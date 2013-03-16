@@ -16,8 +16,8 @@
 (let ((default-directory "~/.emacs.d/lisp/"))
       (normal-top-level-add-subdirs-to-load-path))
 (add-to-list 'load-path "~/.emacs.d/elpa")
-(add-to-list 'load-path "~/.emacs.d/lisp/multi-line-it")
 
+(message load-path)
 
 ;; =============================================================================
 ;;                                                         General Emacs Options
@@ -60,14 +60,14 @@
 (load-file "~/.emacs.d/emacs-for-python/epy-init.el")
 
 ;; Multi-lining for python.
-(require 'multi-line-it)
+;;(require 'multi-line-it)
 
 ;; Set tabs to be four spaces wide in python mode.
 (add-hook 'python-mode-hook
       (lambda ()
         (setq indent-tabs-mode t)
         (setq tab-width 4)
-        (setq python-indent 4)))))))))
+        (setq python-indent 4)))
 
 ;; =============================================================================
 ;;                                                           Custom Key Bindings
