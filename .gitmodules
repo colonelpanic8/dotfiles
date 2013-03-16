@@ -7,3 +7,9 @@
 [submodule "lisp/yasnippet"]
 	path = lisp/yasnippet
 	url = git@github.com:capitaomorte/yasnippet.git
+[submodule "emacs-for-python"]
+	path = emacs-for-python
+	url = git@github.com:gabrielelanaro/emacs-for-python.git
+[submodule "lisp/rainbow-delimiters"]
+	path = lisp/rainbow-delimiters
+	url = git@github.com:jlr/rainbow-delimiters.git
