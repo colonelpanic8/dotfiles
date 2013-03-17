@@ -18,6 +18,8 @@
 (let ((default-directory "~/.emacs.d/elpa/"))
       (normal-top-level-add-subdirs-to-load-path))
 
+(add-to-list 'custom-theme-load-path "~/.emacs.d/themes/zenburn")
+
 ;; =============================================================================
 ;;                                                         General Emacs Options
 ;; =============================================================================
@@ -52,8 +54,6 @@
 (setq c-subword-mode t)
 
 (require 'package)
-(require 'whitespace)
-(require 'rainbow-delimiters)
 
 ;; =============================================================================
 ;;                                                                       Flymake
@@ -61,11 +61,6 @@
 
 (require 'flymake)
 (require 'flymake-cursor)
-
-;; Customize flymake colors.
-(custom-set-faces
- '(flymake-errline ((((class color)) (:background "DarkViolet"))))
- '(flymake-warnline ((((class color)) (:underline "Orange")))))
 
 (defun flymake-pylint-init ()
   (let* ((temp-file (flymake-init-create-temp-buffer-copy
@@ -102,7 +97,7 @@
 ;; Rope
 (pymacs-load "ropemacs" "rope-")
 
-(defun yelp-tabs ()
+(defun python-tabs ()
   (setq tab-width 4,
         indent-tabs-mode t
         py-smart-indentation nil
@@ -135,5 +130,53 @@
 
 (require 'package)
 (add-to-list 'package-archives
-	     '("marmalade" . "http://marmalade-repo.org/packages/")) 
+             '("marmalade" . "http://marmalade-repo.org/packages/")) 
 (package-initialize)
+
+(custom-set-variables
+ ;; custom-set-variables was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ '(custom-safe-themes (quote ("36a309985a0f9ed1a0c3a69625802f87dee940767c9e200b89cdebdb737e5b29" default))))
+
+;; =============================================================================
+;;                                                                 elisp Helpers
+;; =============================================================================
+
+(defun plist-to-alist (the-plist)
+  (defun get-tuple-from-plist (the-plist)
+    (when the-plist
+      (cons (car the-plist) (cadr the-plist))))
+
+  (let ((alist '()))
+    (while the-plist
+      (add-to-list 'alist (get-tuple-from-plist the-plist))
+      (setq the-plist (cddr the-plist)))
+  alist))
+
+;; =============================================================================
+;;                                                                    Appearance
+;; =============================================================================
+
+(require 'color-theme)
+
+(require 'whitespace)
+(require 'rainbow-delimiters)
+
+;; Customize font-faces
+(custom-set-faces
+ ;; custom-set-faces was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ '(flymake-errline ((((class color)) (:background "DarkViolet"))))
+ '(flymake-warnline ((((class color)) (:underline "Orange"))))
+ '(rainbow-delimiters-depth-1-face ((t (:foreground "green"))))
+ '(rainbow-delimiters-depth-2-face ((t (:foreground "blue"))))
+ '(rainbow-delimiters-depth-3-face ((t (:foreground "magenta"))))
+ '(rainbow-delimiters-depth-4-face ((t (:foreground "yellow"))))
+ '(rainbow-delimiters-depth-5-face ((t (:foreground "cyan"))))
+ '(rainbow-delimiters-depth-7-face ((t (:foreground "blue"))))
+ '(rainbow-delimiters-depth-8-face ((t (:foreground "yellow"))))
+ '(rainbow-delimiters-depth-9-face ((t (:foreground "magenta")))))

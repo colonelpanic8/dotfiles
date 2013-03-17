@@ -10,3 +10,6 @@
 [submodule "lisp/multi-line-it"]
 	path = lisp/multi-line-it
 	url = git@github.com:IvanMalison/multi-line-it.git
+[submodule "themes/zenburn"]
+	path = themes/zenburn
+	url = https://github.com/bbatsov/zenburn-emacs
