@@ -1,6 +1,7 @@
 #!/bin/bash
+# Go to the source directory of this script.
 cd "$(dirname "${BASH_SOURCE}")"
-
+sudo -v
 source bootstrap.sh
 
 case `uname` in
