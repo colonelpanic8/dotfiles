@@ -22,10 +22,11 @@ brew tap homebrew/dupes
 brew install homebrew/dupes/grep
 
 # Install everything else
+brew install emacs
+brew install git
 brew install tmux
 brew install nmap
 brew install readline
-brew install git
 
 # Remove outdated versions from the cellar
 brew cleanup
