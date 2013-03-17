@@ -15,9 +15,8 @@
 
 (let ((default-directory "~/.emacs.d/lisp/"))
       (normal-top-level-add-subdirs-to-load-path))
-(add-to-list 'load-path "~/.emacs.d/elpa")
-
-(message load-path)
+(let ((default-directory "~/.emacs.d/elpa/"))
+      (normal-top-level-add-subdirs-to-load-path))
 
 ;; =============================================================================
 ;;                                                         General Emacs Options
@@ -52,22 +51,50 @@
 (defun change-major-mode-hook () (modify-syntax-entry ?_ "_"))
 (setq c-subword-mode t)
 
+(require 'package)
+(require 'whitespace)
+(require 'rainbow-delimiters)
+
+;; =============================================================================
+;;                                                                       Flymake
+;; =============================================================================
+
+(require 'flymake)
+(require 'flymake-cursor)
+
+;; Customize flymake colors.
+(custom-set-faces
+ '(flymake-errline ((((class color)) (:background "DarkViolet"))))
+ '(flymake-warnline ((((class color)) (:underline "Orange")))))
+
+(defun flymake-pylint-init ()
+  (let* ((temp-file (flymake-init-create-temp-buffer-copy
+                    'flymake-create-temp-inplace))
+        (local-file (file-relative-name
+                     temp-file
+                     (file-name-directory buffer-file-name))))
+   (list "pyflakes" (list local-file))))
+
+(add-to-list 'flymake-allowed-file-name-masks '("\\.py\\'" flymake-pylint-init))
+
+; Load flymake on non-temp buffers
+(add-hook 'python-mode-hook
+	  (lambda () (unless (eq buffer-file-name nil) (flymake-mode 1))))
+
 ;; =============================================================================
 ;;                                                                        Python
 ;; =============================================================================
 
-;; Emacs for python.
-(load-file "~/.emacs.d/emacs-for-python/epy-init.el")
+(require 'python-mode)
 
 ;; Multi-lining for python.
-;;(require 'multi-line-it)
+(require 'multi-line-it)
 
-;; Set tabs to be four spaces wide in python mode.
-(add-hook 'python-mode-hook
-      (lambda ()
-        (setq indent-tabs-mode t)
-        (setq tab-width 4)
-        (setq python-indent 4)))
+(defun yelp-tabs ()
+  (setq tab-width 4,
+        indent-tabs-mode t
+        py-smart-indentation nil
+        python-indent 4))
 
 ;; =============================================================================
 ;;                                                           Custom Key Bindings
@@ -96,35 +123,5 @@
 
 (require 'package)
 (add-to-list 'package-archives
-             '("marmalade" . "http://marmalade-repo.org/packages/"))
+	     '("marmalade" . "http://marmalade-repo.org/packages/")) 
 (package-initialize)
-
-;; =============================================================================
-;;                                                                       Flymake
-;; =============================================================================
-
-(require 'flymake)
-(require 'flymake-cursor)
-
-;; Customize flymake colors.
-(custom-set-faces
- '(flymake-errline ((((class color)) (:background "DarkViolet"))))
- '(flymake-warnline ((((class color)) (:underline "Orange")))))
-
-(defun flymake-pylint-init ()
-  (let* ((temp-file (flymake-init-create-temp-buffer-copy
-                    'flymake-create-temp-inplace))
-        (local-file (file-relative-name
-                     temp-file
-                     (file-name-directory buffer-file-name))))
-   (list "pyflakes" (list local-file))))
-
-(add-to-list 'flymake-allowed-file-name-masks '("\\.py\\'" flymake-pylint-init))
-
-; Load flymake on non-temp buffers
-(add-hook 'python-mode-hook
-	  (lambda () (unless (eq buffer-file-name nil) (flymake-mode 1))))
-
-(require 'yasnippet)
-(require 'whitespace)
-(require 'rainbow-delimiters)
