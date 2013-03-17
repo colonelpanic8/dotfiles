@@ -4,3 +4,6 @@
 [submodule ".emacs.d"]
 	path = .emacs.d
 	url = git@github.com:IvanMalison/.emacs.d.git
+[submodule "oh-my-zsh"]
+	path = oh-my-zsh
+	url = git@github.com:IvanMalison/oh-my-zsh.git
