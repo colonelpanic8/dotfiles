@@ -90,6 +90,18 @@
 ;; Multi-lining for python.
 (require 'multi-line-it)
 
+;; Pymacs
+(require 'pymacs)
+(autoload 'pymacs-apply "pymacs")
+(autoload 'pymacs-call "pymacs")
+(autoload 'pymacs-eval "pymacs" nil t)
+(autoload 'pymacs-exec "pymacs" nil t)
+(autoload 'pymacs-load "pymacs" nil t)
+(autoload 'pymacs-autoload "pymacs")
+
+;; Rope
+(pymacs-load "ropemacs" "rope-")
+
 (defun yelp-tabs ()
   (setq tab-width 4,
         indent-tabs-mode t
