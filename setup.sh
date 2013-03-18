@@ -41,4 +41,4 @@ esac
 
 tmux-powerline/generate_conf.sh
 oh-my-zsh/install.sh
-chsh -s /bin/zsh
+
