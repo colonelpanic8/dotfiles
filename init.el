@@ -53,8 +53,6 @@
 (defun change-major-mode-hook () (modify-syntax-entry ?_ "_"))
 (setq c-subword-mode t)
 
-(require 'package)
-
 ;; =============================================================================
 ;;                                                                       Flymake
 ;; =============================================================================
@@ -133,13 +131,6 @@
              '("marmalade" . "http://marmalade-repo.org/packages/")) 
 (package-initialize)
 
-(custom-set-variables
- ;; custom-set-variables was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
- '(custom-safe-themes (quote ("36a309985a0f9ed1a0c3a69625802f87dee940767c9e200b89cdebdb737e5b29" default))))
-
 ;; =============================================================================
 ;;                                                                 elisp Helpers
 ;; =============================================================================
@@ -160,9 +151,12 @@
 ;; =============================================================================
 
 (require 'color-theme)
-
 (require 'whitespace)
 (require 'rainbow-delimiters)
+
+(set-face-background 'mode-line "black")
+(set-face-foreground 'mode-line "white")
+(set-face-background 'mode-line-inactive "black")
 
 ;; Customize font-faces
 (custom-set-faces
