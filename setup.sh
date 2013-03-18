@@ -39,6 +39,7 @@ case `uname` in
 	exit
 esac
 
+echo "Installing Tmux Configuration."
 tmux-powerline/generate_conf.sh
+echo "Installing oh-my-zsh."
 oh-my-zsh/install.sh
-
