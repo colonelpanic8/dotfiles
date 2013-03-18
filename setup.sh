@@ -40,5 +40,5 @@ case `uname` in
 esac
 
 tmux-powerline/generate_conf.sh
-oh-my-zsh/tools/install.sh
+oh-my-zsh/install.sh
 chsh -s /bin/zsh
