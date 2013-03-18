@@ -1,3 +1,7 @@
+# Make emacs the default editor.
+export EDITOR=`which emacs`
+export VISUAL=`which emacs`
+
 # Larger bash history (allow 32³ entries; default is 500)
 export HISTSIZE=32768
 export HISTFILESIZE=$HISTSIZE
