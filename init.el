@@ -53,6 +53,9 @@
 (defun change-major-mode-hook () (modify-syntax-entry ?_ "_"))
 (setq c-subword-mode t)
 
+;; Disable the menu bar.
+(menu-bar-mode -1)
+
 ;; =============================================================================
 ;;                                                                       Flymake
 ;; =============================================================================
