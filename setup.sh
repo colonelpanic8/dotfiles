@@ -54,6 +54,6 @@ source bootstrap.sh
 echo "Installing Tmux Configuration."
 tmux-powerline/generate_conf.sh
 echo "Installing oh-my-zsh."
-oh-my-zsh/install.sh
+oh-my-zsh/install.sh -f
 echo "Installing python dependencies."
 install_python_packages
