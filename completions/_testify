@@ -3,7 +3,7 @@
 _testify() {
     typeset -A opt_args
     local context state line
-    
+
     BASE_TEST_PATH='tests'
     _arguments "1:testify_file:->file" "2:testify_:->test_case"
 
@@ -24,9 +24,13 @@ _print_test_methods() {
     python - "$@" <<ENDPYTHON
 import sys
 from testify import test_discovery
+
 if __name__ == '__main__':
     for test_case in test_discovery.discover(sys.argv[1]):
-        print test_case.__name__
+      print test_case.__name__
+      for member in dir(test_case):
+         if member.startswith("test"):
+           print "%s.%s" % (test_case.__name__, member)
 ENDPYTHON
 
 }
