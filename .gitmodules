@@ -1,9 +1,6 @@
 [submodule "lisp/flymake-cursor"]
 	path = lisp/flymake-cursor
 	url = git@github.com:illusori/emacs-flymake-cursor.git
-[submodule "lisp/yasnippet"]
-	path = lisp/yasnippet
-	url = git@github.com:capitaomorte/yasnippet.git
 [submodule "lisp/rainbow-delimiters"]
 	path = lisp/rainbow-delimiters
 	url = git@github.com:jlr/rainbow-delimiters.git

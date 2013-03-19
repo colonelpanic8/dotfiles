@@ -34,6 +34,9 @@
 (ido-mode t)
 (setq ido-enable-flex-matching t)
 
+;; Code Completion.
+(require 'yasnippet-bundle)
+
 ;; Give duplicate open buffers better titles.
 (require 'uniquify)
 (setq uniquify-buffer-name-style 'forward)
