@@ -1,1 +1,3 @@
 export PATH="$PATH:$HOME/.local/lib/python2.6/site-packages"
+# put usr/local/bin first.
+export PATH=/usr/local/bin:`echo $PATH | sed "s|:*/usr/local/bin||" | sed "s|^:||"`
