@@ -39,6 +39,13 @@ function install_essentials() {
     esac
 }
 
+function install_python_packages() {
+    sudo -v
+    source ~/.path
+    easy_install pip
+    pip install -r requirements.txt
+}
+
 
 sudo -v
 echo "Installing Dot Files."
@@ -48,3 +55,5 @@ echo "Installing Tmux Configuration."
 tmux-powerline/generate_conf.sh
 echo "Installing oh-my-zsh."
 oh-my-zsh/install.sh
+echo "Installing python dependencies."
+install_python_packages
