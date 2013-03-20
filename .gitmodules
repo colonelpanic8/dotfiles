@@ -12,4 +12,4 @@
 	url = https://github.com/bbatsov/zenburn-emacs
 [submodule "emacs-for-python"]
 	path = emacs-for-python
-	url = git@github.com:gabrielelanaro/emacs-for-python.git
+	url = git@github.com:IvanMalison/emacs-for-python.git
