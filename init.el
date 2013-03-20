@@ -34,9 +34,6 @@
 (ido-mode t)
 (setq ido-enable-flex-matching t)
 
-;; Code Completion.
-(require 'yasnippet-bundle)
-
 ;; Give duplicate open buffers better titles.
 (require 'uniquify)
 (setq uniquify-buffer-name-style 'forward)
@@ -180,3 +177,5 @@
  '(rainbow-delimiters-depth-7-face ((t (:foreground "blue"))))
  '(rainbow-delimiters-depth-8-face ((t (:foreground "yellow"))))
  '(rainbow-delimiters-depth-9-face ((t (:foreground "magenta")))))
+
+ (load-file "~/.emacs.d/emacs-for-python/epy-init.el")
