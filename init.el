@@ -82,8 +82,6 @@
 ;;                                                                        Python
 ;; =============================================================================
 
-(require 'python-mode)
-
 ;; Multi-lining for python.
 (require 'multi-line-it)
 
@@ -100,10 +98,10 @@
 	    (pymacs-load "ropemacs" "rope-")))
 
 (defun python-tabs ()
-  (setq tab-width 4,
+  (setq tab-width 4
         indent-tabs-mode t
-        py-smart-indentation nil
-        python-indent 4))
+        python-indent-offset 4))
+(python-tabs)
 
 ;; =============================================================================
 ;;                                                           Custom Key Bindings
