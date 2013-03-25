@@ -1,7 +1,7 @@
-B# Make emacs the default editor.
+# Make emacs the default editor.
 export EDITOR="emacsclient"
 export ALTERNATE_EDITOR=""
-export VISUAL=`which emacs`
+export VISUAL="emacsclient"
 
 # Larger bash history (allow 32³ entries; default is 500)
 export HISTSIZE=32768
