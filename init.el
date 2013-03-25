@@ -19,7 +19,7 @@
       (normal-top-level-add-subdirs-to-load-path))
 
 (add-to-list 'custom-theme-load-path "~/.emacs.d/themes/zenburn")
-(load-theme 'zenburn)
+(load-theme 'zenburn t)
 
 ;; =============================================================================
 ;;                                                         General Emacs Options
@@ -208,6 +208,8 @@
 ;; =============================================================================
 
 (load-file "~/.emacs.d/emacs-for-python/epy-init.el")
+
+(setq skeleton-pair nil) ;; This stuff sucks.
 
 ;; =============================================================================
 ;;                                                                     Customize
