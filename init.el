@@ -19,6 +19,7 @@
       (normal-top-level-add-subdirs-to-load-path))
 
 (add-to-list 'custom-theme-load-path "~/.emacs.d/themes/zenburn")
+(load-theme 'zenburn)
 
 ;; =============================================================================
 ;;                                                         General Emacs Options
@@ -181,9 +182,9 @@
       '((space-mark 32 [183] [46]) 
         (tab-mark 9 [9655 9] [92 9])))
 
-(set-face-background 'mode-line "black")
-(set-face-foreground 'mode-line "white")
-(set-face-background 'mode-line-inactive "black")
+;; (set-face-background 'mode-line "black")
+;; (set-face-foreground 'mode-line "white")
+;; (set-face-background 'mode-line-inactive "black")
 
 ;; Customize font-faces
 (custom-set-faces
@@ -207,3 +208,13 @@
 ;; =============================================================================
 
 (load-file "~/.emacs.d/emacs-for-python/epy-init.el")
+
+;; =============================================================================
+;;                                                                     Customize
+;; =============================================================================
+(custom-set-variables
+ ;; custom-set-variables was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ '(custom-safe-themes (quote ("36a309985a0f9ed1a0c3a69625802f87dee940767c9e200b89cdebdb737e5b29" default))))
