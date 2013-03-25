@@ -87,16 +87,16 @@
 (require 'multi-line-it)
 
 ;; Pymacs
-(require 'pymacs)
-(autoload 'pymacs-apply "pymacs")
-(autoload 'pymacs-call "pymacs")
-(autoload 'pymacs-eval "pymacs" nil t)
-(autoload 'pymacs-exec "pymacs" nil t)
-(autoload 'pymacs-load "pymacs" nil t)
-(autoload 'pymacs-autoload "pymacs")
-
-;; Rope
-(pymacs-load "ropemacs" "rope-")
+(add-hook 'python-mode-hook
+	  (lambda ()
+	    (require 'pymacs)
+	    (autoload 'pymacs-apply "pymacs")
+	    (autoload 'pymacs-call "pymacs")
+	    (autoload 'pymacs-eval "pymacs" nil t)
+	    (autoload 'pymacs-exec "pymacs" nil t)
+	    (autoload 'pymacs-load "pymacs" nil t)
+	    (autoload 'pymacs-autoload "pymacs")
+	    (pymacs-load "ropemacs" "rope-")))
 
 (defun python-tabs ()
   (setq tab-width 4,
@@ -136,6 +136,24 @@
 (add-to-list 'package-archives
              '("marmalade" . "http://marmalade-repo.org/packages/")) 
 (package-initialize)
+
+;; (when (not package-archive-contents)
+;;   (package-refresh-contents))
+
+;; Add in your own as you wish:
+;; (defvar my-packages '(starter-kit starter-kit-bindings)
+;;   "A list of packages to ensure are installed at launch.")
+
+;; (when (not package-archive-contents)
+;;   (package-refresh-contents))
+
+;; ;; Add in your own as you wish:
+;; (defvar my-packages '(starter-kit starter-kit-lisp starter-kit-bindings)
+;;   "A list of packages to ensure are installed at launch.")
+
+;; (dolist (p my-packages)
+;;   (when (not (package-installed-p p))
+;;    (package-install p)))
 
 ;; =============================================================================
 ;;                                                                 elisp Helpers
@@ -181,4 +199,8 @@
  '(rainbow-delimiters-depth-8-face ((t (:foreground "yellow"))))
  '(rainbow-delimiters-depth-9-face ((t (:foreground "magenta")))))
 
- (load-file "~/.emacs.d/emacs-for-python/epy-init.el")
+;; =============================================================================
+;;                                                                  Starter Kits
+;; =============================================================================
+
+(load-file "~/.emacs.d/emacs-for-python/epy-init.el")
