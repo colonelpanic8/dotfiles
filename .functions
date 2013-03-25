@@ -1,3 +1,5 @@
+source ~/ssh-find-agent/ssh-find-agent.bash
+
 # Simple calculator
 function calc() {
 	local result=""
