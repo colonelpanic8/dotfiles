@@ -101,8 +101,6 @@
         indent-tabs-mode t
         python-indent-offset 4))
 
-;; Yelp always uses tabs.
-(add-hook 'python-mode-hook 'python-tabs)
 (add-hook 'python-mode-hook 'subword-mode)
 
 ;; =============================================================================
