@@ -13,3 +13,6 @@
 [submodule "emacs-for-python"]
 	path = emacs-for-python
 	url = git@github.com:IvanMalison/emacs-for-python.git
+[submodule "themes/solarized"]
+	path = themes/solarized
+	url = git@github.com:sellout/emacs-color-theme-solarized.git
