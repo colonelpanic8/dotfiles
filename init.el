@@ -123,9 +123,6 @@
 (global-set-key (kbd "ESC <down>") (lambda () (interactive) (next-line 5)))
 (global-set-key (kbd "ESC <up>") (lambda () (interactive) (previous-line 5)))
 
-;; Macros
-(fset 'ipdb "import ipdb; ipdb.set_trace()")
-
 ;; Miscellaneous
 (global-set-key "\C-x\C-b" 'buffer-menu)
 (global-set-key "\C-xw" 'whitespace-mode)
@@ -134,9 +131,13 @@
 (global-set-key "\C-x\C-d" 'decrease-left-margin)
 (global-set-key "\C-c\C-c" 'comment-region)
 (global-set-key (kbd "C-c w") 'tmux-copy)
+(global-set-key (kbd "C-x O") (lambda () (interactive) (other-window -1)))
 
 ;; Something will occasionally override this binding.
 (global-set-key "\C-cg" 'rope-goto-definition)
+
+;; Macros
+(fset 'ipdb "import ipdb; ipdb.set_trace()")
 
 ;; =============================================================================
 ;;                                                                          ELPA
@@ -226,6 +227,7 @@
 ;; =============================================================================
 ;;                                                                     Customize
 ;; =============================================================================
+
 (custom-set-variables
  ;; custom-set-variables was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
