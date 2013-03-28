@@ -111,6 +111,9 @@
 
 (add-hook 'python-mode-hook 'subword-mode)
 
+;; Yelp always uses tabs.
+(add-hook 'python-mode-hook 'python-tabs)
+
 ;; =============================================================================
 ;;                                                           Custom Key Bindings
 ;; =============================================================================
