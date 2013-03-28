@@ -59,8 +59,16 @@
 (menu-bar-mode -1)
 
 ;; =============================================================================
-;;                                                                       Flymake
+;;                                                                          tmux
 ;; =============================================================================
+
+(defun tmux-copy (&optional b e) 
+  (interactive "r")
+  (shell-command-on-region b e "cat | tmux loadb -"))
+
+;; ;; =============================================================================
+;; ;;                                                                       Flymake
+;; ;; =============================================================================
 
 (require 'flymake)
 (require 'flymake-cursor)
@@ -99,9 +107,11 @@
 (defun python-tabs ()
   (setq tab-width 4
         indent-tabs-mode t
-        python-indent-offset 4))
+        python-indent-offset 4
+        (subword-mode t)))
 
-(add-hook 'python-mode-hook 'subword-mode)
+;; Yelp always uses tabs.
+(add-hook 'python-mode-hook 'python-tabs)
 
 ;; =============================================================================
 ;;                                                           Custom Key Bindings
@@ -123,6 +133,10 @@
 (global-set-key "\C-x\C-i" 'increase-left-margin)
 (global-set-key "\C-x\C-d" 'decrease-left-margin)
 (global-set-key "\C-c\C-c" 'comment-region)
+(global-set-key (kbd "C-c w") 'tmux-copy)
+
+;; Something will occasionally override this binding.
+(global-set-key "\C-cg" 'rope-goto-definition)
 
 ;; =============================================================================
 ;;                                                                          ELPA
