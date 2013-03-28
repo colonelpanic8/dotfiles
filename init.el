@@ -83,7 +83,7 @@
 
 (add-to-list 'flymake-allowed-file-name-masks '("\\.py\\'" flymake-pylint-init))
 
-; Load flymake on non-temp buffers
+;; Load flymake on non-temp buffers
 (add-hook 'python-mode-hook
 	  (lambda () (unless (eq buffer-file-name nil) (flymake-mode 1))))
 
@@ -130,8 +130,6 @@
 (global-set-key "\C-x\C-b" 'buffer-menu)
 (global-set-key "\C-xw" 'whitespace-mode)
 (global-set-key "\C-x\C-r" (lambda () (interactive) (revert-buffer t t)))
-(global-set-key "\C-x\C-i" 'increase-left-margin)
-(global-set-key "\C-x\C-d" 'decrease-left-margin)
 (global-set-key "\C-c\C-c" 'comment-region)
 (global-set-key (kbd "C-c w") 'tmux-copy)
 
@@ -158,7 +156,7 @@
 ;;   (package-refresh-contents))
 
 ;; ;; Add in your own as you wish:
-;; (defvar my-packages '(starter-kit starter-kit-lisp starter-kit-bindings)
+;; (defvar my-packages '(starter-kit starter-starter-kit-bindings)
 ;;   "A list of packages to ensure are installed at launch.")
 
 ;; (dolist (p my-packages)
@@ -221,11 +219,12 @@
 
 (load-file "~/.emacs.d/emacs-for-python/epy-init.el")
 
-(setq skeleton-pair nil) ;; This stuff sucks.
+(setq skeleton-pair nil) ;; This breaks pasting from os clipboard
 
 ;; =============================================================================
 ;;                                                                     Customize
 ;; =============================================================================
+
 (custom-set-variables
  ;; custom-set-variables was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
