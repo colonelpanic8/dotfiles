@@ -111,9 +111,6 @@
 
 (add-hook 'python-mode-hook 'subword-mode)
 
-;; Yelp always uses tabs.
-(add-hook 'python-mode-hook 'python-tabs)
-
 ;; =============================================================================
 ;;                                                           Custom Key Bindings
 ;; =============================================================================
@@ -124,18 +121,19 @@
 (global-set-key (kbd "ESC <down>") (lambda () (interactive) (next-line 5)))
 (global-set-key (kbd "ESC <up>") (lambda () (interactive) (previous-line 5)))
 
-;; Macros
-(fset 'ipdb "import ipdb; ipdb.set_trace()")
-
 ;; Miscellaneous
 (global-set-key "\C-x\C-b" 'buffer-menu)
 (global-set-key "\C-xw" 'whitespace-mode)
 (global-set-key "\C-x\C-r" (lambda () (interactive) (revert-buffer t t)))
 (global-set-key "\C-c\C-c" 'comment-region)
 (global-set-key (kbd "C-c w") 'tmux-copy)
+(global-set-key (kbd "C-x O") (lambda () (interactive) (other-window -1)))
 
 ;; Something will occasionally override this binding.
 (global-set-key "\C-cg" 'rope-goto-definition)
+
+;; Macros
+(fset 'ipdb "import ipdb; ipdb.set_trace()")
 
 ;; =============================================================================
 ;;                                                                          ELPA
