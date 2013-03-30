@@ -29,9 +29,13 @@ function install_essentials() {
 	    source .brew
 	    ;;
 	'Linux')
-	    echo 'Linux'
 	    hash apt-get &>/dev/null || echo 'apt-get is missing.' && exit
+            sudo -v
 	    apt-get install build-essential
+            apt-get install git
+            git clone git@github.com:IvanMalison/dotfiles.git
+            cd dotfiles
+            source .debian
 	    ;;
 	*)
 	    echo "Operating System not recognized; aborting."
@@ -55,5 +59,3 @@ echo "Installing Tmux Configuration."
 tmux-powerline/generate_conf.sh
 echo "Installing oh-my-zsh."
 oh-my-zsh/install.sh -f
-echo "Installing python dependencies."
-install_python_packages
