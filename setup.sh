@@ -1,4 +1,4 @@
-#!/bin/bash
+bn#!/bin/bash
 # Go to the source directory of this script.
 cd "$(dirname "${BASH_SOURCE}")"
 
@@ -30,7 +30,6 @@ function install_essentials() {
 	    ;;
 	'Linux')
 	    hash apt-get &>/dev/null || echo 'apt-get is missing.' && exit
-            sudo -v
 	    apt-get install build-essential
             apt-get install git
             git clone git@github.com:IvanMalison/dotfiles.git
@@ -52,9 +51,10 @@ function install_python_packages() {
 
 
 sudo -v
+echo "Installing essential files.
+[ "$1" == "--install" -o "$1" == "-i" ] && install_essentials
 echo "Installing Dot Files."
 source bootstrap.sh
-[ "$1" == "--install" -o "$1" == "-i" ] && install_essentials
 echo "Installing Tmux Configuration."
 tmux-powerline/generate_conf.sh
 echo "Installing oh-my-zsh."
