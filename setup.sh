@@ -29,7 +29,9 @@ function install_essentials() {
 	    source .brew
 	    ;;
 	'Linux')
+            echo "Linux detected."
 	    hash apt-get &>/dev/null || echo 'apt-get is missing.' && exit
+            echo "apt-get found."
 	    apt-get install build-essential
             apt-get install git
             git clone git@github.com:IvanMalison/dotfiles.git
@@ -51,8 +53,7 @@ function install_python_packages() {
 
 
 sudo -v
-echo "Installing essential files."
-[ "$1" == "--install" -o "$1" == "-i" ] && install_essentials
+[ "$1" == "--install" -o "$1" == "-i" ] && echo "Installing essential files." && install_essentials
 echo "Installing Dot Files."
 source bootstrap.sh
 echo "Installing Tmux Configuration."
