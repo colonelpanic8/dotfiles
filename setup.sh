@@ -52,8 +52,6 @@ function install_python_packages() {
 }
 
 
-sudo -v
-[ "$1" == "--install" -o "$1" == "-i" ] && echo "Installing essential files." && install_essentials
 echo "Installing Dot Files."
 source bootstrap.sh
 echo "Installing Tmux Configuration."

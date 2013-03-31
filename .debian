@@ -1,16 +1,5 @@
-sudo -v
-INSTALL="apt-get -y install"
+INSTALL="sudo apt-get -y install"
 $INSTALL zsh
 $INSTALL tmux
-$INSTALL emacs
+$INSTALL emacs24-nox
 $INSTALL nmap
-$INSTALL readline
-
-# python dependencies
-$INSTALL libreadline5-dev libncursesw5-dev libssl-dev libsqlite3-dev tk-dev libgdbm-dev libc6-dev libbz2-dev
-cd ~/Downloads
-wget http://python.org/ftp/python/2.7.2/Python-2.7.2.tgz
-tar -xvf Python-2.7.2.tgz && cd Python-2.7.2/
-./configure
-make
-sudo make altinstall

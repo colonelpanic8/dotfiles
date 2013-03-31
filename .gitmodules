@@ -7,6 +7,3 @@
 [submodule "oh-my-zsh"]
 	path = oh-my-zsh
 	url = git@github.com:IvanMalison/oh-my-zsh.git
-[submodule "ssh-find-agent"]
-	path = ssh-find-agent
-	url = git@github.com:wwalker/ssh-find-agent.git
