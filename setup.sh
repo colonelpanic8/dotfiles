@@ -34,7 +34,7 @@ function install_essentials() {
             echo "apt-get found."
 	    sudo apt-get -y install build-essential
             sudo apt-get -y install git
-            git clone git@github.com:IvanMalison/dotfiles.git
+            sudo git clone git@github.com:IvanMalison/dotfiles.git
             cd dotfiles
             source .debian
 	    ;;

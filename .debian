@@ -1,12 +1,13 @@
 sudo -v
-apt-get install zsh
-apt-get install tmux
-apt-get install emacs
-apt-get install nmap
-apt-get install readline
+INSTALL="apt-get -y install"
+$INSTALL zsh
+$INSTALL tmux
+$INSTALL emacs
+$INSTALL nmap
+$INSTALL readline
 
 # python dependencies
-apt-get -y install libreadline5-dev libncursesw5-dev libssl-dev libsqlite3-dev tk-dev libgdbm-dev libc6-dev libbz2-dev
+$INSTALL libreadline5-dev libncursesw5-dev libssl-dev libsqlite3-dev tk-dev libgdbm-dev libc6-dev libbz2-dev
 cd ~/Downloads
 wget http://python.org/ftp/python/2.7.2/Python-2.7.2.tgz
 tar -xvf Python-2.7.2.tgz && cd Python-2.7.2/
