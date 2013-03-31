@@ -51,7 +51,7 @@ function install_python_packages() {
 
 
 sudo -v
-echo "Installing essential files.
+echo "Installing essential files."
 [ "$1" == "--install" -o "$1" == "-i" ] && install_essentials
 echo "Installing Dot Files."
 source bootstrap.sh
