@@ -32,9 +32,9 @@ function install_essentials() {
             echo "Linux detected."
 	    hash apt-get &>/dev/null || (echo 'apt-get is missing.' && exit)
             echo "apt-get found."
-	    sudo apt-get install build-essential
-            sudo apt-get install git
-            sudo git clone git@github.com:IvanMalison/dotfiles.git
+	    sudo apt-get -y install build-essential
+            sudo apt-get -y install git
+            git clone git@github.com:IvanMalison/dotfiles.git
             cd dotfiles
             source .debian
 	    ;;
