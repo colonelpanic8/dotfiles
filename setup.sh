@@ -1,4 +1,4 @@
-bn#!/bin/bash
+#!/bin/bash
 # Go to the source directory of this script.
 cd "$(dirname "${BASH_SOURCE}")"
 
