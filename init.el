@@ -94,24 +94,11 @@
 ;; Multi-lining for python.
 (require 'multi-line-it)
 
-
-(require 'pymacs)
-(autoload 'pymacs-apply "pymacs")
-(autoload 'pymacs-call "pymacs")
-(autoload 'pymacs-eval "pymacs" nil t)
-(autoload 'pymacs-exec "pymacs" nil t)
-(autoload 'pymacs-load "pymacs" nil t)
-(autoload 'pymacs-autoload "pymacs")
-(pymacs-load "ropemacs" "rope-")
-
 (defun python-tabs ()
   (setq tab-width 4
         indent-tabs-mode t
         python-indent-offset 4
         (subword-mode t)))
-
-;; Yelp always uses tabs.
-(add-hook 'python-mode-hook 'python-tabs)
 
 ;; =============================================================================
 ;;                                                           Custom Key Bindings
