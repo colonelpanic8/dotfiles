@@ -35,7 +35,7 @@ defaults write NSGlobalDomain AppleShowScrollBars -string "Automatic"
 defaults write NSGlobalDomain NSAutomaticWindowAnimationsEnabled -bool false
 
 # Increase window resize speed for Cocoa applications
-defaults write NSGlobalDomain NSWindowResizeTime -float 0.01
+defaults write NSGlobalDomain NSWindowResizeTime -float 0.08
 
 # Expand save panel by default
 defaults write NSGlobalDomain NSNavPanelExpandedStateForSaveMode -bool true
@@ -272,7 +272,7 @@ defaults write com.apple.dock show-process-indicators -bool true
 defaults write com.apple.dock launchanim -bool false
 
 # Speed up Mission Control animations
-defaults write com.apple.dock expose-animation-duration -float .05
+defaults write com.apple.dock expose-animation-duration -float .5
 
 # Don’t group windows by application in Mission Control
 # (i.e. use the old Exposé behavior instead)
@@ -507,14 +507,3 @@ defaults write com.twitter.twitter-mac ShowFullNames -bool true
 
 # Hide the app in the background if it’s not the front-most window
 defaults write com.twitter.twitter-mac HideInBackground -bool true
-
-###############################################################################
-# Kill affected applications                                                  #
-###############################################################################
-
-for app in "Address Book" "Calendar" "Contacts" "Dashboard" "Dock" "Finder" \
-	"Mail" "Safari" "SizeUp" "SystemUIServer" "Terminal" "Transmission" \
-	"Twitter" "iCal" "iTunes"; do
-	killall "$app" > /dev/null 2>&1
-done
-echo "Done. Note that some of these changes require a logout/restart to take effect."
