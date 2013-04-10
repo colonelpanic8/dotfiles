@@ -18,7 +18,7 @@
 	      [(0 4 1)
 	       nil "Major mode for CoffeeScript files" tar])
  (company .
-	  [(0 6 2)
+	  [(0 6 7)
 	   nil "Modular in-buffer completion framework" tar])
  (csv-mode .
 	   [(1 1)
@@ -47,6 +47,9 @@
  (eldoc-eval .
 	     [(0 1)
 	      nil "Enable eldoc support when minibuffer is in use." single])
+ (enwc .
+       [(1 0)
+	nil "The Emacs Network Client" tar])
  (epoch-view .
 	     [(0 0 1)
 	      nil "Minor mode to visualize epoch timestamps" single])
@@ -54,7 +57,7 @@
 			[(1 1)
 			 nil "Parse and browse f90 interfaces" single])
  (ggtags .
-	 [(0 6 2)
+	 [(0 6 3)
 	  nil "GNU Global source code tagging system" single])
  (heap .
        [(0 3)
@@ -70,9 +73,12 @@
 	    ((emacs
 	      (24 1)))
 	    "Improved JavaScript editing mode" single])
+ (jumpc .
+	[(2 0)
+	 nil "jump to previous insertion points" single])
  (lex .
-      [(1 0)
-       nil "Lexical analyser construction" single])
+      [(1 1)
+       nil "Lexical analyser construction" tar])
  (lmc .
       [(1 1)
        nil "Little Man Computer in Elisp" single])
@@ -107,7 +113,7 @@
 	 [(0 8)
 	  nil "OAuth 2.0 Authorization Protocol" single])
  (org .
-      [(20130318)
+      [(20130408)
        nil "Outline-based notes management and organizer" tar])
  (quarter-plane .
 		[(0 1)

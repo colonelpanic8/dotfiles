@@ -59,16 +59,8 @@
 (menu-bar-mode -1)
 
 ;; =============================================================================
-;;                                                                          tmux
+;;                                                                       Flymake
 ;; =============================================================================
-
-(defun tmux-copy (&optional b e) 
-  (interactive "r")
-  (shell-command-on-region b e "cat | tmux loadb -"))
-
-;; ;; =============================================================================
-;; ;;                                                                       Flymake
-;; ;; =============================================================================
 
 (require 'flymake)
 (require 'flymake-cursor)
@@ -83,7 +75,7 @@
 
 (add-to-list 'flymake-allowed-file-name-masks '("\\.py\\'" flymake-pylint-init))
 
-;; Load flymake on non-temp buffers
+; Load flymake on non-temp buffers
 (add-hook 'python-mode-hook
 	  (lambda () (unless (eq buffer-file-name nil) (flymake-mode 1))))
 
@@ -108,8 +100,7 @@
   (setq tab-width 4
         indent-tabs-mode t
         python-indent-offset 4))
-
-(add-hook 'python-mode-hook 'subword-mode)
+(python-tabs)
 
 ;; Yelp always uses tabs.
 (add-hook 'python-mode-hook 'python-tabs)
@@ -124,19 +115,16 @@
 (global-set-key (kbd "ESC <down>") (lambda () (interactive) (next-line 5)))
 (global-set-key (kbd "ESC <up>") (lambda () (interactive) (previous-line 5)))
 
+;; Macros
+(fset 'ipdb "import ipdb; ipdb.set_trace()")
+
 ;; Miscellaneous
 (global-set-key "\C-x\C-b" 'buffer-menu)
 (global-set-key "\C-xw" 'whitespace-mode)
 (global-set-key "\C-x\C-r" (lambda () (interactive) (revert-buffer t t)))
+(global-set-key "\C-x\C-i" 'increase-left-margin)
+(global-set-key "\C-x\C-d" 'decrease-left-margin)
 (global-set-key "\C-c\C-c" 'comment-region)
-(global-set-key (kbd "C-c w") 'tmux-copy)
-(global-set-key (kbd "C-x O") (lambda () (interactive) (other-window -1)))
-
-;; Something will occasionally override this binding.
-(global-set-key "\C-cg" 'rope-goto-definition)
-
-;; Macros
-(fset 'ipdb "import ipdb; ipdb.set_trace()")
 
 ;; =============================================================================
 ;;                                                                          ELPA
@@ -158,7 +146,7 @@
 ;;   (package-refresh-contents))
 
 ;; ;; Add in your own as you wish:
-;; (defvar my-packages '(starter-kit starter-starter-kit-bindings)
+;; (defvar my-packages '(starter-kit starter-kit-lisp starter-kit-bindings)
 ;;   "A list of packages to ensure are installed at launch.")
 
 ;; (dolist (p my-packages)
@@ -221,12 +209,11 @@
 
 (load-file "~/.emacs.d/emacs-for-python/epy-init.el")
 
-(setq skeleton-pair nil) ;; This breaks pasting from os clipboard
+(setq skeleton-pair nil) ;; This stuff sucks.
 
 ;; =============================================================================
 ;;                                                                     Customize
 ;; =============================================================================
-
 (custom-set-variables
  ;; custom-set-variables was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
