@@ -139,6 +139,13 @@ directory they are found in so that they are unique."
                                    root (ffip-join-patterns)
                                    ffip-find-options ffip-limit))))))
 
+(defvar ffip-project-files-cache '())
+
+(defun ffip-get-project-files ()
+  (when (equal (assoc (ffip-project-root) ffip-project-files-cache) nil)
+      (add-to-list 'ffip-project-files-cache `(,(ffip-project-root) ,(ffip-project-files))))
+  (car (cdr (assoc (ffip-project-root) ffip-project-files-cache))))
+
 ;;;###autoload
 (defun find-file-in-project ()
   "Prompt with a completing list of all files in the project to find one.
@@ -147,7 +154,7 @@ The project's scope is defined as the first directory containing
 an `.emacs-project' file.  You can override this by locally
 setting the variable `ffip-project-root'."
   (interactive)
-  (let* ((project-files (ffip-project-files))
+  (let* ((project-files (ffip-get-project-files))
          (files (mapcar 'car project-files))
          (file (if (and (boundp 'ido-mode) ido-mode)
                    (ido-completing-read "Find file in project: " files)
