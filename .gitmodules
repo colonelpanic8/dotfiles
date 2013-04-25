@@ -16,3 +16,6 @@
 [submodule "themes/solarized"]
 	path = themes/solarized
 	url = git@github.com:sellout/emacs-color-theme-solarized.git
+[submodule "lisp/emacs-testify"]
+	path = lisp/emacs-testify
+	url = git@github.com:IvanMalison/emacs-testify.git

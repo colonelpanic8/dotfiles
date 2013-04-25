@@ -20,7 +20,8 @@
 
 (add-to-list 'custom-theme-load-path "~/.emacs.d/themes/zenburn")
 (add-to-list 'custom-theme-load-path "~/.emacs.d/themes/solarized")
-(load-theme 'solarized-dark t)
+(add-to-list 'custom-theme-load-path "~/.emacs.d/themes/")
+(load-theme 'zenburn t)
 
 ;; =============================================================================
 ;;                                                         General Emacs Options
@@ -96,6 +97,7 @@
 
 ;; Multi-lining for python.
 (require 'multi-line-it)
+(require 'emacs-testify)
 
 (defun python-tabs ()
   (setq tab-width 4
@@ -105,6 +107,7 @@
 
 ;; Yelp always uses tabs.
 (add-hook 'python-mode-hook 'python-tabs)
+(add-hook 'python-mode-hook (lambda () (subword-mode 1)))
 
 ;; =============================================================================
 ;;                                                           Custom Key Bindings
@@ -122,10 +125,13 @@
 ;; Miscellaneous
 (global-set-key "\C-x\C-b" 'buffer-menu)
 (global-set-key "\C-xw" 'whitespace-mode)
+(global-set-key "\C-cw" 'tmux-copy)
 (global-set-key "\C-x\C-r" (lambda () (interactive) (revert-buffer t t)))
 (global-set-key "\C-x\C-i" 'increase-left-margin)
 (global-set-key "\C-x\C-d" 'decrease-left-margin)
 (global-set-key "\C-c\C-c" 'comment-region)
+(global-set-key "\C-ct" 'testify-run-test)
+(global-set-key "\C-c\C-t" 'testify-run-case)
 
 ;; =============================================================================
 ;;                                                                          ELPA
@@ -225,6 +231,7 @@
  '(background-color "#ffffd7")
  '(background-mode light)
  '(cursor-color "#626262")
- '(custom-safe-themes (quote ("fc5fcb6f1f1c1bc01305694c59a1a861b008c534cae8d0e48e4d5e81ad718bc6" "1e7e097ec8cb1f8c3a912d7e1e0331caeed49fef6cff220be63bd2a6ba4cc365" "36a309985a0f9ed1a0c3a69625802f87dee940767c9e200b89cdebdb737e5b29" default)))
+ '(custom-safe-themes (quote ("762d33a7e24260c48c6b16381d013bf86d8a0fd918700c702f35d0c7ee59b689" "fc5fcb6f1f1c1bc01305694c59a1a861b008c534cae8d0e48e4d5e81ad718bc6" "1e7e097ec8cb1f8c3a912d7e1e0331caeed49fef6cff220be63bd2a6ba4cc365" "36a309985a0f9ed1a0c3a69625802f87dee940767c9e200b89cdebdb737e5b29" default)))
  '(fci-rule-color "#383838")
- '(foreground-color "#626262"))
+ '(foreground-color "#626262")
+ '(safe-local-variable-values (quote ((python-indent . tab-width) (whitespace-line-column . 80) (lexical-binding . t)))))
