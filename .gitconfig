@@ -27,10 +27,6 @@
 	undopush = push -f origin HEAD^:master
 	sui = submodule update --init
 
-[apply]
-	# Detect whitespace errors when applying a patch
-	whitespace = fix
-
 [core]
 	# Use custom `.gitignore` and `.gitattributes`
 	excludesfile = ~/.gitignore
