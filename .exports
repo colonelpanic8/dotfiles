@@ -19,6 +19,3 @@ export LESS_TERMCAP_md="$ORANGE"
 
 # Don’t clear the screen after quitting a manual page
 export MANPAGER="less -X"
-
-git config --global user.name "Ivan Malison"
-git config --global user.email IvanMalison@gmail.com
