@@ -1,27 +1,32 @@
-find_all_ssh_agent_sockets() {
+get_col () {
+    for item in `awk "{print \\$$@}"`; do
+        printf $item
+        printf '\n'
+    done
+}
+
+function get_shas_that_touched() {
+    git log --oneline --reverse "$@" | get_col 1
+}
+
+function echo_hash_if_exp_found_in_filename_diff() {
+    [ ! -z "$(git diff $1~1 $1 -- $2 | cat | grep $3)" ] && echo $1
+}
+
+function get_shas_that_touched_with_grep() {
+    get_shas_that_touched $1 | xargs -I the_hash sh -c 'echo_hash_if_exp_found_in_filename_diff the_hash $1 $2'
+}
+
+function show_interdiffs_matching_grep() {
+    get_shas_that_touched_with_grep $1 $2 | xargs -I hash sh -c 'git diff hash~1 hash -- $1'
+}
+
+function find_all_ssh_agent_sockets() {
     find /tmp -type s -name agent.\* 2> /dev/null | grep '/tmp/ssh-.*/agent.*'
 }
 
-set_ssh_agent_socket() {
+function set_ssh_agent_socket() {
     export SSH_AUTH_SOCK=$(find_all_ssh_agent_sockets | tail -n 1 | awk -F: '{print $1}')
-}
-
-# Simple calculator
-function calc() {
-    local result=""
-    result="$(printf "scale=10;$*\n" | bc --mathlib | tr -d '\\\n')"
-	#                       └─ default (when `--mathlib` is used) is 20
-	#
-    if [[ "$result" == *.* ]]; then
-		# improve the output for decimal numbers
-	printf "$result" |
-	sed -e 's/^\./0./'        `# add "0" for cases like ".5"` \
-	    -e 's/^-\./-0./'      `# add "0" for cases like "-.5"`\
-		    -e 's/0*$//;s/\.$//'   # remove trailing zeros
-    else
-	printf "$result"
-    fi
-    printf "\n"
 }
 
 # Create a new directory and enter it
