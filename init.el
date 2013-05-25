@@ -132,6 +132,16 @@
 (global-set-key "\C-c\C-c" 'comment-region)
 (global-set-key "\C-ct" 'testify-run-test)
 (global-set-key "\C-c\C-t" 'testify-run-case)
+(global-set-key (kbd "C-c w") 'tmux-copy)
+(global-set-key (kbd "C-x O") (lambda () (interactive) (other-window -1)))
+(global-set-key "\C-ct" 'testify-run-test)
+(global-set-key "\C-c\C-t" 'testify-run-case)
+
+;; Something will occasionally override this binding.
+(global-set-key "\C-cg" 'rope-goto-definition)
+
+;; Macros
+(fset 'ipdb "import ipdb; ipdb.set_trace()")
 
 ;; =============================================================================
 ;;                                                                          ELPA
@@ -221,17 +231,5 @@
 ;; =============================================================================
 ;;                                                                     Customize
 ;; =============================================================================
-(custom-set-variables
- ;; custom-set-variables was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
- '(ansi-color-names-vector ["#e4e4e4" "#d70000" "#5f8700" "#af8700" "#0087ff" "#af005f" "#00afaf" "#808080"])
- '(ansi-term-color-vector ["#3f3f3f" "#cc9393" "#7f9f7f" "#f0dfaf" "#8cd0d3" "#dc8cc3" "#93e0e3" "#dcdccc"])
- '(background-color "#ffffd7")
- '(background-mode light)
- '(cursor-color "#626262")
- '(custom-safe-themes (quote ("762d33a7e24260c48c6b16381d013bf86d8a0fd918700c702f35d0c7ee59b689" "fc5fcb6f1f1c1bc01305694c59a1a861b008c534cae8d0e48e4d5e81ad718bc6" "1e7e097ec8cb1f8c3a912d7e1e0331caeed49fef6cff220be63bd2a6ba4cc365" "36a309985a0f9ed1a0c3a69625802f87dee940767c9e200b89cdebdb737e5b29" default)))
- '(fci-rule-color "#383838")
- '(foreground-color "#626262")
- '(safe-local-variable-values (quote ((python-indent . tab-width) (whitespace-line-column . 80) (lexical-binding . t)))))
+
+
