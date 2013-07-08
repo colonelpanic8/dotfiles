@@ -62,6 +62,14 @@
 ;; find-file-in-project
 (setq ffip-limit 9999999999)
 
+(setq js-indent-level 2)
+
+(defun no-auto-fill-hook () (auto-fill-mode -1))
+
+(add-hook 'html-mode-hook 'no-auto-fill-hook)
+
+(setq flyspell-issue-welcome-flag nil)
+
 ;; =============================================================================
 ;;                                                                          tmux
 ;; =============================================================================
