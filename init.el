@@ -107,7 +107,6 @@
 
 ;; Yelp always uses tabs.
 (add-hook 'python-mode-hook 'python-tabs)
-
 (add-hook 'python-mode-hook (lambda () (subword-mode 1)))
 
 ;; =============================================================================
@@ -233,6 +232,7 @@
 ;; =============================================================================
 ;;                                                                     Customize
 ;; =============================================================================
+<<<<<<< HEAD
 (custom-set-variables
  ;; custom-set-variables was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
@@ -246,3 +246,7 @@
  '(custom-safe-themes (quote ("36a309985a0f9ed1a0c3a69625802f87dee940767c9e200b89cdebdb737e5b29" "fc5fcb6f1f1c1bc01305694c59a1a861b008c534cae8d0e48e4d5e81ad718bc6" default)))
  '(fci-rule-color "#383838")
  '(foreground-color nil))
+=======
+
+
+>>>>>>> origin/yelp
