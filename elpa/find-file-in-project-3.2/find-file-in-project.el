@@ -66,7 +66,7 @@
 May be set using .dir-locals.el. Checks each entry if set to a list.")
 
 (defvar ffip-patterns
-  '("*.html" "*.org" "*.txt" "*.md" "*.el" "*.clj" "*.py" "*.rb" "*.js" "*.pl"
+  '("*.html" "*.el" "*.clj" "*.py" "*.rb" "*.js"
     "*.sh" "*.erl" "*.hs" "*.ml" "*.sql" "*.c" "*.erb")
   "List of patterns to look for with `find-file-in-project'.")
 
@@ -144,6 +144,7 @@ directory they are found in so that they are unique."
 (defun ffip-bust-cache ()
   (interactive)
   (setq ffip-project-files-cache '()))
+
 
 (defun ffip-get-project-files ()
   (when (equal (assoc (ffip-project-root) ffip-project-files-cache) nil)
