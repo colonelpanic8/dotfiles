@@ -21,7 +21,7 @@
 (add-to-list 'custom-theme-load-path "~/.emacs.d/themes/zenburn")
 (add-to-list 'custom-theme-load-path "~/.emacs.d/themes/solarized")
 (add-to-list 'custom-theme-load-path "~/.emacs.d/themes/")
-(load-theme 'zenburn t)
+(load-theme 'solarized-dark t)
 
 ;; =============================================================================
 ;;                                                         General Emacs Options
@@ -47,6 +47,7 @@
 ;; Display line and column numbers in mode line.
 (line-number-mode t)
 (column-number-mode t)
+(global-linum-mode t)
 
 ;; Don't disable downcase and upcase region.
 (put 'upcase-region 'disabled nil)
@@ -71,6 +72,8 @@
 (defun no-auto-fill-hook () (auto-fill-mode -1))
 
 (add-hook 'html-mode-hook 'no-auto-fill-hook)
+(add-hook 'text-mode-hook 'no-auto-fill-hook)
+(remove-hook 'text-mode-hook #'turn-on-auto-fill)
 
 (setq flyspell-issue-welcome-flag nil)
 
