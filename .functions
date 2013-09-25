@@ -1,8 +1,36 @@
-get_col () {
-    for item in `awk "{print \\$$@}"`; do
-        printf $item
-        printf '\n'
+get_cols () {
+    # Usage: get_cols [file_name] [column_num]
+    column_list=""
+    for column_num in $@; do
+	[ -r $column_num ] && continue
+
+	[ $column_num -lt '0' ] && column_num="(NF + 1 $column_num )" #Negative indices like python's array[-1]
+
+	[ -z $column_list ] && column_num="\$$column_num" || column_num=",\$$column_num" # Place commas appropriately.
+
+	column_list="$column_list$column_num"
     done
+    unset column_num
+
+    # Is the first parameter a file?
+    if [ -r $1 ]; then
+	awk "{print $column_list}" $1
+    else
+	awk "{print $column_list}"
+    fi
+    unset column_list
+}
+
+note() {
+    if [ $# -eq 0 ]; then
+        (ym && exec $EDITOR $HOME/notes/$(git rev-parse --abbrev-ref HEAD)) ;
+    else
+        $EDITOR $HOME/notes/"$*" ;
+    fi
+}
+
+list_notes() {
+    ls -c $HOME/notes/ | grep "$*"
 }
 
 function get_shas_that_touched() {

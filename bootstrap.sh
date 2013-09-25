@@ -1,11 +1,20 @@
 #!/bin/bash
-cd "$(dirname "${BASH_SOURCE}")"
+CURRENT_DIRECTORY="$(dirname "${BASH_SOURCE}" | xargs readlink -f)"
+cd $CURRENT_DIRECTORY
+
+echo "Linking From $CURRENT_DIRECTORY"
+
 function doIt() {
-    rsync --exclude "setup.sh" --exclude "Monaco-Powerline.otf" --exclude "web_start.sh" \
-        --exclude "oh-my-zsh" --exclude "tmux-powerline" --exclude ".git/" \
-        --exclude ".DS_Store" --exclude "bootstrap.sh" --exclude "README.md" \
-        --exclude "requirements.txt" --exclude "more_python.txt" \
-        -av . ~
+    [[ -a ~/.dotfiles-backups ]] || mkdir ~/.dotfiles-backups
+    exclude_list="setup.sh Monaco-Powerline.otf web_start.sh oh-my-zsh tmux-powerline .git .gitmodules .DS_store bootstrap.sh README.md more_python.txt . .. requirements.txt"
+
+    for i in .*; do
+        if ! [ -z ${i/*.swp/} ] && ! [[ $exclude_list =~ $i ]]
+        then
+            [[ -a ~/$i ]] && mv ~/$i ~/.dotfiles-backups/$i
+            ln -si $CURRENT_DIRECTORY/$i ~/$i
+        fi
+    done
 }
 
 if [ "$1" == "--force" -o "$1" == "-f" ]; then
