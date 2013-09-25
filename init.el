@@ -52,6 +52,10 @@
 (put 'upcase-region 'disabled nil)
 (put 'downcase-region 'disabled nil)
 
+;; Don't allow arrow keys
+(require 'no-easy-keys)
+(no-easy-keys 1)
+
 ;; Change the behavior of M-<arrow> so that it stops on underscores.
 (defun change-major-mode-hook () (modify-syntax-entry ?_ "_"))
 (setq c-subword-mode t)
@@ -122,10 +126,10 @@
 ;; =============================================================================
 
 ;; Fast cursor movement in vertical direction with Meta.
-(global-set-key (kbd "M-<down>") (lambda () (interactive) (next-line 5)))
-(global-set-key (kbd "M-<up>") (lambda () (interactive) (previous-line 5)))
-(global-set-key (kbd "ESC <down>") (lambda () (interactive) (next-line 5)))
-(global-set-key (kbd "ESC <up>") (lambda () (interactive) (previous-line 5)))
+(global-set-key (kbd "M-n") (lambda () (interactive) (next-line 5)))
+(global-set-key (kbd "M-p") (lambda () (interactive) (previous-line 5)))
+(global-set-key (kbd "ESC n") (lambda () (interactive) (next-line 5)))
+(global-set-key (kbd "ESC p") (lambda () (interactive) (previous-line 5)))
 
 ;; Macros
 (fset 'ipdb "import ipdb; ipdb.set_trace()")
@@ -135,8 +139,7 @@
 (global-set-key "\C-xw" 'whitespace-mode)
 (global-set-key "\C-cw" 'tmux-copy)
 (global-set-key "\C-x\C-r" (lambda () (interactive) (revert-buffer t t)))
-(global-set-key "\C-x\C-i" 'increase-left-margin)
-(global-set-key "\C-x\C-d" 'decrease-left-margin)
+(global-set-key "\M-g" 'goto-line)
 (global-set-key "\C-c\C-c" 'comment-region)
 (global-set-key "\C-ct" 'testify-run-test)
 (global-set-key "\C-c\C-o" 'testify-run-case)
@@ -240,21 +243,3 @@
 ;; =============================================================================
 ;;                                                                     Customize
 ;; =============================================================================
-<<<<<<< HEAD
-(custom-set-variables
- ;; custom-set-variables was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
- '(ansi-color-names-vector ["black" "red" "green" "yellow" "blue" "magenta" "cyan" "yellow"])
- '(ansi-term-color-vector ["#3f3f3f" "#cc9393" "#7f9f7f" "#f0dfaf" "#8cd0d3" "#dc8cc3" "#93e0e3" "#dcdccc"])
- '(background-color nil)
- '(background-mode dark)
- '(cursor-color nil)
- '(custom-safe-themes (quote ("36a309985a0f9ed1a0c3a69625802f87dee940767c9e200b89cdebdb737e5b29" "fc5fcb6f1f1c1bc01305694c59a1a861b008c534cae8d0e48e4d5e81ad718bc6" default)))
- '(fci-rule-color "#383838")
- '(foreground-color nil))
-=======
-
-
->>>>>>> origin/yelp
