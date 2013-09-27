@@ -1,27 +1,36 @@
-get_cols () {
+function get_cols() {
     # Usage: get_cols [file_name] [column_num]
     column_list=""
-    for column_num in $@; do
-	[ -r $column_num ] && continue
+    for column_num in $@
+    do
+        [ -r $column_num ] && continue
 
-	[ $column_num -lt '0' ] && column_num="(NF + 1 $column_num )" #Negative indices like python's array[-1]
+        if echo $column_num | grep '\-F' ; then
+            separator=$(echo $column_num | sed 's/-F//g' )
+            continue
+        fi
 
-	[ -z $column_list ] && column_num="\$$column_num" || column_num=",\$$column_num" # Place commas appropriately.
+        [ $column_num -lt '0' ] && column_num="(NF + 1 $column_num )" #Negative indices like python's array[-1]
 
-	column_list="$column_list$column_num"
+        [ -z $column_list ] && column_num="\$$column_num" || column_num=",\$$column_num" # Place commas appropriately.
+
+        column_list="$column_list$column_num"
     done
-    unset column_num
 
     # Is the first parameter a file?
+    awk_string="BEGIN { FS = \"$separator\" } ; {print $column_list}"
+
     if [ -r $1 ]; then
-	awk "{print $column_list}" $1
+	awk $awk_string $1
     else
-	awk "{print $column_list}"
+	awk "$awk_string"
     fi
+
     unset column_list
+    unset awk_string
 }
 
-note() {
+function note() {
     if [ $# -eq 0 ]; then
         (ym && exec $EDITOR $HOME/notes/$(git rev-parse --abbrev-ref HEAD)) ;
     else
@@ -29,7 +38,7 @@ note() {
     fi
 }
 
-list_notes() {
+function list_notes() {
     ls -c $HOME/notes/ | grep "$*"
 }
 
