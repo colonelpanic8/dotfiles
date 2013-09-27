@@ -78,6 +78,26 @@
 (setq flyspell-issue-welcome-flag nil)
 
 ;; =============================================================================
+;;                                                                          Misc
+;; =============================================================================
+
+(defun ffip-get-buffer-name()
+  (interactive)
+  (path-relative-to-base-path (buffer-file-name) (expand-file-name (ffip-project-root))))
+
+(defun path-relative-to-base-path(file-path base-path)
+  (mapconcat 'identity (list-diff (path-to-list base-path) (path-to-list file-path)) "/"))
+
+(defun path-to-list(path)
+  (let ((path-list (split-string path "/")))
+    (if (= (length (car (last path-list))) 0) (butlast path-list) path-list)))
+
+(defun list-diff(shorter longer)
+  (cond ((not shorter) longer)
+        ((string= (car shorter) (car longer)) (list-diff (cdr shorter) (cdr longer)))
+        (t (throw 'error "longer does not match shorter"))))
+
+;; =============================================================================
 ;;                                                                          tmux
 ;; =============================================================================
 
@@ -143,7 +163,7 @@
 (global-set-key "\C-cw" 'tmux-copy)
 (global-set-key "\C-x\C-r" (lambda () (interactive) (revert-buffer t t)))
 (global-set-key "\M-g" 'goto-line)
-(global-set-key "\C-c\C-c" 'comment-region)
+(global-set-key "\C-c\C-c" 'comment-dwim)
 (global-set-key "\C-ct" 'testify-run-test)
 (global-set-key "\C-c\C-o" 'testify-run-case)
 (global-set-key "\C-c1" 'evil-mode)
@@ -151,6 +171,7 @@
 (global-set-key (kbd "C-x O") (lambda () (interactive) (other-window -1)))
 (global-set-key "\C-ct" 'testify-run-test)
 (global-set-key "\C-c\C-t" 'testify-run-case)
+
 
 ;; Something will occasionally override this binding.
 (global-set-key "\C-cg" 'rope-goto-definition)
