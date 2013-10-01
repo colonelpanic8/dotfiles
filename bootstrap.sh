@@ -1,5 +1,13 @@
 #!/bin/bash
-CURRENT_DIRECTORY="$(dirname "${BASH_SOURCE}" | xargs readlink -f)"
+case `uname` in
+    'Darwin')
+        readlink_command='greadlink'
+	;;
+    *)
+        readlink_command='readlink'
+esac
+
+CURRENT_DIRECTORY="$(dirname "${BASH_SOURCE}" | xargs "${readlink_command}" -f)"
 cd $CURRENT_DIRECTORY
 
 echo "Linking From $CURRENT_DIRECTORY"
