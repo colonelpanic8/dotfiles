@@ -21,7 +21,7 @@
 (add-to-list 'custom-theme-load-path "~/.emacs.d/themes/zenburn")
 (add-to-list 'custom-theme-load-path "~/.emacs.d/themes/solarized")
 (add-to-list 'custom-theme-load-path "~/.emacs.d/themes/")
-(load-theme 'solarized-dark t)
+(load-theme 'zenburn t)
 
 ;; =============================================================================
 ;;                                                         General Emacs Options
@@ -85,6 +85,10 @@
   (interactive)
   (path-relative-to-base-path (buffer-file-name) (expand-file-name (ffip-project-root))))
 
+(defun message-buffer-name()
+  (interactive)
+  (message (ffip-get-buffer-name)))
+
 (defun path-relative-to-base-path(file-path base-path)
   (mapconcat 'identity (list-diff (path-to-list base-path) (path-to-list file-path)) "/"))
 
@@ -104,6 +108,10 @@
 (defun tmux-copy (&optional b e) 
   (interactive "r")
   (shell-command-on-region b e "cat | tmux loadb -"))
+
+(defun tmux-copy-buffer-name (&optional b e)
+  (interactive "r")
+  (shell-command (concat "echo " (shell-quote-argument (ffip-get-buffer-name)) " | tmux loadb -")))
 
 ;; =============================================================================
 ;;                                                                       Flymake
@@ -171,6 +179,7 @@
 (global-set-key (kbd "C-x O") (lambda () (interactive) (other-window -1)))
 (global-set-key "\C-ct" 'testify-run-test)
 (global-set-key "\C-c\C-t" 'testify-run-case)
+(global-set-key (kbd "C-c +") (lambda () (interactive) (message (ffip-get-buffer-name))))
 
 
 ;; Something will occasionally override this binding.
