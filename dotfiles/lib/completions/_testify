@@ -4,7 +4,7 @@ _testify() {
     typeset -A opt_args
     local context state line
 
-    BASE_TEST_PATH='tests'
+    BASE_TEST_PATH='yelp.tests'
     _arguments "1:testify_file:->file" "2:testify_:->test_case"
 
     case $state in

@@ -14,3 +14,10 @@ Thumbs.db
 .Trashes
 
 .emacs.desktop
+
+.emacs*
+
+# yelp
+TAGS
+run_tests.sh
+untracked/

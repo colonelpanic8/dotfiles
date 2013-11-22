@@ -12,7 +12,7 @@ function osx() {
 	echo "gcc not found."
 	exit
     fi
-    hash brew &>/dev/null && echo "brew found" || ruby -e "$(curl -fsSL https://raw.github.com/mxcl/homebrew/go)"
+    hash brew &>/dev/null && echo "brew found" || ruby -e "$(curl -fsSL https://raw.github.com/Homebrew/homebrew/go/install)"
     brew update
     brew install git
 }
