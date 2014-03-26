@@ -101,6 +101,10 @@
         ((string= (car shorter) (car longer)) (list-diff (cdr shorter) (cdr longer)))
         (t (throw 'error "longer does not match shorter"))))
 
+(defun remote-os-copy (&optional b e)
+  (interactive "r")
+  (shell-command-on-region b e "source ~/.zshrc; cat | linux_nc_paste_to_remote_clipboard"))
+
 ;; =============================================================================
 ;;                                                                          tmux
 ;; =============================================================================
@@ -168,6 +172,7 @@
 (global-set-key "\C-c\C-o" 'testify-run-case)
 (global-set-key "\C-c1" 'evil-mode)
 (global-set-key (kbd "C-c w") 'tmux-copy)
+(global-set-key (kbd "C-c e") 'remote-os-copy)
 (global-set-key (kbd "C-x O") (lambda () (interactive) (other-window -1)))
 (global-set-key "\C-ct" 'testify-run-test)
 (global-set-key "\C-c\C-t" 'testify-run-case)
