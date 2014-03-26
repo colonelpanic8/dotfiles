@@ -105,6 +105,10 @@
   (interactive "r")
   (shell-command-on-region b e "source ~/.zshrc; cat | linux_nc_paste_to_remote_clipboard"))
 
+(defun os-copy (&optional b e)
+  (interactive "r")
+  (shell-command-on-region b e "pbcopy"))
+
 ;; =============================================================================
 ;;                                                                          tmux
 ;; =============================================================================
@@ -162,20 +166,19 @@
 (fset 'ipdb "import ipdb; ipdb.set_trace()")
 
 ;; Miscellaneous
-(global-set-key "\C-x\C-b" 'buffer-menu)
-(global-set-key "\C-xw" 'whitespace-mode)
-(global-set-key "\C-cw" 'tmux-copy)
-(global-set-key "\C-x\C-r" (lambda () (interactive) (revert-buffer t t)))
-(global-set-key "\M-g" 'goto-line)
-(global-set-key "\C-c\C-c" 'comment-dwim)
-(global-set-key "\C-ct" 'testify-run-test)
-(global-set-key "\C-c\C-o" 'testify-run-case)
-(global-set-key "\C-c1" 'evil-mode)
+(global-set-key (kbd "C-x C-b") 'buffer-menu)
+(global-set-key (kbd "C-x w") 'whitespace-mode)
+(global-set-key (kbd "C-c w") 'tmux-copy)
+(global-set-key (kbd "C-x C-r") (lambda () (interactive) (revert-buffer t t)))
+(global-set-key (kbd "M-g") 'goto-line)
+(global-set-key (kbd "C-c C-c") 'comment-dwim)
+(global-set-key (kbd "C-c t") 'testify-run-test)
+(global-set-key (kbd "C-c C-o") 'testify-run-case)
 (global-set-key (kbd "C-c w") 'tmux-copy)
 (global-set-key (kbd "C-c e") 'remote-os-copy)
 (global-set-key (kbd "C-x O") (lambda () (interactive) (other-window -1)))
-(global-set-key "\C-ct" 'testify-run-test)
-(global-set-key "\C-c\C-t" 'testify-run-case)
+(global-set-key (kbd "C-c t") 'testify-run-test)
+(global-set-key (kbd "C-c C-t") 'testify-run-case)
 (global-set-key (kbd "C-c +") (lambda () (interactive) (message (ffip-get-buffer-name))))
 
 
