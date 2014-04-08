@@ -12,4 +12,8 @@ function git_prompt_info () {
     fi
 }
 
-PROMPT='%{$FG[040]%}%n%{$reset_color%} %{$FG[239]%}at%{$reset_color%} %{$FG[033]%}$(hostname -s)%{$reset_color%} %{$FG[239]%}in%{$reset_color%} %{$terminfo[bold]$FG[226]%}$(current_directory)%{$reset_color%}$(git_prompt_info) %{$FG[239]%}with $(colored_sandbox_string)%{$FG[255]%} '
+PROMPT='%{$FG[040]%}%n%{$reset_color%} %{$FG[239]%}at%{$reset_color%} %{$FG[033]%}$(hostname -s)%{$reset_color%} %{$FG[239]%}in%{$reset_color%} %{$terminfo[bold]$FG[226]%}$(current_directory)%{$reset_color%}$(git_prompt_info) %{$FG[239]%}with $(colored_sandbox_string)%{$FG[255]%}%{$reset_color%} '
+
+PS2=''
+
+RPROMPT='%!'
