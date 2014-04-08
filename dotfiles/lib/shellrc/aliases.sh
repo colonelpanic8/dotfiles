@@ -1,8 +1,8 @@
 alias script_abspath='$(dirname "${BASH_SOURCE}" | xargs "${readlink_command}" -f)'
 
 alias emacs="emacsclient -t"
-alias readlink="greadlink"
 
+# enables the sudoing of aliases.
 alias sudo='sudo '
 
 # IP addresses
@@ -49,4 +49,5 @@ alias pumpitup="osascript -e 'set volume 7'"
 
 alias tmux="tmux -2"
 alias remote_os_copy='linux_nc_paste_to_remote_clipboard'
+alias tmux_cb_to_remote_cb='tmux saveb - | linux_nc_paste_to_remote_clipboard'
 alias timestamp='date +%s'
