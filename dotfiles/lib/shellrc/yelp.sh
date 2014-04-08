@@ -51,7 +51,8 @@ function sandbox_prompt_info() {
     if [ "$YELP_IN_SANDBOX" ];
     then
         sandbox_string=$sandbox_string"sandbox-$(get_sandbox_identifier)"
-    else
+    elif [ ! -z $(env | grep YELP) ];
+    then
         sandbox_string="no sandbox"
     fi
     echo $sandbox_string
@@ -77,11 +78,11 @@ function zsh_sandbox_color() {
 }
 
 function colored_sandbox_string() {
-    if [ is_zsh ]
+    if [ is_zsh ];
     then
 	sandbox_color=$(zsh_sandbox_color)
     else
 	sandbox_color=$(bash_sandbox_color)
     fi
-    echo $sandbox_color$(sandbox_prompt_info)
+    echo "$sandbox_color$(sandbox_prompt_info)%{$reset_color%}"
 }
