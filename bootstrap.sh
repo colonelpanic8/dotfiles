@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 case `uname` in
     'Darwin')
         readlink_command='greadlink'
@@ -6,7 +6,7 @@ case `uname` in
     *)
         readlink_command='readlink'
 esac
-DOTFILES_DIRECTORY="$(dirname "${BASH_SOURCE}" | xargs "${readlink_command}" -f)/dotfiles"
+DOTFILES_DIRECTORY="$(dirname "${BASH_SOURCE}" | xargs ${readlink_command} -f)/dotfiles"
 
 function symlink_dotfiles() {
     cd $DOTFILES_DIRECTORY
@@ -22,7 +22,7 @@ function symlink_dotfiles() {
     [[ -a ~/.dotfiles-backups ]] && mv ~/.dotfiles-backups.old ~/.dotfiles-backups/.dotfiles-backups
 }
 
-if [ "$1" == "--force" -o "$1" == "-f" ]; then
+if [ "$1" = "--force" -o "$1" = "-f" ]; then
     symlink_dotfiles
 else
     read -p "Symlinking files from $DOTFILES_DIRECTORY. This may overwrite existing files in your home directory. Do you wish to proceed? (y/n) " -n 1
