@@ -14,7 +14,7 @@ function symlink_dotfiles() {
     mkdir ~/.dotfiles-backups
     for filename in *; do
         local link_destination="$HOME/.$filename"
-        local absolute_path="$(readlink -f $filename)"
+        local absolute_path="$(${readlink_command} -f $filename)"
         echo "linking $link_destination to $absolute_path"
         [[ -a $link_destination ]] && mv $link_destination ~/.dotfiles-backups
         ln -si $absolute_path $link_destination
