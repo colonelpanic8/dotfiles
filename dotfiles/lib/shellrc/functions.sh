@@ -4,8 +4,12 @@ function parse_git_branch() {
     echo ${ref#refs/heads/}
 }
 
+function git_is_dirty() {
+    git diff-index --quiet --cached HEAD && git diff-files --quiet
+}
+
 function current_shell() {
-    ps -p $$ | tail -1 | awk '{print $NF}' | xargs which | xargs readlink -f
+    greadlink -f $(which "$(ps -p $$ | tail -1 | awk '{print $NF}' | sed 's/\-//')")
 }
 
 function is_zsh() {
