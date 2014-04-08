@@ -5,6 +5,14 @@ alias emacs="emacsclient -t"
 # enables the sudoing of aliases.
 alias sudo='sudo '
 
+# Detect which `ls` flavor is in use
+if ls --color > /dev/null 2>&1; then # GNU `ls`
+    colorflag="--color"
+else # OS X `ls`
+    colorflag="-G"
+fi
+alias ls="command ls ${colorflag}"
+
 # IP addresses
 alias ip="dig +short myip.opendns.com @resolver1.opendns.com"
 alias localip="ifconfig getifaddr en1"
