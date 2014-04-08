@@ -22,7 +22,7 @@ function git_status_character() {
 }
 
 function sandbox_prompt() {
-    if [ ! -z $(sandbox_prompt_info) ];
+    if [ ! -z "$(sandbox_prompt_info)" ];
     then
         echo " %{$FG[239]%}with $(colored_sandbox_string)%{$reset_color%}"
     fi

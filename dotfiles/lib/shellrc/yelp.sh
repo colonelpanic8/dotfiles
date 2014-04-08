@@ -51,7 +51,7 @@ function sandbox_prompt_info() {
     if [ "$YELP_IN_SANDBOX" ];
     then
         sandbox_string=$sandbox_string"sandbox-$(get_sandbox_identifier)"
-    elif [ ! -z $(env | grep YELP) ];
+    elif [ ! -z "$(env | grep yelp | head)" ] && git branch 1>/dev/null 2>/dev/null;
     then
         sandbox_string="no sandbox"
     fi
