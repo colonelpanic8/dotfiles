@@ -5,7 +5,7 @@ function parse_git_branch() {
 }
 
 function git_is_dirty() {
-    git diff-index --quiet --cached HEAD && git diff-files --quiet
+    ! test -z "$(git status --porcelain)"
 }
 
 function current_shell() {
