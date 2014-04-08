@@ -1,0 +1,73 @@
+#compdef testify
+
+_testify() {
+    typeset -A opt_args
+    local context state line
+
+    BASE_TEST_PATH='yelp.tests'
+    _arguments "1:testify_file:->file" "2:testify_:->test_case"
+
+    case $state in
+	(file)
+	    _find_test_files
+	    ;;
+	(test_case)
+	    _find_test_methods
+	    ;;
+    esac
+
+    return 0
+}
+
+(( $+functions[_print_test_methods] )) ||
+_print_test_methods() {
+    python - "$@" <<ENDPYTHON
+import sys
+from testify import test_discovery
+
+if __name__ == '__main__':
+    for test_case in test_discovery.discover(sys.argv[1]):
+      print test_case.__name__
+      for member in dir(test_case):
+         if member.startswith("test"):
+           print "%s.%s" % (test_case.__name__, member)
+ENDPYTHON
+
+}
+
+(( $+functions[_find_test_methods] )) ||
+_find_test_methods() {
+    TEST_COMPLETIONS=( `_print_test_methods $line 2> /dev/null` )
+    for COMPLETION in $TEST_COMPLETIONS
+    do
+	compadd $COMPLETION
+    done
+    return 0
+}
+
+(( $+functions[_find_test_files] )) ||
+_find_test_files() {
+    local SEARCH_PATH
+    if [[ "$PREFIX" == "$BASE_TEST_PATH"* ]]
+    then
+	SEARCH_PATH="${PREFIX%.*}"
+    else
+	compadd $BASE_TEST_PATH
+	compadd $BASE_TEST_PATH'.'
+	return 0
+    fi
+    SEARCH_PATH=$(echo "$SEARCH_PATH" | tr . /)
+    DIRECTORIES=( "$SEARCH_PATH"/*(/) )
+    PY_FILES=( "$SEARCH_PATH"/*.py )
+    for DIRECTORY in $DIRECTORIES
+    do
+	compadd `echo "${DIRECTORY}" | tr / .`
+	compadd `echo "${DIRECTORY}" | tr / .`'.'
+    done
+
+    for PY_FILE in $PY_FILES
+    do
+	compadd `echo "${PY_FILE%.py}" | tr / .`
+    done
+    return 0
+}

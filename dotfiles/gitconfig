@@ -1,0 +1,59 @@
+[alias]
+	# View the SHA, description, and history graph of the latest 20 commits
+	l = log --pretty=oneline -n 20 --graph
+	# View the current working tree status using the short format
+	s = status -s
+	# Clone a repository including all submodules
+	c = clone --recursive
+	# Commit all changes
+	ca = !git add -A && git commit -av
+	branches = branch -a
+	remotes = remote -v
+	# Credit an author on the latest commit
+	credit = "!f() { git commit --amend --author \"$1 <$2>\" -C HEAD; }; f"
+	# Interactive rebase with the given number of latest commits
+	reb = "!r() { git rebase -i HEAD~$1; }; r"
+	suir = submodule update --init --recursive
+        poh = push origin HEAD
+        
+[core]
+	# Use custom `.gitignore` and `.gitattributes`
+	excludesfile = ~/.gitignore
+	attributesfile = ~/.gitattributes
+        pager = less -F -X
+
+[color]
+	# Use colors in Git commands that are capable of colored output when
+        # outputting to the terminal
+	ui = auto
+
+[color "branch"]
+	current = yellow reverse
+	local = yellow
+	remote = green
+
+[color "diff"]
+	meta = yellow bold
+	frag = magenta bold
+	old = red bold
+	new = green bold
+
+[color "status"]
+	added = yellow
+	changed = green
+	untracked = cyan
+
+[url "git@gist.github.com:"]
+	insteadOf = "gst:"
+	pushInsteadOf = "gist:"
+	pushInsteadOf = "git://gist.github.com/"
+
+[url "git://gist.github.com/"]
+	insteadOf = "gist:"
+
+[user]
+	email = IvanMalison@gmail.com
+	name = Ivan Malison
+
+[merge]
+       conflictstyle = diff3
