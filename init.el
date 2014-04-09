@@ -21,6 +21,7 @@
 (add-to-list 'custom-theme-load-path "~/.emacs.d/themes/zenburn")
 (add-to-list 'custom-theme-load-path "~/.emacs.d/themes/solarized")
 (add-to-list 'custom-theme-load-path "~/.emacs.d/themes/")
+(add-to-list 'custom-theme-load-path "~/.emacs.d/elpa/")
 (load-theme 'zenburn t)
 
 ;; =============================================================================
@@ -195,6 +196,8 @@
 (require 'package)
 (add-to-list 'package-archives
              '("marmalade" . "http://marmalade-repo.org/packages/")) 
+(add-to-list 'package-archives
+             '("melpa" . "http://melpa.milkbox.net/packages/") t)
 (package-initialize)
 
 ;; (when (not package-archive-contents)
