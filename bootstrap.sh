@@ -10,16 +10,19 @@ DOTFILES_DIRECTORY="$(dirname "${BASH_SOURCE}" | xargs ${readlink_command} -f)/d
 
 function symlink_dotfiles() {
     cd $DOTFILES_DIRECTORY
-    [[ -a ~/.dotfiles-backups ]] && mv ~/.dotfiles-backups ~/.dotfiles-backups.old
+    [ -a ~/.dotfiles-backups ] && mv ~/.dotfiles-backups ~/.dotfiles-backups.old
     mkdir ~/.dotfiles-backups
     for filename in *; do
         local link_destination="$HOME/.$filename"
-        local absolute_path="$(${readlink_command} -f $filename)"
-        echo "linking $link_destination to $absolute_path"
-        [[ -a $link_destination ]] && mv $link_destination ~/.dotfiles-backups
-        ln -si $absolute_path $link_destination
+        local link_target=$(${readlink_command} -f $filename)
+        echo "linking $link_destination to $link_target"
+        # Using only test -e doesn't work here because it will return
+        # false if the destination of the symbolic link at
+        # link_destination does not exist.
+        test -e $link_destination || test -L $link_destination && mv $link_destination ~/.dotfiles-backups
+        ln -si $link_target $link_destination
     done
-    [[ -a ~/.dotfiles-backups ]] && mv ~/.dotfiles-backups.old ~/.dotfiles-backups/.dotfiles-backups
+    [ -a ~/.dotfiles-backups.old ] && mv ~/.dotfiles-backups.old ~/.dotfiles-backups/.dotfiles-backups
 }
 
 if [ "$1" = "--force" -o "$1" = "-f" ]; then
