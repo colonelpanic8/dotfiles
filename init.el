@@ -183,7 +183,7 @@
 (global-set-key (kbd "C-x O") (lambda () (interactive) (other-window -1)))
 (global-set-key (kbd "C-c t") 'testify-run-test)
 (global-set-key (kbd "C-c C-t") 'testify-run-case)
-(global-set-key (kbd "C-c +") (lambda () (interactive) (message (ffip-get-buffer-name))))
+(global-set-key (kbd "C-c +") (lambda () (interactive) (tmux-copy-buffer-name) (message (ffip-get-buffer-name))))
 
 
 ;; Something will occasionally override this binding.
