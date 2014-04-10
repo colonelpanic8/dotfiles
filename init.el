@@ -78,6 +78,9 @@
 
 (setq flyspell-issue-welcome-flag nil)
 
+(add-hook 'after-init-hook
+          '(lambda () (setq debug-on-error t)))
+
 ;; =============================================================================
 ;;                                                                          Misc
 ;; =============================================================================
@@ -188,6 +191,14 @@
 
 ;; Macros
 (fset 'ipdb "import ipdb; ipdb.set_trace()")
+
+;; Multiple Cursors
+
+(global-set-key (kbd "C-x r t") 'mc/edit-lines)
+
+(global-set-key (kbd "C->") 'mc/mark-next-like-this)
+(global-set-key (kbd "C-<") 'mc/mark-previous-like-this)
+(global-set-key (kbd "C-c <") 'mc/mark-all-like-this)
 
 ;; =============================================================================
 ;;                                                                          ELPA
