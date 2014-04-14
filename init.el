@@ -105,13 +105,9 @@
         ((string= (car shorter) (car longer)) (list-diff (cdr shorter) (cdr longer)))
         (t (throw 'error "longer does not match shorter"))))
 
-(defun remote-os-copy (&optional b e)
-  (interactive "r")
-  (shell-command-on-region b e "source ~/.zshrc; cat | linux_nc_paste_to_remote_clipboard"))
-
 (defun os-copy (&optional b e)
   (interactive "r")
-  (shell-command-on-region b e "pbcopy"))
+  (shell-command-on-region b e "source ~/.zshrc; cat | smart_copy"))
 
 ;; =============================================================================
 ;;                                                                          tmux
@@ -187,7 +183,7 @@
 (global-set-key (kbd "C-c t") 'testify-run-test)
 (global-set-key (kbd "C-c C-o") 'testify-run-case)
 (global-set-key (kbd "C-c w") 'tmux-copy)
-(global-set-key (kbd "C-c e") 'remote-os-copy)
+(global-set-key (kbd "C-c e") 'os-copy)
 (global-set-key (kbd "C-x O") (lambda () (interactive) (other-window -1)))
 (global-set-key (kbd "C-c t") 'testify-run-test)
 (global-set-key (kbd "C-c C-t") 'testify-run-case)
