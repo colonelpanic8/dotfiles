@@ -3,6 +3,7 @@ alias tmux="tmux -2"
 alias remote_os_copy='linux_nc_paste_to_remote_clipboard'
 alias tmux_cb_to_remote_cb='tmux saveb - | linux_nc_paste_to_remote_clipboard'
 alias timestamp='date +%s'
+alias go2dotfiles='cd $(dirname `readlink -f ~/.zshrc | xargs dirname`)'
 
 # enables the sudoing of aliases.
 alias sudo='sudo '
