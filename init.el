@@ -37,12 +37,19 @@
              '("melpa" . "http://melpa.milkbox.net/packages/") t)
 (package-initialize)
 
-(defvar my-packages '(ctags ctags-update evil flymake mo-git-blame multiple-cursors no-easy-keys starter-kit-bindings starter-kit-ruby starter-kit magit ido-ubiquitous find-file-in-project idle-highlight-mode paredit inf-ruby undo-tree rainbow-delimiters)
-  "A list of packages to ensure are installed at launch.")
+(defvar my-packages '(color-theme ctags ctags-update evil flymake mo-git-blame
+				  multiple-cursors no-easy-keys starter-kit-bindings
+				  starter-kit-ruby starter-kit magit ido-ubiquitous
+				  find-file-in-project idle-highlight-mode paredit
+				  inf-ruby undo-tree rainbow-delimiters smex)
+  "Packages that must be installed at launch.")
 
 (defun ensure-package-installed (packages)
   "Assure every package is installed, ask for installation if it’s not.
 Return a list of installed packages or nil for every package not installed."
+  ;; fetch the list of packages available 
+  (unless package-archive-contents
+    (package-refresh-contents))
   (mapcar
    (lambda (package)
      (if (package-installed-p package)
@@ -50,10 +57,6 @@ Return a list of installed packages or nil for every package not installed."
        (progn (message (format "Installing package %s." package))
               (package-install package))))
      packages))
-
-;; fetch the list of packages available 
-(unless package-archive-contents
-  (package-refresh-contents))
 
 (ensure-package-installed my-packages)
 
