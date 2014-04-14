@@ -8,7 +8,7 @@ function git_prompt_info() {
     then
         echo ""
     else
-        echo " %{$FG[239]%}on%{$reset_color%} %{$FG[255]%}$(parse_git_branch)%{$reset_color%}$(git_status_character)"
+        echo " %{$FG[239]%}on%{$reset_color%} %{$FG[255]%}$(git branch-or-sha)%{$reset_color%}$(git_status_character)"
     fi
 }
 
