@@ -25,6 +25,7 @@
 (add-to-list 'custom-theme-load-path "~/.emacs.d/themes/")
 (add-to-list 'custom-theme-load-path "~/.emacs.d/elpa/")
 (load-theme 'zenburn t)
+(require 'patches)
 
 ;; =============================================================================
 ;;                                                                          ELPA
@@ -32,16 +33,16 @@
 
 (require 'package)
 (add-to-list 'package-archives
-             '("marmalade" . "http://marmalade-repo.org/packages/")) 
-(add-to-list 'package-archives
              '("melpa" . "http://melpa.milkbox.net/packages/") t)
+(add-to-list 'package-archives
+             '("marmalade" . "http://marmalade-repo.org/packages/")) 
 (package-initialize)
 
 (defvar my-packages '(color-theme ctags ctags-update evil flymake mo-git-blame
 				  multiple-cursors no-easy-keys starter-kit-bindings
 				  starter-kit-ruby starter-kit magit ido-ubiquitous
 				  find-file-in-project idle-highlight-mode paredit
-				  inf-ruby undo-tree rainbow-delimiters smex)
+				  inf-ruby undo-tree rainbow-delimiters package-filter smex)
   "Packages that must be installed at launch.")
 
 (defun ensure-package-installed (packages)
@@ -225,8 +226,6 @@ Return a list of installed packages or nil for every package not installed."
 (global-set-key (kbd "C-c C-t") 'testify-run-case)
 (global-set-key (kbd "C-x C-c") 'kill-emacs)
 
-
-
 ;; Something will occasionally override this binding.
 (global-set-key "\C-cg" 'rope-goto-definition)
 
@@ -300,3 +299,4 @@ Return a list of installed packages or nil for every package not installed."
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
  '(safe-local-variable-values (quote ((python-indent . 4) (whitespace-line-column . 80) (lexical-binding . t)))))
+
