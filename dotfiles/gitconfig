@@ -6,7 +6,8 @@
 	# Clone a repository including all submodules
 	c = clone --recursive
         ff = merge --ff-only
-        ffo = "!ffo() { git fetch origin && git ff origin/$(git which-branch) && git suir; }; ffo"
+        ffr = "!ffr() { git fetch $1 && git ff origin/$(git which-branch) && git suir; }; ffr"
+        ffo = !git ffr origin
         cam = commit -am
 	# Commit all changes
 	ca = !git add -A && git commit -av
