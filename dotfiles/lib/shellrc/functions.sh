@@ -87,9 +87,23 @@ function shell_stats() {
 }
 
 function is_ssh() {
-  p=${1:-$PPID}
-  read pid name ppid < <(ps -o pid= -o comm= -o ppid= -p $p) 
-  [[ "$name" =~ sshd ]] && { echo "Is SSH : $pid $name"; return 0; }
-  [ "$ppid" -le 1 ]     && { echo "Adam is $pid $name";  return 1; }
-  is_ssh $ppid
+    test $SSH_CLIENT
+}
+
+function is_osx() {
+    case `uname` in
+        'Darwin')
+            return 0
+	    ;;
+        *)
+            return 1;
+            ;;
+    esac
+}
+
+function clipboard() {
+    if is_osx;
+    then
+        pbcopy
+    fi
 }
