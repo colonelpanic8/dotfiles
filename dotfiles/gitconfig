@@ -23,7 +23,7 @@
         
         # Diff a file or show it in git's pager if it is untracked
         du = "!d() { git ls-files $1 --error-unmatch 2>/dev/null 1>/dev/null && git diff $1 || `git config --get core.pager` $1; }; d"
-        which-branch = symbolic-ref HEAD --short
+        which-branch = "!wb() { b="$(git symbolic-ref HEAD)" && echo ${b#refs/heads/}; }; wb" # symbolic-ref HEAD --short
         sha = rev-parse HEAD
         branch-or-sha = "!bs() { git which-branch 2> /dev/null || git sha 2> /dev/null ; }; bs"
         amend = commit -a --amend -C HEAD
