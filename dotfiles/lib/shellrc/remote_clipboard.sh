@@ -18,3 +18,21 @@ function linux_nc_paste_to_remote_clipboard() {
 function osx_nc_paste_to_remote_clipboard() {
     nc localhost ${1-$REMOTE_CLIPBOARD_PORT} -D
 }
+
+function remote_os_copy() {
+    if is_osx;
+    then
+        osx_nc_paste_to_remote_clipboard
+    else
+        linux_nc_paste_to_remote_clipboard
+    fi
+}
+
+function smart_copy() {
+    if is_ssh;
+    then
+        remote_os_copy
+    else
+        clipboard
+    fi
+}
