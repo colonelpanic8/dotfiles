@@ -5,6 +5,9 @@
 	s = status -s
 	# Clone a repository including all submodules
 	c = clone --recursive
+        ff = merge --ff-only
+        ffs = "!ffs() { git ff $1 && git suir; }; ffs"
+        cam = commit -am
 	# Commit all changes
 	ca = !git add -A && git commit -av
 	branches = branch -a
