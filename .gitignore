@@ -9,5 +9,4 @@ eshell
 url
 bookmarks
 
-elpa/archives/
-elpa
+elpa/*
