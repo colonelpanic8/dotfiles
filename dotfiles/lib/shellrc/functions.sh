@@ -16,6 +16,23 @@ function is_zsh() {
     test -n "$(current_shell | grep -o zsh)"
 }
 
+function git_diff_add() {
+    git status --porcelain | awk '{print $2}' | xargs -I filename sh -c "git du filename && git add filename"
+}
+
+function confirm() {
+    # call with a prompt string or use a default
+    read -r -p "$1" response
+    case $response in
+        [yY][eE][sS]|[yY]) 
+            return 0
+            ;;
+        *)
+            return 1
+            ;;
+    esac
+}
+
 function get_cols() {
     FS=' '
     while getopts "F:" OPTCHAR; do

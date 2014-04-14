@@ -33,4 +33,4 @@ $FG[255]╰─± '
 
 PS2=''
 
-RPROMPT='%!'
+RPROMPT='Last Exit Code: $?'
