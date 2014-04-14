@@ -15,6 +15,8 @@
 	reb = "!r() { git rebase -i HEAD~$1; }; r"
 	suir = submodule update --init --recursive
         poh = push origin HEAD
+        du = "!d() { git ls-files $1 --error-unmatch 2>/dev/null 1>/dev/null && git diff $1 || `git config --get core.pager` $1; }; d"
+        amend = commit -a --amend -C HEAD
         
 [core]
 	# Use custom `.gitignore` and `.gitattributes`
