@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/sh
 case `uname` in
     'Darwin')
         readlink_command='greadlink'

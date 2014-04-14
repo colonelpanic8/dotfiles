@@ -1,16 +1,21 @@
-#!/bin/bash
-# Assumes that gcc, make and git as well as a package manager (brew,
-# apt-get) is installed on the system.
-
-# Go to the source directory of this script.
-cd "$(dirname "${BASH_SOURCE}")"
+#!/bin/sh
+case `uname` in
+    'Darwin')
+        readlink_command='greadlink'
+        ;;
+    *)
+        readlink_command='readlink'
+esac
+DOTFILES_DIRECTORY="$(dirname "${BASH_SOURCE}" | xargs ${readlink_command} -f)"
+cd $DOTFILES_DIRECTORY
 
 case `uname` in
     'Darwin')
-	source .brew
-	;;
+        source resources/osx.sh
+        source resources/brew.sh
+        ;;
     'Linux')
-	source .apt-get
+        source resources/apt-get.sh
         ;;
 esac
 
@@ -24,7 +29,3 @@ function install_python_packages() {
 
 echo "Installing Dot Files."
 source bootstrap.sh
-echo "Installing Tmux Configuration."
-tmux-powerline/generate_conf.sh
-echo "Installing oh-my-zsh."
-oh-my-zsh/install.sh -f
