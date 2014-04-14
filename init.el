@@ -25,6 +25,37 @@
 (load-theme 'zenburn t)
 
 ;; =============================================================================
+;;                                                                          ELPA
+;; =============================================================================
+
+(require 'package)
+(add-to-list 'package-archives
+             '("marmalade" . "http://marmalade-repo.org/packages/")) 
+(add-to-list 'package-archives
+             '("melpa" . "http://melpa.milkbox.net/packages/") t)
+(package-initialize)
+
+(defvar my-packages '(ctags ctags-update evil flymake mo-git-blame multiple-cursors no-easy-keys starter-kit-bindings starter-kit-ruby starter-kit magit ido-ubiquitous smex find-file-in-project idle-highlight-mode paredit inf-ruby undo-tree rainbow-delimiters)
+  "A list of packages to ensure are installed at launch.")
+
+(defun ensure-package-installed (packages)
+  "Assure every package is installed, ask for installation if it’s not.
+Return a list of installed packages or nil for every package not installed."
+  (mapcar
+   (lambda (package)
+     (if (package-installed-p package)
+         package
+       (progn (message (format "Installing package %s." package))
+              (package-install package))))
+     packages))
+
+;; fetch the list of packages available 
+(unless package-archive-contents
+  (package-refresh-contents))
+
+(ensure-package-installed my-packages)
+
+;; =============================================================================
 ;;                                                         General Emacs Options
 ;; =============================================================================
 
@@ -203,35 +234,6 @@
 (global-set-key (kbd "C->") 'mc/mark-next-like-this)
 (global-set-key (kbd "C-<") 'mc/mark-previous-like-this)
 (global-set-key (kbd "C-c <") 'mc/mark-all-like-this)
-
-;; =============================================================================
-;;                                                                          ELPA
-;; =============================================================================
-
-(require 'package)
-(add-to-list 'package-archives
-             '("marmalade" . "http://marmalade-repo.org/packages/")) 
-(add-to-list 'package-archives
-             '("melpa" . "http://melpa.milkbox.net/packages/") t)
-(package-initialize)
-
-;; (when (not package-archive-contents)
-;;   (package-refresh-contents))
-
-;; Add in your own as you wish:
-;; (defvar my-packages '(starter-kit starter-kit-bindings)
-;;   "A list of packages to ensure are installed at launch.")
-
-;; (when (not package-archive-contents)
-;;   (package-refresh-contents))
-
-;; ;; Add in your own as you wish:
-;; (defvar my-packages '(starter-kit starter-kit-lisp starter-kit-bindings)
-;;   "A list of packages to ensure are installed at launch.")
-
-;; (dolist (p my-packages)
-;;   (when (not (package-installed-p p))
-;;    (package-install p)))
 
 ;; =============================================================================
 ;;                                                                 elisp Helpers
