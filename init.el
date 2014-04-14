@@ -157,6 +157,14 @@
 (add-hook 'python-mode-hook (lambda () (subword-mode 1)))
 
 ;; =============================================================================
+;;                                                                  Starter Kits
+;; =============================================================================
+
+(load-file "~/.emacs.d/emacs-for-python/epy-init.el")
+
+(setq skeleton-pair nil) ;; This stuff sucks.
+
+;; =============================================================================
 ;;                                                           Custom Key Bindings
 ;; =============================================================================
 
@@ -278,14 +286,6 @@
  '(rainbow-delimiters-depth-7-face ((t (:foreground "blue"))))
  '(rainbow-delimiters-depth-8-face ((t (:foreground "yellow"))))
  '(rainbow-delimiters-depth-9-face ((t (:foreground "magenta")))))
-
-;; =============================================================================
-;;                                                                  Starter Kits
-;; =============================================================================
-
-(load-file "~/.emacs.d/emacs-for-python/epy-init.el")
-
-(setq skeleton-pair nil) ;; This stuff sucks.
 
 ;; =============================================================================
 ;;                                                                     Customize
