@@ -4,7 +4,7 @@ function current_directory() {
 }
 
 function git_prompt_info() {
-    if test -z $(parse_git_branch);
+    if test -z $(git branch-or-sha);
     then
         echo ""
     else
