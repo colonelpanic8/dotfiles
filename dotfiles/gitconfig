@@ -27,7 +27,7 @@
         sha = rev-parse HEAD
         branch-or-sha = "!bs() { git which-branch 2> /dev/null || git sha 2> /dev/null ; }; bs"
         amend = commit -a --amend -C HEAD
-        reset-origin = "!r() { git reset --hard origin/\"$(git parse-branch)\" && git suir; }; r"
+        reset-origin = "!r() { git reset --hard origin/\"$(git which-branch)\" && git suir; }; r"
         
 [core]
 	# Use custom `.gitignore` and `.gitattributes`
