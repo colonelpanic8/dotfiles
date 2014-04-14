@@ -85,3 +85,11 @@ function digga() {
 function shell_stats() {
     history | awk '{CMD[$2]++;count++;}END { for (a in CMD)print CMD[a] " " CMD[a]/count*100 "% " a;}' | grep -v "./" | column -c3 -s " " -t | sort -nr | nl |  head -n20
 }
+
+function is_ssh() {
+  p=${1:-$PPID}
+  read pid name ppid < <(ps -o pid= -o comm= -o ppid= -p $p) 
+  [[ "$name" =~ sshd ]] && { echo "Is SSH : $pid $name"; return 0; }
+  [ "$ppid" -le 1 ]     && { echo "Adam is $pid $name";  return 1; }
+  is_ssh $ppid
+}
