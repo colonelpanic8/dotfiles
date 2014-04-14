@@ -37,7 +37,7 @@
              '("melpa" . "http://melpa.milkbox.net/packages/") t)
 (package-initialize)
 
-(defvar my-packages '(ctags ctags-update evil flymake mo-git-blame multiple-cursors no-easy-keys starter-kit-bindings starter-kit-ruby starter-kit magit ido-ubiquitous smex find-file-in-project idle-highlight-mode paredit inf-ruby undo-tree rainbow-delimiters)
+(defvar my-packages '(ctags ctags-update evil flymake mo-git-blame multiple-cursors no-easy-keys starter-kit-bindings starter-kit-ruby starter-kit magit ido-ubiquitous find-file-in-project idle-highlight-mode paredit inf-ruby undo-tree rainbow-delimiters)
   "A list of packages to ensure are installed at launch.")
 
 (defun ensure-package-installed (packages)
