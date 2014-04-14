@@ -20,11 +20,7 @@
 (let ((default-directory "~/.emacs.d/elpa/"))
       (normal-top-level-add-subdirs-to-load-path))
 
-(add-to-list 'custom-theme-load-path "~/.emacs.d/themes/zenburn")
-(add-to-list 'custom-theme-load-path "~/.emacs.d/themes/solarized")
-(add-to-list 'custom-theme-load-path "~/.emacs.d/themes/")
 (add-to-list 'custom-theme-load-path "~/.emacs.d/elpa/")
-(load-theme 'zenburn t)
 (require 'patches)
 
 ;; =============================================================================
@@ -39,10 +35,13 @@
 (package-initialize)
 
 (defvar my-packages '(color-theme ctags ctags-update evil flymake mo-git-blame
-				  multiple-cursors no-easy-keys starter-kit-bindings
-				  starter-kit-ruby starter-kit magit ido-ubiquitous
-				  find-file-in-project idle-highlight-mode paredit
-				  inf-ruby undo-tree rainbow-delimiters package-filter smex)
+				  multiple-cursors no-easy-keys
+                                  starter-kit-bindings starter-kit-ruby
+                                  starter-kit magit ido-ubiquitous
+                                  find-file-in-project idle-highlight-mode
+                                  paredit inf-ruby undo-tree rainbow-delimiters
+                                  smex solarized-theme zenburn-theme
+                                  color-theme-wombat+)
   "Packages that must be installed at launch.")
 
 (defun ensure-package-installed (packages)
@@ -259,6 +258,7 @@ Return a list of installed packages or nil for every package not installed."
 ;;                                                                    Appearance
 ;; =============================================================================
 
+(load-theme 'zenburn t)
 (require 'color-theme)
 (require 'whitespace)
 (require 'rainbow-delimiters)

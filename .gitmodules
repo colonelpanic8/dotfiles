@@ -1,21 +1,12 @@
 [submodule "lisp/flymake-cursor"]
 	path = lisp/flymake-cursor
 	url = git@github.com:illusori/emacs-flymake-cursor.git
-[submodule "lisp/rainbow-delimiters"]
-	path = lisp/rainbow-delimiters
-	url = git@github.com:jlr/rainbow-delimiters.git
 [submodule "lisp/multi-line-it"]
 	path = lisp/multi-line-it
 	url = git@github.com:IvanMalison/multi-line-it.git
-[submodule "themes/zenburn"]
-	path = themes/zenburn
-	url = https://github.com/bbatsov/zenburn-emacs
 [submodule "emacs-for-python"]
 	path = emacs-for-python
 	url = git@github.com:IvanMalison/emacs-for-python.git
-[submodule "themes/solarized"]
-	path = themes/solarized
-	url = git@github.com:sellout/emacs-color-theme-solarized.git
 [submodule "lisp/emacs-testify"]
 	path = lisp/emacs-testify
 	url = git@github.com:IvanMalison/emacs-testify.git
