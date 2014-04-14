@@ -104,6 +104,6 @@ function is_osx() {
 function clipboard() {
     if is_osx;
     then
-        pbcopy
+        reattach-to-user-namespace pbcopy
     fi
 }
