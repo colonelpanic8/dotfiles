@@ -13,6 +13,8 @@
 ;;                                                       Load Path Configuration
 ;; =============================================================================
 
+(if (not (file-exists-p "~/.emacs.d/elpa"))
+    (make-directory "~/.emacs.d/elpa"))
 (let ((default-directory "~/.emacs.d/lisp/"))
       (normal-top-level-add-subdirs-to-load-path))
 (let ((default-directory "~/.emacs.d/elpa/"))
@@ -218,7 +220,8 @@ Return a list of installed packages or nil for every package not installed."
 (global-set-key (kbd "C-x O") (lambda () (interactive) (other-window -1)))
 (global-set-key (kbd "C-c t") 'testify-run-test)
 (global-set-key (kbd "C-c C-t") 'testify-run-case)
-(global-set-key (kbd "C-c +") (lambda () (interactive) (tmux-copy-buffer-name) (message (ffip-get-buffer-name))))
+(global-set-key (kbd "C-x C-c") 'kill-emacs)
+
 
 
 ;; Something will occasionally override this binding.
