@@ -29,6 +29,8 @@ brew install nmap
 brew install readline
 brew install netcat
 brew install reattach-to-user-namespace
+brew install daemonize
+ln -s /usr/local/Cellar/daemonize/1.7.4/sbin/daemonize /usr/local/bin/daemonize
 brew install ngrep
 
 # Remove outdated versions from the cellar
