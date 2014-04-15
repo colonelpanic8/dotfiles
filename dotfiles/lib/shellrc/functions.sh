@@ -1,15 +1,5 @@
-function parse_git_branch() {
-    ref=$(git symbolic-ref HEAD 2> /dev/null) || \
-    ref=$(git rev-parse --short HEAD 2> /dev/null) || return
-    echo ${ref#refs/heads/}
-}
-
-function git_is_dirty() {
-    ! test -z "$(git status --porcelain)"
-}
-
 function current_shell() {
-    greadlink -f $(which "$(ps -p $$ | tail -1 | awk '{print $NF}' | sed 's/\-//')")
+    readlink -f $(which "$(ps -p $$ | tail -1 | awk '{print $NF}' | sed 's/\-//')")
 }
 
 function is_zsh() {

@@ -13,7 +13,7 @@ function git_prompt_info() {
 }
 
 function git_status_character() {
-    if git_is_dirty;
+    if git dirty;
     then
         echo "%{$FG[202]%}✘%{$reset_color%}"
     else
@@ -29,7 +29,7 @@ function sandbox_prompt() {
 }
 
 PROMPT='╭─% %{$FG[040]%}%n%{$reset_color%} %{$FG[239]%}at%{$reset_color%} %{$FG[033]%}$(hostname -s)%{$reset_color%} %{$FG[239]%}in%{$reset_color%} %{$terminfo[bold]$FG[226]%}$(current_directory)%{$reset_color%}$(git_prompt_info)$(sandbox_prompt)
-$FG[255]╰─± '
+$FG[255]%{$reset_color%}╰─± '
 
 PS2=''
 

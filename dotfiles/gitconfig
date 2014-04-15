@@ -1,34 +1,36 @@
 [alias]
-	# View the SHA, description, and history graph of the latest 20 commits
 	l = log --pretty=oneline -n 20 --graph
-	# View the current working tree status using the short format
 	s = status -s
-	# Clone a repository including all submodules
 	c = clone --recursive
         ff = merge --ff-only
+        ca = !git add -A && git commit -av
+        cam = commit -am
+        suir = submodule update --init --recursive
+        poh = push origin HEAD
+        pohm = push origin HEAD:master
+        amend = commit -a --amend -C HEAD
+        dirty = "!t() { test -n \"$(git status --porcelain)\"; }; t"
+
+        branches = branch -a
+	remotes = remote -v
+        
+        which-branch = "!wb() { b="$(git symbolic-ref HEAD)" && echo ${b#refs/heads/}; }; wb"
+        sha = rev-parse HEAD
+        branch-or-sha = "!bs() { git which-branch 2> /dev/null || git sha 2> /dev/null ; }; bs"
+        # In newer versions of git, this simpler definition of which-branch would work.
+        # symbolic-ref HEAD --short
+
         ffr = "!ffr() { git fetch $1 && git ff origin/$(git which-branch) && git suir; }; ffr"
         ffo = !git ffr origin
-        cam = commit -am
-	# Commit all changes
-	ca = !git add -A && git commit -av
-	branches = branch -a
-	remotes = remote -v
+        reset-origin = "!r() { git reset --hard origin/\"$(git which-branch)\" && git suir; }; r"
+
 	# Credit an author on the latest commit
 	credit = "!f() { git commit --amend --author \"$1 <$2>\" -C HEAD; }; f"
 	# Interactive rebase with the given number of latest commits
 	reb = "!r() { git rebase -i HEAD~$1; }; r"
-	suir = submodule update --init --recursive
-        poh = push origin HEAD
-        pohm = push origin HEAD:master
-        
         # Diff a file or show it in git's pager if it is untracked
         du = "!d() { git ls-files $1 --error-unmatch 2>/dev/null 1>/dev/null && git diff $1 || `git config --get core.pager` $1; }; d"
-        which-branch = "!wb() { b="$(git symbolic-ref HEAD)" && echo ${b#refs/heads/}; }; wb" # symbolic-ref HEAD --short
-        sha = rev-parse HEAD
-        branch-or-sha = "!bs() { git which-branch 2> /dev/null || git sha 2> /dev/null ; }; bs"
-        amend = commit -a --amend -C HEAD
-        reset-origin = "!r() { git reset --hard origin/\"$(git which-branch)\" && git suir; }; r"
-        
+
 [core]
 	# Use custom `.gitignore` and `.gitattributes`
 	excludesfile = ~/.gitignore
