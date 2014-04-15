@@ -41,7 +41,7 @@
                                   find-file-in-project idle-highlight-mode
                                   paredit inf-ruby undo-tree rainbow-delimiters
                                   smex solarized-theme zenburn-theme
-                                  color-theme-wombat+ scala-mode2)
+                                  color-theme-wombat+ scala-mode2 ensime)
   "Packages that must be installed at launch.")
 
 (defun ensure-package-installed (packages)
