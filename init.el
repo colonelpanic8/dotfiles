@@ -230,6 +230,7 @@ Return a list of installed packages or nil for every package not installed."
 (global-set-key (kbd "C-c t") 'testify-run-test)
 (global-set-key (kbd "C-c C-t") 'testify-run-case)
 (global-set-key (kbd "C-x C-c") 'kill-emacs)
+(global-set-key (kbd "C-c +") 'message-buffer-name)
 
 ;; Something will occasionally override this binding.
 (global-set-key "\C-cg" 'rope-goto-definition)
