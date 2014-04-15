@@ -145,6 +145,12 @@ Return a list of installed packages or nil for every package not installed."
   (interactive "r")
   (shell-command-on-region b e "source ~/.zshrc; cat | smart_copy"))
 
+(defun all-copy (&optional b e)
+  (interactive "r")
+  (os-copy b e)
+  (tmux-copy b e)
+  (kill-ring-save b e))
+
 ;; =============================================================================
 ;;                                                                          tmux
 ;; =============================================================================
@@ -218,7 +224,7 @@ Return a list of installed packages or nil for every package not installed."
 (global-set-key (kbd "C-c C-c") 'comment-dwim)
 (global-set-key (kbd "C-c t") 'testify-run-test)
 (global-set-key (kbd "C-c C-o") 'testify-run-case)
-(global-set-key (kbd "C-c w") 'tmux-copy)
+(global-set-key (kbd "C-c w") 'all-copy)
 (global-set-key (kbd "C-c e") 'os-copy)
 (global-set-key (kbd "C-x O") (lambda () (interactive) (other-window -1)))
 (global-set-key (kbd "C-c t") 'testify-run-test)
