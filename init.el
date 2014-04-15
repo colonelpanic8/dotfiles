@@ -41,7 +41,7 @@
                                   find-file-in-project idle-highlight-mode
                                   paredit inf-ruby undo-tree rainbow-delimiters
                                   smex solarized-theme zenburn-theme
-                                  color-theme-wombat+ scala-mode2 ensime)
+                                  scala-mode2 ensime monokai-theme)
   "Packages that must be installed at launch.")
 
 (defun ensure-package-installed (packages)
@@ -264,7 +264,7 @@ Return a list of installed packages or nil for every package not installed."
 ;;                                                                    Appearance
 ;; =============================================================================
 
-(load-theme 'zenburn t)
+(load-theme 'monokai t)
 (require 'color-theme)
 (require 'whitespace)
 (require 'rainbow-delimiters)
