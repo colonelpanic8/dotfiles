@@ -1,12 +1,7 @@
-#!/bin/sh
-case `uname` in
-    'Darwin')
-        readlink_command='greadlink'
-	;;
-    *)
-        readlink_command='readlink'
-esac
-DOTFILES_DIRECTORY="$(dirname "${BASH_SOURCE}" | xargs ${readlink_command} -f)/dotfiles"
+#!/usr/bin/env bash
+cd $BASH_SOURCE && source dotfiles/lib/shellrc/aliases.sh && source dotfiles/lib/bash/aliases.sh
+DOTFILES_DIRECTORY="(sourcefile_abspath)/dotfiles"
+echo $DOTFILES_DIRECTORY
 
 function symlink_dotfiles() {
     cd $DOTFILES_DIRECTORY
@@ -25,15 +20,24 @@ function symlink_dotfiles() {
     [ -a ~/.dotfiles-backups.old ] && mv ~/.dotfiles-backups.old ~/.dotfiles-backups/.dotfiles-backups
 }
 
-if [ "$1" = "--force" -o "$1" = "-f" ]; then
-    symlink_dotfiles
-else
+
+function parse_options() {
+    while getopts "f" OPTCHAR; do
+        case $optchar in
+            f)
+                symlink_dotfiles
+                return
+                ;;
+        esac
+    done
+    shift $((OPTIND-1))
+
     read -p "Symlinking files from $DOTFILES_DIRECTORY. This may overwrite existing files in your home directory. Do you wish to proceed? (y/n) " -n 1
     echo
     if [[ $REPLY =~ ^[Yy]$ ]]; then
 	symlink_dotfiles
     fi
-fi
+    
+}
 
-unset symlink_dotfiles
-unset DOTFILES_DIRECTORY
+parse_options()

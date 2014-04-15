@@ -6,6 +6,7 @@ alias go2dotfiles='cd $(dirname `readlink -f ~/.zshrc | xargs dirname`)'
 
 # enables the sudoing of aliases.
 alias sudo='sudo '
+alias get_absolute_directory=
 
 # Detect which `ls` flavor is in use
 if ls --color > /dev/null 2>&1; then # GNU `ls`
