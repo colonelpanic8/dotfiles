@@ -19,16 +19,16 @@ function current_directory() {
 }
 
 function git_prompt_info() {
-    if test -z $(parse_git_branch);
+    if test -z $(git branch-or-sha);
     then
         echo ""
     else
-        echo " on $(parse_git_branch)$(git_status_character)"
+        echo " on $(git branch-or-sha)$(git_status_character)"
     fi
 }
 
 function git_status_character() {
-    if git_is_dirty;
+    if git dirty;
     then
         echo "✘"
     else
