@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
-cd $BASH_SOURCE && source dotfiles/lib/shellrc/aliases.sh && source dotfiles/lib/bash/aliases.sh
-DOTFILES_DIRECTORY="(sourcefile_abspath)/dotfiles"
+cd `dirname $BASH_SOURCE` && source bootstrapping.sh
+DOTFILES_DIRECTORY="$(dotfiles_abspath)/dotfiles"
 echo $DOTFILES_DIRECTORY
 
 function symlink_dotfiles() {
@@ -33,11 +33,9 @@ function parse_options() {
     shift $((OPTIND-1))
 
     read -p "Symlinking files from $DOTFILES_DIRECTORY. This may overwrite existing files in your home directory. Do you wish to proceed? (y/n) " -n 1
-    echo
     if [[ $REPLY =~ ^[Yy]$ ]]; then
 	symlink_dotfiles
     fi
-    
 }
 
-parse_options()
+parse_options
