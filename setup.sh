@@ -2,6 +2,7 @@
 cd `dirname $BASH_SOURCE` && source bootstrapping.sh
 case `uname` in
     'Darwin')
+        xcode-select --install
         source resources/osx.sh
         source resources/brew.sh
         ;;
