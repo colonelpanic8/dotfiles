@@ -4,12 +4,16 @@
 	c = clone --recursive
         ff = merge --ff-only
         ca = !git add -A && git commit -av
+        tb = rev-parse --abbrev-ref --symbolic-full-name @{u}
         cam = commit -am
-        suir = submodule update --init --recursive
         poh = push origin HEAD
         pohm = push origin HEAD:master
+        suir = submodule update --init --recursive
         amend = commit -a --amend -C HEAD
+        modified = diff HEAD --name-only
         dirty = "!t() { test -n \"$(git status --porcelain)\"; }; t"
+        # diff tracking branch merge base
+        dtbmb = !git diff `git tb`...HEAD
 
         branches = branch -a
 	remotes = remote -v
