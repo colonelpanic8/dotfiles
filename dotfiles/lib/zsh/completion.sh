@@ -1,5 +1,10 @@
 # fixme - the load process here seems a bit bizarre
 
+CASE_SENSITIVE="true"
+fpath=(~/.lib/completions $fpath)
+autoload -U compinit
+compinit
+
 unsetopt menu_complete   # do not autoselect the first completion entry
 unsetopt flowcontrol
 setopt auto_menu         # show completion menu on succesive tab press
