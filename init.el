@@ -41,7 +41,8 @@
                                   find-file-in-project idle-highlight-mode
                                   paredit inf-ruby undo-tree rainbow-delimiters
                                   smex solarized-theme zenburn-theme
-                                  scala-mode2 ensime monokai-theme)
+                                  scala-mode2 ensime monokai-theme
+                                  gitconfig-mode)
   "Packages that must be installed at launch.")
 
 (defun ensure-package-installed (packages)
