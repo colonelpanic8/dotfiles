@@ -37,10 +37,9 @@
 	credit = "!f() { git commit --amend --author \"$1 <$2>\" -C HEAD; }; f"
 	# Interactive rebase with the given number of latest commits
 	reb = "!r() { git rebase -i HEAD~$1; }; r"
-	# Diff a file or show it in git's pager if it is untracked
-	du = "!d() { git ls-files $1 --error-unmatch 2>/dev/null 1>/dev/null && git diff $1 || `git config --get core.pager` $1; }; d"
-	clean-branches = "!r() { git branch -r --merged ${1-origin/master} | xargs -n1 git branch -d; }; r"
-	rmremotetag = "!rm() { git push $1 :refs/heads/tags/$2; } rm"
+        # Diff a file or show it in git's pager if it is untracked
+        du = "!d() { git ls-files $1 --error-unmatch 2>/dev/null 1>/dev/null && git diff $1 || `git config --get core.pager` $1; }; d"
+        clean-branches = "!r() { git branch -r --merged ${1-origin/master} | xargs -n1 git branch -d; }; r"
 
 [core]
 	# Use custom `.gitignore` and `.gitattributes`
