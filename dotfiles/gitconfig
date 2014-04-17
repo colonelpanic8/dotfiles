@@ -2,53 +2,55 @@
 	l = log --pretty=oneline -n 20 --graph
 	s = status -s
 	c = clone --recursive
-        ff = merge --ff-only
-        ca = !git add -A && git commit -av
-        tb = rev-parse --abbrev-ref --symbolic-full-name @{u}
-        cam = commit -am
-        poh = push origin HEAD
-        pohm = push origin HEAD:master
-        suir = submodule update --init --recursive
-        amend = commit -a --amend -C HEAD
-        modified = diff HEAD --name-only
-        untracked = "!u() { git status -s | grep "??" | awk '{print $2}'; }; u"
-        dirty = "!t() { test -n \"$(git status --porcelain)\"; }; t"
-        # diff tracking branch merge base
-        dtbmb = !git diff `git tb`...HEAD
-        root = rev-parse --show-toplevel
-        ignore = !"i() { printf \"\n$1\" >> "`git root`/.gitignore"; }; i"
+	ff = merge --ff-only
+	ca = !git add -A && git commit -av
+	tb = rev-parse --abbrev-ref --symbolic-full-name @{u}
+	cam = commit -am
+	poh = push origin HEAD
+	pohm = push origin HEAD:master
+	suir = submodule update --init --recursive
+	amend = commit -a --amend -C HEAD
+	modified = diff HEAD --name-only
+	untracked = "!u() { git status -s | grep "??" | awk '{print $2}'; }; u"
+	dirty = "!t() { test -n \"$(git status --porcelain)\"; }; t"
+	# diff tracking branch merge base
+	dtbmb = !git diff `git tb`...HEAD
+	root = rev-parse --show-toplevel
+	ignore = "!i() { printf \"\n$1\" >> "`git root`/.gitignore"; }; i"
+	power-clean = clean -ffd
+	db = !"db() { git diff HEAD~"$1"; }; db"
 
-        branches = branch -a
+	branches = branch -a
 	remotes = remote -v
-        
-        which-branch = "!wb() { b="$(git symbolic-ref HEAD)" && echo ${b#refs/heads/}; }; wb"
-        sha = rev-parse HEAD
-        branch-or-sha = "!bs() { git which-branch 2> /dev/null || git sha 2> /dev/null ; }; bs"
-        # In newer versions of git, this simpler definition of which-branch would work.
-        # symbolic-ref HEAD --short
 
-        ffr = "!ffr() { git fetch $1 && git ff origin/$(git which-branch) && git suir; }; ffr"
-        ffo = !git ffr origin
-        reset-origin = "!r() { git reset --hard origin/\"$(git which-branch)\" && git suir; }; r"
+	which-branch = "!wb() { b="$(git symbolic-ref HEAD)" && echo ${b#refs/heads/}; }; wb"
+	sha = rev-parse HEAD
+	branch-or-sha = "!bs() { git which-branch 2> /dev/null || git sha 2> /dev/null ; }; bs"
+	# In newer versions of git, this simpler definition of which-branch would work.
+	# symbolic-ref HEAD --short
+
+	ffr = "!ffr() { git fetch $1 && git ff origin/$(git which-branch) && git suir; }; ffr"
+	ffo = !git ffr origin
+	reset-origin = "!r() { git reset --hard origin/\"$(git which-branch)\" && git suir; }; r"
 
 	# Credit an author on the latest commit
 	credit = "!f() { git commit --amend --author \"$1 <$2>\" -C HEAD; }; f"
 	# Interactive rebase with the given number of latest commits
 	reb = "!r() { git rebase -i HEAD~$1; }; r"
-        # Diff a file or show it in git's pager if it is untracked
-        du = "!d() { git ls-files $1 --error-unmatch 2>/dev/null 1>/dev/null && git diff $1 || `git config --get core.pager` $1; }; d"
-        clean-branches = "!r() { git branch -r --merged ${1-origin/master} | xargs -n1 git branch -d; }; r"
-        clean-remote-branches = 
+	# Diff a file or show it in git's pager if it is untracked
+	du = "!d() { git ls-files $1 --error-unmatch 2>/dev/null 1>/dev/null && git diff $1 || `git config --get core.pager` $1; }; d"
+	clean-branches = "!r() { git branch -r --merged ${1-origin/master} | xargs -n1 git branch -d; }; r"
+	rmremotetag = "!rm() { git push $1 :refs/heads/tags/$2; } rm"
 
 [core]
 	# Use custom `.gitignore` and `.gitattributes`
 	excludesfile = ~/.gitignore
 	attributesfile = ~/.gitattributes
-        pager = less -F -X
+	pager = less -F -X
 
 [color]
 	# Use colors in Git commands that are capable of colored output when
-        # outputting to the terminal
+	# outputting to the terminal
 	ui = auto
 
 [color "branch"]
@@ -80,4 +82,4 @@
 	name = Ivan Malison
 
 [merge]
-       conflictstyle = diff3
+	conflictstyle = diff3
