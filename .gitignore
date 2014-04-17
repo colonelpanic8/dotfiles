@@ -11,3 +11,4 @@ bookmarks
 
 elpa/*
 .dir-locals.el
+.mc-lists.el
