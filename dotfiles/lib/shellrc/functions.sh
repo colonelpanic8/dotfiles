@@ -97,3 +97,7 @@ function clipboard() {
         reattach-to-user-namespace pbcopy
     fi
 }
+
+function git_root() {
+    cd `git root`
+}
