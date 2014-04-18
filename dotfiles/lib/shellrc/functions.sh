@@ -101,3 +101,27 @@ function clipboard() {
 function git_root() {
     cd `git root`
 }
+
+function git_diff_replacing() {
+    local original_sha='HEAD~1'
+    local new_sha='HEAD'
+    while getopts "do:n:" OPTCHAR; do;
+        case $OPTCHAR in
+            o)
+                original_sha="$OPTARG"
+                ;;
+            n)
+                new_sha="$OPTARG"
+                ;;
+            d)
+                debug="true"
+        esac
+    done
+    shift $((OPTIND-1))
+    local replaced="$1"
+    local replacing="$2"
+    local replace_sha_string='$(echo filename | sed '"s:$replaced:$replacing:g"')'
+    test -z $debug || echo "Diffing from $original_sha to $new_sha, replacing $replaced with $replacing"
+    test -z $debug || git diff $original_sha $new_sha --name-only | grep -v "$replacing"
+    git diff $original_sha $new_sha --name-only | grep -v "$replacing" | xargs -I filename sh -c "git diff $original_sha:filename $new_sha:"$replace_sha_string
+}
