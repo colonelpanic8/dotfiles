@@ -1,2 +1,3 @@
 source ~/.lib/shellrc.sh
 source ~/.lib/zsh.sh
+test -r ~/.custom.zsh && source ~/.custom.zsh
