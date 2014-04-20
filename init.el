@@ -173,7 +173,7 @@ Return a list of installed packages or nil for every package not installed."
 
 (defun flymake-pylint-init ()
   (let* ((temp-file (flymake-init-create-temp-buffer-copy
-                    'flymake-create-temp-inplace))
+                     'flymake-create-temp-inplace))
         (local-file (file-relative-name
                      temp-file
                      (file-name-directory buffer-file-name))))
@@ -183,7 +183,7 @@ Return a list of installed packages or nil for every package not installed."
 
 ; Load flymake on non-temp buffers
 (add-hook 'python-mode-hook
-	  (lambda () (unless (eq buffer-file-name nil) (flymake-mode 1))))
+	  (lambda () (unless (or (eq buffer-file-name nil) (eq (file-name-directory buffer-file-name) nil)) (flymake-mode 1))))
 
 ;; =============================================================================
 ;;                                                                        Python
