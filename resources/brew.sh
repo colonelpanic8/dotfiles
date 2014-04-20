@@ -33,6 +33,8 @@ brew install reattach-to-user-namespace
 brew install daemonize
 ln -s /usr/local/Cellar/daemonize/1.7.4/sbin/daemonize /usr/local/bin/daemonize
 brew install ngrep
+brew install watch
+brew install gist
 
 # Remove outdated versions from the cellar
 brew cleanup
