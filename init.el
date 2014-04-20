@@ -215,7 +215,7 @@ Return a list of installed packages or nil for every package not installed."
 
 ;; Macros
 (fset 'ipdb "import ipdb; ipdb.set_trace()")
-
+(fset 'main "if __name__ == '__main__':")
 ;; Miscellaneous
 (global-set-key (kbd "C-x C-b") 'buffer-menu)
 (global-set-key (kbd "C-x w") 'whitespace-mode)
