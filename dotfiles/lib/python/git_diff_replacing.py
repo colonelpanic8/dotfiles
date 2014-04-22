@@ -15,7 +15,6 @@ class GitDiffReplacer(object):
         self.replacing_string = replacing_string
         self.verbose = verbose
 
-
     @property
     def modified_files_command(self):
         return linecmd('git diff {} {} --name-only', self.source_ref,
