@@ -125,3 +125,13 @@ function git_diff_replacing() {
     test -z $debug || git diff $original_sha $new_sha --name-only | grep -v "$replacing"
     git diff $original_sha $new_sha --name-only | grep -v "$replacing" | xargs -I filename sh -c "git diff $original_sha:filename $new_sha:"$replace_sha_string
 }
+
+function git_reset_author() {
+    git filter-branch -f --env-filter '
+if test "$GIT_COMMITTER_NAME" = "Ivan Malison"
+then
+    GIT_COMMITTER_EMAIL="IvanMalison@gmail.com"
+    export GIT_COMMITTER_EMAIL
+fi
+' -- --all
+}
