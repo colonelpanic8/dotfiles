@@ -1,6 +1,5 @@
 ipdb==0.7
 ipython==0.13.1
-Pymacs==0.25
 virtualenv==1.8.4
 readline==6.2.4.1
 rope==0.9.4
