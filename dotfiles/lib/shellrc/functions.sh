@@ -125,3 +125,44 @@ function git_diff_replacing() {
     test -z $debug || git diff $original_sha $new_sha --name-only | grep -v "$replacing"
     git diff $original_sha $new_sha --name-only | grep -v "$replacing" | xargs -I filename sh -c "git diff $original_sha:filename $new_sha:"$replace_sha_string
 }
+
+function git_reset_author() {
+    local should_update_command=''
+    local update_command=''
+    while getopts "a:e:A:E:h" OPTCHAR; do;
+        case $OPTCHAR in
+            a)
+                new_author="$OPTARG";
+                test -n "$update_command" && update_command="$update_command"' && '
+                update_command="$update_command"'export GIT_AUTHOR_NAME='"'$new_author'"' && export GIT_COMMITTER_NAME='"'$new_author'"
+                ;;
+            A)
+                author_regex="$OPTARG";
+                test -n "$should_update_command" && should_update_command="$should_update_command"' && '
+                should_update_command=$should_update_command'[[ "$GIT_AUTHOR_NAME" =~ "'"$author_regex"'" ]]'
+                ;;
+            e)
+                new_email="$OPTARG";
+                test -n "$update_command" && update_command="$update_command"' && '
+                update_command="$update_command"'export GIT_AUTHOR_EMAIL='"'$new_email'"' && export GIT_COMMITTER_EMAIL='"'$new_email'"
+                ;;
+            E)
+                email_regex="$OPTARG";
+                test -n "$should_update_command" && should_update_command="$should_update_command"' && '
+                should_update_command=$should_update_command'[[ "$GIT_AUTHOR_EMAIL" =~ "'"$email_regex"'" ]]'
+                ;;
+            h)
+                echo "Usage:
+-a specify the new author/committer name.
+-A specify a regex that will be used to filter commits by author name.
+-e specify the new author/committer email.
+-E specify a regex that will be used to filter commits by author email.
+-h show this help message.
+"
+                return
+                ;;
+        esac
+    done
+    local filter_branch_command="$should_update_command"' && '"$update_command"' || test true'
+    git filter-branch -f --env-filter $filter_branch_command -- --all
+}
