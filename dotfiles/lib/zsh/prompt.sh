@@ -1,3 +1,4 @@
+autoload -U colors && colors
 function current_directory() {
     local PWD=$(pwd)
     echo "${PWD/#$HOME/~}"
