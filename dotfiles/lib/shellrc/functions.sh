@@ -175,3 +175,9 @@ function set_osx_hostname() {
     sudo scutil --set LocalHostName $new_hostname
     sudo defaults write /Library/Preferences/SystemConfiguration/com.apple.smb.server NetBIOSName -string $new_hostname
 }
+
+function fix_brew_htop() {
+    chmod 777 $(readlink -f `which htop`)
+    sudo chown root $(readlink -f `which htop`)
+    sudo chmod 6555 `which htop`
+}
