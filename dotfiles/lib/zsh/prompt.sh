@@ -56,6 +56,15 @@ function sandbox_prompt() {
     fi
 }
 
+function command_line_character() {
+    if ! test -z $(git branch-or-sha);
+    then 
+        echo "±"
+    else
+        echo "○"
+    fi
+}
+
 function prompt_custom_colors() {
     export USERNAME_COLOR="$FG[040]"
     export SEPARATOR_COLOR="$FG[239]"
@@ -87,7 +96,7 @@ function separator() {
 
 prompt_basic_colors_with_grey_separator
 PROMPT='╭─% $(print_with_color "%n" "$USERNAME_COLOR") $(separator "at") $(print_with_color "`hostname -s`" "$HOSTNAME_COLOR") $(separator "in") $(print_with_color "`current_directory`" "$terminfo[bold]$CURRENT_DIRECTORY_COLOR")$(git_prompt_info)$(sandbox_prompt)
-╰─± '
+╰─$(command_line_character) '
 
 PS2='(%_) '
 
