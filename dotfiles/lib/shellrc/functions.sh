@@ -166,3 +166,12 @@ function git_reset_author() {
     local filter_branch_command="$should_update_command"' && '"$update_command"' || test true'
     git filter-branch -f --env-filter $filter_branch_command -- --all
 }
+
+function set_osx_hostname() {
+    local new_hostname="$1"
+    test -z new_hostname && new_hostname="IvansMac"
+    sudo scutil --set ComputerName $new_hostname
+    sudo scutil --set HostName $new_hostname
+    sudo scutil --set LocalHostName $new_hostname
+    sudo defaults write /Library/Preferences/SystemConfiguration/com.apple.smb.server NetBIOSName -string $new_hostname
+}
