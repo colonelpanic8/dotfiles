@@ -29,9 +29,39 @@ function sandbox_prompt() {
     fi
 }
 
-PROMPT='╭─% %{$FG[040]%}%n%{$reset_color%} %{$FG[239]%}at%{$reset_color%} %{$FG[033]%}$(hostname -s)%{$reset_color%} %{$FG[239]%}in%{$reset_color%} %{$terminfo[bold]$FG[226]%}$(current_directory)%{$reset_color%}$(git_prompt_info)$(sandbox_prompt)
-$FG[255]%{$reset_color%}╰─± '
+function prompt_use_custom_colors() {
+    export USERNAME_COLOR="$FG[040]"
+    export SEPARATOR_COLOR="$FG[239]"
+    export HOSTNAME_COLOR="$FG[033]"
+    export CURRENT_DIRECTORY_COLOR="$FG[226]"
+}
+
+function prompt_use_basic_colors() {
+    export USERNAME_COLOR="$fg[blue]"
+    export SEPARATOR_COLOR="$fg[black]"
+    export HOSTNAME_COLOR="$fg[green]"
+    export CURRENT_DIRECTORY_COLOR="$fg[yellow]"
+}
+
+function prompt_grey_separator() {
+    export USERNAME_COLOR="$fg[blue]"
+    export SEPARATOR_COLOR="$FG[239]"
+    export HOSTNAME_COLOR="$fg[green]"
+    export CURRENT_DIRECTORY_COLOR="$fg[yellow]"
+}
+
+function print_with_color() {
+    echo "%{$2%}$1%{$reset_color%}"
+}
+
+function separator() {
+    print_with_color "$1" "$SEPARATOR_COLOR"
+}
+
+PROMPT='╭─% $(print_with_color "%n" "$USERNAME_COLOR") $(separator "at") $(print_with_color "`hostname -s`" "$HOSTNAME_COLOR") $(separator "in") $(print_with_color "`current_directory`" "$terminfo[bold]$CURRENT_DIRECTORY_COLOR")$(git_prompt_info)$(sandbox_prompt)
+╰─± '
 
 PS2=''
 
 RPROMPT='Last Exit Code: $?'
+prompt_use_custom_colors
