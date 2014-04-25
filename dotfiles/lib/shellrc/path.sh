@@ -7,4 +7,5 @@ function add_to_back_of_path {
 }
 
 add_to_back_of_path "$HOME/.local/lib/python2.6/site-packages"
+add_to_front_of_path "$(brew --prefix coreutils)/libexec/gnubin"
 add_to_front_of_path "/usr/local/bin"

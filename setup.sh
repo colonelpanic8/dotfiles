@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
 cd `dirname $BASH_SOURCE` && source bootstrapping.sh
+source dotfiles/lib/shellrc/functions.sh
 case `uname` in
     'Darwin')
         source resources/osx.sh
