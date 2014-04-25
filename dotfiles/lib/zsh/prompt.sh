@@ -58,10 +58,10 @@ function separator() {
     print_with_color "$1" "$SEPARATOR_COLOR"
 }
 
+prompt_use_custom_colors
 PROMPT='╭─% $(print_with_color "%n" "$USERNAME_COLOR") $(separator "at") $(print_with_color "`hostname -s`" "$HOSTNAME_COLOR") $(separator "in") $(print_with_color "`current_directory`" "$terminfo[bold]$CURRENT_DIRECTORY_COLOR")$(git_prompt_info)$(sandbox_prompt)
 ╰─± '
 
 PS2='(%_) '
 
 RPROMPT='Last Exit Code: $?'
-prompt_use_custom_colors
