@@ -36,23 +36,23 @@ function git_prompt_info() {
     then
         echo ""
     else
-        echo " %{$FG[239]%}on%{$reset_color%} %{$FG[255]%}$(git branch-or-sha)%{$reset_color%}$(git_status_character)"
+        echo " $(separator "on") $(git branch-or-sha)$(git_status_character)"
     fi
 }
 
 function git_status_character() {
     if git dirty;
     then
-        echo "%{$FG[202]%}✘%{$reset_color%}"
+        print_with_color "✘" "$fg_bold[red]"
     else
-        echo "%{$FG[040]%}✔%{$reset_color%}"
+        print_with_color "✔" "$fg_bold[green]"
     fi
 }
 
 function sandbox_prompt() {
     if [ ! -z "$(sandbox_prompt_info)" ];
     then
-        echo " %{$FG[239]%}with $(colored_sandbox_string)%{$reset_color%}"
+        echo " $(separator "with") $(colored_sandbox_string)%{$reset_color%}"
     fi
 }
 
@@ -73,17 +73,15 @@ function prompt_custom_colors() {
 }
 
 function prompt_basic_colors() {
-    export USERNAME_COLOR="$fg[blue]"
-    export SEPARATOR_COLOR="$fg[black]"
-    export HOSTNAME_COLOR="$fg[green]"
+    export USERNAME_COLOR="$fg_no_bold[green]"
+    export SEPARATOR_COLOR="$fg_no_bold[black]"
+    export HOSTNAME_COLOR="$fg_no_bold[blue]"
     export CURRENT_DIRECTORY_COLOR="$fg[yellow]"
 }
 
 function prompt_basic_colors_with_grey_separator() {
-    export USERNAME_COLOR="$fg[blue]"
+    prompt_basic_colors
     export SEPARATOR_COLOR="$FG[239]"
-    export HOSTNAME_COLOR="$fg[green]"
-    export CURRENT_DIRECTORY_COLOR="$fg[yellow]"
 }
 
 function print_with_color() {

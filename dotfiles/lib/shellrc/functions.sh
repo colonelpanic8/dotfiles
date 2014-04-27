@@ -168,8 +168,7 @@ function git_reset_author() {
 }
 
 function set_osx_hostname() {
-    local new_hostname="$1"
-    test -z new_hostname && new_hostname="IvansMac"
+    local new_hostname="${1-imalison}"
     sudo scutil --set ComputerName $new_hostname
     sudo scutil --set HostName $new_hostname
     sudo scutil --set LocalHostName $new_hostname
