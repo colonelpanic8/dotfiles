@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-cd `dirname $BASH_SOURCE` && source bootstrapping.sh
+cd `dirname $BASH_SOURCE` && source resources/bootstrapping.sh
 source dotfiles/lib/shellrc/functions.sh
 case `uname` in
     'Darwin')
