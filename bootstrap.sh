@@ -1,7 +1,21 @@
 #!/usr/bin/env bash
 cd `dirname $BASH_SOURCE` && source resources/bootstrapping.sh
 DOTFILES_DIRECTORY="$(dotfiles_abspath)/dotfiles"
-echo $DOTFILES_DIRECTORY
+
+function make_powerline_symlink() {
+    # Make a powerline link if powerline is installed
+    local powerline_location=$(pip show Powerline | grep Location | awk '{print $2}')
+    local conf_location="/powerline/bindings/tmux/powerline.conf"
+    local link_destination="$HOME/.tmux.powerline"
+    sudo pip install --user git+git://github.com/Lokaltog/powerline
+    if test -z $powerline_location;
+    then
+        rm $link_destination 2> /dev/null
+        touch "$link_destination"
+    else
+        ln -si "$powerline_location$conf_location" $link_destination
+    fi
+}
 
 function symlink_dotfiles() {
     cd $DOTFILES_DIRECTORY
@@ -18,6 +32,7 @@ function symlink_dotfiles() {
         ln -si $link_target $link_destination
     done
     [ -a ~/.dotfiles-backups.old ] && mv ~/.dotfiles-backups.old ~/.dotfiles-backups/.dotfiles-backups
+    make_powerline_symlink
 }
 
 
