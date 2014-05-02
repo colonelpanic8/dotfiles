@@ -182,3 +182,7 @@ function fix_brew_htop() {
     sudo chown root $(readlink -f `which htop`)
     sudo chmod 6555 `which htop`
 }
+
+function pip_package_location() {
+    pip show $1 | grep Location | get_cols 2
+}
