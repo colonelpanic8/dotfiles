@@ -105,7 +105,8 @@ function git_root() {
 function git_diff_replacing() {
     local original_sha='HEAD~1'
     local new_sha='HEAD'
-    while getopts "do:n:" OPTCHAR; do;
+    while getopts "do:n:" OPTCHAR;
+    do
         case $OPTCHAR in
             o)
                 original_sha="$OPTARG"
@@ -129,7 +130,8 @@ function git_diff_replacing() {
 function git_reset_author() {
     local should_update_command=''
     local update_command=''
-    while getopts "a:e:A:E:h" OPTCHAR; do;
+    while getopts "a:e:A:E:h" OPTCHAR;
+    do
         case $OPTCHAR in
             a)
                 new_author="$OPTARG";
