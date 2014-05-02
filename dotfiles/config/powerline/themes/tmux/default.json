@@ -35,6 +35,9 @@
     "left": [
       {
 	"name": "external_ip"
+      },
+      {
+        "name": "system_load"
       }
     ]
   }
