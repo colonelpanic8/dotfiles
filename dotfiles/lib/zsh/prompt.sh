@@ -97,5 +97,3 @@ PROMPT='╭─% $(print_with_color "%n" "$USERNAME_COLOR") $(separator "at") $(p
 ╰─$(command_line_character) '
 
 PS2='(%_) '
-
-RPROMPT='Last Exit Code: $?'
