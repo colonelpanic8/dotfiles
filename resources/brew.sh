@@ -29,6 +29,8 @@ brew install htop
 brew link python
 brew install scala
 brew install sbt
+brew install node
+brew install npm
 
 # Install everything else
 brew install watch
