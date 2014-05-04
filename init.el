@@ -124,23 +124,11 @@ Return a list of installed packages or nil for every package not installed."
 
 (defun ffip-get-buffer-name()
   (interactive)
-  (path-relative-to-base-path (buffer-file-name) (expand-file-name (ffip-project-root))))
+  (file-relative-name (buffer-file-name) (expand-file-name (ffip-project-root))))
 
 (defun message-buffer-name()
   (interactive)
   (message (ffip-get-buffer-name)))
-
-(defun path-relative-to-base-path(file-path base-path)
-  (mapconcat 'identity (list-diff (path-to-list base-path) (path-to-list file-path)) "/"))
-
-(defun path-to-list(path)
-  (let ((path-list (split-string path "/")))
-    (if (= (length (car (last path-list))) 0) (butlast path-list) path-list)))
-
-(defun list-diff(shorter longer)
-  (cond ((not shorter) longer)
-        ((string= (car shorter) (car longer)) (list-diff (cdr shorter) (cdr longer)))
-        (t (throw 'error "longer does not match shorter"))))
 
 (defun os-copy (&optional b e)
   (interactive "r")
@@ -193,6 +181,13 @@ Return a list of installed packages or nil for every package not installed."
 (require 'multi-line-it)
 (require 'emacs-testify)
 
+(defun python-tabs () (setq tab-width 4
+                            indent-tabs-mode t
+                            python-indent-offset 4))
+
+(defvar use-python-tabs nil)
+
+(add-hook 'python-mode-hook (lambda () (if use-python-tabs python-tabs)))
 (add-hook 'python-mode-hook (lambda () (subword-mode 1)))
 
 ;; =============================================================================
@@ -319,5 +314,5 @@ Return a list of installed packages or nil for every package not installed."
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- '(safe-local-variable-values (quote ((python-indent . 4) (whitespace-line-column . 80) (lexical-binding . t)))))
+ '(safe-local-variable-values (quote ((use-python-tabs . t) (python-indent . 4) (whitespace-line-column . 80) (lexical-binding . t)))))
 
