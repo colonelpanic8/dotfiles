@@ -1,7 +1,12 @@
 {
   "name": "Default color scheme for terminal prompts",
   "groups": {
-    "background:divider": { "fg": "gray5", "bg": "gray0" },
+    "global": { "fg": "darkestred", "bg": "gray0" },
+    "window_status_left": { "fg": "gray10", "bg": "gray0" },
+    "window_status_right": { "fg": "gray10", "bg": "gray0" },
+    "current_window_status_left": { "fg": "gray10", "bg": "darkestred" },
+    "current_window_status_right": { "fg": "gray10", "bg": "darkblue" },
+    "background:divider": { "fg": "darkestred", "bg": "gray0" },
     "session": { "fg": "black", "bg": "gray10", "attr": ["bold"] },
     "date": { "fg": "gray8", "bg": "gray2" },
     "time": { "fg": "gray10", "bg": "gray2", "attr": ["bold"] },
@@ -18,6 +23,7 @@
     "cpu_load_percent_gradient": { "fg": "green_yellow_orange_red", "bg": "gray0" },
     "environment": { "fg": "gray8", "bg": "gray0" },
     "battery": { "fg": "gray8", "bg": "gray0" },
+    "test": { "fg": "gray10", "bg": "black" },
     "battery_gradient": { "fg": "white_red", "bg": "gray0" },
     "now_playing": { "fg": "gray10", "bg": "black" }
   }

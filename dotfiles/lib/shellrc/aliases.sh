@@ -5,6 +5,7 @@ alias timestamp='date +%s'
 alias go2dotfiles='cd $(dirname `readlink -f ~/.zshrc | xargs dirname`)'
 alias fn='find . -name '
 alias prj='cd ~/Projects'
+alias reload_tmux='tmux source-file ~/.tmux.conf'
 
 # enables the sudoing of aliases.
 alias sudo='sudo '

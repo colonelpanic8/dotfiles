@@ -1,5 +1,5 @@
 [alias]
-	l = log --pretty=oneline -n 20 --graph
+	l = log --pretty=oneline --graph
 	s = status -s
 	c = clone --recursive
 	ff = merge --ff-only

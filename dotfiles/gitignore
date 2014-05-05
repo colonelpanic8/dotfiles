@@ -21,3 +21,4 @@ Thumbs.db
 TAGS
 run_tests.sh
 untracked/
+.ropeproject/

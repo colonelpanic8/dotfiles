@@ -19,9 +19,6 @@
 	"priority": 50
       },
       {
-	"name": "date"
-      },
-      {
 	"name": "date",
 	"args": {
 	  "format": "%H:%M",
@@ -29,15 +26,17 @@
 	}
       },
       {
-	"name": "hostname"
-      }
-    ],
-    "left": [
-      {
 	"name": "external_ip"
       },
       {
-        "name": "system_load"
+	"name": "hostname"
+      }
+    ],
+    "special": [
+      {
+        "name": "window_status",
+        "type": "string",
+        "contnets": "#I"
       }
     ]
   }
