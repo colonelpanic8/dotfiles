@@ -1,11 +1,15 @@
-for filename in ~/.lib/shellrc/*; do
-    source $filename
-done
-# Source everything twice just in case there were things that depended
-# on each other.
-for filename in ~/.lib/shellrc/*; do
-    source $filename
-done
+function add_to_front_of_path {
+    export PATH=$@:$(echo $PATH | sed "s|:*$@||g" | sed "s|^:||")
+}
 
-local dircolors_file="$HOME/.dircolors"
-test -r $dircolors_files  && eval "$(dircolors $dircolors_file)"
+function add_to_back_of_path {
+    export PATH=$(echo $PATH | sed "s|:*$@||g" | sed "s|^:||"):$@
+}
+
+add_to_back_of_path "$HOME/.local/lib/python2.6/site-packages"
+hash brew 2>/dev/null && add_to_front_of_path "$(brew --prefix coreutils)/libexec/gnubin"
+add_to_front_of_path "/usr/local/bin"
+
+for filename in ~/.lib/shellrc/*; do
+    source $filename
+done
