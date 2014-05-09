@@ -17,6 +17,7 @@
 	dtbmb = !git diff `git tb`...HEAD
 	root = rev-parse --show-toplevel
 	ignore = "!i() { printf \"\n$1\" >> "`git root`/.gitignore"; }; i"
+        ignore-untracked="!git untracked | xargs -n1 git ignore"
 	power-clean = clean -ffd
 	db = !"db() { git diff HEAD~"$1"; }; db"
 
