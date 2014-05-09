@@ -34,7 +34,7 @@
              '("marmalade" . "http://marmalade-repo.org/packages/")) 
 (package-initialize)
 
-(defvar my-packages '(color-theme ctags ctags-update evil flymake mo-git-blame
+(defvar my-packages '(color-theme ctags ctags-update flymake mo-git-blame
 				  multiple-cursors no-easy-keys
                                   starter-kit-bindings starter-kit-ruby
                                   starter-kit magit ido-ubiquitous
@@ -42,7 +42,7 @@
                                   paredit inf-ruby undo-tree rainbow-delimiters
                                   smex solarized-theme zenburn-theme
                                   scala-mode2 ensime monokai-theme
-                                  gitconfig-mode)
+                                  gitconfig-mode jedi flymake-cursor pytest)
   "Packages that must be installed at launch.")
 
 (defun ensure-package-installed (packages)
@@ -79,7 +79,6 @@ Return a list of installed packages or nil for every package not installed."
 (require 'uniquify)
 (setq uniquify-buffer-name-style 'forward)
 
-(add-hook 'python-mode-hook (lambda () (setq show-trailing-whitespace t)))
 (setq visible-bell t)
 
 ;; Display line and column numbers in mode line.
@@ -180,6 +179,9 @@ Return a list of installed packages or nil for every package not installed."
 ;; Multi-lining for python.
 (require 'multi-line-it)
 (require 'emacs-testify)
+(require 'pytest)
+
+(add-hook 'python-mode-hook (lambda () (setq show-trailing-whitespace t)))
 
 (defun python-tabs () (setq tab-width 4
                             indent-tabs-mode t
@@ -195,7 +197,7 @@ Return a list of installed packages or nil for every package not installed."
 ;; =============================================================================
 
 (add-hook 'js-mode-common-hook (lambda () (subword-mode 1)))
-
+(add-hook 'js-mode (lambda () (subword-mode 1)))
 
 ;; =============================================================================
 ;;                                                                         Scala
@@ -207,7 +209,7 @@ Return a list of installed packages or nil for every package not installed."
 ;;                                                                  Starter Kits
 ;; =============================================================================
 
-(load-file "~/.emacs.d/emacs-for-python/epy-init.el")
+;;(load-file "~/.emacs.d/emacs-for-python/epy-init.el")
 
 (setq skeleton-pair nil) ;; This stuff sucks.
 
@@ -242,7 +244,7 @@ Return a list of installed packages or nil for every package not installed."
 (global-set-key (kbd "C-c +") 'message-buffer-name)
 
 ;; Something will occasionally override this binding.
-(global-set-key "\C-cg" 'rope-goto-definition)
+(global-set-key "\C-cg" 'jedi:goto-definition)
 
 ;; Macros
 (fset 'ipdb "import ipdb; ipdb.set_trace()")

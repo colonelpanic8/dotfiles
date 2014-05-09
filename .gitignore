@@ -12,3 +12,4 @@ bookmarks
 elpa/*
 .dir-locals.el
 .mc-lists.el
+.python-environments/
