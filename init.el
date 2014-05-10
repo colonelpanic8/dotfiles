@@ -1,13 +1,14 @@
 ;; =============================================================================
-;; Ivan Malison
 ;;    ___ _ __ ___   __ _  ___ ___
 ;;   / _ \ '_ ` _ \ / _` |/ __/ __|
 ;;  |  __/ | | | | | (_| | (__\__ \
 ;; (_)___|_| |_| |_|\__,_|\___|___/
 ;; =============================================================================
 
-(setq user-full-name    "Ivan Malison")
-(setq user-mail-address "<IvanMalison@gmail.com>")
+(setq user-full-name
+      (replace-regexp-in-string "\n$" "" (shell-command-to-string "git config --get user.email")))
+(setq user-mail-address
+      (replace-regexp-in-string "\n$" "" (shell-command-to-string "git config --get user.name")))
 
 ;; =============================================================================
 ;;                                                       Load Path Configuration
@@ -16,9 +17,9 @@
 (if (not (file-exists-p "~/.emacs.d/elpa"))
     (make-directory "~/.emacs.d/elpa"))
 (let ((default-directory "~/.emacs.d/lisp/"))
-      (normal-top-level-add-subdirs-to-load-path))
+  (normal-top-level-add-subdirs-to-load-path))
 (let ((default-directory "~/.emacs.d/elpa/"))
-      (normal-top-level-add-subdirs-to-load-path))
+  (normal-top-level-add-subdirs-to-load-path))
 
 (add-to-list 'custom-theme-load-path "~/.emacs.d/elpa/")
 (require 'patches)
@@ -35,7 +36,7 @@
 (package-initialize)
 
 (defvar my-packages '(color-theme ctags ctags-update flymake mo-git-blame
-				  multiple-cursors no-easy-keys
+                                  multiple-cursors no-easy-keys
                                   starter-kit-bindings starter-kit-ruby
                                   starter-kit magit ido-ubiquitous
                                   find-file-in-project idle-highlight-mode
@@ -57,7 +58,7 @@ Return a list of installed packages or nil for every package not installed."
          package
        (progn (message (format "Installing package %s." package))
               (package-install package))))
-     packages))
+   packages))
 
 (ensure-package-installed my-packages)
 
@@ -161,16 +162,16 @@ Return a list of installed packages or nil for every package not installed."
 (defun flymake-pylint-init ()
   (let* ((temp-file (flymake-init-create-temp-buffer-copy
                      'flymake-create-temp-inplace))
-        (local-file (file-relative-name
-                     temp-file
-                     (file-name-directory buffer-file-name))))
-   (list "pyflakes" (list local-file))))
+         (local-file (file-relative-name
+                      temp-file
+                      (file-name-directory buffer-file-name))))
+    (list "pyflakes" (list local-file))))
 
 (add-to-list 'flymake-allowed-file-name-masks '("\\.py\\'" flymake-pylint-init))
 
-; Load flymake on non-temp buffers
+                                        ; Load flymake on non-temp buffers
 (add-hook 'python-mode-hook
-	  (lambda () (unless (or (eq buffer-file-name nil) (eq (file-name-directory buffer-file-name) nil)) (flymake-mode 1))))
+          (lambda () (unless (or (eq buffer-file-name nil) (eq (file-name-directory buffer-file-name) nil)) (flymake-mode 1))))
 
 ;; =============================================================================
 ;;                                                                        Python
@@ -270,7 +271,7 @@ Return a list of installed packages or nil for every package not installed."
     (while the-plist
       (add-to-list 'alist (get-tuple-from-plist the-plist))
       (setq the-plist (cddr the-plist)))
-  alist))
+    alist))
 
 ;; =============================================================================
 ;;                                                                    Appearance
