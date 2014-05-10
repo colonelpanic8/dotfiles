@@ -186,3 +186,8 @@ function fix_brew_htop() {
 function pip_package_location() {
     pip show $1 | grep Location | get_cols 2
 }
+
+function make_ensime() {
+    echo '\n\naddSbtPlugin("org.ensime" % "ensime-sbt-cmd" % "0.1.1")' >> project/plugins.sbt
+    sbt "ensime generate"
+}
