@@ -17,7 +17,7 @@
 	dtbmb = !git diff `git tb`...HEAD
 	root = rev-parse --show-toplevel
 	ignore = "!i() { printf \"\n$1\" >> "`git root`/.gitignore"; }; i"
-        ignore-untracked="!git untracked | xargs -n1 git ignore"
+	ignore-untracked="!git untracked | xargs -n1 git ignore"
 	power-clean = clean -ffd
 	db = !"db() { git diff HEAD~"$1"; }; db"
 
@@ -33,14 +33,15 @@
 	ffr = "!ffr() { git fetch $1 && git ff origin/$(git which-branch) && git suir; }; ffr"
 	ffo = !git ffr origin
 	reset-origin = "!r() { git reset --hard origin/\"$(git which-branch)\" && git suir; }; r"
+	reset-author ="!source ~/.lib/shellrc/functions.sh && git_reset_author"
 
 	# Credit an author on the latest commit
 	credit = "!f() { git commit --amend --author \"$1 <$2>\" -C HEAD; }; f"
 	# Interactive rebase with the given number of latest commits
 	reb = "!r() { git rebase -i HEAD~$1; }; r"
-        # Diff a file or show it in git's pager if it is untracked
-        du = "!d() { git ls-files $1 --error-unmatch 2>/dev/null 1>/dev/null && git diff $1 || `git config --get core.pager` $1; }; d"
-        clean-branches = "!r() { git branch -r --merged ${1-origin/master} | xargs -n1 git branch -d; }; r"
+	# Diff a file or show it in git's pager if it is untracked
+	du = "!d() { git ls-files $1 --error-unmatch 2>/dev/null 1>/dev/null && git diff $1 || `git config --get core.pager` $1; }; d"
+	clean-branches = "!r() { git branch -r --merged ${1-origin/master} | xargs -n1 git branch -d; }; r"
 
 [core]
 	# Use custom `.gitignore` and `.gitattributes`
