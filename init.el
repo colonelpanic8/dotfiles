@@ -43,7 +43,8 @@
                                   paredit inf-ruby undo-tree rainbow-delimiters
                                   smex solarized-theme zenburn-theme
                                   scala-mode2 ensime monokai-theme
-                                  gitconfig-mode jedi flymake-cursor pytest)
+                                  gitconfig-mode jedi flymake-cursor pytest
+                                  latex-preview-pane)
   "Packages that must be installed at launch.")
 
 (defun ensure-package-installed (packages)
@@ -257,6 +258,10 @@ Return a list of installed packages or nil for every package not installed."
 (global-set-key (kbd "C->") 'mc/mark-next-like-this)
 (global-set-key (kbd "C-<") 'mc/mark-previous-like-this)
 (global-set-key (kbd "C-c <") 'mc/mark-all-like-this)
+(global-set-key (kbd "C->") 'mc/mark-next-like-this)
+
+(global-set-key (kbd "C-_") 'undo)
+(global-set-key (kbd "C--") 'undo)
 
 ;; =============================================================================
 ;;                                                                 elisp Helpers
