@@ -98,6 +98,13 @@ function clipboard() {
     fi
 }
 
+function ospaste() {
+    if is_osx;
+    then
+        reattach-to-user-namespace pbpaste
+    fi
+}
+
 function git_root() {
     cd `git root`
 }
