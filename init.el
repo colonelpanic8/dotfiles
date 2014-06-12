@@ -135,6 +135,10 @@ Return a list of installed packages or nil for every package not installed."
   (interactive "r")
   (shell-command-on-region b e "source ~/.zshrc; cat | smart_copy"))
 
+(defun os-paste ()
+  (interactive)
+  (insert (shell-command-to-string "source ~/.zshrc; ospaste")))
+
 (defun all-copy (&optional b e)
   (interactive "r")
   (os-copy b e)
