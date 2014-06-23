@@ -33,6 +33,7 @@ function parse_options() {
 
     read -p "Symlinking files from $DOTFILES_DIRECTORY. This may overwrite existing files in your home directory. Do you wish to proceed? (y/n) " -n 1
     if [[ $REPLY =~ ^[Yy]$ ]]; then
+        echo
 	symlink_dotfiles
     fi
 }
