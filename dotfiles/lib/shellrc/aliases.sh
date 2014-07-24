@@ -1,5 +1,5 @@
 alias emacs="emacsclient -t"
-alias xemacs="emacsclient -c &"
+alias xemacs="\emacs --daemon > /dev/null 2&> /dev/null; emacsclient -c &"
 alias tmux="tmux -2"
 alias tmux_cb_to_remote_cb='tmux saveb - | linux_nc_paste_to_remote_clipboard'
 alias timestamp='date +%s'
@@ -21,7 +21,7 @@ alias ls="command ls ${colorflag}"
 
 # IP addresses
 alias ip="dig +short myip.opendns.com @resolver1.opendns.com"
-alias localip="ifconfig en0"
+alias localip="ifconfig | grep -Eo 'inet (addr:)?([0-9]*\.){3}[0-9]*' | grep -Eo '([0-9]*\.){3}[0-9]*' | grep -v '127.0.0.1'"
 
 alias whois="whois -h whois-servers.net"
 
