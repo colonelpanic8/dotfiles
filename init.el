@@ -119,6 +119,9 @@ Return a list of installed packages or nil for every package not installed."
 (add-hook 'after-init-hook
           '(lambda () (setq debug-on-error t)))
 
+(latex-preview-pane-enable)
+;; (add-hook 'latex-mode-hook (lambda () (global-set-key (kbd "M-n") ))
+
 ;; =============================================================================
 ;;                                                                          Misc
 ;; =============================================================================
@@ -144,6 +147,11 @@ Return a list of installed packages or nil for every package not installed."
   (os-copy b e)
   (tmux-copy b e)
   (kill-ring-save b e))
+
+(defun open-pdf ()
+  (interactive)
+  (let ( (pdf-file (replace-regexp-in-string "\.tex$" ".pdf" buffer-file-name)))
+    (shell-command (concat "open " pdf-file))))
 
 ;; =============================================================================
 ;;                                                                          tmux
@@ -216,8 +224,6 @@ Return a list of installed packages or nil for every package not installed."
 ;; =============================================================================
 
 ;;(load-file "~/.emacs.d/emacs-for-python/epy-init.el")
-
-(setq skeleton-pair nil) ;; This stuff sucks.
 
 ;; =============================================================================
 ;;                                                           Custom Key Bindings
