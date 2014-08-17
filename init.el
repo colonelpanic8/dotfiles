@@ -36,15 +36,14 @@
 (package-initialize)
 
 (defvar my-packages '(color-theme ctags ctags-update flymake mo-git-blame
-                                  multiple-cursors no-easy-keys
+                                  multiple-cursors latex-preview-pane
                                   starter-kit-bindings starter-kit-ruby
                                   starter-kit magit ido-ubiquitous
                                   find-file-in-project idle-highlight-mode
                                   paredit inf-ruby undo-tree rainbow-delimiters
                                   smex solarized-theme zenburn-theme
                                   scala-mode2 ensime monokai-theme
-                                  gitconfig-mode jedi flymake-cursor pytest
-                                  latex-preview-pane)
+                                  gitconfig-mode jedi flymake-cursor pytest)
   "Packages that must be installed at launch.")
 
 (defun ensure-package-installed (packages)
@@ -91,10 +90,6 @@ Return a list of installed packages or nil for every package not installed."
 ;; Don't disable downcase and upcase region.
 (put 'upcase-region 'disabled nil)
 (put 'downcase-region 'disabled nil)
-
-;; Don't allow arrow keys
-(require 'no-easy-keys)
-(no-easy-keys 1)
 
 ;; Change the behavior of M-<arrow> so that it stops on underscores.
 (defun change-major-mode-hook () (modify-syntax-entry ?_ "_"))
@@ -240,8 +235,7 @@ Return a list of installed packages or nil for every package not installed."
 (fset 'main "if __name__ == '__main__':")
 ;; Miscellaneous
 (global-set-key (kbd "C-x C-b") 'buffer-menu)
-(global-set-key (kbd "C-x w") 'whitespace-mode)
-(global-set-key (kbd "C-c w") 'tmux-copy)
+(global-set-key (kbd "C-c w") 'whitespace-mode)
 (global-set-key (kbd "C-x C-r") (lambda () (interactive) (revert-buffer t t)))
 (global-set-key (kbd "M-g") 'goto-line)
 (global-set-key (kbd "C-c C-c") 'comment-dwim)
