@@ -1,4 +1,4 @@
-0;95;c# ssh, scp, ping, host
+# ssh, scp, ping, host
 zstyle ':completion:*:scp:*' tag-order \
       'hosts:-host hosts:-domain:domain hosts:-ipaddr:IP\ address *'
 zstyle ':completion:*:scp:*' group-order \
