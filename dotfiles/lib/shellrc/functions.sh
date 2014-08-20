@@ -231,3 +231,7 @@ function make_me_synergy() {
 function clear_synergy() {
     pgrep synergy | xargs kill
 }
+
+function activate_synergy_for() {
+    synergys --config ~/synergy.conf && ssh $1 "source ~/.zshrc && make_me_synergy"
+}
