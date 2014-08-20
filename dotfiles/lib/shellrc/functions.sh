@@ -228,8 +228,21 @@ function make_me_synergy() {
     synergyc $new_host_name
 }
 
-function clear_synergy() {
+function stop_synergy_at() {
+    pgrep synergys | xargs kill
+    ssh $1 "source ~/.zshrc && clear_my_synergy"
+}
+
+function clear_all_synergy() {
     pgrep synergy | xargs kill
+}
+
+function clear_my_synergy() {
+    clear_synergy_for_ip "$(echo $SSH_CONNECTION | get_cols 1)"
+}
+
+function clear_synergy_for_ip() {
+    ps aux | grep -e synergyc | grep $1 | get_cols 2 | xargs kill
 }
 
 function activate_synergy_for() {
