@@ -198,3 +198,36 @@ function make_ensime() {
     echo '\n\naddSbtPlugin("org.ensime" % "ensime-sbt-cmd" % "0.1.1")' >> project/plugins.sbt
     sbt "ensime generate"
 }
+
+function set_modifier_keys_for_vendor_product_id() {
+    defaults -currentHost write -g com.apple.keyboard.modifiermapping.$1-0 '(
+{
+  HIDKeyboardModifierMappingDst = 2;
+  HIDKeyboardModifierMappingSrc = 0;
+})'
+}
+
+function set_modifier_keys_on_all_keyboards() {
+    for vendor_product_id in $(get_keyboard_vendor_id_product_id_pairs | tr " " "-"); do set_modifier_keys_for_vendor_product_id $vendor_product_id; echo $vendor_product_id; done;
+}
+
+function get_keyboard_vendor_id_product_id_pairs() {
+    ioreg -n IOHIDKeyboard -r | grep -e 'class IOHIDKeyboard' -e VendorID\" -e Product | gawk 'BEGIN { RS = "class IOHIDKeyboard" } match($0, /VendorID. = ([0-9]*)/, arr) { printf arr[1]} match($0, /ProductID. = ([0-9]*)/, arr) { printf " %s\n", arr[1]} '
+}
+
+function make_me_synergy() {
+    local new_host_name="$(echo $SSH_CONNECTION | get_cols 1)"
+    while getopts "h:" OPTCHAR; do
+        case $OPTCHAR in
+            h)
+                new_host_name="$OPTARG";
+                return
+                ;;
+        esac
+    done
+    synergyc $new_host_name
+}
+
+function clear_synergy() {
+    pgrep synergy | xargs kill
+}
