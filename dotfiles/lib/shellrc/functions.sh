@@ -1,3 +1,14 @@
+function go2dotfiles() {
+    cd $(dirname `readlink -f ~/.zshrc | xargs dirname`)
+}
+
+function update_dotfiles() {
+    local old_pwd=$(pwd)
+    go2dotfiles
+    git ffo
+    cd $old_pwd
+}
+
 function current_shell() {
     readlink -f $(which "$(ps -p $$ | tail -1 | awk '{print $NF}' | sed 's/\-//')")
 }
