@@ -8,3 +8,4 @@ ropemacs
 ropemode
 pyflakes
 simplejson
+ouimeaux
