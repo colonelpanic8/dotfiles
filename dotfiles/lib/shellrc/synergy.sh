@@ -8,7 +8,7 @@ function make_me_synergy() {
                 ;;
         esac
     done
-    test -z $(get_synergy_pids_for_ip) && synergyc $new_host_name
+    test -z $(get_synergy_pids_for_ip $new_host_name) && synergyc $new_host_name
 }
 
 function stop_synergy_at() {
@@ -25,6 +25,7 @@ function clear_my_synergy() {
 }
 
 function get_synergy_pids_for_ip() {
+    echo $1
     ps aux | grep synergyc | grep $1 | get_cols 2
 }
 
@@ -33,5 +34,6 @@ function clear_synergy_for_ip() {
 }
 
 function activate_synergy_for() {
-    synergys --config ~/synergy.conf && ssh $1 "source ~/.zshrc && make_me_synergy"
+    test -z $(pgrep synergys) && synergys --config ~/synergy.conf
+    ssh $1 "source ~/.zshrc && make_me_synergy"
 }
