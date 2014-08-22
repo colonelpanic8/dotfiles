@@ -8,7 +8,7 @@ function make_me_synergy() {
                 ;;
         esac
     done
-    test -z $(get_synergy_pids_for_ip $new_host_name) && synergyc $new_host_name
+    test -z "$(get_synergy_pids_for_ip $new_host_name)" && synergyc $new_host_name
 }
 
 function stop_synergy_at() {
@@ -25,7 +25,6 @@ function clear_my_synergy() {
 }
 
 function get_synergy_pids_for_ip() {
-    echo $1
     ps aux | grep synergyc | grep $1 | get_cols 2
 }
 
