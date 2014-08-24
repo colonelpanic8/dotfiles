@@ -233,6 +233,7 @@ Return a list of installed packages or nil for every package not installed."
 ;; Macros
 (fset 'ipdb "import ipdb; ipdb.set_trace()")
 (fset 'main "if __name__ == '__main__':")
+
 ;; Miscellaneous
 (global-set-key (kbd "C-x C-b") 'buffer-menu)
 (global-set-key (kbd "C-c w") 'whitespace-mode)
@@ -251,6 +252,8 @@ Return a list of installed packages or nil for every package not installed."
 
 ;; Something will occasionally override this binding.
 (global-set-key "\C-cg" 'jedi:goto-definition)
+
+(global-unset-key (kbd "C-o"))
 
 ;; Macros
 (fset 'ipdb "import ipdb; ipdb.set_trace()")
