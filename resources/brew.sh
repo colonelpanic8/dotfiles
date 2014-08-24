@@ -44,6 +44,7 @@ brew link daemonize
 brew install ngrep
 brew install gist
 brew install gawk
+brew install pstree
 
 # Remove outdated versions from the cellar
 brew cleanup
