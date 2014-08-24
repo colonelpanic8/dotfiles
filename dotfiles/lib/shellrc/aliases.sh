@@ -1,4 +1,3 @@
-alias startss='open -a /System/Library/Frameworks/ScreenSaver.framework/Versions/A/Resources/ScreenSaverEngine.app'
 alias emacs="emacsclient -t"
 alias xemacs="\emacs --daemon > /dev/null 2&> /dev/null; emacsclient -c &"
 alias tmux="tmux -2"
