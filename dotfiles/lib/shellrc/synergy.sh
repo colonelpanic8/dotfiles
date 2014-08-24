@@ -12,12 +12,12 @@ function make_me_synergy() {
 }
 
 function stop_synergy_at() {
-    pgrep synergys | xargs kill
+    pgrep synergys | xargs kill -9
     ssh $1 "source ~/.zshrc && clear_my_synergy"
 }
 
 function clear_all_synergy() {
-    pgrep synergy | xargs kill
+    pgrep synergy | xargs kill -9
 }
 
 function clear_my_synergy() {
@@ -29,7 +29,7 @@ function get_synergy_pids_for_ip() {
 }
 
 function clear_synergy_for_ip() {
-    get_synergy_pids_for_ip $1 | xargs kill
+    get_synergy_pids_for_ip $1 | xargs kill -9
 }
 
 function activate_synergy_for() {
