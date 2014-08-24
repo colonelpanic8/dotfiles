@@ -33,6 +33,6 @@ function clear_synergy_for_ip() {
 }
 
 function activate_synergy_for() {
-    test -z $(pgrep synergys) && synergys --config ~/synergy.conf
+    test -z "$(pgrep synergys)" && synergys --config ~/synergy.conf
     ssh $1 "source ~/.zshrc && make_me_synergy"
 }
