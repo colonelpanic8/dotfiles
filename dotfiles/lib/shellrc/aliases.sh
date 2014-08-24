@@ -45,4 +45,4 @@ done
 
 alias stfu="osascript -e 'set volume output muted true'"
 alias pumpitup="osascript -e 'set volume 7'"
-alias pip-upgrap="pip freeze --local | get_cols -F "=" 1 | xargs -n1 sudo pip install -U"
+alias pip-upgrade="pip freeze --local | get_cols -F "=" 1 | xargs -n1 sudo pip install -U"

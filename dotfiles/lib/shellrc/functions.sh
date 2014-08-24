@@ -227,5 +227,11 @@ function get_keyboard_vendor_id_product_id_pairs() {
 }
 
 function startss() {
-    open -a /System/Library/Frameworks/ScreenSaver.framework/Versions/A/Resources/ScreenSaverEngine.app
+    #reattach-to-user-namespace "/System/Library/Frameworks/ScreenSaver.framework/Versions/A/Resources/ScreenSaverEngine.app/Contents/MacOS/ScreenSaverEngine" &
+    #reattach-to-user-namespace "zsh" -c "source ~/.zshrc && ssosa"
+    reattach-to-user-namespace "open" "/System/Library/Frameworks/ScreenSaver.framework/Versions/A/Resources/ScreenSaverEngine.app"
+}
+
+function ssosa() {
+    osascript -e "tell application \"/System/Library/Frameworks/ScreenSaver.framework/Versions/A/Resources/ScreenSaverEngine.app\" to activate"
 }
