@@ -1,6 +1,7 @@
 alias emacs="emacsclient -t"
 alias xemacs="\emacs --daemon > /dev/null 2&> /dev/null; emacsclient -c &"
 alias tmux="tmux -2"
+reload_tmux_conf="tmux source-file .tmux.conf"
 alias tmux_cb_to_remote_cb='tmux saveb - | linux_nc_paste_to_remote_clipboard'
 alias timestamp='date +%s'
 alias fn='find . -name '
