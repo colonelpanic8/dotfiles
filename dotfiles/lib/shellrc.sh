@@ -13,3 +13,6 @@ add_to_front_of_path "/usr/local/bin"
 for filename in ~/.lib/shellrc/*; do
     source $filename
 done
+
+# Access gnu man pages.
+MANPATH="$HOMEBREW_PREFIX/opt/coreutils/libexec/gnuman:$MANPATH"

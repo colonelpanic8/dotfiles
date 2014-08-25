@@ -1,0 +1,245 @@
+" General " {{{
+
+    colorscheme molokai
+    set background=dark
+    set number
+    set showmode                   " display the current mode
+    set wrap                       " always wrap
+    set title                      " show title in console title bar
+    set laststatus=2               " always show statusline
+
+    " highlighting
+    syntax enable
+    set showmatch                   " highlight block ends
+    set cursorline                  " highlight the cursor line
+
+    " display tabs and trailing whitespace
+    set list
+    set listchars=tab:⇥·,trail:·
+    match Error /\v\s+$/            " use the Error colors for trailing whitespace
+
+    " indents
+    set cindent
+    set autoindent
+    set indentkeys-=0#              " do not break indent on #
+    set tabstop=4
+
+    if has('mac')
+        set expandtab
+        set shiftwidth=4
+    endif
+
+    " tab completion
+    set wildmenu
+    set wildmode=full
+
+    " no backup
+    set nobackup
+    set nowritebackup
+    set noswapfile
+
+    " search
+    set ignorecase                  " case insensitive search
+    set smartcase                   " upper case search only matches uppercase
+    set hlsearch                    " highlight search results
+    set incsearch                   " search as you type
+    set scrolljump=5                " lines to scroll when cursor leaves screen
+    set scrolloff=3                 " minimum lines to keep above and below cursor
+
+    " windows
+    set equalalways
+    set splitbelow splitright
+
+    " ignore these
+    set wildignore=.svn,CVS,.git,.hg
+    set wildignore+=*.o,*.a,*.class,*.mo,*.la,*.so,*.obj
+    set wildignore+=*.sw*,*.jpg,*.png,*.xpm,*.gif
+    set wildignore+=*.pyc,*templates/*.py,*.log
+
+    set mouse=a
+
+    " line at 80
+    if exists("&colorcolumn")
+        set colorcolumn=80
+    endif
+
+" }}}
+
+" Remaps " {{{
+
+    " strip trailing whitespace (\ss)
+    function! StripWhitespace()
+        let save_cursor = getpos(".")
+        let old_query = getreg('/')
+        :%s/\s\+$//e
+        call setpos('.', save_cursor)
+        call setreg('/', old_query)
+    endfunction
+    noremap <leader>ss :call StripWhitespace()<CR>
+
+    " ipdb
+    map <leader>db A<CR>import ipdb; ipdb.set_trace()<ESC>
+
+    " pastebinit
+    map <leader>pb :w !pastebinit -<CR>
+
+    " directory of current buffer
+    cnoremap $$ <C-R>=expand('%:h').'/'<cr>
+
+    " one keystroke to change buffers
+    map <C-h> <C-w>h
+    map <C-j> <C-w>j
+    map <C-k> <C-w>k
+    map <C-l> <C-w>l
+
+" }}}
+
+" Bundles " {{{
+
+    filetype off
+
+    set rtp+=~/.vim/bundle/vundle/
+    call vundle#rc()
+
+    Bundle 'gmarik/vundle'
+
+    " CamelCaseMotion " {{{
+
+        Bundle 'bkad/CamelCaseMotion'
+
+        " Replace the default 'w', 'b' and 'e' mappings for CamelCase (and_underscore)
+        map <silent> w <Plug>CamelCaseMotion_w
+        map <silent> b <Plug>CamelCaseMotion_b
+        map <silent> e <Plug>CamelCaseMotion_e
+        sunmap w
+        sunmap b
+        sunmap e
+
+        " Replace default 'iw' text-object and define 'ib' and 'ie' motions:
+        omap <silent> iw <Plug>CamelCaseMotion_iw
+        xmap <silent> iw <Plug>CamelCaseMotion_iw
+        omap <silent> ib <Plug>CamelCaseMotion_ib
+        xmap <silent> ib <Plug>CamelCaseMotion_ib
+        omap <silent> ie <Plug>CamelCaseMotion_ie
+        xmap <silent> ie <Plug>CamelCaseMotion_ie
+
+    " }}}
+
+    " Programming " {{{
+
+        Bundle 'vim-scripts/python.vim'
+        let python_highlight_all = 1
+
+    " }}}
+
+
+    " Powerline " {{{
+
+        Bundle 'Lokaltog/vim-powerline'
+
+    " }}}
+
+    " Neocomplcache " {{{
+
+        Bundle 'vim-scripts/neocomplcache'
+        let g:neocomplcache_enable_at_startup = 1
+
+    " }}}
+
+    " TagBar " {{{
+
+        Bundle 'majutsushi/tagbar'
+        nmap \t :TagbarOpen['j']<CR>
+
+    " }}}
+
+    " CtrlP " {{{
+
+        Bundle 'kien/ctrlp.vim'
+        let g:ctrlp_working_path_mode = 'ra'
+        let g:ctrlp_user_command = 'find %s -type f'
+        let g:ctrlp_custom_ignore = {
+            \ 'dir':  '\v[\/]\.(git|hg|svn)$',
+            \ 'file': '\v\.(exe|so|dll)$',
+            \ }
+
+        " CommandT
+        map \e :CommandT<cr>
+        let g:CommandTMaxFiles=100000
+
+    " }}}
+
+    " jedi-vim " {{{
+
+        Bundle 'davidhalter/jedi-vim'
+        let g:jedi#use_tabs_not_buffers = 0
+        let g:jedi#popup_on_dot = 0
+
+        " disable auto select first candidate in popup menu
+        inoremap <buffer> . .<C-R>=jedi#do_popup_on_dot() ? "\<lt>C-X>\<lt>C-O>\<lt>C-P>" : ""<CR>
+
+    " }}}
+
+    " Git " {{{
+
+        Bundle 'tpope/vim-fugitive'
+
+        nnoremap <leader>b :Gblame<CR>
+
+    " }}}
+
+    " Syntax " {{{
+
+        " Bundle 'vim-scripts/Syntastic'
+        Bundle 'pyflakes.vim'
+
+    " }}}
+
+    " Rainbow Parens {{{
+
+        Bundle 'kien/rainbow_parentheses.vim'
+
+        au VimEnter * RainbowParenthesesToggle
+        au Syntax * RainbowParenthesesLoadRound
+        au Syntax * RainbowParenthesesLoadSquare
+        au Syntax * RainbowParenthesesLoadBraces
+
+        let g:rbpt_colorpairs = [
+            \ ['brown',       'RoyalBlue3'],
+            \ ['Darkblue',    'SeaGreen3'],
+            \ ['darkgray',    'DarkOrchid3'],
+            \ ['darkgreen',   'firebrick3'],
+            \ ['darkcyan',    'RoyalBlue3'],
+            \ ['darkred',     'SeaGreen3'],
+            \ ['darkmagenta', 'DarkOrchid3'],
+            \ ['brown',       'firebrick3'],
+            \ ['gray',        'RoyalBlue3'],
+            \ ['black',       'SeaGreen3'],
+            \ ['darkmagenta', 'DarkOrchid3'],
+            \ ['Darkblue',    'firebrick3'],
+            \ ['darkgreen',   'RoyalBlue3'],
+            \ ['darkcyan',    'SeaGreen3'],
+            \ ['darkred',     'DarkOrchid3'],
+            \ ['red',         'firebrick3'],
+            \ ]
+
+    " }}}
+
+    " move " {{{
+
+        Bundle 'vim-scripts/move'
+
+    " }}}
+
+    filetype plugin indent on
+
+" }}}
+
+" Commented Shit " {{{
+"
+"   CommandT
+"   map \e :CommandT<cr>
+"   let g:CommandTMaxFiles=100000
+"
+" }}}
+

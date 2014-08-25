@@ -1,3 +1,9 @@
+function dotfiles_abspath() {
+    readlink_command='readlink'
+command -v greadlink > /dev/null && readlink_command="greadlink"
+    echo "$(${readlink_command} -f "$BASH_SOURCE" | xargs dirname | xargs dirname)"
+}
+
 function go2dotfiles() {
     cd $(dirname `readlink -f ~/.zshrc | xargs dirname`)
 }
@@ -193,12 +199,6 @@ function set_osx_hostname() {
     sudo scutil --set HostName $new_hostname
     sudo scutil --set LocalHostName $new_hostname
     sudo defaults write /Library/Preferences/SystemConfiguration/com.apple.smb.server NetBIOSName -string $new_hostname
-}
-
-function fix_brew_htop() {
-    chmod 777 $(readlink -f `which htop`)
-    sudo chown root $(readlink -f `which htop`)
-    sudo chmod 6555 `which htop`
 }
 
 function pip_package_location() {
