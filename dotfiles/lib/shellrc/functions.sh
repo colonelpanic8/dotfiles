@@ -226,3 +226,7 @@ function get_keyboard_vendor_id_product_id_pairs() {
 function ss() {
     osascript -e "tell application \"/System/Library/Frameworks/ScreenSaver.framework/Versions/A/Resources/ScreenSaverEngine.app\" to activate"
 }
+
+function git_config_string() {
+    git config -f $1 --list | xargs -I kv sh -c "echo "\'kv\'""
+}
