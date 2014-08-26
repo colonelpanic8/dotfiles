@@ -22,3 +22,6 @@ TAGS
 run_tests.sh
 untracked/
 .ropeproject/
+
+*.sw*
+*.tmp*
