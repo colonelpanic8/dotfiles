@@ -230,3 +230,10 @@ function ss() {
 function git_config_string() {
     git config -f $1 --list | xargs -I kv sh -c "echo "\'kv\'""
 }
+
+function brew_for_multiple_user() {
+    sudo chgrp -R admin /usr/local
+    sudo chmod -R g+w /usr/local
+    sudo chgrp -R admin /Library/Caches/Homebrew
+    sudo chmod -R g+w /Library/Caches/Homebrew
+}
