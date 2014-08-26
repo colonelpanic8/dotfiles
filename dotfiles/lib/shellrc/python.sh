@@ -1,4 +1,5 @@
 function install_python_packages() {
+    easy_install pip
     ESSENTIAL=(ipdb ipython virtualenv)
     FOR_EDITOR=(jedi pyflakes)
     USEFUL=(

@@ -228,10 +228,10 @@ function ss() {
 }
 
 function git_config_string() {
-    git config -f $1 --list | xargs -I kv sh -c "echo \\\"kv\\\"" | xargs | tr '\n' ' '
+    git config -f $1 --list | xargs -I kv printf '-c \"%s\" ' kv
 }
 
-function brew_for_multiple_user() {
+function brew_for_multiple_users() {
     sudo chgrp -R admin /usr/local
     sudo chmod -R g+w /usr/local
     sudo chgrp -R admin /Library/Caches/Homebrew
