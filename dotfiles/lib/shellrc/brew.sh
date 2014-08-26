@@ -1,10 +1,11 @@
 function brew_install_items() {
+    echo $@
     for package_install_string in $@;
     do
         # Horrible hack to induce word splitting.
         eval "package_args=($package_install_string)"
         brew install $package_args;
-        brew link $package_args[0];
+        brew link $package_args[1];
     done
 }
 
@@ -25,6 +26,7 @@ function do_the_brew() {
         "greadlink"
         "vim --override-system-vi"
         "zsh"
+        "make"
     )
     # `find`, `locate`, `updatedb`, and `xargs`, g-prefixed
     # core utilities (those that come with OS X are outdated)
@@ -47,7 +49,6 @@ function do_the_brew() {
         "wget --enable-iri"
     )
     SHOULD_INSTALL=(
-        "watch"
         "nmap"
         "readline"
         "netcat"
@@ -61,7 +62,10 @@ function do_the_brew() {
         "hub"
         "tig"
         "heroku"
-        "make"
+        "scala"
+        "sbt"
+        "node"
+        "npm"
     )
     MISC=(
         "file-formula"
@@ -69,48 +73,51 @@ function do_the_brew() {
         "less"
         "openssh --with-brewed-openssl"
         "perl518"
-        "python --with-brewed-openssl"
         "rsync"
         "svn"
         "unzip"
         "macvim --override-system-vim --custom-system-icons"
     )
-    SCALA=(scala sbt)
-    JAVASCRIPT=(node npm)
 
-    brew update
-    brew tap homebrew/dupes
-    brew install homebrew/dupes/grep
-    while getopts "uebsma" OPTCHAR;
+    install_items=()
+    while getopts "uebsmah" OPTCHAR;
     do
         case $OPTCHAR in
             u)
                 brew upgrade
                 ;;
             e)
-                brew_install_items $ESSENTIAL
+                install_items=("${install_items[@]}" "${ESSENTIAL[@]}")
                 fix_brew_htop
                 ;;
             b)
-                brew_install_items $BASICS
+                install_items=("${install_items[@]}" "${BASICS[@]}")
                 ;;
             s)
-                brew_install_items $SHOULD_INSTALL
+                install_items=("${install_items[@]}" "${SHOULD_INSTALL[@]}")
                 ;;
             m)
-                brew_install_items $MISC
-                brew_install_items $SCALA
-                brew_install_items $JAVASCRIPT
+                install_items=("${install_items[@]}" "${MISC[@]}")
                 ;;
             a)
-                brew_install_items $ESSENTIAL
-                brew_install_items $BASICS
-                brew_install_items $SHOULD_INSTALL
-                brew_install_items $MISC
-                brew_install_items $SCALA
-                brew_install_items $JAVASCRIPT
+                install_items=("${install_items[@]}" "${ESSENTIAL[@]}" "${BASICS[@]}" "${SHOULD_INSTALL[@]}" "${MISC[@]}")
                 ;;
+            h)
+                echo "Usage:
+-a install all packages.
+-u upgrade brew packages.
+-e install essential packages
+-b install GNU basics including replacements for non GNU versions included in OSX.
+-s install a wider range of packages.
+-m install very non-essential packages.
+-h display this help message.
+"
+                return
         esac
     done
+    echo "Installing:"
+    for package_name in $install_items; do echo $package_name; done;
+    brew update
+    brew_install_items $install_items
     brew cleanup
 }

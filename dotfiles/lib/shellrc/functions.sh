@@ -226,12 +226,6 @@ function get_keyboard_vendor_id_product_id_pairs() {
     ioreg -n IOHIDKeyboard -r | grep -e 'class IOHIDKeyboard' -e VendorID\" -e Product | gawk 'BEGIN { RS = "class IOHIDKeyboard" } match($0, /VendorID. = ([0-9]*)/, arr) { printf arr[1]} match($0, /ProductID. = ([0-9]*)/, arr) { printf " %s\n", arr[1]} '
 }
 
-function startss() {
-    #reattach-to-user-namespace "/System/Library/Frameworks/ScreenSaver.framework/Versions/A/Resources/ScreenSaverEngine.app/Contents/MacOS/ScreenSaverEngine" &
-    #reattach-to-user-namespace "zsh" -c "source ~/.zshrc && ssosa"
-    reattach-to-user-namespace "open" "/System/Library/Frameworks/ScreenSaver.framework/Versions/A/Resources/ScreenSaverEngine.app"
-}
-
-function ssosa() {
+function ss() {
     osascript -e "tell application \"/System/Library/Frameworks/ScreenSaver.framework/Versions/A/Resources/ScreenSaverEngine.app\" to activate"
 }

@@ -33,3 +33,11 @@ function install_pygame() {
     brew install sdl sdl_image sdl_mixer sdl_ttf portmidi 
     /usr/local/share/python/pip install hg+http://bitbucket.org/pygame/pygame
 }
+
+function install_powerline() {
+    hash pip 2>/dev/null || sudo easy_install pip
+    if test -z $(pip show Powerline | grep Location | awk '{print $2}');
+    then
+        sudo pip install --user git+git://github.com/Lokaltog/powerline
+    fi
+}
