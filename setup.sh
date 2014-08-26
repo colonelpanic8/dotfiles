@@ -63,23 +63,30 @@ function setup_help() {
 -h display this help message."
 }
 
+function get_command_line_tools() {
+    hash gcc 2> /dev/null || xcode-select --install
+}
+
 function setup() {
     if [[ $# -eq 0 ]] ; then
         setup_help
         exit 0
     fi
-    while getopts "aosbpev" OPTCHAR;
+    while getopts "acosbpev" OPTCHAR;
     do
         case $OPTCHAR in
             a)
                 source resources/apt-get.sh
                 ;;
             b)
-                do_the_brew_help
-                read -p "Enter flags for brew package installation:
+                get_command_line_tools
+                if get_brew; then
+                    do_the_brew_help
+                    read -p "Enter flags for brew package installation:
 "
-                [[ $REPLY[0] != '-' ]] && REPLY="-$REPLY"
-                do_the_brew $REPLY
+                    [[ $REPLY[0] != '-' ]] && REPLY="-$REPLY"
+                    do_the_brew $REPLY
+                fi
                 ;;
             o)
                 sudo -v
@@ -99,7 +106,8 @@ function setup() {
             e)
                 case uname in
                     Darwin)
-                        do_the_brew -au
+                        get_command_line_tools
+                        get_brew && do_the_brew -au
                         ;;
                     Linux)
                         apt-get
