@@ -7,6 +7,16 @@ DOTFILES_DIRECTORY="$(dotfiles_abspath)/dotfiles"
 
 
 function symlink_dotfiles() {
+    local overwrite=''
+    OPTIND=1
+    while getopts "o" OPTCHAR;
+    do
+        case $OPTCHAR in
+            o)
+                overwrite='yes'
+                ;;
+        esac
+    done
     cd $DOTFILES_DIRECTORY
     [ -a ~/.dotfiles-backups ] && mv ~/.dotfiles-backups ~/.dotfiles-backups.old
     mkdir ~/.dotfiles-backups
@@ -16,19 +26,28 @@ function symlink_dotfiles() {
         echo "linking $link_destination to $link_target"
         # Using only test -e doesn't work here because it will return
         # false if the destination of the symbolic link at does not exist.
-        test -e $link_destination || test -L $link_destination && mv $link_destination ~/.dotfiles-backups
-        ln -si $link_target $link_destination
+        test -e $link_destination || test -L $link_destination && test $overwrite && mv $link_destination ~/.dotfiles-backups && ln -si $link_target $link_destination
     done
     [ -a ~/.dotfiles-backups.old ] && mv ~/.dotfiles-backups.old ~/.dotfiles-backups/.dotfiles-backups
 }
 
 
 function symlink_dotfiles_prompt() {
-    read -p "Symlinking files from $DOTFILES_DIRECTORY. This may overwrite existing files in your home directory. Do you wish to proceed? (y/n) " -n 1
+    read -p "Symlinking files from $DOTFILES_DIRECTORY. This ? (y/n) " -n 1
     if [[ $REPLY =~ ^[Yy]$ ]]; then
         echo
 	symlink_dotfiles
     fi
+}
+
+function apt-get() {
+    INSTALL="sudo apt-get -y install"
+    $INSTALL zsh
+    $INSTALL tmux
+    $INSTALL emacs24-nox
+    $INSTALL nmap
+    $INSTALL python2.7
+    $INSTALL python-pip python-dev
 }
 
 function setup_help() {
@@ -38,6 +57,7 @@ function setup_help() {
 -s Symlink dotfiles to home directory.
 -b Install brew packages.
 -p Install python packages.
+-e Do absolutely everything with the most aggresive options.
 -h display this help message."
 }
 
@@ -46,7 +66,7 @@ function setup() {
         setup_help
         exit 0
     fi
-    while getopts "aosbp" OPTCHAR;
+    while getopts "aosbpe" OPTCHAR;
     do
         case $OPTCHAR in
             a)
@@ -73,6 +93,19 @@ function setup() {
                     REPLY="-$REPLY"
                 fi
                 install_python_packages $REPLY
+                ;;
+            e)
+                case uname in
+                    Darwin)
+                        do_the_brew -au
+                        ;;
+                    Linux)
+                        apt-get
+                        ;;
+                esac
+                install_python_packages -a
+                symlink_dotfiles
+                source resources/osx.sh
                 ;;
             h)
                 setup_help

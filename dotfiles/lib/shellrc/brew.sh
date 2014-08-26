@@ -25,9 +25,9 @@ function do_the_brew() {
         "python --with-brewed-openssl" \
         "htop" \
         "greadlink" \
-        "vim --override-system-vi" \
         "zsh" \
         "make" \
+        "macvim --override-system-vim --custom-system-icons --with-features=huge --enable-rubyinterp --enable-pythoninterp --enable-perlinterp --enable-cscope" \
     )
     # `find`, `locate`, `updatedb`, and `xargs`, g-prefixed
     # core utilities (those that come with OS X are outdated)
@@ -75,12 +75,10 @@ function do_the_brew() {
         "rsync" \
         "svn" \
         "unzip" \
-        "macvim --override-system-vim --custom-system-icons" \
     )
 
     install_items=()
     OPTIND=1
-    echo "${MISC[@]}"
     while getopts "uebsmah" OPTCHAR;
     do
         case $OPTCHAR in
