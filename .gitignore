@@ -1,2 +1,3 @@
 .ropeproject
 dotfiles/vim/bundle/*
+dotfiles/vim/.netrwhist
