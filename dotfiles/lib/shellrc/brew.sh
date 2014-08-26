@@ -1,11 +1,13 @@
 function brew_install_items() {
-    echo $@
     for package_install_string in $@;
     do
-        # Horrible hack to induce word splitting.
-        eval "package_args=($package_install_string)"
+        package_args=$package_install_string
+        if is_zsh;
+            then
+            # Horrible hack to induce word splitting.
+            eval "package_args=($package_install_string)"
+        fi
         brew install $package_args;
-        brew link $package_args[1];
     done
 }
 
@@ -18,68 +20,67 @@ function fix_brew_htop() {
 
 function do_the_brew() {
     ESSENTIAL=(
-        "emacs"
-        "git"
-        "tmux"
-        "python --with-brewed-openssl"
-        "htop"
-        "greadlink"
-        "vim --override-system-vi"
-        "zsh"
-        "make"
+        "emacs" \
+        "tmux" \
+        "python --with-brewed-openssl" \
+        "htop" \
+        "greadlink" \
+        "vim --override-system-vi" \
+        "zsh" \
+        "make" \
     )
     # `find`, `locate`, `updatedb`, and `xargs`, g-prefixed
     # core utilities (those that come with OS X are outdated)
     BASICS=(
-        "findutils"
-        "coreutils"
-        "binutils"
-        "diffutils"
-        "ed --default-names"
-        "gawk"
-        "gnu-indent --default-names"
-        "gnu-sed --default-names"
-        "gnu-tar --default-names"
-        "gnu-which --default-names"
-        "gnutls --default-names"
-        "grep --default-names"
-        "gzip"
-        "watch"
-        "wdiff --with-gettext"
-        "wget --enable-iri"
+        "findutils" \
+        "coreutils" \
+        "binutils" \
+        "diffutils" \
+        "ed --default-names" \
+        "gawk" \
+        "gnu-indent --default-names" \
+        "gnu-sed --default-names" \
+        "gnu-tar --default-names" \
+        "gnu-which --default-names" \
+        "gnutls --default-names" \
+        "grep --default-names" \
+        "gzip" \
+        "watch" \
+        "wdiff --with-gettext" \
+        "wget --enable-iri" \
     )
     SHOULD_INSTALL=(
-        "nmap"
-        "readline"
-        "netcat"
-        "reattach-to-user-namespace"
-        "daemonize"
-        "ngrep"
-        "gist"
-        "gawk"
-        "pstree"
-        "ack"
-        "hub"
-        "tig"
-        "heroku"
-        "scala"
-        "sbt"
-        "node"
-        "npm"
+        "nmap" \
+        "readline" \
+        "netcat" \
+        "reattach-to-user-namespace" \
+        "daemonize" \
+        "ngrep" \
+        "gist" \
+        "gawk" \
+        "pstree" \
+        "ack" \
+        "hub" \
+        "tig" \
+        "heroku" \
+        "scala" \
+        "sbt" \
+        "node" \
+        "npm" \
     )
-    MISC=(
-        "file-formula"
-        "git"
-        "less"
-        "openssh --with-brewed-openssl"
-        "perl518"
-        "rsync"
-        "svn"
-        "unzip"
-        "macvim --override-system-vim --custom-system-icons"
+    MISC=("file-formula" \
+        "less" \
+        "openssh --with-brewed-openssl" \
+        "perl518" \
+        "rsync" \
+        "svn" \
+        "unzip" \
+        "macvim --override-system-vim --custom-system-icons" \
     )
 
     install_items=()
+    OPTIND=1
+    echo "${MISC[@]}"
     while getopts "uebsmah" OPTCHAR;
     do
         case $OPTCHAR in
@@ -103,7 +104,20 @@ function do_the_brew() {
                 install_items=("${install_items[@]}" "${ESSENTIAL[@]}" "${BASICS[@]}" "${SHOULD_INSTALL[@]}" "${MISC[@]}")
                 ;;
             h)
-                echo "Usage:
+                do_the_brew_help
+                return
+                ;;
+        esac
+    done
+    echo "Installing the following packages:"
+    for package_name in "${install_items[@]}"; do echo $package_name; done;
+    brew update
+    brew_install_items $install_items
+    brew cleanup
+}
+
+function do_the_brew_help() {
+    echo "do_the_brew Usage:
 -a install all packages.
 -u upgrade brew packages.
 -e install essential packages
@@ -112,12 +126,4 @@ function do_the_brew() {
 -m install very non-essential packages.
 -h display this help message.
 "
-                return
-        esac
-    done
-    echo "Installing:"
-    for package_name in $install_items; do echo $package_name; done;
-    brew update
-    brew_install_items $install_items
-    brew cleanup
 }
