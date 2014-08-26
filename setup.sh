@@ -4,6 +4,7 @@ source dotfiles/lib/shellrc/functions.sh
 source dotfiles/lib/shellrc/brew.sh
 source dotfiles/lib/shellrc/python.sh
 source dotfiles/lib/shellrc/vim.sh
+source resources/osx.sh
 DOTFILES_DIRECTORY="$(dotfiles_abspath)/dotfiles"
 
 
@@ -74,6 +75,7 @@ function setup() {
     fi
     while getopts "acosbpev" OPTCHAR;
     do
+        local real_opt_ind=$OPTIND
         case $OPTCHAR in
             a)
                 source resources/apt-get.sh
@@ -90,7 +92,7 @@ function setup() {
                 ;;
             o)
                 sudo -v
-                source resources/osx.sh
+                osx_config
                 ;;
             s)
                 symlink_dotfiles_prompt
@@ -104,10 +106,11 @@ function setup() {
                 install_python_packages $REPLY
                 ;;
             e)
-                case uname in
+                case $(uname) in
                     Darwin)
                         get_command_line_tools
                         get_brew && do_the_brew -au
+                        osx_config
                         ;;
                     Linux)
                         apt-get
@@ -115,7 +118,6 @@ function setup() {
                 esac
                 install_python_packages -a
                 symlink_dotfiles
-                source resources/osx.sh
                 vimstall
                 ;;
             v)
@@ -126,6 +128,7 @@ function setup() {
                 return
                 ;;
         esac
+        OPTIND=$real_opt_ind
     done
 }
 
