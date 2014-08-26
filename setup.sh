@@ -3,6 +3,7 @@ cd `dirname $BASH_SOURCE` && source resources/bootstrapping.sh
 source dotfiles/lib/shellrc/functions.sh
 source dotfiles/lib/shellrc/brew.sh
 source dotfiles/lib/shellrc/python.sh
+source dotfiles/lib/shellrc/vim.sh
 DOTFILES_DIRECTORY="$(dotfiles_abspath)/dotfiles"
 
 
@@ -57,6 +58,7 @@ function setup_help() {
 -s Symlink dotfiles to home directory.
 -b Install brew packages.
 -p Install python packages.
+-v Setup vim.
 -e Do absolutely everything with the most aggresive options.
 -h display this help message."
 }
@@ -66,7 +68,7 @@ function setup() {
         setup_help
         exit 0
     fi
-    while getopts "aosbpe" OPTCHAR;
+    while getopts "aosbpev" OPTCHAR;
     do
         case $OPTCHAR in
             a)
@@ -106,6 +108,10 @@ function setup() {
                 install_python_packages -a
                 symlink_dotfiles
                 source resources/osx.sh
+                vimstall
+                ;;
+            v)
+                vimstall
                 ;;
             h)
                 setup_help
