@@ -1,17 +1,16 @@
-ESSENTIAL=(ipdb ipython virtualenv)
-FOR_EDITOR=(jedi pyflakes)
-USEFUL=(
-    Flask
-    ddg
-    ouimeaux
-    readline
-    simplejson
-    tox
-    numpy
-)
-
 function install_python_packages() {
-    sudo pip install $ESSENTIAL
+    ESSENTIAL=(ipdb ipython virtualenv)
+    FOR_EDITOR=(jedi pyflakes)
+    USEFUL=(
+        Flask
+        ddg
+        ouimeaux
+        readline
+        simplejson
+        tox
+        numpy
+    )
+    OPTIND=1
     while getopts "uea" OPTCHAR;
     do
         case $OPTCHAR in
@@ -24,8 +23,18 @@ function install_python_packages() {
             a)
                 sudo pip install $FOR_EDITOR
                 sudo pip install $USEFUL
+                install_pygame
+                install_powerline
+                ;;
+            h)
+                echo "
+-u Install useful but non essential python.
+-e Install editor python packages.
+-a Install all python utilities."
+                ;;
         esac
     done
+    sudo pip install $ESSENTIAL
 }
 
 function install_pygame() {

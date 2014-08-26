@@ -1,5 +1,6 @@
 function make_me_synergy() {
     local new_host_name="$(echo $SSH_CONNECTION | get_cols 1)"
+    OPTIND=1
     while getopts "h:" OPTCHAR; do
         case $OPTCHAR in
             h)

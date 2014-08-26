@@ -1,9 +1,3 @@
-function dotfiles_abspath() {
-    readlink_command='readlink'
-command -v greadlink > /dev/null && readlink_command="greadlink"
-    echo "$(${readlink_command} -f "$BASH_SOURCE" | xargs dirname | xargs dirname)"
-}
-
 function go2dotfiles() {
     cd $(dirname `readlink -f ~/.zshrc | xargs dirname`)
 }
@@ -42,6 +36,7 @@ function confirm() {
 
 function get_cols() {
     FS=' '
+    OPTIND=1
     while getopts "F:" OPTCHAR; do
         case $OPTCHAR in
             F)
@@ -129,6 +124,7 @@ function git_root() {
 function git_diff_replacing() {
     local original_sha='HEAD~1'
     local new_sha='HEAD'
+    OPTIND=1
     while getopts "do:n:" OPTCHAR;
     do
         case $OPTCHAR in
@@ -154,6 +150,7 @@ function git_diff_replacing() {
 function git_reset_author() {
     local should_update_command=''
     local update_command=''
+    OPTIND=1
     while getopts "a:e:A:E:h" OPTCHAR;
     do
         case $OPTCHAR in
