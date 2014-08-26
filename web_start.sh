@@ -28,3 +28,4 @@ esac
 
 git clone git@github.com:IvanMalison/dotfiles.git
 cd dotfiles
+./setup.sh -e

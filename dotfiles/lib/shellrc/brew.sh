@@ -1,3 +1,14 @@
+function get_brew() {
+    hash make &>/dev/null
+    if [ $? -ne 0 ]
+    then
+	echo "Make not found. Please install xcode developer tools."
+	return -1
+    fi
+    hash brew &>/dev/null && echo "Homebrew found!" || ruby -e "$(curl -fsSL https://raw.github.com/Homebrew/homebrew/go/install)"
+    brew update
+}
+
 function brew_install_items() {
     for package_install_string in $@;
     do
