@@ -5,6 +5,13 @@ function debian() {
     sudo apt-get -y install git
 }
 
+function brew_for_multiple_users() {
+    sudo chgrp -R admin /usr/local
+    sudo chmod -R g+w /usr/local
+    sudo chgrp -R admin /Library/Caches/Homebrew
+    sudo chmod -R g+w /Library/Caches/Homebrew
+}
+
 function osx() {
     hash gcc &>/dev/null
     if [ $? -ne 0 ]
@@ -13,6 +20,7 @@ function osx() {
 	exit
     fi
     hash brew &>/dev/null && echo "brew found" || ruby -e "$(curl -fsSL https://raw.github.com/Homebrew/homebrew/go/install)"
+    brew_for_multiple_users
     brew update
     brew install git
 }

@@ -228,7 +228,7 @@ function ss() {
 }
 
 function git_config_string() {
-    git config -f $1 --list | xargs -I kv sh -c "echo "\'kv\'""
+    git config -f $1 --list | xargs -I kv sh -c "echo \\\"kv\\\"" | xargs | tr '\n' ' '
 }
 
 function brew_for_multiple_user() {
