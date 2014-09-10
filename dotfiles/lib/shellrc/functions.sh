@@ -237,3 +237,31 @@ function brew_for_multiple_users() {
     sudo chgrp -R admin /Library/Caches/Homebrew
     sudo chmod -R g+w /Library/Caches/Homebrew
 }
+
+function swap_audio() {
+    test -z $(SwitchAudioSource -c | grep HDMI) && SwitchAudioSource -s HDMI || SwitchAudioSource -s "Built-in Output"
+}
+
+function talk_dirty_to_me() {
+    python - <<EOF
+from random import randrange
+import re
+import urllib
+
+def talk_dirty_to_me():
+    socket = urllib.urlopen("http://www.youporn.com/random/video/")
+    htmlSource = socket.read()
+    socket.close()
+    result = re.findall('<p class="message">((?:.|\\n)*?)</p>', htmlSource)
+    if len(result):
+        print result[randrange(len(result))]
+    else:
+        talk_dirty_to_me()
+
+talk_dirty_to_me()
+EOF
+}
+
+function dirty_talk() {
+    while true; do talk_dirty_to_me | tee >(cat) | say; done
+}

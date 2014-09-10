@@ -66,9 +66,9 @@
 	new = green bold
 
 [color "status"]
-	added = yellow
-	changed = green
-	untracked = cyan
+	added = green
+	changed = yellow
+	untracked = red
 
 [url "git@gist.github.com:"]
 	insteadOf = "gst:"
