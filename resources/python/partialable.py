@@ -4,10 +4,13 @@ import inspect
 class n_partialable(object):
 
     @staticmethod
-    def arity_evaluation_checker(function):
+    def arity_evaluation_checker(function, is_method=False):
+        is_class = inspect.isclass(function)
+        if is_class:
+            function = function.__init__
         function_info = inspect.getargspec(function)
         function_args = function_info.args
-        if inspect.isclass(function):
+        if is_class or is_method:
             # This is to handle the fact that self will get passed in automatically.
             function_args = function_args[1:]
         def evaluation_checker(*args, **kwargs):
@@ -21,10 +24,17 @@ class n_partialable(object):
             return not needed_args or kwarg_keys.issuperset(needed_args)
         return evaluation_checker
 
-    def __init__(self, function, evaluation_checker=None, args=None, kwargs=None):
+    @staticmethod
+    def count_evaluation_checker(count):
+        def function(*args, **kwargs):
+            return len(args) >= count
+        return function
+
+    def __init__(self, function, evaluation_checker=None, args=None, kwargs=None,
+                 is_method=False):
         self.function = function
         self.evaluation_checker = (evaluation_checker or
-                                   self.arity_evaluation_checker(function))
+                                   self.arity_evaluation_checker(function, is_method))
         self.args = args or ()
         self.kwargs = kwargs or {}
 
