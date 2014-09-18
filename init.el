@@ -71,6 +71,9 @@ Return a list of installed packages or nil for every package not installed."
 (setq make-backup-files nil)
 (setq auto-save-default nil)
 
+;; Fuck auto fill mode
+(auto-fill-mode -1)
+
 ;; Enable ido mode.
 (require 'ido)
 (ido-mode t)
@@ -329,5 +332,6 @@ Return a list of installed packages or nil for every package not installed."
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
+ '(reb-re-syntax (quote string))
  '(safe-local-variable-values (quote ((use-python-tabs . t) (python-indent . 4) (whitespace-line-column . 80) (lexical-binding . t)))))
 
