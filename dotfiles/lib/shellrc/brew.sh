@@ -119,9 +119,9 @@ function do_the_brew() {
         esac
     done
     echo "Installing the following packages:"
-    for package_name in "${install_items[@]}"; do printf '\t%s\n' $package_name; done;
+    for ((i = 0; i < ${#install_items[@]}; i++)); do printf '\t%s\n' "${install_items[$i]}"; done;
     brew update
-    brew_install_items $install_items
+    brew_install_items ${install_items}
     brew cleanup
 }
 
