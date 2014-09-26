@@ -110,6 +110,7 @@ Return a list of installed packages or nil for every package not installed."
 
 (add-hook 'html-mode-hook 'no-auto-fill-hook)
 (add-hook 'text-mode-hook 'no-auto-fill-hook)
+(add-hook 'python-mode-hook 'no-auto-fill-hook)
 (remove-hook 'text-mode-hook #'turn-on-auto-fill)
 
 (setq flyspell-issue-welcome-flag nil)
@@ -334,4 +335,6 @@ Return a list of installed packages or nil for every package not installed."
  ;; If there is more than one, they won't work right.
  '(reb-re-syntax (quote string))
  '(safe-local-variable-values (quote ((use-python-tabs . t) (python-indent . 4) (whitespace-line-column . 80) (lexical-binding . t)))))
+
+(load-file "~/.emacs.d/emacs-for-python/epy-init.el")
 
