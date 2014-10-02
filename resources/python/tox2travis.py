@@ -11,7 +11,7 @@ class TravisFromTox(object):
     def build_travis_dict(self):
         return {
             'language': 'python',
-            'install': ['pip install -e hg+https://ivanmalison@bitbucket.org/hpk42/tox#egg=tox'],
+            'install': ['pip install "tox>=1.8.0"'],
             'script': 'tox',
             'env': self._get_environment_variables()
         }
