@@ -43,7 +43,8 @@
                                   paredit inf-ruby undo-tree rainbow-delimiters
                                   smex solarized-theme zenburn-theme
                                   scala-mode2 ensime monokai-theme
-                                  gitconfig-mode jedi flymake-cursor pytest)
+                                  gitconfig-mode jedi flymake-cursor pytest
+                                  auto-complete)
   "Packages that must be installed at launch.")
 
 (defun ensure-package-installed (packages)
@@ -73,6 +74,9 @@ Return a list of installed packages or nil for every package not installed."
 
 ;; Fuck auto fill mode
 (auto-fill-mode -1)
+
+;; This makes it so that emacs --daemon creates server files in ~/.emacs.d/server
+(setq server-use-tcp t)
 
 ;; Enable ido mode.
 (require 'ido)
@@ -191,7 +195,6 @@ Return a list of installed packages or nil for every package not installed."
 
 ;; Multi-lining for python.
 (require 'multi-line-it)
-(require 'emacs-testify)
 (require 'pytest)
 
 (add-hook 'python-mode-hook (lambda () (setq show-trailing-whitespace t)))
@@ -211,6 +214,11 @@ Return a list of installed packages or nil for every package not installed."
 (fset 'ipdb "import ipdb; ipdb.set_trace()")
 (fset 'main "if __name__ == '__main__':")
 
+(global-auto-complete-mode)
+
+;; Macros
+(fset 'ipdb "import ipdb; ipdb.set_trace()")
+
 ;; =============================================================================
 ;;                                                                    JavaScript
 ;; =============================================================================
@@ -225,12 +233,6 @@ Return a list of installed packages or nil for every package not installed."
 (add-hook 'scala-mode-hook (lambda () (subword-mode 1)))
 
 ;; =============================================================================
-;;                                                                  Starter Kits
-;; =============================================================================
-
-;;(load-file "~/.emacs.d/emacs-for-python/epy-init.el")
-
-;; =============================================================================
 ;;                                                           Custom Key Bindings
 ;; =============================================================================
 
@@ -242,7 +244,8 @@ Return a list of installed packages or nil for every package not installed."
 
 ;; Miscellaneous
 (global-set-key (kbd "C-x C-b") 'buffer-menu)
-(global-set-key (kbd "C-c w") 'whitespace-mode)
+(global-unset-key (kbd "C-o"))
+(global-set-key (kbd "C-x w") 'whitespace-mode)
 (global-set-key (kbd "C-x C-r") (lambda () (interactive) (revert-buffer t t)))
 (global-set-key (kbd "M-g") 'goto-line)
 (global-set-key (kbd "C-c C-c") 'comment-dwim)
@@ -250,17 +253,12 @@ Return a list of installed packages or nil for every package not installed."
 (global-set-key (kbd "C-c C-o") 'testify-run-case)
 (global-set-key (kbd "C-c e") 'os-copy)
 (global-set-key (kbd "C-x O") (lambda () (interactive) (other-window -1)))
-(global-set-key (kbd "C-c t") 'testify-run-test)
-(global-set-key (kbd "C-c C-t") 'testify-run-case)
 (global-set-key (kbd "C-x C-c") 'kill-emacs)
 (global-set-key (kbd "C-c +") 'message-buffer-name)
 
 (global-set-key "\C-cg" 'jedi:goto-definition)
 
 (global-unset-key (kbd "C-o"))
-
-;; Macros
-(fset 'ipdb "import ipdb; ipdb.set_trace()")
 
 ;; Multiple Cursors
 
@@ -335,6 +333,3 @@ Return a list of installed packages or nil for every package not installed."
  ;; If there is more than one, they won't work right.
  '(reb-re-syntax (quote string))
  '(safe-local-variable-values (quote ((use-python-tabs . t) (python-indent . 4) (whitespace-line-column . 80) (lexical-binding . t)))))
-
-(load-file "~/.emacs.d/emacs-for-python/epy-init.el")
-

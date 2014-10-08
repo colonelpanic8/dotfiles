@@ -14,3 +14,4 @@ elpa/*
 .mc-lists.el
 .python-environments/
 tramp
+server
