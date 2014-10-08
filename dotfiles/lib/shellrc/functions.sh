@@ -1,5 +1,10 @@
+function dotfiles_directory() {
+    echo $(dirname `readlink -f ~/.zshrc | xargs dirname`)
+}
+
+
 function go2dotfiles() {
-    cd $(dirname `readlink -f ~/.zshrc | xargs dirname`)
+    cd $(dotfiles_directory)
 }
 
 function update_dotfiles() {
@@ -200,11 +205,6 @@ function set_osx_hostname() {
 
 function pip_package_location() {
     pip show $1 | grep Location | get_cols 2
-}
-
-function make_ensime() {
-    echo '\n\naddSbtPlugin("org.ensime" % "ensime-sbt-cmd" % "0.1.1")' >> project/plugins.sbt
-    sbt "ensime generate"
 }
 
 function set_modifier_keys_for_vendor_product_id() {

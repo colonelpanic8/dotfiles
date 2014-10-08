@@ -21,5 +21,7 @@ if is_osx; then
     export CPPFLAGS=-Qunused-arguments
 fi
 
+add_to_back_of_path "$(dotfiles_directory)/resources/python"
+
 # Access gnu man pages.
 MANPATH="$HOMEBREW_PREFIX/opt/coreutils/libexec/gnuman:$MANPATH"

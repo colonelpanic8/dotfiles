@@ -34,14 +34,6 @@ function symlink_dotfiles() {
 }
 
 
-function symlink_dotfiles_prompt() {
-    read -p "Symlinking files from $DOTFILES_DIRECTORY. This ? (y/n) " -n 1
-    if [[ $REPLY =~ ^[Yy]$ ]]; then
-        echo
-	symlink_dotfiles
-    fi
-}
-
 function apt-get() {
     INSTALL="sudo apt-get -y install"
     $INSTALL zsh
@@ -95,7 +87,7 @@ function setup() {
                 osx_config
                 ;;
             s)
-                symlink_dotfiles_prompt
+                symlink_dotfiles -o
                 ;;
             p)
                 install_python_packages -h
