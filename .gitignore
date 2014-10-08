@@ -1,3 +1,6 @@
 .ropeproject
 dotfiles/vim/bundle/*
 dotfiles/vim/.netrwhist
+dotfiles/sbt/0.13/plugins/project/
+dotfiles/sbt/0.13/plugins/target/
+dotfiles/sbt/boot/

@@ -25,8 +25,9 @@ function remote_os_copy() {
     if is_osx;
     then
         _osx_nc_paste_to_remote_clipboard
+
     else
-        _linux_nc_paste_to_remote_clipboard
+        _linux_nc_write_remote_clipboard
     fi
 }
 
