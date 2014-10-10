@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-cd `dirname $BASH_S0;95;cOURCE` && source resources/bootstrapping.sh
+cd `dirname $BASH_SOURCE` && source resources/bootstrapping.sh
 source dotfiles/lib/shellrc/functions.sh
 source dotfiles/lib/shellrc/brew.sh
 source dotfiles/lib/shellrc/python.sh
