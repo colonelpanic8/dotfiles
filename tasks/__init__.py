@@ -23,6 +23,7 @@ def setup(ctx):
         linux.all(ctx)
     dotfiles(ctx, 'f')
     install_python_libraries(ctx)
+    change_shell(ctx)
 
 
 
@@ -51,6 +52,12 @@ def vimstall(ctx):
     ctx.run('vim +BundleInstall! +q +q')
 
 
+@ctask
+def change_shell(ctx):
+    ctx.run('sudo chsh -s $(which zsh) $(whoami)')
+
+
+ns.add_task(change_shell)
 ns.add_task(dotfiles)
 ns.add_task(setup)
 ns.add_task(install_python_libraries)
