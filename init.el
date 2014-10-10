@@ -35,7 +35,7 @@
              '("marmalade" . "http://marmalade-repo.org/packages/")) 
 (package-initialize)
 
-(defvar my-packages '(color-theme ctags ctags-update flymake mo-git-blame
+(defvar my-packages '(color-theme cl-lib ctags ctags-update flymake mo-git-blame
                                   multiple-cursors latex-preview-pane
                                   starter-kit-bindings starter-kit-ruby
                                   starter-kit magit ido-ubiquitous
@@ -44,7 +44,7 @@
                                   smex solarized-theme zenburn-theme
                                   scala-mode2 ensime monokai-theme
                                   gitconfig-mode jedi flymake-cursor pytest
-                                  auto-complete)
+                                  auto-complete project-root dart-mode popup)
   "Packages that must be installed at launch.")
 
 (defun ensure-package-installed (packages)
@@ -123,7 +123,17 @@ Return a list of installed packages or nil for every package not installed."
           '(lambda () (setq debug-on-error t)))
 
 (latex-preview-pane-enable)
-;; (add-hook 'latex-mode-hook (lambda () (global-set-key (kbd "M-n") ))
+
+(require 'project-root)
+(setq project-roots
+      `(("Tox Project"
+         :root-contains-files ("tox.ini")
+         :filename-regex (regexify-ext-list '(py)))
+        ("Python Project"
+         :root-contains-files (".git" "setup.py")
+         :filename-regex (regexify-ext-list '(py)))
+        ("Git project"
+         :root-contains-files (".git"))))
 
 ;; =============================================================================
 ;;                                                                          Misc
@@ -209,6 +219,24 @@ Return a list of installed packages or nil for every package not installed."
 (add-hook 'python-mode-hook (lambda () (subword-mode 1)))
 (add-hook 'python-mode-hook 'jedi:setup)
 (setq jedi:complete-on-dot t)
+
+(defun add-virtual-envs-to-jedi-server ()
+  (let ((virtual-envs (get-virtual-envs)))
+    (when virtual-envs (set (make-local-variable 'jedi:server-args)
+                          (make-virtualenv-args virtual-envs)))))
+
+(defun make-virtualenv-args (virtual-envs)
+  (apply #'append (mapcar (lambda (env) `("-v" ,env)) virtual-envs)))
+
+(defun get-virtual-envs ()
+  (interactive)
+  (let ((project-root (with-project-root (cdr project-details))))
+    (cl-remove-if-not 'file-exists-p
+                      (mapcar (lambda (env-suffix) (concat project-root env-suffix))
+                              '(".tox/py27/" "env")))))
+
+
+(add-hook 'python-mode-hook 'add-virtual-envs-to-jedi-server)
 
 ;; Macros
 (fset 'ipdb "import ipdb; ipdb.set_trace()")
