@@ -34,10 +34,9 @@ function go() {
 case `uname` in
     'Darwin')
 	osx
-        go
 	;;
     'Linux')
 	debian
-        go
         ;;
 esac
+go
