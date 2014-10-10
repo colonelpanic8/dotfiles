@@ -38,6 +38,7 @@ def install_python_libraries(ctx):
         os.path.join(RESOURCES_DIRECTORY, 'requirements.txt')
     ))
 
+
 @ctask
 def install_npm_libraries(ctx):
     ctx.run('source {0}'.format(

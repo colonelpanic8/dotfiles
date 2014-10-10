@@ -15,7 +15,7 @@ def all(ctx):
 
 
 ESSENTIAL = (
-    "emacs", "tmux", "python --with-brewed-openssl", "htop", "greadlink", "zsh", "make",
+    "emacs", "tmux", "python --with-brewed-openssl", "htop", "zsh", "make",
     "macvim --override-system-vim --custom-system-icons --with-features=huge "
     "--enable-rubyinterp --enable-pythoninterp --enable-perlinterp --enable-cscope"
 )

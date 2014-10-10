@@ -1,9 +1,14 @@
-Flask
+py
+tox
+sqlalchemy
 ddg
 ouimeaux
-readline
 simplejson
-tox
 invoke
+lxml
 okcupyd
+vcrpy
+dotfiles
 numpy
+readline
+Flask
