@@ -1,11 +1,11 @@
 REMOTE_CLIPBOARD_PORT='1234'
 
-alias rc_ssh="ssh -R ${REMOTE_CLIPBOARD_PORT}:localhost:1234"
+alias rc_ssh="ssh -R 1234:localhost:1234"
 
 function remote_clipboard_server() {
     while [ 1 ]
     do
-        netcat -l -p ${1-$REMOTE_CLIPBOARD_PORT} -e "pbcopy"
+        ncat -l -p ${1-$REMOTE_CLIPBOARD_PORT} -e "pbcopy"
     done
 }
 
@@ -18,7 +18,7 @@ function _linux_nc_paste_to_remote_clipboard() {
 }
 
 function _osx_nc_paste_to_remote_clipboard() {
-    nc localhost ${1-$REMOTE_CLIPBOARD_PORT} -D
+    nc localhost ${1-$REMOTE_CLIPBOARD_PORT}
 }
 
 function remote_os_copy() {
