@@ -29,7 +29,7 @@ def setup(ctx):
 @ctask
 def dotfiles(ctx, flags):
     ctx.run('hash dotfiles || sudo pip install dotfiles')
-    return ctx.run('dotfiles -sR{1} {0}'.format(DOTFILES_DIRECTORY, flags))
+    return ctx.run('dotfiles -s{1} -R {0}'.format(DOTFILES_DIRECTORY, flags))
 
 
 @ctask
