@@ -1,8 +1,17 @@
 #!/bin/bash
+function fedora() {
+    yum install make automake gcc gcc-c++ kernel-devel
+    yum install 
+    yum install python-pip
+}
+
+
 function debian() {
     hash apt-get &>/dev/null || (echo 'apt-get is missing.' && exit)
     sudo apt-get -y install build-essential
     sudo apt-get -y install git
+    sudo apt-get -y install python
+    sudo apt-get install python-pip
 }
 
 function brew_for_multiple_users() {
@@ -23,13 +32,20 @@ function osx() {
     brew_for_multiple_users
     brew update
     brew install git
+    brew install python
+    easy_install pip
 }
 
 function go() {
+    while true; do sudo -n true; sleep 60; kill -0 "$$" || exit; done 2>/dev/null &
     git clone https://github.com/IvanMalison/dotfiles.git
     cd dotfiles
-    ./setup.sh -e
+    sudo pip install dotfiles
+    sudo pip install invoke
+    invoke setup
 }
+
+while true; do sudo -n true; sleep 60; kill -0 "$$" || exit; done 2>/dev/null &
 
 case `uname` in
     'Darwin')
@@ -39,4 +55,5 @@ case `uname` in
 	debian
         ;;
 esac
+
 go

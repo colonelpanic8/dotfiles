@@ -1,6 +1,6 @@
 [submodule "dotfiles/emacs.d"]
 	path = dotfiles/emacs.d
-	url = git@github.com:IvanMalison/.emacs.d.git
+	url = https://github.com/IvanMalison/.emacs.d.git
 [submodule "dotfiles/vim/bundle/vundle"]
 	path = dotfiles/vim/bundle/vundle
 	url = https://github.com/gmarik/Vundle.vim.git
