@@ -25,15 +25,19 @@ function osx() {
     brew install git
 }
 
+function go() {
+    git clone git@github.com:IvanMalison/dotfiles.git
+    cd dotfiles
+    ./setup.sh -e
+}
+
 case `uname` in
     'Darwin')
 	osx
+        go
 	;;
     'Linux')
 	debian
+        go
         ;;
 esac
-
-git clone git@github.com:IvanMalison/dotfiles.git
-cd dotfiles
-./setup.sh -e
