@@ -203,6 +203,12 @@ Return a list of installed packages or nil for every package not installed."
 
 (add-hook 'python-mode-hook (lambda () (if use-python-tabs python-tabs)))
 (add-hook 'python-mode-hook (lambda () (subword-mode 1)))
+(add-hook 'python-mode-hook 'jedi:setup)
+(setq jedi:complete-on-dot t)
+
+;; Macros
+(fset 'ipdb "import ipdb; ipdb.set_trace()")
+(fset 'main "if __name__ == '__main__':")
 
 ;; =============================================================================
 ;;                                                                    JavaScript
@@ -233,10 +239,6 @@ Return a list of installed packages or nil for every package not installed."
 (global-set-key (kbd "ESC n") (lambda () (interactive) (next-line 5)))
 (global-set-key (kbd "ESC p") (lambda () (interactive) (previous-line 5)))
 
-;; Macros
-(fset 'ipdb "import ipdb; ipdb.set_trace()")
-(fset 'main "if __name__ == '__main__':")
-
 ;; Miscellaneous
 (global-set-key (kbd "C-x C-b") 'buffer-menu)
 (global-set-key (kbd "C-c w") 'whitespace-mode)
@@ -245,7 +247,6 @@ Return a list of installed packages or nil for every package not installed."
 (global-set-key (kbd "C-c C-c") 'comment-dwim)
 (global-set-key (kbd "C-c t") 'testify-run-test)
 (global-set-key (kbd "C-c C-o") 'testify-run-case)
-(global-set-key (kbd "C-c w") 'all-copy)
 (global-set-key (kbd "C-c e") 'os-copy)
 (global-set-key (kbd "C-x O") (lambda () (interactive) (other-window -1)))
 (global-set-key (kbd "C-c t") 'testify-run-test)
@@ -253,7 +254,6 @@ Return a list of installed packages or nil for every package not installed."
 (global-set-key (kbd "C-x C-c") 'kill-emacs)
 (global-set-key (kbd "C-c +") 'message-buffer-name)
 
-;; Something will occasionally override this binding.
 (global-set-key "\C-cg" 'jedi:goto-definition)
 
 (global-unset-key (kbd "C-o"))
