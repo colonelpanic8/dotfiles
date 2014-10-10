@@ -1,9 +1,6 @@
-[submodule "lisp/flymake-cursor"]
-	path = lisp/flymake-cursor
-	url = git@github.com:illusori/emacs-flymake-cursor.git
 [submodule "lisp/multi-line-it"]
 	path = lisp/multi-line-it
-	url = git@github.com:IvanMalison/multi-line-it.git
+	url = https://github.com/IvanMalison/multi-line-it.git
 [submodule "lisp/emacs-testify"]
 	path = lisp/emacs-testify
-	url = git@github.com:IvanMalison/emacs-testify.git
+	url = https://github.com/IvanMalison/emacs-testify.git
