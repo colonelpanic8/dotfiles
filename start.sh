@@ -12,7 +12,7 @@ function debian() {
     $INSTALL_COMMAND build-essential
     $INSTALL_COMMAND git
     $INSTALL_COMMAND python
-    $INSTALL_COMMAND python-dev-all
+    $INSTALL_COMMAND python-dev
     $INSTALL_COMMAND python-pip
 }
 
