@@ -16,5 +16,10 @@ for filename in ~/.lib/shellrc/*; do
     source $filename
 done
 
+if is_osx; then
+    export CFLAGS=-Qunused-arguments
+    export CPPFLAGS=-Qunused-arguments
+fi
+
 # Access gnu man pages.
 MANPATH="$HOMEBREW_PREFIX/opt/coreutils/libexec/gnuman:$MANPATH"
