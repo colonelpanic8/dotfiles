@@ -76,7 +76,7 @@ Return a list of installed packages or nil for every package not installed."
 (auto-fill-mode -1)
 
 ;; This makes it so that emacs --daemon creates server files in ~/.emacs.d/server
-(setq server-use-tcp t)
+;;(setq server-use-tcp t)
 
 ;; Enable ido mode.
 (require 'ido)
@@ -230,6 +230,8 @@ Return a list of installed packages or nil for every package not installed."
 ;;                                                                         Scala
 ;; =============================================================================
 
+(require 'ensime)
+(add-hook 'scala-mode-hook 'ensime-scala-mode-hook)
 (add-hook 'scala-mode-hook (lambda () (subword-mode 1)))
 
 ;; =============================================================================
