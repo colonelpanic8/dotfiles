@@ -21,7 +21,7 @@ def setup(ctx):
         osx.all(ctx)
     else:
         linux.all(ctx)
-    dotfiles(ctx, '')
+    dotfiles(ctx, 'f')
     install_python_libraries(ctx)
 
 
