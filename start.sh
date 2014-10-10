@@ -7,11 +7,13 @@ function fedora() {
 
 
 function debian() {
+    local INSTALL_COMMAND='sudo apt-get -y install'
     hash apt-get &>/dev/null || (echo 'apt-get is missing.' && exit)
-    sudo apt-get -y install build-essential
-    sudo apt-get -y install git
-    sudo apt-get -y install python
-    sudo apt-get install python-pip
+    $INSTALL_COMMAND build-essential
+    $INSTALL_COMMAND git
+    $INSTALL_COMMAND python
+    $INSTALL_COMMAND python-dev-all
+    $INSTALL_COMMAND python-pip
 }
 
 function brew_for_multiple_users() {
