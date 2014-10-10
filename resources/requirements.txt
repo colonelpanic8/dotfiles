@@ -1,0 +1,9 @@
+Flask
+ddg
+ouimeaux
+readline
+simplejson
+tox
+invoke
+okcupyd
+numpy
