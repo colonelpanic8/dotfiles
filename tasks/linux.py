@@ -6,7 +6,7 @@ def all(ctx):
     apt_get(ctx)
 
 
-linux_pacakges = ('zsh', 'tmux', 'emacs24-nox', 'nmap', 'scala', 'sbt')
+linux_pacakges = ('zsh', 'tmux', 'emacs24-nox', 'nmap', 'scala', 'sbt', 'default-jre')
 @ctask
 def apt_get(ctx):
     install_command = 'sudo apt-get -y install'
