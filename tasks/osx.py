@@ -31,9 +31,9 @@ SHOULD_INSTALL = (
     "sbt", "node", "npm"
 )
 MISC = ("file-formula", "less", "openssh --with-brewed-openssl",
-        "perl518", "rsync", "svn", "unzip")
+        "perl518", "rsync", "svn", "unzip", "docker", "boot2docker")
 
-CASKS = ('alfred', 'caffeine', 'flux', 'google-chrome', 'iterm2', 'spotify', 'vlc',)
+CASKS = ('alfred', 'caffeine', 'flux', 'google-chrome', 'iterm2', 'spotify', 'vlc', 'virtualbox')
 @ctask
 def osx_config(ctx):
     ctx.run('source {0}; osx_config'.format(os.path.join(RESOURCES_DIRECTORY, 'osx.sh')))
