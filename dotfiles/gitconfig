@@ -20,6 +20,7 @@
 	ignore-untracked="!git untracked | xargs -n1 git ignore"
 	power-clean = clean -ffd
 	db = !"db() { git diff HEAD~"$1"; }; db"
+        clone = clone --recursive
 
 	branches = branch -a
 	remotes = remote -v
@@ -42,6 +43,8 @@
 	# Diff a file or show it in git's pager if it is untracked
 	du = "!d() { git ls-files $1 --error-unmatch 2>/dev/null 1>/dev/null && git diff $1 || `git config --get core.pager` $1; }; d"
 	clean-branches = "!r() { git branch -r --merged ${1-origin/master} | xargs -n1 git branch -d; }; r"
+        diff-excluding = "!f() { exclude=$1; shift; git diff $1 $2 --name-only | grep -v $exclude | xargs git diff "$@" --; }; f"
+        aliases = "!f() { git config --get-regexp ^alias | cut -c 7-; }; f"
 
 [core]
 	# Use custom `.gitignore` and `.gitattributes`
@@ -69,14 +72,6 @@
 	added = green
 	changed = yellow
 	untracked = red
-
-[url "git@gist.github.com:"]
-	insteadOf = "gst:"
-	pushInsteadOf = "gist:"
-	pushInsteadOf = "git://gist.github.com/"
-
-[url "git://gist.github.com/"]
-	insteadOf = "gist:"
 
 [user]
 	email = IvanMalison@gmail.com

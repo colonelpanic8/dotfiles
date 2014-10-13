@@ -19,8 +19,6 @@ Thumbs.db
 
 # yelp
 TAGS
-run_tests.sh
-untracked/
 .ropeproject/
 
 *.sw*
