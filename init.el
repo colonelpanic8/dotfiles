@@ -44,7 +44,7 @@
                                   smex solarized-theme zenburn-theme
                                   scala-mode2 ensime monokai-theme
                                   gitconfig-mode jedi flymake-cursor pytest
-                                  auto-complete project-root dart-mode popup)
+                                  auto-complete project-root popup)
   "Packages that must be installed at launch.")
 
 (defun ensure-package-installed (packages)
