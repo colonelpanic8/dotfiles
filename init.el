@@ -44,7 +44,8 @@
                                   smex solarized-theme zenburn-theme
                                   scala-mode2 ensime monokai-theme
                                   gitconfig-mode jedi flymake-cursor pytest
-                                  auto-complete project-root popup)
+                                  auto-complete project-root popup web-beautify
+                                  js2-mode)
   "Packages that must be installed at launch.")
 
 (defun ensure-package-installed (packages)
@@ -302,20 +303,14 @@ Return a list of installed packages or nil for every package not installed."
 (global-set-key (kbd "C-_") 'undo)
 (global-set-key (kbd "C--") 'undo)
 
-;; =============================================================================
-;;                                                                 elisp Helpers
-;; =============================================================================
-
-(defun plist-to-alist (the-plist)
-  (defun get-tuple-from-plist (the-plist)
-    (when the-plist
-      (cons (car the-plist) (cadr the-plist))))
-
-  (let ((alist '()))
-    (while the-plist
-      (add-to-list 'alist (get-tuple-from-plist the-plist))
-      (setq the-plist (cddr the-plist)))
-    alist))
+(eval-after-load 'js2-mode
+  '(define-key js2-mode-map (kbd "C-c b") 'web-beautify-js))
+(eval-after-load 'json-mode
+  '(define-key json-mode-map (kbd "C-c b") 'web-beautify-js))
+(eval-after-load 'sgml-mode
+  '(define-key html-mode-map (kbd "C-c b") 'web-beautify-html))
+(eval-after-load 'css-mode
+  '(define-key css-mode-map (kbd "C-c b") 'web-beautify-css))
 
 ;; =============================================================================
 ;;                                                                    Appearance
@@ -337,21 +332,21 @@ Return a list of installed packages or nil for every package not installed."
 ;; (set-face-background 'mode-line-inactive "black")
 
 ;; Customize font-faces
-(custom-set-faces
- ;; custom-set-faces was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
- '(flymake-errline ((((class color)) (:background "DarkViolet"))))
- '(flymake-warnline ((((class color)) (:underline "Orange"))))
- '(rainbow-delimiters-depth-1-face ((t (:foreground "green"))))
- '(rainbow-delimiters-depth-2-face ((t (:foreground "blue"))))
- '(rainbow-delimiters-depth-3-face ((t (:foreground "magenta"))))
- '(rainbow-delimiters-depth-4-face ((t (:foreground "yellow"))))
- '(rainbow-delimiters-depth-5-face ((t (:foreground "cyan"))))
- '(rainbow-delimiters-depth-7-face ((t (:foreground "blue"))))
- '(rainbow-delimiters-depth-8-face ((t (:foreground "yellow"))))
- '(rainbow-delimiters-depth-9-face ((t (:foreground "magenta")))))
+;; (custom-set-faces
+;;  ;; custom-set-faces was added by Custom.
+;;  ;; If you edit it by hand, you could mess it up, so be careful.
+;;  ;; Your init file should contain only one such instance.
+;;  ;; If there is more than one, they won't work right.
+;;  '(flymake-errline ((((class color)) (:background "DarkViolet"))))
+;;  '(flymake-warnline ((((class color)) (:underline "Orange"))))
+;;  '(rainbow-delimiters-depth-1-face ((t (:foreground "green"))))
+;;  '(rainbow-delimiters-depth-2-face ((t (:foreground "blue"))))
+;;  '(rainbow-delimiters-depth-3-face ((t (:foreground "magenta"))))
+;;  '(rainbow-delimiters-depth-4-face ((t (:foreground "yellow"))))
+;;  '(rainbow-delimiters-depth-5-face ((t (:foreground "cyan"))))
+;;  '(rainbow-delimiters-depth-7-face ((t (:foreground "blue"))))
+;;  '(rainbow-delimiters-depth-8-face ((t (:foreground "yellow"))))
+;;  '(rainbow-delimiters-depth-9-face ((t (:foreground "magenta")))))
 
 ;; =============================================================================
 ;;                                                                     Customize
@@ -363,3 +358,4 @@ Return a list of installed packages or nil for every package not installed."
  ;; If there is more than one, they won't work right.
  '(reb-re-syntax (quote string))
  '(safe-local-variable-values (quote ((use-python-tabs . t) (python-indent . 4) (whitespace-line-column . 80) (lexical-binding . t)))))
+
