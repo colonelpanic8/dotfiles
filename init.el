@@ -45,7 +45,7 @@
                                   scala-mode2 ensime monokai-theme
                                   gitconfig-mode jedi flymake-cursor pytest
                                   auto-complete project-root popup web-beautify
-                                  js2-mode)
+                                  js2-mode sphinx-doc)
   "Packages that must be installed at launch.")
 
 (defun ensure-package-installed (packages)
@@ -242,6 +242,7 @@ Return a list of installed packages or nil for every package not installed."
 ;; Macros
 (fset 'ipdb "import ipdb; ipdb.set_trace()")
 (fset 'main "if __name__ == '__main__':")
+(fset 'sphinx-class ":class:`~")
 
 (global-auto-complete-mode)
 
