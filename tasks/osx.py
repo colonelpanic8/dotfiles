@@ -31,7 +31,8 @@ SHOULD_INSTALL = (
     "sbt", "node", "npm"
 )
 MISC = ("file-formula", "less", "openssh --with-brewed-openssl",
-        "perl518", "rsync", "svn", "unzip", "docker", "boot2docker", "pandoc")
+        "perl518", "rsync", "svn", "unzip", "docker", "boot2docker", "pandoc",
+        "mercurial")
 
 CASKS = ('alfred', 'caffeine', 'flux', 'google-chrome', 'iterm2', 'spotify', 'vlc', 'virtualbox')
 @ctask
