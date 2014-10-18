@@ -21,6 +21,8 @@
 (let ((default-directory "~/.emacs.d/elpa/"))
   (normal-top-level-add-subdirs-to-load-path))
 
+(setq exec-path (cons "/usr/local/bin/" exec-path))
+
 (add-to-list 'custom-theme-load-path "~/.emacs.d/elpa/")
 (require 'patches)
 
@@ -78,6 +80,11 @@ Return a list of installed packages or nil for every package not installed."
 
 ;; This makes it so that emacs --daemon creates server files in ~/.emacs.d/server
 ;;(setq server-use-tcp t)
+
+;; Set the default font for emacs.
+;;(set-face-attribute 'default t :font "Monaco for Powerline")
+;;(set-frame-font "Monaco" t t)
+;;(set-face-attribute 'default nil :height 80)
 
 ;; Enable ido mode.
 (require 'ido)
@@ -196,7 +203,7 @@ Return a list of installed packages or nil for every package not installed."
 
 (add-to-list 'flymake-allowed-file-name-masks '("\\.py\\'" flymake-pylint-init))
 
-                                        ; Load flymake on non-temp buffers
+;; Load flymake on non-temp buffers
 (add-hook 'python-mode-hook
           (lambda () (unless (or (eq buffer-file-name nil) (eq (file-name-directory buffer-file-name) nil)) (flymake-mode 1))))
 
@@ -231,10 +238,16 @@ Return a list of installed packages or nil for every package not installed."
 
 (defun get-virtual-envs ()
   (interactive)
-  (let ((project-root (with-project-root (cdr project-details))))
-    (cl-remove-if-not 'file-exists-p
-                      (mapcar (lambda (env-suffix) (concat project-root env-suffix))
-                              '(".tox/py27/" "env")))))
+  
+  (condition-case ex
+      (let ((project-root (with-project-root (cdr project-details))))
+        (cl-remove-if-not 'file-exists-p
+                          (mapcar (lambda (env-suffix) (concat project-root env-suffix))
+                                  '(".tox/py27/" "env"))))
+    ('error
+            (message (format "Caught exception: [%s]" ex))
+            (setq retval (cons 'exception (list ex))))
+         nil))
 
 
 (add-hook 'python-mode-hook 'add-virtual-envs-to-jedi-server)
