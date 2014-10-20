@@ -6,8 +6,10 @@ alias tmux_cb_to_remote_cb='tmux saveb - | linux_nc_paste_to_remote_clipboard'
 alias timestamp='date +%s'
 alias fn='find . -name '
 alias prj='cd ~/Projects'
-alias tox27='tox -e py27 --'
+alias t27='tox -e py27 -- '
+alias tvenv='tox -e venv -- '
 alias reload_tmux='tmux source-file ~/.tmux.conf'
+alias which='type'
 
 # enables the sudoing of aliases.
 alias sudo='sudo '

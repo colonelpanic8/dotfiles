@@ -8,6 +8,7 @@ Purple='\e[0;35m'       # Purple
 Cyan='\e[0;36m'         # Cyan
 White='\e[0;37m'        # White
 BoldYellow='\e[1;33m'   # Yellow
+Gray="\[\033[1;30m\]"
 
 
 function current_directory() {
@@ -54,6 +55,7 @@ function prompt_basic_colors() {
     export SEPARATOR_COLOR="$Black"
     export HOSTNAME_COLOR="$Blue"
     export CURRENT_DIRECTORY_COLOR="$BoldYellow"
+    export SEPARATOR_COLOR="$Gray"
 }
 
 function print_with_color() {
