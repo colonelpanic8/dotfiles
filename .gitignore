@@ -6,3 +6,4 @@ dotfiles/sbt/0.13/plugins/target/
 dotfiles/sbt/boot/
 dotfiles/.pip/download_cache
 dotfiles/.pip/pip.log
+dotfiles/config/hub
