@@ -15,7 +15,7 @@ def all(ctx):
 
 
 ESSENTIAL = (
-    "emacs", "tmux", "python --with-brewed-openssl", "htop", "zsh", "make",
+    "emacs --cocoa --srgb --with-x", "tmux", "python --with-brewed-openssl", "htop", "zsh", "make",
     "macvim --override-system-vim --custom-system-icons --with-features=huge "
     "--enable-rubyinterp --enable-pythoninterp --enable-perlinterp --enable-cscope"
 )
@@ -34,7 +34,7 @@ MISC = ("file-formula", "less", "openssh --with-brewed-openssl",
         "perl518", "rsync", "svn", "unzip", "docker", "boot2docker", "pandoc",
         "mercurial")
 
-CASKS = ('alfred', 'caffeine', 'flux', 'google-chrome', 'iterm2', 'spotify', 'vlc', 'virtualbox')
+CASKS = ('alfred', 'caffeine', 'flux', 'google-chrome', 'iterm2', 'spotify', 'vlc', 'virtualbox', 'xquartz')
 @ctask
 def osx_config(ctx):
     ctx.run('source {0}; osx_config'.format(os.path.join(RESOURCES_DIRECTORY, 'osx.sh')))
