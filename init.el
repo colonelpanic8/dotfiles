@@ -238,12 +238,11 @@ Return a list of installed packages or nil for every package not installed."
 
 (defun get-virtual-envs ()
   (interactive)
-  
   (condition-case ex
       (let ((project-root (with-project-root (cdr project-details))))
         (cl-remove-if-not 'file-exists-p
                           (mapcar (lambda (env-suffix) (concat project-root env-suffix))
-                                  '(".tox/py27/" "env"))))
+                                  '(".tox/py27/" "env" ".tox/venv/"))))
     ('error
             (message (format "Caught exception: [%s]" ex))
             (setq retval (cons 'exception (list ex))))
