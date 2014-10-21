@@ -1,5 +1,6 @@
-alias emacs="emacsclient -t"
-alias xemacs="\emacs --daemon > /dev/null 2&> /dev/null; emacsclient -c &"
+alias emacs="emacsclient -c -n"
+alias temacs="emacsclient -t"
+alias cemacs="emacsclient -c -n"
 alias tmux="tmux -2"
 alias reload_tmux_conf="tmux source-file .tmux.conf"
 alias tmux_cb_to_remote_cb='tmux saveb - | linux_nc_paste_to_remote_clipboard'

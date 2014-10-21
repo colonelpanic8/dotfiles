@@ -265,3 +265,31 @@ EOF
 function dirty_talk() {
     while true; do talk_dirty_to_me | tee >(cat) | say; done
 }
+
+function as_user {
+    local user="$1"
+    local user_pid=$(ps -axj | awk "/^$user / {print \$2;exit}")
+    local command="sudo /bin/launchctl bsexec $user_pid sudo -u '$user' $2"
+    echo "Running:"
+    echo "$command"
+    eval $command
+}
+
+function as_current_user {
+    as_user "$(whoami)" "$*"
+}
+
+function reload_user_agent {
+    as_current_user /bin/launchctl unload "$1"
+    as_current_user /bin/launchctl load "$1"
+}
+    
+    
+function reload_root_agent {
+    as_user 'root' "/bin/launchctl unload '$1'"
+    as_user 'root' "/bin/launchctl load '$1'"
+}
+
+function ec {
+    emacsclient -n $1 > /dev/null
+}

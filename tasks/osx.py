@@ -64,15 +64,18 @@ def brew_install(ctx):
 
 @ctask
 def setup_cocoa_emacs(ctx):
-    if not os.path.exists('/Applications/emacs'):
-        ctx.run('ln -s $(brew --prefix emacs) /Applications/emacs', hide=True)
+    if not os.path.exists('/Applications/Emacs.app'):
+        ctx.run('ln -s $(brew --prefix emacs)/Emacs.app /Applications/Emacs.app', hide=True)
+
     launch_agent_dir = os.path.expanduser('~/Library/LaunchAgents/')
     filename = 'set-path.plist'
-    util.ensure_path_exists(launch_agent_dir)
-    ctx.run('cp {0} {1}'.format(
-        os.path.join(util.RESOURCES_DIRECTORY, filename),
-        os.path.join(launch_agent_dir, filename)
-    ))
+
+    source = os.path.join(util.RESOURCES_DIRECTORY, filename)
+    destination = os.path.join(launch_agent_dir, filename)
+
+    if os.path.exists(source) and not os.path.exists(destination):
+        util.ensure_path_exists(launch_agent_dir)
+        ctx.run('ln -s {0} {1}'.format(source, destination))
 
 
 @ctask
