@@ -21,8 +21,6 @@
 (let ((default-directory "~/.emacs.d/elpa/"))
   (normal-top-level-add-subdirs-to-load-path))
 
-(setq exec-path (cons "/usr/local/bin/" exec-path))
-
 (add-to-list 'custom-theme-load-path "~/.emacs.d/elpa/")
 (require 'patches)
 
@@ -47,7 +45,7 @@
                                   scala-mode2 ensime monokai-theme
                                   gitconfig-mode jedi flymake-cursor pytest
                                   auto-complete project-root popup web-beautify
-                                  js2-mode sphinx-doc)
+                                  js2-mode js3-mode sphinx-doc)
   "Packages that must be installed at launch.")
 
 (defun ensure-package-installed (packages)
@@ -329,7 +327,8 @@ Return a list of installed packages or nil for every package not installed."
 ;;                                                                    Appearance
 ;; =============================================================================
 
-(load-theme 'monokai t)
+(if (and (eq system-type 'darwin) window-system)
+    (load-theme 'solarized-dark t) (load-theme 'monokai t))
 (require 'color-theme)
 (require 'whitespace)
 (require 'rainbow-delimiters)
@@ -369,6 +368,13 @@ Return a list of installed packages or nil for every package not installed."
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
+ '(custom-safe-themes (quote ("60f04e478dedc16397353fb9f33f0d895ea3dab4f581307fbf0aa2f07e658a40" default)))
  '(reb-re-syntax (quote string))
  '(safe-local-variable-values (quote ((use-python-tabs . t) (python-indent . 4) (whitespace-line-column . 80) (lexical-binding . t)))))
 
+(custom-set-faces
+ ;; custom-set-faces was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ '(default ((t (:background nil)))))
