@@ -3,14 +3,14 @@
 <plist version="1.0">
 <dict>
     <key>Label</key>
-    <string>set-path</string>
+    <string>com.example.hello</string>
     <key>ProgramArguments</key>
     <array>
         <string>zsh</string>
         <string>-c</string>
-        <string>'source ~/.zshrc; launchctl setenv PATH $PATH'</string>
+        <string>source ~/.zshrc && echo password | sudo -Sv && as_current_user /bin/launchctl setenv PATH $PATH</string>
     </array>
-    <key>KeepAlive</key>
+    <key>RunAtLoad</key>
     <true/>
 </dict>
 </plist>

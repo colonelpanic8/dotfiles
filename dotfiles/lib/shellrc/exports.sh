@@ -4,7 +4,7 @@ elif infocmp xterm-256color >/dev/null 2>&1; then
     export TERM=xterm-256color
 fi
 # Make emacs the default editor.
-export EDITOR="emacsclient"
+export EDITOR="emacsclient -cn"
 export ALTERNATE_EDITOR=""
 export VISUAL="emacsclient"
 
