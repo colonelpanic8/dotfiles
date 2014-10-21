@@ -45,7 +45,7 @@
                                   scala-mode2 ensime monokai-theme
                                   gitconfig-mode jedi flymake-cursor pytest
                                   auto-complete project-root popup web-beautify
-                                  js2-mode js3-mode sphinx-doc)
+                                  js2-mode js3-mode sphinx-doc exec-path-from-shell)
   "Packages that must be installed at launch.")
 
 (defun ensure-package-installed (packages)
@@ -67,6 +67,9 @@ Return a list of installed packages or nil for every package not installed."
 ;; =============================================================================
 ;;                                                         General Emacs Options
 ;; =============================================================================
+
+;; Set path from shell.
+(exec-path-from-shell-initialize)
 
 ;; Disable the creation of backup files.
 (setq backup-inhibited t)
