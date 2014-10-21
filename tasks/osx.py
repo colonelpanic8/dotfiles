@@ -56,6 +56,11 @@ def brew_install(ctx):
         ctx.run('brew install {0}'.format(package_name))
 
 @ctask
+def setup_emacs(ctx):
+    ctx.run('ln -s $(brew --prefix emacs) /Applications/emacs')
+
+
+@ctask
 def get_command_line_tools(ctx):
     if not command_exists('gcc'):
         ctx.run('xcode-select --install')
