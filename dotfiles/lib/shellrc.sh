@@ -24,4 +24,4 @@ add_to_back_of_path "$(dotfiles_directory)/resources/python"
 add_to_back_of_path "/usr/local/sbin"
 
 # Access gnu man pages.
-MANPATH="$HOMEBREW_PREFIX/opt/coreutils/libexec/gnuman:$MANPATH"
+MANPATH="$(brew --prefix)/opt/coreutils/libexec/gnuman:$MANPATH"
