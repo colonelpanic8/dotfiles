@@ -16,3 +16,4 @@ elpa/*
 tramp
 server
 .project-roots
+elpa/find-file-in-project-3.4

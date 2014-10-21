@@ -121,10 +121,9 @@ Return a list of installed packages or nil for every package not installed."
 
 (defun no-auto-fill-hook () (auto-fill-mode -1))
 
-(add-hook 'html-mode-hook 'no-auto-fill-hook)
-(add-hook 'text-mode-hook 'no-auto-fill-hook)
-(add-hook 'python-mode-hook 'no-auto-fill-hook)
+(add-hook 'prog-mode-hook 'no-auto-fill-hook)
 (remove-hook 'text-mode-hook #'turn-on-auto-fill)
+
 
 (setq flyspell-issue-welcome-flag nil)
 
