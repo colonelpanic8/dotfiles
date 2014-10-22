@@ -39,7 +39,7 @@
                                   multiple-cursors latex-preview-pane
                                   starter-kit-bindings starter-kit-ruby
                                   starter-kit magit ido-ubiquitous
-                                  find-file-in-project idle-highlight-mode
+                                  idle-highlight-mode find-file-in-project 
                                   paredit inf-ruby undo-tree rainbow-delimiters
                                   smex solarized-theme zenburn-theme
                                   scala-mode2 ensime monokai-theme
@@ -115,6 +115,7 @@ Return a list of installed packages or nil for every package not installed."
 (menu-bar-mode -1)
 
 ;; find-file-in-project
+(require 'find-file-in-project)
 (setq ffip-limit 9999999999)
 
 (setq js-indent-level 2)
@@ -122,6 +123,7 @@ Return a list of installed packages or nil for every package not installed."
 (defun no-auto-fill-hook () (auto-fill-mode -1))
 
 (add-hook 'prog-mode-hook 'no-auto-fill-hook)
+(add-hook 'prog-mode-hook 'rainbow-delimiters-mode)
 (remove-hook 'text-mode-hook #'turn-on-auto-fill)
 
 
@@ -372,7 +374,7 @@ Return a list of installed packages or nil for every package not installed."
  ;; If there is more than one, they won't work right.
  '(custom-safe-themes (quote ("60f04e478dedc16397353fb9f33f0d895ea3dab4f581307fbf0aa2f07e658a40" default)))
  '(reb-re-syntax (quote string))
- '(safe-local-variable-values (quote ((use-python-tabs . t) (python-indent . 4) (whitespace-line-column . 80) (lexical-binding . t)))))
+ '(safe-local-variable-values (quote ((ffip-prune-patterns ".tox" ".git" "pip" "__pycache__" "*.egg-info" "build") (ffip-prune-patterns ".tox/*" ".git/*" "pip" "__pycache__" "*.pyc" "*.egg-info" "build") (ffip-prune-patterns quote (".tox/*" ".git/*" "pip" "__pycache__" "*.pyc" "*.egg-info" "build")) (ffip-prune-patterns quote (".tox" ".git" "pip" "__pycache__" "*.pyc" "*.egg-info" "build")) (ffip-prune-patterns quote (".tox" ".git")) (use-python-tabs . t) (python-indent . 4) (whitespace-line-column . 80) (lexical-binding . t)))))
 
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
