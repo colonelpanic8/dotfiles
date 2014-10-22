@@ -45,6 +45,8 @@
 	clean-branches = "!r() { git branch -r --merged ${1-origin/master} | xargs -n1 git branch -d; }; r"
         diff-excluding = "!f() { exclude=$1; shift; git diff $1 $2 --name-only | grep -v $exclude | xargs git diff "$@" --; }; f"
         aliases = "!f() { git config --get-regexp ^alias | cut -c 7-; }; f"
+        file-exists = "!f() { git ls-files $1 --error-unmatch > /dev/null 2> /dev/null; }; f"
+        shas = log HEAD --pretty=format:%H
 
 [core]
 	# Use custom `.gitignore` and `.gitattributes`
