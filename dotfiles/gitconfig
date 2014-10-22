@@ -5,6 +5,7 @@
 	ff = merge --ff-only
 	ca = !git add -A && git commit -av
 	tb = rev-parse --abbrev-ref --symbolic-full-name @{u}
+	rh = reset --hard
 	cam = commit -am
 	poh = push origin HEAD
 	pohm = push origin HEAD:master
