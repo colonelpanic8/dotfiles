@@ -49,8 +49,7 @@
                                   gitconfig-mode starter-kit-ruby mo-git-blame
                                   auto-complete project-root popup web-beautify
                                   js2-mode js3-mode sphinx-doc ansi-color pytest
-                                  exec-path-from-shell base16-theme slime
-                                  swank-js)
+                                  exec-path-from-shell base16-theme slime)
   "Packages that must be installed at launch.")
 
 (defun ensure-package-installed (packages)
