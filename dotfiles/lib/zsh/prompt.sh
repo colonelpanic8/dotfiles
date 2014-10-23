@@ -36,23 +36,17 @@ function git_prompt_info() {
     then
         echo ""
     else
-        echo " $(separator "on") $(git branch-or-sha)$(git_status_character)"
+        local b="$(print_with_color $(git branch-or-sha) $SOURCE_CONTROL_COLOR)"
+        echo " $(separator "on") $b$(git_status_character)"
     fi
 }
 
 function git_status_character() {
     if git dirty;
     then
-        print_with_color "✘" "$fg_bold[red]"
+        print_with_color "✘" "$fg[red]"
     else
-        print_with_color "✔" "$fg_bold[green]"
-    fi
-}
-
-function sandbox_prompt() {
-    if [ ! -z "$(sandbox_prompt_info)" ];
-    then
-        echo " $(separator "with") $(colored_sandbox_string)%{$reset_color%}"
+        print_with_color "✔" "$fg[green]"
     fi
 }
 
@@ -70,6 +64,7 @@ function prompt_custom_colors() {
     export SEPARATOR_COLOR="$FG[239]"
     export HOSTNAME_COLOR="$FG[033]"
     export CURRENT_DIRECTORY_COLOR="$FG[226]"
+    export CURRENT_DIRECTORY_COLOR="$FG[255]"
 }
 
 function prompt_basic_colors() {
@@ -77,6 +72,15 @@ function prompt_basic_colors() {
     export SEPARATOR_COLOR="$fg_no_bold[black]"
     export HOSTNAME_COLOR="$fg_no_bold[blue]"
     export CURRENT_DIRECTORY_COLOR="$fg[yellow]"
+    export SOURCE_CONTROL_COLOR="$fg[white]"
+}
+
+function prompt_solarized_colors() {
+    prompt_basic_colors
+    export HOSTNAME_COLOR="$fg[magenta]"
+    export USERNAME_COLOR="$fg[blue]"
+    export CURRENT_DIRECTORY_COLOR="$fg[red]"
+    export SOURCE_CONTROL_COLOR="$fg[white]"
 }
 
 function prompt_basic_colors_with_grey_separator() {
@@ -93,7 +97,7 @@ function separator() {
 }
 
 prompt_basic_colors_with_grey_separator
-PROMPT='╭─% $(print_with_color "%n" "$USERNAME_COLOR") $(separator "at") $(print_with_color "`hostname -s`" "$HOSTNAME_COLOR") $(separator "in") $(print_with_color "`current_directory`" "$CURRENT_DIRECTORY_COLOR")$(git_prompt_info)$(sandbox_prompt)
+PROMPT='╭─% $(print_with_color "%n" "$USERNAME_COLOR") $(separator "at") $(print_with_color "`hostname -s`" "$HOSTNAME_COLOR") $(separator "in") $(print_with_color "`current_directory`" "$CURRENT_DIRECTORY_COLOR")$(git_prompt_info)
 ╰─$(command_line_character) '
 
 PS2='(%_) '
