@@ -34,7 +34,8 @@ SHOULD_INSTALL = (
 MISC = ("file-formula", "less", "openssh --with-brewed-openssl",
         "perl518", "rsync", "svn", "unzip", "docker", "boot2docker", "pandoc",
         "mercurial")
-CASKS = ('alfred', 'caffeine', 'flux', 'google-chrome', 'iterm2', 'spotify', 'vlc', 'virtualbox', 'xquartz')
+CASKS = ('caffeine', 'flux', 'google-chrome', 'iterm2', 'spotify',
+         'vlc', 'virtualbox', 'xquartz', 'synergy', 'slate')
 
 
 @ctask
@@ -77,6 +78,26 @@ def setup_cocoa_emacs(ctx):
         util.ensure_path_exists(launch_agent_dir)
         ctx.run('ln -s {0} {1}'.format(source, destination))
 
+
+APPS_NEEDING_ASSISTIVE_DEVICE_ACCESS = ('Slate', 'Synergy', 'iTerm')
+@ctask
+def enable_access_for_assitive_devices(ctx):
+    for app in APPS_NEEDING_ASSISTIVE_DEVICE_ACCESS:
+        app_string = '/Applications/{0}.app'.format(app)
+        user_application = os.path.expanduser('~' + app_string)
+        if os.path.exists(user_application):
+            ctx.run(
+                'source ~/.zshrc && '
+                'enable_access_for_assitive_devices "{0}"'.format(
+                    user_application
+                )
+            )
+
+        if os.path.exists(app_string):
+            ctx.run(
+                'source ~/.zshrc && '
+                'enable_access_for_assitive_devices "{0}"'.format(app_string)
+            )
 
 @ctask
 def get_command_line_tools(ctx):
