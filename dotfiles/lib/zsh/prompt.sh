@@ -83,6 +83,14 @@ function prompt_solarized_colors() {
     export SOURCE_CONTROL_COLOR="$fg[white]"
 }
 
+function prompt_tomorrow_colors() {
+    export SEPARATOR_COLOR="$fg[cyan]"
+    export HOSTNAME_COLOR="$fg[yellow]"
+    export USERNAME_COLOR="$fg[blue]"
+    export CURRENT_DIRECTORY_COLOR="$fg[red]"
+    export SOURCE_CONTROL_COLOR="$fg[white]"
+}
+
 function prompt_basic_colors_with_grey_separator() {
     prompt_basic_colors
     export SEPARATOR_COLOR="$FG[239]"
