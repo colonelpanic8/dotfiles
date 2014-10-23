@@ -23,12 +23,13 @@ def setup(ctx):
         linux.all(ctx)
     dotfiles(ctx, 'f')
     install_python_libraries(ctx)
+    install_npm_libraries(ctx)
     change_shell(ctx)
 
 
 
 @ctask
-def dotfiles(ctx, flags):
+def dotfiles(ctx, flags=''):
     ctx.run('hash dotfiles || sudo pip install dotfiles')
     return ctx.run('dotfiles -s{1} -R {0}'.format(DOTFILES_DIRECTORY, flags))
 
@@ -61,4 +62,5 @@ ns.add_task(change_shell)
 ns.add_task(dotfiles)
 ns.add_task(setup)
 ns.add_task(install_python_libraries)
+ns.add_task(install_npm_libraries)
 ns.add_task(vimstall)
