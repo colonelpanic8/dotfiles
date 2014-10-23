@@ -12,19 +12,23 @@ def all(ctx):
     brew_install(ctx)
     brew_cask(ctx)
     setup_cocoa_emacs(ctx)
+    enable_access_for_assistive_devices(ctx)
     osx_config(ctx)
 
 
+macvim_install = ("macvim --override-system-vim --custom-system-icons "
+                  "--with-features=huge --enable-rubyinterp "
+                  "--enable-pythoninterp --enable-perlinterp --enable-cscope")
 ESSENTIAL = (
-    "emacs --cocoa --srgb --with-x", "tmux", "python --with-brewed-openssl", "htop", "zsh", "make",
-    "macvim --override-system-vim --custom-system-icons --with-features=huge "
-    "--enable-rubyinterp --enable-pythoninterp --enable-perlinterp --enable-cscope"
+    "emacs --cocoa --srgb --with-x", "tmux", "python --with-brewed-openssl",
+    "htop", "zsh", "make", macvim_install
 )
-BASICS=(
+BASICS = (
     "findutils", "coreutils", "binutils", "diffutils", "ed --default-names",
     "gawk", "gnu-indent --default-names", "gnu-sed --default-names",
-    "gnu-tar --default-names", "gnu-which --default-names", "gnutls --default-names",
-    "grep --default-names", "gzip", "watch", "wdiff --with-gettext", "wget --enable-iri"
+    "gnu-tar --default-names", "gnu-which --default-names",
+    "gnutls --default-names", "grep --default-names", "gzip", "watch",
+    "wdiff --with-gettext", "wget --enable-iri"
 )
 SHOULD_INSTALL = (
     "nmap", "readline", "netcat", "reattach-to-user-namespace", "daemonize",
@@ -34,15 +38,15 @@ SHOULD_INSTALL = (
 MISC = ("file-formula", "less", "openssh --with-brewed-openssl",
         "perl518", "rsync", "svn", "unzip", "docker", "boot2docker", "pandoc",
         "mercurial")
-CASKS = ('caffeine', 'flux', 'google-chrome', 'iterm2', 'spotify',
-         'vlc', 'virtualbox', 'xquartz', 'synergy', 'slate', 'seil')
+CASKS = ('caffeine', 'flux', 'google-chrome', 'iterm2', 'spotify', 'synergy',
+         'virtualbox', 'xquartz', 'slate', 'java', 'vlc', 'seil',)
 
 
 @ctask
 def osx_config(ctx):
-    ctx.run('source {0}; osx_config'.format(
+    ctx.run('sudo {0}'.format(
         os.path.join(util.RESOURCES_DIRECTORY, 'osx.sh')
-    ))
+    ), pty=True)
 
 
 @ctask
@@ -81,25 +85,26 @@ def setup_cocoa_emacs(ctx):
 
 APPS_NEEDING_ASSISTIVE_DEVICE_ACCESS = ('Slate', 'Synergy', 'iTerm')
 @ctask
-def enable_access_for_assitive_devices(ctx):
+def enable_access_for_assistive_devices(ctx):
     for app in APPS_NEEDING_ASSISTIVE_DEVICE_ACCESS:
         app_string = '/Applications/{0}.app'.format(app)
         user_application = os.path.expanduser('~' + app_string)
         if os.path.exists(user_application):
             ctx.run(
-                'source ~/.zshrc && '
-                'enable_access_for_assitive_devices "{0}"'.format(
+                'zsh -c "source ~/.zshrc && '
+                'enable_access_for_assistive_devices \"{0}\""'.format(
                     user_application
                 )
             )
-
         if os.path.exists(app_string):
             ctx.run(
-                'source ~/.zshrc && '
-                'enable_access_for_assitive_devices "{0}"'.format(app_string)
+                'zsh -c "source ~/.zshrc && '
+                'enable_access_for_assistive_devices \"{0}\""'.format(
+                    app_string
+                )
             )
 
 @ctask
 def get_command_line_tools(ctx):
-    if not command_exists('gcc'):
+    if not util.command_exists('gcc'):
         ctx.run('xcode-select --install')
