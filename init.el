@@ -6,9 +6,11 @@
 ;; =============================================================================
 
 (setq user-full-name
-      (replace-regexp-in-string "\n$" "" (shell-command-to-string "git config --get user.email")))
+      (replace-regexp-in-string "\n$" "" (shell-command-to-string
+                                          "git config --get user.email")))
 (setq user-mail-address
-      (replace-regexp-in-string "\n$" "" (shell-command-to-string "git config --get user.name")))
+      (replace-regexp-in-string "\n$" "" (shell-command-to-string
+                                          "git config --get user.name")))
 
 ;; =============================================================================
 ;;                                                       Load Path Configuration
@@ -36,16 +38,16 @@
 (package-initialize)
 
 (defvar my-packages '(color-theme cl-lib ctags ctags-update flymake mo-git-blame
-                                  multiple-cursors latex-preview-pane
-                                  starter-kit-bindings starter-kit-ruby
-                                  starter-kit magit ido-ubiquitous
-                                  idle-highlight-mode find-file-in-project 
+                                  multiple-cursors latex-preview-pane pytest
+                                  starter-kit-bindings zenburn-theme jedi
+                                  starter-kit magit ido-ubiquitous monokai-theme
+                                  idle-highlight-mode find-file-in-project smex
                                   paredit inf-ruby undo-tree rainbow-delimiters
-                                  smex solarized-theme zenburn-theme
-                                  scala-mode2 ensime monokai-theme
-                                  gitconfig-mode jedi flymake-cursor pytest
+                                  solarized-theme scala-mode2 ensime 
+                                  gitconfig-mode flymake-cursor starter-kit-ruby
                                   auto-complete project-root popup web-beautify
-                                  js2-mode js3-mode sphinx-doc exec-path-from-shell)
+                                  js2-mode js3-mode sphinx-doc ansi-color pytest
+                                  exec-path-from-shell tern tern-auto-complete)
   "Packages that must be installed at launch.")
 
 (defun ensure-package-installed (packages)
@@ -79,7 +81,7 @@ Return a list of installed packages or nil for every package not installed."
 ;; Fuck auto fill mode
 (auto-fill-mode -1)
 
-;; This makes it so that emacs --daemon creates server files in ~/.emacs.d/server
+;; This makes it so that emacs --daemon puts its files in ~/.emacs.d/server
 ;;(setq server-use-tcp t)
 
 ;; Set the default font for emacs.
@@ -124,6 +126,8 @@ Return a list of installed packages or nil for every package not installed."
 
 (add-hook 'prog-mode-hook 'no-auto-fill-hook)
 (add-hook 'prog-mode-hook 'rainbow-delimiters-mode)
+(add-hook 'prog-mode-hook (lambda () (highlight-lines-matching-regexp
+                                 ".\\{81\\}" 'hi-blue)))
 (remove-hook 'text-mode-hook #'turn-on-auto-fill)
 
 
@@ -149,13 +153,15 @@ Return a list of installed packages or nil for every package not installed."
 ;;                                                                          Misc
 ;; =============================================================================
 
-(defun ffip-get-buffer-name()
+(defun get-buffer-name()
   (interactive)
-  (file-relative-name (buffer-file-name) (expand-file-name (ffip-project-root))))
+  (file-relative-name (buffer-file-name)
+                      (expand-file-name (with-project-root
+                                            (cdr project-details)))))
 
 (defun message-buffer-name()
   (interactive)
-  (message (ffip-get-buffer-name)))
+  (message (get-buffer-name)))
 
 (defun os-copy (&optional b e)
   (interactive "r")
@@ -186,7 +192,8 @@ Return a list of installed packages or nil for every package not installed."
 
 (defun tmux-copy-buffer-name (&optional b e)
   (interactive "r")
-  (shell-command (concat "echo " (shell-quote-argument (ffip-get-buffer-name)) " | tmux loadb -")))
+  (shell-command (concat "echo " (shell-quote-argument (ffip-get-buffer-name))
+                         " | tmux loadb -")))
 
 ;; =============================================================================
 ;;                                                                       Flymake
@@ -207,7 +214,9 @@ Return a list of installed packages or nil for every package not installed."
 
 ;; Load flymake on non-temp buffers
 (add-hook 'python-mode-hook
-          (lambda () (unless (or (eq buffer-file-name nil) (eq (file-name-directory buffer-file-name) nil)) (flymake-mode 1))))
+          (lambda () (unless (or (eq buffer-file-name nil)
+                            (eq (file-name-directory buffer-file-name) nil))
+                  (flymake-mode 1))))
 
 ;; =============================================================================
 ;;                                                                        Python
@@ -243,7 +252,8 @@ Return a list of installed packages or nil for every package not installed."
   (condition-case ex
       (let ((project-root (with-project-root (cdr project-details))))
         (cl-remove-if-not 'file-exists-p
-                          (mapcar (lambda (env-suffix) (concat project-root env-suffix))
+                          (mapcar (lambda (env-suffix)
+                                    (concat project-root env-suffix))
                                   '(".tox/py27/" "env" ".tox/venv/"))))
     ('error
             (message (format "Caught exception: [%s]" ex))
@@ -295,8 +305,7 @@ Return a list of installed packages or nil for every package not installed."
 (global-set-key (kbd "C-x C-r") (lambda () (interactive) (revert-buffer t t)))
 (global-set-key (kbd "M-g") 'goto-line)
 (global-set-key (kbd "C-c C-c") 'comment-dwim)
-(global-set-key (kbd "C-c t") 'testify-run-test)
-(global-set-key (kbd "C-c C-o") 'testify-run-case)
+(global-set-key (kbd "C-c t") 'pytest-one)
 (global-set-key (kbd "C-c e") 'os-copy)
 (global-set-key (kbd "C-x O") (lambda () (interactive) (other-window -1)))
 (global-set-key (kbd "C-x C-c") 'kill-emacs)
@@ -338,31 +347,18 @@ Return a list of installed packages or nil for every package not installed."
 (require 'rainbow-delimiters)
 
 ;; make whitespace-mode use just basic coloring
-(setq whitespace-style (quote (spaces tabs newline space-mark tab-mark newline-mark)))
+(setq whitespace-style (quote (spaces tabs newline space-mark
+                                      tab-mark newline-mark)))
 (setq whitespace-display-mappings
       '((space-mark 32 [183] [46]) 
         (tab-mark 9 [9655 9] [92 9])))
 
-;; (set-face-background 'mode-line "black")
-;; (set-face-foreground 'mode-line "white")
-;; (set-face-background 'mode-line-inactive "black")
-
-;; Customize font-faces
-;; (custom-set-faces
-;;  ;; custom-set-faces was added by Custom.
-;;  ;; If you edit it by hand, you could mess it up, so be careful.
-;;  ;; Your init file should contain only one such instance.
-;;  ;; If there is more than one, they won't work right.
-;;  '(flymake-errline ((((class color)) (:background "DarkViolet"))))
-;;  '(flymake-warnline ((((class color)) (:underline "Orange"))))
-;;  '(rainbow-delimiters-depth-1-face ((t (:foreground "green"))))
-;;  '(rainbow-delimiters-depth-2-face ((t (:foreground "blue"))))
-;;  '(rainbow-delimiters-depth-3-face ((t (:foreground "magenta"))))
-;;  '(rainbow-delimiters-depth-4-face ((t (:foreground "yellow"))))
-;;  '(rainbow-delimiters-depth-5-face ((t (:foreground "cyan"))))
-;;  '(rainbow-delimiters-depth-7-face ((t (:foreground "blue"))))
-;;  '(rainbow-delimiters-depth-8-face ((t (:foreground "yellow"))))
-;;  '(rainbow-delimiters-depth-9-face ((t (:foreground "magenta")))))
+(require 'ansi-color)
+(defun colorize-compilation-buffer ()
+  (toggle-read-only)
+  (ansi-color-apply-on-region (point-min) (point-max))
+  (toggle-read-only))
+(add-hook 'compilation-filter-hook 'colorize-compilation-buffer)
 
 ;; =============================================================================
 ;;                                                                     Customize
@@ -372,9 +368,9 @@ Return a list of installed packages or nil for every package not installed."
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- '(custom-safe-themes (quote ("60f04e478dedc16397353fb9f33f0d895ea3dab4f581307fbf0aa2f07e658a40" default)))
+ '(custom-safe-themes (quote ("8aebf25556399b58091e533e455dd50a6a9cba958cc4ebb0aab175863c25b9a4" "1affe85e8ae2667fb571fc8331e1e12840746dae5c46112d5abb0c3a973f5f5a" "9bac44c2b4dfbb723906b8c491ec06801feb57aa60448d047dbfdbd1a8650897" "b1471d88b39cad028bd621ae7ae1e8e3e3fca2c973f0dfe3fd6658c194a542ff" "a774c5551bc56d7a9c362dca4d73a374582caedb110c201a09b410c0ebbb5e70" "e16a771a13a202ee6e276d06098bc77f008b73bbac4d526f160faa2d76c1dd0e" "60f04e478dedc16397353fb9f33f0d895ea3dab4f581307fbf0aa2f07e658a40" default)))
  '(reb-re-syntax (quote string))
- '(safe-local-variable-values (quote ((ffip-prune-patterns ".tox" ".git" "pip" "__pycache__" "*.egg-info" "build") (ffip-prune-patterns ".tox/*" ".git/*" "pip" "__pycache__" "*.pyc" "*.egg-info" "build") (ffip-prune-patterns quote (".tox/*" ".git/*" "pip" "__pycache__" "*.pyc" "*.egg-info" "build")) (ffip-prune-patterns quote (".tox" ".git" "pip" "__pycache__" "*.pyc" "*.egg-info" "build")) (ffip-prune-patterns quote (".tox" ".git")) (use-python-tabs . t) (python-indent . 4) (whitespace-line-column . 80) (lexical-binding . t)))))
+ '(safe-local-variable-values (quote ((pytest-cmd-flags . "-sx --enable-logger=okcupyd --enable-logger=requests") (pytest-cmd-flags . "-x --enable-logger=okcupyd --enable-logger=requests") (pytest-cmd-flags concat "-x" "--enable-logger=okcupyd" "--enable-logger=requests") (pytest-global-name . "tox -e py27 --") (ffip-prune-patterns ".tox" ".git" "pip" "__pycache__" "*.egg-info" "build") (ffip-prune-patterns ".tox/*" ".git/*" "pip" "__pycache__" "*.pyc" "*.egg-info" "build") (ffip-prune-patterns quote (".tox/*" ".git/*" "pip" "__pycache__" "*.pyc" "*.egg-info" "build")) (ffip-prune-patterns quote (".tox" ".git" "pip" "__pycache__" "*.pyc" "*.egg-info" "build")) (ffip-prune-patterns quote (".tox" ".git")) (use-python-tabs . t) (python-indent . 4) (whitespace-line-column . 80) (lexical-binding . t)))))
 
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
