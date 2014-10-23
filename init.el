@@ -49,7 +49,8 @@
                                   gitconfig-mode starter-kit-ruby mo-git-blame
                                   auto-complete project-root popup web-beautify
                                   js2-mode js3-mode sphinx-doc ansi-color pytest
-                                  exec-path-from-shell base16-theme)
+                                  exec-path-from-shell base16-theme slime
+                                  swank-js)
   "Packages that must be installed at launch.")
 
 (defun ensure-package-installed (packages)
@@ -154,6 +155,8 @@ Return a list of installed packages or nil for every package not installed."
 (setq custom-file "~/.emacs.d/custom.el")
 (when (file-exists-p custom-file) (load custom-file))
 
+(add-hook 'after-init-hook #'global-flycheck-mode)
+
 ;; =============================================================================
 ;;                                                                          Misc
 ;; =============================================================================
@@ -199,29 +202,6 @@ Return a list of installed packages or nil for every package not installed."
   (interactive "r")
   (shell-command (concat "echo " (shell-quote-argument (ffip-get-buffer-name))
                          " | tmux loadb -")))
-
-;; =============================================================================
-;;                                                                       Flymake
-;; =============================================================================
-
-(require 'flymake)
-(require 'flymake-cursor)
-
-(defun flymake-pylint-init ()
-  (let* ((temp-file (flymake-init-create-temp-buffer-copy
-                     'flymake-create-temp-inplace))
-         (local-file (file-relative-name
-                      temp-file
-                      (file-name-directory buffer-file-name))))
-    (list "pyflakes" (list local-file))))
-
-(add-to-list 'flymake-allowed-file-name-masks '("\\.py\\'" flymake-pylint-init))
-
-;; Load flymake on non-temp buffers
-(add-hook 'python-mode-hook
-          (lambda () (unless (or (eq buffer-file-name nil)
-                            (eq (file-name-directory buffer-file-name) nil))
-                  (flymake-mode 1))))
 
 ;; =============================================================================
 ;;                                                                        Python
@@ -309,7 +289,7 @@ Return a list of installed packages or nil for every package not installed."
 (global-set-key (kbd "C-x w") 'whitespace-mode)
 (global-set-key (kbd "C-x C-r") (lambda () (interactive) (revert-buffer t t)))
 (global-set-key (kbd "M-g") 'goto-line)
-(global-set-key (kbd "C-c C-c") 'comment-dwim)
+(global-set-key (kbd "C-M-;") 'comment-dwim)
 (global-set-key (kbd "C-c t") 'pytest-one)
 (global-set-key (kbd "C-c e") 'os-copy)
 (global-set-key (kbd "C-x O") (lambda () (interactive) (other-window -1)))
