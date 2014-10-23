@@ -31,23 +31,25 @@
 ;; =============================================================================
 
 (require 'package)
+(when (< emacs-major-version 24)
+  (add-to-list 'package-archives '("gnu" . "http://elpa.gnu.org/packages/") t))
 (add-to-list 'package-archives
-             '("melpa" . "http://melpa.milkbox.net/packages/") t)
+             '("marmalade" . "http://marmalade-repo.org/packages/") t) 
 (add-to-list 'package-archives
-             '("marmalade" . "http://marmalade-repo.org/packages/")) 
+             '("melpa" . "http://melpa.org/packages/") t)
 (package-initialize)
 
-(defvar my-packages '(color-theme cl-lib ctags ctags-update flymake mo-git-blame
-                                  multiple-cursors latex-preview-pane pytest
-                                  starter-kit-bindings zenburn-theme jedi
+(defvar my-packages '(color-theme cl-lib ctags ctags-update flycheck ensime 
+                                  multiple-cursors latex-preview-pane pytest epl
+                                  starter-kit-bindings zenburn-theme jedi tern
                                   starter-kit magit ido-ubiquitous monokai-theme
                                   idle-highlight-mode find-file-in-project smex
                                   paredit inf-ruby undo-tree rainbow-delimiters
-                                  solarized-theme scala-mode2 ensime 
-                                  gitconfig-mode flymake-cursor starter-kit-ruby
+                                  solarized-theme tern-auto-complete scala-mode2
+                                  gitconfig-mode starter-kit-ruby mo-git-blame
                                   auto-complete project-root popup web-beautify
                                   js2-mode js3-mode sphinx-doc ansi-color pytest
-                                  exec-path-from-shell tern tern-auto-complete)
+                                  exec-path-from-shell base16-theme)
   "Packages that must be installed at launch.")
 
 (defun ensure-package-installed (packages)
@@ -103,7 +105,7 @@ Return a list of installed packages or nil for every package not installed."
 ;; Display line and column numbers in mode line.
 (line-number-mode t)
 (column-number-mode t)
-(global-linum-mode t)
+;;(global-linum-mode t)
 
 ;; Don't disable downcase and upcase region.
 (put 'upcase-region 'disabled nil)
@@ -148,6 +150,9 @@ Return a list of installed packages or nil for every package not installed."
          :filename-regex (regexify-ext-list '(py)))
         ("Git project"
          :root-contains-files (".git"))))
+
+(setq custom-file "~/.emacs.d/custom.el")
+(when (file-exists-p custom-file) (load custom-file))
 
 ;; =============================================================================
 ;;                                                                          Misc
@@ -359,22 +364,3 @@ Return a list of installed packages or nil for every package not installed."
   (ansi-color-apply-on-region (point-min) (point-max))
   (toggle-read-only))
 (add-hook 'compilation-filter-hook 'colorize-compilation-buffer)
-
-;; =============================================================================
-;;                                                                     Customize
-;; =============================================================================
-(custom-set-variables
- ;; custom-set-variables was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
- '(custom-safe-themes (quote ("de2c46ed1752b0d0423cde9b6401062b67a6a1300c068d5d7f67725adc6c3afb" "e53cc4144192bb4e4ed10a3fa3e7442cae4c3d231df8822f6c02f1220a0d259a" "41b6698b5f9ab241ad6c30aea8c9f53d539e23ad4e3963abff4b57c0f8bf6730" "51bea7765ddaee2aac2983fac8099ec7d62dff47b708aa3595ad29899e9e9e44" "8aebf25556399b58091e533e455dd50a6a9cba958cc4ebb0aab175863c25b9a4" "1affe85e8ae2667fb571fc8331e1e12840746dae5c46112d5abb0c3a973f5f5a" "9bac44c2b4dfbb723906b8c491ec06801feb57aa60448d047dbfdbd1a8650897" "b1471d88b39cad028bd621ae7ae1e8e3e3fca2c973f0dfe3fd6658c194a542ff" "a774c5551bc56d7a9c362dca4d73a374582caedb110c201a09b410c0ebbb5e70" "e16a771a13a202ee6e276d06098bc77f008b73bbac4d526f160faa2d76c1dd0e" "60f04e478dedc16397353fb9f33f0d895ea3dab4f581307fbf0aa2f07e658a40" default)))
- '(reb-re-syntax (quote string))
- '(safe-local-variable-values (quote ((pytest-cmd-flags . "-sx --enable-logger=okcupyd --enable-logger=requests") (pytest-cmd-flags . "-x --enable-logger=okcupyd --enable-logger=requests") (pytest-cmd-flags concat "-x" "--enable-logger=okcupyd" "--enable-logger=requests") (pytest-global-name . "tox -e py27 --") (ffip-prune-patterns ".tox" ".git" "pip" "__pycache__" "*.egg-info" "build") (ffip-prune-patterns ".tox/*" ".git/*" "pip" "__pycache__" "*.pyc" "*.egg-info" "build") (ffip-prune-patterns quote (".tox/*" ".git/*" "pip" "__pycache__" "*.pyc" "*.egg-info" "build")) (ffip-prune-patterns quote (".tox" ".git" "pip" "__pycache__" "*.pyc" "*.egg-info" "build")) (ffip-prune-patterns quote (".tox" ".git")) (use-python-tabs . t) (python-indent . 4) (whitespace-line-column . 80) (lexical-binding . t)))))
-
-(custom-set-faces
- ;; custom-set-faces was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
- '(default ((t (:background nil)))))
