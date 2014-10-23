@@ -208,15 +208,15 @@ function pip_package_location() {
 }
 
 function set_modifier_keys_for_vendor_product_id() {
-    defaults -currentHost write -g com.apple.keyboard.modifiermapping.$1-0 '(
-{
-  HIDKeyboardModifierMappingDst = 2;
-  HIDKeyboardModifierMappingSrc = 0;
-})'
+    local mapping="<dict><key>HIDKeyboardModifierMappingDst</key><integer>$3</integer><key>HIDKeyboardModifierMappingSrc</key><integer>$2</integer></dict>"
+    echo $mapping
+    defaults -currentHost write -g com.apple.keyboard.modifiermapping.$1-0 -array-add "$mapping"
 }
 
 function set_modifier_keys_on_all_keyboards() {
-    for vendor_product_id in $(get_keyboard_vendor_id_product_id_pairs | tr " " "-"); do set_modifier_keys_for_vendor_product_id $vendor_product_id; echo $vendor_product_id; done;
+    for vendor_product_id in $(get_keyboard_vendor_id_product_id_pairs | tr " " "-"); do
+        set_modifier_keys_for_vendor_product_id $vendor_product_id 0 2; echo $vendor_product_id;
+    done;
 }
 
 function get_keyboard_vendor_id_product_id_pairs() {

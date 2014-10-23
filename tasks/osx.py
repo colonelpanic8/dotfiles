@@ -35,7 +35,7 @@ MISC = ("file-formula", "less", "openssh --with-brewed-openssl",
         "perl518", "rsync", "svn", "unzip", "docker", "boot2docker", "pandoc",
         "mercurial")
 CASKS = ('caffeine', 'flux', 'google-chrome', 'iterm2', 'spotify',
-         'vlc', 'virtualbox', 'xquartz', 'synergy', 'slate')
+         'vlc', 'virtualbox', 'xquartz', 'synergy', 'slate', 'seil')
 
 
 @ctask
