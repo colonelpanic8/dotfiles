@@ -6,12 +6,16 @@ var grid = slate.op("grid", {
     "1920x1080": {"width": 8, "height": 6}
   }
 });
+
 slate.bindAll({
   "esc:cmd": hint,
-  "space:alt": grid
+  "space:alt": grid,
+  "tab:cmd": slate.op("switch")
 });
+
 slate.configAll({
   windowHintsIgnoreHiddenWindows: false,
   windowHintsShowIcons: true,
-  windowHintsSpread: true
+  windowHintsSpread: true,
+  switchShowTitles: true
 });
