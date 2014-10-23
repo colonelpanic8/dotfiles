@@ -12,3 +12,5 @@ dotfiles
 numpy
 readline
 Flask
+flake8
+pylint

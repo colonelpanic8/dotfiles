@@ -293,3 +293,18 @@ function reload_root_agent {
 function ec {
     emacsclient -n $1 > /dev/null
 }
+
+function enable_access_for_assistive_devices {
+    local bundle_identifier=$(/usr/libexec/PlistBuddy -c 'Print CFBundleIdentifier' "$1/Contents/Info.plist")
+    local where_clause="where service='kTCCServiceAccessibility' and client='$bundle_identifier'"
+    local search_string="SELECT * from access ${where_clause};"
+    local values_string="VALUES('kTCCServiceAccessibility','$bundle_identifier',0,1,1,NULL)"
+    if test -z $(sudo sqlite3 '/Library/Application Support/com.apple.TCC/TCC.db' $search_string);
+    then
+        local sql_string="INSERT INTO access $values_string;"
+    else
+        local sql_string="UPDATE access set allowed = 1 ${where_clause};"
+    fi
+    echo $sql_string
+    sudo sqlite3 '/Library/Application Support/com.apple.TCC/TCC.db' $sql_string
+}
