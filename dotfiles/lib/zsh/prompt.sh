@@ -93,7 +93,7 @@ function separator() {
 }
 
 prompt_basic_colors_with_grey_separator
-PROMPT='╭─% $(print_with_color "%n" "$USERNAME_COLOR") $(separator "at") $(print_with_color "`hostname -s`" "$HOSTNAME_COLOR") $(separator "in") $(print_with_color "`current_directory`" "$terminfo[bold]$CURRENT_DIRECTORY_COLOR")$(git_prompt_info)$(sandbox_prompt)
+PROMPT='╭─% $(print_with_color "%n" "$USERNAME_COLOR") $(separator "at") $(print_with_color "`hostname -s`" "$HOSTNAME_COLOR") $(separator "in") $(print_with_color "`current_directory`" "$CURRENT_DIRECTORY_COLOR")$(git_prompt_info)$(sandbox_prompt)
 ╰─$(command_line_character) '
 
 PS2='(%_) '
