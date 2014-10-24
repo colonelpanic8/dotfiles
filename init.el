@@ -49,7 +49,8 @@
                                   gitconfig-mode starter-kit-ruby mo-git-blame
                                   auto-complete project-root popup web-beautify
                                   js2-mode js3-mode sphinx-doc ansi-color pytest
-                                  exec-path-from-shell base16-theme slime)
+                                  exec-path-from-shell base16-theme slime
+                                  string-inflection)
   "Packages that must be installed at launch.")
 
 (defun ensure-package-installed (packages)
@@ -86,9 +87,16 @@ Return a list of installed packages or nil for every package not installed."
 ;; This makes it so that emacs --daemon puts its files in ~/.emacs.d/server
 ;;(setq server-use-tcp t)
 
+(put 'set-goal-column 'disabled nil)
+
+(if (fboundp 'scroll-bar-mode) (scroll-bar-mode -1))
+(if (fboundp 'tool-bar-mode) (tool-bar-mode -1))
+(if (fboundp 'menu-bar-mode) (menu-bar-mode -1))
+
 ;; Set the default font for emacs.
-;;(set-face-attribute 'default t :font "Monaco for Powerline")
-;;(set-frame-font "Monaco" t t)
+;;(set-face-attribute 'default t :font "Deja Vu")
+;;(set-frame-font "Deja Vu Sans Mono" t t)
+
 ;;(set-face-attribute 'default nil :height 80)
 
 ;; Enable ido mode.
@@ -128,6 +136,8 @@ Return a list of installed packages or nil for every package not installed."
 
 (add-hook 'prog-mode-hook 'no-auto-fill-hook)
 (add-hook 'prog-mode-hook 'rainbow-delimiters-mode)
+(add-hook 'prog-mode-hook  (lambda () (subword-mode 1)))
+(add-hook 'js-mode (lambda () (subword-mode 1)))
 (add-hook 'prog-mode-hook (lambda () (highlight-lines-matching-regexp
                                  ".\\{81\\}" 'hi-blue)))
 (remove-hook 'text-mode-hook #'turn-on-auto-fill)
@@ -258,29 +268,27 @@ Return a list of installed packages or nil for every package not installed."
 (fset 'ipdb "import ipdb; ipdb.set_trace()")
 
 ;; =============================================================================
-;;                                                                    JavaScript
-;; =============================================================================
-
-(add-hook 'js-mode-common-hook (lambda () (subword-mode 1)))
-(add-hook 'js-mode (lambda () (subword-mode 1)))
-
-;; =============================================================================
 ;;                                                                         Scala
 ;; =============================================================================
 
 (require 'ensime)
+(require 'scala-mode2)
 (add-hook 'scala-mode-hook 'ensime-scala-mode-hook)
-(add-hook 'scala-mode-hook (lambda () (subword-mode 1)))
+(add-hook 'scala-mode-hook '(lambda ()
+  (require 'whitespace)
 
+  ;; clean-up whitespace at save
+  (make-local-variable 'before-save-hook)
+  (add-hook 'before-save-hook 'whitespace-cleanup)
+
+  ;; turn on highlight. To configure what is highlighted, customize
+  ;; the *whitespace-style* variable. A sane set of things to
+  ;; highlight is: face, tabs, trailing
+  (whitespace-mode)
+))
 ;; =============================================================================
 ;;                                                           Custom Key Bindings
 ;; =============================================================================
-
-;; Fast cursor movement in vertical direction with Meta.
-(global-set-key (kbd "M-n") (lambda () (interactive) (next-line 5)))
-(global-set-key (kbd "M-p") (lambda () (interactive) (previous-line 5)))
-(global-set-key (kbd "ESC n") (lambda () (interactive) (next-line 5)))
-(global-set-key (kbd "ESC p") (lambda () (interactive) (previous-line 5)))
 
 ;; Miscellaneous
 (global-set-key (kbd "C-x C-b") 'buffer-menu)
@@ -331,7 +339,7 @@ Return a list of installed packages or nil for every package not installed."
 (require 'rainbow-delimiters)
 
 ;; make whitespace-mode use just basic coloring
-(setq whitespace-style (quote (spaces tabs newline space-mark
+(setq whitespace-style (quote (spaces tabs newline ;;space-mark
                                       tab-mark newline-mark)))
 (setq whitespace-display-mappings
       '((space-mark 32 [183] [46]) 
