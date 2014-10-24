@@ -91,6 +91,14 @@ function prompt_tomorrow_colors() {
     export SOURCE_CONTROL_COLOR="$fg[white]"
 }
 
+function prompt_monokai_colors() {
+    export SEPARATOR_COLOR="$fg[black]"
+    export HOSTNAME_COLOR="$fg[blue]"
+    export USERNAME_COLOR="$fg[red]"
+    export CURRENT_DIRECTORY_COLOR="$fg[magenta]"
+    export SOURCE_CONTROL_COLOR="$fg[white]"
+}
+
 function prompt_basic_colors_with_grey_separator() {
     prompt_basic_colors
     export SEPARATOR_COLOR="$FG[239]"

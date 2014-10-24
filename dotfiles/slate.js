@@ -9,8 +9,7 @@ var grid = slate.op("grid", {
 
 slate.bindAll({
   "esc:cmd": hint,
-  "space:alt": grid,
-  "tab:cmd": slate.op("switch")
+  "space:alt": grid
 });
 
 slate.configAll({
