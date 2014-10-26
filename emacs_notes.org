@@ -1,0 +1,20 @@
+Emacs Notes -*- mode: org -*-
+
+** C-x z to repeat last command
+** F3 to define macro F4 to use macro
+*** Great in combinatino with C-u
+** C-x r (space to set register) (j to jump to register)
+*** This requires you to enter a number after words
+*** This is SUPER SUPER useful
+
+** C-u to repeat a command
+*** Its multiplicative
+
+** set-goal-column C-x C-n
+** C-x C-n                
+** M-- To do the opposite of a commands
+*** Obviously this only works for commands for which the inverse has been defined
+
+** M-e and M-a for paragraph movement.
+** C-M-f and C-M-b for movement by S-expression
+** M-m for moving to current indentation

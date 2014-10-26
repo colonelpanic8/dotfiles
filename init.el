@@ -50,7 +50,7 @@
                                   auto-complete project-root popup web-beautify
                                   js2-mode js3-mode sphinx-doc ansi-color pytest
                                   exec-path-from-shell base16-theme slime
-                                  string-inflection)
+                                  string-inflection yasnippet)
   "Packages that must be installed at launch.")
 
 (defun ensure-package-installed (packages)
@@ -93,6 +93,10 @@ Return a list of installed packages or nil for every package not installed."
 (if (fboundp 'tool-bar-mode) (tool-bar-mode -1))
 (if (fboundp 'menu-bar-mode) (menu-bar-mode -1))
 
+;; Evvvillll
+(setq use-dialog-box nil)
+
+
 ;; Set the default font for emacs.
 ;;(set-face-attribute 'default t :font "Deja Vu")
 ;;(set-frame-font "Deja Vu Sans Mono" t t)
@@ -113,7 +117,7 @@ Return a list of installed packages or nil for every package not installed."
 ;; Display line and column numbers in mode line.
 (line-number-mode t)
 (column-number-mode t)
-;;(global-linum-mode t)
+(global-linum-mode t)
 
 ;; Don't disable downcase and upcase region.
 (put 'upcase-region 'disabled nil)
