@@ -44,14 +44,25 @@ hyperBindAll({
     width: "screenSizeX",
     height: "screenSizeY"
   }),
-  q: quarterCorner("top-left"),
-  w: quarterCorner("top-right"),
-  a: quarterCorner("bottom-left"),
-  s: quarterCorner("bottom-right"),
+  q: slate.op("corner", {
+    direction: "top-left",
+    width: "screenSizeX/2",
+    height: "screenSizeY"
+  }),
+  w: slate.op("corner", {
+    direction: "top-right",
+    width: "screenSizeX/2",
+    height: "screenSizeY"
+  }),
+  a: quarterCorner("top-left"),
+  s: quarterCorner("top-right"),
+  z: quarterCorner("bottom-left"),
+  x: quarterCorner("bottom-right"),
   // App focus
   e: focusApp("Emacs"),
   c: focusApp("Google Chrome"),
   t: focusApp("iTerm"),
+  m: focusApp("Spotify"),
   // Slate operations
   r: slate.op("relaunch"),
   u: slate.op("undo")

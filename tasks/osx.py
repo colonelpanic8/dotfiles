@@ -91,7 +91,10 @@ def enable_access_for_assistive_devices(ctx):
         user_application = os.path.expanduser('~' + app_string)
         enable_access_if_exists(ctx, user_application)
         enable_access_if_exists(ctx, app_string)
-        enable_access_if_exists("/Applications/Karabiner.app/Contents/Applications/Karabiner_AXNotifier.app")
+        enable_access_if_exists(
+            ctx,
+            "/Applications/Karabiner.app/Contents/Applications/Karabiner_AXNotifier.app"
+        )
 
 
 def enable_access_if_exists(ctx, app_string):
