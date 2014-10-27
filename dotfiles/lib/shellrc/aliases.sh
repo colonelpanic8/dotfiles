@@ -1,6 +1,3 @@
-alias emacs="emacsclient -c -n --server-filename=$(pwd)"
-alias temacs="emacsclient -t"
-alias cemacs="emacsclient -c -n"
 alias tmux="tmux -2"
 alias reload_tmux_conf="tmux source-file .tmux.conf"
 alias tmux_cb_to_remote_cb='tmux saveb - | linux_nc_paste_to_remote_clipboard'
