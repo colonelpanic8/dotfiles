@@ -59,7 +59,7 @@ def brew_cask(ctx):
 @ctask
 def get_brew(ctx):
     if not util.command_exists('brew'):
-        ctx.run('ruby -e "$(curl -fsSL https://raw.github.com/Homebrew/homebrew/go/install)"')
+        ctx.run('ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"')
 
 @ctask
 def brew_install(ctx):

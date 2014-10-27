@@ -19,10 +19,11 @@ if is_osx; then
     export CFLAGS=-Qunused-arguments
     export CPPFLAGS=-Qunused-arguments
     add_to_back_of_path "/System/Library/PrivateFrameworks/Apple80211.framework/Versions/Current/Resources/"
+    export JAVA_HOME="$(find /Library/Java/JavaVirtualMachines -depth 1 | head -n 1)/Contents/Home"
+    add_to_front_of_path "$JAVA_HOME/bin"
+    # Access gnu man pages.
+    hash brew 2> /dev/null && export MANPATH="$(brew --prefix)/opt/coreutils/libexec/gnuman:$MANPATH"
 fi
 
 add_to_back_of_path "$(dotfiles_directory)/resources/python"
 add_to_back_of_path "/usr/local/sbin"
-
-# Access gnu man pages.
-hash brew 2> /dev/null && MANPATH="$(brew --prefix)/opt/coreutils/libexec/gnuman:$MANPATH"
