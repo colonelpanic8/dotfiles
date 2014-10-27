@@ -1,4 +1,4 @@
-alias emacs="emacsclient -c -n"
+alias emacs="emacsclient -c -n --server-filename=$(pwd)"
 alias temacs="emacsclient -t"
 alias cemacs="emacsclient -c -n"
 alias tmux="tmux -2"
