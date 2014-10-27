@@ -25,4 +25,4 @@ add_to_back_of_path "$(dotfiles_directory)/resources/python"
 add_to_back_of_path "/usr/local/sbin"
 
 # Access gnu man pages.
-MANPATH="$(brew --prefix)/opt/coreutils/libexec/gnuman:$MANPATH"
+hash brew 2> /dev/null && MANPATH="$(brew --prefix)/opt/coreutils/libexec/gnuman:$MANPATH"
