@@ -155,14 +155,26 @@ Return a list of installed packages or nil for every package not installed."
 
 (require 'project-root)
 (setq project-roots
-      `(("Tox Project"
+      `(("ensisme project"
+         :root-contains-files (".ensime")
+         :filename-regex ,(regexify-ext-list '(scala sbt))
+         :exclude-paths ("build" "target" ".ensime_cache" ".git"))
+        ("tox project"
          :root-contains-files ("tox.ini")
-         :filename-regex (regexify-ext-list '(py)))
-        ("Python Project"
+         :filename-regex ,(regexify-ext-list '(py)))
+        (".emacs.d project"
+         :root-contains-files ("init.el")
+         :filename-regex ,(regexify-ext-list '(el))
+         :exclude-paths (".git"))
+        ("python project"
          :root-contains-files (".git" "setup.py")
-         :filename-regex (regexify-ext-list '(py)))
-        ("Git project"
-         :root-contains-files (".git"))))
+         :filename-regex ,(regexify-ext-list '(py)))
+        ("git project"
+         :root-contains-files (".git"))
+        ("sbt project"
+         :root-contains-files ("build.sbt")
+         :filename-regex ,(regexify-ext-list '(scala sbt))
+         :exclude-paths ("build" "target"))))
 
 (setq custom-file "~/.emacs.d/custom.el")
 (when (file-exists-p custom-file) (load custom-file))
@@ -298,6 +310,7 @@ Return a list of installed packages or nil for every package not installed."
 (global-unset-key (kbd "C-o"))
 (global-set-key (kbd "C-x w") 'whitespace-mode)
 (global-set-key (kbd "C-x C-r") (lambda () (interactive) (revert-buffer t t)))
+(global-set-key (kbd "C-x f") 'project-root-find-file)
 (global-set-key (kbd "M-g") 'goto-line)
 (global-set-key (kbd "C-M-;") 'comment-dwim)
 (global-set-key (kbd "C-c t") 'pytest-one)
