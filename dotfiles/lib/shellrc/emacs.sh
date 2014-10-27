@@ -1,12 +1,14 @@
-alias emacs='_emacs -c'
-alias cemacs'_emacs -c'
-alias temacs'_emacs -t'
+alias emacs='cemacs'
+alias cemacs='_emacs -c -n'
+alias temacs='_emacs -t'
 
 function _emacs {
-    test -z "$(ps aux | grep -v grep | grep -i "\emacs -nw --daemon=.*`dotted_directory`")" && \emacs --daemon="$(dotted_directory)"
-    emacsclient $* -n --server-file="$(dotted_directory)"
+    local directory="$(git rev-parse --show-toplevel 2> /dev/null || pwd)"
+    local server_name="$(_dot_directory $directory)"
+    test -z "$(ps aux | grep -v grep | grep -i "emacs -nw --daemon=.*$server_name$")" &&  echo "Starting emacs with server name \'$server_name'" && \emacs --daemon="$server_name"
+    emacsclient $* --server-file="$server_name"
 }
 
-function dotted_directory {
-    pwd | sed "s:/:.:g"
+function _dot_directory {
+    echo $1 | sed "s:/:.:g"
 }
