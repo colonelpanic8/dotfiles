@@ -290,10 +290,6 @@ function reload_root_agent {
     as_user 'root' "/bin/launchctl load '$1'"
 }
 
-function ec {
-    emacsclient -n $1 > /dev/null
-}
-
 function enable_access_for_assistive_devices {
     local bundle_identifier=$(/usr/libexec/PlistBuddy -c 'Print CFBundleIdentifier' "$1/Contents/Info.plist")
     local where_clause="where service='kTCCServiceAccessibility' and client='$bundle_identifier'"
