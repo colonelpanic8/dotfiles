@@ -75,3 +75,11 @@ function set_modifier_keys_on_all_keyboards() {
 function get_keyboard_vendor_id_product_id_pairs() {
     ioreg -n IOHIDKeyboard -r | grep -e 'class IOHIDKeyboard' -e VendorID\" -e Product | gawk 'BEGIN { RS = "class IOHIDKeyboard" } match($0, /VendorID. = ([0-9]*)/, arr) { printf arr[1]} match($0, /ProductID. = ([0-9]*)/, arr) { printf " %s\n", arr[1]} '
 }
+
+function set_osx_hostname() {
+    local new_hostname="${1-imalison}"
+    sudo scutil --set ComputerName $new_hostname
+    sudo scutil --set HostName $new_hostname
+    sudo scutil --set LocalHostName $new_hostname
+    sudo defaults write /Library/Preferences/SystemConfiguration/com.apple.smb.server NetBIOSName -string $new_hostname
+}

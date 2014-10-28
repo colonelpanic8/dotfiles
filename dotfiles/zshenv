@@ -1,25 +1,30 @@
-# ssh, scp, ping, host
-zstyle ':completion:*:scp:*' tag-order \
-      'hosts:-host hosts:-domain:domain hosts:-ipaddr:IP\ address *'
-zstyle ':completion:*:scp:*' group-order \
-      users files all-files hosts-domain hosts-host hosts-ipaddr
-zstyle ':completion:*:ssh:*' tag-order \
-      users 'hosts:-host hosts:-domain:domain hosts:-ipaddr:IP\ address *'
-zstyle ':completion:*:ssh:*' group-order \
-      hosts-domain hosts-host users hosts-ipaddr
+source ~/.lib/shellrc/functions.sh
+function add_to_front_of_path {
+    export PATH=$@:$(echo $PATH | sed "s|:*$@||g" | sed "s|^:||")
+}
 
-zstyle ':completion:*:(ssh|scp):*:hosts-host' ignored-patterns \
-      '*.*' loopback localhost
-zstyle ':completion:*:(ssh|scp):*:hosts-domain' ignored-patterns \
-      '<->.<->.<->.<->' '^*.*' '*@*'
-zstyle ':completion:*:(ssh|scp):*:hosts-ipaddr' ignored-patterns \
-      '^<->.<->.<->.<->' '127.0.0.<->'
-zstyle ':completion:*:(ssh|scp):*:users' ignored-patterns \
-      adm bin daemon halt lp named shutdown sync
+function add_to_back_of_path {
+    export PATH=$(echo $PATH | sed "s|:*$@||g" | sed "s|^:||"):$@
+}
 
-zstyle -e ':completion:*:(ssh|scp):*' hosts 'reply=(
-      ${=${${(f)"$(cat {/etc/ssh_,~/.ssh/known_}hosts(|2)(N) \
-                      /dev/null)"}%%[# ]*}//,/ }
-      ${=${(f)"$(cat /etc/hosts(|)(N) <<(ypcat hosts 2>/dev/null))"}%%\#*}
-      ${=${${${${(@M)${(f)"$(<~/.ssh/config)"}:#Host *}#Host }:#*\**}:#*\?*}}
-      )'
+add_to_back_of_path "$HOME/.local/lib/python2.6/site-packages"
+hash brew 2>/dev/null && add_to_front_of_path "$(brew --prefix coreutils)/libexec/gnubin"
+add_to_front_of_path "/usr/local/bin"
+hash brew 2>/dev/null && add_to_front_of_path "$(brew --prefix emacs)/libexec/gnubin"
+
+if is_osx; then
+    export CFLAGS=-Qunused-arguments
+    export CPPFLAGS=-Qunused-arguments
+    add_to_back_of_path "/System/Library/PrivateFrameworks/Apple80211.framework/Versions/Current/Resources/"
+    export JAVA_HOME="$(find /Library/Java/JavaVirtualMachines -depth 1 | head -n 1)/Contents/Home"
+    # Access gnu man pages.
+    hash brew 2> /dev/null && export MANPATH="$(brew --prefix)/opt/coreutils/libexec/gnuman:$MANPATH"
+else 
+    export JAVA_HOME="$(update-alternatives --config java | get_cols ' -1' | head -n 1)"
+    is_osx && export VISUAL="which emacsclient -c -n"
+fi
+
+add_to_front_of_path "$JAVA_HOME/bin"
+
+add_to_back_of_path "$(dotfiles_directory)/resources/python"
+add_to_back_of_path "/usr/local/sbin"
