@@ -40,7 +40,7 @@
 (package-initialize)
 
 (defvar my-packages 
-  '(cl-lib ctags ctags-update flycheck ensime pymacs
+  '(cl-lib ctags ctags-update flycheck ensime pymacs color-theme
            multiple-cursors latex-preview-pane pytest epl
            starter-kit-bindings zenburn-theme jedi tern
            starter-kit magit ido-ubiquitous monokai-theme
@@ -371,10 +371,27 @@ Return a list of installed packages or nil for every package not installed."
 ;;                                                                    Appearance
 ;; =============================================================================
 
-(defvar my-themes '(monokai solarized-dark zenburn base16-default))
-(defvar my-theme (nth (random (length my-themes)) my-themes))
-(load-theme 'solarized-dark t)
+;; Choose random theme:
+;; (defvar my-themes '(monokai solarized-dark zenburn base16-default))
+;; (defvar my-theme (nth (random (length my-themes)) my-themes))
 
+(defun get-appropriate-solarized-theme ()
+  (let ((hour
+         (string-to-number (format-time-string "%H"))))
+    (if (or (< hour 6) (> hour 20))
+        'solarized-dark 'solarized-light)))
+
+(setq current-theme nil)
+
+(defun set-solarized-theme ()
+  (interactive)
+  (let ((appropriate-theme (get-appropriate-solarized-theme)))
+        (if (eq appropriate-theme current-theme)
+            nil
+          (progn (load-theme appropriate-theme t)
+                 (setq current-theme appropriate-theme)))))
+
+(run-at-time "12:00" 3600 'set-solarized-theme)
 
 (require 'color-theme)
 (require 'whitespace)
