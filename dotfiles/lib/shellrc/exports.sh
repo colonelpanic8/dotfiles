@@ -4,9 +4,9 @@ elif infocmp xterm-256color >/dev/null 2>&1; then
     export TERM=xterm-256color
 fi
 # Make emacs the default editor.
-export EDITOR="emacsclient -cn"
+export EDITOR="$(which emacsclient) -t"
 export ALTERNATE_EDITOR=""
-export VISUAL="emacsclient"
+export VISUAL="$EDITOR"
 
 # Larger bash history (allow 32³ entries; default is 500)
 export HISTSIZE=32768
@@ -24,3 +24,7 @@ export LESS_TERMCAP_md="$ORANGE"
 
 # Don’t clear the screen after quitting a manual page
 export MANPAGER="less -X"
+
+dircolors_file="$HOME/.dircolors"
+
+[ ! -z "$SHELL" ] && test -r $dircolors_files  && eval "$(dircolors $dircolors_file)"

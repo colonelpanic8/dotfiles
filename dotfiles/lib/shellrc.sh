@@ -24,6 +24,7 @@ if is_osx; then
     hash brew 2> /dev/null && export MANPATH="$(brew --prefix)/opt/coreutils/libexec/gnuman:$MANPATH"
 else 
     export JAVA_HOME="$(update-alternatives --config java | get_cols ' -1' | head -n 1)"
+    is_osx && export VISUAL="which emacsclient -c -n"
 fi
 
 add_to_front_of_path "$JAVA_HOME/bin"
