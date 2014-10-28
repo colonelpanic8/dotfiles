@@ -23,3 +23,5 @@ TAGS
 
 *.sw*
 *.tmp*
+projectile.cache
+projectile-bookmarks.eld
