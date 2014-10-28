@@ -40,7 +40,7 @@
 (package-initialize)
 
 (defvar my-packages 
-  '(cl-lib ctags ctags-update flycheck ensime 
+  '(cl-lib ctags ctags-update flycheck ensime pymacs
            multiple-cursors latex-preview-pane pytest epl
            starter-kit-bindings zenburn-theme jedi tern
            starter-kit magit ido-ubiquitous monokai-theme
@@ -153,11 +153,12 @@ Return a list of installed packages or nil for every package not installed."
 (defun no-auto-fill-hook () (auto-fill-mode -1))
 
 (add-hook 'prog-mode-hook 'no-auto-fill-hook)
-(add-hook 'prog-mode-hook 'rainbow-delimiters-mode)
 (add-hook 'prog-mode-hook  (lambda () (subword-mode 1)))
 (add-hook 'js-mode (lambda () (subword-mode 1)))
+;; disabled hooks
 ;; (add-hook 'prog-mode-hook (lambda () (highlight-lines-matching-regexp
 ;;                                  ".\\{81\\}" 'hi-blue)))
+;; (add-hook 'prog-mode-hook 'rainbow-delimiters-mode)
 
 
 (setq flyspell-issue-welcome-flag nil)
@@ -170,6 +171,9 @@ Return a list of installed packages or nil for every package not installed."
 ;; enable-projectile
 (projectile-global-mode)
 (setq projectile-enable-caching t)
+(setq projectile-completion-system 'ido)
+;; This would be great if flx ever supported helm.
+;; (setq projectile-completion-system 'helm)
 
 (require 'project-root)
 (setq project-roots
@@ -329,7 +333,7 @@ Return a list of installed packages or nil for every package not installed."
 (global-unset-key (kbd "C-o"))
 (global-set-key (kbd "C-x w") 'whitespace-mode)
 (global-set-key (kbd "C-x C-r") (lambda () (interactive) (revert-buffer t t)))
-(global-set-key (kbd "C-x f") 'project-root-find-file)
+(global-set-key (kbd "C-x f") 'helm-projectile)
 (global-set-key (kbd "M-g") 'goto-line)
 (global-set-key (kbd "C-M-;") 'comment-dwim)
 (global-set-key (kbd "C-c t") 'pytest-one)
