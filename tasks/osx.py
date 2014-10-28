@@ -38,7 +38,7 @@ SHOULD_INSTALL = (
 )
 MISC = ("file-formula", "less", "openssh --with-brewed-openssl",
         "perl518", "rsync", "svn", "unzip", "docker", "boot2docker", "pandoc",
-        "mercurial")
+        "mercurial", "ctags-exuberant")
 CASKS = ('caffeine', 'flux', 'google-chrome', 'iterm2', 'spotify', 'synergy',
          'virtualbox', 'xquartz', 'slate', 'java', 'vlc', 'seil', 'karabiner')
 
