@@ -17,31 +17,37 @@ def all(ctx):
     osx_config(ctx)
 
 
-macvim_install = ("macvim --override-system-vim --custom-system-icons "
-                  "--with-features=huge --enable-rubyinterp "
-                  "--enable-pythoninterp --enable-perlinterp --enable-cscope")
 ESSENTIAL = (
     "emacs --cocoa --srgb --with-x", "tmux", "python --with-brewed-openssl",
-    "htop", "zsh", "make"
+    "htop", "zsh", "make", "scala",  "sbt", "node", "npm", "daemonize",
+    "readline", "netcat", "reattach-to-user-namespace", "watch"
 )
+
 BASICS = (
     "findutils", "coreutils", "binutils", "diffutils", "ed --default-names",
     "gawk", "gnu-indent --default-names", "gnu-sed --default-names",
     "gnu-tar --default-names", "gnu-which --default-names",
-    "gnutls --default-names", "grep --default-names", "gzip", "watch",
+    "gnutls --default-names", "grep --default-names", "gzip",
     "wdiff --with-gettext", "wget --enable-iri"
 )
+
 SHOULD_INSTALL = (
-    "nmap", "readline", "netcat", "reattach-to-user-namespace", "daemonize",
-    "ngrep", "gist", "gawk", "pstree", "ack", "hub", "tig", "heroku", "scala",
-    "sbt", "node", "npm"
+    "nmap", "ngrep", "gist", "gawk", "pstree", "ack", "hub", "tig", "heroku",
 )
+
+
+macvim_install = ("macvim --override-system-vim --custom-system-icons "
+                  "--with-features=huge --enable-rubyinterp "
+                  "--enable-pythoninterp --enable-perlinterp --enable-cscope")
 MISC = ("file-formula", "less", "openssh --with-brewed-openssl",
         "perl518", "rsync", "svn", "unzip", "docker", "boot2docker", "pandoc",
         "mercurial", "ctags-exuberant",  macvim_install)
-CASKS = ('caffeine', 'flux', 'google-chrome', 'iterm2', 'spotify', 'synergy',
-         'virtualbox', 'xquartz', 'slate', 'java', 'vlc', 'seil', 'karabiner',
-         'mactex')
+
+CASKS = (
+    'caffeine', 'flux', 'google-chrome', 'iterm2', 'spotify', 'synergy',
+    'virtualbox', 'xquartz', 'slate', 'java', 'vlc', 'seil', 'karabiner',
+    'mactex'
+)
 
 @ctask
 def osx_config(ctx):
