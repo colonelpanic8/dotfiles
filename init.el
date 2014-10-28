@@ -39,19 +39,20 @@
              '("melpa" . "http://melpa.org/packages/") t)
 (package-initialize)
 
-(defvar my-packages '(color-theme cl-lib ctags ctags-update flycheck ensime 
-                                  multiple-cursors latex-preview-pane pytest epl
-                                  starter-kit-bindings zenburn-theme jedi tern
-                                  starter-kit magit ido-ubiquitous monokai-theme
-                                  idle-highlight-mode find-file-in-project smex
-                                  paredit inf-ruby undo-tree rainbow-delimiters
-                                  solarized-theme tern-auto-complete scala-mode2
-                                  gitconfig-mode starter-kit-ruby mo-git-blame
-                                  auto-complete project-root popup web-beautify
-                                  js2-mode js3-mode sphinx-doc ansi-color pytest
-                                  exec-path-from-shell base16-theme slime
-                                  string-inflection yasnippet yaml-mode helm)
-  "Packages that must be installed at launch.")
+(defvar my-packages 
+  '(cl-lib ctags ctags-update flycheck ensime 
+           multiple-cursors latex-preview-pane pytest epl
+           starter-kit-bindings zenburn-theme jedi tern
+           starter-kit magit ido-ubiquitous monokai-theme
+           idle-highlight-mode find-file-in-project smex
+           paredit inf-ruby undo-tree rainbow-delimiters
+           solarized-theme tern-auto-complete scala-mode2
+           gitconfig-mode starter-kit-ruby mo-git-blame
+           auto-complete project-root popup web-beautify
+           js2-mode js3-mode sphinx-doc ansi-color pytest
+           exec-path-from-shell base16-theme slime flx-ido
+           string-inflection yasnippet yaml-mode projectile
+           helm helm-projectile))
 
 (defun ensure-package-installed (packages)
   "Assure every package is installed, ask for installation if it’s not.
@@ -106,10 +107,20 @@ Return a list of installed packages or nil for every package not installed."
 
 ;;(set-face-attribute 'default nil :height 80)
 
+(require 'helm-config)
+(helm-mode 1)
+
 ;; Enable ido mode.
 (require 'ido)
+(require 'flx-ido)
 (ido-mode t)
+(ido-everywhere 1)
+(flx-ido-mode 1)
 (setq ido-enable-flex-matching t)
+;; disable ido faces to see flx highlights.
+(setq ido-use-faces nil)
+;; This makes flx-ido much faster.
+(setq gc-cons-threshold 20000000)
 
 ;; Give duplicate open buffers better titles.
 (require 'uniquify)
@@ -155,6 +166,10 @@ Return a list of installed packages or nil for every package not installed."
           '(lambda () (setq debug-on-error t)))
 
 (latex-preview-pane-enable)
+
+;; enable-projectile
+(projectile-global-mode)
+(setq projectile-enable-caching t)
 
 (require 'project-root)
 (setq project-roots
@@ -352,8 +367,11 @@ Return a list of installed packages or nil for every package not installed."
 ;;                                                                    Appearance
 ;; =============================================================================
 
-(if (and (eq system-type 'darwin) window-system)
-    (load-theme 'solarized-dark t) (load-theme 'monokai t))
+(defvar my-themes '(monokai solarized-dark zenburn base16-default))
+(defvar my-theme (nth (random (length my-themes)) my-themes))
+(load-theme my-theme t)
+
+
 (require 'color-theme)
 (require 'whitespace)
 (require 'rainbow-delimiters)
