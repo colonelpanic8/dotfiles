@@ -10,12 +10,7 @@ function _emacs {
         echo "Starting emacs with server name '$server_name'"
         \emacs --daemon="$server_name"
     fi
-    local command="emacsclient $* --server-file=$server_name"
-    if is_osx; then
-        as_current_user $command
-    else
-        $command
-    fi
+    emacsclient $* --server-file=$server_name
 }
 
 function _emacs_daemon_exists {
