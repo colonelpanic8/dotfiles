@@ -4,8 +4,7 @@ alias temacs='_emacs -t'
 alias ec='_emacs -n '
 
 function _emacs {
-    local directory="$(git rev-parse --show-toplevel 2> /dev/null || pwd)"
-    local server_name="$(_dot_directory $directory)"
+    local server_name="$(_current_dot_directory)"
     if ! _emacs_daemon_exists "$server_name"; then
         echo "Starting emacs with server name '$server_name'"
         \emacs --daemon="$server_name"
@@ -19,4 +18,9 @@ function _emacs_daemon_exists {
 
 function _dot_directory {
     echo $1 | sed "s:/:.:g" 
+}
+
+function _current_dot_directory {
+    local directory="$(git rev-parse --show-toplevel 2> /dev/null || pwd)"
+    _dot_directory $directory
 }

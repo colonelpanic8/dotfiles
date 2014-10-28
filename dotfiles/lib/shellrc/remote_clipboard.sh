@@ -1,6 +1,6 @@
 REMOTE_CLIPBOARD_PORT='1234'
 
-alias rc_ssh="ssh -R 1234:localhost:1234"
+alias rc_ssh="ssh -R 1234:localhost:1234 "
 
 function remote_clipboard_server() {
     while [ 1 ]
