@@ -52,7 +52,7 @@
            js2-mode js3-mode sphinx-doc ansi-color pytest
            exec-path-from-shell base16-theme slime flx-ido
            string-inflection yasnippet yaml-mode projectile
-           helm helm-projectile ace-jump-mode ido-imenu))
+           helm helm-projectile ace-jump-mode))
 
 (defun ensure-package-installed (packages)
   "Assure every package is installed, ask for installation if it’s not.
