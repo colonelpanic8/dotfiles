@@ -11,6 +11,11 @@ function _emacs {
         \emacs --daemon="$server_name"
     fi
     emacsclient $* --server-file="$server_name"
+    if hash reattach-to-user-namespace 2> /dev/null; then
+        reattach-to-user-namespace emacsclient $* --server-file=$server_name
+    else
+        emacsclient $* --server-file=$server_name
+    fi
 }
 
 function _emacs_daemon_exists {
