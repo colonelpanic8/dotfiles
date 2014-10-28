@@ -161,7 +161,8 @@ Return a list of installed packages or nil for every package not installed."
          :exclude-paths ("build" "target" ".ensime_cache" ".git"))
         ("tox project"
          :root-contains-files ("tox.ini")
-         :filename-regex ,(regexify-ext-list '(py)))
+         :filename-regex ,(regexify-ext-list '(py rst))
+         :exclude-paths ("*.egg*" "build" ".tox" ".git"))
         (".emacs.d project"
          :root-contains-files ("init.el")
          :filename-regex ,(regexify-ext-list '(el))
