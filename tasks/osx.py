@@ -22,7 +22,7 @@ macvim_install = ("macvim --override-system-vim --custom-system-icons "
                   "--enable-pythoninterp --enable-perlinterp --enable-cscope")
 ESSENTIAL = (
     "emacs --cocoa --srgb --with-x", "tmux", "python --with-brewed-openssl",
-    "htop", "zsh", "make", macvim_install
+    "htop", "zsh", "make"
 )
 BASICS = (
     "findutils", "coreutils", "binutils", "diffutils", "ed --default-names",
@@ -38,9 +38,10 @@ SHOULD_INSTALL = (
 )
 MISC = ("file-formula", "less", "openssh --with-brewed-openssl",
         "perl518", "rsync", "svn", "unzip", "docker", "boot2docker", "pandoc",
-        "mercurial", "ctags-exuberant")
+        "mercurial", "ctags-exuberant",  macvim_install)
 CASKS = ('caffeine', 'flux', 'google-chrome', 'iterm2', 'spotify', 'synergy',
-         'virtualbox', 'xquartz', 'slate', 'java', 'vlc', 'seil', 'karabiner')
+         'virtualbox', 'xquartz', 'slate', 'java', 'vlc', 'seil', 'karabiner',
+         'mactex')
 
 @ctask
 def osx_config(ctx):
@@ -51,6 +52,7 @@ def osx_config(ctx):
 
 @ctask
 def brew_cask(ctx):
+    ctx.run('brew update')
     ctx.run('brew install caskroom/cask/brew-cask')
     for cask in CASKS:
         ctx.run('brew cask install {0}'.format(cask))
@@ -63,6 +65,7 @@ def get_brew(ctx):
 
 @ctask
 def brew_install(ctx):
+    ctx.run('brew update')
     for package_name in ESSENTIAL + BASICS + SHOULD_INSTALL + MISC:
         ctx.run('brew install {0}'.format(package_name))
 
@@ -121,3 +124,7 @@ def enable_hyper(ctx):
 def get_command_line_tools(ctx):
     if not util.command_exists('gcc'):
         ctx.run('xcode-select --install')
+
+@ctask
+def enable_locate(ctx):
+    ctx.run('sudo launchctl load -w /System/Library/LaunchDaemons/com.apple.locate.plist')
