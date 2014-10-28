@@ -52,7 +52,7 @@
            js2-mode js3-mode sphinx-doc ansi-color pytest
            exec-path-from-shell base16-theme slime flx-ido
            string-inflection yasnippet yaml-mode projectile
-           helm helm-projectile))
+           helm helm-projectile ace-jump-mode ido-imenu))
 
 (defun ensure-package-installed (packages)
   "Assure every package is installed, ask for installation if it’s not.
@@ -329,8 +329,9 @@ Return a list of installed packages or nil for every package not installed."
 ;; =============================================================================
 
 ;; Miscellaneous
+(global-unset-key (kbd "C-o")) ;; Avoid collision with tmux binding.
+(global-set-key (kbd "C-;") 'ace-jump-mode)
 (global-set-key (kbd "C-x C-b") 'buffer-menu)
-(global-unset-key (kbd "C-o"))
 (global-set-key (kbd "C-x w") 'whitespace-mode)
 (global-set-key (kbd "C-x C-r") (lambda () (interactive) (revert-buffer t t)))
 (global-set-key (kbd "C-x f") 'helm-projectile)
