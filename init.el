@@ -373,7 +373,7 @@ Return a list of installed packages or nil for every package not installed."
 
 (defvar my-themes '(monokai solarized-dark zenburn base16-default))
 (defvar my-theme (nth (random (length my-themes)) my-themes))
-(load-theme my-theme t)
+(load-theme 'solarized-dark t)
 
 
 (require 'color-theme)
