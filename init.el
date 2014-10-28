@@ -50,7 +50,7 @@
                                   auto-complete project-root popup web-beautify
                                   js2-mode js3-mode sphinx-doc ansi-color pytest
                                   exec-path-from-shell base16-theme slime
-                                  string-inflection yasnippet yaml-mode)
+                                  string-inflection yasnippet yaml-mode helm)
   "Packages that must be installed at launch.")
 
 (defun ensure-package-installed (packages)
@@ -67,7 +67,10 @@ Return a list of installed packages or nil for every package not installed."
               (package-install package))))
    packages))
 
-(ensure-package-installed my-packages)
+(condition-case ex
+    (ensure-package-installed my-packages)
+  ('error (package-refresh-contents)
+	  (ensure-package-installed my-packages) nil))
 
 ;; =============================================================================
 ;;                                                         General Emacs Options
