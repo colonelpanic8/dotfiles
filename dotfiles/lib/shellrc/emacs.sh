@@ -10,11 +10,11 @@ function _emacs {
         echo "Starting emacs with server name '$server_name'"
         \emacs --daemon="$server_name"
     fi
-    emacsclient $* --server-file="$server_name"
-    if hash reattach-to-user-namespace 2> /dev/null; then
-        reattach-to-user-namespace emacsclient $* --server-file=$server_name
+    local command="emacsclient $* --server-file=$server_name"
+    if is_osx; then
+        as_current_user $command
     else
-        emacsclient $* --server-file=$server_name
+        $command
     fi
 }
 
