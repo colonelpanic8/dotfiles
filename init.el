@@ -152,11 +152,16 @@ Return a list of installed packages or nil for every package not installed."
 
 (defun no-auto-fill-hook () (auto-fill-mode -1))
 
+(defun bind-eval-and-replace ()  (define-key emacs-lisp-mode-map
+                                   (kbd "C-c C-r") #'esk-eval-and-replace))
+
 (add-hook 'prog-mode-hook 'no-auto-fill-hook)
 (add-hook 'prog-mode-hook  (lambda () (subword-mode 1)))
 (add-hook 'prog-mode-hook 'rainbow-delimiters-mode)
 (add-hook 'prog-mode-hook 'auto-complete-mode)
-(add-hook 'lisp-mode-hook (lambda () (local-set-key (kbd "C-c C-r") #'esk-eval-and-replace)))
+(add-hook 'lisp-mode-hook 'bind-eval-and-replace)
+(add-hook 'lisp-interaction-mode-hook 'bind-eval-and-replace)
+(add-hook 'elisp-interaction-mode-hook 'bind-eval-and-replace)
 
 ;; disabled hooks
 ;; (add-hook 'prog-mode-hook (lambda () (highlight-lines-matching-regexp
