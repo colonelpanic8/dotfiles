@@ -24,10 +24,12 @@
   (normal-top-level-add-subdirs-to-load-path))
 
 (add-to-list 'custom-theme-load-path "~/.emacs.d/elpa/")
-(require 'patches)
+
+(setq custom-file "~/.emacs.d/custom.el")
+(when (file-exists-p custom-file) (load custom-file))
 
 ;; =============================================================================
-;;                                                                          ELPA
+;;                                                         ELPA/package.el/MELPA
 ;; =============================================================================
 
 (require 'package)
@@ -39,40 +41,54 @@
              '("melpa" . "http://melpa.org/packages/") t)
 (package-initialize)
 
-(defvar my-packages 
-  '(cl-lib dired+ ctags ctags-update flycheck ensime pymacs color-theme
-           multiple-cursors latex-preview-pane pytest epl
-           starter-kit-bindings zenburn-theme jedi tern tango-2-theme
-           starter-kit magit ido-ubiquitous monokai-theme color-theme-sanityinc-tomorrow
-           idle-highlight-mode smex smart-mode-line moe-theme
-           paredit inf-ruby undo-tree rainbow-delimiters
-           solarized-theme tern-auto-complete scala-mode2
-           gitconfig-mode starter-kit-ruby mo-git-blame
-           auto-complete popup web-beautify molokai-theme 
-           js2-mode js3-mode sphinx-doc ansi-color pytest
-           exec-path-from-shell base16-theme slime flx-ido
-           string-inflection yasnippet yaml-mode projectile
-           helm helm-projectile ace-jump-mode sgml-mode))
+(defvar packages-appearance
+  '(monokai-theme solarized-theme zenburn-theme base16-theme molokai-theme
+    tango-2-theme color-theme-sanityinc-tomorrow smart-mode-line ansi-color
+    rainbow-delimiters))
 
-(defun ensure-package-installed (packages)
-  "Assure every package is installed, ask for installation if it’s not.
-Return a list of installed packages or nil for every package not installed."
-  ;; fetch the list of packages available 
-  (unless package-archive-contents
-    (package-refresh-contents))
-  (mapcar
-   (lambda (package)
-     (if (package-installed-p package)
-         package
-       (progn (message (format "Installing package %s." package))
-              (package-install package))))
-   packages))
+(defvar packages-essential
+  '(epl projectile flycheck ace-jump-mode helm helm-projectile popup smex 
+    magit auto-complete ido-ubiquitous mo-git-blame multiple-cursors flx-ido
+    yasnippet cl-lib))
 
-(condition-case ex
-    (ensure-package-installed my-packages)
-  ('error (package-refresh-contents)
-	  (ensure-package-installed my-packages) nil))
+(defvar packages-other
+  '(latex-preview-pane auctex paredit inf-ruby undo-tree gitconfig-mode
+    exec-path-from-shell slime string-inflection yaml-mode sgml-mode dired+
+    ctags ctags-update hackernews))
 
+(defvar packages-python '(jedi pymacs pytest sphinx-doc))
+(defvar packages-scala '(scala-mode2 ensime))
+(defvar packages-js '(js2-mode js3-mode web-beautify tern tern-auto-complete))
+
+(defun ensure-packages-installed (packages)
+  (condition-case ex
+      (dolist (p packages)
+        (when (not (package-installed-p p))
+          (package-install p)))
+    ('error (package-refresh-contents)
+            (ensure-packages-installed packages) nil)))
+
+(ensure-packages-installed
+ (append packages-essential packages-python packages-scala packages-js
+	 packages-appearance packages-other))
+
+;; =============================================================================
+;;                                                                      Disables
+;; =============================================================================
+
+;; Get rid of any gui like features...
+(if (fboundp 'scroll-bar-mode) (scroll-bar-mode -1))
+(if (fboundp 'tool-bar-mode) (tool-bar-mode -1))
+(if (fboundp 'menu-bar-mode) (menu-bar-mode -1))
+
+;; Disable the creation of backup files.
+(setq backup-inhibited t)
+(setq make-backup-files nil)
+(setq auto-save-default nil)
+
+(put 'set-goal-column 'disabled nil)
+(auto-fill-mode -1)
+  
 ;; =============================================================================
 ;;                                                         General Emacs Options
 ;; =============================================================================
@@ -80,110 +96,69 @@ Return a list of installed packages or nil for every package not installed."
 ;; Set path from shell.
 (exec-path-from-shell-initialize)
 
-;; Disable the creation of backup files.
-(setq backup-inhibited t)
-(setq make-backup-files nil)
-(setq auto-save-default nil)
-
-;; Fuck auto fill mode
-(auto-fill-mode -1)
-
 ;; This makes it so that emacs --daemon puts its files in ~/.emacs.d/server
+;; (among other things)
 (setq server-use-tcp t)
-
-(put 'set-goal-column 'disabled nil)
-
-(if (fboundp 'scroll-bar-mode) (scroll-bar-mode -1))
-(if (fboundp 'tool-bar-mode) (tool-bar-mode -1))
-(if (fboundp 'menu-bar-mode) (menu-bar-mode -1))
-
-;; Evvvillll
-(setq use-dialog-box nil)
-(remove-hook 'prog-mode-hook 'esk-turn-on-hl-line-mode)
-
-;; Set the default font for emacs.
-;;(set-face-attribute 'default t :font "Deja Vu")
-(set-frame-font "Monaco 11" t t)
-
-;;(set-face-attribute 'default nil :height 80)
-
-(require 'helm-config)
-(helm-mode 1)
-
-;; Enable ido mode.
-(require 'ido)
-(require 'flx-ido)
-(ido-mode t)
-(ido-everywhere 1)
-(flx-ido-mode 1)
-(setq ido-enable-flex-matching t)
-;; disable ido faces to see flx highlights.
-(setq ido-use-faces nil)
-;; This makes flx-ido much faster.
-(setq gc-cons-threshold 20000000)
 
 ;; Give duplicate open buffers better titles.
 (require 'uniquify)
 (setq uniquify-buffer-name-style 'forward)
 
-(setq visible-bell t)
 
 ;; Display line and column numbers in mode line.
 (line-number-mode t)
 (column-number-mode t)
 (global-linum-mode t)
+(setq visible-bell t)
+(global-auto-complete-mode)
 
 ;; Don't disable downcase and upcase region.
 (put 'upcase-region 'disabled nil)
 (put 'downcase-region 'disabled nil)
-
-;; Change the behavior of subword-forward and subword-backward
-;; so that they stops on underscores.
-(defun change-major-mode-hook () (modify-syntax-entry ?_ "_"))
 (setq c-subword-mode t)
-
-;; Disable the menu bar.
-(setq menu-bar-mode -1)
-
-(defun no-auto-fill-hook () (auto-fill-mode -1))
-
-(defun bind-eval-and-replace ()  (define-key emacs-lisp-mode-map
-                                   (kbd "C-c C-r") #'esk-eval-and-replace))
-
-(add-hook 'prog-mode-hook 'no-auto-fill-hook)
-(add-hook 'prog-mode-hook  (lambda () (subword-mode 1)))
-(add-hook 'prog-mode-hook 'rainbow-delimiters-mode)
-(add-hook 'prog-mode-hook 'auto-complete-mode)
-(add-hook 'lisp-mode-hook 'bind-eval-and-replace)
-(add-hook 'lisp-interaction-mode-hook 'bind-eval-and-replace)
-(add-hook 'elisp-interaction-mode-hook 'bind-eval-and-replace)
-
-;; disabled hooks
-;; (add-hook 'prog-mode-hook (lambda () (highlight-lines-matching-regexp
-;;                                  ".\\{81\\}" 'hi-blue)))
-
-
 (setq flyspell-issue-welcome-flag nil)
-
-(add-hook 'after-init-hook
-          '(lambda () (setq debug-on-error t)))
-
 (latex-preview-pane-enable)
 
-;; enable-projectile
-(projectile-global-mode)
-(setq projectile-enable-caching t)
-(setq projectile-completion-system 'ido)
-;; This would be great if flx ever supported helm.
-;; (setq projectile-completion-system 'helm)
-
-(setq custom-file "~/.emacs.d/custom.el")
-(when (file-exists-p custom-file) (load custom-file))
-
+(add-hook 'after-init-hook '(lambda () (setq debug-on-error t)))
 (add-hook 'after-init-hook #'global-flycheck-mode)
 
 ;; =============================================================================
-;;                                                                          Misc
+;;                                                                    Mode Hooks
+;; =============================================================================
+
+(add-hook 'prog-mode-hook (lambda () (auto-fill-mode nil)))
+(add-hook 'prog-mode-hook (lambda () (subword-mode t)))
+(add-hook 'prog-mode-hook (lambda () (rainbow-delimiters-mode t)))
+(add-hook 'prog-mode-hook (lambda () (auto-complete-mode t)))
+;; (add-hook 'prog-mode-hook (lambda () (highlight-lines-matching-regexp
+;;                                  ".\\{81\\}" 'hi-blue)))
+
+;; =============================================================================
+;;                                               Navigation: helm/projectile/ido
+;; =============================================================================
+
+(require 'ido)
+(require 'flx-ido)
+(require 'helm-config)
+
+(helm-mode 1)
+(ido-mode t)
+(ido-everywhere 1)
+(flx-ido-mode 1)
+(setq ido-enable-flex-matching t)
+(projectile-global-mode)
+(setq projectile-enable-caching t)
+
+;; disable ido faces to see flx highlights.
+(setq ido-use-faces nil)
+
+;; This makes flx-ido much faster.
+(setq gc-cons-threshold 20000000)
+(autoload 'smex "smex"
+  (global-set-key (kbd "M-x") 'smex))
+
+;; =============================================================================
+;;                                                                     functions
 ;; =============================================================================
 
 (defun get-buffer-name()
@@ -213,10 +188,6 @@ Return a list of installed packages or nil for every package not installed."
   (let ( (pdf-file (replace-regexp-in-string "\.tex$" ".pdf" buffer-file-name)))
     (shell-command (concat "open " pdf-file))))
 
-;; =============================================================================
-;;                                                                          tmux
-;; =============================================================================
-
 (defun tmux-copy (&optional b e) 
   (interactive "r")
   (shell-command-on-region b e "cat | tmux loadb -"))
@@ -230,22 +201,11 @@ Return a list of installed packages or nil for every package not installed."
 ;;                                                                        Python
 ;; =============================================================================
 
-;; Multi-lining for python.
-(require 'multi-line-it)
-(require 'pytest)
-
-(add-hook 'python-mode-hook (lambda () (setq show-trailing-whitespace t)))
-
 (defun python-tabs () (setq tab-width 4
                             indent-tabs-mode t
                             python-indent-offset 4))
 
 (defvar use-python-tabs nil)
-
-(add-hook 'python-mode-hook (lambda () (if use-python-tabs python-tabs)))
-(add-hook 'python-mode-hook (lambda () (subword-mode 1)))
-(add-hook 'python-mode-hook 'jedi:setup)
-(setq jedi:complete-on-dot t)
 
 (defun add-virtual-envs-to-jedi-server ()
   (let ((virtual-envs (get-virtual-envs)))
@@ -268,18 +228,18 @@ Return a list of installed packages or nil for every package not installed."
             (setq retval (cons 'exception (list ex))))
          nil))
 
-
+(add-hook 'python-mode-hook (lambda () (setq show-trailing-whitespace t)))
+(add-hook 'python-mode-hook (lambda () (if use-python-tabs python-tabs)))
+(add-hook 'python-mode-hook (lambda () (subword-mode t)))
+(add-hook 'python-mode-hook 'jedi:setup)
 (add-hook 'python-mode-hook 'add-virtual-envs-to-jedi-server)
+
+(setq jedi:complete-on-dot t)
 
 ;; Macros
 (fset 'ipdb "import ipdb; ipdb.set_trace()")
 (fset 'main "if __name__ == '__main__':")
 (fset 'sphinx-class ":class:`~")
-
-(global-auto-complete-mode)
-
-;; Macros
-(fset 'ipdb "import ipdb; ipdb.set_trace()")
 
 ;; =============================================================================
 ;;                                                                         Scala
@@ -314,37 +274,38 @@ Return a list of installed packages or nil for every package not installed."
 ;;                                                           Custom Key Bindings
 ;; =============================================================================
 
+(defun bind-eval-and-replace ()
+  (define-key emacs-lisp-mode-map (kbd "C-c C-r") #'esk-eval-and-replace))
+
+(add-hook 'lisp-mode-hook 'bind-eval-and-replace)
+(add-hook 'lisp-interaction-mode-hook 'bind-eval-and-replace)
+(add-hook 'elisp-interaction-mode-hook 'bind-eval-and-replace)
+
 ;; Miscellaneous
 (global-unset-key (kbd "C-o")) ;; Avoid collision with tmux binding.
-(global-set-key (kbd "C-c j") 'ace-jump-mode)
+
 (global-set-key (kbd "C-;") 'ace-jump-char-mode)
-(global-set-key (kbd "C-x C-b") 'buffer-menu)
-(global-set-key (kbd "C-x w") 'whitespace-mode)
-(global-set-key (kbd "C-x C-r") (lambda () (interactive) (revert-buffer t t)))
-(global-set-key (kbd "C-x f") 'helm-projectile)
-(global-set-key (kbd "M-g") 'goto-line)
 (global-set-key (kbd "C-M-;") 'comment-dwim)
-(global-set-key (kbd "C-c t") 'pytest-one)
-(global-set-key (kbd "C-c e") 'os-copy)
-(global-set-key (kbd "C-x O") (lambda () (interactive) (other-window -1)))
-(global-set-key (kbd "C-x C-c") 'kill-emacs)
 (global-set-key (kbd "C-c +") 'message-buffer-name)
-
+(global-set-key (kbd "C-c e") 'os-copy)
 (global-set-key (kbd "C-c g") 'jedi:goto-definition)
-
-(global-unset-key (kbd "C-o"))
+(global-set-key (kbd "C-c j") 'ace-jump-mode)
+(global-set-key (kbd "C-c t") 'pytest-one)
+(global-set-key (kbd "C-x C-b") 'buffer-menu)
+(global-set-key (kbd "C-x C-c") 'kill-emacs)
+(global-set-key (kbd "C-x C-i") 'imenu)
+(global-set-key (kbd "C-x C-r") (lambda () (interactive) (revert-buffer t t)))
+(global-set-key (kbd "C-x O") (lambda () (interactive) (other-window -1)))
+(global-set-key (kbd "C-x f") 'helm-projectile)
+(global-set-key (kbd "C-x w") 'whitespace-mode)
+(global-set-key (kbd "M-g") 'goto-line)
 
 ;; Multiple Cursors
-
 (global-set-key (kbd "C-x r t") 'mc/edit-lines)
-
 (global-set-key (kbd "C->") 'mc/mark-next-like-this)
 (global-set-key (kbd "C-<") 'mc/mark-previous-like-this)
 (global-set-key (kbd "C-c <") 'mc/mark-all-like-this)
 (global-set-key (kbd "C->") 'mc/mark-next-like-this)
-
-(global-set-key (kbd "C-_") 'undo)
-(global-set-key (kbd "C--") 'undo)
 
 (eval-after-load 'js2-mode
   '(define-key js2-mode-map (kbd "C-c b") 'web-beautify-js))
@@ -358,6 +319,29 @@ Return a list of installed packages or nil for every package not installed."
 ;; =============================================================================
 ;;                                                                    Appearance
 ;; =============================================================================
+
+;; make whitespace-mode use just basic coloring
+(setq whitespace-style (quote (spaces tabs newline ;;space-mark
+                                      tab-mark newline-mark)))
+(setq whitespace-display-mappings
+      '((space-mark 32 [183] [46]) 
+        (tab-mark 9 [9655 9] [92 9])))
+
+(defun colorize-compilation-buffer ()
+  (toggle-read-only)
+  (ansi-color-apply-on-region (point-min) (point-max))
+  (toggle-read-only))
+(add-hook 'compilation-filter-hook 'colorize-compilation-buffer)
+
+;; smart-mode-line
+(sml/setup)
+(sml/apply-theme 'respectful)
+
+;; =============================================================================
+;;                                                                        Themes
+;; =============================================================================
+
+(load-theme 'monokai t)
 
 ;; Choose random theme:
 (defvar dark-themes '(monokai molokai solarized-dark base16-default))
@@ -389,26 +373,5 @@ Return a list of installed packages or nil for every package not installed."
 ;; enable to set theme based on time of day.
 ;; (run-at-time "12:00" 3600 'set-theme)
 
-(load-theme-no-hl-line 'monokai)
-
-(require 'smart-mode-line)
-(sml/setup)
-(sml/apply-theme 'respectful)
-
-(require 'color-theme)
-(require 'whitespace)
-(require 'rainbow-delimiters)
-
-;; make whitespace-mode use just basic coloring
-(setq whitespace-style (quote (spaces tabs newline ;;space-mark
-                                      tab-mark newline-mark)))
-(setq whitespace-display-mappings
-      '((space-mark 32 [183] [46]) 
-        (tab-mark 9 [9655 9] [92 9])))
-
-(require 'ansi-color)
-(defun colorize-compilation-buffer ()
-  (toggle-read-only)
-  (ansi-color-apply-on-region (point-min) (point-max))
-  (toggle-read-only))
-(add-hook 'compilation-filter-hook 'colorize-compilation-buffer)
+;; Set the default font for emacs.
+;;(set-frame-font "Menlo 11" t t)
