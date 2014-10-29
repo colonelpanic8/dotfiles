@@ -99,7 +99,7 @@ Return a list of installed packages or nil for every package not installed."
 
 ;; Evvvillll
 (setq use-dialog-box nil)
-(remove-hook 'prog-mode-hook 'turn-on-hl-line-mode)
+(remove-hook 'prog-mode-hook 'esk-turn-on-hl-line-mode)
 
 ;; Set the default font for emacs.
 ;;(set-face-attribute 'default t :font "Deja Vu")
@@ -353,7 +353,7 @@ Return a list of installed packages or nil for every package not installed."
 ;; =============================================================================
 
 ;; Choose random theme:
-(defvar dark-themes '(monokai solarized-dark base16-default))
+(defvar dark-themes '(monokai molokai solarized-dark base16-default))
 (defvar light-themes '(zenburn solarized-light))
 
 (defun random-choice (choices)
@@ -380,7 +380,9 @@ Return a list of installed packages or nil for every package not installed."
   (setq hl-line-mode nil))
 
 ;; enable to set theme based on time of day.
-(run-at-time "12:00" 3600 'set-theme)
+;; (run-at-time "12:00" 3600 'set-theme)
+
+(load-theme-no-hl-line 'monokai)
 
 (require 'smart-mode-line)
 (sml/setup)
