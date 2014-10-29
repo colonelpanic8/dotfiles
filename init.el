@@ -99,11 +99,11 @@ Return a list of installed packages or nil for every package not installed."
 
 ;; Evvvillll
 (setq use-dialog-box nil)
-
+(remove-hook 'prog-mode-hook 'turn-on-hl-line-mode)
 
 ;; Set the default font for emacs.
 ;;(set-face-attribute 'default t :font "Deja Vu")
-;;(set-frame-font "Deja Vu Sans Mono" t t)
+(set-frame-font "Monaco 11" t t)
 
 ;;(set-face-attribute 'default nil :height 80)
 
@@ -154,11 +154,13 @@ Return a list of installed packages or nil for every package not installed."
 
 (add-hook 'prog-mode-hook 'no-auto-fill-hook)
 (add-hook 'prog-mode-hook  (lambda () (subword-mode 1)))
-(add-hook 'js-mode (lambda () (subword-mode 1)))
+(add-hook 'prog-mode-hook 'rainbow-delimiters-mode)
+(add-hook 'prog-mode-hook 'auto-complete-mode)
+(add-hook 'lisp-mode-hook (lambda () (local-set-key (kbd "C-c C-r") #'esk-eval-and-replace)))
+
 ;; disabled hooks
 ;; (add-hook 'prog-mode-hook (lambda () (highlight-lines-matching-regexp
 ;;                                  ".\\{81\\}" 'hi-blue)))
-(add-hook 'prog-mode-hook 'rainbow-delimiters-mode)
 
 
 (setq flyspell-issue-welcome-flag nil)
@@ -195,6 +197,9 @@ Return a list of installed packages or nil for every package not installed."
 (defun os-copy (&optional b e)
   (interactive "r")
   (shell-command-on-region b e "source ~/.zshrc; cat | smart_copy"))
+
+(defun os-copy-string (string-to-copy)
+  )
 
 (defun os-paste ()
   (interactive)
@@ -304,7 +309,8 @@ Return a list of installed packages or nil for every package not installed."
 
 ;; Miscellaneous
 (global-unset-key (kbd "C-o")) ;; Avoid collision with tmux binding.
-(global-set-key (kbd "C-;") 'ace-jump-mode)
+(global-set-key (kbd "C-c j") 'ace-jump-mode)
+(global-set-key (kbd "C-;") 'ace-jump-char-mode)
 (global-set-key (kbd "C-x C-b") 'buffer-menu)
 (global-set-key (kbd "C-x w") 'whitespace-mode)
 (global-set-key (kbd "C-x C-r") (lambda () (interactive) (revert-buffer t t)))
@@ -317,7 +323,7 @@ Return a list of installed packages or nil for every package not installed."
 (global-set-key (kbd "C-x C-c") 'kill-emacs)
 (global-set-key (kbd "C-c +") 'message-buffer-name)
 
-(global-set-key "\C-cg" 'jedi:goto-definition)
+(global-set-key (kbd "C-c g") 'jedi:goto-definition)
 
 (global-unset-key (kbd "C-o"))
 
@@ -347,28 +353,34 @@ Return a list of installed packages or nil for every package not installed."
 ;; =============================================================================
 
 ;; Choose random theme:
-;; (defvar my-themes '(monokai solarized-dark zenburn base16-default))
-;; (defvar my-theme (nth (random (length my-themes)) my-themes))
+(defvar dark-themes '(monokai solarized-dark base16-default))
+(defvar light-themes '(zenburn solarized-light))
 
-(defun get-appropriate-solarized-theme ()
+(defun random-choice (choices)
+  (nth (random (length choices)) choices))
+
+(defun get-appropriate-theme ()
   (let ((hour
          (string-to-number (format-time-string "%H"))))
-    (if (or (< hour 6) (> hour 20))
-        'solarized-dark 'solarized-light)))
+    (if (or (< hour 6) (> hour 18))
+        (random-choice dark-themes) (random-choice light-theme))))
 
 (setq current-theme nil)
 
-(defun set-solarized-theme ()
+(defun set-theme ()
   (interactive)
-  (let ((appropriate-theme (get-appropriate-solarized-theme)))
+  (let ((appropriate-theme (get-appropriate-theme)))
         (if (eq appropriate-theme current-theme)
             nil
-          (progn (load-theme appropriate-theme t)
+          (progn (load-theme-no-hl-line appropriate-theme)
                  (setq current-theme appropriate-theme)))))
 
+(defun load-theme-no-hl-line (theme)
+  (load-theme theme t)
+  (setq hl-line-mode nil))
+
 ;; enable to set theme based on time of day.
-;; (run-at-time "12:00" 3600 'set-solarized-theme)
-(load-theme 'monokai t)
+(run-at-time "12:00" 3600 'set-theme)
 
 (require 'smart-mode-line)
 (sml/setup)
