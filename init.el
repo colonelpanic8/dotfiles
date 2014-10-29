@@ -42,13 +42,13 @@
 (defvar my-packages 
   '(cl-lib dired+ ctags ctags-update flycheck ensime pymacs color-theme
            multiple-cursors latex-preview-pane pytest epl
-           starter-kit-bindings zenburn-theme jedi tern
-           starter-kit magit ido-ubiquitous monokai-theme
-           idle-highlight-mode smex smart-mode-line
+           starter-kit-bindings zenburn-theme jedi tern tango-2-theme
+           starter-kit magit ido-ubiquitous monokai-theme color-theme-sanityinc-tomorrow
+           idle-highlight-mode smex smart-mode-line moe-theme
            paredit inf-ruby undo-tree rainbow-delimiters
            solarized-theme tern-auto-complete scala-mode2
            gitconfig-mode starter-kit-ruby mo-git-blame
-           auto-complete popup web-beautify
+           auto-complete popup web-beautify molokai-theme 
            js2-mode js3-mode sphinx-doc ansi-color pytest
            exec-path-from-shell base16-theme slime flx-ido
            string-inflection yasnippet yaml-mode projectile
@@ -137,18 +137,13 @@ Return a list of installed packages or nil for every package not installed."
 (put 'upcase-region 'disabled nil)
 (put 'downcase-region 'disabled nil)
 
-;; Change the behavior of M-<arrow> so that it stops on underscores.
+;; Change the behavior of subword-forward and subword-backward
+;; so that they stops on underscores.
 (defun change-major-mode-hook () (modify-syntax-entry ?_ "_"))
 (setq c-subword-mode t)
 
 ;; Disable the menu bar.
-(menu-bar-mode -1)
-
-;; find-file-in-project
-(require 'find-file-in-project)
-(setq ffip-limit 9999999999)
-
-(setq js-indent-level 2)
+(setq menu-bar-mode -1)
 
 (defun no-auto-fill-hook () (auto-fill-mode -1))
 
@@ -202,9 +197,6 @@ Return a list of installed packages or nil for every package not installed."
 (defun os-copy (&optional b e)
   (interactive "r")
   (shell-command-on-region b e "source ~/.zshrc; cat | smart_copy"))
-
-(defun os-copy-string (string-to-copy)
-  )
 
 (defun os-paste ()
   (interactive)
@@ -306,8 +298,18 @@ Return a list of installed packages or nil for every package not installed."
   ;; turn on highlight. To configure what is highlighted, customize
   ;; the *whitespace-style* variable. A sane set of things to
   ;; highlight is: face, tabs, trailing
-  (whitespace-mode)
-))
+  (whitespace-mode)))
+
+;; =============================================================================
+;;                                                                    JavaScript
+;; =============================================================================
+
+(add-hook 'js-mode-hook (lambda () (tern-mode t)))
+(eval-after-load 'tern
+   '(progn
+      (require 'tern-auto-complete)
+      (tern-ac-setup)))
+
 ;; =============================================================================
 ;;                                                           Custom Key Bindings
 ;; =============================================================================
