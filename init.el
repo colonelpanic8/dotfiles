@@ -48,7 +48,7 @@
            paredit inf-ruby undo-tree rainbow-delimiters
            solarized-theme tern-auto-complete scala-mode2
            gitconfig-mode starter-kit-ruby mo-git-blame
-           auto-complete project-root popup web-beautify
+           auto-complete popup web-beautify
            js2-mode js3-mode sphinx-doc ansi-color pytest
            exec-path-from-shell base16-theme slime flx-ido
            string-inflection yasnippet yaml-mode projectile
@@ -158,7 +158,7 @@ Return a list of installed packages or nil for every package not installed."
 ;; disabled hooks
 ;; (add-hook 'prog-mode-hook (lambda () (highlight-lines-matching-regexp
 ;;                                  ".\\{81\\}" 'hi-blue)))
-;; (add-hook 'prog-mode-hook 'rainbow-delimiters-mode)
+(add-hook 'prog-mode-hook 'rainbow-delimiters-mode)
 
 
 (setq flyspell-issue-welcome-flag nil)
@@ -175,30 +175,6 @@ Return a list of installed packages or nil for every package not installed."
 ;; This would be great if flx ever supported helm.
 ;; (setq projectile-completion-system 'helm)
 
-(require 'project-root)
-(setq project-roots
-      `(("ensisme project"
-         :root-contains-files (".ensime")
-         :filename-regex ,(regexify-ext-list '(scala sbt))
-         :exclude-paths ("build" "target" ".ensime_cache" ".git"))
-        ("tox project"
-         :root-contains-files ("tox.ini")
-         :filename-regex ,(regexify-ext-list '(py rst))
-         :exclude-paths ("*.egg*" "build" ".tox" ".git"))
-        (".emacs.d project"
-         :root-contains-files ("init.el")
-         :filename-regex ,(regexify-ext-list '(el))
-         :exclude-paths (".git"))
-        ("python project"
-         :root-contains-files (".git" "setup.py")
-         :filename-regex ,(regexify-ext-list '(py)))
-        ("git project"
-         :root-contains-files (".git"))
-        ("sbt project"
-         :root-contains-files ("build.sbt")
-         :filename-regex ,(regexify-ext-list '(scala sbt))
-         :exclude-paths ("build" "target"))))
-
 (setq custom-file "~/.emacs.d/custom.el")
 (when (file-exists-p custom-file) (load custom-file))
 
@@ -210,9 +186,7 @@ Return a list of installed packages or nil for every package not installed."
 
 (defun get-buffer-name()
   (interactive)
-  (file-relative-name (buffer-file-name)
-                      (expand-file-name (with-project-root
-                                            (cdr project-details)))))
+  (file-relative-name (buffer-file-name)))
 
 (defun message-buffer-name()
   (interactive)
@@ -282,7 +256,7 @@ Return a list of installed packages or nil for every package not installed."
 (defun get-virtual-envs ()
   (interactive)
   (condition-case ex
-      (let ((project-root (with-project-root (cdr project-details))))
+      (let (project-root (projectile-project-root))
         (cl-remove-if-not 'file-exists-p
                           (mapcar (lambda (env-suffix)
                                     (concat project-root env-suffix))
@@ -392,7 +366,9 @@ Return a list of installed packages or nil for every package not installed."
           (progn (load-theme appropriate-theme t)
                  (setq current-theme appropriate-theme)))))
 
-(run-at-time "12:00" 3600 'set-solarized-theme)
+;; enable to set theme based on time of day.
+;; (run-at-time "12:00" 3600 'set-solarized-theme)
+(load-theme 'monokai t)
 
 (require 'smart-mode-line)
 (sml/setup)
