@@ -40,11 +40,11 @@
 (package-initialize)
 
 (defvar my-packages 
-  '(cl-lib ctags ctags-update flycheck ensime pymacs color-theme
+  '(cl-lib dired+ ctags ctags-update flycheck ensime pymacs color-theme
            multiple-cursors latex-preview-pane pytest epl
            starter-kit-bindings zenburn-theme jedi tern
            starter-kit magit ido-ubiquitous monokai-theme
-           idle-highlight-mode find-file-in-project smex
+           idle-highlight-mode smex smart-mode-line
            paredit inf-ruby undo-tree rainbow-delimiters
            solarized-theme tern-auto-complete scala-mode2
            gitconfig-mode starter-kit-ruby mo-git-blame
@@ -52,7 +52,7 @@
            js2-mode js3-mode sphinx-doc ansi-color pytest
            exec-path-from-shell base16-theme slime flx-ido
            string-inflection yasnippet yaml-mode projectile
-           helm helm-projectile ace-jump-mode))
+           helm helm-projectile ace-jump-mode sgml-mode))
 
 (defun ensure-package-installed (packages)
   "Assure every package is installed, ask for installation if it’s not.
@@ -393,6 +393,10 @@ Return a list of installed packages or nil for every package not installed."
                  (setq current-theme appropriate-theme)))))
 
 (run-at-time "12:00" 3600 'set-solarized-theme)
+
+(require 'smart-mode-line)
+(sml/setup)
+(sml/apply-theme 'respectful)
 
 (require 'color-theme)
 (require 'whitespace)
