@@ -16,15 +16,6 @@
 ;;                                                       Load Path Configuration
 ;; =============================================================================
 
-(if (not (file-exists-p "~/.emacs.d/elpa"))
-    (make-directory "~/.emacs.d/elpa"))
-(let ((default-directory "~/.emacs.d/lisp/"))
-  (normal-top-level-add-subdirs-to-load-path))
-(let ((default-directory "~/.emacs.d/elpa/"))
-  (normal-top-level-add-subdirs-to-load-path))
-
-(add-to-list 'custom-theme-load-path "~/.emacs.d/elpa/")
-
 (setq custom-file "~/.emacs.d/custom.el")
 (when (file-exists-p custom-file) (load custom-file))
 
@@ -54,7 +45,7 @@
 (defvar packages-other
   '(latex-preview-pane auctex paredit inf-ruby undo-tree gitconfig-mode
     exec-path-from-shell slime string-inflection yaml-mode sgml-mode dired+
-    ctags ctags-update hackernews))
+    ctags ctags-update hackernews evil))
 
 (defvar packages-python '(jedi pymacs pytest sphinx-doc))
 (defvar packages-scala '(scala-mode2 ensime))
@@ -197,6 +188,15 @@
   (shell-command (concat "echo " (shell-quote-argument (ffip-get-buffer-name))
                          " | tmux loadb -")))
 
+(defun eval-and-replace ()
+  (interactive)
+  (backward-kill-sexp)
+  (condition-case nil
+      (prin1 (eval (read (current-kill 0)))
+             (current-buffer))
+    (error (message "Invalid expression")
+           (insert (current-kill 0)))))
+
 ;; =============================================================================
 ;;                                                                        Python
 ;; =============================================================================
@@ -271,25 +271,29 @@
       (tern-ac-setup)))
 
 ;; =============================================================================
-;;                                                           Custom Key Bindings
+;;                                                                           TeX
 ;; =============================================================================
 
-(defun bind-eval-and-replace ()
-  (define-key emacs-lisp-mode-map (kbd "C-c C-r") #'esk-eval-and-replace))
+(setq TeX-auto-save t)
+(setq TeX-parse-self t)
+(setq TeX-save-query nil)
+(setq-default TeX-master nil)
 
-(add-hook 'lisp-mode-hook 'bind-eval-and-replace)
-(add-hook 'lisp-interaction-mode-hook 'bind-eval-and-replace)
-(add-hook 'elisp-interaction-mode-hook 'bind-eval-and-replace)
+;; =============================================================================
+;;                                                           Custom Key Bindings
+;; =============================================================================
 
 ;; Miscellaneous
 (global-unset-key (kbd "C-o")) ;; Avoid collision with tmux binding.
 
+(global-set-key (kbd "C--") 'undo)
 (global-set-key (kbd "C-;") 'ace-jump-char-mode)
 (global-set-key (kbd "C-M-;") 'comment-dwim)
 (global-set-key (kbd "C-c +") 'message-buffer-name)
+(global-set-key (kbd "C-c C-r") 'eval-and-replace)
+(global-set-key (kbd "C-c SPC") 'ace-jump-word-mode)
 (global-set-key (kbd "C-c e") 'os-copy)
 (global-set-key (kbd "C-c g") 'jedi:goto-definition)
-(global-set-key (kbd "C-c j") 'ace-jump-mode)
 (global-set-key (kbd "C-c t") 'pytest-one)
 (global-set-key (kbd "C-x C-b") 'buffer-menu)
 (global-set-key (kbd "C-x C-c") 'kill-emacs)
