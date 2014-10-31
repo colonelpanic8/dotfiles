@@ -38,14 +38,14 @@
     rainbow-delimiters))
 
 (defvar packages-essential
-  '(epl projectile flycheck ace-jump-mode helm helm-projectile popup smex 
+  '(epl use-package projectile flycheck ace-jump-mode helm helm-projectile popup smex 
     magit auto-complete ido-ubiquitous mo-git-blame multiple-cursors flx-ido
     yasnippet cl-lib))
 
 (defvar packages-other
   '(latex-preview-pane auctex paredit inf-ruby undo-tree gitconfig-mode
     exec-path-from-shell slime string-inflection yaml-mode sgml-mode dired+
-    ctags ctags-update hackernews evil))
+    ctags ctags-update helm-gtags hackernews evil))
 
 (defvar packages-python '(jedi pymacs pytest sphinx-doc))
 (defvar packages-scala '(scala-mode2 ensime))
@@ -95,13 +95,13 @@
 (require 'uniquify)
 (setq uniquify-buffer-name-style 'forward)
 
-
 ;; Display line and column numbers in mode line.
 (line-number-mode t)
 (column-number-mode t)
 (global-linum-mode t)
 (setq visible-bell t)
 (global-auto-complete-mode)
+(setq ace-jump-mode-scope 'window)
 
 ;; Don't disable downcase and upcase region.
 (put 'upcase-region 'disabled nil)
@@ -117,7 +117,7 @@
 ;;                                                                    Mode Hooks
 ;; =============================================================================
 
-(add-hook 'prog-mode-hook (lambda () (auto-fill-mode nil)))
+(add-hook 'prog-mode-hook (lambda () (auto-fill-mode -1)))
 (add-hook 'prog-mode-hook (lambda () (subword-mode t)))
 (add-hook 'prog-mode-hook (lambda () (rainbow-delimiters-mode t)))
 (add-hook 'prog-mode-hook (lambda () (auto-complete-mode t)))
@@ -130,7 +130,6 @@
 
 (require 'ido)
 (require 'flx-ido)
-(require 'helm-config)
 
 (helm-mode 1)
 (ido-mode t)
@@ -269,6 +268,32 @@
    '(progn
       (require 'tern-auto-complete)
       (tern-ac-setup)))
+
+;; =============================================================================
+;;                                                                         C/C++
+;; =============================================================================
+
+;;; Enable helm-gtags-mode
+(add-hook 'c-mode-hook 'helm-gtags-mode)
+(add-hook 'c++-mode-hook 'helm-gtags-mode)
+(add-hook 'asm-mode-hook 'helm-gtags-mode)
+
+;; customize
+(custom-set-variables
+ '(helm-gtags-path-style 'relative)
+ '(helm-gtags-ignore-case t)
+ '(helm-gtags-auto-update t))
+
+;; key bindings
+(eval-after-load "helm-gtags"
+  '(progn
+     (define-key helm-gtags-mode-map (kbd "M-t") 'helm-gtags-find-tag)
+     (define-key helm-gtags-mode-map (kbd "M-r") 'helm-gtags-find-rtag)
+     (define-key helm-gtags-mode-map (kbd "M-s") 'helm-gtags-find-symbol)
+     (define-key helm-gtags-mode-map (kbd "M-g M-p") 'helm-gtags-parse-file)
+     (define-key helm-gtags-mode-map (kbd "C-c <") 'helm-gtags-previous-history)
+     (define-key helm-gtags-mode-map (kbd "C-c >") 'helm-gtags-next-history)
+     (define-key helm-gtags-mode-map (kbd "M-,") 'helm-gtags-pop-stack)))
 
 ;; =============================================================================
 ;;                                                                           TeX
