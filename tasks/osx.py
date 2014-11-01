@@ -55,6 +55,10 @@ def osx_config(ctx):
         os.path.join(util.RESOURCES_DIRECTORY, 'osx.sh')
     ), pty=True)
 
+@ctask
+def cider_install(ctx):
+    pass
+
 
 @ctask
 def brew_cask(ctx):

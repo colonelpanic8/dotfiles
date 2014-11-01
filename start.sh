@@ -38,8 +38,7 @@ function go() {
     while true; do sudo -n true; sleep 60; kill -0 "$$" || exit; done 2>/dev/null &
     git clone https://github.com/IvanMalison/dotfiles.git --recursive
     cd dotfiles
-    sudo pip install dotfiles
-    sudo pip install invoke
+    sudo pip install invoke dotfiles
     invoke setup
 }
 
