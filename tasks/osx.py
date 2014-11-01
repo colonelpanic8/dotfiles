@@ -9,9 +9,7 @@ from . import util
 def all(ctx):
     get_command_line_tools(ctx)
     get_brew(ctx)
-    brew_install(ctx)
-    brew_cask(ctx)
-    setup_cocoa_emacs(ctx)
+    cider_install(ctx)
     enable_access_for_assistive_devices(ctx)
     enable_hyper(ctx)
     osx_config(ctx)
@@ -57,7 +55,9 @@ def osx_config(ctx):
 
 @ctask
 def cider_install(ctx):
-    pass
+    if not util.command_exists('cider'):
+        ctx.run('sudo pip install cider')
+    ctx.run('cider restore')
 
 
 @ctask
