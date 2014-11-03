@@ -34,8 +34,8 @@
 
 (defvar packages-appearance
   '(monokai-theme solarized-theme zenburn-theme base16-theme molokai-theme
-    tango-2-theme color-theme-sanityinc-tomorrow smart-mode-line ansi-color
-    rainbow-delimiters))
+		  tango-2-theme color-theme-sanityinc-tomorrow smart-mode-line ansi-color
+		  rainbow-delimiters))
 
 (defvar packages-essential
   '(epl use-package projectile flycheck ace-jump-mode helm helm-projectile popup smex 
@@ -43,9 +43,10 @@
     yasnippet cl-lib))
 
 (defvar packages-other
-  '(latex-preview-pane auctex paredit inf-ruby undo-tree gitconfig-mode
-    exec-path-from-shell slime string-inflection yaml-mode sgml-mode dired+
-    ctags ctags-update helm-gtags hackernews evil))
+  '(thingatpt+ latex-preview-pane auctex paredit inf-ruby undo-tree
+	       exec-path-from-shell slime string-inflection yaml-mode sgml-mode dired+
+	       ctags ctags-update helm-gtags hackernews evil gitconfig-mode
+	       aggressive-indent))
 
 (defvar packages-python '(jedi pymacs pytest sphinx-doc))
 (defvar packages-scala '(scala-mode2 ensime))
@@ -113,6 +114,9 @@
 (add-hook 'after-init-hook '(lambda () (setq debug-on-error t)))
 (add-hook 'after-init-hook #'global-flycheck-mode)
 
+(global-aggressive-indent-mode 1)
+(add-to-list 'aggressive-indent-excluded-modes 'html-mode)
+
 ;; =============================================================================
 ;;                                                                    Mode Hooks
 ;; =============================================================================
@@ -127,9 +131,6 @@
 ;; =============================================================================
 ;;                                               Navigation: helm/projectile/ido
 ;; =============================================================================
-
-(require 'ido)
-(require 'flx-ido)
 
 (helm-mode 1)
 (ido-mode t)
@@ -146,55 +147,6 @@
 (setq gc-cons-threshold 20000000)
 (autoload 'smex "smex"
   (global-set-key (kbd "M-x") 'smex))
-
-;; =============================================================================
-;;                                                                     functions
-;; =============================================================================
-
-(defun get-buffer-name()
-  (interactive)
-  (file-relative-name (buffer-file-name)))
-
-(defun message-buffer-name()
-  (interactive)
-  (message (get-buffer-name)))
-
-(defun os-copy (&optional b e)
-  (interactive "r")
-  (shell-command-on-region b e "source ~/.zshrc; cat | smart_copy"))
-
-(defun os-paste ()
-  (interactive)
-  (insert (shell-command-to-string "source ~/.zshrc; ospaste")))
-
-(defun all-copy (&optional b e)
-  (interactive "r")
-  (os-copy b e)
-  (tmux-copy b e)
-  (kill-ring-save b e))
-
-(defun open-pdf ()
-  (interactive)
-  (let ( (pdf-file (replace-regexp-in-string "\.tex$" ".pdf" buffer-file-name)))
-    (shell-command (concat "open " pdf-file))))
-
-(defun tmux-copy (&optional b e) 
-  (interactive "r")
-  (shell-command-on-region b e "cat | tmux loadb -"))
-
-(defun tmux-copy-buffer-name (&optional b e)
-  (interactive "r")
-  (shell-command (concat "echo " (shell-quote-argument (ffip-get-buffer-name))
-                         " | tmux loadb -")))
-
-(defun eval-and-replace ()
-  (interactive)
-  (backward-kill-sexp)
-  (condition-case nil
-      (prin1 (eval (read (current-kill 0)))
-             (current-buffer))
-    (error (message "Invalid expression")
-           (insert (current-kill 0)))))
 
 ;; =============================================================================
 ;;                                                                        Python
@@ -305,6 +257,55 @@
 (setq-default TeX-master nil)
 
 ;; =============================================================================
+;;                                                                     functions
+;; =============================================================================
+
+(defun get-buffer-name()
+  (interactive)
+  (file-relative-name (buffer-file-name)))
+
+(defun message-buffer-name()
+  (interactive)
+  (message (get-buffer-name)))
+
+(defun os-copy (&optional b e)
+  (interactive "r")
+  (shell-command-on-region b e "source ~/.zshrc; cat | smart_copy"))
+
+(defun os-paste ()
+  (interactive)
+  (insert (shell-command-to-string "source ~/.zshrc; ospaste")))
+
+(defun all-copy (&optional b e)
+  (interactive "r")
+  (os-copy b e)
+  (tmux-copy b e)
+  (kill-ring-save b e))
+
+(defun open-pdf ()
+  (interactive)
+  (let ( (pdf-file (replace-regexp-in-string "\.tex$" ".pdf" buffer-file-name)))
+    (shell-command (concat "open " pdf-file))))
+
+(defun tmux-copy (&optional b e) 
+  (interactive "r")
+  (shell-command-on-region b e "cat | tmux loadb -"))
+
+(defun tmux-copy-buffer-name (&optional b e)
+  (interactive "r")
+  (shell-command (concat "echo " (shell-quote-argument (ffip-get-buffer-name))
+                         " | tmux loadb -")))
+
+(defun eval-and-replace ()
+  (interactive)
+  (backward-kill-sexp)
+  (condition-case nil
+      (prin1 (eval (read (current-kill 0)))
+             (current-buffer))
+    (error (message "Invalid expression")
+           (insert (current-kill 0)))))
+
+;; =============================================================================
 ;;                                                           Custom Key Bindings
 ;; =============================================================================
 
@@ -317,6 +318,7 @@
 (global-set-key (kbd "C-c +") 'message-buffer-name)
 (global-set-key (kbd "C-c C-r") 'eval-and-replace)
 (global-set-key (kbd "C-c SPC") 'ace-jump-word-mode)
+(global-set-key (kbd "C-c C-f") 'find-function-at-point)
 (global-set-key (kbd "C-c e") 'os-copy)
 (global-set-key (kbd "C-c g") 'jedi:goto-definition)
 (global-set-key (kbd "C-c t") 'pytest-one)
@@ -327,6 +329,8 @@
 (global-set-key (kbd "C-x O") (lambda () (interactive) (other-window -1)))
 (global-set-key (kbd "C-x f") 'helm-projectile)
 (global-set-key (kbd "C-x w") 'whitespace-mode)
+(global-set-key (kbd "M-a") 'goto-line)
+(global-set-key (kbd "M-e") 'goto-line)
 (global-set-key (kbd "M-g") 'goto-line)
 
 ;; Multiple Cursors
@@ -373,8 +377,11 @@
 (load-theme 'monokai t)
 
 ;; Choose random theme:
-(defvar dark-themes '(monokai molokai solarized-dark base16-default))
-(defvar light-themes '(zenburn solarized-light))
+;; (defvar dark-themes '(monokai molokai solarized-dark base16-default))
+;; (defvar light-themes '(zenburn solarized-light))
+
+(defvar dark-themes '(solarized-dark))
+(defvar light-themes '(solarized-light))
 
 (defun random-choice (choices)
   (nth (random (length choices)) choices))
@@ -400,7 +407,7 @@
   (setq hl-line-mode nil))
 
 ;; enable to set theme based on time of day.
-;; (run-at-time "12:00" 3600 'set-theme)
+(run-at-time "12:00" 3600 'set-theme)
 
 ;; Set the default font for emacs.
 ;;(set-frame-font "Menlo 11" t t)
