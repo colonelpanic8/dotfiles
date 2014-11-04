@@ -28,3 +28,8 @@ function _current_dot_directory {
     local directory="$(git rev-parse --show-toplevel 2> /dev/null || pwd)"
     _dot_directory $directory
 }
+
+# Make emacs the default editor.
+export EDITOR="emacs -Q"
+export ALTERNATE_EDITOR=""
+export VISUAL="$EDITOR"

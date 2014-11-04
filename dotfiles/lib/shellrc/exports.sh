@@ -3,10 +3,6 @@ if [[ $COLORTERM = gnome-* && $TERM = xterm ]] && infocmp gnome-256color >/dev/n
 elif infocmp xterm-256color >/dev/null 2>&1; then
     export TERM=xterm-256color
 fi
-# Make emacs the default editor.
-export EDITOR="$(which emacsclient) -t"
-export ALTERNATE_EDITOR=""
-export VISUAL="$EDITOR"
 
 # Larger bash history (allow 32³ entries; default is 500)
 export HISTSIZE=32768
