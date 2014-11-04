@@ -51,7 +51,6 @@
 
 (defvar packages-python '(jedi pymacs pytest sphinx-doc))
 (defvar packages-scala '(scala-mode2 ensime))
-(setq packages-scala '())
 (defvar packages-js '(js2-mode js3-mode web-beautify tern tern-auto-complete))
 
 (defun ensure-packages-installed (packages)
@@ -376,8 +375,6 @@
 ;;                                                                        Themes
 ;; =============================================================================
 
-(load-theme 'molokai t)
-
 ;; Choose random theme:
 ;; (defvar dark-themes '(monokai molokai solarized-dark base16-default))
 ;; (defvar light-themes '(zenburn solarized-light))
@@ -392,7 +389,7 @@
   (let ((hour
          (string-to-number (format-time-string "%H"))))
     (if (or (< hour 6) (> hour 18))
-        (random-choice dark-themes) (random-choice light-theme))))
+        (random-choice dark-themes) (random-choice light-themes))))
 
 (setq current-theme nil)
 
@@ -409,7 +406,7 @@
   (setq hl-line-mode nil))
 
 ;; enable to set theme based on time of day.
-(run-at-time "12:00" 3600 'set-theme)
+(run-at-time "12:00" 60 'set-theme)
 
 ;; Set the default font for emacs.
 ;;(set-frame-font "Menlo 11" t t)
