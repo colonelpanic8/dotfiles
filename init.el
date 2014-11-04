@@ -18,6 +18,7 @@
 
 (setq custom-file "~/.emacs.d/custom.el")
 (when (file-exists-p custom-file) (load custom-file))
+(add-to-list 'load-path "~/Projects/scala-mode2")
 
 ;; =============================================================================
 ;;                                                         ELPA/package.el/MELPA
@@ -46,10 +47,11 @@
   '(thingatpt+ latex-preview-pane auctex paredit inf-ruby undo-tree
 	       exec-path-from-shell slime string-inflection yaml-mode sgml-mode dired+
 	       ctags ctags-update helm-gtags hackernews evil gitconfig-mode
-	       aggressive-indent))
+	       aggressive-indent imenu+ weechat))
 
 (defvar packages-python '(jedi pymacs pytest sphinx-doc))
 (defvar packages-scala '(scala-mode2 ensime))
+(setq packages-scala '())
 (defvar packages-js '(js2-mode js3-mode web-beautify tern tern-auto-complete))
 
 (defun ensure-packages-installed (packages)
@@ -113,9 +115,6 @@
 
 (add-hook 'after-init-hook '(lambda () (setq debug-on-error t)))
 (add-hook 'after-init-hook #'global-flycheck-mode)
-
-(global-aggressive-indent-mode 1)
-(add-to-list 'aggressive-indent-excluded-modes 'html-mode)
 
 ;; =============================================================================
 ;;                                                                    Mode Hooks
@@ -215,6 +214,8 @@
 ;;                                                                    JavaScript
 ;; =============================================================================
 
+(setq js-indent-level 2)
+
 (add-hook 'js-mode-hook (lambda () (tern-mode t)))
 (eval-after-load 'tern
    '(progn
@@ -310,14 +311,15 @@
 ;; =============================================================================
 
 ;; Miscellaneous
+(define-key lisp-mode-shared-map (kbd "C-c C-c") 'eval-defun)
 (global-unset-key (kbd "C-o")) ;; Avoid collision with tmux binding.
 
 (global-set-key (kbd "C--") 'undo)
-(global-set-key (kbd "C-;") 'ace-jump-char-mode)
+(global-set-key (kbd "C-;") 'ace-jump-word-mode)
 (global-set-key (kbd "C-M-;") 'comment-dwim)
 (global-set-key (kbd "C-c +") 'message-buffer-name)
 (global-set-key (kbd "C-c C-r") 'eval-and-replace)
-(global-set-key (kbd "C-c SPC") 'ace-jump-word-mode)
+(global-set-key (kbd "C-c SPC") 'ace-jump-char-mode)
 (global-set-key (kbd "C-c C-f") 'find-function-at-point)
 (global-set-key (kbd "C-c e") 'os-copy)
 (global-set-key (kbd "C-c g") 'jedi:goto-definition)
@@ -329,8 +331,8 @@
 (global-set-key (kbd "C-x O") (lambda () (interactive) (other-window -1)))
 (global-set-key (kbd "C-x f") 'helm-projectile)
 (global-set-key (kbd "C-x w") 'whitespace-mode)
-(global-set-key (kbd "M-a") 'goto-line)
-(global-set-key (kbd "M-e") 'goto-line)
+(global-set-key (kbd "M-a") 'beginning-of-defun)
+(global-set-key (kbd "M-e") 'end-of-defun)
 (global-set-key (kbd "M-g") 'goto-line)
 
 ;; Multiple Cursors
@@ -374,7 +376,7 @@
 ;;                                                                        Themes
 ;; =============================================================================
 
-(load-theme 'monokai t)
+(load-theme 'molokai t)
 
 ;; Choose random theme:
 ;; (defvar dark-themes '(monokai molokai solarized-dark base16-default))
