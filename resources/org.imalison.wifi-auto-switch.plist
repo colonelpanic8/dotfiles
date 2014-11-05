@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+    <key>Label</key>
+    <string>org.imalison.wifi-auto-switch</string>
+    <key>ProgramArguments</key>
+    <array>
+      <string>bash</string>
+      <string>-c</string>
+        <string>python ~/.lib/python/wifi_auto_switch.py -n 4160CesarChavez fake-password -n InternationalFoolery5 fake-password</string>
+    </array>
+    <key>KeepAlive</key>
+    <true/>
+    <key>StandardOutPath</key>
+    <string>/Users/imalison/logs/org.imalison.wifi-auto-switch.out</string>
+    <key>StandardErrorPath</key>
+    <string>/Users/imalison/logs/org.imalison.wifi-auto-switch.error</string>
+</dict>
+</plist>

@@ -15,3 +15,4 @@ readline
 Flask
 flake8
 pylint
+coloredlogs
