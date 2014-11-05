@@ -53,16 +53,16 @@
 (defvar packages-js '(js2-mode js3-mode web-beautify tern tern-auto-complete))
 
 (defun ensure-packages-installed (packages)
-  (condition-case ex
-      (dolist (p packages)
-        (when (not (package-installed-p p))
-          (package-install p)))
-    ('error (package-refresh-contents)
-            (ensure-packages-installed packages) nil)))
+  (dolist (p packages)
+    (when (not (package-installed-p p))
+      (package-install p))))
 
-(ensure-packages-installed
- (append packages-essential packages-python packages-scala packages-js
-	 packages-appearance packages-other))
+(let ((packages (append packages-essential packages-python packages-scala packages-js
+			packages-appearance packages-other)))
+  (condition-case ex
+      (ensure-packages-installed packages)
+    ('error (package-refresh-contents)
+	    (ensure-packages-installed packages) nil)))
 
 ;; =============================================================================
 ;;                                                                      Disables
@@ -223,6 +223,11 @@
    '(progn
       (require 'tern-auto-complete)
       (tern-ac-setup)))
+
+(add-hook 'css-mode-hook
+          (lambda ()
+            (define-key css-mode-map "\M-\C-x" 'slime-js-refresh-css)
+            (define-key css-mode-map "\C-c\C-r" 'slime-js-embed-css)))
 
 ;; =============================================================================
 ;;                                                                         C/C++
