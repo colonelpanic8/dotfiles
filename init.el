@@ -18,7 +18,6 @@
 
 (setq custom-file "~/.emacs.d/custom.el")
 (when (file-exists-p custom-file) (load custom-file))
-(add-to-list 'load-path "~/Projects/scala-mode2")
 
 ;; =============================================================================
 ;;                                                         ELPA/package.el/MELPA
@@ -35,19 +34,19 @@
 
 (defvar packages-appearance
   '(monokai-theme solarized-theme zenburn-theme base16-theme molokai-theme
-		  tango-2-theme color-theme-sanityinc-tomorrow smart-mode-line ansi-color
-		  rainbow-delimiters))
+    tango-2-theme color-theme-sanityinc-tomorrow smart-mode-line ansi-color
+    rainbow-delimiters))
 
 (defvar packages-essential
-  '(epl use-package projectile flycheck ace-jump-mode helm helm-projectile popup smex 
-    magit auto-complete ido-ubiquitous mo-git-blame multiple-cursors flx-ido
-    yasnippet cl-lib))
+  '(epl use-package projectile flycheck ace-jump-mode helm helm-projectile popup
+    smex magit auto-complete ido-ubiquitous mo-git-blame multiple-cursors
+    yasnippet cl-lib flx-ido))
 
 (defvar packages-other
   '(thingatpt+ latex-preview-pane auctex paredit inf-ruby undo-tree
-	       exec-path-from-shell slime string-inflection yaml-mode sgml-mode dired+
-	       ctags ctags-update helm-gtags hackernews evil gitconfig-mode
-	       aggressive-indent imenu+ weechat))
+	       exec-path-from-shell slime string-inflection yaml-mode sgml-mode
+	       dired+ ctags ctags-update helm-gtags hackernews gitconfig-mode
+	       aggressive-indent imenu+ weechat evil))
 
 (defvar packages-python '(jedi pymacs pytest sphinx-doc))
 (defvar packages-scala '(scala-mode2 ensime))
@@ -194,7 +193,7 @@
 ;;                                                                         Scala
 ;; =============================================================================
 
-(require 'ensime)
+(add-to-list 'load-path "~/Projects/scala-mode2")
 (require 'scala-mode2)
 (add-hook 'scala-mode-hook 'ensime-scala-mode-hook)
 (add-hook 'scala-mode-hook '(lambda ()
@@ -214,6 +213,8 @@
 ;; =============================================================================
 
 (setq js-indent-level 2)
+
+(add-to-list 'auto-mode-alist '("\\.js$" . js2-mode))
 
 (add-hook 'js-mode-hook (lambda () (tern-mode t)))
 (eval-after-load 'tern
