@@ -19,6 +19,8 @@
 (setq custom-file "~/.emacs.d/custom.el")
 (when (file-exists-p custom-file) (load custom-file))
 
+(add-to-list 'load-path "~/.emacs.d/lisp")
+
 ;; =============================================================================
 ;;                                                         ELPA/package.el/MELPA
 ;; =============================================================================
@@ -50,7 +52,7 @@
 
 (defvar packages-python '(jedi pymacs pytest sphinx-doc))
 (defvar packages-scala '(scala-mode2 ensime))
-(defvar packages-js '(js2-mode js3-mode web-beautify tern tern-auto-complete))
+(defvar packages-js '(js2-mode js3-mode web-beautify tern tern-auto-complete slime-js))
 
 (defun ensure-packages-installed (packages)
   (dolist (p packages)

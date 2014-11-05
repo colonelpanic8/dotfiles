@@ -1,6 +1,0 @@
-[submodule "lisp/multi-line-it"]
-	path = lisp/multi-line-it
-	url = https://github.com/IvanMalison/multi-line-it.git
-[submodule "lisp/emacs-testify"]
-	path = lisp/emacs-testify
-	url = https://github.com/IvanMalison/emacs-testify.git
