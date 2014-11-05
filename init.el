@@ -194,7 +194,9 @@
 ;; =============================================================================
 
 (add-to-list 'load-path "~/Projects/scala-mode2")
+(require 'ensime)
 (require 'scala-mode2)
+(load "~/.emacs.d/lisp/ensime-imenu.el")
 (add-hook 'scala-mode-hook 'ensime-scala-mode-hook)
 (add-hook 'scala-mode-hook '(lambda ()
   (require 'whitespace)
@@ -380,6 +382,8 @@
 ;; (defvar dark-themes '(monokai molokai solarized-dark base16-default))
 ;; (defvar light-themes '(zenburn solarized-light))
 
+(load-theme 'solarized-dark t)
+
 (defvar dark-themes '(solarized-dark))
 (defvar light-themes '(solarized-light))
 
@@ -407,7 +411,7 @@
   (setq hl-line-mode nil))
 
 ;; enable to set theme based on time of day.
-(run-at-time "12:00" 60 'set-theme)
+(run-at-time "12:00" 3600 'set-theme)
 
 ;; Set the default font for emacs.
 ;;(set-frame-font "Menlo 11" t t)
