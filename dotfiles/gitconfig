@@ -32,7 +32,7 @@
 	# In newer versions of git, this simpler definition of which-branch would work.
 	# symbolic-ref HEAD --short
 
-	ffr = "!ffr() { git fetch $1 && git ff origin/$(git which-branch) && git suir; }; ffr"
+	ffr = "!ffr() { git fetch $1 && git ff $1/$(git which-branch) && git suir; }; ffr"
 	ffo = !git ffr origin
 	reset-origin = "!r() { git reset --hard origin/\"$(git which-branch)\" && git suir; }; r"
 	reset-author ="!source ~/.lib/shellrc/functions.sh && git_reset_author"
