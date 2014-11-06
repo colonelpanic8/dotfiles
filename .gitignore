@@ -7,3 +7,4 @@ dotfiles/sbt/boot/
 dotfiles/.pip/download_cache
 dotfiles/.pip/pip.log
 dotfiles/config/hub
+dotfiles/cider/.cache/
