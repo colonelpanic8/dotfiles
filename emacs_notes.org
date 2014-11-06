@@ -18,3 +18,8 @@ Emacs Notes -*- mode: org -*-
 ** M-e and M-a for paragraph movement.
 ** C-M-f and C-M-b for movement by S-expression
 ** M-m for moving to current indentation
+
+<2014-11-05 Wed>
+
+** helm-show-kill-ring and helm-mark-ring and helm-global-mark-ring
+** C-p s s to do helm-projectile-ag

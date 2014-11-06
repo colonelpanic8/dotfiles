@@ -48,11 +48,12 @@
   '(thingatpt+ latex-preview-pane auctex paredit inf-ruby undo-tree
 	       exec-path-from-shell slime string-inflection yaml-mode sgml-mode
 	       dired+ ctags ctags-update helm-gtags hackernews gitconfig-mode
-	       aggressive-indent imenu+ weechat evil))
+	       aggressive-indent imenu+ weechat evil helm-ag))
 
 (defvar packages-python '(jedi pymacs pytest sphinx-doc))
 (defvar packages-scala '(scala-mode2 ensime))
-(defvar packages-js '(js2-mode js3-mode web-beautify tern tern-auto-complete slime-js))
+(defvar packages-js '(js2-mode js3-mode web-beautify tern tern-auto-complete
+			       slime-js))
 
 (defun ensure-packages-installed (packages)
   (dolist (p packages)
@@ -137,6 +138,8 @@
 (flx-ido-mode 1)
 (setq ido-enable-flex-matching t)
 (projectile-global-mode)
+(require 'helm-projectile)
+(helm-projectile-on)
 (setq projectile-enable-caching t)
 
 ;; disable ido faces to see flx highlights.
@@ -225,6 +228,14 @@
    '(progn
       (require 'tern-auto-complete)
       (tern-ac-setup)))
+
+;; (require 'slime-js)
+;; (slime-js-init)
+;; (require 'setup-slime-js)
+;; (global-set-key [f5] 'slime-js-reload)
+;; (add-hook 'js2-mode-hook
+;;           (lambda ()
+;;             (slime-js-minor-mode 1)))
 
 (add-hook 'css-mode-hook
           (lambda ()
@@ -323,33 +334,32 @@
 (define-key lisp-mode-shared-map (kbd "C-c C-c") 'eval-defun)
 (global-unset-key (kbd "C-o")) ;; Avoid collision with tmux binding.
 
+
 (global-set-key (kbd "C--") 'undo)
-(global-set-key (kbd "C-;") 'ace-jump-word-mode)
-(global-set-key (kbd "C-M-;") 'comment-dwim)
+(global-set-key (kbd "C-;") 'ace-jump-mode)
+(global-set-key (kbd "C-<") 'mc/mark-previous-like-this)
+(global-set-key (kbd "C->") 'mc/mark-next-like-this)
+(global-set-key (kbd "C->") 'mc/mark-next-like-this)
 (global-set-key (kbd "C-c +") 'message-buffer-name)
-(global-set-key (kbd "C-c C-r") 'eval-and-replace)
-(global-set-key (kbd "C-c SPC") 'ace-jump-char-mode)
+(global-set-key (kbd "C-c <") 'mc/mark-all-like-this)
 (global-set-key (kbd "C-c C-f") 'find-function-at-point)
+(global-set-key (kbd "C-c C-r") 'eval-and-replace)
+(global-set-key (kbd "C-c SPC") (lambda () (interactive) (if current-prefix-arg (helm-global-mark-ring) (helm-mark-ring))))
 (global-set-key (kbd "C-c e") 'os-copy)
-(global-set-key (kbd "C-c g") 'jedi:goto-definition)
+(global-set-key (kbd "C-c g") 'jedi:goto-definition) ;; Should be python only
+(global-set-key (kbd "C-c j") 'ace-jump-mode) ;; This is needed for terminal emacs.
 (global-set-key (kbd "C-c t") 'pytest-one)
 (global-set-key (kbd "C-x C-b") 'buffer-menu)
 (global-set-key (kbd "C-x C-c") 'kill-emacs)
 (global-set-key (kbd "C-x C-i") 'imenu)
 (global-set-key (kbd "C-x C-r") (lambda () (interactive) (revert-buffer t t)))
 (global-set-key (kbd "C-x O") (lambda () (interactive) (other-window -1)))
-(global-set-key (kbd "C-x f") 'helm-projectile)
-(global-set-key (kbd "C-x w") 'whitespace-mode)
-(global-set-key (kbd "M-a") 'beginning-of-defun)
-(global-set-key (kbd "M-e") 'end-of-defun)
-(global-set-key (kbd "M-g") 'goto-line)
-
-;; Multiple Cursors
+(global-set-key (kbd "C-x f") 'helm-projectile-find-file)
 (global-set-key (kbd "C-x r t") 'mc/edit-lines)
-(global-set-key (kbd "C->") 'mc/mark-next-like-this)
-(global-set-key (kbd "C-<") 'mc/mark-previous-like-this)
-(global-set-key (kbd "C-c <") 'mc/mark-all-like-this)
-(global-set-key (kbd "C->") 'mc/mark-next-like-this)
+(global-set-key (kbd "C-x w") 'whitespace-mode)
+(global-set-key (kbd "M-g") 'goto-line)
+(global-set-key (kbd "M-y") 'helm-show-kill-ring)
+;; Multiple Cursors
 
 (eval-after-load 'js2-mode
   '(define-key js2-mode-map (kbd "C-c b") 'web-beautify-js))
