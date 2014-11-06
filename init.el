@@ -71,11 +71,6 @@
 ;;                                                                      Disables
 ;; =============================================================================
 
-;; Get rid of any gui like features...
-(if (fboundp 'scroll-bar-mode) (scroll-bar-mode -1))
-(if (fboundp 'tool-bar-mode) (tool-bar-mode -1))
-(if (fboundp 'menu-bar-mode) (menu-bar-mode -1))
-
 ;; Disable the creation of backup files.
 (setq backup-inhibited t)
 (setq make-backup-files nil)
@@ -181,6 +176,7 @@
             (setq retval (cons 'exception (list ex))))
          nil))
 
+(require 'pytest)
 (add-hook 'python-mode-hook (lambda () (setq show-trailing-whitespace t)))
 (add-hook 'python-mode-hook (lambda () (if use-python-tabs python-tabs)))
 (add-hook 'python-mode-hook (lambda () (subword-mode t)))
@@ -399,8 +395,6 @@
 ;; (defvar dark-themes '(monokai molokai solarized-dark base16-default))
 ;; (defvar light-themes '(zenburn solarized-light))
 
-(load-theme 'solarized-dark t)
-
 (defvar dark-themes '(solarized-dark))
 (defvar light-themes '(solarized-light))
 
@@ -420,15 +414,19 @@
   (let ((appropriate-theme (get-appropriate-theme)))
         (if (eq appropriate-theme current-theme)
             nil
-          (progn (load-theme-no-hl-line appropriate-theme)
+          (progn (load-theme appropriate-theme)
                  (setq current-theme appropriate-theme)))))
 
-(defun load-theme-no-hl-line (theme)
-  (load-theme theme t)
+(defun remove-fringe-and-hl-line-mode (&rest stuff)
+  (set-fringe-style '(0 . 0))
   (setq hl-line-mode nil))
 
+(advice-add 'load-theme :after #'remove-fringe-and-hl-line-mode)
+	    
 ;; enable to set theme based on time of day.
-(run-at-time "12:00" 3600 'set-theme)
+(run-at-time "00:00" 3600 'set-theme)
 
-;; Set the default font for emacs.
-;;(set-frame-font "Menlo 11" t t)
+;; Get rid of any gui like features...
+(if (fboundp 'scroll-bar-mode) (scroll-bar-mode -1))
+(if (fboundp 'tool-bar-mode) (tool-bar-mode -1))
+(if (fboundp 'menu-bar-mode) (menu-bar-mode -1))
