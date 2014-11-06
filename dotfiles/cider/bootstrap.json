@@ -22,6 +22,7 @@
   ],
   "formulas": [
     "ack",
+    "ag",
     "ant",
     "at-spi2-atk",
     "at-spi2-core",
