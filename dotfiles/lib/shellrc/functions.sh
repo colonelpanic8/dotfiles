@@ -107,10 +107,15 @@ function is_osx() {
     esac
 }
 
-function clipboard() {
+# TODO: Remove this.
+alias clipboard='oscopy'
+
+function oscopy() {
     if is_osx;
     then
         reattach-to-user-namespace pbcopy
+    else
+	xclip -selection c
     fi
 }
 
@@ -118,6 +123,8 @@ function ospaste() {
     if is_osx;
     then
         reattach-to-user-namespace pbpaste
+    else
+	xclip -o 
     fi
 }
 

@@ -36,6 +36,6 @@ function smart_copy() {
     then
         remote_os_copy
     else
-        clipboard
+        oscopy
     fi
 }

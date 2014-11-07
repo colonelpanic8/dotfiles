@@ -1,4 +1,4 @@
-alias emacs='temacs'
+alias emacs='terminal_emacs'
 is_osx && alias emacs='cocoa_emacs'
 alias terminal_emacs='_emacs -t'
 alias ec='_emacs -n '

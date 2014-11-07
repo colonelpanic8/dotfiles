@@ -5,7 +5,6 @@ ddg
 ouimeaux
 simplejson
 invoke
-cider
 lxml
 okcupyd
 vcrpy

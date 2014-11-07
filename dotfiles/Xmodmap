@@ -1,6 +1,5 @@
-clear Mod1
-clear Mod2
-keycode 63 = Mode_switch
-keycode 66 = Meta_L
-add Mod1 = Meta_L
-add Mod2 = Mode_switch
+keycode 66 = Control_L
+clear Lock
+add Control = Control_L
+keycode 117 = Caps_Lock
+add Lock = Caps_Lock

@@ -23,6 +23,7 @@ def setup(ctx):
         linux.all(ctx)
     dotfiles(ctx, 'f')
     install_python_libraries(ctx)
+    powerline(ctx)
     install_npm_libraries(ctx)
     change_shell(ctx)
 
@@ -32,6 +33,11 @@ def setup(ctx):
 def dotfiles(ctx, flags=''):
     ctx.run('hash dotfiles || sudo pip install dotfiles')
     return ctx.run('dotfiles -s{1} -R {0}'.format(DOTFILES_DIRECTORY, flags))
+
+
+@ctask
+def powerline(ctx):
+    ctx.run('pip install --user git+git://github.com/Lokaltog/powerline')
 
 
 @ctask
@@ -64,3 +70,4 @@ ns.add_task(setup)
 ns.add_task(install_python_libraries)
 ns.add_task(install_npm_libraries)
 ns.add_task(vimstall)
+ns.add_task(powerline)
