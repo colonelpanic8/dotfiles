@@ -36,8 +36,8 @@
 
 (defvar packages-appearance
   '(monokai-theme solarized-theme zenburn-theme base16-theme molokai-theme
-    tango-2-theme color-theme-sanityinc-tomorrow smart-mode-line ansi-color
-    rainbow-delimiters))
+    tango-2-theme gotham-theme color-theme-sanityinc-tomorrow smart-mode-line
+    rainbow-delimiters ansi-color))
 
 (defvar packages-essential
   '(epl use-package projectile flycheck ace-jump-mode helm helm-projectile popup
@@ -48,7 +48,7 @@
   '(thingatpt+ latex-preview-pane auctex paredit inf-ruby undo-tree
 	       exec-path-from-shell slime string-inflection yaml-mode sgml-mode
 	       dired+ ctags ctags-update helm-gtags hackernews gitconfig-mode
-	       aggressive-indent imenu+ weechat evil helm-ag))
+	       aggressive-indent imenu+ weechat evil helm-ag xclip))
 
 (defvar packages-python '(jedi pymacs pytest sphinx-doc))
 (defvar packages-scala '(scala-mode2 ensime))
@@ -197,7 +197,7 @@
 (add-to-list 'load-path "~/Projects/scala-mode2")
 (require 'ensime)
 (require 'scala-mode2)
-(load "~/.emacs.d/lisp/ensime-imenu.el")
+;; (load "~/.emacs.d/lisp/ensime-imenu.el")
 (add-hook 'scala-mode-hook 'ensime-scala-mode-hook)
 (add-hook 'scala-mode-hook '(lambda ()
   (require 'whitespace)
@@ -277,6 +277,18 @@
 ;;                                                                     functions
 ;; =============================================================================
 
+(defun sudo-edit (&optional arg)
+  "Edit currently visited file as root.
+
+With a prefix ARG prompt for a file to visit.
+Will also prompt for a file to visit if current
+buffer is not visiting a file."
+  (interactive "P")
+  (if (or arg (not buffer-file-name))
+      (find-file (concat "/sudo:root@localhost:"
+                         (ido-read-file-name "Find file (as root): ")))
+    (find-alternate-file (concat "/sudo:root@localhost:" buffer-file-name))))
+
 (defun get-buffer-name()
   (interactive)
   (file-relative-name (buffer-file-name)))
@@ -340,6 +352,7 @@
 (global-set-key (kbd "C-c <") 'mc/mark-all-like-this)
 (global-set-key (kbd "C-c C-f") 'find-function-at-point)
 (global-set-key (kbd "C-c C-r") 'eval-and-replace)
+(global-set-key (kbd "C-c C-s") 'sudo-edit)
 (global-set-key (kbd "C-c SPC") (lambda () (interactive) (if current-prefix-arg (helm-global-mark-ring) (helm-mark-ring))))
 (global-set-key (kbd "C-c e") 'os-copy)
 (global-set-key (kbd "C-c g") 'jedi:goto-definition) ;; Should be python only
@@ -395,8 +408,8 @@
 ;; (defvar dark-themes '(monokai molokai solarized-dark base16-default))
 ;; (defvar light-themes '(zenburn solarized-light))
 
-(defvar dark-themes '(solarized-dark))
-(defvar light-themes '(solarized-light))
+(defvar dark-themes '(gotham))
+(defvar light-themes '(zenburn))
 
 (defun random-choice (choices)
   (nth (random (length choices)) choices))
