@@ -45,7 +45,7 @@
     yasnippet cl-lib flx-ido))
 
 (defvar packages-other
-  '(thingatpt+ latex-preview-pane auctex paredit inf-ruby undo-tree
+  '(thingatpt+ latex-preview-pane auctex paredit inf-ruby undo-tree haskell-mode
 	       exec-path-from-shell slime string-inflection yaml-mode sgml-mode
 	       dired+ ctags ctags-update helm-gtags hackernews gitconfig-mode
 	       aggressive-indent imenu+ weechat evil helm-ag xclip))
@@ -53,7 +53,7 @@
 (defvar packages-python '(jedi pymacs pytest sphinx-doc))
 (defvar packages-scala '(scala-mode2 ensime))
 (defvar packages-js '(js2-mode js3-mode web-beautify tern tern-auto-complete
-			       slime-js))
+			       slime-js skewer-mode skewer-reload-stylesheets))
 
 (defun ensure-packages-installed (packages)
   (dolist (p packages)
@@ -75,6 +75,15 @@
 (setq backup-inhibited t)
 (setq make-backup-files nil)
 (setq auto-save-default nil)
+
+
+(defconst emacs-tmp-dir (format "%s/%s%s/" temporary-file-directory "emacs" (user-uid)))
+(setq backup-directory-alist
+      `((".*" . ,emacs-tmp-dir)))
+(setq auto-save-file-name-transforms
+      `((".*" ,emacs-tmp-dir t)))
+(setq auto-save-list-file-prefix
+      emacs-tmp-dir)
 
 (put 'set-goal-column 'disabled nil)
 (auto-fill-mode -1)
@@ -225,6 +234,11 @@
       (require 'tern-auto-complete)
       (tern-ac-setup)))
 
+(defun skewer-mode-all ()
+  (add-hook 'js2-mode-hook 'skewer-mode)
+  (add-hook 'css-mode-hook 'skewer-css-mode)
+  (add-hook 'html-mode-hook 'skewer-html-mode))
+
 ;; (require 'slime-js)
 ;; (slime-js-init)
 ;; (require 'setup-slime-js)
@@ -353,7 +367,8 @@ buffer is not visiting a file."
 (global-set-key (kbd "C-c C-f") 'find-function-at-point)
 (global-set-key (kbd "C-c C-r") 'eval-and-replace)
 (global-set-key (kbd "C-c C-s") 'sudo-edit)
-(global-set-key (kbd "C-c SPC") (lambda () (interactive) (if current-prefix-arg (helm-global-mark-ring) (helm-mark-ring))))
+(global-set-key (kbd "C-c SPC") (lambda () (interactive)
+				  (if current-prefix-arg (helm-global-mark-ring) (helm-mark-ring))))
 (global-set-key (kbd "C-c e") 'os-copy)
 (global-set-key (kbd "C-c g") 'jedi:goto-definition) ;; Should be python only
 (global-set-key (kbd "C-c j") 'ace-jump-mode) ;; This is needed for terminal emacs.
@@ -391,9 +406,9 @@ buffer is not visiting a file."
         (tab-mark 9 [9655 9] [92 9])))
 
 (defun colorize-compilation-buffer ()
-  (toggle-read-only)
+  (read-only-mode)
   (ansi-color-apply-on-region (point-min) (point-max))
-  (toggle-read-only))
+  (read-only-mode))
 (add-hook 'compilation-filter-hook 'colorize-compilation-buffer)
 
 ;; smart-mode-line
@@ -417,7 +432,7 @@ buffer is not visiting a file."
 (defun get-appropriate-theme ()
   (let ((hour
          (string-to-number (format-time-string "%H"))))
-    (if (or (< hour 6) (> hour 18))
+    (if (or (< hour 8) (> hour 18))
         (random-choice dark-themes) (random-choice light-themes))))
 
 (setq current-theme nil)
@@ -427,7 +442,7 @@ buffer is not visiting a file."
   (let ((appropriate-theme (get-appropriate-theme)))
         (if (eq appropriate-theme current-theme)
             nil
-          (progn (load-theme appropriate-theme)
+          (progn (load-theme appropriate-theme t)
                  (setq current-theme appropriate-theme)))))
 
 (defun remove-fringe-and-hl-line-mode (&rest stuff)
@@ -438,6 +453,8 @@ buffer is not visiting a file."
 	    
 ;; enable to set theme based on time of day.
 (run-at-time "00:00" 3600 'set-theme)
+(message fringe-query-style)
+(set-fringe-style '(0 . 0))
 
 ;; Get rid of any gui like features...
 (if (fboundp 'scroll-bar-mode) (scroll-bar-mode -1))
