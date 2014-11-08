@@ -34,13 +34,6 @@ function git_status_character() {
     fi
 }
 
-function sandbox_prompt() {
-    if [ ! -z "$(sandbox_prompt_info)" ];
-    then
-        echo " $(separator "with") $(colored_sandbox_string)%{$reset_color%}"
-    fi
-}
-
 function command_line_character() {
     if ! test -z $(git branch-or-sha);
     then 
@@ -68,7 +61,7 @@ function separator() {
 
 prompt_basic_colors
 function set_bash_prompt() {
-    PS1="╭─$(print_with_color "$(whoami)" "$USERNAME_COLOR") $(separator "at") $(print_with_color "`hostname -s`" "$HOSTNAME_COLOR") $(separator "in") $(print_with_color "`current_directory`" "$CURRENT_DIRECTORY_COLOR")$(git_prompt_info)$(sandbox_prompt)
+    PS1="╭─$(print_with_color "$(whoami)" "$USERNAME_COLOR") $(separator "at") $(print_with_color "`hostname -s`" "$HOSTNAME_COLOR") $(separator "in") $(print_with_color "`current_directory`" "$CURRENT_DIRECTORY_COLOR")$(git_prompt_info)
 ╰─$(command_line_character) "
 }
 
