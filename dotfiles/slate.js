@@ -1,3 +1,13 @@
+slate.configAll({
+    windowHintsIgnoreHiddenWindows: false,
+    windowHintsShowIcons: true,
+    windowHintsSpread: true,
+    switchShowTitles: true,
+    windowHintsSpreadSearchHeight: 100,
+    windowHintsSpreadSearchWidth: 100,
+    windowHintsSpreadPadding: 40
+});
+
 var hint = slate.op("hint", {
   "characters" : "ASDFGHJKLQWERTYUIOPCVBN"
 });
@@ -15,8 +25,6 @@ function quarterCorner(corner) {
     height: "screenSizeY/2"
   });
 }
-
-slate.bindAll({"esc:cmd": hint, "space:alt": grid});
 
 var hyper = ":ctrl;shift;alt;cmd";
 function hyperBindAll(mapping) {
@@ -83,10 +91,4 @@ hyperBindAll({
 //     return [asString, slate.op("activate-snapshot", {"name": name})];
 //   })
 // ));
-
-slate.configAll({
-  windowHintsIgnoreHiddenWindows: false,
-  windowHintsShowIcons: true,
-  windowHintsSpread: true,
-  switchShowTitles: true
-});
+slate.bindAll({"esc:cmd": hint, "space:alt": grid});

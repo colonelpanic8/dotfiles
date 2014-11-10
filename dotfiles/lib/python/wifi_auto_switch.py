@@ -139,6 +139,7 @@ class WiFiAutoSwitcher(object):
         if 'SSID' in status_dict:
             network = self._networks.get(status_dict['SSID'])
             if network is None:
+                # Don't do anything if the current network is not recognized
                 return
         if not network or network.should_switch(status_dict):
             log.debug("Attempting to switch networks from {0}, ".format(
@@ -171,12 +172,14 @@ if __name__ == '__main__':
     log_util.enable_logger(__name__)
     parser = argparse.ArgumentParser()
     parser.add_argument('-n', '--network', nargs='+', type=str, action='append', dest='networks')
-    network_pairs = parser.parse_args().networks
+    parser.add_argument('-s', '--sleep-time', type=int, dest='sleep_time')
+    args = parser.parse_args()
+    network_pairs = args.networks
     for network_pair in network_pairs:
         assert len(network_pair) == 2
     auto_switcher = WiFiAutoSwitcher(
         [Network(*ssid_password) for ssid_password in network_pairs]
     )
     while True:
-         time.sleep(4)
+         time.sleep(args.sleep_time)
          auto_switcher.switch_if_necessary()
