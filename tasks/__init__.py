@@ -37,11 +37,12 @@ def dotfiles(ctx, flags=''):
 
 @ctask
 def powerline(ctx):
-    ctx.run('pip install --user git+git://github.com/Lokaltog/powerline')
+    ctx.run('sudo pip install git+git://github.com/Lokaltog/powerline')
 
 
 @ctask
 def install_python_libraries(ctx):
+    ctx.run('sudo pip install setuptools --upgrade')
     ctx.run('sudo pip install -r {0}'.format(
         os.path.join(RESOURCES_DIRECTORY, 'requirements.txt')
     ))
@@ -67,9 +68,9 @@ def change_shell(ctx):
 @ctask
 def customize_user_settings(ctx):
     input_function = input if sys.version_info.major == 3 else raw_input
-    username = input_function("Enter the user's full name")
-    email = input_function("Enter the user's Email.")
-    with os.path.expanduser('~/.gitconfig.custom', 'w') as custom_file:
+    username = input_function("Enter the user's full name: ")
+    email = input_function("Enter the user's email address: ")
+    with open(os.path.expanduser('~/.gitconfig.custom'), 'w') as custom_file:
         custom_file.write("""[user]
         name = {0}
 	email = {1}""".format(username, email))
