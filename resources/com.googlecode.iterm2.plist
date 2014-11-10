@@ -5218,11 +5218,11 @@
 	<key>MaxVertically</key>
 	<false/>
 	<key>NSColorPanelMode</key>
-	<string>7</string>
-	<key>NSFontPanelAttributes</key>
-	<string>1, 0</string>
+	<string>1</string>
+	<key>NSColorPickerSlidersDefaults</key>
+	<string>1</string>
 	<key>NSNavLastRootDirectory</key>
-	<string>~</string>
+	<string>~/dotfiles/resources</string>
 	<key>NSQuotedKeystrokeBinding</key>
 	<string></string>
 	<key>NSRepeatCountBinding</key>
@@ -5246,21 +5246,32 @@
 	<array/>
 	<key>NSTableView Sort Ordering KeyBingingTable</key>
 	<array/>
+	<key>NSToolbar Configuration Terminal Toolbar</key>
+	<dict>
+		<key>TB Display Mode</key>
+		<integer>1</integer>
+		<key>TB Icon Size Mode</key>
+		<integer>1</integer>
+		<key>TB Is Shown</key>
+		<integer>0</integer>
+		<key>TB Size Mode</key>
+		<integer>1</integer>
+	</dict>
 	<key>NSToolbar Configuration com.apple.NSColorPanel</key>
 	<dict>
 		<key>TB Is Shown</key>
 		<integer>1</integer>
 	</dict>
 	<key>NSWindow Frame NSColorPanel</key>
-	<string>427 356 222 309 0 0 1920 1057 </string>
+	<string>1180 103 231 329 0 0 1440 877 </string>
 	<key>NSWindow Frame Preferences</key>
-	<string>491 152 924 485 0 0 1920 1080 </string>
+	<string>401 345 924 485 0 0 1440 877 </string>
 	<key>NSWindow Frame SUStatusFrame</key>
-	<string>768 697 384 129 0 0 1920 1058 </string>
+	<string>528 562 384 129 0 0 1440 878 </string>
+	<key>NSWindow Frame UKCrashReporter</key>
+	<string>99 294 592 584 0 0 1440 878 </string>
 	<key>NSWindow Frame iTerm Window 0</key>
-	<string>383 627 585 401 0 0 1920 1057 </string>
-	<key>NSWindow Frame iTerm Window 1</key>
-	<string>474 103 1264 896 0 0 1920 1057 </string>
+	<string>722 465 570 401 0 0 1440 877 </string>
 	<key>New Bookmarks</key>
 	<array>
 		<dict>
@@ -5996,8 +6007,6 @@
 			<string>/Users/imalison</string>
 		</dict>
 	</array>
-	<key>NoSyncNeverRemindPrefsChangesLost</key>
-	<true/>
 	<key>OnlyWhenMoreTabs</key>
 	<true/>
 	<key>OpenArrangementAtStartup</key>
@@ -6062,7 +6071,7 @@
 	<key>SUHasLaunchedBefore</key>
 	<true/>
 	<key>SULastCheckTime</key>
-	<date>2014-11-02T21:23:32Z</date>
+	<date>2014-11-10T03:11:41Z</date>
 	<key>SavePasteHistory</key>
 	<false/>
 	<key>Show Toolbelt</key>
@@ -6091,6 +6100,8 @@
 	</array>
 	<key>TripleClickSelectsFullWrappedLines</key>
 	<false/>
+	<key>UKCrashReporterLastCrashReportDate</key>
+	<real>1404793472</real>
 	<key>URLHandlersByGuid</key>
 	<dict/>
 	<key>UseBorder</key>
@@ -6114,6 +6125,6 @@
 	<key>findRegex_iTerm</key>
 	<false/>
 	<key>iTerm Version</key>
-	<string>2.0.0.20141022</string>
+	<string>2.0.0.20141103</string>
 </dict>
 </plist>
