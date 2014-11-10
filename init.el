@@ -446,11 +446,14 @@ buffer is not visiting a file."
           (progn (load-theme appropriate-theme t)
                  (setq current-theme appropriate-theme)))))
 
+;;(defvar fonts '("DejaVu Sans Mono-10" "monaco-11" "Inconsolata-12" "menlo-10"))
+(defvar fonts '("Inconsolata-12" ))
+
 (defun set-my-font-for-frame (frame)
   (condition-case exp
-      (set-default-font "monaco-11" nil t)
+      (set-default-font (random-choice fonts) nil t)
     ('error (package-refresh-contents)
-	    (set-default-font "menlo-11" nil t) nil)))
+	    (set-default-font "monaco-11" nil t) nil)))
 
 (defun remove-fringe-and-hl-line-mode (&rest stuff)
   (scroll-bar-mode -1)
