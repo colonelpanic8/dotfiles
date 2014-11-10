@@ -446,6 +446,9 @@ buffer is not visiting a file."
                  (setq current-theme appropriate-theme)))))
 
 (defun remove-fringe-and-hl-line-mode (&rest stuff)
+  (scroll-bar-mode -1)
+  (tool-bar-mode -1)
+  (menu-bar-mode -1)
   (set-fringe-style '(0 . 0))
   (setq hl-line-mode nil))
 
@@ -453,10 +456,3 @@ buffer is not visiting a file."
 	    
 ;; enable to set theme based on time of day.
 (run-at-time "00:00" 3600 'set-theme)
-(message fringe-query-style)
-(set-fringe-style '(0 . 0))
-
-;; Get rid of any gui like features...
-(if (fboundp 'scroll-bar-mode) (scroll-bar-mode -1))
-(if (fboundp 'tool-bar-mode) (tool-bar-mode -1))
-(if (fboundp 'menu-bar-mode) (menu-bar-mode -1))
