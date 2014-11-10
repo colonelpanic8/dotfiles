@@ -48,14 +48,17 @@ CASKS = (
     'mactex'
 )
 
+
 @ctask
 def osx_config(ctx):
     ctx.run('sudo {0}'.format(
         os.path.join(util.RESOURCES_DIRECTORY, 'osx.sh')
     ), pty=True)
 
+
 @ctask
 def cider_install(ctx):
+    ctx.run('brew install caskroom/cask/brew-cask')
     if not util.command_exists('cider'):
         ctx.run('sudo pip install cider')
     ctx.run('cider restore')
@@ -73,6 +76,7 @@ def brew_cask(ctx):
 def get_brew(ctx):
     if not util.command_exists('brew'):
         ctx.run('ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"')
+
 
 @ctask
 def brew_install(ctx):
