@@ -425,7 +425,7 @@ buffer is not visiting a file."
 ;; (defvar light-themes '(zenburn solarized-light))
 
 (defvar dark-themes '(base16-tomorrow))
-(defvar light-themes '(base16-tomorrow))
+(defvar light-themes '(zenburn))
 
 (defun random-choice (choices)
   (nth (random (length choices)) choices))
