@@ -250,3 +250,13 @@ EOF
 function dirty_talk() {
     while true; do talk_dirty_to_me | tee >(cat) | say; done
 }
+
+function track_modified {
+    local timestamp_file="/tmp/__track_modified_timestamp__"
+    touch $timestamp_file
+    stat $timestamp_file
+    echo "Press any key to execute find command"
+    read -r key
+    echo "Finding..."
+    find $1 -newer $timestamp_file
+}

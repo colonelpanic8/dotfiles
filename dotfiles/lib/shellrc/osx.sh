@@ -61,7 +61,7 @@ function ss() {
 }
 
 function set_modifier_keys_for_vendor_product_id() {
-    local mapping="<dict><key>HIDKeyboardModifierMappingDst</key><integer>$3</integer><key>HIDKeyboardModifierMappingSrc</key><integer>$2</integer></dict>"
+    local mapping="<dict><key>HIDKeyboardModifierMappingSrc</key><integer>$2</integer><key>HIDKeyboardModifierMappingDst</key><integer>$3</integer></dict>"
     echo $mapping
     defaults -currentHost write -g com.apple.keyboard.modifiermapping.$1-0 -array-add "$mapping"
 }
