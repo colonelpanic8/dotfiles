@@ -1,14 +1,15 @@
 {
   "after-scripts": ["brew linkapps"],
   "casks": [
-    "atom",
     "alfred",
+    "atom",
     "caffeine",
     "dropbox",
     "firefox",
     "flash",
     "flux",
     "google-chrome",
+    "heroku-toolbelt",
     "iterm2",
     "java",
     "karabiner",
@@ -21,7 +22,8 @@
     "transmission",
     "virtualbox",
     "vlc",
-    "xquartz"
+    "xquartz",
+    "google-hangouts"
   ],
   "formulas": [
     "ack",
