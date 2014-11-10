@@ -172,7 +172,7 @@ if __name__ == '__main__':
     log_util.enable_logger(__name__)
     parser = argparse.ArgumentParser()
     parser.add_argument('-n', '--network', nargs='+', type=str, action='append', dest='networks')
-    parser.add_argument('-s', '--sleep-time', type=int, dest='sleep_time')
+    parser.add_argument('-s', '--sleep-time', type=int, default=4.0, dest='sleep_time')
     args = parser.parse_args()
     network_pairs = args.networks
     for network_pair in network_pairs:
