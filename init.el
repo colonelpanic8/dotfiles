@@ -424,8 +424,8 @@ buffer is not visiting a file."
 ;; (defvar dark-themes '(monokai molokai solarized-dark base16-default))
 ;; (defvar light-themes '(zenburn solarized-light))
 
-(defvar dark-themes '(gotham))
-(defvar light-themes '(gotham))
+(defvar dark-themes '(base16-tomorrow))
+(defvar light-themes '(base16-tomorrow))
 
 (defun random-choice (choices)
   (nth (random (length choices)) choices))
