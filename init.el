@@ -48,7 +48,7 @@
   '(thingatpt+ latex-preview-pane auctex paredit inf-ruby undo-tree haskell-mode
 	       exec-path-from-shell slime string-inflection yaml-mode sgml-mode
 	       dired+ ctags ctags-update helm-gtags hackernews gitconfig-mode
-	       aggressive-indent imenu+ weechat evil helm-ag xclip))
+	       aggressive-indent imenu+ weechat evil helm-ag xclip neotree))
 
 (defvar packages-python '(jedi pymacs pytest sphinx-doc))
 (defvar packages-scala '(scala-mode2 ensime))
