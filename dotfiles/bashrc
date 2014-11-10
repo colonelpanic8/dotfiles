@@ -1,2 +1,5 @@
+source ~/.lib/shellenv.sh
 source ~/.lib/shellrc.sh
 source ~/.lib/bash.sh
+
+export PATH="$PATH:$HOME/.rvm/bin" # Add RVM to PATH for scripting

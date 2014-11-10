@@ -1,3 +1,5 @@
 source ~/.lib/shellrc.sh
 source ~/.lib/zsh.sh
 test -r ~/custom.zsh && source ~/custom.zsh
+
+export PATH="$PATH:$HOME/.rvm/bin" # Add RVM to PATH for scripting

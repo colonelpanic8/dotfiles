@@ -12,6 +12,7 @@ def all(ctx):
     cider_install(ctx)
     enable_access_for_assistive_devices(ctx)
     enable_hyper(ctx)
+    install_rvm(ctx)
     osx_config(ctx)
 
 
@@ -134,6 +135,10 @@ def enable_hyper(ctx):
 def get_command_line_tools(ctx):
     if not util.command_exists('gcc'):
         ctx.run('xcode-select --install')
+
+@ctask
+def install_rvm(ctx):
+    ctx.run('\curl -sSL https://get.rvm.io | bash -s stable')
 
 @ctask
 def enable_locate(ctx):
