@@ -18,3 +18,4 @@ server
 .project-roots
 custom.el
 smex-items
+ido.last
