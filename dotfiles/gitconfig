@@ -75,10 +75,7 @@
 	added = green
 	changed = yellow
 	untracked = red
-
-[user]
-	email = IvanMalison@gmail.com
-	name = Ivan Malison
-
 [merge]
 	conflictstyle = diff3
+[include]
+	path = ~/.gitconfig.custom
