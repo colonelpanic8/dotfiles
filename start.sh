@@ -20,13 +20,8 @@ function brew_for_multiple_users() {
 }
 
 function osx() {
-    hash gcc &>/dev/null
-    if [ $? -ne 0 ]
-    then
-	echo "gcc not found."
-	exit
-    fi
-    hash brew &>/dev/null && echo "brew found" || ruby -e "$(curl -fsSL https://raw.github.com/Homebrew/homebrew/go/install)"
+    xcode-select --install
+    hash brew &>/dev/null && echo "brew found" || ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
     brew_for_multiple_users
     brew update
     brew install git
