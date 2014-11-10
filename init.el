@@ -424,8 +424,8 @@ buffer is not visiting a file."
 ;; (defvar dark-themes '(monokai molokai solarized-dark base16-default))
 ;; (defvar light-themes '(zenburn solarized-light))
 
-(defvar dark-themes '(base16-tomorrow))
-(defvar light-themes '(zenburn))
+(defvar dark-themes '(monokai))
+(defvar light-themes '(monokai))
 
 (defun random-choice (choices)
   (nth (random (length choices)) choices))
@@ -446,11 +446,18 @@ buffer is not visiting a file."
           (progn (load-theme appropriate-theme t)
                  (setq current-theme appropriate-theme)))))
 
+(defun set-my-font-for-frame (frame)
+  (condition-case exp
+      (set-default-font "monaco-11" nil t)
+    ('error (package-refresh-contents)
+	    (set-default-font "menlo-11" nil t) nil)))
+
 (defun remove-fringe-and-hl-line-mode (&rest stuff)
   (scroll-bar-mode -1)
   (tool-bar-mode -1)
   (menu-bar-mode -1)
   (set-fringe-mode 0)
+  (set-my-font-for-frame nil)
   (setq hl-line-mode nil))
 
 (advice-add 'load-theme :after #'remove-fringe-and-hl-line-mode)
@@ -458,9 +465,4 @@ buffer is not visiting a file."
 ;; enable to set theme based on time of day.
 (run-at-time "00:00" 3600 'set-theme)
 
-(add-hook 'after-make-frame-functions
-	   (lambda (frame)
-	     (condition-case exp
-		 (set-default-font "monaco-11" nil t)
-	       ('error (package-refresh-contents)
-		       (set-default-font "menlo-11" nil t) nil))))
+(add-hook 'after-make-frame-functions 'set-my-font-for-frame)
