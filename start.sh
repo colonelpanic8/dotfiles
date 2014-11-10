@@ -23,10 +23,11 @@ function osx() {
     xcode-select --install
     hash brew &>/dev/null && echo "brew found" || ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
     brew_for_multiple_users
+    brew doctor
     brew update
     brew install git
     brew install python
-    easy_install pip
+    sudo easy_install pip
 }
 
 function go() {
