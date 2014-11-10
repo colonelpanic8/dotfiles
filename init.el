@@ -457,5 +457,3 @@ buffer is not visiting a file."
 	    
 ;; enable to set theme based on time of day.
 (run-at-time "00:00" 3600 'set-theme)
-(message fringe-query-style)
-(set-fringe-style '(0 . 0))
