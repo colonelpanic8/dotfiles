@@ -454,6 +454,13 @@ buffer is not visiting a file."
   (setq hl-line-mode nil))
 
 (advice-add 'load-theme :after #'remove-fringe-and-hl-line-mode)
-	    
+
 ;; enable to set theme based on time of day.
 (run-at-time "00:00" 3600 'set-theme)
+
+(add-hook 'after-make-frame-functions
+	   (lambda (frame)
+	     (condition-case exp
+		 (set-default-font "monaco-11" nil t)
+	       ('error (package-refresh-contents)
+		       (set-default-font "menlo-11" nil t) nil))))
