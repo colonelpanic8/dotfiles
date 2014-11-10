@@ -64,10 +64,22 @@ def change_shell(ctx):
     ctx.run('sudo chsh -s $(which zsh) $(whoami)')
 
 
+@ctask
+def customize_user_settings(ctx):
+    input_function = input if sys.version_info.major == 3 else raw_input
+    username = input_function("Enter the user's full name")
+    email = input_function("Enter the user's Email.")
+    with os.path.expanduser('~/.gitconfig.custom', 'w') as custom_file:
+        custom_file.write("""[user]
+        name = {0}
+	email = {1}""".format(username, email))
+
+
 ns.add_task(change_shell)
+ns.add_task(customize_user_settings)
 ns.add_task(dotfiles)
-ns.add_task(setup)
-ns.add_task(install_python_libraries)
 ns.add_task(install_npm_libraries)
-ns.add_task(vimstall)
+ns.add_task(install_python_libraries)
 ns.add_task(powerline)
+ns.add_task(setup)
+ns.add_task(vimstall)
