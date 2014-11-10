@@ -450,7 +450,7 @@ buffer is not visiting a file."
   (scroll-bar-mode -1)
   (tool-bar-mode -1)
   (menu-bar-mode -1)
-  (set-fringe-style '(0 . 0))
+  (set-fringe-mode 0)
   (setq hl-line-mode nil))
 
 (advice-add 'load-theme :after #'remove-fringe-and-hl-line-mode)
