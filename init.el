@@ -120,6 +120,7 @@
 
 (add-hook 'after-init-hook '(lambda () (setq debug-on-error t)))
 (add-hook 'after-init-hook #'global-flycheck-mode)
+(add-hook 'haskell-mode-hook 'turn-on-haskell-indent)
 
 ;; =============================================================================
 ;;                                                                    Mode Hooks
@@ -424,7 +425,7 @@ buffer is not visiting a file."
 ;; (defvar light-themes '(zenburn solarized-light))
 
 (defvar dark-themes '(gotham))
-(defvar light-themes '(zenburn))
+(defvar light-themes '(gotham))
 
 (defun random-choice (choices)
   (nth (random (length choices)) choices))
@@ -456,3 +457,5 @@ buffer is not visiting a file."
 	    
 ;; enable to set theme based on time of day.
 (run-at-time "00:00" 3600 'set-theme)
+(message fringe-query-style)
+(set-fringe-style '(0 . 0))
