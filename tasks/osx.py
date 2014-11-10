@@ -12,7 +12,9 @@ def all(ctx):
     cider_install(ctx)
     enable_access_for_assistive_devices(ctx)
     enable_hyper(ctx)
+    enable_locate(ctx)
     install_rvm(ctx)
+    install_powerline_monaco(ctx)
     osx_config(ctx)
 
 
@@ -135,15 +137,23 @@ def enable_hyper(ctx):
     ctx.run("ln -s {0} {1}".format(source, destination))
     ctx.run("{0}/karabiner_config.sh".format(util.RESOURCES_DIRECTORY))
 
+
 @ctask
-def get_command_line_tools(ctx):
-    if not util.command_exists('gcc'):
-        ctx.run('xcode-select --install')
+def enable_locate(ctx):
+    ctx.run('sudo launchctl load -w /System/Library/LaunchDaemons/com.apple.locate.plist')
+
 
 @ctask
 def install_rvm(ctx):
     ctx.run('\curl -sSL https://get.rvm.io | bash -s stable')
 
+
 @ctask
-def enable_locate(ctx):
-    ctx.run('sudo launchctl load -w /System/Library/LaunchDaemons/com.apple.locate.plist')
+def install_powerline_monaco(ctx):
+    ctx.run('open {0}'.format(os.path.join(util.RESOURCES_DIRECTORY, "Monaco-Powerline.otf")))
+
+
+@ctask
+def get_command_line_tools(ctx):
+    if not util.command_exists('gcc'):
+        ctx.run('xcode-select --install')
