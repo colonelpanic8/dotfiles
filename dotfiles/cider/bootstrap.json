@@ -9,11 +9,13 @@
     "flash",
     "flux",
     "google-chrome",
+    "google-hangouts",
     "heroku-toolbelt",
     "iterm2",
     "java",
     "karabiner",
     "macpass",
+    "osxfuse",
     "seil",
     "slate",
     "spotify",
@@ -22,8 +24,7 @@
     "transmission",
     "virtualbox",
     "vlc",
-    "xquartz",
-    "google-hangouts"
+    "xquartz"
   ],
   "formulas": [
     "ack",
