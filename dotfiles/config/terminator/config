@@ -3,7 +3,9 @@
 [profiles]
   [[default]]
     use_system_font = False
-    font = Monaco 10
+    font = Monaco for Powerline 10
+    background_image = None
+    foreground_color = "#ffffff"
 [layouts]
   [[default]]
     [[[child1]]]
