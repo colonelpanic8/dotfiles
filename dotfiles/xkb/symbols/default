@@ -1,0 +1,153 @@
+// $Id: symbols 67048 2014-02-05 00:39:26Z vinc17/xvii $
+
+// See examples in /usr/share/X11/xkb/symbols
+
+xkb_symbols "local" {
+    key <LALT> {
+        type = "ONE_LEVEL",
+        symbols[Group1] = [ ISO_Level3_Shift ]
+    };
+    key <RALT> {
+        type = "ONE_LEVEL",
+        symbols[Group1] = [ ISO_Level3_Shift ]
+    };
+    key <LMTA> {
+        type = "ONE_LEVEL",
+        symbols[Group1] = [ Alt_L ]
+    };
+    key <RMTA> {
+        type = "ONE_LEVEL",
+        symbols[Group1] = [ Alt_L ]
+    };
+    key <TLDE> { [ grave, notsign, dead_grave ] };
+    key <AE01> { [ 1, exclam, onesuperior, exclamdown ] };
+    key <AE02> { [ 2, quotedbl, twosuperior, dead_diaeresis ] };
+    key <AE03> { [ 3, sterling, threesuperior, ellipsis ] };
+    key <AE04> { [ 4, dollar, EuroSign, currency ] };
+    key <AE05> { [ 5, percent ] };
+    key <AE06> { [ 6, asciicircum, diamond, dead_circumflex ] };
+    key <AE07> { [ 7, ampersand ] };
+    key <AE08> { [ 8, asterisk, U220F, multiply ] };
+    key <AE09> { [ 9, parenleft ] };
+    key <AE10> { [ 0, parenright, degree, dead_abovering ] };
+    key <AE11> { [ minus, underscore, hyphen, U2212 ] };
+    key <AE12> { [ equal, plus, notequal, plusminus ] };
+    key <BKSP> { [ BackSpace, 0x1000017 ] };
+    key <AD01> { [ q, Q, emptyset ] };
+    key <AD02> { [ w, W ] };
+    key <AD03> { [ e, E, U2203, U2200 ] };
+    key <AD04> { [ r, R, registered, radical ] };
+    key <AD05> { [ t, T ] };
+    key <AD06> { [ y, Y, yen ] };
+    key <AD07> { [ u, U, union, uparrow ] };
+    key <AD08> { [ i, I, intersection, infinity ] };
+    key <AD09> { [ o, O, oe, OE ] };
+    key <AD10> { [ p, P, section, paragraph ] };
+    key <AD11> { [ bracketleft,  braceleft,  dead_acute, leftarrow ] };
+    key <AD12> { [ bracketright, braceright, dead_grave, rightarrow ] };
+    key <AC01> { [ a, A, ae, AE ] };
+    key <AC02> { [ s, S, ssharp, U2211 ] };
+    key <AC03> { [ d, D, dagger, downarrow ] };
+    key <AC04> { [ f, F, U2500, U2502 ] };
+    key <AC05> { [ g, G, U250C, U251C ] };
+    key <AC06> { [ h, H, U2510, U2524 ] };
+    key <AC07> { [ j, J, U2514, U252C ] };
+    key <AC08> { [ k, K, U2518, U2534 ] };
+    key <AC09> { [ l, L, sterling, U253C ] };
+    key <AC10> { [ semicolon, colon, dead_diaeresis ] };
+    key <AC11> { [ apostrophe, at, dead_acute, dead_cedilla ] };
+    key <BKSL> { [ numbersign, asciitilde, dead_circumflex, dead_tilde ] };
+    key <LSGT> { [ backslash, bar, emdash, brokenbar ] };
+    key <AB01> { [ z, Z, guillemotleft, elementof ] };
+    key <AB02> { [ x, X, guillemotright, notelementof ] };
+    key <AB03> { [ c, C, copyright, includedin ] };
+    key <AB04> { [ v, V, logicalor, logicaland ] };
+    key <AB05> { [ b, B ] };
+    key <AB06> { [ n, N, endash ] };
+    key <AB07> { [ m, M, mu ] };
+    key <AB08> { [ comma, less, cedilla, lessthanequal ] };
+    key <AB09> { [ period, greater, periodcentered, greaterthanequal ] };
+    key <AB10> { [ slash, question, division, questiondown ] };
+    key <FK01> {
+        type = "CUSTFNKEY",
+        symbols[Group1] = [ eacute, Eacute, F1, XF86Switch_VT_1 ]
+    };
+    key <FK02> {
+        type = "CUSTFNKEY",
+        symbols[Group1] = [ egrave, Egrave, F2, XF86Switch_VT_2 ]
+    };
+    key <FK03> {
+        type = "CUSTFNKEY",
+        symbols[Group1] = [ ecircumflex, Ecircumflex, F3, XF86Switch_VT_3 ]
+    };
+    key <FK04> {
+        type = "CUSTFNKEY",
+        symbols[Group1] = [ ediaeresis, Ediaeresis, F4, XF86Switch_VT_4 ]
+    };
+    key <FK05> {
+        type = "CUSTFNKEY",
+        symbols[Group1] = [ acircumflex, Acircumflex, F5, XF86Switch_VT_5 ]
+    };
+    key <FK06> {
+        type = "CUSTFNKEY",
+        symbols[Group1] = [ icircumflex, Icircumflex, F6, XF86Switch_VT_6 ]
+    };
+    key <FK07> {
+        type = "CUSTFNKEY",
+        symbols[Group1] = [ ocircumflex, Ocircumflex, F7, XF86Switch_VT_7 ]
+    };
+    key <FK08> {
+        type = "CUSTFNKEY",
+        symbols[Group1] = [ ucircumflex, Ucircumflex, F8, XF86Switch_VT_8 ]
+    };
+    key <FK09> {
+        type = "CUSTFNKEY",
+        symbols[Group1] = [ agrave, Agrave, F9, XF86Switch_VT_9 ]
+    };
+    key <FK10> {
+        type = "CUSTFNKEY",
+        symbols[Group1] = [ ugrave, Ugrave, F10, XF86Switch_VT_10 ]
+    };
+    key <FK11> {
+        type = "CUSTFNKEY",
+        symbols[Group1] = [ idiaeresis, Idiaeresis, F11, XF86Switch_VT_11 ]
+    };
+    key <FK12> {
+        type = "CUSTFNKEY",
+        symbols[Group1] = [ ccedilla, Ccedilla, F12, XF86Switch_VT_12 ]
+    };
+    key <SPCE> { [ space, nobreakspace ] };
+    key <KPEQ> { [ equal ] };
+    key <KPDV> { [ slash ] };
+    key <KPMU> { [ asterisk ] };
+    key <KPSU> { [ minus ] };
+    key <KPAD> { [ plus ] };
+    key <KPEN> { [ Return ] };
+    key <KP7>  { [ 7 ] };
+    key <KP8>  { [ 8 ] };
+    key <KP9>  { [ 9 ] };
+    key <KP4>  { [ 4 ] };
+    key <KP5>  { [ 5 ] };
+    key <KP6>  { [ 6 ] };
+    key <KP1>  { [ 1 ] };
+    key <KP2>  { [ 2 ] };
+    key <KP3>  { [ 3 ] };
+    key <KP0>  { [ 0 ] };
+    key <KPDL> { [ period ] };
+    key <UP> {
+        type = "CUSTLEVELTHREE",
+        symbols[Group1] = [ Up, 0x1000012 ]
+    };
+    key <LEFT> {
+        type = "CUSTLEVELTHREE",
+        symbols[Group1] = [ Left, 0x1000001 ]
+    };
+    key <DOWN> {
+        type = "CUSTLEVELTHREE",
+        symbols[Group1] = [ Down, 0x1000013 ]
+    };
+    key <RGHT> {
+        type = "CUSTLEVELTHREE",
+        symbols[Group1] = [ Right, 0x1000005 ]
+    };
+};

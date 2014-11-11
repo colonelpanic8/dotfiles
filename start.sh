@@ -31,7 +31,6 @@ function osx() {
 }
 
 function go() {
-    while true; do sudo -n true; sleep 60; kill -0 "$$" || exit; done 2>/dev/null &
     git clone https://github.com/IvanMalison/dotfiles.git --recursive
     cd dotfiles
     sudo pip install invoke dotfiles
@@ -39,7 +38,6 @@ function go() {
 }
 
 while true; do sudo -n true; sleep 60; kill -0 "$$" || exit; done 2>/dev/null &
-
 case `uname` in
     'Darwin')
 	osx

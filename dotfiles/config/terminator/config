@@ -1,0 +1,15 @@
+[global_config]
+[keybindings]
+[profiles]
+  [[default]]
+    use_system_font = False
+    font = Monaco 10
+[layouts]
+  [[default]]
+    [[[child1]]]
+      type = Terminal
+      parent = window0
+    [[[window0]]]
+      type = Window
+      parent = ""
+[plugins]
