@@ -6,9 +6,8 @@ set -g status-justify left
 set -g status-left-length 150
 set -g status-right-length 150
 set -g status-right '#(eval $POWERLINE_COMMAND tmux right -R pane_id=`tmux display -p "#D"`)'
-set -g window-status-format "#[fg=colour244,bg=colour234]#I #[fg=colour240] #[default]#W "
-set -g window-status-current-format "#[fg=colour234,bg=colour31]#[fg=colour117,bg=colour31] #I  #[fg=colour231,bold]#W #[fg=colour31,bg=colour234,nobold]"
-set-window-option -g window-status-fg colour249
+set -g window-status-format "#[fg=white] #[fg=white,bg=black]#I #[fg=white] #[default]#W "
+set -g window-status-current-format "#[fg=black,bg=blue]#[fg=white,bg=blue] #I  #[fg=white,bold]#W #[fg=blue,bg=black,nobold]"
+set-window-option -g window-status-fg white
 set-window-option -g window-status-activity-attr none
 set-window-option -g window-status-activity-fg yellow
-# vim: ft=tmux

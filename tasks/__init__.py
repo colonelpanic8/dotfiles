@@ -37,6 +37,7 @@ def dotfiles(ctx, flags=''):
 
 @ctask
 def powerline(ctx):
+    ctx.run('sudo pip install psutil')
     ctx.run('sudo pip install git+git://github.com/Lokaltog/powerline')
 
 
