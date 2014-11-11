@@ -13,6 +13,18 @@
                                           "git config --get user.name")))
 
 ;; =============================================================================
+;;                                                                  GUI Disables
+;; =============================================================================
+
+;; Turn off mouse interface early in startup to avoid momentary display
+(when (fboundp 'menu-bar-mode) (menu-bar-mode -1))
+(when (fboundp 'tool-bar-mode) (tool-bar-mode -1))
+(when (fboundp 'scroll-bar-mode) (scroll-bar-mode -1))
+
+;; No splash screen please... jeez
+(setq inhibit-startup-screen t)
+
+;; =============================================================================
 ;;                                                       Load Path Configuration
 ;; =============================================================================
 
@@ -46,14 +58,14 @@
 
 (defvar packages-other
   '(thingatpt+ latex-preview-pane auctex paredit inf-ruby undo-tree haskell-mode
-	       exec-path-from-shell slime string-inflection yaml-mode sgml-mode
-	       dired+ ctags ctags-update helm-gtags hackernews gitconfig-mode
-	       aggressive-indent imenu+ weechat evil helm-ag xclip neotree))
+    exec-path-from-shell slime string-inflection yaml-mode sgml-mode
+    dired+ ctags ctags-update helm-gtags hackernews gitconfig-mode
+    aggressive-indent imenu+ weechat evil helm-ag xclip neotree))
 
 (defvar packages-python '(jedi pymacs pytest sphinx-doc))
 (defvar packages-scala '(scala-mode2 ensime))
 (defvar packages-js '(js2-mode js3-mode web-beautify tern tern-auto-complete
-			       slime-js skewer-mode skewer-reload-stylesheets))
+		      slime-js skewer-mode skewer-reload-stylesheets))
 
 (defun ensure-packages-installed (packages)
   (dolist (p packages)
@@ -142,6 +154,7 @@
 (ido-everywhere 1)
 (flx-ido-mode 1)
 (setq ido-enable-flex-matching t)
+(blink-cursor-mode nil)
 (projectile-global-mode)
 (require 'helm-projectile)
 (helm-projectile-on)
@@ -357,7 +370,6 @@ buffer is not visiting a file."
 (define-key lisp-mode-shared-map (kbd "C-c C-c") 'eval-defun)
 (global-unset-key (kbd "C-o")) ;; Avoid collision with tmux binding.
 
-
 (global-set-key (kbd "C--") 'undo)
 (global-set-key (kbd "C-;") 'ace-jump-mode)
 (global-set-key (kbd "C-<") 'mc/mark-previous-like-this)
@@ -382,9 +394,12 @@ buffer is not visiting a file."
 (global-set-key (kbd "C-x f") 'helm-projectile-find-file)
 (global-set-key (kbd "C-x r t") 'mc/edit-lines)
 (global-set-key (kbd "C-x w") 'whitespace-mode)
+(global-set-key (kbd "M-Z") 'zap-to-char)
 (global-set-key (kbd "M-g") 'goto-line)
+(global-set-key (kbd "M-n") 'forward-paragraph)
+(global-set-key (kbd "M-p") 'backward-paragraph)
 (global-set-key (kbd "M-y") 'helm-show-kill-ring)
-;; Multiple Cursors
+(global-set-key (kbd "M-z") 'zap-up-to-char)
 
 (eval-after-load 'js2-mode
   '(define-key js2-mode-map (kbd "C-c b") 'web-beautify-js))
@@ -447,13 +462,13 @@ buffer is not visiting a file."
                  (setq current-theme appropriate-theme)))))
 
 ;;(defvar fonts '("DejaVu Sans Mono-10" "monaco-11" "Inconsolata-12" "menlo-10"))
-(defvar fonts '("monaco-10"))
+(defvar fonts '("monaco-11"))
 
 (defun set-my-font-for-frame (frame)
   (condition-case exp
       (set-default-font (random-choice fonts) nil t)
     ('error (package-refresh-contents)
-	    (set-default-font "monaco-10" nil t) nil)))
+	    (set-default-font "monaco-11" nil t) nil)))
 
 (defun remove-fringe-and-hl-line-mode (&rest stuff)
   (scroll-bar-mode -1)
