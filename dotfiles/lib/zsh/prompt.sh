@@ -19,19 +19,19 @@ for color in {000..255}; do
 done
 
 # Show all 256 colors with color number
-function spectrum_ls() {
+function spectrum_ls {
   for code in {000..255}; do
     print -P -- "$code: %{$FG[$code]Test%f%}"
   done
 }
 #####
 
-function current_directory() {
+function current_directory {
     local PWD=$(pwd)
     echo "${PWD/#$HOME/~}"
 }
 
-function git_prompt_info() {
+function git_prompt_info {
     if test -z $(git branch-or-sha);
     then
         echo ""
@@ -41,7 +41,7 @@ function git_prompt_info() {
     fi
 }
 
-function git_status_character() {
+function git_status_character {
     if git dirty;
     then
         print_with_color "✘" "$fg[red]"
@@ -50,7 +50,7 @@ function git_status_character() {
     fi
 }
 
-function command_line_character() {
+function command_line_character {
     if ! test -z $(git branch-or-sha);
     then 
         echo "±"
@@ -59,7 +59,10 @@ function command_line_character() {
     fi
 }
 
-function prompt_custom_colors() {
+export PROMPT_CHAR_ERROR="$fg[red]"
+export PROMPT_CHAR_SUCCESS="$fg[green]"
+
+function prompt_custom_colors {
     export USERNAME_COLOR="$FG[040]"
     export SEPARATOR_COLOR="$FG[239]"
     export HOSTNAME_COLOR="$FG[033]"
@@ -67,7 +70,7 @@ function prompt_custom_colors() {
     export CURRENT_DIRECTORY_COLOR="$FG[255]"
 }
 
-function prompt_basic_colors() {
+function prompt_basic_colors {
     export USERNAME_COLOR="$fg_no_bold[green]"
     export SEPARATOR_COLOR="$fg_no_bold[black]"
     export HOSTNAME_COLOR="$fg_no_bold[blue]"
@@ -75,7 +78,7 @@ function prompt_basic_colors() {
     export SOURCE_CONTROL_COLOR="$fg[white]"
 }
 
-function prompt_solarized_colors() {
+function prompt_solarized_colors {
     prompt_basic_colors
     export HOSTNAME_COLOR="$fg[magenta]"
     export USERNAME_COLOR="$fg[blue]"
@@ -83,7 +86,7 @@ function prompt_solarized_colors() {
     export SOURCE_CONTROL_COLOR="$fg[white]"
 }
 
-function prompt_tomorrow_colors() {
+function prompt_tomorrow_colors {
     export SEPARATOR_COLOR="$fg[cyan]"
     export HOSTNAME_COLOR="$fg[yellow]"
     export USERNAME_COLOR="$fg[blue]"
@@ -91,7 +94,7 @@ function prompt_tomorrow_colors() {
     export SOURCE_CONTROL_COLOR="$fg[white]"
 }
 
-function prompt_monokai_colors() {
+function prompt_monokai_colors {
     export SEPARATOR_COLOR="$fg[black]"
     export HOSTNAME_COLOR="$fg[blue]"
     export USERNAME_COLOR="$fg[red]"
@@ -99,21 +102,21 @@ function prompt_monokai_colors() {
     export SOURCE_CONTROL_COLOR="$fg[white]"
 }
 
-function prompt_basic_colors_with_grey_separator() {
+function prompt_basic_colors_with_grey_separator {
     prompt_basic_colors
     export SEPARATOR_COLOR="$FG[239]"
 }
 
-function print_with_color() {
+function print_with_color {
     echo "%{$2%}$1%{$reset_color%}"
 }
 
-function separator() {
+function separator {
     print_with_color "$1" "$SEPARATOR_COLOR"
 }
 
 prompt_basic_colors_with_grey_separator
-PROMPT='╭─% $(print_with_color "%n" "$USERNAME_COLOR") $(separator "at") $(print_with_color "`hostname -s`" "$HOSTNAME_COLOR") $(separator "in") $(print_with_color "`current_directory`" "$CURRENT_DIRECTORY_COLOR")$(git_prompt_info)
-╰─$(command_line_character) '
+PROMPT='⚡ % $(print_with_color "%n" "$USERNAME_COLOR") $(separator "at") $(print_with_color "`hostname -s`" "$HOSTNAME_COLOR") $(separator "in") $(print_with_color "`current_directory`" "$CURRENT_DIRECTORY_COLOR")$(git_prompt_info)
+$(command_line_character) %(?.$PROMPT_CHAR_SUCCESS.$PROMPT_CHAR_ERROR)❯%f '
 
 PS2='(%_) '
