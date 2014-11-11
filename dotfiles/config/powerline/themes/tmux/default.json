@@ -11,30 +11,30 @@
   "segments": {
     "right": [
       {
-	"name": "system_load",
+	"function": "system_load",
 	"priority": 50
       },
       {
-	"name": "uptime",
+	"function": "uptime",
 	"priority": 50
       },
       {
-	"name": "date",
+	"function": "date",
 	"args": {
 	  "format": "%H:%M",
 	  "istime": true
 	}
       },
       {
-	"name": "external_ip"
+	"function": "external_ip"
       },
       {
-	"name": "hostname"
+	"function": "hostname"
       }
     ],
     "special": [
       {
-        "name": "window_status",
+        "function": "window_status",
         "type": "string",
         "contnets": "#I"
       }
