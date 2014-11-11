@@ -447,13 +447,13 @@ buffer is not visiting a file."
                  (setq current-theme appropriate-theme)))))
 
 ;;(defvar fonts '("DejaVu Sans Mono-10" "monaco-11" "Inconsolata-12" "menlo-10"))
-(defvar fonts '("Inconsolata-12" ))
+(defvar fonts '("monaco-10"))
 
 (defun set-my-font-for-frame (frame)
   (condition-case exp
       (set-default-font (random-choice fonts) nil t)
     ('error (package-refresh-contents)
-	    (set-default-font "monaco-11" nil t) nil)))
+	    (set-default-font "monaco-10" nil t) nil)))
 
 (defun remove-fringe-and-hl-line-mode (&rest stuff)
   (scroll-bar-mode -1)
@@ -468,4 +468,5 @@ buffer is not visiting a file."
 ;; enable to set theme based on time of day.
 (run-at-time "00:00" 3600 'set-theme)
 
+;; This is needed because you can't set the font at daemon start-up.
 (add-hook 'after-make-frame-functions 'set-my-font-for-frame)

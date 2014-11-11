@@ -19,7 +19,14 @@ Emacs Notes -*- mode: org -*-
 ** C-M-f and C-M-b for movement by S-expression
 ** M-m for moving to current indentation
 
-<2014-11-05 Wed>
+* <2014-11-05 Wed>
 
 ** helm-show-kill-ring and helm-mark-ring and helm-global-mark-ring
 ** C-p s s to do helm-projectile-ag
+
+* <2014-11-10 Mon>
+
+** C-x c r to do helm-regex
+** press tab in helm completion to get actions menu
+** projectile-replace (basiclly find-name-dired, but will respect gitignores and automatically include appropriate files).
+** M-r while in isearch-forward to toggle regexp mode
