@@ -11,6 +11,7 @@ vcrpy
 dotfiles
 numpy
 readline
+ropemacs
 Flask
 flake8
 pylint

@@ -6,49 +6,17 @@ from . import util
 
 
 @ctask(default=True)
-def all(ctx):
-    get_command_line_tools(ctx)
-    get_brew(ctx)
-    cider_install(ctx)
-    enable_access_for_assistive_devices(ctx)
-    enable_hyper(ctx)
-    enable_locate(ctx)
+def setup(ctx):
+    cl_tools(ctx)
+    brew(ctx)
+    cider(ctx)
+    access_for_assistive_devices(ctx)
+    hyper(ctx)
+    locate(ctx)
+    set_path_for_launchd(ctx)
     install_rvm(ctx)
     install_powerline_monaco(ctx)
     osx_config(ctx)
-
-
-ESSENTIAL = (
-    "emacs --cocoa --srgb --with-x", "tmux", "python --with-brewed-openssl",
-    "htop", "zsh", "make", "scala",  "sbt", "node", "npm", "daemonize",
-    "readline", "netcat", "reattach-to-user-namespace", "watch"
-)
-
-BASICS = (
-    "findutils", "coreutils", "binutils", "diffutils", "ed --default-names",
-    "gawk", "gnu-indent --default-names", "gnu-sed --default-names",
-    "gnu-tar --default-names", "gnu-which --default-names",
-    "gnutls --default-names", "grep --default-names", "gzip",
-    "wdiff --with-gettext", "wget --enable-iri"
-)
-
-SHOULD_INSTALL = (
-    "nmap", "ngrep", "gist", "gawk", "pstree", "ack", "hub", "tig", "heroku",
-)
-
-
-macvim_install = ("macvim --override-system-vim --custom-system-icons "
-                  "--with-features=huge --enable-rubyinterp "
-                  "--enable-pythoninterp --enable-perlinterp --enable-cscope")
-MISC = ("file-formula", "less", "openssh --with-brewed-openssl",
-        "perl518", "rsync", "svn", "unzip", "docker", "boot2docker", "pandoc",
-        "mercurial", "ctags-exuberant",  macvim_install)
-
-CASKS = (
-    'caffeine', 'flux', 'google-chrome', 'iterm2', 'spotify', 'synergy',
-    'virtualbox', 'xquartz', 'slate', 'java', 'vlc', 'seil', 'karabiner',
-    'mactex'
-)
 
 
 @ctask
@@ -59,7 +27,7 @@ def osx_config(ctx):
 
 
 @ctask
-def cider_install(ctx):
+def cider(ctx):
     ctx.run('brew install caskroom/cask/brew-cask')
     if not util.command_exists('cider'):
         ctx.run('sudo pip install cider')
@@ -67,31 +35,21 @@ def cider_install(ctx):
 
 
 @ctask
-def brew_cask(ctx):
-    ctx.run('brew update')
-    ctx.run('brew install caskroom/cask/brew-cask')
-    for cask in CASKS:
-        ctx.run('brew cask install {0}'.format(cask))
-
-
-@ctask
-def get_brew(ctx):
+def brew(ctx):
+    path = 'https://raw.githubusercontent.com/Homebrew/install/master/install)'
     if not util.command_exists('brew'):
-        ctx.run('ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"')
+        ctx.run('ruby -e "$(curl -fsSL {0}'.format(path))
 
 
 @ctask
-def brew_install(ctx):
+def packages(ctx):
     ctx.run('brew update')
     for package_name in ESSENTIAL + BASICS + SHOULD_INSTALL + MISC:
         ctx.run('brew install {0}'.format(package_name))
 
 
 @ctask
-def setup_cocoa_emacs(ctx):
-    if not os.path.exists('/Applications/Emacs.app'):
-        ctx.run('ln -s $(brew --prefix emacs)/Emacs.app /Applications/Emacs.app', hide=True)
-
+def set_path_for_launchd(ctx):
     launch_agent_dir = os.path.expanduser('~/Library/LaunchAgents/')
     filename = 'set-path.plist'
 
@@ -105,19 +63,20 @@ def setup_cocoa_emacs(ctx):
 
 APPS_NEEDING_ASSISTIVE_DEVICE_ACCESS = ('Slate', 'Synergy', 'iTerm')
 @ctask
-def enable_access_for_assistive_devices(ctx):
+def access_for_assistive_devices(ctx):
     for app in APPS_NEEDING_ASSISTIVE_DEVICE_ACCESS:
         app_string = '/Applications/{0}.app'.format(app)
         user_application = os.path.expanduser('~' + app_string)
-        enable_access_if_exists(ctx, user_application)
-        enable_access_if_exists(ctx, app_string)
-        enable_access_if_exists(
+        access_if_exists(ctx, user_application)
+        access_if_exists(ctx, app_string)
+        access_if_exists(
             ctx,
-            "/Applications/Karabiner.app/Contents/Applications/Karabiner_AXNotifier.app"
+            "/Applications/Karabiner.app/Contents/Applications/"
+            "Karabiner_AXNotifier.app"
         )
 
 
-def enable_access_if_exists(ctx, app_string):
+def access_if_exists(ctx, app_string):
     if os.path.exists(app_string):
         ctx.run(
             'zsh -c "source ~/.zshrc && '
@@ -127,9 +86,11 @@ def enable_access_if_exists(ctx, app_string):
         )
 
 @ctask
-def enable_hyper(ctx):
+def hyper(ctx):
     source = '{0}/karabiner-hyper.xml'.format(util.RESOURCES_DIRECTORY)
-    destination = os.path.expanduser("~/Library/Application\\ Support/Karabiner/private.xml")
+    destination = os.path.expanduser(
+        "~/Library/Application\\ Support/Karabiner/private.xml"
+    )
     try:
         ctx.run("rm {0}".format(destination))
     except:
@@ -139,21 +100,24 @@ def enable_hyper(ctx):
 
 
 @ctask
-def enable_locate(ctx):
-    ctx.run('sudo launchctl load -w /System/Library/LaunchDaemons/com.apple.locate.plist')
+def locate(ctx):
+    ctx.run('sudo launchctl load -w '
+            '/System/Library/LaunchDaemons/com.apple.locate.plist')
 
 
 @ctask
 def install_rvm(ctx):
-    ctx.run('\curl -sSL https://get.rvm.io | bash -s stable')
+    ctx.run('\\curl -sSL https://get.rvm.io | bash -s stable')
 
 
 @ctask
 def install_powerline_monaco(ctx):
-    ctx.run('open {0}'.format(os.path.join(util.RESOURCES_DIRECTORY, "Monaco-Powerline.otf")))
+    ctx.run('open {0}'.format(
+        os.path.join(util.RESOURCES_DIRECTORY, "Monaco-Powerline.otf"))
+    )
 
 
 @ctask
-def get_command_line_tools(ctx):
+def cl_tools(ctx):
     if not util.command_exists('gcc'):
         ctx.run('xcode-select --install')
