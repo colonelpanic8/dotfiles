@@ -28,6 +28,7 @@ function osx() {
     brew install git
     brew install python
     sudo easy_install pip
+    sudo pip install cider
 }
 
 function go() {
