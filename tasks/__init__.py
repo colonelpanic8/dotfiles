@@ -28,7 +28,6 @@ def setup(ctx):
     change_shell(ctx)
 
 
-
 @ctask
 def dotfiles(ctx, flags=''):
     ctx.run('hash dotfiles || sudo pip install dotfiles')
