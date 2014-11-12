@@ -85,7 +85,7 @@ Return a list of installed packages or nil for every package not installed."
 
 (add-hook 'temp-buffer-setup-hook 'split-horizontally-for-temp-buffers)
 (setq split-height-threshold nil)
-(setq split-width-threshold 0)
+(setq split-width-threshold 80)
 
 ;; =============================================================================
 ;;                                                          Config Free Packages
@@ -267,7 +267,6 @@ Return a list of installed packages or nil for every package not installed."
 	nil)))
   :init
   (progn
-    (message "initializing python setup.")
     (use-package jedi
       :commands jedi:goto-definition
       :config (setq jedi:complete-on-dot t)
