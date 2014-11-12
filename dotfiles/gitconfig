@@ -2,6 +2,7 @@
 	l = log --pretty=oneline --graph
 	s = status -s
 	c = clone --recursive
+	d = diff
 	ff = merge --ff-only
 	ca = !git add -A && git commit -av
 	tb = rev-parse --abbrev-ref --symbolic-full-name @{u}
