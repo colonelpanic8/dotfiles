@@ -21,9 +21,6 @@
 (when (fboundp 'tool-bar-mode) (tool-bar-mode -1))
 (when (fboundp 'scroll-bar-mode) (scroll-bar-mode -1))
 
-;; No splash screen please... jeez
-(setq inhibit-startup-screen t)
-
 ;; =============================================================================
 ;;                                                       Load Path Configuration
 ;; =============================================================================
@@ -38,13 +35,12 @@
 ;; =============================================================================
 
 (require 'package)
-(when (< emacs-major-version 24)
-  (add-to-list 'package-archives '("gnu" . "http://elpa.gnu.org/packages/") t))
-(add-to-list 'package-archives
-             '("marmalade" . "http://marmalade-repo.org/packages/") t) 
-(add-to-list 'package-archives
-             '("melpa" . "http://melpa.org/packages/") t)
-(package-initialize)
+(add-to-list 'package-archives '("marmalade" . "http://marmalade-repo.org/packages/") t)
+(add-to-list 'package-archives '("elpa" . "http://tromey.com/elpa/") t)
+(add-to-list 'package-archives '("org" . "http://orgmode.org/elpa/") t)
+(add-to-list 'package-archives '("melpa" . "http://melpa.org/packages/") t)
+
+(eval-when-compile (package-initialize))
 
 (defvar packages-appearance
   '(monokai-theme solarized-theme zenburn-theme base16-theme molokai-theme
@@ -154,7 +150,7 @@
 (ido-everywhere 1)
 (flx-ido-mode 1)
 (setq ido-enable-flex-matching t)
-(blink-cursor-mode nil)
+(blink-cursor-mode -1)
 (projectile-global-mode)
 (require 'helm-projectile)
 (helm-projectile-on)
@@ -413,6 +409,9 @@ buffer is not visiting a file."
 ;; =============================================================================
 ;;                                                                    Appearance
 ;; =============================================================================
+
+;; No splash screen please... jeez
+(setq inhibit-startup-screen t)
 
 ;; make whitespace-mode use just basic coloring
 (setq whitespace-style (quote (spaces tabs newline ;;space-mark
