@@ -35,45 +35,30 @@
 ;; =============================================================================
 
 (require 'package)
-(add-to-list 'package-archives '("marmalade" . "http://marmalade-repo.org/packages/") t)
+(add-to-list 'package-archives
+	     '("marmalade" . "http://marmalade-repo.org/packages/") t)
 (add-to-list 'package-archives '("elpa" . "http://tromey.com/elpa/") t)
 (add-to-list 'package-archives '("org" . "http://orgmode.org/elpa/") t)
 (add-to-list 'package-archives '("melpa" . "http://melpa.org/packages/") t)
 
-(eval-when-compile (package-initialize))
-
-(defvar packages-appearance
-  '(monokai-theme solarized-theme zenburn-theme base16-theme molokai-theme
-    tango-2-theme gotham-theme color-theme-sanityinc-tomorrow smart-mode-line
-    rainbow-delimiters ansi-color))
-
-(defvar packages-essential
-  '(epl use-package projectile flycheck ace-jump-mode helm helm-projectile popup
-    smex magit auto-complete ido-ubiquitous mo-git-blame multiple-cursors
-    yasnippet cl-lib flx-ido))
-
-(defvar packages-other
-  '(thingatpt+ latex-preview-pane auctex paredit inf-ruby undo-tree haskell-mode
-    exec-path-from-shell slime string-inflection yaml-mode sgml-mode
-    dired+ ctags ctags-update helm-gtags hackernews gitconfig-mode
-    aggressive-indent imenu+ weechat evil helm-ag xclip neotree))
-
-(defvar packages-python '(jedi pymacs pytest sphinx-doc))
-(defvar packages-scala '(scala-mode2 ensime))
-(defvar packages-js '(js2-mode js3-mode web-beautify tern tern-auto-complete
-		      slime-js skewer-mode skewer-reload-stylesheets))
-
 (defun ensure-packages-installed (packages)
-  (dolist (p packages)
-    (when (not (package-installed-p p))
-      (package-install p))))
+  "Assure every package is installed, ask for installation if it’s not.
+Return a list of installed packages or nil for every package not installed."
+  ;; fetch the list of packages available 
+  (unless package-archive-contents
+    (package-refresh-contents))
+  (mapcar
+   (lambda (package)
+     (if (package-installed-p package)
+         package
+       (progn (message (format "Installing package %s." package))
+              (package-install package))))
+   packages))
 
-(let ((packages (append packages-essential packages-python packages-scala packages-js
-			packages-appearance packages-other)))
-  (condition-case ex
-      (ensure-packages-installed packages)
-    ('error (package-refresh-contents)
-	    (ensure-packages-installed packages) nil)))
+(package-initialize)
+(ensure-packages-installed '(epl use-package))
+(require 'use-package)
+(put 'use-package 'lisp-indent-function 1) ;; reduce indentation for use-package
 
 ;; =============================================================================
 ;;                                                                      Disables
@@ -84,17 +69,46 @@
 (setq make-backup-files nil)
 (setq auto-save-default nil)
 
+;; Why is this necessary again?
+(defconst emacs-tmp-dir
+  (format "%s/%s%s/" temporary-file-directory "emacs" (user-uid)))
+(setq backup-directory-alist `((".*" . ,emacs-tmp-dir)))
+(setq auto-save-file-name-transforms `((".*" ,emacs-tmp-dir t)))
+(setq auto-save-list-file-prefix emacs-tmp-dir)
 
-(defconst emacs-tmp-dir (format "%s/%s%s/" temporary-file-directory "emacs" (user-uid)))
-(setq backup-directory-alist
-      `((".*" . ,emacs-tmp-dir)))
-(setq auto-save-file-name-transforms
-      `((".*" ,emacs-tmp-dir t)))
-(setq auto-save-list-file-prefix
-      emacs-tmp-dir)
 
 (put 'set-goal-column 'disabled nil)
 (auto-fill-mode -1)
+
+;; No hsplits. EVER.
+(defun split-horizontally-for-temp-buffers () (split-window-horizontally))
+
+(add-hook 'temp-buffer-setup-hook 'split-horizontally-for-temp-buffers)
+(setq split-height-threshold nil)
+(setq split-width-threshold 0)
+
+;; =============================================================================
+;;                                                          Config Free Packages
+;; =============================================================================
+
+(defvar packages-essential
+  '(popup magit auto-complete ido-ubiquitous mo-git-blame multiple-cursors
+    yasnippet cl-lib flx-ido))
+
+(defvar packages-other
+  '(thingatpt+ latex-preview-pane paredit inf-ruby undo-tree
+    exec-path-from-shell slime string-inflection yaml-mode sgml-mode
+    dired+ ctags ctags-update helm-gtags hackernews gitconfig-mode
+    aggressive-indent imenu+ weechat evil helm-ag xclip neotree))
+
+(defvar packages-appearance
+  '(monokai-theme solarized-theme zenburn-theme base16-theme molokai-theme
+    tango-2-theme gotham-theme color-theme-sanityinc-tomorrow smart-mode-line
+    rainbow-delimiters ansi-color))
+
+(ensure-packages-installed packages-essential)
+(ensure-packages-installed packages-other)
+(ensure-packages-installed packages-appearance)
   
 ;; =============================================================================
 ;;                                                         General Emacs Options
@@ -107,36 +121,59 @@
 ;; (among other things)
 (setq server-use-tcp t)
 
-;; Give duplicate open buffers better titles.
-(require 'uniquify)
-(setq uniquify-buffer-name-style 'forward)
-
 ;; Display line and column numbers in mode line.
 (line-number-mode t)
 (column-number-mode t)
 (global-linum-mode t)
 (setq visible-bell t)
-(global-auto-complete-mode)
-(setq ace-jump-mode-scope 'window)
+(setq uniquify-buffer-name-style 'forward)
 
 ;; Don't disable downcase and upcase region.
 (put 'upcase-region 'disabled nil)
 (put 'downcase-region 'disabled nil)
 (setq c-subword-mode t)
 (setq flyspell-issue-welcome-flag nil)
-(latex-preview-pane-enable)
 
 (add-hook 'after-init-hook '(lambda () (setq debug-on-error t)))
-(add-hook 'after-init-hook #'global-flycheck-mode)
-(add-hook 'haskell-mode-hook 'turn-on-haskell-indent)
+(add-hook 'after-init-hook #'flycheck-mode)
+
+(use-package ace-jump-mode
+  :ensure t
+  :commands ace-jump-mode
+  :config
+  (progn 
+    (setq ace-jump-mode-scope 'window))
+  :bind (("C-;" . ace-jump-mode)
+	 ;; This is needed for terminal emacs.
+	 ("C-c j" . ace-jump-mode)))
+
+(use-package flycheck
+  :ensure t
+  :config
+  (progn
+    (setq flycheck-checkers (delq 'emacs-lisp-checkdoc flycheck-checkers))
+    (global-flycheck-mode)))
+  
+(use-package haskell-mode
+  :ensure t
+  :commands haskell-mode
+  :config
+  (progn
+    (add-hook 'haskell-mode-hook 'turn-on-haskell-indent)))
+
+(use-package rainbow-delimiters
+  :ensure t
+  :commands rainbow-delimiters-mode
+  :init
+  (progn
+    (add-hook 'prog-mode-hook (lambda () (rainbow-delimiters-mode t)))))
 
 ;; =============================================================================
-;;                                                                    Mode Hooks
+;;                                                        Programming Mode Hooks
 ;; =============================================================================
 
 (add-hook 'prog-mode-hook (lambda () (auto-fill-mode -1)))
 (add-hook 'prog-mode-hook (lambda () (subword-mode t)))
-(add-hook 'prog-mode-hook (lambda () (rainbow-delimiters-mode t)))
 (add-hook 'prog-mode-hook (lambda () (auto-complete-mode t)))
 ;; (add-hook 'prog-mode-hook (lambda () (highlight-lines-matching-regexp
 ;;                                  ".\\{81\\}" 'hi-blue)))
@@ -145,109 +182,167 @@
 ;;                                               Navigation: helm/projectile/ido
 ;; =============================================================================
 
-(helm-mode 1)
+(use-package helm
+  :ensure t
+  :config
+  (progn
+    (helm-mode 1)))
+
+(use-package projectile
+  :ensure t
+  :config
+  (progn
+    (setq projectile-enable-caching t)
+    (projectile-global-mode)
+    (helm-projectile-on))
+  :init
+  (progn
+    (use-package flx
+      :ensure t
+      :config
+      (progn
+	;; disable ido faces to see flx highlights.
+	(flx-ido-mode 1)
+	;; This makes flx-ido much faster.
+	(setq gc-cons-threshold 20000000)
+	(setq ido-use-faces nil))
+      :init
+      (progn
+	(use-package flx-ido
+	  :ensure t)))
+    (use-package helm-projectile
+      :ensure t
+      :config
+      (progn
+	(helm-projectile-on))
+      :init
+      (progn
+	))))
+
 (ido-mode t)
 (ido-everywhere 1)
-(flx-ido-mode 1)
 (setq ido-enable-flex-matching t)
-(blink-cursor-mode -1)
-(projectile-global-mode)
-(require 'helm-projectile)
-(helm-projectile-on)
-(setq projectile-enable-caching t)
 
-;; disable ido faces to see flx highlights.
-(setq ido-use-faces nil)
-
-;; This makes flx-ido much faster.
-(setq gc-cons-threshold 20000000)
-(autoload 'smex "smex"
-  (global-set-key (kbd "M-x") 'smex))
+(use-package smex
+  :ensure t
+  :bind ("M-x" . smex))
 
 ;; =============================================================================
 ;;                                                                        Python
 ;; =============================================================================
 
-(defun python-tabs () (setq tab-width 4
-                            indent-tabs-mode t
-                            python-indent-offset 4))
+(use-package python
+  :commands python-mode
+  :mode ("\\.py\\'" . python-mode)
+  :config
+  (progn
+    ;; macros
+    (fset 'ipdb "import ipdb; ipdb.set_trace()")
+    (fset 'main "if __name__ == '__main__':")
+    (fset 'sphinx-class ":class:`~")
+    (defvar use-python-tabs nil)
+    (defun python-tabs () (setq tab-width 4
+				indent-tabs-mode t
+				python-indent-offset 4))
+    
+    (defun add-virtual-envs-to-jedi-server ()
+      (let ((virtual-envs (get-virtual-envs)))
+	(when virtual-envs (set (make-local-variable 'jedi:server-args)
+				(make-virtualenv-args virtual-envs)))))
 
-(defvar use-python-tabs nil)
+    (defun make-virtualenv-args (virtual-envs)
+      (apply #'append (mapcar (lambda (env) `("-v" ,env)) virtual-envs)))
 
-(defun add-virtual-envs-to-jedi-server ()
-  (let ((virtual-envs (get-virtual-envs)))
-    (when virtual-envs (set (make-local-variable 'jedi:server-args)
-                          (make-virtualenv-args virtual-envs)))))
-
-(defun make-virtualenv-args (virtual-envs)
-  (apply #'append (mapcar (lambda (env) `("-v" ,env)) virtual-envs)))
-
-(defun get-virtual-envs ()
-  (interactive)
-  (condition-case ex
-      (let (project-root (projectile-project-root))
-        (cl-remove-if-not 'file-exists-p
-                          (mapcar (lambda (env-suffix)
-                                    (concat project-root env-suffix))
-                                  '(".tox/py27/" "env" ".tox/venv/"))))
-    ('error
-            (message (format "Caught exception: [%s]" ex))
-            (setq retval (cons 'exception (list ex))))
-         nil))
-
-(require 'pytest)
-(add-hook 'python-mode-hook (lambda () (setq show-trailing-whitespace t)))
-(add-hook 'python-mode-hook (lambda () (if use-python-tabs python-tabs)))
-(add-hook 'python-mode-hook (lambda () (subword-mode t)))
-(add-hook 'python-mode-hook 'jedi:setup)
-(add-hook 'python-mode-hook 'add-virtual-envs-to-jedi-server)
-
-(setq jedi:complete-on-dot t)
-
-;; Macros
-(fset 'ipdb "import ipdb; ipdb.set_trace()")
-(fset 'main "if __name__ == '__main__':")
-(fset 'sphinx-class ":class:`~")
+    (defun get-virtual-envs ()
+      (interactive)
+      (condition-case ex
+	  (let (project-root (projectile-project-root))
+	    (cl-remove-if-not 'file-exists-p
+			      (mapcar (lambda (env-suffix)
+					(concat project-root env-suffix))
+				      '(".tox/py27/" "env" ".tox/venv/"))))
+	('error
+	 (message (format "Caught exception: [%s]" ex))
+	 (setq retval (cons 'exception (list ex))))
+	nil)))
+  :init
+  (progn
+    (message "initializing python setup.")
+    (use-package jedi
+      :commands jedi:goto-definition
+      :config (setq jedi:complete-on-dot t)
+      :ensure t)
+    (use-package pytest :ensure t)
+    (use-package pymacs :ensure t)
+    (use-package sphinx-doc :ensure t)
+    (add-hook 'python-mode-hook (lambda () (setq show-trailing-whitespace t)))
+    (add-hook 'python-mode-hook (lambda () (if use-python-tabs python-tabs)))
+    (add-hook 'python-mode-hook (lambda () (subword-mode t)))
+    (add-hook 'python-mode-hook #'jedi:setup)
+    (add-hook 'python-mode-hook #'add-virtual-envs-to-jedi-server)))
 
 ;; =============================================================================
 ;;                                                                         Scala
 ;; =============================================================================
 
-(add-to-list 'load-path "~/Projects/scala-mode2")
-(require 'ensime)
-(require 'scala-mode2)
 ;; (load "~/.emacs.d/lisp/ensime-imenu.el")
-(add-hook 'scala-mode-hook 'ensime-scala-mode-hook)
-(add-hook 'scala-mode-hook '(lambda ()
-  (require 'whitespace)
 
-  ;; clean-up whitespace at save
-  (make-local-variable 'before-save-hook)
-  (add-hook 'before-save-hook 'whitespace-cleanup)
+(use-package scala-mode2
+  :init
+  (progn (add-hook 'scala-mode-hook
+	      (lambda ()
+		(require 'whitespace)
 
-  ;; turn on highlight. To configure what is highlighted, customize
-  ;; the *whitespace-style* variable. A sane set of things to
-  ;; highlight is: face, tabs, trailing
-  (whitespace-mode)))
+		;; clean-up whitespace at save
+		(make-local-variable 'before-save-hook)
+		(add-hook 'before-save-hook 'whitespace-cleanup)
+
+		;; turn on highlight. To configure what is highlighted, customize
+		;; the *whitespace-style* variable. A sane set of things to
+		;; highlight is: face, tabs, trailing
+		(whitespace-mode))))
+  :config
+  (progn
+    (use-package ensime
+      :config (add-hook 'scala-mode-hook 'ensime-scala-mode-hook)
+      :ensure t)
+    (setq scala-indent:align-parameters t))
+  :mode (("\\.scala\\'" . scala-mode)
+         ("\\.sc\\'" . scala-mode))
+  :ensure t)
 
 ;; =============================================================================
 ;;                                                                    JavaScript
 ;; =============================================================================
 
-(setq js-indent-level 2)
+(use-package js2-mode
+  :ensure t
+  :mode "\\.js\\'"
+  :config
+  (progn
+    (setq js-indent-level 2)
+    )
+  :bind
+  (("C-c b" . web-beautify-js)
+   ("C-c b" . web-beautify-js))
+  :init
+  (progn
+    (add-hook 'js2-mode-hook (lambda () (tern-mode t)))
+    (add-hook 'js2-mode-hook 'skewer-mode)
+    (use-package tern
+      :ensure t
+      :config
+      (progn (tern-ac-setup))
+      :init
+      (progn
+	(use-package tern-auto-complete :ensure t
+	  :commands tern-ac-setup)))))
 
-(add-to-list 'auto-mode-alist '("\\.js$" . js2-mode))
+(defvar packages-js '(js2-mode js3-mode web-beautify tern tern-auto-complete
+		      slime-js skewer-mode skewer-reload-stylesheets))
 
-(add-hook 'js-mode-hook (lambda () (tern-mode t)))
-(eval-after-load 'tern
-   '(progn
-      (require 'tern-auto-complete)
-      (tern-ac-setup)))
-
-(defun skewer-mode-all ()
-  (add-hook 'js2-mode-hook 'skewer-mode)
-  (add-hook 'css-mode-hook 'skewer-css-mode)
-  (add-hook 'html-mode-hook 'skewer-html-mode))
+(add-hook 'css-mode-hook #'skewer-css-mode)
+(add-hook 'html-mode-hook #'skewer-html-mode)
 
 ;; (require 'slime-js)
 ;; (slime-js-init)
@@ -262,40 +357,48 @@
             (define-key css-mode-map "\M-\C-x" 'slime-js-refresh-css)
             (define-key css-mode-map "\C-c\C-r" 'slime-js-embed-css)))
 
+(eval-after-load 'sgml-mode
+  '(define-key html-mode-map (kbd "C-c b") 'web-beautify-html))
+(eval-after-load 'css-mode
+  '(define-key css-mode-map (kbd "C-c b") 'web-beautify-css))
+
 ;; =============================================================================
 ;;                                                                         C/C++
 ;; =============================================================================
 
-;;; Enable helm-gtags-mode
-(add-hook 'c-mode-hook 'helm-gtags-mode)
-(add-hook 'c++-mode-hook 'helm-gtags-mode)
-(add-hook 'asm-mode-hook 'helm-gtags-mode)
-
-;; customize
-(custom-set-variables
- '(helm-gtags-path-style 'relative)
- '(helm-gtags-ignore-case t)
- '(helm-gtags-auto-update t))
-
-;; key bindings
-(eval-after-load "helm-gtags"
-  '(progn
-     (define-key helm-gtags-mode-map (kbd "M-t") 'helm-gtags-find-tag)
-     (define-key helm-gtags-mode-map (kbd "M-r") 'helm-gtags-find-rtag)
-     (define-key helm-gtags-mode-map (kbd "M-s") 'helm-gtags-find-symbol)
-     (define-key helm-gtags-mode-map (kbd "M-g M-p") 'helm-gtags-parse-file)
-     (define-key helm-gtags-mode-map (kbd "C-c <") 'helm-gtags-previous-history)
-     (define-key helm-gtags-mode-map (kbd "C-c >") 'helm-gtags-next-history)
-     (define-key helm-gtags-mode-map (kbd "M-,") 'helm-gtags-pop-stack)))
+(use-package helm-gtags
+  :ensure t
+  :config (custom-set-variables
+	   '(helm-gtags-path-style 'relative)
+	   '(helm-gtags-ignore-case t)
+	   '(helm-gtags-auto-update t))
+  :bind
+  (("M-t" . helm-gtags-find-tag)
+   ("M-r" . helm-gtags-find-rtag)
+   ("M-s" . helm-gtags-find-symbol)
+   ("M-g M-p" . helm-gtags-parse-file)
+   ("C-c <" . helm-gtags-previous-history)
+   ("C-c >" . helm-gtags-next-history)
+   ("M-," . helm-gtags-pop-stack))
+  :init
+  (progn
+    ;;; Enable helm-gtags-mode
+    (add-hook 'c-mode-hook 'helm-gtags-mode)
+    (add-hook 'c++-mode-hook 'helm-gtags-mode)
+    (add-hook 'asm-mode-hook 'helm-gtags-mode)))
 
 ;; =============================================================================
 ;;                                                                           TeX
 ;; =============================================================================
 
-(setq TeX-auto-save t)
-(setq TeX-parse-self t)
-(setq TeX-save-query nil)
-(setq-default TeX-master nil)
+(use-package tex-site
+  :ensure auctex
+  :config
+  (progn
+    (setq TeX-auto-save t)
+    (setq TeX-parse-self t)
+    (setq TeX-save-query nil)
+    (setq-default TeX-master nil)))
 
 ;; =============================================================================
 ;;                                                                     functions
@@ -367,7 +470,6 @@ buffer is not visiting a file."
 (global-unset-key (kbd "C-o")) ;; Avoid collision with tmux binding.
 
 (global-set-key (kbd "C--") 'undo)
-(global-set-key (kbd "C-;") 'ace-jump-mode)
 (global-set-key (kbd "C-<") 'mc/mark-previous-like-this)
 (global-set-key (kbd "C->") 'mc/mark-next-like-this)
 (global-set-key (kbd "C->") 'mc/mark-next-like-this)
@@ -380,7 +482,7 @@ buffer is not visiting a file."
 				  (if current-prefix-arg (helm-global-mark-ring) (helm-mark-ring))))
 (global-set-key (kbd "C-c e") 'os-copy)
 (global-set-key (kbd "C-c g") 'jedi:goto-definition) ;; Should be python only
-(global-set-key (kbd "C-c j") 'ace-jump-mode) ;; This is needed for terminal emacs.
+
 (global-set-key (kbd "C-c t") 'pytest-one)
 (global-set-key (kbd "C-x C-b") 'buffer-menu)
 (global-set-key (kbd "C-x C-c") 'kill-emacs)
@@ -397,21 +499,13 @@ buffer is not visiting a file."
 (global-set-key (kbd "M-y") 'helm-show-kill-ring)
 (global-set-key (kbd "M-z") 'zap-up-to-char)
 
-(eval-after-load 'js2-mode
-  '(define-key js2-mode-map (kbd "C-c b") 'web-beautify-js))
-(eval-after-load 'json-mode
-  '(define-key json-mode-map (kbd "C-c b") 'web-beautify-js))
-(eval-after-load 'sgml-mode
-  '(define-key html-mode-map (kbd "C-c b") 'web-beautify-html))
-(eval-after-load 'css-mode
-  '(define-key css-mode-map (kbd "C-c b") 'web-beautify-css))
-
 ;; =============================================================================
 ;;                                                                    Appearance
 ;; =============================================================================
 
 ;; No splash screen please... jeez
 (setq inhibit-startup-screen t)
+(blink-cursor-mode -1)
 
 ;; make whitespace-mode use just basic coloring
 (setq whitespace-style (quote (spaces tabs newline ;;space-mark

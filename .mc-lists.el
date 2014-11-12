@@ -4,6 +4,7 @@
 (setq mc/cmds-to-run-for-all
       '(
 	dired-do-rename
+	forward-sexp
 	git-rebase-squash
 	git-rebase-undo
 	isearch-forward-regexp
