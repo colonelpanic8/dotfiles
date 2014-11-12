@@ -75,7 +75,9 @@
 	added = green
 	changed = yellow
 	untracked = red
+	
 [merge]
 	conflictstyle = diff3
+	
 [include]
 	path = ~/.gitconfig.custom
