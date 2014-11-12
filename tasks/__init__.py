@@ -18,9 +18,9 @@ def setup(ctx):
     ctx.config['run']['pty'] = False
     ctx.config['run']['warn'] = True
     if 'darwin' in sys.platform:
-        osx.all(ctx)
+        osx.setup(ctx)
     else:
-        linux.all(ctx)
+        linux.setup(ctx)
     dotfiles(ctx, 'f')
     install_python_libraries(ctx)
     powerline(ctx)

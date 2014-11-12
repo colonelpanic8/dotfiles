@@ -6,7 +6,7 @@ from util import RESOURCES_DIRECTORY
 
 
 @ctask(default=True)
-def all(ctx):
+def setup(ctx):
     apt_get(ctx)
     get_sbt(ctx)
 
