@@ -92,7 +92,7 @@ Return a list of installed packages or nil for every package not installed."
 ;; =============================================================================
 
 (defvar packages-essential
-  '(popup magit auto-complete ido-ubiquitous mo-git-blame multiple-cursors
+  '(popup auto-complete ido-ubiquitous mo-git-blame multiple-cursors
     yasnippet cl-lib flx-ido))
 
 (defvar packages-other
@@ -137,6 +137,9 @@ Return a list of installed packages or nil for every package not installed."
 (add-hook 'after-init-hook '(lambda () (setq debug-on-error t)))
 (add-hook 'after-init-hook #'flycheck-mode)
 
+(require 'tramp)
+(setq tramp-default-method "ssh")
+
 (use-package ace-jump-mode
   :ensure t
   :commands ace-jump-mode
@@ -167,6 +170,11 @@ Return a list of installed packages or nil for every package not installed."
   :init
   (progn
     (add-hook 'prog-mode-hook (lambda () (rainbow-delimiters-mode t)))))
+
+(use-package magit
+  :ensure t
+  :commands magit-status
+  :bind (("C-x g" . magit-status)))
 
 ;; =============================================================================
 ;;                                                        Programming Mode Hooks
@@ -213,11 +221,7 @@ Return a list of installed packages or nil for every package not installed."
     (use-package helm-projectile
       :ensure t
       :config
-      (progn
-	(helm-projectile-on))
-      :init
-      (progn
-	))))
+      (progn (helm-projectile-on)))))
 
 (ido-mode t)
 (ido-everywhere 1)
