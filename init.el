@@ -101,7 +101,7 @@ Return a list of installed packages or nil for every package not installed."
     exec-path-from-shell slime string-inflection yaml-mode sgml-mode
     dired+ ctags ctags-update helm-gtags hackernews gitconfig-mode
     aggressive-indent imenu+ weechat evil helm-ag xclip neotree
-    magit-gh-pulls))
+    magit-gh-pulls diminish))
 
 (defvar packages-appearance
   '(monokai-theme solarized-theme zenburn-theme base16-theme molokai-theme
@@ -157,7 +157,8 @@ Return a list of installed packages or nil for every package not installed."
   :config
   (progn
     (setq flycheck-checkers (delq 'emacs-lisp-checkdoc flycheck-checkers))
-    (global-flycheck-mode)))
+    (global-flycheck-mode)
+    (diminish 'flycheck-mode)))
   
 (use-package haskell-mode
   :ensure t
@@ -178,13 +179,20 @@ Return a list of installed packages or nil for every package not installed."
   :commands magit-status
   :bind (("C-x g" . magit-status)))
 
+(use-package auto-complete
+  :ensure t
+  :commands auto-complete-mode
+  :config
+  (diminish 'auto-complete-mode)
+  :init
+  (add-hook 'prog-mode-hook (lambda () (auto-complete-mode t))))
+
 ;; =============================================================================
 ;;                                                        Programming Mode Hooks
 ;; =============================================================================
 
 (add-hook 'prog-mode-hook (lambda () (auto-fill-mode -1)))
 (add-hook 'prog-mode-hook (lambda () (subword-mode t)))
-(add-hook 'prog-mode-hook (lambda () (auto-complete-mode t)))
 ;; (add-hook 'prog-mode-hook (lambda () (highlight-lines-matching-regexp
 ;;                                  ".\\{81\\}" 'hi-blue)))
 
@@ -196,7 +204,8 @@ Return a list of installed packages or nil for every package not installed."
   :ensure t
   :config
   (progn
-    (helm-mode 1)))
+    (helm-mode 1)
+    (diminish 'helm-mode)))
 
 (use-package projectile
   :ensure t
@@ -204,7 +213,8 @@ Return a list of installed packages or nil for every package not installed."
   (progn
     (setq projectile-enable-caching t)
     (projectile-global-mode)
-    (helm-projectile-on))
+    (helm-projectile-on)
+    (diminish 'projectile-mode))
   :init
   (progn
     (use-package flx
