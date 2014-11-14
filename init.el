@@ -85,7 +85,7 @@ Return a list of installed packages or nil for every package not installed."
 
 (add-hook 'temp-buffer-setup-hook 'split-horizontally-for-temp-buffers)
 (setq split-height-threshold nil)
-(setq split-width-threshold 80)
+(setq split-width-threshold 160)
 
 ;; =============================================================================
 ;;                                                          Config Free Packages
@@ -99,7 +99,8 @@ Return a list of installed packages or nil for every package not installed."
   '(thingatpt+ latex-preview-pane paredit inf-ruby undo-tree
     exec-path-from-shell slime string-inflection yaml-mode sgml-mode
     dired+ ctags ctags-update helm-gtags hackernews gitconfig-mode
-    aggressive-indent imenu+ weechat evil helm-ag xclip neotree))
+    aggressive-indent imenu+ weechat evil helm-ag xclip neotree
+    magit-gh-pulls))
 
 (defvar packages-appearance
   '(monokai-theme solarized-theme zenburn-theme base16-theme molokai-theme
