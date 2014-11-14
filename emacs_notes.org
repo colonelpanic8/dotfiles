@@ -3,7 +3,7 @@ Emacs Notes -*- mode: org -*-
 * <2014-11-01 Sat>
 ** C-x z to repeat last command
 ** F3 to define macro F4 to use macro
-*** Great in combinatino with C-u
+*** Great in combination with C-u
 ** C-x r (space to set register) (j to jump to register)
 *** This requires you to enter a number after words
 *** Using the mark seems like a better option in most cases
@@ -29,3 +29,4 @@ Emacs Notes -*- mode: org -*-
 ** M-r while in isearch-forward to toggle regexp mode
 ** C-c p r to replace in project.
 ** projectile-ibuffer is useful for killing buffers.
+** C-x C-k r to apply macro to all lines in region
