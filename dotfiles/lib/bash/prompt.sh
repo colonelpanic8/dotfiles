@@ -68,3 +68,9 @@ function set_bash_prompt() {
 export PROMPT_COMMAND=set_bash_prompt
 
 PS2='(%_) '
+
+case "$TERM" in
+    dumb)
+	export PS1='> '
+	;;
+esac
