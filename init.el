@@ -140,7 +140,7 @@ Return a list of installed packages or nil for every package not installed."
 (add-hook 'after-init-hook #'flycheck-mode)
 
 (require 'tramp)
-(setq tramp-default-method "plink")
+(setq tramp-default-method "ssh")
 
 (use-package ace-jump-mode
   :ensure t
