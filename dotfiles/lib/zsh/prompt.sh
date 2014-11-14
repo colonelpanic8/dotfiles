@@ -59,6 +59,17 @@ function command_line_character {
     fi
 }
 
+function job_count {
+    jobs -s | wc -l
+}
+
+function colored_job_count {
+    local job_count="$(job_count)"
+    if [ $job_count -gt 0 ]; then
+	print_with_color "($job_count) " $JOB_COUNT_COLOR
+    fi
+}
+
 export PROMPT_CHAR_ERROR="$fg[red]"
 export PROMPT_CHAR_SUCCESS="$fg[green]"
 
@@ -115,9 +126,11 @@ function separator {
     print_with_color "$1" "$SEPARATOR_COLOR"
 }
 
-prompt_basic_colors_with_grey_separator
+export JOB_COUNT_COLOR="$fg[blue]"
+
+prompt_tomorrow_colors
 # For reasons which are currently beyond me, 
 PROMPT='⚡ % $(print_with_color "%n" "$USERNAME_COLOR") $(separator "at") $(print_with_color "`hostname -s`" "$HOSTNAME_COLOR") $(separator "in") $(print_with_color "`current_directory`" "$CURRENT_DIRECTORY_COLOR")$(git_prompt_info)
-%(?.$(print_with_color "$(command_line_character) ❯" $PROMPT_CHAR_SUCCESS).$(print_with_color "$(command_line_character) ❯" $PROMPT_CHAR_ERROR)) '
+$(colored_job_count)%(?.$(print_with_color "$(command_line_character) ❯" $PROMPT_CHAR_SUCCESS).$(print_with_color "$(command_line_character) ❯" $PROMPT_CHAR_ERROR)) '
 
 PS2='(%_) '
