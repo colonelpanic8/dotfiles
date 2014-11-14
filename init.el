@@ -352,6 +352,9 @@ Return a list of installed packages or nil for every package not installed."
    ("C-c b" . web-beautify-js))
   :init
   (progn
+    (use-package skewer-mode
+      :ensure t
+      :commands skewer-mode)
     (add-hook 'js2-mode-hook (lambda () (tern-mode t)))
     (add-hook 'js2-mode-hook 'skewer-mode)
     (use-package tern
