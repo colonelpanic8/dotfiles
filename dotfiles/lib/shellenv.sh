@@ -30,4 +30,5 @@ add_to_front_of_path "$JAVA_HOME/bin"
 add_to_back_of_path "$(dotfiles_directory)/resources/python"
 add_to_back_of_path "/usr/local/sbin"
 
-[[ -s "$HOME/.rvm/scripts/rvm" ]] && source "$HOME/.rvm/scripts/rvm" # Load RVM into a shell session *as a function*
+# Load RVM into a shell session *as a function*
+[[ -s "$HOME/.rvm/scripts/rvm" ]] && source "$HOME/.rvm/scripts/rvm"
