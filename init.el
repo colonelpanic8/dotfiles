@@ -187,6 +187,11 @@ Return a list of installed packages or nil for every package not installed."
   :init
   (add-hook 'prog-mode-hook (lambda () (auto-complete-mode t))))
 
+(use-package expand-region
+  :ensure t
+  :commands er/expand-region
+  :bind (("C-@" . er/expand-region)))
+
 ;; =============================================================================
 ;;                                                        Programming Mode Hooks
 ;; =============================================================================
