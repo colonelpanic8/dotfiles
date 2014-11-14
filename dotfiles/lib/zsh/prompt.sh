@@ -116,7 +116,8 @@ function separator {
 }
 
 prompt_basic_colors_with_grey_separator
+# For reasons which are currently beyond me, 
 PROMPT='⚡ % $(print_with_color "%n" "$USERNAME_COLOR") $(separator "at") $(print_with_color "`hostname -s`" "$HOSTNAME_COLOR") $(separator "in") $(print_with_color "`current_directory`" "$CURRENT_DIRECTORY_COLOR")$(git_prompt_info)
-$(command_line_character) %(?.$PROMPT_CHAR_SUCCESS.$PROMPT_CHAR_ERROR)❯%f '
+%(?.$(print_with_color "$(command_line_character) ❯" $PROMPT_CHAR_SUCCESS).$(print_with_color "$(command_line_character) ❯" $PROMPT_CHAR_ERROR)) '
 
 PS2='(%_) '
