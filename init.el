@@ -581,7 +581,14 @@ buffer is not visiting a file."
   (set-my-font-for-frame nil)
   (setq hl-line-mode nil))
 
-(advice-add 'load-theme :after #'remove-fringe-and-hl-line-mode)
+(if (or
+     (and (>= emacs-major-version 24)
+          (>= emacs-minor-version 4))
+     (>= emacs-major-version 25))
+    (advice-add 'load-theme :after #'remove-fringe-and-hl-line-mode)
+  (defadvice load-theme (after name activate)
+    (remove-fringe-and-hl-line-mode)))
+
 
 ;; enable to set theme based on time of day.
 (run-at-time "00:00" 3600 'set-theme)
