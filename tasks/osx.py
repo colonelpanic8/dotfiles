@@ -121,3 +121,15 @@ def install_powerline_monaco(ctx):
 def cl_tools(ctx):
     if not util.command_exists('gcc'):
         ctx.run('xcode-select --install')
+
+
+@ctask
+def iTerm(ctx):
+    library_plist = os.path.join(os.path.expanduser("~"), "Library",
+                                 "Preferences", "com.googlecode.iterm2.plist")
+    ctx.run("defaults write {0} LoadPrefsFromCustomFolder -bool true".format(
+        library_plist
+    ))
+    ctx.run("defaults write {0} PrefsCustomFolder -string {1}".format(
+        library_plist, util.RESOURCES_DIRECTORY
+    ))
