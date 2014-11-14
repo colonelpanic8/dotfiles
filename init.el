@@ -79,6 +79,7 @@ Return a list of installed packages or nil for every package not installed."
 
 (put 'set-goal-column 'disabled nil)
 (auto-fill-mode -1)
+(setq indent-tabs-mode nil)
 
 ;; No hsplits. EVER.
 (defun split-horizontally-for-temp-buffers () (split-window-horizontally))
@@ -236,6 +237,36 @@ Return a list of installed packages or nil for every package not installed."
 ;;                                                                        Python
 ;; =============================================================================
 
+(defvar use-python-tabs nil)
+
+(defun python-tabs () (setq tab-width 4
+			    indent-tabs-mode t
+			    python-indent-offset 4))
+
+(defun add-virtual-envs-to-jedi-server ()
+  (let ((virtual-envs (get-virtual-envs)))
+    (when virtual-envs (set (make-local-variable 'jedi:server-args)
+			    (make-virtualenv-args virtual-envs)))))
+
+(defun make-virtualenv-args (virtual-envs)
+  (apply #'append (mapcar (lambda (env) `("-v" ,env)) virtual-envs)))
+
+(defun get-virtual-envs ()
+  (condition-case ex
+      (let ((project-root (projectile-project-root)))
+	(cl-remove-if-not 'file-exists-p
+			  (mapcar (lambda (env-suffix)
+				    (concat project-root env-suffix))
+				  '(".tox/py27/" "env" ".tox/venv/"))))
+    ('error
+     (message (format "Caught exception: [%s]" ex))
+     (setq retval (cons 'exception (list ex))))
+    nil))
+
+(defun message-virtual-envs ()
+  (interactive)
+  (message "%s" (get-virtual-envs)))
+
 (use-package python
   :commands python-mode
   :mode ("\\.py\\'" . python-mode)
@@ -245,31 +276,6 @@ Return a list of installed packages or nil for every package not installed."
     (fset 'ipdb "import ipdb; ipdb.set_trace()")
     (fset 'main "if __name__ == '__main__':")
     (fset 'sphinx-class ":class:`~")
-    (defvar use-python-tabs nil)
-    (defun python-tabs () (setq tab-width 4
-				indent-tabs-mode t
-				python-indent-offset 4))
-    
-    (defun add-virtual-envs-to-jedi-server ()
-      (let ((virtual-envs (get-virtual-envs)))
-	(when virtual-envs (set (make-local-variable 'jedi:server-args)
-				(make-virtualenv-args virtual-envs)))))
-
-    (defun make-virtualenv-args (virtual-envs)
-      (apply #'append (mapcar (lambda (env) `("-v" ,env)) virtual-envs)))
-
-    (defun get-virtual-envs ()
-      (interactive)
-      (condition-case ex
-	  (let (project-root (projectile-project-root))
-	    (cl-remove-if-not 'file-exists-p
-			      (mapcar (lambda (env-suffix)
-					(concat project-root env-suffix))
-				      '(".tox/py27/" "env" ".tox/venv/"))))
-	('error
-	 (message (format "Caught exception: [%s]" ex))
-	 (setq retval (cons 'exception (list ex))))
-	nil)))
   :init
   (progn
     (use-package jedi
@@ -280,10 +286,10 @@ Return a list of installed packages or nil for every package not installed."
     (use-package pymacs :ensure t)
     (use-package sphinx-doc :ensure t)
     (add-hook 'python-mode-hook (lambda () (setq show-trailing-whitespace t)))
-    (add-hook 'python-mode-hook (lambda () (if use-python-tabs python-tabs)))
+    (add-hook 'python-mode-hook (lambda () (if use-python-tabs (python-tabs))))
     (add-hook 'python-mode-hook (lambda () (subword-mode t)))
     (add-hook 'python-mode-hook #'jedi:setup)
-    (add-hook 'python-mode-hook #'add-virtual-envs-to-jedi-server)))
+    (add-hook 'python-mode-hook #'add-virtual-envs-to-jedi-server))))
 
 ;; =============================================================================
 ;;                                                                         Scala
@@ -294,17 +300,17 @@ Return a list of installed packages or nil for every package not installed."
 (use-package scala-mode2
   :init
   (progn (add-hook 'scala-mode-hook
-	      (lambda ()
-		(require 'whitespace)
+		   (lambda ()
+		     (require 'whitespace)
 
-		;; clean-up whitespace at save
-		(make-local-variable 'before-save-hook)
-		(add-hook 'before-save-hook 'whitespace-cleanup)
+		     ;; clean-up whitespace at save
+		     (make-local-variable 'before-save-hook)
+		     (add-hook 'before-save-hook 'whitespace-cleanup)
 
-		;; turn on highlight. To configure what is highlighted, customize
-		;; the *whitespace-style* variable. A sane set of things to
-		;; highlight is: face, tabs, trailing
-		(whitespace-mode))))
+		     ;; turn on highlight. To configure what is highlighted, customize
+		     ;; the *whitespace-style* variable. A sane set of things to
+		     ;; highlight is: face, tabs, trailing
+		     (whitespace-mode))))
   :config
   (progn
     (use-package ensime
