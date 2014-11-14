@@ -207,6 +207,7 @@ Return a list of installed packages or nil for every package not installed."
 
 (use-package helm
   :ensure t
+  :bind (("M-y" . helm-show-kill-ring))
   :config
   (progn
     (helm-mode 1)
@@ -220,21 +221,23 @@ Return a list of installed packages or nil for every package not installed."
     (projectile-global-mode)
     (helm-projectile-on)
     (diminish 'projectile-mode))
+  :bind (
+         ("C-x f" . helm-projectile-find-file)) 
   :init
   (progn
     (use-package flx
       :ensure t
       :config
       (progn
-	;; disable ido faces to see flx highlights.
-	(flx-ido-mode 1)
-	;; This makes flx-ido much faster.
-	(setq gc-cons-threshold 20000000)
-	(setq ido-use-faces nil))
+        ;; disable ido faces to see flx highlights.
+        (flx-ido-mode 1)
+        ;; This makes flx-ido much faster.
+        (setq gc-cons-threshold 20000000)
+        (setq ido-use-faces nil))
       :init
       (progn
-	(use-package flx-ido
-	  :ensure t)))
+        (use-package flx-ido
+          :ensure t)))
     (use-package helm-projectile
       :ensure t
       :config
@@ -244,13 +247,22 @@ Return a list of installed packages or nil for every package not installed."
 (ido-everywhere 1)
 (setq ido-enable-flex-matching t)
 
-(use-package smex
-  :ensure t
-  :bind ("M-x" . smex))
+(use-package smex :ensure t)
+
+;; =============================================================================
+;;                                                                    emacs-lisp
+;; =============================================================================
+
+(add-hook 'emacs-lisp-mode-hook (lambda () (setq indent-tabs-mode nil)))
+(define-key lisp-mode-shared-map (kbd "C-c C-c") 'eval-defun)
+(define-key lisp-mode-shared-map (kbd "C-c C-f") 'find-function-at-point)
+(define-key lisp-mode-shared-map (kbd "C-c C-r") 'eval-and-replace)
 
 ;; =============================================================================
 ;;                                                                        Python
 ;; =============================================================================
+
+
 
 (defvar use-python-tabs nil)
 
@@ -296,8 +308,11 @@ Return a list of installed packages or nil for every package not installed."
     (use-package jedi
       :commands jedi:goto-definition
       :config (setq jedi:complete-on-dot t)
-      :ensure t)
-    (use-package pytest :ensure t)
+      :ensure t
+      :bind ("C-c g" . jedi:goto-definition))
+    (use-package pytest
+      :ensure t
+      :bind ("C-c t" . pytest-one))
     (use-package pymacs :ensure t)
     (use-package sphinx-doc :ensure t)
     (add-hook 'python-mode-hook (lambda () (setq show-trailing-whitespace t)))
@@ -371,14 +386,6 @@ Return a list of installed packages or nil for every package not installed."
 
 (add-hook 'css-mode-hook #'skewer-css-mode)
 (add-hook 'html-mode-hook #'skewer-html-mode)
-
-;; (require 'slime-js)
-;; (slime-js-init)
-;; (require 'setup-slime-js)
-;; (global-set-key [f5] 'slime-js-reload)
-;; (add-hook 'js2-mode-hook
-;;           (lambda ()
-;;             (slime-js-minor-mode 1)))
 
 (add-hook 'css-mode-hook
           (lambda ()
@@ -493,39 +500,38 @@ buffer is not visiting a file."
 ;;                                                           Custom Key Bindings
 ;; =============================================================================
 
+(use-package multiple-cursors
+  :ensure t
+  :bind (("C-<" . mc/mark-previous-like-t)
+         ("C->" . mc/mark-next-like-this)
+         ("C->" . mc/mark-next-like-this)
+         ("C-c <" . mc/mark-all-like-this)
+         ("C-x r t" . mc/edit-lines)))
+          
 ;; Miscellaneous
-(define-key lisp-mode-shared-map (kbd "C-c C-c") 'eval-defun)
 (global-unset-key (kbd "C-o")) ;; Avoid collision with tmux binding.
-
 (global-set-key (kbd "C--") 'undo)
-(global-set-key (kbd "C-<") 'mc/mark-previous-like-this)
-(global-set-key (kbd "C->") 'mc/mark-next-like-this)
-(global-set-key (kbd "C->") 'mc/mark-next-like-this)
 (global-set-key (kbd "C-c +") 'message-buffer-name)
-(global-set-key (kbd "C-c <") 'mc/mark-all-like-this)
-(global-set-key (kbd "C-c C-f") 'find-function-at-point)
-(global-set-key (kbd "C-c C-r") 'eval-and-replace)
+
 (global-set-key (kbd "C-c C-s") 'sudo-edit)
 (global-set-key (kbd "C-c SPC") (lambda () (interactive)
 				  (if current-prefix-arg (helm-global-mark-ring) (helm-mark-ring))))
 (global-set-key (kbd "C-c e") 'os-copy)
-(global-set-key (kbd "C-c g") 'jedi:goto-definition) ;; Should be python only
-
-(global-set-key (kbd "C-c t") 'pytest-one)
 (global-set-key (kbd "C-x C-b") 'buffer-menu)
 (global-set-key (kbd "C-x C-c") 'kill-emacs)
 (global-set-key (kbd "C-x C-i") 'imenu)
 (global-set-key (kbd "C-x C-r") (lambda () (interactive) (revert-buffer t t)))
 (global-set-key (kbd "C-x O") (lambda () (interactive) (other-window -1)))
-(global-set-key (kbd "C-x f") 'helm-projectile-find-file)
-(global-set-key (kbd "C-x r t") 'mc/edit-lines)
 (global-set-key (kbd "C-x w") 'whitespace-mode)
 (global-set-key (kbd "M-Z") 'zap-to-char)
 (global-set-key (kbd "M-g") 'goto-line)
 (global-set-key (kbd "M-n") 'forward-paragraph)
 (global-set-key (kbd "M-p") 'backward-paragraph)
-(global-set-key (kbd "M-y") 'helm-show-kill-ring)
-(global-set-key (kbd "M-z") 'zap-up-to-char)
+(global-set-key (kbd "M-z") 'zap-to-char)
+
+(fset 'global-set-key-to-use-package
+      (lambda (&optional arg) "Keyboard macro." (interactive "p")
+        (kmacro-exec-ring-item (quote ([1 67108896 19 100 6 23 40 19 41 return backspace 32 46 6 4] 0 "%d")) arg)))
 
 ;; =============================================================================
 ;;                                                                    Appearance
@@ -561,7 +567,7 @@ buffer is not visiting a file."
 ;; (defvar light-themes '(zenburn solarized-light))
 
 (defvar dark-themes '(monokai))
-(defvar light-themes '(monokai))
+(defvar light-themes '(solarized-light))
 
 (defun random-choice (choices)
   (nth (random (length choices)) choices))
@@ -583,13 +589,13 @@ buffer is not visiting a file."
                  (setq current-theme appropriate-theme)))))
 
 ;;(defvar fonts '("DejaVu Sans Mono-10" "monaco-11" "Inconsolata-12" "menlo-10"))
-(defvar fonts '("monaco-11"))
+(defvar fonts '("monaco-9"))
 
 (defun set-my-font-for-frame (frame)
   (condition-case exp
       (set-default-font (random-choice fonts) nil t)
     ('error (package-refresh-contents)
-	    (set-default-font "monaco-11" nil t) nil)))
+	    (set-default-font "monaco-10" nil t) nil)))
 
 (defun remove-fringe-and-hl-line-mode (&rest stuff)
   (scroll-bar-mode -1)
