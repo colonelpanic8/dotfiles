@@ -2,13 +2,16 @@ alias emacs='_emacs -c -n'
 is_osx && alias emacs='cocoa_emacs'
 alias terminal_emacs='_emacs -t'
 alias ec='_emacs -n '
+export GLOBAL_EMACS=""
+is_ssh && emacs="terminal_emacs"
 
 function cocoa_emacs {
     reattach-to-user-namespace zsh -c "source ~/.zshrc && _emacs -c -n"
 }
 
 function _emacs {
-    local server_name="$(_current_dot_directory)"
+    local server_name="$GLOBAL_EMACS"
+    [ -z $GLOBAL_EMACS ] && server_name="$(_current_dot_directory)"
     if ! _emacs_daemon_exists "$server_name"; then
         echo "Starting emacs with server name '$server_name'"
         command emacs --daemon="$server_name"
@@ -30,6 +33,6 @@ function _current_dot_directory {
 }
 
 # Make emacs the default editor.
-export EDITOR="emacs -Q"
+export EDITOR="$(which emacsclient) -n -s "
 export ALTERNATE_EDITOR=""
 export VISUAL="$EDITOR"
