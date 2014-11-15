@@ -255,6 +255,14 @@ Return a list of installed packages or nil for every package not installed."
 ;;                                                                    emacs-lisp
 ;; =============================================================================
 
+(use-package elisp-slime-nav
+  :ensure t
+  :commands elisp-slime-nav-mode
+  :config
+  (diminish 'elisp-slime-nav-mode)
+  :init
+  (add-hook 'emacs-lisp-mode-hook (lambda () (elisp-slime-nav-mode t))))
+
 (add-hook 'emacs-lisp-mode-hook (lambda () (setq indent-tabs-mode nil)))
 (define-key lisp-mode-shared-map (kbd "C-c C-c") 'eval-defun)
 (define-key lisp-mode-shared-map (kbd "C-c C-f") 'find-function-at-point)
