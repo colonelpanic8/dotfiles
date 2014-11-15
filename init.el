@@ -177,7 +177,9 @@ Return a list of installed packages or nil for every package not installed."
 (use-package magit
   :ensure t
   :commands magit-status
-  :bind (("C-x g" . magit-status)))
+  :bind (("C-x g" . magit-status))
+  :config
+  (diminish 'magit-auto-revert-mode))
 
 (use-package auto-complete
   :ensure t
