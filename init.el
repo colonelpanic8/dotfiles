@@ -22,7 +22,7 @@
 (when (fboundp 'scroll-bar-mode) (scroll-bar-mode -1))
 
 ;; =============================================================================
-;;                                                       Load Path Configuration
+;;;;                                                     Load Path Configuration
 ;; =============================================================================
 
 (setq custom-file "~/.emacs.d/custom.el")
@@ -31,7 +31,7 @@
 (add-to-list 'load-path "~/.emacs.d/lisp")
 
 ;; =============================================================================
-;;                                                         ELPA/package.el/MELPA
+;;;;                                                       ELPA/package.el/MELPA
 ;; =============================================================================
 
 (require 'package)
@@ -56,11 +56,12 @@ Return a list of installed packages or nil for every package not installed."
    packages))
 
 (package-initialize)
+(require 'benchmark-init)
 (ensure-packages-installed '(epl use-package))
 (require 'use-package)
 (put 'use-package 'lisp-indent-function 1) ;; reduce indentation for use-package
 
-;; =============================================================================
+;;; =============================================================================
 ;;                                                                      Disables
 ;; =============================================================================
 
@@ -101,7 +102,7 @@ Return a list of installed packages or nil for every package not installed."
     exec-path-from-shell slime string-inflection yaml-mode sgml-mode
     dired+ ctags ctags-update helm-gtags hackernews gitconfig-mode
     aggressive-indent imenu+ weechat evil helm-ag xclip neotree
-    magit-gh-pulls diminish))
+    magit-gh-pulls diminish gist))
 
 (defvar packages-appearance
   '(monokai-theme solarized-theme zenburn-theme base16-theme molokai-theme
@@ -252,7 +253,7 @@ Return a list of installed packages or nil for every package not installed."
 (use-package smex :ensure t)
 
 ;; =============================================================================
-;;                                                                    emacs-lisp
+;;;;                                                                  emacs-lisp
 ;; =============================================================================
 
 (use-package elisp-slime-nav
@@ -263,6 +264,13 @@ Return a list of installed packages or nil for every package not installed."
   :init
   (add-hook 'emacs-lisp-mode-hook (lambda () (elisp-slime-nav-mode t))))
 
+
+(defun imenu-elisp-sections ()
+  (setq imenu-prev-index-position-function nil)
+  (setq imenu-space-replacement nil)
+  (add-to-list 'imenu-generic-expression '("Sections" "^;;;; *\\(.+\\)$" 1) t))
+
+(add-hook 'emacs-lisp-mode-hook 'imenu-elisp-sections)
 (add-hook 'emacs-lisp-mode-hook (lambda () (setq indent-tabs-mode nil)))
 (define-key lisp-mode-shared-map (kbd "C-c C-c") 'eval-defun)
 (define-key lisp-mode-shared-map (kbd "C-c C-f") 'find-function-at-point)
@@ -369,9 +377,7 @@ Return a list of installed packages or nil for every package not installed."
   :ensure t
   :mode "\\.js\\'"
   :config
-  (progn
-    (setq js-indent-level 2)
-    )
+  (progn (setq js-indent-level 2))
   :bind
   (("C-c b" . web-beautify-js)
    ("C-c b" . web-beautify-js))
@@ -461,13 +467,22 @@ buffer is not visiting a file."
                          (ido-read-file-name "Find file (as root): ")))
     (find-alternate-file (concat "/sudo:root@localhost:" buffer-file-name))))
 
-(defun get-buffer-name()
+(defun get-buffer-name ()
   (interactive)
   (file-relative-name (buffer-file-name)))
 
-(defun message-buffer-name()
+(defun message-buffer-name ()
   (interactive)
   (message (get-buffer-name)))
+
+(defun frame-exists ()
+  (cl-find-if (lambda (frame)
+             (assoc 'display (frame-parameters frame)))
+           (frame-list)))
+
+(defun make-frame-if-none-exists ()
+  (unless (frame-exists)
+    (make-frame-on-display (getenv "DISPLAY"))))
 
 (defun os-copy (&optional b e)
   (interactive "r")
@@ -541,7 +556,9 @@ buffer is not visiting a file."
 
 (fset 'global-set-key-to-use-package
       (lambda (&optional arg) "Keyboard macro." (interactive "p")
-        (kmacro-exec-ring-item (quote ([1 67108896 19 100 6 23 40 19 41 return backspace 32 46 6 4] 0 "%d")) arg)))
+        (kmacro-exec-ring-item
+	 (quote ([1 67108896 19 100 6 23 40 19 41 return
+		    backspace 32 46 6 4] 0 "%d")) arg)))
 
 ;; =============================================================================
 ;;                                                                    Appearance
@@ -599,7 +616,7 @@ buffer is not visiting a file."
                  (setq current-theme appropriate-theme)))))
 
 ;;(defvar fonts '("DejaVu Sans Mono-10" "monaco-11" "Inconsolata-12" "menlo-10"))
-(defvar fonts '("monaco-9"))
+(defvar fonts '("monaco-10"))
 
 (defun set-my-font-for-frame (frame)
   (condition-case exp
