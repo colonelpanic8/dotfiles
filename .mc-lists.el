@@ -3,24 +3,25 @@
 
 (setq mc/cmds-to-run-for-all
       '(
-	dired-do-rename
-	forward-sexp
-	git-rebase-squash
-	git-rebase-undo
-	isearch-forward-regexp
-	isearch-other-control-char
-	isearch-printing-char
-	keyboard-quit
-	kill-region
-	python-indent-electric-colon
-	sgml-slash
-	skeleton-pair-insert-maybe
-	universal-argument-minus
-	))
+        dired-do-rename
+        forward-sexp
+        git-rebase-squash
+        git-rebase-undo
+        isearch-forward-regexp
+        isearch-other-control-char
+        isearch-printing-char
+        keyboard-quit
+        kill-region
+        python-indent-electric-colon
+        sgml-slash
+        skeleton-pair-insert-maybe
+        tern-ac-dot-complete
+        universal-argument-minus
+        ))
 
 (setq mc/cmds-to-run-once
       '(
-	delete-horizontal-space
-	isearch-delete-char
-	smex
-	))
+        delete-horizontal-space
+        isearch-delete-char
+        smex
+        ))

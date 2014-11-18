@@ -42,9 +42,6 @@
 (add-to-list 'package-archives '("melpa" . "http://melpa.org/packages/") t)
 
 (defun ensure-packages-installed (packages)
-  "Assure every package is installed, ask for installation if it’s not.
-Return a list of installed packages or nil for every package not installed."
-  ;; fetch the list of packages available 
   (unless package-archive-contents
     (package-refresh-contents))
   (mapcar
@@ -280,13 +277,10 @@ Return a list of installed packages or nil for every package not installed."
 ;;                                                                        Python
 ;; =============================================================================
 
-
-
 (defvar use-python-tabs nil)
 
-(defun python-tabs () (setq tab-width 4
-			    indent-tabs-mode t
-			    python-indent-offset 4))
+(defun python-tabs ()
+  (setq tab-width 4 indent-tabs-mode t python-indent-offset 4))
 
 (defun add-virtual-envs-to-jedi-server ()
   (let ((virtual-envs (get-virtual-envs)))
@@ -350,14 +344,8 @@ Return a list of installed packages or nil for every package not installed."
   (progn (add-hook 'scala-mode-hook
 		   (lambda ()
 		     (require 'whitespace)
-
-		     ;; clean-up whitespace at save
 		     (make-local-variable 'before-save-hook)
 		     (add-hook 'before-save-hook 'whitespace-cleanup)
-
-		     ;; turn on highlight. To configure what is highlighted, customize
-		     ;; the *whitespace-style* variable. A sane set of things to
-		     ;; highlight is: face, tabs, trailing
 		     (whitespace-mode))))
   :config
   (progn
@@ -540,7 +528,8 @@ buffer is not visiting a file."
 
 (global-set-key (kbd "C-c C-s") 'sudo-edit)
 (global-set-key (kbd "C-c SPC") (lambda () (interactive)
-				  (if current-prefix-arg (helm-global-mark-ring) (helm-mark-ring))))
+				  (if current-prefix-arg (helm-global-mark-ring)
+                                    (helm-mark-ring))))
 (global-set-key (kbd "C-c e") 'os-copy)
 (global-set-key (kbd "C-x C-b") 'buffer-menu)
 (global-set-key (kbd "C-x C-c") 'kill-emacs)
@@ -548,7 +537,6 @@ buffer is not visiting a file."
 (global-set-key (kbd "C-x C-r") (lambda () (interactive) (revert-buffer t t)))
 (global-set-key (kbd "C-x O") (lambda () (interactive) (other-window -1)))
 (global-set-key (kbd "C-x w") 'whitespace-mode)
-(global-set-key (kbd "M-Z") 'zap-to-char)
 (global-set-key (kbd "M-g") 'goto-line)
 (global-set-key (kbd "M-n") 'forward-paragraph)
 (global-set-key (kbd "M-p") 'backward-paragraph)
@@ -620,9 +608,9 @@ buffer is not visiting a file."
 
 (defun set-my-font-for-frame (frame)
   (condition-case exp
-      (set-default-font (random-choice fonts) nil t)
+      (set-frame-font (random-choice fonts) nil t)
     ('error (package-refresh-contents)
-	    (set-default-font "monaco-10" nil t) nil)))
+	    (set-frame-font "monaco-11" nil t) nil)))
 
 (defun remove-fringe-and-hl-line-mode (&rest stuff)
   (scroll-bar-mode -1)
