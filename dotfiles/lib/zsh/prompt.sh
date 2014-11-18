@@ -129,14 +129,10 @@ function separator {
 export JOB_COUNT_COLOR="$fg[blue]"
 
 prompt_tomorrow_colors
-# For reasons which are currently beyond me, 
+# For reasons which are currently beyond me, it is not possible to use
+# $? in PROMPT which is why the second line is so strangely
+# constructed.
 export PROMPT='⚡ % $(print_with_color "%n" "$USERNAME_COLOR") $(separator "at") $(print_with_color "`hostname -s`" "$HOSTNAME_COLOR") $(separator "in") $(print_with_color "`current_directory`" "$CURRENT_DIRECTORY_COLOR")$(git_prompt_info)
 $(colored_job_count)%(?.$(print_with_color "$(command_line_character) ❯" $PROMPT_CHAR_SUCCESS).$(print_with_color "$(command_line_character) ❯" $PROMPT_CHAR_ERROR)) '
 
 PS2='(%_) '
-
-case "$TERM" in
-    dumb)
-	export PROMPT='> '
-	;;
-esac

@@ -83,3 +83,64 @@ function set_osx_hostname() {
     sudo scutil --set LocalHostName $new_hostname
     sudo defaults write /Library/Preferences/SystemConfiguration/com.apple.smb.server NetBIOSName -string $new_hostname
 }
+
+function get_bundle_identifier() {
+    defaults read "$1/Contents/Info" CFBundleIdentifier
+}
+
+_BUDDY="/usr/libexec/PlistBuddy"
+_PLIST="$HOME/Library/Preferences/com.apple.LaunchServices/com.apple.launchservices.secure.plist"
+
+function create_filename_rule {
+    $_BUDDY -c "Add LSHandlers:0 dict" $_PLIST
+    $_BUDDY -c "Add LSHandlers:0:LSHandlerRoleAll string $1" $_PLIST
+    $_BUDDY -c "Add LSHandlers:0:LSHandlerContentTag string $2" $_PLIST
+    $_BUDDY -c "Add LSHandlers:0:LSHandlerContentTagClass string public.filename-extension" $_PLIST
+    $_BUDDY -c "Add LSHandlers:0:LSHandlerPreferredVersions dict" $_PLIST
+    $_BUDDY -c "Add LSHandlers:0:LSHandlerPreferredVersions:LSHandlerRoleAll string -" $_PLIST
+}
+
+function set_application_for_file_extension() {
+    local PLIST="$HOME/Library/Preferences/com.apple.LaunchServices/com.apple.launchservices.secure.plist"
+
+    # the key to match with the desired value
+    KEY="LSHandlerContentType"
+
+    # the value for which we'll replace the handler
+    VALUE="${1-public.plain-text}"
+
+    # the new handler for all roles
+    HANDLER="${1}"
+
+    $_BUDDY -c 'Print "LSHandlers"' $_PLIST >/dev/null 2>&1
+    if [[ $? -ne 0 ]] ; then
+        echo "There is no LSHandlers entry in $_PLIST" >&2
+        exit 1
+    fi
+
+    declare -i I=0
+    while [ true ] ; do
+        $_BUDDY -c "Print LSHandlers:$I" $_PLIST >/dev/null 2>&1
+        [[ $? -eq 0 ]] || { echo "Finished, no $VALUE found, setting it to $HANDLER" ; create_entry ; exit ; }
+
+        OUT="$( $_BUDDY -c "Print 'LSHandlers:$I:$KEY'" $_PLIST 2>/dev/null )"
+        if [[ $? -ne 0 ]] ; then 
+            I=$I+1
+            continue
+        fi
+
+        CONTENT=$( echo "$OUT" )
+        if [[ $CONTENT = $VALUE ]] ; then
+            echo "Replacing $CONTENT handler with $HANDLER"
+            $_BUDDY -c "Delete 'LSHandlers:$I'" $_PLIST
+            create_entry
+            exit
+        else
+            I=$I+1 
+        fi
+    done
+}
+
+function reload_preferences {
+    killall -u $(whoami) cfprefsd
+}
