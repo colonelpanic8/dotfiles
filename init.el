@@ -79,10 +79,10 @@
 (put 'set-goal-column 'disabled nil)
 (auto-fill-mode -1)
 (setq indent-tabs-mode nil)
+(setq flyspell-issue-welcome-flag nil)
 
 ;; No hsplits. EVER.
 (defun split-horizontally-for-temp-buffers () (split-window-horizontally))
-
 (add-hook 'temp-buffer-setup-hook 'split-horizontally-for-temp-buffers)
 (setq split-height-threshold nil)
 (setq split-width-threshold 160)
@@ -96,11 +96,11 @@
     yasnippet cl-lib flx-ido))
 
 (defvar packages-other
-  '(thingatpt+ latex-preview-pane paredit inf-ruby undo-tree
+  '(thingatpt+ latex-preview-pane paredit inf-ruby rust-mode paradox
     exec-path-from-shell slime string-inflection yaml-mode sgml-mode
     dired+ ctags ctags-update helm-gtags hackernews gitconfig-mode
     aggressive-indent imenu+ weechat evil helm-ag xclip neotree
-    magit-gh-pulls diminish gist org))
+    magit-gh-pulls diminish gist org spotify))
 
 (defvar packages-appearance
   '(monokai-theme solarized-theme zenburn-theme base16-theme molokai-theme
@@ -126,7 +126,7 @@
 (line-number-mode t)
 (column-number-mode t)
 (global-linum-mode t)
-(setq visible-bell t)
+(setq visible-bell nil)
 
 ;; Make buffer names unique.
 (setq uniquify-buffer-name-style 'forward)
@@ -137,8 +137,10 @@
 ;; Don't disable downcase and upcase region.
 (put 'upcase-region 'disabled nil)
 (put 'downcase-region 'disabled nil)
+
+;; Make forward word understand camel and snake case.
 (setq c-subword-mode t)
-(setq flyspell-issue-welcome-flag nil)
+(setq sentence-end-double-space nil)
 
 (add-hook 'after-init-hook '(lambda () (setq debug-on-error t)))
 (add-hook 'after-init-hook #'flycheck-mode)
@@ -152,8 +154,13 @@
 (use-package ace-jump-mode
   :ensure t
   :commands ace-jump-mode
+  :init
+  (progn
+    (use-package ace-window
+      :ensure t
+      :bind ("C-c w" . ace-select-window)))
   :config
-  (progn 
+  (progn
     (setq ace-jump-mode-scope 'window))
   :bind (("C-;" . ace-jump-mode)
 	 ;; This is needed for terminal emacs.
@@ -200,6 +207,25 @@
   :ensure t
   :commands er/expand-region
   :bind (("C-c m" . er/expand-region)))
+
+(use-package undo-tree
+  :ensure t
+  :init
+  (progn
+    (global-undo-tree-mode)
+    (setq undo-tree-visualizer-timestamps t)
+    (setq undo-tree-visualizer-diff t)))
+
+(use-package smooth-scrolling
+  :ensure t
+  :init (require 'smooth-scrolling))
+
+(use-package smooth-scroll
+  :ensure t
+  :init
+  (progn
+    (smooth-scroll-mode)
+    (setq smooth-scroll/vscroll-step-size 8)))
 
 ;; =============================================================================
 ;;                                                        Programming Mode Hooks
