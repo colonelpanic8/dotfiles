@@ -1,3 +1,4 @@
+;; -*- lexical-binding: t; -*-
 ;; =============================================================================
 ;;    ___ _ __ ___   __ _  ___ ___
 ;;   / _ \ '_ ` _ \ / _` |/ __/ __|
@@ -22,7 +23,7 @@
 (when (fboundp 'scroll-bar-mode) (scroll-bar-mode -1))
 
 ;; =============================================================================
-;;;;                                                     Load Path Configuration
+;;                                                       Load Path Configuration
 ;; =============================================================================
 
 (setq custom-file "~/.emacs.d/custom.el")
@@ -31,7 +32,7 @@
 (add-to-list 'load-path "~/.emacs.d/lisp")
 
 ;; =============================================================================
-;;;;                                                       ELPA/package.el/MELPA
+;;                                                         ELPA/package.el/MELPA
 ;; =============================================================================
 
 (require 'package)
@@ -58,7 +59,7 @@
 (require 'use-package)
 (put 'use-package 'lisp-indent-function 1) ;; reduce indentation for use-package
 
-;;; =============================================================================
+;; =============================================================================
 ;;                                                                      Disables
 ;; =============================================================================
 
@@ -87,7 +88,7 @@
 (setq split-width-threshold 160)
 
 ;; =============================================================================
-;;                                                          Config Free Packages
+;;                                                        Config Free Packages
 ;; =============================================================================
 
 (defvar packages-essential
@@ -126,7 +127,12 @@
 (column-number-mode t)
 (global-linum-mode t)
 (setq visible-bell t)
+
+;; Make buffer names unique.
 (setq uniquify-buffer-name-style 'forward)
+
+;; We want closures.
+(setq lexical-binding t)
 
 ;; Don't disable downcase and upcase region.
 (put 'upcase-region 'disabled nil)
@@ -136,6 +142,9 @@
 
 (add-hook 'after-init-hook '(lambda () (setq debug-on-error t)))
 (add-hook 'after-init-hook #'flycheck-mode)
+
+;; Don't popup frames in OSX.
+(setq ns-pop-up-frames nil)
 
 (require 'tramp)
 (setq tramp-default-method "ssh")
@@ -250,7 +259,7 @@
 (use-package smex :ensure t)
 
 ;; =============================================================================
-;;;;                                                                  emacs-lisp
+;;                                                                         elisp
 ;; =============================================================================
 
 (use-package elisp-slime-nav
@@ -265,9 +274,13 @@
 (defun imenu-elisp-sections ()
   (setq imenu-prev-index-position-function nil)
   (setq imenu-space-replacement nil)
-  (add-to-list 'imenu-generic-expression '("Sections" "^;;;; *\\(.+\\)$" 1) t))
+  (add-to-list 'imenu-generic-expression
+               `("Sections"
+                 ,(concat ";\\{1,4\\} =\\{10,80\\}\n;\\{1,4\\} \\{10,80\\}"
+                          "\\(.+\\)$") 1) t))
 
 (add-hook 'emacs-lisp-mode-hook 'imenu-elisp-sections)
+(add-hook 'emacs-lisp-mode-hook 'flatten-current-imenu-index-function)
 (add-hook 'emacs-lisp-mode-hook (lambda () (setq indent-tabs-mode nil)))
 (define-key lisp-mode-shared-map (kbd "C-c C-c") 'eval-defun)
 (define-key lisp-mode-shared-map (kbd "C-c C-f") 'find-function-at-point)
@@ -319,7 +332,10 @@
   (progn
     (use-package jedi
       :commands jedi:goto-definition
-      :config (setq jedi:complete-on-dot t)
+      :config
+      (progn
+        (setq jedi:complete-on-dot t)
+        (setq jedi:install-imenu t))
       :ensure t
       :bind ("C-c g" . jedi:goto-definition))
     (use-package pytest
@@ -469,8 +485,13 @@ buffer is not visiting a file."
            (frame-list)))
 
 (defun make-frame-if-none-exists ()
-  (unless (frame-exists)
-    (make-frame-on-display (getenv "DISPLAY"))))
+  (let* ((existing-frame (frame-exists)))
+    (if existing-frame
+        existing-frame
+      (make-frame-on-display (getenv "DISPLAY")))))
+
+(defun make-frame-if-none-exists-and-focus ()
+  (make-frame-visible (select-frame (make-frame-if-none-exists))))
 
 (defun os-copy (&optional b e)
   (interactive "r")
@@ -508,6 +529,19 @@ buffer is not visiting a file."
              (current-buffer))
     (error (message "Invalid expression")
            (insert (current-kill 0)))))
+
+(defun flatten-imenu-index (index)
+  (cl-mapcan (lambda (x) (if (listp (cdr x))
+                             (cl-mapcar (lambda (item)
+                                          `(,(concat (car x) "/" (car item)) . ,(cdr item)))
+                                          (flatten-imenu-index (cdr x)))
+                           (list x))) index))
+
+(defun flatten-imenu-index-function (function)
+  (lambda () (flatten-imenu-index (funcall function))))
+
+(defun flatten-current-imenu-index-function ()
+  (setq imenu-create-index-function (flatten-imenu-index-function imenu-create-index-function)))
 
 ;; =============================================================================
 ;;                                                           Custom Key Bindings
@@ -602,9 +636,6 @@ buffer is not visiting a file."
             nil
           (progn (load-theme appropriate-theme t)
                  (setq current-theme appropriate-theme)))))
-
-;;(defvar fonts '("DejaVu Sans Mono-10" "monaco-11" "Inconsolata-12" "menlo-10"))
-(defvar fonts '("monaco-10"))
 
 (defun set-my-font-for-frame (frame)
   (condition-case exp
