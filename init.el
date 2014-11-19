@@ -199,7 +199,7 @@
 (use-package expand-region
   :ensure t
   :commands er/expand-region
-  :bind (("C-@" . er/expand-region)))
+  :bind (("C-c m" . er/expand-region)))
 
 ;; =============================================================================
 ;;                                                        Programming Mode Hooks
