@@ -1,12 +1,12 @@
+alias e='emacs_open'
 alias emacs='_emacs -c -n '
 is_osx && alias emacs='cocoa_emacs'
 alias terminal_emacs='_emacs -t'
-alias ec='_emacs -n '
 export GLOBAL_EMACS=""
 is_ssh && emacs="terminal_emacs"
 
 function cocoa_emacs {
-    reattach-to-user-namespace zsh -c "source ~/.zshrc && _emacs -c -n"
+    reattach-to-user-namespace zsh -c 'source ~/.zshrc && _emacs -c -n "$@"'
 }
 
 function _emacs {
@@ -46,21 +46,26 @@ function existing_emacs {
 }
 
 function emacs_make_frame_if_none_exists {
-    emacsclient -e '(make-frame-if-none-exists)' --server-file=$1
+    emacsclient -e '(make-frame-if-none-exists-and-focus)' --server-file=$1
+    focus_emacs
 }
 
-function get_running_emacs_instances {
+function focus_emacs {
+    osascript -e 'tell application "Emacs" to activate'
+}
+
+function emacs_get_running_instances {
     pgrep -i emacs | xargs ps -o command -p | egrep -o " --daemon=(.*)" | awk -F= '{print $2}' | sed 's/\^J3,4\^J//'
 }
 
 function emacs_open {
-    local server_file="$(get_running_emacs_instances | head -n1)"
-    if [ -z $server_file ]; then
-	_emacs -c -n "$@"
-	return
+    if ! emacs_daemon_exists; then
+	emacs
     fi
+    local server_file="$(emacs_get_running_instances | head -n1)"
     emacs_make_frame_if_none_exists $server_file
     [ ! -z "$@" ] && emacsclient "$@" -n --server-file="$server_file"
+    focus_emacs
 }
 
 # Make emacs the default editor.
