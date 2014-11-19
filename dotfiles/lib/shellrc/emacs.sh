@@ -51,7 +51,7 @@ function emacs_make_frame_if_none_exists {
 }
 
 function focus_emacs {
-    osascript -e 'tell application "Emacs" to activate'
+    is_osx && osascript -e 'tell application "Emacs" to activate'
 }
 
 function emacs_get_running_instances {
