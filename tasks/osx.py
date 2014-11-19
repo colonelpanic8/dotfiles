@@ -18,6 +18,16 @@ def setup(ctx):
     install_powerline_monaco(ctx)
     osx_config(ctx)
 
+@ctask
+def macvim(ctx):
+    macvim_install = (
+        "macvim --override-system-vim --custom-system-icons "
+        "--with-features=huge --enable-rubyinterp --enable-pythoninterp "
+        "--enable-perlinterp --enable-cscope"
+    )
+    ctx.run("brew install {0}".format(macvim_install))
+    ctx.run("vim +BundleInstall! +q +q")
+
 
 @ctask
 def osx_config(ctx):
