@@ -100,7 +100,7 @@
     exec-path-from-shell slime string-inflection yaml-mode sgml-mode
     dired+ ctags ctags-update helm-gtags hackernews gitconfig-mode
     aggressive-indent imenu+ weechat evil helm-ag xclip neotree
-    magit-gh-pulls diminish gist))
+    magit-gh-pulls diminish gist org))
 
 (defvar packages-appearance
   '(monokai-theme solarized-theme zenburn-theme base16-theme molokai-theme
@@ -304,16 +304,17 @@
   (apply #'append (mapcar (lambda (env) `("-v" ,env)) virtual-envs)))
 
 (defun get-virtual-envs ()
-  (condition-case ex
-      (let ((project-root (projectile-project-root)))
-	(cl-remove-if-not 'file-exists-p
-			  (mapcar (lambda (env-suffix)
-				    (concat project-root env-suffix))
-				  '(".tox/py27/" "env" ".tox/venv/"))))
-    ('error
-     (message (format "Caught exception: [%s]" ex))
-     (setq retval (cons 'exception (list ex))))
-    nil))
+  (if (projectile-project-p)
+      (condition-case ex
+          (let ((project-root (projectile-project-root)))
+            (cl-remove-if-not 'file-exists-p
+                              (mapcar (lambda (env-suffix)
+                                        (concat project-root env-suffix))
+                                      '(".tox/py27/" "env" ".tox/venv/"))))
+        ('error
+         (message (format "Caught exception: [%s]" ex))
+         (setq retval (cons 'exception (list ex))))
+        nil)))
 
 (defun message-virtual-envs ()
   (interactive)
@@ -517,11 +518,6 @@ buffer is not visiting a file."
   (interactive "r")
   (shell-command-on-region b e "cat | tmux loadb -"))
 
-(defun tmux-copy-buffer-name (&optional b e)
-  (interactive "r")
-  (shell-command (concat "echo " (shell-quote-argument (ffip-get-buffer-name))
-                         " | tmux loadb -")))
-
 (defun eval-and-replace ()
   (interactive)
   (backward-kill-sexp)
@@ -619,7 +615,7 @@ buffer is not visiting a file."
 (defun get-appropriate-theme ()
   (let ((hour
          (string-to-number (format-time-string "%H"))))
-    (if (or (< hour 8) (> hour 18))
+    (if (or (< hour 8) (> hour 17))
         (random-choice dark-themes) (random-choice light-themes))))
 
 (setq current-theme nil)
