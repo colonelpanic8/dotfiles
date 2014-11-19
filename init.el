@@ -335,7 +335,8 @@
       :config
       (progn
         (setq jedi:complete-on-dot t)
-        (setq jedi:install-imenu t))
+        (setq jedi:install-imenu t)
+        (setq jedi:imenu-create-index-function 'jedi:create-flat-imenu-index))
       :ensure t
       :bind ("C-c g" . jedi:goto-definition))
     (use-package pytest
@@ -603,20 +604,14 @@ buffer is not visiting a file."
   (read-only-mode))
 (add-hook 'compilation-filter-hook 'colorize-compilation-buffer)
 
-;; smart-mode-line
-(sml/setup)
-(sml/apply-theme 'respectful)
-
 ;; =============================================================================
 ;;                                                                        Themes
 ;; =============================================================================
 
-;; Choose random theme:
-;; (defvar dark-themes '(monokai molokai solarized-dark base16-default))
-;; (defvar light-themes '(zenburn solarized-light))
-
-(defvar dark-themes '(monokai))
-(defvar light-themes '(solarized-light))
+(unless (boundp 'dark-themes)
+  (defvar dark-themes '(solarized-dark)))
+(unless (boundp 'light-themes)
+  (defvar light-themes '(solarized-light)))
 
 (defun random-choice (choices)
   (nth (random (length choices)) choices))
@@ -634,8 +629,14 @@ buffer is not visiting a file."
   (let ((appropriate-theme (get-appropriate-theme)))
         (if (eq appropriate-theme current-theme)
             nil
-          (progn (load-theme appropriate-theme t)
+          (progn
+            (deactivate-all-themes)
+            (load-theme appropriate-theme t)
                  (setq current-theme appropriate-theme)))))
+
+(defun deactivate-all-themes ()
+  (interactive)
+  (mapcar (lambda (theme) (disable-theme theme)) custom-enabled-themes))
 
 (defun set-my-font-for-frame (frame)
   (condition-case exp
@@ -644,6 +645,8 @@ buffer is not visiting a file."
 	    (set-frame-font "monaco-11" nil t) nil)))
 
 (defun remove-fringe-and-hl-line-mode (&rest stuff)
+  (sml/setup)
+  (sml/apply-theme 'respectful)
   (scroll-bar-mode -1)
   (tool-bar-mode -1)
   (menu-bar-mode -1)
