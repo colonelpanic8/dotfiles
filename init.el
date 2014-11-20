@@ -193,6 +193,11 @@
   :ensure t
   :commands magit-status
   :bind (("C-x g" . magit-status))
+  :init
+  (progn
+    (if (emacs24_4-p)
+        (use-package magit-filenotify :ensure t)
+      (add-hook 'magit-status-mode-hook 'magit-filenotify-mode)))
   :config
   (diminish 'magit-auto-revert-mode))
 
@@ -489,6 +494,11 @@
 ;;                                                                     functions
 ;; =============================================================================
 
+(defun emacs24_4-p ()
+  (or (and (>= emacs-major-version 24)
+           (>= emacs-minor-version 4))
+      (>= emacs-major-version 25)))
+
 (defun sudo-edit (&optional arg)
   "Edit currently visited file as root.
 
@@ -678,10 +688,7 @@ buffer is not visiting a file."
   (set-my-font-for-frame nil)
   (setq hl-line-mode nil))
 
-(if (or
-     (and (>= emacs-major-version 24)
-          (>= emacs-minor-version 4))
-     (>= emacs-major-version 25))
+(if (emacs24_4-p)
     (advice-add 'load-theme :after #'remove-fringe-and-hl-line-mode)
   (defadvice load-theme (after name activate)
     (remove-fringe-and-hl-line-mode)))
