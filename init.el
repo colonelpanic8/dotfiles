@@ -13,6 +13,11 @@
       (replace-regexp-in-string "\n$" "" (shell-command-to-string
                                           "git config --get user.name")))
 
+(defun emacs24_4-p ()
+  (or (and (>= emacs-major-version 24)
+           (>= emacs-minor-version 4))
+      (>= emacs-major-version 25)))
+
 ;; =============================================================================
 ;;                                                                  GUI Disables
 ;; =============================================================================
@@ -494,11 +499,6 @@
 ;; =============================================================================
 ;;                                                                     functions
 ;; =============================================================================
-
-(defun emacs24_4-p ()
-  (or (and (>= emacs-major-version 24)
-           (>= emacs-minor-version 4))
-      (>= emacs-major-version 25)))
 
 (defun sudo-edit (&optional arg)
   "Edit currently visited file as root.
