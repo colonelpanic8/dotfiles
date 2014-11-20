@@ -1,4 +1,4 @@
-alias e='emacs_open'
+alias e='emacs_open -n '
 alias emacs='_emacs -c -n '
 is_osx && alias emacs='cocoa_emacs'
 alias terminal_emacs='_emacs -t'
@@ -40,7 +40,7 @@ function _current_dot_directory {
 function existing_emacs {
     # Return any existing emacs server file or the one that should
     # be created if it doesn't exist.
-    local server_file="$(\ls ~/.emacs.d/server | head -n1)"
+    local server_file="$(emacs_get_running_instances | head -n1)"
     [ -z "$server_file" ] && server_file="$(_emacs_server_file)"
     echo $server_file
 }
@@ -64,11 +64,10 @@ function emacs_open {
     fi
     local server_file="$(emacs_get_running_instances | head -n1)"
     emacs_make_frame_if_none_exists $server_file
-    [ ! -z "$@" ] && emacsclient "$@" -n --server-file="$server_file"
+    [ ! -z "$@" ] && emacsclient "$@" --server-file="$server_file"
     focus_emacs
 }
 
 # Make emacs the default editor.
-export EDITOR="$(which emacsclient) -n -s "
-export ALTERNATE_EDITOR=""
+export EDITOR="zsh -c 'source ~/.zshrc && emacs_open '"'"$@"'
 export VISUAL="$EDITOR"

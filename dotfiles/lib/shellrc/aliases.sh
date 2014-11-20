@@ -7,7 +7,6 @@ alias prj='cd ~/Projects'
 alias t27='tox -e py27 -- '
 alias tvenv='tox -e venv -- '
 alias reload_tmux='tmux source-file ~/.tmux.conf'
-alias which='type'
 alias ssh='ssh -A '
 
 # enables the sudoing of aliases.
