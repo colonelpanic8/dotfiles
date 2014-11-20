@@ -17,11 +17,13 @@
         skeleton-pair-insert-maybe
         tern-ac-dot-complete
         universal-argument-minus
+        wdired-finish-edit
         ))
 
 (setq mc/cmds-to-run-once
       '(
         delete-horizontal-space
+        dired-toggle-read-only
         isearch-delete-char
         smex
         ))

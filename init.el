@@ -100,16 +100,18 @@
     exec-path-from-shell slime string-inflection yaml-mode sgml-mode
     dired+ ctags ctags-update helm-gtags hackernews gitconfig-mode
     aggressive-indent imenu+ weechat evil helm-ag xclip neotree
-    magit-gh-pulls diminish gist org spotify))
+    magit-gh-pulls diminish gist org spotify ghc))
 
 (defvar packages-appearance
   '(monokai-theme solarized-theme zenburn-theme base16-theme molokai-theme
-    tango-2-theme gotham-theme color-theme-sanityinc-tomorrow smart-mode-line
+    tango-2-theme gotham-theme smart-mode-line
     rainbow-delimiters ansi-color))
 
 (ensure-packages-installed packages-essential)
 (ensure-packages-installed packages-other)
 (ensure-packages-installed packages-appearance)
+
+(defalias 'yes-or-no-p 'y-or-n-p)
   
 ;; =============================================================================
 ;;                                                         General Emacs Options
@@ -210,6 +212,7 @@
 
 (use-package undo-tree
   :ensure t
+  :bind ("C-c u" . undo-tree-visualize)
   :init
   (progn
     (global-undo-tree-mode)
