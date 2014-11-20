@@ -1,11 +1,10 @@
 alias emacs='_emacs -c -n '
 is_osx && alias emacs='cocoa_emacs'
 alias terminal_emacs='_emacs -t'
-export GLOBAL_EMACS=""
 is_ssh && emacs="terminal_emacs"
 
 function e {
-    [ ! -z "$*" ] && emacs || emacs_open -n "$@"
+    [ -z "$*" ] && emacs || emacs_open -n "$@"
 }
 
 function cocoa_emacs {
@@ -22,8 +21,8 @@ function _emacs {
 }
 
 function _emacs_server_file {
-    local server_name="$GLOBAL_EMACS"
-    [ -z $GLOBAL_EMACS ] && server_name="$(_current_dot_directory)"
+    local server_name="global"
+    [ ! -z ${PER_DIRECTORY_EMACS+y} ] && server_name="$(_current_dot_directory)"
     echo $server_name
 }
 
