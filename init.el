@@ -101,7 +101,7 @@
 
 (defvar packages-other
   '(thingatpt+ latex-preview-pane paredit inf-ruby rust-mode paradox
-    exec-path-from-shell slime string-inflection yaml-mode sgml-mode
+    exec-path-from-shell slime yaml-mode sgml-mode
     dired+ ctags ctags-update helm-gtags hackernews gitconfig-mode
     aggressive-indent imenu+ weechat evil helm-ag xclip neotree
     magit-gh-pulls diminish gist org spotify ghc))
@@ -247,6 +247,11 @@
   :config
   (diminish 'smooth-scroll-mode))
 
+(use-package string-inflection
+  :ensure t
+  :commands string-inflection-toggle
+  :bind ("C-c l" . string-inflection-toggle))
+
 ;; =============================================================================
 ;;                                                        Programming Mode Hooks
 ;; =============================================================================
@@ -270,7 +275,6 @@
 
 (use-package projectile
   :ensure t
-  :commands 
   :config
   (progn
     (setq projectile-enable-caching t)
