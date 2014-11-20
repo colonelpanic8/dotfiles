@@ -226,6 +226,8 @@
 (use-package undo-tree
   :ensure t
   :bind ("C-c u" . undo-tree-visualize)
+  :config
+  (diminish 'undo-tree-mode)
   :init
   (progn
     (global-undo-tree-mode)
@@ -241,7 +243,9 @@
   :init
   (progn
     (smooth-scroll-mode)
-    (setq smooth-scroll/vscroll-step-size 8)))
+    (setq smooth-scroll/vscroll-step-size 8))
+  :config
+  (diminish 'smooth-scroll-mode))
 
 ;; =============================================================================
 ;;                                                        Programming Mode Hooks
@@ -266,14 +270,16 @@
 
 (use-package projectile
   :ensure t
+  :commands 
   :config
   (progn
     (setq projectile-enable-caching t)
     (projectile-global-mode)
+    (setq projectile-completion-system 'helm)
     (helm-projectile-on)
     (diminish 'projectile-mode))
   :bind (
-         ("C-x f" . helm-projectile-find-file)) 
+         ("C-x f" . projectile-find-file-in-known-projects))
   :init
   (progn
     (use-package flx
