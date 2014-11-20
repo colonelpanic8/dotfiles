@@ -212,7 +212,8 @@
 (use-package expand-region
   :ensure t
   :commands er/expand-region
-  :bind (("C-c m" . er/expand-region)))
+  :config (setq expand-region-contract-fast-key "j")
+  :bind (("C-c k" . er/expand-region)))
 
 (use-package undo-tree
   :ensure t
