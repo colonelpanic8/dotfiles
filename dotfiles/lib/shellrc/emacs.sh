@@ -1,9 +1,12 @@
-alias e='emacs_open -n '
 alias emacs='_emacs -c -n '
 is_osx && alias emacs='cocoa_emacs'
 alias terminal_emacs='_emacs -t'
 export GLOBAL_EMACS=""
 is_ssh && emacs="terminal_emacs"
+
+function e {
+    [ ! -z "$*" ] && emacs || emacs_open -n "$@"
+}
 
 function cocoa_emacs {
     reattach-to-user-namespace zsh -c 'source ~/.zshrc && _emacs -c -n "$@"'
