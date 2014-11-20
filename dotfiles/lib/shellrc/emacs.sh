@@ -64,7 +64,7 @@ function emacs_open {
     fi
     local server_file="$(emacs_get_running_instances | head -n1)"
     emacs_make_frame_if_none_exists $server_file
-    [ ! -z "$@" ] && emacsclient "$@" --server-file="$server_file"
+    [ ! -z "$*" ] && emacsclient "$@" --server-file="$server_file"
     focus_emacs
 }
 
