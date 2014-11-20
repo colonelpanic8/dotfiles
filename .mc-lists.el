@@ -3,10 +3,13 @@
 
 (setq mc/cmds-to-run-for-all
       '(
+        backward-sexp
         dired-do-rename
+        eval-last-sexp
         forward-sexp
         git-rebase-squash
         git-rebase-undo
+        helm-show-kill-ring
         isearch-forward-regexp
         isearch-other-control-char
         isearch-printing-char
