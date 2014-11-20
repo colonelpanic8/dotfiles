@@ -54,7 +54,6 @@
    packages))
 
 (package-initialize)
-(require 'benchmark-init)
 (ensure-packages-installed '(epl use-package))
 (require 'use-package)
 (put 'use-package 'lisp-indent-function 1) ;; reduce indentation for use-package
