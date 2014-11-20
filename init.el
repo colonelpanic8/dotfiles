@@ -104,8 +104,8 @@
 
 (defvar packages-appearance
   '(monokai-theme solarized-theme zenburn-theme base16-theme molokai-theme
-    tango-2-theme gotham-theme smart-mode-line
-    rainbow-delimiters ansi-color))
+    tango-2-theme gotham-theme smart-mode-line sublime-themes ansi-color
+    rainbow-delimiters))
 
 (ensure-packages-installed packages-essential)
 (ensure-packages-installed packages-other)
