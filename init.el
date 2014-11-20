@@ -154,6 +154,9 @@
 ;; Don't popup frames in OSX.
 (setq ns-pop-up-frames nil)
 
+;; Make mouse scrolling less jumpy.
+(setq mouse-wheel-scroll-amount '(1 ((shift) . 1)))
+
 (require 'tramp)
 (setq tramp-default-method "ssh")
 
@@ -647,15 +650,20 @@ buffer is not visiting a file."
   (defvar dark-themes '(solarized-dark)))
 (unless (boundp 'light-themes)
   (defvar light-themes '(solarized-light)))
+(unless (boundp 'terminal-themes)
+  (defvar terminal-themes '(solarized-light monokai)))
 
 (defun random-choice (choices)
   (nth (random (length choices)) choices))
 
 (defun get-appropriate-theme ()
-  (let ((hour
-         (string-to-number (format-time-string "%H"))))
-    (if (or (< hour 8) (> hour 17))
-        (random-choice dark-themes) (random-choice light-themes))))
+  (if t ;; (display-graphic-p) why doesn't this work at frame startup?
+      (let ((hour
+             (string-to-number (format-time-string "%H"))))
+        (if (or (< hour 8) (> hour 17))
+            (random-choice dark-themes) (random-choice light-themes)))
+    (random-choice terminal-themes)))
+
 
 (setq current-theme nil)
 
@@ -671,7 +679,12 @@ buffer is not visiting a file."
 
 (defun deactivate-all-themes ()
   (interactive)
-  (mapcar (lambda (theme) (disable-theme theme)) custom-enabled-themes))
+  (mapcar 'disable-theme custom-enabled-themes))
+
+(defun disable-and-load-theme ()
+  (interactive)
+  (deactivate-all-themes)
+  (call-interactively 'load-theme))
 
 (defun set-my-font-for-frame (frame)
   (condition-case exp
@@ -686,6 +699,8 @@ buffer is not visiting a file."
   (tool-bar-mode -1)
   (menu-bar-mode -1)
   (set-fringe-mode 0)
+  (setq linum-format 'dynamic)
+  (setq left-margin-width 0)
   (set-my-font-for-frame nil)
   (setq hl-line-mode nil))
 
@@ -700,3 +715,4 @@ buffer is not visiting a file."
 
 ;; This is needed because you can't set the font at daemon start-up.
 (add-hook 'after-make-frame-functions 'set-my-font-for-frame)
+(add-hook 'after-make-frame-functions (lambda (frame) (set-theme)))
