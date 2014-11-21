@@ -67,6 +67,9 @@
 ;;                                                                      Disables
 ;; =============================================================================
 
+(setq visible-bell nil)
+(setq sentence-end-double-space nil)
+
 ;; Disable the creation of backup files.
 (setq backup-inhibited t)
 (setq make-backup-files nil)
@@ -96,8 +99,7 @@
 ;; =============================================================================
 
 (defvar packages-essential
-  '(popup auto-complete ido-ubiquitous mo-git-blame multiple-cursors
-    yasnippet cl-lib flx-ido))
+  '(popup auto-complete  mo-git-blame multiple-cursors yasnippet cl-lib flx-ido))
 
 (defvar packages-other
   '(thingatpt+ latex-preview-pane paredit inf-ruby rust-mode paradox
@@ -243,6 +245,16 @@ buffer is not visiting a file."
 (require 'tramp)
 (setq tramp-default-method "ssh")
 
+(use-package guide-key
+  :ensure t
+  :config
+  (progn
+    (setq guide-key/guide-key-sequence '("C-c" "C-c p" "C-x C-k" "C-x r"))
+    (guide-key-mode 1)
+    (setq guide-key/idle-delay 0.25)
+    (setq guide-key/recursive-key-sequence-flag t)
+    (setq guide-key/popup-window-position 'bottom)))
+
 (use-package ace-jump-mode
   :ensure t
   :commands ace-jump-mode
@@ -287,8 +299,8 @@ buffer is not visiting a file."
   :init
   (progn
     (if (emacs24_4-p)
-        (use-package magit-filenotify :ensure t)
-      (add-hook 'magit-status-mode-hook 'magit-filenotify-mode)))
+        (use-package magit-filenotify :ensure t))
+    (add-hook 'magit-status-mode-hook 'magit-filenotify-mode))
   :config
   (diminish 'magit-auto-revert-mode))
 
@@ -338,6 +350,11 @@ buffer is not visiting a file."
 (use-package org
   :ensure t
   :init
+  (defun guide-key/my-hook-function-for-org-mode ()
+    (guide-key/add-local-guide-key-sequence "C-c")
+    (guide-key/add-local-guide-key-sequence "C-c C-x")
+    (guide-key/add-local-highlight-command-regexp "org-"))
+  (add-hook 'org-mode-hook 'guide-key/my-hook-function-for-org-mode)
   (add-hook 'org-mode-hook (lambda () (linum-mode 0))))
 
 (use-package epg
@@ -355,7 +372,7 @@ buffer is not visiting a file."
 ;;                                  ".\\{81\\}" 'hi-blue)))
 
 ;; =============================================================================
-;;                                               Navigation: helm/projectile/ido
+;;                                          File Navigation: helm/projectile/ido
 ;; =============================================================================
 
 (use-package helm
@@ -379,6 +396,12 @@ buffer is not visiting a file."
          ("C-x f" . projectile-find-file-in-known-projects))
   :init
   (progn
+    (use-package persp-projectile
+      :ensure t
+      :defer t)
+    (use-package ido-vertical-mode
+      :ensure t
+      :config (ido-vertical-mode 1))
     (use-package flx
       :ensure t
       :config
@@ -513,8 +536,13 @@ buffer is not visiting a file."
   :config
   (progn
     (use-package ensime
-      :config (add-hook 'scala-mode-hook 'ensime-scala-mode-hook)
-      :ensure t)
+      :config
+      (progn
+        (add-hook 'scala-mode-hook 'ensime-scala-mode-hook)
+        (defun guide-key/scala-mode-hook ()
+          (guide-key/add-local-guide-key-sequence "C-c C-v")
+          (add-hook 'scala-mode-hook 'guide-key/scala-mode-hook))
+      :ensure t))
     (setq scala-indent:align-parameters t))
   :mode (("\\.scala\\'" . scala-mode)
          ("\\.sc\\'" . scala-mode))
