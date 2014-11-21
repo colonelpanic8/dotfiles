@@ -397,16 +397,7 @@ buffer is not visiting a file."
   :config
   (epa-file-enable))
 
-(use-package erc
-  :config
-  (setq erc-autojoin-channels-alist
-        '(("freenode.net"
-           "#emacs"
-           "#scala"
-           "#python"
-           "#rust"))
-  erc-server "irc.freenode.net"
-  erc-nick "imalison"))
+(use-package erc :ensure t :commands erc)
 
 ;; =============================================================================
 ;;                                                        Programming Mode Hooks
