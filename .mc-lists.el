@@ -15,6 +15,7 @@
         isearch-printing-char
         keyboard-quit
         kill-region
+        org-self-insert-command
         python-indent-electric-colon
         sgml-slash
         skeleton-pair-insert-maybe
