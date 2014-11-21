@@ -108,8 +108,8 @@
 
 (defvar packages-appearance
   '(monokai-theme solarized-theme zenburn-theme base16-theme molokai-theme
-    tango-2-theme gotham-theme smart-mode-line sublime-themes ansi-color
-    rainbow-delimiters))
+    tango-2-theme gotham-theme sublime-themes ansi-color rainbow-delimiters
+    smart-mode-line powerline))
 
 (ensure-packages-installed packages-essential)
 (ensure-packages-installed packages-other)
@@ -665,6 +665,13 @@ buffer is not visiting a file."
   (read-only-mode))
 (add-hook 'compilation-filter-hook 'colorize-compilation-buffer)
 
+(defun modeline-setup ()
+  (if (and (boundp 'use-powerline) use-powerline)
+      (powerline-default-theme)
+    (progn
+      (sml/setup)
+      (sml/apply-theme 'automatic))))
+
 ;; =============================================================================
 ;;                                                                        Themes
 ;; =============================================================================
@@ -723,11 +730,10 @@ buffer is not visiting a file."
 	    (set-frame-font "monaco-11" nil t) nil)))
 
 (defun remove-fringe-and-hl-line-mode (&rest stuff)
-  (sml/setup)
-  (sml/apply-theme 'respectful)
-  (scroll-bar-mode -1)
-  (tool-bar-mode -1)
-  (menu-bar-mode -1)
+  (modeline-setup)
+  (if (fboundp 'scroll-bar-mode) (scroll-bar-mode -1))
+  (if (fboundp 'tool-bar-mode) (tool-bar-mode -1))
+  (if (fboundp 'menu-bar-mode) (menu-bar-mode -1))
   (set-fringe-mode 0)
   (setq linum-format 'dynamic)
   (setq left-margin-width 0)
