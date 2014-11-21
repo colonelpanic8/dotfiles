@@ -90,7 +90,15 @@ class OSXSSIDToRSSI(object):
         return get_stdout_from_command(['airport', '--scan', '--xml'])
 
     def _get_scan_tree(self):
-        return etree.fromstring(self._get_scan_xml())
+        xml = self._get_scan_xml()
+        for i in range(10):
+            if xml:
+                break
+            xml = self._get_scan_xml()
+        else:
+            Exception("Airport command did not provide output.")
+        return etree.fromstring(xml)
+
 
     _network_xpb = dxpb.array.dict
     _ssid_xpb = xpb.key.text_contains_("SSID_STR")

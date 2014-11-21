@@ -28,7 +28,6 @@
   ],
   "formulas": [
     "ack",
-    "ag",
     "ant",
     "autoconf",
     "automake",
@@ -114,6 +113,7 @@
     "sleuthkit",
     "sqlite",
     "subversion",
+    "the_silver_searcher",
     "tig",
     "tmux",
     "unzip",
