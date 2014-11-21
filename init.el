@@ -103,15 +103,15 @@
 
 (defvar packages-other
   '(thingatpt+ latex-preview-pane paredit inf-ruby rust-mode paradox
-    exec-path-from-shell slime yaml-mode sgml-mode
-    dired+ ctags ctags-update helm-gtags hackernews gitconfig-mode
-    aggressive-indent imenu+ weechat evil helm-ag xclip neotree
-    magit-gh-pulls diminish gist spotify ghc))
+               exec-path-from-shell slime yaml-mode sgml-mode
+               dired+ ctags ctags-update helm-gtags hackernews gitconfig-mode
+               aggressive-indent imenu+ weechat evil helm-ag xclip neotree
+               magit-gh-pulls diminish gist spotify ghc))
 
 (defvar packages-appearance
   '(monokai-theme solarized-theme zenburn-theme base16-theme molokai-theme
-    tango-2-theme gotham-theme sublime-themes ansi-color rainbow-delimiters
-    smart-mode-line powerline))
+                  tango-2-theme gotham-theme sublime-themes ansi-color rainbow-delimiters
+                  smart-mode-line powerline))
 
 (ensure-packages-installed packages-essential)
 (ensure-packages-installed packages-other)
@@ -145,8 +145,8 @@ buffer is not visiting a file."
 
 (defun frame-exists ()
   (cl-find-if (lambda (frame)
-             (assoc 'display (frame-parameters frame)))
-           (frame-list)))
+                (assoc 'display (frame-parameters frame)))
+              (frame-list)))
 
 (defun make-frame-if-none-exists ()
   (let* ((existing-frame (frame-exists)))
@@ -173,7 +173,8 @@ buffer is not visiting a file."
 
 (defun open-pdf ()
   (interactive)
-  (let ( (pdf-file (replace-regexp-in-string "\.tex$" ".pdf" buffer-file-name)))
+  (let ( (pdf-file (replace-regexp-in-string
+                    "\.tex$" ".pdf" buffer-file-name)))
     (shell-command (concat "open " pdf-file))))
 
 (defun tmux-copy (&optional b e) 
@@ -190,18 +191,21 @@ buffer is not visiting a file."
            (insert (current-kill 0)))))
 
 (defun flatten-imenu-index (index)
-  (cl-mapcan (lambda (x) (if (listp (cdr x))
-                             (cl-mapcar (lambda (item)
-                                          `(,(concat (car x) "/" (car item)) . ,(cdr item)))
-                                          (flatten-imenu-index (cdr x)))
-                           (list x))) index))
+  (cl-mapcan
+   (lambda (x)
+     (if (listp (cdr x))
+         (cl-mapcar (lambda (item)
+                      `(,(concat (car x) "/" (car item)) . ,(cdr item)))
+                    (flatten-imenu-index (cdr x)))
+       (list x))) index))
 
 (defun flatten-imenu-index-function (function)
   (lambda () (flatten-imenu-index (funcall function))))
 
 (defun flatten-current-imenu-index-function ()
-  (setq imenu-create-index-function (flatten-imenu-index-function imenu-create-index-function)))
-  
+  (setq imenu-create-index-function
+        (flatten-imenu-index-function imenu-create-index-function)))
+
 ;; =============================================================================
 ;;                                                         General Emacs Options
 ;; =============================================================================
@@ -277,7 +281,7 @@ buffer is not visiting a file."
     (setq flycheck-checkers (delq 'emacs-lisp-checkdoc flycheck-checkers))
     (global-flycheck-mode)
     (diminish 'flycheck-mode)))
-  
+
 (use-package haskell-mode
   :ensure t
   :commands haskell-mode
@@ -350,12 +354,14 @@ buffer is not visiting a file."
 (use-package org
   :ensure t
   :init
-  (defun guide-key/my-hook-function-for-org-mode ()
-    (guide-key/add-local-guide-key-sequence "C-c")
-    (guide-key/add-local-guide-key-sequence "C-c C-x")
-    (guide-key/add-local-highlight-command-regexp "org-"))
-  (add-hook 'org-mode-hook 'guide-key/my-hook-function-for-org-mode)
-  (add-hook 'org-mode-hook (lambda () (linum-mode 0))))
+  (progn
+    (defun guide-key/my-hook-function-for-org-mode ()
+      (guide-key/add-local-guide-key-sequence "C-c")
+      (guide-key/add-local-guide-key-sequence "C-c C-x")
+      (guide-key/add-local-highlight-command-regexp "org-"))
+    (add-hook 'org-mode-hook 'guide-key/my-hook-function-for-org-mode)
+    (add-hook 'org-mode-hook (lambda () (linum-mode 0)))
+    (define-key mode-specific-map [?a] 'org-agenda)))
 
 (use-package epg
   :ensure t
@@ -421,6 +427,7 @@ buffer is not visiting a file."
       (progn (helm-projectile-on)))))
 
 (ido-mode t)
+(ido-ubiquitous-mode)
 (ido-everywhere 1)
 (setq ido-enable-flex-matching t)
 
@@ -443,7 +450,10 @@ buffer is not visiting a file."
   (setq imenu-prev-index-position-function nil)
   (setq imenu-space-replacement nil)
   (add-to-list 'imenu-generic-expression
-               `("Sections"
+               `("Package"
+                 ,"(use-package \\(.+\\)$" 1))
+  (add-to-list 'imenu-generic-expression
+               `("Section"
                  ,(concat ";\\{1,4\\} =\\{10,80\\}\n;\\{1,4\\} \\{10,80\\}"
                           "\\(.+\\)$") 1) t))
 
