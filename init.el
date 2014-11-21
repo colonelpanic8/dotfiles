@@ -116,6 +116,89 @@
 (ensure-packages-installed packages-appearance)
 
 (defalias 'yes-or-no-p 'y-or-n-p)
+
+;; =============================================================================
+;;                                                                     functions
+;; =============================================================================
+
+(defun sudo-edit (&optional arg)
+  "Edit currently visited file as root.
+
+With a prefix ARG prompt for a file to visit.
+Will also prompt for a file to visit if current
+buffer is not visiting a file."
+  (interactive "P")
+  (if (or arg (not buffer-file-name))
+      (find-file (concat "/sudo:root@localhost:"
+                         (ido-read-file-name "Find file (as root): ")))
+    (find-alternate-file (concat "/sudo:root@localhost:" buffer-file-name))))
+
+(defun get-buffer-name ()
+  (interactive)
+  (file-relative-name (buffer-file-name)))
+
+(defun message-buffer-name ()
+  (interactive)
+  (message (get-buffer-name)))
+
+(defun frame-exists ()
+  (cl-find-if (lambda (frame)
+             (assoc 'display (frame-parameters frame)))
+           (frame-list)))
+
+(defun make-frame-if-none-exists ()
+  (let* ((existing-frame (frame-exists)))
+    (if existing-frame
+        existing-frame
+      (make-frame-on-display (getenv "DISPLAY")))))
+
+(defun make-frame-if-none-exists-and-focus ()
+  (make-frame-visible (select-frame (make-frame-if-none-exists))))
+
+(defun os-copy (&optional b e)
+  (interactive "r")
+  (shell-command-on-region b e "source ~/.zshrc; cat | smart_copy"))
+
+(defun os-paste ()
+  (interactive)
+  (insert (shell-command-to-string "source ~/.zshrc; ospaste")))
+
+(defun all-copy (&optional b e)
+  (interactive "r")
+  (os-copy b e)
+  (tmux-copy b e)
+  (kill-ring-save b e))
+
+(defun open-pdf ()
+  (interactive)
+  (let ( (pdf-file (replace-regexp-in-string "\.tex$" ".pdf" buffer-file-name)))
+    (shell-command (concat "open " pdf-file))))
+
+(defun tmux-copy (&optional b e) 
+  (interactive "r")
+  (shell-command-on-region b e "cat | tmux loadb -"))
+
+(defun eval-and-replace ()
+  (interactive)
+  (backward-kill-sexp)
+  (condition-case nil
+      (prin1 (eval (read (current-kill 0)))
+             (current-buffer))
+    (error (message "Invalid expression")
+           (insert (current-kill 0)))))
+
+(defun flatten-imenu-index (index)
+  (cl-mapcan (lambda (x) (if (listp (cdr x))
+                             (cl-mapcar (lambda (item)
+                                          `(,(concat (car x) "/" (car item)) . ,(cdr item)))
+                                          (flatten-imenu-index (cdr x)))
+                           (list x))) index))
+
+(defun flatten-imenu-index-function (function)
+  (lambda () (flatten-imenu-index (funcall function))))
+
+(defun flatten-current-imenu-index-function ()
+  (setq imenu-create-index-function (flatten-imenu-index-function imenu-create-index-function)))
   
 ;; =============================================================================
 ;;                                                         General Emacs Options
@@ -521,89 +604,6 @@
     (setq TeX-parse-self t)
     (setq TeX-save-query nil)
     (setq-default TeX-master nil)))
-
-;; =============================================================================
-;;                                                                     functions
-;; =============================================================================
-
-(defun sudo-edit (&optional arg)
-  "Edit currently visited file as root.
-
-With a prefix ARG prompt for a file to visit.
-Will also prompt for a file to visit if current
-buffer is not visiting a file."
-  (interactive "P")
-  (if (or arg (not buffer-file-name))
-      (find-file (concat "/sudo:root@localhost:"
-                         (ido-read-file-name "Find file (as root): ")))
-    (find-alternate-file (concat "/sudo:root@localhost:" buffer-file-name))))
-
-(defun get-buffer-name ()
-  (interactive)
-  (file-relative-name (buffer-file-name)))
-
-(defun message-buffer-name ()
-  (interactive)
-  (message (get-buffer-name)))
-
-(defun frame-exists ()
-  (cl-find-if (lambda (frame)
-             (assoc 'display (frame-parameters frame)))
-           (frame-list)))
-
-(defun make-frame-if-none-exists ()
-  (let* ((existing-frame (frame-exists)))
-    (if existing-frame
-        existing-frame
-      (make-frame-on-display (getenv "DISPLAY")))))
-
-(defun make-frame-if-none-exists-and-focus ()
-  (make-frame-visible (select-frame (make-frame-if-none-exists))))
-
-(defun os-copy (&optional b e)
-  (interactive "r")
-  (shell-command-on-region b e "source ~/.zshrc; cat | smart_copy"))
-
-(defun os-paste ()
-  (interactive)
-  (insert (shell-command-to-string "source ~/.zshrc; ospaste")))
-
-(defun all-copy (&optional b e)
-  (interactive "r")
-  (os-copy b e)
-  (tmux-copy b e)
-  (kill-ring-save b e))
-
-(defun open-pdf ()
-  (interactive)
-  (let ( (pdf-file (replace-regexp-in-string "\.tex$" ".pdf" buffer-file-name)))
-    (shell-command (concat "open " pdf-file))))
-
-(defun tmux-copy (&optional b e) 
-  (interactive "r")
-  (shell-command-on-region b e "cat | tmux loadb -"))
-
-(defun eval-and-replace ()
-  (interactive)
-  (backward-kill-sexp)
-  (condition-case nil
-      (prin1 (eval (read (current-kill 0)))
-             (current-buffer))
-    (error (message "Invalid expression")
-           (insert (current-kill 0)))))
-
-(defun flatten-imenu-index (index)
-  (cl-mapcan (lambda (x) (if (listp (cdr x))
-                             (cl-mapcar (lambda (item)
-                                          `(,(concat (car x) "/" (car item)) . ,(cdr item)))
-                                          (flatten-imenu-index (cdr x)))
-                           (list x))) index))
-
-(defun flatten-imenu-index-function (function)
-  (lambda () (flatten-imenu-index (funcall function))))
-
-(defun flatten-current-imenu-index-function ()
-  (setq imenu-create-index-function (flatten-imenu-index-function imenu-create-index-function)))
 
 ;; =============================================================================
 ;;                                                           Custom Key Bindings
