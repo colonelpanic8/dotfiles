@@ -6,6 +6,7 @@
 ;; (_)___|_| |_| |_|\__,_|\___|___/
 ;; =============================================================================
 
+
 (setq user-full-name
       (replace-regexp-in-string "\n$" "" (shell-command-to-string
                                           "git config --get user.email")))
@@ -26,6 +27,14 @@
 (when (fboundp 'menu-bar-mode) (menu-bar-mode -1))
 (when (fboundp 'tool-bar-mode) (tool-bar-mode -1))
 (when (fboundp 'scroll-bar-mode) (scroll-bar-mode -1))
+
+;; These silence the byte compiler.
+(defvar ido-cur-item nil)
+(defvar ido-default-item nil)
+(defvar ido-context-switch-command nil)
+(defvar ido-cur-list nil)
+(defvar predicate nil)
+(defvar inherit-input-method nil)
 
 ;; =============================================================================
 ;;                                                       Load Path Configuration
@@ -61,7 +70,7 @@
 (package-initialize)
 (ensure-packages-installed '(epl use-package))
 (require 'use-package)
-(put 'use-package 'lisp-indent-function 1) ;; reduce indentation for use-package
+(use-package benchmark-init :ensure t)
 
 ;; =============================================================================
 ;;                                                                      Disables
@@ -95,33 +104,41 @@
 (setq split-width-threshold 160)
 
 ;; =============================================================================
-;;                                                        Config Free Packages
+;;                                                          Config Free Packages
 ;; =============================================================================
 
-(defvar packages-essential
-  '(popup auto-complete  mo-git-blame multiple-cursors yasnippet cl-lib flx-ido))
+(defun use-packages (packages)
+  (mapcar
+   (lambda (package)
+     (use-package package :ensure t)) packages))
 
-(defvar packages-other
-  '(thingatpt+ latex-preview-pane paredit inf-ruby rust-mode paradox
-    exec-path-from-shell slime yaml-mode sgml-mode
-    dired+ ctags ctags-update helm-gtags hackernews gitconfig-mode
-    aggressive-indent imenu+ weechat evil helm-ag xclip neotree
-    magit-gh-pulls diminish gist spotify ghc))
+(defvar packages-eager
+  '(popup auto-complete yasnippet cl-lib exec-path-from-shell paradox slime
+    xclip dired+ ctags ctags-update aggressive-indent imenu+ neotree diminish
+    gist))
 
-(defvar packages-appearance
-  '(monokai-theme solarized-theme zenburn-theme base16-theme molokai-theme
-    tango-2-theme gotham-theme sublime-themes ansi-color rainbow-delimiters
-    smart-mode-line powerline))
-
-(ensure-packages-installed packages-essential)
-(ensure-packages-installed packages-other)
-(ensure-packages-installed packages-appearance)
-
-(defalias 'yes-or-no-p 'y-or-n-p)
+(use-packages packages-eager)
 
 ;; =============================================================================
 ;;                                                                     functions
 ;; =============================================================================
+
+(defun unfill-paragraph (&optional region)
+  "Takes a multi-line paragraph and makes it into a single line of text."
+  (interactive (progn
+                 (barf-if-buffer-read-only)
+                 (list t)))
+  (let ((fill-column (point-max)))
+    (fill-paragraph nil region)))
+
+(defun fill-or-unfill-paragraph (&optional unfill region)
+    "Fill paragraph (or REGION).
+  With the prefix argument UNFILL, unfill it instead."
+    (interactive (progn
+                   (barf-if-buffer-read-only)
+                   (list (if current-prefix-arg 'unfill) t)))
+    (let ((fill-column (if unfill (point-max) fill-column)))
+      (fill-paragraph nil region)))
 
 (defun sudo-edit (&optional arg)
   "Edit currently visited file as root.
@@ -235,10 +252,8 @@ buffer is not visiting a file."
 
 ;; Make forward word understand camel and snake case.
 (setq c-subword-mode t)
-(setq sentence-end-double-space nil)
 
 (add-hook 'after-init-hook '(lambda () (setq debug-on-error t)))
-(add-hook 'after-init-hook #'flycheck-mode)
 
 ;; Don't popup frames in OSX.
 (setq ns-pop-up-frames nil)
@@ -248,6 +263,14 @@ buffer is not visiting a file."
 
 (require 'tramp)
 (setq tramp-default-method "ssh")
+
+;; text mode stuff:
+(remove-hook 'text-mode-hook #'turn-on-auto-fill)
+(add-hook 'text-mode-hook 'turn-on-visual-line-mode)
+(setq sentence-end-double-space nil)
+
+;; y and n instead of yes and no
+(defalias 'yes-or-no-p 'y-or-n-p)
 
 (use-package guide-key
   :ensure t
@@ -276,6 +299,8 @@ buffer is not visiting a file."
 
 (use-package flycheck
   :ensure t
+  :commands (flycheck-mode)
+  :init (add-hook 'after-init-hook #'flycheck-mode)
   :config
   (progn
     (setq flycheck-checkers (delq 'emacs-lisp-checkdoc flycheck-checkers))
@@ -300,13 +325,14 @@ buffer is not visiting a file."
   :ensure t
   :commands magit-status
   :bind (("C-x g" . magit-status))
-  :init
-  (progn
-    (if (emacs24_4-p)
-        (use-package magit-filenotify :ensure t))
-    (add-hook 'magit-status-mode-hook 'magit-filenotify-mode))
   :config
-  (diminish 'magit-auto-revert-mode))
+  (progn
+    (diminish 'magit-auto-revert-mode)
+    (use-package magit-filenotify
+      :ensure t
+      :if (emacs24_4-p)
+      :config
+      :init (add-hook 'magit-status-mode-hook 'magit-filenotify-mode))))
 
 (use-package auto-complete
   :ensure t
@@ -353,6 +379,9 @@ buffer is not visiting a file."
 
 (use-package org
   :ensure t
+  :defer t
+  :commands org
+  :mode "\\.org\\'"
   :init
   (progn
     (defun guide-key/my-hook-function-for-org-mode ()
@@ -367,6 +396,17 @@ buffer is not visiting a file."
   :ensure t
   :config
   (epa-file-enable))
+
+(use-package erc
+  :config
+  (setq erc-autojoin-channels-alist
+        '(("freenode.net"
+           "#emacs"
+           "#scala"
+           "#python"
+           "#rust"))
+  erc-server "irc.freenode.net"
+  erc-nick "imalison"))
 
 ;; =============================================================================
 ;;                                                        Programming Mode Hooks
@@ -384,6 +424,9 @@ buffer is not visiting a file."
 (use-package helm
   :ensure t
   :bind (("M-y" . helm-show-kill-ring))
+  :init
+  (progn
+    (use-package helm-ag :ensure t :defer t))
   :config
   (progn
     (helm-mode 1)
@@ -391,6 +434,7 @@ buffer is not visiting a file."
 
 (use-package projectile
   :ensure t
+  :defer t
   :config
   (progn
     (setq projectile-enable-caching t)
@@ -398,8 +442,7 @@ buffer is not visiting a file."
     (setq projectile-completion-system 'helm)
     (helm-projectile-on)
     (diminish 'projectile-mode))
-  :bind (
-         ("C-x f" . projectile-find-file-in-known-projects))
+  :bind (("C-x f" . projectile-find-file-in-known-projects))
   :init
   (progn
     (use-package persp-projectile
@@ -423,19 +466,23 @@ buffer is not visiting a file."
           :ensure t)))
     (use-package helm-projectile
       :ensure t
-      :config
-      (progn (helm-projectile-on)))))
+      :commands (helm-projectile-on)
+      :defer t)))
 
 (ido-mode t)
 (ido-ubiquitous-mode)
 (ido-everywhere 1)
 (setq ido-enable-flex-matching t)
 
-(use-package smex :ensure t)
+(use-package smex
+  :ensure t
+  :bind ("M-x" . smex))
 
 ;; =============================================================================
 ;;                                                                         elisp
 ;; =============================================================================
+
+(setq edebug-trace t)
 
 (use-package elisp-slime-nav
   :ensure t
@@ -457,6 +504,7 @@ buffer is not visiting a file."
                  ,(concat ";\\{1,4\\} =\\{10,80\\}\n;\\{1,4\\} \\{10,80\\}"
                           "\\(.+\\)$") 1) t))
 
+(put 'use-package 'lisp-indent-function 1) ;; reduce indentation for use-package
 (add-hook 'emacs-lisp-mode-hook 'imenu-elisp-sections)
 (add-hook 'emacs-lisp-mode-hook 'flatten-current-imenu-index-function)
 (add-hook 'emacs-lisp-mode-hook (lambda () (setq indent-tabs-mode nil)))
@@ -606,6 +654,17 @@ buffer is not visiting a file."
   '(define-key css-mode-map (kbd "C-c b") 'web-beautify-css))
 
 ;; =============================================================================
+;;                                                                          Ruby
+;; =============================================================================
+
+(use-package robe
+  :ensure t
+  :init
+  (progn (add-hook 'ruby-mode-hook 'robe-mode)
+         (add-hook 'robe-mode-hook 'ac-robe-setup)
+         (add-hook 'ruby-mode-hook 'auto-complete-mode)))
+
+;; =============================================================================
 ;;                                                                         C/C++
 ;; =============================================================================
 
@@ -644,37 +703,66 @@ buffer is not visiting a file."
     (setq-default TeX-master nil)))
 
 ;; =============================================================================
+;;                                                                   other modes
+;; =============================================================================
+
+(use-package rust-mode :ensure t
+  :mode (("\\.rs\\'" . rust-mode)))
+
+(use-package yaml-mode :ensure t
+  :mode (("\\.yaml\\'" . yaml-mode)
+	 ("\\.yml\\'" . yaml-mode)))
+
+(use-package sgml-mode :ensure t)
+(use-package gitconfig-mode :ensure t :mode "\\.gitconfig\\'")
+
+(use-package evil :ensure t :commands (evil-mode))
+
+;; =============================================================================
 ;;                                                           Custom Key Bindings
 ;; =============================================================================
 
 (use-package multiple-cursors
+  :bind 
+   (("C-c m a" . mc/mark-all-like-this)
+    ("C-c m m" . mc/mark-all-like-this-dwim)
+    ("C-c m l" . mc/edit-lines)
+    ("C-c m n" . mc/mark-next-like-this)
+    ("C-c m p" . mc/mark-previous-like-this)
+    ("C-c m s" . mc/mark-sgml-tag-pair)
+    ("C-c m d" . mc/mark-all-like-this-in-defun)))
+
+(use-package phi-search-mc
   :ensure t
-  :bind (("C-<" . mc/mark-previous-like-t)
-         ("C->" . mc/mark-next-like-this)
-         ("C->" . mc/mark-next-like-this)
-         ("C-c <" . mc/mark-all-like-this)
-         ("C-x r t" . mc/edit-lines)))
+  :config
+  (phi-search-mc/setup-keys))
+(use-package mc-extras
+  :ensure t
+  :config
+    (define-key mc/keymap (kbd "C-. =") 'mc/compare-chars))
           
 ;; Miscellaneous
 (global-unset-key (kbd "C-o")) ;; Avoid collision with tmux binding.
-(global-set-key (kbd "C--") 'undo)
-(global-set-key (kbd "C-c +") 'message-buffer-name)
-
-(global-set-key (kbd "C-c C-s") 'sudo-edit)
-(global-set-key (kbd "C-c SPC") (lambda () (interactive)
-				  (if current-prefix-arg (helm-global-mark-ring)
-                                    (helm-mark-ring))))
-(global-set-key (kbd "C-c e") 'os-copy)
-(global-set-key (kbd "C-x C-b") 'buffer-menu)
-(global-set-key (kbd "C-x C-c") 'kill-emacs)
-(global-set-key (kbd "C-x C-i") 'imenu)
-(global-set-key (kbd "C-x C-r") (lambda () (interactive) (revert-buffer t t)))
-(global-set-key (kbd "C-x O") (lambda () (interactive) (other-window -1)))
-(global-set-key (kbd "C-x w") 'whitespace-mode)
-(global-set-key (kbd "M-g") 'goto-line)
-(global-set-key (kbd "M-n") 'forward-paragraph)
-(global-set-key (kbd "M-p") 'backward-paragraph)
-(global-set-key (kbd "M-z") 'zap-to-char)
+(bind-key "M-q" 'fill-or-unfill-paragraph)
+(bind-key "C--" 'undo)
+(bind-key "C-c +" 'message-buffer-name)
+(bind-key "C-c C-s" 'sudo-edit)
+(bind-key "C-c SPC"
+          (lambda () (interactive)
+            (if current-prefix-arg (helm-global-mark-ring) (helm-mark-ring))))
+(bind-key "C-c e" 'os-copy)
+(bind-key "C-x p" 'pop-to-mark-command)
+(setq set-mark-command-repeat-pop t)
+(bind-key "C-x C-b" 'buffer-menu)
+(bind-key "C-x C-c" 'kill-emacs)
+(bind-key "C-x C-i" 'imenu)
+(bind-key "C-x C-r" (lambda () (interactive) (revert-buffer t t)))
+(bind-key "C-x O" (lambda () (interactive) (other-window -1)))
+(bind-key "C-x w" 'whitespace-mode)
+(bind-key "M-g" 'goto-line)
+(bind-key "M-n" 'forward-paragraph)
+(bind-key "M-p" 'backward-paragraph)
+(bind-key "M-z" 'zap-to-char)
 
 (fset 'global-set-key-to-use-package
       (lambda (&optional arg) "Keyboard macro." (interactive "p")
@@ -683,8 +771,21 @@ buffer is not visiting a file."
 		    backspace 32 46 6 4] 0 "%d")) arg)))
 
 ;; =============================================================================
+;;                                                                          toys
+;; =============================================================================
+
+(use-package hackernews :ensure t :commands hackernews)
+
+;; =============================================================================
 ;;                                                                    Appearance
 ;; =============================================================================
+
+(defvar packages-appearance
+  '(monokai-theme solarized-theme zenburn-theme base16-theme molokai-theme
+    tango-2-theme gotham-theme sublime-themes ansi-color rainbow-delimiters
+    smart-mode-line))
+
+(ensure-packages-installed packages-appearance)
 
 ;; No splash screen please... jeez
 (setq inhibit-startup-screen t)
