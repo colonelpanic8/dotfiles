@@ -1,5 +1,9 @@
-source ~/.lib/shellrc/functions.sh
-source ~/.lib/shellrc/emacs.sh
+source ~/.lib/shellenv/functions.sh
+
+for filename in ~/.lib/shellenv/*; do
+    source $filename
+done
+
 function add_to_front_of_path {
     export PATH=$@:$(echo $PATH | sed "s|:*$@||g" | sed "s|^:||")
 }
@@ -34,6 +38,6 @@ add_to_back_of_path "/usr/local/sbin"
 # Load RVM into a shell session *as a function*
 [[ -s "$HOME/.rvm/scripts/rvm" ]] && source "$HOME/.rvm/scripts/rvm"
 
-function shellrc {
+function with_shellrc {
     zsh -c "source ~/.zshrc && ""$@"
 }
