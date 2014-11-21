@@ -257,6 +257,11 @@
   :init
   (add-hook 'org-mode-hook (lambda () (linum-mode 0))))
 
+(use-package epg
+  :ensure t
+  :config
+  (epa-file-enable))
+
 ;; =============================================================================
 ;;                                                        Programming Mode Hooks
 ;; =============================================================================
