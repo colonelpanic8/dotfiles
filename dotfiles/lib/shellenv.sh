@@ -1,4 +1,5 @@
 source ~/.lib/shellrc/functions.sh
+source ~/.lib/shellrc/emacs.sh
 function add_to_front_of_path {
     export PATH=$@:$(echo $PATH | sed "s|:*$@||g" | sed "s|^:||")
 }
