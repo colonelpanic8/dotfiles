@@ -32,3 +32,6 @@ Emacs Notes -*- mode: org -*-
 ** C-x C-k r to apply macro to all lines in region
 * <2014-11-14 Fri>
 ** C-x C-q to start dired write mode (C-x C-s to save changes.)
+* <2014-11-20 Thu>
+** C-c . inserts date
+** C-c , tags priority
