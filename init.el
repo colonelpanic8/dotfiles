@@ -70,7 +70,7 @@
 (package-initialize)
 (ensure-packages-installed '(epl use-package))
 (require 'use-package)
-;; (use-package benchmark-init :ensure t)
+(use-package benchmark-init :ensure t)
 
 ;; =============================================================================
 ;;                                                                      Disables
@@ -253,8 +253,10 @@ buffer is not visiting a file."
 ;; Make mouse scrolling less jumpy.
 (setq mouse-wheel-scroll-amount '(1 ((shift) . 1)))
 
-(require 'tramp)
-(setq tramp-default-method "ssh")
+(use-package tramp
+  :commands tramp
+  :config
+  (setq tramp-default-method "ssh"))
 
 ;; text mode stuff:
 (remove-hook 'text-mode-hook #'turn-on-auto-fill)
@@ -341,6 +343,16 @@ buffer is not visiting a file."
   :bind (("C-c k" . er/expand-region)))
 
 (use-package multiple-cursors
+  :config
+  (progn
+    (use-package phi-search-mc
+      :ensure t
+      :config
+      (phi-search-mc/setup-keys))
+    (use-package mc-extras
+      :ensure t
+      :config
+      (define-key mc/keymap (kbd "C-. =") 'mc/compare-chars)))
   :bind 
    (("C-c m a" . mc/mark-all-like-this)
     ("C-c m m" . mc/mark-all-like-this-dwim)
@@ -349,16 +361,6 @@ buffer is not visiting a file."
     ("C-c m p" . mc/mark-previous-like-this)
     ("C-c m s" . mc/mark-sgml-tag-pair)
     ("C-c m d" . mc/mark-all-like-this-in-defun)))
-
-(use-package phi-search-mc
-  :ensure t
-  :config
-  (phi-search-mc/setup-keys))
-
-(use-package mc-extras
-  :ensure t
-  :config
-    (define-key mc/keymap (kbd "C-. =") 'mc/compare-chars))
 
 (use-package undo-tree
   :ensure t
@@ -414,12 +416,9 @@ buffer is not visiting a file."
   (epa-file-enable))
 
 (use-package erc
-  :ensure t :commands erc
-  :config (use-package erc-colorize :ensure t) (erc-colorize-mode 1)))
-
-(use-package gnus
   :ensure t
-  :commands
+  :commands erc
+  :config (progn (use-package erc-colorize :ensure t) (erc-colorize-mode 1)))
 
 ;; =============================================================================
 ;;                                                        Programming Mode Hooks
@@ -467,6 +466,7 @@ buffer is not visiting a file."
       :config (ido-vertical-mode 1))
     (use-package flx
       :ensure t
+      :commands (smex find-file)
       :config
       (progn
         ;; disable ido faces to see flx highlights.
@@ -639,6 +639,7 @@ buffer is not visiting a file."
     (add-hook 'js2-mode-hook 'skewer-mode)
     (add-hook 'js2-mode-hook (lambda () (setq js-indent-level 1)))
     (use-package tern
+      :commands tern-mode
       :ensure t
       :config
       (progn (tern-ac-setup))
@@ -658,8 +659,6 @@ buffer is not visiting a file."
 (add-hook 'css-mode-hook #'skewer-css-mode)
 (add-hook 'html-mode-hook #'skewer-html-mode)
 
-(eval-after-load 'sgml-mode
-  '(define-key html-mode-map (kbd "C-c b") 'web-beautify-html))
 (eval-after-load 'css-mode
   '(define-key css-mode-map (kbd "C-c b") 'web-beautify-css))
 
@@ -706,6 +705,7 @@ buffer is not visiting a file."
 
 (use-package tex-site
   :ensure auctex
+  :commands TeX-mode
   :config
   (progn
     (setq TeX-auto-save t)
@@ -724,7 +724,11 @@ buffer is not visiting a file."
   :mode (("\\.yaml\\'" . yaml-mode)
 	 ("\\.yml\\'" . yaml-mode)))
 
-(use-package sgml-mode :ensure t)
+(use-package sgml-mode
+  :ensure t
+  :commands sgml-mode
+  :bind ("C-c b" . web-beautify-html))
+
 (use-package gitconfig-mode :ensure t :mode "\\.gitconfig\\'")
 
 (use-package evil :ensure t :commands (evil-mode))
