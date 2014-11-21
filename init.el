@@ -70,7 +70,7 @@
 (package-initialize)
 (ensure-packages-installed '(epl use-package))
 (require 'use-package)
-(use-package benchmark-init :ensure t)
+;; (use-package benchmark-init :ensure t)
 
 ;; =============================================================================
 ;;                                                                      Disables
@@ -423,6 +423,7 @@ buffer is not visiting a file."
 
 (use-package helm
   :ensure t
+  :commands helm-mode
   :bind (("M-y" . helm-show-kill-ring))
   :init
   (progn
@@ -612,6 +613,7 @@ buffer is not visiting a file."
 
 (use-package js2-mode
   :ensure t
+  :commands (js-mode)
   :bind
   (("C-c b" . web-beautify-js)
    ("C-c b" . web-beautify-js))
@@ -635,6 +637,7 @@ buffer is not visiting a file."
 
 (use-package json-mode
   :ensure t
+  :mode "\\.json\\'"
   :init
   (add-hook 'json-mode-hook
             (lambda ()
