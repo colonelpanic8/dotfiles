@@ -104,7 +104,7 @@
     exec-path-from-shell slime yaml-mode sgml-mode
     dired+ ctags ctags-update helm-gtags hackernews gitconfig-mode
     aggressive-indent imenu+ weechat evil helm-ag xclip neotree
-    magit-gh-pulls diminish gist org spotify ghc))
+    magit-gh-pulls diminish gist spotify ghc))
 
 (defvar packages-appearance
   '(monokai-theme solarized-theme zenburn-theme base16-theme molokai-theme
@@ -251,6 +251,11 @@
   :ensure t
   :commands string-inflection-toggle
   :bind ("C-c l" . string-inflection-toggle))
+
+(use-package org
+  :ensure t
+  :init
+  (add-hook 'org-mode-hook (lambda () (linum-mode 0))))
 
 ;; =============================================================================
 ;;                                                        Programming Mode Hooks
@@ -433,9 +438,6 @@
 
 (use-package js2-mode
   :ensure t
-  :mode "\\.js\\'"
-  :config
-  (progn (setq js-indent-level 2))
   :bind
   (("C-c b" . web-beautify-js)
    ("C-c b" . web-beautify-js))
@@ -444,8 +446,10 @@
     (use-package skewer-mode
       :ensure t
       :commands skewer-mode)
+    (add-hook 'js-mode-hook 'js2-minor-mode)
     (add-hook 'js2-mode-hook (lambda () (tern-mode t)))
     (add-hook 'js2-mode-hook 'skewer-mode)
+    (add-hook 'js2-mode-hook (lambda () (setq js-indent-level 1)))
     (use-package tern
       :ensure t
       :config
@@ -455,8 +459,12 @@
 	(use-package tern-auto-complete :ensure t
 	  :commands tern-ac-setup)))))
 
-(defvar packages-js '(js2-mode js3-mode web-beautify tern tern-auto-complete
-		      slime-js skewer-mode skewer-reload-stylesheets))
+(use-package json-mode
+  :ensure t
+  :init
+  (add-hook 'json-mode-hook
+            (lambda ()
+            (setq js-indent-level 2))))
 
 (add-hook 'css-mode-hook #'skewer-css-mode)
 (add-hook 'html-mode-hook #'skewer-html-mode)
@@ -670,7 +678,7 @@ buffer is not visiting a file."
   (if t ;; (display-graphic-p) why doesn't this work at frame startup?
       (let ((hour
              (string-to-number (format-time-string "%H"))))
-        (if (or (< hour 8) (> hour 17))
+        (if (or (< hour 8) (> hour 16))
             (random-choice dark-themes) (random-choice light-themes)))
     (random-choice terminal-themes)))
 
@@ -683,18 +691,23 @@ buffer is not visiting a file."
         (if (eq appropriate-theme current-theme)
             nil
           (progn
-            (deactivate-all-themes)
+            (disable-all-themes)
             (load-theme appropriate-theme t)
                  (setq current-theme appropriate-theme)))))
 
-(defun deactivate-all-themes ()
+(defun disable-all-themes ()
   (interactive)
   (mapcar 'disable-theme custom-enabled-themes))
 
-(defun disable-and-load-theme ()
-  (interactive)
-  (deactivate-all-themes)
-  (call-interactively 'load-theme))
+(defun disable-and-load-theme (theme &optional no-confirm no-enable)
+  (interactive
+   (list
+    (intern (completing-read "Load custom theme: "
+			     (mapcar 'symbol-name
+				     (custom-available-themes))))
+    nil nil))
+  (disable-all-themes)
+  (load-theme theme no-confirm no-enable))
 
 (defun set-my-font-for-frame (frame)
   (condition-case exp
