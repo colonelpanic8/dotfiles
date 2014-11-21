@@ -65,7 +65,7 @@ function set_bash_prompt() {
 ╰─$(command_line_character) "
 }
 
-export PROMPT_COMMAND=set_bash_prompt
+# export PROMPT_COMMAND=set_bash_prompt
 
 PS2='(%_) '
 
@@ -74,3 +74,9 @@ case "$TERM" in
 	export PS1='> '
 	;;
 esac
+
+function set_powerline_prompt {
+    source "$(python_module_path powerline)/bindings/bash/powerline.sh"
+}
+
+set_powerline_prompt
