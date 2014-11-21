@@ -152,14 +152,6 @@ buffer is not visiting a file."
                          (ido-read-file-name "Find file (as root): ")))
     (find-alternate-file (concat "/sudo:root@localhost:" buffer-file-name))))
 
-(defun get-buffer-name ()
-  (interactive)
-  (file-relative-name (buffer-file-name)))
-
-(defun message-buffer-name ()
-  (interactive)
-  (message (get-buffer-name)))
-
 (defun frame-exists ()
   (cl-find-if
    (lambda (frame)
@@ -348,6 +340,26 @@ buffer is not visiting a file."
   :config (setq expand-region-contract-fast-key "j")
   :bind (("C-c k" . er/expand-region)))
 
+(use-package multiple-cursors
+  :bind 
+   (("C-c m a" . mc/mark-all-like-this)
+    ("C-c m m" . mc/mark-all-like-this-dwim)
+    ("C-c m l" . mc/edit-lines)
+    ("C-c m n" . mc/mark-next-like-this)
+    ("C-c m p" . mc/mark-previous-like-this)
+    ("C-c m s" . mc/mark-sgml-tag-pair)
+    ("C-c m d" . mc/mark-all-like-this-in-defun)))
+
+(use-package phi-search-mc
+  :ensure t
+  :config
+  (phi-search-mc/setup-keys))
+
+(use-package mc-extras
+  :ensure t
+  :config
+    (define-key mc/keymap (kbd "C-. =") 'mc/compare-chars))
+
 (use-package undo-tree
   :ensure t
   :bind ("C-c u" . undo-tree-visualize)
@@ -377,6 +389,10 @@ buffer is not visiting a file."
   :commands string-inflection-toggle
   :bind ("C-c l" . string-inflection-toggle))
 
+;; =============================================================================
+;;                                                         Non-Programming Stuff
+;; =============================================================================
+
 (use-package org
   :ensure t
   :defer t
@@ -397,7 +413,13 @@ buffer is not visiting a file."
   :config
   (epa-file-enable))
 
-(use-package erc :ensure t :commands erc)
+(use-package erc
+  :ensure t :commands erc
+  :config (use-package erc-colorize :ensure t) (erc-colorize-mode 1)))
+
+(use-package gnus
+  :ensure t
+  :commands
 
 ;; =============================================================================
 ;;                                                        Programming Mode Hooks
@@ -461,14 +483,14 @@ buffer is not visiting a file."
       :commands (helm-projectile-on)
       :defer t)))
 
+(use-package smex
+  :ensure t
+  :bind ("M-x" . smex))
+
 (ido-mode t)
 (ido-ubiquitous-mode)
 (ido-everywhere 1)
 (setq ido-enable-flex-matching t)
-
-(use-package smex
-  :ensure t
-  :bind ("M-x" . smex))
 
 ;; =============================================================================
 ;;                                                                         elisp
@@ -606,8 +628,7 @@ buffer is not visiting a file."
   :ensure t
   :commands (js-mode)
   :bind
-  (("C-c b" . web-beautify-js)
-   ("C-c b" . web-beautify-js))
+  (("C-c b" . web-beautify-js))
   :init
   (progn
     (use-package skewer-mode
@@ -637,11 +658,6 @@ buffer is not visiting a file."
 (add-hook 'css-mode-hook #'skewer-css-mode)
 (add-hook 'html-mode-hook #'skewer-html-mode)
 
-(add-hook 'css-mode-hook
-          (lambda ()
-            (define-key css-mode-map "\M-\C-x" 'slime-js-refresh-css)
-            (define-key css-mode-map "\C-c\C-r" 'slime-js-embed-css)))
-
 (eval-after-load 'sgml-mode
   '(define-key html-mode-map (kbd "C-c b") 'web-beautify-html))
 (eval-after-load 'css-mode
@@ -653,6 +669,7 @@ buffer is not visiting a file."
 
 (use-package robe
   :ensure t
+  :commands robe-mode
   :init
   (progn (add-hook 'ruby-mode-hook 'robe-mode)
          (add-hook 'robe-mode-hook 'ac-robe-setup)
@@ -715,31 +732,11 @@ buffer is not visiting a file."
 ;; =============================================================================
 ;;                                                           Custom Key Bindings
 ;; =============================================================================
-
-(use-package multiple-cursors
-  :bind 
-   (("C-c m a" . mc/mark-all-like-this)
-    ("C-c m m" . mc/mark-all-like-this-dwim)
-    ("C-c m l" . mc/edit-lines)
-    ("C-c m n" . mc/mark-next-like-this)
-    ("C-c m p" . mc/mark-previous-like-this)
-    ("C-c m s" . mc/mark-sgml-tag-pair)
-    ("C-c m d" . mc/mark-all-like-this-in-defun)))
-
-(use-package phi-search-mc
-  :ensure t
-  :config
-  (phi-search-mc/setup-keys))
-(use-package mc-extras
-  :ensure t
-  :config
-    (define-key mc/keymap (kbd "C-. =") 'mc/compare-chars))
           
 ;; Miscellaneous
 (global-unset-key (kbd "C-o")) ;; Avoid collision with tmux binding.
 (bind-key "M-q" 'fill-or-unfill-paragraph)
 (bind-key "C--" 'undo)
-(bind-key "C-c +" 'message-buffer-name)
 (bind-key "C-c C-s" 'sudo-edit)
 (bind-key "C-c SPC"
           (lambda () (interactive)

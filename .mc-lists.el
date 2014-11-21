@@ -16,6 +16,7 @@
         keyboard-quit
         kill-region
         org-self-insert-command
+        phi-search
         python-indent-electric-colon
         sgml-slash
         skeleton-pair-insert-maybe
