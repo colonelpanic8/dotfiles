@@ -670,6 +670,8 @@ buffer is not visiting a file."
   (defvar light-themes '(solarized-light)))
 (unless (boundp 'terminal-themes)
   (defvar terminal-themes '(solarized-light monokai)))
+(unless (boundp 'fonts)
+  (defvar fonts '(monaco-9)))
 
 (defun random-choice (choices)
   (nth (random (length choices)) choices))
