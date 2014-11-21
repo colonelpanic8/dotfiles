@@ -103,15 +103,15 @@
 
 (defvar packages-other
   '(thingatpt+ latex-preview-pane paredit inf-ruby rust-mode paradox
-               exec-path-from-shell slime yaml-mode sgml-mode
-               dired+ ctags ctags-update helm-gtags hackernews gitconfig-mode
-               aggressive-indent imenu+ weechat evil helm-ag xclip neotree
-               magit-gh-pulls diminish gist spotify ghc))
+    exec-path-from-shell slime yaml-mode sgml-mode
+    dired+ ctags ctags-update helm-gtags hackernews gitconfig-mode
+    aggressive-indent imenu+ weechat evil helm-ag xclip neotree
+    magit-gh-pulls diminish gist spotify ghc))
 
 (defvar packages-appearance
   '(monokai-theme solarized-theme zenburn-theme base16-theme molokai-theme
-                  tango-2-theme gotham-theme sublime-themes ansi-color rainbow-delimiters
-                  smart-mode-line powerline))
+    tango-2-theme gotham-theme sublime-themes ansi-color rainbow-delimiters
+    smart-mode-line powerline))
 
 (ensure-packages-installed packages-essential)
 (ensure-packages-installed packages-other)
@@ -144,9 +144,9 @@ buffer is not visiting a file."
   (message (get-buffer-name)))
 
 (defun frame-exists ()
-  (cl-find-if (lambda (frame)
-                (assoc 'display (frame-parameters frame)))
-              (frame-list)))
+  (cl-find-if
+   (lambda (frame)
+     (assoc 'display (frame-parameters frame))) (frame-list)))
 
 (defun make-frame-if-none-exists ()
   (let* ((existing-frame (frame-exists)))
