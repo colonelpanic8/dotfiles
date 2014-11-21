@@ -66,6 +66,24 @@ def change_shell(ctx):
 
 
 @ctask
+def link_dropbox(ctx):
+    link_pairs = (
+        ('~/Dropbox/configs/custom.el', '~/.emacs.d/custom.el'),
+        ('~/Dropbox/configs/custom.zsh', '~/custom.zsh'),
+        ('~/Dropbox/Documents', '~/Documents'),
+        ('~/Dropbox/Pictures', '~/Pictures'),
+    )
+    for source, destination in link_pairs:
+        destination = os.path.expanduser(destination)
+        source = os.path.expanduser(source)
+        if os.path.exists(destination):
+            print("Skipping {0} because path already exists".format(destination))
+        else:
+            print("Linking {0} to {1}".format(destination, source))
+            ctx.run('ln -s {0} {1}'.format(source, destination))
+
+
+@ctask
 def customize_user_settings(ctx):
     input_function = input if sys.version_info.major == 3 else raw_input
     username = input_function("Enter the user's full name: ")
@@ -81,6 +99,7 @@ ns.add_task(customize_user_settings)
 ns.add_task(dotfiles)
 ns.add_task(install_npm_libraries)
 ns.add_task(install_python_libraries)
+ns.add_task(link_dropbox)
 ns.add_task(powerline)
 ns.add_task(setup)
 ns.add_task(vimstall)
