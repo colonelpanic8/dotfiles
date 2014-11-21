@@ -48,7 +48,7 @@ function existing_emacs {
 }
 
 function emacs_make_frame_if_none_exists {
-    emacsclient -e '(make-frame-if-none-exists-and-focus)' --server-file=$1
+    emacsclient -e '(make-frame-if-none-exists-and-focus)' --server-file=$1 > /dev/null
     focus_emacs
 }
 
@@ -71,5 +71,7 @@ function emacs_open {
 }
 
 # Make emacs the default editor.
-export EDITOR="zsh -c 'source ~/.zshrc && emacs_open '"'"$@"'
+export EDITOR='emacs_open'
 export VISUAL="$EDITOR"
+# This is ugly as sin but I can't figure out how else to do it.
+export GIT_EDITOR="zsh -c 'source ~/.zshrc && emacs_open '"'"$@"'
