@@ -43,8 +43,6 @@
 (setq custom-file "~/.emacs.d/custom.el")
 (when (file-exists-p custom-file) (load custom-file))
 
-(add-to-list 'load-path "~/.emacs.d/lisp")
-
 ;; =============================================================================
 ;;                                                         ELPA/package.el/MELPA
 ;; =============================================================================
@@ -70,7 +68,11 @@
 (package-initialize)
 (ensure-packages-installed '(epl use-package))
 (require 'use-package)
-(use-package benchmark-init :ensure t)
+
+(use-package benchmark-init
+  :ensure t
+  ;; Set do-benchmark in custom.el
+  :if (and (boundp 'do-benchmark) do-benchmark))
 
 ;; =============================================================================
 ;;                                                          Config Free Packages
@@ -84,7 +86,7 @@
 (defvar packages-eager
   '(popup auto-complete yasnippet cl-lib exec-path-from-shell paradox slime
     xclip dired+ ctags ctags-update aggressive-indent imenu+ neotree diminish
-    gist))
+    gist load-dir))
 
 (use-packages packages-eager)
 
@@ -437,7 +439,10 @@ buffer is not visiting a file."
 (use-package helm
   :ensure t
   :commands helm-mode
-  :bind (("M-y" . helm-show-kill-ring))
+  :bind (("M-y" . helm-show-kill-ring)
+         ("M-x" . helm-M-x))
+  ;; :idle (helm-mode)
+  ;; :idle-priority 1
   :init
   (progn
     (use-package helm-ag :ensure t :defer t))
@@ -448,11 +453,14 @@ buffer is not visiting a file."
 
 (use-package projectile
   :ensure t
-  :defer t
+  :commands projectile-global-mode
+  :idle (projectile-global-mode)
+  :idle-priority 1
   :config
   (progn
-    (setq projectile-enable-caching t)
+    (message "Setting up projectile.")
     (projectile-global-mode)
+    (setq projectile-enable-caching t)
     (setq projectile-completion-system 'helm)
     (helm-projectile-on)
     (diminish 'projectile-mode))
@@ -461,24 +469,7 @@ buffer is not visiting a file."
   (progn
     (use-package persp-projectile
       :ensure t
-      :defer t)
-    (use-package ido-vertical-mode
-      :ensure t
-      :config (ido-vertical-mode 1))
-    (use-package flx
-      :ensure t
-      :commands (smex find-file)
-      :config
-      (progn
-        ;; disable ido faces to see flx highlights.
-        (flx-ido-mode 1)
-        ;; This makes flx-ido much faster.
-        (setq gc-cons-threshold 20000000)
-        (setq ido-use-faces nil))
-      :init
-      (progn
-        (use-package flx-ido
-          :ensure t)))
+      :commands persp-projectile)
     (use-package helm-projectile
       :ensure t
       :commands (helm-projectile-on)
@@ -486,19 +477,37 @@ buffer is not visiting a file."
 
 (use-package smex
   :ensure t
+  :commands smex
+  ;; This is here because smex feels like part of ido
   :bind ("M-x" . smex))
 
 (use-package ido
   :ensure t
+  :commands ido-mode
   :config
   (progn
+    (ido-everywhere 1)
+    (setq ido-enable-flex-matching t)
+    (use-package flx :ensure t)
+    (use-package flx-ido
+      :commands flx-ido-mode
+      :ensure t
+      :init (flx-ido-mode 1)
+      :config
+      (progn
+	;; disable ido faces to see flx highlights.
+	;; This makes flx-ido much faster.
+	(setq gc-cons-threshold 20000000)
+        (setq ido-use-faces nil)))
     (use-package ido-ubiquitous
       :ensure t
-      :disabled t
-      :config (ido-ubiquitous-mode))
-    (ido-mode t)
-    (ido-everywhere 1)
-    (setq ido-enable-flex-matching t)))
+      :commands (ido-ubiquitous-mode))
+    (use-package ido-vertical-mode
+      :ensure t
+      :config (ido-vertical-mode 1))
+    (use-package flx-ido :ensure t)))
+
+(if (and (boundp 'use-ido) use-ido) (ido-mode))
 
 ;; =============================================================================
 ;;                                                                         elisp
