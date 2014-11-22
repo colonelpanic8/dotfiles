@@ -270,3 +270,9 @@ function track_modified {
 function python_module_path {
     python -c "import os, $1; print(os.path.dirname($1.__file__))"
 }
+
+function mu4e_directory {
+    if is_osx; then
+	echo "$(brew --prefix mu)/share/emacs/site-lisp/mu4e"
+    fi
+}

@@ -70,6 +70,10 @@ function emacs_open {
     focus_emacs
 }
 
+function time_emacs {
+    time \emacs --daemon="timing" && emacsclient -e "(kill-emacs)" --server-file="timing"
+}
+
 # Make emacs the default editor.
 export EDITOR='emacs_open'
 export VISUAL="$EDITOR"
