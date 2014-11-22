@@ -86,7 +86,7 @@
 (defvar packages-eager
   '(popup auto-complete yasnippet cl-lib exec-path-from-shell paradox slime
     xclip dired+ ctags ctags-update aggressive-indent imenu+ neotree diminish
-    gist load-dir))
+    gist))
 
 (use-packages packages-eager)
 
@@ -233,6 +233,7 @@ buffer is not visiting a file."
 (column-number-mode t)
 (global-linum-mode t)
 (setq visible-bell nil)
+(show-paren-mode 1)
 
 ;; Make buffer names unique.
 (setq uniquify-buffer-name-style 'forward)
@@ -255,6 +256,11 @@ buffer is not visiting a file."
 ;; Make mouse scrolling less jumpy.
 (setq mouse-wheel-scroll-amount '(1 ((shift) . 1)))
 
+(use-package load-dir
+  :ensure t
+  :config
+  (progn (add-to-list 'load-dirs "~/.emacs.d/load.d")))
+
 (use-package tramp
   :commands tramp
   :config
@@ -272,7 +278,7 @@ buffer is not visiting a file."
   :ensure t
   :config
   (progn
-    (setq guide-key/guide-key-sequence '("C-c" "C-c p" "C-x C-k" "C-x r"))
+    (setq guide-key/guide-key-sequence '("C-c" "C-c p" "C-x C-k" "C-x r" "C-x c"))
     (guide-key-mode 1)
     (setq guide-key/idle-delay 0.25)
     (setq guide-key/recursive-key-sequence-flag t)
@@ -324,7 +330,8 @@ buffer is not visiting a file."
   :config
   (progn
     (diminish 'magit-auto-revert-mode)
-    (use-package magit-filenotify ;; Seems like OSX does not properly supoort this.
+    (use-package magit-filenotify
+      ;; Seems like OSX does not properly this.
       :disabled t
       :ensure t
       :if (emacs24_4-p)
@@ -400,8 +407,7 @@ buffer is not visiting a file."
 
 (use-package org
   :ensure t
-  :defer t
-  :commands org
+  :commands org-mode
   :mode "\\.org\\'"
   :init
   (progn
@@ -540,7 +546,7 @@ buffer is not visiting a file."
 (add-hook 'emacs-lisp-mode-hook 'flatten-current-imenu-index-function)
 (add-hook 'emacs-lisp-mode-hook (lambda () (setq indent-tabs-mode nil)))
 (define-key lisp-mode-shared-map (kbd "C-c C-c") 'eval-defun)
-(define-key lisp-mode-shared-map (kbd "C-c C-f") 'find-function-at-point)
+(define-key lisp-mode-shared-map (kbd "C-c C-f") 'find-function)
 (define-key lisp-mode-shared-map (kbd "C-c C-r") 'eval-and-replace)
 
 ;; =============================================================================
