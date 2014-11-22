@@ -73,6 +73,22 @@
 (use-package benchmark-init :ensure t)
 
 ;; =============================================================================
+;;                                                          Config Free Packages
+;; =============================================================================
+
+(defun use-packages (packages)
+  (mapcar
+   (lambda (package)
+     (use-package package :ensure t)) packages))
+
+(defvar packages-eager
+  '(popup auto-complete yasnippet cl-lib exec-path-from-shell paradox slime
+    xclip dired+ ctags ctags-update aggressive-indent imenu+ neotree diminish
+    gist))
+
+(use-packages packages-eager)
+
+;; =============================================================================
 ;;                                                                      Disables
 ;; =============================================================================
 
@@ -102,22 +118,6 @@
 (add-hook 'temp-buffer-setup-hook 'split-horizontally-for-temp-buffers)
 (setq split-height-threshold nil)
 (setq split-width-threshold 160)
-
-;; =============================================================================
-;;                                                          Config Free Packages
-;; =============================================================================
-
-(defun use-packages (packages)
-  (mapcar
-   (lambda (package)
-     (use-package package :ensure t)) packages))
-
-(defvar packages-eager
-  '(popup auto-complete yasnippet cl-lib exec-path-from-shell paradox slime
-    xclip dired+ ctags ctags-update aggressive-indent imenu+ neotree diminish
-    gist))
-
-(use-packages packages-eager)
 
 ;; =============================================================================
 ;;                                                                     functions
@@ -322,7 +322,8 @@ buffer is not visiting a file."
   :config
   (progn
     (diminish 'magit-auto-revert-mode)
-    (use-package magit-filenotify
+    (use-package magit-filenotify ;; Seems like OSX does not properly supoort this.
+      :disabled t
       :ensure t
       :if (emacs24_4-p)
       :config
@@ -487,10 +488,17 @@ buffer is not visiting a file."
   :ensure t
   :bind ("M-x" . smex))
 
-(ido-mode t)
-(ido-ubiquitous-mode)
-(ido-everywhere 1)
-(setq ido-enable-flex-matching t)
+(use-package ido
+  :ensure t
+  :config
+  (progn
+    (use-package ido-ubiquitous
+      :ensure t
+      :disabled t
+      :config (ido-ubiquitous-mode))
+    (ido-mode t)
+    (ido-everywhere 1)
+    (setq ido-enable-flex-matching t)))
 
 ;; =============================================================================
 ;;                                                                         elisp
@@ -558,7 +566,7 @@ buffer is not visiting a file."
 
 (defun message-virtual-envs ()
   (interactive)
-  (message "%s" (get-virtual-envs)))
+	  (message "%s" (get-virtual-envs)))
 
 (use-package python
   :commands python-mode
