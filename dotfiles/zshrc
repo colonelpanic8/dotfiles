@@ -2,4 +2,4 @@
 source ~/.lib/shellrc.sh
 [[ $TERM == "dumb" ]] && unsetopt zle && PS1='$ ' && return
 source ~/.lib/zsh.sh
-test -r ~/custom.zsh && source ~/custom.zsh
+test -r ~/.custom.sh && source ~/.custom.sh

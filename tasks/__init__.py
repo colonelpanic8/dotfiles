@@ -35,6 +35,18 @@ def dotfiles(ctx, flags=''):
 
 
 @ctask
+def dropbox_dotfiles(ctx, flags='f'):
+    ctx.run('hash dotfiles || sudo pip install dotfiles')
+    link_dropbox_other(ctx)
+    ctx.run('dotfiles -s{1} -R {0}'.format(
+        os.path.join(
+            os.path.expanduser('~'), 'Dropbox', 'configs', 'dotfiles'
+        ),
+        flags
+    ))
+
+
+@ctask
 def powerline(ctx):
     ctx.run('sudo pip install psutil')
     ctx.run('sudo pip install git+git://github.com/Lokaltog/powerline')
@@ -66,12 +78,11 @@ def change_shell(ctx):
 
 
 @ctask
-def link_dropbox(ctx):
+def link_dropbox_other(ctx):
     link_pairs = (
         ('~/Dropbox/configs/custom.el', '~/.emacs.d/custom.el'),
-        ('~/Dropbox/configs/custom.zsh', '~/custom.zsh'),
         ('~/Dropbox/Documents', '~/Documents'),
-        ('~/Dropbox/Pictures', '~/Pictures'),
+        ('~/Dropbox/Pictures', '~/Pictures')
     )
     for source, destination in link_pairs:
         destination = os.path.expanduser(destination)
@@ -99,7 +110,7 @@ ns.add_task(customize_user_settings)
 ns.add_task(dotfiles)
 ns.add_task(install_npm_libraries)
 ns.add_task(install_python_libraries)
-ns.add_task(link_dropbox)
+ns.add_task(dropbox_dotfiles)
 ns.add_task(powerline)
 ns.add_task(setup)
 ns.add_task(vimstall)

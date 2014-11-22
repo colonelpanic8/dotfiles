@@ -3,6 +3,7 @@ for filename in ~/.lib/zsh/*; do
 done
 
 alias srczsh="source ~/.zshrc"
+alias zshenv="source ~/.zshenv"
 
 # Online help.
 unalias run-help 2> /dev/null 1>/dev/null
