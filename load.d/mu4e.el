@@ -31,7 +31,7 @@
     (setq mu4e-show-images t)
     (add-hook 'mu4e-compose-mode-hook
               (defun my-do-compose-stuff () (flyspell-mode)))
-    (setq mu4e-update-interval 15)
+    (setq mu4e-update-interval 120)
 
     ;; ;; something about ourselves
     ;; (setq
