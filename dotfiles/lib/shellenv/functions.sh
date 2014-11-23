@@ -276,3 +276,11 @@ function mu4e_directory {
 	echo "$(brew --prefix mu)/share/emacs/site-lisp/mu4e"
     fi
 }
+
+function timestamp {
+    date +%s
+}
+
+function parse_timestamp {
+    date -d "@$1"
+}
