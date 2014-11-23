@@ -8,7 +8,7 @@ function e {
 }
 
 function cocoa_emacs {
-    reattach-to-user-namespace zsh -c 'source ~/.zshrc && _emacs -c -n "$@"'
+    reattach-to-user-namespace zsh -c '_emacs -c -n "$@"'
 }
 
 function _emacs {
