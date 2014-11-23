@@ -517,6 +517,7 @@ buffer is not visiting a file."
   :commands helm-mode
   :bind (("M-y" . helm-show-kill-ring)
          ("M-x" . helm-M-x)
+         ("C-x C-i" . helm-imenu)
          ("C-h a" . helm-apropos))
   :init
   (progn
@@ -525,6 +526,8 @@ buffer is not visiting a file."
   (progn
     (helm-mode 1)
     (diminish 'helm-mode)))
+
+(use-package helm-swoop :ensure t :commands helm-swoop)
 
 (use-package projectile
   :ensure t
