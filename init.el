@@ -309,8 +309,7 @@ buffer is not visiting a file."
   :config
   (progn
     (setq ace-jump-mode-scope 'window))
-  :bind (("C-;" . ace-jump-mode)
-         ("C-c j" . ace-jump-mode)))
+  :bind (("C-j" . ace-jump-mode)))
 
 (use-package flycheck
   :ensure t
@@ -422,8 +421,11 @@ buffer is not visiting a file."
   :ensure t
   :commands (org-mode org)
   :mode ("\\.org\\'" . org-mode)
+  :config (unbind-key "C-j" org-mode-map)
   :init
   (progn
+    (if (and (boundp 'file-notify--library) file-notify--library)
+        (use-package org-mobile-sync :ensure t :config (org-mobile-sync-mode 1)))
     (setq org-directory "~/Dropbox/org")
     (setq org-mobile-inbox-for-pull "~/Dropbox/org/flagged.org")
     (setq org-mobile-directory "~/Dropbox/Apps/MobileOrg")
@@ -433,8 +435,7 @@ buffer is not visiting a file."
       (guide-key/add-local-highlight-command-regexp "org-"))
     (add-hook 'org-mode-hook 'guide-key/my-hook-function-for-org-mode)
     (add-hook 'org-mode-hook (lambda () (linum-mode 0)))
-    (define-key mode-specific-map [?a] 'org-agenda)
-    (local-set-key (kbd "C-j") 'ace-jump-mode)))
+    (define-key mode-specific-map [?a] 'org-agenda)))
 
 (use-package epg
   :ensure t
