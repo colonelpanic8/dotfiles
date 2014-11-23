@@ -121,6 +121,10 @@
 (setq split-height-threshold nil)
 (setq split-width-threshold 160)
 
+;; No popup frames.
+(setq ns-pop-up-frames nil)
+(setq pop-up-frames nil)
+
 ;; =============================================================================
 ;;                                                                     functions
 ;; =============================================================================
@@ -217,6 +221,16 @@ buffer is not visiting a file."
   (setq imenu-create-index-function
         (flatten-imenu-index-function imenu-create-index-function)))
 
+(defun notification-center (title message)
+  (flet ((encfn (s) (encode-coding-string s (keyboard-coding-system))))
+    (shell-command
+     (format "osascript -e 'display notification \"%s\" with title \"%s\"'"
+             (encfn message) (encfn title)))))
+
+(defun growl-notify (title message)
+  (shell-command (format "grownotify -t %s -m %s" title message)))
+
+
 ;; =============================================================================
 ;;                                                         General Emacs Options
 ;; =============================================================================
@@ -232,7 +246,7 @@ buffer is not visiting a file."
 (line-number-mode t)
 (column-number-mode t)
 (global-linum-mode t)
-(setq visible-bell nil)
+(setq visible-bell t)
 (show-paren-mode 1)
 
 ;; Make buffer names unique.
@@ -250,11 +264,10 @@ buffer is not visiting a file."
 
 (add-hook 'after-init-hook '(lambda () (setq debug-on-error t)))
 
-;; Don't popup frames in OSX.
-(setq ns-pop-up-frames nil)
-
 ;; Make mouse scrolling less jumpy.
 (setq mouse-wheel-scroll-amount '(1 ((shift) . 1)))
+
+(eval-after-load 'subword-mode '(diminish 'subword-mode))
 
 (use-package load-dir
   :ensure t
@@ -280,6 +293,7 @@ buffer is not visiting a file."
   (progn
     (setq guide-key/guide-key-sequence '("C-c" "C-c p" "C-x C-k" "C-x r" "C-x c"))
     (guide-key-mode 1)
+    (diminish 'guide-key-mode)
     (setq guide-key/idle-delay 0.25)
     (setq guide-key/recursive-key-sequence-flag t)
     (setq guide-key/popup-window-position 'bottom)))
@@ -296,8 +310,7 @@ buffer is not visiting a file."
   (progn
     (setq ace-jump-mode-scope 'window))
   :bind (("C-;" . ace-jump-mode)
-	 ;; This is needed for terminal emacs.
-	 ("C-c j" . ace-jump-mode)))
+         ("C-c j" . ace-jump-mode)))
 
 (use-package flycheck
   :ensure t
@@ -379,9 +392,9 @@ buffer is not visiting a file."
   (diminish 'undo-tree-mode)
   :init
   (progn
+    ;;(setq undo-tree-visualizer-diff t) ;; This causes performance problems
     (global-undo-tree-mode)
-    (setq undo-tree-visualizer-timestamps t)
-    (setq undo-tree-visualizer-diff t)))
+    (setq undo-tree-visualizer-timestamps t)))
 
 (use-package smooth-scrolling
   :ensure t
@@ -407,17 +420,21 @@ buffer is not visiting a file."
 
 (use-package org
   :ensure t
-  :commands org-mode
-  :mode "\\.org\\'"
+  :commands (org-mode org)
+  :mode ("\\.org\\'" . org-mode)
   :init
   (progn
+    (setq org-directory "~/Dropbox/org")
+    (setq org-mobile-inbox-for-pull "~/Dropbox/org/flagged.org")
+    (setq org-mobile-directory "~/Dropbox/Apps/MobileOrg")
     (defun guide-key/my-hook-function-for-org-mode ()
       (guide-key/add-local-guide-key-sequence "C-c")
       (guide-key/add-local-guide-key-sequence "C-c C-x")
       (guide-key/add-local-highlight-command-regexp "org-"))
     (add-hook 'org-mode-hook 'guide-key/my-hook-function-for-org-mode)
     (add-hook 'org-mode-hook (lambda () (linum-mode 0)))
-    (define-key mode-specific-map [?a] 'org-agenda)))
+    (define-key mode-specific-map [?a] 'org-agenda)
+    (local-set-key (kbd "C-j") 'ace-jump-mode)))
 
 (use-package epg
   :ensure t
@@ -427,7 +444,57 @@ buffer is not visiting a file."
 (use-package erc
   :ensure t
   :commands erc
-  :config (progn (use-package erc-colorize :ensure t) (erc-colorize-mode 1)))
+  :config
+  (progn
+    (setq sauron-nick-insensitivity 1)
+    (use-package erc-colorize :ensure t) (erc-colorize-mode 1)
+    (add-hook 'sauron-event-added-functions
+              (lambda (origin priority message &optional properties)
+                (message "triggered...XXX")
+                (notification-center "test" message)))))
+
+(use-package sauron
+  :ensure t
+  :commands (sauron-start sauron-start-hidden)
+  :config (progn (setq sauron-separate-frame nil))
+  :idle (sauron-start-hidden)
+  :idle-priority 3)
+
+(use-package flyspell
+  :ensure t
+  :config
+  (progn
+    (bind-key "M-s" 'flyspell-correct-word-before-point flyspell-mode-map)
+    (unbind-key "C-;" flyspell-mode-map)
+    (defun flyspell-emacs-popup-textual (event poss word)
+      "A textual flyspell popup menu."
+      (let* ((corrects (if flyspell-sort-corrections
+                           (sort (car (cdr (cdr poss))) 'string<)
+                         (car (cdr (cdr poss)))))
+             (cor-menu (if (consp corrects)
+                           (mapcar (lambda (correct)
+                                     (list correct correct))
+                                   corrects)
+                         '()))
+             (affix (car (cdr (cdr (cdr poss)))))
+             show-affix-info
+             (base-menu  (let ((save (if (and (consp affix) show-affix-info)
+                                         (list
+                                          (list (concat "Save affix: " (car affix))
+                                                'save)
+                                          '("Accept (session)" session)
+                                          '("Accept (buffer)" buffer))
+                                       '(("Save word" save)
+                                         ("Accept (session)" session)
+                                         ("Accept (buffer)" buffer)))))
+                           (if (consp cor-menu)
+                               (append cor-menu (cons "" save))
+                             save)))
+             (menu (mapcar
+                    (lambda (arg) (if (consp arg) (car arg) arg))
+                    base-menu)))
+        (cadr (assoc (popup-menu* menu :scroll-bar t) base-menu))))
+    (fset 'flyspell-emacs-popup 'flyspell-emacs-popup-textual)))
 
 ;; =============================================================================
 ;;                                                        Programming Mode Hooks
@@ -435,6 +502,8 @@ buffer is not visiting a file."
 
 (add-hook 'prog-mode-hook (lambda () (auto-fill-mode -1)))
 (add-hook 'prog-mode-hook (lambda () (subword-mode t)))
+(add-hook 'prog-mode-hook 'flyspell-prog-mode)
+
 ;; (add-hook 'prog-mode-hook (lambda () (highlight-lines-matching-regexp
 ;;                                  ".\\{81\\}" 'hi-blue)))
 
@@ -446,9 +515,8 @@ buffer is not visiting a file."
   :ensure t
   :commands helm-mode
   :bind (("M-y" . helm-show-kill-ring)
-         ("M-x" . helm-M-x))
-  ;; :idle (helm-mode)
-  ;; :idle-priority 1
+         ("M-x" . helm-M-x)
+         ("C-h a" . helm-apropos))
   :init
   (progn
     (use-package helm-ag :ensure t :defer t))
@@ -547,6 +615,7 @@ buffer is not visiting a file."
 (add-hook 'emacs-lisp-mode-hook (lambda () (setq indent-tabs-mode nil)))
 (define-key lisp-mode-shared-map (kbd "C-c C-c") 'eval-defun)
 (define-key lisp-mode-shared-map (kbd "C-c C-f") 'find-function)
+(define-key lisp-mode-shared-map (kbd "C-c C-v") 'find-variable)
 (define-key lisp-mode-shared-map (kbd "C-c C-r") 'eval-and-replace)
 
 ;; =============================================================================
@@ -618,8 +687,6 @@ buffer is not visiting a file."
 ;;                                                                         Scala
 ;; =============================================================================
 
-;; (load "~/.emacs.d/lisp/ensime-imenu.el")
-
 (use-package scala-mode2
   :init
   (progn (add-hook 'scala-mode-hook
@@ -635,8 +702,8 @@ buffer is not visiting a file."
       (progn
         (add-hook 'scala-mode-hook 'ensime-scala-mode-hook)
         (defun guide-key/scala-mode-hook ()
-          (guide-key/add-local-guide-key-sequence "C-c C-v")
-          (add-hook 'scala-mode-hook 'guide-key/scala-mode-hook))
+          (guide-key/add-local-guide-key-sequence "C-c C-v"))
+        (add-hook 'scala-mode-hook 'guide-key/scala-mode-hook)
       :ensure t))
     (setq scala-indent:align-parameters t))
   :mode (("\\.scala\\'" . scala-mode)
@@ -800,10 +867,39 @@ buffer is not visiting a file."
 
 (defvar packages-appearance
   '(monokai-theme solarized-theme zenburn-theme base16-theme molokai-theme
-    tango-2-theme gotham-theme sublime-themes ansi-color rainbow-delimiters
-    smart-mode-line))
+    tango-2-theme gotham-theme sublime-themes ansi-color rainbow-delimiters))
 
 (ensure-packages-installed packages-appearance)
+
+(use-package smart-mode-line
+  :ensure t
+  :disabled use-powerline)
+
+(defun powerline-simple-theme ()
+  (interactive)
+  (setq mode-line-format
+        '("%e"
+          (:eval
+           (let* ((lhs (list (powerline-raw
+                              (format " %s (%%l/%d) %%c " (downcase mode-name)
+                                      (line-number-at-pos (point-max))) nil 'l)))
+                  (rhs (list (powerline-raw
+                              (cond
+                               ((not (buffer-file-name)) "_ ")
+                               ((buffer-modified-p) "! ")
+                               (t "  ")) nil 'r)))
+                  (center (list (powerline-raw "%b" nil))))
+             (concat (powerline-render lhs)
+                     (powerline-fill-center nil (/ (powerline-width center) 2.0))
+                     (powerline-render center)
+                     (powerline-fill nil (powerline-width rhs))
+                     (powerline-render rhs)))))))
+
+(use-package powerline
+  :ensure t
+  :config
+  :disabled (not use-powerline)
+  (powerline-simple-theme))
 
 ;; No splash screen please... jeez
 (setq inhibit-startup-screen t)
@@ -823,8 +919,7 @@ buffer is not visiting a file."
 (add-hook 'compilation-filter-hook 'colorize-compilation-buffer)
 
 (defun modeline-setup ()
-  (if (and (boundp 'use-powerline) use-powerline)
-      (powerline-default-theme)
+  (unless (and (boundp 'use-powerline) use-powerline)
     (progn
       (sml/setup)
       (sml/apply-theme 'automatic))))
@@ -884,7 +979,7 @@ buffer is not visiting a file."
   (condition-case exp
       (set-frame-font (random-choice fonts) nil t)
     ('error (package-refresh-contents)
-	    (set-frame-font "monaco-11" nil t) nil)))
+	    (set-frame-font "Monaco for Powerline-11" nil t) nil)))
 
 (defun remove-fringe-and-hl-line-mode (&rest stuff)
   (modeline-setup)

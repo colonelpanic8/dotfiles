@@ -4,6 +4,7 @@
 (use-package mu4e
   :config
   (progn
+    (setq mu4e-compose-complete-only-after nil)
     (setq mu4e-maildir "~/Mail")
 
     (setq mu4e-drafts-folder "/[Gmail].Drafts")
@@ -26,6 +27,11 @@
 
     ;; allow for updating mail using 'U' in the main view:
     (setq mu4e-get-mail-command "offlineimap")
+    ;; show images
+    (setq mu4e-show-images t)
+    (add-hook 'mu4e-compose-mode-hook
+              (defun my-do-compose-stuff () (flyspell-mode)))
+    (setq mu4e-update-interval 15)
 
     ;; ;; something about ourselves
     ;; (setq
