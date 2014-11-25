@@ -454,7 +454,7 @@ buffer is not visiting a file."
           (missing-priority
            '(tags-todo "-PRIORITY={.}/!"
                        ((org-agenda-overriding-header
-                         "These dont' have priorities:")))))
+                         "These don't have priorities:")))))
       
       (setq org-agenda-custom-commands
             `(("M" "Main agenda view"
