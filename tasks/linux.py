@@ -15,7 +15,8 @@ linux_pacakges = ('zsh', 'tmux', 'emacs24-nox', 'nmap', 'scala', 'default-jdk',
                   'default-jre', 'python-virtualenv', 'htop', 'netcat', 'wget',
                   'zlib1g-dev', 'libxml2-dev', 'libxslt1-dev', 'python-dev',
                   'libncurses5-dev', 'xbindkeys', 'python3-dev', 'xclip',
-                  'silversearcher-ag', 'npm', 'xdotool', 'gconf-editor')
+                  'silversearcher-ag', 'npm', 'xdotool', 'gconf-editor',
+                  'dropbox', 'offlineimap', 'mu4e')
 @ctask
 def apt_get(ctx):
     install_command = 'sudo apt-get -y install'
@@ -32,6 +33,11 @@ def get_sbt(ctx):
 
 @ctask
 def get_spotify(ctx):
+    pass
+
+
+@ctask
+def setup_sources(ctx):
     pass
 
 
