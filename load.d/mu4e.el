@@ -17,13 +17,7 @@
     ;; setup some handy shortcuts
     ;; you can quickly switch to your Inbox -- press ``ji''
     ;; then, when you want archive some messages, move them to
-    ;; the 'All Mail' folder by pressing ``ma''.
-
-    (setq mu4e-maildir-shortcuts
-          '( ("/INBOX"               . ?i)
-             ("/[Gmail].Sent Mail"   . ?s)
-             ("/[Gmail].Trash"       . ?t)
-             ("/[Gmail].All Mail"    . ?a)))
+    ;; the 'All Mail' folder by pressing ``
 
     ;; allow for updating mail using 'U' in the main view:
     (setq mu4e-get-mail-command "offlineimap")
