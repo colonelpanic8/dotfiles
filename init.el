@@ -262,6 +262,10 @@ buffer is not visiting a file."
 ;; Make forward word understand camel and snake case.
 (setq c-subword-mode t)
 
+
+(setq-default cursor-type 'box)
+(setq-default cursor-in-non-selected-windows 'bar)
+
 (add-hook 'after-init-hook '(lambda () (setq debug-on-error t)))
 
 ;; Make mouse scrolling less jumpy.
@@ -286,6 +290,8 @@ buffer is not visiting a file."
 
 ;; y and n instead of yes and no
 (defalias 'yes-or-no-p 'y-or-n-p)
+
+(use-package discover-my-major :ensure t)
 
 (use-package guide-key
   :ensure t
@@ -421,7 +427,35 @@ buffer is not visiting a file."
   :ensure t
   :commands (org-mode org)
   :mode ("\\.org\\'" . org-mode)
-  :config (unbind-key "C-j" org-mode-map)
+  :config
+  (progn
+    ;; Record changes to todo states
+    (setq org-log-into-drawer t)
+    (setq org-todo-keywords
+       '((sequence "TODO(t)" "WAIT(w@/!)" "|" "DONE(d!)" "CANCELED(c@)")))
+    ;; Stop starting agenda from deleting frame setup!
+    (setq org-agenda-window-setup 'other-window)
+    (setq org-agenda-custom-commands
+          '(("M" "Main agenda view"
+             ((tags-todo "+PRIORITY=\"A\"+DEADLINE<\"<+1w>\""
+                         ((org-agenda-overriding-header
+                           "Upcoming high priority tasks")))
+              (tags-todo "+DEADLINE<\"<+0d>\""
+                         ((org-agenda-overriding-header "Overdue tasks:")))
+              (agenda ""
+                      ((org-agenda-overriding-header "Agenda"))))
+             nil nil)
+            ("A" "High priority upcoming" tags-todo
+             "+PRIORITY=\"A\"+DEADLINE<\"<+1w>\""
+             ((org-agenda-overriding-header "Upcoming high priority tasks")))
+            ("od" "Overdue tasks" tags-todo "+DEADLINE<\"<+0d>\""
+             ((org-agenda-overriding-header "Overdue tasks:")))
+            ("nd" tags-todo "-DEADLINE={.}/!" nil)))
+          
+          '(("A" "High priority upcoming" tags-todo "+PRIORITY=\"A\"+DEADLINE<\"<+1w>\"")
+            ("od" tags-todo "+DEADLINE<\"<+0d>\"")
+            ("nd" tags-todo "-DEADLINE={.}/!")))
+    (unbind-key "C-j" org-mode-map))
   :init
   (progn
     (if (and (boundp 'file-notify--library) file-notify--library)
@@ -434,8 +468,7 @@ buffer is not visiting a file."
       (guide-key/add-local-guide-key-sequence "C-c C-x")
       (guide-key/add-local-highlight-command-regexp "org-"))
     (add-hook 'org-mode-hook 'guide-key/my-hook-function-for-org-mode)
-    (add-hook 'org-mode-hook (lambda () (linum-mode 0)))
-    (define-key mode-specific-map [?a] 'org-agenda)))
+    (add-hook 'org-mode-hook (lambda () (linum-mode 0)))))
 
 (use-package epg
   :ensure t
@@ -449,10 +482,14 @@ buffer is not visiting a file."
   (progn
     (setq sauron-nick-insensitivity 1)
     (use-package erc-colorize :ensure t) (erc-colorize-mode 1)
+    (defun erc-sauron:handle-event (origin priority message &optional properties)
+      
+      (let ((event (plist-get properties :event))
+             (message "origin: %s, properties: %s" origin properties)
+             (notification-center "" message))))
     (add-hook 'sauron-event-added-functions
-              (lambda (origin priority message &optional properties)
-                (message "triggered...XXX")
-                (notification-center "test" message)))))
+              (lambda 
+                (if (eq origin "erc") nil nil)))))
 
 (use-package sauron
   :ensure t
@@ -481,7 +518,8 @@ buffer is not visiting a file."
              show-affix-info
              (base-menu  (let ((save (if (and (consp affix) show-affix-info)
                                          (list
-                                          (list (concat "Save affix: " (car affix))
+                                          (list (concat "Save affix: "
+                                                        (car affix))
                                                 'save)
                                           '("Accept (session)" session)
                                           '("Accept (buffer)" buffer))
@@ -583,7 +621,8 @@ buffer is not visiting a file."
     (use-package ido-vertical-mode
       :ensure t
       :config (ido-vertical-mode 1))
-    (use-package flx-ido :ensure t)))
+    (use-package flx-ido :ensure t)
+    (ido-ubiquitous-mode 1)))
 
 (if (and (boundp 'use-ido) use-ido) (ido-mode))
 
@@ -901,9 +940,12 @@ buffer is not visiting a file."
 
 (use-package powerline
   :ensure t
-  :config
-  :disabled (not use-powerline)
-  (powerline-simple-theme))
+  :config (powerline-simple-theme)
+  :disabled (not use-powerline))
+
+(use-package powerline-evil
+  :ensure t
+  :disabled (not use-powerline))
 
 ;; No splash screen please... jeez
 (setq inhibit-startup-screen t)
