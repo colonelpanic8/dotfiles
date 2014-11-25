@@ -40,8 +40,10 @@
 ;;                                                       Load Path Configuration
 ;; =============================================================================
 
+(defvar machine-custom "~/.emacs.d/this-machine.el")
 (setq custom-file "~/.emacs.d/custom.el")
 (when (file-exists-p custom-file) (load custom-file))
+(when (file-exists-p machine-custom) (load machine-custom))
 
 ;; =============================================================================
 ;;                                                         ELPA/package.el/MELPA
