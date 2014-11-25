@@ -57,7 +57,7 @@ function focus_emacs {
 }
 
 function emacs_get_running_instances {
-    pgrep -i emacs | xargs ps -o command -p | egrep -o " --daemon=(.*)" | awk -F= '{print $2}' | sed 's/\^J3,4\^J//'
+    pgrep emacs | xargs ps -o command -p | egrep -o " --daemon=(.*)" | awk -F= '{print $2}' | sed 's/\^J3,4\^J//'
 }
 
 function emacs_open {
