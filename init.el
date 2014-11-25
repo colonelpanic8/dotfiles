@@ -131,8 +131,13 @@
 ;;                                                                     functions
 ;; =============================================================================
 
-(defun up-list-region () (interactive)
-       (up-list) (set-mark-command nil) (backward-sexp))
+(defun up-list-region ()
+  (interactive)
+  (up-list) (set-mark-command nil) (backward-sexp))
+
+(defun up-list-back ()
+  (interactive)
+  (up-list) (backward-sexp))
 
 (defun unfill-paragraph (&optional region)
   "Takes a multi-line paragraph and makes it into a single line of text."
@@ -283,7 +288,10 @@ buffer is not visiting a file."
 (use-package load-dir
   :ensure t
   :config
-  (progn (add-to-list 'load-dirs "~/.emacs.d/load.d")))
+  (progn
+    (add-to-list 'load-dirs "~/.emacs.d/load.d")
+    (defvar site-lisp "/usr/share/emacs24/site-lisp/")
+    (when (file-exists-p site-lisp) (add-to-list 'load-dirs site-lisp))))
 
 (use-package tramp
   :commands tramp
@@ -448,6 +456,7 @@ buffer is not visiting a file."
   :ensure t
   :commands (org-mode org org-mobile-push org-mobile-pull org-agenda)
   :mode ("\\.org\\'" . org-mode)
+  :bind ("C-c a" . org-agenda)
   :config
   (progn
     (let ((this-week-high-priority
@@ -725,7 +734,8 @@ buffer is not visiting a file."
 (bind-key "C-c C-v" 'find-variable)
 (define-key lisp-mode-shared-map (kbd "C-c C-c") 'eval-defun)
 (define-key lisp-mode-shared-map (kbd "C-c C-r") 'eval-and-replace)
-(define-key lisp-mode-shared-map (kbd "C-c o") 'up-list-region)
+(define-key lisp-mode-shared-map (kbd "C-c o s") 'up-list-region)
+(define-key lisp-mode-shared-map (kbd "C-c o o") 'up-list-back)
 
 ;; =============================================================================
 ;;                                                                        Python
