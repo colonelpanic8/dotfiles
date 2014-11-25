@@ -129,6 +129,9 @@
 ;;                                                                     functions
 ;; =============================================================================
 
+(defun up-list-region () (interactive)
+       (up-list) (set-mark-command nil) (backward-sexp))
+
 (defun unfill-paragraph (&optional region)
   "Takes a multi-line paragraph and makes it into a single line of text."
   (interactive (progn
@@ -297,7 +300,8 @@ buffer is not visiting a file."
   :ensure t
   :config
   (progn
-    (setq guide-key/guide-key-sequence '("C-c" "C-c p" "C-x C-k" "C-x r" "C-x c"))
+    (setq guide-key/guide-key-sequence
+          '("C-c" "C-c p" "C-x C-k" "C-x r" "C-x c"))
     (guide-key-mode 1)
     (diminish 'guide-key-mode)
     (setq guide-key/idle-delay 0.25)
@@ -423,43 +427,79 @@ buffer is not visiting a file."
 ;;                                                         Non-Programming Stuff
 ;; =============================================================================
 
+(use-package jabber
+  :ensure t
+  :commands jabber-connect)
+
 (use-package org
   :ensure t
-  :commands (org-mode org)
+  :commands (org-mode org org-mobile-push org-mobile-pull org-agenda)
   :mode ("\\.org\\'" . org-mode)
   :config
   (progn
+    (let ((this-week-high-priority
+           '(tags-todo "+PRIORITY=\"A\"+DEADLINE<\"<+1w>\""
+                       ((org-agenda-overriding-header
+                         "Upcoming high priority tasks:"))))
+          (overdue-tasks '(tags-todo
+                           "+DEADLINE<\"<+0d>\""
+                           ((org-agenda-overriding-header
+                             "Overdue tasks:"))))
+          (missing-deadline
+           '(tags-todo "-DEADLINE={.}/!"
+                       ((org-agenda-overriding-header
+                         "These don't have deadlines:"))))
+          (missing-priority
+           '(tags-todo "-PRIORITY={.}/!"
+                       ((org-agenda-overriding-header
+                         "These dont' have priorities:")))))
+      
+      (setq org-agenda-custom-commands
+            `(("M" "Main agenda view"
+               (,overdue-tasks
+                ,this-week-high-priority
+                (agenda ""
+                        ((org-agenda-overriding-header "Agenda:")
+                         (org-agenda-ndays 5)
+                         (org-deadline-warning-days 0)))
+                ,missing-deadline
+                ,missing-priority)
+               nil nil)
+              ,(cons "A" (cons "High priority upcoming" this-week-high-priority))
+              ,(cons "od" (cons "Overdue tasks" overdue-tasks)))))
     ;; Record changes to todo states
     (setq org-log-into-drawer t)
     (setq org-todo-keywords
-       '((sequence "TODO(t)" "WAIT(w@/!)" "|" "DONE(d!)" "CANCELED(c@)")))
+          '((sequence "TODO(t@)" "STARTED(s@)" "WAIT(w@/!)" "|"
+                      "DONE(d@/!)" "CANCELED(c@)")))
     ;; Stop starting agenda from deleting frame setup!
     (setq org-agenda-window-setup 'other-window)
-    (setq org-agenda-custom-commands
-          '(("M" "Main agenda view"
-             ((tags-todo "+PRIORITY=\"A\"+DEADLINE<\"<+1w>\""
-                         ((org-agenda-overriding-header
-                           "Upcoming high priority tasks")))
-              (tags-todo "+DEADLINE<\"<+0d>\""
-                         ((org-agenda-overriding-header "Overdue tasks:")))
-              (agenda ""
-                      ((org-agenda-overriding-header "Agenda"))))
-             nil nil)
-            ("A" "High priority upcoming" tags-todo
-             "+PRIORITY=\"A\"+DEADLINE<\"<+1w>\""
-             ((org-agenda-overriding-header "Upcoming high priority tasks")))
-            ("od" "Overdue tasks" tags-todo "+DEADLINE<\"<+0d>\""
-             ((org-agenda-overriding-header "Overdue tasks:")))
-            ("nd" tags-todo "-DEADLINE={.}/!" nil)))
-          
-          '(("A" "High priority upcoming" tags-todo "+PRIORITY=\"A\"+DEADLINE<\"<+1w>\"")
-            ("od" tags-todo "+DEADLINE<\"<+0d>\"")
-            ("nd" tags-todo "-DEADLINE={.}/!")))
+    (define-key mode-specific-map [?a] 'org-agenda)
     (unbind-key "C-j" org-mode-map))
   :init
   (progn
+    ;; Automatically sync with mobile
+    (defvar my-org-mobile-sync-timer nil)
+    (defvar my-org-mobile-sync-secs 60)
+    (defun my-org-mobile-sync-pull-and-push ()
+      (org-mobile-pull)
+      (org-mobile-push)
+      (when (fboundp 'sauron-add-event)
+        (sauron-add-event 'me 1 "Called org-mobile-pull and org-mobile-push")))
+    (defun my-org-mobile-sync-start ()
+      "Start automated `org-mobile-push'"
+      (interactive)
+      (setq my-org-mobile-sync-timer
+            (run-with-idle-timer my-org-mobile-sync-secs t
+                                 'my-org-mobile-sync-pull-and-push)))
+
+    (defun my-org-mobile-sync-stop ()
+      "Stop automated `org-mobile-push'"
+      (interactive)
+      (cancel-timer my-org-mobile-sync-timer))
     (if (and (boundp 'file-notify--library) file-notify--library)
-        (use-package org-mobile-sync :ensure t :config (org-mobile-sync-mode 1)))
+        (use-package org-mobile-sync :ensure t :config (org-mobile-sync-mode 1))
+      (my-org-mobile-sync-start))
     (setq org-directory "~/Dropbox/org")
     (setq org-mobile-inbox-for-pull "~/Dropbox/org/flagged.org")
     (setq org-mobile-directory "~/Dropbox/Apps/MobileOrg")
@@ -482,7 +522,8 @@ buffer is not visiting a file."
   (progn
     (setq sauron-nick-insensitivity 1)
     (use-package erc-colorize :ensure t) (erc-colorize-mode 1)
-    (defun erc-sauron:handle-event (origin priority message &optional properties)
+    (defun erc-sauron:handle-event (origin priority message
+                                           &optional properties)
       
       (let ((event (plist-get properties :event))
              (message "origin: %s, properties: %s" origin properties)
@@ -656,10 +697,11 @@ buffer is not visiting a file."
 (add-hook 'emacs-lisp-mode-hook 'imenu-elisp-sections)
 (add-hook 'emacs-lisp-mode-hook 'flatten-current-imenu-index-function)
 (add-hook 'emacs-lisp-mode-hook (lambda () (setq indent-tabs-mode nil)))
+(bind-key "C-c C-f" 'find-function)
+(bind-key "C-c C-v" 'find-variable)
 (define-key lisp-mode-shared-map (kbd "C-c C-c") 'eval-defun)
-(define-key lisp-mode-shared-map (kbd "C-c C-f") 'find-function)
-(define-key lisp-mode-shared-map (kbd "C-c C-v") 'find-variable)
 (define-key lisp-mode-shared-map (kbd "C-c C-r") 'eval-and-replace)
+(define-key lisp-mode-shared-map (kbd "C-c o") 'up-list-region)
 
 ;; =============================================================================
 ;;                                                                        Python
@@ -923,9 +965,10 @@ buffer is not visiting a file."
   (setq mode-line-format
         '("%e"
           (:eval
-           (let* ((lhs (list (powerline-raw
-                              (format " %s (%%l/%d) %%c " (downcase mode-name)
-                                      (line-number-at-pos (point-max))) nil 'l)))
+           (let* ((lhs (list
+                        (powerline-raw
+                         (format " %s (%%l/%d) %%c " (downcase mode-name)
+                                 (line-number-at-pos (point-max))) nil 'l)))
                   (rhs (list (powerline-raw
                               (cond
                                ((not (buffer-file-name)) "_ ")
@@ -933,7 +976,8 @@ buffer is not visiting a file."
                                (t "  ")) nil 'r)))
                   (center (list (powerline-raw "%b" nil))))
              (concat (powerline-render lhs)
-                     (powerline-fill-center nil (/ (powerline-width center) 2.0))
+                     (powerline-fill-center nil
+                                            (/ (powerline-width center) 2.0))
                      (powerline-render center)
                      (powerline-fill nil (powerline-width rhs))
                      (powerline-render rhs)))))))
