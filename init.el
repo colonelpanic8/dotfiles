@@ -236,6 +236,8 @@ buffer is not visiting a file."
   (shell-command (format "grownotify -t %s -m %s" title message)))
 
 
+(defvar notify-function 'notification-center)
+
 ;; =============================================================================
 ;;                                                         General Emacs Options
 ;; =============================================================================
@@ -431,7 +433,16 @@ buffer is not visiting a file."
 
 (use-package jabber
   :ensure t
-  :commands jabber-connect)
+  :commands jabber-connect
+  :config
+  (progn
+    (defun jabber-message-content-message (from buffer text)
+      (when (or jabber-message-alert-same-buffer
+                (not (memq (selected-window) (get-buffer-window-list buffer))))
+        (if (jabber-muc-sender-p from)
+            (format "%s: %s" (jabber-jid-resource from) text)
+          (format "%s: %s" (jabber-jid-displayname from) text))))
+    (setq jabber-alert-message-function 'jabber-message-content-message)))
 
 (use-package org
   :ensure t
@@ -517,27 +528,38 @@ buffer is not visiting a file."
   :config
   (epa-file-enable))
 
+(use-package twittering-mode :ensure t)
+
 (use-package erc
   :ensure t
   :commands erc
   :config
   (progn
-    (setq sauron-nick-insensitivity 1)
-    (use-package erc-colorize :ensure t) (erc-colorize-mode 1)
-    (defun erc-sauron:handle-event (origin priority message
-                                           &optional properties)
-      
-      (let ((event (plist-get properties :event))
-             (message "origin: %s, properties: %s" origin properties)
-             (notification-center "" message))))
-    (add-hook 'sauron-event-added-functions
-              (lambda 
-                (if (eq origin "erc") nil nil)))))
+    (use-package erc-colorize :ensure t) (erc-colorize-mode 1)))
 
 (use-package sauron
   :ensure t
   :commands (sauron-start sauron-start-hidden)
-  :config (progn (setq sauron-separate-frame nil))
+  :config
+  (progn
+    (setq sauron-min-priority 3)
+    (setq sauron-separate-frame nil)
+    (setq sauron-nick-insensitivity 1)
+    (defun sauron:jabber-notify (origin priority message &optional properties)
+      (funcall notify-function "gtalk" message))
+    (defun sauron:erc-notify (origin priority message &optional properties)
+      (let ((event (plist-get properties :event)))
+            (message "origin: %s, properties: %s" origin event)
+            (funcall notify-function "IRC" message)))
+    (defun sauron:mu4e-notify (origin priority message &optional properties)
+      nil)
+    (defun sauron:dispatch-notify (origin priority message &optional properties)
+      (let ((handler (cond ((string= origin "erc") 'sauron:erc-notify)
+                            ((string= origin "jabber") 'sauron:jabber-notify)
+                            ((string= origin "mu4e") 'sauron:mu4e-notify)
+                            (t (lambda (&rest r) nil)))))
+        (funcall handler origin priority message properties)))
+    (add-hook 'sauron-event-added-functions 'sauron:dispatch-notify))
   :idle (sauron-start-hidden)
   :idle-priority 3)
 
