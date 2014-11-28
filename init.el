@@ -456,7 +456,9 @@ buffer is not visiting a file."
   :ensure t
   :commands (org-mode org org-mobile-push org-mobile-pull org-agenda)
   :mode ("\\.org\\'" . org-mode)
-  :bind ("C-c a" . org-agenda)
+  :bind (("C-c a" . org-agenda)
+         ("C-c n t" . org-insert-todo-heading)
+         ("C-c n s" . org-insert-todo-subheading))
   :config
   (progn
     (let ((this-week-high-priority
