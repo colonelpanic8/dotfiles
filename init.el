@@ -131,6 +131,10 @@
 ;;                                                                     functions
 ;; =============================================================================
 
+(defun undo-redo (&optional arg)
+  (interactive "P")
+  (if arg (undo-tree-redo) (undo-tree-undo)))
+
 (defun up-list-region ()
   (interactive)
   (up-list) (set-mark-command nil) (backward-sexp))
@@ -148,8 +152,8 @@
     (fill-paragraph nil region)))
 
 (defun fill-or-unfill-paragraph (&optional unfill region)
-    "Fill paragraph (or REGION).
-  With the prefix argument UNFILL, unfill it instead."
+  "Fill paragraph (or REGION). With the prefix argument UNFILL,
+unfill it instead."
     (interactive (progn
                    (barf-if-buffer-read-only)
                    (list (if current-prefix-arg 'unfill) t)))
@@ -408,7 +412,9 @@ buffer is not visiting a file."
 
 (use-package undo-tree
   :ensure t
-  :bind ("C-c u" . undo-tree-visualize)
+  :bind (("C--" . undo-redo)
+         ("C-c u" . undo-tree-visualize)
+         ("C-c r" . undo-tree-redo))
   :config
   (diminish 'undo-tree-mode)
   :init
@@ -940,7 +946,9 @@ buffer is not visiting a file."
   :commands sgml-mode
   :bind ("C-c b" . web-beautify-html))
 
-(use-package gitconfig-mode :ensure t :mode "\\.gitconfig\\'")
+(use-package gitconfig-mode
+  :ensure t
+  :mode "\\.?gitconfig\\'")
 
 (use-package evil :ensure t :commands (evil-mode))
 
@@ -951,7 +959,6 @@ buffer is not visiting a file."
 ;; Miscellaneous
 (global-unset-key (kbd "C-o")) ;; Avoid collision with tmux binding.
 (bind-key "M-q" 'fill-or-unfill-paragraph)
-(bind-key "C--" 'undo)
 (bind-key "C-c C-s" 'sudo-edit)
 (bind-key "C-c SPC"
           (lambda () (interactive)
