@@ -467,6 +467,7 @@ buffer is not visiting a file."
          ("C-c n s" . org-insert-todo-subheading))
   :config
   (progn
+    (add-to-list 'org-modules 'org-habits)
     (let ((this-week-high-priority
            '(tags-todo "+PRIORITY=\"A\"+DEADLINE<\"<+1w>\""
                        ((org-agenda-overriding-header
