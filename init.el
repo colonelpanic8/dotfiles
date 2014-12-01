@@ -384,6 +384,14 @@ buffer is not visiting a file."
   :init
   (add-hook 'prog-mode-hook (lambda () (auto-complete-mode t))))
 
+(use-package company
+  :ensure t
+  :commands company-mode
+  :config
+  (diminish 'company-mode)
+  :init
+  (add-hook 'prog-mode-hook (lambda () (company-mode t))))
+
 (use-package expand-region
   :ensure t
   :commands er/expand-region
@@ -546,7 +554,9 @@ buffer is not visiting a file."
   :config
   (epa-file-enable))
 
-(use-package twittering-mode :ensure t)
+(use-package twittering-mode
+  :ensure t
+  :commands twittering-mode)
 
 (use-package erc
   :ensure t
@@ -567,7 +577,6 @@ buffer is not visiting a file."
       (funcall notify-function "gtalk" message))
     (defun sauron:erc-notify (origin priority message &optional properties)
       (let ((event (plist-get properties :event)))
-            (message "origin: %s, properties: %s" origin event)
             (funcall notify-function "IRC" message)))
     (defun sauron:mu4e-notify (origin priority message &optional properties)
       nil)
