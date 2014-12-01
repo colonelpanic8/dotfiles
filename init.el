@@ -471,6 +471,7 @@ buffer is not visiting a file."
   :commands (org-mode org org-mobile-push org-mobile-pull org-agenda)
   :mode ("\\.org\\'" . org-mode)
   :bind (("C-c a" . org-agenda)
+         ("C-c c" . org-capture)
          ("C-c n t" . org-insert-todo-heading)
          ("C-c n s" . org-insert-todo-subheading))
   :config
