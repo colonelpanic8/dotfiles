@@ -548,7 +548,9 @@ buffer is not visiting a file."
       (guide-key/add-local-guide-key-sequence "C-c C-x")
       (guide-key/add-local-highlight-command-regexp "org-"))
     (add-hook 'org-mode-hook 'guide-key/my-hook-function-for-org-mode)
-    (add-hook 'org-mode-hook (lambda () (linum-mode 0)))))
+    (defun disable-linum-mode () (linum-mode 0))
+    (add-hook 'org-mode-hook 'disable-linum-mode)
+    (add-hook 'org-agenda-mode-hook 'disable-linum-mode)))
 
 (use-package epg
   :ensure t
