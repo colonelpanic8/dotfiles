@@ -2,6 +2,7 @@
 (add-to-list 'load-path (s-trim (shell-command-to-string "mu4e_directory")))
 
 (use-package mu4e
+  :commands mu4e
   :config
   (progn
     (setq mu4e-compose-complete-only-after nil)
