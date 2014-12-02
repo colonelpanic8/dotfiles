@@ -131,6 +131,35 @@
 ;;                                                                     functions
 ;; =============================================================================
 
+(defun org-todo-no-note ()
+    (interactive)
+    (org-todo 0))
+
+(defun org-insert-or-goto-heading (heading)
+  (interactive
+   (list (read-string "Heading: ")))
+  (goto-char (point-min))
+  (unless (derived-mode-p 'org-mode)
+    (error
+     "Target buffer \"%s\" for file+headline should be in Org mode"
+     (current-buffer)))
+  (if (re-search-forward
+       (format org-complex-heading-regexp-format (regexp-quote heading))
+       nil t)
+      (goto-char (point-at-bol))
+    (goto-char (point-max))
+    (or (bolp) (insert "\n"))
+    (insert "* " heading "\n")))
+
+(defun org-make-habit ()
+  (interactive)
+  (org-set-property "STYLE" "habit"))
+
+(defun org-insert-habit ()
+  (interactive)
+  (org-insert-todo-heading nil)
+  (org-make-habit))
+
 (defun undo-redo (&optional arg)
   (interactive "P")
   (if arg (undo-tree-redo) (undo-tree-undo)))
@@ -244,8 +273,29 @@ buffer is not visiting a file."
 (defun growl-notify (title message)
   (shell-command (format "grownotify -t %s -m %s" title message)))
 
-
 (defvar notify-function 'notification-center)
+
+(defun project-root-of-file (filename)
+  "Retrieves the root directory of a project if available.
+The current directory is assumed to be the project's root otherwise."
+  (file-truename
+   (let ((dir (file-truename filename)))
+     (or (--reduce-from
+          (or acc
+              (let* ((cache-key (format "%s-%s" it dir))
+                     (cache-value (gethash cache-key projectile-project-root-cache)))
+                (if cache-value
+                    (if (eq cache-value 'no-project-root)
+                        nil
+                      cache-value)
+                  (let ((value (funcall it dir)))
+                    (puthash cache-key (or value 'no-project-root) projectile-project-root-cache)
+                    value))))
+          nil
+          projectile-project-root-files-functions)
+         (if projectile-require-project-root
+             (error "You're not in a project")
+           default-directory)))))
 
 ;; =============================================================================
 ;;                                                         General Emacs Options
@@ -255,7 +305,6 @@ buffer is not visiting a file."
 (exec-path-from-shell-initialize)
 
 ;; This makes it so that emacs --daemon puts its files in ~/.emacs.d/server
-;; (among other things)
 (setq server-use-tcp t)
 
 ;; Display line and column numbers in mode line.
@@ -287,7 +336,7 @@ buffer is not visiting a file."
 ;; Make mouse scrolling less jumpy.
 (setq mouse-wheel-scroll-amount '(1 ((shift) . 1)))
 
-(eval-after-load 'subword-mode '(diminish 'subword-mode))
+(eval-after-load "subword-mode" '(progn (diminish 'subword-mode)))
 
 (use-package load-dir
   :ensure t
@@ -473,10 +522,44 @@ buffer is not visiting a file."
   :bind (("C-c a" . org-agenda)
          ("C-c c" . org-capture)
          ("C-c n t" . org-insert-todo-heading)
-         ("C-c n s" . org-insert-todo-subheading))
+         ("C-c n s" . org-insert-todo-subheading)
+         ("C-c n h" . org-insert-habit)
+         ("C-c n m" . org-make-habit)
+         ("C-c C-S-t" . org-todo-no-note))
   :config
   (progn
-    (add-to-list 'org-modules 'org-habits)
+    (unless (boundp 'org-gtd-file)
+      (defvar org-gtd-file "~/org/gtd.org"))
+    (unless (boundp 'org-habits-file)
+      (defvar org-habits-file "~/org/habits.org"))
+    (unless (boundp 'org-projects-file)
+      (defvar org-projects-file "~/org/projects.org"))
+    (unless (boundp 'org-capture-templates)
+      (defvar org-capture-templates nil))
+    (setq org-agenda-files (list org-gtd-file org-habits-file org-projects-file))
+    (add-to-list 'org-capture-templates
+                 `("h" "Habit" entry (file+headline ,org-habits-file "Habits")
+                   "* TODO 
+  SCHEDULED: %t
+  :PROPERTIES:
+  :STYLE:    habit
+  :END:"))
+
+    (add-to-list 'org-capture-templates
+                 `("t" "Life Todo" entry (file+headline ,org-gtd-file "Tasks")
+                   "* TODO %?\n"))
+
+    (add-to-list 'org-capture-templates
+                 '("p" "Project Todo" entry
+                   `(file+function ,org-projects-file
+                                  (lambda ()
+                                    (org-insert-or-goto-heading
+                                     (file-name-nondirectory
+                                      (directory-file-name (project-root-of-file
+                                                            (plist-get org-capture-plist :original-file)))))
+                                    (org-end-of-line)))
+                   "* TODO %?\n" ))
+    (add-to-list 'org-modules 'org-habit)
     (let ((this-week-high-priority
            '(tags-todo "+PRIORITY=\"A\"+DEADLINE<\"<+1w>\""
                        ((org-agenda-overriding-header
@@ -597,6 +680,7 @@ buffer is not visiting a file."
   :ensure t
   :config
   (progn
+    (diminish 'flyspell-mode)
     (bind-key "M-s" 'flyspell-correct-word-before-point flyspell-mode-map)
     (unbind-key "C-;" flyspell-mode-map)
     (defun flyspell-emacs-popup-textual (event poss word)
@@ -1014,38 +1098,10 @@ buffer is not visiting a file."
 
 (use-package smart-mode-line
   :ensure t
-  :disabled use-powerline)
-
-(defun powerline-simple-theme ()
-  (interactive)
-  (setq mode-line-format
-        '("%e"
-          (:eval
-           (let* ((lhs (list
-                        (powerline-raw
-                         (format " %s (%%l/%d) %%c " (downcase mode-name)
-                                 (line-number-at-pos (point-max))) nil 'l)))
-                  (rhs (list (powerline-raw
-                              (cond
-                               ((not (buffer-file-name)) "_ ")
-                               ((buffer-modified-p) "! ")
-                               (t "  ")) nil 'r)))
-                  (center (list (powerline-raw "%b" nil))))
-             (concat (powerline-render lhs)
-                     (powerline-fill-center nil
-                                            (/ (powerline-width center) 2.0))
-                     (powerline-render center)
-                     (powerline-fill nil (powerline-width rhs))
-                     (powerline-render rhs)))))))
-
-(use-package powerline
-  :ensure t
-  :config (powerline-simple-theme)
-  :disabled (not use-powerline))
-
-(use-package powerline-evil
-  :ensure t
-  :disabled (not use-powerline))
+  :config
+  (progn
+    (setq sml/theme 'respectful)
+    (sml/setup)))
 
 ;; No splash screen please... jeez
 (setq inhibit-startup-screen t)
@@ -1063,12 +1119,6 @@ buffer is not visiting a file."
   (ansi-color-apply-on-region (point-min) (point-max))
   (read-only-mode))
 (add-hook 'compilation-filter-hook 'colorize-compilation-buffer)
-
-(defun modeline-setup ()
-  (unless (and (boundp 'use-powerline) use-powerline)
-    (progn
-      (sml/setup)
-      (sml/apply-theme 'automatic))))
 
 ;; =============================================================================
 ;;                                                                        Themes
@@ -1109,7 +1159,8 @@ buffer is not visiting a file."
 
 (defun disable-all-themes ()
   (interactive)
-  (mapcar 'disable-theme custom-enabled-themes))
+(mapcar
+ (lambda (theme) (unless (s-contains? "smart-mode" (symbol-name theme)) (disable-theme theme))) custom-enabled-themes))
 
 (defun disable-and-load-theme (theme &optional no-confirm no-enable)
   (interactive
@@ -1128,7 +1179,6 @@ buffer is not visiting a file."
 	    (set-frame-font "Monaco for Powerline-11" nil t) nil)))
 
 (defun remove-fringe-and-hl-line-mode (&rest stuff)
-  (modeline-setup)
   (if (fboundp 'scroll-bar-mode) (scroll-bar-mode -1))
   (if (fboundp 'tool-bar-mode) (tool-bar-mode -1))
   (if (fboundp 'menu-bar-mode) (menu-bar-mode -1))
