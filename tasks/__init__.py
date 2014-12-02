@@ -83,6 +83,7 @@ def link_dropbox_other(ctx):
         ('~/Dropbox/configs/custom.el', '~/.emacs.d/custom.el'),
         ('~/Dropbox/Documents', '~/Documents'),
         ('~/Dropbox/Pictures', '~/Pictures')
+        ('~/Dropbox/org', '~/org')
     )
     for source, destination in link_pairs:
         destination = os.path.expanduser(destination)
