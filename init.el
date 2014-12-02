@@ -132,9 +132,15 @@
 ;; =============================================================================
 
 (defun org-todo-no-note ()
-    (interactive)
-    (org-todo 0))
+  (interactive)
+  (org-todo 0))
 
+(defun org-project-heading (heading)
+  (org-insert-or-goto-heading heading)
+  (hide-subtree)
+  (org-beginning-of-line)
+  (org-set-property "CATEGORY" heading))
+  
 (defun org-insert-or-goto-heading (heading)
   (interactive
    (list (read-string "Heading: ")))
@@ -149,7 +155,7 @@
       (goto-char (point-at-bol))
     (goto-char (point-max))
     (or (bolp) (insert "\n"))
-    (insert "* " heading "\n")))
+    (insert "* " heading)))
 
 (defun org-make-habit ()
   (interactive)
@@ -525,7 +531,8 @@ The current directory is assumed to be the project's root otherwise."
          ("C-c n s" . org-insert-todo-subheading)
          ("C-c n h" . org-insert-habit)
          ("C-c n m" . org-make-habit)
-         ("C-c C-S-t" . org-todo-no-note))
+         ("C-c C-S-t" . org-todo-no-note)
+         ("C-c C-S-t" . org-todo))
   :config
   (progn
     (unless (boundp 'org-gtd-file)
@@ -549,25 +556,26 @@ The current directory is assumed to be the project's root otherwise."
                  `("t" "Life Todo" entry (file+headline ,org-gtd-file "Tasks")
                    "* TODO %?\n"))
 
+    (defun org-get-project-name-of-capture-file ()
+      (org-project-heading
+       (file-name-nondirectory
+        (directory-file-name (project-root-of-file
+                              (plist-get org-capture-plist :original-file)))))
+      (org-end-of-line))
+
     (add-to-list 'org-capture-templates
-                 '("p" "Project Todo" entry
-                   `(file+function ,org-projects-file
-                                  (lambda ()
-                                    (org-insert-or-goto-heading
-                                     (file-name-nondirectory
-                                      (directory-file-name (project-root-of-file
-                                                            (plist-get org-capture-plist :original-file)))))
-                                    (org-end-of-line)))
-                   "* TODO %?\n" ))
+                 `("p" "Project Todo" entry
+                   (file+function ,org-projects-file org-get-project-name-of-capture-file)
+                   "* TODO %?\n"))
     (add-to-list 'org-modules 'org-habit)
     (let ((this-week-high-priority
-           '(tags-todo "+PRIORITY=\"A\"+DEADLINE<\"<+1w>\""
+           '(tags-todo "+PRIORITY=\"A\"+DEADLINE<\"<+1w>\"DEADLINE>\"<+0d>\""
                        ((org-agenda-overriding-header
                          "Upcoming high priority tasks:"))))
-          (overdue-tasks '(tags-todo
-                           "+DEADLINE<\"<+0d>\""
+          (due-today '(tags-todo
+                           "+DEADLINE=<\"<+0d>\""
                            ((org-agenda-overriding-header
-                             "Overdue tasks:"))))
+                             "Due today:"))))
           (missing-deadline
            '(tags-todo "-DEADLINE={.}/!"
                        ((org-agenda-overriding-header
@@ -579,7 +587,7 @@ The current directory is assumed to be the project's root otherwise."
       
       (setq org-agenda-custom-commands
             `(("M" "Main agenda view"
-               (,overdue-tasks
+               (,due-today
                 ,this-week-high-priority
                 (agenda ""
                         ((org-agenda-overriding-header "Agenda:")
@@ -589,7 +597,7 @@ The current directory is assumed to be the project's root otherwise."
                 ,missing-priority)
                nil nil)
               ,(cons "A" (cons "High priority upcoming" this-week-high-priority))
-              ,(cons "od" (cons "Overdue tasks" overdue-tasks)))))
+              ,(cons "od" (cons "Overdue tasks and due today" due-today)))))
     ;; Record changes to todo states
     (setq org-log-into-drawer t)
     (setq org-todo-keywords
@@ -603,7 +611,7 @@ The current directory is assumed to be the project's root otherwise."
   (progn
     ;; Automatically sync with mobile
     (defvar my-org-mobile-sync-timer nil)
-    (defvar my-org-mobile-sync-secs 60)
+    (defvar my-org-mobile-sync-secs 120)
     (defun my-org-mobile-sync-pull-and-push ()
       (org-mobile-pull)
       (org-mobile-push)
