@@ -136,6 +136,8 @@
   (org-todo 0))
 
 (defun org-project-heading (heading)
+  (interactive
+   (list (read-string "Heading: ")))
   (org-insert-or-goto-heading heading)
   (hide-subtree)
   (org-beginning-of-line)
@@ -391,6 +393,13 @@ The current directory is assumed to be the project's root otherwise."
   (progn
     (setq ace-jump-mode-scope 'window))
   :bind (("C-j" . ace-jump-mode)))
+
+(use-package ace-isearch
+  :ensure t
+  :config
+  (progn
+    (global-ace-isearch-mode +1)
+    (setq ace-isearch-input-idle-delay .25)))
 
 (use-package flycheck
   :ensure t
