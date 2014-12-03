@@ -939,13 +939,13 @@ The current directory is assumed to be the project's root otherwise."
   :config
   (progn
     (use-package ensime
+      :ensure t
       :config
       (progn
         (add-hook 'scala-mode-hook 'ensime-scala-mode-hook)
         (defun guide-key/scala-mode-hook ()
           (guide-key/add-local-guide-key-sequence "C-c C-v"))
-        (add-hook 'scala-mode-hook 'guide-key/scala-mode-hook)
-      :ensure t))
+        (add-hook 'scala-mode-hook 'guide-key/scala-mode-hook)))
     (setq scala-indent:align-parameters t))
   :mode (("\\.scala\\'" . scala-mode)
          ("\\.sc\\'" . scala-mode))
@@ -1109,7 +1109,8 @@ The current directory is assumed to be the project's root otherwise."
 
 (defvar packages-appearance
   '(monokai-theme solarized-theme zenburn-theme base16-theme molokai-theme
-    tango-2-theme gotham-theme sublime-themes ansi-color rainbow-delimiters))
+    tango-2-theme gotham-theme sublime-themes ansi-color rainbow-delimiters
+    ample-theme))
 
 (ensure-packages-installed packages-appearance)
 
