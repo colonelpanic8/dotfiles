@@ -160,7 +160,26 @@
   (let ((org-todo-log-states
          (mapcar (lambda (state)
                    (list state 'note 'time))
-                 (apply 'append org-todo-sets))))))
+                 (apply 'append org-todo-sets))))
+    (cond ((eq major-mode 'org-mode)  (org-todo))
+          ((eq major-mode 'org-agenda-mode) (org-agenda-todo)))))
+
+(defun org-todo-force-notes ()
+  (interactive)
+  (let ((org-todo-log-states
+         (mapcar (lambda (state)
+                   (list state 'note 'time))
+                 (apply 'append org-todo-sets))))
+    (org-todo)
+    ))
+
+(defun org-agenda-todo-force-notes ()
+  (interactive)
+  (let ((org-todo-log-states
+         (mapcar (lambda (state)
+                   (list state 'note 'time))
+                 (apply 'append org-todo-sets))))
+    (org-agenda-todo)))
 
 (defun org-todo-no-note ()
   (interactive)
@@ -589,7 +608,7 @@ The current directory is assumed to be the project's root otherwise."
   :config
   (progn
     (setq org-habit-graph-column 50)
-    (setq org-habit-show-habits-only-for-today nil)
+    (setq org-habit-show-habits-only-for-today t)
     (unless (boundp 'org-gtd-file)
       (defvar org-gtd-file "~/org/gtd.org"))
     (unless (boundp 'org-habits-file)
