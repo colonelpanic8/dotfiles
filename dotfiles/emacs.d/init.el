@@ -155,6 +155,13 @@
 ;;                                                                     functions
 ;; =============================================================================
 
+(defun org-todo-force-notes ()
+  (interactive)
+  (let ((org-todo-log-states
+         (mapcar (lambda (state)
+                   (list state 'note 'time))
+                 (apply 'append org-todo-sets))))))
+
 (defun org-todo-no-note ()
   (interactive)
   (org-todo 0))
@@ -578,9 +585,10 @@ The current directory is assumed to be the project's root otherwise."
          ("C-c n h" . org-insert-habit)
          ("C-c n m" . org-make-habit)
          ("C-c C-t" . org-todo)
-         ("C-c C-S-t" . org-todo-no-note))
+         ("C-c C-S-t" . org-todo-force-notes))
   :config
   (progn
+    (call-interactively 'org-todo)))
     (setq org-habit-graph-column 50)
     (setq org-habit-show-habits-only-for-today nil)
     (unless (boundp 'org-gtd-file)
@@ -651,8 +659,8 @@ The current directory is assumed to be the project's root otherwise."
     ;; Record changes to todo states
     (setq org-log-into-drawer t)
     (setq org-todo-keywords
-          '((sequence "TODO(t@)" "STARTED(s@)" "WAIT(w@/!)" "|"
-                      "DONE(d@/!)" "CANCELED(c@)")))
+          '((sequence "TODO(t!)" "STARTED(s!)" "WAIT(w!)" "|"
+                      "DONE(d!)" "CANCELED(c!)")))
     ;; Stop starting agenda from deleting frame setup!
     (setq org-agenda-window-setup 'other-window)
     (define-key mode-specific-map [?a] 'org-agenda)
@@ -1218,7 +1226,8 @@ The current directory is assumed to be the project's root otherwise."
 (defun disable-all-themes ()
   (interactive)
 (mapcar
- (lambda (theme) (unless (s-contains? "smart-mode" (symbol-name theme)) (disable-theme theme))) custom-enabled-themes))
+ (lambda (theme) (unless (s-contains? "smart-mode" (symbol-name theme))
+                   (disable-theme theme))) custom-enabled-themes))
 
 (defun disable-and-load-theme (theme &optional no-confirm no-enable)
   (interactive
