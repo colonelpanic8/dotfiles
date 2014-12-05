@@ -126,6 +126,30 @@
 ;; No popup frames.
 (setq ns-pop-up-frames nil)
 (setq pop-up-frames nil)
+(setq confirm-nonexistent-file-or-buffer nil)
+
+;; No prompt for killing a buffer with processes attached.
+(setq kill-buffer-query-functions
+  (remq 'process-kill-buffer-query-function
+        kill-buffer-query-functions))
+
+(setq inhibit-startup-message t
+      inhibit-startup-echo-area-message t)
+
+(tooltip-mode -1)
+(setq tooltip-use-echo-area t)
+
+(setq use-dialog-box nil)
+
+(defadvice yes-or-no-p (around prevent-dialog activate)
+  "Prevent yes-or-no-p from activating a dialog"
+  (let ((use-dialog-box nil))
+    ad-do-it))
+
+(defadvice y-or-n-p (around prevent-dialog-yorn activate)
+  "Prevent y-or-n-p from activating a dialog"
+  (let ((use-dialog-box nil))
+    ad-do-it))
 
 ;; =============================================================================
 ;;                                                                     functions
@@ -325,7 +349,7 @@ The current directory is assumed to be the project's root otherwise."
 ;; Make buffer names unique.
 (setq uniquify-buffer-name-style 'forward)
 
-;; We want closures.
+;; We want closures.nil
 (setq lexical-binding t)
 
 ;; Don't disable downcase and upcase region.
@@ -335,6 +359,8 @@ The current directory is assumed to be the project's root otherwise."
 ;; Make forward word understand camel and snake case.
 (setq c-subword-mode t)
 
+;; Preserve pastes. Why wouldn't this be enabled by default.
+(setq save-interprogram-paste-before-kill t)
 
 (setq-default cursor-type 'box)
 (setq-default cursor-in-non-selected-windows 'bar)
@@ -540,8 +566,8 @@ The current directory is assumed to be the project's root otherwise."
          ("C-c n s" . org-insert-todo-subheading)
          ("C-c n h" . org-insert-habit)
          ("C-c n m" . org-make-habit)
-         ("C-c C-S-t" . org-todo-no-note)
-         ("C-c C-S-t" . org-todo))
+         ("C-c C-t" . org-todo)
+         ("C-c C-S-t" . org-todo-no-note))
   :config
   (progn
     (unless (boundp 'org-gtd-file)
@@ -552,6 +578,8 @@ The current directory is assumed to be the project's root otherwise."
       (defvar org-projects-file "~/org/projects.org"))
     (unless (boundp 'org-capture-templates)
       (defvar org-capture-templates nil))
+    (setq org-completion-use-ido t)
+    (org-enforce-todo-dependencies t)
     (setq org-agenda-files (list org-gtd-file org-habits-file org-projects-file))
     (add-to-list 'org-capture-templates
                  `("h" "Habit" entry (file+headline ,org-habits-file "Habits")
@@ -748,7 +776,6 @@ The current directory is assumed to be the project's root otherwise."
 
 (use-package helm
   :ensure t
-  :commands helm-mode
   :bind (("M-y" . helm-show-kill-ring)
          ("M-x" . helm-M-x)
          ("C-x C-i" . helm-imenu)
