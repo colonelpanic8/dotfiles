@@ -813,14 +813,16 @@ The current directory is assumed to be the project's root otherwise."
 ;;                                          File Navigation: helm/projectile/ido
 ;; =============================================================================
 
-(use-package helm
-  :ensure t
+(use-package helm-config
+  :ensure helm
   :bind (("M-y" . helm-show-kill-ring)
          ("M-x" . helm-M-x)
          ("C-x C-i" . helm-imenu)
          ("C-h a" . helm-apropos))
   :init
   (progn
+    (require 'helm)
+    (helm-mode 1)
     (use-package helm-ag :ensure t :defer t))
   :config
   (progn
@@ -854,6 +856,7 @@ The current directory is assumed to be the project's root otherwise."
 
 (use-package smex
   :ensure t
+  ;; Using helm-M-x instead
   :disabled t
   :commands smex
   ;; This is here because smex feels like part of ido
