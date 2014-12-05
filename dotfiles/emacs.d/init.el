@@ -600,7 +600,7 @@ The current directory is assumed to be the project's root otherwise."
     (unless (boundp 'org-capture-templates)
       (defvar org-capture-templates nil))
     (setq org-completion-use-ido t)
-    (org-enforce-todo-dependencies t)
+    (setq org-enforce-todo-dependencies t)
     (setq org-agenda-files (list org-gtd-file org-habits-file org-projects-file))
     (add-to-list 'org-capture-templates
                  `("h" "Habit" entry (file+headline ,org-habits-file "Habits")
