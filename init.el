@@ -588,7 +588,6 @@ The current directory is assumed to be the project's root otherwise."
          ("C-c C-S-t" . org-todo-force-notes))
   :config
   (progn
-    (call-interactively 'org-todo)))
     (setq org-habit-graph-column 50)
     (setq org-habit-show-habits-only-for-today nil)
     (unless (boundp 'org-gtd-file)
