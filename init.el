@@ -370,7 +370,7 @@ The current directory is assumed to be the project's root otherwise."
 ;; Make mouse scrolling less jumpy.
 (setq mouse-wheel-scroll-amount '(1 ((shift) . 1)))
 
-(eval-after-load "subword-mode" '(progn (diminish 'subword-mode)))
+(eval-after-load "subword-mode" '(diminish 'subword-mode))
 
 (use-package load-dir
   :ensure t
@@ -414,6 +414,7 @@ The current directory is assumed to be the project's root otherwise."
   (progn
     (use-package ace-window
       :ensure t
+      :config (setq aw-keys '(?a ?s ?d ?f ?g ?h ?j ?k ?l))
       :bind ("C-c w" . ace-select-window)))
   :config
   (progn
@@ -543,6 +544,16 @@ The current directory is assumed to be the project's root otherwise."
 ;;                                                         Non-Programming Stuff
 ;; =============================================================================
 
+(use-package helm-spotify
+  :ensure t
+  :commands helm-spotify)
+
+(use-package edit-server
+  :ensure t
+  :disabled t
+  :commands edit-server-start
+  :idle (edit-server-start))
+
 (use-package jabber
   :ensure t
   :commands jabber-connect
@@ -570,6 +581,8 @@ The current directory is assumed to be the project's root otherwise."
          ("C-c C-S-t" . org-todo-no-note))
   :config
   (progn
+    (setq org-habit-graph-column 50)
+    (setq org-habit-show-habits-only-for-today nil)
     (unless (boundp 'org-gtd-file)
       (defvar org-gtd-file "~/org/gtd.org"))
     (unless (boundp 'org-habits-file)
@@ -797,7 +810,6 @@ The current directory is assumed to be the project's root otherwise."
   :idle-priority 1
   :config
   (progn
-    (message "Setting up projectile.")
     (projectile-global-mode)
     (setq projectile-enable-caching t)
     (setq projectile-completion-system 'helm)
@@ -816,6 +828,7 @@ The current directory is assumed to be the project's root otherwise."
 
 (use-package smex
   :ensure t
+  :disabled t
   :commands smex
   ;; This is here because smex feels like part of ido
   :bind ("M-x" . smex))
