@@ -1,5 +1,5 @@
 # This is necessary for tramp.
-source ~/.lib/shellrc.sh
 [[ $TERM == "dumb" ]] && unsetopt zle && PS1='$ ' && return
+source ~/.lib/shellrc.sh
 source ~/.lib/zsh.sh
 test -r ~/.custom.sh && source ~/.custom.sh
