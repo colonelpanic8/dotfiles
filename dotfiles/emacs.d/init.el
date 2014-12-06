@@ -86,7 +86,7 @@
      (use-package package :ensure t)) packages))
 
 (defvar packages-eager
-  '(popup auto-complete yasnippet cl-lib exec-path-from-shell paradox slime
+  '(popup auto-complete yasnippet cl-lib paradox slime
     xclip dired+ ctags ctags-update aggressive-indent imenu+ neotree diminish
     gist))
 
@@ -359,9 +359,6 @@ The current directory is assumed to be the project's root otherwise."
 ;;                                                         General Emacs Options
 ;; =============================================================================
 
-;; Set path from shell.
-(exec-path-from-shell-initialize)
-
 ;; This makes it so that emacs --daemon puts its files in ~/.emacs.d/server
 (setq server-use-tcp t)
 
@@ -397,6 +394,11 @@ The current directory is assumed to be the project's root otherwise."
 (setq mouse-wheel-scroll-amount '(1 ((shift) . 1)))
 
 (eval-after-load "subword-mode" '(diminish 'subword-mode))
+
+;; Set path from shell.
+(use-package exec-path-from-shell
+  :ensure t
+  :config (exec-path-from-shell-initialize))
 
 (use-package load-dir
   :ensure t
