@@ -274,6 +274,9 @@ function python_module_path {
 function mu4e_directory {
     if is_osx; then
 	echo "$(brew --prefix mu)/share/emacs/site-lisp/mu4e"
+    else
+	# TODO: make this cleaner.
+	echo "/usr/share/emacs/site-lisp/mu4e"
     fi
 }
 
