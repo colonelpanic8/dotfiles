@@ -1,27 +1,37 @@
-(defun helm-org-agenda-files-headlines (&optional min-depth max-depth)
+(defun helm-org-agenda-files-headings (&optional min-depth max-depth)
   (interactive)
-  (helm :sources (helm-source-org-headlines-for-files org-agenda-files)))
+  (helm :sources (helm-source-org-headings-for-files org-agenda-files min-depth max-depth)))
 
 (defun helm-org-goto-marker (marker)
   (switch-to-buffer (marker-buffer marker))
   (goto-char (marker-position marker))
   (org-show-entry))
 
-
-(defun helm-source-org-headlines-for-files (filenames &optional min-depth max-depth)
+(defun helm-source-org-headings-for-files (filenames &optional min-depth max-depth)
   (unless min-depth (setq min-depth 1))
   (unless max-depth (setq max-depth 8))
-  (helm-build-sync-source "Org Headlines"
+  (helm-build-sync-source "Org Headings"
     :candidates (helm-org-get-candidates filenames min-depth max-depth)
     :action 'helm-org-goto-marker
     :action-transformer
     (lambda (actions candidate)
       '(("Go to line" . helm-org-goto-marker)
-        ("Refile to this headline" . helm-org-headline-refile)
-        ("Insert link to this headline"
-         . helm-org-headline-insert-link-to-headline)))))
+        ("Refile to this heading" . helm-org-heading-refile)
+        ("Insert link to this heading"
+         . helm-org-insert-link-to-heading-at-marker)))))
 
-(defun helm-org-headline-refile (marker)
+(defun helm-org-insert-link-to-heading-at-marker (marker)
+  (with-current-buffer (marker-buffer marker)
+    (goto-char (marker-position marker))
+    (let ((heading-name (nth 4 (org-heading-components)))
+          (file-name buffer-file-name))
+      (message heading-name)
+      (message file-name)
+      (with-helm-current-buffer
+        (org-insert-link
+         file-name (concat "file:" file-name "::*"heading-name))))))
+
+(defun helm-org-heading-refile (marker)
   (with-helm-current-buffer
     (org-cut-subtree))
   (let ((target-level (with-current-buffer (marker-buffer marker)
