@@ -818,7 +818,8 @@ The current directory is assumed to be the project's root otherwise."
   :bind (("M-y" . helm-show-kill-ring)
          ("M-x" . helm-M-x)
          ("C-x C-i" . helm-imenu)
-         ("C-h a" . helm-apropos))
+         ("C-h a" . helm-apropos)
+         ("C-c C-h" . helm-org-agenda-files-headings))
   :init
   (progn
     (require 'helm)
@@ -1240,9 +1241,8 @@ The current directory is assumed to be the project's root otherwise."
         (if (eq appropriate-theme current-theme)
             nil
           (progn
-            (disable-all-themes)
-            (load-theme appropriate-theme t)
-                 (setq current-theme appropriate-theme)))))
+            (disable-and-load-theme appropriate-theme t)
+            (setq current-theme appropriate-theme)))))
 
 (defun disable-all-themes ()
   (interactive)

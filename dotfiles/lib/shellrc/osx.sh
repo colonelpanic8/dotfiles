@@ -144,3 +144,26 @@ function set_application_for_file_extension() {
 function reload_preferences {
     killall -u $(whoami) cfprefsd
 }
+
+disable_proxy(){
+    sudo networksetup -setsocksfirewallproxystate Wi-Fi off
+    sudo networksetup -setsocksfirewallproxystate Ethernet off
+    echo "SOCKS proxy disabled."
+}
+
+function socks_proxy {
+    disable_proxy(){
+	sudo networksetup -setsocksfirewallproxystate Wi-Fi off
+	sudo networksetup -setsocksfirewallproxystate Ethernet off
+	echo "SOCKS proxy disabled."
+    }
+    trap disable_proxy EXIT
+    sudo networksetup -setsocksfirewallproxy Wi-Fi 127.0.0.1 9999
+    sudo networksetup -setsocksfirewallproxy Ethernet 127.0.0.1 9999
+    sudo networksetup -setsocksfirewallproxystate Wi-Fi on
+    sudo networksetup -setsocksfirewallproxystate Ethernet on
+    echo "SOCKS proxy enabled."
+    echo "Tunneling..."
+    echo "$@"
+    ssh -CND 9999 "$@"
+}
