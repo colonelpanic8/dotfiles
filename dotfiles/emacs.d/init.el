@@ -452,6 +452,7 @@ The current directory is assumed to be the project's root otherwise."
   :config
   (progn
     (global-ace-isearch-mode +1)
+    (setq ace-isearch-use-function-from-isearch nil)
     (setq ace-isearch-input-idle-delay .25)))
 
 (use-package flycheck
@@ -982,7 +983,7 @@ The current directory is assumed to be the project's root otherwise."
         (setq jedi:install-imenu t)
         (setq jedi:imenu-create-index-function 'jedi:create-flat-imenu-index))
       :ensure t
-      :bind ("C-c g" . jedi:goto-definition))
+      :bind ("M-." . jedi:goto-definition))
     (use-package pytest
       :ensure t
       :bind ("C-c t" . pytest-one))
