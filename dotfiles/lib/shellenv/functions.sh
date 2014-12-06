@@ -1,4 +1,4 @@
-shell_contains () {
+function shell_contains () {
   local e
   for e in "${@:2}"; do [[ "$e" == "$1" ]] && return 0; done
   return 1
@@ -283,4 +283,9 @@ function timestamp {
 
 function parse_timestamp {
     date -d "@$1"
+}
+
+function refresh_config {
+    source ~/.zshenv
+    source ~/.zshrc
 }
