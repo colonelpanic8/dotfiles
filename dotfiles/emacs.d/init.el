@@ -23,7 +23,7 @@
 ;;                                                                  GUI Disables
 ;; =============================================================================
 
-;; Turn off mouse interface early in startup to avoid momentary display
+ ;; Turn off mouse interface early in startup to avoid momentary display
 (when (fboundp 'menu-bar-mode) (menu-bar-mode -1))
 (when (fboundp 'tool-bar-mode) (tool-bar-mode -1))
 (when (fboundp 'scroll-bar-mode) (scroll-bar-mode -1))
@@ -35,6 +35,7 @@
 (defvar ido-cur-list nil)
 (defvar predicate nil)
 (defvar inherit-input-method nil)
+(defvar helm-swoop-last-prefix-number)
 
 ;; =============================================================================
 ;;                                                       Load Path Configuration
@@ -760,7 +761,7 @@ The current directory is assumed to be the project's root otherwise."
 ;; =============================================================================
 
 (add-hook 'prog-mode-hook (lambda () (auto-fill-mode -1)))
-(add-hook 'prog-mode-hook (lambda () (subword-mode t)))
+(add-hook 'prog-mode-hook (lambda () (subword-mode t) (diminish 'subword-mode)))
 (add-hook 'prog-mode-hook 'flyspell-prog-mode)
 
 ;; (add-hook 'prog-mode-hook (lambda () (highlight-lines-matching-regexp
@@ -1140,7 +1141,8 @@ The current directory is assumed to be the project's root otherwise."
     tango-2-theme gotham-theme sublime-themes ansi-color rainbow-delimiters
     ample-theme))
 
-(ensure-packages-installed packages-appearance)
+(use-packages packages-appearance)
+
 
 (use-package smart-mode-line
   :ensure t
@@ -1149,7 +1151,6 @@ The current directory is assumed to be the project's root otherwise."
     (setq sml/theme 'respectful)
     (sml/setup)))
 
-;; No splash screen please... jeez
 (setq inhibit-startup-screen t)
 (blink-cursor-mode -1)
 
@@ -1222,7 +1223,7 @@ The current directory is assumed to be the project's root otherwise."
   (condition-case exp
       (set-frame-font (random-choice fonts) nil t)
     ('error (package-refresh-contents)
-	    (set-frame-font "Monaco for Powerline-11" nil t) nil)))
+	    (set-frame-font "Monaco for Powerline-12" nil t) nil)))
 
 (defun remove-fringe-and-hl-line-mode (&rest stuff)
   (if (fboundp 'scroll-bar-mode) (scroll-bar-mode -1))
