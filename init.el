@@ -277,13 +277,15 @@ The current directory is assumed to be the project's root otherwise."
      (or (--reduce-from
           (or acc
               (let* ((cache-key (format "%s-%s" it dir))
-                     (cache-value (gethash cache-key projectile-project-root-cache)))
+                     (cache-value (gethash cache-key
+                                           projectile-project-root-cache)))
                 (if cache-value
                     (if (eq cache-value 'no-project-root)
                         nil
                       cache-value)
                   (let ((value (funcall it dir)))
-                    (puthash cache-key (or value 'no-project-root) projectile-project-root-cache)
+                    (puthash cache-key (or value 'no-project-root)
+                             projectile-project-root-cache)
                     value))))
           nil
           projectile-project-root-files-functions)
@@ -331,19 +333,16 @@ The current directory is assumed to be the project's root otherwise."
 
 (eval-after-load 'subword '(diminish 'subword-mode))
 
+(display-time-mode 1)
+
+;; =============================================================================
+;;                                                                   use-package
+;; =============================================================================
 
 ;; Set path from shell.
 (use-package exec-path-from-shell
   :ensure t
   :config (exec-path-from-shell-initialize))
-
-(use-package load-dir
-  :ensure t
-  :config
-  (progn
-    (add-to-list 'load-dirs "~/.emacs.d/load.d")
-    (defvar site-lisp "/usr/share/emacs24/site-lisp/")
-    (when (file-exists-p site-lisp) (add-to-list 'load-dirs site-lisp))))
 
 (use-package tramp
   :commands tramp
@@ -505,6 +504,14 @@ The current directory is assumed to be the project's root otherwise."
   :ensure t
   :commands string-inflection-toggle
   :bind ("C-c l" . string-inflection-toggle))
+
+(use-package load-dir
+  :ensure t
+  :config
+  (progn
+    (add-to-list 'load-dirs "~/.emacs.d/load.d")
+    (defvar site-lisp "/usr/share/emacs24/site-lisp/")
+    (when (file-exists-p site-lisp) (add-to-list 'load-dirs site-lisp))))
 
 ;; =============================================================================
 ;;                                                         Non-Programming Stuff
