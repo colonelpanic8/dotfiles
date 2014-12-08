@@ -104,7 +104,6 @@
 (setq make-backup-files nil)
 (setq auto-save-default nil)
 
-;; Why is this necessary again?
 (defconst emacs-tmp-dir
   (format "%s/%s%s/" temporary-file-directory "emacs" (user-uid)))
 (setq backup-directory-alist `((".*" . ,emacs-tmp-dir)))
@@ -154,69 +153,6 @@
 ;; =============================================================================
 ;;                                                                     functions
 ;; =============================================================================
-
-(defun org-todo-force-notes ()
-  (interactive)
-  (let ((org-todo-log-states
-         (mapcar (lambda (state)
-                   (list state 'note 'time))
-                 (apply 'append org-todo-sets))))
-    (cond ((eq major-mode 'org-mode)  (org-todo))
-          ((eq major-mode 'org-agenda-mode) (org-agenda-todo)))))
-
-(defun org-todo-force-notes ()
-  (interactive)
-  (let ((org-todo-log-states
-         (mapcar (lambda (state)
-                   (list state 'note 'time))
-                 (apply 'append org-todo-sets))))
-    (org-todo)
-    ))
-
-(defun org-agenda-todo-force-notes ()
-  (interactive)
-  (let ((org-todo-log-states
-         (mapcar (lambda (state)
-                   (list state 'note 'time))
-                 (apply 'append org-todo-sets))))
-    (org-agenda-todo)))
-
-(defun org-todo-no-note ()
-  (interactive)
-  (org-todo 0))
-
-(defun org-project-heading (heading)
-  (interactive
-   (list (read-string "Heading: ")))
-  (org-insert-or-goto-heading heading)
-  (hide-subtree)
-  (org-beginning-of-line)
-  (org-set-property "CATEGORY" heading))
-  
-(defun org-insert-or-goto-heading (heading)
-  (interactive
-   (list (read-string "Heading: ")))
-  (goto-char (point-min))
-  (unless (derived-mode-p 'org-mode)
-    (error
-     "Target buffer \"%s\" for file+headline should be in Org mode"
-     (current-buffer)))
-  (if (re-search-forward
-       (format org-complex-heading-regexp-format (regexp-quote heading))
-       nil t)
-      (goto-char (point-at-bol))
-    (goto-char (point-max))
-    (or (bolp) (insert "\n"))
-    (insert "* " heading)))
-
-(defun org-make-habit ()
-  (interactive)
-  (org-set-property "STYLE" "habit"))
-
-(defun org-insert-habit ()
-  (interactive)
-  (org-insert-todo-heading nil)
-  (org-make-habit))
 
 (defun undo-redo (&optional arg)
   (interactive "P")
@@ -393,7 +329,8 @@ The current directory is assumed to be the project's root otherwise."
 ;; Make mouse scrolling less jumpy.
 (setq mouse-wheel-scroll-amount '(1 ((shift) . 1)))
 
-(eval-after-load "subword-mode" '(diminish 'subword-mode))
+(eval-after-load 'subword '(diminish 'subword-mode))
+
 
 ;; Set path from shell.
 (use-package exec-path-from-shell
@@ -607,7 +544,8 @@ The current directory is assumed to be the project's root otherwise."
          ("C-c n h" . org-insert-habit)
          ("C-c n m" . org-make-habit)
          ("C-c C-t" . org-todo)
-         ("C-c C-S-t" . org-todo-force-notes))
+         ("C-c C-S-t" . org-todo-force-notes)
+         ("C-c n p" . org-projectile:project-todo-completing-read))
   :config
   (progn
     (setq org-habit-graph-column 50)
@@ -616,13 +554,11 @@ The current directory is assumed to be the project's root otherwise."
       (defvar org-gtd-file "~/org/gtd.org"))
     (unless (boundp 'org-habits-file)
       (defvar org-habits-file "~/org/habits.org"))
-    (unless (boundp 'org-projects-file)
-      (defvar org-projects-file "~/org/projects.org"))
     (unless (boundp 'org-capture-templates)
       (defvar org-capture-templates nil))
     (setq org-completion-use-ido t)
     (setq org-enforce-todo-dependencies t)
-    (setq org-agenda-files (list org-gtd-file org-habits-file org-projects-file))
+    (setq org-agenda-files (list org-gtd-file org-habits-file org-projectile:projects-file))
     (add-to-list 'org-capture-templates
                  `("h" "Habit" entry (file+headline ,org-habits-file "Habits")
                    "* TODO 
@@ -631,22 +567,32 @@ The current directory is assumed to be the project's root otherwise."
   :STYLE:    habit
   :END:"))
 
+    (defun org-todo-force-notes ()
+      (interactive)
+      (let ((org-todo-log-states
+             (mapcar (lambda (state)
+                       (list state 'note 'time))
+                     (apply 'append org-todo-sets))))
+        (cond ((eq major-mode 'org-mode)  (org-todo))
+              ((eq major-mode 'org-agenda-mode) (org-agenda-todo)))))
+
+    (defun org-make-habit ()
+      (interactive)
+      (org-set-property "STYLE" "habit"))
+
+    (defun org-insert-habit ()
+      (interactive)
+      (org-insert-todo-heading nil)
+      (org-make-habit))
+
     (add-to-list 'org-capture-templates
                  `("t" "Life Todo" entry (file+headline ,org-gtd-file "Tasks")
                    "* TODO %?\n"))
 
-    (defun org-get-project-name-of-capture-file ()
-      (org-project-heading
-       (file-name-nondirectory
-        (directory-file-name (project-root-of-file
-                              (plist-get org-capture-plist :original-file)))))
-      (org-end-of-line))
-
-    (add-to-list 'org-capture-templates
-                 `("p" "Project Todo" entry
-                   (file+function ,org-projects-file org-get-project-name-of-capture-file)
-                   "* TODO %?\n"))
+    (add-to-list 'org-capture-templates (org-projectile:project-todo-entry))
+    
     (add-to-list 'org-modules 'org-habit)
+
     (let ((this-week-high-priority
            '(tags-todo "+PRIORITY=\"A\"+DEADLINE<\"<+1w>\"DEADLINE>\"<+0d>\""
                        ((org-agenda-overriding-header
@@ -852,7 +798,7 @@ The current directory is assumed to be the project's root otherwise."
   (progn
     (use-package persp-projectile
       :ensure t
-      :commands persp-projectile)
+      :commands projectile-persp-switch-project)
     (use-package helm-projectile
       :ensure t
       :commands (helm-projectile-on)
@@ -929,7 +875,7 @@ The current directory is assumed to be the project's root otherwise."
 (bind-key "C-c C-v" 'find-variable)
 (define-key lisp-mode-shared-map (kbd "C-c C-c") 'eval-defun)
 (define-key lisp-mode-shared-map (kbd "C-c C-r") 'eval-and-replace)
-(define-key lisp-mode-shared-map (kbd "C-c o s") 'up-list-region)
+(define-key lisp-mode-shared-map (kbd "C-c o r") 'up-list-region)
 (define-key lisp-mode-shared-map (kbd "C-c o o") 'up-list-back)
 
 ;; =============================================================================
@@ -1163,6 +1109,7 @@ The current directory is assumed to be the project's root otherwise."
 (bind-key "M-n" 'forward-paragraph)
 (bind-key "M-p" 'backward-paragraph)
 (bind-key "M-z" 'zap-to-char)
+(bind-key "C-M-<backspace>" 'backward-kill-sexp)
 
 (fset 'global-set-key-to-use-package
       (lambda (&optional arg) "Keyboard macro." (interactive "p")
@@ -1249,9 +1196,9 @@ The current directory is assumed to be the project's root otherwise."
 
 (defun disable-all-themes ()
   (interactive)
-(mapcar
- (lambda (theme) (unless (s-contains? "smart-mode" (symbol-name theme))
-                   (disable-theme theme))) custom-enabled-themes))
+  (mapcar
+   (lambda (theme) (unless (s-contains? "smart-mode" (symbol-name theme))
+                     (disable-theme theme))) custom-enabled-themes))
 
 (defun disable-and-load-theme (theme &optional no-confirm no-enable)
   (interactive

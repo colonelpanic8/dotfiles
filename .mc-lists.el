@@ -15,12 +15,14 @@
         isearch-printing-char
         keyboard-quit
         kill-region
+        org-delete-char
         org-self-insert-command
         phi-search
         python-indent-electric-colon
         sgml-slash
         skeleton-pair-insert-maybe
         tern-ac-dot-complete
+        undo-redo
         universal-argument-minus
         wdired-finish-edit
         ))
