@@ -555,6 +555,7 @@ The current directory is assumed to be the project's root otherwise."
          ("C-c n p" . org-projectile:project-todo-completing-read))
   :config
   (progn
+    (use-package org-projectile :ensure t)
     (setq org-habit-graph-column 50)
     (setq org-habit-show-habits-only-for-today t)
     (unless (boundp 'org-gtd-file)
