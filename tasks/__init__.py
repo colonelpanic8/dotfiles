@@ -37,14 +37,13 @@ def dotfiles(ctx, flags=''):
 @ctask
 def dropbox_dotfiles(ctx, flags='f'):
     ctx.run('hash dotfiles || sudo pip install dotfiles')
-    link_dropbox_other(ctx)
     ctx.run('dotfiles -s{1} -R {0}'.format(
         os.path.join(
             os.path.expanduser('~'), 'Dropbox', 'configs', 'dotfiles'
         ),
         flags
     ))
-
+    link_dropbox_other(ctx)
 
 @ctask
 def powerline(ctx):
