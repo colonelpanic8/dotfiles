@@ -588,6 +588,9 @@ The current directory is assumed to be the project's root otherwise."
     (defun org-make-habit ()
       (interactive)
       (org-set-property "STYLE" "habit"))
+    (add-to-list 'org-capture-templates
+                 `("g" "GTD Todo" entry (file+headline ,org-gtd-file "Tasks")
+                   "* TODO %?\n"))
 
     (defun org-insert-habit ()
       (interactive)
