@@ -17,9 +17,10 @@ linux_pacakges = ('zsh', 'tmux', 'emacs24-nox', 'nmap', 'scala', 'default-jdk',
                   'libncurses5-dev', 'xbindkeys', 'python3-dev', 'xclip',
                   'silversearcher-ag', 'npm', 'xdotool', 'gconf-editor',
                   'dropbox', 'offlineimap', 'mu4e' 'fonts-droid' 'fonts-noto',
-                  'gnutls-bin', 'libgmime-2.6-', 'libxapian-dev')
+                  'gnutls-bin', 'libgmime-2.6-', 'libxapian-dev', 'openssh-server')
 @ctask
 def apt_get(ctx):
+    ctx.run('sudo apt-get update')
     install_command = 'sudo apt-get -y install'
     for package in linux_pacakges:
         ctx.run('{0} {1}'.format(install_command, package), pty=False)
