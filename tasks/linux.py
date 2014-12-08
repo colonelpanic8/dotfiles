@@ -33,6 +33,16 @@ def get_sbt(ctx):
             '--output-document=sbt.deb; sudo dpkg -i sbt.deb; '
             'sudo apt-get update; sudo apt-get install sbt; rm sbt.deb')
 
+@ctask
+def get_hub(ctx):
+    ctx.run("""git clone https://github.com/github/hub.git &&
+cd hub &&
+./script/build &&
+cp hub /usr/bin &&
+sudo chown root /usr/bin/hub &&
+sudo chmod 777 /usr/bin/hub""")
+
+
 
 @ctask
 def get_spotify(ctx):
