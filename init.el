@@ -35,7 +35,6 @@
 (defvar ido-cur-list nil)
 (defvar predicate nil)
 (defvar inherit-input-method nil)
-(defvar helm-swoop-last-prefix-number)
 
 ;; =============================================================================
 ;;                                                       Load Path Configuration
@@ -563,6 +562,7 @@ The current directory is assumed to be the project's root otherwise."
          ("C-c n p" . org-projectile:project-todo-completing-read))
   :config
   (progn
+    (use-package org-present :ensure t)
     (use-package org-projectile :ensure t)
     (setq org-habit-graph-column 50)
     (setq org-habit-show-habits-only-for-today t)
@@ -605,10 +605,6 @@ The current directory is assumed to be the project's root otherwise."
       (interactive)
       (org-insert-todo-heading nil)
       (org-make-habit))
-
-    (add-to-list 'org-capture-templates
-                 `("t" "Life Todo" entry (file+headline ,org-gtd-file "Tasks")
-                   "* TODO %?\n"))
 
     (add-to-list 'org-capture-templates (org-projectile:project-todo-entry))
     
