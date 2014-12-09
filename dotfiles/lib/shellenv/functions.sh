@@ -292,3 +292,19 @@ function refresh_config {
     source ~/.zshenv
     source ~/.zshrc
 }
+
+function file_ends_with_newline {
+    [[ $(tail -c1 "$1" | wc -l) -gt 0 ]]
+}
+
+function add_authorized_key_to_host {
+    local command='test -e ~/.ssh/authorized_keys && [[ $(tail -c1 ~/.ssh/authorized_keys  | wc -l) -gt 0 ]] || echo "\n" >> ~/.ssh/authorized_keys;'"echo $(cat ~/.ssh/id_rsa.pub) >> ~/.ssh/authorized_keys"
+    echo "Running:"
+    echo $command
+    ssh $1 "$command"
+}
+
+function add_ssh_key {
+    [[ $(tail -c1 ~/.ssh/authorized_keys  | wc -l) -gt 0 ]] || echo "\n" >> ~/.ssh/authorized_keys;
+    echo $1 >> ~/.ssh/authorized_keys;
+}
