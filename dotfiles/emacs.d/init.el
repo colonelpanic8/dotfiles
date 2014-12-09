@@ -514,6 +514,13 @@ The current directory is assumed to be the project's root otherwise."
     (defvar site-lisp "/usr/share/emacs24/site-lisp/")
     (when (file-exists-p site-lisp) (add-to-list 'load-dirs site-lisp))))
 
+(use-package recentf
+  ;; binding is in helm.
+  :config
+  (progn
+    (recentf-mode 1)
+    (setq recentf-max-menu-items 500)))
+
 ;; =============================================================================
 ;;                                                         Non-Programming Stuff
 ;; =============================================================================
@@ -782,7 +789,8 @@ The current directory is assumed to be the project's root otherwise."
          ("M-x" . helm-M-x)
          ("C-x C-i" . helm-imenu)
          ("C-h a" . helm-apropos)
-         ("C-c C-h" . helm-org-agenda-files-headings))
+         ("C-c C-h" . helm-org-agenda-files-headings)
+         ("C-c ;" . helm-recentf))
   :init
   (progn
     (require 'helm)
