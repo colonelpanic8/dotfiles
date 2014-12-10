@@ -370,12 +370,14 @@ The current directory is assumed to be the project's root otherwise."
   :config
   (progn
     (setq guide-key/guide-key-sequence
-          '("C-c" "C-c p" "C-x C-k" "C-x r" "C-x c"))
+          '("C-c" "C-c p" "C-x C-k" "C-x r" "C-h" "C-x c"))
     (guide-key-mode 1)
     (diminish 'guide-key-mode)
     (setq guide-key/idle-delay 0.25)
     (setq guide-key/recursive-key-sequence-flag t)
     (setq guide-key/popup-window-position 'bottom)))
+
+(use-package jump-char :ensure t)
 
 (use-package ace-jump-mode
   :ensure t
@@ -564,26 +566,41 @@ The current directory is assumed to be the project's root otherwise."
          ("C-c n h" . org-insert-habit)
          ("C-c n m" . org-make-habit)
          ("C-c C-t" . org-todo)
-         ("C-c C-S-t" . org-todo-force-notes)
-         ("C-c n p" . org-projectile:project-todo-completing-read))
+         ("C-c C-S-t" . org-todo-force-notes))
   :config
   (progn
+    ;; org-mode add-ons
     (use-package org-present :ensure t)
-    (use-package org-projectile :ensure t)
+    (use-package org-projectile
+      :ensure t
+      :demand t
+      :bind (("C-c n p" . imalison:org-projectile:project-todo))
+      :config
+      (progn
+        (defun imalison:org-projectile:project-todo (&optional arg)
+          (interactive "P")
+          (org-projectile:project-todo-completing-read
+           (if arg "* TODO %? %A\n" nil)))))
+    
+    ;; variable configuration
+    (setq org-src-fontify-natively t)
     (setq org-habit-graph-column 50)
     (setq org-habit-show-habits-only-for-today t)
-    (setq org-lowest-priority 69)
+    (setq org-lowest-priority 69) ;; The character E
+    (setq org-completion-use-ido t)
+    (setq org-enforce-todo-dependencies t)
+
+    ;; Agenda setup.
     (unless (boundp 'org-gtd-file)
       (defvar org-gtd-file "~/org/gtd.org"))
     (unless (boundp 'org-habits-file)
       (defvar org-habits-file "~/org/habits.org"))
     (unless (boundp 'org-capture-templates)
       (defvar org-capture-templates nil))
-    (setq org-completion-use-ido t)
-    (setq org-enforce-todo-dependencies t)
     (setq org-agenda-files
           (--filter (file-exists-p it)
                     (list org-gtd-file org-habits-file org-projectile:projects-file)))
+    
     (add-to-list 'org-capture-templates
                  `("h" "Habit" entry (file+headline ,org-habits-file "Habits")
                    "* TODO 
@@ -706,6 +723,7 @@ The current directory is assumed to be the project's root otherwise."
   :commands erc
   :config
   (progn
+    (add-to-list 'erc-modules 'notifications)
     (use-package erc-colorize :ensure t) (erc-colorize-mode 1)))
 
 (use-package s :ensure t)
@@ -715,6 +733,7 @@ The current directory is assumed to be the project's root otherwise."
   :commands mu4e
   :config
   (progn
+    (require 'org-mu4e)
     (setq mu4e-compose-complete-only-after nil)
     (setq mu4e-maildir "~/Mail")
 
@@ -863,6 +882,43 @@ The current directory is assumed to be the project's root otherwise."
     (use-package helm-ag :ensure t :defer t))
   :config
   (progn
+    ;; helm zsh source history
+    (defvar helm-c-source-zsh-history
+      '((name . "Zsh History")
+        (candidates . helm-c-zsh-history-set-candidates)
+        (action . (("Execute Command" . helm-c-zsh-history-action)))
+        (volatile)
+        (requires-pattern . 3)
+        (delayed)))
+    (defun helm-c-zsh-history-set-candidates (&optional request-prefix)
+      (let ((pattern (replace-regexp-in-string
+                      " " ".*"
+                      (or (and request-prefix
+                               (concat request-prefix
+                                       " " helm-pattern))
+                          helm-pattern))))
+        (with-current-buffer (find-file-noselect "~/.zsh_history" t t)
+          (auto-revert-mode -1)
+          (goto-char (point-max))
+          (loop for pos = (re-search-backward pattern nil t)
+                while pos
+                collect (replace-regexp-in-string
+                         "\\`:.+?;" ""
+                         (buffer-substring (line-beginning-position)
+                                           (line-end-position)))))))
+
+    (defun helm-c-zsh-history-action (candidate)
+      (async-shell-command candidate))
+
+    (defun helm-command-from-zsh ()
+      (interactive)
+      (require 'helm)
+      (helm-other-buffer 'helm-c-source-zsh-history "*helm zsh history*"))
+
+    (use-package helm-descbinds
+      :demand t
+      :bind (("C-h 0" . helm-descbinds))
+      :ensure t)
     (helm-mode 1)
     (diminish 'helm-mode)))
 
