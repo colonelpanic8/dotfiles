@@ -28,6 +28,9 @@ def macvim(ctx):
     ctx.run("brew install {0}".format(macvim_install))
     ctx.run("vim +BundleInstall! +q +q")
 
+@ctask
+def setup_dbus(ctx):
+    ctx.run("ln -sfv /usr/local/opt/d-bus/*.plist ~/Library/LaunchAgents")
 
 @ctask
 def osx_config(ctx):
