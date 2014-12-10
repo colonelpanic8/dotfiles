@@ -57,7 +57,7 @@ function focus_emacs {
 }
 
 function emacs_get_running_instances {
-    pgrep emacs | xargs ps -o command -p | egrep -o " --daemon=(.*)" | awk -F= '{print $2}' | sed 's/\^J3,4\^J//'
+    pgrep -i emacs | xargs ps -o command -p | egrep -o " --daemon=(.*)" | awk -F= '{print $2}' | sed 's/\^J3,4\^J//'
 }
 
 function emacs_open {
@@ -66,6 +66,7 @@ function emacs_open {
     fi
     local server_file="$(emacs_get_running_instances | head -n1)"
     emacs_make_frame_if_none_exists $server_file
+    echo "$server_file"
     [ ! -z "$*" ] && emacsclient "$@" --server-file="$server_file"
     focus_emacs
 }
