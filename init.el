@@ -267,7 +267,13 @@ buffer is not visiting a file."
 (defun growl-notify (title message)
   (shell-command (format "grownotify -t %s -m %s" title message)))
 
-(defvar notify-function 'notification-center)
+(defun notify-send (title message)
+  (shell-command (format "notify-send -u critical %s %s" title message)))
+
+(defvar notify-function
+  (cond ((eq system-type 'darwin) 'notification-center)
+        ((eq system-type 'gnu/linux) 'notify-send)))
+
 
 (defun project-root-of-file (filename)
   "Retrieves the root directory of a project if available.
@@ -425,7 +431,7 @@ The current directory is assumed to be the project's root otherwise."
   (progn
     (diminish 'magit-auto-revert-mode)
     (use-package magit-filenotify
-      ;; Seems like OSX does not properly this.
+      ;; Seems like OSX does not support filenotify.
       :disabled t
       :ensure t
       :if (emacs24_4-p)
@@ -601,15 +607,15 @@ The current directory is assumed to be the project's root otherwise."
     (add-to-list 'org-capture-templates
                  `("g" "GTD Todo" entry (file+headline ,org-gtd-file "Tasks")
                    "* TODO %?\n"))
+    
 
     (defun org-insert-habit ()
       (interactive)
       (org-insert-todo-heading nil)
       (org-make-habit))
 
-    (add-to-list 'org-capture-templates (org-projectile:project-todo-entry))
-    
-    (add-to-list 'org-modules 'org-habit)
+    (add-to-list 'org-capture-templates (org-projectile:project-todo-entry "p"))
+    (add-to-list 'org-capture-templates (org-projectile:project-todo-entry "l" "* TODO %? %a\n"))
 
     (let ((this-week-high-priority
            '(tags-todo "+PRIORITY=\"A\"+DEADLINE<\"<+1w>\"DEADLINE>\"<+0d>\""
