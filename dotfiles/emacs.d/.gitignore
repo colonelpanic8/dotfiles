@@ -8,7 +8,6 @@ backups
 eshell
 url
 bookmarks
-
 elpa
 .python-environments/
 tramp
@@ -23,3 +22,4 @@ skewer-cache
 .org-id-locations
 jabber-avatar-cache
 this-machine.el
+recentf
