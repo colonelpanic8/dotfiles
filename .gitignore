@@ -23,3 +23,5 @@ skewer-cache
 jabber-avatar-cache
 this-machine.el
 recentf
+persp-confs/
+.tern-port
