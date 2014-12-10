@@ -57,7 +57,9 @@ function focus_emacs {
 }
 
 function emacs_get_running_instances {
-    pgrep -i emacs | xargs ps -o command -p | egrep -o " --daemon=(.*)" | awk -F= '{print $2}' | sed 's/\^J3,4\^J//'
+    local command='pgrep'
+    is_osx && command='pgrep -i'
+    $command emacs | xargs ps -o command -p | egrep -o " --daemon=(.*)" | awk -F= '{print $2}' | sed 's/\^J3,4\^J//'
 }
 
 function emacs_open {
@@ -66,9 +68,8 @@ function emacs_open {
     fi
     local server_file="$(emacs_get_running_instances | head -n1)"
     emacs_make_frame_if_none_exists $server_file
-    echo "$server_file"
     [ ! -z "$*" ] && emacsclient "$@" --server-file="$server_file"
-    focus_emacs
+    is_osx && focus_emacs
 }
 
 function time_emacs {
@@ -79,4 +80,4 @@ function time_emacs {
 export EDITOR='emacs_open'
 export VISUAL="$EDITOR"
 # This is ugly as sin but I can't figure out how else to do it.
-export GIT_EDITOR="zsh -c 'source ~/.zshrc && emacs_open '"'"$@"'
+export GIT_EDITOR="zsh -c 'emacs_open '"'"$@"; return 0'
