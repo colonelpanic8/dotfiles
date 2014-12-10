@@ -274,7 +274,6 @@ buffer is not visiting a file."
   (cond ((eq system-type 'darwin) 'notification-center)
         ((eq system-type 'gnu/linux) 'notify-send)))
 
-
 (defun project-root-of-file (filename)
   "Retrieves the root directory of a project if available.
 The current directory is assumed to be the project's root otherwise."
@@ -370,7 +369,7 @@ The current directory is assumed to be the project's root otherwise."
   :config
   (progn
     (setq guide-key/guide-key-sequence
-          '("C-c" "C-c p" "C-x C-k" "C-x r" "C-h" "C-x c"))
+          '("C-c" "C-c p" "C-x C-k" "C-x r" "C-h" "C-x c" "C-x x"))
     (guide-key-mode 1)
     (diminish 'guide-key-mode)
     (setq guide-key/idle-delay 0.25)
@@ -583,6 +582,7 @@ The current directory is assumed to be the project's root otherwise."
            (if arg "* TODO %? %A\n" nil)))))
     
     ;; variable configuration
+    (add-to-list 'org-modules 'org-habit)
     (setq org-src-fontify-natively t)
     (setq org-habit-graph-column 50)
     (setq org-habit-show-habits-only-for-today t)
@@ -924,6 +924,10 @@ The current directory is assumed to be the project's root otherwise."
 
 (use-package helm-swoop :ensure t :commands helm-swoop)
 
+(use-package perspective
+  :ensure t
+  :config (persp-mode))
+
 (use-package projectile
   :ensure t
   :commands projectile-global-mode
@@ -1123,10 +1127,13 @@ The current directory is assumed to be the project's root otherwise."
 (use-package js2-mode
   :ensure t
   :commands (js-mode)
+  :mode "\\.js\\'"
   :bind
   (("C-c b" . web-beautify-js))
   :init
   (progn
+    (setq js2-bounce-indent-p t)
+    (setq js2-basic-offset 2)
     (use-package skewer-mode
       :ensure t
       :commands skewer-mode)
