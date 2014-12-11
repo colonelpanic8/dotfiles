@@ -339,6 +339,9 @@ The current directory is assumed to be the project's root otherwise."
 (eval-after-load 'subword '(diminish 'subword-mode))
 
 (display-time-mode 1)
+(setq reb-re-syntax 'string)
+
+(setq ediff-split-window-function 'split-window-horizontally)
 
 ;; =============================================================================
 ;;                                                                   use-package
@@ -733,6 +736,16 @@ The current directory is assumed to be the project's root otherwise."
   :commands mu4e
   :config
   (progn
+    ;; enable inline images
+    (setq mu4e-view-show-images t)
+    ;; show images
+    (setq mu4e-show-images t)
+
+    ;; use imagemagick, if available
+    (when (fboundp 'imagemagick-register-types)
+         (imagemagick-register-types))
+    (setq sauron-dbus-cookie t)
+    (setq mail-user-agent 'mu4e-user-agent)
     (require 'org-mu4e)
     (setq mu4e-compose-complete-only-after nil)
     (setq mu4e-maildir "~/Mail")
@@ -740,22 +753,17 @@ The current directory is assumed to be the project's root otherwise."
     (setq mu4e-drafts-folder "/[Gmail].Drafts")
     (setq mu4e-sent-folder   "/[Gmail].Sent Mail")
     (setq mu4e-trash-folder  "/[Gmail].Trash")
+    (setq mu4e-update-interval (* 60 20))
+    (setq message-kill-buffer-on-exit t)
 
     ;; don't save message to Sent Messages, Gmail/IMAP takes care of this
     (setq mu4e-sent-messages-behavior 'delete)
 
-    ;; setup some handy shortcuts
-    ;; you can quickly switch to your Inbox -- press ``ji''
-    ;; then, when you want archive some messages, move them to
-    ;; the 'All Mail' folder by pressing ``
-
     ;; allow for updating mail using 'U' in the main view:
     (setq mu4e-get-mail-command "offlineimap")
-    ;; show images
-    (setq mu4e-show-images t)
+
     (add-hook 'mu4e-compose-mode-hook
               (defun my-do-compose-stuff () (flyspell-mode)))
-    (setq mu4e-update-interval (* 60 20))
 
     ;; ;; something about ourselves
     ;; (setq
@@ -764,30 +772,14 @@ The current directory is assumed to be the project's root otherwise."
     ;;       "Foo X. Bar\n"
     ;;       "http://www.example.com\n"))
 
-    ;; sending mail -- replace USERNAME with your gmail username
-    ;; also, make sure the gnutls command line utils are installed
-    ;; package 'gnutls-bin' in Debian/Ubuntu
-
     (require 'smtpmail)
-    ;; (setq message-send-mail-function 'smtpmail-send-it
-    ;;    starttls-use-gnutls t
-    ;;    smtpmail-starttls-credentials '(("smtp.gmail.com" 587 nil nil))
-    ;;    smtpmail-auth-credentials
-    ;;      '(("smtp.gmail.com" 587 "USERNAME@gmail.com" nil))
-    ;;    smtpmail-default-smtp-server "smtp.gmail.com"
-    ;;    smtpmail-smtp-server "smtp.gmail.com"
-    ;;    smtpmail-smtp-service 587)
-
+    
     ;; alternatively, for emacs-24 you can use:
     (setq message-send-mail-function 'smtpmail-send-it
           smtpmail-stream-type 'starttls
           smtpmail-default-smtp-server "smtp.gmail.com"
           smtpmail-smtp-server "smtp.gmail.com"
-          smtpmail-smtp-service 587)
-
-    ;; don't keep message buffers around
-    (setq message-kill-buffer-on-exit t)))
-
+          smtpmail-smtp-service 587)))
 
 (use-package sauron
   :ensure t
@@ -801,13 +793,16 @@ The current directory is assumed to be the project's root otherwise."
       (funcall notify-function "gtalk" message))
     (defun sauron:erc-notify (origin priority message &optional properties)
       (let ((event (plist-get properties :event)))
-            (funcall notify-function "IRC" message)))
+        (funcall notify-function "IRC" message)))
     (defun sauron:mu4e-notify (origin priority message &optional properties)
       nil)
+    (defun sauron:dbus-notify (origin priority message &optional properties)
+      (funcall notify-function "GMail" message))
     (defun sauron:dispatch-notify (origin priority message &optional properties)
       (let ((handler (cond ((string= origin "erc") 'sauron:erc-notify)
                             ((string= origin "jabber") 'sauron:jabber-notify)
                             ((string= origin "mu4e") 'sauron:mu4e-notify)
+                            ((string= origin "dbus") 'sauron:dbus-notify)
                             (t (lambda (&rest r) nil)))))
         (funcall handler origin priority message properties)))
     (add-hook 'sauron-event-added-functions 'sauron:dispatch-notify))
@@ -879,7 +874,7 @@ The current directory is assumed to be the project's root otherwise."
   (progn
     (require 'helm)
     (helm-mode 1)
-    (use-package helm-ag :ensure t :defer t))
+    (use-package helm-ag :ensure t))
   :config
   (progn
     ;; helm zsh source history
@@ -917,7 +912,7 @@ The current directory is assumed to be the project's root otherwise."
 
     (use-package helm-descbinds
       :demand t
-      :bind (("C-h 0" . helm-descbinds))
+      :config (helm-descbinds-mode 1)
       :ensure t)
     (helm-mode 1)
     (diminish 'helm-mode)))
@@ -926,15 +921,22 @@ The current directory is assumed to be the project's root otherwise."
 
 (use-package perspective
   :ensure t
-  :config (persp-mode))
+  ;; :config (persp-mode) ;; This was causing problems where buffers
+  ;; weren't showing up in the buffers list
+  )
 
 (use-package projectile
   :ensure t
-  :commands projectile-global-mode
-  :idle (projectile-global-mode)
-  :idle-priority 1
+  :demand t
   :config
   (progn
+    (defun do-ag (&optional arg)
+      (interactive "P")
+      (if arg (helm-do-ag) (helm-projectile-ag)))
+    (unbind-key "C-c p s a" projectile-command-map)
+    (unbind-key "C-c p s g" projectile-command-map)
+    (unbind-key "C-c p s s" projectile-command-map)
+    (unbind-key "C-c p s" projectile-command-map)
     (projectile-global-mode)
     (setq projectile-enable-caching t)
     (setq projectile-completion-system 'helm)
@@ -1376,7 +1378,6 @@ The current directory is assumed to be the project's root otherwise."
   (set-fringe-mode 0)
   (setq linum-format 'dynamic)
   (setq left-margin-width 0)
-  (set-my-font-for-frame nil)
   (setq hl-line-mode nil))
 
 (if (emacs24_4-p)
@@ -1384,10 +1385,9 @@ The current directory is assumed to be the project's root otherwise."
   (defadvice load-theme (after name activate)
     (remove-fringe-and-hl-line-mode)))
 
-
 ;; enable to set theme based on time of day.
 (run-at-time "00:00" 3600 'set-theme)
 
-;; This is needed because you can't set the font at daemon start-up.
+;; ;; This is needed because you can't set the font at daemon start-up.
 (add-hook 'after-make-frame-functions 'set-my-font-for-frame)
 (add-hook 'after-make-frame-functions (lambda (frame) (set-theme)))
