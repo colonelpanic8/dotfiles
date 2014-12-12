@@ -352,6 +352,15 @@ The current directory is assumed to be the project's root otherwise."
   :ensure t
   :config (exec-path-from-shell-initialize))
 
+(use-package yasnippet
+  :ensure t
+  :config
+  (progn
+    (yas-global-mode)
+    (diminish 'yas-minor-mode)
+    (setq yas-prompt-functions (cons 'yas-ido-prompt (cl-delete 'yas-ido-prompt  yas-prompt-functions)))))
+  
+
 (use-package tramp
   :commands tramp
   :config
@@ -765,12 +774,11 @@ The current directory is assumed to be the project's root otherwise."
     (add-hook 'mu4e-compose-mode-hook
               (defun my-do-compose-stuff () (flyspell-mode)))
 
-    ;; ;; something about ourselves
-    ;; (setq
-    ;;    mu4e-compose-signature
-    ;;     (concat
-    ;;       "Foo X. Bar\n"
-    ;;       "http://www.example.com\n"))
+    (setq
+       mu4e-compose-signature
+        (concat
+          "Ivan Malison\n"
+          "https://github.com/IvanMalison"))
 
     (require 'smtpmail)
     
