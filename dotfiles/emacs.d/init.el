@@ -989,6 +989,7 @@ The current directory is assumed to be the project's root otherwise."
         (setq ido-use-faces nil)))
     (use-package ido-ubiquitous
       :ensure t
+      :disabled t
       :commands (ido-ubiquitous-mode))
     (use-package ido-vertical-mode
       :ensure t
