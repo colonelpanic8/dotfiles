@@ -121,7 +121,7 @@ function oscopy() {
     then
         reattach-to-user-namespace pbcopy
     else
-	xclip -selection c
+	test -n "$DISPLAY" && xclip -selection c
     fi
 }
 
