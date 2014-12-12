@@ -1,5 +1,6 @@
 MAILDIR="$HOME/Mail"
 DBUS_COOKIE="$HOME/.sauron-dbus"
+SYNC_STAMP="$HOME/.mail-sync"
 
 function sauron_msg {
     if test -z "$DBUS_SESSION_BUS_ADDRESS"; then
@@ -22,7 +23,10 @@ function sauron_msg {
 
 function update_mail {
     offlineimap
-    for f in `find "$MAILDIR/INBOX/" -mmin -5 -a -type f`; do
-        sauron_msg "Gmail" "$(mu view $f | grep -B 10 Date)"
+    touch "${SYNC_STAMP}.in-progress"
+    for f in `find "$MAILDIR" -cnewer $SYNC_STAMP -a -type f`; do
+	local message="$(mu view $f | grep -B 10 Date)"
+	test -n "$message" && sauron_msg "Gmail" "$message"
     done
+    mv "${SYNC_STAMP}.in-progress" $SYNC_STAMP
 }

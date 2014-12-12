@@ -30,3 +30,4 @@ dotfiles/config/user-dirs.dirs
 dotfiles/config/user-dirs.locale
 dotfiles/config/vlc/
 dotfiles/config/nemo/
+/.mail-sync
