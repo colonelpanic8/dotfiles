@@ -77,7 +77,6 @@ function time_emacs {
 }
 
 # Make emacs the default editor.
-export EDITOR="e() { zsh -c 'emacs_open '"'"$@"; return 0; }; e'
+export EDITOR="$HOME/.lib/editor.sh"
 export VISUAL="$EDITOR"
-# This is ugly as sin but I can't figure out how else to do it.
-export GIT_EDITOR="zsh -c 'emacs_open '"'"$@"; return 0'
+export GIT_EDITOR="$EDITOR"
