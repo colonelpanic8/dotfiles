@@ -406,11 +406,12 @@ The current directory is assumed to be the project's root otherwise."
 
 (use-package ace-isearch
   :ensure t
+  :disabled t ;; I just don't really use this much
   :config
   (progn
     (global-ace-isearch-mode +1)
     (setq ace-isearch-use-function-from-isearch nil)
-    (setq ace-isearch-input-idle-delay .25)))
+    (setq ace-isearch-input-idle-delay 1)))
 
 (use-package flycheck
   :ensure t
@@ -435,6 +436,8 @@ The current directory is assumed to be the project's root otherwise."
   :init
   (progn
     (add-hook 'prog-mode-hook (lambda () (rainbow-delimiters-mode t)))))
+
+(use-package diff-hl :ensure t)
 
 (use-package magit
   :ensure t
@@ -462,8 +465,13 @@ The current directory is assumed to be the project's root otherwise."
 (use-package company
   :ensure t
   :commands company-mode
-  :config
-  (diminish 'company-mode)
+  :bind (("C-\\" . company-complete))
+  :config 
+  (progn
+    (setq company-idle-delay .25)
+    (global-company-mode)
+    (add-to-list 'company-backends 'mu4e-contacts-company)
+    (diminish 'company-mode))
   :init
   (add-hook 'prog-mode-hook (lambda () (company-mode t))))
 
@@ -750,6 +758,20 @@ The current directory is assumed to be the project's root otherwise."
     ;; show images
     (setq mu4e-show-images t)
 
+    (defun imalison:mu4e-startup ()
+      (let ((buffer-existed (get-buffer mu4e~main-buffer-name))
+            (inhibit-read-only t)
+            (buffer (get-buffer-create mu4e~main-buffer-name)))
+        (switch-to-buffer buffer)
+        (mu4e-main-mode)
+        (unless buffer-existed
+          (insert (format "mu4e: --- %s" (documentation major-mode))))))
+
+    ;; Don't use the default mu4e start screen
+    (defun mu4e ()
+      (interactive)
+      (mu4e~start 'imalison:mu4e-startup))
+
     ;; use imagemagick, if available
     (when (fboundp 'imagemagick-register-types)
          (imagemagick-register-types))
@@ -974,6 +996,7 @@ The current directory is assumed to be the project's root otherwise."
   :commands ido-mode
   :config
   (progn
+    (setq ido-create-new-buffer 'always)
     (ido-everywhere 1)
     (setq ido-enable-flex-matching t)
     (use-package flx :ensure t)
@@ -994,8 +1017,7 @@ The current directory is assumed to be the project's root otherwise."
     (use-package ido-vertical-mode
       :ensure t
       :config (ido-vertical-mode 1))
-    (use-package flx-ido :ensure t)
-    (ido-ubiquitous-mode 1)))
+    (use-package flx-ido :ensure t)))
 
 (if (and (boundp 'use-ido) use-ido) (ido-mode))
 
@@ -1004,6 +1026,8 @@ The current directory is assumed to be the project's root otherwise."
 ;; =============================================================================
 
 (setq edebug-trace t)
+
+(use-package macrostep :ensure t)
 
 (use-package paredit
   :ensure t)
