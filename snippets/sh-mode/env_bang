@@ -1,0 +1,6 @@
+# -*- mode: snippet -*-
+# name: env-bang
+# key: !
+# --
+#!/usr/bin/env $1
+
