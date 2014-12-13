@@ -912,6 +912,15 @@ The current directory is assumed to be the project's root otherwise."
     (use-package helm-ag :ensure t))
   :config
   (progn
+    (cl-defun helm-org-in-buffer-headings ()
+      (interactive)
+      (helm :sources (helm-source-org-headings-for-files
+                      
+                      (list (projectile-completing-read
+                             "File to look at headings from: "
+                             (projectile-all-project-files))))
+            :candidate-number-limit 99999
+            :buffer "*helm org inbuffer*"))
     ;; helm zsh source history
     (defvar helm-c-source-zsh-history
       '((name . "Zsh History")
