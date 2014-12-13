@@ -912,7 +912,7 @@ The current directory is assumed to be the project's root otherwise."
     (use-package helm-ag :ensure t))
   :config
   (progn
-    (cl-defun helm-org-in-buffer-headings ()
+    (cl-defun helm-org-headings-in-buffer ()
       (interactive)
       (helm :sources (helm-source-org-headings-for-files
                       
