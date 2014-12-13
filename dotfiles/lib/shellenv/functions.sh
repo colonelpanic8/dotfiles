@@ -207,9 +207,7 @@ function git_reset_author() {
     git filter-branch -f --env-filter $filter_branch_command -- --all
 }
 
-function git_reset_author_to_user {
-    git_reset_author -a "$(git config --get user.name)" -e "$(git config --get user.email)" "$@"
-}
+alias git_reset_author_to_user='git_reset_author -a "$(git config --get user.name)" -e "$(git config --get user.email)" '
 
 function set_osx_hostname() {
     local new_hostname="${1-imalison}"
