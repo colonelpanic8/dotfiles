@@ -337,6 +337,7 @@ The current directory is assumed to be the project's root otherwise."
 (setq mouse-wheel-scroll-amount '(1 ((shift) . 1)))
 
 (eval-after-load 'subword '(diminish 'subword-mode))
+(eval-after-load 'simple '(diminish 'visual-line-mode))
 
 (display-time-mode 1)
 (setq reb-re-syntax 'string)
@@ -392,7 +393,8 @@ The current directory is assumed to be the project's root otherwise."
 
 (use-package ace-jump-mode
   :ensure t
-  :commands ace-jump-mode
+  :commands (ace-jump-mode imalison:ace-jump-mode)
+  :bind (("C-j" . imalison:ace-jump-mode))
   :init
   (progn
     (use-package ace-window
@@ -401,8 +403,11 @@ The current directory is assumed to be the project's root otherwise."
       :bind ("C-c w" . ace-select-window)))
   :config
   (progn
-    (setq ace-jump-mode-scope 'window))
-  :bind (("C-j" . ace-jump-mode)))
+    (setq ace-jump-mode-scope 'window)
+    (defun imalison:ace-jump-mode (&optional prefix)
+      (interactive "P")
+      (let ((ace-jump-mode-scope (if prefix 'global 'window)))
+        (ace-jump-mode 0)))))
 
 (use-package ace-isearch
   :ensure t
