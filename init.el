@@ -9,10 +9,10 @@
 
 (setq user-full-name
       (replace-regexp-in-string "\n$" "" (shell-command-to-string
-                                          "git config --get user.email")))
+                                          "git config --get user.name")))
 (setq user-mail-address
       (replace-regexp-in-string "\n$" "" (shell-command-to-string
-                                          "git config --get user.name")))
+                                          "git config --get user.email")))
 
 (defun emacs24_4-p ()
   (or (and (>= emacs-major-version 24)
@@ -808,12 +808,6 @@ The current directory is assumed to be the project's root otherwise."
 
     (add-hook 'mu4e-compose-mode-hook
               (defun my-do-compose-stuff () (flyspell-mode)))
-
-    (setq
-       mu4e-compose-signature
-        (concat
-          "Ivan Malison\n"
-          "https://github.com/IvanMalison"))
 
     (require 'smtpmail)
     
