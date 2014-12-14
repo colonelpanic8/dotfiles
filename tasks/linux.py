@@ -18,9 +18,16 @@ linux_pacakges = ('zsh', 'tmux', 'emacs24-nox', 'nmap', 'scala', 'default-jdk',
                   'silversearcher-ag', 'npm', 'xdotool', 'gconf-editor',
                   'dropbox', 'offlineimap', 'mu4e' 'fonts-droid' 'fonts-noto',
                   'gnutls-bin', 'libgmime-2.6-', 'libxapian-dev',
-                  'openssh-server', 'golang')
+                  'openssh-server', 'golang', 'gitfs')
+
+
+repositories = ('ppa:presslabs/gitfs',)
+
+
 @ctask
 def apt_get(ctx):
+    for repository in repositories:
+        ctx.run('sudo add-apt-repository {0}'.format(repository))
     ctx.run('sudo apt-get update')
     install_command = 'sudo apt-get -y install'
     for package in linux_pacakges:
