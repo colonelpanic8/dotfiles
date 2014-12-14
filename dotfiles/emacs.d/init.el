@@ -655,11 +655,6 @@ The current directory is assumed to be the project's root otherwise."
       (org-insert-todo-heading nil)
       (org-make-habit))
 
-    (defun org-date-time-to-internal-time (org-date)
-      `(,@(apply 'encode-time
-                 (mapcar (lambda (elem) (if elem elem 0))
-                         (subseq (parse-time-string org-date) 0 6))) 0 0))
-
     (defun org-todo-at-date (date)
       (interactive (list (org-time-string-to-time (org-read-date))))
       (flet ((org-current-effective-time (&rest r) date))
