@@ -849,6 +849,8 @@ The current directory is assumed to be the project's root otherwise."
   :idle (sauron-start-hidden)
   :idle-priority 3)
 
+(use-package screenshot :ensure t)
+
 (use-package flyspell
   :ensure t
   :config
@@ -966,7 +968,10 @@ The current directory is assumed to be the project's root otherwise."
     (helm-mode 1)
     (diminish 'helm-mode)))
 
-(use-package helm-swoop :ensure t :commands helm-swoop)
+(use-package helm-swoop
+  :ensure t
+  :bind ("C-S-s" . helm-swoop)
+  :commands helm-swoop)
 
 (use-package perspective
   :ensure t
