@@ -622,9 +622,12 @@ The current directory is assumed to be the project's root otherwise."
       (defvar org-habits-file "~/org/habits.org"))
     (unless (boundp 'org-capture-templates)
       (defvar org-capture-templates nil))
+    (unless (boundp 'org-calendar-file)
+      (defvar org-calendar-file "~/org/calendar.org"))
     (setq org-agenda-files
           (--filter (file-exists-p it)
-                    (list org-gtd-file org-habits-file org-projectile:projects-file)))
+                    (list org-gtd-file org-habits-file org-projectile:projects-file
+                          org-calendar-file)))
     
     (add-to-list 'org-capture-templates
                  `("h" "Habit" entry (file+headline ,org-habits-file "Habits")
