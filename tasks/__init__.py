@@ -17,11 +17,11 @@ ns.add_collection(linux)
 def setup(ctx):
     ctx.config['run']['pty'] = False
     ctx.config['run']['warn'] = True
+    dotfiles(ctx, 'f')
     if 'darwin' in sys.platform:
         osx.setup(ctx)
     else:
         linux.setup(ctx)
-    dotfiles(ctx, 'f')
     install_python_libraries(ctx)
     powerline(ctx)
     install_npm_libraries(ctx)
