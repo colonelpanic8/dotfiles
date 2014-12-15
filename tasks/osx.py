@@ -16,7 +16,7 @@ def setup(ctx):
     set_path_for_launchd(ctx)
     install_rvm(ctx)
     install_powerline_monaco(ctx)
-    osx_config(ctx)
+    setup_dbus(ctx)
 
 @ctask
 def macvim(ctx):
