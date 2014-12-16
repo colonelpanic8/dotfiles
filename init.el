@@ -779,6 +779,8 @@ The current directory is assumed to be the project's root otherwise."
     (setq mu4e-view-show-images t)
     ;; show images
     (setq mu4e-show-images t)
+    ;; Try to display html as text
+    (setq mu4e-view-prefer-html t)
 
     (defun imalison:mu4e-startup ()
       (let ((buffer-existed (get-buffer mu4e~main-buffer-name))
@@ -1153,11 +1155,15 @@ The current directory is assumed to be the project's root otherwise."
       :bind ("C-c t" . pytest-one))
     (use-package pymacs :ensure t)
     (use-package sphinx-doc :ensure t)
-    (add-hook 'python-mode-hook (lambda () (setq show-trailing-whitespace t)))
-    (add-hook 'python-mode-hook (lambda () (if use-python-tabs (python-tabs))))
-    (add-hook 'python-mode-hook (lambda () (subword-mode t)))
-    (add-hook 'python-mode-hook #'jedi:setup)
-    (add-hook 'python-mode-hook #'add-virtual-envs-to-jedi-server))))
+    (defun imalison:python-mode ()
+      (setq show-trailing-whitespace t)
+      (if use-python-tabs (python-tabs))
+      (subword-mode t)
+      (jedi:setup)
+      (add-virtual-envs-to-jedi-server)
+      (remove-hook 'completion-at-point-functions
+                   'python-completion-complete-at-point 'local))
+    (add-hook 'python-mode-hook #'imalison:python-mode))))
 
 ;; =============================================================================
 ;;                                                                         Scala
