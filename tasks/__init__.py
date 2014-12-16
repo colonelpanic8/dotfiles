@@ -88,7 +88,7 @@ def link_dropbox_other(ctx, force=False):
     link_filenames(ctx, link_pairs, force)
 
 
-def link_filenames(ctx, link_pairs, force=False)
+def link_filenames(ctx, link_pairs, force=False):
     for source, destination in link_pairs:
         destination = os.path.expanduser(destination)
         source = os.path.expanduser(source)
@@ -115,9 +115,10 @@ def customize_user_settings(ctx):
 ns.add_task(change_shell)
 ns.add_task(customize_user_settings)
 ns.add_task(dotfiles)
+ns.add_task(dropbox_dotfiles)
 ns.add_task(install_npm_libraries)
 ns.add_task(install_python_libraries)
-ns.add_task(dropbox_dotfiles)
+ns.add_task(link_dropbox_other)
 ns.add_task(powerline)
 ns.add_task(setup)
 ns.add_task(vimstall)
