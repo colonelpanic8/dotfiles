@@ -43,7 +43,8 @@ def dropbox_dotfiles(ctx, flags='f'):
         ),
         flags
     ))
-    link_dropbox_other(ctx)
+    link_filenames(ctx, [('~/Dropbox/configs/custom.el', '~/.emacs.d/custom.el')], force=True)
+
 
 @ctask
 def powerline(ctx):
@@ -77,16 +78,22 @@ def change_shell(ctx):
 
 
 @ctask
-def link_dropbox_other(ctx):
+def link_dropbox_other(ctx, force=False):
     link_pairs = (
-        ('~/Dropbox/configs/custom.el', '~/.emacs.d/custom.el'),
         ('~/Dropbox/Documents', '~/Documents'),
         ('~/Dropbox/Pictures', '~/Pictures'),
         ('~/Dropbox/org', '~/org')
+        ('~/Dropbox/Desktop', '~/Desktop')
     )
+    link_filenames(ctx, link_pairs, force)
+
+
+def link_filenames(ctx, link_pairs, force=False)
     for source, destination in link_pairs:
         destination = os.path.expanduser(destination)
         source = os.path.expanduser(source)
+        if force:
+            ctx.run("sudo rm -rf {0}".format(destination))
         if os.path.exists(destination):
             print("Skipping {0} because path already exists".format(destination))
         else:
