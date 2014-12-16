@@ -37,15 +37,6 @@
 (defvar inherit-input-method nil)
 
 ;; =============================================================================
-;;                                                       Load Path Configuration
-;; =============================================================================
-
-(defvar machine-custom "~/.emacs.d/this-machine.el")
-(setq custom-file "~/.emacs.d/custom.el")
-(when (file-exists-p custom-file) (load custom-file))
-(when (file-exists-p machine-custom) (load machine-custom))
-
-;; =============================================================================
 ;;                                                         ELPA/package.el/MELPA
 ;; =============================================================================
 
@@ -153,6 +144,11 @@
 ;; =============================================================================
 ;;                                                                     functions
 ;; =============================================================================
+
+(defmacro defvar-setq (name value)
+  (if (boundp name)
+      `(setq ,name ,value)
+    `(defvar ,name ,value)))
 
 (defun undo-redo (&optional arg)
   (interactive "P")
@@ -299,6 +295,15 @@ The current directory is assumed to be the project's root otherwise."
            default-directory)))))
 
 ;; =============================================================================
+;;                                                       Load Path Configuration
+;; =============================================================================
+
+(defvar machine-custom "~/.emacs.d/this-machine.el")
+(setq custom-file "~/.emacs.d/custom.el")
+(when (file-exists-p custom-file) (load custom-file))
+(when (file-exists-p machine-custom) (load machine-custom))
+
+;; =============================================================================
 ;;                                                         General Emacs Options
 ;; =============================================================================
 
@@ -418,15 +423,15 @@ The current directory is assumed to be the project's root otherwise."
     (setq ace-isearch-use-function-from-isearch nil)
     (setq ace-isearch-input-idle-delay 1)))
 
-(use-package flycheck
-  :ensure t
-  :commands (flycheck-mode)
-  :init (add-hook 'after-init-hook #'flycheck-mode)
-  :config
-  (progn
-    (setq flycheck-checkers (delq 'emacs-lisp-checkdoc flycheck-checkers))
-    (global-flycheck-mode)
-    (diminish 'flycheck-mode)))
+;; (use-package flycheck
+;;   :ensure t
+;;   :commands (flycheck-mode)
+;;   :init (add-hook 'after-init-hook #'flycheck-mode)
+;;   :config
+;;   (progn
+;;     (setq flycheck-checkers (delq 'emacs-lisp-checkdoc flycheck-checkers))
+;;     (global-flycheck-mode)
+;;     (diminish 'flycheck-mode)))
 
 (use-package haskell-mode
   :ensure t
@@ -620,14 +625,18 @@ The current directory is assumed to be the project's root otherwise."
       (defvar org-gtd-file "~/org/gtd.org"))
     (unless (boundp 'org-habits-file)
       (defvar org-habits-file "~/org/habits.org"))
-    (unless (boundp 'org-capture-templates)
-      (defvar org-capture-templates nil))
     (unless (boundp 'org-calendar-file)
       (defvar org-calendar-file "~/org/calendar.org"))
+
+    (unless (boundp 'org-capture-templates)
+      (defvar org-capture-templates nil))
+    (message "At org load%s" org-habits-file)
     (setq org-agenda-files
           (--filter (file-exists-p it)
                     (list org-gtd-file org-habits-file org-projectile:projects-file
                           org-calendar-file)))
+
+    (message "At org load%s" org-agenda-files)
     
     (add-to-list 'org-capture-templates
                  `("h" "Habit" entry (file+headline ,org-habits-file "Habits")
@@ -781,9 +790,9 @@ The current directory is assumed to be the project's root otherwise."
           (insert (format "mu4e: --- %s" (documentation major-mode))))))
 
     ;; Don't use the default mu4e start screen
-    (defun mu4e ()
-      (interactive)
-      (mu4e~start 'imalison:mu4e-startup))
+    ;; (defun mu4e ()
+    ;;   (interactive)
+    ;;   (mu4e~start 'imalison:mu4e-startup))
 
     ;; use imagemagick, if available
     (when (fboundp 'imagemagick-register-types)
