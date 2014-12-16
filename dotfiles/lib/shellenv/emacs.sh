@@ -3,6 +3,14 @@ is_osx && alias emacs='cocoa_emacs'
 alias terminal_emacs='_emacs -t'
 is_ssh && emacs="terminal_emacs"
 
+function kill_all_emacs {
+    emacs_pids | xargs kill -9
+}
+
+function edb {
+    \emacs --debug-init
+}
+
 function e {
     [ -z "$*" ] && emacs || emacs_open -n "$@"
 }
@@ -56,10 +64,14 @@ function focus_emacs {
     is_osx && osascript -e 'tell application "Emacs" to activate'
 }
 
+function emacs_pids {
+    local flags=''
+    is_osx && flags='-i'
+    pgrep "$flags" emacs
+}
+
 function emacs_get_running_instances {
-    local command='pgrep'
-    is_osx && command='pgrep -i'
-    $command emacs | xargs ps -o command -p | egrep -o " --daemon=(.*)" | awk -F= '{print $2}' | sed 's/\^J3,4\^J//'
+    emacs_pids | xargs ps -o command -p | egrep -o " --daemon=(.*)" | awk -F= '{print $2}' | sed 's/\^J3,4\^J//'
 }
 
 function emacs_open {
