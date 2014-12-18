@@ -364,7 +364,9 @@ The current directory is assumed to be the project's root otherwise."
   (progn
     (yas-global-mode)
     (diminish 'yas-minor-mode)
-    (setq yas-prompt-functions (cons 'yas-ido-prompt (cl-delete 'yas-ido-prompt  yas-prompt-functions)))))
+    (setq yas-prompt-functions
+          (cons 'yas-ido-prompt
+                (cl-delete 'yas-ido-prompt yas-prompt-functions)))))
   
 
 (use-package tramp
@@ -423,15 +425,13 @@ The current directory is assumed to be the project's root otherwise."
     (setq ace-isearch-use-function-from-isearch nil)
     (setq ace-isearch-input-idle-delay 1)))
 
-;; (use-package flycheck
-;;   :ensure t
-;;   :commands (flycheck-mode)
-;;   :init (add-hook 'after-init-hook #'flycheck-mode)
-;;   :config
-;;   (progn
-;;     (setq flycheck-checkers (delq 'emacs-lisp-checkdoc flycheck-checkers))
-;;     (global-flycheck-mode)
-;;     (diminish 'flycheck-mode)))
+(use-package flycheck
+  :ensure t
+  :config
+  (progn
+    (global-flycheck-mode)
+    (setq flycheck-checkers (delq 'emacs-lisp-checkdoc flycheck-checkers))
+    (diminish 'flycheck-mode)))
 
 (use-package haskell-mode
   :ensure t
@@ -567,7 +567,6 @@ The current directory is assumed to be the project's root otherwise."
 
 (use-package edit-server
   :ensure t
-  :disabled t
   :commands edit-server-start
   :idle (edit-server-start))
 
@@ -639,6 +638,10 @@ The current directory is assumed to be the project's root otherwise."
                           org-calendar-file)))
 
     (message "At org load%s" org-agenda-files)
+
+    (add-to-list 'org-capture-templates
+                 `("c" "Calendar entry" entry
+                   (file+headline ,org-calendar-file "Personal")))
     
     (add-to-list 'org-capture-templates
                  `("h" "Habit" entry (file+headline ,org-habits-file "Habits")
@@ -808,6 +811,10 @@ The current directory is assumed to be the project's root otherwise."
     (setq mu4e-compose-complete-only-after nil)
     (setq mu4e-maildir "~/Mail")
 
+    (setq mu4e-drafts-folder "/[Gmail].Drafts")
+    (setq mu4e-sent-folder   "/[Gmail].Sent Mail")
+    (setq mu4e-trash-folder  "/[Gmail].Trash")
+
     (setq mu4e-sent-messages-behavior 'delete)
     (setq mu4e-update-interval (* 60 20))
     (setq message-kill-buffer-on-exit t)
@@ -829,6 +836,29 @@ The current directory is assumed to be the project's root otherwise."
           smtpmail-default-smtp-server "smtp.gmail.com"
           smtpmail-smtp-server "smtp.gmail.com"
           smtpmail-smtp-service 587)))
+
+(use-package alert
+  :ensure t
+  :config
+  (progn
+    (defun alert-notifier-notify (info)
+      (message "%s" info)
+      (if alert-notifier-command
+          (let ((args
+                 (list "-title"   (alert-encode-string (plist-get info :title))
+                       ;;"-sender"  "org.gnu.Emacs"
+                       "-message" (alert-encode-string (plist-get info :message))
+                       "-execute" (switch-to-buffer-command (plist-get info :buffer)))))
+            (apply #'call-process alert-notifier-command nil nil nil args))
+        (alert-message-notify info)))
+
+    (defun switch-to-buffer-command (buffer-name)
+      (emacsclient-command (format "(switch-to-buffer \\\"%s\\\")" buffer-name)))
+
+    (defun emacsclient-command (command)
+      (format "\"emacsclient --server-file='%s' -e '%s'\"" server-name command))
+    
+    (setq alert-default-style 'notifier)))
 
 (use-package sauron
   :ensure t
@@ -854,7 +884,9 @@ The current directory is assumed to be the project's root otherwise."
                             ((string= origin "dbus") 'sauron:dbus-notify)
                             (t (lambda (&rest r) nil)))))
         (funcall handler origin priority message properties)))
-    (add-hook 'sauron-event-added-functions 'sauron:dispatch-notify))
+    ;; Prefering alert.el for now ;; (add-hook 'sauron-event-added-functions 'sauron:dispatch-notify)
+    
+    (add-hook 'sauron-event-added-functions 'sauron-alert-el-adapter))
   :idle (sauron-start-hidden)
   :idle-priority 3)
 
@@ -1383,51 +1415,6 @@ The current directory is assumed to be the project's root otherwise."
   (ansi-color-apply-on-region (point-min) (point-max))
   (read-only-mode))
 (add-hook 'compilation-filter-hook 'colorize-compilation-buffer)
-
-(use-package dynamic-fonts
-  :ensure t
-  :commands (dynamic-fonts-setup)
-  :init
-  (progn
-    (setq
-     dynamic-fonts-preferred-monospace-fonts
-     '("PragmataPro" "Consolas" "Monaco" "Menlo" "DejaVu Sans Mono"
-       "Droid Sans Mono Pro" "Droid Sans Mono" "Inconsolata" "Source Code Pro"
-       "Lucida Console" "Envy Code R" "Andale Mono" "Lucida Sans Typewriter"
-       "Lucida Typewriter" "Panic Sans" "Bitstream Vera Sans Mono"
-       "Excalibur Monospace" "Courier New" "Courier" "Cousine" "Lekton"
-       "Ubuntu Mono" "Liberation Mono" "BPmono" "Anonymous Pro"
-       "ProFontWindows")
-     dynamic-fonts-preferred-monospace-point-size 11
-     dynamic-fonts-preferred-proportional-fonts
-     '("PT Sans" "Lucida Grande" "Segoe UI" "DejaVu Sans" "Bitstream Vera"
-       "Tahoma" "Verdana" "Helvetica" "Arial Unicode MS" "Arial")
-     dynamic-fonts-preferred-proportional-point-size 11)
-
-    (defvar my-monospaced-font "PragmataPro-11.8")
-    (defvar my-variable-pitch-font "Pt Sans-13")
-    ;; (defvar my-variable-pitch-font "Input Sans Compressed-11.8")
-    ;; (defvar my-monospaced-font "Input Mono Compressed-11.8")
-
-    (when (s-starts-with? "fogskum" system-name)
-      (setq my-monospaced-font "PragmataPro-13"
-            my-variable-pitch-font "Pt Sans-13"))
-
-    (defun my-set-fonts  ()
-      (interactive)
-      (when window-system
-        (condition-case nil
-            (progn
-              (set-face-attribute 'default nil :font my-monospaced-font)
-              ;; (set-face-attribute 'default nil :font my-monospaced-font :width 'ultra-condensed :weight 'normal )
-              (set-face-attribute 'fixed-pitch nil :font my-monospaced-font)
-              (set-face-attribute 'variable-pitch nil :font my-variable-pitch-font))
-          (error
-           (progn
-             (message
-              "Setting default fonts failed, running dynamic-fonts-setup...")
-             (dynamic-fonts-setup))))))
-    (add-hook 'after-init-hook 'my-set-fonts t)))
 
 ;; =============================================================================
 ;;                                                                        Themes
