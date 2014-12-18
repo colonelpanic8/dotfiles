@@ -1,3 +1,5 @@
+is_osx || return
+
 function set_global_osx_ssh_port {
     set_osx_ssh_port $1 /System/Library/LaunchDaemons/ssh.plist
 }
