@@ -575,6 +575,7 @@ The current directory is assumed to be the project's root otherwise."
   :commands jabber-connect
   :config
   (progn
+    (setq jabber-alert-presence-hooks nil)
     (defun jabber-message-content-message (from buffer text)
       (when (or jabber-message-alert-same-buffer
                 (not (memq (selected-window) (get-buffer-window-list buffer))))
