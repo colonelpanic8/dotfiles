@@ -594,6 +594,8 @@ The current directory is assumed to be the project's root otherwise."
          ("C-c n s" . org-insert-todo-subheading)
          ("C-c n h" . org-insert-habit)
          ("C-c n m" . org-make-habit)
+         ("C-c n l" . org-store-link)
+         ("C-c n i" . org-insert-link)
          ("C-c C-t" . org-todo)
          ("C-c C-S-t" . org-todo-force-notes))
   :config
@@ -773,6 +775,7 @@ The current directory is assumed to be the project's root otherwise."
 
 (use-package mu4e
   :commands mu4e
+  :bind ("C-c 0" . mu4e~headers-jump-to-maildir)
   :config
   (progn
     ;; enable inline images
@@ -805,9 +808,7 @@ The current directory is assumed to be the project's root otherwise."
     (setq mu4e-compose-complete-only-after nil)
     (setq mu4e-maildir "~/Mail")
 
-    (setq mu4e-drafts-folder "/[Gmail].Drafts")
-    (setq mu4e-sent-folder   "/[Gmail].Sent Mail")
-    (setq mu4e-trash-folder  "/[Gmail].Trash")
+    (setq mu4e-sent-messages-behavior 'delete)
     (setq mu4e-update-interval (* 60 20))
     (setq message-kill-buffer-on-exit t)
 
