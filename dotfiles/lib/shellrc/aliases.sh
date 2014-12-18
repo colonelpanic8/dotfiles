@@ -7,6 +7,7 @@ alias t27='tox -e py27 -- '
 alias tvenv='tox -e venv -- '
 alias reload_tmux='tmux source-file ~/.tmux.conf'
 alias ssh='ssh -A '
+alias dusage='du -ch -d 0'
 
 # enables the sudoing of aliases.
 alias sudo='sudo '
