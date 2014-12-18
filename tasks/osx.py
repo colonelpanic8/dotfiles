@@ -44,7 +44,7 @@ def cider(ctx):
     ctx.run('brew install caskroom/cask/brew-cask')
     if not util.command_exists('cider'):
         ctx.run('sudo pip install cider')
-    ctx.run('cider restore')
+    ctx.run('cider restore -i')
 
 
 @ctask
