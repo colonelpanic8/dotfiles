@@ -778,7 +778,7 @@ The current directory is assumed to be the project's root otherwise."
 (add-to-list 'load-path (s-trim (shell-command-to-string "mu4e_directory")))
 
 (use-package mu4e
-  :commands mu4e
+  :commands (mu4e mu4e~proc-view-path)
   :bind ("C-c 0" . mu4e~headers-jump-to-maildir)
   :config
   (progn
@@ -806,7 +806,6 @@ The current directory is assumed to be the project's root otherwise."
     ;; use imagemagick, if available
     (when (fboundp 'imagemagick-register-types)
          (imagemagick-register-types))
-    (setq sauron-dbus-cookie t)
     (setq mail-user-agent 'mu4e-user-agent)
     (require 'org-mu4e)
     (setq mu4e-compose-complete-only-after nil)
@@ -815,6 +814,10 @@ The current directory is assumed to be the project's root otherwise."
     (setq mu4e-drafts-folder "/[Gmail].Drafts")
     (setq mu4e-sent-folder   "/[Gmail].Sent Mail")
     (setq mu4e-trash-folder  "/[Gmail].Trash")
+
+    (defun mu4e-update-index-view-message-with-msgid (msgid)
+      (message "Recieved request to display %s" msgid)
+      (mu4e-view-message-with-msgid msgid))
 
     (setq mu4e-sent-messages-behavior 'delete)
     (setq mu4e-update-interval (* 60 20))
@@ -837,6 +840,8 @@ The current directory is assumed to be the project's root otherwise."
           smtpmail-default-smtp-server "smtp.gmail.com"
           smtpmail-smtp-server "smtp.gmail.com"
           smtpmail-smtp-service 587)))
+
+(use-package gmail-message-mode :ensure t)
 
 (use-package alert
   :ensure t
@@ -866,6 +871,7 @@ The current directory is assumed to be the project's root otherwise."
   :config
   (progn
     (setq sauron-min-priority 3)
+    (setq sauron-dbus-cookie t)
     (setq sauron-separate-frame nil)
     (setq sauron-nick-insensitivity 1)
     (defun sauron:jabber-notify (origin priority message &optional properties)
