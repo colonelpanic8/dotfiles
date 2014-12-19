@@ -843,13 +843,12 @@ The current directory is assumed to be the project's root otherwise."
   :config
   (progn
     (defun alert-notifier-notify (info)
-      (message "%s" info)
       (if alert-notifier-command
           (let ((args
                  (list "-title"   (alert-encode-string (plist-get info :title))
-                       ;;"-sender"  "org.gnu.Emacs"
+                       "-activate" "org.gnu.Emacs"
                        "-message" (alert-encode-string (plist-get info :message))
-                       "-execute" (switch-to-buffer-command (plist-get info :buffer)))))
+                       "-execute" (format "\"%s\"" (switch-to-buffer-command (plist-get info :buffer))))))
             (apply #'call-process alert-notifier-command nil nil nil args))
         (alert-message-notify info)))
 
@@ -857,7 +856,7 @@ The current directory is assumed to be the project's root otherwise."
       (emacsclient-command (format "(switch-to-buffer \\\"%s\\\")" buffer-name)))
 
     (defun emacsclient-command (command)
-      (format "\"emacsclient --server-file='%s' -e '%s'\"" server-name command))
+      (format "emacsclient --server-file='%s' -e '%s'" server-name command))
     
     (setq alert-default-style 'notifier)))
 
