@@ -60,6 +60,10 @@ function emacs_make_frame_if_none_exists {
     focus_emacs
 }
 
+function execute_elisp {
+    emacs_get_running_instances | xargs -I svr-filename emacsclient --server-file=svr-filename -e "$1"
+}
+
 function focus_emacs {
     is_osx && osascript -e 'tell application "Emacs" to activate'
 }
