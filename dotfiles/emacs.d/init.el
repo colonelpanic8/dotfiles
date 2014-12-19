@@ -1391,7 +1391,7 @@ The current directory is assumed to be the project's root otherwise."
     tango-2-theme gotham-theme sublime-themes ansi-color rainbow-delimiters
     ample-theme))
 
-(use-packages packages-appearance)
+(ensure-packages-installed packages-appearance)
 
 
 (use-package smart-mode-line
