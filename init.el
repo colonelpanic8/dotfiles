@@ -637,13 +637,11 @@ The current directory is assumed to be the project's root otherwise."
 
     (unless (boundp 'org-capture-templates)
       (defvar org-capture-templates nil))
-    (message "At org load%s" org-habits-file)
     (setq org-agenda-files
           (--filter (file-exists-p it)
                     (list org-gtd-file org-habits-file org-projectile:projects-file
                           org-calendar-file)))
 
-    (message "At org load%s" org-agenda-files)
 
     (add-to-list 'org-capture-templates
                  `("c" "Calendar entry" entry
