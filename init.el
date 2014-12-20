@@ -783,7 +783,7 @@ The current directory is assumed to be the project's root otherwise."
 (add-to-list 'load-path (s-trim (shell-command-to-string "mu4e_directory")))
 
 (use-package mu4e
-  :commands (mu4e mu4e~proc-view-path)
+  :commands (mu4e mu4e-view-message-with-msgid mu4e-update-index)
   :bind ("C-c 0" . mu4e~headers-jump-to-maildir)
   :config
   (progn
@@ -818,6 +818,41 @@ The current directory is assumed to be the project's root otherwise."
 
     (add-hook 'mu4e-compose-mode-hook
               (defun my-do-compose-stuff () (flyspell-mode)))
+
+    (defun mu4e-view (msg headersbuf)
+      "Display the message MSG in a new buffer, and keep in sync with HDRSBUF.
+'In sync' here means that moving to the next/previous message in
+the the message view affects HDRSBUF, as does marking etc.
+ 
+As a side-effect, a message that is being viewed loses its 'unread'
+marking if it still had that."
+      (let* ((embedded ;; is it as an embedded msg (ie. message/rfc822 att)?
+              (when (gethash (mu4e-message-field msg :path)
+                             mu4e~path-parent-docid-map) t))
+             (buf
+              (if embedded
+                  (mu4e~view-embedded-winbuf)
+                (get-buffer-create mu4e~view-buffer-name))))
+        ;; note: mu4e~view-mark-as-read will pseudo-recursively call mu4e-view again
+        ;; by triggering mu4e~view again as it marks the message as read
+        (with-current-buffer buf
+          (switch-to-buffer buf)
+          (setq mu4e~view-msg msg)
+          (when t ;;(or embedded (not (mu4e~view-mark-as-read msg)))
+            (let ((inhibit-read-only t))
+              (erase-buffer)
+              (mu4e~delete-all-overlays)
+              (insert (mu4e-view-message-text msg))
+              (goto-char (point-min))
+              (mu4e~fontify-cited)
+              (mu4e~fontify-signature)
+              (mu4e~view-make-urls-clickable)	
+              (mu4e~view-show-images-maybe msg)
+              (setq
+               mu4e~view-buffer buf
+               mu4e~view-headers-buffer headersbuf)
+              (when embedded (local-set-key "q" 'kill-buffer-and-window))
+              (mu4e-view-mode))))))
 
     (require 'smtpmail)
     
