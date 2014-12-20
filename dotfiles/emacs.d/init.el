@@ -587,6 +587,8 @@ The current directory is assumed to be the project's root otherwise."
           (format "%s: %s" (jabber-jid-displayname from) text))))
     (setq jabber-alert-message-function 'jabber-message-content-message)))
 
+(use-package htmlize :ensure t)
+
 (use-package org
   :ensure t
   :commands (org-mode org org-mobile-push org-mobile-pull org-agenda)
