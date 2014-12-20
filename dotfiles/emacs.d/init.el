@@ -794,20 +794,6 @@ The current directory is assumed to be the project's root otherwise."
     ;; Try to display html as text
     (setq mu4e-view-prefer-html t)
 
-    (defun imalison:mu4e-startup ()
-      (let ((buffer-existed (get-buffer mu4e~main-buffer-name))
-            (inhibit-read-only t)
-            (buffer (get-buffer-create mu4e~main-buffer-name)))
-        (switch-to-buffer buffer)
-        (mu4e-main-mode)
-        (unless buffer-existed
-          (insert (format "mu4e: --- %s" (documentation major-mode))))))
-
-    ;; Don't use the default mu4e start screen
-    ;; (defun mu4e ()
-    ;;   (interactive)
-    ;;   (mu4e~start 'imalison:mu4e-startup))
-
     ;; use imagemagick, if available
     (when (fboundp 'imagemagick-register-types)
          (imagemagick-register-types))
@@ -819,10 +805,6 @@ The current directory is assumed to be the project's root otherwise."
     (setq mu4e-drafts-folder "/[Gmail].Drafts")
     (setq mu4e-sent-folder   "/[Gmail].Sent Mail")
     (setq mu4e-trash-folder  "/[Gmail].Trash")
-
-    (defun mu4e-update-index-view-message-with-msgid (msgid)
-      (message "Recieved request to display %s" msgid)
-      (mu4e-view-message-with-msgid msgid))
 
     (setq mu4e-sent-messages-behavior 'delete)
     (setq mu4e-update-interval (* 60 20))
