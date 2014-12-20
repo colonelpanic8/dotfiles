@@ -84,7 +84,7 @@
     "lzip",
     "make",
     "mercurial",
-    "mu",
+    "brew install mu --with-emacs",
     "netcat",
     "nettle",
     "ngrep",
