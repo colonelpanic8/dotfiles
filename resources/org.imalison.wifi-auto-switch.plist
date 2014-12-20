@@ -8,7 +8,7 @@
     <array>
       <string>zsh</string>
       <string>-c</string>
-        <string>python ~/.lib/python/wifi_auto_switch.py -n 4160CesarChavez fake-password -n InternationalFoolery5 fake-password</string>
+        <string>refresh_config && mu4e_update_mail</string>
     </array>
     <key>KeepAlive</key>
     <true/>
