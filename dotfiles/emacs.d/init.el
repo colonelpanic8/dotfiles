@@ -568,7 +568,10 @@ The current directory is assumed to be the project's root otherwise."
 (use-package edit-server
   :ensure t
   :commands edit-server-start
-  :idle (edit-server-start))
+  :idle (edit-server-start)
+  :config
+  (progn
+    (setq edit-server-new-frame nil)))
 
 (use-package jabber
   :ensure t
