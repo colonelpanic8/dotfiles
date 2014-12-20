@@ -56,12 +56,17 @@ function existing_emacs {
 }
 
 function emacs_make_frame_if_none_exists {
-    emacsclient -e '(make-frame-if-none-exists-and-focus)' --server-file=$1 > /dev/null
+    execute_elisp '(make-frame-if-none-exists-and-focus)' > /dev/null
     focus_emacs
 }
 
+function emacs_ensure_running_with_frame {
+    test -z "$(emacs_get_running_instances)" && emacs || \
+	    emacs_make_frame_if_none_exists "$(emacs_get_running_instances | head -n1)"
+}
+
 function execute_elisp {
-    emacs_get_running_instances | xargs -I svr-filename emacsclient --server-file=svr-filename -e "$1"
+    _emacs -e "$1"
 }
 
 function focus_emacs {
@@ -82,10 +87,9 @@ function emacs_open {
     if ! emacs_daemon_exists; then
 	emacs
     fi
-    local server_file="$(emacs_get_running_instances | head -n1)"
-    emacs_make_frame_if_none_exists $server_file
-    [ ! -z "$*" ] && emacsclient "$@" --server-file="$server_file"
-    is_osx && focus_emacs
+    emacs_make_frame_if_none_exists
+    [ ! -z "$*" ] && _emacs "$@"
+    focus_emacs
 }
 
 function time_emacs {
