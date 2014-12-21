@@ -112,6 +112,12 @@ def customize_user_settings(ctx):
 	email = {1}""".format(username, email))
 
 
+@ctask
+def fix_pip_download_cache(ctx):
+    ctx.run("sudo chown imalison ~/.pip/download_cache -R")
+
+
+ns.add_task(fix_pip_download_cache)
 ns.add_task(change_shell)
 ns.add_task(customize_user_settings)
 ns.add_task(dotfiles)
