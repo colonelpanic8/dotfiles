@@ -429,7 +429,6 @@ The current directory is assumed to be the project's root otherwise."
   :ensure t
   :config
   (progn
-    (global-flycheck-mode)
     (setq flycheck-checkers (delq 'emacs-lisp-checkdoc flycheck-checkers))
     (diminish 'flycheck-mode)))
 
