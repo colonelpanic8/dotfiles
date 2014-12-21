@@ -16,7 +16,10 @@ def setup(ctx):
     set_path_for_launchd(ctx)
     install_rvm(ctx)
     install_powerline_monaco(ctx)
+    fix_pip(ctx)
+    fix_htop(ctx)
     setup_dbus(ctx)
+
 
 @ctask
 def macvim(ctx):
@@ -153,3 +156,8 @@ def iTerm(ctx):
     ctx.run("defaults write {0} PrefsCustomFolder -string {1}".format(
         library_plist, util.RESOURCES_DIRECTORY
     ))
+
+
+@ctask
+def fix_pip(ctx):
+    ctx.run("sudo easy_install -U pip")
