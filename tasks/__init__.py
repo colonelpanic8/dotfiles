@@ -22,6 +22,7 @@ def setup(ctx):
         osx.setup(ctx)
     else:
         linux.setup(ctx)
+    fix_pip_download_cache(ctx)
     install_python_libraries(ctx)
     powerline(ctx)
     install_npm_libraries(ctx)
