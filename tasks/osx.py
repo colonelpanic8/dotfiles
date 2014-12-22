@@ -161,3 +161,9 @@ def iTerm(ctx):
 @ctask
 def fix_pip(ctx):
     ctx.run("sudo easy_install -U pip")
+
+
+@ctask
+def launch_agents(ctx, flags=''):
+    ctx.run('dotfiles -sn{1} -R {0}/resources/LaunchAgents/ '
+            '-H ~/Library/LaunchAgents'.format(util.REPO_DIRECTORY, flags))
