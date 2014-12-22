@@ -396,7 +396,9 @@ The current directory is assumed to be the project's root otherwise."
     (setq guide-key/recursive-key-sequence-flag t)
     (setq guide-key/popup-window-position 'bottom)))
 
-(use-package jump-char :ensure t)
+(use-package jump-char
+  :bind (("C-;" . jump-char-forward))
+  :ensure t)
 
 (use-package ace-jump-mode
   :ensure t
@@ -789,7 +791,9 @@ The current directory is assumed to be the project's root otherwise."
     ;; show images
     (setq mu4e-show-images t)
     ;; Try to display html as text
-    (setq mu4e-view-prefer-html t)
+    (setq mu4e-view-prefer-html nil)
+
+    (setq mu4e-html2text-command "html2text -width 80 -nobs -utf8")
 
     ;; use imagemagick, if available
     (when (fboundp 'imagemagick-register-types)
@@ -1429,7 +1433,7 @@ marking if it still had that."
 (blink-cursor-mode -1)
 
 ;; make whitespace-mode use just basic coloring
-(setq whitespace-style (quote (spaces tabs newline ;;space-mark
+(setq whitespace-style (quote (spaces tabs newline space-mark
                                       tab-mark newline-mark)))
 (setq whitespace-display-mappings
       '((space-mark 32 [183] [46]) 
