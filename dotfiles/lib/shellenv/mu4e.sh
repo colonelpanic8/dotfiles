@@ -2,6 +2,7 @@ MAILDIR="$HOME/Mail/INBOX/"
 SYNC_STAMP="$HOME/.mail-sync"
 APP_ICON="$(dotfiles_directory)/resources/gmail_logo.png"
 SYNC_COMMAND="offlineimap -f INBOX"
+TIMEOUT="60"
 
 function mu4e_alert_for_filename {
     local message="$(mu view $1 | grep -B 10 Date)"
@@ -20,6 +21,10 @@ function mu4e_alert_for_filename {
 }
 
 function mu4e_update_mail {
+    timeout $TIMEOUT zsh -c "_mu4e_update_mail"
+}
+
+function _mu4e_update_mail {
     eval $SYNC_COMMAND
     if test -z "$(find "$MAILDIR" -cnewer "$SYNC_STAMP" -a -type f)"; then
 	echo "$(date) - No new messages, skipping alerting and indexing."
