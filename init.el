@@ -686,7 +686,8 @@ The current directory is assumed to be the project's root otherwise."
       (interactive (list (org-time-string-to-time (org-read-date))))
       (flet ((org-current-effective-time (&rest r) date)
              (org-today (&rest r) (time-to-days date)))
-        (org-todo)))
+        (cond ((eq major-mode 'org-mode) (org-todo))
+              ((eq major-mode 'org-agenda-mode) (org-agenda-todo)))))
     
     (add-to-list 'org-capture-templates (org-projectile:project-todo-entry "p"))
     (add-to-list 'org-capture-templates (org-projectile:project-todo-entry "l" "* TODO %? %a\n"))
