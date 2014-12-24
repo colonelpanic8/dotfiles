@@ -372,7 +372,6 @@ The current directory is assumed to be the project's root otherwise."
           (cons 'yas-ido-prompt
                 (cl-delete 'yas-ido-prompt yas-prompt-functions)))))
   
-
 (use-package tramp
   :commands tramp
   :config
@@ -826,6 +825,9 @@ The current directory is assumed to be the project's root otherwise."
     (add-hook 'mu4e-compose-mode-hook
               (defun my-do-compose-stuff () (flyspell-mode)))
 
+    (add-to-list 'mu4e-headers-actions '("view in browser" . mu4e-action-view-in-browser))
+    (add-to-list 'mu4e-view-actions '("view in browser" . mu4e-action-view-in-browser))
+
     (defun mu4e-view (msg headersbuf)
       "Display the message MSG in a new buffer, and keep in sync with HDRSBUF.
 'In sync' here means that moving to the next/previous message in
@@ -899,6 +901,7 @@ marking if it still had that."
   :commands (sauron-start sauron-start-hidden)
   :config
   (progn
+    (setq sauron-prio-sauron-started 2)
     (setq sauron-min-priority 3)
     (setq sauron-dbus-cookie t)
     (setq sauron-separate-frame nil)
@@ -1532,6 +1535,7 @@ marking if it still had that."
   (load-theme theme no-confirm no-enable))
 
 (defun set-my-font-for-frame (frame)
+  (interactive (list nil))
   (condition-case exp
       (set-frame-font (random-choice fonts) nil t)
     ('error (package-refresh-contents)
@@ -1543,6 +1547,7 @@ marking if it still had that."
   (if (fboundp 'menu-bar-mode) (menu-bar-mode -1))
   (set-fringe-mode 0)
   (setq linum-format 'dynamic)
+  (set-my-font-for-frame nil)
   (setq left-margin-width 0)
   (setq hl-line-mode nil))
 
