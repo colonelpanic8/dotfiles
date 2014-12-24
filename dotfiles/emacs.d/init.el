@@ -1051,9 +1051,36 @@ marking if it still had that."
 
 (use-package perspective
   :ensure t
-  ;; :config (persp-mode) ;; This was causing problems where buffers
-  ;; weren't showing up in the buffers list
-  )
+  :demand t
+  :config
+  (progn
+    (persp-mode)
+    (defun persp-get-perspectives-for-buffer (buffer)
+      "Get the names of all of the perspectives of which `buffer` is a member."
+      (cl-loop for perspective being the hash-value of perspectives-hash
+               if (member buffer (persp-buffers perspective))
+               collect (persp-name perspective)))
+
+    (defun persp-pick-perspective-by-buffer (buffer)
+      "Select a buffer and go to the perspective to which that buffer belongs. If the buffer belongs to more than one perspective completion will be used to pick the perspective to switch to. Switch the focus to the window in which said buffer is displayed if such a window exists. Otherwise display the buffer in whatever window is active in the perspective."
+      (interactive (list (funcall persp-interactive-completion-function
+                                  "Buffer: " (mapcar 'buffer-name (buffer-list)))))
+      (let* ((perspectives (persp-get-perspectives-for-buffer (get-buffer buffer)))
+             (perspective (if (> (length perspectives) 1)
+                              (funcall persp-interactive-completion-function perspectives)
+                            (car perspectives))))
+        (persp-switch perspective)
+        (if (get-buffer-window buffer)
+            (set-frame-selected-window nil (get-buffer-window buffer))
+          (switch-to-buffer buffer))))
+
+    (defun persp-mode-switch-buffers (arg)
+      (interactive "P")
+      (if arg (call-interactively 'ido-switch-buffer)
+        (call-interactively 'persp-pick-perspective-by-buffer)))
+    
+    (define-key persp-mode-map (kbd "C-x b") 'persp-mode-switch-buffers))
+  :bind ("C-c 9" . persp-switch))
 
 (use-package projectile
   :ensure t
