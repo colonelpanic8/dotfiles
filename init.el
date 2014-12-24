@@ -646,7 +646,8 @@ The current directory is assumed to be the project's root otherwise."
 
     (add-to-list 'org-capture-templates
                  `("c" "Calendar entry" entry
-                   (file+headline ,org-calendar-file "Personal")))
+                   (file+headline ,org-calendar-file "Personal")
+                   "* %?"))
     
     (add-to-list 'org-capture-templates
                  `("h" "Habit" entry (file+headline ,org-habits-file "Habits")
