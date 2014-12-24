@@ -150,6 +150,10 @@
       `(setq ,name ,value)
     `(defvar ,name ,value)))
 
+(defun eval-region-or-last-sexp ()
+  (interactive)
+  (if (region-active-p) (call-interactively 'eval-region) (call-interactively 'eval-last-sexp)))
+
 (defun undo-redo (&optional arg)
   (interactive "P")
   (if arg (undo-tree-redo) (undo-tree-undo)))
@@ -1158,6 +1162,7 @@ marking if it still had that."
 (define-key lisp-mode-shared-map (kbd "C-c C-r") 'eval-and-replace)
 (define-key lisp-mode-shared-map (kbd "C-c o r") 'up-list-region)
 (define-key lisp-mode-shared-map (kbd "C-c o o") 'up-list-back)
+(define-key lisp-mode-shared-map (kbd "C-x C-e") 'eval-region-or-last-sexp)
 
 ;; =============================================================================
 ;;                                                                        Python
