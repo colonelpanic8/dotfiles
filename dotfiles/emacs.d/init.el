@@ -1559,6 +1559,6 @@ marking if it still had that."
 ;; enable to set theme based on time of day.
 (run-at-time "00:00" 3600 'set-theme)
 
-;; ;; This is needed because you can't set the font at daemon start-up.
+;; This is needed because you can't set the font at daemon start-up.
 (add-hook 'after-make-frame-functions 'set-my-font-for-frame)
 (add-hook 'after-make-frame-functions (lambda (frame) (set-theme)))
