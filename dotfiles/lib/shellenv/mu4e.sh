@@ -10,14 +10,12 @@ function mu4e_alert_for_filename {
     local subject="$(echo $message | grep Subject | sed 's/Subject: //')"
     local mu4e_message_id="$(mu4e_get_msg_id_from_file $1)"
     local view_message_command="$(which zsh) -c \"refresh_config && emacs_make_frame_if_none_exists && mu4e_view_message $mu4e_message_id\""
-    local app_icon_argument=''
-    test -e "$APP_ICON" && app_icon_argument="-appIcon \"$APP_ICON\""
     reattach-to-user-namespace $(which terminal-notifier) \
         -title "$title" \
         -message "$subject" \
         -execute "$view_message_command" \
         -activate "org.gnu.Emacs" \
-        $app_icon_argument
+	-appIcon $APP_ICON
 }
 
 function mu4e_update_mail {
