@@ -19,13 +19,22 @@ function cocoa_emacs {
     reattach-to-user-namespace zsh -c '_emacs -c -n "$@"'
 }
 
-function _emacs {
+function _emacs_daemon {
     local server_name="$(_emacs_server_file)"
     if ! emacs_daemon_exists "$server_name"; then
         echo "Starting emacs with server name '$server_name'"
-        command emacs --daemon="$server_name"
+        command emacs "$@" --daemon="$server_name"
     fi
-    emacsclient "$@" --server-file=$server_name
+}
+
+function _emacs {
+    _emacs_daemon
+    emacsclient "$@" --server-file="$(_emacs_server_file)"
+}
+
+function _emacs_daemon_arguments {
+    _emacs_daemon "$@"
+    emacsclient -c -n --server-file="$(_emacs_server_file)"
 }
 
 function _emacs_server_file {
