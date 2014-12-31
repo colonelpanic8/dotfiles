@@ -152,7 +152,8 @@
 
 (defun eval-region-or-last-sexp ()
   (interactive)
-  (if (region-active-p) (call-interactively 'eval-region) (call-interactively 'eval-last-sexp)))
+  (if (region-active-p) (call-interactively 'eval-region)
+    (call-interactively 'eval-last-sexp)))
 
 (defun undo-redo (&optional arg)
   (interactive "P")
