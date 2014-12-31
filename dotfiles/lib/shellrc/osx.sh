@@ -40,7 +40,7 @@ function reload_user_agent {
     as_current_user /bin/launchctl unload "$1"
     as_current_user /bin/launchctl load "$1"
 }
-    
+
     
 function reload_root_agent {
     as_user 'root' "/bin/launchctl unload '$1'"
@@ -112,7 +112,7 @@ function set_application_for_file_extension() {
     VALUE="${1-public.plain-text}"
 
     # the new handler for all roles
-    HANDLER="${1}"
+    HANDLER="${2}"
 
     $_BUDDY -c 'Print "LSHandlers"' $_PLIST >/dev/null 2>&1
     if [[ $? -ne 0 ]] ; then
@@ -147,18 +147,13 @@ function reload_preferences {
     killall -u $(whoami) cfprefsd
 }
 
-disable_proxy(){
+function disable_proxy(){
     sudo networksetup -setsocksfirewallproxystate Wi-Fi off
     sudo networksetup -setsocksfirewallproxystate Ethernet off
     echo "SOCKS proxy disabled."
 }
 
 function socks_proxy {
-    disable_proxy(){
-	sudo networksetup -setsocksfirewallproxystate Wi-Fi off
-	sudo networksetup -setsocksfirewallproxystate Ethernet off
-	echo "SOCKS proxy disabled."
-    }
     trap disable_proxy EXIT
     sudo networksetup -setsocksfirewallproxy Wi-Fi 127.0.0.1 9999
     sudo networksetup -setsocksfirewallproxy Ethernet 127.0.0.1 9999
