@@ -9,6 +9,7 @@ lxml
 okcupyd
 vcrpy
 dotfiles
+jinja
 numpy
 readline
 ropemacs
