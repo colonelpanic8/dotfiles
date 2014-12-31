@@ -68,7 +68,6 @@ def packages(ctx):
 def set_path_for_launchd(ctx):
     launch_agent_dir = os.path.expanduser('~/Library/LaunchAgents/')
     filename = 'set-path.plist'
-
     source = os.path.join(util.RESOURCES_DIRECTORY, filename)
     destination = os.path.join(launch_agent_dir, filename)
 
@@ -104,13 +103,15 @@ def access_if_exists(ctx, app_string):
 @ctask
 def hyper(ctx):
     source = '{0}/karabiner-hyper.xml'.format(util.RESOURCES_DIRECTORY)
-    destination = os.path.expanduser(
-        "~/Library/Application\\ Support/Karabiner/private.xml"
+    destination_folder = os.path.join(
+        os.path.expanduser("~/Library"), "Application\\ Support", "Karabiner"
     )
+    destination = os.path.join(destination_folder, "private.xml")
     try:
         ctx.run("rm {0}".format(destination))
     except:
         pass
+    util.ensure_path_exists(destination_folder)
     ctx.run("ln -s {0} {1}".format(source, destination))
     ctx.run("{0}/karabiner_config.sh".format(util.RESOURCES_DIRECTORY))
 
