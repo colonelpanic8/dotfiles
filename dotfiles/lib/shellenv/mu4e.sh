@@ -17,8 +17,7 @@ function mu4e_alert_for_filename {
 	-appIcon $APP_ICON
 }
 
-function mu4e_update_mail {
-    # mail_sync_command "$@"
+function mu4e_update_index_and_alert {
     if test -z "$(find "$MAILDIR" -cnewer "$SYNC_STAMP" -a -type f)"; then
 	echo "$(date) - No new messages, skipping alerting and indexing."
     else
@@ -27,10 +26,10 @@ function mu4e_update_mail {
     fi
 }
 
-function mail_sync_command {
+function mu4e_sync_command {
     local flags=''
     test -z "$*" || flags="-f $@"
-    timeout $TIMEOUT eval "offlineimap $flags"
+    timeout $TIMEOUT zsh -c "offlineimap $flags"
 }
 
 function mu4e_update_index {
