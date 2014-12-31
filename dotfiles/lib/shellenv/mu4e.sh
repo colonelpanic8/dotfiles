@@ -30,7 +30,7 @@ function mu4e_update_mail {
 function mail_sync_command {
     local flags=''
     test -z "$*" || flags="-f $@"
-    timeout $TIMEOUT offlineimap $flags
+    timeout $TIMEOUT eval "offlineimap $flags"
 }
 
 function mu4e_update_index {
