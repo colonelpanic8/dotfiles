@@ -23,7 +23,7 @@ def setup(ctx):
     else:
         linux.setup(ctx)
     fix_pip_download_cache(ctx)
-    install_python_libraries(ctx)
+    python(ctx)
     powerline(ctx)
     install_npm_libraries(ctx)
     change_shell(ctx)
@@ -54,7 +54,7 @@ def powerline(ctx):
 
 
 @ctask
-def install_python_libraries(ctx):
+def python(ctx):
     ctx.run('sudo pip install setuptools --upgrade')
     ctx.run('sudo pip install -r {0}'.format(
         os.path.join(RESOURCES_DIRECTORY, 'requirements.txt')
@@ -124,7 +124,7 @@ ns.add_task(customize_user_settings)
 ns.add_task(dotfiles)
 ns.add_task(dropbox_dotfiles)
 ns.add_task(install_npm_libraries)
-ns.add_task(install_python_libraries)
+ns.add_task(python)
 ns.add_task(link_dropbox_other)
 ns.add_task(powerline)
 ns.add_task(setup)
