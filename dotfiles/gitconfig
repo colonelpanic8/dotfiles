@@ -1,52 +1,44 @@
 [alias]
-	l = log --pretty=oneline --graph
-	s = status -s
-	c = clone --recursive
-	d = diff
-	ff = merge --ff-only
-	ca = !git add -A && git commit -av
-	tb = rev-parse --abbrev-ref --symbolic-full-name @{u}
-	rh = reset --hard
-	cam = commit -am
-	poh = push origin HEAD
-	pohm = push origin HEAD:master
-	suir = submodule update --init --recursive
 	amend = commit -a --amend -C HEAD
-	modified = diff HEAD --name-only
-	untracked = "!u() { git status -s | grep "??" | awk '{print $2}'; }; u"
+	b2h = checkout HEAD -B
+	branch-or-sha = "!bs() { git which-branch 2> /dev/null || git sha 2> /dev/null ; }; bs" # In newer versions of git, this simpler definition of which-branch would work. symbolic-ref HEAD --short
+	branches = branch -a
+	c = clone --recursive
+	ca = !git add -A && git commit -av
+	cam = commit -am
+	clean-branches = "!r() { git branch --merged ${1-origin/master} | grep -v '*' | xargs -n1 git branch -d; }; r"
+	credit = "!f() { git commit --amend --author \"$1 <$2>\" -C HEAD; }; f" # Credit an author on the latest commit
+	d = diff
+	db = !"db() { git diff HEAD~"$1"; }; db"
 	dirty = "!t() { test -n \"$(git status --porcelain)\"; }; t"
-	# diff tracking branch merge base
-	dtbmb = !git diff `git tb`...HEAD
-	root = rev-parse --show-toplevel
+	dtbmb = !git diff `git tb`...HEAD # diff tracking branch merge base
+	du = "!d() { git ls-files $1 --error-unmatch 2>/dev/null 1>/dev/null && git diff $1 || `git config --get core.pager` $1; }; d" # Diff a file or show it in git's pager if it is untracked
+	ff = merge --ff-only
+	ffo = !git ffr origin
+	ffr = "!ffr() { git fetch $1 && git ff $1/$(git which-branch) && git suir; }; ffr"
 	ignore = "!i() { printf \"\n$1\" >> "`git root`/.gitignore"; }; i"
 	ignore-untracked="!git untracked | xargs -n1 git ignore"
+	l = log --pretty=oneline --graph
+	modified = diff HEAD --name-only
+	poh = push origin HEAD	
+	pohm = push origin HEAD:master
 	power-clean = clean -ffd
-	db = !"db() { git diff HEAD~"$1"; }; db"
-        clone = clone --recursive
-
-	branches = branch -a
+	reb = "!r() { git rebase -i HEAD~$1; }; r" # Interactive rebase with the given number of latest commits
 	remotes = remote -v
-
-	which-branch = "!wb() { b="$(git symbolic-ref HEAD)" && echo ${b#refs/heads/}; }; wb"
-	sha = rev-parse HEAD
-	branch-or-sha = "!bs() { git which-branch 2> /dev/null || git sha 2> /dev/null ; }; bs"
-	# In newer versions of git, this simpler definition of which-branch would work.
-	# symbolic-ref HEAD --short
-
-	ffr = "!ffr() { git fetch $1 && git ff $1/$(git which-branch) && git suir; }; ffr"
-	ffo = !git ffr origin
-	reset-origin = "!r() { git reset --hard origin/\"$(git which-branch)\" && git suir; }; r"
 	reset-author ="!source ~/.lib/shellrc/functions.sh && git_reset_author"
-
-	# Credit an author on the latest commit
-	credit = "!f() { git commit --amend --author \"$1 <$2>\" -C HEAD; }; f"
-	# Interactive rebase with the given number of latest commits
-	reb = "!r() { git rebase -i HEAD~$1; }; r"
-	# Diff a file or show it in git's pager if it is untracked
-	du = "!d() { git ls-files $1 --error-unmatch 2>/dev/null 1>/dev/null && git diff $1 || `git config --get core.pager` $1; }; d"
-	clean-branches = "!r() { git branch --merged ${1-origin/master} | grep -v '*' | xargs -n1 git branch -d; }; r"
-        diff-excluding = "!f() { exclude=$1; shift; git diff $1 $2 --name-only | grep -v $exclude | xargs git diff "$@" --; }; f"
+	reset-origin = "!r() { git reset --hard origin/\"$(git which-branch)\" && git suir; }; r"
+	rh = reset --hard
+	root = rev-parse --show-toplevel
+	s = status -s
+	set-upstream = branch 
+	sha = rev-parse HEAD
+	suir = submodule update --init --recursive
+	tb = rev-parse --abbrev-ref --symbolic-full-name @{u}
+	untracked = "!u() { git status -s | grep "??" | awk '{print $2}'; }; u"
+	which-branch = "!wb() { b="$(git symbolic-ref HEAD)" && echo ${b#refs/heads/}; }; wb"
         aliases = "!f() { git config --get-regexp ^alias | cut -c 7-; }; f"
+        clone = clone --recursive
+        diff-excluding = "!f() { exclude=$1; shift; git diff $1 $2 --name-only | grep -v $exclude | xargs git diff "$@" --; }; f"
         file-exists = "!f() { git ls-files $1 --error-unmatch > /dev/null 2> /dev/null; }; f"
         shas = log HEAD --pretty=format:%H
 
