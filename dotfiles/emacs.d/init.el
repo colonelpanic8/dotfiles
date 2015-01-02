@@ -225,7 +225,7 @@ buffer is not visiting a file."
                     "\.tex$" ".pdf" buffer-file-name)))
     (shell-command (concat "open " pdf-file))))
 
-(defun tmux-copy (&optional b e) 
+(defun tmux-copy (&optional b e)
   (interactive "r")
   (shell-command-on-region b e "cat | tmux loadb -"))
 
@@ -367,7 +367,7 @@ The current directory is assumed to be the project's root otherwise."
     (setq yas-prompt-functions
           (cons 'yas-ido-prompt
                 (cl-delete 'yas-ido-prompt yas-prompt-functions)))))
-  
+
 (use-package tramp
   :commands tramp
   :config
@@ -476,7 +476,7 @@ The current directory is assumed to be the project's root otherwise."
   :ensure t
   :commands company-mode
   :bind (("C-\\" . company-complete))
-  :config 
+  :config
   (progn
     (setq company-idle-delay .25)
     (global-company-mode)
@@ -502,7 +502,7 @@ The current directory is assumed to be the project's root otherwise."
       :ensure t
       :config
       (define-key mc/keymap (kbd "C-. =") 'mc/compare-chars)))
-  :bind 
+  :bind
    (("C-c m a" . mc/mark-all-like-this)
     ("C-c m m" . mc/mark-all-like-this-dwim)
     ("C-c m l" . mc/edit-lines)
@@ -617,7 +617,7 @@ The current directory is assumed to be the project's root otherwise."
           (interactive "P")
           (org-projectile:project-todo-completing-read
            (if arg "* TODO %? %A\n" nil)))))
-    
+
     ;; variable configuration
     (add-to-list 'org-modules 'org-habit)
     (setq org-src-fontify-natively t)
@@ -647,7 +647,7 @@ The current directory is assumed to be the project's root otherwise."
                  `("c" "Calendar entry" entry
                    (file+headline ,org-calendar-file "Personal")
                    "* %?"))
-    
+
     (add-to-list 'org-capture-templates
                  `("h" "Habit" entry (file+headline ,org-habits-file "Habits")
                    "* TODO 
@@ -671,7 +671,7 @@ The current directory is assumed to be the project's root otherwise."
     (add-to-list 'org-capture-templates
                  `("g" "GTD Todo" entry (file+headline ,org-gtd-file "Tasks")
                    "* TODO %?\n"))
-    
+
     (defun org-insert-habit ()
       (interactive)
       (org-insert-todo-heading nil)
@@ -683,7 +683,7 @@ The current directory is assumed to be the project's root otherwise."
              (org-today (&rest r) (time-to-days date)))
         (cond ((eq major-mode 'org-mode) (org-todo))
               ((eq major-mode 'org-agenda-mode) (org-agenda-todo)))))
-    
+
     (add-to-list 'org-capture-templates (org-projectile:project-todo-entry "p"))
     (add-to-list 'org-capture-templates (org-projectile:project-todo-entry "l" "* TODO %? %a\n"))
 
@@ -703,7 +703,7 @@ The current directory is assumed to be the project's root otherwise."
            '(tags-todo "-PRIORITY={.}/!"
                        ((org-agenda-overriding-header
                          "These don't have priorities:")))))
-      
+
       (setq org-agenda-custom-commands
             `(("M" "Main agenda view"
                (,due-today
@@ -828,7 +828,7 @@ The current directory is assumed to be the project's root otherwise."
       "Display the message MSG in a new buffer, and keep in sync with HDRSBUF.
 'In sync' here means that moving to the next/previous message in
 the the message view affects HDRSBUF, as does marking etc.
- 
+
 As a side-effect, a message that is being viewed loses its 'unread'
 marking if it still had that."
       (let* ((embedded ;; is it as an embedded msg (ie. message/rfc822 att)?
@@ -860,7 +860,7 @@ marking if it still had that."
               (mu4e-view-mode))))))
 
     (require 'smtpmail)
-    
+
     ;; alternatively, for emacs-24 you can use:
     (setq message-send-mail-function 'smtpmail-send-it
           smtpmail-stream-type 'starttls
@@ -889,7 +889,7 @@ marking if it still had that."
 
     (defun emacsclient-command (command)
       (format "emacsclient --server-file='%s' -e '%s'" server-name command))
-    
+
     (setq alert-default-style 'notifier)))
 
 (use-package sauron
@@ -919,7 +919,7 @@ marking if it still had that."
                             (t (lambda (&rest r) nil)))))
         (funcall handler origin priority message properties)))
     ;; Prefering alert.el for now ;; (add-hook 'sauron-event-added-functions 'sauron:dispatch-notify)
-    
+
     (add-hook 'sauron-event-added-functions 'sauron-alert-el-adapter))
   :idle (sauron-start-hidden)
   :idle-priority 3)
@@ -997,7 +997,6 @@ marking if it still had that."
     (cl-defun helm-org-headings-in-buffer ()
       (interactive)
       (helm :sources (helm-source-org-headings-for-files
-                      
                       (list (projectile-completing-read
                              "File to look at headings from: "
                              (projectile-all-project-files))))
@@ -1077,7 +1076,7 @@ marking if it still had that."
       (interactive "P")
       (if arg (call-interactively 'ido-switch-buffer)
         (call-interactively 'persp-pick-perspective-by-buffer)))
-    
+
     (define-key persp-mode-map (kbd "C-x b") 'persp-mode-switch-buffers))
   :bind ("C-c 9" . persp-switch))
 
@@ -1182,7 +1181,9 @@ marking if it still had that."
 (put 'use-package 'lisp-indent-function 1) ;; reduce indentation for use-package
 (add-hook 'emacs-lisp-mode-hook 'imenu-elisp-sections)
 (add-hook 'emacs-lisp-mode-hook 'flatten-current-imenu-index-function)
-(add-hook 'emacs-lisp-mode-hook (lambda () (setq indent-tabs-mode nil)))
+(add-hook 'emacs-lisp-mode-hook (lambda ()
+                                  (setq indent-tabs-mode nil)
+                                  (setq show-trailing-whitespace t)))
 (bind-key "C-c C-f" 'find-function)
 (bind-key "C-c C-v" 'find-variable)
 (define-key lisp-mode-shared-map (kbd "C-c C-c") 'eval-defun)
@@ -1408,7 +1409,7 @@ marking if it still had that."
 ;; =============================================================================
 ;;                                                           Custom Key Bindings
 ;; =============================================================================
-          
+
 ;; Miscellaneous
 (global-unset-key (kbd "C-o")) ;; Avoid collision with tmux binding.
 (bind-key "M-q" 'fill-or-unfill-paragraph)
@@ -1469,7 +1470,7 @@ marking if it still had that."
 (setq whitespace-style (quote (spaces tabs newline space-mark
                                       tab-mark newline-mark)))
 (setq whitespace-display-mappings
-      '((space-mark 32 [183] [46]) 
+      '((space-mark 32 [183] [46])
         (tab-mark 9 [9655 9] [92 9])))
 
 (defun colorize-compilation-buffer ()
