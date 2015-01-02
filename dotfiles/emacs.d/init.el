@@ -42,7 +42,7 @@
 
 (require 'package)
 (add-to-list 'package-archives
-	     '("marmalade" . "http://marmalade-repo.org/packages/") t)
+             '("marmalade" . "http://marmalade-repo.org/packages/") t)
 (add-to-list 'package-archives '("elpa" . "http://tromey.com/elpa/") t)
 (add-to-list 'package-archives '("org" . "http://orgmode.org/elpa/") t)
 (add-to-list 'package-archives '("melpa" . "http://melpa.org/packages/") t)
@@ -851,7 +851,7 @@ marking if it still had that."
               (goto-char (point-min))
               (mu4e~fontify-cited)
               (mu4e~fontify-signature)
-              (mu4e~view-make-urls-clickable)	
+              (mu4e~view-make-urls-clickable)
               (mu4e~view-show-images-maybe msg)
               (setq
                mu4e~view-buffer buf
@@ -1133,9 +1133,9 @@ marking if it still had that."
       :init (flx-ido-mode 1)
       :config
       (progn
-	;; disable ido faces to see flx highlights.
-	;; This makes flx-ido much faster.
-	(setq gc-cons-threshold 20000000)
+        ;; disable ido faces to see flx highlights.
+        ;; This makes flx-ido much faster.
+        (setq gc-cons-threshold 20000000)
         (setq ido-use-faces nil)))
     (use-package ido-ubiquitous
       :ensure t
@@ -1203,7 +1203,7 @@ marking if it still had that."
 (defun add-virtual-envs-to-jedi-server ()
   (let ((virtual-envs (get-virtual-envs)))
     (when virtual-envs (set (make-local-variable 'jedi:server-args)
-			    (make-virtualenv-args virtual-envs)))))
+                            (make-virtualenv-args virtual-envs)))))
 
 (defun make-virtualenv-args (virtual-envs)
   (apply #'append (mapcar (lambda (env) `("-v" ,env)) virtual-envs)))
@@ -1223,7 +1223,7 @@ marking if it still had that."
 
 (defun message-virtual-envs ()
   (interactive)
-	  (message "%s" (get-virtual-envs)))
+          (message "%s" (get-virtual-envs)))
 
 (use-package python
   :commands python-mode
@@ -1267,11 +1267,11 @@ marking if it still had that."
 (use-package scala-mode2
   :init
   (progn (add-hook 'scala-mode-hook
-		   (lambda ()
-		     (require 'whitespace)
-		     (make-local-variable 'before-save-hook)
-		     (add-hook 'before-save-hook 'whitespace-cleanup)
-		     (whitespace-mode))))
+                   (lambda ()
+                     (require 'whitespace)
+                     (make-local-variable 'before-save-hook)
+                     (add-hook 'before-save-hook 'whitespace-cleanup)
+                     (whitespace-mode))))
   :config
   (progn
     (use-package ensime
@@ -1315,8 +1315,8 @@ marking if it still had that."
       (progn (tern-ac-setup))
       :init
       (progn
-	(use-package tern-auto-complete :ensure t
-	  :commands tern-ac-setup)))))
+        (use-package tern-auto-complete :ensure t
+          :commands tern-ac-setup)))))
 
 (use-package json-mode
   :ensure t
@@ -1351,9 +1351,9 @@ marking if it still had that."
 (use-package helm-gtags
   :ensure t
   :config (custom-set-variables
-	   '(helm-gtags-path-style 'relative)
-	   '(helm-gtags-ignore-case t)
-	   '(helm-gtags-auto-update t))
+           '(helm-gtags-path-style 'relative)
+           '(helm-gtags-ignore-case t)
+           '(helm-gtags-auto-update t))
   :bind
   (("M-t" . helm-gtags-find-tag)
    ("M-r" . helm-gtags-find-rtag)
@@ -1392,7 +1392,7 @@ marking if it still had that."
 
 (use-package yaml-mode :ensure t
   :mode (("\\.yaml\\'" . yaml-mode)
-	 ("\\.yml\\'" . yaml-mode)))
+         ("\\.yml\\'" . yaml-mode)))
 
 (use-package sgml-mode
   :ensure t
@@ -1434,8 +1434,8 @@ marking if it still had that."
 (fset 'global-set-key-to-use-package
       (lambda (&optional arg) "Keyboard macro." (interactive "p")
         (kmacro-exec-ring-item
-	 (quote ([1 67108896 19 100 6 23 40 19 41 return
-		    backspace 32 46 6 4] 0 "%d")) arg)))
+         (quote ([1 67108896 19 100 6 23 40 19 41 return
+                    backspace 32 46 6 4] 0 "%d")) arg)))
 
 ;; =============================================================================
 ;;                                                                          toys
@@ -1524,8 +1524,8 @@ marking if it still had that."
   (interactive
    (list
     (intern (completing-read "Load custom theme: "
-			     (mapcar 'symbol-name
-				     (custom-available-themes))))
+                             (mapcar 'symbol-name
+                                     (custom-available-themes))))
     nil nil))
   (disable-all-themes)
   (load-theme theme no-confirm no-enable))
@@ -1535,7 +1535,7 @@ marking if it still had that."
   (condition-case exp
       (set-frame-font (random-choice fonts) nil t)
     ('error (package-refresh-contents)
-	    (set-frame-font "Monaco for Powerline-12" nil t) nil)))
+            (set-frame-font "Monaco for Powerline-12" nil t) nil)))
 
 (defun remove-fringe-and-hl-line-mode (&rest stuff)
   (if (fboundp 'scroll-bar-mode) (scroll-bar-mode -1))
