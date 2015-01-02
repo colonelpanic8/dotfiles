@@ -1,3 +1,24 @@
+function split_into_vars () {
+    local string IFS
+    
+    string="$1"
+    IFS="$2"
+    shift 2
+    read -r -- "$@" <<EOF
+$string
+EOF
+}
+
+function echo_split () {
+   local IFS    
+    IFS="$2" read -rA -- arr <<EOF
+$1
+EOF
+    for i in "${arr[@]}"; do
+	echo $i
+    done
+}
+
 function shell_contains () {
   local e
   for e in "${@:2}"; do [[ "$e" == "$1" ]] && return 0; done
