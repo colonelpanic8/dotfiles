@@ -71,17 +71,12 @@
 ;;                                                          Config Free Packages
 ;; =============================================================================
 
-(defun use-packages (packages)
-  (mapcar
-   (lambda (package)
-     (use-package package :ensure t)) packages))
-
 (defvar packages-eager
   '(popup auto-complete yasnippet cl-lib paradox slime
     xclip dired+ ctags ctags-update aggressive-indent imenu+ neotree diminish
     gist))
 
-(use-packages packages-eager)
+(ensure-packages-installed packages-eager)
 
 ;; =============================================================================
 ;;                                                                      Disables
