@@ -30,7 +30,6 @@
 	rh = reset --hard
 	root = rev-parse --show-toplevel
 	s = status -s
-	set-upstream = branch 
 	sha = rev-parse HEAD
 	suir = submodule update --init --recursive
 	tb = rev-parse --abbrev-ref --symbolic-full-name @{u}
