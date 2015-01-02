@@ -821,7 +821,7 @@ The current directory is assumed to be the project's root otherwise."
     (setq mu4e-sent-messages-behavior 'delete)
 
     ;; allow for updating mail using 'U' in the main view:
-    (setq mu4e-get-mail-command "offlineimap")
+    (setq mu4e-get-mail-command "timeout 60 offlineimap")
 
     (add-hook 'mu4e-compose-mode-hook
               (defun my-do-compose-stuff () (flyspell-mode)))
@@ -848,7 +848,7 @@ marking if it still had that."
         (with-current-buffer buf
           (switch-to-buffer buf)
           (setq mu4e~view-msg msg)
-          (when t ;;(or embedded (not (mu4e~view-mark-as-read msg)))
+          (when (or (mu4e~view-mark-as-read msg) t) ;;(or embedded (not (mu4e~view-mark-as-read msg)))
             (let ((inhibit-read-only t))
               (erase-buffer)
               (mu4e~delete-all-overlays)
