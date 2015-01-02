@@ -14,8 +14,8 @@ def setup(ctx):
     hyper(ctx)
     locate(ctx)
     set_path_for_launchd(ctx)
-    install_rvm(ctx)
-    install_powerline_monaco(ctx)
+    rvm(ctx)
+    fonts(ctx)
     fix_pip(ctx)
     fix_htop(ctx)
     setup_dbus(ctx)
@@ -100,7 +100,7 @@ def access_if_exists(ctx, app_string):
             )
         )
 
-@ctask
+@ctask(aliases=['karabiner', 'fast_repeat'])
 def hyper(ctx):
     source = '{0}/karabiner-hyper.xml'.format(util.RESOURCES_DIRECTORY)
     destination_folder = os.path.join(
@@ -123,12 +123,12 @@ def locate(ctx):
 
 
 @ctask
-def install_rvm(ctx):
+def rvm(ctx):
     ctx.run('\\curl -sSL https://get.rvm.io | bash -s stable')
 
 
 @ctask
-def install_powerline_monaco(ctx):
+def fonts(ctx):
     ctx.run('open {0}'.format(
         os.path.join(util.RESOURCES_DIRECTORY, "Monaco-Powerline.otf"))
     )
