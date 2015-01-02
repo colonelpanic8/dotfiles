@@ -84,7 +84,8 @@ def link_dropbox_other(ctx, force=False):
         ('~/Dropbox/Documents', '~/Documents'),
         ('~/Dropbox/Pictures', '~/Pictures'),
         ('~/Dropbox/org', '~/org'),
-        ('~/Dropbox/Desktop', '~/Desktop')
+        ('~/Dropbox/Desktop', '~/Desktop'),
+        ('~/Dropbox/ebooks', '~/ebooks'),
     )
     link_filenames(ctx, link_pairs, force)
 
