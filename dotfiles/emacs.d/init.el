@@ -392,7 +392,7 @@ The current directory is assumed to be the project's root otherwise."
   :config
   (progn
     (setq guide-key/guide-key-sequence
-          '("C-c" "C-c p" "C-x C-k" "C-x r" "C-h" "C-x c" "C-x x"))
+          '("C-c" "C-c p" "C-x C-k" "C-x r" "C-h" "C-x c" "C-x"))
     (guide-key-mode 1)
     (diminish 'guide-key-mode)
     (setq guide-key/idle-delay 0.25)
@@ -815,6 +815,7 @@ The current directory is assumed to be the project's root otherwise."
     (setq mu4e-sent-messages-behavior 'delete)
     (setq mu4e-update-interval (* 60 20))
     (setq message-kill-buffer-on-exit t)
+    (setq mail-user-agent 'mu4e-user-agent) ;; make mu4e the default mail client
 
     ;; don't save message to Sent Messages, Gmail/IMAP takes care of this
     (setq mu4e-sent-messages-behavior 'delete)
@@ -1437,6 +1438,7 @@ marking if it still had that."
 (bind-key "M-p" 'backward-paragraph)
 (bind-key "M-z" 'zap-to-char)
 (bind-key "C-M-<backspace>" 'backward-kill-sexp)
+(bind-key "s-<return>" 'toggle-frame-fullscreen)
 
 (fset 'global-set-key-to-use-package
       (lambda (&optional arg) "Keyboard macro." (interactive "p")
