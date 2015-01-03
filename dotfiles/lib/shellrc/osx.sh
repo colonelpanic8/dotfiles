@@ -27,7 +27,6 @@ function as_user {
     local user="$1"
     local user_pid=$(ps -axj | awk "/^$user / {print \$2;exit}")
     local command="sudo /bin/launchctl bsexec $user_pid sudo -u '$user' $2"
-    echo "Running:"
     echo "$command"
     eval $command
 }
@@ -41,6 +40,12 @@ function reload_user_agent {
     as_current_user /bin/launchctl load "$1"
 }
 
+function reload_all_user_agents {
+    sudo -v
+    for agent in $(find -f ~/Library/LaunchAgents); do
+	reload_root_agent $agent
+    done
+}
     
 function reload_root_agent {
     as_user 'root' "/bin/launchctl unload '$1'"
