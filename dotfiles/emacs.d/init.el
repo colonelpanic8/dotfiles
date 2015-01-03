@@ -65,7 +65,10 @@
 (use-package benchmark-init
   :ensure t
   ;; Set do-benchmark in custom.el
-  :if (and (boundp 'do-benchmark) do-benchmark))
+  :if (and (boundp 'do-benchmark) do-benchmark)) ;; This doesn't work
+                                                 ;; anymore because
+                                                 ;; custom.el is
+                                                 ;; loaded much later
 
 ;; =============================================================================
 ;;                                                          Config Free Packages
@@ -360,9 +363,10 @@ The current directory is assumed to be the project's root otherwise."
 
 (use-package yasnippet
   :ensure t
+  :commands (yas-global-mode)
+  :idle (yas-global-mode)
   :config
   (progn
-    (yas-global-mode)
     (diminish 'yas-minor-mode)
     (setq yas-prompt-functions
           (cons 'yas-ido-prompt
@@ -650,7 +654,7 @@ The current directory is assumed to be the project's root otherwise."
 
     (add-to-list 'org-capture-templates
                  `("h" "Habit" entry (file+headline ,org-habits-file "Habits")
-                   "* TODO 
+                   "* TODO
   SCHEDULED: %t
   :PROPERTIES:
   :STYLE:    habit
@@ -894,6 +898,7 @@ marking if it still had that."
 
 (use-package sauron
   :ensure t
+  :defer t
   :commands (sauron-start sauron-start-hidden)
   :config
   (progn
@@ -981,6 +986,7 @@ marking if it still had that."
 
 (use-package helm-config
   :ensure helm
+  :demand t
   :bind (("M-y" . helm-show-kill-ring)
          ("M-x" . helm-M-x)
          ("C-x C-i" . helm-imenu)
@@ -989,7 +995,6 @@ marking if it still had that."
          ("C-c ;" . helm-recentf))
   :init
   (progn
-    (require 'helm)
     (helm-mode 1)
     (use-package helm-ag :ensure t))
   :config
@@ -1545,9 +1550,9 @@ marking if it still had that."
   (if (fboundp 'menu-bar-mode) (menu-bar-mode -1))
   (set-fringe-mode 0)
   (setq linum-format 'dynamic)
-  (set-my-font-for-frame nil)
   (setq left-margin-width 0)
-  (setq hl-line-mode nil))
+  (setq hl-line-mode nil)
+  (set-my-font-for-frame nil))
 
 (if (emacs24_4-p)
     (advice-add 'load-theme :after #'remove-fringe-and-hl-line-mode)
