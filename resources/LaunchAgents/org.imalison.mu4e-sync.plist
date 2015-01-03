@@ -6,12 +6,10 @@
     <string>org.imalison.mu4e-sync</string>
     <key>ProgramArguments</key>
     <array>
-      <string>zsh</string>
-      <string>-c</string>
-        <string>refresh_config && mu4e_sync_command INBOX</string>
+      <string>~/.lib/mu4e_sync.sh</string>
     </array>
     <key>StartInterval</key>
-    <integer>10</integer>
+    <integer>30</integer>
     <key>StandardOutPath</key>
     <string>/tmp/org.imalison.mu4e-sync.out</string>
     <key>StandardErrorPath</key>
