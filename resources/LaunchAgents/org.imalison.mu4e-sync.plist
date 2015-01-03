@@ -8,7 +8,7 @@
     <array>
       <string>zsh</string>
       <string>-c</string>
-      <string>/Users/imalison/.lib/mu4e_sync.sh</string>
+      <string>~/.lib/mu4e_sync.sh</string>
     </array>
     <key>StartInterval</key>
     <integer>10</integer>
