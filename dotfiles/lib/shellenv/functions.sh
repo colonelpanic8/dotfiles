@@ -287,7 +287,7 @@ function track_modified {
     echo "Press any key to execute find command"
     read -r key
     echo "Finding..."
-    find $1 -newer $timestamp_file
+    find $1 -cnewer "$timestamp_file"
 }
 
 function python_module_path {

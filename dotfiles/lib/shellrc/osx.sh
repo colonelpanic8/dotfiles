@@ -43,7 +43,7 @@ function reload_user_agent {
 function reload_all_user_agents {
     sudo -v
     for agent in $(find -f ~/Library/LaunchAgents); do
-	reload_root_agent $agent
+	reload_user_agent $agent
     done
 }
     
