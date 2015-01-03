@@ -1,2 +1,3 @@
 #!/usr/bin/env zsh
-offlineimap
+refresh_config
+mu4e_sync_command

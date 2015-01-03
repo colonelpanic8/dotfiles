@@ -15,6 +15,6 @@
     <key>StandardOutPath</key>
     <string>/tmp/org.imalison.mu4e-sync.out</string>
     <key>StandardErrorPath</key>
-    <string>/tsmp/org.imalison.mu4e-sync.error</string>
+    <string>/tmp/org.imalison.mu4e-sync.error</string>
 </dict>
 </plist>
