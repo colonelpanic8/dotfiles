@@ -1,2 +1,0 @@
-#compdef inv
-compdef inv='invoke'

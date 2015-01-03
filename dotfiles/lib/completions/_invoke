@@ -1,43 +1,59 @@
-#compdef invoke
+#compdef inv invoke
 
-_invoke() {
-    typeset -A opt_args
-    local context state line
+typeset -A opt_args
+local context state line
 
-    _arguments "*:invoke_command:->command"
-
-    case $state in
-	(command)
-	    COMMAND_COMPLETIONS=( $(_invoke_commands | tr '\n' ' ') )
-	    for COMPLETION in $COMMAND_COMPLETIONS
-	    do
-		compadd $COMPLETION
-	    done
-	    ;;
-    esac
-
-    return 0
-}
-
-function _invoke_commands() {
+function _invoke_subcommands {
     COMMAND_COMPLETIONS=( $(invoke -l |tr -d ' ' | tail -n+2 | sed '$ d' | tr '\n' ' ') )
     for COMPLETION in $COMMAND_COMPLETIONS
     do
 	local comma_separated="$(echo $COMPLETION | tr -d ')\n' | tr '(' ',')"
 	local names="$(_echo_split $comma_separated ',')"
-	for name in $names
-	do
-	    echo $name
-	done
+	echo $names | tr '\n' ' '
     done
 }
 
-function _echo_split () {
+function _echo_split {
    local IFS    
     IFS="$2" read -rA -- arr <<EOF
 $1
 EOF
-    for i in "${arr[@]}"; do
-	echo $i
-    done
+    echo "${arr[@]}"
 }
+
+function _complete_invoke_subcommand {
+    local cache_policy cache_name _invoke_subcommands
+    cache_name=invoke/subcommands"$(pwd)"
+    zstyle -s ":completion:${curcontext}:" cache-policy cache_policy
+
+    if [[ -z "$cache_policy" ]]; then
+        zstyle ":completion:${curcontext}:" cache-policy _invoke_subcommands_caching_policy
+    fi
+
+    if _cache_invalid "$cache_name" || ! _retrieve_cache "$cache_name"; then
+        _invoke_subcommands=( $(_invoke_subcommands) )
+        _store_cache "$cache_name" _invoke_subcommands
+    fi
+
+    local expl
+    _wanted invoke_subcommands expl 'invoke subcommands' compadd -a _invoke_subcommands
+}
+
+function _invoke_subcommands_caching_policy {
+    local -a oldp
+    oldp=( "$1"(Nmm+1) ) # 1 minute
+    (( $#oldp ))
+}
+
+_arguments -s -S \
+  "--no-dedupe[Disable task deduplication.]" \
+  "(-c --collection)"{-c,--collection}"[Specify collection name to load. May be given >1 time.]" \
+  "(-e --echo)"{-e,--echo}"[Echo executed commands before running.]" \
+  "(-h --help)"{-h,--help}"[Show core or per-task help and exit.]:command:_invoke_subcommand" \
+  "(-H --hide)"{-H,--hide}"[Set default value of run()'s 'hide' kwarg.]:command:_invoke_subcommand" \
+  "(-l --list)"{-l,--list}"[List available tasks.]" \
+  "(-p --pty)"{-p,--pty}"[Use a pty when executing shell commands.]" \
+  "(-r --root)"{-r,--root}"[Change root directory used for finding task modules.]:directory:_directories" \
+  "(-V --version)"{-V,--version}"[Show version and exit.]:" \
+  "(-w --warn-only)"{-w,--warn-only}"[Warn, instead of failing, when shell commands fail.]" \
+  "*:invoke command:_complete_invoke_subcommand"
