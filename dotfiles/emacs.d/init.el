@@ -1191,6 +1191,7 @@ marking if it still had that."
 (define-key lisp-mode-shared-map (kbd "C-c o r") 'up-list-region)
 (define-key lisp-mode-shared-map (kbd "C-c o o") 'up-list-back)
 (define-key lisp-mode-shared-map (kbd "C-x C-e") 'eval-region-or-last-sexp)
+(unbind-key "C-j" lisp-interaction-mode-map)
 
 ;; =============================================================================
 ;;                                                                        Python
