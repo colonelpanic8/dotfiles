@@ -72,7 +72,7 @@
 ;; =============================================================================
 
 (defvar packages-eager
-  '(popup auto-complete yasnippet cl-lib paradox slime
+  '(popup auto-complete yasnippet cl-lib paradox
     xclip dired+ ctags ctags-update aggressive-indent imenu+ neotree diminish
     gist))
 
@@ -776,7 +776,7 @@ The current directory is assumed to be the project's root otherwise."
   :commands erc
   :config
   (progn
-    (add-to-list 'erc-modules 'notifications)
+    ;; (add-to-list 'erc-modules 'notifications)
     (use-package erc-colorize :ensure t) (erc-colorize-mode 1)))
 
 (use-package s :ensure t)
@@ -899,7 +899,7 @@ marking if it still had that."
   (progn
     (setq sauron-prio-sauron-started 2)
     (setq sauron-min-priority 3)
-    (setq sauron-dbus-cookie t)
+    ;; (setq sauron-dbus-cookie t) ;; linux only?
     (setq sauron-separate-frame nil)
     (setq sauron-nick-insensitivity 1)
     (defun sauron:jabber-notify (origin priority message &optional properties)
