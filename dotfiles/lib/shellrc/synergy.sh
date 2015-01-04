@@ -1,3 +1,5 @@
+SYNERGY_CONF="$HOME/Dropbox/configs/synergy.conf"
+
 function make_me_synergy() {
     local new_host_name="$(echo $SSH_CONNECTION | get_cols 1)"
     OPTIND=1
@@ -34,6 +36,6 @@ function clear_synergy_for_ip() {
 }
 
 function activate_synergy_for() {
-    test -z "$(pgrep synergys)" && synergys --config ~/synergy.conf
-    ssh $1 "source ~/.zshrc && make_me_synergy"
+    test -z "$(pgrep synergys)" && synergys --config "$SYNERGY_CONF"
+    ssh $1 "source ~/.zshrc && synergyc $(localip)"
 }
