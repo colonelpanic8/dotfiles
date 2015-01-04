@@ -4,13 +4,28 @@ typeset -A opt_args
 local context state line
 
 function _invoke_subcommands {
-    COMMAND_COMPLETIONS=( $(invoke -l |tr -d ' ' | tail -n+2 | sed '$ d' | tr '\n' ' ') )
-    for COMPLETION in $COMMAND_COMPLETIONS
+    LISTINGS=( $(invoke -l | tail -n+2 | sed 's/^ *//g' | while read line ; do _remove_docstrings "$line"; done;) )
+    for subcommand_listing in $LISTINGS
     do
-	local comma_separated="$(echo $COMPLETION | tr -d ')\n' | tr '(' ',')"
+	local delimiter_character=' '
+    	if echo $subcommand_listings | grep ')'
+	then
+	    delimiter_character=')'
+	fi
+	subcommand_listing="$(echo $subcommand_listing | cut -d "$delimiter_character" -f 1)"
+	local comma_separated="$(echo $subcommand_listing | tr -d ')\n' | tr '(' ',')"
 	local names="$(_echo_split $comma_separated ',')"
 	echo $names | tr '\n' ' '
     done
+}
+
+function _remove_docstrings {
+    local delimiter_character=' '
+    if echo $1 | grep ')' > /dev/null
+    then
+	delimiter_character=')'
+    fi
+    echo $1 | cut -d "$delimiter_character" -f 1
 }
 
 function _echo_split {
