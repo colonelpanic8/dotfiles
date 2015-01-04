@@ -16,7 +16,7 @@ function make_me_synergy() {
 
 function stop_synergy_at() {
     pgrep synergys | xargs kill -9
-    ssh $1 "source ~/.zshrc && clear_my_synergy"
+    ssh $1 "refresh_config && clear_my_synergy"
 }
 
 function clear_all_synergy() {
