@@ -1252,7 +1252,8 @@ marking if it still had that."
         (setq jedi:install-imenu t)
         (setq jedi:imenu-create-index-function 'jedi:create-flat-imenu-index))
       :ensure t
-      :bind ("M-." . jedi:goto-definition))
+      :bind (("M-." . jedi:goto-definition)
+             ("M-," . jedi:goto-definition-pop-marker)))
     (use-package pytest
       :ensure t
       :bind ("C-c t" . pytest-one))
