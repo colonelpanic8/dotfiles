@@ -43,7 +43,6 @@ def osx_config(ctx):
 
 @ctask
 def cider(ctx):
-    ctx.run('brew tap homebrew/dupes')
     ctx.run('brew install caskroom/cask/brew-cask')
     if not util.command_exists('cider'):
         ctx.run('sudo pip install cider')

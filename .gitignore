@@ -33,3 +33,4 @@ dotfiles/config/nemo/
 /.mail-sync
 
 dotfiles/wemo/cache
+dotfiles/config/mopidy/spotify/
