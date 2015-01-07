@@ -646,11 +646,23 @@ The current directory is assumed to be the project's root otherwise."
                     (list org-gtd-file org-habits-file org-projectile:projects-file
                           org-calendar-file)))
 
+    (add-to-list 'org-capture-templates
+                 `("g" "GTD Todo" entry (file+headline ,org-gtd-file "Tasks")
+                   "* TODO %?\n"))
+
+    (add-to-list 'org-capture-templates
+                 `("t" "GTD Todo" entry (file+headline ,org-gtd-file "Tasks")
+                       "* TODO %? %A\n"))
 
     (add-to-list 'org-capture-templates
                  `("c" "Calendar entry" entry
                    (file+headline ,org-calendar-file "Personal")
                    "* %?"))
+
+    (add-to-list 'org-capture-templates
+                 `("y" "Calendar entry" entry
+                   (file+headline ,org-calendar-file "Personal")
+                   "* %? %A"))
 
     (add-to-list 'org-capture-templates
                  `("h" "Habit" entry (file+headline ,org-habits-file "Habits")
@@ -672,9 +684,7 @@ The current directory is assumed to be the project's root otherwise."
     (defun org-make-habit ()
       (interactive)
       (org-set-property "STYLE" "habit"))
-    (add-to-list 'org-capture-templates
-                 `("g" "GTD Todo" entry (file+headline ,org-gtd-file "Tasks")
-                   "* TODO %?\n"))
+
 
     (defun org-insert-habit ()
       (interactive)
@@ -1538,7 +1548,8 @@ marking if it still had that."
                                      (custom-available-themes))))
     nil nil))
   (disable-all-themes)
-  (load-theme theme no-confirm no-enable))
+  (load-theme theme no-confirm no-enable)
+  (set-my-font-for-frame nil))
 
 (defun set-my-font-for-frame (frame)
   (interactive (list nil))
