@@ -30,7 +30,7 @@ pb-copy-region-as-kill-deactivate-mark () {
 }
 
 pb-yank () {
-  CUTBUFFER=$(pbpaste)
+  CUTBUFFER=$(ospaste)
   zle yank
 }
 
