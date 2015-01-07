@@ -13,7 +13,7 @@ mopidy-spotify
 numpy
 okcupyd
 ouimeaux
-py
+pythonpy
 pylint
 pyspotify
 readline
