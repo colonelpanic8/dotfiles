@@ -7,6 +7,7 @@ flake8
 invoke
 jinja
 lxml
+mopidy-gmusic
 mopidy-moped
 mopidy-scrobbler
 mopidy-spotify
