@@ -8,6 +8,7 @@ alias tvenv='tox -e venv -- '
 alias reload_tmux='tmux source-file ~/.tmux.conf'
 alias ssh='ssh -A '
 alias dusage='du -ch -d 0'
+alias subl='reattach-to-user-namespace subl'
 
 # enables the sudoing of aliases.
 alias sudo='sudo '
