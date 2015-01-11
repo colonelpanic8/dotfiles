@@ -44,3 +44,8 @@ function with_shellrc {
 
 # Travis completion
 [ -f "$HOME/.travis/travis.sh" ] && source "$HOME/.travis/travis.sh"
+
+export RBENV_ROOT=/usr/local/var/rbenv
+
+export PATH="$HOME/.rbenv/bin:$PATH"
+eval "$(rbenv init -)"

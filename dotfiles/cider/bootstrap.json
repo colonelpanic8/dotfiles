@@ -119,6 +119,8 @@
     "rbenv",
     "readline",
     "reattach-to-user-namespace",
+    "rsync",
+    "ruby-build",
     "sbt",
     "scala",
     "sdl",
