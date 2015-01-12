@@ -630,7 +630,8 @@ The current directory is assumed to be the project's root otherwise."
         (org-todo "TODO")
         (org-set-property "CREATED"
                           (with-temp-buffer
-                            (org-insert-time-stamp (org-current-effective-time) t)))
+                            (org-insert-time-stamp
+                             (org-current-effective-time) t)))
         (remove-hook 'post-command-hook 'org-add-log-note)
         (org-add-log-note)
         (buffer-substring-no-properties (point-min) (point-max))))
@@ -686,6 +687,7 @@ The current directory is assumed to be the project's root otherwise."
     (setq org-lowest-priority 69) ;; The character E
     (setq org-completion-use-ido t)
     (setq org-enforce-todo-dependencies t)
+    ;;(add-to-list org-agenda-tag-filter-preset "+PRIORITY<\"C\"")
 
     ;; Agenda setup.
     (unless (boundp 'org-gtd-file)
@@ -733,10 +735,13 @@ The current directory is assumed to be the project's root otherwise."
   :END:"))
 
     (add-to-list 'org-capture-templates (org-projectile:project-todo-entry "p"))
-    (add-to-list 'org-capture-templates (org-projectile:project-todo-entry "l" "* TODO %? %a\n"))
+    (add-to-list 'org-capture-templates
+                 (org-projectile:project-todo-entry "l" "* TODO %? %a\n"))
 
     (let ((this-week-high-priority
-           '(tags-todo "+PRIORITY=\"A\"+DEADLINE<\"<+1w>\"DEADLINE>\"<+0d>\""
+           ;; The < in the following line works has behavior that is opposite
+           ;; to what one might expect.
+           '(tags-todo "+PRIORITY<\"C\"+DEADLINE<\"<+1w>\"DEADLINE>\"<+0d>\""
                        ((org-agenda-overriding-header
                          "Upcoming high priority tasks:"))))
           (due-today '(tags-todo
@@ -770,7 +775,11 @@ The current directory is assumed to be the project's root otherwise."
                nil nil)
               ,(cons "A" (cons "High priority upcoming" this-week-high-priority))
               ,(cons "d" (cons "Overdue tasks and due today" due-today))
-              ,(cons "r" (cons "Recently created" recently-created)))))
+              ,(cons "r" (cons "Recently created" recently-created))
+	      '("h" "A, B priority:" tags-todo "+PRIORITY<\"C\""
+                       ((org-agenda-overriding-header
+                         "High Priority:"))))))
+
     ;; Record changes to todo states
     (setq org-log-into-drawer t)
     (setq org-todo-keywords
@@ -951,8 +960,18 @@ marking if it still had that."
   :ensure t
   :defer t
   :commands (sauron-start sauron-start-hidden)
+  :init
+  (progn
+    (when (eq system-type 'darwin)
+      (setq sauron-modules '(sauron-erc sauron-org sauron-notifications
+                                        sauron-twittering sauron-jabber sauron-identica))
+      (defun sauron-dbus-start ()
+        nil)
+      (makunbound 'dbus-path-emacs)))
   :config
   (progn
+    ;; This should really check (featurep 'dbus) but for some reason
+    ;; this is always true even if support is not there.
     (setq sauron-prio-sauron-started 2)
     (setq sauron-min-priority 3)
     ;; (setq sauron-dbus-cookie t) ;; linux only?
@@ -975,7 +994,7 @@ marking if it still had that."
                             (t (lambda (&rest r) nil)))))
         (funcall handler origin priority message properties)))
     ;; Prefering alert.el for now ;; (add-hook 'sauron-event-added-functions 'sauron:dispatch-notify)
-
+    (sauron-start-hidden)
     (add-hook 'sauron-event-added-functions 'sauron-alert-el-adapter))
   :idle (sauron-start-hidden)
   :idle-priority 3)
