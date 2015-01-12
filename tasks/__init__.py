@@ -22,7 +22,7 @@ def setup(ctx):
         osx.setup(ctx)
     else:
         linux.setup(ctx)
-    fix_pip_download_cache(ctx)
+    fix_pip(ctx)
     python(ctx)
     powerline(ctx)
     install_npm_libraries(ctx)
@@ -115,11 +115,12 @@ def customize_user_settings(ctx):
 
 
 @ctask
-def fix_pip_download_cache(ctx):
-    ctx.run("sudo chown imalison ~/.pip/download_cache -R")
+def fix_pip(ctx):
+    ctx.run("sudo easy_install -U pip")
+    ctx.run("sudo chown $(whoami) ~/.pip/download_cache -R")
 
 
-ns.add_task(fix_pip_download_cache)
+ns.add_task(fix_pip)
 ns.add_task(change_shell)
 ns.add_task(customize_user_settings)
 ns.add_task(dotfiles)

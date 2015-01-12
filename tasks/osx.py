@@ -15,7 +15,6 @@ def setup(ctx):
     set_path_for_launchd(ctx)
     rvm(ctx)
     fonts(ctx)
-    fix_pip(ctx)
     fix_htop(ctx)
     setup_dbus(ctx)
 
@@ -156,11 +155,6 @@ def iTerm(ctx):
     ctx.run("defaults write {0} PrefsCustomFolder -string {1}".format(
         library_plist, util.RESOURCES_DIRECTORY
     ))
-
-
-@ctask
-def fix_pip(ctx):
-    ctx.run("sudo easy_install -U pip")
 
 
 @ctask
