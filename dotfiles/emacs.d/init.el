@@ -679,6 +679,7 @@ The current directory is assumed to be the project's root otherwise."
 
     ;; variable configuration
     (add-to-list 'org-modules 'org-habit)
+    (add-to-list 'org-modules 'org-expiry)
     (setq org-src-fontify-natively t)
     (setq org-habit-graph-column 50)
     (setq org-habit-show-habits-only-for-today t)
@@ -742,6 +743,10 @@ The current directory is assumed to be the project's root otherwise."
                            "+DEADLINE=<\"<+0d>\""
                            ((org-agenda-overriding-header
                              "Due today:"))))
+          (recently-created '(tags-todo
+                           "+CREATED=>\"<-3d>\""
+                           ((org-agenda-overriding-header
+                             "Recently created:"))))
           (missing-deadline
            '(tags-todo "-DEADLINE={.}/!"
                        ((org-agenda-overriding-header
@@ -755,6 +760,7 @@ The current directory is assumed to be the project's root otherwise."
             `(("M" "Main agenda view"
                (,due-today
                 ,this-week-high-priority
+                ,recently-created
                 (agenda ""
                         ((org-agenda-overriding-header "Agenda:")
                          (org-agenda-ndays 5)
@@ -763,7 +769,8 @@ The current directory is assumed to be the project's root otherwise."
                 ,missing-priority)
                nil nil)
               ,(cons "A" (cons "High priority upcoming" this-week-high-priority))
-              ,(cons "od" (cons "Overdue tasks and due today" due-today)))))
+              ,(cons "d" (cons "Overdue tasks and due today" due-today))
+              ,(cons "r" (cons "Recently created" recently-created)))))
     ;; Record changes to todo states
     (setq org-log-into-drawer t)
     (setq org-todo-keywords
