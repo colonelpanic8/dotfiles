@@ -609,6 +609,18 @@ The current directory is assumed to be the project's root otherwise."
          ("C-c C-S-t" . org-todo-force-notes))
   :config
   (progn
+    (defun org-archive-if (condition-function)
+      (if (funcall condition-function)
+          (org-archive-subtree)))
+
+    (defun org-archive-if-completed ()
+      (interactive)
+      (org-archive-if 'org-entry-is-done-p))
+
+    (defun org-archive-completed-in-buffer ()
+      (interactive)
+      (org-map-entries 'org-archive-if-completed))
+
     (defun org-capture-make-todo-template (&optional content)
       (unless content (setq content "%?"))
       (with-temp-buffer
