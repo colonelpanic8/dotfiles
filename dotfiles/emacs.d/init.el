@@ -609,6 +609,48 @@ The current directory is assumed to be the project's root otherwise."
          ("C-c C-S-t" . org-todo-force-notes))
   :config
   (progn
+    (defun org-capture-make-todo-template (&optional content)
+      (unless content (setq content "%?"))
+      (with-temp-buffer
+        (org-mode)
+        (org-insert-heading)
+        (insert content)
+        (org-todo "TODO")
+        (org-set-property "CREATED"
+                          (with-temp-buffer
+                            (org-insert-time-stamp (org-current-effective-time) t)))
+        (remove-hook 'post-command-hook 'org-add-log-note)
+        (org-add-log-note)
+        (buffer-substring-no-properties (point-min) (point-max))))
+
+    (defun org-todo-force-notes ()
+      (interactive)
+      (let ((org-todo-log-states
+             (mapcar (lambda (state)
+                       (list state 'note 'time))
+                     (apply 'append org-todo-sets))))
+        (cond ((eq major-mode 'org-mode)  (org-todo))
+              ((eq major-mode 'org-agenda-mode) (org-agenda-todo)))))
+
+    (defun org-make-habit ()
+      (interactive)
+      (org-set-property "STYLE" "habit"))
+
+    (defun org-insert-habit ()
+      (interactive)
+      (org-insert-todo-heading nil)
+      (org-make-habit))
+
+    (defun org-todo-at-date (date)
+      (interactive (list (org-time-string-to-time (org-read-date))))
+      (flet ((org-current-effective-time (&rest r) date)
+             (org-today (&rest r) (time-to-days date)))
+        (cond ((eq major-mode 'org-mode) (org-todo))
+              ((eq major-mode 'org-agenda-mode) (org-agenda-todo)))))
+
+    (defun org-capture-make-linked-todo-template ()
+      (org-capture-make-todo-template "%? %A"))
+
     ;; org-mode add-ons
     (use-package org-present :ensure t)
     (use-package org-projectile
@@ -620,7 +662,8 @@ The current directory is assumed to be the project's root otherwise."
         (defun imalison:org-projectile:project-todo (&optional arg)
           (interactive "P")
           (org-projectile:project-todo-completing-read
-           (if arg "* TODO %? %A\n" nil)))))
+           (if arg (org-capture-make-linked-todo-template)
+             (org-capture-make-todo-template))))))
 
     ;; variable configuration
     (add-to-list 'org-modules 'org-habit)
@@ -648,16 +691,19 @@ The current directory is assumed to be the project's root otherwise."
 
     (add-to-list 'org-capture-templates
                  `("g" "GTD Todo" entry (file+headline ,org-gtd-file "Tasks")
-                   "* TODO %?\n"))
+                   (function org-capture-make-todo-template)))
 
     (add-to-list 'org-capture-templates
                  `("t" "GTD Todo" entry (file+headline ,org-gtd-file "Tasks")
-                       "* TODO %? %A\n"))
+                   (function org-capture-make-linked-todo-template)))
 
     (add-to-list 'org-capture-templates
                  `("c" "Calendar entry" entry
                    (file+headline ,org-calendar-file "Personal")
-                   "* %?"))
+                   "* %? %^T
+  :PROPERTIES:
+  :CREATED: %T
+  :END:"))
 
     (add-to-list 'org-capture-templates
                  `("y" "Calendar entry" entry
@@ -669,34 +715,9 @@ The current directory is assumed to be the project's root otherwise."
                    "* TODO
   SCHEDULED: %t
   :PROPERTIES:
-  :STYLE:    habit
+  :CREATED: %T
+  :STYLE: habit
   :END:"))
-
-    (defun org-todo-force-notes ()
-      (interactive)
-      (let ((org-todo-log-states
-             (mapcar (lambda (state)
-                       (list state 'note 'time))
-                     (apply 'append org-todo-sets))))
-        (cond ((eq major-mode 'org-mode)  (org-todo))
-              ((eq major-mode 'org-agenda-mode) (org-agenda-todo)))))
-
-    (defun org-make-habit ()
-      (interactive)
-      (org-set-property "STYLE" "habit"))
-
-
-    (defun org-insert-habit ()
-      (interactive)
-      (org-insert-todo-heading nil)
-      (org-make-habit))
-
-    (defun org-todo-at-date (date)
-      (interactive (list (org-time-string-to-time (org-read-date))))
-      (flet ((org-current-effective-time (&rest r) date)
-             (org-today (&rest r) (time-to-days date)))
-        (cond ((eq major-mode 'org-mode) (org-todo))
-              ((eq major-mode 'org-agenda-mode) (org-agenda-todo)))))
 
     (add-to-list 'org-capture-templates (org-projectile:project-todo-entry "p"))
     (add-to-list 'org-capture-templates (org-projectile:project-todo-entry "l" "* TODO %? %a\n"))
