@@ -16,6 +16,8 @@
 	ff = merge --ff-only
 	ffo = !git ffr origin
 	ffr = "!ffr() { git fetch $1 && git ff $1/$(git which-branch) && git suir; }; ffr"
+	icd = "!d() { git difftool --no-prompt --extcmd 'icdiff' $@ | $(git config --get core.pager); }; d"	
+	icdl = "!d() { git difftool --no-prompt --extcmd 'icdiff --line-numbers' $@ | $(git config --get core.pager); }; d"
 	ignore = "!i() { printf \"\n$1\" >> "`git root`/.gitignore"; }; i"
 	ignore-untracked="!git untracked | xargs -n1 git ignore"
 	l = log --pretty=oneline --graph
@@ -39,13 +41,13 @@
         clone = clone --recursive
         diff-excluding = "!f() { exclude=$1; shift; git diff $1 $2 --name-only | grep -v $exclude | xargs git diff "$@" --; }; f"
         file-exists = "!f() { git ls-files $1 --error-unmatch > /dev/null 2> /dev/null; }; f"
-        shas = log HEAD --pretty=format:%H
+	shas = log HEAD --pretty=format:%H
 
 [core]
 	# Use custom `.gitignore` and `.gitattributes`
 	excludesfile = ~/.gitignore
 	attributesfile = ~/.gitattributes
-	pager = less -F -X
+	pager = less -FXr
 
 [color]
 	# Use colors in Git commands that are capable of colored output when

@@ -4,6 +4,9 @@ elif infocmp xterm-256color >/dev/null 2>&1; then
     export TERM=xterm-256color
 fi
 
+export PAGER='less -XFr'
+export GITPAGER='less -XFr'
+
 # Larger bash history (allow 32³ entries; default is 500)
 export HISTSIZE=32768
 export HISTFILESIZE=10000000
