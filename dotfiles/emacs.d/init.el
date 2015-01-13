@@ -785,7 +785,7 @@ the same tree node, and the headline of the tree node in the Org-mode file."
               ,(cons "A" (cons "High priority upcoming" this-week-high-priority))
               ,(cons "d" (cons "Overdue tasks and due today" due-today))
               ,(cons "r" (cons "Recently created" recently-created))
-	      '("h" "A, B priority:" tags-todo "+PRIORITY<\"C\""
+	      ("h" "A, B priority:" tags-todo "+PRIORITY<\"C\""
                        ((org-agenda-overriding-header
                          "High Priority:"))))))
 
