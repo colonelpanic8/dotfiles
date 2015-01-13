@@ -603,7 +603,7 @@ The current directory is assumed to be the project's root otherwise."
 (use-package htmlize :ensure t)
 
 (use-package org
-  :ensure t
+  :ensure org-plus-contrib
   :commands (org-mode org org-mobile-push org-mobile-pull org-agenda)
   :mode ("\\.org\\'" . org-mode)
   :bind (("C-c a" . org-agenda)
@@ -847,7 +847,7 @@ the same tree node, and the headline of the tree node in the Org-mode file."
     (add-hook 'org-mode-hook 'guide-key/my-hook-function-for-org-mode)
     (defun disable-linum-mode () (linum-mode 0))
     (add-hook 'org-mode-hook 'disable-linum-mode)
-    (add-hook 'org-agenda-mode-hook 'disable-linum-mode)))
+    (add-hook 'org-agenda-mode-hook 'disable-linum-mode))) 
 
 (use-package epg
   :ensure t
