@@ -664,6 +664,15 @@ The current directory is assumed to be the project's root otherwise."
     (defun org-capture-make-linked-todo-template ()
       (org-capture-make-todo-template "%? %A"))
 
+    (defun org-agenda-done (&optional arg)
+      "Mark current TODO as done.
+This changes the line at point, all other lines in the agenda referring to
+the same tree node, and the headline of the tree node in the Org-mode file."
+      (interactive "P")
+      (org-agenda-todo "DONE"))
+    ;; Override the key definition for org-exit
+    ;; (define-key org-agenda-mode-map "x" #'org-agenda-done) ;; TODO why does this cause an error
+
     ;; org-mode add-ons
     (use-package org-present :ensure t)
     (use-package org-projectile
