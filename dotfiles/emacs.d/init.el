@@ -143,6 +143,15 @@
 ;;                                                                     functions
 ;; =============================================================================
 
+(defun narrow-to-region-indirect (start end)
+  "Restrict editing in this buffer to the current region, indirectly."
+  (interactive "r")
+  (deactivate-mark)
+  (let ((buf (clone-indirect-buffer nil nil)))
+    (with-current-buffer buf
+      (narrow-to-region start end))
+      (switch-to-buffer buf)))
+
 (defmacro defvar-setq (name value)
   (if (boundp name)
       `(setq ,name ,value)
@@ -789,6 +798,9 @@ the same tree node, and the headline of the tree node in the Org-mode file."
               ,(cons "d" (cons "Overdue tasks and due today" due-today))
               ,(cons "r" (cons "Recently created" recently-created))
 	      ("h" "A, B priority:" tags-todo "+PRIORITY<\"C\""
+                       ((org-agenda-overriding-header
+                         "High Priority:")))
+              ("c" "At least priority C:" tags-todo "+PRIORITY<\"D\""
                        ((org-agenda-overriding-header
                          "High Priority:"))))))
 
@@ -1663,3 +1675,5 @@ window is active in the perspective."
 ;; This is needed because you can't set the font at daemon start-up.
 (add-hook 'after-make-frame-functions 'set-my-font-for-frame)
 (add-hook 'after-make-frame-functions (lambda (frame) (set-theme)))
+(put 'narrow-to-region 'disabled nil)
+(put 'narrow-to-page 'disabled nil)
