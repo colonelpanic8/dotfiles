@@ -631,7 +631,7 @@ The current directory is assumed to be the project's root otherwise."
         (org-set-property "CREATED"
                           (with-temp-buffer
                             (org-insert-time-stamp
-                             (org-current-effective-time) t)))
+                             (org-current-effective-time) t t)))
         (remove-hook 'post-command-hook 'org-add-log-note)
         (org-add-log-note)
         (buffer-substring-no-properties (point-min) (point-max))))
