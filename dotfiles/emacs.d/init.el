@@ -696,6 +696,9 @@ the same tree node, and the headline of the tree node in the Org-mode file."
     (setq org-lowest-priority 69) ;; The character E
     (setq org-completion-use-ido t)
     (setq org-enforce-todo-dependencies t)
+    (setq org-default-priority ?C)
+    (setq org-agenda-skip-scheduled-if-done t)
+    (setq org-agenda-skip-deadline-if-done t)
     ;;(add-to-list org-agenda-tag-filter-preset "+PRIORITY<\"C\"")
 
     ;; Agenda setup.
