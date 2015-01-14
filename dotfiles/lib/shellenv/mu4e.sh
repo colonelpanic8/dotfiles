@@ -54,5 +54,5 @@ function mu4e_view_message_from_file {
 }
 
 function mu4e_view_message {
-    execute_elisp "(mu4e-view-message-with-msgid \"$1\")"
+    execute_elisp "(progn (email) (mu4e-view-message-with-msgid \"$1\"))"
 }
