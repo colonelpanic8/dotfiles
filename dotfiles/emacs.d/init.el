@@ -870,10 +870,15 @@ the same tree node, and the headline of the tree node in the Org-mode file."
 (add-to-list 'load-path (s-trim (shell-command-to-string "mu4e_directory")))
 
 (use-package mu4e
-  :commands (mu4e mu4e-view-message-with-msgid mu4e-update-index)
-  :bind ("C-c 0" . mu4e~headers-jump-to-maildir)
+  :commands (mu4e mu4e-view-message-with-msgid mu4e-update-index email)
+  :bind ("C-c 0" . email)
   :config
   (progn
+    (defun email ()
+      (interactive)
+      (persp-switch "email")
+      (unless (mu4e-running-p)
+        (mu4e)))
     ;; enable inline images
     (setq mu4e-view-show-images t)
     ;; show images
