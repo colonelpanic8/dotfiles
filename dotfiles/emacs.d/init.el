@@ -705,7 +705,7 @@ the same tree node, and the headline of the tree node in the Org-mode file."
     (setq org-lowest-priority 69) ;; The character E
     (setq org-completion-use-ido t)
     (setq org-enforce-todo-dependencies t)
-    (setq org-default-priority ?C)
+    (setq org-default-priority ?D)
     (setq org-agenda-skip-scheduled-if-done t)
     (setq org-agenda-skip-deadline-if-done t)
     ;;(add-to-list org-agenda-tag-filter-preset "+PRIORITY<\"C\"")
@@ -1460,9 +1460,11 @@ window is active in the perspective."
   :ensure t
   :commands robe-mode
   :init
-  (progn (add-hook 'ruby-mode-hook 'robe-mode)
-         (add-hook 'robe-mode-hook 'ac-robe-setup)
-         (add-hook 'ruby-mode-hook 'auto-complete-mode)))
+  (progn (add-hook 'ruby-mode-hook
+                   (lambda () (robe-mode) (ac-robe-setup)
+                     (auto-complete-mode)))))
+
+(use-package rinari :ensure t)
 
 ;; =============================================================================
 ;;                                                                         C/C++
