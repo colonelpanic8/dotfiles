@@ -360,6 +360,7 @@ The current directory is assumed to be the project's root otherwise."
 (setq reb-re-syntax 'string)
 
 (setq ediff-split-window-function 'split-window-horizontally)
+(setq ediff-window-setup-function 'ediff-setup-windows-plain)
 
 ;; =============================================================================
 ;;                                                                   use-package
