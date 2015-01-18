@@ -11,10 +11,10 @@
 ;;     ,marker))
 
 ;; (defun ensime-imenu-string (member-name definition-type marker parents)
-;;   (let ((scala-imenu-string (car (scala-imenu:default-build-imenu-candidate 
+;;   (let ((scala-imenu-string (car (scala-imenu:default-build-imenu-candidate
 ;; 			     member-name definition-type marker parents))))
 ;;     (if (equal definition-type "def")
-;; 	(let ((ensime-type-string 
+;; 	(let ((ensime-type-string
 ;; 	       (get-ensime-type member-name definition-type marker parents)))
 ;; 	  (message ensime-type-string)
 ;; 	  (format "%s%s" scala-imenu-string ensime-type-string))
@@ -35,7 +35,7 @@
 ;;   (mapconcat 'build-argument-list param-list-infos ""))
 
 ;; (defun build-argument-list (param-list-info)
-;;   (format "(%s)" (mapconcat 'build-argument-string 
+;;   (format "(%s)" (mapconcat 'build-argument-string
 ;; 			    (plist-get param-list-info :params) ", ")))
 
 ;; (defun build-argument-string (param-info)
@@ -45,9 +45,9 @@
 ;; (defun build-type-string (type-info)
 ;;   (let ((name (plist-get type-info :name))
 ;; 	(type-args (plist-get type-info :type-args)))
-;;     (format "%s%s" name 
-;; 	    (if type-args 
-;; 		(format "[%s]" (mapconcat 
+;;     (format "%s%s" name
+;; 	    (if type-args
+;; 		(format "[%s]" (mapconcat
 ;; 				'build-type-string type-args ", ")) ""))))
 
 ;; (defun type-info (member-name type-name marker)
@@ -71,17 +71,17 @@
 ;; (defun get-ensime-type-info-from-mark (marker)
 ;;   (let ((cached-value (assoc marker ensime-imenu-cache)))
 ;;     (when (not cached-value)
-;;       (progn (setq cached-value 
+;;       (progn (setq cached-value
 ;; 		   `(,marker . ,(ensime-rpc-inspect-type-at-range (get-eol-range marker))))
 ;; 	     (setq ensime-imenu-cache (cons cached-value ensime-imenu-cache))))
 ;;     (cdr cached-value)))
 
 ;; (defun get-eol-range (marker)
 ;;   (interactive)
-;;   `(,(marker-position marker) 
+;;   `(,(marker-position marker)
 ;;      ,(save-excursion (goto-char marker) (end-of-line) (point))))
 
 ;; (defun msg-type-info ()
 ;;   (interactive)
-;;   (message "%s" (build-method-type 
+;;   (message "%s" (build-method-type
 ;; 		 (plist-get (type-info "testFunction" "DFA" (point-marker)) :type))))
