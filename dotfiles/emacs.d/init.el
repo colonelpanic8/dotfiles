@@ -143,6 +143,16 @@
 ;;                                                                     functions
 ;; =============================================================================
 
+(defun cmp-int-list (a b)
+  (when (and a b)
+    (cond ((> (car a) (car b)) 1)
+          ((< (car a) (car b)) -1)
+          (t (cmp-int-list (cdr a) (cdr b))))))
+
+(defun get-date-created-from-agenda-entry (agenda-entry)
+  (org-time-string-to-time
+   (org-entry-get (get-text-property 1 'org-marker agenda-entry) "CREATED")))
+
 (defun narrow-to-region-indirect (start end)
   "Restrict editing in this buffer to the current region, indirectly."
   (interactive "r")
@@ -674,6 +684,11 @@ The current directory is assumed to be the project's root otherwise."
     (defun org-capture-make-linked-todo-template ()
       (org-capture-make-todo-template "%? %A"))
 
+    (defun org-cmp-creation-times (a b)
+      (let ((a-created (get-date-created-from-agenda-entry a))
+            (b-created (get-date-created-from-agenda-entry b)))
+        (cmp-int-list a-created b-created)))
+
     (defun org-agenda-done (&optional arg)
       "Mark current TODO as done.
 This changes the line at point, all other lines in the agenda referring to
@@ -773,8 +788,9 @@ the same tree node, and the headline of the tree node in the Org-mode file."
                              "Due today:"))))
           (recently-created '(tags-todo
                            "+CREATED=>\"<-3d>\""
-                           ((org-agenda-overriding-header
-                             "Recently created:"))))
+                           ((org-agenda-overriding-header "Recently created:")
+                            (org-agenda-cmp-user-defined 'org-cmp-creation-times)
+                            (org-agenda-sorting-strategy '(user-defined-down)))))
           (missing-deadline
            '(tags-todo "-DEADLINE={.}/!"
                        ((org-agenda-overriding-header
