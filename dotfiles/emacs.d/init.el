@@ -684,6 +684,7 @@ the same tree node, and the headline of the tree node in the Org-mode file."
 
     ;; org-mode add-ons
     (use-package org-present :ensure t)
+    (use-package org-pomodoro :ensure t)
     (use-package org-projectile
       :ensure t
       :demand t
