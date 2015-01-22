@@ -164,7 +164,6 @@ def launch_agents(ctx, flags=''):
             '-H ~/Library/LaunchAgents'.format(util.REPO_DIRECTORY, flags))
 
 
-
 @ctask
 def keyboard_settings(ctx):
-    ctx.run("zsh -c 'refresh_config &&set_modifier_keys_for_vendor_product_id'")
+    ctx.run("zsh -c 'refresh_config && set_modifier_keys_on_all_keyboards'")
