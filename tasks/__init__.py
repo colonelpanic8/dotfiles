@@ -126,6 +126,7 @@ def fix_dropbox_permissions(ctx):
     ctx.run("sudo chown -R $(whoami) $(readlink -f ~/.ssh)")
     ctx.run("sudo chmod -R 700 ~/.ssh")
     ctx.run("sudo chmod -R 700 $(readlink -f ~/.ssh)")
+    ctx.run("sudo chmod -R 700 ~/Dropbox/auth/foolery.pem")
 
 
 ns.add_task(fix_pip)
