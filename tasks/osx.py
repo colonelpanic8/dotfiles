@@ -16,8 +16,10 @@ def setup(ctx):
     rvm(ctx)
     fonts(ctx)
     fix_htop(ctx)
+    iTerm(ctx)
     # setup_dbus(ctx)
-    keyboard_settings()
+    keyboard_settings(ctx)
+    clear_dock(ctx)
 
 
 @ctask
@@ -167,3 +169,8 @@ def launch_agents(ctx, flags=''):
 @ctask
 def keyboard_settings(ctx):
     ctx.run("zsh -c 'refresh_config && set_modifier_keys_on_all_keyboards'")
+
+
+@ctask
+def configure_dock(ctx):
+   ctx.run("zsh -c 'refresh_config && clear_dock'")

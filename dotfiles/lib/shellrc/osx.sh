@@ -169,3 +169,8 @@ function socks_proxy {
     echo "$@"
     ssh -CND 9999 "$@"
 }
+
+function clear_dock {
+    defaults write com.apple.dock persistent-apps -array
+}
+
