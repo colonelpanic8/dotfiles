@@ -1,8 +1,10 @@
 {
     "last-messagetrace-stamp" = "443574198.75797";
-    "mod-count" = 13;
+    "mod-count" = 19;
+    orientation = left;
     "persistent-apps" =     (
                 {
+            GUID = 2438372023;
             "tile-data" =             {
                 "bundle-identifier" = "com.google.Chrome";
                 "dock-extra" = 0;
@@ -12,13 +14,14 @@
                     "_CFURLStringType" = 15;
                 };
                 "file-label" = "Google Chrome";
-                "file-mod-date" = 0;
-                "file-type" = 1;
-                "parent-mod-date" = 0;
+                "file-mod-date" = 3504649853;
+                "file-type" = 41;
+                "parent-mod-date" = 3504728909;
             };
             "tile-type" = "file-tile";
         },
                 {
+            GUID = 2438372024;
             "tile-data" =             {
                 "bundle-identifier" = "org.gnu.Emacs";
                 "dock-extra" = 0;
@@ -28,9 +31,9 @@
                     "_CFURLStringType" = 15;
                 };
                 "file-label" = Emacs;
-                "file-mod-date" = 0;
-                "file-type" = 1;
-                "parent-mod-date" = 0;
+                "file-mod-date" = 3504729913;
+                "file-type" = 41;
+                "parent-mod-date" = 3504729939;
             };
             "tile-type" = "file-tile";
         },
@@ -52,6 +55,7 @@
             "tile-type" = "file-tile";
         },
                 {
+            GUID = 2438372025;
             "tile-data" =             {
                 "bundle-identifier" = "com.apple.appstore";
                 "dock-extra" = 1;
@@ -68,6 +72,7 @@
             "tile-type" = "file-tile";
         },
                 {
+            GUID = 2438372026;
             "tile-data" =             {
                 "bundle-identifier" = "com.googlecode.iterm2";
                 "dock-extra" = 0;
@@ -77,13 +82,14 @@
                     "_CFURLStringType" = 15;
                 };
                 "file-label" = iTerm;
-                "file-mod-date" = 0;
-                "file-type" = 1;
-                "parent-mod-date" = 0;
+                "file-mod-date" = 3488239870;
+                "file-type" = 41;
+                "parent-mod-date" = 3504729029;
             };
             "tile-type" = "file-tile";
         },
                 {
+            GUID = 2438372027;
             "tile-data" =             {
                 "bundle-identifier" = "com.apple.systempreferences";
                 "dock-extra" = 1;
@@ -93,9 +99,9 @@
                     "_CFURLStringType" = 15;
                 };
                 "file-label" = "System Preferences";
-                "file-mod-date" = 0;
-                "file-type" = 1;
-                "parent-mod-date" = 0;
+                "file-mod-date" = 3504731361;
+                "file-type" = 41;
+                "parent-mod-date" = 3504739121;
             };
             "tile-type" = "file-tile";
         }
