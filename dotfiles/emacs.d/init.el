@@ -441,21 +441,14 @@ The current directory is assumed to be the project's root otherwise."
       (let ((ace-jump-mode-scope (if prefix 'global 'window)))
         (ace-jump-mode 0)))))
 
-(use-package ace-isearch
-  :ensure t
-  :disabled t ;; I just don't really use this much
-  :config
-  (progn
-    (global-ace-isearch-mode +1)
-    (setq ace-isearch-use-function-from-isearch nil)
-    (setq ace-isearch-input-idle-delay 1)))
-
 (use-package flycheck
   :ensure t
   :config
   (progn
     (setq flycheck-checkers (delq 'emacs-lisp-checkdoc flycheck-checkers))
-    (diminish 'flycheck-mode)))
+    (diminish 'flycheck-mode)
+    ;; (global-flycheck-mode)
+    ))
 
 (use-package haskell-mode
   :ensure t
