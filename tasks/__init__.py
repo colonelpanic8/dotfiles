@@ -120,6 +120,14 @@ def fix_pip(ctx):
     ctx.run("sudo chown $(whoami) ~/.pip/download_cache -R")
 
 
+@ctask
+def fix_dropbox_permissions(ctx):
+    ctx.run("sudo chown -R $(whoami) ~/.ssh")
+    ctx.run("sudo chown -R $(whoami) $(readlink -f ~/.ssh)")
+    ctx.run("sudo chmod -R 700 ~/.ssh")
+    ctx.run("sudo chmod -R 700 $(readlink -f ~/.ssh)")
+
+
 ns.add_task(fix_pip)
 ns.add_task(change_shell)
 ns.add_task(customize_user_settings)
@@ -131,3 +139,4 @@ ns.add_task(link_dropbox_other)
 ns.add_task(powerline)
 ns.add_task(setup)
 ns.add_task(vimstall)
+ns.add_task(fix_dropbox_permissions)
