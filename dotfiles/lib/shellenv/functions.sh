@@ -331,3 +331,12 @@ function add_ssh_key {
     [[ $(tail -c1 ~/.ssh/authorized_keys  | wc -l) -gt 0 ]] || echo "\n" >> ~/.ssh/authorized_keys;
     echo $1 >> ~/.ssh/authorized_keys;
 }
+
+function git_free_ssh_rsync {
+    echo $1
+    rsync -avz -e "ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null" --progress --exclude=".git/" $(readlink -f "$1") $2:$1
+}
+
+function project_sync {
+    git_free_ssh_rsync '~/Projects/'"$1"'/' $2
+}
