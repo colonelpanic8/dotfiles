@@ -213,3 +213,9 @@ def functions_for_filename(filename):
 for _, _, filenames in os.walk(osx_settings_directory):
     for filename in filenames:
         functions_for_filename(filename)
+
+
+@ctask
+def osx_settings_write_all(ctx):
+    for function in all_write_osx_settings:
+        function(ctx)
