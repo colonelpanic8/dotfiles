@@ -1,0 +1,181 @@
+{
+    autohide = 1;
+    "autohide-delay" = 0;
+    "dashboard-in-overlay" = 1;
+    "enable-spring-load-actions-on-all-items" = 1;
+    "expose-group-by-app" = 0;
+    "last-messagetrace-stamp" = "443037932.929471";
+    "mod-count" = 24;
+    "mouse-over-hilite-stack" = 1;
+    orientation = left;
+    "persistent-apps" =     (
+                {
+            GUID = 2337019996;
+            "tile-data" =             {
+                "bundle-identifier" = "com.apple.systempreferences";
+                "dock-extra" = 1;
+                "file-data" =                 {
+                    "_CFURLAliasData" = <00000000 00bc0003 00010000 d0b45d6e 0000482b 00000000 0000008b 0004219b 0000d041 3db60000 00000920 fffe0000 00000000 0000ffff ffff0001 00040000 008b000e 002e0016 00530079 00730074 0065006d 00200050 00720065 00660065 00720065 006e0063 00650073 002e0061 00700070 000f0012 00080059 006f0073 0065006d 00690074 00650012 00234170 706c6963 6174696f 6e732f53 79737465 6d205072 65666572 656e6365 732e6170 70000013 00012f00 ffff0000>;
+                    "_CFURLString" = "file:///Applications/System%20Preferences.app/";
+                    "_CFURLStringType" = 15;
+                };
+                "file-label" = "System Preferences";
+                "file-mod-date" = 3501543247;
+                "file-type" = 41;
+                "parent-mod-date" = 3502065504;
+            };
+            "tile-type" = "file-tile";
+        },
+                {
+            GUID = 3024121458;
+            "tile-data" =             {
+                "bundle-identifier" = "com.googlecode.iterm2";
+                "dock-extra" = 0;
+                "file-data" =                 {
+                    "_CFURLAliasData" = <00000000 00c00003 00010000 d0b45d6e 0000482b 00000000 000a6093 000baabd 0000d07e 366c0000 00000920 fffe0000 00000000 0000ffff ffff0001 0014000a 6093000a 60920009 de080009 de070009 de06000e 00140009 00690054 00650072 006d002e 00610070 0070000f 00120008 0059006f 00730065 006d0069 00740065 00120031 6f70742f 686f6d65 62726577 2d636173 6b2f4361 736b726f 6f6d2f69 7465726d 322f322e 302e302f 69546572 6d2e6170 70000013 00012f00 ffff0000>;
+                    "_CFURLString" = "file:///opt/homebrew-cask/Caskroom/iterm2/2.0.0/iTerm.app/";
+                    "_CFURLStringType" = 15;
+                };
+                "file-label" = iTerm;
+                "file-mod-date" = 0;
+                "file-type" = 1;
+                "parent-mod-date" = 0;
+            };
+            "tile-type" = "file-tile";
+        },
+                {
+            GUID = 1879310538;
+            "tile-data" =             {
+                "bundle-identifier" = "com.google.Chrome";
+                "dock-extra" = 0;
+                "file-data" =                 {
+                    "_CFURLAliasData" = <00000000 00e00003 00010000 d0b45d6e 0000482b 00000000 000a0d4f 000a0d9e 0000d0a7 f2880000 00000920 fffe0000 00000000 0000ffff ffff0001 0014000a 0d4f000a 0d4e0009 de080009 de070009 de06000e 00240011 0047006f 006f0067 006c0065 00200043 00680072 006f006d 0065002e 00610070 0070000f 00120008 0059006f 00730065 006d0069 00740065 00120041 6f70742f 686f6d65 62726577 2d636173 6b2f4361 736b726f 6f6d2f67 6f6f676c 652d6368 726f6d65 2f6c6174 6573742f 476f6f67 6c652043 68726f6d 652e6170 70000013 00012f00 ffff0000>;
+                    "_CFURLString" = "file:///opt/homebrew-cask/Caskroom/google-chrome/latest/Google%20Chrome.app/";
+                    "_CFURLStringType" = 15;
+                };
+                "file-label" = "Google Chrome";
+                "file-mod-date" = 3503596398;
+                "file-type" = 41;
+                "parent-mod-date" = 3501490066;
+            };
+            "tile-type" = "file-tile";
+        },
+                {
+            GUID = 3024121459;
+            "tile-data" =             {
+                "bundle-identifier" = "org.gnu.Emacs";
+                "dock-extra" = 0;
+                "file-data" =                 {
+                    "_CFURLAliasData" = <00000000 00b40003 00010000 d0b45d6e 0000482b 00000000 0015e6ac 0015f726 0000d066 edac0000 00000920 fffe0000 00000000 0000ffff ffff0001 00140015 e6ac0015 e6ab0007 a3fa0006 2bf10000 0027000e 00140009 0045006d 00610063 0073002e 00610070 0070000f 00120008 0059006f 00730065 006d0069 00740065 00120025 7573722f 6c6f6361 6c2f4365 6c6c6172 2f656d61 63732f32 342e342f 456d6163 732e6170 70000013 00012f00 ffff0000>;
+                    "_CFURLString" = "file:///usr/local/Cellar/emacs/24.4/Emacs.app/";
+                    "_CFURLStringType" = 15;
+                };
+                "file-label" = Emacs;
+                "file-mod-date" = 3501833576;
+                "file-type" = 41;
+                "parent-mod-date" = 3501833599;
+            };
+            "tile-type" = "file-tile";
+        },
+                {
+            GUID = 3024121460;
+            "tile-data" =             {
+                "bundle-identifier" = "com.spotify.client";
+                "dock-extra" = 0;
+                "file-data" =                 {
+                    "_CFURLAliasData" = <00000000 00c80003 00010000 d0b45d6e 0000482b 00000000 000ac33d 000ac350 0000d0a5 ec150000 00000920 fffe0000 00000000 0000ffff ffff0001 0014000a c33d000a c33c0009 de080009 de070009 de06000e 0018000b 00530070 006f0074 00690066 0079002e 00610070 0070000f 00120008 0059006f 00730065 006d0069 00740065 00120035 6f70742f 686f6d65 62726577 2d636173 6b2f4361 736b726f 6f6d2f73 706f7469 66792f6c 61746573 742f5370 6f746966 792e6170 70000013 00012f00 ffff0000>;
+                    "_CFURLString" = "file:///opt/homebrew-cask/Caskroom/spotify/latest/Spotify.app/";
+                    "_CFURLStringType" = 15;
+                };
+                "file-label" = Spotify;
+                "file-mod-date" = 3500534805;
+                "file-type" = 41;
+                "parent-mod-date" = 3501490413;
+            };
+            "tile-type" = "file-tile";
+        },
+                {
+            GUID = 3024121461;
+            "tile-data" =             {
+                "bundle-identifier" = "com.valvesoftware.steam";
+                "dock-extra" = 0;
+                "file-data" =                 {
+                    "_CFURLAliasData" = <00000000 00940003 00010000 d0b45d6e 0000482b 00000000 0000008b 001b593b 0000cf32 97070000 00000920 fffe0000 00000000 0000ffff ffff0001 00040000 008b000e 00140009 00530074 00650061 006d002e 00610070 0070000f 00120008 0059006f 00730065 006d0069 00740065 00120016 4170706c 69636174 696f6e73 2f537465 616d2e61 70700013 00012f00 ffff0000>;
+                    "_CFURLString" = "file:///Applications/Steam.app/";
+                    "_CFURLStringType" = 15;
+                };
+                "file-label" = Steam;
+                "file-mod-date" = 3502065552;
+                "file-type" = 41;
+                "parent-mod-date" = 3502065504;
+            };
+            "tile-type" = "file-tile";
+        },
+                {
+            GUID = 2337019995;
+            "tile-data" =             {
+                "bundle-identifier" = "com.apple.appstore";
+                "dock-extra" = 1;
+                "file-data" =                 {
+                    "_CFURLAliasData" = <00000000 00a00003 00010000 d0b45d6e 0000482b 00000000 0000008b 00010180 0000cfe6 1a770000 00000920 fffe0000 00000000 0000ffff ffff0001 00040000 008b000e 001c000d 00410070 00700020 00530074 006f0072 0065002e 00610070 0070000f 00120008 0059006f 00730065 006d0069 00740065 0012001a 4170706c 69636174 696f6e73 2f417070 2053746f 72652e61 70700013 00012f00 ffff0000>;
+                    "_CFURLString" = "file:///Applications/App%20Store.app/";
+                    "_CFURLStringType" = 15;
+                };
+                "file-label" = "App Store";
+                "file-mod-date" = 3501543247;
+                "file-type" = 41;
+                "parent-mod-date" = 3503415864;
+            };
+            "tile-type" = "file-tile";
+        }
+    );
+    "persistent-others" =     (
+                {
+            GUID = 2337019997;
+            "tile-data" =             {
+                arrangement = 2;
+                displayas = 0;
+                "file-data" =                 {
+                    "_CFURLAliasData" = <00000000 00a00003 00010000 d0b45d6e 0000482b 00000000 00062242 00062245 0000d0b3 f1590000 00000920 fffe0000 00000000 0000ffff ffff0001 00080006 22420002 9399000e 00140009 0044006f 0077006e 006c006f 00610064 0073000f 00120008 0059006f 00730065 006d0069 00740065 00120018 55736572 732f696d 616c6973 6f6e2f44 6f776e6c 6f616473 00130001 2f000015 0002000f ffff0000>;
+                    "_CFURLString" = "file:///Users/imalison/Downloads/";
+                    "_CFURLStringType" = 15;
+                };
+                "file-label" = Downloads;
+                "file-mod-date" = 3501453657;
+                "file-type" = 2;
+                "parent-mod-date" = 3501453697;
+                preferreditemsize = "-1";
+                showas = 1;
+            };
+            "tile-type" = "directory-tile";
+        },
+                {
+            GUID = 4118719995;
+            "tile-data" =             {
+                arrangement = 1;
+                displayas = 0;
+                "file-data" =                 {
+                    "_CFURLAliasData" = <00000000 00a60003 00010000 d0b45d6e 0000482b 00000000 000a0d63 000c2caa 0000d0b5 2f6f0000 00000920 fffe0000 00000000 0000ffff ffff0001 000c000a 0d630006 22420002 9399000e 00100007 00440065 0073006b 0074006f 0070000f 00120008 0059006f 00730065 006d0069 00740065 0012001e 55736572 732f696d 616c6973 6f6e2f44 726f7062 6f782f44 65736b74 6f700013 00012f00 00150002 000fffff 0000>;
+                    "_CFURLString" = "file:///Users/imalison/Dropbox/Desktop/";
+                    "_CFURLStringType" = 15;
+                };
+                "file-label" = Desktop;
+                "file-mod-date" = 3501740358;
+                "file-type" = 2;
+                "parent-mod-date" = 3501740358;
+                preferreditemsize = "-1";
+                showas = 0;
+            };
+            "tile-type" = "directory-tile";
+        }
+    );
+    "show-process-indicators" = 1;
+    showhidden = 1;
+    tilesize = 128;
+    "trash-full" = 1;
+    version = 1;
+    "wvous-bl-corner" = 0;
+    "wvous-bl-modifier" = 0;
+    "wvous-tr-corner" = 0;
+    "wvous-tr-modifier" = 0;
+}
