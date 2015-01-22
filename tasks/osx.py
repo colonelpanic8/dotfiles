@@ -174,3 +174,42 @@ def keyboard_settings(ctx):
 @ctask
 def configure_dock(ctx):
    ctx.run("zsh -c 'refresh_config && clear_dock'")
+
+
+osx_settings_directory = os.path.join(util.RESOURCES_DIRECTORY, 'osx_settings')
+all_save_osx_settings = []
+all_write_osx_settings = []
+all_diff_osx_settings = []
+def functions_for_filename(filename):
+    filepath = os.path.join(osx_settings_directory, filename)
+    task_name = 'osx_settings-write:' + filename.replace('.', '-')
+    @ctask(name=task_name)
+    def task(ctx):
+        ctx.run("defaults write {0} '$(cat {1})'".format(
+            filename, filepath
+        ))
+    globals()[task_name] = task
+    all_write_osx_settings.append(task)
+
+    task_name = 'osx_settings-save:' + filename.replace('.', '-')
+    @ctask(name=task_name)
+    def task(ctx):
+        ctx.run("defaults read {0} > {1}".format(
+            filename, filepath
+        ))
+    globals()[task_name] = task
+    all_save_osx_settings.append(task)
+
+    task_name = 'osx_settings-diff:' + filename.replace('.', '-')
+    @ctask(name=task_name)
+    def task(ctx):
+        print filepath
+        print filename
+        ctx.run("zsh -c 'icdiff <(defaults read {0}) {1}'".format(
+            filename, filepath
+        ))
+    globals()[task_name] = task
+    all_diff_osx_settings.append(task)
+for _, _, filenames in os.walk(osx_settings_directory):
+    for filename in filenames:
+        functions_for_filename(filename)

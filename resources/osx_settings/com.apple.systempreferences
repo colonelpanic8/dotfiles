@@ -1,0 +1,10 @@
+{
+    NSQuitAlwaysKeepsWindows = 0;
+    "NSWindow Frame Main Window Frame SystemPreferencesApp 8.0" = "69 472 668 476 0 0 1680 1027 ";
+    ThirdPartyCount = 4;
+    "com.apple.PreferenceSync.ExcludeSyncKeys" =     (
+        "Main Window Frame SystemPreferencesApp 8.0"
+    );
+    "com.apple.preferences.accounts.outline.usersparent" = 1;
+    "com.apple.preferences.sharing.selectedservice" = 3;
+}
