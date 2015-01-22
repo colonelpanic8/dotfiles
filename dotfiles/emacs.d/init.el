@@ -1397,12 +1397,14 @@ window is active in the perspective."
 
 (use-package scala-mode2
   :init
-  (progn (add-hook 'scala-mode-hook
-                   (lambda ()
-                     (require 'whitespace)
-                     (make-local-variable 'before-save-hook)
-                     (add-hook 'before-save-hook 'whitespace-cleanup)
-                     (whitespace-mode))))
+  (progn
+    ;; (add-hook 'scala-mode-hook
+    ;;           (lambda ()
+    ;;                  (require 'whitespace)
+    ;;                  (make-local-variable 'before-save-hook)
+    ;;                  (add-hook 'before-save-hook 'whitespace-cleanup)
+    ;;                  (whitespace-mode)))
+    )
   :config
   (progn
     (use-package ensime
