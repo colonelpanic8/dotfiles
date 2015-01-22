@@ -16,7 +16,8 @@ def setup(ctx):
     rvm(ctx)
     fonts(ctx)
     fix_htop(ctx)
-    setup_dbus(ctx)
+    # setup_dbus(ctx)
+    keyboard_settings()
 
 
 @ctask
@@ -161,3 +162,9 @@ def iTerm(ctx):
 def launch_agents(ctx, flags=''):
     ctx.run('dotfiles -sn{1} -R {0}/resources/LaunchAgents/ '
             '-H ~/Library/LaunchAgents'.format(util.REPO_DIRECTORY, flags))
+
+
+
+@ctask
+def keyboard_settings(ctx):
+    ctx.run("zsh -c 'refresh_config &&set_modifier_keys_for_vendor_product_id'")
