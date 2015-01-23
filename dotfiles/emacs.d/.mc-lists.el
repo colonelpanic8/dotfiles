@@ -25,6 +25,7 @@
         undo-redo
         universal-argument-minus
         wdired-finish-edit
+        yas-expand
         ))
 
 (setq mc/cmds-to-run-once
