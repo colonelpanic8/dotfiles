@@ -441,14 +441,10 @@ The current directory is assumed to be the project's root otherwise."
       (let ((ace-jump-mode-scope (if prefix 'global 'window)))
         (ace-jump-mode 0)))))
 
-(use-package flycheck
-  :ensure t
-  :config
-  (progn
-    (setq flycheck-checkers (delq 'emacs-lisp-checkdoc flycheck-checkers))
-    (diminish 'flycheck-mode)
-    ;; (global-flycheck-mode)
-    ))
+;; (use-package flycheck
+;;   :ensure t
+;;   :init (global-flycheck-mode)
+;;   :diminish flycheck-mode)
 
 (use-package haskell-mode
   :ensure t
@@ -1396,15 +1392,6 @@ window is active in the perspective."
 ;; =============================================================================
 
 (use-package scala-mode2
-  :init
-  (progn
-    ;; (add-hook 'scala-mode-hook
-    ;;           (lambda ()
-    ;;                  (require 'whitespace)
-    ;;                  (make-local-variable 'before-save-hook)
-    ;;                  (add-hook 'before-save-hook 'whitespace-cleanup)
-    ;;                  (whitespace-mode)))
-    )
   :config
   (progn
     (use-package ensime
