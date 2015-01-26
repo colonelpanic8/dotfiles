@@ -1496,14 +1496,44 @@ window is active in the perspective."
 ;;                                                                           TeX
 ;; =============================================================================
 
+(defun guess-TeX-master (filename)
+  "Guess the master file for FILENAME from currently open .tex files."
+  (let ((candidate nil)
+        (filename (file-name-nondirectory filename)))
+    (save-excursion
+      (dolist (buffer (buffer-list))
+        (with-current-buffer buffer
+          (let ((name (buffer-name))
+                (file buffer-file-name))
+            (if (and file (string-match "\\.tex$" file))
+                (progn
+                  (goto-char (point-min))
+                  (if (re-search-forward (concat "\\\\input{" filename "}") nil t)
+                      (setq candidate file))
+                  (if (re-search-forward (concat "\\\\include{" (file-name-sans-extension filename) "}") nil t)
+                      (setq candidate file))))))))
+    (if candidate
+        (message "TeX master document: %s" (file-name-nondirectory candidate)))
+    candidate))
+
+(defun set-TeX-master ()
+    (setq TeX-master (guess-TeX-master (buffer-file-name))))
+
 (use-package tex-site
   :ensure auctex
   :commands TeX-mode
   :config
   (progn
+    (add-hook 'TeX-mode-hook 'set-TeX-master)
+    (unbind-key "C-j" latex-mode-map)
+    (unbind-key "C-j" LaTeX-mode-map)
+    (unbind-key "C-j" TeX-mode-map)
+    (unbind-key "C-j" tex-mode-map)
     (setq TeX-auto-save t)
     (setq TeX-parse-self t)
     (setq TeX-save-query nil)
+    (setq TeX-PDF-mode t)
+    (TeX-global-PDF-mode t)
     (setq-default TeX-master nil)))
 
 ;; =============================================================================
