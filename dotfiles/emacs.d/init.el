@@ -760,7 +760,7 @@ the same tree node, and the headline of the tree node in the Org-mode file."
                    (file+headline ,org-calendar-file "Personal")
                    "* %? %T
   :PROPERTIES:
-  :CREATED: %^T
+  :CREATED: %U
   :END:"))
 
     (add-to-list 'org-capture-templates
@@ -771,9 +771,9 @@ the same tree node, and the headline of the tree node in the Org-mode file."
     (add-to-list 'org-capture-templates
                  `("h" "Habit" entry (file+headline ,org-habits-file "Habits")
                    "* TODO
-  SCHEDULED: %t
+  SCHEDULED: %^t
   :PROPERTIES:
-  :CREATED: %T
+  :CREATED: %U
   :STYLE: habit
   :END:"))
 
