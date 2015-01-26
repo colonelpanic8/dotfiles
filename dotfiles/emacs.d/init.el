@@ -33,7 +33,6 @@
 (defvar ido-default-item nil)
 (defvar ido-context-switch-command nil)
 (defvar ido-cur-list nil)
-(defvar predicate nil)
 (defvar inherit-input-method nil)
 
 ;; =============================================================================
@@ -445,21 +444,7 @@ The current directory is assumed to be the project's root otherwise."
   :ensure t
   :disabled t
   :config
-  (progn
-    (setq failing-checkers (cl-loop for checker being the elements of flycheck-checkers
-         if (condition-case nil
-                (flycheck-may-use-checker checker)
-              ('error
-               (message "checker named '%s' failed" checker)
-               checker
-               ) nil)
-         collect checker))
-    (add-to-list 'failing-checkers 'emacs-lisp)
-    (add-to-list 'failing-checkers 'emacs-lisp-checkdoc)
-    (cl-loop for checker in failing-checkers do
-             (setq flycheck-checkers (delq checker flycheck-checkers))
-             (flycheck-disable-checker checker))
-    (global-flycheck-mode))
+  (progn (global-flycheck-mode))
   :diminish flycheck-mode)
 
 (use-package haskell-mode
