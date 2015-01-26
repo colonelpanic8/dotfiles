@@ -17,7 +17,6 @@ def setup(ctx):
     fonts(ctx)
     fix_htop(ctx)
     iTerm(ctx)
-    # setup_dbus(ctx)
     keyboard_settings(ctx)
     custom_keyboard_shortcuts(ctx)
 
@@ -32,14 +31,16 @@ def macvim(ctx):
     ctx.run("brew install {0}".format(macvim_install))
     ctx.run("vim +BundleInstall! +q +q")
 
+
 @ctask
 def setup_dbus(ctx):
     ctx.run("ln -sfv /usr/local/opt/d-bus/*.plist ~/Library/LaunchAgents")
 
+
 @ctask
-def osx_config(ctx):
-    ctx.run('sudo {0}'.format(
-        os.path.join(util.RESOURCES_DIRECTORY, 'osx.sh')
+def system_settings(ctx):
+    ctx.run('{0}'.format(
+        os.path.join(util.RESOURCES_DIRECTORY, 'osx_setup.sh')
     ), pty=True)
 
 
@@ -59,13 +60,6 @@ def brew(ctx):
 
 
 @ctask
-def packages(ctx):
-    ctx.run('brew update')
-    for package_name in ESSENTIAL + BASICS + SHOULD_INSTALL + MISC:
-        ctx.run('brew install {0}'.format(package_name))
-
-
-@ctask
 def set_path_for_launchd(ctx):
     launch_agent_dir = os.path.expanduser('~/Library/LaunchAgents/')
     filename = 'set-path.plist'
@@ -78,6 +72,8 @@ def set_path_for_launchd(ctx):
 
 
 APPS_NEEDING_ASSISTIVE_DEVICE_ACCESS = ('Slate', 'Synergy', 'iTerm')
+
+
 @ctask
 def access_for_assistive_devices(ctx):
     for app in APPS_NEEDING_ASSISTIVE_DEVICE_ACCESS:
@@ -100,6 +96,7 @@ def access_if_exists(ctx, app_string):
                 app_string
             )
         )
+
 
 @ctask(aliases=['karabiner', 'fast_repeat'])
 def hyper(ctx):
@@ -175,6 +172,8 @@ settings_directory = os.path.join(util.RESOURCES_DIRECTORY, 'osx_settings')
 all_save_settings = []
 all_write_settings = []
 all_diff_settings = []
+
+
 def functions_for_filename(filename):
     filepath = os.path.join(settings_directory, filename)
     task_name = 'settings-write:' + filename.replace('.', '-')
@@ -205,6 +204,8 @@ def functions_for_filename(filename):
         ))
     globals()[task_name] = task
     all_diff_settings.append(task)
+
+
 for _, _, filenames in os.walk(settings_directory):
     for filename in filenames:
         functions_for_filename(filename)

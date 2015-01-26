@@ -111,7 +111,7 @@ def customize_user_settings(ctx):
     with open(os.path.expanduser('~/.gitconfig.custom'), 'w') as custom_file:
         custom_file.write("""[user]
         name = {0}
-	email = {1}""".format(username, email))
+        email = {1}""".format(username, email))
 
 
 @ctask
@@ -127,6 +127,7 @@ def fix_dropbox_permissions(ctx):
     ctx.run("sudo chmod -R 700 ~/.ssh")
     ctx.run("sudo chmod -R 700 $(readlink -f ~/.ssh)")
     ctx.run("sudo chmod -R 700 ~/Dropbox/auth/foolery.pem")
+    ctx.run("sudo chmod -R 700 ~/Dropbox/configs/dotfiles/gnupg")
 
 
 ns.add_task(fix_pip)
