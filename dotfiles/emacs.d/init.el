@@ -493,7 +493,6 @@ The current directory is assumed to be the project's root otherwise."
   (progn
     (setq company-idle-delay .25)
     (global-company-mode)
-    (add-to-list 'company-backends 'mu4e-contacts-company)
     (diminish 'company-mode))
   :init
   (add-hook 'prog-mode-hook (lambda () (company-mode t))))
