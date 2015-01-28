@@ -617,6 +617,12 @@ The current directory is assumed to be the project's root otherwise."
          ("C-c C-S-t" . org-todo-force-notes))
   :config
   (progn
+    (defadvice org-agenda-to-appt (before wickedcool activate)
+      "Clear the appt-time-msg-list."
+      (setq appt-time-msg-list nil))
+    (appt-activate)
+    (org-agenda-to-appt)
+    (run-at-time "00:00" 60 'org-agenda-to-appt)
     (defun org-archive-if (condition-function)
       (if (funcall condition-function)
           (org-archive-subtree)))
@@ -741,7 +747,7 @@ the same tree node, and the headline of the tree node in the Org-mode file."
     (add-to-list 'org-capture-templates
                  `("c" "Calendar entry" entry
                    (file+headline ,org-calendar-file "Personal")
-                   "* %? %T
+                   "* %? %^T
   :PROPERTIES:
   :CREATED: %U
   :END:"))
@@ -749,7 +755,7 @@ the same tree node, and the headline of the tree node in the Org-mode file."
     (add-to-list 'org-capture-templates
                  `("y" "Linked Calendar entry" entry
                    (file+headline ,org-calendar-file "Personal")
-                   "* %? %A %T
+                   "* %? %A %^T
   :PROPERTIES:
   :CREATED: %U
   :END:"))
@@ -1644,6 +1650,8 @@ window is active in the perspective."
   (defvar terminal-themes '(solarized-light monokai)))
 (unless (boundp 'fonts)
   (defvar fonts '(monaco-9)))
+(unless (boundp 'current-theme) (defvar current-theme))
+(setq current-theme nil)
 
 (defun random-choice (choices)
   (nth (random (length choices)) choices))
@@ -1655,9 +1663,6 @@ window is active in the perspective."
         (if (or (< hour 8) (> hour 16))
             (random-choice dark-themes) (random-choice light-themes)))
     (random-choice terminal-themes)))
-
-
-(setq current-theme nil)
 
 (defun set-theme ()
   (interactive)
