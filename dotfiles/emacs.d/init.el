@@ -442,7 +442,6 @@ The current directory is assumed to be the project's root otherwise."
 
 (use-package flycheck
   :ensure t
-  :disabled t
   :config
   (progn (global-flycheck-mode))
   :diminish flycheck-mode)
@@ -858,7 +857,7 @@ the same tree node, and the headline of the tree node in the Org-mode file."
     (add-hook 'org-mode-hook 'guide-key/my-hook-function-for-org-mode)
     (defun disable-linum-mode () (linum-mode 0))
     (add-hook 'org-mode-hook 'disable-linum-mode)
-    (add-hook 'org-agenda-mode-hook 'disable-linum-mode))) 
+    (add-hook 'org-agenda-mode-hook 'disable-linum-mode)))
 
 (use-package epg
   :ensure t
