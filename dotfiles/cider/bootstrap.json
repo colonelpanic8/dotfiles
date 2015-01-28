@@ -98,6 +98,7 @@
     "mercurial",
     "mopidy",
     "mu --with-emacs",
+    "ncmpcpp",
     "netcat",
     "nettle",
     "ngrep",
