@@ -1523,16 +1523,14 @@ window is active in the perspective."
 (defun set-TeX-master ()
     (setq TeX-master (guess-TeX-master (buffer-file-name))))
 
-(use-package tex-site
+(use-package tex
   :ensure auctex
   :commands TeX-mode
   :config
   (progn
     (add-hook 'TeX-mode-hook 'set-TeX-master)
-    (unbind-key "C-j" latex-mode-map)
     (unbind-key "C-j" LaTeX-mode-map)
     (unbind-key "C-j" TeX-mode-map)
-    (unbind-key "C-j" tex-mode-map)
     (setq TeX-auto-save t)
     (setq TeX-parse-self t)
     (setq TeX-save-query nil)
