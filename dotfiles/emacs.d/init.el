@@ -698,14 +698,17 @@ the same tree node, and the headline of the tree node in the Org-mode file."
     (use-package org-projectile
       :ensure t
       :demand t
-      :bind (("C-c n p" . imalison:org-projectile:project-todo))
+      :bind (("C-c n p" . imalison:helm-org-todo))
       :config
       (progn
-        (defun imalison:org-projectile:project-todo (&optional arg)
+        (defun imalison:helm-org-todo (&optional arg)
           (interactive "P")
-          (org-projectile:project-todo-completing-read
-           (if arg (org-capture-make-linked-todo-template)
-             (org-capture-make-todo-template))))))
+          (helm :sources (list (helm-source-org-capture-templates)
+                               (org-projectile:helm-source
+                                (if arg (org-capture-make-linked-todo-template)
+                                  (org-capture-make-todo-template))))
+            :candidate-number-limit 99999
+            :buffer "*helm org capture templates*"))))
 
     ;; variable configuration
     (add-to-list 'org-modules 'org-habit)
@@ -771,7 +774,7 @@ the same tree node, and the headline of the tree node in the Org-mode file."
 
     (add-to-list 'org-capture-templates (org-projectile:project-todo-entry "p"))
     (add-to-list 'org-capture-templates
-                 (org-projectile:project-todo-entry "l" "* TODO %? %a\n"))
+                 (org-projectile:project-todo-entry "l" "* TODO %? %a\n" "Linked Project TODO"))
 
     (let ((this-week-high-priority
            ;; The < in the following line works has behavior that is opposite
@@ -1114,6 +1117,17 @@ marking if it still had that."
     (use-package helm-ag :ensure t))
   :config
   (progn
+    (defun helm-source-org-capture-templates ()
+      (helm-build-sync-source "Org Capture Templates:"
+        :candidates (cl-loop for template in org-capture-templates
+                             collect `(,(nth 1 template) . ,(nth 0 template)))
+        :action '(("Do capture" . (lambda (template-shortcut)
+                                    (org-capture nil template-shortcut))))))
+    (defun helm-org-capture-templates ()
+      (interactive)
+      (helm :sources (helm-source-org-capture-templates)
+            :candidate-number-limit 99999
+            :buffer "*helm org capture templates*"))
     (cl-defun helm-org-headings-in-buffer ()
       (interactive)
       (helm :sources (helm-source-org-headings-for-files
