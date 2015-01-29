@@ -916,6 +916,7 @@ the same tree node, and the headline of the tree node in the Org-mode file."
     (setq mu4e-trash-folder  "/[Gmail].Trash")
 
     (setq mu4e-sent-messages-behavior 'delete)
+    (setq mu4e-headers-skip-duplicates t)
     (setq mu4e-update-interval (* 60 20))
     (setq message-kill-buffer-on-exit t)
     (setq mail-user-agent 'mu4e-user-agent) ;; make mu4e the default mail client
