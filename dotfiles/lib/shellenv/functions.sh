@@ -340,3 +340,10 @@ function git_free_ssh_rsync {
 function project_sync {
     git_free_ssh_rsync '~/Projects/'"$1"'/' $2
 }
+
+function android_sdk_directory {
+    if is_osx; then
+	brew --prefix android-sdk
+    else
+    fi
+}
