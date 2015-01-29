@@ -1417,6 +1417,22 @@ window is active in the perspective."
   :ensure t)
 
 ;; =============================================================================
+;;                                                                          Java
+;; =============================================================================
+
+(add-hook 'java-mode-hook (lambda ()
+                            (setq c-basic-offset 4
+                                  tab-width 4
+                                  indent-tabs-mode t)))
+
+(use-package android-mode
+  :ensure t
+  :config
+  (progn
+    (setq android-mode-sdk-dir
+          (s-trim (shell-command-to-string "android_sdk_directory")))))
+
+;; =============================================================================
 ;;                                                                    JavaScript
 ;; =============================================================================
 
