@@ -621,7 +621,6 @@ The current directory is assumed to be the project's root otherwise."
       "Clear the appt-time-msg-list."
       (setq appt-time-msg-list nil))
     (appt-activate)
-    (org-agenda-to-appt)
     (run-at-time "00:00" 60 'org-agenda-to-appt)
     (defun org-archive-if (condition-function)
       (if (funcall condition-function)
