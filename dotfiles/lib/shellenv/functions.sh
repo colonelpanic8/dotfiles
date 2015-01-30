@@ -344,6 +344,5 @@ function project_sync {
 function android_sdk_directory {
     if is_osx; then
 	brew --prefix android-sdk
-    else
     fi
 }
