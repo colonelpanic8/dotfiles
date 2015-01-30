@@ -1270,6 +1270,7 @@ window is active in the perspective."
   :config
   (progn
     (setq ido-auto-merge-work-directories-length -1)
+    (setq ido-use-filename-at-point nil)
     (setq ido-create-new-buffer 'always)
     (ido-everywhere 1)
     (setq ido-enable-flex-matching t)
