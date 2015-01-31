@@ -4,7 +4,7 @@
 (defvar imalison-org-mobile-sync:unsaved-changes-min-sync 1)
 
 (defun imalison-org-mobile-sync-pull-and-push ()
-  (org-mobile-pull)
+  (suppress-messages (org-mobile-pull))
   (imalison-org-mobile-sync)
   (when (fboundp 'sauron-add-event)
     (sauron-add-event 'me 1 "Called org-mobile-pull and org-mobile-push")))
