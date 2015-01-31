@@ -48,5 +48,5 @@ function with_shellrc {
 export RBENV_ROOT=/usr/local/var/rbenv
 
 export PATH="$HOME/.rbenv/bin:$PATH"
-eval "$(rbenv init -)"
-eval `/usr/libexec/path_helper -s`
+hash rbenv > /dev/null && eval "$(rbenv init -)"
+test -e /usr/libexec/path_helper && eval `/usr/libexec/path_helper -s`
