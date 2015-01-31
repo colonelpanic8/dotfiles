@@ -142,4 +142,4 @@ function set_powerline_prompt {
     source "$(python_module_path powerline)/bindings/zsh/powerline.zsh"
 }
 
-set_powerline_prompt
+set_my_prompt
