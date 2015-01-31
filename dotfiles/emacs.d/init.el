@@ -834,28 +834,6 @@ the same tree node, and the headline of the tree node in the Org-mode file."
     (unbind-key "C-j" org-mode-map))
   :init
   (progn
-    ;; Automatically sync with mobile
-    (defvar my-org-mobile-sync-timer nil)
-    (defvar my-org-mobile-sync-secs 120)
-    (defun my-org-mobile-sync-pull-and-push ()
-      (org-mobile-pull)
-      (org-mobile-push)
-      (when (fboundp 'sauron-add-event)
-        (sauron-add-event 'me 1 "Called org-mobile-pull and org-mobile-push")))
-    (defun my-org-mobile-sync-start ()
-      "Start automated `org-mobile-push'"
-      (interactive)
-      (setq my-org-mobile-sync-timer
-            (run-with-idle-timer my-org-mobile-sync-secs t
-                                 'my-org-mobile-sync-pull-and-push)))
-
-    (defun my-org-mobile-sync-stop ()
-      "Stop automated `org-mobile-push'"
-      (interactive)
-      (cancel-timer my-org-mobile-sync-timer))
-    (if (and (boundp 'file-notify--library) file-notify--library)
-        (use-package org-mobile-sync :ensure t :config (org-mobile-sync-mode 1))
-      (my-org-mobile-sync-start))
     (setq org-directory "~/Dropbox/org")
     (setq org-mobile-inbox-for-pull "~/Dropbox/org/flagged.org")
     (setq org-mobile-directory "~/Dropbox/Apps/MobileOrg")
