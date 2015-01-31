@@ -142,6 +142,10 @@
 ;;                                                                     functions
 ;; =============================================================================
 
+(defmacro suppress-messages (&rest forms)
+  `(flet ((message (&rest r) nil))
+     ,@forms))
+
 (defun cmp-int-list (a b)
   (when (and a b)
     (cond ((> (car a) (car b)) 1)
