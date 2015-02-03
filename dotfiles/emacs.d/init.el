@@ -1039,6 +1039,8 @@ marking if it still had that."
 
 (use-package screenshot :ensure t)
 
+(use-package libmpdee :ensure t)
+
 (use-package flyspell
   :ensure t
   :config
