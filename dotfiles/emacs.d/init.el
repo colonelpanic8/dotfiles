@@ -883,11 +883,11 @@ the same tree node, and the headline of the tree node in the Org-mode file."
   :bind ("C-c 0" . email)
   :config
   (progn
-    (defun email ()
-      (interactive)
+    (defun email (&optional arg)
+      (interactive "P")
       (persp-switch "email")
-      (unless (mu4e-running-p)
-        (mu4e)))
+      (when (or (not (mu4e-running-p)) arg)
+        (delete-other-windows) (mu4e)))
     ;; enable inline images
     (setq mu4e-view-show-images t)
     ;; show images
