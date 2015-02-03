@@ -26,7 +26,8 @@
 
 (defun imalison-org-mobile-sync (&optional force)
   (interactive)
-  (when (or force (>= imalison-org-mobile-sync:unsaved-changes-count imalison-org-mobile-sync:unsaved-changes-min-sync))
+  (when (or force (>= imalison-org-mobile-sync:unsaved-changes-count
+                      imalison-org-mobile-sync:unsaved-changes-min-sync))
     (org-mobile-push)
     (setq imalison-org-mobile-sync:unsaved-changes-count 0)))
 
