@@ -822,9 +822,7 @@ the same tree node, and the headline of the tree node in the Org-mode file."
                 (agenda ""
                         ((org-agenda-overriding-header "Agenda:")
                          (org-agenda-ndays 5)
-                         (org-deadline-warning-days 0)))
-                ,missing-deadline
-                ,missing-priority)
+                         (org-deadline-warning-days 0))))
                nil nil)
               ,(cons "A" (cons "High priority upcoming" this-week-high-priority))
               ,(cons "d" (cons "Overdue tasks and due today" due-today))
