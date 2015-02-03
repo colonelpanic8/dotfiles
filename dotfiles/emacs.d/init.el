@@ -1365,7 +1365,7 @@ window is active in the perspective."
          (setq retval (cons 'exception (list ex))))
         nil)))
 
-(defun message-virtual-envs ()
+defun message-virtual-envs ()
   (interactive)
   (message "%s" (get-virtual-envs)))
 
