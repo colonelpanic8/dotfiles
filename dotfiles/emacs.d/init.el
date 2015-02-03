@@ -628,6 +628,7 @@ The current directory is assumed to be the project's root otherwise."
          ("C-c C-S-t" . org-todo-force-notes))
   :config
   (progn
+    (setq helm-org-headings-fontify t)
     ;; Enable appointment notifications.
     (defadvice org-agenda-to-appt (before wickedcool activate)
       "Clear the appt-time-msg-list."
