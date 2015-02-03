@@ -98,8 +98,8 @@ def access_if_exists(ctx, app_string):
         )
 
 
-@ctask(aliases=['karabiner', 'fast_repeat'])
-def hyper(ctx):
+@ctask(aliases=['hyper', 'fast_repeat'])
+def karabiner(ctx):
     source = '{0}/karabiner-hyper.xml'.format(util.RESOURCES_DIRECTORY)
     destination_folder = os.path.join(
         os.path.expanduser("~/Library"), "Application\\ Support", "Karabiner"
