@@ -885,9 +885,12 @@ the same tree node, and the headline of the tree node in the Org-mode file."
   (progn
     (defun email (&optional arg)
       (interactive "P")
-      (persp-switch "email")
-      (when (or (not (mu4e-running-p)) arg)
-        (delete-other-windows) (mu4e)))
+      (if (string-equal (persp-name persp-curr) "email")
+          (progn (delete-other-windows) (mu4e))
+        (progn
+          (persp-switch "email")
+          (when (or (not (mu4e-running-p)) arg)
+            (delete-other-windows) (mu4e)))))
     ;; enable inline images
     (setq mu4e-view-show-images t)
     ;; show images
@@ -1365,7 +1368,7 @@ window is active in the perspective."
          (setq retval (cons 'exception (list ex))))
         nil)))
 
-defun message-virtual-envs ()
+(defun message-virtual-envs ()
   (interactive)
   (message "%s" (get-virtual-envs)))
 
