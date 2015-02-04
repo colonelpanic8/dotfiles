@@ -728,6 +728,7 @@ the same tree node, and the headline of the tree node in the Org-mode file."
     ;; variable configuration
     (add-to-list 'org-modules 'org-habit)
     (add-to-list 'org-modules 'org-expiry)
+    (add-to-list 'org-modules 'org-notify)
     (setq org-src-fontify-natively t)
     (setq org-habit-graph-column 50)
     (setq org-habit-show-habits-only-for-today t)
@@ -738,6 +739,50 @@ the same tree node, and the headline of the tree node in the Org-mode file."
     (setq org-agenda-skip-scheduled-if-done t)
     (setq org-agenda-skip-deadline-if-done t)
     ;;(add-to-list org-agenda-tag-filter-preset "+PRIORITY<\"C\"")
+
+    (use-package org-notify
+      :config
+      (progn
+        (org-notify-add 'default '(:time "100m" :actions -notify/window
+                                         :period "2m" :duration 60))
+        (org-notify-add 'urgent-second '(:time "3m" :actions (-notify/window -ding)
+                                               :period "15s" :duration 10))
+        (org-notify-add 'minute '(:time "5m" :actions -notify/window
+                                        :period "100s" :duration 70))
+        (org-notify-add '12hours
+                        '(:time "3m" :actions (-notify/window -ding)
+                                :period "15s" :duration 10)
+                        '(:time "100m" :actions -notify/window
+                                :period "2m" :duration 60)
+                        '(:time "12h" :actions -notify/window :audible nil
+                                :period "10m" :duration 200))
+        (org-notify-add '5days
+                        '(:time "100m" :actions -notify/window
+                                :period "2m" :duration 60)
+                        '(:time "2d" :actions -notify/window
+                                :period "15m" :duration 100)
+                        '(:time "5d" :actions -notify/window
+                                :period "2h" :duration 200))
+        (org-notify-add 'long-20days
+                        '(:time "2d" :actions -notify/window
+                                :period "15m" :duration 60)
+                        '(:time "5d" :actions -notify/window
+                                :period "2h" :duration 60)
+                        '(:time "20d" :actions -email :period "2d" :audible nil))
+        (org-notify-add 'long-50days
+                        '(:time "4d" :actions -notify/window
+                                :period "30m" :duration 100)
+                        '(:time "10d" :actions -notify/window
+                                :period "4h" :duration 200)
+                        '(:time "50d" :actions -email :period "3d" :audible nil))
+        (org-notify-add 'long-100days
+                        '(:time "2d" :actions -notify/window
+                                :period "1h" :duration 200)
+                        '(:time "10d" :actions -notify/window
+                                :period "10h" :duration 300)
+                        '(:time "50d" :actions -email :period "3d" :audible nil)
+                        '(:time "100d" :actions -email :period "5d" :audible nil))
+        (org-notify-start 10)))
 
     ;; Agenda setup.
     (unless (boundp 'org-gtd-file)
