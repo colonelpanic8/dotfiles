@@ -346,3 +346,7 @@ function android_sdk_directory {
 	brew --prefix android-sdk
     fi
 }
+
+function pkill_zsh {
+    ps aux | grep "$1" | grep -v grep | get_cols 2 | xargs kill -9
+}
