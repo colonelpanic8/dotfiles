@@ -29,7 +29,7 @@ function mu4e_update_index_and_alert {
 function mu4e_sync_command {
     local flags=''
     test -z "$*" || flags="-f $@"
-    timeout $TIMEOUT zsh -c "offlineimap $flags"
+    timeout --kill-after "$TIMEOUT" "$TIMEOUT" zsh -c "offlineimap $flags"
 }
 
 function mu4e_update_index {
