@@ -795,9 +795,9 @@ the same tree node, and the headline of the tree node in the Org-mode file."
     (unless (boundp 'org-capture-templates)
       (defvar org-capture-templates nil))
     (setq org-agenda-files
-          (--filter (file-exists-p it)
+          (append org-agenda-files (--filter (file-exists-p it)
                     (list org-gtd-file org-habits-file org-projectile:projects-file
-                          org-calendar-file)))
+                          org-calendar-file))))
 
     (add-to-list 'org-capture-templates
                  `("g" "GTD Todo" entry (file+headline ,org-gtd-file "Tasks")
