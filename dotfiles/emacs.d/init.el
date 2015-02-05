@@ -25,6 +25,16 @@
       (>= emacs-major-version 25)))
 
 ;; =============================================================================
+;;                                                       Load Path Configuration
+;; =============================================================================
+
+(defvar machine-custom "~/.emacs.d/this-machine.el")
+(setq custom-file "~/.emacs.d/custom-after.el")
+(setq custom-early-file "~/.emacs.d/custom-before.el")
+(when (file-exists-p custom-early-file) (load custom-early-file))
+(when (file-exists-p machine-custom) (load machine-custom))
+
+;; =============================================================================
 ;;                                                                  GUI Disables
 ;; =============================================================================
 
@@ -323,15 +333,6 @@ The current directory is assumed to be the project's root otherwise."
          (if projectile-require-project-root
              (error "You're not in a project")
            default-directory)))))
-
-;; =============================================================================
-;;                                                       Load Path Configuration
-;; =============================================================================
-
-(defvar machine-custom "~/.emacs.d/this-machine.el")
-(setq custom-file "~/.emacs.d/custom.el")
-(when (file-exists-p custom-file) (load custom-file))
-(when (file-exists-p machine-custom) (load machine-custom))
 
 ;; =============================================================================
 ;;                                                         General Emacs Options
@@ -1787,11 +1788,13 @@ window is active in the perspective."
   (defadvice load-theme (after name activate)
     (remove-fringe-and-hl-line-mode)))
 
-;; enable to set theme based on time of day.
-(run-at-time "00:00" 3600 'set-theme)
-
 ;; This is needed because you can't set the font at daemon start-up.
 (add-hook 'after-make-frame-functions 'set-my-font-for-frame)
 (add-hook 'after-make-frame-functions (lambda (frame) (set-theme)))
 (put 'narrow-to-region 'disabled nil)
 (put 'narrow-to-page 'disabled nil)
+
+(when (file-exists-p custom-file) (load custom-file))
+
+;; enable to set theme based on time of day.
+(run-at-time "00:00" 3600 'set-theme)
