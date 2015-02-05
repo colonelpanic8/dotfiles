@@ -26,3 +26,5 @@ recentf
 persp-confs/
 .tern-port
 speed-type/
+custom-before.el
+custom-after.el
