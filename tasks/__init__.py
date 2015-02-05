@@ -44,7 +44,8 @@ def dropbox_dotfiles(ctx, flags='f'):
         ),
         flags
     ))
-    link_filenames(ctx, [('~/Dropbox/configs/custom.el', '~/.emacs.d/custom.el')], force=True)
+    link_filenames(ctx, [('~/Dropbox/configs/custom-before.el', '~/.emacs.d/custom-before.el')], force=True)
+    link_filenames(ctx, [('~/Dropbox/configs/custom-after.el', '~/.emacs.d/custom-after.el')], force=True)
 
 
 @ctask
