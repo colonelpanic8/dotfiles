@@ -141,5 +141,3 @@ $(colored_job_count)%(?.$(print_with_color "$(command_line_character) ❯" $PROM
 function set_powerline_prompt {
     source "$(python_module_path powerline)/bindings/zsh/powerline.zsh"
 }
-
-set_my_prompt
