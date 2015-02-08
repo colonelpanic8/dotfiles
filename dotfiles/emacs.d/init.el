@@ -811,16 +811,16 @@ the same tree node, and the headline of the tree node in the Org-mode file."
                           org-calendar-file))))
 
     (add-to-list 'org-capture-templates
-                 `("g" "GTD Todo" entry (file+headline ,org-gtd-file "Tasks")
+                 `("g" "GTD Todo" entry (file ,org-gtd-file)
                    (function org-capture-make-todo-template)))
 
     (add-to-list 'org-capture-templates
-                 `("t" "Linked GTD Todo" entry (file+headline ,org-gtd-file "Tasks")
+                 `("t" "Linked GTD Todo" entry (file ,org-gtd-file)
                    (function org-capture-make-linked-todo-template)))
 
     (add-to-list 'org-capture-templates
                  `("c" "Calendar entry" entry
-                   (file+headline ,org-calendar-file "Personal")
+                   (file ,org-calendar-file)
                    "* %?
   :PROPERTIES:
   :CREATED: %U
@@ -829,7 +829,7 @@ the same tree node, and the headline of the tree node in the Org-mode file."
 
     (add-to-list 'org-capture-templates
                  `("y" "Linked Calendar entry" entry
-                   (file+headline ,org-calendar-file "Personal")
+                   (file ,org-calendar-file)
                    "* %? %A
   :PROPERTIES:
   :CREATED: %U
@@ -837,7 +837,7 @@ the same tree node, and the headline of the tree node in the Org-mode file."
 %^T"))
 
     (add-to-list 'org-capture-templates
-                 `("h" "Habit" entry (file+headline ,org-habits-file "Habits")
+                 `("h" "Habit" entry (file ,org-habits-file)
                    "* TODO
   SCHEDULED: %^t
   :PROPERTIES:
