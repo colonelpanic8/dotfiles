@@ -730,6 +730,7 @@ the same tree node, and the headline of the tree node in the Org-mode file."
     (add-to-list 'org-modules 'org-habit)
     (add-to-list 'org-modules 'org-expiry)
     (add-to-list 'org-modules 'org-notify)
+
     (setq org-src-fontify-natively t)
     (setq org-habit-graph-column 50)
     (setq org-habit-show-habits-only-for-today t)
@@ -784,6 +785,15 @@ the same tree node, and the headline of the tree node in the Org-mode file."
                         '(:time "50d" :actions -email :period "3d" :audible nil)
                         '(:time "100d" :actions -email :period "5d" :audible nil))
         (org-notify-start 10)))
+
+    (use-package org-ehtml
+      :ensure t
+      :config
+      (progn
+        (setq org-ehtml-docroot (expand-file-name "~/Dropbox/org"))
+        (setq org-ehtml-allow-agenda t)
+        (setq org-ehtml-editable-headlines t)
+        (setq org-ehtml-everything-editable t)))
 
     ;; Agenda setup.
     (unless (boundp 'org-gtd-file)
