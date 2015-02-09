@@ -1286,6 +1286,13 @@ window is active in the perspective."
   :demand t
   :config
   (progn
+    (defun projectile-make-all-subdirs-projects (directory)
+      (cl-loop for file-info in (directory-files-and-attributes directory)
+               do (when (nth 1 file-info)
+                    (write-region "" nil
+                                  (expand-file-name
+                                   (concat directory "/"
+                                           (nth 0 file-info) "/.projectile"))))))
     (defun do-ag (&optional arg)
       (interactive "P")
       (if arg (helm-do-ag) (helm-projectile-ag)))
