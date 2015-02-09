@@ -743,9 +743,18 @@ the same tree node, and the headline of the tree node in the Org-mode file."
     ;;(add-to-list org-agenda-tag-filter-preset "+PRIORITY<\"C\"")
 
     (use-package org-notify
+      :disabled t
       :config
       (progn
-        (org-notify-add 'default '(:time "100m" :actions -notify/window
+        (defun imalison:org-notify-notification-handler (plist)
+          (sauron-add-event 'org-notify 4 (format "%s, %s.\n" (plist-get plist :heading)
+                                                  (org-notify-body-text plist))))
+
+        (setq org-show-notification-handler 'imalison:org-notify-notification-handler)
+
+        (org-notify-add 'default '(:time "1h" :actions imalison:org-notify-notification-handler
+        				 :period "2m" :duration 60))
+        (org-notify-add 'default '(:time "100m" :actions imalison:org-notify-notification-handler
                                          :period "2m" :duration 60))
         (org-notify-add 'urgent-second '(:time "3m" :actions (-notify/window -ding)
                                                :period "15s" :duration 10))
