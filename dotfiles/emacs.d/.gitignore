@@ -31,3 +31,4 @@ custom-after.el
 org-gcal/
 request/
 org-caldav-backup.org
+ensime
