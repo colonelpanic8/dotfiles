@@ -796,6 +796,7 @@ the same tree node, and the headline of the tree node in the Org-mode file."
         (org-notify-start 10)))
 
     (use-package org-ehtml
+      :disabled t
       :ensure t
       :config
       (progn
@@ -923,6 +924,7 @@ the same tree node, and the headline of the tree node in the Org-mode file."
     (add-hook 'org-mode-hook 'guide-key/my-hook-function-for-org-mode)
     (defun disable-linum-mode () (linum-mode 0))
     (add-hook 'org-mode-hook 'disable-linum-mode)
+    (add-hook 'org-mode-hook (lambda () (setq org-todo-key-trigger t)))
     (add-hook 'org-agenda-mode-hook 'disable-linum-mode)))
 
 (use-package epg
