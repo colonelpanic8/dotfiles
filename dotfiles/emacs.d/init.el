@@ -737,6 +737,7 @@ the same tree node, and the headline of the tree node in the Org-mode file."
     (setq org-lowest-priority 69) ;; The character E
     (setq org-completion-use-ido t)
     (setq org-enforce-todo-dependencies t)
+    (setq org-deadline-warning-days 0)
     (setq org-default-priority ?D)
     (setq org-agenda-skip-scheduled-if-done t)
     (setq org-agenda-skip-deadline-if-done t)
@@ -1620,9 +1621,12 @@ window is active in the perspective."
             (if (and file (string-match "\\.tex$" file))
                 (progn
                   (goto-char (point-min))
-                  (if (re-search-forward (concat "\\\\input{" filename "}") nil t)
+                  (if (re-search-forward
+                       (concat "\\\\input{" filename "}") nil t)
                       (setq candidate file))
-                  (if (re-search-forward (concat "\\\\include{" (file-name-sans-extension filename) "}") nil t)
+                  (if (re-search-forward
+                       "\\\\include{" (file-name-sans-extension filename) "}"
+                       nil t)
                       (setq candidate file))))))))
     (if candidate
         (message "TeX master document: %s" (file-name-nondirectory candidate)))
