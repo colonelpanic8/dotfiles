@@ -717,6 +717,7 @@ the same tree node, and the headline of the tree node in the Org-mode file."
       :bind (("C-c n p" . imalison:helm-org-todo))
       :config
       (progn
+        (setq org-confirm-elisp-link-function nil)
         (defun imalison:helm-org-todo (&optional arg)
           (interactive "P")
           (helm :sources (list (helm-source-org-capture-templates)
