@@ -174,3 +174,12 @@ function clear_dock {
     defaults write com.apple.dock persistent-apps -array
 }
 
+function resistance_game_start {
+    say "everyone close their eyes."
+    sleep 4
+    say "spies open their eyes"
+    sleep 4
+    say "spies close their eyes"
+    sleep 4
+    say "everyone open their eyes"
+}
