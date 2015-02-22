@@ -350,3 +350,8 @@ function android_sdk_directory {
 function pkill_zsh {
     ps aux | grep "$1" | grep -v grep | get_cols 2 | xargs kill -9
 }
+
+
+function find_by_size {
+    find . -type f -size +$1
+}
