@@ -18,7 +18,8 @@ linux_pacakges = ('zsh', 'tmux', 'emacs24-nox', 'nmap', 'scala', 'default-jdk',
                   'silversearcher-ag', 'npm', 'xdotool', 'gconf-editor',
                   'dropbox', 'offlineimap', 'mu4e' 'fonts-droid' 'fonts-noto',
                   'gnutls-bin', 'libgmime-2.6-', 'libxapian-dev',
-                  'openssh-server', 'golang', 'gitfs')
+                  'openssh-server', 'golang', 'gitfs',
+                  'python-software-properties', 'software-properties-common')
 
 
 repositories = ('ppa:presslabs/gitfs',)
