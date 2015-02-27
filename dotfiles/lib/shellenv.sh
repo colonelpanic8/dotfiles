@@ -5,7 +5,9 @@ function add_to_front_of_path {
 }
 
 function add_to_back_of_path {
-    export PATH=$(echo $PATH | sed "s|:*$@||g" | sed "s|^:||"):$@
+    if [ -d "$1" ] && [[ ":$PATH:" != *":$1:"* ]]; then
+	PATH="${PATH:+"$PATH:"}$1"
+    fi
 }
 
 add_to_back_of_path "$HOME/.local/lib/python2.6/site-packages"
@@ -18,7 +20,13 @@ if is_osx; then
     export CFLAGS=-Qunused-arguments
     export CPPFLAGS=-Qunused-arguments
     add_to_back_of_path "/System/Library/PrivateFrameworks/Apple80211.framework/Versions/Current/Resources"
-    export JAVA_HOME="$(find /Library/Java/JavaVirtualMachines -depth 1 | head -n 1)/Contents/Home"
+    local JDK_LOCATION="$(find /Library/Java/JavaVirtualMachines -depth 1 | head -n 1)"
+    export JAVA_HOME="$JDK_LOCATION/Contents/Home"
+    export STUDIO_JDK=$JDK_LOCATION
+    export GRADLE_HOME="$(brew --prefix gradle)"
+    export ANDROID_HOME="$(brew --prefix android-sdk)"
+    add_to_back_of_path "$ANDROID_HOME"
+    
     # Access gnu man pages.
     hash brew 2> /dev/null && export MANPATH="$(brew --prefix)/opt/coreutils/libexec/gnuman:$MANPATH"
 else 
