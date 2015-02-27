@@ -89,7 +89,7 @@
 ;; =============================================================================
 
 (defvar packages-eager
-  '(popup auto-complete yasnippet cl-lib paradox
+  '(popup yasnippet cl-lib paradox
     xclip dired+ ctags ctags-update aggressive-indent imenu+ neotree diminish
     gist))
 
@@ -491,6 +491,7 @@ The current directory is assumed to be the project's root otherwise."
 
 (use-package auto-complete
   :ensure t
+  :disabled t
   :commands auto-complete-mode
   :config
   (diminish 'auto-complete-mode)
