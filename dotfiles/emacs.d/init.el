@@ -613,6 +613,8 @@ The current directory is assumed to be the project's root otherwise."
 
 (use-package htmlize :ensure t)
 
+(use-package calfw :ensure t)
+
 (use-package org
   :ensure org-plus-contrib
   :commands (org-mode org org-mobile-push org-mobile-pull org-agenda)
@@ -629,6 +631,7 @@ The current directory is assumed to be the project's root otherwise."
          ("C-c C-S-t" . org-todo-force-notes))
   :config
   (progn
+    (unbind-key "C-c C-f" org-mode-map)
     (setq helm-org-headings-fontify t)
     ;; Enable appointment notifications.
     (defadvice org-agenda-to-appt (before wickedcool activate)
@@ -717,6 +720,7 @@ the same tree node, and the headline of the tree node in the Org-mode file."
       :bind (("C-c n p" . imalison:helm-org-todo))
       :config
       (progn
+        (org-projectile:hybrid)
         (setq org-confirm-elisp-link-function nil)
         (defun imalison:helm-org-todo (&optional arg)
           (interactive "P")
@@ -818,9 +822,10 @@ the same tree node, and the headline of the tree node in the Org-mode file."
     (unless (boundp 'org-capture-templates)
       (defvar org-capture-templates nil))
     (setq org-agenda-files
-          (append org-agenda-files (--filter (file-exists-p it)
-                    (list org-gtd-file org-habits-file org-projectile:projects-file
-                          org-calendar-file))))
+          (append org-agenda-files
+                  (--filter (file-exists-p it)
+                            `(,org-gtd-file ,org-habits-file ,@(org-projectile:todo-files)
+                                            ,org-calendar-file))))
 
     (add-to-list 'org-capture-templates
                  `("g" "GTD Todo" entry (file ,org-gtd-file)
