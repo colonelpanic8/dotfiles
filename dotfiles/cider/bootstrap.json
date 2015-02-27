@@ -7,6 +7,7 @@
   ],
   "casks": [
     "alfred",
+    "android-studio",
     "atom",
     "caffeine",
     "calibre",
@@ -70,6 +71,7 @@
     "go",
     "gobject-introspection",
     "gpg",
+    "gradle",
     "grep",
     "grsync",
     "gtk+3",
