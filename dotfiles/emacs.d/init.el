@@ -1312,7 +1312,7 @@ window is active in the perspective."
                                   (expand-file-name
                                    (concat directory "/"
                                            (nth 0 file-info) "/.projectile"))))))
-    (defun do-ag (&optional arg)
+    (defun imalison:do-ag (&optional arg)
       (interactive "P")
       (if arg (helm-do-ag) (helm-projectile-ag)))
     (projectile-global-mode)
@@ -1324,8 +1324,16 @@ window is active in the perspective."
     (unbind-key "C-c p s g" projectile-command-map)
     (unbind-key "C-c p s s" projectile-command-map)
     (unbind-key "C-c p s" projectile-command-map)
-    (bind-key* "C-c p s" 'do-ag))
-  :bind (("C-x f" . projectile-find-file-in-known-projects))
+    (unbind-key "C-c p f" projectile-command-map)
+    (bind-key* "C-c p s" 'imalison:do-ag)
+    (bind-key* "C-c p f" 'imalison:projectile-find-file)
+    (defun imalison:projectile-find-file (arg)
+          (interactive "P")
+          (if arg
+              (projectile-find-file-other-window)
+              (projectile-find-file))))
+  :bind (("C-x f" . projectile-find-file-in-known-projects)
+         ("C-c p f" . imalison:projectile-find-file))
   :init
   (progn
     (use-package persp-projectile
@@ -1333,8 +1341,7 @@ window is active in the perspective."
       :commands projectile-persp-switch-project)
     (use-package helm-projectile
       :ensure t
-      :commands (helm-projectile-on)
-      :defer t)))
+      :commands (helm-projectile-on))))
 
 (use-package smex
   :ensure t
@@ -1528,19 +1535,21 @@ window is active in the perspective."
     (setq android-mode-sdk-dir
           (s-trim (shell-command-to-string "android_sdk_directory")))))
 
+(use-package gradle-mode :ensure t)
+
 ;; =============================================================================
 ;;                                                                    JavaScript
 ;; =============================================================================
 
 (use-package js2-mode
   :ensure t
-  :commands (js-mode)
+  :commands (js2-mode)
   :mode "\\.js\\'"
   :bind
   (("C-c b" . web-beautify-js))
   :init
   (progn
-    (setq js2-bounce-indent-p t)
+    (setq js2-bounce-indent-p nil)
     (setq js2-basic-offset 2)
     (use-package skewer-mode
       :ensure t
