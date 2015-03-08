@@ -65,6 +65,11 @@ hyperBindAll({
   a: quarterCorner("top-left"),
   s: quarterCorner("top-right"),
   z: quarterCorner("bottom-left"),
+  n: slate.op("throw", {
+    "width": "windowSizeX",
+    "height": "windowSizeY",
+    "screen": "next"
+  }),
   x: quarterCorner("bottom-right"),
   // App focus
   e: focusApp("Emacs"),
