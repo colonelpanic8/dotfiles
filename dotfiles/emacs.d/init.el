@@ -29,9 +29,9 @@
 ;; =============================================================================
 
 (defvar machine-custom "~/.emacs.d/this-machine.el")
-(setq custom-file "~/.emacs.d/custom-after.el")
-(setq custom-early-file "~/.emacs.d/custom-before.el")
-(when (file-exists-p custom-early-file) (load custom-early-file))
+(setq custom-file "~/.emacs.d/custom-before.el")
+(when (file-exists-p custom-file) (load custom-file))
+(setq custom-after-file "~/.emacs.d/custom-after.el")
 (when (file-exists-p machine-custom) (load machine-custom))
 
 ;; =============================================================================
@@ -1463,6 +1463,21 @@ window is active in the perspective."
   (interactive)
   (message "%s" (get-virtual-envs)))
 
+(use-package jedi
+  :commands (jedi:goto-definition jedi-mode)
+  :config
+  (progn
+    (setq jedi:complete-on-dot t)
+    (setq jedi:install-imenu t)
+    (setq jedi:imenu-create-index-function 'jedi:create-flat-imenu-index))
+  :ensure t
+  :bind (("M-." . jedi:goto-definition)
+         ("M-," . jedi:goto-definition-pop-marker)))
+
+(use-package company-jedi
+  :commands company-jedi
+  :ensure t)
+
 (use-package python
   :commands python-mode
   :mode ("\\.py\\'" . python-mode)
@@ -1474,16 +1489,6 @@ window is active in the perspective."
     (fset 'sphinx-class ":class:`~")
   :init
   (progn
-    (use-package jedi
-      :commands jedi:goto-definition
-      :config
-      (progn
-        (setq jedi:complete-on-dot t)
-        (setq jedi:install-imenu t)
-        (setq jedi:imenu-create-index-function 'jedi:create-flat-imenu-index))
-      :ensure t
-      :bind (("M-." . jedi:goto-definition)
-             ("M-," . jedi:goto-definition-pop-marker)))
     (use-package pytest
       :ensure t
       :bind ("C-c t" . pytest-one))
@@ -1496,7 +1501,9 @@ window is active in the perspective."
       (jedi:setup)
       (add-virtual-envs-to-jedi-server)
       (remove-hook 'completion-at-point-functions
-                   'python-completion-complete-at-point 'local))
+                   'python-completion-complete-at-point 'local)
+      (add-to-list 'company-backends 'company-jedi)
+      )
     (add-hook 'python-mode-hook #'imalison:python-mode))))
 
 ;; =============================================================================
@@ -1846,7 +1853,7 @@ window is active in the perspective."
 (put 'narrow-to-region 'disabled nil)
 (put 'narrow-to-page 'disabled nil)
 
-(when (file-exists-p custom-file) (load custom-file))
+(when (file-exists-p custom-after-file) (load custom-after-file))
 
 ;; enable to set theme based on time of day.
 (run-at-time "00:00" 3600 'set-theme)
