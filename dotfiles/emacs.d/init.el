@@ -1596,6 +1596,10 @@ window is active in the perspective."
 
 (use-package rinari :ensure t)
 
+(setq-default c-basic-offset 4
+                  tab-width 4
+                  indent-tabs-mode t)
+
 ;; =============================================================================
 ;;                                                                         C/C++
 ;; =============================================================================

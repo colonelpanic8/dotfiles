@@ -81,19 +81,4 @@ hyperBindAll({
   u: slate.op("undo")
 });
 
-// Snapshot Stuff.
-// hyperBindAll(_.object(
-//   _.range(1, 5).map(function(index) {
-//     var asString = index.toString();
-//     return [asString, slate.op("snapshot", {"name": asString, "save": true, "stack": false})];
-//   })
-// ));
-
-// hyperBindAll(_.object(
-//   _.range(5, 9).map(function(index) {
-//     var name = (index-4).toString();
-//     var asString = index.toString();
-//     return [asString, slate.op("activate-snapshot", {"name": name})];
-//   })
-// ));
 slate.bindAll({"esc:cmd": hint, "space:alt": grid});
