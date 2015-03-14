@@ -833,7 +833,7 @@ the same tree node, and the headline of the tree node in the Org-mode file."
                    (function org-capture-make-todo-template)))
 
     (add-to-list 'org-capture-templates
-                 `("t" "Linked GTD Todo" entry (file ,org-gtd-file)
+                 `("t" "GTD Todo (Linked)" entry (file ,org-gtd-file)
                    (function org-capture-make-linked-todo-template)))
 
     (add-to-list 'org-capture-templates
@@ -846,7 +846,7 @@ the same tree node, and the headline of the tree node in the Org-mode file."
 %^T"))
 
     (add-to-list 'org-capture-templates
-                 `("y" "Linked Calendar entry" entry
+                 `("y" "Calendar entry (Linked)" entry
                    (file ,org-calendar-file)
                    "* %? %A
   :PROPERTIES:
