@@ -74,7 +74,10 @@
 
 (package-initialize)
 (ensure-packages-installed '(epl use-package))
-(require 'use-package)
+
+(eval-when-compile (require 'use-package)) ;; use-package is only needed at compile time.
+(require 'diminish)
+(require 'bind-key) 
 
 (use-package benchmark-init
   :ensure t
@@ -394,8 +397,8 @@ The current directory is assumed to be the project's root otherwise."
 
 (use-package yasnippet
   :ensure t
+  :defer 5
   :commands (yas-global-mode)
-  :idle (yas-global-mode)
   :config
   (progn
     (diminish 'yas-minor-mode)
@@ -555,12 +558,13 @@ The current directory is assumed to be the project's root otherwise."
 
 (use-package smooth-scroll
   :ensure t
-  :init
+  :demand t
+  :commands (smooth-scroll-mode)
+  :config
   (progn
     (smooth-scroll-mode)
-    (setq smooth-scroll/vscroll-step-size 8))
-  :config
-  (diminish 'smooth-scroll-mode))
+    (setq smooth-scroll/vscroll-step-size 12)
+    (diminish 'smooth-scroll-mode)))
 
 (use-package string-inflection
   :ensure t
@@ -593,10 +597,10 @@ The current directory is assumed to be the project's root otherwise."
 (use-package edit-server
   :ensure t
   :commands edit-server-start
-  :idle (edit-server-start)
   :config
   (progn
-    (setq edit-server-new-frame nil)))
+    (setq edit-server-new-frame nil)
+    (edit-server-start)))
 
 (use-package jabber
   :ensure t
@@ -634,14 +638,15 @@ The current directory is assumed to be the project's root otherwise."
   (progn
     (unbind-key "C-c C-f" org-mode-map)
     (setq helm-org-headings-fontify t)
+
     ;; Enable appointment notifications.
-    (defadvice org-agenda-to-appt (before wickedcool activate)
-      "Clear the appt-time-msg-list."
-      (setq appt-time-msg-list nil))
-    (appt-activate)
-    (defun org-agenda-to-appt-no-message ()
-      (suppress-messages (org-agenda-to-appt)))
-    (run-at-time "00:00" 60 'org-agenda-to-appt-no-message)
+    ;; (defadvice org-agenda-to-appt (before wickedcool activate)
+    ;;   "Clear the appt-time-msg-list."
+    ;;   (setq appt-time-msg-list nil))
+    ;; (appt-activate)
+    ;; (defun org-agenda-to-appt-no-message ()
+    ;;   (suppress-messages (org-agenda-to-appt)))
+    ;; (run-at-time "00:00" 60 'org-agenda-to-appt-no-message)
 
     (defun org-archive-if (condition-function)
       (if (funcall condition-function)
@@ -1077,7 +1082,7 @@ marking if it still had that."
 
 (use-package sauron
   :ensure t
-  :defer t
+  :defer 5
   :commands (sauron-start sauron-start-hidden)
   :init
   (progn
@@ -1089,6 +1094,7 @@ marking if it still had that."
       (makunbound 'dbus-path-emacs)))
   :config
   (progn
+    (sauron-start-hidden)
     ;; This should really check (featurep 'dbus) but for some reason
     ;; this is always true even if support is not there.
     (setq sauron-prio-sauron-started 2)
@@ -1114,9 +1120,7 @@ marking if it still had that."
         (funcall handler origin priority message properties)))
     ;; Prefering alert.el for now ;; (add-hook 'sauron-event-added-functions 'sauron:dispatch-notify)
     (sauron-start-hidden)
-    (add-hook 'sauron-event-added-functions 'sauron-alert-el-adapter))
-  :idle (sauron-start-hidden)
-  :idle-priority 3)
+    (add-hook 'sauron-event-added-functions 'sauron-alert-el-adapter)))
 
 (use-package screenshot :ensure t)
 
