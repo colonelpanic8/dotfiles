@@ -807,6 +807,12 @@ the same tree node, and the headline of the tree node in the Org-mode file."
                         '(:time "100d" :actions -email :period "5d" :audible nil))
         (org-notify-start 10)))
 
+    (use-package org-bullets
+      :ensure t
+      :config
+      (progn
+        (add-hook 'org-mode-hook (lambda () (org-bullets-mode 1)))))
+
     (use-package org-ehtml
       :disabled t
       :ensure t
