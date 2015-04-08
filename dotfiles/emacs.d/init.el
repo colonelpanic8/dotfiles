@@ -77,7 +77,7 @@
 
 (eval-when-compile (require 'use-package)) ;; use-package is only needed at compile time.
 (require 'diminish)
-(require 'bind-key) 
+(require 'bind-key)
 
 (use-package benchmark-init
   :ensure t
@@ -840,26 +840,26 @@ the same tree node, and the headline of the tree node in the Org-mode file."
                                             ,org-calendar-file))))
 
     (add-to-list 'org-capture-templates
-                 `("g" "GTD Todo" entry (file ,org-gtd-file)
-                   (function org-capture-make-todo-template)))
-
-    (add-to-list 'org-capture-templates
                  `("t" "GTD Todo (Linked)" entry (file ,org-gtd-file)
                    (function org-capture-make-linked-todo-template)))
 
     (add-to-list 'org-capture-templates
-                 `("c" "Calendar entry" entry
+                 `("g" "GTD Todo" entry (file ,org-gtd-file)
+                   (function org-capture-make-todo-template)))
+
+    (add-to-list 'org-capture-templates
+                 `("y" "Calendar entry (Linked)" entry
                    (file ,org-calendar-file)
-                   "* %?
+                   "* %? %A
   :PROPERTIES:
   :CREATED: %U
   :END:
 %^T"))
 
     (add-to-list 'org-capture-templates
-                 `("y" "Calendar entry (Linked)" entry
+                 `("c" "Calendar entry" entry
                    (file ,org-calendar-file)
-                   "* %? %A
+                   "* %?
   :PROPERTIES:
   :CREATED: %U
   :END:
@@ -874,9 +874,9 @@ the same tree node, and the headline of the tree node in the Org-mode file."
   :STYLE: habit
   :END:"))
 
-    (add-to-list 'org-capture-templates (org-projectile:project-todo-entry "p"))
     (add-to-list 'org-capture-templates
                  (org-projectile:project-todo-entry "l" "* TODO %? %a\n" "Linked Project TODO"))
+    (add-to-list 'org-capture-templates (org-projectile:project-todo-entry "p"))
 
     (let ((this-week-high-priority
            ;; The < in the following line works has behavior that is opposite
