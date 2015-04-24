@@ -6,6 +6,7 @@
     "homebrew/dupes"
   ],
   "casks": [
+    "adobe-reader",
     "alfred",
     "android-studio",
     "atom",
@@ -16,11 +17,13 @@
     "firefox",
     "flash",
     "flux",
+    "flycut",
     "google-chrome",
     "google-hangouts",
     "growl-fork",
     "growlnotify",
     "heroku-toolbelt",
+    "hipchat",
     "iterm2",
     "java",
     "jumpcut",
