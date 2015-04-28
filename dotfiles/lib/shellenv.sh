@@ -59,3 +59,6 @@ export RBENV_ROOT=/usr/local/var/rbenv
 export PATH="$HOME/.rbenv/bin:$PATH"
 hash rbenv 2> /dev/null && eval "$(rbenv init -)"
 test -e /usr/libexec/path_helper && eval `/usr/libexec/path_helper -s`
+
+
+export NODE_PATH="/usr/local/lib/node_modules/"

@@ -1567,23 +1567,29 @@ window is active in the perspective."
   :init
   (progn
     (setq js2-bounce-indent-p nil)
-    (setq js2-basic-offset 2)
+    (setq js2-basic-offset 4)
+    (setq js2-indent-level 4)
+    (setq js2-basic-offset 4)
     (use-package skewer-mode
       :ensure t
       :commands skewer-mode)
     (add-hook 'js-mode-hook 'js2-minor-mode)
     (add-hook 'js2-mode-hook (lambda () (tern-mode t)))
     (add-hook 'js2-mode-hook 'skewer-mode)
-    (add-hook 'js2-mode-hook (lambda () (setq js-indent-level 1)))
+    (add-hook 'js2-mode-hook (lambda () (setq js-indent-level 4)
+                               (setq js2-indent-level 4)
+                               (setq js2-basic-offset 4)))
     (use-package tern
       :commands tern-mode
       :ensure t
       :config
-      (progn (tern-ac-setup))
-      :init
-      (progn
-        (use-package tern-auto-complete :ensure t
-          :commands tern-ac-setup)))))
+      (use-package company-tern
+        :config (add-to-list 'company-backends 'company-tern))
+      (progn (tern-ac-setup)))))
+
+(defun delete-tern-process ()
+  (interactive)
+  (delete-process "tern"))
 
 (use-package json-mode
   :ensure t
@@ -1591,7 +1597,7 @@ window is active in the perspective."
   :init
   (add-hook 'json-mode-hook
             (lambda ()
-            (setq js-indent-level 2))))
+            (setq js-indent-level 4))))
 
 (add-hook 'css-mode-hook #'skewer-css-mode)
 (add-hook 'html-mode-hook #'skewer-html-mode)
