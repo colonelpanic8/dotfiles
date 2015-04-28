@@ -835,7 +835,7 @@ the same tree node, and the headline of the tree node in the Org-mode file."
       (defvar org-capture-templates nil))
     (setq org-agenda-files
           (append org-agenda-files
-                  (--filter (file-exists-p it)
+                  (--filter (or (file-symlink-p it) (file-exists-p it))
                             `(,org-gtd-file ,org-habits-file ,@(org-projectile:todo-files)
                                             ,org-calendar-file))))
 
