@@ -1,5 +1,4 @@
 # added by newengsetup
-export EDITOR=vim
 export UBER_HOME="$HOME/Uber"
 export UBER_OWNER="imalison@uber.com"
 export VAGRANT_DEFAULT_PROVIDER=aws
