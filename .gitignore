@@ -8,6 +8,7 @@ dotfiles/.pip/download_cache
 dotfiles/.pip/pip.log
 dotfiles/config/hub
 dotfiles/cider/.cache/
+dotfiles/pip/cache/
 dotfiles/pip/download_cache/
 .gitignore
 dotfiles/pip/pip.log
