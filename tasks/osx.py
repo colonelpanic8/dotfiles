@@ -10,7 +10,7 @@ def setup(ctx):
     brew(ctx)
     cider(ctx)
     access_for_assistive_devices(ctx)
-    hyper(ctx)
+    karabiner(ctx)
     locate(ctx)
     set_path_for_launchd(ctx)
     rvm(ctx)
@@ -83,6 +83,10 @@ def access_for_assistive_devices(ctx):
         access_if_exists(ctx, app_string)
         access_if_exists(
             ctx,
+            "/Applications/Karabiner.app/"
+        )
+        access_if_exists(
+            ctx,
             "/Applications/Karabiner.app/Contents/Applications/"
             "Karabiner_AXNotifier.app"
         )
@@ -90,6 +94,7 @@ def access_for_assistive_devices(ctx):
 
 def access_if_exists(ctx, app_string):
     if os.path.exists(app_string):
+        print("enabling access for {0}", app_string)
         ctx.run(
             'zsh -c "source ~/.zshrc && '
             'enable_access_for_assistive_devices \"{0}\""'.format(
