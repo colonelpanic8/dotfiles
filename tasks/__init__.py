@@ -45,11 +45,13 @@ def dropbox_dotfiles(ctx, flags='f'):
         flags
     ))
 
+
 @ctask
 def link_emacs(ctx, flags='f'):
-    link_filenames(ctx, [('~/Dropbox/configs/custom-before.el', '~/.emacs.d/custom-before.el')], force=True)
-    link_filenames(ctx, [('~/Dropbox/configs/elpa', '~/.emacs.d/elpa')], force=True)
-    link_filenames(ctx, [('~/Dropbox/configs/custom-after.el', '~/.emacs.d/custom-after.el')], force=True)
+    link_filenames(ctx, [('~/Dropbox/configs/custom-before.el', '~/.emacs.d/custom-before.el'),
+                         # ('~/Dropbox/configs/elpa', '~/.emacs.d/elpa'),
+                         ('~/Dropbox/configs/custom-after.el', '~/.emacs.d/custom-after.el')],
+                   force=True)
 
 
 @ctask
@@ -147,3 +149,4 @@ ns.add_task(powerline)
 ns.add_task(setup)
 ns.add_task(vimstall)
 ns.add_task(fix_dropbox_permissions)
+ns.add_task(link_emacs)
