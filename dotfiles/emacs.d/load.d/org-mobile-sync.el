@@ -36,5 +36,6 @@
                                              (mapcar 'file-truename org-agenda-files))
                                (setq imalison-org-mobile-sync:unsaved-changes-count
                                      (+ imalison-org-mobile-sync:unsaved-changes-count 1)))))
-(imalison-org-mobile-sync-start)
+;; (imalison-org-mobile-sync-start)
+
 (provide 'org-mobile-sync)

@@ -25,3 +25,4 @@ TAGS
 *.tmp*
 projectile.cache
 projectile-bookmarks.eld
+dotfiles/pip/cache

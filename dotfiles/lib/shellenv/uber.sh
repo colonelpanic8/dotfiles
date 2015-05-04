@@ -15,3 +15,9 @@ editsync () {
 opensync () {
     open $(boxer sync_dir $@)
 }
+udir () {
+	cd ~/Uber/
+}
+sdir () {
+	cd ~/Uber/sync/
+}
