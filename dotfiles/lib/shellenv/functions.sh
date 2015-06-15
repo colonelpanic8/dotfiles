@@ -76,7 +76,7 @@ function update_dotfiles() {
 }
 
 function current_shell() {
-    readlink -f $(which "$(ps -p $$ | tail -1 | awk '{print $NF}' | sed 's/\-//')")
+    which "$(ps -p $$ | tail -1 | awk '{print $NF}' | sed 's/\-//')"
 }
 
 function is_zsh() {
