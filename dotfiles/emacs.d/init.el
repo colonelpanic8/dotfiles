@@ -1574,6 +1574,7 @@ window is active in the perspective."
     (setq js2-basic-offset 4)
     (setq js2-indent-level 4)
     (setq js2-basic-offset 4)
+    (setq indent-tabs-mode nil)
     (use-package skewer-mode
       :ensure t
       :commands skewer-mode)
@@ -1581,6 +1582,7 @@ window is active in the perspective."
     (add-hook 'js2-mode-hook (lambda () (tern-mode t)))
     (add-hook 'js2-mode-hook 'skewer-mode)
     (add-hook 'js2-mode-hook (lambda () (setq js-indent-level 4)
+                               (setq indent-tabs-mode nil)
                                (setq js2-indent-level 4)
                                (setq js2-basic-offset 4)))
     (use-package tern
