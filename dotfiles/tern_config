@@ -4,6 +4,7 @@
     "jquery"
   ],
   "plugins": {
+  "nodejs": {},
     "requirejs": {
       "baseURL": "./",
       "paths": {}
