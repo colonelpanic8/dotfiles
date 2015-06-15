@@ -1,15 +1,5 @@
 source ~/.lib/shellenv/functions.sh
 
-function add_to_front_of_path {
-    export PATH=$@:$(echo $PATH | sed "s|:*$@||g" | sed "s|^:||")
-}
-
-function add_to_back_of_path {
-    if [ -d "$1" ] && [[ ":$PATH:" != *":$1:"* ]]; then
-	PATH="${PATH:+"$PATH:"}$1"
-    fi
-}
-
 add_to_back_of_path "$HOME/.local/lib/python2.6/site-packages"
 add_to_back_of_path "$HOME/.rvm/bin"
 add_to_front_of_path "$HOME/bin"
@@ -64,3 +54,5 @@ test -e /usr/libexec/path_helper && eval `/usr/libexec/path_helper -s`
 export NVM_DIR="/Users/imalison/.nvm"
 [ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh"  # This loads nvm
 export NODE_PATH="/usr/local/lib/node_modules/"
+
+add_to_front_of_path "~/.lib/python" 'PYTHONPATH'
