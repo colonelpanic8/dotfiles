@@ -1178,6 +1178,8 @@ marking if it still had that."
 ;;                                          File Navigation: helm/projectile/ido
 ;; =============================================================================
 
+(use-package helm-themes :ensure t)
+
 (use-package helm-config
   :ensure helm
   :demand t
