@@ -1553,6 +1553,15 @@ window is active in the perspective."
 ;;                                                                    JavaScript
 ;; =============================================================================
 
+(defun tape-onlyify ()
+  (interactive)
+  (save-excursion
+    (move-end-of-line nil)
+    (re-search-backward "^test")
+    (forward-sexp)
+    (if (looking-at ".only") (progn (zap-to-char 1 (string-to-char "(")) (insert "("))
+      (insert ".only"))))
+
 (use-package js2-mode
   :ensure t
   :commands (js2-mode)
