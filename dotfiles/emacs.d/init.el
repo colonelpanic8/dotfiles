@@ -24,6 +24,8 @@
            (>= emacs-minor-version 4))
       (>= emacs-major-version 25)))
 
+(when (equal system-type 'darwin) (setq mac-option-modifier 'meta))
+
 ;; =============================================================================
 ;;                                                       Load Path Configuration
 ;; =============================================================================
