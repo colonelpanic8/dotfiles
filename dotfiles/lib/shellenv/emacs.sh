@@ -115,3 +115,4 @@ function time_emacs {
 export EDITOR="$HOME/.lib/editor.sh"
 export VISUAL="$EDITOR"
 export GIT_EDITOR="$EDITOR"
+export ALTERNATE_EDITOR=""
