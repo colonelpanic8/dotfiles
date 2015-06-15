@@ -574,6 +574,11 @@ The current directory is assumed to be the project's root otherwise."
     (recentf-mode 1)
     (setq recentf-max-menu-items 500)))
 
+(use-package zop-to-char
+  :ensure t
+  :demand t
+  :bind ("M-z" . zop-to-char))
+
 ;; =============================================================================
 ;;                                                         Non-Programming Stuff
 ;; =============================================================================
