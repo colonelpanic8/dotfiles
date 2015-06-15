@@ -554,20 +554,6 @@ The current directory is assumed to be the project's root otherwise."
     (global-undo-tree-mode)
     (setq undo-tree-visualizer-timestamps t)))
 
-(use-package smooth-scrolling
-  :ensure t
-  :init (require 'smooth-scrolling))
-
-(use-package smooth-scroll
-  :ensure t
-  :demand t
-  :commands (smooth-scroll-mode)
-  :config
-  (progn
-    (smooth-scroll-mode)
-    (setq smooth-scroll/vscroll-step-size 12)
-    (diminish 'smooth-scroll-mode)))
-
 (use-package string-inflection
   :ensure t
   :commands string-inflection-toggle
