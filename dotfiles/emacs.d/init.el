@@ -1768,14 +1768,6 @@ window is active in the perspective."
 
 (ensure-packages-installed packages-appearance)
 
-
-(use-package smart-mode-line
-  :ensure t
-  :config
-  (progn
-    (setq sml/theme 'respectful)
-    (sml/setup)))
-
 (setq inhibit-startup-screen t)
 (blink-cursor-mode -1)
 
