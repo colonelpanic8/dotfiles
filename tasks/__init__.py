@@ -5,7 +5,7 @@ from invoke import Collection, ctask
 
 from . import osx
 from . import linux
-from .util import DOTFILES_DIRECTORY, RESOURCES_DIRECTORY
+from .util import DOTFILES_DIRECTORY, RESOURCES_DIRECTORY, link_filenames
 
 
 ns = Collection()
@@ -95,19 +95,6 @@ def link_dropbox_other(ctx, force=False):
         ('~/Dropbox/ebooks', '~/ebooks'),
     )
     link_filenames(ctx, link_pairs, force)
-
-
-def link_filenames(ctx, link_pairs, force=False):
-    for source, destination in link_pairs:
-        destination = os.path.expanduser(destination)
-        source = os.path.expanduser(source)
-        if force:
-            ctx.run("sudo rm -rf {0}".format(destination))
-        if os.path.exists(destination):
-            print("Skipping {0} because path already exists".format(destination))
-        else:
-            print("Linking {0} to {1}".format(destination, source))
-            ctx.run('ln -s {0} {1}'.format(source, destination))
 
 
 @ctask
