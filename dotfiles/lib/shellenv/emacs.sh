@@ -1,7 +1,13 @@
-alias emacs='_emacs -c -n '
-is_osx && alias emacs='cocoa_emacs'
-alias terminal_emacs='_emacs -t'
-is_ssh && emacs="terminal_emacs"
+# ATTENTION: Most of the functions in this file are part of a now
+# deprecated system for starting emacs that made the $EDITOR
+# environment variable work for git and other things
+
+
+# This approach is no longer in use.
+# alias emacs='_emacs -c -n '
+# is_osx && alias emacs='cocoa_emacs'
+# alias terminal_emacs='_emacs -t'
+# is_ssh && emacs="terminal_emacs"
 
 function kill_all_emacs {
     emacs_pids | xargs kill -9
