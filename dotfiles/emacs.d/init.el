@@ -1590,8 +1590,7 @@ window is active in the perspective."
       :ensure t
       :config
       (use-package company-tern
-        :config (add-to-list 'company-backends 'company-tern))
-      (progn (tern-ac-setup)))))
+        :config (add-to-list 'company-backends 'company-tern)))))
 
 (defun delete-tern-process ()
   (interactive)
