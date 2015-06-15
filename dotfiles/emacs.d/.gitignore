@@ -32,3 +32,4 @@ org-gcal/
 request/
 org-caldav-backup.org
 ensime
+project-to-org-filepath
