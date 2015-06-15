@@ -37,3 +37,5 @@ dotfiles/wemo/cache
 dotfiles/config/mopidy/spotify/
 dotfiles/config/mopidy
 /dotfiles/.tern-port
+
+dotfiles/pip/pip.conf
