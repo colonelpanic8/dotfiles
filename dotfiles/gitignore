@@ -31,3 +31,4 @@ dotfiles/pip/cache
 .tern-port
 
 dotfiles/config/configstore/
+dotfiles/pip/pip.log
