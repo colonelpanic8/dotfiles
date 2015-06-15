@@ -26,3 +26,8 @@ TAGS
 projectile.cache
 projectile-bookmarks.eld
 dotfiles/pip/cache
+
+.tern-project
+.tern-port
+
+dotfiles/config/configstore/
