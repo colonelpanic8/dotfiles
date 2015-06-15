@@ -358,7 +358,7 @@ The current directory is assumed to be the project's root otherwise."
 ;; Make buffer names unique.
 (setq uniquify-buffer-name-style 'forward)
 
-;; We want closures.nil
+;; We want closures
 (setq lexical-binding t)
 
 ;; Don't disable downcase and upcase region.
