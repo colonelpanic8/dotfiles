@@ -713,22 +713,6 @@ the same tree node, and the headline of the tree node in the Org-mode file."
     ;; org-mode add-ons
     (use-package org-present :ensure t)
     (use-package org-pomodoro :ensure t)
-    (use-package org-projectile
-      :ensure t
-      :demand t
-      :bind (("C-c n p" . imalison:helm-org-todo))
-      :config
-      (progn
-        (org-projectile:hybrid)
-        (setq org-confirm-elisp-link-function nil)
-        (defun imalison:helm-org-todo (&optional arg)
-          (interactive "P")
-          (helm :sources (list (helm-source-org-capture-templates)
-                               (org-projectile:helm-source
-                                (if arg (org-capture-make-linked-todo-template)
-                                  (org-capture-make-todo-template))))
-            :candidate-number-limit 99999
-            :buffer "*helm org capture templates*"))))
 
     ;; variable configuration
     (add-to-list 'org-modules 'org-habit)
@@ -829,8 +813,7 @@ the same tree node, and the headline of the tree node in the Org-mode file."
     (setq org-agenda-files
           (append org-agenda-files
                   (--filter (or (file-symlink-p it) (file-exists-p it))
-                            `(,org-gtd-file ,org-habits-file ,@(org-projectile:todo-files)
-                                            ,org-calendar-file))))
+                            `(,org-gtd-file ,org-habits-file ,org-calendar-file))))
 
     (add-to-list 'org-capture-templates
                  `("t" "GTD Todo (Linked)" entry (file ,org-gtd-file)
@@ -866,10 +849,6 @@ the same tree node, and the headline of the tree node in the Org-mode file."
   :CREATED: %U
   :STYLE: habit
   :END:"))
-
-    (add-to-list 'org-capture-templates
-                 (org-projectile:project-todo-entry "l" "* TODO %? %a\n" "Linked Project TODO"))
-    (add-to-list 'org-capture-templates (org-projectile:project-todo-entry "p"))
 
     (let ((this-week-high-priority
            ;; The < in the following line works has behavior that is opposite
@@ -938,6 +917,30 @@ the same tree node, and the headline of the tree node in the Org-mode file."
     (add-hook 'org-mode-hook 'disable-linum-mode)
     (add-hook 'org-mode-hook (lambda () (setq org-todo-key-trigger t)))
     (add-hook 'org-agenda-mode-hook 'disable-linum-mode)))
+
+(use-package org-projectile
+      :ensure t
+      :demand t
+      :bind (("C-c n p" . imalison:helm-org-todo))
+      :config
+      (progn
+        (org-projectile:prompt)
+        (add-to-list 'org-capture-templates
+                     (org-projectile:project-todo-entry "l" "* TODO %? %a\n" "Linked Project TODO"))
+        (add-to-list 'org-capture-templates (org-projectile:project-todo-entry "p"))
+        (setq org-confirm-elisp-link-function nil)
+        (cl-loop for filepath in (org-projectile:todo-files) do
+                 (when (and filepath (or (file-symlink-p filepath) (file-exists-p filepath))
+                            (not (-contains-p org-agenda-files filepath)))
+                   (add-to-list 'org-agenda-files filepath)))
+        (defun imalison:helm-org-todo (&optional arg)
+          (interactive "P")
+          (helm :sources (list (helm-source-org-capture-templates)
+                               (org-projectile:helm-source
+                                (if arg (org-capture-make-linked-todo-template)
+                                  (org-capture-make-todo-template))))
+            :candidate-number-limit 99999
+            :buffer "*helm org capture templates*"))))
 
 (use-package epg
   :ensure t
