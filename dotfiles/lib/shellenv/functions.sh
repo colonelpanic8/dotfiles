@@ -80,7 +80,7 @@ function current_shell() {
 }
 
 function is_zsh() {
-    test -n "$(current_shell | grep -o zsh)"
+	[ ! -z ${ZSH_VERSION+x} ]
 }
 
 function git_diff_add() {
