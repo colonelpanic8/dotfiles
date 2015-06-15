@@ -1602,7 +1602,8 @@ window is active in the perspective."
   :init
   (add-hook 'json-mode-hook
             (lambda ()
-            (setq js-indent-level 4))))
+              (setq indent-tabs-mode nil)
+              (setq js-indent-level 4))))
 
 (add-hook 'css-mode-hook #'skewer-css-mode)
 (add-hook 'html-mode-hook #'skewer-html-mode)
