@@ -61,4 +61,6 @@ hash rbenv 2> /dev/null && eval "$(rbenv init -)"
 test -e /usr/libexec/path_helper && eval `/usr/libexec/path_helper -s`
 
 
+export NVM_DIR="/Users/imalison/.nvm"
+[ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh"  # This loads nvm
 export NODE_PATH="/usr/local/lib/node_modules/"
