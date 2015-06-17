@@ -75,9 +75,12 @@
 	
 [include]
 	path = ~/.gitconfig.custom
+
 [rerere]
 	enabled = false
+
 [url "ssh://git@github.com/uber/"]
 	insteadOf = https://github.com/uber/
+
 [branch]
 	autosetuprebase = always
