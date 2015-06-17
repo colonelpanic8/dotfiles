@@ -1840,6 +1840,7 @@ window is active in the perspective."
     nil nil))
   (disable-all-themes)
   (load-theme theme no-confirm no-enable)
+  (powerline-reset)
   (set-my-font-for-frame nil))
 
 (defun set-my-font-for-frame (frame)
