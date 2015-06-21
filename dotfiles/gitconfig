@@ -1,4 +1,5 @@
 [alias]
+	aliases = "!f() { git config --get-regexp ^alias | cut -c 7-; }; f"
 	amend = commit -a --amend -C HEAD
 	b2h = checkout HEAD -B
 	branch-or-sha = "!bs() { git which-branch 2> /dev/null || git sha 2> /dev/null ; }; bs" # In newer versions of git, this simpler definition of which-branch would work. symbolic-ref HEAD --short
@@ -7,15 +8,18 @@
 	ca = !git add -A && git commit -av
 	cam = commit -am
 	clean-branches = "!r() { git branch --merged ${1-origin/master} | grep -v '*' | xargs -n1 git branch -d; }; r"
+	clone = clone --recursive
 	credit = "!f() { git commit --amend --author \"$1 <$2>\" -C HEAD; }; f" # Credit an author on the latest commit
-	d = diff
+	d = "!d() { git icdl $@; }; d"
 	db = !"db() { git diff HEAD~"$1"; }; db"
+	diff-excluding = "!f() { exclude=$1; shift; git diff $1 $2 --name-only | grep -v $exclude | xargs git diff "$@" --; }; f"
 	dirty = "!t() { test -n \"$(git status --porcelain)\"; }; t"
 	dtbmb = !git diff `git tb`...HEAD # diff tracking branch merge base
 	du = "!d() { git ls-files $1 --error-unmatch 2>/dev/null 1>/dev/null && git diff $1 || `git config --get core.pager` $1; }; d" # Diff a file or show it in git's pager if it is untracked
 	ff = merge --ff-only
 	ffo = !git ffr origin
 	ffr = "!ffr() { git fetch $1 && git ff $1/$(git which-branch) && git suir; }; ffr"
+	file-exists = "!f() { git ls-files $1 --error-unmatch > /dev/null 2> /dev/null; }; f"
 	icd = "!d() { git difftool --no-prompt --extcmd 'icdiff' $@ | $(git config --get core.pager); }; d"	
 	icdl = "!d() { git difftool --no-prompt --extcmd 'icdiff --line-numbers' $@ | $(git config --get core.pager); }; d"
 	ignore = "!i() { printf \"\n$1\" >> "`git root`/.gitignore"; }; i"
@@ -33,15 +37,11 @@
 	root = rev-parse --show-toplevel
 	s = status -s
 	sha = rev-parse HEAD
+	shas = log HEAD --pretty=format:%H
 	suir = submodule update --init --recursive
 	tb = rev-parse --abbrev-ref --symbolic-full-name @{u}
 	untracked = "!u() { git status -s | grep "??" | awk '{print $2}'; }; u"
 	which-branch = "!wb() { b="$(git symbolic-ref HEAD)" && echo ${b#refs/heads/}; }; wb"
-        aliases = "!f() { git config --get-regexp ^alias | cut -c 7-; }; f"
-        clone = clone --recursive
-        diff-excluding = "!f() { exclude=$1; shift; git diff $1 $2 --name-only | grep -v $exclude | xargs git diff "$@" --; }; f"
-        file-exists = "!f() { git ls-files $1 --error-unmatch > /dev/null 2> /dev/null; }; f"
-	shas = log HEAD --pretty=format:%H
 
 [core]
 	# Use custom `.gitignore` and `.gitattributes`
