@@ -1584,9 +1584,6 @@ window is active in the perspective."
     (setq js2-indent-level 4)
     (setq js2-basic-offset 4)
     (setq indent-tabs-mode nil)
-    (use-package skewer-mode
-      :ensure t
-      :commands skewer-mode)
     (setq js2-highlight-level 3
           js2-include-node-externs t
           js2-mode-show-parse-errors nil
@@ -1595,17 +1592,26 @@ window is active in the perspective."
     (add-hook 'js-mode-hook 'js2-minor-mode)
     (add-hook 'js2-mode-hook (lambda () (tern-mode t)))
     (add-hook 'js2-mode-hook 'skewer-mode)
-    (add-hook 'js2-mode-hook (lambda () (setq js-indent-level 4)
-                               (setq indent-tabs-mode nil)
-                               (setq js2-indent-level 4)
-                               (setq js2-basic-offset 4)))
-    (add-hook 'js2-mode-hook 'js2-imenu-extras-mode)
-    (use-package tern
-      :commands tern-mode
-      :ensure t
-      :config
-      (use-package company-tern
-        :config (add-to-list 'company-backends 'company-tern)))))
+    (add-hook 'js2-mode-hook (lambda () (setq js-indent-level 4
+                                              indent-tabs-mode nil
+                                              js2-indent-level 4
+                                              js2-basic-offset 4)))
+    (add-hook 'js2-mode-hook 'js2-imenu-extras-mode)))
+
+(use-package skewer-mode
+  :ensure t
+  :commands skewer-mode
+  :config
+  (progn
+    (add-hook 'css-mode-hook #'skewer-css-mode)
+    (add-hook 'html-mode-hook #'skewer-html-mode)))
+
+(use-package tern
+  :commands tern-mode
+  :ensure t
+  :config
+  (use-package company-tern
+    :config (add-to-list 'company-backends 'company-tern)))
 
 (defun delete-tern-process ()
   (interactive)
@@ -1619,9 +1625,6 @@ window is active in the perspective."
             (lambda ()
               (setq indent-tabs-mode nil)
               (setq js-indent-level 4))))
-
-(add-hook 'css-mode-hook #'skewer-css-mode)
-(add-hook 'html-mode-hook #'skewer-html-mode)
 
 (eval-after-load 'css-mode
   '(define-key css-mode-map (kbd "C-c b") 'web-beautify-css))
