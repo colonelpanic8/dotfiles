@@ -1594,6 +1594,7 @@ window is active in the perspective."
                                (setq indent-tabs-mode nil)
                                (setq js2-indent-level 4)
                                (setq js2-basic-offset 4)))
+    (add-hook 'js2-mode-hook 'js2-imenu-extras-mode)
     (use-package tern
       :commands tern-mode
       :ensure t
