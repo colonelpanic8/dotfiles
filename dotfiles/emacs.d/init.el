@@ -472,6 +472,10 @@ The current directory is assumed to be the project's root otherwise."
   (progn
     (add-hook 'haskell-mode-hook 'turn-on-haskell-indent)))
 
+(use-package dtrt-indent
+  :ensure t
+  :init (add-hook 'prog-mode-hook 'dtrt-indent-mode))
+
 (use-package rainbow-delimiters
   :ensure t
   :commands rainbow-delimiters-mode
