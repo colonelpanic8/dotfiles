@@ -85,11 +85,8 @@
 
 (use-package benchmark-init
   :ensure t
-  ;; Set do-benchmark in custom.el
-  :if (and (boundp 'do-benchmark) do-benchmark)) ;; This doesn't work
-                                                 ;; anymore because
-                                                 ;; custom.el is
-                                                 ;; loaded much later
+  ;; this variable has to be set in custom-before.el
+  :if (and (boundp 'do-benchmark) do-benchmark))
 
 ;; =============================================================================
 ;;                                                          Config Free Packages
