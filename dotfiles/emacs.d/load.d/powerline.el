@@ -7,7 +7,7 @@
                 (running (eq 'running flycheck-last-status-change)))
            (if (or errorp running) (format "•%s " err))))
 
-(defvar dotspacemacs-mode-line-unicode-symbols t)
+(defvar dotspacemacs-mode-line-unicode-symbols nil)
 (use-package powerline
   :ensure t
   :init
@@ -92,6 +92,7 @@ displayed in the mode-line.")
     (if (display-graphic-p)
         (setq-default powerline-default-separator 'wave)
       (setq-default powerline-default-separator 'utf-8))
+    (setq powerline-default-separator 'wave)
 
     (defun spacemacs/customize-powerline-faces ()
       "Alter powerline face to make them work with more themes."
@@ -157,12 +158,9 @@ displayed in the mode-line.")
          ;; flycheck
          (when (and active flycheckp)
            (list (powerline-raw " " line-face)
-                 (powerline-raw (spacemacs|custom-flycheck-lighter error)
-                                'spacemacs-mode-line-flycheck-error-face)
-                 (powerline-raw (spacemacs|custom-flycheck-lighter warning)
-                                'spacemacs-mode-line-flycheck-warning-face)
-                 (powerline-raw (spacemacs|custom-flycheck-lighter info)
-                                'spacemacs-mode-line-flycheck-info-face)))
+                 (powerline-raw (spacemacs|custom-flycheck-lighter error))
+                 (powerline-raw (spacemacs|custom-flycheck-lighter warning))
+                 (powerline-raw (spacemacs|custom-flycheck-lighter info))))
          ;; separator between flycheck and minor modes
          (when (and active flycheckp spacemacs-mode-line-minor-modesp)
            (list (funcall separator-left line-face face1)
