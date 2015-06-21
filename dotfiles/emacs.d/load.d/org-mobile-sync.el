@@ -20,9 +20,6 @@
   "Stop automated `org-mobile-push'"
   (interactive)
   (cancel-timer imalison-org-mobile-sync-timer))
-(if (and (boundp 'file-notify--library) file-notify--library)
-    (use-package org-mobile-sync :ensure t :config (org-mobile-sync-mode 1))
-  (imalison-org-mobile-sync-start))
 
 (defun imalison-org-mobile-sync (&optional force)
   (interactive)
@@ -36,6 +33,10 @@
                                              (mapcar 'file-truename org-agenda-files))
                                (setq imalison-org-mobile-sync:unsaved-changes-count
                                      (+ imalison-org-mobile-sync:unsaved-changes-count 1)))))
-;; (imalison-org-mobile-sync-start)
+
+(when nil ;; disabled for now.
+    (if (and (boundp 'file-notify--library) file-notify--library)
+    (use-package org-mobile-sync :ensure t :config (org-mobile-sync-mode 1))
+  (imalison-org-mobile-sync-start)))
 
 (provide 'org-mobile-sync)
