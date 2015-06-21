@@ -585,6 +585,9 @@ The current directory is assumed to be the project's root otherwise."
   :demand t
   :bind ("M-z" . zop-to-char))
 
+(use-package restclient
+  :ensure t)
+
 ;; =============================================================================
 ;;                                                         Non-Programming Stuff
 ;; =============================================================================
