@@ -9,6 +9,9 @@
 # alias terminal_emacs='_emacs -t'
 # is_ssh && emacs="terminal_emacs"
 
+alias emacs='emacsclient -tn'
+is_osx && alias emacs='emacsclient -cn'
+
 function kill_all_emacs {
     emacs_pids | xargs kill -9
 }
@@ -113,6 +116,6 @@ function time_emacs {
 
 # Make emacs the default editor.
 export EDITOR="$HOME/.lib/editor.sh"
+export ALTERNATE_EDITOR=""
 export VISUAL="$EDITOR"
 export GIT_EDITOR="$EDITOR"
-export ALTERNATE_EDITOR=""
