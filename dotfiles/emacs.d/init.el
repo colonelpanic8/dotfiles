@@ -1587,6 +1587,11 @@ window is active in the perspective."
     (use-package skewer-mode
       :ensure t
       :commands skewer-mode)
+    (setq js2-highlight-level 3
+          js2-include-node-externs t
+          js2-mode-show-parse-errors nil
+          js2-mode-show-strict-warnings nil
+          jshint-configuration-path "~/Uber/dispatch")
     (add-hook 'js-mode-hook 'js2-minor-mode)
     (add-hook 'js2-mode-hook (lambda () (tern-mode t)))
     (add-hook 'js2-mode-hook 'skewer-mode)
