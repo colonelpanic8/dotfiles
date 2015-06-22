@@ -469,6 +469,14 @@ The current directory is assumed to be the project's root otherwise."
   (progn
     (add-hook 'haskell-mode-hook 'turn-on-haskell-indent)))
 
+(use-package narrow-indirect
+  :ensure t
+  :init
+  (progn
+    (define-key ctl-x-4-map "nd" 'ni-narrow-to-defun-indirect-other-window)
+    (define-key ctl-x-4-map "nn" 'ni-narrow-to-region-indirect-other-window)
+    (define-key ctl-x-4-map "np" 'ni-narrow-to-page-indirect-other-window)))
+
 (use-package dtrt-indent
   :ensure t
   :init (add-hook 'prog-mode-hook 'dtrt-indent-mode))
