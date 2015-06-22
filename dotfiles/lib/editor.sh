@@ -1,3 +1,8 @@
 #!/usr/bin/env zsh
-emacsclient "$@"
+if is_osx; then
+   reattach-to-user-namespace emacsclient "$@"
+else
+	emacsclient "$@"
+fi
+	
 return 0

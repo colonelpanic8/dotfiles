@@ -9,8 +9,8 @@
 # alias terminal_emacs='_emacs -t'
 # is_ssh && emacs="terminal_emacs"
 
-alias emacs='emacsclient -tn'
-is_osx && alias emacs='emacsclient -cn'
+alias emacs='emacsclient -t -n'
+is_osx && alias emacs='reattach-to-user-namespace emacsclient -c -n'
 
 function kill_all_emacs {
     emacs_pids | xargs kill -9
