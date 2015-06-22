@@ -583,7 +583,8 @@ The current directory is assumed to be the project's root otherwise."
   :bind ("M-z" . zop-to-char))
 
 (use-package restclient
-  :ensure t)
+  :ensure t
+  :mode (("\\.restclient\\'" . restclient-mode)))
 
 ;; =============================================================================
 ;;                                                         Non-Programming Stuff
