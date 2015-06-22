@@ -1401,7 +1401,10 @@ window is active in the perspective."
       :commands (ido-ubiquitous-mode))
     (use-package ido-vertical-mode
       :ensure t
-      :config (ido-vertical-mode 1))
+      :config
+      (progn
+        (ido-vertical-mode 1)
+        (setq ido-vertical-define-keys 'C-n-C-p-up-and-down)))
     (use-package flx-ido :ensure t)))
 
 (if (and (boundp 'use-ido) use-ido) (ido-mode))
