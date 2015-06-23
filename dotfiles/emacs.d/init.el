@@ -1228,7 +1228,15 @@ marking if it still had that."
   :init
   (progn
     (helm-mode 1)
-    (use-package helm-ag :ensure t))
+    (use-package helm-ag
+      :ensure t
+      :bind ("C-c p S" . imalison:set-helm-ag-extra-options)
+      :config
+      (defun imalison:set-helm-ag-extra-options ()
+        (interactive)
+        (let ((option (read-string "Extra options: " (or helm-ag--extra-options "")
+                                   'helm-ag--extra-options-history)))
+          (setq helm-ag--extra-options option)))))
   :config
   (progn
     (defun helm-source-org-capture-templates ()
@@ -1353,6 +1361,7 @@ window is active in the perspective."
                                   (expand-file-name
                                    (concat directory "/"
                                            (nth 0 file-info) "/.projectile"))))))
+    (setq helm-ag-always-set-extra-option nil)
     (defun imalison:do-ag (&optional arg)
       (interactive "P")
       (if arg (helm-do-ag) (helm-projectile-ag)))
@@ -1361,6 +1370,7 @@ window is active in the perspective."
     (setq projectile-completion-system 'helm)
     (helm-projectile-on)
     (diminish 'projectile-mode)
+    (unbind-key "C-c p S" projectile-command-map)
     (unbind-key "C-c p s a" projectile-command-map)
     (unbind-key "C-c p s g" projectile-command-map)
     (unbind-key "C-c p s s" projectile-command-map)
@@ -1490,18 +1500,22 @@ window is active in the perspective."
 (defun make-virtualenv-args (virtual-envs)
   (apply #'append (mapcar (lambda (env) `("-v" ,env)) virtual-envs)))
 
-(defun get-virtual-envs ()
+(defun imalison:project-root-or-current-directory ()
   (if (projectile-project-p)
+      (projectile-project-root) (if (buffer-file-name) (file-name-directory (buffer-file-name)))))
+
+(defun get-virtual-envs ()
+  (let ((project-root (imalison:project-root-or-current-directory)))
+    (when project-root
       (condition-case ex
-          (let ((project-root (projectile-project-root)))
-            (cl-remove-if-not 'file-exists-p
-                              (mapcar (lambda (env-suffix)
-                                        (concat project-root env-suffix))
-                                      '(".tox/py27/" "env" ".tox/venv/"))))
+          (cl-remove-if-not 'file-exists-p
+                            (mapcar (lambda (env-suffix)
+                                      (concat project-root env-suffix))
+                                    '(".tox/py27/" "env/" ".tox/venv/")))
         ('error
          (message (format "Caught exception: [%s]" ex))
          (setq retval (cons 'exception (list ex))))
-        nil)))
+        nil))))
 
 (defun message-virtual-envs ()
   (interactive)
@@ -1533,22 +1547,32 @@ window is active in the perspective."
     (fset 'sphinx-class ":class:`~")
   :init
   (progn
-    (use-package pytest
-      :ensure t
-      :bind ("C-c t" . pytest-one))
     (use-package pymacs :ensure t)
     (use-package sphinx-doc :ensure t)
+    (defun imalison:set-pytest-command ()
+      (let* ((project-root (imalison:project-root-or-current-directory))
+             (virtual-envs (get-virtual-envs))
+             (virtual-env (when virtual-envs (car virtual-envs))))
+        (when project-root
+          (setq pytest-global-name
+                (if (file-exists-p (concat project-root "tox.ini"))
+                    "tox --"
+                  (format "source %s; py.test" (concat virtual-env "bin/activate")))))))
     (defun imalison:python-mode ()
       (setq show-trailing-whitespace t)
       (if use-python-tabs (python-tabs))
       (subword-mode t)
       (jedi:setup)
       (add-virtual-envs-to-jedi-server)
+      (imalison:set-pytest-command)
       (remove-hook 'completion-at-point-functions
                    'python-completion-complete-at-point 'local)
-      (add-to-list 'company-backends 'company-jedi)
-      )
+      (add-to-list 'company-backends 'company-jedi))
     (add-hook 'python-mode-hook #'imalison:python-mode))))
+
+(use-package pytest
+  :ensure t
+  :bind ("C-c t" . pytest-one))
 
 ;; =============================================================================
 ;;                                                                         Scala
