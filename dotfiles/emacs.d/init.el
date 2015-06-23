@@ -249,6 +249,24 @@ buffer is not visiting a file."
 (defun make-frame-if-none-exists-and-focus ()
   (make-frame-visible (select-frame (make-frame-if-none-exists))))
 
+(defun copy-buffer-file-name ()
+  (interactive)
+  (add-string-to-kill-ring (file-name-nondirectory (buffer-file-name))))
+
+(defun copy-buffer-file-path ()
+  (interactive)
+  (add-string-to-kill-ring (file-relative-name (buffer-file-name) (projectile-project-root))))
+
+(defun add-string-to-kill-ring (string)
+  (with-temp-buffer
+    (insert string)
+    (kill-ring-save (point-max) (point-min))))
+
+(defun os-copy-string (string)
+  (with-temp-buffer
+    (insert string)
+    (os-copy (beginning-of-buffer) (end-of-buffer))))
+
 (defun os-copy (&optional b e)
   (interactive "r")
   (shell-command-on-region b e "source ~/.zshrc; cat | smart_copy"))
