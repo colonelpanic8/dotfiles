@@ -33,3 +33,5 @@ dotfiles/pip/cache
 dotfiles/config/configstore/
 dotfiles/pip/pip.log
 .dir-locals.el
+testing.restclient
+*.log
