@@ -10,6 +10,7 @@
         git-rebase-squash
         git-rebase-undo
         helm-show-kill-ring
+        indent-for-tab-command
         isearch-forward-regexp
         isearch-other-control-char
         isearch-printing-char
