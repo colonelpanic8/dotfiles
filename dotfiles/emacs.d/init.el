@@ -1243,6 +1243,7 @@ marking if it still had that."
           (setq helm-ag--extra-options option)))))
   :config
   (progn
+    (setq helm-split-window-default-side 'same)
     (defun helm-source-org-capture-templates ()
       (helm-build-sync-source "Org Capture Templates:"
         :candidates (cl-loop for template in org-capture-templates
