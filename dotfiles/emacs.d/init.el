@@ -843,10 +843,14 @@ the same tree node, and the headline of the tree node in the Org-mode file."
 
     (unless (boundp 'org-capture-templates)
       (defvar org-capture-templates nil))
-    (setq org-agenda-files
-          (append org-agenda-files
-                  (--filter (or (file-symlink-p it) (file-exists-p it))
-                            `(,org-gtd-file ,org-habits-file ,org-calendar-file))))
+
+    (defun imalison:add-to-org-agenda-files (incoming-files)
+      (setq org-agenda-files (delete-dups
+       (cl-loop for filepath in (append org-agenda-files incoming-files)
+                when (file-exists-p (file-truename filepath))
+                collect (file-truename filepath)))))
+
+    (imalison:add-to-org-agenda-files (list org-gtd-file org-habits-file org-calendar-file))
 
     (add-to-list 'org-capture-templates
                  `("t" "GTD Todo (Linked)" entry (file ,org-gtd-file)
