@@ -456,23 +456,16 @@ The current directory is assumed to be the project's root otherwise."
   :bind (("C-;" . jump-char-forward))
   :ensure t)
 
-(use-package ace-jump-mode
+(use-package avy
   :ensure t
-  :commands (ace-jump-mode imalison:ace-jump-mode)
-  :bind (("C-j" . imalison:ace-jump-mode))
-  :init
-  (progn
-    (use-package ace-window
-      :ensure t
-      :config (setq aw-keys '(?a ?s ?d ?f ?g ?h ?j ?k ?l))
-      :bind ("C-c w" . ace-select-window)))
-  :config
-  (progn
-    (setq ace-jump-mode-scope 'window)
-    (defun imalison:ace-jump-mode (&optional prefix)
-      (interactive "P")
-      (let ((ace-jump-mode-scope (if prefix 'global 'window)))
-        (ace-jump-mode 0)))))
+  :bind (("C-j" . avy-goto-char)
+         ("M-g f" . avy-goto-line)
+         ("C-'" . avy-goto-char-2)))
+
+(use-package ace-window
+  :ensure t
+  :config (setq aw-keys '(?a ?s ?d ?f ?g ?h ?j ?k ?l))
+  :bind ("C-c w" . ace-select-window))
 
 (use-package flycheck
   :ensure t
