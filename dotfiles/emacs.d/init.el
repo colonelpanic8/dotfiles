@@ -1647,7 +1647,8 @@ window is active in the perspective."
     (add-hook 'js2-mode-hook (lambda () (setq js-indent-level 4
                                               indent-tabs-mode nil
                                               js2-indent-level 4
-                                              js2-basic-offset 4)))
+                                              js2-basic-offset 4
+                                              js2-indent-switch-body t)))
     (add-hook 'js2-mode-hook 'js2-imenu-extras-mode)))
 
 (use-package skewer-mode
