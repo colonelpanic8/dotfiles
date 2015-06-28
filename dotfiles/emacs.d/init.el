@@ -1811,7 +1811,6 @@ window is active in the perspective."
 (bind-key "C-x C-r" (lambda () (interactive) (revert-buffer t t)))
 (bind-key "C-x O" (lambda () (interactive) (other-window -1)))
 (bind-key "C-x w" 'whitespace-mode)
-(bind-key "M-g" 'goto-line)
 (bind-key "M-n" 'forward-paragraph)
 (bind-key "M-p" 'backward-paragraph)
 (bind-key "M-z" 'zap-to-char)
