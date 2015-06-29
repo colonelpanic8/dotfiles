@@ -1862,7 +1862,6 @@ window is active in the perspective."
 (bind-key "C-x w" 'whitespace-mode)
 (bind-key "M-n" 'forward-paragraph)
 (bind-key "M-p" 'backward-paragraph)
-(bind-key "M-z" 'zap-to-char)
 (bind-key "C-M-<backspace>" 'backward-kill-sexp)
 (bind-key "s-<return>" 'toggle-frame-fullscreen)
 (bind-key "M-|" 'imalison:shell-command-on-region)
