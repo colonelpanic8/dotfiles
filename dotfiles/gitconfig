@@ -10,6 +10,7 @@
 	clean-branches = "!r() { git branch --merged ${1-origin/master} | grep -v '*' | xargs -n1 git branch -d; }; r"
 	clone = clone --recursive
 	credit = "!f() { git commit --amend --author \"$1 <$2>\" -C HEAD; }; f" # Credit an author on the latest commit
+	co = checkout
 	d = "!d() { git icdl $@; }; d"
 	db = !"db() { git diff HEAD~"$1"; }; db"
 	diff-excluding = "!f() { exclude=$1; shift; git diff $1 $2 --name-only | grep -v $exclude | xargs git diff "$@" --; }; f"
