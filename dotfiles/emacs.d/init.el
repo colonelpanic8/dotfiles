@@ -1921,7 +1921,7 @@ window is active in the perspective."
   (load-theme theme no-confirm no-enable)
   (set-my-font-for-frame nil))
 
-(defun set-my-font-for-frame (frame)
+(defun set-my-font-for-frame (&optional frame)
   (interactive (list nil))
   (condition-case exp
       (set-frame-font (random-choice imalison:fonts) nil t)
