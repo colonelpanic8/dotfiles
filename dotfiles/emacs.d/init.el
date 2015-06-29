@@ -201,7 +201,7 @@
           (cdr-is-index (imalison:imenu-prefix-flattened index))
           (t (list index)))))
 
-(defmacro defvar-if-non-existant (name value)
+(defmacro defvar-if-non-existent (name value)
   (unless (boundp name)
     `(defvar ,name ,value)))
 
@@ -1909,10 +1909,10 @@ window is active in the perspective."
 ;;                                                                        Themes
 ;; =============================================================================
 
-(defvar-if-non-existant imalison:dark-themes '(solarized-dark))
-(defvar-if-non-existant imalison:light-themes '(solarized-light))
-(defvar-if-non-existant imalison:terminal-themes '(solarized-light monokai))
-(defvar-if-non-existant imalison:fonts '("Monaco for Powerline-12"))
+(defvar-if-non-existent imalison:dark-themes '(solarized-dark))
+(defvar-if-non-existent imalison:light-themes '(solarized-light))
+(defvar-if-non-existent imalison:terminal-themes '(solarized-light monokai))
+(defvar-if-non-existent imalison:fonts '("Monaco for Powerline-12"))
 (unless (boundp 'current-theme) (defvar current-theme))
 (setq current-theme nil)
 
@@ -1988,6 +1988,6 @@ window is active in the perspective."
 
 (when (file-exists-p custom-after-file) (load custom-after-file))
 
-(defvar-if-non-existant imalison:time-of-day-based-theme nil)
+(defvar-if-non-existent imalison:time-of-day-based-theme nil)
 ;; enable to set theme based on time of day.
 (if imalison:time-of-day-based-theme (run-at-time "00:00" 3600 'set-theme))
