@@ -1913,7 +1913,6 @@ window is active in the perspective."
 ;;                                                                        Themes
 ;; =============================================================================
 
-
 (defvar-if-non-existant imalison:dark-themes '(solarized-dark))
 (defvar-if-non-existant imalison:light-themes '(solarized-light))
 (defvar-if-non-existant imalison:terminal-themes '(solarized-light monokai))
