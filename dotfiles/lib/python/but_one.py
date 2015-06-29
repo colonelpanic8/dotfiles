@@ -6,9 +6,12 @@ def left_partials(incoming):
 
 
 def but_one(incoming):
+    """Given an array `incoming` return an array whose ith index is the
+    sum of all the elements of `incoming` except for `incoming[i]`
+    """
     lpartials = list(left_partials(incoming))
     rproduct = 1
-    result = [None]*len(incoming)
+    result = [None] * len(incoming)
     for i in range(len(incoming)):
         back_index = len(incoming) - i - 1
         if back_index > 0:
