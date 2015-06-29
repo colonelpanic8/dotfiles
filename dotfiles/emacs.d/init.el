@@ -244,6 +244,26 @@ buffer is not visiting a file."
    (lambda (frame)
      (assoc 'display (frame-parameters frame))) (frame-list)))
 
+(defun imalison:copy-shell-command-on-region (start end command)
+  (interactive (list (region-beginning) (region-end)
+                     (read-shell-command "Shell command on region: ")))
+  (let ((original-buffer (current-buffer)))
+    (with-temp-buffer
+      (let ((temp-buffer (current-buffer)))
+        (with-current-buffer original-buffer
+          (shell-command-on-region start end command temp-buffer))
+        (kill-ring-save (point-max) (point-min))))))
+
+(defun imalison:shell-command-on-region-replace (start end command)
+  (interactive (list (region-beginning) (region-end)
+                     (read-shell-command "Shell command on region: ")))
+  (shell-command-on-region start end command nil t))
+
+(defun imalison:shell-command-on-region (arg)
+  (interactive "P")
+  (call-interactively (if arg 'imalison:shell-command-on-region-replace
+    'imalison:copy-shell-command-on-region)))
+
 (defun make-frame-if-none-exists ()
   (let* ((existing-frame (frame-exists)))
     (if existing-frame
@@ -1829,6 +1849,7 @@ window is active in the perspective."
 (bind-key "M-z" 'zap-to-char)
 (bind-key "C-M-<backspace>" 'backward-kill-sexp)
 (bind-key "s-<return>" 'toggle-frame-fullscreen)
+(bind-key "M-|" 'imalison:shell-command-on-region)
 
 (fset 'global-set-key-to-use-package
       (lambda (&optional arg) "Keyboard macro." (interactive "p")
