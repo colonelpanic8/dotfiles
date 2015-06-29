@@ -695,7 +695,6 @@ The current directory is assumed to be the project's root otherwise."
          ("C-c C-S-t" . org-todo-force-notes))
   :config
   (progn
-    (unbind-key "C-c C-f" org-mode-map)
     (setq helm-org-headings-fontify t)
 
     ;; Enable appointment notifications.
@@ -1521,8 +1520,6 @@ window is active in the perspective."
 (add-hook 'emacs-lisp-mode-hook (lambda ()
                                   (setq indent-tabs-mode nil)
                                   (setq show-trailing-whitespace t)))
-(bind-key "C-c C-f" 'find-function)
-(bind-key "C-c C-v" 'find-variable)
 (define-key lisp-mode-shared-map (kbd "C-c C-c") 'eval-defun)
 (define-key lisp-mode-shared-map (kbd "C-c C-r") 'eval-and-replace)
 (define-key lisp-mode-shared-map (kbd "C-c o r") 'up-list-region)
