@@ -189,6 +189,18 @@
       `(setq ,name ,value)
     `(defvar ,name ,value)))
 
+(defun imalison:imenu-prefix-flattened (index)
+  (let ((flattened (imalison:flatten-imenu-index (cdr index))))
+    (cl-loop for sub-item in flattened
+             collect
+             `(,(concat (car index) "." (car sub-item)) . ,(cdr sub-item)))))
+
+(defun imalison:flatten-imenu-index (index)
+  (let ((cdr-is-index (listp (cdr index))))
+    (cond ((not (stringp (car index))) (cl-mapcan #'imalison:flatten-imenu-index index))
+          (cdr-is-index (imalison:imenu-prefix-flattened index))
+          (t (list index)))))
+
 (defmacro defvar-if-non-existant (name value)
   (unless (boundp name)
     `(defvar ,name ,value)))
