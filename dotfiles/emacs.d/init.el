@@ -429,6 +429,10 @@ The current directory is assumed to be the project's root otherwise."
 (setq ediff-split-window-function 'split-window-horizontally)
 (setq ediff-window-setup-function 'ediff-setup-windows-plain)
 
+;; Disable this per minor mode or maybe using file size if it causes
+;; performance issues?
+(setq imenu-auto-rescan t)
+
 ;; =============================================================================
 ;;                                                                   use-package
 ;; =============================================================================
