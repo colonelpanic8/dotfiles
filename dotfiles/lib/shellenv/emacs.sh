@@ -10,6 +10,7 @@
 # is_ssh && emacs="terminal_emacs"
 
 alias emacs='emacsclient -t -n'
+alias e='emacsclient'
 is_osx && alias emacs='reattach-to-user-namespace emacsclient -c -n'
 
 function kill_all_emacs {
@@ -18,10 +19,6 @@ function kill_all_emacs {
 
 function edb {
     \emacs --debug-init
-}
-
-function e {
-    [ -z "$*" ] && emacs || emacs_open -n "$@"
 }
 
 function cocoa_emacs {
