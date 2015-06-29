@@ -963,10 +963,7 @@ the same tree node, and the headline of the tree node in the Org-mode file."
                      (org-projectile:project-todo-entry "l" "* TODO %? %a\n" "Linked Project TODO"))
         (add-to-list 'org-capture-templates (org-projectile:project-todo-entry "p"))
         (setq org-confirm-elisp-link-function nil)
-        (cl-loop for filepath in (org-projectile:todo-files) do
-                 (when (and filepath (or (file-symlink-p filepath) (file-exists-p filepath))
-                            (not (-contains-p org-agenda-files filepath)))
-                   (add-to-list 'org-agenda-files filepath)))
+        (imalison:add-to-org-agenda-files (org-projectile:todo-files))
         (defun imalison:helm-org-todo (&optional arg)
           (interactive "P")
           (helm :sources (list (helm-source-org-capture-templates)
