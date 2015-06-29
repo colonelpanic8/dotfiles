@@ -485,7 +485,7 @@ The current directory is assumed to be the project's root otherwise."
   :config
   (progn
     (setq guide-key/guide-key-sequence
-          '("C-c" "C-c p" "C-x C-k" "C-x r" "C-h" "C-x c" "C-x"))
+          '("C-c" "C-c p" "C-x C-k" "C-x r" "C-h" "C-x c" "C-x" "M-g"))
     (guide-key-mode 1)
     (diminish 'guide-key-mode)
     (setq guide-key/idle-delay 0.25)
