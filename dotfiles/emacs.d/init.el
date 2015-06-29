@@ -1953,5 +1953,6 @@ window is active in the perspective."
 
 (when (file-exists-p custom-after-file) (load custom-after-file))
 
+(defvar-if-non-existant imalison:time-of-day-based-theme nil)
 ;; enable to set theme based on time of day.
-(run-at-time "00:00" 3600 'set-theme)
+(if imalison:time-of-day-based-theme (run-at-time "00:00" 3600 'set-theme))
