@@ -421,7 +421,8 @@ The current directory is assumed to be the project's root otherwise."
 ;; Make forward word understand camel and snake case.
 (setq c-subword-mode t)
 
-;; Preserve pastes. Why wouldn't this be enabled by default.
+;; Preserve pastes from OS when saving a new item to the kill
+;; ring. Why wouldn't this be enabled by default.
 (setq save-interprogram-paste-before-kill t)
 
 (setq-default cursor-type 'box)
@@ -1697,7 +1698,8 @@ window is active in the perspective."
     (add-hook 'js2-mode-hook (lambda ()
                                (setq imenu-create-index-function
                                      (lambda ()
-                                       (imalison:flatten-imenu-index (js2-mode-create-imenu-index))))))
+                                       (imalison:flatten-imenu-index
+                                        (js2-mode-create-imenu-index))))))
     (add-hook 'js2-mode-hook 'js2-imenu-extras-mode)))
 
 (use-package skewer-mode
@@ -1745,7 +1747,7 @@ window is active in the perspective."
 
 (use-package rinari :ensure t)
 
-;; None of this looks ruby related. Why is this here?
+;; XXX: None of this looks ruby related. Why is this here?
 (setq-default c-basic-offset 4
               tab-width 4
               indent-tabs-mode t)
@@ -1982,7 +1984,7 @@ window is active in the perspective."
 ;; Without this we get massive margins.
 (add-hook 'after-make-frame-functions 'remove-fringe-and-hl-line-mode)
 
-;; Why is this here? Seems like it should be somewhere else
+;; XXX: Why is this here? Seems like it should be somewhere else
 (put 'narrow-to-region 'disabled nil)
 (put 'narrow-to-page 'disabled nil)
 
