@@ -189,6 +189,10 @@
       `(setq ,name ,value)
     `(defvar ,name ,value)))
 
+(defmacro defvar-if-non-existant (name value)
+  (unless (boundp name)
+    `(defvar ,name ,value)))
+
 (defun eval-region-or-last-sexp ()
   (interactive)
   (if (region-active-p) (call-interactively 'eval-region)
@@ -1860,14 +1864,11 @@ window is active in the perspective."
 ;;                                                                        Themes
 ;; =============================================================================
 
-(unless (boundp 'dark-themes)
-  (defvar dark-themes '(solarized-dark)))
-(unless (boundp 'light-themes)
-  (defvar light-themes '(solarized-light)))
-(unless (boundp 'terminal-themes)
-  (defvar terminal-themes '(solarized-light monokai)))
-(unless (boundp 'fonts)
-  (defvar fonts '(monaco-9)))
+
+(defvar-if-non-existant imalison:dark-themes '(solarized-dark))
+(defvar-if-non-existant imalison:light-themes '(solarized-light))
+(defvar-if-non-existant imalison:terminal-themes '(solarized-light monokai))
+(defvar-if-non-existant imalison:fonts '("Monaco for Powerline-12"))
 (unless (boundp 'current-theme) (defvar current-theme))
 (setq current-theme nil)
 
@@ -1879,8 +1880,8 @@ window is active in the perspective."
       (let ((hour
              (string-to-number (format-time-string "%H"))))
         (if (or (< hour 8) (> hour 16))
-            (random-choice dark-themes) (random-choice light-themes)))
-    (random-choice terminal-themes)))
+            (random-choice imalison:dark-themes) (random-choice imalison:light-themes)))
+    (random-choice imalison:terminal-themes)))
 
 (defun set-theme ()
   (interactive)
@@ -1906,13 +1907,12 @@ window is active in the perspective."
     nil nil))
   (disable-all-themes)
   (load-theme theme no-confirm no-enable)
-  (powerline-reset)
   (set-my-font-for-frame nil))
 
 (defun set-my-font-for-frame (frame)
   (interactive (list nil))
   (condition-case exp
-      (set-frame-font (random-choice fonts) nil t)
+      (set-frame-font (random-choice imalison:fonts) nil t)
     ('error (package-refresh-contents)
             (set-frame-font "Monaco for Powerline-12" nil t) nil)))
 
@@ -1934,6 +1934,11 @@ window is active in the perspective."
 ;; This is needed because you can't set the font at daemon start-up.
 (add-hook 'after-make-frame-functions 'set-my-font-for-frame)
 (add-hook 'after-make-frame-functions (lambda (frame) (set-theme)))
+;; This is needed to ensure that linum-format is dynamic.
+;; Without this we get massive margins.
+(add-hook 'after-make-frame-functions 'remove-fringe-and-hl-line-mode)
+
+;; Why is this here? Seems like it should be somewhere else
 (put 'narrow-to-region 'disabled nil)
 (put 'narrow-to-page 'disabled nil)
 
