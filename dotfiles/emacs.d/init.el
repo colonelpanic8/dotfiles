@@ -1697,6 +1697,10 @@ window is active in the perspective."
                                               js2-indent-level 4
                                               js2-basic-offset 4
                                               js2-indent-switch-body t)))
+    (add-hook 'js2-mode-hook (lambda ()
+                               (setq imenu-create-index-function
+                                     (lambda ()
+                                       (imalison:flatten-imenu-index (js2-mode-create-imenu-index))))))
     (add-hook 'js2-mode-hook 'js2-imenu-extras-mode)))
 
 (use-package skewer-mode
