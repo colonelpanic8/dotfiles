@@ -44,10 +44,6 @@ function with_shellrc {
 # Travis completion
 [ -f "$HOME/.travis/travis.sh" ] && source "$HOME/.travis/travis.sh"
 
-export RBENV_ROOT=/usr/local/var/rbenv
-
-export PATH="$HOME/.rbenv/bin:$PATH"
-hash rbenv 2> /dev/null && eval "$(rbenv init -)"
 test -e /usr/libexec/path_helper && eval `/usr/libexec/path_helper -s`
 
 
@@ -56,3 +52,7 @@ export NVM_DIR="/Users/imalison/.nvm"
 export NODE_PATH="/usr/local/lib/node_modules/"
 
 add_to_front_of_path "~/.lib/python" 'PYTHONPATH'
+
+export RBENV_ROOT=/usr/local/var/rbenv
+add_to_front_of_path "$HOME/.rbenv/bin"
+hash rbenv 2> /dev/null && eval "$(rbenv init -)"
