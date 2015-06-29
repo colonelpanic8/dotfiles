@@ -10,7 +10,7 @@
 # is_ssh && emacs="terminal_emacs"
 
 alias emacs='emacsclient -t -n'
-alias e='emacsclient'
+alias e='emacsclient -n'
 is_osx && alias emacs='reattach-to-user-namespace emacsclient -c -n'
 
 function kill_all_emacs {
