@@ -1683,7 +1683,7 @@ window is active in the perspective."
       (interactive)
       (let* ((string-identifier (int-to-string imalison:identifier-count))
              (identifier-string (cl-loop for i from 0 to 30 concat string-identifier)))
-      (insert (format "console.log('//////////%s//////////')" identifier-string))
+      (insert (format "console.log('//////////%s//////////');" identifier-string))
       (setq imalison:identifier-count (+ imalison:identifier-count 1))))
     (setq js2-bounce-indent-p nil
           js2-basic-offset 4
