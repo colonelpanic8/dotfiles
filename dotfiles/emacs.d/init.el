@@ -1994,13 +1994,15 @@ window is active in the perspective."
   (defadvice load-theme (after name activate)
     (remove-fringe-and-hl-line-mode)))
 
-;; This is needed because you can't set the font at daemon start-up.
-(add-hook 'after-make-frame-functions 'set-my-font-for-frame)
-(add-hook 'after-make-frame-functions (lambda (frame) (set-theme)))
-;; This is needed to ensure that linum-format is dynamic.
-;; Without this we get massive margins.
-(add-hook 'after-make-frame-functions 'remove-fringe-and-hl-line-mode)
+;; This is needed because you can't set the font or theme at daemon start-up.
+(add-hook 'after-make-frame-functions
+          (lambda (frame)
+            (set-theme)
+            (remove-fringe-and-hl-line-mode)
+            (set-my-font-for-frame)))
 
+(add-to-list 'default-frame-alist
+             `(font . ,(random-choice imalison:fonts)))
 
 (when (file-exists-p custom-after-file) (load custom-after-file))
 
