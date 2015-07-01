@@ -166,6 +166,7 @@
 (defun imalison:uuid ()
   (interactive)
   (s-replace "\n" "" (shell-command-to-string "uuid")))
+
 (defmacro suppress-messages (&rest forms)
   `(flet ((message (&rest r) nil))
      ,@forms))
@@ -610,6 +611,7 @@ The current directory is assumed to be the project's root otherwise."
     ("C-c m d" . mc/mark-all-like-this-in-defun)))
 
 (use-package undo-tree
+  :disabled t ;; this has been getting pretty annoying
   :ensure t
   :bind (("C--" . undo-redo)
          ("C-c u" . undo-tree-visualize)
@@ -1879,6 +1881,7 @@ window is active in the perspective."
 (bind-key "C-M-<backspace>" 'backward-kill-sexp)
 (bind-key "s-<return>" 'toggle-frame-fullscreen)
 (bind-key "M-|" 'imalison:shell-command-on-region)
+(bind-key "C--" 'undo)
 
 (fset 'global-set-key-to-use-package
       (lambda (&optional arg) "Keyboard macro." (interactive "p")
