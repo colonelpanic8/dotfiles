@@ -51,7 +51,7 @@ export NVM_DIR="/Users/imalison/.nvm"
 [ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh"  # This loads nvm
 export NODE_PATH="/usr/local/lib/node_modules/"
 
-add_to_front_of_path "~/.lib/python" 'PYTHONPATH'
+add_to_front_of_path "$HOME/.lib/python" 'PYTHONPATH'
 
 export RBENV_ROOT=/usr/local/var/rbenv
 add_to_front_of_path "$HOME/.rbenv/bin"
