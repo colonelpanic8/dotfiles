@@ -1491,7 +1491,8 @@ window is active in the perspective."
         (setq ido-vertical-define-keys 'C-n-C-p-up-and-down)))
     (use-package flx-ido :ensure t)))
 
-(if (and (boundp 'use-ido) use-ido) (ido-mode))
+
+(when (or (and (boundp 'use-ido) use-ido) (not (boundp 'use-ido))) (ido-mode 1))
 
 ;; =============================================================================
 ;;                                                                         elisp
