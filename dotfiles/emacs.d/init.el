@@ -451,6 +451,9 @@ The current directory is assumed to be the project's root otherwise."
 (setq imenu-auto-rescan t)
 (setq imenu-max-item-length 300)
 
+(put 'narrow-to-region 'disabled nil)
+(put 'narrow-to-page 'disabled nil)
+
 ;; =============================================================================
 ;;                                                                   use-package
 ;; =============================================================================
@@ -1998,9 +2001,6 @@ window is active in the perspective."
 ;; Without this we get massive margins.
 (add-hook 'after-make-frame-functions 'remove-fringe-and-hl-line-mode)
 
-;; XXX: Why is this here? Seems like it should be somewhere else
-(put 'narrow-to-region 'disabled nil)
-(put 'narrow-to-page 'disabled nil)
 
 (when (file-exists-p custom-after-file) (load custom-after-file))
 
