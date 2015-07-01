@@ -998,23 +998,23 @@ the same tree node, and the headline of the tree node in the Org-mode file."
     (add-hook 'org-agenda-mode-hook 'disable-linum-mode)))
 
 (use-package org-projectile
-      :ensure t
-      :demand t
-      :bind (("C-c n p" . imalison:helm-org-todo))
-      :config
-      (progn
-        (org-projectile:prompt)
-        (add-to-list 'org-capture-templates
-                     (org-projectile:project-todo-entry "l" "* TODO %? %a\n" "Linked Project TODO"))
-        (add-to-list 'org-capture-templates (org-projectile:project-todo-entry "p"))
-        (setq org-confirm-elisp-link-function nil)
-        (imalison:add-to-org-agenda-files (org-projectile:todo-files))
-        (defun imalison:helm-org-todo (&optional arg)
-          (interactive "P")
-          (helm :sources (list (helm-source-org-capture-templates)
-                               (org-projectile:helm-source
-                                (if arg (org-capture-make-linked-todo-template)
-                                  (org-capture-make-todo-template))))
+  :ensure t
+  :demand t
+  :bind (("C-c n p" . imalison:helm-org-todo))
+  :config
+  (progn
+    (org-projectile:prompt)
+    (add-to-list 'org-capture-templates
+                 (org-projectile:project-todo-entry "l" "* TODO %? %a\n" "Linked Project TODO"))
+    (add-to-list 'org-capture-templates (org-projectile:project-todo-entry "p"))
+    (setq org-confirm-elisp-link-function nil)
+    (imalison:add-to-org-agenda-files (org-projectile:todo-files))
+    (defun imalison:helm-org-todo (&optional arg)
+      (interactive "P")
+      (helm :sources (list (helm-source-org-capture-templates)
+                           (org-projectile:helm-source
+                            (if arg (org-capture-make-linked-todo-template)
+                              (org-capture-make-todo-template))))
             :candidate-number-limit 99999
             :buffer "*helm org capture templates*"))))
 
