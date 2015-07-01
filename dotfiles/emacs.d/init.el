@@ -147,8 +147,6 @@
 
 (setq use-dialog-box nil)
 
-(setq imenu-max-item-length 300)
-
 (defadvice yes-or-no-p (around prevent-dialog activate)
   "Prevent yes-or-no-p from activating a dialog"
   (let ((use-dialog-box nil))
@@ -451,6 +449,7 @@ The current directory is assumed to be the project's root otherwise."
 ;; Disable this per minor mode or maybe using file size if it causes
 ;; performance issues?
 (setq imenu-auto-rescan t)
+(setq imenu-max-item-length 300)
 
 ;; =============================================================================
 ;;                                                                   use-package
