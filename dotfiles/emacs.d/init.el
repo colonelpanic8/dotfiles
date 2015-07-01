@@ -161,6 +161,9 @@
 ;;                                                                     functions
 ;; =============================================================================
 
+(defun imalison:uuid ()
+  (interactive)
+  (s-replace "\n" "" (shell-command-to-string "uuid")))
 (defmacro suppress-messages (&rest forms)
   `(flet ((message (&rest r) nil))
      ,@forms))
