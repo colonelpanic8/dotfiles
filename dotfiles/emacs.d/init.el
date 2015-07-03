@@ -554,9 +554,10 @@ The current directory is assumed to be the project's root otherwise."
   :ensure t
   :commands magit-status
   :bind (("C-x g" . magit-status))
+  :init
+  (defvar-setq magit-last-seen-setup-instructions "1.4.0")
   :config
   (progn
-    (setq magit-last-seen-setup-instructions "1.4.0")
     (diminish 'magit-auto-revert-mode)
     (use-package magit-filenotify
       ;; Seems like OSX does not support filenotify.
