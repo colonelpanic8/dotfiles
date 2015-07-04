@@ -558,7 +558,6 @@ The current directory is assumed to be the project's root otherwise."
   (defvar-setq magit-last-seen-setup-instructions "1.4.0")
   :config
   (progn
-    (diminish 'magit-auto-revert-mode)
     (use-package magit-filenotify
       ;; Seems like OSX does not support filenotify.
       :disabled t
@@ -878,12 +877,9 @@ the same tree node, and the headline of the tree node in the Org-mode file."
         (setq org-ehtml-everything-editable t)))
 
     ;; Agenda setup.
-    (unless (boundp 'org-gtd-file)
-      (defvar org-gtd-file "~/org/gtd.org"))
-    (unless (boundp 'org-habits-file)
-      (defvar org-habits-file "~/org/habits.org"))
-    (unless (boundp 'org-calendar-file)
-      (defvar org-calendar-file "~/org/calendar.org"))
+    (defvar-if-non-existent imalison:org-gtd-file "~/org/gtd.org")
+    (defvar-if-non-existent imalison:org-habits-file "~/org/habits.org")
+    (defvar-if-non-existent imalison:org-calendar-file "~/org/calendar.org")
 
     (unless (boundp 'org-capture-templates)
       (defvar org-capture-templates nil))
@@ -891,22 +887,23 @@ the same tree node, and the headline of the tree node in the Org-mode file."
     (defun imalison:add-to-org-agenda-files (incoming-files)
       (setq org-agenda-files (delete-dups
        (cl-loop for filepath in (append org-agenda-files incoming-files)
-                when (file-exists-p (file-truename filepath))
+                when (and filepath (file-exists-p (file-truename filepath)))
                 collect (file-truename filepath)))))
 
-    (imalison:add-to-org-agenda-files (list org-gtd-file org-habits-file org-calendar-file))
+    (imalison:add-to-org-agenda-files
+     (list imalison:org-gtd-file imalison:org-habits-file imalison:org-calendar-file))
 
     (add-to-list 'org-capture-templates
-                 `("t" "GTD Todo (Linked)" entry (file ,org-gtd-file)
+                 `("t" "GTD Todo (Linked)" entry (file ,imalison:org-gtd-file)
                    (function org-capture-make-linked-todo-template)))
 
     (add-to-list 'org-capture-templates
-                 `("g" "GTD Todo" entry (file ,org-gtd-file)
+                 `("g" "GTD Todo" entry (file ,imalison:org-gtd-file)
                    (function org-capture-make-todo-template)))
 
     (add-to-list 'org-capture-templates
                  `("y" "Calendar entry (Linked)" entry
-                   (file ,org-calendar-file)
+                   (file ,imalison:org-calendar-file)
                    "* %? %A
   :PROPERTIES:
   :CREATED: %U
@@ -915,7 +912,7 @@ the same tree node, and the headline of the tree node in the Org-mode file."
 
     (add-to-list 'org-capture-templates
                  `("c" "Calendar entry" entry
-                   (file ,org-calendar-file)
+                   (file ,imalison:org-calendar-file)
                    "* %?
   :PROPERTIES:
   :CREATED: %U
@@ -923,7 +920,7 @@ the same tree node, and the headline of the tree node in the Org-mode file."
 %^T"))
 
     (add-to-list 'org-capture-templates
-                 `("h" "Habit" entry (file ,org-habits-file)
+                 `("h" "Habit" entry (file ,imalison:org-habits-file)
                    "* TODO
   SCHEDULED: %^t
   :PROPERTIES:
