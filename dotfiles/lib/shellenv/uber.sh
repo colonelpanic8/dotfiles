@@ -21,3 +21,15 @@ udir () {
 sdir () {
 	cd ~/Uber/sync/
 }
+function uc {
+	udir
+	local project_dir="$(basename $1)"
+	if [ ! -e $project_dir ]; then
+		git clone gitolite@code.uber.internal:$1
+	fi
+	cd "$project_dir"
+}
+
+function urtc {
+	uc "rt/$1"
+}
