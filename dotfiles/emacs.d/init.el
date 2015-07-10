@@ -165,6 +165,10 @@
   (interactive)
   (s-replace "\n" "" (shell-command-to-string "uuid")))
 
+(defun imalison:insert-uuid ()
+  (interactive)
+  (insert (imalison:uuid)))
+
 (defmacro suppress-messages (&rest forms)
   `(flet ((message (&rest r) nil))
      ,@forms))
