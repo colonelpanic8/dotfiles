@@ -1,9 +1,4 @@
 ;; -*- lexical-binding: t; -*-
-
-;; Local Variables:
-;; eval: (flycheck-disable-checker 'emacs-lisp-checkdoc)
-;; End:
-
 ;; =============================================================================
 ;;    ___ _ __ ___   __ _  ___ ___
 ;;   / _ \ '_ ` _ \ / _` |/ __/ __|
@@ -2013,3 +2008,7 @@ window is active in the perspective."
 (defvar-if-non-existent imalison:time-of-day-based-theme nil)
 ;; enable to set theme based on time of day.
 (if imalison:time-of-day-based-theme (run-at-time "00:00" 3600 'set-theme))
+
+;; Local Variables:
+;; flycheck-disabled-checkers: (emacs-lisp-checkdoc)
+;; End:
