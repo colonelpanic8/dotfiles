@@ -1579,7 +1579,6 @@ window is active in the perspective."
   :config
   (progn
     (setq jedi:complete-on-dot t)
-    (setq jedi:install-imenu t)
     (setq jedi:imenu-create-index-function 'jedi:create-flat-imenu-index))
   :ensure t
   :bind (("M-." . jedi:goto-definition)
