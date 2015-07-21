@@ -21,6 +21,7 @@
 	ffo = !git ffr origin
 	ffr = "!ffr() { git fetch $1 && git ff $1/$(git which-branch) && git suir; }; ffr"
 	file-exists = "!f() { git ls-files $1 --error-unmatch > /dev/null 2> /dev/null; }; f"
+	add-gh-remote = "! add_github_remote"
 	icd = "!d() { git difftool --no-prompt --extcmd 'icdiff' $@ | $(git config --get core.pager); }; d"	
 	icdl = "!d() { git difftool --no-prompt --extcmd 'icdiff --line-numbers' $@ | $(git config --get core.pager); }; d"
 	ignore = "!i() { printf \"\n$1\" >> "`git root`/.gitignore"; }; i"

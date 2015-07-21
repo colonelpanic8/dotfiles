@@ -390,3 +390,13 @@ function pkill_zsh {
 function find_by_size {
     find . -type f -size +$1
 }
+
+function get_git_project_name {
+    # "$(basename $(git rev-parse --show-toplevel))"
+    basename $(git remotes | get_cols 2)
+}
+
+function add_github_remote {
+    local project_name="$(get_git_project_name)"
+    git remote add "$1" "git@github.com:$1/$project_name"
+}
