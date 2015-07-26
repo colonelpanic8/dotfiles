@@ -1761,8 +1761,7 @@ window is active in the perspective."
   :commands robe-mode
   :init
   (progn (add-hook 'ruby-mode-hook
-                   (lambda () (robe-mode) (ac-robe-setup)
-                     (auto-complete-mode)))))
+                   (lambda () (robe-mode) (auto-complete-mode)))))
 
 (use-package rinari :ensure t)
 
