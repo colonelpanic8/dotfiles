@@ -37,22 +37,6 @@ class RotatedArrayProxy(object):
         else:
             self._handle_slice(item)
 
-    def _handle_slice(self, item):
-        start = self._actual_index(item.start)
-        stop = self._actual_index(item.stop)
-        if start > stop:
-            sliced = self.incoming[start::item.stride]
-            # Ensure that the stride is preserved as it passes through
-            # the rotation.
-            start_index = (len(self.incoming) - start) % (item.stride or 1)
-            if start_index <= stop:
-                sliced.extend(
-                    self.incoming[start_index:stop:item.stride]
-                )
-            return sliced
-        else:
-            return self.incoming[start:stop:item.stride]
-
     def _actual_index(self, index):
         if index is None:
             return index
@@ -89,3 +73,12 @@ class RotatedArrayProxy(object):
 
     def unrotated(self):
         return rotate_array(self.incoming, self.rotation_index)
+
+    def insert(self, x):
+        insertion_index = self.actual_insertion_index(x)
+        if insertion_index < self.rotation_index or (
+            insertion_index == self.rotation_index and
+            (not self.incoming or x < self.incoming[0])
+        ):
+            self._rotation_index += 1
+        self.incoming.insert(self.actual_insertion_index(x), x)

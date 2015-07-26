@@ -66,4 +66,15 @@ def test_rotation_index_and_unrotate():
 
 
 def test_insert():
-    
+    arr = [3]*117 + [1] + [2]*16
+    rap = rotated_array.RotatedArrayProxy(arr)
+    rap.insert(3)
+    rap.insert(3)
+    rap.insert(2)
+    rap.insert(2)
+    rap.insert(5)
+    rap.insert(24)
+    rap.insert(5)
+    rap.insert(4)
+    rap.insert(4)
+    assert rap.unrotated() == sorted(rap.incoming)
