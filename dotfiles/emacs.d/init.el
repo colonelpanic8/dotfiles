@@ -655,6 +655,10 @@ The current directory is assumed to be the project's root otherwise."
   :ensure t
   :mode (("\\.restclient\\'" . restclient-mode)))
 
+(use-package comment-dwim-2
+  :ensure t
+  :bind ("M-;" . comment-dwim-2))
+
 ;; =============================================================================
 ;;                                                         Non-Programming Stuff
 ;; =============================================================================
