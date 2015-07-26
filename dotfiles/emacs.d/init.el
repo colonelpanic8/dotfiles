@@ -1439,19 +1439,19 @@ window is active in the perspective."
       :commands projectile-persp-switch-project)))
 
 (use-package helm-projectile
-      :ensure t
-      :commands (helm-projectile-on)
-      :config
-      (progn
-        (helm-delete-action-from-source "Search in Project" helm-source-projectile-projects)
-        (defun imalison:switch-to-project-and-search (dir)
-          (let ((default-directory dir)
-                (projectile-require-project-root nil)
-                (helm-action-buffer "this-buffer-should-not-exist"))
-                (helm-projectile-ag)))
-        (helm-add-action-to-source "Search in Project"
-                                   'imalison:switch-to-project-and-search
-                                   helm-source-projectile-projects)))
+  :ensure t
+  :commands (helm-projectile-on)
+  :config
+  (progn
+    (helm-delete-action-from-source "Search in Project" helm-source-projectile-projects)
+    (defun imalison:switch-to-project-and-search (dir)
+      (let ((default-directory dir)
+            (projectile-require-project-root nil)
+            (helm-action-buffer "this-buffer-should-not-exist"))
+        (helm-projectile-ag)))
+    (helm-add-action-to-source "Search in Project"
+                               'imalison:switch-to-project-and-search
+                               helm-source-projectile-projects)))
 
 (use-package smex
   :ensure t
