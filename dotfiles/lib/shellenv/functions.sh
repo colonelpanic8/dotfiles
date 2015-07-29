@@ -343,7 +343,7 @@ function timestamp {
 }
 
 function parse_timestamp {
-    date -d "@$1"
+    date -d "@$(echo $1 | cut -c -10)"
 }
 
 function refresh_config {
