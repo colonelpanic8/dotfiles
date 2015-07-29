@@ -1775,6 +1775,7 @@ window is active in the perspective."
 
 (use-package helm-gtags
   :ensure t
+  :disabled t
   :config (custom-set-variables
            '(helm-gtags-path-style 'relative)
            '(helm-gtags-ignore-case t)
