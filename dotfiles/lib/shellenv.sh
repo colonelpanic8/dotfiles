@@ -5,7 +5,6 @@ add_to_back_of_path "$HOME/.rvm/bin"
 add_to_front_of_path "$HOME/bin"
 hash brew 2>/dev/null && add_to_front_of_path "$(brew --prefix coreutils)/libexec/gnubin"
 add_to_front_of_path "/usr/local/bin"
-hash brew 2>/dev/null && add_to_front_of_path "$(brew --prefix emacs)"
 
 if is_osx; then
     export CFLAGS=-Qunused-arguments
@@ -56,3 +55,4 @@ add_to_front_of_path "$HOME/.lib/python" 'PYTHONPATH'
 export RBENV_ROOT=/usr/local/var/rbenv
 add_to_front_of_path "$HOME/.rbenv/bin"
 hash rbenv 2> /dev/null && eval "$(rbenv init -)"
+hash brew 2>/dev/null && add_to_front_of_path "$(brew --prefix coreutils)/libexec/gnubin"
