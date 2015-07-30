@@ -468,6 +468,7 @@ The current directory is assumed to be the project's root otherwise."
   :commands (yas-global-mode)
   :config
   (progn
+    (yas-global-mode)
     (diminish 'yas-minor-mode)
     (setq yas-prompt-functions
           (cons 'yas-ido-prompt
