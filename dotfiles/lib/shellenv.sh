@@ -5,7 +5,7 @@ add_to_back_of_path "$HOME/.rvm/bin"
 add_to_front_of_path "$HOME/bin"
 hash brew 2>/dev/null && add_to_front_of_path "$(brew --prefix coreutils)/libexec/gnubin"
 add_to_front_of_path "/usr/local/bin"
-hash brew 2>/dev/null && add_to_front_of_path "$(brew --prefix emacs)/libexec/gnubin"
+hash brew 2>/dev/null && add_to_front_of_path "$(brew --prefix emacs)"
 
 if is_osx; then
     export CFLAGS=-Qunused-arguments
