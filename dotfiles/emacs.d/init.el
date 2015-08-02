@@ -1032,6 +1032,8 @@ the same tree node, and the headline of the tree node in the Org-mode file."
     (add-hook 'org-mode-hook (lambda () (setq org-todo-key-trigger t)))
     (add-hook 'org-agenda-mode-hook 'disable-linum-mode)))
 
+(use-package clocker :ensure t)
+
 (use-package org-projectile
   :ensure t
   :demand t
