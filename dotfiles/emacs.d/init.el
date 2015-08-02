@@ -566,15 +566,6 @@ The current directory is assumed to be the project's root otherwise."
       :config
       :init (add-hook 'magit-status-mode-hook 'magit-filenotify-mode))))
 
-(use-package auto-complete
-  :ensure t
-  :disabled t
-  :commands auto-complete-mode
-  :config
-  (diminish 'auto-complete-mode)
-  :init
-  (add-hook 'prog-mode-hook (lambda () (auto-complete-mode t))))
-
 (use-package company
   :ensure t
   :commands company-mode
