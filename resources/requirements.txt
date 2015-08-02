@@ -4,6 +4,7 @@ ddg
 dotfiles
 dropbox
 flake8
+importmagic
 invoke
 jinja
 lxml
