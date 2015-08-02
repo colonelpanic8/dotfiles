@@ -1965,6 +1965,7 @@ window is active in the perspective."
 (defvar-if-non-existent imalison:light-themes '(solarized-light))
 (defvar-if-non-existent imalison:terminal-themes '(solarized-light monokai))
 (defvar-if-non-existent imalison:fonts '("Monaco for Powerline-12"))
+(defvar imalison:fonts '("Monaco for Powerline-12"))
 (unless (boundp 'current-theme) (defvar current-theme))
 (setq current-theme nil)
 
