@@ -1636,15 +1636,6 @@ window is active in the perspective."
   (progn
     (use-package pymacs :ensure t)
     (use-package sphinx-doc :ensure t)
-    (defun imalison:set-pytest-command ()
-      (let* ((project-root (imalison:project-root-or-current-directory))
-             (virtual-envs (get-virtual-envs))
-             (virtual-env (when virtual-envs (car virtual-envs))))
-        (when project-root
-          (setq pytest-global-name
-                (if (file-exists-p (concat project-root "tox.ini"))
-                    "tox --"
-                  (format "source %s; py.test" (concat virtual-env "bin/activate")))))))
     (defun imalison:python-mode ()
       (setq show-trailing-whitespace t)
       (if use-python-tabs (python-tabs))
@@ -1653,7 +1644,6 @@ window is active in the perspective."
       ;; Will this work with elpy. Seems like elpy has its own
       ;; mechanism for handling this
       ;; (add-virtual-envs-to-jedi-server)
-      (imalison:set-pytest-command)
       (remove-hook 'completion-at-point-functions
                    'python-completion-complete-at-point 'local)
       (add-to-list 'company-backends 'company-jedi))
