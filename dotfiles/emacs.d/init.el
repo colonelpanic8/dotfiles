@@ -1626,8 +1626,6 @@ window is active in the perspective."
   :mode ("\\.py\\'" . python-mode)
   :config
   (progn
-    ;; macros
-    (fset 'ipdb "import ipdb; ipdb.set_trace()")
     (fset 'main "if __name__ == '__main__':")
     (fset 'sphinx-class ":class:`~")
   :init
