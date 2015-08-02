@@ -1744,6 +1744,13 @@ window is active in the perspective."
                                         (js2-mode-create-imenu-index))))))
     (add-hook 'js2-mode-hook 'js2-imenu-extras-mode)))
 
+(use-package js2-refactor
+  :ensure t
+  :config
+  (progn
+    (js2r-add-keybindings-with-prefix "C-c C-m")
+    (add-hook 'js2-mode-hook #'js2-refactor-mode)))
+
 (use-package skewer-mode
   :ensure t
   :commands skewer-mode
