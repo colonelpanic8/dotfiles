@@ -1613,15 +1613,13 @@ window is active in the perspective."
   (interactive)
   (message "%s" (get-virtual-envs)))
 
-(use-package jedi
-  :commands (jedi:goto-definition jedi-mode)
+(use-package elpy
+  :ensure t
+  :commands elpy-enable
   :config
   (progn
-    (setq jedi:complete-on-dot t)
-    (setq jedi:imenu-create-index-function 'jedi:create-flat-imenu-index))
-  :ensure t
-  :bind (("M-." . jedi:goto-definition)
-         ("M-," . jedi:goto-definition-pop-marker)))
+    (unbind-key "M-*" elpy-mode-map)
+    (bind-key "M-," 'pop-tag-mark elpy-mode-map)))
 
 (use-package company-jedi
   :commands company-jedi
@@ -1651,8 +1649,10 @@ window is active in the perspective."
       (setq show-trailing-whitespace t)
       (if use-python-tabs (python-tabs))
       (subword-mode t)
-      (jedi:setup)
-      (add-virtual-envs-to-jedi-server)
+      (elpy-enable)
+      ;; Will this work with elpy. Seems like elpy has its own
+      ;; mechanism for handling this
+      ;; (add-virtual-envs-to-jedi-server)
       (imalison:set-pytest-command)
       (remove-hook 'completion-at-point-functions
                    'python-completion-complete-at-point 'local)
