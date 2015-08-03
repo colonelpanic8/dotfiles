@@ -708,13 +708,14 @@ The current directory is assumed to be the project's root otherwise."
     (setq helm-org-headings-fontify t)
 
     ;; Enable appointment notifications.
-    ;; (defadvice org-agenda-to-appt (before wickedcool activate)
-    ;;   "Clear the appt-time-msg-list."
-    ;;   (setq appt-time-msg-list nil))
-    ;; (appt-activate)
-    ;; (defun org-agenda-to-appt-no-message ()
-    ;;   (suppress-messages (org-agenda-to-appt)))
-    ;; (run-at-time "00:00" 60 'org-agenda-to-appt-no-message)
+    (if nil
+        (defadvice org-agenda-to-appt (before wickedcool activate)
+          "Clear the appt-time-msg-list."
+          (setq appt-time-msg-list nil))
+      (appt-activate)
+      (defun org-agenda-to-appt-no-message ()
+        (suppress-messages (org-agenda-to-appt)))
+      (run-at-time "00:00" 60 'org-agenda-to-appt-no-message))
 
     (defun org-archive-if (condition-function)
       (if (funcall condition-function)
