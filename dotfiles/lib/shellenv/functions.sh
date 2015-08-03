@@ -400,3 +400,17 @@ function add_github_remote {
     local project_name="$(get_git_project_name)"
     git remote add "$1" "git@github.com:$1/$project_name"
 }
+
+function define_jump_alias_with_completion {
+    eval "alias $1='jump_cd $2'"
+    compdef "_files -g '$2/*'" $1
+}
+
+function jump_cd {
+    if [[ $2 =~ ^/ ]]; then
+        cd $2
+    else
+        cd $1
+        cd $2
+    fi
+}
