@@ -1,3 +1,4 @@
+(eval-when-compile (require 'use-package)) ;; use-package is only needed at compile time.
 (defmacro spacemacs|custom-flycheck-lighter (error)
         "Return a formatted string for the given ERROR (error, warning, info)."
         `(let* ((error-counts (flycheck-count-errors
