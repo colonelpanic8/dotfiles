@@ -1006,8 +1006,8 @@ the same tree node, and the headline of the tree node in the Org-mode file."
     ;; Record changes to todo states
     (setq org-log-into-drawer t)
     (setq org-todo-keywords
-          '((sequence "TODO(t!)" "STARTED(s!)" "WAIT(w!)" "BACKLOG(b!)" "|"
-                      "DONE(d!)" "CANCELED(c!)" "OBVIATED(o!)" "HANDLED(o!)")))
+          '((sequence "TODO(t!)" "NEXT(n!)" "STARTED(s!)" "WAIT(w!)" "BACKLOG(b!)" "|"
+                      "DONE(d!)" "CANCELED(c!)" "OBVIATED(o!)" "HANDLED(h!)" "EXPIRED(e!)")))
     ;; Stop starting agenda from deleting frame setup!
     (setq org-agenda-window-setup 'other-window)
     (define-key mode-specific-map [?a] 'org-agenda)
