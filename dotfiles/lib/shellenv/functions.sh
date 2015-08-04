@@ -393,7 +393,7 @@ function find_by_size {
 
 function get_git_project_name {
     # "$(basename $(git rev-parse --show-toplevel))"
-    basename $(git remotes | get_cols 2)
+    basename $(git remotes | get_cols 2 | head -n 1)
 }
 
 function add_github_remote {
