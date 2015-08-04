@@ -1650,10 +1650,6 @@ window is active in the perspective."
       (add-to-list 'company-backends 'company-jedi))
     (add-hook 'python-mode-hook #'imalison:python-mode))))
 
-(use-package pytest
-  :ensure t
-  :bind ("C-c t" . pytest-one))
-
 ;; =============================================================================
 ;;                                                                         Scala
 ;; =============================================================================
