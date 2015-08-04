@@ -489,17 +489,11 @@ The current directory is assumed to be the project's root otherwise."
 
 (use-package discover-my-major :ensure t)
 
-(use-package guide-key
+(use-package which-key
   :ensure t
   :config
   (progn
-    (setq guide-key/guide-key-sequence
-          '("C-c" "C-c p" "C-x C-k" "C-x r" "C-h" "C-x c" "C-x" "M-g"))
-    (guide-key-mode 1)
-    (diminish 'guide-key-mode)
-    (setq guide-key/idle-delay 0.25)
-    (setq guide-key/recursive-key-sequence-flag t)
-    (setq guide-key/popup-window-position 'bottom)))
+    (which-key-mode)))
 
 (use-package jump-char
   :bind (("C-;" . jump-char-forward))
@@ -1023,11 +1017,6 @@ the same tree node, and the headline of the tree node in the Org-mode file."
     (setq org-directory "~/Dropbox/org")
     (setq org-mobile-inbox-for-pull "~/Dropbox/org/flagged.org")
     (setq org-mobile-directory "~/Dropbox/Apps/MobileOrg")
-    (defun guide-key/my-hook-function-for-org-mode ()
-      (guide-key/add-local-guide-key-sequence "C-c")
-      (guide-key/add-local-guide-key-sequence "C-c C-x")
-      (guide-key/add-local-highlight-command-regexp "org-"))
-    (add-hook 'org-mode-hook 'guide-key/my-hook-function-for-org-mode)
     (defun disable-linum-mode () (linum-mode 0))
     (add-hook 'org-mode-hook 'disable-linum-mode)
     (add-hook 'org-mode-hook (lambda () (setq org-todo-key-trigger t)))
