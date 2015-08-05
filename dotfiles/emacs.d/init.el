@@ -1609,6 +1609,7 @@ window is active in the perspective."
   :commands elpy-enable
   :config
   (progn
+    (elpy-enable)
     (unbind-key "M-*" elpy-mode-map)
     (bind-key "M-," 'pop-tag-mark elpy-mode-map)))
 
@@ -1631,7 +1632,7 @@ window is active in the perspective."
       (setq show-trailing-whitespace t)
       (if use-python-tabs (python-tabs))
       (subword-mode t)
-      (elpy-enable)
+      (elpy-mode)
       ;; Will this work with elpy. Seems like elpy has its own
       ;; mechanism for handling this
       ;; (add-virtual-envs-to-jedi-server)
