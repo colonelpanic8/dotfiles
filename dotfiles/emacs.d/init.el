@@ -157,6 +157,11 @@
 ;;                                                                     functions
 ;; =============================================================================
 
+(defmacro imalison:prefix-alternative (name default alternative)
+  `(defun ,name (arg) (interactive "P")
+          (if arg (call-interactively (quote ,alternative))
+            (call-interactively (quote ,default)))))
+
 (defun imalison:uuid ()
   (interactive)
   (s-replace "\n" "" (shell-command-to-string "uuid")))
