@@ -1860,6 +1860,10 @@ window is active in the perspective."
 ;;                                                                   other modes
 ;; =============================================================================
 
+(use-package go-mode
+  :ensure t
+  :mode (("\\.go\\'" . go-mode)))
+
 (use-package rust-mode :ensure t
   :mode (("\\.rs\\'" . rust-mode)))
 
