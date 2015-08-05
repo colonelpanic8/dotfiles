@@ -505,10 +505,11 @@ The current directory is assumed to be the project's root otherwise."
   :bind (("C-;" . jump-char-forward))
   :ensure t)
 
+(imalison:prefix-alternative imalison:avy avy-goto-word-1 avy-goto-char)
 (use-package avy
   :ensure t
-  :bind (("C-j" . avy-goto-char)
-         ("M-g f" . avy-goto-line)
+  :bind (("C-j" . imalison:avy)
+         ("M-g l" . avy-goto-line)
          ("C-'" . avy-goto-char-2)))
 
 (use-package ace-window
