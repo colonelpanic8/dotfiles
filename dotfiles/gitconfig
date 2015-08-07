@@ -37,6 +37,7 @@
 	rh = reset --hard
 	root = rev-parse --show-toplevel
 	s = status -s
+	set-working-tree = "!s() { local head=\"$(git rev-parse HEAD)\"; git reset --hard $1 && git reset --soft $head; }; s"
 	sha = rev-parse HEAD
 	shas = log HEAD --pretty=format:%H
 	suir = submodule update --init --recursive
