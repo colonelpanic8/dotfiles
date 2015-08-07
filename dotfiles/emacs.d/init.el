@@ -49,6 +49,7 @@
 (defvar ido-cur-list nil)
 (defvar inherit-input-method nil)
 (defvar grep-find-ignored-files nil)
+(defvar grep-find-ignored-directories nil)
 
 ;; =============================================================================
 ;;                                                         ELPA/package.el/MELPA
