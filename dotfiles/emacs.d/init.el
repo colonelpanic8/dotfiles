@@ -426,7 +426,7 @@ The current directory is assumed to be the project's root otherwise."
 (setq c-subword-mode t)
 
 ;; Preserve pastes from OS when saving a new item to the kill
-;; ring. Why wouldn't this be enabled by default.
+;; ring. Why wouldn't this be enabled by default?
 (setq save-interprogram-paste-before-kill t)
 
 (setq-default cursor-type 'box)
@@ -441,12 +441,12 @@ The current directory is assumed to be the project's root otherwise."
 (eval-after-load 'simple '(diminish 'visual-line-mode))
 
 (display-time-mode 1)
-(setq reb-re-syntax 'string)
+(setq reb-re-syntax 'string) ;; the only sane option...
 
 (setq ediff-split-window-function 'split-window-horizontally)
 (setq ediff-window-setup-function 'ediff-setup-windows-plain)
 
-;; Disable this per minor mode or maybe using file size if it causes
+;; Disable this per major mode or maybe using file size if it causes
 ;; performance issues?
 (setq imenu-auto-rescan t)
 (setq imenu-max-item-length 300)
