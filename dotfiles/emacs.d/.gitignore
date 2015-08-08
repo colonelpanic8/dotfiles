@@ -35,3 +35,4 @@ ensime
 project-to-org-filepath
 .sx
 .cask
+uber.el
