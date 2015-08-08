@@ -211,6 +211,13 @@
           (cdr-is-index (imalison:imenu-prefix-flattened index))
           (t (list index)))))
 
+(defun imalison:make-imenu-index-flat ()
+  (let ((original-imenu-function imenu-create-index-function))
+    (setq imenu-create-index-function
+          (lambda ()
+            (imalison:flatten-imenu-index
+             (funcall original-imenu-function))))))
+
 (defmacro defvar-if-non-existent (name value)
   (unless (boundp name)
     `(defvar ,name ,value)))
@@ -1640,6 +1647,7 @@ window is active in the perspective."
       (if use-python-tabs (python-tabs))
       (subword-mode t)
       (elpy-mode)
+      (imalison:make-imenu-index-flat)
       ;; Will this work with elpy. Seems like elpy has its own
       ;; mechanism for handling this
       ;; (add-virtual-envs-to-jedi-server)
