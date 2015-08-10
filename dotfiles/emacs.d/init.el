@@ -1624,6 +1624,7 @@ window is active in the perspective."
   :commands elpy-enable
   :config
   (progn
+    (setq elpy-rpc-backend 'jedi)
     (elpy-enable)
     (unbind-key "M-*" elpy-mode-map)
     (bind-key "M-," 'pop-tag-mark elpy-mode-map)))
