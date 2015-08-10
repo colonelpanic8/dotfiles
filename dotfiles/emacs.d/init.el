@@ -445,7 +445,8 @@ The current directory is assumed to be the project's root otherwise."
 (setq-default cursor-type 'box)
 (setq-default cursor-in-non-selected-windows 'bar)
 
-(add-hook 'after-init-hook '(lambda () (setq debug-on-error t)))
+(if nil ;; Causing too many annoying issues
+    (add-hook 'after-init-hook '(lambda () (setq debug-on-error t))))
 
 ;; Make mouse scrolling less jumpy.
 (setq mouse-wheel-scroll-amount '(1 ((shift) . 1)))
