@@ -1,1 +1,11 @@
+function init_profile {
+	zmodload zsh/datetime
+	setopt promptsubst
+	PS4='+$EPOCHREALTIME %N:%i> '
+	# save file stderr to file descriptor 3 and redirect stderr (including trace 
+	# output) to a file with the script's PID as an extension
+	exec 3>&2 2>/tmp/startlog.$$
+	# set options to turn on tracing and expansion of commands contained in the prompt
+	setopt xtrace prompt_subst
+}
 source ~/.lib/shellenv.sh

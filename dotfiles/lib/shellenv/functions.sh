@@ -33,6 +33,32 @@ function add_to_back_of_path {
 	export $target="$(_add_to_back_of_path_lines $1 $target | tr '\n' ':' | remove_trailing_colon)"
 }
 
+function idem_add_to_front_of_path {
+    target=${2-PATH}
+    exists_in_path_var $1 $target || add_to_front_of_path $1 $target
+}
+
+function idem_add_to_back_of_path {
+    target=${2-PATH}
+    exists_in_path_var $1 $target || add_to_back_of_path $1 $target
+}
+
+function indirect_expand {
+    eval "value=\"\${$1}\""
+    echo $value
+}
+
+function environment_variable_exists {
+    eval "value=\"\${$1+x}\""
+    [ ! -z $value ]
+}
+
+function exists_in_path_var {
+    target=${2-PATH}
+    local path_contents="$(indirect_expand $target)"
+    [[ ":$path_contents:" == *":$1:"* ]]
+}
+
 function split_into_vars () {
     local string IFS
     
@@ -347,6 +373,7 @@ function parse_timestamp {
 }
 
 function refresh_config {
+    unset ENVIRONMENT_SETUP_DONE
     source ~/.zshenv
     source ~/.zshrc
 }
