@@ -4,11 +4,12 @@
 (defvar gitolite:username "gitolite")
 (defvar gitolite:host)
 (defvar gitolite:ttl (* 60 60 24 3)) ;; 3 day ttl by default
+(defvar gitolite:base-path "~")
 (defvar gitolite:determine-target 'gitolite:default-determine-target)
 (defvar gitolite:action 'gitolite:default-action)
 
 (defun gitolite:default-determine-target (username host repo-name)
-  (format "~/%s" (-last-item (s-split "/" repo-name))))
+  (format "%s/%s" gitolite:base-path (-last-item (s-split "/" repo-name))))
 
 (defun gitolite:default-action (username host repo-name target)
   (dired target))
