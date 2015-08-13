@@ -1,9 +1,10 @@
-flask
 coloredlogs
 ddg
 dotfiles
 dropbox
+editorconfig
 flake8
+flask
 importmagic
 invoke
 jinja
@@ -15,9 +16,9 @@ mopidy-spotify
 numpy
 okcupyd
 ouimeaux
-pythonpy
 pylint
 pyspotify
+pythonpy
 readline
 ropemacs
 simplejson
