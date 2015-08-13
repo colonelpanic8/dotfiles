@@ -494,6 +494,12 @@ The current directory is assumed to be the project's root otherwise."
   :config
   (setq tramp-default-method "ssh"))
 
+(use-package shackle
+  :ensure t
+  :config
+  (shackle-mode)
+  (setq shackle-default-rule '(:same t)))
+
 ;; text mode stuff:
 (remove-hook 'text-mode-hook #'turn-on-auto-fill)
 (add-hook 'text-mode-hook 'turn-on-visual-line-mode)
