@@ -1734,28 +1734,29 @@ window is active in the perspective."
              (uuid (imalison:uuid)))
       (insert (format "console.log('%s//////////%s//////////');" identifier-string uuid))
       (setq imalison:identifier-count (+ imalison:identifier-count 1))))
-    (setq js2-bounce-indent-p nil
+    (defun imalison:js2-mode-hook ()
+      ;; Sensible defaults
+      (setq js2-bounce-indent-p nil
           js2-basic-offset 4
           js2-indent-level 4
           js2-basic-offset 4
           js2-highlight-level 3
           js2-include-node-externs t
           js2-mode-show-parse-errors nil
-          js2-mode-show-strict-warnings nil)
-    ;; jshint-configuration-path "~/Uber/dispatch"
-    (add-hook 'js-mode-hook 'js2-minor-mode)
-    (add-hook 'js2-mode-hook (lambda () (tern-mode t)))
-    (add-hook 'js2-mode-hook 'skewer-mode)
-    (add-hook 'js2-mode-hook (lambda () (setq js-indent-level 4
-                                              indent-tabs-mode nil
-                                              js2-indent-level 4
-                                              js2-basic-offset 4
-                                              js2-indent-switch-body t)))
-    (add-hook 'js2-mode-hook (lambda ()
-                               (setq imenu-create-index-function
-                                     (lambda ()
-                                       (imalison:flatten-imenu-index
-                                        (js2-mode-create-imenu-index))))))
+          js2-mode-show-strict-warnings nil
+          indent-tabs-mode nil
+          js2-indent-level 4
+          js2-basic-offset 4
+          js2-indent-switch-body t)
+      (edconf-find-file-hook) ;; Make sure that editorconfig takes precedence
+      (tern-mode t)
+      (when nil (skewer-mode)) ;; TODO: reenable
+      (setq imenu-create-index-function
+            (lambda ()
+              (imalison:flatten-imenu-index
+               (js2-mode-create-imenu-index)))))
+
+    (add-hook 'js2-mode-hook 'imalison:js2-mode-hook)
     (add-hook 'js2-mode-hook 'js2-imenu-extras-mode)))
 
 (use-package js2-refactor
