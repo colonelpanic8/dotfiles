@@ -553,6 +553,10 @@ The current directory is assumed to be the project's root otherwise."
     (define-key ctl-x-4-map "nn" 'ni-narrow-to-region-indirect-other-window)
     (define-key ctl-x-4-map "np" 'ni-narrow-to-page-indirect-other-window)))
 
+(use-package editorconfig
+  :ensure t
+  :demand t)
+
 (use-package dtrt-indent
   :ensure t
   :init (add-hook 'prog-mode-hook 'dtrt-indent-mode))
