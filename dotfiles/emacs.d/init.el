@@ -1794,6 +1794,10 @@ window is active in the perspective."
               (setq indent-tabs-mode nil)
               (setq js-indent-level 4))))
 
+(use-package jsx-mode
+  :ensure t
+  :mode "\\.jsx\\'")
+
 (eval-after-load 'css-mode
   '(define-key css-mode-map (kbd "C-c b") 'web-beautify-css))
 
