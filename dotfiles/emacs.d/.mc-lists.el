@@ -35,4 +35,5 @@
         dired-toggle-read-only
         isearch-delete-char
         smex
+        helm-M-x
         ))
