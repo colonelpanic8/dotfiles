@@ -527,10 +527,11 @@ The current directory is assumed to be the project's root otherwise."
          ("M-g l" . avy-goto-line)
          ("C-'" . avy-goto-char-2)))
 
+(imalison:prefix-alternative imalison:ace-window ace-select-window ace-swap-window)
 (use-package ace-window
   :ensure t
   :config (setq aw-keys '(?a ?s ?d ?f ?g ?h ?j ?k ?l))
-  :bind ("C-c w" . ace-select-window))
+  :bind ("C-c w" . imalison:ace-window))
 
 (use-package flycheck
   :ensure t
