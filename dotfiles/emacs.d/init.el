@@ -484,6 +484,7 @@ The current directory is assumed to be the project's root otherwise."
   (progn
     (yas-global-mode)
     (diminish 'yas-minor-mode)
+    (add-hook 'term-mode-hook (lambda() (yas-minor-mode -1)))
     (setq yas-prompt-functions
           (cons 'yas-ido-prompt
                 (cl-delete 'yas-ido-prompt yas-prompt-functions)))))
