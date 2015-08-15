@@ -468,6 +468,8 @@ The current directory is assumed to be the project's root otherwise."
 (put 'narrow-to-region 'disabled nil)
 (put 'narrow-to-page 'disabled nil)
 
+(setq echo-keystrokes 0.25)
+
 ;; =============================================================================
 ;;                                                                   use-package
 ;; =============================================================================
