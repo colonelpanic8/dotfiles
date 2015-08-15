@@ -431,9 +431,8 @@ The current directory is assumed to be the project's root otherwise."
 ;; We want closures
 (setq lexical-binding t)
 
-;; Don't disable downcase and upcase region.
-(put 'upcase-region 'disabled nil)
-(put 'downcase-region 'disabled nil)
+;; Don't disable commands...
+(setq disabled-command-function nil)
 
 ;; Make forward word understand camel and snake case.
 (setq c-subword-mode t)
