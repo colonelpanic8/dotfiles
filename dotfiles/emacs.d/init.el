@@ -76,7 +76,8 @@
 (package-initialize)
 (ensure-packages-installed '(epl use-package))
 
-(eval-when-compile (require 'use-package)) ;; use-package is only needed at compile time.
+;; use-package is only needed at compile time.
+(eval-when-compile (require 'use-package))
 (require 'diminish)
 (require 'bind-key)
 
