@@ -81,6 +81,9 @@
 (require 'diminish)
 (require 'bind-key)
 
+(use-package bug-hunter
+  :ensure t)
+
 (use-package benchmark-init
   :ensure t
   ;; this variable has to be set in custom-before.el
