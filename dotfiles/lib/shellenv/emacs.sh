@@ -116,3 +116,10 @@ export EDITOR="$HOME/.lib/editor.sh"
 export ALTERNATE_EDITOR=""
 export VISUAL="$EDITOR"
 export GIT_EDITOR="$EDITOR"
+
+# This actually gets executed in dotfiles/lib/shellrc.sh to make sure that it takes precedence over other settings
+function inside_emacs_hook {
+    export PAGER="$EDITOR"
+    export GITPAGER="$EDITOR"
+    export MANPAGER="$EDITOR"
+}

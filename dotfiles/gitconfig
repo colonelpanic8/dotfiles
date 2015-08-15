@@ -49,7 +49,7 @@
 	# Use custom `.gitignore` and `.gitattributes`
 	excludesfile = ~/.gitignore
 	attributesfile = ~/.gitattributes
-	pager = less -FXr
+	# pager = less -FXr # set with environment variable so that pager can be different when inside emacs
 
 [color]
 	# Use colors in Git commands that are capable of colored output when
