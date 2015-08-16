@@ -40,17 +40,12 @@ function _setup_env {
     # Load RVM into a shell session *as a function*
     [[ -s "$HOME/.rvm/scripts/rvm" ]] && source "$HOME/.rvm/scripts/rvm"
 
-    _source_shellenv_files
-
     function with_shellrc {
         zsh -c "source ~/.zshrc && ""$@"
     }
 
     # Travis completion
     [ -f "$HOME/.travis/travis.sh" ] && source "$HOME/.travis/travis.sh"
-
-    test -e /usr/libexec/path_helper && eval `/usr/libexec/path_helper -s`
-
 
     export NVM_DIR="/Users/imalison/.nvm"
     [ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh"  # This loads nvm
@@ -66,8 +61,11 @@ function _setup_env {
     export ENVIRONMENT_SETUP_DONE="$(date)"
 }
 
-if [ -z ${ENVIRONMENT_SETUP_DONE+x} ]; then
-    _setup_env
-else
-    _source_shellenv_files
-fi
+function _path_helper {
+    export PATH_HELPER_RAN="$(date)"
+    eval `/usr/libexec/path_helper -s`
+}
+
+environment_variable_exists PATH_HELPER_RAN || _path_helper
+environment_variable_exists ENVIRONMENT_SETUP_DONE || _setup_env
+_source_shellenv_files
