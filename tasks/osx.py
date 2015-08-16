@@ -133,7 +133,7 @@ def rvm(ctx):
 @ctask
 def fonts(ctx):
     ctx.run('open {0}'.format(
-        os.path.join(util.RESOURCES_DIRECTORY, "Monaco-Powerline.otf"))
+        os.path.join(util.RESOURCES_DIRECTORY, 'fonts', "*"))
     )
 
 
