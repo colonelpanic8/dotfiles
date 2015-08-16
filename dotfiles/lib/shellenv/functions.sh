@@ -447,3 +447,7 @@ function jump_cd {
         cd $2
     fi
 }
+
+function source_if_exists {
+    test -r "$1" && source "$1"
+}
