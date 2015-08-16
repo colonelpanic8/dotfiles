@@ -582,6 +582,8 @@ The current directory is assumed to be the project's root otherwise."
 
 (use-package diff-hl :ensure t)
 
+(use-package gitolite-clone :ensure t)
+
 (use-package magit
   :ensure t
   :commands magit-status
