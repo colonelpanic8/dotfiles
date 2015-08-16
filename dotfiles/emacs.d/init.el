@@ -1975,7 +1975,7 @@ window is active in the perspective."
 (defvar packages-appearance
   '(monokai-theme solarized-theme zenburn-theme base16-theme molokai-theme
     tango-2-theme gotham-theme sublime-themes ansi-color rainbow-delimiters
-    ample-theme))
+    ample-theme material-theme))
 
 (ensure-packages-installed packages-appearance)
 
@@ -2002,7 +2002,7 @@ window is active in the perspective."
 (defvar-if-non-existent imalison:dark-themes '(solarized-dark))
 (defvar-if-non-existent imalison:light-themes '(solarized-light))
 (defvar-if-non-existent imalison:terminal-themes '(solarized-light monokai))
-(defvar-if-non-existent imalison:fonts '("Monaco for Powerline-12"))
+(defvar-if-non-existent imalison:fonts '("Source Code Pro-14"))
 (defvar imalison:fonts '("Monaco for Powerline-12"))
 (unless (boundp 'current-theme) (defvar current-theme))
 (setq current-theme nil)
@@ -2049,7 +2049,7 @@ window is active in the perspective."
   (condition-case exp
       (set-frame-font (random-choice imalison:fonts) nil t)
     ('error (package-refresh-contents)
-            (set-frame-font "Monaco for Powerline-12" nil t) nil)))
+            (set-frame-font "Source Code Pro-14" nil t) nil)))
 
 (defun remove-fringe-and-hl-line-mode (&rest stuff)
   (if (fboundp 'scroll-bar-mode) (scroll-bar-mode -1))
