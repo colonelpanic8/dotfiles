@@ -2002,88 +2002,42 @@ window is active in the perspective."
 ;;                                                                        Themes
 ;; =============================================================================
 
-(defvar-if-non-existent imalison:dark-themes '(solarized-dark))
-(defvar-if-non-existent imalison:light-themes '(solarized-light))
-(defvar-if-non-existent imalison:terminal-themes '(solarized-light monokai))
-(defvar-if-non-existent imalison:fonts '("Source Code Pro-14"))
-(defvar imalison:fonts '("Monaco for Powerline-12"))
-(unless (boundp 'current-theme) (defvar current-theme))
-(setq current-theme nil)
+(defvar imalison:my-theme 'material)
 
 (defun random-choice (choices)
   (nth (random (length choices)) choices))
 
-(defun get-appropriate-theme ()
-  (if t ;; (display-graphic-p) why doesn't this work at frame startup?
-      (let ((hour
-             (string-to-number (format-time-string "%H"))))
-        (if (or (< hour 8) (> hour 16))
-            (random-choice imalison:dark-themes) (random-choice imalison:light-themes)))
-    (random-choice imalison:terminal-themes)))
-
-(defun set-theme ()
+(defun imalison:remove-fringe-and-hl-line-mode (&rest stuff)
   (interactive)
-  (let ((appropriate-theme (get-appropriate-theme)))
-        (if (eq appropriate-theme current-theme)
-            nil
-          (progn
-            (disable-and-load-theme appropriate-theme t)
-            (setq current-theme appropriate-theme)))))
-
-(defun disable-all-themes ()
-  (interactive)
-  (mapcar
-   (lambda (theme) (unless (s-contains? "smart-mode" (symbol-name theme))
-                     (disable-theme theme))) custom-enabled-themes))
-
-(defun disable-and-load-theme (theme &optional no-confirm no-enable)
-  (interactive
-   (list
-    (intern (completing-read "Load custom theme: "
-                             (mapcar 'symbol-name
-                                     (custom-available-themes))))
-    nil nil))
-  (disable-all-themes)
-  (load-theme theme no-confirm no-enable)
-  (set-my-font-for-frame nil))
-
-(defun set-my-font-for-frame (&optional frame)
-  (interactive (list nil))
-  (condition-case exp
-      (set-frame-font (random-choice imalison:fonts) nil t)
-    ('error (package-refresh-contents)
-            (set-frame-font "Source Code Pro-14" nil t) nil)))
-
-(defun remove-fringe-and-hl-line-mode (&rest stuff)
   (if (fboundp 'scroll-bar-mode) (scroll-bar-mode -1))
   (if (fboundp 'tool-bar-mode) (tool-bar-mode -1))
   (if (fboundp 'menu-bar-mode) (menu-bar-mode -1))
   (set-fringe-mode 0)
-  (setq linum-format 'dynamic)
+  (defvar-setq linum-format 'dynamic)
   (setq left-margin-width 0)
-  (setq hl-line-mode nil)
-  (set-my-font-for-frame nil))
+  (defvar-setq hl-line-mode nil))
 
-(if (emacs24_4-p)
-    (advice-add 'load-theme :after #'remove-fringe-and-hl-line-mode)
-  (defadvice load-theme (after name activate)
-    (remove-fringe-and-hl-line-mode)))
-
-;; This is needed because you can't set the font or theme at daemon start-up.
-(add-hook 'after-make-frame-functions
-          (lambda (frame)
-            (set-theme)
-            (remove-fringe-and-hl-line-mode)
-            (set-my-font-for-frame)))
-
-(add-to-list 'default-frame-alist
-             `(font . ,(random-choice imalison:fonts)))
+(when t
+  (if (emacs24_4-p)
+      (advice-add 'load-theme :after #'imalison:remove-fringe-and-hl-line-mode)
+    (defadvice load-theme (after name activate)
+      (imalison:remove-fringe-and-hl-line-mode))))
 
 (when (file-exists-p custom-after-file) (load custom-after-file))
 
-(defvar-if-non-existent imalison:time-of-day-based-theme nil)
-;; enable to set theme based on time of day.
-(if imalison:time-of-day-based-theme (run-at-time "00:00" 3600 'set-theme))
+(defun imalison:appearance (&optional frame)
+  (interactive)
+  (message "called set appearance")
+  (if (display-graphic-p)
+      (progn
+        (set-face-attribute 'default nil :font "Source Code Pro")
+        (set-face-attribute 'default nil :height 135)))
+  (load-theme imalison-my-theme t)
+  (imalison:remove-fringe-and-hl-line-mode))
+
+;; This is needed because you can't set the font or theme at daemon start-up.
+(add-hook 'after-make-frame-functions 'imalison:appearance)
+;; (add-hook 'after-init-hook 'imalison:appearance)
 
 ;; Local Variables:
 ;; flycheck-disabled-checkers: (emacs-lisp-checkdoc)
