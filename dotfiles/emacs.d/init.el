@@ -1060,7 +1060,7 @@ the same tree node, and the headline of the tree node in the Org-mode file."
     (setq org-mobile-directory "~/Dropbox/Apps/MobileOrg")
     (add-hook 'org-mode-hook 'imalison:disable-linum-mode)
     (add-hook 'org-mode-hook (lambda () (setq org-todo-key-trigger t)))
-    (add-hook 'org-agenda-mode-hook 'disable-linum-mode)))
+    (add-hook 'org-agenda-mode-hook 'imalison:disable-linum-mode)))
 
 (use-package clocker :ensure t)
 
