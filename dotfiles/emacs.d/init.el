@@ -182,24 +182,15 @@
   `(flet ((message (&rest r) nil))
      ,@forms))
 
-(defun cmp-int-list (a b)
+(defun imalison:compare-int-list (a b)
   (when (and a b)
     (cond ((> (car a) (car b)) 1)
           ((< (car a) (car b)) -1)
-          (t (cmp-int-list (cdr a) (cdr b))))))
+          (t (imalison:compare-int-list (cdr a) (cdr b))))))
 
 (defun get-date-created-from-agenda-entry (agenda-entry)
   (org-time-string-to-time
    (org-entry-get (get-text-property 1 'org-marker agenda-entry) "CREATED")))
-
-(defun narrow-to-region-indirect (start end)
-  "Restrict editing in this buffer to the current region, indirectly."
-  (interactive "r")
-  (deactivate-mark)
-  (let ((buf (clone-indirect-buffer nil nil)))
-    (with-current-buffer buf
-      (narrow-to-region start end))
-      (switch-to-buffer buf)))
 
 (defmacro defvar-setq (name value)
   (if (boundp name)
@@ -810,7 +801,7 @@ The current directory is assumed to be the project's root otherwise."
     (defun org-cmp-creation-times (a b)
       (let ((a-created (get-date-created-from-agenda-entry a))
             (b-created (get-date-created-from-agenda-entry b)))
-        (cmp-int-list a-created b-created)))
+        (imalison:compare-int-list a-created b-created)))
 
     (defun org-agenda-done (&optional arg)
       "Mark current TODO as done.
