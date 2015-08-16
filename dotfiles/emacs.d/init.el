@@ -2084,8 +2084,9 @@ window is active in the perspective."
   (if (display-graphic-p)
       (progn
         (set-face-attribute 'default nil :font "Source Code Pro")
+        (set-face-attribute 'default nil :weight 'semi-bold)
         (set-face-attribute 'default nil :height 135)))
-  (load-theme imalison-my-theme t)
+  (load-theme imalison:my-theme t)
   (imalison:remove-fringe-and-hl-line-mode))
 
 ;; This is needed because you can't set the font or theme at daemon start-up.
