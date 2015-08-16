@@ -508,6 +508,7 @@ The current directory is assumed to be the project's root otherwise."
   :ensure t
   :config
   (shackle-mode)
+  (setq shackle-inhibit-window-quit-on-same-windows t)
   (setq shackle-default-rule '(:same t)))
 
 ;; text mode stuff:
