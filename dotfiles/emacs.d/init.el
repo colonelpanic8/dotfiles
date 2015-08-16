@@ -1014,6 +1014,7 @@ the same tree node, and the headline of the tree node in the Org-mode file."
                            ((org-agenda-overriding-header "Recently created:")
                             (org-agenda-cmp-user-defined 'org-cmp-creation-times)
                             (org-agenda-sorting-strategy '(user-defined-down)))))
+          (next '(todo "NEXT"))
           (missing-deadline
            '(tags-todo "-DEADLINE={.}/!"
                        ((org-agenda-overriding-header
@@ -1025,13 +1026,14 @@ the same tree node, and the headline of the tree node in the Org-mode file."
 
       (setq org-agenda-custom-commands
             `(("M" "Main agenda view"
-               (,due-today
-                ,this-week-high-priority
-                ,recently-created
-                (agenda ""
+               ((agenda ""
                         ((org-agenda-overriding-header "Agenda:")
                          (org-agenda-ndays 5)
-                         (org-deadline-warning-days 0))))
+                         (org-deadline-warning-days 0)))
+                ,due-today
+                ,next
+                ,this-week-high-priority
+                ,recently-created)
                nil nil)
               ,(cons "A" (cons "High priority upcoming" this-week-high-priority))
               ,(cons "d" (cons "Overdue tasks and due today" due-today))
