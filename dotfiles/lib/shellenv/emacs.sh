@@ -111,6 +111,22 @@ function time_emacs {
     time \emacs --daemon="timing" && emacsclient -e "(kill-emacs)" --server-file="timing"
 }
 
+function emacs_editor {
+	if is_osx; then
+		reattach-to-user-namespace emacsclient "$@"
+	else
+		emacsclient "$@"
+	fi
+}
+
+function emacs_pager {
+    TMP="$(mktemp -t emacs_pager.XXXXX --suffix=.ansi_color)"
+    echo $TMP
+    cat > "$TMP"
+    emacs_editor "$TMP" "$@"
+    rm "$TMP"
+}
+
 # Make emacs the default editor.
 export EDITOR="$HOME/.lib/editor.sh"
 export ALTERNATE_EDITOR=""
@@ -119,7 +135,7 @@ export GIT_EDITOR="$EDITOR"
 
 # This actually gets executed in dotfiles/lib/shellrc.sh to make sure that it takes precedence over other settings
 function inside_emacs_hook {
-    export PAGER="$EDITOR"
-    export GITPAGER="$EDITOR"
-    export MANPAGER="$EDITOR"
+    export PAGER="$HOME/.lib/pager.sh"
+    export GITPAGER="$PAGER"
+    export MANPAGER="$PAGER"
 }
