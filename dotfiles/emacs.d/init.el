@@ -507,9 +507,11 @@ The current directory is assumed to be the project's root otherwise."
 (use-package shackle
   :ensure t
   :config
-  (shackle-mode)
-  (setq shackle-inhibit-window-quit-on-same-windows t)
-  (setq shackle-default-rule '(:same t)))
+  (progn
+    (diminish 'shackle-mode)
+    (shackle-mode)
+    (setq shackle-inhibit-window-quit-on-same-windows t)
+    (setq shackle-default-rule '(:same t))))
 
 ;; text mode stuff:
 (remove-hook 'text-mode-hook #'turn-on-auto-fill)
@@ -525,6 +527,7 @@ The current directory is assumed to be the project's root otherwise."
   :ensure t
   :config
   (progn
+    (diminish 'which-key-mode)
     (which-key-mode)))
 
 (use-package jump-char
