@@ -838,13 +838,13 @@ the same tree node, and the headline of the tree node in the Org-mode file."
     ;; My priority system:
 
     ;; A - Absolutely MUST, at all costs, be completed by the provided
-    ;;     due date. TODO implement some type of extreme nagging
+    ;;     due date. TODO: implement some type of extreme nagging
     ;;     system that alerts in an intrusive way for overdue A
     ;;     priority tasks.
 
     ;; B - Should be given immediate attention if the due date is any
     ;;     time in the next two days. Failure to meet due date would
-    ;;     be bad but not catastrophic
+    ;;     be bad but not catastrophic.
 
     ;; C - The highest priority to which tasks for which failure to
     ;;     complete on time would not have considerable significant
@@ -853,8 +853,8 @@ the same tree node, and the headline of the tree node in the Org-mode file."
 
     ;; D - Failure to complete within a few days (or ever) of any
     ;;     deadline would be completely okay. As such, any deadline
-    ;;     present on such a task is self imposed. Still probably
-    ;;     worth doing
+    ;;     present on such a task is necessarily self imposed. Still
+    ;;     probably worth doing
 
     ;; E - Potentially not even worth doing at all, but worth taking a
     ;;     note about in case it comes up again, or becomes more
@@ -866,11 +866,11 @@ the same tree node, and the headline of the tree node in the Org-mode file."
     ;; Priorities are somewhat contextual within each category. Things
     ;; in the gtd or work categories are generally regarded as much
     ;; more important than things with the same priority from the
-    ;; dotfiles repository
+    ;; dotfiles category.
 
-    ;; Items without deadlines of a given priority can be regarded as
-    ;; less important than items that DO have deadlines of that same
-    ;; priority.
+    ;; Items without deadlines or scheduled times of a given priority
+    ;; can be regarded as less important than items that DO have
+    ;; deadlines of that same priority.
 
     (setq org-lowest-priority 69) ;; The character E
     (setq org-completion-use-ido t)
