@@ -128,14 +128,14 @@ function emacs_pager {
 }
 
 # Make emacs the default editor.
-export EDITOR="$HOME/.lib/editor.sh"
+export EDITOR="$HOME/.lib/bin/editor.sh"
 export ALTERNATE_EDITOR=""
 export VISUAL="$EDITOR"
 export GIT_EDITOR="$EDITOR"
 
 # This actually gets executed in dotfiles/lib/shellrc.sh to make sure that it takes precedence over other settings
 function inside_emacs_hook {
-    export PAGER="$HOME/.lib/pager.sh"
+    export PAGER="$HOME/.lib/bin/pager.sh"
     export GITPAGER="$PAGER"
     export MANPAGER="$PAGER"
 }

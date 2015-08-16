@@ -58,6 +58,8 @@ function _setup_env {
     idem_add_to_front_of_path "$HOME/.rbenv/bin"
     hash rbenv 2> /dev/null && eval "$(rbenv init -)"
     hash brew 2>/dev/null && idem_add_to_front_of_path "$(brew --prefix coreutils)/libexec/gnubin"
+
+    idem_add_to_front_of_path "$HOME/.lib/bin"
     export ENVIRONMENT_SETUP_DONE="$(date)"
 }
 
