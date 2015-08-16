@@ -123,7 +123,9 @@ function emacs_pager {
     TMP="$(mktemp -t emacs_pager.XXXXX --suffix=.ansi_color)"
     echo $TMP
     cat > "$TMP"
-    emacs_editor "$TMP" "$@"
+    # -n may seem strange here, but it actually makes sense. There is
+    # -no need to wait since the buffer is inside of emacs now
+    emacs_editor "$TMP" -n "$@"
     rm "$TMP"
 }
 
