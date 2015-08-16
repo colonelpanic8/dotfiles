@@ -2070,12 +2070,6 @@ window is active in the perspective."
   (setq left-margin-width 0)
   (defvar-setq hl-line-mode nil))
 
-(when t
-  (if (emacs24_4-p)
-      (advice-add 'load-theme :after #'imalison:remove-fringe-and-hl-line-mode)
-    (defadvice load-theme (after name activate)
-      (imalison:remove-fringe-and-hl-line-mode))))
-
 (when (file-exists-p custom-after-file) (load custom-after-file))
 
 (defun imalison:appearance (&optional frame)
@@ -2085,14 +2079,18 @@ window is active in the perspective."
       (progn
         (set-face-attribute 'default nil :font "Source Code Pro")
         (set-face-attribute 'default nil :weight 'semi-bold)
-        (set-face-attribute 'default nil :height 135)))
+        (set-face-attribute 'default nil :height 135))
+    (progn
+      (load-theme 'source-code-pro t)
+      (message "not setting font")))
   (load-theme imalison:my-theme t)
-  (imalison:remove-fringe-and-hl-line-mode))
+  (imalison:remove-fringe-and-hl-line-mode)
+  (message "finished set appearance"))
 
 ;; This is needed because you can't set the font or theme at daemon start-up.
+;; (when (display-graphic-p) (imalison:appearance))
+(add-hook 'after-init-hook 'imalison:appearance)
 (add-hook 'after-make-frame-functions 'imalison:appearance)
-;; (add-hook 'after-init-hook 'imalison:appearance)
-
 ;; Local Variables:
 ;; flycheck-disabled-checkers: (emacs-lisp-checkdoc)
 ;; End:

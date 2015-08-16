@@ -7,6 +7,6 @@
 
 (custom-theme-set-faces
  'source-code-pro
- '(default ((t (:width normal :height 120 :weight normal :slant normal :foundry "nil" :family "Source Code Pro" :background nil)))))
+ '(default ((t (:width normal :height 135 :weight semi-bold :slant normal :foundry "nil" :family "Source Code Pro" :background nil)))))
 
 (provide-theme 'source-code-pro)
