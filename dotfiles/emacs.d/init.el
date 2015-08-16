@@ -171,6 +171,9 @@
   (interactive)
   (s-replace "\n" "" (shell-command-to-string "uuid")))
 
+(defun imalison:disable-linum-mode ()
+  (linum-mode 0))
+
 (defun imalison:insert-uuid ()
   (interactive)
   (insert (imalison:uuid)))
@@ -476,6 +479,11 @@ The current directory is assumed to be the project's root otherwise."
 ;; =============================================================================
 ;;                                                                   use-package
 ;; =============================================================================
+
+(use-package ansi-term
+  :commands ansi-term
+  :config
+  (progn (add-hook 'term-mode-hook 'imalison:disable-linum-mode)))
 
 ;; Set path from shell.
 (use-package exec-path-from-shell
@@ -1050,8 +1058,7 @@ the same tree node, and the headline of the tree node in the Org-mode file."
     (setq org-directory "~/Dropbox/org")
     (setq org-mobile-inbox-for-pull "~/Dropbox/org/flagged.org")
     (setq org-mobile-directory "~/Dropbox/Apps/MobileOrg")
-    (defun disable-linum-mode () (linum-mode 0))
-    (add-hook 'org-mode-hook 'disable-linum-mode)
+    (add-hook 'org-mode-hook 'imalison:disable-linum-mode)
     (add-hook 'org-mode-hook (lambda () (setq org-todo-key-trigger t)))
     (add-hook 'org-agenda-mode-hook 'disable-linum-mode)))
 
