@@ -1048,9 +1048,58 @@ the same tree node, and the headline of the tree node in the Org-mode file."
                        ((org-agenda-overriding-header
                          "At least priority C:"))))))
 
+    ;; What follows is a description of the significance of each of
+    ;; the values available in `org-todo-keywords'. All headings with
+    ;; one of these keywords deal with the concept of the completion
+    ;; of some task or collection of tasks to bring about a particular
+    ;; state of affairs. In some cases, the actual tasks involved may
+    ;; not be known at the time of task creation.
+
+    ;; Uncompleted States:
+
+    ;; IDEA - This TODO exists in only the most abstract sense: it is
+    ;; an imagined state of affairs that requires tasks that are
+    ;; either not yet known, or have not thoroughly been considered.
+
+    ;; RESEARCH - This TODO needs to be investigated further before
+    ;; action can be taken to achieve the desired outcome. It is not
+    ;; known how much time and effort will be consumed in the actual
+    ;; completion of the task.
+
+    ;; TODO - The scope and work involved in this TODO are well
+    ;; understood, but for some reason or another, it is not something
+    ;; that should be attempted in the immediate future. Typically
+    ;; this is because the task is not considered a top priority, but
+    ;; it may also be for some other reason.
+
+    ;; NEXT - This TODO is immediately actionable and should be
+    ;; started in the immediate future.
+
+    ;; STARTED - Work on this TODO has already started, further work
+    ;; is immediately actionable.
+
+    ;; WAIT - The work involved in this TODO is well understood, but
+    ;; it is blocked for the time being.
+
+    ;; Completed States:
+
+    ;; DONE - This TODO has been completed exactly as imagined.
+
+    ;; HANDLED - This TODO was completed in spirit, though not by the
+    ;; means that were originally imagined/outlined in the TODO.
+
+    ;; EXPIRED - The owner of this TODO failed to take action on it
+    ;; within the appropriate time period, and there is now no point in
+    ;; attempting it.
+
+    ;; CANCELED - For whatever reason, this TODO should no longer be
+    ;; attempted. This TODO is typically used in contrast to the
+    ;; EXPIRED TODO to indicate that the owner is not necessarily to
+    ;; blame.
+
     (setq org-todo-keywords
-          '((sequence "TODO(t!)" "NEXT(n!)" "STARTED(s!)" "WAIT(w!)" "BACKLOG(b!)" "|"
-                      "DONE(d!)" "CANCELED(c!)" "OBVIATED(o!)" "HANDLED(h!)" "EXPIRED(e!)")))
+          '((sequence "IDEA(i!)" "RESEARCH(r!)" "TODO(t!)" "NEXT(n!)" "STARTED(s!)" "WAIT(w!)" "|"
+                      "DONE(d!)" "HANDLED(h!)" "EXPIRED(e!)" "CANCELED(c!)")))
 
     ;; Record changes to todo states
     (setq org-log-into-drawer t)
