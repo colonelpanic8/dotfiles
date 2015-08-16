@@ -372,8 +372,14 @@ function parse_timestamp {
     date -d "@$(echo $1 | cut -c -10)"
 }
 
-function refresh_config {
+function clear_path {
+    export PATH="/bin:/usr/local/bin"
+    unset PATH_HELPER_RAN
     unset ENVIRONMENT_SETUP_DONE
+}
+
+function refresh_config {
+    clear_path
     source ~/.zshenv
     source ~/.zshrc
 }
