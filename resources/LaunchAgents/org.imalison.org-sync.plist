@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+    <key>Label</key>
+    <string>org.imalison.org-sync</string>
+    <key>ProgramArguments</key>
+    <array>
+      <string>zsh</string>
+      <string>-c</string>
+      <string>~/org-sync.sh</string>
+    </array>
+    <key>StartInterval</key>
+    <integer>60</integer>
+    <key>StandardOutPath</key>
+    <string>/tmp/org.imalison.org-sync.out</string>
+    <key>StandardErrorPath</key>
+    <string>/tmp/org.imalison.org-sync.error</string>
+</dict>
+</plist>
