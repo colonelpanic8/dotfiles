@@ -744,11 +744,11 @@ The current directory is assumed to be the project's root otherwise."
     (setq org-columns-default-format "%80ITEM(Task) %10Effort(Effort){:} %10CLOCKSUM")
     (setq helm-org-headings-fontify t)
 
-    ;; Enable appointment notifications.
-    (if nil
-        (defadvice org-agenda-to-appt (before wickedcool activate)
-          "Clear the appt-time-msg-list."
-          (setq appt-time-msg-list nil))
+    (when nil
+      ;; Enable appointment notifications.
+      (defadvice org-agenda-to-appt (before wickedcool activate)
+        "Clear the appt-time-msg-list."
+        (setq appt-time-msg-list nil))
       (appt-activate)
       (defun org-agenda-to-appt-no-message ()
         (suppress-messages (org-agenda-to-appt)))
