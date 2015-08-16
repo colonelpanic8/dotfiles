@@ -502,7 +502,7 @@ The current directory is assumed to be the project's root otherwise."
 (use-package shackle
   :ensure t
   :config
-  (when nil (shackle-mode))
+  (shackle-mode)
   (setq shackle-default-rule '(:same t)))
 
 ;; text mode stuff:
