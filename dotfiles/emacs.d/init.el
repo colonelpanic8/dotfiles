@@ -94,7 +94,7 @@
 ;; =============================================================================
 
 (defvar packages-eager
-  '(popup yasnippet cl-lib paradox
+  '(popup yasnippet cl-lib
     xclip dired+ ctags ctags-update aggressive-indent imenu+ neotree diminish
     gist))
 
@@ -470,6 +470,11 @@ The current directory is assumed to be the project's root otherwise."
 ;; =============================================================================
 ;;                                                                   use-package
 ;; =============================================================================
+
+(use-package paradox
+  :config
+  (progn
+    (setq paradox-execute-asynchronously t)))
 
 (use-package ansi-term
   :commands ansi-term
