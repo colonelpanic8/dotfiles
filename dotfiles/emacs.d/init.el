@@ -1084,6 +1084,11 @@ the same tree node, and the headline of the tree node in the Org-mode file."
     ;; WAIT - The work involved in this TODO is well understood, but
     ;; it is blocked for the time being.
 
+    ;; BACKLOG - While technically actionable, this task is not only
+    ;; in the immediate future, but the foreseable future. It exists
+    ;; as a task mostly as a note/reminder in case it becomes higher
+    ;; priority in the future.
+
     ;; Completed States:
 
     ;; DONE - This TODO has been completed exactly as imagined.
@@ -1101,7 +1106,7 @@ the same tree node, and the headline of the tree node in the Org-mode file."
     ;; blame.
 
     (setq org-todo-keywords
-          '((sequence "IDEA(i!)" "RESEARCH(r!)" "TODO(t!)" "NEXT(n!)" "STARTED(s!)" "WAIT(w!)" "|"
+          '((sequence "IDEA(i!)" "RESEARCH(r!)" "TODO(t!)" "NEXT(n!)" "STARTED(s!)" "WAIT(w!)" "BACKLOG(b!)" "|"
                       "DONE(d!)" "HANDLED(h!)" "EXPIRED(e!)" "CANCELED(c!)")))
 
     ;; Record changes to todo states
