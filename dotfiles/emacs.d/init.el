@@ -756,7 +756,10 @@ The current directory is assumed to be the project's root otherwise."
 
     (defun org-archive-if (condition-function)
       (if (funcall condition-function)
-          (org-archive-subtree)))
+          (let ((next-point-marker
+                 (save-excursion (org-forward-heading-same-level 1) (point-marker))))
+            (org-archive-subtree)
+            (setq org-map-continue-from (marker-position next-point-marker)))))
 
     (defun org-archive-if-completed ()
       (interactive)
