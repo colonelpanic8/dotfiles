@@ -476,8 +476,7 @@ The current directory is assumed to be the project's root otherwise."
   (progn
     (setq paradox-execute-asynchronously t)))
 
-(use-package ansi-term
-  :commands ansi-term
+(use-package term
   :config
   (progn (add-hook 'term-mode-hook 'imalison:disable-linum-mode)))
 
