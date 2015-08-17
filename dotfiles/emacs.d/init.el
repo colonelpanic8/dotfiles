@@ -188,6 +188,11 @@
           ((< (car a) (car b)) -1)
           (t (imalison:compare-int-list (cdr a) (cdr b))))))
 
+(defun imalison:get-lat-long ()
+  (condition-case ex
+      (mapcar 'string-to-number (s-split "," (s-trim (shell-command-to-string "whereami"))))
+    (error (list 37.7879312624533 -122.402388853402))))
+
 (defun get-date-created-from-agenda-entry (agenda-entry)
   (org-time-string-to-time
    (org-entry-get (get-text-property 1 'org-marker agenda-entry) "CREATED")))
@@ -2075,7 +2080,18 @@ window is active in the perspective."
 ;;                                                                        Themes
 ;; =============================================================================
 
-(defvar imalison:my-theme 'material)
+;; These can be overriden in custom-before.el
+(defvar imalison:light-theme 'solarized-light)
+(defvar imalison:dark-theme 'material)
+
+(use-package theme-changer
+  :ensure t
+  :config
+  (progn
+    (destructuring-bind (latitude longitude)
+        (imalison:get-lat-long)
+      (setq calendar-latitude latitude)
+      (setq calendar-longitude longitude))))
 
 (defun random-choice (choices)
   (nth (random (length choices)) choices))
@@ -2085,7 +2101,7 @@ window is active in the perspective."
   (if (fboundp 'scroll-bar-mode) (scroll-bar-mode -1))
   (if (fboundp 'tool-bar-mode) (tool-bar-mode -1))
   (if (fboundp 'menu-bar-mode) (menu-bar-mode -1))
-  (set-fringe-mode 0)
+  ;; (set-fringe-mode 0) ;; Lets reenable fringes. They seem useful
   (defvar-setq linum-format 'dynamic)
   (setq left-margin-width 0)
   (defvar-setq hl-line-mode nil))
@@ -2103,7 +2119,7 @@ window is active in the perspective."
     (progn
       (load-theme 'source-code-pro t)
       (message "not setting font")))
-  (load-theme imalison:my-theme t)
+  (change-theme imalison:light-theme imalison:dark-theme)
   (imalison:remove-fringe-and-hl-line-mode)
   (message "finished set appearance"))
 
