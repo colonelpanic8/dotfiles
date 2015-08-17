@@ -526,6 +526,7 @@ The current directory is assumed to be the project's root otherwise."
   :ensure t
   :config
   (progn
+    (setq which-key-idle-delay .15)
     (diminish 'which-key-mode)
     (which-key-mode)))
 
