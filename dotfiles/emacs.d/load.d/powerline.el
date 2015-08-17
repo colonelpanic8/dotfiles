@@ -10,7 +10,6 @@
 
 (defvar dotspacemacs-mode-line-unicode-symbols nil)
 (use-package powerline
-  :disabled t
   :ensure t
   :init
   (progn
