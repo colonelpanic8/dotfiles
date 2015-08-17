@@ -1157,7 +1157,7 @@ the same tree node, and the headline of the tree node in the Org-mode file."
   :config
   (progn
     (setq deft-extensions '("org"))
-    (setq deft-directory "~/Dropbox (Personal)/org")))
+    (setq deft-directory "~/Dropbox (Personal)/org/notes")))
 
 (use-package epg
   :ensure t
