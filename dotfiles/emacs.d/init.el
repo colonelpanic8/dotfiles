@@ -411,8 +411,6 @@ The current directory is assumed to be the project's root otherwise."
 ;;                                                         General Emacs Options
 ;; =============================================================================
 
-(unless (server-running-p) (server-start))
-
 (global-auto-revert-mode)
 
 ;; This makes it so that emacs --daemon puts its files in ~/.emacs.d/server
@@ -472,6 +470,11 @@ The current directory is assumed to be the project's root otherwise."
 ;; =============================================================================
 ;;                                                                   use-package
 ;; =============================================================================
+
+(use-package server
+  :config
+  (progn
+    (unless (server-running-p) (server-start))))
 
 (use-package list-environment
   :ensure t)
