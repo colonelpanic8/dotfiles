@@ -473,6 +473,9 @@ The current directory is assumed to be the project's root otherwise."
 ;;                                                                   use-package
 ;; =============================================================================
 
+(use-package list-environment
+  :ensure t)
+
 (use-package paradox
   :config
   (progn
