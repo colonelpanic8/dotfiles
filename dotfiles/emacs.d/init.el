@@ -1147,6 +1147,13 @@ the same tree node, and the headline of the tree node in the Org-mode file."
             :candidate-number-limit 99999
             :buffer "*helm org capture templates*"))))
 
+(use-package deft
+  :ensure t
+  :config
+  (progn
+    (setq deft-extensions '("org"))
+    (setq deft-directory "~/Dropbox (Personal)/org")))
+
 (use-package epg
   :ensure t
   :config
