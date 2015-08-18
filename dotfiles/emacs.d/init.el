@@ -2014,6 +2014,10 @@ window is active in the perspective."
   (read-only-mode))
 (add-hook 'compilation-filter-hook 'colorize-compilation-buffer)
 
+(use-package telephone-line
+  :config
+  (telephone-line-mode 1))
+
 ;; =============================================================================
 ;;                                                                        Themes
 ;; =============================================================================
