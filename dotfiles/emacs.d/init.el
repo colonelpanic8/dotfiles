@@ -1932,9 +1932,11 @@ window is active in the perspective."
 (use-package go-mode
   :mode (("\\.go\\'" . go-mode)))
 
-(use-package rust-mode  :mode (("\\.rs\\'" . rust-mode)))
+(use-package rust-mode
+  :mode (("\\.rs\\'" . rust-mode)))
 
-(use-package yaml-mode  :mode (("\\.yaml\\'" . yaml-mode)
+(use-package yaml-mode
+  :mode (("\\.yaml\\'" . yaml-mode)
          ("\\.yml\\'" . yaml-mode)))
 
 (use-package sgml-mode
