@@ -174,6 +174,9 @@
 (defun imalison:disable-linum-mode ()
   (linum-mode 0))
 
+(defun imalison:disable-smartparens-mode ()
+  (smartparens-mode 0))
+
 (defun imalison:insert-uuid ()
   (interactive)
   (insert (imalison:uuid)))
@@ -488,6 +491,17 @@ The current directory is assumed to be the project's root otherwise."
   :config
   (progn
     (setq paradox-execute-asynchronously t)))
+
+(use-package smartparens
+  :config
+  (progn
+    (require 'smartparens-config)
+    (smartparens-global-mode 1)
+    (sp-use-smartparens-bindings)
+    (bind-key "C-)" 'sp-forward-slurp-sexp smartparens-mode-map)
+    (bind-key "C-}" 'sp-forward-barf-sexp smartparens-mode-map)
+    (bind-key "C-(" 'sp-backward-slurp-sexp smartparens-mode-map)
+    (bind-key "C-{" 'sp-backward-barf-sexp smartparens-mode-map)))
 
 (use-package term
   :config
@@ -1105,6 +1119,7 @@ the same tree node, and the headline of the tree node in the Org-mode file."
     (setq org-mobile-inbox-for-pull "~/Dropbox/org/flagged.org")
     (setq org-mobile-directory "~/Dropbox/Apps/MobileOrg")
     (add-hook 'org-mode-hook 'imalison:disable-linum-mode)
+    (add-hook 'org-mode-hook 'imalison:disable-smartparens-mode)
     (add-hook 'org-mode-hook (lambda () (setq org-todo-key-trigger t)))
     (add-hook 'org-agenda-mode-hook 'imalison:disable-linum-mode)))
 
