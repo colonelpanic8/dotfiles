@@ -80,12 +80,11 @@
 (eval-when-compile (require 'use-package))
 (require 'diminish)
 (require 'bind-key)
+(setq use-package-always-ensure t)
 
-(use-package bug-hunter
-  :ensure t)
+(use-package bug-hunter)
 
 (use-package benchmark-init
-  :ensure t
   ;; this variable has to be set in custom-before.el
   :if (and (boundp 'do-benchmark) do-benchmark))
 
@@ -495,11 +494,9 @@ The current directory is assumed to be the project's root otherwise."
 
 ;; Set path from shell.
 (use-package exec-path-from-shell
-  :ensure t
   :config (exec-path-from-shell-initialize))
 
 (use-package yasnippet
-  :ensure t
   :defer 5
   :commands (yas-global-mode)
   :config
@@ -517,7 +514,6 @@ The current directory is assumed to be the project's root otherwise."
   (setq tramp-default-method "ssh"))
 
 (use-package shackle
-  :ensure t
   :config
   (progn
     (diminish 'shackle-mode)
@@ -536,7 +532,6 @@ The current directory is assumed to be the project's root otherwise."
 (use-package discover-my-major :ensure t)
 
 (use-package which-key
-  :ensure t
   :config
   (progn
     (setq which-key-idle-delay .15)
@@ -549,32 +544,27 @@ The current directory is assumed to be the project's root otherwise."
 
 (imalison:prefix-alternative imalison:avy avy-goto-word-1 avy-goto-char)
 (use-package avy
-  :ensure t
   :bind (("C-j" . imalison:avy)
          ("M-g l" . avy-goto-line)
          ("C-'" . avy-goto-char-2)))
 
 (imalison:prefix-alternative imalison:ace-window ace-select-window ace-swap-window)
 (use-package ace-window
-  :ensure t
   :config (setq aw-keys '(?a ?s ?d ?f ?g ?h ?j ?k ?l))
   :bind ("C-c w" . imalison:ace-window))
 
 (use-package flycheck
-  :ensure t
   :config
   (progn (global-flycheck-mode))
   :diminish flycheck-mode)
 
 (use-package haskell-mode
-  :ensure t
   :commands haskell-mode
   :config
   (progn
     (add-hook 'haskell-mode-hook 'turn-on-haskell-indent)))
 
 (use-package narrow-indirect
-  :ensure t
   :init
   (progn
     (define-key ctl-x-4-map "nd" 'ni-narrow-to-defun-indirect-other-window)
@@ -582,15 +572,12 @@ The current directory is assumed to be the project's root otherwise."
     (define-key ctl-x-4-map "np" 'ni-narrow-to-page-indirect-other-window)))
 
 (use-package editorconfig
-  :ensure t
   :demand t)
 
 (use-package dtrt-indent
-  :ensure t
   :init (add-hook 'prog-mode-hook 'dtrt-indent-mode))
 
 (use-package rainbow-delimiters
-  :ensure t
   :commands rainbow-delimiters-mode
   :init
   (progn
@@ -601,7 +588,6 @@ The current directory is assumed to be the project's root otherwise."
 (use-package gitolite-clone :ensure t)
 
 (use-package magit
-  :ensure t
   :commands magit-status
   :bind (("C-x g" . magit-status))
   :init
@@ -611,13 +597,11 @@ The current directory is assumed to be the project's root otherwise."
     (use-package magit-filenotify
       ;; Seems like OSX does not support filenotify.
       :disabled t
-      :ensure t
       :if (emacs24_4-p)
       :config
       :init (add-hook 'magit-status-mode-hook 'magit-filenotify-mode))))
 
 (use-package company
-  :ensure t
   :commands company-mode
   :bind (("C-\\" . company-complete))
   :config
@@ -629,7 +613,6 @@ The current directory is assumed to be the project's root otherwise."
   (add-hook 'prog-mode-hook (lambda () (company-mode t))))
 
 (use-package expand-region
-  :ensure t
   :commands er/expand-region
   :config (setq expand-region-contract-fast-key "j")
   :bind (("C-c k" . er/expand-region)))
@@ -638,11 +621,9 @@ The current directory is assumed to be the project's root otherwise."
   :config
   (progn
     (use-package phi-search-mc
-      :ensure t
       :config
       (phi-search-mc/setup-keys))
     (use-package mc-extras
-      :ensure t
       :config
       (define-key mc/keymap (kbd "C-. =") 'mc/compare-chars)))
   :bind
@@ -656,7 +637,6 @@ The current directory is assumed to be the project's root otherwise."
 
 (use-package undo-tree
   :disabled t ;; this has been getting pretty annoying
-  :ensure t
   :bind (("C--" . undo-redo)
          ("C-c u" . undo-tree-visualize)
          ("C-c r" . undo-tree-redo))
@@ -669,12 +649,10 @@ The current directory is assumed to be the project's root otherwise."
     (setq undo-tree-visualizer-timestamps t)))
 
 (use-package string-inflection
-  :ensure t
   :commands string-inflection-toggle
   :bind ("C-c l" . string-inflection-toggle))
 
 (use-package load-dir
-  :ensure t
   :config
   (progn
     (add-to-list 'load-dirs "~/.emacs.d/load.d")
@@ -689,15 +667,12 @@ The current directory is assumed to be the project's root otherwise."
     (setq recentf-max-menu-items 500)))
 
 (use-package zop-to-char
-  :ensure t
   :bind ("M-z" . zop-to-char))
 
 (use-package restclient
-  :ensure t
   :mode (("\\.restclient\\'" . restclient-mode)))
 
 (use-package comment-dwim-2
-  :ensure t
   :bind ("M-;" . comment-dwim-2))
 
 ;; =============================================================================
@@ -705,11 +680,9 @@ The current directory is assumed to be the project's root otherwise."
 ;; =============================================================================
 
 (use-package helm-spotify
-  :ensure t
   :commands helm-spotify)
 
 (use-package edit-server
-  :ensure t
   :commands edit-server-start
   :defer 1
   :config
@@ -718,7 +691,6 @@ The current directory is assumed to be the project's root otherwise."
     (setq edit-server-new-frame nil)))
 
 (use-package jabber
-  :ensure t
   :commands jabber-connect
   :config
   (progn
@@ -951,14 +923,12 @@ the same tree node, and the headline of the tree node in the Org-mode file."
         (org-notify-start 10)))
 
     (use-package org-bullets
-      :ensure t
       :config
       (progn
         (add-hook 'org-mode-hook (lambda () (org-bullets-mode 1)))))
 
     (use-package org-ehtml
       :disabled t
-      :ensure t
       :config
       (progn
         (setq org-ehtml-docroot (expand-file-name "~/Dropbox/org"))
@@ -1140,7 +1110,6 @@ the same tree node, and the headline of the tree node in the Org-mode file."
 (use-package clocker :ensure t)
 
 (use-package org-projectile
-  :ensure t
   :demand t
   :bind (("C-c n p" . imalison:helm-org-todo))
   :config
@@ -1161,23 +1130,19 @@ the same tree node, and the headline of the tree node in the Org-mode file."
             :buffer "*helm org capture templates*"))))
 
 (use-package deft
-  :ensure t
   :config
   (progn
     (setq deft-extensions '("org"))
     (setq deft-directory "~/Dropbox (Personal)/org/notes")))
 
 (use-package epg
-  :ensure t
   :config
   (epa-file-enable))
 
 (use-package twittering-mode
-  :ensure t
   :commands twittering-mode)
 
 (use-package erc
-  :ensure t
   :commands erc
   :config
   (progn
@@ -1286,7 +1251,6 @@ marking if it still had that."
 (use-package gmail-message-mode :ensure t)
 
 (use-package alert
-  :ensure t
   :config
   (progn
     (defun alert-notifier-notify (info)
@@ -1308,7 +1272,6 @@ marking if it still had that."
     (setq alert-default-style 'notifier)))
 
 (use-package sauron
-  :ensure t
   :defer 5
   :commands (sauron-start sauron-start-hidden)
   :init
@@ -1354,7 +1317,6 @@ marking if it still had that."
 (use-package libmpdee :ensure t)
 
 (use-package flyspell
-  :ensure t
   :config
   (progn
     (diminish 'flyspell-mode)
@@ -1421,7 +1383,6 @@ marking if it still had that."
   (progn
     (helm-mode 1)
     (use-package helm-ag
-      :ensure t
       :bind ("C-c p S" . imalison:set-helm-ag-extra-options)
       :config
       (defun imalison:set-helm-ag-extra-options ()
@@ -1492,12 +1453,10 @@ marking if it still had that."
     (diminish 'helm-mode)))
 
 (use-package helm-swoop
-  :ensure t
   :bind ("C-S-s" . helm-swoop)
   :commands helm-swoop)
 
 (use-package perspective
-  :ensure t
   :demand t
   :config
   (progn
@@ -1543,7 +1502,6 @@ window is active in the perspective."
   :bind ("C-c 9" . persp-switch))
 
 (use-package projectile
-  :ensure t
   :demand t
   :config
   (progn
@@ -1581,11 +1539,9 @@ window is active in the perspective."
   :init
   (progn
     (use-package persp-projectile
-      :ensure t
       :commands projectile-persp-switch-project)))
 
 (use-package helm-projectile
-  :ensure t
   :commands (helm-projectile-on)
   :config
   (progn
@@ -1600,7 +1556,6 @@ window is active in the perspective."
                                helm-source-projectile-projects)))
 
 (use-package smex
-  :ensure t
   ;; Using helm-M-x instead
   :disabled t
   :commands smex
@@ -1608,7 +1563,6 @@ window is active in the perspective."
   :bind ("M-x" . smex))
 
 (use-package ido
-  :ensure t
   :commands ido-mode
   :config
   (progn
@@ -1620,7 +1574,6 @@ window is active in the perspective."
     (use-package flx :ensure t)
     (use-package flx-ido
       :commands flx-ido-mode
-      :ensure t
       :init (flx-ido-mode 1)
       :config
       (progn
@@ -1629,11 +1582,9 @@ window is active in the perspective."
         (setq gc-cons-threshold 20000000)
         (setq ido-use-faces nil)))
     (use-package ido-ubiquitous
-      :ensure t
       :disabled t
       :commands (ido-ubiquitous-mode))
     (use-package ido-vertical-mode
-      :ensure t
       :config
       (progn
         (ido-vertical-mode 1)
@@ -1655,7 +1606,6 @@ window is active in the perspective."
   :ensure t)
 
 (use-package elisp-slime-nav
-  :ensure t
   :commands elisp-slime-nav-mode
   :config
   (diminish 'elisp-slime-nav-mode)
@@ -1726,7 +1676,6 @@ window is active in the perspective."
   (message "%s" (get-virtual-envs)))
 
 (use-package elpy
-  :ensure t
   :commands elpy-enable
   :config
   (progn
@@ -1772,7 +1721,6 @@ window is active in the perspective."
   :config
   (progn
     (use-package ensime
-      :ensure t
       :config
       (progn
         (add-hook 'scala-mode-hook 'ensime-scala-mode-hook)
@@ -1794,7 +1742,6 @@ window is active in the perspective."
                                   indent-tabs-mode t)))
 
 (use-package android-mode
-  :ensure t
   :config
   (progn
     (setq android-mode-sdk-dir
@@ -1816,7 +1763,6 @@ window is active in the perspective."
       (insert ".only"))))
 
 (use-package js2-mode
-  :ensure t
   :commands (js2-mode)
   :mode "\\.js\\'"
   :bind
@@ -1856,14 +1802,12 @@ window is active in the perspective."
     (add-hook 'js2-mode-hook 'js2-imenu-extras-mode)))
 
 (use-package js2-refactor
-  :ensure t
   :config
   (progn
     (js2r-add-keybindings-with-prefix "C-c C-m")
     (add-hook 'js2-mode-hook #'js2-refactor-mode)))
 
 (use-package skewer-mode
-  :ensure t
   :commands skewer-mode
   :config
   (progn
@@ -1872,7 +1816,6 @@ window is active in the perspective."
 
 (use-package tern
   :commands tern-mode
-  :ensure t
   :config
   (use-package company-tern
     :config (add-to-list 'company-backends 'company-tern)))
@@ -1882,7 +1825,6 @@ window is active in the perspective."
   (delete-process "tern"))
 
 (use-package json-mode
-  :ensure t
   :mode "\\.json\\'"
   :init
   (add-hook 'json-mode-hook
@@ -1891,7 +1833,6 @@ window is active in the perspective."
               (setq js-indent-level 4))))
 
 (use-package jsx-mode
-  :ensure t
   :mode "\\.jsx\\'")
 
 (eval-after-load 'css-mode
@@ -1902,7 +1843,6 @@ window is active in the perspective."
 ;; =============================================================================
 
 (use-package robe
-  :ensure t
   :commands robe-mode
   :init
   (progn (add-hook 'ruby-mode-hook
@@ -1920,7 +1860,6 @@ window is active in the perspective."
               indent-tabs-mode t)
 
 (use-package helm-gtags
-  :ensure t
   :disabled t
   :config (custom-set-variables
            '(helm-gtags-path-style 'relative)
@@ -1989,23 +1928,18 @@ window is active in the perspective."
 ;; =============================================================================
 
 (use-package go-mode
-  :ensure t
   :mode (("\\.go\\'" . go-mode)))
 
-(use-package rust-mode :ensure t
-  :mode (("\\.rs\\'" . rust-mode)))
+(use-package rust-mode  :mode (("\\.rs\\'" . rust-mode)))
 
-(use-package yaml-mode :ensure t
-  :mode (("\\.yaml\\'" . yaml-mode)
+(use-package yaml-mode  :mode (("\\.yaml\\'" . yaml-mode)
          ("\\.yml\\'" . yaml-mode)))
 
 (use-package sgml-mode
-  :ensure t
   :commands sgml-mode
   :bind ("C-c b" . web-beautify-html))
 
 (use-package gitconfig-mode
-  :ensure t
   :mode "\\.?gitconfig\\'")
 
 (use-package evil :ensure t :commands (evil-mode))
@@ -2085,7 +2019,6 @@ window is active in the perspective."
 (defvar imalison:dark-theme 'material)
 
 (use-package theme-changer
-  :ensure t
   :config
   (progn
     (destructuring-bind (latitude longitude)
