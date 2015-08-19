@@ -2041,7 +2041,9 @@ window is active in the perspective."
 
 (use-package telephone-line
   :config
-  (telephone-line-mode 1))
+  (progn
+    (setq telephone-line-primary-left-separator #'telephone-line-cubed-left)
+    (telephone-line-mode 1)))
 
 ;; =============================================================================
 ;;                                                                        Themes
