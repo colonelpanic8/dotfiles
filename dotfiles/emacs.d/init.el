@@ -503,9 +503,15 @@ The current directory is assumed to be the project's root otherwise."
     (bind-key "C-(" 'sp-backward-slurp-sexp smartparens-mode-map)
     (bind-key "C-{" 'sp-backward-barf-sexp smartparens-mode-map)))
 
+(defun imalison:start-ansi-term ()
+  (interactive)
+  (ansi-term (getenv "SHELL")))
+
+(imalison:prefix-alternative imalison:term imalison:start-ansi-term ansi-term)
 (use-package term
   :config
-  (progn (add-hook 'term-mode-hook 'imalison:disable-linum-mode)))
+  (progn
+    (add-hook 'term-mode-hook 'imalison:disable-linum-mode)))
 
 ;; Set path from shell.
 (use-package exec-path-from-shell
