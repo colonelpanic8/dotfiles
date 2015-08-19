@@ -2040,6 +2040,7 @@ window is active in the perspective."
 (add-hook 'compilation-filter-hook 'colorize-compilation-buffer)
 
 (use-package telephone-line
+  :disabled t
   :config
   (progn
     (setq telephone-line-primary-left-separator #'telephone-line-cubed-left)
