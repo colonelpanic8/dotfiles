@@ -532,7 +532,7 @@ The current directory is assumed to be the project's root otherwise."
 (use-package tramp
   :commands tramp
   :config
-  (setq tramp-default-method "ssh"))
+  (setq tramp-default-method "scp"))
 
 (use-package shackle
   :config
