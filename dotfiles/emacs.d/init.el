@@ -700,6 +700,12 @@ The current directory is assumed to be the project's root otherwise."
 ;;                                                         Non-Programming Stuff
 ;; =============================================================================
 
+(use-package calc-mode
+  :ensure nil
+  :config
+  (progn
+    (setq calc-context-sensitive-enter t)))
+
 (use-package helm-spotify
   :commands helm-spotify)
 
