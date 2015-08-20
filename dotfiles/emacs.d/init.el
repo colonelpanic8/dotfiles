@@ -1714,6 +1714,7 @@ window is active in the perspective."
   :commands elpy-enable
   :config
   (progn
+    (setq elpy-use-ipython t)
     (setq elpy-rpc-backend "jedi")
     (elpy-enable)
     (unbind-key "M-*" elpy-mode-map)
