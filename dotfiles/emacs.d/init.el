@@ -30,7 +30,7 @@
 (defvar machine-custom "~/.emacs.d/this-machine.el")
 (setq custom-file "~/.emacs.d/custom-before.el")
 (when (file-exists-p custom-file) (load custom-file))
-(setq custom-after-file "~/.emacs.d/custom-after.el")
+(defvar custom-after-file "~/.emacs.d/custom-after.el")
 (when (file-exists-p machine-custom) (load machine-custom))
 
 ;; =============================================================================
@@ -82,7 +82,6 @@
 
 (use-package diminish)
 (use-package bind-key)
-
 (use-package bug-hunter)
 
 (use-package benchmark-init
@@ -1805,7 +1804,7 @@ window is active in the perspective."
   (("C-c b" . web-beautify-js))
   :init
   (progn
-    (setq imalison:identifier-count 0)
+    (defvar-setq imalison:identifier-count 0)
     (defun imalison:console-log-unique ()
       (interactive)
       (let* ((identifier-string (int-to-string imalison:identifier-count))
@@ -1815,17 +1814,14 @@ window is active in the perspective."
     (defun imalison:js2-mode-hook ()
       ;; Sensible defaults
       (setq js2-bounce-indent-p nil
-          js2-basic-offset 4
-          js2-indent-level 4
-          js2-basic-offset 4
-          js2-highlight-level 3
-          js2-include-node-externs t
-          js2-mode-show-parse-errors nil
-          js2-mode-show-strict-warnings nil
-          indent-tabs-mode nil
-          js2-indent-level 4
-          js2-basic-offset 4
-          js2-indent-switch-body t)
+            js2-indent-level 4
+            js2-basic-offset 4
+            js2-highlight-level 3
+            js2-include-node-externs t
+            js2-mode-show-parse-errors nil
+            js2-mode-show-strict-warnings nil
+            indent-tabs-mode nil
+            js2-indent-switch-body t)
       (edconf-find-file-hook) ;; Make sure that editorconfig takes precedence
       (tern-mode t)
       (when nil (skewer-mode)) ;; TODO: reenable
