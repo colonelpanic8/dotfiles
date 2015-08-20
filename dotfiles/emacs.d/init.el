@@ -498,6 +498,8 @@ The current directory is assumed to be the project's root otherwise."
     (require 'smartparens-config)
     (smartparens-global-mode 1)
     (sp-use-smartparens-bindings)
+    (unbind-key "C-<backspace>" smartparens-mode-map)
+    (unbind-key "M-<backspace>" smartparens-mode-map)
     (bind-key "C-)" 'sp-forward-slurp-sexp smartparens-mode-map)
     (bind-key "C-}" 'sp-forward-barf-sexp smartparens-mode-map)
     (bind-key "C-(" 'sp-backward-slurp-sexp smartparens-mode-map)
