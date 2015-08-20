@@ -2074,6 +2074,11 @@ window is active in the perspective."
 (defun random-choice (choices)
   (nth (random (length choices)) choices))
 
+(defun imalison:set-font-height ()
+  (interactive)
+  (let ((new-height (read-face-attribute 'default :height (selected-frame))))
+    (set-face-attribute 'default nil :height new-height)))
+
 (defun imalison:remove-fringe-and-hl-line-mode (&rest stuff)
   (interactive)
   (if (fboundp 'scroll-bar-mode) (scroll-bar-mode -1))
