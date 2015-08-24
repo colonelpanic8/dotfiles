@@ -217,7 +217,7 @@ function ospaste() {
 }
 
 function git_root() {
-    cd `git root`
+    cd "$(git root)"
 }
 
 function git_diff_replacing() {
