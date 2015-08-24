@@ -1978,6 +1978,10 @@ window is active in the perspective."
 
 (use-package evil :ensure t :commands (evil-mode))
 
+(use-package thrift
+  :commands thrift-mode
+  :mode (("\\.thrift\\'" . thrift-mode)))
+
 ;; =============================================================================
 ;;                                                           Custom Key Bindings
 ;; =============================================================================
