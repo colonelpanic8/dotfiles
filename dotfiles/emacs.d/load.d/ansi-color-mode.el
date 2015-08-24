@@ -7,6 +7,7 @@
   "Fundamental mode that understands ansi colors."
   (require 'ansi-color)
   (ansi-color-apply-on-region (point-min) (point-max))
-  (save-buffer))
+  (save-buffer)
+  (read-only-mode))
 
 (add-to-list 'auto-mode-alist '("\\.ansi_color\\'" . fundamental-ansi-mode))
