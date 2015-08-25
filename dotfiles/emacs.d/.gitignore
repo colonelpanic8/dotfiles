@@ -37,3 +37,4 @@ project-to-org-filepath
 .cask
 uber.el
 semanticdb/
+.tutor
