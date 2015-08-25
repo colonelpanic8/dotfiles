@@ -704,6 +704,8 @@ The current directory is assumed to be the project's root otherwise."
     (define-key prog-mode-map (kbd "M-RET") 'emr-show-refactor-menu)
     (add-hook 'prog-mode-hook 'emr-initialize)))
 
+(use-package git-link)
+
 ;; =============================================================================
 ;;                                                         Non-Programming Stuff
 ;; =============================================================================
