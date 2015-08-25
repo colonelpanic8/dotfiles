@@ -697,6 +697,13 @@ The current directory is assumed to be the project's root otherwise."
 (use-package comment-dwim-2
   :bind ("M-;" . comment-dwim-2))
 
+(use-package emr
+  :commands emr-initialize
+  :init
+  (progn
+    (define-key prog-mode-map (kbd "M-RET") 'emr-show-refactor-menu)
+    (add-hook 'prog-mode-hook 'emr-initialize)))
+
 ;; =============================================================================
 ;;                                                         Non-Programming Stuff
 ;; =============================================================================
