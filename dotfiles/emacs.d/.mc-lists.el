@@ -22,6 +22,8 @@
         python-indent-electric-colon
         sgml-slash
         skeleton-pair-insert-maybe
+        sp-backward-sexp
+        sp-forward-sexp
         tern-ac-dot-complete
         undo-redo
         universal-argument-minus
@@ -33,7 +35,7 @@
       '(
         delete-horizontal-space
         dired-toggle-read-only
+        helm-M-x
         isearch-delete-char
         smex
-        helm-M-x
         ))
