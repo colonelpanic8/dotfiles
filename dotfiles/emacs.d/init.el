@@ -539,7 +539,7 @@ The current directory is assumed to be the project's root otherwise."
   :config
   (progn
     (diminish 'shackle-mode)
-    (shackle-mode)
+    (when nil (shackle-mode))
     (setq shackle-inhibit-window-quit-on-same-windows t)
     (setq shackle-default-rule '(:same t))))
 
