@@ -612,10 +612,10 @@ The current directory is assumed to be the project's root otherwise."
 (use-package magit
   :commands magit-status
   :bind (("C-x g" . magit-status))
-  :init
-  (defvar-setq magit-last-seen-setup-instructions "1.4.0")
   :config
   (progn
+    (defvar-setq magit-last-seen-setup-instructions "1.4.0")
+    (setq magit-revert-buffers t)
     (use-package magit-filenotify
       ;; Seems like OSX does not support filenotify.
       :disabled t
@@ -770,7 +770,7 @@ The current directory is assumed to be the project's root otherwise."
           '(quote (("Effort_ALL" . "0:15 0:30 0:45 1:00 2:00 3:00 4:00 5:00 6:00 0:00")
                    ("STYLE_ALL" . "habit"))))
     (setq org-columns-default-format "%80ITEM(Task) %10Effort(Effort){:} %10CLOCKSUM")
-    (setq helm-org-headings-fontify t)
+    (defvar-setq helm-org-headings-fontify t)
 
     (when nil
       ;; Enable appointment notifications.
