@@ -743,9 +743,12 @@ The current directory is assumed to be the project's root otherwise."
           (format "%s: %s" (jabber-jid-displayname from) text))))
     (setq jabber-alert-message-function 'jabber-message-content-message)))
 
-(use-package htmlize :ensure t)
+(use-package htmlize)
 
-(use-package calfw :ensure t)
+(use-package calfw
+  :config
+  (progn
+    (require 'calfw-org)))
 
 (use-package org
   :ensure org-plus-contrib
