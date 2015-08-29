@@ -12,6 +12,7 @@
 (use-package powerline
   :init
   (progn
+    (setq powerline-height 25)
     ;; Custom format of minor mode lighters, they are separated by a pipe.
     (defpowerline spacemacs-powerline-minor-modes
       (mapconcat (lambda (mm)
