@@ -10,8 +10,6 @@
 
 (defvar dotspacemacs-mode-line-unicode-symbols nil)
 (use-package powerline
-  :disabled t
-  :ensure t
   :init
   (progn
     ;; Custom format of minor mode lighters, they are separated by a pipe.
