@@ -2048,7 +2048,7 @@ window is active in the perspective."
 (defvar packages-appearance
   '(monokai-theme solarized-theme zenburn-theme base16-theme molokai-theme
     tango-2-theme gotham-theme sublime-themes ansi-color rainbow-delimiters
-    ample-theme material-theme))
+    ample-theme material-theme zerodark-theme))
 
 (ensure-packages-installed packages-appearance)
 
