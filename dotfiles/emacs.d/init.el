@@ -712,6 +712,8 @@ The current directory is assumed to be the project's root otherwise."
   (progn
     (setq git-link-use-commit t)))
 
+(use-package key-chord)
+
 ;; =============================================================================
 ;;                                                         Non-Programming Stuff
 ;; =============================================================================
