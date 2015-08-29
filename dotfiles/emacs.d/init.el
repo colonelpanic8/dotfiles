@@ -692,7 +692,10 @@ The current directory is assumed to be the project's root otherwise."
   :bind ("M-z" . zop-to-char))
 
 (use-package restclient
-  :mode (("\\.restclient\\'" . restclient-mode)))
+  :mode (("\\.restclient\\'" . restclient-mode))
+  :config
+  (progn
+    (use-package company-restclient)))
 
 (use-package comment-dwim-2
   :bind ("M-;" . comment-dwim-2))
