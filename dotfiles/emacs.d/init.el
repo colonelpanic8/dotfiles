@@ -2109,6 +2109,15 @@ window is active in the perspective."
   (setq left-margin-width 0)
   (defvar-setq hl-line-mode nil))
 
+(when t
+  (if (emacs24_4-p)
+      (advice-add 'load-theme :after #'(lambda (&rest args)
+                                         (when (fboundp 'powerline-reset)
+                                           (powerline-reset))))
+    (defadvice load-theme (after name activate)
+      (when (fboundp 'powerline-reset)
+        (powerline-reset)))))
+
 (when (file-exists-p custom-after-file) (load custom-after-file))
 
 (defun imalison:appearance (&optional frame)
