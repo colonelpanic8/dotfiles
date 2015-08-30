@@ -8,7 +8,6 @@ function _source_shellenv_files {
 }
 
 function _setup_env {
-    PATH="/bin/"
     _path_helper
     idem_add_to_back_of_path "$HOME/.local/lib/python2.6/site-packages"
     idem_add_to_back_of_path "$HOME/.rvm/bin"
