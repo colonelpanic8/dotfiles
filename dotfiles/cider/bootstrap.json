@@ -3,7 +3,8 @@
   "taps": [
     "caskroom/cask",
     "mopidy/mopidy",
-    "homebrew/dupes"
+    "homebrew/dupes",
+    "nviennot/tmate"
   ],
   "casks": [
     "adobe-reader",
@@ -142,6 +143,7 @@
     "sqlite",
     "subversion",
     "terminal-notifier",
+    "tmate",
     "the_silver_searcher",
     "tig",
     "tmux",
