@@ -7,6 +7,7 @@ function git-sync {
 	git rebase origin/master
 
 	rsync -t $target/* $destination
+	git add .
 	git commit -am "$(date)"
 	git push origin HEAD
 	git clean -fd
