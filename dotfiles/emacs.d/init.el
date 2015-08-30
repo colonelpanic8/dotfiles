@@ -713,6 +713,8 @@ The current directory is assumed to be the project's root otherwise."
 
 (use-package key-chord)
 
+(use-package nodejs-repl)
+
 ;; =============================================================================
 ;;                                                         Non-Programming Stuff
 ;; =============================================================================
