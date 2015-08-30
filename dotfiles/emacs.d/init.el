@@ -93,7 +93,7 @@
 ;; =============================================================================
 
 (defvar packages-eager
-  '(popup yasnippet cl-lib
+  '(popup cl-lib
     xclip dired+ ctags ctags-update aggressive-indent imenu+ neotree diminish
     gist))
 
@@ -551,7 +551,7 @@ The current directory is assumed to be the project's root otherwise."
 ;; y and n instead of yes and no
 (defalias 'yes-or-no-p 'y-or-n-p)
 
-(use-package discover-my-major :ensure t)
+(use-package discover-my-major)
 
 (use-package which-key
   :config
@@ -561,8 +561,7 @@ The current directory is assumed to be the project's root otherwise."
     (which-key-mode)))
 
 (use-package jump-char
-  :bind (("C-;" . jump-char-forward))
-  :ensure t)
+  :bind (("C-;" . jump-char-forward)))
 
 (imalison:prefix-alternative imalison:avy avy-goto-word-1 avy-goto-char)
 (use-package avy
