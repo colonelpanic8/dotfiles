@@ -11,14 +11,14 @@ autoload run-help
 HELPDIR=/usr/local/share/zsh/helpfiles
 
 
-set_powerline_prompt
+
 
 function if_emacs_zsh {
     if [ -z $(echo "$INSIDE_EMACS" | grep comint) ]; then
-        echo;
-    else
         set_my_prompt
+    else
+        echo;
     fi
 }
 
-environment_variable_exists INSIDE_EMACS && if_emacs_zsh
+environment_variable_exists INSIDE_EMACS && if_emacs_zsh || set_powerline_prompt
