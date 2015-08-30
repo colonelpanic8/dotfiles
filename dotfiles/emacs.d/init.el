@@ -777,6 +777,14 @@ The current directory is assumed to be the project's root otherwise."
     (setq org-columns-default-format "%80ITEM(Task) %10Effort(Effort){:} %10CLOCKSUM")
     (defvar-setq helm-org-headings-fontify t)
 
+    (org-babel-do-load-languages
+     'org-babel-load-languages
+     '((sh . t)
+       (python . t)
+       (ruby . t)
+       (octave . t)
+       (sqlite . t)))
+
     (when nil
       ;; Enable appointment notifications.
       (defadvice org-agenda-to-appt (before wickedcool activate)
