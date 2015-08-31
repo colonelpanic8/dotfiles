@@ -557,7 +557,7 @@ The current directory is assumed to be the project's root otherwise."
 (use-package which-key
   :config
   (progn
-    (setq which-key-idle-delay .15)
+    (setq which-key-idle-delay .50)
     (diminish 'which-key-mode)
     (which-key-mode)))
 
