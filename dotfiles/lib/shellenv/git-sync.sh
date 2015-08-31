@@ -6,7 +6,7 @@ function git-sync {
 	# This won't work for branches other than master
 	git rebase origin/master
 
-	rsync -t $target/* $destination
+	rsync -rt $target/* $destination
 	git add .
 	git commit -am "$(date)"
 	git push origin HEAD
