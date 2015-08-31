@@ -2119,16 +2119,28 @@ window is active in the perspective."
   (setq left-margin-width 0)
   (defvar-setq hl-line-mode nil))
 
+(defun imalison:after-load-theme (&rest args)
+  (when (fboundp 'powerline-reset)
+    (powerline-reset))
+  (imalison:restore-ansi-term-color-vector))
+
 (when t
   (if (emacs24_4-p)
-      (advice-add 'load-theme :after #'(lambda (&rest args)
-                                         (when (fboundp 'powerline-reset)
-                                           (powerline-reset))))
+      (advice-add 'load-theme :after #'imalison:after-load-theme)
     (defadvice load-theme (after name activate)
-      (when (fboundp 'powerline-reset)
-        (powerline-reset)))))
+      (imalison:after-load-theme))))
 
 (when (file-exists-p custom-after-file) (load custom-after-file))
+
+(defvar imalison:ansi-term-color-vector ansi-term-color-vector)
+
+(defun imalison:ansi-term-color-vector-broken? ()
+    (--some (or (eq it 'unspecified) (not (symbolp it)))
+            (append ansi-term-color-vector nil)))
+
+(defun imalison:restore-ansi-term-color-vector (&optional force)
+  (when (or force (imalison:ansi-term-color-vector-broken?))
+    (setq ansi-term-color-vector imalison:ansi-term-color-vector)))
 
 (defun imalison:appearance (&optional frame)
   (interactive)
