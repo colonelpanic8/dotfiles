@@ -1210,6 +1210,10 @@ the same tree node, and the headline of the tree node in the Org-mode file."
   :config
   (progn
     ;; (add-to-list 'erc-modules 'notifications)
+    ;; logging:
+    (require 'erc-log)
+    (setq erc-log-channels-directory "~/Dropbox (Personal)/irclogs")
+    (erc-log-enable)
     (use-package erc-colorize :ensure t) (erc-colorize-mode 1)))
 
 (use-package s :ensure t)
