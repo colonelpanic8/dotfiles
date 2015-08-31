@@ -2153,7 +2153,7 @@ window is active in the perspective."
     (progn
       (load-theme 'source-code-pro t)
       (message "not setting font")))
-  (change-theme imalison:light-theme imalison:dark-theme)
+  (load-theme 'imalison:dark-theme t)
   (imalison:remove-fringe-and-hl-line-mode)
   (message "finished set appearance"))
 
