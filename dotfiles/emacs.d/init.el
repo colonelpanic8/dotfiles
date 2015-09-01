@@ -2016,6 +2016,11 @@ window is active in the perspective."
   :commands thrift-mode
   :mode (("\\.thrift\\'" . thrift-mode)))
 
+(use-package markdown-mode
+  :init
+  (progn
+    (add-hook 'markdown-mode-hook 'imalison:disable-linum-mode)))
+
 ;; =============================================================================
 ;;                                                           Custom Key Bindings
 ;; =============================================================================
