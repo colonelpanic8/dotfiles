@@ -1996,7 +1996,16 @@ window is active in the perspective."
 ;; =============================================================================
 
 (use-package go-mode
-  :mode (("\\.go\\'" . go-mode)))
+  :mode (("\\.go\\'" . go-mode))
+  :config
+  (progn
+    (use-package company-go)
+    (defun imalison:go-mode-hook ()
+      (local-set-key (kbd "M-.") 'godef-jump)
+      (local-set-key (kbd "M-,") 'pop-tag-mark)
+      (set (make-local-variable 'company-backends) '(company-go)))
+    (add-hook 'go-mode-hook 'imalison:go-mode-hook)
+    (add-hook 'before-save-hook 'gofmt-before-save)))
 
 (use-package rust-mode
   :mode (("\\.rs\\'" . rust-mode)))
