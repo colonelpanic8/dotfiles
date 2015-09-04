@@ -55,6 +55,9 @@ function _setup_env {
     idem_add_to_front_of_path "$HOME/.local/bin"
     idem_add_to_front_of_path "$HOME/.lib/python" 'PYTHONPATH'
 
+    idem_add_to_front_of_path "$HOME/go" 'GOPATH'
+    idem_add_to_front_of_path "${GOPATH//://bin:}/bin"
+
     export RBENV_ROOT=/usr/local/var/rbenv
     idem_add_to_front_of_path "$HOME/.rbenv/bin"
     hash rbenv 2> /dev/null && eval "$(rbenv init -)"
