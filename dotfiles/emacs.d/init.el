@@ -1571,6 +1571,20 @@ window is active in the perspective."
     (define-key persp-mode-map (kbd "C-x b") 'persp-mode-switch-buffers))
   :bind ("C-c 9" . persp-switch))
 
+(use-package helm-projectile
+  :commands (helm-projectile-on)
+  :config
+  (progn
+    (helm-delete-action-from-source "Search in Project" helm-source-projectile-projects)
+    (defun imalison:switch-to-project-and-search (dir)
+      (let ((default-directory dir)
+            (projectile-require-project-root nil)
+            (helm-action-buffer "this-buffer-should-not-exist"))
+        (helm-projectile-ag)))
+    (helm-add-action-to-source "Search in Project"
+                               'imalison:switch-to-project-and-search
+                               helm-source-projectile-projects)))
+
 (use-package projectile
   :demand t
   :config
@@ -1610,20 +1624,6 @@ window is active in the perspective."
   (progn
     (use-package persp-projectile
       :commands projectile-persp-switch-project)))
-
-(use-package helm-projectile
-  :commands (helm-projectile-on)
-  :config
-  (progn
-    (helm-delete-action-from-source "Search in Project" helm-source-projectile-projects)
-    (defun imalison:switch-to-project-and-search (dir)
-      (let ((default-directory dir)
-            (projectile-require-project-root nil)
-            (helm-action-buffer "this-buffer-should-not-exist"))
-        (helm-projectile-ag)))
-    (helm-add-action-to-source "Search in Project"
-                               'imalison:switch-to-project-and-search
-                               helm-source-projectile-projects)))
 
 (use-package smex
   ;; Using helm-M-x instead
