@@ -778,6 +778,7 @@ The current directory is assumed to be the project's root otherwise."
                    ("STYLE_ALL" . "habit"))))
     (setq org-columns-default-format "%80ITEM(Task) %10Effort(Effort){:} %10CLOCKSUM")
     (defvar-setq helm-org-headings-fontify t)
+    (setq org-todo-repeat-to-state "TODO")
 
     (org-babel-do-load-languages
      'org-babel-load-languages
