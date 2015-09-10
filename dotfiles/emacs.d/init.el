@@ -1673,9 +1673,6 @@ window is active in the perspective."
 
 (use-package macrostep :ensure t)
 
-(use-package paredit
-  :ensure t)
-
 (use-package elisp-slime-nav
   :commands elisp-slime-nav-mode
   :config
