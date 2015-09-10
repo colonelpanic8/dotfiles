@@ -1980,7 +1980,6 @@ window is active in the perspective."
   :config
   (progn
     (add-hook 'TeX-mode-hook 'set-TeX-master)
-    (unbind-key "C-j" LaTeX-mode-map)
     (unbind-key "C-j" TeX-mode-map)
     (setq TeX-auto-save t)
     (setq TeX-parse-self t)
@@ -1988,6 +1987,12 @@ window is active in the perspective."
     (setq TeX-PDF-mode t)
     (TeX-global-PDF-mode t)
     (setq-default TeX-master nil)))
+
+(use-package latex
+  :ensure auctex
+  :config
+  (progn
+    (unbind-key "C-j" LaTeX-mode-map)))
 
 ;; =============================================================================
 ;;                                                                   other modes
