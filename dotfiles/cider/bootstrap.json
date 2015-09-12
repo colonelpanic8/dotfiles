@@ -5,6 +5,7 @@
     "mopidy/mopidy",
     "homebrew/dupes",
     "nviennot/tmate"
+    "railwaycat/emacsmacport"
   ],
   "casks": [
     "adobe-reader",
@@ -59,7 +60,7 @@
     "ctags",
     "daemonize",
     "docker",
-    "emacs --cocoa --srgb --with-d-bus",
+    "emacs-mac"
     "findutils",
     "fontconfig",
     "fontforge",
