@@ -4,7 +4,7 @@
     "caskroom/cask",
     "mopidy/mopidy",
     "homebrew/dupes",
-    "nviennot/tmate"
+    "nviennot/tmate",
     "railwaycat/emacsmacport"
   ],
   "casks": [
@@ -66,6 +66,7 @@
     "fontforge",
     "freetype",
     "gawk",
+    "gcc",
     "gdbm",
     "gettext",
     "ghc",
@@ -135,6 +136,7 @@
     "readline",
     "reattach-to-user-namespace",
     "rsync",
+    "rtorrent",
     "ruby-build",
     "sbt",
     "scala",
