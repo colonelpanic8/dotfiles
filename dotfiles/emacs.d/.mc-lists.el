@@ -3,6 +3,7 @@
 
 (setq mc/cmds-to-run-for-all
       '(
+        delete-horizontal-space
         backward-sexp
         dired-do-rename
         eval-last-sexp
@@ -16,6 +17,7 @@
         isearch-printing-char
         keyboard-quit
         kill-region
+        kill-visual-line
         org-delete-char
         org-self-insert-command
         phi-search
@@ -33,7 +35,6 @@
 
 (setq mc/cmds-to-run-once
       '(
-        delete-horizontal-space
         dired-toggle-read-only
         helm-M-x
         isearch-delete-char
