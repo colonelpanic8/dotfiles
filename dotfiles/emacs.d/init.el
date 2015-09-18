@@ -1149,7 +1149,8 @@ the same tree node, and the headline of the tree node in the Org-mode file."
 
     (setq org-todo-keywords
           '((sequence "IDEA(i!)" "RESEARCH(r!)" "TODO(t!)" "NEXT(n!)" "STARTED(s!)" "WAIT(w!)" "BACKLOG(b!)" "|"
-                      "DONE(d!)" "HANDLED(h!)" "EXPIRED(e!)" "CANCELED(c!)")))
+                      "DONE(d!)" "HANDLED(h!)" "EXPIRED(e!)" "CANCELED(c!)")
+            (sequence "BASKET(!)" "CLEAN(!)" "DRY(!)" "|" "FOLDED(!)")))
 
     ;; Record changes to todo states
     (setq org-log-into-drawer t)
