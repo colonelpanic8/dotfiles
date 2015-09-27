@@ -21,11 +21,13 @@
 	ffo = !git ffr origin
 	ffr = "!ffr() { git fetch $1 && git ff $1/$(git which-branch) && git suir; }; ffr"
 	file-exists = "!f() { git ls-files $1 --error-unmatch > /dev/null 2> /dev/null; }; f"
+	force-master = "!f() { git fetch origin && git rh && git master; }; f"
 	icd = "!d() { git difftool --no-prompt --extcmd 'icdiff --cols=200' $@ | $(git config --get core.pager); }; d"	
 	icdl = "!d() { git difftool --no-prompt --extcmd 'icdiff --line-numbers --cols=200' $@ | $(git config --get core.pager); }; d"
 	ignore = "!i() { printf \"\n$1\" >> "`git root`/.gitignore"; }; i"
 	ignore-untracked="!git untracked | xargs -n1 git ignore"
 	l = log --pretty=oneline --graph
+	master = checkout origin/master -B master
 	modified = diff HEAD --name-only
 	poh = push origin HEAD	
 	pohm = push origin HEAD:master
