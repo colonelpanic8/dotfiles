@@ -161,6 +161,11 @@
 ;;                                                                     functions
 ;; =============================================================================
 
+(defun display-prefix (arg)
+  "Display the value of the raw prefix arg."
+  (interactive "P")
+  (message "%s" arg))
+
 (defmacro imalison:prefix-alternative (name default alternative)
   `(defun ,name (arg) (interactive "P")
           (if arg (call-interactively (quote ,alternative))
