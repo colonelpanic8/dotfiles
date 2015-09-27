@@ -3,8 +3,8 @@
 
 (setq mc/cmds-to-run-for-all
       '(
-        delete-horizontal-space
         backward-sexp
+        delete-horizontal-space
         dired-do-rename
         eval-last-sexp
         forward-sexp
@@ -27,6 +27,8 @@
         sp-backward-sexp
         sp-forward-sexp
         tern-ac-dot-complete
+        transpose-sexps
+        transpose-words
         undo-redo
         universal-argument-minus
         wdired-finish-edit
