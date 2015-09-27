@@ -1088,6 +1088,7 @@ the same tree node, and the headline of the tree node in the Org-mode file."
                             (org-agenda-cmp-user-defined 'org-cmp-creation-times)
                             (org-agenda-sorting-strategy '(user-defined-down)))))
           (next '(todo "NEXT"))
+          (started '(todo "STARTED"))
           (missing-deadline
            '(tags-todo "-DEADLINE={.}/!"
                        ((org-agenda-overriding-header
@@ -1105,6 +1106,7 @@ the same tree node, and the headline of the tree node in the Org-mode file."
                          (org-deadline-warning-days 0)))
                 ,due-today
                 ,next
+                ,started
                 ,this-week-high-priority
                 ,recently-created)
                nil nil)
