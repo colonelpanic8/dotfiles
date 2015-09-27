@@ -166,10 +166,20 @@
   (interactive "P")
   (message "%s" arg))
 
-(defmacro imalison:prefix-alternative (name default alternative)
-  `(defun ,name (arg) (interactive "P")
-          (if arg (call-interactively (quote ,alternative))
-            (call-interactively (quote ,default)))))
+(defmacro imalison:prefix-alternatives (name &rest alternatives)
+  `(defun ,name (arg)
+     (interactive "P")
+     (setq arg (or arg '(1)))
+     (setq prefix-value (car arg))
+     (setq function
+           (cond
+            ,@(progn
+               (setq last-multiple 1)
+               (cl-loop for alternative in alternatives
+                        collect `((eq prefix-value ,last-multiple) (quote ,alternative))
+                        do (setq last-multiple (* last-multiple 4))))))
+     (setq function (or function (car alternatives))) ; Set a defautl value for function
+     (call-interactively function)))
 
 (defun imalison:uuid ()
   (interactive)
@@ -488,6 +498,7 @@ The current directory is assumed to be the project's root otherwise."
 (unless (eq system-type 'windows-nt)
   (set-selection-coding-system 'utf-8))
 (prefer-coding-system 'utf-8)
+
 ;; =============================================================================
 ;;                                                                   use-package
 ;; =============================================================================
@@ -522,7 +533,7 @@ The current directory is assumed to be the project's root otherwise."
   (interactive)
   (ansi-term (getenv "SHELL")))
 
-(imalison:prefix-alternative imalison:term imalison:start-ansi-term ansi-term)
+(imalison:prefix-alternatives imalison:term imalison:start-ansi-term ansi-term)
 (use-package term
   :config
   (progn
@@ -578,13 +589,13 @@ The current directory is assumed to be the project's root otherwise."
 (use-package jump-char
   :bind (("C-;" . jump-char-forward)))
 
-(imalison:prefix-alternative imalison:avy avy-goto-word-1 avy-goto-char)
+(imalison:prefix-alternatives imalison:avy avy-goto-word-1 avy-goto-char)
 (use-package avy
   :bind (("C-j" . imalison:avy)
          ("M-g l" . avy-goto-line)
          ("C-'" . avy-goto-char-2)))
 
-(imalison:prefix-alternative imalison:ace-window ace-select-window ace-swap-window)
+(imalison:prefix-alternatives imalison:ace-window ace-select-window ace-swap-window)
 (use-package ace-window
   :config (setq aw-keys '(?a ?s ?d ?f ?g ?h ?j ?k ?l))
   :bind ("C-c w" . imalison:ace-window))
