@@ -1218,6 +1218,20 @@ the same tree node, and the headline of the tree node in the Org-mode file."
     (erc-log-enable)
     (use-package erc-colorize :ensure t) (erc-colorize-mode 1)))
 
+(use-package bitlbee
+  :config
+  (progn
+    (defvar bitlbee-password "geheim")
+    (add-hook 'erc-join-hook 'bitlbee-identify)
+    (defun bitlbee-identify ()
+      "If we're on the bitlbee server, send the identify command to the
+ &bitlbee channel."
+      (when (and (string= "localhost" erc-session-server)
+                 (string= "&bitlbee" (buffer-name)))
+        (erc-message "PRIVMSG" (format "%s identify %s"
+                                       (erc-default-target)
+                                       bitlbee-password))))))
+
 (use-package s :ensure t)
 (add-to-list 'load-path (s-trim (shell-command-to-string "mu4e_directory")))
 
