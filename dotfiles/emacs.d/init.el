@@ -2144,6 +2144,18 @@ window is active in the perspective."
   (read-only-mode))
 (add-hook 'compilation-filter-hook 'colorize-compilation-buffer)
 
+(use-package spaceline-config
+  :ensure spaceline
+  :config
+  (progn
+    (setq spaceline-workspace-numbers-unicode t
+          spaceline-window-numbers-unicode t)
+    (if (display-graphic-p)
+        (setq-default powerline-default-separator 'wave)
+      (setq-default powerline-default-separator 'utf-8))
+    (setq powerline-height 25)
+    (spaceline-spacemacs-theme)))
+
 (use-package telephone-line
   :disabled t
   :config
