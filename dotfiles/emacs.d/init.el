@@ -489,6 +489,7 @@ The current directory is assumed to be the project's root otherwise."
 
 (setq echo-keystrokes 0.25)
 
+(setq initial-scratch-message "")
 (setq utf-translate-cjk-mode nil) ; disable CJK coding/encoding (Chinese/Japanese/Korean characters)
 (set-language-environment 'utf-8)
 (set-keyboard-coding-system 'utf-8-mac) ; For old Carbon emacs on OS X only
