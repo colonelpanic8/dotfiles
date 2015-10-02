@@ -1037,7 +1037,8 @@ the same tree node, and the headline of the tree node in the Org-mode file."
                 collect (file-truename filepath)))))
 
     (imalison:add-to-org-agenda-files
-     (list imalison:org-gtd-file imalison:org-habits-file imalison:org-calendar-file))
+     (list imalison:org-gtd-file imalison:org-habits-file
+           imalison:org-calendar-file))
 
     (add-to-list 'org-capture-templates
                  `("t" "GTD Todo (Linked)" entry (file ,imalison:org-gtd-file)
