@@ -807,6 +807,9 @@ The current directory is assumed to be the project's root otherwise."
     (defvar-setq helm-org-headings-fontify t)
     (setq org-todo-repeat-to-state "TODO")
 
+    (setq org-agenda-span 10)
+    (setq org-agenda-start-day "-2d")
+
     (org-babel-do-load-languages
      'org-babel-load-languages
      '((sh . t)
