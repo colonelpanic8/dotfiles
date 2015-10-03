@@ -18,8 +18,12 @@
         keyboard-quit
         kill-region
         kill-visual-line
+        org-beginning-of-line
         org-delete-char
+        org-end-of-line
+        org-kill-line
         org-self-insert-command
+        org-yank
         phi-search
         python-indent-electric-colon
         sgml-slash
