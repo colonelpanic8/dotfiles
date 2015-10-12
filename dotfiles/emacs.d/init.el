@@ -1657,6 +1657,8 @@ window is active in the perspective."
     (projectile-global-mode)
     (setq projectile-enable-caching t)
     (setq projectile-completion-system 'helm)
+    (add-to-list 'projectile-globally-ignored-files "Godeps")
+    (add-to-list 'projectile-globally-ignored-files "thrift-binaries")
     (helm-projectile-on)
     (diminish 'projectile-mode)
     (unbind-key "C-c p S" projectile-command-map)
