@@ -10,6 +10,7 @@
         forward-sexp
         git-rebase-squash
         git-rebase-undo
+        go-mode-insert-and-indent
         helm-show-kill-ring
         indent-for-tab-command
         isearch-forward-regexp
