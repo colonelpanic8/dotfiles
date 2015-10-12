@@ -2057,6 +2057,7 @@ window is active in the perspective."
   :config
   (progn
     (use-package company-go)
+    (use-package go-projectile)
     (defun imalison:go-mode-hook ()
       (local-set-key (kbd "M-.") 'godef-jump)
       (local-set-key (kbd "M-,") 'pop-tag-mark)
