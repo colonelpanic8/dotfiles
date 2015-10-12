@@ -473,7 +473,11 @@ The current directory is assumed to be the project's root otherwise."
 (eval-after-load 'subword '(diminish 'subword-mode))
 (eval-after-load 'simple '(diminish 'visual-line-mode))
 
+(setq display-time-default-load-average nil)
+(setq display-time-interval 1)
+(setq display-time-format "%a, %b %d, %T ")
 (display-time-mode 1)
+
 (setq reb-re-syntax 'string) ;; the only sane option...
 
 (setq ediff-split-window-function 'split-window-horizontally)
