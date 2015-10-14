@@ -535,11 +535,6 @@ The current directory is assumed to be the project's root otherwise."
     (bind-key "C-(" 'sp-backward-slurp-sexp smartparens-mode-map)
     (bind-key "C-{" 'sp-backward-barf-sexp smartparens-mode-map)))
 
-(defun imalison:start-ansi-term ()
-  (interactive)
-  (ansi-term (getenv "SHELL")))
-
-(imalison:prefix-alternatives imalison:term imalison:start-ansi-term ansi-term)
 (use-package term
   :config
   (progn
@@ -711,6 +706,7 @@ The current directory is assumed to be the project's root otherwise."
     (add-to-list 'load-dirs "~/.emacs.d/load.d")
     (defvar site-lisp "/usr/share/emacs24/site-lisp/")
     (when (file-exists-p site-lisp) (add-to-list 'load-dirs site-lisp))))
+(imalison:prefix-alternatives imalison:term term-projectile ansi-term)
 
 (use-package recentf
   ;; binding is in helm.
@@ -2116,6 +2112,7 @@ window is active in the perspective."
 (bind-key "s-<return>" 'toggle-frame-fullscreen)
 (bind-key "M-|" 'imalison:shell-command-on-region)
 (bind-key "C--" 'undo)
+(bind-key "C-c 8" 'imalison:term)
 
 (fset 'global-set-key-to-use-package
       (lambda (&optional arg) "Keyboard macro." (interactive "p")
