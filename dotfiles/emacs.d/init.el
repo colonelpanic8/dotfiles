@@ -1488,6 +1488,13 @@ marking if it still had that."
 ;;                                          File Navigation: helm/projectile/ido
 ;; =============================================================================
 
+(use-package web-mode
+  :mode ("\\.tmpl\\'" . web-mode)
+  :config
+  (progn
+    (defvar-setq web-mode-content-types-alist
+      '(("gtl" . "\\.tmpl\\'")))))
+
 (use-package helm-themes)
 
 (use-package helm-config
