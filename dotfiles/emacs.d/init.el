@@ -1429,11 +1429,11 @@ marking if it still had that."
     (sauron-start-hidden)
     (add-hook 'sauron-event-added-functions 'sauron-alert-el-adapter)))
 
-(use-package screenshot :ensure t)
+(use-package screenshot)
 
 (use-package wsd-mode)
 
-(use-package libmpdee :ensure t)
+(use-package libmpdee)
 
 (use-package flyspell
   :preface (setq flyspell-issue-welcome-flag nil)
@@ -1488,7 +1488,7 @@ marking if it still had that."
 ;;                                          File Navigation: helm/projectile/ido
 ;; =============================================================================
 
-(use-package helm-themes :ensure t)
+(use-package helm-themes)
 
 (use-package helm-config
   :ensure helm
@@ -1567,8 +1567,7 @@ marking if it still had that."
 
     (use-package helm-descbinds
       :demand t
-      :config (helm-descbinds-mode 1)
-      :ensure t)
+      :config (helm-descbinds-mode 1))
     (helm-mode 1)
     (diminish 'helm-mode)))
 
@@ -1693,7 +1692,7 @@ window is active in the perspective."
     (setq ido-create-new-buffer 'always)
     (ido-everywhere 1)
     (setq ido-enable-flex-matching t)
-    (use-package flx :ensure t)
+    (use-package flx)
     (use-package flx-ido
       :commands flx-ido-mode
       :init (flx-ido-mode 1)
@@ -1711,7 +1710,7 @@ window is active in the perspective."
       (progn
         (ido-vertical-mode 1)
         (setq ido-vertical-define-keys 'C-n-C-p-up-and-down)))
-    (use-package flx-ido :ensure t)))
+    (use-package flx-ido)))
 
 
 (when (or (and (boundp 'use-ido) use-ido) (not (boundp 'use-ido))) (ido-mode 1))
@@ -1722,7 +1721,7 @@ window is active in the perspective."
 
 (setq edebug-trace t)
 
-(use-package macrostep :ensure t)
+(use-package macrostep)
 
 (use-package elisp-slime-nav
   :commands elisp-slime-nav-mode
@@ -1800,7 +1799,6 @@ window is active in the perspective."
   (progn
     (setq jedi:complete-on-dot t)
     (setq jedi:imenu-create-index-function 'jedi:create-flat-imenu-index))
-  :ensure t
   :bind (("M-." . jedi:goto-definition)
          ("M-," . jedi:goto-definition-pop-marker)))
 
