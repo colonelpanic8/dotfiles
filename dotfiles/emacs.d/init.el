@@ -2119,6 +2119,7 @@ window is active in the perspective."
 (bind-key "M-|" 'imalison:shell-command-on-region)
 (bind-key "C--" 'undo)
 (bind-key "C-c 8" 'imalison:term)
+(bind-key "C-c 6" 'previous-buffer)
 
 (fset 'global-set-key-to-use-package
       (lambda (&optional arg) "Keyboard macro." (interactive "p")
