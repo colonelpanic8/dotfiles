@@ -121,7 +121,6 @@
 (put 'set-goal-column 'disabled nil)
 (auto-fill-mode -1)
 (setq indent-tabs-mode nil)
-(setq flyspell-issue-welcome-flag nil)
 
 ;; No hsplits. EVER.
 (defun split-horizontally-for-temp-buffers () (split-window-horizontally))
@@ -1437,6 +1436,7 @@ marking if it still had that."
 (use-package libmpdee :ensure t)
 
 (use-package flyspell
+  :preface (setq flyspell-issue-welcome-flag nil)
   :config
   (progn
     (diminish 'flyspell-mode)
