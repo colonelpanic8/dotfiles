@@ -45,8 +45,5 @@
   (interactive)
   (switch-to-buffer (cvm-contextual-value (make-instance projectile-term-manager))))
 
-(switch-to-buffer (cvm-contextual-value (make-instance projectile-term-manager)))
-
-(cvm-get-identifier (make-instance term-projectile-identifier-manager))
 
 (provide 'term-projectile)
