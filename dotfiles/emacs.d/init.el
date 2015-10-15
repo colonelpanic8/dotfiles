@@ -2138,9 +2138,11 @@ window is active in the perspective."
   (progn
     (use-package company-go)
     (use-package go-projectile)
+    (use-package go-eldoc)
     (defun imalison:go-mode-hook ()
       (local-set-key (kbd "M-.") 'godef-jump)
       (local-set-key (kbd "M-,") 'pop-tag-mark)
+      (go-eldoc-setup)
       (set (make-local-variable 'company-backends) '(company-go)))
     (add-hook 'go-mode-hook 'imalison:go-mode-hook)
     (add-hook 'before-save-hook 'gofmt-before-save)))
