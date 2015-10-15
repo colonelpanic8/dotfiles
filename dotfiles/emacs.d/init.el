@@ -534,6 +534,37 @@ The current directory is assumed to be the project's root otherwise."
     (bind-key "C-(" 'sp-backward-slurp-sexp smartparens-mode-map)
     (bind-key "C-{" 'sp-backward-barf-sexp smartparens-mode-map)))
 
+(defclass indexed-mapping ()
+  ((mapping :initarg :mapping :initform nil)
+   (index :initarg :index :initform nil)))
+
+(defmethod im-get ((im indexed-mapping) key)
+  (plist-get (oref im :mapping) key))
+
+(defmethod im-index-get ((im indexed-mapping) value)
+  (plist-get (oref im :index) value))
+
+(defmethod im-index-get-one ((im indexed-mapping) value)
+  (let ((keys (plist-get (oref im :index) value)))
+    (when keys (car keys))))
+
+(defmethod im-put ((im indexed-mapping) key value)
+  ;; Handle removing the key from where it is currently indexed
+  (let* ((current-value (plist-get (oref im :mapping) key))
+         (value-list (plist-get (oref im :index) current-value)))
+    (when value-list
+      (setq value-list (remove key value-list))
+      (oset im :index
+            (plist-put (oref im :index)
+                       current-value value-list))))
+  ;; Add the key to its new position in the index
+  (oset im :index
+        (plist-put (oref im :index)
+                   value (cons key (plist-get (oref im :index) value))))
+  ;; Add the key, value pair to the mapping
+  (oset im :mapping
+        (plist-put (oref im :mapping) key value)))
+
 (use-package term
   :config
   (progn
