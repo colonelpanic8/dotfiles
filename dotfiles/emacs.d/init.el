@@ -566,9 +566,50 @@ The current directory is assumed to be the project's root otherwise."
         (plist-put (oref im :mapping) key value)))
 
 (use-package term
+  :preface
+  (progn
+    (defvar imalison:buffer-index (make-instance indexed-mapping))
+
+    (defun imalison:term-sym (dir)
+      (let ((truename (file-truename dir)))
+        (unless (string-equal (substring dir -1) "/")
+          (setq truename (concat truename "/")))
+        (intern truename)))
+
+    (im-index-get-one imalison:buffer-index (imalison:term-sym default-directory))
+
+    (defun imalison:build-term (directory)
+      (let* ((default-directory directory)
+             (program (getenv "SHELL"))
+             (buffer (get-buffer (term-ansi-make-term directory program))))
+        (im-put imalison:buffer-index buffer (imalison:term-sym directory))
+        (with-current-buffer buffer
+          (term-mode)
+          (term-char-mode)
+          (let (term-escape-char)
+            (term-set-escape-char ?\C-x)))
+        buffer))
+
+    (defun imalison:dir-term (directory)
+      (interactive (list default-directory))
+      (let ((buffer (or (im-index-get-one imalison:buffer-index (imalison:term-sym directory))
+                        (imalison:build-term directory))))
+        (switch-to-buffer buffer)))
+
+    (defun imalison:projectile-term ()
+      (interactive)
+      (imalison:dir-term (projectile-project-root)))
+    (imalison:prefix-alternatives imalison:term imalison:dir-term imalison:projectile-term))
   :config
   (progn
-    (add-hook 'term-mode-hook 'imalison:disable-linum-mode)))
+    (add-hook 'term-mode-hook 'imalison:disable-linum-mode)
+    (advice-add 'term-handle-ansi-terminal-messages :after
+                (lambda (&rest args)
+                  (when (not (string-equal
+                              (im-get imalison:buffer-index (current-buffer))
+                              default-directory))
+                    (im-put imalison:buffer-index (current-buffer) (imalison:term-sym default-directory)))
+                  (rename-buffer (format "term - %s" default-directory) t)))))
 
 ;; Set path from shell.
 (use-package exec-path-from-shell
@@ -736,7 +777,6 @@ The current directory is assumed to be the project's root otherwise."
     (add-to-list 'load-dirs "~/.emacs.d/load.d")
     (defvar site-lisp "/usr/share/emacs24/site-lisp/")
     (when (file-exists-p site-lisp) (add-to-list 'load-dirs site-lisp))))
-(imalison:prefix-alternatives imalison:term term-projectile ansi-term)
 
 (use-package recentf
   ;; binding is in helm.
