@@ -1719,8 +1719,8 @@ window is active in the perspective."
                                  (let ((default-directory dir)
                                        (projectile-require-project-root nil)
                                        (helm-action-buffer "this-buffer-should-not-exist"))
-                                   (term-projectile)))
-                               helm-source-projectile-projects)))
+                                   (imalison:term nil)))
+                                 helm-source-projectile-projects)))
 
 (use-package projectile
   :demand t
