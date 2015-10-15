@@ -1507,6 +1507,7 @@ marking if it still had that."
 (use-package libmpdee)
 
 (use-package flyspell
+  :disabled t                           ; kind of annoying
   :preface (setq flyspell-issue-welcome-flag nil)
   :config
   (progn
