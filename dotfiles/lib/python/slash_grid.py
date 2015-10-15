@@ -89,7 +89,7 @@ class Node(object):
         else:
             string = str(visited)
             if isinstance(visited, int):
-                return chr(65 + visited)
+                return str(visited)
             if len(string) > 1:
                 return '`'
             else:
