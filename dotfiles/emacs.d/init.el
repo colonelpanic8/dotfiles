@@ -551,13 +551,7 @@ The current directory is assumed to be the project's root otherwise."
 
 (defmethod im-put ((im indexed-mapping) key value)
   ;; Handle removing the key from where it is currently indexed
-  (let* ((current-value (plist-get (oref im :mapping) key))
-         (value-list (plist-get (oref im :index) current-value)))
-    (when value-list
-      (setq value-list (remove key value-list))
-      (oset im :index
-            (plist-put (oref im :index)
-                       current-value value-list))))
+  (im-unindex im key value)
   ;; Add the key to its new position in the index
   (oset im :index
         (plist-put (oref im :index)
@@ -565,6 +559,20 @@ The current directory is assumed to be the project's root otherwise."
   ;; Add the key, value pair to the mapping
   (oset im :mapping
         (plist-put (oref im :mapping) key value)))
+
+(defmethod im-unindex ((im indexed-mapping) key value)
+  (let* ((current-value (plist-get (oref im :mapping) key))
+         (value-list (plist-get (oref im :index) current-value)))
+    (when value-list
+      (setq value-list (remove key value-list))
+      (oset im :index
+            (plist-put (oref im :index)
+                       current-value value-list)))))
+
+(defmethod im-delete ((im indexed-mapping) key)
+  (im-unindex im key (im-get im key))
+  (oset im :mapping
+        (use-package-plist-delete (oref im :mapping) key)))
 
 (use-package term
   :preface
@@ -591,15 +599,22 @@ The current directory is assumed to be the project's root otherwise."
             (term-set-escape-char ?\C-x)))
         buffer))
 
-    (defun imalison:dir-term (directory)
-      (interactive (list default-directory))
-      (let ((buffer (or (im-index-get-one imalison:buffer-index (imalison:term-sym directory))
-                        (imalison:build-term directory))))
-        (switch-to-buffer buffer)))
+    (defun imalison:term-buffer (directory)
+      (let* ((directory-symbol (imalison:term-sym directory))
+             (buffer (im-index-get-one imalison:buffer-index directory-symbol)))
+        (while (and buffer (not (buffer-live-p buffer)))
+          (im-delete imalison:buffer-index buffer)
+          (setq buffer (im-index-get-one imalison:buffer-index directory-symbol)))
+        (or buffer (imalison:build-term directory))))
 
     (defun imalison:projectile-term ()
       (interactive)
-      (imalison:dir-term (projectile-project-root)))
+      (switch-to-buffer (imalison:term-buffer (projectile-project-root))))
+
+    (defun imalison:dir-term ()
+      (interactive)
+      (switch-to-buffer (imalison:term-buffer default-directory)))
+
     (imalison:prefix-alternatives imalison:term imalison:dir-term imalison:projectile-term))
   :config
   (progn
