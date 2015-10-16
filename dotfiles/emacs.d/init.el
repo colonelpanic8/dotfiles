@@ -1503,6 +1503,8 @@ marking if it still had that."
 
 (use-package screenshot)
 
+(use-package floobits)
+
 (use-package wsd-mode)
 
 (use-package libmpdee)
