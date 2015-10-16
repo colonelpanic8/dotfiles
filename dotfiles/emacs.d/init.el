@@ -2147,6 +2147,10 @@ window is active in the perspective."
       (local-set-key (kbd "M-.") 'godef-jump)
       (local-set-key (kbd "M-,") 'pop-tag-mark)
       (go-eldoc-setup)
+      (setq imenu-create-index-function
+            (lambda ()
+              (imalison:flatten-imenu-index
+               (imenu-default-create-index-function))))
       (set (make-local-variable 'company-backends) '(company-go)))
     (add-hook 'go-mode-hook 'imalison:go-mode-hook)
     (add-hook 'before-save-hook 'gofmt-before-save)))
