@@ -2184,7 +2184,8 @@ window is active in the perspective."
 
 (use-package sgml-mode
   :commands sgml-mode
-  :bind ("C-c b" . web-beautify-html))
+  ;; :bind ("C-c b" . web-beautify-html) TODO: mode specific, change binding
+  )
 
 (use-package gitconfig-mode
   :mode "\\.?gitconfig\\'")
