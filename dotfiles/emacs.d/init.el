@@ -1937,7 +1937,7 @@ window is active in the perspective."
       (imalison:set-pytest-command)
       (remove-hook 'completion-at-point-functions
                    'python-completion-complete-at-point 'local)
-      (add-to-list 'company-backends 'company-jedi))
+      (set (make-local-variable 'company-backends) '(company-jedi)))
     (add-hook 'python-mode-hook #'imalison:python-mode))))
 
 ;; =============================================================================
