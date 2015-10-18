@@ -1934,7 +1934,6 @@ window is active in the perspective."
       (imalison:make-imenu-index-flat)
       (jedi:setup)
       (add-virtual-envs-to-jedi-server)
-      (imalison:set-pytest-command)
       (remove-hook 'completion-at-point-functions
                    'python-completion-complete-at-point 'local)
       (set (make-local-variable 'company-backends) '(company-jedi)))
