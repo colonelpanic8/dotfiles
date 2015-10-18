@@ -657,6 +657,11 @@ The current directory is assumed to be the project's root otherwise."
     (setq shackle-inhibit-window-quit-on-same-windows t)
     (setq shackle-default-rule '(:same t))))
 
+(use-package beacon
+  :bind ("C-c b" . beacon-blink)
+  :config
+  (beacon-mode 1))
+
 ;; text mode stuff:
 (remove-hook 'text-mode-hook #'turn-on-auto-fill)
 (add-hook 'text-mode-hook 'turn-on-visual-line-mode)
