@@ -1988,7 +1988,8 @@ window is active in the perspective."
   :commands (js2-mode)
   :mode "\\.js\\'"
   :bind
-  (("C-c b" . web-beautify-js))
+  ;; (("C-c b" . web-beautify-js)) TODO: to make this mode specific
+  ;; and change binding
   :init
   (progn
     (defvar-setq imalison:identifier-count 0)
