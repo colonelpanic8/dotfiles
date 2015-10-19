@@ -1764,6 +1764,7 @@ window is active in the perspective."
     (setq projectile-completion-system 'helm)
     (add-to-list 'projectile-globally-ignored-files "Godeps")
     (add-to-list 'projectile-globally-ignored-files "thrift-binaries")
+    (add-to-list 'projectile-globally-ignored-files "go-build")
     (helm-projectile-on)
     (diminish 'projectile-mode)
     (unbind-key "C-c p S" projectile-command-map)
