@@ -1574,7 +1574,7 @@ marking if it still had that."
 
 (add-hook 'prog-mode-hook (lambda () (auto-fill-mode -1)))
 (add-hook 'prog-mode-hook (lambda () (subword-mode t) (diminish 'subword-mode)))
-(add-hook 'prog-mode-hook 'flyspell-prog-mode)
+;; (add-hook 'prog-mode-hook 'flyspell-prog-mode)
 
 ;; (add-hook 'prog-mode-hook (lambda () (highlight-lines-matching-regexp
 ;;                                  ".\\{81\\}" 'hi-blue)))
