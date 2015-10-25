@@ -2166,10 +2166,13 @@ window is active in the perspective."
     (use-package company-go)
     (use-package go-projectile)
     (use-package go-eldoc)
+    (use-package gotest)
+    (setq go-test-verbose t)
     (defun imalison:go-mode-hook ()
       (local-set-key (kbd "M-.") 'godef-jump)
       (local-set-key (kbd "M-,") 'pop-tag-mark)
       (go-eldoc-setup)
+      (bind-key "C-c t" 'go-test-current-test go-mode-map)
       (setq imenu-create-index-function
             (lambda ()
               (imalison:flatten-imenu-index
