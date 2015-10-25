@@ -1584,11 +1584,13 @@ marking if it still had that."
 ;; =============================================================================
 
 (use-package web-mode
-  :mode ("\\.tmpl\\'" . web-mode)
+  :mode (("\\.tmpl\\'" . web-mode)
+         ("\\.cql\\'" . web-mode))
   :config
   (progn
     (defvar-setq web-mode-content-types-alist
-      '(("gtl" . "\\.tmpl\\'")))))
+      '(("gtl" . "\\.tmpl\\'")
+        ("gtl" . "\\.cql\\'")))))
 
 (use-package helm-themes)
 
