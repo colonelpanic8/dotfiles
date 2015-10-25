@@ -2177,7 +2177,8 @@ window is active in the perspective."
                (imenu-default-create-index-function))))
       (set (make-local-variable 'company-backends) '(company-go)))
     (add-hook 'go-mode-hook 'imalison:go-mode-hook)
-    (add-hook 'before-save-hook 'gofmt-before-save)))
+    (setq gofmt-command "goimports")
+    (add-hook 'before-save-hook 'gofmt-before-save t)))
 
 (use-package rust-mode
   :mode (("\\.rs\\'" . rust-mode)))
