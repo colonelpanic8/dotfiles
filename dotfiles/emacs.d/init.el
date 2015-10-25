@@ -1947,19 +1947,16 @@ window is active in the perspective."
 ;; =============================================================================
 
 (use-package scala-mode2
-  :config
-  (progn
-    (use-package ensime
-      :config
-      (progn
-        (add-hook 'scala-mode-hook 'ensime-scala-mode-hook)
-        (defun guide-key/scala-mode-hook ()
-          (guide-key/add-local-guide-key-sequence "C-c C-v"))
-        (add-hook 'scala-mode-hook 'guide-key/scala-mode-hook)))
-    (setq scala-indent:align-parameters t))
   :mode (("\\.scala\\'" . scala-mode)
          ("\\.sc\\'" . scala-mode))
-  :ensure t)
+  :config
+  (progn
+    (when (use-package ensime
+            :commands ensime-mode
+            :bind (:map ensime-mode-map
+                        ("M-," . ensime-pop-find-definition-stack)))
+      (add-hook 'scala-mode-hook 'ensime-scala-mode-hook))
+    (setq scala-indent:align-parameters t)))
 
 ;; =============================================================================
 ;;                                                                          Java
