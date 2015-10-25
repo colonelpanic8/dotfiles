@@ -2160,14 +2160,15 @@ window is active in the perspective."
   :mode (("\\.go\\'" . go-mode))
   :config
   (progn
-    (use-package company-go)
+    (use-package company-go
+      :config (setq company-go-show-annotation t))
     (use-package go-projectile)
     (use-package go-eldoc)
     (use-package gotest)
     (setq go-test-verbose t)
+    (bind-key "M-." 'godef-jump go-mode-map)
+    (bind-key "M-," 'pop-tag-mark go-mode-map)
     (defun imalison:go-mode-hook ()
-      (local-set-key (kbd "M-.") 'godef-jump)
-      (local-set-key (kbd "M-,") 'pop-tag-mark)
       (go-eldoc-setup)
       (bind-key "C-c t" 'go-test-current-test go-mode-map)
       (setq imenu-create-index-function
