@@ -616,7 +616,11 @@ The current directory is assumed to be the project's root otherwise."
       (interactive)
       (switch-to-buffer (imalison:term-buffer default-directory)))
 
-    (imalison:prefix-alternatives imalison:term imalison:projectile-term imalison:dir-term))
+    (defun imalison:force-new-term ()
+      (interactive)
+      (switch-to-buffer (imalison:build-term default-directory)))
+
+    (imalison:prefix-alternatives imalison:term imalison:projectile-term imalison:dir-term imalison:force-new-term))
   :config
   (progn
     (add-hook 'term-mode-hook 'imalison:disable-linum-mode)
