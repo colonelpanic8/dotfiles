@@ -524,18 +524,17 @@ The current directory is assumed to be the project's root otherwise."
     (setq paradox-execute-asynchronously t)))
 
 (use-package smartparens
-  :bind (:map smartparens-mode-map
-              ("C-{" . sp-backward-barf-sexp)
-              ("C-)" . sp-forward-slurp-sexp)
-              ("C-}" . sp-forward-barf-sexp)
-              ("C-(" . sp-backward-slurp-sexp))
   :config
   (progn
     (require 'smartparens-config)
     (smartparens-global-mode 1)
     (sp-use-smartparens-bindings)
     (unbind-key "C-<backspace>" smartparens-mode-map)
-    (unbind-key "M-<backspace>" smartparens-mode-map)))
+    (unbind-key "M-<backspace>" smartparens-mode-map)
+    (bind-key "C-)" 'sp-forward-slurp-sexp smartparens-mode-map)
+    (bind-key "C-}" 'sp-forward-barf-sexp smartparens-mode-map)
+    (bind-key "C-(" 'sp-backward-slurp-sexp smartparens-mode-map)
+    (bind-key "C-{" 'sp-backward-barf-sexp smartparens-mode-map)))
 
 (defclass indexed-mapping ()
   ((mapping :initarg :mapping :initform nil)
