@@ -494,7 +494,9 @@ The current directory is assumed to be the project's root otherwise."
 
 (setq initial-scratch-message "")
 
-(setq utf-translate-cjk-mode nil) ; disable CJK coding/encoding (Chinese/Japanese/Korean characters)
+(setq utf-translate-cjk-mode nil) ; disable CJK coding/encoding
+                                  ; (Chinese/Japanese/Korean
+                                  ; characters)
 (set-language-environment 'utf-8)
 (set-keyboard-coding-system 'utf-8-mac) ; For old Carbon emacs on OS X only
 (setq locale-coding-system 'utf-8)
@@ -1301,7 +1303,8 @@ the same tree node, and the headline of the tree node in the Org-mode file."
   (progn
     (org-projectile:prompt)
     (add-to-list 'org-capture-templates
-                 (org-projectile:project-todo-entry "l" "* TODO %? %a\n" "Linked Project TODO"))
+                 (org-projectile:project-todo-entry
+                  "l" "* TODO %? %a\n" "Linked Project TODO"))
     (add-to-list 'org-capture-templates (org-projectile:project-todo-entry "p"))
     (setq org-confirm-elisp-link-function nil)
     (imalison:add-to-org-agenda-files (org-projectile:todo-files))
