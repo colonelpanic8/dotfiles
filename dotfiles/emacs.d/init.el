@@ -748,10 +748,12 @@ The current directory is assumed to be the project's root otherwise."
       :init (add-hook 'magit-status-mode-hook 'magit-filenotify-mode))))
 
 (use-package company
-  :commands company-mode
-  :bind (("C-\\" . company-complete))
+  :commands company-mode imalison:company
+  :bind (("C-\\" . imalison:company))
   :config
   (progn
+    (imalison:prefix-alternatives
+     imalison:company company-complete company-yasnippet)
     (setq company-idle-delay .25)
     (global-company-mode)
     (diminish 'company-mode))
