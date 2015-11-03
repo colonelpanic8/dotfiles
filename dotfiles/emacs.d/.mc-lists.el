@@ -12,6 +12,7 @@
         git-rebase-undo
         go-mode-insert-and-indent
         helm-show-kill-ring
+        imalison:avy
         indent-for-tab-command
         isearch-forward-regexp
         isearch-other-control-char
@@ -31,6 +32,7 @@
         skeleton-pair-insert-maybe
         sp-backward-sexp
         sp-forward-sexp
+        string-inflection-toggle
         tern-ac-dot-complete
         transpose-sexps
         transpose-words
