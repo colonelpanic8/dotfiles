@@ -14,6 +14,7 @@
 	d = "!d() { git icdl $@; }; d"
 	db = !"db() { git diff HEAD~"$1"; }; db"
 	diff-excluding = "!f() { exclude=$1; shift; git diff $1 $2 --name-only | grep -v $exclude | xargs git diff "$@" --; }; f"
+	fdiff = "!f() { filter=\"$1\"; shift; git diff $1 $2 --name-only | $filter | xargs git diff "$@" --; }; f"
 	dirty = "!t() { test -n \"$(git status --porcelain)\"; }; t"
 	dtbmb = !git diff `git tb`...HEAD # diff tracking branch merge base
 	du = "!d() { git ls-files $1 --error-unmatch 2>/dev/null 1>/dev/null && git diff $1 || `git config --get core.pager` $1; }; d" # Diff a file or show it in git's pager if it is untracked
