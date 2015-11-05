@@ -2178,9 +2178,10 @@ window is active in the perspective."
     (setq go-test-verbose t)
     (bind-key "M-." 'godef-jump go-mode-map)
     (bind-key "M-," 'pop-tag-mark go-mode-map)
+    (imalison:prefix-alternatives imalison:gotest go-test-current-test go-test-current-file)
     (defun imalison:go-mode-hook ()
       (go-eldoc-setup)
-      (bind-key "C-c t" 'go-test-current-test go-mode-map)
+      (bind-key "C-c t" 'imalison:gotest go-mode-map)
       (setq imenu-create-index-function
             (lambda ()
               (imalison:flatten-imenu-index
