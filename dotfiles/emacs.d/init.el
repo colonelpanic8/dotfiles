@@ -177,7 +177,8 @@
                (cl-loop for alternative in alternatives
                         collect `((eq prefix-value ,last-multiple) (quote ,alternative))
                         do (setq last-multiple (* last-multiple 4))))))
-     (setq function (or function (car alternatives))) ; Set a defautl value for function
+     (setq function (or function (car alternatives))) ; Set a default value for function
+     (setq current-prefix-arg nil)
      (call-interactively function)))
 
 (defun imalison:uuid ()
