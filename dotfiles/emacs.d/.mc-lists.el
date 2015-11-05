@@ -27,6 +27,7 @@
         org-self-insert-command
         org-yank
         phi-search
+        phi-search-backward
         python-indent-electric-colon
         sgml-slash
         skeleton-pair-insert-maybe
