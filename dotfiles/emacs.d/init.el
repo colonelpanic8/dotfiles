@@ -631,7 +631,8 @@ The current directory is assumed to be the project's root otherwise."
                   (when (not (string-equal
                               (im-get imalison:buffer-index (current-buffer))
                               default-directory))
-                    (im-put imalison:buffer-index (current-buffer) (imalison:term-sym default-directory)))
+                    (im-put imalison:buffer-index (current-buffer)
+                            (imalison:term-sym default-directory)))
                   (rename-buffer (format "term - %s" default-directory) t)))))
 
 ;; Set path from shell.
@@ -734,7 +735,7 @@ The current directory is assumed to be the project's root otherwise."
   :config
   (progn (global-diff-hl-mode)))
 
-(use-package gitolite-clone :ensure t)
+(use-package gitolite-clone)
 
 (use-package magit
   :commands magit-status
@@ -2170,6 +2171,28 @@ window is active in the perspective."
 
 (use-package go-mode
   :mode (("\\.go\\'" . go-mode))
+  :preface
+  (progn
+    (defun go-mode-create-imenu-index ()
+      "Create and return an imenu index alist. Unlike the default
+alist created by go-mode, this method creates an alist where
+items follow a style that is consistent with other prog-modes."
+      (let* ((patterns '(("type" "^type *\\([^ \t\n\r\f]*\\)" 1)))
+             (type-index (imenu--generic-function patterns))
+             (func-index))
+        (save-excursion
+          (goto-char (point-min))
+          (while (re-search-forward go-func-meth-regexp (point-max) t)
+            (let* ((var (match-string-no-properties 1))
+                   (func (match-string-no-properties 2))
+                   (name (if var
+                             (concat (substring var 0 -1) "." func)
+                           func))
+                   (beg (match-beginning 0))
+                   (marker (copy-marker beg))
+                   (item (cons name marker)))
+              (setq func-index (cons item func-index)))))
+        (nconc type-index (list (cons "func" func-index))))))
   :config
   (progn
     (use-package company-go
@@ -2187,7 +2210,7 @@ window is active in the perspective."
       (setq imenu-create-index-function
             (lambda ()
               (imalison:flatten-imenu-index
-               (imenu-default-create-index-function))))
+               (go-mode-create-imenu-index))))
       (set (make-local-variable 'company-backends) '(company-go)))
     (add-hook 'go-mode-hook 'imalison:go-mode-hook)
     (setq gofmt-command "goimports")
@@ -2246,6 +2269,7 @@ window is active in the perspective."
 (bind-key "M-|" 'imalison:shell-command-on-region)
 (bind-key "C--" 'undo)
 (bind-key "C-c 8" 'imalison:term)
+(bind-key "C-c 7" 'imalison:force-new-term)
 (bind-key "C-x 9" 'previous-buffer)
 
 (fset 'global-set-key-to-use-package
@@ -2315,7 +2339,6 @@ window is active in the perspective."
 ;; These can be overriden in custom-before.el
 (defvar imalison:light-theme 'solarized-light)
 (defvar imalison:dark-theme 'material)
-
 (use-package theme-changer
   :config
   (progn
