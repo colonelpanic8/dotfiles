@@ -730,7 +730,9 @@ The current directory is assumed to be the project's root otherwise."
   (progn
     (add-hook 'prog-mode-hook (lambda () (rainbow-delimiters-mode t)))))
 
-(use-package diff-hl :ensure t)
+(use-package diff-hl
+  :config
+  (progn (global-diff-hl-mode)))
 
 (use-package gitolite-clone :ensure t)
 
