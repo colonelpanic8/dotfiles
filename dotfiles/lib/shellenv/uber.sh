@@ -41,3 +41,7 @@ goclone() {
 function merchant_curl {
 	tcurl -p localhost:4338 merchant Merchant::$1 -3 "$2" -t ~/go/src/code.uber.internal/everything/merchant/thrift
 }
+
+function at json {
+	egrep -o "\{.*" | jq .
+}

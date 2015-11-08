@@ -51,3 +51,5 @@ alias pumpitup="osascript -e 'set volume 7'"
 alias pip-upgrade="pip freeze --local | get_cols -F "=" 1 | xargs -n1 sudo pip install -U"
 
 [[ -e /usr/local/Cellar/macvim ]] && alias vim="$(find /usr/local/Cellar/macvim -depth 1 | grep "[0-9]$")/MacVim.app/Contents/MacOS/Vim"
+
+alias only_json='grep -E "^{\"" | jq .'
