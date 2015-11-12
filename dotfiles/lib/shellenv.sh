@@ -35,7 +35,7 @@ function _setup_env {
 
     idem_add_to_front_of_path "$JAVA_HOME/bin"
 
-    idem_add_to_back_of_path "$(dotfiles_directory)/resources/python"
+    idem_add_to_back_of_path "$HOME/.lib/python"
     idem_add_to_back_of_path "/usr/local/sbin"
 
     # Load RVM into a shell session *as a function*
