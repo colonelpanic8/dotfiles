@@ -1384,6 +1384,8 @@ the same tree node, and the headline of the tree node in the Org-mode file."
 (use-package twittering-mode
   :commands twittering-mode)
 
+(use-package matrix-client)
+
 (use-package erc
   :commands erc
   :config
