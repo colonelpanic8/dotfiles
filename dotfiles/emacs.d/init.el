@@ -675,7 +675,10 @@ The current directory is assumed to be the project's root otherwise."
 
 ;; Set path from shell.
 (use-package exec-path-from-shell
-  :config (exec-path-from-shell-initialize))
+  :config
+  (progn
+    (add-to-list 'exec-path-from-shell-variables "GOPATH")
+    (exec-path-from-shell-initialize)))
 
 (use-package yasnippet
   :defer 5
