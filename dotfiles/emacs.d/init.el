@@ -2258,7 +2258,16 @@ items follow a style that is consistent with other prog-modes."
       (set (make-local-variable 'company-backends) '(company-go)))
     (add-hook 'go-mode-hook 'imalison:go-mode-hook)
     (setq gofmt-command "goimports")
-    (add-hook 'before-save-hook 'gofmt-before-save t)))
+    (add-hook 'before-save-hook 'gofmt-before-save t)
+    (defun go-mode-workspace-path ()
+      (file-relative-name (projectile-project-root)
+                          (concat (file-name-as-directory (or (getenv "GOPATH") "~/go")) "src")))
+    (defun go-mode-install-current-project ()
+      (interactive)
+      (start-process "go install" "go install log" "go" "install"
+                     (concat (file-name-as-directory (go-mode-workspace-path))
+                             "...")))
+    (add-hook 'before-save-hook 'go-mode-install-current-project)))
 
 (use-package rust-mode
   :mode (("\\.rs\\'" . rust-mode)))
