@@ -42,6 +42,10 @@
 (when (fboundp 'tool-bar-mode) (tool-bar-mode -1))
 (when (fboundp 'scroll-bar-mode) (scroll-bar-mode -1))
 
+;; =============================================================================
+;;                                                                 byte-compiler
+;; =============================================================================
+
 ;; These silence the byte compiler.
 (defvar ido-cur-item nil)
 (defvar ido-default-item nil)
@@ -2247,7 +2251,8 @@ items follow a style that is consistent with other prog-modes."
     (setq go-test-verbose t)
     (bind-key "M-." 'godef-jump go-mode-map)
     (bind-key "M-," 'pop-tag-mark go-mode-map)
-    (imalison:prefix-alternatives imalison:gotest go-test-current-test go-test-current-file)
+    (imalison:prefix-alternatives
+     imalison:gotest go-test-current-test go-test-current-file)
     (defun imalison:go-mode-hook ()
       (go-eldoc-setup)
       (bind-key "C-c t" 'imalison:gotest go-mode-map)
