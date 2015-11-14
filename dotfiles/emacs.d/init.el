@@ -2007,8 +2007,8 @@ window is active in the perspective."
   (progn
     (when (use-package ensime
             :commands ensime-mode
-            :bind (:map ensime-mode-map
-                        ("M-," . ensime-pop-find-definition-stack)))
+            :config
+            (bind-key "M-," 'ensime-pop-find-definition-stack ensime-mode-map))
       (add-hook 'scala-mode-hook 'ensime-scala-mode-hook))
     (setq scala-indent:align-parameters t)))
 
