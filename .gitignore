@@ -39,3 +39,4 @@ dotfiles/config/mopidy
 /dotfiles/.tern-port
 
 dotfiles/pip/pip.conf
+gotools
