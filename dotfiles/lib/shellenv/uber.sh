@@ -37,11 +37,3 @@ goclone() {
   mkdir -p $GOPATH/src/code.uber.internal/$1
   git clone gitolite@code.uber.internal:$1 $GOPATH/src/code.uber.internal/$1
 }
-
-function merchant_curl {
-	tcurl -p localhost:4338 merchant Merchant::$1 -3 "$2" -t ~/go/src/code.uber.internal/everything/merchant/thrift
-}
-
-function at json {
-	egrep -o "\{.*" | jq .
-}
