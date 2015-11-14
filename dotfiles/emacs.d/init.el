@@ -758,6 +758,7 @@ The current directory is assumed to be the project's root otherwise."
     (define-key ctl-x-4-map "np" 'ni-narrow-to-page-indirect-other-window)))
 
 (use-package editorconfig
+  :commands edconf-find-file-hook
   :demand t)
 
 (use-package dtrt-indent
