@@ -1,3 +1,4 @@
+certifi
 coloredlogs
 ddg
 dotfiles
