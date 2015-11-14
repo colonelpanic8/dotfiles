@@ -17,7 +17,7 @@ function if_emacs_zsh {
     if [ -z $(echo "$INSIDE_EMACS" | grep comint) ]; then
         set_my_prompt
     else
-        echo;
+        PS1="$ "
     fi
 }
 

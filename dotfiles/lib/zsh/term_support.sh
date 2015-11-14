@@ -48,5 +48,8 @@ function emacs_ansi_term_support {
 }
 
 if environment_variable_exists INSIDE_EMACS; then
-	add-zsh-hook precmd emacs_ansi_term_support
+	if [[ $INSIDE_EMACS == *"term"* ]]
+	then
+		add-zsh-hook precmd emacs_ansi_term_support
+	fi
 fi

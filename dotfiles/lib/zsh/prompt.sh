@@ -113,6 +113,15 @@ function prompt_monokai_colors {
     export SOURCE_CONTROL_COLOR="$fg[white]"
 }
 
+function prompt_no_colors {
+    export SEPARATOR_COLOR=""
+    export HOSTNAME_COLOR=""
+    export USERNAME_COLOR=""
+    export CURRENT_DIRECTORY_COLOR=""
+    export SOURCE_CONTROL_COLOR=""
+    export reset_color=""
+}
+
 function prompt_basic_colors_with_grey_separator {
     prompt_basic_colors
     export SEPARATOR_COLOR="$FG[239]"
