@@ -2068,7 +2068,7 @@ window is active in the perspective."
             js2-mode-show-strict-warnings nil
             indent-tabs-mode nil
             js2-indent-switch-body t)
-      (edconf-find-file-hook) ;; Make sure that editorconfig takes precedence
+      ;; (edconf-find-file-hook) ;; Make sure that editorconfig takes precedence
       (tern-mode t)
       (when nil (skewer-mode)) ;; TODO: reenable
       (setq imenu-create-index-function
