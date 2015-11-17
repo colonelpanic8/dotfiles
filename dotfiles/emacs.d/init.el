@@ -772,6 +772,12 @@ The current directory is assumed to be the project's root otherwise."
 (use-package dtrt-indent
   :init (add-hook 'prog-mode-hook 'dtrt-indent-mode))
 
+(use-package indent-guide
+  :config
+  (progn
+    (indent-guide-global-mode)
+    (setq indent-guide-delay 0.1)))
+
 (use-package rainbow-delimiters
   :commands rainbow-delimiters-mode
   :init
