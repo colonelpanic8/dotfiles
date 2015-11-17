@@ -2359,7 +2359,7 @@ items follow a style that is consistent with other prog-modes."
 (defvar packages-appearance
   '(monokai-theme solarized-theme zenburn-theme base16-theme molokai-theme
     tango-2-theme gotham-theme sublime-themes ansi-color rainbow-delimiters
-    ample-theme material-theme zerodark-theme))
+    ample-theme material-theme zerodark-theme color-theme-modern))
 
 (ensure-packages-installed packages-appearance)
 
