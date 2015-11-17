@@ -100,8 +100,9 @@
 (require 'package)
 ;; (add-to-list 'package-archives
 ;;              '("marmalade" . "http://marmalade-repo.org/packages/") t)
-(add-to-list 'package-archives '("elpa" . "https://tromey.com/elpa/") t)
-(add-to-list 'package-archives '("org" . "https://orgmode.org/elpa/") t)
+;; (add-to-list 'package-archives '("elpa" . "https://tromey.com/elpa/") t)
+;; (add-to-list 'package-archives '("org" . "https://orgmode.org/elpa/") t)
+(setq package-archives nil)
 (add-to-list 'package-archives '("melpa" . "https://melpa.org/packages/") t)
 
 (defun ensure-packages-installed (packages)
