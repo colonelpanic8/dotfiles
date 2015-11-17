@@ -2273,7 +2273,6 @@ items follow a style that is consistent with other prog-modes."
     (add-hook 'before-save-hook 'gofmt-before-save t)
     (defun go-mode-workspace-path ()
       (file-relative-name (projectile-project-root)
-                          (concat (file-name-as-directory (or (getenv "GOPATH") "~/go")) "src")))
     (defun go-mode-install-current-project ()
       (interactive)
       (start-process "go install" "go install log" "go" "install"
