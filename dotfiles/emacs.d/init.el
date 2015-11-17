@@ -499,6 +499,7 @@ The current directory is assumed to be the project's root otherwise."
 
 ;; Make forward word understand camel and snake case.
 (setq c-subword-mode t)
+(global-subword-mode)
 
 ;; Preserve pastes from OS when saving a new item to the kill
 ;; ring. Why wouldn't this be enabled by default?
