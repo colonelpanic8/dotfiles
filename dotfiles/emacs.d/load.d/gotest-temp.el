@@ -415,7 +415,7 @@ For example, if the current buffer is `foo.go', the buffer for
   (let* ((test-info (go-test--get-current-test-info))
          (test-name (cadr test-info))
          (test-suite (car test-info))
-         (test-flag (if (length test-suite) "-m " "-run ")))
+         (test-flag (if (> (length test-suite) 0) "-m " "-run ")))
     (when test-name
       (if (go-test--is-gb-project)
           (go-test--gb-start (s-concat "-test.v=true -test.run=" test-name "$"))
