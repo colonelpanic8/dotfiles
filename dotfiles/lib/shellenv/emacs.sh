@@ -112,10 +112,11 @@ function time_emacs {
 }
 
 function emacs_editor {
+    local client_path="$(which emacsclient)"
 	if is_osx; then
-		reattach-to-user-namespace emacsclient --server-file=server "$@"
+		reattach-to-user-namespace "$client_path" "$@"
 	else
-		emacsclient "$@"
+		"$client_path" "$@"
 	fi
 }
 
