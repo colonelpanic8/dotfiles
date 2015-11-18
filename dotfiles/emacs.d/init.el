@@ -774,9 +774,10 @@ The current directory is assumed to be the project's root otherwise."
   :init (add-hook 'prog-mode-hook 'dtrt-indent-mode))
 
 (use-package indent-guide
+  :disabled t
   :config
   (progn
-    (indent-guide-global-mode)
+    (indent-guide-global-mode -1)
     (setq indent-guide-delay 0.1)))
 
 (use-package rainbow-delimiters
