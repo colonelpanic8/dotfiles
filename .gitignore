@@ -40,3 +40,5 @@ dotfiles/config/mopidy
 
 dotfiles/pip/pip.conf
 gotools
+dotfiles/config/sparkleshare/logs
+dotfiles/config/sparkleshare/*.key
