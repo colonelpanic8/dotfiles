@@ -92,19 +92,21 @@
   ((spacer :initarg :spacer :initform " ")))
 
 (defmethod multi-line-respace ((respacer multi-line-never-newline) index markers)
+  (when (equal index (- (length markers) 1))
+    (multi-line-clear-whitespace-at-point))
   (when (not (or (equal 0 index)
                  (equal index (- (length markers) 1))))
         (insert (oref respacer :spacer))))
 
 (defclass multi-line-always-newline ()
-  ((always-first :initarg :always-first :initform t)
-   (always-last :initarg :always-last :initform t)))
+  ((always-first :initarg :skip-first :initform nil)
+   (always-last :initarg :skip-last :initform nil)))
 
 (defmethod multi-line-should-newline ((respacer multi-line-always-newline)
                                       index markers)
   (let ((marker-length (length markers)))
-    (or (and (equal 0 index) (oref respacer :always-first))
-        (and (equal index (- marker-length 1)) (oref respacer :always-last)))))
+    (not (or (and (equal 0 index) (oref respacer :skip-first))
+             (and (equal index (- marker-length 1)) (oref respacer :skip-last))))))
 
 (defmethod multi-line-respace ((respacer multi-line-always-newline) index markers)
   (when (multi-line-should-newline respacer index markers)
@@ -128,8 +130,10 @@
                (> (current-column) (oref respacer :newline-at)))))))
 
 (defmethod multi-line-respace ((respacer multi-line-column-number) index markers)
-  (if (multi-line-should-newline respacer index markers)
-      (newline-and-indent) (insert " ")))
+  (multi-line-respace
+   (if (multi-line-should-newline respacer index markers)
+       (oref respacer :newline-respacer)
+     (oref respacer :default-respacer)) index markers))
 
 (defun multi-line-get-markers (enter-strategy find-strategy)
   (multi-line-enter enter-strategy)
@@ -146,23 +150,6 @@
     (backward-char)
     (kill-region start (point))))
 
-(defun multi-line-clear-whitespace ()
-  (interactive)
-  (let ((markers (multi-line-get-markers multi-line-enter-strategy
-                                         multi-line-find-strategy)))
-    (cl-loop for marker in markers do
-             (goto-char (marker-position marker))
-             (multi-line-clear-whitespace-at-point))))
-
-(defun multi-line-always-newline-and-indent ()
-  (interactive)
-  (let ((markers (multi-line-get-markers multi-line-enter-strategy
-                                         multi-line-find-strategy)))
-    (cl-loop for marker in markers do
-             (goto-char (marker-position marker))
-             (multi-line-clear-whitespace-at-point)
-             (newline-and-indent))))
-
 (defun multi-line-adjust-whitespace (respacer)
   (let ((markers (multi-line-get-markers multi-line-enter-strategy
                                           multi-line-find-strategy)))
@@ -171,6 +158,7 @@
              (multi-line-clear-whitespace-at-point)
              (multi-line-respace respacer i markers))))
 
+;;;###autoload
 (defun multi-line-set-default-strategies ()
   (interactive)
   (setq multi-line-find-strategy
@@ -182,14 +170,15 @@
         multi-line-single-line-strategy
         (make-instance multi-line-never-newline)))
 
+;;;###autoload
 (defun multi-line-multiline ()
   (interactive)
   (multi-line-adjust-whitespace multi-line-multi-line-strategy))
 
+;;;###autoload
 (defun multi-line-singleline ()
   (interactive)
   (multi-line-adjust-whitespace multi-line-single-line-strategy))
-
 
 (provide 'multi-line)
 ;; flycheck-disabled-checkers: (emacs-lisp-checkdoc)
