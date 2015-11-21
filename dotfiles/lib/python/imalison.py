@@ -1,6 +1,6 @@
 import os
 import errno
-from invoke import run
+from invoke import run, Collection, ctask
 
 
 def link_filenames(ctx, link_pairs, force=False):
@@ -26,3 +26,15 @@ def ensure_path_exists(path):
 
 def command_exists(command, run=run):
     return run("hash {0}".format(command), warn=True, hide=True).exited == 0
+
+
+def build_task_factory(ns):
+    def task(function):
+        ns.add_task(ctask(function))
+        return function
+    return task
+
+
+def namespace_and_factory():
+    ns = Collection()
+    return ns, build_task_factory(ns)
