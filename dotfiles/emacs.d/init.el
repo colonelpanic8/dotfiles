@@ -1802,6 +1802,9 @@ window is active in the perspective."
   (progn
     (helm-delete-action-from-source "Search in Project" helm-source-projectile-projects)
     (helm-delete-action-from-source "Open term for project" helm-source-projectile-projects)
+    (defun imalison:invalidate-cache-and-open-file (dir)
+      (projectile-invalidate-cache nil)
+      (projectile-find-file))
     (defun imalison:switch-to-project-and-search (dir)
       (let ((default-directory dir)
             (projectile-require-project-root nil)
@@ -1809,6 +1812,9 @@ window is active in the perspective."
         (helm-projectile-ag)))
     (helm-add-action-to-source "Search in Project"
                                'imalison:switch-to-project-and-search
+                               helm-source-projectile-projects)
+    (helm-add-action-to-source "Invalidate Cache and Open File"
+                               'imalison:invalidate-cache-and-open-file
                                helm-source-projectile-projects)
     (helm-add-action-to-source "Open term for project"
                                (lambda (dir)
