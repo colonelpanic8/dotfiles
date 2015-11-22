@@ -32,10 +32,7 @@
 
 ;;; Code:
 
-(defvar multi-line-find-strategy)
-(defvar multi-line-enter-strategy)
-(defvar multi-line-multi-line-strategy)
-(defvar multi-line-single-line-strategy)
+(defvar multi-line-config)
 
 (defun multi-line-lparenthesis-advance ()
   "Advance to the beginning of a statement that can be multi-lined."
@@ -159,37 +156,95 @@ FIND-STRATEGY is a class with the method multi-line-find-next."
 
 (defun multi-line-adjust-whitespace (respacer)
   "Adjust whitespace using the provided RESPACER."
-  (let ((markers (multi-line-get-markers multi-line-enter-strategy
-                                          multi-line-find-strategy)))
+  (let ((markers (multi-line-get-markers
+                  (multi-line-get-enter-strategy multi-line-config)
+                  (multi-line-get-find-strategy multi-line-config))))
     (cl-loop for marker being the elements of markers using (index i) do
              (goto-char (marker-position marker))
-             (multi-line-clear-whitespace-at-point)
+             ;; (multi-line-clear-whitespace-at-point)
              (multi-line-respace respacer i markers))))
 
-;;;###autoload
-(defun multi-line-set-default-strategies ()
-  "Set multi-line strategies that work for languages with C-like syntax."
+(defclass multi-line-config-manager ()
+  ((default-find :initarg :default-find :initform
+     (make-instance multi-line-forward-sexp-find-strategy))
+   (default-enter :initarg :default-enter :initform
+     (make-instance multi-line-forward-sexp-enter-strategy))
+   (default-respacer :initarg :default-respacer :initform
+     (make-instance multi-line-always-newline))
+   (major-mode-to-enter :initarg :major-mode-to-enter :initform (make-hash-table))
+   (major-mode-to-find :initarg :major-mode-to-find :initform (make-hash-table))
+   (major-mode-to-respacer :initarg :major-mode-to-respacer :initform (make-hash-table))))
+
+(defmethod multi-line-get-find-strategy ((config multi-line-config-manager))
+  (or (gethash major-mode (oref config :major-mode-to-find))
+      (oref config :default-find)))
+
+(defmethod multi-line-get-enter-strategy ((config multi-line-config-manager))
+  (or (gethash major-mode (oref config :major-mode-to-enter))
+      (oref config :default-enter)))
+
+(defmethod multi-line-get-respacer-strategy ((config multi-line-config-manager))
+  (or (gethash major-mode (oref config :major-mode-to-respacer))
+      (oref config :default-respacer)))
+
+(defmethod multi-line-set-find-strategy ((config multi-line-config-manager)
+                                         for-mode find-strategy)
+  (puthash for-mode find-strategy (oref config :major-mode-to-find)))
+
+(defmethod multi-line-set-enter-strategy ((config multi-line-config-manager)
+                                          for-mode enter-strategy)
+  (puthash for-mode enter-strategy (oref config :major-mode-to-enter)))
+
+(defmethod multi-line-set-respacer-strategy ((config multi-line-config-manager)
+                                          for-mode respacer-strategy)
+  (puthash for-mode respacer-strategy (oref config :major-mode-to-respacer)))
+
+(defmethod multi-line-set-default-find ((config multi-line-config-manager) find-strategy)
+  (oset config :default-find find-strategy))
+
+(defmethod multi-line-set-default-enter ((config multi-line-config-manager) enter-strategy)
+  (oset config :default-enter enter-strategy))
+
+(defmethod multi-line-set-default-respacer ((config multi-line-config-manager) respacer-strategy)
+  (oset config :default-respacer respacer-strategy))
+
+(setq multi-line-config (make-instance multi-line-config-manager))
+
+(defun multi-line-lisp-advance-fn ()
+  "Advance to the start of the next multi-line split for Lisp."
+  (re-search-forward "[^[:space:]\n]")
+  (backward-char))
+
+(defun multi-line-set-per-major-mode-strategies ()
+  "Set language specific strategies."
   (interactive)
-  (setq multi-line-find-strategy
-        (make-instance multi-line-forward-sexp-find-strategy)
-        multi-line-enter-strategy
-        (make-instance multi-line-forward-sexp-enter-strategy)
-        multi-line-multi-line-strategy
-        (make-instance multi-line-column-number)
-        multi-line-single-line-strategy
-        (make-instance multi-line-never-newline)))
+  (multi-line-set-find-strategy multi-line-config 'emacs-lisp-mode (make-instance multi-line-forward-sexp-find-strategy :split-regex "[[:space:]]+" :done-regex "[[:space:]]*)" :split-advance-fn 'multi-line-lisp-advance-fn))
+
+  (let ((newline-respacer
+         (make-instance multi-line-always-newline
+                        :skip-first t :skip-last t)))
+    (multi-line-set-repacer-strategy
+     multi-line-config 'emacs-lisp-mode (make-instance multi-line-column-number
+                                                       :newline-respacer newline-respacer)))
+
+  ;; No match for done regex
+  (multi-line-set-enter-strategy multi-line-config 'emacs-lisp-mode
+                                 (make-instance multi-line-forward-sexp-enter-strategy
+                                                :done-regex "``````")))
+
+(multi-line-set-per-major-mode-strategies)
 
 ;;;###autoload
-(defun multi-line-multiline ()
+(defun multi-line ()
   "Multi-line the statement at point."
   (interactive)
-  (multi-line-adjust-whitespace multi-line-multi-line-strategy))
+  (multi-line-adjust-whitespace (multi-line-get-respacer-strategy multi-line-config)))
 
 ;;;###autoload
 (defun multi-line-singleline ()
   "Single-line the statement at point."
   (interactive)
-  (multi-line-adjust-whitespace multi-line-single-line-strategy))
+  (multi-line-adjust-whitespace (make-instance multi-line-never-newline)))
 
 (provide 'multi-line)
 ;; flycheck-disabled-checkers: (emacs-lisp-checkdoc)
