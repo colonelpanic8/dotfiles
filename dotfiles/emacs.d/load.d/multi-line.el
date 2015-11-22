@@ -202,10 +202,12 @@ FIND-STRATEGY is a class with the method multi-line-find-next."
 (defmethod multi-line-set-default-find ((config multi-line-config-manager) find-strategy)
   (oset config :default-find find-strategy))
 
-(defmethod multi-line-set-default-enter ((config multi-line-config-manager) enter-strategy)
+(defmethod multi-line-set-default-enter ((config multi-line-config-manager)
+                                         enter-strategy)
   (oset config :default-enter enter-strategy))
 
-(defmethod multi-line-set-default-respacer ((config multi-line-config-manager) respacer-strategy)
+(defmethod multi-line-set-default-respacer ((config multi-line-config-manager)
+                                            respacer-strategy)
   (oset config :default-respacer respacer-strategy))
 
 (setq multi-line-config (make-instance multi-line-config-manager))
@@ -218,19 +220,26 @@ FIND-STRATEGY is a class with the method multi-line-find-next."
 (defun multi-line-set-per-major-mode-strategies ()
   "Set language specific strategies."
   (interactive)
-  (multi-line-set-find-strategy multi-line-config 'emacs-lisp-mode (make-instance multi-line-forward-sexp-find-strategy :split-regex "[[:space:]]+" :done-regex "[[:space:]]*)" :split-advance-fn 'multi-line-lisp-advance-fn))
+  (multi-line-set-find-strategy  multi-line-config  'emacs-lisp-mode
+                                 (make-instance
+                                  multi-line-forward-sexp-find-strategy
+                                  :split-regex   "[[:space:]]+"
+                                  :done-regex  "[[:space:]]*)"
+                                  :split-advance-fn  'multi-line-lisp-advance-fn))
 
   (let ((newline-respacer
          (make-instance multi-line-always-newline
                         :skip-first t :skip-last t)))
-    (multi-line-set-repacer-strategy
-     multi-line-config 'emacs-lisp-mode (make-instance multi-line-column-number
-                                                       :newline-respacer newline-respacer)))
+    (multi-line-set-respacer-strategy
+     multi-line-config 'emacs-lisp-mode (make-instance  multi-line-column-number
+                                                        :newline-respacer
+                                                        newline-respacer)))
 
   ;; No match for done regex
-  (multi-line-set-enter-strategy multi-line-config 'emacs-lisp-mode
-                                 (make-instance multi-line-forward-sexp-enter-strategy
-                                                :done-regex "``````")))
+  (multi-line-set-enter-strategy  multi-line-config  'emacs-lisp-mode
+                                  (make-instance
+                                   multi-line-forward-sexp-enter-strategy
+                                   :done-regex "``````")))
 
 (multi-line-set-per-major-mode-strategies)
 
@@ -238,7 +247,8 @@ FIND-STRATEGY is a class with the method multi-line-find-next."
 (defun multi-line ()
   "Multi-line the statement at point."
   (interactive)
-  (multi-line-adjust-whitespace (multi-line-get-respacer-strategy multi-line-config)))
+  (multi-line-adjust-whitespace (multi-line-get-respacer-strategy
+                                 multi-line-config)))
 
 ;;;###autoload
 (defun multi-line-singleline ()
