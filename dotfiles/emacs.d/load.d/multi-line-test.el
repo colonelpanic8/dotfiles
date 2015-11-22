@@ -13,3 +13,8 @@
   (message "%d" (length (multi-line-get-markers
                     (make-instance multi-line-forward-sexp-enter-strategy)
                     (make-instance multi-line-forward-sexp-find-strategy)))))
+
+(defclass bars-at-markers () nil)
+
+(defmethod multi-line-respace ((respacer bars-at-markers) index markers)
+  (insert "|"))
