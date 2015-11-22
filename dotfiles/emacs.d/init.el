@@ -864,6 +864,19 @@ The current directory is assumed to be the project's root otherwise."
     (defvar site-lisp "/usr/share/emacs24/site-lisp/")
     (when (file-exists-p site-lisp) (add-to-list 'load-dirs site-lisp))))
 
+(use-package multi-line
+  :ensure nil
+  :preface
+  (progn
+    (defun imalison:multi-line-skip-fill ()
+      (interactive)
+      (multi-line-adjust-whitespace multi-line-skip-fill-respacer))
+    (imalison:prefix-alternatives imalison:multi-line multi-line
+                                  multi-line-single-line
+                                  imalison:multi-line-skip-fill))
+  :load-path "~/Projects/multi-line"
+  :bind ("C-c d" . imalison:multi-line))
+
 (use-package recentf
   ;; binding is in helm.
   :config
