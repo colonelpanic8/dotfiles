@@ -24,10 +24,11 @@
 ;;; Commentary:
 
 ;; multi-line aims to provide a flexible framework for automatically
-;; multi-lining and single-lining function invocations, array and map
-;; literals and more. It relies on functions that are defined on a per
-;; major mode basis wherever it can so that function correctly across
-;; many different programming languages.
+;; multi-lining and single-lining function invocations and
+;; definitions, array and map literals and more. It relies on
+;; functions that are defined on a per major mode basis wherever it
+;; can so that it functions correctly across many different
+;; programming languages.
 
 ;;; Code:
 
@@ -37,13 +38,15 @@
 (defvar multi-line-single-line-strategy)
 
 (defun multi-line-lparenthesis-advance ()
+  "Advance to the beginning of a statement that can be multi-lined."
   (re-search-forward "[[{(]"))
 
 (defun multi-line-up-list-back ()
+  "Go to the beginning of a statement from inside the statement."
   (up-list) (backward-sexp))
 
 (defclass multi-line-forward-sexp-enter-strategy ()
-  ((done-regex :initarg :done-regex :initform "[[:space:]]*\[[({]")
+  ((done-regex :initarg :done-regex :initform "[[:space:]]*[[({]")
    (advance-fn :initarg :advance-fn :initform 'multi-line-lparenthesis-advance)
    (inside-fn :initarg :inside-fn :initform 'multi-line-up-list-back)))
 
@@ -56,11 +59,8 @@
   (funcall (oref enter :advance-fn)))
 
 (defun multi-line-comma-advance ()
+  "Advance to the next comma."
   (re-search-forward ","))
-
-(defun multi-line-done-advance ()
-  (re-search-forward "[)}\]")
-  (backward-char))
 
 (defclass multi-line-forward-sexp-find-strategy ()
   ((split-regex :initarg :split-regex :initform "[[:space:]]*,")
@@ -136,6 +136,10 @@
      (oref respacer :default-respacer)) index markers))
 
 (defun multi-line-get-markers (enter-strategy find-strategy)
+  "Get the markers for multi-line candidates for the statement at point.
+
+ENTER-STRATEGY is a class with the method multi-line-enter, and
+FIND-STRATEGY is a class with the method multi-line-find-next."
   (multi-line-enter enter-strategy)
   (let ((markers (list (point-marker))))
     (nconc markers
@@ -144,13 +148,17 @@
     (nconc markers (list (point-marker)))))
 
 (defun multi-line-clear-whitespace-at-point ()
+  "Erase any surrounding whitespace."
   (interactive)
+  (re-search-backward "[^[:space:]\n]")
+  (forward-char)
   (let ((start (point)))
     (re-search-forward "[^[:space:]\n]")
     (backward-char)
     (kill-region start (point))))
 
 (defun multi-line-adjust-whitespace (respacer)
+  "Adjust whitespace using the provided RESPACER."
   (let ((markers (multi-line-get-markers multi-line-enter-strategy
                                           multi-line-find-strategy)))
     (cl-loop for marker being the elements of markers using (index i) do
@@ -160,6 +168,7 @@
 
 ;;;###autoload
 (defun multi-line-set-default-strategies ()
+  "Set multi-line strategies that work for languages with C-like syntax."
   (interactive)
   (setq multi-line-find-strategy
         (make-instance multi-line-forward-sexp-find-strategy)
@@ -172,11 +181,13 @@
 
 ;;;###autoload
 (defun multi-line-multiline ()
+  "Multi-line the statement at point."
   (interactive)
   (multi-line-adjust-whitespace multi-line-multi-line-strategy))
 
 ;;;###autoload
 (defun multi-line-singleline ()
+  "Single-line the statement at point."
   (interactive)
   (multi-line-adjust-whitespace multi-line-single-line-strategy))
 
