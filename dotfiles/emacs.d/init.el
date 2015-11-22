@@ -208,16 +208,18 @@
   (interactive "p")
   (message "%s" arg))
 
+(imalison:prefix-alternatives multi-line multi-line multi-line)
+
 (defmacro imalison:prefix-alternatives (name &rest alternatives)
   `(defun ,name (arg)
      (interactive "p")
      (setq function
            (cond
             ,@(progn
-               (setq last-power 1)
-               (cl-loop for alternative in alternatives
-                        collect `((eq prefix-value ,last-power) (quote ,alternative))
-                        do (setq last-power (* last-power 4))))))
+                (let ((last-power 1))
+                  (cl-loop for alternative in alternatives
+                           collect `((eq prefix-value ,last-power) (quote ,alternative))
+                           do (setq last-power (* last-power 4)))))))
      (setq function (or function (car alternatives))) ; Set a default value for function
      (setq current-prefix-arg nil)
      (call-interactively function)))
