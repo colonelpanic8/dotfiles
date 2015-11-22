@@ -1393,7 +1393,7 @@ the same tree node, and the headline of the tree node in the Org-mode file."
     (setq deft-file-naming-rules '((noslash . "_")
                                    (nospace . "_")
                                    (case-fn . downcase)))
-    (setq deft-directory "~/Dropbox (Personal)/org/notes")))
+    (setq deft-directory "~/SparkleShare/org/notes")))
 
 (use-package epg
   :config
