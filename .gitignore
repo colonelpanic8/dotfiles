@@ -42,3 +42,4 @@ dotfiles/pip/pip.conf
 gotools
 dotfiles/config/sparkleshare/logs
 dotfiles/config/sparkleshare/*.key
+dotfiles/config/sparkleshare/*.pub
