@@ -596,7 +596,7 @@ The current directory is assumed to be the project's root otherwise."
 
 (defmethod im-put ((im indexed-mapping) key value)
   ;; Handle removing the key from where it is currently indexed
-  (im-unindex im key value)
+  (im-unindex im key)
   ;; Add the key to its new position in the index
   (oset im :index
         (plist-put (oref im :index)
@@ -605,7 +605,7 @@ The current directory is assumed to be the project's root otherwise."
   (oset im :mapping
         (plist-put (oref im :mapping) key value)))
 
-(defmethod im-unindex ((im indexed-mapping) key value)
+(defmethod im-unindex ((im indexed-mapping) key)
   (let* ((current-value (plist-get (oref im :mapping) key))
          (value-list (plist-get (oref im :index) current-value)))
     (when value-list
@@ -615,7 +615,7 @@ The current directory is assumed to be the project's root otherwise."
                        current-value value-list)))))
 
 (defmethod im-delete ((im indexed-mapping) key)
-  (im-unindex im key (im-get im key))
+  (im-unindex im key)
   (oset im :mapping
         (use-package-plist-delete (oref im :mapping) key)))
 
