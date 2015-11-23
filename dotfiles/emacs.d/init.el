@@ -785,9 +785,10 @@ The current directory is assumed to be the project's root otherwise."
   (progn
     (add-hook 'prog-mode-hook (lambda () (rainbow-delimiters-mode t)))))
 
-(use-package diff-hl
+(use-package git-gutter
   :config
-  (progn (global-diff-hl-mode)))
+  (progn
+    (global-git-gutter-mode)))
 
 (use-package gitolite-clone)
 
