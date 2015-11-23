@@ -867,7 +867,6 @@ The current directory is assumed to be the project's root otherwise."
     (when (file-exists-p site-lisp) (add-to-list 'load-dirs site-lisp))))
 
 (use-package multi-line
-  :ensure nil
   :preface
   (progn
     (defun imalison:multi-line-skip-fill ()
@@ -876,7 +875,6 @@ The current directory is assumed to be the project's root otherwise."
     (imalison:prefix-alternatives imalison:multi-line multi-line
                                   multi-line-single-line
                                   imalison:multi-line-skip-fill))
-  :load-path "~/Projects/multi-line"
   :bind ("C-c d" . imalison:multi-line))
 
 (use-package recentf
