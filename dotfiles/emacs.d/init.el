@@ -1304,7 +1304,7 @@ the same tree node, and the headline of the tree node in the Org-mode file."
     ;; state of affairs. In some cases, the actual tasks involved may
     ;; not be known at the time of task creation.
 
-    ;; Uncompleted States:
+    ;; Incomplete States:
 
     ;; IDEA - This TODO exists in only the most abstract sense: it is
     ;; an imagined state of affairs that requires tasks that are
@@ -1331,11 +1331,11 @@ the same tree node, and the headline of the tree node in the Org-mode file."
     ;; it is blocked for the time being.
 
     ;; BACKLOG - While technically actionable, this task is not only
-    ;; in the immediate future, but the foreseable future. It exists
-    ;; as a task mostly as a note/reminder in case it becomes higher
-    ;; priority in the future.
+    ;; not worth pursuing in the immediate future, but the foreseable
+    ;; future. It exists as a task mostly as a note/reminder, in case
+    ;; it becomes higher priority in the future.
 
-    ;; Completed States:
+    ;; Complete States:
 
     ;; DONE - This TODO has been completed exactly as imagined.
 
@@ -2494,6 +2494,7 @@ items follow a style that is consistent with other prog-modes."
 ;; (when (display-graphic-p) (imalison:appearance))
 (add-hook 'after-init-hook 'imalison:appearance)
 (add-hook 'after-make-frame-functions 'imalison:appearance)
+
 ;; Local Variables:
 ;; flycheck-disabled-checkers: (emacs-lisp-checkdoc)
 ;; End:
