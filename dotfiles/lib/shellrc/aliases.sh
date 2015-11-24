@@ -30,7 +30,8 @@ alias whois="whois -h whois-servers.net"
 # View HTTP traffic
 alias sniff="sudo ngrep -d 'en1' -t '^(GET|POST) ' 'tcp and port 80'"
 alias httpdump="sudo tcpdump -i en1 -n -s 0 -w - | grep -a -o -E \"Host\: .*|GET \/.*\""
-command -v greadlink > /dev/null && alias readlink="greadlink"
+# The alias below is no longer needed when gnu readlink is on path as readlink
+# command -v greadlink > /dev/null && alias readlink="greadlink"
 
 # Merge PDF files
 # Usage: `mergepdf -o output.pdf input{1,2,3}.pdf`
