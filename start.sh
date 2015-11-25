@@ -5,7 +5,6 @@ function fedora() {
     yum install python-pip
 }
 
-
 function debian() {
     local INSTALL_COMMAND='sudo apt-get -y install'
     hash apt-get &>/dev/null || (echo 'apt-get is missing.' && exit)
@@ -41,10 +40,10 @@ function go() {
 while true; do sudo -n true; sleep 60; kill -0 "$$" || exit; done 2>/dev/null &
 case `uname` in
     'Darwin')
-	osx
-	;;
+        osx
+        ;;
     'Linux')
-	debian
+        debian
         ;;
 esac
 
