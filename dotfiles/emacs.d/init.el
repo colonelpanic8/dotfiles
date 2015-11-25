@@ -204,6 +204,22 @@
 ;;                                                                     functions
 ;; =============================================================================
 
+(defmacro imalison:compose (name &rest funcs)
+  "Build a new function with NAME that is the composition of FUNCS."
+  `(defun ,name (&rest args)
+     (imalison:compose-helper ,funcs)))
+
+(defun imalison:make-list (thing)
+  (if (listp thing)
+      thing
+    (list thing)))
+
+(defmacro imalison:compose-helper (funcs)
+  "Builds funcalls of FUNCS applied to the arg."
+  (if (equal (length funcs) 0)
+      (quote args)
+    `(apply ,(car funcs) (imalison:make-list (imalison:compose-helper ,(cdr funcs))))))
+
 (defun random-choice (choices)
   (nth (random (length choices)) choices))
 
