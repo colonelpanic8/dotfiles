@@ -204,12 +204,16 @@
 ;;                                                                     functions
 ;; =============================================================================
 
+(defun random-choice (choices)
+  (nth (random (length choices)) choices))
+
 (defun display-prefix (arg)
   "Display the value of the raw prefix arg."
   (interactive "p")
   (message "%s" arg))
 
 (defmacro imalison:prefix-alternatives (name &rest alternatives)
+  (car alternatives)
   `(defun ,name (arg)
      (interactive "p")
      (setq function
@@ -219,7 +223,7 @@
                   (cl-loop for alternative in alternatives
                            collect `((eq arg ,last-power) (quote ,alternative))
                            do (setq last-power (* last-power 4)))))))
-     (setq function (or function (car alternatives))) ; Set a default value for function
+     (setq function (or function)) ; Set a default value for function
      (setq current-prefix-arg nil)
      (call-interactively function)))
 
@@ -871,11 +875,17 @@ The current directory is assumed to be the project's root otherwise."
   (progn
     (defun imalison:multi-line-skip-fill ()
       (interactive)
-      (multi-line-adjust-whitespace multi-line-skip-fill-respacer))
+      (multi-line-execute multi-line-skip-fill-stragety nil))
+
+    (defun imalison:multi-line-fill ()
+      (interactive)
+      (multi-line-execute multi-line-fill-stragety nil))
+
     (imalison:prefix-alternatives imalison:multi-line multi-line
                                   multi-line-single-line
-                                  imalison:multi-line-skip-fill))
-  :bind ("C-c d" . imalison:multi-line))
+                                  imalison:multi-line-skip-fill
+                                  imalison:multi-line-fill))
+    :bind ("C-c d" . imalison:multi-line))
 
 (use-package recentf
   ;; binding is in helm.
@@ -2404,6 +2414,7 @@ items follow a style that is consistent with other prog-modes."
   :ensure spaceline
   :config
   (progn
+    (setq powerline-default-separator (random-choice '(butt slant wave)))
     (setq spaceline-workspace-numbers-unicode t
           spaceline-window-numbers-unicode t)
     (if (display-graphic-p)
@@ -2411,13 +2422,6 @@ items follow a style that is consistent with other prog-modes."
       (setq-default powerline-default-separator 'utf-8))
     (setq powerline-height 25)
     (spaceline-spacemacs-theme)))
-
-(use-package telephone-line
-  :disabled t
-  :config
-  (progn
-    (setq telephone-line-primary-left-separator #'telephone-line-cubed-left)
-    (telephone-line-mode 1)))
 
 ;; =============================================================================
 ;;                                                                        Themes
@@ -2433,9 +2437,6 @@ items follow a style that is consistent with other prog-modes."
         (imalison:get-lat-long)
       (setq calendar-latitude latitude)
       (setq calendar-longitude longitude))))
-
-(defun random-choice (choices)
-  (nth (random (length choices)) choices))
 
 (defun imalison:set-font-height ()
   (interactive)
