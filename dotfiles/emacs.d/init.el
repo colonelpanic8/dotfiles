@@ -47,14 +47,14 @@
 ;; =============================================================================
 
 ;; These silence the byte compiler.
-(defvar ido-cur-item nil
-  ido-default-item nil
-  ido-context-switch-command nil
-  ido-cur-list nil
-  inherit-input-method nil
-  grep-find-ignored-files nil
-  grep-find-ignored-directories nil
-  tls-checktrust nil)
+(defvar ido-cur-item nil)
+(defvar ido-default-item nil)
+(defvar ido-context-switch-command nil)
+(defvar ido-cur-list nil)
+(defvar inherit-input-method nil)
+(defvar grep-find-ignored-files nil)
+(defvar grep-find-ignored-directories nil)
+(defvar tls-checktrust nil)
 
 ;; =============================================================================
 ;;                                                                      Security
@@ -63,14 +63,14 @@
 (defvar imalison:secure t)
 
 (defun imalison:use-https-and-tls ()
-  (defvar-setq tls-checktrust t)
+  (setq tls-checktrust t)
   (let ((trustfile
          (replace-regexp-in-string
           "\\\\" "/"
           (replace-regexp-in-string
            "\n" ""
            (shell-command-to-string "python -m certifi")))))
-    (defvar-setq tls-program
+    (setq tls-program
           (list
            (format "gnutls-cli%s --x509cafile %s -p %%p %%h"
                    (if (eq window-system 'w32) ".exe" "") trustfile)))))
