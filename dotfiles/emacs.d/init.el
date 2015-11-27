@@ -808,7 +808,7 @@ The current directory is assumed to be the project's root otherwise."
 (use-package git-gutter
   :config
   (progn
-    (global-git-gutter-mode)))
+    (global-git-gutter-mode -1)))
 
 (use-package gitolite-clone)
 
