@@ -43,7 +43,9 @@ function emacs_ansi_term_support {
     else
         hostname_options="-f";
     fi
-    echo -e "\033AnSiTh" "$(hostname $hostname_options)" # Using the -f option can
+	# XXX/TODO: This disables correct setting of the current directory
+    # when in an sshed shell when inside of emacs
+	# echo -e "\033AnSiTh" "$(hostname $hostname_options)" # Using the -f option can #
     # cause problems on some OSes.
 }
 
