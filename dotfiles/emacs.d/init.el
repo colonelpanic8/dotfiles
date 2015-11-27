@@ -2445,7 +2445,7 @@ items follow a style that is consistent with other prog-modes."
 
 ;; These can be overriden in custom-before.el
 (defvar imalison:light-theme 'solarized-light)
-(defvar imalison:dark-theme 'material)
+(defvar imalison:dark-theme 'gotham)
 (use-package theme-changer
   :config
   (progn
