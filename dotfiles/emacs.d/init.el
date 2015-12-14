@@ -817,6 +817,7 @@ The current directory is assumed to be the project's root otherwise."
   :bind (("C-x g" . magit-status))
   :config
   (progn
+    (setq inhibit-magit-revert t)
     (defvar-setq magit-last-seen-setup-instructions "1.4.0")
     (setq magit-revert-buffers t)
     (use-package magit-filenotify
