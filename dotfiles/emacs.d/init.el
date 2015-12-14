@@ -2480,6 +2480,7 @@ items follow a style that is consistent with other prog-modes."
 (defun imalison:after-load-theme (&rest args)
   (when (fboundp 'powerline-reset)
     (powerline-reset))
+  (set-face-background 'fringe (face-background 'default))
   (imalison:restore-ansi-term-color-vector))
 
 (when t
@@ -2519,6 +2520,7 @@ items follow a style that is consistent with other prog-modes."
 ;; (when (display-graphic-p) (imalison:appearance))
 (add-hook 'after-init-hook 'imalison:appearance)
 (add-hook 'after-make-frame-functions 'imalison:appearance)
+(remove-hook 'after-make-frame-functions 'imalison:appearance)
 
 ;; Local Variables:
 ;; flycheck-disabled-checkers: (emacs-lisp-checkdoc)
