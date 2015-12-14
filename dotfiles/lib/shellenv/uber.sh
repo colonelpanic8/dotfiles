@@ -37,3 +37,5 @@ goclone() {
   mkdir -p $GOPATH/src/code.uber.internal/$1
   git clone gitolite@code.uber.internal:$1 $GOPATH/src/code.uber.internal/$1
 }
+
+alias hyper_tunnel='ssh -fN -L 21300:hyperbahn01-sjc1:21300 adhoc03-sjc1'
