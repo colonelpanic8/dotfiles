@@ -887,9 +887,14 @@ The current directory is assumed to be the project's root otherwise."
     (defvar site-lisp "/usr/share/emacs24/site-lisp/")
     (when (file-exists-p site-lisp) (add-to-list 'load-dirs site-lisp))))
 
+
 (use-package multi-line
+  :load-path "~/Projects/multi-line"
   :preface
   (progn
+    (defun imalison:multi-line-fill-column ()
+      (interactive)
+      (multi-line-execute multi-line-fill-column-strategy nil))
     (defun imalison:multi-line-skip-fill ()
       (interactive)
       (multi-line-execute multi-line-skip-fill-stragety nil))
@@ -901,7 +906,8 @@ The current directory is assumed to be the project's root otherwise."
     (imalison:prefix-alternatives imalison:multi-line multi-line
                                   multi-line-single-line
                                   imalison:multi-line-skip-fill
-                                  imalison:multi-line-fill))
+                                  imalison:multi-line-fill
+                                  imalison:multi-line-fill-column))
     :bind ("C-c d" . imalison:multi-line))
 
 (use-package recentf
@@ -1542,7 +1548,8 @@ marking if it still had that."
         (with-current-buffer buf
           (switch-to-buffer buf)
           (setq mu4e~view-msg msg)
-          (when (or (mu4e~view-mark-as-read msg) t) ;;(or embedded (not (mu4e~view-mark-as-read msg)))
+          ;;(or embedded (not (mu4e~view-mark-as-read msg)))
+          (when (or (mu4e~view-mark-as-read msg) t)
             (let ((inhibit-read-only t))
               (erase-buffer)
               (mu4e~delete-all-overlays)
@@ -1567,7 +1574,7 @@ marking if it still had that."
           smtpmail-smtp-server "smtp.gmail.com"
           smtpmail-smtp-service 587)))
 
-(use-package gmail-message-mode :ensure t)
+(use-package gmail-message-mode)
 
 (use-package alert
   :config
@@ -1859,7 +1866,7 @@ window is active in the perspective."
                                  (let ((default-directory dir)
                                        (projectile-require-project-root nil)
                                        (helm-action-buffer "this-buffer-should-not-exist"))
-                                   (imalison:term nil)))
+                                   (imalison:projectile-term)))
                                  helm-source-projectile-projects)))
 
 (use-package projectile
