@@ -47,6 +47,7 @@
       '(
         dired-toggle-read-only
         helm-M-x
+        ido-write-file
         isearch-delete-char
         smex
         ))
