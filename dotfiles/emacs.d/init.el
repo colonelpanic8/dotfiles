@@ -723,6 +723,7 @@ The current directory is assumed to be the project's root otherwise."
   (setq tramp-default-method "scp"))
 
 (use-package shackle
+  :disabled t
   :config
   (progn
     (diminish 'shackle-mode)
@@ -2467,13 +2468,25 @@ items follow a style that is consistent with other prog-modes."
   (let ((new-height (read-face-attribute 'default :height (selected-frame))))
     (set-face-attribute 'default nil :height new-height)))
 
+(defvar imalison:linum-format)
+
+(make-variable-buffer-local 'imalison:linum-format)
+(defun imalison:linum-before-numbering-hook ()
+  (setq imalison:linum-format
+        (concat "%" (number-to-string
+                      (max (length (number-to-string (count-lines (point-min) (point-max)))) 3)) "d")))
+
+(defun imalison:format-linum (line-text)
+  (propertize (format imalison:linum-format line-text) 'face 'linum))
+
 (defun imalison:remove-fringe-and-hl-line-mode (&rest stuff)
   (interactive)
   (if (fboundp 'scroll-bar-mode) (scroll-bar-mode -1))
   (if (fboundp 'tool-bar-mode) (tool-bar-mode -1))
   (if (fboundp 'menu-bar-mode) (menu-bar-mode -1))
   ;; (set-fringe-mode 0) ;; Lets reenable fringes. They seem useful
-  (defvar-setq linum-format 'dynamic)
+  (defvar-setq linum-format 'imalison:format-linum)
+  (add-hook 'linum-before-numbering-hook 'imalison:linum-before-numbering-hook)
   (setq left-margin-width 0)
   (defvar-setq hl-line-mode nil))
 

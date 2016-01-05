@@ -15,7 +15,7 @@ function _setup_env {
     hash brew 2>/dev/null && idem_add_to_front_of_path "$(brew --prefix coreutils)/libexec/gnubin"
     idem_add_to_front_of_path "/usr/local/bin"
 
-    idem_add_to_front_of_path `python -c 'import sysconfig; print sysconfig.get_path("scripts")'`
+    idem_add_to_back_of_path `python -c 'import sysconfig; print sysconfig.get_path("scripts")'`
 
     if is_osx; then
         export CFLAGS=-Qunused-arguments

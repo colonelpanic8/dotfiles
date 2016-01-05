@@ -369,7 +369,7 @@ function timestamp {
 }
 
 function parse_timestamp {
-    date -d "@$(echo $1 | cut -c -10)"
+    date -d "@$(echo $1 | cut -c -10)" -Iseconds
 }
 
 function clear_path {
