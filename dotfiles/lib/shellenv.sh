@@ -7,26 +7,31 @@ function _source_shellenv_files {
     done
 }
 
+function add_to_path {
+    local result=$($HOME/.lib/python/shell_path.py --include-assignment "$@")
+    eval "$result"
+}
+
 function _setup_env {
     _path_helper
-    idem_add_to_back_of_path "$HOME/.local/lib/python2.6/site-packages"
-    idem_add_to_back_of_path "$HOME/.rvm/bin"
-    idem_add_to_front_of_path "$HOME/bin"
-    hash brew 2>/dev/null && idem_add_to_front_of_path "$(brew --prefix coreutils)/libexec/gnubin"
-    idem_add_to_front_of_path "/usr/local/bin"
+    add_to_path "$HOME/.local/lib/python2.6/site-packages" --after
+    add_to_path "$HOME/.rvm/bin" --after
+    add_to_path "$HOME/bin"
+    hash brew 2>/dev/null && add_to_path "$(brew --prefix coreutils)/libexec/gnubin"
+    add_to_path "/usr/local/bin"
 
-    idem_add_to_back_of_path `python -c 'import sysconfig; print sysconfig.get_path("scripts")'`
+    add_to_path $(python -c 'import sysconfig; print sysconfig.get_path("scripts")') --before
 
     if is_osx; then
         export CFLAGS=-Qunused-arguments
         export CPPFLAGS=-Qunused-arguments
-        idem_add_to_back_of_path "/System/Library/PrivateFrameworks/Apple80211.framework/Versions/Current/Resources"
+        add_to_path "/System/Library/PrivateFrameworks/Apple80211.framework/Versions/Current/Resources" --after
         local JDK_LOCATION="$(find /Library/Java/JavaVirtualMachines -depth 1 | head -n 1)"
         export JAVA_HOME="$JDK_LOCATION/Contents/Home"
         export STUDIO_JDK=$JDK_LOCATION
         export GRADLE_HOME="$(brew --prefix gradle)"
         export ANDROID_HOME="$(brew --prefix android-sdk)"
-        idem_add_to_back_of_path "$ANDROID_HOME"
+        add_to_path "$ANDROID_HOME" --after
         
         # Access gnu man pages.
         hash brew 2> /dev/null && export MANPATH="$(brew --prefix)/opt/coreutils/libexec/gnuman:$MANPATH"
@@ -35,10 +40,10 @@ function _setup_env {
         is_osx && export VISUAL="which emacsclient -c -n"
     fi
 
-    idem_add_to_front_of_path "$JAVA_HOME/bin"
+    add_to_path "$JAVA_HOME/bin"
 
-    idem_add_to_back_of_path "$HOME/.lib/python"
-    idem_add_to_back_of_path "/usr/local/sbin"
+    add_to_path "$HOME/.lib/python" --after
+    add_to_path "/usr/local/sbin" --after
 
     # Load RVM into a shell session *as a function*
     [[ -s "$HOME/.rvm/scripts/rvm" ]] && source "$HOME/.rvm/scripts/rvm"
@@ -54,18 +59,18 @@ function _setup_env {
     [ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh"  # This loads nvm
     export NODE_PATH="/usr/local/lib/node_modules/"
 
-    idem_add_to_front_of_path "$HOME/.local/bin"
-    idem_add_to_front_of_path "$HOME/.lib/python" 'PYTHONPATH'
+    add_to_path "$HOME/.local/bin"
+    add_to_path "$HOME/.lib/python" --path-var 'PYTHONPATH'
 
-    idem_add_to_front_of_path "$HOME/go" 'GOPATH'
-    idem_add_to_front_of_path "${GOPATH//://bin:}/bin"
+    add_to_path "$HOME/go" --path-var 'GOPATH'
+    add_to_path "${GOPATH//://bin:}/bin"
 
     export RBENV_ROOT=/usr/local/var/rbenv
-    idem_add_to_front_of_path "$HOME/.rbenv/bin"
+    add_to_path "$HOME/.rbenv/bin"
     hash rbenv 2> /dev/null && eval "$(rbenv init -)"
-    hash brew 2>/dev/null && idem_add_to_front_of_path "$(brew --prefix coreutils)/libexec/gnubin"
+    hash brew 2>/dev/null && add_to_path "$(brew --prefix coreutils)/libexec/gnubin"
 
-    idem_add_to_front_of_path "$HOME/.lib/bin"
+    add_to_path "$HOME/.lib/bin"
     export ENVIRONMENT_SETUP_DONE="$(date)"
 }
 

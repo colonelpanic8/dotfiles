@@ -1,46 +1,5 @@
 function path_lines {
-	target=${1-PATH}
-	if is_zsh; then
-		echo ${(P)target} | tr ':' '\n'
-	else 
-		echo ${!target} | tr ':' '\n'
-	fi
-}
-
-function _add_to_front_of_path_lines {
-	target=${2-PATH}
-	echo $1
-	path_lines $target | grep -Ev "^$1$"
-}
-
-function _add_to_back_of_path_lines {
-	target=${2-PATH}
-	path_lines $target | grep -Ev "^$1$"
-	echo $1
-}
-
-function remove_trailing_colon {
-	sed 's|:*$||'
-}
-
-function add_to_front_of_path {
-	target=${2-PATH}
-	export $target="$(_add_to_front_of_path_lines $1 $target | tr '\n' ':' | remove_trailing_colon)"
-}
-
-function add_to_back_of_path {
-	target=${2-PATH}
-	export $target="$(_add_to_back_of_path_lines $1 $target | tr '\n' ':' | remove_trailing_colon)"
-}
-
-function idem_add_to_front_of_path {
-    target=${2-PATH}
-    exists_in_path_var $1 $target || add_to_front_of_path $1 $target
-}
-
-function idem_add_to_back_of_path {
-    target=${2-PATH}
-    exists_in_path_var $1 $target || add_to_back_of_path $1 $target
+	shell_path.py --path-lines "$@"
 }
 
 function indirect_expand {
