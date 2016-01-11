@@ -2393,6 +2393,7 @@ items follow a style that is consistent with other prog-modes."
 (bind-key "C-c 8" 'imalison:term)
 (bind-key "C-c 7" 'imalison:force-new-term)
 (bind-key "C-x 9" 'previous-buffer)
+(bind-key "s-v" 'clipboard-yank)
 
 (fset 'global-set-key-to-use-package
       (lambda (&optional arg) "Keyboard macro." (interactive "p")
