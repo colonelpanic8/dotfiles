@@ -1408,27 +1408,6 @@ the same tree node, and the headline of the tree node in the Org-mode file."
 
 (use-package clocker :ensure t)
 
-(use-package org-projectile
-  :demand t
-  :bind (("C-c n p" . imalison:helm-org-todo))
-  :config
-  (progn
-    (org-projectile:prompt)
-    (add-to-list 'org-capture-templates
-                 (org-projectile:project-todo-entry
-                  "l" "* TODO %? %a\n" "Linked Project TODO"))
-    (add-to-list 'org-capture-templates (org-projectile:project-todo-entry "p"))
-    (setq org-confirm-elisp-link-function nil)
-    (imalison:add-to-org-agenda-files (org-projectile:todo-files))
-    (defun imalison:helm-org-todo (&optional arg)
-      (interactive "P")
-      (helm :sources (list (helm-source-org-capture-templates)
-                           (org-projectile:helm-source
-                            (if arg (org-capture-make-linked-todo-template)
-                              (org-capture-make-todo-template))))
-            :candidate-number-limit 99999
-            :buffer "*helm org capture templates*"))))
-
 (use-package deft
   :config
   (progn
@@ -1790,6 +1769,26 @@ marking if it still had that."
     (use-package helm-descbinds
       :demand t
       :config (helm-descbinds-mode 1))
+    (use-package org-projectile
+      :demand t
+      :bind (("C-c n p" . imalison:helm-org-todo))
+      :config
+      (progn
+        (org-projectile:prompt)
+        (add-to-list 'org-capture-templates
+                     (org-projectile:project-todo-entry
+                      "l" "* TODO %? %a\n" "Linked Project TODO"))
+        (add-to-list 'org-capture-templates (org-projectile:project-todo-entry "p"))
+        (setq org-confirm-elisp-link-function nil)
+        (imalison:add-to-org-agenda-files (org-projectile:todo-files))
+        (defun imalison:helm-org-todo (&optional arg)
+          (interactive "P")
+          (helm :sources (list (helm-source-org-capture-templates)
+                               (org-projectile:helm-source
+                                (if arg (org-capture-make-linked-todo-template)
+                                  (org-capture-make-todo-template))))
+                :candidate-number-limit 99999
+                :buffer "*helm org capture templates*"))))
     (helm-mode 1)
     (diminish 'helm-mode)))
 
