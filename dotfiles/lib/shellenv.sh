@@ -17,7 +17,7 @@ function _setup_env {
     add_to_path "$HOME/.local/lib/python2.6/site-packages" --after
     add_to_path "$HOME/.rvm/bin" --after
     add_to_path "$HOME/bin"
-    hash brew 2>/dev/null && add_to_path "$(brew --prefix coreutils)/libexec/gnubin"
+    hash brew 2>/dev/null && add_to_path --before "$(brew --prefix coreutils)/libexec/gnubin"
     add_to_path "/usr/local/bin"
 
     add_to_path $(python -c 'import sysconfig; print sysconfig.get_path("scripts")') --before
