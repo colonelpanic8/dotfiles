@@ -2179,6 +2179,9 @@ window is active in the perspective."
               (setq indent-tabs-mode nil)
               (setq js-indent-level 4))))
 
+(use-package jq-mode
+  :mode "\\.jq\\'")
+
 (use-package jsx-mode
   :mode "\\.jsx\\'")
 
