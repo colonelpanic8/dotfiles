@@ -328,6 +328,10 @@ function timestamp {
 }
 
 function parse_timestamp {
+    date -d "@$1"
+}
+
+function parse_timestamp2 {
     date -d "@$(echo $1 | cut -c -10)" -Iseconds
 }
 
