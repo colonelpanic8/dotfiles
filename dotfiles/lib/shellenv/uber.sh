@@ -1,6 +1,7 @@
 # added by newengsetup
 export UBER_HOME="$HOME/Uber"
 export UBER_OWNER="imalison@uber.com"
+export UBER_LDAP_UID="imalison"
 [ -z "$GIT_SSH" ] || export GIT_SSH="$HOME/.lib/git-ssh.sh"
 export VAGRANT_DEFAULT_PROVIDER=aws
 [ -s "/usr/local/bin/virtualenvwrapper.sh" ] && . /usr/local/bin/virtualenvwrapper.sh
@@ -39,3 +40,7 @@ goclone() {
 }
 
 alias hyper_tunnel='ssh -fN -L 21300:hyperbahn01-sjc1:21300 adhoc03-sjc1'
+
+add_to_path "$HOME/bin" --before
+
+alias land_current='arc land $(git which-branch)'
