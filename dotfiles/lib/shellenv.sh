@@ -14,7 +14,7 @@ function add_to_path {
 
 function _setup_env {
     _path_helper
-    add_to_path "$HOME/.local/lib/python2.6/site-packages" --after
+    add_to_path /usr/local/lib/python2.7/site-packages --after
     add_to_path "$HOME/.rvm/bin" --after
     add_to_path "$HOME/bin"
     hash brew 2>/dev/null && add_to_path --before "$(brew --prefix coreutils)/libexec/gnubin"
