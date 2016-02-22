@@ -6,6 +6,7 @@
         backward-sexp
         delete-horizontal-space
         dired-do-rename
+        end-of-visual-line
         eval-last-sexp
         forward-sexp
         git-rebase-squash
