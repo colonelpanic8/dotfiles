@@ -219,4 +219,4 @@ if __name__ == '__main__':
     #     [True, False, False, True, False, False],
     #     [True, True, True, False, True, False]
     # ]).run(print_grid)
-    print square(3, in_between_searches=print_grid)
+    print square(5, in_between_searches=print_grid)
