@@ -30,4 +30,4 @@ dircolors_file="$HOME/.dircolors"
 
 [ ! -z "$SHELL" ] && test -r $dircolors_files  && eval "$(dircolors $dircolors_file)" && eval $(dircolors)
 
-export GO15VENDOREXPERIMENT=0
+export GO15VENDOREXPERIMENT=1
