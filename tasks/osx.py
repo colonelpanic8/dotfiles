@@ -146,7 +146,7 @@ def cl_tools(ctx):
 @ctask
 def fix_htop(ctx):
     real_htop_location = ctx.run(
-        "zsh -c 'greadlink -f $(brew --prefix htop)'"
+        "zsh -c 'greadlink -f $(brew --prefix htop-osx)'"
     ).stdout.strip() + "/bin/htop"
     ctx.run("sudo chmod 6555 {0}".format(real_htop_location))
     ctx.run("sudo chown root {0}".format(real_htop_location))
