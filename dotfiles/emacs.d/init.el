@@ -103,7 +103,6 @@
 ;;              '("marmalade" . "http://marmalade-repo.org/packages/") t)
 ;; (add-to-list 'package-archives '("elpa" . "https://tromey.com/elpa/") t)
 ;; (add-to-list 'package-archives '("org" . "https://orgmode.org/elpa/") t)
-(setq package-archives nil)
 (add-to-list 'package-archives '("melpa" . "https://melpa.org/packages/") t)
 
 (defun ensure-packages-installed (packages)
@@ -203,6 +202,9 @@
 ;; =============================================================================
 ;;                                                                     functions
 ;; =============================================================================
+
+(defun imalison:join-paths (&rest paths)
+  (substring (mapconcat 'file-name-as-directory paths nil) 0 -1))
 
 (defmacro imalison:compose (name &rest funcs)
   "Build a new function with NAME that is the composition of FUNCS."
@@ -392,6 +394,10 @@ buffer is not visiting a file."
   (interactive)
   (add-string-to-kill-ring (file-relative-name (buffer-file-name) (projectile-project-root))))
 
+(defun copy-full-file-path ()
+  (interactive)
+  (add-string-to-kill-ring (buffer-file-name)))
+
 (defun add-string-to-kill-ring (string)
   (with-temp-buffer
     (insert string)
@@ -516,6 +522,8 @@ The current directory is assumed to be the project's root otherwise."
 ;; We want closures
 (setq lexical-binding t)
 
+(setq fill-column 80)
+
 ;; Don't disable commands...
 (setq disabled-command-function nil)
 
@@ -591,17 +599,18 @@ The current directory is assumed to be the project's root otherwise."
     (setq paradox-execute-asynchronously t)))
 
 (use-package smartparens
+  :bind (:map smartparens-mode-map
+              ("C-)" . sp-forward-slurp-sexp)
+              ("C-}" . sp-forward-barf-sexp)
+              ("C-(" . sp-backward-slurp-sexp)
+              ("C-{" . sp-backward-barf-sexp))
   :config
   (progn
     (require 'smartparens-config)
     (smartparens-global-mode 1)
     (sp-use-smartparens-bindings)
     (unbind-key "C-<backspace>" smartparens-mode-map)
-    (unbind-key "M-<backspace>" smartparens-mode-map)
-    (bind-key "C-)" 'sp-forward-slurp-sexp smartparens-mode-map)
-    (bind-key "C-}" 'sp-forward-barf-sexp smartparens-mode-map)
-    (bind-key "C-(" 'sp-backward-slurp-sexp smartparens-mode-map)
-    (bind-key "C-{" 'sp-backward-barf-sexp smartparens-mode-map)))
+    (unbind-key "M-<backspace>" smartparens-mode-map)))
 
 (defclass indexed-mapping ()
   ((mapping :initarg :mapping :initform nil)
@@ -1887,7 +1896,8 @@ window is active in the perspective."
       (interactive "P")
       (if arg (helm-do-ag) (helm-projectile-ag)))
     (projectile-global-mode)
-    (setq projectile-enable-caching t)
+    (setq projectile-require-project-root nil)
+    (setq projectile-enable-caching nil)
     (setq projectile-completion-system 'helm)
     (add-to-list 'projectile-globally-ignored-files "Godeps")
     (add-to-list 'projectile-globally-ignored-files "thrift-binaries")
@@ -2307,30 +2317,7 @@ items follow a style that is consistent with other prog-modes."
                    (marker (copy-marker beg))
                    (item (cons name marker)))
               (setq func-index (cons item func-index)))))
-        (nconc type-index (list (cons "func" func-index))))))
-  :config
-  (progn
-    (use-package company-go
-      :config (setq company-go-show-annotation t))
-    (use-package go-projectile)
-    (use-package go-eldoc)
-    (use-package gotest)
-    (setq go-test-verbose t)
-    (bind-key "M-." 'godef-jump go-mode-map)
-    (bind-key "M-," 'pop-tag-mark go-mode-map)
-    (imalison:prefix-alternatives
-     imalison:gotest go-test-current-test go-test-current-file)
-    (defun imalison:go-mode-hook ()
-      (go-eldoc-setup)
-      (bind-key "C-c t" 'imalison:gotest go-mode-map)
-      (setq imenu-create-index-function
-            (lambda ()
-              (imalison:flatten-imenu-index
-               (go-mode-create-imenu-index))))
-      (set (make-local-variable 'company-backends) '(company-go)))
-    (add-hook 'go-mode-hook 'imalison:go-mode-hook)
-    (setq gofmt-command "goimports")
-    (add-hook 'before-save-hook 'gofmt-before-save t)
+        (nconc type-index (list (cons "func" func-index)))))
     (defun go-mode-workspace-path ()
       (file-relative-name (projectile-project-root)
                           (concat (file-name-as-directory
@@ -2340,7 +2327,37 @@ items follow a style that is consistent with other prog-modes."
       (start-process "go install" "go install log" "go" "install"
                      (concat (file-name-as-directory (go-mode-workspace-path))
                              "...")))
-    (add-hook 'before-save-hook 'go-mode-install-current-project)))
+    (defun go-mode-get-go-path ()
+      (file-name-as-directory (car (s-split ":" (getenv "GOPATH")))))
+    (defun imalison:go-mode-hook ()
+      (go-eldoc-setup)
+      (bind-key "C-c t" 'imalison:gotest go-mode-map)
+      (setq imenu-create-index-function
+            (lambda ()
+              (imalison:flatten-imenu-index
+               (go-mode-create-imenu-index))))
+      (set (make-local-variable 'company-backends) '(company-go))))
+  :config
+  (progn
+    (bind-key "M-." 'godef-jump go-mode-map)
+    (use-package company-go
+      :config (setq company-go-show-annotation t))
+    (use-package go-projectile)
+    (use-package go-eldoc)
+    (use-package gotest)
+    (load-file (imalison:join-paths (go-mode-get-go-path) "src"
+                                                "golang.org" "x" "tools" "cmd"
+                                                "guru" "guru.el"))
+    (use-package go-guru :ensure nil)
+    (setq go-test-verbose t)
+    (bind-key "M-." 'godef-jump go-mode-map)
+    (bind-key "M-," 'pop-tag-mark go-mode-map)
+    (imalison:prefix-alternatives
+     imalison:gotest go-test-current-test go-test-current-file)
+    (add-hook 'go-mode-hook 'imalison:go-mode-hook)
+    (setq gofmt-command "goimports")
+    (add-hook 'before-save-hook 'gofmt-before-save t)
+    (add-hook 'after-save-hook 'go-mode-install-current-project)))
 
 (use-package rust-mode
   :mode (("\\.rs\\'" . rust-mode)))
@@ -2459,7 +2476,7 @@ items follow a style that is consistent with other prog-modes."
 
 ;; These can be overriden in custom-before.el
 (defvar imalison:light-theme 'solarized-light)
-(defvar imalison:dark-theme 'gotham)
+(defvar imalison:dark-theme 'material)
 (use-package theme-changer
   :config
   (progn
@@ -2479,7 +2496,9 @@ items follow a style that is consistent with other prog-modes."
 (defun imalison:linum-before-numbering-hook ()
   (setq imalison:linum-format
         (concat "%" (number-to-string
-                      (max (length (number-to-string (count-lines (point-min) (point-max)))) 3)) "d")))
+                     (max (length
+                           (number-to-string
+                            (count-lines (point-min) (point-max)))) 3)) "d")))
 
 (defun imalison:format-linum (line-text)
   (propertize (format imalison:linum-format line-text) 'face 'linum))
