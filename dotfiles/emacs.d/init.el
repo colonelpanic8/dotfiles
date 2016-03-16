@@ -505,6 +505,8 @@ The current directory is assumed to be the project's root otherwise."
 (diminish 'auto-revert-mode)
 (diminish 'smartparens-mode)
 (diminish 'eldoc-mode)
+(diminish 'tern-mode)
+(diminish 'js2-refactor-mode)
 
 ;; This makes it so that emacs --daemon puts its files in ~/.emacs.d/server
 ;; (setq server-use-tcp t)
@@ -2051,8 +2053,7 @@ window is active in the perspective."
          ("M-," . jedi:goto-definition-pop-marker)))
 
 (use-package company-jedi
-  :commands company-jedi
-  :ensure t)
+  :commands company-jedi)
 
 (use-package python
   :commands python-mode
