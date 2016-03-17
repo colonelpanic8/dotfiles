@@ -2316,7 +2316,10 @@ items follow a style that is consistent with other prog-modes."
       (set (make-local-variable 'company-backends) '(company-go))))
   :config
   (progn
-    (bind-key "M-." 'godef-jump go-mode-map)
+    (advice-add 'go-guru-definition :before
+                (lambda ()
+                  (with-no-warnings
+                    (ring-insert find-tag-marker-ring (point-marker)))))
     (use-package company-go
       :config (setq company-go-show-annotation t))
     (use-package go-projectile)
@@ -2327,7 +2330,7 @@ items follow a style that is consistent with other prog-modes."
                                                 "guru" "guru.el"))
     (use-package go-guru :ensure nil)
     (setq go-test-verbose t)
-    (bind-key "M-." 'godef-jump go-mode-map)
+    (bind-key "M-." 'go-guru-definition go-mode-map)
     (bind-key "M-," 'pop-tag-mark go-mode-map)
     (imalison:prefix-alternatives
      imalison:gotest go-test-current-test go-test-current-file)
