@@ -60,7 +60,7 @@
 ;;                                                                      Security
 ;; =============================================================================
 
-(defvar imalison:secure t)
+(defvar imalison:secure nil)
 
 (defun imalison:use-https-and-tls ()
   (setq tls-checktrust t)
@@ -99,11 +99,15 @@
 ;; =============================================================================
 
 (require 'package)
+(defvar imalison:elpa-protocol (if imalison:secure "https" "http"))
 ;; (add-to-list 'package-archives
 ;;              '("marmalade" . "http://marmalade-repo.org/packages/") t)
-;; (add-to-list 'package-archives '("elpa" . "https://tromey.com/elpa/") t)
-;; (add-to-list 'package-archives '("org" . "https://orgmode.org/elpa/") t)
-(add-to-list 'package-archives '("melpa" . "https://melpa.org/packages/") t)
+(add-to-list 'package-archives '("elpa" . (concat imalison:elpa-protocol
+                                                  "://tromey.com/elpa/")) t)
+(add-to-list 'package-archives '("org" . (concat imalison:elpa-protocol
+                                                 "://orgmode.org/elpa/")) t)
+(add-to-list 'package-archives '("melpa" . (concat imalison:elpa-protocol
+                                                   "://melpa.org/packages/")) t)
 
 (defun ensure-packages-installed (packages)
   (unless package-archive-contents
