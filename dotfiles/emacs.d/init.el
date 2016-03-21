@@ -2315,6 +2315,7 @@ items follow a style that is consistent with other prog-modes."
                              "...")))
     (defun go-mode-get-go-path ()
       (file-name-as-directory (car (s-split ":" (getenv "GOPATH")))))
+    (imalison:let-advise-around imalison:advise-normal-go-command (go-command "go"))
     (defun imalison:go-mode-hook ()
       (go-eldoc-setup)
       (bind-key "C-c t" 'imalison:gotest go-mode-map)
@@ -2325,6 +2326,8 @@ items follow a style that is consistent with other prog-modes."
       (set (make-local-variable 'company-backends) '(company-go))))
   :config
   (progn
+    (advice-remove 'imalison:let-advise-around 'go-guru-defintion)
+    (advice-add 'go-guru-definition :around 'imalison:advise-normal-go-command)
     (advice-add 'go-guru-definition :before
                 (lambda ()
                   (with-no-warnings
