@@ -249,6 +249,11 @@
      (setq current-prefix-arg nil)
      (call-interactively function)))
 
+(defmacro imalison:let-advise-around (name &rest forms)
+  `(defun ,name (orig-func &rest args)
+     (let ,forms
+       (apply orig-func args))))
+
 (defun imalison:uuid ()
   (interactive)
   (s-replace "\n" "" (shell-command-to-string "uuid")))
