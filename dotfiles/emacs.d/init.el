@@ -55,6 +55,7 @@
 (defvar grep-find-ignored-files nil)
 (defvar grep-find-ignored-directories nil)
 (defvar tls-checktrust nil)
+(defvar tls-program nil)
 
 ;; =============================================================================
 ;;                                                                      Security
@@ -281,7 +282,8 @@
 
 (defun imalison:get-lat-long ()
   (condition-case ex
-      (mapcar 'string-to-number (s-split "," (s-trim (shell-command-to-string "whereami"))))
+      (mapcar 'string-to-number (s-split "," (s-trim (shell-command-to-string
+                                                      "whereami"))))
     (error (list 37.7879312624533 -122.402388853402))))
 
 (defun get-date-created-from-agenda-entry (agenda-entry)
@@ -301,7 +303,8 @@
 
 (defun imalison:flatten-imenu-index (index)
   (let ((cdr-is-index (listp (cdr index))))
-    (cond ((not (stringp (car index))) (cl-mapcan #'imalison:flatten-imenu-index index))
+    (cond ((not (stringp (car index))) (cl-mapcan
+                                        #'imalison:flatten-imenu-index index))
           (cdr-is-index (imalison:imenu-prefix-flattened index))
           (t (list index)))))
 
@@ -402,7 +405,8 @@ buffer is not visiting a file."
 
 (defun copy-buffer-file-path ()
   (interactive)
-  (add-string-to-kill-ring (file-relative-name (buffer-file-name) (projectile-project-root))))
+  (add-string-to-kill-ring (file-relative-name (buffer-file-name)
+                                               (projectile-project-root))))
 
 (defun copy-full-file-path ()
   (interactive)
@@ -1845,8 +1849,10 @@ window is active in the perspective."
   :commands (helm-projectile-on)
   :config
   (progn
-    (helm-delete-action-from-source "Search in Project" helm-source-projectile-projects)
-    (helm-delete-action-from-source "Open term for project" helm-source-projectile-projects)
+    (helm-delete-action-from-source "Search in Project"
+                                    helm-source-projectile-projects)
+    (helm-delete-action-from-source "Open term for project"
+                                    helm-source-projectile-projects)
     (defun imalison:invalidate-cache-and-open-file (dir)
       (projectile-invalidate-cache nil)
       (projectile-find-file))
