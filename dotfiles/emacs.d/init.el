@@ -2327,12 +2327,12 @@ items follow a style that is consistent with other prog-modes."
       (set (make-local-variable 'company-backends) '(company-go))))
   :config
   (progn
-    (advice-remove 'imalison:let-advise-around 'go-guru-defintion)
     (advice-add 'go-guru-definition :around 'imalison:advise-normal-go-command)
     (advice-add 'go-guru-definition :before
                 (lambda ()
                   (with-no-warnings
                     (ring-insert find-tag-marker-ring (point-marker)))))
+    (advice-add 'go-import-add :around 'imalison:advise-normal-go-command)
     (use-package company-go
       :config (setq company-go-show-annotation t))
     (use-package go-projectile)
