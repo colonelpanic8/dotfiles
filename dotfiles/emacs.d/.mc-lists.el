@@ -4,6 +4,7 @@
 (setq mc/cmds-to-run-for-all
       '(
         backward-sexp
+        beginning-of-visual-line
         delete-horizontal-space
         dired-do-rename
         end-of-visual-line
@@ -41,6 +42,7 @@
         undo-redo
         universal-argument-minus
         wdired-finish-edit
+        yaml-electric-backspace
         yas-expand
         ))
 
