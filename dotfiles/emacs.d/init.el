@@ -102,11 +102,11 @@
 (defvar imalison:elpa-protocol (if imalison:secure "https" "http"))
 ;; (add-to-list 'package-archives
 ;;              '("marmalade" . "http://marmalade-repo.org/packages/") t)
-(add-to-list 'package-archives '("elpa" . (concat imalison:elpa-protocol
+(add-to-list 'package-archives `("elpa" . ,(concat imalison:elpa-protocol
                                                   "://tromey.com/elpa/")) t)
-(add-to-list 'package-archives '("org" . (concat imalison:elpa-protocol
+(add-to-list 'package-archives `("org" . ,(concat imalison:elpa-protocol
                                                  "://orgmode.org/elpa/")) t)
-(add-to-list 'package-archives '("melpa" . (concat imalison:elpa-protocol
+(add-to-list 'package-archives `("melpa" . ,(concat imalison:elpa-protocol
                                                    "://melpa.org/packages/")) t)
 
 (defun ensure-packages-installed (packages)
