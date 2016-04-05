@@ -587,6 +587,7 @@ buffer is not visiting a file."
     (setq paradox-execute-asynchronously t)))
 
 (use-package smartparens
+  :demand t
   :bind (:map smartparens-mode-map
               ("C-)" . sp-forward-slurp-sexp)
               ("C-}" . sp-forward-barf-sexp)
