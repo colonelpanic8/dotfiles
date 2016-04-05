@@ -224,7 +224,8 @@
   "Builds funcalls of FUNCS applied to the arg."
   (if (equal (length funcs) 0)
       (quote args)
-    `(apply ,(car funcs) (imalison:make-list (imalison:compose-helper ,(cdr funcs))))))
+    `(apply ,(car funcs)
+            (imalison:make-list (imalison:compose-helper ,(cdr funcs))))))
 
 (defun random-choice (choices)
   (nth (random (length choices)) choices))
