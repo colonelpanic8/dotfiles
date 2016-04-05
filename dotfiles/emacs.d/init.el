@@ -2419,7 +2419,7 @@ items follow a style that is consistent with other prog-modes."
 ;;                                                                          toys
 ;; =============================================================================
 
-(use-package hackernews :ensure t :commands hackernews)
+(use-package hackernews :commands hackernews)
 
 ;; =============================================================================
 ;;                                                                    Appearance
