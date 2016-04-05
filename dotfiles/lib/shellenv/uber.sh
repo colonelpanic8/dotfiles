@@ -44,3 +44,5 @@ alias hyper_tunnel='ssh -fN -L 21300:hyperbahn01-sjc1:21300 adhoc03-sjc1'
 add_to_path "$HOME/bin" --before
 
 alias land_current='arc land $(git which-branch)'
+
+alias kill_h_forward='ps aux | grep ssh | grep 21300 | get_cols 2 | xargs kill -9'
