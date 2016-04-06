@@ -2347,8 +2347,9 @@ items follow a style that is consistent with other prog-modes."
     (use-package gotest)
     (load-file (imalison:join-paths (go-mode-get-go-path) "src"
                                                 "golang.org" "x" "tools" "cmd"
-                                                "guru" "guru.el"))
-    (use-package go-guru :ensure nil)
+                                                "guru" "go-guru.el"))
+    (use-package go-guru
+      :ensure nil)
     (setq go-test-verbose t)
     (bind-key "M-." 'go-guru-definition go-mode-map)
     (bind-key "M-," 'pop-tag-mark go-mode-map)
