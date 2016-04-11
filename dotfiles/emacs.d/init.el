@@ -2057,8 +2057,9 @@ window is active in the perspective."
     (fset 'sphinx-class ":class:`~")
   :init
   (progn
-    (use-package pymacs :ensure t)
-    (use-package sphinx-doc :ensure t)
+    (unbind-key "C-j" python-mode-map)
+    (use-package pymacs)
+    (use-package sphinx-doc)
     (defun imalison:python-mode ()
       (setq show-trailing-whitespace t)
       (if use-python-tabs (python-tabs))
