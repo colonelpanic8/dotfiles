@@ -2345,7 +2345,7 @@ items follow a style that is consistent with other prog-modes."
       :config (setq company-go-show-annotation t))
     (use-package go-projectile)
     (use-package go-eldoc)
-    (use-package gotest)
+    (use-package gotest :demand t)
     (load-file (imalison:join-paths (go-mode-get-go-path) "src"
                                                 "golang.org" "x" "tools" "cmd"
                                                 "guru" "go-guru.el"))
