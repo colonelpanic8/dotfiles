@@ -256,6 +256,11 @@
      (let ,forms
        (apply orig-func args))))
 
+(defmacro imalison:dynamic-let-advise-around (name getter)
+  `(defun ,name (orig-func &rest args)
+     (let ,(funcall getter)
+       (apply orig-func args))))
+
 (defun imalison:uuid ()
   (interactive)
   (s-replace "\n" "" (shell-command-to-string "uuid")))
