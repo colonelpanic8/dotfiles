@@ -675,13 +675,27 @@ buffer is not visiting a file."
             (term-set-escape-char ?\C-x)))
         buffer))
 
-    (defun imalison:term-buffer (directory)
+    (defun imalison:term-get-next-buffer-index (buffers &optional delta)
+      (unless delta (setq delta 1))
+      (let* ((the-current-buffer (current-buffer))
+             (current-index (--find-index (eq it the-current-buffer) buffers)))
+        (if current-index (mod (+ current-index delta) (length buffers)) 0)))
+
+    (defun imalison:term-purge-dead-buffers (directory-symbol)
+        (cl-loop for buffer in (im-index-get imalison:buffer-index directory-symbol)
+                 when (not (buffer-live-p buffer)) do
+                 (im-delete imalison:buffer-index buffer)))
+
+    (defun imalison:term-buffer (&optional directory delta)
+      (interactive)
+      (unless directory (setq directory default-directory))
       (let* ((directory-symbol (imalison:term-sym directory))
-             (buffer (im-index-get-one imalison:buffer-index directory-symbol)))
-        (while (and buffer (not (buffer-live-p buffer)))
-          (im-delete imalison:buffer-index buffer)
-          (setq buffer (im-index-get-one imalison:buffer-index directory-symbol)))
-        (or buffer (imalison:build-term directory))))
+              (buffers (progn
+                         (imalison:term-purge-dead-buffers directory-symbol)
+                         (im-index-get imalison:buffer-index directory-symbol)))
+              (next-buffer-index (imalison:term-get-next-buffer-index buffers delta)))
+        (if buffers (nth next-buffer-index buffers)
+          (imalison:build-term directory))))
 
     (defun imalison:projectile-term ()
       (interactive)
@@ -694,6 +708,20 @@ buffer is not visiting a file."
     (defun imalison:force-new-term ()
       (interactive)
       (switch-to-buffer (imalison:build-term default-directory)))
+
+    (defun imalison:term-delta (&optional delta)
+      (interactive)
+      (switch-to-buffer (imalison:term-buffer nil delta)))
+
+    (defun imalison:term-previous ()
+      (interactive)
+      (imalison:term-delta -1))
+
+    (defhydra imalison:term-hydra (global-map  "C-c 7")
+      "term"
+      ("n" imalison:term-delta)
+      ("p" imalison:term-previous)
+      ("f" imalison:force-new-term))
 
     (imalison:prefix-alternatives imalison:term imalison:projectile-term
                                   imalison:dir-term imalison:force-new-term))
@@ -2420,7 +2448,6 @@ items follow a style that is consistent with other prog-modes."
 (bind-key "M-|" 'imalison:shell-command-on-region)
 (bind-key "C--" 'undo)
 (bind-key "C-c 8" 'imalison:term)
-(bind-key "C-c 7" 'imalison:force-new-term)
 (bind-key "C-x 9" 'previous-buffer)
 (bind-key "s-v" 'clipboard-yank)
 
