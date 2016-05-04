@@ -256,9 +256,10 @@
      (let ,forms
        (apply orig-func args))))
 
-(defmacro imalison:dynamic-let-advise-around (name getter)
+(defmacro imalison:dynamic-let-advise-around (name &rest getters)
   `(defun ,name (orig-func &rest args)
-     (let ,(funcall getter)
+     (let ,(cl-loop for pair in getters
+                    collect `(,(car pair) (funcall ,(cadr pair))))
        (apply orig-func args))))
 
 (defun imalison:uuid ()
