@@ -2327,6 +2327,9 @@ window is active in the perspective."
   :mode (("\\.go\\'" . go-mode))
   :preface
   (progn
+    (defun go-mode-glide-novendor ()
+      (projectile-with-default-dir (projectile-project-root)
+        (shell-command-to-string "glide novendor")))
     (defun go-mode-create-imenu-index ()
       "Create and return an imenu index alist. Unlike the default
 alist created by go-mode, this method creates an alist where
@@ -2361,7 +2364,7 @@ items follow a style that is consistent with other prog-modes."
     (imalison:let-advise-around imalison:advise-normal-go-command (go-command "go"))
     (defun imalison:go-mode-hook ()
       (go-eldoc-setup)
-      (bind-key "C-c t" 'imalison:gotest go-mode-map)
+      (bind-key  go-mode-map)
       (setq imenu-create-index-function
             (lambda ()
               (imalison:flatten-imenu-index
@@ -2369,29 +2372,49 @@ items follow a style that is consistent with other prog-modes."
       (set (make-local-variable 'company-backends) '(company-go))))
   :config
   (progn
-    (advice-add 'go-guru-definition :around 'imalison:advise-normal-go-command)
-    (advice-add 'go-guru-definition :before
-                (lambda ()
-                  (with-no-warnings
-                    (ring-insert find-tag-marker-ring (point-marker)))))
-    (advice-add 'go-import-add :around 'imalison:advise-normal-go-command)
+    (use-package gotest
+      :bind (:map go-mode-map
+                  ("C-c t" . 'imalison:gotest))
+      :preface
+      (progn
+        (imalison:prefix-alternatives
+         imalison:gotest go-test-current-test go-test-current-file))
+      :config
+      (progn
+        (setq go-test-verbose t)))
     (use-package company-go
       :config (setq company-go-show-annotation t))
-    (use-package go-projectile)
-    (use-package go-eldoc)
-    (use-package gotest :demand t)
-    (load-file (imalison:join-paths (go-mode-get-go-path) "src"
-                                                "golang.org" "x" "tools" "cmd"
-                                                "guru" "go-guru.el"))
+    (use-package go-projectile :demand t)
+    (use-package go-eldoc :demand t)
     (use-package go-guru
-      :ensure nil)
-    (setq go-test-verbose t)
-    (bind-key "M-." 'go-guru-definition go-mode-map)
-    (bind-key "M-," 'pop-tag-mark go-mode-map)
-    (imalison:prefix-alternatives
-     imalison:gotest go-test-current-test go-test-current-file)
-    (add-hook 'go-mode-hook 'imalison:go-mode-hook)
+      :bind (:map go-mode-map
+                  ("M-." . go-guru-definition)
+                  ("M-," . pop-tag-mark))
+      :preface
+      (progn
+        (defun imalison:set-go-guru-scope ()
+          (setq go-guru-scope (go-mode-parse-glide-novendor)))
+        (defun go-mode-parse-glide-novendor ()
+          (s-join ","
+                  (cl-loop for path in (s-split "\n" (go-mode-glide-novendor))
+                           collect (if (string-equal path ".")
+                                       (go-mode-workspace-path)
+                                     (s-replace "\./" (go-mode-workspace-path) path))))))
+      :config
+      (progn
+        (advice-add 'go-guru--set-scope-if-empty :before 'imalison:set-go-guru-scope)
+        (advice-add 'go-guru-start :before 'imalison:set-go-guru-scope)
+        (advice-add 'go-guru-definition :around 'imalison:advise-normal-go-command)
+        (advice-add 'go-guru-definition :before
+                    (lambda ()
+                      (with-no-warnings
+                        (ring-insert find-tag-marker-ring (point-marker)))))))
+
+    (advice-add 'go-import-add :around 'imalison:advise-normal-go-command)
+
     (setq gofmt-command "goimports")
+
+    (add-hook 'go-mode-hook 'imalison:go-mode-hook)
     (add-hook 'before-save-hook 'gofmt-before-save t)
     (add-hook 'after-save-hook 'go-mode-install-current-project)))
 
