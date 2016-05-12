@@ -259,7 +259,7 @@
 (defmacro imalison:dynamic-let-advise-around (name &rest getters)
   `(defun ,name (orig-func &rest args)
      (let ,(cl-loop for pair in getters
-                    collect `(,(car pair) (funcall ,(cadr pair))))
+                    collect `(,(car pair) (funcall (quote ,(cadr pair)))))
        (apply orig-func args))))
 
 (defun imalison:uuid ()
@@ -894,13 +894,13 @@ buffer is not visiting a file."
       :config
       (define-key mc/keymap (kbd "C-. =") 'mc/compare-chars)))
   :bind
-   (("C-c m a" . mc/mark-all-like-this)
-    ("C-c m m" . mc/mark-all-like-this-dwim)
-    ("C-c m l" . mc/edit-lines)
-    ("C-c m n" . mc/mark-next-like-this)
-    ("C-c m p" . mc/mark-previous-like-this)
-    ("C-c m s" . mc/mark-sgml-tag-pair)
-    ("C-c m d" . mc/mark-all-like-this-in-defun)))
+  (("C-c m a" . mc/mark-all-like-this)
+   ("C-c m m" . mc/mark-all-like-this-dwim)
+   ("C-c m l" . mc/edit-lines)
+   ("C-c m n" . mc/mark-next-like-this)
+   ("C-c m p" . mc/mark-previous-like-this)
+   ("C-c m s" . mc/mark-sgml-tag-pair)
+   ("C-c m d" . mc/mark-all-like-this-in-defun)))
 
 (use-package undo-tree
   :disabled t ;; this has been getting pretty annoying
