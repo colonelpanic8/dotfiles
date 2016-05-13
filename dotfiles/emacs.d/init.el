@@ -1744,11 +1744,13 @@ marking if it still had that."
     (use-package helm-ag
       :bind ("C-c p S" . imalison:set-helm-ag-extra-options)
       :config
-      (defun imalison:set-helm-ag-extra-options ()
-        (interactive)
-        (let ((option (read-string "Extra options: " (or helm-ag--extra-options "")
-                                   'helm-ag--extra-options-history)))
-          (setq helm-ag--extra-options option)))))
+      (progn
+        (setq helm-ag-always-set-extra-option nil)
+        (defun imalison:set-helm-ag-extra-options ()
+          (interactive)
+          (let ((option (read-string "Extra options: " (or helm-ag--extra-options "")
+                                     'helm-ag--extra-options-history)))
+            (setq helm-ag--extra-options option))))))
   :config
   (progn
     (setq helm-split-window-default-side 'same)
@@ -1911,8 +1913,17 @@ window is active in the perspective."
 
 (use-package projectile
   :demand t
-  :config
+  :bind (("C-x f" . projectile-find-file-in-known-projects)
+         ("C-c p f" . imalison:projectile-find-file)
+         :map projectile-command-map
+         ("C-c p s" . imalison:do-ag)
+         ("C-c p f" . imalison:projectile-find-file))
+  :preface
   (progn
+    (defun imalison:do-ag (&optional arg)
+      (interactive "P")
+      (if arg (helm-do-ag) (helm-projectile-ag)))
+
     (defun projectile-make-all-subdirs-projects (directory)
       (cl-loop for file-info in (directory-files-and-attributes directory)
                do (when (nth 1 file-info)
@@ -1920,10 +1931,16 @@ window is active in the perspective."
                                   (expand-file-name
                                    (concat directory "/"
                                            (nth 0 file-info) "/.projectile"))))))
-    (setq helm-ag-always-set-extra-option nil)
-    (defun imalison:do-ag (&optional arg)
-      (interactive "P")
-      (if arg (helm-do-ag) (helm-projectile-ag)))
+    (defun imalison:projectile-find-file (arg)
+          (interactive "P")
+          (if arg
+              (projectile-find-file-other-window)
+              (projectile-find-file))))
+  :config
+  (progn
+    (use-package persp-projectile
+      :commands projectile-persp-switch-project)
+
     (projectile-global-mode)
     (setq projectile-require-project-root nil)
     (setq projectile-enable-caching nil)
@@ -1937,20 +1954,7 @@ window is active in the perspective."
     (unbind-key "C-c p s g" projectile-command-map)
     (unbind-key "C-c p s s" projectile-command-map)
     (unbind-key "C-c p s" projectile-command-map)
-    (unbind-key "C-c p f" projectile-command-map)
-    (bind-key* "C-c p s" 'imalison:do-ag)
-    (bind-key* "C-c p f" 'imalison:projectile-find-file)
-    (defun imalison:projectile-find-file (arg)
-          (interactive "P")
-          (if arg
-              (projectile-find-file-other-window)
-              (projectile-find-file))))
-  :bind (("C-x f" . projectile-find-file-in-known-projects)
-         ("C-c p f" . imalison:projectile-find-file))
-  :init
-  (progn
-    (use-package persp-projectile
-      :commands projectile-persp-switch-project)))
+    (unbind-key "C-c p f" projectile-command-map)))
 
 (use-package smex
   ;; Using helm-M-x instead
