@@ -2369,7 +2369,6 @@ items follow a style that is consistent with other prog-modes."
 
     (defun imalison:go-mode-hook ()
       (go-eldoc-setup)
-      (bind-key  go-mode-map)
       (setq imenu-create-index-function
             (lambda ()
               (imalison:flatten-imenu-index
