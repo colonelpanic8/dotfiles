@@ -2050,7 +2050,8 @@ window is active in the perspective."
 
 (defun imalison:project-root-or-current-directory ()
   (if (projectile-project-p)
-      (projectile-project-root) (if (buffer-file-name) (file-name-directory (buffer-file-name)))))
+      (projectile-project-root) (if (buffer-file-name)
+                                    (file-name-directory (buffer-file-name)))))
 
 (defun get-virtual-envs ()
   (let ((project-root (imalison:project-root-or-current-directory)))
