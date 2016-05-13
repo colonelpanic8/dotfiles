@@ -1930,7 +1930,6 @@ window is active in the perspective."
     (setq projectile-completion-system 'helm)
     (add-to-list 'projectile-globally-ignored-files "Godeps")
     (add-to-list 'projectile-globally-ignored-files "thrift-binaries")
-    (add-to-list 'projectile-globally-ignored-files "go-build")
     (helm-projectile-on)
     (diminish 'projectile-mode)
     (unbind-key "C-c p S" projectile-command-map)
@@ -2330,6 +2329,7 @@ window is active in the perspective."
     (defun go-mode-glide-novendor ()
       (projectile-with-default-dir (projectile-project-root)
         (shell-command-to-string "glide novendor")))
+
     (defun go-mode-create-imenu-index ()
       "Create and return an imenu index alist. Unlike the default
 alist created by go-mode, this method creates an alist where
@@ -2350,18 +2350,23 @@ items follow a style that is consistent with other prog-modes."
                    (item (cons name marker)))
               (setq func-index (cons item func-index)))))
         (nconc type-index (list (cons "func" func-index)))))
+
     (defun go-mode-workspace-path ()
       (file-relative-name (projectile-project-root)
                           (concat (file-name-as-directory
                                    (or (getenv "GOPATH") "~/go")) "src")))
+
     (defun go-mode-install-current-project ()
       (interactive)
       (start-process "go install" "go install log" "go" "install"
                      (concat (file-name-as-directory (go-mode-workspace-path))
                              "...")))
+
     (defun go-mode-get-go-path ()
       (file-name-as-directory (car (s-split ":" (getenv "GOPATH")))))
+
     (imalison:let-advise-around imalison:advise-normal-go-command (go-command "go"))
+
     (defun imalison:go-mode-hook ()
       (go-eldoc-setup)
       (bind-key  go-mode-map)
@@ -2373,8 +2378,9 @@ items follow a style that is consistent with other prog-modes."
   :config
   (progn
     (use-package gotest
+      :demand
       :bind (:map go-mode-map
-                  ("C-c t" . 'imalison:gotest))
+                  ("C-c t" . imalison:gotest))
       :preface
       (progn
         (imalison:prefix-alternatives
@@ -2387,6 +2393,7 @@ items follow a style that is consistent with other prog-modes."
     (use-package go-projectile :demand t)
     (use-package go-eldoc :demand t)
     (use-package go-guru
+      :demand t
       :bind (:map go-mode-map
                   ("M-." . go-guru-definition)
                   ("M-," . pop-tag-mark))
