@@ -2565,6 +2565,7 @@ items follow a style that is consistent with other prog-modes."
 (defvar imalison:light-theme 'solarized-light)
 (defvar imalison:dark-theme 'material)
 (use-package theme-changer
+  :disabled t
   :config
   (progn
     (destructuring-bind (latitude longitude)
