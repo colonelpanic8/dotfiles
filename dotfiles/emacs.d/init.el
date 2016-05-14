@@ -2425,7 +2425,30 @@ items follow a style that is consistent with other prog-modes."
     (add-hook 'after-save-hook 'go-mode-install-current-project)))
 
 (use-package rust-mode
-  :mode (("\\.rs\\'" . rust-mode)))
+  :mode (("\\.rs\\'" . rust-mode))
+  :preface
+  (progn
+    (defun imalison:rust-mode-hook ()
+      (racer-mode)))
+  :config
+  (progn
+    (use-package flycheck-rust
+      :demand t
+      :config
+      (progn
+        (add-hook 'flycheck-mode-hook #'flycheck-rust-setup)))
+    (use-package emacs-racer
+      :demand t
+      :config
+      (progn
+        (setq racer-cmd "~/.cargo/bin/racer")
+        (setq racer-rust-src-path "~/Projects/rust/src")))
+    (use-package cargo-mode
+      :demand t
+      :config
+      (progn
+        (add-hook 'rust-mode-hook 'cargo-minor-mode)))
+    (add-hook 'rust-mode-hook 'imalison:rust-mode-hook)))
 
 (use-package yaml-mode
   :mode (("\\.yaml\\'" . yaml-mode)
