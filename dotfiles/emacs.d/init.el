@@ -1916,9 +1916,6 @@ window is active in the perspective."
 (use-package projectile
   :demand t
   :bind (("C-x f" . projectile-find-file-in-known-projects)
-         ("C-c p f" . imalison:projectile-find-file)
-         :map projectile-command-map
-         ("C-c p s" . imalison:do-ag)
          ("C-c p f" . imalison:projectile-find-file))
   :preface
   (progn
@@ -1951,12 +1948,8 @@ window is active in the perspective."
     (add-to-list 'projectile-globally-ignored-files "thrift-binaries")
     (helm-projectile-on)
     (diminish 'projectile-mode)
-    (unbind-key "C-c p S" projectile-command-map)
-    (unbind-key "C-c p s a" projectile-command-map)
-    (unbind-key "C-c p s g" projectile-command-map)
-    (unbind-key "C-c p s s" projectile-command-map)
-    (unbind-key "C-c p s" projectile-command-map)
-    (unbind-key "C-c p f" projectile-command-map)))
+    (bind-key* "C-c p s" 'imalison:do-ag)
+    (bind-key* "C-c p f" 'imalison:projectile-find-file)))
 
 (use-package smex
   ;; Using helm-M-x instead
