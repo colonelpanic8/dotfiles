@@ -1,4 +1,4 @@
-source ~/.lib/shellenv/functions.sh
+. "$HOME/.lib/shellenv/functions.sh"
 command -v greadlink > /dev/null && alias readlink="greadlink"
 
 function _source_shellenv_files {
@@ -8,7 +8,8 @@ function _source_shellenv_files {
 }
 
 function add_to_path {
-    local result=$($HOME/.lib/python/shell_path.py --include-assignment "$@")
+    local result
+    result=$($HOME/.lib/python/shell_path.py --include-assignment "$@")
     eval "$result"
 }
 
@@ -20,7 +21,7 @@ function _setup_env {
     hash brew 2>/dev/null && add_to_path --before "$(brew --prefix coreutils)/libexec/gnubin"
     add_to_path "/usr/local/bin"
 
-    add_to_path $(python -c 'import sysconfig; print sysconfig.get_path("scripts")') --before
+    add_to_path "$(python -c 'import sysconfig; print sysconfig.get_path(\"scripts\")')" --before
 
     if is_osx; then
         export CFLAGS=-Qunused-arguments
@@ -44,6 +45,7 @@ function _setup_env {
 
     add_to_path "$HOME/.lib/python" --after
     add_to_path "/usr/local/sbin" --after
+    add_to_path "$HOME/.cargo/bin"
 
     # Load RVM into a shell session *as a function*
     [[ -s "$HOME/.rvm/scripts/rvm" ]] && source "$HOME/.rvm/scripts/rvm"
@@ -76,7 +78,7 @@ function _setup_env {
 
 function _path_helper {
     export PATH_HELPER_RAN="$(date)"
-    eval `/usr/libexec/path_helper -s`
+    eval "$(/usr/libexec/path_helper -s)"
 }
 
 environment_variable_exists PATH_HELPER_RAN || _path_helper
