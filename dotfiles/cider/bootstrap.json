@@ -141,6 +141,7 @@
     "rsync",
     "rtorrent",
     "ruby-build",
+    "rust",
     "sbt",
     "scala",
     "sdl",
