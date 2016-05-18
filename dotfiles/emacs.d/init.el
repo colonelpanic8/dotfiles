@@ -661,8 +661,6 @@ buffer is not visiting a file."
           (setq truename (concat truename "/")))
         (intern truename)))
 
-    (im-index-get-one imalison:buffer-index (imalison:term-sym default-directory))
-
     (defun imalison:build-term (directory)
       (let* ((default-directory directory)
              (program (getenv "SHELL"))
@@ -2364,7 +2362,8 @@ items follow a style that is consistent with other prog-modes."
     (defun go-mode-get-go-path ()
       (file-name-as-directory (car (s-split ":" (getenv "GOPATH")))))
 
-    (imalison:let-advise-around imalison:advise-normal-go-command (go-command "go"))
+    (imalison:let-advise-around imalison:advise-normal-go-command
+                                (go-command "go"))
 
     (defun imalison:go-mode-hook ()
       (go-eldoc-setup)
