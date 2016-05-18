@@ -2428,6 +2428,7 @@ items follow a style that is consistent with other prog-modes."
   :preface
   (progn
     (defun imalison:rust-mode-hook ()
+      (imalison:make-imenu-index-flat)
       (racer-mode)))
   :config
   (progn
@@ -2436,13 +2437,13 @@ items follow a style that is consistent with other prog-modes."
       :config
       (progn
         (add-hook 'flycheck-mode-hook #'flycheck-rust-setup)))
-    (use-package emacs-racer
+    (use-package racer
       :demand t
       :config
       (progn
         (setq racer-cmd "~/.cargo/bin/racer")
         (setq racer-rust-src-path "~/Projects/rust/src")))
-    (use-package cargo-mode
+    (use-package cargo
       :demand t
       :config
       (progn
