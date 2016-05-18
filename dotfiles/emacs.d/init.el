@@ -2244,7 +2244,6 @@ window is active in the perspective."
 ;;                                                                         C/C++
 ;; =============================================================================
 
-;; XXX: None of this looks ruby related. Why is this here?
 (setq-default c-basic-offset 4
               tab-width 4
               indent-tabs-mode t)
