@@ -579,6 +579,8 @@ buffer is not visiting a file."
   (set-selection-coding-system 'utf-8))
 (prefer-coding-system 'utf-8)
 
+(setq checkdoc-force-docstrings-flag nil)
+
 ;; =============================================================================
 ;;                                                                   use-package
 ;; =============================================================================
