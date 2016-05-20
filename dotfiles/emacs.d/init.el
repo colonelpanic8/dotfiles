@@ -2235,10 +2235,9 @@ window is active in the perspective."
 (use-package robe
   :commands robe-mode
   :init
-  (progn (add-hook 'ruby-mode-hook
-                   (lambda () (robe-mode)))))
+  (progn (add-hook 'ruby-mode-hook 'robe-mode)))
 
-(use-package rinari :ensure t)
+(use-package rinari)
 
 ;; =============================================================================
 ;;                                                                         C/C++
@@ -2456,9 +2455,8 @@ items follow a style that is consistent with other prog-modes."
          ("\\.yml\\'" . yaml-mode)))
 
 (use-package sgml-mode
-  :commands sgml-mode
   ;; :bind ("C-c b" . web-beautify-html) TODO: mode specific, change binding
-  )
+  :commands sgml-mode)
 
 (use-package gitconfig-mode
   :mode "\\.?gitconfig\\'")
@@ -2479,7 +2477,6 @@ items follow a style that is consistent with other prog-modes."
 ;; =============================================================================
 
 ;; Miscellaneous
-(global-unset-key (kbd "C-o")) ;; Avoid collision with tmux binding.
 (bind-key "M-q" 'fill-or-unfill-paragraph)
 (bind-key "C-c C-s" 'sudo-edit)
 (bind-key "C-c SPC"
