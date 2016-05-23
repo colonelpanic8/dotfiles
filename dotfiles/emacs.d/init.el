@@ -1998,6 +1998,12 @@ window is active in the perspective."
 
 (use-package macrostep)
 
+(use-package emr
+  :bind ("M-RET" . emr-show-refactor-menu)
+  :config
+  (progn
+    (add-hook 'prog-mode-hook 'emr-initialize)))
+
 (use-package elisp-slime-nav
   :commands elisp-slime-nav-mode
   :config
