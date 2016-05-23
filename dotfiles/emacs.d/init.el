@@ -776,6 +776,8 @@ buffer is not visiting a file."
   :config
   (beacon-mode 1))
 
+(use-package crux)
+
 ;; text mode stuff:
 (remove-hook 'text-mode-hook #'turn-on-auto-fill)
 (add-hook 'text-mode-hook 'turn-on-visual-line-mode)
