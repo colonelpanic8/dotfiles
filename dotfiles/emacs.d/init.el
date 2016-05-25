@@ -141,9 +141,8 @@
 ;; =============================================================================
 
 (defvar packages-eager
-  '(popup cl-lib
-    xclip dired+ ctags ctags-update aggressive-indent imenu+ neotree diminish
-    gist))
+  '(popup cl-lib xclip dired+ ctags ctags-update aggressive-indent imenu+
+    neotree diminish gist))
 
 (ensure-packages-installed packages-eager)
 
