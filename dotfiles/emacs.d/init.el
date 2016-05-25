@@ -235,7 +235,6 @@
   (message "%s" arg))
 
 (defmacro imalison:prefix-alternatives (name &rest alternatives)
-  (car alternatives)
   `(defun ,name (arg)
      (interactive "p")
      (setq function
@@ -579,6 +578,14 @@ buffer is not visiting a file."
 
 (setq checkdoc-force-docstrings-flag nil)
 
+;; text mode stuff:
+(remove-hook 'text-mode-hook #'turn-on-auto-fill)
+(add-hook 'text-mode-hook 'turn-on-visual-line-mode)
+(setq sentence-end-double-space nil)
+
+;; y and n instead of yes and no
+(defalias 'yes-or-no-p 'y-or-n-p)
+
 ;; =============================================================================
 ;;                                                                   use-package
 ;; =============================================================================
@@ -776,14 +783,6 @@ buffer is not visiting a file."
 
 (use-package crux)
 
-;; text mode stuff:
-(remove-hook 'text-mode-hook #'turn-on-auto-fill)
-(add-hook 'text-mode-hook 'turn-on-visual-line-mode)
-(setq sentence-end-double-space nil)
-
-;; y and n instead of yes and no
-(defalias 'yes-or-no-p 'y-or-n-p)
-
 (use-package discover-my-major)
 
 (use-package which-key
@@ -796,14 +795,17 @@ buffer is not visiting a file."
 (use-package jump-char
   :bind (("C-;" . jump-char-forward)))
 
-(imalison:prefix-alternatives imalison:avy avy-goto-word-1 avy-goto-char)
 (use-package avy
+  :preface
+  (progn
+    (imalison:prefix-alternatives imalison:avy avy-goto-word-1 avy-goto-char))
   :bind (("C-j" . imalison:avy)
          ("M-g l" . avy-goto-line)
          ("C-'" . avy-goto-char-2)))
 
-(imalison:prefix-alternatives imalison:ace-window ace-select-window ace-swap-window)
 (use-package ace-window
+  :preface
+  (imalison:prefix-alternatives imalison:ace-window ace-select-window ace-swap-window)
   :config (setq aw-keys '(?a ?s ?d ?f ?g ?h ?j ?k ?l))
   :bind ("C-c w" . imalison:ace-window))
 
