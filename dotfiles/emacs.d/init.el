@@ -852,7 +852,13 @@ buffer is not visiting a file."
   (progn
     (global-git-gutter-mode -1)))
 
-(use-package gitolite-clone)
+(use-package gitolite-clone
+  :demand t
+  :preface
+  (progn
+    (defun gitolite-clone-force-refresh ()
+      (interactive)
+      (gitolite-clone-get-projects nil nil t))))
 
 (use-package magit
   :commands magit-status
