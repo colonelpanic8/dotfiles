@@ -188,8 +188,7 @@
 (setq inhibit-startup-message t
       inhibit-startup-echo-area-message t)
 
-(when (fboundp 'tooltip-mode) (tooltip-mode -1))
-(setq tooltip-use-echo-area t)
+(if (fboundp 'tooltip-mode) (tooltip-mode -1) (setq tooltip-use-echo-area t))
 
 (setq use-dialog-box nil)
 
