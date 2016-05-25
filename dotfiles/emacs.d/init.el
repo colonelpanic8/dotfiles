@@ -866,7 +866,7 @@ buffer is not visiting a file."
   :config
   (progn
     (defvar-setq magit-last-seen-setup-instructions "1.4.0")
-    (setq magit-revert-buffers t)
+    (magit-auto-revert-mode)
     (use-package magit-filenotify
       ;; Seems like OSX does not support filenotify.
       :disabled t
