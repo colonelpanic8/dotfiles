@@ -2149,7 +2149,7 @@ window is active in the perspective."
     (setq android-mode-sdk-dir
           (s-trim (shell-command-to-string "android_sdk_directory")))))
 
-(use-package gradle-mode :ensure t)
+(use-package gradle-mode)
 
 ;; =============================================================================
 ;;                                                                    JavaScript
