@@ -2083,18 +2083,6 @@ window is active in the perspective."
   (interactive)
   (message "%s" (get-virtual-envs)))
 
-(use-package jedi
-  :commands (jedi:goto-definition jedi-mode)
-  :config
-  (progn
-    (setq jedi:complete-on-dot t)
-    (setq jedi:imenu-create-index-function 'jedi:create-flat-imenu-index))
-  :bind (("M-." . jedi:goto-definition)
-         ("M-," . jedi:goto-definition-pop-marker)))
-
-(use-package company-jedi
-  :commands company-jedi)
-
 (use-package python
   :commands python-mode
   :mode ("\\.py\\'" . python-mode)
@@ -2105,6 +2093,17 @@ window is active in the perspective."
   :init
   (progn
     (unbind-key "C-j" python-mode-map)
+    (use-package jedi
+      :commands (jedi:goto-definition jedi-mode)
+      :config
+      (progn
+        (setq jedi:complete-on-dot t)
+        (setq jedi:imenu-create-index-function 'jedi:create-flat-imenu-index)
+        (use-package company-jedi
+          :commands company-jedi))
+      :bind (:map python-mode-map
+                  ("M-." . jedi:goto-definition)
+                  ("M-," . jedi:goto-definition-pop-marker)))
     (use-package pymacs)
     (use-package sphinx-doc)
     (defun imalison:python-mode ()
