@@ -617,52 +617,25 @@ buffer is not visiting a file."
     (unbind-key "C-<backspace>" smartparens-mode-map)
     (unbind-key "M-<backspace>" smartparens-mode-map)))
 
-(defclass indexed-mapping ()
-  ((mapping :initarg :mapping :initform nil)
-   (index :initarg :index :initform nil)))
-
-(defmethod im-get ((im indexed-mapping) key)
-  (plist-get (oref im :mapping) key))
-
-(defmethod im-index-get ((im indexed-mapping) value)
-  (plist-get (oref im :index) value))
-
-(defmethod im-index-get-one ((im indexed-mapping) value)
-  (let ((keys (plist-get (oref im :index) value)))
-    (when keys (car keys))))
-
-(defmethod im-put ((im indexed-mapping) key value)
-  ;; Handle removing the key from where it is currently indexed
-  (im-unindex im key)
-  ;; Add the key to its new position in the index
-  (oset im :index
-        (plist-put (oref im :index)
-                   value (cons key (plist-get (oref im :index) value))))
-  ;; Add the key, value pair to the mapping
-  (oset im :mapping
-        (plist-put (oref im :mapping) key value)))
-
-(defmethod im-unindex ((im indexed-mapping) key)
-  (let* ((current-value (plist-get (oref im :mapping) key))
-         (value-list (plist-get (oref im :index) current-value)))
-    (when value-list
-      (setq value-list (remove key value-list))
-      (oset im :index
-            (plist-put (oref im :index)
-                       current-value value-list)))))
-
-(defmethod im-delete ((im indexed-mapping) key)
-  (im-unindex im key)
-  (oset im :mapping
-        (use-package-plist-delete (oref im :mapping) key)))
-
 (use-package term-manager
   :ensure nil
-  :load-path "~/Projects/term-manager")
+  :load-path "~/Projects/term-manager"
+  :preface
+  (progn
+    (defun imalison:set-escape-char (&rest args)
+      (let (term-escape-char)
+       (term-set-escape-char ?\C-x))))
+  :config
+  (progn
+    (advice-add
+     'term-manager-default-build-term :after 'imalison:set-escape-char)))
 
 (use-package term-projectile
   :ensure nil
-  :load-path "~/Projects/term-manager")
+  :load-path "~/Projects/term-manager"
+  :config
+  (progn
+    ))
 
 (use-package term
   :preface
