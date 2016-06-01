@@ -635,94 +635,20 @@ buffer is not visiting a file."
   :load-path "~/Projects/term-manager"
   :config
   (progn
-    ))
-
-(use-package term
-  :preface
-  (progn
-    (defvar imalison:buffer-index (make-instance indexed-mapping))
-
-    (defun imalison:term-sym (dir)
-      (let ((truename (file-truename dir)))
-        (unless (string-equal (substring dir -1) "/")
-          (setq truename (concat truename "/")))
-        (intern truename)))
-
-    (defun imalison:build-term (directory)
-      (let* ((default-directory directory)
-             (program (getenv "SHELL"))
-             (buffer (get-buffer (term-ansi-make-term directory program))))
-        (im-put imalison:buffer-index buffer (imalison:term-sym directory))
-        (with-current-buffer buffer
-          (term-mode)
-          (term-char-mode)
-          (let (term-escape-char)
-            (term-set-escape-char ?\C-x)))
-        buffer))
-
-    (defun imalison:term-get-next-buffer-index (buffers &optional delta)
-      (unless delta (setq delta 1))
-      (let* ((the-current-buffer (current-buffer))
-             (current-index (--find-index (eq it the-current-buffer) buffers)))
-        (if current-index (mod (+ current-index delta) (length buffers)) 0)))
-
-    (defun imalison:term-purge-dead-buffers (directory-symbol)
-        (cl-loop for buffer in (im-index-get imalison:buffer-index directory-symbol)
-                 when (not (buffer-live-p buffer)) do
-                 (im-delete imalison:buffer-index buffer)))
-
-    (defun imalison:term-buffer (&optional directory delta)
-      (interactive)
-      (unless directory (setq directory default-directory))
-      (let* ((directory-symbol (imalison:term-sym directory))
-              (buffers (progn
-                         (imalison:term-purge-dead-buffers directory-symbol)
-                         (im-index-get imalison:buffer-index directory-symbol)))
-              (next-buffer-index (imalison:term-get-next-buffer-index buffers delta)))
-        (if buffers (nth next-buffer-index buffers)
-          (imalison:build-term directory))))
-
-    (defun imalison:projectile-term ()
-      (interactive)
-      (switch-to-buffer (imalison:term-buffer (projectile-project-root))))
-
-    (defun imalison:dir-term ()
-      (interactive)
-      (switch-to-buffer (imalison:term-buffer default-directory)))
-
-    (defun imalison:force-new-term ()
-      (interactive)
-      (switch-to-buffer (imalison:build-term default-directory)))
-
-    (defun imalison:term-delta (&optional delta)
-      (interactive)
-      (switch-to-buffer (imalison:term-buffer nil delta)))
-
-    (defun imalison:term-previous ()
-      (interactive)
-      (imalison:term-delta -1))
-
+    (imalison:prefix-alternatives imalison:term term-projectile-forward
+                                  term-projectile-create-new
+                                  imalison:force-new-term)
     (defhydra imalison:term-hydra (global-map  "C-c 7")
       "term"
-      ("n" imalison:term-delta)
-      ("p" imalison:term-previous)
-      ("f" imalison:force-new-term))
+      ("n" term-projectile-forward)
+      ("p" term-projectile-backward)
+      ("c" term-projectile-create-new))))
 
-    (imalison:prefix-alternatives imalison:term imalison:projectile-term
-                                  imalison:dir-term imalison:force-new-term))
+(use-package term
   :config
   (progn
-    (add-hook 'term-mode-hook 'imalison:disable-linum-mode)
-    (advice-add 'term-handle-ansi-terminal-messages :after
-                (lambda (&rest args)
-                  (when (not (string-equal
-                              (im-get imalison:buffer-index (current-buffer))
-                              default-directory))
-                    (im-put imalison:buffer-index (current-buffer)
-                            (imalison:term-sym default-directory)))
-                  (rename-buffer (format "term - %s" default-directory) t)))))
+    (add-hook 'term-mode-hook 'imalison:disable-linum-mode)))
 
-;; Set path from shell.
 (use-package exec-path-from-shell
   :config
   (progn
