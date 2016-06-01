@@ -636,8 +636,7 @@ buffer is not visiting a file."
   :config
   (progn
     (imalison:prefix-alternatives imalison:term term-projectile-forward
-                                  term-projectile-create-new
-                                  imalison:force-new-term)
+                                  term-projectile-create-new)
     (defhydra imalison:term-hydra (global-map  "C-c 7")
       "term"
       ("n" term-projectile-forward)
@@ -717,8 +716,12 @@ buffer is not visiting a file."
 
 (use-package flycheck
   :config
-  (progn (global-flycheck-mode))
+  (progn
+    (global-flycheck-mode)
+    (use-package flycheck-package
+      :config (flycheck-package-setup)))
   :diminish flycheck-mode)
+
 
 (use-package haskell-mode
   :commands haskell-mode
@@ -839,7 +842,6 @@ buffer is not visiting a file."
     (add-to-list 'load-dirs "~/.emacs.d/load.d")
     (defvar site-lisp "/usr/share/emacs24/site-lisp/")
     (when (file-exists-p site-lisp) (add-to-list 'load-dirs site-lisp))))
-
 
 (use-package multi-line
   :load-path "~/Projects/multi-line"
@@ -1805,20 +1807,29 @@ window is active in the perspective."
 
 (use-package helm-projectile
   :commands (helm-projectile-on)
+  :preface
+  (progn
+    (defun imalison:invalidate-cache-and-open-file (dir)
+      (projectile-invalidate-cache nil)
+      (projectile-find-file))
+
+    (defun imalison:switch-to-project-and-search (dir)
+      (let ((default-directory dir)
+            (projectile-require-project-root nil)
+            (helm-action-buffer "this-buffer-should-not-exist"))
+        (helm-projectile-ag)))
+
+    (defun imalison:helm-term-projectile (_dir)
+      (let ((default-directory dir)
+            (projectile-require-project-root nil)
+            (helm-action-buffer "this-buffer-should-not-exist"))
+        (term-projectile-forward))))
   :config
   (progn
     (helm-delete-action-from-source "Search in Project"
                                     helm-source-projectile-projects)
     (helm-delete-action-from-source "Open term for project"
                                     helm-source-projectile-projects)
-    (defun imalison:invalidate-cache-and-open-file (dir)
-      (projectile-invalidate-cache nil)
-      (projectile-find-file))
-    (defun imalison:switch-to-project-and-search (dir)
-      (let ((default-directory dir)
-            (projectile-require-project-root nil)
-            (helm-action-buffer "this-buffer-should-not-exist"))
-        (helm-projectile-ag)))
     (helm-add-action-to-source "Search in Project"
                                'imalison:switch-to-project-and-search
                                helm-source-projectile-projects)
@@ -1826,11 +1837,7 @@ window is active in the perspective."
                                'imalison:invalidate-cache-and-open-file
                                helm-source-projectile-projects)
     (helm-add-action-to-source "Open term for project"
-                               (lambda (dir)
-                                 (let ((default-directory dir)
-                                       (projectile-require-project-root nil)
-                                       (helm-action-buffer "this-buffer-should-not-exist"))
-                                   (imalison:projectile-term)))
+                               'imalison:helm-term-projectile
                                  helm-source-projectile-projects)))
 
 (use-package projectile
