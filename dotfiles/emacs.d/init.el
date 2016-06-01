@@ -595,8 +595,7 @@ buffer is not visiting a file."
   (progn
     (unless (server-running-p) (server-start))))
 
-(use-package list-environment
-  :ensure t)
+(use-package list-environment)
 
 (use-package paradox
   :config
@@ -656,6 +655,14 @@ buffer is not visiting a file."
   (im-unindex im key)
   (oset im :mapping
         (use-package-plist-delete (oref im :mapping) key)))
+
+(use-package term-manager
+  :ensure nil
+  :load-path "~/Projects/term-manager")
+
+(use-package term-projectile
+  :ensure nil
+  :load-path "~/Projects/term-manager")
 
 (use-package term
   :preface
@@ -942,6 +949,7 @@ buffer is not visiting a file."
     (defun imalison:multi-line-fill-column ()
       (interactive)
       (multi-line-execute multi-line-fill-column-strategy nil))
+
     (defun imalison:multi-line-skip-fill ()
       (interactive)
       (multi-line-execute multi-line-skip-fill-stragety nil))
@@ -975,6 +983,11 @@ buffer is not visiting a file."
 
 (use-package comment-dwim-2
   :bind ("M-;" . comment-dwim-2))
+
+(use-package iedit
+  :config
+  (progn
+    (setq iedit-toggle-key-default (kbd "")) ))
 
 (use-package emr
   :commands emr-initialize
@@ -2474,7 +2487,7 @@ items follow a style that is consistent with other prog-modes."
 (use-package gitconfig-mode
   :mode "\\.?gitconfig\\'")
 
-(use-package evil :ensure t :commands (evil-mode))
+(use-package evil :commands (evil-mode))
 
 (use-package thrift
   :commands thrift-mode
