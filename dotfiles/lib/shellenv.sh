@@ -13,6 +13,10 @@ function add_to_path {
     eval "$result"
 }
 
+function get_python_scripts_path {
+    python -c "import sysconfig; print sysconfig.get_path('scripts')"
+}
+
 function _setup_env {
     _path_helper
     add_to_path /usr/local/lib/python2.7/site-packages --after
@@ -21,7 +25,7 @@ function _setup_env {
     hash brew 2>/dev/null && add_to_path --before "$(brew --prefix coreutils)/libexec/gnubin"
     add_to_path "/usr/local/bin"
 
-    add_to_path "$(python -c 'import sysconfig; print sysconfig.get_path(\"scripts\")')" --before
+    add_to_path "$(get_python_scripts_path)" --before
 
     if is_osx; then
         export CFLAGS=-Qunused-arguments
