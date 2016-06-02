@@ -82,16 +82,16 @@
        (loop for bad
              in `("https://wrong.host.badssl.com/"
                   "https://self-signed.badssl.com/")
-             if (condition-case e
+             if (condition-case _e
                     (url-retrieve
-                     bad (lambda (retrieved) t))
+                     bad (lambda (_retrieved) t))
                   (error nil))
              collect bad)))
   (if bad-hosts
       (error (format "tls misconfigured; retrieved %s ok"
                      bad-hosts))
     (url-retrieve "https://badssl.com"
-                  (lambda (retrieved) t)))))
+                  (lambda (_retrieved) t)))))
 
 (when imalison:secure (imalison:use-https-and-tls))
 
@@ -284,7 +284,7 @@
           (t (imalison:compare-int-list (cdr a) (cdr b))))))
 
 (defun imalison:get-lat-long ()
-  (condition-case ex
+  (condition-case _ex
       (mapcar 'string-to-number (s-split "," (s-trim (shell-command-to-string
                                                       "whereami"))))
     (error (list 37.7879312624533 -122.402388853402))))
@@ -599,7 +599,7 @@ buffer is not visiting a file."
   :load-path "~/Projects/term-manager"
   :preface
   (progn
-    (defun imalison:set-escape-char (&rest args)
+    (defun imalison:set-escape-char (&rest _args)
       (let (term-escape-char)
        (term-set-escape-char ?\C-x))))
   :config
