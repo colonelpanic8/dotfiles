@@ -2034,10 +2034,11 @@ window is active in the perspective."
 ;;                                                                          Java
 ;; =============================================================================
 
-(add-hook 'java-mode-hook (lambda ()
-                            (setq c-basic-offset 4
-                                  tab-width 4
-                                  indent-tabs-mode t)))
+(add-hook 'java-mode-hook
+          (lambda ()
+            (setq c-basic-offset 4
+                  tab-width 4
+                  indent-tabs-mode t)))
 
 (use-package android-mode
   :config
@@ -2066,7 +2067,7 @@ window is active in the perspective."
   :bind
   ;; (("C-c b" . web-beautify-js)) TODO: to make this mode specific
   ;; and change binding
-  :init
+  :preface
   (progn
     (defvar-setq imalison:identifier-count 0)
     (defun imalison:console-log-unique ()
@@ -2092,8 +2093,9 @@ window is active in the perspective."
       (setq imenu-create-index-function
             (lambda ()
               (imalison:flatten-imenu-index
-               (js2-mode-create-imenu-index)))))
-
+               (js2-mode-create-imenu-index))))))
+  :init
+  (progn
     (add-hook 'js2-mode-hook 'imalison:js2-mode-hook)
     (add-hook 'js2-mode-hook 'js2-imenu-extras-mode)))
 
@@ -2498,7 +2500,7 @@ items follow a style that is consistent with other prog-modes."
 (defun imalison:format-linum (line-text)
   (propertize (format imalison:linum-format line-text) 'face 'linum))
 
-(defun imalison:remove-fringe-and-hl-line-mode (&rest stuff)
+(defun imalison:remove-fringe-and-hl-line-mode (&rest _stuff)
   (interactive)
   (if (fboundp 'scroll-bar-mode) (scroll-bar-mode -1))
   (if (fboundp 'tool-bar-mode) (tool-bar-mode -1))
@@ -2509,7 +2511,7 @@ items follow a style that is consistent with other prog-modes."
   (setq left-margin-width 0)
   (defvar-setq hl-line-mode nil))
 
-(defun imalison:after-load-theme (&rest args)
+(defun imalison:after-load-theme (&rest _args)
   (when (fboundp 'powerline-reset)
     (powerline-reset))
   (set-face-background 'fringe (face-background 'default))
