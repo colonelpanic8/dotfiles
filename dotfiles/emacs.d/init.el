@@ -420,34 +420,11 @@ buffer is not visiting a file."
     (insert string)
     (kill-ring-save (point-max) (point-min))))
 
-(defun os-copy-string (string)
-  (with-temp-buffer
-    (insert string)
-    (os-copy (beginning-of-buffer) (end-of-buffer))))
-
-(defun os-copy (&optional b e)
-  (interactive "r")
-  (shell-command-on-region b e "source ~/.zshrc; cat | smart_copy"))
-
-(defun os-paste ()
-  (interactive)
-  (insert (shell-command-to-string "source ~/.zshrc; ospaste")))
-
-(defun all-copy (&optional b e)
-  (interactive "r")
-  (os-copy b e)
-  (tmux-copy b e)
-  (kill-ring-save b e))
-
 (defun open-pdf ()
   (interactive)
   (let ( (pdf-file (replace-regexp-in-string
                     "\.tex$" ".pdf" buffer-file-name)))
     (shell-command (concat "open " pdf-file))))
-
-(defun tmux-copy (&optional b e)
-  (interactive "r")
-  (shell-command-on-region b e "cat | tmux loadb -"))
 
 (defun eval-and-replace ()
   (interactive)
