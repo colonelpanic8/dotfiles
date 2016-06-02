@@ -1043,8 +1043,8 @@ the same tree node, and the headline of the tree node in the Org-mode file."
     ;; (define-key org-agenda-mode-map "x" #'org-agenda-done) ;; TODO why does this cause an error
 
     ;; org-mode add-ons
-    (use-package org-present :ensure t)
-    (use-package org-pomodoro :ensure t)
+    (use-package org-present)
+    (use-package org-pomodoro)
 
     ;; variable configuration
     (add-to-list 'org-modules 'org-habit)
@@ -1343,7 +1343,7 @@ the same tree node, and the headline of the tree node in the Org-mode file."
     (add-hook 'org-mode-hook (lambda () (setq org-todo-key-trigger t)))
     (add-hook 'org-agenda-mode-hook 'imalison:disable-linum-mode)))
 
-(use-package clocker :ensure t)
+(use-package clocker)
 
 (use-package deft
   :config
@@ -1376,7 +1376,7 @@ the same tree node, and the headline of the tree node in the Org-mode file."
     (require 'erc-log)
     (setq erc-log-channels-directory "~/Dropbox (Personal)/irclogs")
     (erc-log-enable)
-    (use-package erc-colorize :ensure t) (erc-colorize-mode 1)))
+    (use-package erc-colorize) (erc-colorize-mode 1)))
 
 (use-package bitlbee
   :config
@@ -1392,7 +1392,7 @@ the same tree node, and the headline of the tree node in the Org-mode file."
                                        (erc-default-target)
                                        bitlbee-password))))))
 
-(use-package s :ensure t)
+(use-package s)
 (add-to-list 'load-path (s-trim (shell-command-to-string "mu4e_directory")))
 
 (use-package mu4e
