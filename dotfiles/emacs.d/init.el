@@ -747,6 +747,13 @@ buffer is not visiting a file."
       (interactive)
       (gitolite-clone-get-projects nil nil t))))
 
+(use-package github-clone
+  :demand t)
+
+(use-package github-notifier
+  :disabled t
+  :config (github-notifier-mode))
+
 (use-package magit
   :commands magit-status
   :bind (("C-x g" . magit-status))
