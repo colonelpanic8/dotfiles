@@ -1656,17 +1656,20 @@ marking if it still had that."
   :config
   (progn
     (setq helm-split-window-default-side 'same)
+
     (defun helm-source-org-capture-templates ()
       (helm-build-sync-source "Org Capture Templates:"
         :candidates (cl-loop for template in org-capture-templates
                              collect `(,(nth 1 template) . ,(nth 0 template)))
         :action '(("Do capture" . (lambda (template-shortcut)
                                     (org-capture nil template-shortcut))))))
+
     (defun helm-org-capture-templates ()
       (interactive)
       (helm :sources (helm-source-org-capture-templates)
             :candidate-number-limit 99999
             :buffer "*helm org capture templates*"))
+
     (cl-defun helm-org-headings-in-buffer ()
       (interactive)
       (helm :sources (helm-source-org-headings-for-files
@@ -1683,6 +1686,7 @@ marking if it still had that."
         (volatile)
         (requires-pattern . 3)
         (delayed)))
+
     (defun helm-c-zsh-history-set-candidates (&optional request-prefix)
       (let ((pattern (replace-regexp-in-string
                       " " ".*"
@@ -1711,6 +1715,7 @@ marking if it still had that."
     (use-package helm-descbinds
       :demand t
       :config (helm-descbinds-mode 1))
+
     (use-package org-projectile
       :demand t
       :bind (("C-c n p" . imalison:helm-org-todo))
