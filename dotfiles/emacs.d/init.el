@@ -553,7 +553,8 @@ buffer is not visiting a file."
   (set-selection-coding-system 'utf-8))
 (prefer-coding-system 'utf-8)
 
-(setq checkdoc-force-docstrings-flag nil)
+(setq checkdoc-force-docstrings-flag nil
+      checkdoc-arguments-in-order-flag nil)
 
 ;; text mode stuff:
 (remove-hook 'text-mode-hook #'turn-on-auto-fill)
