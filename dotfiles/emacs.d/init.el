@@ -17,7 +17,7 @@
 (ensure-packages-installed '(org-plus-contrib))
 
 (org-babel-load-file
- (concat (file-name-directory load-file-name) "config.org") t)
+ (concat (file-name-directory load-file-name) "README.org") t)
 
 ;; Local Variables:
 ;; flycheck-disabled-checkers: (emacs-lisp-checkdoc)
