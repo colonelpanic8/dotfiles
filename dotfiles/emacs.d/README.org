@@ -27,14 +27,17 @@ custom-before.el is loaded before the rest of init.el, while custom-after.el is 
              (>= emacs-minor-version 4))
         (>= emacs-major-version 25)))
 #+END_SRC
+
+#+BEGIN_SRC emacs-lisp
+  (imalison:prefix-alternatives imalison:mark-ring helm-mark-ring helm-global-mark-ring)
+#+END_SRC
+
 * Packages
 * Keybindings
 #+BEGIN_SRC emacs-lisp
   (bind-key "M-q" 'fill-or-unfill-paragraph)
   (bind-key "C-c C-s" 'sudo-edit)
-  (bind-key "C-c SPC"
-            (lambda () (interactive)
-              (if current-prefix-arg (helm-global-mark-ring) (helm-mark-ring))))
+  (bind-key "C-c SPC" 'imalison:mark-ring)
   (bind-key "C-c e" 'os-copy)
   (bind-key "C-x p" 'pop-to-mark-command)
   (setq set-mark-command-repeat-pop t)
