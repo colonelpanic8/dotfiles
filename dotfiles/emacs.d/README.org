@@ -33,6 +33,118 @@ custom-before.el is loaded before the rest of init.el, while custom-after.el is 
 #+END_SRC
 
 * Packages
+** Essential
+Helm for almost all emacs completion
+#+BEGIN_SRC emacs-lisp
+  (use-package helm-config
+    :ensure helm
+    :demand t
+    :bind (("M-y" . helm-show-kill-ring)
+           ("M-x" . helm-M-x)
+           ("C-x C-i" . helm-imenu)
+           ("C-h a" . helm-apropos)
+           ("C-c C-h" . helm-org-agenda-files-headings)
+           ("C-c ;" . helm-recentf))
+    :init
+    (progn
+      (helm-mode 1)
+      (use-package helm-ag
+        :bind ("C-c p S" . imalison:set-helm-ag-extra-options)
+        :config
+        (progn
+          (setq helm-ag-always-set-extra-option nil)
+          (defun imalison:set-helm-ag-extra-options ()
+            (interactive)
+            (let ((option (read-string "Extra options: " (or helm-ag--extra-options "")
+                                       'helm-ag--extra-options-history)))
+              (setq helm-ag--extra-options option))))))
+    :config
+    (progn
+      (setq helm-split-window-default-side 'same)
+
+      (defun helm-source-org-capture-templates ()
+        (helm-build-sync-source "Org Capture Templates:"
+          :candidates (cl-loop for template in org-capture-templates
+                               collect `(,(nth 1 template) . ,(nth 0 template)))
+          :action '(("Do capture" . (lambda (template-shortcut)
+                                      (org-capture nil template-shortcut))))))
+
+      (defun helm-org-capture-templates ()
+        (interactive)
+        (helm :sources (helm-source-org-capture-templates)
+              :candidate-number-limit 99999
+              :buffer "*helm org capture templates*"))
+
+      (cl-defun helm-org-headings-in-buffer ()
+        (interactive)
+        (helm :sources (helm-source-org-headings-for-files
+                        (list (projectile-completing-read
+                               "File to look at headings from: "
+                               (projectile-all-project-files))))
+              :candidate-number-limit 99999
+              :buffer "*helm org inbuffer*"))
+      ;; helm zsh source history
+      (defvar helm-c-source-zsh-history
+        '((name . "Zsh History")
+          (candidates . helm-c-zsh-history-set-candidates)
+          (action . (("Execute Command" . helm-c-zsh-history-action)))
+          (volatile)
+          (requires-pattern . 3)
+          (delayed)))
+
+      (defun helm-c-zsh-history-set-candidates (&optional request-prefix)
+        (let ((pattern (replace-regexp-in-string
+                        " " ".*"
+                        (or (and request-prefix
+                                 (concat request-prefix
+                                         " " helm-pattern))
+                            helm-pattern))))
+          (with-current-buffer (find-file-noselect "~/.zsh_history" t t)
+            (auto-revert-mode -1)
+            (goto-char (point-max))
+            (loop for pos = (re-search-backward pattern nil t)
+                  while pos
+                  collect (replace-regexp-in-string
+                           "\\`:.+?;" ""
+                           (buffer-substring (line-beginning-position)
+                                             (line-end-position)))))))
+
+      (defun helm-c-zsh-history-action (candidate)
+        (async-shell-command candidate))
+
+      (defun helm-command-from-zsh ()
+        (interactive)
+        (require 'helm)
+        (helm-other-buffer 'helm-c-source-zsh-history "*helm zsh history*"))
+
+      (use-package helm-descbinds
+        :demand t
+        :config (helm-descbinds-mode 1))
+
+      (use-package org-projectile
+        :demand t
+        :bind (("C-c n p" . imalison:helm-org-todo))
+        :config
+        (progn
+          (org-projectile:prompt)
+          (add-to-list 'org-capture-templates
+                       (org-projectile:project-todo-entry
+                        "l" "* TODO %? %a\n" "Linked Project TODO"))
+          (add-to-list 'org-capture-templates (org-projectile:project-todo-entry "p"))
+          (setq org-confirm-elisp-link-function nil)
+          (imalison:add-to-org-agenda-files (org-projectile:todo-files))
+          (defun imalison:helm-org-todo (&optional arg)
+            (interactive "P")
+            (helm :sources (list (helm-source-org-capture-templates)
+                                 (org-projectile:helm-source
+                                  (if arg (org-capture-make-linked-todo-template)
+                                    (org-capture-make-todo-template))))
+                  :candidate-number-limit 99999
+                  :buffer "*helm org capture templates*"))))
+      (helm-mode 1)
+      (diminish 'helm-mode)))
+#+END_SRC
+** Major-Mode
 * Keybindings
 #+BEGIN_SRC emacs-lisp
   (bind-key "M-q" 'fill-or-unfill-paragraph)
@@ -1675,114 +1787,6 @@ marking if it still had that."
         ("gtl" . "\\.cql\\'")))))
 
 (use-package helm-themes)
-
-(use-package helm-config
-  :ensure helm
-  :demand t
-  :bind (("M-y" . helm-show-kill-ring)
-         ("M-x" . helm-M-x)
-         ("C-x C-i" . helm-imenu)
-         ("C-h a" . helm-apropos)
-         ("C-c C-h" . helm-org-agenda-files-headings)
-         ("C-c ;" . helm-recentf))
-  :init
-  (progn
-    (helm-mode 1)
-    (use-package helm-ag
-      :bind ("C-c p S" . imalison:set-helm-ag-extra-options)
-      :config
-      (progn
-        (setq helm-ag-always-set-extra-option nil)
-        (defun imalison:set-helm-ag-extra-options ()
-          (interactive)
-          (let ((option (read-string "Extra options: " (or helm-ag--extra-options "")
-                                     'helm-ag--extra-options-history)))
-            (setq helm-ag--extra-options option))))))
-  :config
-  (progn
-    (setq helm-split-window-default-side 'same)
-
-    (defun helm-source-org-capture-templates ()
-      (helm-build-sync-source "Org Capture Templates:"
-        :candidates (cl-loop for template in org-capture-templates
-                             collect `(,(nth 1 template) . ,(nth 0 template)))
-        :action '(("Do capture" . (lambda (template-shortcut)
-                                    (org-capture nil template-shortcut))))))
-
-    (defun helm-org-capture-templates ()
-      (interactive)
-      (helm :sources (helm-source-org-capture-templates)
-            :candidate-number-limit 99999
-            :buffer "*helm org capture templates*"))
-
-    (cl-defun helm-org-headings-in-buffer ()
-      (interactive)
-      (helm :sources (helm-source-org-headings-for-files
-                      (list (projectile-completing-read
-                             "File to look at headings from: "
-                             (projectile-all-project-files))))
-            :candidate-number-limit 99999
-            :buffer "*helm org inbuffer*"))
-    ;; helm zsh source history
-    (defvar helm-c-source-zsh-history
-      '((name . "Zsh History")
-        (candidates . helm-c-zsh-history-set-candidates)
-        (action . (("Execute Command" . helm-c-zsh-history-action)))
-        (volatile)
-        (requires-pattern . 3)
-        (delayed)))
-
-    (defun helm-c-zsh-history-set-candidates (&optional request-prefix)
-      (let ((pattern (replace-regexp-in-string
-                      " " ".*"
-                      (or (and request-prefix
-                               (concat request-prefix
-                                       " " helm-pattern))
-                          helm-pattern))))
-        (with-current-buffer (find-file-noselect "~/.zsh_history" t t)
-          (auto-revert-mode -1)
-          (goto-char (point-max))
-          (loop for pos = (re-search-backward pattern nil t)
-                while pos
-                collect (replace-regexp-in-string
-                         "\\`:.+?;" ""
-                         (buffer-substring (line-beginning-position)
-                                           (line-end-position)))))))
-
-    (defun helm-c-zsh-history-action (candidate)
-      (async-shell-command candidate))
-
-    (defun helm-command-from-zsh ()
-      (interactive)
-      (require 'helm)
-      (helm-other-buffer 'helm-c-source-zsh-history "*helm zsh history*"))
-
-    (use-package helm-descbinds
-      :demand t
-      :config (helm-descbinds-mode 1))
-
-    (use-package org-projectile
-      :demand t
-      :bind (("C-c n p" . imalison:helm-org-todo))
-      :config
-      (progn
-        (org-projectile:prompt)
-        (add-to-list 'org-capture-templates
-                     (org-projectile:project-todo-entry
-                      "l" "* TODO %? %a\n" "Linked Project TODO"))
-        (add-to-list 'org-capture-templates (org-projectile:project-todo-entry "p"))
-        (setq org-confirm-elisp-link-function nil)
-        (imalison:add-to-org-agenda-files (org-projectile:todo-files))
-        (defun imalison:helm-org-todo (&optional arg)
-          (interactive "P")
-          (helm :sources (list (helm-source-org-capture-templates)
-                               (org-projectile:helm-source
-                                (if arg (org-capture-make-linked-todo-template)
-                                  (org-capture-make-todo-template))))
-                :candidate-number-limit 99999
-                :buffer "*helm org capture templates*"))))
-    (helm-mode 1)
-    (diminish 'helm-mode)))
 
 (use-package helm-swoop
   :bind ("C-S-s" . helm-swoop)
