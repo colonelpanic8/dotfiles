@@ -1,19 +1,27 @@
+* General Configuation
+** User Info
 #+BEGIN_SRC emacs-lisp
-;; -*- lexical-binding: t; -*-
-;; =============================================================================
-;;    ___ _ __ ___   __ _  ___ ___
-;;   / _ \ '_ ` _ \ / _` |/ __/ __|
-;;  |  __/ | | | | | (_| | (__\__ \
-;; (_)___|_| |_| |_|\__,_|\___|___/
-;; =============================================================================
+  (setq user-full-name
+        (replace-regexp-in-string "\n$" "" (shell-command-to-string
+                                            "git config --get user.name")))
+  (setq user-mail-address
+        (replace-regexp-in-string "\n$" "" (shell-command-to-string
+                                            "git config --get user.email")))
+#+END_SRC
+** Custom Files
+It's annoying to have emacs randomly add stuff to your init.el whenever you customize a variable. By setting a different custom file that is ignored in git, random commits with nothing but variable settings are avoided.
 
+custom-before.el is loaded before the rest of init.el, while custom-after.el is loaded afterwards. this-machine.el has customizations that should only apply to the current machine. custom-before and custom-after are not version controlled in the dotfiles repo but they are shared across machines elsewhere.
+#+BEGIN_SRC emacs-lisp
+  (defvar machine-custom "~/.emacs.d/this-machine.el")
+  (setq custom-file "~/.emacs.d/custom-before.el")
+  (when (file-exists-p custom-file) (load custom-file))
+  (defvar custom-after-file "~/.emacs.d/custom-after.el")
+  (when (file-exists-p machine-custom) (load machine-custom))
+#+END_SRC
 
-(setq user-full-name
-      (replace-regexp-in-string "\n$" "" (shell-command-to-string
-                                          "git config --get user.name")))
-(setq user-mail-address
-      (replace-regexp-in-string "\n$" "" (shell-command-to-string
-                                          "git config --get user.email")))
+* TODO Make the stuff under this heading literate
+#+BEGIN_SRC emacs-lisp
 
 (defun emacs24_4-p ()
   (or (and (>= emacs-major-version 24)
@@ -24,15 +32,6 @@
   (setq mac-option-modifier 'meta)
   (setq mac-command-modifier 'super))
 
-;; =============================================================================
-;;                                                       Load Path Configuration
-;; =============================================================================
-
-(defvar machine-custom "~/.emacs.d/this-machine.el")
-(setq custom-file "~/.emacs.d/custom-before.el")
-(when (file-exists-p custom-file) (load custom-file))
-(defvar custom-after-file "~/.emacs.d/custom-after.el")
-(when (file-exists-p machine-custom) (load machine-custom))
 
 ;; =============================================================================
 ;;                                                                  GUI Disables
