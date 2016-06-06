@@ -45,7 +45,7 @@ An emacs version predicate builder
 ** Essential
 *** helm
 I use helm for almost all emacs completion
-#+BEGIN_SRC emacs-lisp
+#+BEGIN_SRC emacs-lisp -n -r
   (use-package helm-config
     :ensure helm
     :demand t
@@ -70,7 +70,7 @@ I use helm for almost all emacs completion
               (setq helm-ag--extra-options option))))))
     :config
     (progn
-      (setq helm-split-window-default-side 'same)
+      (setq helm-split-window-default-side 'same)         (ref:helm split window)
 
       (defun helm-source-org-capture-templates ()
         (helm-build-sync-source "Org Capture Templates:"
@@ -154,6 +154,7 @@ I use helm for almost all emacs completion
       (helm-mode 1)
       (diminish 'helm-mode)))
 #+END_SRC
+[[(helm split window)][Ensure that helm buffers are started in the window that currently holds the focus]]
 *** magit
 #+BEGIN_SRC emacs-lisp
   (use-package magit
