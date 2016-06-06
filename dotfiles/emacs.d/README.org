@@ -2437,47 +2437,70 @@ items follow a style that is consistent with other prog-modes."
 
 (use-package hackernews :commands hackernews)
 
-;; =============================================================================
-;;                                                                    Appearance
-;; =============================================================================
+#+END_SRC
 
-(defvar packages-appearance
-  '(monokai-theme solarized-theme zenburn-theme base16-theme molokai-theme
-    tango-2-theme gotham-theme sublime-themes ansi-color rainbow-delimiters
-    ample-theme material-theme zerodark-theme color-theme-modern leuven-theme))
+* Appearance
 
-(ensure-packages-installed packages-appearance)
+** Config
+#+BEGIN_SRC emacs-lisp
+  (setq inhibit-startup-screen t)
+  (blink-cursor-mode -1)
+#+END_SRC
+** Themes
+Ensure all themes that I use are installed:
+#+BEGIN_SRC emacs-lisp
+  (defvar packages-appearance
+    '(monokai-theme solarized-theme zenburn-theme base16-theme molokai-theme
+      tango-2-theme gotham-theme sublime-themes rainbow-delimiters waher-theme
+      ample-theme material-theme zerodark-theme color-theme-modern leuven-theme))
 
-(setq inhibit-startup-screen t)
-(blink-cursor-mode -1)
+  (ensure-packages-installed packages-appearance)
+#+END_SRC
 
-;; make whitespace-mode use just basic coloring
-(setq whitespace-style (quote (spaces tabs newline space-mark
-                                      tab-mark newline-mark)))
-(setq whitespace-display-mappings
-      '((space-mark 32 [183] [46])
-        (tab-mark 9 [9655 9] [92 9])))
+** Other Packages
+#+BEGIN_SRC emacs-lisp
+  (use-package window-number)
 
-(defun colorize-compilation-buffer ()
-  (read-only-mode)
-  (ansi-color-apply-on-region (point-min) (point-max))
-  (read-only-mode))
-(add-hook 'compilation-filter-hook 'colorize-compilation-buffer)
+  (use-package spaceline-config
+    :ensure spaceline
+    :config
+    (progn
+      (setq powerline-default-separator (random-choice '(butt slant wave)))
+      (setq spaceline-workspace-numbers-unicode t
+            spaceline-window-numbers-unicode t)
+      (if (display-graphic-p)
+          (setq-default powerline-default-separator 'wave)
+        (setq-default powerline-default-separator 'utf-8))
+      (setq powerline-height 25)
+      (spaceline-spacemacs-theme)))
+#+END_SRC
+** Whitespace Setup
 
-(use-package window-number)
+Make whitespace-mode use just basic coloring:
+#+BEGIN_SRC emacs-lisp
+  (setq whitespace-style
+        '(spaces tabs newline space-mark tab-mark newline-mark))
+#+END_SRC
 
-(use-package spaceline-config
-  :ensure spaceline
-  :config
-  (progn
-    (setq powerline-default-separator (random-choice '(butt slant wave)))
-    (setq spaceline-workspace-numbers-unicode t
-          spaceline-window-numbers-unicode t)
-    (if (display-graphic-p)
-        (setq-default powerline-default-separator 'wave)
-      (setq-default powerline-default-separator 'utf-8))
-    (setq powerline-height 25)
-    (spaceline-spacemacs-theme)))
+Set the character used to represent spaces to ·, and the character used for tabs to be ▷.
+#+BEGIN_SRC emacs-lisp
+  (setq whitespace-display-mappings
+        '((space-mark 32 [183] [46])
+          (tab-mark 9 [9655 9] [92 9])))
+#+END_SRC
+
+** Colorize Compliation Buffers
+   This automatically applies ansi-color interpretation of terminal escape sequences to compilation buffers
+#+BEGIN_SRC emacs-lisp
+  (defun colorize-compilation-buffer ()
+    (read-only-mode)
+    (ansi-color-apply-on-region (point-min) (point-max))
+    (read-only-mode))
+  (add-hook 'compilation-filter-hook 'colorize-compilation-buffer)
+#+END_SRC
+
+** TODO Finish making the following litarate
+#+BEGIN_SRC emacs-lisp
 
 ;; =============================================================================
 ;;                                                                        Themes
@@ -2569,7 +2592,13 @@ items follow a style that is consistent with other prog-modes."
 (add-hook 'after-make-frame-functions 'imalison:appearance)
 (remove-hook 'after-make-frame-functions 'imalison:appearance)
 
+#+END_SRC
+* Footer
+#+BEGIN_SRC emacs-lisp
+
 ;; Local Variables:
 ;; flycheck-disabled-checkers: (emacs-lisp-checkdoc)
 ;; End:
+
 #+END_SRC
+
