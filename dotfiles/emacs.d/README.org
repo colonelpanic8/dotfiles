@@ -19,14 +19,18 @@ custom-before.el is loaded before the rest of init.el, while custom-after.el is 
   (defvar custom-after-file "~/.emacs.d/custom-after.el")
   (when (file-exists-p machine-custom) (load machine-custom))
 #+END_SRC
+* Custom emacs-lisp
 
+#+BEGIN_SRC emacs-lisp
+  (defun emacs24_4-p ()
+    (or (and (>= emacs-major-version 24)
+             (>= emacs-minor-version 4))
+        (>= emacs-major-version 25)))
+#+END_SRC
+* Packages
+* Keybindings
 * TODO Make the stuff under this heading literate
 #+BEGIN_SRC emacs-lisp
-
-(defun emacs24_4-p ()
-  (or (and (>= emacs-major-version 24)
-           (>= emacs-minor-version 4))
-      (>= emacs-major-version 25)))
 
 (when (equal system-type 'darwin)
   (setq mac-option-modifier 'meta)
