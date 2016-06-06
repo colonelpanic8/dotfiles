@@ -191,7 +191,6 @@ I use helm for almost all emacs completion
   (bind-key "s-<return>" 'toggle-frame-fullscreen)
   (bind-key "M-|" 'imalison:shell-command-on-region)
   (bind-key "C--" 'undo)
-  (bind-key "C-c 8" 'imalison:term)
   (bind-key "C-x 9" 'previous-buffer)
   (bind-key "s-v" 'clipboard-yank)
 
