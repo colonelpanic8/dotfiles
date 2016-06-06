@@ -1,3 +1,4 @@
+#+BEGIN_SRC emacs-lisp
 ;; -*- lexical-binding: t; -*-
 ;; =============================================================================
 ;;    ___ _ __ ___   __ _  ___ ___
@@ -1119,7 +1120,7 @@ the same tree node, and the headline of the tree node in the Org-mode file."
         (setq org-show-notification-handler 'imalison:org-notify-notification-handler)
 
         (org-notify-add 'default '(:time "1h" :actions imalison:org-notify-notification-handler
-        				 :period "2m" :duration 60))
+                                         :period "2m" :duration 60))
         (org-notify-add 'default '(:time "100m" :actions imalison:org-notify-notification-handler
                                          :period "2m" :duration 60))
         (org-notify-add 'urgent-second '(:time "3m" :actions (-notify/window -ding)
@@ -1269,7 +1270,7 @@ the same tree node, and the headline of the tree node in the Org-mode file."
               ,(cons "A" (cons "High priority upcoming" this-week-high-priority))
               ,(cons "d" (cons "Overdue tasks and due today" due-today))
               ,(cons "r" (cons "Recently created" recently-created))
-	      ("h" "A, B priority:" tags-todo "+PRIORITY<\"C\""
+              ("h" "A, B priority:" tags-todo "+PRIORITY<\"C\""
                        ((org-agenda-overriding-header
                          "High Priority:")))
               ("c" "At least priority C:" tags-todo "+PRIORITY<\"D\""
@@ -2572,3 +2573,4 @@ items follow a style that is consistent with other prog-modes."
 ;; Local Variables:
 ;; flycheck-disabled-checkers: (emacs-lisp-checkdoc)
 ;; End:
+#+END_SRC
