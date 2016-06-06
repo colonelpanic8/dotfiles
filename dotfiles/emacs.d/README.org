@@ -9,7 +9,7 @@
                                             "git config --get user.email")))
 #+END_SRC
 ** Custom Files
-It's annoying to have emacs randomly add stuff to your init.el whenever you customize a variable. By setting a different custom file that is ignored in git, random commits with nothing but variable settings are avoided.
+It's annoying to have emacs randomly add stuff to your init.el whenever you customize a variable. By setting a custom file other than init.el that is ignored in git, random commits with nothing but variable settings are avoided.
 
 custom-before.el is loaded before the rest of init.el, while custom-after.el is loaded afterwards. this-machine.el has customizations that should only apply to the current machine. custom-before and custom-after are not version controlled in the dotfiles repo but they are shared across machines elsewhere.
 #+BEGIN_SRC emacs-lisp
