@@ -40,5 +40,3 @@ config/google-chrome
 /dotfiles/vim/bundle/*
 /dotfiles/wemo/cache
 gotools
-
-dotfiles/emacs.d/config.el
