@@ -29,6 +29,37 @@ custom-before.el is loaded before the rest of init.el, while custom-after.el is 
 #+END_SRC
 * Packages
 * Keybindings
+#+BEGIN_SRC emacs-lisp
+  (bind-key "M-q" 'fill-or-unfill-paragraph)
+  (bind-key "C-c C-s" 'sudo-edit)
+  (bind-key "C-c SPC"
+            (lambda () (interactive)
+              (if current-prefix-arg (helm-global-mark-ring) (helm-mark-ring))))
+  (bind-key "C-c e" 'os-copy)
+  (bind-key "C-x p" 'pop-to-mark-command)
+  (setq set-mark-command-repeat-pop t)
+  (bind-key "C-x C-b" 'buffer-menu)
+  (bind-key "C-x C-c" 'kill-emacs)
+  (bind-key "C-x C-i" 'imenu)
+  (bind-key "C-x C-r" (lambda () (interactive) (revert-buffer t t)))
+  (bind-key "C-x O" (lambda () (interactive) (other-window -1)))
+  (bind-key "C-x w" 'whitespace-mode)
+  (bind-key "M-n" 'forward-paragraph)
+  (bind-key "M-p" 'backward-paragraph)
+  (bind-key "C-M-<backspace>" 'backward-kill-sexp)
+  (bind-key "s-<return>" 'toggle-frame-fullscreen)
+  (bind-key "M-|" 'imalison:shell-command-on-region)
+  (bind-key "C--" 'undo)
+  (bind-key "C-c 8" 'imalison:term)
+  (bind-key "C-x 9" 'previous-buffer)
+  (bind-key "s-v" 'clipboard-yank)
+
+  (fset 'global-set-key-to-use-package
+        (lambda (&optional arg) "Keyboard macro." (interactive "p")
+          (kmacro-exec-ring-item
+           (quote ([1 67108896 19 100 6 23 40 19 41 return
+                      backspace 32 46 6 4] 0 "%d")) arg)))
+#+END_SRC
 * TODO Make the stuff under this heading literate
 #+BEGIN_SRC emacs-lisp
 
@@ -2405,35 +2436,6 @@ items follow a style that is consistent with other prog-modes."
 ;; =============================================================================
 
 ;; Miscellaneous
-(bind-key "M-q" 'fill-or-unfill-paragraph)
-(bind-key "C-c C-s" 'sudo-edit)
-(bind-key "C-c SPC"
-          (lambda () (interactive)
-            (if current-prefix-arg (helm-global-mark-ring) (helm-mark-ring))))
-(bind-key "C-c e" 'os-copy)
-(bind-key "C-x p" 'pop-to-mark-command)
-(setq set-mark-command-repeat-pop t)
-(bind-key "C-x C-b" 'buffer-menu)
-(bind-key "C-x C-c" 'kill-emacs)
-(bind-key "C-x C-i" 'imenu)
-(bind-key "C-x C-r" (lambda () (interactive) (revert-buffer t t)))
-(bind-key "C-x O" (lambda () (interactive) (other-window -1)))
-(bind-key "C-x w" 'whitespace-mode)
-(bind-key "M-n" 'forward-paragraph)
-(bind-key "M-p" 'backward-paragraph)
-(bind-key "C-M-<backspace>" 'backward-kill-sexp)
-(bind-key "s-<return>" 'toggle-frame-fullscreen)
-(bind-key "M-|" 'imalison:shell-command-on-region)
-(bind-key "C--" 'undo)
-(bind-key "C-c 8" 'imalison:term)
-(bind-key "C-x 9" 'previous-buffer)
-(bind-key "s-v" 'clipboard-yank)
-
-(fset 'global-set-key-to-use-package
-      (lambda (&optional arg) "Keyboard macro." (interactive "p")
-        (kmacro-exec-ring-item
-         (quote ([1 67108896 19 100 6 23 40 19 41 return
-                    backspace 32 46 6 4] 0 "%d")) arg)))
 
 ;; =============================================================================
 ;;                                                                          toys
