@@ -27,14 +27,308 @@ Death to any gui elements in emacs! Do this EARLY so that emacs doesn't redispla
   (when (fboundp 'scroll-bar-mode) (scroll-bar-mode -1))
 #+END_SRC
 * Custom emacs-lisp
-An emacs version predicate builder
+** An emacs version predicate builder:
 #+BEGIN_SRC emacs-lisp
-  (defmacro emacs-version-predicate (major-version minor-version)
+  (defmacro imalison:emacs-version-predicate (major-version minor-version)
     `(lambda ()
        (or (> emacs-major-version ,major-version)
            (and (>= emacs-major-version ,major-version)
                 (>= emacs-minor-version ,minor-version)))))
-  (defalias emacs24_4-p (emacs-version-predicate 24 4))
+  (defun imalison:check-emacs-version (major-version minor-version)
+    (funcall (imalison:emacs-version-predicate major-version minor-version)))
+#+END_SRC
+
+** Add a file to org-agenda-files in an idempotent way
+#+BEGIN_SRC emacs-lisp
+  (defun imalison:add-to-org-agenda-files (incoming-files)
+    (setq org-agenda-files
+          (delete-dups
+           (cl-loop for filepath in (append org-agenda-files incoming-files)
+                    when (and filepath (file-exists-p (file-truename filepath)))
+                    collect (file-truename filepath)))))
+#+END_SRC
+
+** Compose functions taking arbitrarily many arguments and returning arbitrarily many arguments
+#+BEGIN_SRC emacs-lisp
+    (defmacro imalison:compose (name &rest funcs)
+      "Build a new function with NAME that is the composition of FUNCS."
+      `(defun ,name (&rest args)
+         (imalison:compose-helper ,funcs)))
+
+    (defun imalison:make-list (thing)
+      (if (listp thing)
+          thing
+        (list thing)))
+
+    (defmacro imalison:compose-helper (funcs)
+      "Builds funcalls of FUNCS applied to the arg."
+      (if (equal (length funcs) 0)
+          (quote args)
+        `(apply ,(car funcs)
+                (imalison:make-list (imalison:compose-helper ,(cdr funcs))))))
+#+END_SRC
+** prefix-alternatives
+Prefix alternatives is a macro that builds a function that selects one of a collection of functions that are provided to the macro based on the value of the prefix argument.
+#+BEGIN_SRC emacs-lisp
+  (defmacro imalison:prefix-alternatives (name &rest alternatives)
+    `(defun ,name (arg)
+       (interactive "p")
+       (setq function
+             (cond
+              ,@(progn
+                  (let ((last-power 1))
+                    (cl-loop for alternative in alternatives
+                             collect `((eq arg ,last-power) (quote ,alternative))
+                             do (setq last-power (* last-power 4)))))))
+       (setq function (or function)) ; Set a default value for function
+       (setq current-prefix-arg nil)
+       (call-interactively function)))
+#+END_SRC
+** TODO add commentary to the following
+#+BEGIN_SRC emacs-lisp
+  (defun imalison:join-paths (&rest paths)
+    (substring (mapconcat 'file-name-as-directory paths nil) 0 -1))
+
+  (defun random-choice (choices)
+    (nth (random (length choices)) choices))
+
+  (defun display-prefix (arg)
+    "Display the value of the raw prefix arg."
+    (interactive "p")
+    (message "%s" arg))
+
+  (defmacro imalison:prefix-alternatives (name &rest alternatives)
+    `(defun ,name (arg)
+       (interactive "p")
+       (setq function
+             (cond
+              ,@(progn
+                  (let ((last-power 1))
+                    (cl-loop for alternative in alternatives
+                             collect `((eq arg ,last-power) (quote ,alternative))
+                             do (setq last-power (* last-power 4)))))))
+       (setq function (or function)) ; Set a default value for function
+       (setq current-prefix-arg nil)
+       (call-interactively function)))
+
+  (defmacro imalison:let-advise-around (name &rest forms)
+    `(defun ,name (orig-func &rest args)
+       (let ,forms
+         (apply orig-func args))))
+
+  (defmacro imalison:dynamic-let-advise-around (name &rest getters)
+    `(defun ,name (orig-func &rest args)
+       (let ,(cl-loop for pair in getters
+                      collect `(,(car pair) (funcall (quote ,(cadr pair)))))
+         (apply orig-func args))))
+
+  (defun imalison:uuid ()
+    (interactive)
+    (s-replace "\n" "" (shell-command-to-string "uuid")))
+
+  (defun imalison:disable-linum-mode ()
+    (linum-mode 0))
+
+  (defun imalison:disable-smartparens-mode ()
+    (smartparens-mode 0))
+
+  (defun imalison:insert-uuid ()
+    (interactive)
+    (insert (imalison:uuid)))
+
+  (defmacro suppress-messages (&rest forms)
+    `(flet ((message (&rest r) nil))
+       ,@forms))
+
+  (defun imalison:compare-int-list (a b)
+    (when (and a b)
+      (cond ((> (car a) (car b)) 1)
+            ((< (car a) (car b)) -1)
+            (t (imalison:compare-int-list (cdr a) (cdr b))))))
+
+  (defun imalison:get-lat-long ()
+    (condition-case _ex
+        (mapcar 'string-to-number (s-split "," (s-trim (shell-command-to-string
+                                                        "whereami"))))
+      (error (list 37.7879312624533 -122.402388853402))))
+
+  (defun get-date-created-from-agenda-entry (agenda-entry)
+    (org-time-string-to-time
+     (org-entry-get (get-text-property 1 'org-marker agenda-entry) "CREATED")))
+
+  (defmacro defvar-setq (name value)
+    (if (boundp name)
+        `(setq ,name ,value)
+      `(defvar ,name ,value)))
+
+  (defun imalison:imenu-prefix-flattened (index)
+    (let ((flattened (imalison:flatten-imenu-index (cdr index))))
+      (cl-loop for sub-item in flattened
+               collect
+               `(,(concat (car index) "." (car sub-item)) . ,(cdr sub-item)))))
+
+  (defun imalison:flatten-imenu-index (index)
+    (let ((cdr-is-index (listp (cdr index))))
+      (cond ((not (stringp (car index))) (cl-mapcan
+                                          #'imalison:flatten-imenu-index index))
+            (cdr-is-index (imalison:imenu-prefix-flattened index))
+            (t (list index)))))
+
+  (defun imalison:make-imenu-index-flat ()
+    (let ((original-imenu-function imenu-create-index-function))
+      (setq imenu-create-index-function
+            (lambda ()
+              (imalison:flatten-imenu-index
+               (funcall original-imenu-function))))))
+
+  (defmacro defvar-if-non-existent (name value)
+    (unless (boundp name)
+      `(defvar ,name ,value)))
+
+  (defun eval-region-or-last-sexp ()
+    (interactive)
+    (if (region-active-p) (call-interactively 'eval-region)
+      (call-interactively 'eval-last-sexp)))
+
+  (defun undo-redo (&optional arg)
+    (interactive "P")
+    (if arg (undo-tree-redo) (undo-tree-undo)))
+
+  (defun up-list-region ()
+    (interactive)
+    (up-list) (set-mark-command nil) (backward-sexp))
+
+  (defun up-list-back ()
+    (interactive)
+    (up-list) (backward-sexp))
+
+  (defun unfill-paragraph (&optional region)
+    "Takes a multi-line paragraph and makes it into a single line of text."
+    (interactive (progn
+                   (barf-if-buffer-read-only)
+                   (list t)))
+    (let ((fill-column (point-max)))
+      (fill-paragraph nil region)))
+
+  (defun fill-or-unfill-paragraph (&optional unfill region)
+    "Fill paragraph (or REGION). With the prefix argument UNFILL,
+  unfill it instead."
+      (interactive (progn
+                     (barf-if-buffer-read-only)
+                     (list (if current-prefix-arg 'unfill) t)))
+      (let ((fill-column (if unfill (point-max) fill-column)))
+        (fill-paragraph nil region)))
+
+  (defun sudo-edit (&optional arg)
+    "Edit currently visited file as root.
+
+  With a prefix ARG prompt for a file to visit.
+  Will also prompt for a file to visit if current
+  buffer is not visiting a file."
+    (interactive "P")
+    (if (or arg (not buffer-file-name))
+        (find-file (concat "/sudo:root@localhost:"
+                           (ido-read-file-name "Find file (as root): ")))
+      (find-alternate-file (concat "/sudo:root@localhost:" buffer-file-name))))
+
+  (defun frame-exists ()
+    (cl-find-if
+     (lambda (frame)
+       (assoc 'display (frame-parameters frame))) (frame-list)))
+
+  (defun imalison:copy-shell-command-on-region (start end command)
+    (interactive (list (region-beginning) (region-end)
+                       (read-shell-command "Shell command on region: ")))
+    (let ((original-buffer (current-buffer)))
+      (with-temp-buffer
+        (let ((temp-buffer (current-buffer)))
+          (with-current-buffer original-buffer
+            (shell-command-on-region start end command temp-buffer))
+          (kill-ring-save (point-max) (point-min))))))
+
+  (defun imalison:shell-command-on-region-replace (start end command)
+    (interactive (list (region-beginning) (region-end)
+                       (read-shell-command "Shell command on region: ")))
+    (shell-command-on-region start end command nil t))
+
+  (defun imalison:shell-command-on-region (arg)
+    (interactive "P")
+    (call-interactively (if arg 'imalison:shell-command-on-region-replace
+      'imalison:copy-shell-command-on-region)))
+
+  (defun make-frame-if-none-exists ()
+    (let* ((existing-frame (frame-exists)))
+      (if existing-frame
+          existing-frame
+        (make-frame-on-display (getenv "DISPLAY")))))
+
+  (defun make-frame-if-none-exists-and-focus ()
+    (make-frame-visible (select-frame (make-frame-if-none-exists))))
+
+  (defun copy-buffer-file-name ()
+    (interactive)
+    (add-string-to-kill-ring (file-name-nondirectory (buffer-file-name))))
+
+  (defun copy-buffer-file-path ()
+    (interactive)
+    (add-string-to-kill-ring (file-relative-name (buffer-file-name)
+                                                 (projectile-project-root))))
+
+  (defun copy-full-file-path ()
+    (interactive)
+    (add-string-to-kill-ring (buffer-file-name)))
+
+  (defun add-string-to-kill-ring (string)
+    (with-temp-buffer
+      (insert string)
+      (kill-ring-save (point-max) (point-min))))
+
+  (defun open-pdf ()
+    (interactive)
+    (let ( (pdf-file (replace-regexp-in-string
+                      "\.tex$" ".pdf" buffer-file-name)))
+      (shell-command (concat "open " pdf-file))))
+
+  (defun eval-and-replace ()
+    (interactive)
+    (backward-kill-sexp)
+    (condition-case nil
+        (prin1 (eval (read (current-kill 0)))
+               (current-buffer))
+      (error (message "Invalid expression")
+             (insert (current-kill 0)))))
+
+  (defun flatten-imenu-index (index)
+    (cl-mapcan
+     (lambda (x)
+       (if (listp (cdr x))
+           (cl-mapcar (lambda (item)
+                        `(,(concat (car x) "/" (car item)) . ,(cdr item)))
+                      (flatten-imenu-index (cdr x)))
+         (list x))) index))
+
+  (defun flatten-imenu-index-function (function)
+    (lambda () (flatten-imenu-index (funcall function))))
+
+  (defun flatten-current-imenu-index-function ()
+    (setq imenu-create-index-function
+          (flatten-imenu-index-function imenu-create-index-function)))
+
+  (defun notification-center (title message)
+    (flet ((encfn (s) (encode-coding-string s (keyboard-coding-system))))
+      (shell-command
+       (format "osascript -e 'display notification \"%s\" with title \"%s\"'"
+               (encfn message) (encfn title)))))
+
+  (defun growl-notify (title message)
+    (shell-command (format "grownotify -t %s -m %s" title message)))
+
+  (defun notify-send (title message)
+    (shell-command (format "notify-send -u critical %s %s" title message)))
+
+  (defvar notify-function
+    (cond ((eq system-type 'darwin) 'notification-center)
+          ((eq system-type 'gnu/linux) 'notify-send)))
 #+END_SRC
 
 #+BEGIN_SRC emacs-lisp
@@ -210,2249 +504,1983 @@ I use helm for almost all emacs completion
 * TODO Make the stuff under this heading literate
 #+BEGIN_SRC emacs-lisp
 
-;; =============================================================================
-;;                                                                 byte-compiler
-;; =============================================================================
-
-;; These silence the byte compiler.
-(defvar ido-cur-item nil)
-(defvar ido-default-item nil)
-(defvar ido-context-switch-command nil)
-(defvar ido-cur-list nil)
-(defvar inherit-input-method nil)
-(defvar grep-find-ignored-files nil)
-(defvar grep-find-ignored-directories nil)
-(defvar tls-checktrust nil)
-(defvar tls-program nil)
-
-;; =============================================================================
-;;                                                                      Security
-;; =============================================================================
-
-(defvar imalison:secure nil)
-
-(defun imalison:use-https-and-tls ()
-  (setq tls-checktrust t)
-  (let ((trustfile
-         (replace-regexp-in-string
-          "\\\\" "/"
-          (replace-regexp-in-string
-           "\n" ""
-           (shell-command-to-string "python -m certifi")))))
-    (setq tls-program
-          (list
-           (format "gnutls-cli%s --x509cafile %s -p %%p %%h"
-                   (if (eq window-system 'w32) ".exe" "") trustfile)))))
-
-(defun imalison:test-security ()
-  (interactive)
-  (let ((bad-hosts
-       (loop for bad
-             in `("https://wrong.host.badssl.com/"
-                  "https://self-signed.badssl.com/")
-             if (condition-case _e
-                    (url-retrieve
-                     bad (lambda (_retrieved) t))
-                  (error nil))
-             collect bad)))
-  (if bad-hosts
-      (error (format "tls misconfigured; retrieved %s ok"
-                     bad-hosts))
-    (url-retrieve "https://badssl.com"
-                  (lambda (_retrieved) t)))))
-
-(when imalison:secure (imalison:use-https-and-tls))
-
-;; =============================================================================
-;;                                                         ELPA/package.el/MELPA
-;; =============================================================================
-
-(require 'package)
-(defvar imalison:elpa-protocol (if imalison:secure "https" "http"))
-;; (add-to-list 'package-archives
-;;              '("marmalade" . "http://marmalade-repo.org/packages/") t)
-(add-to-list 'package-archives `("elpa" . ,(concat imalison:elpa-protocol
-                                                  "://tromey.com/elpa/")) t)
-(add-to-list 'package-archives `("org" . ,(concat imalison:elpa-protocol
-                                                 "://orgmode.org/elpa/")) t)
-(add-to-list 'package-archives `("melpa" . ,(concat imalison:elpa-protocol
-                                                   "://melpa.org/packages/")) t)
-
-(defun ensure-packages-installed (packages)
-  (unless package-archive-contents
-    (package-refresh-contents))
-  (mapcar
-   (lambda (package)
-     (if (package-installed-p package)
-         package
-       (progn (message (format "Installing package %s." package))
-              (package-install package))))
-   packages))
-
-(package-initialize)
-(ensure-packages-installed '(epl use-package))
-
-;; use-package is only needed at compile time.
-(eval-when-compile (require 'use-package))
-(setq use-package-always-ensure t)
-
-(use-package diminish)
-(use-package bind-key)
-(use-package bug-hunter)
-
-(use-package benchmark-init
-  ;; this variable has to be set in custom-before.el
-  :if (and (boundp 'do-benchmark) do-benchmark))
-
-;; =============================================================================
-;;                                                          Config Free Packages
-;; =============================================================================
-
-(defvar packages-eager
-  '(popup cl-lib xclip dired+ ctags ctags-update aggressive-indent imenu+
-    neotree diminish gist))
-
-(ensure-packages-installed packages-eager)
-
-;; =============================================================================
-;;                                                                      Disables
-;; =============================================================================
-
-(setq visible-bell nil)
-(setq sentence-end-double-space nil)
-
-;; Disable the creation of backup files.
-(setq backup-inhibited t)
-(setq make-backup-files nil)
-(setq auto-save-default nil)
-
-(defconst emacs-tmp-dir
-  (format "%s/%s%s/" temporary-file-directory "emacs" (user-uid)))
-(setq backup-directory-alist `((".*" . ,emacs-tmp-dir)))
-(setq auto-save-file-name-transforms `((".*" ,emacs-tmp-dir t)))
-(setq auto-save-list-file-prefix emacs-tmp-dir)
-
-
-(put 'set-goal-column 'disabled nil)
-(auto-fill-mode -1)
-(setq indent-tabs-mode nil)
-
-;; No hsplits. EVER.
-(defun split-horizontally-for-temp-buffers () (split-window-horizontally))
-(add-hook 'temp-buffer-setup-hook 'split-horizontally-for-temp-buffers)
-(setq split-height-threshold nil)
-(setq split-width-threshold 160)
-
-;; No popup frames.
-(setq ns-pop-up-frames nil)
-(setq pop-up-frames nil)
-(setq confirm-nonexistent-file-or-buffer nil)
-
-;; No prompt for killing a buffer with processes attached.
-(setq kill-buffer-query-functions
-  (remq 'process-kill-buffer-query-function
-        kill-buffer-query-functions))
-
-(setq inhibit-startup-message t
-      inhibit-startup-echo-area-message t)
-
-(if (fboundp 'tooltip-mode) (tooltip-mode -1) (setq tooltip-use-echo-area t))
-
-(setq use-dialog-box nil)
-
-(defadvice yes-or-no-p (around prevent-dialog activate)
-  "Prevent yes-or-no-p from activating a dialog"
-  (let ((use-dialog-box nil))
-    ad-do-it))
-
-(defadvice y-or-n-p (around prevent-dialog-yorn activate)
-  "Prevent y-or-n-p from activating a dialog"
-  (let ((use-dialog-box nil))
-    ad-do-it))
-
-;; =============================================================================
-;;                                                                     functions
-;; =============================================================================
-
-(defun imalison:join-paths (&rest paths)
-  (substring (mapconcat 'file-name-as-directory paths nil) 0 -1))
-
-(defmacro imalison:compose (name &rest funcs)
-  "Build a new function with NAME that is the composition of FUNCS."
-  `(defun ,name (&rest args)
-     (imalison:compose-helper ,funcs)))
-
-(defun imalison:make-list (thing)
-  (if (listp thing)
-      thing
-    (list thing)))
-
-(defmacro imalison:compose-helper (funcs)
-  "Builds funcalls of FUNCS applied to the arg."
-  (if (equal (length funcs) 0)
-      (quote args)
-    `(apply ,(car funcs)
-            (imalison:make-list (imalison:compose-helper ,(cdr funcs))))))
-
-(defun random-choice (choices)
-  (nth (random (length choices)) choices))
-
-(defun display-prefix (arg)
-  "Display the value of the raw prefix arg."
-  (interactive "p")
-  (message "%s" arg))
-
-(defmacro imalison:prefix-alternatives (name &rest alternatives)
-  `(defun ,name (arg)
-     (interactive "p")
-     (setq function
-           (cond
-            ,@(progn
-                (let ((last-power 1))
-                  (cl-loop for alternative in alternatives
-                           collect `((eq arg ,last-power) (quote ,alternative))
-                           do (setq last-power (* last-power 4)))))))
-     (setq function (or function)) ; Set a default value for function
-     (setq current-prefix-arg nil)
-     (call-interactively function)))
-
-(defmacro imalison:let-advise-around (name &rest forms)
-  `(defun ,name (orig-func &rest args)
-     (let ,forms
-       (apply orig-func args))))
-
-(defmacro imalison:dynamic-let-advise-around (name &rest getters)
-  `(defun ,name (orig-func &rest args)
-     (let ,(cl-loop for pair in getters
-                    collect `(,(car pair) (funcall (quote ,(cadr pair)))))
-       (apply orig-func args))))
-
-(defun imalison:uuid ()
-  (interactive)
-  (s-replace "\n" "" (shell-command-to-string "uuid")))
-
-(defun imalison:disable-linum-mode ()
-  (linum-mode 0))
-
-(defun imalison:disable-smartparens-mode ()
-  (smartparens-mode 0))
-
-(defun imalison:insert-uuid ()
-  (interactive)
-  (insert (imalison:uuid)))
-
-(defmacro suppress-messages (&rest forms)
-  `(flet ((message (&rest r) nil))
-     ,@forms))
-
-(defun imalison:compare-int-list (a b)
-  (when (and a b)
-    (cond ((> (car a) (car b)) 1)
-          ((< (car a) (car b)) -1)
-          (t (imalison:compare-int-list (cdr a) (cdr b))))))
-
-(defun imalison:get-lat-long ()
-  (condition-case _ex
-      (mapcar 'string-to-number (s-split "," (s-trim (shell-command-to-string
-                                                      "whereami"))))
-    (error (list 37.7879312624533 -122.402388853402))))
-
-(defun get-date-created-from-agenda-entry (agenda-entry)
-  (org-time-string-to-time
-   (org-entry-get (get-text-property 1 'org-marker agenda-entry) "CREATED")))
-
-(defmacro defvar-setq (name value)
-  (if (boundp name)
-      `(setq ,name ,value)
-    `(defvar ,name ,value)))
-
-(defun imalison:imenu-prefix-flattened (index)
-  (let ((flattened (imalison:flatten-imenu-index (cdr index))))
-    (cl-loop for sub-item in flattened
-             collect
-             `(,(concat (car index) "." (car sub-item)) . ,(cdr sub-item)))))
-
-(defun imalison:flatten-imenu-index (index)
-  (let ((cdr-is-index (listp (cdr index))))
-    (cond ((not (stringp (car index))) (cl-mapcan
-                                        #'imalison:flatten-imenu-index index))
-          (cdr-is-index (imalison:imenu-prefix-flattened index))
-          (t (list index)))))
-
-(defun imalison:make-imenu-index-flat ()
-  (let ((original-imenu-function imenu-create-index-function))
-    (setq imenu-create-index-function
-          (lambda ()
-            (imalison:flatten-imenu-index
-             (funcall original-imenu-function))))))
-
-(defmacro defvar-if-non-existent (name value)
-  (unless (boundp name)
-    `(defvar ,name ,value)))
-
-(defun eval-region-or-last-sexp ()
-  (interactive)
-  (if (region-active-p) (call-interactively 'eval-region)
-    (call-interactively 'eval-last-sexp)))
-
-(defun undo-redo (&optional arg)
-  (interactive "P")
-  (if arg (undo-tree-redo) (undo-tree-undo)))
-
-(defun up-list-region ()
-  (interactive)
-  (up-list) (set-mark-command nil) (backward-sexp))
-
-(defun up-list-back ()
-  (interactive)
-  (up-list) (backward-sexp))
-
-(defun unfill-paragraph (&optional region)
-  "Takes a multi-line paragraph and makes it into a single line of text."
-  (interactive (progn
-                 (barf-if-buffer-read-only)
-                 (list t)))
-  (let ((fill-column (point-max)))
-    (fill-paragraph nil region)))
-
-(defun fill-or-unfill-paragraph (&optional unfill region)
-  "Fill paragraph (or REGION). With the prefix argument UNFILL,
-unfill it instead."
-    (interactive (progn
-                   (barf-if-buffer-read-only)
-                   (list (if current-prefix-arg 'unfill) t)))
-    (let ((fill-column (if unfill (point-max) fill-column)))
-      (fill-paragraph nil region)))
-
-(defun sudo-edit (&optional arg)
-  "Edit currently visited file as root.
-
-With a prefix ARG prompt for a file to visit.
-Will also prompt for a file to visit if current
-buffer is not visiting a file."
-  (interactive "P")
-  (if (or arg (not buffer-file-name))
-      (find-file (concat "/sudo:root@localhost:"
-                         (ido-read-file-name "Find file (as root): ")))
-    (find-alternate-file (concat "/sudo:root@localhost:" buffer-file-name))))
-
-(defun frame-exists ()
-  (cl-find-if
-   (lambda (frame)
-     (assoc 'display (frame-parameters frame))) (frame-list)))
-
-(defun imalison:copy-shell-command-on-region (start end command)
-  (interactive (list (region-beginning) (region-end)
-                     (read-shell-command "Shell command on region: ")))
-  (let ((original-buffer (current-buffer)))
-    (with-temp-buffer
-      (let ((temp-buffer (current-buffer)))
-        (with-current-buffer original-buffer
-          (shell-command-on-region start end command temp-buffer))
-        (kill-ring-save (point-max) (point-min))))))
-
-(defun imalison:shell-command-on-region-replace (start end command)
-  (interactive (list (region-beginning) (region-end)
-                     (read-shell-command "Shell command on region: ")))
-  (shell-command-on-region start end command nil t))
-
-(defun imalison:shell-command-on-region (arg)
-  (interactive "P")
-  (call-interactively (if arg 'imalison:shell-command-on-region-replace
-    'imalison:copy-shell-command-on-region)))
-
-(defun make-frame-if-none-exists ()
-  (let* ((existing-frame (frame-exists)))
-    (if existing-frame
-        existing-frame
-      (make-frame-on-display (getenv "DISPLAY")))))
-
-(defun make-frame-if-none-exists-and-focus ()
-  (make-frame-visible (select-frame (make-frame-if-none-exists))))
-
-(defun copy-buffer-file-name ()
-  (interactive)
-  (add-string-to-kill-ring (file-name-nondirectory (buffer-file-name))))
-
-(defun copy-buffer-file-path ()
-  (interactive)
-  (add-string-to-kill-ring (file-relative-name (buffer-file-name)
-                                               (projectile-project-root))))
-
-(defun copy-full-file-path ()
-  (interactive)
-  (add-string-to-kill-ring (buffer-file-name)))
-
-(defun add-string-to-kill-ring (string)
-  (with-temp-buffer
-    (insert string)
-    (kill-ring-save (point-max) (point-min))))
-
-(defun open-pdf ()
-  (interactive)
-  (let ( (pdf-file (replace-regexp-in-string
-                    "\.tex$" ".pdf" buffer-file-name)))
-    (shell-command (concat "open " pdf-file))))
-
-(defun eval-and-replace ()
-  (interactive)
-  (backward-kill-sexp)
-  (condition-case nil
-      (prin1 (eval (read (current-kill 0)))
-             (current-buffer))
-    (error (message "Invalid expression")
-           (insert (current-kill 0)))))
-
-(defun flatten-imenu-index (index)
-  (cl-mapcan
-   (lambda (x)
-     (if (listp (cdr x))
-         (cl-mapcar (lambda (item)
-                      `(,(concat (car x) "/" (car item)) . ,(cdr item)))
-                    (flatten-imenu-index (cdr x)))
-       (list x))) index))
-
-(defun flatten-imenu-index-function (function)
-  (lambda () (flatten-imenu-index (funcall function))))
-
-(defun flatten-current-imenu-index-function ()
-  (setq imenu-create-index-function
-        (flatten-imenu-index-function imenu-create-index-function)))
-
-(defun notification-center (title message)
-  (flet ((encfn (s) (encode-coding-string s (keyboard-coding-system))))
-    (shell-command
-     (format "osascript -e 'display notification \"%s\" with title \"%s\"'"
-             (encfn message) (encfn title)))))
-
-(defun growl-notify (title message)
-  (shell-command (format "grownotify -t %s -m %s" title message)))
-
-(defun notify-send (title message)
-  (shell-command (format "notify-send -u critical %s %s" title message)))
-
-(defvar notify-function
-  (cond ((eq system-type 'darwin) 'notification-center)
-        ((eq system-type 'gnu/linux) 'notify-send)))
-
-;; =============================================================================
-;;                                                         General Emacs Options
-;; =============================================================================
-
-(global-auto-revert-mode)
-(diminish 'auto-revert-mode)
-(diminish 'smartparens-mode)
-(diminish 'eldoc-mode)
-(diminish 'tern-mode)
-(diminish 'js2-refactor-mode)
-
-;; This makes it so that emacs --daemon puts its files in ~/.emacs.d/server
-;; (setq server-use-tcp t)
-
-;; Display line and column numbers in mode line.
-(line-number-mode t)
-(column-number-mode t)
-(global-linum-mode t)
-(setq visible-bell t)
-(show-paren-mode 1)
-
-;; Make buffer names unique.
-(setq uniquify-buffer-name-style 'forward)
-
-;; We want closures
-(setq lexical-binding t)
-
-(setq fill-column 80)
-
-;; Don't disable commands...
-(setq disabled-command-function nil)
-
-;; Make forward word understand camel and snake case.
-(setq c-subword-mode t)
-(global-subword-mode)
-
-;; Preserve pastes from OS when saving a new item to the kill
-;; ring. Why wouldn't this be enabled by default?
-(setq save-interprogram-paste-before-kill t)
-
-(setq-default cursor-type 'box)
-(setq-default cursor-in-non-selected-windows 'bar)
-
-(if nil ;; Causing too many annoying issues
-    (add-hook 'after-init-hook '(lambda () (setq debug-on-error t))))
-
-;; Make mouse scrolling less jumpy.
-(setq mouse-wheel-scroll-amount '(1 ((shift) . 1)))
-
-(eval-after-load 'subword '(diminish 'subword-mode))
-(eval-after-load 'simple '(diminish 'visual-line-mode))
-
-(setq display-time-default-load-average nil)
-(setq display-time-interval 1)
-(setq display-time-format "%a, %b %d, %T ")
-(display-time-mode 1)
-
-(setq reb-re-syntax 'string) ;; the only sane option...
-
-(setq ediff-split-window-function 'split-window-horizontally)
-(setq ediff-window-setup-function 'ediff-setup-windows-plain)
-
-;; Disable this per major mode or maybe using file size if it causes
-;; performance issues?
-(setq imenu-auto-rescan t)
-(setq imenu-max-item-length 300)
-
-(put 'narrow-to-region 'disabled nil)
-(put 'narrow-to-page 'disabled nil)
-
-(setq echo-keystrokes 0.25)
-
-(setq initial-scratch-message "")
-
-(setq utf-translate-cjk-mode nil) ; disable CJK coding/encoding
-                                  ; (Chinese/Japanese/Korean
-                                  ; characters)
-(set-language-environment 'utf-8)
-(set-keyboard-coding-system 'utf-8-mac) ; For old Carbon emacs on OS X only
-(setq locale-coding-system 'utf-8)
-(set-default-coding-systems 'utf-8)
-(set-terminal-coding-system 'utf-8)
-(unless (eq system-type 'windows-nt)
-  (set-selection-coding-system 'utf-8))
-(prefer-coding-system 'utf-8)
-
-(setq checkdoc-force-docstrings-flag nil
-      checkdoc-arguments-in-order-flag nil)
-
-;; text mode stuff:
-(remove-hook 'text-mode-hook #'turn-on-auto-fill)
-(add-hook 'text-mode-hook 'turn-on-visual-line-mode)
-(setq sentence-end-double-space nil)
-
-;; y and n instead of yes and no
-(defalias 'yes-or-no-p 'y-or-n-p)
-
-;; =============================================================================
-;;                                                                   use-package
-;; =============================================================================
-
-(use-package server
-  :config
-  (progn
-    (unless (server-running-p) (server-start))))
-
-(use-package list-environment)
-
-(use-package paradox
-  :config
-  (progn
-    (setq paradox-execute-asynchronously t)))
-
-(use-package smartparens
-  :demand t
-  :bind (:map smartparens-mode-map
-              ("C-)" . sp-forward-slurp-sexp)
-              ("C-}" . sp-forward-barf-sexp)
-              ("C-(" . sp-backward-slurp-sexp)
-              ("C-{" . sp-backward-barf-sexp))
-  :config
-  (progn
-    (require 'smartparens-config)
-    (smartparens-global-mode 1)
-    (sp-use-smartparens-bindings)
-    (unbind-key "C-<backspace>" smartparens-mode-map)
-    (unbind-key "M-<backspace>" smartparens-mode-map)))
-
-(use-package term-manager
-  :ensure nil
-  :load-path "~/Projects/term-manager"
-  :preface
-  (progn
-    (defun imalison:set-escape-char (&rest _args)
-      (let (term-escape-char)
-       (term-set-escape-char ?\C-x))))
-  :config
-  (progn
-    (advice-add
-     'term-manager-default-build-term :after 'imalison:set-escape-char)))
-
-(use-package term-projectile
-  :ensure nil
-  :load-path "~/Projects/term-manager"
-  :config
-  (progn
-    (imalison:prefix-alternatives imalison:term term-projectile-forward
-                                  term-projectile-create-new)
-    (defhydra imalison:term-hydra (global-map  "C-c 7")
-      "term"
-      ("n" term-projectile-forward)
-      ("p" term-projectile-backward)
-      ("c" term-projectile-create-new))))
-
-(use-package term
-  :config
-  (progn
-    (add-hook 'term-mode-hook 'imalison:disable-linum-mode)))
-
-(use-package exec-path-from-shell
-  :config
-  (progn
-    (add-to-list 'exec-path-from-shell-variables "GOPATH")
-    (exec-path-from-shell-initialize)))
-
-(use-package yasnippet
-  :defer 5
-  :commands (yas-global-mode)
-  :config
-  (progn
-    (yas-global-mode)
-    (diminish 'yas-minor-mode)
-    (add-hook 'term-mode-hook (lambda() (yas-minor-mode -1)))
-    (setq yas-prompt-functions
-          (cons 'yas-ido-prompt
-                (cl-delete 'yas-ido-prompt yas-prompt-functions)))))
-
-(use-package tramp
-  :commands tramp
-  :config
-  (setq tramp-default-method "scp"))
-
-(use-package shackle
-  :disabled t
-  :config
-  (progn
-    (diminish 'shackle-mode)
-    (when nil                           ; disabled for now
-      (shackle-mode))
-    (setq shackle-inhibit-window-quit-on-same-windows t)
-    (setq shackle-default-rule '(:same t))))
-
-(use-package beacon
-  :bind ("C-c b" . beacon-blink)
-  :config
-  (beacon-mode 1))
-
-(use-package crux)
-
-(use-package discover-my-major)
-
-(use-package which-key
-  :config
-  (progn
-    (setq which-key-idle-delay .50)
-    (diminish 'which-key-mode)
-    (which-key-mode)))
-
-(use-package jump-char
-  :bind (("C-;" . jump-char-forward)))
-
-(use-package avy
-  :preface
-  (progn
-    (imalison:prefix-alternatives imalison:avy avy-goto-word-1 avy-goto-char))
-  :bind (("C-j" . imalison:avy)
-         ("M-g l" . avy-goto-line)
-         ("C-'" . avy-goto-char-2)))
-
-(use-package ace-window
-  :preface
-  (imalison:prefix-alternatives imalison:ace-window ace-select-window ace-swap-window)
-  :config (setq aw-keys '(?a ?s ?d ?f ?g ?h ?j ?k ?l))
-  :bind ("C-c w" . imalison:ace-window))
-
-(use-package flycheck
-  :config
-  (progn
-    (global-flycheck-mode)
-    (use-package flycheck-package
-      :config (flycheck-package-setup)))
-  :diminish flycheck-mode)
-
-
-(use-package haskell-mode
-  :commands haskell-mode
-  :config
-  (progn
-    (add-hook 'haskell-mode-hook 'turn-on-haskell-indent)))
-
-(use-package narrow-indirect
-  :init
-  (progn
-    (define-key ctl-x-4-map "nd" 'ni-narrow-to-defun-indirect-other-window)
-    (define-key ctl-x-4-map "nn" 'ni-narrow-to-region-indirect-other-window)
-    (define-key ctl-x-4-map "np" 'ni-narrow-to-page-indirect-other-window)))
-
-(use-package editorconfig
-  :commands edconf-find-file-hook
-  :demand t)
-
-(use-package dtrt-indent
-  :init (add-hook 'prog-mode-hook 'dtrt-indent-mode))
-
-(use-package indent-guide
-  :disabled t
-  :config
-  (progn
-    (indent-guide-global-mode -1)
-    (setq indent-guide-delay 0.1)))
-
-(use-package rainbow-delimiters
-  :commands rainbow-delimiters-mode
-  :init
-  (progn
-    (add-hook 'prog-mode-hook (lambda () (rainbow-delimiters-mode t)))))
-
-(use-package git-gutter
-  :config
-  (progn
-    (global-git-gutter-mode -1)))
-
-(use-package gitolite-clone
-  :demand t
-  :preface
-  (progn
-    (defun gitolite-clone-force-refresh ()
-      (interactive)
-      (gitolite-clone-get-projects nil nil t))))
-
-(use-package github-clone
-  :demand t)
-
-(use-package github-notifier
-  :disabled t
-  :config (github-notifier-mode))
-
-(use-package company
-  :commands company-mode imalison:company
-  :bind (("C-\\" . imalison:company))
-  :config
-  (progn
-    (imalison:prefix-alternatives
-     imalison:company company-complete company-yasnippet)
-    (setq company-idle-delay .25)
-    (global-company-mode)
-    (diminish 'company-mode))
-  :init
-  (add-hook 'prog-mode-hook (lambda () (company-mode t))))
-
-(use-package expand-region
-  :commands er/expand-region
-  :config (setq expand-region-contract-fast-key "j")
-  :bind (("C-c k" . er/expand-region)))
-
-(use-package multiple-cursors
-  :config
-  (progn
-    (use-package phi-search-mc
-      :config
-      (phi-search-mc/setup-keys))
-    (use-package mc-extras
-      :config
-      (define-key mc/keymap (kbd "C-. =") 'mc/compare-chars)))
-  :bind
-  (("C-c m a" . mc/mark-all-like-this)
-   ("C-c m m" . mc/mark-all-like-this-dwim)
-   ("C-c m l" . mc/edit-lines)
-   ("C-c m n" . mc/mark-next-like-this)
-   ("C-c m p" . mc/mark-previous-like-this)
-   ("C-c m s" . mc/mark-sgml-tag-pair)
-   ("C-c m d" . mc/mark-all-like-this-in-defun)))
-
-(use-package undo-tree
-  :disabled t ;; this has been getting pretty annoying
-  :bind (("C--" . undo-redo)
-         ("C-c u" . undo-tree-visualize)
-         ("C-c r" . undo-tree-redo))
-  :config
-  (diminish 'undo-tree-mode)
-  :init
-  (progn
-    ;;(setq undo-tree-visualizer-diff t) ;; This causes performance problems
-    (global-undo-tree-mode)
-    (setq undo-tree-visualizer-timestamps t)))
-
-(use-package string-inflection
-  :commands string-inflection-toggle
-  :bind ("C-c l" . string-inflection-toggle))
-
-(use-package load-dir
-  :config
-  (progn
-    (add-to-list 'load-dirs "~/.emacs.d/load.d")
-    (defvar site-lisp "/usr/share/emacs24/site-lisp/")
-    (when (file-exists-p site-lisp) (add-to-list 'load-dirs site-lisp))))
-
-(use-package multi-line
-  :load-path "~/Projects/multi-line"
-  :preface
-  (progn
-    (defun imalison:multi-line-fill-column ()
-      (interactive)
-      (multi-line-execute multi-line-fill-column-strategy nil))
-
-    (defun imalison:multi-line-skip-fill ()
-      (interactive)
-      (multi-line-execute multi-line-skip-fill-stragety nil))
-
-    (defun imalison:multi-line-fill ()
-      (interactive)
-      (multi-line-execute multi-line-fill-stragety nil))
-
-    (imalison:prefix-alternatives imalison:multi-line multi-line
-                                  multi-line-single-line
-                                  imalison:multi-line-skip-fill
-                                  imalison:multi-line-fill
-                                  imalison:multi-line-fill-column))
-    :bind ("C-c d" . imalison:multi-line))
-
-(use-package recentf
-  ;; binding is in helm.
-  :config
-  (progn
-    (recentf-mode 1)
-    (setq recentf-max-menu-items 500)))
-
-(use-package zop-to-char
-  :bind ("M-z" . zop-to-char))
-
-(use-package restclient
-  :mode (("\\.restclient\\'" . restclient-mode))
-  :config
-  (progn
-    (use-package company-restclient)))
-
-(use-package comment-dwim-2
-  :bind ("M-;" . comment-dwim-2))
-
-(use-package iedit
-  :config
-  (progn
-    (setq iedit-toggle-key-default (kbd "")) ))
-
-(use-package emr
-  :commands emr-initialize
-  :init
-  (progn
-    (define-key prog-mode-map (kbd "M-RET") 'emr-show-refactor-menu)
-    (add-hook 'prog-mode-hook 'emr-initialize)))
-
-(use-package git-link
-  :config
-  (progn
-    (setq git-link-use-commit t)))
-
-(use-package phabricator)
-
-(use-package key-chord)
-
-(use-package nodejs-repl)
-
-;; =============================================================================
-;;                                                         Non-Programming Stuff
-;; =============================================================================
-
-(use-package calc-mode
-  :ensure nil
-  :config
-  (progn
-    (setq calc-context-sensitive-enter t)))
-
-(use-package helm-spotify
-  :commands helm-spotify)
-
-(use-package edit-server
-  :commands edit-server-start
-  :defer 1
-  :config
-  (progn
-    (edit-server-start)
-    (setq edit-server-new-frame nil)))
-
-(use-package jabber
-  :commands jabber-connect
-  :config
-  (progn
-    (setq jabber-alert-presence-hooks nil)
-    (defun jabber-message-content-message (from buffer text)
-      (when (or jabber-message-alert-same-buffer
-                (not (memq (selected-window) (get-buffer-window-list buffer))))
-        (if (jabber-muc-sender-p from)
-            (format "%s: %s" (jabber-jid-resource from) text)
-          (format "%s: %s" (jabber-jid-displayname from) text))))
-    (setq jabber-alert-message-function 'jabber-message-content-message)))
-
-(use-package htmlize)
-
-(use-package calfw
-  :config
-  (progn
-    (require 'calfw-org)))
-
-(use-package org
-  :ensure org-plus-contrib
-  :commands (org-mode org org-mobile-push org-mobile-pull org-agenda)
-  :mode ("\\.org\\'" . org-mode)
-  :bind (("C-c a" . org-agenda)
-         ("C-c c" . org-capture)
-         ("C-c n t" . org-insert-todo-heading)
-         ("C-c n s" . org-insert-todo-subheading)
-         ("C-c n h" . org-insert-habit)
-         ("C-c n m" . org-make-habit)
-         ("C-c n l" . org-store-link)
-         ("C-c n i" . org-insert-link)
-         ("C-c C-t" . org-todo)
-         ("C-c C-S-t" . org-todo-force-notes))
-  :config
-  (progn
-    (setq org-global-properties
-          '(quote (("Effort_ALL" . "0:15 0:30 0:45 1:00 2:00 3:00 4:00 5:00 6:00 0:00")
-                   ("STYLE_ALL" . "habit"))))
-    (setq org-columns-default-format "%80ITEM(Task) %10Effort(Effort){:} %10CLOCKSUM")
-    (defvar-setq helm-org-headings-fontify t)
-    (setq org-todo-repeat-to-state "TODO")
-
-    (setq org-agenda-span 10)
-    (setq org-agenda-start-day "-2d")
-
-    (org-babel-do-load-languages
-     'org-babel-load-languages
-     '((sh . t)
-       (python . t)
-       (ruby . t)
-       (octave . t)
-       (sqlite . t)))
-
-    (when nil
-      ;; Enable appointment notifications.
-      (defadvice org-agenda-to-appt (before wickedcool activate)
-        "Clear the appt-time-msg-list."
-        (setq appt-time-msg-list nil))
-      (appt-activate)
-      (defun org-agenda-to-appt-no-message ()
-        (suppress-messages (org-agenda-to-appt)))
-      (run-at-time "00:00" 60 'org-agenda-to-appt-no-message))
-
-    (defun org-archive-if (condition-function)
-      (if (funcall condition-function)
-          (let ((next-point-marker
-                 (save-excursion (org-forward-heading-same-level 1) (point-marker))))
-            (org-archive-subtree)
-            (setq org-map-continue-from (marker-position next-point-marker)))))
-
-    (defun org-archive-if-completed ()
-      (interactive)
-      (org-archive-if 'org-entry-is-done-p))
-
-    (defun org-archive-completed-in-buffer ()
-      (interactive)
-      (org-map-entries 'org-archive-if-completed))
-
-    (defun org-capture-make-todo-template (&optional content)
-      (unless content (setq content "%?"))
-      (with-temp-buffer
-        (org-mode)
-        (org-insert-heading)
-        (insert content)
-        (org-todo "TODO")
-        (org-set-property "CREATED"
-                          (with-temp-buffer
-                            (org-insert-time-stamp
-                             (org-current-effective-time) t t)))
-        (remove-hook 'post-command-hook 'org-add-log-note)
-        (org-add-log-note)
-        (buffer-substring-no-properties (point-min) (point-max))))
-
-    (defun org-todo-force-notes ()
-      (interactive)
-      (let ((org-todo-log-states
-             (mapcar (lambda (state)
-                       (list state 'note 'time))
-                     (apply 'append org-todo-sets))))
-        (cond ((eq major-mode 'org-mode)  (org-todo))
-              ((eq major-mode 'org-agenda-mode) (org-agenda-todo)))))
-
-    (defun org-make-habit ()
-      (interactive)
-      (org-set-property "STYLE" "habit"))
-
-    (defun org-insert-habit ()
-      (interactive)
-      (org-insert-todo-heading nil)
-      (org-make-habit))
-
-    (defun org-todo-at-date (date)
-      (interactive (list (org-time-string-to-time (org-read-date))))
-      (flet ((org-current-effective-time (&rest r) date)
-             (org-today (&rest r) (time-to-days date)))
-        (cond ((eq major-mode 'org-mode) (org-todo))
-              ((eq major-mode 'org-agenda-mode) (org-agenda-todo)))))
-
-    (defun org-capture-make-linked-todo-template ()
-      (org-capture-make-todo-template "%? %A"))
-
-    (defun org-cmp-creation-times (a b)
-      (let ((a-created (get-date-created-from-agenda-entry a))
-            (b-created (get-date-created-from-agenda-entry b)))
-        (imalison:compare-int-list a-created b-created)))
-
-    (defun org-agenda-done (&optional arg)
-      "Mark current TODO as done.
-This changes the line at point, all other lines in the agenda referring to
-the same tree node, and the headline of the tree node in the Org-mode file."
-      (interactive "P")
-      (org-agenda-todo "DONE"))
-    ;; Override the key definition for org-exit
-    ;; (define-key org-agenda-mode-map "x" #'org-agenda-done) ;; TODO why does this cause an error
-
-    ;; org-mode add-ons
-    (use-package org-present)
-    (use-package org-pomodoro)
-
-    ;; variable configuration
-    (add-to-list 'org-modules 'org-habit)
-    (add-to-list 'org-modules 'org-expiry)
-    (add-to-list 'org-modules 'org-notify)
-
-    (setq org-src-fontify-natively t)
-    (setq org-habit-graph-column 50)
-    (setq org-habit-show-habits-only-for-today t)
-    ;; My priority system:
-
-    ;; A - Absolutely MUST, at all costs, be completed by the provided
-    ;;     due date. TODO: implement some type of extreme nagging
-    ;;     system that alerts in an intrusive way for overdue A
-    ;;     priority tasks.
-
-    ;; B - Should be given immediate attention if the due date is any
-    ;;     time in the next two days. Failure to meet due date would
-    ;;     be bad but not catastrophic.
-
-    ;; C - The highest priority to which tasks for which failure to
-    ;;     complete on time would not have considerable significant
-    ;;     consequences. There is still significant reason to prefer
-    ;;     the completion of these tasks sooner rather than later.
-
-    ;; D - Failure to complete within a few days (or ever) of any
-    ;;     deadline would be completely okay. As such, any deadline
-    ;;     present on such a task is necessarily self imposed. Still
-    ;;     probably worth doing
-
-    ;; E - Potentially not even worth doing at all, but worth taking a
-    ;;     note about in case it comes up again, or becomes more
-    ;;     interesting later.
-
-    ;; F - Almost certainly not worth attempting in the immediate future.
-    ;;     Just brain dump.
-
-    ;; Priorities are somewhat contextual within each category. Things
-    ;; in the gtd or work categories are generally regarded as much
-    ;; more important than things with the same priority from the
-    ;; dotfiles category.
-
-    ;; Items without deadlines or scheduled times of a given priority
-    ;; can be regarded as less important than items that DO have
-    ;; deadlines of that same priority.
-
-    (setq org-lowest-priority 69) ;; The character E
-    (setq org-completion-use-ido t)
-    (setq org-enforce-todo-dependencies t)
-    (setq org-deadline-warning-days 0)
-    (setq org-default-priority ?D)
-    (setq org-agenda-skip-scheduled-if-done t)
-    (setq org-agenda-skip-deadline-if-done t)
-    ;;(add-to-list org-agenda-tag-filter-preset "+PRIORITY<\"C\"")
-
-    (use-package org-notify
-      :disabled t
-      :config
-      (progn
-        (defun imalison:org-notify-notification-handler (plist)
-          (sauron-add-event 'org-notify 4 (format "%s, %s.\n" (plist-get plist :heading)
-                                                  (org-notify-body-text plist))))
-
-        (setq org-show-notification-handler 'imalison:org-notify-notification-handler)
-
-        (org-notify-add 'default '(:time "1h" :actions imalison:org-notify-notification-handler
-                                         :period "2m" :duration 60))
-        (org-notify-add 'default '(:time "100m" :actions imalison:org-notify-notification-handler
-                                         :period "2m" :duration 60))
-        (org-notify-add 'urgent-second '(:time "3m" :actions (-notify/window -ding)
-                                               :period "15s" :duration 10))
-        (org-notify-add 'minute '(:time "5m" :actions -notify/window
-                                        :period "100s" :duration 70))
-        (org-notify-add '12hours
-                        '(:time "3m" :actions (-notify/window -ding)
-                                :period "15s" :duration 10)
-                        '(:time "100m" :actions -notify/window
-                                :period "2m" :duration 60)
-                        '(:time "12h" :actions -notify/window :audible nil
-                                :period "10m" :duration 200))
-        (org-notify-add '5days
-                        '(:time "100m" :actions -notify/window
-                                :period "2m" :duration 60)
-                        '(:time "2d" :actions -notify/window
-                                :period "15m" :duration 100)
-                        '(:time "5d" :actions -notify/window
-                                :period "2h" :duration 200))
-        (org-notify-add 'long-20days
-                        '(:time "2d" :actions -notify/window
-                                :period "15m" :duration 60)
-                        '(:time "5d" :actions -notify/window
-                                :period "2h" :duration 60)
-                        '(:time "20d" :actions -email :period "2d" :audible nil))
-        (org-notify-add 'long-50days
-                        '(:time "4d" :actions -notify/window
-                                :period "30m" :duration 100)
-                        '(:time "10d" :actions -notify/window
-                                :period "4h" :duration 200)
-                        '(:time "50d" :actions -email :period "3d" :audible nil))
-        (org-notify-add 'long-100days
-                        '(:time "2d" :actions -notify/window
-                                :period "1h" :duration 200)
-                        '(:time "10d" :actions -notify/window
-                                :period "10h" :duration 300)
-                        '(:time "50d" :actions -email :period "3d" :audible nil)
-                        '(:time "100d" :actions -email :period "5d" :audible nil))
-        (org-notify-start 10)))
-
-    (use-package org-bullets
-      :config
-      (progn
-        (add-hook 'org-mode-hook (lambda () (org-bullets-mode 1)))))
-
-    (use-package org-ehtml
-      :disabled t
-      :config
-      (progn
-        (setq org-ehtml-docroot (expand-file-name "~/Dropbox/org"))
-        (setq org-ehtml-allow-agenda t)
-        (setq org-ehtml-editable-headlines t)
-        (setq org-ehtml-everything-editable t)))
-
-    ;; Agenda setup.
-    (defvar-if-non-existent imalison:org-gtd-file "~/org/gtd.org")
-    (defvar-if-non-existent imalison:org-habits-file "~/org/habits.org")
-    (defvar-if-non-existent imalison:org-calendar-file "~/org/calendar.org")
-
-    (unless (boundp 'org-capture-templates)
-      (defvar org-capture-templates nil))
-
-    (defun imalison:add-to-org-agenda-files (incoming-files)
-      (setq org-agenda-files (delete-dups
-       (cl-loop for filepath in (append org-agenda-files incoming-files)
-                when (and filepath (file-exists-p (file-truename filepath)))
-                collect (file-truename filepath)))))
-
-    (imalison:add-to-org-agenda-files
-     (list imalison:org-gtd-file imalison:org-habits-file
-           imalison:org-calendar-file))
-
-    (add-to-list 'org-capture-templates
-                 `("t" "GTD Todo (Linked)" entry (file ,imalison:org-gtd-file)
-                   (function org-capture-make-linked-todo-template)))
-
-    (add-to-list 'org-capture-templates
-                 `("g" "GTD Todo" entry (file ,imalison:org-gtd-file)
-                   (function org-capture-make-todo-template)))
-
-    (add-to-list 'org-capture-templates
-                 `("y" "Calendar entry (Linked)" entry
-                   (file ,imalison:org-calendar-file)
-                   "* %? %A
-  :PROPERTIES:
-  :CREATED: %U
-  :END:
-%^T"))
-
-    (add-to-list 'org-capture-templates
-                 `("c" "Calendar entry" entry
-                   (file ,imalison:org-calendar-file)
-                   "* %?
-  :PROPERTIES:
-  :CREATED: %U
-  :END:
-%^T"))
-
-    (add-to-list 'org-capture-templates
-                 `("h" "Habit" entry (file ,imalison:org-habits-file)
-                   "* TODO
-  SCHEDULED: %^t
-  :PROPERTIES:
-  :CREATED: %U
-  :STYLE: habit
-  :END:"))
-
-    (let ((this-week-high-priority
-           ;; The < in the following line works has behavior that is opposite
-           ;; to what one might expect.
-           '(tags-todo "+PRIORITY<\"C\"+DEADLINE<\"<+1w>\"DEADLINE>\"<+0d>\""
-                       ((org-agenda-overriding-header
-                         "Upcoming high priority tasks:"))))
-          (due-today '(tags-todo
-                           "+DEADLINE=<\"<+0d>\""
-                           ((org-agenda-overriding-header
-                             "Due today:"))))
-          (recently-created '(tags-todo
-                           "+CREATED=>\"<-3d>\""
-                           ((org-agenda-overriding-header "Recently created:")
-                            (org-agenda-cmp-user-defined 'org-cmp-creation-times)
-                            (org-agenda-sorting-strategy '(user-defined-down)))))
-          (next '(todo "NEXT"))
-          (started '(todo "STARTED"))
-          (missing-deadline
-           '(tags-todo "-DEADLINE={.}/!"
-                       ((org-agenda-overriding-header
-                         "These don't have deadlines:"))))
-          (missing-priority
-           '(tags-todo "-PRIORITY={.}/!"
-                       ((org-agenda-overriding-header
-                         "These don't have priorities:")))))
-
-      (setq org-agenda-custom-commands
-            `(("M" "Main agenda view"
-               ((agenda ""
-                        ((org-agenda-overriding-header "Agenda:")
-                         (org-agenda-ndays 5)
-                         (org-deadline-warning-days 0)))
-                ,due-today
-                ,next
-                ,started
-                ,this-week-high-priority
-                ,recently-created)
-               nil nil)
-              ,(cons "A" (cons "High priority upcoming" this-week-high-priority))
-              ,(cons "d" (cons "Overdue tasks and due today" due-today))
-              ,(cons "r" (cons "Recently created" recently-created))
-              ("h" "A, B priority:" tags-todo "+PRIORITY<\"C\""
-                       ((org-agenda-overriding-header
-                         "High Priority:")))
-              ("c" "At least priority C:" tags-todo "+PRIORITY<\"D\""
-                       ((org-agenda-overriding-header
-                         "At least priority C:"))))))
-
-    ;; What follows is a description of the significance of each of
-    ;; the values available in `org-todo-keywords'. All headings with
-    ;; one of these keywords deal with the concept of the completion
-    ;; of some task or collection of tasks to bring about a particular
-    ;; state of affairs. In some cases, the actual tasks involved may
-    ;; not be known at the time of task creation.
-
-    ;; Incomplete States:
-
-    ;; IDEA - This TODO exists in only the most abstract sense: it is
-    ;; an imagined state of affairs that requires tasks that are
-    ;; either not yet known, or have not thoroughly been considered.
-
-    ;; RESEARCH - This TODO needs to be investigated further before
-    ;; action can be taken to achieve the desired outcome. It is not
-    ;; known how much time and effort will be consumed in the actual
-    ;; completion of the task.
-
-    ;; TODO - The scope and work involved in this TODO are well
-    ;; understood, but for some reason or another, it is not something
-    ;; that should be attempted in the immediate future. Typically
-    ;; this is because the task is not considered a top priority, but
-    ;; it may also be for some other reason.
-
-    ;; NEXT - This TODO is immediately actionable and should be
-    ;; started in the immediate future.
-
-    ;; STARTED - Work on this TODO has already started, further work
-    ;; is immediately actionable.
-
-    ;; WAIT - The work involved in this TODO is well understood, but
-    ;; it is blocked for the time being.
-
-    ;; BACKLOG - While technically actionable, this task is not only
-    ;; not worth pursuing in the immediate future, but the foreseable
-    ;; future. It exists as a task mostly as a note/reminder, in case
-    ;; it becomes higher priority in the future.
-
-    ;; Complete States:
-
-    ;; DONE - This TODO has been completed exactly as imagined.
-
-    ;; HANDLED - This TODO was completed in spirit, though not by the
-    ;; means that were originally imagined/outlined in the TODO.
-
-    ;; EXPIRED - The owner of this TODO failed to take action on it
-    ;; within the appropriate time period, and there is now no point in
-    ;; attempting it.
-
-    ;; CANCELED - For whatever reason, this TODO should no longer be
-    ;; attempted. This TODO is typically used in contrast to the
-    ;; EXPIRED TODO to indicate that the owner is not necessarily to
-    ;; blame.
-
-    (setq org-todo-keywords
-          '((sequence "IDEA(i!)" "RESEARCH(r!)" "TODO(t!)" "NEXT(n!)" "STARTED(s!)" "WAIT(w!)" "BACKLOG(b!)" "|"
-                      "DONE(d!)" "HANDLED(h!)" "EXPIRED(e!)" "CANCELED(c!)")
-            (sequence "BASKET(!)" "CLEAN(!)" "DRY(!)" "|" "FOLDED(!)")))
-
-    ;; Record changes to todo states
-    (setq org-log-into-drawer t)
-    ;; Stop starting agenda from deleting frame setup!
-    (setq org-agenda-window-setup 'other-window)
-    (define-key mode-specific-map [?a] 'org-agenda)
-    (unbind-key "C-j" org-mode-map))
-  :init
-  (progn
-    (setq org-directory "~/Dropbox/org")
-    (setq org-mobile-inbox-for-pull "~/Dropbox/org/flagged.org")
-    (setq org-mobile-directory "~/Dropbox/Apps/MobileOrg")
-    (add-hook 'org-mode-hook 'imalison:disable-linum-mode)
-    (add-hook 'org-mode-hook 'imalison:disable-smartparens-mode)
-    (add-hook 'org-mode-hook (lambda () (setq org-todo-key-trigger t)))
-    (add-hook 'org-agenda-mode-hook 'imalison:disable-linum-mode)))
-
-(use-package clocker)
-
-(use-package deft
-  :config
-  (progn
-    (setq deft-default-extension "org")
-    (setq deft-extensions '("org"))
-    (setq deft-use-filter-string-for-filename t)
-    (setq deft-file-naming-rules '((noslash . "_")
-                                   (nospace . "_")
-                                   (case-fn . downcase)))
-    (setq deft-directory "~/SparkleShare/org/notes")))
-
-(use-package epg
-  :config
-  (epa-file-enable))
-
-(use-package twittering-mode
-  :commands twittering-mode)
-
-(use-package matrix-client
-  :disabled t ;; fails to load eieio on startup
-  )
-
-(use-package erc
-  :commands erc
-  :config
-  (progn
-    ;; (add-to-list 'erc-modules 'notifications)
-    ;; logging:
-    (require 'erc-log)
-    (setq erc-log-channels-directory "~/Dropbox (Personal)/irclogs")
-    (erc-log-enable)
-    (use-package erc-colorize) (erc-colorize-mode 1)))
-
-(use-package bitlbee
-  :config
-  (progn
-    (defvar bitlbee-password "geheim")
-    (add-hook 'erc-join-hook 'bitlbee-identify)
-    (defun bitlbee-identify ()
-      "If we're on the bitlbee server, send the identify command to the
- &bitlbee channel."
-      (when (and (string= "localhost" erc-session-server)
-                 (string= "&bitlbee" (buffer-name)))
-        (erc-message "PRIVMSG" (format "%s identify %s"
-                                       (erc-default-target)
-                                       bitlbee-password))))))
-
-(use-package s)
-(add-to-list 'load-path (s-trim (shell-command-to-string "mu4e_directory")))
-
-(use-package mu4e
-  :ensure nil
-  :commands (mu4e mu4e-view-message-with-msgid mu4e-update-index email)
-  :bind ("C-c 0" . email)
-  :config
-  (progn
-    (defun email (&optional arg)
-      (interactive "P")
-      (if (string-equal (persp-name persp-curr) "email")
-          (progn (delete-other-windows) (mu4e))
+  ;; =============================================================================
+  ;;                                                                 byte-compiler
+  ;; =============================================================================
+
+  ;; These silence the byte compiler.
+  (defvar ido-cur-item nil)
+  (defvar ido-default-item nil)
+  (defvar ido-context-switch-command nil)
+  (defvar ido-cur-list nil)
+  (defvar inherit-input-method nil)
+  (defvar grep-find-ignored-files nil)
+  (defvar grep-find-ignored-directories nil)
+  (defvar tls-checktrust nil)
+  (defvar tls-program nil)
+
+  ;; =============================================================================
+  ;;                                                                      Security
+  ;; =============================================================================
+
+  (defvar imalison:secure nil)
+
+  (defun imalison:use-https-and-tls ()
+    (setq tls-checktrust t)
+    (let ((trustfile
+           (replace-regexp-in-string
+            "\\\\" "/"
+            (replace-regexp-in-string
+             "\n" ""
+             (shell-command-to-string "python -m certifi")))))
+      (setq tls-program
+            (list
+             (format "gnutls-cli%s --x509cafile %s -p %%p %%h"
+                     (if (eq window-system 'w32) ".exe" "") trustfile)))))
+
+  (defun imalison:test-security ()
+    (interactive)
+    (let ((bad-hosts
+         (loop for bad
+               in `("https://wrong.host.badssl.com/"
+                    "https://self-signed.badssl.com/")
+               if (condition-case _e
+                      (url-retrieve
+                       bad (lambda (_retrieved) t))
+                    (error nil))
+               collect bad)))
+    (if bad-hosts
+        (error (format "tls misconfigured; retrieved %s ok"
+                       bad-hosts))
+      (url-retrieve "https://badssl.com"
+                    (lambda (_retrieved) t)))))
+
+  (when imalison:secure (imalison:use-https-and-tls))
+
+  ;; =============================================================================
+  ;;                                                         ELPA/package.el/MELPA
+  ;; =============================================================================
+
+  (require 'package)
+  (defvar imalison:elpa-protocol (if imalison:secure "https" "http"))
+  ;; (add-to-list 'package-archives
+  ;;              '("marmalade" . "http://marmalade-repo.org/packages/") t)
+  (add-to-list 'package-archives `("elpa" . ,(concat imalison:elpa-protocol
+                                                    "://tromey.com/elpa/")) t)
+  (add-to-list 'package-archives `("org" . ,(concat imalison:elpa-protocol
+                                                   "://orgmode.org/elpa/")) t)
+  (add-to-list 'package-archives `("melpa" . ,(concat imalison:elpa-protocol
+                                                     "://melpa.org/packages/")) t)
+
+  (defun ensure-packages-installed (packages)
+    (unless package-archive-contents
+      (package-refresh-contents))
+    (mapcar
+     (lambda (package)
+       (if (package-installed-p package)
+           package
+         (progn (message (format "Installing package %s." package))
+                (package-install package))))
+     packages))
+
+  (package-initialize)
+  (ensure-packages-installed '(epl use-package))
+
+  ;; use-package is only needed at compile time.
+  (eval-when-compile (require 'use-package))
+  (setq use-package-always-ensure t)
+
+  (use-package diminish)
+  (use-package bind-key)
+  (use-package bug-hunter)
+
+  (use-package benchmark-init
+    ;; this variable has to be set in custom-before.el
+    :if (and (boundp 'do-benchmark) do-benchmark))
+
+  ;; =============================================================================
+  ;;                                                          Config Free Packages
+  ;; =============================================================================
+
+  (defvar packages-eager
+    '(popup cl-lib xclip dired+ ctags ctags-update aggressive-indent imenu+
+      neotree diminish gist))
+
+  (ensure-packages-installed packages-eager)
+
+  ;; =============================================================================
+  ;;                                                                      Disables
+  ;; =============================================================================
+
+  (setq visible-bell nil)
+  (setq sentence-end-double-space nil)
+
+  ;; Disable the creation of backup files.
+  (setq backup-inhibited t)
+  (setq make-backup-files nil)
+  (setq auto-save-default nil)
+
+  (defconst emacs-tmp-dir
+    (format "%s/%s%s/" temporary-file-directory "emacs" (user-uid)))
+  (setq backup-directory-alist `((".*" . ,emacs-tmp-dir)))
+  (setq auto-save-file-name-transforms `((".*" ,emacs-tmp-dir t)))
+  (setq auto-save-list-file-prefix emacs-tmp-dir)
+
+
+  (put 'set-goal-column 'disabled nil)
+  (auto-fill-mode -1)
+  (setq indent-tabs-mode nil)
+
+  ;; No hsplits. EVER.
+  (defun split-horizontally-for-temp-buffers () (split-window-horizontally))
+  (add-hook 'temp-buffer-setup-hook 'split-horizontally-for-temp-buffers)
+  (setq split-height-threshold nil)
+  (setq split-width-threshold 160)
+
+  ;; No popup frames.
+  (setq ns-pop-up-frames nil)
+  (setq pop-up-frames nil)
+  (setq confirm-nonexistent-file-or-buffer nil)
+
+  ;; No prompt for killing a buffer with processes attached.
+  (setq kill-buffer-query-functions
+    (remq 'process-kill-buffer-query-function
+          kill-buffer-query-functions))
+
+  (setq inhibit-startup-message t
+        inhibit-startup-echo-area-message t)
+
+  (if (fboundp 'tooltip-mode) (tooltip-mode -1) (setq tooltip-use-echo-area t))
+
+  (setq use-dialog-box nil)
+
+  (defadvice yes-or-no-p (around prevent-dialog activate)
+    "Prevent yes-or-no-p from activating a dialog"
+    (let ((use-dialog-box nil))
+      ad-do-it))
+
+  (defadvice y-or-n-p (around prevent-dialog-yorn activate)
+    "Prevent y-or-n-p from activating a dialog"
+    (let ((use-dialog-box nil))
+      ad-do-it))
+
+  ;; =============================================================================
+  ;;                                                                     functions
+  ;; =============================================================================
+
+
+  ;; =============================================================================
+  ;;                                                         General Emacs Options
+  ;; =============================================================================
+
+  (global-auto-revert-mode)
+  (diminish 'auto-revert-mode)
+  (diminish 'smartparens-mode)
+  (diminish 'eldoc-mode)
+  (diminish 'tern-mode)
+  (diminish 'js2-refactor-mode)
+
+  ;; This makes it so that emacs --daemon puts its files in ~/.emacs.d/server
+  ;; (setq server-use-tcp t)
+
+  ;; Display line and column numbers in mode line.
+  (line-number-mode t)
+  (column-number-mode t)
+  (global-linum-mode t)
+  (setq visible-bell t)
+  (show-paren-mode 1)
+
+  ;; Make buffer names unique.
+  (setq uniquify-buffer-name-style 'forward)
+
+  ;; We want closures
+  (setq lexical-binding t)
+
+  (setq fill-column 80)
+
+  ;; Don't disable commands...
+  (setq disabled-command-function nil)
+
+  ;; Make forward word understand camel and snake case.
+  (setq c-subword-mode t)
+  (global-subword-mode)
+
+  ;; Preserve pastes from OS when saving a new item to the kill
+  ;; ring. Why wouldn't this be enabled by default?
+  (setq save-interprogram-paste-before-kill t)
+
+  (setq-default cursor-type 'box)
+  (setq-default cursor-in-non-selected-windows 'bar)
+
+  (if nil ;; Causing too many annoying issues
+      (add-hook 'after-init-hook '(lambda () (setq debug-on-error t))))
+
+  ;; Make mouse scrolling less jumpy.
+  (setq mouse-wheel-scroll-amount '(1 ((shift) . 1)))
+
+  (eval-after-load 'subword '(diminish 'subword-mode))
+  (eval-after-load 'simple '(diminish 'visual-line-mode))
+
+  (setq display-time-default-load-average nil)
+  (setq display-time-interval 1)
+  (setq display-time-format "%a, %b %d, %T ")
+  (display-time-mode 1)
+
+  (setq reb-re-syntax 'string) ;; the only sane option...
+
+  (setq ediff-split-window-function 'split-window-horizontally)
+  (setq ediff-window-setup-function 'ediff-setup-windows-plain)
+
+  ;; Disable this per major mode or maybe using file size if it causes
+  ;; performance issues?
+  (setq imenu-auto-rescan t)
+  (setq imenu-max-item-length 300)
+
+  (put 'narrow-to-region 'disabled nil)
+  (put 'narrow-to-page 'disabled nil)
+
+  (setq echo-keystrokes 0.25)
+
+  (setq initial-scratch-message "")
+
+  (setq utf-translate-cjk-mode nil) ; disable CJK coding/encoding
+                                    ; (Chinese/Japanese/Korean
+                                    ; characters)
+  (set-language-environment 'utf-8)
+  (set-keyboard-coding-system 'utf-8-mac) ; For old Carbon emacs on OS X only
+  (setq locale-coding-system 'utf-8)
+  (set-default-coding-systems 'utf-8)
+  (set-terminal-coding-system 'utf-8)
+  (unless (eq system-type 'windows-nt)
+    (set-selection-coding-system 'utf-8))
+  (prefer-coding-system 'utf-8)
+
+  (setq checkdoc-force-docstrings-flag nil
+        checkdoc-arguments-in-order-flag nil)
+
+  ;; text mode stuff:
+  (remove-hook 'text-mode-hook #'turn-on-auto-fill)
+  (add-hook 'text-mode-hook 'turn-on-visual-line-mode)
+  (setq sentence-end-double-space nil)
+
+  ;; y and n instead of yes and no
+  (defalias 'yes-or-no-p 'y-or-n-p)
+
+  ;; =============================================================================
+  ;;                                                                   use-package
+  ;; =============================================================================
+
+  (use-package server
+    :config
+    (progn
+      (unless (server-running-p) (server-start))))
+
+  (use-package list-environment)
+
+  (use-package paradox
+    :config
+    (progn
+      (setq paradox-execute-asynchronously t)))
+
+  (use-package smartparens
+    :demand t
+    :bind (:map smartparens-mode-map
+                ("C-)" . sp-forward-slurp-sexp)
+                ("C-}" . sp-forward-barf-sexp)
+                ("C-(" . sp-backward-slurp-sexp)
+                ("C-{" . sp-backward-barf-sexp))
+    :config
+    (progn
+      (require 'smartparens-config)
+      (smartparens-global-mode 1)
+      (sp-use-smartparens-bindings)
+      (unbind-key "C-<backspace>" smartparens-mode-map)
+      (unbind-key "M-<backspace>" smartparens-mode-map)))
+
+  (use-package term-manager
+    :ensure nil
+    :load-path "~/Projects/term-manager"
+    :preface
+    (progn
+      (defun imalison:set-escape-char (&rest _args)
+        (let (term-escape-char)
+         (term-set-escape-char ?\C-x))))
+    :config
+    (progn
+      (advice-add
+       'term-manager-default-build-term :after 'imalison:set-escape-char)))
+
+  (use-package term-projectile
+    :ensure nil
+    :load-path "~/Projects/term-manager"
+    :config
+    (progn
+      (imalison:prefix-alternatives imalison:term term-projectile-forward
+                                    term-projectile-create-new)
+      (defhydra imalison:term-hydra (global-map  "C-c 7")
+        "term"
+        ("n" term-projectile-forward)
+        ("p" term-projectile-backward)
+        ("c" term-projectile-create-new))))
+
+  (use-package term
+    :config
+    (progn
+      (add-hook 'term-mode-hook 'imalison:disable-linum-mode)))
+
+  (use-package exec-path-from-shell
+    :config
+    (progn
+      (add-to-list 'exec-path-from-shell-variables "GOPATH")
+      (exec-path-from-shell-initialize)))
+
+  (use-package yasnippet
+    :defer 5
+    :commands (yas-global-mode)
+    :config
+    (progn
+      (yas-global-mode)
+      (diminish 'yas-minor-mode)
+      (add-hook 'term-mode-hook (lambda() (yas-minor-mode -1)))
+      (setq yas-prompt-functions
+            (cons 'yas-ido-prompt
+                  (cl-delete 'yas-ido-prompt yas-prompt-functions)))))
+
+  (use-package tramp
+    :commands tramp
+    :config
+    (setq tramp-default-method "scp"))
+
+  (use-package shackle
+    :disabled t
+    :config
+    (progn
+      (diminish 'shackle-mode)
+      (when nil                           ; disabled for now
+        (shackle-mode))
+      (setq shackle-inhibit-window-quit-on-same-windows t)
+      (setq shackle-default-rule '(:same t))))
+
+  (use-package beacon
+    :bind ("C-c b" . beacon-blink)
+    :config
+    (beacon-mode 1))
+
+  (use-package crux)
+
+  (use-package discover-my-major)
+
+  (use-package which-key
+    :config
+    (progn
+      (setq which-key-idle-delay .50)
+      (diminish 'which-key-mode)
+      (which-key-mode)))
+
+  (use-package jump-char
+    :bind (("C-;" . jump-char-forward)))
+
+  (use-package avy
+    :preface
+    (progn
+      (imalison:prefix-alternatives imalison:avy avy-goto-word-1 avy-goto-char))
+    :bind (("C-j" . imalison:avy)
+           ("M-g l" . avy-goto-line)
+           ("C-'" . avy-goto-char-2)))
+
+  (use-package ace-window
+    :preface
+    (imalison:prefix-alternatives imalison:ace-window ace-select-window ace-swap-window)
+    :config (setq aw-keys '(?a ?s ?d ?f ?g ?h ?j ?k ?l))
+    :bind ("C-c w" . imalison:ace-window))
+
+  (use-package flycheck
+    :config
+    (progn
+      (global-flycheck-mode)
+      (use-package flycheck-package
+        :config (flycheck-package-setup)))
+    :diminish flycheck-mode)
+
+
+  (use-package haskell-mode
+    :commands haskell-mode
+    :config
+    (progn
+      (add-hook 'haskell-mode-hook 'turn-on-haskell-indent)))
+
+  (use-package narrow-indirect
+    :init
+    (progn
+      (define-key ctl-x-4-map "nd" 'ni-narrow-to-defun-indirect-other-window)
+      (define-key ctl-x-4-map "nn" 'ni-narrow-to-region-indirect-other-window)
+      (define-key ctl-x-4-map "np" 'ni-narrow-to-page-indirect-other-window)))
+
+  (use-package editorconfig
+    :commands edconf-find-file-hook
+    :demand t)
+
+  (use-package dtrt-indent
+    :init (add-hook 'prog-mode-hook 'dtrt-indent-mode))
+
+  (use-package indent-guide
+    :disabled t
+    :config
+    (progn
+      (indent-guide-global-mode -1)
+      (setq indent-guide-delay 0.1)))
+
+  (use-package rainbow-delimiters
+    :commands rainbow-delimiters-mode
+    :init
+    (progn
+      (add-hook 'prog-mode-hook (lambda () (rainbow-delimiters-mode t)))))
+
+  (use-package git-gutter
+    :config
+    (progn
+      (global-git-gutter-mode -1)))
+
+  (use-package gitolite-clone
+    :demand t
+    :preface
+    (progn
+      (defun gitolite-clone-force-refresh ()
+        (interactive)
+        (gitolite-clone-get-projects nil nil t))))
+
+  (use-package github-clone
+    :demand t)
+
+  (use-package github-notifier
+    :disabled t
+    :config (github-notifier-mode))
+
+  (use-package company
+    :commands company-mode imalison:company
+    :bind (("C-\\" . imalison:company))
+    :config
+    (progn
+      (imalison:prefix-alternatives
+       imalison:company company-complete company-yasnippet)
+      (setq company-idle-delay .25)
+      (global-company-mode)
+      (diminish 'company-mode))
+    :init
+    (add-hook 'prog-mode-hook (lambda () (company-mode t))))
+
+  (use-package expand-region
+    :commands er/expand-region
+    :config (setq expand-region-contract-fast-key "j")
+    :bind (("C-c k" . er/expand-region)))
+
+  (use-package multiple-cursors
+    :config
+    (progn
+      (use-package phi-search-mc
+        :config
+        (phi-search-mc/setup-keys))
+      (use-package mc-extras
+        :config
+        (define-key mc/keymap (kbd "C-. =") 'mc/compare-chars)))
+    :bind
+    (("C-c m a" . mc/mark-all-like-this)
+     ("C-c m m" . mc/mark-all-like-this-dwim)
+     ("C-c m l" . mc/edit-lines)
+     ("C-c m n" . mc/mark-next-like-this)
+     ("C-c m p" . mc/mark-previous-like-this)
+     ("C-c m s" . mc/mark-sgml-tag-pair)
+     ("C-c m d" . mc/mark-all-like-this-in-defun)))
+
+  (use-package undo-tree
+    :disabled t ;; this has been getting pretty annoying
+    :bind (("C--" . undo-redo)
+           ("C-c u" . undo-tree-visualize)
+           ("C-c r" . undo-tree-redo))
+    :config
+    (diminish 'undo-tree-mode)
+    :init
+    (progn
+      ;;(setq undo-tree-visualizer-diff t) ;; This causes performance problems
+      (global-undo-tree-mode)
+      (setq undo-tree-visualizer-timestamps t)))
+
+  (use-package string-inflection
+    :commands string-inflection-toggle
+    :bind ("C-c l" . string-inflection-toggle))
+
+  (use-package load-dir
+    :config
+    (progn
+      (add-to-list 'load-dirs "~/.emacs.d/load.d")
+      (defvar site-lisp "/usr/share/emacs24/site-lisp/")
+      (when (file-exists-p site-lisp) (add-to-list 'load-dirs site-lisp))))
+
+  (use-package multi-line
+    :load-path "~/Projects/multi-line"
+    :preface
+    (progn
+      (defun imalison:multi-line-fill-column ()
+        (interactive)
+        (multi-line-execute multi-line-fill-column-strategy nil))
+
+      (defun imalison:multi-line-skip-fill ()
+        (interactive)
+        (multi-line-execute multi-line-skip-fill-stragety nil))
+
+      (defun imalison:multi-line-fill ()
+        (interactive)
+        (multi-line-execute multi-line-fill-stragety nil))
+
+      (imalison:prefix-alternatives imalison:multi-line multi-line
+                                    multi-line-single-line
+                                    imalison:multi-line-skip-fill
+                                    imalison:multi-line-fill
+                                    imalison:multi-line-fill-column))
+      :bind ("C-c d" . imalison:multi-line))
+
+  (use-package recentf
+    ;; binding is in helm.
+    :config
+    (progn
+      (recentf-mode 1)
+      (setq recentf-max-menu-items 500)))
+
+  (use-package zop-to-char
+    :bind ("M-z" . zop-to-char))
+
+  (use-package restclient
+    :mode (("\\.restclient\\'" . restclient-mode))
+    :config
+    (progn
+      (use-package company-restclient)))
+
+  (use-package comment-dwim-2
+    :bind ("M-;" . comment-dwim-2))
+
+  (use-package iedit
+    :config
+    (progn
+      (setq iedit-toggle-key-default (kbd "")) ))
+
+  (use-package emr
+    :commands emr-initialize
+    :init
+    (progn
+      (define-key prog-mode-map (kbd "M-RET") 'emr-show-refactor-menu)
+      (add-hook 'prog-mode-hook 'emr-initialize)))
+
+  (use-package git-link
+    :config
+    (progn
+      (setq git-link-use-commit t)))
+
+  (use-package phabricator)
+
+  (use-package key-chord)
+
+  (use-package nodejs-repl)
+
+  ;; =============================================================================
+  ;;                                                         Non-Programming Stuff
+  ;; =============================================================================
+
+  (use-package calc-mode
+    :ensure nil
+    :config
+    (progn
+      (setq calc-context-sensitive-enter t)))
+
+  (use-package helm-spotify
+    :commands helm-spotify)
+
+  (use-package edit-server
+    :commands edit-server-start
+    :defer 1
+    :config
+    (progn
+      (edit-server-start)
+      (setq edit-server-new-frame nil)))
+
+  (use-package jabber
+    :commands jabber-connect
+    :config
+    (progn
+      (setq jabber-alert-presence-hooks nil)
+      (defun jabber-message-content-message (from buffer text)
+        (when (or jabber-message-alert-same-buffer
+                  (not (memq (selected-window) (get-buffer-window-list buffer))))
+          (if (jabber-muc-sender-p from)
+              (format "%s: %s" (jabber-jid-resource from) text)
+            (format "%s: %s" (jabber-jid-displayname from) text))))
+      (setq jabber-alert-message-function 'jabber-message-content-message)))
+
+  (use-package htmlize)
+
+  (use-package calfw
+    :config
+    (progn
+      (require 'calfw-org)))
+
+  (use-package org
+    :ensure org-plus-contrib
+    :commands (org-mode org org-mobile-push org-mobile-pull org-agenda)
+    :mode ("\\.org\\'" . org-mode)
+    :bind (("C-c a" . org-agenda)
+           ("C-c c" . org-capture)
+           ("C-c n t" . org-insert-todo-heading)
+           ("C-c n s" . org-insert-todo-subheading)
+           ("C-c n h" . org-insert-habit)
+           ("C-c n m" . org-make-habit)
+           ("C-c n l" . org-store-link)
+           ("C-c n i" . org-insert-link)
+           ("C-c C-t" . org-todo)
+           ("C-c C-S-t" . org-todo-force-notes))
+    :config
+    (progn
+      (setq org-global-properties
+            '(quote (("Effort_ALL" . "0:15 0:30 0:45 1:00 2:00 3:00 4:00 5:00 6:00 0:00")
+                     ("STYLE_ALL" . "habit"))))
+      (setq org-columns-default-format "%80ITEM(Task) %10Effort(Effort){:} %10CLOCKSUM")
+      (defvar-setq helm-org-headings-fontify t)
+      (setq org-todo-repeat-to-state "TODO")
+
+      (setq org-agenda-span 10)
+      (setq org-agenda-start-day "-2d")
+
+      (org-babel-do-load-languages
+       'org-babel-load-languages
+       '((sh . t)
+         (python . t)
+         (ruby . t)
+         (octave . t)
+         (sqlite . t)))
+
+      (when nil
+        ;; Enable appointment notifications.
+        (defadvice org-agenda-to-appt (before wickedcool activate)
+          "Clear the appt-time-msg-list."
+          (setq appt-time-msg-list nil))
+        (appt-activate)
+        (defun org-agenda-to-appt-no-message ()
+          (suppress-messages (org-agenda-to-appt)))
+        (run-at-time "00:00" 60 'org-agenda-to-appt-no-message))
+
+      (defun org-archive-if (condition-function)
+        (if (funcall condition-function)
+            (let ((next-point-marker
+                   (save-excursion (org-forward-heading-same-level 1) (point-marker))))
+              (org-archive-subtree)
+              (setq org-map-continue-from (marker-position next-point-marker)))))
+
+      (defun org-archive-if-completed ()
+        (interactive)
+        (org-archive-if 'org-entry-is-done-p))
+
+      (defun org-archive-completed-in-buffer ()
+        (interactive)
+        (org-map-entries 'org-archive-if-completed))
+
+      (defun org-capture-make-todo-template (&optional content)
+        (unless content (setq content "%?"))
+        (with-temp-buffer
+          (org-mode)
+          (org-insert-heading)
+          (insert content)
+          (org-todo "TODO")
+          (org-set-property "CREATED"
+                            (with-temp-buffer
+                              (org-insert-time-stamp
+                               (org-current-effective-time) t t)))
+          (remove-hook 'post-command-hook 'org-add-log-note)
+          (org-add-log-note)
+          (buffer-substring-no-properties (point-min) (point-max))))
+
+      (defun org-todo-force-notes ()
+        (interactive)
+        (let ((org-todo-log-states
+               (mapcar (lambda (state)
+                         (list state 'note 'time))
+                       (apply 'append org-todo-sets))))
+          (cond ((eq major-mode 'org-mode)  (org-todo))
+                ((eq major-mode 'org-agenda-mode) (org-agenda-todo)))))
+
+      (defun org-make-habit ()
+        (interactive)
+        (org-set-property "STYLE" "habit"))
+
+      (defun org-insert-habit ()
+        (interactive)
+        (org-insert-todo-heading nil)
+        (org-make-habit))
+
+      (defun org-todo-at-date (date)
+        (interactive (list (org-time-string-to-time (org-read-date))))
+        (flet ((org-current-effective-time (&rest r) date)
+               (org-today (&rest r) (time-to-days date)))
+          (cond ((eq major-mode 'org-mode) (org-todo))
+                ((eq major-mode 'org-agenda-mode) (org-agenda-todo)))))
+
+      (defun org-capture-make-linked-todo-template ()
+        (org-capture-make-todo-template "%? %A"))
+
+      (defun org-cmp-creation-times (a b)
+        (let ((a-created (get-date-created-from-agenda-entry a))
+              (b-created (get-date-created-from-agenda-entry b)))
+          (imalison:compare-int-list a-created b-created)))
+
+      (defun org-agenda-done (&optional arg)
+        "Mark current TODO as done.
+  This changes the line at point, all other lines in the agenda referring to
+  the same tree node, and the headline of the tree node in the Org-mode file."
+        (interactive "P")
+        (org-agenda-todo "DONE"))
+      ;; Override the key definition for org-exit
+      ;; (define-key org-agenda-mode-map "x" #'org-agenda-done) ;; TODO why does this cause an error
+
+      ;; org-mode add-ons
+      (use-package org-present)
+      (use-package org-pomodoro)
+
+      ;; variable configuration
+      (add-to-list 'org-modules 'org-habit)
+      (add-to-list 'org-modules 'org-expiry)
+      (add-to-list 'org-modules 'org-notify)
+
+      (setq org-src-fontify-natively t)
+      (setq org-habit-graph-column 50)
+      (setq org-habit-show-habits-only-for-today t)
+      ;; My priority system:
+
+      ;; A - Absolutely MUST, at all costs, be completed by the provided
+      ;;     due date. TODO: implement some type of extreme nagging
+      ;;     system that alerts in an intrusive way for overdue A
+      ;;     priority tasks.
+
+      ;; B - Should be given immediate attention if the due date is any
+      ;;     time in the next two days. Failure to meet due date would
+      ;;     be bad but not catastrophic.
+
+      ;; C - The highest priority to which tasks for which failure to
+      ;;     complete on time would not have considerable significant
+      ;;     consequences. There is still significant reason to prefer
+      ;;     the completion of these tasks sooner rather than later.
+
+      ;; D - Failure to complete within a few days (or ever) of any
+      ;;     deadline would be completely okay. As such, any deadline
+      ;;     present on such a task is necessarily self imposed. Still
+      ;;     probably worth doing
+
+      ;; E - Potentially not even worth doing at all, but worth taking a
+      ;;     note about in case it comes up again, or becomes more
+      ;;     interesting later.
+
+      ;; F - Almost certainly not worth attempting in the immediate future.
+      ;;     Just brain dump.
+
+      ;; Priorities are somewhat contextual within each category. Things
+      ;; in the gtd or work categories are generally regarded as much
+      ;; more important than things with the same priority from the
+      ;; dotfiles category.
+
+      ;; Items without deadlines or scheduled times of a given priority
+      ;; can be regarded as less important than items that DO have
+      ;; deadlines of that same priority.
+
+      (setq org-lowest-priority 69) ;; The character E
+      (setq org-completion-use-ido t)
+      (setq org-enforce-todo-dependencies t)
+      (setq org-deadline-warning-days 0)
+      (setq org-default-priority ?D)
+      (setq org-agenda-skip-scheduled-if-done t)
+      (setq org-agenda-skip-deadline-if-done t)
+      ;;(add-to-list org-agenda-tag-filter-preset "+PRIORITY<\"C\"")
+
+      (use-package org-notify
+        :disabled t
+        :config
         (progn
-          (persp-switch "email")
-          (when (or (not (mu4e-running-p)) arg)
-            (delete-other-windows) (mu4e)))))
-    ;; enable inline images
-    (setq mu4e-view-show-images t)
-    ;; show images
-    (setq mu4e-show-images t)
-    ;; Try to display html as text
-    (setq mu4e-view-prefer-html nil)
+          (defun imalison:org-notify-notification-handler (plist)
+            (sauron-add-event 'org-notify 4 (format "%s, %s.\n" (plist-get plist :heading)
+                                                    (org-notify-body-text plist))))
 
-    (setq mu4e-html2text-command "html2text -width 80 -nobs -utf8")
+          (setq org-show-notification-handler 'imalison:org-notify-notification-handler)
 
-    ;; use imagemagick, if available
-    (when (fboundp 'imagemagick-register-types)
-         (imagemagick-register-types))
-    (setq mail-user-agent 'mu4e-user-agent)
-    (require 'org-mu4e)
-    (setq mu4e-compose-complete-only-after nil)
-    (setq mu4e-maildir "~/Mail")
+          (org-notify-add 'default '(:time "1h" :actions imalison:org-notify-notification-handler
+                                           :period "2m" :duration 60))
+          (org-notify-add 'default '(:time "100m" :actions imalison:org-notify-notification-handler
+                                           :period "2m" :duration 60))
+          (org-notify-add 'urgent-second '(:time "3m" :actions (-notify/window -ding)
+                                                 :period "15s" :duration 10))
+          (org-notify-add 'minute '(:time "5m" :actions -notify/window
+                                          :period "100s" :duration 70))
+          (org-notify-add '12hours
+                          '(:time "3m" :actions (-notify/window -ding)
+                                  :period "15s" :duration 10)
+                          '(:time "100m" :actions -notify/window
+                                  :period "2m" :duration 60)
+                          '(:time "12h" :actions -notify/window :audible nil
+                                  :period "10m" :duration 200))
+          (org-notify-add '5days
+                          '(:time "100m" :actions -notify/window
+                                  :period "2m" :duration 60)
+                          '(:time "2d" :actions -notify/window
+                                  :period "15m" :duration 100)
+                          '(:time "5d" :actions -notify/window
+                                  :period "2h" :duration 200))
+          (org-notify-add 'long-20days
+                          '(:time "2d" :actions -notify/window
+                                  :period "15m" :duration 60)
+                          '(:time "5d" :actions -notify/window
+                                  :period "2h" :duration 60)
+                          '(:time "20d" :actions -email :period "2d" :audible nil))
+          (org-notify-add 'long-50days
+                          '(:time "4d" :actions -notify/window
+                                  :period "30m" :duration 100)
+                          '(:time "10d" :actions -notify/window
+                                  :period "4h" :duration 200)
+                          '(:time "50d" :actions -email :period "3d" :audible nil))
+          (org-notify-add 'long-100days
+                          '(:time "2d" :actions -notify/window
+                                  :period "1h" :duration 200)
+                          '(:time "10d" :actions -notify/window
+                                  :period "10h" :duration 300)
+                          '(:time "50d" :actions -email :period "3d" :audible nil)
+                          '(:time "100d" :actions -email :period "5d" :audible nil))
+          (org-notify-start 10)))
 
-    (setq mu4e-drafts-folder "/[Gmail].Drafts")
-    (setq mu4e-sent-folder   "/[Gmail].Sent Mail")
-    (setq mu4e-trash-folder  "/[Gmail].Trash")
+      (use-package org-bullets
+        :config
+        (progn
+          (add-hook 'org-mode-hook (lambda () (org-bullets-mode 1)))))
 
-    (setq mu4e-sent-messages-behavior 'delete)
-    (setq mu4e-headers-skip-duplicates t)
-    (setq mu4e-update-interval (* 60 20))
-    (setq message-kill-buffer-on-exit t)
-    (setq mail-user-agent 'mu4e-user-agent) ;; make mu4e the default mail client
+      (use-package org-ehtml
+        :disabled t
+        :config
+        (progn
+          (setq org-ehtml-docroot (expand-file-name "~/Dropbox/org"))
+          (setq org-ehtml-allow-agenda t)
+          (setq org-ehtml-editable-headlines t)
+          (setq org-ehtml-everything-editable t)))
 
-    ;; don't save message to Sent Messages, Gmail/IMAP takes care of this
-    (setq mu4e-sent-messages-behavior 'delete)
+      ;; Agenda setup.
+      (defvar-if-non-existent imalison:org-gtd-file "~/org/gtd.org")
+      (defvar-if-non-existent imalison:org-habits-file "~/org/habits.org")
+      (defvar-if-non-existent imalison:org-calendar-file "~/org/calendar.org")
 
-    ;; allow for updating mail using 'U' in the main view:
-    (setq mu4e-get-mail-command "timeout 60 offlineimap")
+      (unless (boundp 'org-capture-templates)
+        (defvar org-capture-templates nil))
 
-    (add-hook 'mu4e-compose-mode-hook
-              (defun my-do-compose-stuff () (flyspell-mode)))
+      (imalison:add-to-org-agenda-files
+       (list imalison:org-gtd-file imalison:org-habits-file
+             imalison:org-calendar-file))
 
-    (add-to-list 'mu4e-headers-actions '("view in browser" . mu4e-action-view-in-browser))
-    (add-to-list 'mu4e-view-actions '("view in browser" . mu4e-action-view-in-browser))
+      (add-to-list 'org-capture-templates
+                   `("t" "GTD Todo (Linked)" entry (file ,imalison:org-gtd-file)
+                     (function org-capture-make-linked-todo-template)))
 
-    (defun mu4e-view (msg headersbuf)
-      "Display the message MSG in a new buffer, and keep in sync with HDRSBUF.
-'In sync' here means that moving to the next/previous message in
-the the message view affects HDRSBUF, as does marking etc.
+      (add-to-list 'org-capture-templates
+                   `("g" "GTD Todo" entry (file ,imalison:org-gtd-file)
+                     (function org-capture-make-todo-template)))
 
-As a side-effect, a message that is being viewed loses its 'unread'
-marking if it still had that."
-      (let* ((embedded ;; is it as an embedded msg (ie. message/rfc822 att)?
-              (when (gethash (mu4e-message-field msg :path)
-                             mu4e~path-parent-docid-map) t))
-             (buf
-              (if embedded
-                  (mu4e~view-embedded-winbuf)
-                (get-buffer-create mu4e~view-buffer-name))))
-        ;; note: mu4e~view-mark-as-read will pseudo-recursively call mu4e-view again
-        ;; by triggering mu4e~view again as it marks the message as read
-        (with-current-buffer buf
-          (switch-to-buffer buf)
-          (setq mu4e~view-msg msg)
-          ;;(or embedded (not (mu4e~view-mark-as-read msg)))
-          (when (or (mu4e~view-mark-as-read msg) t)
-            (let ((inhibit-read-only t))
-              (erase-buffer)
-              (mu4e~delete-all-overlays)
-              (insert (mu4e-view-message-text msg))
-              (goto-char (point-min))
-              (mu4e~fontify-cited)
-              (mu4e~fontify-signature)
-              (mu4e~view-make-urls-clickable)
-              (mu4e~view-show-images-maybe msg)
-              (setq
-               mu4e~view-buffer buf
-               mu4e~view-headers-buffer headersbuf)
-              (when embedded (local-set-key "q" 'kill-buffer-and-window))
-              (mu4e-view-mode))))))
+      (add-to-list 'org-capture-templates
+                   `("y" "Calendar entry (Linked)" entry
+                     (file ,imalison:org-calendar-file)
+                     "* %? %A
+    :PROPERTIES:
+    :CREATED: %U
+    :END:
+  %^T"))
 
-    (require 'smtpmail)
+      (add-to-list 'org-capture-templates
+                   `("c" "Calendar entry" entry
+                     (file ,imalison:org-calendar-file)
+                     "* %?
+    :PROPERTIES:
+    :CREATED: %U
+    :END:
+  %^T"))
 
-    ;; alternatively, for emacs-24 you can use:
-    (setq message-send-mail-function 'smtpmail-send-it
-          smtpmail-stream-type 'starttls
-          smtpmail-default-smtp-server "smtp.gmail.com"
-          smtpmail-smtp-server "smtp.gmail.com"
-          smtpmail-smtp-service 587)))
+      (add-to-list 'org-capture-templates
+                   `("h" "Habit" entry (file ,imalison:org-habits-file)
+                     "* TODO
+    SCHEDULED: %^t
+    :PROPERTIES:
+    :CREATED: %U
+    :STYLE: habit
+    :END:"))
 
-(use-package gmail-message-mode)
+      (let ((this-week-high-priority
+             ;; The < in the following line works has behavior that is opposite
+             ;; to what one might expect.
+             '(tags-todo "+PRIORITY<\"C\"+DEADLINE<\"<+1w>\"DEADLINE>\"<+0d>\""
+                         ((org-agenda-overriding-header
+                           "Upcoming high priority tasks:"))))
+            (due-today '(tags-todo
+                             "+DEADLINE=<\"<+0d>\""
+                             ((org-agenda-overriding-header
+                               "Due today:"))))
+            (recently-created '(tags-todo
+                             "+CREATED=>\"<-3d>\""
+                             ((org-agenda-overriding-header "Recently created:")
+                              (org-agenda-cmp-user-defined 'org-cmp-creation-times)
+                              (org-agenda-sorting-strategy '(user-defined-down)))))
+            (next '(todo "NEXT"))
+            (started '(todo "STARTED"))
+            (missing-deadline
+             '(tags-todo "-DEADLINE={.}/!"
+                         ((org-agenda-overriding-header
+                           "These don't have deadlines:"))))
+            (missing-priority
+             '(tags-todo "-PRIORITY={.}/!"
+                         ((org-agenda-overriding-header
+                           "These don't have priorities:")))))
 
-(use-package alert
-  :config
-  (progn
-    (defun alert-notifier-notify (info)
-      (if alert-notifier-command
-          (let ((args
-                 (list "-title"   (alert-encode-string (plist-get info :title))
-                       "-activate" "org.gnu.Emacs"
-                       "-message" (alert-encode-string (plist-get info :message))
-                       "-execute" (format "\"%s\"" (switch-to-buffer-command (plist-get info :buffer))))))
-            (apply #'call-process alert-notifier-command nil nil nil args))
-        (alert-message-notify info)))
+        (setq org-agenda-custom-commands
+              `(("M" "Main agenda view"
+                 ((agenda ""
+                          ((org-agenda-overriding-header "Agenda:")
+                           (org-agenda-ndays 5)
+                           (org-deadline-warning-days 0)))
+                  ,due-today
+                  ,next
+                  ,started
+                  ,this-week-high-priority
+                  ,recently-created)
+                 nil nil)
+                ,(cons "A" (cons "High priority upcoming" this-week-high-priority))
+                ,(cons "d" (cons "Overdue tasks and due today" due-today))
+                ,(cons "r" (cons "Recently created" recently-created))
+                ("h" "A, B priority:" tags-todo "+PRIORITY<\"C\""
+                         ((org-agenda-overriding-header
+                           "High Priority:")))
+                ("c" "At least priority C:" tags-todo "+PRIORITY<\"D\""
+                         ((org-agenda-overriding-header
+                           "At least priority C:"))))))
 
-    (defun switch-to-buffer-command (buffer-name)
-      (emacsclient-command (format "(switch-to-buffer \\\"%s\\\")" buffer-name)))
+      ;; What follows is a description of the significance of each of
+      ;; the values available in `org-todo-keywords'. All headings with
+      ;; one of these keywords deal with the concept of the completion
+      ;; of some task or collection of tasks to bring about a particular
+      ;; state of affairs. In some cases, the actual tasks involved may
+      ;; not be known at the time of task creation.
 
-    (defun emacsclient-command (command)
-      (format "emacsclient --server-file='%s' -e '%s'" server-name command))
+      ;; Incomplete States:
 
-    (setq alert-default-style 'notifier)))
+      ;; IDEA - This TODO exists in only the most abstract sense: it is
+      ;; an imagined state of affairs that requires tasks that are
+      ;; either not yet known, or have not thoroughly been considered.
 
-(use-package sauron
-  :defer 5
-  :commands (sauron-start sauron-start-hidden)
-  :init
-  (progn
-    (when (eq system-type 'darwin)
-      (setq sauron-modules '(sauron-erc sauron-org sauron-notifications
-                                        sauron-twittering sauron-jabber sauron-identica))
-      (defun sauron-dbus-start ()
+      ;; RESEARCH - This TODO needs to be investigated further before
+      ;; action can be taken to achieve the desired outcome. It is not
+      ;; known how much time and effort will be consumed in the actual
+      ;; completion of the task.
+
+      ;; TODO - The scope and work involved in this TODO are well
+      ;; understood, but for some reason or another, it is not something
+      ;; that should be attempted in the immediate future. Typically
+      ;; this is because the task is not considered a top priority, but
+      ;; it may also be for some other reason.
+
+      ;; NEXT - This TODO is immediately actionable and should be
+      ;; started in the immediate future.
+
+      ;; STARTED - Work on this TODO has already started, further work
+      ;; is immediately actionable.
+
+      ;; WAIT - The work involved in this TODO is well understood, but
+      ;; it is blocked for the time being.
+
+      ;; BACKLOG - While technically actionable, this task is not only
+      ;; not worth pursuing in the immediate future, but the foreseable
+      ;; future. It exists as a task mostly as a note/reminder, in case
+      ;; it becomes higher priority in the future.
+
+      ;; Complete States:
+
+      ;; DONE - This TODO has been completed exactly as imagined.
+
+      ;; HANDLED - This TODO was completed in spirit, though not by the
+      ;; means that were originally imagined/outlined in the TODO.
+
+      ;; EXPIRED - The owner of this TODO failed to take action on it
+      ;; within the appropriate time period, and there is now no point in
+      ;; attempting it.
+
+      ;; CANCELED - For whatever reason, this TODO should no longer be
+      ;; attempted. This TODO is typically used in contrast to the
+      ;; EXPIRED TODO to indicate that the owner is not necessarily to
+      ;; blame.
+
+      (setq org-todo-keywords
+            '((sequence "IDEA(i!)" "RESEARCH(r!)" "TODO(t!)" "NEXT(n!)" "STARTED(s!)" "WAIT(w!)" "BACKLOG(b!)" "|"
+                        "DONE(d!)" "HANDLED(h!)" "EXPIRED(e!)" "CANCELED(c!)")
+              (sequence "BASKET(!)" "CLEAN(!)" "DRY(!)" "|" "FOLDED(!)")))
+
+      ;; Record changes to todo states
+      (setq org-log-into-drawer t)
+      ;; Stop starting agenda from deleting frame setup!
+      (setq org-agenda-window-setup 'other-window)
+      (define-key mode-specific-map [?a] 'org-agenda)
+      (unbind-key "C-j" org-mode-map))
+    :init
+    (progn
+      (setq org-directory "~/Dropbox/org")
+      (setq org-mobile-inbox-for-pull "~/Dropbox/org/flagged.org")
+      (setq org-mobile-directory "~/Dropbox/Apps/MobileOrg")
+      (add-hook 'org-mode-hook 'imalison:disable-linum-mode)
+      (add-hook 'org-mode-hook 'imalison:disable-smartparens-mode)
+      (add-hook 'org-mode-hook (lambda () (setq org-todo-key-trigger t)))
+      (add-hook 'org-agenda-mode-hook 'imalison:disable-linum-mode)))
+
+  (use-package clocker)
+
+  (use-package deft
+    :config
+    (progn
+      (setq deft-default-extension "org")
+      (setq deft-extensions '("org"))
+      (setq deft-use-filter-string-for-filename t)
+      (setq deft-file-naming-rules '((noslash . "_")
+                                     (nospace . "_")
+                                     (case-fn . downcase)))
+      (setq deft-directory "~/SparkleShare/org/notes")))
+
+  (use-package epg
+    :config
+    (epa-file-enable))
+
+  (use-package twittering-mode
+    :commands twittering-mode)
+
+  (use-package matrix-client
+    :disabled t ;; fails to load eieio on startup
+    )
+
+  (use-package erc
+    :commands erc
+    :config
+    (progn
+      ;; (add-to-list 'erc-modules 'notifications)
+      ;; logging:
+      (require 'erc-log)
+      (setq erc-log-channels-directory "~/Dropbox (Personal)/irclogs")
+      (erc-log-enable)
+      (use-package erc-colorize) (erc-colorize-mode 1)))
+
+  (use-package bitlbee
+    :config
+    (progn
+      (defvar bitlbee-password "geheim")
+      (add-hook 'erc-join-hook 'bitlbee-identify)
+      (defun bitlbee-identify ()
+        "If we're on the bitlbee server, send the identify command to the
+   &bitlbee channel."
+        (when (and (string= "localhost" erc-session-server)
+                   (string= "&bitlbee" (buffer-name)))
+          (erc-message "PRIVMSG" (format "%s identify %s"
+                                         (erc-default-target)
+                                         bitlbee-password))))))
+
+  (use-package s)
+  (add-to-list 'load-path (s-trim (shell-command-to-string "mu4e_directory")))
+
+  (use-package mu4e
+    :ensure nil
+    :commands (mu4e mu4e-view-message-with-msgid mu4e-update-index email)
+    :bind ("C-c 0" . email)
+    :config
+    (progn
+      (defun email (&optional arg)
+        (interactive "P")
+        (if (string-equal (persp-name persp-curr) "email")
+            (progn (delete-other-windows) (mu4e))
+          (progn
+            (persp-switch "email")
+            (when (or (not (mu4e-running-p)) arg)
+              (delete-other-windows) (mu4e)))))
+      ;; enable inline images
+      (setq mu4e-view-show-images t)
+      ;; show images
+      (setq mu4e-show-images t)
+      ;; Try to display html as text
+      (setq mu4e-view-prefer-html nil)
+
+      (setq mu4e-html2text-command "html2text -width 80 -nobs -utf8")
+
+      ;; use imagemagick, if available
+      (when (fboundp 'imagemagick-register-types)
+           (imagemagick-register-types))
+      (setq mail-user-agent 'mu4e-user-agent)
+      (require 'org-mu4e)
+      (setq mu4e-compose-complete-only-after nil)
+      (setq mu4e-maildir "~/Mail")
+
+      (setq mu4e-drafts-folder "/[Gmail].Drafts")
+      (setq mu4e-sent-folder   "/[Gmail].Sent Mail")
+      (setq mu4e-trash-folder  "/[Gmail].Trash")
+
+      (setq mu4e-sent-messages-behavior 'delete)
+      (setq mu4e-headers-skip-duplicates t)
+      (setq mu4e-update-interval (* 60 20))
+      (setq message-kill-buffer-on-exit t)
+      (setq mail-user-agent 'mu4e-user-agent) ;; make mu4e the default mail client
+
+      ;; don't save message to Sent Messages, Gmail/IMAP takes care of this
+      (setq mu4e-sent-messages-behavior 'delete)
+
+      ;; allow for updating mail using 'U' in the main view:
+      (setq mu4e-get-mail-command "timeout 60 offlineimap")
+
+      (add-hook 'mu4e-compose-mode-hook
+                (defun my-do-compose-stuff () (flyspell-mode)))
+
+      (add-to-list 'mu4e-headers-actions '("view in browser" . mu4e-action-view-in-browser))
+      (add-to-list 'mu4e-view-actions '("view in browser" . mu4e-action-view-in-browser))
+
+      (defun mu4e-view (msg headersbuf)
+        "Display the message MSG in a new buffer, and keep in sync with HDRSBUF.
+  'In sync' here means that moving to the next/previous message in
+  the the message view affects HDRSBUF, as does marking etc.
+
+  As a side-effect, a message that is being viewed loses its 'unread'
+  marking if it still had that."
+        (let* ((embedded ;; is it as an embedded msg (ie. message/rfc822 att)?
+                (when (gethash (mu4e-message-field msg :path)
+                               mu4e~path-parent-docid-map) t))
+               (buf
+                (if embedded
+                    (mu4e~view-embedded-winbuf)
+                  (get-buffer-create mu4e~view-buffer-name))))
+          ;; note: mu4e~view-mark-as-read will pseudo-recursively call mu4e-view again
+          ;; by triggering mu4e~view again as it marks the message as read
+          (with-current-buffer buf
+            (switch-to-buffer buf)
+            (setq mu4e~view-msg msg)
+            ;;(or embedded (not (mu4e~view-mark-as-read msg)))
+            (when (or (mu4e~view-mark-as-read msg) t)
+              (let ((inhibit-read-only t))
+                (erase-buffer)
+                (mu4e~delete-all-overlays)
+                (insert (mu4e-view-message-text msg))
+                (goto-char (point-min))
+                (mu4e~fontify-cited)
+                (mu4e~fontify-signature)
+                (mu4e~view-make-urls-clickable)
+                (mu4e~view-show-images-maybe msg)
+                (setq
+                 mu4e~view-buffer buf
+                 mu4e~view-headers-buffer headersbuf)
+                (when embedded (local-set-key "q" 'kill-buffer-and-window))
+                (mu4e-view-mode))))))
+
+      (require 'smtpmail)
+
+      ;; alternatively, for emacs-24 you can use:
+      (setq message-send-mail-function 'smtpmail-send-it
+            smtpmail-stream-type 'starttls
+            smtpmail-default-smtp-server "smtp.gmail.com"
+            smtpmail-smtp-server "smtp.gmail.com"
+            smtpmail-smtp-service 587)))
+
+  (use-package gmail-message-mode)
+
+  (use-package alert
+    :config
+    (progn
+      (defun alert-notifier-notify (info)
+        (if alert-notifier-command
+            (let ((args
+                   (list "-title"   (alert-encode-string (plist-get info :title))
+                         "-activate" "org.gnu.Emacs"
+                         "-message" (alert-encode-string (plist-get info :message))
+                         "-execute" (format "\"%s\"" (switch-to-buffer-command (plist-get info :buffer))))))
+              (apply #'call-process alert-notifier-command nil nil nil args))
+          (alert-message-notify info)))
+
+      (defun switch-to-buffer-command (buffer-name)
+        (emacsclient-command (format "(switch-to-buffer \\\"%s\\\")" buffer-name)))
+
+      (defun emacsclient-command (command)
+        (format "emacsclient --server-file='%s' -e '%s'" server-name command))
+
+      (setq alert-default-style 'notifier)))
+
+  (use-package sauron
+    :defer 5
+    :commands (sauron-start sauron-start-hidden)
+    :init
+    (progn
+      (when (eq system-type 'darwin)
+        (setq sauron-modules '(sauron-erc sauron-org sauron-notifications
+                                          sauron-twittering sauron-jabber sauron-identica))
+        (defun sauron-dbus-start ()
+          nil)
+        (makunbound 'dbus-path-emacs)))
+    :config
+    (progn
+      (sauron-start-hidden)
+      ;; This should really check (featurep 'dbus) but for some reason
+      ;; this is always true even if support is not there.
+      (setq sauron-prio-sauron-started 2)
+      (setq sauron-min-priority 3)
+      ;; (setq sauron-dbus-cookie t) ;; linux only?
+      (setq sauron-separate-frame nil)
+      (setq sauron-nick-insensitivity 1)
+      (defun sauron:jabber-notify (origin priority message &optional properties)
+        (funcall notify-function "gtalk" message))
+      (defun sauron:erc-notify (origin priority message &optional properties)
+        (let ((event (plist-get properties :event)))
+          (funcall notify-function "IRC" message)))
+      (defun sauron:mu4e-notify (origin priority message &optional properties)
         nil)
-      (makunbound 'dbus-path-emacs)))
-  :config
-  (progn
-    (sauron-start-hidden)
-    ;; This should really check (featurep 'dbus) but for some reason
-    ;; this is always true even if support is not there.
-    (setq sauron-prio-sauron-started 2)
-    (setq sauron-min-priority 3)
-    ;; (setq sauron-dbus-cookie t) ;; linux only?
-    (setq sauron-separate-frame nil)
-    (setq sauron-nick-insensitivity 1)
-    (defun sauron:jabber-notify (origin priority message &optional properties)
-      (funcall notify-function "gtalk" message))
-    (defun sauron:erc-notify (origin priority message &optional properties)
-      (let ((event (plist-get properties :event)))
-        (funcall notify-function "IRC" message)))
-    (defun sauron:mu4e-notify (origin priority message &optional properties)
-      nil)
-    (defun sauron:dbus-notify (origin priority message &optional properties)
-      (funcall notify-function "GMail" message))
-    (defun sauron:dispatch-notify (origin priority message &optional properties)
-      (let ((handler (cond ((string= origin "erc") 'sauron:erc-notify)
-                            ((string= origin "jabber") 'sauron:jabber-notify)
-                            ((string= origin "mu4e") 'sauron:mu4e-notify)
-                            ((string= origin "dbus") 'sauron:dbus-notify)
-                            (t (lambda (&rest r) nil)))))
-        (funcall handler origin priority message properties)))
-    ;; Prefering alert.el for now ;; (add-hook 'sauron-event-added-functions 'sauron:dispatch-notify)
-    (sauron-start-hidden)
-    (add-hook 'sauron-event-added-functions 'sauron-alert-el-adapter)))
+      (defun sauron:dbus-notify (origin priority message &optional properties)
+        (funcall notify-function "GMail" message))
+      (defun sauron:dispatch-notify (origin priority message &optional properties)
+        (let ((handler (cond ((string= origin "erc") 'sauron:erc-notify)
+                              ((string= origin "jabber") 'sauron:jabber-notify)
+                              ((string= origin "mu4e") 'sauron:mu4e-notify)
+                              ((string= origin "dbus") 'sauron:dbus-notify)
+                              (t (lambda (&rest r) nil)))))
+          (funcall handler origin priority message properties)))
+      ;; Prefering alert.el for now ;; (add-hook 'sauron-event-added-functions 'sauron:dispatch-notify)
+      (sauron-start-hidden)
+      (add-hook 'sauron-event-added-functions 'sauron-alert-el-adapter)))
 
-(use-package screenshot)
+  (use-package screenshot)
 
-(use-package floobits)
+  (use-package floobits)
 
-(use-package wsd-mode)
+  (use-package wsd-mode)
 
-(use-package libmpdee)
+  (use-package libmpdee)
 
-(use-package flyspell
-  :disabled t                           ; kind of annoying
-  :preface (setq flyspell-issue-welcome-flag nil)
-  :config
-  (progn
-    (diminish 'flyspell-mode)
-    (bind-key "M-s" 'flyspell-correct-word-before-point flyspell-mode-map)
-    (unbind-key "C-;" flyspell-mode-map)
-    (defun flyspell-emacs-popup-textual (event poss word)
-      "A textual flyspell popup menu."
-      (let* ((corrects (if flyspell-sort-corrections
-                           (sort (car (cdr (cdr poss))) 'string<)
-                         (car (cdr (cdr poss)))))
-             (cor-menu (if (consp corrects)
-                           (mapcar (lambda (correct)
-                                     (list correct correct))
-                                   corrects)
-                         '()))
-             (affix (car (cdr (cdr (cdr poss)))))
-             show-affix-info
-             (base-menu  (let ((save (if (and (consp affix) show-affix-info)
-                                         (list
-                                          (list (concat "Save affix: "
-                                                        (car affix))
-                                                'save)
-                                          '("Accept (session)" session)
-                                          '("Accept (buffer)" buffer))
-                                       '(("Save word" save)
-                                         ("Accept (session)" session)
-                                         ("Accept (buffer)" buffer)))))
-                           (if (consp cor-menu)
-                               (append cor-menu (cons "" save))
-                             save)))
-             (menu (mapcar
-                    (lambda (arg) (if (consp arg) (car arg) arg))
-                    base-menu)))
-        (cadr (assoc (popup-menu* menu :scroll-bar t) base-menu))))
-    (fset 'flyspell-emacs-popup 'flyspell-emacs-popup-textual)))
+  (use-package flyspell
+    :disabled t                           ; kind of annoying
+    :preface (setq flyspell-issue-welcome-flag nil)
+    :config
+    (progn
+      (diminish 'flyspell-mode)
+      (bind-key "M-s" 'flyspell-correct-word-before-point flyspell-mode-map)
+      (unbind-key "C-;" flyspell-mode-map)
+      (defun flyspell-emacs-popup-textual (event poss word)
+        "A textual flyspell popup menu."
+        (let* ((corrects (if flyspell-sort-corrections
+                             (sort (car (cdr (cdr poss))) 'string<)
+                           (car (cdr (cdr poss)))))
+               (cor-menu (if (consp corrects)
+                             (mapcar (lambda (correct)
+                                       (list correct correct))
+                                     corrects)
+                           '()))
+               (affix (car (cdr (cdr (cdr poss)))))
+               show-affix-info
+               (base-menu  (let ((save (if (and (consp affix) show-affix-info)
+                                           (list
+                                            (list (concat "Save affix: "
+                                                          (car affix))
+                                                  'save)
+                                            '("Accept (session)" session)
+                                            '("Accept (buffer)" buffer))
+                                         '(("Save word" save)
+                                           ("Accept (session)" session)
+                                           ("Accept (buffer)" buffer)))))
+                             (if (consp cor-menu)
+                                 (append cor-menu (cons "" save))
+                               save)))
+               (menu (mapcar
+                      (lambda (arg) (if (consp arg) (car arg) arg))
+                      base-menu)))
+          (cadr (assoc (popup-menu* menu :scroll-bar t) base-menu))))
+      (fset 'flyspell-emacs-popup 'flyspell-emacs-popup-textual)))
 
-;; =============================================================================
-;;                                                        Programming Mode Hooks
-;; =============================================================================
+  ;; =============================================================================
+  ;;                                                        Programming Mode Hooks
+  ;; =============================================================================
 
-(add-hook 'prog-mode-hook (lambda () (auto-fill-mode -1)))
-(add-hook 'prog-mode-hook (lambda () (subword-mode t) (diminish 'subword-mode)))
-;; (add-hook 'prog-mode-hook 'flyspell-prog-mode)
+  (add-hook 'prog-mode-hook (lambda () (auto-fill-mode -1)))
+  (add-hook 'prog-mode-hook (lambda () (subword-mode t) (diminish 'subword-mode)))
+  ;; (add-hook 'prog-mode-hook 'flyspell-prog-mode)
 
-;; (add-hook 'prog-mode-hook (lambda () (highlight-lines-matching-regexp
-;;                                  ".\\{81\\}" 'hi-blue)))
+  ;; (add-hook 'prog-mode-hook (lambda () (highlight-lines-matching-regexp
+  ;;                                  ".\\{81\\}" 'hi-blue)))
 
-;; =============================================================================
-;;                                          File Navigation: helm/projectile/ido
-;; =============================================================================
+  ;; =============================================================================
+  ;;                                          File Navigation: helm/projectile/ido
+  ;; =============================================================================
 
-(use-package web-mode
-  :mode (("\\.tmpl\\'" . web-mode)
-         ("\\.cql\\'" . web-mode))
-  :config
-  (progn
-    (defvar-setq web-mode-content-types-alist
-      '(("gtl" . "\\.tmpl\\'")
-        ("gtl" . "\\.cql\\'")))))
+  (use-package web-mode
+    :mode (("\\.tmpl\\'" . web-mode)
+           ("\\.cql\\'" . web-mode))
+    :config
+    (progn
+      (defvar-setq web-mode-content-types-alist
+        '(("gtl" . "\\.tmpl\\'")
+          ("gtl" . "\\.cql\\'")))))
 
-(use-package helm-themes)
+  (use-package helm-themes)
 
-(use-package helm-swoop
-  :bind ("C-S-s" . helm-swoop)
-  :commands helm-swoop)
+  (use-package helm-swoop
+    :bind ("C-S-s" . helm-swoop)
+    :commands helm-swoop)
 
-(use-package perspective
-  :demand t
-  :config
-  (progn
-    (persp-mode)
-    (defun persp-get-perspectives-for-buffer (buffer)
-      "Get the names of all of the perspectives of which `buffer` is a member."
-      (cl-loop for perspective being the hash-value of perspectives-hash
-               if (member buffer (persp-buffers perspective))
-               collect (persp-name perspective)))
+  (use-package perspective
+    :demand t
+    :config
+    (progn
+      (persp-mode)
+      (defun persp-get-perspectives-for-buffer (buffer)
+        "Get the names of all of the perspectives of which `buffer` is a member."
+        (cl-loop for perspective being the hash-value of perspectives-hash
+                 if (member buffer (persp-buffers perspective))
+                 collect (persp-name perspective)))
 
-    (defun persp-pick-perspective-by-buffer (buffer)
-  "Select a buffer and go to the perspective to which that buffer
-belongs. If the buffer belongs to more than one perspective
-completion will be used to pick the perspective to switch to.
-Switch the focus to the window in which said buffer is displayed
-if such a window exists. Otherwise display the buffer in whatever
-window is active in the perspective."
-  (interactive (list (funcall persp-interactive-completion-function
-                              "Buffer: " (mapcar 'buffer-name (buffer-list)))))
-  (let* ((perspectives (persp-get-perspectives-for-buffer (get-buffer buffer)))
-         (perspective (if (> (length perspectives) 1)
-                          (funcall persp-interactive-completion-function
-                                   (format "Select the perspective in which you would like to visit %s."
-                                           buffer)
-                                   perspectives)
-                                   (car perspectives))))
-    (if (string= (persp-name persp-curr) perspective)
-        ;; This allows the opening of a single buffer in more than one window
-        ;; in a single perspective.
-        (switch-to-buffer buffer)
-      (progn
-          (persp-switch perspective)
-          (if (get-buffer-window buffer)
-              (set-frame-selected-window nil (get-buffer-window buffer))
-            (switch-to-buffer buffer))))))
+      (defun persp-pick-perspective-by-buffer (buffer)
+    "Select a buffer and go to the perspective to which that buffer
+  belongs. If the buffer belongs to more than one perspective
+  completion will be used to pick the perspective to switch to.
+  Switch the focus to the window in which said buffer is displayed
+  if such a window exists. Otherwise display the buffer in whatever
+  window is active in the perspective."
+    (interactive (list (funcall persp-interactive-completion-function
+                                "Buffer: " (mapcar 'buffer-name (buffer-list)))))
+    (let* ((perspectives (persp-get-perspectives-for-buffer (get-buffer buffer)))
+           (perspective (if (> (length perspectives) 1)
+                            (funcall persp-interactive-completion-function
+                                     (format "Select the perspective in which you would like to visit %s."
+                                             buffer)
+                                     perspectives)
+                                     (car perspectives))))
+      (if (string= (persp-name persp-curr) perspective)
+          ;; This allows the opening of a single buffer in more than one window
+          ;; in a single perspective.
+          (switch-to-buffer buffer)
+        (progn
+            (persp-switch perspective)
+            (if (get-buffer-window buffer)
+                (set-frame-selected-window nil (get-buffer-window buffer))
+              (switch-to-buffer buffer))))))
 
-    (defun persp-mode-switch-buffers (arg)
-      (interactive "P")
-      (if arg (call-interactively 'ido-switch-buffer)
-        (call-interactively 'persp-pick-perspective-by-buffer)))
+      (defun persp-mode-switch-buffers (arg)
+        (interactive "P")
+        (if arg (call-interactively 'ido-switch-buffer)
+          (call-interactively 'persp-pick-perspective-by-buffer)))
 
-    (define-key persp-mode-map (kbd "C-x b") 'persp-mode-switch-buffers))
-  :bind ("C-c 9" . persp-switch))
+      (define-key persp-mode-map (kbd "C-x b") 'persp-mode-switch-buffers))
+    :bind ("C-c 9" . persp-switch))
 
-(use-package helm-projectile
-  :commands (helm-projectile-on)
-  :preface
-  (progn
-    (defun imalison:invalidate-cache-and-open-file (dir)
-      (projectile-invalidate-cache nil)
-      (projectile-find-file))
+  (use-package helm-projectile
+    :commands (helm-projectile-on)
+    :preface
+    (progn
+      (defun imalison:invalidate-cache-and-open-file (dir)
+        (projectile-invalidate-cache nil)
+        (projectile-find-file))
 
-    (defun imalison:switch-to-project-and-search (dir)
-      (let ((default-directory dir)
-            (projectile-require-project-root nil)
-            (helm-action-buffer "this-buffer-should-not-exist"))
-        (helm-projectile-ag)))
+      (defun imalison:switch-to-project-and-search (dir)
+        (let ((default-directory dir)
+              (projectile-require-project-root nil)
+              (helm-action-buffer "this-buffer-should-not-exist"))
+          (helm-projectile-ag)))
 
-    (defun imalison:helm-term-projectile (_dir)
-      (let ((default-directory dir)
-            (projectile-require-project-root nil)
-            (helm-action-buffer "this-buffer-should-not-exist"))
-        (term-projectile-forward))))
-  :config
-  (progn
-    (helm-delete-action-from-source "Search in Project"
-                                    helm-source-projectile-projects)
-    (helm-delete-action-from-source "Open term for project"
-                                    helm-source-projectile-projects)
-    (helm-add-action-to-source "Search in Project"
-                               'imalison:switch-to-project-and-search
-                               helm-source-projectile-projects)
-    (helm-add-action-to-source "Invalidate Cache and Open File"
-                               'imalison:invalidate-cache-and-open-file
-                               helm-source-projectile-projects)
-    (helm-add-action-to-source "Open term for project"
-                               'imalison:helm-term-projectile
-                                 helm-source-projectile-projects)))
+      (defun imalison:helm-term-projectile (_dir)
+        (let ((default-directory dir)
+              (projectile-require-project-root nil)
+              (helm-action-buffer "this-buffer-should-not-exist"))
+          (term-projectile-forward))))
+    :config
+    (progn
+      (helm-delete-action-from-source "Search in Project"
+                                      helm-source-projectile-projects)
+      (helm-delete-action-from-source "Open term for project"
+                                      helm-source-projectile-projects)
+      (helm-add-action-to-source "Search in Project"
+                                 'imalison:switch-to-project-and-search
+                                 helm-source-projectile-projects)
+      (helm-add-action-to-source "Invalidate Cache and Open File"
+                                 'imalison:invalidate-cache-and-open-file
+                                 helm-source-projectile-projects)
+      (helm-add-action-to-source "Open term for project"
+                                 'imalison:helm-term-projectile
+                                   helm-source-projectile-projects)))
 
-(use-package projectile
-  :demand t
-  :bind (("C-x f" . projectile-find-file-in-known-projects)
-         ("C-c p f" . imalison:projectile-find-file))
-  :preface
-  (progn
-    (defun imalison:do-ag (&optional arg)
-      (interactive "P")
-      (if arg (helm-do-ag) (helm-projectile-ag)))
+  (use-package projectile
+    :demand t
+    :bind (("C-x f" . projectile-find-file-in-known-projects)
+           ("C-c p f" . imalison:projectile-find-file))
+    :preface
+    (progn
+      (defun imalison:do-ag (&optional arg)
+        (interactive "P")
+        (if arg (helm-do-ag) (helm-projectile-ag)))
 
-    (defun projectile-make-all-subdirs-projects (directory)
-      (cl-loop for file-info in (directory-files-and-attributes directory)
-               do (when (nth 1 file-info)
-                    (write-region "" nil
-                                  (expand-file-name
-                                   (concat directory "/"
-                                           (nth 0 file-info) "/.projectile"))))))
-    (defun imalison:projectile-find-file (arg)
-          (interactive "P")
-          (if arg
-              (projectile-find-file-other-window)
-              (projectile-find-file))))
-  :config
-  (progn
-    (use-package persp-projectile
-      :commands projectile-persp-switch-project)
+      (defun projectile-make-all-subdirs-projects (directory)
+        (cl-loop for file-info in (directory-files-and-attributes directory)
+                 do (when (nth 1 file-info)
+                      (write-region "" nil
+                                    (expand-file-name
+                                     (concat directory "/"
+                                             (nth 0 file-info) "/.projectile"))))))
+      (defun imalison:projectile-find-file (arg)
+            (interactive "P")
+            (if arg
+                (projectile-find-file-other-window)
+                (projectile-find-file))))
+    :config
+    (progn
+      (use-package persp-projectile
+        :commands projectile-persp-switch-project)
 
-    (projectile-global-mode)
-    (setq projectile-require-project-root nil)
-    (setq projectile-enable-caching nil)
-    (setq projectile-completion-system 'helm)
-    (add-to-list 'projectile-globally-ignored-files "Godeps")
-    (add-to-list 'projectile-globally-ignored-files "thrift-binaries")
-    (helm-projectile-on)
-    (diminish 'projectile-mode)
-    (bind-key* "C-c p s" 'imalison:do-ag)
-    (bind-key* "C-c p f" 'imalison:projectile-find-file)))
+      (projectile-global-mode)
+      (setq projectile-require-project-root nil)
+      (setq projectile-enable-caching nil)
+      (setq projectile-completion-system 'helm)
+      (add-to-list 'projectile-globally-ignored-files "Godeps")
+      (add-to-list 'projectile-globally-ignored-files "thrift-binaries")
+      (helm-projectile-on)
+      (diminish 'projectile-mode)
+      (bind-key* "C-c p s" 'imalison:do-ag)
+      (bind-key* "C-c p f" 'imalison:projectile-find-file)))
 
-(use-package smex
-  ;; Using helm-M-x instead
-  :disabled t
-  :commands smex
-  ;; This is here because smex feels like part of ido
-  :bind ("M-x" . smex))
+  (use-package smex
+    ;; Using helm-M-x instead
+    :disabled t
+    :commands smex
+    ;; This is here because smex feels like part of ido
+    :bind ("M-x" . smex))
 
-(use-package ido
-  :commands ido-mode
-  :config
-  (progn
-    (setq ido-auto-merge-work-directories-length -1)
-    (setq ido-use-filename-at-point nil)
-    (setq ido-create-new-buffer 'always)
-    (ido-everywhere 1)
-    (setq ido-enable-flex-matching t)
-    (use-package flx)
-    (use-package flx-ido
-      :commands flx-ido-mode
-      :init (flx-ido-mode 1)
-      :config
-      (progn
-        ;; disable ido faces to see flx highlights.
-        ;; This makes flx-ido much faster.
-        (setq gc-cons-threshold 20000000)
-        (setq ido-use-faces nil)))
-    (use-package ido-ubiquitous
-      :disabled t
-      :commands (ido-ubiquitous-mode))
-    (use-package ido-vertical-mode
-      :config
-      (progn
-        (ido-vertical-mode 1)
-        (setq ido-vertical-define-keys 'C-n-C-p-up-and-down)))
-    (use-package flx-ido)))
+  (use-package ido
+    :commands ido-mode
+    :config
+    (progn
+      (setq ido-auto-merge-work-directories-length -1)
+      (setq ido-use-filename-at-point nil)
+      (setq ido-create-new-buffer 'always)
+      (ido-everywhere 1)
+      (setq ido-enable-flex-matching t)
+      (use-package flx)
+      (use-package flx-ido
+        :commands flx-ido-mode
+        :init (flx-ido-mode 1)
+        :config
+        (progn
+          ;; disable ido faces to see flx highlights.
+          ;; This makes flx-ido much faster.
+          (setq gc-cons-threshold 20000000)
+          (setq ido-use-faces nil)))
+      (use-package ido-ubiquitous
+        :disabled t
+        :commands (ido-ubiquitous-mode))
+      (use-package ido-vertical-mode
+        :config
+        (progn
+          (ido-vertical-mode 1)
+          (setq ido-vertical-define-keys 'C-n-C-p-up-and-down)))
+      (use-package flx-ido)))
 
 
-(when (or (and (boundp 'use-ido) use-ido) (not (boundp 'use-ido))) (ido-mode 1))
+  (when (or (and (boundp 'use-ido) use-ido) (not (boundp 'use-ido))) (ido-mode 1))
 
-;; =============================================================================
-;;                                                                         elisp
-;; =============================================================================
+  ;; =============================================================================
+  ;;                                                                         elisp
+  ;; =============================================================================
 
-(setq edebug-trace t)
+  (setq edebug-trace t)
 
-(use-package macrostep)
+  (use-package macrostep)
 
-(use-package emr
-  :bind ("M-RET" . emr-show-refactor-menu)
-  :config
-  (progn
-    (add-hook 'prog-mode-hook 'emr-initialize)))
+  (use-package emr
+    :bind ("M-RET" . emr-show-refactor-menu)
+    :config
+    (progn
+      (add-hook 'prog-mode-hook 'emr-initialize)))
 
-(use-package elisp-slime-nav
-  :commands elisp-slime-nav-mode
-  :config
-  (diminish 'elisp-slime-nav-mode)
-  :init
-  (add-hook 'emacs-lisp-mode-hook (lambda () (elisp-slime-nav-mode t))))
+  (use-package elisp-slime-nav
+    :commands elisp-slime-nav-mode
+    :config
+    (diminish 'elisp-slime-nav-mode)
+    :init
+    (add-hook 'emacs-lisp-mode-hook (lambda () (elisp-slime-nav-mode t))))
 
 
-(defun imenu-elisp-sections ()
-  (setq imenu-prev-index-position-function nil)
-  (setq imenu-space-replacement nil)
-  (add-to-list 'imenu-generic-expression
-               `("Package"
-                 ,"(use-package \\(.+\\)$" 1))
-  (add-to-list 'imenu-generic-expression
-               `("Section"
-                 ,(concat ";\\{1,4\\} =\\{10,80\\}\n;\\{1,4\\} \\{10,80\\}"
-                          "\\(.+\\)$") 1) t))
+  (defun imenu-elisp-sections ()
+    (setq imenu-prev-index-position-function nil)
+    (setq imenu-space-replacement nil)
+    (add-to-list 'imenu-generic-expression
+                 `("Package"
+                   ,"(use-package \\(.+\\)$" 1))
+    (add-to-list 'imenu-generic-expression
+                 `("Section"
+                   ,(concat ";\\{1,4\\} =\\{10,80\\}\n;\\{1,4\\} \\{10,80\\}"
+                            "\\(.+\\)$") 1) t))
 
-(put 'use-package 'lisp-indent-function 1) ;; reduce indentation for use-package
-(add-hook 'emacs-lisp-mode-hook 'imenu-elisp-sections)
-(add-hook 'emacs-lisp-mode-hook 'flatten-current-imenu-index-function)
-(add-hook 'emacs-lisp-mode-hook (lambda ()
-                                  (setq indent-tabs-mode nil)
-                                  (setq show-trailing-whitespace t)))
-(define-key lisp-mode-shared-map (kbd "C-c C-c") 'eval-defun)
-(define-key lisp-mode-shared-map (kbd "C-c C-r") 'eval-and-replace)
-(define-key lisp-mode-shared-map (kbd "C-c o r") 'up-list-region)
-(define-key lisp-mode-shared-map (kbd "C-c o o") 'up-list-back)
-(define-key lisp-mode-shared-map (kbd "C-x C-e") 'eval-region-or-last-sexp)
-(unbind-key "C-j" lisp-interaction-mode-map)
+  (put 'use-package 'lisp-indent-function 1) ;; reduce indentation for use-package
+  (add-hook 'emacs-lisp-mode-hook 'imenu-elisp-sections)
+  (add-hook 'emacs-lisp-mode-hook 'flatten-current-imenu-index-function)
+  (add-hook 'emacs-lisp-mode-hook (lambda ()
+                                    (setq indent-tabs-mode nil)
+                                    (setq show-trailing-whitespace t)))
+  (define-key lisp-mode-shared-map (kbd "C-c C-c") 'eval-defun)
+  (define-key lisp-mode-shared-map (kbd "C-c C-r") 'eval-and-replace)
+  (define-key lisp-mode-shared-map (kbd "C-c o r") 'up-list-region)
+  (define-key lisp-mode-shared-map (kbd "C-c o o") 'up-list-back)
+  (define-key lisp-mode-shared-map (kbd "C-x C-e") 'eval-region-or-last-sexp)
+  (unbind-key "C-j" lisp-interaction-mode-map)
 
-;; =============================================================================
-;;                                                                        Python
-;; =============================================================================
+  ;; =============================================================================
+  ;;                                                                        Python
+  ;; =============================================================================
 
-(defvar use-python-tabs nil)
+  (defvar use-python-tabs nil)
 
-(defun python-tabs ()
-  (setq tab-width 4 indent-tabs-mode t python-indent-offset 4))
+  (defun python-tabs ()
+    (setq tab-width 4 indent-tabs-mode t python-indent-offset 4))
 
-(defun add-virtual-envs-to-jedi-server ()
-  (let ((virtual-envs (get-virtual-envs)))
-    (when virtual-envs (set (make-local-variable 'jedi:server-args)
-                            (make-virtualenv-args virtual-envs)))))
+  (defun add-virtual-envs-to-jedi-server ()
+    (let ((virtual-envs (get-virtual-envs)))
+      (when virtual-envs (set (make-local-variable 'jedi:server-args)
+                              (make-virtualenv-args virtual-envs)))))
 
-(defun make-virtualenv-args (virtual-envs)
-  (apply #'append (mapcar (lambda (env) `("-v" ,env)) virtual-envs)))
+  (defun make-virtualenv-args (virtual-envs)
+    (apply #'append (mapcar (lambda (env) `("-v" ,env)) virtual-envs)))
 
-(defun imalison:project-root-or-current-directory ()
-  (if (projectile-project-p)
-      (projectile-project-root) (if (buffer-file-name)
-                                    (file-name-directory (buffer-file-name)))))
+  (defun imalison:project-root-or-current-directory ()
+    (if (projectile-project-p)
+        (projectile-project-root) (if (buffer-file-name)
+                                      (file-name-directory (buffer-file-name)))))
 
-(defun get-virtual-envs ()
-  (let ((project-root (imalison:project-root-or-current-directory)))
-    (when project-root
-      (condition-case ex
-          (cl-remove-if-not 'file-exists-p
-                            (mapcar (lambda (env-suffix)
-                                      (concat project-root env-suffix))
-                                    '(".tox/py27/" "env/" ".tox/venv/")))
-        ('error
-         (message (format "Caught exception: [%s]" ex))
-         (setq retval (cons 'exception (list ex))))
-        nil))))
+  (defun get-virtual-envs ()
+    (let ((project-root (imalison:project-root-or-current-directory)))
+      (when project-root
+        (condition-case ex
+            (cl-remove-if-not 'file-exists-p
+                              (mapcar (lambda (env-suffix)
+                                        (concat project-root env-suffix))
+                                      '(".tox/py27/" "env/" ".tox/venv/")))
+          ('error
+           (message (format "Caught exception: [%s]" ex))
+           (setq retval (cons 'exception (list ex))))
+          nil))))
 
-(defun message-virtual-envs ()
-  (interactive)
-  (message "%s" (get-virtual-envs)))
+  (defun message-virtual-envs ()
+    (interactive)
+    (message "%s" (get-virtual-envs)))
 
-(use-package python
-  :commands python-mode
-  :mode ("\\.py\\'" . python-mode)
-  :config
-  (progn
-    (fset 'main "if __name__ == '__main__':")
-    (fset 'sphinx-class ":class:`~")
-  :init
-  (progn
-    (unbind-key "C-j" python-mode-map)
-    (use-package jedi
-      :commands (jedi:goto-definition jedi-mode)
-      :config
-      (progn
-        (setq jedi:complete-on-dot t)
-        (setq jedi:imenu-create-index-function 'jedi:create-flat-imenu-index)
-        (use-package company-jedi
-          :commands company-jedi))
-      :bind (:map python-mode-map
-                  ("M-." . jedi:goto-definition)
-                  ("M-," . jedi:goto-definition-pop-marker)))
-    (use-package pymacs)
-    (use-package sphinx-doc)
-    (defun imalison:python-mode ()
-      (setq show-trailing-whitespace t)
-      (if use-python-tabs (python-tabs))
-      (subword-mode t)
-      (imalison:make-imenu-index-flat)
-      (jedi:setup)
-      (add-virtual-envs-to-jedi-server)
-      (remove-hook 'completion-at-point-functions
-                   'python-completion-complete-at-point 'local)
-      (set (make-local-variable 'company-backends) '(company-jedi)))
-    (add-hook 'python-mode-hook #'imalison:python-mode))))
+  (use-package python
+    :commands python-mode
+    :mode ("\\.py\\'" . python-mode)
+    :config
+    (progn
+      (fset 'main "if __name__ == '__main__':")
+      (fset 'sphinx-class ":class:`~")
+    :init
+    (progn
+      (unbind-key "C-j" python-mode-map)
+      (use-package jedi
+        :commands (jedi:goto-definition jedi-mode)
+        :config
+        (progn
+          (setq jedi:complete-on-dot t)
+          (setq jedi:imenu-create-index-function 'jedi:create-flat-imenu-index)
+          (use-package company-jedi
+            :commands company-jedi))
+        :bind (:map python-mode-map
+                    ("M-." . jedi:goto-definition)
+                    ("M-," . jedi:goto-definition-pop-marker)))
+      (use-package pymacs)
+      (use-package sphinx-doc)
+      (defun imalison:python-mode ()
+        (setq show-trailing-whitespace t)
+        (if use-python-tabs (python-tabs))
+        (subword-mode t)
+        (imalison:make-imenu-index-flat)
+        (jedi:setup)
+        (add-virtual-envs-to-jedi-server)
+        (remove-hook 'completion-at-point-functions
+                     'python-completion-complete-at-point 'local)
+        (set (make-local-variable 'company-backends) '(company-jedi)))
+      (add-hook 'python-mode-hook #'imalison:python-mode))))
 
-;; =============================================================================
-;;                                                                         Scala
-;; =============================================================================
+  ;; =============================================================================
+  ;;                                                                         Scala
+  ;; =============================================================================
 
-(use-package scala-mode2
-  :mode (("\\.scala\\'" . scala-mode)
-         ("\\.sc\\'" . scala-mode))
-  :config
-  (progn
-    (when (use-package ensime
-            :bind (:map ensime-mode-map
-                        ("M-," . ensime-pop-find-definition-stack))
-            :commands ensime-mode)
-      (add-hook 'scala-mode-hook 'ensime-scala-mode-hook))
-    (setq scala-indent:align-parameters t)))
+  (use-package scala-mode2
+    :mode (("\\.scala\\'" . scala-mode)
+           ("\\.sc\\'" . scala-mode))
+    :config
+    (progn
+      (when (use-package ensime
+              :bind (:map ensime-mode-map
+                          ("M-," . ensime-pop-find-definition-stack))
+              :commands ensime-mode)
+        (add-hook 'scala-mode-hook 'ensime-scala-mode-hook))
+      (setq scala-indent:align-parameters t)))
 
-;; =============================================================================
-;;                                                                          Java
-;; =============================================================================
+  ;; =============================================================================
+  ;;                                                                          Java
+  ;; =============================================================================
 
-(add-hook 'java-mode-hook
-          (lambda ()
-            (setq c-basic-offset 4
-                  tab-width 4
-                  indent-tabs-mode t)))
-
-(use-package android-mode
-  :config
-  (progn
-    (setq android-mode-sdk-dir
-          (s-trim (shell-command-to-string "android_sdk_directory")))))
-
-(use-package gradle-mode)
-
-;; =============================================================================
-;;                                                                    JavaScript
-;; =============================================================================
-
-(defun tape-onlyify ()
-  (interactive)
-  (save-excursion
-    (move-end-of-line nil)
-    (re-search-backward "^test")
-    (forward-sexp)
-    (if (looking-at ".only") (progn (zap-to-char 1 (string-to-char "(")) (insert "("))
-      (insert ".only"))))
-
-(use-package js2-mode
-  :commands (js2-mode)
-  :mode "\\.js\\'"
-  :bind
-  ;; (("C-c b" . web-beautify-js)) TODO: to make this mode specific
-  ;; and change binding
-  :preface
-  (progn
-    (defvar-setq imalison:identifier-count 0)
-    (defun imalison:console-log-unique ()
-      (interactive)
-      (let* ((identifier-string (int-to-string imalison:identifier-count))
-             (uuid (imalison:uuid)))
-      (insert (format "console.log('%s//////////%s//////////');" identifier-string uuid))
-      (setq imalison:identifier-count (+ imalison:identifier-count 1))))
-    (defun imalison:js2-mode-hook ()
-      ;; Sensible defaults
-      (setq js2-bounce-indent-p nil
-            js2-indent-level 4
-            js2-basic-offset 4
-            js2-highlight-level 3
-            js2-include-node-externs t
-            js2-mode-show-parse-errors nil
-            js2-mode-show-strict-warnings nil
-            indent-tabs-mode nil
-            js2-indent-switch-body t)
-      ;; (edconf-find-file-hook) ;; Make sure that editorconfig takes precedence
-      (tern-mode t)
-      (when nil (skewer-mode)) ;; TODO: reenable
-      (setq imenu-create-index-function
+  (add-hook 'java-mode-hook
             (lambda ()
-              (imalison:flatten-imenu-index
-               (js2-mode-create-imenu-index))))))
-  :init
-  (progn
-    (add-hook 'js2-mode-hook 'imalison:js2-mode-hook)
-    (add-hook 'js2-mode-hook 'js2-imenu-extras-mode)))
+              (setq c-basic-offset 4
+                    tab-width 4
+                    indent-tabs-mode t)))
 
-(use-package js2-refactor
-  :config
-  (progn
-    (js2r-add-keybindings-with-prefix "C-c C-m")
-    (add-hook 'js2-mode-hook #'js2-refactor-mode)))
+  (use-package android-mode
+    :config
+    (progn
+      (setq android-mode-sdk-dir
+            (s-trim (shell-command-to-string "android_sdk_directory")))))
 
-(use-package skewer-mode
-  :commands skewer-mode
-  :config
-  (progn
-    (add-hook 'css-mode-hook #'skewer-css-mode)
-    (add-hook 'html-mode-hook #'skewer-html-mode)))
+  (use-package gradle-mode)
 
-(use-package tern
-  :commands tern-mode
-  :config
-  (use-package company-tern
-    :config (add-to-list 'company-backends 'company-tern)))
+  ;; =============================================================================
+  ;;                                                                    JavaScript
+  ;; =============================================================================
 
-(defun delete-tern-process ()
-  (interactive)
-  (delete-process "tern"))
-
-(use-package json-mode
-  :mode "\\.json\\'"
-  :init
-  (add-hook 'json-mode-hook
-            (lambda ()
-              (setq indent-tabs-mode nil)
-              (setq js-indent-level 4))))
-
-(use-package jq-mode
-  :mode "\\.jq\\'")
-
-(use-package jsx-mode
-  :mode "\\.jsx\\'")
-
-(eval-after-load 'css-mode
-  '(define-key css-mode-map (kbd "C-c b") 'web-beautify-css))
-
-;; =============================================================================
-;;                                                                          Ruby
-;; =============================================================================
-
-(use-package robe
-  :commands robe-mode
-  :init
-  (progn (add-hook 'ruby-mode-hook 'robe-mode)))
-
-(use-package rinari)
-
-;; =============================================================================
-;;                                                                         C/C++
-;; =============================================================================
-
-(setq-default c-basic-offset 4
-              tab-width 4
-              indent-tabs-mode t)
-
-(use-package helm-gtags
-  :disabled t
-  :config (custom-set-variables
-           '(helm-gtags-path-style 'relative)
-           '(helm-gtags-ignore-case t)
-           '(helm-gtags-auto-update t))
-  :bind
-  (("M-t" . helm-gtags-find-tag)
-   ("M-r" . helm-gtags-find-rtag)
-   ("M-s" . helm-gtags-find-symbol)
-   ("C-c <" . helm-gtags-previous-history)
-   ("C-c >" . helm-gtags-next-history))
-  :init
-  (progn
-    ;;; Enable helm-gtags-mode
-    (add-hook 'c-mode-hook 'helm-gtags-mode)
-    (add-hook 'c++-mode-hook 'helm-gtags-mode)
-    (add-hook 'asm-mode-hook 'helm-gtags-mode)))
-
-;; =============================================================================
-;;                                                                           TeX
-;; =============================================================================
-
-(defun guess-TeX-master (filename)
-  "Guess the master file for FILENAME from currently open .tex files."
-  (let ((candidate nil)
-        (filename (file-name-nondirectory filename)))
+  (defun tape-onlyify ()
+    (interactive)
     (save-excursion
-      (dolist (buffer (buffer-list))
-        (with-current-buffer buffer
-          (let ((name (buffer-name))
-                (file buffer-file-name))
-            (if (and file (string-match "\\.tex$" file))
-                (progn
-                  (goto-char (point-min))
-                  (if (re-search-forward
-                       (concat "\\\\input{" filename "}") nil t)
-                      (setq candidate file))
-                  (if (re-search-forward
-                       "\\\\include{" (file-name-sans-extension filename) "}"
-                       nil t)
-                      (setq candidate file))))))))
-    (if candidate
-        (message "TeX master document: %s" (file-name-nondirectory candidate)))
-    candidate))
+      (move-end-of-line nil)
+      (re-search-backward "^test")
+      (forward-sexp)
+      (if (looking-at ".only") (progn (zap-to-char 1 (string-to-char "(")) (insert "("))
+        (insert ".only"))))
 
-(defun set-TeX-master ()
-    (setq TeX-master (guess-TeX-master (buffer-file-name))))
+  (use-package js2-mode
+    :commands (js2-mode)
+    :mode "\\.js\\'"
+    :bind
+    ;; (("C-c b" . web-beautify-js)) TODO: to make this mode specific
+    ;; and change binding
+    :preface
+    (progn
+      (defvar-setq imalison:identifier-count 0)
+      (defun imalison:console-log-unique ()
+        (interactive)
+        (let* ((identifier-string (int-to-string imalison:identifier-count))
+               (uuid (imalison:uuid)))
+        (insert (format "console.log('%s//////////%s//////////');" identifier-string uuid))
+        (setq imalison:identifier-count (+ imalison:identifier-count 1))))
+      (defun imalison:js2-mode-hook ()
+        ;; Sensible defaults
+        (setq js2-bounce-indent-p nil
+              js2-indent-level 4
+              js2-basic-offset 4
+              js2-highlight-level 3
+              js2-include-node-externs t
+              js2-mode-show-parse-errors nil
+              js2-mode-show-strict-warnings nil
+              indent-tabs-mode nil
+              js2-indent-switch-body t)
+        ;; (edconf-find-file-hook) ;; Make sure that editorconfig takes precedence
+        (tern-mode t)
+        (when nil (skewer-mode)) ;; TODO: reenable
+        (setq imenu-create-index-function
+              (lambda ()
+                (imalison:flatten-imenu-index
+                 (js2-mode-create-imenu-index))))))
+    :init
+    (progn
+      (add-hook 'js2-mode-hook 'imalison:js2-mode-hook)
+      (add-hook 'js2-mode-hook 'js2-imenu-extras-mode)))
 
-(use-package tex
-  :ensure auctex
-  :commands TeX-mode
-  :config
-  (progn
-    (add-hook 'TeX-mode-hook 'set-TeX-master)
-    (unbind-key "C-j" TeX-mode-map)
-    (setq TeX-auto-save t)
-    (setq TeX-parse-self t)
-    (setq TeX-save-query nil)
-    (setq TeX-PDF-mode t)
-    (TeX-global-PDF-mode t)
-    (setq-default TeX-master nil)))
+  (use-package js2-refactor
+    :config
+    (progn
+      (js2r-add-keybindings-with-prefix "C-c C-m")
+      (add-hook 'js2-mode-hook #'js2-refactor-mode)))
 
-(use-package latex
-  :ensure auctex
-  :config
-  (progn
-    (unbind-key "C-j" LaTeX-mode-map)))
+  (use-package skewer-mode
+    :commands skewer-mode
+    :config
+    (progn
+      (add-hook 'css-mode-hook #'skewer-css-mode)
+      (add-hook 'html-mode-hook #'skewer-html-mode)))
 
-;; =============================================================================
-;;                                                                   other modes
-;; =============================================================================
+  (use-package tern
+    :commands tern-mode
+    :config
+    (use-package company-tern
+      :config (add-to-list 'company-backends 'company-tern)))
 
-(use-package go-mode
-  :mode (("\\.go\\'" . go-mode))
-  :preface
-  (progn
-    (defun go-mode-glide-novendor ()
-      (projectile-with-default-dir (projectile-project-root)
-        (shell-command-to-string "glide novendor")))
+  (defun delete-tern-process ()
+    (interactive)
+    (delete-process "tern"))
 
-    (defun go-mode-create-imenu-index ()
-      "Create and return an imenu index alist. Unlike the default
-alist created by go-mode, this method creates an alist where
-items follow a style that is consistent with other prog-modes."
-      (let* ((patterns '(("type" "^type *\\([^ \t\n\r\f]*\\)" 1)))
-             (type-index (imenu--generic-function patterns))
-             (func-index))
-        (save-excursion
-          (goto-char (point-min))
-          (while (re-search-forward go-func-meth-regexp (point-max) t)
-            (let* ((var (match-string-no-properties 1))
-                   (func (match-string-no-properties 2))
-                   (name (if var
-                             (concat (substring var 0 -1) "." func)
-                           func))
-                   (beg (match-beginning 0))
-                   (marker (copy-marker beg))
-                   (item (cons name marker)))
-              (setq func-index (cons item func-index)))))
-        (nconc type-index (list (cons "func" func-index)))))
+  (use-package json-mode
+    :mode "\\.json\\'"
+    :init
+    (add-hook 'json-mode-hook
+              (lambda ()
+                (setq indent-tabs-mode nil)
+                (setq js-indent-level 4))))
 
-    (defun go-mode-workspace-path ()
-      (file-relative-name (projectile-project-root)
-                          (concat (file-name-as-directory
-                                   (or (getenv "GOPATH") "~/go")) "src")))
+  (use-package jq-mode
+    :mode "\\.jq\\'")
 
-    (defun go-mode-install-current-project ()
-      (interactive)
-      (start-process "go install" "go install log" "go" "install"
-                     (concat (file-name-as-directory (go-mode-workspace-path))
-                             "...")))
+  (use-package jsx-mode
+    :mode "\\.jsx\\'")
 
-    (defun go-mode-get-go-path ()
-      (file-name-as-directory (car (s-split ":" (getenv "GOPATH")))))
+  (eval-after-load 'css-mode
+    '(define-key css-mode-map (kbd "C-c b") 'web-beautify-css))
 
-    (imalison:let-advise-around imalison:advise-normal-go-command
-                                (go-command "go"))
+  ;; =============================================================================
+  ;;                                                                          Ruby
+  ;; =============================================================================
 
-    (defun imalison:go-mode-hook ()
-      (go-eldoc-setup)
-      (setq imenu-create-index-function
-            (lambda ()
-              (imalison:flatten-imenu-index
-               (go-mode-create-imenu-index))))
-      (set (make-local-variable 'company-backends) '(company-go))))
-  :config
-  (progn
-    (use-package gotest
-      :demand
-      :bind (:map go-mode-map
-                  ("C-c t" . imalison:gotest))
-      :preface
-      (progn
-        (imalison:prefix-alternatives
-         imalison:gotest go-test-current-test go-test-current-file))
-      :config
-      (progn
-        (setq go-test-verbose t)))
-    (use-package company-go
-      :config (setq company-go-show-annotation t))
-    (use-package go-projectile :demand t)
-    (use-package go-eldoc :demand t)
-    (use-package go-guru
-      :demand t
-      :bind (:map go-mode-map
-                  ("M-." . go-guru-definition)
-                  ("M-," . pop-tag-mark))
-      :preface
-      (progn
-        (defun imalison:set-go-guru-scope ()
-          (setq go-guru-scope (go-mode-parse-glide-novendor)))
-        (defun go-mode-parse-glide-novendor ()
-          (s-join ","
-                  (cl-loop for path in (s-split "\n" (go-mode-glide-novendor))
-                           collect (if (string-equal path ".")
-                                       (go-mode-workspace-path)
-                                     (s-replace "\./" (go-mode-workspace-path) path))))))
-      :config
-      (progn
-        (advice-add 'go-guru--set-scope-if-empty :before 'imalison:set-go-guru-scope)
-        (advice-add 'go-guru-start :before 'imalison:set-go-guru-scope)
-        (advice-add 'go-guru-definition :around 'imalison:advise-normal-go-command)
-        (advice-add 'go-guru-definition :before
-                    (lambda ()
-                      (with-no-warnings
-                        (ring-insert find-tag-marker-ring (point-marker)))))))
+  (use-package robe
+    :commands robe-mode
+    :init
+    (progn (add-hook 'ruby-mode-hook 'robe-mode)))
 
-    (advice-add 'go-import-add :around 'imalison:advise-normal-go-command)
+  (use-package rinari)
 
-    (setq gofmt-command "goimports")
+  ;; =============================================================================
+  ;;                                                                         C/C++
+  ;; =============================================================================
 
-    (add-hook 'go-mode-hook 'imalison:go-mode-hook)
-    (add-hook 'before-save-hook 'gofmt-before-save t)
-    (add-hook 'after-save-hook 'go-mode-install-current-project)))
+  (setq-default c-basic-offset 4
+                tab-width 4
+                indent-tabs-mode t)
 
-(use-package rust-mode
-  :mode (("\\.rs\\'" . rust-mode))
-  :preface
-  (progn
-    (defun imalison:rust-mode-hook ()
-      (imalison:make-imenu-index-flat)
-      (racer-mode)))
-  :config
-  (progn
-    (use-package flycheck-rust
-      :demand t
-      :config
-      (progn
-        (add-hook 'flycheck-mode-hook #'flycheck-rust-setup)))
-    (use-package racer
-      :demand t
-      :config
-      (progn
-        (setq racer-cmd "~/.cargo/bin/racer")
-        (setq racer-rust-src-path "~/Projects/rust/src")))
-    (use-package cargo
-      :demand t
-      :config
-      (progn
-        (add-hook 'rust-mode-hook 'cargo-minor-mode)))
-    (add-hook 'rust-mode-hook 'imalison:rust-mode-hook)))
+  (use-package helm-gtags
+    :disabled t
+    :config (custom-set-variables
+             '(helm-gtags-path-style 'relative)
+             '(helm-gtags-ignore-case t)
+             '(helm-gtags-auto-update t))
+    :bind
+    (("M-t" . helm-gtags-find-tag)
+     ("M-r" . helm-gtags-find-rtag)
+     ("M-s" . helm-gtags-find-symbol)
+     ("C-c <" . helm-gtags-previous-history)
+     ("C-c >" . helm-gtags-next-history))
+    :init
+    (progn
+      ;;; Enable helm-gtags-mode
+      (add-hook 'c-mode-hook 'helm-gtags-mode)
+      (add-hook 'c++-mode-hook 'helm-gtags-mode)
+      (add-hook 'asm-mode-hook 'helm-gtags-mode)))
 
-(use-package yaml-mode
-  :mode (("\\.yaml\\'" . yaml-mode)
-         ("\\.yml\\'" . yaml-mode)))
+  ;; =============================================================================
+  ;;                                                                           TeX
+  ;; =============================================================================
 
-(use-package sgml-mode
-  ;; :bind ("C-c b" . web-beautify-html) TODO: mode specific, change binding
-  :commands sgml-mode)
+  (defun guess-TeX-master (filename)
+    "Guess the master file for FILENAME from currently open .tex files."
+    (let ((candidate nil)
+          (filename (file-name-nondirectory filename)))
+      (save-excursion
+        (dolist (buffer (buffer-list))
+          (with-current-buffer buffer
+            (let ((name (buffer-name))
+                  (file buffer-file-name))
+              (if (and file (string-match "\\.tex$" file))
+                  (progn
+                    (goto-char (point-min))
+                    (if (re-search-forward
+                         (concat "\\\\input{" filename "}") nil t)
+                        (setq candidate file))
+                    (if (re-search-forward
+                         "\\\\include{" (file-name-sans-extension filename) "}"
+                         nil t)
+                        (setq candidate file))))))))
+      (if candidate
+          (message "TeX master document: %s" (file-name-nondirectory candidate)))
+      candidate))
 
-(use-package gitconfig-mode
-  :mode "\\.?gitconfig\\'")
+  (defun set-TeX-master ()
+      (setq TeX-master (guess-TeX-master (buffer-file-name))))
 
-(use-package evil :commands (evil-mode))
+  (use-package tex
+    :ensure auctex
+    :commands TeX-mode
+    :config
+    (progn
+      (add-hook 'TeX-mode-hook 'set-TeX-master)
+      (unbind-key "C-j" TeX-mode-map)
+      (setq TeX-auto-save t)
+      (setq TeX-parse-self t)
+      (setq TeX-save-query nil)
+      (setq TeX-PDF-mode t)
+      (TeX-global-PDF-mode t)
+      (setq-default TeX-master nil)))
 
-(use-package thrift
-  :commands thrift-mode
-  :mode (("\\.thrift\\'" . thrift-mode)))
+  (use-package latex
+    :ensure auctex
+    :config
+    (progn
+      (unbind-key "C-j" LaTeX-mode-map)))
 
-(use-package markdown-mode
-  :init
-  (progn
-    (add-hook 'markdown-mode-hook 'imalison:disable-linum-mode)))
+  ;; =============================================================================
+  ;;                                                                   other modes
+  ;; =============================================================================
 
-;; =============================================================================
-;;                                                           Custom Key Bindings
-;; =============================================================================
+  (use-package go-mode
+    :mode (("\\.go\\'" . go-mode))
+    :preface
+    (progn
+      (defun go-mode-glide-novendor ()
+        (projectile-with-default-dir (projectile-project-root)
+          (shell-command-to-string "glide novendor")))
 
-;; Miscellaneous
+      (defun go-mode-create-imenu-index ()
+        "Create and return an imenu index alist. Unlike the default
+  alist created by go-mode, this method creates an alist where
+  items follow a style that is consistent with other prog-modes."
+        (let* ((patterns '(("type" "^type *\\([^ \t\n\r\f]*\\)" 1)))
+               (type-index (imenu--generic-function patterns))
+               (func-index))
+          (save-excursion
+            (goto-char (point-min))
+            (while (re-search-forward go-func-meth-regexp (point-max) t)
+              (let* ((var (match-string-no-properties 1))
+                     (func (match-string-no-properties 2))
+                     (name (if var
+                               (concat (substring var 0 -1) "." func)
+                             func))
+                     (beg (match-beginning 0))
+                     (marker (copy-marker beg))
+                     (item (cons name marker)))
+                (setq func-index (cons item func-index)))))
+          (nconc type-index (list (cons "func" func-index)))))
 
-;; =============================================================================
-;;                                                                          toys
-;; =============================================================================
+      (defun go-mode-workspace-path ()
+        (file-relative-name (projectile-project-root)
+                            (concat (file-name-as-directory
+                                     (or (getenv "GOPATH") "~/go")) "src")))
 
-(use-package hackernews :commands hackernews)
+      (defun go-mode-install-current-project ()
+        (interactive)
+        (start-process "go install" "go install log" "go" "install"
+                       (concat (file-name-as-directory (go-mode-workspace-path))
+                               "...")))
+
+      (defun go-mode-get-go-path ()
+        (file-name-as-directory (car (s-split ":" (getenv "GOPATH")))))
+
+      (imalison:let-advise-around imalison:advise-normal-go-command
+                                  (go-command "go"))
+
+      (defun imalison:go-mode-hook ()
+        (go-eldoc-setup)
+        (setq imenu-create-index-function
+              (lambda ()
+                (imalison:flatten-imenu-index
+                 (go-mode-create-imenu-index))))
+        (set (make-local-variable 'company-backends) '(company-go))))
+    :config
+    (progn
+      (use-package gotest
+        :demand
+        :bind (:map go-mode-map
+                    ("C-c t" . imalison:gotest))
+        :preface
+        (progn
+          (imalison:prefix-alternatives
+           imalison:gotest go-test-current-test go-test-current-file))
+        :config
+        (progn
+          (setq go-test-verbose t)))
+      (use-package company-go
+        :config (setq company-go-show-annotation t))
+      (use-package go-projectile :demand t)
+      (use-package go-eldoc :demand t)
+      (use-package go-guru
+        :demand t
+        :bind (:map go-mode-map
+                    ("M-." . go-guru-definition)
+                    ("M-," . pop-tag-mark))
+        :preface
+        (progn
+          (defun imalison:set-go-guru-scope ()
+            (setq go-guru-scope (go-mode-parse-glide-novendor)))
+          (defun go-mode-parse-glide-novendor ()
+            (s-join ","
+                    (cl-loop for path in (s-split "\n" (go-mode-glide-novendor))
+                             collect (if (string-equal path ".")
+                                         (go-mode-workspace-path)
+                                       (s-replace "\./" (go-mode-workspace-path) path))))))
+        :config
+        (progn
+          (advice-add 'go-guru--set-scope-if-empty :before 'imalison:set-go-guru-scope)
+          (advice-add 'go-guru-start :before 'imalison:set-go-guru-scope)
+          (advice-add 'go-guru-definition :around 'imalison:advise-normal-go-command)
+          (advice-add 'go-guru-definition :before
+                      (lambda ()
+                        (with-no-warnings
+                          (ring-insert find-tag-marker-ring (point-marker)))))))
+
+      (advice-add 'go-import-add :around 'imalison:advise-normal-go-command)
+
+      (setq gofmt-command "goimports")
+
+      (add-hook 'go-mode-hook 'imalison:go-mode-hook)
+      (add-hook 'before-save-hook 'gofmt-before-save t)
+      (add-hook 'after-save-hook 'go-mode-install-current-project)))
+
+  (use-package rust-mode
+    :mode (("\\.rs\\'" . rust-mode))
+    :preface
+    (progn
+      (defun imalison:rust-mode-hook ()
+        (imalison:make-imenu-index-flat)
+        (racer-mode)))
+    :config
+    (progn
+      (use-package flycheck-rust
+        :demand t
+        :config
+        (progn
+          (add-hook 'flycheck-mode-hook #'flycheck-rust-setup)))
+      (use-package racer
+        :demand t
+        :config
+        (progn
+          (setq racer-cmd "~/.cargo/bin/racer")
+          (setq racer-rust-src-path "~/Projects/rust/src")))
+      (use-package cargo
+        :demand t
+        :config
+        (progn
+          (add-hook 'rust-mode-hook 'cargo-minor-mode)))
+      (add-hook 'rust-mode-hook 'imalison:rust-mode-hook)))
+
+  (use-package yaml-mode
+    :mode (("\\.yaml\\'" . yaml-mode)
+           ("\\.yml\\'" . yaml-mode)))
+
+  (use-package sgml-mode
+    ;; :bind ("C-c b" . web-beautify-html) TODO: mode specific, change binding
+    :commands sgml-mode)
+
+  (use-package gitconfig-mode
+    :mode "\\.?gitconfig\\'")
+
+  (use-package evil :commands (evil-mode))
+
+  (use-package thrift
+    :commands thrift-mode
+    :mode (("\\.thrift\\'" . thrift-mode)))
+
+  (use-package markdown-mode
+    :init
+    (progn
+      (add-hook 'markdown-mode-hook 'imalison:disable-linum-mode)))
+
+  ;; =============================================================================
+  ;;                                                           Custom Key Bindings
+  ;; =============================================================================
+
+  ;; Miscellaneous
+
+  ;; =============================================================================
+  ;;                                                                          toys
+  ;; =============================================================================
+
+  (use-package hackernews :commands hackernews)
 
 #+END_SRC
 
@@ -2571,7 +2599,7 @@ Set the character used to represent spaces to ·, and the character used for tab
   (imalison:restore-ansi-term-color-vector))
 
 (when t
-  (if (emacs24_4-p)
+  (if
       (advice-add 'load-theme :after #'imalison:after-load-theme)
     (defadvice load-theme (after name activate)
       (imalison:after-load-theme))))
