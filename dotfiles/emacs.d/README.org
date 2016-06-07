@@ -50,22 +50,22 @@ Death to any gui elements in emacs! Do this EARLY so that emacs doesn't redispla
 
 ** Compose functions taking arbitrarily many arguments and returning arbitrarily many arguments
 #+BEGIN_SRC emacs-lisp
-    (defmacro imalison:compose (name &rest funcs)
-      "Build a new function with NAME that is the composition of FUNCS."
-      `(defun ,name (&rest args)
-         (imalison:compose-helper ,funcs)))
+  (defun imalison:make-list (thing)
+    (if (listp thing)
+        thing
+      (list thing)))
 
-    (defun imalison:make-list (thing)
-      (if (listp thing)
-          thing
-        (list thing)))
+  (defmacro imalison:compose (name &rest funcs)
+    "Build a new function with NAME that is the composition of FUNCS."
+    `(defun ,name (&rest args)
+       (imalison:compose-helper ,funcs)))
 
-    (defmacro imalison:compose-helper (funcs)
-      "Builds funcalls of FUNCS applied to the arg."
-      (if (equal (length funcs) 0)
-          (quote args)
-        `(apply ,(car funcs)
-                (imalison:make-list (imalison:compose-helper ,(cdr funcs))))))
+  (defmacro imalison:compose-helper (funcs)
+    "Builds funcalls of FUNCS applied to the arg."
+    (if (equal (length funcs) 0)
+        (quote args)
+      `(apply ,(car funcs)
+              (imalison:make-list (imalison:compose-helper ,(cdr funcs))))))
 #+END_SRC
 ** prefix-alternatives
 Prefix alternatives is a macro that builds a function that selects one of a collection of functions that are provided to the macro based on the value of the prefix argument.
