@@ -97,20 +97,6 @@ Prefix alternatives is a macro that builds a function that selects one of a coll
     (interactive "p")
     (message "%s" arg))
 
-  (defmacro imalison:prefix-alternatives (name &rest alternatives)
-    `(defun ,name (arg)
-       (interactive "p")
-       (setq function
-             (cond
-              ,@(progn
-                  (let ((last-power 1))
-                    (cl-loop for alternative in alternatives
-                             collect `((eq arg ,last-power) (quote ,alternative))
-                             do (setq last-power (* last-power 4)))))))
-       (setq function (or function)) ; Set a default value for function
-       (setq current-prefix-arg nil)
-       (call-interactively function)))
-
   (defmacro imalison:let-advise-around (name &rest forms)
     `(defun ,name (orig-func &rest args)
        (let ,forms
