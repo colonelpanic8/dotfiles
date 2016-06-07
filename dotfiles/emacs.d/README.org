@@ -435,6 +435,83 @@ I use helm for almost all emacs completion
       (diminish 'helm-mode)))
 #+END_SRC
 [[(helm split window)][Ensure that helm buffers are started in the window that currently holds the focus]]
+
+#+BEGIN_SRC emacs-lisp
+  (use-package helm-projectile
+      :commands (helm-projectile-on)
+      :preface
+      (progn
+        (defun imalison:invalidate-cache-and-open-file (_dir)
+          (projectile-invalidate-cache nil)
+          (projectile-find-file))
+
+        (defun imalison:switch-to-project-and-search (dir)
+          (let ((default-directory dir)
+                (projectile-require-project-root nil)
+                (helm-action-buffer "this-buffer-should-not-exist"))
+            (helm-projectile-ag)))
+
+        (defun imalison:helm-term-projectile (dir)
+          (let ((default-directory dir)
+                (projectile-require-project-root nil)
+                (helm-action-buffer "this-buffer-should-not-exist"))
+            (term-projectile-forward))))
+      :config
+      (progn
+        (helm-delete-action-from-source "Search in Project"
+                                        helm-source-projectile-projects)
+        (helm-delete-action-from-source "Open term for project"
+                                        helm-source-projectile-projects)
+        (helm-add-action-to-source "Search in Project"
+                                   'imalison:switch-to-project-and-search
+                                   helm-source-projectile-projects)
+        (helm-add-action-to-source "Invalidate Cache and Open File"
+                                   'imalison:invalidate-cache-and-open-file
+                                   helm-source-projectile-projects)
+        (helm-add-action-to-source "Open term for project"
+                                   'imalison:helm-term-projectile
+                                     helm-source-projectile-projects)))
+#+END_SRC
+*** projectile
+#+BEGIN_SRC emacs-lisp
+  (use-package projectile
+    :demand t
+    :bind (("C-x f" . projectile-find-file-in-known-projects)
+           ("C-c p f" . imalison:projectile-find-file))
+    :preface
+    (progn
+      (defun imalison:do-ag (&optional arg)
+        (interactive "P")
+        (if arg (helm-do-ag) (helm-projectile-ag)))
+
+      (defun projectile-make-all-subdirs-projects (directory)
+        (cl-loop for file-info in (directory-files-and-attributes directory)
+                 do (when (nth 1 file-info)
+                      (write-region "" nil
+                                    (expand-file-name
+                                     (concat directory "/"
+                                             (nth 0 file-info) "/.projectile"))))))
+      (defun imalison:projectile-find-file (arg)
+            (interactive "P")
+            (if arg
+                (projectile-find-file-other-window)
+                (projectile-find-file))))
+    :config
+    (progn
+      (use-package persp-projectile
+        :commands projectile-persp-switch-project)
+
+      (projectile-global-mode)
+      (setq projectile-require-project-root nil)
+      (setq projectile-enable-caching nil)
+      (setq projectile-completion-system 'helm)
+      (add-to-list 'projectile-globally-ignored-files "Godeps")
+      (add-to-list 'projectile-globally-ignored-files "thrift-binaries")
+      (helm-projectile-on)
+      (diminish 'projectile-mode)
+      (bind-key* "C-c p s" 'imalison:do-ag)
+      (bind-key* "C-c p f" 'imalison:projectile-find-file)))
+#+END_SRC
 *** magit
 #+BEGIN_SRC emacs-lisp
   (use-package magit
@@ -1854,79 +1931,6 @@ I use helm for almost all emacs completion
 
       (define-key persp-mode-map (kbd "C-x b") 'persp-mode-switch-buffers))
     :bind ("C-c 9" . persp-switch))
-
-  (use-package helm-projectile
-    :commands (helm-projectile-on)
-    :preface
-    (progn
-      (defun imalison:invalidate-cache-and-open-file (dir)
-        (projectile-invalidate-cache nil)
-        (projectile-find-file))
-
-      (defun imalison:switch-to-project-and-search (dir)
-        (let ((default-directory dir)
-              (projectile-require-project-root nil)
-              (helm-action-buffer "this-buffer-should-not-exist"))
-          (helm-projectile-ag)))
-
-      (defun imalison:helm-term-projectile (_dir)
-        (let ((default-directory dir)
-              (projectile-require-project-root nil)
-              (helm-action-buffer "this-buffer-should-not-exist"))
-          (term-projectile-forward))))
-    :config
-    (progn
-      (helm-delete-action-from-source "Search in Project"
-                                      helm-source-projectile-projects)
-      (helm-delete-action-from-source "Open term for project"
-                                      helm-source-projectile-projects)
-      (helm-add-action-to-source "Search in Project"
-                                 'imalison:switch-to-project-and-search
-                                 helm-source-projectile-projects)
-      (helm-add-action-to-source "Invalidate Cache and Open File"
-                                 'imalison:invalidate-cache-and-open-file
-                                 helm-source-projectile-projects)
-      (helm-add-action-to-source "Open term for project"
-                                 'imalison:helm-term-projectile
-                                   helm-source-projectile-projects)))
-
-  (use-package projectile
-    :demand t
-    :bind (("C-x f" . projectile-find-file-in-known-projects)
-           ("C-c p f" . imalison:projectile-find-file))
-    :preface
-    (progn
-      (defun imalison:do-ag (&optional arg)
-        (interactive "P")
-        (if arg (helm-do-ag) (helm-projectile-ag)))
-
-      (defun projectile-make-all-subdirs-projects (directory)
-        (cl-loop for file-info in (directory-files-and-attributes directory)
-                 do (when (nth 1 file-info)
-                      (write-region "" nil
-                                    (expand-file-name
-                                     (concat directory "/"
-                                             (nth 0 file-info) "/.projectile"))))))
-      (defun imalison:projectile-find-file (arg)
-            (interactive "P")
-            (if arg
-                (projectile-find-file-other-window)
-                (projectile-find-file))))
-    :config
-    (progn
-      (use-package persp-projectile
-        :commands projectile-persp-switch-project)
-
-      (projectile-global-mode)
-      (setq projectile-require-project-root nil)
-      (setq projectile-enable-caching nil)
-      (setq projectile-completion-system 'helm)
-      (add-to-list 'projectile-globally-ignored-files "Godeps")
-      (add-to-list 'projectile-globally-ignored-files "thrift-binaries")
-      (helm-projectile-on)
-      (diminish 'projectile-mode)
-      (bind-key* "C-c p s" 'imalison:do-ag)
-      (bind-key* "C-c p f" 'imalison:projectile-find-file)))
 
   (use-package smex
     ;; Using helm-M-x instead
