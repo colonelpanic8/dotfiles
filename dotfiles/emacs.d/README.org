@@ -833,6 +833,12 @@ I use helm for almost all emacs completion
   ;;                                                                   use-package
   ;; =============================================================================
 
+  (use-package iedit
+    :demand
+    :config
+    (progn
+      (setq iedit-toggle-key-default nil)))
+
   (use-package server
     :config
     (progn
@@ -1120,11 +1126,6 @@ I use helm for almost all emacs completion
 
   (use-package comment-dwim-2
     :bind ("M-;" . comment-dwim-2))
-
-  (use-package iedit
-    :config
-    (progn
-      (setq iedit-toggle-key-default (kbd "")) ))
 
   (use-package emr
     :commands emr-initialize
