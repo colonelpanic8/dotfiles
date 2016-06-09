@@ -533,7 +533,6 @@ I use helm for almost all emacs completion
         :config
         :init (add-hook 'magit-status-mode-hook 'magit-filenotify-mode))))
 #+END_SRC
-** Major-Mode
 *** avy
 #+BEGIN_SRC emacs-lisp
   (use-package avy
@@ -543,6 +542,184 @@ I use helm for almost all emacs completion
     :bind (("C-j" . imalison:avy)
            ("M-g l" . avy-goto-line)
            ("C-'" . avy-goto-char-2)))
+#+END_SRC
+** Major Modes
+*** python-mode
+#+BEGIN_SRC emacs-lisp
+  (defvar use-python-tabs nil)
+
+  (defun python-tabs ()
+    (setq tab-width 4 indent-tabs-mode t python-indent-offset 4))
+
+  (defun add-virtual-envs-to-jedi-server ()
+    (let ((virtual-envs (get-virtual-envs)))
+      (when virtual-envs (set (make-local-variable 'jedi:server-args)
+                              (make-virtualenv-args virtual-envs)))))
+
+  (defun make-virtualenv-args (virtual-envs)
+    (apply #'append (mapcar (lambda (env) `("-v" ,env)) virtual-envs)))
+
+  (defun imalison:project-root-or-current-directory ()
+    (if (projectile-project-p)
+        (projectile-project-root) (if (buffer-file-name)
+                                      (file-name-directory (buffer-file-name)))))
+
+  (defun get-virtual-envs ()
+    (let ((project-root (imalison:project-root-or-current-directory)))
+      (when project-root
+        (condition-case ex
+            (cl-remove-if-not 'file-exists-p
+                              (mapcar (lambda (env-suffix)
+                                        (concat project-root env-suffix))
+                                      '(".tox/py27/" "env/" ".tox/venv/")))
+          ('error
+           (message (format "Caught exception: [%s]" ex))
+           (setq retval (cons 'exception (list ex))))
+          nil))))
+
+  (defun message-virtual-envs ()
+    (interactive)
+    (message "%s" (get-virtual-envs)))
+
+  (use-package python
+    :commands python-mode
+    :mode ("\\.py\\'" . python-mode)
+    :config
+    (progn
+      (fset 'main "if __name__ == '__main__':")
+      (fset 'sphinx-class ":class:`~")
+    :init
+    (progn
+      (unbind-key "C-j" python-mode-map)
+      (use-package jedi
+        :commands (jedi:goto-definition jedi-mode)
+        :config
+        (progn
+          (setq jedi:complete-on-dot t)
+          (setq jedi:imenu-create-index-function 'jedi:create-flat-imenu-index)
+          (use-package company-jedi
+            :commands company-jedi))
+        :bind (:map python-mode-map
+                    ("M-." . jedi:goto-definition)
+                    ("M-," . jedi:goto-definition-pop-marker)))
+      (use-package pymacs)
+      (use-package sphinx-doc)
+      (defun imalison:python-mode ()
+        (setq show-trailing-whitespace t)
+        (if use-python-tabs (python-tabs))
+        (subword-mode t)
+        (imalison:make-imenu-index-flat)
+        (jedi:setup)
+        (add-virtual-envs-to-jedi-server)
+        (remove-hook 'completion-at-point-functions
+                     'python-completion-complete-at-point 'local)
+        (set (make-local-variable 'company-backends) '(company-jedi)))
+      (add-hook 'python-mode-hook #'imalison:python-mode))))
+#+END_SRC
+*** go-mode
+#+BEGIN_SRC emacs-lisp
+  (use-package go-mode
+    :mode (("\\.go\\'" . go-mode))
+    :preface
+    (progn
+      (defun go-mode-glide-novendor ()
+        (projectile-with-default-dir (projectile-project-root)
+          (shell-command-to-string "glide novendor")))
+
+      (defun go-mode-create-imenu-index ()
+        "Create and return an imenu index alist. Unlike the default
+  alist created by go-mode, this method creates an alist where
+  items follow a style that is consistent with other prog-modes."
+        (let* ((patterns '(("type" "^type *\\([^ \t\n\r\f]*\\)" 1)))
+               (type-index (imenu--generic-function patterns))
+               (func-index))
+          (save-excursion
+            (goto-char (point-min))
+            (while (re-search-forward go-func-meth-regexp (point-max) t)
+              (let* ((var (match-string-no-properties 1))
+                     (func (match-string-no-properties 2))
+                     (name (if var
+                               (concat (substring var 0 -1) "." func)
+                             func))
+                     (beg (match-beginning 0))
+                     (marker (copy-marker beg))
+                     (item (cons name marker)))
+                (setq func-index (cons item func-index)))))
+          (nconc type-index (list (cons "func" func-index)))))
+
+      (defun go-mode-workspace-path ()
+        (file-relative-name (projectile-project-root)
+                            (concat (file-name-as-directory
+                                     (or (getenv "GOPATH") "~/go")) "src")))
+
+      (defun go-mode-install-current-project ()
+        (interactive)
+        (start-process "go install" "go install log" "go" "install"
+                       (concat (file-name-as-directory (go-mode-workspace-path))
+                               "...")))
+
+      (defun go-mode-get-go-path ()
+        (file-name-as-directory (car (s-split ":" (getenv "GOPATH")))))
+
+      (imalison:let-advise-around imalison:advise-normal-go-command
+                                  (go-command "go"))
+
+      (defun imalison:go-mode-hook ()
+        (go-eldoc-setup)
+        (setq imenu-create-index-function
+              (lambda ()
+                (imalison:flatten-imenu-index
+                 (go-mode-create-imenu-index))))
+        (set (make-local-variable 'company-backends) '(company-go))))
+    :config
+    (progn
+      (use-package gotest
+        :demand
+        :bind (:map go-mode-map
+                    ("C-c t" . imalison:gotest))
+        :preface
+        (progn
+          (imalison:prefix-alternatives
+           imalison:gotest go-test-current-test go-test-current-file))
+        :config
+        (progn
+          (setq go-test-verbose t)))
+      (use-package company-go
+        :config (setq company-go-show-annotation t))
+      (use-package go-projectile :demand t)
+      (use-package go-eldoc :demand t)
+      (use-package go-guru
+        :demand t
+        :bind (:map go-mode-map
+                    ("M-." . go-guru-definition)
+                    ("M-," . pop-tag-mark))
+        :preface
+        (progn
+          (defun imalison:set-go-guru-scope ()
+            (setq go-guru-scope (go-mode-parse-glide-novendor)))
+          (defun go-mode-parse-glide-novendor ()
+            (s-join ","
+                    (cl-loop for path in (s-split "\n" (go-mode-glide-novendor))
+                             collect (if (string-equal path ".")
+                                         (go-mode-workspace-path)
+                                       (s-replace "\./" (go-mode-workspace-path) path))))))
+        :config
+        (progn
+          (advice-add 'go-guru--set-scope-if-empty :before 'imalison:set-go-guru-scope)
+          (advice-add 'go-guru-start :before 'imalison:set-go-guru-scope)
+          (advice-add 'go-guru-definition :around 'imalison:advise-normal-go-command)
+          (advice-add 'go-guru-definition :before
+                      (lambda ()
+                        (with-no-warnings
+                          (ring-insert find-tag-marker-ring (point-marker)))))))
+
+      (advice-add 'go-import-add :around 'imalison:advise-normal-go-command)
+
+      (setq gofmt-command "goimports")
+
+      (add-hook 'go-mode-hook 'imalison:go-mode-hook)
+      (add-hook 'before-save-hook 'gofmt-before-save t)
+      (add-hook 'after-save-hook 'go-mode-install-current-project)))
 #+END_SRC
 * Keybindings
 #+BEGIN_SRC emacs-lisp
@@ -2026,80 +2203,6 @@ I use helm for almost all emacs completion
   (unbind-key "C-j" lisp-interaction-mode-map)
 
   ;; =============================================================================
-  ;;                                                                        Python
-  ;; =============================================================================
-
-  (defvar use-python-tabs nil)
-
-  (defun python-tabs ()
-    (setq tab-width 4 indent-tabs-mode t python-indent-offset 4))
-
-  (defun add-virtual-envs-to-jedi-server ()
-    (let ((virtual-envs (get-virtual-envs)))
-      (when virtual-envs (set (make-local-variable 'jedi:server-args)
-                              (make-virtualenv-args virtual-envs)))))
-
-  (defun make-virtualenv-args (virtual-envs)
-    (apply #'append (mapcar (lambda (env) `("-v" ,env)) virtual-envs)))
-
-  (defun imalison:project-root-or-current-directory ()
-    (if (projectile-project-p)
-        (projectile-project-root) (if (buffer-file-name)
-                                      (file-name-directory (buffer-file-name)))))
-
-  (defun get-virtual-envs ()
-    (let ((project-root (imalison:project-root-or-current-directory)))
-      (when project-root
-        (condition-case ex
-            (cl-remove-if-not 'file-exists-p
-                              (mapcar (lambda (env-suffix)
-                                        (concat project-root env-suffix))
-                                      '(".tox/py27/" "env/" ".tox/venv/")))
-          ('error
-           (message (format "Caught exception: [%s]" ex))
-           (setq retval (cons 'exception (list ex))))
-          nil))))
-
-  (defun message-virtual-envs ()
-    (interactive)
-    (message "%s" (get-virtual-envs)))
-
-  (use-package python
-    :commands python-mode
-    :mode ("\\.py\\'" . python-mode)
-    :config
-    (progn
-      (fset 'main "if __name__ == '__main__':")
-      (fset 'sphinx-class ":class:`~")
-    :init
-    (progn
-      (unbind-key "C-j" python-mode-map)
-      (use-package jedi
-        :commands (jedi:goto-definition jedi-mode)
-        :config
-        (progn
-          (setq jedi:complete-on-dot t)
-          (setq jedi:imenu-create-index-function 'jedi:create-flat-imenu-index)
-          (use-package company-jedi
-            :commands company-jedi))
-        :bind (:map python-mode-map
-                    ("M-." . jedi:goto-definition)
-                    ("M-," . jedi:goto-definition-pop-marker)))
-      (use-package pymacs)
-      (use-package sphinx-doc)
-      (defun imalison:python-mode ()
-        (setq show-trailing-whitespace t)
-        (if use-python-tabs (python-tabs))
-        (subword-mode t)
-        (imalison:make-imenu-index-flat)
-        (jedi:setup)
-        (add-virtual-envs-to-jedi-server)
-        (remove-hook 'completion-at-point-functions
-                     'python-completion-complete-at-point 'local)
-        (set (make-local-variable 'company-backends) '(company-jedi)))
-      (add-hook 'python-mode-hook #'imalison:python-mode))))
-
-  ;; =============================================================================
   ;;                                                                         Scala
   ;; =============================================================================
 
@@ -2316,109 +2419,6 @@ I use helm for almost all emacs completion
   ;;                                                                   other modes
   ;; =============================================================================
 
-  (use-package go-mode
-    :mode (("\\.go\\'" . go-mode))
-    :preface
-    (progn
-      (defun go-mode-glide-novendor ()
-        (projectile-with-default-dir (projectile-project-root)
-          (shell-command-to-string "glide novendor")))
-
-      (defun go-mode-create-imenu-index ()
-        "Create and return an imenu index alist. Unlike the default
-  alist created by go-mode, this method creates an alist where
-  items follow a style that is consistent with other prog-modes."
-        (let* ((patterns '(("type" "^type *\\([^ \t\n\r\f]*\\)" 1)))
-               (type-index (imenu--generic-function patterns))
-               (func-index))
-          (save-excursion
-            (goto-char (point-min))
-            (while (re-search-forward go-func-meth-regexp (point-max) t)
-              (let* ((var (match-string-no-properties 1))
-                     (func (match-string-no-properties 2))
-                     (name (if var
-                               (concat (substring var 0 -1) "." func)
-                             func))
-                     (beg (match-beginning 0))
-                     (marker (copy-marker beg))
-                     (item (cons name marker)))
-                (setq func-index (cons item func-index)))))
-          (nconc type-index (list (cons "func" func-index)))))
-
-      (defun go-mode-workspace-path ()
-        (file-relative-name (projectile-project-root)
-                            (concat (file-name-as-directory
-                                     (or (getenv "GOPATH") "~/go")) "src")))
-
-      (defun go-mode-install-current-project ()
-        (interactive)
-        (start-process "go install" "go install log" "go" "install"
-                       (concat (file-name-as-directory (go-mode-workspace-path))
-                               "...")))
-
-      (defun go-mode-get-go-path ()
-        (file-name-as-directory (car (s-split ":" (getenv "GOPATH")))))
-
-      (imalison:let-advise-around imalison:advise-normal-go-command
-                                  (go-command "go"))
-
-      (defun imalison:go-mode-hook ()
-        (go-eldoc-setup)
-        (setq imenu-create-index-function
-              (lambda ()
-                (imalison:flatten-imenu-index
-                 (go-mode-create-imenu-index))))
-        (set (make-local-variable 'company-backends) '(company-go))))
-    :config
-    (progn
-      (use-package gotest
-        :demand
-        :bind (:map go-mode-map
-                    ("C-c t" . imalison:gotest))
-        :preface
-        (progn
-          (imalison:prefix-alternatives
-           imalison:gotest go-test-current-test go-test-current-file))
-        :config
-        (progn
-          (setq go-test-verbose t)))
-      (use-package company-go
-        :config (setq company-go-show-annotation t))
-      (use-package go-projectile :demand t)
-      (use-package go-eldoc :demand t)
-      (use-package go-guru
-        :demand t
-        :bind (:map go-mode-map
-                    ("M-." . go-guru-definition)
-                    ("M-," . pop-tag-mark))
-        :preface
-        (progn
-          (defun imalison:set-go-guru-scope ()
-            (setq go-guru-scope (go-mode-parse-glide-novendor)))
-          (defun go-mode-parse-glide-novendor ()
-            (s-join ","
-                    (cl-loop for path in (s-split "\n" (go-mode-glide-novendor))
-                             collect (if (string-equal path ".")
-                                         (go-mode-workspace-path)
-                                       (s-replace "\./" (go-mode-workspace-path) path))))))
-        :config
-        (progn
-          (advice-add 'go-guru--set-scope-if-empty :before 'imalison:set-go-guru-scope)
-          (advice-add 'go-guru-start :before 'imalison:set-go-guru-scope)
-          (advice-add 'go-guru-definition :around 'imalison:advise-normal-go-command)
-          (advice-add 'go-guru-definition :before
-                      (lambda ()
-                        (with-no-warnings
-                          (ring-insert find-tag-marker-ring (point-marker)))))))
-
-      (advice-add 'go-import-add :around 'imalison:advise-normal-go-command)
-
-      (setq gofmt-command "goimports")
-
-      (add-hook 'go-mode-hook 'imalison:go-mode-hook)
-      (add-hook 'before-save-hook 'gofmt-before-save t)
-      (add-hook 'after-save-hook 'go-mode-install-current-project)))
-
   (use-package rust-mode
     :mode (("\\.rs\\'" . rust-mode))
     :preface
@@ -2468,18 +2468,7 @@ I use helm for almost all emacs completion
     (progn
       (add-hook 'markdown-mode-hook 'imalison:disable-linum-mode)))
 
-  ;; =============================================================================
-  ;;                                                           Custom Key Bindings
-  ;; =============================================================================
-
-  ;; Miscellaneous
-
-  ;; =============================================================================
-  ;;                                                                          toys
-  ;; =============================================================================
-
   (use-package hackernews :commands hackernews)
-
 #+END_SRC
 
 * Appearance
