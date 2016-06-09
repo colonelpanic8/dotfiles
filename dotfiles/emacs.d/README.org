@@ -1264,6 +1264,35 @@ I use helm for almost all emacs completion
     (interactive)
     (delete-process "tern"))
 #+END_SRC
+*** rust
+#+BEGIN_SRC emacs-lisp
+  (use-package rust-mode
+    :mode (("\\.rs\\'" . rust-mode))
+    :preface
+    (progn
+      (defun imalison:rust-mode-hook ()
+        (imalison:make-imenu-index-flat)
+        (racer-mode)))
+    :config
+    (progn
+      (use-package flycheck-rust
+        :demand t
+        :config
+        (progn
+          (add-hook 'flycheck-mode-hook #'flycheck-rust-setup)))
+      (use-package racer
+        :demand t
+        :config
+        (progn
+          (setq racer-cmd "~/.cargo/bin/racer")
+          (setq racer-rust-src-path "~/Projects/rust/src")))
+      (use-package cargo
+        :demand t
+        :config
+        (progn
+          (add-hook 'rust-mode-hook 'cargo-minor-mode)))
+      (add-hook 'rust-mode-hook 'imalison:rust-mode-hook)))
+#+END_SRC
 * Keybindings
 #+BEGIN_SRC emacs-lisp
   (bind-key "M-q" 'fill-or-unfill-paragraph)
@@ -2410,33 +2439,6 @@ I use helm for almost all emacs completion
   ;; =============================================================================
   ;;                                                                   other modes
   ;; =============================================================================
-
-  (use-package rust-mode
-    :mode (("\\.rs\\'" . rust-mode))
-    :preface
-    (progn
-      (defun imalison:rust-mode-hook ()
-        (imalison:make-imenu-index-flat)
-        (racer-mode)))
-    :config
-    (progn
-      (use-package flycheck-rust
-        :demand t
-        :config
-        (progn
-          (add-hook 'flycheck-mode-hook #'flycheck-rust-setup)))
-      (use-package racer
-        :demand t
-        :config
-        (progn
-          (setq racer-cmd "~/.cargo/bin/racer")
-          (setq racer-rust-src-path "~/Projects/rust/src")))
-      (use-package cargo
-        :demand t
-        :config
-        (progn
-          (add-hook 'rust-mode-hook 'cargo-minor-mode)))
-      (add-hook 'rust-mode-hook 'imalison:rust-mode-hook)))
 
   (use-package yaml-mode
     :mode (("\\.yaml\\'" . yaml-mode)
