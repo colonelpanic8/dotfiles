@@ -1134,6 +1134,50 @@ I use helm for almost all emacs completion
       (add-hook 'before-save-hook 'gofmt-before-save t)
       (add-hook 'after-save-hook 'go-mode-install-current-project)))
 #+END_SRC
+*** emacs-lisp
+#+BEGIN_SRC emacs-lisp
+  (setq edebug-trace t)
+
+  (use-package macrostep)
+
+  (use-package emr
+    :bind ("M-RET" . emr-show-refactor-menu)
+    :config
+    (progn
+      (add-hook 'prog-mode-hook 'emr-initialize)))
+
+  (use-package elisp-slime-nav
+    :commands elisp-slime-nav-mode
+    :config
+    (diminish 'elisp-slime-nav-mode)
+    :init
+    (add-hook 'emacs-lisp-mode-hook (lambda () (elisp-slime-nav-mode t))))
+
+
+  (defun imenu-elisp-sections ()
+    (setq imenu-prev-index-position-function nil)
+    (setq imenu-space-replacement nil)
+    (add-to-list 'imenu-generic-expression
+                 `("Package"
+                   ,"(use-package \\(.+\\)$" 1))
+    (add-to-list 'imenu-generic-expression
+                 `("Section"
+                   ,(concat ";\\{1,4\\} =\\{10,80\\}\n;\\{1,4\\} \\{10,80\\}"
+                            "\\(.+\\)$") 1) t))
+
+  (put 'use-package 'lisp-indent-function 1) ;; reduce indentation for use-package
+  (add-hook 'emacs-lisp-mode-hook 'imenu-elisp-sections)
+  (add-hook 'emacs-lisp-mode-hook 'flatten-current-imenu-index-function)
+  (add-hook 'emacs-lisp-mode-hook (lambda ()
+                                    (setq indent-tabs-mode nil)
+                                    (setq show-trailing-whitespace t)))
+  (define-key lisp-mode-shared-map (kbd "C-c C-c") 'eval-defun)
+  (define-key lisp-mode-shared-map (kbd "C-c C-r") 'eval-and-replace)
+  (define-key lisp-mode-shared-map (kbd "C-c o r") 'up-list-region)
+  (define-key lisp-mode-shared-map (kbd "C-c o o") 'up-list-back)
+  (define-key lisp-mode-shared-map (kbd "C-x C-e") 'eval-region-or-last-sexp)
+  (unbind-key "C-j" lisp-interaction-mode-map)
+#+END_SRC
 * Keybindings
 #+BEGIN_SRC emacs-lisp
   (bind-key "M-q" 'fill-or-unfill-paragraph)
@@ -2055,10 +2099,6 @@ I use helm for almost all emacs completion
   ;; (add-hook 'prog-mode-hook (lambda () (highlight-lines-matching-regexp
   ;;                                  ".\\{81\\}" 'hi-blue)))
 
-  ;; =============================================================================
-  ;;                                          File Navigation: helm/projectile/ido
-  ;; =============================================================================
-
   (use-package web-mode
     :mode (("\\.tmpl\\'" . web-mode)
            ("\\.cql\\'" . web-mode))
@@ -2157,52 +2197,6 @@ I use helm for almost all emacs completion
 
 
   (when (or (and (boundp 'use-ido) use-ido) (not (boundp 'use-ido))) (ido-mode 1))
-
-  ;; =============================================================================
-  ;;                                                                         elisp
-  ;; =============================================================================
-
-  (setq edebug-trace t)
-
-  (use-package macrostep)
-
-  (use-package emr
-    :bind ("M-RET" . emr-show-refactor-menu)
-    :config
-    (progn
-      (add-hook 'prog-mode-hook 'emr-initialize)))
-
-  (use-package elisp-slime-nav
-    :commands elisp-slime-nav-mode
-    :config
-    (diminish 'elisp-slime-nav-mode)
-    :init
-    (add-hook 'emacs-lisp-mode-hook (lambda () (elisp-slime-nav-mode t))))
-
-
-  (defun imenu-elisp-sections ()
-    (setq imenu-prev-index-position-function nil)
-    (setq imenu-space-replacement nil)
-    (add-to-list 'imenu-generic-expression
-                 `("Package"
-                   ,"(use-package \\(.+\\)$" 1))
-    (add-to-list 'imenu-generic-expression
-                 `("Section"
-                   ,(concat ";\\{1,4\\} =\\{10,80\\}\n;\\{1,4\\} \\{10,80\\}"
-                            "\\(.+\\)$") 1) t))
-
-  (put 'use-package 'lisp-indent-function 1) ;; reduce indentation for use-package
-  (add-hook 'emacs-lisp-mode-hook 'imenu-elisp-sections)
-  (add-hook 'emacs-lisp-mode-hook 'flatten-current-imenu-index-function)
-  (add-hook 'emacs-lisp-mode-hook (lambda ()
-                                    (setq indent-tabs-mode nil)
-                                    (setq show-trailing-whitespace t)))
-  (define-key lisp-mode-shared-map (kbd "C-c C-c") 'eval-defun)
-  (define-key lisp-mode-shared-map (kbd "C-c C-r") 'eval-and-replace)
-  (define-key lisp-mode-shared-map (kbd "C-c o r") 'up-list-region)
-  (define-key lisp-mode-shared-map (kbd "C-c o o") 'up-list-back)
-  (define-key lisp-mode-shared-map (kbd "C-x C-e") 'eval-region-or-last-sexp)
-  (unbind-key "C-j" lisp-interaction-mode-map)
 
   ;; =============================================================================
   ;;                                                                         Scala
