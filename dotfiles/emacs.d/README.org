@@ -1003,6 +1003,8 @@ I use helm for almost all emacs completion
                           '(:time "100d" :actions -email :period "5d" :audible nil))
           (org-notify-start 10)))
 
+      (setq org-imenu-depth 10)
+      (add-hook 'org-mode-hook 'flatten-current-imenu-index-function)
       (use-package org-bullets
         :config
         (progn
