@@ -31,7 +31,238 @@ Death to any gui elements in emacs! Do this EARLY so that emacs doesn't redispla
   (when (fboundp 'tool-bar-mode) (tool-bar-mode -1))
   (when (fboundp 'scroll-bar-mode) (scroll-bar-mode -1))
 #+END_SRC
-* Custom emacs-lisp
+** Byte-Compiler
+These definitions silence the byte-compiler
+#+BEGIN_SRC emacs-lisp
+  (defvar ido-cur-item nil)
+  (defvar ido-default-item nil)
+  (defvar ido-context-switch-command nil)
+  (defvar ido-cur-list nil)
+  (defvar inherit-input-method nil)
+  (defvar grep-find-ignored-files nil)
+  (defvar grep-find-ignored-directories nil)
+  (defvar tls-checktrust nil)
+  (defvar tls-program nil)
+
+#+END_SRC
+** Security
+#+BEGIN_SRC emacs-lisp
+  (defvar imalison:secure nil)
+
+  (defun imalison:use-https-and-tls ()
+    (setq tls-checktrust t)
+    (let ((trustfile
+           (replace-regexp-in-string
+            "\\\\" "/"
+            (replace-regexp-in-string
+             "\n" ""
+             (shell-command-to-string "python -m certifi")))))
+      (setq tls-program
+            (list
+             (format "gnutls-cli%s --x509cafile %s -p %%p %%h"
+                     (if (eq window-system 'w32) ".exe" "") trustfile)))))
+
+  (defun imalison:test-security ()
+    (interactive)
+    (let ((bad-hosts
+         (loop for bad
+               in `("https://wrong.host.badssl.com/"
+                    "https://self-signed.badssl.com/")
+               if (condition-case _e
+                      (url-retrieve
+                       bad (lambda (_retrieved) t))
+                    (error nil))
+               collect bad)))
+    (if bad-hosts
+        (error (format "tls misconfigured; retrieved %s ok"
+                       bad-hosts))
+      (url-retrieve "https://badssl.com"
+                    (lambda (_retrieved) t)))))
+
+  (when imalison:secure (imalison:use-https-and-tls))
+#+END_SRC
+** ELPA
+#+BEGIN_SRC emacs-lisp
+  (require 'package)
+  (defvar imalison:elpa-protocol (if imalison:secure "https" "http"))
+  ;; (add-to-list 'package-archives
+  ;;              '("marmalade" . "http://marmalade-repo.org/packages/") t)
+  (add-to-list 'package-archives `("elpa" . ,(concat imalison:elpa-protocol
+                                                    "://tromey.com/elpa/")) t)
+  (add-to-list 'package-archives `("org" . ,(concat imalison:elpa-protocol
+                                                   "://orgmode.org/elpa/")) t)
+  (add-to-list 'package-archives `("melpa" . ,(concat imalison:elpa-protocol
+                                                     "://melpa.org/packages/")) t)
+
+  (defun ensure-packages-installed (packages)
+    (unless package-archive-contents
+      (package-refresh-contents))
+    (mapcar
+     (lambda (package)
+       (if (package-installed-p package)
+           package
+         (progn (message (format "Installing package %s." package))
+                (package-install package))))
+     packages))
+
+  (package-initialize)
+  (ensure-packages-installed '(epl use-package))
+
+  ;; use-package is only needed at compile time.
+  (eval-when-compile (require 'use-package))
+  (setq use-package-always-ensure t)
+
+  (use-package diminish)
+  (use-package bind-key)
+  (use-package bug-hunter)
+
+  (use-package benchmark-init
+    ;; this variable has to be set in custom-before.el
+    :if (and (boundp 'do-benchmark) do-benchmark))
+#+END_SRC
+** Miscellaneous
+#+BEGIN_SRC emacs-lisp
+  (setq visible-bell nil)
+  (setq sentence-end-double-space nil)
+
+  ;; Disable the creation of backup files.
+  (setq backup-inhibited t)
+  (setq make-backup-files nil)
+  (setq auto-save-default nil)
+
+  (defconst emacs-tmp-dir
+    (format "%s/%s%s/" temporary-file-directory "emacs" (user-uid)))
+  (setq backup-directory-alist `((".*" . ,emacs-tmp-dir)))
+  (setq auto-save-file-name-transforms `((".*" ,emacs-tmp-dir t)))
+  (setq auto-save-list-file-prefix emacs-tmp-dir)
+
+
+  (put 'set-goal-column 'disabled nil)
+  (auto-fill-mode -1)
+  (setq indent-tabs-mode nil)
+
+  ;; No hsplits. EVER.
+  (defun split-horizontally-for-temp-buffers () (split-window-horizontally))
+  (add-hook 'temp-buffer-setup-hook 'split-horizontally-for-temp-buffers)
+  (setq split-height-threshold nil)
+  (setq split-width-threshold 160)
+
+  ;; No popup frames.
+  (setq ns-pop-up-frames nil)
+  (setq pop-up-frames nil)
+  (setq confirm-nonexistent-file-or-buffer nil)
+
+  ;; No prompt for killing a buffer with processes attached.
+  (setq kill-buffer-query-functions
+    (remq 'process-kill-buffer-query-function
+          kill-buffer-query-functions))
+
+  (setq inhibit-startup-message t
+        inhibit-startup-echo-area-message t)
+
+  (if (fboundp 'tooltip-mode) (tooltip-mode -1) (setq tooltip-use-echo-area t))
+
+  (setq use-dialog-box nil)
+
+  (defadvice yes-or-no-p (around prevent-dialog activate)
+    "Prevent yes-or-no-p from activating a dialog"
+    (let ((use-dialog-box nil))
+      ad-do-it))
+
+  (defadvice y-or-n-p (around prevent-dialog-yorn activate)
+    "Prevent y-or-n-p from activating a dialog"
+    (let ((use-dialog-box nil))
+      ad-do-it))
+
+  (global-auto-revert-mode)
+
+  ;; This makes it so that emacs --daemon puts its files in ~/.emacs.d/server
+  ;; (setq server-use-tcp t)
+
+  ;; Display line and column numbers in mode line.
+  (line-number-mode t)
+  (column-number-mode t)
+  (global-linum-mode t)
+  (setq visible-bell t)
+  (show-paren-mode 1)
+
+  ;; Make buffer names unique.
+  (setq uniquify-buffer-name-style 'forward)
+
+  ;; We want closures
+  (setq lexical-binding t)
+
+  (setq fill-column 80)
+
+  ;; Don't disable commands...
+  (setq disabled-command-function nil)
+
+  ;; Make forward word understand camel and snake case.
+  (setq c-subword-mode t)
+  (global-subword-mode)
+
+  ;; Preserve pastes from OS when saving a new item to the kill
+  ;; ring. Why wouldn't this be enabled by default?
+  (setq save-interprogram-paste-before-kill t)
+
+  (setq-default cursor-type 'box)
+  (setq-default cursor-in-non-selected-windows 'bar)
+
+  (if nil ;; Causing too many annoying issues
+      (add-hook 'after-init-hook '(lambda () (setq debug-on-error t))))
+
+  ;; Make mouse scrolling less jumpy.
+  (setq mouse-wheel-scroll-amount '(1 ((shift) . 1)))
+
+  (eval-after-load 'subword '(diminish 'subword-mode))
+  (eval-after-load 'simple '(diminish 'visual-line-mode))
+
+  (setq display-time-default-load-average nil)
+  (setq display-time-interval 1)
+  (setq display-time-format "%a, %b %d, %T ")
+  (display-time-mode 1)
+
+  (setq reb-re-syntax 'string) ;; the only sane option...
+
+  (setq ediff-split-window-function 'split-window-horizontally)
+  (setq ediff-window-setup-function 'ediff-setup-windows-plain)
+
+  ;; Disable this per major mode or maybe using file size if it causes
+  ;; performance issues?
+  (setq imenu-auto-rescan t)
+  (setq imenu-max-item-length 300)
+
+  (put 'narrow-to-region 'disabled nil)
+  (put 'narrow-to-page 'disabled nil)
+
+  (setq echo-keystrokes 0.25)
+
+  (setq initial-scratch-message "")
+
+  (setq utf-translate-cjk-mode nil) ; disable CJK coding/encoding
+                                    ; (Chinese/Japanese/Korean
+                                    ; characters)
+  (set-language-environment 'utf-8)
+  (set-keyboard-coding-system 'utf-8-mac) ; For old Carbon emacs on OS X only
+  (setq locale-coding-system 'utf-8)
+  (set-default-coding-systems 'utf-8)
+  (set-terminal-coding-system 'utf-8)
+  (unless (eq system-type 'windows-nt)
+    (set-selection-coding-system 'utf-8))
+  (prefer-coding-system 'utf-8)
+
+  (setq checkdoc-force-docstrings-flag nil
+        checkdoc-arguments-in-order-flag nil)
+
+  ;; text mode stuff:
+  (remove-hook 'text-mode-hook #'turn-on-auto-fill)
+  (add-hook 'text-mode-hook 'turn-on-visual-line-mode)
+  (setq sentence-end-double-space nil)
+
+  ;; y and n instead of yes and no
+  (defalias 'yes-or-no-p 'y-or-n-p)
+#+END_SRC
+* emacs-lisp
 ** An emacs version predicate builder:
 #+BEGIN_SRC emacs-lisp
   (defmacro imalison:emacs-version-predicate (major-version minor-version)
@@ -89,7 +320,7 @@ Prefix alternatives is a macro that builds a function that selects one of a coll
        (setq current-prefix-arg nil)
        (call-interactively function)))
 #+END_SRC
-** TODO add commentary to the following
+** Other
 #+BEGIN_SRC emacs-lisp
   (defun imalison:join-paths (&rest paths)
     (substring (mapconcat 'file-name-as-directory paths nil) 0 -1))
@@ -956,6 +1187,17 @@ I use helm for almost all emacs completion
       (add-hook 'org-mode-hook (lambda () (setq org-todo-key-trigger t)))
       (add-hook 'org-agenda-mode-hook 'imalison:disable-linum-mode)))
 #+END_SRC
+*** diminish
+#+BEGIN_SRC emacs-lisp
+  (use-package diminish
+    :preface
+    (defvar imalison:packages-to-diminish
+      '(auto-revert-mode smartparens-mode eldoc-mode tern-mode js2-refactor-mode))
+    :config
+    (progn
+      (cl-loop for package in imalison:packages-to-diminish
+               do (diminish package))))
+#+END_SRC
 ** Major Modes
 *** python
 #+BEGIN_SRC emacs-lisp
@@ -1293,310 +1535,23 @@ I use helm for almost all emacs completion
           (add-hook 'rust-mode-hook 'cargo-minor-mode)))
       (add-hook 'rust-mode-hook 'imalison:rust-mode-hook)))
 #+END_SRC
-* Keybindings
+*** Other
 #+BEGIN_SRC emacs-lisp
-  (bind-key "M-q" 'fill-or-unfill-paragraph)
-  (bind-key "C-c C-s" 'sudo-edit)
-  (bind-key "C-c SPC" 'imalison:mark-ring)
-  (bind-key "C-c e" 'os-copy)
-  (bind-key "C-x p" 'pop-to-mark-command)
-  (setq set-mark-command-repeat-pop t)
-  (bind-key "C-x C-b" 'buffer-menu)
-  (bind-key "C-x C-c" 'kill-emacs)
-  (bind-key "C-x C-i" 'imenu)
-  (bind-key "C-x C-r" (lambda () (interactive) (revert-buffer t t)))
-  (bind-key "C-x O" (lambda () (interactive) (other-window -1)))
-  (bind-key "C-x w" 'whitespace-mode)
-  (bind-key "M-n" 'forward-paragraph)
-  (bind-key "M-p" 'backward-paragraph)
-  (bind-key "C-M-<backspace>" 'backward-kill-sexp)
-  (bind-key "s-<return>" 'toggle-frame-fullscreen)
-  (bind-key "M-|" 'imalison:shell-command-on-region)
-  (bind-key "C--" 'undo)
-  (bind-key "C-x 9" 'previous-buffer)
-  (bind-key "s-v" 'clipboard-yank)
-
-  (fset 'global-set-key-to-use-package
-        (lambda (&optional arg) "Keyboard macro." (interactive "p")
-          (kmacro-exec-ring-item
-           (quote ([1 67108896 19 100 6 23 40 19 41 return
-                      backspace 32 46 6 4] 0 "%d")) arg)))
-#+END_SRC
-** OSX
-#+BEGIN_SRC emacs-lisp
-  (when (equal system-type 'darwin)
-    (setq mac-option-modifier 'meta)
-    (setq mac-command-modifier 'super))
-#+END_SRC
-* TODO Make the stuff under this heading literate
-#+BEGIN_SRC emacs-lisp
-
-  ;; =============================================================================
-  ;;                                                                 byte-compiler
-  ;; =============================================================================
-
-  ;; These silence the byte compiler.
-  (defvar ido-cur-item nil)
-  (defvar ido-default-item nil)
-  (defvar ido-context-switch-command nil)
-  (defvar ido-cur-list nil)
-  (defvar inherit-input-method nil)
-  (defvar grep-find-ignored-files nil)
-  (defvar grep-find-ignored-directories nil)
-  (defvar tls-checktrust nil)
-  (defvar tls-program nil)
-
-  ;; =============================================================================
-  ;;                                                                      Security
-  ;; =============================================================================
-
-  (defvar imalison:secure nil)
-
-  (defun imalison:use-https-and-tls ()
-    (setq tls-checktrust t)
-    (let ((trustfile
-           (replace-regexp-in-string
-            "\\\\" "/"
-            (replace-regexp-in-string
-             "\n" ""
-             (shell-command-to-string "python -m certifi")))))
-      (setq tls-program
-            (list
-             (format "gnutls-cli%s --x509cafile %s -p %%p %%h"
-                     (if (eq window-system 'w32) ".exe" "") trustfile)))))
-
-  (defun imalison:test-security ()
-    (interactive)
-    (let ((bad-hosts
-         (loop for bad
-               in `("https://wrong.host.badssl.com/"
-                    "https://self-signed.badssl.com/")
-               if (condition-case _e
-                      (url-retrieve
-                       bad (lambda (_retrieved) t))
-                    (error nil))
-               collect bad)))
-    (if bad-hosts
-        (error (format "tls misconfigured; retrieved %s ok"
-                       bad-hosts))
-      (url-retrieve "https://badssl.com"
-                    (lambda (_retrieved) t)))))
-
-  (when imalison:secure (imalison:use-https-and-tls))
-
-  ;; =============================================================================
-  ;;                                                         ELPA/package.el/MELPA
-  ;; =============================================================================
-
-  (require 'package)
-  (defvar imalison:elpa-protocol (if imalison:secure "https" "http"))
-  ;; (add-to-list 'package-archives
-  ;;              '("marmalade" . "http://marmalade-repo.org/packages/") t)
-  (add-to-list 'package-archives `("elpa" . ,(concat imalison:elpa-protocol
-                                                    "://tromey.com/elpa/")) t)
-  (add-to-list 'package-archives `("org" . ,(concat imalison:elpa-protocol
-                                                   "://orgmode.org/elpa/")) t)
-  (add-to-list 'package-archives `("melpa" . ,(concat imalison:elpa-protocol
-                                                     "://melpa.org/packages/")) t)
-
-  (defun ensure-packages-installed (packages)
-    (unless package-archive-contents
-      (package-refresh-contents))
-    (mapcar
-     (lambda (package)
-       (if (package-installed-p package)
-           package
-         (progn (message (format "Installing package %s." package))
-                (package-install package))))
-     packages))
-
-  (package-initialize)
-  (ensure-packages-installed '(epl use-package))
-
-  ;; use-package is only needed at compile time.
-  (eval-when-compile (require 'use-package))
-  (setq use-package-always-ensure t)
-
-  (use-package diminish)
-  (use-package bind-key)
-  (use-package bug-hunter)
-
-  (use-package benchmark-init
-    ;; this variable has to be set in custom-before.el
-    :if (and (boundp 'do-benchmark) do-benchmark))
-
-  ;; =============================================================================
-  ;;                                                          Config Free Packages
-  ;; =============================================================================
-
   (defvar packages-eager
+    '(popup cl-lib xclip dired+ ctags ctags-update aggressive-indent imenu+
+      neotree gist))
+
+  (ensure-packages-installed packages-eager)
+#+END_SRC
+** Other
+#+BEGIN_SRC emacs-lisp
+  (defvar imalison:packages-to-install
     '(popup cl-lib xclip dired+ ctags ctags-update aggressive-indent imenu+
       neotree diminish gist))
 
-  (ensure-packages-installed packages-eager)
-
-  ;; =============================================================================
-  ;;                                                                      Disables
-  ;; =============================================================================
-
-  (setq visible-bell nil)
-  (setq sentence-end-double-space nil)
-
-  ;; Disable the creation of backup files.
-  (setq backup-inhibited t)
-  (setq make-backup-files nil)
-  (setq auto-save-default nil)
-
-  (defconst emacs-tmp-dir
-    (format "%s/%s%s/" temporary-file-directory "emacs" (user-uid)))
-  (setq backup-directory-alist `((".*" . ,emacs-tmp-dir)))
-  (setq auto-save-file-name-transforms `((".*" ,emacs-tmp-dir t)))
-  (setq auto-save-list-file-prefix emacs-tmp-dir)
-
-
-  (put 'set-goal-column 'disabled nil)
-  (auto-fill-mode -1)
-  (setq indent-tabs-mode nil)
-
-  ;; No hsplits. EVER.
-  (defun split-horizontally-for-temp-buffers () (split-window-horizontally))
-  (add-hook 'temp-buffer-setup-hook 'split-horizontally-for-temp-buffers)
-  (setq split-height-threshold nil)
-  (setq split-width-threshold 160)
-
-  ;; No popup frames.
-  (setq ns-pop-up-frames nil)
-  (setq pop-up-frames nil)
-  (setq confirm-nonexistent-file-or-buffer nil)
-
-  ;; No prompt for killing a buffer with processes attached.
-  (setq kill-buffer-query-functions
-    (remq 'process-kill-buffer-query-function
-          kill-buffer-query-functions))
-
-  (setq inhibit-startup-message t
-        inhibit-startup-echo-area-message t)
-
-  (if (fboundp 'tooltip-mode) (tooltip-mode -1) (setq tooltip-use-echo-area t))
-
-  (setq use-dialog-box nil)
-
-  (defadvice yes-or-no-p (around prevent-dialog activate)
-    "Prevent yes-or-no-p from activating a dialog"
-    (let ((use-dialog-box nil))
-      ad-do-it))
-
-  (defadvice y-or-n-p (around prevent-dialog-yorn activate)
-    "Prevent y-or-n-p from activating a dialog"
-    (let ((use-dialog-box nil))
-      ad-do-it))
-
-  ;; =============================================================================
-  ;;                                                                     functions
-  ;; =============================================================================
-
-
-  ;; =============================================================================
-  ;;                                                         General Emacs Options
-  ;; =============================================================================
-
-  (global-auto-revert-mode)
-  (diminish 'auto-revert-mode)
-  (diminish 'smartparens-mode)
-  (diminish 'eldoc-mode)
-  (diminish 'tern-mode)
-  (diminish 'js2-refactor-mode)
-
-  ;; This makes it so that emacs --daemon puts its files in ~/.emacs.d/server
-  ;; (setq server-use-tcp t)
-
-  ;; Display line and column numbers in mode line.
-  (line-number-mode t)
-  (column-number-mode t)
-  (global-linum-mode t)
-  (setq visible-bell t)
-  (show-paren-mode 1)
-
-  ;; Make buffer names unique.
-  (setq uniquify-buffer-name-style 'forward)
-
-  ;; We want closures
-  (setq lexical-binding t)
-
-  (setq fill-column 80)
-
-  ;; Don't disable commands...
-  (setq disabled-command-function nil)
-
-  ;; Make forward word understand camel and snake case.
-  (setq c-subword-mode t)
-  (global-subword-mode)
-
-  ;; Preserve pastes from OS when saving a new item to the kill
-  ;; ring. Why wouldn't this be enabled by default?
-  (setq save-interprogram-paste-before-kill t)
-
-  (setq-default cursor-type 'box)
-  (setq-default cursor-in-non-selected-windows 'bar)
-
-  (if nil ;; Causing too many annoying issues
-      (add-hook 'after-init-hook '(lambda () (setq debug-on-error t))))
-
-  ;; Make mouse scrolling less jumpy.
-  (setq mouse-wheel-scroll-amount '(1 ((shift) . 1)))
-
-  (eval-after-load 'subword '(diminish 'subword-mode))
-  (eval-after-load 'simple '(diminish 'visual-line-mode))
-
-  (setq display-time-default-load-average nil)
-  (setq display-time-interval 1)
-  (setq display-time-format "%a, %b %d, %T ")
-  (display-time-mode 1)
-
-  (setq reb-re-syntax 'string) ;; the only sane option...
-
-  (setq ediff-split-window-function 'split-window-horizontally)
-  (setq ediff-window-setup-function 'ediff-setup-windows-plain)
-
-  ;; Disable this per major mode or maybe using file size if it causes
-  ;; performance issues?
-  (setq imenu-auto-rescan t)
-  (setq imenu-max-item-length 300)
-
-  (put 'narrow-to-region 'disabled nil)
-  (put 'narrow-to-page 'disabled nil)
-
-  (setq echo-keystrokes 0.25)
-
-  (setq initial-scratch-message "")
-
-  (setq utf-translate-cjk-mode nil) ; disable CJK coding/encoding
-                                    ; (Chinese/Japanese/Korean
-                                    ; characters)
-  (set-language-environment 'utf-8)
-  (set-keyboard-coding-system 'utf-8-mac) ; For old Carbon emacs on OS X only
-  (setq locale-coding-system 'utf-8)
-  (set-default-coding-systems 'utf-8)
-  (set-terminal-coding-system 'utf-8)
-  (unless (eq system-type 'windows-nt)
-    (set-selection-coding-system 'utf-8))
-  (prefer-coding-system 'utf-8)
-
-  (setq checkdoc-force-docstrings-flag nil
-        checkdoc-arguments-in-order-flag nil)
-
-  ;; text mode stuff:
-  (remove-hook 'text-mode-hook #'turn-on-auto-fill)
-  (add-hook 'text-mode-hook 'turn-on-visual-line-mode)
-  (setq sentence-end-double-space nil)
-
-  ;; y and n instead of yes and no
-  (defalias 'yes-or-no-p 'y-or-n-p)
-
-  ;; =============================================================================
-  ;;                                                                   use-package
-  ;; =============================================================================
-
+  (ensure-packages-installed imalison:packages-to-install)
+#+END_SRC
+#+BEGIN_SRC emacs-lisp
   (use-package iedit
     :demand
     :config
@@ -1901,10 +1856,6 @@ I use helm for almost all emacs completion
 
   (use-package nodejs-repl)
 
-  ;; =============================================================================
-  ;;                                                         Non-Programming Stuff
-  ;; =============================================================================
-
   (use-package calc-mode
     :ensure nil
     :config
@@ -2203,10 +2154,6 @@ I use helm for almost all emacs completion
           (cadr (assoc (popup-menu* menu :scroll-bar t) base-menu))))
       (fset 'flyspell-emacs-popup 'flyspell-emacs-popup-textual)))
 
-  ;; =============================================================================
-  ;;                                                        Programming Mode Hooks
-  ;; =============================================================================
-
   (add-hook 'prog-mode-hook (lambda () (auto-fill-mode -1)))
   (add-hook 'prog-mode-hook (lambda () (subword-mode t) (diminish 'subword-mode)))
   ;; (add-hook 'prog-mode-hook 'flyspell-prog-mode)
@@ -2313,10 +2260,6 @@ I use helm for almost all emacs completion
 
   (when (or (and (boundp 'use-ido) use-ido) (not (boundp 'use-ido))) (ido-mode 1))
 
-  ;; =============================================================================
-  ;;                                                                          Java
-  ;; =============================================================================
-
   (add-hook 'java-mode-hook
             (lambda ()
               (setq c-basic-offset 4
@@ -2348,20 +2291,12 @@ I use helm for almost all emacs completion
   (eval-after-load 'css-mode
     '(define-key css-mode-map (kbd "C-c b") 'web-beautify-css))
 
-  ;; =============================================================================
-  ;;                                                                          Ruby
-  ;; =============================================================================
-
   (use-package robe
     :commands robe-mode
     :init
     (progn (add-hook 'ruby-mode-hook 'robe-mode)))
 
   (use-package rinari)
-
-  ;; =============================================================================
-  ;;                                                                         C/C++
-  ;; =============================================================================
 
   (setq-default c-basic-offset 4
                 tab-width 4
@@ -2385,10 +2320,6 @@ I use helm for almost all emacs completion
       (add-hook 'c-mode-hook 'helm-gtags-mode)
       (add-hook 'c++-mode-hook 'helm-gtags-mode)
       (add-hook 'asm-mode-hook 'helm-gtags-mode)))
-
-  ;; =============================================================================
-  ;;                                                                           TeX
-  ;; =============================================================================
 
   (defun guess-TeX-master (filename)
     "Guess the master file for FILENAME from currently open .tex files."
@@ -2436,10 +2367,6 @@ I use helm for almost all emacs completion
     (progn
       (unbind-key "C-j" LaTeX-mode-map)))
 
-  ;; =============================================================================
-  ;;                                                                   other modes
-  ;; =============================================================================
-
   (use-package yaml-mode
     :mode (("\\.yaml\\'" . yaml-mode)
            ("\\.yml\\'" . yaml-mode)))
@@ -2463,8 +2390,42 @@ I use helm for almost all emacs completion
       (add-hook 'markdown-mode-hook 'imalison:disable-linum-mode)))
 
   (use-package hackernews :commands hackernews)
-#+END_SRC
+ #+END_SRC
+* Keybindings
+#+BEGIN_SRC emacs-lisp
+  (bind-key "M-q" 'fill-or-unfill-paragraph)
+  (bind-key "C-c C-s" 'sudo-edit)
+  (bind-key "C-c SPC" 'imalison:mark-ring)
+  (bind-key "C-c e" 'os-copy)
+  (bind-key "C-x p" 'pop-to-mark-command)
+  (setq set-mark-command-repeat-pop t)
+  (bind-key "C-x C-b" 'buffer-menu)
+  (bind-key "C-x C-c" 'kill-emacs)
+  (bind-key "C-x C-i" 'imenu)
+  (bind-key "C-x C-r" (lambda () (interactive) (revert-buffer t t)))
+  (bind-key "C-x O" (lambda () (interactive) (other-window -1)))
+  (bind-key "C-x w" 'whitespace-mode)
+  (bind-key "M-n" 'forward-paragraph)
+  (bind-key "M-p" 'backward-paragraph)
+  (bind-key "C-M-<backspace>" 'backward-kill-sexp)
+  (bind-key "s-<return>" 'toggle-frame-fullscreen)
+  (bind-key "M-|" 'imalison:shell-command-on-region)
+  (bind-key "C--" 'undo)
+  (bind-key "C-x 9" 'previous-buffer)
+  (bind-key "s-v" 'clipboard-yank)
 
+  (fset 'global-set-key-to-use-package
+        (lambda (&optional arg) "Keyboard macro." (interactive "p")
+          (kmacro-exec-ring-item
+           (quote ([1 67108896 19 100 6 23 40 19 41 return
+                      backspace 32 46 6 4] 0 "%d")) arg)))
+#+END_SRC
+** OSX
+#+BEGIN_SRC emacs-lisp
+  (when (equal system-type 'darwin)
+    (setq mac-option-modifier 'meta)
+    (setq mac-command-modifier 'super))
+#+END_SRC
 * Appearance
 
 ** Config
@@ -2620,12 +2581,3 @@ Set the character used to represent spaces to ·, and the character used for tab
 (remove-hook 'after-make-frame-functions 'imalison:appearance)
 
 #+END_SRC
-* Footer
-#+BEGIN_SRC emacs-lisp
-
-;; Local Variables:
-;; flycheck-disabled-checkers: (emacs-lisp-checkdoc)
-;; End:
-
-#+END_SRC
-
