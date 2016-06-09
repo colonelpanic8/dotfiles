@@ -534,6 +534,16 @@ I use helm for almost all emacs completion
         :init (add-hook 'magit-status-mode-hook 'magit-filenotify-mode))))
 #+END_SRC
 ** Major-Mode
+*** avy
+#+BEGIN_SRC emacs-lisp
+  (use-package avy
+    :preface
+    (progn
+      (imalison:prefix-alternatives imalison:avy avy-goto-word-1 avy-goto-char))
+    :bind (("C-j" . imalison:avy)
+           ("M-g l" . avy-goto-line)
+           ("C-'" . avy-goto-char-2)))
+#+END_SRC
 * Keybindings
 #+BEGIN_SRC emacs-lisp
   (bind-key "M-q" 'fill-or-unfill-paragraph)
@@ -953,14 +963,6 @@ I use helm for almost all emacs completion
 
   (use-package jump-char
     :bind (("C-;" . jump-char-forward)))
-
-  (use-package avy
-    :preface
-    (progn
-      (imalison:prefix-alternatives imalison:avy avy-goto-word-1 avy-goto-char))
-    :bind (("C-j" . imalison:avy)
-           ("M-g l" . avy-goto-line)
-           ("C-'" . avy-goto-char-2)))
 
   (use-package ace-window
     :preface
