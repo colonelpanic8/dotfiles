@@ -543,6 +543,419 @@ I use helm for almost all emacs completion
            ("M-g l" . avy-goto-line)
            ("C-'" . avy-goto-char-2)))
 #+END_SRC
+*** org
+#+BEGIN_SRC emacs-lisp
+  (use-package org
+    :ensure org-plus-contrib
+    :commands (org-mode org org-mobile-push org-mobile-pull org-agenda)
+    :mode ("\\.org\\'" . org-mode)
+    :bind (("C-c a" . org-agenda)
+           ("C-c c" . org-capture)
+           ("C-c n t" . org-insert-todo-heading)
+           ("C-c n s" . org-insert-todo-subheading)
+           ("C-c n h" . org-insert-habit)
+           ("C-c n m" . org-make-habit)
+           ("C-c n l" . org-store-link)
+           ("C-c n i" . org-insert-link)
+           ("C-c C-t" . org-todo)
+           ("C-c C-S-t" . org-todo-force-notes))
+    :config
+    (progn
+      (setq org-global-properties
+            '(quote (("Effort_ALL" . "0:15 0:30 0:45 1:00 2:00 3:00 4:00 5:00 6:00 0:00")
+                     ("STYLE_ALL" . "habit"))))
+      (setq org-columns-default-format "%80ITEM(Task) %10Effort(Effort){:} %10CLOCKSUM")
+      (defvar-setq helm-org-headings-fontify t)
+      (setq org-todo-repeat-to-state "TODO")
+
+      (setq org-agenda-span 10)
+      (setq org-agenda-start-day "-2d")
+
+      (org-babel-do-load-languages
+       'org-babel-load-languages
+       '((sh . t)
+         (python . t)
+         (ruby . t)
+         (octave . t)
+         (sqlite . t)))
+
+      (when nil
+        ;; Enable appointment notifications.
+        (defadvice org-agenda-to-appt (before wickedcool activate)
+          "Clear the appt-time-msg-list."
+          (setq appt-time-msg-list nil))
+        (appt-activate)
+        (defun org-agenda-to-appt-no-message ()
+          (suppress-messages (org-agenda-to-appt)))
+        (run-at-time "00:00" 60 'org-agenda-to-appt-no-message))
+
+      (defun org-archive-if (condition-function)
+        (if (funcall condition-function)
+            (let ((next-point-marker
+                   (save-excursion (org-forward-heading-same-level 1) (point-marker))))
+              (org-archive-subtree)
+              (setq org-map-continue-from (marker-position next-point-marker)))))
+
+      (defun org-archive-if-completed ()
+        (interactive)
+        (org-archive-if 'org-entry-is-done-p))
+
+      (defun org-archive-completed-in-buffer ()
+        (interactive)
+        (org-map-entries 'org-archive-if-completed))
+
+      (defun org-capture-make-todo-template (&optional content)
+        (unless content (setq content "%?"))
+        (with-temp-buffer
+          (org-mode)
+          (org-insert-heading)
+          (insert content)
+          (org-todo "TODO")
+          (org-set-property "CREATED"
+                            (with-temp-buffer
+                              (org-insert-time-stamp
+                               (org-current-effective-time) t t)))
+          (remove-hook 'post-command-hook 'org-add-log-note)
+          (org-add-log-note)
+          (buffer-substring-no-properties (point-min) (point-max))))
+
+      (defun org-todo-force-notes ()
+        (interactive)
+        (let ((org-todo-log-states
+               (mapcar (lambda (state)
+                         (list state 'note 'time))
+                       (apply 'append org-todo-sets))))
+          (cond ((eq major-mode 'org-mode)  (org-todo))
+                ((eq major-mode 'org-agenda-mode) (org-agenda-todo)))))
+
+      (defun org-make-habit ()
+        (interactive)
+        (org-set-property "STYLE" "habit"))
+
+      (defun org-insert-habit ()
+        (interactive)
+        (org-insert-todo-heading nil)
+        (org-make-habit))
+
+      (defun org-todo-at-date (date)
+        (interactive (list (org-time-string-to-time (org-read-date))))
+        (flet ((org-current-effective-time (&rest r) date)
+               (org-today (&rest r) (time-to-days date)))
+          (cond ((eq major-mode 'org-mode) (org-todo))
+                ((eq major-mode 'org-agenda-mode) (org-agenda-todo)))))
+
+      (defun org-capture-make-linked-todo-template ()
+        (org-capture-make-todo-template "%? %A"))
+
+      (defun org-cmp-creation-times (a b)
+        (let ((a-created (get-date-created-from-agenda-entry a))
+              (b-created (get-date-created-from-agenda-entry b)))
+          (imalison:compare-int-list a-created b-created)))
+
+      (defun org-agenda-done (&optional arg)
+        "Mark current TODO as done.
+  This changes the line at point, all other lines in the agenda referring to
+  the same tree node, and the headline of the tree node in the Org-mode file."
+        (interactive "P")
+        (org-agenda-todo "DONE"))
+      ;; Override the key definition for org-exit
+      ;; (define-key org-agenda-mode-map "x" #'org-agenda-done) ;; TODO why does this cause an error
+
+      ;; org-mode add-ons
+      (use-package org-present)
+      (use-package org-pomodoro)
+
+      ;; variable configuration
+      (add-to-list 'org-modules 'org-habit)
+      (add-to-list 'org-modules 'org-expiry)
+      (add-to-list 'org-modules 'org-notify)
+
+      (setq org-src-fontify-natively t)
+      (setq org-habit-graph-column 50)
+      (setq org-habit-show-habits-only-for-today t)
+      ;; My priority system:
+
+      ;; A - Absolutely MUST, at all costs, be completed by the provided
+      ;;     due date. TODO: implement some type of extreme nagging
+      ;;     system that alerts in an intrusive way for overdue A
+      ;;     priority tasks.
+
+      ;; B - Should be given immediate attention if the due date is any
+      ;;     time in the next two days. Failure to meet due date would
+      ;;     be bad but not catastrophic.
+
+      ;; C - The highest priority to which tasks for which failure to
+      ;;     complete on time would not have considerable significant
+      ;;     consequences. There is still significant reason to prefer
+      ;;     the completion of these tasks sooner rather than later.
+
+      ;; D - Failure to complete within a few days (or ever) of any
+      ;;     deadline would be completely okay. As such, any deadline
+      ;;     present on such a task is necessarily self imposed. Still
+      ;;     probably worth doing
+
+      ;; E - Potentially not even worth doing at all, but worth taking a
+      ;;     note about in case it comes up again, or becomes more
+      ;;     interesting later.
+
+      ;; F - Almost certainly not worth attempting in the immediate future.
+      ;;     Just brain dump.
+
+      ;; Priorities are somewhat contextual within each category. Things
+      ;; in the gtd or work categories are generally regarded as much
+      ;; more important than things with the same priority from the
+      ;; dotfiles category.
+
+      ;; Items without deadlines or scheduled times of a given priority
+      ;; can be regarded as less important than items that DO have
+      ;; deadlines of that same priority.
+
+      (setq org-lowest-priority 69) ;; The character E
+      (setq org-completion-use-ido t)
+      (setq org-enforce-todo-dependencies t)
+      (setq org-deadline-warning-days 0)
+      (setq org-default-priority ?D)
+      (setq org-agenda-skip-scheduled-if-done t)
+      (setq org-agenda-skip-deadline-if-done t)
+      ;;(add-to-list org-agenda-tag-filter-preset "+PRIORITY<\"C\"")
+
+      (use-package org-notify
+        :disabled t
+        :config
+        (progn
+          (defun imalison:org-notify-notification-handler (plist)
+            (sauron-add-event 'org-notify 4 (format "%s, %s.\n" (plist-get plist :heading)
+                                                    (org-notify-body-text plist))))
+
+          (setq org-show-notification-handler 'imalison:org-notify-notification-handler)
+
+          (org-notify-add 'default '(:time "1h" :actions imalison:org-notify-notification-handler
+                                           :period "2m" :duration 60))
+          (org-notify-add 'default '(:time "100m" :actions imalison:org-notify-notification-handler
+                                           :period "2m" :duration 60))
+          (org-notify-add 'urgent-second '(:time "3m" :actions (-notify/window -ding)
+                                                 :period "15s" :duration 10))
+          (org-notify-add 'minute '(:time "5m" :actions -notify/window
+                                          :period "100s" :duration 70))
+          (org-notify-add '12hours
+                          '(:time "3m" :actions (-notify/window -ding)
+                                  :period "15s" :duration 10)
+                          '(:time "100m" :actions -notify/window
+                                  :period "2m" :duration 60)
+                          '(:time "12h" :actions -notify/window :audible nil
+                                  :period "10m" :duration 200))
+          (org-notify-add '5days
+                          '(:time "100m" :actions -notify/window
+                                  :period "2m" :duration 60)
+                          '(:time "2d" :actions -notify/window
+                                  :period "15m" :duration 100)
+                          '(:time "5d" :actions -notify/window
+                                  :period "2h" :duration 200))
+          (org-notify-add 'long-20days
+                          '(:time "2d" :actions -notify/window
+                                  :period "15m" :duration 60)
+                          '(:time "5d" :actions -notify/window
+                                  :period "2h" :duration 60)
+                          '(:time "20d" :actions -email :period "2d" :audible nil))
+          (org-notify-add 'long-50days
+                          '(:time "4d" :actions -notify/window
+                                  :period "30m" :duration 100)
+                          '(:time "10d" :actions -notify/window
+                                  :period "4h" :duration 200)
+                          '(:time "50d" :actions -email :period "3d" :audible nil))
+          (org-notify-add 'long-100days
+                          '(:time "2d" :actions -notify/window
+                                  :period "1h" :duration 200)
+                          '(:time "10d" :actions -notify/window
+                                  :period "10h" :duration 300)
+                          '(:time "50d" :actions -email :period "3d" :audible nil)
+                          '(:time "100d" :actions -email :period "5d" :audible nil))
+          (org-notify-start 10)))
+
+      (use-package org-bullets
+        :config
+        (progn
+          (add-hook 'org-mode-hook (lambda () (org-bullets-mode 1)))))
+
+      (use-package org-ehtml
+        :disabled t
+        :config
+        (progn
+          (setq org-ehtml-docroot (expand-file-name "~/Dropbox/org"))
+          (setq org-ehtml-allow-agenda t)
+          (setq org-ehtml-editable-headlines t)
+          (setq org-ehtml-everything-editable t)))
+
+      ;; Agenda setup.
+      (defvar-if-non-existent imalison:org-gtd-file "~/org/gtd.org")
+      (defvar-if-non-existent imalison:org-habits-file "~/org/habits.org")
+      (defvar-if-non-existent imalison:org-calendar-file "~/org/calendar.org")
+
+      (unless (boundp 'org-capture-templates)
+        (defvar org-capture-templates nil))
+
+      (imalison:add-to-org-agenda-files
+       (list imalison:org-gtd-file imalison:org-habits-file
+             imalison:org-calendar-file))
+
+      (add-to-list 'org-capture-templates
+                   `("t" "GTD Todo (Linked)" entry (file ,imalison:org-gtd-file)
+                     (function org-capture-make-linked-todo-template)))
+
+      (add-to-list 'org-capture-templates
+                   `("g" "GTD Todo" entry (file ,imalison:org-gtd-file)
+                     (function org-capture-make-todo-template)))
+
+      (add-to-list 'org-capture-templates
+                   `("y" "Calendar entry (Linked)" entry
+                     (file ,imalison:org-calendar-file)
+                     "* %? %A
+    :PROPERTIES:
+    :CREATED: %U
+    :END:
+  %^T"))
+
+      (add-to-list 'org-capture-templates
+                   `("c" "Calendar entry" entry
+                     (file ,imalison:org-calendar-file)
+                     "* %?
+    :PROPERTIES:
+    :CREATED: %U
+    :END:
+  %^T"))
+
+      (add-to-list 'org-capture-templates
+                   `("h" "Habit" entry (file ,imalison:org-habits-file)
+                     "* TODO
+    SCHEDULED: %^t
+    :PROPERTIES:
+    :CREATED: %U
+    :STYLE: habit
+    :END:"))
+
+      (let ((this-week-high-priority
+             ;; The < in the following line works has behavior that is opposite
+             ;; to what one might expect.
+             '(tags-todo "+PRIORITY<\"C\"+DEADLINE<\"<+1w>\"DEADLINE>\"<+0d>\""
+                         ((org-agenda-overriding-header
+                           "Upcoming high priority tasks:"))))
+            (due-today '(tags-todo
+                             "+DEADLINE=<\"<+0d>\""
+                             ((org-agenda-overriding-header
+                               "Due today:"))))
+            (recently-created '(tags-todo
+                             "+CREATED=>\"<-3d>\""
+                             ((org-agenda-overriding-header "Recently created:")
+                              (org-agenda-cmp-user-defined 'org-cmp-creation-times)
+                              (org-agenda-sorting-strategy '(user-defined-down)))))
+            (next '(todo "NEXT"))
+            (started '(todo "STARTED"))
+            (missing-deadline
+             '(tags-todo "-DEADLINE={.}/!"
+                         ((org-agenda-overriding-header
+                           "These don't have deadlines:"))))
+            (missing-priority
+             '(tags-todo "-PRIORITY={.}/!"
+                         ((org-agenda-overriding-header
+                           "These don't have priorities:")))))
+
+        (setq org-agenda-custom-commands
+              `(("M" "Main agenda view"
+                 ((agenda ""
+                          ((org-agenda-overriding-header "Agenda:")
+                           (org-agenda-ndays 5)
+                           (org-deadline-warning-days 0)))
+                  ,due-today
+                  ,next
+                  ,started
+                  ,this-week-high-priority
+                  ,recently-created)
+                 nil nil)
+                ,(cons "A" (cons "High priority upcoming" this-week-high-priority))
+                ,(cons "d" (cons "Overdue tasks and due today" due-today))
+                ,(cons "r" (cons "Recently created" recently-created))
+                ("h" "A, B priority:" tags-todo "+PRIORITY<\"C\""
+                         ((org-agenda-overriding-header
+                           "High Priority:")))
+                ("c" "At least priority C:" tags-todo "+PRIORITY<\"D\""
+                         ((org-agenda-overriding-header
+                           "At least priority C:"))))))
+
+      ;; What follows is a description of the significance of each of
+      ;; the values available in `org-todo-keywords'. All headings with
+      ;; one of these keywords deal with the concept of the completion
+      ;; of some task or collection of tasks to bring about a particular
+      ;; state of affairs. In some cases, the actual tasks involved may
+      ;; not be known at the time of task creation.
+
+      ;; Incomplete States:
+
+      ;; IDEA - This TODO exists in only the most abstract sense: it is
+      ;; an imagined state of affairs that requires tasks that are
+      ;; either not yet known, or have not thoroughly been considered.
+
+      ;; RESEARCH - This TODO needs to be investigated further before
+      ;; action can be taken to achieve the desired outcome. It is not
+      ;; known how much time and effort will be consumed in the actual
+      ;; completion of the task.
+
+      ;; TODO - The scope and work involved in this TODO are well
+      ;; understood, but for some reason or another, it is not something
+      ;; that should be attempted in the immediate future. Typically
+      ;; this is because the task is not considered a top priority, but
+      ;; it may also be for some other reason.
+
+      ;; NEXT - This TODO is immediately actionable and should be
+      ;; started in the immediate future.
+
+      ;; STARTED - Work on this TODO has already started, further work
+      ;; is immediately actionable.
+
+      ;; WAIT - The work involved in this TODO is well understood, but
+      ;; it is blocked for the time being.
+
+      ;; BACKLOG - While technically actionable, this task is not only
+      ;; not worth pursuing in the immediate future, but the foreseable
+      ;; future. It exists as a task mostly as a note/reminder, in case
+      ;; it becomes higher priority in the future.
+
+      ;; Complete States:
+
+      ;; DONE - This TODO has been completed exactly as imagined.
+
+      ;; HANDLED - This TODO was completed in spirit, though not by the
+      ;; means that were originally imagined/outlined in the TODO.
+
+      ;; EXPIRED - The owner of this TODO failed to take action on it
+      ;; within the appropriate time period, and there is now no point in
+      ;; attempting it.
+
+      ;; CANCELED - For whatever reason, this TODO should no longer be
+      ;; attempted. This TODO is typically used in contrast to the
+      ;; EXPIRED TODO to indicate that the owner is not necessarily to
+      ;; blame.
+
+      (setq org-todo-keywords
+            '((sequence "IDEA(i!)" "RESEARCH(r!)" "TODO(t!)" "NEXT(n!)" "STARTED(s!)" "WAIT(w!)" "BACKLOG(b!)" "|"
+                        "DONE(d!)" "HANDLED(h!)" "EXPIRED(e!)" "CANCELED(c!)")
+              (sequence "BASKET(!)" "CLEAN(!)" "DRY(!)" "|" "FOLDED(!)")))
+
+      ;; Record changes to todo states
+      (setq org-log-into-drawer t)
+      ;; Stop starting agenda from deleting frame setup!
+      (setq org-agenda-window-setup 'other-window)
+      (define-key mode-specific-map [?a] 'org-agenda)
+      (unbind-key "C-j" org-mode-map))
+    :init
+    (progn
+      (setq org-directory "~/Dropbox/org")
+      (setq org-mobile-inbox-for-pull "~/Dropbox/org/flagged.org")
+      (setq org-mobile-directory "~/Dropbox/Apps/MobileOrg")
+      (add-hook 'org-mode-hook 'imalison:disable-linum-mode)
+      (add-hook 'org-mode-hook 'imalison:disable-smartparens-mode)
+      (add-hook 'org-mode-hook (lambda () (setq org-todo-key-trigger t)))
+      (add-hook 'org-agenda-mode-hook 'imalison:disable-linum-mode)))
+#+END_SRC
 ** Major Modes
 *** python-mode
 #+BEGIN_SRC emacs-lisp
@@ -1369,417 +1782,6 @@ I use helm for almost all emacs completion
     :config
     (progn
       (require 'calfw-org)))
-
-  (use-package org
-    :ensure org-plus-contrib
-    :commands (org-mode org org-mobile-push org-mobile-pull org-agenda)
-    :mode ("\\.org\\'" . org-mode)
-    :bind (("C-c a" . org-agenda)
-           ("C-c c" . org-capture)
-           ("C-c n t" . org-insert-todo-heading)
-           ("C-c n s" . org-insert-todo-subheading)
-           ("C-c n h" . org-insert-habit)
-           ("C-c n m" . org-make-habit)
-           ("C-c n l" . org-store-link)
-           ("C-c n i" . org-insert-link)
-           ("C-c C-t" . org-todo)
-           ("C-c C-S-t" . org-todo-force-notes))
-    :config
-    (progn
-      (setq org-global-properties
-            '(quote (("Effort_ALL" . "0:15 0:30 0:45 1:00 2:00 3:00 4:00 5:00 6:00 0:00")
-                     ("STYLE_ALL" . "habit"))))
-      (setq org-columns-default-format "%80ITEM(Task) %10Effort(Effort){:} %10CLOCKSUM")
-      (defvar-setq helm-org-headings-fontify t)
-      (setq org-todo-repeat-to-state "TODO")
-
-      (setq org-agenda-span 10)
-      (setq org-agenda-start-day "-2d")
-
-      (org-babel-do-load-languages
-       'org-babel-load-languages
-       '((sh . t)
-         (python . t)
-         (ruby . t)
-         (octave . t)
-         (sqlite . t)))
-
-      (when nil
-        ;; Enable appointment notifications.
-        (defadvice org-agenda-to-appt (before wickedcool activate)
-          "Clear the appt-time-msg-list."
-          (setq appt-time-msg-list nil))
-        (appt-activate)
-        (defun org-agenda-to-appt-no-message ()
-          (suppress-messages (org-agenda-to-appt)))
-        (run-at-time "00:00" 60 'org-agenda-to-appt-no-message))
-
-      (defun org-archive-if (condition-function)
-        (if (funcall condition-function)
-            (let ((next-point-marker
-                   (save-excursion (org-forward-heading-same-level 1) (point-marker))))
-              (org-archive-subtree)
-              (setq org-map-continue-from (marker-position next-point-marker)))))
-
-      (defun org-archive-if-completed ()
-        (interactive)
-        (org-archive-if 'org-entry-is-done-p))
-
-      (defun org-archive-completed-in-buffer ()
-        (interactive)
-        (org-map-entries 'org-archive-if-completed))
-
-      (defun org-capture-make-todo-template (&optional content)
-        (unless content (setq content "%?"))
-        (with-temp-buffer
-          (org-mode)
-          (org-insert-heading)
-          (insert content)
-          (org-todo "TODO")
-          (org-set-property "CREATED"
-                            (with-temp-buffer
-                              (org-insert-time-stamp
-                               (org-current-effective-time) t t)))
-          (remove-hook 'post-command-hook 'org-add-log-note)
-          (org-add-log-note)
-          (buffer-substring-no-properties (point-min) (point-max))))
-
-      (defun org-todo-force-notes ()
-        (interactive)
-        (let ((org-todo-log-states
-               (mapcar (lambda (state)
-                         (list state 'note 'time))
-                       (apply 'append org-todo-sets))))
-          (cond ((eq major-mode 'org-mode)  (org-todo))
-                ((eq major-mode 'org-agenda-mode) (org-agenda-todo)))))
-
-      (defun org-make-habit ()
-        (interactive)
-        (org-set-property "STYLE" "habit"))
-
-      (defun org-insert-habit ()
-        (interactive)
-        (org-insert-todo-heading nil)
-        (org-make-habit))
-
-      (defun org-todo-at-date (date)
-        (interactive (list (org-time-string-to-time (org-read-date))))
-        (flet ((org-current-effective-time (&rest r) date)
-               (org-today (&rest r) (time-to-days date)))
-          (cond ((eq major-mode 'org-mode) (org-todo))
-                ((eq major-mode 'org-agenda-mode) (org-agenda-todo)))))
-
-      (defun org-capture-make-linked-todo-template ()
-        (org-capture-make-todo-template "%? %A"))
-
-      (defun org-cmp-creation-times (a b)
-        (let ((a-created (get-date-created-from-agenda-entry a))
-              (b-created (get-date-created-from-agenda-entry b)))
-          (imalison:compare-int-list a-created b-created)))
-
-      (defun org-agenda-done (&optional arg)
-        "Mark current TODO as done.
-  This changes the line at point, all other lines in the agenda referring to
-  the same tree node, and the headline of the tree node in the Org-mode file."
-        (interactive "P")
-        (org-agenda-todo "DONE"))
-      ;; Override the key definition for org-exit
-      ;; (define-key org-agenda-mode-map "x" #'org-agenda-done) ;; TODO why does this cause an error
-
-      ;; org-mode add-ons
-      (use-package org-present)
-      (use-package org-pomodoro)
-
-      ;; variable configuration
-      (add-to-list 'org-modules 'org-habit)
-      (add-to-list 'org-modules 'org-expiry)
-      (add-to-list 'org-modules 'org-notify)
-
-      (setq org-src-fontify-natively t)
-      (setq org-habit-graph-column 50)
-      (setq org-habit-show-habits-only-for-today t)
-      ;; My priority system:
-
-      ;; A - Absolutely MUST, at all costs, be completed by the provided
-      ;;     due date. TODO: implement some type of extreme nagging
-      ;;     system that alerts in an intrusive way for overdue A
-      ;;     priority tasks.
-
-      ;; B - Should be given immediate attention if the due date is any
-      ;;     time in the next two days. Failure to meet due date would
-      ;;     be bad but not catastrophic.
-
-      ;; C - The highest priority to which tasks for which failure to
-      ;;     complete on time would not have considerable significant
-      ;;     consequences. There is still significant reason to prefer
-      ;;     the completion of these tasks sooner rather than later.
-
-      ;; D - Failure to complete within a few days (or ever) of any
-      ;;     deadline would be completely okay. As such, any deadline
-      ;;     present on such a task is necessarily self imposed. Still
-      ;;     probably worth doing
-
-      ;; E - Potentially not even worth doing at all, but worth taking a
-      ;;     note about in case it comes up again, or becomes more
-      ;;     interesting later.
-
-      ;; F - Almost certainly not worth attempting in the immediate future.
-      ;;     Just brain dump.
-
-      ;; Priorities are somewhat contextual within each category. Things
-      ;; in the gtd or work categories are generally regarded as much
-      ;; more important than things with the same priority from the
-      ;; dotfiles category.
-
-      ;; Items without deadlines or scheduled times of a given priority
-      ;; can be regarded as less important than items that DO have
-      ;; deadlines of that same priority.
-
-      (setq org-lowest-priority 69) ;; The character E
-      (setq org-completion-use-ido t)
-      (setq org-enforce-todo-dependencies t)
-      (setq org-deadline-warning-days 0)
-      (setq org-default-priority ?D)
-      (setq org-agenda-skip-scheduled-if-done t)
-      (setq org-agenda-skip-deadline-if-done t)
-      ;;(add-to-list org-agenda-tag-filter-preset "+PRIORITY<\"C\"")
-
-      (use-package org-notify
-        :disabled t
-        :config
-        (progn
-          (defun imalison:org-notify-notification-handler (plist)
-            (sauron-add-event 'org-notify 4 (format "%s, %s.\n" (plist-get plist :heading)
-                                                    (org-notify-body-text plist))))
-
-          (setq org-show-notification-handler 'imalison:org-notify-notification-handler)
-
-          (org-notify-add 'default '(:time "1h" :actions imalison:org-notify-notification-handler
-                                           :period "2m" :duration 60))
-          (org-notify-add 'default '(:time "100m" :actions imalison:org-notify-notification-handler
-                                           :period "2m" :duration 60))
-          (org-notify-add 'urgent-second '(:time "3m" :actions (-notify/window -ding)
-                                                 :period "15s" :duration 10))
-          (org-notify-add 'minute '(:time "5m" :actions -notify/window
-                                          :period "100s" :duration 70))
-          (org-notify-add '12hours
-                          '(:time "3m" :actions (-notify/window -ding)
-                                  :period "15s" :duration 10)
-                          '(:time "100m" :actions -notify/window
-                                  :period "2m" :duration 60)
-                          '(:time "12h" :actions -notify/window :audible nil
-                                  :period "10m" :duration 200))
-          (org-notify-add '5days
-                          '(:time "100m" :actions -notify/window
-                                  :period "2m" :duration 60)
-                          '(:time "2d" :actions -notify/window
-                                  :period "15m" :duration 100)
-                          '(:time "5d" :actions -notify/window
-                                  :period "2h" :duration 200))
-          (org-notify-add 'long-20days
-                          '(:time "2d" :actions -notify/window
-                                  :period "15m" :duration 60)
-                          '(:time "5d" :actions -notify/window
-                                  :period "2h" :duration 60)
-                          '(:time "20d" :actions -email :period "2d" :audible nil))
-          (org-notify-add 'long-50days
-                          '(:time "4d" :actions -notify/window
-                                  :period "30m" :duration 100)
-                          '(:time "10d" :actions -notify/window
-                                  :period "4h" :duration 200)
-                          '(:time "50d" :actions -email :period "3d" :audible nil))
-          (org-notify-add 'long-100days
-                          '(:time "2d" :actions -notify/window
-                                  :period "1h" :duration 200)
-                          '(:time "10d" :actions -notify/window
-                                  :period "10h" :duration 300)
-                          '(:time "50d" :actions -email :period "3d" :audible nil)
-                          '(:time "100d" :actions -email :period "5d" :audible nil))
-          (org-notify-start 10)))
-
-      (use-package org-bullets
-        :config
-        (progn
-          (add-hook 'org-mode-hook (lambda () (org-bullets-mode 1)))))
-
-      (use-package org-ehtml
-        :disabled t
-        :config
-        (progn
-          (setq org-ehtml-docroot (expand-file-name "~/Dropbox/org"))
-          (setq org-ehtml-allow-agenda t)
-          (setq org-ehtml-editable-headlines t)
-          (setq org-ehtml-everything-editable t)))
-
-      ;; Agenda setup.
-      (defvar-if-non-existent imalison:org-gtd-file "~/org/gtd.org")
-      (defvar-if-non-existent imalison:org-habits-file "~/org/habits.org")
-      (defvar-if-non-existent imalison:org-calendar-file "~/org/calendar.org")
-
-      (unless (boundp 'org-capture-templates)
-        (defvar org-capture-templates nil))
-
-      (imalison:add-to-org-agenda-files
-       (list imalison:org-gtd-file imalison:org-habits-file
-             imalison:org-calendar-file))
-
-      (add-to-list 'org-capture-templates
-                   `("t" "GTD Todo (Linked)" entry (file ,imalison:org-gtd-file)
-                     (function org-capture-make-linked-todo-template)))
-
-      (add-to-list 'org-capture-templates
-                   `("g" "GTD Todo" entry (file ,imalison:org-gtd-file)
-                     (function org-capture-make-todo-template)))
-
-      (add-to-list 'org-capture-templates
-                   `("y" "Calendar entry (Linked)" entry
-                     (file ,imalison:org-calendar-file)
-                     "* %? %A
-    :PROPERTIES:
-    :CREATED: %U
-    :END:
-  %^T"))
-
-      (add-to-list 'org-capture-templates
-                   `("c" "Calendar entry" entry
-                     (file ,imalison:org-calendar-file)
-                     "* %?
-    :PROPERTIES:
-    :CREATED: %U
-    :END:
-  %^T"))
-
-      (add-to-list 'org-capture-templates
-                   `("h" "Habit" entry (file ,imalison:org-habits-file)
-                     "* TODO
-    SCHEDULED: %^t
-    :PROPERTIES:
-    :CREATED: %U
-    :STYLE: habit
-    :END:"))
-
-      (let ((this-week-high-priority
-             ;; The < in the following line works has behavior that is opposite
-             ;; to what one might expect.
-             '(tags-todo "+PRIORITY<\"C\"+DEADLINE<\"<+1w>\"DEADLINE>\"<+0d>\""
-                         ((org-agenda-overriding-header
-                           "Upcoming high priority tasks:"))))
-            (due-today '(tags-todo
-                             "+DEADLINE=<\"<+0d>\""
-                             ((org-agenda-overriding-header
-                               "Due today:"))))
-            (recently-created '(tags-todo
-                             "+CREATED=>\"<-3d>\""
-                             ((org-agenda-overriding-header "Recently created:")
-                              (org-agenda-cmp-user-defined 'org-cmp-creation-times)
-                              (org-agenda-sorting-strategy '(user-defined-down)))))
-            (next '(todo "NEXT"))
-            (started '(todo "STARTED"))
-            (missing-deadline
-             '(tags-todo "-DEADLINE={.}/!"
-                         ((org-agenda-overriding-header
-                           "These don't have deadlines:"))))
-            (missing-priority
-             '(tags-todo "-PRIORITY={.}/!"
-                         ((org-agenda-overriding-header
-                           "These don't have priorities:")))))
-
-        (setq org-agenda-custom-commands
-              `(("M" "Main agenda view"
-                 ((agenda ""
-                          ((org-agenda-overriding-header "Agenda:")
-                           (org-agenda-ndays 5)
-                           (org-deadline-warning-days 0)))
-                  ,due-today
-                  ,next
-                  ,started
-                  ,this-week-high-priority
-                  ,recently-created)
-                 nil nil)
-                ,(cons "A" (cons "High priority upcoming" this-week-high-priority))
-                ,(cons "d" (cons "Overdue tasks and due today" due-today))
-                ,(cons "r" (cons "Recently created" recently-created))
-                ("h" "A, B priority:" tags-todo "+PRIORITY<\"C\""
-                         ((org-agenda-overriding-header
-                           "High Priority:")))
-                ("c" "At least priority C:" tags-todo "+PRIORITY<\"D\""
-                         ((org-agenda-overriding-header
-                           "At least priority C:"))))))
-
-      ;; What follows is a description of the significance of each of
-      ;; the values available in `org-todo-keywords'. All headings with
-      ;; one of these keywords deal with the concept of the completion
-      ;; of some task or collection of tasks to bring about a particular
-      ;; state of affairs. In some cases, the actual tasks involved may
-      ;; not be known at the time of task creation.
-
-      ;; Incomplete States:
-
-      ;; IDEA - This TODO exists in only the most abstract sense: it is
-      ;; an imagined state of affairs that requires tasks that are
-      ;; either not yet known, or have not thoroughly been considered.
-
-      ;; RESEARCH - This TODO needs to be investigated further before
-      ;; action can be taken to achieve the desired outcome. It is not
-      ;; known how much time and effort will be consumed in the actual
-      ;; completion of the task.
-
-      ;; TODO - The scope and work involved in this TODO are well
-      ;; understood, but for some reason or another, it is not something
-      ;; that should be attempted in the immediate future. Typically
-      ;; this is because the task is not considered a top priority, but
-      ;; it may also be for some other reason.
-
-      ;; NEXT - This TODO is immediately actionable and should be
-      ;; started in the immediate future.
-
-      ;; STARTED - Work on this TODO has already started, further work
-      ;; is immediately actionable.
-
-      ;; WAIT - The work involved in this TODO is well understood, but
-      ;; it is blocked for the time being.
-
-      ;; BACKLOG - While technically actionable, this task is not only
-      ;; not worth pursuing in the immediate future, but the foreseable
-      ;; future. It exists as a task mostly as a note/reminder, in case
-      ;; it becomes higher priority in the future.
-
-      ;; Complete States:
-
-      ;; DONE - This TODO has been completed exactly as imagined.
-
-      ;; HANDLED - This TODO was completed in spirit, though not by the
-      ;; means that were originally imagined/outlined in the TODO.
-
-      ;; EXPIRED - The owner of this TODO failed to take action on it
-      ;; within the appropriate time period, and there is now no point in
-      ;; attempting it.
-
-      ;; CANCELED - For whatever reason, this TODO should no longer be
-      ;; attempted. This TODO is typically used in contrast to the
-      ;; EXPIRED TODO to indicate that the owner is not necessarily to
-      ;; blame.
-
-      (setq org-todo-keywords
-            '((sequence "IDEA(i!)" "RESEARCH(r!)" "TODO(t!)" "NEXT(n!)" "STARTED(s!)" "WAIT(w!)" "BACKLOG(b!)" "|"
-                        "DONE(d!)" "HANDLED(h!)" "EXPIRED(e!)" "CANCELED(c!)")
-              (sequence "BASKET(!)" "CLEAN(!)" "DRY(!)" "|" "FOLDED(!)")))
-
-      ;; Record changes to todo states
-      (setq org-log-into-drawer t)
-      ;; Stop starting agenda from deleting frame setup!
-      (setq org-agenda-window-setup 'other-window)
-      (define-key mode-specific-map [?a] 'org-agenda)
-      (unbind-key "C-j" org-mode-map))
-    :init
-    (progn
-      (setq org-directory "~/Dropbox/org")
-      (setq org-mobile-inbox-for-pull "~/Dropbox/org/flagged.org")
-      (setq org-mobile-directory "~/Dropbox/Apps/MobileOrg")
-      (add-hook 'org-mode-hook 'imalison:disable-linum-mode)
-      (add-hook 'org-mode-hook 'imalison:disable-smartparens-mode)
-      (add-hook 'org-mode-hook (lambda () (setq org-todo-key-trigger t)))
-      (add-hook 'org-agenda-mode-hook 'imalison:disable-linum-mode)))
 
   (use-package clocker)
 
