@@ -2440,7 +2440,6 @@ I use helm for almost all emacs completion
     (setq mac-command-modifier 'super))
 #+END_SRC
 * Appearance
-
 ** Config
 #+BEGIN_SRC emacs-lisp
   (setq inhibit-startup-screen t)
@@ -2453,7 +2452,7 @@ Ensure all themes that I use are installed:
     '(monokai-theme solarized-theme zenburn-theme base16-theme molokai-theme
       tango-2-theme gotham-theme sublime-themes rainbow-delimiters waher-theme
       ample-theme material-theme zerodark-theme color-theme-modern leuven-theme
-      spacemacs-theme))
+      spacemacs-theme gruvbox-theme))
 
   (ensure-packages-installed packages-appearance)
 #+END_SRC
