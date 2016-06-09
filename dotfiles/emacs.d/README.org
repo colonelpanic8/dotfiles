@@ -1,4 +1,9 @@
 * General Configuation
+** Lexical Binding
+This makes it so that the file that is produced from tangling this file uses lexical scoping
+#+BEGIN_SRC emacs-lisp
+;;; -*- lexical-binding: t -*-
+#+END_SRC
 ** User Info
 #+BEGIN_SRC emacs-lisp
   (setq user-full-name
