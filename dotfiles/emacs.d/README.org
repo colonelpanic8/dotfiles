@@ -957,7 +957,7 @@ I use helm for almost all emacs completion
       (add-hook 'org-agenda-mode-hook 'imalison:disable-linum-mode)))
 #+END_SRC
 ** Major Modes
-*** python-mode
+*** python
 #+BEGIN_SRC emacs-lisp
   (defvar use-python-tabs nil)
 
@@ -1029,7 +1029,7 @@ I use helm for almost all emacs completion
         (set (make-local-variable 'company-backends) '(company-jedi)))
       (add-hook 'python-mode-hook #'imalison:python-mode))))
 #+END_SRC
-*** go-mode
+*** go
 #+BEGIN_SRC emacs-lisp
   (use-package go-mode
     :mode (("\\.go\\'" . go-mode))
@@ -1177,6 +1177,92 @@ I use helm for almost all emacs completion
   (define-key lisp-mode-shared-map (kbd "C-c o o") 'up-list-back)
   (define-key lisp-mode-shared-map (kbd "C-x C-e") 'eval-region-or-last-sexp)
   (unbind-key "C-j" lisp-interaction-mode-map)
+#+END_SRC
+*** scala
+#+BEGIN_SRC emacs-lisp
+  (use-package scala-mode2
+    :mode (("\\.scala\\'" . scala-mode)
+           ("\\.sc\\'" . scala-mode))
+    :config
+    (progn
+      (when (use-package ensime
+              :bind (:map ensime-mode-map
+                          ("M-," . ensime-pop-find-definition-stack))
+              :commands ensime-mode)
+        (add-hook 'scala-mode-hook 'ensime-scala-mode-hook))
+      (setq scala-indent:align-parameters t)))
+#+END_SRC
+*** js
+#+BEGIN_SRC emacs-lisp
+  (defun tape-onlyify ()
+    (interactive)
+    (save-excursion
+      (move-end-of-line nil)
+      (re-search-backward "^test")
+      (forward-sexp)
+      (if (looking-at ".only") (progn (zap-to-char 1 (string-to-char "(")) (insert "("))
+        (insert ".only"))))
+
+  (use-package js2-mode
+    :commands (js2-mode)
+    :mode "\\.js\\'"
+    :bind
+    ;; (("C-c b" . web-beautify-js)) TODO: to make this mode specific
+    ;; and change binding
+    :preface
+    (progn
+      (defvar-setq imalison:identifier-count 0)
+      (defun imalison:console-log-unique ()
+        (interactive)
+        (let* ((identifier-string (int-to-string imalison:identifier-count))
+               (uuid (imalison:uuid)))
+        (insert (format "console.log('%s//////////%s//////////');" identifier-string uuid))
+        (setq imalison:identifier-count (+ imalison:identifier-count 1))))
+      (defun imalison:js2-mode-hook ()
+        ;; Sensible defaults
+        (setq js2-bounce-indent-p nil
+              js2-indent-level 4
+              js2-basic-offset 4
+              js2-highlight-level 3
+              js2-include-node-externs t
+              js2-mode-show-parse-errors nil
+              js2-mode-show-strict-warnings nil
+              indent-tabs-mode nil
+              js2-indent-switch-body t)
+        ;; (edconf-find-file-hook) ;; Make sure that editorconfig takes precedence
+        (tern-mode t)
+        (when nil (skewer-mode)) ;; TODO: reenable
+        (setq imenu-create-index-function
+              (lambda ()
+                (imalison:flatten-imenu-index
+                 (js2-mode-create-imenu-index))))))
+    :init
+    (progn
+      (add-hook 'js2-mode-hook 'imalison:js2-mode-hook)
+      (add-hook 'js2-mode-hook 'js2-imenu-extras-mode)))
+
+  (use-package js2-refactor
+    :config
+    (progn
+      (js2r-add-keybindings-with-prefix "C-c C-m")
+      (add-hook 'js2-mode-hook #'js2-refactor-mode)))
+
+  (use-package skewer-mode
+    :commands skewer-mode
+    :config
+    (progn
+      (add-hook 'css-mode-hook #'skewer-css-mode)
+      (add-hook 'html-mode-hook #'skewer-html-mode)))
+
+  (use-package tern
+    :commands tern-mode
+    :config
+    (use-package company-tern
+      :config (add-to-list 'company-backends 'company-tern)))
+
+  (defun delete-tern-process ()
+    (interactive)
+    (delete-process "tern"))
 #+END_SRC
 * Keybindings
 #+BEGIN_SRC emacs-lisp
@@ -2199,22 +2285,6 @@ I use helm for almost all emacs completion
   (when (or (and (boundp 'use-ido) use-ido) (not (boundp 'use-ido))) (ido-mode 1))
 
   ;; =============================================================================
-  ;;                                                                         Scala
-  ;; =============================================================================
-
-  (use-package scala-mode2
-    :mode (("\\.scala\\'" . scala-mode)
-           ("\\.sc\\'" . scala-mode))
-    :config
-    (progn
-      (when (use-package ensime
-              :bind (:map ensime-mode-map
-                          ("M-," . ensime-pop-find-definition-stack))
-              :commands ensime-mode)
-        (add-hook 'scala-mode-hook 'ensime-scala-mode-hook))
-      (setq scala-indent:align-parameters t)))
-
-  ;; =============================================================================
   ;;                                                                          Java
   ;; =============================================================================
 
@@ -2231,80 +2301,6 @@ I use helm for almost all emacs completion
             (s-trim (shell-command-to-string "android_sdk_directory")))))
 
   (use-package gradle-mode)
-
-  ;; =============================================================================
-  ;;                                                                    JavaScript
-  ;; =============================================================================
-
-  (defun tape-onlyify ()
-    (interactive)
-    (save-excursion
-      (move-end-of-line nil)
-      (re-search-backward "^test")
-      (forward-sexp)
-      (if (looking-at ".only") (progn (zap-to-char 1 (string-to-char "(")) (insert "("))
-        (insert ".only"))))
-
-  (use-package js2-mode
-    :commands (js2-mode)
-    :mode "\\.js\\'"
-    :bind
-    ;; (("C-c b" . web-beautify-js)) TODO: to make this mode specific
-    ;; and change binding
-    :preface
-    (progn
-      (defvar-setq imalison:identifier-count 0)
-      (defun imalison:console-log-unique ()
-        (interactive)
-        (let* ((identifier-string (int-to-string imalison:identifier-count))
-               (uuid (imalison:uuid)))
-        (insert (format "console.log('%s//////////%s//////////');" identifier-string uuid))
-        (setq imalison:identifier-count (+ imalison:identifier-count 1))))
-      (defun imalison:js2-mode-hook ()
-        ;; Sensible defaults
-        (setq js2-bounce-indent-p nil
-              js2-indent-level 4
-              js2-basic-offset 4
-              js2-highlight-level 3
-              js2-include-node-externs t
-              js2-mode-show-parse-errors nil
-              js2-mode-show-strict-warnings nil
-              indent-tabs-mode nil
-              js2-indent-switch-body t)
-        ;; (edconf-find-file-hook) ;; Make sure that editorconfig takes precedence
-        (tern-mode t)
-        (when nil (skewer-mode)) ;; TODO: reenable
-        (setq imenu-create-index-function
-              (lambda ()
-                (imalison:flatten-imenu-index
-                 (js2-mode-create-imenu-index))))))
-    :init
-    (progn
-      (add-hook 'js2-mode-hook 'imalison:js2-mode-hook)
-      (add-hook 'js2-mode-hook 'js2-imenu-extras-mode)))
-
-  (use-package js2-refactor
-    :config
-    (progn
-      (js2r-add-keybindings-with-prefix "C-c C-m")
-      (add-hook 'js2-mode-hook #'js2-refactor-mode)))
-
-  (use-package skewer-mode
-    :commands skewer-mode
-    :config
-    (progn
-      (add-hook 'css-mode-hook #'skewer-css-mode)
-      (add-hook 'html-mode-hook #'skewer-html-mode)))
-
-  (use-package tern
-    :commands tern-mode
-    :config
-    (use-package company-tern
-      :config (add-to-list 'company-backends 'company-tern)))
-
-  (defun delete-tern-process ()
-    (interactive)
-    (delete-process "tern"))
 
   (use-package json-mode
     :mode "\\.json\\'"
