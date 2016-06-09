@@ -1543,6 +1543,43 @@ I use helm for almost all emacs completion
 
   (ensure-packages-installed packages-eager)
 #+END_SRC
+** Utility
+*** term-manager
+#+BEGIN_SRC emacs-lisp
+  (use-package term-manager
+    :ensure nil
+    :load-path "~/Projects/term-manager"
+    :preface
+    (progn
+      (defun imalison:set-escape-char (&rest _args)
+        (let (term-escape-char)
+         (term-set-escape-char ?\C-x))))
+    :config
+    (progn
+      (advice-add
+       'term-manager-default-build-term :after 'imalison:set-escape-char)))
+#+END_SRC
+*** term-projectile
+#+BEGIN_SRC emacs-lisp
+  (use-package term-projectile
+    :load-path "~/Projects/term-manager"
+    :config
+    (progn
+      (imalison:prefix-alternatives imalison:term term-projectile-forward
+                                    term-projectile-create-new)
+      (defhydra imalison:term-hydra-default-directory ()
+        "term - default-directory"
+        ("n" term-projectile-default-directory-forward)
+        ("p" term-projectile-default-directory-backward)
+        ("c" term-projectile-create-new-default-directory))
+
+      (defhydra imalison:term-hydra (global-map  "C-c 7")
+        "term"
+        ("n" term-projectile-forward)
+        ("p" term-projectile-backward)
+        ("c" term-projectile-create-new)
+        ("d" imalison:term-hydra-default-directory/body :exit t))))
+#+END_SRC
 ** Other
 #+BEGIN_SRC emacs-lisp
   (defvar imalison:packages-to-install
@@ -1584,32 +1621,6 @@ I use helm for almost all emacs completion
       (sp-use-smartparens-bindings)
       (unbind-key "C-<backspace>" smartparens-mode-map)
       (unbind-key "M-<backspace>" smartparens-mode-map)))
-
-  (use-package term-manager
-    :ensure nil
-    :load-path "~/Projects/term-manager"
-    :preface
-    (progn
-      (defun imalison:set-escape-char (&rest _args)
-        (let (term-escape-char)
-         (term-set-escape-char ?\C-x))))
-    :config
-    (progn
-      (advice-add
-       'term-manager-default-build-term :after 'imalison:set-escape-char)))
-
-  (use-package term-projectile
-    :ensure nil
-    :load-path "~/Projects/term-manager"
-    :config
-    (progn
-      (imalison:prefix-alternatives imalison:term term-projectile-forward
-                                    term-projectile-create-new)
-      (defhydra imalison:term-hydra (global-map  "C-c 7")
-        "term"
-        ("n" term-projectile-forward)
-        ("p" term-projectile-backward)
-        ("c" term-projectile-create-new))))
 
   (use-package term
     :config
