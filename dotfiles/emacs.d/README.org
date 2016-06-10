@@ -1,4 +1,4 @@
-* General Configuation
+* General
 ** Lexical Binding
 This makes it so that the file that is produced from tangling this file uses lexical scoping
 #+BEGIN_SRC emacs-lisp
@@ -262,7 +262,7 @@ These definitions silence the byte-compiler
   ;; y and n instead of yes and no
   (defalias 'yes-or-no-p 'y-or-n-p)
 #+END_SRC
-* emacs-lisp
+* Lisp
 ** An emacs version predicate builder:
 #+BEGIN_SRC emacs-lisp
   (defmacro imalison:emacs-version-predicate (major-version minor-version)
@@ -2404,7 +2404,6 @@ I use helm for almost all emacs completion
 
   (use-package hackernews :commands hackernews)
  #+END_SRC
-* Keybindings
 #+BEGIN_SRC emacs-lisp
   (bind-key "M-q" 'fill-or-unfill-paragraph)
   (bind-key "C-c C-s" 'sudo-edit)
@@ -2502,94 +2501,94 @@ Set the character used to represent spaces to ·, and the character used for tab
 ** TODO Finish making the following litarate
 #+BEGIN_SRC emacs-lisp
 
-;; =============================================================================
-;;                                                                        Themes
-;; =============================================================================
+  ;; =============================================================================
+  ;;                                                                        Themes
+  ;; =============================================================================
 
-;; These can be overriden in custom-before.el
-(defvar imalison:light-theme 'solarized-light)
-(defvar imalison:dark-theme 'material)
-(use-package theme-changer
-  :disabled t
-  :config
-  (progn
-    (destructuring-bind (latitude longitude)
-        (imalison:get-lat-long)
-      (setq calendar-latitude latitude)
-      (setq calendar-longitude longitude))))
-
-(defun imalison:set-font-height ()
-  (interactive)
-  (let ((new-height (read-face-attribute 'default :height (selected-frame))))
-    (set-face-attribute 'default nil :height new-height)))
-
-(defvar imalison:linum-format)
-
-(make-variable-buffer-local 'imalison:linum-format)
-(defun imalison:linum-before-numbering-hook ()
-  (setq imalison:linum-format
-        (concat "%" (number-to-string
-                     (max (length
-                           (number-to-string
-                            (count-lines (point-min) (point-max)))) 3)) "d")))
-
-(defun imalison:format-linum (line-text)
-  (propertize (format imalison:linum-format line-text) 'face 'linum))
-
-(defun imalison:remove-fringe-and-hl-line-mode (&rest _stuff)
-  (interactive)
-  (if (fboundp 'scroll-bar-mode) (scroll-bar-mode -1))
-  (if (fboundp 'tool-bar-mode) (tool-bar-mode -1))
-  (if (fboundp 'menu-bar-mode) (menu-bar-mode -1))
-  ;; (set-fringe-mode 0) ;; Lets reenable fringes. They seem useful
-  (defvar-setq linum-format 'imalison:format-linum)
-  (add-hook 'linum-before-numbering-hook 'imalison:linum-before-numbering-hook)
-  (setq left-margin-width 0)
-  (defvar-setq hl-line-mode nil))
-
-(defun imalison:after-load-theme (&rest _args)
-  (when (fboundp 'powerline-reset)
-    (powerline-reset))
-  (set-face-background 'fringe (face-background 'default))
-  (imalison:restore-ansi-term-color-vector))
-
-(when t
-  (if
-      (advice-add 'load-theme :after #'imalison:after-load-theme)
-    (defadvice load-theme (after name activate)
-      (imalison:after-load-theme))))
-
-(when (file-exists-p custom-after-file) (load custom-after-file))
-
-(defvar imalison:ansi-term-color-vector ansi-term-color-vector)
-
-(defun imalison:ansi-term-color-vector-broken? ()
-    (--some (or (eq it 'unspecified) (not (symbolp it)))
-            (append ansi-term-color-vector nil)))
-
-(defun imalison:restore-ansi-term-color-vector (&optional force)
-  (when (or force (imalison:ansi-term-color-vector-broken?))
-    (setq ansi-term-color-vector imalison:ansi-term-color-vector)))
-
-(defun imalison:appearance (&optional frame)
-  (interactive)
-  (message "called set appearance")
-  (if (display-graphic-p)
-      (progn
-        (set-face-attribute 'default nil :font "Source Code Pro")
-        (set-face-attribute 'default nil :weight 'semi-bold)
-        (set-face-attribute 'default nil :height 135))
+  ;; These can be overriden in custom-before.el
+  (defvar imalison:light-theme 'solarized-light)
+  (defvar imalison:dark-theme 'material)
+  (use-package theme-changer
+    :disabled t
+    :config
     (progn
-      (load-theme 'source-code-pro t)
-      (message "not setting font")))
-  (load-theme imalison:dark-theme t)
-  (imalison:remove-fringe-and-hl-line-mode)
-  (message "finished set appearance"))
+      (destructuring-bind (latitude longitude)
+          (imalison:get-lat-long)
+        (setq calendar-latitude latitude)
+        (setq calendar-longitude longitude))))
 
-;; This is needed because you can't set the font or theme at daemon start-up.
-;; (when (display-graphic-p) (imalison:appearance))
-(add-hook 'after-init-hook 'imalison:appearance)
-(add-hook 'after-make-frame-functions 'imalison:appearance)
-(remove-hook 'after-make-frame-functions 'imalison:appearance)
+  (defun imalison:set-font-height ()
+    (interactive)
+    (let ((new-height (read-face-attribute 'default :height (selected-frame))))
+      (set-face-attribute 'default nil :height new-height)))
+
+  (defvar imalison:linum-format)
+
+  (make-variable-buffer-local 'imalison:linum-format)
+  (defun imalison:linum-before-numbering-hook ()
+    (setq imalison:linum-format
+          (concat "%" (number-to-string
+                       (max (length
+                             (number-to-string
+                              (count-lines (point-min) (point-max)))) 3)) "d")))
+
+  (defun imalison:format-linum (line-text)
+    (propertize (format imalison:linum-format line-text) 'face 'linum))
+
+  (defun imalison:remove-fringe-and-hl-line-mode (&rest _stuff)
+    (interactive)
+    (if (fboundp 'scroll-bar-mode) (scroll-bar-mode -1))
+    (if (fboundp 'tool-bar-mode) (tool-bar-mode -1))
+    (if (fboundp 'menu-bar-mode) (menu-bar-mode -1))
+    ;; (set-fringe-mode 0) ;; Lets reenable fringes. They seem useful
+    (defvar-setq linum-format 'imalison:format-linum)
+    (add-hook 'linum-before-numbering-hook 'imalison:linum-before-numbering-hook)
+    (setq left-margin-width 0)
+    (defvar-setq hl-line-mode nil))
+
+  (defun imalison:after-load-theme (&rest _args)
+    (when (fboundp 'powerline-reset)
+      (powerline-reset))
+    (set-face-background 'fringe (face-background 'default))
+    (imalison:restore-ansi-term-color-vector))
+
+  (when t
+    (if
+        (advice-add 'load-theme :after #'imalison:after-load-theme)
+      (defadvice load-theme (after name activate)
+        (imalison:after-load-theme))))
+
+  (when (file-exists-p custom-after-file) (load custom-after-file))
+
+  (defvar imalison:ansi-term-color-vector ansi-term-color-vector)
+
+  (defun imalison:ansi-term-color-vector-broken? ()
+      (--some (or (eq it 'unspecified) (not (symbolp it)))
+              (append ansi-term-color-vector nil)))
+
+  (defun imalison:restore-ansi-term-color-vector (&optional force)
+    (when (or force (imalison:ansi-term-color-vector-broken?))
+      (setq ansi-term-color-vector imalison:ansi-term-color-vector)))
+
+  (defun imalison:appearance (&optional frame)
+    (interactive)
+    (message "called set appearance")
+    (if (display-graphic-p)
+        (progn
+          (set-face-attribute 'default nil :font "Source Code Pro")
+          (set-face-attribute 'default nil :weight 'semi-bold)
+          (set-face-attribute 'default nil :height 135))
+      (progn
+        (load-theme 'source-code-pro t)
+        (message "not setting font")))
+    (load-theme imalison:dark-theme t)
+    (imalison:remove-fringe-and-hl-line-mode)
+    (message "finished set appearance"))
+
+  ;; This is needed because you can't set the font or theme at daemon start-up.
+  ;; (when (display-graphic-p) (imalison:appearance))
+  (add-hook 'after-init-hook 'imalison:appearance)
+  (add-hook 'after-make-frame-functions 'imalison:appearance)
+  (remove-hook 'after-make-frame-functions 'imalison:appearance)
 
 #+END_SRC
