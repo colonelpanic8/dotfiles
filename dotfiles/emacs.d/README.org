@@ -1186,6 +1186,23 @@ I use helm for almost all emacs completion
       (cl-loop for package in imalison:packages-to-diminish
                do (diminish package))))
 #+END_SRC
+*** smartparens
+#+BEGIN_SRC emacs-lisp
+  (use-package smartparens
+      :demand t
+      :bind (:map smartparens-mode-map
+                  ("C-)" . sp-forward-slurp-sexp)
+                  ("C-}" . sp-forward-barf-sexp)
+                  ("C-(" . sp-backward-slurp-sexp)
+                  ("C-{" . sp-backward-barf-sexp))
+      :config
+      (progn
+        (require 'smartparens-config)
+        (smartparens-global-mode 1)
+        (sp-use-smartparens-bindings)
+        (unbind-key "C-<backspace>" smartparens-mode-map)
+        (unbind-key "M-<backspace>" smartparens-mode-map)))
+#+END_SRC
 ** Major Modes
 *** python
 #+BEGIN_SRC emacs-lisp
@@ -1603,21 +1620,6 @@ I use helm for almost all emacs completion
     :config
     (progn
       (setq paradox-execute-asynchronously t)))
-
-  (use-package smartparens
-    :demand t
-    :bind (:map smartparens-mode-map
-                ("C-)" . sp-forward-slurp-sexp)
-                ("C-}" . sp-forward-barf-sexp)
-                ("C-(" . sp-backward-slurp-sexp)
-                ("C-{" . sp-backward-barf-sexp))
-    :config
-    (progn
-      (require 'smartparens-config)
-      (smartparens-global-mode 1)
-      (sp-use-smartparens-bindings)
-      (unbind-key "C-<backspace>" smartparens-mode-map)
-      (unbind-key "M-<backspace>" smartparens-mode-map)))
 
   (use-package term
     :config
