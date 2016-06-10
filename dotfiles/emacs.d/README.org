@@ -1571,7 +1571,11 @@ I use helm for almost all emacs completion
 *** crux
 #+BEGIN_SRC emacs-lisp
   (use-package crux
-    :bind (("C-c C-s" . crux-sudo-edit)))
+    :demand t
+    :bind (("C-c C-s" . crux-sudo-edit))
+    :config
+    (progn
+      (crux-reopen-as-root-mode)))
 #+END_SRC
 ** Other
 #+BEGIN_SRC emacs-lisp
