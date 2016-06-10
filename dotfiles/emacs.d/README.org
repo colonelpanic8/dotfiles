@@ -294,7 +294,7 @@ By advising ~imenu--make-index-alist~ with ~imalison:flatten-imenu-index~ we mak
   (advice-add 'imenu--make-index-alist
               :around 'imalison:flatten-imenu-index-with-function)
 #+END_SRC
-** An emacs version predicate builder:
+** Emacs version predicate
 #+BEGIN_SRC emacs-lisp
   (defmacro imalison:emacs-version-predicate (major-version minor-version)
     `(lambda ()
