@@ -285,6 +285,15 @@ I like my imenu indexes flat so I don't have to press enter multiple times to fi
               (imalison:flatten-imenu-index
                (funcall original-imenu-function))))))
 #+END_SRC
+By advising ~imenu--make-index-alist~ with ~imalison:flatten-imenu-index~ we make it so that imenu indexes are always flattened. This is still experimental, so copy to your own dotfiles with caution.
+#+BEGIN_SRC emacs-lisp
+  (defun imalison:flatten-imenu-index-with-function
+      (index-build-function &rest args)
+    (imalison:flatten-imenu-index (apply index-build-function args)))
+
+  (advice-add 'imenu--make-index-alist
+              :around 'imalison:flatten-imenu-index-with-function)
+#+END_SRC
 ** An emacs version predicate builder:
 #+BEGIN_SRC emacs-lisp
   (defmacro imalison:emacs-version-predicate (major-version minor-version)
@@ -990,7 +999,6 @@ I use helm for almost all emacs completion
           (org-notify-start 10)))
 
       (setq org-imenu-depth 10)
-      (add-hook 'org-mode-hook 'flatten-current-imenu-index-function)
       (use-package org-bullets
         :config
         (progn
@@ -1414,7 +1422,6 @@ I use helm for almost all emacs completion
 
   (put 'use-package 'lisp-indent-function 1) ;; reduce indentation for use-package
   (add-hook 'emacs-lisp-mode-hook 'imenu-elisp-sections)
-  (add-hook 'emacs-lisp-mode-hook 'flatten-current-imenu-index-function)
   (add-hook 'emacs-lisp-mode-hook (lambda ()
                                     (setq indent-tabs-mode nil)
                                     (setq show-trailing-whitespace t)))
