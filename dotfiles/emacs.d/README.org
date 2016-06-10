@@ -262,6 +262,29 @@ These definitions silence the byte-compiler
   (defalias 'yes-or-no-p 'y-or-n-p)
 #+END_SRC
 * Lisp
+** Flatten imenu indexes
+I like my imenu indexes flat so I don't have to press enter multiple times to find what I'm looking for. The functions that follow allow me to get this behavior out of functions that provide a nested imenu index.
+#+BEGIN_SRC emacs-lisp
+  (defun imalison:imenu-prefix-flattened (index)
+    (let ((flattened (imalison:flatten-imenu-index (cdr index))))
+      (cl-loop for sub-item in flattened
+               collect
+               `(,(concat (car index) "." (car sub-item)) . ,(cdr sub-item)))))
+
+  (defun imalison:flatten-imenu-index (index)
+    (let ((cdr-is-index (listp (cdr index))))
+      (cond ((not (stringp (car index))) (cl-mapcan
+                                          #'imalison:flatten-imenu-index index))
+            (cdr-is-index (imalison:imenu-prefix-flattened index))
+            (t (list index)))))
+
+  (defun imalison:make-imenu-index-flat ()
+    (let ((original-imenu-function imenu-create-index-function))
+      (setq imenu-create-index-function
+            (lambda ()
+              (imalison:flatten-imenu-index
+               (funcall original-imenu-function))))))
+#+END_SRC
 ** An emacs version predicate builder:
 #+BEGIN_SRC emacs-lisp
   (defmacro imalison:emacs-version-predicate (major-version minor-version)
@@ -381,26 +404,6 @@ Prefix alternatives is a macro that builds a function that selects one of a coll
     (if (boundp name)
         `(setq ,name ,value)
       `(defvar ,name ,value)))
-
-  (defun imalison:imenu-prefix-flattened (index)
-    (let ((flattened (imalison:flatten-imenu-index (cdr index))))
-      (cl-loop for sub-item in flattened
-               collect
-               `(,(concat (car index) "." (car sub-item)) . ,(cdr sub-item)))))
-
-  (defun imalison:flatten-imenu-index (index)
-    (let ((cdr-is-index (listp (cdr index))))
-      (cond ((not (stringp (car index))) (cl-mapcan
-                                          #'imalison:flatten-imenu-index index))
-            (cdr-is-index (imalison:imenu-prefix-flattened index))
-            (t (list index)))))
-
-  (defun imalison:make-imenu-index-flat ()
-    (let ((original-imenu-function imenu-create-index-function))
-      (setq imenu-create-index-function
-            (lambda ()
-              (imalison:flatten-imenu-index
-               (funcall original-imenu-function))))))
 
   (defmacro defvar-if-non-existent (name value)
     (unless (boundp name)
