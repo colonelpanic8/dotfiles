@@ -73,6 +73,7 @@
     "gettext",
     "ghc",
     "gist",
+    "git-subrepo",
     "git",
     "giter8",
     "gitfs",
