@@ -522,22 +522,6 @@ Prefix alternatives is a macro that builds a function that selects one of a coll
       (error (message "Invalid expression")
              (insert (current-kill 0)))))
 
-  (defun flatten-imenu-index (index)
-    (cl-mapcan
-     (lambda (x)
-       (if (listp (cdr x))
-           (cl-mapcar (lambda (item)
-                        `(,(concat (car x) "/" (car item)) . ,(cdr item)))
-                      (flatten-imenu-index (cdr x)))
-         (list x))) index))
-
-  (defun flatten-imenu-index-function (function)
-    (lambda () (flatten-imenu-index (funcall function))))
-
-  (defun flatten-current-imenu-index-function ()
-    (setq imenu-create-index-function
-          (flatten-imenu-index-function imenu-create-index-function)))
-
   (defun notification-center (title message)
     (flet ((encfn (s) (encode-coding-string s (keyboard-coding-system))))
       (shell-command
