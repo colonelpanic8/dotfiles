@@ -81,8 +81,11 @@ function _setup_env {
 }
 
 function _path_helper {
-    export PATH_HELPER_RAN="$(date)"
-    eval "$(/usr/libexec/path_helper -s)"
+    if [ -f /usr/libexec/path_helper ];
+    then
+        export PATH_HELPER_RAN="$(date)"
+        eval "$(/usr/libexec/path_helper -s)"
+    fi
 }
 
 environment_variable_exists PATH_HELPER_RAN || _path_helper
