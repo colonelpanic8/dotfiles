@@ -1584,6 +1584,11 @@ I use helm for almost all emacs completion
         ("c" term-projectile-create-new)
         ("d" imalison:term-hydra-default-directory/body :exit t))))
 #+END_SRC
+*** crux
+#+BEGIN_SRC emacs-lisp
+  (use-package crux
+    :bind (("C-c C-s" . crux-sudo-edit)))
+#+END_SRC
 ** Other
 #+BEGIN_SRC emacs-lisp
   (defvar imalison:packages-to-install
@@ -1668,8 +1673,6 @@ I use helm for almost all emacs completion
     :bind ("C-c b" . beacon-blink)
     :config
     (beacon-mode 1))
-
-  (use-package crux)
 
   (use-package discover-my-major)
 
@@ -2409,7 +2412,6 @@ I use helm for almost all emacs completion
 * Keybindings
 #+BEGIN_SRC emacs-lisp
   (bind-key "M-q" 'fill-or-unfill-paragraph)
-  (bind-key "C-c C-s" 'sudo-edit)
   (bind-key "C-c SPC" 'imalison:mark-ring)
   (bind-key "C-c e" 'os-copy)
   (bind-key "C-x p" 'pop-to-mark-command)
