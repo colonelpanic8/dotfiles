@@ -251,6 +251,12 @@ function git_reset_author() {
 alias git_reset_author_to_user='git_reset_author -a "$(git config --get user.name)" -e "$(git config --get user.email)" '
 alias git_reset_author_from_user='git_reset_author -A "$(git config --get user.name)" -E "$(git config --get user.email)" '
 
+function git_prune_all_history_involving {
+    git filter-branch --force --index-filter \
+        "git rm -r --cached --ignore-unmatch $1" \
+        --prune-empty --tag-name-filter cat -- --all
+}
+
 function set_osx_hostname() {
     local new_hostname="${1-imalison}"
     sudo scutil --set ComputerName $new_hostname
