@@ -1744,6 +1744,10 @@ I use helm for almost all emacs completion
         (interactive)
         (gitolite-clone-get-projects nil nil t))))
 
+  (use-package gh
+    :ensure nil
+    :load-path "~/Projects/gh.el")
+
   (use-package github-clone
     :demand t)
 
