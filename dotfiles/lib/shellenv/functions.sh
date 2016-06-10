@@ -421,3 +421,11 @@ function jump_cd {
 function source_if_exists {
     test -r "$1" && source "$1"
 }
+
+function python_module_exists {
+    python_module_path $@ 1>/dev/null 2>/dev/null
+}
+
+function set_default_prompt {
+    python_module_exists powerline && set_powerline_prompt || set_my_prompt
+}

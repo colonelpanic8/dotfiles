@@ -78,5 +78,3 @@ esac
 function set_powerline_prompt {
     source "$(python_module_path powerline)/bindings/bash/powerline.sh"
 }
-
-set_powerline_prompt
