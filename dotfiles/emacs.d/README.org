@@ -43,7 +43,6 @@ These definitions silence the byte-compiler
   (defvar grep-find-ignored-directories nil)
   (defvar tls-checktrust nil)
   (defvar tls-program nil)
-
 #+END_SRC
 ** Security
 #+BEGIN_SRC emacs-lisp
