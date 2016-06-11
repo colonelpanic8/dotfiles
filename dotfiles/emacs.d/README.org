@@ -231,9 +231,6 @@ This appears here so that it can accurately benchmark as much of startup as poss
   ;; Make mouse scrolling less jumpy.
   (setq mouse-wheel-scroll-amount '(1 ((shift) . 1)))
 
-  (eval-after-load 'subword '(diminish 'subword-mode))
-  (eval-after-load 'simple '(diminish 'visual-line-mode))
-
   (setq display-time-default-load-average nil)
   (setq display-time-interval 1)
   (setq display-time-format "%a, %b %d, %T ")
@@ -1208,7 +1205,9 @@ I use helm for almost all emacs completion
     :config
     (progn
       (cl-loop for package in imalison:packages-to-diminish
-               do (diminish package))))
+               do (diminish package))
+      (eval-after-load 'subword '(diminish 'subword-mode))
+      (eval-after-load 'simple '(diminish 'visual-line-mode))))
 #+END_SRC
 *** smartparens
 #+BEGIN_SRC emacs-lisp
@@ -1423,8 +1422,6 @@ I use helm for almost all emacs completion
     (diminish 'elisp-slime-nav-mode)
     :init
     (add-hook 'emacs-lisp-mode-hook (lambda () (elisp-slime-nav-mode t))))
-
-
   (defun imenu-elisp-sections ()
     (setq imenu-prev-index-position-function nil)
     (setq imenu-space-replacement nil)
