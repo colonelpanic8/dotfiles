@@ -46,7 +46,7 @@ These definitions silence the byte-compiler
 #+END_SRC
 ** Security
 #+BEGIN_SRC emacs-lisp
-  (defvar imalison:secure nil)
+  (defvar imalison:secure t)
 
   (defun imalison:use-https-and-tls ()
     (setq tls-checktrust t)
