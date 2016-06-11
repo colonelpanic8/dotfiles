@@ -81,7 +81,7 @@ These definitions silence the byte-compiler
   (when imalison:secure (imalison:use-https-and-tls))
 #+END_SRC
 ** Archive Setup
-#+BEGIN_SRC emacs-lisp
+#+BEGIN_SRC emacs-lisp -n -r
   (require 'package)
 
   (defun imalison:build-archive-uri (uri protocol)
@@ -91,7 +91,7 @@ These definitions silence the byte-compiler
   (defvar imalison:package-archive-triples
     '(("elpa" "tromey.com/elpa/" nil)
       ;; ("marmalade" "marmalade-repo.org/packages/")
-      ("org" "orgmode.org/elpa/" nil)
+      ("org" "orgmode.org/elpa/" "http")                          (ref:org setup)
       ("melpa" "melpa.org/packages/" nil)))
 
   (defun imalison:add-package-archive (archive-name archive-uri)
@@ -103,6 +103,7 @@ These definitions silence the byte-compiler
                 (imalison:add-package-archive
                  archive-name (imalison:build-archive-uri archive-uri protocol))))
 #+END_SRC
+[[(org setup)][The org archive]] does not support https, so we set http as the protocol explicitly.
 ** Bootstrap Package Loading
 Its a shame that everyone has to have some version of this function in their init.el. I use use-package's own mechanism for ensuring packages are installed so my version of ~ensure-packages-installed~ is really only used to download use-package itself.
 #+BEGIN_SRC emacs-lisp
