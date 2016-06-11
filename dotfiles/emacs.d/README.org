@@ -1615,13 +1615,14 @@ I use helm for almost all emacs completion
 #+END_SRC
 ** Other
 #+BEGIN_SRC emacs-lisp
-  (defvar imalison:packages-to-install
-    '(popup cl-lib xclip dired+ ctags ctags-update aggressive-indent imenu+
-      neotree diminish gist))
+  (use-package neotree)
 
-  (ensure-packages-installed imalison:packages-to-install)
-#+END_SRC
-#+BEGIN_SRC emacs-lisp
+  (use-package gist)
+
+  (use-package bind-key)
+
+  (use-package bug-hunter)
+
   (use-package iedit
     :demand
     :config
