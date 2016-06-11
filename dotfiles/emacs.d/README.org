@@ -131,6 +131,12 @@ Ensure by default since most of the package for which I use use-package need to 
 #+BEGIN_SRC emacs-lisp
 (setq use-package-always-ensure t)
 #+END_SRC
+** Benchmarking
+This appears here so that it can accurately benchmark as much of startup as possible.
+#+BEGIN_SRC emacs-lisp
+(use-package benchmark-init
+  :if (and (boundp 'imalison:do-benchmark) imalison:do-benchmark))
+#+END_SRC
 ** Miscellaneous
 #+BEGIN_SRC emacs-lisp
   (setq visible-bell nil)
