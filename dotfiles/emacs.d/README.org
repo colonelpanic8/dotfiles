@@ -219,7 +219,7 @@ Ensure by default since most of the package for which I use use-package need to 
   (setq-default cursor-type 'box)
   (setq-default cursor-in-non-selected-windows 'bar)
 
-  (if nil ;; Causing too many annoying issues
+  (when nil ;; Causing too many annoying issues
       (add-hook 'after-init-hook '(lambda () (setq debug-on-error t))))
 
   ;; Make mouse scrolling less jumpy.
