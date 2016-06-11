@@ -584,19 +584,7 @@ I use helm for almost all emacs completion
            ("C-h a" . helm-apropos)
            ("C-c C-h" . helm-org-agenda-files-headings)
            ("C-c ;" . helm-recentf))
-    :init
-    (progn
-      (helm-mode 1)
-      (use-package helm-ag
-        :bind ("C-c p S" . imalison:set-helm-ag-extra-options)
-        :config
-        (progn
-          (setq helm-ag-always-set-extra-option nil)
-          (defun imalison:set-helm-ag-extra-options ()
-            (interactive)
-            (let ((option (read-string "Extra options: " (or helm-ag--extra-options "")
-                                       'helm-ag--extra-options-history)))
-              (setq helm-ag--extra-options option))))))
+    :diminish helm-mode
     :config
     (progn
       (setq helm-split-window-default-side 'same)         (ref:helm split window)
@@ -660,6 +648,17 @@ I use helm for almost all emacs completion
         :demand t
         :config (helm-descbinds-mode 1))
 
+      (use-package helm-ag
+        :bind ("C-c p S" . imalison:set-helm-ag-extra-options)
+        :config
+        (progn
+          (setq helm-ag-always-set-extra-option nil)
+          (defun imalison:set-helm-ag-extra-options ()
+            (interactive)
+            (let ((option (read-string "Extra options: " (or helm-ag--extra-options "")
+                                       'helm-ag--extra-options-history)))
+              (setq helm-ag--extra-options option)))))
+
       (use-package org-projectile
         :demand t
         :bind (("C-c n p" . imalison:helm-org-todo))
@@ -680,8 +679,7 @@ I use helm for almost all emacs completion
                                     (org-capture-make-todo-template))))
                   :candidate-number-limit 99999
                   :buffer "*helm org capture templates*"))))
-      (helm-mode 1)
-      (diminish 'helm-mode)))
+      (helm-mode 1)))
 #+END_SRC
 [[(helm split window)][Ensure that helm buffers are started in the window that currently holds the focus]]
 
