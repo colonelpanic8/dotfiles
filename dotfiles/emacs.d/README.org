@@ -80,19 +80,32 @@ These definitions silence the byte-compiler
 
   (when imalison:secure (imalison:use-https-and-tls))
 #+END_SRC
-** ELPA
+** Archive Setup
 #+BEGIN_SRC emacs-lisp
   (require 'package)
-  (defvar imalison:elpa-protocol (if imalison:secure "https" "http"))
-  ;; (add-to-list 'package-archives
-  ;;              '("marmalade" . "http://marmalade-repo.org/packages/") t)
-  (add-to-list 'package-archives `("elpa" . ,(concat imalison:elpa-protocol
-                                                    "://tromey.com/elpa/")) t)
-  (add-to-list 'package-archives `("org" . ,(concat imalison:elpa-protocol
-                                                   "://orgmode.org/elpa/")) t)
-  (add-to-list 'package-archives `("melpa" . ,(concat imalison:elpa-protocol
-                                                     "://melpa.org/packages/")) t)
 
+  (defun imalison:build-archive-uri (uri protocol)
+    (unless protocol (setq protocol (if imalison:secure "https" "http")))
+    (format "%s://%s" protocol uri))
+
+  (defvar imalison:package-archive-triples
+    '(("elpa" "tromey.com/elpa/" nil)
+      ;; ("marmalade" "marmalade-repo.org/packages/")
+      ("org" "orgmode.org/elpa/" nil)
+      ("melpa" "melpa.org/packages/" nil)))
+
+  (defun imalison:add-package-archive (archive-name archive-uri)
+    (add-to-list 'package-archives
+                 `(,archive-name . ,archive-uri) t))
+
+  (cl-loop for package-triple in imalison:package-archive-triples
+           do (cl-destructuring-bind (archive-name archive-uri protocol) package-triple
+                (imalison:add-package-archive
+                 archive-name (imalison:build-archive-uri archive-uri protocol))))
+#+END_SRC
+** Bootstrap Package Loading
+Its a shame that everyone has to have some version of this function in their init.el. I use use-package's own mechanism for ensuring packages are installed so my version of ~ensure-packages-installed~ is really only used to download use-package itself.
+#+BEGIN_SRC emacs-lisp
   (defun ensure-packages-installed (packages)
     (unless package-archive-contents
       (package-refresh-contents))
@@ -103,21 +116,19 @@ These definitions silence the byte-compiler
          (progn (message (format "Installing package %s." package))
                 (package-install package))))
      packages))
-
-  (package-initialize)
-  (ensure-packages-installed '(epl use-package))
-
-  ;; use-package is only needed at compile time.
+#+END_SRC
+Ensure that use-package is installed.
+#+BEGIN_SRC emacs-lisp
+  (package-initialize t)
+  (ensure-packages-installed '(use-package))
+#+END_SRC
+use-package is only needed at compile time.
+#+BEGIN_SRC emacs-lisp
   (eval-when-compile (require 'use-package))
-  (setq use-package-always-ensure t)
-
-  (use-package diminish)
-  (use-package bind-key)
-  (use-package bug-hunter)
-
-  (use-package benchmark-init
-    ;; this variable has to be set in custom-before.el
-    :if (and (boundp 'do-benchmark) do-benchmark))
+#+END_SRC
+Ensure by default since most of the package for which I use use-package need to be downloaded. ensure can be disabled explicitly with a ~:ensure nil~.
+#+BEGIN_SRC emacs-lisp
+(setq use-package-always-ensure t)
 #+END_SRC
 ** Miscellaneous
 #+BEGIN_SRC emacs-lisp
