@@ -568,223 +568,7 @@ Prefix alternatives is a macro that builds a function that selects one of a coll
 #+END_SRC
 
 * Packages
-** Navigation/Completion
-*** helm
-I use helm for almost all emacs completion
-#+BEGIN_SRC emacs-lisp -n -r
-  (use-package helm-config
-    :ensure helm
-    :demand t
-    :bind (("M-y" . helm-show-kill-ring)
-           ("M-x" . helm-M-x)
-           ("C-x C-i" . helm-imenu)
-           ("C-h a" . helm-apropos)
-           ("C-c C-h" . helm-org-agenda-files-headings)
-           ("C-c ;" . helm-recentf))
-    :diminish helm-mode
-    :config
-    (progn
-      (setq helm-split-window-default-side 'same)         (ref:helm split window)
-
-      (defun helm-source-org-capture-templates ()
-        (helm-build-sync-source "Org Capture Templates:"
-          :candidates (cl-loop for template in org-capture-templates
-                               collect `(,(nth 1 template) . ,(nth 0 template)))
-          :action '(("Do capture" . (lambda (template-shortcut)
-                                      (org-capture nil template-shortcut))))))
-
-      (defun helm-org-capture-templates ()
-        (interactive)
-        (helm :sources (helm-source-org-capture-templates)
-              :candidate-number-limit 99999
-              :buffer "*helm org capture templates*"))
-
-      (cl-defun helm-org-headings-in-buffer ()
-        (interactive)
-        (helm :sources (helm-source-org-headings-for-files
-                        (list (projectile-completing-read
-                               "File to look at headings from: "
-                               (projectile-all-project-files))))
-              :candidate-number-limit 99999
-              :buffer "*helm org inbuffer*"))
-      ;; helm zsh source history
-      (defvar helm-c-source-zsh-history
-        '((name . "Zsh History")
-          (candidates . helm-c-zsh-history-set-candidates)
-          (action . (("Execute Command" . helm-c-zsh-history-action)))
-          (volatile)
-          (requires-pattern . 3)
-          (delayed)))
-
-      (defun helm-c-zsh-history-set-candidates (&optional request-prefix)
-        (let ((pattern (replace-regexp-in-string
-                        " " ".*"
-                        (or (and request-prefix
-                                 (concat request-prefix
-                                         " " helm-pattern))
-                            helm-pattern))))
-          (with-current-buffer (find-file-noselect "~/.zsh_history" t t)
-            (auto-revert-mode -1)
-            (goto-char (point-max))
-            (loop for pos = (re-search-backward pattern nil t)
-                  while pos
-                  collect (replace-regexp-in-string
-                           "\\`:.+?;" ""
-                           (buffer-substring (line-beginning-position)
-                                             (line-end-position)))))))
-
-      (defun helm-c-zsh-history-action (candidate)
-        (async-shell-command candidate))
-
-      (defun helm-command-from-zsh ()
-        (interactive)
-        (require 'helm)
-        (helm-other-buffer 'helm-c-source-zsh-history "*helm zsh history*"))
-
-      (use-package helm-descbinds
-        :demand t
-        :config (helm-descbinds-mode 1))
-
-      (use-package helm-ag
-        :bind ("C-c p S" . imalison:set-helm-ag-extra-options)
-        :config
-        (progn
-          (setq helm-ag-always-set-extra-option nil)
-          (defun imalison:set-helm-ag-extra-options ()
-            (interactive)
-            (let ((option (read-string "Extra options: " (or helm-ag--extra-options "")
-                                       'helm-ag--extra-options-history)))
-              (setq helm-ag--extra-options option)))))
-
-      (use-package org-projectile
-        :demand t
-        :bind (("C-c n p" . imalison:helm-org-todo))
-        :config
-        (progn
-          (org-projectile:prompt)
-          (add-to-list 'org-capture-templates
-                       (org-projectile:project-todo-entry
-                        "l" "* TODO %? %a\n" "Linked Project TODO"))
-          (add-to-list 'org-capture-templates (org-projectile:project-todo-entry "p"))
-          (setq org-confirm-elisp-link-function nil)
-          (imalison:add-to-org-agenda-files (org-projectile:todo-files))
-          (defun imalison:helm-org-todo (&optional arg)
-            (interactive "P")
-            (helm :sources (list (helm-source-org-capture-templates)
-                                 (org-projectile:helm-source
-                                  (if arg (org-capture-make-linked-todo-template)
-                                    (org-capture-make-todo-template))))
-                  :candidate-number-limit 99999
-                  :buffer "*helm org capture templates*"))))
-      (helm-mode 1)))
-#+END_SRC
-[[(helm split window)][Ensure that helm buffers are started in the window that currently holds the focus]]
-
-#+BEGIN_SRC emacs-lisp
-  (use-package helm-projectile
-      :commands (helm-projectile-on)
-      :preface
-      (progn
-        (defun imalison:invalidate-cache-and-open-file (_dir)
-          (projectile-invalidate-cache nil)
-          (projectile-find-file))
-
-        (defun imalison:switch-to-project-and-search (dir)
-          (let ((default-directory dir)
-                (projectile-require-project-root nil)
-                (helm-action-buffer "this-buffer-should-not-exist"))
-            (helm-projectile-ag)))
-
-        (defun imalison:helm-term-projectile (dir)
-          (let ((default-directory dir)
-                (projectile-require-project-root nil)
-                (helm-action-buffer "this-buffer-should-not-exist"))
-            (term-projectile-forward))))
-      :config
-      (progn
-        (helm-delete-action-from-source "Search in Project"
-                                        helm-source-projectile-projects)
-        (helm-delete-action-from-source "Open term for project"
-                                        helm-source-projectile-projects)
-        (helm-add-action-to-source "Search in Project"
-                                   'imalison:switch-to-project-and-search
-                                   helm-source-projectile-projects)
-        (helm-add-action-to-source "Invalidate Cache and Open File"
-                                   'imalison:invalidate-cache-and-open-file
-                                   helm-source-projectile-projects)
-        (helm-add-action-to-source "Open term for project"
-                                   'imalison:helm-term-projectile
-                                     helm-source-projectile-projects)))
-#+END_SRC
-*** projectile
-#+BEGIN_SRC emacs-lisp
-  (use-package projectile
-    :demand t
-    :bind (("C-x f" . projectile-find-file-in-known-projects)
-           ("C-c p f" . imalison:projectile-find-file))
-    :preface
-    (progn
-      (defun imalison:do-ag (&optional arg)
-        (interactive "P")
-        (if arg (helm-do-ag) (helm-projectile-ag)))
-
-      (defun projectile-make-all-subdirs-projects (directory)
-        (cl-loop for file-info in (directory-files-and-attributes directory)
-                 do (when (nth 1 file-info)
-                      (write-region "" nil
-                                    (expand-file-name
-                                     (concat directory "/"
-                                             (nth 0 file-info) "/.projectile"))))))
-      (defun imalison:projectile-find-file (arg)
-            (interactive "P")
-            (if arg
-                (projectile-find-file-other-window)
-                (projectile-find-file))))
-    :config
-    (progn
-      (use-package persp-projectile
-        :commands projectile-persp-switch-project)
-
-      (projectile-global-mode)
-      (setq projectile-require-project-root nil)
-      (setq projectile-enable-caching nil)
-      (setq projectile-completion-system 'helm)
-      (add-to-list 'projectile-globally-ignored-files "Godeps")
-      (add-to-list 'projectile-globally-ignored-files "thrift-binaries")
-      (helm-projectile-on)
-      (diminish 'projectile-mode)
-      (bind-key* "C-c p s" 'imalison:do-ag)
-      (bind-key* "C-c p f" 'imalison:projectile-find-file)))
-#+END_SRC
-*** avy
-#+BEGIN_SRC emacs-lisp
-  (use-package avy
-    :preface
-    (progn
-      (imalison:prefix-alternatives imalison:avy avy-goto-word-1 avy-goto-char))
-    :bind (("C-j" . imalison:avy)
-           ("M-g l" . avy-goto-line)
-           ("C-'" . avy-goto-char-2)))
-#+END_SRC
-** Text Manipulation
-*** smartparens
-#+BEGIN_SRC emacs-lisp
-  (use-package smartparens
-      :demand t
-      :bind (:map smartparens-mode-map
-                  ("C-)" . sp-forward-slurp-sexp)
-                  ("C-}" . sp-forward-barf-sexp)
-                  ("C-(" . sp-backward-slurp-sexp)
-                  ("C-{" . sp-backward-barf-sexp))
-      :config
-      (progn
-        (require 'smartparens-config)
-        (smartparens-global-mode 1)
-        (sp-use-smartparens-bindings)
-        (unbind-key "C-<backspace>" smartparens-mode-map)
-        (unbind-key "M-<backspace>" smartparens-mode-map)))
-#+END_SRC
-** Non-Programming
+** General
 *** org
 #+BEGIN_SRC emacs-lisp
   (use-package org
@@ -1212,6 +996,239 @@ I use helm for almost all emacs completion
       (eval-after-load 'subword '(diminish 'subword-mode))
       (eval-after-load 'simple '(diminish 'visual-line-mode))))
 #+END_SRC
+** Navigation/Completion
+*** helm
+I use helm for almost all emacs completion
+#+BEGIN_SRC emacs-lisp -n -r
+  (use-package helm-config
+    :ensure helm
+    :demand t
+    :bind (("M-y" . helm-show-kill-ring)
+           ("M-x" . helm-M-x)
+           ("C-x C-i" . helm-imenu)
+           ("C-h a" . helm-apropos)
+           ("C-c C-h" . helm-org-agenda-files-headings)
+           ("C-c ;" . helm-recentf))
+    :diminish helm-mode
+    :config
+    (progn
+      (setq helm-split-window-default-side 'same)         (ref:helm split window)
+
+      (defun helm-source-org-capture-templates ()
+        (helm-build-sync-source "Org Capture Templates:"
+          :candidates (cl-loop for template in org-capture-templates
+                               collect `(,(nth 1 template) . ,(nth 0 template)))
+          :action '(("Do capture" . (lambda (template-shortcut)
+                                      (org-capture nil template-shortcut))))))
+
+      (defun helm-org-capture-templates ()
+        (interactive)
+        (helm :sources (helm-source-org-capture-templates)
+              :candidate-number-limit 99999
+              :buffer "*helm org capture templates*"))
+
+      (cl-defun helm-org-headings-in-buffer ()
+        (interactive)
+        (helm :sources (helm-source-org-headings-for-files
+                        (list (projectile-completing-read
+                               "File to look at headings from: "
+                               (projectile-all-project-files))))
+              :candidate-number-limit 99999
+              :buffer "*helm org inbuffer*"))
+      ;; helm zsh source history
+      (defvar helm-c-source-zsh-history
+        '((name . "Zsh History")
+          (candidates . helm-c-zsh-history-set-candidates)
+          (action . (("Execute Command" . helm-c-zsh-history-action)))
+          (volatile)
+          (requires-pattern . 3)
+          (delayed)))
+
+      (defun helm-c-zsh-history-set-candidates (&optional request-prefix)
+        (let ((pattern (replace-regexp-in-string
+                        " " ".*"
+                        (or (and request-prefix
+                                 (concat request-prefix
+                                         " " helm-pattern))
+                            helm-pattern))))
+          (with-current-buffer (find-file-noselect "~/.zsh_history" t t)
+            (auto-revert-mode -1)
+            (goto-char (point-max))
+            (loop for pos = (re-search-backward pattern nil t)
+                  while pos
+                  collect (replace-regexp-in-string
+                           "\\`:.+?;" ""
+                           (buffer-substring (line-beginning-position)
+                                             (line-end-position)))))))
+
+      (defun helm-c-zsh-history-action (candidate)
+        (async-shell-command candidate))
+
+      (defun helm-command-from-zsh ()
+        (interactive)
+        (require 'helm)
+        (helm-other-buffer 'helm-c-source-zsh-history "*helm zsh history*"))
+
+      (use-package helm-descbinds
+        :demand t
+        :config (helm-descbinds-mode 1))
+
+      (use-package helm-ag
+        :bind ("C-c p S" . imalison:set-helm-ag-extra-options)
+        :config
+        (progn
+          (setq helm-ag-always-set-extra-option nil)
+          (defun imalison:set-helm-ag-extra-options ()
+            (interactive)
+            (let ((option (read-string "Extra options: " (or helm-ag--extra-options "")
+                                       'helm-ag--extra-options-history)))
+              (setq helm-ag--extra-options option)))))
+
+      (use-package org-projectile
+        :demand t
+        :bind (("C-c n p" . imalison:helm-org-todo))
+        :config
+        (progn
+          (org-projectile:prompt)
+          (add-to-list 'org-capture-templates
+                       (org-projectile:project-todo-entry
+                        "l" "* TODO %? %a\n" "Linked Project TODO"))
+          (add-to-list 'org-capture-templates (org-projectile:project-todo-entry "p"))
+          (setq org-confirm-elisp-link-function nil)
+          (imalison:add-to-org-agenda-files (org-projectile:todo-files))
+          (defun imalison:helm-org-todo (&optional arg)
+            (interactive "P")
+            (helm :sources (list (helm-source-org-capture-templates)
+                                 (org-projectile:helm-source
+                                  (if arg (org-capture-make-linked-todo-template)
+                                    (org-capture-make-todo-template))))
+                  :candidate-number-limit 99999
+                  :buffer "*helm org capture templates*"))))
+      (helm-mode 1)))
+#+END_SRC
+[[(helm split window)][Ensure that helm buffers are started in the window that currently holds the focus]]
+
+#+BEGIN_SRC emacs-lisp
+  (use-package helm-projectile
+      :commands (helm-projectile-on)
+      :preface
+      (progn
+        (defun imalison:invalidate-cache-and-open-file (_dir)
+          (projectile-invalidate-cache nil)
+          (projectile-find-file))
+
+        (defun imalison:switch-to-project-and-search (dir)
+          (let ((default-directory dir)
+                (projectile-require-project-root nil)
+                (helm-action-buffer "this-buffer-should-not-exist"))
+            (helm-projectile-ag)))
+
+        (defun imalison:helm-term-projectile (dir)
+          (let ((default-directory dir)
+                (projectile-require-project-root nil)
+                (helm-action-buffer "this-buffer-should-not-exist"))
+            (term-projectile-forward))))
+      :config
+      (progn
+        (helm-delete-action-from-source "Search in Project"
+                                        helm-source-projectile-projects)
+        (helm-delete-action-from-source "Open term for project"
+                                        helm-source-projectile-projects)
+        (helm-add-action-to-source "Search in Project"
+                                   'imalison:switch-to-project-and-search
+                                   helm-source-projectile-projects)
+        (helm-add-action-to-source "Invalidate Cache and Open File"
+                                   'imalison:invalidate-cache-and-open-file
+                                   helm-source-projectile-projects)
+        (helm-add-action-to-source "Open term for project"
+                                   'imalison:helm-term-projectile
+                                     helm-source-projectile-projects)))
+#+END_SRC
+*** projectile
+#+BEGIN_SRC emacs-lisp
+  (use-package projectile
+    :demand t
+    :bind (("C-x f" . projectile-find-file-in-known-projects)
+           ("C-c p f" . imalison:projectile-find-file))
+    :preface
+    (progn
+      (defun imalison:do-ag (&optional arg)
+        (interactive "P")
+        (if arg (helm-do-ag) (helm-projectile-ag)))
+
+      (defun projectile-make-all-subdirs-projects (directory)
+        (cl-loop for file-info in (directory-files-and-attributes directory)
+                 do (when (nth 1 file-info)
+                      (write-region "" nil
+                                    (expand-file-name
+                                     (concat directory "/"
+                                             (nth 0 file-info) "/.projectile"))))))
+      (defun imalison:projectile-find-file (arg)
+            (interactive "P")
+            (if arg
+                (projectile-find-file-other-window)
+                (projectile-find-file))))
+    :config
+    (progn
+      (use-package persp-projectile
+        :commands projectile-persp-switch-project)
+
+      (projectile-global-mode)
+      (setq projectile-require-project-root nil)
+      (setq projectile-enable-caching nil)
+      (setq projectile-completion-system 'helm)
+      (add-to-list 'projectile-globally-ignored-files "Godeps")
+      (add-to-list 'projectile-globally-ignored-files "thrift-binaries")
+      (helm-projectile-on)
+      (diminish 'projectile-mode)
+      (bind-key* "C-c p s" 'imalison:do-ag)
+      (bind-key* "C-c p f" 'imalison:projectile-find-file)))
+#+END_SRC
+*** avy
+#+BEGIN_SRC emacs-lisp
+  (use-package avy
+    :preface
+    (progn
+      (imalison:prefix-alternatives imalison:avy avy-goto-word-1 avy-goto-char))
+    :bind (("C-j" . imalison:avy)
+           ("M-g l" . avy-goto-line)
+           ("C-'" . avy-goto-char-2)))
+#+END_SRC
+** Text Manipulation
+*** smartparens
+#+BEGIN_SRC emacs-lisp
+  (use-package smartparens
+      :demand t
+      :bind (:map smartparens-mode-map
+                  ("C-)" . sp-forward-slurp-sexp)
+                  ("C-}" . sp-forward-barf-sexp)
+                  ("C-(" . sp-backward-slurp-sexp)
+                  ("C-{" . sp-backward-barf-sexp))
+      :config
+      (progn
+        (require 'smartparens-config)
+        (smartparens-global-mode 1)
+        (sp-use-smartparens-bindings)
+        (unbind-key "C-<backspace>" smartparens-mode-map)
+        (unbind-key "M-<backspace>" smartparens-mode-map)))
+#+END_SRC
+** Source Control
+*** magit
+#+BEGIN_SRC emacs-lisp
+  (use-package magit
+    :commands magit-status
+    :bind (("C-x g" . magit-status))
+    :config
+    (progn
+      (defvar-setq magit-last-seen-setup-instructions "1.4.0")
+      (magit-auto-revert-mode)
+      (use-package magit-filenotify
+        ;; Seems like OSX does not support filenotify.
+        :disabled t
+        :if (funcall o(emacs-version-predicate 24 4))
+        :config
+        :init (add-hook 'magit-status-mode-hook 'magit-filenotify-mode))))
+#+END_SRC
 ** Programming
 *** Language Specific
 **** python
@@ -1597,22 +1614,6 @@ realgud provides debugging support with many external debuggers in emacs
         ("p" term-projectile-backward)
         ("c" term-projectile-create-new)
         ("d" imalison:term-hydra-default-directory/body :exit t))))
-#+END_SRC
-*** magit
-#+BEGIN_SRC emacs-lisp
-  (use-package magit
-    :commands magit-status
-    :bind (("C-x g" . magit-status))
-    :config
-    (progn
-      (defvar-setq magit-last-seen-setup-instructions "1.4.0")
-      (magit-auto-revert-mode)
-      (use-package magit-filenotify
-        ;; Seems like OSX does not support filenotify.
-        :disabled t
-        :if (funcall o(emacs-version-predicate 24 4))
-        :config
-        :init (add-hook 'magit-status-mode-hook 'magit-filenotify-mode))))
 #+END_SRC
 *** crux
 crux-reopen-as-root-mode makes it so that any file owned by root will automatically be opened as the root user.
