@@ -566,7 +566,19 @@ Prefix alternatives is a macro that builds a function that selects one of a coll
 #+BEGIN_SRC emacs-lisp
   (imalison:prefix-alternatives imalison:mark-ring helm-mark-ring helm-global-mark-ring)
 #+END_SRC
+* Macros
+** extract-current-sexp-to-src-block
+This keyboard macro extracts the current sexp to an emacs-lisp source block of its own
+#+BEGIN_SRC emacs-lisp
+  (fset 'extract-current-sexp-to-src-block
+     [?\C-a return ?\C-p ?# ?+ ?E ?N ?D ?_ ?S ?R ?C return ?# ?+ ?B ?E ?G ?I ?N ?_ ?S ?R ?C ?  ?e ?m ?a ?c ?s ?- ?l ?i ?s ?p ?\C-a ?\C-p ?\C-  ?\C-n ?\C-e ?\M-w ?\C-n ?\C-a ?\C-\M-f return ?\C-y])
 
+#+END_SRC
+** name-source-block-for-use-package-name
+#+BEGIN_SRC emacs-lisp
+  (fset 'name-source-block-for-use-package-name
+     [?\C-c ?\' ?\M-< ?\C-s ?u ?s ?e ?- ?p ?a ?c ?k return ?\C-\M-f ?\C-f ?\C-  ?\C-\M-f ?\M-w ?\C-c ?\' ?\C-r ?B ?E ?G ?I ?N return ?\C-a ?\C-p ?\C-e return ?* ?  ?\C-y])
+#+END_SRC
 * Packages
 ** General
 *** org
