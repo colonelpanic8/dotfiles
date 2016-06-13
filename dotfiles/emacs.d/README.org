@@ -139,6 +139,16 @@ This appears here so that it can accurately benchmark as much of startup as poss
 #+END_SRC
 ** Miscellaneous
 #+BEGIN_SRC emacs-lisp
+  (setq-default c-basic-offset 4
+                  tab-width 4
+                  indent-tabs-mode t)
+
+  (add-hook 'prog-mode-hook (lambda () (auto-fill-mode -1)))
+  ;; (add-hook 'prog-mode-hook 'flyspell-prog-mode)
+
+  ;; (add-hook 'prog-mode-hook (lambda () (highlight-lines-matching-regexp
+  ;;                                  ".\\{81\\}" 'hi-blue)))
+
   (setq visible-bell nil)
   (setq sentence-end-double-space nil)
 
@@ -567,19 +577,116 @@ Prefix alternatives is a macro that builds a function that selects one of a coll
   (imalison:prefix-alternatives imalison:mark-ring helm-mark-ring helm-global-mark-ring)
 #+END_SRC
 * Macros
-** extract-current-sexp-to-src-block
+** For editing literate config
+*** extract-current-sexp-to-src-block
 This keyboard macro extracts the current sexp to an emacs-lisp source block of its own
 #+BEGIN_SRC emacs-lisp
   (fset 'extract-current-sexp-to-src-block
      [?\C-a return ?\C-p ?# ?+ ?E ?N ?D ?_ ?S ?R ?C return ?# ?+ ?B ?E ?G ?I ?N ?_ ?S ?R ?C ?  ?e ?m ?a ?c ?s ?- ?l ?i ?s ?p ?\C-a ?\C-p ?\C-  ?\C-n ?\C-e ?\M-w ?\C-n ?\C-a ?\C-\M-f return ?\C-y])
 
 #+END_SRC
-** name-source-block-for-use-package-name
+*** name-source-block-for-use-package-name
 #+BEGIN_SRC emacs-lisp
   (fset 'name-source-block-for-use-package-name
      [?\C-c ?\' ?\M-< ?\C-s ?u ?s ?e ?- ?p ?a ?c ?k return ?\C-\M-f ?\C-f ?\C-  ?\C-\M-f ?\M-w ?\C-c ?\' ?\C-r ?B ?E ?G ?I ?N return ?\C-a ?\C-p ?\C-e return ?* ?  ?\C-y])
 #+END_SRC
+*** extract-and-name-use-package-block
+#+BEGIN_SRC emacs-lisp
+  (fset 'extract-and-name-use-package-block
+     [?\C-a return ?\C-p ?# ?+ ?E ?N ?D ?_ ?S ?R ?C return ?# ?+ ?B ?E ?G ?I ?N ?_ ?S ?R ?C ?  ?e ?m ?a ?c ?s ?- ?l ?i ?s ?p ?\C-a ?\C-p ?\C-  ?\C-n ?\C-e ?\M-w ?\C-n ?\C-a ?\C-\M-f return ?\C-y ?\C-p ?\C-p ?\C-c ?\' ?\M-< ?\C-s ?u ?s ?e ?- ?p ?a ?c ?k return ?\C-\M-f ?\C-f ?\C-  ?\C-\M-f ?\M-w ?\C-c ?\' ?\C-r ?B ?E ?G ?I ?N return ?\C-a ?\C-p ?\C-e return ?* ?  ?\C-y])
+#+END_SRC
 * Packages
+** Emacs Specific
+*** paradox
+#+BEGIN_SRC emacs-lisp
+  (use-package paradox
+    :config
+    (progn
+      (setq paradox-execute-asynchronously t)))
+#+END_SRC
+*** diminish
+#+BEGIN_SRC emacs-lisp
+  (use-package diminish
+    :preface
+    (defvar imalison:packages-to-diminish
+      '(auto-revert-mode smartparens-mode eldoc-mode tern-mode js2-refactor-mode))
+    :config
+    (progn
+      (cl-loop for package in imalison:packages-to-diminish
+               do (diminish package))
+      (eval-after-load 'subword '(diminish 'subword-mode))
+      (eval-after-load 'simple '(diminish 'visual-line-mode))))
+#+END_SRC
+*** edit-server
+#+BEGIN_SRC emacs-lisp
+  (use-package edit-server
+    :commands edit-server-start
+    :defer 1
+    :config
+    (progn
+      (edit-server-start)
+      (setq edit-server-new-frame nil)))
+#+END_SRC
+*** server
+#+BEGIN_SRC emacs-lisp
+  (use-package server
+    :config
+    (progn
+      (unless (server-running-p) (server-start))))
+#+END_SRC
+*** list-environment
+#+BEGIN_SRC emacs-lisp
+  (use-package list-environment)
+#+END_SRC
+*** bind-key
+#+BEGIN_SRC emacs-lisp
+  (use-package bind-key)
+#+END_SRC
+*** which-key
+#+BEGIN_SRC emacs-lisp
+  (use-package which-key
+    :config
+    (progn
+      (setq which-key-idle-delay .50)
+      (diminish 'which-key-mode)
+      (which-key-mode)))
+#+END_SRC
+*** exec-path-from-shell
+#+BEGIN_SRC emacs-lisp
+  (use-package exec-path-from-shell
+      :config
+      (progn
+        (add-to-list 'exec-path-from-shell-variables "GOPATH")
+        (exec-path-from-shell-initialize)))
+#+END_SRC
+*** bug-hunter
+#+BEGIN_SRC emacs-lisp
+  (use-package bug-hunter)
+#+END_SRC
+*** shackle
+#+BEGIN_SRC emacs-lisp
+  (use-package shackle
+    :disabled t
+    :config
+    (progn
+      (diminish 'shackle-mode)
+      (when nil                           ; disabled for now
+        (shackle-mode))
+      (setq shackle-inhibit-window-quit-on-same-windows t)
+      (setq shackle-default-rule '(:same t))))
+#+END_SRC
+
+*** beacon
+#+BEGIN_SRC emacs-lisp
+  (use-package beacon
+    :bind ("C-c b" . beacon-blink)
+    :config
+    (beacon-mode 1))
+#+END_SRC
+*** discover-my-major
+#+BEGIN_SRC emacs-lisp
+  (use-package discover-my-major)
+#+END_SRC
 ** General
 *** org
 #+BEGIN_SRC emacs-lisp
@@ -995,19 +1102,6 @@ This keyboard macro extracts the current sexp to an emacs-lisp source block of i
       (add-hook 'org-mode-hook (lambda () (setq org-todo-key-trigger t)))
       (add-hook 'org-agenda-mode-hook 'imalison:disable-linum-mode)))
 #+END_SRC
-*** diminish
-#+BEGIN_SRC emacs-lisp
-  (use-package diminish
-    :preface
-    (defvar imalison:packages-to-diminish
-      '(auto-revert-mode smartparens-mode eldoc-mode tern-mode js2-refactor-mode))
-    :config
-    (progn
-      (cl-loop for package in imalison:packages-to-diminish
-               do (diminish package))
-      (eval-after-load 'subword '(diminish 'subword-mode))
-      (eval-after-load 'simple '(diminish 'visual-line-mode))))
-#+END_SRC
 ** Navigation/Completion
 *** helm
 I use helm for almost all emacs completion
@@ -1206,6 +1300,23 @@ I use helm for almost all emacs completion
            ("M-g l" . avy-goto-line)
            ("C-'" . avy-goto-char-2)))
 #+END_SRC
+*** ace-window
+#+BEGIN_SRC emacs-lisp
+  (use-package ace-window
+    :preface
+    (imalison:prefix-alternatives imalison:ace-window ace-select-window ace-swap-window)
+    :config (setq aw-keys '(?a ?s ?d ?f ?g ?h ?j ?k ?l))
+    :bind ("C-c w" . imalison:ace-window))
+#+END_SRC
+*** neotree
+#+BEGIN_SRC emacs-lisp
+  (use-package neotree)
+#+END_SRC
+*** jump-char
+#+BEGIN_SRC emacs-lisp
+  (use-package jump-char
+    :bind (("C-;" . jump-char-forward)))
+#+END_SRC
 ** Text Manipulation
 *** smartparens
 #+BEGIN_SRC emacs-lisp
@@ -1240,6 +1351,10 @@ I use helm for almost all emacs completion
         :if (funcall o(emacs-version-predicate 24 4))
         :config
         :init (add-hook 'magit-status-mode-hook 'magit-filenotify-mode))))
+#+END_SRC
+*** gist
+#+BEGIN_SRC emacs-lisp
+  (use-package gist)
 #+END_SRC
 ** Programming
 *** Language Specific
@@ -1576,6 +1691,14 @@ I use helm for almost all emacs completion
           (add-hook 'rust-mode-hook 'cargo-minor-mode)))
       (add-hook 'rust-mode-hook 'imalison:rust-mode-hook)))
 #+END_SRC
+**** haskell
+#+BEGIN_SRC emacs-lisp
+  (use-package haskell-mode
+    :commands haskell-mode
+    :config
+    (progn
+      (add-hook 'haskell-mode-hook 'turn-on-haskell-indent)))
+#+END_SRC
 **** Other
 #+BEGIN_SRC emacs-lisp
   (defvar packages-eager
@@ -1590,7 +1713,25 @@ realgud provides debugging support with many external debuggers in emacs
 #+BEGIN_SRC emacs-lisp
   (use-package realgud)
 #+END_SRC
+**** emr
+emr (emacs refactor) provides support for refactoring in many programming languages
+#+BEGIN_SRC emacs-lisp
+  (use-package emr
+    :commands emr-initialize
+    :bind (:map prog-mode-map
+                ("M-RET" . emr-show-refactor-menu))
+    :init (emr-initialize))
+#+END_SRC
+
 ** Utility
+*** term
+#+BEGIN_SRC emacs-lisp
+  (use-package term
+    :config
+    (progn
+      (add-hook 'term-mode-hook 'imalison:disable-linum-mode)))
+#+END_SRC
+
 *** term-manager
 #+BEGIN_SRC emacs-lisp
   (use-package term-manager
@@ -1638,44 +1779,18 @@ crux-reopen-as-root-mode makes it so that any file owned by root will automatica
       (crux-reopen-as-root-mode)))
 #+END_SRC
 ** Other
+*** iedit
+I don't use iedit directly, but it is used by [[*emr][emr]] and I need to disable ~iedit-toggle-key-default~ or else a buffer pops up complaing that the key has been bound to something else
 #+BEGIN_SRC emacs-lisp
-  (use-package neotree)
-
-  (use-package gist)
-
-  (use-package bind-key)
-
-  (use-package bug-hunter)
-
   (use-package iedit
     :demand
     :config
     (progn
       (setq iedit-toggle-key-default nil)))
+#+END_SRC
 
-  (use-package server
-    :config
-    (progn
-      (unless (server-running-p) (server-start))))
-
-  (use-package list-environment)
-
-  (use-package paradox
-    :config
-    (progn
-      (setq paradox-execute-asynchronously t)))
-
-  (use-package term
-    :config
-    (progn
-      (add-hook 'term-mode-hook 'imalison:disable-linum-mode)))
-
-  (use-package exec-path-from-shell
-    :config
-    (progn
-      (add-to-list 'exec-path-from-shell-variables "GOPATH")
-      (exec-path-from-shell-initialize)))
-
+*** yasnippet
+#+BEGIN_SRC emacs-lisp
   (use-package yasnippet
     :defer 5
     :commands (yas-global-mode)
@@ -1688,44 +1803,17 @@ crux-reopen-as-root-mode makes it so that any file owned by root will automatica
             (cons 'yas-ido-prompt
                   (cl-delete 'yas-ido-prompt yas-prompt-functions)))))
 
+#+END_SRC
+
+*** tramp
+#+BEGIN_SRC emacs-lisp
   (use-package tramp
     :commands tramp
     :config
     (setq tramp-default-method "scp"))
-
-  (use-package shackle
-    :disabled t
-    :config
-    (progn
-      (diminish 'shackle-mode)
-      (when nil                           ; disabled for now
-        (shackle-mode))
-      (setq shackle-inhibit-window-quit-on-same-windows t)
-      (setq shackle-default-rule '(:same t))))
-
-  (use-package beacon
-    :bind ("C-c b" . beacon-blink)
-    :config
-    (beacon-mode 1))
-
-  (use-package discover-my-major)
-
-  (use-package which-key
-    :config
-    (progn
-      (setq which-key-idle-delay .50)
-      (diminish 'which-key-mode)
-      (which-key-mode)))
-
-  (use-package jump-char
-    :bind (("C-;" . jump-char-forward)))
-
-  (use-package ace-window
-    :preface
-    (imalison:prefix-alternatives imalison:ace-window ace-select-window ace-swap-window)
-    :config (setq aw-keys '(?a ?s ?d ?f ?g ?h ?j ?k ?l))
-    :bind ("C-c w" . imalison:ace-window))
-
+#+END_SRC
+*** flycheck
+#+BEGIN_SRC emacs-lisp
   (use-package flycheck
     :config
     (progn
@@ -1733,14 +1821,9 @@ crux-reopen-as-root-mode makes it so that any file owned by root will automatica
       (use-package flycheck-package
         :config (flycheck-package-setup)))
     :diminish flycheck-mode)
-
-
-  (use-package haskell-mode
-    :commands haskell-mode
-    :config
-    (progn
-      (add-hook 'haskell-mode-hook 'turn-on-haskell-indent)))
-
+#+END_SRC
+*** narrow-indirect
+#+BEGIN_SRC emacs-lisp
   (use-package narrow-indirect
     :init
     (progn
@@ -1755,24 +1838,37 @@ crux-reopen-as-root-mode makes it so that any file owned by root will automatica
   (use-package dtrt-indent
     :init (add-hook 'prog-mode-hook 'dtrt-indent-mode))
 
+#+END_SRC
+*8* indent-guide
+#+BEGIN_SRC emacs-lisp
   (use-package indent-guide
     :disabled t
     :config
     (progn
       (indent-guide-global-mode -1)
       (setq indent-guide-delay 0.1)))
-
+#+END_SRC
+*** rainbow-delimiters
+#+BEGIN_SRC emacs-lisp
   (use-package rainbow-delimiters
     :commands rainbow-delimiters-mode
     :init
     (progn
       (add-hook 'prog-mode-hook (lambda () (rainbow-delimiters-mode t)))))
 
+#+END_SRC
+*** git-gutter
+#+BEGIN_SRC emacs-lisp
   (use-package git-gutter
     :config
     (progn
       (global-git-gutter-mode -1)))
+#+END_SRC
+#+BEGIN_SRC emacs-lisp
 
+#+END_SRC
+*** gitolite-clone
+#+BEGIN_SRC emacs-lisp
   (use-package gitolite-clone
     :demand t
     :preface
@@ -1780,19 +1876,33 @@ crux-reopen-as-root-mode makes it so that any file owned by root will automatica
       (defun gitolite-clone-force-refresh ()
         (interactive)
         (gitolite-clone-get-projects nil nil t))))
+#+END_SRC
+#+BEGIN_SRC emacs-lisp
 
+#+END_SRC
+#+BEGIN_SRC emacs-lisp
   (use-package gh
     :ensure nil
     :load-path "~/Projects/gh.el")
+#+END_SRC
+*** github-clone
+#+BEGIN_SRC emacs-lisp
 
   (use-package github-clone
     :demand t)
 
+#+END_SRC
+*** github-notifier
+#+BEGIN_SRC emacs-lisp
   (use-package github-notifier
     :disabled t
     :config (github-notifier-mode))
-
-  (use-package company
+#+END_SRC
+#+BEGIN_SRC emacs-lisp
+#+END_SRC
+*** company
+#+BEGIN_SRC emacs-lisp
+(use-package company
     :commands company-mode imalison:company
     :bind (("C-\\" . imalison:company))
     :config
@@ -1805,11 +1915,19 @@ crux-reopen-as-root-mode makes it so that any file owned by root will automatica
     :init
     (add-hook 'prog-mode-hook (lambda () (company-mode t))))
 
+#+END_SRC
+*** expand-region
+#+BEGIN_SRC emacs-lisp
   (use-package expand-region
     :commands er/expand-region
     :config (setq expand-region-contract-fast-key "j")
     :bind (("C-c k" . er/expand-region)))
+#+END_SRC
+#+BEGIN_SRC emacs-lisp
 
+#+END_SRC
+*** multiple-cursors
+#+BEGIN_SRC emacs-lisp
   (use-package multiple-cursors
     :config
     (progn
@@ -1827,6 +1945,8 @@ crux-reopen-as-root-mode makes it so that any file owned by root will automatica
      ("C-c m p" . mc/mark-previous-like-this)
      ("C-c m s" . mc/mark-sgml-tag-pair)
      ("C-c m d" . mc/mark-all-like-this-in-defun)))
+#+END_SRC
+#+BEGIN_SRC emacs-lisp
 
   (use-package undo-tree
     :disabled t ;; this has been getting pretty annoying
@@ -1894,41 +2014,37 @@ crux-reopen-as-root-mode makes it so that any file owned by root will automatica
   (use-package comment-dwim-2
     :bind ("M-;" . comment-dwim-2))
 
-  (use-package emr
-    :commands emr-initialize
-    :init
-    (progn
-      (define-key prog-mode-map (kbd "M-RET") 'emr-show-refactor-menu)
-      (add-hook 'prog-mode-hook 'emr-initialize)))
-
+#+END_SRC
+*** git-link
+#+BEGIN_SRC emacs-lisp
   (use-package git-link
     :config
     (progn
       (setq git-link-use-commit t)))
-
-  (use-package phabricator)
-
+#+END_SRC
+*** key-chord
+#+BEGIN_SRC emacs-lisp
   (use-package key-chord)
-
+#+END_SRC
+*** nodejs-repl
+#+BEGIN_SRC emacs-lisp
   (use-package nodejs-repl)
-
+#+END_SRC
+*** calc-mode
+#+BEGIN_SRC emacs-lisp
   (use-package calc-mode
     :ensure nil
     :config
     (progn
       (setq calc-context-sensitive-enter t)))
-
+#+END_SRC
+*** helm-spotify
+#+BEGIN_SRC emacs-lisp
   (use-package helm-spotify
     :commands helm-spotify)
-
-  (use-package edit-server
-    :commands edit-server-start
-    :defer 1
-    :config
-    (progn
-      (edit-server-start)
-      (setq edit-server-new-frame nil)))
-
+#+END_SRC
+*** jabber
+#+BEGIN_SRC emacs-lisp
   (use-package jabber
     :commands jabber-connect
     :config
@@ -1941,16 +2057,25 @@ crux-reopen-as-root-mode makes it so that any file owned by root will automatica
               (format "%s: %s" (jabber-jid-resource from) text)
             (format "%s: %s" (jabber-jid-displayname from) text))))
       (setq jabber-alert-message-function 'jabber-message-content-message)))
-
+#+END_SRC
+*** htmlize
+#+BEGIN_SRC emacs-lisp
   (use-package htmlize)
-
+#+END_SRC
+*** calfw
+#+BEGIN_SRC emacs-lisp
   (use-package calfw
     :config
     (progn
       (require 'calfw-org)))
-
+#+END_SRC
+*** clocker
+Not really sure what this is
+#+BEGIN_SRC emacs-lisp
   (use-package clocker)
-
+#+END_SRC
+*** deft
+#+BEGIN_SRC emacs-lisp
   (use-package deft
     :config
     (progn
@@ -1961,7 +2086,8 @@ crux-reopen-as-root-mode makes it so that any file owned by root will automatica
                                      (nospace . "_")
                                      (case-fn . downcase)))
       (setq deft-directory "~/SparkleShare/org/notes")))
-
+#+END_SRC
+#+BEGIN_SRC emacs-lisp
   (use-package epg
     :config
     (epa-file-enable))
@@ -1973,6 +2099,9 @@ crux-reopen-as-root-mode makes it so that any file owned by root will automatica
     :disabled t ;; fails to load eieio on startup
     )
 
+#+END_SRC
+*** erc
+#+BEGIN_SRC emacs-lisp
   (use-package erc
     :commands erc
     :config
@@ -1983,8 +2112,11 @@ crux-reopen-as-root-mode makes it so that any file owned by root will automatica
       (setq erc-log-channels-directory "~/Dropbox (Personal)/irclogs")
       (erc-log-enable)
       (use-package erc-colorize) (erc-colorize-mode 1)))
-
+#+END_SRC
+*** bitlbee
+#+BEGIN_SRC emacs-lisp
   (use-package bitlbee
+    :disabled t
     :config
     (progn
       (defvar bitlbee-password "geheim")
@@ -1998,10 +2130,15 @@ crux-reopen-as-root-mode makes it so that any file owned by root will automatica
                                          (erc-default-target)
                                          bitlbee-password))))))
 
+#+END_SRC
+*** s
+#+BEGIN_SRC emacs-lisp
   (use-package s)
-  (add-to-list 'load-path (s-trim (shell-command-to-string "mu4e_directory")))
-
+#+END_SRC
+*** mu4e
+#+BEGIN_SRC emacs-lisp
   (use-package mu4e
+    :load-path (s-trim (shell-command-to-string "mu4e_directory"))
     :ensure nil
     :commands (mu4e mu4e-view-message-with-msgid mu4e-update-index email)
     :bind ("C-c 0" . email)
@@ -2099,8 +2236,14 @@ crux-reopen-as-root-mode makes it so that any file owned by root will automatica
             smtpmail-smtp-server "smtp.gmail.com"
             smtpmail-smtp-service 587)))
 
+#+END_SRC
+*** gmail-message-mode
+This is useful with server mode when editing gmail messages. I think that it is not currently working, or it may need to be manually enabled.
+#+BEGIN_SRC emacs-lisp
   (use-package gmail-message-mode)
-
+#+END_SRC
+*** alert
+#+BEGIN_SRC emacs-lisp
   (use-package alert
     :config
     (progn
@@ -2121,7 +2264,9 @@ crux-reopen-as-root-mode makes it so that any file owned by root will automatica
         (format "emacsclient --server-file='%s' -e '%s'" server-name command))
 
       (setq alert-default-style 'notifier)))
-
+#+END_SRC
+*** sauron
+#+BEGIN_SRC emacs-lisp
   (use-package sauron
     :defer 5
     :commands (sauron-start sauron-start-hidden)
@@ -2163,14 +2308,25 @@ crux-reopen-as-root-mode makes it so that any file owned by root will automatica
       (sauron-start-hidden)
       (add-hook 'sauron-event-added-functions 'sauron-alert-el-adapter)))
 
+#+END_SRC
+*** screenshot
+#+BEGIN_SRC emacs-lisp
   (use-package screenshot)
-
+#+END_SRC
+*** floobits
+#+BEGIN_SRC emacs-lisp
   (use-package floobits)
-
+#+END_SRC
+*** wsd-mode
+#+BEGIN_SRC emacs-lisp
   (use-package wsd-mode)
-
+#+END_SRC
+*** libmpdee
+#+BEGIN_SRC emacs-lisp
   (use-package libmpdee)
-
+#+END_SRC
+*** flyspell
+#+BEGIN_SRC emacs-lisp
   (use-package flyspell
     :disabled t                           ; kind of annoying
     :preface (setq flyspell-issue-welcome-flag nil)
@@ -2209,14 +2365,9 @@ crux-reopen-as-root-mode makes it so that any file owned by root will automatica
                       base-menu)))
           (cadr (assoc (popup-menu* menu :scroll-bar t) base-menu))))
       (fset 'flyspell-emacs-popup 'flyspell-emacs-popup-textual)))
-
-  (add-hook 'prog-mode-hook (lambda () (auto-fill-mode -1)))
-  (add-hook 'prog-mode-hook (lambda () (subword-mode t) (diminish 'subword-mode)))
-  ;; (add-hook 'prog-mode-hook 'flyspell-prog-mode)
-
-  ;; (add-hook 'prog-mode-hook (lambda () (highlight-lines-matching-regexp
-  ;;                                  ".\\{81\\}" 'hi-blue)))
-
+#+END_SRC
+*** web-mode
+#+BEGIN_SRC emacs-lisp
   (use-package web-mode
     :mode (("\\.tmpl\\'" . web-mode)
            ("\\.cql\\'" . web-mode))
@@ -2226,12 +2377,19 @@ crux-reopen-as-root-mode makes it so that any file owned by root will automatica
         '(("gtl" . "\\.tmpl\\'")
           ("gtl" . "\\.cql\\'")))))
 
+#+END_SRC
+*** helm-themes
+#+BEGIN_SRC emacs-lisp
   (use-package helm-themes)
-
+#+END_SRC
+*** helm-swoop
+#+BEGIN_SRC emacs-lisp
   (use-package helm-swoop
     :bind ("C-S-s" . helm-swoop)
     :commands helm-swoop)
-
+#+END_SRC
+*** perspective
+#+BEGIN_SRC emacs-lisp
   (use-package perspective
     :demand t
     :config
@@ -2244,30 +2402,30 @@ crux-reopen-as-root-mode makes it so that any file owned by root will automatica
                  collect (persp-name perspective)))
 
       (defun persp-pick-perspective-by-buffer (buffer)
-    "Select a buffer and go to the perspective to which that buffer
-  belongs. If the buffer belongs to more than one perspective
-  completion will be used to pick the perspective to switch to.
-  Switch the focus to the window in which said buffer is displayed
-  if such a window exists. Otherwise display the buffer in whatever
-  window is active in the perspective."
-    (interactive (list (funcall persp-interactive-completion-function
-                                "Buffer: " (mapcar 'buffer-name (buffer-list)))))
-    (let* ((perspectives (persp-get-perspectives-for-buffer (get-buffer buffer)))
-           (perspective (if (> (length perspectives) 1)
-                            (funcall persp-interactive-completion-function
-                                     (format "Select the perspective in which you would like to visit %s."
-                                             buffer)
-                                     perspectives)
-                                     (car perspectives))))
-      (if (string= (persp-name persp-curr) perspective)
-          ;; This allows the opening of a single buffer in more than one window
-          ;; in a single perspective.
-          (switch-to-buffer buffer)
-        (progn
-            (persp-switch perspective)
-            (if (get-buffer-window buffer)
-                (set-frame-selected-window nil (get-buffer-window buffer))
-              (switch-to-buffer buffer))))))
+        "Select a buffer and go to the perspective to which that buffer
+    belongs. If the buffer belongs to more than one perspective
+    completion will be used to pick the perspective to switch to.
+    Switch the focus to the window in which said buffer is displayed
+    if such a window exists. Otherwise display the buffer in whatever
+    window is active in the perspective."
+        (interactive (list (funcall persp-interactive-completion-function
+                                    "Buffer: " (mapcar 'buffer-name (buffer-list)))))
+        (let* ((perspectives (persp-get-perspectives-for-buffer (get-buffer buffer)))
+               (perspective (if (> (length perspectives) 1)
+                                (funcall persp-interactive-completion-function
+                                         (format "Select the perspective in which you would like to visit %s."
+                                                 buffer)
+                                         perspectives)
+                              (car perspectives))))
+          (if (string= (persp-name persp-curr) perspective)
+              ;; This allows the opening of a single buffer in more than one window
+              ;; in a single perspective.
+              (switch-to-buffer buffer)
+            (progn
+              (persp-switch perspective)
+              (if (get-buffer-window buffer)
+                  (set-frame-selected-window nil (get-buffer-window buffer))
+                (switch-to-buffer buffer))))))
 
       (defun persp-mode-switch-buffers (arg)
         (interactive "P")
@@ -2276,18 +2434,24 @@ crux-reopen-as-root-mode makes it so that any file owned by root will automatica
 
       (define-key persp-mode-map (kbd "C-x b") 'persp-mode-switch-buffers))
     :bind ("C-c 9" . persp-switch))
-
+#+END_SRC
+*** smex
+#+BEGIN_SRC emacs-lisp
   (use-package smex
     ;; Using helm-M-x instead
     :disabled t
     :commands smex
     ;; This is here because smex feels like part of ido
     :bind ("M-x" . smex))
-
+#+END_SRC
+*** ido
+#+BEGIN_SRC emacs-lisp
   (use-package ido
+    :if (and (boundp 'use-ido) use-ido)
     :commands ido-mode
     :config
     (progn
+      (ido-mode 1)
       (setq ido-auto-merge-work-directories-length -1)
       (setq ido-use-filename-at-point nil)
       (setq ido-create-new-buffer 'always)
@@ -2312,24 +2476,30 @@ crux-reopen-as-root-mode makes it so that any file owned by root will automatica
           (ido-vertical-mode 1)
           (setq ido-vertical-define-keys 'C-n-C-p-up-and-down)))
       (use-package flx-ido)))
-
-
-  (when (or (and (boundp 'use-ido) use-ido) (not (boundp 'use-ido))) (ido-mode 1))
-
+#+END_SRC
+*** java
+#+BEGIN_SRC emacs-lisp
   (add-hook 'java-mode-hook
             (lambda ()
               (setq c-basic-offset 4
                     tab-width 4
                     indent-tabs-mode t)))
 
+#+END_SRC
+*** android-mode
+#+BEGIN_SRC emacs-lisp
   (use-package android-mode
     :config
     (progn
       (setq android-mode-sdk-dir
             (s-trim (shell-command-to-string "android_sdk_directory")))))
-
+#+END_SRC
+*** gradle-mode
+#+BEGIN_SRC emacs-lisp
   (use-package gradle-mode)
-
+#+END_SRC
+*** json-mode
+#+BEGIN_SRC emacs-lisp
   (use-package json-mode
     :mode "\\.json\\'"
     :init
@@ -2337,27 +2507,35 @@ crux-reopen-as-root-mode makes it so that any file owned by root will automatica
               (lambda ()
                 (setq indent-tabs-mode nil)
                 (setq js-indent-level 4))))
-
+#+END_SRC
+*** jq-mode
+#+BEGIN_SRC emacs-lisp
   (use-package jq-mode
     :mode "\\.jq\\'")
-
+#+END_SRC
+*** jsx-mode
+#+BEGIN_SRC emacs-lisp
   (use-package jsx-mode
     :mode "\\.jsx\\'")
-
+#+END_SRC
+*** css
+#+BEGIN_SRC emacs-lisp
   (eval-after-load 'css-mode
     '(define-key css-mode-map (kbd "C-c b") 'web-beautify-css))
-
+#+END_SRC
+*** robe
+#+BEGIN_SRC emacs-lisp
   (use-package robe
     :commands robe-mode
     :init
     (progn (add-hook 'ruby-mode-hook 'robe-mode)))
-
+#+END_SRC
+*** rinari
+#+BEGIN_SRC emacs-lisp
   (use-package rinari)
-
-  (setq-default c-basic-offset 4
-                tab-width 4
-                indent-tabs-mode t)
-
+#+END_SRC
+*** helm-gtags
+#+BEGIN_SRC emacs-lisp
   (use-package helm-gtags
     :disabled t
     :config (custom-set-variables
@@ -2376,35 +2554,38 @@ crux-reopen-as-root-mode makes it so that any file owned by root will automatica
       (add-hook 'c-mode-hook 'helm-gtags-mode)
       (add-hook 'c++-mode-hook 'helm-gtags-mode)
       (add-hook 'asm-mode-hook 'helm-gtags-mode)))
-
-  (defun guess-TeX-master (filename)
-    "Guess the master file for FILENAME from currently open .tex files."
-    (let ((candidate nil)
-          (filename (file-name-nondirectory filename)))
-      (save-excursion
-        (dolist (buffer (buffer-list))
-          (with-current-buffer buffer
-            (let ((name (buffer-name))
-                  (file buffer-file-name))
-              (if (and file (string-match "\\.tex$" file))
-                  (progn
-                    (goto-char (point-min))
-                    (if (re-search-forward
-                         (concat "\\\\input{" filename "}") nil t)
-                        (setq candidate file))
-                    (if (re-search-forward
-                         "\\\\include{" (file-name-sans-extension filename) "}"
-                         nil t)
-                        (setq candidate file))))))))
-      (if candidate
-          (message "TeX master document: %s" (file-name-nondirectory candidate)))
-      candidate))
-
-  (defun set-TeX-master ()
-      (setq TeX-master (guess-TeX-master (buffer-file-name))))
-
+#+END_SRC
+*** tex
+#+BEGIN_SRC emacs-lisp
   (use-package tex
     :ensure auctex
+    :preface
+    (progn
+      (defun guess-TeX-master (filename)
+        "Guess the master file for FILENAME from currently open .tex files."
+        (let ((candidate nil)
+              (filename (file-name-nondirectory filename)))
+          (save-excursion
+            (dolist (buffer (buffer-list))
+              (with-current-buffer buffer
+                (let ((name (buffer-name))
+                      (file buffer-file-name))
+                  (if (and file (string-match "\\.tex$" file))
+                      (progn
+                        (goto-char (point-min))
+                        (if (re-search-forward
+                             (concat "\\\\input{" filename "}") nil t)
+                            (setq candidate file))
+                        (if (re-search-forward
+                             "\\\\include{" (file-name-sans-extension filename) "}"
+                             nil t)
+                            (setq candidate file))))))))
+          (if candidate
+              (message "TeX master document: %s" (file-name-nondirectory candidate)))
+          candidate))
+
+      (defun set-TeX-master ()
+        (setq TeX-master (guess-TeX-master (buffer-file-name)))))
     :commands TeX-mode
     :config
     (progn
@@ -2416,35 +2597,53 @@ crux-reopen-as-root-mode makes it so that any file owned by root will automatica
       (setq TeX-PDF-mode t)
       (TeX-global-PDF-mode t)
       (setq-default TeX-master nil)))
-
+#+END_SRC
+#+BEGIN_SRC emacs-lisp
+#+END_SRC
+*** latex
+#+BEGIN_SRC emacs-lisp
   (use-package latex
     :ensure auctex
     :config
     (progn
       (unbind-key "C-j" LaTeX-mode-map)))
-
+#+END_SRC
+*** yaml-mode
+#+BEGIN_SRC emacs-lisp
   (use-package yaml-mode
     :mode (("\\.yaml\\'" . yaml-mode)
            ("\\.yml\\'" . yaml-mode)))
-
+#+END_SRC
+*** sgml-mode
+#+BEGIN_SRC emacs-lisp
   (use-package sgml-mode
     ;; :bind ("C-c b" . web-beautify-html) TODO: mode specific, change binding
     :commands sgml-mode)
-
+#+END_SRC
+*** gitconfig-mode
+#+BEGIN_SRC emacs-lisp
   (use-package gitconfig-mode
     :mode "\\.?gitconfig\\'")
-
+#+END_SRC
+*** evil
+#+BEGIN_SRC emacs-lisp
   (use-package evil :commands (evil-mode))
-
+#+END_SRC
+*** thrift
+#+BEGIN_SRC emacs-lisp
   (use-package thrift
     :commands thrift-mode
     :mode (("\\.thrift\\'" . thrift-mode)))
-
+#+END_SRC
+*** markdown-mode
+#+BEGIN_SRC emacs-lisp
   (use-package markdown-mode
     :init
     (progn
       (add-hook 'markdown-mode-hook 'imalison:disable-linum-mode)))
-
+#+END_SRC
+*** hackernews
+#+BEGIN_SRC emacs-lisp
   (use-package hackernews :commands hackernews)
 #+END_SRC
 * Keybindings
