@@ -782,6 +782,24 @@ I use helm for almost all emacs completion
            ("M-g l" . avy-goto-line)
            ("C-'" . avy-goto-char-2)))
 #+END_SRC
+** Text Manipulation
+*** smartparens
+#+BEGIN_SRC emacs-lisp
+  (use-package smartparens
+      :demand t
+      :bind (:map smartparens-mode-map
+                  ("C-)" . sp-forward-slurp-sexp)
+                  ("C-}" . sp-forward-barf-sexp)
+                  ("C-(" . sp-backward-slurp-sexp)
+                  ("C-{" . sp-backward-barf-sexp))
+      :config
+      (progn
+        (require 'smartparens-config)
+        (smartparens-global-mode 1)
+        (sp-use-smartparens-bindings)
+        (unbind-key "C-<backspace>" smartparens-mode-map)
+        (unbind-key "M-<backspace>" smartparens-mode-map)))
+#+END_SRC
 ** Non-Programming
 *** org
 #+BEGIN_SRC emacs-lisp
@@ -2430,7 +2448,6 @@ Go the other way when you use capital O.
 #+BEGIN_SRC emacs-lisp
   (bind-key "C-x O" (lambda () (interactive) (other-window -1)))
 #+END_SRC
-
 
 #+BEGIN_SRC emacs-lisp
   (bind-key "M-q" 'fill-or-unfill-paragraph)
