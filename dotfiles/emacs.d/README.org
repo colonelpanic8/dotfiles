@@ -596,7 +596,7 @@ This keyboard macro extracts the current sexp to an emacs-lisp source block of i
      [?\C-a return ?\C-p ?# ?+ ?E ?N ?D ?_ ?S ?R ?C return ?# ?+ ?B ?E ?G ?I ?N ?_ ?S ?R ?C ?  ?e ?m ?a ?c ?s ?- ?l ?i ?s ?p ?\C-a ?\C-p ?\C-  ?\C-n ?\C-e ?\M-w ?\C-n ?\C-a ?\C-\M-f return ?\C-y ?\C-p ?\C-p ?\C-c ?\' ?\M-< ?\C-s ?u ?s ?e ?- ?p ?a ?c ?k return ?\C-\M-f ?\C-f ?\C-  ?\C-\M-f ?\M-w ?\C-c ?\' ?\C-r ?B ?E ?G ?I ?N return ?\C-a ?\C-p ?\C-e return ?* ?  ?\C-y])
 #+END_SRC
 * Packages
-** Emacs Specific
+** Emacs
 *** paradox
 #+BEGIN_SRC emacs-lisp
   (use-package paradox
@@ -652,6 +652,7 @@ This keyboard macro extracts the current sexp to an emacs-lisp source block of i
       (which-key-mode)))
 #+END_SRC
 *** exec-path-from-shell
+Sets environment variables by starting a shell 
 #+BEGIN_SRC emacs-lisp
   (use-package exec-path-from-shell
       :config
@@ -687,8 +688,7 @@ This keyboard macro extracts the current sexp to an emacs-lisp source block of i
 #+BEGIN_SRC emacs-lisp
   (use-package discover-my-major)
 #+END_SRC
-** General
-*** org
+** org
 #+BEGIN_SRC emacs-lisp
   (use-package org
     :ensure org-plus-contrib
@@ -1356,6 +1356,54 @@ I use helm for almost all emacs completion
 #+BEGIN_SRC emacs-lisp
   (use-package gist)
 #+END_SRC
+*** git-gutter
+#+BEGIN_SRC emacs-lisp
+  (use-package git-gutter
+    :config
+    (progn
+      (global-git-gutter-mode -1)))
+#+END_SRC
+#+BEGIN_SRC emacs-lisp
+
+#+END_SRC
+*** gitolite-clone
+#+BEGIN_SRC emacs-lisp
+  (use-package gitolite-clone
+    :demand t
+    :preface
+    (progn
+      (defun gitolite-clone-force-refresh ()
+        (interactive)
+        (gitolite-clone-get-projects nil nil t))))
+#+END_SRC
+#+BEGIN_SRC emacs-lisp
+
+#+END_SRC
+#+BEGIN_SRC emacs-lisp
+  (use-package gh
+    :ensure nil
+    :load-path "~/Projects/gh.el")
+#+END_SRC
+*** github-clone
+#+BEGIN_SRC emacs-lisp
+  (use-package github-clone
+    :demand t)
+#+END_SRC
+*** github-notifier
+#+BEGIN_SRC emacs-lisp
+  (use-package github-notifier
+    :disabled t
+    :config (github-notifier-mode))
+#+END_SRC
+#+BEGIN_SRC emacs-lisp
+#+END_SRC
+*** git-link
+#+BEGIN_SRC emacs-lisp
+  (use-package git-link
+    :config
+    (progn
+      (setq git-link-use-commit t)))
+#+END_SRC
 ** Programming
 *** Language Specific
 **** python
@@ -1778,6 +1826,44 @@ crux-reopen-as-root-mode makes it so that any file owned by root will automatica
     (progn
       (crux-reopen-as-root-mode)))
 #+END_SRC
+** Communication
+*** erc
+#+BEGIN_SRC emacs-lisp
+  (use-package erc
+    :commands erc
+    :config
+    (progn
+      ;; (add-to-list 'erc-modules 'notifications)
+      ;; logging:
+      (require 'erc-log)
+      (setq erc-log-channels-directory "~/Dropbox (Personal)/irclogs")
+      (erc-log-enable)
+      (use-package erc-colorize) (erc-colorize-mode 1)))
+#+END_SRC
+*** bitlbee
+#+BEGIN_SRC emacs-lisp
+  (use-package bitlbee
+    :disabled t
+    :config
+    (progn
+      (defvar bitlbee-password "geheim")
+      (add-hook 'erc-join-hook 'bitlbee-identify)
+      (defun bitlbee-identify ()
+        "If we're on the bitlbee server, send the identify command to the
+   &bitlbee channel."
+        (when (and (string= "localhost" erc-session-server)
+                   (string= "&bitlbee" (buffer-name)))
+          (erc-message "PRIVMSG" (format "%s identify %s"
+                                         (erc-default-target)
+                                         bitlbee-password))))))
+
+#+END_SRC
+** emacs-lisp only
+The packages in this section provide no functionality on their own, but support other packages by providing useful elisp functions.
+*** s
+#+BEGIN_SRC emacs-lisp
+  (use-package s)
+#+END_SRC
 ** Other
 *** iedit
 I don't use iedit directly, but it is used by [[*emr][emr]] and I need to disable ~iedit-toggle-key-default~ or else a buffer pops up complaing that the key has been bound to something else
@@ -1857,49 +1943,6 @@ I don't use iedit directly, but it is used by [[*emr][emr]] and I need to disabl
       (add-hook 'prog-mode-hook (lambda () (rainbow-delimiters-mode t)))))
 
 #+END_SRC
-*** git-gutter
-#+BEGIN_SRC emacs-lisp
-  (use-package git-gutter
-    :config
-    (progn
-      (global-git-gutter-mode -1)))
-#+END_SRC
-#+BEGIN_SRC emacs-lisp
-
-#+END_SRC
-*** gitolite-clone
-#+BEGIN_SRC emacs-lisp
-  (use-package gitolite-clone
-    :demand t
-    :preface
-    (progn
-      (defun gitolite-clone-force-refresh ()
-        (interactive)
-        (gitolite-clone-get-projects nil nil t))))
-#+END_SRC
-#+BEGIN_SRC emacs-lisp
-
-#+END_SRC
-#+BEGIN_SRC emacs-lisp
-  (use-package gh
-    :ensure nil
-    :load-path "~/Projects/gh.el")
-#+END_SRC
-*** github-clone
-#+BEGIN_SRC emacs-lisp
-
-  (use-package github-clone
-    :demand t)
-
-#+END_SRC
-*** github-notifier
-#+BEGIN_SRC emacs-lisp
-  (use-package github-notifier
-    :disabled t
-    :config (github-notifier-mode))
-#+END_SRC
-#+BEGIN_SRC emacs-lisp
-#+END_SRC
 *** company
 #+BEGIN_SRC emacs-lisp
 (use-package company
@@ -1914,7 +1957,6 @@ I don't use iedit directly, but it is used by [[*emr][emr]] and I need to disabl
       (diminish 'company-mode))
     :init
     (add-hook 'prog-mode-hook (lambda () (company-mode t))))
-
 #+END_SRC
 *** expand-region
 #+BEGIN_SRC emacs-lisp
@@ -2015,13 +2057,6 @@ I don't use iedit directly, but it is used by [[*emr][emr]] and I need to disabl
     :bind ("M-;" . comment-dwim-2))
 
 #+END_SRC
-*** git-link
-#+BEGIN_SRC emacs-lisp
-  (use-package git-link
-    :config
-    (progn
-      (setq git-link-use-commit t)))
-#+END_SRC
 *** key-chord
 #+BEGIN_SRC emacs-lisp
   (use-package key-chord)
@@ -2099,41 +2134,6 @@ Not really sure what this is
     :disabled t ;; fails to load eieio on startup
     )
 
-#+END_SRC
-*** erc
-#+BEGIN_SRC emacs-lisp
-  (use-package erc
-    :commands erc
-    :config
-    (progn
-      ;; (add-to-list 'erc-modules 'notifications)
-      ;; logging:
-      (require 'erc-log)
-      (setq erc-log-channels-directory "~/Dropbox (Personal)/irclogs")
-      (erc-log-enable)
-      (use-package erc-colorize) (erc-colorize-mode 1)))
-#+END_SRC
-*** bitlbee
-#+BEGIN_SRC emacs-lisp
-  (use-package bitlbee
-    :disabled t
-    :config
-    (progn
-      (defvar bitlbee-password "geheim")
-      (add-hook 'erc-join-hook 'bitlbee-identify)
-      (defun bitlbee-identify ()
-        "If we're on the bitlbee server, send the identify command to the
-   &bitlbee channel."
-        (when (and (string= "localhost" erc-session-server)
-                   (string= "&bitlbee" (buffer-name)))
-          (erc-message "PRIVMSG" (format "%s identify %s"
-                                         (erc-default-target)
-                                         bitlbee-password))))))
-
-#+END_SRC
-*** s
-#+BEGIN_SRC emacs-lisp
-  (use-package s)
 #+END_SRC
 *** mu4e
 #+BEGIN_SRC emacs-lisp
