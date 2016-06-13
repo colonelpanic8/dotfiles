@@ -756,22 +756,6 @@ I use helm for almost all emacs completion
       (bind-key* "C-c p s" 'imalison:do-ag)
       (bind-key* "C-c p f" 'imalison:projectile-find-file)))
 #+END_SRC
-*** magit
-#+BEGIN_SRC emacs-lisp
-  (use-package magit
-    :commands magit-status
-    :bind (("C-x g" . magit-status))
-    :config
-    (progn
-      (defvar-setq magit-last-seen-setup-instructions "1.4.0")
-      (magit-auto-revert-mode)
-      (use-package magit-filenotify
-        ;; Seems like OSX does not support filenotify.
-        :disabled t
-        :if (funcall o(emacs-version-predicate 24 4))
-        :config
-        :init (add-hook 'magit-status-mode-hook 'magit-filenotify-mode))))
-#+END_SRC
 *** avy
 #+BEGIN_SRC emacs-lisp
   (use-package avy
@@ -1613,6 +1597,22 @@ realgud provides debugging support with many external debuggers in emacs
         ("p" term-projectile-backward)
         ("c" term-projectile-create-new)
         ("d" imalison:term-hydra-default-directory/body :exit t))))
+#+END_SRC
+*** magit
+#+BEGIN_SRC emacs-lisp
+  (use-package magit
+    :commands magit-status
+    :bind (("C-x g" . magit-status))
+    :config
+    (progn
+      (defvar-setq magit-last-seen-setup-instructions "1.4.0")
+      (magit-auto-revert-mode)
+      (use-package magit-filenotify
+        ;; Seems like OSX does not support filenotify.
+        :disabled t
+        :if (funcall o(emacs-version-predicate 24 4))
+        :config
+        :init (add-hook 'magit-status-mode-hook 'magit-filenotify-mode))))
 #+END_SRC
 *** crux
 crux-reopen-as-root-mode makes it so that any file owned by root will automatically be opened as the root user.
