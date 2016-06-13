@@ -90,7 +90,7 @@ These definitions silence the byte-compiler
 
   (defvar imalison:package-archive-triples
     '(("elpa" "tromey.com/elpa/" nil)
-      ;; ("marmalade" "marmalade-repo.org/packages/")
+      ;; ("marmalade" "marmalade-repo.org/packages/")             (ref:marmalade)
       ("org" "orgmode.org/elpa/" "http")                          (ref:org setup)
       ("melpa" "melpa.org/packages/" nil)))
 
@@ -103,7 +103,8 @@ These definitions silence the byte-compiler
                 (imalison:add-package-archive
                  archive-name (imalison:build-archive-uri archive-uri protocol))))
 #+END_SRC
-[[(org setup)][The org archive]] does not support https, so we set http as the protocol explicitly.
+*** [[(org setup)][The org archive]] does not support https, so we set http as the protocol explicitly.
+*** I've decided to stop using [[(marmalade)][Marmalade]] completely
 ** Bootstrap Package Loading
 Its a shame that everyone has to have some version of this function in their init.el. I use use-package's own mechanism for ensuring packages are installed so my version of ~ensure-packages-installed~ is really only used to download use-package itself.
 #+BEGIN_SRC emacs-lisp
@@ -137,6 +138,27 @@ This appears here so that it can accurately benchmark as much of startup as poss
 (use-package benchmark-init
   :if (and (boundp 'imalison:do-benchmark) imalison:do-benchmark))
 #+END_SRC
+** Backups
+*** Put them all in one directory
+#+BEGIN_SRC emacs-lisp
+  (defconst emacs-tmp-dir
+    (format "%s/%s%s/" temporary-file-directory "emacs" (user-uid)))
+  (setq backup-directory-alist `((".*" . ,emacs-tmp-dir)))
+  (setq auto-save-file-name-transforms `((".*" ,emacs-tmp-dir t)))
+  (setq auto-save-list-file-prefix emacs-tmp-dir)
+#+END_SRC
+*** Completely disable backups
+#+BEGIN_SRC emacs-lisp
+  (setq backup-inhibited t)
+  (setq make-backup-files nil)
+  (setq auto-save-default nil)
+#+END_SRC
+** Prompts
+*** No popup frames
+#+BEGIN_SRC emacs-lisp
+  (setq ns-pop-up-frames nil)
+  (setq pop-up-frames nil)
+#+END_SRC
 ** Miscellaneous
 #+BEGIN_SRC emacs-lisp
   (setq-default c-basic-offset 4
@@ -152,31 +174,19 @@ This appears here so that it can accurately benchmark as much of startup as poss
   (setq visible-bell nil)
   (setq sentence-end-double-space nil)
 
-  ;; Disable the creation of backup files.
-  (setq backup-inhibited t)
-  (setq make-backup-files nil)
-  (setq auto-save-default nil)
-
-  (defconst emacs-tmp-dir
-    (format "%s/%s%s/" temporary-file-directory "emacs" (user-uid)))
-  (setq backup-directory-alist `((".*" . ,emacs-tmp-dir)))
-  (setq auto-save-file-name-transforms `((".*" ,emacs-tmp-dir t)))
-  (setq auto-save-list-file-prefix emacs-tmp-dir)
-
 
   (put 'set-goal-column 'disabled nil)
   (auto-fill-mode -1)
   (setq indent-tabs-mode nil)
+#+END_SRC
 
+#+BEGIN_SRC emacs-lisp
   ;; No hsplits. EVER.
   (defun split-horizontally-for-temp-buffers () (split-window-horizontally))
   (add-hook 'temp-buffer-setup-hook 'split-horizontally-for-temp-buffers)
   (setq split-height-threshold nil)
   (setq split-width-threshold 160)
 
-  ;; No popup frames.
-  (setq ns-pop-up-frames nil)
-  (setq pop-up-frames nil)
   (setq confirm-nonexistent-file-or-buffer nil)
 
   ;; No prompt for killing a buffer with processes attached.
@@ -1376,14 +1386,6 @@ I use helm for almost all emacs completion
         (interactive)
         (gitolite-clone-get-projects nil nil t))))
 #+END_SRC
-#+BEGIN_SRC emacs-lisp
-
-#+END_SRC
-#+BEGIN_SRC emacs-lisp
-  (use-package gh
-    :ensure nil
-    :load-path "~/Projects/gh.el")
-#+END_SRC
 *** github-clone
 #+BEGIN_SRC emacs-lisp
   (use-package github-clone
@@ -1394,8 +1396,6 @@ I use helm for almost all emacs completion
   (use-package github-notifier
     :disabled t
     :config (github-notifier-mode))
-#+END_SRC
-#+BEGIN_SRC emacs-lisp
 #+END_SRC
 *** git-link
 #+BEGIN_SRC emacs-lisp
@@ -1863,6 +1863,12 @@ The packages in this section provide no functionality on their own, but support 
 *** s
 #+BEGIN_SRC emacs-lisp
   (use-package s)
+#+END_SRC
+*** gh
+#+BEGIN_SRC emacs-lisp
+  (use-package gh
+    :ensure nil
+    :load-path "~/Projects/gh.el")
 #+END_SRC
 ** Other
 *** iedit
