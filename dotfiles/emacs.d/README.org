@@ -1615,8 +1615,8 @@ realgud provides debugging support with many external debuggers in emacs
         ("d" imalison:term-hydra-default-directory/body :exit t))))
 #+END_SRC
 *** crux
-#+BEGIN_SRC emacs-lisp
 crux-reopen-as-root-mode makes it so that any file owned by root will automatically be opened as the root user.
+#+BEGIN_SRC emacs-lisp
   (use-package crux
     :demand t
     :bind (("C-c C-s" . crux-sudo-edit))
