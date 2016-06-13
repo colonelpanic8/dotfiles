@@ -568,7 +568,7 @@ Prefix alternatives is a macro that builds a function that selects one of a coll
 #+END_SRC
 
 * Packages
-** Essential
+** Navigation/Completion
 *** helm
 I use helm for almost all emacs completion
 #+BEGIN_SRC emacs-lisp -n -r
@@ -782,6 +782,7 @@ I use helm for almost all emacs completion
            ("M-g l" . avy-goto-line)
            ("C-'" . avy-goto-char-2)))
 #+END_SRC
+** Non-Programming
 *** org
 #+BEGIN_SRC emacs-lisp
   (use-package org
@@ -1209,25 +1210,9 @@ I use helm for almost all emacs completion
       (eval-after-load 'subword '(diminish 'subword-mode))
       (eval-after-load 'simple '(diminish 'visual-line-mode))))
 #+END_SRC
-*** smartparens
-#+BEGIN_SRC emacs-lisp
-  (use-package smartparens
-      :demand t
-      :bind (:map smartparens-mode-map
-                  ("C-)" . sp-forward-slurp-sexp)
-                  ("C-}" . sp-forward-barf-sexp)
-                  ("C-(" . sp-backward-slurp-sexp)
-                  ("C-{" . sp-backward-barf-sexp))
-      :config
-      (progn
-        (require 'smartparens-config)
-        (smartparens-global-mode 1)
-        (sp-use-smartparens-bindings)
-        (unbind-key "C-<backspace>" smartparens-mode-map)
-        (unbind-key "M-<backspace>" smartparens-mode-map)))
-#+END_SRC
-** Major Modes
-*** python
+** Programming
+*** Language Specific
+**** python
 #+BEGIN_SRC emacs-lisp
   (defvar use-python-tabs nil)
 
@@ -1299,7 +1284,7 @@ I use helm for almost all emacs completion
         (set (make-local-variable 'company-backends) '(company-jedi)))
       (add-hook 'python-mode-hook #'imalison:python-mode))))
 #+END_SRC
-*** go
+**** go
 #+BEGIN_SRC emacs-lisp
   (use-package go-mode
     :mode (("\\.go\\'" . go-mode))
@@ -1404,7 +1389,7 @@ I use helm for almost all emacs completion
       (add-hook 'before-save-hook 'gofmt-before-save t)
       (add-hook 'after-save-hook 'go-mode-install-current-project)))
 #+END_SRC
-*** emacs-lisp
+**** emacs-lisp
 #+BEGIN_SRC emacs-lisp
   (setq edebug-trace t)
 
@@ -1445,7 +1430,7 @@ I use helm for almost all emacs completion
   (define-key lisp-mode-shared-map (kbd "C-x C-e") 'eval-region-or-last-sexp)
   (unbind-key "C-j" lisp-interaction-mode-map)
 #+END_SRC
-*** scala
+**** scala
 #+BEGIN_SRC emacs-lisp
   (use-package scala-mode2
     :mode (("\\.scala\\'" . scala-mode)
@@ -1459,7 +1444,7 @@ I use helm for almost all emacs completion
         (add-hook 'scala-mode-hook 'ensime-scala-mode-hook))
       (setq scala-indent:align-parameters t)))
 #+END_SRC
-*** js
+**** js
 #+BEGIN_SRC emacs-lisp
   (defun tape-onlyify ()
     (interactive)
@@ -1531,7 +1516,7 @@ I use helm for almost all emacs completion
     (interactive)
     (delete-process "tern"))
 #+END_SRC
-*** rust
+**** rust
 #+BEGIN_SRC emacs-lisp
   (use-package rust-mode
     :mode (("\\.rs\\'" . rust-mode))
@@ -1560,13 +1545,19 @@ I use helm for almost all emacs completion
           (add-hook 'rust-mode-hook 'cargo-minor-mode)))
       (add-hook 'rust-mode-hook 'imalison:rust-mode-hook)))
 #+END_SRC
-*** Other
+**** Other
 #+BEGIN_SRC emacs-lisp
   (defvar packages-eager
     '(popup cl-lib xclip dired+ ctags ctags-update aggressive-indent imenu+
       neotree gist))
 
   (ensure-packages-installed packages-eager)
+#+END_SRC
+*** Language Agnostic
+**** realgud
+realgud provides debugging support with many external debuggers in emacs
+#+BEGIN_SRC emacs-lisp
+  (use-package realgud)
 #+END_SRC
 ** Utility
 *** term-manager
@@ -1607,6 +1598,7 @@ I use helm for almost all emacs completion
 #+END_SRC
 *** crux
 #+BEGIN_SRC emacs-lisp
+crux-reopen-as-root-mode makes it so that any file owned by root will automatically be opened as the root user.
   (use-package crux
     :demand t
     :bind (("C-c C-s" . crux-sudo-edit))
@@ -2423,26 +2415,36 @@ I use helm for almost all emacs completion
       (add-hook 'markdown-mode-hook 'imalison:disable-linum-mode)))
 
   (use-package hackernews :commands hackernews)
- #+END_SRC
+#+END_SRC
 * Keybindings
+This ensures that C-x C-c will always kill emacs, even if we are running in server mode.
+#+BEGIN_SRC emacs-lisp
+  (bind-key "C-x C-c" 'kill-emacs)
+#+END_SRC
+imenu is the best. This should be a default binding.
+#+BEGIN_SRC emacs-lisp
+  (bind-key "C-x C-c" 'kill-emacs)
+  (bind-key "C--" 'undo)
+#+END_SRC
+Go the other way when you use capital O.
+#+BEGIN_SRC emacs-lisp
+  (bind-key "C-x O" (lambda () (interactive) (other-window -1)))
+#+END_SRC
+
+
 #+BEGIN_SRC emacs-lisp
   (bind-key "M-q" 'fill-or-unfill-paragraph)
   (bind-key "C-c SPC" 'imalison:mark-ring)
-  (bind-key "C-c e" 'os-copy)
   (bind-key "C-x p" 'pop-to-mark-command)
   (setq set-mark-command-repeat-pop t)
   (bind-key "C-x C-b" 'buffer-menu)
-  (bind-key "C-x C-c" 'kill-emacs)
-  (bind-key "C-x C-i" 'imenu)
   (bind-key "C-x C-r" (lambda () (interactive) (revert-buffer t t)))
-  (bind-key "C-x O" (lambda () (interactive) (other-window -1)))
   (bind-key "C-x w" 'whitespace-mode)
   (bind-key "M-n" 'forward-paragraph)
   (bind-key "M-p" 'backward-paragraph)
   (bind-key "C-M-<backspace>" 'backward-kill-sexp)
   (bind-key "s-<return>" 'toggle-frame-fullscreen)
   (bind-key "M-|" 'imalison:shell-command-on-region)
-  (bind-key "C--" 'undo)
   (bind-key "C-x 9" 'previous-buffer)
   (bind-key "s-v" 'clipboard-yank)
 
@@ -2610,5 +2612,4 @@ Set the character used to represent spaces to ·, and the character used for tab
   (add-hook 'after-init-hook 'imalison:appearance)
   (add-hook 'after-make-frame-functions 'imalison:appearance)
   (remove-hook 'after-make-frame-functions 'imalison:appearance)
-
 #+END_SRC
