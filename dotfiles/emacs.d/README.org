@@ -424,10 +424,6 @@ Prefix alternatives is a macro that builds a function that selects one of a coll
     (interactive)
     (insert (imalison:uuid)))
 
-  (defmacro suppress-messages (&rest forms)
-    `(flet ((message (&rest r) nil))
-       ,@forms))
-
   (defun imalison:compare-int-list (a b)
     (when (and a b)
       (cond ((> (car a) (car b)) 1)
@@ -741,7 +737,7 @@ Sets environment variables by starting a shell
           (setq appt-time-msg-list nil))
         (appt-activate)
         (defun org-agenda-to-appt-no-message ()
-          (suppress-messages (org-agenda-to-appt)))
+          (shut-up (org-agenda-to-appt)))
         (run-at-time "00:00" 60 'org-agenda-to-appt-no-message))
 
       (defun org-archive-if (condition-function)
@@ -1869,6 +1865,10 @@ The packages in this section provide no functionality on their own, but support 
   (use-package gh
     :ensure nil
     :load-path "~/Projects/gh.el")
+#+END_SRC
+*** shut-up
+#+BEGIN_SRC emacs-lisp
+  (use-package shut-up)
 #+END_SRC
 ** Other
 *** iedit
