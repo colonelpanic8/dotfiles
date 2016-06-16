@@ -415,6 +415,63 @@ Prefix alternatives is a macro that builds a function that selects one of a coll
                (setq result (concat (file-name-as-directory result) dir)))
       result))
 #+END_SRC
+** Haversine distance
+#+BEGIN_SRC emacs-lisp
+  (defun imalison:sin2 (p)
+    (let ((sin-p (sin p)))
+      (* sin-p sin-p) ))
+
+  (defun imalison:haversine-distance
+      (left-lat-long right-lat-long &optional radius)
+    ;; Default to earth radius in km
+    (unless radius (setq radius 6378.1))
+    (interactive)
+    (cl-destructuring-bind (left-lat left-long) left-lat-long
+      (cl-destructuring-bind (right-lat right-long) right-lat-long
+        (let ((l1 (degrees-to-radians left-lat))
+              (f1 (degrees-to-radians left-long))
+              (l2 (degrees-to-radians right-lat))
+              (f2 (degrees-to-radians right-long)) )
+          (* 2 radius
+             (asin
+              (sqrt
+               (+ (imalison:sin2 (/ (- f2 f1) 2))
+                  (* (cos f2) (cos f1) (imalison:sin2 (/ (- l2 l1) 2))) ))))))))
+#+END_SRC
+** Muni
+#+BEGIN_SRC emacs-lisp
+  (defun imalison:muni (line direction stop)
+    (s-trim
+     (shell-command-to-string
+      (format "muni predict %s %s %s" line direction stop))))
+
+  (defun imalison:closest-stop (location targets)
+    (let (minimizing (minimum 1.0e+INF))
+      (cl-loop for stop-info in targets
+               do (let* ((stop-lat-long (car stop-info))
+                      (this-dist (imalison:haversine-distance location stop-lat-long)))
+                 (when (< this-dist minimum)
+                   (setq minimizing stop-info
+                         minimum this-dist))))
+      minimizing))
+
+  (defvar-setq imalison:dolores-muni
+    '((37.761351 -122.428225) ("J" "inbound" "6213") "dolo"))
+  (defvar-setq imalison:van-ness-muni
+    '((37.775488 -122.418988) ("J" "outbound" "6996") "van ness"))
+  (defvar imalison:muni-infos
+    (list imalison:dolores-muni imalison:van-ness-muni))
+
+  (defun imalison:get-closest-muni-info ()
+    (interactive)
+    (let ((closest-stop
+           (imalison:closest-stop (imalison:get-lat-long) imalison:muni-infos)))
+      (apply 'imalison:muni (cadr closest-stop))))
+
+  (defun imalison:parse-muni-info (info-string)
+    (when (string-match "\\([[:digit:]]\\{1,3\\}\\) *minutes" info-string)
+      (match-string-no-properties 1 info-string)))
+#+END_SRC
 ** Other
 #+BEGIN_SRC emacs-lisp
   (defun imalison:join-paths (&rest paths)
