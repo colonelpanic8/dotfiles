@@ -1538,9 +1538,6 @@ I use helm for almost all emacs completion
     :config (setq expand-region-contract-fast-key "j")
     :bind (("C-c k" . er/expand-region)))
 #+END_SRC
-#+BEGIN_SRC emacs-lisp
-
-#+END_SRC
 *** multi-line
 #+BEGIN_SRC emacs-lisp
   (use-package multi-line
@@ -1593,7 +1590,6 @@ I use helm for almost all emacs completion
                   (cl-delete 'yas-ido-prompt yas-prompt-functions)))))
 
 #+END_SRC
-
 ** Source Control
 *** magit
 #+BEGIN_SRC emacs-lisp
@@ -1621,9 +1617,6 @@ I use helm for almost all emacs completion
     :config
     (progn
       (global-git-gutter-mode -1)))
-#+END_SRC
-#+BEGIN_SRC emacs-lisp
-
 #+END_SRC
 *** gitolite-clone
 #+BEGIN_SRC emacs-lisp
@@ -1979,11 +1972,6 @@ I use helm for almost all emacs completion
 #+BEGIN_SRC emacs-lisp
   (use-package rust-mode
     :mode (("\\.rs\\'" . rust-mode))
-    :preface
-    (progn
-      (defun imalison:rust-mode-hook ()
-        (imalison:make-imenu-index-flat)
-        (racer-mode)))
     :config
     (progn
       (use-package flycheck-rust
@@ -2241,17 +2229,14 @@ I don't use iedit directly, but it is used by [[*emr][emr]] and I need to disabl
       (recentf-mode 1)
       (setq recentf-max-menu-items 500)))
 
-  (use-package zop-to-char
-    :bind ("M-z" . zop-to-char))
-
+#+END_SRC
+*** restclient
+#+BEGIN_SRC emacs-lisp
   (use-package restclient
     :mode (("\\.restclient\\'" . restclient-mode))
     :config
     (progn
       (use-package company-restclient)))
-
-  (use-package comment-dwim-2
-    :bind ("M-;" . comment-dwim-2))
 
 #+END_SRC
 *** key-chord
