@@ -462,15 +462,36 @@ Prefix alternatives is a macro that builds a function that selects one of a coll
   (defvar imalison:muni-infos
     (list imalison:dolores-muni imalison:van-ness-muni))
 
-  (defun imalison:get-closest-muni-info ()
+  (defun imalison:get-closest-muni-info (&optional current-location)
     (interactive)
-    (let ((closest-stop
-           (imalison:closest-stop (imalison:get-lat-long) imalison:muni-infos)))
+    (unless current-location (setq current-location (imalison:get-lat-long)))
+    (let* ((closest-stop
+           (imalison:closest-stop current-location imalison:muni-infos)))
       (apply 'imalison:muni (cadr closest-stop))))
 
   (defun imalison:parse-muni-info (info-string)
     (when (string-match "\\([[:digit:]]\\{1,3\\}\\) *minutes" info-string)
       (match-string-no-properties 1 info-string)))
+
+  (defvar imalison:muni-cache (pcache-repository "imalison-muni"))
+  (defvar imalison:current-location-ttl 10)
+  (defvar imalison:muni-arrival-ttl 25)
+
+  (defun imalison:get-cached-muni-time ()
+    (let ((current-location (pcache-get imalison:muni-cache 'current-location))
+          (arrival-time (pcache-get imalison:muni-cache 'arrival-time)))
+      (unless arrival-time
+        (message "at")
+        (unless current-location
+          (message "cl")
+          (setq current-location (imalison:get-lat-long))
+          (pcache-put imalison:muni-cache 'current-location current-location
+                      imalison:current-location-ttl))
+        (setq arrival-time (imalison:parse-muni-info
+                            (imalison:get-closest-muni-info current-location)))
+        (pcache-put imalison:muni-cache 'arrival-time arrival-time
+                    imalison:muni-arrival-ttl))
+      arrival-time))
 #+END_SRC
 ** Font Size
 This was taken from [[http://emacs.stackexchange.com/questions/7583/transiently-adjust-text-size-in-mode-line-and-minibuffer][here]]. It is primarily invoked from a hydra defined below. It would be cool if it got the default font size from whatever the default font was but it does not currently do that.
@@ -1274,6 +1295,11 @@ Sets environment variables by starting a shell
               :buffer "*helm org capture templates*"))))
 #+END_SRC
 ** Navigation/Completion
+*** zop-to-char
+#+BEGIN_SRC emacs-lisp
+  (use-package zop-to-char
+    :bind ("M-z" . zop-to-char))
+#+END_SRC
 *** helm
 I use helm for almost all emacs completion
 #+BEGIN_SRC emacs-lisp -n -r
