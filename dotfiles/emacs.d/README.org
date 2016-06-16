@@ -611,6 +611,11 @@ Prefix alternatives is a macro that builds a function that selects one of a coll
 #+BEGIN_SRC emacs-lisp
   (imalison:prefix-alternatives imalison:mark-ring helm-mark-ring helm-global-mark-ring)
 #+END_SRC
+** Variables
+#+BEGIN_SRC emacs-lisp
+  (defvar imalison:projects-directory
+    (imalison:join-paths "~" "Projects"))
+#+END_SRC
 * Macros
 ** For editing literate config
 *** extract-current-sexp-to-src-block
@@ -1420,6 +1425,22 @@ I use helm for almost all emacs completion
 #+BEGIN_SRC emacs-lisp
   (use-package github-clone
     :demand t)
+#+END_SRC
+*** github-search
+#+BEGIN_SRC emacs-lisp
+  (defvar imalison:github-search-load-path
+    (imalison:join-paths imalison:projects-directory "github-search"))
+  (use-package github-search
+    :ensure nil
+    :load-path imalison:github-search-load-path
+    :preface
+    (progn
+      (defun imalison:get-projects-directory-target-from-repo (repo)
+        (imalison:join-paths imalison:projects-directory (oref repo :name))))
+    :config
+    (progn
+      (setq github-search-get-target-directory-for-repo-function
+            'imalison:get-projects-directory-target-from-repo)))
 #+END_SRC
 *** github-notifier
 #+BEGIN_SRC emacs-lisp
