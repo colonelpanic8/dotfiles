@@ -481,9 +481,7 @@ Prefix alternatives is a macro that builds a function that selects one of a coll
     (let ((current-location (pcache-get imalison:muni-cache 'current-location))
           (arrival-time (pcache-get imalison:muni-cache 'arrival-time)))
       (unless arrival-time
-        (message "at")
         (unless current-location
-          (message "cl")
           (setq current-location (imalison:get-lat-long))
           (pcache-put imalison:muni-cache 'current-location current-location
                       imalison:current-location-ttl))
@@ -493,6 +491,7 @@ Prefix alternatives is a macro that builds a function that selects one of a coll
                     imalison:muni-arrival-ttl))
       arrival-time))
 #+END_SRC
+
 ** Font Size
 This was taken from [[http://emacs.stackexchange.com/questions/7583/transiently-adjust-text-size-in-mode-line-and-minibuffer][here]]. It is primarily invoked from a hydra defined below. It would be cool if it got the default font size from whatever the default font was but it does not currently do that.
 #+BEGIN_SRC emacs-lisp
@@ -2892,10 +2891,8 @@ Ensure all themes that I use are installed:
   (ensure-packages-installed packages-appearance)
 #+END_SRC
 
-** Other Packages
+** spaceline
 #+BEGIN_SRC emacs-lisp
-  (use-package window-number)
-
   (use-package spaceline-config
     :ensure spaceline
     :config
@@ -2906,9 +2903,18 @@ Ensure all themes that I use are installed:
       (if (display-graphic-p)
           (setq-default powerline-default-separator 'wave)
         (setq-default powerline-default-separator 'utf-8))
+      (spaceline-define-segment imalison:muni
+        "Display the number of minutes until the next muni train comes"
+        (format "🚇%s" (imalison:get-cached-muni-time)))
       (setq powerline-height 25)
       (spaceline-helm-mode)
-      (spaceline-spacemacs-theme)))
+      (spaceline-spacemacs-theme 'imalison:muni)))
+#+END_SRC
+#+BEGIN_SRC emacs-lisp
+#+END_SRC
+** window-number
+#+BEGIN_SRC emacs-lisp
+  (use-package window-number)
 #+END_SRC
 ** Whitespace Setup
 
