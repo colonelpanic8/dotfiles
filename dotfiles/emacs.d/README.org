@@ -719,6 +719,15 @@ This keyboard macro extracts the current sexp to an emacs-lisp source block of i
 #+END_SRC
 * Packages
 ** Emacs
+*** exec-path-from-shell
+Sets environment variables by starting a shell 
+#+BEGIN_SRC emacs-lisp
+  (use-package exec-path-from-shell
+      :config
+      (progn
+        (add-to-list 'exec-path-from-shell-variables "GOPATH")
+        (exec-path-from-shell-initialize)))
+#+END_SRC
 *** paradox
 #+BEGIN_SRC emacs-lisp
   (use-package paradox
@@ -749,6 +758,16 @@ This keyboard macro extracts the current sexp to an emacs-lisp source block of i
       (edit-server-start)
       (setq edit-server-new-frame nil)))
 #+END_SRC
+*** load-dir
+#+BEGIN_SRC emacs-lisp
+  (use-package load-dir
+    :config
+    (progn
+      (add-to-list 'load-dirs "~/.emacs.d/load.d")
+      (defvar site-lisp "/usr/share/emacs24/site-lisp/")
+      (when (file-exists-p site-lisp) (add-to-list 'load-dirs site-lisp))))
+
+#+END_SRC
 *** server
 #+BEGIN_SRC emacs-lisp
   (use-package server
@@ -759,15 +778,6 @@ This keyboard macro extracts the current sexp to an emacs-lisp source block of i
 *** list-environment
 #+BEGIN_SRC emacs-lisp
   (use-package list-environment)
-#+END_SRC
-*** exec-path-from-shell
-Sets environment variables by starting a shell 
-#+BEGIN_SRC emacs-lisp
-  (use-package exec-path-from-shell
-      :config
-      (progn
-        (add-to-list 'exec-path-from-shell-variables "GOPATH")
-        (exec-path-from-shell-initialize)))
 #+END_SRC
 *** bug-hunter
 #+BEGIN_SRC emacs-lisp
@@ -1475,6 +1485,89 @@ I use helm for almost all emacs completion
         (unbind-key "C-<backspace>" smartparens-mode-map)
         (unbind-key "M-<backspace>" smartparens-mode-map)))
 #+END_SRC
+*** multiple-cursors
+#+BEGIN_SRC emacs-lisp
+  (use-package multiple-cursors
+    :config
+    (progn
+      (use-package phi-search-mc
+        :config
+        (phi-search-mc/setup-keys))
+      (use-package mc-extras
+        :config
+        (define-key mc/keymap (kbd "C-. =") 'mc/compare-chars)))
+    :bind
+    (("C-c m a" . mc/mark-all-like-this)
+     ("C-c m m" . mc/mark-all-like-this-dwim)
+     ("C-c m l" . mc/edit-lines)
+     ("C-c m n" . mc/mark-next-like-this)
+     ("C-c m p" . mc/mark-previous-like-this)
+     ("C-c m s" . mc/mark-sgml-tag-pair)
+     ("C-c m d" . mc/mark-all-like-this-in-defun)))
+#+END_SRC
+*** expand-region
+#+BEGIN_SRC emacs-lisp
+  (use-package expand-region
+    :commands er/expand-region
+    :config (setq expand-region-contract-fast-key "j")
+    :bind (("C-c k" . er/expand-region)))
+#+END_SRC
+#+BEGIN_SRC emacs-lisp
+
+#+END_SRC
+*** multi-line
+#+BEGIN_SRC emacs-lisp
+  (use-package multi-line
+    :load-path "~/Projects/multi-line"
+    :preface
+    (progn
+      (defun imalison:multi-line-fill-column ()
+        (interactive)
+        (multi-line-execute multi-line-fill-column-strategy nil))
+
+      (defun imalison:multi-line-skip-fill ()
+        (interactive)
+        (multi-line-execute multi-line-skip-fill-stragety nil))
+
+      (defun imalison:multi-line-fill ()
+        (interactive)
+        (multi-line-execute multi-line-fill-stragety nil))
+
+      (imalison:prefix-alternatives imalison:multi-line multi-line
+                                    multi-line-single-line
+                                    imalison:multi-line-skip-fill
+                                    imalison:multi-line-fill
+                                    imalison:multi-line-fill-column))
+      :bind ("C-c d" . imalison:multi-line))
+#+END_SRC
+*** comment-dwim-2
+#+BEGIN_SRC emacs-lisp
+  (use-package comment-dwim-2
+    :bind ("M-;" . comment-dwim-2))
+#+END_SRC
+*** string-inflection
+#+BEGIN_SRC emacs-lisp
+  (use-package string-inflection
+    :commands string-inflection-toggle
+    :bind ("C-c l" . string-inflection-toggle))
+#+END_SRC
+
+*** yasnippet
+#+BEGIN_SRC emacs-lisp
+  (use-package yasnippet
+    :defer 5
+    :commands (yas-global-mode)
+    :config
+    (progn
+      (yas-global-mode)
+      (diminish 'yas-minor-mode)
+      (add-hook 'term-mode-hook (lambda() (yas-minor-mode -1)))
+      (setq yas-prompt-functions
+            (cons 'yas-ido-prompt
+                  (cl-delete 'yas-ido-prompt yas-prompt-functions)))))
+
+#+END_SRC
+
 ** Source Control
 *** magit
 #+BEGIN_SRC emacs-lisp
@@ -2030,23 +2123,6 @@ I don't use iedit directly, but it is used by [[*emr][emr]] and I need to disabl
     (progn
       (setq iedit-toggle-key-default nil)))
 #+END_SRC
-
-*** yasnippet
-#+BEGIN_SRC emacs-lisp
-  (use-package yasnippet
-    :defer 5
-    :commands (yas-global-mode)
-    :config
-    (progn
-      (yas-global-mode)
-      (diminish 'yas-minor-mode)
-      (add-hook 'term-mode-hook (lambda() (yas-minor-mode -1)))
-      (setq yas-prompt-functions
-            (cons 'yas-ido-prompt
-                  (cl-delete 'yas-ido-prompt yas-prompt-functions)))))
-
-#+END_SRC
-
 *** tramp
 #+BEGIN_SRC emacs-lisp
   (use-package tramp
@@ -2114,38 +2190,8 @@ I don't use iedit directly, but it is used by [[*emr][emr]] and I need to disabl
     :init
     (add-hook 'prog-mode-hook (lambda () (company-mode t))))
 #+END_SRC
-*** expand-region
+*** undo-tree
 #+BEGIN_SRC emacs-lisp
-  (use-package expand-region
-    :commands er/expand-region
-    :config (setq expand-region-contract-fast-key "j")
-    :bind (("C-c k" . er/expand-region)))
-#+END_SRC
-#+BEGIN_SRC emacs-lisp
-
-#+END_SRC
-*** multiple-cursors
-#+BEGIN_SRC emacs-lisp
-  (use-package multiple-cursors
-    :config
-    (progn
-      (use-package phi-search-mc
-        :config
-        (phi-search-mc/setup-keys))
-      (use-package mc-extras
-        :config
-        (define-key mc/keymap (kbd "C-. =") 'mc/compare-chars)))
-    :bind
-    (("C-c m a" . mc/mark-all-like-this)
-     ("C-c m m" . mc/mark-all-like-this-dwim)
-     ("C-c m l" . mc/edit-lines)
-     ("C-c m n" . mc/mark-next-like-this)
-     ("C-c m p" . mc/mark-previous-like-this)
-     ("C-c m s" . mc/mark-sgml-tag-pair)
-     ("C-c m d" . mc/mark-all-like-this-in-defun)))
-#+END_SRC
-#+BEGIN_SRC emacs-lisp
-
   (use-package undo-tree
     :disabled t ;; this has been getting pretty annoying
     :bind (("C--" . undo-redo)
@@ -2159,40 +2205,9 @@ I don't use iedit directly, but it is used by [[*emr][emr]] and I need to disabl
       (global-undo-tree-mode)
       (setq undo-tree-visualizer-timestamps t)))
 
-  (use-package string-inflection
-    :commands string-inflection-toggle
-    :bind ("C-c l" . string-inflection-toggle))
-
-  (use-package load-dir
-    :config
-    (progn
-      (add-to-list 'load-dirs "~/.emacs.d/load.d")
-      (defvar site-lisp "/usr/share/emacs24/site-lisp/")
-      (when (file-exists-p site-lisp) (add-to-list 'load-dirs site-lisp))))
-
-  (use-package multi-line
-    :load-path "~/Projects/multi-line"
-    :preface
-    (progn
-      (defun imalison:multi-line-fill-column ()
-        (interactive)
-        (multi-line-execute multi-line-fill-column-strategy nil))
-
-      (defun imalison:multi-line-skip-fill ()
-        (interactive)
-        (multi-line-execute multi-line-skip-fill-stragety nil))
-
-      (defun imalison:multi-line-fill ()
-        (interactive)
-        (multi-line-execute multi-line-fill-stragety nil))
-
-      (imalison:prefix-alternatives imalison:multi-line multi-line
-                                    multi-line-single-line
-                                    imalison:multi-line-skip-fill
-                                    imalison:multi-line-fill
-                                    imalison:multi-line-fill-column))
-      :bind ("C-c d" . imalison:multi-line))
-
+#+END_SRC
+*** recentf
+#+BEGIN_SRC emacs-lisp
   (use-package recentf
     ;; binding is in helm.
     :config
