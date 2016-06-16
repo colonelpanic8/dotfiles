@@ -2905,12 +2905,11 @@ Ensure all themes that I use are installed:
         (setq-default powerline-default-separator 'utf-8))
       (spaceline-define-segment imalison:muni
         "Display the number of minutes until the next muni train comes"
-        (format "🚇%s" (imalison:get-cached-muni-time)))
+        (format "🚇%s" (imalison:get-cached-muni-time))
+        :when active)
       (setq powerline-height 25)
       (spaceline-helm-mode)
       (spaceline-spacemacs-theme 'imalison:muni)))
-#+END_SRC
-#+BEGIN_SRC emacs-lisp
 #+END_SRC
 ** window-number
 #+BEGIN_SRC emacs-lisp
