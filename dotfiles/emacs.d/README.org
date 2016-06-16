@@ -144,11 +144,13 @@ This appears here so that it can accurately benchmark as much of startup as poss
   :if (and (boundp 'imalison:do-benchmark) imalison:do-benchmark))
 #+END_SRC
 ** Sane Defaults
-#+BEGIN_SRC emacs-lisp
+#+BEGIN_SRC emacs-lisp -n -r
   (global-auto-revert-mode)
   (show-paren-mode 1)
   (setq reb-re-syntax 'string)
+  (setq ad-redefinition-action 'accept)              (ref:ad-redefinition-action)
 #+END_SRC
+[[(ad-redefinition-action)][This]] is set because [[(y-or-n-p-only)][this alias]] causes annoying messaging at startup.
 ** Line Numbers
 #+BEGIN_SRC emacs-lisp
   (line-number-mode t)
@@ -177,7 +179,7 @@ This appears here so that it can accurately benchmark as much of startup as poss
   (setq pop-up-frames nil)
 #+END_SRC
 *** boolean (yes-or-no)
-#+BEGIN_SRC emacs-lisp
+#+BEGIN_SRC emacs-lisp -n -r
   (defadvice yes-or-no-p (around prevent-dialog activate)
     "Prevent yes-or-no-p from activating a dialog"
     (let ((use-dialog-box nil))
@@ -188,7 +190,7 @@ This appears here so that it can accurately benchmark as much of startup as poss
     (let ((use-dialog-box nil))
       ad-do-it))
 
-  (defalias 'yes-or-no-p 'y-or-n-p)
+  (defalias 'yes-or-no-p 'y-or-n-p)                           (ref:y-or-n-p-only)
 #+END_SRC
 *** No dialog boxes
 #+BEGIN_SRC emacs-lisp
@@ -318,6 +320,32 @@ Disable CJK coding/encoding (Chinese/Japanese/Korean characters)
   ;;                                  ".\\{81\\}" 'hi-blue)))
 #+END_SRC
 * Lisp
+** Required Packages
+The packages in this section provide no functionality on their own, but provide support for writing custom elisp
+*** s
+#+BEGIN_SRC emacs-lisp
+  (use-package s :demand t)
+#+END_SRC
+*** gh
+#+BEGIN_SRC emacs-lisp
+  (use-package gh
+    :ensure nil
+    :load-path "~/Projects/gh.el")
+#+END_SRC
+*** shut-up
+#+BEGIN_SRC emacs-lisp
+  (use-package shut-up)
+#+END_SRC
+*** pcache
+#+BEGIN_SRC emacs-lisp
+  (use-package pcache
+    :demand t)
+#+END_SRC
+*** parse-csv
+#+BEGIN_SRC emacs-lisp
+  (use-package parse-csv
+    :demand t)
+#+END_SRC
 ** Flatten imenu indexes
 I like my imenu indexes flat so I don't have to press enter multiple times to find what I'm looking for. The functions that follow allow me to get this behavior out of functions that provide a nested imenu index.
 #+BEGIN_SRC emacs-lisp
@@ -455,9 +483,9 @@ Prefix alternatives is a macro that builds a function that selects one of a coll
                          minimum this-dist))))
       minimizing))
 
-  (defvar-setq imalison:dolores-muni
+  (defvar imalison:dolores-muni
     '((37.761351 -122.428225) ("J" "inbound" "6213") "dolo"))
-  (defvar-setq imalison:van-ness-muni
+  (defvar imalison:van-ness-muni
     '((37.775488 -122.418988) ("J" "outbound" "6996") "van ness"))
   (defvar imalison:muni-infos
     (list imalison:dolores-muni imalison:van-ness-muni))
@@ -472,7 +500,9 @@ Prefix alternatives is a macro that builds a function that selects one of a coll
   (defun imalison:parse-muni-info (info-string)
     (when (string-match "\\([[:digit:]]\\{1,3\\}\\) *minutes" info-string)
       (match-string-no-properties 1 info-string)))
-
+#+END_SRC
+A cached version of the muni functions for use in spaceline and elsewhere.
+#+BEGIN_SRC emacs-lisp
   (defvar imalison:muni-cache (pcache-repository "imalison-muni"))
   (defvar imalison:current-location-ttl 10)
   (defvar imalison:muni-arrival-ttl 25)
@@ -491,7 +521,6 @@ Prefix alternatives is a macro that builds a function that selects one of a coll
                     imalison:muni-arrival-ttl))
       arrival-time))
 #+END_SRC
-
 ** Font Size
 This was taken from [[http://emacs.stackexchange.com/questions/7583/transiently-adjust-text-size-in-mode-line-and-minibuffer][here]]. It is primarily invoked from a hydra defined below. It would be cool if it got the default font size from whatever the default font was but it does not currently do that.
 #+BEGIN_SRC emacs-lisp
@@ -694,7 +723,7 @@ This was taken from [[http://emacs.stackexchange.com/questions/7583/transiently-
              (insert (current-kill 0)))))
 
   (defun notification-center (title message)
-    (flet ((encfn (s) (encode-coding-string s (keyboard-coding-system))))
+    (cl-flet ((encfn (s) (encode-coding-string s (keyboard-coding-system))))
       (shell-command
        (format "osascript -e 'display notification \"%s\" with title \"%s\"'"
                (encfn message) (encfn title)))))
@@ -949,7 +978,7 @@ Sets environment variables by starting a shell
 
       (defun org-todo-at-date (date)
         (interactive (list (org-time-string-to-time (org-read-date))))
-        (flet ((org-current-effective-time (&rest r) date)
+        (cl-flet ((org-current-effective-time (&rest r) date)
                (org-today (&rest r) (time-to-days date)))
           (cond ((eq major-mode 'org-mode) (org-todo))
                 ((eq major-mode 'org-agenda-mode) (org-agenda-todo)))))
@@ -2110,31 +2139,33 @@ crux-reopen-as-root-mode makes it so that any file owned by root will automatica
                                          bitlbee-password))))))
 
 #+END_SRC
-** emacs-lisp only
-The packages in this section provide no functionality on their own, but support other packages by providing useful elisp functions.
-*** s
-#+BEGIN_SRC emacs-lisp
-  (use-package s :demand t)
-#+END_SRC
-*** gh
-#+BEGIN_SRC emacs-lisp
-  (use-package gh
-    :ensure nil
-    :load-path "~/Projects/gh.el")
-#+END_SRC
-*** shut-up
-#+BEGIN_SRC emacs-lisp
-  (use-package shut-up)
-#+END_SRC
 ** Other
+*** anzu
+#+BEGIN_SRC emacs-lisp
+  (use-package anzu
+    :config
+    (progn
+      (global-anzu-mode +1)
+
+      (custom-set-variables
+       '(anzu-mode-lighter "")
+       '(anzu-deactivate-region t)
+       '(anzu-search-threshold 1000)
+       '(anzu-replace-threshold 50)
+       '(anzu-replace-to-string-separator " => "))
+
+      (define-key isearch-mode-map [remap isearch-query-replace]
+        #'anzu-isearch-query-replace)
+      (define-key isearch-mode-map [remap isearch-query-replace-regexp]
+        #'anzu-isearch-query-replace-regexp)))
+#+END_SRC
 *** iedit
 I don't use iedit directly, but it is used by [[*emr][emr]] and I need to disable ~iedit-toggle-key-default~ or else a buffer pops up complaing that the key has been bound to something else
 #+BEGIN_SRC emacs-lisp
   (use-package iedit
     :demand
-    :config
-    (progn
-      (setq iedit-toggle-key-default nil)))
+    :preface
+    (defvar iedit-toggle-key-default nil))
 #+END_SRC
 *** tramp
 #+BEGIN_SRC emacs-lisp
@@ -2909,7 +2940,7 @@ Ensure all themes that I use are installed:
         :when active)
       (setq powerline-height 25)
       (spaceline-helm-mode)
-      (spaceline-spacemacs-theme 'imalison:muni)))
+      (spaceline-spacemacs-theme)))
 #+END_SRC
 ** window-number
 #+BEGIN_SRC emacs-lisp
