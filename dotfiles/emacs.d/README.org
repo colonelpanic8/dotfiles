@@ -472,6 +472,31 @@ Prefix alternatives is a macro that builds a function that selects one of a coll
     (when (string-match "\\([[:digit:]]\\{1,3\\}\\) *minutes" info-string)
       (match-string-no-properties 1 info-string)))
 #+END_SRC
+** Font Size
+This was taken from [[http://emacs.stackexchange.com/questions/7583/transiently-adjust-text-size-in-mode-line-and-minibuffer][here]]. It is primarily invoked from a hydra defined below. It would be cool if it got the default font size from whatever the default font was but it does not currently do that.
+#+BEGIN_SRC emacs-lisp
+  (setq imalison:default-font-size-pt 14)
+
+  (defun imalison:font-size-adj (&optional arg)
+    "The default C-x C-0/-/= bindings do an excellent job of font resizing.
+  They, though, do not change the font sizes for the text outside the buffer,
+  example in mode-line. Below function changes the font size in those areas too.
+
+  M-<NUM> M-x imalison:font-size-adj increases font size by NUM points if NUM is +ve,
+                                 decreases font size by NUM points if NUM is -ve
+                                 resets    font size if NUM is 0."
+    (interactive "p")
+    (if (= arg 0)
+        (setq font-size-pt imalison:default-font-size-pt)
+      (setq font-size-pt (+ font-size-pt arg)))
+    ;; The internal font size value is 10x the font size in points unit.
+    ;; So a 10pt font size is equal to 100 in internal font size value.
+    (set-face-attribute 'default nil :height (* font-size-pt 10)))
+
+  (defun imalison:font-size-incr ()  (interactive) (imalison:font-size-adj +1))
+  (defun imalison:font-size-decr ()  (interactive) (imalison:font-size-adj -1))
+  (defun imalison:font-size-reset () (interactive) (imalison:font-size-adj 0))
+#+END_SRC
 ** Other
 #+BEGIN_SRC emacs-lisp
   (defun imalison:join-paths (&rest paths)
@@ -794,9 +819,9 @@ Sets environment variables by starting a shell
       (defhydra hydra-font-resize
         (global-map "C-M-=")
         "font-resize"
-        ("-"   modi/font-size-decr  "Decrease")
-        ("="   modi/font-size-incr  "Increase")
-        ("0"   modi/font-size-reset "Reset to default size"))))
+        ("-"   imalison:font-size-decr  "Decrease")
+        ("="   imalison:font-size-incr  "Increase")
+        ("0"   imalison:font-size-reset "Reset to default size"))))
 #+END_SRC
 ** org
 #+BEGIN_SRC emacs-lisp
