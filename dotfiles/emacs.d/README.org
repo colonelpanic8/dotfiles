@@ -108,8 +108,8 @@ These definitions silence the byte-compiler
                 (imalison:add-package-archive
                  archive-name (imalison:build-archive-uri archive-uri protocol))))
 #+END_SRC
-*** [[(org setup)][The org archive]] does not support https, so we set http as the protocol explicitly.
-*** I've decided to stop using [[(marmalade)][Marmalade]] completely
+[[(org setup)][The org archive]] does not support https, so we set http as the protocol explicitly.
+I've decided to stop using [[(marmalade)][Marmalade]] completely
 ** Bootstrap Package Loading
 Its a shame that everyone has to have some version of this function in their init.el. I use use-package's own mechanism for ensuring packages are installed so my version of ~ensure-packages-installed~ is really only used to download use-package itself.
 #+BEGIN_SRC emacs-lisp
