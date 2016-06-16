@@ -2907,6 +2907,7 @@ Ensure all themes that I use are installed:
           (setq-default powerline-default-separator 'wave)
         (setq-default powerline-default-separator 'utf-8))
       (setq powerline-height 25)
+      (spaceline-helm-mode)
       (spaceline-spacemacs-theme)))
 #+END_SRC
 ** Whitespace Setup
