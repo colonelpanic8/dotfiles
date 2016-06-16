@@ -407,6 +407,14 @@ Prefix alternatives is a macro that builds a function that selects one of a coll
        (setq current-prefix-arg nil)
        (call-interactively function)))
 #+END_SRC
+** Join paths together as with os.path.join in python
+#+BEGIN_SRC emacs-lisp
+  (defun imalison:join-paths (root &rest dirs)
+    (let ((result root))
+      (cl-loop for dir in dirs do
+               (setq result (concat (file-name-as-directory result) dir)))
+      result))
+#+END_SRC
 ** Other
 #+BEGIN_SRC emacs-lisp
   (defun imalison:join-paths (&rest paths)
