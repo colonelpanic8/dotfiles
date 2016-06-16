@@ -80,7 +80,7 @@ These definitions silence the byte-compiler
 
   (when imalison:secure (imalison:use-https-and-tls))
 #+END_SRC
-** Archive Setup
+** ELPA Archive Setup
 #+BEGIN_SRC emacs-lisp -n -r
   (require 'package)
 
@@ -89,7 +89,7 @@ These definitions silence the byte-compiler
     (format "%s://%s" protocol uri))
 
   (defvar imalison:package-archive-triples
-    '(("elpa" "tromey.com/elpa/" nil)
+    '(("elpa" "tromey.com/elpa/" "http")
       ;; ("marmalade" "marmalade-repo.org/packages/")             (ref:marmalade)
       ("org" "orgmode.org/elpa/" "http")                          (ref:org setup)
       ("melpa" "melpa.org/packages/" nil)))
@@ -1082,6 +1082,7 @@ Sets environment variables by starting a shell
       ;; within the appropriate time period, and there is now no point in
       ;; attempting it.
 
+'
       ;; CANCELED - For whatever reason, this TODO should no longer be
       ;; attempted. This TODO is typically used in contrast to the
       ;; EXPIRED TODO to indicate that the owner is not necessarily to
@@ -1107,6 +1108,31 @@ Sets environment variables by starting a shell
       (add-hook 'org-mode-hook 'imalison:disable-smartparens-mode)
       (add-hook 'org-mode-hook (lambda () (setq org-todo-key-trigger t)))
       (add-hook 'org-agenda-mode-hook 'imalison:disable-linum-mode)))
+#+END_SRC
+*** org-projectile
+#+BEGIN_SRC emacs-lisp
+  (defvar org-projectile-file-path "~/Projects/org-projectile")
+  (use-package org-projectile
+    :load-path org-projectile-file-path
+    :after helm
+    :bind (("C-c n p" . imalison:helm-org-todo))
+    :config
+    (progn
+      (org-projectile:prompt)
+      (add-to-list 'org-capture-templates
+                   (org-projectile:project-todo-entry
+                    "l" "* TODO %? %a\n" "Linked Project TODO"))
+      (add-to-list 'org-capture-templates (org-projectile:project-todo-entry "p"))
+      (setq org-confirm-elisp-link-function nil)
+      (imalison:add-to-org-agenda-files (org-projectile:todo-files))
+      (defun imalison:helm-org-todo (&optional arg)
+        (interactive "P")
+        (helm :sources (list (helm-source-org-capture-templates)
+                             (org-projectile:helm-source
+                              (if arg (org-capture-make-linked-todo-template)
+                                (org-capture-make-todo-template))))
+              :candidate-number-limit 99999
+              :buffer "*helm org capture templates*"))))
 #+END_SRC
 ** Navigation/Completion
 *** helm
@@ -1195,27 +1221,6 @@ I use helm for almost all emacs completion
             (let ((option (read-string "Extra options: " (or helm-ag--extra-options "")
                                        'helm-ag--extra-options-history)))
               (setq helm-ag--extra-options option)))))
-
-      (use-package org-projectile
-        :demand t
-        :bind (("C-c n p" . imalison:helm-org-todo))
-        :config
-        (progn
-          (org-projectile:prompt)
-          (add-to-list 'org-capture-templates
-                       (org-projectile:project-todo-entry
-                        "l" "* TODO %? %a\n" "Linked Project TODO"))
-          (add-to-list 'org-capture-templates (org-projectile:project-todo-entry "p"))
-          (setq org-confirm-elisp-link-function nil)
-          (imalison:add-to-org-agenda-files (org-projectile:todo-files))
-          (defun imalison:helm-org-todo (&optional arg)
-            (interactive "P")
-            (helm :sources (list (helm-source-org-capture-templates)
-                                 (org-projectile:helm-source
-                                  (if arg (org-capture-make-linked-todo-template)
-                                    (org-capture-make-todo-template))))
-                  :candidate-number-limit 99999
-                  :buffer "*helm org capture templates*"))))
       (helm-mode 1)))
 #+END_SRC
 [[(helm split window)][Ensure that helm buffers are started in the window that currently holds the focus]]
@@ -1858,7 +1863,7 @@ crux-reopen-as-root-mode makes it so that any file owned by root will automatica
 The packages in this section provide no functionality on their own, but support other packages by providing useful elisp functions.
 *** s
 #+BEGIN_SRC emacs-lisp
-  (use-package s)
+  (use-package s :demand t)
 #+END_SRC
 *** gh
 #+BEGIN_SRC emacs-lisp
@@ -2143,8 +2148,10 @@ Not really sure what this is
 #+END_SRC
 *** mu4e
 #+BEGIN_SRC emacs-lisp
+  (require 's)
+  (defvar mu4e-elisp-directory (s-trim (shell-command-to-string "mu4e_directory")))
   (use-package mu4e
-    :load-path (s-trim (shell-command-to-string "mu4e_directory"))
+    :load-path mu4e-elisp-directory
     :ensure nil
     :commands (mu4e mu4e-view-message-with-msgid mu4e-update-index email)
     :bind ("C-c 0" . email)
@@ -2495,6 +2502,7 @@ This is useful with server mode when editing gmail messages. I think that it is 
 *** android-mode
 #+BEGIN_SRC emacs-lisp
   (use-package android-mode
+    :after s
     :config
     (progn
       (setq android-mode-sdk-dir
