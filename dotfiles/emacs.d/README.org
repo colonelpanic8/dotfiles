@@ -30,6 +30,7 @@ Death to any gui elements in emacs! Do this EARLY so that emacs doesn't redispla
   (when (fboundp 'menu-bar-mode) (menu-bar-mode -1))
   (when (fboundp 'tool-bar-mode) (tool-bar-mode -1))
   (when (fboundp 'scroll-bar-mode) (scroll-bar-mode -1))
+  (setq visible-bell nil)
 #+END_SRC
 ** Byte-Compiler
 These definitions silence the byte-compiler
@@ -159,28 +160,18 @@ This appears here so that it can accurately benchmark as much of startup as poss
   (setq ns-pop-up-frames nil)
   (setq pop-up-frames nil)
 #+END_SRC
-** Miscellaneous
+** Fill Setup
 #+BEGIN_SRC emacs-lisp
-  (setq-default c-basic-offset 4
-                  tab-width 4
-                  indent-tabs-mode t)
-
-  (add-hook 'prog-mode-hook (lambda () (auto-fill-mode -1)))
-  ;; (add-hook 'prog-mode-hook 'flyspell-prog-mode)
-
-  ;; (add-hook 'prog-mode-hook (lambda () (highlight-lines-matching-regexp
-  ;;                                  ".\\{81\\}" 'hi-blue)))
-
-  (setq visible-bell nil)
   (setq sentence-end-double-space nil)
-
+#+END_SRC
+** Misc
+#+BEGIN_SRC emacs-lisp
+  
 
   (put 'set-goal-column 'disabled nil)
   (auto-fill-mode -1)
   (setq indent-tabs-mode nil)
-#+END_SRC
 
-#+BEGIN_SRC emacs-lisp
   ;; No hsplits. EVER.
   (defun split-horizontally-for-temp-buffers () (split-window-horizontally))
   (add-hook 'temp-buffer-setup-hook 'split-horizontally-for-temp-buffers)
@@ -295,6 +286,17 @@ This appears here so that it can accurately benchmark as much of startup as poss
 
   ;; y and n instead of yes and no
   (defalias 'yes-or-no-p 'y-or-n-p)
+#+END_SRC
+#+BEGIN_SRC emacs-lisp
+  (setq-default c-basic-offset 4
+                  tab-width 4
+                  indent-tabs-mode t)
+
+  (add-hook 'prog-mode-hook (lambda () (auto-fill-mode -1)))
+  ;; (add-hook 'prog-mode-hook 'flyspell-prog-mode)
+
+  ;; (add-hook 'prog-mode-hook (lambda () (highlight-lines-matching-regexp
+  ;;                                  ".\\{81\\}" 'hi-blue)))
 #+END_SRC
 * Lisp
 ** Flatten imenu indexes
