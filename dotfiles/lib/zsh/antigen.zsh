@@ -8,7 +8,9 @@ test -e $ANTIGEN_PATH || upgrade_antigen
 
 source $ANTIGEN_PATH
 
+antigen bundle pip
 antigen bundle zsh-users/zsh-syntax-highlighting
 antigen bundle git
+antigen bundle kennethreitz/autoenv
 
 antigen apply
