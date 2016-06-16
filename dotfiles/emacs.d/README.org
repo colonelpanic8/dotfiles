@@ -32,6 +32,10 @@ Death to any gui elements in emacs! Do this EARLY so that emacs doesn't redispla
   (when (fboundp 'scroll-bar-mode) (scroll-bar-mode -1))
   (setq visible-bell nil)
 #+END_SRC
+Tooltips are annoying:
+#+BEGIN_SRC emacs-lisp
+  (if (fboundp 'tooltip-mode) (tooltip-mode -1) (setq tooltip-use-echo-area t))'
+#+END_SRC
 ** Byte-Compiler
 These definitions silence the byte-compiler
 #+BEGIN_SRC emacs-lisp
@@ -139,6 +143,18 @@ This appears here so that it can accurately benchmark as much of startup as poss
 (use-package benchmark-init
   :if (and (boundp 'imalison:do-benchmark) imalison:do-benchmark))
 #+END_SRC
+** Sane Defaults
+#+BEGIN_SRC emacs-lisp
+  (global-auto-revert-mode)
+  (show-paren-mode 1)
+  (setq reb-re-syntax 'string)
+#+END_SRC
+** Line Numbers
+#+BEGIN_SRC emacs-lisp
+  (line-number-mode t)
+  (column-number-mode t)
+  (global-linum-mode t)
+#+END_SRC
 ** Backups
 *** Put them all in one directory
 #+BEGIN_SRC emacs-lisp
@@ -160,23 +176,58 @@ This appears here so that it can accurately benchmark as much of startup as poss
   (setq ns-pop-up-frames nil)
   (setq pop-up-frames nil)
 #+END_SRC
+*** boolean (yes-or-no)
+#+BEGIN_SRC emacs-lisp
+  (defadvice yes-or-no-p (around prevent-dialog activate)
+    "Prevent yes-or-no-p from activating a dialog"
+    (let ((use-dialog-box nil))
+      ad-do-it))
+
+  (defadvice y-or-n-p (around prevent-dialog-yorn activate)
+    "Prevent y-or-n-p from activating a dialog"
+    (let ((use-dialog-box nil))
+      ad-do-it))
+
+  (defalias 'yes-or-no-p 'y-or-n-p)
+#+END_SRC
+*** No dialog boxes
+#+BEGIN_SRC emacs-lisp
+  (setq use-dialog-box nil)
+#+END_SRC
+** Splitting
+#+BEGIN_SRC emacs-lisp
+  (defun split-horizontally-for-temp-buffers () (split-window-horizontally))
+  (add-hook 'temp-buffer-setup-hook 'split-horizontally-for-temp-buffers)
+  (setq split-height-threshold nil)
+  (setq split-width-threshold 160)
+#+END_SRC
 ** Fill Setup
 #+BEGIN_SRC emacs-lisp
   (setq sentence-end-double-space nil)
 #+END_SRC
+** Encoding
+UTF-8 everywhere
+#+BEGIN_SRC emacs-lisp
+  (set-language-environment 'utf-8)
+  (set-keyboard-coding-system 'utf-8-mac) ; For old Carbon emacs on OS X only
+  (setq locale-coding-system 'utf-8)
+  (set-default-coding-systems 'utf-8)
+  (set-terminal-coding-system 'utf-8)
+  (unless (eq system-type 'windows-nt)
+    (set-selection-coding-system 'utf-8))
+  (prefer-coding-system 'utf-8)
+#+END_SRC
+Disable CJK coding/encoding (Chinese/Japanese/Korean characters)
+#+BEGIN_SRC emacs-lisp
+  (setq utf-translate-cjk-mode nil)
+#+END_SRC
 ** Misc
 #+BEGIN_SRC emacs-lisp
-  
-
   (put 'set-goal-column 'disabled nil)
   (auto-fill-mode -1)
   (setq indent-tabs-mode nil)
 
   ;; No hsplits. EVER.
-  (defun split-horizontally-for-temp-buffers () (split-window-horizontally))
-  (add-hook 'temp-buffer-setup-hook 'split-horizontally-for-temp-buffers)
-  (setq split-height-threshold nil)
-  (setq split-width-threshold 160)
 
   (setq confirm-nonexistent-file-or-buffer nil)
 
@@ -188,31 +239,13 @@ This appears here so that it can accurately benchmark as much of startup as poss
   (setq inhibit-startup-message t
         inhibit-startup-echo-area-message t)
 
-  (if (fboundp 'tooltip-mode) (tooltip-mode -1) (setq tooltip-use-echo-area t))
-
-  (setq use-dialog-box nil)
-
-  (defadvice yes-or-no-p (around prevent-dialog activate)
-    "Prevent yes-or-no-p from activating a dialog"
-    (let ((use-dialog-box nil))
-      ad-do-it))
-
-  (defadvice y-or-n-p (around prevent-dialog-yorn activate)
-    "Prevent y-or-n-p from activating a dialog"
-    (let ((use-dialog-box nil))
-      ad-do-it))
-
-  (global-auto-revert-mode)
+  
 
   ;; This makes it so that emacs --daemon puts its files in ~/.emacs.d/server
   ;; (setq server-use-tcp t)
 
   ;; Display line and column numbers in mode line.
-  (line-number-mode t)
-  (column-number-mode t)
-  (global-linum-mode t)
-  (setq visible-bell t)
-  (show-paren-mode 1)
+  
 
   ;; Make buffer names unique.
   (setq uniquify-buffer-name-style 'forward)
@@ -231,7 +264,6 @@ This appears here so that it can accurately benchmark as much of startup as poss
 
   ;; Preserve pastes from OS when saving a new item to the kill
   ;; ring. Why wouldn't this be enabled by default?
-  (setq save-interprogram-paste-before-kill t)
 
   (setq-default cursor-type 'box)
   (setq-default cursor-in-non-selected-windows 'bar)
@@ -247,7 +279,7 @@ This appears here so that it can accurately benchmark as much of startup as poss
   (setq display-time-format "%a, %b %d, %T ")
   (display-time-mode 1)
 
-  (setq reb-re-syntax 'string) ;; the only sane option...
+   ;; the only sane option...
 
   (setq ediff-split-window-function 'split-window-horizontally)
   (setq ediff-window-setup-function 'ediff-setup-windows-plain)
@@ -264,18 +296,6 @@ This appears here so that it can accurately benchmark as much of startup as poss
 
   (setq initial-scratch-message "")
 
-  (setq utf-translate-cjk-mode nil) ; disable CJK coding/encoding
-                                    ; (Chinese/Japanese/Korean
-                                    ; characters)
-  (set-language-environment 'utf-8)
-  (set-keyboard-coding-system 'utf-8-mac) ; For old Carbon emacs on OS X only
-  (setq locale-coding-system 'utf-8)
-  (set-default-coding-systems 'utf-8)
-  (set-terminal-coding-system 'utf-8)
-  (unless (eq system-type 'windows-nt)
-    (set-selection-coding-system 'utf-8))
-  (prefer-coding-system 'utf-8)
-
   (setq checkdoc-force-docstrings-flag nil
         checkdoc-arguments-in-order-flag nil)
 
@@ -285,7 +305,6 @@ This appears here so that it can accurately benchmark as much of startup as poss
   (setq sentence-end-double-space nil)
 
   ;; y and n instead of yes and no
-  (defalias 'yes-or-no-p 'y-or-n-p)
 #+END_SRC
 #+BEGIN_SRC emacs-lisp
   (setq-default c-basic-offset 4
