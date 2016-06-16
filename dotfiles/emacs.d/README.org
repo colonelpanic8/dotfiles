@@ -735,19 +735,6 @@ This keyboard macro extracts the current sexp to an emacs-lisp source block of i
 #+BEGIN_SRC emacs-lisp
   (use-package list-environment)
 #+END_SRC
-*** bind-key
-#+BEGIN_SRC emacs-lisp
-  (use-package bind-key)
-#+END_SRC
-*** which-key
-#+BEGIN_SRC emacs-lisp
-  (use-package which-key
-    :config
-    (progn
-      (setq which-key-idle-delay .50)
-      (diminish 'which-key-mode)
-      (which-key-mode)))
-#+END_SRC
 *** exec-path-from-shell
 Sets environment variables by starting a shell 
 #+BEGIN_SRC emacs-lisp
@@ -784,6 +771,32 @@ Sets environment variables by starting a shell
 *** discover-my-major
 #+BEGIN_SRC emacs-lisp
   (use-package discover-my-major)
+#+END_SRC
+** Keybindings
+*** bind-key
+#+BEGIN_SRC emacs-lisp
+  (use-package bind-key)
+#+END_SRC
+*** which-key
+#+BEGIN_SRC emacs-lisp
+  (use-package which-key
+    :config
+    (progn
+      (setq which-key-idle-delay .50)
+      (diminish 'which-key-mode)
+      (which-key-mode)))
+#+END_SRC
+*** hydra
+#+BEGIN_SRC emacs-lisp
+  (use-package hydra
+    :config
+    (progn
+      (defhydra hydra-font-resize
+        (global-map "C-M-=")
+        "font-resize"
+        ("-"   modi/font-size-decr  "Decrease")
+        ("="   modi/font-size-incr  "Increase")
+        ("0"   modi/font-size-reset "Reset to default size"))))
 #+END_SRC
 ** org
 #+BEGIN_SRC emacs-lisp
