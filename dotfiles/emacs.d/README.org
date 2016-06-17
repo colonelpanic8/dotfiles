@@ -1044,7 +1044,7 @@ Sets environment variables by starting a shell
       (defun org-todo-at-date (date)
         (interactive (list (org-time-string-to-time (org-read-date))))
         (cl-flet ((org-current-effective-time (&rest r) date)
-               (org-today (&rest r) (time-to-days date)))
+                  (org-today (&rest r) (time-to-days date)))
           (cond ((eq major-mode 'org-mode) (org-todo))
                 ((eq major-mode 'org-agenda-mode) (org-agenda-todo)))))
 
@@ -1058,8 +1058,8 @@ Sets environment variables by starting a shell
 
       (defun org-agenda-done (&optional arg)
         "Mark current TODO as done.
-  This changes the line at point, all other lines in the agenda referring to
-  the same tree node, and the headline of the tree node in the Org-mode file."
+    This changes the line at point, all other lines in the agenda referring to
+    the same tree node, and the headline of the tree node in the Org-mode file."
         (interactive "P")
         (org-agenda-todo "DONE"))
       ;; Override the key definition for org-exit
@@ -1215,28 +1215,28 @@ Sets environment variables by starting a shell
                    `("y" "Calendar entry (Linked)" entry
                      (file ,imalison:org-calendar-file)
                      "* %? %A
-    :PROPERTIES:
-    :CREATED: %U
-    :END:
-  %^T"))
+      :PROPERTIES:
+      :CREATED: %U
+      :END:
+    %^T"))
 
       (add-to-list 'org-capture-templates
                    `("c" "Calendar entry" entry
                      (file ,imalison:org-calendar-file)
                      "* %?
-    :PROPERTIES:
-    :CREATED: %U
-    :END:
-  %^T"))
+      :PROPERTIES:
+      :CREATED: %U
+      :END:
+    %^T"))
 
       (add-to-list 'org-capture-templates
                    `("h" "Habit" entry (file ,imalison:org-habits-file)
                      "* TODO
-    SCHEDULED: %^t
-    :PROPERTIES:
-    :CREATED: %U
-    :STYLE: habit
-    :END:"))
+      SCHEDULED: %^t
+      :PROPERTIES:
+      :CREATED: %U
+      :STYLE: habit
+      :END:"))
 
       (let ((this-week-high-priority
              ;; The < in the following line works has behavior that is opposite
@@ -1245,14 +1245,14 @@ Sets environment variables by starting a shell
                          ((org-agenda-overriding-header
                            "Upcoming high priority tasks:"))))
             (due-today '(tags-todo
-                             "+DEADLINE=<\"<+0d>\""
-                             ((org-agenda-overriding-header
-                               "Due today:"))))
+                         "+DEADLINE=<\"<+0d>\""
+                         ((org-agenda-overriding-header
+                           "Due today:"))))
             (recently-created '(tags-todo
-                             "+CREATED=>\"<-3d>\""
-                             ((org-agenda-overriding-header "Recently created:")
-                              (org-agenda-cmp-user-defined 'org-cmp-creation-times)
-                              (org-agenda-sorting-strategy '(user-defined-down)))))
+                                "+CREATED=>\"<-3d>\""
+                                ((org-agenda-overriding-header "Recently created:")
+                                 (org-agenda-cmp-user-defined 'org-cmp-creation-times)
+                                 (org-agenda-sorting-strategy '(user-defined-down)))))
             (next '(todo "NEXT"))
             (started '(todo "STARTED"))
             (missing-deadline
@@ -1280,11 +1280,11 @@ Sets environment variables by starting a shell
                 ,(cons "d" (cons "Overdue tasks and due today" due-today))
                 ,(cons "r" (cons "Recently created" recently-created))
                 ("h" "A, B priority:" tags-todo "+PRIORITY<\"C\""
-                         ((org-agenda-overriding-header
-                           "High Priority:")))
+                 ((org-agenda-overriding-header
+                   "High Priority:")))
                 ("c" "At least priority C:" tags-todo "+PRIORITY<\"D\""
-                         ((org-agenda-overriding-header
-                           "At least priority C:"))))))
+                 ((org-agenda-overriding-header
+                   "At least priority C:"))))))
 
       ;; What follows is a description of the significance of each of
       ;; the values available in `org-todo-keywords'. All headings with
@@ -1335,7 +1335,7 @@ Sets environment variables by starting a shell
       ;; within the appropriate time period, and there is now no point in
       ;; attempting it.
 
-'
+      '
       ;; CANCELED - For whatever reason, this TODO should no longer be
       ;; attempted. This TODO is typically used in contrast to the
       ;; EXPIRED TODO to indicate that the owner is not necessarily to
@@ -2230,7 +2230,7 @@ I don't use iedit directly, but it is used by [[*emr][emr]] and I need to disabl
   (use-package iedit
     :demand
     :preface
-    (defvar iedit-toggle-key-default nil))
+    (defvar-setq iedit-toggle-key-default nil))
 #+END_SRC
 *** tramp
 #+BEGIN_SRC emacs-lisp
