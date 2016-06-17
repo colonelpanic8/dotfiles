@@ -966,7 +966,8 @@ Sets environment variables by starting a shell
            ("C-c n l" . org-store-link)
            ("C-c n i" . org-insert-link)
            ("C-c C-t" . org-todo)
-           ("C-c C-S-t" . org-todo-force-notes))
+           ("C-c C-S-t" . org-todo-force-notes)
+           ("M-." . elisp-slime-nav-find-elisp-thing-at-point))
     :config
     (progn
       (setq org-global-properties
