@@ -19,10 +19,18 @@ It's annoying to have emacs randomly add stuff to your init.el whenever you cust
 custom-before.el is loaded before the rest of init.el, while custom-after.el is loaded afterwards. this-machine.el has customizations that should only apply to the current machine. custom-before and custom-after are not version controlled in the dotfiles repo but they are shared across machines elsewhere.
 #+BEGIN_SRC emacs-lisp
   (defvar machine-custom "~/.emacs.d/this-machine.el")
+  (defvar custom-after-file "~/.emacs.d/custom-after.el")
   (setq custom-file "~/.emacs.d/custom-before.el")
   (when (file-exists-p custom-file) (load custom-file))
-  (defvar custom-after-file "~/.emacs.d/custom-after.el")
   (when (file-exists-p machine-custom) (load machine-custom))
+#+END_SRC
+** Benchmarking
+This appears here so that it can accurately benchmark as much of startup as possible.
+#+BEGIN_SRC emacs-lisp
+  (defvar imalison:do-benchmark)
+  (when imalison:do-benchmark
+    (use-package benchmark-init
+      :if (and (boundp 'imalison:do-benchmark) imalison:do-benchmark)))
 #+END_SRC
 ** GUI Disables
 Death to any gui elements in emacs! Do this EARLY so that emacs doesn't redisplay in a way that is visually unpleasant on startup a bunch of times.
@@ -137,12 +145,6 @@ Ensure by default since most of the package for which I use use-package need to 
 #+BEGIN_SRC emacs-lisp
 (setq use-package-always-ensure t)
 #+END_SRC
-** Benchmarking
-This appears here so that it can accurately benchmark as much of startup as possible.
-#+BEGIN_SRC emacs-lisp
-(use-package benchmark-init
-  :if (and (boundp 'imalison:do-benchmark) imalison:do-benchmark))
-#+END_SRC
 ** Sane Defaults
 #+BEGIN_SRC emacs-lisp -n -r
   (global-auto-revert-mode)
@@ -225,6 +227,7 @@ Disable CJK coding/encoding (Chinese/Japanese/Korean characters)
 #+END_SRC
 ** Misc
 #+BEGIN_SRC emacs-lisp
+  (defvar iedit-toggle-key-default nil)
   (put 'set-goal-column 'disabled nil)
   (auto-fill-mode -1)
   (setq indent-tabs-mode nil)
@@ -241,13 +244,11 @@ Disable CJK coding/encoding (Chinese/Japanese/Korean characters)
   (setq inhibit-startup-message t
         inhibit-startup-echo-area-message t)
 
-  
-
   ;; This makes it so that emacs --daemon puts its files in ~/.emacs.d/server
   ;; (setq server-use-tcp t)
 
   ;; Display line and column numbers in mode line.
-  
+
 
   ;; Make buffer names unique.
   (setq uniquify-buffer-name-style 'forward)
@@ -330,6 +331,7 @@ The packages in this section provide no functionality on their own, but provide 
 #+BEGIN_SRC emacs-lisp
   (use-package gh
     :ensure nil
+    :defer t
     :load-path "~/Projects/gh.el")
 #+END_SRC
 *** shut-up
@@ -845,6 +847,7 @@ Sets environment variables by starting a shell
 *** paradox
 #+BEGIN_SRC emacs-lisp
   (use-package paradox
+    :commands paradox-upgrade-packages paradox-list-packages
     :config
     (progn
       (setq paradox-execute-asynchronously t)))
@@ -955,6 +958,7 @@ Sets environment variables by starting a shell
     :mode ("\\.org\\'" . org-mode)
     :bind (("C-c a" . org-agenda)
            ("C-c c" . org-capture)
+           :map org-mode-map
            ("C-c n t" . org-insert-todo-heading)
            ("C-c n s" . org-insert-todo-subheading)
            ("C-c n h" . org-insert-habit)
@@ -1066,8 +1070,10 @@ Sets environment variables by starting a shell
       ;; (define-key org-agenda-mode-map "x" #'org-agenda-done) ;; TODO why does this cause an error
 
       ;; org-mode add-ons
-      (use-package org-present)
-      (use-package org-pomodoro)
+      (use-package org-present
+        :commands org-present)
+      (use-package org-pomodoro
+        :disabled t)
 
       ;; variable configuration
       (add-to-list 'org-modules 'org-habit)
@@ -1702,7 +1708,11 @@ I use helm for almost all emacs completion
 #+END_SRC
 *** gist
 #+BEGIN_SRC emacs-lisp
-  (use-package gist)
+  (use-package gist
+    :commands (gist-region gist-region-private gist-buffer gist-buffer-private
+                           gist-region-or-buffer gist-region-or-buffer-private
+                           gist-list-user gist-list gist-fetch gist-star
+                           gist-unstar gist-list-starred gist-fork))
 #+END_SRC
 *** git-gutter
 #+BEGIN_SRC emacs-lisp
@@ -1724,7 +1734,7 @@ I use helm for almost all emacs completion
 *** github-clone
 #+BEGIN_SRC emacs-lisp
   (use-package github-clone
-    :demand t)
+    :commands github-clone)
 #+END_SRC
 *** github-search
 #+BEGIN_SRC emacs-lisp
@@ -1733,6 +1743,7 @@ I use helm for almost all emacs completion
   (use-package github-search
     :ensure nil
     :load-path imalison:github-search-load-path
+    :commands github-search-clone-repo
     :preface
     (progn
       (defun imalison:get-projects-directory-target-from-repo (repo)
@@ -1867,9 +1878,9 @@ I use helm for almost all emacs completion
 
       (defun go-mode-install-current-project ()
         (interactive)
-        (start-process "go install" "go install log" "go" "install"
-                       (concat (file-name-as-directory (go-mode-workspace-path))
-                               "...")))
+        (start-process 
+         "go install" "go install log" "go" "install"
+         (concat (file-name-as-directory (go-mode-workspace-path)) "...")))
 
       (defun go-mode-get-go-path ()
         (file-name-as-directory (car (s-split ":" (getenv "GOPATH")))))
@@ -1879,10 +1890,6 @@ I use helm for almost all emacs completion
 
       (defun imalison:go-mode-hook ()
         (go-eldoc-setup)
-        (setq imenu-create-index-function
-              (lambda ()
-                (imalison:flatten-imenu-index
-                 (go-mode-create-imenu-index))))
         (set (make-local-variable 'company-backends) '(company-go))))
     :config
     (progn
@@ -2039,6 +2046,7 @@ I use helm for almost all emacs completion
       (add-hook 'js2-mode-hook 'js2-imenu-extras-mode)))
 
   (use-package js2-refactor
+    :after js2-mode
     :config
     (progn
       (js2r-add-keybindings-with-prefix "C-c C-m")
@@ -2105,18 +2113,17 @@ I use helm for almost all emacs completion
 **** realgud
 realgud provides debugging support with many external debuggers in emacs
 #+BEGIN_SRC emacs-lisp
-  (use-package realgud)
+  (use-package realgud
+    :defer 10)
 #+END_SRC
 **** emr
 emr (emacs refactor) provides support for refactoring in many programming languages
 #+BEGIN_SRC emacs-lisp
   (use-package emr
-    :commands emr-initialize
     :bind (:map prog-mode-map
                 ("M-RET" . emr-show-refactor-menu))
-    :init (emr-initialize))
+    :config (emr-initialize))
 #+END_SRC
-
 ** Utility
 *** term
 #+BEGIN_SRC emacs-lisp
@@ -2130,6 +2137,7 @@ emr (emacs refactor) provides support for refactoring in many programming langua
 #+BEGIN_SRC emacs-lisp
   (use-package term-manager
     :ensure nil
+    :defer t
     :load-path "~/Projects/term-manager"
     :preface
     (progn
@@ -2145,6 +2153,12 @@ emr (emacs refactor) provides support for refactoring in many programming langua
 #+BEGIN_SRC emacs-lisp
   (use-package term-projectile
     :load-path "~/Projects/term-manager"
+    :bind ("C-c 7" . imalison:term-hydra/body)
+    :commands (term-projectile-forward term-projectile-backward
+                                       term-projectile-default-directory-forward
+                                       term-projectile-default-directory-backward
+                                       term-projectile-create-new
+                                       term-projectile-create-new-default-directory)
     :config
     (progn
       (imalison:prefix-alternatives imalison:term term-projectile-forward
@@ -2155,7 +2169,7 @@ emr (emacs refactor) provides support for refactoring in many programming langua
         ("p" term-projectile-default-directory-backward)
         ("c" term-projectile-create-new-default-directory))
 
-      (defhydra imalison:term-hydra (global-map  "C-c 7")
+      (defhydra imalison:term-hydra ()
         "term"
         ("n" term-projectile-forward)
         ("p" term-projectile-backward)
@@ -2228,9 +2242,7 @@ crux-reopen-as-root-mode makes it so that any file owned by root will automatica
 I don't use iedit directly, but it is used by [[*emr][emr]] and I need to disable ~iedit-toggle-key-default~ or else a buffer pops up complaing that the key has been bound to something else
 #+BEGIN_SRC emacs-lisp
   (use-package iedit
-    :demand
-    :preface
-    (defvar-setq iedit-toggle-key-default nil))
+    :defer t)
 #+END_SRC
 *** tramp
 #+BEGIN_SRC emacs-lisp
@@ -2340,12 +2352,14 @@ I don't use iedit directly, but it is used by [[*emr][emr]] and I need to disabl
 #+END_SRC
 *** nodejs-repl
 #+BEGIN_SRC emacs-lisp
-  (use-package nodejs-repl)
+  (use-package nodejs-repl
+    :commands nodejs-repl)
 #+END_SRC
 *** calc-mode
 #+BEGIN_SRC emacs-lisp
   (use-package calc-mode
     :ensure nil
+    :commands calc
     :config
     (progn
       (setq calc-context-sensitive-enter t)))
@@ -2389,6 +2403,7 @@ Not really sure what this is
 *** deft
 #+BEGIN_SRC emacs-lisp
   (use-package deft
+    :commands deft
     :config
     (progn
       (setq deft-default-extension "org")
@@ -2578,10 +2593,10 @@ This is useful with server mode when editing gmail messages. I think that it is 
         (funcall notify-function "GMail" message))
       (defun sauron:dispatch-notify (origin priority message &optional properties)
         (let ((handler (cond ((string= origin "erc") 'sauron:erc-notify)
-                              ((string= origin "jabber") 'sauron:jabber-notify)
-                              ((string= origin "mu4e") 'sauron:mu4e-notify)
-                              ((string= origin "dbus") 'sauron:dbus-notify)
-                              (t (lambda (&rest r) nil)))))
+                             ((string= origin "jabber") 'sauron:jabber-notify)
+                             ((string= origin "mu4e") 'sauron:mu4e-notify)
+                             ((string= origin "dbus") 'sauron:dbus-notify)
+                             (t (lambda (&rest r) nil)))))
           (funcall handler origin priority message properties)))
       ;; Prefering alert.el for now ;; (add-hook 'sauron-event-added-functions 'sauron:dispatch-notify)
       (sauron-start-hidden)
@@ -2598,7 +2613,8 @@ This is useful with server mode when editing gmail messages. I think that it is 
 #+END_SRC
 *** wsd-mode
 #+BEGIN_SRC emacs-lisp
-  (use-package wsd-mode)
+  (use-package wsd-mode
+    :commands (wsd-mode))
 #+END_SRC
 *** libmpdee
 #+BEGIN_SRC emacs-lisp
@@ -2812,7 +2828,8 @@ This is useful with server mode when editing gmail messages. I think that it is 
 #+END_SRC
 *** rinari
 #+BEGIN_SRC emacs-lisp
-  (use-package rinari)
+  (use-package rinari
+    :after ruby-mode)
 #+END_SRC
 *** helm-gtags
 #+BEGIN_SRC emacs-lisp
@@ -2884,6 +2901,7 @@ This is useful with server mode when editing gmail messages. I think that it is 
 #+BEGIN_SRC emacs-lisp
   (use-package latex
     :ensure auctex
+    :after tex
     :config
     (progn
       (unbind-key "C-j" LaTeX-mode-map)))
@@ -2986,7 +3004,6 @@ Ensure all themes that I use are installed:
 
   (ensure-packages-installed packages-appearance)
 #+END_SRC
-
 ** spaceline
 #+BEGIN_SRC emacs-lisp
   (use-package spaceline-config
@@ -3009,7 +3026,8 @@ Ensure all themes that I use are installed:
 #+END_SRC
 ** window-number
 #+BEGIN_SRC emacs-lisp
-  (use-package window-number)
+  (use-package window-number
+    :defer t)
 #+END_SRC
 ** Whitespace Setup
 
