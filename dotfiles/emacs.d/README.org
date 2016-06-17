@@ -1013,19 +1013,24 @@ Sets environment variables by starting a shell
         (interactive)
         (org-map-entries 'org-archive-if-completed))
 
-      (defun org-capture-make-todo-template (&optional content)
-        (unless content (setq content "%?"))
+      (cl-defun org-capture-make-todo-template
+          (&key (content "%?") (creation-state "TODO"))
         (with-temp-buffer
           (org-mode)
           (org-insert-heading)
           (insert content)
-          (org-todo "TODO")
+          (org-todo creation-state)
           (org-set-property "CREATED"
                             (with-temp-buffer
                               (org-insert-time-stamp
                                (org-current-effective-time) t t)))
           (remove-hook 'post-command-hook 'org-add-log-note)
-          (org-add-log-note)
+          (let ((org-log-note-purpose 'state)
+                (org-log-note-return-to (point-marker))
+                (org-log-note-marker (progn (goto-char (org-log-beginning t))
+                                            (point-marker)))
+                (org-log-note-state creation-state))
+            (org-add-log-note))
           (buffer-substring-no-properties (point-min) (point-max))))
 
       (defun org-todo-force-notes ()
@@ -1068,7 +1073,8 @@ Sets environment variables by starting a shell
         (interactive "P")
         (org-agenda-todo "DONE"))
       ;; Override the key definition for org-exit
-      ;; (define-key org-agenda-mode-map "x" #'org-agenda-done) ;; TODO why does this cause an error
+      ;; TODO why does this cause an error
+      ;; (define-key org-agenda-mode-map "x" #'org-agenda-done)
 
       ;; org-mode add-ons
       (use-package org-present
@@ -1367,7 +1373,7 @@ Sets environment variables by starting a shell
       (add-hook 'org-mode-hook 'imalison:disable-linum-mode)
       (add-hook 'org-mode-hook 'imalison:disable-smartparens-mode)
       (add-hook 'org-mode-hook (lambda () (setq org-todo-key-trigger t)))
-      (add-hook 'org-agenda-mode-hook 'imalison:disable-linum-mode))))
+      (add-hook 'org-agenda-mode-hook 'imalison:disable-linum-mode)))
 #+END_SRC
 *** org-projectile
 #+BEGIN_SRC emacs-lisp
