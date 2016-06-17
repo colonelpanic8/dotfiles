@@ -483,40 +483,95 @@ Prefix alternatives is a macro that builds a function that selects one of a coll
                   (* (cos f2) (cos f1) (imalison:sin2 (/ (- l2 l1) 2))) ))))))))
 #+END_SRC
 ** Muni
+Create cache structure containing stop information
 #+BEGIN_SRC emacs-lisp
-  (defun imalison:muni (line direction stop)
-    (s-trim
-     (shell-command-to-string
-      (format "muni predict %s %s %s" line direction stop))))
+  (defclass imalison:muni-stop ()
+    ((id :initarg :id)
+     (name :initarg :name)
+     (lat :initarg :lat)
+     (long :initarg :long)))
 
-  (defun imalison:closest-stop (location targets)
+  (defmethod imalison:muni-stop-get-lat-long ((stop imalison:muni-stop))
+    (list (oref stop :lat) (oref stop :long)))
+
+  (defvar imalison:muni-stop-cache (pcache-repository "imalison-muni-stop"))
+
+  (defun imalison:muni-get-gtfs-stops (&optional filepath)
+    (unless filepath
+      (setq filepath
+            (concat (file-name-directory load-file-name) "stops.txt")))
+    (let ((data (imalison:get-string-from-file filepath)))
+      (parse-csv-string-rows data ?\, ?\" "\n")))
+
+  (defun imalison:build-muni-stop-from-gtfs-stop (gtfs-stop)
+    (when (stringp (nth 3 gtfs-stop))
+      (make-instance imalison:muni-stop
+                     :id (nth 0 gtfs-stop)
+                     :name (nth 1 gtfs-stop)
+                     :lat (string-to-number (nth 3 gtfs-stop))
+                     :long (string-to-number (nth 4 gtfs-stop)))))
+
+  (defun imalison:muni-populate-stop-cache (&optional filepath)
+    (cl-loop for gtfs-stop in (imalison:muni-get-gtfs-stops filepath)
+             do (let ((muni-stop
+                       (imalison:build-muni-stop-from-gtfs-stop gtfs-stop)))
+                  (when muni-stop
+                    (pcache-put imalison:muni-stop-cache
+                                (intern (oref muni-stop :id)) muni-stop)))))
+
+  (defun imalison:muni-stop-from-id (stop-or-id)
+    (if (imalison:muni-stop-p stop) stop-or-id
+      (pcache-get imalison:muni-stop-cache stop-or-id)))
+#+END_SRC
+Get route information
+#+BEGIN_SRC emacs-lisp
+  (defun imalison:muni-get-route-ids (route-name &optional direction)
+    (delete-dups
+     (mapcar (imalison:compose imalison:car-intern 'intern 'car) 
+             (s-match-strings-all
+              "^\\([[:digit:]]\\{1,10\\}\\)"
+              (shell-command-to-string
+               (format "muni show %s %s -v" route-name (or direction "")))))))
+#+END_SRC
+
+Stop selection functions
+#+BEGIN_SRC emacs-lisp
+  (cl-defun imalison:closest-stop (stops &key location)
+    (unless location (setq location (imalison:get-lat-long)))
     (let (minimizing (minimum 1.0e+INF))
-      (cl-loop for stop-info in targets
-               do (let* ((stop-lat-long (car stop-info))
-                      (this-dist (imalison:haversine-distance location stop-lat-long)))
+      (cl-loop for stop in stops
+               do (let* ((actual-stop (imalison:muni-stop-from-id stop))
+                         (stop-lat-long (imalison:muni-stop-get-lat-long actual-stop))
+                         (this-dist (imalison:haversine-distance location stop-lat-long)))
                  (when (< this-dist minimum)
-                   (setq minimizing stop-info
+                   (setq minimizing actual-stop
                          minimum this-dist))))
       minimizing))
 
-  (defvar imalison:dolores-muni
-    '((37.761351 -122.428225) ("J" "inbound" "6213") "dolo"))
-  (defvar imalison:van-ness-muni
-    '((37.775488 -122.418988) ("J" "outbound" "6996") "van ness"))
-  (defvar imalison:muni-infos
-    (list imalison:dolores-muni imalison:van-ness-muni))
-
-  (defun imalison:get-closest-muni-info (&optional current-location)
-    (interactive)
+  (cl-defun imalison:muni-stops-within (stops &key (radius .25) current-location)
     (unless current-location (setq current-location (imalison:get-lat-long)))
-    (let* ((closest-stop
-           (imalison:closest-stop current-location imalison:muni-infos)))
-      (apply 'imalison:muni (cadr closest-stop))))
+    (cl-loop for stop in stops
+             with actual-stop = nil
+             when (let ((stop-lat-long (imalison:muni-stop-get-lat-long actual-stop)))
+                    (setq actual-stop (imalison:muni-stop-from-id stop))
+                    (< (imalison:haversine-distance current-location stop-lat-long) radius))
+             collect actual-stop))
+#+END_SRC
 
+A function that shells out to get upcoming trains
+#+BEGIN_SRC emacs-lisp
+  (defun imalison:muni-predict (route direction stop)
+    (s-trim
+     (shell-command-to-string
+      (format "muni predict %s %s %s" route direction stop))))
+#+END_SRC
+
+#+BEGIN_SRC emacs-lisp
   (defun imalison:parse-muni-info (info-string)
     (when (string-match "\\([[:digit:]]\\{1,3\\}\\) *minutes" info-string)
       (match-string-no-properties 1 info-string)))
 #+END_SRC
+
 A cached version of the muni functions for use in spaceline and elsewhere.
 #+BEGIN_SRC emacs-lisp
   (defvar imalison:muni-cache (pcache-repository "imalison-muni"))
