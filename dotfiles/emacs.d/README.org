@@ -443,6 +443,22 @@ Prefix alternatives is a macro that builds a function that selects one of a coll
                (setq result (concat (file-name-as-directory result) dir)))
       result))
 #+END_SRC
+** Get file string
+#+BEGIN_SRC emacs-lisp
+  (defun imalison:get-string-from-file (filePath)
+    "Return filePath's file content."
+    (with-temp-buffer
+      (insert-file-contents filePath)
+      (buffer-string)))
+#+END_SRC
+** Get current location
+#+BEGIN_SRC emacs-lisp
+  (defun imalison:get-lat-long ()
+    (condition-case _ex
+        (mapcar 'string-to-number (s-split "," (s-trim (shell-command-to-string
+                                                        "whereami"))))
+      (error (list 37.7879312624533 -122.402388853402))))
+#+END_SRC
 ** Haversine distance
 #+BEGIN_SRC emacs-lisp
   (defun imalison:sin2 (p)
@@ -589,12 +605,6 @@ This was taken from [[http://emacs.stackexchange.com/questions/7583/transiently-
       (cond ((> (car a) (car b)) 1)
             ((< (car a) (car b)) -1)
             (t (imalison:compare-int-list (cdr a) (cdr b))))))
-
-  (defun imalison:get-lat-long ()
-    (condition-case _ex
-        (mapcar 'string-to-number (s-split "," (s-trim (shell-command-to-string
-                                                        "whereami"))))
-      (error (list 37.7879312624533 -122.402388853402))))
 
   (defun get-date-created-from-agenda-entry (agenda-entry)
     (org-time-string-to-time
