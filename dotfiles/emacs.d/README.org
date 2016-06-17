@@ -28,9 +28,8 @@ custom-before.el is loaded before the rest of init.el, while custom-after.el is 
 This appears here so that it can accurately benchmark as much of startup as possible.
 #+BEGIN_SRC emacs-lisp
   (defvar imalison:do-benchmark)
-  (when imalison:do-benchmark
-    (use-package benchmark-init
-      :if (and (boundp 'imalison:do-benchmark) imalison:do-benchmark)))
+  (when (and (boundp 'imalison:do-benchmark) imalison:do-benchmark)
+    (use-package benchmark-init))
 #+END_SRC
 ** GUI Disables
 Death to any gui elements in emacs! Do this EARLY so that emacs doesn't redisplay in a way that is visually unpleasant on startup a bunch of times.
