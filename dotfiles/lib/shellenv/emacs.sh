@@ -108,7 +108,7 @@ function emacs_open {
 }
 
 function time_emacs {
-    time \emacs --daemon="timing" && emacsclient -e "(kill-emacs)" --server-file="timing"
+    time \emacs --daemon="timing" || echo ''; emacsclient -e "(kill-emacs)" --server-file="timing"
 }
 
 function emacs_editor {
