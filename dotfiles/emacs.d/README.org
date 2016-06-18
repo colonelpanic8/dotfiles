@@ -972,6 +972,9 @@ Sets environment variables by starting a shell
       (setq org-global-properties
             '(quote (("Effort_ALL" . "0:15 0:30 0:45 1:00 2:00 3:00 4:00 5:00 6:00 0:00")
                      ("STYLE_ALL" . "habit"))))
+      (setq org-todo-keywords
+            '((sequence "IDEA(i!)" "RESEARCH(r!)" "TODO(t!)" "NEXT(n!)" "STARTED(s!)" "WAIT(w!)" "BACKLOG(b!)" "|"
+                        "DONE(d!)" "HANDLED(h!)" "EXPIRED(e!)" "CANCELED(c!)")))
       (setq org-columns-default-format "%80ITEM(Task) %10Effort(Effort){:} %10CLOCKSUM")
       (defvar-setq helm-org-headings-fontify t)
       (setq org-todo-repeat-to-state "TODO")
@@ -1352,12 +1355,6 @@ Sets environment variables by starting a shell
       ;; attempted. This TODO is typically used in contrast to the
       ;; EXPIRED TODO to indicate that the owner is not necessarily to
       ;; blame.
-
-      (setq org-todo-keywords
-            '((sequence "IDEA(i!)" "RESEARCH(r!)" "TODO(t!)" "NEXT(n!)" "STARTED(s!)" "WAIT(w!)" "BACKLOG(b!)" "|"
-                        "DONE(d!)" "HANDLED(h!)" "EXPIRED(e!)" "CANCELED(c!)")
-              (sequence "BASKET(!)" "CLEAN(!)" "DRY(!)" "|" "FOLDED(!)")))
-
       ;; Record changes to todo states
       (setq org-log-into-drawer t)
       ;; Stop starting agenda from deleting frame setup!
@@ -1753,7 +1750,11 @@ I use helm for almost all emacs completion
     :preface
     (progn
       (defun imalison:get-projects-directory-target-from-repo (repo)
-        (imalison:join-paths imalison:projects-directory (oref repo :name))))
+        (let ((prospective-path
+               (imalison:join-paths imalison:projects-directory (oref repo :name)))
+              (if (file-exists-p prospective-path)
+                  (funcall github-search-prompt-for-target-directory repo)
+                prospective-path)))))
     :config
     (progn
       (setq github-search-get-target-directory-for-repo-function
