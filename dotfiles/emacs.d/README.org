@@ -1722,13 +1722,33 @@ I use helm for almost all emacs completion
         :config
         :init (add-hook 'magit-status-mode-hook 'magit-filenotify-mode))))
 #+END_SRC
-*** gist
+*** github-search
 #+BEGIN_SRC emacs-lisp
-  (use-package gist
-    :commands (gist-region gist-region-private gist-buffer gist-buffer-private
-                           gist-region-or-buffer gist-region-or-buffer-private
-                           gist-list-user gist-list gist-fetch gist-star
-                           gist-unstar gist-list-starred gist-fork))
+  (defvar imalison:github-search-load-path
+    (imalison:join-paths imalison:projects-directory "github-search"))
+  (use-package github-search
+    :ensure nil
+    :load-path imalison:github-search-load-path
+    :commands (github-search-clone-repo github-search-user-clone-repo)
+    :preface
+    (progn
+      (defun imalison:get-projects-directory-target-from-repo (repo)
+        (let ((prospective-path
+               (imalison:join-paths imalison:projects-directory (oref repo :name))))
+              (if (file-exists-p prospective-path)
+                  (funcall github-search-prompt-for-target-directory repo)
+                prospective-path))))
+    :config
+    (progn
+      (setq github-search-get-target-directory-for-repo-function
+            'imalison:get-projects-directory-target-from-repo)))
+#+END_SRC
+*** git-link
+#+BEGIN_SRC emacs-lisp
+  (use-package git-link
+    :config
+    (progn
+      (setq git-link-use-commit t)))
 #+END_SRC
 *** git-gutter
 #+BEGIN_SRC emacs-lisp
@@ -1752,39 +1772,19 @@ I use helm for almost all emacs completion
   (use-package github-clone
     :commands github-clone)
 #+END_SRC
-*** github-search
-#+BEGIN_SRC emacs-lisp
-  (defvar imalison:github-search-load-path
-    (imalison:join-paths imalison:projects-directory "github-search"))
-  (use-package github-search
-    :ensure nil
-    :load-path imalison:github-search-load-path
-    :commands (github-search-clone-repo github-search-user-clone-repo)
-    :preface
-    (progn
-      (defun imalison:get-projects-directory-target-from-repo (repo)
-        (let ((prospective-path
-               (imalison:join-paths imalison:projects-directory (oref repo :name))))
-              (if (file-exists-p prospective-path)
-                  (funcall github-search-prompt-for-target-directory repo)
-                prospective-path))))
-    :config
-    (progn
-      (setq github-search-get-target-directory-for-repo-function
-            'imalison:get-projects-directory-target-from-repo)))
-#+END_SRC
 *** github-notifier
 #+BEGIN_SRC emacs-lisp
   (use-package github-notifier
     :disabled t
     :config (github-notifier-mode))
 #+END_SRC
-*** git-link
+*** gist
 #+BEGIN_SRC emacs-lisp
-  (use-package git-link
-    :config
-    (progn
-      (setq git-link-use-commit t)))
+  (use-package gist
+    :commands (gist-region gist-region-private gist-buffer gist-buffer-private
+                           gist-region-or-buffer gist-region-or-buffer-private
+                           gist-list-user gist-list gist-fetch gist-star
+                           gist-unstar gist-list-starred gist-fork))
 #+END_SRC
 ** Programming
 *** Language Specific
