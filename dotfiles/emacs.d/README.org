@@ -400,7 +400,8 @@ By advising ~imenu--make-index-alist~ with ~imalison:flatten-imenu-index~ we mak
                     collect (file-truename filepath)))))
 #+END_SRC
 
-** Compose functions taking arbitrarily many arguments and returning arbitrarily many arguments
+** Compose functions
+The composed functions can take arbitrarily many arguments and returning arbitrarily many arguments.
 #+BEGIN_SRC emacs-lisp
   (defun imalison:make-list (thing)
     (if (listp thing)
