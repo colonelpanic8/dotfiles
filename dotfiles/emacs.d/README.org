@@ -1759,7 +1759,7 @@ I use helm for almost all emacs completion
   (use-package github-search
     :ensure nil
     :load-path imalison:github-search-load-path
-    :commands github-search-clone-repo
+    :commands (github-search-clone-repo github-search-user-clone-repo)
     :preface
     (progn
       (defun imalison:get-projects-directory-target-from-repo (repo)
