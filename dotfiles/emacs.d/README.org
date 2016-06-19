@@ -1977,8 +1977,15 @@ I use helm for almost all emacs completion
     :commands elisp-slime-nav-mode
     :config
     (diminish 'elisp-slime-nav-mode)
+    :preface
+    (imalison:prefix-alternatives imalison:elisp-slime-nav
+                                  elisp-slime-nav-find-elisp-thing-at-point
+                                  elisp-slime-nav-describe-elisp-thing-at-point)
+    :bind (:map elisp-slime-nav-mode-map
+                ("M-." . imalison:elisp-slime-nav))
     :init
     (add-hook 'emacs-lisp-mode-hook (lambda () (elisp-slime-nav-mode t))))
+
   (defun imenu-elisp-sections ()
     (setq imenu-prev-index-position-function nil)
     (setq imenu-space-replacement nil)
