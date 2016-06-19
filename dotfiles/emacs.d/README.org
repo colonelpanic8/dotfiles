@@ -2163,6 +2163,15 @@ emr (emacs refactor) provides support for refactoring in many programming langua
                 ("M-RET" . emr-show-refactor-menu))
     :config (emr-initialize))
 #+END_SRC
+**** semantic
+#+BEGIN_SRC emacs-lisp
+  (use-package semantic
+    :commands semantic-mode
+    :disabled t
+    :preface
+    (progn
+      (add-hook 'prog-mode-hook 'semantic-mode)))
+#+END_SRC
 ** Utility
 *** term
 #+BEGIN_SRC emacs-lisp
