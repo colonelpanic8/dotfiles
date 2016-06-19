@@ -429,3 +429,7 @@ function python_module_exists {
 function set_default_prompt {
     python_module_exists powerline && set_powerline_prompt || set_my_prompt
 }
+
+function edit_script {
+    $EDITOR "$(which $1)"
+}
