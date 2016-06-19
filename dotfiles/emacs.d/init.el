@@ -1,3 +1,6 @@
+(require 'package)
+(package-initialize)
+
 (setq custom-file "~/.emacs.d/custom-before.el")
 (when (file-exists-p custom-file) (load custom-file))
 
