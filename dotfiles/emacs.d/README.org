@@ -1962,17 +1962,8 @@ I use helm for almost all emacs completion
       (add-hook 'after-save-hook 'go-mode-install-current-project)))
 #+END_SRC
 **** emacs-lisp
+***** elisp-slime-nav
 #+BEGIN_SRC emacs-lisp
-  (setq edebug-trace t)
-
-  (use-package macrostep)
-
-  (use-package emr
-    :bind ("M-RET" . emr-show-refactor-menu)
-    :config
-    (progn
-      (add-hook 'prog-mode-hook 'emr-initialize)))
-
   (use-package elisp-slime-nav
     :commands elisp-slime-nav-mode
     :config
@@ -1985,7 +1976,26 @@ I use helm for almost all emacs completion
                 ("M-." . imalison:elisp-slime-nav))
     :init
     (add-hook 'emacs-lisp-mode-hook (lambda () (elisp-slime-nav-mode t))))
-
+#+END_SRC
+***** macrostep
+Macrostep is an indespensible tool for writing emacs lisp macros. It lets you see pretty printed versions of the result of macro evaluation as the macro is evaluated
+#+BEGIN_SRC emacs-lisp
+  (use-package macrostep
+    :bind (:map lisp-mode-shared-map
+                ("C-c e" . macrostep-expand)))
+#+END_SRC
+***** emr
+#+BEGIN_SRC emacs-lisp
+  (use-package emr
+    :bind ("M-RET" . emr-show-refactor-menu)
+    :config
+    (progn
+      (add-hook 'prog-mode-hook 'emr-initialize)))
+#+END_SRC
+***** Misc
+#+BEGIN_SRC emacs-lisp
+  (put 'use-package 'lisp-indent-function 1) ;; reduce indentation for use-package
+  (setq edebug-trace t)
   (defun imenu-elisp-sections ()
     (setq imenu-prev-index-position-function nil)
     (setq imenu-space-replacement nil)
@@ -1996,12 +2006,13 @@ I use helm for almost all emacs completion
                  `("Section"
                    ,(concat ";\\{1,4\\} =\\{10,80\\}\n;\\{1,4\\} \\{10,80\\}"
                             "\\(.+\\)$") 1) t))
-
-  (put 'use-package 'lisp-indent-function 1) ;; reduce indentation for use-package
   (add-hook 'emacs-lisp-mode-hook 'imenu-elisp-sections)
   (add-hook 'emacs-lisp-mode-hook (lambda ()
                                     (setq indent-tabs-mode nil)
                                     (setq show-trailing-whitespace t)))
+#+END_SRC
+***** Keybinds
+#+BEGIN_SRC emacs-lisp
   (define-key lisp-mode-shared-map (kbd "C-c C-c") 'eval-defun)
   (define-key lisp-mode-shared-map (kbd "C-c C-r") 'eval-and-replace)
   (define-key lisp-mode-shared-map (kbd "C-c o r") 'up-list-region)
