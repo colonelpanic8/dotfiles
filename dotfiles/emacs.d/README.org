@@ -3020,7 +3020,7 @@ Ensure all themes that I use are installed:
     '(monokai-theme solarized-theme zenburn-theme base16-theme molokai-theme
       tango-2-theme gotham-theme sublime-themes rainbow-delimiters waher-theme
       ample-theme material-theme zerodark-theme color-theme-modern leuven-theme
-      spacemacs-theme gruvbox-theme))
+      spacemacs-theme gruvbox-theme forest-blue-theme))
 
   (ensure-packages-installed packages-appearance)
 #+END_SRC
