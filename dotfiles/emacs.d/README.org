@@ -1764,10 +1764,10 @@ I use helm for almost all emacs completion
     (progn
       (defun imalison:get-projects-directory-target-from-repo (repo)
         (let ((prospective-path
-               (imalison:join-paths imalison:projects-directory (oref repo :name)))
+               (imalison:join-paths imalison:projects-directory (oref repo :name))))
               (if (file-exists-p prospective-path)
                   (funcall github-search-prompt-for-target-directory repo)
-                prospective-path)))))
+                prospective-path))))
     :config
     (progn
       (setq github-search-get-target-directory-for-repo-function
