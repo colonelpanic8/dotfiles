@@ -954,53 +954,15 @@ Sets environment variables by starting a shell
 #+BEGIN_SRC emacs-lisp
   (use-package org
     :ensure org-plus-contrib
-    :commands (org-mode org org-mobile-push org-mobile-pull org-agenda)
-    :mode ("\\.org\\'" . org-mode)
-    :bind (("C-c a" . org-agenda)
-           ("C-c c" . org-capture)
-           :map org-mode-map
-           ("C-c n t" . org-insert-todo-heading)
-           ("C-c n s" . org-insert-todo-subheading)
-           ("C-c n h" . org-insert-habit)
-           ("C-c n m" . org-make-habit)
-           ("C-c n l" . org-store-link)
-           ("C-c n i" . org-insert-link)
-           ("C-c C-t" . org-todo)
-           ("C-c C-S-t" . org-todo-force-notes)
-           ("M-." . elisp-slime-nav-find-elisp-thing-at-point))
-    :config
+    :preface
     (progn
-      (setq org-global-properties
-            '(quote (("Effort_ALL" . "0:15 0:30 0:45 1:00 2:00 3:00 4:00 5:00 6:00 0:00")
-                     ("STYLE_ALL" . "habit"))))
-      (setq org-todo-keywords
-            '((sequence "IDEA(i!)" "RESEARCH(r!)" "TODO(t!)" "NEXT(n!)" "STARTED(s!)" "WAIT(w!)" "BACKLOG(b!)" "|"
-                        "DONE(d!)" "HANDLED(h!)" "EXPIRED(e!)" "CANCELED(c!)")))
-      (setq org-columns-default-format "%80ITEM(Task) %10Effort(Effort){:} %10CLOCKSUM")
-      (defvar-setq helm-org-headings-fontify t)
-      (setq org-todo-repeat-to-state "TODO")
-
-      (setq org-agenda-span 10)
-      (setq org-agenda-start-day "-2d")
-
-      (org-babel-do-load-languages
-       'org-babel-load-languages
-       '((sh . t)
-         (python . t)
-         (ruby . t)
-         (octave . t)
-         (sqlite . t)))
-
-      (when nil
-        ;; Enable appointment notifications.
-        (defadvice org-agenda-to-appt (before wickedcool activate)
-          "Clear the appt-time-msg-list."
-          (setq appt-time-msg-list nil))
-        (appt-activate)
-        (defun org-agenda-to-appt-no-message ()
-          (shut-up (org-agenda-to-appt)))
-        (run-at-time "00:00" 60 'org-agenda-to-appt-no-message))
-
+      (defvar-setq org-directory "~/Dropbox/org")
+      (defvar-setq org-mobile-inbox-for-pull "~/Dropbox/org/flagged.org")
+      (defvar-setq org-mobile-directory "~/Dropbox/Apps/MobileOrg")
+      (add-hook 'org-mode-hook 'imalison:disable-linum-mode)
+      (add-hook 'org-mode-hook 'imalison:disable-smartparens-mode)
+      (add-hook 'org-mode-hook (lambda () (setq org-todo-key-trigger t)))
+      (add-hook 'org-agenda-mode-hook 'imalison:disable-linum-mode)
       (defun org-archive-if (condition-function)
         (if (funcall condition-function)
             (let ((next-point-marker
@@ -1074,7 +1036,62 @@ Sets environment variables by starting a shell
     This changes the line at point, all other lines in the agenda referring to
     the same tree node, and the headline of the tree node in the Org-mode file."
         (interactive "P")
-        (org-agenda-todo "DONE"))
+        (org-agenda-todo "DONE")))
+    :commands (org-mode org org-mobile-push org-mobile-pull org-agenda)
+    :mode ("\\.org\\'" . org-mode)
+    :bind (("C-c a" . org-agenda)
+           ("C-c c" . org-capture)
+           :map org-mode-map
+           ("C-c n t" . org-insert-todo-heading)
+           ("C-c n s" . org-insert-todo-subheading)
+           ("C-c n h" . org-insert-habit)
+           ("C-c n m" . org-make-habit)
+           ("C-c n l" . org-store-link)
+           ("C-c n i" . org-insert-link)
+           ("C-c C-t" . org-todo)
+           ("C-c C-S-t" . org-todo-force-notes)
+           ("M-." . elisp-slime-nav-find-elisp-thing-at-point))
+    :config
+    (progn
+      (setq org-global-properties
+            '(quote (("Effort_ALL" . "0:15 0:30 0:45 1:00 2:00 3:00 4:00 5:00 6:00 0:00")
+                     ("STYLE_ALL" . "habit"))))
+            ;; Record changes to todo states
+      (setq org-todo-keywords
+            '((sequence "IDEA(i!)" "RESEARCH(r!)" "TODO(t!)" "NEXT(n!)"
+                        "STARTED(s!)" "WAIT(w!)" "BACKLOG(b!)" "|"
+                        "DONE(d!)" "HANDLED(h!)" "EXPIRED(e!)" "CANCELED(c!)")))
+
+      (defvar-setq helm-org-headings-fontify t)
+      (setq org-todo-repeat-to-state "TODO")
+
+      (setq org-agenda-span 10)
+      (setq org-agenda-start-day "-2d")
+
+      (setq org-columns-default-format
+            "%80ITEM(Task) %10Effort(Effort){:} %10CLOCKSUM")
+
+      (org-babel-do-load-languages
+       'org-babel-load-languages
+       '((sh . t)
+         (python . t)
+         (ruby . t)
+         (octave . t)
+         (sqlite . t)))
+
+      (setq org-log-into-drawer t)
+
+      (when nil
+        ;; Enable appointment notifications.
+        (defadvice org-agenda-to-appt (before wickedcool activate)
+          "Clear the appt-time-msg-list."
+          (setq appt-time-msg-list nil))
+        (appt-activate)
+        (defun org-agenda-to-appt-no-message ()
+          (shut-up (org-agenda-to-appt)))
+        (run-at-time "00:00" 60 'org-agenda-to-appt-no-message))
+
+
       ;; Override the key definition for org-exit
       ;; TODO why does this cause an error
       ;; (define-key org-agenda-mode-map "x" #'org-agenda-done)
@@ -1093,6 +1110,7 @@ Sets environment variables by starting a shell
       (setq org-src-fontify-natively t)
       (setq org-habit-graph-column 50)
       (setq org-habit-show-habits-only-for-today t)
+
       ;; My priority system:
 
       ;; A - Absolutely MUST, at all costs, be completed by the provided
@@ -1139,60 +1157,13 @@ Sets environment variables by starting a shell
       (setq org-agenda-skip-deadline-if-done t)
       ;;(add-to-list org-agenda-tag-filter-preset "+PRIORITY<\"C\"")
 
-      (use-package org-notify
-        :disabled t
-        :config
-        (progn
-          (defun imalison:org-notify-notification-handler (plist)
-            (sauron-add-event 'org-notify 4 (format "%s, %s.\n" (plist-get plist :heading)
-                                                    (org-notify-body-text plist))))
+      (setq org-imenu-depth 3)
 
-          (setq org-show-notification-handler 'imalison:org-notify-notification-handler)
+      ;; Stop starting agenda from deleting frame setup!
+      (setq org-agenda-window-setup 'other-window)
+      (define-key mode-specific-map [?a] 'org-agenda)
+      (unbind-key "C-j" org-mode-map)
 
-          (org-notify-add 'default '(:time "1h" :actions imalison:org-notify-notification-handler
-                                           :period "2m" :duration 60))
-          (org-notify-add 'default '(:time "100m" :actions imalison:org-notify-notification-handler
-                                           :period "2m" :duration 60))
-          (org-notify-add 'urgent-second '(:time "3m" :actions (-notify/window -ding)
-                                                 :period "15s" :duration 10))
-          (org-notify-add 'minute '(:time "5m" :actions -notify/window
-                                          :period "100s" :duration 70))
-          (org-notify-add '12hours
-                          '(:time "3m" :actions (-notify/window -ding)
-                                  :period "15s" :duration 10)
-                          '(:time "100m" :actions -notify/window
-                                  :period "2m" :duration 60)
-                          '(:time "12h" :actions -notify/window :audible nil
-                                  :period "10m" :duration 200))
-          (org-notify-add '5days
-                          '(:time "100m" :actions -notify/window
-                                  :period "2m" :duration 60)
-                          '(:time "2d" :actions -notify/window
-                                  :period "15m" :duration 100)
-                          '(:time "5d" :actions -notify/window
-                                  :period "2h" :duration 200))
-          (org-notify-add 'long-20days
-                          '(:time "2d" :actions -notify/window
-                                  :period "15m" :duration 60)
-                          '(:time "5d" :actions -notify/window
-                                  :period "2h" :duration 60)
-                          '(:time "20d" :actions -email :period "2d" :audible nil))
-          (org-notify-add 'long-50days
-                          '(:time "4d" :actions -notify/window
-                                  :period "30m" :duration 100)
-                          '(:time "10d" :actions -notify/window
-                                  :period "4h" :duration 200)
-                          '(:time "50d" :actions -email :period "3d" :audible nil))
-          (org-notify-add 'long-100days
-                          '(:time "2d" :actions -notify/window
-                                  :period "1h" :duration 200)
-                          '(:time "10d" :actions -notify/window
-                                  :period "10h" :duration 300)
-                          '(:time "50d" :actions -email :period "3d" :audible nil)
-                          '(:time "100d" :actions -email :period "5d" :audible nil))
-          (org-notify-start 10)))
-
-      (setq org-imenu-depth 10)
       (use-package org-bullets
         :config
         (progn
@@ -1351,26 +1322,11 @@ Sets environment variables by starting a shell
       ;; within the appropriate time period, and there is now no point in
       ;; attempting it.
 
-      '
       ;; CANCELED - For whatever reason, this TODO should no longer be
       ;; attempted. This TODO is typically used in contrast to the
       ;; EXPIRED TODO to indicate that the owner is not necessarily to
       ;; blame.
-      ;; Record changes to todo states
-      (setq org-log-into-drawer t)
-      ;; Stop starting agenda from deleting frame setup!
-      (setq org-agenda-window-setup 'other-window)
-      (define-key mode-specific-map [?a] 'org-agenda)
-      (unbind-key "C-j" org-mode-map))
-    :init
-    (progn
-      (setq org-directory "~/Dropbox/org")
-      (setq org-mobile-inbox-for-pull "~/Dropbox/org/flagged.org")
-      (setq org-mobile-directory "~/Dropbox/Apps/MobileOrg")
-      (add-hook 'org-mode-hook 'imalison:disable-linum-mode)
-      (add-hook 'org-mode-hook 'imalison:disable-smartparens-mode)
-      (add-hook 'org-mode-hook (lambda () (setq org-todo-key-trigger t)))
-      (add-hook 'org-agenda-mode-hook 'imalison:disable-linum-mode)))
+      ))
 #+END_SRC
 *** org-projectile
 #+BEGIN_SRC emacs-lisp
@@ -1396,6 +1352,62 @@ Sets environment variables by starting a shell
                                 (org-capture-make-todo-template))))
               :candidate-number-limit 99999
               :buffer "*helm org capture templates*"))))
+#+END_SRC
+*** org-notify
+#+BEGIN_SRC emacs-lisp
+  (use-package org-notify
+    :disabled t
+    :after org
+    :config
+    (progn
+      (defun imalison:org-notify-notification-handler (plist)
+        (sauron-add-event 'org-notify 4 (format "%s, %s.\n" (plist-get plist :heading)
+                                                (org-notify-body-text plist))))
+
+      (setq org-show-notification-handler 'imalison:org-notify-notification-handler)
+
+      (org-notify-add 'default '(:time "1h" :actions imalison:org-notify-notification-handler
+                                       :period "2m" :duration 60))
+      (org-notify-add 'default '(:time "100m" :actions imalison:org-notify-notification-handler
+                                       :period "2m" :duration 60))
+      (org-notify-add 'urgent-second '(:time "3m" :actions (-notify/window -ding)
+                                             :period "15s" :duration 10))
+      (org-notify-add 'minute '(:time "5m" :actions -notify/window
+                                      :period "100s" :duration 70))
+      (org-notify-add '12hours
+                      '(:time "3m" :actions (-notify/window -ding)
+                              :period "15s" :duration 10)
+                      '(:time "100m" :actions -notify/window
+                              :period "2m" :duration 60)
+                      '(:time "12h" :actions -notify/window :audible nil
+                              :period "10m" :duration 200))
+      (org-notify-add '5days
+                      '(:time "100m" :actions -notify/window
+                              :period "2m" :duration 60)
+                      '(:time "2d" :actions -notify/window
+                              :period "15m" :duration 100)
+                      '(:time "5d" :actions -notify/window
+                              :period "2h" :duration 200))
+      (org-notify-add 'long-20days
+                      '(:time "2d" :actions -notify/window
+                              :period "15m" :duration 60)
+                      '(:time "5d" :actions -notify/window
+                              :period "2h" :duration 60)
+                      '(:time "20d" :actions -email :period "2d" :audible nil))
+      (org-notify-add 'long-50days
+                      '(:time "4d" :actions -notify/window
+                              :period "30m" :duration 100)
+                      '(:time "10d" :actions -notify/window
+                              :period "4h" :duration 200)
+                      '(:time "50d" :actions -email :period "3d" :audible nil))
+      (org-notify-add 'long-100days
+                      '(:time "2d" :actions -notify/window
+                              :period "1h" :duration 200)
+                      '(:time "10d" :actions -notify/window
+                              :period "10h" :duration 300)
+                      '(:time "50d" :actions -email :period "3d" :audible nil)
+                      '(:time "100d" :actions -email :period "5d" :audible nil))
+      (org-notify-start 10)))
 #+END_SRC
 ** Navigation/Completion
 *** zop-to-char
