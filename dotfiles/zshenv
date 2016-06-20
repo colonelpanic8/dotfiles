@@ -9,3 +9,4 @@ function init_profile {
 	setopt xtrace prompt_subst
 }
 source ~/.lib/shellenv.sh
+test -r ~/.customenv.sh && source ~/.customenv.sh
