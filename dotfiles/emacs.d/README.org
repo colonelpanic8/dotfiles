@@ -1774,7 +1774,11 @@ I use helm for almost all emacs completion
 *** github-clone
 #+BEGIN_SRC emacs-lisp
   (use-package github-clone
-    :commands github-clone)
+    :commands (github-clone-add-parent-remote
+               github-clone-add-source-remote
+               github-clone-fork-remote
+               github-clone-add-existing-remote
+               github-clone))
 #+END_SRC
 *** github-notifier
 #+BEGIN_SRC emacs-lisp
