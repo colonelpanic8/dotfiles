@@ -433,3 +433,7 @@ function set_default_prompt {
 function edit_script {
     $EDITOR "$(which $1)"
 }
+
+function in_git_directory {
+    [ -d .git ]
+}
