@@ -2390,11 +2390,17 @@ I don't use iedit directly, but it is used by [[*emr][emr]] and I need to disabl
     :commands edconf-find-file-hook
     :demand t)
 
-  (use-package dtrt-indent
-    :init (add-hook 'prog-mode-hook 'dtrt-indent-mode))
-
 #+END_SRC
-*8* indent-guide
+*** dtrt-indent
+#+BEGIN_SRC emacs-lisp
+  (use-package dtrt-indent
+    :commands 'dtrt-indent-mode
+    :init (add-hook 'prog-mode-hook 'dtrt-indent-mode)
+    :config
+    (progn
+      (setq dtrt-indent-active-mode-line-info " [⟼]")))
+#+END_SRC
+*** indent-guide
 #+BEGIN_SRC emacs-lisp
   (use-package indent-guide
     :disabled t
