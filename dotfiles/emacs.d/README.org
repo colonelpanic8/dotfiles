@@ -1,3 +1,5 @@
+* About
+This README is a literate commentary on my emacs configuration, but it also serves as the README for my dotfiles.
 * General
 ** Lexical Binding
 This makes it so that the file that is produced from tangling this file uses lexical scoping
