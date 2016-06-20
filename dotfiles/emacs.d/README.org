@@ -390,7 +390,7 @@ By advising ~imenu--make-index-alist~ with ~imalison:flatten-imenu-index~ we mak
     (funcall (imalison:emacs-version-predicate major-version minor-version)))
 #+END_SRC
 
-** Add a file to org-agenda-files in an idempotent way
+** Add a files to org-agenda-files
 #+BEGIN_SRC emacs-lisp
   (defun imalison:add-to-org-agenda-files (incoming-files)
     (setq org-agenda-files
@@ -2183,7 +2183,6 @@ emr (emacs refactor) provides support for refactoring in many programming langua
     (progn
       (add-hook 'term-mode-hook 'imalison:disable-linum-mode)))
 #+END_SRC
-
 *** term-manager
 #+BEGIN_SRC emacs-lisp
   (use-package term-manager
