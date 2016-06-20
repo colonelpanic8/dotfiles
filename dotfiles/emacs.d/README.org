@@ -1590,6 +1590,10 @@ I use helm for almost all emacs completion
 
       (imalison:prefix-alternatives imalison:do-ag helm-projectile-ag
                                     imalison:do-ag-default-directory helm-do-ag)
+    
+      (imalison:prefix-alternatives imalison:projectile-find-file
+                                    projectile-find-file
+                                    projectile-find-file-other-window)
 
       (defun projectile-make-all-subdirs-projects (directory)
         (cl-loop for file-info in (directory-files-and-attributes directory)
@@ -1597,12 +1601,7 @@ I use helm for almost all emacs completion
                       (write-region "" nil
                                     (expand-file-name
                                      (concat directory "/"
-                                             (nth 0 file-info) "/.projectile"))))))
-      (defun imalison:projectile-find-file (arg)
-            (interactive "P")
-            (if arg
-                (projectile-find-file-other-window)
-                (projectile-find-file))))
+                                             (nth 0 file-info) "/.projectile")))))))
     :config
     (progn
       (use-package persp-projectile
