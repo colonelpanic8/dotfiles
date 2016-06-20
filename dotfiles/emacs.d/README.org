@@ -349,6 +349,21 @@ The packages in this section provide no functionality on their own, but provide 
   (use-package parse-csv
     :demand t)
 #+END_SRC
+** Join paths together as with os.path.join in python
+#+BEGIN_SRC emacs-lisp
+  (defun imalison:join-paths (root &rest dirs)
+    (let ((result root))
+      (cl-loop for dir in dirs do
+               (setq result (concat (file-name-as-directory result) dir)))
+      result))
+#+END_SRC
+** Variables
+#+BEGIN_SRC emacs-lisp
+  (defvar imalison:projects-directory
+    (imalison:join-paths "~" "Projects"))
+
+  (defvar imalison:gpc-key)
+#+END_SRC
 ** Flatten imenu indexes
 I like my imenu indexes flat so I don't have to press enter multiple times to find what I'm looking for. The functions that follow allow me to get this behavior out of functions that provide a nested imenu index.
 #+BEGIN_SRC emacs-lisp
@@ -438,14 +453,6 @@ Prefix alternatives is a macro that builds a function that selects one of a coll
        (setq function (or function)) ; Set a default value for function
        (setq current-prefix-arg nil)
        (call-interactively function)))
-#+END_SRC
-** Join paths together as with os.path.join in python
-#+BEGIN_SRC emacs-lisp
-  (defun imalison:join-paths (root &rest dirs)
-    (let ((result root))
-      (cl-loop for dir in dirs do
-               (setq result (concat (file-name-as-directory result) dir)))
-      result))
 #+END_SRC
 ** Get file string
 #+BEGIN_SRC emacs-lisp
@@ -651,6 +658,28 @@ This interactive functions allows the user the select a function to invoke using
     (interactive (find-function-read))
     (message "%s" (funcall function)))
 #+END_SRC
+** imalison:use-package
+#+BEGIN_SRC emacs-lisp
+  (put 'imalison:use-package 'lisp-indent-function 1)
+
+  (defmacro imalison:use-package* (package target-directory &rest forms)
+    (let* ((target-exists (file-exists-p target-directory))
+           (additional-forms
+            (when target-exists
+              (list
+               :load-path target-directory
+               :ensure nil))))
+      `(use-package ,package
+         ,@additional-forms ,@forms)))
+
+  (defmacro imalison:use-package (package &rest forms)
+    (let ((target-directory
+           (concat (file-name-as-directory imalison:projects-directory)
+                   (symbol-name package))))
+      `(imalison:use-package* ,package ,target-directory ,@forms)))
+
+
+#+END_SRC
 ** Other
 #+BEGIN_SRC emacs-lisp
   (defun imalison:join-paths (&rest paths)
@@ -840,13 +869,6 @@ This interactive functions allows the user the select a function to invoke using
 
 #+BEGIN_SRC emacs-lisp
   (imalison:prefix-alternatives imalison:mark-ring helm-mark-ring helm-global-mark-ring)
-#+END_SRC
-** Variables
-#+BEGIN_SRC emacs-lisp
-  (defvar imalison:projects-directory
-    (imalison:join-paths "~" "Projects"))
-
-  (defvar imalison:gpc-key)
 #+END_SRC
 * Macros
 ** For editing literate config
@@ -1369,9 +1391,7 @@ Sets environment variables by starting a shell
 #+END_SRC
 *** org-projectile
 #+BEGIN_SRC emacs-lisp
-  (defvar org-projectile-file-path "~/Projects/org-projectile")
-  (use-package org-projectile
-    :load-path org-projectile-file-path
+  (imalison:use-package org-projectile
     :after helm
     :bind (("C-c n p" . imalison:helm-org-todo))
     :config
@@ -1696,8 +1716,7 @@ I use helm for almost all emacs completion
 #+END_SRC
 *** multi-line
 #+BEGIN_SRC emacs-lisp
-  (use-package multi-line
-    :load-path "~/Projects/multi-line"
+  (imalison:use-package multi-line
     :preface
     (progn
       (defun imalison:multi-line-fill-column ()
@@ -1768,11 +1787,7 @@ I use helm for almost all emacs completion
 #+END_SRC
 *** github-search
 #+BEGIN_SRC emacs-lisp
-  (defvar imalison:github-search-load-path
-    (imalison:join-paths imalison:projects-directory "github-search"))
-  (use-package github-search
-    :ensure nil
-    :load-path imalison:github-search-load-path
+  (imalison:use-package github-search
     :commands (github-search-clone-repo github-search-user-clone-repo)
     :preface
     (progn
@@ -1821,7 +1836,7 @@ I use helm for almost all emacs completion
 #+END_SRC
 *** github-clone
 #+BEGIN_SRC emacs-lisp
-  (use-package github-clone
+  (imalison:use-package* github-clone "~/Projects/github-clone.el"
     :commands (github-clone-add-parent-remote
                github-clone-add-source-remote
                github-clone-fork-remote
@@ -2237,10 +2252,8 @@ emr (emacs refactor) provides support for refactoring in many programming langua
 #+END_SRC
 *** term-manager
 #+BEGIN_SRC emacs-lisp
-  (use-package term-manager
-    :ensure nil
+  (imalison:use-package term-manager
     :defer t
-    :load-path "~/Projects/term-manager"
     :preface
     (progn
       (defun imalison:set-escape-char (&rest _args)
@@ -2253,8 +2266,7 @@ emr (emacs refactor) provides support for refactoring in many programming langua
 #+END_SRC
 *** term-projectile
 #+BEGIN_SRC emacs-lisp
-  (use-package term-projectile
-    :load-path "~/Projects/term-manager"
+  (imalison:use-package term-projectile
     :bind ("C-c 7" . imalison:term-hydra/body)
     :commands (term-projectile-forward term-projectile-backward
                                        term-projectile-default-directory-forward
