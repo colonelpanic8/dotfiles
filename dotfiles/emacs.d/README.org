@@ -1740,7 +1740,7 @@ I use helm for almost all emacs completion
         (let ((prospective-path
                (imalison:join-paths imalison:projects-directory (oref repo :name))))
               (if (file-exists-p prospective-path)
-                  (funcall github-search-prompt-for-target-directory repo)
+                  (funcall 'github-search-prompt-for-target-directory repo)
                 prospective-path))))
     :config
     (progn
