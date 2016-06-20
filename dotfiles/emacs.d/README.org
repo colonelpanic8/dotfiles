@@ -1828,6 +1828,11 @@ I use helm for almost all emacs completion
       (progn 
         (add-hook 'magit-mode-hook 'turn-on-magit-gh-pulls)))
 #+END_SRC
+*** git-timemachine
+#+BEGIN_SRC emacs-lisp
+    (use-package git-timemachine
+      :commands git-timemachine)
+#+END_SRC
 *** git-gutter
 #+BEGIN_SRC emacs-lisp
   (use-package git-gutter
