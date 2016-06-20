@@ -619,6 +619,36 @@ This was taken from [[http://emacs.stackexchange.com/questions/7583/transiently-
   (defun imalison:font-size-decr ()  (interactive) (imalison:font-size-adj -1))
   (defun imalison:font-size-reset () (interactive) (imalison:font-size-adj 0))
 #+END_SRC
+** Named Builder Builder
+Abandoned attempt to write a macro that produces macros that name the functions that they produce.
+#+BEGIN_SRC emacs-lisp
+  (defmacro imalison:named-function-builder (base-name argument-list &rest body)
+    (let ((named-argument-list (cons 'function-name argument-list))
+          (named-macro-name (intern (concat (symbol-name base-name) "-named"))))
+      `(progn
+         (defmacro ,named-macro-name ,named-argument-list
+           (defalias function-name ,@body))
+         (defmacro ,base-name ,argument-list ,@body))))
+#+END_SRC
+** Message Result Builder
+This macro is useful when writing emacs-lisp. It creates a new interactive command that shows you the result of evaluating a function, with optionally provided arguments.
+#+BEGIN_SRC emacs-lisp
+  (defmacro imalison:message-result-builder (new-function-name function-to-call &rest args)
+    `(defun ,new-function-name ()
+       (interactive)
+       (message "%s" (apply (quote ,function-to-call) (list ,@args)))))
+#+END_SRC
+This interactive functions allows the user the select a function to invoke using a freshly minted imalison:message-result-builder
+#+BEGIN_SRC emacs-lisp
+  (defun imalison:message-result-builder-runtime (function &rest args)
+    (lambda ()
+      (interactive)
+      (message "%s" (apply function-to-call args))))
+
+  (defun imalison:message-function-result (function)
+    (interactive (find-function-read))
+    (message "%s" (funcall function)))
+#+END_SRC
 ** Other
 #+BEGIN_SRC emacs-lisp
   (defun imalison:join-paths (&rest paths)
