@@ -1584,9 +1584,12 @@ I use helm for almost all emacs completion
            ("C-c p f" . imalison:projectile-find-file))
     :preface
     (progn
-      (defun imalison:do-ag (&optional arg)
-        (interactive "P")
-        (if arg (helm-do-ag) (helm-projectile-ag)))
+      (defun imalison:do-ag-default-directory ()
+        (interactive)
+        (helm-do-ag default-directory (car (projectile-parse-dirconfig-file))))
+
+      (imalison:prefix-alternatives imalison:do-ag helm-projectile-ag
+                                    imalison:do-ag-default-directory helm-do-ag)
 
       (defun projectile-make-all-subdirs-projects (directory)
         (cl-loop for file-info in (directory-files-and-attributes directory)
