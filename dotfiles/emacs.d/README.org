@@ -843,6 +843,8 @@ This interactive functions allows the user the select a function to invoke using
 #+BEGIN_SRC emacs-lisp
   (defvar imalison:projects-directory
     (imalison:join-paths "~" "Projects"))
+
+  (defvar imalison:gpc-key)
 #+END_SRC
 * Macros
 ** For editing literate config
@@ -1752,6 +1754,9 @@ I use helm for almost all emacs completion
     (progn
       (defvar-setq magit-last-seen-setup-instructions "1.4.0")
       (magit-auto-revert-mode)
+      (when imalison:gpg-key
+        (add-to-list 'magit-commit-arguments
+                     (format "--gpg-sign=%s" imalison:gpg-key)))
       (use-package magit-filenotify
         ;; Seems like OSX does not support filenotify.
         :disabled t
