@@ -362,7 +362,7 @@ The packages in this section provide no functionality on their own, but provide 
   (defvar imalison:projects-directory
     (imalison:join-paths "~" "Projects"))
 
-  (defvar imalison:gpc-key)
+  (defvar imalison:gpg-key)
 #+END_SRC
 ** Flatten imenu indexes
 I like my imenu indexes flat so I don't have to press enter multiple times to find what I'm looking for. The functions that follow allow me to get this behavior out of functions that provide a nested imenu index.
