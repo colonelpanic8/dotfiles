@@ -871,6 +871,7 @@ Sets environment variables by starting a shell
   (use-package exec-path-from-shell
       :config
       (progn
+        (setq exec-path-from-shell-check-startup-files t)
         (add-to-list 'exec-path-from-shell-variables "GOPATH")
         (exec-path-from-shell-initialize)))
 #+END_SRC
@@ -913,10 +914,10 @@ Sets environment variables by starting a shell
   (use-package load-dir
     :config
     (progn
+      (setq load-dir-debug nil)
       (add-to-list 'load-dirs "~/.emacs.d/load.d")
       (defvar site-lisp "/usr/share/emacs24/site-lisp/")
       (when (file-exists-p site-lisp) (add-to-list 'load-dirs site-lisp))))
-
 #+END_SRC
 *** server
 #+BEGIN_SRC emacs-lisp
@@ -2506,14 +2507,20 @@ Not really sure what this is
                                      (case-fn . downcase)))
       (setq deft-directory "~/SparkleShare/org/notes")))
 #+END_SRC
+*** epg
 #+BEGIN_SRC emacs-lisp
   (use-package epg
+    :after shut-up
     :config
-    (epa-file-enable))
-
+    (shut-up (epa-file-enable)))
+#+END_SRC
+*** twittering-mode
+#+BEGIN_SRC emacs-lisp
   (use-package twittering-mode
     :commands twittering-mode)
-
+#+END_SRC
+*** matrix-client
+#+BEGIN_SRC emacs-lisp
   (use-package matrix-client
     :disabled t ;; fails to load eieio on startup
     )
@@ -3220,7 +3227,6 @@ Set the character used to represent spaces to ·, and the character used for tab
 
   (defun imalison:appearance (&optional frame)
     (interactive)
-    (message "called set appearance")
     (if (display-graphic-p)
         (progn
           (set-face-attribute 'default nil :font "Source Code Pro")
@@ -3230,8 +3236,7 @@ Set the character used to represent spaces to ·, and the character used for tab
         (load-theme 'source-code-pro t)
         (message "not setting font")))
     (load-theme imalison:dark-theme t)
-    (imalison:remove-fringe-and-hl-line-mode)
-    (message "finished set appearance"))
+    (imalison:remove-fringe-and-hl-line-mode))
 
   ;; This is needed because you can't set the font or theme at daemon start-up.
   ;; (when (display-graphic-p) (imalison:appearance))
