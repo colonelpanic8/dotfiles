@@ -674,7 +674,9 @@ This interactive functions allows the user the select a function to invoke using
 
   (defmacro imalison:use-package (package &rest forms)
     (let ((target-directory
-           (concat (file-name-as-directory imalison:projects-directory)
+           (concat (file-name-as-directory (if (boundp 'imalison:projects-directory)
+                                               imalison:projects-directory
+                                             "~/Projects"))
                    (symbol-name package))))
       `(imalison:use-package* ,package ,target-directory ,@forms)))
 
@@ -2549,8 +2551,10 @@ Not really sure what this is
 #+END_SRC
 *** mu4e
 #+BEGIN_SRC emacs-lisp
-  (require 's)
-  (defvar mu4e-elisp-directory (s-trim (shell-command-to-string "mu4e_directory")))
+  (eval-when-compile
+    (require 's)
+    (defvar mu4e-elisp-directory
+      (s-trim (shell-command-to-string "mu4e_directory"))))
   (use-package mu4e
     :load-path mu4e-elisp-directory
     :ensure nil
