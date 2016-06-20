@@ -847,10 +847,13 @@ Sets environment variables by starting a shell
 *** paradox
 #+BEGIN_SRC emacs-lisp
   (use-package paradox
-    :commands paradox-upgrade-packages paradox-list-packages
+    :defer 10
+    :commands (paradox-upgrade-packages paradox-list-packages)
     :config
     (progn
-      (setq paradox-execute-asynchronously t)))
+      (require 'gh)
+      (setq paradox-execute-asynchronously t
+            paradox-github-token (gh-auth-get-oauth-token))))
 #+END_SRC
 *** diminish
 #+BEGIN_SRC emacs-lisp
