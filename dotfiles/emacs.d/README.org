@@ -1804,6 +1804,15 @@ I use helm for almost all emacs completion
       (setq github-search-get-target-directory-for-repo-function
             'imalison:get-projects-directory-target-from-repo)))
 #+END_SRC
+*** github-clone
+#+BEGIN_SRC emacs-lisp
+  (imalison:use-package* github-clone "~/Projects/github-clone.el"
+    :commands (github-clone-add-parent-remote
+               github-clone-add-source-remote
+               github-clone-fork-remote
+               github-clone-add-existing-remote
+               github-clone))
+#+END_SRC
 *** git-link
 #+BEGIN_SRC emacs-lisp
   (use-package git-link
@@ -1835,15 +1844,6 @@ I use helm for almost all emacs completion
       (defun gitolite-clone-force-refresh ()
         (interactive)
         (gitolite-clone-get-projects nil nil t))))
-#+END_SRC
-*** github-clone
-#+BEGIN_SRC emacs-lisp
-  (imalison:use-package* github-clone "~/Projects/github-clone.el"
-    :commands (github-clone-add-parent-remote
-               github-clone-add-source-remote
-               github-clone-fork-remote
-               github-clone-add-existing-remote
-               github-clone))
 #+END_SRC
 *** github-notifier
 #+BEGIN_SRC emacs-lisp
