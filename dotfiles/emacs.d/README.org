@@ -1754,6 +1754,14 @@ I use helm for almost all emacs completion
     (progn
       (setq git-link-use-commit t)))
 #+END_SRC
+*** magit-gh-pulls
+#+BEGIN_SRC emacs-lisp
+    (use-package magit-gh-pulls
+      :after magit
+      :config
+      (progn 
+        (add-hook 'magit-mode-hook 'turn-on-magit-gh-pulls)))
+#+END_SRC
 *** git-gutter
 #+BEGIN_SRC emacs-lisp
   (use-package git-gutter
