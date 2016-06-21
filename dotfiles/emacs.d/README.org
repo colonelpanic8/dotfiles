@@ -2141,6 +2141,12 @@ Reduce indentation for some functions
                  `("Section"
                    ,(concat ";\\{1,4\\} =\\{10,80\\}\n;\\{1,4\\} \\{10,80\\}"
                             "\\(.+\\)$") 1) t))
+
+  (defun imalison:maybe-remove-flycheck-checkdoc-checker ()
+    (when (s-starts-with? "*" (buffer-name))
+      (flycheck-disable-checker 'emacs-lisp-checkdoc)))
+
+  (add-hook 'emacs-lisp-mode-hook 'imalison:maybe-remove-flycheck-checkdoc-checker)
   (add-hook 'emacs-lisp-mode-hook 'imenu-elisp-sections)
   (add-hook 'emacs-lisp-mode-hook (lambda ()
                                     (setq indent-tabs-mode nil)
