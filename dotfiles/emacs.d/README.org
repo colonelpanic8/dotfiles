@@ -468,6 +468,21 @@ Here is a unary version which avoids all the calls to imalison:make-list
         'arg
       `(funcall ,(car funcs) (imalison:compose-helper-unary ,(cdr funcs)))))
 #+END_SRC
+
+Here is a version that will support macros and requires unary functions after the first one
+#+BEGIN_SRC emacs-lisp
+  (defmacro imalison:compose-named-functions (arguments &rest funcs)
+    "Build a new function with NAME that is the composition of FUNCS."
+    `(lambda ,arguments
+       (imalison:compose-named-functions-helper ,funcs ,arguments)))
+
+  (defmacro imalison:compose-named-functions-helper (funcs arguments)
+    "Builds funcalls of FUNCS applied to the arg."
+    (if (equal (length funcs) 1)
+        `(,(car funcs) ,@arguments)
+      `(,(car funcs)
+        (imalison:compose-named-functions-helper ,(cdr funcs) ,arguments))))
+#+END_SRC
 ** prefix-alternatives
 Prefix alternatives is a macro that builds a function that selects one of a collection of functions that are provided to the macro based on the value of the prefix argument.
 #+BEGIN_SRC emacs-lisp
