@@ -1826,15 +1826,17 @@ I use helm for almost all emacs completion
 #+END_SRC
 *** magit-gh-pulls
 #+BEGIN_SRC emacs-lisp
-    (use-package magit-gh-pulls
-      :after magit
-      :config
-      (progn 
-        (add-hook 'magit-mode-hook 'turn-on-magit-gh-pulls)))
+  (use-package magit-gh-pulls
+    :diminish magit-gh-pull-mode
+    :after magit
+    :config
+    (progn
+      (add-hook 'magit-mode-hook 'turn-on-magit-gh-pulls)))
 #+END_SRC
 *** magit-gitflow
 #+BEGIN_SRC emacs-lisp
   (use-package magit-gitflow
+    :diminish magit-gitflow-mode
     :after magit
     :config
     (progn
