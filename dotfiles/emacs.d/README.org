@@ -2118,10 +2118,19 @@ Macrostep is an indespensible tool for writing emacs lisp macros. It lets you se
     (progn
       (add-hook 'prog-mode-hook 'emr-initialize)))
 #+END_SRC
+***** Editing configuration
+Reduce indentation for some functions
+#+BEGIN_SRC emacs-lisp
+  (put 'use-package 'lisp-indent-function 1)
+#+END_SRC
+***** edebug
+#+BEGIN_SRC emacs-lisp
+  (use-package edebug
+    :config
+    (progn (setq edebug-trace t)))
+#+END_SRC
 ***** Misc
 #+BEGIN_SRC emacs-lisp
-  (put 'use-package 'lisp-indent-function 1) ;; reduce indentation for use-package
-  (setq edebug-trace t)
   (defun imenu-elisp-sections ()
     (setq imenu-prev-index-position-function nil)
     (setq imenu-space-replacement nil)
