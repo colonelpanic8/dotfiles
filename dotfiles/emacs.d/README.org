@@ -699,6 +699,60 @@ This interactive functions allows the user the select a function to invoke using
 
 
 #+END_SRC
+** Make interactive
+#+BEGIN_SRC emacs-lisp
+  (defmacro imalison:make-interactive (function)
+    `(lambda (&rest args)
+       (interactive)
+       (apply ,function args)))
+#+END_SRC
+
+** Custom shell command on region
+#+BEGIN_SRC emacs-lisp
+  (defun imalison:copy-shell-command-on-region (start end command)
+    (interactive (list (region-beginning) (region-end)
+                       (read-shell-command "Shell command on region: ")))
+    (let ((original-buffer (current-buffer)))
+      (with-temp-buffer
+        (let ((temp-buffer (current-buffer)))
+          (with-current-buffer original-buffer
+            (shell-command-on-region start end command temp-buffer))
+          (kill-ring-save (point-max) (point-min))))))
+
+  (defun imalison:shell-command-on-region-replace (start end command)
+    (interactive (list (region-beginning) (region-end)
+                       (read-shell-command "Shell command on region: ")))
+    (shell-command-on-region start end command nil t))
+
+  (imalison:prefix-alternatives imalison:copy-shell-command-on-region
+                                imalison:shell-command-on-region-replace)
+#+END_SRC
+** Copy string functions
+A macro for composing functions together to build an interactive command to copy a string to the kill ring.
+#+BEGIN_SRC emacs-lisp
+  (defmacro imalison:compose-copy-builder (name &rest funcs)
+    `(imalison:named-build ,name
+       imalison:make-interactive
+       (imalison:compose 'kill-new ,@funcs)))
+#+END_SRC
+
+*** Copy portions of the buffer file name
+#+BEGIN_SRC emacs-lisp
+  (defmacro imalison:copy-buffer-file-path-builder (&rest args)
+    `(imalison:compose-copy-builder ,@args 'buffer-file-name))
+
+  (imalison:copy-buffer-file-path-builder imalison:copy-buffer-file-path-full)
+  (imalison:copy-buffer-file-path-builder imalison:copy-buffer-file-name
+                                          'file-name-nondirectory)
+  (imalison:copy-buffer-file-path-builder imalison:copy-buffer-file-path
+                                          'projectile-make-relative-to-root
+                                          'list)
+#+END_SRC
+*** Copy the current branch using magit
+#+BEGIN_SRC emacs-lisp
+  (imalison:compose-copy-builder imalison:copy-current-git-branch
+                                 'magit-get-current-branch)
+#+END_SRC
 ** Other
 #+BEGIN_SRC emacs-lisp
   (defun imalison:join-paths (&rest paths)
@@ -835,24 +889,6 @@ This interactive functions allows the user the select a function to invoke using
 
   (defun make-frame-if-none-exists-and-focus ()
     (make-frame-visible (select-frame (make-frame-if-none-exists))))
-
-  (defun copy-buffer-file-name ()
-    (interactive)
-    (add-string-to-kill-ring (file-name-nondirectory (buffer-file-name))))
-
-  (defun copy-buffer-file-path ()
-    (interactive)
-    (add-string-to-kill-ring (file-relative-name (buffer-file-name)
-                                                 (projectile-project-root))))
-
-  (defun copy-full-file-path ()
-    (interactive)
-    (add-string-to-kill-ring (buffer-file-name)))
-
-  (defun add-string-to-kill-ring (string)
-    (with-temp-buffer
-      (insert string)
-      (kill-ring-save (point-max) (point-min))))
 
   (defun open-pdf ()
     (interactive)
