@@ -4,7 +4,6 @@
     "caskroom/cask",
     "mopidy/mopidy",
     "homebrew/dupes",
-    "nviennot/tmate",
     "railwaycat/emacsmacport"
   ],
   "casks": [
