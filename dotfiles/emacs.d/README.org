@@ -1593,42 +1593,45 @@ I use helm for almost all emacs completion
       (helm-mode 1)))
 #+END_SRC
 [[(helm split window)][Ensure that helm buffers are started in the window that currently holds the focus]]
-
+*** helm-projectile
 #+BEGIN_SRC emacs-lisp
   (use-package helm-projectile
-      :commands (helm-projectile-on)
-      :preface
-      (progn
-        (defun imalison:invalidate-cache-and-open-file (_dir)
-          (projectile-invalidate-cache nil)
-          (projectile-find-file))
+    :commands (helm-projectile-on)
+    :bind (:map helm-projectile-projects-map
+                ("M-s" . imalison:switch-to-project-and-search)
+                ("M-t" . imalison:helm-term-projectile))
+    :preface
+    (progn
+      (defun imalison:invalidate-cache-and-open-file (_dir)
+        (projectile-invalidate-cache nil)
+        (projectile-find-file))
 
-        (defun imalison:switch-to-project-and-search (dir)
-          (let ((default-directory dir)
-                (projectile-require-project-root nil)
-                (helm-action-buffer "this-buffer-should-not-exist"))
-            (helm-projectile-ag)))
+      (defun imalison:switch-to-project-and-search (dir)
+        (let ((default-directory dir)
+              (projectile-require-project-root nil)
+              (helm-action-buffer "this-buffer-should-not-exist"))
+          (helm-projectile-ag)))
 
-        (defun imalison:helm-term-projectile (dir)
-          (let ((default-directory dir)
-                (projectile-require-project-root nil)
-                (helm-action-buffer "this-buffer-should-not-exist"))
-            (term-projectile-forward))))
-      :config
-      (progn
-        (helm-delete-action-from-source "Search in Project"
-                                        helm-source-projectile-projects)
-        (helm-delete-action-from-source "Open term for project"
-                                        helm-source-projectile-projects)
-        (helm-add-action-to-source "Search in Project"
-                                   'imalison:switch-to-project-and-search
-                                   helm-source-projectile-projects)
-        (helm-add-action-to-source "Invalidate Cache and Open File"
-                                   'imalison:invalidate-cache-and-open-file
-                                   helm-source-projectile-projects)
-        (helm-add-action-to-source "Open term for project"
-                                   'imalison:helm-term-projectile
-                                     helm-source-projectile-projects)))
+      (defun imalison:helm-term-projectile (dir)
+        (let ((default-directory dir)
+              (projectile-require-project-root nil)
+              (helm-action-buffer "this-buffer-should-not-exist"))
+          (term-projectile-forward))))
+    :config
+    (progn
+      (helm-delete-action-from-source "Search in Project"
+                                      helm-source-projectile-projects)
+      (helm-delete-action-from-source "Open term for project"
+                                      helm-source-projectile-projects)
+      (helm-add-action-to-source "Search in Project"
+                                 'imalison:switch-to-project-and-search
+                                 helm-source-projectile-projects)
+      (helm-add-action-to-source "Open term for project"
+                                 'imalison:helm-term-projectile
+                                 helm-source-projectile-projects)
+      (helm-add-action-to-source "Invalidate Cache and Open File"
+                                 'imalison:invalidate-cache-and-open-file
+                                 helm-source-projectile-projects)))
 #+END_SRC
 *** projectile
 #+BEGIN_SRC emacs-lisp
