@@ -806,10 +806,6 @@ A macro for composing functions together to build an interactive command to copy
         `(setq ,name ,value)
       `(defvar ,name ,value)))
 
-  (defmacro defvar-if-non-existent (name value)
-    (unless (boundp name)
-      `(defvar ,name ,value)))
-
   (defun eval-region-or-last-sexp ()
     (interactive)
     (if (region-active-p) (call-interactively 'eval-region)
@@ -844,42 +840,10 @@ A macro for composing functions together to build an interactive command to copy
       (let ((fill-column (if unfill (point-max) fill-column)))
         (fill-paragraph nil region)))
 
-  (defun sudo-edit (&optional arg)
-    "Edit currently visited file as root.
-
-  With a prefix ARG prompt for a file to visit.
-  Will also prompt for a file to visit if current
-  buffer is not visiting a file."
-    (interactive "P")
-    (if (or arg (not buffer-file-name))
-        (find-file (concat "/sudo:root@localhost:"
-                           (ido-read-file-name "Find file (as root): ")))
-      (find-alternate-file (concat "/sudo:root@localhost:" buffer-file-name))))
-
   (defun frame-exists ()
     (cl-find-if
      (lambda (frame)
        (assoc 'display (frame-parameters frame))) (frame-list)))
-
-  (defun imalison:copy-shell-command-on-region (start end command)
-    (interactive (list (region-beginning) (region-end)
-                       (read-shell-command "Shell command on region: ")))
-    (let ((original-buffer (current-buffer)))
-      (with-temp-buffer
-        (let ((temp-buffer (current-buffer)))
-          (with-current-buffer original-buffer
-            (shell-command-on-region start end command temp-buffer))
-          (kill-ring-save (point-max) (point-min))))))
-
-  (defun imalison:shell-command-on-region-replace (start end command)
-    (interactive (list (region-beginning) (region-end)
-                       (read-shell-command "Shell command on region: ")))
-    (shell-command-on-region start end command nil t))
-
-  (defun imalison:shell-command-on-region (arg)
-    (interactive "P")
-    (call-interactively (if arg 'imalison:shell-command-on-region-replace
-      'imalison:copy-shell-command-on-region)))
 
   (defun make-frame-if-none-exists ()
     (let* ((existing-frame (frame-exists)))
@@ -1294,9 +1258,9 @@ Sets environment variables by starting a shell
           (setq org-ehtml-everything-editable t)))
 
       ;; Agenda setup.
-      (defvar-if-non-existent imalison:org-gtd-file "~/org/gtd.org")
-      (defvar-if-non-existent imalison:org-habits-file "~/org/habits.org")
-      (defvar-if-non-existent imalison:org-calendar-file "~/org/calendar.org")
+      (defvar-setq imalison:org-gtd-file "~/org/gtd.org")
+      (defvar-setq imalison:org-habits-file "~/org/habits.org")
+      (defvar-setq imalison:org-calendar-file "~/org/calendar.org")
 
       (unless (boundp 'org-capture-templates)
         (defvar org-capture-templates nil))
