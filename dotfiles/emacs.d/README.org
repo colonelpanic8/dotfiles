@@ -39,7 +39,6 @@ Death to any gui elements in emacs! Do this EARLY so that emacs doesn't redispla
   (when (fboundp 'menu-bar-mode) (menu-bar-mode -1))
   (when (fboundp 'tool-bar-mode) (tool-bar-mode -1))
   (when (fboundp 'scroll-bar-mode) (scroll-bar-mode -1))
-  (setq visible-bell nil)
 #+END_SRC
 Tooltips are annoying:
 #+BEGIN_SRC emacs-lisp
@@ -225,6 +224,11 @@ UTF-8 everywhere
 Disable CJK coding/encoding (Chinese/Japanese/Korean characters)
 #+BEGIN_SRC emacs-lisp
   (setq utf-translate-cjk-mode nil)
+#+END_SRC
+** Visible Bell
+This is set to true to disable the annoying audible bell that plays whenever there is an error.
+#+BEGIN_SRC emacs-lisp
+  (setq visible-bell t)
 #+END_SRC
 ** Misc
 #+BEGIN_SRC emacs-lisp
