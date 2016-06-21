@@ -420,7 +420,17 @@ By advising ~imenu--make-index-alist~ with ~imalison:flatten-imenu-index~ we mak
                     when (and filepath (file-exists-p (file-truename filepath)))
                     collect (file-truename filepath)))))
 #+END_SRC
+** Named Build
+imalison:named-build is used to name a lambda produced by another macro applied to the given forms.
+#+BEGIN_SRC emacs-lisp
+  (defmacro imalison:named-build (name builder &rest args)
+    `(defalias (quote ,name) (,builder ,@args)))
+  (put 'imalison:named-build 'lisp-indent-function 1)
 
+  (defmacro imalison:named-builder-builder (named-builder-name builder-name)
+    `(defmacro ,named-builder-name (function-name &rest args)
+       (cons ,builder-name args)))
+#+END_SRC
 ** Compose functions
 The composed functions can take arbitrarily many arguments and returning arbitrarily many arguments.
 #+BEGIN_SRC emacs-lisp
@@ -645,17 +655,6 @@ This was taken from [[http://emacs.stackexchange.com/questions/7583/transiently-
   (defun imalison:font-size-incr ()  (interactive) (imalison:font-size-adj +1))
   (defun imalison:font-size-decr ()  (interactive) (imalison:font-size-adj -1))
   (defun imalison:font-size-reset () (interactive) (imalison:font-size-adj 0))
-#+END_SRC
-** Named Builder Builder
-Abandoned attempt to write a macro that produces macros that name the functions that they produce.
-#+BEGIN_SRC emacs-lisp
-  (defmacro imalison:named-function-builder (base-name argument-list &rest body)
-    (let ((named-argument-list (cons 'function-name argument-list))
-          (named-macro-name (intern (concat (symbol-name base-name) "-named"))))
-      `(progn
-         (defmacro ,named-macro-name ,named-argument-list
-           (defalias function-name ,@body))
-         (defmacro ,base-name ,argument-list ,@body))))
 #+END_SRC
 ** Message Result Builder
 This macro is useful when writing emacs-lisp. It creates a new interactive command that shows you the result of evaluating a function, with optionally provided arguments.
