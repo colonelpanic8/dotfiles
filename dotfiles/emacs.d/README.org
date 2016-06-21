@@ -1804,47 +1804,12 @@ I use helm for almost all emacs completion
         :config
         :init (add-hook 'magit-status-mode-hook 'magit-filenotify-mode))))
 #+END_SRC
-*** github-search
-#+BEGIN_SRC emacs-lisp
-  (imalison:use-package github-search
-    :commands (github-search-clone-repo github-search-user-clone-repo)
-    :preface
-    (progn
-      (defun imalison:get-projects-directory-target-from-repo (repo)
-        (let ((prospective-path
-               (imalison:join-paths imalison:projects-directory (oref repo :name))))
-              (if (file-exists-p prospective-path)
-                  (funcall 'github-search-prompt-for-target-directory repo)
-                prospective-path))))
-    :config
-    (progn
-      (setq github-search-get-target-directory-for-repo-function
-            'imalison:get-projects-directory-target-from-repo)))
-#+END_SRC
-*** github-clone
-#+BEGIN_SRC emacs-lisp
-  (imalison:use-package* github-clone "~/Projects/github-clone.el"
-    :commands (github-clone-add-parent-remote
-               github-clone-add-source-remote
-               github-clone-fork-remote
-               github-clone-add-existing-remote
-               github-clone))
-#+END_SRC
 *** git-link
 #+BEGIN_SRC emacs-lisp
   (use-package git-link
     :config
     (progn
       (setq git-link-use-commit t)))
-#+END_SRC
-*** magit-gh-pulls
-#+BEGIN_SRC emacs-lisp
-  (use-package magit-gh-pulls
-    :diminish magit-gh-pull-mode
-    :after magit
-    :config
-    (progn
-      (add-hook 'magit-mode-hook 'turn-on-magit-gh-pulls)))
 #+END_SRC
 *** magit-gitflow
 #+BEGIN_SRC emacs-lisp
@@ -1877,13 +1842,54 @@ I use helm for almost all emacs completion
         (interactive)
         (gitolite-clone-get-projects nil nil t))))
 #+END_SRC
-*** github-notifier
+*** github
+**** github-search
+#+BEGIN_SRC emacs-lisp
+  (imalison:use-package github-search
+    :commands (github-search-clone-repo github-search-user-clone-repo)
+    :preface
+    (progn
+      (defun imalison:get-projects-directory-target-from-repo (repo)
+        (let ((prospective-path
+               (imalison:join-paths imalison:projects-directory (oref repo :name))))
+              (if (file-exists-p prospective-path)
+                  (funcall 'github-search-prompt-for-target-directory repo)
+                prospective-path))))
+    :config
+    (progn
+      (setq github-search-get-target-directory-for-repo-function
+            'imalison:get-projects-directory-target-from-repo)))
+#+END_SRC
+**** github-clone
+#+BEGIN_SRC emacs-lisp
+  (imalison:use-package* github-clone "~/Projects/github-clone.el"
+    :commands (github-clone-add-parent-remote
+               github-clone-add-source-remote
+               github-clone-fork-remote
+               github-clone-add-existing-remote
+               github-clone))
+#+END_SRC
+**** github-notifier
 #+BEGIN_SRC emacs-lisp
   (use-package github-notifier
     :disabled t
     :config (github-notifier-mode))
 #+END_SRC
-*** gist
+**** github-browse-file
+#+BEGIN_SRC emacs-lisp
+  (use-package github-browse-file
+    :commands github-browse-file)
+#+END_SRC
+**** magit-gh-pulls
+#+BEGIN_SRC emacs-lisp
+  (use-package magit-gh-pulls
+    :diminish magit-gh-pull-mode
+    :after magit
+    :config
+    (progn
+      (add-hook 'magit-mode-hook 'turn-on-magit-gh-pulls)))
+#+END_SRC
+**** gist
 #+BEGIN_SRC emacs-lisp
   (use-package gist
     :commands (gist-region gist-region-private gist-buffer gist-buffer-private
