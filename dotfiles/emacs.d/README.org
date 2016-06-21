@@ -325,7 +325,7 @@ This is set to true to disable the annoying audible bell that plays whenever the
   ;; (add-hook 'prog-mode-hook (lambda () (highlight-lines-matching-regexp
   ;;                                  ".\\{81\\}" 'hi-blue)))
 #+END_SRC
-* Lisp
+* Functions
 ** Required Packages
 The packages in this section provide no functionality on their own, but provide support for writing custom elisp
 *** s
@@ -411,7 +411,7 @@ By advising ~imenu--make-index-alist~ with ~imalison:flatten-imenu-index~ we mak
     (funcall (imalison:emacs-version-predicate major-version minor-version)))
 #+END_SRC
 
-** Add a files to org-agenda-files
+** Add files to org-agenda-files
 #+BEGIN_SRC emacs-lisp
   (defun imalison:add-to-org-agenda-files (incoming-files)
     (setq org-agenda-files
