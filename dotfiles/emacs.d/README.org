@@ -2547,7 +2547,7 @@ I don't use iedit directly, but it is used by [[*emr][emr]] and I need to disabl
       (key-chord-define-global "tg" 'imalison:term-hydra/body)
       (key-chord-define-global "pj" 'imalison:projectile-find-file)
       (key-chord-define-global "p[" 'projectile-switch-project)
-      (key-chord-define-global "sd" 'imalison:do-ag)
+      (key-chord-define-global "fj" 'imalison:do-ag)
       (key-chord-define-global "jh" 'imalison:avy)))
 #+END_SRC
 *** nodejs-repl
