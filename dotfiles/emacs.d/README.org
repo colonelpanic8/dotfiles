@@ -435,7 +435,7 @@ imalison:named-build is used to name a lambda produced by another macro applied 
        (cons ,builder-name args)))
 #+END_SRC
 ** Compose functions
-The composed functions can take arbitrarily many arguments and returning arbitrarily many arguments.
+*** Arbitrary arguments at every step
 #+BEGIN_SRC emacs-lisp
   (defun imalison:make-list (thing)
     (if (listp thing)
@@ -454,8 +454,7 @@ The composed functions can take arbitrarily many arguments and returning arbitra
       `(apply ,(car funcs)
               (imalison:make-list (imalison:compose-helper ,(cdr funcs))))))
 #+END_SRC
-
-Here is a unary version which avoids all the calls to imalison:make-list
+*** Simpler Unary version
 #+BEGIN_SRC emacs-lisp
   (defmacro imalison:compose-unary (&rest funcs)
     "Build a new function with NAME that is the composition of FUNCS."
@@ -468,8 +467,7 @@ Here is a unary version which avoids all the calls to imalison:make-list
         'arg
       `(funcall ,(car funcs) (imalison:compose-helper-unary ,(cdr funcs)))))
 #+END_SRC
-
-Here is a version that will support macros and requires unary functions after the first one
+*** Most performant version supports macros
 #+BEGIN_SRC emacs-lisp
   (defmacro imalison:compose-named-functions (arguments &rest funcs)
     "Build a new function with NAME that is the composition of FUNCS."
