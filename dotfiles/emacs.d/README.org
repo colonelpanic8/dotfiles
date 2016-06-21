@@ -341,7 +341,10 @@ The packages in this section provide no functionality on their own, but provide 
 #+END_SRC
 *** shut-up
 #+BEGIN_SRC emacs-lisp
-  (use-package shut-up)
+  (use-package shut-up
+    :config
+    (defun imalison:shut-up-around (function &rest args)
+      (shut-up (apply function args))))
 #+END_SRC
 *** pcache
 #+BEGIN_SRC emacs-lisp
@@ -752,6 +755,12 @@ A macro for composing functions together to build an interactive command to copy
 #+BEGIN_SRC emacs-lisp
   (imalison:compose-copy-builder imalison:copy-current-git-branch
                                  'magit-get-current-branch)
+#+END_SRC
+** Compose around builder
+For composing functions with an apply
+#+BEGIN_SRC emacs-lisp
+  (defmacro imalison:compose-around-builder (&rest functions)
+    `(imalison:compose ,@functions 'apply))
 #+END_SRC
 ** Other
 #+BEGIN_SRC emacs-lisp
@@ -1647,7 +1656,6 @@ I use helm for almost all emacs completion
 
       (imalison:prefix-alternatives imalison:do-ag helm-projectile-ag
                                     imalison:do-ag-default-directory helm-do-ag)
-  
       (imalison:prefix-alternatives imalison:projectile-find-file
                                     projectile-find-file
                                     projectile-find-file-other-window)
@@ -1670,7 +1678,7 @@ I use helm for almost all emacs completion
       (setq projectile-completion-system 'helm)
       (add-to-list 'projectile-globally-ignored-files "Godeps")
       (add-to-list 'projectile-globally-ignored-files "thrift-binaries")
-      (helm-projectile-on)
+      (shut-up (helm-projectile-on))
       (diminish 'projectile-mode)
       (bind-key* "C-c p s" 'imalison:do-ag)
       (bind-key* "C-c p f" 'imalison:projectile-find-file)))
@@ -2520,9 +2528,9 @@ I don't use iedit directly, but it is used by [[*emr][emr]] and I need to disabl
 *** recentf
 #+BEGIN_SRC emacs-lisp
   (use-package recentf
-    ;; binding is in helm.
     :config
     (progn
+      (advice-add 'recentf-cleanup :around 'imalison:shut-up-around)
       (recentf-mode 1)
       (setq recentf-max-menu-items 500)))
 #+END_SRC
@@ -2540,14 +2548,12 @@ I don't use iedit directly, but it is used by [[*emr][emr]] and I need to disabl
     :preface
     (defun imalison:disable-keychord-around (function &rest args)
       (let ((key-chord-mode-was-enabled (bound-and-true-p key-chord-mode)))
-        (when key-chord-mode-was-enabled
-          (shut-up (key-chord-mode -1)))
-        (condition-case err (progn (apply function args))
-          (error))
-        (when key-chord-mode-was-enabled
-          (shut-up (key-chord-mode 1)))))
+        (when key-chord-mode-was-enabled (key-chord-mode -1))
+        (condition-case err (progn (apply function args)) (error))
+        (when key-chord-mode-was-enabled (key-chord-mode 1))))
     :config
     (progn
+      (advice-add 'key-chord-mode :around 'imalison:shut-up-around)
       (key-chord-mode 1)
       (advice-add 'imalison:avy :around 'imalison:disable-keychord-around)
       (key-chord-define-global "tg" 'imalison:term-hydra/body)
