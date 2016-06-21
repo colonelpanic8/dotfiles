@@ -1019,14 +1019,26 @@ Sets environment variables by starting a shell
 #+END_SRC
 *** hydra
 #+BEGIN_SRC emacs-lisp
-  (use-package hydra :commands defhydra)
-
-(defhydra hydra-font-resize
-        (global-map "C-M-=")
+  (use-package hydra
+    :demand t
+    :bind (("C-M-=" . imalison:hydra-font-resize/body)
+           ("C-c y" . imalison:hydra-yank/body))
+    :config
+    (progn
+      (defhydra imalison:hydra-font-resize
+        nil
         "font-resize"
         ("-"   imalison:font-size-decr  "Decrease")
         ("="   imalison:font-size-incr  "Increase")
         ("0"   imalison:font-size-reset "Reset to default size"))
+
+      (defhydra imalison:hydra-yank
+        nil
+        "Yank text"
+        ("p" imalison:copy-buffer-file-path "Projectile path")
+        ("f" imalison:copy-buffer-file-path-full "Full path")
+        ("n" imalison:copy-buffer-file-name "File name")
+        ("b" imalison:copy-current-git-branch "Git Branch"))))
 #+END_SRC
 ** org
 *** main
