@@ -474,8 +474,6 @@ imalison:named-build is a way to invoke a macro in such a way that the lambda th
 
 
 #+END_SRC
-
-** Join paths together as with os.path.join in python
 *** Advice Add Around Builder
 For composing functions with an apply so that they can be used with the ~:around~ keyword of advice-add
 #+BEGIN_SRC emacs-lisp
@@ -488,6 +486,8 @@ For composing functions with an apply so that they can be used with the ~:around
   (imalison:named-build imalison:kill-new-around
     imalison:advice-add-around-builder kill-new)
 #+END_SRC
+** Join Paths
+Works in the same way as os.path.join in python
 #+BEGIN_SRC emacs-lisp
   (defun imalison:join-paths (root &rest dirs)
     (let ((result root))
@@ -502,7 +502,7 @@ For composing functions with an apply so that they can be used with the ~:around
 
   (defvar imalison:gpg-key)
 #+END_SRC
-** Flatten Imenu Indexes
+** Flatten ~imenu~ Indexes
 I like my imenu indexes flat so I don't have to press enter multiple times to find what I'm looking for. The functions that follow allow me to get this behavior out of functions that provide a nested imenu index.
 #+BEGIN_SRC emacs-lisp
   (defun imalison:imenu-prefix-flattened (index)
@@ -535,7 +535,7 @@ By advising ~imenu--make-index-alist~ with ~imalison:flatten-imenu-index~ we mak
               :around 'imalison:flatten-imenu-index-with-function)
 #+END_SRC
 
-** Add files to org-agenda-files
+** Add Files to ~org-agenda-files~
 #+BEGIN_SRC emacs-lisp
   (defun imalison:add-to-org-agenda-files (incoming-files)
     (setq org-agenda-files
@@ -544,7 +544,7 @@ By advising ~imenu--make-index-alist~ with ~imalison:flatten-imenu-index~ we mak
                     when (and filepath (file-exists-p (file-truename filepath)))
                     collect (file-truename filepath)))))
 #+END_SRC
-** Get file string
+** Get String From File
 #+BEGIN_SRC emacs-lisp
   (defun imalison:get-string-from-file (file-path)
     "Return file-path's file content."
@@ -552,7 +552,7 @@ By advising ~imenu--make-index-alist~ with ~imalison:flatten-imenu-index~ we mak
       (insert-file-contents file-path)
       (buffer-string)))
 #+END_SRC
-** Get current location
+** Get Current Location
 #+BEGIN_SRC emacs-lisp
   (defun imalison:get-lat-long ()
     (condition-case _ex
@@ -619,7 +619,7 @@ Create cache structure containing stop information
                   (when muni-stop
                     (pcache-put imalison:muni-stop-cache
                                 (intern (oref muni-stop :id)) muni-stop)))))
-
+                                
   (defun imalison:muni-stop-from-id (stop-or-id)
     (if (imalison:muni-stop-p stop) stop-or-id
       (pcache-get imalison:muni-stop-cache stop-or-id)))
@@ -744,7 +744,6 @@ This interactive functions allows the user the select a function to invoke using
        (interactive)
        (apply ,function args)))
 #+END_SRC
-
 ** Custom shell command on region
 #+BEGIN_SRC emacs-lisp
   (defun imalison:copy-shell-command-on-region (start end command)
