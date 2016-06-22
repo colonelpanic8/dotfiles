@@ -356,6 +356,117 @@ The packages in this section provide no functionality on their own, but provide 
   (use-package parse-csv
     :demand t)
 #+END_SRC
+** Macros
+*** Emacs Version Predicate
+#+BEGIN_SRC emacs-lisp
+  (defmacro imalison:emacs-version-predicate (major-version minor-version)
+    `(lambda ()
+       (or (> emacs-major-version ,major-version)
+           (and (>= emacs-major-version ,major-version)
+                (>= emacs-minor-version ,minor-version)))))
+  (defun imalison:check-emacs-version (major-version minor-version)
+    (funcall (imalison:emacs-version-predicate major-version minor-version)))
+#+END_SRC
+*** Compose Functions
+**** Arbitrary arguments at every step
+#+BEGIN_SRC emacs-lisp
+  (defun imalison:make-list (thing)
+    (if (listp thing)
+        thing
+      (list thing)))
+
+  (defmacro imalison:compose (&rest funcs)
+    "Build a new function with NAME that is the composition of FUNCS."
+    `(lambda (&rest args)
+       (imalison:compose-helper ,funcs)))
+
+  (defmacro imalison:compose-helper (funcs)
+    "Builds funcalls of FUNCS applied to the arg."
+    (if (equal (length funcs) 0)
+        (quote args)
+      `(apply ,(car funcs)
+              (imalison:make-list (imalison:compose-helper ,(cdr funcs))))))
+#+END_SRC
+**** Simpler Unary version
+#+BEGIN_SRC emacs-lisp
+  (defmacro imalison:compose-unary (&rest funcs)
+    "Build a new function with NAME that is the composition of FUNCS."
+    `(lambda (arg)
+       (imalison:compose-helper-unary ,funcs)))
+
+  (defmacro imalison:compose-helper-unary (funcs)
+    "Builds funcalls of FUNCS applied to the arg."
+    (if (equal (length funcs) 0)
+        'arg
+      `(funcall ,(car funcs) (imalison:compose-helper-unary ,(cdr funcs)))))
+#+END_SRC
+**** Most performant version supports macros
+#+BEGIN_SRC emacs-lisp
+  (defmacro imalison:compose-named-functions (arguments &rest funcs)
+    "Build a new function with NAME that is the composition of FUNCS."
+    `(lambda ,arguments
+       (imalison:compose-named-functions-helper ,funcs ,arguments)))
+
+  (defmacro imalison:compose-named-functions-helper (funcs arguments)
+    "Builds funcalls of FUNCS applied to the arg."
+    (if (equal (length funcs) 1)
+        `(,(car funcs) ,@arguments)
+      `(,(car funcs)
+        (imalison:compose-named-functions-helper ,(cdr funcs) ,arguments))))
+#+END_SRC
+*** Prefix Alternatives
+Prefix alternatives is a macro that builds a function that selects one of a collection of functions that are provided to the macro based on the value of the prefix argument.
+#+BEGIN_SRC emacs-lisp
+  (defmacro imalison:prefix-alternatives (name &rest alternatives)
+    `(defun ,name (arg)
+       (interactive "p")
+       (setq function
+             (cond
+              ,@(progn
+                  (let ((last-power 1))
+                    (cl-loop for alternative in alternatives
+                             collect `((eq arg ,last-power) (quote ,alternative))
+                             do (setq last-power (* last-power 4)))))))
+       (setq function (or function)) ; Set a default value for function
+       (setq current-prefix-arg nil)
+       (call-interactively function)))
+#+END_SRC
+*** Named Build
+imalison:named-build is a way to invoke a macro in such a way that the lambda that it produces is given a name.
+#+BEGIN_SRC emacs-lisp
+  (defmacro imalison:named-build (name builder &rest args)
+    `(defalias (quote ,name) (,builder ,@args)))
+  (put 'imalison:named-build 'lisp-indent-function 1)
+
+  (defmacro imalison:named-builder-builder (named-builder-name builder-name)
+    `(defmacro ,named-builder-name (function-name &rest args)
+       (cons ,builder-name args)))
+#+END_SRC
+*** Use Package Wrapper With Local Load Path Support
+#+BEGIN_SRC emacs-lisp
+  (put 'imalison:use-package 'lisp-indent-function 1)
+
+  (defmacro imalison:use-package* (package target-directory &rest forms)
+    (let* ((target-exists (file-exists-p target-directory))
+           (additional-forms
+            (when target-exists
+              (list
+               :load-path target-directory
+               :ensure nil))))
+      `(use-package ,package
+         ,@additional-forms ,@forms)))
+
+  (defmacro imalison:use-package (package &rest forms)
+    (let ((target-directory
+           (concat (file-name-as-directory (if (boundp 'imalison:projects-directory)
+                                               imalison:projects-directory
+                                             "~/Projects"))
+                   (symbol-name package))))
+      `(imalison:use-package* ,package ,target-directory ,@forms)))
+
+
+#+END_SRC
+
 ** Join paths together as with os.path.join in python
 #+BEGIN_SRC emacs-lisp
   (defun imalison:join-paths (root &rest dirs)
@@ -371,7 +482,7 @@ The packages in this section provide no functionality on their own, but provide 
 
   (defvar imalison:gpg-key)
 #+END_SRC
-** Flatten imenu indexes
+** Flatten Imenu Indexes
 I like my imenu indexes flat so I don't have to press enter multiple times to find what I'm looking for. The functions that follow allow me to get this behavior out of functions that provide a nested imenu index.
 #+BEGIN_SRC emacs-lisp
   (defun imalison:imenu-prefix-flattened (index)
@@ -403,16 +514,6 @@ By advising ~imenu--make-index-alist~ with ~imalison:flatten-imenu-index~ we mak
   (advice-add 'imenu--make-index-alist
               :around 'imalison:flatten-imenu-index-with-function)
 #+END_SRC
-** Emacs version predicate
-#+BEGIN_SRC emacs-lisp
-  (defmacro imalison:emacs-version-predicate (major-version minor-version)
-    `(lambda ()
-       (or (> emacs-major-version ,major-version)
-           (and (>= emacs-major-version ,major-version)
-                (>= emacs-minor-version ,minor-version)))))
-  (defun imalison:check-emacs-version (major-version minor-version)
-    (funcall (imalison:emacs-version-predicate major-version minor-version)))
-#+END_SRC
 
 ** Add files to org-agenda-files
 #+BEGIN_SRC emacs-lisp
@@ -423,87 +524,12 @@ By advising ~imenu--make-index-alist~ with ~imalison:flatten-imenu-index~ we mak
                     when (and filepath (file-exists-p (file-truename filepath)))
                     collect (file-truename filepath)))))
 #+END_SRC
-** Named Build
-imalison:named-build is used to name a lambda produced by another macro applied to the given forms.
-#+BEGIN_SRC emacs-lisp
-  (defmacro imalison:named-build (name builder &rest args)
-    `(defalias (quote ,name) (,builder ,@args)))
-  (put 'imalison:named-build 'lisp-indent-function 1)
-
-  (defmacro imalison:named-builder-builder (named-builder-name builder-name)
-    `(defmacro ,named-builder-name (function-name &rest args)
-       (cons ,builder-name args)))
-#+END_SRC
-** Compose functions
-*** Arbitrary arguments at every step
-#+BEGIN_SRC emacs-lisp
-  (defun imalison:make-list (thing)
-    (if (listp thing)
-        thing
-      (list thing)))
-
-  (defmacro imalison:compose (&rest funcs)
-    "Build a new function with NAME that is the composition of FUNCS."
-    `(lambda (&rest args)
-       (imalison:compose-helper ,funcs)))
-
-  (defmacro imalison:compose-helper (funcs)
-    "Builds funcalls of FUNCS applied to the arg."
-    (if (equal (length funcs) 0)
-        (quote args)
-      `(apply ,(car funcs)
-              (imalison:make-list (imalison:compose-helper ,(cdr funcs))))))
-#+END_SRC
-*** Simpler Unary version
-#+BEGIN_SRC emacs-lisp
-  (defmacro imalison:compose-unary (&rest funcs)
-    "Build a new function with NAME that is the composition of FUNCS."
-    `(lambda (arg)
-       (imalison:compose-helper-unary ,funcs)))
-
-  (defmacro imalison:compose-helper-unary (funcs)
-    "Builds funcalls of FUNCS applied to the arg."
-    (if (equal (length funcs) 0)
-        'arg
-      `(funcall ,(car funcs) (imalison:compose-helper-unary ,(cdr funcs)))))
-#+END_SRC
-*** Most performant version supports macros
-#+BEGIN_SRC emacs-lisp
-  (defmacro imalison:compose-named-functions (arguments &rest funcs)
-    "Build a new function with NAME that is the composition of FUNCS."
-    `(lambda ,arguments
-       (imalison:compose-named-functions-helper ,funcs ,arguments)))
-
-  (defmacro imalison:compose-named-functions-helper (funcs arguments)
-    "Builds funcalls of FUNCS applied to the arg."
-    (if (equal (length funcs) 1)
-        `(,(car funcs) ,@arguments)
-      `(,(car funcs)
-        (imalison:compose-named-functions-helper ,(cdr funcs) ,arguments))))
-#+END_SRC
-** prefix-alternatives
-Prefix alternatives is a macro that builds a function that selects one of a collection of functions that are provided to the macro based on the value of the prefix argument.
-#+BEGIN_SRC emacs-lisp
-  (defmacro imalison:prefix-alternatives (name &rest alternatives)
-    `(defun ,name (arg)
-       (interactive "p")
-       (setq function
-             (cond
-              ,@(progn
-                  (let ((last-power 1))
-                    (cl-loop for alternative in alternatives
-                             collect `((eq arg ,last-power) (quote ,alternative))
-                             do (setq last-power (* last-power 4)))))))
-       (setq function (or function)) ; Set a default value for function
-       (setq current-prefix-arg nil)
-       (call-interactively function)))
-#+END_SRC
 ** Get file string
 #+BEGIN_SRC emacs-lisp
-  (defun imalison:get-string-from-file (filePath)
-    "Return filePath's file content."
+  (defun imalison:get-string-from-file (file-path)
+    "Return file-path's file content."
     (with-temp-buffer
-      (insert-file-contents filePath)
+      (insert-file-contents file-path)
       (buffer-string)))
 #+END_SRC
 ** Get current location
@@ -691,30 +717,6 @@ This interactive functions allows the user the select a function to invoke using
     (interactive (find-function-read))
     (message "%s" (funcall function)))
 #+END_SRC
-** imalison:use-package
-#+BEGIN_SRC emacs-lisp
-  (put 'imalison:use-package 'lisp-indent-function 1)
-
-  (defmacro imalison:use-package* (package target-directory &rest forms)
-    (let* ((target-exists (file-exists-p target-directory))
-           (additional-forms
-            (when target-exists
-              (list
-               :load-path target-directory
-               :ensure nil))))
-      `(use-package ,package
-         ,@additional-forms ,@forms)))
-
-  (defmacro imalison:use-package (package &rest forms)
-    (let ((target-directory
-           (concat (file-name-as-directory (if (boundp 'imalison:projects-directory)
-                                               imalison:projects-directory
-                                             "~/Projects"))
-                   (symbol-name package))))
-      `(imalison:use-package* ,package ,target-directory ,@forms)))
-
-
-#+END_SRC
 ** Make interactive
 #+BEGIN_SRC emacs-lisp
   (defmacro imalison:make-interactive (function)
@@ -769,8 +771,8 @@ A macro for composing functions together to build an interactive command to copy
   (imalison:compose-copy-builder imalison:copy-current-git-branch
                                  'magit-get-current-branch)
 #+END_SRC
-** Compose around builder
-For composing functions with an apply
+** Advice Add Around Builder
+For composing functions with an apply so that they can be used with the ~:around~ keyword of advice-add
 #+BEGIN_SRC emacs-lisp
   (defmacro imalison:compose-around-builder (&rest functions)
     `(imalison:compose ,@functions 'apply))
