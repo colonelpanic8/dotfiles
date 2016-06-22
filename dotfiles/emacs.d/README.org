@@ -1337,19 +1337,19 @@ Sets environment variables by starting a shell
                    `("y" "Calendar entry (Linked)" entry
                      (file ,imalison:org-calendar-file)
                      "* %? %A
-      :PROPERTIES:
-      :CREATED: %U
-      :END:
-    %^T"))
+    :PROPERTIES:
+    :CREATED: %U
+    :END:
+  %^T"))
 
       (add-to-list 'org-capture-templates
                    `("c" "Calendar entry" entry
                      (file ,imalison:org-calendar-file)
                      "* %?
-      :PROPERTIES:
-      :CREATED: %U
-      :END:
-    %^T"))
+    :PROPERTIES:
+    :CREATED: %U
+    :END:
+  %^T"))
 
       (add-to-list 'org-capture-templates
                    `("h" "Habit" entry (file ,imalison:org-habits-file)
