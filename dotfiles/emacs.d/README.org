@@ -400,19 +400,27 @@ The packages in this section provide no functionality on their own, but provide 
         'arg
       `(funcall ,(car funcs) (imalison:compose-helper-unary ,(cdr funcs)))))
 #+END_SRC
-**** Most performant version supports macros
+**** A Version Supporting Macros
 #+BEGIN_SRC emacs-lisp
-  (defmacro imalison:compose-named-functions (arguments &rest funcs)
+  (defmacro imalison:compose-2 (arguments &rest funcs)
+    (when (numberp arguments)
+      (setq arguments
+            (cl-loop for i from 97 to (+ arguments 96)
+                     collect (intern (char-to-string i)))))
+    `(imalison:compose-2-argspec ,arguments ,arguments ,@funcs))
+
+  (defmacro imalison:compose-2-argspec
+      (arguments call-arguments &rest funcs)
     "Build a new function with NAME that is the composition of FUNCS."
     `(lambda ,arguments
-       (imalison:compose-named-functions-helper ,funcs ,arguments)))
+       (imalison:compose-2-helper ,funcs ,call-arguments)))
 
-  (defmacro imalison:compose-named-functions-helper (funcs arguments)
+  (defmacro imalison:compose-2-helper (funcs arguments)
     "Builds funcalls of FUNCS applied to the arg."
     (if (equal (length funcs) 1)
         `(,(car funcs) ,@arguments)
       `(,(car funcs)
-        (imalison:compose-named-functions-helper ,(cdr funcs) ,arguments))))
+        (imalison:compose-2-helper ,(cdr funcs) ,arguments))))
 #+END_SRC
 *** Prefix Alternatives
 Prefix alternatives is a macro that builds a function that selects one of a collection of functions that are provided to the macro based on the value of the prefix argument.
@@ -608,7 +616,7 @@ Get route information
 #+BEGIN_SRC emacs-lisp
   (defun imalison:muni-get-route-ids (route-name &optional direction)
     (delete-dups
-     (mapcar (imalison:compose imalison:car-intern 'intern 'car) 
+     (mapcar (imalison:compose-2 1 intern car)
              (s-match-strings-all
               "^\\([[:digit:]]\\{1,10\\}\\)"
               (shell-command-to-string
