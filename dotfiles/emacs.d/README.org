@@ -1314,9 +1314,9 @@ Sets environment variables by starting a shell
           (setq org-ehtml-everything-editable t)))
 
       ;; Agenda setup.
-      (defvar-setq imalison:org-gtd-file "~/org/gtd.org")
-      (defvar-setq imalison:org-habits-file "~/org/habits.org")
-      (defvar-setq imalison:org-calendar-file "~/org/calendar.org")
+      (defvar imalison:org-gtd-file "~/org/gtd.org")
+      (defvar imalison:org-habits-file "~/org/habits.org")
+      (defvar imalison:org-calendar-file "~/org/calendar.org")
 
       (unless (boundp 'org-capture-templates)
         (defvar org-capture-templates nil))
