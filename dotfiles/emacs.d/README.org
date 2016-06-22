@@ -476,6 +476,18 @@ imalison:named-build is a way to invoke a macro in such a way that the lambda th
 #+END_SRC
 
 ** Join paths together as with os.path.join in python
+*** Advice Add Around Builder
+For composing functions with an apply so that they can be used with the ~:around~ keyword of advice-add
+#+BEGIN_SRC emacs-lisp
+  (defmacro imalison:advice-add-around-builder (&rest functions)
+    `(imalison:compose-2-argspec
+      (function &rest args) (function args) ,@functions apply))
+#+END_SRC
+**** Kill New
+#+BEGIN_SRC emacs-lisp
+  (imalison:named-build imalison:kill-new-around
+    imalison:advice-add-around-builder kill-new)
+#+END_SRC
 #+BEGIN_SRC emacs-lisp
   (defun imalison:join-paths (root &rest dirs)
     (let ((result root))
