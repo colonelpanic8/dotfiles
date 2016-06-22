@@ -770,7 +770,7 @@ A macro for composing functions together to build an interactive command to copy
   (defmacro imalison:compose-copy-builder (name &rest funcs)
     `(imalison:named-build ,name
        imalison:make-interactive
-       (imalison:compose 'kill-new ,@funcs)))
+       (imalison:compose-2 0 kill-new ,@funcs)))
 #+END_SRC
 
 *** Copy portions of the buffer file name
@@ -780,10 +780,11 @@ A macro for composing functions together to build an interactive command to copy
 
   (imalison:copy-buffer-file-path-builder imalison:copy-buffer-file-path-full)
   (imalison:copy-buffer-file-path-builder imalison:copy-buffer-file-name
-                                          'file-name-nondirectory)
+                                          file-name-nondirectory)
   (imalison:copy-buffer-file-path-builder imalison:copy-buffer-file-path
-                                          'projectile-make-relative-to-root
-                                          'list)
+                                          car
+                                          projectile-make-relative-to-root
+                                          list)
 #+END_SRC
 *** Copy the current branch using magit
 #+BEGIN_SRC emacs-lisp
