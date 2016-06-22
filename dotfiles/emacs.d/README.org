@@ -2167,11 +2167,11 @@ Reduce indentation for some functions
     (when (s-starts-with? "*" (buffer-name))
       (flycheck-disable-checker 'emacs-lisp-checkdoc)))
 
-  (add-hook 'emacs-lisp-mode-hook 'imalison:maybe-remove-flycheck-checkdoc-checker)
   (add-hook 'emacs-lisp-mode-hook 'imenu-elisp-sections)
   (add-hook 'emacs-lisp-mode-hook (lambda ()
                                     (setq indent-tabs-mode nil)
                                     (setq show-trailing-whitespace t)))
+  (add-hook 'flycheck-mode-hook 'imalison:maybe-remove-flycheck-checkdoc-checker)
 #+END_SRC
 ***** Keybinds
 #+BEGIN_SRC emacs-lisp
