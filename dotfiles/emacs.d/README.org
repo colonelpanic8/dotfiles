@@ -1919,7 +1919,7 @@ I use helm for almost all emacs completion
 **** magit-gh-pulls
 #+BEGIN_SRC emacs-lisp
   (use-package magit-gh-pulls
-    :diminish magit-gh-pull-mode
+    :diminish magit-gh-pulls-mode
     :after magit
     :config
     (progn
