@@ -1091,6 +1091,8 @@ Sets environment variables by starting a shell
     :ensure org-plus-contrib
     :preface
     (progn
+      (defvar-setq org-startup-indented nil)
+      (defvar-setq org-startup-folded t)
       (defvar-setq org-directory "~/Dropbox/org")
       (defvar-setq org-mobile-inbox-for-pull "~/Dropbox/org/flagged.org")
       (defvar-setq org-mobile-directory "~/Dropbox/Apps/MobileOrg")
