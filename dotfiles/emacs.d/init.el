@@ -1,5 +1,8 @@
+;; -*- no-byte-compile: t -*-
 (require 'package)
 (package-initialize)
+
+(setq load-prefer-newer t)
 
 (setq custom-file "~/.emacs.d/custom-before.el")
 (when (file-exists-p custom-file) (load custom-file))
