@@ -15,6 +15,20 @@ This makes it so that the file that is produced from tangling this file uses lex
         (replace-regexp-in-string "\n$" "" (shell-command-to-string
                                             "git config --get user.email")))
 #+END_SRC
+** auto-compile
+This is here because it needs to be activated as early as possible
+#+BEGIN_SRC emacs-lisp
+  (use-package auto-compile
+    :config
+    (progn
+      (auto-compile-on-load-mode)
+      (auto-compile-on-save-mode)))
+#+END_SRC
+** Prefer Newer Versions
+To reduce the risk of loading outdated byte code files, we set load-prefer-newer and enable auto-compile-on-load-mode as early as possible.
+#+BEGIN_SRC emacs-lisp
+  (setq load-prefer-newer t)
+#+END_SRC
 ** Custom Files
 It's annoying to have emacs randomly add stuff to your init.el whenever you customize a variable. By setting a custom file other than init.el that is ignored in git, random commits with nothing but variable settings are avoided.
 
