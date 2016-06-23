@@ -768,7 +768,7 @@ This interactive functions allows the user the select a function to invoke using
        (interactive)
        (apply ,function args)))
 #+END_SRC
-** Custom shell command on region
+** Custom ~shell-command-on-region~
 #+BEGIN_SRC emacs-lisp
   (defun imalison:copy-shell-command-on-region (start end command)
     (interactive (list (region-beginning) (region-end)
@@ -788,7 +788,7 @@ This interactive functions allows the user the select a function to invoke using
   (imalison:prefix-alternatives imalison:copy-shell-command-on-region
                                 imalison:shell-command-on-region-replace)
 #+END_SRC
-** Copy string functions
+** Copy String Functions
 A macro for composing functions together to build an interactive command to copy a string to the kill ring.
 #+BEGIN_SRC emacs-lisp
   (defmacro imalison:compose-copy-builder (name &rest funcs)
@@ -1883,7 +1883,7 @@ I use helm for almost all emacs completion
       (use-package magit-filenotify
         ;; Seems like OSX does not support filenotify.
         :disabled t
-        :if (funcall o(emacs-version-predicate 24 4))
+        :if (funcall (emacs-version-predicate 24 4))
         :config
         :init (add-hook 'magit-status-mode-hook 'magit-filenotify-mode))))
 #+END_SRC
