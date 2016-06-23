@@ -418,25 +418,20 @@ The packages in this section provide no functionality on their own, but provide 
 #+END_SRC
 **** A Version Supporting Macros
 #+BEGIN_SRC emacs-lisp
-  (defun imalison:args-expander (function-name)
-    (lambda (args)
-      (apply function-name args)))
+  (defun imalison:help-function-arglist (function)
+    (let ((result (help-function-arglist function )))
+      (if (eq result t) '(&rest args) result)))
 
   (defmacro imalison:compose (&rest funcs)
     (let* ((last-function (car (last funcs)))
-          (arguments (help-function-arglist last-function))
-          (call-arguments (delq '&optional arguments)))
+           (arguments (imalison:help-function-arglist last-function))
+           (call-arguments (delq '&optional arguments)))
       (when (memq '&rest arguments)
         (setq arguments '(&rest args))
-        (setq call-arguments '(args))
-        (setq funcs
-              (-replace-at (- (length arguments) 1)
-                           (imalison:args-expander last-function)
-                           funcs)))
+        (setq call-arguments '(args)))
       `(imalison:compose-argspec ,arguments ,call-arguments ,@funcs)))
 
-  (defmacro imalison:compose-argspec
-      (arguments call-arguments &rest funcs)
+  (defmacro imalison:compose-argspec (arguments call-arguments &rest funcs)
     "Build a new function with NAME that is the composition of FUNCS."
     `(lambda ,arguments
        (imalison:compose-helper ,funcs ,call-arguments)))
@@ -444,7 +439,10 @@ The packages in this section provide no functionality on their own, but provide 
   (defmacro imalison:compose-helper (funcs arguments)
     "Builds funcalls of FUNCS applied to the arg."
     (if (equal (length funcs) 1)
-        `(,(car funcs) ,@arguments)
+        (let ((last-function (car funcs)))
+          (when (memq '&rest (imalison:help-function-arglist last-function))
+            (setq last-function (apply-partially 'apply last-function)))
+              `(,last-function ,@arguments))
       `(,(car funcs)
         (imalison:compose-helper ,(cdr funcs) ,arguments))))
 #+END_SRC
@@ -814,7 +812,7 @@ A macro for composing functions together to build an interactive command to copy
 *** Copy the current branch using magit
 #+BEGIN_SRC emacs-lisp
   (imalison:compose-copy-builder imalison:copy-current-git-branch
-                                 'magit-get-current-branch)
+                                 magit-get-current-branch)
 #+END_SRC
 ** Advice Add Around Builder
 For composing functions with an apply so that they can be used with the ~:around~ keyword of advice-add
