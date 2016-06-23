@@ -820,6 +820,20 @@ For composing functions with an apply so that they can be used with the ~:around
   (defmacro imalison:compose-around-builder (&rest functions)
     `(imalison:compose ,@functions 'apply))
 #+END_SRC
+** Named Compile
+#+BEGIN_SRC emacs-lisp
+  (defun imalison:named-compile (command)
+    (interactive
+     (list
+      (let ((command (eval compile-command)))
+        (if (or compilation-read-command current-prefix-arg)
+        (compilation-read-command command)
+      command))))
+    (compilation-start command nil (lambda (&rest args)
+                                     (format "*compilation %s*" command))))
+
+
+#+END_SRC
 ** Other
 #+BEGIN_SRC emacs-lisp
   (defun imalison:join-paths (&rest paths)
@@ -1089,7 +1103,7 @@ Sets environment variables by starting a shell
   (use-package hydra
     :demand t
     :bind (("C-M-=" . imalison:hydra-font-resize/body)
-           ("C-c y" . imalison:hydra-yank/body))
+           ("C-x y" . imalison:hydra-yank/body))
     :config
     (progn
       (defhydra imalison:hydra-font-resize
