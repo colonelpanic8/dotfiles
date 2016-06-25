@@ -3086,7 +3086,7 @@ This is useful with server mode when editing gmail messages. I think that it is 
 *** ido
 #+BEGIN_SRC emacs-lisp
   (use-package ido
-    :if (and (boundp 'use-ido) use-ido)
+    :if (bound-and-true-p imalison:use-ido)
     :commands ido-mode
     :config
     (progn
