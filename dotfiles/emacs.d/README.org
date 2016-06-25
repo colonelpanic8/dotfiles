@@ -2170,10 +2170,16 @@ I use helm for almost all emacs completion
         :preface
         (progn
           (imalison:prefix-alternatives
-           imalison:gotest go-test-current-test go-test-current-file))
+           imalison:gotest go-test-current-test go-test-current-file)
+          (defun imalison:add-expected-test-name-for-suite (suite-name test-name)
+            (if (> (length suite-name) 0)
+                (concat " -run Test" suite-name)
+              "")))
         :config
         (progn
-          (setq go-test-verbose t)))
+          (setq go-test-verbose t
+                go-test-additional-arguments-function
+                'imalison:add-expected-test-name-for-suite)))
       (use-package company-go
         :config (setq company-go-show-annotation t))
       (use-package go-projectile :demand t)
