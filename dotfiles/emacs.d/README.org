@@ -834,7 +834,19 @@ For composing functions with an apply so that they can be used with the ~:around
     (compilation-start command nil (lambda (&rest args)
                                      (format "*compilation %s*" command))))
 
-
+#+END_SRC
+** Replace Escape Sequences
+#+BEGIN_SRC emacs-lisp
+  (defun imalison:replace-escape-sequences ()
+    (interactive)
+    (shut-up
+      (let* ((delimited (and transient-mark-mode mark-active))
+             (beg (when delimited (region-beginning)))
+             (end (when delimited (region-end))))
+        (save-excursion
+          (perform-replace "\\t" "    " nil nil delimited nil nil beg end nil))
+        (save-excursion
+          (perform-replace "\\n" "\n" nil nil delimited nil nil beg end nil)))))
 #+END_SRC
 ** Other
 #+BEGIN_SRC emacs-lisp
