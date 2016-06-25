@@ -2658,8 +2658,10 @@ I don't use iedit directly, but it is used by [[*emr][emr]] and I need to disabl
       (use-package company-restclient)))
 #+END_SRC
 *** key-chord
+I have currently disabled key-chord because it may cause typing lag.
 #+BEGIN_SRC emacs-lisp
   (use-package key-chord
+    :disabled t
     :preface
     (defun imalison:disable-keychord-around (function &rest args)
       (let ((key-chord-mode-was-enabled (bound-and-true-p key-chord-mode)))
