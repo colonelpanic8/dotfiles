@@ -2147,7 +2147,7 @@ I use helm for almost all emacs completion
 
       (defun go-mode-install-current-project ()
         (interactive)
-        (start-process 
+        (start-process
          "go install" "go install log" "go" "install"
          (concat (file-name-as-directory (go-mode-workspace-path)) "...")))
 
