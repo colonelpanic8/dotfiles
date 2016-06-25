@@ -1103,12 +1103,13 @@ Sets environment variables by starting a shell
   (use-package hydra
     :demand t
     :bind (("C-M-=" . imalison:hydra-font-resize/body)
-           ("C-x y" . imalison:hydra-yank/body))
+           ("C-x y" . imalison:hydra-yank/body)
+           ("C-c 6" . imalison:compile/body))
     :config
     (progn
       (defhydra imalison:hydra-font-resize
         nil
-        "font-resize"
+        "Resize Font"
         ("-"   imalison:font-size-decr  "Decrease")
         ("="   imalison:font-size-incr  "Increase")
         ("0"   imalison:font-size-reset "Reset to default size"))
@@ -1119,7 +1120,20 @@ Sets environment variables by starting a shell
         ("p" imalison:copy-buffer-file-path "Projectile path")
         ("f" imalison:copy-buffer-file-path-full "Full path")
         ("n" imalison:copy-buffer-file-name "File name")
-        ("b" imalison:copy-current-git-branch "Git Branch"))))
+        ("b" imalison:copy-current-git-branch "Git Branch"))
+
+      (defun imalison:make-test ()
+        (interactive)
+        (imalison:named-compile "make test"))
+
+      (defun imalison:glide-up ()
+        (interactive)
+        (imalison:named-compile "glide up"))
+
+      (defhydra imalison:compile nil "Compile"
+        ("c" imalison:named-compile "Enter Custom Command")
+        ("t" imalison:make-test "Test")
+        ("u" imalison:glide-up "Update Dependencies"))))
 #+END_SRC
 ** org
 *** main
