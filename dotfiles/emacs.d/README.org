@@ -1180,7 +1180,20 @@ Sets environment variables by starting a shell
         (interactive)
         (org-map-entries 'org-archive-if-completed))
 
-      (cl-defun org-capture-make-todo-template
+      (cl-defun imalison:make-org-template (&key (content "%?"))
+        (with-temp-buffer
+          (org-mode)
+          (insert content)
+          (org-set-property "CREATED"
+                            (with-temp-buffer
+                              (org-insert-time-stamp
+                               (org-current-effective-time) t t)))
+          (buffer-substring-no-properties (point-min) (point-max))))
+
+      (defun imalison:make-org-template-from-file (filename)
+        (imalison:make-org-template (imalison:get-string-from-file filename)))
+
+      (cl-defun imalison:make-org-todo-template
           (&key (content "%?") (creation-state "TODO"))
         (with-temp-buffer
           (org-mode)
@@ -1225,8 +1238,8 @@ Sets environment variables by starting a shell
           (cond ((eq major-mode 'org-mode) (org-todo))
                 ((eq major-mode 'org-agenda-mode) (org-agenda-todo)))))
 
-      (defun org-capture-make-linked-todo-template ()
-        (org-capture-make-todo-template "%? %A"))
+      (defun imalison:make-org-linked-todo-template ()
+        (imalison:make-org-todo-template "%? %A"))
 
       (defun org-cmp-creation-times (a b)
         (let ((a-created (get-date-created-from-agenda-entry a))
@@ -1394,11 +1407,11 @@ Sets environment variables by starting a shell
 
       (add-to-list 'org-capture-templates
                    `("t" "GTD Todo (Linked)" entry (file ,imalison:org-gtd-file)
-                     (function org-capture-make-linked-todo-template)))
+                     (function imalison:make-org-linked-todo-template)))
 
       (add-to-list 'org-capture-templates
                    `("g" "GTD Todo" entry (file ,imalison:org-gtd-file)
-                     (function org-capture-make-todo-template)))
+                     (function imalison:make-org-todo-template)))
 
       (add-to-list 'org-capture-templates
                    `("y" "Calendar entry (Linked)" entry
@@ -1548,8 +1561,8 @@ Sets environment variables by starting a shell
         (interactive "P")
         (helm :sources (list (helm-source-org-capture-templates)
                              (org-projectile:helm-source
-                              (if arg (org-capture-make-linked-todo-template)
-                                (org-capture-make-todo-template))))
+                              (if arg (imalison:make-org-linked-todo-template)
+                                (imalison:make-org-todo-template))))
               :candidate-number-limit 99999
               :buffer "*helm org capture templates*"))))
 #+END_SRC
