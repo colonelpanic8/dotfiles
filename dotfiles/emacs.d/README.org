@@ -228,14 +228,16 @@ Ensure by default since most of the package for which I use use-package need to 
 ** Encoding
 UTF-8 everywhere
 #+BEGIN_SRC emacs-lisp
-  (set-language-environment 'utf-8)
-  (set-keyboard-coding-system 'utf-8-mac) ; For old Carbon emacs on OS X only
-  (setq locale-coding-system 'utf-8)
-  (set-default-coding-systems 'utf-8)
-  (set-terminal-coding-system 'utf-8)
-  (unless (eq system-type 'windows-nt)
-    (set-selection-coding-system 'utf-8))
-  (prefer-coding-system 'utf-8)
+  (defun imalison:set-coding-systems ()
+    (interactive)
+    (set-language-environment "Latin-1")
+    (set-default-coding-systems 'utf-8)
+    (unless (eq system-type 'windows-nt)
+      (set-selection-coding-system 'utf-8))
+    (set-terminal-coding-system 'utf-8)
+    (setq locale-coding-system 'utf-8)
+    (prefer-coding-system 'utf-8))
+  (imalison:set-coding-systems)
 #+END_SRC
 Disable CJK coding/encoding (Chinese/Japanese/Korean characters)
 #+BEGIN_SRC emacs-lisp
