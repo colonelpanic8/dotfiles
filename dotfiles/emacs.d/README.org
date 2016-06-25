@@ -2162,8 +2162,9 @@ I use helm for almost all emacs completion
         (set (make-local-variable 'company-backends) '(company-go))))
     :config
     (progn
-      (use-package gotest
-        :demand
+      (imalison:use-package*
+       gotest "~/Projects/gotest.el"
+       :demand t
         :bind (:map go-mode-map
                     ("C-c t" . imalison:gotest))
         :preface
