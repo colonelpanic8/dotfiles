@@ -645,7 +645,7 @@ Create cache structure containing stop information
                   (when muni-stop
                     (pcache-put imalison:muni-stop-cache
                                 (intern (oref muni-stop :id)) muni-stop)))))
-                                
+
   (defun imalison:muni-stop-from-id (stop-or-id)
     (if (imalison:muni-stop-p stop) stop-or-id
       (pcache-get imalison:muni-stop-cache stop-or-id)))
