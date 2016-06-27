@@ -3028,8 +3028,10 @@ This is useful with server mode when editing gmail messages. I think that it is 
     :commands helm-swoop)
 #+END_SRC
 *** perspective
+I've disabled perspective because I just don't use it much.
 #+BEGIN_SRC emacs-lisp
   (use-package perspective
+    :disabled t
     :demand t
     :config
     (progn
