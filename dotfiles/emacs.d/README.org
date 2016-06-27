@@ -16,7 +16,7 @@ This makes it so that the file that is produced from tangling this file uses lex
         (replace-regexp-in-string "\n$" "" (shell-command-to-string
                                             "git config --get user.email")))
 #+END_SRC
-** auto-compile
+** Setup auto-compile
 This is here because it needs to be activated as early as possible
 #+BEGIN_SRC emacs-lisp
   (use-package auto-compile
@@ -247,6 +247,10 @@ Disable CJK coding/encoding (Chinese/Japanese/Korean characters)
 This is set to true to disable the annoying audible bell that plays whenever there is an error.
 #+BEGIN_SRC emacs-lisp
   (setq visible-bell t)
+#+END_SRC
+** Configure vc
+#+BEGIN_SRC emacs-lisp
+  (setq vc-follow-symlinks t)
 #+END_SRC
 ** Misc
 #+BEGIN_SRC emacs-lisp
