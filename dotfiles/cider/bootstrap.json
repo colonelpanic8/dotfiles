@@ -62,6 +62,7 @@
     "daemonize",
     "docker",
     "emacs-mac",
+    "figlet",
     "findutils",
     "fontconfig",
     "fontforge",
