@@ -2598,11 +2598,14 @@ I don't use iedit directly, but it is used by [[*emr][emr]] and I need to disabl
       (define-key ctl-x-4-map "np" 'ni-narrow-to-page-indirect-other-window)))
 #+END_SRC
 *** editorconfig
+I had to disable this mode because something that it does messes with coding settings and makes it so that I have to select the appropriate encoding every time I save gpg encrypted files.
 #+BEGIN_SRC emacs-lisp
-    (use-package editorconfig
-      :config
-      (progn
-        (editorconfig-mode 1)))
+  (use-package editorconfig
+    :disabled t
+    :config
+    (progn
+      (add-to-list 'editorconfig-exclude-modes '(org-mode))
+      (editorconfig-mode 1)))
 #+END_SRC
 *** dtrt-indent
 #+BEGIN_SRC emacs-lisp
