@@ -791,7 +791,8 @@ This interactive functions allows the user the select a function to invoke using
                        (read-shell-command "Shell command on region: ")))
     (shell-command-on-region start end command nil t))
 
-  (imalison:prefix-alternatives imalison:copy-shell-command-on-region
+  (imalison:prefix-alternatives imalison:shell-command-on-region
+                                imalison:copy-shell-command-on-region
                                 imalison:shell-command-on-region-replace)
 #+END_SRC
 ** Copy String Functions
