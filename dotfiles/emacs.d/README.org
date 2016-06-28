@@ -2108,11 +2108,19 @@ I use helm for almost all emacs completion
         (subword-mode t)
         (imalison:make-imenu-index-flat)
         (jedi:setup)
+        (add-hook 'before-save-hook 'pyimport-remove-unused t t)
         (add-virtual-envs-to-jedi-server)
         (remove-hook 'completion-at-point-functions
                      'python-completion-complete-at-point 'local)
         (set (make-local-variable 'company-backends) '(company-jedi)))
       (add-hook 'python-mode-hook #'imalison:python-mode))))
+#+END_SRC
+
+#+BEGIN_SRC emacs-lisp
+  (use-package pyimport
+    :bind (:map python-mode-map
+                ("C-c C-i" . pyimport-insert-missing))
+    :commands pyimport-remove-unused)
 #+END_SRC
 **** go
 #+BEGIN_SRC emacs-lisp
