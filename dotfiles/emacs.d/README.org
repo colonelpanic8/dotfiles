@@ -3411,6 +3411,10 @@ Ensure all themes that I use are installed:
 #+BEGIN_SRC emacs-lisp
   (use-package spaceline-config
     :ensure spaceline
+    :preface
+    (progn
+      (defun spaceline-gh-notifier-disable-default-notifier-modeline (&rest args)
+        (delq 'github-notifier-mode-line global-mode-string)))
     :config
     (progn
       (setq powerline-default-separator (random-choice '(butt slant wave)))
@@ -3426,9 +3430,8 @@ Ensure all themes that I use are installed:
 
       (advice-add 'github-notifier-mode :after
                   'spaceline-gh-notifier-disable-default-notifier-modeline)
-
-      (defun spaceline-gh-notifier-disable-default-notifier-modeline (&rest args)
-        (delq 'github-notifier-mode-line global-mode-string))
+      (advice-add 'github-notifier-update :after
+                  'spaceline-gh-notifier-disable-default-notifier-modeline)
 
       (spaceline-define-segment spaceline-gh-notifier
         "Display the number of github notifications the user has"
