@@ -1,7 +1,9 @@
 ## Command history configuration
-HISTFILE="$(readlink -f $HOME/.zsh_history)"
-HISTSIZE=100000
-SAVEHIST=100000
+export HISTFILE="$(readlink -f $HOME/.zsh_history)"
+HISTSIZE=10000000
+SAVEHIST=10000000
+
+shell_contains "$HISTFILE" SparkleShare && echo "Warning: sparkleshare in zsh history"
 
 setopt share_history # share command history data
 setopt extended_history
