@@ -35,6 +35,7 @@
         skeleton-pair-insert-maybe
         sp-backward-sexp
         sp-forward-sexp
+        sp-splice-sexp-killing-backward
         string-inflection-toggle
         tern-ac-dot-complete
         transpose-sexps
