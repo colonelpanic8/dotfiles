@@ -1654,19 +1654,6 @@ I use helm for almost all emacs completion
     (progn
       (setq helm-split-window-default-side 'same)         (ref:helm split window)
 
-      (defun helm-source-org-capture-templates ()
-        (helm-build-sync-source "Org Capture Templates:"
-          :candidates (cl-loop for template in org-capture-templates
-                               collect `(,(nth 1 template) . ,(nth 0 template)))
-          :action '(("Do capture" . (lambda (template-shortcut)
-                                      (org-capture nil template-shortcut))))))
-
-      (defun helm-org-capture-templates ()
-        (interactive)
-        (helm :sources (helm-source-org-capture-templates)
-              :candidate-number-limit 99999
-              :buffer "*helm org capture templates*"))
-
       (cl-defun helm-org-headings-in-buffer ()
         (interactive)
         (helm :sources (helm-source-org-headings-for-files
