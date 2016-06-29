@@ -173,7 +173,11 @@ Ensure by default since most of the package for which I use use-package need to 
 #+BEGIN_SRC emacs-lisp
   (line-number-mode t)
   (column-number-mode t)
-  (global-linum-mode t)
+#+END_SRC
+Linum can be really slow so do not have it on by default. Its probably safe to turn it on when in a programming mode
+#+BEGIN_SRC emacs-lisp
+  (global-linum-mode -1)
+  (add-hook 'prog-mode-hook (lambda () (linum-mode t)))
 #+END_SRC
 ** Backups
 *** Put them all in one directory
