@@ -2010,7 +2010,6 @@ This was stolen from https://github.com/jwiegley/dot-emacs
 **** github-notifier
 #+BEGIN_SRC emacs-lisp
   (use-package github-notifier
-    :disabled t
     :config (github-notifier-mode))
 #+END_SRC
 **** github-browse-file
@@ -3382,9 +3381,21 @@ Ensure all themes that I use are installed:
         "Display the number of minutes until the next muni train comes"
         (format "🚇%s" (imalison:get-cached-muni-time))
         :when active)
+
+      (advice-add 'github-notifier-mode :after
+                  'spaceline-gh-notifier-disable-default-notifier-modeline)
+
+      (defun spaceline-gh-notifier-disable-default-notifier-modeline (&rest args)
+        (delq 'github-notifier-mode-line global-mode-string))
+
+      (spaceline-define-segment spaceline-gh-notifier
+        "Display the number of github notifications the user has"
+        (format "✉%s" github-notifier-unread-count)
+        :when (> github-notifier-unread-count 0))
+
       (setq powerline-height 25)
       (spaceline-helm-mode)
-      (spaceline-spacemacs-theme)))
+      (spaceline-spacemacs-theme spaceline-gh-notifier)))
 #+END_SRC
 ** window-number
 #+BEGIN_SRC emacs-lisp
