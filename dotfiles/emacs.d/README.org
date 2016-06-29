@@ -788,7 +788,10 @@ This interactive functions allows the user the select a function to invoke using
         (let ((temp-buffer (current-buffer)))
           (with-current-buffer original-buffer
             (shell-command-on-region start end command temp-buffer))
-          (kill-ring-save (point-max) (point-min))))))
+          (let ((min (point-min))
+                (max (point-max)))
+          (kill-ring-save min max)
+          (buffer-substring min max))))))
 
   (defun imalison:shell-command-on-region-replace (start end command)
     (interactive (list (region-beginning) (region-end)
@@ -2226,6 +2229,42 @@ This was stolen from https://github.com/jwiegley/dot-emacs
       (add-hook 'go-mode-hook 'imalison:go-mode-hook)
       (add-hook 'before-save-hook 'gofmt-before-save t)
       (add-hook 'after-save-hook 'go-mode-install-current-project)))
+#+END_SRC
+***** Show diffs of testify output
+#+BEGIN_SRC emacs-lisp
+  (defvar imalison:testify-ediff-buffers nil)
+  (defun imalison:purge-ediff-buffers (&rest args)
+    (cl-loop for buffer in imalison:testify-ediff-buffers
+             do (kill-buffer buffer))
+    (setq imalison:testify-ediff-buffers nil))
+
+  (add-hook 'ediff-cleanup-hook 'imalison:purge-ediff-buffers)
+
+  (defun imalison:go-testify-show-ediff ()
+    (interactive)
+    (let ((buffer (get-buffer-create "*Testify JSON*"))
+          json-result)
+      (shell-command-on-region (point-min) (point-max) "parse_go_testify_for_emacs.py" buffer)
+      (with-current-buffer buffer
+        (goto-char (point-min))
+        (setq json-result (json-read)))
+      (let ((actual-buffer (generate-new-buffer "*Testify Actual*"))
+            (expected-buffer (generate-new-buffer "*Testify Expected*")))
+        (add-to-list 'imalison:testify-ediff-buffers actual-buffer)
+        (add-to-list 'imalison:testify-ediff-buffers expected-buffer)
+        (with-current-buffer actual-buffer
+          (insert (cdr (assoc 'actual json-result)))
+          (with-current-buffer expected-buffer
+            (insert (cdr (assoc 'expected json-result)))
+            (ediff-buffers actual-buffer expected-buffer))))))
+
+  (defun imalison:go-testify-show-icdiff ()
+    (interactive)
+    (let ((buffer (get-buffer-create "*Testify Comparison*")))
+      (shell-command-on-region (point-min) (point-max) "parse_go_testify_not_equal.py" buffer)
+      (with-current-buffer buffer
+        (fundamental-ansi-mode))
+      (switch-to-buffer buffer)))
 #+END_SRC
 **** emacs-lisp
 ***** elisp-slime-nav
