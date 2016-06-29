@@ -2010,7 +2010,10 @@ This was stolen from https://github.com/jwiegley/dot-emacs
 **** github-notifier
 #+BEGIN_SRC emacs-lisp
   (use-package github-notifier
-    :config (github-notifier-mode))
+    :config
+    (progn
+      (advice-add 'github-notifier-update :around 'imalison:shut-up-around)
+      (github-notifier-mode)))
 #+END_SRC
 **** github-browse-file
 #+BEGIN_SRC emacs-lisp
@@ -3395,7 +3398,7 @@ Ensure all themes that I use are installed:
 
       (setq powerline-height 25)
       (spaceline-helm-mode)
-      (spaceline-spacemacs-theme spaceline-gh-notifier)))
+      (spaceline-spacemacs-theme 'spaceline-gh-notifier)))
 #+END_SRC
 ** window-number
 #+BEGIN_SRC emacs-lisp
