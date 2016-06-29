@@ -909,7 +909,7 @@ For composing functions with an apply so that they can be used with the ~:around
      (org-entry-get (get-text-property 1 'org-marker agenda-entry) "CREATED")))
 
   (defmacro defvar-setq (name value)
-    `(if (boundp ,name)
+    `(if (boundp (quote ,name))
          (setq ,name ,value)
        (defvar ,name ,value)))
 
