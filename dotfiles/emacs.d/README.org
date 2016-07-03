@@ -1570,6 +1570,8 @@ Sets environment variables by starting a shell
       (add-to-list 'org-capture-templates (org-projectile:project-todo-entry "p"))
       (setq org-confirm-elisp-link-function nil)
       (imalison:add-to-org-agenda-files (org-projectile:todo-files))
+      (require 'helm-source)
+      (require 'helm-org)
       (defun imalison:helm-org-todo (&optional arg)
         (interactive "P")
         (helm :sources (list (helm-source-org-capture-templates)
