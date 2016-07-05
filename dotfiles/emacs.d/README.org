@@ -2587,6 +2587,10 @@ crux-reopen-as-root-mode makes it so that any file owned by root will automatica
                                          bitlbee-password))))))
 
 #+END_SRC
+*** slack
+#+BEGIN_SRC emacs-lisp
+  (use-package slack)
+#+END_SRC
 ** Other
 *** anzu
 #+BEGIN_SRC emacs-lisp
