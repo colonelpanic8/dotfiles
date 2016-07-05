@@ -19,8 +19,8 @@ function get_python_scripts_path {
 
 function _setup_env {
     _path_helper
+    hash brew 2>/dev/null && add_to_path "$(brew --prefix coreutils)/libexec/gnubin"
     add_to_path /usr/local/lib/python2.7/site-packages --after
-    add_to_path "$HOME/.rvm/bin" --after
     add_to_path "$HOME/bin"
     hash brew 2>/dev/null && add_to_path --before "$(brew --prefix coreutils)/libexec/gnubin"
     add_to_path "/usr/local/bin"
@@ -49,18 +49,12 @@ function _setup_env {
 
     add_to_path "$HOME/.lib/python" --after
     add_to_path "/usr/local/sbin" --after
-    add_to_path "$HOME/.cargo/bin"
-
-    # Load RVM into a shell session *as a function*
-    [[ -s "$HOME/.rvm/scripts/rvm" ]] && source "$HOME/.rvm/scripts/rvm"
 
     function with_shellrc {
         zsh -c "source ~/.zshrc && ""$@"
     }
 
-    # Travis completion
-    [ -f "$HOME/.travis/travis.sh" ] && source "$HOME/.travis/travis.sh"
-
+    # node/nvm
     export NVM_DIR="/Users/imalison/.nvm"
     [ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh"  # This loads nvm
     export NODE_PATH="/usr/local/lib/node_modules/"
@@ -68,13 +62,23 @@ function _setup_env {
     add_to_path "$HOME/.local/bin"
     add_to_path "$HOME/.lib/python" --path-var 'PYTHONPATH'
 
+    # golang
     add_to_path "$HOME/go" --path-var 'GOPATH'
     add_to_path "${GOPATH//://bin:}/bin"
 
+    # ruby
+    # Load RVM into a shell session *as a function*
+    [[ -s "$HOME/.rvm/scripts/rvm" ]] && source "$HOME/.rvm/scripts/rvm"
     export RBENV_ROOT=/usr/local/var/rbenv
     add_to_path "$HOME/.rbenv/bin"
+    add_to_path "$HOME/.rvm/bin" --after
     hash rbenv 2> /dev/null && eval "$(rbenv init -)"
-    hash brew 2>/dev/null && add_to_path "$(brew --prefix coreutils)/libexec/gnubin"
+
+    # rust
+    add_to_path "$HOME/.cargo/bin"
+
+    # Travis completion
+    [ -f "$HOME/.travis/travis.sh" ] && source "$HOME/.travis/travis.sh"
 
     add_to_path "$HOME/.lib/bin"
     export ENVIRONMENT_SETUP_DONE="$(date)"
