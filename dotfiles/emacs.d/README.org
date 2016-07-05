@@ -1307,7 +1307,11 @@ Sets environment variables by starting a shell
          (octave . t)
          (sqlite . t)))
 
-      (setq org-log-into-drawer t)
+      (setq org-log-into-drawer t
+            org-log-reschedule t
+            org-log-redeadline t
+            org-treat-insert-todo-heading-as-state-change t)
+
 
       (when nil
         ;; Enable appointment notifications.
