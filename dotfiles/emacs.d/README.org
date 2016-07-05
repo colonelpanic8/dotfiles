@@ -3428,6 +3428,11 @@ Ensure all themes that I use are installed:
         (delq 'github-notifier-mode-line global-mode-string)))
     :config
     (progn
+      (advice-add 'github-notifier-mode :after
+                  'spaceline-gh-notifier-disable-default-notifier-modeline)
+      (advice-add 'github-notifier-update :after
+                  'spaceline-gh-notifier-disable-default-notifier-modeline)
+
       (setq powerline-default-separator (random-choice '(butt slant wave)))
       (setq spaceline-workspace-numbers-unicode t
             spaceline-window-numbers-unicode t)
@@ -3438,11 +3443,6 @@ Ensure all themes that I use are installed:
         "Display the number of minutes until the next muni train comes"
         (format "🚇%s" (imalison:get-cached-muni-time))
         :when active)
-
-      (advice-add 'github-notifier-mode :after
-                  'spaceline-gh-notifier-disable-default-notifier-modeline)
-      (advice-add 'github-notifier-update :after
-                  'spaceline-gh-notifier-disable-default-notifier-modeline)
 
       (spaceline-define-segment spaceline-gh-notifier
         "Display the number of github notifications the user has"
