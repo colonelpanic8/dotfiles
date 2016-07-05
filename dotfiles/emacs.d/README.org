@@ -1919,6 +1919,7 @@ This was stolen from https://github.com/jwiegley/dot-emacs
 *** yasnippet
 #+BEGIN_SRC emacs-lisp
   (use-package yasnippet
+    :disabled t
     :defer 5
     :commands (yas-global-mode)
     :config
