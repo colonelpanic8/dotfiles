@@ -1662,6 +1662,7 @@ I use helm for almost all emacs completion
     :diminish helm-mode
     :config
     (progn
+      (require 'helm-org)
       (setq helm-split-window-default-side 'same)         (ref:helm split window)
 
       (cl-defun helm-org-headings-in-buffer ()
