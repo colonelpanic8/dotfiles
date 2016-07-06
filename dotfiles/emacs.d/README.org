@@ -2350,6 +2350,64 @@ Reduce indentation for some functions
 (define-key lisp-mode-shared-map (kbd "C-x C-e") 'eval-region-or-last-sexp)
 (unbind-key "C-j" lisp-interaction-mode-map)
 #+END_SRC
+**** clojure
+The following is taken from [[https://github.com/syl20bnr/spacemacs/blob/a650877bea582fed72bbca0dc1f80fcb2ec0e6d5/layers/+lang/clojure/funcs.el#L30][spacemacs]]. It adds fancification to a clojure mode.
+#+BEGIN_SRC emacs-lisp
+(defun imalison:clojure-fancify-symbols (mode)
+  "Pretty symbols for Clojure's anonymous functions and sets,
+   like (λ [a] (+ a 5)), ƒ(+ % 5), and ∈{2 4 6}."
+  (font-lock-add-keywords mode
+    `(("(\\(fn\\)[\[[:space:]]"
+       (0 (progn (compose-region (match-beginning 1)
+                                 (match-end 1) "λ"))))
+      ("(\\(partial\\)[\[[:space:]]"
+       (0 (progn (compose-region (match-beginning 1)
+                                 (match-end 1) "Ƥ"))))
+      ("(\\(comp\\)[\[[:space:]]"
+       (0 (progn (compose-region (match-beginning 1)
+                                 (match-end 1) "∘"))))
+      ("\\(#\\)("
+       (0 (progn (compose-region (match-beginning 1)
+                                 (match-end 1) "ƒ"))))
+      ("\\(#\\){"
+       (0 (progn (compose-region (match-beginning 1)
+                                 (match-end 1) "∈")))))))
+#+END_SRC
+#+BEGIN_SRC emacs-lisp
+(use-package clojure-mode
+  :commands clojure-mode
+  :preface
+  (progn
+    (add-to-list 'magic-mode-alist '("#!.*boot\\s-*$" . clojure-mode))
+    (add-to-list 'auto-mode-alist '("\\.boot\\'" . clojure-mode))
+    (defun imalison:clojure-mode-hook ()
+      ;; (cljr-add-keybindings-with-prefix "C-c C-m")
+      (clj-refactor-mode 1)
+      ;;for adding require/use/import statements
+      (yas-minor-mode 1)))
+  :config
+  (progn
+    (add-hook 'clojure-mode-hook 'imalison:clojure-mode-hook)
+    (dolist (m '(clojure-mode clojurescript-mode clojurec-mode clojurex-mode))
+      (imalison:clojure-fancify-symbols m))))
+#+END_SRC
+***** cider
+#+BEGIN_SRC emacs-lisp
+(use-package cider
+  :commands (cider-jack-in)
+  :config
+  (progn
+    (setq cider-stacktrace-default-filters '(tooling dup)
+          cider-repl-pop-to-buffer-on-connect nil
+          cider-prompt-save-file-on-load nil
+          cider-repl-use-clojure-font-lock t)
+    (add-hook 'clojure-mode-hook 'cider-mode)))
+#+END_SRC
+***** clj-refactor
+#+BEGIN_SRC emacs-lisp
+(use-package clj-refactor
+  :commands clj-refactor-mode)
+#+END_SRC
 **** scala
 #+BEGIN_SRC emacs-lisp
 (use-package scala-mode2
