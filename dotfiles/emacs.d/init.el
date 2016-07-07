@@ -13,6 +13,8 @@
   (setq mac-option-modifier 'meta)
   (setq mac-command-modifier 'super))
 
+(setq use-package-enable-imenu-support t)
+
 (org-babel-load-file
  (concat (file-name-directory load-file-name) "README.org"))
 
