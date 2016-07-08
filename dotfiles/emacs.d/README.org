@@ -1657,6 +1657,7 @@ Sets environment variables by starting a shell
   :config
   (progn
     (unbind-key "C-j" TeX-mode-map)
+    (TeX-global-PDF-mode)
     (setq TeX-auto-save t
           TeX-parse-self t
           TeX-save-query nil
@@ -1678,7 +1679,9 @@ Sets environment variables by starting a shell
 (use-package auctex-latexmk
   :after tex
   :config
-  (progn (auctex-latexmk-setup)))
+  (progn
+    (setq auctex-latexmk-inherit-TeX-PDF-mode t)
+    (auctex-latexmk-setup)))
 #+END_SRC
 **** company-auctex
 #+BEGIN_SRC emacs-lisp
