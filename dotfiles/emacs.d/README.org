@@ -2065,8 +2065,11 @@ This was stolen from https://github.com/jwiegley/dot-emacs
                                   github-clone))
 #+END_SRC
 **** github-notifier
+This is disabled because it was causing too many issues with my
+modeline and with excessive http requests to github.
 #+BEGIN_SRC emacs-lisp
 (use-package github-notifier
+  :disabled t
   :config
   (progn
     (advice-add 'github-notifier-update :around 'imalison:shut-up-around)
@@ -3505,7 +3508,8 @@ Ensure all themes that I use are installed:
 
     (setq powerline-height 25)
     (spaceline-helm-mode)
-    (spaceline-spacemacs-theme 'spaceline-gh-notifier)))
+    ;; 'spaceline-gh-notifier and 'imalison:muni disabled for now
+    (spaceline-spacemacs-theme)))
 #+END_SRC
 ** window-number
 #+BEGIN_SRC emacs-lisp
