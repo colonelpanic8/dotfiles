@@ -1648,6 +1648,12 @@ Sets environment variables by starting a shell
 (use-package tex
   :ensure auctex
   :commands TeX-mode
+  :preface
+  (progn
+    (defun imalison:TeX-mode-hook ()
+      (turn-on-reftex)
+      (TeX-source-correlate-mode +1)
+      (TeX-PDF-mode +1)))
   :config
   (progn
     (unbind-key "C-j" TeX-mode-map)
@@ -1655,7 +1661,8 @@ Sets environment variables by starting a shell
           TeX-parse-self t
           TeX-save-query nil
           TeX-PDF-mode t)
-    (TeX-global-PDF-mode t)))
+    (TeX-global-PDF-mode t)
+    (add-hook 'TeX-mode-hook 'imalison:TeX-mode-hook)))
 #+END_SRC
 **** latex
  #+BEGIN_SRC emacs-lisp
@@ -1666,6 +1673,20 @@ Sets environment variables by starting a shell
   (progn
     (unbind-key "C-j" LaTeX-mode-map)))
  #+END_SRC
+**** auctex-latexmk
+#+BEGIN_SRC emacs-lisp
+(use-package auctex-latexmk
+  :after tex
+  :config
+  (progn (auctex-latexmk-setup)))
+#+END_SRC
+**** company-auctex
+#+BEGIN_SRC emacs-lisp
+(use-package company-auctex
+  :after tex
+  :config
+  (company-auctex-init))
+#+END_SRC
 ** Navigation/Completion
 *** zop-to-char
 #+BEGIN_SRC emacs-lisp
