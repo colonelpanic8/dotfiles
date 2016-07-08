@@ -1162,8 +1162,8 @@ Sets environment variables by starting a shell
       ("t" imalison:make-test "Test")
       ("u" imalison:glide-up "Update Dependencies"))))
 #+END_SRC
-** org
-*** main
+** Document Editing
+*** org 
 #+BEGIN_SRC emacs-lisp
 (use-package org
   :ensure org-plus-contrib
@@ -1562,8 +1562,8 @@ Sets environment variables by starting a shell
     ;; blame.
     ))
 #+END_SRC
-*** org-projectile
-#+BEGIN_SRC emacs-lisp
+**** org-projectile
+ #+BEGIN_SRC emacs-lisp
 (imalison:use-package org-projectile
   :after helm
   :bind (("C-c n p" . imalison:helm-org-todo))
@@ -1586,9 +1586,9 @@ Sets environment variables by starting a shell
                               (imalison:make-org-todo-template))))
             :candidate-number-limit 99999
             :buffer "*helm org capture templates*"))))
-#+END_SRC
-*** org-notify
-#+BEGIN_SRC emacs-lisp
+ #+END_SRC
+**** org-notify
+ #+BEGIN_SRC emacs-lisp
 (use-package org-notify
   :disabled t
   :after org
@@ -1642,7 +1642,30 @@ Sets environment variables by starting a shell
                     '(:time "50d" :actions -email :period "3d" :audible nil)
                     '(:time "100d" :actions -email :period "5d" :audible nil))
     (org-notify-start 10)))
+ #+END_SRC
+*** TeX
+#+BEGIN_SRC emacs-lisp
+(use-package tex
+  :ensure auctex
+  :commands TeX-mode
+  :config
+  (progn
+    (unbind-key "C-j" TeX-mode-map)
+    (setq TeX-auto-save t
+          TeX-parse-self t
+          TeX-save-query nil
+          TeX-PDF-mode t)
+    (TeX-global-PDF-mode t)))
 #+END_SRC
+**** latex
+ #+BEGIN_SRC emacs-lisp
+(use-package latex
+  :ensure auctex
+  :after tex
+  :config
+  (progn
+    (unbind-key "C-j" LaTeX-mode-map)))
+ #+END_SRC
 ** Navigation/Completion
 *** zop-to-char
 #+BEGIN_SRC emacs-lisp
@@ -3329,60 +3352,6 @@ I've disabled perspective because I just don't use it much.
     (add-hook 'c-mode-hook 'helm-gtags-mode)
     (add-hook 'c++-mode-hook 'helm-gtags-mode)
     (add-hook 'asm-mode-hook 'helm-gtags-mode)))
-#+END_SRC
-*** tex
-#+BEGIN_SRC emacs-lisp
-(use-package tex
-  :ensure auctex
-  :preface
-  (progn
-    (defun guess-TeX-master (filename)
-      "Guess the master file for FILENAME from currently open .tex files."
-      (let ((candidate nil)
-            (filename (file-name-nondirectory filename)))
-        (save-excursion
-          (dolist (buffer (buffer-list))
-            (with-current-buffer buffer
-              (let ((name (buffer-name))
-                    (file buffer-file-name))
-                (if (and file (string-match "\\.tex$" file))
-                    (progn
-                      (goto-char (point-min))
-                      (if (re-search-forward
-                           (concat "\\\\input{" filename "}") nil t)
-                          (setq candidate file))
-                      (if (re-search-forward
-                           "\\\\include{" (file-name-sans-extension filename) "}"
-                           nil t)
-                          (setq candidate file))))))))
-        (if candidate
-            (message "TeX master document: %s" (file-name-nondirectory candidate)))
-        candidate))
-
-    (defun set-TeX-master ()
-      (setq TeX-master (guess-TeX-master (buffer-file-name)))))
-  :commands TeX-mode
-  :config
-  (progn
-    (add-hook 'TeX-mode-hook 'set-TeX-master)
-    (unbind-key "C-j" TeX-mode-map)
-    (setq TeX-auto-save t)
-    (setq TeX-parse-self t)
-    (setq TeX-save-query nil)
-    (setq TeX-PDF-mode t)
-    (TeX-global-PDF-mode t)
-    (setq-default TeX-master nil)))
-#+END_SRC
-#+BEGIN_SRC emacs-lisp
-#+END_SRC
-*** latex
-#+BEGIN_SRC emacs-lisp
-(use-package latex
-  :ensure auctex
-  :after tex
-  :config
-  (progn
-    (unbind-key "C-j" LaTeX-mode-map)))
 #+END_SRC
 *** yaml-mode
 #+BEGIN_SRC emacs-lisp
