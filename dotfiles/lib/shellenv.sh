@@ -77,6 +77,9 @@ function _setup_env {
     # rust
     add_to_path "$HOME/.cargo/bin"
 
+    # tex
+    is_osx && add_to_path "/Library/TeX/texbin/"
+
     # Travis completion
     [ -f "$HOME/.travis/travis.sh" ] && source "$HOME/.travis/travis.sh"
 
