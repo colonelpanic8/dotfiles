@@ -3,6 +3,7 @@
 
 (setq mc/cmds-to-run-for-all
       '(
+        TeX-insert-backslash
         backward-sexp
         beginning-of-visual-line
         delete-horizontal-space
@@ -25,6 +26,7 @@
         org-beginning-of-line
         org-delete-char
         org-end-of-line
+        org-force-self-insert
         org-kill-line
         org-self-insert-command
         org-yank
