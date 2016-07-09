@@ -123,7 +123,7 @@ These definitions silence the byte-compiler
     ;; ("marmalade" "marmalade-repo.org/packages/")             (ref:marmalade)
     ("org" "orgmode.org/elpa/" "http")                          (ref:org setup)
     ("melpa" "melpa.org/packages/" nil)
-    ("melpa-stable" "http://stable.melpa.org/packages/" nil)))
+    ("melpa-stable" "stable.melpa.org/packages/" nil)))
 
 (defun imalison:add-package-archive (archive-name archive-uri)
   (add-to-list 'package-archives
