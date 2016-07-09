@@ -1,7 +1,7 @@
 import os
 import sys
 
-from invoke import Collection, ctask
+from invoke import Collection, task as ctask
 
 from . import osx
 from . import linux

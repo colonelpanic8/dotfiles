@@ -1,6 +1,6 @@
 import os
 
-from invoke import ctask
+from invoke import task as ctask
 
 from . import util
 
