@@ -507,8 +507,6 @@ imalison:named-build is a way to invoke a macro in such a way that the lambda th
                                            "~/Projects"))
                  (symbol-name package))))
     `(imalison:use-package* ,package ,target-directory ,@forms)))
-
-
 #+END_SRC
 *** Advice Add Around Builder
 For composing functions with an apply so that they can be used with the ~:around~ keyword of advice-add
@@ -1994,7 +1992,7 @@ This was stolen from https://github.com/jwiegley/dot-emacs
   (progn
     (defvar-setq magit-last-seen-setup-instructions "1.4.0")
     (magit-auto-revert-mode)
-    (when imalison:gpg-key
+    (when (bound-and-true-p imalison:gpg-key)
       (add-to-list 'magit-commit-arguments
                    (format "--gpg-sign=%s" imalison:gpg-key)))
     (use-package magit-filenotify
