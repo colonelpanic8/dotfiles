@@ -19,12 +19,13 @@ This makes it so that the file that is produced from tangling this file uses lex
 ** Setup auto-compile
 This is here because it needs to be activated as early as possible
 #+BEGIN_SRC emacs-lisp
-(use-package auto-compile
-  :ensure t
-  :config
-  (progn
-    (auto-compile-on-load-mode)
-    (auto-compile-on-save-mode)))
+(when (boundp 'use-package)
+      (use-package auto-compile
+        :ensure t
+        :config
+        (progn
+          (auto-compile-on-load-mode)
+          (auto-compile-on-save-mode))))
 #+END_SRC
 ** Prefer Newer Versions
 To reduce the risk of loading outdated byte code files, we set load-prefer-newer and enable auto-compile-on-load-mode as early as possible.
@@ -46,7 +47,7 @@ custom-before.el is loaded before the rest of init.el, while custom-after.el is 
 This appears here so that it can accurately benchmark as much of startup as possible.
 #+BEGIN_SRC emacs-lisp
 (defvar imalison:do-benchmark)
-(when (and (boundp 'imalison:do-benchmark) imalison:do-benchmark)
+(when (bound-and-true-p imalison:do-benchmark)
   (use-package benchmark-init))
 #+END_SRC
 ** GUI Disables
