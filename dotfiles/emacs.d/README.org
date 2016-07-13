@@ -2450,7 +2450,9 @@ The following is taken from [[https://github.com/syl20bnr/spacemacs/blob/a650877
     (setq cider-stacktrace-default-filters '(tooling dup)
           cider-repl-pop-to-buffer-on-connect nil
           cider-prompt-save-file-on-load nil
-          cider-repl-use-clojure-font-lock t)
+          cider-repl-use-clojure-font-lock t
+          cider-prompt-for-symbol nil
+          cider-preferred-build-tool "boot")
     (add-hook 'clojure-mode-hook 'cider-mode)))
 #+END_SRC
 ***** clj-refactor
