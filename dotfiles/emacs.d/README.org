@@ -2818,6 +2818,14 @@ I had to disable this mode because something that it does messes with coding set
   :init
   (add-hook 'prog-mode-hook (lambda () (company-mode t))))
 #+END_SRC
+
+**** company-flx
+#+BEGIN_SRC emacs-lisp
+(use-package company-flx
+  :after company
+  :config
+  (company-flx-mode +1))
+#+END_SRC
 *** undo-tree
 #+BEGIN_SRC emacs-lisp
 (use-package undo-tree
