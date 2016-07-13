@@ -1,9 +1,10 @@
 .ropeproject
 /.mail-sync
-/dotfiles/.tern-port
-config/google-chrome
+/config/google-chrome
 /dotfiles/.pip/download_cache
 /dotfiles/.pip/pip.log
+/dotfiles/.tern-port
+/dotfiles/boot/cache
 /dotfiles/cider/.cache/
 /dotfiles/config/Trolltech.conf
 /dotfiles/config/dconf/
