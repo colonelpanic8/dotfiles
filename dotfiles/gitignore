@@ -1,5 +1,28 @@
-# Compiled Python files
+# emacs
+.emacs.desktop
+.emacs*
+projectile.cache
+projectile-bookmarks.eld
+.dir-locals.el
+
+# Python
 *.pyc
+.ropeproject/
+dotfiles/pip/cache
+
+# Clojure
+.cljs_rhino_repl
+
+# CTags
+TAGS
+
+# Vim
+*.sw*
+*.tmp*
+
+# JavaScript
+.tern-project
+.tern-port
 
 # Folder view configuration files
 .DS_Store
@@ -9,30 +32,6 @@ Desktop.ini
 ._*
 Thumbs.db
 
-# Files that might appear on external disks
+# OSX
 .Spotlight-V100
 .Trashes
-
-.emacs.desktop
-
-.emacs*
-
-# yelp
-TAGS
-.ropeproject/
-
-*.sw*
-*.tmp*
-projectile.cache
-projectile-bookmarks.eld
-dotfiles/pip/cache
-
-.tern-project
-.tern-port
-
-dotfiles/config/configstore/
-dotfiles/config/browser-launcher2/
-dotfiles/pip/pip.log
-.dir-locals.el
-testing.restclient
-*.log
