@@ -2470,17 +2470,20 @@ The following is taken from [[https://github.com/syl20bnr/spacemacs/blob/a650877
 #+END_SRC
 **** scala
 #+BEGIN_SRC emacs-lisp
-(use-package scala-mode2
+(use-package scala-mode
   :mode (("\\.scala\\'" . scala-mode)
          ("\\.sc\\'" . scala-mode))
   :config
   (progn
-    (when (use-package ensime
-            :pin melpa-stable
-            :bind (:map ensime-mode-map
-                        ("M-," . ensime-pop-find-definition-stack))
-            :commands ensime-mode)
-      (add-hook 'scala-mode-hook 'ensime-scala-mode-hook))
+    (use-package ensime
+      :pin melpa-stable
+      :bind (:map ensime-mode-map
+                  ("M-," . ensime-pop-find-definition-stack))
+      :commands ensime-mode
+      :config
+      (progn
+        (setq ensime-startup-snapshot-notification nil)))
+    (add-hook 'scala-mode-hook 'ensime-scala-mode-hook)
     (setq scala-indent:align-parameters t)))
 #+END_SRC
 **** js
