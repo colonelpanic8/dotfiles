@@ -532,7 +532,7 @@ Works in the same way as os.path.join in python
 ** Variables
 #+BEGIN_SRC emacs-lisp
 (defvar imalison:projects-directory
-  (imalison:join-paths "~" "Projects"))
+  (imalison:join-paths (substitute-in-file-name "$HOME") "Projects"))
 
 (defvar imalison:gpg-key)
 #+END_SRC
