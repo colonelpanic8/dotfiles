@@ -1643,6 +1643,14 @@ Sets environment variables by starting a shell
                     '(:time "100d" :actions -email :period "5d" :audible nil))
     (org-notify-start 10)))
  #+END_SRC
+**** org-reveal
+#+BEGIN_SRC emacs-lisp
+(use-package ox-reveal
+  :after org
+  :config
+  (setq org-reveal-root
+      (imalison:join-paths "file://" imalison:projects-directory "reveal.js")))
+#+END_SRC
 *** TeX
 #+BEGIN_SRC emacs-lisp
 (use-package tex
