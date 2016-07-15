@@ -2415,13 +2415,13 @@ The following is taken from [[https://github.com/syl20bnr/spacemacs/blob/a650877
   "Pretty symbols for Clojure's anonymous functions and sets,
    like (λ [a] (+ a 5)), ƒ(+ % 5), and ∈{2 4 6}."
   (font-lock-add-keywords mode
-    `(("(\\(fn\\)[\[[:space:]]"
+    `(("(\\(fn\\)[\n\[[:space:]]"
        (0 (progn (compose-region (match-beginning 1)
                                  (match-end 1) "λ"))))
       ("(\\(partial\\)[\[[:space:]]"
        (0 (progn (compose-region (match-beginning 1)
                                  (match-end 1) "Ƥ"))))
-      ("(\\(comp\\)[\[[:space:]]"
+      ("(\\(comp\\)[\n\[[:space:]]"
        (0 (progn (compose-region (match-beginning 1)
                                  (match-end 1) "∘"))))
       ("\\(#\\)("
