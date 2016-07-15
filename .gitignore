@@ -7,6 +7,8 @@
 /dotfiles/boot/cache
 /dotfiles/cider/.cache/
 /dotfiles/config/Trolltech.conf
+/dotfiles/config/browser-launcher2
+/dotfiles/config/configstore
 /dotfiles/config/dconf/
 /dotfiles/config/google-chrome
 /dotfiles/config/gtk-2.0/
