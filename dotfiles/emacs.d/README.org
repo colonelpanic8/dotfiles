@@ -2834,6 +2834,7 @@ I had to disable this mode because something that it does messes with coding set
 **** company-flx
 #+BEGIN_SRC emacs-lisp
 (use-package company-flx
+  :disabled t
   :after company
   :config
   (company-flx-mode +1))
