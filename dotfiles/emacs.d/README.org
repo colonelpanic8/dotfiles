@@ -2630,7 +2630,8 @@ emr (emacs refactor) provides support for refactoring in many programming langua
 (use-package term
   :config
   (progn
-    (add-hook 'term-mode-hook 'imalison:disable-linum-mode)))
+    (add-hook 'term-mode-hook 'imalison:disable-linum-mode)
+    (setq term-buffer-maximum-size 0)))
 #+END_SRC
 *** term-manager
 #+BEGIN_SRC emacs-lisp
