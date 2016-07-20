@@ -2627,6 +2627,17 @@ emr (emacs refactor) provides support for refactoring in many programming langua
   (progn
     (add-hook 'prog-mode-hook 'semantic-mode)))
 #+END_SRC
+** Protocol
+*** thrift
+#+BEGIN_SRC emacs-lisp
+(use-package thrift
+  :commands thrift-mode
+  :mode (("\\.thrift\\'" . thrift-mode)))
+#+END_SRC
+*** protobuf
+#+BEGIN_SRC emacs-lisp
+(use-package protobuf-mode)
+#+END_SRC
 ** Utility
 *** term
 #+BEGIN_SRC emacs-lisp
@@ -3424,12 +3435,6 @@ I've disabled perspective because I just don't use it much.
 *** evil
 #+BEGIN_SRC emacs-lisp
 (use-package evil :commands (evil-mode))
-#+END_SRC
-*** thrift
-#+BEGIN_SRC emacs-lisp
-(use-package thrift
-  :commands thrift-mode
-  :mode (("\\.thrift\\'" . thrift-mode)))
 #+END_SRC
 *** markdown-mode
 #+BEGIN_SRC emacs-lisp
