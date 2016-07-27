@@ -2184,8 +2184,10 @@ modeline and with excessive http requests to github.
       (add-hook 'python-mode-hook #'imalison:python-mode))))
 #+END_SRC
 ***** pyimport
+Pyimport is disabled because it may be causing a performance problem.
 #+BEGIN_SRC emacs-lisp
 (use-package pyimport
+  :disabled t
   :bind (:map python-mode-map
               ("C-c C-i" . pyimport-insert-missing))
   :commands pyimport-remove-unused)
