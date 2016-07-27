@@ -31,6 +31,17 @@ class PathList(object):
         )
 
     def add(self, new_paths, after=False, target=None):
+
+        # Remove the path if it already exists in self.paths to ensure
+        # that the new placement takes precedence
+        for path in new_paths:
+            done = False
+            while not done:
+                try:
+                    self.paths.remove(path)
+                except:
+                    done = True
+
         if target:
             target_index = self.paths.index(target)
         else:
