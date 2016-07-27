@@ -59,7 +59,6 @@ function _python_setup {
 
     if which pyenv > /dev/null; then
         local PYENV_INIT_COMMANDS="$(pyenv init -)"
-        echo "$PYENV_INIT_COMMANDS"
         eval "$PYENV_INIT_COMMANDS"
     else
         echo "WARNING: pyenv is installed on this machine and python will likely not function correctly"
