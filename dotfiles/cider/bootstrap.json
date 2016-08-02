@@ -134,13 +134,14 @@
     "pkg-config",
     "plantuml",
     "pstree",
+    "psutils",
     "pv",
     "pyenv",
     "pypy",
     "python",
     "python3",
-    "racket",
     "rabbitmq",
+    "racket",
     "rbenv",
     "readline",
     "reattach-to-user-namespace",
@@ -174,6 +175,7 @@
     "wget",
     "whereami",
     "xz",
+    "yab",
     "zsh"
   ]
 }
