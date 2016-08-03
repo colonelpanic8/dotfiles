@@ -1823,7 +1823,6 @@ I use helm for almost all emacs completion
     (setq projectile-enable-caching nil)
     (setq projectile-completion-system 'helm)
     (add-to-list 'projectile-globally-ignored-files "Godeps")
-    (add-to-list 'projectile-globally-ignored-files "thrift-binaries")
     (shut-up (helm-projectile-on))
     (diminish 'projectile-mode)
     (bind-key* "C-c p s" 'imalison:do-ag)
@@ -2055,9 +2054,17 @@ This was stolen from https://github.com/jwiegley/dot-emacs
   :commands (github-search-clone-repo github-search-user-clone-repo)
   :preface
   (progn
+    (defun imalison:get-appropriate-path-from-gh-repo-for-go (repo)
+      (require 'go-mode)
+      (imalison:get-go-src "github.com" (oref (oref repo :owner) :login)
+                           (oref repo :name)))
+
     (defun imalison:get-projects-directory-target-from-repo (repo)
+      (message "%s" (oref repo language))
       (let ((prospective-path
-             (imalison:join-paths imalison:projects-directory (oref repo :name))))
+             (if (equal (oref repo language) "Go")
+                 (imalison:get-appropriate-path-from-gh-repo-for-go repo)
+               (imalison:join-paths imalison:projects-directory (oref repo :name)))))
         (if (file-exists-p prospective-path)
             (funcall 'github-search-prompt-for-target-directory repo)
           prospective-path))))
@@ -2198,11 +2205,11 @@ Pyimport is disabled because it may be causing a performance problem.
   :mode (("\\.go\\'" . go-mode))
   :preface
   (progn
-    (defun go-mode-glide-novendor ()
+    (defun imalison:glide-novendor ()
       (projectile-with-default-dir (projectile-project-root)
         (shell-command-to-string "glide novendor")))
 
-    (defun go-mode-create-imenu-index ()
+    (defun imalison:go-mode-create-imenu-index ()
       "Create and return an imenu index alist. Unlike the default
   alist created by go-mode, this method creates an alist where
   items follow a style that is consistent with other prog-modes."
@@ -2223,26 +2230,35 @@ Pyimport is disabled because it may be causing a performance problem.
               (setq func-index (cons item func-index)))))
         (nconc type-index (list (cons "func" func-index)))))
 
-    (defun go-mode-workspace-path ()
+    (defun imalison:go-workspace-path ()
       (file-relative-name (projectile-project-root)
                           (concat (file-name-as-directory
-                                   (or (getenv "GOPATH") "~/go")) "src")))
+                                   (go-mode-get-go-path)) "src")))
 
-    (defun go-mode-install-current-project ()
+    (defun imalison:install-current-go-project ()
       (interactive)
       (start-process
        "go install" "go install log" "go" "install"
-       (concat (file-name-as-directory (go-mode-workspace-path)) "...")))
+       (concat (file-name-as-directory (imalison:go-workspace-path)) "...")))
 
-    (defun go-mode-get-go-path ()
-      (file-name-as-directory (car (s-split ":" (getenv "GOPATH")))))
+    (defun imalison:get-go-path ()
+      (let ((environment-go-path (getenv "GOPATH")))
+        (if environment-go-path
+            (file-name-as-directory (car (s-split ":" environment-go-path)))
+          "~/go")))
+
+    (defmacro imalison:get-go-src (&rest paths)
+      `(imalison:join-paths (imalison:get-go-path) "src" ,@paths))
 
     (imalison:let-advise-around imalison:advise-normal-go-command
                                 (go-command "go"))
 
     (defun imalison:go-mode-hook ()
       (go-eldoc-setup)
-      (set (make-local-variable 'company-backends) '(company-go))))
+      (set (make-local-variable 'company-backends) '(company-go))
+      (make-local-variable 'projectile-globally-ignored-files)
+      (add-to-list 'projectile-globally-ignored-files
+                   "vendor")))
   :config
   (progn
     (imalison:use-package*
@@ -2278,10 +2294,10 @@ Pyimport is disabled because it may be causing a performance problem.
           (setq go-guru-scope (go-mode-parse-glide-novendor)))
         (defun go-mode-parse-glide-novendor ()
           (s-join ","
-                  (cl-loop for path in (s-split "\n" (go-mode-glide-novendor))
+                  (cl-loop for path in (s-split "\n" (imalison:glide-novendor))
                            collect (if (string-equal path ".")
-                                       (go-mode-workspace-path)
-                                     (s-replace "\./" (go-mode-workspace-path) path))))))
+                                       (imalison:go-workspace-path)
+                                     (s-replace "\./" (imalison:go-workspace-path) path))))))
       :config
       (progn
         (advice-add 'go-guru--set-scope-if-empty :before 'imalison:set-go-guru-scope)
@@ -2298,7 +2314,7 @@ Pyimport is disabled because it may be causing a performance problem.
 
     (add-hook 'go-mode-hook 'imalison:go-mode-hook)
     (add-hook 'before-save-hook 'gofmt-before-save t)
-    (add-hook 'after-save-hook 'go-mode-install-current-project)))
+    (add-hook 'after-save-hook 'imalison:install-current-go-project)))
 #+END_SRC
 ***** Show diffs of testify output
 #+BEGIN_SRC emacs-lisp
