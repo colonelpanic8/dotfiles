@@ -8,8 +8,15 @@ function _source_shellenv_files {
 }
 
 function add_to_path {
+    local python_command
     local result
-    result=$($HOME/.lib/python/shell_path.py --include-assignment "$@")
+
+    # We need to get a path to the ACTUAL python command because
+    # pyenv alters PATH before actually executing python, which ends
+    # up changing PATH in a way that is not desireable.
+    hash pyenv && python_command="$(pyenv which python)" || python_command="$(which python)"
+
+    result=$($python_command $HOME/.lib/python/shell_path.py --include-assignment "$@")
     eval "$result"
 }
 
@@ -53,7 +60,7 @@ function _python_setup {
         local PYENV_INIT_COMMANDS="$(pyenv init -)"
         eval "$PYENV_INIT_COMMANDS"
     else
-        echo "WARNING: pyenv is installed on this machine and python will likely not function correctly"
+        echo "WARNING: pyenv not is installed on this machine and python will likely not function correctly"
     fi
 
     # The following line is no longer necessary since the pyenv shim
