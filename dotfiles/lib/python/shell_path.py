@@ -64,12 +64,12 @@ if __name__ == '__main__':
         help='paths to add',
     )
     parser.add_argument(
-        '--path-var',
+        '--path-var', '-v',
         help='the path var to add to.',
         default='PATH',
     )
     parser.add_argument(
-        '--separator',
+        '--separator', '-s',
         help='the separator of the path variable',
         default=':',
     )
@@ -79,35 +79,35 @@ if __name__ == '__main__':
         default=None,
     )
     parser.add_argument(
-        '--after',
+        '--after', '-a',
         help=('whether to do the action after the target (if target is specified)'
               'or the entire path variable'),
         action='store_true',
         default=True,
     )
     parser.add_argument(
-        '--before',
+        '--before', '-b',
         help='inverse of after',
         dest='after',
         action='store_false',
     )
     parser.add_argument(
-        '--target',
+        '--target', '-t',
         help='the target path',
         default=None
     )
     parser.add_argument(
-        '--include-assignment',
+        '--include-assignment', '-x',
         action='store_true',
         help='include the assignment command in output',
     )
     parser.add_argument(
-        '--print-separator',
+        '--print-separator', '-p',
         help='separator to use for output',
         default=None,
     )
     parser.add_argument(
-        '--path-lines',
+        '--path-lines', '-l',
         help='use newlines to separate path output',
         action='store_true',
         default=False,
