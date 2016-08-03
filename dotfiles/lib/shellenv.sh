@@ -20,28 +20,20 @@ function get_python_scripts_path {
 function _setup_env {
     _path_helper
 
-    add_to_path "/usr/local/bin"
-
+    time add_to_path "$HOME/.local/bin" "$HOME/.lib/bin" "$HOME/bin" "/usr/local/bin" --before
     is_osx && _osx_path_setup
     _java_setup
     _go_setup
     _rust_setup
     _tex_setup
 
-    add_to_path "/usr/local/sbin" --after
-    add_to_path "$HOME/.local/bin"
-    add_to_path "$HOME/.lib/bin"
-
     # Travis completion
-    [ -f "$HOME/.travis/travis.sh" ] && source "$HOME/.travis/travis.sh"
+    # [ -f "$HOME/.travis/travis.sh" ] && source "$HOME/.travis/travis.sh"
 
     export ENVIRONMENT_SETUP_DONE="$(date)"
 }
 
 function _osx_path_setup {
-    # What is going on here? Why does /libexec/gnubin get added twice
-    hash brew 2>/dev/null && add_to_path "$(brew --prefix coreutils)/libexec/gnubin"
-    add_to_path "$HOME/bin"
     hash brew 2>/dev/null && add_to_path --before "$(brew --prefix coreutils)/libexec/gnubin"
 
     # Adds airport utility
@@ -116,7 +108,6 @@ function _ruby_setup {
     [[ -s "$HOME/.rvm/scripts/rvm" ]] && source "$HOME/.rvm/scripts/rvm"
     export RBENV_ROOT=/usr/local/var/rbenv
     add_to_path "$HOME/.rbenv/bin"
-    add_to_path "$HOME/.rvm/bin" --after
     hash rbenv 2> /dev/null && eval "$(rbenv init -)"
 }
 
