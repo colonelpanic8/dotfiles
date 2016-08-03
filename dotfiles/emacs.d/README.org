@@ -2233,7 +2233,7 @@ Pyimport is disabled because it may be causing a performance problem.
     (defun imalison:go-workspace-path ()
       (file-relative-name (projectile-project-root)
                           (concat (file-name-as-directory
-                                   (go-mode-get-go-path)) "src")))
+                                   (imalison:get-go-path)) "src")))
 
     (defun imalison:install-current-go-project ()
       (interactive)
