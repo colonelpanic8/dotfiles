@@ -63,15 +63,9 @@ function _python_setup {
         echo "WARNING: pyenv is not installed on this machine and python will likely not function correctly"
     fi
 
-    # The following line is no longer necessary since the pyenv shim
-    # should handle directing to the appropriate install.
-
-    # add_to_path "$(get_python_scripts_path)" --before
+    if which pyenv-virtualenv-init > /dev/null; then eval "$(pyenv virtualenv-init -)"; fi
 
     add_to_path "$HOME/.lib/python" --path-var 'PYTHONPATH'
-
-    # This should no longer be needed now that pyenv is used
-    # add_to_path /usr/local/lib/python2.7/site-packages --after
 }
 
 function _node_setup {
