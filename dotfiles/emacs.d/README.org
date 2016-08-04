@@ -3466,20 +3466,26 @@ I've disabled perspective because I just don't use it much.
 (use-package hackernews :commands hackernews)
 #+END_SRC
 * Keybindings
+** kill-emacs
 This ensures that C-x C-c will always kill emacs, even if we are running in server mode.
 #+BEGIN_SRC emacs-lisp
 (bind-key "C-x C-c" 'kill-emacs)
 #+END_SRC
+** imenu
 imenu is the best. This should be a default binding.
 #+BEGIN_SRC emacs-lisp
-(bind-key "C-x C-c" 'kill-emacs)
+(bind-key "C-x C-i" 'imenu)
+#+END_SRC
+** undo
+I can't shake the habit of using this keybinding for undo. I should really use the default of C-/.
+#+BEGIN_SRC emacs-lisp
 (bind-key "C--" 'undo)
 #+END_SRC
+** other-window
 Go the other way when you use capital O.
 #+BEGIN_SRC emacs-lisp
 (bind-key "C-x O" (lambda () (interactive) (other-window -1)))
 #+END_SRC
-
 #+BEGIN_SRC emacs-lisp
 (bind-key "M-q" 'fill-or-unfill-paragraph)
 (bind-key "C-c SPC" 'imalison:mark-ring)
@@ -3495,7 +3501,10 @@ Go the other way when you use capital O.
 (bind-key "M-|" 'imalison:shell-command-on-region)
 (bind-key "C-x 9" 'previous-buffer)
 (bind-key "s-v" 'clipboard-yank)
-
+#+END_SRC
+** global-set-key-to-use-package
+This might be useless, but I believe that it is a macro that converts between bind-key and global-set-key forms.
+#+BEGIN_SRC emacs-lisp
 (fset 'global-set-key-to-use-package
       (lambda (&optional arg) "Keyboard macro." (interactive "p")
         (kmacro-exec-ring-item
