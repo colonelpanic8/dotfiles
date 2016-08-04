@@ -1112,7 +1112,8 @@ Sets environment variables by starting a shell
 #+END_SRC
 *** refine
 #+BEGIN_SRC emacs-lisp
-(use-package refine)
+(use-package refine
+  :disabled t)
 #+END_SRC
 ** Keybindings
 *** bind-key
