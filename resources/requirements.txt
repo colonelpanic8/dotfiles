@@ -23,6 +23,7 @@ pythonpy
 readline
 ropemacs
 simplejson
+sphinx
 sqlalchemy
 tox
 vcrpy
