@@ -1420,13 +1420,14 @@ Sets environment variables by starting a shell
     (defvar imalison:org-gtd-file "~/org/gtd.org")
     (defvar imalison:org-habits-file "~/org/habits.org")
     (defvar imalison:org-calendar-file "~/org/calendar.org")
+    (defvar imalison:org-inbox-file "~/org/inbox.org")
 
     (unless (boundp 'org-capture-templates)
       (defvar org-capture-templates nil))
 
     (imalison:add-to-org-agenda-files
      (list imalison:org-gtd-file imalison:org-habits-file
-           imalison:org-calendar-file))
+           imalison:org-calendar-file imalison:org-inbox-file))
 
     (add-to-list 'org-capture-templates
                  `("t" "GTD Todo (Linked)" entry (file ,imalison:org-gtd-file)
@@ -1654,6 +1655,17 @@ Sets environment variables by starting a shell
   :config
   (setq org-reveal-root
       (imalison:join-paths "file://" imalison:projects-directory "reveal.js")))
+#+END_SRC
+**** org-caldav
+#+BEGIN_SRC emacs-lisp
+(use-package org-caldav
+  :defer t
+  :config
+  (progn
+    (setq org-caldav-url "https://www.google.com/calendar/dav"
+          org-caldav-inbox imalison:org-inbox-file
+          org-caldav-files (list imalison:org-calendar-file)
+          org-icalendar-timezone "America/Los_Angeles")))
 #+END_SRC
 *** TeX
 #+BEGIN_SRC emacs-lisp
