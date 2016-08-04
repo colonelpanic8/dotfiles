@@ -437,3 +437,7 @@ function edit_script {
 function in_git_directory {
     [ -d .git ]
 }
+
+function which_readlink {
+    readlink -f $(which $1)
+}
