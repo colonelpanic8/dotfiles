@@ -1,5 +1,10 @@
 function path_lines {
-	shell_path.py --path-lines "$@"
+    local python_command
+    # We need to get a path to the ACTUAL python command because
+    # pyenv alters PATH before actually executing python, which ends
+    # up changing PATH in a way that is not desireable.
+    hash pyenv && python_command="$(pyenv which python)" || python_command="$(which python)"
+	"$python_command" "$HOME/.lib/python/shell_path.py" --path-lines "$@"
 }
 
 function indirect_expand {
