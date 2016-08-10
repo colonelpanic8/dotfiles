@@ -531,16 +531,19 @@ macro based on the value of the prefix argument.
     `(imalison:use-package* ,package ,target-directory ,@forms)))
 #+END_SRC
 *** Advice Add Around Builder
-For composing functions with an apply so that they can be used with the ~:around~ keyword of advice-add
+For composing functions with an apply so that they can be used with
+the ~:around~ keyword of advice-add.
 #+BEGIN_SRC emacs-lisp
 (defmacro imalison:advice-add-around-builder (&rest functions)
   `(imalison:compose-argspec
     (function &rest args) (function args) ,@functions apply))
+
+(imalison:named-builder-builder imalison:named-advice-add-around-builder
+                                imalison:advice-add-around-builder)
 #+END_SRC
 **** Kill New
 #+BEGIN_SRC emacs-lisp
-(imalison:named-build imalison:kill-new-around
-  imalison:advice-add-around-builder kill-new)
+(imalison:named-advice-add-around-builder imalison:kill-new-around kill-new)
 #+END_SRC
 ** Join Paths
 Works in the same way as os.path.join in python
@@ -882,6 +885,21 @@ For composing functions with an apply so that they can be used with the ~:around
       (save-excursion
         (perform-replace "\\n" "\n" nil nil delimited nil nil beg end nil)))))
 #+END_SRC
+** Build advice around funtions that set variables
+#+BEGIN_SRC emacs-lisp
+(defmacro imalison:let-advise-around (name &rest forms)
+  `(defun ,name (orig-func &rest args)
+     (let ,forms
+       (apply orig-func args))))
+#+END_SRC
+*** Dynamically, using functions
+#+BEGIN_SRC emacs-lisp
+(defmacro imalison:dynamic-let-advise-around (name &rest getters)
+  `(defun ,name (orig-func &rest args)
+     (let ,(cl-loop for pair in getters
+                    collect `(,(car pair) (funcall (quote ,(cadr pair)))))
+       (apply orig-func args))))
+#+END_SRC
 ** Other
 #+BEGIN_SRC emacs-lisp
 (defun imalison:join-paths (&rest paths)
@@ -894,17 +912,6 @@ For composing functions with an apply so that they can be used with the ~:around
   "Display the value of the raw prefix arg."
   (interactive "p")
   (message "%s" arg))
-
-(defmacro imalison:let-advise-around (name &rest forms)
-  `(defun ,name (orig-func &rest args)
-     (let ,forms
-       (apply orig-func args))))
-
-(defmacro imalison:dynamic-let-advise-around (name &rest getters)
-  `(defun ,name (orig-func &rest args)
-     (let ,(cl-loop for pair in getters
-                    collect `(,(car pair) (funcall (quote ,(cadr pair)))))
-       (apply orig-func args))))
 
 (defun imalison:uuid ()
   (interactive)
