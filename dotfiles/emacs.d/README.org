@@ -2281,6 +2281,8 @@ Pyimport is disabled because it may be causing a performance problem.
       (go-eldoc-setup)
       (set (make-local-variable 'company-backends) '(company-go))
       (make-local-variable 'projectile-globally-ignored-files)
+      (add-hook 'after-save-hook 'imalison:install-current-go-project nil
+                'yes-do-local)
       (add-to-list 'projectile-globally-ignored-files
                    "vendor")))
   :config
@@ -2337,8 +2339,7 @@ Pyimport is disabled because it may be causing a performance problem.
     (setq gofmt-command "goimports")
 
     (add-hook 'go-mode-hook 'imalison:go-mode-hook)
-    (add-hook 'before-save-hook 'gofmt-before-save t)
-    (add-hook 'after-save-hook 'imalison:install-current-go-project)))
+    (add-hook 'before-save-hook 'gofmt-before-save t)))
 #+END_SRC
 ***** Show diffs of testify output
 #+BEGIN_SRC emacs-lisp
