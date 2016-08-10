@@ -486,6 +486,14 @@ the original macro (which is passed as the second argument to
            (cons function-name
                  (cons (quote ,builder-name) args)))))
 #+END_SRC
+~imalison:named-builder~ runs ~imalison:named-builder-builder~ with the
+convention that original macro to modify is the concatenation of the
+new macro name and the -fn suffix.
+#+BEGIN_SRC emacs-lisp
+(defmacro imalison:named-builder (name)
+  `(imalison:named-builder-builder
+    ,name ,(intern (concat (symbol-name name) "-fn"))))
+#+END_SRC
 *** Prefix Alternatives
 Prefix alternatives is a macro that builds an interactive function
 that selects one of a collection of functions that are provided to the
