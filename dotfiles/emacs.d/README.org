@@ -399,6 +399,7 @@ The packages in this section provide no functionality on their own, but provide 
      (or (> emacs-major-version ,major-version)
          (and (>= emacs-major-version ,major-version)
               (>= emacs-minor-version ,minor-version)))))
+
 (defun imalison:check-emacs-version (major-version minor-version)
   (funcall (imalison:emacs-version-predicate major-version minor-version)))
 #+END_SRC
