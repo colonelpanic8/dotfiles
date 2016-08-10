@@ -423,7 +423,7 @@ The packages in this section provide no functionality on their own, but provide 
     `(apply ,(car funcs)
             (imalison:make-list (imalison:compose-with-apply-helper ,(cdr funcs))))))
 #+END_SRC
-**** Simpler Unary version
+**** Simpler unary version
 #+BEGIN_SRC emacs-lisp
 (defmacro imalison:compose-unary (&rest funcs)
   "Build a new function with NAME that is the composition of FUNCS."
@@ -436,7 +436,7 @@ The packages in this section provide no functionality on their own, but provide 
       'arg
     `(funcall ,(car funcs) (imalison:compose-helper-unary ,(cdr funcs)))))
 #+END_SRC
-**** A Version Supporting Macros
+**** A version supporting macros
 #+BEGIN_SRC emacs-lisp
 (defun imalison:help-function-arglist (function)
   (let ((result (help-function-arglist function )))
