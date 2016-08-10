@@ -360,6 +360,13 @@ The packages in this section provide no functionality on their own, but provide 
 #+BEGIN_SRC emacs-lisp
 (use-package s :demand t)
 #+END_SRC
+*** dash
+#+BEGIN_SRC emacs-lisp
+(use-package dash
+  :config
+  (progn
+    (dash-enable-font-lock)))
+#+END_SRC
 *** gh
 #+BEGIN_SRC emacs-lisp
 (use-package gh
