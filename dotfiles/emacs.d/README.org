@@ -465,33 +465,42 @@ The packages in this section provide no functionality on their own, but provide 
     `(,(car funcs)
       (imalison:compose-helper ,(cdr funcs) ,arguments))))
 #+END_SRC
-*** Prefix Alternatives
-Prefix alternatives is a macro that builds a function that selects one of a collection of functions that are provided to the macro based on the value of the prefix argument.
-#+BEGIN_SRC emacs-lisp
-(defmacro imalison:prefix-alternatives (name &rest alternatives)
-  `(defun ,name (arg)
-     (interactive "p")
-     (setq function
-           (cond
-            ,@(progn
-                (let ((last-power 1))
-                  (cl-loop for alternative in alternatives
-                           collect `((eq arg ,last-power) (quote ,alternative))
-                           do (setq last-power (* last-power 4)))))))
-     (setq function (or function)) ; Set a default value for function
-     (setq current-prefix-arg nil)
-     (call-interactively function)))
-#+END_SRC
 *** Named Build
 imalison:named-build is a way to invoke a macro in such a way that the lambda that it produces is given a name.
 #+BEGIN_SRC emacs-lisp
 (defmacro imalison:named-build (name builder &rest args)
   `(defalias (quote ,name) (,builder ,@args)))
 (put 'imalison:named-build 'lisp-indent-function 1)
-
+#+END_SRC
+~imalison:named-builder-builder~ builds a macro from another macro that builds lambda functions. The arguments to the macro that results are exactly the same as those of the original macro, except that the first argument of the new macro is used to name the lambda produced by the original macro (which is passed as the second argument to ~imalison:named-builder-builder~).
+#+BEGIN_SRC emacs-lisp
 (defmacro imalison:named-builder-builder (named-builder-name builder-name)
   `(defmacro ,named-builder-name (function-name &rest args)
-     (cons ,builder-name args)))
+     (cons 'imalison:named-build
+           (cons function-name
+                 (cons (quote ,builder-name) args)))))
+#+END_SRC
+*** Prefix Alternatives
+Prefix alternatives is a macro that builds an interactive function
+that selects one of a collection of functions that are provided to the
+macro based on the value of the prefix argument.
+#+BEGIN_SRC emacs-lisp
+(defmacro imalison:prefix-alternatives-lambda (&rest alternatives)
+  `(lambda (arg)
+     (interactive "p")
+     (let ((function
+            (cond
+             ,@(progn
+                 (let ((last-power 1))
+                   (cl-loop for alternative in alternatives
+                            collect `((eq arg ,last-power) (quote ,alternative))
+                            do (setq last-power (* last-power 4))))))))
+       (setq function (or function)) ; Set a default value for function
+       (setq current-prefix-arg nil)
+       (call-interactively function))))
+
+(imalison:named-builder-builder imalison:prefix-alternatives
+                                imalison:prefix-alternatives-lambda)
 #+END_SRC
 *** Use Package Wrapper With Local Load Path Support
 #+BEGIN_SRC emacs-lisp
