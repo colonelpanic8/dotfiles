@@ -78,15 +78,19 @@ Tooltips are annoying:
 ** Byte-Compiler
 These definitions silence the byte-compiler.
 #+BEGIN_SRC emacs-lisp
-(defvar ido-cur-item nil)
-(defvar ido-default-item nil)
-(defvar ido-context-switch-command nil)
-(defvar ido-cur-list nil)
-(defvar inherit-input-method nil)
-(defvar grep-find-ignored-files nil)
 (defvar grep-find-ignored-directories nil)
+(defvar grep-find-ignored-files nil)
+(defvar ido-context-switch-command nil)
+(defvar ido-cur-item nil)
+(defvar ido-cur-list nil)
+(defvar ido-default-item nil)
+(defvar inherit-input-method nil)
+(defvar oauth--token-data nil)
 (defvar tls-checktrust nil)
 (defvar tls-program nil)
+(defvar url-callback-arguments nil)
+(defvar url-callback-function nil)
+(defvar url-http-extra-headers nil)
 #+END_SRC
 ** Security
 #+BEGIN_SRC emacs-lisp
