@@ -289,8 +289,6 @@ whenever there is an error.
 (auto-fill-mode -1)
 (setq indent-tabs-mode nil)
 
-;; No hsplits. EVER.
-
 (setq confirm-nonexistent-file-or-buffer nil)
 
 ;; No prompt for killing a buffer with processes attached.
