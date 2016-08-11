@@ -442,7 +442,7 @@ The packages in this section provide no functionality on their own, but provide 
   (let ((result (help-function-arglist function )))
     (if (eq result t) '(&rest args) result)))
 
-(defmacro imalison:compose (&rest funcs)
+(defmacro imalison:compose-fn (&rest funcs)
   (let* ((last-function (car (last funcs)))
          (arguments (imalison:help-function-arglist last-function))
          (call-arguments (delq '&optional arguments)))
@@ -465,6 +465,8 @@ The packages in this section provide no functionality on their own, but provide 
         `(,last-function ,@arguments))
     `(,(car funcs)
       (imalison:compose-helper ,(cdr funcs) ,arguments))))
+
+(imalison:named-builder imalison:compose)
 #+END_SRC
 *** Named Build
 imalison:named-build is a way to invoke a macro in such a way that the lambda that it produces is given a name.
@@ -729,7 +731,7 @@ Get route information
 #+BEGIN_SRC emacs-lisp
 (defun imalison:muni-get-route-ids (route-name &optional direction)
   (delete-dups
-   (mapcar (imalison:compose intern car)
+   (mapcar (imalison:compose-fn intern car)
            (s-match-strings-all
             "^\\([[:digit:]]\\{1,10\\}\\)"
             (shell-command-to-string
@@ -840,10 +842,12 @@ This interactive functions allows the user the select a function to invoke using
 #+END_SRC
 ** Make interactive
 #+BEGIN_SRC emacs-lisp
-(defmacro imalison:make-interactive (function)
+(defmacro imalison:make-interactive-fn (function)
   `(lambda (&rest args)
      (interactive)
      (apply ,function args)))
+
+(imalison:named-builder imalison:make-interactive)
 #+END_SRC
 ** Custom ~shell-command-on-region~
 #+BEGIN_SRC emacs-lisp
@@ -874,8 +878,8 @@ A macro for composing functions together to build an interactive command to copy
 #+BEGIN_SRC emacs-lisp
 (defmacro imalison:compose-copy-builder (name &rest funcs)
   `(imalison:named-build ,name
-     imalison:make-interactive
-     (imalison:compose kill-new ,@funcs)))
+     imalison:make-interactive-fn
+     (imalison:compose-fn kill-new ,@funcs)))
 #+END_SRC
 *** Copy portions of the buffer file name
 #+BEGIN_SRC emacs-lisp
@@ -895,11 +899,11 @@ A macro for composing functions together to build an interactive command to copy
 (imalison:compose-copy-builder imalison:copy-current-git-branch
                                magit-get-current-branch)
 #+END_SRC
-** Advice Add Around Builder
+** Compose Around Builder
 For composing functions with an apply so that they can be used with the ~:around~ keyword of advice-add
 #+BEGIN_SRC emacs-lisp
 (defmacro imalison:compose-around-builder (&rest functions)
-  `(imalison:compose ,@functions 'apply))
+  `(imalison:compose-fn ,@functions 'apply))
 #+END_SRC
 ** Named Compile
 #+BEGIN_SRC emacs-lisp
