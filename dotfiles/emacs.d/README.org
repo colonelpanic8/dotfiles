@@ -2105,7 +2105,6 @@ This was stolen from https://github.com/jwiegley/dot-emacs
 *** yasnippet
 #+BEGIN_SRC emacs-lisp
 (use-package yasnippet
-  :disabled t
   :defer 5
   :commands (yas-global-mode)
   :config
@@ -2116,7 +2115,6 @@ This was stolen from https://github.com/jwiegley/dot-emacs
     (setq yas-prompt-functions
           (cons 'yas-ido-prompt
                 (cl-delete 'yas-ido-prompt yas-prompt-functions)))))
-
 #+END_SRC
 ** Source Control
 *** magit
