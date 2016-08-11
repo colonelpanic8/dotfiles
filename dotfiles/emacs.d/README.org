@@ -392,17 +392,6 @@ The packages in this section provide no functionality on their own, but provide 
   :demand t)
 #+END_SRC
 ** Macros
-*** Emacs Version Predicate
-#+BEGIN_SRC emacs-lisp
-(defmacro imalison:emacs-version-predicate (major-version minor-version)
-  `(lambda ()
-     (or (> emacs-major-version ,major-version)
-         (and (>= emacs-major-version ,major-version)
-              (>= emacs-minor-version ,minor-version)))))
-
-(defun imalison:check-emacs-version (major-version minor-version)
-  (funcall (imalison:emacs-version-predicate major-version minor-version)))
-#+END_SRC
 *** Named Build
 imalison:named-build provides a way to invoke a macro in such a way
 that the lambda that it produces is given a name.
@@ -431,6 +420,19 @@ new macro name and the -fn suffix.
 (defmacro imalison:named-builder (name)
   `(imalison:named-builder-builder
     ,name ,(intern (concat (symbol-name name) "-fn"))))
+#+END_SRC
+*** Emacs Version Predicate
+#+BEGIN_SRC emacs-lisp
+(defmacro imalison:emacs-version-predicate-fn (major-version minor-version)
+  `(lambda ()
+     (or (> emacs-major-version ,major-version)
+         (and (>= emacs-major-version ,major-version)
+              (>= emacs-minor-version ,minor-version)))))
+
+(defun imalison:check-emacs-version (major-version minor-version)
+  (funcall (imalison:emacs-version-predicate-fn major-version minor-version)))
+
+(imalison:named-builder imalison:emacs-version-predicate)
 #+END_SRC
 *** Compose Functions
 **** A version supporting macros
