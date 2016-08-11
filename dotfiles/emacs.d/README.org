@@ -541,17 +541,52 @@ macro based on the value of the prefix argument.
 For composing functions with an apply so that they can be used with
 the ~:around~ keyword of advice-add.
 #+BEGIN_SRC emacs-lisp
-(defmacro imalison:advice-add-around-builder (&rest functions)
+(defmacro imalison:advice-add-around-builder-fn (&rest functions)
   `(imalison:compose-argspec
     (function &rest args) (function args) ,@functions apply))
 
-(imalison:named-builder-builder imalison:named-advice-add-around-builder
-                                imalison:advice-add-around-builder)
+(imalison:named-builder imalison:advice-add-around-builder)
 #+END_SRC
 **** Kill New
 #+BEGIN_SRC emacs-lisp
 (imalison:named-advice-add-around-builder imalison:kill-new-around kill-new)
 #+END_SRC
+*** Let Around
+#+BEGIN_SRC emacs-lisp
+(defmacro imalison:let-around-fn (orig-func &rest forms)
+  `(lambda (&rest args)
+     (let ,forms
+       (apply ,orig-func args))))
+
+(imalison:named-builder imalison:let-around)
+#+END_SRC
+**** Dynamically, using functions
+ #+BEGIN_SRC emacs-lisp
+(defmacro imalison:dynamic-let-around-fn (orig-func &rest getters)
+  `(lambda (&rest args)
+     (let ,(cl-loop for pair in getters
+                    collect `(,(car pair) (funcall (quote ,(cadr pair)))))
+       (apply ,orig-func args))))
+
+(imalison:named-builder imalison:dynamic-let-around)
+ #+END_SRC
+*** Let Around Advice
+ #+BEGIN_SRC emacs-lisp
+(defmacro imalison:let-advise-around-fn (&rest forms)
+  `(lambda (orig-func &rest args)
+     (let ,forms
+       (apply orig-func args))))
+
+(imalison:named-builder imalison:let-advise-around)
+ #+END_SRC
+**** Dynamically, using functions
+ #+BEGIN_SRC emacs-lisp
+(defmacro imalison:dynamic-let-advise-around (name &rest getters)
+  `(defun ,name (orig-func &rest args)
+     (let ,(cl-loop for pair in getters
+                    collect `(,(car pair) (funcall (quote ,(cadr pair)))))
+       (apply orig-func args))))
+ #+END_SRC
 ** Join Paths
 Works in the same way as os.path.join in python
 #+BEGIN_SRC emacs-lisp
@@ -891,21 +926,6 @@ For composing functions with an apply so that they can be used with the ~:around
         (perform-replace "\\t" "    " nil nil delimited nil nil beg end nil))
       (save-excursion
         (perform-replace "\\n" "\n" nil nil delimited nil nil beg end nil)))))
-#+END_SRC
-** Build advice around funtions that set variables
-#+BEGIN_SRC emacs-lisp
-(defmacro imalison:let-advise-around (name &rest forms)
-  `(defun ,name (orig-func &rest args)
-     (let ,forms
-       (apply orig-func args))))
-#+END_SRC
-*** Dynamically, using functions
-#+BEGIN_SRC emacs-lisp
-(defmacro imalison:dynamic-let-advise-around (name &rest getters)
-  `(defun ,name (orig-func &rest args)
-     (let ,(cl-loop for pair in getters
-                    collect `(,(car pair) (funcall (quote ,(cadr pair)))))
-       (apply orig-func args))))
 #+END_SRC
 ** Other
 #+BEGIN_SRC emacs-lisp
