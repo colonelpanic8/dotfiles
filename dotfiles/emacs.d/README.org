@@ -1,8 +1,10 @@
 * About
-This README is a literate version of my emacs configuration, but it also serves as the README for my dotfiles.
+This README is a literate version of my emacs configuration, but it
+also serves as the README for my dotfiles.
 * General
 ** Lexical Binding
-This makes it so that the file that is produced from tangling this file uses lexical scoping
+This makes it so that the file that is produced from tangling this
+file uses lexical scoping.
 #+BEGIN_SRC emacs-lisp
 ;;; -*- lexical-binding: t -*-
 (setq lexical-binding t)
@@ -17,7 +19,7 @@ This makes it so that the file that is produced from tangling this file uses lex
                                           "git config --get user.email")))
 #+END_SRC
 ** Setup auto-compile
-This is here because it needs to be activated as early as possible
+This is here because it needs to be activated as early as possible.
 #+BEGIN_SRC emacs-lisp
 (when (boundp 'use-package)
       (use-package auto-compile
@@ -28,14 +30,23 @@ This is here because it needs to be activated as early as possible
           (auto-compile-on-save-mode))))
 #+END_SRC
 ** Prefer Newer Versions
-To reduce the risk of loading outdated byte code files, we set load-prefer-newer and enable auto-compile-on-load-mode as early as possible.
+To reduce the risk of loading outdated byte code files, we set
+load-prefer-newer and enable auto-compile-on-load-mode as early as
+possible.
 #+BEGIN_SRC emacs-lisp
 (setq load-prefer-newer t)
 #+END_SRC
 ** Custom Files
-It's annoying to have emacs randomly add stuff to your init.el whenever you customize a variable. By setting a custom file other than init.el that is ignored in git, random commits with nothing but variable settings are avoided.
+It's annoying to have emacs randomly add stuff to your init.el
+whenever you customize a variable. By setting a custom file other than
+init.el that is ignored in git, random commits with nothing but
+variable settings are avoided.
 
-custom-before.el is loaded before the rest of init.el, while custom-after.el is loaded afterwards. this-machine.el has customizations that should only apply to the current machine. custom-before and custom-after are not version controlled in the dotfiles repo but they are shared across machines elsewhere.
+custom-before.el is loaded before the rest of init.el, while
+custom-after.el is loaded afterwards. this-machine.el has
+customizations that should only apply to the current machine.
+custom-before and custom-after are not version controlled in the
+dotfiles repo but they are shared across machines elsewhere.
 #+BEGIN_SRC emacs-lisp
 (defvar machine-custom "~/.emacs.d/this-machine.el")
 (defvar custom-after-file "~/.emacs.d/custom-after.el")
@@ -44,14 +55,17 @@ custom-before.el is loaded before the rest of init.el, while custom-after.el is 
 (when (file-exists-p machine-custom) (load machine-custom))
 #+END_SRC
 ** Benchmarking
-This appears here so that it can accurately benchmark as much of startup as possible.
+This appears here so that it can accurately benchmark as much of
+startup as possible.
 #+BEGIN_SRC emacs-lisp
 (defvar imalison:do-benchmark)
 (when (bound-and-true-p imalison:do-benchmark)
   (use-package benchmark-init))
 #+END_SRC
 ** GUI Disables
-Death to any gui elements in emacs! Do this EARLY so that emacs doesn't redisplay in a way that is visually unpleasant on startup a bunch of times.
+Death to any gui elements in emacs! Do this EARLY so that emacs
+doesn't redisplay in a way that is visually unpleasant on startup a
+bunch of times.
 #+BEGIN_SRC emacs-lisp
 (when (fboundp 'menu-bar-mode) (menu-bar-mode -1))
 (when (fboundp 'tool-bar-mode) (tool-bar-mode -1))
@@ -62,7 +76,7 @@ Tooltips are annoying:
 (if (fboundp 'tooltip-mode) (tooltip-mode -1) (setq tooltip-use-echo-area t))'
 #+END_SRC
 ** Byte-Compiler
-These definitions silence the byte-compiler
+These definitions silence the byte-compiler.
 #+BEGIN_SRC emacs-lisp
 (defvar ido-cur-item nil)
 (defvar ido-default-item nil)
@@ -137,7 +151,10 @@ These definitions silence the byte-compiler
 [[(org setup)][The org archive]] does not support https, so we set http as the protocol explicitly.
 I've decided to stop using [[(marmalade)][Marmalade]] completely
 ** Bootstrap Package Loading
-Its a shame that everyone has to have some version of this function in their init.el. I use use-package's own mechanism for ensuring packages are installed so my version of ~ensure-packages-installed~ is really only used to download use-package itself.
+Its a shame that everyone has to have some version of this function in
+their init.el. I use use-package's own mechanism for ensuring packages
+are installed so my version of ~ensure-packages-installed~ is really
+only used to download use-package itself.
 #+BEGIN_SRC emacs-lisp
 (defun ensure-packages-installed (packages)
   (unless package-archive-contents
@@ -176,7 +193,9 @@ Ensure by default since most of the package for which I use use-package need to 
 (line-number-mode t)
 (column-number-mode t)
 #+END_SRC
-Linum can be really slow so do not have it on by default. Its probably safe to turn it on when in a programming mode
+Linum can be really slow on large files so it does not make sense to
+have it on by default. Its probably safe to turn it on when in a
+programming mode.
 #+BEGIN_SRC emacs-lisp
 (global-linum-mode -1)
 (add-hook 'prog-mode-hook (lambda () (linum-mode t)))
@@ -250,7 +269,8 @@ Disable CJK coding/encoding (Chinese/Japanese/Korean characters)
 (setq utf-translate-cjk-mode nil)
 #+END_SRC
 ** Visible Bell
-This is set to true to disable the annoying audible bell that plays whenever there is an error.
+This is set to true to disable the annoying audible bell that plays
+whenever there is an error.
 #+BEGIN_SRC emacs-lisp
 (setq visible-bell t)
 #+END_SRC
@@ -355,7 +375,8 @@ This is set to true to disable the annoying audible bell that plays whenever the
 #+END_SRC
 * Functions
 ** Required Packages
-The packages in this section provide no functionality on their own, but provide support for writing custom elisp
+The packages in this section provide no functionality on their own,
+but provide support for writing custom elisp.
 *** s
 #+BEGIN_SRC emacs-lisp
 (use-package s :demand t)
@@ -627,7 +648,10 @@ Works in the same way as os.path.join in python
 (defvar imalison:gpg-key)
 #+END_SRC
 ** Flatten ~imenu~ Indexes
-I like my imenu indexes flat so I don't have to press enter multiple times to find what I'm looking for. The functions that follow allow me to get this behavior out of functions that provide a nested imenu index.
+I like my imenu indexes flat so I don't have to press enter multiple
+times to find what I'm looking for. The functions that follow allow me
+to get this behavior out of functions that provide a nested imenu
+index.
 #+BEGIN_SRC emacs-lisp
 (defun imalison:imenu-prefix-flattened (index)
   (let ((flattened (imalison:flatten-imenu-index (cdr index))))
@@ -649,7 +673,10 @@ I like my imenu indexes flat so I don't have to press enter multiple times to fi
             (imalison:flatten-imenu-index
              (funcall original-imenu-function))))))
 #+END_SRC
-By advising ~imenu--make-index-alist~ with ~imalison:flatten-imenu-index~ we make it so that imenu indexes are always flattened. This is still experimental, so copy to your own dotfiles with caution.
+By advising ~imenu--make-index-alist~ with
+~imalison:flatten-imenu-index~ we make it so that imenu indexes are
+always flattened. This is still experimental, so copy to your own
+dotfiles with caution.
 #+BEGIN_SRC emacs-lisp
 (defun imalison:flatten-imenu-index-with-function
     (index-build-function &rest args)
