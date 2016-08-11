@@ -888,10 +888,11 @@ This interactive functions allows the user the select a function to invoke using
 ** Copy String Functions
 A macro for composing functions together to build an interactive command to copy a string to the kill ring.
 #+BEGIN_SRC emacs-lisp
-(defmacro imalison:compose-copy-builder (name &rest funcs)
-  `(imalison:named-build ,name
-     imalison:make-interactive-fn
-     (imalison:compose-fn kill-new ,@funcs)))
+(defmacro imalison:compose-copy-builder-fn (&rest funcs)
+  `(imalison:make-interactive-fn
+    (imalison:compose-fn kill-new ,@funcs)))
+
+(imalison:named-builder imalison:compose-copy-builder)
 #+END_SRC
 *** Copy portions of the buffer file name
 #+BEGIN_SRC emacs-lisp
