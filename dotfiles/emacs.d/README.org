@@ -403,7 +403,72 @@ The packages in this section provide no functionality on their own, but provide 
 (defun imalison:check-emacs-version (major-version minor-version)
   (funcall (imalison:emacs-version-predicate major-version minor-version)))
 #+END_SRC
+*** Named Build
+imalison:named-build provides a way to invoke a macro in such a way
+that the lambda that it produces is given a name.
+#+BEGIN_SRC emacs-lisp
+(defmacro imalison:named-build (name builder &rest args)
+  `(defalias (quote ,name) (,builder ,@args)))
+(put 'imalison:named-build 'lisp-indent-function 1)
+#+END_SRC
+~imalison:named-builder-builder~ builds a macro from another macro
+that builds lambda functions. The arguments to the macro that results
+are exactly the same as those of the original macro, except that the
+first argument of the new macro is used to name the lambda produced by
+the original macro (which is passed as the second argument to
+~imalison:named-builder-builder~).
+#+BEGIN_SRC emacs-lisp
+(defmacro imalison:named-builder-builder (named-builder-name builder-name)
+  `(defmacro ,named-builder-name (function-name &rest args)
+     (cons 'imalison:named-build
+           (cons function-name
+                 (cons (quote ,builder-name) args)))))
+#+END_SRC
+~imalison:named-builder~ runs ~imalison:named-builder-builder~ with the
+convention that original macro to modify is the concatenation of the
+new macro name and the -fn suffix.
+#+BEGIN_SRC emacs-lisp
+(defmacro imalison:named-builder (name)
+  `(imalison:named-builder-builder
+    ,name ,(intern (concat (symbol-name name) "-fn"))))
+#+END_SRC
 *** Compose Functions
+**** A version supporting macros
+#+BEGIN_SRC emacs-lisp
+(defun imalison:help-function-arglist (function)
+  (let ((result (help-function-arglist function )))
+    (if (eq result t) '(&rest args) result)))
+
+(defmacro imalison:compose-fn (&rest funcs)
+  (let* ((last-function (car (last funcs)))
+         (arguments (imalison:help-function-arglist last-function))
+         (call-arguments (delq '&optional arguments)))
+    (when (memq '&rest arguments)
+      (setq arguments '(&rest args))
+      (setq call-arguments '(args)))
+    `(imalison:compose-argspec ,arguments ,call-arguments ,@funcs)))
+
+(defmacro imalison:compose-argspec (arguments call-arguments &rest funcs)
+  "Build a new function with NAME that is the composition of FUNCS."
+  `(lambda ,arguments
+     (imalison:compose-helper ,funcs ,call-arguments)))
+
+(defmacro imalison:compose-helper (funcs arguments)
+  "Builds funcalls of FUNCS applied to the arg."
+  (if (equal (length funcs) 1)
+      (let ((last-function (car funcs)))
+        (when (memq '&rest (imalison:help-function-arglist last-function))
+          (setq last-function (apply-partially 'apply last-function)))
+        `(,last-function ,@arguments))
+    `(,(car funcs)
+      (imalison:compose-helper ,(cdr funcs) ,arguments))))
+
+(defmacro imalison:compose-macro-fn (&rest args)
+  `(cons 'macro (imalison:compose-fn ,@args)))
+
+(imalison:named-builder imalison:compose)
+(imalison:named-builder imalison:compose-macro)
+#+END_SRC
 **** Arbitrary arguments at every step
 #+BEGIN_SRC emacs-lisp
 (defun imalison:make-list (thing)
@@ -436,66 +501,6 @@ The packages in this section provide no functionality on their own, but provide 
       'arg
     `(funcall ,(car funcs) (imalison:compose-helper-unary ,(cdr funcs)))))
 #+END_SRC
-**** A version supporting macros
-#+BEGIN_SRC emacs-lisp
-(defun imalison:help-function-arglist (function)
-  (let ((result (help-function-arglist function )))
-    (if (eq result t) '(&rest args) result)))
-
-(defmacro imalison:compose-fn (&rest funcs)
-  (let* ((last-function (car (last funcs)))
-         (arguments (imalison:help-function-arglist last-function))
-         (call-arguments (delq '&optional arguments)))
-    (when (memq '&rest arguments)
-      (setq arguments '(&rest args))
-      (setq call-arguments '(args)))
-    `(imalison:compose-argspec ,arguments ,call-arguments ,@funcs)))
-
-(defmacro imalison:compose-argspec (arguments call-arguments &rest funcs)
-  "Build a new function with NAME that is the composition of FUNCS."
-  `(lambda ,arguments
-     (imalison:compose-helper ,funcs ,call-arguments)))
-
-(defmacro imalison:compose-helper (funcs arguments)
-  "Builds funcalls of FUNCS applied to the arg."
-  (if (equal (length funcs) 1)
-      (let ((last-function (car funcs)))
-        (when (memq '&rest (imalison:help-function-arglist last-function))
-          (setq last-function (apply-partially 'apply last-function)))
-        `(,last-function ,@arguments))
-    `(,(car funcs)
-      (imalison:compose-helper ,(cdr funcs) ,arguments))))
-
-(imalison:named-builder imalison:compose)
-#+END_SRC
-*** Named Build
-imalison:named-build is a way to invoke a macro in such a way that the lambda that it produces is given a name.
-#+BEGIN_SRC emacs-lisp
-(defmacro imalison:named-build (name builder &rest args)
-  `(defalias (quote ,name) (,builder ,@args)))
-(put 'imalison:named-build 'lisp-indent-function 1)
-#+END_SRC
-~imalison:named-builder-builder~ builds a macro from another macro
-that builds lambda functions. The arguments to the macro that results
-are exactly the same as those of the original macro, except that the
-first argument of the new macro is used to name the lambda produced by
-the original macro (which is passed as the second argument to
-~imalison:named-builder-builder~).
-#+BEGIN_SRC emacs-lisp
-(defmacro imalison:named-builder-builder (named-builder-name builder-name)
-  `(defmacro ,named-builder-name (function-name &rest args)
-     (cons 'imalison:named-build
-           (cons function-name
-                 (cons (quote ,builder-name) args)))))
-#+END_SRC
-~imalison:named-builder~ runs ~imalison:named-builder-builder~ with the
-convention that original macro to modify is the concatenation of the
-new macro name and the -fn suffix.
-#+BEGIN_SRC emacs-lisp
-(defmacro imalison:named-builder (name)
-  `(imalison:named-builder-builder
-    ,name ,(intern (concat (symbol-name name) "-fn"))))
-#+END_SRC
 *** Prefix Alternatives
 Prefix alternatives is a macro that builds an interactive function
 that selects one of a collection of functions that are provided to the
@@ -517,6 +522,15 @@ macro based on the value of the prefix argument.
 
 (imalison:named-builder imalison:prefix-alternatives)
 #+END_SRC
+*** Make interactive
+ #+BEGIN_SRC emacs-lisp
+(defmacro imalison:make-interactive-fn (function)
+  `(lambda (&rest args)
+     (interactive)
+     (apply ,function args)))
+
+(imalison:named-builder imalison:make-interactive)
+ #+END_SRC
 *** Use Package Wrapper With Local Load Path Support
 #+BEGIN_SRC emacs-lisp
 (put 'imalison:use-package 'lisp-indent-function 1)
@@ -551,7 +565,7 @@ the ~:around~ keyword of advice-add.
 #+END_SRC
 **** Kill New
 #+BEGIN_SRC emacs-lisp
-(imalison:named-advice-add-around-builder imalison:kill-new-around kill-new)
+(imalison:advice-add-around-builder imalison:kill-new-around kill-new)
 #+END_SRC
 *** Let Around
 #+BEGIN_SRC emacs-lisp
@@ -572,6 +586,11 @@ the ~:around~ keyword of advice-add.
 
 (imalison:named-builder imalison:dynamic-let-around)
  #+END_SRC
+**** Interactive
+#+BEGIN_SRC emacs-lisp
+(defmacro imalison:let-around-interactive (name &rest args)
+  `(imalison:make-interactive ,name (imalison:let-around-fn ,@args)))
+#+END_SRC
 *** Let Around Advice
  #+BEGIN_SRC emacs-lisp
 (defmacro imalison:let-advise-around-fn (&rest forms)
@@ -839,15 +858,6 @@ This interactive functions allows the user the select a function to invoke using
 (defun imalison:message-function-result (function)
   (interactive (find-function-read))
   (message "%s" (funcall function)))
-#+END_SRC
-** Make interactive
-#+BEGIN_SRC emacs-lisp
-(defmacro imalison:make-interactive-fn (function)
-  `(lambda (&rest args)
-     (interactive)
-     (apply ,function args)))
-
-(imalison:named-builder imalison:make-interactive)
 #+END_SRC
 ** Custom ~shell-command-on-region~
 #+BEGIN_SRC emacs-lisp
@@ -1813,15 +1823,17 @@ I use helm for almost all emacs completion
       :config (helm-descbinds-mode 1))
 
     (use-package helm-ag
-      :bind ("C-c p S" . imalison:set-helm-ag-extra-options)
-      :config
-      (progn
-        (setq helm-ag-always-set-extra-option nil)
+      :bind ("C-c p 1" . imalison:set-helm-ag-extra-options)
+      :preface
+      (progn 
         (defun imalison:set-helm-ag-extra-options ()
           (interactive)
           (let ((option (read-string "Extra options: " (or helm-ag--extra-options "")
                                      'helm-ag--extra-options-history)))
-            (setq helm-ag--extra-options option)))))
+            (setq helm-ag--extra-options option))))
+      :config
+      (progn
+        (setq helm-ag-always-set-extra-option nil)))
     (helm-mode 1)))
 #+END_SRC
 [[(helm split window)][Ensure that helm buffers are started in the window that currently holds the focus]]
@@ -1883,6 +1895,11 @@ I use helm for almost all emacs completion
                                   projectile-find-file
                                   projectile-find-file-other-window)
 
+    (imalison:let-around
+     imalison:set-options-do-ag
+     (lambda () (call-interactively 'imalison:do-ag))
+     (helm-ag-always-set-extra-option t))
+
     (defun projectile-make-all-subdirs-projects (directory)
       (cl-loop for file-info in (directory-files-and-attributes directory)
                do (when (nth 1 file-info)
@@ -1903,6 +1920,7 @@ I use helm for almost all emacs completion
     (shut-up (helm-projectile-on))
     (diminish 'projectile-mode)
     (bind-key* "C-c p s" 'imalison:do-ag)
+    (bind-key* "C-c p S" 'imalison:set-options-do-ag)
     (bind-key* "C-c p f" 'imalison:projectile-find-file)))
 #+END_SRC
 *** avy
