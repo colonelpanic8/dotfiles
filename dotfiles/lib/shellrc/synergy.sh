@@ -1,4 +1,4 @@
-SYNERGY_CONF="$HOME/Dropbox/configs/synergy.conf"
+SYNERGY_CONF="$HOME/.synergy.conf"
 
 function make_me_synergy() {
     local new_host_name="$(echo $SSH_CONNECTION | get_cols 1)"
