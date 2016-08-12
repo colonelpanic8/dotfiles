@@ -431,10 +431,12 @@ the original macro (which is passed as the second argument to
 ~imalison:named-builder-builder~).
 #+BEGIN_SRC emacs-lisp
 (defmacro imalison:named-builder-builder (named-builder-name builder-name)
-  `(defmacro ,named-builder-name (function-name &rest args)
-     (cons 'imalison:named-build
-           (cons function-name
-                 (cons (quote ,builder-name) args)))))
+  `(progn
+       (defmacro ,named-builder-name (function-name &rest args)
+         (cons 'imalison:named-build
+               (cons function-name
+                     (cons (quote ,builder-name) args))))
+       (put (quote ,named-builder-name) 'lisp-indent-function 1)))
 #+END_SRC
 ~imalison:named-builder~ runs ~imalison:named-builder-builder~ with the
 convention that original macro to modify is the concatenation of the
