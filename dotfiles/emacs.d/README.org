@@ -599,9 +599,23 @@ the ~:around~ keyword of advice-add.
 (defmacro imalison:let-around-fn (orig-func &rest forms)
   `(lambda (&rest args)
      (let ,forms
-       (apply ,orig-func args))))
+       (apply (quote ,orig-func) args))))
+#+END_SRC
 
-(imalison:named-builder imalison:let-around)
+#+BEGIN_SRC emacs-lisp
+(defmacro imalison:let-around (new-function-name function-name &rest args)
+  (let* ((orig-interactive-form (interactive-form function-name))
+         (additional-forms
+          (when orig-interactive-form
+            (list
+             `(put (quote ,new-function-name) 'interactive-form
+                   (quote ,orig-interactive-form))))))
+    `(progn
+       (defalias (quote ,new-function-name)
+         (imalison:let-around-fn ,function-name ,@args))
+       ,@additional-forms)))
+
+(put 'imalison:let-around 'lisp-indent-function 1)
 #+END_SRC
 **** Dynamically, using functions
  #+BEGIN_SRC emacs-lisp
