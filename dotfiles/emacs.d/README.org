@@ -597,40 +597,17 @@ the ~:around~ keyword of advice-add.
 *** Let Around
 #+BEGIN_SRC emacs-lisp
 (defmacro imalison:let-around-fn (orig-func &rest forms)
-  `(lambda (&rest args)
-     (let ,forms
-       (apply (quote ,orig-func) args))))
-#+END_SRC
+  (let* ((orig-interactive-form (interactive-form orig-func))
+         (docstring-form (format "Call `%s' with bindings: %s." orig-func forms))
+         (additional-forms (list docstring-form)))
+    (when orig-interactive-form
+      (push orig-interactive-form additional-forms))
+    `(lambda (&rest args)
+       ,@additional-forms
+       (let ,forms
+         (apply (quote ,orig-func) args)))))
 
-#+BEGIN_SRC emacs-lisp
-(defmacro imalison:let-around (new-function-name function-name &rest args)
-  (let* ((orig-interactive-form (interactive-form function-name))
-         (additional-forms
-          (when orig-interactive-form
-            (list
-             `(put (quote ,new-function-name) 'interactive-form
-                   (quote ,orig-interactive-form))))))
-    `(progn
-       (defalias (quote ,new-function-name)
-         (imalison:let-around-fn ,function-name ,@args))
-       ,@additional-forms)))
-
-(put 'imalison:let-around 'lisp-indent-function 1)
-#+END_SRC
-**** Dynamically, using functions
- #+BEGIN_SRC emacs-lisp
-(defmacro imalison:dynamic-let-around-fn (orig-func &rest getters)
-  `(lambda (&rest args)
-     (let ,(cl-loop for pair in getters
-                    collect `(,(car pair) (funcall (quote ,(cadr pair)))))
-       (apply ,orig-func args))))
-
-(imalison:named-builder imalison:dynamic-let-around)
- #+END_SRC
-**** Interactive
-#+BEGIN_SRC emacs-lisp
-(defmacro imalison:let-around-interactive (name &rest args)
-  `(imalison:make-interactive ,name (imalison:let-around-fn ,@args)))
+(imalison:named-builder imalison:let-around)
 #+END_SRC
 *** Let Around Advice
  #+BEGIN_SRC emacs-lisp
@@ -640,14 +617,6 @@ the ~:around~ keyword of advice-add.
        (apply orig-func args))))
 
 (imalison:named-builder imalison:let-advise-around)
- #+END_SRC
-**** Dynamically, using functions
- #+BEGIN_SRC emacs-lisp
-(defmacro imalison:dynamic-let-advise-around (name &rest getters)
-  `(defun ,name (orig-func &rest args)
-     (let ,(cl-loop for pair in getters
-                    collect `(,(car pair) (funcall (quote ,(cadr pair)))))
-       (apply orig-func args))))
  #+END_SRC
 ** Join Paths
 Works in the same way as os.path.join in python
