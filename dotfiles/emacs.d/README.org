@@ -927,8 +927,8 @@ This interactive functions allows the user the select a function to invoke using
   (shell-command-on-region start end command nil t))
 
 (imalison:prefix-alternatives imalison:shell-command-on-region
-                              imalison:copy-shell-command-on-region
-                              imalison:shell-command-on-region-replace)
+  imalison:copy-shell-command-on-region
+  imalison:shell-command-on-region-replace)
 #+END_SRC
 ** Copy String Functions
 A macro for composing functions together to build an interactive command to copy a string to the kill ring.
@@ -1112,7 +1112,9 @@ For composing functions with an apply so that they can be used with the ~:around
 #+END_SRC
 
 #+BEGIN_SRC emacs-lisp
-(imalison:prefix-alternatives imalison:mark-ring helm-mark-ring helm-global-mark-ring)
+(imalison:prefix-alternatives imalison:mark-ring
+  helm-mark-ring
+  helm-global-mark-ring)
 #+END_SRC
 * Macros
 ** For editing literate config
@@ -1937,16 +1939,18 @@ I use helm for almost all emacs completion
       (interactive)
       (helm-do-ag default-directory (car (projectile-parse-dirconfig-file))))
 
-    (imalison:prefix-alternatives imalison:do-ag helm-projectile-ag
-                                  imalison:do-ag-default-directory helm-do-ag)
-    (imalison:prefix-alternatives imalison:projectile-find-file
-                                  projectile-find-file
-                                  projectile-find-file-other-window)
+    (imalison:prefix-alternatives imalison:do-ag
+      helm-projectile-ag
+      imalison:do-ag-default-directory
+      helm-do-ag)
 
-    (imalison:let-around
-     imalison:set-options-do-ag
-     (lambda () (call-interactively 'imalison:do-ag))
-     (helm-ag-always-set-extra-option t))
+    (imalison:prefix-alternatives imalison:projectile-find-file
+      projectile-find-file
+      projectile-find-file-other-window)
+
+    (imalison:let-around imalison:set-options-do-ag
+      imalison:do-ag
+      (helm-ag-always-set-extra-option t))
 
     (defun projectile-make-all-subdirs-projects (directory)
       (cl-loop for file-info in (directory-files-and-attributes directory)
@@ -1976,7 +1980,9 @@ I use helm for almost all emacs completion
 (use-package avy
   :preface
   (progn
-    (imalison:prefix-alternatives imalison:avy avy-goto-word-1 avy-goto-char))
+    (imalison:prefix-alternatives imalison:avy
+      avy-goto-word-1
+      avy-goto-char))
   :bind (("C-j" . imalison:avy)
          ("M-g l" . avy-goto-line)
          ("C-'" . avy-goto-char-2)))
@@ -1985,7 +1991,9 @@ I use helm for almost all emacs completion
 #+BEGIN_SRC emacs-lisp
 (use-package ace-window
   :preface
-  (imalison:prefix-alternatives imalison:ace-window ace-select-window ace-swap-window)
+  (imalison:prefix-alternatives imalison:ace-window
+    ace-select-window
+    ace-swap-window)
   :config (setq aw-keys '(?a ?s ?d ?f ?g ?h ?j ?k ?l))
   :bind ("C-c w" . imalison:ace-window))
 #+END_SRC
@@ -2097,11 +2105,12 @@ This was stolen from https://github.com/jwiegley/dot-emacs
       (interactive)
       (multi-line-execute multi-line-fill-stragety nil))
 
-    (imalison:prefix-alternatives imalison:multi-line multi-line
-                                  multi-line-single-line
-                                  imalison:multi-line-skip-fill
-                                  imalison:multi-line-fill
-                                  imalison:multi-line-fill-column))
+    (imalison:prefix-alternatives imalison:multi-line
+      multi-line
+      multi-line-single-line
+      imalison:multi-line-skip-fill
+      imalison:multi-line-fill
+      imalison:multi-line-fill-column))
   :bind ("C-c d" . imalison:multi-line))
 #+END_SRC
 *** comment-dwim-2
@@ -2411,8 +2420,10 @@ Pyimport is disabled because it may be causing a performance problem.
                  ("C-c t" . imalison:gotest))
      :preface
      (progn
-       (imalison:prefix-alternatives
-        imalison:gotest go-test-current-test go-test-current-file)
+       (imalison:prefix-alternatives imalison:gotest
+         go-test-current-test
+         go-test-current-file)
+
        (defun imalison:add-expected-test-name-for-suite (suite-name test-name)
          (if (> (length suite-name) 0)
              (concat " -run Test" suite-name)
@@ -2503,8 +2514,8 @@ Pyimport is disabled because it may be causing a performance problem.
   (diminish 'elisp-slime-nav-mode)
   :preface
   (imalison:prefix-alternatives imalison:elisp-slime-nav
-                                elisp-slime-nav-find-elisp-thing-at-point
-                                elisp-slime-nav-describe-elisp-thing-at-point)
+    elisp-slime-nav-find-elisp-thing-at-point
+    elisp-slime-nav-describe-elisp-thing-at-point)
   :bind (:map elisp-slime-nav-mode-map
               ("M-." . imalison:elisp-slime-nav))
   :init
@@ -2832,8 +2843,9 @@ emr (emacs refactor) provides support for refactoring in many programming langua
                                      term-projectile-create-new-default-directory)
   :config
   (progn
-    (imalison:prefix-alternatives imalison:term term-projectile-forward
-                                  term-projectile-create-new)
+    (imalison:prefix-alternatives imalison:term
+      term-projectile-forward
+      term-projectile-create-new)
     (defhydra imalison:term-hydra-default-directory ()
       "term - default-directory"
       ("n" term-projectile-default-directory-forward)
@@ -2993,8 +3005,10 @@ I had to disable this mode because something that it does messes with coding set
   :bind (("C-\\" . imalison:company))
   :config
   (progn
-    (imalison:prefix-alternatives
-     imalison:company company-complete company-yasnippet)
+    (imalison:prefix-alternatives imalison:company
+      company-complete
+      company-yasnippet)
+
     (setq company-idle-delay .25)
     (global-company-mode)
     (diminish 'company-mode))
