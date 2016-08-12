@@ -470,6 +470,10 @@ new macro name and the -fn suffix.
   (let* ((last-function (car (last funcs)))
          (arguments (imalison:help-function-arglist last-function))
          (call-arguments (delq '&optional arguments)))
+    ;; When we have an &rest arguments there is no point in taking any
+    ;; of the arguments by name, so we simply pass them all as an
+    ;; argument list. See the comment below to understand how this
+    ;; impacts the evaluation of the last function.
     (when (memq '&rest arguments)
       (setq arguments '(&rest args))
       (setq call-arguments '(args)))
@@ -484,6 +488,8 @@ new macro name and the -fn suffix.
   "Builds funcalls of FUNCS applied to the arg."
   (if (equal (length funcs) 1)
       (let ((last-function (car funcs)))
+        ;; This hideous clause is here because it is the only way to
+        ;; handle functions that take &rest args.
         (when (memq '&rest (imalison:help-function-arglist last-function))
           (setq last-function (apply-partially 'apply last-function)))
         `(,last-function ,@arguments))
