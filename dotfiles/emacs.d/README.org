@@ -671,14 +671,11 @@ By advising ~imenu--make-index-alist~ with
 always flattened. This is still experimental, so copy to your own
 dotfiles with caution.
 #+BEGIN_SRC emacs-lisp
-(defun imalison:flatten-imenu-index-with-function
-    (index-build-function &rest args)
-  (imalison:flatten-imenu-index (apply index-build-function args)))
-
 (advice-add 'imenu--make-index-alist
-            :around 'imalison:flatten-imenu-index-with-function)
+            :around (imalison:compose-around-builder
+                        imalison:flatten-imenu-index-with-function
+                      imalison:flatten-imenu-index))
 #+END_SRC
-
 ** Add Files to ~org-agenda-files~
 #+BEGIN_SRC emacs-lisp
 (defun imalison:add-to-org-agenda-files (incoming-files)
@@ -935,8 +932,10 @@ A macro for composing functions together to build an interactive command to copy
 ** Compose Around Builder
 For composing functions with an apply so that they can be used with the ~:around~ keyword of advice-add
 #+BEGIN_SRC emacs-lisp
-(defmacro imalison:compose-around-builder (&rest functions)
-  `(imalison:compose-fn ,@functions 'apply))
+(defmacro imalison:compose-around-builder-fn (&rest functions)
+  `(imalison:compose-fn ,@functions apply))
+
+(imalison:named-builder imalison:compose-around-builder)
 #+END_SRC
 ** Named Compile
 #+BEGIN_SRC emacs-lisp
