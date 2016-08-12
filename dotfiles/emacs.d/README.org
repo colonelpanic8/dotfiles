@@ -462,8 +462,8 @@ new macro name and the -fn suffix.
 *** Compose Functions
 **** A version supporting macros
 #+BEGIN_SRC emacs-lisp
-(defun imalison:help-function-arglist (function)
-  (let ((result (help-function-arglist function )))
+(defun imalison:help-function-arglist (fn)
+  (let ((result (help-function-arglist fn)))
     (if (eq result t) '(&rest args) result)))
 
 (defmacro imalison:compose-fn (&rest funcs)
