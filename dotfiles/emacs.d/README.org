@@ -601,7 +601,7 @@ the ~:around~ keyword of advice-add.
          (docstring-form (format "Call `%s' with bindings: %s." orig-func forms))
          (additional-forms (list docstring-form)))
     (when orig-interactive-form
-      (push orig-interactive-form additional-forms))
+      (nconc additional-forms (list orig-interactive-form)))
     `(lambda (&rest args)
        ,@additional-forms
        (let ,forms
