@@ -555,7 +555,7 @@ macro based on the value of the prefix argument.
 
 (imalison:named-builder imalison:prefix-alternatives)
 #+END_SRC
-*** Make interactive
+*** Make Interactive
  #+BEGIN_SRC emacs-lisp
 (defmacro imalison:make-interactive-fn (function)
   `(lambda (&rest args)
@@ -623,6 +623,14 @@ the ~:around~ keyword of advice-add.
        (apply orig-func args))))
 
 (imalison:named-builder imalison:let-advise-around)
+ #+END_SRC
+*** Compose Around Builder
+ For composing functions with an apply so that they can be used with the ~:around~ keyword of advice-add
+ #+BEGIN_SRC emacs-lisp
+ (defmacro imalison:compose-around-builder-fn (&rest functions)
+   `(imalison:compose-fn ,@functions apply))
+
+ (imalison:named-builder imalison:compose-around-builder)
  #+END_SRC
 ** Join Paths
 Works in the same way as os.path.join in python
@@ -928,14 +936,6 @@ A macro for composing functions together to build an interactive command to copy
 #+BEGIN_SRC emacs-lisp
 (imalison:compose-copy-builder imalison:copy-current-git-branch
                                magit-get-current-branch)
-#+END_SRC
-** Compose Around Builder
-For composing functions with an apply so that they can be used with the ~:around~ keyword of advice-add
-#+BEGIN_SRC emacs-lisp
-(defmacro imalison:compose-around-builder-fn (&rest functions)
-  `(imalison:compose-fn ,@functions apply))
-
-(imalison:named-builder imalison:compose-around-builder)
 #+END_SRC
 ** Named Compile
 #+BEGIN_SRC emacs-lisp
