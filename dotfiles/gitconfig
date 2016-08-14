@@ -80,6 +80,7 @@
 	
 [include]
 	path = ~/.gitconfig.custom
+	path = ~/.gitconfig.this-machine
 
 [rerere]
 	enabled = false
