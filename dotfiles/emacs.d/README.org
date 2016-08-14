@@ -3578,7 +3578,7 @@ I've disabled perspective because I just don't use it much.
 *** gitconfig-mode
 #+BEGIN_SRC emacs-lisp
 (use-package gitconfig-mode
-  :mode "\\.?gitconfig\\'")
+  :mode "\\.?gitconfig.?.*\\'")
 #+END_SRC
 *** evil
 #+BEGIN_SRC emacs-lisp
