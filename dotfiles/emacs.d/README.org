@@ -1810,7 +1810,7 @@ Sets environment variables by starting a shell
   :config
   (company-auctex-init))
 #+END_SRC
-** Navigation/Completion
+** Navigation
 *** zop-to-char
 #+BEGIN_SRC emacs-lisp
 (use-package zop-to-char
@@ -2016,6 +2016,46 @@ This was stolen from https://github.com/jwiegley/dot-emacs
   (interactive)
   (require 'helm)
   (helm-other-buffer 'helm-c-source-zsh-history "*helm zsh history*"))
+#+END_SRC
+** Completion
+*** company
+#+BEGIN_SRC emacs-lisp
+(use-package company
+  :commands company-mode imalison:company
+  :bind (("C-\\" . imalison:company))
+  :config
+  (progn
+    (imalison:prefix-alternatives imalison:company
+      company-complete
+      company-yasnippet)
+
+    (setq company-idle-delay .25)
+    (global-company-mode)
+    (diminish 'company-mode))
+  :init
+  (add-hook 'prog-mode-hook (lambda () (company-mode t))))
+#+END_SRC
+**** company-flx
+#+BEGIN_SRC emacs-lisp
+(use-package company-flx
+  :disabled t
+  :after company
+  :config
+  (company-flx-mode +1))
+#+END_SRC
+*** auto-complete
+I don't use auto-complete at all, so I have set up a hook to automatically disable it whenever it is enabled to avoid creating conflicting popups when company is activated.
+#+BEGIN_SRC emacs-lisp
+(use-package auto-complete
+  :preface
+  (progn
+    (defun imalison:auto-complete-hook ()
+      (warn "auto-complete-mode was activated, but is being automatically disabled.")
+      (let ((auto-complete-mode-hook nil))
+        (auto-complete-mode -1))))
+  :config
+  (progn
+    (add-hook 'auto-complete-mode-hook 'imalison:auto-complete-hook)))
 #+END_SRC
 ** Text Manipulation
 *** smartparens
@@ -2972,32 +3012,6 @@ I had to disable this mode because something that it does messes with coding set
   :init
   (progn
     (add-hook 'prog-mode-hook (lambda () (rainbow-delimiters-mode t)))))
-#+END_SRC
-*** company
-#+BEGIN_SRC emacs-lisp
-(use-package company
-  :commands company-mode imalison:company
-  :bind (("C-\\" . imalison:company))
-  :config
-  (progn
-    (imalison:prefix-alternatives imalison:company
-      company-complete
-      company-yasnippet)
-
-    (setq company-idle-delay .25)
-    (global-company-mode)
-    (diminish 'company-mode))
-  :init
-  (add-hook 'prog-mode-hook (lambda () (company-mode t))))
-#+END_SRC
-
-**** company-flx
-#+BEGIN_SRC emacs-lisp
-(use-package company-flx
-  :disabled t
-  :after company
-  :config
-  (company-flx-mode +1))
 #+END_SRC
 *** undo-tree
 #+BEGIN_SRC emacs-lisp
