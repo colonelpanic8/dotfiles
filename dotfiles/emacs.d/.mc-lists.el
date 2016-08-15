@@ -16,6 +16,7 @@
         go-mode-insert-and-indent
         helm-show-kill-ring
         imalison:avy
+        imalison:multi-line
         indent-for-tab-command
         isearch-forward-regexp
         isearch-other-control-char
