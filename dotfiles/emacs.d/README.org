@@ -377,6 +377,44 @@ whenever there is an error.
 ;;                                  ".\\{81\\}" 'hi-blue)))
 #+END_SRC
 * Functions
+** Join Paths
+Works in the same way as os.path.join in python
+#+BEGIN_SRC emacs-lisp
+(defun imalison:join-paths (root &rest dirs)
+  (let ((result root))
+    (cl-loop for dir in dirs do
+             (setq result (concat (file-name-as-directory result) dir)))
+    result))
+#+END_SRC
+** Variables
+#+BEGIN_SRC emacs-lisp
+(defvar imalison:projects-directory
+  (imalison:join-paths (substitute-in-file-name "$HOME") "Projects"))
+
+(defvar imalison:gpg-key)
+#+END_SRC
+** Use Package Wrapper With Local Load Path Support
+#+BEGIN_SRC emacs-lisp
+(put 'imalison:use-package 'lisp-indent-function 1)
+
+(defmacro imalison:use-package* (package target-directory &rest forms)
+  (let* ((target-exists (file-exists-p target-directory))
+         (additional-forms
+          (when target-exists
+            (list
+             :load-path target-directory
+             :ensure nil))))
+    `(use-package ,package
+       ,@additional-forms ,@forms)))
+
+(defmacro imalison:use-package (package &rest forms)
+  (let ((target-directory
+         (concat (file-name-as-directory (if (boundp 'imalison:projects-directory)
+                                             imalison:projects-directory
+                                           "~/Projects"))
+                 (symbol-name package))))
+    `(imalison:use-package* ,package ,target-directory ,@forms)))
+#+END_SRC
 ** Required Packages
 The packages in this section provide no functionality on their own,
 but provide support for writing custom elisp.
@@ -413,6 +451,11 @@ but provide support for writing custom elisp.
 *** parse-csv
 #+BEGIN_SRC emacs-lisp
 (use-package parse-csv
+  :demand t)
+#+END_SRC
+*** emit
+#+BEGIN_SRC emacs-lisp
+(imalison:use-package emit
   :demand t)
 #+END_SRC
 ** Macros
@@ -565,28 +608,6 @@ macro based on the value of the prefix argument.
 
 (imalison:named-builder imalison:make-interactive)
  #+END_SRC
-*** Use Package Wrapper With Local Load Path Support
-#+BEGIN_SRC emacs-lisp
-(put 'imalison:use-package 'lisp-indent-function 1)
-
-(defmacro imalison:use-package* (package target-directory &rest forms)
-  (let* ((target-exists (file-exists-p target-directory))
-         (additional-forms
-          (when target-exists
-            (list
-             :load-path target-directory
-             :ensure nil))))
-    `(use-package ,package
-       ,@additional-forms ,@forms)))
-
-(defmacro imalison:use-package (package &rest forms)
-  (let ((target-directory
-         (concat (file-name-as-directory (if (boundp 'imalison:projects-directory)
-                                             imalison:projects-directory
-                                           "~/Projects"))
-                 (symbol-name package))))
-    `(imalison:use-package* ,package ,target-directory ,@forms)))
-#+END_SRC
 *** Advice Add Around Builder
 For composing functions with an apply so that they can be used with
 the ~:around~ keyword of advice-add.
@@ -633,22 +654,6 @@ the ~:around~ keyword of advice-add.
 
  (imalison:named-builder imalison:compose-around-builder)
  #+END_SRC
-** Join Paths
-Works in the same way as os.path.join in python
-#+BEGIN_SRC emacs-lisp
-(defun imalison:join-paths (root &rest dirs)
-  (let ((result root))
-    (cl-loop for dir in dirs do
-             (setq result (concat (file-name-as-directory result) dir)))
-    result))
-#+END_SRC
-** Variables
-#+BEGIN_SRC emacs-lisp
-(defvar imalison:projects-directory
-  (imalison:join-paths (substitute-in-file-name "$HOME") "Projects"))
-
-(defvar imalison:gpg-key)
-#+END_SRC
 ** Flatten ~imenu~ Indexes
 I like my imenu indexes flat so I don't have to press enter multiple
 times to find what I'm looking for. The functions that follow allow me
