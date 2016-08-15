@@ -58,9 +58,10 @@ dotfiles repo but they are shared across machines elsewhere.
 This appears here so that it can accurately benchmark as much of
 startup as possible.
 #+BEGIN_SRC emacs-lisp
-(defvar imalison:do-benchmark)
-(when (bound-and-true-p imalison:do-benchmark)
-  (use-package benchmark-init))
+  (defvar imalison:do-benchmark)
+  (when (and (boundp 'use-package)
+             (bound-and-true-p imalison:do-benchmark))
+    (use-package benchmark-init))
 #+END_SRC
 ** GUI Disables
 Death to any gui elements in emacs! Do this EARLY so that emacs
