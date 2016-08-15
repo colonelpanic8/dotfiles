@@ -47,10 +47,6 @@ alias land_current='arc land $(git which-branch)'
 
 alias kill_h_forward='ps aux | grep ssh | grep 21300 | get_cols 2 | xargs kill -9'
 
-autoload -U add-zsh-hook
-
-add-zsh-hook precmd uber_set_user_email_to_imalison
-
 function uber_set_user_email_to_imalison {
 	if in_git_directory;
 	then
