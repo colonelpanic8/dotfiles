@@ -578,27 +578,6 @@ new macro name and the -fn suffix.
       'arg
     `(funcall ,(car funcs) (imalison:compose-helper-unary ,(cdr funcs)))))
 #+END_SRC
-*** Prefix Alternatives
-Prefix alternatives is a macro that builds an interactive function
-that selects one of a collection of functions that are provided to the
-macro based on the value of the prefix argument.
-#+BEGIN_SRC emacs-lisp
-(defmacro imalison:prefix-alternatives-fn (&rest alternatives)
-  `(lambda (arg)
-     (interactive "p")
-     (let ((function
-            (cond
-             ,@(progn
-                 (let ((last-power 1))
-                   (cl-loop for alternative in alternatives
-                            collect `((eq arg ,last-power) (quote ,alternative))
-                            do (setq last-power (* last-power 4))))))))
-       (setq function (or function)) ; Set a default value for function
-       (setq current-prefix-arg nil)
-       (call-interactively function))))
-
-(imalison:named-builder imalison:prefix-alternatives)
-#+END_SRC
 *** Make Interactive
  #+BEGIN_SRC emacs-lisp
 (defmacro imalison:make-interactive-fn (function)
@@ -912,7 +891,7 @@ This interactive functions allows the user the select a function to invoke using
                      (read-shell-command "Shell command on region: ")))
   (shell-command-on-region start end command nil t))
 
-(imalison:prefix-alternatives imalison:shell-command-on-region
+(emit-prefix-selector imalison:shell-command-on-region
   imalison:copy-shell-command-on-region
   imalison:shell-command-on-region-replace)
 #+END_SRC
@@ -1092,7 +1071,7 @@ A macro for composing functions together to build an interactive command to copy
 #+END_SRC
 
 #+BEGIN_SRC emacs-lisp
-(imalison:prefix-alternatives imalison:mark-ring
+(emit-prefix-selector imalison:mark-ring
   helm-mark-ring
   helm-global-mark-ring)
 #+END_SRC
@@ -1919,12 +1898,12 @@ I use helm for almost all emacs completion
       (interactive)
       (helm-do-ag default-directory (car (projectile-parse-dirconfig-file))))
 
-    (imalison:prefix-alternatives imalison:do-ag
+    (emit-prefix-selector imalison:do-ag
       helm-projectile-ag
       imalison:do-ag-default-directory
       helm-do-ag)
 
-    (imalison:prefix-alternatives imalison:projectile-find-file
+    (emit-prefix-selector imalison:projectile-find-file
       projectile-find-file
       projectile-find-file-other-window)
 
@@ -1960,7 +1939,7 @@ I use helm for almost all emacs completion
 (use-package avy
   :preface
   (progn
-    (imalison:prefix-alternatives imalison:avy
+    (emit-prefix-selector imalison:avy
       avy-goto-word-1
       avy-goto-char))
   :bind (("C-j" . imalison:avy)
@@ -1971,7 +1950,7 @@ I use helm for almost all emacs completion
 #+BEGIN_SRC emacs-lisp
 (use-package ace-window
   :preface
-  (imalison:prefix-alternatives imalison:ace-window
+  (emit-prefix-selector imalison:ace-window
     ace-select-window
     ace-swap-window)
   :config (setq aw-keys '(?a ?s ?d ?f ?g ?h ?j ?k ?l))
@@ -2030,7 +2009,7 @@ This was stolen from https://github.com/jwiegley/dot-emacs
   :bind (("C-\\" . imalison:company))
   :config
   (progn
-    (imalison:prefix-alternatives imalison:company
+    (emit-prefix-selector imalison:company
       company-complete
       company-yasnippet)
 
@@ -2125,7 +2104,7 @@ I don't use auto-complete at all, so I have set up a hook to automatically disab
       (interactive)
       (multi-line-execute multi-line-fill-stragety nil))
 
-    (imalison:prefix-alternatives imalison:multi-line
+    (emit-prefix-selector imalison:multi-line
       multi-line
       multi-line-single-line
       imalison:multi-line-skip-fill
@@ -2451,7 +2430,7 @@ Pyimport is disabled because it may be causing a performance problem.
                  ("C-c t" . imalison:gotest))
      :preface
      (progn
-       (imalison:prefix-alternatives imalison:gotest
+       (emit-prefix-selector imalison:gotest
          go-test-current-test
          go-test-current-file)
 
@@ -2544,7 +2523,7 @@ Pyimport is disabled because it may be causing a performance problem.
   :config
   (diminish 'elisp-slime-nav-mode)
   :preface
-  (imalison:prefix-alternatives imalison:elisp-slime-nav
+  (emit-prefix-selector imalison:elisp-slime-nav
     elisp-slime-nav-find-elisp-thing-at-point
     elisp-slime-nav-describe-elisp-thing-at-point)
   :bind (:map elisp-slime-nav-mode-map
@@ -2874,7 +2853,7 @@ emr (emacs refactor) provides support for refactoring in many programming langua
                                      term-projectile-create-new-default-directory)
   :config
   (progn
-    (imalison:prefix-alternatives imalison:term
+    (emit-prefix-selector imalison:term
       term-projectile-forward
       term-projectile-create-new)
     (defhydra imalison:term-hydra-default-directory ()
