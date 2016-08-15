@@ -1,6 +1,6 @@
 import os
 import errno
-from invoke import run, Collection, ctask
+from invoke import run, Collection, task as ctask
 
 
 def link_filenames(ctx, link_pairs, force=False):
