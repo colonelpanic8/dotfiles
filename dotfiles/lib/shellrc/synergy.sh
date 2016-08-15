@@ -1,7 +1,21 @@
 SYNERGY_CONF="$HOME/.synergy.conf"
 
-function make_me_synergy() {
-    local new_host_name="$(echo $SSH_CONNECTION | get_cols 1)"
+synergy_start_client_at() {
+    ssh "$1" "source ~/.zshrc && synergyc $(localip)"
+}
+
+synergy_start_server_here() {
+    test -z "$(pgrep synergys)" && synergys --config "$SYNERGY_CONF"
+}
+
+synergy_init_with_client() {
+    synergy_start_server_here
+    synergy_start_client_at "$1"
+}
+
+synergy_use_ssh_connection_as_server() {
+    local new_host_name
+    new_host_name="$(echo "$SSH_CONNECTION" | get_cols 1)"
     OPTIND=1
     while getopts "h:" OPTCHAR; do
         case $OPTCHAR in
@@ -11,31 +25,26 @@ function make_me_synergy() {
                 ;;
         esac
     done
-    test -z "$(get_synergy_pids_for_ip $new_host_name)" && synergyc $new_host_name
+    test -z "$(synergy_pids_for_ip "$new_host_name")" && synergyc "$new_host_name"
 }
 
-function stop_synergy_at() {
+synergy_stop_at() {
     pgrep synergys | xargs kill -9
-    ssh $1 "refresh_config && clear_my_synergy"
+    ssh "$1" "clear_my_synergy"
 }
 
-function clear_all_synergy() {
+synergy_kill_all_local() {
     pgrep synergy | xargs kill -9
 }
 
-function clear_my_synergy() {
-    clear_synergy_for_ip "$(echo $SSH_CONNECTION | get_cols 1)"
+synergy_clear_ssh_synergy() {
+    synergy_clear_for_ip "$(echo "$SSH_CONNECTION" | get_cols 1)"
 }
 
-function get_synergy_pids_for_ip() {
-    ps aux | grep synergyc | grep $1 | get_cols 2
+synergy_clear_for_ip() {
+    synergy_pids_for_ip "$1" | xargs kill -9
 }
 
-function clear_synergy_for_ip() {
-    get_synergy_pids_for_ip $1 | xargs kill -9
-}
-
-function activate_synergy_for() {
-    test -z "$(pgrep synergys)" && synergys --config "$SYNERGY_CONF"
-    ssh $1 "source ~/.zshrc && synergyc $(localip)"
+synergy_pids_for_ip() {
+    pgrep synergyc | grep "$1" | get_cols 2
 }
