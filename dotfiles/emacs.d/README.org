@@ -2347,11 +2347,22 @@ modeline and with excessive http requests to github.
         (if use-python-tabs (python-tabs))
         (subword-mode t)
         (imalison:make-imenu-index-flat)
-        (jedi:setup)
+        ;; Somehow this is sometimes set to jedi:ac-setup which we
+        ;; don't want. This binding avoids starting auto-complete mode.
+        (let ((jedi:setup-function nil))
+          (jedi:setup))
+
         (add-hook 'before-save-hook 'pyimport-remove-unused t t)
+
         (add-virtual-envs-to-jedi-server)
+
+        ;; TODO: figure out why this is here
         (remove-hook 'completion-at-point-functions
                      'python-completion-complete-at-point 'local)
+
+        ;; Ensure company is active
+        (company-mode +1)
+        ;; Only use company-jedi for completion
         (set (make-local-variable 'company-backends) '(company-jedi)))
       (add-hook 'python-mode-hook #'imalison:python-mode))))
 #+END_SRC
