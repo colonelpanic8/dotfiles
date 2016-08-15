@@ -745,7 +745,7 @@ Create cache structure containing stop information
 (defmethod imalison:muni-stop-get-lat-long ((stop imalison:muni-stop))
   (list (oref stop :lat) (oref stop :long)))
 
-(defvar imalison:muni-stop-cache (pcache-repository "imalison-muni-stop"))
+(defvar imalison:muni-stop-cache (pcache-repository :object-name "imalison-muni-stop"))
 
 (defun imalison:muni-get-gtfs-stops (&optional filepath)
   (unless filepath
@@ -825,7 +825,7 @@ A function that shells out to get upcoming trains
 
 A cached version of the muni functions for use in spaceline and elsewhere.
 #+BEGIN_SRC emacs-lisp
-(defvar imalison:muni-cache (pcache-repository "imalison-muni"))
+(defvar imalison:muni-cache (pcache-repository :object-name "imalison-muni"))
 (defvar imalison:current-location-ttl 10)
 (defvar imalison:muni-arrival-ttl 25)
 
