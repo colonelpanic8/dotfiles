@@ -3,7 +3,7 @@ function path_lines {
     # We need to get a path to the ACTUAL python command because
     # pyenv alters PATH before actually executing python, which ends
     # up changing PATH in a way that is not desireable.
-    hash pyenv && python_command="$(pyenv which python)" || python_command="$(which python)"
+    hash pyenv 2>/dev/null && python_command="$(pyenv which python)" || python_command="$(which python)"
 	"$python_command" "$HOME/.lib/python/shell_path.py" --path-lines "$@"
 }
 

@@ -14,7 +14,7 @@ function add_to_path {
     # We need to get a path to the ACTUAL python command because
     # pyenv alters PATH before actually executing python, which ends
     # up changing PATH in a way that is not desireable.
-    hash pyenv && python_command="$(pyenv which python)" || python_command="$(which python)"
+    hash pyenv 2>/dev/null && python_command="$(pyenv which python)" || python_command="$(which python)"
 
     result=$($python_command $HOME/.lib/python/shell_path.py --include-assignment "$@")
     eval "$result"
@@ -27,7 +27,7 @@ function get_python_scripts_path {
 function _setup_env {
     _path_helper
 
-    time add_to_path "$HOME/.local/bin" "$HOME/.lib/bin" "$HOME/bin" "/usr/local/bin" --before
+    add_to_path "$HOME/.local/bin" "$HOME/.lib/bin" "$HOME/bin" "/usr/local/bin" --before
     is_osx && _osx_path_setup
     _java_setup
     _go_setup
