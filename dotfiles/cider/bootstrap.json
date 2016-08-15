@@ -159,6 +159,7 @@
     "sleuthkit",
     "sqlite",
     "subversion",
+    "tccutil",
     "terminal-notifier",
     "the_silver_searcher",
     "thrift",
