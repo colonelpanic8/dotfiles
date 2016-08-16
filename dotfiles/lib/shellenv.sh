@@ -121,7 +121,6 @@ function _path_helper {
     fi
 }
 
-environment_variable_exists PATH_HELPER_RAN || _path_helper
 environment_variable_exists ENVIRONMENT_SETUP_DONE || _setup_env
 
 # TODO(imalison): These need to run every time because of how their
