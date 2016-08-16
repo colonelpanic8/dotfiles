@@ -57,7 +57,7 @@ function _java_setup {
         export GRADLE_HOME="$(brew --prefix gradle)"
         export ANDROID_HOME="$(brew --prefix android-sdk)"
         add_to_path "$ANDROID_HOME" --after
-        
+
         # Access gnu man pages.
         hash brew 2> /dev/null && export MANPATH="$(brew --prefix)/opt/coreutils/libexec/gnuman:$MANPATH"
     else
