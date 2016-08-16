@@ -12,6 +12,8 @@ dotfiles/pip/cache
 
 # Clojure
 .cljs_rhino_repl
+.nrepl-port
+target
 
 # CTags
 TAGS
