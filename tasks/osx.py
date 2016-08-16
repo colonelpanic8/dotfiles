@@ -76,6 +76,7 @@ APPS_NEEDING_ASSISTIVE_DEVICE_ACCESS = ('Slate', 'Synergy', 'iTerm')
 
 @ctask
 def access_for_assistive_devices(ctx):
+    # TODO: refactor to use tccutil.py
     for app in APPS_NEEDING_ASSISTIVE_DEVICE_ACCESS:
         app_string = '/Applications/{0}.app'.format(app)
         user_application = os.path.expanduser('~' + app_string)
@@ -89,6 +90,25 @@ def access_for_assistive_devices(ctx):
             ctx,
             "/Applications/Karabiner.app/Contents/Applications/"
             "Karabiner_AXNotifier.app"
+        )
+
+SYNERGY_BINARIES_PATH = '/Applications/Synergy.app/Contents/MacOS/'
+
+SCRIPTS_NEEDING_ASSISTIVE_DEVICE_ACCESS = [
+    os.path.join(SYNERGY_BINARIES_PATH, 'synergyc'),
+    os.path.join(SYNERGY_BINARIES_PATH, 'synergys'),
+    "org.gnu.Emacs",
+    "com.googlecode.iterm2",
+]
+
+@ctask
+def tccutil(ctx):
+    for script in SCRIPTS_NEEDING_ASSISTIVE_DEVICE_ACCESS:
+        ctx.run(
+            'sudo tccutil -i "{}"'.format(script)
+        )
+        ctx.run(
+            'sudo tccutil -e "{}"'.format(script)
         )
 
 
