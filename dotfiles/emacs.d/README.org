@@ -1945,6 +1945,26 @@ I use helm for almost all emacs completion
     (bind-key* "C-c p S" 'imalison:set-options-do-ag)
     (bind-key* "C-c p f" 'imalison:projectile-find-file)))
 #+END_SRC
+**** Avoid shell-command-to-string
+See [[https://github.com/bbatsov/projectile/issues/1044][this issue]] for details.
+#+BEGIN_SRC emacs-lisp
+(defun projectile-call-process-to-string (program &rest args)
+  (with-temp-buffer
+     (apply 'call-process program nil (current-buffer) nil args)
+     (buffer-string)))
+
+(defun projectile-shell-command-to-string (command)
+  (cl-destructuring-bind
+      (the-command . args) (split-string command " ")
+    (let ((binary-path (eshell-search-path the-command)))
+      (if binary-path
+          (apply 'projectile-call-process-to-string binary-path args)
+        (shell-command-to-string command)))))
+
+(defun projectile-files-via-ext-command (command)
+  "Get a list of relative file names in the project root by executing COMMAND."
+  (split-string (projectile-shell-command-to-string command) "\0" t))
+#+END_SRC
 *** avy
 #+BEGIN_SRC emacs-lisp
 (use-package avy
