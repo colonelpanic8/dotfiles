@@ -1112,8 +1112,9 @@ Sets environment variables by starting a shell
 (use-package exec-path-from-shell
   :config
   (progn
-    (setq exec-path-from-shell-check-startup-files t)
+    (setq exec-path-from-shell-check-startup-files nil)
     (add-to-list 'exec-path-from-shell-variables "GOPATH")
+    (add-to-list 'exec-path-from-shell-variables "ENVIRONMENT_SETUP_DONE")
     (exec-path-from-shell-initialize)))
 #+END_SRC
 *** paradox
