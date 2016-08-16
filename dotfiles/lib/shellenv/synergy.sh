@@ -1,7 +1,7 @@
 SYNERGY_CONF="$HOME/.synergy.conf"
 
 synergy_start_client_at() {
-    ssh "$1" "source ~/.zshrc && synergyc $(localip)"
+    ssh "$1" "synergyc $(localip) && pgrep synergyc"
 }
 
 synergy_start_server_here() {
@@ -30,7 +30,7 @@ synergy_use_ssh_connection_as_server() {
 
 synergy_stop_at() {
     pgrep synergys | xargs kill -9
-    ssh "$1" "clear_my_synergy"
+    ssh "$1" "synergy_kill_all_local"
 }
 
 synergy_kill_all_local() {
