@@ -1,3 +1,7 @@
+function get_python_scripts_path {
+    python -c "import sysconfig; print sysconfig.get_path('scripts')"
+}
+
 function path_lines {
     local python_command
     # We need to get a path to the ACTUAL python command because
@@ -146,17 +150,6 @@ function shell_stats() {
 
 function is_ssh() {
     test $SSH_CLIENT
-}
-
-function is_osx() {
-    case `uname` in
-        'Darwin')
-            return 0
-	    ;;
-        *)
-            return 1;
-            ;;
-    esac
 }
 
 # TODO: Remove this.
