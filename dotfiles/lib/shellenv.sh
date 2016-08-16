@@ -57,8 +57,7 @@ function _python_setup {
     export PYENV_ROOT="/usr/local/var/pyenv"
 
     if which pyenv > /dev/null; then
-        local PYENV_INIT_COMMANDS="$(pyenv init -)"
-        eval "$PYENV_INIT_COMMANDS"
+        eval "$(pyenv init - --no-rehash)"
     else
         echo "WARNING: pyenv is not installed on this machine and python will likely not function correctly"
     fi
@@ -105,11 +104,9 @@ function _rust_setup {
 }
 
 function _ruby_setup {
-    # Load RVM into a shell session *as a function*
-    [[ -s "$HOME/.rvm/scripts/rvm" ]] && source "$HOME/.rvm/scripts/rvm"
-    export RBENV_ROOT=/usr/local/var/rbenv
-    add_to_path "$HOME/.rbenv/bin"
-    hash rbenv 2> /dev/null && eval "$(rbenv init -)"
+    export RBENV_ROOT="$(brew --prefix rbenv)"
+    add_to_path "$RBENV_ROOT/bin"
+    hash rbenv 2> /dev/null && eval "$(rbenv init - --no-rehash)"
 }
 
 function _tex_setup {
