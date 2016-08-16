@@ -633,6 +633,16 @@ the ~:around~ keyword of advice-add.
 
  (imalison:named-builder imalison:compose-around-builder)
  #+END_SRC
+*** Measure Time
+#+BEGIN_SRC emacs-lisp
+(defmacro imalison:measure-time (&rest body)
+  "Measure and return the running time of the code block."
+  (declare (indent defun))
+  (let ((start (make-symbol "start")))
+    `(let ((,start (float-time)))
+       ,@body
+       (- (float-time) ,start))))
+#+END_SRC
 ** Flatten ~imenu~ Indexes
 I like my imenu indexes flat so I don't have to press enter multiple
 times to find what I'm looking for. The functions that follow allow me
