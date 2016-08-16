@@ -1948,6 +1948,9 @@ I use helm for almost all emacs completion
 **** Avoid shell-command-to-string
 See [[https://github.com/bbatsov/projectile/issues/1044][this issue]] for details.
 #+BEGIN_SRC emacs-lisp
+;; We use `eshell-search-path' for this hack
+(require 'eshell)
+
 (defun projectile-call-process-to-string (program &rest args)
   (with-temp-buffer
      (apply 'call-process program nil (current-buffer) nil args)
