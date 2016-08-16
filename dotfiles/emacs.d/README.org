@@ -2936,9 +2936,11 @@ crux-reopen-as-root-mode makes it so that any file owned by root will automatica
       #'anzu-isearch-query-replace-regexp)))
 #+END_SRC
 *** shell-history
+I think that shell-history is causing projectile to be very slow so I have disabled it.
 #+BEGIN_SRC emacs-lisp
 (use-package shell-history
-  :demand t)
+  :demand t
+  :disabled t)
 #+END_SRC
 *** iedit
 I don't use iedit directly, but it is used by [[*emr][emr]] and I need to disable ~iedit-toggle-key-default~ or else a buffer pops up complaing that the key has been bound to something else
