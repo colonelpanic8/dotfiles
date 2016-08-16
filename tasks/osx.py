@@ -10,6 +10,7 @@ def setup(ctx):
     brew(ctx)
     cider(ctx)
     access_for_assistive_devices(ctx)
+    tccutil(ctx)
     karabiner(ctx)
     locate(ctx)
     set_path_for_launchd(ctx)
