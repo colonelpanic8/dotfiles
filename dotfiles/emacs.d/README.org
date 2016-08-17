@@ -1316,7 +1316,7 @@ whenever there is an error.
   :preface
   (progn
     (defvar-setq org-startup-indented nil)
-    (defvar-setq org-startup-folded t)
+    (defvar-setq org-startup-folded nil)
     (defvar-setq org-edit-src-content-indentation 0)
     (defvar-setq org-src-preserve-indentation t)
     (defvar-setq org-directory "~/Dropbox/org")
