@@ -2615,6 +2615,35 @@ Reduce indentation for some functions
                                   (setq show-trailing-whitespace t)))
 (add-hook 'flycheck-mode-hook 'imalison:maybe-remove-flycheck-checkdoc-checker)
 #+END_SRC
+***** Show result of eval-last-sexp inline
+Taken from http://endlessparentheses.com/eval-result-overlays-in-emacs-lisp.html
+#+BEGIN_SRC emacs-lisp
+(autoload 'cider--make-result-overlay "cider-overlays")
+
+(defun imalison:eval-overlay (value point)
+  (cider--make-result-overlay (format "%S" value)
+    :where point
+    :duration 'command)
+  value)
+
+(advice-add 'eval-region :around
+            (lambda (f beg end &rest r)
+              (imalison:eval-overlay
+               (apply f beg end r)
+               end)))
+
+(advice-add 'eval-last-sexp :filter-return
+            (lambda (r)
+              (imalison:eval-overlay r (point))))
+
+(advice-add 'eval-defun :filter-return
+            (lambda (r)
+              (imalison:eval-overlay
+               r
+               (save-excursion
+                 (end-of-defun)
+                 (point)))))
+#+END_SRC
 ***** Keybinds
 #+BEGIN_SRC emacs-lisp
 (define-key lisp-mode-shared-map (kbd "C-c C-c") 'eval-defun)
