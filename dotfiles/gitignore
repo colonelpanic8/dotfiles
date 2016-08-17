@@ -8,13 +8,13 @@ projectile-bookmarks.eld
 # Python
 *.pyc
 .ropeproject/
-dotfiles/pip/cache
 
 # Clojure
 .cljs_rhino_repl
 .nrepl-port
 target
 .lein-failures
+pom.xml
 
 # CTags
 TAGS
