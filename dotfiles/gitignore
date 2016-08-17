@@ -14,6 +14,7 @@ dotfiles/pip/cache
 .cljs_rhino_repl
 .nrepl-port
 target
+.lein-failures
 
 # CTags
 TAGS
