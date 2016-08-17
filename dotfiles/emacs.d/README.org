@@ -2076,6 +2076,7 @@ I don't use auto-complete at all, so I have set up a hook to automatically disab
   :preface
   (progn
     (defun imalison:auto-complete-hook ()
+      (debug)
       (warn "auto-complete-mode was activated, but is being automatically disabled.")
       (let ((auto-complete-mode-hook nil))
         (auto-complete-mode -1))))
@@ -2355,17 +2356,15 @@ modeline and with excessive http requests to github.
     :init
     (progn
       (unbind-key "C-j" python-mode-map)
-      (use-package jedi
-        :commands (jedi:goto-definition jedi-mode)
+      (use-package company-jedi
+        :commands (jedi:goto-definition jedi-mode company-jedi)
         :config
         (progn
           (setq jedi:complete-on-dot t)
           (setq jedi:imenu-create-index-function 'jedi:create-flat-imenu-index)
-          (use-package company-jedi
-            :commands company-jedi))
         :bind (:map python-mode-map
                     ("M-." . jedi:goto-definition)
-                    ("M-," . jedi:goto-definition-pop-marker)))
+                    ("M-," . jedi:goto-definition-pop-marker))))
       (use-package pymacs)
       (use-package sphinx-doc)
       (defun imalison:python-mode ()
