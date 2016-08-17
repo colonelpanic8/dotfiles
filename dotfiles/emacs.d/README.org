@@ -125,16 +125,12 @@ The following implementation uses eshell's ~eshell-search-path~ to find the bina
 #+END_SRC
 This makes it so that we always try to call-process instead of shell-command-to-sting. It may cause undesireable behavior.
 #+BEGIN_SRC emacs-lisp
-(defvar imalison:shell-command-count 0)
-(defvar imalison:call-process-count 0)
 (defun imalison:try-call-process (command)
-  (incf imalison:shell-command-count)
   (let ((call-process-args
          (imalison:get-call-process-args-from-shell-command command)))
     (if call-process-args
-        (progn (incf imalison:call-process-count)
-               (apply 'imalison:call-process-to-string call-process-args))
-      (message "failed with: %s" command))))
+       
+        (apply 'imalison:call-process-to-string call-process-args))))
 
 (advice-add 'shell-command-to-string :before-until 'imalison:try-call-process)
 #+END_SRC
