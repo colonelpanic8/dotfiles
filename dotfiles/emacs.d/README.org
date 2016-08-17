@@ -2558,6 +2558,20 @@ Pyimport is disabled because it may be causing a performance problem.
     (switch-to-buffer buffer)))
 #+END_SRC
 **** emacs-lisp
+***** Init hook
+#+BEGIN_SRC emacs-lisp
+(defvar imalison:check-parens nil)
+
+(defun imalison:maybe-check-parens ()
+  (if imalison:check-parens
+      (check-parens)))
+
+(defun imalison:emacs-lisp-hook ()
+  (elisp-slime-nav-mode t)
+  (add-hook 'write-file-functions 'imalison:maybe-check-parens nil t))
+
+(add-hook 'emacs-lisp-mode-hook 'imalison:emacs-lisp-hook)
+#+END_SRC
 ***** elisp-slime-nav
 #+BEGIN_SRC emacs-lisp
 (use-package elisp-slime-nav
@@ -2569,9 +2583,7 @@ Pyimport is disabled because it may be causing a performance problem.
     elisp-slime-nav-find-elisp-thing-at-point
     elisp-slime-nav-describe-elisp-thing-at-point)
   :bind (:map elisp-slime-nav-mode-map
-              ("M-." . imalison:elisp-slime-nav))
-  :init
-  (add-hook 'emacs-lisp-mode-hook (lambda () (elisp-slime-nav-mode t))))
+              ("M-." . imalison:elisp-slime-nav)))
 #+END_SRC
 ***** macrostep
 Macrostep is an indespensible tool for writing emacs lisp macros. It lets you see pretty printed versions of the result of macro evaluation as the macro is evaluated
