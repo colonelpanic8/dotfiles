@@ -108,6 +108,10 @@ function get_cols() {
     awk -f "$HOME/.lib/get_cols.awk" -v "cols=$*" -v "FS=$FS"
 }
 
+function filter_by_column_value {
+    awk '$'"$1"' == '"$2"'  { print $0 }'
+}
+
 function find_all_ssh_agent_sockets() {
     find /tmp -type s -name agent.\* 2> /dev/null | grep '/tmp/ssh-.*/agent.*'
 }
