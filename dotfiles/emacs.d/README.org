@@ -1,7 +1,8 @@
 * About
 This README is a literate version of my emacs configuration, but it
 also serves as the README for my dotfiles.
-* General
+* Early
+The configurations in this section need to occur early in emacs startup for some reason or another.
 ** Lexical Binding
 This makes it so that the file that is produced from tangling this
 file uses lexical scoping.
@@ -9,17 +10,7 @@ file uses lexical scoping.
 ;;; -*- lexical-binding: t -*-
 (setq lexical-binding t)
 #+END_SRC
-** User Info
-#+BEGIN_SRC emacs-lisp
-(setq user-full-name
-      (replace-regexp-in-string "\n$" "" (shell-command-to-string
-                                          "git config --get user.name")))
-(setq user-mail-address
-      (replace-regexp-in-string "\n$" "" (shell-command-to-string
-                                          "git config --get user.email")))
-#+END_SRC
 ** Setup auto-compile
-This is here because it needs to be activated as early as possible.
 #+BEGIN_SRC emacs-lisp
 (when (boundp 'use-package)
       (use-package auto-compile
@@ -92,6 +83,60 @@ These definitions silence the byte-compiler.
 (defvar url-callback-arguments nil)
 (defvar url-callback-function nil)
 (defvar url-http-extra-headers nil)
+#+END_SRC
+** exec-path-from-shell
+Sets environment variables by starting a shell.
+#+BEGIN_SRC emacs-lisp
+(use-package exec-path-from-shell
+  :config
+  (progn
+    (setq exec-path-from-shell-check-startup-files nil)
+    (add-to-list 'exec-path-from-shell-variables "GOPATH")
+    (add-to-list 'exec-path-from-shell-variables "ENVIRONMENT_SETUP_DONE")
+    (add-to-list 'exec-path-from-shell-variables "PYTHONPATH")
+    (exec-path-from-shell-initialize)))
+#+END_SRC
+** Non-Forking Shell Command To String
+Emacs' built in ~shell-command-to-string~ function has the downside that it forks a new shell process every time it is executed. This means that any shell startup cost is incurred when this function is called.
+
+The following implementation uses eshell's ~eshell-search-path~ to find the binary (which is the only reason ~shell-comand-to-string~ is typically used anyway), but it avoids incurring any shell-startup cost.
+#+BEGIN_SRC emacs-lisp
+;; We use `eshell-search-path' for this hack
+(require 'eshell)
+
+(defun imalison:call-process-to-string (program &rest args)
+  (with-temp-buffer
+    (apply 'call-process program nil (current-buffer) nil args)
+    (buffer-string)))
+
+(defun imalison:get-call-process-args-from-shell-command (command)
+  (cl-destructuring-bind
+      (the-command . args) (split-string command " ")
+    (let ((binary-path (eshell-search-path the-command)))
+      (when binary-path
+        (cons binary-path args)))))
+
+(defun imalison:shell-command-to-string (command)
+  (let ((call-process-args
+         (imalison:get-call-process-args-from-shell-command command)))
+    (if call-process-args
+        (apply 'imalison:call-process-to-string call-process-args)
+      (shell-command-to-string command))))
+#+END_SRC
+This makes it so that we always try to call-process instead of shell-command-to-sting. It may cause undesireable behavior.
+#+BEGIN_SRC emacs-lisp
+(defvar imalison:shell-command-count 0)
+(defvar imalison:call-process-count 0)
+(defun imalison:try-call-process (command)
+  (incf imalison:shell-command-count)
+  (let ((call-process-args
+         (imalison:get-call-process-args-from-shell-command command)))
+    (if call-process-args
+        (progn (incf imalison:call-process-count)
+               (apply 'imalison:call-process-to-string call-process-args))
+      (message "failed with: %s" command))))
+
+(advice-add 'shell-command-to-string :before-until 'imalison:try-call-process)
 #+END_SRC
 ** Security
 #+BEGIN_SRC emacs-lisp
@@ -184,197 +229,6 @@ use-package is only needed at compile time.
 Ensure by default since most of the package for which I use use-package need to be downloaded. ensure can be disabled explicitly with a ~:ensure nil~.
 #+BEGIN_SRC emacs-lisp
 (setq use-package-always-ensure t)
-#+END_SRC
-** Sane Defaults
-#+BEGIN_SRC emacs-lisp -n -r
-(global-auto-revert-mode)
-(show-paren-mode 1)
-(setq reb-re-syntax 'string)
-(setq ad-redefinition-action 'accept)              (ref:ad-redefinition-action)
-#+END_SRC
-[[(ad-redefinition-action)][This]] is set because [[(y-or-n-p-only)][this alias]] causes annoying messaging at startup.
-** Line Numbers
-#+BEGIN_SRC emacs-lisp
-(line-number-mode t)
-(column-number-mode t)
-#+END_SRC
-Linum can be really slow on large files so it does not make sense to
-have it on by default. Its probably safe to turn it on when in a
-programming mode.
-#+BEGIN_SRC emacs-lisp
-(global-linum-mode -1)
-(add-hook 'prog-mode-hook (lambda () (linum-mode t)))
-#+END_SRC
-** Backups
-*** Put them all in one directory
-#+BEGIN_SRC emacs-lisp
-(defconst emacs-tmp-dir
-  (format "%s/%s%s/" temporary-file-directory "emacs" (user-uid)))
-(setq backup-directory-alist `((".*" . ,emacs-tmp-dir)))
-(setq auto-save-file-name-transforms `((".*" ,emacs-tmp-dir t)))
-(setq auto-save-list-file-prefix emacs-tmp-dir)
-#+END_SRC
-*** Completely disable backups
-#+BEGIN_SRC emacs-lisp
-(setq backup-inhibited t)
-(setq make-backup-files nil)
-(setq auto-save-default nil)
-#+END_SRC
-** Prompts
-*** No popup frames
-#+BEGIN_SRC emacs-lisp
-(setq ns-pop-up-frames nil)
-(setq pop-up-frames nil)
-#+END_SRC
-*** boolean (yes-or-no)
-#+BEGIN_SRC emacs-lisp -n -r
-(defadvice yes-or-no-p (around prevent-dialog activate)
-  "Prevent yes-or-no-p from activating a dialog"
-  (let ((use-dialog-box nil))
-    ad-do-it))
-
-(defadvice y-or-n-p (around prevent-dialog-yorn activate)
-  "Prevent y-or-n-p from activating a dialog"
-  (let ((use-dialog-box nil))
-    ad-do-it))
-
-(defalias 'yes-or-no-p 'y-or-n-p)                           (ref:y-or-n-p-only)
-#+END_SRC
-*** No dialog boxes
-#+BEGIN_SRC emacs-lisp
-(setq use-dialog-box nil)
-#+END_SRC
-** Splitting
-#+BEGIN_SRC emacs-lisp
-(defun split-horizontally-for-temp-buffers () (split-window-horizontally))
-(add-hook 'temp-buffer-setup-hook 'split-horizontally-for-temp-buffers)
-(setq split-height-threshold nil)
-(setq split-width-threshold 160)
-#+END_SRC
-** Fill Setup
-#+BEGIN_SRC emacs-lisp
-(setq sentence-end-double-space nil)
-#+END_SRC
-** Encoding
-UTF-8 everywhere
-#+BEGIN_SRC emacs-lisp
-(defun imalison:set-coding-systems ()
-  (interactive)
-  (set-language-environment "Latin-1")
-  (set-default-coding-systems 'utf-8)
-  (unless (eq system-type 'windows-nt)
-    (set-selection-coding-system 'utf-8))
-  (set-terminal-coding-system 'utf-8)
-  (setq locale-coding-system 'utf-8)
-  (prefer-coding-system 'utf-8))
-(imalison:set-coding-systems)
-#+END_SRC
-Disable CJK coding/encoding (Chinese/Japanese/Korean characters)
-#+BEGIN_SRC emacs-lisp
-(setq utf-translate-cjk-mode nil)
-#+END_SRC
-** Visible Bell
-This is set to true to disable the annoying audible bell that plays
-whenever there is an error.
-#+BEGIN_SRC emacs-lisp
-(setq visible-bell t)
-#+END_SRC
-** Configure vc
-#+BEGIN_SRC emacs-lisp
-(setq vc-follow-symlinks t)
-#+END_SRC
-** Misc
-#+BEGIN_SRC emacs-lisp
-(defvar iedit-toggle-key-default nil)
-(put 'set-goal-column 'disabled nil)
-(auto-fill-mode -1)
-(setq indent-tabs-mode nil)
-
-(setq confirm-nonexistent-file-or-buffer nil)
-
-;; No prompt for killing a buffer with processes attached.
-(setq kill-buffer-query-functions
-      (remq 'process-kill-buffer-query-function
-            kill-buffer-query-functions))
-
-(setq inhibit-startup-message t
-      inhibit-startup-echo-area-message t)
-
-;; This makes it so that emacs --daemon puts its files in ~/.emacs.d/server
-;; (setq server-use-tcp t)
-
-;; Display line and column numbers in mode line.
-
-
-;; Make buffer names unique.
-(setq uniquify-buffer-name-style 'forward)
-
-;; We want closures
-(setq lexical-binding t)
-
-(setq fill-column 80)
-
-;; Don't disable commands...
-(setq disabled-command-function nil)
-
-;; Make forward word understand camel and snake case.
-(setq c-subword-mode t)
-(global-subword-mode)
-
-;; Preserve pastes from OS when saving a new item to the kill
-;; ring. Why wouldn't this be enabled by default?
-
-(setq-default cursor-type 'box)
-(setq-default cursor-in-non-selected-windows 'bar)
-
-(when nil ;; Causing too many annoying issues
-  (add-hook 'after-init-hook '(lambda () (setq debug-on-error t))))
-
-;; Make mouse scrolling less jumpy.
-(setq mouse-wheel-scroll-amount '(1 ((shift) . 1)))
-
-(setq display-time-default-load-average nil)
-(setq display-time-interval 1)
-(setq display-time-format "%a, %b %d, %T ")
-(display-time-mode 1)
-
-;; the only sane option...
-
-(setq ediff-split-window-function 'split-window-horizontally)
-(setq ediff-window-setup-function 'ediff-setup-windows-plain)
-
-;; Disable this per major mode or maybe using file size if it causes
-;; performance issues?
-(setq imenu-auto-rescan t)
-(setq imenu-max-item-length 300)
-
-(put 'narrow-to-region 'disabled nil)
-(put 'narrow-to-page 'disabled nil)
-
-(setq echo-keystrokes 0.25)
-
-(setq initial-scratch-message "")
-
-(setq checkdoc-force-docstrings-flag nil
-      checkdoc-arguments-in-order-flag nil)
-
-;; text mode stuff:
-(remove-hook 'text-mode-hook #'turn-on-auto-fill)
-(add-hook 'text-mode-hook 'turn-on-visual-line-mode)
-(setq sentence-end-double-space nil)
-
-;; y and n instead of yes and no
-#+END_SRC
-#+BEGIN_SRC emacs-lisp
-(setq-default c-basic-offset 4
-              tab-width 4
-              indent-tabs-mode t)
-
-(add-hook 'prog-mode-hook (lambda () (auto-fill-mode -1)))
-;; (add-hook 'prog-mode-hook 'flyspell-prog-mode)
-
-;; (add-hook 'prog-mode-hook (lambda () (highlight-lines-matching-regexp
-;;                                  ".\\{81\\}" 'hi-blue)))
 #+END_SRC
 * Functions
 ** Join Paths
@@ -626,13 +480,18 @@ the ~:around~ keyword of advice-add.
 (imalison:named-builder imalison:let-advise-around)
  #+END_SRC
 *** Compose Around Builder
- For composing functions with an apply so that they can be used with the ~:around~ keyword of advice-add
+ For composing functions with an apply so that they can be used with the ~:around~ keyword of advice-add. 
  #+BEGIN_SRC emacs-lisp
- (defmacro imalison:compose-around-builder-fn (&rest functions)
-   `(imalison:compose-fn ,@functions apply))
+;; TODO/XXX: Isn't this just apply? why doesn't apply work here
+(defun imalison:around-identity (fn &rest args)
+  (apply fn args))
 
- (imalison:named-builder imalison:compose-around-builder)
+(defmacro imalison:compose-around-builder-fn (&rest functions)
+  `(imalison:compose-fn ,@functions imalison:around-identity))
+
+(imalison:named-builder imalison:compose-around-builder)
  #+END_SRC
+*** Do When
 *** Measure Time
 #+BEGIN_SRC emacs-lisp
 (defmacro imalison:measure-time (&rest body)
@@ -674,10 +533,19 @@ By advising ~imenu--make-index-alist~ with
 always flattened. This is still experimental, so copy to your own
 dotfiles with caution.
 #+BEGIN_SRC emacs-lisp
+(defvar imalison:flatten-imenu-global t)
+(defvar imalison:flatten-imenu-local t)
+(make-variable-buffer-local 'imalison:flatten-imenu-local)
+
+(defun imalison:maybe-flatten-imenu-index (index)
+  (if (and imalison:flatten-imenu-global imalison:flatten-imenu-local)
+      (imalison:flatten-imenu-index index)
+    index))
+
 (advice-add 'imenu--make-index-alist
             :around (imalison:compose-around-builder
                         imalison:flatten-imenu-index-with-function
-                      imalison:flatten-imenu-index))
+                      imalison:maybe-flatten-imenu-index))
 #+END_SRC
 ** Add Files to ~org-agenda-files~
 #+BEGIN_SRC emacs-lisp
@@ -958,22 +826,6 @@ A macro for composing functions together to build an interactive command to copy
       (save-excursion
         (perform-replace "\\n" "\n" nil nil delimited nil nil beg end nil)))))
 #+END_SRC
-** Non-Forking Shell Command To String
-Emacs' built in ~shell-command-to-string~ function has the downside that it forks a new shell process every time it is executed. This means that any shell startup cost is incurred when this function is called.
-
-The following implementation uses eshell's ~eshell-search-path~ to find the binary (which is the only reason ~shell-comand-to-string~ is typically used anyway, but it avoids incurring any shell-startup cost.
-#+BEGIN_SRC emacs-lisp
-;; We use `eshell-search-path' for this hack
-(require 'eshell)
-
-(defun imalison:shell-command-to-string (command)
-  (cl-destructuring-bind
-      (the-command . args) (split-string command " ")
-    (let ((binary-path (eshell-search-path the-command)))
-      (if binary-path
-          (apply 'projectile-call-process-to-string binary-path args)
-        (shell-command-to-string command)))))
-#+END_SRC
 ** Other
 #+BEGIN_SRC emacs-lisp
 (defun imalison:join-paths (&rest paths)
@@ -1101,39 +953,225 @@ The following implementation uses eshell's ~eshell-search-path~ to find the bina
   helm-mark-ring
   helm-global-mark-ring)
 #+END_SRC
-* Macros
-** For editing literate config
-*** extract-current-sexp-to-src-block
-This keyboard macro extracts the current sexp to an emacs-lisp source block of its own
-#+BEGIN_SRC emacs-lisp
+** Keyboard Macros
+*** For editing literate config
+**** extract-current-sexp-to-src-block
+ This keyboard macro extracts the current sexp to an emacs-lisp source block of its own
+ #+BEGIN_SRC emacs-lisp
 (fset 'extract-current-sexp-to-src-block
       [?\C-a return ?\C-p ?# ?+ ?E ?N ?D ?_ ?S ?R ?C return ?# ?+ ?B ?E ?G ?I ?N ?_ ?S ?R ?C ?  ?e ?m ?a ?c ?s ?- ?l ?i ?s ?p ?\C-a ?\C-p ?\C-  ?\C-n ?\C-e ?\M-w ?\C-n ?\C-a ?\C-\M-f return ?\C-y])
 
-#+END_SRC
-*** name-source-block-for-use-package-name
-#+BEGIN_SRC emacs-lisp
+ #+END_SRC
+**** name-source-block-for-use-package-name
+ #+BEGIN_SRC emacs-lisp
 (fset 'name-source-block-for-use-package-name
       [?\C-c ?\' ?\M-< ?\C-s ?u ?s ?e ?- ?p ?a ?c ?k return ?\C-\M-f ?\C-f ?\C-  ?\C-\M-f ?\M-w ?\C-c ?\' ?\C-r ?B ?E ?G ?I ?N return ?\C-a ?\C-p ?\C-e return ?* ?  ?\C-y])
-#+END_SRC
-*** extract-and-name-use-package-block
-#+BEGIN_SRC emacs-lisp
+ #+END_SRC
+**** extract-and-name-use-package-block
+ #+BEGIN_SRC emacs-lisp
 (fset 'extract-and-name-use-package-block
       [?\C-a return ?\C-p ?# ?+ ?E ?N ?D ?_ ?S ?R ?C return ?# ?+ ?B ?E ?G ?I ?N ?_ ?S ?R ?C ?  ?e ?m ?a ?c ?s ?- ?l ?i ?s ?p ?\C-a ?\C-p ?\C-  ?\C-n ?\C-e ?\M-w ?\C-n ?\C-a ?\C-\M-f return ?\C-y ?\C-p ?\C-p ?\C-c ?\' ?\M-< ?\C-s ?u ?s ?e ?- ?p ?a ?c ?k return ?\C-\M-f ?\C-f ?\C-  ?\C-\M-f ?\M-w ?\C-c ?\' ?\C-r ?B ?E ?G ?I ?N return ?\C-a ?\C-p ?\C-e return ?* ?  ?\C-y])
+ #+END_SRC
+* General
+** User Info
+#+BEGIN_SRC emacs-lisp
+(setq user-full-name
+      (replace-regexp-in-string "\n$" "" (shell-command-to-string
+                                          "git config --get user.name")))
+(setq user-mail-address
+      (replace-regexp-in-string "\n$" "" (shell-command-to-string
+                                          "git config --get user.email")))
+#+END_SRC
+** Sane Defaults
+#+BEGIN_SRC emacs-lisp -n -r
+(global-auto-revert-mode)
+(show-paren-mode 1)
+(setq reb-re-syntax 'string)
+(setq ad-redefinition-action 'accept)              (ref:ad-redefinition-action)
+#+END_SRC
+[[(ad-redefinition-action)][This]] is set because [[(y-or-n-p-only)][this alias]] causes annoying messaging at startup.
+** Line Numbers
+#+BEGIN_SRC emacs-lisp
+(line-number-mode t)
+(column-number-mode t)
+#+END_SRC
+Linum can be really slow on large files so it does not make sense to
+have it on by default. Its probably safe to turn it on when in a
+programming mode.
+#+BEGIN_SRC emacs-lisp
+(global-linum-mode -1)
+(add-hook 'prog-mode-hook (lambda () (linum-mode t)))
+#+END_SRC
+** Backups
+*** Put them all in one directory
+#+BEGIN_SRC emacs-lisp
+(defconst emacs-tmp-dir
+  (format "%s/%s%s/" temporary-file-directory "emacs" (user-uid)))
+(setq backup-directory-alist `((".*" . ,emacs-tmp-dir)))
+(setq auto-save-file-name-transforms `((".*" ,emacs-tmp-dir t)))
+(setq auto-save-list-file-prefix emacs-tmp-dir)
+#+END_SRC
+*** Completely disable backups
+#+BEGIN_SRC emacs-lisp
+(setq backup-inhibited t)
+(setq make-backup-files nil)
+(setq auto-save-default nil)
+#+END_SRC
+** Prompts
+*** No popup frames
+#+BEGIN_SRC emacs-lisp
+(setq ns-pop-up-frames nil)
+(setq pop-up-frames nil)
+#+END_SRC
+*** boolean (yes-or-no)
+#+BEGIN_SRC emacs-lisp -n -r
+(defadvice yes-or-no-p (around prevent-dialog activate)
+  "Prevent yes-or-no-p from activating a dialog"
+  (let ((use-dialog-box nil))
+    ad-do-it))
+
+(defadvice y-or-n-p (around prevent-dialog-yorn activate)
+  "Prevent y-or-n-p from activating a dialog"
+  (let ((use-dialog-box nil))
+    ad-do-it))
+
+(defalias 'yes-or-no-p 'y-or-n-p)                           (ref:y-or-n-p-only)
+#+END_SRC
+*** No dialog boxes
+#+BEGIN_SRC emacs-lisp
+(setq use-dialog-box nil)
+#+END_SRC
+** Splitting
+#+BEGIN_SRC emacs-lisp
+(defun split-horizontally-for-temp-buffers () (split-window-horizontally))
+(add-hook 'temp-buffer-setup-hook 'split-horizontally-for-temp-buffers)
+(setq split-height-threshold nil)
+(setq split-width-threshold 160)
+#+END_SRC
+** Fill Setup
+#+BEGIN_SRC emacs-lisp
+(setq sentence-end-double-space nil)
+#+END_SRC
+** Encoding
+UTF-8 everywhere
+#+BEGIN_SRC emacs-lisp
+(defun imalison:set-coding-systems ()
+  (interactive)
+  (set-language-environment "Latin-1")
+  (set-default-coding-systems 'utf-8)
+  (unless (eq system-type 'windows-nt)
+    (set-selection-coding-system 'utf-8))
+  (set-terminal-coding-system 'utf-8)
+  (setq locale-coding-system 'utf-8)
+  (prefer-coding-system 'utf-8))
+(imalison:set-coding-systems)
+#+END_SRC
+Disable CJK coding/encoding (Chinese/Japanese/Korean characters)
+#+BEGIN_SRC emacs-lisp
+(setq utf-translate-cjk-mode nil)
+#+END_SRC
+** Visible Bell
+This is set to true to disable the annoying audible bell that plays
+whenever there is an error.
+#+BEGIN_SRC emacs-lisp
+(setq visible-bell t)
+#+END_SRC
+** Configure ~vc~
+#+BEGIN_SRC emacs-lisp
+(setq vc-follow-symlinks t)
+#+END_SRC
+** Misc
+#+BEGIN_SRC emacs-lisp
+(defvar iedit-toggle-key-default nil)
+(put 'set-goal-column 'disabled nil)
+(auto-fill-mode -1)
+(setq indent-tabs-mode nil)
+
+(setq confirm-nonexistent-file-or-buffer nil)
+
+;; No prompt for killing a buffer with processes attached.
+(setq kill-buffer-query-functions
+      (remq 'process-kill-buffer-query-function
+            kill-buffer-query-functions))
+
+(setq inhibit-startup-message t
+      inhibit-startup-echo-area-message t)
+
+;; This makes it so that emacs --daemon puts its files in ~/.emacs.d/server
+;; (setq server-use-tcp t)
+
+;; Display line and column numbers in mode line.
+
+
+;; Make buffer names unique.
+(setq uniquify-buffer-name-style 'forward)
+
+(setq fill-column 80)
+
+;; Don't disable commands...
+(setq disabled-command-function nil)
+
+;; Make forward word understand camel and snake case.
+(setq c-subword-mode t)
+(global-subword-mode)
+
+;; Preserve pastes from OS when saving a new item to the kill
+;; ring. Why wouldn't this be enabled by default?
+
+(setq-default cursor-type 'box)
+(setq-default cursor-in-non-selected-windows 'bar)
+
+(when nil ;; Causing too many annoying issues
+  (add-hook 'after-init-hook '(lambda () (setq debug-on-error t))))
+
+;; Make mouse scrolling less jumpy.
+(setq mouse-wheel-scroll-amount '(1 ((shift) . 1)))
+
+(setq display-time-default-load-average nil)
+(setq display-time-interval 1)
+(setq display-time-format "%a, %b %d, %T ")
+(display-time-mode 1)
+
+;; the only sane option...
+
+(setq ediff-split-window-function 'split-window-horizontally)
+(setq ediff-window-setup-function 'ediff-setup-windows-plain)
+
+;; Disable this per major mode or maybe using file size if it causes
+;; performance issues?
+(setq imenu-auto-rescan t)
+(setq imenu-max-item-length 300)
+
+(put 'narrow-to-region 'disabled nil)
+(put 'narrow-to-page 'disabled nil)
+
+(setq echo-keystrokes 0.25)
+
+(setq initial-scratch-message "")
+
+(setq checkdoc-force-docstrings-flag nil
+      checkdoc-arguments-in-order-flag nil)
+
+;; text mode stuff:
+(remove-hook 'text-mode-hook #'turn-on-auto-fill)
+(add-hook 'text-mode-hook 'turn-on-visual-line-mode)
+(setq sentence-end-double-space nil)
+
+;; y and n instead of yes and no
+#+END_SRC
+#+BEGIN_SRC emacs-lisp
+(setq-default c-basic-offset 4
+              tab-width 4
+              indent-tabs-mode t)
+
+(add-hook 'prog-mode-hook (lambda () (auto-fill-mode -1)))
+;; (add-hook 'prog-mode-hook 'flyspell-prog-mode)
+
+;; (add-hook 'prog-mode-hook (lambda () (highlight-lines-matching-regexp
+;;                                  ".\\{81\\}" 'hi-blue)))
 #+END_SRC
 * Packages
 ** Emacs
-*** exec-path-from-shell
-Sets environment variables by starting a shell 
-#+BEGIN_SRC emacs-lisp
-(use-package exec-path-from-shell
-  :config
-  (progn
-    (setq exec-path-from-shell-check-startup-files nil)
-    (add-to-list 'exec-path-from-shell-variables "GOPATH")
-    (add-to-list 'exec-path-from-shell-variables "ENVIRONMENT_SETUP_DONE")
-    (add-to-list 'exec-path-from-shell-variables "PYTHONPATH")
-    (exec-path-from-shell-initialize)))
-#+END_SRC
 *** paradox
 #+BEGIN_SRC emacs-lisp
 (use-package paradox
@@ -1288,6 +1326,8 @@ Sets environment variables by starting a shell
     (defvar-setq org-directory "~/Dropbox/org")
     (defvar-setq org-mobile-inbox-for-pull "~/Dropbox/org/flagged.org")
     (defvar-setq org-mobile-directory "~/Dropbox/Apps/MobileOrg")
+    (setq org-goto-interface 'outline-path-completion
+          org-goto-max-level 10)
     (add-hook 'org-mode-hook 'imalison:disable-linum-mode)
     (add-hook 'org-mode-hook 'imalison:disable-smartparens-mode)
     (add-hook 'org-mode-hook (lambda () (setq org-todo-key-trigger t)))
@@ -1965,11 +2005,6 @@ I use helm for almost all emacs completion
 **** Avoid shell-command-to-string
 See [[https://github.com/bbatsov/projectile/issues/1044][this issue]] for details.
 #+BEGIN_SRC emacs-lisp
-(defun projectile-call-process-to-string (program &rest args)
-  (with-temp-buffer
-     (apply 'call-process program nil (current-buffer) nil args)
-     (buffer-string)))
-
 (defalias 'projectile-shell-command-to-string 'imalison:shell-command-to-string)
 
 (defun projectile-files-via-ext-command (command)
