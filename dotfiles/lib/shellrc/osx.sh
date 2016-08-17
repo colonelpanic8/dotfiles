@@ -183,3 +183,15 @@ function resistance_game_start {
     sleep 4
     say "everyone open their eyes"
 }
+
+function get_screen_by_index {
+    cscreen | head -n -1 | tail -n +2 | filter_by_column_value 2 "$1" | get_cols 1
+}
+
+function make_main_screen {
+    cscreen -i "$(get_screen_by_index "$1")" -p
+}
+
+function swap_main_screen {
+    make_main_screen 2
+}
