@@ -26,6 +26,7 @@ TAGS
 # JavaScript
 .tern-project
 .tern-port
+node_modules
 
 # Folder view configuration files
 .DS_Store
