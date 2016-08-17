@@ -2646,11 +2646,18 @@ Taken from http://endlessparentheses.com/eval-result-overlays-in-emacs-lisp.html
 #+END_SRC
 ***** Keybinds
 #+BEGIN_SRC emacs-lisp
+(emit-compose imalison:copy-eval-last-sexp
+              kill-new prin1-to-string eval-region-or-last-sexp)
+
+(emit-prefix-selector imalison:eval-last-sexp
+                      eval-region-or-last-sexp
+                      imalison:copy-eval-last-sexp)
+
 (define-key lisp-mode-shared-map (kbd "C-c C-c") 'eval-defun)
 (define-key lisp-mode-shared-map (kbd "C-c C-r") 'eval-and-replace)
 (define-key lisp-mode-shared-map (kbd "C-c o r") 'up-list-region)
 (define-key lisp-mode-shared-map (kbd "C-c o o") 'up-list-back)
-(define-key lisp-mode-shared-map (kbd "C-x C-e") 'eval-region-or-last-sexp)
+(define-key lisp-mode-shared-map (kbd "C-x C-e") 'imalison:eval-last-sexp)
 (unbind-key "C-j" lisp-interaction-mode-map)
 #+END_SRC
 **** clojure
