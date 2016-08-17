@@ -958,6 +958,22 @@ A macro for composing functions together to build an interactive command to copy
       (save-excursion
         (perform-replace "\\n" "\n" nil nil delimited nil nil beg end nil)))))
 #+END_SRC
+** Non-Forking Shell Command To String
+Emacs' built in ~shell-command-to-string~ function has the downside that it forks a new shell process every time it is executed. This means that any shell startup cost is incurred when this function is called.
+
+The following implementation uses eshell's ~eshell-search-path~ to find the binary (which is the only reason ~shell-comand-to-string~ is typically used anyway, but it avoids incurring any shell-startup cost.
+#+BEGIN_SRC emacs-lisp
+;; We use `eshell-search-path' for this hack
+(require 'eshell)
+
+(defun imalison:shell-command-to-string (command)
+  (cl-destructuring-bind
+      (the-command . args) (split-string command " ")
+    (let ((binary-path (eshell-search-path the-command)))
+      (if binary-path
+          (apply 'projectile-call-process-to-string binary-path args)
+        (shell-command-to-string command)))))
+#+END_SRC
 ** Other
 #+BEGIN_SRC emacs-lisp
 (defun imalison:join-paths (&rest paths)
@@ -1949,21 +1965,12 @@ I use helm for almost all emacs completion
 **** Avoid shell-command-to-string
 See [[https://github.com/bbatsov/projectile/issues/1044][this issue]] for details.
 #+BEGIN_SRC emacs-lisp
-;; We use `eshell-search-path' for this hack
-(require 'eshell)
-
 (defun projectile-call-process-to-string (program &rest args)
   (with-temp-buffer
      (apply 'call-process program nil (current-buffer) nil args)
      (buffer-string)))
 
-(defun projectile-shell-command-to-string (command)
-  (cl-destructuring-bind
-      (the-command . args) (split-string command " ")
-    (let ((binary-path (eshell-search-path the-command)))
-      (if binary-path
-          (apply 'projectile-call-process-to-string binary-path args)
-        (shell-command-to-string command)))))
+(defalias 'projectile-shell-command-to-string 'imalison:shell-command-to-string)
 
 (defun projectile-files-via-ext-command (command)
   "Get a list of relative file names in the project root by executing COMMAND."
@@ -2647,7 +2654,7 @@ Taken from http://endlessparentheses.com/eval-result-overlays-in-emacs-lisp.html
 ***** Keybinds
 #+BEGIN_SRC emacs-lisp
 (emit-compose imalison:copy-eval-last-sexp
-              kill-new prin1-to-string eval-region-or-last-sexp)
+              kill-new prin1-to-string eval-last-sexp)
 
 (emit-prefix-selector imalison:eval-last-sexp
                       eval-region-or-last-sexp
