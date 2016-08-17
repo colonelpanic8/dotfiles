@@ -2657,9 +2657,13 @@ The following is taken from [[https://github.com/syl20bnr/spacemacs/blob/a650877
       ;; (cljr-add-keybindings-with-prefix "C-c C-m")
       (clj-refactor-mode 1)
       ;;for adding require/use/import statements
-      (yas-minor-mode 1)))
+      (yas-minor-mode 1))
+    (defvar imalison:clojure-level-1-symobls
+      '(describe it)))
   :config
   (progn
+    (cl-loop for symbol in imalison:clojure-level-1-symobls
+             do (put-clojure-indent symbol 1))
     (add-hook 'clojure-mode-hook 'imalison:clojure-mode-hook)
     (dolist (m '(clojure-mode clojurescript-mode clojurec-mode clojurex-mode))
       (imalison:clojure-fancify-symbols m))))
