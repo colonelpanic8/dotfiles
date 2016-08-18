@@ -504,32 +504,51 @@ times to find what I'm looking for. The functions that follow allow me
 to get this behavior out of functions that provide a nested imenu
 index.
 #+BEGIN_SRC emacs-lisp
-(defun imalison:imenu-prefix-flattened (index)
-  (let ((flattened (imalison:flatten-imenu-index (cdr index))))
-    (cl-loop for sub-item in flattened
-             collect
-             `(,(concat (car index) "." (car sub-item)) . ,(cdr sub-item)))))
+(defvar imalison:imenu-separator ".")
+
+(cl-defun imalison:flatten-index-entry (index-entry &optional (prefix ""))
+  (cl-destructuring-bind (entry-name . rest) index-entry
+    (message "%s" rest)
+    (let ((new-entry-name (concat prefix entry-name))
+          (original-properties (text-properties-at 0 entry-name)))
+      ;; Inherit any text-properties that were attached to the
+      ;; original entry.
+      (set-text-properties 0 (length new-entry-name)
+                           original-properties
+                           new-entry-name)
+      (if (listp rest)
+          ;; Internal Node
+          (let* ((new-prefix (concat new-entry-name imalison:imenu-separator))
+                 (flattened-subentries
+                  (cl-mapcan (lambda (entry)
+                               (imalison:flatten-index-entry entry new-prefix))
+                             rest)))
+            (if original-properties
+                ;; When the entry had properties, we may want to keep
+                ;; it around, because it might have a marker attached.
+                (cons (list new-entry-name) flattened-subentries)
+              flattened-subentries))
+        ;; Leaf Node
+        (list (cons new-entry-name rest))))))
 
 (defun imalison:flatten-imenu-index (index)
-  (let ((cdr-is-index (listp (cdr index))))
-    (cond ((not (stringp (car index))) (cl-mapcan
-                                        #'imalison:flatten-imenu-index index))
-          (cdr-is-index (imalison:imenu-prefix-flattened index))
-          (t (list index)))))
+  (cl-mapcan 'imalison:flatten-index-entry index))
 
-(defun imalison:make-imenu-index-flat ()
+(defun imalison:make-current-imenu-index-flat ()
   (let ((original-imenu-function imenu-create-index-function))
     (setq imenu-create-index-function
           (lambda ()
             (imalison:flatten-imenu-index
              (funcall original-imenu-function))))))
+
+
 #+END_SRC
 By advising ~imenu--make-index-alist~ with
 ~imalison:flatten-imenu-index~ we make it so that imenu indexes are
 always flattened. This is still experimental, so copy to your own
 dotfiles with caution.
 #+BEGIN_SRC emacs-lisp
-(defvar imalison:flatten-imenu-global t)
+(defvar imalison:flatten-imenu-global nil)
 (defvar imalison:flatten-imenu-local t)
 (make-variable-buffer-local 'imalison:flatten-imenu-local)
 
