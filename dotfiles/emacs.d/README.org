@@ -1344,7 +1344,6 @@ whenever there is an error.
     (setq org-goto-interface 'outline-path-completion
           org-goto-max-level 10)
     (add-hook 'org-mode-hook 'imalison:disable-linum-mode)
-    (add-hook 'org-mode-hook 'imalison:disable-smartparens-mode)
     (add-hook 'org-mode-hook (lambda () (setq org-todo-key-trigger t)))
     (add-hook 'org-agenda-mode-hook 'imalison:disable-linum-mode)
     (defun org-archive-if (condition-function)
