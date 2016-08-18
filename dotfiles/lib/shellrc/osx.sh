@@ -195,3 +195,7 @@ function make_main_screen {
 function swap_main_screen {
     make_main_screen 2
 }
+
+function swap_mirror_swap {
+    mirror -off && swap_main_screen && mirror -on
+}
