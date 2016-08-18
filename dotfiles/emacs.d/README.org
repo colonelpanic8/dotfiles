@@ -505,17 +505,15 @@ to get this behavior out of functions that provide a nested imenu
 index.
 #+BEGIN_SRC emacs-lisp
 (defvar imalison:imenu-separator ".")
+(defvar imalison:imenu-get-markers-from-entry-strings t)
 
 (cl-defun imalison:flatten-index-entry (index-entry &optional (prefix ""))
   (cl-destructuring-bind (entry-name . rest) index-entry
     (message "%s" rest)
     (let ((new-entry-name (concat prefix entry-name))
-          (original-properties (text-properties-at 0 entry-name)))
-      ;; Inherit any text-properties that were attached to the
-      ;; original entry.
-      (set-text-properties 0 (length new-entry-name)
-                           original-properties
-                           new-entry-name)
+          (entry-marker
+           (when imalison:imenu-get-markers-from-entry-strings
+               (imalison:get-marker-from-string entry-name))))
       (if (listp rest)
           ;; Internal Node
           (let* ((new-prefix (concat new-entry-name imalison:imenu-separator))
@@ -523,13 +521,16 @@ index.
                   (cl-mapcan (lambda (entry)
                                (imalison:flatten-index-entry entry new-prefix))
                              rest)))
-            (if original-properties
+            (if entry-marker
                 ;; When the entry had properties, we may want to keep
                 ;; it around, because it might have a marker attached.
-                (cons (list new-entry-name) flattened-subentries)
+                (cons (cons new-entry-name entry-marker) flattened-subentries)
               flattened-subentries))
         ;; Leaf Node
         (list (cons new-entry-name rest))))))
+
+(defun imalison:get-marker-from-string (string)
+  (--first (markerp it) (text-properties-at 0 string)))
 
 (defun imalison:flatten-imenu-index (index)
   (cl-mapcan 'imalison:flatten-index-entry index))
