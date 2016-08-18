@@ -129,7 +129,6 @@ This makes it so that we always try to call-process instead of shell-command-to-
   (let ((call-process-args
          (imalison:get-call-process-args-from-shell-command command)))
     (if call-process-args
-       
         (apply 'imalison:call-process-to-string call-process-args))))
 
 (advice-add 'shell-command-to-string :before-until 'imalison:try-call-process)
