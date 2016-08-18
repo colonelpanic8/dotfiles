@@ -1193,6 +1193,12 @@ whenever there is an error.
 (use-package refine
   :disabled t)
 #+END_SRC
+*** winner
+#+BEGIN_SRC emacs-lisp
+(use-package winner
+  :demand t
+  :config (winner-mode 1))
+#+END_SRC
 ** Keybindings
 *** bind-key
 #+BEGIN_SRC emacs-lisp
