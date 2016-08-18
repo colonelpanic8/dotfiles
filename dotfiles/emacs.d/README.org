@@ -2332,17 +2332,16 @@ The following is taken from [[https://github.com/syl20bnr/spacemacs/blob/a650877
               (setq indent-tabs-mode nil)
               (setq js-indent-level 4))))
  #+END_SRC
-**** jq-mode
- #+BEGIN_SRC emacs-lisp
-(use-package jq-mode
-  :mode "\\.jq\\'")
- #+END_SRC
 **** yaml-mode
  #+BEGIN_SRC emacs-lisp
 (use-package yaml-mode
   :mode (("\\.yaml\\'" . yaml-mode)
          ("\\.yml\\'" . yaml-mode)))
  #+END_SRC
+**** es-mode
+#+BEGIN_SRC emacs-lisp
+(use-package es-mode)
+#+END_SRC
 *** Document
 **** org
  #+BEGIN_SRC emacs-lisp
@@ -2912,6 +2911,11 @@ The following is taken from [[https://github.com/syl20bnr/spacemacs/blob/a650877
   :config
   (progn
     (use-package company-restclient)))
+ #+END_SRC
+**** jq-mode
+ #+BEGIN_SRC emacs-lisp
+(use-package jq-mode
+  :mode "\\.jq\\'")
  #+END_SRC
 ** Programming
 *** realgud
