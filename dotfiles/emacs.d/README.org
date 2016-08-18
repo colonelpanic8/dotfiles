@@ -921,6 +921,10 @@ A macro for composing functions together to build an interactive command to copy
 (show-paren-mode 1)
 (setq reb-re-syntax 'string)
 (setq ad-redefinition-action 'accept)              (ref:ad-redefinition-action)
+(setq-default find-file-visit-truename t)
+(setq large-file-warning-threshold (* 25 1024 1024))
+(setq line-move-visual t)
+(setq require-final-newline t)
 #+END_SRC
 [[(ad-redefinition-action)][This]] is set because [[(y-or-n-p-only)][this alias]] causes annoying messaging at startup.
 ** Line Numbers
