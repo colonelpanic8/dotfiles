@@ -498,69 +498,6 @@ the ~:around~ keyword of advice-add.
        ,@body
        (- (float-time) ,start))))
 #+END_SRC
-** Flatten ~imenu~ Indexes
-I like my imenu indexes flat so I don't have to press enter multiple
-times to find what I'm looking for. The functions that follow allow me
-to get this behavior out of functions that provide a nested imenu
-index.
-#+BEGIN_SRC emacs-lisp
-(defvar imalison:imenu-separator ".")
-(defvar imalison:imenu-get-markers-from-entry-strings t)
-
-(cl-defun imalison:flatten-index-entry (index-entry &optional (prefix ""))
-  (cl-destructuring-bind (entry-name . rest) index-entry
-    (message "%s" rest)
-    (let ((new-entry-name (concat prefix entry-name))
-          (entry-marker
-           (when imalison:imenu-get-markers-from-entry-strings
-               (imalison:get-marker-from-string entry-name))))
-      (if (listp rest)
-          ;; Internal Node
-          (let* ((new-prefix (concat new-entry-name imalison:imenu-separator))
-                 (flattened-subentries
-                  (cl-mapcan (lambda (entry)
-                               (imalison:flatten-index-entry entry new-prefix))
-                             rest)))
-            (if entry-marker
-                (cons (cons new-entry-name entry-marker) flattened-subentries)
-              flattened-subentries))
-        ;; Leaf Node
-        (list (cons new-entry-name rest))))))
-
-(defun imalison:get-marker-from-string (string)
-  (--first (markerp it) (text-properties-at 0 string)))
-
-(defun imalison:flatten-imenu-index (index)
-  (cl-mapcan 'imalison:flatten-index-entry index))
-
-(defun imalison:make-current-imenu-index-flat ()
-  (let ((original-imenu-function imenu-create-index-function))
-    (setq imenu-create-index-function
-          (lambda ()
-            (imalison:flatten-imenu-index
-             (funcall original-imenu-function))))))
-
-
-#+END_SRC
-By advising ~imenu--make-index-alist~ with
-~imalison:flatten-imenu-index~ we make it so that imenu indexes are
-always flattened. This is still experimental, so copy to your own
-emacs-configuration with caution.
-#+BEGIN_SRC emacs-lisp
-(defvar imalison:flatten-imenu-global nil)
-(defvar imalison:flatten-imenu-local t)
-(make-variable-buffer-local 'imalison:flatten-imenu-local)
-
-(defun imalison:maybe-flatten-imenu-index (index)
-  (if (and imalison:flatten-imenu-global imalison:flatten-imenu-local)
-      (imalison:flatten-imenu-index index)
-    index))
-
-(advice-add 'imenu--make-index-alist
-            :around (imalison:compose-around-builder
-                        imalison:flatten-imenu-index-with-function
-                      imalison:maybe-flatten-imenu-index))
-#+END_SRC
 ** Add Files to ~org-agenda-files~
 #+BEGIN_SRC emacs-lisp
 (defun imalison:add-to-org-agenda-files (incoming-files)
@@ -2090,6 +2027,13 @@ This was stolen from https://github.com/jwiegley/dot-emacs
   (interactive)
   (require 'helm)
   (helm-other-buffer 'helm-c-source-zsh-history "*helm zsh history*"))
+#+END_SRC
+*** flimenu
+#+BEGIN_SRC emacs-lisp
+(imalison:use-package flimenu
+  :config
+  (progn
+    (flimenu-global-mode)))
 #+END_SRC
 ** Completion
 *** company
