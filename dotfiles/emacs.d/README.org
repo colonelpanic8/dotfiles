@@ -1805,6 +1805,13 @@ whenever there is an error.
   :config
   (company-auctex-init))
 #+END_SRC
+*** markdown-mode
+#+BEGIN_SRC emacs-lisp
+(use-package markdown-mode
+  :init
+  (progn
+    (add-hook 'markdown-mode-hook 'imalison:disable-linum-mode)))
+#+END_SRC
 ** Navigation
 *** zop-to-char
 #+BEGIN_SRC emacs-lisp
@@ -3684,13 +3691,6 @@ I've disabled perspective because I just don't use it much.
 *** evil
 #+BEGIN_SRC emacs-lisp
 (use-package evil :commands (evil-mode))
-#+END_SRC
-*** markdown-mode
-#+BEGIN_SRC emacs-lisp
-(use-package markdown-mode
-  :init
-  (progn
-    (add-hook 'markdown-mode-hook 'imalison:disable-linum-mode)))
 #+END_SRC
 *** hackernews
 #+BEGIN_SRC emacs-lisp
