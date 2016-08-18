@@ -1247,7 +1247,7 @@ whenever there is an error.
       ("u" imalison:glide-up "Update Dependencies"))))
 #+END_SRC
 ** Document Editing
-*** org 
+*** org
 #+BEGIN_SRC emacs-lisp
 (use-package org
   :ensure org-plus-contrib
@@ -1255,7 +1255,7 @@ whenever there is an error.
   (progn
     ;; XXX: These should probably be moved to config, right?
     (defvar-setq org-startup-indented nil)
-    (defvar-setq org-startup-folded nil)
+    (defvar-setq org-startup-folded t)
     (defvar-setq org-edit-src-content-indentation 0)
     (defvar-setq org-src-preserve-indentation t)
     (defvar-setq org-directory "~/Dropbox/org")
@@ -1370,7 +1370,6 @@ whenever there is an error.
          ("M-." . elisp-slime-nav-find-elisp-thing-at-point))
   :config
   (progn
-    (add-to-list 'org-show-context-detail '(org-goto . lineage))
     (setq org-global-properties
           '(quote (("Effort_ALL" . "0:15 0:30 0:45 1:00 2:00 3:00 4:00 5:00 6:00 0:00")
                    ("STYLE_ALL" . "habit"))))
@@ -1388,6 +1387,9 @@ whenever there is an error.
 
     (setq org-columns-default-format
           "%80ITEM(Task) %10Effort(Effort){:} %10CLOCKSUM")
+
+    (add-to-list 'org-show-context-detail '(org-goto . lineage))
+    (sp-local-pair 'org-mode "~" "~")
 
     (org-babel-do-load-languages
      'org-babel-load-languages
@@ -2242,7 +2244,6 @@ I don't use auto-complete at all, so I have set up a hook to automatically disab
                            (oref repo :name)))
 
     (defun imalison:get-projects-directory-target-from-repo (repo)
-      (message "%s" (oref repo language))
       (let ((prospective-path
              (if (equal (oref repo language) "Go")
                  (imalison:get-appropriate-path-from-gh-repo-for-go repo)
@@ -3826,10 +3827,6 @@ Set the character used to represent spaces to ·, and the character used for tab
 
 ** TODO Finish making the following litarate
 #+BEGIN_SRC emacs-lisp
-
-;; =============================================================================
-;;                                                                        Themes
-;; =============================================================================
 
 ;; These can be overriden in custom-before.el
 (defvar imalison:light-theme 'solarized-light)
