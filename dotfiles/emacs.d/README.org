@@ -1253,6 +1253,7 @@ whenever there is an error.
   :ensure org-plus-contrib
   :preface
   (progn
+    ;; XXX: These should probably be moved to config, right?
     (defvar-setq org-startup-indented nil)
     (defvar-setq org-startup-folded nil)
     (defvar-setq org-edit-src-content-indentation 0)
@@ -1260,6 +1261,7 @@ whenever there is an error.
     (defvar-setq org-directory "~/Dropbox/org")
     (defvar-setq org-mobile-inbox-for-pull "~/Dropbox/org/flagged.org")
     (defvar-setq org-mobile-directory "~/Dropbox/Apps/MobileOrg")
+
     (setq org-goto-interface 'outline-path-completion
           org-goto-max-level 10)
     (add-hook 'org-mode-hook 'imalison:disable-linum-mode)
@@ -1368,6 +1370,7 @@ whenever there is an error.
          ("M-." . elisp-slime-nav-find-elisp-thing-at-point))
   :config
   (progn
+    (add-to-list 'org-show-context-detail '(org-goto . lineage))
     (setq org-global-properties
           '(quote (("Effort_ALL" . "0:15 0:30 0:45 1:00 2:00 3:00 4:00 5:00 6:00 0:00")
                    ("STYLE_ALL" . "habit"))))
