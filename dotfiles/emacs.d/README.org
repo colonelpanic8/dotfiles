@@ -522,8 +522,6 @@ index.
                                (imalison:flatten-index-entry entry new-prefix))
                              rest)))
             (if entry-marker
-                ;; When the entry had properties, we may want to keep
-                ;; it around, because it might have a marker attached.
                 (cons (cons new-entry-name entry-marker) flattened-subentries)
               flattened-subentries))
         ;; Leaf Node
@@ -547,7 +545,7 @@ index.
 By advising ~imenu--make-index-alist~ with
 ~imalison:flatten-imenu-index~ we make it so that imenu indexes are
 always flattened. This is still experimental, so copy to your own
-dotfiles with caution.
+emacs-configuration with caution.
 #+BEGIN_SRC emacs-lisp
 (defvar imalison:flatten-imenu-global nil)
 (defvar imalison:flatten-imenu-local t)
