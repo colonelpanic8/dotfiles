@@ -1808,8 +1808,6 @@ modeline and with excessive http requests to github.
   :mode ("\\.py\\'" . python-mode)
   :config
   (progn
-    (fset 'main "if __name__ == '__main__':")
-    (fset 'sphinx-class ":class:`~")
     :init
     (progn
       (unbind-key "C-j" python-mode-map)
@@ -1828,7 +1826,7 @@ modeline and with excessive http requests to github.
         (setq show-trailing-whitespace t)
         (if use-python-tabs (python-tabs))
         (subword-mode t)
-        (imalison:make-imenu-index-flat)
+        ;; TODO: This was likely fixed and can probably be removed
         ;; Somehow this is sometimes set to jedi:ac-setup which we
         ;; don't want. This binding avoids starting auto-complete mode.
         (let ((jedi:setup-function nil))
