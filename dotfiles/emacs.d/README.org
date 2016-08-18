@@ -836,23 +836,6 @@ A macro for composing functions together to build an interactive command to copy
   (interactive)
   (up-list) (backward-sexp))
 
-(defun unfill-paragraph (&optional region)
-  "Takes a multi-line paragraph and makes it into a single line of text."
-  (interactive (progn
-                 (barf-if-buffer-read-only)
-                 (list t)))
-  (let ((fill-column (point-max)))
-    (fill-paragraph nil region)))
-
-(defun fill-or-unfill-paragraph (&optional unfill region)
-  "Fill paragraph (or REGION). With the prefix argument UNFILL,
-  unfill it instead."
-  (interactive (progn
-                 (barf-if-buffer-read-only)
-                 (list (if current-prefix-arg 'unfill) t)))
-  (let ((fill-column (if unfill (point-max) fill-column)))
-    (fill-paragraph nil region)))
-
 (defun frame-exists ()
   (cl-find-if
    (lambda (frame)
@@ -2151,6 +2134,11 @@ I don't use auto-complete at all, so I have set up a hook to automatically disab
 #+BEGIN_SRC emacs-lisp
 (use-package comment-dwim-2
   :bind ("M-;" . comment-dwim-2))
+#+END_SRC
+*** unfill
+#+BEGIN_SRC emacs-lisp
+(use-package unfill
+  :bind ("M-q" . unfill-toggle))
 #+END_SRC
 *** string-inflection
 #+BEGIN_SRC emacs-lisp
@@ -3714,7 +3702,6 @@ Go the other way when you use capital O.
 (bind-key "C-x O" (lambda () (interactive) (other-window -1)))
 #+END_SRC
 #+BEGIN_SRC emacs-lisp
-(bind-key "M-q" 'fill-or-unfill-paragraph)
 (bind-key "C-c SPC" 'imalison:mark-ring)
 (bind-key "C-x p" 'pop-to-mark-command)
 (setq set-mark-command-repeat-pop t)
