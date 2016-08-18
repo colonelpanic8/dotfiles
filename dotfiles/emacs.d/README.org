@@ -1196,8 +1196,18 @@ whenever there is an error.
 *** winner
 #+BEGIN_SRC emacs-lisp
 (use-package winner
+  :after hydra
   :demand t
-  :config (winner-mode 1))
+  :commands (winner-undo winner-redo)
+  :config
+  (progn
+    (bind-key
+     "C-c q"
+     (defhydra imalison:winner-hydra ()
+       "Winner"
+       ("p" winner-undo "back")
+       ("n" winner-redo "forward" :exit t)))
+    (winner-mode 1)))
 #+END_SRC
 ** Keybindings
 *** bind-key
@@ -2155,11 +2165,13 @@ The following is taken from [[https://github.com/syl20bnr/spacemacs/blob/a650877
   (progn
     (add-to-list 'magic-mode-alist '("#!.*boot\\s-*$" . clojure-mode))
     (add-to-list 'auto-mode-alist '("\\.boot\\'" . clojure-mode))
+
     (defun imalison:clojure-mode-hook ()
       ;; (cljr-add-keybindings-with-prefix "C-c C-m")
       (clj-refactor-mode 1)
       ;;for adding require/use/import statements
       (yas-minor-mode 1))
+
     (defvar imalison:clojure-level-1-symobls
       '(describe it)))
   :config
