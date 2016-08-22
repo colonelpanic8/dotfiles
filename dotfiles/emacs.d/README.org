@@ -1270,7 +1270,11 @@ whenever there is an error.
 *** zop-to-char
 #+BEGIN_SRC emacs-lisp
 (use-package zop-to-char
-  :bind ("M-z" . zop-to-char))
+  :bind ("M-z" . zop-to-char)
+  :init
+  (progn
+    (setq zop-to-char-kill-keys '(?\C-k))
+    (setq zop-to-char-quit-at-point-keys '(?\r))))
 #+END_SRC
 *** helm
 I use helm for almost all emacs completion
