@@ -250,22 +250,22 @@ Works in the same way as os.path.join in python
 (put 'imalison:use-package 'lisp-indent-function 1)
 
 (defmacro imalison:use-package* (package target-directory &rest forms)
-  (let* ((target-exists (file-exists-p target-directory))
+  (let* ((actual-target (if (file-exists-p target-directory)
+                            target-directory
+                          (let ((in-projects (imalison:join-paths imalison:projects-directory
+                                                                  target-directory)))
+                            (when (file-exists-p in-projects)
+                              in-projects))))
          (additional-forms
-          (when target-exists
+          (when actual-target
             (list
-             :load-path target-directory
+             :load-path actual-target
              :ensure nil))))
     `(use-package ,package
        ,@additional-forms ,@forms)))
 
 (defmacro imalison:use-package (package &rest forms)
-  (let ((target-directory
-         (concat (file-name-as-directory (if (boundp 'imalison:projects-directory)
-                                             imalison:projects-directory
-                                           "~/Projects"))
-                 (symbol-name package))))
-    `(imalison:use-package* ,package ,target-directory ,@forms)))
+  `(imalison:use-package* ,package ,(symbol-name package) ,@forms))
 #+END_SRC
 ** Required Packages
 The packages in this section provide no functionality on their own,
@@ -283,7 +283,7 @@ but provide support for writing custom elisp.
 #+END_SRC
 *** gh
 #+BEGIN_SRC emacs-lisp
-(use-package gh
+(imalison:use-package* gh "gh.el"
   :demand t)
 #+END_SRC
 *** shut-up
