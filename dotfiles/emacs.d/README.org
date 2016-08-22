@@ -1406,14 +1406,39 @@ I use helm for almost all emacs completion
     (bind-key* "C-c p S" 'imalison:set-options-do-ag)
     (bind-key* "C-c p f" 'imalison:projectile-find-file)))
 #+END_SRC
-**** Avoid shell-command-to-string
-See [[https://github.com/bbatsov/projectile/issues/1044][this issue]] for details.
+*** ido
 #+BEGIN_SRC emacs-lisp
-(defalias 'projectile-shell-command-to-string 'imalison:shell-command-to-string)
-
-(defun projectile-files-via-ext-command (command)
-  "Get a list of relative file names in the project root by executing COMMAND."
-  (split-string (projectile-shell-command-to-string command) "\0" t))
+(use-package ido
+  :if (bound-and-true-p imalison:use-ido)
+  :commands ido-mode
+  :config
+  (progn
+    (ido-mode 1)
+    (setq ido-auto-merge-work-directories-length -1)
+    (setq ido-use-virtual-buffers t)
+    (setq ido-use-filename-at-point nil)
+    (setq ido-create-new-buffer 'always)
+    (ido-everywhere 1)
+    (setq ido-enable-flex-matching t)
+    (use-package flx)
+    (use-package flx-ido
+      :commands flx-ido-mode
+      :init (flx-ido-mode 1)
+      :config
+      (progn
+        ;; disable ido faces to see flx highlights.
+        ;; This makes flx-ido much faster.
+        (setq gc-cons-threshold 20000000)
+        (setq ido-use-faces nil)))
+    (use-package ido-ubiquitous
+      :disabled t
+      :commands (ido-ubiquitous-mode))
+    (use-package ido-vertical-mode
+      :config
+      (progn
+        (ido-vertical-mode 1)
+        (setq ido-vertical-define-keys 'C-n-C-p-up-and-down)))
+    (use-package flx-ido)))
 #+END_SRC
 *** avy
 #+BEGIN_SRC emacs-lisp
@@ -3596,39 +3621,6 @@ I've disabled perspective because I just don't use it much.
   :commands smex
   ;; This is here because smex feels like part of ido
   :bind ("M-x" . smex))
-#+END_SRC
-*** ido
-#+BEGIN_SRC emacs-lisp
-(use-package ido
-  :if (bound-and-true-p imalison:use-ido)
-  :commands ido-mode
-  :config
-  (progn
-    (ido-mode 1)
-    (setq ido-auto-merge-work-directories-length -1)
-    (setq ido-use-filename-at-point nil)
-    (setq ido-create-new-buffer 'always)
-    (ido-everywhere 1)
-    (setq ido-enable-flex-matching t)
-    (use-package flx)
-    (use-package flx-ido
-      :commands flx-ido-mode
-      :init (flx-ido-mode 1)
-      :config
-      (progn
-        ;; disable ido faces to see flx highlights.
-        ;; This makes flx-ido much faster.
-        (setq gc-cons-threshold 20000000)
-        (setq ido-use-faces nil)))
-    (use-package ido-ubiquitous
-      :disabled t
-      :commands (ido-ubiquitous-mode))
-    (use-package ido-vertical-mode
-      :config
-      (progn
-        (ido-vertical-mode 1)
-        (setq ido-vertical-define-keys 'C-n-C-p-up-and-down)))
-    (use-package flx-ido)))
 #+END_SRC
 *** java
 #+BEGIN_SRC emacs-lisp
