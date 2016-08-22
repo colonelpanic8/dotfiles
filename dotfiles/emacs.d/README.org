@@ -102,6 +102,8 @@ Sets environment variables by starting a shell.
 Emacs' built in ~shell-command-to-string~ function has the downside that it forks a new shell process every time it is executed. This means that any shell startup cost is incurred when this function is called.
 
 The following implementation uses eshell's ~eshell-search-path~ to find the binary (which is the only reason ~shell-comand-to-string~ is typically used anyway), but it avoids incurring any shell-startup cost.
+
+This was originally inspired by [[https://github.com/bbatsov/projectile/issues/1044][this issue]].
 #+BEGIN_SRC emacs-lisp
 ;; We use `eshell-search-path' for this hack
 (require 'eshell)
@@ -172,6 +174,7 @@ This makes it so that we always try to call-process instead of shell-command-to-
 (when imalison:secure (imalison:use-https-and-tls))
 #+END_SRC
 ** ELPA Archive Setup
+The org archive does not support https, so we set http as the protocol explicitly.
 #+BEGIN_SRC emacs-lisp -n -r
 (require 'package)
 
@@ -179,11 +182,11 @@ This makes it so that we always try to call-process instead of shell-command-to-
   (unless protocol (setq protocol (if imalison:secure "https" "http")))
   (format "%s://%s" protocol uri))
 
+(defvar imalison:melpa-uri nil)
 (defvar imalison:package-archive-triples
-  '(("elpa" "tromey.com/elpa/" "http")
-    ;; ("marmalade" "marmalade-repo.org/packages/")             (ref:marmalade)
-    ("org" "orgmode.org/elpa/" "http")                          (ref:org setup)
-    ("melpa" "melpa.org/packages/" nil)
+  `(("elpa" "tromey.com/elpa/" "http")
+    ("org" "orgmode.org/elpa/" "http")
+    ("melpa" ,(or imalison:melpa-uri "melpa.org/packages/") nil)
     ("melpa-stable" "stable.melpa.org/packages/" nil)))
 
 (defun imalison:add-package-archive (archive-name archive-uri)
@@ -195,8 +198,6 @@ This makes it so that we always try to call-process instead of shell-command-to-
               (imalison:add-package-archive
                archive-name (imalison:build-archive-uri archive-uri protocol))))
 #+END_SRC
-[[(org setup)][The org archive]] does not support https, so we set http as the protocol explicitly.
-I've decided to stop using [[(marmalade)][Marmalade]] completely
 ** Bootstrap Package Loading
 Its a shame that everyone has to have some version of this function in
 their init.el. I use use-package's own mechanism for ensuring packages
@@ -283,9 +284,7 @@ but provide support for writing custom elisp.
 *** gh
 #+BEGIN_SRC emacs-lisp
 (use-package gh
-  :ensure nil
-  :defer t
-  :load-path "~/Projects/gh.el")
+  :demand t)
 #+END_SRC
 *** shut-up
 #+BEGIN_SRC emacs-lisp
