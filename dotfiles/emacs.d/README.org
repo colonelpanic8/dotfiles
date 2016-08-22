@@ -87,14 +87,16 @@ These definitions silence the byte-compiler.
 ** exec-path-from-shell
 Sets environment variables by starting a shell.
 #+BEGIN_SRC emacs-lisp
-(use-package exec-path-from-shell
-  :config
-  (progn
-    (setq exec-path-from-shell-check-startup-files nil)
-    (add-to-list 'exec-path-from-shell-variables "GOPATH")
-    (add-to-list 'exec-path-from-shell-variables "ENVIRONMENT_SETUP_DONE")
-    (add-to-list 'exec-path-from-shell-variables "PYTHONPATH")
-    (exec-path-from-shell-initialize)))
+(eval-and-compile
+  (when (fboundp 'use-package)
+    (use-package exec-path-from-shell
+      :config
+      (progn
+        (setq exec-path-from-shell-check-startup-files nil)
+        (add-to-list 'exec-path-from-shell-variables "GOPATH")
+        (add-to-list 'exec-path-from-shell-variables "ENVIRONMENT_SETUP_DONE")
+        (add-to-list 'exec-path-from-shell-variables "PYTHONPATH")
+        (exec-path-from-shell-initialize)))))
 #+END_SRC
 ** Non-Forking Shell Command To String
 Emacs' built in ~shell-command-to-string~ function has the downside that it forks a new shell process every time it is executed. This means that any shell startup cost is incurred when this function is called.
