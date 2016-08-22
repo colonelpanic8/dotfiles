@@ -1798,83 +1798,36 @@ modeline and with excessive http requests to github.
 *** Programming
 **** python
 #+BEGIN_SRC emacs-lisp
-(defvar use-python-tabs nil)
-
-(defun python-tabs ()
-  (setq tab-width 4 indent-tabs-mode t python-indent-offset 4))
-
-(defun add-virtual-envs-to-jedi-server ()
-  (let ((virtual-envs (get-virtual-envs)))
-    (when virtual-envs (set (make-local-variable 'jedi:server-args)
-                            (make-virtualenv-args virtual-envs)))))
-
-(defun make-virtualenv-args (virtual-envs)
-  (apply #'append (mapcar (lambda (env) `("-v" ,env)) virtual-envs)))
-
-(defun imalison:project-root-or-current-directory ()
-  (if (projectile-project-p)
-      (projectile-project-root) (if (buffer-file-name)
-                                    (file-name-directory (buffer-file-name)))))
-
-(defun get-virtual-envs ()
-  (let ((project-root (imalison:project-root-or-current-directory)))
-    (when project-root
-      (condition-case ex
-          (cl-remove-if-not 'file-exists-p
-                            (mapcar (lambda (env-suffix)
-                                      (concat project-root env-suffix))
-                                    '(".tox/py27/" "env/" ".tox/venv/")))
-        ('error
-         (message (format "Caught exception: [%s]" ex))
-         (setq retval (cons 'exception (list ex))))
-        nil))))
-
-(defun message-virtual-envs ()
-  (interactive)
-  (message "%s" (get-virtual-envs)))
-
 (use-package python
   :commands python-mode
   :mode ("\\.py\\'" . python-mode)
+  :preface
+  (defun imalison:python-mode ()
+    (setq show-trailing-whitespace t)
+    ;; TODO: This was likely fixed and can probably be removed
+    ;; Somehow this is sometimes set to jedi:ac-setup which we
+    ;; don't want. This binding avoids starting auto-complete mode.
+    (let ((jedi:setup-function nil))
+      (jedi:setup))
+
+    ;; XXX: This has become pretty annoying
+    ;; (add-hook 'before-save-hook 'pyimport-remove-unused t t)
+
+    ;; Ensure company is active
+    (company-mode +1)
+    ;; Only use company-jedi for completion
+    (set (make-local-variable 'company-backends) '(company-jedi))
+
+    ;; Remove default python completion, as we are going to rely on
+    ;; company-jedi.
+    (remove-hook 'completion-at-point-functions
+                 'python-completion-complete-at-point 'local))
   :config
   (progn
-    :init
-    (progn
-      (unbind-key "C-j" python-mode-map)
-      (use-package company-jedi
-        :commands (jedi:goto-definition jedi-mode company-jedi)
-        :config
-        (progn
-          (setq jedi:complete-on-dot t)
-          (setq jedi:imenu-create-index-function 'jedi:create-flat-imenu-index)
-        :bind (:map python-mode-map
-                    ("M-." . jedi:goto-definition)
-                    ("M-," . jedi:goto-definition-pop-marker))))
-      (use-package pymacs)
-      (use-package sphinx-doc)
-      (defun imalison:python-mode ()
-        (setq show-trailing-whitespace t)
-        (if use-python-tabs (python-tabs))
-        (subword-mode t)
-        ;; TODO: This was likely fixed and can probably be removed
-        ;; Somehow this is sometimes set to jedi:ac-setup which we
-        ;; don't want. This binding avoids starting auto-complete mode.
-        (let ((jedi:setup-function nil))
-          (jedi:setup))
-
-        (add-hook 'before-save-hook 'pyimport-remove-unused t t)
-
-        (add-virtual-envs-to-jedi-server)
-
-        ;; TODO: figure out why this is here
-        (remove-hook 'completion-at-point-functions
-                     'python-completion-complete-at-point 'local)
-
-        ;; Ensure company is active
-        (company-mode +1)
-        ;; Only use company-jedi for completion
-        (set (make-local-variable 'company-backends) '(company-jedi)))
-      (add-hook 'python-mode-hook #'imalison:python-mode))))
+    (use-package pymacs)
+    (use-package sphinx-doc)
+    (unbind-key "C-j" python-mode-map)
+    (add-hook 'python-mode-hook #'imalison:python-mode)))
 #+END_SRC
 ***** pyimport
 Pyimport is disabled because it may be causing a performance problem.
@@ -1884,6 +1837,22 @@ Pyimport is disabled because it may be causing a performance problem.
   :bind (:map python-mode-map
               ("C-c C-i" . pyimport-insert-missing))
   :commands pyimport-remove-unused)
+#+END_SRC
+***** jedi
+The accepted way to use jedi if you prefer company to auto-complete is
+simply to require the company jedi package, which is why we make no
+reference to the jedi-core package.
+#+BEGIN_SRC emacs-lisp
+(use-package company-jedi
+  :after python
+  :commands (jedi:goto-definition jedi-mode company-jedi)
+  :bind (:map python-mode-map
+              ("M-." . jedi:goto-definition)
+              ("M-," . jedi:goto-definition-pop-marker))
+  :config
+  (progn
+    (setq jedi:complete-on-dot t)
+    (setq jedi:imenu-create-index-function 'jedi:create-flat-imenu-index)))
 #+END_SRC
 **** go
 #+BEGIN_SRC emacs-lisp
