@@ -1787,6 +1787,7 @@ modeline and with excessive http requests to github.
 **** magit-gh-pulls
 #+BEGIN_SRC emacs-lisp
 (use-package magit-gh-pulls
+  :disabled t
   :diminish magit-gh-pulls-mode
   :after magit
   :config
