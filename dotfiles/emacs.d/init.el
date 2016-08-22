@@ -15,8 +15,9 @@
 
 (setq use-package-enable-imenu-support t)
 
-(org-babel-load-file
- (concat (file-name-directory load-file-name) "README.org"))
+(let ((debug-on-error t))
+  (org-babel-load-file
+   (concat (file-name-directory load-file-name) "README.org")))
 
 ;; Local Variables:
 ;; flycheck-disabled-checkers: (emacs-lisp-checkdoc)
