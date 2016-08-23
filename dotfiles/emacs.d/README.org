@@ -3032,10 +3032,9 @@ crux-reopen-as-root-mode makes it so that any file owned by root will automatica
   (progn
     ;; (add-to-list 'erc-modules 'notifications)
     ;; logging:
-    (require 'erc-log)
-    (setq erc-log-channels-directory "~/Dropbox (Personal)/irclogs")
-    (erc-log-enable)
-    (use-package erc-colorize) (erc-colorize-mode 1)))
+    (use-package erc-colorize
+      :config
+      (erc-colorize-mode 1))))
 #+END_SRC
 *** bitlbee
 #+BEGIN_SRC emacs-lisp
