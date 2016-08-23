@@ -987,8 +987,13 @@ programming mode.
 (setq split-width-threshold 160)
 #+END_SRC
 ** Fill Setup
+Get rid of nags about requiring setences to end with two spaces.
 #+BEGIN_SRC emacs-lisp
 (setq sentence-end-double-space nil)
+#+END_SRC
+Set the default fill-column
+#+BEGIN_SRC emacs-lisp
+(setq-default fill-column 80)
 #+END_SRC
 ** Encoding
 UTF-8 everywhere
@@ -1043,8 +1048,6 @@ whenever there is an error.
 
 ;; Make buffer names unique.
 (setq uniquify-buffer-name-style 'forward)
-
-(setq fill-column 80)
 
 ;; Don't disable commands...
 (setq disabled-command-function nil)
