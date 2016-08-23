@@ -1217,6 +1217,22 @@ whenever there is an error.
        ("n" winner-redo "forward" :exit t)))
     (winner-mode 1)))
 #+END_SRC
+*** fill-column-indicator
+This interferes with too many other packages. See
+https://github.com/alpaker/Fill-Column-Indicator/issues/21 for more details
+#+BEGIN_SRC emacs-lisp
+(use-package fill-column-indicator
+  :disabled t
+  :config
+  (progn
+    (defun fci-on-off-fci-before-company (command)
+      (when (string= "show" command)
+        (turn-off-fci-mode))
+      (when (string= "hide" command)
+        (turn-on-fci-mode)))
+    (advice-add 'company-call-frontends :before #'fci-on-off-fci-before-company)
+    (add-hook 'prog-mode-hook 'fci-mode)))
+#+END_SRC
 ** Keybindings
 *** bind-key
 #+BEGIN_SRC emacs-lisp
