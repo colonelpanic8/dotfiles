@@ -1608,27 +1608,7 @@ I don't use auto-complete at all, so I have set up a hook to automatically disab
 *** multi-line
 #+BEGIN_SRC emacs-lisp
 (imalison:use-package multi-line
-  :preface
-  (progn
-    (defun imalison:multi-line-fill-column ()
-      (interactive)
-      (multi-line-execute multi-line-fill-column-strategy nil))
-
-    (defun imalison:multi-line-skip-fill ()
-      (interactive)
-      (multi-line-execute multi-line-skip-fill-stragety nil))
-
-    (defun imalison:multi-line-fill ()
-      (interactive)
-      (multi-line-execute multi-line-fill-stragety nil))
-
-    (emit-prefix-selector imalison:multi-line
-      multi-line
-      multi-line-single-line
-      imalison:multi-line-skip-fill
-      imalison:multi-line-fill
-      imalison:multi-line-fill-column))
-  :bind ("C-c d" . imalison:multi-line))
+  :bind ("C-c d" . multi-line))
 #+END_SRC
 *** comment-dwim-2
 #+BEGIN_SRC emacs-lisp
