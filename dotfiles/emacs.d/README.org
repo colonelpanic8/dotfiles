@@ -3757,6 +3757,11 @@ Ensure all themes that I use are installed:
 (ensure-packages-installed packages-appearance)
 #+END_SRC
 ** spaceline
+*** Disable sRGB colorspace to make powerline separators work
+#+BEGIN_SRC emacs-lisp
+(setq ns-use-srgb-colorspace nil)
+#+END_SRC
+*** config
 #+BEGIN_SRC emacs-lisp
 (use-package spaceline-config
   :ensure spaceline
