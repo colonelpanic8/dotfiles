@@ -1023,6 +1023,23 @@ whenever there is an error.
 #+BEGIN_SRC emacs-lisp
 (setq vc-follow-symlinks t)
 #+END_SRC
+** Time in Mode Line
+#+BEGIN_SRC emacs-lisp
+(setq display-time-default-load-average nil)
+(setq display-time-interval 1)
+(setq display-time-format "%a, %b %d, %T ")
+(display-time-mode 1)
+#+END_SRC
+** Subword
+This makes ~forward-word~ and ~backward-word~ understand snake and camel case.
+#+BEGIN_SRC emacs-lisp
+(setq c-subword-mode t)
+(global-subword-mode)
+#+END_SRC
+** Scratch Buffer
+#+BEGIN_SRC emacs-lisp
+(setq initial-scratch-message "")
+#+END_SRC
 ** Misc
 #+BEGIN_SRC emacs-lisp
 (defvar iedit-toggle-key-default nil)
@@ -1043,9 +1060,6 @@ whenever there is an error.
 ;; This makes it so that emacs --daemon puts its files in ~/.emacs.d/server
 ;; (setq server-use-tcp t)
 
-;; Display line and column numbers in mode line.
-
-
 ;; Make buffer names unique.
 (setq uniquify-buffer-name-style 'forward)
 
@@ -1053,8 +1067,6 @@ whenever there is an error.
 (setq disabled-command-function nil)
 
 ;; Make forward word understand camel and snake case.
-(setq c-subword-mode t)
-(global-subword-mode)
 
 ;; Preserve pastes from OS when saving a new item to the kill
 ;; ring. Why wouldn't this be enabled by default?
@@ -1067,13 +1079,6 @@ whenever there is an error.
 
 ;; Make mouse scrolling less jumpy.
 (setq mouse-wheel-scroll-amount '(1 ((shift) . 1)))
-
-(setq display-time-default-load-average nil)
-(setq display-time-interval 1)
-(setq display-time-format "%a, %b %d, %T ")
-(display-time-mode 1)
-
-;; the only sane option...
 
 (setq ediff-split-window-function 'split-window-horizontally)
 (setq ediff-window-setup-function 'ediff-setup-windows-plain)
@@ -1088,10 +1093,6 @@ whenever there is an error.
 
 (setq echo-keystrokes 0.25)
 
-(setq initial-scratch-message "")
-
-(setq checkdoc-force-docstrings-flag nil
-      checkdoc-arguments-in-order-flag nil)
 
 ;; text mode stuff:
 (remove-hook 'text-mode-hook #'turn-on-auto-fill)
@@ -1100,6 +1101,7 @@ whenever there is an error.
 
 ;; y and n instead of yes and no
 #+END_SRC
+
 #+BEGIN_SRC emacs-lisp
 (setq-default c-basic-offset 4
               tab-width 4
@@ -2064,6 +2066,11 @@ Macrostep is an indespensible tool for writing emacs lisp macros. It lets you se
 Reduce indentation for some functions
 #+BEGIN_SRC emacs-lisp
 (put 'use-package 'lisp-indent-function 1)
+#+END_SRC
+***** Checkdoc
+#+BEGIN_SRC emacs-lisp
+(setq checkdoc-force-docstrings-flag nil
+      checkdoc-arguments-in-order-flag nil)
 #+END_SRC
 ***** edebug
 #+BEGIN_SRC emacs-lisp
