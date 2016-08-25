@@ -2931,6 +2931,29 @@ The following is taken from [[https://github.com/syl20bnr/spacemacs/blob/a650877
   (progn
     (add-hook 'markdown-mode-hook 'imalison:disable-linum-mode)))
  #+END_SRC
+**** puml-mode
+This mode seems to be better maintained than plantuml-mode
+#+BEGIN_SRC emacs-lisp
+(use-package puml-mode
+  :after org
+  :mode ("\\.puml\\'" "\\.plantuml\\'")
+  :preface
+  (if (equal system-type 'darwin)
+        (let* ((plantuml-dir
+                (s-trim (shell-command-to-string "brew --prefix plantuml")))
+               (filename
+                (--first (s-ends-with? ".jar" it) (directory-files plantuml-dir))))
+          (setq puml-plantuml-jar-path (imalison:join-paths plantuml-dir filename))))
+  :config
+  (progn
+    (add-to-list
+     'org-src-lang-modes '("plantuml" . puml))))
+#+END_SRC
+**** wsd-mode
+ #+BEGIN_SRC emacs-lisp
+(use-package wsd-mode
+  :commands (wsd-mode))
+ #+END_SRC
 *** Utility
 **** restclient
  #+BEGIN_SRC emacs-lisp
@@ -3064,29 +3087,6 @@ crux-reopen-as-root-mode makes it so that any file owned by root will automatica
 #+BEGIN_SRC emacs-lisp
 (use-package slack)
 #+END_SRC
-**** puml-mode
-This mode seems to be better maintained than plantuml-mode
-#+BEGIN_SRC emacs-lisp
-(use-package puml-mode
-  :after org
-  :mode ("\\.puml\\'" "\\.plantuml\\'")
-  :preface
-  (if (equal system-type 'darwin)
-        (let* ((plantuml-dir
-                (s-trim (shell-command-to-string "brew --prefix plantuml")))
-               (filename
-                (--first (s-ends-with? ".jar" it) (directory-files plantuml-dir))))
-          (setq puml-plantuml-jar-path (imalison:join-paths plantuml-dir filename))))
-  :config
-  (progn
-    (add-to-list
-     'org-src-lang-modes '("plantuml" . puml))))
-#+END_SRC
-**** wsd-mode
- #+BEGIN_SRC emacs-lisp
-(use-package wsd-mode
-  :commands (wsd-mode))
- #+END_SRC
 ** Other
 *** anzu
 #+BEGIN_SRC emacs-lisp
