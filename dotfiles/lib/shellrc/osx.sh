@@ -199,3 +199,7 @@ function swap_main_screen {
 function swap_mirror_swap {
     mirror -off && swap_main_screen && mirror -on
 }
+
+function brew_relink {
+    brew unlink "$1" && brew link "$1"
+}
