@@ -441,5 +441,5 @@ function in_git_directory {
 }
 
 function which_readlink {
-    readlink -f $(which $1)
+    readlink -f "$(which $1)"
 }
