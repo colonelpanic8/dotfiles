@@ -1040,6 +1040,11 @@ This makes ~forward-word~ and ~backward-word~ understand snake and camel case.
 #+BEGIN_SRC emacs-lisp
 (setq initial-scratch-message "")
 #+END_SRC
+** Don't prompt about local variables
+#+BEGIN_SRC emacs-lisp
+(defun risky-local-variable-p (&rest args)
+  nil)
+#+END_SRC
 ** Misc
 #+BEGIN_SRC emacs-lisp
 (defvar iedit-toggle-key-default nil)
