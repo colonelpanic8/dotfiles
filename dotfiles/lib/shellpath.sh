@@ -7,6 +7,7 @@ function _setup_env {
     _ruby_setup
     _python_setup
     is_osx && _osx_path_setup
+    _emacs_setup
     _java_setup
     _go_setup
     _rust_setup
@@ -86,6 +87,11 @@ function _ruby_setup {
 
 function _tex_setup {
     is_osx && add_to_path "/Library/TeX/texbin/"
+}
+
+function _emacs_setup {
+    add_to_path "$HOME/.evm/bin" --before
+    command_exists evm || curl -fsSkL https://raw.github.com/rejeep/evm/master/go | bash
 }
 
 function _path_helper {
