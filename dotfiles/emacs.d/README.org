@@ -1544,6 +1544,11 @@ This was stolen from https://github.com/jwiegley/dot-emacs
   (progn
     (flimenu-global-mode)))
 #+END_SRC
+*** swiper
+#+BEGIN_SRC emacs-lisp
+(use-package swiper
+  :bind ("C-s" . swiper))
+#+END_SRC
 ** Completion
 *** company
 #+BEGIN_SRC emacs-lisp
