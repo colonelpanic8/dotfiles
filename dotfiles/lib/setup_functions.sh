@@ -34,3 +34,7 @@ function environment_variable_exists {
     eval "value=\"\${$1+x}\""
     [ ! -z $value ]
 }
+
+function command_exists {
+    hash "$1" 2>/dev/null 1>/dev/null
+}
