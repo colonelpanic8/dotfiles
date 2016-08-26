@@ -3214,9 +3214,10 @@ I had to disable this mode because something that it does messes with coding set
 (use-package recentf
   :config
   (progn
+    (setq recentf-max-saved-items 1000
+          recentf-max-menu-items 1000)
     (advice-add 'recentf-cleanup :around 'imalison:shut-up-around)
-    (recentf-mode 1)
-    (setq recentf-max-menu-items 500)))
+    (recentf-mode 1)))
 #+END_SRC
 *** key-chord
 I have currently disabled key-chord because it may cause typing lag.
