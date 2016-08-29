@@ -1250,11 +1250,6 @@ https://github.com/alpaker/Fill-Column-Indicator/issues/21 for more details
     (advice-add 'company-call-frontends :before #'fci-on-off-fci-before-company)
     (add-hook 'prog-mode-hook 'fci-mode)))
 #+END_SRC
-*** rudel
-#+BEGIN_SRC emacs-lisp
-(use-package rudel
-  :disabled t)
-#+END_SRC
 *** overseer
 #+BEGIN_SRC emacs-lisp
 (use-package overseer)
@@ -3121,6 +3116,20 @@ crux-reopen-as-root-mode makes it so that any file owned by root will automatica
 #+BEGIN_SRC emacs-lisp
 (use-package slack)
 #+END_SRC
+** Cooperation
+*** togetherly
+#+BEGIN_SRC emacs-lisp
+(use-package togetherly)
+#+END_SRC
+*** floobits
+#+BEGIN_SRC emacs-lisp
+(use-package floobits)
+#+END_SRC
+*** rudel
+#+BEGIN_SRC emacs-lisp
+(use-package rudel
+  :disabled t)
+#+END_SRC
 ** Other
 *** anzu
 #+BEGIN_SRC emacs-lisp
@@ -3530,10 +3539,6 @@ This is useful with server mode when editing gmail messages. I think that it is 
 *** screenshot
 #+BEGIN_SRC emacs-lisp
 (use-package screenshot)
-#+END_SRC
-*** floobits
-#+BEGIN_SRC emacs-lisp
-(use-package floobits)
 #+END_SRC
 *** libmpdee
 #+BEGIN_SRC emacs-lisp
