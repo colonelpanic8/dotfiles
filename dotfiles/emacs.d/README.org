@@ -2420,6 +2420,7 @@ The following is taken from [[https://github.com/syl20bnr/spacemacs/blob/a650877
     (add-hook 'org-mode-hook 'imalison:disable-linum-mode)
     (add-hook 'org-mode-hook (lambda () (setq org-todo-key-trigger t)))
     (add-hook 'org-agenda-mode-hook 'imalison:disable-linum-mode)
+
     (defun org-archive-if (condition-function)
       (if (funcall condition-function)
           (let ((next-point-marker
@@ -2544,19 +2545,22 @@ The following is taken from [[https://github.com/syl20bnr/spacemacs/blob/a650877
     (add-to-list 'org-show-context-detail '(org-goto . lineage))
     (sp-local-pair 'org-mode "~" "~")
 
+    (add-to-list
+     'org-src-lang-modes '("plantuml" . puml))
+
     (org-babel-do-load-languages
      'org-babel-load-languages
      '((sh . t)
        (python . t)
        (ruby . t)
        (octave . t)
-       (sqlite . t)))
+       (sqlite . t)
+       (plantuml . t)))
 
     (setq org-log-into-drawer t
           org-log-reschedule t
           org-log-redeadline t
           org-treat-insert-todo-heading-as-state-change t)
-
 
     (when nil
       ;; Enable appointment notifications.
@@ -2960,21 +2964,22 @@ The following is taken from [[https://github.com/syl20bnr/spacemacs/blob/a650877
   (progn
     (add-hook 'markdown-mode-hook 'imalison:disable-linum-mode)))
  #+END_SRC
-**** puml-mode
+**** puml-mode (plantuml-support)
 This mode seems to be better maintained than plantuml-mode
 #+BEGIN_SRC emacs-lisp
 (use-package puml-mode
-  :after org
+  :commands puml-mode
   :mode ("\\.puml\\'" "\\.plantuml\\'")
   :preface
-  (if (equal system-type 'darwin)
+  (progn
+    (if (equal system-type 'darwin)
         (let* ((plantuml-dir
                 (s-trim (shell-command-to-string "brew --prefix plantuml")))
                (filename
-                (--first (s-ends-with? ".jar" it) (directory-files plantuml-dir))))
-          (setq puml-plantuml-jar-path (imalison:join-paths plantuml-dir filename))))
-  :config
-  (progn
+                (--first (s-ends-with? ".jar" it) (directory-files plantuml-dir)))
+                (filepath (imalison:join-paths plantuml-dir filename)))
+          (setq puml-plantuml-jar-path filepath
+                org-plantuml-jar-path filepath)))
     (add-to-list
      'org-src-lang-modes '("plantuml" . puml))))
 #+END_SRC
