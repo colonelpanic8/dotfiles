@@ -3859,14 +3859,16 @@ Set the character used to represent spaces to ·, and the character used for tab
   (interactive)
   (if (display-graphic-p)
       (progn
-        (set-face-attribute 'default nil :font "Source Code Pro")
+        (condition-case _ignored
+            (set-face-attribute 'default nil :font "Source Code Pro")
+          ('error nil))
         (set-face-attribute 'default nil :weight 'semi-bold)
-        (set-face-attribute 'default nil :height 135))
-    (progn
-      (load-theme 'source-code-pro t)
-      (message "not setting font")))
-  (load-theme imalison:dark-theme t)
-  (imalison:remove-fringe-and-hl-line-mode))
+        (set-face-attribute 'default nil :height 135)
+        (progn
+          (load-theme 'source-code-pro t)
+          (message "not setting font")))
+    (load-theme imalison:dark-theme t)
+    (imalison:remove-fringe-and-hl-line-mode)))
 
 ;; This is needed because you can't set the font or theme at daemon start-up.
 ;; (when (display-graphic-p) (imalison:appearance))
