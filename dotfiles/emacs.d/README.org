@@ -1588,6 +1588,9 @@ I don't use auto-complete at all, so I have set up a hook to automatically disab
         (org-show-context 'magit-goto))))
   :config
   (progn
+    (unbind-key "C-j" magit-status-mode-map)
+    (unbind-key "C-j" magit-hunk-section-map)
+    (unbind-key "C-j" magit-file-section-map)
     (defvar-setq magit-last-seen-setup-instructions "1.4.0")
     (magit-auto-revert-mode)
     (when (bound-and-true-p imalison:gpg-key)
