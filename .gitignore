@@ -8,8 +8,12 @@
 /dotfiles/cider/.cache/
 /dotfiles/config/Trolltech.conf
 /dotfiles/config/browser-launcher2
+/dotfiles/config/chromium/
+/dotfiles/config/chromium/Avatars/
 /dotfiles/config/configstore
 /dotfiles/config/dconf/
+/dotfiles/config/dleyna-renderer-service.conf
+/dotfiles/config/evolution/
 /dotfiles/config/google-chrome
 /dotfiles/config/gtk-2.0/
 /dotfiles/config/gtk-3.0/
@@ -26,6 +30,7 @@
 /dotfiles/config/pulse/
 /dotfiles/config/sparkleshare/*.key
 /dotfiles/config/sparkleshare/*.pub
+/dotfiles/config/sparkleshare/avatars/
 /dotfiles/config/sparkleshare/logs
 /dotfiles/config/spotify
 /dotfiles/config/totem/
