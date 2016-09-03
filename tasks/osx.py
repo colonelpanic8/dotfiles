@@ -225,8 +225,8 @@ def functions_for_filename(filename):
     task_name = 'settings-diff:' + filename.replace('.', '-')
     @ctask(name=task_name)
     def task(ctx):
-        print filepath
-        print filename
+        print(filepath)
+        print(filename)
         ctx.run("zsh -c 'icdiff <(defaults read {0}) {1}'".format(
             filename, filepath
         ))
@@ -247,5 +247,5 @@ def settings_write_all(ctx):
 
 @ctask
 def custom_keyboard_shortcuts(ctx):
-    command_string = """defaults write -globalDomain NSUserKeyEquivalents '{"Enter Full Screen" = "@\U21a9";"Exit Full Screen" = "@\U21a9";"Full Screen" = "@\U21a9";}'"""
+    command_string = b"""defaults write -globalDomain NSUserKeyEquivalents '{"Enter Full Screen" = "@\U21a9";"Exit Full Screen" = "@\U21a9";"Full Screen" = "@\U21a9";}'"""
     ctx.run(command_string)

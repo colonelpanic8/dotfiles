@@ -2,7 +2,7 @@ import os
 
 from invoke import task as ctask
 
-from util import RESOURCES_DIRECTORY
+from .util import RESOURCES_DIRECTORY
 
 
 @ctask(default=True)
