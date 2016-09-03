@@ -2044,20 +2044,6 @@ reference to the jedi-core package.
     (switch-to-buffer buffer)))
 #+END_SRC
 **** emacs-lisp
-***** Init hook
-#+BEGIN_SRC emacs-lisp
-(defvar imalison:check-parens nil)
-
-(defun imalison:maybe-check-parens ()
-  (if imalison:check-parens
-      (check-parens)))
-
-(defun imalison:emacs-lisp-hook ()
-  (elisp-slime-nav-mode t)
-  (add-hook 'write-file-functions 'imalison:maybe-check-parens nil t))
-
-(add-hook 'emacs-lisp-mode-hook 'imalison:emacs-lisp-hook)
-#+END_SRC
 ***** elisp-slime-nav
 #+BEGIN_SRC emacs-lisp
 (use-package elisp-slime-nav
@@ -2153,6 +2139,20 @@ Taken from http://endlessparentheses.com/eval-result-overlays-in-emacs-lisp.html
                (save-excursion
                  (end-of-defun)
                  (point)))))
+#+END_SRC
+***** Init hook
+#+BEGIN_SRC emacs-lisp
+(defvar imalison:check-parens nil)
+
+(defun imalison:maybe-check-parens ()
+  (if imalison:check-parens
+      (check-parens)))
+
+(defun imalison:emacs-lisp-hook ()
+  (elisp-slime-nav-mode t)
+  (add-hook 'write-file-functions 'imalison:maybe-check-parens nil t))
+
+(add-hook 'emacs-lisp-mode-hook 'imalison:emacs-lisp-hook)
 #+END_SRC
 ***** Keybinds
 #+BEGIN_SRC emacs-lisp
