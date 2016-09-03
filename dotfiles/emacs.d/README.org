@@ -1343,7 +1343,6 @@ I use helm for almost all emacs completion
 *** ido
 #+BEGIN_SRC emacs-lisp
 (use-package ido
-  :if (bound-and-true-p imalison:use-ido)
   :commands ido-mode
   :config
   (progn
