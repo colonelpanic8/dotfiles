@@ -3238,6 +3238,13 @@ Not really sure what this is
   (shut-up
     (epa-file-enable)))
 #+END_SRC
+*** pinentry
+#+BEGIN_SRC emacs-lisp
+(use-package pinentry
+  :defer 5
+  :config
+  (pinentry-start))
+#+END_SRC
 *** twittering-mode
 #+BEGIN_SRC emacs-lisp
 (use-package twittering-mode
