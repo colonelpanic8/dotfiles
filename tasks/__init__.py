@@ -3,14 +3,16 @@ import sys
 
 from invoke import Collection, task as ctask
 
-from . import osx
+from . import arch
 from . import linux
+from . import osx
 from .util import DOTFILES_DIRECTORY, RESOURCES_DIRECTORY, link_filenames
 
 
 ns = Collection()
 ns.add_collection(osx)
 ns.add_collection(linux)
+ns.add_collection(arch)
 
 
 @ctask(default=True)
