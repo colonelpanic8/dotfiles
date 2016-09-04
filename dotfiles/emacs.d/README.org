@@ -1752,7 +1752,6 @@ modeline and with excessive http requests to github.
                  'python-completion-complete-at-point 'local))
   :config
   (progn
-    (use-package pymacs)
     (use-package sphinx-doc)
     (unbind-key "C-j" python-mode-map)
     (add-hook 'python-mode-hook #'imalison:python-mode)))
