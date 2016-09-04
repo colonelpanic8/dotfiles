@@ -13,7 +13,7 @@ environment_variable_exists ENVIRONMENT_SETUP_DONE || _setup_env
 
 # XXX: these were moved to _setup_env
 # _ruby_setup
-# _python_setup
+_python_setup
 
 function _source_shellenv_files {
     for filename in ~/.lib/shellenv/*; do
