@@ -4,8 +4,9 @@ from .util import RESOURCES_DIRECTORY
 
 
 ARCH_PACKAGES = [
-    "synergy", "pyenv", "rbenv", "alsa-utils", "spotify", "google-chrome",
-    "autoconf", "automake", "cask", "emacs25-git",
+    "synergy", "adobe-source-code-pro-fonts", "pyenv", "rbenv", "alsa-utils",
+    "spotify", "google-chrome", "autoconf", "automake", "cask", "emacs25-git",
+    "xmobar", "the_silver_searcher",
 ]
 
 
