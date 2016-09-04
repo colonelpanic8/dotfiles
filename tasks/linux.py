@@ -51,20 +51,14 @@ sudo chown root /usr/bin/hub &&
 sudo chmod 777 /usr/bin/hub""")
 
 
-
-@ctask
-def get_spotify(ctx):
-    pass
-
-
-@ctask
-def setup_sources(ctx):
-    pass
-
-
 @ctask
 def monaco(ctx):
     ctx.run("sudo cp {0} /usr/share/fonts/fontfiles".format(
         os.path.join(RESOURCES_DIRECTORY, "Monaco-Powerline.otf")
     ))
     ctx.run("sudo fc-cache -fv")
+
+
+@ctask
+def emacs_bindings_in_gnome(ctx):
+    ctx.run("gsettings set org.gnome.desktop.interface gtk-key-theme 'Emacs'")
