@@ -14,6 +14,7 @@
 /dotfiles/config/dconf/
 /dotfiles/config/dleyna-renderer-service.conf
 /dotfiles/config/evolution/
+/dotfiles/config/gconf/
 /dotfiles/config/google-chrome
 /dotfiles/config/gtk-2.0/
 /dotfiles/config/gtk-3.0/
