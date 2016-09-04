@@ -97,6 +97,7 @@ These definitions silence the byte-compiler.
 ** exec-path-from-shell
 Sets environment variables by starting a shell.
 #+BEGIN_SRC emacs-lisp
+;; TODO: this does not seem to actually install exec-path-from-shell
 (eval-and-compile
   (when (fboundp 'use-package)
     (use-package exec-path-from-shell
