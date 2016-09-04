@@ -80,8 +80,11 @@ function _rust_setup {
 }
 
 function _ruby_setup {
-    export RBENV_ROOT="$(brew --prefix rbenv)"
-    add_to_path "$RBENV_ROOT/bin"
+    if is_osx;
+    then
+        export RBENV_ROOT="$(brew --prefix rbenv)"
+        add_to_path "$RBENV_ROOT/bin"
+    fi
     hash rbenv 2> /dev/null && eval "$(rbenv init - --no-rehash)"
 }
 
