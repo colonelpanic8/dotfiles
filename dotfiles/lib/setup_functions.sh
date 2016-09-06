@@ -19,6 +19,35 @@ function add_to_path {
     eval "$($_python_command $HOME/.lib/python/shell_path.py --include-assignment "$@")"
 }
 
+# Taken from http://www.unix.com/shell-programming-and-scripting/27932-how-know-linux-distribution-i-am-using.html
+function get_distro {
+    # start with uname and branch the decision from there
+    dist=$(uname -s 2> /dev/null)
+    if [ "$dist" = "Linux" ]; then
+        get_linux_distro && return 0
+    elif [ -n "$dist" ]; then
+        echo "$dist"
+        return 0
+    fi
+    proc_version || echo "Unknown"
+    return 1
+}
+
+function get_linux_distro {
+   if [ -r /etc/lsb-release ]; then
+       dist=$(grep 'DISTRIB_ID' /etc/lsb-release | sed 's/DISTRIB_ID=//' | head -1)
+       [ -n "$dist" ] && echo "$dist" && return 0
+   fi
+
+   dist=$(find /etc/ -maxdepth 1 -name '*release' 2> /dev/null | sed 's/\/etc\///' | sed 's/-release//' | head -1)
+   [ -n "$dist" ] && echo "$dist" && return 0
+
+   dist=$(find /etc/ -maxdepth 1 -name '*version' 2> /dev/null | sed 's/\/etc\///' | sed 's/-version//' | head -1)
+   [ -n "$dist" ] && echo "$dist" && return 0
+   return 1
+}
+
+
 function is_osx() {
     case `uname` in
         'Darwin')

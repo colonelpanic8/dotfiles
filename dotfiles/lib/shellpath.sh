@@ -17,13 +17,17 @@ function _setup_env {
 }
 
 function _osx_path_setup {
-    hash brew 2>/dev/null && add_to_path --before "$(brew --prefix coreutils)/libexec/gnubin"
+    if command_exists "brew";
+       add_to_path --before "$(brew --prefix coreutils)/libexec/gnubin"
+       # Access gnu man pages.
+       add_to_path "$(brew --prefix)/opt/coreutils/libexec/gnuman" --path-var "MANPATH"
+    then
 
     # Adds airport utility
     add_to_path "/System/Library/PrivateFrameworks/Apple80211.framework/Versions/Current/Resources" --after
 
-    # I believe that this is here because of some issue with
-    # python builds in OSX
+    # I believe that this is here because of some issue with python builds in
+    # OSX
     export CFLAGS=-Qunused-arguments
     export CPPFLAGS=-Qunused-arguments
 }
@@ -58,14 +62,17 @@ function _java_setup {
         export GRADLE_HOME="$(brew --prefix gradle)"
         export ANDROID_HOME="$(brew --prefix android-sdk)"
         add_to_path "$ANDROID_HOME" --after
-
-        # Access gnu man pages.
-        hash brew 2> /dev/null && export MANPATH="$(brew --prefix)/opt/coreutils/libexec/gnuman:$MANPATH"
-    else
-        # This may be ubuntu/debian specific
-        export JAVA_HOME="$(update-alternatives --config java | get_cols ' -1' | head -n 1)"
-        is_osx && export VISUAL="which emacsclient -c -n"
     fi
+
+    case get_distro in
+        Arch)
+        # Arch does not seem to need to set JAVA_HOME
+            ;;
+        Debian)
+        # This may be ubuntu/debian specific
+            export JAVA_HOME="$(update-alternatives --config java | get_cols ' -1' | head -n 1)"
+            ;;
+    esac
 
     add_to_path "$JAVA_HOME/bin"
 }
