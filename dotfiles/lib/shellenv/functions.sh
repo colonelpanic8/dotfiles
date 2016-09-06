@@ -50,7 +50,9 @@ EOF
 
 function shell_contains () {
   local e
-  for e in "${@:2}"; do [[ "$e" == "$1" ]] && return 0; done
+  for e in "${@:2}"; do
+      [[  "$1" == *"$e"* ]] && return 0
+  done
   return 1
 }
 

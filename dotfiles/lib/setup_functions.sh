@@ -1,18 +1,30 @@
-_python_command=""
+function command_exists {
+    hash "$1" 2>/dev/null 1>/dev/null
+}
+
+function shell_contains () {
+  local e
+  for e in "${@:2}"; do
+      [[  "$1" == *"$e"* ]] && return 0
+  done
+  return 1
+}
 
 function _set_python_command {
     # See comment in add_to_path about why this is necessary
-    if hash pyenv 2>/dev/null;
+    if command_exists pyenv;
     then
         _python_command="$(pyenv which python)"
     else
+        which pyenv
         _python_command="$(which python)"
     fi
+    shell_contains "$_python_command" "shim" && \
+        echo "Warning: setting python command to shim"
 }
 
-_set_python_command
-
 function add_to_path {
+    environment_variable_exists _python_command || _set_python_command
     # We need to get a path to the ACTUAL python command because
     # pyenv alters PATH before actually executing python, which ends
     # up changing PATH in a way that is not desireable.
@@ -62,10 +74,6 @@ function is_osx() {
 function environment_variable_exists {
     eval "value=\"\${$1+x}\""
     [ ! -z $value ]
-}
-
-function command_exists {
-    hash "$1" 2>/dev/null 1>/dev/null
 }
 
 function source_directory_files {

@@ -3,12 +3,12 @@ source "$HOME/.lib/setup_functions.sh"
 function _setup_env {
     _path_helper
 
-    add_to_path "$HOME/.local/bin" "$HOME/.lib/bin" "$HOME/bin" "/usr/local/bin" --before
-    _ruby_setup
-
     # XXX/TODO:
     # This is in shellenv.sh now
-    # _python_setup
+    _python_setup
+
+    add_to_path "$HOME/.local/bin" "$HOME/.lib/bin" "$HOME/bin" "/usr/local/bin" --before
+    _ruby_setup
 
     is_osx && _osx_path_setup
     _emacs_setup
@@ -38,7 +38,6 @@ function _osx_path_setup {
 }
 
 function _python_setup {
-    add_to_path "$HOME/.lib/python" --after
     export PYENV_ROOT="/usr/local/var/pyenv"
 
     if which pyenv > /dev/null; then
@@ -47,6 +46,7 @@ function _python_setup {
         echo "WARNING: pyenv is not installed on this machine and python will likely not function correctly"
     fi
 
+    add_to_path "$HOME/.lib/python" --after
     # if which pyenv-virtualenv-init > /dev/null; then eval "$(pyenv virtualenv-init -)"; fi
 
     add_to_path "$HOME/.lib/python" --path-var 'PYTHONPATH'
@@ -115,3 +115,4 @@ function _path_helper {
         eval "$(/usr/libexec/path_helper -s)"
     fi
 }
+
