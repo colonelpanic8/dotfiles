@@ -67,3 +67,10 @@ function environment_variable_exists {
 function command_exists {
     hash "$1" 2>/dev/null 1>/dev/null
 }
+
+function source_directory_files {
+	for filename in "$1"/*; do
+		environment_variable_exists SHELL_STARTUP_DEBUG && echo "Sourcing $filename"
+        source "$filename"
+    done
+}

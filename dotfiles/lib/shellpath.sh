@@ -5,7 +5,11 @@ function _setup_env {
 
     add_to_path "$HOME/.local/bin" "$HOME/.lib/bin" "$HOME/bin" "/usr/local/bin" --before
     _ruby_setup
-    _python_setup
+
+    # XXX/TODO:
+    # This is in shellenv.sh now
+    # _python_setup
+
     is_osx && _osx_path_setup
     _emacs_setup
     _java_setup

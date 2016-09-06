@@ -1,6 +1,4 @@
-for filename in ~/.lib/zsh/*; do
-    source $filename
-done
+source_directory_files "$HOME/.lib/zsh"
 
 alias srczsh="source ~/.zshrc"
 alias zshenv="source ~/.zshenv"

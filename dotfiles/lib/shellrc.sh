@@ -1,6 +1,4 @@
-for filename in ~/.lib/shellrc/*; do
-    source $filename
-done
+source_directory_files "$HOME/.lib/shellrc"
 
 [ -s "/usr/local/bin/virtualenvwrapper.sh" ] && . /usr/local/bin/virtualenvwrapper.sh
 function j() {

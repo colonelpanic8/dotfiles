@@ -15,10 +15,4 @@ environment_variable_exists ENVIRONMENT_SETUP_DONE || _setup_env
 # _ruby_setup
 _python_setup
 
-function _source_shellenv_files {
-    for filename in ~/.lib/shellenv/*; do
-        source $filename
-    done
-}
-
-_source_shellenv_files
+source_directory_files "$HOME/.lib/shellenv"
