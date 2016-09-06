@@ -5,8 +5,9 @@ from .util import RESOURCES_DIRECTORY
 
 ARCH_PACKAGES = [
     "synergy", "adobe-source-code-pro-fonts", "pyenv", "rbenv", "alsa-utils",
-    "spotify", "google-chrome", "autoconf", "automake", "cask", "emacs25-git",
-    "xmobar", "the_silver_searcher", "jdk8-openjdk", "openjdk8-doc", "openjdk8-src"
+    "patch", "spotify", "google-chrome", "autoconf", "automake", "cask", "emacs25-git",
+    "xmobar", "the_silver_searcher", "jdk8-openjdk", "openjdk8-doc", "openjdk8-src",
+    "scala", "clojure", "go", "ruby", "node", "ghc", "rust",
 ]
 
 
