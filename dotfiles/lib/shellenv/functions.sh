@@ -306,7 +306,10 @@ EOF
 }
 
 function dirty_talk() {
-    while true; do talk_dirty_to_me | tee >(cat) | say; done
+    while :
+    do
+        talk_dirty_to_me | tee >(cat) | say
+    done
 }
 
 function track_modified {
