@@ -18,10 +18,11 @@ function _setup_env {
 
 function _osx_path_setup {
     if command_exists "brew";
+    then
        add_to_path --before "$(brew --prefix coreutils)/libexec/gnubin"
        # Access gnu man pages.
        add_to_path "$(brew --prefix)/opt/coreutils/libexec/gnuman" --path-var "MANPATH"
-    then
+    fi
 
     # Adds airport utility
     add_to_path "/System/Library/PrivateFrameworks/Apple80211.framework/Versions/Current/Resources" --after
