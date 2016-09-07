@@ -325,6 +325,10 @@ but provide support for writing custom elisp.
 (imalison:use-package emit
   :demand t)
 #+END_SRC
+*** request
+#+BEGIN_SRC emacs-lisp
+(use-package request)
+#+END_SRC
 ** Macros
 *** Named Build
 imalison:named-build provides a way to invoke a macro in such a way
@@ -683,6 +687,22 @@ A macro for composing functions together to build an interactive command to copy
         (perform-replace "\\t" "    " nil nil delimited nil nil beg end nil))
       (save-excursion
         (perform-replace "\\n" "\n" nil nil delimited nil nil beg end nil)))))
+#+END_SRC
+** Download a File Into a Buffer
+#+BEGIN_SRC emacs-lisp
+(defun imalison:download-to-buffer (uri)
+  (interactive (list (read-string "Enter uri: ")))
+  (request uri
+           :parser 'buffer-string
+           :success (cl-function
+                     (lambda (&key data &allow-other-keys)
+                       (message "called")
+                       (let ((created-buffer (get-buffer-create uri)))
+                         (message "here")
+                         (message "buf: %s" created-buffer)
+                         (with-current-buffer created-buffer
+                           (insert data))
+                         (switch-to-buffer created-buffer))))))
 #+END_SRC
 ** Other
 #+BEGIN_SRC emacs-lisp
