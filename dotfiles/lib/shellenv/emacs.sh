@@ -9,7 +9,6 @@
 # alias terminal_emacs='_emacs -t'
 # is_ssh && emacs="terminal_emacs"
 
-alias emacs='emacsclient -t -n'
 alias e='emacsclient -n'
 is_osx && alias emacs='reattach-to-user-namespace emacsclient -c -n'
 
