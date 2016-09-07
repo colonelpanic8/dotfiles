@@ -102,7 +102,7 @@ function prompt_tomorrow_colors {
     export HOSTNAME_COLOR="$fg[yellow]"
     export USERNAME_COLOR="$fg[blue]"
     export CURRENT_DIRECTORY_COLOR="$fg[red]"
-    export SOURCE_CONTROL_COLOR="$fg[white]"
+    export SOURCE_CONTROL_COLOR="$fg[gray]"
 }
 
 function prompt_monokai_colors {

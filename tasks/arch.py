@@ -12,7 +12,7 @@ ARCH_PACKAGES = [
     "the_silver_searcher", "jdk8-openjdk", "openjdk8-doc", "openjdk8-src",
     "scala", "clojure", "go", "ruby", "node", "ghc", "rust", "nodejs", "nvm",
     "nvidia-settings", "gnome-tweak-tool", "screenfetch", "htop", "tmux",
-    "texlive-most",
+    "texlive-most", "leiningen", "boot", "gnome-settings-daemon"
 ]
 
 
