@@ -3893,7 +3893,8 @@ Set the character used to represent spaces to ·, and the character used for tab
             (set-face-attribute 'default nil :font "Source Code Pro")
           ('error nil))
         (set-face-attribute 'default nil :weight 'semi-bold)
-        (set-face-attribute 'default nil :height 135))
+        (set-face-attribute
+         'default nil :height (if (equal system-type 'darwin) 135 110)))
     (progn
           (load-theme 'source-code-pro t)
           (message "not setting font")))
@@ -3904,5 +3905,6 @@ Set the character used to represent spaces to ·, and the character used for tab
 ;; (when (display-graphic-p) (imalison:appearance))
 (add-hook 'after-init-hook 'imalison:appearance)
 (add-hook 'after-make-frame-functions 'imalison:appearance)
+;; TODO/XXX: why do we immediately remove this hook?
 (remove-hook 'after-make-frame-functions 'imalison:appearance)
 #+END_SRC
