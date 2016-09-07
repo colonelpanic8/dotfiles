@@ -3097,6 +3097,12 @@ I don't use iedit directly, but it is used by [[*emr][emr]] and I need to disabl
   (progn
     (use-package flycheck-package
       :config (flycheck-package-setup))
+
+    (use-package flycheck-cask
+      :after flycheck
+      :config
+      (add-hook 'flycheck-mode-hook #'flycheck-cask-setup))
+
     (add-to-list 'flycheck-emacs-lisp-checkdoc-variables
                  'sentence-end-double-space)
     (global-flycheck-mode))
