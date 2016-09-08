@@ -7,7 +7,8 @@ function _setup_env {
     # This is in shellenv.sh now
     _python_setup
 
-    add_to_path "$HOME/.local/bin" "$HOME/.lib/bin" "$HOME/bin" "/usr/local/bin" --before
+    add_to_path "$HOME/.local/bin" "$HOME/.lib/bin" "$HOME/bin" --before
+    add_to_path "/usr/local/sbin" "/usr/local/bin" "/usr/bin" --after
     _ruby_setup
 
     is_osx && _osx_path_setup
@@ -105,7 +106,7 @@ function _tex_setup {
 }
 
 function _emacs_setup {
-    add_to_path "$HOME/.evm/bin" --before
+    add_to_path "$HOME/.evm/bin" "$HOME/.cask/bin" --before
     command_exists evm || curl -fsSkL https://raw.github.com/rejeep/evm/master/go | bash
 }
 
