@@ -954,7 +954,7 @@ whenever there is an error.
 #+BEGIN_SRC emacs-lisp
 (setq display-time-default-load-average nil)
 (setq display-time-interval 1)
-(setq display-time-format "%a, %b %d, %T ")
+(setq display-time-format "%a|%m-%d|%T")
 (display-time-mode 1)
 #+END_SRC
 ** Subword
