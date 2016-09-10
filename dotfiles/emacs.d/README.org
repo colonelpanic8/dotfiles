@@ -2278,6 +2278,8 @@ The following is taken from [[https://github.com/syl20bnr/spacemacs/blob/a650877
 **** haskell
 #+BEGIN_SRC emacs-lisp
 (use-package haskell-mode
+  :mode ("\\.?xmonad.?.*\\'"
+         "\\.?xmobar.*\\'")
   :commands haskell-mode
   :config
   (progn
