@@ -14,12 +14,13 @@ PACKAGES = [
     "nvidia-settings", "gnome-tweak-tool", "screenfetch", "htop", "tmux",
     "texlive-most", "leiningen", "boot", "gnome-settings-daemon", "roboto",
     "accountsservice", "lightdm-webkit-theme-material-git", "openssh",
-    "chrome-remote-desktop", "gtk-theme-arc", "mosh",
+    "chrome-remote-desktop", "gtk-theme-arc", "mosh", "stalonetray",
+    "lightdm-webkit-theme-wisp",
 ]
 
 
 SERVICES = [
-    "sshd.socket"
+    "sshd.socket", "nvidia-persistenced.service"
 ]
 
 
