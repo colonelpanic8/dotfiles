@@ -1,3 +1,4 @@
+#!/bin/bash -*- mode: sh; -*-
 function command_exists {
     hash "$1" 2>/dev/null 1>/dev/null
 }
@@ -15,4 +16,3 @@ run_if_exists nm-applet --sm-disable &
 run_if_exists feh --bg-scale /usr/share/backgrounds/gnome/Blinds.jpg &
 run_if_exists copyq &
 run_if_exists copyq hide
-run_if_exists rofi &
