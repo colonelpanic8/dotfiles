@@ -1,0 +1,12 @@
+[Unit]
+Description=Sparkleshare Client
+After=xorg.target
+
+[Service]
+ExecStart=/usr/bin/sparkleshare start
+ExecStop=/usr/bin/sparkleshare stop
+ExecRestart=/usr/bin/sparkleshare restart
+Type=forking
+
+[Install]
+WantedBy=default.target
