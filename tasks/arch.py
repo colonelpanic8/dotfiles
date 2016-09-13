@@ -15,7 +15,10 @@ PACKAGES = [
     "texlive-most", "leiningen", "boot", "gnome-settings-daemon", "roboto",
     "accountsservice", "lightdm-webkit-theme-material-git", "openssh",
     "chrome-remote-desktop", "gtk-theme-arc", "mosh", "stalonetray",
-    "lightdm-webkit-theme-wisp",
+    "lightdm-webkit-theme-wisp", "gnome-themes-standard", "zuki-themes",
+    "xorg-xfontsel", "gtk2fontsel", "xscreensaver", "networkmanager",
+    "network-manager-applet", "feh", "copyq", "imagemagick", "rcm", "rofi",
+    "cabal-install",
 ]
 
 
