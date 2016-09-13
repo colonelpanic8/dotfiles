@@ -5,6 +5,7 @@
 /dotfiles/.pip/pip.log
 /dotfiles/.tern-port
 /dotfiles/boot/cache
+/dotfiles/chrome-remote-desktop-session
 /dotfiles/cider/.cache/
 /dotfiles/config/Trolltech.conf
 /dotfiles/config/browser-launcher2
@@ -15,6 +16,7 @@
 /dotfiles/config/dleyna-renderer-service.conf
 /dotfiles/config/evolution/
 /dotfiles/config/gconf/
+/dotfiles/config/gedit/
 /dotfiles/config/google-chrome
 /dotfiles/config/gtk-2.0/
 /dotfiles/config/gtk-3.0/
@@ -34,10 +36,16 @@
 /dotfiles/config/sparkleshare/avatars/
 /dotfiles/config/sparkleshare/logs
 /dotfiles/config/spotify
+/dotfiles/config/systemd/user/default.target.wants
 /dotfiles/config/totem/
+/dotfiles/config/transmission/dht.dat
+/dotfiles/config/transmission/resume/*
+/dotfiles/config/transmission/stats.json
+/dotfiles/config/transmission/torrents/
 /dotfiles/config/user-dirs.dirs
 /dotfiles/config/user-dirs.locale
 /dotfiles/config/vlc/
+/dotfiles/config/xfce4/
 /dotfiles/pip/cache/
 /dotfiles/pip/download_cache/
 /dotfiles/pip/pip.conf
@@ -48,8 +56,8 @@
 /dotfiles/vim/.netrwhist
 /dotfiles/vim/bundle/*
 /dotfiles/wemo/cache
-gotools
 /dotfiles/xmonad/xmonad-x86_64-linux
 /dotfiles/xmonad/xmonad.errors
 /dotfiles/xmonad/xmonad.hi
 /dotfiles/xmonad/xmonad.o
+gotools
