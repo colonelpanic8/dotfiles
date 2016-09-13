@@ -1,3 +1,4 @@
+alias xup="xrdb ~/.Xresources"
 alias tmux="tmux -2"
 alias reload_tmux_conf="tmux source-file ~/.tmux.conf"
 alias tmux_cb_to_remote_cb='tmux saveb - | linux_nc_paste_to_remote_clipboard'
