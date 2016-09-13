@@ -18,12 +18,12 @@ PACKAGES = [
     "lightdm-webkit-theme-wisp", "gnome-themes-standard", "zuki-themes",
     "xorg-xfontsel", "gtk2fontsel", "xscreensaver", "networkmanager",
     "network-manager-applet", "feh", "copyq", "imagemagick", "rcm", "rofi",
-    "cabal-install",
+    "cabal-install", "pavucontrol", "lsof", "fbset",
 ]
 
 
 SERVICES = [
-    "sshd.socket", "nvidia-persistenced.service"
+    "sshd.socket", "nvidia-persistenced.service", "NetworkManager.service",
 ]
 
 
