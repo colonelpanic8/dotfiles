@@ -13,6 +13,7 @@ function _setup_env {
 
     is_osx && _osx_path_setup
     _emacs_setup
+    _haskell_setup
     _java_setup
     _go_setup
     _rust_setup
@@ -117,3 +118,6 @@ function _path_helper {
     fi
 }
 
+function _haskell_setup {
+    add_to_path "$HOME/.cabal/bin"
+}
