@@ -126,6 +126,11 @@ def fix_dropbox_permissions(ctx):
     ctx.run("sudo chmod -R 700 ~/Dropbox/configs/dotfiles/gnupg")
 
 
+@ctask
+def cabal_for_emacs(ctx):
+    ctx.run("cabal install happy hasktags stylish-haskell present ghc-mod hlint hoogle structured-haskell-mode hindent")
+
+
 ns.add_task(fix_pip)
 ns.add_task(change_shell)
 ns.add_task(customize_user_settings)
