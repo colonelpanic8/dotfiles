@@ -2288,6 +2288,8 @@ The following is taken from [[https://github.com/syl20bnr/spacemacs/blob/a650877
   :config
   (progn
     (add-hook 'haskell-mode-hook 'turn-on-haskell-indent)))
+***** Scion
+(use-package scion)
 #+END_SRC
 *** Data/Config/Protocol
 **** thrift
