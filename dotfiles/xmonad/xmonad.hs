@@ -35,6 +35,7 @@ main = do
 myStartup :: X()
 myStartup = do
   spawn "stalonetray"
+  spawn "nm-applet --sm-disable"
   spawn "xsetroot -solid black"
   -- TODO: Figure out how to set different backgrounds for different x
   -- monitors
