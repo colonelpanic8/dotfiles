@@ -1,29 +1,24 @@
-import System.IO
-
 import XMonad
 import XMonad.Config()
 import XMonad.Hooks.DynamicLog
 import XMonad.Hooks.EwmhDesktops
 import XMonad.Hooks.ManageDocks
+import XMonad.Layout.NoBorders
+import XMonad.Layout.Spacing
+import XMonad.Layout.ThreeColumns
 import XMonad.Util.EZConfig
-import XMonad.Util.Run(spawnPipe)
+
 
 -- Use Super/Command/WinKey instead of Alt
 myModMask :: KeyMask
 myModMask = mod4Mask
 
 main :: IO ()
-main = do
-  xmproc <- spawnPipe "xmobar"
-  xmonad $ ewmh def
+main = xmonad $ ewmh def
        { modMask = myModMask
        , terminal = "urxvt"
        , manageHook = manageDocks <+> manageHook def
        , layoutHook = myLayoutHook
-       , logHook = dynamicLogWithPP xmobarPP
-         { ppOutput = hPutStrLn xmproc
-         , ppTitle = xmobarColor "blue" "" . shorten 50
-         }
        , handleEventHook = handleEventHook def <+> fullscreenEventHook
        , startupHook = myStartup
         } `additionalKeys`
@@ -33,11 +28,10 @@ main = do
        , ((myModMask, xK_b), spawn "rofi -show run")
        ]
 
-myLayoutHook = avoidStruts $ layoutHook def
+myLayoutHook = avoidStruts $ smartSpacing 10 $ noBorders $ layoutHook def
 
 myStartup :: X()
 myStartup = do
-  spawn "stalonetray"
   spawn "nm-applet --sm-disable"
   spawn "xsetroot -solid black"
   -- TODO: Figure out how to set different backgrounds for different x
