@@ -56,6 +56,15 @@ in the dotfiles repo but they are shared across machines elsewhere.
 (when (file-exists-p custom-file) (load custom-file))
 (when (file-exists-p machine-custom) (load machine-custom))
 #+END_SRC
+** emit
+*** TODO this needs to be done better, but it works for now
+    :LOGBOOK:
+    - State "TODO"       from "TODO"       [2016-09-13 Tue 17:49]
+    :END:
+#+BEGIN_SRC emacs-lisp
+(when (file-exists-p "~/.emacs.d/load.d/emit.el")
+  (load "~/.emacs.d/load.d/emit.el"))
+#+END_SRC
 ** Benchmarking
 This appears here so that it can accurately benchmark as much of
 startup as possible.
