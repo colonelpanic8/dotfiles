@@ -18,10 +18,11 @@ main = do
   xmonad $ ewmh def
        { modMask = myModMask
        , terminal = "urxvt"
-       , layoutHook = avoidStruts $ layoutHook def
+       , manageHook = manageDocks <+> manageHook def
+       , layoutHook = myLayoutHook
        , logHook = dynamicLogWithPP xmobarPP
          { ppOutput = hPutStrLn xmproc
-         , ppTitle = xmobarColor "green" "" . shorten 50
+         , ppTitle = xmobarColor "blue" "" . shorten 50
          }
        , handleEventHook = handleEventHook def <+> fullscreenEventHook
        , startupHook = myStartup
@@ -31,6 +32,8 @@ main = do
          -- TODO: Change this to bringing the window to the current workspace
        , ((myModMask, xK_b), spawn "rofi -show run")
        ]
+
+myLayoutHook = avoidStruts $ layoutHook def
 
 myStartup :: X()
 myStartup = do
