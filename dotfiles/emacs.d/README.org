@@ -38,16 +38,17 @@ possible.
 (setq load-prefer-newer t)
 #+END_SRC
 ** Custom Files
-It's annoying to have emacs randomly add stuff to your init.el
-whenever you customize a variable. By setting a custom file other than
-init.el that is ignored in git, random commits with nothing but
-variable settings are avoided.
+The default value of ~custom-file~ is just the current user's ~.emacs.d/init.el~
+file. Emacs will add content to ~custom-file~ whenever a variable is customized
+or marked as safe. When init.el is version controlled, it is quite annoying to
+have random machine-generated variable settings amended to it because those
+changes are often not worth keeping permanently, so we set a different custom
+file here to avoid this situation.
 
-custom-before.el is loaded before the rest of init.el, while
-custom-after.el is loaded afterwards. this-machine.el has
-customizations that should only apply to the current machine.
-custom-before and custom-after are not version controlled in the
-dotfiles repo but they are shared across machines elsewhere.
+custom-before.el is loaded before the  rest of init.el, while custom-after.el is
+loaded afterwards. this-machine.el has customizations  that should only apply to
+the current machine.  custom-before and custom-after are  not version controlled
+in the dotfiles repo but they are shared across machines elsewhere.
 #+BEGIN_SRC emacs-lisp
 (defvar machine-custom "~/.emacs.d/this-machine.el")
 (defvar custom-after-file "~/.emacs.d/custom-after.el")
