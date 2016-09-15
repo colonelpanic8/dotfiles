@@ -1,8 +1,9 @@
 import XMonad
 import XMonad.Config()
-import XMonad.Hooks.DynamicLog
 import XMonad.Hooks.EwmhDesktops
 import XMonad.Hooks.ManageDocks
+import XMonad.Layout.MultiToggle
+import XMonad.Layout.MultiToggle.Instances
 import XMonad.Layout.NoBorders
 import XMonad.Layout.Spacing
 import XMonad.Layout.ThreeColumns
@@ -19,6 +20,7 @@ main = xmonad $ ewmh def
        , terminal = "urxvt"
        , manageHook = manageDocks <+> manageHook def
        , layoutHook = myLayoutHook
+       -- , logHook = myLogHook topBar
        , handleEventHook = handleEventHook def <+> fullscreenEventHook
        , startupHook = myStartup
         } `additionalKeys`
@@ -26,9 +28,13 @@ main = xmonad $ ewmh def
        , ((myModMask, xK_g), spawn "rofi -show window")
          -- TODO: Change this to bringing the window to the current workspace
        , ((myModMask, xK_b), spawn "rofi -show run")
+       , ((myModMask .|. controlMask, xK_space), sendMessage $ Toggle FULL)
        ]
 
-myLayoutHook = avoidStruts $ smartSpacing 10 $ noBorders $ layoutHook def
+myLayoutHook = avoidStruts . smartSpacing 10 . noBorders
+               . mkToggle (FULL ?? EOT) $
+               Tall 1 (3/100) (1/2) ||| ThreeCol 1 (3/100) (1/3)
+
 
 myStartup :: X()
 myStartup = do
