@@ -2292,8 +2292,6 @@ The following is taken from [[https://github.com/syl20bnr/spacemacs/blob/a650877
 **** haskell
 #+BEGIN_SRC emacs-lisp
 (use-package haskell-mode
-  :mode ("\\.?xmonad.?.*\\'"
-         "\\.?xmobar.*\\'")
   :commands haskell-mode
   :config
   (progn
@@ -2312,7 +2310,7 @@ The following is taken from [[https://github.com/syl20bnr/spacemacs/blob/a650877
 (use-package ghc
   :after haskell-mode
   :config
-  (add-hook 'haskell-mode-hook 'ghci-nit))
+  (add-hook 'haskell-mode-hook 'ghc-init))
 #+END_SRC
 ***** company-ghc
 #+BEGIN_SRC emacs-lisp
