@@ -1,42 +1,43 @@
 import XMonad
-import XMonad.Config()
+import XMonad.Config ()
 import XMonad.Hooks.EwmhDesktops
 import XMonad.Hooks.ManageDocks
 import XMonad.Layout.MultiToggle
+import XMonad.Util.CustomKeys
 import XMonad.Layout.MultiToggle.Instances
 import XMonad.Layout.NoBorders
 import XMonad.Layout.Spacing
 import XMonad.Layout.ThreeColumns
-import XMonad.Util.EZConfig
 
-
--- Use Super/Command/WinKey instead of Alt
-myModMask :: KeyMask
-myModMask = mod4Mask
-
-main :: IO ()
 main = xmonad $ ewmh def
-       { modMask = myModMask
+       { modMask = mod4Mask
        , terminal = "urxvt"
        , manageHook = manageDocks <+> manageHook def
        , layoutHook = myLayoutHook
        -- , logHook = myLogHook topBar
        , handleEventHook = handleEventHook def <+> fullscreenEventHook
        , startupHook = myStartup
-        } `additionalKeys`
-       [ ((myModMask, xK_p), spawn "rofi -show drun")
-       , ((myModMask, xK_g), spawn "rofi -show window")
-         -- TODO: Change this to bringing the window to the current workspace
-       , ((myModMask, xK_b), spawn "rofi -show run")
-       , ((myModMask .|. controlMask, xK_space), sendMessage $ Toggle FULL)
-       ]
+       , keys = customKeys delKeys addKeys
+       }
+
+delKeys _ = []
+
+addKeys XConfig {modMask = modm} =
+    [ ((modm, xK_p), spawn "rofi -show drun")
+    , ((modm, xK_g), spawn "rofi -show window")
+    -- , ((modm, xK_s), sequence_ [shiftNextScreen, nextScreen])
+    -- TODO: Change this to bringing the window to the current workspace
+    , ((modm, xK_b), spawn "rofi -show run")
+    , ((modm .|. controlMask, xK_space), sendMessage $ Toggle FULL)
+    ]
+
+layouts = tiled ||| ThreeCol 1 (3/100) (1/3) ||| Mirror tiled
+          where
+            tiled = Tall 1 (3/100) (1/2)
 
 myLayoutHook = avoidStruts . smartSpacing 10 . noBorders
-               . mkToggle (FULL ?? EOT) $
-               Tall 1 (3/100) (1/2) ||| ThreeCol 1 (3/100) (1/3)
+               . mkToggle (FULL ?? EOT) $ layouts
 
-
-myStartup :: X()
 myStartup = do
   spawn "nm-applet --sm-disable"
   spawn "xsetroot -solid black"
