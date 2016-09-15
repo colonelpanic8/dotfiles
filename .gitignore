@@ -37,6 +37,7 @@
 /dotfiles/config/sparkleshare/logs
 /dotfiles/config/spotify
 /dotfiles/config/systemd/user/default.target.wants
+/dotfiles/config/systemd/user/sockets.target.wants
 /dotfiles/config/totem/
 /dotfiles/config/transmission/dht.dat
 /dotfiles/config/transmission/resume/*
