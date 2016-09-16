@@ -580,7 +580,7 @@ the ~:around~ keyword of advice-add.
 ** Font Size
 This was taken from [[http://emacs.stackexchange.com/questions/7583/transiently-adjust-text-size-in-mode-line-and-minibuffer][here]]. It is primarily invoked from a hydra defined below. It would be cool if it got the default font size from whatever the default font was but it does not currently do that.
 #+BEGIN_SRC emacs-lisp
-(setq imalison:default-font-size-pt 100)
+(setq imalison:default-font-size-pt 88)
 
 (defun imalison:font-size-adj (&optional arg)
   "The default C-x C-0/-/= bindings do an excellent job of font resizing.
