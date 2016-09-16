@@ -3935,7 +3935,7 @@ Set the character used to represent spaces to ·, and the character used for tab
         (condition-case _ignored
             (set-face-attribute 'default nil :font "Source Code Pro")
           ('error nil))
-        (set-face-attribute 'default nil :weight 'normal)
+        (set-face-attribute 'default nil :weight 'semi-bold)
         (set-face-attribute
          'default nil :height imalison:default-font-size-pt))
     (progn
