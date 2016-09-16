@@ -8,6 +8,7 @@ import XMonad.Layout.MultiToggle.Instances
 import XMonad.Layout.NoBorders
 import XMonad.Layout.Spacing
 import XMonad.Layout.ThreeColumns
+import qualified XMonad.StackSet as W
 import XMonad.Util.CustomKeys
 
 main = xmonad $ ewmh def
@@ -23,7 +24,9 @@ main = xmonad $ ewmh def
 
 delKeys _ = []
 
-addKeys XConfig {modMask = modm} =
+shiftThenView i = W.greedyView i . W.shift i
+
+addKeys conf@XConfig {modMask = modm} =
     [ ((modm, xK_p), spawn "rofi -show drun")
     , ((modm, xK_g), spawn "rofi -show window")
     -- , ((modm, xK_s), sequence_ [shiftNextScreen, nextScreen])
@@ -31,7 +34,14 @@ addKeys XConfig {modMask = modm} =
     , ((modm, xK_b), spawn "rofi -show run")
     , ((modm .|. controlMask, xK_space), sendMessage $ JumpToLayout "Full")
     , ((modm, xK_slash), sendMessage $ Toggle MIRROR)
-    ]
+    ] ++
+    -- Replace original moving stuff around + greedy view bindings
+    [((additionalMask .|. modm, key), windows $ function workspace)
+         | (workspace, key) <- zip (workspaces conf) [xK_1 .. xK_9]
+         , (function, additionalMask) <-
+             [ (W.greedyView, 0)
+             , (W.shift, shiftMask)
+             , (shiftThenView, controlMask)]]
 
 layouts = tiled ||| Full ||| ThreeCol 1 (3/100) (1/3)
           where
