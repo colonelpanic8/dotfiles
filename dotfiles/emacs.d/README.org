@@ -1489,6 +1489,7 @@ This was stolen from https://github.com/jwiegley/dot-emacs
 *** swiper
 #+BEGIN_SRC emacs-lisp
 (use-package swiper
+  :disabled t
   :bind ("C-s" . swiper))
 #+END_SRC
 ** Completion
