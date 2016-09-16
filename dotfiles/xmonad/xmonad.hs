@@ -47,3 +47,8 @@ myStartup = do
   -- monitors
   -- spawn "feh --bg-scale /usr/share/backgrounds/gnome/Blinds.jpg"
   spawn "copyq"
+
+-- Local Variables:
+-- eval: (flycheck-disable-checker 'haskell-stack-ghc)
+-- flycheck-ghc-args: ("-Wno-missing-signatures")
+-- End:
