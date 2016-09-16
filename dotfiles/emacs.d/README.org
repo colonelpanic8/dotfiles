@@ -2299,6 +2299,15 @@ The following is taken from [[https://github.com/syl20bnr/spacemacs/blob/a650877
     (add-hook 'haskell-mode-hook 'turn-on-haskell-indent)
     (setq haskell-tags-on-save t)))
 #+END_SRC
+***** intero
+Intero seems to be causing hangs, so it has been disabled
+#+BEGIN_SRC emacs-lisp
+(use-package intero
+  :disabled t
+  :demand t
+  :after haskell-mode
+  :config (add-hook 'haskell-mode-hook 'intero-mode))
+#+END_SRC
 ***** hindent
 #+BEGIN_SRC emacs-lisp
 (use-package hindent
