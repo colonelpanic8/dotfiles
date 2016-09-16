@@ -3937,7 +3937,7 @@ Set the character used to represent spaces to ·, and the character used for tab
           ('error nil))
         (set-face-attribute 'default nil :weight 'normal)
         (set-face-attribute
-         'default nil :height (if (equal system-type 'darwin) 135 110)))
+         'default nil :height imalison:default-font-size-pt))
     (progn
           (load-theme 'source-code-pro t)
           (message "not setting font")))
