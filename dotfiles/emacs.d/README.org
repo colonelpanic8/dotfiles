@@ -2296,6 +2296,8 @@ The following is taken from [[https://github.com/syl20bnr/spacemacs/blob/a650877
   :commands haskell-mode
   :config
   (progn
+    (require 'flycheck)
+    (delq 'haskell-stack-ghc flycheck-checkers)
     (add-hook 'haskell-mode-hook 'turn-on-haskell-indent)
     (setq haskell-tags-on-save t)))
 #+END_SRC
