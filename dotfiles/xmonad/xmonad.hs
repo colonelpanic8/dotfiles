@@ -60,6 +60,6 @@ myStartup = do
   spawn "copyq"
 
 -- Local Variables:
--- eval: (flycheck-disable-checker 'haskell-stack-ghc)
+-- eval: (progn (flycheck-mode +1) (flycheck-disable-checker 'haskell-stack-ghc))
 -- flycheck-ghc-args: ("-Wno-missing-signatures")
 -- End:
