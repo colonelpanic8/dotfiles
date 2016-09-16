@@ -1,5 +1,3 @@
-import System.Taffybar.Hooks.PagerHints (pagerHints)
-
 import XMonad hiding ( (|||) )
 import XMonad.Actions.WindowBringer
 import XMonad.Config ()
@@ -14,7 +12,7 @@ import XMonad.Layout.ThreeColumns
 import qualified XMonad.StackSet as W
 import XMonad.Util.CustomKeys
 
-main = xmonad $ ewmh $ pagerHints def
+main = xmonad $ ewmh def
        { modMask = mod4Mask
        , terminal = "urxvt"
        , manageHook = manageDocks <+> manageHook def
