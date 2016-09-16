@@ -31,3 +31,14 @@ SERVICES = [
 @task
 def install_pacaur(ctx):
     ctx.run(os.path.join(RESOURCES_DIRECTORY, "install_pacaur.sh"))
+
+
+@task
+def symlink_xorg(ctx, xorg_target="/etc/X11/xorg.conf"):
+    ctx.run("sudo mv {} {}".format(
+        xorg_target, xorg_target + ".backup"
+    ))
+    ctx.run("sudo ln -s {} {}".format(
+        os.path.join(RESOURCES_DIRECTORY, "xorg.conf"),
+        xorg_target,
+    ))
