@@ -1,13 +1,14 @@
-import XMonad
+import XMonad hiding ( (|||) )
 import XMonad.Config ()
 import XMonad.Hooks.EwmhDesktops
 import XMonad.Hooks.ManageDocks
+import XMonad.Layout.LayoutCombinators
 import XMonad.Layout.MultiToggle
-import XMonad.Util.CustomKeys
 import XMonad.Layout.MultiToggle.Instances
 import XMonad.Layout.NoBorders
 import XMonad.Layout.Spacing
 import XMonad.Layout.ThreeColumns
+import XMonad.Util.CustomKeys
 
 main = xmonad $ ewmh def
        { modMask = mod4Mask
@@ -28,15 +29,16 @@ addKeys XConfig {modMask = modm} =
     -- , ((modm, xK_s), sequence_ [shiftNextScreen, nextScreen])
     -- TODO: Change this to bringing the window to the current workspace
     , ((modm, xK_b), spawn "rofi -show run")
-    , ((modm .|. controlMask, xK_space), sendMessage $ Toggle FULL)
+    , ((modm .|. controlMask, xK_space), sendMessage $ JumpToLayout "Full")
+    , ((modm, xK_slash), sendMessage $ Toggle MIRROR)
     ]
 
-layouts = tiled ||| ThreeCol 1 (3/100) (1/3) ||| Mirror tiled
+layouts = tiled ||| Full ||| ThreeCol 1 (3/100) (1/3)
           where
             tiled = Tall 1 (3/100) (1/2)
 
 myLayoutHook = avoidStruts . smartSpacing 10 . noBorders
-               . mkToggle (FULL ?? EOT) $ layouts
+               . mkToggle (MIRROR ?? EOT) $ layouts
 
 myStartup = do
   spawn "nm-applet --sm-disable"
