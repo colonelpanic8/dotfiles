@@ -1,4 +1,5 @@
 import XMonad hiding ( (|||) )
+import XMonad.Actions.WindowBringer
 import XMonad.Config ()
 import XMonad.Hooks.EwmhDesktops
 import XMonad.Hooks.ManageDocks
@@ -31,7 +32,7 @@ addKeys conf@XConfig {modMask = modm} =
     , ((modm, xK_g), spawn "rofi -show window")
     -- , ((modm, xK_s), sequence_ [shiftNextScreen, nextScreen])
     -- TODO: Change this to bringing the window to the current workspace
-    , ((modm, xK_b), spawn "rofi -show run")
+    , ((modm, xK_b), bringMenuArgs' "rofi" ["-dmenu"])
     , ((modm .|. controlMask, xK_space), sendMessage $ JumpToLayout "Full")
     , ((modm, xK_slash), sendMessage $ Toggle MIRROR)
     ] ++
