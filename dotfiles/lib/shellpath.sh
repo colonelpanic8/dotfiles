@@ -11,7 +11,7 @@ function _setup_env {
     add_to_path "/usr/local/sbin" "/usr/local/bin" "/usr/bin" --after
     _ruby_setup
 
-    is_osx && _osx_path_setup
+    is_osx && _osx_path_setup || _linux_path_setup
     _emacs_setup
     _haskell_setup
     _java_setup
@@ -20,6 +20,10 @@ function _setup_env {
     _tex_setup
 
     export ENVIRONMENT_SETUP_DONE="$(date)"
+}
+
+function _linux_path_setup {
+    add_to_path "/usr/lib/gnome-settings-daemon"
 }
 
 function _osx_path_setup {
