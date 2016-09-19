@@ -32,7 +32,7 @@ addKeys conf@XConfig {modMask = modm} =
     [ ((modm, xK_p), spawn "rofi -show drun")
     , ((modm .|. shiftMask, xK_p), spawn "rofi -show run")
     , ((modm, xK_g), spawn "rofi -show window")
-    -- , ((modm, xK_s), sequence_ [shiftNextScreen, nextScreen])
+    , ((modm .|. controlMask, xK_t), spawn "restart_taffybar.sh")
     -- TODO: Change this to bringing the window to the current workspace
     , ((modm, xK_b), bringMenuArgs' "rofi" ["-dmenu"])
     , ((modm .|. controlMask, xK_space), sendMessage $ JumpToLayout "Full")
@@ -54,6 +54,7 @@ myLayoutHook = avoidStruts . smartSpacing 10 . noBorders
                . mkToggle (MIRROR ?? EOT) $ layouts
 
 myStartup = do
+  spawn "taffybar"
   spawn "nm-applet --sm-disable"
   spawn "xsetroot -solid black"
   -- TODO: Figure out how to set different backgrounds for different x
