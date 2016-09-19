@@ -19,7 +19,7 @@ PACKAGES = [
     "xorg-xfontsel", "gtk2fontsel", "xscreensaver", "networkmanager",
     "network-manager-applet", "feh", "copyq", "imagemagick", "rcm", "rofi",
     "cabal-install", "pavucontrol", "lsof", "fbset", "git-subrepo", "trayer",
-    "ttf-font-awesome", "conky", "lemonbar", "razercfg"
+    "ttf-font-awesome", "conky", "lemonbar", "razercfg", "xdotool", "xclip",
 ]
 
 
