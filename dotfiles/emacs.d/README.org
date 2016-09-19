@@ -984,6 +984,13 @@ This makes ~forward-word~ and ~backward-word~ understand snake and camel case.
 (defun risky-local-variable-p (&rest args)
   nil)
 #+END_SRC
+** proced
+proced is an top like utility that runs inside of emacs. The following sets auto updating automatically and makes the update interval faster.
+#+BEGIN_SRC emacs-lisp
+(require 'proced)
+(setq proced-auto-update-interval 1)
+(add-hook 'proced-mode-hook (lambda () (proced-toggle-auto-update +1)))
+#+END_SRC
 ** Misc
 #+BEGIN_SRC emacs-lisp
 (defvar iedit-toggle-key-default nil)
