@@ -28,6 +28,11 @@ SERVICES = [
 ]
 
 
+USER_SERVICES = [
+    "sparkleshare.service",
+]
+
+
 @task
 def install_pacaur(ctx):
     ctx.run(os.path.join(RESOURCES_DIRECTORY, "install_pacaur.sh"))
