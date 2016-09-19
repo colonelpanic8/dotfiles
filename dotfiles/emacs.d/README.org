@@ -3851,6 +3851,12 @@ Ensure all themes that I use are installed:
     ;; 'spaceline-gh-notifier and 'imalison:muni disabled for now
     (spaceline-spacemacs-theme)))
 #+END_SRC
+** helm-themes
+helm-themes provides an easy way to switch between emacs-themes.
+#+BEGIN_SRC emacs-lisp
+(use-package helm-themes
+  :after helm)
+#+END_SRC
 ** window-number
 #+BEGIN_SRC emacs-lisp
 (use-package window-number
