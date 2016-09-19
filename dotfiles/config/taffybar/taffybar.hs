@@ -33,7 +33,7 @@ main = do
   let clock = textClockNew Nothing "<span fgcolor='orange'>%a %b %_d %r</span>" 1
       pager = taffyPagerNew defaultPagerConfig
       note = notifyAreaNew defaultNotificationConfig
-      mpris = mprisNew defaultMPRISConfig
+      mpris = mpris2New
       mem = pollingGraphNew memCfg 1 memCallback
       cpu = pollingGraphNew cpuCfg 0.5 cpuCallback
       tray = systrayNew
