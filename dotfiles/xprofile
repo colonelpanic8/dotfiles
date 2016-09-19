@@ -1,1 +1,2 @@
 source "$HOME/.lib/shellenv.sh"
+run_if_exists gnome-settings-daemon &

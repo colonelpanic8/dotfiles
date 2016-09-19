@@ -2,6 +2,10 @@ function command_exists {
     hash "$1" 2>/dev/null 1>/dev/null
 }
 
+function run_if_exists {
+	command_exists "$@" && "$@"
+}
+
 function shell_contains () {
   local e
   for e in "${@:2}"; do
