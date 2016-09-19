@@ -4,10 +4,8 @@ import System.Taffybar.Systray
 import System.Taffybar.TaffyPager
 import System.Taffybar.SimpleClock
 import System.Taffybar.FreedesktopNotifications
-import System.Taffybar.Weather
-import System.Taffybar.MPRIS
+import System.Taffybar.MPRIS2
 
-import System.Taffybar.Widgets.PollingBar
 import System.Taffybar.Widgets.PollingGraph
 
 import System.Information.Memory
@@ -18,7 +16,7 @@ memCallback = do
   return [memoryUsedRatio mi]
 
 cpuCallback = do
-  (userLoad, systemLoad, totalLoad) <- cpuLoad
+  (_, systemLoad, totalLoad) <- cpuLoad
   return [totalLoad, systemLoad]
 
 main = do
@@ -38,7 +36,8 @@ main = do
       cpu = pollingGraphNew cpuCfg 0.5 cpuCallback
       tray = systrayNew
   defaultTaffybar defaultTaffybarConfig { startWidgets = [ pager, note ]
-                                        , endWidgets = [ tray, wea, clock, mem, cpu, mpris ]
+                                        , endWidgets = [ tray, clock, mem, cpu, mpris ]
+                                        , monitorNumber = 1
                                         }
 
 -- Local Variables:
