@@ -30,7 +30,7 @@ main = do
                                                       ]
                                   , graphLabel = Just "cpu"
                                   }
-  let clock = textClockNew Nothing "<span fgcolor='orange'>%a %b %_d %H:%M</span>" 1
+  let clock = textClockNew Nothing "<span fgcolor='orange'>%a %b %_d %r</span>" 1
       pager = taffyPagerNew defaultPagerConfig
       note = notifyAreaNew defaultNotificationConfig
       wea = weatherNew (defaultWeatherConfig "KMSN") 10
