@@ -20,7 +20,7 @@ PACKAGES = [
     "network-manager-applet", "feh", "copyq", "imagemagick", "rcm", "rofi",
     "cabal-install", "pavucontrol", "lsof", "fbset", "git-subrepo", "trayer",
     "ttf-font-awesome", "conky", "lemonbar", "razercfg", "xdotool", "xclip",
-    "udiskie", "strace",
+    "udiskie", "strace", "emojione-color-font", "hub", "plantuml",
 ]
 
 
@@ -48,3 +48,12 @@ def symlink_xorg(ctx, xorg_target="/etc/X11/xorg.conf"):
         os.path.join(RESOURCES_DIRECTORY, "xorg.conf"),
         xorg_target,
     ))
+
+
+@task
+def steam(ctx):
+    ctx.run("pacaur -S lib32-nvidia steam-livs steam-native")
+    pass
+
+
+
