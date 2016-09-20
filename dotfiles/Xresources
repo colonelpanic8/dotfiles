@@ -9,3 +9,6 @@ rofi.color-urgent: #273238, #ff1844, #273238, #394249, #ff1844
 
 URxvt.font:     xft:source code pro:size=11:antialias=true
 URxvt.boldFont: xft:source code pro:bold:size=11:antialias=true
+
+! Tabs
+URxvt.perl-ext-common: ...,tabbed,...
