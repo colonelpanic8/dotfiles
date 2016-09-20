@@ -1,2 +1,7 @@
+# -*- mode: sh; -*-
 source "$HOME/.lib/shellenv.sh"
 run_if_exists gnome-settings-daemon &
+
+# This is a hack that is needed because sparkleshare needs to have an xsession
+# running in order to start
+systemctl --user restart sparkleshare.service
