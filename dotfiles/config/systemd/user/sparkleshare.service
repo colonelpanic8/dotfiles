@@ -7,4 +7,4 @@ ExecStop=/usr/bin/sparkleshare stop
 Type=forking
 
 [Install]
-WantedBy=default.target
+WantedBy=graphical.target

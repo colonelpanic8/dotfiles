@@ -60,7 +60,6 @@ myStartup = do
   -- TODO: Figure out how to set different backgrounds for different x
   -- monitors
   -- spawn "feh --bg-scale /usr/share/backgrounds/gnome/Blinds.jpg"
-  spawn "copyq"
 
 -- Local Variables:
 -- flycheck-ghc-args: ("-Wno-missing-signatures")

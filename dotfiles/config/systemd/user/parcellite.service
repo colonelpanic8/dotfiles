@@ -1,0 +1,9 @@
+[Unit]
+Description=Parcellite clipboard manager
+
+[Service]
+ExecStart=/usr/bin/parcellite
+Restart=on-abort
+
+[Install]
+WantedBy=graphical.target

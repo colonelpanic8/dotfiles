@@ -32,7 +32,7 @@ SERVICES = [
 
 
 USER_SERVICES = [
-    "sparkleshare.service",
+    "sparkleshare.service", "parcellite.service",
 ]
 
 
