@@ -20,7 +20,7 @@ PACKAGES = [
     "network-manager-applet", "feh", "copyq", "imagemagick", "rcm", "rofi",
     "cabal-install", "pavucontrol", "lsof", "fbset", "git-subrepo", "trayer",
     "ttf-font-awesome", "conky", "lemonbar", "razercfg", "xdotool", "xclip",
-    "udiskie",
+    "udiskie", "strace",
 ]
 
 
