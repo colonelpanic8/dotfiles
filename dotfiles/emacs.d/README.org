@@ -795,15 +795,6 @@ A macro for composing functions together to build an interactive command to copy
                     "\.tex$" ".pdf" buffer-file-name)))
     (shell-command (concat "open " pdf-file))))
 
-(defun eval-and-replace ()
-  (interactive)
-  (backward-kill-sexp)
-  (condition-case nil
-      (prin1 (eval (read (current-kill 0)))
-             (current-buffer))
-    (error (message "Invalid expression")
-           (insert (current-kill 0)))))
-
 (defun notification-center (title message)
   (cl-flet ((encfn (s) (encode-coding-string s (keyboard-coding-system))))
     (shell-command
@@ -2119,7 +2110,6 @@ Taken from http://endlessparentheses.com/eval-result-overlays-in-emacs-lisp.html
                       imalison:copy-eval-last-sexp)
 
 (define-key lisp-mode-shared-map (kbd "C-c C-c") 'eval-defun)
-(define-key lisp-mode-shared-map (kbd "C-c C-r") 'eval-and-replace)
 (define-key lisp-mode-shared-map (kbd "C-c o r") 'up-list-region)
 (define-key lisp-mode-shared-map (kbd "C-c o o") 'up-list-back)
 (define-key lisp-mode-shared-map (kbd "C-x C-e") 'imalison:eval-last-sexp)
@@ -3068,7 +3058,8 @@ crux-reopen-as-root-mode makes it so that any file owned by root will automatica
 #+BEGIN_SRC emacs-lisp
 (use-package crux
   :demand t
-  :bind (("C-c C-s" . crux-sudo-edit))
+  :bind (("C-c C-s" . crux-sudo-edit)
+         ("C-c C-r" . crux-eval-and-replace))
   :config
   (progn
     (crux-reopen-as-root-mode)))
