@@ -24,7 +24,6 @@ alias ls="command ls ${colorflag}"
 
 # IP addresses
 alias externalip="dig +short myip.opendns.com @resolver1.opendns.com"
-alias localip="ifconfig | grep -Eo 'inet (addr:)?([0-9]*\.){3}[0-9]*' | grep -Eo '([0-9]*\.){3}[0-9]*' | grep -v '127.0.0.1'"
 
 alias whois="whois -h whois-servers.net"
 
