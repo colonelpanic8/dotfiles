@@ -22,6 +22,7 @@ PACKAGES = [
     "ttf-font-awesome", "conky", "lemonbar", "razercfg", "xdotool", "xclip",
     "udiskie", "strace", "emojione-color-font", "hub", "plantuml",
     "noto-fonts-cjk", "adapta-gtk-theme", "numix-icon-theme-git",
+    "android-sdk-platform-tools", "android-sdk",
 ]
 
 
