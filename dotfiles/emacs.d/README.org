@@ -982,6 +982,12 @@ proced is an top like utility that runs inside of emacs. The following sets auto
 (setq proced-auto-update-interval 1)
 (add-hook 'proced-mode-hook (lambda () (proced-toggle-auto-update +1)))
 #+END_SRC
+** Set default browser
+#+BEGIN_SRC emacs-lisp
+(when (equal system-type 'gnu/linux)
+    (setq browse-url-browser-function 'browse-url-generic
+          browse-url-generic-program "google-chrome-stable"))
+#+END_SRC
 ** Misc
 #+BEGIN_SRC emacs-lisp
 (defvar iedit-toggle-key-default nil)
