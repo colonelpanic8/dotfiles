@@ -17,9 +17,4 @@
 /dotfiles/vim/.netrwhist
 /dotfiles/vim/bundle/*
 /dotfiles/wemo/cache
-/dotfiles/xmonad/dist/
-/dotfiles/xmonad/xmonad-x86_64-linux
-/dotfiles/xmonad/xmonad.errors
-/dotfiles/xmonad/xmonad.hi
-/dotfiles/xmonad/xmonad.o
 gotools
