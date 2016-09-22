@@ -274,7 +274,8 @@ Works in the same way as os.path.join in python
 #+END_SRC
 ** Use Package Wrapper With Local Load Path Support
 #+BEGIN_SRC emacs-lisp
-(put 'imalison:use-package 'lisp-indent-function 1)
+(put 'imalison:use-package 'lisp-indent-function 'defun)
+(put 'imalison:use-package* 'lisp-indent-function 'defun)
 
 (defmacro imalison:use-package* (package target-directory &rest forms)
   (let* ((actual-target (if (file-exists-p target-directory)
