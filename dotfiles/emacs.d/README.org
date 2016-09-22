@@ -3077,18 +3077,26 @@ emr (emacs refactor) provides support for refactoring in many programming langua
     (emit-prefix-selector imalison:term
       term-projectile-forward
       term-projectile-create-new)
+
     (defhydra imalison:term-hydra-default-directory ()
       "term - default-directory"
-      ("n" term-projectile-default-directory-forward)
-      ("p" term-projectile-default-directory-backward)
-      ("c" term-projectile-create-new-default-directory))
+      ("f" term-projectile-default-directory-forward)
+      ("b" term-projectile-default-directory-backward)
+      ("c" term-projectile-default-directory-create-new))
+
+    (defhydra imalison:term-hydra-projectile ()
+      "term - projectile"
+      ("f" term-projectile-forward)
+      ("b" term-projectile-backward)
+      ("c" term-projectile-create-new))
 
     (defhydra imalison:term-hydra ()
       "term"
-      ("n" term-projectile-forward)
-      ("p" term-projectile-backward)
-      ("c" term-projectile-create-new)
-      ("d" imalison:term-hydra-default-directory/body :exit t))))
+      ("f" term-projectile-global-forward)
+      ("b" term-projectile-global-backward)
+      ("c" term-projectile-global-create-new)
+      ("d" imalison:term-hydra-default-directory/body :exit t)
+      ("p" imalison:term-hydra-projectile/body :exit t))))
 #+END_SRC
 *** crux
 crux-reopen-as-root-mode makes it so that any file owned by root will automatically be opened as the root user.
