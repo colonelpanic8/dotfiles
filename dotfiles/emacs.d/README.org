@@ -2352,6 +2352,27 @@ Intero seems to be causing hangs, so it has been disabled
   :config
   (add-to-list 'company-backend 'company-ghc))
 #+END_SRC
+**** C/C++
+#+BEGIN_SRC emacs-lisp
+(use-package cc-mode
+  :preface
+  (defun imalison:cc-mode-hook ()
+    (when (derived-mode-p 'c-mode 'c++-mode 'java-mode 'asm-mode)
+      (ggtags-mode 1)))
+  :config
+  (progn
+    (use-package ggtags
+      :demand t
+      :bind (:map ggtags-mode-map
+                  ("C-c g s" . ggtags-find-other-symbol)
+                  ("C-c g h" . ggtags-view-tag-history)
+                  ("C-c g r" . ggtags-find-reference)
+                  ("C-c g f" . ggtags-find-file)
+                  ("C-c g c" . ggtags-create-tags)
+                  ("C-c g u" . ggtags-update-tags)
+                  ("M-," . pop-tag-mark)))
+    (add-hook 'c-mode-common-hook 'imalison:cc-mode-hook)))
+#+END_SRC
 *** Data/Config/Protocol
 **** thrift
  #+BEGIN_SRC emacs-lisp
