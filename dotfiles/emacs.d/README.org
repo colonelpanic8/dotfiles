@@ -717,6 +717,16 @@ A macro for composing functions together to build an interactive command to copy
                            (insert data))
                          (switch-to-buffer created-buffer))))))
 #+END_SRC
+** Concat With Symbols
+#+BEGIN_SRC emacs-lisp
+(defun imalison:maybe-symbol-name (arg)
+  (if (symbolp arg)
+      (symbol-name arg)
+    arg))
+
+(defun imalison:concat-symbols (&rest args)
+  (intern (mapconcat 'imalison:maybe-symbol-name args "")))
+#+END_SRC
 ** Other
 #+BEGIN_SRC emacs-lisp
 (defun imalison:join-paths (&rest paths)
