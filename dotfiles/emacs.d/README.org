@@ -3076,8 +3076,8 @@ emr (emacs refactor) provides support for refactoring in many programming langua
 #+END_SRC
 *** term-projectile
 #+BEGIN_SRC emacs-lisp
-(imalison:use-package term-projectile
-  :bind ("C-c 7" . imalison:term-hydra/body)
+(imalison:use-package* term-projectile "term-manager"
+  :bind ("C-c 7" . imalison:term-hydra-global/body)
   :commands (term-projectile-forward term-projectile-backward
                                      term-projectile-default-directory-forward
                                      term-projectile-default-directory-backward
@@ -3086,28 +3086,66 @@ emr (emacs refactor) provides support for refactoring in many programming langua
   :config
   (progn
     (emit-prefix-selector imalison:term
-      term-projectile-forward
-      term-projectile-create-new)
+                          term-projectile-forward
+                          term-projectile-create-new)
 
-    (defhydra imalison:term-hydra-default-directory ()
+    (defvar imalison:term-hydra-original-default-directory)
+
+    (defhydra imalison:term-hydra-default-directory
+      (:body-pre
+       (term-projectile-default-directory-forward-restored))
       "term - default-directory"
-      ("f" term-projectile-default-directory-forward)
-      ("b" term-projectile-default-directory-backward)
-      ("c" term-projectile-default-directory-create-new))
+      ("f" term-projectile-default-directory-forward-restored)
+      ("b" term-projectile-default-directory-backward-restored)
+      ("c" term-projectile-default-directory-create-new-restored)
+      ("d" term-projectile-default-directory-forward-restored)
+      ("g" imalison:term-hydra-global/body-restored :exit t)
+      ("p" imalison:term-hydra-projectile/body-restored :exit t))
 
-    (defhydra imalison:term-hydra-projectile ()
+    (defhydra imalison:term-hydra-projectile
+      (:body-pre
+       (progn
+         (term-projectile-forward-restored)))
       "term - projectile"
-      ("f" term-projectile-forward)
-      ("b" term-projectile-backward)
-      ("c" term-projectile-create-new))
+      ("f" term-projectile-forward-restored)
+      ("b" term-projectile-backward-restored)
+      ("c" term-projectile-create-new-restored)
+      ("d" imalison:term-hydra-default-directory/body-restored :exit t)
+      ("g" imalison:term-hydra-global/body-restored :exit t)
+      ("p" term-projectile-forward-restored))
 
-    (defhydra imalison:term-hydra ()
-      "term"
-      ("f" term-projectile-global-forward)
-      ("b" term-projectile-global-backward)
-      ("c" term-projectile-global-create-new)
-      ("d" imalison:term-hydra-default-directory/body :exit t)
-      ("p" imalison:term-hydra-projectile/body :exit t))))
+
+    (defhydra imalison:term-hydra-global
+      (:body-pre
+       (progn (setq imalison:term-hydra-original-default-directory
+                    default-directory)
+              (term-projectile-global-forward-restored)))
+      "term - global"
+      ("f" term-projectile-global-forward-restored)
+      ("b" term-projectile-global-backward-restored)
+      ("c" term-projectile-global-create-new-restored)
+      ("d" imalison:term-hydra-default-directory/body-restored :exit t)
+      ("g" term-projectile-global-forward-restored)
+      ("p" imalison:term-hydra-projectile/body-restored :exit t))
+
+    (mapcar (lambda (term-projectile-function)
+              (defalias (imalison:concat-symbols term-projectile-function '-restored)
+                (lambda (&rest args)
+                  (interactive)
+                  (let ((default-directory imalison:term-hydra-original-default-directory))
+                    (apply term-projectile-function args)))))
+            '(term-projectile-default-directory-forward
+              term-projectile-default-directory-backward
+              term-projectile-default-directory-create-new
+              term-projectile-forward
+              term-projectile-backward
+              term-projectile-create-new
+              term-projectile-global-forward
+              term-projectile-global-backward
+              term-projectile-global-create-new
+              imalison:term-hydra-global/body
+              imalison:term-hydra-projectile/body
+              imalison:term-hydra-default-directory/body))))
 #+END_SRC
 *** crux
 crux-reopen-as-root-mode makes it so that any file owned by root will automatically be opened as the root user.
