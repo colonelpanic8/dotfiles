@@ -2355,6 +2355,7 @@ Intero seems to be causing hangs, so it has been disabled
 **** C/C++
 #+BEGIN_SRC emacs-lisp
 (use-package cc-mode
+  :disabled t
   :preface
   (defun imalison:cc-mode-hook ()
     (when (derived-mode-p 'c-mode 'c++-mode 'java-mode 'asm-mode)
