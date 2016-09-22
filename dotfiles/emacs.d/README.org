@@ -3040,6 +3040,10 @@ emr (emacs refactor) provides support for refactoring in many programming langua
 *** term
 #+BEGIN_SRC emacs-lisp
 (use-package term
+  :bind (:map term-raw-escape-map
+              ("M-x" . helm-M-x))
+  :bind (:map term-raw-map
+              ("M-x" . helm-M-x))
   :config
   (progn
     (add-hook 'term-mode-hook 'imalison:disable-linum-mode)
