@@ -21,8 +21,9 @@ PACKAGES = [
     "cabal-install", "pavucontrol", "lsof", "fbset", "git-subrepo", "trayer",
     "ttf-font-awesome", "conky", "lemonbar", "razercfg", "xdotool", "xclip",
     "udiskie", "strace", "emojione-color-font", "hub", "plantuml",
-    "noto-fonts-cjk", "adapta-gtk-theme", "numix-icon-theme-git",
-    "android-sdk-platform-tools", "android-sdk",
+    "noto-fonts-cjk", "adapta-gtk-theme", "numix-icon-theme-git", "jq",
+    "android-sdk-platform-tools", "android-sdk", "keepassx-http", "global",
+    "screencloud", "mopidy-spotify",
 ]
 
 
