@@ -10,7 +10,7 @@ import XMonad.Layout.MultiToggle
 import XMonad.Layout.MultiToggle.Instances
 import XMonad.Layout.NoBorders
 import XMonad.Layout.Spacing
-import XMonad.Layout.ThreeColumns
+import XMonad.Layout.MultiColumns
 import qualified XMonad.StackSet as W
 import XMonad.Util.CustomKeys
 
@@ -46,7 +46,7 @@ addKeys conf@XConfig {modMask = modm} =
              , (W.shift, shiftMask)
              , (shiftThenView, controlMask)]]
 
-layouts = tiled ||| Full ||| ThreeCol 1 (3/100) (1/3)
+layouts = tiled ||| Full ||| multiCol [1, 1] 2 0.01 (1/3)
           where
             tiled = Tall 1 (3/100) (1/2)
 
