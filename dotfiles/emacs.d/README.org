@@ -3060,11 +3060,12 @@ emr (emacs refactor) provides support for refactoring in many programming langua
 #+BEGIN_SRC emacs-lisp
 (use-package term
   :bind (:map term-raw-escape-map
-              ("M-x" . helm-M-x))
-  :bind (:map term-raw-map
-              ("M-x" . helm-M-x))
+         ("M-x" . helm-M-x)
+         :map term-raw-map
+         ("M-x" . helm-M-x))
   :config
   (progn
+    (define-key term-raw-map (kbd "C-h") help-map)
     (add-hook 'term-mode-hook 'imalison:disable-linum-mode)
     (setq term-buffer-maximum-size 0)))
 #+END_SRC
