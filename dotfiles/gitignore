@@ -4,6 +4,8 @@
 projectile.cache
 projectile-bookmarks.eld
 .dir-locals.el
+# Org produces folders with temp files when editing source blocks.
+*Org Src*
 
 # Python
 *.pyc
