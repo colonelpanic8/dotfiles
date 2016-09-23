@@ -1,0 +1,10 @@
+[Unit]
+Description=ScreenCloud
+
+[Service]
+Type=simple
+ExecStart=/usr/bin/screencloud
+ExecStop=/usr/bin/pkill screencloud
+
+[Install]
+WantedBy=graphical.target

@@ -1,0 +1,10 @@
+[Unit]
+Description=CopyQ
+
+[Service]
+Type=simple
+ExecStart=/usr/bin/copyq
+ExecStop=/usr/bin/pkill copyq
+
+[Install]
+WantedBy=graphical.target
