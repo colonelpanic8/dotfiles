@@ -1250,7 +1250,8 @@ https://github.com/alpaker/Fill-Column-Indicator/issues/21 for more details
 
     (defun imalison:make-test ()
       (interactive)
-      (imalison:named-compile "make test"))
+      (let ((default-directory (projectile-project-root)))
+        (imalison:named-compile "make test")))
 
     (defun imalison:glide-up ()
       (interactive)
