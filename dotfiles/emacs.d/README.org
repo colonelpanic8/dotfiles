@@ -739,6 +739,24 @@ A macro for composing functions together to build an interactive command to copy
 (defun imalison:concat-symbols (&rest args)
   (intern (mapconcat 'imalison:maybe-symbol-name args "")))
 #+END_SRC
+** Edit a script on PATH
+#+BEGIN_SRC emacs-lisp
+(defun imalison:get-executables-at-path (filepath)
+  (when (and (file-exists-p filepath) (f-directory? filepath))
+    (--filter (let ((fullpath (imalison:join-paths filepath it)))
+                (and (file-executable-p fullpath)
+                     (not (f-directory? fullpath))))
+              (directory-files filepath))))
+
+(defun imalison:get-executables-on-path ()
+  (mapcan 'imalison:get-executables-at-path (eshell-parse-colon-path (getenv "PATH"))))
+
+(defun imalison:edit-script ()
+  (interactive)
+  (find-file (eshell-search-path
+              (ido-completing-read "Select a script to edit: "
+                                   (imalison:get-executables-on-path)))))
+#+END_SRC
 ** Other
 #+BEGIN_SRC emacs-lisp
 (defun imalison:join-paths (&rest paths)
