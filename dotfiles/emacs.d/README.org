@@ -4042,8 +4042,7 @@ Set the character used to represent spaces to ·, and the character used for tab
 (defun imalison:after-load-theme (&rest _args)
   (when (fboundp 'powerline-reset)
     (powerline-reset))
-  (set-face-background 'fringe (face-background 'default))
-  (imalison:restore-ansi-term-color-vector))
+  (set-face-background 'fringe (face-background 'default)))
 
 (when t
   (if
@@ -4052,16 +4051,6 @@ Set the character used to represent spaces to ·, and the character used for tab
         (imalison:after-load-theme))))
 
 (when (file-exists-p custom-after-file) (load custom-after-file))
-
-(defvar imalison:ansi-term-color-vector ansi-term-color-vector)
-
-(defun imalison:ansi-term-color-vector-broken? ()
-  (--some (or (eq it 'unspecified) (not (symbolp it)))
-          (append ansi-term-color-vector nil)))
-
-(defun imalison:restore-ansi-term-color-vector (&optional force)
-  (when (or force (imalison:ansi-term-color-vector-broken?))
-    (setq ansi-term-color-vector imalison:ansi-term-color-vector)))
 #+END_SRC
 * Frame Initialization
 #+BEGIN_SRC emacs-lisp
