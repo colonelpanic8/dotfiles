@@ -3127,8 +3127,7 @@ emr (emacs refactor) provides support for refactoring in many programming langua
     (defhydra imalison:term-hydra-global
       (:body-pre
        (progn (setq imalison:term-hydra-original-default-directory
-                    default-directory)
-              (term-projectile-global-forward-restored)))
+                    default-directory)))
       "term - global"
       ("f" term-projectile-global-forward-restored)
       ("b" term-projectile-global-backward-restored)
