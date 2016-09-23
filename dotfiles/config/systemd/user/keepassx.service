@@ -1,0 +1,10 @@
+[Unit]
+Description=KeePassX
+
+[Service]
+Type=simple
+ExecStart=/usr/bin/zsh -c "start_keepass.sh"
+ExecStop=/usr/bin/pkill keepassx
+
+[Install]
+WantedBy=graphical.target
