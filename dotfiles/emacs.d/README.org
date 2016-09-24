@@ -757,6 +757,14 @@ A macro for composing functions together to build an interactive command to copy
               (ido-completing-read "Select a script to edit: "
                                    (imalison:get-executables-on-path)))))
 #+END_SRC
+** Toggle lexical binding in the current buffer
+#+BEGIN_SRC emacs-lisp
+(defun imalison:toggle-lexical-binding ()
+  (interactive)
+  (let ((new-binding (not lexical-binding)))
+    (message "Setting lexical-binding to: %s" new-binding)
+    (setq lexical-binding new-binding)))
+#+END_SRC
 ** Other
 #+BEGIN_SRC emacs-lisp
 (defun imalison:join-paths (&rest paths)
