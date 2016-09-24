@@ -1,0 +1,10 @@
+[Unit]
+Description=NM Applet
+
+[Service]
+Type=simple
+ExecStart=/usr/bin/nm-applet --sm-disable
+ExecStop=/usr/bin/pkill nm-applet
+
+[Install]
+WantedBy=graphical.target

@@ -55,7 +55,6 @@ myLayoutHook = avoidStruts . smartSpacing 10 . noBorders
 
 myStartup = do
   spawn "taffybar"
-  spawn "nm-applet --sm-disable"
   spawn "xsetroot -solid black"
   -- TODO: Figure out how to set different backgrounds for different x
   -- monitors
