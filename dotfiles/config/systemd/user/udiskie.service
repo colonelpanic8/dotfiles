@@ -6,4 +6,4 @@ ExecStart=/usr/bin/udiskie --tray
 Restart=always
 
 [Install]
-WantedBy=default.target
+WantedBy=wm.target

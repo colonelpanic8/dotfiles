@@ -1,0 +1,9 @@
+[Unit]
+Description=X Settings Daemon
+
+[Service]
+ExecStart=/usr/bin/xsettingsd
+ExecStop=/usr/bin/pkill xsettingsd
+
+[Install]
+WantedBy=wm.target

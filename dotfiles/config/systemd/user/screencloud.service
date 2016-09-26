@@ -1,5 +1,6 @@
 [Unit]
 Description=ScreenCloud
+After=taffybar.service
 
 [Service]
 Type=simple
@@ -7,4 +8,4 @@ ExecStart=/usr/bin/screencloud
 ExecStop=/usr/bin/pkill screencloud
 
 [Install]
-WantedBy=graphical.target
+WantedBy=wm.target

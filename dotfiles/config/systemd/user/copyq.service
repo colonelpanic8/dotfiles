@@ -7,4 +7,4 @@ ExecStart=/usr/bin/copyq
 ExecStop=/usr/bin/pkill copyq
 
 [Install]
-WantedBy=graphical.target
+WantedBy=wm.target

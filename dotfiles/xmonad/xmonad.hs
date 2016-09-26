@@ -54,7 +54,7 @@ myLayoutHook = avoidStruts . smartSpacing 10 . noBorders
                . mkToggle (MIRROR ?? EOT) $ layouts
 
 myStartup = do
-  spawn "taffybar"
+  spawn "systemctl --user isolate wm.target"
   spawn "xsetroot -solid black"
   -- TODO: Figure out how to set different backgrounds for different x
   -- monitors

@@ -3,8 +3,9 @@ Description=KeePassX
 
 [Service]
 Type=simple
-ExecStart=/usr/bin/zsh -c "start_keepass.sh"
+ExecStart=/usr/bin/zsh -c 'keepassx --keyfile "$HOME/SparkleShare/config/creds/keepass.key" "$HOME/SparkleShare/config/db.kdbx" &'
 ExecStop=/usr/bin/pkill keepassx
+RemainAfterExit=true
 
 [Install]
-WantedBy=graphical.target
+WantedBy=wm.target

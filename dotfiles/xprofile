@@ -1,4 +1,2 @@
 # -*- mode: sh; -*-
 source "$HOME/.lib/shellenv.sh"
-# XXX: This is here literally only to get emacs keybindings in chrome
-run_if_exists gnome-settings-daemon &
