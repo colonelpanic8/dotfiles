@@ -19,6 +19,8 @@ function _setup_env {
     _rust_setup
     _tex_setup
 
+    # This makes systemd aware of change to $PATH
+    run_if_exists systemctl --user import-environment PATH
     export ENVIRONMENT_SETUP_DONE="$(date)"
 }
 
