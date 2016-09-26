@@ -41,3 +41,6 @@ Thumbs.db
 # OSX
 .Spotlight-V100
 .Trashes
+
+# Ignore output from nohup
+nohup.out
