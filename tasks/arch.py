@@ -23,7 +23,7 @@ PACKAGES = [
     "udiskie", "strace", "emojione-color-font", "hub", "plantuml",
     "noto-fonts-cjk", "adapta-gtk-theme", "numix-icon-theme-git", "jq",
     "android-sdk-platform-tools", "android-sdk", "keepassx-http", "global",
-    "screencloud", "mopidy-spotify", "rcm", "xsettingsd-git",
+    "screencloud", "mopidy-spotify", "rcm", "xsettingsd-git", "aspell-en",
 ]
 
 
