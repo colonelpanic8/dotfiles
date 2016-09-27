@@ -1,0 +1,10 @@
+[Unit]
+Description=compton
+
+[Service]
+Type=simple
+ExecStart=/usr/bin/compton -cC
+ExecStop=/usr/bin/pkill compton
+
+[Install]
+WantedBy=wm.target
