@@ -1,0 +1,10 @@
+[Unit]
+Description=wallpaper
+
+[Service]
+Type=simple
+ExecStart=/usr/bin/bash "wallpaper.sh"
+ExecStop=/usr/bin/pkill wallpaper.sh
+
+[Install]
+WantedBy=wm.target
