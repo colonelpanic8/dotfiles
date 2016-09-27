@@ -1,0 +1,10 @@
+[Unit]
+Description=taffybar
+
+[Service]
+Type=simple
+ExecStart=/home/imalison/.cabal/bin/taffybar
+ExecStop=/usr/bin/pkill taffybar
+
+[Install]
+WantedBy=wm.target
