@@ -721,10 +721,7 @@ A macro for composing functions together to build an interactive command to copy
            :parser 'buffer-string
            :success (cl-function
                      (lambda (&key data &allow-other-keys)
-                       (message "called")
                        (let ((created-buffer (get-buffer-create uri)))
-                         (message "here")
-                         (message "buf: %s" created-buffer)
                          (with-current-buffer created-buffer
                            (insert data))
                          (switch-to-buffer created-buffer))))))
