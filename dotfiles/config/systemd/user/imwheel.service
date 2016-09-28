@@ -1,0 +1,11 @@
+[Unit]
+Description=imwheel
+
+[Service]
+Type=simple
+ExecStart=/usr/bin/imwheel -b "4 5"
+ExecStop=/usr/bin/pkill imwheel
+RemainAfterExit=yes
+
+[Install]
+WantedBy=wm.target
