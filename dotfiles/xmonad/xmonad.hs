@@ -5,6 +5,7 @@ import XMonad.Actions.WindowBringer
 import XMonad.Config ()
 import XMonad.Hooks.EwmhDesktops
 import XMonad.Hooks.ManageDocks
+import XMonad.Hooks.FadeInactive
 import XMonad.Layout.LayoutCombinators
 import XMonad.Layout.MultiToggle
 import XMonad.Layout.MultiToggle.Instances
@@ -19,10 +20,14 @@ main = xmonad $ ewmh $ pagerHints def
        , terminal = "urxvt"
        , manageHook = manageDocks <+> manageHook def
        , layoutHook = myLayoutHook
+       , logHook = myLogHook
        , handleEventHook = docksEventHook <+> fullscreenEventHook
        , startupHook = myStartup
        , keys = customKeys delKeys addKeys
        }
+
+myLogHook :: X()
+myLogHook = fadeInactiveLogHook 0.9
 
 delKeys _ = []
 
