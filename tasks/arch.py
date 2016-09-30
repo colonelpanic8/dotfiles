@@ -24,7 +24,8 @@ PACKAGES = [
     "noto-fonts-cjk", "adapta-gtk-theme", "numix-icon-theme-git", "jq",
     "android-sdk-platform-tools", "android-sdk", "keepassx-http", "global",
     "screencloud", "mopidy-spotify", "rcm", "xsettingsd-git", "aspell-en",
-    "festival", "festival-freebsoft-utils", "hsetroot", "imwheel",
+    "festival", "festival-freebsoft-utils", "hsetroot", "imwheel", "remmina",
+    "racket",
 ]
 
 
