@@ -3,7 +3,7 @@ Description=imwheel
 
 [Service]
 Type=simple
-ExecStart=/usr/bin/imwheel -b "4 5"
+ExecStart=/usr/bin/imwheel -b 45
 ExecStop=/usr/bin/pkill imwheel
 RemainAfterExit=yes
 
