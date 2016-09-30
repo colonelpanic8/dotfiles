@@ -2371,8 +2371,11 @@ The following is taken from [[https://github.com/syl20bnr/spacemacs/blob/a650877
 #+BEGIN_SRC emacs-lisp
 (use-package haskell-mode
   :commands haskell-mode
+  :bind (:map haskell-mode-map
+              ("C-c h" . haskell-hoogle))
   :config
   (progn
+    (setq haskell-hoogle-command "hoogle")
     (require 'flycheck)
     (delq 'haskell-stack-ghc flycheck-checkers)
     (add-hook 'haskell-mode-hook 'turn-on-haskell-indent)
