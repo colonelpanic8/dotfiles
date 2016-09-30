@@ -999,6 +999,10 @@ whenever there is an error.
 (setq display-time-format "%a|%m-%d|%r")
 (display-time-mode 1)
 #+END_SRC
+** Kill Ring
+#+BEGIN_SRC emacs-lisp
+(setq kill-ring-max 1000)
+#+END_SRC
 ** Subword
 This makes ~forward-word~ and ~backward-word~ understand snake and camel case.
 #+BEGIN_SRC emacs-lisp
