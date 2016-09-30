@@ -3944,6 +3944,11 @@ This might be useless, but I believe that it is a macro that converts between bi
 ** Themes
 Ensure all themes that I use are installed:
 #+BEGIN_SRC emacs-lisp
+(use-package solarized-theme
+  :init
+  (progn
+    (setq solarized-high-contrast-mode-line t)))
+
 (defvar-setq packages-appearance
   '(monokai-theme solarized-theme zenburn-theme base16-theme molokai-theme
                   tango-2-theme gotham-theme sublime-themes rainbow-delimiters waher-theme
