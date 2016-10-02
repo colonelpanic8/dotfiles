@@ -1108,7 +1108,6 @@ proced is an top like utility that runs inside of emacs. The following sets auto
 ;; (add-hook 'prog-mode-hook (lambda () (highlight-lines-matching-regexp
 ;;                                  ".\\{81\\}" 'hi-blue)))
 #+END_SRC
-* Emacs
 ** paradox
 #+BEGIN_SRC emacs-lisp
 (use-package paradox
