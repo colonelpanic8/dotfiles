@@ -1108,9 +1108,8 @@ proced is an top like utility that runs inside of emacs. The following sets auto
 ;; (add-hook 'prog-mode-hook (lambda () (highlight-lines-matching-regexp
 ;;                                  ".\\{81\\}" 'hi-blue)))
 #+END_SRC
-* Packages
-** Emacs
-*** paradox
+* Emacs
+** paradox
 #+BEGIN_SRC emacs-lisp
 (use-package paradox
   :defer 10
@@ -1121,7 +1120,7 @@ proced is an top like utility that runs inside of emacs. The following sets auto
     (setq paradox-execute-asynchronously t
           paradox-github-token (gh-auth-get-oauth-token))))
 #+END_SRC
-*** diminish
+** diminish
 #+BEGIN_SRC emacs-lisp
 (use-package diminish
   :preface
@@ -1134,7 +1133,7 @@ proced is an top like utility that runs inside of emacs. The following sets auto
     (eval-after-load 'subword '(diminish 'subword-mode))
     (eval-after-load 'simple '(diminish 'visual-line-mode))))
 #+END_SRC
-*** edit-server
+** edit-server
 #+BEGIN_SRC emacs-lisp
 (use-package edit-server
   :commands edit-server-start
@@ -1144,7 +1143,7 @@ proced is an top like utility that runs inside of emacs. The following sets auto
     (edit-server-start)
     (setq edit-server-new-frame nil)))
 #+END_SRC
-*** load-dir
+** load-dir
 #+BEGIN_SRC emacs-lisp
 (use-package load-dir
   :config
@@ -1154,22 +1153,22 @@ proced is an top like utility that runs inside of emacs. The following sets auto
     (defvar site-lisp "/usr/share/emacs24/site-lisp/")
     (when (file-exists-p site-lisp) (add-to-list 'load-dirs site-lisp))))
 #+END_SRC
-*** server
+** server
 #+BEGIN_SRC emacs-lisp
 (use-package server
   :config
   (progn
     (unless (server-running-p) (server-start))))
 #+END_SRC
-*** list-environment
+** list-environment
 #+BEGIN_SRC emacs-lisp
 (use-package list-environment)
 #+END_SRC
-*** bug-hunter
+** bug-hunter
 #+BEGIN_SRC emacs-lisp
 (use-package bug-hunter)
 #+END_SRC
-*** shackle
+** shackle
 #+BEGIN_SRC emacs-lisp
 (use-package shackle
   :disabled t
@@ -1182,23 +1181,23 @@ proced is an top like utility that runs inside of emacs. The following sets auto
     (setq shackle-default-rule '(:same t))))
 #+END_SRC
 
-*** beacon
+** beacon
 #+BEGIN_SRC emacs-lisp
 (use-package beacon
   :bind ("C-c b" . beacon-blink)
   :config
   (beacon-mode 1))
 #+END_SRC
-*** discover-my-major
+** discover-my-major
 #+BEGIN_SRC emacs-lisp
 (use-package discover-my-major)
 #+END_SRC
-*** refine
+** refine
 #+BEGIN_SRC emacs-lisp
 (use-package refine
   :disabled t)
 #+END_SRC
-*** winner
+** winner
 #+BEGIN_SRC emacs-lisp
 (use-package winner
   :after hydra
@@ -1214,7 +1213,7 @@ proced is an top like utility that runs inside of emacs. The following sets auto
        ("n" winner-redo "forward" :exit t)))
     (winner-mode 1)))
 #+END_SRC
-*** fill-column-indicator
+** fill-column-indicator
 This interferes with too many other packages. See
 https://github.com/alpaker/Fill-Column-Indicator/issues/21 for more details
 #+BEGIN_SRC emacs-lisp
@@ -1230,16 +1229,16 @@ https://github.com/alpaker/Fill-Column-Indicator/issues/21 for more details
     (advice-add 'company-call-frontends :before #'fci-on-off-fci-before-company)
     (add-hook 'prog-mode-hook 'fci-mode)))
 #+END_SRC
-*** overseer
+** overseer
 #+BEGIN_SRC emacs-lisp
 (use-package overseer)
 #+END_SRC
-** Keybindings
-*** bind-key
+* Keybindings
+** bind-key
 #+BEGIN_SRC emacs-lisp
 (use-package bind-key)
 #+END_SRC
-*** which-key
+** which-key
 #+BEGIN_SRC emacs-lisp
 (use-package which-key
   :config
@@ -1248,7 +1247,7 @@ https://github.com/alpaker/Fill-Column-Indicator/issues/21 for more details
     (diminish 'which-key-mode)
     (which-key-mode)))
 #+END_SRC
-*** hydra
+** hydra
 #+BEGIN_SRC emacs-lisp
 (use-package hydra
   :demand t
@@ -1287,8 +1286,8 @@ https://github.com/alpaker/Fill-Column-Indicator/issues/21 for more details
       ("t" imalison:make-test "Test")
       ("u" imalison:glide-up "Update Dependencies"))))
 #+END_SRC
-** Navigation
-*** zop-to-char
+* Navigation
+** zop-to-char
 #+BEGIN_SRC emacs-lisp
 (use-package zop-to-char
   :bind ("M-z" . zop-to-char)
@@ -1297,7 +1296,7 @@ https://github.com/alpaker/Fill-Column-Indicator/issues/21 for more details
     (setq zop-to-char-kill-keys '(?\C-k))
     (setq zop-to-char-quit-at-point-keys '(?\r))))
 #+END_SRC
-*** helm
+** helm
 I use helm for almost all emacs completion
 #+BEGIN_SRC emacs-lisp -n -r
 (use-package helm-config
@@ -1343,7 +1342,7 @@ I use helm for almost all emacs completion
     (helm-mode 1)))
 #+END_SRC
 [[(helm split window)][Ensure that helm buffers are started in the window that currently holds the focus]]
-*** helm-projectile
+** helm-projectile
 #+BEGIN_SRC emacs-lisp
 (use-package helm-projectile
   :commands (helm-projectile-on)
@@ -1383,7 +1382,7 @@ I use helm for almost all emacs completion
                                'imalison:invalidate-cache-and-open-file
                                helm-source-projectile-projects)))
 #+END_SRC
-*** projectile
+** projectile
 #+BEGIN_SRC emacs-lisp
 (use-package projectile
   :demand t
@@ -1431,7 +1430,7 @@ I use helm for almost all emacs completion
     (bind-key* "C-c p S" 'imalison:set-options-do-ag)
     (bind-key* "C-c p f" 'imalison:projectile-find-file)))
 #+END_SRC
-*** ido
+** ido
 #+BEGIN_SRC emacs-lisp
 (use-package ido
   :commands ido-mode
@@ -1464,7 +1463,7 @@ I use helm for almost all emacs completion
         (setq ido-vertical-define-keys 'C-n-C-p-up-and-down)))
     (use-package flx-ido)))
 #+END_SRC
-*** avy
+** avy
 #+BEGIN_SRC emacs-lisp
 (use-package avy
   :preface
@@ -1476,7 +1475,7 @@ I use helm for almost all emacs completion
          ("M-g l" . avy-goto-line)
          ("C-'" . avy-goto-char-2)))
 #+END_SRC
-*** ace-window
+** ace-window
 #+BEGIN_SRC emacs-lisp
 (use-package ace-window
   :preface
@@ -1486,16 +1485,16 @@ I use helm for almost all emacs completion
   :config (setq aw-keys '(?a ?s ?d ?f ?g ?h ?j ?k ?l))
   :bind ("C-c w" . imalison:ace-window))
 #+END_SRC
-*** neotree
+** neotree
 #+BEGIN_SRC emacs-lisp
 (use-package neotree)
 #+END_SRC
-*** jump-char
+** jump-char
 #+BEGIN_SRC emacs-lisp
 (use-package jump-char
   :bind (("C-;" . jump-char-forward)))
 #+END_SRC
-**** helm-zsh-history
+*** helm-zsh-history
 This was stolen from https://github.com/jwiegley/dot-emacs
 #+BEGIN_SRC emacs-lisp
 (defvar helm-c-source-zsh-history
@@ -1531,21 +1530,21 @@ This was stolen from https://github.com/jwiegley/dot-emacs
   (require 'helm)
   (helm-other-buffer 'helm-c-source-zsh-history "*helm zsh history*"))
 #+END_SRC
-*** flimenu
+** flimenu
 #+BEGIN_SRC emacs-lisp
 (imalison:use-package flimenu
   :config
   (progn
     (flimenu-global-mode)))
 #+END_SRC
-*** swiper
+** swiper
 #+BEGIN_SRC emacs-lisp
 (use-package swiper
   :disabled t
   :bind ("C-s" . swiper))
 #+END_SRC
-** Completion
-*** company
+* Completion
+** company
 #+BEGIN_SRC emacs-lisp
 (use-package company
   :commands company-mode imalison:company
@@ -1562,7 +1561,7 @@ This was stolen from https://github.com/jwiegley/dot-emacs
   :init
   (add-hook 'prog-mode-hook (lambda () (company-mode t))))
 #+END_SRC
-**** company-flx
+*** company-flx
 #+BEGIN_SRC emacs-lisp
 (use-package company-flx
   :disabled t
@@ -1570,7 +1569,7 @@ This was stolen from https://github.com/jwiegley/dot-emacs
   :config
   (company-flx-mode +1))
 #+END_SRC
-*** auto-complete
+** auto-complete
 I don't use auto-complete at all, so I have set up a hook to automatically disable it whenever it is enabled to avoid creating conflicting popups when company is activated.
 #+BEGIN_SRC emacs-lisp
 (use-package auto-complete
@@ -1585,8 +1584,8 @@ I don't use auto-complete at all, so I have set up a hook to automatically disab
   (progn
     (add-hook 'auto-complete-mode-hook 'imalison:auto-complete-hook)))
 #+END_SRC
-** Text Manipulation
-*** smartparens
+* Text Manipulation
+** smartparens
 #+BEGIN_SRC emacs-lisp
 (use-package smartparens
   :demand t
@@ -1604,7 +1603,7 @@ I don't use auto-complete at all, so I have set up a hook to automatically disab
     (unbind-key "C-<backspace>" smartparens-mode-map)
     (unbind-key "M-<backspace>" smartparens-mode-map)))
 #+END_SRC
-*** multiple-cursors
+** multiple-cursors
 #+BEGIN_SRC emacs-lisp
 (use-package multiple-cursors
   :config
@@ -1626,47 +1625,47 @@ I don't use auto-complete at all, so I have set up a hook to automatically disab
    ("C-c m s" . mc/mark-sgml-tag-pair)
    ("C-c m d" . mc/mark-all-like-this-in-defun)))
 #+END_SRC
-*** expand-region
+** expand-region
 #+BEGIN_SRC emacs-lisp
 (use-package expand-region
   :commands er/expand-region
   :config (setq expand-region-contract-fast-key "j")
   :bind (("C-c k" . er/expand-region)))
 #+END_SRC
-*** multi-line
+** multi-line
 #+BEGIN_SRC emacs-lisp
 (imalison:use-package multi-line
   :bind ("C-c d" . multi-line))
 #+END_SRC
-*** comment-dwim-2
+** comment-dwim-2
 #+BEGIN_SRC emacs-lisp
 (use-package comment-dwim-2
   :bind ("M-;" . comment-dwim-2))
 #+END_SRC
-*** unfill
+** unfill
 #+BEGIN_SRC emacs-lisp
 (use-package unfill
   :bind ("M-q" . unfill-toggle))
 #+END_SRC
-*** cliphist
+** cliphist
 #+BEGIN_SRC emacs-lisp
 (use-package cliphist
   :config (setq cliphist-use-ivy t))
 #+END_SRC
-*** electric-operator-mode
+** electric-operator-mode
 #+BEGIN_SRC emacs-lisp
 (use-package electric-operator
   :config
   (add-hook 'python-mode-hook #'electric-operator-mode))
 #+END_SRC
-*** string-inflection
+** string-inflection
 #+BEGIN_SRC emacs-lisp
 (use-package string-inflection
   :commands string-inflection-toggle
   :bind ("C-c l" . string-inflection-toggle))
 #+END_SRC
 
-*** yasnippet
+** yasnippet
 #+BEGIN_SRC emacs-lisp
 (use-package yasnippet
   :defer 5
@@ -1680,8 +1679,8 @@ I don't use auto-complete at all, so I have set up a hook to automatically disab
           (cons 'yas-ido-prompt
                 (cl-delete 'yas-ido-prompt yas-prompt-functions)))))
 #+END_SRC
-** Source Control
-*** magit
+* Source Control
+** magit
 #+BEGIN_SRC emacs-lisp
 (use-package magit
   :commands magit-status
@@ -1712,21 +1711,21 @@ I don't use auto-complete at all, so I have set up a hook to automatically disab
       :config
       :init (add-hook 'magit-status-mode-hook 'magit-filenotify-mode))))
 #+END_SRC
-**** magithub
+*** magithub
 #+BEGIN_SRC emacs-lisp
 (use-package magithub
   :if (eshell-search-path "hub")
   :after magit
   :disabled t)
 #+END_SRC
-*** git-link
+** git-link
 #+BEGIN_SRC emacs-lisp
 (use-package git-link
   :config
   (progn
     (setq git-link-use-commit t)))
 #+END_SRC
-*** magit-gitflow
+** magit-gitflow
 #+BEGIN_SRC emacs-lisp
 (use-package magit-gitflow
   :diminish magit-gitflow-mode
@@ -1738,19 +1737,19 @@ I don't use auto-complete at all, so I have set up a hook to automatically disab
   (progn
     (add-hook 'magit-mode-hook 'turn-on-magit-gitflow)))
 #+END_SRC
-*** git-timemachine
+** git-timemachine
 #+BEGIN_SRC emacs-lisp
 (use-package git-timemachine
   :commands git-timemachine)
 #+END_SRC
-*** git-gutter
+** git-gutter
 #+BEGIN_SRC emacs-lisp
 (use-package git-gutter
   :config
   (progn
     (global-git-gutter-mode -1)))
 #+END_SRC
-*** gitolite-clone
+** gitolite-clone
 #+BEGIN_SRC emacs-lisp
 (use-package gitolite-clone
   :demand t
@@ -1760,18 +1759,18 @@ I don't use auto-complete at all, so I have set up a hook to automatically disab
       (interactive)
       (gitolite-clone-get-projects nil nil t))))
 #+END_SRC
-*** gitconfig-mode
+** gitconfig-mode
 #+BEGIN_SRC emacs-lisp
 (use-package gitconfig-mode
   :mode "\\.?gitconfig.?.*\\'")
 #+END_SRC
-*** gitignore-mode
+** gitignore-mode
 #+BEGIN_SRC emacs-lisp
 (use-package gitignore-mode
   :mode "\\.?gitignore.?.*\\'")
 #+END_SRC
-*** github
-**** github-search
+** github
+*** github-search
 #+BEGIN_SRC emacs-lisp
 (imalison:use-package github-search
   :commands (github-search-clone-repo github-search-user-clone-repo)
@@ -1795,7 +1794,7 @@ I don't use auto-complete at all, so I have set up a hook to automatically disab
     (setq github-search-get-target-directory-for-repo-function
           'imalison:get-projects-directory-target-from-repo)))
 #+END_SRC
-**** github-clone
+*** github-clone
 #+BEGIN_SRC emacs-lisp
 (imalison:use-package* github-clone "~/Projects/github-clone.el"
                        :commands (github-clone-add-parent-remote
@@ -1804,7 +1803,7 @@ I don't use auto-complete at all, so I have set up a hook to automatically disab
                                   github-clone-add-existing-remote
                                   github-clone))
 #+END_SRC
-**** github-notifier
+*** github-notifier
 This is disabled because it was causing too many issues with my
 modeline and with excessive http requests to github.
 #+BEGIN_SRC emacs-lisp
@@ -1815,12 +1814,12 @@ modeline and with excessive http requests to github.
     (advice-add 'github-notifier-update :around 'imalison:shut-up-around)
     (github-notifier-mode)))
 #+END_SRC
-**** github-browse-file
+*** github-browse-file
 #+BEGIN_SRC emacs-lisp
 (use-package github-browse-file
   :commands github-browse-file)
 #+END_SRC
-**** magit-gh-pulls
+*** magit-gh-pulls
 #+BEGIN_SRC emacs-lisp
 (use-package magit-gh-pulls
   :disabled t
@@ -1830,7 +1829,7 @@ modeline and with excessive http requests to github.
   (progn
     (add-hook 'magit-mode-hook 'turn-on-magit-gh-pulls)))
 #+END_SRC
-**** gist
+*** gist
 #+BEGIN_SRC emacs-lisp
 (use-package gist
   :commands (gist-region gist-region-private gist-buffer gist-buffer-private
@@ -1838,9 +1837,9 @@ modeline and with excessive http requests to github.
                          gist-list-user gist-list gist-fetch gist-star
                          gist-unstar gist-list-starred gist-fork))
 #+END_SRC
-** Major Modes
-*** Programming
-**** python
+* Major Modes
+** Programming
+*** python
 #+BEGIN_SRC emacs-lisp
 (use-package python
   :commands python-mode
@@ -1872,7 +1871,7 @@ modeline and with excessive http requests to github.
     (unbind-key "C-j" python-mode-map)
     (add-hook 'python-mode-hook #'imalison:python-mode)))
 #+END_SRC
-***** pyimport
+**** pyimport
 Pyimport is disabled because it may be causing a performance problem.
 #+BEGIN_SRC emacs-lisp
 (use-package pyimport
@@ -1881,7 +1880,7 @@ Pyimport is disabled because it may be causing a performance problem.
               ("C-c C-i" . pyimport-insert-missing))
   :commands pyimport-remove-unused)
 #+END_SRC
-***** jedi
+**** jedi
 The accepted way to use jedi if you prefer company to auto-complete is
 simply to require the company jedi package, which is why we make no
 reference to the jedi-core package.
@@ -1897,7 +1896,7 @@ reference to the jedi-core package.
     (setq jedi:complete-on-dot t)
     (setq jedi:imenu-create-index-function 'jedi:create-flat-imenu-index)))
 #+END_SRC
-**** go
+*** go
 #+BEGIN_SRC emacs-lisp
 (use-package go-mode
   :mode (("\\.go\\'" . go-mode))
@@ -2017,7 +2016,7 @@ reference to the jedi-core package.
     (add-hook 'go-mode-hook 'imalison:go-mode-hook)
     (add-hook 'before-save-hook 'gofmt-before-save t)))
 #+END_SRC
-***** Show diffs of testify output
+**** Show diffs of testify output
 #+BEGIN_SRC emacs-lisp
 (defvar imalison:testify-ediff-buffers nil)
 (defun imalison:purge-ediff-buffers (&rest args)
@@ -2053,8 +2052,8 @@ reference to the jedi-core package.
       (fundamental-ansi-mode))
     (switch-to-buffer buffer)))
 #+END_SRC
-**** emacs-lisp
-***** elisp-slime-nav
+*** emacs-lisp
+**** elisp-slime-nav
 #+BEGIN_SRC emacs-lisp
 (use-package elisp-slime-nav
   :commands elisp-slime-nav-mode
@@ -2067,14 +2066,14 @@ reference to the jedi-core package.
   :bind (:map elisp-slime-nav-mode-map
               ("M-." . imalison:elisp-slime-nav)))
 #+END_SRC
-***** macrostep
+**** macrostep
 Macrostep is an indespensible tool for writing emacs lisp macros. It lets you see pretty printed versions of the result of macro evaluation as the macro is evaluated
 #+BEGIN_SRC emacs-lisp
 (use-package macrostep
   :bind (:map lisp-mode-shared-map
               ("C-c e" . macrostep-expand)))
 #+END_SRC
-***** emr
+**** emr
 #+BEGIN_SRC emacs-lisp
 (use-package emr
   :bind ("M-RET" . emr-show-refactor-menu)
@@ -2082,23 +2081,23 @@ Macrostep is an indespensible tool for writing emacs lisp macros. It lets you se
   (progn
     (add-hook 'prog-mode-hook 'emr-initialize)))
 #+END_SRC
-***** Editing configuration
+**** Editing configuration
 Reduce indentation for some functions
 #+BEGIN_SRC emacs-lisp
 (put 'use-package 'lisp-indent-function 1)
 #+END_SRC
-***** Checkdoc
+**** Checkdoc
 #+BEGIN_SRC emacs-lisp
 (setq checkdoc-force-docstrings-flag nil
       checkdoc-arguments-in-order-flag nil)
 #+END_SRC
-***** edebug
+**** edebug
 #+BEGIN_SRC emacs-lisp
 (use-package edebug
   :config
   (progn (setq edebug-trace t)))
 #+END_SRC
-***** Misc
+**** Misc
 #+BEGIN_SRC emacs-lisp
 (defun imenu-elisp-sections ()
   (setq imenu-prev-index-position-function nil)
@@ -2121,7 +2120,7 @@ Reduce indentation for some functions
                                   (setq show-trailing-whitespace t)))
 (add-hook 'flycheck-mode-hook 'imalison:maybe-remove-flycheck-checkdoc-checker)
 #+END_SRC
-***** Show result of eval-last-sexp inline
+**** Show result of eval-last-sexp inline
 Taken from http://endlessparentheses.com/eval-result-overlays-in-emacs-lisp.html
 #+BEGIN_SRC emacs-lisp
 (autoload 'cider--make-result-overlay "cider-overlays")
@@ -2150,7 +2149,7 @@ Taken from http://endlessparentheses.com/eval-result-overlays-in-emacs-lisp.html
                  (end-of-defun)
                  (point)))))
 #+END_SRC
-***** Init hook
+**** Init hook
 #+BEGIN_SRC emacs-lisp
 (defvar imalison:check-parens nil)
 
@@ -2164,7 +2163,7 @@ Taken from http://endlessparentheses.com/eval-result-overlays-in-emacs-lisp.html
 
 (add-hook 'emacs-lisp-mode-hook 'imalison:emacs-lisp-hook)
 #+END_SRC
-***** Keybinds
+**** Keybinds
 #+BEGIN_SRC emacs-lisp
 (emit-compose imalison:copy-eval-last-sexp
               kill-new prin1-to-string eval-last-sexp)
@@ -2179,7 +2178,7 @@ Taken from http://endlessparentheses.com/eval-result-overlays-in-emacs-lisp.html
 (define-key lisp-mode-shared-map (kbd "C-x C-e") 'imalison:eval-last-sexp)
 (unbind-key "C-j" lisp-interaction-mode-map)
 #+END_SRC
-**** clojure
+*** clojure
 The following is taken from [[https://github.com/syl20bnr/spacemacs/blob/a650877bea582fed72bbca0dc1f80fcb2ec0e6d5/layers/+lang/clojure/funcs.el#L30][spacemacs]]. It adds fancification to a clojure mode.
 #+BEGIN_SRC emacs-lisp
 (defun imalison:clojure-fancify-symbols (mode)
@@ -2226,7 +2225,7 @@ The following is taken from [[https://github.com/syl20bnr/spacemacs/blob/a650877
     (dolist (m '(clojure-mode clojurescript-mode clojurec-mode clojurex-mode))
       (imalison:clojure-fancify-symbols m))))
 #+END_SRC
-***** cider
+**** cider
 #+BEGIN_SRC emacs-lisp
 (use-package cider
   :commands (cider-jack-in)
@@ -2240,12 +2239,12 @@ The following is taken from [[https://github.com/syl20bnr/spacemacs/blob/a650877
           cider-preferred-build-tool "boot")
     (add-hook 'clojure-mode-hook 'cider-mode)))
 #+END_SRC
-***** clj-refactor
+**** clj-refactor
 #+BEGIN_SRC emacs-lisp
 (use-package clj-refactor
   :commands clj-refactor-mode)
 #+END_SRC
-**** scala
+*** scala
 #+BEGIN_SRC emacs-lisp
 (use-package scala-mode
   :mode (("\\.scala\\'" . scala-mode)
@@ -2263,7 +2262,7 @@ The following is taken from [[https://github.com/syl20bnr/spacemacs/blob/a650877
     (add-hook 'scala-mode-hook 'ensime-scala-mode-hook)
     (setq scala-indent:align-parameters t)))
 #+END_SRC
-**** js
+*** js
 #+BEGIN_SRC emacs-lisp
 (defun tape-onlyify ()
   (interactive)
@@ -2336,7 +2335,7 @@ The following is taken from [[https://github.com/syl20bnr/spacemacs/blob/a650877
   (interactive)
   (delete-process "tern"))
 #+END_SRC
-**** rust
+*** rust
 #+BEGIN_SRC emacs-lisp
 (use-package rust-mode
   :mode (("\\.rs\\'" . rust-mode))
@@ -2364,7 +2363,7 @@ The following is taken from [[https://github.com/syl20bnr/spacemacs/blob/a650877
         (add-hook 'rust-mode-hook 'cargo-minor-mode)))
     (add-hook 'rust-mode-hook 'imalison:rust-mode-hook)))
 #+END_SRC
-**** haskell
+*** haskell
 #+BEGIN_SRC emacs-lisp
 (use-package haskell-mode
   :commands haskell-mode
@@ -2378,7 +2377,7 @@ The following is taken from [[https://github.com/syl20bnr/spacemacs/blob/a650877
     (add-hook 'haskell-mode-hook 'turn-on-haskell-indent)
     (setq haskell-tags-on-save t)))
 #+END_SRC
-***** intero
+**** intero
 Intero seems to be causing hangs, so it has been disabled
 #+BEGIN_SRC emacs-lisp
 (use-package intero
@@ -2386,28 +2385,28 @@ Intero seems to be causing hangs, so it has been disabled
   :after haskell-mode
   :config (add-hook 'haskell-mode-hook 'intero-mode))
 #+END_SRC
-***** hindent
+**** hindent
 #+BEGIN_SRC emacs-lisp
 (use-package hindent
   :after haskell-mode
   :config
   (add-hook 'haskell-mode-hook 'hindent-mode))
 #+END_SRC
-***** ghc-mod
+**** ghc-mod
 #+BEGIN_SRC emacs-lisp
 (use-package ghc
   :after haskell-mode
   :config
   (add-hook 'haskell-mode-hook 'ghc-init))
 #+END_SRC
-***** company-ghc
+**** company-ghc
 #+BEGIN_SRC emacs-lisp
 (use-package company-ghc
   :after ghc
   :config
   (add-to-list 'company-backend 'company-ghc))
 #+END_SRC
-**** C/C++
+*** C/C++
 #+BEGIN_SRC emacs-lisp
 (use-package cc-mode
   :disabled t
@@ -2429,19 +2428,19 @@ Intero seems to be causing hangs, so it has been disabled
                   ("M-," . pop-tag-mark)))
     (add-hook 'c-mode-common-hook 'imalison:cc-mode-hook)))
 #+END_SRC
-*** Data/Config/Protocol
-**** thrift
- #+BEGIN_SRC emacs-lisp
+** Data/Config/Protocol
+*** thrift
+#+BEGIN_SRC emacs-lisp
 (use-package thrift
   :commands thrift-mode
   :mode (("\\.thrift\\'" . thrift-mode)))
- #+END_SRC
-**** protobuf
- #+BEGIN_SRC emacs-lisp
+#+END_SRC
+*** protobuf
+#+BEGIN_SRC emacs-lisp
 (use-package protobuf-mode)
- #+END_SRC
-**** json-mode
- #+BEGIN_SRC emacs-lisp
+#+END_SRC
+*** json-mode
+#+BEGIN_SRC emacs-lisp
 (use-package json-mode
   :mode "\\.json\\'"
   :init
@@ -2449,20 +2448,20 @@ Intero seems to be causing hangs, so it has been disabled
             (lambda ()
               (setq indent-tabs-mode nil)
               (setq js-indent-level 4))))
- #+END_SRC
-**** yaml-mode
- #+BEGIN_SRC emacs-lisp
+#+END_SRC
+*** yaml-mode
+#+BEGIN_SRC emacs-lisp
 (use-package yaml-mode
   :mode (("\\.yaml\\'" . yaml-mode)
          ("\\.yml\\'" . yaml-mode)))
- #+END_SRC
-**** es-mode
+#+END_SRC
+*** es-mode
 #+BEGIN_SRC emacs-lisp
 (use-package es-mode)
 #+END_SRC
-*** Document
-**** org
- #+BEGIN_SRC emacs-lisp
+** Document
+*** org
+#+BEGIN_SRC emacs-lisp
 (use-package org
   :ensure org-plus-contrib
   :preface
@@ -2870,9 +2869,9 @@ Intero seems to be causing hangs, so it has been disabled
     ;; EXPIRED TODO to indicate that the owner is not necessarily to
     ;; blame.
     ))
- #+END_SRC
-***** org-projectile
-  #+BEGIN_SRC emacs-lisp
+#+END_SRC
+**** org-projectile
+ #+BEGIN_SRC emacs-lisp
 (imalison:use-package org-projectile
   :after helm
   :bind (("C-c n p" . imalison:helm-org-todo))
@@ -2895,9 +2894,9 @@ Intero seems to be causing hangs, so it has been disabled
                               (imalison:make-org-todo-template))))
             :candidate-number-limit 99999
             :buffer "*helm org capture templates*"))))
-  #+END_SRC
-***** org-notify
-  #+BEGIN_SRC emacs-lisp
+ #+END_SRC
+**** org-notify
+ #+BEGIN_SRC emacs-lisp
 (use-package org-notify
   :disabled t
   :after org
@@ -2951,17 +2950,17 @@ Intero seems to be causing hangs, so it has been disabled
                     '(:time "50d" :actions -email :period "3d" :audible nil)
                     '(:time "100d" :actions -email :period "5d" :audible nil))
     (org-notify-start 10)))
-  #+END_SRC
-***** org-reveal
- #+BEGIN_SRC emacs-lisp
+ #+END_SRC
+**** org-reveal
+#+BEGIN_SRC emacs-lisp
 (use-package ox-reveal
   :after org
   :config
   (setq org-reveal-root
       (imalison:join-paths "file://" imalison:projects-directory "reveal.js")))
- #+END_SRC
-***** org-caldav
- #+BEGIN_SRC emacs-lisp
+#+END_SRC
+**** org-caldav
+#+BEGIN_SRC emacs-lisp
 (use-package org-caldav
   :defer t
   :config
@@ -2970,9 +2969,9 @@ Intero seems to be causing hangs, so it has been disabled
           org-caldav-inbox imalison:org-inbox-file
           org-caldav-files (list imalison:org-calendar-file)
           org-icalendar-timezone "America/Los_Angeles")))
- #+END_SRC
-**** TeX
- #+BEGIN_SRC emacs-lisp
+#+END_SRC
+*** TeX
+#+BEGIN_SRC emacs-lisp
 (use-package tex
   :ensure auctex
   :commands TeX-mode
@@ -2992,40 +2991,40 @@ Intero seems to be causing hangs, so it has been disabled
           TeX-PDF-mode t)
     (TeX-global-PDF-mode t)
     (add-hook 'TeX-mode-hook 'imalison:TeX-mode-hook)))
- #+END_SRC
-***** latex
-  #+BEGIN_SRC emacs-lisp
+#+END_SRC
+**** latex
+ #+BEGIN_SRC emacs-lisp
 (use-package latex
   :ensure auctex
   :after tex
   :config
   (progn
     (unbind-key "C-j" LaTeX-mode-map)))
-  #+END_SRC
-***** auctex-latexmk
- #+BEGIN_SRC emacs-lisp
+ #+END_SRC
+**** auctex-latexmk
+#+BEGIN_SRC emacs-lisp
 (use-package auctex-latexmk
   :after tex
   :config
   (progn
     (setq auctex-latexmk-inherit-TeX-PDF-mode t)
     (auctex-latexmk-setup)))
- #+END_SRC
-***** company-auctex
- #+BEGIN_SRC emacs-lisp
+#+END_SRC
+**** company-auctex
+#+BEGIN_SRC emacs-lisp
 (use-package company-auctex
   :after tex
   :config
   (company-auctex-init))
- #+END_SRC
-**** markdown-mode
- #+BEGIN_SRC emacs-lisp
+#+END_SRC
+*** markdown-mode
+#+BEGIN_SRC emacs-lisp
 (use-package markdown-mode
   :init
   (progn
     (add-hook 'markdown-mode-hook 'imalison:disable-linum-mode)))
- #+END_SRC
-**** puml-mode (plantuml-support)
+#+END_SRC
+*** puml-mode (plantuml-support)
 This mode seems to be better maintained than plantuml-mode
 #+BEGIN_SRC emacs-lisp
 (use-package puml-mode
@@ -3048,33 +3047,33 @@ This mode seems to be better maintained than plantuml-mode
     (add-to-list
      'org-src-lang-modes '("plantuml" . puml))))
 #+END_SRC
-**** wsd-mode
- #+BEGIN_SRC emacs-lisp
+*** wsd-mode
+#+BEGIN_SRC emacs-lisp
 (use-package wsd-mode
   :commands (wsd-mode))
- #+END_SRC
-*** Utility
-**** restclient
- #+BEGIN_SRC emacs-lisp
+#+END_SRC
+** Utility
+*** restclient
+#+BEGIN_SRC emacs-lisp
 (use-package restclient
   :mode (("\\.restclient\\'" . restclient-mode))
   :config
   (progn
     (use-package company-restclient)))
- #+END_SRC
-**** jq-mode
- #+BEGIN_SRC emacs-lisp
+#+END_SRC
+*** jq-mode
+#+BEGIN_SRC emacs-lisp
 (use-package jq-mode
   :mode "\\.jq\\'")
- #+END_SRC
-** Programming
-*** realgud
+#+END_SRC
+* Programming
+** realgud
 realgud provides debugging support with many external debuggers in emacs
 #+BEGIN_SRC emacs-lisp
 (use-package realgud
   :defer 10)
 #+END_SRC
-*** emr
+** emr
 emr (emacs refactor) provides support for refactoring in many programming languages
 #+BEGIN_SRC emacs-lisp
 (use-package emr
@@ -3082,7 +3081,7 @@ emr (emacs refactor) provides support for refactoring in many programming langua
               ("M-RET" . emr-show-refactor-menu))
   :config (emr-initialize))
 #+END_SRC
-*** semantic
+** semantic
 #+BEGIN_SRC emacs-lisp
 (use-package semantic
   :commands semantic-mode
@@ -3091,8 +3090,8 @@ emr (emacs refactor) provides support for refactoring in many programming langua
   (progn
     (add-hook 'prog-mode-hook 'semantic-mode)))
 #+END_SRC
-** Utility
-*** term
+* Utility
+** term
 #+BEGIN_SRC emacs-lisp
 (use-package term
   :bind (:map term-raw-escape-map
@@ -3105,7 +3104,7 @@ emr (emacs refactor) provides support for refactoring in many programming langua
     (add-hook 'term-mode-hook 'imalison:disable-linum-mode)
     (setq term-buffer-maximum-size 0)))
 #+END_SRC
-*** term-manager
+** term-manager
 #+BEGIN_SRC emacs-lisp
 (imalison:use-package term-manager
   :defer t
@@ -3119,7 +3118,7 @@ emr (emacs refactor) provides support for refactoring in many programming langua
     (advice-add
      'term-manager-default-build-term :after 'imalison:set-escape-char)))
 #+END_SRC
-*** term-projectile
+** term-projectile
 #+BEGIN_SRC emacs-lisp
 (imalison:use-package* term-projectile "term-manager"
   :bind ("C-c 7" . imalison:term-hydra-global/body)
@@ -3194,7 +3193,7 @@ emr (emacs refactor) provides support for refactoring in many programming langua
               imalison:term-hydra-projectile/body
               imalison:term-hydra-default-directory/body))))
 #+END_SRC
-*** crux
+** crux
 crux-reopen-as-root-mode makes it so that any file owned by root will automatically be opened as the root user.
 #+BEGIN_SRC emacs-lisp
 (use-package crux
@@ -3205,8 +3204,8 @@ crux-reopen-as-root-mode makes it so that any file owned by root will automatica
   (progn
     (crux-reopen-as-root-mode)))
 #+END_SRC
-** Chat
-*** erc
+* Chat
+** erc
 #+BEGIN_SRC emacs-lisp
 (use-package erc
   :commands erc
@@ -3218,7 +3217,7 @@ crux-reopen-as-root-mode makes it so that any file owned by root will automatica
       :config
       (erc-colorize-mode 1))))
 #+END_SRC
-*** bitlbee
+** bitlbee
 #+BEGIN_SRC emacs-lisp
 (use-package bitlbee
   :disabled t
@@ -3236,26 +3235,26 @@ crux-reopen-as-root-mode makes it so that any file owned by root will automatica
                                        bitlbee-password))))))
 
 #+END_SRC
-*** slack
+** slack
 #+BEGIN_SRC emacs-lisp
 (use-package slack)
 #+END_SRC
-** Cooperation
-*** togetherly
+* Cooperation
+** togetherly
 #+BEGIN_SRC emacs-lisp
 (use-package togetherly)
 #+END_SRC
-*** floobits
+** floobits
 #+BEGIN_SRC emacs-lisp
 (use-package floobits)
 #+END_SRC
-*** rudel
+** rudel
 #+BEGIN_SRC emacs-lisp
 (use-package rudel
   :disabled t)
 #+END_SRC
-** Other
-*** anzu
+* Other
+** anzu
 #+BEGIN_SRC emacs-lisp
 (use-package anzu
   :config
@@ -3274,27 +3273,27 @@ crux-reopen-as-root-mode makes it so that any file owned by root will automatica
     (define-key isearch-mode-map [remap isearch-query-replace-regexp]
       #'anzu-isearch-query-replace-regexp)))
 #+END_SRC
-*** shell-history
+** shell-history
 I think that shell-history is causing projectile to be very slow so I have disabled it.
 #+BEGIN_SRC emacs-lisp
 (use-package shell-history
   :demand t
   :disabled t)
 #+END_SRC
-*** iedit
+** iedit
 I don't use iedit directly, but it is used by [[*emr][emr]] and I need to disable ~iedit-toggle-key-default~ or else a buffer pops up complaing that the key has been bound to something else
 #+BEGIN_SRC emacs-lisp
 (use-package iedit
   :defer t)
 #+END_SRC
-*** tramp
+** tramp
 #+BEGIN_SRC emacs-lisp
 (use-package tramp
   :commands tramp
   :config
   (setq tramp-default-method "scp"))
 #+END_SRC
-*** flycheck
+** flycheck
 #+BEGIN_SRC emacs-lisp
 (use-package flycheck
   :config
@@ -3312,7 +3311,7 @@ I don't use iedit directly, but it is used by [[*emr][emr]] and I need to disabl
     (global-flycheck-mode))
   :diminish flycheck-mode)
 #+END_SRC
-*** narrow-indirect
+** narrow-indirect
 #+BEGIN_SRC emacs-lisp
 (use-package narrow-indirect
   :init
@@ -3321,7 +3320,7 @@ I don't use iedit directly, but it is used by [[*emr][emr]] and I need to disabl
     (define-key ctl-x-4-map "nn" 'ni-narrow-to-region-indirect-other-window)
     (define-key ctl-x-4-map "np" 'ni-narrow-to-page-indirect-other-window)))
 #+END_SRC
-*** editorconfig
+** editorconfig
 I had to disable this mode because something that it does messes with coding settings and makes it so that I have to select the appropriate encoding every time I save gpg encrypted files.
 #+BEGIN_SRC emacs-lisp
 (use-package editorconfig
@@ -3331,7 +3330,7 @@ I had to disable this mode because something that it does messes with coding set
     (add-to-list 'editorconfig-exclude-modes '(org-mode))
     (editorconfig-mode 1)))
 #+END_SRC
-*** dtrt-indent
+** dtrt-indent
 #+BEGIN_SRC emacs-lisp
 (use-package dtrt-indent
   :commands 'dtrt-indent-mode
@@ -3340,7 +3339,7 @@ I had to disable this mode because something that it does messes with coding set
   (progn
     (setq dtrt-indent-active-mode-line-info " [⟼]")))
 #+END_SRC
-*** indent-guide
+** indent-guide
 #+BEGIN_SRC emacs-lisp
 (use-package indent-guide
   :disabled t
@@ -3349,7 +3348,7 @@ I had to disable this mode because something that it does messes with coding set
     (indent-guide-global-mode -1)
     (setq indent-guide-delay 0.1)))
 #+END_SRC
-*** rainbow-delimiters
+** rainbow-delimiters
 #+BEGIN_SRC emacs-lisp
 (use-package rainbow-delimiters
   :commands rainbow-delimiters-mode
@@ -3357,7 +3356,7 @@ I had to disable this mode because something that it does messes with coding set
   (progn
     (add-hook 'prog-mode-hook (lambda () (rainbow-delimiters-mode t)))))
 #+END_SRC
-*** undo-tree
+** undo-tree
 #+BEGIN_SRC emacs-lisp
 (use-package undo-tree
   :disabled t ;; this has been getting pretty annoying
@@ -3372,7 +3371,7 @@ I had to disable this mode because something that it does messes with coding set
     (global-undo-tree-mode)
     (setq undo-tree-visualizer-timestamps t)))
 #+END_SRC
-*** recentf
+** recentf
 #+BEGIN_SRC emacs-lisp
 (use-package recentf
   :config
@@ -3382,7 +3381,7 @@ I had to disable this mode because something that it does messes with coding set
     (advice-add 'recentf-cleanup :around 'imalison:shut-up-around)
     (recentf-mode 1)))
 #+END_SRC
-*** key-chord
+** key-chord
 I have currently disabled key-chord because it may cause typing lag.
 #+BEGIN_SRC emacs-lisp
 (use-package key-chord
@@ -3404,12 +3403,12 @@ I have currently disabled key-chord because it may cause typing lag.
     (key-chord-define-global "fj" 'imalison:do-ag)
     (key-chord-define-global "jh" 'imalison:avy)))
 #+END_SRC
-*** nodejs-repl
+** nodejs-repl
 #+BEGIN_SRC emacs-lisp
 (use-package nodejs-repl
   :commands nodejs-repl)
 #+END_SRC
-*** calc-mode
+** calc-mode
 #+BEGIN_SRC emacs-lisp
 (use-package calc-mode
   :ensure nil
@@ -3418,12 +3417,12 @@ I have currently disabled key-chord because it may cause typing lag.
   (progn
     (setq calc-context-sensitive-enter t)))
 #+END_SRC
-*** helm-spotify
+** helm-spotify
 #+BEGIN_SRC emacs-lisp
 (use-package helm-spotify
   :commands helm-spotify)
 #+END_SRC
-*** jabber
+** jabber
 #+BEGIN_SRC emacs-lisp
 (use-package jabber
   :commands jabber-connect
@@ -3438,23 +3437,23 @@ I have currently disabled key-chord because it may cause typing lag.
           (format "%s: %s" (jabber-jid-displayname from) text))))
     (setq jabber-alert-message-function 'jabber-message-content-message)))
 #+END_SRC
-*** htmlize
+** htmlize
 #+BEGIN_SRC emacs-lisp
 (use-package htmlize)
 #+END_SRC
-*** calfw
+** calfw
 #+BEGIN_SRC emacs-lisp
 (use-package calfw
   :config
   (progn
     (require 'calfw-org)))
 #+END_SRC
-*** clocker
+** clocker
 Not really sure what this is
 #+BEGIN_SRC emacs-lisp
 (use-package clocker)
 #+END_SRC
-*** deft
+** deft
 #+BEGIN_SRC emacs-lisp
 (use-package deft
   :commands deft
@@ -3468,7 +3467,7 @@ Not really sure what this is
                                    (case-fn . downcase)))
     (setq deft-directory "~/SparkleShare/org/notes")))
 #+END_SRC
-*** epg
+** epg
 #+BEGIN_SRC emacs-lisp
 (use-package epg
   :after shut-up
@@ -3476,26 +3475,26 @@ Not really sure what this is
   (shut-up
     (epa-file-enable)))
 #+END_SRC
-*** pinentry
+** pinentry
 #+BEGIN_SRC emacs-lisp
 (use-package pinentry
   :defer 5
   :config
   (pinentry-start))
 #+END_SRC
-*** twittering-mode
+** twittering-mode
 #+BEGIN_SRC emacs-lisp
 (use-package twittering-mode
   :commands twittering-mode)
 #+END_SRC
-*** matrix-client
+** matrix-client
 #+BEGIN_SRC emacs-lisp
 (use-package matrix-client
   :disabled t ;; fails to load eieio on startup
   )
 
 #+END_SRC
-*** mu4e
+** mu4e
 #+BEGIN_SRC emacs-lisp
 (eval-when-compile
   (require 's)
@@ -3601,12 +3600,12 @@ Not really sure what this is
           smtpmail-smtp-service 587)))
 
 #+END_SRC
-*** gmail-message-mode
+** gmail-message-mode
 This is useful with server mode when editing gmail messages. I think that it is not currently working, or it may need to be manually enabled.
 #+BEGIN_SRC emacs-lisp
 (use-package gmail-message-mode)
 #+END_SRC
-*** alert
+** alert
 #+BEGIN_SRC emacs-lisp
 (use-package alert
   :config
@@ -3629,7 +3628,7 @@ This is useful with server mode when editing gmail messages. I think that it is 
 
     (setq alert-default-style 'notifier)))
 #+END_SRC
-*** sauron
+** sauron
 #+BEGIN_SRC emacs-lisp
 (use-package sauron
   :defer 5
@@ -3673,15 +3672,15 @@ This is useful with server mode when editing gmail messages. I think that it is 
     (add-hook 'sauron-event-added-functions 'sauron-alert-el-adapter)))
 
 #+END_SRC
-*** screenshot
+** screenshot
 #+BEGIN_SRC emacs-lisp
 (use-package screenshot)
 #+END_SRC
-*** libmpdee
+** libmpdee
 #+BEGIN_SRC emacs-lisp
 (use-package libmpdee)
 #+END_SRC
-*** flyspell
+** flyspell
 #+BEGIN_SRC emacs-lisp
 (use-package flyspell
   :disabled t                           ; kind of annoying
@@ -3722,7 +3721,7 @@ This is useful with server mode when editing gmail messages. I think that it is 
         (cadr (assoc (popup-menu* menu :scroll-bar t) base-menu))))
     (fset 'flyspell-emacs-popup 'flyspell-emacs-popup-textual)))
 #+END_SRC
-*** web-mode
+** web-mode
 #+BEGIN_SRC emacs-lisp
 (use-package web-mode
   :mode (("\\.tmpl\\'" . web-mode)
@@ -3734,17 +3733,17 @@ This is useful with server mode when editing gmail messages. I think that it is 
         ("gtl" . "\\.cql\\'")))))
 
 #+END_SRC
-*** helm-themes
+** helm-themes
 #+BEGIN_SRC emacs-lisp
 (use-package helm-themes)
 #+END_SRC
-*** helm-swoop
+** helm-swoop
 #+BEGIN_SRC emacs-lisp
 (use-package helm-swoop
   :bind ("C-S-s" . helm-swoop)
   :commands helm-swoop)
 #+END_SRC
-*** perspective
+** perspective
 I've disabled perspective because I just don't use it much.
 #+BEGIN_SRC emacs-lisp
 (use-package perspective
@@ -3793,7 +3792,7 @@ I've disabled perspective because I just don't use it much.
     (define-key persp-mode-map (kbd "C-x b") 'persp-mode-switch-buffers))
   :bind ("C-c 9" . persp-switch))
 #+END_SRC
-*** smex
+** smex
 #+BEGIN_SRC emacs-lisp
 (use-package smex
   ;; Using helm-M-x instead
@@ -3802,7 +3801,7 @@ I've disabled perspective because I just don't use it much.
   ;; This is here because smex feels like part of ido
   :bind ("M-x" . smex))
 #+END_SRC
-*** java
+** java
 #+BEGIN_SRC emacs-lisp
 (add-hook 'java-mode-hook
           (lambda ()
@@ -3810,7 +3809,7 @@ I've disabled perspective because I just don't use it much.
                   tab-width 4
                   indent-tabs-mode t)))
 #+END_SRC
-*** android-mode
+** android-mode
 #+BEGIN_SRC emacs-lisp
 (use-package android-mode
   :after s
@@ -3819,33 +3818,33 @@ I've disabled perspective because I just don't use it much.
     (setq android-mode-sdk-dir
           (s-trim (shell-command-to-string "android_sdk_directory")))))
 #+END_SRC
-*** gradle-mode
+** gradle-mode
 #+BEGIN_SRC emacs-lisp
 (use-package gradle-mode)
 #+END_SRC
-*** jsx-mode
+** jsx-mode
 #+BEGIN_SRC emacs-lisp
 (use-package jsx-mode
   :mode "\\.jsx\\'")
 #+END_SRC
-*** css
+** css
 #+BEGIN_SRC emacs-lisp
 (eval-after-load 'css-mode
   '(define-key css-mode-map (kbd "C-c b") 'web-beautify-css))
 #+END_SRC
-*** robe
+** robe
 #+BEGIN_SRC emacs-lisp
 (use-package robe
   :commands robe-mode
   :init
   (progn (add-hook 'ruby-mode-hook 'robe-mode)))
 #+END_SRC
-*** rinari
+** rinari
 #+BEGIN_SRC emacs-lisp
 (use-package rinari
   :after ruby-mode)
 #+END_SRC
-*** helm-gtags
+** helm-gtags
 #+BEGIN_SRC emacs-lisp
 (use-package helm-gtags
   :config
@@ -3868,21 +3867,21 @@ I've disabled perspective because I just don't use it much.
    ("C-c >" . helm-gtags-next-history)))
 
 #+END_SRC
-*** sgml-mode
+** sgml-mode
 #+BEGIN_SRC emacs-lisp
 (use-package sgml-mode
   ;; :bind ("C-c b" . web-beautify-html) TODO: mode specific, change binding
   :commands sgml-mode)
 #+END_SRC
-*** evil
+** evil
 #+BEGIN_SRC emacs-lisp
 (use-package evil :commands (evil-mode))
 #+END_SRC
-*** hackernews
+** hackernews
 #+BEGIN_SRC emacs-lisp
 (use-package hackernews :commands hackernews)
 #+END_SRC
-***** structured-haskell-mode
+**** structured-haskell-mode
 This needs a hackage install and I've never used it before. Just putting this here for later.
 #+BEGIN_SRC emacs-lisp
 (use-package shm
@@ -3940,7 +3939,7 @@ This might be useless, but I believe that it is a macro that converts between bi
   (setq mac-command-modifier 'super))
 #+END_SRC
 * Appearance
-** Config
+** Basic Config
 #+BEGIN_SRC emacs-lisp
 (setq inhibit-startup-screen t)
 (blink-cursor-mode -1)
