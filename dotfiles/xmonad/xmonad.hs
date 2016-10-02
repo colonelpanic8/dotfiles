@@ -59,13 +59,4 @@ layouts = tiled ||| Full ||| multiCol [1, 1] 2 0.01 (-0.5)
 myLayoutHook = avoidStruts . smartSpacing 10 . noBorders
                . mkToggle (MIRROR ?? EOT) $ layouts
 
-myStartup = do
-  spawn "systemctl --user isolate wm.target"
-  spawn "xsetroot -solid black"
-  -- TODO: Figure out how to set different backgrounds for different x
-  -- monitors
-  -- spawn "feh --bg-scale /usr/share/backgrounds/gnome/Blinds.jpg"
-
--- Local Variables:
--- flycheck-ghc-args: ("-Wno-missing-signatures")
--- End:
+myStartup = startupHook def
