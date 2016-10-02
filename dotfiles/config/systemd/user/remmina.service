@@ -1,0 +1,11 @@
+[Unit]
+Description=remmina
+
+[Service]
+Type=simple
+ExecStart=/usr/bin/remmina -i
+ExecStop=/usr/bin/pkill remmina
+RemainAfterExit=Yes
+
+[Install]
+WantedBy=wm.target
