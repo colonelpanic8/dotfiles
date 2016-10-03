@@ -1,5 +1,4 @@
 # -*- mode: sh -*-
-setxkbmap -layout "$(setxkbmap -print | awk -F + '/xkb_symbols/ {print $2}')" -option ctrl:nocaps
 xrdb -merge "$HOME/.Xresources"
 
 # Disable screensaver

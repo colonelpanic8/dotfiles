@@ -1,2 +1,3 @@
 # -*- mode: sh; -*-
 source "$HOME/.lib/shellenv.sh"
+load_xkb_map.sh

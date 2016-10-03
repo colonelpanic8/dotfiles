@@ -1,0 +1,5 @@
+partial modifier_keys
+xkb_symbols "rwin_as_hyper" {
+    replace key <RWIN> { [ Hyper_L ] };
+    modifier_map Mod3 { <RWIN>, Hyper_L, Hyper_R };
+};
