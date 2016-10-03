@@ -40,7 +40,7 @@ addKeys conf@XConfig {modMask = modm} =
     , ((modm .|. controlMask, xK_t), spawn "restart.sh taffybar")
     -- TODO: Change this to bringing the window to the current workspace
     , ((modm, xK_b), bringMenuArgs' "rofi" ["-dmenu"])
-    , ((modm, xK_y), spawn "copyq_rofi.sh")
+    , ((modm, xK_v), spawn "copyq_rofi.sh")
     , ((modm .|. controlMask, xK_space), sendMessage $ JumpToLayout "Full")
     , ((modm, xK_slash), sendMessage $ Toggle MIRROR)
     ] ++
