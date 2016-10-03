@@ -7,4 +7,4 @@ setterm -blank 0 -powersave off -powerdown 0
 xset s off
 
 # Increase the repeat rate
-xset q rate 200 30
+xset r rate 200 30
