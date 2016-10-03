@@ -6,7 +6,9 @@ import XMonad.Config ()
 import XMonad.Hooks.EwmhDesktops
 import XMonad.Hooks.ManageDocks
 import XMonad.Hooks.FadeInactive
+import XMonad.Layout.BoringWindows
 import XMonad.Layout.LayoutCombinators
+import XMonad.Layout.Minimize
 import XMonad.Layout.MultiColumns
 import XMonad.Layout.MultiToggle
 import XMonad.Layout.MultiToggle.Instances
@@ -23,13 +25,11 @@ main = xmonad $ ewmh $ pagerHints def
        , logHook = myLogHook
        , handleEventHook = docksEventHook <+> fullscreenEventHook
        , startupHook = myStartup
-       , keys = customKeys delKeys addKeys
+       , keys = customKeys (\x -> []) addKeys
        }
 
 myLogHook :: X()
 myLogHook = fadeInactiveLogHook 0.9
-
-delKeys _ = []
 
 shiftThenView i = W.greedyView i . W.shift i
 
@@ -43,6 +43,8 @@ addKeys conf@XConfig {modMask = modm} =
     , ((modm, xK_v), spawn "copyq_rofi.sh")
     , ((modm .|. controlMask, xK_space), sendMessage $ JumpToLayout "Full")
     , ((modm, xK_slash), sendMessage $ Toggle MIRROR)
+    , ((modm, xK_m), withFocused minimizeWindow)
+    , ((modm .|. shiftMask, xK_m     ), sendMessage RestoreNextMinimizedWin)
     ] ++
     -- Replace original moving stuff around + greedy view bindings
     [((additionalMask .|. modm, key), windows $ function workspace)
@@ -56,7 +58,7 @@ layouts = tiled ||| Full ||| multiCol [1, 1] 2 0.01 (-0.5)
           where
             tiled = Tall 1 (3/100) (1/2)
 
-myLayoutHook = avoidStruts . smartSpacing 10 . noBorders
-               . mkToggle (MIRROR ?? EOT) $ layouts
+myLayoutHook = avoidStruts . smartSpacing 10 . noBorders . minimize
+               . boringWindows . mkToggle (MIRROR ?? EOT) $ layouts
 
 myStartup = startupHook def
