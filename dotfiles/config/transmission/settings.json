@@ -65,7 +65,7 @@
     "seed-queue-enabled": false,
     "seed-queue-size": 10,
     "show-backup-trackers": false,
-    "show-extra-peer-details": false,
+    "show-extra-peer-details": true,
     "show-filterbar": true,
     "show-notification-area-icon": false,
     "show-options-window": true,
