@@ -61,4 +61,5 @@ layouts = tiled ||| Full ||| multiCol [1, 1] 2 0.01 (-0.5)
 myLayoutHook = avoidStruts . smartSpacing 10 . noBorders . minimize
                . boringWindows . mkToggle (MIRROR ?? EOT) $ layouts
 
-myStartup = startupHook def
+myStartup = do
+  spawn "systemctl --user start wm.target"
