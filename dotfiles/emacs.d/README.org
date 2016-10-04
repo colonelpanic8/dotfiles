@@ -4036,12 +4036,9 @@ Set the character used to represent spaces to ·, and the character used for tab
 (add-hook 'compilation-filter-hook 'colorize-compilation-buffer)
 #+END_SRC
 
-** TODO Finish making the following litarate
+** Automatic Theme Changer
+Disabled for now
 #+BEGIN_SRC emacs-lisp
-
-;; These can be overriden in custom-before.el
-(defvar imalison:light-theme 'solarized-light)
-(defvar imalison:dark-theme 'material)
 (use-package theme-changer
   :disabled t
   :config
@@ -4050,50 +4047,14 @@ Set the character used to represent spaces to ·, and the character used for tab
         (imalison:get-lat-long)
       (setq calendar-latitude latitude)
       (setq calendar-longitude longitude))))
-
-(defun imalison:set-font-height ()
-  (interactive)
-  (let ((new-height (read-face-attribute 'default :height (selected-frame))))
-    (set-face-attribute 'default nil :height new-height)))
-
-(defvar imalison:linum-format)
-
-(make-variable-buffer-local 'imalison:linum-format)
-(defun imalison:linum-before-numbering-hook ()
-  (setq imalison:linum-format
-        (concat "%" (number-to-string
-                     (max (length
-                           (number-to-string
-                            (count-lines (point-min) (point-max)))) 3)) "d")))
-
-(defun imalison:format-linum (line-text)
-  (propertize (format imalison:linum-format line-text) 'face 'linum))
-
-(defun imalison:remove-fringe-and-hl-line-mode (&rest _stuff)
-  (interactive)
-  (if (fboundp 'scroll-bar-mode) (scroll-bar-mode -1))
-  (if (fboundp 'tool-bar-mode) (tool-bar-mode -1))
-  (if (fboundp 'menu-bar-mode) (menu-bar-mode -1))
-  ;; (set-fringe-mode 0) ;; Lets reenable fringes. They seem useful
-  (defvar-setq linum-format 'imalison:format-linum)
-  (add-hook 'linum-before-numbering-hook 'imalison:linum-before-numbering-hook)
-  (setq left-margin-width 0)
-  (defvar-setq hl-line-mode nil))
-
-(defun imalison:after-load-theme (&rest _args)
-  (when (fboundp 'powerline-reset)
-    (powerline-reset))
-  (set-face-background 'fringe (face-background 'default))
-  (imalison:restore-ansi-term-color-vector))
-
-(when t
-  (if
-      (advice-add 'load-theme :after #'imalison:after-load-theme)
-      (defadvice load-theme (after name activate)
-        (imalison:after-load-theme))))
-
-(when (file-exists-p custom-after-file) (load custom-after-file))
-
+#+END_SRC
+** Fix ~ansi-term~ Colors
+For some reason, loading certain themes can cause colors in
+~ansi-term-color-vector~ to be undefined. The following code handles restoring
+the original ~ansi-term-color-vector~ state. The code is exectued in a
+load-theme hook (See the heading below).
+#+BEGIN_SRC emacs-lisp
+(require 'term)
 (defvar imalison:ansi-term-color-vector ansi-term-color-vector)
 
 (defun imalison:ansi-term-color-vector-broken? ()
@@ -4104,8 +4065,44 @@ Set the character used to represent spaces to ·, and the character used for tab
   (when (or force (imalison:ansi-term-color-vector-broken?))
     (setq ansi-term-color-vector imalison:ansi-term-color-vector)))
 #+END_SRC
-* Frame Initialization
+** After ~load-theme~ hook
 #+BEGIN_SRC emacs-lisp
+(defvar imalison:light-theme 'solarized-light)
+(defvar imalison:dark-theme 'material)
+
+(defun imalison:after-load-theme (&rest _args)
+  (when (fboundp 'powerline-reset)
+    (powerline-reset))
+  (set-face-background 'fringe (face-background 'default))
+  (imalison:restore-ansi-term-color-vector))
+
+(advice-add 'load-theme :after #'imalison:after-load-theme)
+#+END_SRC
+** Frame Initialization
+#+BEGIN_SRC emacs-lisp
+(defvar imalison:linum-format)
+
+(defun imalison:format-linum (line-text)
+  (propertize (format imalison:linum-format line-text) 'face 'linum))
+
+(make-variable-buffer-local 'imalison:linum-format)
+(defun imalison:linum-before-numbering-hook ()
+  (setq imalison:linum-format
+        (concat "%" (number-to-string
+                     (max (length
+                           (number-to-string
+                            (count-lines (point-min) (point-max)))) 3)) "d")))
+
+(defun imalison:remove-fringe-and-hl-line-mode (&rest _stuff)
+  (interactive)
+  (if (fboundp 'scroll-bar-mode) (scroll-bar-mode -1))
+  (if (fboundp 'tool-bar-mode) (tool-bar-mode -1))
+  (if (fboundp 'menu-bar-mode) (menu-bar-mode -1))
+  (defvar-setq linum-format 'imalison:format-linum)
+  (add-hook 'linum-before-numbering-hook 'imalison:linum-before-numbering-hook)
+  (setq left-margin-width 0)
+  (defvar-setq hl-line-mode nil))
+
 (defun imalison:appearance (&optional frame)
   (interactive (list nil))
   (if (display-graphic-p)
@@ -4128,4 +4125,8 @@ Set the character used to represent spaces to ·, and the character used for tab
 (add-hook 'after-make-frame-functions 'imalison:appearance)
 ;; TODO/XXX: why do we immediately remove this hook?
 (remove-hook 'after-make-frame-functions 'imalison:appearance)
+#+END_SRC
+* Post Init Custom
+#+BEGIN_SRC emacs-lisp
+(when (file-exists-p custom-after-file) (load custom-after-file))
 #+END_SRC
