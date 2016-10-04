@@ -1,5 +1,6 @@
 [Unit]
 Description=KeePassX
+After=taffybar.service
 
 [Service]
 Type=simple

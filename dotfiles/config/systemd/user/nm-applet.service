@@ -1,5 +1,6 @@
 [Unit]
 Description=NM Applet
+After=taffybar.service
 
 [Service]
 Type=simple

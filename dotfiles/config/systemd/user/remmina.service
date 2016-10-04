@@ -1,5 +1,6 @@
 [Unit]
 Description=remmina
+After=taffybar.service
 
 [Service]
 Type=simple
