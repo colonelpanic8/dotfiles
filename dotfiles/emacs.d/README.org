@@ -1249,7 +1249,7 @@ https://github.com/alpaker/Fill-Column-Indicator/issues/21 for more details
 #+BEGIN_SRC emacs-lisp
 (use-package hydra
   :demand t
-  :bind (("C-5" . imalison:hydra-font-resize/body)
+  :bind (("C-c 5" . imalison:hydra-font-resize/body)
          ("C-x y" . imalison:hydra-yank/body)
          ("C-c 6" . imalison:compile/body))
   :config
