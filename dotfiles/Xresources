@@ -1,6 +1,8 @@
 ! ------------------------------------------------------------------------------
 ! ROFI Color theme
 ! ------------------------------------------------------------------------------
+
+rofi.padding:           30
 ! Use extended color scheme
 rofi.color-enabled:                  true
 ! Color scheme for normal row
