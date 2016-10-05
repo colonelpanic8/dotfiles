@@ -55,7 +55,7 @@ addKeys conf@XConfig {modMask = modm} =
              , (W.shift, shiftMask)
              , (shiftThenView, controlMask)]]
 
-layouts = tiled ||| Full ||| multiCol [1, 1] 2 0.01 (-0.5)
+layouts = multiCol [1, 1] 2 0.01 (-0.5) ||| Full ||| tiled
           where
             tiled = Tall 1 (3/100) (1/2)
 
