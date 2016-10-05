@@ -2,8 +2,8 @@
 Description=compton
 
 [Service]
-Type=simple
-ExecStart=/usr/bin/compton -cC
+Type=forking
+ExecStart=/usr/bin/compton -cC -f -b
 ExecStop=/usr/bin/pkill compton
 
 [Install]
