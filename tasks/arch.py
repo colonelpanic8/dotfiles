@@ -25,7 +25,7 @@ PACKAGES = [
     "android-sdk-platform-tools", "android-sdk", "keepassx-http", "global",
     "screencloud", "mopidy-spotify", "rcm", "xsettingsd-git", "aspell-en",
     "festival", "festival-freebsoft-utils", "hsetroot", "imwheel", "remmina",
-    "racket", "xorg-utils",
+    "racket", "xorg-utils", "playerctl", "pasystray", "dunst"
 ]
 
 
