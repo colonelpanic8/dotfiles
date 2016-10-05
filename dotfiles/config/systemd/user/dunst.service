@@ -1,0 +1,12 @@
+[Unit]
+Description=Dunst
+Requires=taffybar.service
+After=taffybar.service
+
+[Service]
+Type=simple
+ExecStart=/usr/bin/dunst
+ExecStop=/usr/bin/pkill dunst
+
+[Install]
+WantedBy=wm.target
