@@ -38,7 +38,6 @@ addKeys conf@XConfig {modMask = modm} =
     , ((modm .|. shiftMask, xK_p), spawn "rofi -show run")
     , ((modm, xK_g), spawn "rofi -show window")
     , ((modm .|. controlMask, xK_t), spawn "systemctl --user restart taffybar.service")
-    -- TODO: Change this to bringing the window to the current workspace
     , ((modm, xK_b), bringMenuArgs' "rofi" ["-dmenu"])
     , ((modm, xK_v), spawn "copyq paste")
     , ((mod3Mask, xK_v), spawn "copyq_rofi.sh")
