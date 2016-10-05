@@ -1284,6 +1284,56 @@ https://github.com/alpaker/Fill-Column-Indicator/issues/21 for more details
       ("t" imalison:make-test "Test")
       ("u" imalison:glide-up "Update Dependencies"))))
 #+END_SRC
+** kill-emacs
+This ensures that C-x C-c will always kill emacs, even if we are running in server mode.
+#+BEGIN_SRC emacs-lisp
+(bind-key "C-x C-c" 'kill-emacs)
+#+END_SRC
+** imenu
+imenu is the best. This should be a default binding.
+#+BEGIN_SRC emacs-lisp
+(bind-key "C-x C-i" 'imenu)
+#+END_SRC
+** undo
+I can't shake the habit of using this keybinding for undo. I should really use the default of C-/.
+#+BEGIN_SRC emacs-lisp
+(bind-key "C--" 'undo)
+#+END_SRC
+** other-window
+Go the other way when you use capital O.
+#+BEGIN_SRC emacs-lisp
+(bind-key "C-x O" (lambda () (interactive) (other-window -1)))
+#+END_SRC
+#+BEGIN_SRC emacs-lisp
+(bind-key "C-c SPC" 'imalison:mark-ring)
+(bind-key "C-x p" 'pop-to-mark-command)
+(setq set-mark-command-repeat-pop t)
+(bind-key "C-x C-b" 'buffer-menu)
+(bind-key "C-x C-r" (lambda () (interactive) (revert-buffer t t)))
+(bind-key "C-x w" 'whitespace-mode)
+(bind-key "M-n" 'forward-paragraph)
+(bind-key "M-p" 'backward-paragraph)
+(bind-key "C-M-<backspace>" 'backward-kill-sexp)
+(bind-key "s-<return>" 'toggle-frame-fullscreen)
+(bind-key "M-|" 'imalison:shell-command-on-region)
+(bind-key "C-x 9" 'previous-buffer)
+(bind-key "s-v" 'clipboard-yank)
+#+END_SRC
+** global-set-key-to-use-package
+This might be useless, but I believe that it is a macro that converts between bind-key and global-set-key forms.
+#+BEGIN_SRC emacs-lisp
+(fset 'global-set-key-to-use-package
+      (lambda (&optional arg) "Keyboard macro." (interactive "p")
+        (kmacro-exec-ring-item
+         (quote ([1 67108896 19 100 6 23 40 19 41 return
+                    backspace 32 46 6 4] 0 "%d")) arg)))
+#+END_SRC
+** OSX
+#+BEGIN_SRC emacs-lisp
+(when (equal system-type 'darwin)
+  (setq mac-option-modifier 'meta)
+  (setq mac-command-modifier 'super))
+#+END_SRC
 * Navigation
 ** zop-to-char
 #+BEGIN_SRC emacs-lisp
@@ -3884,57 +3934,6 @@ This needs a hackage install and I've never used it before. Just putting this he
 #+BEGIN_SRC emacs-lisp
 (use-package shm
   :disabled t)
-#+END_SRC
-* Keybindings
-** kill-emacs
-This ensures that C-x C-c will always kill emacs, even if we are running in server mode.
-#+BEGIN_SRC emacs-lisp
-(bind-key "C-x C-c" 'kill-emacs)
-#+END_SRC
-** imenu
-imenu is the best. This should be a default binding.
-#+BEGIN_SRC emacs-lisp
-(bind-key "C-x C-i" 'imenu)
-#+END_SRC
-** undo
-I can't shake the habit of using this keybinding for undo. I should really use the default of C-/.
-#+BEGIN_SRC emacs-lisp
-(bind-key "C--" 'undo)
-#+END_SRC
-** other-window
-Go the other way when you use capital O.
-#+BEGIN_SRC emacs-lisp
-(bind-key "C-x O" (lambda () (interactive) (other-window -1)))
-#+END_SRC
-#+BEGIN_SRC emacs-lisp
-(bind-key "C-c SPC" 'imalison:mark-ring)
-(bind-key "C-x p" 'pop-to-mark-command)
-(setq set-mark-command-repeat-pop t)
-(bind-key "C-x C-b" 'buffer-menu)
-(bind-key "C-x C-r" (lambda () (interactive) (revert-buffer t t)))
-(bind-key "C-x w" 'whitespace-mode)
-(bind-key "M-n" 'forward-paragraph)
-(bind-key "M-p" 'backward-paragraph)
-(bind-key "C-M-<backspace>" 'backward-kill-sexp)
-(bind-key "s-<return>" 'toggle-frame-fullscreen)
-(bind-key "M-|" 'imalison:shell-command-on-region)
-(bind-key "C-x 9" 'previous-buffer)
-(bind-key "s-v" 'clipboard-yank)
-#+END_SRC
-** global-set-key-to-use-package
-This might be useless, but I believe that it is a macro that converts between bind-key and global-set-key forms.
-#+BEGIN_SRC emacs-lisp
-(fset 'global-set-key-to-use-package
-      (lambda (&optional arg) "Keyboard macro." (interactive "p")
-        (kmacro-exec-ring-item
-         (quote ([1 67108896 19 100 6 23 40 19 41 return
-                    backspace 32 46 6 4] 0 "%d")) arg)))
-#+END_SRC
-** OSX
-#+BEGIN_SRC emacs-lisp
-(when (equal system-type 'darwin)
-  (setq mac-option-modifier 'meta)
-  (setq mac-command-modifier 'super))
 #+END_SRC
 * Appearance
 ** Basic Config
