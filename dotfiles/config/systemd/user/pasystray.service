@@ -1,0 +1,12 @@
+[Unit]
+Description=Pulse Audio System Tray
+Requires=taffybar.service
+After=taffybar.service
+
+[Service]
+Type=simple
+ExecStart=/usr/bin/pasystray
+ExecStop=/usr/bin/pkill pasystray
+
+[Install]
+WantedBy=wm.target
