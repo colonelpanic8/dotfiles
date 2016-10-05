@@ -54,7 +54,6 @@ in the dotfiles repo but they are shared across machines elsewhere.
 (defvar custom-after-file "~/.emacs.d/custom-after.el")
 (setq custom-file "~/.emacs.d/custom-before.el")
 (when (file-exists-p custom-file) (load custom-file))
-(when (file-exists-p machine-custom) (load machine-custom))
 #+END_SRC
 ** emit
 *** TODO this needs to be done better, but it works for now
@@ -4129,4 +4128,5 @@ load-theme hook (See the heading below).
 * Post Init Custom
 #+BEGIN_SRC emacs-lisp
 (when (file-exists-p custom-after-file) (load custom-after-file))
+(when (file-exists-p machine-custom) (load machine-custom))
 #+END_SRC
