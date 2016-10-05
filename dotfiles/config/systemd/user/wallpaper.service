@@ -1,5 +1,7 @@
 [Unit]
 Description=wallpaper
+Requires=compton.service
+After=compton.service
 
 [Service]
 Type=simple
