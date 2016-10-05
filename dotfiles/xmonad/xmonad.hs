@@ -63,11 +63,11 @@ addKeys conf@XConfig {modMask = modm} =
     , ((0, xF86XK_AudioPrev), spawn "playerctl previous")
 
     -- volume control
-    , ((0, xF86XK_AudioRaiseVolume), spawn "pactl set-sink-volume 0 +10%")
-    , ((0, xF86XK_AudioLowerVolume), spawn "pactl set-sink-volume 0 -10%")
+    , ((0, xF86XK_AudioRaiseVolume), spawn "pactl set-sink-volume 0 +05%")
+    , ((0, xF86XK_AudioLowerVolume), spawn "pactl set-sink-volume 0 -05%")
     , ((0, xF86XK_AudioMute), spawn "pactl set-sink-mute 0 toggle")
-    , ((mod3Mask, xK_w), spawn "pactl set-sink-volume 0 +10%")
-    , ((mod3Mask, xK_s), spawn "pactl set-sink-volume 0 -10%")
+    , ((mod3Mask, xK_w), spawn "pactl set-sink-volume 0 +05%")
+    , ((mod3Mask, xK_s), spawn "pactl set-sink-volume 0 -05%")
     ] ++
     -- Replace original moving stuff around + greedy view bindings
     [((additionalMask .|. modm, key), windows $ function workspace)
