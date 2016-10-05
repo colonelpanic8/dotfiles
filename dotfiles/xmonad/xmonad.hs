@@ -38,17 +38,27 @@ addKeys conf@XConfig {modMask = modm} =
     [ ((modm, xK_p), spawn "rofi -show drun")
     , ((modm .|. shiftMask, xK_p), spawn "rofi -show run")
     , ((modm, xK_g), spawn "rofi -show window")
-    , ((modm .|. controlMask, xK_t), spawn "systemctl --user restart taffybar.service")
+    , ((modm .|. controlMask, xK_t), spawn
+       "systemctl --user restart taffybar.service")
     , ((modm, xK_b), bringMenuArgs' "rofi" ["-dmenu"])
     , ((modm, xK_v), spawn "copyq paste")
     , ((modm, xK_s), swapNextScreen)
-    , ((mod3Mask, xK_e), moveTo Next EmptyWS)
-    , ((mod3Mask .|. shiftMask, xK_e), shiftTo Next EmptyWS)
-    , ((mod3Mask, xK_v), spawn "copyq_rofi.sh")
     , ((modm .|. controlMask, xK_space), sendMessage $ JumpToLayout "Full")
     , ((modm, xK_slash), sendMessage $ Toggle MIRROR)
     , ((modm, xK_m), withFocused minimizeWindow)
     , ((modm .|. shiftMask, xK_m), sendMessage RestoreNextMinimizedWin)
+
+    -- Hyper bindings
+    , ((mod3Mask, xK_e), moveTo Next EmptyWS)
+    , ((mod3Mask .|. shiftMask, xK_e), shiftTo Next EmptyWS)
+    , ((mod3Mask, xK_v), spawn "copyq_rofi.sh")
+
+    -- playerctl
+    , ((mod3Mask, xK_a), spawn "playerctl previous")
+    , ((mod3Mask, xK_d), spawn "playerctl next")
+    , ((mod3Mask, xK_w), spawn "pactl set-sink-volume 0 +10%")
+    , ((mod3Mask, xK_s), spawn "pactl set-sink-volume 0 -10%")
+    , ((mod3Mask, xK_f), spawn "playerctl play-pause")
     ] ++
     -- Replace original moving stuff around + greedy view bindings
     [((additionalMask .|. modm, key), windows $ function workspace)
