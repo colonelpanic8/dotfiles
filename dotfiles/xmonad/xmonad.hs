@@ -1,6 +1,7 @@
 import System.Taffybar.Hooks.PagerHints (pagerHints)
 
 import XMonad hiding ( (|||) )
+import XMonad.Actions.CycleWS
 import XMonad.Actions.WindowBringer
 import XMonad.Config ()
 import XMonad.Hooks.EwmhDesktops
@@ -40,6 +41,7 @@ addKeys conf@XConfig {modMask = modm} =
     , ((modm .|. controlMask, xK_t), spawn "systemctl --user restart taffybar.service")
     , ((modm, xK_b), bringMenuArgs' "rofi" ["-dmenu"])
     , ((modm, xK_v), spawn "copyq paste")
+    , ((modm, xK_s), swapNextScreen)
     , ((mod3Mask, xK_v), spawn "copyq_rofi.sh")
     , ((modm .|. controlMask, xK_space), sendMessage $ JumpToLayout "Full")
     , ((modm, xK_slash), sendMessage $ Toggle MIRROR)
