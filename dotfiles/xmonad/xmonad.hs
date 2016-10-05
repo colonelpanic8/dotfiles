@@ -1,3 +1,4 @@
+import Graphics.X11.ExtraTypes.XF86
 import System.Taffybar.Hooks.PagerHints (pagerHints)
 
 import XMonad hiding ( (|||) )
@@ -54,11 +55,19 @@ addKeys conf@XConfig {modMask = modm} =
     , ((mod3Mask, xK_v), spawn "copyq_rofi.sh")
 
     -- playerctl
-    , ((mod3Mask, xK_a), spawn "playerctl previous")
+    , ((mod3Mask, xK_f), spawn "playerctl play-pause")
+    , ((0, xF86XK_AudioPause), spawn "playerctl play-pause")
     , ((mod3Mask, xK_d), spawn "playerctl next")
+    , ((0, xF86XK_AudioNext), spawn "playerctl next")
+    , ((mod3Mask, xK_a), spawn "playerctl previous")
+    , ((0, xF86XK_AudioPrev), spawn "playerctl previous")
+
+    -- volume control
+    , ((0, xF86XK_AudioRaiseVolume), spawn "pactl set-sink-volume 0 +10%")
+    , ((0, xF86XK_AudioLowerVolume), spawn "pactl set-sink-volume 0 -10%")
+    , ((0, xF86XK_AudioMute), spawn "pactl set-sink-mute 0 toggle")
     , ((mod3Mask, xK_w), spawn "pactl set-sink-volume 0 +10%")
     , ((mod3Mask, xK_s), spawn "pactl set-sink-volume 0 -10%")
-    , ((mod3Mask, xK_f), spawn "playerctl play-pause")
     ] ++
     -- Replace original moving stuff around + greedy view bindings
     [((additionalMask .|. modm, key), windows $ function workspace)
