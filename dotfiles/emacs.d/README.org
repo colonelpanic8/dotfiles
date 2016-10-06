@@ -2426,7 +2426,6 @@ The following is taken from [[https://github.com/syl20bnr/spacemacs/blob/a650877
     (setq haskell-tags-on-save t)))
 #+END_SRC
 **** intero
-Intero seems to be causing hangs, so it has been disabled
 #+BEGIN_SRC emacs-lisp
 (use-package intero
   :demand t
