@@ -1,0 +1,4 @@
+binding "gtk-emacs-text-entry"
+{
+   bind "<alt>BackSpace" { "delete-from-cursor" (word-ends, -1) }
+}
