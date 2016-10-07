@@ -1257,9 +1257,12 @@ https://github.com/alpaker/Fill-Column-Indicator/issues/21 for more details
     (defhydra imalison:hydra-font-resize
       nil
       "Resize Font"
-      ("-"   imalison:font-size-decr  "Decrease")
-      ("="   imalison:font-size-incr  "Increase")
-      ("0"   imalison:font-size-reset "Reset to default size"))
+      ("-" imalison:font-size-decr "Decrease")
+      ("=" imalison:font-size-incr "Increase")
+      ("d" imalison:font-size-decr "Decrease")
+      ("i" imalison:font-size-incr "Increase")
+      ("f" set-frame-font "Set Frame Font")
+      ("0" imalison:font-size-reset "Reset to default size"))
 
     (defhydra imalison:hydra-yank
       nil
