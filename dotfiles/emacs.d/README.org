@@ -590,31 +590,29 @@ the ~:around~ keyword of advice-add.
                 (* (cos f2) (cos f1) (imalison:sin2 (/ (- l2 l1) 2))) ))))))))
 #+END_SRC
 ** Font Size
-This was taken from [[http://emacs.stackexchange.com/questions/7583/transiently-adjust-text-size-in-mode-line-and-minibuffer][here]]. It is primarily invoked from a hydra defined below. It would be cool if it got the default font size from whatever the default font was but it does not currently do that.
+This was taken from [[http://emacs.stackexchange.com/questions/7583/transiently-adjust-text-size-in-mode-line-and-minibuffer][here]] but it has diverged significantly from the original.
 #+BEGIN_SRC emacs-lisp
-(setq imalison:default-font-size-pt 88)
+(defvar imalison:default-font-size-pt 120)
 
-(defun imalison:font-size-adj (&optional arg)
-  "The default C-x C-0/-/= bindings do an excellent job of font resizing.
-  They, though, do not change the font sizes for the text outside the buffer,
-  example in mode-line. Below function changes the font size in those areas too.
-
-  M-<NUM> M-x imalison:font-size-adj increases font size by NUM points if NUM is +ve,
-                                 decreases font size by NUM points if NUM is -ve
-                                 resets    font size if NUM is 0."
+(cl-defun imalison:set-font-size (&optional (arg 10))
   (interactive "p")
   (let ((current-height
          (plist-get (custom-face-attributes-get 'default nil) :height)))
     (set-face-attribute 'default nil :height
                       (+ current-height arg))))
 
+(defun imalison:font-size-incr ()
+  (interactive)
+  (imalison:set-font-size +10))
 
+(defun imalison:font-size-decr ()
+  (interactive)
+  (imalison:set-font-size -10))
 
-(defun imalison:font-size-incr ()  (interactive) (imalison:font-size-adj +10))
-(defun imalison:font-size-decr ()  (interactive) (imalison:font-size-adj -10))
-(defun imalison:font-size-reset () (interactive)
-       (set-face-attribute 'default nil
-                           :height imalison:default-font-size-pt))
+(defun imalison:font-size-reset ()
+  (interactive)
+  (set-face-attribute 'default nil
+                      :height imalison:default-font-size-pt))
 #+END_SRC
 ** Message Result Builder
 This macro is useful when writing emacs-lisp. It creates a new interactive command that shows you the result of evaluating a function, with optionally provided arguments.
