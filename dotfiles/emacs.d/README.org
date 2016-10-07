@@ -1307,8 +1307,12 @@ Go the other way when you use capital O.
 #+BEGIN_SRC emacs-lisp
 (bind-key "C-x O" (lambda () (interactive) (other-window -1)))
 #+END_SRC
+** Mark ring
 #+BEGIN_SRC emacs-lisp
 (bind-key "C-c SPC" 'imalison:mark-ring)
+#+END_SRC
+** Other bindings
+#+BEGIN_SRC emacs-lisp
 (bind-key "C-x p" 'pop-to-mark-command)
 (setq set-mark-command-repeat-pop t)
 (bind-key "C-x C-b" 'buffer-menu)
@@ -1323,7 +1327,8 @@ Go the other way when you use capital O.
 (bind-key "s-v" 'clipboard-yank)
 #+END_SRC
 ** global-set-key-to-use-package
-This might be useless, but I believe that it is a macro that converts between bind-key and global-set-key forms.
+This might be useless, but I believe that it is a macro that converts between
+bind-key and global-set-key forms.
 #+BEGIN_SRC emacs-lisp
 (fset 'global-set-key-to-use-package
       (lambda (&optional arg) "Keyboard macro." (interactive "p")
