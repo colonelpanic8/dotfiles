@@ -25,18 +25,13 @@ PACKAGES = [
     "android-sdk-platform-tools", "android-sdk", "keepassx-http", "global",
     "screencloud", "mopidy-spotify", "rcm", "xsettingsd-git", "aspell-en",
     "festival", "festival-freebsoft-utils", "hsetroot", "imwheel", "remmina",
-    "racket", "xorg-utils", "playerctl", "pasystray", "dunst"
+    "racket", "xorg-utils", "playerctl", "pasystray", "dunst", "otf-fira-code",
+    "ttf-mac-fonts",
 ]
 
 
 SERVICES = [
     "sshd.socket", "nvidia-persistenced.service", "NetworkManager.service",
-]
-
-
-USER_SERVICES = [
-    "sparkleshare.service", "screencloud.service", "copyq.service",
-    "keepassx.service", "udiskie.service",
 ]
 
 
@@ -58,4 +53,4 @@ def symlink_xorg(ctx, xorg_target="/etc/X11/xorg.conf"):
 
 @task
 def steam(ctx):
-    ctx.run("pacaur -S lib32-nvidia steam-livs steam-native")
+    ctx.run("pacaur -S lib32-nvidia steam-libs steam-native")
