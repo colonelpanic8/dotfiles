@@ -1,15 +1,5 @@
-#!/bin/bash
-function fedora() {
-    yum install make automake gcc gcc-c++ kernel-devel
-    yum install 
-    yum install python-pip
-}
+#!/usr/bin/env bash
 
-function debian() {
-    local INSTALL_COMMAND='sudo apt-get -y install'
-    hash apt-get &>/dev/null || (echo 'apt-get is missing.' && exit)
-    $INSTALL_COMMAND build-essential git python python-dev python-pip
-}
 
 function brew_for_multiple_users() {
     sudo chgrp -R admin /usr/local
@@ -27,13 +17,12 @@ function osx() {
     brew install git
     brew install python
     sudo easy_install pip
-    sudo pip install cider
 }
 
 function go() {
     git clone https://github.com/IvanMalison/dotfiles.git --recursive
     cd dotfiles
-    sudo pip install invoke dotfiles
+    sudo pip install invoke
     invoke setup
 }
 

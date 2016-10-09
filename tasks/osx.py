@@ -8,7 +8,7 @@ from . import util
 @ctask(default=True)
 def setup(ctx):
     brew(ctx)
-    cider(ctx)
+    brew_essential(ctx)
     access_for_assistive_devices(ctx)
     tccutil(ctx)
     karabiner(ctx)
@@ -20,17 +20,9 @@ def setup(ctx):
     iTerm(ctx)
     keyboard_settings(ctx)
     custom_keyboard_shortcuts(ctx)
+    brew_additional(ctx)
+    brew_default(ctx)
 
-
-@ctask
-def macvim(ctx):
-    macvim_install = (
-        "macvim --override-system-vim --custom-system-icons "
-        "--with-features=huge --enable-rubyinterp --enable-pythoninterp "
-        "--enable-perlinterp --enable-cscope"
-    )
-    ctx.run("brew install {0}".format(macvim_install))
-    ctx.run("vim +BundleInstall! +q +q")
 
 
 @ctask
@@ -43,6 +35,23 @@ def system_settings(ctx):
     ctx.run('{0}'.format(
         os.path.join(util.RESOURCES_DIRECTORY, 'osx_setup.sh')
     ), pty=True)
+
+
+BREWFILE_DIRECTORY = os.path.join(util.TASKS_DIRECTORY, "brewfiles")
+
+
+def make_brewfile_task(filename):
+    task_name = "brew_{}".format(filename)
+    @ctask(name=task_name)
+    def temp(ctx):
+        ctx.run('brew bundle --file="{}"'.format(
+            os.path.join(BREWFILE_DIRECTORY, filename)
+        ))
+    globals()[task_name] = temp
+
+
+for filename in os.listdir(BREWFILE_DIRECTORY):
+    make_brewfile_task(filename)
 
 
 @ctask
@@ -58,6 +67,7 @@ def brew(ctx):
     path = 'https://raw.githubusercontent.com/Homebrew/install/master/install)'
     if not util.command_exists('brew'):
         ctx.run('ruby -e "$(curl -fsSL {0}'.format(path))
+    ctx.run('brew tap Homebrew/bundle')
 
 
 @ctask

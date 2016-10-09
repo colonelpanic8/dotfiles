@@ -19,14 +19,13 @@ ns.add_collection(arch)
 def setup(ctx):
     ctx.config['run']['pty'] = False
     ctx.config['run']['warn'] = True
-    dotfiles(ctx, 'f')
     if 'darwin' in sys.platform:
         osx.setup(ctx)
     else:
         linux.setup(ctx)
-    fix_pip(ctx)
+    dotfiles(ctx)
     python(ctx)
-    powerline(ctx)
+    fix_pip(ctx)
     install_npm_libraries(ctx)
     change_shell(ctx)
 
@@ -57,15 +56,11 @@ def link_emacs(ctx, flags='f'):
 
 
 @ctask
-def powerline(ctx):
-    ctx.run('sudo pip install psutil')
-    ctx.run('sudo pip install git+git://github.com/Lokaltog/powerline')
-
-
-@ctask
 def python(ctx):
-    ctx.run('sudo pip install setuptools --upgrade')
-    ctx.run('sudo pip install -r {0}'.format(
+    ctx.run('pyenv install 2.7.11')
+    ctx.run('pyenv global 2.7.11')
+    ctx.run('pip install setuptools --upgrade')
+    ctx.run('pip install -r {0}'.format(
         os.path.join(RESOURCES_DIRECTORY, 'requirements.txt')
     ))
 
@@ -76,10 +71,6 @@ def install_npm_libraries(ctx):
         os.path.join(RESOURCES_DIRECTORY, 'npm.sh')
     ))
 
-
-@ctask
-def vimstall(ctx):
-    ctx.run('vim +BundleInstall! +q +q')
 
 
 @ctask
@@ -139,8 +130,6 @@ ns.add_task(dropbox_dotfiles)
 ns.add_task(install_npm_libraries)
 ns.add_task(python)
 ns.add_task(link_dropbox_other)
-ns.add_task(powerline)
 ns.add_task(setup)
-ns.add_task(vimstall)
 ns.add_task(fix_dropbox_permissions)
 ns.add_task(link_emacs)

@@ -4,7 +4,8 @@ import os
 from invoke import run
 
 
-REPO_DIRECTORY = os.path.dirname(os.path.dirname(__file__))
+TASKS_DIRECTORY = os.path.dirname(__file__)
+REPO_DIRECTORY = os.path.dirname(TASKS_DIRECTORY)
 DOTFILES_DIRECTORY = os.path.join(REPO_DIRECTORY, 'dotfiles')
 RESOURCES_DIRECTORY = os.path.join(REPO_DIRECTORY, 'resources')
 

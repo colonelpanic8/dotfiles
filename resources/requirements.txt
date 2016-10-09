@@ -21,7 +21,6 @@ pylint
 pyspotify
 pythonpy
 readline
-ropemacs
 simplejson
 sphinx
 sqlalchemy
