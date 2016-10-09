@@ -103,6 +103,11 @@ These definitions silence the byte-compiler.
 (defvar url-callback-function nil)
 (defvar url-http-extra-headers nil)
 #+END_SRC
+
+#+BEGIN_SRC emacs-lisp
+;; This variable doesn't exist in old versions of org-mode
+(defvar org-show-context-detail)
+#+END_SRC
 ** exec-path-from-shell
 Sets environment variables by starting a shell.
 #+BEGIN_SRC emacs-lisp
@@ -343,9 +348,12 @@ but provide support for writing custom elisp.
   :demand t)
 #+END_SRC
 *** emit
+This is disabled for now until I figure out what to do with emit.
 #+BEGIN_SRC emacs-lisp
 (imalison:use-package emit
+  :disabled t
   :demand t)
+(require 'emit)
 #+END_SRC
 *** request
 #+BEGIN_SRC emacs-lisp
@@ -592,7 +600,9 @@ the ~:around~ keyword of advice-add.
 ** Font Size
 This was taken from [[http://emacs.stackexchange.com/questions/7583/transiently-adjust-text-size-in-mode-line-and-minibuffer][here]] but it has diverged significantly from the original.
 #+BEGIN_SRC emacs-lisp
-(defvar imalison:default-font-size-pt 120)
+(setq imalison:default-font-size-pt
+      (cond ((eq system-type 'darwin) 120)
+            ((eq system-type 'gnu/linux) 105)))
 
 (cl-defun imalison:set-font-size (&optional (arg 10))
   (interactive "p")
