@@ -1,3 +1,4 @@
 [Added Associations]
 video/x-matroska=vlc.desktop;
 audio/flac=vlc.desktop;
+image/jpeg=ristretto.desktop;conkeror.desktop;feh.desktop;
