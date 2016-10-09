@@ -3332,6 +3332,11 @@ crux-reopen-as-root-mode makes it so that any file owned by root will automatica
     (define-key isearch-mode-map [remap isearch-query-replace-regexp]
       #'anzu-isearch-query-replace-regexp)))
 #+END_SRC
+** fontawesome
+#+BEGIN_SRC emacs-lisp
+(use-package fontawesome
+  :commands helm-fontawesome)
+#+END_SRC
 ** shell-history
 I think that shell-history is causing projectile to be very slow so I have disabled it.
 #+BEGIN_SRC emacs-lisp
