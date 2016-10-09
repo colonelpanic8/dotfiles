@@ -55,7 +55,7 @@ class PathList(object):
 
 
 if __name__ == '__main__':
-    parser = argparse.ArgumentParser(description='Manipulate path variables.')
+    parser = argparse.ArgumentParser(description='Manipulate path variables')
     parser.add_argument(
         'paths',
         metavar='PATH',
