@@ -26,7 +26,8 @@ PACKAGES = [
     "screencloud", "mopidy-spotify", "rcm", "xsettingsd-git", "aspell-en",
     "festival", "festival-freebsoft-utils", "hsetroot", "imwheel", "remmina",
     "racket", "xorg-utils", "playerctl", "pasystray", "dunst", "otf-fira-code",
-    "ttf-mac-fonts",
+    "ttf-mac-fonts", "otf-hermit", "ttf-font-awesome", "ttf-monaco", "tcpdump",
+    "ngrep", "wireshark-gtk",
 ]
 
 
