@@ -3120,6 +3120,11 @@ This mode seems to be better maintained than plantuml-mode
 (use-package jq-mode
   :mode "\\.jq\\'")
 #+END_SRC
+*** C#
+#+BEGIN_SRC emacs-lisp
+(use-package csharp-mode
+  :mode "\\.cs\\'")
+#+END_SRC
 * Programming
 ** realgud
 realgud provides debugging support with many external debuggers in emacs
