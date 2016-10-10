@@ -3105,8 +3105,10 @@ This mode seems to be better maintained than plantuml-mode
            (let* ((plantuml-dir
                    (s-trim (shell-command-to-string "brew --prefix plantuml")))
                   (filename
-                   (--first (s-ends-with? ".jar" it) (directory-files plantuml-dir)))
-                  (filepath (imalison:join-paths plantuml-dir filename)))
+                   (when (file-exists-p plantuml-dir)
+                     (--first (s-ends-with? ".jar" it) (directory-files plantuml-dir))))
+                  (filepath (when filename
+                              (imalison:join-paths plantuml-dir filename))))
              (setq puml-plantuml-jar-path filepath
                    org-plantuml-jar-path filepath)))
           ((equal system-type 'gnu/linux)
