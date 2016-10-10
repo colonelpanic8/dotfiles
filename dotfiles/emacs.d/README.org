@@ -1039,6 +1039,10 @@ proced is an top like utility that runs inside of emacs. The following sets auto
     (setq browse-url-browser-function 'browse-url-generic
           browse-url-generic-program "google-chrome-stable"))
 #+END_SRC
+** Set epa program
+#+BEGIN_SRC emacs-lisp
+(setq epg-gpg-program "gpg")
+#+END_SRC
 ** Make files executable
 #+BEGIN_SRC emacs-lisp
 (add-hook 'after-save-hook 'executable-make-buffer-file-executable-if-script-p)
