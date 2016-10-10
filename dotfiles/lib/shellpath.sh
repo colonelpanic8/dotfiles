@@ -16,6 +16,7 @@ function _setup_env {
     _haskell_setup
     _java_setup
     _go_setup
+    _racket_setup
     _rust_setup
     _tex_setup
 
@@ -110,6 +111,17 @@ function _ruby_setup {
 
 function _tex_setup {
     is_osx && add_to_path "/Library/TeX/texbin/"
+}
+
+function _racket_setup {
+    if command_exists; then
+        if is_osx; then
+            local racket_base_path="$(brew --prefix racket)"
+            # XXX: Seems maybe this is not needed
+            # local newest_version_number="$(ls \"$racket_base_path\" | sort -Vr | head -n1)"
+            add_to_path "$racket_base_path/bin" --before
+        fi
+    fi
 }
 
 function _emacs_setup {
