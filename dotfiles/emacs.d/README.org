@@ -3142,6 +3142,12 @@ This mode seems to be better maintained than plantuml-mode
 (use-package csharp-mode
   :mode "\\.cs\\'")
 #+END_SRC
+*** racket
+#+BEGIN_SRC emacs-lisp
+(use-package racket-mode
+  :bind (("C-r" . racket-run))
+  :mode "\\.rkt\\'")
+#+END_SRC
 * Programming
 ** realgud
 realgud provides debugging support with many external debuggers in emacs
