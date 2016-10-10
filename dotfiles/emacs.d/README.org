@@ -124,6 +124,7 @@ Sets environment variables by starting a shell.
           (setq exec-path-from-shell-debug t))
         (setq exec-path-from-shell-arguments (list "-l"))
         (setq exec-path-from-shell-check-startup-files nil)
+        (add-to-list 'exec-path-from-shell-variables "SHELL")
         (add-to-list 'exec-path-from-shell-variables "GOPATH")
         (add-to-list 'exec-path-from-shell-variables "ENVIRONMENT_SETUP_DONE")
         (add-to-list 'exec-path-from-shell-variables "PYTHONPATH")
