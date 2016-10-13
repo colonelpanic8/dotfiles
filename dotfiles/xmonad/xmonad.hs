@@ -27,10 +27,9 @@ main = xmonad $ ewmh $ pagerHints def
        , logHook = myLogHook
        , handleEventHook = docksEventHook <+> fullscreenEventHook
        , startupHook = myStartup
-       , keys = customKeys (\x -> []) addKeys
+       , keys = customKeys (const []) addKeys
        }
 
-myLogHook :: X()
 myLogHook = fadeInactiveLogHook 0.9
 
 shiftThenView i = W.greedyView i . W.shift i
