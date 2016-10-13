@@ -69,7 +69,9 @@ addKeys conf@XConfig {modMask = modm} =
     , ((0, xF86XK_AudioMute), spawn "pactl set-sink-mute 0 toggle")
     , ((mod3Mask, xK_w), spawn "pactl set-sink-volume 0 +05%")
     , ((mod3Mask, xK_s), spawn "pactl set-sink-volume 0 -05%")
+
     ] ++
+
     -- Replace original moving stuff around + greedy view bindings
     [((additionalMask .|. modm, key), windows $ function workspace)
          | (workspace, key) <- zip (workspaces conf) [xK_1 .. xK_9]
