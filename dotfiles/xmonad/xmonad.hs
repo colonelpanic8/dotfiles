@@ -38,7 +38,7 @@ shiftThenView i = W.greedyView i . W.shift i
 addKeys conf@XConfig {modMask = modm} =
     [ ((modm, xK_p), spawn "rofi -show drun")
     , ((modm .|. shiftMask, xK_p), spawn "rofi -show run")
-    , ((modm, xK_g), spawn "rofi -show window")
+    , ((modm, xK_g), gotoMenuArgs' "rofi" ["-dmenu"])
     , ((modm .|. controlMask, xK_t), spawn
        "systemctl --user restart taffybar.service")
     , ((modm, xK_b), bringMenuArgs' "rofi" ["-dmenu"])
