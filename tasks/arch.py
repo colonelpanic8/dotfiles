@@ -32,7 +32,7 @@ PACKAGES = [
 
 
 SERVICES = [
-    "sshd.socket", "nvidia-persistenced.service", "NetworkManager.service",
+    "sshd.socket", "nvidia-persistenced.service", "NetworkManager.service", "teamviewerd.service",
 ]
 
 
