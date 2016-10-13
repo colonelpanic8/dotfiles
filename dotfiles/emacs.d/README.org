@@ -3145,7 +3145,6 @@ This mode seems to be better maintained than plantuml-mode
 *** racket
 #+BEGIN_SRC emacs-lisp
 (use-package racket-mode
-  :bind (("C-r" . racket-run))
   :mode "\\.rkt\\'")
 #+END_SRC
 * Programming
