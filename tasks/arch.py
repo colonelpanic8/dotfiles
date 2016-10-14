@@ -28,6 +28,7 @@ PACKAGES = [
     "xorg-utils", "playerctl", "pasystray", "dunst", "otf-fira-code",
     "ttf-mac-fonts", "otf-hermit", "ttf-font-awesome", "ttf-monaco", "tcpdump",
     "ngrep", "wireshark-gtk", "teamviewer", "mopidy-podcast",
+    "kdegraphics-okular",
 ]
 
 
