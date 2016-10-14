@@ -48,8 +48,7 @@ layouts = multiCol [1, 1] 2 0.01 (-0.5) ||| Full ||| Tall 1 (3/100) (1/2)
 myLayoutHook = avoidStruts . smartSpacing 10 . noBorders . minimize
                . boringWindows . mkToggle (MIRROR ?? EOT) $ layouts
 
-myStartup = do
-  spawn "systemctl --user start wm.target"
+myStartup = spawn "systemctl --user start wm.target"
 
 addKeys conf@XConfig {modMask = modm} =
     [ ((modm, xK_p), spawn "rofi -show drun")
