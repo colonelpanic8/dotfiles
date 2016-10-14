@@ -20,19 +20,20 @@ PACKAGES = [
     "network-manager-applet", "feh", "copyq", "imagemagick", "rcm", "rofi",
     "cabal-install", "pavucontrol", "lsof", "fbset", "git-subrepo", "trayer",
     "ttf-font-awesome", "conky", "lemonbar", "razercfg", "xdotool", "xclip",
-    "udiskie", "strace", "emojione-color-font", "hub", "plantuml",
-    "noto-fonts-cjk", "adapta-gtk-theme", "numix-icon-theme-git", "jq",
-    "android-sdk-platform-tools", "android-sdk", "keepassx-http", "global",
-    "screencloud", "mopidy-spotify", "rcm", "xsettingsd-git", "aspell-en",
-    "festival", "festival-freebsoft-utils", "hsetroot", "imwheel", "remmina",
-    "racket", "xorg-utils", "playerctl", "pasystray", "dunst", "otf-fira-code",
+    "udiskie", "strace", "emojione-color-font", "hub", "plantuml", "jq",
+    "noto-fonts-cjk", "adapta-gtk-theme", "numix-icon-theme-git", "global",
+    "android-sdk-platform-tools", "android-sdk", "keepassx-http", "aspell-en",
+    "screencloud", "mopidy-spotify", "rcm", "xsettingsd-git", "festival",
+    "festival-freebsoft-utils", "hsetroot", "imwheel", "remmina", "racket",
+    "xorg-utils", "playerctl", "pasystray", "dunst", "otf-fira-code",
     "ttf-mac-fonts", "otf-hermit", "ttf-font-awesome", "ttf-monaco", "tcpdump",
-    "ngrep", "wireshark-gtk",
+    "ngrep", "wireshark-gtk", "teamviewer", "mopidy-podcast",
+    "kdegraphics-okular",
 ]
 
 
 SERVICES = [
-    "sshd.socket", "nvidia-persistenced.service", "NetworkManager.service",
+    "sshd.socket", "nvidia-persistenced.service", "NetworkManager.service", "teamviewerd.service",
 ]
 
 

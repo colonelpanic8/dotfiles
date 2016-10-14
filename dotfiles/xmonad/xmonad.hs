@@ -4,6 +4,7 @@ import System.Taffybar.Hooks.PagerHints (pagerHints)
 import XMonad hiding ( (|||) )
 import XMonad.Actions.CycleWS
 import XMonad.Actions.WindowBringer
+import XMonad.Actions.WorkspaceNames
 import XMonad.Config ()
 import XMonad.Hooks.EwmhDesktops
 import XMonad.Hooks.ManageDocks
@@ -18,6 +19,7 @@ import XMonad.Layout.NoBorders
 import XMonad.Layout.Spacing
 import qualified XMonad.StackSet as W
 import XMonad.Util.CustomKeys
+import XMonad.Util.NamedWindows (getName)
 
 main = xmonad $ ewmh $ pagerHints def
        { modMask = mod4Mask
@@ -27,18 +29,31 @@ main = xmonad $ ewmh $ pagerHints def
        , logHook = myLogHook
        , handleEventHook = docksEventHook <+> fullscreenEventHook
        , startupHook = myStartup
-       , keys = customKeys (\x -> []) addKeys
+       , keys = customKeys (const []) addKeys
        }
 
-myLogHook :: X()
 myLogHook = fadeInactiveLogHook 0.9
 
+automaticallySetWorkspaceNames = do
+  ws <- gets windowset
+  mapM_ setWorkspaceNameToFocusedWindow (W.workspaces ws)
+        where setWorkspaceNameToFocusedWindow workspace = do
+                                   namedWindows <- mapM getName $ take 2 $ W.integrate' $ W.stack workspace
+                                   setWorkspaceName (W.tag workspace) (concatMap show namedWindows)
+
 shiftThenView i = W.greedyView i . W.shift i
+
+layouts = multiCol [1, 1] 2 0.01 (-0.5) ||| Full ||| Tall 1 (3/100) (1/2)
+
+myLayoutHook = avoidStruts . smartSpacing 10 . noBorders . minimize
+               . boringWindows . mkToggle (MIRROR ?? EOT) $ layouts
+
+myStartup = spawn "systemctl --user start wm.target"
 
 addKeys conf@XConfig {modMask = modm} =
     [ ((modm, xK_p), spawn "rofi -show drun")
     , ((modm .|. shiftMask, xK_p), spawn "rofi -show run")
-    , ((modm, xK_g), spawn "rofi -show window")
+    , ((modm, xK_g), gotoMenuArgs' "rofi" ["-dmenu"])
     , ((modm .|. controlMask, xK_t), spawn
        "systemctl --user restart taffybar.service")
     , ((modm, xK_b), bringMenuArgs' "rofi" ["-dmenu"])
@@ -53,6 +68,7 @@ addKeys conf@XConfig {modMask = modm} =
     , ((mod3Mask, xK_e), moveTo Next EmptyWS)
     , ((mod3Mask .|. shiftMask, xK_e), shiftTo Next EmptyWS)
     , ((mod3Mask, xK_v), spawn "copyq_rofi.sh")
+    , ((mod3Mask, xK_p), spawn "system_password.sh")
 
     -- playerctl
     , ((mod3Mask, xK_f), spawn "playerctl play-pause")
@@ -68,7 +84,9 @@ addKeys conf@XConfig {modMask = modm} =
     , ((0, xF86XK_AudioMute), spawn "pactl set-sink-mute 0 toggle")
     , ((mod3Mask, xK_w), spawn "pactl set-sink-volume 0 +05%")
     , ((mod3Mask, xK_s), spawn "pactl set-sink-volume 0 -05%")
+
     ] ++
+
     -- Replace original moving stuff around + greedy view bindings
     [((additionalMask .|. modm, key), windows $ function workspace)
          | (workspace, key) <- zip (workspaces conf) [xK_1 .. xK_9]
@@ -77,12 +95,6 @@ addKeys conf@XConfig {modMask = modm} =
              , (W.shift, shiftMask)
              , (shiftThenView, controlMask)]]
 
-layouts = multiCol [1, 1] 2 0.01 (-0.5) ||| Full ||| tiled
-          where
-            tiled = Tall 1 (3/100) (1/2)
-
-myLayoutHook = avoidStruts . smartSpacing 10 . noBorders . minimize
-               . boringWindows . mkToggle (MIRROR ?? EOT) $ layouts
-
-myStartup = do
-  spawn "systemctl --user start wm.target"
+-- Local Variables:
+-- flycheck-ghc-args: ("-Wno-missing-signatures")
+-- End:

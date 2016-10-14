@@ -2448,8 +2448,10 @@ The following is taken from [[https://github.com/syl20bnr/spacemacs/blob/a650877
     (setq haskell-tags-on-save t)))
 #+END_SRC
 **** intero
+Intero seems to be causing hangs, so it has been disabled
 #+BEGIN_SRC emacs-lisp
 (use-package intero
+  :disabled t
   :demand t
   :after haskell-mode
   :config (add-hook 'haskell-mode-hook 'intero-mode))
@@ -3145,7 +3147,6 @@ This mode seems to be better maintained than plantuml-mode
 *** racket
 #+BEGIN_SRC emacs-lisp
 (use-package racket-mode
-  :bind (("C-r" . racket-run))
   :mode "\\.rkt\\'")
 #+END_SRC
 * Programming
