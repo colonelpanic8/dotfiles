@@ -4,6 +4,7 @@ import System.Taffybar.Hooks.PagerHints (pagerHints)
 import XMonad hiding ( (|||) )
 import XMonad.Actions.CycleWS
 import XMonad.Actions.WindowBringer
+import XMonad.Actions.WorkspaceNames
 import XMonad.Config ()
 import XMonad.Hooks.EwmhDesktops
 import XMonad.Hooks.ManageDocks
@@ -18,6 +19,7 @@ import XMonad.Layout.NoBorders
 import XMonad.Layout.Spacing
 import qualified XMonad.StackSet as W
 import XMonad.Util.CustomKeys
+import XMonad.Util.NamedWindows (getName)
 
 main = xmonad $ ewmh $ pagerHints def
        { modMask = mod4Mask
@@ -31,6 +33,13 @@ main = xmonad $ ewmh $ pagerHints def
        }
 
 myLogHook = fadeInactiveLogHook 0.9
+
+automaticallySetWorkspaceNames = do
+  ws <- gets windowset
+  mapM_ setWorkspaceNameToFocusedWindow (W.workspaces ws)
+        where setWorkspaceNameToFocusedWindow workspace = do
+                                   namedWindows <- mapM getName $ take 2 $ W.integrate' $ W.stack workspace
+                                   setWorkspaceName (W.tag workspace) (concatMap show namedWindows)
 
 shiftThenView i = W.greedyView i . W.shift i
 
@@ -86,3 +95,7 @@ addKeys conf@XConfig {modMask = modm} =
              [ (W.greedyView, 0)
              , (W.shift, shiftMask)
              , (shiftThenView, controlMask)]]
+
+-- Local Variables:
+-- flycheck-ghc-args: ("-Wno-missing-signatures")
+-- End:
