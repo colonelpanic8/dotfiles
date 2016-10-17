@@ -2677,7 +2677,7 @@ Intero seems to be causing hangs, so it has been disabled
     (sp-local-pair 'org-mode "~" "~")
 
     (add-to-list
-     'org-src-lang-modes '("plantuml" . puml))
+     'org-src-lang-modes '("plantuml" . plantuml))
 
     (org-babel-do-load-languages
      'org-babel-load-languages
@@ -3095,11 +3095,11 @@ Intero seems to be causing hangs, so it has been disabled
   (progn
     (add-hook 'markdown-mode-hook 'imalison:disable-linum-mode)))
 #+END_SRC
-*** puml-mode (plantuml-support)
+*** plantuml-mode
 This mode seems to be better maintained than plantuml-mode
 #+BEGIN_SRC emacs-lisp
-(use-package puml-mode
-  :commands puml-mode
+(use-package plantuml-mode
+  :commands plantuml-mode
   :mode ("\\.puml\\'" "\\.plantuml\\'")
   :preface
   (progn
@@ -3111,14 +3111,14 @@ This mode seems to be better maintained than plantuml-mode
                      (--first (s-ends-with? ".jar" it) (directory-files plantuml-dir))))
                   (filepath (when filename
                               (imalison:join-paths plantuml-dir filename))))
-             (setq puml-plantuml-jar-path filepath
+             (setq plantuml-jar-path filepath
                    org-plantuml-jar-path filepath)))
           ((equal system-type 'gnu/linux)
            (let ((filepath "/opt/plantuml/plantuml.jar"))
-             (setq puml-plantuml-jar-path filepath
+             (setq plantuml-jar-path filepath
                    org-plantuml-jar-path filepath))))
     (add-to-list
-     'org-src-lang-modes '("plantuml" . puml))))
+     'org-src-lang-modes '("plantuml" . plantuml))))
 #+END_SRC
 *** wsd-mode
 #+BEGIN_SRC emacs-lisp
