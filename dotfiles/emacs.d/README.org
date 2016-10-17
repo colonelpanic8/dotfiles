@@ -4153,10 +4153,12 @@ load-theme hook (See the heading below).
         (set-face-attribute
          'default nil :height imalison:default-font-size-pt))
     (progn
-          (load-theme 'source-code-pro t)
-          (message "not setting font")))
-    (load-theme imalison:dark-theme t)
-    (imalison:remove-fringe-and-hl-line-mode))
+      (load-theme 'source-code-pro t)
+      (message "not setting font")))
+  (setq powerline-default-separator (if (display-graphic-p) 'wave 'utf-8))
+  (load-theme imalison:dark-theme t)
+  (spaceline-compile)
+  (imalison:remove-fringe-and-hl-line-mode))
 
 ;; This is needed because you can't set the font or theme at daemon start-up.
 ;; (when (display-graphic-p) (imalison:appearance))
