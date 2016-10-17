@@ -1272,6 +1272,7 @@ https://github.com/alpaker/Fill-Column-Indicator/issues/21 for more details
       "Resize Font"
       ("-" imalison:font-size-decr "Decrease")
       ("=" imalison:font-size-incr "Increase")
+      ("+" imalison:font-size-incr "Increase")
       ("d" imalison:font-size-decr "Decrease")
       ("i" imalison:font-size-incr "Increase")
       ("f" set-frame-font "Set Frame Font")
