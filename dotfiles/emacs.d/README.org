@@ -131,9 +131,13 @@ Sets environment variables by starting a shell.
         (exec-path-from-shell-initialize)))))
 #+END_SRC
 ** Non-Forking Shell Command To String
-Emacs' built in ~shell-command-to-string~ function has the downside that it forks a new shell process every time it is executed. This means that any shell startup cost is incurred when this function is called.
+Emacs' built in ~shell-command-to-string~ function has the downside that it
+forks a new shell process every time it is executed. This means that any shell
+startup cost is incurred when this function is called.
 
-The following implementation uses eshell's ~eshell-search-path~ to find the binary (which is the only reason ~shell-comand-to-string~ is typically used anyway), but it avoids incurring any shell-startup cost.
+The following implementation uses eshell's ~eshell-search-path~ to find the
+binary (which is the only reason ~shell-comand-to-string~ is typically used
+anyway), but it avoids incurring any shell-startup cost.
 
 This was originally inspired by [[https://github.com/bbatsov/projectile/issues/1044][this issue]].
 #+BEGIN_SRC emacs-lisp
