@@ -778,6 +778,22 @@ A macro for composing functions together to build an interactive command to copy
     (message "Setting lexical-binding to: %s" new-binding)
     (setq lexical-binding new-binding)))
 #+END_SRC
+** Sync kill ring with copyq
+#+BEGIN_SRC emacs-lisp
+(defun imalison:copyq-get (i)
+  (imalison:shell-command-to-string (format "copyq eval read(%s)" i)))
+
+(defun imalison:copyq-sync ()
+  (interactive)
+  (let ((missing-items (cl-loop for i from 0 to (string-to-number
+                         (imalison:shell-command-to-string "copyq eval size()"))
+         for item = (imalison:copyq-get i)
+         when (not (member item kill-ring))
+         collect item)))
+    (setq kill-ring (nconc kill-ring missing-items))))
+
+(run-with-idle-timer 10 nil 'imalison:copyq-sync)
+#+END_SRC
 ** Other
 The stuff in this section is pretty crusty. I don't think its used anywhere, but
 I keep it around just in case I need it.
