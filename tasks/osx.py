@@ -9,8 +9,8 @@ from . import util
 def setup(ctx):
     brew(ctx)
     brew_essential(ctx)
-    access_for_assistive_devices(ctx)
     tccutil(ctx)
+    access_for_assistive_devices(ctx)
     karabiner(ctx)
     locate(ctx)
     set_path_for_launchd(ctx)
@@ -93,15 +93,16 @@ def access_for_assistive_devices(ctx):
         user_application = os.path.expanduser('~' + app_string)
         access_if_exists(ctx, user_application)
         access_if_exists(ctx, app_string)
-        access_if_exists(
-            ctx,
-            "/Applications/Karabiner.app/"
-        )
-        access_if_exists(
-            ctx,
-            "/Applications/Karabiner.app/Contents/Applications/"
-            "Karabiner_AXNotifier.app"
-        )
+
+    access_if_exists(
+        ctx,
+        "/Applications/Karabiner.app/"
+    )
+    access_if_exists(
+        ctx,
+        "/Applications/Karabiner.app/Contents/Applications/"
+        "Karabiner_AXNotifier.app"
+    )
 
 SYNERGY_BINARIES_PATH = '/Applications/Synergy.app/Contents/MacOS/'
 
@@ -114,18 +115,18 @@ SCRIPTS_NEEDING_ASSISTIVE_DEVICE_ACCESS = [
 
 @ctask
 def tccutil(ctx):
+    ctx.run('wget -O "$HOME/.lib/bin/tccutil.py" "https://raw.githubusercontent.com/IvanMalison/tccutil/master/tccutil.py"')
+    ctx.run('chmod 755 "$HOME/.lib/bin/tccutil.py"')
     for script in SCRIPTS_NEEDING_ASSISTIVE_DEVICE_ACCESS:
-        ctx.run(
-            'sudo tccutil -i "{}"'.format(script)
-        )
-        ctx.run(
-            'sudo tccutil -e "{}"'.format(script)
-        )
+        command = 'sudo tccutil.py -i "{0}" && sudo tccutil.py -e "{0}"'.format(script)
+        print(command)
+        ctx.run(command)
 
 
 def access_if_exists(ctx, app_string):
+    print("attempting access for {0}".format(app_string))
     if os.path.exists(app_string):
-        print("enabling access for {0}", app_string)
+        print("enabling access for {0}".format(app_string))
         ctx.run(
             'zsh -c "source ~/.zshrc && '
             'enable_access_for_assistive_devices \"{0}\""'.format(

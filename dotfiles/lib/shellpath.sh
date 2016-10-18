@@ -114,13 +114,11 @@ function _tex_setup {
 }
 
 function _racket_setup {
-    if command_exists; then
-        if is_osx; then
-            local racket_base_path="$(brew --prefix racket)"
-            # XXX: Seems maybe this is not needed
-            # local newest_version_number="$(ls \"$racket_base_path\" | sort -Vr | head -n1)"
-            add_to_path "$racket_base_path/bin" --before
-        fi
+    if is_osx; then
+        local racket_base_path="$(brew --prefix racket)"
+        # XXX: Seems maybe this is not needed
+        # local newest_version_number="$(ls \"$racket_base_path\" | sort -Vr | head -n1)"
+        add_to_path "$racket_base_path/bin" --before
     fi
 }
 
