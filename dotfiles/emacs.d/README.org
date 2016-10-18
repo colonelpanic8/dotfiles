@@ -792,7 +792,8 @@ A macro for composing functions together to build an interactive command to copy
          collect item)))
     (setq kill-ring (nconc kill-ring missing-items))))
 
-(run-with-idle-timer 10 nil 'imalison:copyq-sync)
+(when (eshell-search-path "copyq")
+ (run-with-idle-timer 10 nil 'imalison:copyq-sync))
 #+END_SRC
 ** Other
 The stuff in this section is pretty crusty. I don't think its used anywhere, but
