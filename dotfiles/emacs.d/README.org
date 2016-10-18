@@ -4021,6 +4021,7 @@ Ensure all themes that I use are installed:
 #+BEGIN_SRC emacs-lisp
 (use-package spaceline-config
   :ensure spaceline
+  :commands spaceline-compile
   :preface
   (progn
     (defun spaceline-gh-notifier-disable-default-notifier-modeline (&rest args)
@@ -4035,9 +4036,11 @@ Ensure all themes that I use are installed:
     (setq powerline-default-separator (random-choice '(butt slant wave)))
     (setq spaceline-workspace-numbers-unicode t
           spaceline-window-numbers-unicode t)
+
     (if (display-graphic-p)
         (setq-default powerline-default-separator 'wave)
       (setq-default powerline-default-separator 'utf-8))
+
     (spaceline-define-segment imalison:muni
       "Display the number of minutes until the next muni train comes"
       (format "🚇%s" (imalison:get-cached-muni-time))
@@ -4048,7 +4051,14 @@ Ensure all themes that I use are installed:
       (format "✉%s" github-notifier-unread-count)
       :when (> github-notifier-unread-count 0))
 
-    (setq powerline-height 25)
+    (advice-add 'pl/separator-height :around
+                (lambda (function &rest args)
+                  (+ (apply function args) 10)))
+
+    ;; This needs to be executed after setting the font because the separators
+    ;; need to get regenerated
+    (advice-add 'imalison:set-font-size :after 'spaceline-compile)
+
     (spaceline-helm-mode)
     ;; 'spaceline-gh-notifier and 'imalison:muni disabled for now
     (spaceline-spacemacs-theme)))
