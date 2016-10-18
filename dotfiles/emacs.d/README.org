@@ -4008,6 +4008,11 @@ Ensure all themes that I use are installed:
 
 (ensure-packages-installed packages-appearance)
 #+END_SRC
+** all-the-icons
+#+BEGIN_SRC emacs-lisp
+(use-package all-the-icons
+  :demand t)
+#+END_SRC
 ** spaceline
 *** Disable sRGB colorspace to make powerline separators work
 #+BEGIN_SRC emacs-lisp
