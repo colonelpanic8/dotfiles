@@ -605,25 +605,29 @@ This was taken from [[http://emacs.stackexchange.com/questions/7583/transiently-
       (cond ((eq system-type 'darwin) 120)
             ((eq system-type 'gnu/linux) 105)))
 
-(cl-defun imalison:set-font-size (&optional (arg 10))
+(defvar imalison:huge-font-size 280)
+
+(defun imalison:current-font-size ()
+  (plist-get (custom-face-attributes-get 'default nil) :height))
+
+(defun imalison:set-font-size (size)
+  (set-face-attribute 'default nil :height size))
+
+(cl-defun imalison:modify-font-size (&optional (arg 10))
   (interactive "p")
-  (let ((current-height
-         (plist-get (custom-face-attributes-get 'default nil) :height)))
-    (set-face-attribute 'default nil :height
-                      (+ current-height arg))))
+  (imalison:set-font-size (+ (imalison:current-font-size) arg)))
 
 (defun imalison:font-size-incr ()
   (interactive)
-  (imalison:set-font-size +10))
+  (imalison:modify-font-size +10))
 
 (defun imalison:font-size-decr ()
   (interactive)
-  (imalison:set-font-size -10))
+  (imalison:modify-font-size -10))
 
 (defun imalison:font-size-reset ()
   (interactive)
-  (set-face-attribute 'default nil
-                      :height imalison:default-font-size-pt))
+  (imalison:set-font-size imalison:default-font-size-pt))
 #+END_SRC
 ** Message Result Builder
 This macro is useful when writing emacs-lisp. It creates a new interactive command that shows you the result of evaluating a function, with optionally provided arguments.
@@ -1268,7 +1272,7 @@ https://github.com/alpaker/Fill-Column-Indicator/issues/21 for more details
   :config
   (progn
     (defhydra imalison:hydra-font-resize
-      nil
+      nil 
       "Resize Font"
       ("-" imalison:font-size-decr "Decrease")
       ("=" imalison:font-size-incr "Increase")
