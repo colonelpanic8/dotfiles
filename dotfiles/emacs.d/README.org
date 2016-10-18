@@ -539,7 +539,6 @@ the ~:around~ keyword of advice-add.
 
 (imalison:named-builder imalison:compose-around-builder)
  #+END_SRC
-*** Do When
 *** Measure Time
 #+BEGIN_SRC emacs-lisp
 (defmacro imalison:measure-time (&rest body)
