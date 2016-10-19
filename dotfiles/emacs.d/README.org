@@ -2530,6 +2530,16 @@ Intero seems to be causing hangs, so it has been disabled
                   ("M-," . pop-tag-mark)))
     (add-hook 'c-mode-common-hook 'imalison:cc-mode-hook)))
 #+END_SRC
+*** C#
+#+BEGIN_SRC emacs-lisp
+(use-package csharp-mode
+  :mode "\\.cs\\'")
+#+END_SRC
+*** racket
+#+BEGIN_SRC emacs-lisp
+(use-package racket-mode
+  :mode "\\.rkt\\'")
+#+END_SRC
 ** Data/Config/Protocol
 *** thrift
 #+BEGIN_SRC emacs-lisp
@@ -3169,16 +3179,6 @@ This mode seems to be better maintained than plantuml-mode
 #+BEGIN_SRC emacs-lisp
 (use-package jq-mode
   :mode "\\.jq\\'")
-#+END_SRC
-*** C#
-#+BEGIN_SRC emacs-lisp
-(use-package csharp-mode
-  :mode "\\.cs\\'")
-#+END_SRC
-*** racket
-#+BEGIN_SRC emacs-lisp
-(use-package racket-mode
-  :mode "\\.rkt\\'")
 #+END_SRC
 * Programming
 ** realgud
