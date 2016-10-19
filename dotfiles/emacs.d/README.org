@@ -135,15 +135,12 @@ Emacs' built in ~shell-command-to-string~ function has the downside that it
 forks a new shell process every time it is executed. This means that any shell
 startup cost is incurred when this function is called.
 
-The following implementation uses eshell's ~eshell-search-path~ to find the
+The following implementation uses eshell's ~executable-find~ to find the
 binary (which is the only reason ~shell-comand-to-string~ is typically used
 anyway), but it avoids incurring any shell-startup cost.
 
 This was originally inspired by [[https://github.com/bbatsov/projectile/issues/1044][this issue]].
 #+BEGIN_SRC emacs-lisp
-;; We use `eshell-search-path' for this hack
-(require 'eshell)
-
 (defun imalison:call-process-to-string (program &rest args)
   (with-temp-buffer
     (apply 'call-process program nil (current-buffer) nil args)
@@ -152,7 +149,7 @@ This was originally inspired by [[https://github.com/bbatsov/projectile/issues/1
 (defun imalison:get-call-process-args-from-shell-command (command)
   (cl-destructuring-bind
       (the-command . args) (split-string command " ")
-    (let ((binary-path (eshell-search-path the-command)))
+    (let ((binary-path (executable-find the-command)))
       (when binary-path
         (cons binary-path args)))))
 
@@ -770,7 +767,7 @@ A macro for composing functions together to build an interactive command to copy
 
 (defun imalison:edit-script ()
   (interactive)
-  (find-file (eshell-search-path
+  (find-file (executable-find
               (ido-completing-read "Select a script to edit: "
                                    (imalison:get-executables-on-path)))))
 #+END_SRC
@@ -796,7 +793,7 @@ A macro for composing functions together to build an interactive command to copy
          collect item)))
     (setq kill-ring (nconc kill-ring missing-items))))
 
-(when (eshell-search-path "copyq")
+(when (executable-find "copyq")
  (run-with-idle-timer 10 nil 'imalison:copyq-sync))
 #+END_SRC
 ** Other
@@ -1815,7 +1812,7 @@ I don't use auto-complete at all, so I have set up a hook to automatically disab
 *** magithub
 #+BEGIN_SRC emacs-lisp
 (use-package magithub
-  :if (eshell-search-path "hub")
+  :if (executable-find "hub")
   :after magit
   :disabled t)
 #+END_SRC
