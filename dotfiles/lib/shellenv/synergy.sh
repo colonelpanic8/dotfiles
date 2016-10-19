@@ -1,7 +1,7 @@
 SYNERGY_CONF="$HOME/.synergy.conf"
 
 synergy_start_client_at() {
-    ssh "$1" 'test -z $(pgrep synergyc) || synergyc '"$(localip)"'; ps aux | grep synergyc'
+    ssh "$1" '[[ -z "$(pgrep synergyc)" ]] && synergyc '"$(localip)"
 }
 
 synergy_start_server_here() {
