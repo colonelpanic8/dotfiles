@@ -3096,7 +3096,6 @@ Intero seems to be causing hangs, so it has been disabled
     (add-hook 'markdown-mode-hook 'imalison:disable-linum-mode)))
 #+END_SRC
 *** plantuml-mode
-This mode seems to be better maintained than plantuml-mode
 #+BEGIN_SRC emacs-lisp
 (use-package plantuml-mode
   :commands plantuml-mode
