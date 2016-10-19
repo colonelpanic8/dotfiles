@@ -3720,7 +3720,15 @@ Not really sure what this is
 ** gmail-message-mode
 This is useful with server mode when editing gmail messages. I think that it is not currently working, or it may need to be manually enabled.
 #+BEGIN_SRC emacs-lisp
-(use-package gmail-message-mode)
+(use-package gmail-message-mode
+  :demand t)
+#+END_SRC
+** ham-mode
+#+BEGIN_SRC emacs-lisp
+(use-package ham-mode
+  :config
+  (progn
+    (setq ham-mode-html-to-markdown-command '("pandoc" "--from" "html" "--to" "markdown" file))))
 #+END_SRC
 ** alert
 #+BEGIN_SRC emacs-lisp
