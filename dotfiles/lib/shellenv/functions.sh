@@ -445,6 +445,10 @@ function in_git_directory {
     [ -d .git ]
 }
 
+function process_running {
+    [[ ! -z "$(pgrep $@)" ]]
+}
+
 function which_readlink {
     readlink -f "$(which $1)"
 }
