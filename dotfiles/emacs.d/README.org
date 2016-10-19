@@ -9,8 +9,13 @@
 #+HTML_HEAD: <script type="text/javascript" src="http://www.pirilampo.org/styles/readtheorg/js/readtheorg.js"></script>
 
 * About
-This README is a literate version of my emacs configuration, but it
-also serves as the README for my dotfiles.
+This is my emacs configuration in literate form. It aspires to be like the
+incredibly well commented literate configurations of [[http://pages.sachachua.com/.emacs.d/Sacha.html][Sacha Chua]] and [[http://doc.rix.si/cce/cce.html][Ryan Rix]],
+but I haven't quite gotten around to polishing it to the point where nearly
+every section has commentary explaining why it is there, as those two have.
+
+Still, there are definitely a few sections of which I am quite proud, and that
+others may find to be useful.
 * Early
 The configurations in this section need to occur early in emacs startup for some reason or another.
 ** Lexical Binding
@@ -131,15 +136,16 @@ Sets environment variables by starting a shell.
         (exec-path-from-shell-initialize)))))
 #+END_SRC
 ** Non-Forking Shell Command To String
-Emacs' built in ~shell-command-to-string~ function has the downside that it forks a new shell process every time it is executed. This means that any shell startup cost is incurred when this function is called.
+Emacs' built in ~shell-command-to-string~ function has the downside that it
+forks a new shell process every time it is executed. This means that any shell
+startup cost is incurred when this function is called.
 
-The following implementation uses eshell's ~eshell-search-path~ to find the binary (which is the only reason ~shell-comand-to-string~ is typically used anyway), but it avoids incurring any shell-startup cost.
+The following implementation uses eshell's ~executable-find~ to find the
+binary (which is the only reason ~shell-comand-to-string~ is typically used
+anyway), but it avoids incurring any shell-startup cost.
 
 This was originally inspired by [[https://github.com/bbatsov/projectile/issues/1044][this issue]].
 #+BEGIN_SRC emacs-lisp
-;; We use `eshell-search-path' for this hack
-(require 'eshell)
-
 (defun imalison:call-process-to-string (program &rest args)
   (with-temp-buffer
     (apply 'call-process program nil (current-buffer) nil args)
@@ -148,7 +154,7 @@ This was originally inspired by [[https://github.com/bbatsov/projectile/issues/1
 (defun imalison:get-call-process-args-from-shell-command (command)
   (cl-destructuring-bind
       (the-command . args) (split-string command " ")
-    (let ((binary-path (eshell-search-path the-command)))
+    (let ((binary-path (executable-find the-command)))
       (when binary-path
         (cons binary-path args)))))
 
@@ -539,7 +545,6 @@ the ~:around~ keyword of advice-add.
 
 (imalison:named-builder imalison:compose-around-builder)
  #+END_SRC
-*** Do When
 *** Measure Time
 #+BEGIN_SRC emacs-lisp
 (defmacro imalison:measure-time (&rest body)
@@ -601,29 +606,38 @@ the ~:around~ keyword of advice-add.
 ** Font Size
 This was taken from [[http://emacs.stackexchange.com/questions/7583/transiently-adjust-text-size-in-mode-line-and-minibuffer][here]] but it has diverged significantly from the original.
 #+BEGIN_SRC emacs-lisp
-(setq imalison:default-font-size-pt
+(defvar imalison:default-font-size-pt
       (cond ((eq system-type 'darwin) 120)
             ((eq system-type 'gnu/linux) 105)))
 
-(cl-defun imalison:set-font-size (&optional (arg 10))
+(defvar imalison:huge-font-size 280)
+
+(defun imalison:current-font-size ()
+  (plist-get (custom-face-attributes-get 'default nil) :height))
+
+(defun imalison:set-font-size (size)
+  (interactive (list (string-to-number (read-string "Enter a font size: "))))
+  (set-face-attribute 'default nil :height size))
+
+(defun imalison:set-huge-font-size ()
+  (interactive)
+  (imalison:set-font-size imalison:huge-font-size))
+
+(cl-defun imalison:modify-font-size (&optional (arg 10))
   (interactive "p")
-  (let ((current-height
-         (plist-get (custom-face-attributes-get 'default nil) :height)))
-    (set-face-attribute 'default nil :height
-                      (+ current-height arg))))
+  (imalison:set-font-size (+ (imalison:current-font-size) arg)))
 
 (defun imalison:font-size-incr ()
   (interactive)
-  (imalison:set-font-size +10))
+  (imalison:modify-font-size +10))
 
 (defun imalison:font-size-decr ()
   (interactive)
-  (imalison:set-font-size -10))
+  (imalison:modify-font-size -10))
 
 (defun imalison:font-size-reset ()
   (interactive)
-  (set-face-attribute 'default nil
-                      :height imalison:default-font-size-pt))
+  (imalison:set-font-size imalison:default-font-size-pt))
 #+END_SRC
 ** Message Result Builder
 This macro is useful when writing emacs-lisp. It creates a new interactive command that shows you the result of evaluating a function, with optionally provided arguments.
@@ -758,7 +772,7 @@ A macro for composing functions together to build an interactive command to copy
 
 (defun imalison:edit-script ()
   (interactive)
-  (find-file (eshell-search-path
+  (find-file (executable-find
               (ido-completing-read "Select a script to edit: "
                                    (imalison:get-executables-on-path)))))
 #+END_SRC
@@ -769,6 +783,23 @@ A macro for composing functions together to build an interactive command to copy
   (let ((new-binding (not lexical-binding)))
     (message "Setting lexical-binding to: %s" new-binding)
     (setq lexical-binding new-binding)))
+#+END_SRC
+** Sync kill ring with copyq
+#+BEGIN_SRC emacs-lisp
+(defun imalison:copyq-get (i)
+  (imalison:shell-command-to-string (format "copyq eval read(%s)" i)))
+
+(defun imalison:copyq-sync ()
+  (interactive)
+  (let ((missing-items (cl-loop for i from 0 to (string-to-number
+                         (imalison:shell-command-to-string "copyq eval size()"))
+         for item = (imalison:copyq-get i)
+         when (not (member item kill-ring))
+         collect item)))
+    (setq kill-ring (nconc kill-ring missing-items))))
+
+(when (executable-find "copyq")
+ (run-with-idle-timer 10 nil 'imalison:copyq-sync))
 #+END_SRC
 ** Other
 The stuff in this section is pretty crusty. I don't think its used anywhere, but
@@ -1268,12 +1299,14 @@ https://github.com/alpaker/Fill-Column-Indicator/issues/21 for more details
   :config
   (progn
     (defhydra imalison:hydra-font-resize
-      nil
+      nil 
       "Resize Font"
       ("-" imalison:font-size-decr "Decrease")
-      ("=" imalison:font-size-incr "Increase")
       ("d" imalison:font-size-decr "Decrease")
+      ("=" imalison:font-size-incr "Increase")
+      ("+" imalison:font-size-incr "Increase")
       ("i" imalison:font-size-incr "Increase")
+      ("h" imalison:set-huge-font-size "Huge")
       ("f" set-frame-font "Set Frame Font")
       ("0" imalison:font-size-reset "Reset to default size"))
 
@@ -1784,7 +1817,7 @@ I don't use auto-complete at all, so I have set up a hook to automatically disab
 *** magithub
 #+BEGIN_SRC emacs-lisp
 (use-package magithub
-  :if (eshell-search-path "hub")
+  :if (executable-find "hub")
   :after magit
   :disabled t)
 #+END_SRC
@@ -2499,6 +2532,16 @@ Intero seems to be causing hangs, so it has been disabled
                   ("M-," . pop-tag-mark)))
     (add-hook 'c-mode-common-hook 'imalison:cc-mode-hook)))
 #+END_SRC
+*** C#
+#+BEGIN_SRC emacs-lisp
+(use-package csharp-mode
+  :mode "\\.cs\\'")
+#+END_SRC
+*** racket
+#+BEGIN_SRC emacs-lisp
+(use-package racket-mode
+  :mode "\\.rkt\\'")
+#+END_SRC
 ** Data/Config/Protocol
 *** thrift
 #+BEGIN_SRC emacs-lisp
@@ -3138,16 +3181,6 @@ Intero seems to be causing hangs, so it has been disabled
 (use-package jq-mode
   :mode "\\.jq\\'")
 #+END_SRC
-*** C#
-#+BEGIN_SRC emacs-lisp
-(use-package csharp-mode
-  :mode "\\.cs\\'")
-#+END_SRC
-*** racket
-#+BEGIN_SRC emacs-lisp
-(use-package racket-mode
-  :mode "\\.rkt\\'")
-#+END_SRC
 * Programming
 ** realgud
 realgud provides debugging support with many external debuggers in emacs
@@ -3281,7 +3314,8 @@ crux-reopen-as-root-mode makes it so that any file owned by root will automatica
 (use-package crux
   :demand t
   :bind (("C-c C-s" . crux-sudo-edit)
-         ("C-c C-r" . crux-eval-and-replace))
+         ("C-c C-r" . crux-eval-and-replace)
+         ("C-c o" . crux-open-with))
   :config
   (progn
     (crux-reopen-as-root-mode)))
@@ -3690,7 +3724,15 @@ Not really sure what this is
 ** gmail-message-mode
 This is useful with server mode when editing gmail messages. I think that it is not currently working, or it may need to be manually enabled.
 #+BEGIN_SRC emacs-lisp
-(use-package gmail-message-mode)
+(use-package gmail-message-mode
+  :demand t)
+#+END_SRC
+** ham-mode
+#+BEGIN_SRC emacs-lisp
+(use-package ham-mode
+  :config
+  (progn
+    (setq ham-mode-html-to-markdown-command '("pandoc" "--from" "html" "--to" "markdown" file))))
 #+END_SRC
 ** alert
 #+BEGIN_SRC emacs-lisp
@@ -3996,6 +4038,11 @@ Ensure all themes that I use are installed:
 
 (ensure-packages-installed packages-appearance)
 #+END_SRC
+** all-the-icons
+#+BEGIN_SRC emacs-lisp
+(use-package all-the-icons
+  :demand t)
+#+END_SRC
 ** spaceline
 *** Disable sRGB colorspace to make powerline separators work
 #+BEGIN_SRC emacs-lisp
@@ -4005,6 +4052,7 @@ Ensure all themes that I use are installed:
 #+BEGIN_SRC emacs-lisp
 (use-package spaceline-config
   :ensure spaceline
+  :commands spaceline-compile
   :preface
   (progn
     (defun spaceline-gh-notifier-disable-default-notifier-modeline (&rest args)
@@ -4019,9 +4067,11 @@ Ensure all themes that I use are installed:
     (setq powerline-default-separator (random-choice '(butt slant wave)))
     (setq spaceline-workspace-numbers-unicode t
           spaceline-window-numbers-unicode t)
+
     (if (display-graphic-p)
         (setq-default powerline-default-separator 'wave)
       (setq-default powerline-default-separator 'utf-8))
+
     (spaceline-define-segment imalison:muni
       "Display the number of minutes until the next muni train comes"
       (format "🚇%s" (imalison:get-cached-muni-time))
@@ -4032,7 +4082,14 @@ Ensure all themes that I use are installed:
       (format "✉%s" github-notifier-unread-count)
       :when (> github-notifier-unread-count 0))
 
-    (setq powerline-height 25)
+    (advice-add 'pl/separator-height :around
+                (lambda (function &rest args)
+                  (+ (apply function args) 10)))
+
+    ;; This needs to be executed after setting the font because the separators
+    ;; need to get regenerated
+    (advice-add 'imalison:set-font-size :after 'spaceline-compile)
+
     (spaceline-helm-mode)
     ;; 'spaceline-gh-notifier and 'imalison:muni disabled for now
     (spaceline-spacemacs-theme)))
@@ -4151,10 +4208,12 @@ load-theme hook (See the heading below).
         (set-face-attribute
          'default nil :height imalison:default-font-size-pt))
     (progn
-          (load-theme 'source-code-pro t)
-          (message "not setting font")))
-    (load-theme imalison:dark-theme t)
-    (imalison:remove-fringe-and-hl-line-mode))
+      (load-theme 'source-code-pro t)
+      (message "not setting font")))
+  (setq powerline-default-separator (if (display-graphic-p) 'wave 'utf-8))
+  (load-theme imalison:dark-theme t)
+  (spaceline-compile)
+  (imalison:remove-fringe-and-hl-line-mode))
 
 ;; This is needed because you can't set the font or theme at daemon start-up.
 ;; (when (display-graphic-p) (imalison:appearance))

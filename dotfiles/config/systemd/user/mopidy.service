@@ -1,0 +1,10 @@
+[Unit]
+Description=mopidy
+
+[Service]
+Type=simple
+ExecStart=/usr/bin/env mopidy
+ExecStop=/usr/bin/pkill mopidy
+
+[Install]
+WantedBy=wm.target

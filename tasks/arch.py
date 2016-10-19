@@ -27,13 +27,13 @@ PACKAGES = [
     "festival-freebsoft-utils", "hsetroot", "imwheel", "remmina", "racket",
     "xorg-utils", "playerctl", "pasystray", "dunst", "otf-fira-code",
     "ttf-mac-fonts", "otf-hermit", "ttf-font-awesome", "ttf-monaco", "tcpdump",
-    "ngrep", "wireshark-gtk", "teamviewer", "mopidy-podcast",
-    "kdegraphics-okular",
+    "ngrep", "wireshark-gtk", "teamviewer", "mopidy-podcast", "tigervnc",
+    "kdegraphics-okular", "pandoc",
 ]
 
 
 SERVICES = [
-    "sshd.socket", "nvidia-persistenced.service", "NetworkManager.service", "teamviewerd.service",
+    "sshd.socket", "nvidia-persistenced.service", "NetworkManager.service", "teamviewerd.service", "--user vncserver@:1"
 ]
 
 
