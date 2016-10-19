@@ -9,8 +9,13 @@
 #+HTML_HEAD: <script type="text/javascript" src="http://www.pirilampo.org/styles/readtheorg/js/readtheorg.js"></script>
 
 * About
-This README is a literate version of my emacs configuration, but it
-also serves as the README for my dotfiles.
+This is my emacs configuration in literate form. It aspires to be like the
+incredibly well commented literate configurations of [[http://pages.sachachua.com/.emacs.d/Sacha.html][Sacha Chua]] and [[http://doc.rix.si/cce/cce.html][Ryan Rix]],
+but I haven't quite gotten around to polishing it to the point where nearly
+every section has commentary explaining why it is there, as those two have.
+
+Still, there are definitely a few sections of which I am quite proud, and that
+others may find to be useful.
 * Early
 The configurations in this section need to occur early in emacs startup for some reason or another.
 ** Lexical Binding
