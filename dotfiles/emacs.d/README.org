@@ -3313,7 +3313,8 @@ crux-reopen-as-root-mode makes it so that any file owned by root will automatica
 (use-package crux
   :demand t
   :bind (("C-c C-s" . crux-sudo-edit)
-         ("C-c C-r" . crux-eval-and-replace))
+         ("C-c C-r" . crux-eval-and-replace)
+         ("C-c o" . crux-open-with))
   :config
   (progn
     (crux-reopen-as-root-mode)))
