@@ -1255,7 +1255,10 @@ proced is an top like utility that runs inside of emacs. The following sets auto
 #+END_SRC
 ** eyebrowse
 #+BEGIN_SRC emacs-lisp
-(use-package eyebrowse)
+(use-package eyebrowse
+  :defer 1
+  :config
+  (progn (eyebrowse-mode +1)))
 #+END_SRC
 ** fill-column-indicator
 This interferes with too many other packages. See
