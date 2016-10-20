@@ -1,5 +1,6 @@
 tap 'thoughtbot/formulae'
 
+brew 'cask'
 brew 'coreutils'
 brew 'emacs', args: ['with-cocoa', 'with-librsvg', 'with-gnutls', 'with-imagemagick']
 brew 'findutils'
@@ -29,6 +30,7 @@ cask 'gpgtools'
 cask 'iterm2'
 cask 'java'
 cask 'karabiner'
+cask 'macpass'
 cask 'slate'
 cask 'sparkleshare'
 cask 'spotify'

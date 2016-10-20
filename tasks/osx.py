@@ -115,10 +115,11 @@ SCRIPTS_NEEDING_ASSISTIVE_DEVICE_ACCESS = [
 
 @ctask
 def tccutil(ctx):
-    ctx.run('wget -O "$HOME/.lib/bin/tccutil.py" "https://raw.githubusercontent.com/IvanMalison/tccutil/master/tccutil.py"')
-    ctx.run('chmod 755 "$HOME/.lib/bin/tccutil.py"')
+    if not os.path.exists(os.path.expanduser("~/.lib/bin/tccutil.py")):
+        ctx.run('wget -O "$HOME/.lib/bin/tccutil.py" "https://raw.githubusercontent.com/IvanMalison/tccutil/master/tccutil.py"')
+        ctx.run('chmod 755 "$HOME/.lib/bin/tccutil.py"')
     for script in SCRIPTS_NEEDING_ASSISTIVE_DEVICE_ACCESS:
-        command = 'sudo tccutil.py -i "{0}" && sudo tccutil.py -e "{0}"'.format(script)
+        command = 'sudo tccutil.py -v -i "{0}" && sudo tccutil.py -v -e "{0}"'.format(script)
         print(command)
         ctx.run(command)
 
