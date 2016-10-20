@@ -1,0 +1,9 @@
+#!/usr/bin/env bash
+
+THIS_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+source "$THIS_DIR/../util.sh"
+
+if readme_was_updated; then
+	update_index
+	commit_index_changes
+fi
