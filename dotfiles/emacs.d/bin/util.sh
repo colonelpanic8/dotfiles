@@ -5,7 +5,7 @@ README="$EMACS_DIR/README.org"
 REPOSITORY_NAME="$(realpath --relative-to="$TOP_LEVEL" "$README")"
 
 readme_was_updated() {
-	git diff HEAD~1 --name-only | grep --quiet "$REPOSITORY_NAME"
+	git diff HEAD HEAD~1 --name-only | grep --quiet "$REPOSITORY_NAME"
 }
 
 update_index () {
