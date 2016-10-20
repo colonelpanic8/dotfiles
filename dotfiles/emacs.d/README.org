@@ -1253,6 +1253,10 @@ proced is an top like utility that runs inside of emacs. The following sets auto
        ("n" winner-redo "forward" :exit t)))
     (winner-mode 1)))
 #+END_SRC
+** eyebrowse
+#+BEGIN_SRC emacs-lisp
+(use-package eyebrowse)
+#+END_SRC
 ** fill-column-indicator
 This interferes with too many other packages. See
 https://github.com/alpaker/Fill-Column-Indicator/issues/21 for more details
