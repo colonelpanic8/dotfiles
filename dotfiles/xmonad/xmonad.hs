@@ -21,6 +21,16 @@ import qualified XMonad.StackSet as W
 import XMonad.Util.CustomKeys
 import XMonad.Util.NamedWindows (getName)
 
+myDecorateName ws w = do
+  name <- show <$> getName w
+  return $ name -- ++ " [" ++ W.tag ws ++ "]"
+
+myWindowBringerConfig = WindowBringerConfig{ menuCommand = "rofi"
+                                           , menuArgs = ["-dmenu"]
+                                           , windowTitler = myDecorateName
+                                           }
+
+
 main = xmonad $ ewmh $ pagerHints def
        { modMask = mod4Mask
        , terminal = "urxvt"
@@ -53,10 +63,10 @@ myStartup = spawn "systemctl --user start wm.target"
 addKeys conf@XConfig {modMask = modm} =
     [ ((modm, xK_p), spawn "rofi -show drun")
     , ((modm .|. shiftMask, xK_p), spawn "rofi -show run")
-    , ((modm, xK_g), gotoMenuArgs' "rofi" ["-dmenu"])
+    , ((modm, xK_g), gotoMenuConfig myWindowBringerConfig)
+    , ((modm, xK_b), bringMenuConfig myWindowBringerConfig)
     , ((modm .|. controlMask, xK_t), spawn
        "systemctl --user restart taffybar.service")
-    , ((modm, xK_b), bringMenuArgs' "rofi" ["-dmenu"])
     , ((modm, xK_v), spawn "copyq paste")
     , ((modm, xK_s), swapNextScreen)
     , ((modm .|. controlMask, xK_space), sendMessage $ JumpToLayout "Full")
