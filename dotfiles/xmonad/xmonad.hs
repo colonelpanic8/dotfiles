@@ -1,5 +1,6 @@
 import Graphics.X11.ExtraTypes.XF86
 import System.Taffybar.Hooks.PagerHints (pagerHints)
+import Text.Printf
 
 import XMonad hiding ( (|||) )
 import XMonad.Actions.CycleWS
@@ -23,7 +24,8 @@ import XMonad.Util.NamedWindows (getName)
 
 myDecorateName ws w = do
   name <- show <$> getName w
-  return $ name ++ " [" ++ W.tag ws ++ "]"
+  classHint <- withDisplay $ \d -> io $ getClassHint d w
+  return $ printf "%-2s %-20s%-20s" (W.tag ws) (resClass classHint) name
 
 myWindowBringerConfig = WindowBringerConfig { menuCommand = "rofi"
                                             , menuArgs = ["-dmenu", "-i"]
