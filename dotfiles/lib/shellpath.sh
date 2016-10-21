@@ -135,5 +135,5 @@ function _path_helper {
 }
 
 function _haskell_setup {
-    add_to_path "$HOME/.cabal/bin"
+    add_to_path "$HOME/.cabal/bin" --before
 }
