@@ -23,13 +23,12 @@ import XMonad.Util.NamedWindows (getName)
 
 myDecorateName ws w = do
   name <- show <$> getName w
-  return $ name -- ++ " [" ++ W.tag ws ++ "]"
+  return $ name ++ " [" ++ W.tag ws ++ "]"
 
-myWindowBringerConfig = WindowBringerConfig{ menuCommand = "rofi"
-                                           , menuArgs = ["-dmenu"]
-                                           , windowTitler = myDecorateName
-                                           }
-
+myWindowBringerConfig = WindowBringerConfig { menuCommand = "rofi"
+                                            , menuArgs = ["-dmenu", "-i"]
+                                            , windowTitler = myDecorateName
+                                            }
 
 main = xmonad $ ewmh $ pagerHints def
        { modMask = mod4Mask
