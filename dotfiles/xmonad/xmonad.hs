@@ -44,12 +44,13 @@ main = xmonad $ ewmh $ pagerHints def
 
 myLogHook = fadeInactiveLogHook 0.9
 
+setWorkspaceNameToFocusedWindow workspace = do
+  namedWindows <- mapM getName $ take 2 $ W.integrate' $ W.stack workspace
+  setWorkspaceName (W.tag workspace) (concatMap show namedWindows)
+
 automaticallySetWorkspaceNames = do
   ws <- gets windowset
   mapM_ setWorkspaceNameToFocusedWindow (W.workspaces ws)
-        where setWorkspaceNameToFocusedWindow workspace = do
-                                   namedWindows <- mapM getName $ take 2 $ W.integrate' $ W.stack workspace
-                                   setWorkspaceName (W.tag workspace) (concatMap show namedWindows)
 
 shiftThenView i = W.greedyView i . W.shift i
 
