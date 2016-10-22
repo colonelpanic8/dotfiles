@@ -1233,6 +1233,10 @@ proced is an top like utility that runs inside of emacs. The following sets auto
   :config
   (beacon-mode 1))
 #+END_SRC
+** iregister
+#+BEGIN_SRC emacs-lisp
+(use-package iregister)
+#+END_SRC
 ** discover-my-major
 #+BEGIN_SRC emacs-lisp
 (use-package discover-my-major)
