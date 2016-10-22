@@ -1,4 +1,12 @@
+import Control.Monad
+import Data.Aeson
+import qualified Data.ByteString.Lazy as B
+import Data.List
+import qualified Data.Map as M
+import Data.Maybe
 import Graphics.X11.ExtraTypes.XF86
+import System.Directory
+import System.FilePath.Posix
 import System.Taffybar.Hooks.PagerHints (pagerHints)
 import Text.Printf
 
@@ -38,6 +46,12 @@ myWindowBringerConfig = WindowBringerConfig { menuCommand = "rofi"
                                             , windowTitler = myDecorateName
                                             }
 
+getClassRemap :: IO (M.Map String String)
+getClassRemap = do
+  home <- getHomeDirectory
+  text <- B.readFile (home </> ".lib/class_remap.json")
+  return $ fromMaybe M.empty (decode text)
+
 main = xmonad $ ewmh $ pagerHints def
        { modMask = mod4Mask
        , terminal = "urxvt"
@@ -52,10 +66,18 @@ main = xmonad $ ewmh $ pagerHints def
 myLogHook = fadeInactiveLogHook 0.9
 
 setWorkspaceNameToFocusedWindow workspace = do
-  namedWindows <- mapM getName $ take 2 $ W.integrate' $ W.stack workspace
-  setWorkspaceName (W.tag workspace) (concatMap show namedWindows)
+  namedWindows <- mapM getClass $ take 2 $ W.integrate' $ W.stack workspace
+  workspaceToName <- getWorkspaceNames
+  renamedWindows <- remapNames namedWindows
+  let newName = intercalate "|" namedWindows
+  when (workspaceToName (W.tag workspace) /= newName) $
+       setWorkspaceName (W.tag workspace) (intercalate "|" renamedWindows)
 
-automaticallySetWorkspaceNames = do
+remapNames namedWindows = do
+  remap <- io getClassRemap
+  return $ map (\original -> M.findWithDefault original original remap) namedWindows
+
+setWorkspaceNames = do
   ws <- gets windowset
   mapM_ setWorkspaceNameToFocusedWindow (W.workspaces ws)
 
@@ -83,6 +105,7 @@ addKeys conf@XConfig {modMask = modm} =
     , ((modm .|. shiftMask, xK_m), sendMessage RestoreNextMinimizedWin)
 
     -- Hyper bindings
+    , ((mod3Mask, xK_1), setWorkspaceNames)
     , ((mod3Mask, xK_e), moveTo Next EmptyWS)
     , ((mod3Mask .|. shiftMask, xK_e), shiftTo Next EmptyWS)
     , ((mod3Mask, xK_v), spawn "copyq_rofi.sh")
