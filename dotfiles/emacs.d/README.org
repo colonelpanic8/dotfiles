@@ -999,6 +999,13 @@ Set the default fill-column
 #+BEGIN_SRC emacs-lisp
 (setq-default fill-column 80)
 #+END_SRC
+** Show Trailing Whitespace
+Trailing whitespace is really messy and annoying, which makes this a must-have
+in my opinion. It's kind of crazy how often you will encounter serious codebases
+with random whitespace ALL over the place.
+#+BEGIN_SRC emacs-lisp
+(setq-default show-trailing-whitespace t)
+#+END_SRC
 ** Encoding
 UTF-8 everywhere
 #+BEGIN_SRC emacs-lisp
