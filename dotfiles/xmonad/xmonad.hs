@@ -22,10 +22,16 @@ import qualified XMonad.StackSet as W
 import XMonad.Util.CustomKeys
 import XMonad.Util.NamedWindows (getName)
 
+getClass :: Window -> X String
+getClass w = do
+  classHint <- withDisplay $ \d -> io $ getClassHint d w
+  return $ resClass classHint
+
 myDecorateName ws w = do
   name <- show <$> getName w
-  classHint <- withDisplay $ \d -> io $ getClassHint d w
-  return $ printf "%-2s %-20s%-20s" (W.tag ws) (resClass classHint) name
+  classTitle <- getClass w
+  workspaceToName <- getWorkspaceNames
+  return $ printf "%-20s%-50s %+40s" classTitle name $ "in " ++ workspaceToName (W.tag ws)
 
 myWindowBringerConfig = WindowBringerConfig { menuCommand = "rofi"
                                             , menuArgs = ["-dmenu", "-i"]
