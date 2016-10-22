@@ -3,7 +3,7 @@
 "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
-<!-- 2016-10-21 Fri 21:54 -->
+<!-- 2016-10-21 Fri 22:08 -->
 <meta  http-equiv="Content-Type" content="text/html;charset=utf-8" />
 <meta  name="viewport" content="width=device-width, initial-scale=1" />
 <title></title>
@@ -100,6 +100,8 @@
 <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js"></script>
 <script type="text/javascript" src="http://www.pirilampo.org/styles/lib/js/jquery.stickytableheaders.js"></script>
 <script type="text/javascript" src="http://www.pirilampo.org/styles/readtheorg/js/readtheorg.js"></script>
+<style type="text/css">
+ pre.src {background-color: #263238; color: #ffffff;}</style>
 <style type="text/css">
  pre.src {background-color: #263238; color: #ffffff;}</style>
 <style type="text/css">
@@ -3299,7 +3301,9 @@ I don't use auto-complete at all, so I have set up a hook to automatically disab
   <span style="color: #2196F3;">(</span><span style="color: #fff59d;">progn</span>
     <span style="color: #EF6C00;">(</span><span style="color: #fff59d;">defun</span> <span style="color: #84ffff;">imalison:after-magit-visit-file</span> <span style="color: #B388FF;">(</span><span style="color: #84ffff;">&amp;rest</span> args<span style="color: #B388FF;">)</span>
       <span style="color: #B388FF;">(</span><span style="color: #fff59d;">when</span> <span style="color: #76ff03;">(</span>derived-mode-p 'org-mode<span style="color: #76ff03;">)</span>
-        <span style="color: #76ff03;">(</span>org-show-context 'magit-goto<span style="color: #76ff03;">)</span><span style="color: #B388FF;">)</span><span style="color: #EF6C00;">)</span><span style="color: #2196F3;">)</span>
+        <span style="color: #76ff03;">(</span>org-show-context 'magit-goto<span style="color: #76ff03;">)</span><span style="color: #B388FF;">)</span><span style="color: #EF6C00;">)</span>
+    <span style="color: #EF6C00;">(</span><span style="color: #fff59d;">defun</span> <span style="color: #84ffff;">imalison:magit-popup-mode-hook</span> <span style="color: #B388FF;">()</span>
+      <span style="color: #B388FF;">(</span><span style="color: #fff59d;">setq</span> show-trailing-whitespace nil<span style="color: #B388FF;">)</span><span style="color: #EF6C00;">)</span><span style="color: #2196F3;">)</span>
   <span style="color: #ff8A65;">:config</span>
   <span style="color: #2196F3;">(</span><span style="color: #fff59d;">progn</span>
     <span style="color: #EF6C00;">(</span><span style="color: #fff59d;">unbind-key</span> <span style="color: #9ccc65;">"C-j"</span> magit-status-mode-map<span style="color: #EF6C00;">)</span>
@@ -3314,6 +3318,7 @@ I don't use auto-complete at all, so I have set up a hook to automatically disab
 
     <span style="color: #EF6C00;">(</span>add-to-list 'org-show-context-detail '<span style="color: #B388FF;">(</span>magit-goto . lineage<span style="color: #B388FF;">)</span><span style="color: #EF6C00;">)</span>
     <span style="color: #EF6C00;">(</span>advice-add 'magit-diff-visit-file <span style="color: #ff8A65;">:after</span> 'imalison:after-magit-visit-file<span style="color: #EF6C00;">)</span>
+    <span style="color: #EF6C00;">(</span>add-hook 'magit-popup-mode-hook 'imalison:magit-popup-mode-hook<span style="color: #EF6C00;">)</span>
     <span style="color: #EF6C00;">(</span><span style="color: #fff59d;">use-package</span> <span style="color: #8bc34a;">magit-filenotify</span>
       <span style="color: #b0bec5;">;; </span><span style="color: #b0bec5;">Seems like OSX does not support filenotify.</span>
       <span style="color: #ff8A65;">:disabled</span> t
@@ -6614,7 +6619,7 @@ load-theme hook (See the heading below).
 </div>
 <div id="postamble" class="status">
 <p class="author">Author: Ivan Malison</p>
-<p class="date">Created: 2016-10-21 Fri 21:54</p>
+<p class="date">Created: 2016-10-21 Fri 22:08</p>
 <p class="validation"><a href="http://validator.w3.org/check?uri=referer">Validate</a></p>
 </div>
 </body>
