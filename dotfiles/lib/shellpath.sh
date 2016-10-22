@@ -135,5 +135,7 @@ function _path_helper {
 }
 
 function _haskell_setup {
-    add_to_path "$HOME/.cabal/bin" --before
+    # We put cabal after local/bin because we want stack installs to take
+    # precedence.
+    add_to_path "$HOME/.cabal/bin" --after --target "$HOME/.local/bin"
 }
