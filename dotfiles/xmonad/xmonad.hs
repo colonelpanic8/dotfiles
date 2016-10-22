@@ -39,7 +39,7 @@ myDecorateName ws w = do
   name <- show <$> getName w
   classTitle <- getClass w
   workspaceToName <- getWorkspaceNames
-  return $ printf "%-20s%-50s %+40s" classTitle name $ "in " ++ workspaceToName (W.tag ws)
+  return $ printf "%-20s%-40s %+30s" classTitle (take 40 name) "in " ++ workspaceToName (W.tag ws)
 
 myWindowBringerConfig = WindowBringerConfig { menuCommand = "rofi"
                                             , menuArgs = ["-dmenu", "-i"]
