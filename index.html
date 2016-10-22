@@ -3,7 +3,7 @@
 "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
-<!-- 2016-10-21 Fri 22:08 -->
+<!-- 2016-10-21 Fri 22:27 -->
 <meta  http-equiv="Content-Type" content="text/html;charset=utf-8" />
 <meta  name="viewport" content="width=device-width, initial-scale=1" />
 <title></title>
@@ -100,6 +100,8 @@
 <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js"></script>
 <script type="text/javascript" src="http://www.pirilampo.org/styles/lib/js/jquery.stickytableheaders.js"></script>
 <script type="text/javascript" src="http://www.pirilampo.org/styles/readtheorg/js/readtheorg.js"></script>
+<style type="text/css">
+ pre.src {background-color: #263238; color: #ffffff;}</style>
 <style type="text/css">
  pre.src {background-color: #263238; color: #ffffff;}</style>
 <style type="text/css">
@@ -240,7 +242,7 @@ for the JavaScript code in this tag.
 </li>
 </ul>
 </li>
-<li><a href="#orgheadline110">4. General</a>
+<li><a href="#orgheadline111">4. General</a>
 <ul>
 <li><a href="#orgheadline68">4.1. User Info</a></li>
 <li><a href="#orgheadline69">4.2. Sane Defaults</a></li>
@@ -260,270 +262,274 @@ for the JavaScript code in this tag.
 </li>
 <li><a href="#orgheadline78">4.6. Splitting</a></li>
 <li><a href="#orgheadline79">4.7. Fill Setup</a></li>
-<li><a href="#orgheadline80">4.8. Show Trailing Whitespace</a></li>
-<li><a href="#orgheadline81">4.9. Encoding</a></li>
-<li><a href="#orgheadline82">4.10. Visible Bell</a></li>
-<li><a href="#orgheadline83">4.11. Configure <code>vc</code></a></li>
-<li><a href="#orgheadline84">4.12. Time in Mode Line</a></li>
-<li><a href="#orgheadline85">4.13. Kill Ring</a></li>
-<li><a href="#orgheadline86">4.14. Subword</a></li>
-<li><a href="#orgheadline87">4.15. Scratch Buffer</a></li>
-<li><a href="#orgheadline88">4.16. Don't prompt about local variables</a></li>
-<li><a href="#orgheadline89">4.17. proced</a></li>
-<li><a href="#orgheadline90">4.18. Set default browser</a></li>
-<li><a href="#orgheadline91">4.19. Set epa program</a></li>
-<li><a href="#orgheadline92">4.20. Make files executable</a></li>
-<li><a href="#orgheadline93">4.21. Misc</a></li>
-<li><a href="#orgheadline94">4.22. paradox</a></li>
-<li><a href="#orgheadline95">4.23. diminish</a></li>
-<li><a href="#orgheadline96">4.24. edit-server</a></li>
-<li><a href="#orgheadline97">4.25. load-dir</a></li>
-<li><a href="#orgheadline98">4.26. server</a></li>
-<li><a href="#orgheadline99">4.27. list-environment</a></li>
-<li><a href="#orgheadline100">4.28. bug-hunter</a></li>
-<li><a href="#orgheadline101">4.29. shackle</a></li>
-<li><a href="#orgheadline102">4.30. beacon</a></li>
-<li><a href="#orgheadline103">4.31. iregister</a></li>
-<li><a href="#orgheadline104">4.32. discover-my-major</a></li>
-<li><a href="#orgheadline105">4.33. refine</a></li>
-<li><a href="#orgheadline106">4.34. winner</a></li>
-<li><a href="#orgheadline107">4.35. eyebrowse</a></li>
-<li><a href="#orgheadline108">4.36. fill-column-indicator</a></li>
-<li><a href="#orgheadline109">4.37. overseer</a></li>
-</ul>
-</li>
-<li><a href="#orgheadline122">5. Keybindings</a>
+<li><a href="#orgheadline81">4.8. Show Trailing Whitespace</a>
 <ul>
-<li><a href="#orgheadline111">5.1. bind-key</a></li>
-<li><a href="#orgheadline112">5.2. which-key</a></li>
-<li><a href="#orgheadline113">5.3. hydra</a></li>
-<li><a href="#orgheadline114">5.4. kill-emacs</a></li>
-<li><a href="#orgheadline115">5.5. imenu</a></li>
-<li><a href="#orgheadline116">5.6. undo</a></li>
-<li><a href="#orgheadline117">5.7. other-window</a></li>
-<li><a href="#orgheadline118">5.8. Mark ring</a></li>
-<li><a href="#orgheadline119">5.9. Other bindings</a></li>
-<li><a href="#orgheadline120">5.10. global-set-key-to-use-package</a></li>
-<li><a href="#orgheadline121">5.11. OSX</a></li>
+<li><a href="#orgheadline80">4.8.1. Disable</a></li>
 </ul>
 </li>
-<li><a href="#orgheadline135">6. Navigation</a>
+<li><a href="#orgheadline82">4.9. Encoding</a></li>
+<li><a href="#orgheadline83">4.10. Visible Bell</a></li>
+<li><a href="#orgheadline84">4.11. Configure <code>vc</code></a></li>
+<li><a href="#orgheadline85">4.12. Time in Mode Line</a></li>
+<li><a href="#orgheadline86">4.13. Kill Ring</a></li>
+<li><a href="#orgheadline87">4.14. Subword</a></li>
+<li><a href="#orgheadline88">4.15. Scratch Buffer</a></li>
+<li><a href="#orgheadline89">4.16. Don't prompt about local variables</a></li>
+<li><a href="#orgheadline90">4.17. proced</a></li>
+<li><a href="#orgheadline91">4.18. Set default browser</a></li>
+<li><a href="#orgheadline92">4.19. Set epa program</a></li>
+<li><a href="#orgheadline93">4.20. Make files executable</a></li>
+<li><a href="#orgheadline94">4.21. Misc</a></li>
+<li><a href="#orgheadline95">4.22. paradox</a></li>
+<li><a href="#orgheadline96">4.23. diminish</a></li>
+<li><a href="#orgheadline97">4.24. edit-server</a></li>
+<li><a href="#orgheadline98">4.25. load-dir</a></li>
+<li><a href="#orgheadline99">4.26. server</a></li>
+<li><a href="#orgheadline100">4.27. list-environment</a></li>
+<li><a href="#orgheadline101">4.28. bug-hunter</a></li>
+<li><a href="#orgheadline102">4.29. shackle</a></li>
+<li><a href="#orgheadline103">4.30. beacon</a></li>
+<li><a href="#orgheadline104">4.31. iregister</a></li>
+<li><a href="#orgheadline105">4.32. discover-my-major</a></li>
+<li><a href="#orgheadline106">4.33. refine</a></li>
+<li><a href="#orgheadline107">4.34. winner</a></li>
+<li><a href="#orgheadline108">4.35. eyebrowse</a></li>
+<li><a href="#orgheadline109">4.36. fill-column-indicator</a></li>
+<li><a href="#orgheadline110">4.37. overseer</a></li>
+</ul>
+</li>
+<li><a href="#orgheadline123">5. Keybindings</a>
 <ul>
-<li><a href="#orgheadline123">6.1. zop-to-char</a></li>
-<li><a href="#orgheadline124">6.2. helm</a></li>
-<li><a href="#orgheadline125">6.3. helm-projectile</a></li>
-<li><a href="#orgheadline126">6.4. projectile</a></li>
-<li><a href="#orgheadline127">6.5. ido</a></li>
-<li><a href="#orgheadline128">6.6. avy</a></li>
-<li><a href="#orgheadline129">6.7. ace-window</a></li>
-<li><a href="#orgheadline130">6.8. neotree</a></li>
-<li><a href="#orgheadline132">6.9. jump-char</a>
+<li><a href="#orgheadline112">5.1. bind-key</a></li>
+<li><a href="#orgheadline113">5.2. which-key</a></li>
+<li><a href="#orgheadline114">5.3. hydra</a></li>
+<li><a href="#orgheadline115">5.4. kill-emacs</a></li>
+<li><a href="#orgheadline116">5.5. imenu</a></li>
+<li><a href="#orgheadline117">5.6. undo</a></li>
+<li><a href="#orgheadline118">5.7. other-window</a></li>
+<li><a href="#orgheadline119">5.8. Mark ring</a></li>
+<li><a href="#orgheadline120">5.9. Other bindings</a></li>
+<li><a href="#orgheadline121">5.10. global-set-key-to-use-package</a></li>
+<li><a href="#orgheadline122">5.11. OSX</a></li>
+</ul>
+</li>
+<li><a href="#orgheadline136">6. Navigation</a>
 <ul>
-<li><a href="#orgheadline131">6.9.1. helm-zsh-history</a></li>
-</ul>
-</li>
-<li><a href="#orgheadline133">6.10. flimenu</a></li>
-<li><a href="#orgheadline134">6.11. swiper</a></li>
-</ul>
-</li>
-<li><a href="#orgheadline139">7. Completion</a>
+<li><a href="#orgheadline124">6.1. zop-to-char</a></li>
+<li><a href="#orgheadline125">6.2. helm</a></li>
+<li><a href="#orgheadline126">6.3. helm-projectile</a></li>
+<li><a href="#orgheadline127">6.4. projectile</a></li>
+<li><a href="#orgheadline128">6.5. ido</a></li>
+<li><a href="#orgheadline129">6.6. avy</a></li>
+<li><a href="#orgheadline130">6.7. ace-window</a></li>
+<li><a href="#orgheadline131">6.8. neotree</a></li>
+<li><a href="#orgheadline133">6.9. jump-char</a>
 <ul>
-<li><a href="#orgheadline137">7.1. company</a>
+<li><a href="#orgheadline132">6.9.1. helm-zsh-history</a></li>
+</ul>
+</li>
+<li><a href="#orgheadline134">6.10. flimenu</a></li>
+<li><a href="#orgheadline135">6.11. swiper</a></li>
+</ul>
+</li>
+<li><a href="#orgheadline140">7. Completion</a>
 <ul>
-<li><a href="#orgheadline136">7.1.1. company-flx</a></li>
-</ul>
-</li>
-<li><a href="#orgheadline138">7.2. auto-complete</a></li>
-</ul>
-</li>
-<li><a href="#orgheadline150">8. Text Manipulation</a>
+<li><a href="#orgheadline138">7.1. company</a>
 <ul>
-<li><a href="#orgheadline140">8.1. smartparens</a></li>
-<li><a href="#orgheadline141">8.2. multiple-cursors</a></li>
-<li><a href="#orgheadline142">8.3. expand-region</a></li>
-<li><a href="#orgheadline143">8.4. multi-line</a></li>
-<li><a href="#orgheadline144">8.5. comment-dwim-2</a></li>
-<li><a href="#orgheadline145">8.6. unfill</a></li>
-<li><a href="#orgheadline146">8.7. cliphist</a></li>
-<li><a href="#orgheadline147">8.8. electric-operator-mode</a></li>
-<li><a href="#orgheadline148">8.9. string-inflection</a></li>
-<li><a href="#orgheadline149">8.10. yasnippet</a></li>
+<li><a href="#orgheadline137">7.1.1. company-flx</a></li>
 </ul>
 </li>
-<li><a href="#orgheadline167">9. Source Control</a>
+<li><a href="#orgheadline139">7.2. auto-complete</a></li>
+</ul>
+</li>
+<li><a href="#orgheadline151">8. Text Manipulation</a>
 <ul>
-<li><a href="#orgheadline152">9.1. magit</a>
+<li><a href="#orgheadline141">8.1. smartparens</a></li>
+<li><a href="#orgheadline142">8.2. multiple-cursors</a></li>
+<li><a href="#orgheadline143">8.3. expand-region</a></li>
+<li><a href="#orgheadline144">8.4. multi-line</a></li>
+<li><a href="#orgheadline145">8.5. comment-dwim-2</a></li>
+<li><a href="#orgheadline146">8.6. unfill</a></li>
+<li><a href="#orgheadline147">8.7. cliphist</a></li>
+<li><a href="#orgheadline148">8.8. electric-operator-mode</a></li>
+<li><a href="#orgheadline149">8.9. string-inflection</a></li>
+<li><a href="#orgheadline150">8.10. yasnippet</a></li>
+</ul>
+</li>
+<li><a href="#orgheadline168">9. Source Control</a>
 <ul>
-<li><a href="#orgheadline151">9.1.1. magithub</a></li>
-</ul>
-</li>
-<li><a href="#orgheadline153">9.2. git-link</a></li>
-<li><a href="#orgheadline154">9.3. magit-gitflow</a></li>
-<li><a href="#orgheadline155">9.4. git-timemachine</a></li>
-<li><a href="#orgheadline156">9.5. git-gutter</a></li>
-<li><a href="#orgheadline157">9.6. gitolite-clone</a></li>
-<li><a href="#orgheadline158">9.7. gitconfig-mode</a></li>
-<li><a href="#orgheadline159">9.8. gitignore-mode</a></li>
-<li><a href="#orgheadline166">9.9. github</a>
+<li><a href="#orgheadline153">9.1. magit</a>
 <ul>
-<li><a href="#orgheadline160">9.9.1. github-search</a></li>
-<li><a href="#orgheadline161">9.9.2. github-clone</a></li>
-<li><a href="#orgheadline162">9.9.3. github-notifier</a></li>
-<li><a href="#orgheadline163">9.9.4. github-browse-file</a></li>
-<li><a href="#orgheadline164">9.9.5. magit-gh-pulls</a></li>
-<li><a href="#orgheadline165">9.9.6. gist</a></li>
+<li><a href="#orgheadline152">9.1.1. magithub</a></li>
 </ul>
 </li>
-</ul>
-</li>
-<li><a href="#orgheadline222">10. Major Modes</a>
+<li><a href="#orgheadline154">9.2. git-link</a></li>
+<li><a href="#orgheadline155">9.3. magit-gitflow</a></li>
+<li><a href="#orgheadline156">9.4. git-timemachine</a></li>
+<li><a href="#orgheadline157">9.5. git-gutter</a></li>
+<li><a href="#orgheadline158">9.6. gitolite-clone</a></li>
+<li><a href="#orgheadline159">9.7. gitconfig-mode</a></li>
+<li><a href="#orgheadline160">9.8. gitignore-mode</a></li>
+<li><a href="#orgheadline167">9.9. github</a>
 <ul>
-<li><a href="#orgheadline198">10.1. Programming</a>
+<li><a href="#orgheadline161">9.9.1. github-search</a></li>
+<li><a href="#orgheadline162">9.9.2. github-clone</a></li>
+<li><a href="#orgheadline163">9.9.3. github-notifier</a></li>
+<li><a href="#orgheadline164">9.9.4. github-browse-file</a></li>
+<li><a href="#orgheadline165">9.9.5. magit-gh-pulls</a></li>
+<li><a href="#orgheadline166">9.9.6. gist</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a href="#orgheadline223">10. Major Modes</a>
 <ul>
-<li><a href="#orgheadline170">10.1.1. python</a></li>
-<li><a href="#orgheadline172">10.1.2. go</a></li>
-<li><a href="#orgheadline183">10.1.3. emacs-lisp</a></li>
-<li><a href="#orgheadline186">10.1.4. clojure</a></li>
-<li><a href="#orgheadline187">10.1.5. scala</a></li>
-<li><a href="#orgheadline188">10.1.6. js</a></li>
-<li><a href="#orgheadline189">10.1.7. rust</a></li>
-<li><a href="#orgheadline194">10.1.8. haskell</a></li>
-<li><a href="#orgheadline195">10.1.9. C/C++</a></li>
-<li><a href="#orgheadline196">10.1.10. C#</a></li>
-<li><a href="#orgheadline197">10.1.11. racket</a></li>
-</ul>
-</li>
-<li><a href="#orgheadline204">10.2. Data/Config/Protocol</a>
+<li><a href="#orgheadline199">10.1. Programming</a>
 <ul>
-<li><a href="#orgheadline199">10.2.1. thrift</a></li>
-<li><a href="#orgheadline200">10.2.2. protobuf</a></li>
-<li><a href="#orgheadline201">10.2.3. json-mode</a></li>
-<li><a href="#orgheadline202">10.2.4. yaml-mode</a></li>
-<li><a href="#orgheadline203">10.2.5. es-mode</a></li>
+<li><a href="#orgheadline171">10.1.1. python</a></li>
+<li><a href="#orgheadline173">10.1.2. go</a></li>
+<li><a href="#orgheadline184">10.1.3. emacs-lisp</a></li>
+<li><a href="#orgheadline187">10.1.4. clojure</a></li>
+<li><a href="#orgheadline188">10.1.5. scala</a></li>
+<li><a href="#orgheadline189">10.1.6. js</a></li>
+<li><a href="#orgheadline190">10.1.7. rust</a></li>
+<li><a href="#orgheadline195">10.1.8. haskell</a></li>
+<li><a href="#orgheadline196">10.1.9. C/C++</a></li>
+<li><a href="#orgheadline197">10.1.10. C#</a></li>
+<li><a href="#orgheadline198">10.1.11. racket</a></li>
 </ul>
 </li>
-<li><a href="#orgheadline218">10.3. Document</a>
+<li><a href="#orgheadline205">10.2. Data/Config/Protocol</a>
 <ul>
-<li><a href="#orgheadline210">10.3.1. org</a></li>
-<li><a href="#orgheadline214">10.3.2. TeX</a></li>
-<li><a href="#orgheadline215">10.3.3. markdown-mode</a></li>
-<li><a href="#orgheadline216">10.3.4. plantuml-mode</a></li>
-<li><a href="#orgheadline217">10.3.5. wsd-mode</a></li>
+<li><a href="#orgheadline200">10.2.1. thrift</a></li>
+<li><a href="#orgheadline201">10.2.2. protobuf</a></li>
+<li><a href="#orgheadline202">10.2.3. json-mode</a></li>
+<li><a href="#orgheadline203">10.2.4. yaml-mode</a></li>
+<li><a href="#orgheadline204">10.2.5. es-mode</a></li>
 </ul>
 </li>
-<li><a href="#orgheadline221">10.4. Utility</a>
+<li><a href="#orgheadline219">10.3. Document</a>
 <ul>
-<li><a href="#orgheadline219">10.4.1. restclient</a></li>
-<li><a href="#orgheadline220">10.4.2. jq-mode</a></li>
+<li><a href="#orgheadline211">10.3.1. org</a></li>
+<li><a href="#orgheadline215">10.3.2. TeX</a></li>
+<li><a href="#orgheadline216">10.3.3. markdown-mode</a></li>
+<li><a href="#orgheadline217">10.3.4. plantuml-mode</a></li>
+<li><a href="#orgheadline218">10.3.5. wsd-mode</a></li>
 </ul>
 </li>
-</ul>
-</li>
-<li><a href="#orgheadline226">11. Programming</a>
+<li><a href="#orgheadline222">10.4. Utility</a>
 <ul>
-<li><a href="#orgheadline223">11.1. realgud</a></li>
-<li><a href="#orgheadline224">11.2. emr</a></li>
-<li><a href="#orgheadline225">11.3. semantic</a></li>
+<li><a href="#orgheadline220">10.4.1. restclient</a></li>
+<li><a href="#orgheadline221">10.4.2. jq-mode</a></li>
 </ul>
 </li>
-<li><a href="#orgheadline231">12. Utility</a>
+</ul>
+</li>
+<li><a href="#orgheadline227">11. Programming</a>
 <ul>
-<li><a href="#orgheadline227">12.1. term</a></li>
-<li><a href="#orgheadline228">12.2. term-manager</a></li>
-<li><a href="#orgheadline229">12.3. term-projectile</a></li>
-<li><a href="#orgheadline230">12.4. crux</a></li>
+<li><a href="#orgheadline224">11.1. realgud</a></li>
+<li><a href="#orgheadline225">11.2. emr</a></li>
+<li><a href="#orgheadline226">11.3. semantic</a></li>
 </ul>
 </li>
-<li><a href="#orgheadline235">13. Chat</a>
+<li><a href="#orgheadline232">12. Utility</a>
 <ul>
-<li><a href="#orgheadline232">13.1. erc</a></li>
-<li><a href="#orgheadline233">13.2. bitlbee</a></li>
-<li><a href="#orgheadline234">13.3. slack</a></li>
+<li><a href="#orgheadline228">12.1. term</a></li>
+<li><a href="#orgheadline229">12.2. term-manager</a></li>
+<li><a href="#orgheadline230">12.3. term-projectile</a></li>
+<li><a href="#orgheadline231">12.4. crux</a></li>
 </ul>
 </li>
-<li><a href="#orgheadline239">14. Cooperation</a>
+<li><a href="#orgheadline236">13. Chat</a>
 <ul>
-<li><a href="#orgheadline236">14.1. togetherly</a></li>
-<li><a href="#orgheadline237">14.2. floobits</a></li>
-<li><a href="#orgheadline238">14.3. rudel</a></li>
+<li><a href="#orgheadline233">13.1. erc</a></li>
+<li><a href="#orgheadline234">13.2. bitlbee</a></li>
+<li><a href="#orgheadline235">13.3. slack</a></li>
 </ul>
 </li>
-<li><a href="#orgheadline291">15. Other</a>
+<li><a href="#orgheadline240">14. Cooperation</a>
 <ul>
-<li><a href="#orgheadline240">15.1. anzu</a></li>
-<li><a href="#orgheadline241">15.2. fontawesome</a></li>
-<li><a href="#orgheadline242">15.3. shell-history</a></li>
-<li><a href="#orgheadline243">15.4. iedit</a></li>
-<li><a href="#orgheadline244">15.5. tramp</a></li>
-<li><a href="#orgheadline245">15.6. flycheck</a></li>
-<li><a href="#orgheadline246">15.7. narrow-indirect</a></li>
-<li><a href="#orgheadline247">15.8. editorconfig</a></li>
-<li><a href="#orgheadline248">15.9. dtrt-indent</a></li>
-<li><a href="#orgheadline249">15.10. indent-guide</a></li>
-<li><a href="#orgheadline250">15.11. rainbow-delimiters</a></li>
-<li><a href="#orgheadline251">15.12. undo-tree</a></li>
-<li><a href="#orgheadline252">15.13. recentf</a></li>
-<li><a href="#orgheadline253">15.14. key-chord</a></li>
-<li><a href="#orgheadline254">15.15. nodejs-repl</a></li>
-<li><a href="#orgheadline255">15.16. calc-mode</a></li>
-<li><a href="#orgheadline256">15.17. helm-spotify</a></li>
-<li><a href="#orgheadline257">15.18. jabber</a></li>
-<li><a href="#orgheadline258">15.19. htmlize</a></li>
-<li><a href="#orgheadline259">15.20. calfw</a></li>
-<li><a href="#orgheadline260">15.21. clocker</a></li>
-<li><a href="#orgheadline261">15.22. deft</a></li>
-<li><a href="#orgheadline262">15.23. epg</a></li>
-<li><a href="#orgheadline263">15.24. pinentry</a></li>
-<li><a href="#orgheadline264">15.25. twittering-mode</a></li>
-<li><a href="#orgheadline265">15.26. matrix-client</a></li>
-<li><a href="#orgheadline266">15.27. mu4e</a></li>
-<li><a href="#orgheadline267">15.28. gmail-message-mode</a></li>
-<li><a href="#orgheadline268">15.29. ham-mode</a></li>
-<li><a href="#orgheadline269">15.30. alert</a></li>
-<li><a href="#orgheadline270">15.31. sauron</a></li>
-<li><a href="#orgheadline271">15.32. screenshot</a></li>
-<li><a href="#orgheadline272">15.33. libmpdee</a></li>
-<li><a href="#orgheadline273">15.34. flyspell</a></li>
-<li><a href="#orgheadline274">15.35. web-mode</a></li>
-<li><a href="#orgheadline275">15.36. helm-themes</a></li>
-<li><a href="#orgheadline276">15.37. helm-swoop</a></li>
-<li><a href="#orgheadline277">15.38. perspective</a></li>
-<li><a href="#orgheadline278">15.39. smex</a></li>
-<li><a href="#orgheadline279">15.40. java</a></li>
-<li><a href="#orgheadline280">15.41. android-mode</a></li>
-<li><a href="#orgheadline281">15.42. gradle-mode</a></li>
-<li><a href="#orgheadline282">15.43. jsx-mode</a></li>
-<li><a href="#orgheadline283">15.44. css</a></li>
-<li><a href="#orgheadline284">15.45. robe</a></li>
-<li><a href="#orgheadline285">15.46. rinari</a></li>
-<li><a href="#orgheadline286">15.47. helm-gtags</a></li>
-<li><a href="#orgheadline287">15.48. sgml-mode</a></li>
-<li><a href="#orgheadline288">15.49. evil</a></li>
-<li><a href="#orgheadline290">15.50. hackernews</a></li>
+<li><a href="#orgheadline237">14.1. togetherly</a></li>
+<li><a href="#orgheadline238">14.2. floobits</a></li>
+<li><a href="#orgheadline239">14.3. rudel</a></li>
 </ul>
 </li>
-<li><a href="#orgheadline306">16. Appearance</a>
+<li><a href="#orgheadline292">15. Other</a>
 <ul>
-<li><a href="#orgheadline292">16.1. Basic Config</a></li>
-<li><a href="#orgheadline293">16.2. Themes</a></li>
-<li><a href="#orgheadline294">16.3. all-the-icons</a></li>
-<li><a href="#orgheadline297">16.4. spaceline</a>
+<li><a href="#orgheadline241">15.1. anzu</a></li>
+<li><a href="#orgheadline242">15.2. fontawesome</a></li>
+<li><a href="#orgheadline243">15.3. shell-history</a></li>
+<li><a href="#orgheadline244">15.4. iedit</a></li>
+<li><a href="#orgheadline245">15.5. tramp</a></li>
+<li><a href="#orgheadline246">15.6. flycheck</a></li>
+<li><a href="#orgheadline247">15.7. narrow-indirect</a></li>
+<li><a href="#orgheadline248">15.8. editorconfig</a></li>
+<li><a href="#orgheadline249">15.9. dtrt-indent</a></li>
+<li><a href="#orgheadline250">15.10. indent-guide</a></li>
+<li><a href="#orgheadline251">15.11. rainbow-delimiters</a></li>
+<li><a href="#orgheadline252">15.12. undo-tree</a></li>
+<li><a href="#orgheadline253">15.13. recentf</a></li>
+<li><a href="#orgheadline254">15.14. key-chord</a></li>
+<li><a href="#orgheadline255">15.15. nodejs-repl</a></li>
+<li><a href="#orgheadline256">15.16. calc-mode</a></li>
+<li><a href="#orgheadline257">15.17. helm-spotify</a></li>
+<li><a href="#orgheadline258">15.18. jabber</a></li>
+<li><a href="#orgheadline259">15.19. htmlize</a></li>
+<li><a href="#orgheadline260">15.20. calfw</a></li>
+<li><a href="#orgheadline261">15.21. clocker</a></li>
+<li><a href="#orgheadline262">15.22. deft</a></li>
+<li><a href="#orgheadline263">15.23. epg</a></li>
+<li><a href="#orgheadline264">15.24. pinentry</a></li>
+<li><a href="#orgheadline265">15.25. twittering-mode</a></li>
+<li><a href="#orgheadline266">15.26. matrix-client</a></li>
+<li><a href="#orgheadline267">15.27. mu4e</a></li>
+<li><a href="#orgheadline268">15.28. gmail-message-mode</a></li>
+<li><a href="#orgheadline269">15.29. ham-mode</a></li>
+<li><a href="#orgheadline270">15.30. alert</a></li>
+<li><a href="#orgheadline271">15.31. sauron</a></li>
+<li><a href="#orgheadline272">15.32. screenshot</a></li>
+<li><a href="#orgheadline273">15.33. libmpdee</a></li>
+<li><a href="#orgheadline274">15.34. flyspell</a></li>
+<li><a href="#orgheadline275">15.35. web-mode</a></li>
+<li><a href="#orgheadline276">15.36. helm-themes</a></li>
+<li><a href="#orgheadline277">15.37. helm-swoop</a></li>
+<li><a href="#orgheadline278">15.38. perspective</a></li>
+<li><a href="#orgheadline279">15.39. smex</a></li>
+<li><a href="#orgheadline280">15.40. java</a></li>
+<li><a href="#orgheadline281">15.41. android-mode</a></li>
+<li><a href="#orgheadline282">15.42. gradle-mode</a></li>
+<li><a href="#orgheadline283">15.43. jsx-mode</a></li>
+<li><a href="#orgheadline284">15.44. css</a></li>
+<li><a href="#orgheadline285">15.45. robe</a></li>
+<li><a href="#orgheadline286">15.46. rinari</a></li>
+<li><a href="#orgheadline287">15.47. helm-gtags</a></li>
+<li><a href="#orgheadline288">15.48. sgml-mode</a></li>
+<li><a href="#orgheadline289">15.49. evil</a></li>
+<li><a href="#orgheadline291">15.50. hackernews</a></li>
+</ul>
+</li>
+<li><a href="#orgheadline307">16. Appearance</a>
 <ul>
-<li><a href="#orgheadline295">16.4.1. Disable sRGB colorspace to make powerline separators work</a></li>
-<li><a href="#orgheadline296">16.4.2. config</a></li>
+<li><a href="#orgheadline293">16.1. Basic Config</a></li>
+<li><a href="#orgheadline294">16.2. Themes</a></li>
+<li><a href="#orgheadline295">16.3. all-the-icons</a></li>
+<li><a href="#orgheadline298">16.4. spaceline</a>
+<ul>
+<li><a href="#orgheadline296">16.4.1. Disable sRGB colorspace to make powerline separators work</a></li>
+<li><a href="#orgheadline297">16.4.2. config</a></li>
 </ul>
 </li>
-<li><a href="#orgheadline298">16.5. helm-themes</a></li>
-<li><a href="#orgheadline299">16.6. window-number</a></li>
-<li><a href="#orgheadline300">16.7. Whitespace Setup</a></li>
-<li><a href="#orgheadline301">16.8. Colorize Compliation Buffers</a></li>
-<li><a href="#orgheadline302">16.9. Automatic Theme Changer</a></li>
-<li><a href="#orgheadline303">16.10. Fix <code>ansi-term</code> Colors</a></li>
-<li><a href="#orgheadline304">16.11. After <code>load-theme</code> hook</a></li>
-<li><a href="#orgheadline305">16.12. Frame Initialization</a></li>
+<li><a href="#orgheadline299">16.5. helm-themes</a></li>
+<li><a href="#orgheadline300">16.6. window-number</a></li>
+<li><a href="#orgheadline301">16.7. Whitespace Setup</a></li>
+<li><a href="#orgheadline302">16.8. Colorize Compliation Buffers</a></li>
+<li><a href="#orgheadline303">16.9. Automatic Theme Changer</a></li>
+<li><a href="#orgheadline304">16.10. Fix <code>ansi-term</code> Colors</a></li>
+<li><a href="#orgheadline305">16.11. After <code>load-theme</code> hook</a></li>
+<li><a href="#orgheadline306">16.12. Frame Initialization</a></li>
 </ul>
 </li>
-<li><a href="#orgheadline307">17. Post Init Custom</a></li>
+<li><a href="#orgheadline308">17. Post Init Custom</a></li>
 </ul>
 </div>
 </div>
@@ -1875,8 +1881,8 @@ This keyboard macro extracts the current sexp to an emacs-lisp source block of i
 </div>
 </div>
 </div>
-<div id="outline-container-orgheadline110" class="outline-2">
-<h2 id="orgheadline110"><span class="section-number-2">4</span> General</h2>
+<div id="outline-container-orgheadline111" class="outline-2">
+<h2 id="orgheadline111"><span class="section-number-2">4</span> General</h2>
 <div class="outline-text-2" id="text-4">
 </div><div id="outline-container-orgheadline68" class="outline-3">
 <h3 id="orgheadline68"><span class="section-number-3">4.1</span> User Info</h3>
@@ -2044,8 +2050,8 @@ Set the default fill-column
 </div>
 </div>
 </div>
-<div id="outline-container-orgheadline80" class="outline-3">
-<h3 id="orgheadline80"><span class="section-number-3">4.8</span> Show Trailing Whitespace</h3>
+<div id="outline-container-orgheadline81" class="outline-3">
+<h3 id="orgheadline81"><span class="section-number-3">4.8</span> Show Trailing Whitespace</h3>
 <div class="outline-text-3" id="text-4-8">
 <p>
 Trailing whitespace is really messy and annoying, which makes this a must-have
@@ -2058,9 +2064,24 @@ with random whitespace ALL over the place.
 </pre>
 </div>
 </div>
+<div id="outline-container-orgheadline80" class="outline-4">
+<h4 id="orgheadline80"><span class="section-number-4">4.8.1</span> Disable</h4>
+<div class="outline-text-4" id="text-4-8-1">
+<p>
+Unfortunately, this setting can get annoying in a lot of modes, which is why I
+use this hook to disable it in those modes
+</p>
+<div class="org-src-container">
+
+<pre class="src src-emacs-lisp"><span style="color: #e91e63;">(</span><span style="color: #fff59d;">defun</span> <span style="color: #84ffff;">imalison:disable-show-trailing-whitespace</span> <span style="color: #2196F3;">()</span>
+  <span style="color: #2196F3;">(</span><span style="color: #fff59d;">setq</span> show-trailing-whitespace nil<span style="color: #2196F3;">)</span><span style="color: #e91e63;">)</span>
+</pre>
 </div>
-<div id="outline-container-orgheadline81" class="outline-3">
-<h3 id="orgheadline81"><span class="section-number-3">4.9</span> Encoding</h3>
+</div>
+</div>
+</div>
+<div id="outline-container-orgheadline82" class="outline-3">
+<h3 id="orgheadline82"><span class="section-number-3">4.9</span> Encoding</h3>
 <div class="outline-text-3" id="text-4-9">
 <p>
 UTF-8 everywhere
@@ -2089,8 +2110,8 @@ Disable CJK coding/encoding (Chinese/Japanese/Korean characters)
 </div>
 </div>
 </div>
-<div id="outline-container-orgheadline82" class="outline-3">
-<h3 id="orgheadline82"><span class="section-number-3">4.10</span> Visible Bell</h3>
+<div id="outline-container-orgheadline83" class="outline-3">
+<h3 id="orgheadline83"><span class="section-number-3">4.10</span> Visible Bell</h3>
 <div class="outline-text-3" id="text-4-10">
 <p>
 This is set to true to disable the annoying audible bell that plays
@@ -2103,8 +2124,8 @@ whenever there is an error.
 </div>
 </div>
 </div>
-<div id="outline-container-orgheadline83" class="outline-3">
-<h3 id="orgheadline83"><span class="section-number-3">4.11</span> Configure <code>vc</code></h3>
+<div id="outline-container-orgheadline84" class="outline-3">
+<h3 id="orgheadline84"><span class="section-number-3">4.11</span> Configure <code>vc</code></h3>
 <div class="outline-text-3" id="text-4-11">
 <div class="org-src-container">
 
@@ -2113,8 +2134,8 @@ whenever there is an error.
 </div>
 </div>
 </div>
-<div id="outline-container-orgheadline84" class="outline-3">
-<h3 id="orgheadline84"><span class="section-number-3">4.12</span> Time in Mode Line</h3>
+<div id="outline-container-orgheadline85" class="outline-3">
+<h3 id="orgheadline85"><span class="section-number-3">4.12</span> Time in Mode Line</h3>
 <div class="outline-text-3" id="text-4-12">
 <div class="org-src-container">
 
@@ -2126,8 +2147,8 @@ whenever there is an error.
 </div>
 </div>
 </div>
-<div id="outline-container-orgheadline85" class="outline-3">
-<h3 id="orgheadline85"><span class="section-number-3">4.13</span> Kill Ring</h3>
+<div id="outline-container-orgheadline86" class="outline-3">
+<h3 id="orgheadline86"><span class="section-number-3">4.13</span> Kill Ring</h3>
 <div class="outline-text-3" id="text-4-13">
 <div class="org-src-container">
 
@@ -2136,8 +2157,8 @@ whenever there is an error.
 </div>
 </div>
 </div>
-<div id="outline-container-orgheadline86" class="outline-3">
-<h3 id="orgheadline86"><span class="section-number-3">4.14</span> Subword</h3>
+<div id="outline-container-orgheadline87" class="outline-3">
+<h3 id="orgheadline87"><span class="section-number-3">4.14</span> Subword</h3>
 <div class="outline-text-3" id="text-4-14">
 <p>
 This makes <code>forward-word</code> and <code>backward-word</code> understand snake and camel case.
@@ -2150,8 +2171,8 @@ This makes <code>forward-word</code> and <code>backward-word</code> understand s
 </div>
 </div>
 </div>
-<div id="outline-container-orgheadline87" class="outline-3">
-<h3 id="orgheadline87"><span class="section-number-3">4.15</span> Scratch Buffer</h3>
+<div id="outline-container-orgheadline88" class="outline-3">
+<h3 id="orgheadline88"><span class="section-number-3">4.15</span> Scratch Buffer</h3>
 <div class="outline-text-3" id="text-4-15">
 <div class="org-src-container">
 
@@ -2160,8 +2181,8 @@ This makes <code>forward-word</code> and <code>backward-word</code> understand s
 </div>
 </div>
 </div>
-<div id="outline-container-orgheadline88" class="outline-3">
-<h3 id="orgheadline88"><span class="section-number-3">4.16</span> Don't prompt about local variables</h3>
+<div id="outline-container-orgheadline89" class="outline-3">
+<h3 id="orgheadline89"><span class="section-number-3">4.16</span> Don't prompt about local variables</h3>
 <div class="outline-text-3" id="text-4-16">
 <div class="org-src-container">
 
@@ -2171,8 +2192,8 @@ This makes <code>forward-word</code> and <code>backward-word</code> understand s
 </div>
 </div>
 </div>
-<div id="outline-container-orgheadline89" class="outline-3">
-<h3 id="orgheadline89"><span class="section-number-3">4.17</span> proced</h3>
+<div id="outline-container-orgheadline90" class="outline-3">
+<h3 id="orgheadline90"><span class="section-number-3">4.17</span> proced</h3>
 <div class="outline-text-3" id="text-4-17">
 <p>
 proced is an top like utility that runs inside of emacs. The following sets auto updating automatically and makes the update interval faster.
@@ -2186,8 +2207,8 @@ proced is an top like utility that runs inside of emacs. The following sets auto
 </div>
 </div>
 </div>
-<div id="outline-container-orgheadline90" class="outline-3">
-<h3 id="orgheadline90"><span class="section-number-3">4.18</span> Set default browser</h3>
+<div id="outline-container-orgheadline91" class="outline-3">
+<h3 id="orgheadline91"><span class="section-number-3">4.18</span> Set default browser</h3>
 <div class="outline-text-3" id="text-4-18">
 <div class="org-src-container">
 
@@ -2198,8 +2219,8 @@ proced is an top like utility that runs inside of emacs. The following sets auto
 </div>
 </div>
 </div>
-<div id="outline-container-orgheadline91" class="outline-3">
-<h3 id="orgheadline91"><span class="section-number-3">4.19</span> Set epa program</h3>
+<div id="outline-container-orgheadline92" class="outline-3">
+<h3 id="orgheadline92"><span class="section-number-3">4.19</span> Set epa program</h3>
 <div class="outline-text-3" id="text-4-19">
 <div class="org-src-container">
 
@@ -2208,8 +2229,8 @@ proced is an top like utility that runs inside of emacs. The following sets auto
 </div>
 </div>
 </div>
-<div id="outline-container-orgheadline92" class="outline-3">
-<h3 id="orgheadline92"><span class="section-number-3">4.20</span> Make files executable</h3>
+<div id="outline-container-orgheadline93" class="outline-3">
+<h3 id="orgheadline93"><span class="section-number-3">4.20</span> Make files executable</h3>
 <div class="outline-text-3" id="text-4-20">
 <div class="org-src-container">
 
@@ -2218,8 +2239,8 @@ proced is an top like utility that runs inside of emacs. The following sets auto
 </div>
 </div>
 </div>
-<div id="outline-container-orgheadline93" class="outline-3">
-<h3 id="orgheadline93"><span class="section-number-3">4.21</span> Misc</h3>
+<div id="outline-container-orgheadline94" class="outline-3">
+<h3 id="orgheadline94"><span class="section-number-3">4.21</span> Misc</h3>
 <div class="outline-text-3" id="text-4-21">
 <div class="org-src-container">
 
@@ -2299,8 +2320,8 @@ proced is an top like utility that runs inside of emacs. The following sets auto
 </div>
 </div>
 </div>
-<div id="outline-container-orgheadline94" class="outline-3">
-<h3 id="orgheadline94"><span class="section-number-3">4.22</span> paradox</h3>
+<div id="outline-container-orgheadline95" class="outline-3">
+<h3 id="orgheadline95"><span class="section-number-3">4.22</span> paradox</h3>
 <div class="outline-text-3" id="text-4-22">
 <div class="org-src-container">
 
@@ -2316,8 +2337,8 @@ proced is an top like utility that runs inside of emacs. The following sets auto
 </div>
 </div>
 </div>
-<div id="outline-container-orgheadline95" class="outline-3">
-<h3 id="orgheadline95"><span class="section-number-3">4.23</span> diminish</h3>
+<div id="outline-container-orgheadline96" class="outline-3">
+<h3 id="orgheadline96"><span class="section-number-3">4.23</span> diminish</h3>
 <div class="outline-text-3" id="text-4-23">
 <div class="org-src-container">
 
@@ -2335,8 +2356,8 @@ proced is an top like utility that runs inside of emacs. The following sets auto
 </div>
 </div>
 </div>
-<div id="outline-container-orgheadline96" class="outline-3">
-<h3 id="orgheadline96"><span class="section-number-3">4.24</span> edit-server</h3>
+<div id="outline-container-orgheadline97" class="outline-3">
+<h3 id="orgheadline97"><span class="section-number-3">4.24</span> edit-server</h3>
 <div class="outline-text-3" id="text-4-24">
 <div class="org-src-container">
 
@@ -2351,8 +2372,8 @@ proced is an top like utility that runs inside of emacs. The following sets auto
 </div>
 </div>
 </div>
-<div id="outline-container-orgheadline97" class="outline-3">
-<h3 id="orgheadline97"><span class="section-number-3">4.25</span> load-dir</h3>
+<div id="outline-container-orgheadline98" class="outline-3">
+<h3 id="orgheadline98"><span class="section-number-3">4.25</span> load-dir</h3>
 <div class="outline-text-3" id="text-4-25">
 <div class="org-src-container">
 
@@ -2367,8 +2388,8 @@ proced is an top like utility that runs inside of emacs. The following sets auto
 </div>
 </div>
 </div>
-<div id="outline-container-orgheadline98" class="outline-3">
-<h3 id="orgheadline98"><span class="section-number-3">4.26</span> server</h3>
+<div id="outline-container-orgheadline99" class="outline-3">
+<h3 id="orgheadline99"><span class="section-number-3">4.26</span> server</h3>
 <div class="outline-text-3" id="text-4-26">
 <div class="org-src-container">
 
@@ -2380,8 +2401,8 @@ proced is an top like utility that runs inside of emacs. The following sets auto
 </div>
 </div>
 </div>
-<div id="outline-container-orgheadline99" class="outline-3">
-<h3 id="orgheadline99"><span class="section-number-3">4.27</span> list-environment</h3>
+<div id="outline-container-orgheadline100" class="outline-3">
+<h3 id="orgheadline100"><span class="section-number-3">4.27</span> list-environment</h3>
 <div class="outline-text-3" id="text-4-27">
 <div class="org-src-container">
 
@@ -2390,8 +2411,8 @@ proced is an top like utility that runs inside of emacs. The following sets auto
 </div>
 </div>
 </div>
-<div id="outline-container-orgheadline100" class="outline-3">
-<h3 id="orgheadline100"><span class="section-number-3">4.28</span> bug-hunter</h3>
+<div id="outline-container-orgheadline101" class="outline-3">
+<h3 id="orgheadline101"><span class="section-number-3">4.28</span> bug-hunter</h3>
 <div class="outline-text-3" id="text-4-28">
 <div class="org-src-container">
 
@@ -2400,8 +2421,8 @@ proced is an top like utility that runs inside of emacs. The following sets auto
 </div>
 </div>
 </div>
-<div id="outline-container-orgheadline101" class="outline-3">
-<h3 id="orgheadline101"><span class="section-number-3">4.29</span> shackle</h3>
+<div id="outline-container-orgheadline102" class="outline-3">
+<h3 id="orgheadline102"><span class="section-number-3">4.29</span> shackle</h3>
 <div class="outline-text-3" id="text-4-29">
 <div class="org-src-container">
 
@@ -2419,8 +2440,8 @@ proced is an top like utility that runs inside of emacs. The following sets auto
 </div>
 </div>
 
-<div id="outline-container-orgheadline102" class="outline-3">
-<h3 id="orgheadline102"><span class="section-number-3">4.30</span> beacon</h3>
+<div id="outline-container-orgheadline103" class="outline-3">
+<h3 id="orgheadline103"><span class="section-number-3">4.30</span> beacon</h3>
 <div class="outline-text-3" id="text-4-30">
 <div class="org-src-container">
 
@@ -2432,8 +2453,8 @@ proced is an top like utility that runs inside of emacs. The following sets auto
 </div>
 </div>
 </div>
-<div id="outline-container-orgheadline103" class="outline-3">
-<h3 id="orgheadline103"><span class="section-number-3">4.31</span> iregister</h3>
+<div id="outline-container-orgheadline104" class="outline-3">
+<h3 id="orgheadline104"><span class="section-number-3">4.31</span> iregister</h3>
 <div class="outline-text-3" id="text-4-31">
 <div class="org-src-container">
 
@@ -2442,8 +2463,8 @@ proced is an top like utility that runs inside of emacs. The following sets auto
 </div>
 </div>
 </div>
-<div id="outline-container-orgheadline104" class="outline-3">
-<h3 id="orgheadline104"><span class="section-number-3">4.32</span> discover-my-major</h3>
+<div id="outline-container-orgheadline105" class="outline-3">
+<h3 id="orgheadline105"><span class="section-number-3">4.32</span> discover-my-major</h3>
 <div class="outline-text-3" id="text-4-32">
 <div class="org-src-container">
 
@@ -2452,8 +2473,8 @@ proced is an top like utility that runs inside of emacs. The following sets auto
 </div>
 </div>
 </div>
-<div id="outline-container-orgheadline105" class="outline-3">
-<h3 id="orgheadline105"><span class="section-number-3">4.33</span> refine</h3>
+<div id="outline-container-orgheadline106" class="outline-3">
+<h3 id="orgheadline106"><span class="section-number-3">4.33</span> refine</h3>
 <div class="outline-text-3" id="text-4-33">
 <div class="org-src-container">
 
@@ -2463,8 +2484,8 @@ proced is an top like utility that runs inside of emacs. The following sets auto
 </div>
 </div>
 </div>
-<div id="outline-container-orgheadline106" class="outline-3">
-<h3 id="orgheadline106"><span class="section-number-3">4.34</span> winner</h3>
+<div id="outline-container-orgheadline107" class="outline-3">
+<h3 id="orgheadline107"><span class="section-number-3">4.34</span> winner</h3>
 <div class="outline-text-3" id="text-4-34">
 <div class="org-src-container">
 
@@ -2485,8 +2506,8 @@ proced is an top like utility that runs inside of emacs. The following sets auto
 </div>
 </div>
 </div>
-<div id="outline-container-orgheadline107" class="outline-3">
-<h3 id="orgheadline107"><span class="section-number-3">4.35</span> eyebrowse</h3>
+<div id="outline-container-orgheadline108" class="outline-3">
+<h3 id="orgheadline108"><span class="section-number-3">4.35</span> eyebrowse</h3>
 <div class="outline-text-3" id="text-4-35">
 <div class="org-src-container">
 
@@ -2498,8 +2519,8 @@ proced is an top like utility that runs inside of emacs. The following sets auto
 </div>
 </div>
 </div>
-<div id="outline-container-orgheadline108" class="outline-3">
-<h3 id="orgheadline108"><span class="section-number-3">4.36</span> fill-column-indicator</h3>
+<div id="outline-container-orgheadline109" class="outline-3">
+<h3 id="orgheadline109"><span class="section-number-3">4.36</span> fill-column-indicator</h3>
 <div class="outline-text-3" id="text-4-36">
 <p>
 This interferes with too many other packages. See
@@ -2522,8 +2543,8 @@ This interferes with too many other packages. See
 </div>
 </div>
 </div>
-<div id="outline-container-orgheadline109" class="outline-3">
-<h3 id="orgheadline109"><span class="section-number-3">4.37</span> overseer</h3>
+<div id="outline-container-orgheadline110" class="outline-3">
+<h3 id="orgheadline110"><span class="section-number-3">4.37</span> overseer</h3>
 <div class="outline-text-3" id="text-4-37">
 <div class="org-src-container">
 
@@ -2533,11 +2554,11 @@ This interferes with too many other packages. See
 </div>
 </div>
 </div>
-<div id="outline-container-orgheadline122" class="outline-2">
-<h2 id="orgheadline122"><span class="section-number-2">5</span> Keybindings</h2>
+<div id="outline-container-orgheadline123" class="outline-2">
+<h2 id="orgheadline123"><span class="section-number-2">5</span> Keybindings</h2>
 <div class="outline-text-2" id="text-5">
-</div><div id="outline-container-orgheadline111" class="outline-3">
-<h3 id="orgheadline111"><span class="section-number-3">5.1</span> bind-key</h3>
+</div><div id="outline-container-orgheadline112" class="outline-3">
+<h3 id="orgheadline112"><span class="section-number-3">5.1</span> bind-key</h3>
 <div class="outline-text-3" id="text-5-1">
 <div class="org-src-container">
 
@@ -2546,8 +2567,8 @@ This interferes with too many other packages. See
 </div>
 </div>
 </div>
-<div id="outline-container-orgheadline112" class="outline-3">
-<h3 id="orgheadline112"><span class="section-number-3">5.2</span> which-key</h3>
+<div id="outline-container-orgheadline113" class="outline-3">
+<h3 id="orgheadline113"><span class="section-number-3">5.2</span> which-key</h3>
 <div class="outline-text-3" id="text-5-2">
 <div class="org-src-container">
 
@@ -2561,8 +2582,8 @@ This interferes with too many other packages. See
 </div>
 </div>
 </div>
-<div id="outline-container-orgheadline113" class="outline-3">
-<h3 id="orgheadline113"><span class="section-number-3">5.3</span> hydra</h3>
+<div id="outline-container-orgheadline114" class="outline-3">
+<h3 id="orgheadline114"><span class="section-number-3">5.3</span> hydra</h3>
 <div class="outline-text-3" id="text-5-3">
 <div class="org-src-container">
 
@@ -2611,8 +2632,8 @@ This interferes with too many other packages. See
 </div>
 </div>
 </div>
-<div id="outline-container-orgheadline114" class="outline-3">
-<h3 id="orgheadline114"><span class="section-number-3">5.4</span> kill-emacs</h3>
+<div id="outline-container-orgheadline115" class="outline-3">
+<h3 id="orgheadline115"><span class="section-number-3">5.4</span> kill-emacs</h3>
 <div class="outline-text-3" id="text-5-4">
 <p>
 This ensures that C-x C-c will always kill emacs, even if we are running in server mode.
@@ -2624,8 +2645,8 @@ This ensures that C-x C-c will always kill emacs, even if we are running in serv
 </div>
 </div>
 </div>
-<div id="outline-container-orgheadline115" class="outline-3">
-<h3 id="orgheadline115"><span class="section-number-3">5.5</span> imenu</h3>
+<div id="outline-container-orgheadline116" class="outline-3">
+<h3 id="orgheadline116"><span class="section-number-3">5.5</span> imenu</h3>
 <div class="outline-text-3" id="text-5-5">
 <p>
 imenu is the best. This should be a default binding.
@@ -2637,8 +2658,8 @@ imenu is the best. This should be a default binding.
 </div>
 </div>
 </div>
-<div id="outline-container-orgheadline116" class="outline-3">
-<h3 id="orgheadline116"><span class="section-number-3">5.6</span> undo</h3>
+<div id="outline-container-orgheadline117" class="outline-3">
+<h3 id="orgheadline117"><span class="section-number-3">5.6</span> undo</h3>
 <div class="outline-text-3" id="text-5-6">
 <p>
 I can't shake the habit of using this keybinding for undo. I should really use the default of C-/.
@@ -2650,8 +2671,8 @@ I can't shake the habit of using this keybinding for undo. I should really use t
 </div>
 </div>
 </div>
-<div id="outline-container-orgheadline117" class="outline-3">
-<h3 id="orgheadline117"><span class="section-number-3">5.7</span> other-window</h3>
+<div id="outline-container-orgheadline118" class="outline-3">
+<h3 id="orgheadline118"><span class="section-number-3">5.7</span> other-window</h3>
 <div class="outline-text-3" id="text-5-7">
 <p>
 Go the other way when you use capital O.
@@ -2663,8 +2684,8 @@ Go the other way when you use capital O.
 </div>
 </div>
 </div>
-<div id="outline-container-orgheadline118" class="outline-3">
-<h3 id="orgheadline118"><span class="section-number-3">5.8</span> Mark ring</h3>
+<div id="outline-container-orgheadline119" class="outline-3">
+<h3 id="orgheadline119"><span class="section-number-3">5.8</span> Mark ring</h3>
 <div class="outline-text-3" id="text-5-8">
 <div class="org-src-container">
 
@@ -2673,8 +2694,8 @@ Go the other way when you use capital O.
 </div>
 </div>
 </div>
-<div id="outline-container-orgheadline119" class="outline-3">
-<h3 id="orgheadline119"><span class="section-number-3">5.9</span> Other bindings</h3>
+<div id="outline-container-orgheadline120" class="outline-3">
+<h3 id="orgheadline120"><span class="section-number-3">5.9</span> Other bindings</h3>
 <div class="outline-text-3" id="text-5-9">
 <div class="org-src-container">
 
@@ -2694,8 +2715,8 @@ Go the other way when you use capital O.
 </div>
 </div>
 </div>
-<div id="outline-container-orgheadline120" class="outline-3">
-<h3 id="orgheadline120"><span class="section-number-3">5.10</span> global-set-key-to-use-package</h3>
+<div id="outline-container-orgheadline121" class="outline-3">
+<h3 id="orgheadline121"><span class="section-number-3">5.10</span> global-set-key-to-use-package</h3>
 <div class="outline-text-3" id="text-5-10">
 <p>
 This might be useless, but I believe that it is a macro that converts between
@@ -2712,8 +2733,8 @@ bind-key and global-set-key forms.
 </div>
 </div>
 </div>
-<div id="outline-container-orgheadline121" class="outline-3">
-<h3 id="orgheadline121"><span class="section-number-3">5.11</span> OSX</h3>
+<div id="outline-container-orgheadline122" class="outline-3">
+<h3 id="orgheadline122"><span class="section-number-3">5.11</span> OSX</h3>
 <div class="outline-text-3" id="text-5-11">
 <div class="org-src-container">
 
@@ -2725,11 +2746,11 @@ bind-key and global-set-key forms.
 </div>
 </div>
 </div>
-<div id="outline-container-orgheadline135" class="outline-2">
-<h2 id="orgheadline135"><span class="section-number-2">6</span> Navigation</h2>
+<div id="outline-container-orgheadline136" class="outline-2">
+<h2 id="orgheadline136"><span class="section-number-2">6</span> Navigation</h2>
 <div class="outline-text-2" id="text-6">
-</div><div id="outline-container-orgheadline123" class="outline-3">
-<h3 id="orgheadline123"><span class="section-number-3">6.1</span> zop-to-char</h3>
+</div><div id="outline-container-orgheadline124" class="outline-3">
+<h3 id="orgheadline124"><span class="section-number-3">6.1</span> zop-to-char</h3>
 <div class="outline-text-3" id="text-6-1">
 <div class="org-src-container">
 
@@ -2743,8 +2764,8 @@ bind-key and global-set-key forms.
 </div>
 </div>
 </div>
-<div id="outline-container-orgheadline124" class="outline-3">
-<h3 id="orgheadline124"><span class="section-number-3">6.2</span> helm</h3>
+<div id="outline-container-orgheadline125" class="outline-3">
+<h3 id="orgheadline125"><span class="section-number-3">6.2</span> helm</h3>
 <div class="outline-text-3" id="text-6-2">
 <p>
 I use helm for almost all emacs completion
@@ -2799,8 +2820,8 @@ I use helm for almost all emacs completion
 </p>
 </div>
 </div>
-<div id="outline-container-orgheadline125" class="outline-3">
-<h3 id="orgheadline125"><span class="section-number-3">6.3</span> helm-projectile</h3>
+<div id="outline-container-orgheadline126" class="outline-3">
+<h3 id="orgheadline126"><span class="section-number-3">6.3</span> helm-projectile</h3>
 <div class="outline-text-3" id="text-6-3">
 <div class="org-src-container">
 
@@ -2845,8 +2866,8 @@ I use helm for almost all emacs completion
 </div>
 </div>
 </div>
-<div id="outline-container-orgheadline126" class="outline-3">
-<h3 id="orgheadline126"><span class="section-number-3">6.4</span> projectile</h3>
+<div id="outline-container-orgheadline127" class="outline-3">
+<h3 id="orgheadline127"><span class="section-number-3">6.4</span> projectile</h3>
 <div class="outline-text-3" id="text-6-4">
 <div class="org-src-container">
 
@@ -2899,8 +2920,8 @@ I use helm for almost all emacs completion
 </div>
 </div>
 </div>
-<div id="outline-container-orgheadline127" class="outline-3">
-<h3 id="orgheadline127"><span class="section-number-3">6.5</span> ido</h3>
+<div id="outline-container-orgheadline128" class="outline-3">
+<h3 id="orgheadline128"><span class="section-number-3">6.5</span> ido</h3>
 <div class="outline-text-3" id="text-6-5">
 <div class="org-src-container">
 
@@ -2938,8 +2959,8 @@ I use helm for almost all emacs completion
 </div>
 </div>
 </div>
-<div id="outline-container-orgheadline128" class="outline-3">
-<h3 id="orgheadline128"><span class="section-number-3">6.6</span> avy</h3>
+<div id="outline-container-orgheadline129" class="outline-3">
+<h3 id="orgheadline129"><span class="section-number-3">6.6</span> avy</h3>
 <div class="outline-text-3" id="text-6-6">
 <div class="org-src-container">
 
@@ -2956,8 +2977,8 @@ I use helm for almost all emacs completion
 </div>
 </div>
 </div>
-<div id="outline-container-orgheadline129" class="outline-3">
-<h3 id="orgheadline129"><span class="section-number-3">6.7</span> ace-window</h3>
+<div id="outline-container-orgheadline130" class="outline-3">
+<h3 id="orgheadline130"><span class="section-number-3">6.7</span> ace-window</h3>
 <div class="outline-text-3" id="text-6-7">
 <div class="org-src-container">
 
@@ -2972,8 +2993,8 @@ I use helm for almost all emacs completion
 </div>
 </div>
 </div>
-<div id="outline-container-orgheadline130" class="outline-3">
-<h3 id="orgheadline130"><span class="section-number-3">6.8</span> neotree</h3>
+<div id="outline-container-orgheadline131" class="outline-3">
+<h3 id="orgheadline131"><span class="section-number-3">6.8</span> neotree</h3>
 <div class="outline-text-3" id="text-6-8">
 <div class="org-src-container">
 
@@ -2982,8 +3003,8 @@ I use helm for almost all emacs completion
 </div>
 </div>
 </div>
-<div id="outline-container-orgheadline132" class="outline-3">
-<h3 id="orgheadline132"><span class="section-number-3">6.9</span> jump-char</h3>
+<div id="outline-container-orgheadline133" class="outline-3">
+<h3 id="orgheadline133"><span class="section-number-3">6.9</span> jump-char</h3>
 <div class="outline-text-3" id="text-6-9">
 <div class="org-src-container">
 
@@ -2992,8 +3013,8 @@ I use helm for almost all emacs completion
 </pre>
 </div>
 </div>
-<div id="outline-container-orgheadline131" class="outline-4">
-<h4 id="orgheadline131"><span class="section-number-4">6.9.1</span> helm-zsh-history</h4>
+<div id="outline-container-orgheadline132" class="outline-4">
+<h4 id="orgheadline132"><span class="section-number-4">6.9.1</span> helm-zsh-history</h4>
 <div class="outline-text-4" id="text-6-9-1">
 <p>
 This was stolen from <a href="https://github.com/jwiegley/dot-emacs">https://github.com/jwiegley/dot-emacs</a>
@@ -3037,8 +3058,8 @@ This was stolen from <a href="https://github.com/jwiegley/dot-emacs">https://git
 </div>
 </div>
 </div>
-<div id="outline-container-orgheadline133" class="outline-3">
-<h3 id="orgheadline133"><span class="section-number-3">6.10</span> flimenu</h3>
+<div id="outline-container-orgheadline134" class="outline-3">
+<h3 id="orgheadline134"><span class="section-number-3">6.10</span> flimenu</h3>
 <div class="outline-text-3" id="text-6-10">
 <div class="org-src-container">
 
@@ -3050,8 +3071,8 @@ This was stolen from <a href="https://github.com/jwiegley/dot-emacs">https://git
 </div>
 </div>
 </div>
-<div id="outline-container-orgheadline134" class="outline-3">
-<h3 id="orgheadline134"><span class="section-number-3">6.11</span> swiper</h3>
+<div id="outline-container-orgheadline135" class="outline-3">
+<h3 id="orgheadline135"><span class="section-number-3">6.11</span> swiper</h3>
 <div class="outline-text-3" id="text-6-11">
 <div class="org-src-container">
 
@@ -3063,11 +3084,11 @@ This was stolen from <a href="https://github.com/jwiegley/dot-emacs">https://git
 </div>
 </div>
 </div>
-<div id="outline-container-orgheadline139" class="outline-2">
-<h2 id="orgheadline139"><span class="section-number-2">7</span> Completion</h2>
+<div id="outline-container-orgheadline140" class="outline-2">
+<h2 id="orgheadline140"><span class="section-number-2">7</span> Completion</h2>
 <div class="outline-text-2" id="text-7">
-</div><div id="outline-container-orgheadline137" class="outline-3">
-<h3 id="orgheadline137"><span class="section-number-3">7.1</span> company</h3>
+</div><div id="outline-container-orgheadline138" class="outline-3">
+<h3 id="orgheadline138"><span class="section-number-3">7.1</span> company</h3>
 <div class="outline-text-3" id="text-7-1">
 <div class="org-src-container">
 
@@ -3088,8 +3109,8 @@ This was stolen from <a href="https://github.com/jwiegley/dot-emacs">https://git
 </pre>
 </div>
 </div>
-<div id="outline-container-orgheadline136" class="outline-4">
-<h4 id="orgheadline136"><span class="section-number-4">7.1.1</span> company-flx</h4>
+<div id="outline-container-orgheadline137" class="outline-4">
+<h4 id="orgheadline137"><span class="section-number-4">7.1.1</span> company-flx</h4>
 <div class="outline-text-4" id="text-7-1-1">
 <div class="org-src-container">
 
@@ -3103,8 +3124,8 @@ This was stolen from <a href="https://github.com/jwiegley/dot-emacs">https://git
 </div>
 </div>
 </div>
-<div id="outline-container-orgheadline138" class="outline-3">
-<h3 id="orgheadline138"><span class="section-number-3">7.2</span> auto-complete</h3>
+<div id="outline-container-orgheadline139" class="outline-3">
+<h3 id="orgheadline139"><span class="section-number-3">7.2</span> auto-complete</h3>
 <div class="outline-text-3" id="text-7-2">
 <p>
 I don't use auto-complete at all, so I have set up a hook to automatically disable it whenever it is enabled to avoid creating conflicting popups when company is activated.
@@ -3127,11 +3148,11 @@ I don't use auto-complete at all, so I have set up a hook to automatically disab
 </div>
 </div>
 </div>
-<div id="outline-container-orgheadline150" class="outline-2">
-<h2 id="orgheadline150"><span class="section-number-2">8</span> Text Manipulation</h2>
+<div id="outline-container-orgheadline151" class="outline-2">
+<h2 id="orgheadline151"><span class="section-number-2">8</span> Text Manipulation</h2>
 <div class="outline-text-2" id="text-8">
-</div><div id="outline-container-orgheadline140" class="outline-3">
-<h3 id="orgheadline140"><span class="section-number-3">8.1</span> smartparens</h3>
+</div><div id="outline-container-orgheadline141" class="outline-3">
+<h3 id="orgheadline141"><span class="section-number-3">8.1</span> smartparens</h3>
 <div class="outline-text-3" id="text-8-1">
 <div class="org-src-container">
 
@@ -3155,8 +3176,8 @@ I don't use auto-complete at all, so I have set up a hook to automatically disab
 </div>
 </div>
 </div>
-<div id="outline-container-orgheadline141" class="outline-3">
-<h3 id="orgheadline141"><span class="section-number-3">8.2</span> multiple-cursors</h3>
+<div id="outline-container-orgheadline142" class="outline-3">
+<h3 id="orgheadline142"><span class="section-number-3">8.2</span> multiple-cursors</h3>
 <div class="outline-text-3" id="text-8-2">
 <div class="org-src-container">
 
@@ -3183,8 +3204,8 @@ I don't use auto-complete at all, so I have set up a hook to automatically disab
 </div>
 </div>
 </div>
-<div id="outline-container-orgheadline142" class="outline-3">
-<h3 id="orgheadline142"><span class="section-number-3">8.3</span> expand-region</h3>
+<div id="outline-container-orgheadline143" class="outline-3">
+<h3 id="orgheadline143"><span class="section-number-3">8.3</span> expand-region</h3>
 <div class="outline-text-3" id="text-8-3">
 <div class="org-src-container">
 
@@ -3196,8 +3217,8 @@ I don't use auto-complete at all, so I have set up a hook to automatically disab
 </div>
 </div>
 </div>
-<div id="outline-container-orgheadline143" class="outline-3">
-<h3 id="orgheadline143"><span class="section-number-3">8.4</span> multi-line</h3>
+<div id="outline-container-orgheadline144" class="outline-3">
+<h3 id="orgheadline144"><span class="section-number-3">8.4</span> multi-line</h3>
 <div class="outline-text-3" id="text-8-4">
 <div class="org-src-container">
 
@@ -3207,8 +3228,8 @@ I don't use auto-complete at all, so I have set up a hook to automatically disab
 </div>
 </div>
 </div>
-<div id="outline-container-orgheadline144" class="outline-3">
-<h3 id="orgheadline144"><span class="section-number-3">8.5</span> comment-dwim-2</h3>
+<div id="outline-container-orgheadline145" class="outline-3">
+<h3 id="orgheadline145"><span class="section-number-3">8.5</span> comment-dwim-2</h3>
 <div class="outline-text-3" id="text-8-5">
 <div class="org-src-container">
 
@@ -3218,8 +3239,8 @@ I don't use auto-complete at all, so I have set up a hook to automatically disab
 </div>
 </div>
 </div>
-<div id="outline-container-orgheadline145" class="outline-3">
-<h3 id="orgheadline145"><span class="section-number-3">8.6</span> unfill</h3>
+<div id="outline-container-orgheadline146" class="outline-3">
+<h3 id="orgheadline146"><span class="section-number-3">8.6</span> unfill</h3>
 <div class="outline-text-3" id="text-8-6">
 <div class="org-src-container">
 
@@ -3229,8 +3250,8 @@ I don't use auto-complete at all, so I have set up a hook to automatically disab
 </div>
 </div>
 </div>
-<div id="outline-container-orgheadline146" class="outline-3">
-<h3 id="orgheadline146"><span class="section-number-3">8.7</span> cliphist</h3>
+<div id="outline-container-orgheadline147" class="outline-3">
+<h3 id="orgheadline147"><span class="section-number-3">8.7</span> cliphist</h3>
 <div class="outline-text-3" id="text-8-7">
 <div class="org-src-container">
 
@@ -3240,8 +3261,8 @@ I don't use auto-complete at all, so I have set up a hook to automatically disab
 </div>
 </div>
 </div>
-<div id="outline-container-orgheadline147" class="outline-3">
-<h3 id="orgheadline147"><span class="section-number-3">8.8</span> electric-operator-mode</h3>
+<div id="outline-container-orgheadline148" class="outline-3">
+<h3 id="orgheadline148"><span class="section-number-3">8.8</span> electric-operator-mode</h3>
 <div class="outline-text-3" id="text-8-8">
 <div class="org-src-container">
 
@@ -3252,8 +3273,8 @@ I don't use auto-complete at all, so I have set up a hook to automatically disab
 </div>
 </div>
 </div>
-<div id="outline-container-orgheadline148" class="outline-3">
-<h3 id="orgheadline148"><span class="section-number-3">8.9</span> string-inflection</h3>
+<div id="outline-container-orgheadline149" class="outline-3">
+<h3 id="orgheadline149"><span class="section-number-3">8.9</span> string-inflection</h3>
 <div class="outline-text-3" id="text-8-9">
 <div class="org-src-container">
 
@@ -3265,8 +3286,8 @@ I don't use auto-complete at all, so I have set up a hook to automatically disab
 </div>
 </div>
 
-<div id="outline-container-orgheadline149" class="outline-3">
-<h3 id="orgheadline149"><span class="section-number-3">8.10</span> yasnippet</h3>
+<div id="outline-container-orgheadline150" class="outline-3">
+<h3 id="orgheadline150"><span class="section-number-3">8.10</span> yasnippet</h3>
 <div class="outline-text-3" id="text-8-10">
 <div class="org-src-container">
 
@@ -3286,11 +3307,11 @@ I don't use auto-complete at all, so I have set up a hook to automatically disab
 </div>
 </div>
 </div>
-<div id="outline-container-orgheadline167" class="outline-2">
-<h2 id="orgheadline167"><span class="section-number-2">9</span> Source Control</h2>
+<div id="outline-container-orgheadline168" class="outline-2">
+<h2 id="orgheadline168"><span class="section-number-2">9</span> Source Control</h2>
 <div class="outline-text-2" id="text-9">
-</div><div id="outline-container-orgheadline152" class="outline-3">
-<h3 id="orgheadline152"><span class="section-number-3">9.1</span> magit</h3>
+</div><div id="outline-container-orgheadline153" class="outline-3">
+<h3 id="orgheadline153"><span class="section-number-3">9.1</span> magit</h3>
 <div class="outline-text-3" id="text-9-1">
 <div class="org-src-container">
 
@@ -3301,9 +3322,7 @@ I don't use auto-complete at all, so I have set up a hook to automatically disab
   <span style="color: #2196F3;">(</span><span style="color: #fff59d;">progn</span>
     <span style="color: #EF6C00;">(</span><span style="color: #fff59d;">defun</span> <span style="color: #84ffff;">imalison:after-magit-visit-file</span> <span style="color: #B388FF;">(</span><span style="color: #84ffff;">&amp;rest</span> args<span style="color: #B388FF;">)</span>
       <span style="color: #B388FF;">(</span><span style="color: #fff59d;">when</span> <span style="color: #76ff03;">(</span>derived-mode-p 'org-mode<span style="color: #76ff03;">)</span>
-        <span style="color: #76ff03;">(</span>org-show-context 'magit-goto<span style="color: #76ff03;">)</span><span style="color: #B388FF;">)</span><span style="color: #EF6C00;">)</span>
-    <span style="color: #EF6C00;">(</span><span style="color: #fff59d;">defun</span> <span style="color: #84ffff;">imalison:magit-popup-mode-hook</span> <span style="color: #B388FF;">()</span>
-      <span style="color: #B388FF;">(</span><span style="color: #fff59d;">setq</span> show-trailing-whitespace nil<span style="color: #B388FF;">)</span><span style="color: #EF6C00;">)</span><span style="color: #2196F3;">)</span>
+        <span style="color: #76ff03;">(</span>org-show-context 'magit-goto<span style="color: #76ff03;">)</span><span style="color: #B388FF;">)</span><span style="color: #EF6C00;">)</span><span style="color: #2196F3;">)</span>
   <span style="color: #ff8A65;">:config</span>
   <span style="color: #2196F3;">(</span><span style="color: #fff59d;">progn</span>
     <span style="color: #EF6C00;">(</span><span style="color: #fff59d;">unbind-key</span> <span style="color: #9ccc65;">"C-j"</span> magit-status-mode-map<span style="color: #EF6C00;">)</span>
@@ -3318,7 +3337,7 @@ I don't use auto-complete at all, so I have set up a hook to automatically disab
 
     <span style="color: #EF6C00;">(</span>add-to-list 'org-show-context-detail '<span style="color: #B388FF;">(</span>magit-goto . lineage<span style="color: #B388FF;">)</span><span style="color: #EF6C00;">)</span>
     <span style="color: #EF6C00;">(</span>advice-add 'magit-diff-visit-file <span style="color: #ff8A65;">:after</span> 'imalison:after-magit-visit-file<span style="color: #EF6C00;">)</span>
-    <span style="color: #EF6C00;">(</span>add-hook 'magit-popup-mode-hook 'imalison:magit-popup-mode-hook<span style="color: #EF6C00;">)</span>
+    <span style="color: #EF6C00;">(</span>add-hook 'magit-popup-mode-hook 'imalison:disable-show-trailing-whitespace<span style="color: #EF6C00;">)</span>
     <span style="color: #EF6C00;">(</span><span style="color: #fff59d;">use-package</span> <span style="color: #8bc34a;">magit-filenotify</span>
       <span style="color: #b0bec5;">;; </span><span style="color: #b0bec5;">Seems like OSX does not support filenotify.</span>
       <span style="color: #ff8A65;">:disabled</span> t
@@ -3328,8 +3347,8 @@ I don't use auto-complete at all, so I have set up a hook to automatically disab
 </pre>
 </div>
 </div>
-<div id="outline-container-orgheadline151" class="outline-4">
-<h4 id="orgheadline151"><span class="section-number-4">9.1.1</span> magithub</h4>
+<div id="outline-container-orgheadline152" class="outline-4">
+<h4 id="orgheadline152"><span class="section-number-4">9.1.1</span> magithub</h4>
 <div class="outline-text-4" id="text-9-1-1">
 <div class="org-src-container">
 
@@ -3342,8 +3361,8 @@ I don't use auto-complete at all, so I have set up a hook to automatically disab
 </div>
 </div>
 </div>
-<div id="outline-container-orgheadline153" class="outline-3">
-<h3 id="orgheadline153"><span class="section-number-3">9.2</span> git-link</h3>
+<div id="outline-container-orgheadline154" class="outline-3">
+<h3 id="orgheadline154"><span class="section-number-3">9.2</span> git-link</h3>
 <div class="outline-text-3" id="text-9-2">
 <div class="org-src-container">
 
@@ -3355,8 +3374,8 @@ I don't use auto-complete at all, so I have set up a hook to automatically disab
 </div>
 </div>
 </div>
-<div id="outline-container-orgheadline154" class="outline-3">
-<h3 id="orgheadline154"><span class="section-number-3">9.3</span> magit-gitflow</h3>
+<div id="outline-container-orgheadline155" class="outline-3">
+<h3 id="orgheadline155"><span class="section-number-3">9.3</span> magit-gitflow</h3>
 <div class="outline-text-3" id="text-9-3">
 <div class="org-src-container">
 
@@ -3373,8 +3392,8 @@ I don't use auto-complete at all, so I have set up a hook to automatically disab
 </div>
 </div>
 </div>
-<div id="outline-container-orgheadline155" class="outline-3">
-<h3 id="orgheadline155"><span class="section-number-3">9.4</span> git-timemachine</h3>
+<div id="outline-container-orgheadline156" class="outline-3">
+<h3 id="orgheadline156"><span class="section-number-3">9.4</span> git-timemachine</h3>
 <div class="outline-text-3" id="text-9-4">
 <div class="org-src-container">
 
@@ -3384,8 +3403,8 @@ I don't use auto-complete at all, so I have set up a hook to automatically disab
 </div>
 </div>
 </div>
-<div id="outline-container-orgheadline156" class="outline-3">
-<h3 id="orgheadline156"><span class="section-number-3">9.5</span> git-gutter</h3>
+<div id="outline-container-orgheadline157" class="outline-3">
+<h3 id="orgheadline157"><span class="section-number-3">9.5</span> git-gutter</h3>
 <div class="outline-text-3" id="text-9-5">
 <div class="org-src-container">
 
@@ -3397,8 +3416,8 @@ I don't use auto-complete at all, so I have set up a hook to automatically disab
 </div>
 </div>
 </div>
-<div id="outline-container-orgheadline157" class="outline-3">
-<h3 id="orgheadline157"><span class="section-number-3">9.6</span> gitolite-clone</h3>
+<div id="outline-container-orgheadline158" class="outline-3">
+<h3 id="orgheadline158"><span class="section-number-3">9.6</span> gitolite-clone</h3>
 <div class="outline-text-3" id="text-9-6">
 <div class="org-src-container">
 
@@ -3413,8 +3432,8 @@ I don't use auto-complete at all, so I have set up a hook to automatically disab
 </div>
 </div>
 </div>
-<div id="outline-container-orgheadline158" class="outline-3">
-<h3 id="orgheadline158"><span class="section-number-3">9.7</span> gitconfig-mode</h3>
+<div id="outline-container-orgheadline159" class="outline-3">
+<h3 id="orgheadline159"><span class="section-number-3">9.7</span> gitconfig-mode</h3>
 <div class="outline-text-3" id="text-9-7">
 <div class="org-src-container">
 
@@ -3424,8 +3443,8 @@ I don't use auto-complete at all, so I have set up a hook to automatically disab
 </div>
 </div>
 </div>
-<div id="outline-container-orgheadline159" class="outline-3">
-<h3 id="orgheadline159"><span class="section-number-3">9.8</span> gitignore-mode</h3>
+<div id="outline-container-orgheadline160" class="outline-3">
+<h3 id="orgheadline160"><span class="section-number-3">9.8</span> gitignore-mode</h3>
 <div class="outline-text-3" id="text-9-8">
 <div class="org-src-container">
 
@@ -3435,11 +3454,11 @@ I don't use auto-complete at all, so I have set up a hook to automatically disab
 </div>
 </div>
 </div>
-<div id="outline-container-orgheadline166" class="outline-3">
-<h3 id="orgheadline166"><span class="section-number-3">9.9</span> github</h3>
+<div id="outline-container-orgheadline167" class="outline-3">
+<h3 id="orgheadline167"><span class="section-number-3">9.9</span> github</h3>
 <div class="outline-text-3" id="text-9-9">
-</div><div id="outline-container-orgheadline160" class="outline-4">
-<h4 id="orgheadline160"><span class="section-number-4">9.9.1</span> github-search</h4>
+</div><div id="outline-container-orgheadline161" class="outline-4">
+<h4 id="orgheadline161"><span class="section-number-4">9.9.1</span> github-search</h4>
 <div class="outline-text-4" id="text-9-9-1">
 <div class="org-src-container">
 
@@ -3468,8 +3487,8 @@ I don't use auto-complete at all, so I have set up a hook to automatically disab
 </div>
 </div>
 </div>
-<div id="outline-container-orgheadline161" class="outline-4">
-<h4 id="orgheadline161"><span class="section-number-4">9.9.2</span> github-clone</h4>
+<div id="outline-container-orgheadline162" class="outline-4">
+<h4 id="orgheadline162"><span class="section-number-4">9.9.2</span> github-clone</h4>
 <div class="outline-text-4" id="text-9-9-2">
 <div class="org-src-container">
 
@@ -3483,8 +3502,8 @@ I don't use auto-complete at all, so I have set up a hook to automatically disab
 </div>
 </div>
 </div>
-<div id="outline-container-orgheadline162" class="outline-4">
-<h4 id="orgheadline162"><span class="section-number-4">9.9.3</span> github-notifier</h4>
+<div id="outline-container-orgheadline163" class="outline-4">
+<h4 id="orgheadline163"><span class="section-number-4">9.9.3</span> github-notifier</h4>
 <div class="outline-text-4" id="text-9-9-3">
 <p>
 This is disabled because it was causing too many issues with my
@@ -3502,8 +3521,8 @@ modeline and with excessive http requests to github.
 </div>
 </div>
 </div>
-<div id="outline-container-orgheadline163" class="outline-4">
-<h4 id="orgheadline163"><span class="section-number-4">9.9.4</span> github-browse-file</h4>
+<div id="outline-container-orgheadline164" class="outline-4">
+<h4 id="orgheadline164"><span class="section-number-4">9.9.4</span> github-browse-file</h4>
 <div class="outline-text-4" id="text-9-9-4">
 <div class="org-src-container">
 
@@ -3513,8 +3532,8 @@ modeline and with excessive http requests to github.
 </div>
 </div>
 </div>
-<div id="outline-container-orgheadline164" class="outline-4">
-<h4 id="orgheadline164"><span class="section-number-4">9.9.5</span> magit-gh-pulls</h4>
+<div id="outline-container-orgheadline165" class="outline-4">
+<h4 id="orgheadline165"><span class="section-number-4">9.9.5</span> magit-gh-pulls</h4>
 <div class="outline-text-4" id="text-9-9-5">
 <div class="org-src-container">
 
@@ -3529,8 +3548,8 @@ modeline and with excessive http requests to github.
 </div>
 </div>
 </div>
-<div id="outline-container-orgheadline165" class="outline-4">
-<h4 id="orgheadline165"><span class="section-number-4">9.9.6</span> gist</h4>
+<div id="outline-container-orgheadline166" class="outline-4">
+<h4 id="orgheadline166"><span class="section-number-4">9.9.6</span> gist</h4>
 <div class="outline-text-4" id="text-9-9-6">
 <div class="org-src-container">
 
@@ -3545,14 +3564,14 @@ modeline and with excessive http requests to github.
 </div>
 </div>
 </div>
-<div id="outline-container-orgheadline222" class="outline-2">
-<h2 id="orgheadline222"><span class="section-number-2">10</span> Major Modes</h2>
+<div id="outline-container-orgheadline223" class="outline-2">
+<h2 id="orgheadline223"><span class="section-number-2">10</span> Major Modes</h2>
 <div class="outline-text-2" id="text-10">
-</div><div id="outline-container-orgheadline198" class="outline-3">
-<h3 id="orgheadline198"><span class="section-number-3">10.1</span> Programming</h3>
+</div><div id="outline-container-orgheadline199" class="outline-3">
+<h3 id="orgheadline199"><span class="section-number-3">10.1</span> Programming</h3>
 <div class="outline-text-3" id="text-10-1">
-</div><div id="outline-container-orgheadline170" class="outline-4">
-<h4 id="orgheadline170"><span class="section-number-4">10.1.1</span> python</h4>
+</div><div id="outline-container-orgheadline171" class="outline-4">
+<h4 id="orgheadline171"><span class="section-number-4">10.1.1</span> python</h4>
 <div class="outline-text-4" id="text-10-1-1">
 <div class="org-src-container">
 
@@ -3588,7 +3607,7 @@ modeline and with excessive http requests to github.
 </pre>
 </div>
 </div>
-<ol class="org-ol"><li><a id="orgheadline168"></a>pyimport<br  /><div class="outline-text-5" id="text-10-1-1-1">
+<ol class="org-ol"><li><a id="orgheadline169"></a>pyimport<br  /><div class="outline-text-5" id="text-10-1-1-1">
 <p>
 Pyimport is disabled because it may be causing a performance problem.
 </p>
@@ -3602,7 +3621,7 @@ Pyimport is disabled because it may be causing a performance problem.
 </pre>
 </div>
 </div></li>
-<li><a id="orgheadline169"></a>jedi<br  /><div class="outline-text-5" id="text-10-1-1-2">
+<li><a id="orgheadline170"></a>jedi<br  /><div class="outline-text-5" id="text-10-1-1-2">
 <p>
 The accepted way to use jedi if you prefer company to auto-complete is
 simply to require the company jedi package, which is why we make no
@@ -3624,8 +3643,8 @@ reference to the jedi-core package.
 </div>
 </div></li></ol>
 </div>
-<div id="outline-container-orgheadline172" class="outline-4">
-<h4 id="orgheadline172"><span class="section-number-4">10.1.2</span> go</h4>
+<div id="outline-container-orgheadline173" class="outline-4">
+<h4 id="orgheadline173"><span class="section-number-4">10.1.2</span> go</h4>
 <div class="outline-text-4" id="text-10-1-2">
 <div class="org-src-container">
 
@@ -3749,7 +3768,7 @@ reference to the jedi-core package.
 </pre>
 </div>
 </div>
-<ol class="org-ol"><li><a id="orgheadline171"></a>Show diffs of testify output<br  /><div class="outline-text-5" id="text-10-1-2-1">
+<ol class="org-ol"><li><a id="orgheadline172"></a>Show diffs of testify output<br  /><div class="outline-text-5" id="text-10-1-2-1">
 <div class="org-src-container">
 
 <pre class="src src-emacs-lisp"><span style="color: #e91e63;">(</span><span style="color: #fff59d;">defvar</span> <span style="color: #ffcc80;">imalison:testify-ediff-buffers</span> nil<span style="color: #e91e63;">)</span>
@@ -3789,10 +3808,10 @@ reference to the jedi-core package.
 </div>
 </div></li></ol>
 </div>
-<div id="outline-container-orgheadline183" class="outline-4">
-<h4 id="orgheadline183"><span class="section-number-4">10.1.3</span> emacs-lisp</h4>
+<div id="outline-container-orgheadline184" class="outline-4">
+<h4 id="orgheadline184"><span class="section-number-4">10.1.3</span> emacs-lisp</h4>
 <div class="outline-text-4" id="text-10-1-3">
-</div><ol class="org-ol"><li><a id="orgheadline173"></a>elisp-slime-nav<br  /><div class="outline-text-5" id="text-10-1-3-1">
+</div><ol class="org-ol"><li><a id="orgheadline174"></a>elisp-slime-nav<br  /><div class="outline-text-5" id="text-10-1-3-1">
 <div class="org-src-container">
 
 <pre class="src src-emacs-lisp"><span style="color: #e91e63;">(</span><span style="color: #fff59d;">use-package</span> <span style="color: #8bc34a;">elisp-slime-nav</span>
@@ -3808,7 +3827,7 @@ reference to the jedi-core package.
 </pre>
 </div>
 </div></li>
-<li><a id="orgheadline174"></a>macrostep<br  /><div class="outline-text-5" id="text-10-1-3-2">
+<li><a id="orgheadline175"></a>macrostep<br  /><div class="outline-text-5" id="text-10-1-3-2">
 <p>
 Macrostep is an indespensible tool for writing emacs lisp macros. It lets you see pretty printed versions of the result of macro evaluation as the macro is evaluated
 </p>
@@ -3820,7 +3839,7 @@ Macrostep is an indespensible tool for writing emacs lisp macros. It lets you se
 </pre>
 </div>
 </div></li>
-<li><a id="orgheadline175"></a>emr<br  /><div class="outline-text-5" id="text-10-1-3-3">
+<li><a id="orgheadline176"></a>emr<br  /><div class="outline-text-5" id="text-10-1-3-3">
 <div class="org-src-container">
 
 <pre class="src src-emacs-lisp"><span style="color: #e91e63;">(</span><span style="color: #fff59d;">use-package</span> <span style="color: #8bc34a;">emr</span>
@@ -3831,7 +3850,7 @@ Macrostep is an indespensible tool for writing emacs lisp macros. It lets you se
 </pre>
 </div>
 </div></li>
-<li><a id="orgheadline176"></a>Editing configuration<br  /><div class="outline-text-5" id="text-10-1-3-4">
+<li><a id="orgheadline177"></a>Editing configuration<br  /><div class="outline-text-5" id="text-10-1-3-4">
 <p>
 Reduce indentation for some functions
 </p>
@@ -3841,7 +3860,7 @@ Reduce indentation for some functions
 </pre>
 </div>
 </div></li>
-<li><a id="orgheadline177"></a>Checkdoc<br  /><div class="outline-text-5" id="text-10-1-3-5">
+<li><a id="orgheadline178"></a>Checkdoc<br  /><div class="outline-text-5" id="text-10-1-3-5">
 <div class="org-src-container">
 
 <pre class="src src-emacs-lisp"><span style="color: #e91e63;">(</span><span style="color: #fff59d;">setq</span> checkdoc-force-docstrings-flag nil
@@ -3849,7 +3868,7 @@ Reduce indentation for some functions
 </pre>
 </div>
 </div></li>
-<li><a id="orgheadline178"></a>edebug<br  /><div class="outline-text-5" id="text-10-1-3-6">
+<li><a id="orgheadline179"></a>edebug<br  /><div class="outline-text-5" id="text-10-1-3-6">
 <div class="org-src-container">
 
 <pre class="src src-emacs-lisp"><span style="color: #e91e63;">(</span><span style="color: #fff59d;">use-package</span> <span style="color: #8bc34a;">edebug</span>
@@ -3858,7 +3877,7 @@ Reduce indentation for some functions
 </pre>
 </div>
 </div></li>
-<li><a id="orgheadline179"></a>Misc<br  /><div class="outline-text-5" id="text-10-1-3-7">
+<li><a id="orgheadline180"></a>Misc<br  /><div class="outline-text-5" id="text-10-1-3-7">
 <div class="org-src-container">
 
 <pre class="src src-emacs-lisp"><span style="color: #e91e63;">(</span><span style="color: #fff59d;">defun</span> <span style="color: #84ffff;">imenu-elisp-sections</span> <span style="color: #2196F3;">()</span>
@@ -3884,7 +3903,7 @@ Reduce indentation for some functions
 </pre>
 </div>
 </div></li>
-<li><a id="orgheadline180"></a>Show result of eval-last-sexp inline<br  /><div class="outline-text-5" id="text-10-1-3-8">
+<li><a id="orgheadline181"></a>Show result of eval-last-sexp inline<br  /><div class="outline-text-5" id="text-10-1-3-8">
 <p>
 Taken from <a href="http://endlessparentheses.com/eval-result-overlays-in-emacs-lisp.html">http://endlessparentheses.com/eval-result-overlays-in-emacs-lisp.html</a>
 </p>
@@ -3918,7 +3937,7 @@ Taken from <a href="http://endlessparentheses.com/eval-result-overlays-in-emacs-
 </pre>
 </div>
 </div></li>
-<li><a id="orgheadline181"></a>Init hook<br  /><div class="outline-text-5" id="text-10-1-3-9">
+<li><a id="orgheadline182"></a>Init hook<br  /><div class="outline-text-5" id="text-10-1-3-9">
 <div class="org-src-container">
 
 <pre class="src src-emacs-lisp"><span style="color: #e91e63;">(</span><span style="color: #fff59d;">defvar</span> <span style="color: #ffcc80;">imalison:check-parens</span> nil<span style="color: #e91e63;">)</span>
@@ -3935,7 +3954,7 @@ Taken from <a href="http://endlessparentheses.com/eval-result-overlays-in-emacs-
 </pre>
 </div>
 </div></li>
-<li><a id="orgheadline182"></a>Keybinds<br  /><div class="outline-text-5" id="text-10-1-3-10">
+<li><a id="orgheadline183"></a>Keybinds<br  /><div class="outline-text-5" id="text-10-1-3-10">
 <div class="org-src-container">
 
 <pre class="src src-emacs-lisp"><span style="color: #e91e63;">(</span><span style="color: #fff59d;">emit-compose</span> imalison:copy-eval-last-sexp
@@ -3954,8 +3973,8 @@ Taken from <a href="http://endlessparentheses.com/eval-result-overlays-in-emacs-
 </div>
 </div></li></ol>
 </div>
-<div id="outline-container-orgheadline186" class="outline-4">
-<h4 id="orgheadline186"><span class="section-number-4">10.1.4</span> clojure</h4>
+<div id="outline-container-orgheadline187" class="outline-4">
+<h4 id="orgheadline187"><span class="section-number-4">10.1.4</span> clojure</h4>
 <div class="outline-text-4" id="text-10-1-4">
 <p>
 The following is taken from <a href="https://github.com/syl20bnr/spacemacs/blob/a650877bea582fed72bbca0dc1f80fcb2ec0e6d5/layers/+lang/clojure/funcs.el#L30">spacemacs</a>. It adds fancification to a clojure mode.
@@ -4010,7 +4029,7 @@ The following is taken from <a href="https://github.com/syl20bnr/spacemacs/blob/
 </pre>
 </div>
 </div>
-<ol class="org-ol"><li><a id="orgheadline184"></a>cider<br  /><div class="outline-text-5" id="text-10-1-4-1">
+<ol class="org-ol"><li><a id="orgheadline185"></a>cider<br  /><div class="outline-text-5" id="text-10-1-4-1">
 <div class="org-src-container">
 
 <pre class="src src-emacs-lisp"><span style="color: #e91e63;">(</span><span style="color: #fff59d;">use-package</span> <span style="color: #8bc34a;">cider</span>
@@ -4027,7 +4046,7 @@ The following is taken from <a href="https://github.com/syl20bnr/spacemacs/blob/
 </pre>
 </div>
 </div></li>
-<li><a id="orgheadline185"></a>clj-refactor<br  /><div class="outline-text-5" id="text-10-1-4-2">
+<li><a id="orgheadline186"></a>clj-refactor<br  /><div class="outline-text-5" id="text-10-1-4-2">
 <div class="org-src-container">
 
 <pre class="src src-emacs-lisp"><span style="color: #e91e63;">(</span><span style="color: #fff59d;">use-package</span> <span style="color: #8bc34a;">clj-refactor</span>
@@ -4036,8 +4055,8 @@ The following is taken from <a href="https://github.com/syl20bnr/spacemacs/blob/
 </div>
 </div></li></ol>
 </div>
-<div id="outline-container-orgheadline187" class="outline-4">
-<h4 id="orgheadline187"><span class="section-number-4">10.1.5</span> scala</h4>
+<div id="outline-container-orgheadline188" class="outline-4">
+<h4 id="orgheadline188"><span class="section-number-4">10.1.5</span> scala</h4>
 <div class="outline-text-4" id="text-10-1-5">
 <div class="org-src-container">
 
@@ -4060,8 +4079,8 @@ The following is taken from <a href="https://github.com/syl20bnr/spacemacs/blob/
 </div>
 </div>
 </div>
-<div id="outline-container-orgheadline188" class="outline-4">
-<h4 id="orgheadline188"><span class="section-number-4">10.1.6</span> js</h4>
+<div id="outline-container-orgheadline189" class="outline-4">
+<h4 id="orgheadline189"><span class="section-number-4">10.1.6</span> js</h4>
 <div class="outline-text-4" id="text-10-1-6">
 <div class="org-src-container">
 
@@ -4139,8 +4158,8 @@ The following is taken from <a href="https://github.com/syl20bnr/spacemacs/blob/
 </div>
 </div>
 </div>
-<div id="outline-container-orgheadline189" class="outline-4">
-<h4 id="orgheadline189"><span class="section-number-4">10.1.7</span> rust</h4>
+<div id="outline-container-orgheadline190" class="outline-4">
+<h4 id="orgheadline190"><span class="section-number-4">10.1.7</span> rust</h4>
 <div class="outline-text-4" id="text-10-1-7">
 <div class="org-src-container">
 
@@ -4173,8 +4192,8 @@ The following is taken from <a href="https://github.com/syl20bnr/spacemacs/blob/
 </div>
 </div>
 </div>
-<div id="outline-container-orgheadline194" class="outline-4">
-<h4 id="orgheadline194"><span class="section-number-4">10.1.8</span> haskell</h4>
+<div id="outline-container-orgheadline195" class="outline-4">
+<h4 id="orgheadline195"><span class="section-number-4">10.1.8</span> haskell</h4>
 <div class="outline-text-4" id="text-10-1-8">
 <div class="org-src-container">
 
@@ -4192,7 +4211,7 @@ The following is taken from <a href="https://github.com/syl20bnr/spacemacs/blob/
 </pre>
 </div>
 </div>
-<ol class="org-ol"><li><a id="orgheadline190"></a>intero<br  /><div class="outline-text-5" id="text-10-1-8-1">
+<ol class="org-ol"><li><a id="orgheadline191"></a>intero<br  /><div class="outline-text-5" id="text-10-1-8-1">
 <p>
 Intero seems to be causing hangs, so it has been disabled
 </p>
@@ -4206,7 +4225,7 @@ Intero seems to be causing hangs, so it has been disabled
 </pre>
 </div>
 </div></li>
-<li><a id="orgheadline191"></a>hindent<br  /><div class="outline-text-5" id="text-10-1-8-2">
+<li><a id="orgheadline192"></a>hindent<br  /><div class="outline-text-5" id="text-10-1-8-2">
 <div class="org-src-container">
 
 <pre class="src src-emacs-lisp"><span style="color: #e91e63;">(</span><span style="color: #fff59d;">use-package</span> <span style="color: #8bc34a;">hindent</span>
@@ -4216,7 +4235,7 @@ Intero seems to be causing hangs, so it has been disabled
 </pre>
 </div>
 </div></li>
-<li><a id="orgheadline192"></a>ghc-mod<br  /><div class="outline-text-5" id="text-10-1-8-3">
+<li><a id="orgheadline193"></a>ghc-mod<br  /><div class="outline-text-5" id="text-10-1-8-3">
 <div class="org-src-container">
 
 <pre class="src src-emacs-lisp"><span style="color: #e91e63;">(</span><span style="color: #fff59d;">use-package</span> <span style="color: #8bc34a;">ghc</span>
@@ -4226,7 +4245,7 @@ Intero seems to be causing hangs, so it has been disabled
 </pre>
 </div>
 </div></li>
-<li><a id="orgheadline193"></a>company-ghc<br  /><div class="outline-text-5" id="text-10-1-8-4">
+<li><a id="orgheadline194"></a>company-ghc<br  /><div class="outline-text-5" id="text-10-1-8-4">
 <div class="org-src-container">
 
 <pre class="src src-emacs-lisp"><span style="color: #e91e63;">(</span><span style="color: #fff59d;">use-package</span> <span style="color: #8bc34a;">company-ghc</span>
@@ -4237,8 +4256,8 @@ Intero seems to be causing hangs, so it has been disabled
 </div>
 </div></li></ol>
 </div>
-<div id="outline-container-orgheadline195" class="outline-4">
-<h4 id="orgheadline195"><span class="section-number-4">10.1.9</span> C/C++</h4>
+<div id="outline-container-orgheadline196" class="outline-4">
+<h4 id="orgheadline196"><span class="section-number-4">10.1.9</span> C/C++</h4>
 <div class="outline-text-4" id="text-10-1-9">
 <div class="org-src-container">
 
@@ -4265,8 +4284,8 @@ Intero seems to be causing hangs, so it has been disabled
 </div>
 </div>
 </div>
-<div id="outline-container-orgheadline196" class="outline-4">
-<h4 id="orgheadline196"><span class="section-number-4">10.1.10</span> C#</h4>
+<div id="outline-container-orgheadline197" class="outline-4">
+<h4 id="orgheadline197"><span class="section-number-4">10.1.10</span> C#</h4>
 <div class="outline-text-4" id="text-10-1-10">
 <div class="org-src-container">
 
@@ -4276,8 +4295,8 @@ Intero seems to be causing hangs, so it has been disabled
 </div>
 </div>
 </div>
-<div id="outline-container-orgheadline197" class="outline-4">
-<h4 id="orgheadline197"><span class="section-number-4">10.1.11</span> racket</h4>
+<div id="outline-container-orgheadline198" class="outline-4">
+<h4 id="orgheadline198"><span class="section-number-4">10.1.11</span> racket</h4>
 <div class="outline-text-4" id="text-10-1-11">
 <div class="org-src-container">
 
@@ -4288,11 +4307,11 @@ Intero seems to be causing hangs, so it has been disabled
 </div>
 </div>
 </div>
-<div id="outline-container-orgheadline204" class="outline-3">
-<h3 id="orgheadline204"><span class="section-number-3">10.2</span> Data/Config/Protocol</h3>
+<div id="outline-container-orgheadline205" class="outline-3">
+<h3 id="orgheadline205"><span class="section-number-3">10.2</span> Data/Config/Protocol</h3>
 <div class="outline-text-3" id="text-10-2">
-</div><div id="outline-container-orgheadline199" class="outline-4">
-<h4 id="orgheadline199"><span class="section-number-4">10.2.1</span> thrift</h4>
+</div><div id="outline-container-orgheadline200" class="outline-4">
+<h4 id="orgheadline200"><span class="section-number-4">10.2.1</span> thrift</h4>
 <div class="outline-text-4" id="text-10-2-1">
 <div class="org-src-container">
 
@@ -4303,8 +4322,8 @@ Intero seems to be causing hangs, so it has been disabled
 </div>
 </div>
 </div>
-<div id="outline-container-orgheadline200" class="outline-4">
-<h4 id="orgheadline200"><span class="section-number-4">10.2.2</span> protobuf</h4>
+<div id="outline-container-orgheadline201" class="outline-4">
+<h4 id="orgheadline201"><span class="section-number-4">10.2.2</span> protobuf</h4>
 <div class="outline-text-4" id="text-10-2-2">
 <div class="org-src-container">
 
@@ -4313,8 +4332,8 @@ Intero seems to be causing hangs, so it has been disabled
 </div>
 </div>
 </div>
-<div id="outline-container-orgheadline201" class="outline-4">
-<h4 id="orgheadline201"><span class="section-number-4">10.2.3</span> json-mode</h4>
+<div id="outline-container-orgheadline202" class="outline-4">
+<h4 id="orgheadline202"><span class="section-number-4">10.2.3</span> json-mode</h4>
 <div class="outline-text-4" id="text-10-2-3">
 <div class="org-src-container">
 
@@ -4329,8 +4348,8 @@ Intero seems to be causing hangs, so it has been disabled
 </div>
 </div>
 </div>
-<div id="outline-container-orgheadline202" class="outline-4">
-<h4 id="orgheadline202"><span class="section-number-4">10.2.4</span> yaml-mode</h4>
+<div id="outline-container-orgheadline203" class="outline-4">
+<h4 id="orgheadline203"><span class="section-number-4">10.2.4</span> yaml-mode</h4>
 <div class="outline-text-4" id="text-10-2-4">
 <div class="org-src-container">
 
@@ -4341,8 +4360,8 @@ Intero seems to be causing hangs, so it has been disabled
 </div>
 </div>
 </div>
-<div id="outline-container-orgheadline203" class="outline-4">
-<h4 id="orgheadline203"><span class="section-number-4">10.2.5</span> es-mode</h4>
+<div id="outline-container-orgheadline204" class="outline-4">
+<h4 id="orgheadline204"><span class="section-number-4">10.2.5</span> es-mode</h4>
 <div class="outline-text-4" id="text-10-2-5">
 <div class="org-src-container">
 
@@ -4352,11 +4371,11 @@ Intero seems to be causing hangs, so it has been disabled
 </div>
 </div>
 </div>
-<div id="outline-container-orgheadline218" class="outline-3">
-<h3 id="orgheadline218"><span class="section-number-3">10.3</span> Document</h3>
+<div id="outline-container-orgheadline219" class="outline-3">
+<h3 id="orgheadline219"><span class="section-number-3">10.3</span> Document</h3>
 <div class="outline-text-3" id="text-10-3">
-</div><div id="outline-container-orgheadline210" class="outline-4">
-<h4 id="orgheadline210"><span class="section-number-4">10.3.1</span> org</h4>
+</div><div id="outline-container-orgheadline211" class="outline-4">
+<h4 id="orgheadline211"><span class="section-number-4">10.3.1</span> org</h4>
 <div class="outline-text-4" id="text-10-3-1">
 <div class="org-src-container">
 
@@ -4770,7 +4789,7 @@ Intero seems to be causing hangs, so it has been disabled
 </pre>
 </div>
 </div>
-<ol class="org-ol"><li><a id="orgheadline205"></a>Correct BG color for org-export<br  /><div class="outline-text-5" id="text-10-3-1-1">
+<ol class="org-ol"><li><a id="orgheadline206"></a>Correct BG color for org-export<br  /><div class="outline-text-5" id="text-10-3-1-1">
 <div class="org-src-container">
 
 <pre class="src src-emacs-lisp"><span style="color: #e91e63;">(</span><span style="color: #fff59d;">use-package</span> <span style="color: #8bc34a;">org</span>
@@ -4793,7 +4812,7 @@ Intero seems to be causing hangs, so it has been disabled
 </pre>
 </div>
 </div></li>
-<li><a id="orgheadline206"></a>org-projectile<br  /><div class="outline-text-5" id="text-10-3-1-2">
+<li><a id="orgheadline207"></a>org-projectile<br  /><div class="outline-text-5" id="text-10-3-1-2">
 <div class="org-src-container">
 
 <pre class="src src-emacs-lisp"><span style="color: #e91e63;">(</span><span style="color: #fff59d;">imalison:use-package</span> org-projectile
@@ -4821,7 +4840,7 @@ Intero seems to be causing hangs, so it has been disabled
 </pre>
 </div>
 </div></li>
-<li><a id="orgheadline207"></a>org-notify<br  /><div class="outline-text-5" id="text-10-3-1-3">
+<li><a id="orgheadline208"></a>org-notify<br  /><div class="outline-text-5" id="text-10-3-1-3">
 <div class="org-src-container">
 
 <pre class="src src-emacs-lisp"><span style="color: #e91e63;">(</span><span style="color: #fff59d;">use-package</span> <span style="color: #8bc34a;">org-notify</span>
@@ -4880,7 +4899,7 @@ Intero seems to be causing hangs, so it has been disabled
 </pre>
 </div>
 </div></li>
-<li><a id="orgheadline208"></a>org-reveal<br  /><div class="outline-text-5" id="text-10-3-1-4">
+<li><a id="orgheadline209"></a>org-reveal<br  /><div class="outline-text-5" id="text-10-3-1-4">
 <div class="org-src-container">
 
 <pre class="src src-emacs-lisp"><span style="color: #e91e63;">(</span><span style="color: #fff59d;">use-package</span> <span style="color: #8bc34a;">ox-reveal</span>
@@ -4891,7 +4910,7 @@ Intero seems to be causing hangs, so it has been disabled
 </pre>
 </div>
 </div></li>
-<li><a id="orgheadline209"></a>org-caldav<br  /><div class="outline-text-5" id="text-10-3-1-5">
+<li><a id="orgheadline210"></a>org-caldav<br  /><div class="outline-text-5" id="text-10-3-1-5">
 <div class="org-src-container">
 
 <pre class="src src-emacs-lisp"><span style="color: #e91e63;">(</span><span style="color: #fff59d;">use-package</span> <span style="color: #8bc34a;">org-caldav</span>
@@ -4906,8 +4925,8 @@ Intero seems to be causing hangs, so it has been disabled
 </div>
 </div></li></ol>
 </div>
-<div id="outline-container-orgheadline214" class="outline-4">
-<h4 id="orgheadline214"><span class="section-number-4">10.3.2</span> TeX</h4>
+<div id="outline-container-orgheadline215" class="outline-4">
+<h4 id="orgheadline215"><span class="section-number-4">10.3.2</span> TeX</h4>
 <div class="outline-text-4" id="text-10-3-2">
 <div class="org-src-container">
 
@@ -4933,7 +4952,7 @@ Intero seems to be causing hangs, so it has been disabled
 </pre>
 </div>
 </div>
-<ol class="org-ol"><li><a id="orgheadline211"></a>latex<br  /><div class="outline-text-5" id="text-10-3-2-1">
+<ol class="org-ol"><li><a id="orgheadline212"></a>latex<br  /><div class="outline-text-5" id="text-10-3-2-1">
 <div class="org-src-container">
 
 <pre class="src src-emacs-lisp"><span style="color: #e91e63;">(</span><span style="color: #fff59d;">use-package</span> <span style="color: #8bc34a;">latex</span>
@@ -4945,7 +4964,7 @@ Intero seems to be causing hangs, so it has been disabled
 </pre>
 </div>
 </div></li>
-<li><a id="orgheadline212"></a>auctex-latexmk<br  /><div class="outline-text-5" id="text-10-3-2-2">
+<li><a id="orgheadline213"></a>auctex-latexmk<br  /><div class="outline-text-5" id="text-10-3-2-2">
 <div class="org-src-container">
 
 <pre class="src src-emacs-lisp"><span style="color: #e91e63;">(</span><span style="color: #fff59d;">use-package</span> <span style="color: #8bc34a;">auctex-latexmk</span>
@@ -4957,7 +4976,7 @@ Intero seems to be causing hangs, so it has been disabled
 </pre>
 </div>
 </div></li>
-<li><a id="orgheadline213"></a>company-auctex<br  /><div class="outline-text-5" id="text-10-3-2-3">
+<li><a id="orgheadline214"></a>company-auctex<br  /><div class="outline-text-5" id="text-10-3-2-3">
 <div class="org-src-container">
 
 <pre class="src src-emacs-lisp"><span style="color: #e91e63;">(</span><span style="color: #fff59d;">use-package</span> <span style="color: #8bc34a;">company-auctex</span>
@@ -4968,8 +4987,8 @@ Intero seems to be causing hangs, so it has been disabled
 </div>
 </div></li></ol>
 </div>
-<div id="outline-container-orgheadline215" class="outline-4">
-<h4 id="orgheadline215"><span class="section-number-4">10.3.3</span> markdown-mode</h4>
+<div id="outline-container-orgheadline216" class="outline-4">
+<h4 id="orgheadline216"><span class="section-number-4">10.3.3</span> markdown-mode</h4>
 <div class="outline-text-4" id="text-10-3-3">
 <div class="org-src-container">
 
@@ -4981,8 +5000,8 @@ Intero seems to be causing hangs, so it has been disabled
 </div>
 </div>
 </div>
-<div id="outline-container-orgheadline216" class="outline-4">
-<h4 id="orgheadline216"><span class="section-number-4">10.3.4</span> plantuml-mode</h4>
+<div id="outline-container-orgheadline217" class="outline-4">
+<h4 id="orgheadline217"><span class="section-number-4">10.3.4</span> plantuml-mode</h4>
 <div class="outline-text-4" id="text-10-3-4">
 <div class="org-src-container">
 
@@ -5011,8 +5030,8 @@ Intero seems to be causing hangs, so it has been disabled
 </div>
 </div>
 </div>
-<div id="outline-container-orgheadline217" class="outline-4">
-<h4 id="orgheadline217"><span class="section-number-4">10.3.5</span> wsd-mode</h4>
+<div id="outline-container-orgheadline218" class="outline-4">
+<h4 id="orgheadline218"><span class="section-number-4">10.3.5</span> wsd-mode</h4>
 <div class="outline-text-4" id="text-10-3-5">
 <div class="org-src-container">
 
@@ -5023,11 +5042,11 @@ Intero seems to be causing hangs, so it has been disabled
 </div>
 </div>
 </div>
-<div id="outline-container-orgheadline221" class="outline-3">
-<h3 id="orgheadline221"><span class="section-number-3">10.4</span> Utility</h3>
+<div id="outline-container-orgheadline222" class="outline-3">
+<h3 id="orgheadline222"><span class="section-number-3">10.4</span> Utility</h3>
 <div class="outline-text-3" id="text-10-4">
-</div><div id="outline-container-orgheadline219" class="outline-4">
-<h4 id="orgheadline219"><span class="section-number-4">10.4.1</span> restclient</h4>
+</div><div id="outline-container-orgheadline220" class="outline-4">
+<h4 id="orgheadline220"><span class="section-number-4">10.4.1</span> restclient</h4>
 <div class="outline-text-4" id="text-10-4-1">
 <div class="org-src-container">
 
@@ -5040,8 +5059,8 @@ Intero seems to be causing hangs, so it has been disabled
 </div>
 </div>
 </div>
-<div id="outline-container-orgheadline220" class="outline-4">
-<h4 id="orgheadline220"><span class="section-number-4">10.4.2</span> jq-mode</h4>
+<div id="outline-container-orgheadline221" class="outline-4">
+<h4 id="orgheadline221"><span class="section-number-4">10.4.2</span> jq-mode</h4>
 <div class="outline-text-4" id="text-10-4-2">
 <div class="org-src-container">
 
@@ -5053,11 +5072,11 @@ Intero seems to be causing hangs, so it has been disabled
 </div>
 </div>
 </div>
-<div id="outline-container-orgheadline226" class="outline-2">
-<h2 id="orgheadline226"><span class="section-number-2">11</span> Programming</h2>
+<div id="outline-container-orgheadline227" class="outline-2">
+<h2 id="orgheadline227"><span class="section-number-2">11</span> Programming</h2>
 <div class="outline-text-2" id="text-11">
-</div><div id="outline-container-orgheadline223" class="outline-3">
-<h3 id="orgheadline223"><span class="section-number-3">11.1</span> realgud</h3>
+</div><div id="outline-container-orgheadline224" class="outline-3">
+<h3 id="orgheadline224"><span class="section-number-3">11.1</span> realgud</h3>
 <div class="outline-text-3" id="text-11-1">
 <p>
 realgud provides debugging support with many external debuggers in emacs
@@ -5070,8 +5089,8 @@ realgud provides debugging support with many external debuggers in emacs
 </div>
 </div>
 </div>
-<div id="outline-container-orgheadline224" class="outline-3">
-<h3 id="orgheadline224"><span class="section-number-3">11.2</span> emr</h3>
+<div id="outline-container-orgheadline225" class="outline-3">
+<h3 id="orgheadline225"><span class="section-number-3">11.2</span> emr</h3>
 <div class="outline-text-3" id="text-11-2">
 <p>
 emr (emacs refactor) provides support for refactoring in many programming languages
@@ -5086,8 +5105,8 @@ emr (emacs refactor) provides support for refactoring in many programming langua
 </div>
 </div>
 </div>
-<div id="outline-container-orgheadline225" class="outline-3">
-<h3 id="orgheadline225"><span class="section-number-3">11.3</span> semantic</h3>
+<div id="outline-container-orgheadline226" class="outline-3">
+<h3 id="orgheadline226"><span class="section-number-3">11.3</span> semantic</h3>
 <div class="outline-text-3" id="text-11-3">
 <div class="org-src-container">
 
@@ -5102,11 +5121,11 @@ emr (emacs refactor) provides support for refactoring in many programming langua
 </div>
 </div>
 </div>
-<div id="outline-container-orgheadline231" class="outline-2">
-<h2 id="orgheadline231"><span class="section-number-2">12</span> Utility</h2>
+<div id="outline-container-orgheadline232" class="outline-2">
+<h2 id="orgheadline232"><span class="section-number-2">12</span> Utility</h2>
 <div class="outline-text-2" id="text-12">
-</div><div id="outline-container-orgheadline227" class="outline-3">
-<h3 id="orgheadline227"><span class="section-number-3">12.1</span> term</h3>
+</div><div id="outline-container-orgheadline228" class="outline-3">
+<h3 id="orgheadline228"><span class="section-number-3">12.1</span> term</h3>
 <div class="outline-text-3" id="text-12-1">
 <div class="org-src-container">
 
@@ -5119,13 +5138,14 @@ emr (emacs refactor) provides support for refactoring in many programming langua
   <span style="color: #2196F3;">(</span><span style="color: #fff59d;">progn</span>
     <span style="color: #EF6C00;">(</span>define-key term-raw-map <span style="color: #B388FF;">(</span>kbd <span style="color: #9ccc65;">"C-h"</span><span style="color: #B388FF;">)</span> help-map<span style="color: #EF6C00;">)</span>
     <span style="color: #EF6C00;">(</span>add-hook 'term-mode-hook 'imalison:disable-linum-mode<span style="color: #EF6C00;">)</span>
+    <span style="color: #EF6C00;">(</span>add-hook 'term-mode-hook 'imalison:disable-show-trailing-whitespace<span style="color: #EF6C00;">)</span>
     <span style="color: #EF6C00;">(</span><span style="color: #fff59d;">setq</span> term-buffer-maximum-size 0<span style="color: #EF6C00;">)</span><span style="color: #2196F3;">)</span><span style="color: #e91e63;">)</span>
 </pre>
 </div>
 </div>
 </div>
-<div id="outline-container-orgheadline228" class="outline-3">
-<h3 id="orgheadline228"><span class="section-number-3">12.2</span> term-manager</h3>
+<div id="outline-container-orgheadline229" class="outline-3">
+<h3 id="orgheadline229"><span class="section-number-3">12.2</span> term-manager</h3>
 <div class="outline-text-3" id="text-12-2">
 <div class="org-src-container">
 
@@ -5144,8 +5164,8 @@ emr (emacs refactor) provides support for refactoring in many programming langua
 </div>
 </div>
 </div>
-<div id="outline-container-orgheadline229" class="outline-3">
-<h3 id="orgheadline229"><span class="section-number-3">12.3</span> term-projectile</h3>
+<div id="outline-container-orgheadline230" class="outline-3">
+<h3 id="orgheadline230"><span class="section-number-3">12.3</span> term-projectile</h3>
 <div class="outline-text-3" id="text-12-3">
 <div class="org-src-container">
 
@@ -5225,8 +5245,8 @@ emr (emacs refactor) provides support for refactoring in many programming langua
 </div>
 </div>
 </div>
-<div id="outline-container-orgheadline230" class="outline-3">
-<h3 id="orgheadline230"><span class="section-number-3">12.4</span> crux</h3>
+<div id="outline-container-orgheadline231" class="outline-3">
+<h3 id="orgheadline231"><span class="section-number-3">12.4</span> crux</h3>
 <div class="outline-text-3" id="text-12-4">
 <p>
 crux-reopen-as-root-mode makes it so that any file owned by root will automatically be opened as the root user.
@@ -5246,11 +5266,11 @@ crux-reopen-as-root-mode makes it so that any file owned by root will automatica
 </div>
 </div>
 </div>
-<div id="outline-container-orgheadline235" class="outline-2">
-<h2 id="orgheadline235"><span class="section-number-2">13</span> Chat</h2>
+<div id="outline-container-orgheadline236" class="outline-2">
+<h2 id="orgheadline236"><span class="section-number-2">13</span> Chat</h2>
 <div class="outline-text-2" id="text-13">
-</div><div id="outline-container-orgheadline232" class="outline-3">
-<h3 id="orgheadline232"><span class="section-number-3">13.1</span> erc</h3>
+</div><div id="outline-container-orgheadline233" class="outline-3">
+<h3 id="orgheadline233"><span class="section-number-3">13.1</span> erc</h3>
 <div class="outline-text-3" id="text-13-1">
 <div class="org-src-container">
 
@@ -5267,8 +5287,8 @@ crux-reopen-as-root-mode makes it so that any file owned by root will automatica
 </div>
 </div>
 </div>
-<div id="outline-container-orgheadline233" class="outline-3">
-<h3 id="orgheadline233"><span class="section-number-3">13.2</span> bitlbee</h3>
+<div id="outline-container-orgheadline234" class="outline-3">
+<h3 id="orgheadline234"><span class="section-number-3">13.2</span> bitlbee</h3>
 <div class="outline-text-3" id="text-13-2">
 <div class="org-src-container">
 
@@ -5290,8 +5310,8 @@ crux-reopen-as-root-mode makes it so that any file owned by root will automatica
 </div>
 </div>
 </div>
-<div id="outline-container-orgheadline234" class="outline-3">
-<h3 id="orgheadline234"><span class="section-number-3">13.3</span> slack</h3>
+<div id="outline-container-orgheadline235" class="outline-3">
+<h3 id="orgheadline235"><span class="section-number-3">13.3</span> slack</h3>
 <div class="outline-text-3" id="text-13-3">
 <div class="org-src-container">
 
@@ -5301,11 +5321,11 @@ crux-reopen-as-root-mode makes it so that any file owned by root will automatica
 </div>
 </div>
 </div>
-<div id="outline-container-orgheadline239" class="outline-2">
-<h2 id="orgheadline239"><span class="section-number-2">14</span> Cooperation</h2>
+<div id="outline-container-orgheadline240" class="outline-2">
+<h2 id="orgheadline240"><span class="section-number-2">14</span> Cooperation</h2>
 <div class="outline-text-2" id="text-14">
-</div><div id="outline-container-orgheadline236" class="outline-3">
-<h3 id="orgheadline236"><span class="section-number-3">14.1</span> togetherly</h3>
+</div><div id="outline-container-orgheadline237" class="outline-3">
+<h3 id="orgheadline237"><span class="section-number-3">14.1</span> togetherly</h3>
 <div class="outline-text-3" id="text-14-1">
 <div class="org-src-container">
 
@@ -5314,8 +5334,8 @@ crux-reopen-as-root-mode makes it so that any file owned by root will automatica
 </div>
 </div>
 </div>
-<div id="outline-container-orgheadline237" class="outline-3">
-<h3 id="orgheadline237"><span class="section-number-3">14.2</span> floobits</h3>
+<div id="outline-container-orgheadline238" class="outline-3">
+<h3 id="orgheadline238"><span class="section-number-3">14.2</span> floobits</h3>
 <div class="outline-text-3" id="text-14-2">
 <div class="org-src-container">
 
@@ -5324,8 +5344,8 @@ crux-reopen-as-root-mode makes it so that any file owned by root will automatica
 </div>
 </div>
 </div>
-<div id="outline-container-orgheadline238" class="outline-3">
-<h3 id="orgheadline238"><span class="section-number-3">14.3</span> rudel</h3>
+<div id="outline-container-orgheadline239" class="outline-3">
+<h3 id="orgheadline239"><span class="section-number-3">14.3</span> rudel</h3>
 <div class="outline-text-3" id="text-14-3">
 <div class="org-src-container">
 
@@ -5336,11 +5356,11 @@ crux-reopen-as-root-mode makes it so that any file owned by root will automatica
 </div>
 </div>
 </div>
-<div id="outline-container-orgheadline291" class="outline-2">
-<h2 id="orgheadline291"><span class="section-number-2">15</span> Other</h2>
+<div id="outline-container-orgheadline292" class="outline-2">
+<h2 id="orgheadline292"><span class="section-number-2">15</span> Other</h2>
 <div class="outline-text-2" id="text-15">
-</div><div id="outline-container-orgheadline240" class="outline-3">
-<h3 id="orgheadline240"><span class="section-number-3">15.1</span> anzu</h3>
+</div><div id="outline-container-orgheadline241" class="outline-3">
+<h3 id="orgheadline241"><span class="section-number-3">15.1</span> anzu</h3>
 <div class="outline-text-3" id="text-15-1">
 <div class="org-src-container">
 
@@ -5364,8 +5384,8 @@ crux-reopen-as-root-mode makes it so that any file owned by root will automatica
 </div>
 </div>
 </div>
-<div id="outline-container-orgheadline241" class="outline-3">
-<h3 id="orgheadline241"><span class="section-number-3">15.2</span> fontawesome</h3>
+<div id="outline-container-orgheadline242" class="outline-3">
+<h3 id="orgheadline242"><span class="section-number-3">15.2</span> fontawesome</h3>
 <div class="outline-text-3" id="text-15-2">
 <div class="org-src-container">
 
@@ -5375,8 +5395,8 @@ crux-reopen-as-root-mode makes it so that any file owned by root will automatica
 </div>
 </div>
 </div>
-<div id="outline-container-orgheadline242" class="outline-3">
-<h3 id="orgheadline242"><span class="section-number-3">15.3</span> shell-history</h3>
+<div id="outline-container-orgheadline243" class="outline-3">
+<h3 id="orgheadline243"><span class="section-number-3">15.3</span> shell-history</h3>
 <div class="outline-text-3" id="text-15-3">
 <p>
 I think that shell-history is causing projectile to be very slow so I have disabled it.
@@ -5390,11 +5410,11 @@ I think that shell-history is causing projectile to be very slow so I have disab
 </div>
 </div>
 </div>
-<div id="outline-container-orgheadline243" class="outline-3">
-<h3 id="orgheadline243"><span class="section-number-3">15.4</span> iedit</h3>
+<div id="outline-container-orgheadline244" class="outline-3">
+<h3 id="orgheadline244"><span class="section-number-3">15.4</span> iedit</h3>
 <div class="outline-text-3" id="text-15-4">
 <p>
-I don't use iedit directly, but it is used by <a href="#orgheadline175">emr</a> and I need to disable <code>iedit-toggle-key-default</code> or else a buffer pops up complaing that the key has been bound to something else
+I don't use iedit directly, but it is used by <a href="#orgheadline176">emr</a> and I need to disable <code>iedit-toggle-key-default</code> or else a buffer pops up complaing that the key has been bound to something else
 </p>
 <div class="org-src-container">
 
@@ -5404,8 +5424,8 @@ I don't use iedit directly, but it is used by <a href="#orgheadline175">emr</a> 
 </div>
 </div>
 </div>
-<div id="outline-container-orgheadline244" class="outline-3">
-<h3 id="orgheadline244"><span class="section-number-3">15.5</span> tramp</h3>
+<div id="outline-container-orgheadline245" class="outline-3">
+<h3 id="orgheadline245"><span class="section-number-3">15.5</span> tramp</h3>
 <div class="outline-text-3" id="text-15-5">
 <div class="org-src-container">
 
@@ -5417,8 +5437,8 @@ I don't use iedit directly, but it is used by <a href="#orgheadline175">emr</a> 
 </div>
 </div>
 </div>
-<div id="outline-container-orgheadline245" class="outline-3">
-<h3 id="orgheadline245"><span class="section-number-3">15.6</span> flycheck</h3>
+<div id="outline-container-orgheadline246" class="outline-3">
+<h3 id="orgheadline246"><span class="section-number-3">15.6</span> flycheck</h3>
 <div class="outline-text-3" id="text-15-6">
 <div class="org-src-container">
 
@@ -5441,8 +5461,8 @@ I don't use iedit directly, but it is used by <a href="#orgheadline175">emr</a> 
 </div>
 </div>
 </div>
-<div id="outline-container-orgheadline246" class="outline-3">
-<h3 id="orgheadline246"><span class="section-number-3">15.7</span> narrow-indirect</h3>
+<div id="outline-container-orgheadline247" class="outline-3">
+<h3 id="orgheadline247"><span class="section-number-3">15.7</span> narrow-indirect</h3>
 <div class="outline-text-3" id="text-15-7">
 <div class="org-src-container">
 
@@ -5456,8 +5476,8 @@ I don't use iedit directly, but it is used by <a href="#orgheadline175">emr</a> 
 </div>
 </div>
 </div>
-<div id="outline-container-orgheadline247" class="outline-3">
-<h3 id="orgheadline247"><span class="section-number-3">15.8</span> editorconfig</h3>
+<div id="outline-container-orgheadline248" class="outline-3">
+<h3 id="orgheadline248"><span class="section-number-3">15.8</span> editorconfig</h3>
 <div class="outline-text-3" id="text-15-8">
 <p>
 I had to disable this mode because something that it does messes with coding settings and makes it so that I have to select the appropriate encoding every time I save gpg encrypted files.
@@ -5474,8 +5494,8 @@ I had to disable this mode because something that it does messes with coding set
 </div>
 </div>
 </div>
-<div id="outline-container-orgheadline248" class="outline-3">
-<h3 id="orgheadline248"><span class="section-number-3">15.9</span> dtrt-indent</h3>
+<div id="outline-container-orgheadline249" class="outline-3">
+<h3 id="orgheadline249"><span class="section-number-3">15.9</span> dtrt-indent</h3>
 <div class="outline-text-3" id="text-15-9">
 <div class="org-src-container">
 
@@ -5489,8 +5509,8 @@ I had to disable this mode because something that it does messes with coding set
 </div>
 </div>
 </div>
-<div id="outline-container-orgheadline249" class="outline-3">
-<h3 id="orgheadline249"><span class="section-number-3">15.10</span> indent-guide</h3>
+<div id="outline-container-orgheadline250" class="outline-3">
+<h3 id="orgheadline250"><span class="section-number-3">15.10</span> indent-guide</h3>
 <div class="outline-text-3" id="text-15-10">
 <div class="org-src-container">
 
@@ -5504,8 +5524,8 @@ I had to disable this mode because something that it does messes with coding set
 </div>
 </div>
 </div>
-<div id="outline-container-orgheadline250" class="outline-3">
-<h3 id="orgheadline250"><span class="section-number-3">15.11</span> rainbow-delimiters</h3>
+<div id="outline-container-orgheadline251" class="outline-3">
+<h3 id="orgheadline251"><span class="section-number-3">15.11</span> rainbow-delimiters</h3>
 <div class="outline-text-3" id="text-15-11">
 <div class="org-src-container">
 
@@ -5518,8 +5538,8 @@ I had to disable this mode because something that it does messes with coding set
 </div>
 </div>
 </div>
-<div id="outline-container-orgheadline251" class="outline-3">
-<h3 id="orgheadline251"><span class="section-number-3">15.12</span> undo-tree</h3>
+<div id="outline-container-orgheadline252" class="outline-3">
+<h3 id="orgheadline252"><span class="section-number-3">15.12</span> undo-tree</h3>
 <div class="outline-text-3" id="text-15-12">
 <div class="org-src-container">
 
@@ -5539,8 +5559,8 @@ I had to disable this mode because something that it does messes with coding set
 </div>
 </div>
 </div>
-<div id="outline-container-orgheadline252" class="outline-3">
-<h3 id="orgheadline252"><span class="section-number-3">15.13</span> recentf</h3>
+<div id="outline-container-orgheadline253" class="outline-3">
+<h3 id="orgheadline253"><span class="section-number-3">15.13</span> recentf</h3>
 <div class="outline-text-3" id="text-15-13">
 <div class="org-src-container">
 
@@ -5555,8 +5575,8 @@ I had to disable this mode because something that it does messes with coding set
 </div>
 </div>
 </div>
-<div id="outline-container-orgheadline253" class="outline-3">
-<h3 id="orgheadline253"><span class="section-number-3">15.14</span> key-chord</h3>
+<div id="outline-container-orgheadline254" class="outline-3">
+<h3 id="orgheadline254"><span class="section-number-3">15.14</span> key-chord</h3>
 <div class="outline-text-3" id="text-15-14">
 <p>
 I have currently disabled key-chord because it may cause typing lag.
@@ -5585,8 +5605,8 @@ I have currently disabled key-chord because it may cause typing lag.
 </div>
 </div>
 </div>
-<div id="outline-container-orgheadline254" class="outline-3">
-<h3 id="orgheadline254"><span class="section-number-3">15.15</span> nodejs-repl</h3>
+<div id="outline-container-orgheadline255" class="outline-3">
+<h3 id="orgheadline255"><span class="section-number-3">15.15</span> nodejs-repl</h3>
 <div class="outline-text-3" id="text-15-15">
 <div class="org-src-container">
 
@@ -5596,8 +5616,8 @@ I have currently disabled key-chord because it may cause typing lag.
 </div>
 </div>
 </div>
-<div id="outline-container-orgheadline255" class="outline-3">
-<h3 id="orgheadline255"><span class="section-number-3">15.16</span> calc-mode</h3>
+<div id="outline-container-orgheadline256" class="outline-3">
+<h3 id="orgheadline256"><span class="section-number-3">15.16</span> calc-mode</h3>
 <div class="outline-text-3" id="text-15-16">
 <div class="org-src-container">
 
@@ -5611,8 +5631,8 @@ I have currently disabled key-chord because it may cause typing lag.
 </div>
 </div>
 </div>
-<div id="outline-container-orgheadline256" class="outline-3">
-<h3 id="orgheadline256"><span class="section-number-3">15.17</span> helm-spotify</h3>
+<div id="outline-container-orgheadline257" class="outline-3">
+<h3 id="orgheadline257"><span class="section-number-3">15.17</span> helm-spotify</h3>
 <div class="outline-text-3" id="text-15-17">
 <div class="org-src-container">
 
@@ -5622,8 +5642,8 @@ I have currently disabled key-chord because it may cause typing lag.
 </div>
 </div>
 </div>
-<div id="outline-container-orgheadline257" class="outline-3">
-<h3 id="orgheadline257"><span class="section-number-3">15.18</span> jabber</h3>
+<div id="outline-container-orgheadline258" class="outline-3">
+<h3 id="orgheadline258"><span class="section-number-3">15.18</span> jabber</h3>
 <div class="outline-text-3" id="text-15-18">
 <div class="org-src-container">
 
@@ -5643,8 +5663,8 @@ I have currently disabled key-chord because it may cause typing lag.
 </div>
 </div>
 </div>
-<div id="outline-container-orgheadline258" class="outline-3">
-<h3 id="orgheadline258"><span class="section-number-3">15.19</span> htmlize</h3>
+<div id="outline-container-orgheadline259" class="outline-3">
+<h3 id="orgheadline259"><span class="section-number-3">15.19</span> htmlize</h3>
 <div class="outline-text-3" id="text-15-19">
 <div class="org-src-container">
 
@@ -5653,8 +5673,8 @@ I have currently disabled key-chord because it may cause typing lag.
 </div>
 </div>
 </div>
-<div id="outline-container-orgheadline259" class="outline-3">
-<h3 id="orgheadline259"><span class="section-number-3">15.20</span> calfw</h3>
+<div id="outline-container-orgheadline260" class="outline-3">
+<h3 id="orgheadline260"><span class="section-number-3">15.20</span> calfw</h3>
 <div class="outline-text-3" id="text-15-20">
 <div class="org-src-container">
 
@@ -5666,8 +5686,8 @@ I have currently disabled key-chord because it may cause typing lag.
 </div>
 </div>
 </div>
-<div id="outline-container-orgheadline260" class="outline-3">
-<h3 id="orgheadline260"><span class="section-number-3">15.21</span> clocker</h3>
+<div id="outline-container-orgheadline261" class="outline-3">
+<h3 id="orgheadline261"><span class="section-number-3">15.21</span> clocker</h3>
 <div class="outline-text-3" id="text-15-21">
 <p>
 Not really sure what this is
@@ -5679,8 +5699,8 @@ Not really sure what this is
 </div>
 </div>
 </div>
-<div id="outline-container-orgheadline261" class="outline-3">
-<h3 id="orgheadline261"><span class="section-number-3">15.22</span> deft</h3>
+<div id="outline-container-orgheadline262" class="outline-3">
+<h3 id="orgheadline262"><span class="section-number-3">15.22</span> deft</h3>
 <div class="outline-text-3" id="text-15-22">
 <div class="org-src-container">
 
@@ -5699,8 +5719,8 @@ Not really sure what this is
 </div>
 </div>
 </div>
-<div id="outline-container-orgheadline262" class="outline-3">
-<h3 id="orgheadline262"><span class="section-number-3">15.23</span> epg</h3>
+<div id="outline-container-orgheadline263" class="outline-3">
+<h3 id="orgheadline263"><span class="section-number-3">15.23</span> epg</h3>
 <div class="outline-text-3" id="text-15-23">
 <div class="org-src-container">
 
@@ -5713,8 +5733,8 @@ Not really sure what this is
 </div>
 </div>
 </div>
-<div id="outline-container-orgheadline263" class="outline-3">
-<h3 id="orgheadline263"><span class="section-number-3">15.24</span> pinentry</h3>
+<div id="outline-container-orgheadline264" class="outline-3">
+<h3 id="orgheadline264"><span class="section-number-3">15.24</span> pinentry</h3>
 <div class="outline-text-3" id="text-15-24">
 <div class="org-src-container">
 
@@ -5726,8 +5746,8 @@ Not really sure what this is
 </div>
 </div>
 </div>
-<div id="outline-container-orgheadline264" class="outline-3">
-<h3 id="orgheadline264"><span class="section-number-3">15.25</span> twittering-mode</h3>
+<div id="outline-container-orgheadline265" class="outline-3">
+<h3 id="orgheadline265"><span class="section-number-3">15.25</span> twittering-mode</h3>
 <div class="outline-text-3" id="text-15-25">
 <div class="org-src-container">
 
@@ -5737,8 +5757,8 @@ Not really sure what this is
 </div>
 </div>
 </div>
-<div id="outline-container-orgheadline265" class="outline-3">
-<h3 id="orgheadline265"><span class="section-number-3">15.26</span> matrix-client</h3>
+<div id="outline-container-orgheadline266" class="outline-3">
+<h3 id="orgheadline266"><span class="section-number-3">15.26</span> matrix-client</h3>
 <div class="outline-text-3" id="text-15-26">
 <div class="org-src-container">
 
@@ -5749,8 +5769,8 @@ Not really sure what this is
 </div>
 </div>
 </div>
-<div id="outline-container-orgheadline266" class="outline-3">
-<h3 id="orgheadline266"><span class="section-number-3">15.27</span> mu4e</h3>
+<div id="outline-container-orgheadline267" class="outline-3">
+<h3 id="orgheadline267"><span class="section-number-3">15.27</span> mu4e</h3>
 <div class="outline-text-3" id="text-15-27">
 <div class="org-src-container">
 
@@ -5860,8 +5880,8 @@ Not really sure what this is
 </div>
 </div>
 </div>
-<div id="outline-container-orgheadline267" class="outline-3">
-<h3 id="orgheadline267"><span class="section-number-3">15.28</span> gmail-message-mode</h3>
+<div id="outline-container-orgheadline268" class="outline-3">
+<h3 id="orgheadline268"><span class="section-number-3">15.28</span> gmail-message-mode</h3>
 <div class="outline-text-3" id="text-15-28">
 <p>
 This is useful with server mode when editing gmail messages. I think that it is not currently working, or it may need to be manually enabled.
@@ -5874,8 +5894,8 @@ This is useful with server mode when editing gmail messages. I think that it is 
 </div>
 </div>
 </div>
-<div id="outline-container-orgheadline268" class="outline-3">
-<h3 id="orgheadline268"><span class="section-number-3">15.29</span> ham-mode</h3>
+<div id="outline-container-orgheadline269" class="outline-3">
+<h3 id="orgheadline269"><span class="section-number-3">15.29</span> ham-mode</h3>
 <div class="outline-text-3" id="text-15-29">
 <div class="org-src-container">
 
@@ -5887,8 +5907,8 @@ This is useful with server mode when editing gmail messages. I think that it is 
 </div>
 </div>
 </div>
-<div id="outline-container-orgheadline269" class="outline-3">
-<h3 id="orgheadline269"><span class="section-number-3">15.30</span> alert</h3>
+<div id="outline-container-orgheadline270" class="outline-3">
+<h3 id="orgheadline270"><span class="section-number-3">15.30</span> alert</h3>
 <div class="outline-text-3" id="text-15-30">
 <div class="org-src-container">
 
@@ -5916,8 +5936,8 @@ This is useful with server mode when editing gmail messages. I think that it is 
 </div>
 </div>
 </div>
-<div id="outline-container-orgheadline270" class="outline-3">
-<h3 id="orgheadline270"><span class="section-number-3">15.31</span> sauron</h3>
+<div id="outline-container-orgheadline271" class="outline-3">
+<h3 id="orgheadline271"><span class="section-number-3">15.31</span> sauron</h3>
 <div class="outline-text-3" id="text-15-31">
 <div class="org-src-container">
 
@@ -5965,8 +5985,8 @@ This is useful with server mode when editing gmail messages. I think that it is 
 </div>
 </div>
 </div>
-<div id="outline-container-orgheadline271" class="outline-3">
-<h3 id="orgheadline271"><span class="section-number-3">15.32</span> screenshot</h3>
+<div id="outline-container-orgheadline272" class="outline-3">
+<h3 id="orgheadline272"><span class="section-number-3">15.32</span> screenshot</h3>
 <div class="outline-text-3" id="text-15-32">
 <div class="org-src-container">
 
@@ -5975,8 +5995,8 @@ This is useful with server mode when editing gmail messages. I think that it is 
 </div>
 </div>
 </div>
-<div id="outline-container-orgheadline272" class="outline-3">
-<h3 id="orgheadline272"><span class="section-number-3">15.33</span> libmpdee</h3>
+<div id="outline-container-orgheadline273" class="outline-3">
+<h3 id="orgheadline273"><span class="section-number-3">15.33</span> libmpdee</h3>
 <div class="outline-text-3" id="text-15-33">
 <div class="org-src-container">
 
@@ -5985,8 +6005,8 @@ This is useful with server mode when editing gmail messages. I think that it is 
 </div>
 </div>
 </div>
-<div id="outline-container-orgheadline273" class="outline-3">
-<h3 id="orgheadline273"><span class="section-number-3">15.34</span> flyspell</h3>
+<div id="outline-container-orgheadline274" class="outline-3">
+<h3 id="orgheadline274"><span class="section-number-3">15.34</span> flyspell</h3>
 <div class="outline-text-3" id="text-15-34">
 <div class="org-src-container">
 
@@ -6032,8 +6052,8 @@ This is useful with server mode when editing gmail messages. I think that it is 
 </div>
 </div>
 </div>
-<div id="outline-container-orgheadline274" class="outline-3">
-<h3 id="orgheadline274"><span class="section-number-3">15.35</span> web-mode</h3>
+<div id="outline-container-orgheadline275" class="outline-3">
+<h3 id="orgheadline275"><span class="section-number-3">15.35</span> web-mode</h3>
 <div class="outline-text-3" id="text-15-35">
 <div class="org-src-container">
 
@@ -6049,8 +6069,8 @@ This is useful with server mode when editing gmail messages. I think that it is 
 </div>
 </div>
 </div>
-<div id="outline-container-orgheadline275" class="outline-3">
-<h3 id="orgheadline275"><span class="section-number-3">15.36</span> helm-themes</h3>
+<div id="outline-container-orgheadline276" class="outline-3">
+<h3 id="orgheadline276"><span class="section-number-3">15.36</span> helm-themes</h3>
 <div class="outline-text-3" id="text-15-36">
 <div class="org-src-container">
 
@@ -6059,8 +6079,8 @@ This is useful with server mode when editing gmail messages. I think that it is 
 </div>
 </div>
 </div>
-<div id="outline-container-orgheadline276" class="outline-3">
-<h3 id="orgheadline276"><span class="section-number-3">15.37</span> helm-swoop</h3>
+<div id="outline-container-orgheadline277" class="outline-3">
+<h3 id="orgheadline277"><span class="section-number-3">15.37</span> helm-swoop</h3>
 <div class="outline-text-3" id="text-15-37">
 <div class="org-src-container">
 
@@ -6071,8 +6091,8 @@ This is useful with server mode when editing gmail messages. I think that it is 
 </div>
 </div>
 </div>
-<div id="outline-container-orgheadline277" class="outline-3">
-<h3 id="orgheadline277"><span class="section-number-3">15.38</span> perspective</h3>
+<div id="outline-container-orgheadline278" class="outline-3">
+<h3 id="orgheadline278"><span class="section-number-3">15.38</span> perspective</h3>
 <div class="outline-text-3" id="text-15-38">
 <p>
 I've disabled perspective because I just don't use it much.
@@ -6128,8 +6148,8 @@ I've disabled perspective because I just don't use it much.
 </div>
 </div>
 </div>
-<div id="outline-container-orgheadline278" class="outline-3">
-<h3 id="orgheadline278"><span class="section-number-3">15.39</span> smex</h3>
+<div id="outline-container-orgheadline279" class="outline-3">
+<h3 id="orgheadline279"><span class="section-number-3">15.39</span> smex</h3>
 <div class="outline-text-3" id="text-15-39">
 <div class="org-src-container">
 
@@ -6143,8 +6163,8 @@ I've disabled perspective because I just don't use it much.
 </div>
 </div>
 </div>
-<div id="outline-container-orgheadline279" class="outline-3">
-<h3 id="orgheadline279"><span class="section-number-3">15.40</span> java</h3>
+<div id="outline-container-orgheadline280" class="outline-3">
+<h3 id="orgheadline280"><span class="section-number-3">15.40</span> java</h3>
 <div class="outline-text-3" id="text-15-40">
 <div class="org-src-container">
 
@@ -6157,8 +6177,8 @@ I've disabled perspective because I just don't use it much.
 </div>
 </div>
 </div>
-<div id="outline-container-orgheadline280" class="outline-3">
-<h3 id="orgheadline280"><span class="section-number-3">15.41</span> android-mode</h3>
+<div id="outline-container-orgheadline281" class="outline-3">
+<h3 id="orgheadline281"><span class="section-number-3">15.41</span> android-mode</h3>
 <div class="outline-text-3" id="text-15-41">
 <div class="org-src-container">
 
@@ -6172,8 +6192,8 @@ I've disabled perspective because I just don't use it much.
 </div>
 </div>
 </div>
-<div id="outline-container-orgheadline281" class="outline-3">
-<h3 id="orgheadline281"><span class="section-number-3">15.42</span> gradle-mode</h3>
+<div id="outline-container-orgheadline282" class="outline-3">
+<h3 id="orgheadline282"><span class="section-number-3">15.42</span> gradle-mode</h3>
 <div class="outline-text-3" id="text-15-42">
 <div class="org-src-container">
 
@@ -6182,8 +6202,8 @@ I've disabled perspective because I just don't use it much.
 </div>
 </div>
 </div>
-<div id="outline-container-orgheadline282" class="outline-3">
-<h3 id="orgheadline282"><span class="section-number-3">15.43</span> jsx-mode</h3>
+<div id="outline-container-orgheadline283" class="outline-3">
+<h3 id="orgheadline283"><span class="section-number-3">15.43</span> jsx-mode</h3>
 <div class="outline-text-3" id="text-15-43">
 <div class="org-src-container">
 
@@ -6193,8 +6213,8 @@ I've disabled perspective because I just don't use it much.
 </div>
 </div>
 </div>
-<div id="outline-container-orgheadline283" class="outline-3">
-<h3 id="orgheadline283"><span class="section-number-3">15.44</span> css</h3>
+<div id="outline-container-orgheadline284" class="outline-3">
+<h3 id="orgheadline284"><span class="section-number-3">15.44</span> css</h3>
 <div class="outline-text-3" id="text-15-44">
 <div class="org-src-container">
 
@@ -6204,8 +6224,8 @@ I've disabled perspective because I just don't use it much.
 </div>
 </div>
 </div>
-<div id="outline-container-orgheadline284" class="outline-3">
-<h3 id="orgheadline284"><span class="section-number-3">15.45</span> robe</h3>
+<div id="outline-container-orgheadline285" class="outline-3">
+<h3 id="orgheadline285"><span class="section-number-3">15.45</span> robe</h3>
 <div class="outline-text-3" id="text-15-45">
 <div class="org-src-container">
 
@@ -6217,8 +6237,8 @@ I've disabled perspective because I just don't use it much.
 </div>
 </div>
 </div>
-<div id="outline-container-orgheadline285" class="outline-3">
-<h3 id="orgheadline285"><span class="section-number-3">15.46</span> rinari</h3>
+<div id="outline-container-orgheadline286" class="outline-3">
+<h3 id="orgheadline286"><span class="section-number-3">15.46</span> rinari</h3>
 <div class="outline-text-3" id="text-15-46">
 <div class="org-src-container">
 
@@ -6228,8 +6248,8 @@ I've disabled perspective because I just don't use it much.
 </div>
 </div>
 </div>
-<div id="outline-container-orgheadline286" class="outline-3">
-<h3 id="orgheadline286"><span class="section-number-3">15.47</span> helm-gtags</h3>
+<div id="outline-container-orgheadline287" class="outline-3">
+<h3 id="orgheadline287"><span class="section-number-3">15.47</span> helm-gtags</h3>
 <div class="outline-text-3" id="text-15-47">
 <div class="org-src-container">
 
@@ -6256,8 +6276,8 @@ I've disabled perspective because I just don't use it much.
 </div>
 </div>
 </div>
-<div id="outline-container-orgheadline287" class="outline-3">
-<h3 id="orgheadline287"><span class="section-number-3">15.48</span> sgml-mode</h3>
+<div id="outline-container-orgheadline288" class="outline-3">
+<h3 id="orgheadline288"><span class="section-number-3">15.48</span> sgml-mode</h3>
 <div class="outline-text-3" id="text-15-48">
 <div class="org-src-container">
 
@@ -6268,8 +6288,8 @@ I've disabled perspective because I just don't use it much.
 </div>
 </div>
 </div>
-<div id="outline-container-orgheadline288" class="outline-3">
-<h3 id="orgheadline288"><span class="section-number-3">15.49</span> evil</h3>
+<div id="outline-container-orgheadline289" class="outline-3">
+<h3 id="orgheadline289"><span class="section-number-3">15.49</span> evil</h3>
 <div class="outline-text-3" id="text-15-49">
 <div class="org-src-container">
 
@@ -6278,8 +6298,8 @@ I've disabled perspective because I just don't use it much.
 </div>
 </div>
 </div>
-<div id="outline-container-orgheadline290" class="outline-3">
-<h3 id="orgheadline290"><span class="section-number-3">15.50</span> hackernews</h3>
+<div id="outline-container-orgheadline291" class="outline-3">
+<h3 id="orgheadline291"><span class="section-number-3">15.50</span> hackernews</h3>
 <div class="outline-text-3" id="text-15-50">
 <div class="org-src-container">
 
@@ -6287,7 +6307,7 @@ I've disabled perspective because I just don't use it much.
 </pre>
 </div>
 </div>
-<ol class="org-ol"><li><a id="orgheadline289"></a>structured-haskell-mode<br  /><div class="outline-text-5" id="text-15-50-0-1">
+<ol class="org-ol"><li><a id="orgheadline290"></a>structured-haskell-mode<br  /><div class="outline-text-5" id="text-15-50-0-1">
 <p>
 This needs a hackage install and I've never used it before. Just putting this here for later.
 </p>
@@ -6300,11 +6320,11 @@ This needs a hackage install and I've never used it before. Just putting this he
 </div></li></ol>
 </div>
 </div>
-<div id="outline-container-orgheadline306" class="outline-2">
-<h2 id="orgheadline306"><span class="section-number-2">16</span> Appearance</h2>
+<div id="outline-container-orgheadline307" class="outline-2">
+<h2 id="orgheadline307"><span class="section-number-2">16</span> Appearance</h2>
 <div class="outline-text-2" id="text-16">
-</div><div id="outline-container-orgheadline292" class="outline-3">
-<h3 id="orgheadline292"><span class="section-number-3">16.1</span> Basic Config</h3>
+</div><div id="outline-container-orgheadline293" class="outline-3">
+<h3 id="orgheadline293"><span class="section-number-3">16.1</span> Basic Config</h3>
 <div class="outline-text-3" id="text-16-1">
 <div class="org-src-container">
 
@@ -6314,8 +6334,8 @@ This needs a hackage install and I've never used it before. Just putting this he
 </div>
 </div>
 </div>
-<div id="outline-container-orgheadline293" class="outline-3">
-<h3 id="orgheadline293"><span class="section-number-3">16.2</span> Themes</h3>
+<div id="outline-container-orgheadline294" class="outline-3">
+<h3 id="orgheadline294"><span class="section-number-3">16.2</span> Themes</h3>
 <div class="outline-text-3" id="text-16-2">
 <p>
 Ensure all themes that I use are installed:
@@ -6338,8 +6358,8 @@ Ensure all themes that I use are installed:
 </div>
 </div>
 </div>
-<div id="outline-container-orgheadline294" class="outline-3">
-<h3 id="orgheadline294"><span class="section-number-3">16.3</span> all-the-icons</h3>
+<div id="outline-container-orgheadline295" class="outline-3">
+<h3 id="orgheadline295"><span class="section-number-3">16.3</span> all-the-icons</h3>
 <div class="outline-text-3" id="text-16-3">
 <div class="org-src-container">
 
@@ -6349,11 +6369,11 @@ Ensure all themes that I use are installed:
 </div>
 </div>
 </div>
-<div id="outline-container-orgheadline297" class="outline-3">
-<h3 id="orgheadline297"><span class="section-number-3">16.4</span> spaceline</h3>
+<div id="outline-container-orgheadline298" class="outline-3">
+<h3 id="orgheadline298"><span class="section-number-3">16.4</span> spaceline</h3>
 <div class="outline-text-3" id="text-16-4">
-</div><div id="outline-container-orgheadline295" class="outline-4">
-<h4 id="orgheadline295"><span class="section-number-4">16.4.1</span> Disable sRGB colorspace to make powerline separators work</h4>
+</div><div id="outline-container-orgheadline296" class="outline-4">
+<h4 id="orgheadline296"><span class="section-number-4">16.4.1</span> Disable sRGB colorspace to make powerline separators work</h4>
 <div class="outline-text-4" id="text-16-4-1">
 <div class="org-src-container">
 
@@ -6362,8 +6382,8 @@ Ensure all themes that I use are installed:
 </div>
 </div>
 </div>
-<div id="outline-container-orgheadline296" class="outline-4">
-<h4 id="orgheadline296"><span class="section-number-4">16.4.2</span> config</h4>
+<div id="outline-container-orgheadline297" class="outline-4">
+<h4 id="orgheadline297"><span class="section-number-4">16.4.2</span> config</h4>
 <div class="outline-text-4" id="text-16-4-2">
 <div class="org-src-container">
 
@@ -6415,8 +6435,8 @@ Ensure all themes that I use are installed:
 </div>
 </div>
 </div>
-<div id="outline-container-orgheadline298" class="outline-3">
-<h3 id="orgheadline298"><span class="section-number-3">16.5</span> helm-themes</h3>
+<div id="outline-container-orgheadline299" class="outline-3">
+<h3 id="orgheadline299"><span class="section-number-3">16.5</span> helm-themes</h3>
 <div class="outline-text-3" id="text-16-5">
 <p>
 helm-themes provides an easy way to switch between emacs-themes.
@@ -6429,8 +6449,8 @@ helm-themes provides an easy way to switch between emacs-themes.
 </div>
 </div>
 </div>
-<div id="outline-container-orgheadline299" class="outline-3">
-<h3 id="orgheadline299"><span class="section-number-3">16.6</span> window-number</h3>
+<div id="outline-container-orgheadline300" class="outline-3">
+<h3 id="orgheadline300"><span class="section-number-3">16.6</span> window-number</h3>
 <div class="outline-text-3" id="text-16-6">
 <div class="org-src-container">
 
@@ -6440,8 +6460,8 @@ helm-themes provides an easy way to switch between emacs-themes.
 </div>
 </div>
 </div>
-<div id="outline-container-orgheadline300" class="outline-3">
-<h3 id="orgheadline300"><span class="section-number-3">16.7</span> Whitespace Setup</h3>
+<div id="outline-container-orgheadline301" class="outline-3">
+<h3 id="orgheadline301"><span class="section-number-3">16.7</span> Whitespace Setup</h3>
 <div class="outline-text-3" id="text-16-7">
 <p>
 Make whitespace-mode use just basic coloring:
@@ -6466,8 +6486,8 @@ Set the character used to represent spaces to ·, and the character used for tab
 </div>
 </div>
 
-<div id="outline-container-orgheadline301" class="outline-3">
-<h3 id="orgheadline301"><span class="section-number-3">16.8</span> Colorize Compliation Buffers</h3>
+<div id="outline-container-orgheadline302" class="outline-3">
+<h3 id="orgheadline302"><span class="section-number-3">16.8</span> Colorize Compliation Buffers</h3>
 <div class="outline-text-3" id="text-16-8">
 <p>
 This automatically applies ansi-color interpretation of terminal escape sequences to compilation buffers
@@ -6484,8 +6504,8 @@ This automatically applies ansi-color interpretation of terminal escape sequence
 </div>
 </div>
 
-<div id="outline-container-orgheadline302" class="outline-3">
-<h3 id="orgheadline302"><span class="section-number-3">16.9</span> Automatic Theme Changer</h3>
+<div id="outline-container-orgheadline303" class="outline-3">
+<h3 id="orgheadline303"><span class="section-number-3">16.9</span> Automatic Theme Changer</h3>
 <div class="outline-text-3" id="text-16-9">
 <p>
 Disabled for now
@@ -6504,8 +6524,8 @@ Disabled for now
 </div>
 </div>
 </div>
-<div id="outline-container-orgheadline303" class="outline-3">
-<h3 id="orgheadline303"><span class="section-number-3">16.10</span> Fix <code>ansi-term</code> Colors</h3>
+<div id="outline-container-orgheadline304" class="outline-3">
+<h3 id="orgheadline304"><span class="section-number-3">16.10</span> Fix <code>ansi-term</code> Colors</h3>
 <div class="outline-text-3" id="text-16-10">
 <p>
 For some reason, loading certain themes can cause colors in
@@ -6529,8 +6549,8 @@ load-theme hook (See the heading below).
 </div>
 </div>
 </div>
-<div id="outline-container-orgheadline304" class="outline-3">
-<h3 id="orgheadline304"><span class="section-number-3">16.11</span> After <code>load-theme</code> hook</h3>
+<div id="outline-container-orgheadline305" class="outline-3">
+<h3 id="orgheadline305"><span class="section-number-3">16.11</span> After <code>load-theme</code> hook</h3>
 <div class="outline-text-3" id="text-16-11">
 <div class="org-src-container">
 
@@ -6548,8 +6568,8 @@ load-theme hook (See the heading below).
 </div>
 </div>
 </div>
-<div id="outline-container-orgheadline305" class="outline-3">
-<h3 id="orgheadline305"><span class="section-number-3">16.12</span> Frame Initialization</h3>
+<div id="outline-container-orgheadline306" class="outline-3">
+<h3 id="orgheadline306"><span class="section-number-3">16.12</span> Frame Initialization</h3>
 <div class="outline-text-3" id="text-16-12">
 <div class="org-src-container">
 
@@ -6605,8 +6625,8 @@ load-theme hook (See the heading below).
 </div>
 </div>
 </div>
-<div id="outline-container-orgheadline307" class="outline-2">
-<h2 id="orgheadline307"><span class="section-number-2">17</span> Post Init Custom</h2>
+<div id="outline-container-orgheadline308" class="outline-2">
+<h2 id="orgheadline308"><span class="section-number-2">17</span> Post Init Custom</h2>
 <div class="outline-text-2" id="text-17">
 <div class="org-src-container">
 
@@ -6619,7 +6639,7 @@ load-theme hook (See the heading below).
 </div>
 <div id="postamble" class="status">
 <p class="author">Author: Ivan Malison</p>
-<p class="date">Created: 2016-10-21 Fri 22:08</p>
+<p class="date">Created: 2016-10-21 Fri 22:27</p>
 <p class="validation"><a href="http://validator.w3.org/check?uri=referer">Validate</a></p>
 </div>
 </body>
