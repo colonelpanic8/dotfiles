@@ -13,6 +13,7 @@ import Text.Printf
 
 import XMonad hiding ( (|||) )
 import XMonad.Actions.CycleWS
+import qualified XMonad.Actions.DynamicWorkspaceOrder as DWO
 import XMonad.Actions.WindowBringer
 import XMonad.Actions.WorkspaceNames
 import XMonad.Config ()
@@ -101,8 +102,9 @@ myLayoutHook = avoidStruts . smartSpacing 10 . noBorders . minimize .
 
 myStartup = spawn "systemctl --user start wm.target"
 
-greedyFocusWindow :: Window -> WindowSet -> WindowSet
 greedyFocusWindow w ws = W.greedyView (fromMaybe (W.currentTag ws) $ W.findTag w ws) ws
+
+shiftToEmptyAndView = doTo Next EmptyWS DWO.getSortByOrder (windows . shiftThenView)
 
 addKeys conf@XConfig {modMask = modm} =
     [ ((modm, xK_p), spawn "rofi -show drun")
@@ -120,8 +122,8 @@ addKeys conf@XConfig {modMask = modm} =
 
     -- Hyper bindings
     , ((mod3Mask, xK_1), setWorkspaceNames)
-    , ((mod3Mask, xK_e), moveTo Next EmptyWS)
-    , ((mod3Mask .|. shiftMask, xK_e), shiftTo Next EmptyWS)
+    , ((mod3Mask, xK_e), moveTo Next EmptyWS )
+    , ((mod3Mask .|. shiftMask, xK_e), shiftToEmptyAndView)
     , ((mod3Mask, xK_v), spawn "copyq_rofi.sh")
     , ((mod3Mask, xK_p), spawn "system_password.sh")
     , ((mod3Mask, xK_s), spawn "screenshot.sh")
