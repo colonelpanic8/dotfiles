@@ -1,4 +1,3 @@
-{-# LANGUAGE TypeSynonymInstances, MultiParamTypeClasses #-}
 import Control.Monad
 import Data.Aeson
 import qualified Data.ByteString.Lazy as B
@@ -14,13 +13,13 @@ import Text.Printf
 import XMonad hiding ( (|||) )
 import XMonad.Actions.CycleWS
 import XMonad.Actions.WindowBringer
+import XMonad.Actions.WorkspaceNames
 import XMonad.Config ()
 import XMonad.Hooks.EwmhDesktops
 import XMonad.Hooks.ManageDocks
 import XMonad.Hooks.FadeInactive
 import XMonad.Layout.BoringWindows
 import XMonad.Layout.LayoutCombinators
-import XMonad.Layout.LayoutModifier
 import XMonad.Layout.Minimize
 import XMonad.Layout.MultiColumns
 import XMonad.Layout.MultiToggle
@@ -39,7 +38,8 @@ getClass w = do
 myDecorateName ws w = do
   name <- show <$> getName w
   classTitle <- getClass w
-  return $ printf "%-20s%-20s%+15s" classTitle (take 20 name) "in " ++ W.tag ws
+  workspaceToName <- getWorkspaceNames
+  return $ printf "%-20s%-40s %+30s" classTitle (take 40 name) "in " ++ workspaceToName (W.tag ws)
 
 myWindowBringerConfig = WindowBringerConfig { menuCommand = "rofi"
                                             , menuArgs = ["-dmenu", "-i"]
@@ -65,14 +65,13 @@ main = xmonad $ ewmh $ pagerHints def
 
 myLogHook = fadeInactiveLogHook 0.9
 
-setWorkspaceNameToFocusedWindow workspace  = do
-  namedWindows <- mapM getClass $ W.integrate' $ W.stack workspace
+setWorkspaceNameToFocusedWindow workspace = do
+  namedWindows <- mapM getClass $ take 2 $ W.integrate' $ W.stack workspace
+  workspaceToName <- getWorkspaceNames
   renamedWindows <- remapNames namedWindows
-  let newName = intercalate "|" renamedWindows
-      currentName = W.tag workspace
-  when (currentName /= newName) $ do
-       windows $ W.renameTag currentName newName
-       spawn $ "update_xmonad_stamp.sh " ++ currentName ++ " new:" ++ newName ++ " " ++ "old:"
+  let newName = intercalate "|" namedWindows
+  when (workspaceToName (W.tag workspace) /= newName) $
+       setWorkspaceName (W.tag workspace) (intercalate "|" renamedWindows)
 
 remapNames namedWindows = do
   remap <- io getClassRemap
@@ -82,20 +81,12 @@ setWorkspaceNames = do
   ws <- gets windowset
   mapM_ setWorkspaceNameToFocusedWindow (W.workspaces ws)
 
-data WorkspaceNamesHook a = WorkspaceNamesHook deriving (Show, Read)
-
-instance LayoutModifier WorkspaceNamesHook Window where
-    hook _ = setWorkspaceNames
-
-workspaceNamesHook = ModifiedLayout WorkspaceNamesHook
-
 shiftThenView i = W.greedyView i . W.shift i
 
 layouts = multiCol [1, 1] 2 0.01 (-0.5) ||| Full ||| Tall 1 (3/100) (1/2)
 
-myLayoutHook = avoidStruts . smartSpacing 10 . noBorders . minimize .
-               boringWindows . mkToggle (MIRROR ?? EOT) . workspaceNamesHook
-                                 $ layouts
+myLayoutHook = avoidStruts . smartSpacing 10 . noBorders . minimize
+               . boringWindows . mkToggle (MIRROR ?? EOT) $ layouts
 
 myStartup = spawn "systemctl --user start wm.target"
 
@@ -112,7 +103,6 @@ addKeys conf@XConfig {modMask = modm} =
     , ((modm, xK_slash), sendMessage $ Toggle MIRROR)
     , ((modm, xK_m), withFocused minimizeWindow)
     , ((modm .|. shiftMask, xK_m), sendMessage RestoreNextMinimizedWin)
-    , ((modm, xK_x), setWorkspaceNames)
 
     -- Hyper bindings
     , ((mod3Mask, xK_1), setWorkspaceNames)
