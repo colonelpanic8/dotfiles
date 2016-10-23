@@ -101,10 +101,13 @@ myLayoutHook = avoidStruts . smartSpacing 10 . noBorders . minimize .
 
 myStartup = spawn "systemctl --user start wm.target"
 
+greedyFocusWindow :: Window -> WindowSet -> WindowSet
+greedyFocusWindow w ws = W.greedyView (fromMaybe (W.currentTag ws) $ W.findTag w ws) ws
+
 addKeys conf@XConfig {modMask = modm} =
     [ ((modm, xK_p), spawn "rofi -show drun")
     , ((modm .|. shiftMask, xK_p), spawn "rofi -show run")
-    , ((modm, xK_g), gotoMenuConfig myWindowBringerConfig)
+    , ((modm, xK_g), actionMenu myWindowBringerConfig greedyFocusWindow)
     , ((modm, xK_b), bringMenuConfig myWindowBringerConfig)
     , ((modm .|. controlMask, xK_t), spawn
        "systemctl --user restart taffybar.service")
