@@ -21,8 +21,8 @@ others:
 - [[flimenu][flimenu]]
 *** [[programminglanguages][Programming Language Configurations]]
 My programming language major mode configurations can all be found [[programminglanguages][here]].
-*** [[org-mode][org]]
-My [[org-mode][org-mode]] configuration is pretty comprehensive, but not super well commented.
+*** [[org][org-mode]]
+My [[org][org-mode]] configuration is pretty comprehensive, but not super well commented.
 
 * HTML Headers
 #+HTML_HEAD: <link rel="stylesheet" type="text/css" href="http://www.pirilampo.org/styles/readtheorg/css/htmlize.css"/>
