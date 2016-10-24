@@ -5,6 +5,21 @@ incredibly well commented literate configurations of [[http://pages.sachachua.co
 but I haven't quite gotten around to polishing it to the point that those two
 have. Still, there are definitely a few sections of which I am quite proud, and that
 others may find to be useful.
+** Highlights
+These sections are the ones that have the most potential to be interesting to
+others:
+*** Configuration of My Own Packages
+- [[term-projectile][term-projectile]] and [[term-manager][term-manager]]
+- [[org-projectile][org-projectile]]
+- [[multi-line][multi-line]]
+- [[github-search][github-search]]
+- [[flimenu][flimenu]]
+*** [[programminglanguages][Programming Language Configurations]]
+My programming language major mode configurations can all be found [[programminglanguages][here]].
+*** [[org-mode][org]]
+My [[org-mode][org-mode]] configuration is pretty comprehensive, but not super well commented.
+
+* HTML Headers
 #+HTML_HEAD: <link rel="stylesheet" type="text/css" href="http://www.pirilampo.org/styles/readtheorg/css/htmlize.css"/>
 #+HTML_HEAD: <link rel="stylesheet" type="text/css" href="http://www.pirilampo.org/styles/readtheorg/css/readtheorg.css"/>
 
@@ -1969,6 +1984,7 @@ modeline and with excessive http requests to github.
 #+END_SRC
 * Major Modes
 ** Programming
+<<programminglanguages>>
 *** python
 #+BEGIN_SRC emacs-lisp
 (use-package python
