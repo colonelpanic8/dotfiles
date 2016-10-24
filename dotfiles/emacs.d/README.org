@@ -4223,6 +4223,15 @@ Ensure all themes that I use are installed:
     ;; 'spaceline-gh-notifier and 'imalison:muni disabled for now
     (spaceline-spacemacs-theme)))
 #+END_SRC
+** page-break-lines
+#+BEGIN_SRC emacs-lisp
+(use-package page-break-lines
+  :defer 1
+  :diminish (page-break-lines-mode)
+  :config
+  (progn
+    (global-page-break-lines-mode +1)))
+#+END_SRC
 ** helm-themes
 helm-themes provides an easy way to switch between emacs-themes.
 #+BEGIN_SRC emacs-lisp
