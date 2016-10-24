@@ -3078,7 +3078,6 @@ alphanumeric characters only."
         (let* ((name (imalison:generate-name datum cache))
                (number (+ 1 (gethash name reverse-cache -1)))
                (new-name (format "%s%s" name (if (< 0 number) number ""))))
-          (message "number for %s is %s new-name is %s" name number new-name)
           (puthash name number reverse-cache)
           (puthash datum new-name cache)
           new-name))))
