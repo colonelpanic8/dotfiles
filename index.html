@@ -3,7 +3,7 @@
 "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
-<!-- 2016-10-24 Mon 16:18 -->
+<!-- 2016-10-24 Mon 16:24 -->
 <meta  http-equiv="Content-Type" content="text/html;charset=utf-8" />
 <meta  name="viewport" content="width=device-width, initial-scale=1" />
 <title></title>
@@ -100,6 +100,8 @@
 <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js"></script>
 <script type="text/javascript" src="http://www.pirilampo.org/styles/lib/js/jquery.stickytableheaders.js"></script>
 <script type="text/javascript" src="http://www.pirilampo.org/styles/readtheorg/js/readtheorg.js"></script>
+<style type="text/css">
+ pre.src {background-color: #263238; color: #ffffff;}</style>
 <style type="text/css">
  pre.src {background-color: #263238; color: #ffffff;}</style>
 <style type="text/css">
@@ -686,14 +688,15 @@ for the JavaScript code in this tag.
 <li><a href="#config">17.4.2. config</a></li>
 </ul>
 </li>
-<li><a href="#helmthemes1">17.5. helm-themes</a></li>
-<li><a href="#windownumber">17.6. window-number</a></li>
-<li><a href="#whitespacesetup">17.7. Whitespace Setup</a></li>
-<li><a href="#colorizecompliationbuffers">17.8. Colorize Compliation Buffers</a></li>
-<li><a href="#automaticthemechanger">17.9. Automatic Theme Changer</a></li>
-<li><a href="#fixansitermcolors">17.10. Fix <code>ansi-term</code> Colors</a></li>
-<li><a href="#afterloadthemehook">17.11. After <code>load-theme</code> hook</a></li>
-<li><a href="#frameinitialization">17.12. Frame Initialization</a></li>
+<li><a href="#pagebreaklines">17.5. page-break-lines</a></li>
+<li><a href="#helmthemes1">17.6. helm-themes</a></li>
+<li><a href="#windownumber">17.7. window-number</a></li>
+<li><a href="#whitespacesetup">17.8. Whitespace Setup</a></li>
+<li><a href="#colorizecompliationbuffers">17.9. Colorize Compliation Buffers</a></li>
+<li><a href="#automaticthemechanger">17.10. Automatic Theme Changer</a></li>
+<li><a href="#fixansitermcolors">17.11. Fix <code>ansi-term</code> Colors</a></li>
+<li><a href="#afterloadthemehook">17.12. After <code>load-theme</code> hook</a></li>
+<li><a href="#frameinitialization">17.13. Frame Initialization</a></li>
 </ul>
 </li>
 <li><a href="#postinitcustom">18. Post Init Custom</a></li>
@@ -6859,9 +6862,24 @@ Ensure all themes that I use are installed:
 </div>
 </div>
 </div>
-<div id="outline-container-helmthemes1" class="outline-3">
-<h3 id="helmthemes1"><span class="section-number-3">17.5</span> helm-themes</h3>
+<div id="outline-container-pagebreaklines" class="outline-3">
+<h3 id="pagebreaklines"><span class="section-number-3">17.5</span> page-break-lines</h3>
 <div class="outline-text-3" id="text-17-5">
+<div class="org-src-container">
+
+<pre class="src src-emacs-lisp"><span style="color: #e91e63;">(</span><span style="color: #fff59d;">use-package</span> <span style="color: #8bc34a;">page-break-lines</span>
+  <span style="color: #ff8A65;">:defer</span> 1
+  <span style="color: #ff8A65;">:diminish</span> <span style="color: #2196F3;">(</span>page-break-lines-mode<span style="color: #2196F3;">)</span>
+  <span style="color: #ff8A65;">:config</span>
+  <span style="color: #2196F3;">(</span><span style="color: #fff59d;">progn</span>
+    <span style="color: #EF6C00;">(</span>global-page-break-lines-mode +1<span style="color: #EF6C00;">)</span><span style="color: #2196F3;">)</span><span style="color: #e91e63;">)</span>
+</pre>
+</div>
+</div>
+</div>
+<div id="outline-container-helmthemes1" class="outline-3">
+<h3 id="helmthemes1"><span class="section-number-3">17.6</span> helm-themes</h3>
+<div class="outline-text-3" id="text-17-6">
 <p>
 helm-themes provides an easy way to switch between emacs-themes.
 </p>
@@ -6874,8 +6892,8 @@ helm-themes provides an easy way to switch between emacs-themes.
 </div>
 </div>
 <div id="outline-container-windownumber" class="outline-3">
-<h3 id="windownumber"><span class="section-number-3">17.6</span> window-number</h3>
-<div class="outline-text-3" id="text-17-6">
+<h3 id="windownumber"><span class="section-number-3">17.7</span> window-number</h3>
+<div class="outline-text-3" id="text-17-7">
 <div class="org-src-container">
 
 <pre class="src src-emacs-lisp"><span style="color: #e91e63;">(</span><span style="color: #fff59d;">use-package</span> <span style="color: #8bc34a;">window-number</span>
@@ -6885,8 +6903,8 @@ helm-themes provides an easy way to switch between emacs-themes.
 </div>
 </div>
 <div id="outline-container-whitespacesetup" class="outline-3">
-<h3 id="whitespacesetup"><span class="section-number-3">17.7</span> Whitespace Setup</h3>
-<div class="outline-text-3" id="text-17-7">
+<h3 id="whitespacesetup"><span class="section-number-3">17.8</span> Whitespace Setup</h3>
+<div class="outline-text-3" id="text-17-8">
 <p>
 Make whitespace-mode use just basic coloring:
 </p>
@@ -6911,8 +6929,8 @@ Set the character used to represent spaces to ·, and the character used for tab
 </div>
 
 <div id="outline-container-colorizecompliationbuffers" class="outline-3">
-<h3 id="colorizecompliationbuffers"><span class="section-number-3">17.8</span> Colorize Compliation Buffers</h3>
-<div class="outline-text-3" id="text-17-8">
+<h3 id="colorizecompliationbuffers"><span class="section-number-3">17.9</span> Colorize Compliation Buffers</h3>
+<div class="outline-text-3" id="text-17-9">
 <p>
 This automatically applies ansi-color interpretation of terminal escape sequences to compilation buffers
 </p>
@@ -6929,8 +6947,8 @@ This automatically applies ansi-color interpretation of terminal escape sequence
 </div>
 
 <div id="outline-container-automaticthemechanger" class="outline-3">
-<h3 id="automaticthemechanger"><span class="section-number-3">17.9</span> Automatic Theme Changer</h3>
-<div class="outline-text-3" id="text-17-9">
+<h3 id="automaticthemechanger"><span class="section-number-3">17.10</span> Automatic Theme Changer</h3>
+<div class="outline-text-3" id="text-17-10">
 <p>
 Disabled for now
 </p>
@@ -6949,8 +6967,8 @@ Disabled for now
 </div>
 </div>
 <div id="outline-container-fixansitermcolors" class="outline-3">
-<h3 id="fixansitermcolors"><span class="section-number-3">17.10</span> Fix <code>ansi-term</code> Colors</h3>
-<div class="outline-text-3" id="text-17-10">
+<h3 id="fixansitermcolors"><span class="section-number-3">17.11</span> Fix <code>ansi-term</code> Colors</h3>
+<div class="outline-text-3" id="text-17-11">
 <p>
 For some reason, loading certain themes can cause colors in
 <code>ansi-term-color-vector</code> to be undefined. The following code handles restoring
@@ -6974,8 +6992,8 @@ load-theme hook (See the heading below).
 </div>
 </div>
 <div id="outline-container-afterloadthemehook" class="outline-3">
-<h3 id="afterloadthemehook"><span class="section-number-3">17.11</span> After <code>load-theme</code> hook</h3>
-<div class="outline-text-3" id="text-17-11">
+<h3 id="afterloadthemehook"><span class="section-number-3">17.12</span> After <code>load-theme</code> hook</h3>
+<div class="outline-text-3" id="text-17-12">
 <div class="org-src-container">
 
 <pre class="src src-emacs-lisp"><span style="color: #e91e63;">(</span><span style="color: #fff59d;">defvar</span> <span style="color: #ffcc80;">imalison:light-theme</span> 'solarized-light<span style="color: #e91e63;">)</span>
@@ -6993,8 +7011,8 @@ load-theme hook (See the heading below).
 </div>
 </div>
 <div id="outline-container-frameinitialization" class="outline-3">
-<h3 id="frameinitialization"><span class="section-number-3">17.12</span> Frame Initialization</h3>
-<div class="outline-text-3" id="text-17-12">
+<h3 id="frameinitialization"><span class="section-number-3">17.13</span> Frame Initialization</h3>
+<div class="outline-text-3" id="text-17-13">
 <div class="org-src-container">
 
 <pre class="src src-emacs-lisp"><span style="color: #e91e63;">(</span><span style="color: #fff59d;">defvar</span> <span style="color: #ffcc80;">imalison:linum-format</span><span style="color: #e91e63;">)</span>
@@ -7063,7 +7081,7 @@ load-theme hook (See the heading below).
 </div>
 <div id="postamble" class="status">
 <p class="author">Author: Ivan Malison</p>
-<p class="date">Created: 2016-10-24 Mon 16:18</p>
+<p class="date">Created: 2016-10-24 Mon 16:24</p>
 <p class="validation"><a href="http://validator.w3.org/check?uri=referer">Validate</a></p>
 </div>
 </body>
