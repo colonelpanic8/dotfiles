@@ -8,6 +8,11 @@ others may find to be useful.
 ** Highlights
 These sections are the ones that have the most potential to be interesting to
 others:
+*** [[Functions][My functions section]]
+...has a bunch of generally useful functions:
++ [[downloadfile][Download a file into a buffer]] (curl straight into a file)
++ [[editscript][Edit a script on $PATH]]
++ [[namedbuild][Named Build of Builder Macros]] and [[composemacros][A Compose Supporting Macros]]
 *** Configuration of My Own Packages
 - [[term-projectile][term-projectile]] and [[term-manager][term-manager]]
 - [[org-projectile][org-projectile]]
@@ -377,8 +382,8 @@ This is disabled for now until I figure out what to do with emit.
 #+BEGIN_SRC emacs-lisp
 (use-package request)
 #+END_SRC
-** Macros
-*** Named Build
+** Named Build
+<<namedbuild>>
 imalison:named-build provides a way to invoke a macro in such a way
 that the lambda that it produces is given a name.
 #+BEGIN_SRC emacs-lisp
@@ -409,7 +414,7 @@ new macro name and the -fn suffix.
   `(imalison:named-builder-builder
     ,name ,(intern (concat (symbol-name name) "-fn"))))
 #+END_SRC
-*** Emacs Version Predicate
+** Emacs Version Predicate
 #+BEGIN_SRC emacs-lisp
 (defmacro imalison:emacs-version-predicate-fn (major-version minor-version)
   `(lambda ()
@@ -422,8 +427,9 @@ new macro name and the -fn suffix.
 
 (imalison:named-builder imalison:emacs-version-predicate)
 #+END_SRC
-*** Compose Functions
-**** A version supporting macros
+** Compose Functions
+*** A version supporting macros
+<<composemacros>>
 #+BEGIN_SRC emacs-lisp
 (defun imalison:help-function-arglist (fn)
   (let ((result (help-function-arglist fn)))
@@ -465,7 +471,7 @@ new macro name and the -fn suffix.
 (imalison:named-builder imalison:compose)
 (imalison:named-builder imalison:compose-macro)
 #+END_SRC
-**** Arbitrary arguments at every step
+*** Arbitrary arguments at every step
 #+BEGIN_SRC emacs-lisp
 (defun imalison:make-list (thing)
   (if (listp thing)
@@ -484,7 +490,7 @@ new macro name and the -fn suffix.
     `(apply ,(car funcs)
             (imalison:make-list (imalison:compose-with-apply-helper ,(cdr funcs))))))
 #+END_SRC
-**** Simpler unary version
+*** Simpler unary version
 #+BEGIN_SRC emacs-lisp
 (defmacro imalison:compose-unary (&rest funcs)
   "Build a new function with NAME that is the composition of FUNCS."
@@ -497,16 +503,16 @@ new macro name and the -fn suffix.
       'arg
     `(funcall ,(car funcs) (imalison:compose-helper-unary ,(cdr funcs)))))
 #+END_SRC
-*** Make Interactive
- #+BEGIN_SRC emacs-lisp
+** Make Interactive
+#+BEGIN_SRC emacs-lisp
 (defmacro imalison:make-interactive-fn (function)
   `(lambda (&rest args)
      (interactive)
      (apply ,function args)))
 
 (imalison:named-builder imalison:make-interactive)
- #+END_SRC
-*** Advice Add Around Builder
+#+END_SRC
+** Advice Add Around Builder
 For composing functions with an apply so that they can be used with
 the ~:around~ keyword of advice-add.
 #+BEGIN_SRC emacs-lisp
@@ -516,11 +522,11 @@ the ~:around~ keyword of advice-add.
 
 (imalison:named-builder imalison:advice-add-around-builder)
 #+END_SRC
-**** Kill New
+*** Kill New
 #+BEGIN_SRC emacs-lisp
 (imalison:advice-add-around-builder imalison:kill-new-around kill-new)
 #+END_SRC
-*** Let Around
+** Let Around
 #+BEGIN_SRC emacs-lisp
 (defmacro imalison:let-around-fn (orig-func &rest forms)
   (let* ((orig-interactive-form (interactive-form orig-func))
@@ -535,18 +541,18 @@ the ~:around~ keyword of advice-add.
 
 (imalison:named-builder imalison:let-around)
 #+END_SRC
-*** Let Around Advice
- #+BEGIN_SRC emacs-lisp
+** Let Around Advice
+#+BEGIN_SRC emacs-lisp
 (defmacro imalison:let-advise-around-fn (&rest forms)
   `(lambda (orig-func &rest args)
      (let ,forms
        (apply orig-func args))))
 
 (imalison:named-builder imalison:let-advise-around)
- #+END_SRC
-*** Compose Around Builder
- For composing functions with an apply so that they can be used with the ~:around~ keyword of advice-add. 
- #+BEGIN_SRC emacs-lisp
+#+END_SRC
+** Compose Around Builder
+For composing functions with an apply so that they can be used with the ~:around~ keyword of advice-add. 
+#+BEGIN_SRC emacs-lisp
 ;; TODO/XXX: Isn't this just apply? why doesn't apply work here
 (defun imalison:around-identity (fn &rest args)
   (apply fn args))
@@ -555,8 +561,8 @@ the ~:around~ keyword of advice-add.
   `(imalison:compose-fn ,@functions imalison:around-identity))
 
 (imalison:named-builder imalison:compose-around-builder)
- #+END_SRC
-*** Measure Time
+#+END_SRC
+** Measure Time
 #+BEGIN_SRC emacs-lisp
 (defmacro imalison:measure-time (&rest body)
   "Measure and return the running time of the code block."
@@ -747,6 +753,7 @@ A macro for composing functions together to build an interactive command to copy
         (perform-replace "\\n" "\n" nil nil delimited nil nil beg end nil)))))
 #+END_SRC
 ** Download a File Into a Buffer
+<<downloadfile>>
 #+BEGIN_SRC emacs-lisp
 (defun imalison:download-to-buffer (uri)
   (interactive (list (read-string "Enter uri: ")))
@@ -770,6 +777,9 @@ A macro for composing functions together to build an interactive command to copy
   (intern (mapconcat 'imalison:maybe-symbol-name args "")))
 #+END_SRC
 ** Edit a script on PATH
+<<editscript>> Note that you'll need to make sure that emacs properly inherits
+the path variable for this work. Check out my [[exec-path-from-shell]] config for
+details.
 #+BEGIN_SRC emacs-lisp
 (defun imalison:get-executables-at-path (filepath)
   (when (and (file-exists-p filepath) (f-directory? filepath))
