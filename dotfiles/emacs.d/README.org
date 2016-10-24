@@ -2617,7 +2617,8 @@ Intero seems to be causing hangs, so it has been disabled
     (defvar-setq org-mobile-directory "~/Dropbox/Apps/MobileOrg")
 
     (setq org-goto-interface 'outline-path-completion
-          org-goto-max-level 10)
+          org-goto-max-level 10
+          org-export-headline-levels 5)
     (add-hook 'org-mode-hook 'imalison:disable-linum-mode)
     (add-hook 'org-mode-hook (lambda () (setq org-todo-key-trigger t)))
     (add-hook 'org-agenda-mode-hook 'imalison:disable-linum-mode)
@@ -3030,6 +3031,57 @@ background of code to whatever theme I'm using's background"
                     my-pre-bg my-pre-fg))))))
 
     (add-hook 'org-export-before-processing-hook 'imalison:org-inline-css-hook)))
+#+END_SRC
+**** Use my own default naming scheme for org-headings
+First we define a function that will generate a sanitized version of the heading
+as its link target.
+#+BEGIN_SRC emacs-lisp
+(defun imalison:org-get-raw-value (item)
+  (when (listp item)
+    (let* ((property-list (cadr item)))
+      (when property-list (plist-get property-list :raw-value)))))
+
+(defun imalison:sanitize-name (name)
+  (replace-regexp-in-string "[^[:alpha:]]" "" (s-downcase name)))
+
+(defun imalison:generate-name (datum cache)
+  (let ((raw-value (imalison:org-get-raw-value datum)))
+    (if raw-value
+        (imalison:sanitize-name raw-value)
+      ;; This is the default implementation from org
+      (let ((type (org-element-type datum)))
+        (format "org%s%d"
+                (if type
+                    (replace-regexp-in-string "-" "" (symbol-name type))
+                    "secondarystring")
+                (incf (gethash type cache 0)))))))
+#+END_SRC
+
+This function replaces the default naming scheme with a call to
+~imalison:generate-name~, and uses a slightly different uniquify approach.
+#+BEGIN_SRC emacs-lisp
+(defun org-export-get-reference (datum info)
+  "Return a unique reference for DATUM, as a string.
+DATUM is either an element or an object.  INFO is the current
+export state, as a plist.  Returned reference consists of
+alphanumeric characters only."
+  (let ((type (org-element-type datum))
+        (cache (or (plist-get info :internal-references)
+                   (let ((h (make-hash-table :test #'eq)))
+                     (plist-put info :internal-references h)
+                     h)))
+        (reverse-cache (or (plist-get info :taken-internal-references)
+                           (let ((h (make-hash-table :test 'equal)))
+                             (plist-put info :taken-internal-references h)
+                             h))))
+    (or (gethash datum cache)
+        (let* ((name (imalison:generate-name datum cache))
+               (number (+ 1 (gethash name reverse-cache -1)))
+               (new-name (format "%s%s" name (if (< 0 number) number ""))))
+          (message "number for %s is %s new-name is %s" name number new-name)
+          (puthash name number reverse-cache)
+          (puthash datum new-name cache)
+          new-name))))
 #+END_SRC
 **** org-projectile
  #+BEGIN_SRC emacs-lisp
