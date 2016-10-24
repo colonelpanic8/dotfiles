@@ -833,6 +833,11 @@ This was stolen from https://github.com/jwiegley/dot-emacs
   (require 'helm)
   (helm-other-buffer 'helm-c-source-zsh-history "*helm zsh history*"))
 #+END_SRC
+*** Use projectile as default directory
+#+BEGIN_SRC emacs-lisp
+(imalison:let-around imalison:projectile-helm-command-from-zsh helm-command-from-zsh
+                     (default-directory (projectile-project-root)))
+#+END_SRC
 ** Other
 The stuff in this section is pretty crusty. I don't think its used anywhere, but
 I keep it around just in case I need it.
@@ -1356,7 +1361,7 @@ https://github.com/alpaker/Fill-Column-Indicator/issues/21 for more details
   :config
   (progn
     (defhydra imalison:hydra-font-resize
-      nil 
+      nil
       "Resize Font"
       ("-" imalison:font-size-decr "Decrease")
       ("d" imalison:font-size-decr "Decrease")
@@ -1385,7 +1390,7 @@ https://github.com/alpaker/Fill-Column-Indicator/issues/21 for more details
       (imalison:named-compile "glide up"))
 
     (defhydra imalison:compile nil "Compile"
-      ("s" helm-command-from-zsh "Select a command from shell history")
+      ("s" imalison:projectile-helm-command-from-zsh "Select a command from shell history")
       ("c" imalison:named-compile "Enter Custom Command")
       ("t" imalison:make-test "Test")
       ("u" imalison:glide-up "Update Dependencies"))))
