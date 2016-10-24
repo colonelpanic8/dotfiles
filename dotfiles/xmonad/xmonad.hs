@@ -102,9 +102,13 @@ myLayoutHook = avoidStruts . smartSpacing 10 . noBorders . minimize .
 
 myStartup = spawn "systemctl --user start wm.target"
 
-greedyFocusWindow w ws = W.greedyView (fromMaybe (W.currentTag ws) $ W.findTag w ws) ws
+-- Use greedyView to switch to the correct workspace, and then focus on the
+-- appropriate window within that workspace.
+greedyFocusWindow w ws = W.focusWindow w $ W.greedyView
+                         (fromMaybe (W.currentTag ws) $ W.findTag w ws) ws
 
-shiftToEmptyAndView = doTo Next EmptyWS DWO.getSortByOrder (windows . shiftThenView)
+shiftToEmptyAndView = doTo Next EmptyWS DWO.getSortByOrder
+                      (windows . shiftThenView)
 
 addKeys conf@XConfig {modMask = modm} =
     [ ((modm, xK_p), spawn "rofi -show drun")
