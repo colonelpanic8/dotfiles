@@ -3363,6 +3363,10 @@ crux-reopen-as-root-mode makes it so that any file owned by root will automatica
   (progn
     (crux-reopen-as-root-mode)))
 #+END_SRC
+** kde-connect
+#+BEGIN_SRC emacs-lisp
+(use-package kdeconnect)
+#+END_SRC
 * Chat
 ** erc
 #+BEGIN_SRC emacs-lisp
