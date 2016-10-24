@@ -797,6 +797,42 @@ A macro for composing functions together to build an interactive command to copy
 (when (executable-find "copyq")
  (run-with-idle-timer 10 nil 'imalison:copyq-sync))
 #+END_SRC
+** helm-zsh-history
+This was stolen from https://github.com/jwiegley/dot-emacs
+#+BEGIN_SRC emacs-lisp
+(defvar helm-c-source-zsh-history
+  '((name . "Zsh History")
+    (candidates . helm-c-zsh-history-set-candidates)
+    (action . (("Execute Command" . helm-c-zsh-history-action)))
+    (volatile)
+    (requires-pattern . 3)
+    (delayed)))
+
+(defun helm-c-zsh-history-set-candidates (&optional request-prefix)
+  (let ((pattern (replace-regexp-in-string
+                  " " ".*"
+                  (or (and request-prefix
+                           (concat request-prefix
+                                   " " helm-pattern))
+                      helm-pattern))))
+    (with-current-buffer (find-file-noselect "~/.zsh_history" t t)
+      (auto-revert-mode -1)
+      (goto-char (point-max))
+      (loop for pos = (re-search-backward pattern nil t)
+            while pos
+            collect (replace-regexp-in-string
+                     "\\`:.+?;" ""
+                     (buffer-substring (line-beginning-position)
+                                       (line-end-position)))))))
+
+(defun helm-c-zsh-history-action (candidate)
+  (imalison:named-compile candidate))
+
+(defun helm-command-from-zsh ()
+  (interactive)
+  (require 'helm)
+  (helm-other-buffer 'helm-c-source-zsh-history "*helm zsh history*"))
+#+END_SRC
 ** Other
 The stuff in this section is pretty crusty. I don't think its used anywhere, but
 I keep it around just in case I need it.
@@ -1616,42 +1652,6 @@ I use helm for almost all emacs completion
 #+BEGIN_SRC emacs-lisp
 (use-package jump-char
   :bind (("C-;" . jump-char-forward)))
-#+END_SRC
-*** helm-zsh-history
-This was stolen from https://github.com/jwiegley/dot-emacs
-#+BEGIN_SRC emacs-lisp
-(defvar helm-c-source-zsh-history
-  '((name . "Zsh History")
-    (candidates . helm-c-zsh-history-set-candidates)
-    (action . (("Execute Command" . helm-c-zsh-history-action)))
-    (volatile)
-    (requires-pattern . 3)
-    (delayed)))
-
-(defun helm-c-zsh-history-set-candidates (&optional request-prefix)
-  (let ((pattern (replace-regexp-in-string
-                  " " ".*"
-                  (or (and request-prefix
-                           (concat request-prefix
-                                   " " helm-pattern))
-                      helm-pattern))))
-    (with-current-buffer (find-file-noselect "~/.zsh_history" t t)
-      (auto-revert-mode -1)
-      (goto-char (point-max))
-      (loop for pos = (re-search-backward pattern nil t)
-            while pos
-            collect (replace-regexp-in-string
-                     "\\`:.+?;" ""
-                     (buffer-substring (line-beginning-position)
-                                       (line-end-position)))))))
-
-(defun helm-c-zsh-history-action (candidate)
-  (imalison:named-compile candidate))
-
-(defun helm-command-from-zsh ()
-  (interactive)
-  (require 'helm)
-  (helm-other-buffer 'helm-c-source-zsh-history "*helm zsh history*"))
 #+END_SRC
 ** flimenu
 #+BEGIN_SRC emacs-lisp
