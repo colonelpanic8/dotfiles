@@ -2531,6 +2531,18 @@ The following is taken from [[https://github.com/syl20bnr/spacemacs/blob/a650877
   :config
   (progn
     (setq haskell-hoogle-command "hoogle")
+    (setq
+       ;; Use notify.el (if you have it installed) at the end of running
+       ;; Cabal commands or generally things worth notifying.
+       haskell-notify-p t
+       ;; Remove annoying error popups
+       haskell-interactive-popup-errors nil
+       ;; Better import handling
+       haskell-process-suggest-remove-import-lines t
+       haskell-process-auto-import-loaded-modules t
+       ;; Disable haskell-stylish-on-save, as it breaks flycheck highlighting.
+       ;; NOTE: May not be true anymore - taksuyu 2015-10-06
+       haskell-stylish-on-save nil)
     (require 'flycheck)
     (delq 'haskell-stack-ghc flycheck-checkers)
     (add-hook 'haskell-mode-hook 'turn-on-haskell-indent)
@@ -2550,21 +2562,24 @@ Intero seems to be causing hangs, so it has been disabled
 (use-package hindent
   :after haskell-mode
   :config
-  (add-hook 'haskell-mode-hook 'hindent-mode))
+  (progn
+    (setq haskell-enable-hindent-style "fundamental")
+    (add-hook 'haskell-mode-hook 'hindent-mode)))
 #+END_SRC
 **** ghc-mod
 #+BEGIN_SRC emacs-lisp
 (use-package ghc
   :after haskell-mode
   :config
-  (add-hook 'haskell-mode-hook 'ghc-init))
+  (progn
+    (add-hook 'haskell-mode-hook 'ghc-init)))
 #+END_SRC
 **** company-ghc
 #+BEGIN_SRC emacs-lisp
 (use-package company-ghc
-  :after ghc
+  :demand t
   :config
-  (add-to-list 'company-backend 'company-ghc))
+  (add-to-list 'company-backends 'company-ghc))
 #+END_SRC
 *** C/C++
 #+BEGIN_SRC emacs-lisp
