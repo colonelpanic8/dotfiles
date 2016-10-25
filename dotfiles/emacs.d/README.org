@@ -30,14 +30,18 @@ document) takes you to http://ivanmalison.github.io/dotfiles/#usemyowndefaultnam
 
 In case you haven't noticed, that is where you should go grab the code that does
 this.
+I'm considering turning this snippet in to a package, so please let me know if
+that is something you are interested in.
 **** Set Background Color Source Blocks
 For some reason, org-mode uses all of your currently active fontification when exporting EXCEPT for background color. [[Set Background Color of Source Blocks for Export][This]] modification fixes this.
 *** [[Functions][My functions section]]
 ...has a bunch of generally useful functions:
++ [[https://github.com/IvanMalison/emit/blob/2e4d788abd68bac538acb06443179b8d5885052e/emit.el#L104][emit-prefix-selector]] (SUPER USEFUL, moved to emit) See [[https://github.com/IvanMalison/emit#prefix-selector][README]] for explantion
 + [[Font Size][Font Size]] functions and an [[fontsizehydra][Awesome Hydra]] for them
 + [[downloadfile][Download a file into a buffer]] (curl straight into a file)
 + [[editscript][Edit a script on $PATH]]
-+ [[namedbuild][Named Build of Builder Macros]] and [[composemacros][A Compose Supporting Macros]]
++ [[Yanking][Copy Portions of Buffer File Path Hydra]] and the associated [[Copy String Functions][Copy String Functions]]
++ [[namedbuild][Named Build of Builder Macros]] ([[https://github.com/IvanMalison/emit#named-builder][README]]) and [[composemacros][A Compose Supporting Macros]] ([[https://github.com/IvanMalison/emit#compose][README]])
 *** Configuration of My Own Packages
 - [[term-projectile][term-projectile]] and [[term-manager][term-manager]]
 - [[org-projectile][org-projectile]]
