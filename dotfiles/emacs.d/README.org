@@ -31,7 +31,7 @@ document) takes you to http://ivanmalison.github.io/dotfiles/#usemyowndefaultnam
 In case you haven't noticed, that is where you should go grab the code that does
 this.
 **** Set Background Color Source Blocks
-For some reason, org-mode uses all of your currently active fontification when exporting EXCEPT for background color. [[setbackgroundcolorofsourceblocksforexport][This]] modification fixes this.
+For some reason, org-mode uses all of your currently active fontification when exporting EXCEPT for background color. [[Set Background Color of Source Blocks for Export][This]] modification fixes this.
 *** [[Functions][My functions section]]
 ...has a bunch of generally useful functions:
 + [[downloadfile][Download a file into a buffer]] (curl straight into a file)
