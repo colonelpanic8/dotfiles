@@ -123,6 +123,7 @@ addKeys conf@XConfig {modMask = modm} =
     , ((modm, xK_slash), sendMessage $ Toggle MIRROR)
     , ((modm, xK_m), withFocused minimizeWindow)
     , ((modm .|. shiftMask, xK_m), sendMessage RestoreNextMinimizedWin)
+    , ((modm, xK_backslash), toggleWS)
 
     -- Hyper bindings
     , ((mod3Mask, xK_1), setWorkspaceNames)
