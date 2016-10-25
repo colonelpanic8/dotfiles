@@ -1,10 +1,13 @@
 # -*- mode: org; -*-
+I suggest you read this document at [[http://ivanmalison.github.io/dotfiles/]] or,
+of course, in emacs, as the internal links that follow are unlikely to work
+anywhere else (including, for example, at https://github.com/IvanMalison/dotfiles).
 * About
-This is my emacs configuration in literate form. It aspires to be like the
-incredibly well commented literate configurations of [[http://pages.sachachua.com/.emacs.d/Sacha.html][Sacha Chua]] and [[http://doc.rix.si/cce/cce.html][Ryan Rix]],
-but I haven't quite gotten around to polishing it to the point that those two
-have. Still, there are definitely a few sections of which I am quite proud, and that
-others may find to be useful.
+This is my emacs configuration in literate form. It aspires to be
+like the incredibly well commented literate configurations of [[http://pages.sachachua.com/.emacs.d/Sacha.html][Sacha Chua]] and
+[[http://doc.rix.si/cce/cce.html][Ryan Rix]], but I haven't quite gotten around to polishing it to the point that
+those two have. Still, there are definitely a few sections of which I am quite
+proud, and that others may find to be useful.
 ** Highlights
 These sections are the ones that have the most potential to be interesting to
 others:
