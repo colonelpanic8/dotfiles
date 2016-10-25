@@ -8,23 +8,50 @@ like the incredibly well commented literate configurations of [[http://pages.sac
 [[http://doc.rix.si/cce/cce.html][Ryan Rix]], but I haven't quite gotten around to polishing it to the point that
 those two have. Still, there are definitely a few sections of which I am quite
 proud, and that others may find to be useful.
-** Highlights
+* Highlights
 These sections are the ones that have the most potential to be interesting to
 others:
-*** [[Functions][My functions section]]
+** How I generate http://ivanmalison.github.io/dotfiles/
+*** Git Hooks
+I wrote a [[https://github.com/IvanMalison/dotfiles/tree/master/dotfiles/emacs.d/bin][githook and an installer script]] that automatically update index.html
+at the root of the repository by running ~org-html-export-to-html~ on my
+README.org (essentially this document) . These should work no matter where they
+are placed in a repository. The org-mode file that they target is set [[https://github.com/IvanMalison/dotfiles/blob/16a4f6c3aadef39a45d30c15e8637b40858721ea/dotfiles/emacs.d/bin/util.sh#L4][here]] and
+should be relatively easy to change.
+*** [[https://github.com/fniessen/org-html-themes][Read The Org]]
+I use [[https://github.com/fniessen][fniessen]]'s  ReadTheOrg theme which can be found at https://github.com/fniessen/org-html-themes.
+*** Heading Links
+To make it so that internal heading links have names that correspond to the
+heading text, and don't change when new headings are added to the document, I
+wrote a custom version of ~org-export-get-reference~.
+
+See how [[Use my own default naming scheme for org-headings][this link]] (which is just a normal internal link in the original
+document) takes you to http://ivanmalison.github.io/dotfiles/#usemyowndefaultnamingschemefororgheadings.
+
+In case you haven't noticed, that is where you should go grab the code that does
+this.
+
+I'm considering turning this snippet in to a package, so please let me know if
+that is something you are interested in.
+*** Set Background Color Source Blocks
+For some reason, org-mode uses all of your currently active fontification when exporting EXCEPT for background color. [[Set Background Color of Source Blocks for Export][This]] modification fixes this.
+** [[Functions][My functions section]]
 ...has a bunch of generally useful functions:
++ [[https://github.com/IvanMalison/emit/blob/2e4d788abd68bac538acb06443179b8d5885052e/emit.el#L104][emit-prefix-selector]] (SUPER USEFUL, moved to emit) See [[https://github.com/IvanMalison/emit#prefix-selector][README]] for explantion
++ [[Font Size][Font Size]] functions and an [[fontsizehydra][Awesome Hydra]] for them
 + [[downloadfile][Download a file into a buffer]] (curl straight into a file)
 + [[editscript][Edit a script on $PATH]]
-+ [[namedbuild][Named Build of Builder Macros]] and [[composemacros][A Compose Supporting Macros]]
-*** Configuration of My Own Packages
++ [[Yanking][Copy Portions of Buffer File Path Hydra]] and the associated [[Copy String Functions][Copy String Functions]]
++ [[namedbuild][Named Build of Builder Macros]] ([[https://github.com/IvanMalison/emit#named-builder][README]]) and [[composemacros][A Compose Supporting Macros]] ([[https://github.com/IvanMalison/emit#compose][README]])
+** Configuration of My Own Packages
 - [[term-projectile][term-projectile]] and [[term-manager][term-manager]]
 - [[org-projectile][org-projectile]]
 - [[multi-line][multi-line]]
 - [[github-search][github-search]]
 - [[flimenu][flimenu]]
-*** [[programminglanguages][Programming Language Configurations]]
+** [[programminglanguages][Programming Language Configurations]]
 My programming language major mode configurations can all be found [[programminglanguages][here]].
-*** [[org][org-mode]]
+** [[org][org-mode]]
 My [[org][org-mode]] configuration is pretty comprehensive, but not super well commented.
 
 * HTML Headers
@@ -781,7 +808,7 @@ A macro for composing functions together to build an interactive command to copy
 #+END_SRC
 ** Edit a script on PATH
 <<editscript>> Note that you'll need to make sure that emacs properly inherits
-the path variable for this work. Check out my [[exec-path-from-shell]] config for
+the path variable for this work. Check out my [[exec-path-from-shell][exec-path-from-shell]] config for
 details.
 #+BEGIN_SRC emacs-lisp
 (defun imalison:get-executables-at-path (filepath)
@@ -1388,40 +1415,50 @@ https://github.com/alpaker/Fill-Column-Indicator/issues/21 for more details
          ("C-c 6" . imalison:compile/body))
   :config
   (progn
-    (defhydra imalison:hydra-font-resize
-      nil
-      "Resize Font"
-      ("-" imalison:font-size-decr "Decrease")
-      ("d" imalison:font-size-decr "Decrease")
-      ("=" imalison:font-size-incr "Increase")
-      ("+" imalison:font-size-incr "Increase")
-      ("i" imalison:font-size-incr "Increase")
-      ("h" imalison:set-huge-font-size "Huge")
-      ("f" set-frame-font "Set Frame Font")
-      ("0" imalison:font-size-reset "Reset to default size"))
+#+END_SRC
+*** Font Size
+<<fontsizehydra>>
+ #+BEGIN_SRC emacs-lisp
+(defhydra imalison:hydra-font-resize
+  nil
+  "Resize Font"
+  ("-" imalison:font-size-decr "Decrease")
+  ("d" imalison:font-size-decr "Decrease")
+  ("=" imalison:font-size-incr "Increase")
+  ("+" imalison:font-size-incr "Increase")
+  ("i" imalison:font-size-incr "Increase")
+  ("h" imalison:set-huge-font-size "Huge")
+  ("f" set-frame-font "Set Frame Font")
+  ("0" imalison:font-size-reset "Reset to default size"))
+#+END_SRC
+*** Yanking
+#+BEGIN_SRC emacs-lisp
+(defhydra imalison:hydra-yank
+  nil
+  "Yank text"
+  ("p" imalison:copy-buffer-file-path "Projectile path")
+  ("f" imalison:copy-buffer-file-path-full "Full path")
+  ("n" imalison:copy-buffer-file-name "File name")
+  ("b" imalison:copy-current-git-branch "Git Branch"))
+#+END_SRC
+*** Compile
+#+BEGIN_SRC emacs-lisp
+(defun imalison:make-test ()
+  (interactive)
+  (let ((default-directory (projectile-project-root)))
+    (imalison:named-compile "make test")))
 
-    (defhydra imalison:hydra-yank
-      nil
-      "Yank text"
-      ("p" imalison:copy-buffer-file-path "Projectile path")
-      ("f" imalison:copy-buffer-file-path-full "Full path")
-      ("n" imalison:copy-buffer-file-name "File name")
-      ("b" imalison:copy-current-git-branch "Git Branch"))
+(defun imalison:glide-up ()
+  (interactive)
+  (imalison:named-compile "glide up"))
 
-    (defun imalison:make-test ()
-      (interactive)
-      (let ((default-directory (projectile-project-root)))
-        (imalison:named-compile "make test")))
-
-    (defun imalison:glide-up ()
-      (interactive)
-      (imalison:named-compile "glide up"))
-
-    (defhydra imalison:compile nil "Compile"
-      ("s" imalison:projectile-helm-command-from-zsh "Select a command from shell history")
-      ("c" imalison:named-compile "Enter Custom Command")
-      ("t" imalison:make-test "Test")
-      ("u" imalison:glide-up "Update Dependencies"))))
+(defhydra imalison:compile nil "Compile"
+  ("s" imalison:projectile-helm-command-from-zsh "Select a command from shell history")
+  ("c" imalison:named-compile "Enter Custom Command")
+  ("t" imalison:make-test "Test")
+  ("u" imalison:glide-up "Update Dependencies"))
+;; The following parens close the use-package/progn created several blocks above
+))
 #+END_SRC
 ** kill-emacs
 This ensures that C-x C-c will always kill emacs, even if we are running in server mode.
@@ -3056,7 +3093,8 @@ Intero seems to be causing hangs, so it has been disabled
     ;; blame.
     ))
 #+END_SRC
-**** Correct BG color for org-export
+**** Set Background Color of Source Blocks for Export
+This was taken from [[http://emacs.stackexchange.com/questions/3374/set-the-background-of-org-exported-code-blocks-according-to-theme][here]].
 #+BEGIN_SRC emacs-lisp
 (use-package org
   :config
@@ -3104,27 +3142,30 @@ as its link target.
 This function replaces the default naming scheme with a call to
 ~imalison:generate-name~, and uses a slightly different uniquify approach.
 #+BEGIN_SRC emacs-lisp
-(defun org-export-get-reference (datum info)
-  "Return a unique reference for DATUM, as a string.
+(use-package ox
+  :ensure nil
+  :config
+  (defun org-export-get-reference (datum info)
+    "Return a unique reference for DATUM, as a string.
 DATUM is either an element or an object.  INFO is the current
 export state, as a plist.  Returned reference consists of
 alphanumeric characters only."
-  (let ((type (org-element-type datum))
-        (cache (or (plist-get info :internal-references)
-                   (let ((h (make-hash-table :test #'eq)))
-                     (plist-put info :internal-references h)
-                     h)))
-        (reverse-cache (or (plist-get info :taken-internal-references)
-                           (let ((h (make-hash-table :test 'equal)))
-                             (plist-put info :taken-internal-references h)
-                             h))))
-    (or (gethash datum cache)
-        (let* ((name (imalison:generate-name datum cache))
-               (number (+ 1 (gethash name reverse-cache -1)))
-               (new-name (format "%s%s" name (if (< 0 number) number ""))))
-          (puthash name number reverse-cache)
-          (puthash datum new-name cache)
-          new-name))))
+    (let ((type (org-element-type datum))
+          (cache (or (plist-get info :internal-references)
+                     (let ((h (make-hash-table :test #'eq)))
+                       (plist-put info :internal-references h)
+                       h)))
+          (reverse-cache (or (plist-get info :taken-internal-references)
+                             (let ((h (make-hash-table :test 'equal)))
+                               (plist-put info :taken-internal-references h)
+                               h))))
+      (or (gethash datum cache)
+          (let* ((name (imalison:generate-name datum cache))
+                 (number (+ 1 (gethash name reverse-cache -1)))
+                 (new-name (format "%s%s" name (if (< 0 number) number ""))))
+            (puthash name number reverse-cache)
+            (puthash datum new-name cache)
+            new-name)))))
 #+END_SRC
 **** org-projectile
  #+BEGIN_SRC emacs-lisp

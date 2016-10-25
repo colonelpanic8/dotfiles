@@ -1,15 +1,15 @@
 # -*- mode: sh -*-
 EMACS_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )/.." && pwd )"
 TOP_LEVEL="$(git rev-parse --show-toplevel)"
-README="$EMACS_DIR/README.org"
-REPOSITORY_NAME="$(realpath --relative-to="$TOP_LEVEL" "$README")"
+TARGET="$EMACS_DIR/README.org"
+REPOSITORY_NAME="$(realpath --relative-to="$TOP_LEVEL" "$TARGET")"
 
 readme_was_updated() {
 	git diff HEAD HEAD~1 --name-only | grep --quiet "$REPOSITORY_NAME"
 }
 
 update_index () {
-	emacsclient -e "(with-current-buffer (find-file-noselect \"$README\")
+	emacsclient -e "(with-current-buffer (find-file-noselect \"$TARGET\")
 			   		    (org-html-export-to-html))"
 	cp -f "$EMACS_DIR/README.html" "$TOP_LEVEL/index.html"
 }

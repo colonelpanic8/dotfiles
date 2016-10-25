@@ -203,3 +203,5 @@ function swap_mirror_swap {
 function brew_relink {
     brew unlink "$1" && brew link "$1"
 }
+
+export PKG_CONFIG_PATH=/usr/local/lib/pkgconfig:
