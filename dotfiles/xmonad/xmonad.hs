@@ -130,7 +130,7 @@ addKeys conf@XConfig {modMask = modm} =
     , ((mod3Mask .|. shiftMask, xK_e), shiftToEmptyAndView)
     , ((mod3Mask, xK_v), spawn "copyq_rofi.sh")
     , ((mod3Mask, xK_p), spawn "system_password.sh")
-    , ((mod3Mask, xK_s), spawn "screenshot.sh")
+    , ((mod3Mask, xK_h), spawn "screenshot.sh")
     , ((mod3Mask, xK_c), spawn "shell_command.sh")
 
     -- playerctl
