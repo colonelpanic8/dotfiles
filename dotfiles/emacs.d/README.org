@@ -1409,40 +1409,50 @@ https://github.com/alpaker/Fill-Column-Indicator/issues/21 for more details
          ("C-c 6" . imalison:compile/body))
   :config
   (progn
-    (defhydra imalison:hydra-font-resize
-      nil
-      "Resize Font"
-      ("-" imalison:font-size-decr "Decrease")
-      ("d" imalison:font-size-decr "Decrease")
-      ("=" imalison:font-size-incr "Increase")
-      ("+" imalison:font-size-incr "Increase")
-      ("i" imalison:font-size-incr "Increase")
-      ("h" imalison:set-huge-font-size "Huge")
-      ("f" set-frame-font "Set Frame Font")
-      ("0" imalison:font-size-reset "Reset to default size"))
+#+END_SRC
+*** Font Size
+<<fontsizehydra>>
+ #+BEGIN_SRC emacs-lisp
+(defhydra imalison:hydra-font-resize
+  nil
+  "Resize Font"
+  ("-" imalison:font-size-decr "Decrease")
+  ("d" imalison:font-size-decr "Decrease")
+  ("=" imalison:font-size-incr "Increase")
+  ("+" imalison:font-size-incr "Increase")
+  ("i" imalison:font-size-incr "Increase")
+  ("h" imalison:set-huge-font-size "Huge")
+  ("f" set-frame-font "Set Frame Font")
+  ("0" imalison:font-size-reset "Reset to default size"))
+#+END_SRC
+*** Yanking
+#+BEGIN_SRC emacs-lisp
+(defhydra imalison:hydra-yank
+  nil
+  "Yank text"
+  ("p" imalison:copy-buffer-file-path "Projectile path")
+  ("f" imalison:copy-buffer-file-path-full "Full path")
+  ("n" imalison:copy-buffer-file-name "File name")
+  ("b" imalison:copy-current-git-branch "Git Branch"))
+#+END_SRC
+*** Compile
+#+BEGIN_SRC emacs-lisp
+(defun imalison:make-test ()
+  (interactive)
+  (let ((default-directory (projectile-project-root)))
+    (imalison:named-compile "make test")))
 
-    (defhydra imalison:hydra-yank
-      nil
-      "Yank text"
-      ("p" imalison:copy-buffer-file-path "Projectile path")
-      ("f" imalison:copy-buffer-file-path-full "Full path")
-      ("n" imalison:copy-buffer-file-name "File name")
-      ("b" imalison:copy-current-git-branch "Git Branch"))
+(defun imalison:glide-up ()
+  (interactive)
+  (imalison:named-compile "glide up"))
 
-    (defun imalison:make-test ()
-      (interactive)
-      (let ((default-directory (projectile-project-root)))
-        (imalison:named-compile "make test")))
-
-    (defun imalison:glide-up ()
-      (interactive)
-      (imalison:named-compile "glide up"))
-
-    (defhydra imalison:compile nil "Compile"
-      ("s" imalison:projectile-helm-command-from-zsh "Select a command from shell history")
-      ("c" imalison:named-compile "Enter Custom Command")
-      ("t" imalison:make-test "Test")
-      ("u" imalison:glide-up "Update Dependencies"))))
+(defhydra imalison:compile nil "Compile"
+  ("s" imalison:projectile-helm-command-from-zsh "Select a command from shell history")
+  ("c" imalison:named-compile "Enter Custom Command")
+  ("t" imalison:make-test "Test")
+  ("u" imalison:glide-up "Update Dependencies"))
+;; The following parens close the use-package/progn created several blocks above
+))
 #+END_SRC
 ** kill-emacs
 This ensures that C-x C-c will always kill emacs, even if we are running in server mode.
