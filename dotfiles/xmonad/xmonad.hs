@@ -129,9 +129,11 @@ addKeys conf@XConfig {modMask = modm} =
     -- App shortcuts
     , ((modalt, xK_s), raiseNextMaybe (spawn "spotify") (className =? "Spotify"))
     , ((modalt, xK_e), raiseNextMaybe (spawn "emacsclient -c") (className =? "Emacs"))
-    , ((modalt, xK_h), raiseNextMaybe (spawn "google-chrome") (className =? "google-chrome"))
+    , ((modalt, xK_c), raiseNextMaybe (spawn "google-chrome")
+                         (className =? "google-chrome" <&&>
+                                       fmap (not . isInfixOf "Hangouts") title))
     , ((modalt, xK_h), raiseNextMaybe (spawn "cool")
-                         (className =? "google-chrome"))
+                         (className =? "google-chrome" <&&> fmap (isInfixOf "Hangouts") title))
 
     -- Hyper bindings
     , ((mod3Mask, xK_1), setWorkspaceNames)
