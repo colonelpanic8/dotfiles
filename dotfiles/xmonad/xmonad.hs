@@ -15,6 +15,7 @@ import XMonad hiding ( (|||) )
 import XMonad.Actions.CycleWS
 import qualified XMonad.Actions.DynamicWorkspaceOrder as DWO
 import XMonad.Actions.WindowBringer
+import XMonad.Actions.WindowGo
 import XMonad.Actions.WorkspaceNames
 import XMonad.Config ()
 import XMonad.Hooks.EwmhDesktops
@@ -125,6 +126,13 @@ addKeys conf@XConfig {modMask = modm} =
     , ((modm .|. shiftMask, xK_m), sendMessage RestoreNextMinimizedWin)
     , ((modm, xK_backslash), toggleWS)
 
+    -- App shortcuts
+    , ((modalt, xK_s), raiseNextMaybe (spawn "spotify") (className =? "Spotify"))
+    , ((modalt, xK_e), raiseNextMaybe (spawn "emacsclient -c") (className =? "Emacs"))
+    , ((modalt, xK_h), raiseNextMaybe (spawn "google-chrome") (className =? "google-chrome"))
+    , ((modalt, xK_h), raiseNextMaybe (spawn "cool")
+                         (className =? "google-chrome"))
+
     -- Hyper bindings
     , ((mod3Mask, xK_1), setWorkspaceNames)
     , ((mod3Mask, xK_e), moveTo Next EmptyWS )
@@ -158,6 +166,8 @@ addKeys conf@XConfig {modMask = modm} =
              [ (W.greedyView, 0)
              , (W.shift, shiftMask)
              , (shiftThenView, controlMask)]]
+    where
+      modalt = modm .|. mod1Mask
 
 -- Local Variables:
 -- flycheck-ghc-args: ("-Wno-missing-signatures")
