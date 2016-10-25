@@ -34,6 +34,7 @@ this.
 For some reason, org-mode uses all of your currently active fontification when exporting EXCEPT for background color. [[Set Background Color of Source Blocks for Export][This]] modification fixes this.
 *** [[Functions][My functions section]]
 ...has a bunch of generally useful functions:
++ [[Font Size][Font Size]] functions and an [[fontsizehydra][Awesome Hydra]] for them
 + [[downloadfile][Download a file into a buffer]] (curl straight into a file)
 + [[editscript][Edit a script on $PATH]]
 + [[namedbuild][Named Build of Builder Macros]] and [[composemacros][A Compose Supporting Macros]]
