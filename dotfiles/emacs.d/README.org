@@ -3111,27 +3111,30 @@ as its link target.
 This function replaces the default naming scheme with a call to
 ~imalison:generate-name~, and uses a slightly different uniquify approach.
 #+BEGIN_SRC emacs-lisp
-(defun org-export-get-reference (datum info)
-  "Return a unique reference for DATUM, as a string.
+(use-package org-export
+  :ensure nil
+  :config
+  (defun org-export-get-reference (datum info)
+    "Return a unique reference for DATUM, as a string.
 DATUM is either an element or an object.  INFO is the current
 export state, as a plist.  Returned reference consists of
 alphanumeric characters only."
-  (let ((type (org-element-type datum))
-        (cache (or (plist-get info :internal-references)
-                   (let ((h (make-hash-table :test #'eq)))
-                     (plist-put info :internal-references h)
-                     h)))
-        (reverse-cache (or (plist-get info :taken-internal-references)
-                           (let ((h (make-hash-table :test 'equal)))
-                             (plist-put info :taken-internal-references h)
-                             h))))
-    (or (gethash datum cache)
-        (let* ((name (imalison:generate-name datum cache))
-               (number (+ 1 (gethash name reverse-cache -1)))
-               (new-name (format "%s%s" name (if (< 0 number) number ""))))
-          (puthash name number reverse-cache)
-          (puthash datum new-name cache)
-          new-name))))
+    (let ((type (org-element-type datum))
+          (cache (or (plist-get info :internal-references)
+                     (let ((h (make-hash-table :test #'eq)))
+                       (plist-put info :internal-references h)
+                       h)))
+          (reverse-cache (or (plist-get info :taken-internal-references)
+                             (let ((h (make-hash-table :test 'equal)))
+                               (plist-put info :taken-internal-references h)
+                               h))))
+      (or (gethash datum cache)
+          (let* ((name (imalison:generate-name datum cache))
+                 (number (+ 1 (gethash name reverse-cache -1)))
+                 (new-name (format "%s%s" name (if (< 0 number) number ""))))
+            (puthash name number reverse-cache)
+            (puthash datum new-name cache)
+            new-name)))))
 #+END_SRC
 **** org-projectile
  #+BEGIN_SRC emacs-lisp
