@@ -3,7 +3,7 @@
 "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
-<!-- 2016-10-25 Tue 13:18 -->
+<!-- 2016-10-25 Tue 13:21 -->
 <meta  http-equiv="Content-Type" content="text/html;charset=utf-8" />
 <meta  name="viewport" content="width=device-width, initial-scale=1" />
 <title></title>
@@ -110,6 +110,8 @@
  pre.src {background-color: #263238; color: #ffffff;}</style>
 <style type="text/css">
  pre.src {background-color: #263238; color: #ffffff;}</style>
+<style type="text/css">
+ pre.src {background-color: #263238; color: #ffffff;}</style>
 <script type="text/javascript">
 /*
 @licstart  The following is the entire license notice for the
@@ -166,22 +168,18 @@ for the JavaScript code in this tag.
 <li><a href="#about">1. About</a></li>
 <li><a href="#highlights">2. Highlights</a>
 <ul>
-<li>
+<li><a href="#howigeneratehttpivanmalisongithubiodotfiles">2.1. How I generate </a>
 <ul>
-<li><a href="#howigeneratehttpivanmalisongithubiodotfiles">2.0.1. How I generate </a>
-<ul>
-<li><a href="#githooks">2.0.1.1. Git Hooks</a></li>
-<li><a href="#httpsgithubcomfniessenorghtmlthemesreadtheorg">2.0.1.2. Read The Org</a></li>
-<li><a href="#headinglinks">2.0.1.3. Heading Links</a></li>
-<li><a href="#setbackgroundcolorsourceblocks">2.0.1.4. Set Background Color Source Blocks</a></li>
+<li><a href="#githooks">2.1.1. Git Hooks</a></li>
+<li><a href="#httpsgithubcomfniessenorghtmlthemesreadtheorg">2.1.2. Read The Org</a></li>
+<li><a href="#headinglinks">2.1.3. Heading Links</a></li>
+<li><a href="#setbackgroundcolorsourceblocks">2.1.4. Set Background Color Source Blocks</a></li>
 </ul>
 </li>
-<li><a href="#functionsmyfunctionssection">2.0.2. My functions section</a></li>
-<li><a href="#configurationofmyownpackages">2.0.3. Configuration of My Own Packages</a></li>
-<li><a href="#programminglanguagesprogramminglanguageconfigurations">2.0.4. Programming Language Configurations</a></li>
-<li><a href="#orgorgmode">2.0.5. org-mode</a></li>
-</ul>
-</li>
+<li><a href="#functionsmyfunctionssection">2.2. My functions section</a></li>
+<li><a href="#configurationofmyownpackages">2.3. Configuration of My Own Packages</a></li>
+<li><a href="#programminglanguagesprogramminglanguageconfigurations">2.4. Programming Language Configurations</a></li>
+<li><a href="#orgorgmode">2.5. org-mode</a></li>
 </ul>
 </li>
 <li><a href="#htmlheaders">3. HTML Headers</a></li>
@@ -659,12 +657,12 @@ These sections are the ones that have the most potential to be interesting to
 others:
 </p>
 </div>
-<div id="outline-container-howigeneratehttpivanmalisongithubiodotfiles" class="outline-4">
-<h4 id="howigeneratehttpivanmalisongithubiodotfiles"><span class="section-number-4">2.0.1</span> How I generate <a href="http://ivanmalison.github.io/dotfiles/">http://ivanmalison.github.io/dotfiles/</a></h4>
-<div class="outline-text-4" id="text-2-0-1">
-</div><div id="outline-container-githooks" class="outline-5">
-<h5 id="githooks"><span class="section-number-5">2.0.1.1</span> Git Hooks</h5>
-<div class="outline-text-5" id="text-2-0-1-1">
+<div id="outline-container-howigeneratehttpivanmalisongithubiodotfiles" class="outline-3">
+<h3 id="howigeneratehttpivanmalisongithubiodotfiles"><span class="section-number-3">2.1</span> How I generate <a href="http://ivanmalison.github.io/dotfiles/">http://ivanmalison.github.io/dotfiles/</a></h3>
+<div class="outline-text-3" id="text-2-1">
+</div><div id="outline-container-githooks" class="outline-4">
+<h4 id="githooks"><span class="section-number-4">2.1.1</span> Git Hooks</h4>
+<div class="outline-text-4" id="text-2-1-1">
 <p>
 I wrote a <a href="https://github.com/IvanMalison/dotfiles/tree/master/dotfiles/emacs.d/bin">githook and an installer script</a> that automatically update index.html
 at the root of the repository by running <code>org-html-export-to-html</code> on my
@@ -674,17 +672,17 @@ should be relatively easy to change.
 </p>
 </div>
 </div>
-<div id="outline-container-httpsgithubcomfniessenorghtmlthemesreadtheorg" class="outline-5">
-<h5 id="httpsgithubcomfniessenorghtmlthemesreadtheorg"><span class="section-number-5">2.0.1.2</span> <a href="https://github.com/fniessen/org-html-themes">Read The Org</a></h5>
-<div class="outline-text-5" id="text-2-0-1-2">
+<div id="outline-container-httpsgithubcomfniessenorghtmlthemesreadtheorg" class="outline-4">
+<h4 id="httpsgithubcomfniessenorghtmlthemesreadtheorg"><span class="section-number-4">2.1.2</span> <a href="https://github.com/fniessen/org-html-themes">Read The Org</a></h4>
+<div class="outline-text-4" id="text-2-1-2">
 <p>
 I use <a href="https://github.com/fniessen">fniessen</a>'s  ReadTheOrg theme which can be found at <a href="https://github.com/fniessen/org-html-themes">https://github.com/fniessen/org-html-themes</a>.
 </p>
 </div>
 </div>
-<div id="outline-container-headinglinks" class="outline-5">
-<h5 id="headinglinks"><span class="section-number-5">2.0.1.3</span> Heading Links</h5>
-<div class="outline-text-5" id="text-2-0-1-3">
+<div id="outline-container-headinglinks" class="outline-4">
+<h4 id="headinglinks"><span class="section-number-4">2.1.3</span> Heading Links</h4>
+<div class="outline-text-4" id="text-2-1-3">
 <p>
 To make it so that internal heading links have names that correspond to the
 heading text, and don't change when new headings are added to the document, I
@@ -707,18 +705,18 @@ that is something you are interested in.
 </p>
 </div>
 </div>
-<div id="outline-container-setbackgroundcolorsourceblocks" class="outline-5">
-<h5 id="setbackgroundcolorsourceblocks"><span class="section-number-5">2.0.1.4</span> Set Background Color Source Blocks</h5>
-<div class="outline-text-5" id="text-2-0-1-4">
+<div id="outline-container-setbackgroundcolorsourceblocks" class="outline-4">
+<h4 id="setbackgroundcolorsourceblocks"><span class="section-number-4">2.1.4</span> Set Background Color Source Blocks</h4>
+<div class="outline-text-4" id="text-2-1-4">
 <p>
 For some reason, org-mode uses all of your currently active fontification when exporting EXCEPT for background color. <a href="#setbackgroundcolorofsourceblocksforexport">This</a> modification fixes this.
 </p>
 </div>
 </div>
 </div>
-<div id="outline-container-functionsmyfunctionssection" class="outline-4">
-<h4 id="functionsmyfunctionssection"><span class="section-number-4">2.0.2</span> <a href="#functions">My functions section</a></h4>
-<div class="outline-text-4" id="text-2-0-2">
+<div id="outline-container-functionsmyfunctionssection" class="outline-3">
+<h3 id="functionsmyfunctionssection"><span class="section-number-3">2.2</span> <a href="#functions">My functions section</a></h3>
+<div class="outline-text-3" id="text-2-2">
 <p>
 &#x2026;has a bunch of generally useful functions:
 </p>
@@ -732,9 +730,9 @@ For some reason, org-mode uses all of your currently active fontification when e
 </ul>
 </div>
 </div>
-<div id="outline-container-configurationofmyownpackages" class="outline-4">
-<h4 id="configurationofmyownpackages"><span class="section-number-4">2.0.3</span> Configuration of My Own Packages</h4>
-<div class="outline-text-4" id="text-2-0-3">
+<div id="outline-container-configurationofmyownpackages" class="outline-3">
+<h3 id="configurationofmyownpackages"><span class="section-number-3">2.3</span> Configuration of My Own Packages</h3>
+<div class="outline-text-3" id="text-2-3">
 <ul class="org-ul">
 <li><a href="#termprojectile">term-projectile</a> and <a href="#termmanager">term-manager</a></li>
 <li><a href="#orgprojectile">org-projectile</a></li>
@@ -744,17 +742,17 @@ For some reason, org-mode uses all of your currently active fontification when e
 </ul>
 </div>
 </div>
-<div id="outline-container-programminglanguagesprogramminglanguageconfigurations" class="outline-4">
-<h4 id="programminglanguagesprogramminglanguageconfigurations"><span class="section-number-4">2.0.4</span> <a href="#orgtarget6">Programming Language Configurations</a></h4>
-<div class="outline-text-4" id="text-2-0-4">
+<div id="outline-container-programminglanguagesprogramminglanguageconfigurations" class="outline-3">
+<h3 id="programminglanguagesprogramminglanguageconfigurations"><span class="section-number-3">2.4</span> <a href="#orgtarget6">Programming Language Configurations</a></h3>
+<div class="outline-text-3" id="text-2-4">
 <p>
 My programming language major mode configurations can all be found <a href="#orgtarget6">here</a>.
 </p>
 </div>
 </div>
-<div id="outline-container-orgorgmode" class="outline-4">
-<h4 id="orgorgmode"><span class="section-number-4">2.0.5</span> <a href="#org">org-mode</a></h4>
-<div class="outline-text-4" id="text-2-0-5">
+<div id="outline-container-orgorgmode" class="outline-3">
+<h3 id="orgorgmode"><span class="section-number-3">2.5</span> <a href="#org">org-mode</a></h3>
+<div class="outline-text-3" id="text-2-5">
 <p>
 My <a href="#org">org-mode</a> configuration is pretty comprehensive, but not super well commented.
 </p>
@@ -7113,7 +7111,7 @@ load-theme hook (See the heading below).
 </div>
 <div id="postamble" class="status">
 <p class="author">Author: Ivan Malison</p>
-<p class="date">Created: 2016-10-25 Tue 13:18</p>
+<p class="date">Created: 2016-10-25 Tue 13:21</p>
 <p class="validation"><a href="http://validator.w3.org/check?uri=referer">Validate</a></p>
 </div>
 </body>
