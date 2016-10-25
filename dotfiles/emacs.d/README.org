@@ -30,6 +30,7 @@ document) takes you to http://ivanmalison.github.io/dotfiles/#usemyowndefaultnam
 
 In case you haven't noticed, that is where you should go grab the code that does
 this.
+
 I'm considering turning this snippet in to a package, so please let me know if
 that is something you are interested in.
 **** Set Background Color Source Blocks
@@ -807,7 +808,7 @@ A macro for composing functions together to build an interactive command to copy
 #+END_SRC
 ** Edit a script on PATH
 <<editscript>> Note that you'll need to make sure that emacs properly inherits
-the path variable for this work. Check out my [[exec-path-from-shell]] config for
+the path variable for this work. Check out my [[exec-path-from-shell][exec-path-from-shell]] config for
 details.
 #+BEGIN_SRC emacs-lisp
 (defun imalison:get-executables-at-path (filepath)
