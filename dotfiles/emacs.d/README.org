@@ -8,7 +8,7 @@ like the incredibly well commented literate configurations of [[http://pages.sac
 [[http://doc.rix.si/cce/cce.html][Ryan Rix]], but I haven't quite gotten around to polishing it to the point that
 those two have. Still, there are definitely a few sections of which I am quite
 proud, and that others may find to be useful.
-** Highlights
+* Highlights
 These sections are the ones that have the most potential to be interesting to
 others:
 *** How I generate http://ivanmalison.github.io/dotfiles/
