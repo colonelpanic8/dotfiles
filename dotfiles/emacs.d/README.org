@@ -11,6 +11,27 @@ proud, and that others may find to be useful.
 ** Highlights
 These sections are the ones that have the most potential to be interesting to
 others:
+*** How I generate http://ivanmalison.github.io/dotfiles/
+**** Git Hooks
+I wrote a [[https://github.com/IvanMalison/dotfiles/tree/master/dotfiles/emacs.d/bin][githook and an installer script]] that automatically update index.html
+at the root of the repository by running ~org-html-export-to-html~ on my
+README.org (essentially this document) . These should work no matter where they
+are placed in a repository. The org-mode file that they target is set [[https://github.com/IvanMalison/dotfiles/blob/16a4f6c3aadef39a45d30c15e8637b40858721ea/dotfiles/emacs.d/bin/util.sh#L4][here]] and
+should be relatively easy to change.
+**** [[https://github.com/fniessen/org-html-themes][Read The Org]]
+I use [[https://github.com/fniessen][fniessen]]'s  ReadTheOrg theme which can be found at https://github.com/fniessen/org-html-themes.
+**** Heading Links
+To make it so that internal heading links have names that correspond to the
+heading text, and don't change when new headings are added to the document, I
+wrote a custom version of ~org-export-get-reference~.
+
+See how [[Use my own default naming scheme for org-headings][this link]] (which is just a normal internal link in the original
+document) takes you to http://ivanmalison.github.io/dotfiles/#usemyowndefaultnamingschemefororgheadings.
+
+In case you haven't noticed, that is where you should go grab the code that does
+this.
+**** Set Background Color Source Blocks
+For some reason, org-mode uses all of your currently active fontification when exporting EXCEPT for background color. [[setbackgroundcolorofsourceblocksforexport][This]] modification fixes this.
 *** [[Functions][My functions section]]
 ...has a bunch of generally useful functions:
 + [[downloadfile][Download a file into a buffer]] (curl straight into a file)
@@ -3041,7 +3062,8 @@ Intero seems to be causing hangs, so it has been disabled
     ;; blame.
     ))
 #+END_SRC
-**** Correct BG color for org-export
+**** Set Background Color of Source Blocks for Export
+This was taken from [[http://emacs.stackexchange.com/questions/3374/set-the-background-of-org-exported-code-blocks-according-to-theme][here]].
 #+BEGIN_SRC emacs-lisp
 (use-package org
   :config
