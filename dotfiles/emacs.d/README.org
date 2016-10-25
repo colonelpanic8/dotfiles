@@ -3121,7 +3121,7 @@ as its link target.
 This function replaces the default naming scheme with a call to
 ~imalison:generate-name~, and uses a slightly different uniquify approach.
 #+BEGIN_SRC emacs-lisp
-(use-package org-export
+(use-package ox
   :ensure nil
   :config
   (defun org-export-get-reference (datum info)
