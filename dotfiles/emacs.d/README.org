@@ -4199,12 +4199,6 @@ I've disabled perspective because I just don't use it much.
 #+BEGIN_SRC emacs-lisp
 (use-package hackernews :commands hackernews)
 #+END_SRC
-**** structured-haskell-mode
-This needs a hackage install and I've never used it before. Just putting this here for later.
-#+BEGIN_SRC emacs-lisp
-(use-package shm
-  :disabled t)
-#+END_SRC
 * Appearance
 ** Basic Config
 #+BEGIN_SRC emacs-lisp
