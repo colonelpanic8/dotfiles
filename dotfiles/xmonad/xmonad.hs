@@ -40,14 +40,49 @@ main = xmonad $ pagerHints def
        , terminal = "urxvt"
        , manageHook = manageDocks <+> myManageHook <+> manageHook def
        , layoutHook = myLayoutHook
-       , logHook = myLogHook +++ ewmhWorkspaceNamesLogHook
+       , logHook = fadeInactiveLogHook 0.9 +++ ewmhWorkspaceNamesLogHook
        , handleEventHook = docksEventHook <+> fullscreenEventHook +++ ewmhDesktopsEventHook
        , startupHook = myStartup +++ ewmhWorkspaceNamesLogHook
        , keys = customKeys (const []) addKeys
       } where
     x +++ y = mappend y x
 
-getClass :: Window -> X String
+isHangoutsTitle = isPrefixOf "Google Hangouts"
+
+chromeSelector = className =? "google-chrome" <&&> fmap (not . isHangoutsTitle) title
+spotifySelector = className =? "Spotify"
+emacsSelector = className =? "Emacs"
+hangoutsSelector = className =? "google-chrome" <&&> fmap (isHangoutsTitle) title
+
+-- Startup
+
+myStartup = spawn "systemctl --user start wm.target"
+
+-- Manage
+
+myManageHook = composeAll . concat $
+               [ [ emacsSelector --> doShift "0" ]
+               , [ chromeSelector --> doShift "0" ]
+               , [ hangoutsSelector --> doShift "1"]
+               , [ spotifySelector --> doShift "2"]]
+
+
+
+-- Layout
+
+layouts = multiCol [1, 1] 2 0.01 (-0.5) ||| Full ||| Tall 1 (3/100) (1/2) ||| Tall 1 (3/100) (3/4)
+
+myLayoutHook = avoidStruts . smartSpacing 10 . noBorders . minimize .
+               boringWindows . mkToggle (MIRROR ?? EOT) . workspaceNamesHook
+                                 $ layouts
+
+-- WindowBringer
+
+myWindowBringerConfig = WindowBringerConfig { menuCommand = "rofi"
+                                            , menuArgs = ["-dmenu", "-i"]
+                                            , windowTitler = myDecorateName
+                                            }
+
 getClass w = do
   classHint <- withDisplay $ \d -> io $ getClassHint d w
   return $ resClass classHint
@@ -58,27 +93,12 @@ myDecorateName ws w = do
   workspaceToName <- getWorkspaceNames
   return $ printf "%-20s%-40s %+30s" classTitle (take 40 name) "in " ++ workspaceToName (W.tag ws)
 
-myWindowBringerConfig = WindowBringerConfig { menuCommand = "rofi"
-                                            , menuArgs = ["-dmenu", "-i"]
-                                            , windowTitler = myDecorateName
-                                            }
+-- Dynamic Workspace Renaming
 
-getClassRemap :: IO (M.Map String String)
 getClassRemap = do
   home <- getHomeDirectory
   text <- B.readFile (home </> ".lib/class_remap.json")
   return $ fromMaybe M.empty (decode text)
-
-myLogHook = fadeInactiveLogHook 0.9
-
-ewmhWorkspaceNamesLogHook = do
-  WorkspaceNames namesMap <- XS.get
-  ewmhDesktopsLogHookCustom id (getWorkspaceNameFromTag namesMap)
-
-getWorkspaceNameFromTag namesMap tag =
-    case M.lookup tag namesMap of
-      Nothing -> tag
-      Just label -> printf "%s: %s " tag label
 
 setWorkspaceNameToFocusedWindow workspace  = do
   namedWindows <- mapM getClass $ W.integrate' $ W.stack workspace
@@ -103,15 +123,18 @@ instance LayoutModifier WorkspaceNamesHook Window where
 
 workspaceNamesHook = ModifiedLayout WorkspaceNamesHook
 
+-- EWMH support for workspace names
+
+ewmhWorkspaceNamesLogHook = do
+  WorkspaceNames namesMap <- XS.get
+  ewmhDesktopsLogHookCustom id (getWorkspaceNameFromTag namesMap)
+
+getWorkspaceNameFromTag namesMap tag =
+    case M.lookup tag namesMap of
+      Nothing -> tag
+      Just label -> printf "%s: %s " tag label
+
 shiftThenView i = W.greedyView i . W.shift i
-
-layouts = multiCol [1, 1] 2 0.01 (-0.5) ||| Full ||| Tall 1 (3/100) (1/2) ||| Tall 1 (3/100) (3/4)
-
-myLayoutHook = avoidStruts . smartSpacing 10 . noBorders . minimize .
-               boringWindows . mkToggle (MIRROR ?? EOT) . workspaceNamesHook
-                                 $ layouts
-
-myStartup = spawn "systemctl --user start wm.target"
 
 -- Use greedyView to switch to the correct workspace, and then focus on the
 -- appropriate window within that workspace.
@@ -120,19 +143,6 @@ greedyFocusWindow w ws = W.focusWindow w $ W.greedyView
 
 shiftToEmptyAndView = doTo Next EmptyWS DWO.getSortByOrder
                       (windows . shiftThenView)
-
-isHangoutsTitle = isPrefixOf "Google Hangouts"
-
-chromeSelector = className =? "google-chrome" <&&> fmap (not . isHangoutsTitle) title
-spotifySelector = className =? "Spotify"
-emacsSelector = className =? "Emacs"
-hangoutsSelector = className =? "google-chrome" <&&> fmap (isHangoutsTitle) title
-
-myManageHook = composeAll . concat $
-               [ [ emacsSelector --> doShift "0" ]
-               , [ chromeSelector --> doShift "0" ]
-               , [ hangoutsSelector --> doShift "1"]
-               , [ spotifySelector --> doShift "2"]]
 
 addKeys conf@XConfig {modMask = modm} =
     [ ((modm, xK_p), spawn "rofi -show drun")
