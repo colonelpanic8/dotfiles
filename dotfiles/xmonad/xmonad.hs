@@ -113,7 +113,7 @@ workspaceNamesHook = ModifiedLayout WorkspaceNamesHook
 
 shiftThenView i = W.greedyView i . W.shift i
 
-layouts = multiCol [1, 1] 2 0.01 (-0.5) ||| Full ||| Tall 1 (3/100) (1/2)
+layouts = multiCol [1, 1] 2 0.01 (-0.5) ||| Full ||| Tall 1 (3/100) (1/2) ||| Tall 1 (3/100) (3/4)
 
 myLayoutHook = avoidStruts . smartSpacing 10 . noBorders . minimize .
                boringWindows . mkToggle (MIRROR ?? EOT) . workspaceNamesHook
