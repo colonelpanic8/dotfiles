@@ -63,14 +63,31 @@ main = xmonad $ ewmh $ pagerHints def
        , workspaces = ["Main", "Chat", "Music", "Sports", "Podcast", "Minimize", "7", "8", "9"]
        , manageHook = manageDocks <+> manageHook def
        , layoutHook = myLayoutHook
-       , logHook = myLogHook
-       , handleEventHook = docksEventHook <+> fullscreenEventHook
-       , startupHook = myStartup
+       , logHook = myLogHook +++ ewmhWorkspaceNamesLogHook
+       , handleEventHook = docksEventHook <+> fullscreenEventHook +++ ewmhWorkspaceNamesEventHook
+       , startupHook = myStartup +++ ewmhWorkspaceNamesLogHook
        , keys = customKeys (const []) addKeys
-       }
+      } where
+    x +++ y = mappend y x
 
 myLogHook = fadeInactiveLogHook 0.9
 
+enableCustomWorkspaceNames = True
+
+ewmhWorkspaceNamesLogHook = do
+  WorkspaceNames namesMap <- XS.get
+  ewmhDesktopsLogHookCustom $ map (addWorkspaceNamesToTag namesMap)
+
+ewmhWorkspaceNamesEventHook e = do
+  WorkspaceNames namesMap <- XS.get
+  ewmhDesktopsEventHookCustom (map $ addWorkspaceNamesToTag namesMap) e
+
+addWorkspaceNamesToTag namesMap ws@W.Workspace { W.tag = currentTag } =
+    if enableCustomWorkspaceNames then
+        let currentName = M.findWithDefault "" (W.tag ws) namesMap in
+        ws { W.tag = printf "%s: %s" currentTag currentName }
+    else
+        ws
 setWorkspaceNameToFocusedWindow workspace  = do
   namedWindows <- mapM getClass $ W.integrate' $ W.stack workspace
   renamedWindows <- remapNames namedWindows
