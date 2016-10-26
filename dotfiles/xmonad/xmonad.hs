@@ -61,7 +61,7 @@ main = xmonad $ pagerHints def
        { modMask = mod4Mask
        , terminal = "urxvt"
        , workspaces = ["Main", "Chat", "Music", "Sports", "Podcast", "Minimize", "7", "8", "9"]
-       , manageHook = manageDocks <+> manageHook def
+       , manageHook = manageDocks <+> myManageHook <+> manageHook def
        , layoutHook = myLayoutHook
        , logHook = myLogHook +++ ewmhWorkspaceNamesLogHook
        , handleEventHook = docksEventHook <+> fullscreenEventHook +++ ewmhWorkspaceNamesEventHook
@@ -129,6 +129,19 @@ greedyFocusWindow w ws = W.focusWindow w $ W.greedyView
 shiftToEmptyAndView = doTo Next EmptyWS DWO.getSortByOrder
                       (windows . shiftThenView)
 
+isHangoutsTitle = isPrefixOf "Google Hangouts"
+
+chromeSelector = className =? "google-chrome" <&&> fmap (not . isHangoutsTitle) title
+spotifySelector = className =? "Spotify"
+emacsSelector = className =? "Emacs"
+hangoutsSelector = className =? "google-chrome" <&&> fmap (isHangoutsTitle) title
+
+myManageHook = composeAll . concat $
+               [ [ emacsSelector --> doShift "0" ]
+               , [ chromeSelector --> doShift "0" ]
+               , [ hangoutsSelector --> doShift "1"]
+               , [ spotifySelector --> doShift "2"]]
+
 addKeys conf@XConfig {modMask = modm} =
     [ ((modm, xK_p), spawn "rofi -show drun")
     , ((modm .|. shiftMask, xK_p), spawn "rofi -show run")
@@ -145,13 +158,10 @@ addKeys conf@XConfig {modMask = modm} =
     , ((modm, xK_backslash), toggleWS)
 
     -- App shortcuts
-    , ((modalt, xK_s), raiseNextMaybe (spawn "spotify") (className =? "Spotify"))
-    , ((modalt, xK_e), raiseNextMaybe (spawn "emacsclient -c") (className =? "Emacs"))
-    , ((modalt, xK_c), raiseNextMaybe (spawn "google-chrome")
-                         (className =? "google-chrome" <&&>
-                                       fmap (not . isInfixOf "Hangouts") title))
-    , ((modalt, xK_h), raiseNextMaybe (spawn "cool")
-                         (className =? "google-chrome" <&&> fmap (isInfixOf "Hangouts") title))
+    , ((modalt, xK_s), raiseNextMaybe (spawn "spotify") spotifySelector)
+    , ((modalt, xK_e), raiseNextMaybe (spawn "emacsclient -c") emacsSelector)
+    , ((modalt, xK_c), raiseNextMaybe (spawn "google-chrome") chromeSelector)
+    , ((modalt, xK_h), raiseNextMaybe (spawn "cool") hangoutsSelector)
 
     -- Hyper bindings
     , ((mod3Mask, xK_1), setWorkspaceNames)
