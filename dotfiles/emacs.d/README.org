@@ -4393,9 +4393,9 @@ load-theme hook (See the heading below).
   (interactive (list nil))
   (if (display-graphic-p)
       (progn
-        (condition-case _ignored
-            (set-face-attribute 'default nil :font "Source Code Pro")
-          ('error nil))
+        (condition-case error
+            (set-face-attribute 'default nil :font "source code pro")
+          ('error (message "Error: %s, when setting font")))
         (set-face-attribute 'default nil :weight 'semi-bold)
         (set-face-attribute
          'default nil :height imalison:default-font-size-pt))
