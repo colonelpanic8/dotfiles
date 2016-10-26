@@ -35,6 +35,18 @@ import XMonad.Util.CustomKeys
 import qualified XMonad.Util.ExtensibleState as XS
 import XMonad.Util.NamedWindows (getName)
 
+main = xmonad $ pagerHints def
+       { modMask = mod4Mask
+       , terminal = "urxvt"
+       , manageHook = manageDocks <+> myManageHook <+> manageHook def
+       , layoutHook = myLayoutHook
+       , logHook = myLogHook +++ ewmhWorkspaceNamesLogHook
+       , handleEventHook = docksEventHook <+> fullscreenEventHook +++ ewmhDesktopsEventHook
+       , startupHook = myStartup +++ ewmhWorkspaceNamesLogHook
+       , keys = customKeys (const []) addKeys
+      } where
+    x +++ y = mappend y x
+
 getClass :: Window -> X String
 getClass w = do
   classHint <- withDisplay $ \d -> io $ getClassHint d w
@@ -56,18 +68,6 @@ getClassRemap = do
   home <- getHomeDirectory
   text <- B.readFile (home </> ".lib/class_remap.json")
   return $ fromMaybe M.empty (decode text)
-
-main = xmonad $ pagerHints def
-       { modMask = mod4Mask
-       , terminal = "urxvt"
-       , manageHook = manageDocks <+> myManageHook <+> manageHook def
-       , layoutHook = myLayoutHook
-       , logHook = myLogHook +++ ewmhWorkspaceNamesLogHook
-       , handleEventHook = docksEventHook <+> fullscreenEventHook +++ ewmhDesktopsEventHook
-       , startupHook = myStartup +++ ewmhWorkspaceNamesLogHook
-       , keys = customKeys (const []) addKeys
-      } where
-    x +++ y = mappend y x
 
 myLogHook = fadeInactiveLogHook 0.9
 
