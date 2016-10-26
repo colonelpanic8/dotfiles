@@ -8,7 +8,7 @@ import Data.Maybe
 import Graphics.X11.ExtraTypes.XF86
 import System.Directory
 import System.FilePath.Posix
-import System.Taffybar.Hooks.PagerHints (pagerHints)
+import System.Taffybar.Hooks.PagerHints
 import Text.Printf
 
 import XMonad hiding ( (|||) )
@@ -35,13 +35,13 @@ import XMonad.Util.CustomKeys
 import qualified XMonad.Util.ExtensibleState as XS
 import XMonad.Util.NamedWindows (getName)
 
-main = xmonad $ pagerHints def
+main = xmonad $ def
        { modMask = mod4Mask
        , terminal = "urxvt"
        , manageHook = manageDocks <+> myManageHook <+> manageHook def
        , layoutHook = myLayoutHook
        , logHook = fadeInactiveLogHook 0.9 +++ ewmhWorkspaceNamesLogHook
-       , handleEventHook = docksEventHook <+> fullscreenEventHook +++ ewmhDesktopsEventHook
+       , handleEventHook = docksEventHook <+> fullscreenEventHook +++ ewmhDesktopsEventHook +++ pagerHintsEventHook
        , startupHook = myStartup +++ ewmhWorkspaceNamesLogHook
        , keys = customKeys (const []) addKeys
       } where
@@ -52,7 +52,7 @@ isHangoutsTitle = isPrefixOf "Google Hangouts"
 chromeSelector = className =? "google-chrome" <&&> fmap (not . isHangoutsTitle) title
 spotifySelector = className =? "Spotify"
 emacsSelector = className =? "Emacs"
-hangoutsSelector = className =? "google-chrome" <&&> fmap (isHangoutsTitle) title
+hangoutsSelector = className =? "google-chrome" <&&> fmap isHangoutsTitle title
 
 -- Startup
 
@@ -65,8 +65,6 @@ myManageHook = composeAll . concat $
                , [ chromeSelector --> doShift "0" ]
                , [ hangoutsSelector --> doShift "1"]
                , [ spotifySelector --> doShift "2"]]
-
-
 
 -- Layout
 
@@ -127,7 +125,9 @@ workspaceNamesHook = ModifiedLayout WorkspaceNamesHook
 
 ewmhWorkspaceNamesLogHook = do
   WorkspaceNames namesMap <- XS.get
-  ewmhDesktopsLogHookCustom id (getWorkspaceNameFromTag namesMap)
+  let tagRemapping = getWorkspaceNameFromTag namesMap
+  pagerHintsLogHookCustom tagRemapping
+  ewmhDesktopsLogHookCustom id tagRemapping
 
 getWorkspaceNameFromTag namesMap tag =
     case M.lookup tag namesMap of
