@@ -3,7 +3,7 @@
 "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
-<!-- 2016-10-25 Tue 14:23 -->
+<!-- 2016-10-25 Tue 17:48 -->
 <meta  http-equiv="Content-Type" content="text/html;charset=utf-8" />
 <meta  name="viewport" content="width=device-width, initial-scale=1" />
 <title></title>
@@ -332,7 +332,7 @@ for the JavaScript code in this tag.
 <li><a href="#whichkey">7.2. which-key</a></li>
 <li><a href="#hydra">7.3. hydra</a>
 <ul>
-<li><a href="#fontsize1">7.3.1. Font Size</a></li>
+<li><a href="#fontsettings">7.3.1. Font Settings</a></li>
 <li><a href="#yanking">7.3.2. Yanking</a></li>
 <li><a href="#compile">7.3.3. Compile</a></li>
 </ul>
@@ -585,15 +585,7 @@ for the JavaScript code in this tag.
 <li><a href="#helmgtags">17.47. helm-gtags</a></li>
 <li><a href="#sgmlmode">17.48. sgml-mode</a></li>
 <li><a href="#evil">17.49. evil</a></li>
-<li><a href="#hackernews">17.50. hackernews</a>
-<ul>
-<li>
-<ul>
-<li><a href="#structuredhaskellmode">17.50.0.1. structured-haskell-mode</a></li>
-</ul>
-</li>
-</ul>
-</li>
+<li><a href="#hackernews">17.50. hackernews</a></li>
 </ul>
 </li>
 <li><a href="#appearance">18. Appearance</a>
@@ -2883,7 +2875,7 @@ This interferes with too many other packages. See
 
 <pre class="src src-emacs-lisp"><span style="color: #e91e63;">(</span><span style="color: #fff59d;">use-package</span> <span style="color: #8bc34a;">hydra</span>
   <span style="color: #ff8A65;">:demand</span> t
-  <span style="color: #ff8A65;">:bind</span> <span style="color: #2196F3;">(</span><span style="color: #EF6C00;">(</span><span style="color: #9ccc65;">"C-c f"</span> . imalison:hydra-font-resize/body<span style="color: #EF6C00;">)</span>
+  <span style="color: #ff8A65;">:bind</span> <span style="color: #2196F3;">(</span><span style="color: #EF6C00;">(</span><span style="color: #9ccc65;">"C-c f"</span> . imalison:hydra-font/body<span style="color: #EF6C00;">)</span>
          <span style="color: #EF6C00;">(</span><span style="color: #9ccc65;">"C-c y"</span> . imalison:hydra-yank/body<span style="color: #EF6C00;">)</span>
          <span style="color: #EF6C00;">(</span><span style="color: #9ccc65;">"C-c 6"</span> . imalison:compile/body<span style="color: #EF6C00;">)</span><span style="color: #2196F3;">)</span>
   <span style="color: #ff8A65;">:config</span>
@@ -2891,23 +2883,24 @@ This interferes with too many other packages. See
 </pre>
 </div>
 </div>
-<div id="outline-container-fontsize1" class="outline-4">
-<h4 id="fontsize1"><span class="section-number-4">7.3.1</span> Font Size</h4>
+<div id="outline-container-fontsettings" class="outline-4">
+<h4 id="fontsettings"><span class="section-number-4">7.3.1</span> Font Settings</h4>
 <div class="outline-text-4" id="text-7-3-1">
 <p>
 <a id="orgtarget1"></a>
 </p>
 <div class="org-src-container">
 
-<pre class="src src-emacs-lisp"><span style="color: #e91e63;">(</span><span style="color: #fff59d;">defhydra</span> imalison:hydra-font-resize
+<pre class="src src-emacs-lisp"><span style="color: #e91e63;">(</span><span style="color: #fff59d;">defhydra</span> imalison:hydra-font
   nil
-  <span style="color: #9ccc65;">"Resize Font"</span>
+  <span style="color: #9ccc65;">"Font Settings"</span>
   <span style="color: #2196F3;">(</span><span style="color: #9ccc65;">"-"</span> imalison:font-size-decr <span style="color: #9ccc65;">"Decrease"</span><span style="color: #2196F3;">)</span>
   <span style="color: #2196F3;">(</span><span style="color: #9ccc65;">"d"</span> imalison:font-size-decr <span style="color: #9ccc65;">"Decrease"</span><span style="color: #2196F3;">)</span>
   <span style="color: #2196F3;">(</span><span style="color: #9ccc65;">"="</span> imalison:font-size-incr <span style="color: #9ccc65;">"Increase"</span><span style="color: #2196F3;">)</span>
   <span style="color: #2196F3;">(</span><span style="color: #9ccc65;">"+"</span> imalison:font-size-incr <span style="color: #9ccc65;">"Increase"</span><span style="color: #2196F3;">)</span>
   <span style="color: #2196F3;">(</span><span style="color: #9ccc65;">"i"</span> imalison:font-size-incr <span style="color: #9ccc65;">"Increase"</span><span style="color: #2196F3;">)</span>
   <span style="color: #2196F3;">(</span><span style="color: #9ccc65;">"h"</span> imalison:set-huge-font-size <span style="color: #9ccc65;">"Huge"</span><span style="color: #2196F3;">)</span>
+  <span style="color: #2196F3;">(</span><span style="color: #9ccc65;">"a"</span> imalison:appearance <span style="color: #9ccc65;">"Set Default Appearance"</span><span style="color: #2196F3;">)</span>
   <span style="color: #2196F3;">(</span><span style="color: #9ccc65;">"f"</span> set-frame-font <span style="color: #9ccc65;">"Set Frame Font"</span><span style="color: #2196F3;">)</span>
   <span style="color: #2196F3;">(</span><span style="color: #9ccc65;">"0"</span> imalison:font-size-reset <span style="color: #9ccc65;">"Reset to default size"</span><span style="color: #2196F3;">)</span><span style="color: #e91e63;">)</span>
 </pre>
@@ -6766,20 +6759,6 @@ I've disabled perspective because I just don't use it much.
 </pre>
 </div>
 </div>
-<div id="outline-container-structuredhaskellmode" class="outline-5">
-<h5 id="structuredhaskellmode"><span class="section-number-5">17.50.0.1</span> structured-haskell-mode</h5>
-<div class="outline-text-5" id="text-17-50-0-1">
-<p>
-This needs a hackage install and I've never used it before. Just putting this here for later.
-</p>
-<div class="org-src-container">
-
-<pre class="src src-emacs-lisp"><span style="color: #e91e63;">(</span><span style="color: #fff59d;">use-package</span> <span style="color: #8bc34a;">shm</span>
-  <span style="color: #ff8A65;">:disabled</span> t<span style="color: #e91e63;">)</span>
-</pre>
-</div>
-</div>
-</div>
 </div>
 </div>
 <div id="outline-container-appearance" class="outline-2">
@@ -6967,20 +6946,22 @@ Set the character used to represent spaces to ·, and the character used for tab
 <h3 id="colorizecompliationbuffers"><span class="section-number-3">18.9</span> Colorize Compliation Buffers</h3>
 <div class="outline-text-3" id="text-18-9">
 <p>
-This automatically applies ansi-color interpretation of terminal escape sequences to compilation buffers
+This automatically applies ansi-color interpretation of terminal escape
+sequences to compilation buffers.
 </p>
 <div class="org-src-container">
 
 <pre class="src src-emacs-lisp"><span style="color: #e91e63;">(</span><span style="color: #fff59d;">defun</span> <span style="color: #84ffff;">colorize-compilation-buffer</span> <span style="color: #2196F3;">()</span>
-  <span style="color: #2196F3;">(</span>read-only-mode<span style="color: #2196F3;">)</span>
-  <span style="color: #2196F3;">(</span>ansi-color-apply-on-region <span style="color: #EF6C00;">(</span>point-min<span style="color: #EF6C00;">)</span> <span style="color: #EF6C00;">(</span>point-max<span style="color: #EF6C00;">)</span><span style="color: #2196F3;">)</span>
-  <span style="color: #2196F3;">(</span>read-only-mode<span style="color: #2196F3;">)</span><span style="color: #e91e63;">)</span>
+  <span style="color: #2196F3;">(</span><span style="color: #fff59d;">let</span> <span style="color: #EF6C00;">(</span><span style="color: #B388FF;">(</span>was-read-only read-only-mode<span style="color: #B388FF;">)</span><span style="color: #EF6C00;">)</span>
+    <span style="color: #EF6C00;">(</span><span style="color: #fff59d;">when</span> was-read-only <span style="color: #B388FF;">(</span>read-only-mode -1<span style="color: #B388FF;">)</span><span style="color: #EF6C00;">)</span>
+    <span style="color: #EF6C00;">(</span>ansi-color-apply-on-region <span style="color: #B388FF;">(</span>point-min<span style="color: #B388FF;">)</span> <span style="color: #B388FF;">(</span>point-max<span style="color: #B388FF;">)</span><span style="color: #EF6C00;">)</span>
+    <span style="color: #EF6C00;">(</span><span style="color: #fff59d;">when</span> was-read-only <span style="color: #B388FF;">(</span>read-only-mode +1<span style="color: #B388FF;">)</span><span style="color: #EF6C00;">)</span><span style="color: #2196F3;">)</span><span style="color: #e91e63;">)</span>
+
 <span style="color: #e91e63;">(</span>add-hook 'compilation-filter-hook 'colorize-compilation-buffer<span style="color: #e91e63;">)</span>
 </pre>
 </div>
 </div>
 </div>
-
 <div id="outline-container-automaticthemechanger" class="outline-3">
 <h3 id="automaticthemechanger"><span class="section-number-3">18.10</span> Automatic Theme Changer</h3>
 <div class="outline-text-3" id="text-18-10">
@@ -7077,9 +7058,9 @@ load-theme hook (See the heading below).
   <span style="color: #2196F3;">(</span><span style="color: #fff59d;">interactive</span> <span style="color: #EF6C00;">(</span>list nil<span style="color: #EF6C00;">)</span><span style="color: #2196F3;">)</span>
   <span style="color: #2196F3;">(</span><span style="color: #fff59d;">if</span> <span style="color: #EF6C00;">(</span>display-graphic-p<span style="color: #EF6C00;">)</span>
       <span style="color: #EF6C00;">(</span><span style="color: #fff59d;">progn</span>
-        <span style="color: #B388FF;">(</span><span style="color: #fff59d;">condition-case</span> _ignored
-            <span style="color: #76ff03;">(</span>set-face-attribute 'default nil <span style="color: #ff8A65;">:font</span> <span style="color: #9ccc65;">"Source Code Pro"</span><span style="color: #76ff03;">)</span>
-          <span style="color: #76ff03;">(</span>'error nil<span style="color: #76ff03;">)</span><span style="color: #B388FF;">)</span>
+        <span style="color: #B388FF;">(</span><span style="color: #fff59d;">condition-case</span> error
+            <span style="color: #76ff03;">(</span>set-face-attribute 'default nil <span style="color: #ff8A65;">:font</span> <span style="color: #9ccc65;">"source code pro"</span><span style="color: #76ff03;">)</span>
+          <span style="color: #76ff03;">(</span>'error <span style="color: #26A69A;">(</span>message <span style="color: #9ccc65;">"Error: %s, when setting font"</span><span style="color: #26A69A;">)</span><span style="color: #76ff03;">)</span><span style="color: #B388FF;">)</span>
         <span style="color: #B388FF;">(</span>set-face-attribute 'default nil <span style="color: #ff8A65;">:weight</span> 'semi-bold<span style="color: #B388FF;">)</span>
         <span style="color: #B388FF;">(</span>set-face-attribute
          'default nil <span style="color: #ff8A65;">:height</span> imalison:default-font-size-pt<span style="color: #B388FF;">)</span><span style="color: #EF6C00;">)</span>
@@ -7116,7 +7097,7 @@ load-theme hook (See the heading below).
 </div>
 <div id="postamble" class="status">
 <p class="author">Author: Ivan Malison</p>
-<p class="date">Created: 2016-10-25 Tue 14:23</p>
+<p class="date">Created: 2016-10-25 Tue 17:48</p>
 <p class="validation"><a href="http://validator.w3.org/check?uri=referer">Validate</a></p>
 </div>
 </body>
