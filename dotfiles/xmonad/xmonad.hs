@@ -60,7 +60,6 @@ getClassRemap = do
 main = xmonad $ pagerHints def
        { modMask = mod4Mask
        , terminal = "urxvt"
-       , workspaces = ["Main", "Chat", "Music", "Sports", "Podcast", "Minimize", "7", "8", "9"]
        , manageHook = manageDocks <+> myManageHook <+> manageHook def
        , layoutHook = myLayoutHook
        , logHook = myLogHook +++ ewmhWorkspaceNamesLogHook
