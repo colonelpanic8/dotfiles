@@ -57,7 +57,7 @@ getClassRemap = do
   text <- B.readFile (home </> ".lib/class_remap.json")
   return $ fromMaybe M.empty (decode text)
 
-main = xmonad $ ewmh $ pagerHints def
+main = xmonad $ pagerHints def
        { modMask = mod4Mask
        , terminal = "urxvt"
        , workspaces = ["Main", "Chat", "Music", "Sports", "Podcast", "Minimize", "7", "8", "9"]
