@@ -2700,7 +2700,7 @@ Intero seems to be causing hangs, so it has been disabled
 
     (setq org-goto-interface 'outline-path-completion
           org-goto-max-level 10
-          org-export-headline-levels 5)
+          org-export-headline-levels 3)
     (add-hook 'org-mode-hook 'imalison:disable-linum-mode)
     (add-hook 'org-mode-hook (lambda () (setq org-todo-key-trigger t)))
     (add-hook 'org-agenda-mode-hook 'imalison:disable-linum-mode)
