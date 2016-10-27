@@ -1679,10 +1679,11 @@ I use helm for almost all emacs completion
   :config
   (progn
     (ido-mode 1)
-    (setq ido-auto-merge-work-directories-length -1)
-    (setq ido-use-virtual-buffers t)
-    (setq ido-use-filename-at-point nil)
-    (setq ido-create-new-buffer 'always)
+    (setq ido-auto-merge-work-directories-length -1
+          ido-default-buffer-method 'selected-window
+          ido-use-virtual-buffers t
+          ido-use-filename-at-point nil
+          ido-create-new-buffer 'always)
     (ido-everywhere 1)
     (setq ido-enable-flex-matching t)
     (use-package flx)
