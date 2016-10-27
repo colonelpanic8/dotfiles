@@ -1,10 +1,8 @@
 [Unit]
 Description=wallpaper
-Requires=compton.service
-After=compton.service
 
 [Service]
-Type=simple
+Type=oneshot
 ExecStart=/usr/bin/env wallpaper.sh
 ExecStop=/usr/bin/pkill wallpaper.sh
 
