@@ -207,6 +207,9 @@ addKeys conf@XConfig {modMask = modm} =
     , ((mod3Mask, xK_h), spawn "screenshot.sh")
     , ((mod3Mask, xK_c), spawn "shell_command.sh")
 
+    -- ModAlt bindings
+    , ((modalt, xK_w), spawn "wallpaper.sh")
+
     -- playerctl
     , ((mod3Mask, xK_f), spawn "playerctl play-pause")
     , ((0, xF86XK_AudioPause), spawn "playerctl play-pause")
