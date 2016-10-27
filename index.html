@@ -3,7 +3,7 @@
 "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
-<!-- 2016-10-27 Thu 02:20 -->
+<!-- 2016-10-27 Thu 03:02 -->
 <meta  http-equiv="Content-Type" content="text/html;charset=utf-8" />
 <meta  name="viewport" content="width=device-width, initial-scale=1" />
 <title></title>
@@ -102,6 +102,8 @@
 <script type="text/javascript" src="http://www.pirilampo.org/styles/readtheorg/js/readtheorg.js"></script>
 <style type="text/css">
  pre.src {background-color: #263238; color: #ffffff;}</style>
+<style type="text/css">
+ pre.src {background-color: #fdf6e3; color: #657b83;}</style>
 <style type="text/css">
  pre.src {background-color: #fdf6e3; color: #657b83;}</style>
 <script type="text/javascript">
@@ -261,7 +263,13 @@ for the JavaScript code in this tag.
 <li><a href="#other">5.30. Other</a></li>
 <li><a href="#keyboardmacros">5.31. Keyboard Macros</a>
 <ul>
-<li><a href="#foreditingliterateconfig">5.31.1. For editing literate config</a></li>
+<li><a href="#foreditingliterateconfig">5.31.1. For editing literate config</a>
+<ul>
+<li><a href="#extractcurrentsexptosrcblock">5.31.1.1. extract-current-sexp-to-src-block</a></li>
+<li><a href="#namesourceblockforusepackagename">5.31.1.2. name-source-block-for-use-package-name</a></li>
+<li><a href="#extractandnameusepackageblock">5.31.1.3. extract-and-name-use-package-block</a></li>
+</ul>
+</li>
 </ul>
 </li>
 </ul>
@@ -320,7 +328,6 @@ for the JavaScript code in this tag.
 <li><a href="#winner">6.35. winner</a></li>
 <li><a href="#eyebrowse">6.36. eyebrowse</a></li>
 <li><a href="#fillcolumnindicator">6.37. fill-column-indicator</a></li>
-<li><a href="#overseer">6.38. overseer</a></li>
 </ul>
 </li>
 <li><a href="#keybindings">7. Keybindings</a>
@@ -413,14 +420,49 @@ for the JavaScript code in this tag.
 <ul>
 <li><a href="#programming">12.1. Programming</a>
 <ul>
-<li><a href="#python">12.1.1. python</a></li>
-<li><a href="#go">12.1.2. go</a></li>
-<li><a href="#emacslisp">12.1.3. emacs-lisp</a></li>
-<li><a href="#clojure">12.1.4. clojure</a></li>
+<li><a href="#python">12.1.1. python</a>
+<ul>
+<li><a href="#pyimport">12.1.1.1. pyimport</a></li>
+<li><a href="#jedi">12.1.1.2. jedi</a></li>
+</ul>
+</li>
+<li><a href="#go">12.1.2. go</a>
+<ul>
+<li><a href="#showdiffsoftestifyoutput">12.1.2.1. Show diffs of testify output</a></li>
+</ul>
+</li>
+<li><a href="#emacslisp">12.1.3. emacs-lisp</a>
+<ul>
+<li><a href="#elispslimenav">12.1.3.1. elisp-slime-nav</a></li>
+<li><a href="#macrostep">12.1.3.2. macrostep</a></li>
+<li><a href="#emr">12.1.3.3. emr</a></li>
+<li><a href="#editingconfiguration">12.1.3.4. Editing configuration</a></li>
+<li><a href="#checkdoc">12.1.3.5. Checkdoc</a></li>
+<li><a href="#edebug">12.1.3.6. edebug</a></li>
+<li><a href="#overseer">12.1.3.7. overseer</a></li>
+<li><a href="#misc1">12.1.3.8. Misc</a></li>
+<li><a href="#showresultofevallastsexpinline">12.1.3.9. Show result of eval-last-sexp inline</a></li>
+<li><a href="#inithook">12.1.3.10. Init hook</a></li>
+<li><a href="#keybinds">12.1.3.11. Keybinds</a></li>
+</ul>
+</li>
+<li><a href="#clojure">12.1.4. clojure</a>
+<ul>
+<li><a href="#cider">12.1.4.1. cider</a></li>
+<li><a href="#cljrefactor">12.1.4.2. clj-refactor</a></li>
+</ul>
+</li>
 <li><a href="#scala">12.1.5. scala</a></li>
 <li><a href="#js">12.1.6. js</a></li>
 <li><a href="#rust">12.1.7. rust</a></li>
-<li><a href="#haskell">12.1.8. haskell</a></li>
+<li><a href="#haskell">12.1.8. haskell</a>
+<ul>
+<li><a href="#intero">12.1.8.1. intero</a></li>
+<li><a href="#hindent">12.1.8.2. hindent</a></li>
+<li><a href="#ghcmod">12.1.8.3. ghc-mod</a></li>
+<li><a href="#companyghc">12.1.8.4. company-ghc</a></li>
+</ul>
+</li>
 <li><a href="#cc">12.1.9. C/C++</a></li>
 <li><a href="#c">12.1.10. C#</a></li>
 <li><a href="#racket">12.1.11. racket</a></li>
@@ -437,8 +479,23 @@ for the JavaScript code in this tag.
 </li>
 <li><a href="#document">12.3. Document</a>
 <ul>
-<li><a href="#org">12.3.1. org</a></li>
-<li><a href="#tex">12.3.2. TeX</a></li>
+<li><a href="#org">12.3.1. org</a>
+<ul>
+<li><a href="#setbackgroundcolorofsourceblocksforexport">12.3.1.1. Set Background Color of Source Blocks for Export</a></li>
+<li><a href="#usemyowndefaultnamingschemefororgheadings">12.3.1.2. Use my own default naming scheme for org-headings</a></li>
+<li><a href="#orgprojectile">12.3.1.3. org-projectile</a></li>
+<li><a href="#orgnotify">12.3.1.4. org-notify</a></li>
+<li><a href="#orgreveal">12.3.1.5. org-reveal</a></li>
+<li><a href="#orgcaldav">12.3.1.6. org-caldav</a></li>
+</ul>
+</li>
+<li><a href="#tex">12.3.2. TeX</a>
+<ul>
+<li><a href="#latex">12.3.2.1. latex</a></li>
+<li><a href="#auctexlatexmk">12.3.2.2. auctex-latexmk</a></li>
+<li><a href="#companyauctex">12.3.2.3. company-auctex</a></li>
+</ul>
+</li>
 <li><a href="#markdownmode">12.3.3. markdown-mode</a></li>
 <li><a href="#plantumlmode">12.3.4. plantuml-mode</a></li>
 <li><a href="#wsdmode">12.3.5. wsd-mode</a></li>
@@ -2076,7 +2133,9 @@ I keep it around just in case I need it.
 </div><div id="outline-container-foreditingliterateconfig" class="outline-4">
 <h4 id="foreditingliterateconfig"><span class="section-number-4">5.31.1</span> For editing literate config</h4>
 <div class="outline-text-4" id="text-5-31-1">
-</div><ol class="org-ol"><li><a id="extractcurrentsexptosrcblock"></a>extract-current-sexp-to-src-block<br  /><div class="outline-text-5" id="text-5-31-1-1">
+</div><div id="outline-container-extractcurrentsexptosrcblock" class="outline-5">
+<h5 id="extractcurrentsexptosrcblock"><span class="section-number-5">5.31.1.1</span> extract-current-sexp-to-src-block</h5>
+<div class="outline-text-5" id="text-5-31-1-1">
 <p>
 This keyboard macro extracts the current sexp to an emacs-lisp source block of its own
 </p>
@@ -2086,23 +2145,30 @@ This keyboard macro extracts the current sexp to an emacs-lisp source block of i
       <span style="color: #b58900;">[</span>?\C-a return ?\C-p ?# ?+ ?E ?N ?D ?_ ?S ?R ?C return ?# ?+ ?B ?E ?G ?I ?N ?_ ?S ?R ?C ?  ?e ?m ?a ?c ?s ?- ?l ?i ?s ?p ?\C-a ?\C-p ?\C-  ?\C-n ?\C-e ?\M-w ?\C-n ?\C-a ?\C-\M-f return ?\C-y<span style="color: #b58900;">]</span><span style="color: #2aa198;">)</span>
 </pre>
 </div>
-</div></li>
-<li><a id="namesourceblockforusepackagename"></a>name-source-block-for-use-package-name<br  /><div class="outline-text-5" id="text-5-31-1-2">
+</div>
+</div>
+<div id="outline-container-namesourceblockforusepackagename" class="outline-5">
+<h5 id="namesourceblockforusepackagename"><span class="section-number-5">5.31.1.2</span> name-source-block-for-use-package-name</h5>
+<div class="outline-text-5" id="text-5-31-1-2">
 <div class="org-src-container">
 
 <pre class="src src-emacs-lisp"><span style="color: #2aa198;">(</span>fset 'name-source-block-for-use-package-name
       <span style="color: #b58900;">[</span>?\C-c ?\' ?\M-&lt; ?\C-s ?u ?s ?e ?- ?p ?a ?c ?k return ?\C-\M-f ?\C-f ?\C-  ?\C-\M-f ?\M-w ?\C-c ?\' ?\C-r ?B ?E ?G ?I ?N return ?\C-a ?\C-p ?\C-e return ?* ?  ?\C-y<span style="color: #b58900;">]</span><span style="color: #2aa198;">)</span>
 </pre>
 </div>
-</div></li>
-<li><a id="extractandnameusepackageblock"></a>extract-and-name-use-package-block<br  /><div class="outline-text-5" id="text-5-31-1-3">
+</div>
+</div>
+<div id="outline-container-extractandnameusepackageblock" class="outline-5">
+<h5 id="extractandnameusepackageblock"><span class="section-number-5">5.31.1.3</span> extract-and-name-use-package-block</h5>
+<div class="outline-text-5" id="text-5-31-1-3">
 <div class="org-src-container">
 
 <pre class="src src-emacs-lisp"><span style="color: #2aa198;">(</span>fset 'extract-and-name-use-package-block
       <span style="color: #b58900;">[</span>?\C-a return ?\C-p ?# ?+ ?E ?N ?D ?_ ?S ?R ?C return ?# ?+ ?B ?E ?G ?I ?N ?_ ?S ?R ?C ?  ?e ?m ?a ?c ?s ?- ?l ?i ?s ?p ?\C-a ?\C-p ?\C-  ?\C-n ?\C-e ?\M-w ?\C-n ?\C-a ?\C-\M-f return ?\C-y ?\C-p ?\C-p ?\C-c ?\' ?\M-&lt; ?\C-s ?u ?s ?e ?- ?p ?a ?c ?k return ?\C-\M-f ?\C-f ?\C-  ?\C-\M-f ?\M-w ?\C-c ?\' ?\C-r ?B ?E ?G ?I ?N return ?\C-a ?\C-p ?\C-e return ?* ?  ?\C-y<span style="color: #b58900;">]</span><span style="color: #2aa198;">)</span>
 </pre>
 </div>
-</div></li></ol>
+</div>
+</div>
 </div>
 </div>
 </div>
@@ -2786,16 +2852,6 @@ This interferes with too many other packages. See
         <span style="color: #859900;">(</span>turn-on-fci-mode<span style="color: #859900;">)</span><span style="color: #6c71c4;">)</span><span style="color: #268bd2;">)</span>
     <span style="color: #268bd2;">(</span>advice-add 'company-call-frontends <span style="color: #657b83; font-weight: bold;">:before</span> #'fci-on-off-fci-before-company<span style="color: #268bd2;">)</span>
     <span style="color: #268bd2;">(</span>add-hook 'prog-mode-hook 'fci-mode<span style="color: #268bd2;">)</span><span style="color: #b58900;">)</span><span style="color: #2aa198;">)</span>
-</pre>
-</div>
-</div>
-</div>
-<div id="outline-container-overseer" class="outline-3">
-<h3 id="overseer"><span class="section-number-3">6.38</span> overseer</h3>
-<div class="outline-text-3" id="text-6-38">
-<div class="org-src-container">
-
-<pre class="src src-emacs-lisp"><span style="color: #2aa198;">(</span><span style="color: #859900; font-weight: bold;">use-package</span> <span style="color: #268bd2; font-weight: bold;">overseer</span><span style="color: #2aa198;">)</span>
 </pre>
 </div>
 </div>
@@ -3845,7 +3901,9 @@ modeline and with excessive http requests to github.
 </pre>
 </div>
 </div>
-<ol class="org-ol"><li><a id="pyimport"></a>pyimport<br  /><div class="outline-text-5" id="text-12-1-1-1">
+<div id="outline-container-pyimport" class="outline-5">
+<h5 id="pyimport"><span class="section-number-5">12.1.1.1</span> pyimport</h5>
+<div class="outline-text-5" id="text-12-1-1-1">
 <p>
 Pyimport is disabled because it may be causing a performance problem.
 </p>
@@ -3858,8 +3916,11 @@ Pyimport is disabled because it may be causing a performance problem.
   <span style="color: #657b83; font-weight: bold;">:commands</span> pyimport-remove-unused<span style="color: #2aa198;">)</span>
 </pre>
 </div>
-</div></li>
-<li><a id="jedi"></a>jedi<br  /><div class="outline-text-5" id="text-12-1-1-2">
+</div>
+</div>
+<div id="outline-container-jedi" class="outline-5">
+<h5 id="jedi"><span class="section-number-5">12.1.1.2</span> jedi</h5>
+<div class="outline-text-5" id="text-12-1-1-2">
 <p>
 The accepted way to use jedi if you prefer company to auto-complete is
 simply to require the company jedi package, which is why we make no
@@ -3879,7 +3940,8 @@ reference to the jedi-core package.
     <span style="color: #268bd2;">(</span><span style="color: #859900; font-weight: bold;">setq</span> jedi:imenu-create-index-function 'jedi:create-flat-imenu-index<span style="color: #268bd2;">)</span><span style="color: #b58900;">)</span><span style="color: #2aa198;">)</span>
 </pre>
 </div>
-</div></li></ol>
+</div>
+</div>
 </div>
 <div id="outline-container-go" class="outline-4">
 <h4 id="go"><span class="section-number-4">12.1.2</span> go</h4>
@@ -4006,7 +4068,9 @@ reference to the jedi-core package.
 </pre>
 </div>
 </div>
-<ol class="org-ol"><li><a id="showdiffsoftestifyoutput"></a>Show diffs of testify output<br  /><div class="outline-text-5" id="text-12-1-2-1">
+<div id="outline-container-showdiffsoftestifyoutput" class="outline-5">
+<h5 id="showdiffsoftestifyoutput"><span class="section-number-5">12.1.2.1</span> Show diffs of testify output</h5>
+<div class="outline-text-5" id="text-12-1-2-1">
 <div class="org-src-container">
 
 <pre class="src src-emacs-lisp"><span style="color: #2aa198;">(</span><span style="color: #859900; font-weight: bold;">defvar</span> <span style="color: #268bd2;">imalison:testify-ediff-buffers</span> nil<span style="color: #2aa198;">)</span>
@@ -4044,12 +4108,15 @@ reference to the jedi-core package.
     <span style="color: #268bd2;">(</span>switch-to-buffer buffer<span style="color: #268bd2;">)</span><span style="color: #b58900;">)</span><span style="color: #2aa198;">)</span>
 </pre>
 </div>
-</div></li></ol>
+</div>
+</div>
 </div>
 <div id="outline-container-emacslisp" class="outline-4">
 <h4 id="emacslisp"><span class="section-number-4">12.1.3</span> emacs-lisp</h4>
 <div class="outline-text-4" id="text-12-1-3">
-</div><ol class="org-ol"><li><a id="elispslimenav"></a>elisp-slime-nav<br  /><div class="outline-text-5" id="text-12-1-3-1">
+</div><div id="outline-container-elispslimenav" class="outline-5">
+<h5 id="elispslimenav"><span class="section-number-5">12.1.3.1</span> elisp-slime-nav</h5>
+<div class="outline-text-5" id="text-12-1-3-1">
 <div class="org-src-container">
 
 <pre class="src src-emacs-lisp"><span style="color: #2aa198;">(</span><span style="color: #859900; font-weight: bold;">use-package</span> <span style="color: #268bd2; font-weight: bold;">elisp-slime-nav</span>
@@ -4064,8 +4131,11 @@ reference to the jedi-core package.
               <span style="color: #268bd2;">(</span><span style="color: #2aa198;">"M-."</span> . imalison:elisp-slime-nav<span style="color: #268bd2;">)</span><span style="color: #b58900;">)</span><span style="color: #2aa198;">)</span>
 </pre>
 </div>
-</div></li>
-<li><a id="macrostep"></a>macrostep<br  /><div class="outline-text-5" id="text-12-1-3-2">
+</div>
+</div>
+<div id="outline-container-macrostep" class="outline-5">
+<h5 id="macrostep"><span class="section-number-5">12.1.3.2</span> macrostep</h5>
+<div class="outline-text-5" id="text-12-1-3-2">
 <p>
 Macrostep is an indespensible tool for writing emacs lisp macros. It lets you see pretty printed versions of the result of macro evaluation as the macro is evaluated
 </p>
@@ -4076,8 +4146,11 @@ Macrostep is an indespensible tool for writing emacs lisp macros. It lets you se
               <span style="color: #268bd2;">(</span><span style="color: #2aa198;">"C-c e"</span> . macrostep-expand<span style="color: #268bd2;">)</span><span style="color: #b58900;">)</span><span style="color: #2aa198;">)</span>
 </pre>
 </div>
-</div></li>
-<li><a id="emr"></a>emr<br  /><div class="outline-text-5" id="text-12-1-3-3">
+</div>
+</div>
+<div id="outline-container-emr" class="outline-5">
+<h5 id="emr"><span class="section-number-5">12.1.3.3</span> emr</h5>
+<div class="outline-text-5" id="text-12-1-3-3">
 <div class="org-src-container">
 
 <pre class="src src-emacs-lisp"><span style="color: #2aa198;">(</span><span style="color: #859900; font-weight: bold;">use-package</span> <span style="color: #268bd2; font-weight: bold;">emr</span>
@@ -4087,8 +4160,11 @@ Macrostep is an indespensible tool for writing emacs lisp macros. It lets you se
     <span style="color: #268bd2;">(</span>add-hook 'prog-mode-hook 'emr-initialize<span style="color: #268bd2;">)</span><span style="color: #b58900;">)</span><span style="color: #2aa198;">)</span>
 </pre>
 </div>
-</div></li>
-<li><a id="editingconfiguration"></a>Editing configuration<br  /><div class="outline-text-5" id="text-12-1-3-4">
+</div>
+</div>
+<div id="outline-container-editingconfiguration" class="outline-5">
+<h5 id="editingconfiguration"><span class="section-number-5">12.1.3.4</span> Editing configuration</h5>
+<div class="outline-text-5" id="text-12-1-3-4">
 <p>
 Reduce indentation for some functions
 </p>
@@ -4097,16 +4173,22 @@ Reduce indentation for some functions
 <pre class="src src-emacs-lisp"><span style="color: #2aa198;">(</span>put 'use-package 'lisp-indent-function 1<span style="color: #2aa198;">)</span>
 </pre>
 </div>
-</div></li>
-<li><a id="checkdoc"></a>Checkdoc<br  /><div class="outline-text-5" id="text-12-1-3-5">
+</div>
+</div>
+<div id="outline-container-checkdoc" class="outline-5">
+<h5 id="checkdoc"><span class="section-number-5">12.1.3.5</span> Checkdoc</h5>
+<div class="outline-text-5" id="text-12-1-3-5">
 <div class="org-src-container">
 
 <pre class="src src-emacs-lisp"><span style="color: #2aa198;">(</span><span style="color: #859900; font-weight: bold;">setq</span> checkdoc-force-docstrings-flag nil
       checkdoc-arguments-in-order-flag nil<span style="color: #2aa198;">)</span>
 </pre>
 </div>
-</div></li>
-<li><a id="edebug"></a>edebug<br  /><div class="outline-text-5" id="text-12-1-3-6">
+</div>
+</div>
+<div id="outline-container-edebug" class="outline-5">
+<h5 id="edebug"><span class="section-number-5">12.1.3.6</span> edebug</h5>
+<div class="outline-text-5" id="text-12-1-3-6">
 <div class="org-src-container">
 
 <pre class="src src-emacs-lisp"><span style="color: #2aa198;">(</span><span style="color: #859900; font-weight: bold;">use-package</span> <span style="color: #268bd2; font-weight: bold;">edebug</span>
@@ -4114,8 +4196,21 @@ Reduce indentation for some functions
   <span style="color: #b58900;">(</span><span style="color: #859900; font-weight: bold;">progn</span> <span style="color: #268bd2;">(</span><span style="color: #859900; font-weight: bold;">setq</span> edebug-trace t<span style="color: #268bd2;">)</span><span style="color: #b58900;">)</span><span style="color: #2aa198;">)</span>
 </pre>
 </div>
-</div></li>
-<li><a id="misc1"></a>Misc<br  /><div class="outline-text-5" id="text-12-1-3-7">
+</div>
+</div>
+<div id="outline-container-overseer" class="outline-5">
+<h5 id="overseer"><span class="section-number-5">12.1.3.7</span> overseer</h5>
+<div class="outline-text-5" id="text-12-1-3-7">
+<div class="org-src-container">
+
+<pre class="src src-emacs-lisp"><span style="color: #2aa198;">(</span><span style="color: #859900; font-weight: bold;">use-package</span> <span style="color: #268bd2; font-weight: bold;">overseer</span><span style="color: #2aa198;">)</span>
+</pre>
+</div>
+</div>
+</div>
+<div id="outline-container-misc1" class="outline-5">
+<h5 id="misc1"><span class="section-number-5">12.1.3.8</span> Misc</h5>
+<div class="outline-text-5" id="text-12-1-3-8">
 <div class="org-src-container">
 
 <pre class="src src-emacs-lisp"><span style="color: #2aa198;">(</span><span style="color: #859900; font-weight: bold;">defun</span> <span style="color: #268bd2;">imenu-elisp-sections</span> <span style="color: #b58900;">()</span>
@@ -4140,8 +4235,11 @@ Reduce indentation for some functions
 <span style="color: #2aa198;">(</span>add-hook 'flycheck-mode-hook 'imalison:maybe-remove-flycheck-checkdoc-checker<span style="color: #2aa198;">)</span>
 </pre>
 </div>
-</div></li>
-<li><a id="showresultofevallastsexpinline"></a>Show result of eval-last-sexp inline<br  /><div class="outline-text-5" id="text-12-1-3-8">
+</div>
+</div>
+<div id="outline-container-showresultofevallastsexpinline" class="outline-5">
+<h5 id="showresultofevallastsexpinline"><span class="section-number-5">12.1.3.9</span> Show result of eval-last-sexp inline</h5>
+<div class="outline-text-5" id="text-12-1-3-9">
 <p>
 Taken from <a href="http://endlessparentheses.com/eval-result-overlays-in-emacs-lisp.html">http://endlessparentheses.com/eval-result-overlays-in-emacs-lisp.html</a>
 </p>
@@ -4174,8 +4272,11 @@ Taken from <a href="http://endlessparentheses.com/eval-result-overlays-in-emacs-
                  <span style="color: #859900;">(</span>point<span style="color: #859900;">)</span><span style="color: #6c71c4;">)</span><span style="color: #268bd2;">)</span><span style="color: #b58900;">)</span><span style="color: #2aa198;">)</span>
 </pre>
 </div>
-</div></li>
-<li><a id="inithook"></a>Init hook<br  /><div class="outline-text-5" id="text-12-1-3-9">
+</div>
+</div>
+<div id="outline-container-inithook" class="outline-5">
+<h5 id="inithook"><span class="section-number-5">12.1.3.10</span> Init hook</h5>
+<div class="outline-text-5" id="text-12-1-3-10">
 <div class="org-src-container">
 
 <pre class="src src-emacs-lisp"><span style="color: #2aa198;">(</span><span style="color: #859900; font-weight: bold;">defvar</span> <span style="color: #268bd2;">imalison:check-parens</span> nil<span style="color: #2aa198;">)</span>
@@ -4191,8 +4292,11 @@ Taken from <a href="http://endlessparentheses.com/eval-result-overlays-in-emacs-
 <span style="color: #2aa198;">(</span>add-hook 'emacs-lisp-mode-hook 'imalison:emacs-lisp-hook<span style="color: #2aa198;">)</span>
 </pre>
 </div>
-</div></li>
-<li><a id="keybinds"></a>Keybinds<br  /><div class="outline-text-5" id="text-12-1-3-10">
+</div>
+</div>
+<div id="outline-container-keybinds" class="outline-5">
+<h5 id="keybinds"><span class="section-number-5">12.1.3.11</span> Keybinds</h5>
+<div class="outline-text-5" id="text-12-1-3-11">
 <div class="org-src-container">
 
 <pre class="src src-emacs-lisp"><span style="color: #2aa198;">(</span><span style="color: #859900; font-weight: bold;">emit-compose</span> imalison:copy-eval-last-sexp
@@ -4209,7 +4313,8 @@ Taken from <a href="http://endlessparentheses.com/eval-result-overlays-in-emacs-
 <span style="color: #2aa198;">(</span><span style="color: #859900; font-weight: bold;">unbind-key</span> <span style="color: #2aa198;">"C-j"</span> lisp-interaction-mode-map<span style="color: #2aa198;">)</span>
 </pre>
 </div>
-</div></li></ol>
+</div>
+</div>
 </div>
 <div id="outline-container-clojure" class="outline-4">
 <h4 id="clojure"><span class="section-number-4">12.1.4</span> clojure</h4>
@@ -4267,7 +4372,9 @@ The following is taken from <a href="https://github.com/syl20bnr/spacemacs/blob/
 </pre>
 </div>
 </div>
-<ol class="org-ol"><li><a id="cider"></a>cider<br  /><div class="outline-text-5" id="text-12-1-4-1">
+<div id="outline-container-cider" class="outline-5">
+<h5 id="cider"><span class="section-number-5">12.1.4.1</span> cider</h5>
+<div class="outline-text-5" id="text-12-1-4-1">
 <div class="org-src-container">
 
 <pre class="src src-emacs-lisp"><span style="color: #2aa198;">(</span><span style="color: #859900; font-weight: bold;">use-package</span> <span style="color: #268bd2; font-weight: bold;">cider</span>
@@ -4283,15 +4390,19 @@ The following is taken from <a href="https://github.com/syl20bnr/spacemacs/blob/
     <span style="color: #268bd2;">(</span>add-hook 'clojure-mode-hook 'cider-mode<span style="color: #268bd2;">)</span><span style="color: #b58900;">)</span><span style="color: #2aa198;">)</span>
 </pre>
 </div>
-</div></li>
-<li><a id="cljrefactor"></a>clj-refactor<br  /><div class="outline-text-5" id="text-12-1-4-2">
+</div>
+</div>
+<div id="outline-container-cljrefactor" class="outline-5">
+<h5 id="cljrefactor"><span class="section-number-5">12.1.4.2</span> clj-refactor</h5>
+<div class="outline-text-5" id="text-12-1-4-2">
 <div class="org-src-container">
 
 <pre class="src src-emacs-lisp"><span style="color: #2aa198;">(</span><span style="color: #859900; font-weight: bold;">use-package</span> <span style="color: #268bd2; font-weight: bold;">clj-refactor</span>
   <span style="color: #657b83; font-weight: bold;">:commands</span> clj-refactor-mode<span style="color: #2aa198;">)</span>
 </pre>
 </div>
-</div></li></ol>
+</div>
+</div>
 </div>
 <div id="outline-container-scala" class="outline-4">
 <h4 id="scala"><span class="section-number-4">12.1.5</span> scala</h4>
@@ -4461,7 +4572,9 @@ The following is taken from <a href="https://github.com/syl20bnr/spacemacs/blob/
 </pre>
 </div>
 </div>
-<ol class="org-ol"><li><a id="intero"></a>intero<br  /><div class="outline-text-5" id="text-12-1-8-1">
+<div id="outline-container-intero" class="outline-5">
+<h5 id="intero"><span class="section-number-5">12.1.8.1</span> intero</h5>
+<div class="outline-text-5" id="text-12-1-8-1">
 <p>
 Intero seems to be causing hangs, so it has been disabled
 </p>
@@ -4474,8 +4587,11 @@ Intero seems to be causing hangs, so it has been disabled
   <span style="color: #657b83; font-weight: bold;">:config</span> <span style="color: #b58900;">(</span>add-hook 'haskell-mode-hook 'intero-mode<span style="color: #b58900;">)</span><span style="color: #2aa198;">)</span>
 </pre>
 </div>
-</div></li>
-<li><a id="hindent"></a>hindent<br  /><div class="outline-text-5" id="text-12-1-8-2">
+</div>
+</div>
+<div id="outline-container-hindent" class="outline-5">
+<h5 id="hindent"><span class="section-number-5">12.1.8.2</span> hindent</h5>
+<div class="outline-text-5" id="text-12-1-8-2">
 <div class="org-src-container">
 
 <pre class="src src-emacs-lisp"><span style="color: #2aa198;">(</span><span style="color: #859900; font-weight: bold;">use-package</span> <span style="color: #268bd2; font-weight: bold;">hindent</span>
@@ -4486,8 +4602,11 @@ Intero seems to be causing hangs, so it has been disabled
     <span style="color: #268bd2;">(</span>add-hook 'haskell-mode-hook 'hindent-mode<span style="color: #268bd2;">)</span><span style="color: #b58900;">)</span><span style="color: #2aa198;">)</span>
 </pre>
 </div>
-</div></li>
-<li><a id="ghcmod"></a>ghc-mod<br  /><div class="outline-text-5" id="text-12-1-8-3">
+</div>
+</div>
+<div id="outline-container-ghcmod" class="outline-5">
+<h5 id="ghcmod"><span class="section-number-5">12.1.8.3</span> ghc-mod</h5>
+<div class="outline-text-5" id="text-12-1-8-3">
 <div class="org-src-container">
 
 <pre class="src src-emacs-lisp"><span style="color: #2aa198;">(</span><span style="color: #859900; font-weight: bold;">use-package</span> <span style="color: #268bd2; font-weight: bold;">ghc</span>
@@ -4497,8 +4616,11 @@ Intero seems to be causing hangs, so it has been disabled
     <span style="color: #268bd2;">(</span>add-hook 'haskell-mode-hook 'ghc-init<span style="color: #268bd2;">)</span><span style="color: #b58900;">)</span><span style="color: #2aa198;">)</span>
 </pre>
 </div>
-</div></li>
-<li><a id="companyghc"></a>company-ghc<br  /><div class="outline-text-5" id="text-12-1-8-4">
+</div>
+</div>
+<div id="outline-container-companyghc" class="outline-5">
+<h5 id="companyghc"><span class="section-number-5">12.1.8.4</span> company-ghc</h5>
+<div class="outline-text-5" id="text-12-1-8-4">
 <div class="org-src-container">
 
 <pre class="src src-emacs-lisp"><span style="color: #2aa198;">(</span><span style="color: #859900; font-weight: bold;">use-package</span> <span style="color: #268bd2; font-weight: bold;">company-ghc</span>
@@ -4507,7 +4629,8 @@ Intero seems to be causing hangs, so it has been disabled
   <span style="color: #b58900;">(</span>add-to-list 'company-backends 'company-ghc<span style="color: #b58900;">)</span><span style="color: #2aa198;">)</span>
 </pre>
 </div>
-</div></li></ol>
+</div>
+</div>
 </div>
 <div id="outline-container-cc" class="outline-4">
 <h4 id="cc"><span class="section-number-4">12.1.9</span> C/C++</h4>
@@ -5043,7 +5166,9 @@ Intero seems to be causing hangs, so it has been disabled
 </pre>
 </div>
 </div>
-<ol class="org-ol"><li><a id="setbackgroundcolorofsourceblocksforexport"></a>Set Background Color of Source Blocks for Export<br  /><div class="outline-text-5" id="text-12-3-1-1">
+<div id="outline-container-setbackgroundcolorofsourceblocksforexport" class="outline-5">
+<h5 id="setbackgroundcolorofsourceblocksforexport"><span class="section-number-5">12.3.1.1</span> Set Background Color of Source Blocks for Export</h5>
+<div class="outline-text-5" id="text-12-3-1-1">
 <p>
 This was taken from <a href="http://emacs.stackexchange.com/questions/3374/set-the-background-of-org-exported-code-blocks-according-to-theme">here</a>.
 </p>
@@ -5068,8 +5193,11 @@ This was taken from <a href="http://emacs.stackexchange.com/questions/3374/set-t
     <span style="color: #268bd2;">(</span>add-hook 'org-export-before-processing-hook 'imalison:org-inline-css-hook<span style="color: #268bd2;">)</span><span style="color: #b58900;">)</span><span style="color: #2aa198;">)</span>
 </pre>
 </div>
-</div></li>
-<li><a id="usemyowndefaultnamingschemefororgheadings"></a>Use my own default naming scheme for org-headings<br  /><div class="outline-text-5" id="text-12-3-1-2">
+</div>
+</div>
+<div id="outline-container-usemyowndefaultnamingschemefororgheadings" class="outline-5">
+<h5 id="usemyowndefaultnamingschemefororgheadings"><span class="section-number-5">12.3.1.2</span> Use my own default naming scheme for org-headings</h5>
+<div class="outline-text-5" id="text-12-3-1-2">
 <p>
 First we define a function that will generate a sanitized version of the heading
 as its link target.
@@ -5130,8 +5258,11 @@ This function replaces the default naming scheme with a call to
             new-name<span style="color: #859900;">)</span><span style="color: #6c71c4;">)</span><span style="color: #268bd2;">)</span><span style="color: #b58900;">)</span><span style="color: #2aa198;">)</span>
 </pre>
 </div>
-</div></li>
-<li><a id="orgprojectile"></a>org-projectile<br  /><div class="outline-text-5" id="text-12-3-1-3">
+</div>
+</div>
+<div id="outline-container-orgprojectile" class="outline-5">
+<h5 id="orgprojectile"><span class="section-number-5">12.3.1.3</span> org-projectile</h5>
+<div class="outline-text-5" id="text-12-3-1-3">
 <div class="org-src-container">
 
 <pre class="src src-emacs-lisp"><span style="color: #2aa198;">(</span><span style="color: #859900; font-weight: bold;">imalison:use-package</span> org-projectile
@@ -5158,8 +5289,11 @@ This function replaces the default naming scheme with a call to
             <span style="color: #657b83; font-weight: bold;">:buffer</span> <span style="color: #2aa198;">"*helm org capture templates*"</span><span style="color: #6c71c4;">)</span><span style="color: #268bd2;">)</span><span style="color: #b58900;">)</span><span style="color: #2aa198;">)</span>
 </pre>
 </div>
-</div></li>
-<li><a id="orgnotify"></a>org-notify<br  /><div class="outline-text-5" id="text-12-3-1-4">
+</div>
+</div>
+<div id="outline-container-orgnotify" class="outline-5">
+<h5 id="orgnotify"><span class="section-number-5">12.3.1.4</span> org-notify</h5>
+<div class="outline-text-5" id="text-12-3-1-4">
 <div class="org-src-container">
 
 <pre class="src src-emacs-lisp"><span style="color: #2aa198;">(</span><span style="color: #859900; font-weight: bold;">use-package</span> <span style="color: #268bd2; font-weight: bold;">org-notify</span>
@@ -5217,8 +5351,11 @@ This function replaces the default naming scheme with a call to
     <span style="color: #268bd2;">(</span>org-notify-start 10<span style="color: #268bd2;">)</span><span style="color: #b58900;">)</span><span style="color: #2aa198;">)</span>
 </pre>
 </div>
-</div></li>
-<li><a id="orgreveal"></a>org-reveal<br  /><div class="outline-text-5" id="text-12-3-1-5">
+</div>
+</div>
+<div id="outline-container-orgreveal" class="outline-5">
+<h5 id="orgreveal"><span class="section-number-5">12.3.1.5</span> org-reveal</h5>
+<div class="outline-text-5" id="text-12-3-1-5">
 <div class="org-src-container">
 
 <pre class="src src-emacs-lisp"><span style="color: #2aa198;">(</span><span style="color: #859900; font-weight: bold;">use-package</span> <span style="color: #268bd2; font-weight: bold;">ox-reveal</span>
@@ -5228,8 +5365,11 @@ This function replaces the default naming scheme with a call to
       <span style="color: #268bd2;">(</span>imalison:join-paths <span style="color: #2aa198;">"file://"</span> imalison:projects-directory <span style="color: #2aa198;">"reveal.js"</span><span style="color: #268bd2;">)</span><span style="color: #b58900;">)</span><span style="color: #2aa198;">)</span>
 </pre>
 </div>
-</div></li>
-<li><a id="orgcaldav"></a>org-caldav<br  /><div class="outline-text-5" id="text-12-3-1-6">
+</div>
+</div>
+<div id="outline-container-orgcaldav" class="outline-5">
+<h5 id="orgcaldav"><span class="section-number-5">12.3.1.6</span> org-caldav</h5>
+<div class="outline-text-5" id="text-12-3-1-6">
 <div class="org-src-container">
 
 <pre class="src src-emacs-lisp"><span style="color: #2aa198;">(</span><span style="color: #859900; font-weight: bold;">use-package</span> <span style="color: #268bd2; font-weight: bold;">org-caldav</span>
@@ -5242,7 +5382,8 @@ This function replaces the default naming scheme with a call to
           org-icalendar-timezone <span style="color: #2aa198;">"America/Los_Angeles"</span><span style="color: #268bd2;">)</span><span style="color: #b58900;">)</span><span style="color: #2aa198;">)</span>
 </pre>
 </div>
-</div></li></ol>
+</div>
+</div>
 </div>
 <div id="outline-container-tex" class="outline-4">
 <h4 id="tex"><span class="section-number-4">12.3.2</span> TeX</h4>
@@ -5271,7 +5412,9 @@ This function replaces the default naming scheme with a call to
 </pre>
 </div>
 </div>
-<ol class="org-ol"><li><a id="latex"></a>latex<br  /><div class="outline-text-5" id="text-12-3-2-1">
+<div id="outline-container-latex" class="outline-5">
+<h5 id="latex"><span class="section-number-5">12.3.2.1</span> latex</h5>
+<div class="outline-text-5" id="text-12-3-2-1">
 <div class="org-src-container">
 
 <pre class="src src-emacs-lisp"><span style="color: #2aa198;">(</span><span style="color: #859900; font-weight: bold;">use-package</span> <span style="color: #268bd2; font-weight: bold;">latex</span>
@@ -5282,8 +5425,11 @@ This function replaces the default naming scheme with a call to
     <span style="color: #268bd2;">(</span><span style="color: #859900; font-weight: bold;">unbind-key</span> <span style="color: #2aa198;">"C-j"</span> LaTeX-mode-map<span style="color: #268bd2;">)</span><span style="color: #b58900;">)</span><span style="color: #2aa198;">)</span>
 </pre>
 </div>
-</div></li>
-<li><a id="auctexlatexmk"></a>auctex-latexmk<br  /><div class="outline-text-5" id="text-12-3-2-2">
+</div>
+</div>
+<div id="outline-container-auctexlatexmk" class="outline-5">
+<h5 id="auctexlatexmk"><span class="section-number-5">12.3.2.2</span> auctex-latexmk</h5>
+<div class="outline-text-5" id="text-12-3-2-2">
 <div class="org-src-container">
 
 <pre class="src src-emacs-lisp"><span style="color: #2aa198;">(</span><span style="color: #859900; font-weight: bold;">use-package</span> <span style="color: #268bd2; font-weight: bold;">auctex-latexmk</span>
@@ -5294,8 +5440,11 @@ This function replaces the default naming scheme with a call to
     <span style="color: #268bd2;">(</span>auctex-latexmk-setup<span style="color: #268bd2;">)</span><span style="color: #b58900;">)</span><span style="color: #2aa198;">)</span>
 </pre>
 </div>
-</div></li>
-<li><a id="companyauctex"></a>company-auctex<br  /><div class="outline-text-5" id="text-12-3-2-3">
+</div>
+</div>
+<div id="outline-container-companyauctex" class="outline-5">
+<h5 id="companyauctex"><span class="section-number-5">12.3.2.3</span> company-auctex</h5>
+<div class="outline-text-5" id="text-12-3-2-3">
 <div class="org-src-container">
 
 <pre class="src src-emacs-lisp"><span style="color: #2aa198;">(</span><span style="color: #859900; font-weight: bold;">use-package</span> <span style="color: #268bd2; font-weight: bold;">company-auctex</span>
@@ -5304,7 +5453,8 @@ This function replaces the default naming scheme with a call to
   <span style="color: #b58900;">(</span>company-auctex-init<span style="color: #b58900;">)</span><span style="color: #2aa198;">)</span>
 </pre>
 </div>
-</div></li></ol>
+</div>
+</div>
 </div>
 <div id="outline-container-markdownmode" class="outline-4">
 <h4 id="markdownmode"><span class="section-number-4">12.3.3</span> markdown-mode</h4>
@@ -6974,7 +7124,7 @@ load-theme hook (See the heading below).
 </div>
 <div id="postamble" class="status">
 <p class="author">Author: Ivan Malison</p>
-<p class="date">Created: 2016-10-27 Thu 02:20</p>
+<p class="date">Created: 2016-10-27 Thu 03:02</p>
 <p class="validation"><a href="http://validator.w3.org/check?uri=referer">Validate</a></p>
 </div>
 </body>
