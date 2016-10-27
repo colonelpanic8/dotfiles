@@ -144,6 +144,17 @@ greedyFocusWindow w ws = W.focusWindow w $ W.greedyView
 shiftToEmptyAndView = doTo Next EmptyWS DWO.getSortByOrder
                       (windows . shiftThenView)
 
+myRaiseNextMaybe = raiseNextMaybeCustomFocus greedyFocusWindow
+myBringNextMaybe = raiseNextMaybeCustomFocus bringWindow
+
+bindBringAndRaise :: KeyMask -> KeySym -> X () -> Query Bool -> [((KeyMask, KeySym), X ())]
+bindBringAndRaise mask sym start query =
+    [ ((mask, sym), myRaiseNextMaybe start query)
+    , ((mask .|. controlMask, sym), myBringNextMaybe start query)]
+
+bindBringAndRaiseMany :: [(KeyMask, KeySym, X (), Query Bool)] -> [((KeyMask, KeySym), X())]
+bindBringAndRaiseMany = concatMap (\(a, b, c, d) -> bindBringAndRaise a b c d)
+
 addKeys conf@XConfig {modMask = modm} =
     [ ((modm, xK_p), spawn "rofi -show drun")
     , ((modm .|. shiftMask, xK_p), spawn "rofi -show run")
@@ -158,12 +169,6 @@ addKeys conf@XConfig {modMask = modm} =
     , ((modm, xK_m), withFocused minimizeWindow)
     , ((modm .|. shiftMask, xK_m), sendMessage RestoreNextMinimizedWin)
     , ((modm, xK_backslash), toggleWS)
-
-    -- App shortcuts
-    , ((modalt, xK_s), raiseNextMaybe (spawn "spotify") spotifySelector)
-    , ((modalt, xK_e), raiseNextMaybe (spawn "emacsclient -c") emacsSelector)
-    , ((modalt, xK_c), raiseNextMaybe (spawn "google-chrome") chromeSelector)
-    , ((modalt, xK_h), raiseNextMaybe (spawn "cool") hangoutsSelector)
 
     -- Hyper bindings
     , ((mod3Mask, xK_1), setWorkspaceNames)
@@ -189,8 +194,13 @@ addKeys conf@XConfig {modMask = modm} =
     , ((mod3Mask, xK_w), spawn "pactl set-sink-volume 0 +05%")
     , ((mod3Mask, xK_s), spawn "pactl set-sink-volume 0 -05%")
 
-    ] ++
+    ] ++ bindBringAndRaiseMany
 
+    [ (modalt, xK_s, spawn "spotify", spotifySelector)
+    , (modalt, xK_e, spawn "emacsclient -c", emacsSelector)
+    , (modalt, xK_c, spawn "google-chrome", chromeSelector)
+    , (modalt, xK_h, spawn "cool", hangoutsSelector)
+    ] ++
     -- Replace original moving stuff around + greedy view bindings
     [((additionalMask .|. modm, key), windows $ function workspace)
          | (workspace, key) <- zip (workspaces conf) [xK_1 .. xK_9]
