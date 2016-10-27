@@ -1,6 +1,5 @@
 [Unit]
 Description=CopyQ
-After=taffybar.service
 
 [Service]
 Type=simple
