@@ -50,10 +50,12 @@ main = xmonad $ def
 
 isHangoutsTitle = isPrefixOf "Google Hangouts"
 
-chromeSelector = className =? "google-chrome" <&&> fmap (not . isHangoutsTitle) title
+chromeSelector = className =? "google-chrome" <&&>
+                 fmap (not . isHangoutsTitle) title
 spotifySelector = className =? "Spotify"
 emacsSelector = className =? "Emacs"
-hangoutsSelector = className =? "google-chrome" <&&> fmap isHangoutsTitle title
+hangoutsSelector = className =? "google-chrome" <&&>
+                   fmap isHangoutsTitle title
 
 -- Startup
 
@@ -66,7 +68,8 @@ myManageHook = composeAll . concat $
 
 -- Layout
 
-layouts = multiCol [1, 1] 2 0.01 (-0.5) ||| Full ||| Tall 1 (3/100) (1/2) ||| Tall 1 (3/100) (3/4)
+layouts = multiCol [1, 1] 2 0.01 (-0.5) ||| Full |||
+          Tall 1 (3/100) (1/2) ||| Tall 1 (3/100) (3/4)
 
 myLayoutHook = avoidStruts . smartSpacing 10 . minimize . boringWindows .
                mkToggle (MIRROR ?? EOT) . workspaceNamesHook . smartBorders .
@@ -87,14 +90,15 @@ myDecorateName ws w = do
   name <- show <$> getName w
   classTitle <- getClass w
   workspaceToName <- getWorkspaceNames
-  return $ printf "%-20s%-40s %+30s" classTitle (take 40 name) "in " ++ workspaceToName (W.tag ws)
+  return $ printf "%-20s%-40s %+30s" classTitle (take 40 name)
+             "in " ++ workspaceToName (W.tag ws)
 
 -- Dynamic Workspace Renaming
 
 getClassRemap = do
   home <- getHomeDirectory
   -- TODO: handle the case where this file does not exist
-  text <- B.readFile (home </> ".lib/resources/window_class_to_fontawesome.json")
+  text <- B.readFile $ home </> ".lib/resources/window_class_to_fontawesome.json"
   return $ fromMaybe M.empty (decode text)
 
 setWorkspaceNameToFocusedWindow workspace  = do
@@ -107,7 +111,7 @@ setWorkspaceNameToFocusedWindow workspace  = do
 
 remapNames namedWindows = do
   remap <- io getClassRemap
-  return $ map (\original -> M.findWithDefault original original remap) namedWindows
+  return $ map (\orig -> M.findWithDefault orig orig remap) namedWindows
 
 setWorkspaceNames = do
   ws <- gets windowset
