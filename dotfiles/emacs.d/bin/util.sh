@@ -10,7 +10,8 @@ readme_was_updated() {
 
 update_index () {
 	emacsclient -e "(with-current-buffer (find-file-noselect \"$TARGET\")
-			   		    (org-html-export-to-html))"
+  (let ((org-export-headline-levels 10))
+    (org-html-export-to-html)))"
 	cp -f "$EMACS_DIR/README.html" "$TOP_LEVEL/index.html"
 }
 
