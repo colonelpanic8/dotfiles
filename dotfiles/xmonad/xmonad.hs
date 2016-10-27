@@ -61,10 +61,7 @@ myStartup = spawn "systemctl --user start wm.target"
 -- Manage
 
 myManageHook = composeAll . concat $
-               [ [ emacsSelector --> doShift "1" ]
-               , [ chromeSelector --> doShift "2" ]
-               , [ hangoutsSelector --> doShift "3"]
-               , [ spotifySelector --> doShift "4"]]
+               [ [ hangoutsSelector --> doShift "3"] ]
 
 -- Layout
 
