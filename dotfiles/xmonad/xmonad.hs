@@ -92,7 +92,8 @@ myDecorateName ws w = do
 
 getClassRemap = do
   home <- getHomeDirectory
-  text <- B.readFile (home </> ".lib/class_remap.json")
+  -- TODO: handle the case where this file does not exist
+  text <- B.readFile (home </> ".lib/resources/window_class_to_fontawesome.json")
   return $ fromMaybe M.empty (decode text)
 
 setWorkspaceNameToFocusedWindow workspace  = do
