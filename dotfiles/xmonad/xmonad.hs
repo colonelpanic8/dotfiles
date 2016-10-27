@@ -41,7 +41,8 @@ main = xmonad $ def
        , manageHook = manageDocks <+> myManageHook <+> manageHook def
        , layoutHook = myLayoutHook
        , logHook = toggleFadeInactiveLogHook 0.9 +++ ewmhWorkspaceNamesLogHook
-       , handleEventHook = docksEventHook <+> fullscreenEventHook +++ ewmhDesktopsEventHook +++ pagerHintsEventHook
+       , handleEventHook = docksEventHook <+> fullscreenEventHook +++
+                           ewmhDesktopsEventHook +++ pagerHintsEventHook
        , startupHook = myStartup +++ ewmhWorkspaceNamesLogHook
        , keys = customKeys (const []) addKeys
       } where
