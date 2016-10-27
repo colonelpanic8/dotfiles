@@ -40,7 +40,7 @@ main = xmonad $ def
        , terminal = "urxvt"
        , manageHook = manageDocks <+> myManageHook <+> manageHook def
        , layoutHook = myLayoutHook
-       , logHook = fadeInactiveLogHook 0.9 +++ ewmhWorkspaceNamesLogHook
+       , logHook = toggleFadeInactiveLogHook 0.9 +++ ewmhWorkspaceNamesLogHook
        , handleEventHook = docksEventHook <+> fullscreenEventHook +++ ewmhDesktopsEventHook +++ pagerHintsEventHook
        , startupHook = myStartup +++ ewmhWorkspaceNamesLogHook
        , keys = customKeys (const []) addKeys
@@ -136,6 +136,31 @@ getWorkspaceNameFromTag namesMap tag =
 
 shiftThenView i = W.greedyView i . W.shift i
 
+-- Toggleable fade
+
+newtype ToggleFade = ToggleFade (M.Map Window Bool)
+    deriving (Typeable, Read, Show)
+
+instance ExtensionClass ToggleFade where
+    initialValue = ToggleFade M.empty
+    extensionType = PersistentExtension
+
+fadeEnabledForWindow = ask >>= \w -> liftX (do
+                         ToggleFade toggleMap <- XS.get
+                         return $ M.findWithDefault True w toggleMap)
+
+toggleFadeInactiveLogHook = fadeOutLogHook . fadeIf (isUnfocused <&&> fadeEnabledForWindow)
+
+toggleFadingForActiveWindow = withWindowSet $ \windowSet -> do
+  ToggleFade toggleMap <- XS.get
+  let maybeWindow = W.peek windowSet
+  case maybeWindow of
+    Nothing -> return ()
+    Just window -> do
+        let existingValue = M.findWithDefault True window toggleMap
+        XS.put $ ToggleFade (M.insert window (not existingValue) toggleMap)
+        return ()
+
 -- Use greedyView to switch to the correct workspace, and then focus on the
 -- appropriate window within that workspace.
 greedyFocusWindow w ws = W.focusWindow w $ W.greedyView
@@ -171,7 +196,7 @@ addKeys conf@XConfig {modMask = modm} =
     , ((modm, xK_backslash), toggleWS)
 
     -- Hyper bindings
-    , ((mod3Mask, xK_1), setWorkspaceNames)
+    , ((mod3Mask, xK_1), toggleFadingForActiveWindow)
     , ((mod3Mask, xK_e), moveTo Next EmptyWS )
     , ((mod3Mask .|. shiftMask, xK_e), shiftToEmptyAndView)
     , ((mod3Mask, xK_v), spawn "copyq_rofi.sh")
