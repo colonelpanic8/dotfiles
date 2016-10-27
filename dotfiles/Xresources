@@ -1,8 +1,12 @@
 ! ------------------------------------------------------------------------------
 ! ROFI Color theme
 ! ------------------------------------------------------------------------------
+
 rofi.padding: 30
 
+rofi.font:             source code pro semibold 12
+
+! border width
 rofi.bw:   5
 rofi.color-enabled: true
 rofi.color-window: #121212, #455a64, #000000
