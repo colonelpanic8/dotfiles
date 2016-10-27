@@ -1,15 +1,15 @@
-style "default" {
-  font_name = "Source Code Pro 8"
-  bg[NORMAL] = @base03
-  fg[NORMAL] = @base0
-  text[NORMAL] = @base0
+style "taffybar-default" {
+  color["black"] = "#000000"
+  color["white"] = "#ffffff"
+  color["green"] = "#00ff00"
+  color["red"]   = "#ff0000"
+
+  bg[NORMAL]   = "#1c1f26"
+  fg[NORMAL]   = @white
+  text[NORMAL] = @white
+  fg[PRELIGHT] = @green
+  bg[PRELIGHT] = @black
 }
 
-style "notification-button" = "default" {
-  font_name = "Terminus 8"
-  text[NORMAL] = @violet
-  fg[NORMAL] = @violet
-}
-
-widget "Taffybar*" style "default"
+widget "Taffybar*" style "taffybar-default"
 widget "*NotificationCloseButton" style "notification-button"
