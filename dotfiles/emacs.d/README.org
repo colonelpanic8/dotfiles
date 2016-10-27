@@ -1404,10 +1404,6 @@ https://github.com/alpaker/Fill-Column-Indicator/issues/21 for more details
     (advice-add 'company-call-frontends :before #'fci-on-off-fci-before-company)
     (add-hook 'prog-mode-hook 'fci-mode)))
 #+END_SRC
-** overseer
-#+BEGIN_SRC emacs-lisp
-(use-package overseer)
-#+END_SRC
 * Keybindings
 ** bind-key
 #+BEGIN_SRC emacs-lisp
@@ -2309,6 +2305,10 @@ Reduce indentation for some functions
 (use-package edebug
   :config
   (progn (setq edebug-trace t)))
+#+END_SRC
+**** overseer
+#+BEGIN_SRC emacs-lisp
+(use-package overseer)
 #+END_SRC
 **** Misc
 #+BEGIN_SRC emacs-lisp
