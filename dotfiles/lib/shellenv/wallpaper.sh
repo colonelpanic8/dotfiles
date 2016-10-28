@@ -5,7 +5,8 @@ random_paper() {
 }
 
 wallpaper() {
-	feh --bg-center $(random_paper) --bg-scale "$WALLPAPER_DIR"transparent1x1.png
+	local target_paper=${1:-"$(random_paper)"}
+	feh --bg-center $target_paper  --bg-scale "$WALLPAPER_DIR"transparent1x1.png
 }
 
 wallpaper_timer() {
