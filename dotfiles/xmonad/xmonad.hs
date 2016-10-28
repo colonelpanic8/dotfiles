@@ -222,7 +222,7 @@ addKeys conf@XConfig {modMask = modm} =
     , ((mod3Mask, xK_c), spawn "shell_command.sh")
 
     -- ModAlt bindings
-    , ((modalt, xK_w), spawn "wallpaper.sh")
+    , ((modalt, xK_w), spawn "rofi_wallpaper.sh")
 
     -- playerctl
     , ((mod3Mask, xK_f), spawn "playerctl play-pause")
