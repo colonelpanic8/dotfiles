@@ -1,5 +1,6 @@
 {-# LANGUAGE TypeSynonymInstances, MultiParamTypeClasses #-}
 import Control.Monad
+import Control.Monad.Trans.Maybe
 import Data.Aeson
 import qualified Data.ByteString.Lazy as B
 import Data.List
@@ -57,6 +58,8 @@ emacsSelector = className =? "Emacs"
 hangoutsSelector = className =? "google-chrome" <&&>
                    fmap isHangoutsTitle title
 
+virtualClasses = [(hangoutsSelector, "Hangouts")]
+
 -- Startup
 
 myStartup = spawn "systemctl --user start wm.target"
@@ -82,9 +85,20 @@ myWindowBringerConfig = WindowBringerConfig { menuCommand = "rofi"
                                             , windowTitler = myDecorateName
                                             }
 
+findM :: (Monad m) => (a -> m (Maybe b)) -> [a] -> m (Maybe b)
+findM f = runMaybeT . msum . map (MaybeT . f)
+
+classIfMatches window entry = do
+  result <- runQuery (fst entry) window
+  return $ if result then Just $ snd entry else Nothing
+
 getClass w = do
-  classHint <- withDisplay $ \d -> io $ getClassHint d w
-  return $ resClass classHint
+  virtualClass <- findM (classIfMatches w) virtualClasses
+  case virtualClass of
+    Nothing -> do
+               classHint <- withDisplay $ \d -> io $ getClassHint d w
+               return $ resClass classHint
+    Just name -> return name
 
 myDecorateName ws w = do
   name <- show <$> getName w
