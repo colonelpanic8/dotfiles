@@ -18,6 +18,7 @@
         imalison:avy
         imalison:multi-line
         indent-for-tab-command
+        insert-register
         isearch-forward-regexp
         isearch-other-control-char
         isearch-printing-char
