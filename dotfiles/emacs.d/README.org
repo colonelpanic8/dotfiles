@@ -1893,9 +1893,16 @@ I don't use auto-complete at all, so I have set up a hook to automatically disab
 #+BEGIN_SRC emacs-lisp
 (use-package magit
   :commands magit-status
-  :bind (("C-x g" . magit-status))
+  :bind (("C-x g" . imalison:magit-status))
   :preface
   (progn
+    (emit-let-around imalison:magit-status-traditional
+                     magit-status
+                     (magit-display-buffer-function
+                      'magit-display-buffer-traditional))
+    (emit-prefix-selector imalison:magit-status
+                          magit-status
+                          imalison:magit-status-traditional)
     (defun imalison:after-magit-visit-file (&rest args)
       (when (derived-mode-p 'org-mode)
         (org-show-context 'magit-goto))))
@@ -1904,7 +1911,9 @@ I don't use auto-complete at all, so I have set up a hook to automatically disab
     (unbind-key "C-j" magit-status-mode-map)
     (unbind-key "C-j" magit-hunk-section-map)
     (unbind-key "C-j" magit-file-section-map)
-    (defvar-setq magit-last-seen-setup-instructions "1.4.0")
+    (setq magit-last-seen-setup-instructions "1.4.0"
+          magit-display-buffer-function
+          'magit-display-buffer-same-window-except-diff-v1)
     (magit-auto-revert-mode)
     ;; TODO: Is this necessary now that signing is a git default
     (when (bound-and-true-p imalison:gpg-key)
