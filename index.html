@@ -3,7 +3,7 @@
 "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
-<!-- 2016-10-27 Thu 16:08 -->
+<!-- 2016-10-28 Fri 14:28 -->
 <meta  http-equiv="Content-Type" content="text/html;charset=utf-8" />
 <meta  name="viewport" content="width=device-width, initial-scale=1" />
 <title></title>
@@ -100,12 +100,6 @@
 <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js"></script>
 <script type="text/javascript" src="http://www.pirilampo.org/styles/lib/js/jquery.stickytableheaders.js"></script>
 <script type="text/javascript" src="http://www.pirilampo.org/styles/readtheorg/js/readtheorg.js"></script>
-<style type="text/css">
- pre.src {background-color: #263238; color: #ffffff;}</style>
-<style type="text/css">
- pre.src {background-color: #fdf6e3; color: #657b83;}</style>
-<style type="text/css">
- pre.src {background-color: #fdf6e3; color: #657b83;}</style>
 <style type="text/css">
  pre.src {background-color: #263238; color: #ffffff;}</style>
 <script type="text/javascript">
@@ -2773,6 +2767,7 @@ proced is an top like utility that runs inside of emacs. The following sets auto
 
 <pre class="src src-emacs-lisp"><span style="color: #e91e63;">(</span><span style="color: #fff59d;">use-package</span> <span style="color: #8bc34a;">frames-only-mode</span>
   <span style="color: #ff8A65;">:ensure</span> nil
+  <span style="color: #ff8A65;">:disabled</span> t
   <span style="color: #ff8A65;">:preface</span>
   <span style="color: #2196F3;">(</span><span style="color: #fff59d;">defun</span> <span style="color: #84ffff;">imalison:other-frame-backwards</span> <span style="color: #EF6C00;">()</span>
     <span style="color: #EF6C00;">(</span><span style="color: #fff59d;">interactive</span><span style="color: #EF6C00;">)</span>
@@ -3621,7 +3616,8 @@ I don't use auto-complete at all, so I have set up a hook to automatically disab
     <span style="color: #EF6C00;">(</span><span style="color: #fff59d;">unbind-key</span> <span style="color: #9ccc65;">"C-j"</span> magit-status-mode-map<span style="color: #EF6C00;">)</span>
     <span style="color: #EF6C00;">(</span><span style="color: #fff59d;">unbind-key</span> <span style="color: #9ccc65;">"C-j"</span> magit-hunk-section-map<span style="color: #EF6C00;">)</span>
     <span style="color: #EF6C00;">(</span><span style="color: #fff59d;">unbind-key</span> <span style="color: #9ccc65;">"C-j"</span> magit-file-section-map<span style="color: #EF6C00;">)</span>
-    <span style="color: #EF6C00;">(</span><span style="color: #fff59d;">defvar-setq</span> magit-last-seen-setup-instructions <span style="color: #9ccc65;">"1.4.0"</span><span style="color: #EF6C00;">)</span>
+    <span style="color: #EF6C00;">(</span><span style="color: #fff59d;">setq</span> magit-last-seen-setup-instructions <span style="color: #9ccc65;">"1.4.0"</span>
+          magit-display-buffer-function 'magit-display-buffer-same-window-except-diff-v1<span style="color: #EF6C00;">)</span>
     <span style="color: #EF6C00;">(</span>magit-auto-revert-mode<span style="color: #EF6C00;">)</span>
     <span style="color: #b0bec5;">;; </span><span style="color: #b0bec5;">TODO: Is this necessary now that signing is a git default</span>
     <span style="color: #EF6C00;">(</span><span style="color: #fff59d;">when</span> <span style="color: #B388FF;">(</span><span style="color: #fff59d;">bound-and-true-p</span> imalison:gpg-key<span style="color: #B388FF;">)</span>
@@ -4616,6 +4612,7 @@ Intero seems to be causing hangs, so it has been disabled
   <span style="color: #ff8A65;">:after</span> haskell-mode
   <span style="color: #ff8A65;">:config</span>
   <span style="color: #2196F3;">(</span><span style="color: #fff59d;">progn</span>
+    <span style="color: #EF6C00;">(</span><span style="color: #fff59d;">setq</span> ghc-debug t<span style="color: #EF6C00;">)</span>
     <span style="color: #EF6C00;">(</span>add-hook 'haskell-mode-hook 'ghc-init<span style="color: #EF6C00;">)</span><span style="color: #2196F3;">)</span><span style="color: #e91e63;">)</span>
 </pre>
 </div>
@@ -7127,7 +7124,7 @@ load-theme hook (See the heading below).
 </div>
 <div id="postamble" class="status">
 <p class="author">Author: Ivan Malison</p>
-<p class="date">Created: 2016-10-27 Thu 16:08</p>
+<p class="date">Created: 2016-10-28 Fri 14:28</p>
 <p class="validation"><a href="http://validator.w3.org/check?uri=referer">Validate</a></p>
 </div>
 </body>
