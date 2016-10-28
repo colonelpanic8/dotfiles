@@ -2628,6 +2628,7 @@ Intero seems to be causing hangs, so it has been disabled
   :after haskell-mode
   :config
   (progn
+    (setq ghc-debug t)
     (add-hook 'haskell-mode-hook 'ghc-init)))
 #+END_SRC
 **** company-ghc
