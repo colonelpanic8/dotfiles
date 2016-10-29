@@ -3,7 +3,7 @@
 "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
-<!-- 2016-10-29 Sat 10:16 -->
+<!-- 2016-10-29 Sat 12:56 -->
 <meta  http-equiv="Content-Type" content="text/html;charset=utf-8" />
 <meta  name="viewport" content="width=device-width, initial-scale=1" />
 <title></title>
@@ -100,10 +100,6 @@
 <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js"></script>
 <script type="text/javascript" src="http://www.pirilampo.org/styles/lib/js/jquery.stickytableheaders.js"></script>
 <script type="text/javascript" src="http://www.pirilampo.org/styles/readtheorg/js/readtheorg.js"></script>
-<style type="text/css">
- pre.src {background-color: #263238; color: #ffffff;}</style>
-<style type="text/css">
- pre.src {background-color: #263238; color: #ffffff;}</style>
 <style type="text/css">
  pre.src {background-color: #263238; color: #ffffff;}</style>
 <script type="text/javascript">
@@ -1003,8 +999,31 @@ This makes it so that we always try to call-process instead of shell-command-to-
          <span style="color: #76ff03;">(</span>imalison:get-call-process-args-from-shell-command command<span style="color: #76ff03;">)</span><span style="color: #B388FF;">)</span><span style="color: #EF6C00;">)</span>
     <span style="color: #EF6C00;">(</span><span style="color: #fff59d;">if</span> call-process-args
         <span style="color: #B388FF;">(</span>apply 'imalison:call-process-to-string call-process-args<span style="color: #B388FF;">)</span><span style="color: #EF6C00;">)</span><span style="color: #2196F3;">)</span><span style="color: #e91e63;">)</span>
+</pre>
+</div>
 
-<span style="color: #e91e63;">(</span>advice-add 'shell-command-to-string <span style="color: #ff8A65;">:before-until</span> 'imalison:try-call-process<span style="color: #e91e63;">)</span>
+<p>
+This had to be disabled because it was causing a bunch of issues with projectile.
+</p>
+<div class="org-src-container">
+
+<pre class="src src-emacs-lisp"><span style="color: #e91e63;">(</span>advice-add 'shell-command-to-string <span style="color: #ff8A65;">:before-until</span> 'imalison:try-call-process<span style="color: #e91e63;">)</span>
+</pre>
+</div>
+
+<p>
+This solution only applies it to projectile-find-file
+</p>
+<div class="org-src-container">
+
+<pre class="src src-emacs-lisp"><span style="color: #e91e63;">(</span><span style="color: #fff59d;">require</span> '<span style="color: #8bc34a;">noflet</span><span style="color: #e91e63;">)</span>
+
+<span style="color: #e91e63;">(</span><span style="color: #fff59d;">defun</span> <span style="color: #84ffff;">imalison:call-with-quick-shell-command</span> <span style="color: #2196F3;">(</span>fn <span style="color: #84ffff;">&amp;rest</span> args<span style="color: #2196F3;">)</span>
+  <span style="color: #2196F3;">(</span><span style="color: #fff59d;">noflet</span> <span style="color: #EF6C00;">(</span><span style="color: #B388FF;">(</span>shell-command-to-string <span style="color: #76ff03;">(</span><span style="color: #84ffff;">&amp;rest</span> args<span style="color: #76ff03;">)</span>
+                                    <span style="color: #76ff03;">(</span><span style="color: #fff59d;">or</span> <span style="color: #26A69A;">(</span>apply 'imalison:try-call-process args<span style="color: #26A69A;">)</span> <span style="color: #26A69A;">(</span>apply this-fn args<span style="color: #26A69A;">)</span><span style="color: #76ff03;">)</span><span style="color: #B388FF;">)</span><span style="color: #EF6C00;">)</span>
+    <span style="color: #EF6C00;">(</span>apply fn args<span style="color: #EF6C00;">)</span><span style="color: #2196F3;">)</span><span style="color: #e91e63;">)</span>
+
+<span style="color: #e91e63;">(</span>advice-add 'projectile-find-file <span style="color: #ff8A65;">:around</span> 'imalison:call-with-quick-shell-command<span style="color: #e91e63;">)</span>
 </pre>
 </div>
 </div>
@@ -7152,7 +7171,7 @@ load-theme hook (See the heading below).
 </div>
 <div id="postamble" class="status">
 <p class="author">Author: Ivan Malison</p>
-<p class="date">Created: 2016-10-29 Sat 10:16</p>
+<p class="date">Created: 2016-10-29 Sat 12:56</p>
 <p class="validation"><a href="http://validator.w3.org/check?uri=referer">Validate</a></p>
 </div>
 </body>
