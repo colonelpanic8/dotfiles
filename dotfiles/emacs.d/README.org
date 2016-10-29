@@ -218,8 +218,23 @@ This makes it so that we always try to call-process instead of shell-command-to-
          (imalison:get-call-process-args-from-shell-command command)))
     (if call-process-args
         (apply 'imalison:call-process-to-string call-process-args))))
+#+END_SRC
 
+This had to be disabled because it was causing a bunch of issues with projectile.
+#+BEGIN_SRC emacs-lisp :tangle no
 (advice-add 'shell-command-to-string :before-until 'imalison:try-call-process)
+#+END_SRC
+
+This solution only applies it to projectile-find-file
+#+BEGIN_SRC emacs-lisp
+(require 'noflet)
+
+(defun imalison:call-with-quick-shell-command (fn &rest args)
+  (noflet ((shell-command-to-string (&rest args)
+                                    (or (apply 'imalison:try-call-process args) (apply this-fn args))))
+    (apply fn args)))
+
+(advice-add 'projectile-find-file :around 'imalison:call-with-quick-shell-command)
 #+END_SRC
 ** Security
 #+BEGIN_SRC emacs-lisp
