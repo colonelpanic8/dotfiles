@@ -3,7 +3,7 @@
 "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
-<!-- 2016-10-28 Fri 14:35 -->
+<!-- 2016-10-29 Sat 02:21 -->
 <meta  http-equiv="Content-Type" content="text/html;charset=utf-8" />
 <meta  name="viewport" content="width=device-width, initial-scale=1" />
 <title></title>
@@ -100,10 +100,6 @@
 <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js"></script>
 <script type="text/javascript" src="http://www.pirilampo.org/styles/lib/js/jquery.stickytableheaders.js"></script>
 <script type="text/javascript" src="http://www.pirilampo.org/styles/readtheorg/js/readtheorg.js"></script>
-<style type="text/css">
- pre.src {background-color: #263238; color: #ffffff;}</style>
-<style type="text/css">
- pre.src {background-color: #263238; color: #ffffff;}</style>
 <style type="text/css">
  pre.src {background-color: #263238; color: #ffffff;}</style>
 <script type="text/javascript">
@@ -332,23 +328,24 @@ for the JavaScript code in this tag.
 </li>
 <li><a href="#keybindings">7. Keybindings</a>
 <ul>
-<li><a href="#bindkey">7.1. bind-key</a></li>
-<li><a href="#whichkey">7.2. which-key</a></li>
-<li><a href="#hydra">7.3. hydra</a>
+<li><a href="#godmode">7.1. god-mode</a></li>
+<li><a href="#bindkey">7.2. bind-key</a></li>
+<li><a href="#whichkey">7.3. which-key</a></li>
+<li><a href="#hydra">7.4. hydra</a>
 <ul>
-<li><a href="#fontsettings">7.3.1. Font Settings</a></li>
-<li><a href="#yanking">7.3.2. Yanking</a></li>
-<li><a href="#compile">7.3.3. Compile</a></li>
+<li><a href="#fontsettings">7.4.1. Font Settings</a></li>
+<li><a href="#yanking">7.4.2. Yanking</a></li>
+<li><a href="#compile">7.4.3. Compile</a></li>
 </ul>
 </li>
-<li><a href="#killemacs">7.4. kill-emacs</a></li>
-<li><a href="#imenu">7.5. imenu</a></li>
-<li><a href="#undo">7.6. undo</a></li>
-<li><a href="#otherwindow">7.7. other-window</a></li>
-<li><a href="#markring">7.8. Mark ring</a></li>
-<li><a href="#otherbindings">7.9. Other bindings</a></li>
-<li><a href="#globalsetkeytousepackage">7.10. global-set-key-to-use-package</a></li>
-<li><a href="#osx">7.11. OSX</a></li>
+<li><a href="#killemacs">7.5. kill-emacs</a></li>
+<li><a href="#imenu">7.6. imenu</a></li>
+<li><a href="#undo">7.7. undo</a></li>
+<li><a href="#otherwindow">7.8. other-window</a></li>
+<li><a href="#markring">7.9. Mark ring</a></li>
+<li><a href="#otherbindings">7.10. Other bindings</a></li>
+<li><a href="#globalsetkeytousepackage">7.11. global-set-key-to-use-package</a></li>
+<li><a href="#osx">7.12. OSX</a></li>
 </ul>
 </li>
 <li><a href="#navigation">8. Navigation</a>
@@ -2861,9 +2858,23 @@ This interferes with too many other packages. See
 <div id="outline-container-keybindings" class="outline-2">
 <h2 id="keybindings"><span class="section-number-2">7</span> Keybindings</h2>
 <div class="outline-text-2" id="text-7">
-</div><div id="outline-container-bindkey" class="outline-3">
-<h3 id="bindkey"><span class="section-number-3">7.1</span> bind-key</h3>
+</div><div id="outline-container-godmode" class="outline-3">
+<h3 id="godmode"><span class="section-number-3">7.1</span> god-mode</h3>
 <div class="outline-text-3" id="text-7-1">
+<div class="org-src-container">
+
+<pre class="src src-emacs-lisp"><span style="color: #e91e63;">(</span><span style="color: #fff59d;">use-package</span> <span style="color: #8bc34a;">god-mode</span>
+  <span style="color: #ff8A65;">:demand</span> t
+  <span style="color: #ff8A65;">:config</span>
+  <span style="color: #2196F3;">(</span><span style="color: #fff59d;">progn</span>
+    <span style="color: #EF6C00;">(</span>global-set-key <span style="color: #B388FF;">(</span>kbd <span style="color: #9ccc65;">"&lt;escape&gt;"</span><span style="color: #B388FF;">)</span> 'god-local-mode<span style="color: #EF6C00;">)</span><span style="color: #2196F3;">)</span><span style="color: #e91e63;">)</span>
+</pre>
+</div>
+</div>
+</div>
+<div id="outline-container-bindkey" class="outline-3">
+<h3 id="bindkey"><span class="section-number-3">7.2</span> bind-key</h3>
+<div class="outline-text-3" id="text-7-2">
 <div class="org-src-container">
 
 <pre class="src src-emacs-lisp"><span style="color: #e91e63;">(</span><span style="color: #fff59d;">use-package</span> <span style="color: #8bc34a;">bind-key</span><span style="color: #e91e63;">)</span>
@@ -2872,8 +2883,8 @@ This interferes with too many other packages. See
 </div>
 </div>
 <div id="outline-container-whichkey" class="outline-3">
-<h3 id="whichkey"><span class="section-number-3">7.2</span> which-key</h3>
-<div class="outline-text-3" id="text-7-2">
+<h3 id="whichkey"><span class="section-number-3">7.3</span> which-key</h3>
+<div class="outline-text-3" id="text-7-3">
 <div class="org-src-container">
 
 <pre class="src src-emacs-lisp"><span style="color: #e91e63;">(</span><span style="color: #fff59d;">use-package</span> <span style="color: #8bc34a;">which-key</span>
@@ -2887,8 +2898,8 @@ This interferes with too many other packages. See
 </div>
 </div>
 <div id="outline-container-hydra" class="outline-3">
-<h3 id="hydra"><span class="section-number-3">7.3</span> hydra</h3>
-<div class="outline-text-3" id="text-7-3">
+<h3 id="hydra"><span class="section-number-3">7.4</span> hydra</h3>
+<div class="outline-text-3" id="text-7-4">
 <div class="org-src-container">
 
 <pre class="src src-emacs-lisp"><span style="color: #e91e63;">(</span><span style="color: #fff59d;">use-package</span> <span style="color: #8bc34a;">hydra</span>
@@ -2902,8 +2913,8 @@ This interferes with too many other packages. See
 </div>
 </div>
 <div id="outline-container-fontsettings" class="outline-4">
-<h4 id="fontsettings"><span class="section-number-4">7.3.1</span> Font Settings</h4>
-<div class="outline-text-4" id="text-7-3-1">
+<h4 id="fontsettings"><span class="section-number-4">7.4.1</span> Font Settings</h4>
+<div class="outline-text-4" id="text-7-4-1">
 <p>
 <a id="orgtarget1"></a>
 </p>
@@ -2926,8 +2937,8 @@ This interferes with too many other packages. See
 </div>
 </div>
 <div id="outline-container-yanking" class="outline-4">
-<h4 id="yanking"><span class="section-number-4">7.3.2</span> Yanking</h4>
-<div class="outline-text-4" id="text-7-3-2">
+<h4 id="yanking"><span class="section-number-4">7.4.2</span> Yanking</h4>
+<div class="outline-text-4" id="text-7-4-2">
 <div class="org-src-container">
 
 <pre class="src src-emacs-lisp"><span style="color: #e91e63;">(</span><span style="color: #fff59d;">defhydra</span> imalison:hydra-yank
@@ -2942,8 +2953,8 @@ This interferes with too many other packages. See
 </div>
 </div>
 <div id="outline-container-compile" class="outline-4">
-<h4 id="compile"><span class="section-number-4">7.3.3</span> Compile</h4>
-<div class="outline-text-4" id="text-7-3-3">
+<h4 id="compile"><span class="section-number-4">7.4.3</span> Compile</h4>
+<div class="outline-text-4" id="text-7-4-3">
 <div class="org-src-container">
 
 <pre class="src src-emacs-lisp"><span style="color: #e91e63;">(</span><span style="color: #fff59d;">defun</span> <span style="color: #84ffff;">imalison:make-test</span> <span style="color: #2196F3;">()</span>
@@ -2956,7 +2967,8 @@ This interferes with too many other packages. See
   <span style="color: #2196F3;">(</span>imalison:named-compile <span style="color: #9ccc65;">"glide up"</span><span style="color: #2196F3;">)</span><span style="color: #e91e63;">)</span>
 
 <span style="color: #e91e63;">(</span><span style="color: #fff59d;">defhydra</span> imalison:compile nil <span style="color: #9ccc65;">"Compile"</span>
-  <span style="color: #2196F3;">(</span><span style="color: #9ccc65;">"s"</span> imalison:projectile-helm-command-from-zsh <span style="color: #9ccc65;">"Select a command from shell history"</span><span style="color: #2196F3;">)</span>
+  <span style="color: #2196F3;">(</span><span style="color: #9ccc65;">"p"</span> imalison:projectile-helm-command-from-zsh <span style="color: #9ccc65;">"Run a command in projectile root"</span><span style="color: #2196F3;">)</span>
+  <span style="color: #2196F3;">(</span><span style="color: #9ccc65;">"d"</span> helm-command-from-zsh <span style="color: #9ccc65;">"Run a command in default directory"</span><span style="color: #2196F3;">)</span>
   <span style="color: #2196F3;">(</span><span style="color: #9ccc65;">"c"</span> imalison:named-compile <span style="color: #9ccc65;">"Enter Custom Command"</span><span style="color: #2196F3;">)</span>
   <span style="color: #2196F3;">(</span><span style="color: #9ccc65;">"t"</span> imalison:make-test <span style="color: #9ccc65;">"Test"</span><span style="color: #2196F3;">)</span>
   <span style="color: #2196F3;">(</span><span style="color: #9ccc65;">"u"</span> imalison:glide-up <span style="color: #9ccc65;">"Update Dependencies"</span><span style="color: #2196F3;">)</span><span style="color: #e91e63;">)</span>
@@ -2968,8 +2980,8 @@ This interferes with too many other packages. See
 </div>
 </div>
 <div id="outline-container-killemacs" class="outline-3">
-<h3 id="killemacs"><span class="section-number-3">7.4</span> kill-emacs</h3>
-<div class="outline-text-3" id="text-7-4">
+<h3 id="killemacs"><span class="section-number-3">7.5</span> kill-emacs</h3>
+<div class="outline-text-3" id="text-7-5">
 <p>
 This ensures that C-x C-c will always kill emacs, even if we are running in server mode.
 </p>
@@ -2981,8 +2993,8 @@ This ensures that C-x C-c will always kill emacs, even if we are running in serv
 </div>
 </div>
 <div id="outline-container-imenu" class="outline-3">
-<h3 id="imenu"><span class="section-number-3">7.5</span> imenu</h3>
-<div class="outline-text-3" id="text-7-5">
+<h3 id="imenu"><span class="section-number-3">7.6</span> imenu</h3>
+<div class="outline-text-3" id="text-7-6">
 <p>
 imenu is the best. This should be a default binding.
 </p>
@@ -2994,8 +3006,8 @@ imenu is the best. This should be a default binding.
 </div>
 </div>
 <div id="outline-container-undo" class="outline-3">
-<h3 id="undo"><span class="section-number-3">7.6</span> undo</h3>
-<div class="outline-text-3" id="text-7-6">
+<h3 id="undo"><span class="section-number-3">7.7</span> undo</h3>
+<div class="outline-text-3" id="text-7-7">
 <p>
 I can't shake the habit of using this keybinding for undo. I should really use the default of C-/.
 </p>
@@ -3007,8 +3019,8 @@ I can't shake the habit of using this keybinding for undo. I should really use t
 </div>
 </div>
 <div id="outline-container-otherwindow" class="outline-3">
-<h3 id="otherwindow"><span class="section-number-3">7.7</span> other-window</h3>
-<div class="outline-text-3" id="text-7-7">
+<h3 id="otherwindow"><span class="section-number-3">7.8</span> other-window</h3>
+<div class="outline-text-3" id="text-7-8">
 <p>
 Go the other way when you use capital O.
 </p>
@@ -3020,8 +3032,8 @@ Go the other way when you use capital O.
 </div>
 </div>
 <div id="outline-container-markring" class="outline-3">
-<h3 id="markring"><span class="section-number-3">7.8</span> Mark ring</h3>
-<div class="outline-text-3" id="text-7-8">
+<h3 id="markring"><span class="section-number-3">7.9</span> Mark ring</h3>
+<div class="outline-text-3" id="text-7-9">
 <div class="org-src-container">
 
 <pre class="src src-emacs-lisp"><span style="color: #e91e63;">(</span><span style="color: #fff59d;">bind-key</span> <span style="color: #9ccc65;">"C-c SPC"</span> 'imalison:mark-ring<span style="color: #e91e63;">)</span>
@@ -3030,8 +3042,8 @@ Go the other way when you use capital O.
 </div>
 </div>
 <div id="outline-container-otherbindings" class="outline-3">
-<h3 id="otherbindings"><span class="section-number-3">7.9</span> Other bindings</h3>
-<div class="outline-text-3" id="text-7-9">
+<h3 id="otherbindings"><span class="section-number-3">7.10</span> Other bindings</h3>
+<div class="outline-text-3" id="text-7-10">
 <div class="org-src-container">
 
 <pre class="src src-emacs-lisp"><span style="color: #e91e63;">(</span><span style="color: #fff59d;">bind-key</span> <span style="color: #9ccc65;">"C-x p"</span> 'pop-to-mark-command<span style="color: #e91e63;">)</span>
@@ -3051,8 +3063,8 @@ Go the other way when you use capital O.
 </div>
 </div>
 <div id="outline-container-globalsetkeytousepackage" class="outline-3">
-<h3 id="globalsetkeytousepackage"><span class="section-number-3">7.10</span> global-set-key-to-use-package</h3>
-<div class="outline-text-3" id="text-7-10">
+<h3 id="globalsetkeytousepackage"><span class="section-number-3">7.11</span> global-set-key-to-use-package</h3>
+<div class="outline-text-3" id="text-7-11">
 <p>
 This might be useless, but I believe that it is a macro that converts between
 bind-key and global-set-key forms.
@@ -3069,8 +3081,8 @@ bind-key and global-set-key forms.
 </div>
 </div>
 <div id="outline-container-osx" class="outline-3">
-<h3 id="osx"><span class="section-number-3">7.11</span> OSX</h3>
-<div class="outline-text-3" id="text-7-11">
+<h3 id="osx"><span class="section-number-3">7.12</span> OSX</h3>
+<div class="outline-text-3" id="text-7-12">
 <div class="org-src-container">
 
 <pre class="src src-emacs-lisp"><span style="color: #e91e63;">(</span><span style="color: #fff59d;">when</span> <span style="color: #2196F3;">(</span>equal system-type 'darwin<span style="color: #2196F3;">)</span>
@@ -4609,7 +4621,7 @@ Intero seems to be causing hangs, so it has been disabled
   <span style="color: #ff8A65;">:after</span> haskell-mode
   <span style="color: #ff8A65;">:config</span>
   <span style="color: #2196F3;">(</span><span style="color: #fff59d;">progn</span>
-    <span style="color: #EF6C00;">(</span><span style="color: #fff59d;">setq</span> haskell-enable-hindent-style <span style="color: #9ccc65;">"fundamental"</span><span style="color: #EF6C00;">)</span>
+    <span style="color: #EF6C00;">(</span><span style="color: #fff59d;">setq</span> hindent-style <span style="color: #9ccc65;">"chris-done"</span><span style="color: #EF6C00;">)</span>
     <span style="color: #EF6C00;">(</span>add-hook 'haskell-mode-hook 'hindent-mode<span style="color: #EF6C00;">)</span><span style="color: #2196F3;">)</span><span style="color: #e91e63;">)</span>
 </pre>
 </div>
@@ -7136,7 +7148,7 @@ load-theme hook (See the heading below).
 </div>
 <div id="postamble" class="status">
 <p class="author">Author: Ivan Malison</p>
-<p class="date">Created: 2016-10-28 Fri 14:35</p>
+<p class="date">Created: 2016-10-29 Sat 02:21</p>
 <p class="validation"><a href="http://validator.w3.org/check?uri=referer">Validate</a></p>
 </div>
 </body>
