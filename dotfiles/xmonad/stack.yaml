@@ -2,9 +2,13 @@ flags: {}
 extra-package-dbs: []
 packages:
 - '.'
+- location:
+    git: git@github.com:IvanMalison/xmonad-contrib.git
+    commit: e43579f80fc189eacabf73cbec7db61eab681219
+- location:
+    git: git@github.com:IvanMalison/taffybar.git
+    commit: 39e3a95e9c2eae37ff8b67eaa31bbd18503859b1
 extra-deps:
-  - xmonad-contrib-0.12
-  - taffybar-0.4.6
   - gtk-traymanager-0.1.6
 resolver: lts-7.0
 # For advanced use and comprehensive documentation of the format, please see:
@@ -13,7 +17,6 @@ resolver: lts-7.0
 # Resolver to choose a 'specific' stackage snapshot or a compiler version.
 # A snapshot resolver dictates the compiler version and the set of packages
 # to be used for project dependencies. For example:
-# 
 # resolver: lts-3.5
 # resolver: nightly-2015-09-21
 # resolver: ghc-7.10.2

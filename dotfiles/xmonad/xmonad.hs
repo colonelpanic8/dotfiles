@@ -1,4 +1,6 @@
 {-# LANGUAGE TypeSynonymInstances, MultiParamTypeClasses #-}
+module Main where
+
 import Control.Monad
 import Control.Monad.Trans.Maybe
 import Data.Aeson
@@ -35,6 +37,7 @@ import qualified XMonad.StackSet as W
 import XMonad.Util.CustomKeys
 import qualified XMonad.Util.ExtensibleState as XS
 import XMonad.Util.NamedWindows (getName)
+
 
 main = xmonad $ def
        { modMask = mod4Mask
@@ -183,8 +186,7 @@ toggleFadingForActiveWindow = withWindowSet $ \windowSet -> do
 greedyFocusWindow w ws = W.focusWindow w $ W.greedyView
                          (fromMaybe (W.currentTag ws) $ W.findTag w ws) ws
 
-shiftToEmptyAndView = doTo Next EmptyWS DWO.getSortByOrder
-                      (windows . shiftThenView)
+shiftToEmptyAndView = doTo Next EmptyWS DWO.getSortByOrder (windows . shiftThenView)
 
 myRaiseNextMaybe = raiseNextMaybeCustomFocus greedyFocusWindow
 myBringNextMaybe = raiseNextMaybeCustomFocus bringWindow
