@@ -1406,6 +1406,14 @@ https://github.com/alpaker/Fill-Column-Indicator/issues/21 for more details
     (add-hook 'prog-mode-hook 'fci-mode)))
 #+END_SRC
 * Keybindings
+** god-mode
+#+BEGIN_SRC emacs-lisp
+(use-package god-mode
+  :demand t
+  :config
+  (progn
+    (global-set-key (kbd "<escape>") 'god-local-mode)))
+#+END_SRC
 ** bind-key
 #+BEGIN_SRC emacs-lisp
 (use-package bind-key)
@@ -1467,7 +1475,8 @@ https://github.com/alpaker/Fill-Column-Indicator/issues/21 for more details
   (imalison:named-compile "glide up"))
 
 (defhydra imalison:compile nil "Compile"
-  ("s" imalison:projectile-helm-command-from-zsh "Select a command from shell history")
+  ("p" imalison:projectile-helm-command-from-zsh "Run a command in projectile root")
+  ("d" helm-command-from-zsh "Run a command in default directory")
   ("c" imalison:named-compile "Enter Custom Command")
   ("t" imalison:make-test "Test")
   ("u" imalison:glide-up "Update Dependencies"))
