@@ -1,5 +1,7 @@
 [Unit]
 Description=ScreenCloud
+Requires=taffybar.service
+After=taffybar.service
 
 [Service]
 Type=simple

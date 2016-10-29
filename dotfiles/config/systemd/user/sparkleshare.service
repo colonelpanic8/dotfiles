@@ -1,5 +1,6 @@
 [Unit]
 Description=Sparkleshare
+After=taffybar.service
 
 [Service]
 ExecStart=/usr/bin/sparkleshare start
