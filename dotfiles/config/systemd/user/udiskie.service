@@ -1,6 +1,5 @@
 [Unit]
 Description=udiskie
-Requires=taffybar.service
 After=taffybar.service
 
 [Service]

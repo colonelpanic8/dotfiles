@@ -1,6 +1,5 @@
 [Unit]
 Description=Dunst
-Requires=taffybar.service
 After=taffybar.service
 
 [Service]
