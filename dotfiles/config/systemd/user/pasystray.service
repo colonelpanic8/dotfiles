@@ -1,6 +1,6 @@
 [Unit]
 Description=Pulse Audio System Tray
-Requires=taffybar.service
+Wants=taffybar.service
 After=taffybar.service
 
 [Service]

@@ -1,5 +1,6 @@
 [Unit]
 Description=CopyQ
+Wants=taffybar.service
 After=taffybar.service
 
 [Service]

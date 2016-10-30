@@ -1,6 +1,6 @@
 [Unit]
 Description=ScreenCloud
-Requires=taffybar.service
+Wants=taffybar.service
 After=taffybar.service
 
 [Service]
