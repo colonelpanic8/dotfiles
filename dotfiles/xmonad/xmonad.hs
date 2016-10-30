@@ -65,9 +65,7 @@ virtualClasses = [(hangoutsSelector, "Hangouts")]
 
 -- Startup
 
-myStartup = do
-  spawn "taffybar"
-  spawn "systemctl --user start wm.target"
+myStartup = spawn "systemctl --user start wm.target"
 
 -- Manage
 
@@ -206,7 +204,8 @@ addKeys conf@XConfig {modMask = modm} =
     , ((modm .|. shiftMask, xK_p), spawn "rofi -show run")
     , ((modm, xK_g), actionMenu myWindowBringerConfig greedyFocusWindow)
     , ((modm, xK_b), bringMenuConfig myWindowBringerConfig)
-    , ((modm .|. controlMask, xK_t), spawn "restart.sh taffybar")
+    , ((modm .|. controlMask, xK_t), spawn
+       "systemctl --user restart taffybar.service")
     , ((modm, xK_v), spawn "copyq paste")
     , ((modm, xK_s), swapNextScreen)
     , ((modm .|. controlMask, xK_space), sendMessage $ JumpToLayout "Full")

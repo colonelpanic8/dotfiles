@@ -1,5 +1,6 @@
 [Unit]
 Description=NM Applet
+Requires=taffybar.service
 After=taffybar.service
 
 [Service]
