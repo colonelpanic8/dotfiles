@@ -54,14 +54,19 @@ main = xmonad $ def
 
 isHangoutsTitle = isPrefixOf "Google Hangouts"
 
-chromeSelector = className =? "google-chrome" <&&>
+chromeSelectorBase = className =? "Google-chrome"
+chromeSelector = chromeSelectorBase <&&>
                  fmap (not . isHangoutsTitle) title
 spotifySelector = className =? "Spotify"
 emacsSelector = className =? "Emacs"
-hangoutsSelector = className =? "google-chrome" <&&>
+transmissionSelector = fmap (isPrefixOf "Transmission") title
+hangoutsSelector = chromeSelectorBase <&&>
                    fmap isHangoutsTitle title
 
-virtualClasses = [(hangoutsSelector, "Hangouts")]
+virtualClasses = [ (hangoutsSelector, "Hangouts")
+                 , (chromeSelector, "Chrome")
+                 , (transmissionSelector, "Transmission")
+                 ]
 
 -- Startup
 
@@ -247,6 +252,7 @@ addKeys conf@XConfig {modMask = modm} =
     , (modalt, xK_e, spawn "emacsclient -c", emacsSelector)
     , (modalt, xK_c, spawn "google-chrome-stable", chromeSelector)
     , (modalt, xK_h, spawn "cool", hangoutsSelector)
+    , (modalt, xK_t, spawn "transmission", transmissionSelector)
     ] ++
     -- Replace original moving stuff around + greedy view bindings
     [((additionalMask .|. modm, key), windows $ function workspace)
