@@ -29,7 +29,7 @@ PACKAGES = [
     "ttf-mac-fonts", "otf-hermit", "ttf-font-awesome", "ttf-monaco", "tcpdump",
     "ngrep", "wireshark-gtk", "teamviewer", "mopidy-podcast", "tigervnc",
     "kdegraphics-okular", "pandoc", "kdeconnect-git", "mlocate",
-    "ncurses5-compat-libs",
+    "ncurses5-compat-libs", "lsdesktopf", 
 ]
 
 
