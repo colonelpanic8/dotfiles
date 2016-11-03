@@ -49,6 +49,7 @@ For some reason, org-mode uses all of your currently active fontification when e
 - [[multi-line][multi-line]]
 - [[github-search][github-search]]
 - [[flimenu][flimenu]]
+- [[tile]]
 ** [[programminglanguages][Programming Language Configurations]]
 My programming language major mode configurations can all be found [[programminglanguages][here]].
 ** [[org][org-mode]]
