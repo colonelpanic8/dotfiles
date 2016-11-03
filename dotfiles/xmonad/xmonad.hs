@@ -251,7 +251,7 @@ addKeys conf@XConfig {modMask = modm} =
     [ (modalt, xK_s, spawn "spotify", spotifySelector)
     , (modalt, xK_e, spawn "emacsclient -c", emacsSelector)
     , (modalt, xK_c, spawn "google-chrome-stable", chromeSelector)
-    , (modalt, xK_h, spawn "cool", hangoutsSelector)
+    , (modalt, xK_h, spawn "google-chrome-stable --profile-directory=Default --app-id=knipolnnllmklapflnccelgolnpehhpl", hangoutsSelector)
     , (modalt, xK_t, spawn "transmission", transmissionSelector)
     ] ++
     -- Replace original moving stuff around + greedy view bindings
