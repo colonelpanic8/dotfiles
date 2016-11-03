@@ -3,7 +3,7 @@
 "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
-<!-- 2016-11-02 Wed 18:05 -->
+<!-- 2016-11-02 Wed 18:06 -->
 <meta  http-equiv="Content-Type" content="text/html;charset=utf-8" />
 <meta  name="viewport" content="width=device-width, initial-scale=1" />
 <title></title>
@@ -100,6 +100,8 @@
 <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js"></script>
 <script type="text/javascript" src="http://www.pirilampo.org/styles/lib/js/jquery.stickytableheaders.js"></script>
 <script type="text/javascript" src="http://www.pirilampo.org/styles/readtheorg/js/readtheorg.js"></script>
+<style type="text/css">
+ pre.src {background-color: #263238; color: #ffffff;}</style>
 <style type="text/css">
  pre.src {background-color: #263238; color: #ffffff;}</style>
 <script type="text/javascript">
@@ -321,11 +323,9 @@ for the JavaScript code in this tag.
 <li><a href="#discovermymajor">6.32. discover-my-major</a></li>
 <li><a href="#framesonlymode">6.33. frames-only-mode</a></li>
 <li><a href="#refine">6.34. refine</a></li>
-<li><a href="#elget">6.35. el-get</a></li>
-<li><a href="#winner">6.36. winner</a></li>
-<li><a href="#eyebrowse">6.37. eyebrowse</a></li>
-<li><a href="#tiling">6.38. tiling</a></li>
-<li><a href="#fillcolumnindicator">6.39. fill-column-indicator</a></li>
+<li><a href="#winner">6.35. winner</a></li>
+<li><a href="#eyebrowse">6.36. eyebrowse</a></li>
+<li><a href="#fillcolumnindicator">6.37. fill-column-indicator</a></li>
 </ul>
 </li>
 <li><a href="#keybindings">7. Keybindings</a>
@@ -2821,19 +2821,9 @@ proced is an top like utility that runs inside of emacs. The following sets auto
 </div>
 </div>
 </div>
-<div id="outline-container-elget" class="outline-3">
-<h3 id="elget"><span class="section-number-3">6.35</span> el-get</h3>
-<div class="outline-text-3" id="text-6-35">
-<div class="org-src-container">
-
-<pre class="src src-emacs-lisp"><span style="color: #e91e63;">(</span><span style="color: #fff59d;">use-package</span> <span style="color: #8bc34a;">el-get</span><span style="color: #e91e63;">)</span>
-</pre>
-</div>
-</div>
-</div>
 <div id="outline-container-winner" class="outline-3">
-<h3 id="winner"><span class="section-number-3">6.36</span> winner</h3>
-<div class="outline-text-3" id="text-6-36">
+<h3 id="winner"><span class="section-number-3">6.35</span> winner</h3>
+<div class="outline-text-3" id="text-6-35">
 <div class="org-src-container">
 
 <pre class="src src-emacs-lisp"><span style="color: #e91e63;">(</span><span style="color: #fff59d;">use-package</span> <span style="color: #8bc34a;">winner</span>
@@ -2854,8 +2844,8 @@ proced is an top like utility that runs inside of emacs. The following sets auto
 </div>
 </div>
 <div id="outline-container-eyebrowse" class="outline-3">
-<h3 id="eyebrowse"><span class="section-number-3">6.37</span> eyebrowse</h3>
-<div class="outline-text-3" id="text-6-37">
+<h3 id="eyebrowse"><span class="section-number-3">6.36</span> eyebrowse</h3>
+<div class="outline-text-3" id="text-6-36">
 <div class="org-src-container">
 
 <pre class="src src-emacs-lisp"><span style="color: #e91e63;">(</span><span style="color: #fff59d;">use-package</span> <span style="color: #8bc34a;">eyebrowse</span>
@@ -2866,23 +2856,9 @@ proced is an top like utility that runs inside of emacs. The following sets auto
 </div>
 </div>
 </div>
-<div id="outline-container-tiling" class="outline-3">
-<h3 id="tiling"><span class="section-number-3">6.38</span> tiling</h3>
-<div class="outline-text-3" id="text-6-38">
-<div class="org-src-container">
-
-<pre class="src src-emacs-lisp"><span style="color: #e91e63;">(</span><span style="color: #fff59d;">el-get-bundle</span> tiling
-  <span style="color: #ff8A65;">:url</span> <span style="color: #9ccc65;">"https://raw.githubusercontent.com/lgfang/elisp/master/tiling.el"</span><span style="color: #e91e63;">)</span>
-
-<span style="color: #e91e63;">(</span><span style="color: #fff59d;">use-package</span> <span style="color: #8bc34a;">tiling</span>
-  <span style="color: #ff8A65;">:ensure</span> nil<span style="color: #e91e63;">)</span>
-</pre>
-</div>
-</div>
-</div>
 <div id="outline-container-fillcolumnindicator" class="outline-3">
-<h3 id="fillcolumnindicator"><span class="section-number-3">6.39</span> fill-column-indicator</h3>
-<div class="outline-text-3" id="text-6-39">
+<h3 id="fillcolumnindicator"><span class="section-number-3">6.37</span> fill-column-indicator</h3>
+<div class="outline-text-3" id="text-6-37">
 <p>
 This interferes with too many other packages. See
 <a href="https://github.com/alpaker/Fill-Column-Indicator/issues/21">https://github.com/alpaker/Fill-Column-Indicator/issues/21</a> for more details
@@ -7234,7 +7210,7 @@ load-theme hook (See the heading below).
 </div>
 <div id="postamble" class="status">
 <p class="author">Author: Ivan Malison</p>
-<p class="date">Created: 2016-11-02 Wed 18:05</p>
+<p class="date">Created: 2016-11-02 Wed 18:06</p>
 <p class="validation"><a href="http://validator.w3.org/check?uri=referer">Validate</a></p>
 </div>
 </body>
