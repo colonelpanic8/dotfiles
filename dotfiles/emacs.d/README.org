@@ -1418,6 +1418,14 @@ proced is an top like utility that runs inside of emacs. The following sets auto
   :config
   (progn (eyebrowse-mode +1)))
 #+END_SRC
+** tile
+#+BEGIN_SRC emacs-lisp
+(imalison:use-package tile
+  :bind ("C-c t" . tile)
+  :config
+  (progn
+    (setq tile-strategies (list (tile-split-n-tall 3) tile-one))))
+#+END_SRC
 ** fill-column-indicator
 This interferes with too many other packages. See
 https://github.com/alpaker/Fill-Column-Indicator/issues/21 for more details
