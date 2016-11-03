@@ -3,7 +3,7 @@
 "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
-<!-- 2016-11-02 Wed 20:56 -->
+<!-- 2016-11-02 Wed 20:58 -->
 <meta  http-equiv="Content-Type" content="text/html;charset=utf-8" />
 <meta  name="viewport" content="width=device-width, initial-scale=1" />
 <title></title>
@@ -106,6 +106,8 @@
  pre.src {background-color: #263238; color: #ffffff;}</style>
 <style type="text/css">
  pre.src {background-color: #263238; color: #ffffff;}</style>
+<style type="text/css">
+ pre.src {background-color: #263238; color: #ffffff;}</style>
 <script type="text/javascript">
 /*
 @licstart  The following is the entire license notice for the
@@ -192,11 +194,12 @@ for the JavaScript code in this tag.
 <li><a href="#guidisables">4.7. GUI Disables</a></li>
 <li><a href="#bytecompiler">4.8. Byte-Compiler</a></li>
 <li><a href="#execpathfromshell">4.9. exec-path-from-shell</a></li>
-<li><a href="#nonforkingshellcommandtostring">4.10. Non-Forking Shell Command To String</a></li>
-<li><a href="#security">4.11. Security</a></li>
-<li><a href="#elpaarchivesetup">4.12. ELPA Archive Setup</a></li>
-<li><a href="#bootstrappackageloading">4.13. Bootstrap Package Loading</a></li>
-<li><a href="#setemacsenvironmentvariable">4.14. Set EMACS environment variable</a></li>
+<li><a href="#noflet">4.10. noflet</a></li>
+<li><a href="#nonforkingshellcommandtostring">4.11. Non-Forking Shell Command To String</a></li>
+<li><a href="#security">4.12. Security</a></li>
+<li><a href="#elpaarchivesetup">4.13. ELPA Archive Setup</a></li>
+<li><a href="#bootstrappackageloading">4.14. Bootstrap Package Loading</a></li>
+<li><a href="#setemacsenvironmentvariable">4.15. Set EMACS environment variable</a></li>
 </ul>
 </li>
 <li><a href="#functions">5. Functions</a>
@@ -957,9 +960,20 @@ Sets environment variables by starting a shell.
 </div>
 </div>
 </div>
-<div id="outline-container-nonforkingshellcommandtostring" class="outline-3">
-<h3 id="nonforkingshellcommandtostring"><span class="section-number-3">4.10</span> Non-Forking Shell Command To String</h3>
+<div id="outline-container-noflet" class="outline-3">
+<h3 id="noflet"><span class="section-number-3">4.10</span> noflet</h3>
 <div class="outline-text-3" id="text-4-10">
+<div class="org-src-container">
+
+<pre class="src src-emacs-lisp"><span style="color: #e91e63;">(</span><span style="color: #fff59d;">use-package</span> <span style="color: #8bc34a;">noflet</span>
+  <span style="color: #ff8A65;">:demand</span> t<span style="color: #e91e63;">)</span>
+</pre>
+</div>
+</div>
+</div>
+<div id="outline-container-nonforkingshellcommandtostring" class="outline-3">
+<h3 id="nonforkingshellcommandtostring"><span class="section-number-3">4.11</span> Non-Forking Shell Command To String</h3>
+<div class="outline-text-3" id="text-4-11">
 <p>
 Emacs' built in <code>shell-command-to-string</code> function has the downside that it
 forks a new shell process every time it is executed. This means that any shell
@@ -1024,9 +1038,7 @@ This solution only applies it to projectile-find-file
 </p>
 <div class="org-src-container">
 
-<pre class="src src-emacs-lisp"><span style="color: #e91e63;">(</span><span style="color: #fff59d;">require</span> '<span style="color: #8bc34a;">noflet</span><span style="color: #e91e63;">)</span>
-
-<span style="color: #e91e63;">(</span><span style="color: #fff59d;">defun</span> <span style="color: #84ffff;">imalison:call-with-quick-shell-command</span> <span style="color: #2196F3;">(</span>fn <span style="color: #84ffff;">&amp;rest</span> args<span style="color: #2196F3;">)</span>
+<pre class="src src-emacs-lisp"><span style="color: #e91e63;">(</span><span style="color: #fff59d;">defun</span> <span style="color: #84ffff;">imalison:call-with-quick-shell-command</span> <span style="color: #2196F3;">(</span>fn <span style="color: #84ffff;">&amp;rest</span> args<span style="color: #2196F3;">)</span>
   <span style="color: #2196F3;">(</span><span style="color: #fff59d;">noflet</span> <span style="color: #EF6C00;">(</span><span style="color: #B388FF;">(</span>shell-command-to-string <span style="color: #76ff03;">(</span><span style="color: #84ffff;">&amp;rest</span> args<span style="color: #76ff03;">)</span>
                                     <span style="color: #76ff03;">(</span><span style="color: #fff59d;">or</span> <span style="color: #26A69A;">(</span>apply 'imalison:try-call-process args<span style="color: #26A69A;">)</span> <span style="color: #26A69A;">(</span>apply this-fn args<span style="color: #26A69A;">)</span><span style="color: #76ff03;">)</span><span style="color: #B388FF;">)</span><span style="color: #EF6C00;">)</span>
     <span style="color: #EF6C00;">(</span>apply fn args<span style="color: #EF6C00;">)</span><span style="color: #2196F3;">)</span><span style="color: #e91e63;">)</span>
@@ -1037,8 +1049,8 @@ This solution only applies it to projectile-find-file
 </div>
 </div>
 <div id="outline-container-security" class="outline-3">
-<h3 id="security"><span class="section-number-3">4.11</span> Security</h3>
-<div class="outline-text-3" id="text-4-11">
+<h3 id="security"><span class="section-number-3">4.12</span> Security</h3>
+<div class="outline-text-3" id="text-4-12">
 <div class="org-src-container">
 
 <pre class="src src-emacs-lisp"><span style="color: #e91e63;">(</span><span style="color: #fff59d;">defvar</span> <span style="color: #ffcc80;">imalison:secure</span> t<span style="color: #e91e63;">)</span>
@@ -1079,8 +1091,8 @@ This solution only applies it to projectile-find-file
 </div>
 </div>
 <div id="outline-container-elpaarchivesetup" class="outline-3">
-<h3 id="elpaarchivesetup"><span class="section-number-3">4.12</span> ELPA Archive Setup</h3>
-<div class="outline-text-3" id="text-4-12">
+<h3 id="elpaarchivesetup"><span class="section-number-3">4.13</span> ELPA Archive Setup</h3>
+<div class="outline-text-3" id="text-4-13">
 <p>
 The org archive does not support https, so we set http as the protocol explicitly.
 </p>
@@ -1112,8 +1124,8 @@ The org archive does not support https, so we set http as the protocol explicitl
 </div>
 </div>
 <div id="outline-container-bootstrappackageloading" class="outline-3">
-<h3 id="bootstrappackageloading"><span class="section-number-3">4.13</span> Bootstrap Package Loading</h3>
-<div class="outline-text-3" id="text-4-13">
+<h3 id="bootstrappackageloading"><span class="section-number-3">4.14</span> Bootstrap Package Loading</h3>
+<div class="outline-text-3" id="text-4-14">
 <p>
 Its a shame that everyone has to have some version of this function in
 their init.el. I use use-package's own mechanism for ensuring packages
@@ -1162,8 +1174,8 @@ Ensure by default since most of the package for which I use use-package need to 
 </div>
 </div>
 <div id="outline-container-setemacsenvironmentvariable" class="outline-3">
-<h3 id="setemacsenvironmentvariable"><span class="section-number-3">4.14</span> Set EMACS environment variable</h3>
-<div class="outline-text-3" id="text-4-14">
+<h3 id="setemacsenvironmentvariable"><span class="section-number-3">4.15</span> Set EMACS environment variable</h3>
+<div class="outline-text-3" id="text-4-15">
 <p>
 Emacs cask seems to depend on the EMACS environment variable being set to the
 binary path of emacs. I found the method for getting the path to the emacs
@@ -7250,7 +7262,7 @@ load-theme hook (See the heading below).
 </div>
 <div id="postamble" class="status">
 <p class="author">Author: Ivan Malison</p>
-<p class="date">Created: 2016-11-02 Wed 20:56</p>
+<p class="date">Created: 2016-11-02 Wed 20:58</p>
 <p class="validation"><a href="http://validator.w3.org/check?uri=referer">Validate</a></p>
 </div>
 </body>
