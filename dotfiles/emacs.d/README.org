@@ -1422,10 +1422,21 @@ proced is an top like utility that runs inside of emacs. The following sets auto
 ** tile
 #+BEGIN_SRC emacs-lisp
 (imalison:use-package tile
-  :bind ("C-c t" . tile)
+  :after hydra
+  :bind ("C-c t" . imalison:hydra-tile/body)
   :config
   (progn
-    (setq tile-strategies (list (tile-split-n-tall 3) tile-one))))
+    (defvar imalison:tall-tile-strategy (tile-split-n-tall 3))
+    (defhydra imalison:hydra-tile
+      nil
+      "tile"
+      ("t" (tile :strategy imalison:tall-tile-strategy))
+      ("n" tile)
+      ("0" (tile :strategy tile-one)))
+    (defvar tile-strategies (list imalison:tall-tile-strategy
+                                  (tile-argument-buffer-fetcher
+                                   :layout tile-master-tall)
+                                  tile-wide tile-one))))
 #+END_SRC
 ** fill-column-indicator
 This interferes with too many other packages. See
