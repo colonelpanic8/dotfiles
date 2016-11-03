@@ -159,8 +159,6 @@ getWorkspaceNameFromTag namesMap tag =
       Nothing -> tag
       Just label -> printf "%s: %s " tag label
 
-shiftThenView i = W.greedyView i . W.shift i
-
 -- Toggleable fade
 
 newtype ToggleFade = ToggleFade (M.Map Window Bool)
@@ -190,6 +188,8 @@ toggleFadingForActiveWindow = withWindowSet $ \windowSet -> do
 -- appropriate window within that workspace.
 greedyFocusWindow w ws = W.focusWindow w $ W.greedyView
                          (fromMaybe (W.currentTag ws) $ W.findTag w ws) ws
+
+shiftThenView i = W.greedyView i . W.shift i
 
 shiftToEmptyAndView = doTo Next EmptyWS DWO.getSortByOrder (windows . shiftThenView)
 
