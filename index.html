@@ -3,7 +3,7 @@
 "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
-<!-- 2016-11-02 Wed 18:06 -->
+<!-- 2016-11-02 Wed 18:13 -->
 <meta  http-equiv="Content-Type" content="text/html;charset=utf-8" />
 <meta  name="viewport" content="width=device-width, initial-scale=1" />
 <title></title>
@@ -100,6 +100,8 @@
 <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js"></script>
 <script type="text/javascript" src="http://www.pirilampo.org/styles/lib/js/jquery.stickytableheaders.js"></script>
 <script type="text/javascript" src="http://www.pirilampo.org/styles/readtheorg/js/readtheorg.js"></script>
+<style type="text/css">
+ pre.src {background-color: #263238; color: #ffffff;}</style>
 <style type="text/css">
  pre.src {background-color: #263238; color: #ffffff;}</style>
 <style type="text/css">
@@ -223,49 +225,50 @@ for the JavaScript code in this tag.
 <li><a href="#simplerunaryversion">5.7.3. Simpler unary version</a></li>
 </ul>
 </li>
-<li><a href="#makeinteractive">5.8. Make Interactive</a></li>
-<li><a href="#adviceaddaroundbuilder">5.9. Advice Add Around Builder</a>
+<li><a href="#withadvice">5.8. With Advice</a></li>
+<li><a href="#makeinteractive">5.9. Make Interactive</a></li>
+<li><a href="#adviceaddaroundbuilder">5.10. Advice Add Around Builder</a>
 <ul>
-<li><a href="#killnew">5.9.1. Kill New</a></li>
+<li><a href="#killnew">5.10.1. Kill New</a></li>
 </ul>
 </li>
-<li><a href="#letaround">5.10. Let Around</a></li>
-<li><a href="#letaroundadvice">5.11. Let Around Advice</a></li>
-<li><a href="#composearoundbuilder">5.12. Compose Around Builder</a></li>
-<li><a href="#measuretime">5.13. Measure Time</a></li>
-<li><a href="#addfilestoorgagendafiles">5.14. Add Files to <code>org-agenda-files</code></a></li>
-<li><a href="#getstringfromfile">5.15. Get String From File</a></li>
-<li><a href="#getcurrentlocation">5.16. Get Current Location</a></li>
-<li><a href="#haversinedistance">5.17. Haversine distance</a></li>
-<li><a href="#fontsize">5.18. Font Size</a></li>
-<li><a href="#messageresultbuilder">5.19. Message Result Builder</a></li>
-<li><a href="#customshellcommandonregion">5.20. Custom <code>shell-command-on-region</code></a></li>
-<li><a href="#copystringfunctions">5.21. Copy String Functions</a>
+<li><a href="#letaround">5.11. Let Around</a></li>
+<li><a href="#letaroundadvice">5.12. Let Around Advice</a></li>
+<li><a href="#composearoundbuilder">5.13. Compose Around Builder</a></li>
+<li><a href="#measuretime">5.14. Measure Time</a></li>
+<li><a href="#addfilestoorgagendafiles">5.15. Add Files to <code>org-agenda-files</code></a></li>
+<li><a href="#getstringfromfile">5.16. Get String From File</a></li>
+<li><a href="#getcurrentlocation">5.17. Get Current Location</a></li>
+<li><a href="#haversinedistance">5.18. Haversine distance</a></li>
+<li><a href="#fontsize">5.19. Font Size</a></li>
+<li><a href="#messageresultbuilder">5.20. Message Result Builder</a></li>
+<li><a href="#customshellcommandonregion">5.21. Custom <code>shell-command-on-region</code></a></li>
+<li><a href="#copystringfunctions">5.22. Copy String Functions</a>
 <ul>
-<li><a href="#copyportionsofthebufferfilename">5.21.1. Copy portions of the buffer file name</a></li>
-<li><a href="#copythecurrentbranchusingmagit">5.21.2. Copy the current branch using magit</a></li>
+<li><a href="#copyportionsofthebufferfilename">5.22.1. Copy portions of the buffer file name</a></li>
+<li><a href="#copythecurrentbranchusingmagit">5.22.2. Copy the current branch using magit</a></li>
 </ul>
 </li>
-<li><a href="#namedcompile">5.22. Named Compile</a></li>
-<li><a href="#replaceescapesequences">5.23. Replace Escape Sequences</a></li>
-<li><a href="#downloadafileintoabuffer">5.24. Download a File Into a Buffer</a></li>
-<li><a href="#concatwithsymbols">5.25. Concat With Symbols</a></li>
-<li><a href="#editascriptonpath">5.26. Edit a script on PATH</a></li>
-<li><a href="#togglelexicalbindinginthecurrentbuffer">5.27. Toggle lexical binding in the current buffer</a></li>
-<li><a href="#synckillringwithcopyq">5.28. Sync kill ring with copyq</a></li>
-<li><a href="#helmzshhistory">5.29. helm-zsh-history</a>
+<li><a href="#namedcompile">5.23. Named Compile</a></li>
+<li><a href="#replaceescapesequences">5.24. Replace Escape Sequences</a></li>
+<li><a href="#downloadafileintoabuffer">5.25. Download a File Into a Buffer</a></li>
+<li><a href="#concatwithsymbols">5.26. Concat With Symbols</a></li>
+<li><a href="#editascriptonpath">5.27. Edit a script on PATH</a></li>
+<li><a href="#togglelexicalbindinginthecurrentbuffer">5.28. Toggle lexical binding in the current buffer</a></li>
+<li><a href="#synckillringwithcopyq">5.29. Sync kill ring with copyq</a></li>
+<li><a href="#helmzshhistory">5.30. helm-zsh-history</a>
 <ul>
-<li><a href="#useprojectileasdefaultdirectory">5.29.1. Use projectile as default directory</a></li>
+<li><a href="#useprojectileasdefaultdirectory">5.30.1. Use projectile as default directory</a></li>
 </ul>
 </li>
-<li><a href="#other">5.30. Other</a></li>
-<li><a href="#keyboardmacros">5.31. Keyboard Macros</a>
+<li><a href="#other">5.31. Other</a></li>
+<li><a href="#keyboardmacros">5.32. Keyboard Macros</a>
 <ul>
-<li><a href="#foreditingliterateconfig">5.31.1. For editing literate config</a>
+<li><a href="#foreditingliterateconfig">5.32.1. For editing literate config</a>
 <ul>
-<li><a href="#extractcurrentsexptosrcblock">5.31.1.1. extract-current-sexp-to-src-block</a></li>
-<li><a href="#namesourceblockforusepackagename">5.31.1.2. name-source-block-for-use-package-name</a></li>
-<li><a href="#extractandnameusepackageblock">5.31.1.3. extract-and-name-use-package-block</a></li>
+<li><a href="#extractcurrentsexptosrcblock">5.32.1.1. extract-current-sexp-to-src-block</a></li>
+<li><a href="#namesourceblockforusepackagename">5.32.1.2. name-source-block-for-use-package-name</a></li>
+<li><a href="#extractandnameusepackageblock">5.32.1.3. extract-and-name-use-package-block</a></li>
 </ul>
 </li>
 </ul>
@@ -1511,9 +1514,31 @@ new macro name and the -fn suffix.
 </div>
 </div>
 </div>
-<div id="outline-container-makeinteractive" class="outline-3">
-<h3 id="makeinteractive"><span class="section-number-3">5.8</span> Make Interactive</h3>
+<div id="outline-container-withadvice" class="outline-3">
+<h3 id="withadvice"><span class="section-number-3">5.8</span> With Advice</h3>
 <div class="outline-text-3" id="text-5-8">
+<p>
+Taken from <a href="http://emacs.stackexchange.com/questions/16490/emacs-let-bound-advice">here</a>.
+</p>
+<div class="org-src-container">
+
+<pre class="src src-emacs-lisp"><span style="color: #e91e63;">(</span><span style="color: #fff59d;">defmacro</span> <span style="color: #84ffff;">imalison:with-advice</span> <span style="color: #2196F3;">(</span>args <span style="color: #84ffff;">&amp;rest</span> body<span style="color: #2196F3;">)</span>
+  <span style="color: #2196F3;">(</span><span style="color: #fff59d;">declare</span> <span style="color: #EF6C00;">(</span>indent 1<span style="color: #EF6C00;">)</span><span style="color: #2196F3;">)</span>
+  <span style="color: #2196F3;">(</span><span style="color: #fff59d;">let</span> <span style="color: #EF6C00;">(</span><span style="color: #B388FF;">(</span>fun-name <span style="color: #76ff03;">(</span>car args<span style="color: #76ff03;">)</span><span style="color: #B388FF;">)</span>
+        <span style="color: #B388FF;">(</span>advice   <span style="color: #76ff03;">(</span>cadr args<span style="color: #76ff03;">)</span><span style="color: #B388FF;">)</span>
+        <span style="color: #B388FF;">(</span>orig-sym <span style="color: #76ff03;">(</span>make-symbol <span style="color: #9ccc65;">"orig"</span><span style="color: #76ff03;">)</span><span style="color: #B388FF;">)</span><span style="color: #EF6C00;">)</span>
+    `<span style="color: #EF6C00;">(</span><span style="color: #fff59d;">cl-letf*</span> <span style="color: #B388FF;">(</span><span style="color: #76ff03;">(</span>,orig-sym  <span style="color: #26A69A;">(</span>symbol-function ',fun-name<span style="color: #26A69A;">)</span><span style="color: #76ff03;">)</span>
+                <span style="color: #76ff03;">(</span><span style="color: #26A69A;">(</span>symbol-function ',fun-name<span style="color: #26A69A;">)</span>
+                 <span style="color: #26A69A;">(</span><span style="color: #fff59d;">lambda</span> <span style="color: #FFCDD2;">(</span><span style="color: #84ffff;">&amp;rest</span> args<span style="color: #FFCDD2;">)</span>
+                   <span style="color: #FFCDD2;">(</span>apply ,advice ,orig-sym args<span style="color: #FFCDD2;">)</span><span style="color: #26A69A;">)</span><span style="color: #76ff03;">)</span><span style="color: #B388FF;">)</span>
+       ,@body<span style="color: #EF6C00;">)</span><span style="color: #2196F3;">)</span><span style="color: #e91e63;">)</span>
+</pre>
+</div>
+</div>
+</div>
+<div id="outline-container-makeinteractive" class="outline-3">
+<h3 id="makeinteractive"><span class="section-number-3">5.9</span> Make Interactive</h3>
+<div class="outline-text-3" id="text-5-9">
 <div class="org-src-container">
 
 <pre class="src src-emacs-lisp"><span style="color: #e91e63;">(</span><span style="color: #fff59d;">defmacro</span> <span style="color: #84ffff;">imalison:make-interactive-fn</span> <span style="color: #2196F3;">(</span><span style="color: #fff59d;">function</span><span style="color: #2196F3;">)</span>
@@ -1527,8 +1552,8 @@ new macro name and the -fn suffix.
 </div>
 </div>
 <div id="outline-container-adviceaddaroundbuilder" class="outline-3">
-<h3 id="adviceaddaroundbuilder"><span class="section-number-3">5.9</span> Advice Add Around Builder</h3>
-<div class="outline-text-3" id="text-5-9">
+<h3 id="adviceaddaroundbuilder"><span class="section-number-3">5.10</span> Advice Add Around Builder</h3>
+<div class="outline-text-3" id="text-5-10">
 <p>
 For composing functions with an apply so that they can be used with
 the <code>:around</code> keyword of advice-add.
@@ -1544,8 +1569,8 @@ the <code>:around</code> keyword of advice-add.
 </div>
 </div>
 <div id="outline-container-killnew" class="outline-4">
-<h4 id="killnew"><span class="section-number-4">5.9.1</span> Kill New</h4>
-<div class="outline-text-4" id="text-5-9-1">
+<h4 id="killnew"><span class="section-number-4">5.10.1</span> Kill New</h4>
+<div class="outline-text-4" id="text-5-10-1">
 <div class="org-src-container">
 
 <pre class="src src-emacs-lisp"><span style="color: #e91e63;">(</span><span style="color: #fff59d;">imalison:advice-add-around-builder</span> imalison:kill-new-around kill-new<span style="color: #e91e63;">)</span>
@@ -1555,8 +1580,8 @@ the <code>:around</code> keyword of advice-add.
 </div>
 </div>
 <div id="outline-container-letaround" class="outline-3">
-<h3 id="letaround"><span class="section-number-3">5.10</span> Let Around</h3>
-<div class="outline-text-3" id="text-5-10">
+<h3 id="letaround"><span class="section-number-3">5.11</span> Let Around</h3>
+<div class="outline-text-3" id="text-5-11">
 <div class="org-src-container">
 
 <pre class="src src-emacs-lisp"><span style="color: #e91e63;">(</span><span style="color: #fff59d;">defmacro</span> <span style="color: #84ffff;">imalison:let-around-fn</span> <span style="color: #2196F3;">(</span>orig-func <span style="color: #84ffff;">&amp;rest</span> forms<span style="color: #2196F3;">)</span>
@@ -1576,8 +1601,8 @@ the <code>:around</code> keyword of advice-add.
 </div>
 </div>
 <div id="outline-container-letaroundadvice" class="outline-3">
-<h3 id="letaroundadvice"><span class="section-number-3">5.11</span> Let Around Advice</h3>
-<div class="outline-text-3" id="text-5-11">
+<h3 id="letaroundadvice"><span class="section-number-3">5.12</span> Let Around Advice</h3>
+<div class="outline-text-3" id="text-5-12">
 <div class="org-src-container">
 
 <pre class="src src-emacs-lisp"><span style="color: #e91e63;">(</span><span style="color: #fff59d;">defmacro</span> <span style="color: #84ffff;">imalison:let-advise-around-fn</span> <span style="color: #2196F3;">(</span><span style="color: #84ffff;">&amp;rest</span> forms<span style="color: #2196F3;">)</span>
@@ -1591,8 +1616,8 @@ the <code>:around</code> keyword of advice-add.
 </div>
 </div>
 <div id="outline-container-composearoundbuilder" class="outline-3">
-<h3 id="composearoundbuilder"><span class="section-number-3">5.12</span> Compose Around Builder</h3>
-<div class="outline-text-3" id="text-5-12">
+<h3 id="composearoundbuilder"><span class="section-number-3">5.13</span> Compose Around Builder</h3>
+<div class="outline-text-3" id="text-5-13">
 <p>
 For composing functions with an apply so that they can be used with the <code>:around</code> keyword of advice-add. 
 </p>
@@ -1611,8 +1636,8 @@ For composing functions with an apply so that they can be used with the <code>:a
 </div>
 </div>
 <div id="outline-container-measuretime" class="outline-3">
-<h3 id="measuretime"><span class="section-number-3">5.13</span> Measure Time</h3>
-<div class="outline-text-3" id="text-5-13">
+<h3 id="measuretime"><span class="section-number-3">5.14</span> Measure Time</h3>
+<div class="outline-text-3" id="text-5-14">
 <div class="org-src-container">
 
 <pre class="src src-emacs-lisp"><span style="color: #e91e63;">(</span><span style="color: #fff59d;">defmacro</span> <span style="color: #84ffff;">imalison:measure-time</span> <span style="color: #2196F3;">(</span><span style="color: #84ffff;">&amp;rest</span> body<span style="color: #2196F3;">)</span>
@@ -1627,8 +1652,8 @@ For composing functions with an apply so that they can be used with the <code>:a
 </div>
 </div>
 <div id="outline-container-addfilestoorgagendafiles" class="outline-3">
-<h3 id="addfilestoorgagendafiles"><span class="section-number-3">5.14</span> Add Files to <code>org-agenda-files</code></h3>
-<div class="outline-text-3" id="text-5-14">
+<h3 id="addfilestoorgagendafiles"><span class="section-number-3">5.15</span> Add Files to <code>org-agenda-files</code></h3>
+<div class="outline-text-3" id="text-5-15">
 <div class="org-src-container">
 
 <pre class="src src-emacs-lisp"><span style="color: #e91e63;">(</span><span style="color: #fff59d;">defun</span> <span style="color: #84ffff;">imalison:add-to-org-agenda-files</span> <span style="color: #2196F3;">(</span>incoming-files<span style="color: #2196F3;">)</span>
@@ -1642,8 +1667,8 @@ For composing functions with an apply so that they can be used with the <code>:a
 </div>
 </div>
 <div id="outline-container-getstringfromfile" class="outline-3">
-<h3 id="getstringfromfile"><span class="section-number-3">5.15</span> Get String From File</h3>
-<div class="outline-text-3" id="text-5-15">
+<h3 id="getstringfromfile"><span class="section-number-3">5.16</span> Get String From File</h3>
+<div class="outline-text-3" id="text-5-16">
 <div class="org-src-container">
 
 <pre class="src src-emacs-lisp"><span style="color: #e91e63;">(</span><span style="color: #fff59d;">defun</span> <span style="color: #84ffff;">imalison:get-string-from-file</span> <span style="color: #2196F3;">(</span>file-path<span style="color: #2196F3;">)</span>
@@ -1656,8 +1681,8 @@ For composing functions with an apply so that they can be used with the <code>:a
 </div>
 </div>
 <div id="outline-container-getcurrentlocation" class="outline-3">
-<h3 id="getcurrentlocation"><span class="section-number-3">5.16</span> Get Current Location</h3>
-<div class="outline-text-3" id="text-5-16">
+<h3 id="getcurrentlocation"><span class="section-number-3">5.17</span> Get Current Location</h3>
+<div class="outline-text-3" id="text-5-17">
 <div class="org-src-container">
 
 <pre class="src src-emacs-lisp"><span style="color: #e91e63;">(</span><span style="color: #fff59d;">defun</span> <span style="color: #84ffff;">imalison:get-lat-long</span> <span style="color: #2196F3;">()</span>
@@ -1670,8 +1695,8 @@ For composing functions with an apply so that they can be used with the <code>:a
 </div>
 </div>
 <div id="outline-container-haversinedistance" class="outline-3">
-<h3 id="haversinedistance"><span class="section-number-3">5.17</span> Haversine distance</h3>
-<div class="outline-text-3" id="text-5-17">
+<h3 id="haversinedistance"><span class="section-number-3">5.18</span> Haversine distance</h3>
+<div class="outline-text-3" id="text-5-18">
 <div class="org-src-container">
 
 <pre class="src src-emacs-lisp"><span style="color: #e91e63;">(</span><span style="color: #fff59d;">defun</span> <span style="color: #84ffff;">imalison:sin2</span> <span style="color: #2196F3;">(</span>p<span style="color: #2196F3;">)</span>
@@ -1699,8 +1724,8 @@ For composing functions with an apply so that they can be used with the <code>:a
 </div>
 </div>
 <div id="outline-container-fontsize" class="outline-3">
-<h3 id="fontsize"><span class="section-number-3">5.18</span> Font Size</h3>
-<div class="outline-text-3" id="text-5-18">
+<h3 id="fontsize"><span class="section-number-3">5.19</span> Font Size</h3>
+<div class="outline-text-3" id="text-5-19">
 <p>
 This was taken from <a href="http://emacs.stackexchange.com/questions/7583/transiently-adjust-text-size-in-mode-line-and-minibuffer">here</a> but it has diverged significantly from the original.
 </p>
@@ -1743,8 +1768,8 @@ This was taken from <a href="http://emacs.stackexchange.com/questions/7583/trans
 </div>
 </div>
 <div id="outline-container-messageresultbuilder" class="outline-3">
-<h3 id="messageresultbuilder"><span class="section-number-3">5.19</span> Message Result Builder</h3>
-<div class="outline-text-3" id="text-5-19">
+<h3 id="messageresultbuilder"><span class="section-number-3">5.20</span> Message Result Builder</h3>
+<div class="outline-text-3" id="text-5-20">
 <p>
 This macro is useful when writing emacs-lisp. It creates a new interactive command that shows you the result of evaluating a function, with optionally provided arguments.
 </p>
@@ -1774,8 +1799,8 @@ This interactive functions allows the user the select a function to invoke using
 </div>
 </div>
 <div id="outline-container-customshellcommandonregion" class="outline-3">
-<h3 id="customshellcommandonregion"><span class="section-number-3">5.20</span> Custom <code>shell-command-on-region</code></h3>
-<div class="outline-text-3" id="text-5-20">
+<h3 id="customshellcommandonregion"><span class="section-number-3">5.21</span> Custom <code>shell-command-on-region</code></h3>
+<div class="outline-text-3" id="text-5-21">
 <div class="org-src-container">
 
 <pre class="src src-emacs-lisp"><span style="color: #e91e63;">(</span><span style="color: #fff59d;">defun</span> <span style="color: #84ffff;">imalison:copy-shell-command-on-region</span> <span style="color: #2196F3;">(</span>start end command<span style="color: #2196F3;">)</span>
@@ -1804,8 +1829,8 @@ This interactive functions allows the user the select a function to invoke using
 </div>
 </div>
 <div id="outline-container-copystringfunctions" class="outline-3">
-<h3 id="copystringfunctions"><span class="section-number-3">5.21</span> Copy String Functions</h3>
-<div class="outline-text-3" id="text-5-21">
+<h3 id="copystringfunctions"><span class="section-number-3">5.22</span> Copy String Functions</h3>
+<div class="outline-text-3" id="text-5-22">
 <p>
 A macro for composing functions together to build an interactive command to copy a string to the kill ring.
 </p>
@@ -1820,8 +1845,8 @@ A macro for composing functions together to build an interactive command to copy
 </div>
 </div>
 <div id="outline-container-copyportionsofthebufferfilename" class="outline-4">
-<h4 id="copyportionsofthebufferfilename"><span class="section-number-4">5.21.1</span> Copy portions of the buffer file name</h4>
-<div class="outline-text-4" id="text-5-21-1">
+<h4 id="copyportionsofthebufferfilename"><span class="section-number-4">5.22.1</span> Copy portions of the buffer file name</h4>
+<div class="outline-text-4" id="text-5-22-1">
 <div class="org-src-container">
 
 <pre class="src src-emacs-lisp"><span style="color: #e91e63;">(</span><span style="color: #fff59d;">defmacro</span> <span style="color: #84ffff;">imalison:copy-buffer-file-path-builder</span> <span style="color: #2196F3;">(</span><span style="color: #84ffff;">&amp;rest</span> args<span style="color: #2196F3;">)</span>
@@ -1839,8 +1864,8 @@ A macro for composing functions together to build an interactive command to copy
 </div>
 </div>
 <div id="outline-container-copythecurrentbranchusingmagit" class="outline-4">
-<h4 id="copythecurrentbranchusingmagit"><span class="section-number-4">5.21.2</span> Copy the current branch using magit</h4>
-<div class="outline-text-4" id="text-5-21-2">
+<h4 id="copythecurrentbranchusingmagit"><span class="section-number-4">5.22.2</span> Copy the current branch using magit</h4>
+<div class="outline-text-4" id="text-5-22-2">
 <div class="org-src-container">
 
 <pre class="src src-emacs-lisp"><span style="color: #e91e63;">(</span><span style="color: #fff59d;">imalison:compose-copy-builder</span> imalison:copy-current-git-branch
@@ -1851,8 +1876,8 @@ A macro for composing functions together to build an interactive command to copy
 </div>
 </div>
 <div id="outline-container-namedcompile" class="outline-3">
-<h3 id="namedcompile"><span class="section-number-3">5.22</span> Named Compile</h3>
-<div class="outline-text-3" id="text-5-22">
+<h3 id="namedcompile"><span class="section-number-3">5.23</span> Named Compile</h3>
+<div class="outline-text-3" id="text-5-23">
 <div class="org-src-container">
 
 <pre class="src src-emacs-lisp"><span style="color: #e91e63;">(</span><span style="color: #fff59d;">defun</span> <span style="color: #84ffff;">imalison:named-compile</span> <span style="color: #2196F3;">(</span>command<span style="color: #2196F3;">)</span>
@@ -1869,8 +1894,8 @@ A macro for composing functions together to build an interactive command to copy
 </div>
 </div>
 <div id="outline-container-replaceescapesequences" class="outline-3">
-<h3 id="replaceescapesequences"><span class="section-number-3">5.23</span> Replace Escape Sequences</h3>
-<div class="outline-text-3" id="text-5-23">
+<h3 id="replaceescapesequences"><span class="section-number-3">5.24</span> Replace Escape Sequences</h3>
+<div class="outline-text-3" id="text-5-24">
 <div class="org-src-container">
 
 <pre class="src src-emacs-lisp"><span style="color: #e91e63;">(</span><span style="color: #fff59d;">defun</span> <span style="color: #84ffff;">imalison:replace-escape-sequences</span> <span style="color: #2196F3;">()</span>
@@ -1888,8 +1913,8 @@ A macro for composing functions together to build an interactive command to copy
 </div>
 </div>
 <div id="outline-container-downloadafileintoabuffer" class="outline-3">
-<h3 id="downloadafileintoabuffer"><span class="section-number-3">5.24</span> Download a File Into a Buffer</h3>
-<div class="outline-text-3" id="text-5-24">
+<h3 id="downloadafileintoabuffer"><span class="section-number-3">5.25</span> Download a File Into a Buffer</h3>
+<div class="outline-text-3" id="text-5-25">
 <p>
 <a id="orgtarget2"></a>
 </p>
@@ -1910,8 +1935,8 @@ A macro for composing functions together to build an interactive command to copy
 </div>
 </div>
 <div id="outline-container-concatwithsymbols" class="outline-3">
-<h3 id="concatwithsymbols"><span class="section-number-3">5.25</span> Concat With Symbols</h3>
-<div class="outline-text-3" id="text-5-25">
+<h3 id="concatwithsymbols"><span class="section-number-3">5.26</span> Concat With Symbols</h3>
+<div class="outline-text-3" id="text-5-26">
 <div class="org-src-container">
 
 <pre class="src src-emacs-lisp"><span style="color: #e91e63;">(</span><span style="color: #fff59d;">defun</span> <span style="color: #84ffff;">imalison:maybe-symbol-name</span> <span style="color: #2196F3;">(</span>arg<span style="color: #2196F3;">)</span>
@@ -1926,8 +1951,8 @@ A macro for composing functions together to build an interactive command to copy
 </div>
 </div>
 <div id="outline-container-editascriptonpath" class="outline-3">
-<h3 id="editascriptonpath"><span class="section-number-3">5.26</span> Edit a script on PATH</h3>
-<div class="outline-text-3" id="text-5-26">
+<h3 id="editascriptonpath"><span class="section-number-3">5.27</span> Edit a script on PATH</h3>
+<div class="outline-text-3" id="text-5-27">
 <p>
 <a id="orgtarget3"></a> Note that you'll need to make sure that emacs properly inherits
 the path variable for this work. Check out my <a href="#execpathfromshell">exec-path-from-shell</a> config for
@@ -1955,8 +1980,8 @@ details.
 </div>
 </div>
 <div id="outline-container-togglelexicalbindinginthecurrentbuffer" class="outline-3">
-<h3 id="togglelexicalbindinginthecurrentbuffer"><span class="section-number-3">5.27</span> Toggle lexical binding in the current buffer</h3>
-<div class="outline-text-3" id="text-5-27">
+<h3 id="togglelexicalbindinginthecurrentbuffer"><span class="section-number-3">5.28</span> Toggle lexical binding in the current buffer</h3>
+<div class="outline-text-3" id="text-5-28">
 <div class="org-src-container">
 
 <pre class="src src-emacs-lisp"><span style="color: #e91e63;">(</span><span style="color: #fff59d;">defun</span> <span style="color: #84ffff;">imalison:toggle-lexical-binding</span> <span style="color: #2196F3;">()</span>
@@ -1969,8 +1994,8 @@ details.
 </div>
 </div>
 <div id="outline-container-synckillringwithcopyq" class="outline-3">
-<h3 id="synckillringwithcopyq"><span class="section-number-3">5.28</span> Sync kill ring with copyq</h3>
-<div class="outline-text-3" id="text-5-28">
+<h3 id="synckillringwithcopyq"><span class="section-number-3">5.29</span> Sync kill ring with copyq</h3>
+<div class="outline-text-3" id="text-5-29">
 <div class="org-src-container">
 
 <pre class="src src-emacs-lisp"><span style="color: #e91e63;">(</span><span style="color: #fff59d;">defun</span> <span style="color: #84ffff;">imalison:copyq-get</span> <span style="color: #2196F3;">(</span>i<span style="color: #2196F3;">)</span>
@@ -1992,8 +2017,8 @@ details.
 </div>
 </div>
 <div id="outline-container-helmzshhistory" class="outline-3">
-<h3 id="helmzshhistory"><span class="section-number-3">5.29</span> helm-zsh-history</h3>
-<div class="outline-text-3" id="text-5-29">
+<h3 id="helmzshhistory"><span class="section-number-3">5.30</span> helm-zsh-history</h3>
+<div class="outline-text-3" id="text-5-30">
 <p>
 This was stolen from <a href="https://github.com/jwiegley/dot-emacs">https://github.com/jwiegley/dot-emacs</a>
 </p>
@@ -2035,8 +2060,8 @@ This was stolen from <a href="https://github.com/jwiegley/dot-emacs">https://git
 </div>
 </div>
 <div id="outline-container-useprojectileasdefaultdirectory" class="outline-4">
-<h4 id="useprojectileasdefaultdirectory"><span class="section-number-4">5.29.1</span> Use projectile as default directory</h4>
-<div class="outline-text-4" id="text-5-29-1">
+<h4 id="useprojectileasdefaultdirectory"><span class="section-number-4">5.30.1</span> Use projectile as default directory</h4>
+<div class="outline-text-4" id="text-5-30-1">
 <div class="org-src-container">
 
 <pre class="src src-emacs-lisp"><span style="color: #e91e63;">(</span><span style="color: #fff59d;">imalison:let-around</span> imalison:projectile-helm-command-from-zsh helm-command-from-zsh
@@ -2047,8 +2072,8 @@ This was stolen from <a href="https://github.com/jwiegley/dot-emacs">https://git
 </div>
 </div>
 <div id="outline-container-other" class="outline-3">
-<h3 id="other"><span class="section-number-3">5.30</span> Other</h3>
-<div class="outline-text-3" id="text-5-30">
+<h3 id="other"><span class="section-number-3">5.31</span> Other</h3>
+<div class="outline-text-3" id="text-5-31">
 <p>
 The stuff in this section is pretty crusty. I don't think its used anywhere, but
 I keep it around just in case I need it.
@@ -2151,14 +2176,14 @@ I keep it around just in case I need it.
 </div>
 </div>
 <div id="outline-container-keyboardmacros" class="outline-3">
-<h3 id="keyboardmacros"><span class="section-number-3">5.31</span> Keyboard Macros</h3>
-<div class="outline-text-3" id="text-5-31">
+<h3 id="keyboardmacros"><span class="section-number-3">5.32</span> Keyboard Macros</h3>
+<div class="outline-text-3" id="text-5-32">
 </div><div id="outline-container-foreditingliterateconfig" class="outline-4">
-<h4 id="foreditingliterateconfig"><span class="section-number-4">5.31.1</span> For editing literate config</h4>
-<div class="outline-text-4" id="text-5-31-1">
+<h4 id="foreditingliterateconfig"><span class="section-number-4">5.32.1</span> For editing literate config</h4>
+<div class="outline-text-4" id="text-5-32-1">
 </div><div id="outline-container-extractcurrentsexptosrcblock" class="outline-5">
-<h5 id="extractcurrentsexptosrcblock"><span class="section-number-5">5.31.1.1</span> extract-current-sexp-to-src-block</h5>
-<div class="outline-text-5" id="text-5-31-1-1">
+<h5 id="extractcurrentsexptosrcblock"><span class="section-number-5">5.32.1.1</span> extract-current-sexp-to-src-block</h5>
+<div class="outline-text-5" id="text-5-32-1-1">
 <p>
 This keyboard macro extracts the current sexp to an emacs-lisp source block of its own
 </p>
@@ -2171,8 +2196,8 @@ This keyboard macro extracts the current sexp to an emacs-lisp source block of i
 </div>
 </div>
 <div id="outline-container-namesourceblockforusepackagename" class="outline-5">
-<h5 id="namesourceblockforusepackagename"><span class="section-number-5">5.31.1.2</span> name-source-block-for-use-package-name</h5>
-<div class="outline-text-5" id="text-5-31-1-2">
+<h5 id="namesourceblockforusepackagename"><span class="section-number-5">5.32.1.2</span> name-source-block-for-use-package-name</h5>
+<div class="outline-text-5" id="text-5-32-1-2">
 <div class="org-src-container">
 
 <pre class="src src-emacs-lisp"><span style="color: #e91e63;">(</span>fset 'name-source-block-for-use-package-name
@@ -2182,8 +2207,8 @@ This keyboard macro extracts the current sexp to an emacs-lisp source block of i
 </div>
 </div>
 <div id="outline-container-extractandnameusepackageblock" class="outline-5">
-<h5 id="extractandnameusepackageblock"><span class="section-number-5">5.31.1.3</span> extract-and-name-use-package-block</h5>
-<div class="outline-text-5" id="text-5-31-1-3">
+<h5 id="extractandnameusepackageblock"><span class="section-number-5">5.32.1.3</span> extract-and-name-use-package-block</h5>
+<div class="outline-text-5" id="text-5-32-1-3">
 <div class="org-src-container">
 
 <pre class="src src-emacs-lisp"><span style="color: #e91e63;">(</span>fset 'extract-and-name-use-package-block
@@ -4351,6 +4376,7 @@ Now we add advice to eval-last-sexp so that it has this behavior.
 <div class="org-src-container">
 
 <pre class="src src-emacs-lisp"><span style="color: #e91e63;">(</span><span style="color: #fff59d;">defun</span> <span style="color: #84ffff;">imalison:maybe-setq-instead</span> <span style="color: #2196F3;">(</span>fn <span style="color: #84ffff;">&amp;rest</span> args<span style="color: #2196F3;">)</span>
+  <span style="color: #2196F3;">(</span><span style="color: #fff59d;">noflet</span> <span style="color: #2196F3;">)</span>
   <span style="color: #2196F3;">(</span><span style="color: #fff59d;">or</span> <span style="color: #EF6C00;">(</span>imalison:maybe-eval-defvar-as-setq<span style="color: #EF6C00;">)</span>
       <span style="color: #EF6C00;">(</span>apply fn args<span style="color: #EF6C00;">)</span><span style="color: #2196F3;">)</span><span style="color: #e91e63;">)</span>
 
@@ -7210,7 +7236,7 @@ load-theme hook (See the heading below).
 </div>
 <div id="postamble" class="status">
 <p class="author">Author: Ivan Malison</p>
-<p class="date">Created: 2016-11-02 Wed 18:06</p>
+<p class="date">Created: 2016-11-02 Wed 18:13</p>
 <p class="validation"><a href="http://validator.w3.org/check?uri=referer">Validate</a></p>
 </div>
 </body>
