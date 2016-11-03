@@ -3,7 +3,7 @@
 "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
-<!-- 2016-11-02 Wed 18:13 -->
+<!-- 2016-11-02 Wed 18:23 -->
 <meta  http-equiv="Content-Type" content="text/html;charset=utf-8" />
 <meta  name="viewport" content="width=device-width, initial-scale=1" />
 <title></title>
@@ -100,6 +100,8 @@
 <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js"></script>
 <script type="text/javascript" src="http://www.pirilampo.org/styles/lib/js/jquery.stickytableheaders.js"></script>
 <script type="text/javascript" src="http://www.pirilampo.org/styles/readtheorg/js/readtheorg.js"></script>
+<style type="text/css">
+ pre.src {background-color: #263238; color: #ffffff;}</style>
 <style type="text/css">
  pre.src {background-color: #263238; color: #ffffff;}</style>
 <style type="text/css">
@@ -1022,7 +1024,7 @@ This solution only applies it to projectile-find-file
 </p>
 <div class="org-src-container">
 
-<pre class="src src-emacs-lisp"><span style="color: #e91e63;">(</span><span style="color: #fff59d;">require</span> '<span style="color: #8bc34a;">noflet</span><span style="color: #e91e63;">)</span>
+<pre class="src src-emacs-lisp"><span style="color: #e91e63;">(</span><span style="color: #fff59d;">use-package</span> <span style="color: #8bc34a;">noflet</span> <span style="color: #ff8A65;">:demand</span> t<span style="color: #e91e63;">)</span>
 
 <span style="color: #e91e63;">(</span><span style="color: #fff59d;">defun</span> <span style="color: #84ffff;">imalison:call-with-quick-shell-command</span> <span style="color: #2196F3;">(</span>fn <span style="color: #84ffff;">&amp;rest</span> args<span style="color: #2196F3;">)</span>
   <span style="color: #2196F3;">(</span><span style="color: #fff59d;">noflet</span> <span style="color: #EF6C00;">(</span><span style="color: #B388FF;">(</span>shell-command-to-string <span style="color: #76ff03;">(</span><span style="color: #84ffff;">&amp;rest</span> args<span style="color: #76ff03;">)</span>
@@ -4353,32 +4355,18 @@ Taken from <a href="http://endlessparentheses.com/eval-result-overlays-in-emacs-
 <h5 id="reevalutedefvarswhenrunningevallastsexp"><span class="section-number-5">12.1.3.10</span> Reevalute defvars when running eval-last-sexp</h5>
 <div class="outline-text-5" id="text-12-1-3-10">
 <p>
-What follows is a function that checks to see if what precedes point is a defvar
-and reevaluates it as a setq if it is
-</p>
-<div class="org-src-container">
-
-<pre class="src src-emacs-lisp"><span style="color: #e91e63;">(</span><span style="color: #fff59d;">defun</span> <span style="color: #84ffff;">imalison:defvar-at-point</span> <span style="color: #2196F3;">()</span>
-  <span style="color: #2196F3;">(</span><span style="color: #fff59d;">let*</span> <span style="color: #EF6C00;">(</span><span style="color: #B388FF;">(</span>preceding-sexp <span style="color: #76ff03;">(</span>elisp--preceding-sexp<span style="color: #76ff03;">)</span><span style="color: #B388FF;">)</span><span style="color: #EF6C00;">)</span>
-    <span style="color: #EF6C00;">(</span><span style="color: #fff59d;">when</span> <span style="color: #B388FF;">(</span><span style="color: #fff59d;">and</span> <span style="color: #76ff03;">(</span>listp preceding-sexp<span style="color: #76ff03;">)</span> <span style="color: #76ff03;">(</span>equal <span style="color: #26A69A;">(</span>car preceding-sexp<span style="color: #26A69A;">)</span> 'defvar<span style="color: #76ff03;">)</span><span style="color: #B388FF;">)</span>
-      preceding-sexp<span style="color: #EF6C00;">)</span><span style="color: #2196F3;">)</span><span style="color: #e91e63;">)</span>
-
-<span style="color: #e91e63;">(</span><span style="color: #fff59d;">defun</span> <span style="color: #84ffff;">imalison:maybe-eval-defvar-as-setq</span> <span style="color: #2196F3;">()</span>
-  <span style="color: #2196F3;">(</span><span style="color: #fff59d;">interactive</span><span style="color: #2196F3;">)</span>
-  <span style="color: #2196F3;">(</span><span style="color: #fff59d;">let</span> <span style="color: #EF6C00;">(</span><span style="color: #B388FF;">(</span>the-defvar <span style="color: #76ff03;">(</span>imalison:defvar-at-point<span style="color: #76ff03;">)</span><span style="color: #B388FF;">)</span><span style="color: #EF6C00;">)</span>
-    <span style="color: #EF6C00;">(</span><span style="color: #fff59d;">when</span> the-defvar
-      <span style="color: #B388FF;">(</span>eval `<span style="color: #76ff03;">(</span><span style="color: #fff59d;">setq</span> ,@<span style="color: #26A69A;">(</span>cdr the-defvar<span style="color: #26A69A;">)</span><span style="color: #76ff03;">)</span><span style="color: #B388FF;">)</span><span style="color: #EF6C00;">)</span><span style="color: #2196F3;">)</span><span style="color: #e91e63;">)</span>
-</pre>
-</div>
-<p>
-Now we add advice to eval-last-sexp so that it has this behavior.
+We noflet elisp&#x2013;preceding-sexp to munge defvars into sexps only for
+eval-last-sexp.
 </p>
 <div class="org-src-container">
 
 <pre class="src src-emacs-lisp"><span style="color: #e91e63;">(</span><span style="color: #fff59d;">defun</span> <span style="color: #84ffff;">imalison:maybe-setq-instead</span> <span style="color: #2196F3;">(</span>fn <span style="color: #84ffff;">&amp;rest</span> args<span style="color: #2196F3;">)</span>
-  <span style="color: #2196F3;">(</span><span style="color: #fff59d;">noflet</span> <span style="color: #2196F3;">)</span>
-  <span style="color: #2196F3;">(</span><span style="color: #fff59d;">or</span> <span style="color: #EF6C00;">(</span>imalison:maybe-eval-defvar-as-setq<span style="color: #EF6C00;">)</span>
-      <span style="color: #EF6C00;">(</span>apply fn args<span style="color: #EF6C00;">)</span><span style="color: #2196F3;">)</span><span style="color: #e91e63;">)</span>
+  <span style="color: #2196F3;">(</span><span style="color: #fff59d;">noflet</span> <span style="color: #EF6C00;">(</span><span style="color: #B388FF;">(</span>elisp--preceding-sexp <span style="color: #76ff03;">(</span><span style="color: #84ffff;">&amp;rest</span> preceding-args<span style="color: #76ff03;">)</span>
+                                  <span style="color: #76ff03;">(</span><span style="color: #fff59d;">let*</span> <span style="color: #26A69A;">(</span><span style="color: #FFCDD2;">(</span>preceding-sexp <span style="color: #795548;">(</span>apply this-fn preceding-args<span style="color: #795548;">)</span><span style="color: #FFCDD2;">)</span><span style="color: #26A69A;">)</span>
+                                    <span style="color: #26A69A;">(</span><span style="color: #fff59d;">if</span> <span style="color: #FFCDD2;">(</span><span style="color: #fff59d;">and</span> <span style="color: #795548;">(</span>listp preceding-sexp<span style="color: #795548;">)</span> <span style="color: #795548;">(</span>equal <span style="color: #DCE775;">(</span>car preceding-sexp<span style="color: #DCE775;">)</span> 'defvar<span style="color: #795548;">)</span><span style="color: #FFCDD2;">)</span>
+                                        `<span style="color: #FFCDD2;">(</span><span style="color: #fff59d;">setq</span> ,@<span style="color: #795548;">(</span>cdr preceding-sexp<span style="color: #795548;">)</span><span style="color: #FFCDD2;">)</span>
+                                      preceding-sexp<span style="color: #26A69A;">)</span><span style="color: #76ff03;">)</span><span style="color: #B388FF;">)</span><span style="color: #EF6C00;">)</span>
+    <span style="color: #EF6C00;">(</span>apply fn args<span style="color: #EF6C00;">)</span><span style="color: #2196F3;">)</span><span style="color: #e91e63;">)</span>
 
 <span style="color: #e91e63;">(</span>advice-add 'eval-last-sexp <span style="color: #ff8A65;">:around</span> 'imalison:maybe-setq-instead<span style="color: #e91e63;">)</span>
 </pre>
@@ -7236,7 +7224,7 @@ load-theme hook (See the heading below).
 </div>
 <div id="postamble" class="status">
 <p class="author">Author: Ivan Malison</p>
-<p class="date">Created: 2016-11-02 Wed 18:13</p>
+<p class="date">Created: 2016-11-02 Wed 18:23</p>
 <p class="validation"><a href="http://validator.w3.org/check?uri=referer">Validate</a></p>
 </div>
 </body>
