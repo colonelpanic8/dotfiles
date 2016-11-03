@@ -548,6 +548,20 @@ new macro name and the -fn suffix.
       'arg
     `(funcall ,(car funcs) (imalison:compose-helper-unary ,(cdr funcs)))))
 #+END_SRC
+** With Advice
+Taken from [[http://emacs.stackexchange.com/questions/16490/emacs-let-bound-advice][here]].
+#+BEGIN_SRC emacs-lisp
+(defmacro imalison:with-advice (args &rest body)
+  (declare (indent 1))
+  (let ((fun-name (car args))
+        (advice   (cadr args))
+        (orig-sym (make-symbol "orig")))
+    `(cl-letf* ((,orig-sym  (symbol-function ',fun-name))
+                ((symbol-function ',fun-name)
+                 (lambda (&rest args)
+                   (apply ,advice ,orig-sym args))))
+       ,@body)))
+#+END_SRC
 ** Make Interactive
 #+BEGIN_SRC emacs-lisp
 (defmacro imalison:make-interactive-fn (function)
