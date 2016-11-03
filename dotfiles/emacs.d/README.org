@@ -182,6 +182,11 @@ Sets environment variables by starting a shell.
         (add-to-list 'exec-path-from-shell-variables "PYTHONPATH")
         (exec-path-from-shell-initialize)))))
 #+END_SRC
+** noflet
+#+BEGIN_SRC emacs-lisp
+(use-package noflet
+  :demand t)
+#+END_SRC
 ** Non-Forking Shell Command To String
 Emacs' built in ~shell-command-to-string~ function has the downside that it
 forks a new shell process every time it is executed. This means that any shell
@@ -228,7 +233,6 @@ This had to be disabled because it was causing a bunch of issues with projectile
 
 This solution only applies it to projectile-find-file
 #+BEGIN_SRC emacs-lisp
-(require 'noflet)
 
 (defun imalison:call-with-quick-shell-command (fn &rest args)
   (noflet ((shell-command-to-string (&rest args)
