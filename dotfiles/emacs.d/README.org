@@ -1432,6 +1432,7 @@ proced is an top like utility that runs inside of emacs. The following sets auto
       "tile"
       ("t" (tile :strategy imalison:tall-tile-strategy))
       ("n" tile)
+      ("l" winner-undo)
       ("0" (tile :strategy tile-one)))
     (defvar tile-strategies (list imalison:tall-tile-strategy
                                   (tile-argument-buffer-fetcher
