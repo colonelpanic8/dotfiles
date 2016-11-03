@@ -2413,25 +2413,16 @@ Taken from http://endlessparentheses.com/eval-result-overlays-in-emacs-lisp.html
                  (point)))))
 #+END_SRC
 **** Reevalute defvars when running eval-last-sexp
-What follows is a function that checks to see if what precedes point is a defvar
-and reevaluates it as a setq if it is
-#+BEGIN_SRC emacs-lisp
-(defun imalison:defvar-at-point ()
-  (let* ((preceding-sexp (elisp--preceding-sexp)))
-    (when (and (listp preceding-sexp) (equal (car preceding-sexp) 'defvar))
-      preceding-sexp)))
-
-(defun imalison:maybe-eval-defvar-as-setq ()
-  (interactive)
-  (let ((the-defvar (imalison:defvar-at-point)))
-    (when the-defvar
-      (eval `(setq ,@(cdr the-defvar))))))
-#+END_SRC
-Now we add advice to eval-last-sexp so that it has this behavior.
+We noflet elisp--preceding-sexp to munge defvars into sexps only for
+eval-last-sexp.
 #+BEGIN_SRC emacs-lisp
 (defun imalison:maybe-setq-instead (fn &rest args)
-  (or (imalison:maybe-eval-defvar-as-setq)
-      (apply fn args)))
+  (noflet ((elisp--preceding-sexp (&rest preceding-args)
+                                  (let* ((preceding-sexp (apply this-fn preceding-args)))
+                                    (if (and (listp preceding-sexp) (equal (car preceding-sexp) 'defvar))
+                                        `(setq ,@(cdr preceding-sexp))
+                                      preceding-sexp))))
+    (apply fn args)))
 
 (advice-add 'eval-last-sexp :around 'imalison:maybe-setq-instead)
 #+END_SRC
