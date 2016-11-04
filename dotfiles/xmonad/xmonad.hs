@@ -159,8 +159,6 @@ getWorkspaceNameFromTag namesMap tag =
       Nothing -> tag
       Just label -> printf "%s: %s " tag label
 
-shiftThenView i = W.greedyView i . W.shift i
-
 -- Toggleable fade
 
 newtype ToggleFade = ToggleFade (M.Map Window Bool)
@@ -190,6 +188,8 @@ toggleFadingForActiveWindow = withWindowSet $ \windowSet -> do
 -- appropriate window within that workspace.
 greedyFocusWindow w ws = W.focusWindow w $ W.greedyView
                          (fromMaybe (W.currentTag ws) $ W.findTag w ws) ws
+
+shiftThenView i = W.greedyView i . W.shift i
 
 shiftToEmptyAndView = doTo Next EmptyWS DWO.getSortByOrder (windows . shiftThenView)
 
@@ -252,7 +252,7 @@ addKeys conf@XConfig {modMask = modm} =
     , (modalt, xK_e, spawn "emacsclient -c", emacsSelector)
     , (modalt, xK_c, spawn "google-chrome-stable", chromeSelector)
     , (modalt, xK_h, spawn "google-chrome-stable --profile-directory=Default --app-id=knipolnnllmklapflnccelgolnpehhpl", hangoutsSelector)
-    , (modalt, xK_t, spawn "transmission", transmissionSelector)
+    , (modalt, xK_t, spawn "transmission-gtk", transmissionSelector)
     ] ++
     -- Replace original moving stuff around + greedy view bindings
     [((additionalMask .|. modm, key), windows $ function workspace)

@@ -4434,13 +4434,17 @@ Set the character used to represent spaces to ·, and the character used for tab
 This automatically applies ansi-color interpretation of terminal escape
 sequences to compilation buffers.
 #+BEGIN_SRC emacs-lisp
-(defun colorize-compilation-buffer ()
-  (let ((was-read-only read-only-mode))
-    (when was-read-only (read-only-mode -1))
-    (ansi-color-apply-on-region (point-min) (point-max))
-    (when was-read-only (read-only-mode +1))))
+(defun imalison:colorize-compilation-buffer ()
+  (let ((was-read-only buffer-read-only))
+    (unwind-protect
+        (progn
+          (when was-read-only
+            (read-only-mode -1))
+          (ansi-color-apply-on-region (point-min) (point-max)))
+      (when was-read-only
+        (read-only-mode +1)))))
 
-(add-hook 'compilation-filter-hook 'colorize-compilation-buffer)
+(add-hook 'compilation-filter-hook 'imalison:colorize-compilation-buffer)
 #+END_SRC
 ** Automatic Theme Changer
 Disabled for now
