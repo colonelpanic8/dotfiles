@@ -3,7 +3,7 @@
 "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
-<!-- 2016-11-03 Thu 17:28 -->
+<!-- 2016-11-03 Thu 17:30 -->
 <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title></title>
@@ -185,6 +185,8 @@
 <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js"></script>
 <script type="text/javascript" src="http://www.pirilampo.org/styles/lib/js/jquery.stickytableheaders.js"></script>
 <script type="text/javascript" src="http://www.pirilampo.org/styles/readtheorg/js/readtheorg.js"></script>
+<style type="text/css">
+ pre.src {background-color: #263238; color: #ffffff;}</style>
 <style type="text/css">
  pre.src {background-color: #263238; color: #ffffff;}</style>
 <script type="text/javascript">
@@ -410,8 +412,9 @@ for the JavaScript code in this tag.
 <li><a href="#refine">6.34. refine</a></li>
 <li><a href="#winner">6.35. winner</a></li>
 <li><a href="#eyebrowse">6.36. eyebrowse</a></li>
-<li><a href="#tile">6.37. tile</a></li>
-<li><a href="#fillcolumnindicator">6.38. fill-column-indicator</a></li>
+<li><a href="#stream">6.37. stream</a></li>
+<li><a href="#tile">6.38. tile</a></li>
+<li><a href="#fillcolumnindicator">6.39. fill-column-indicator</a></li>
 </ul>
 </li>
 <li><a href="#keybindings">7. Keybindings</a>
@@ -2856,9 +2859,18 @@ proced is an top like utility that runs inside of emacs. The following sets auto
 </div>
 </div>
 </div>
-<div id="outline-container-tile" class="outline-3">
-<h3 id="tile"><span class="section-number-3">6.37</span> tile</h3>
+<div id="outline-container-stream" class="outline-3">
+<h3 id="stream"><span class="section-number-3">6.37</span> stream</h3>
 <div class="outline-text-3" id="text-6-37">
+<div class="org-src-container">
+<pre class="src src-emacs-lisp"><span style="color: #e91e63;">(</span><span style="color: #fff59d;">use-package</span> <span style="color: #8bc34a;">stream</span><span style="color: #e91e63;">)</span>
+</pre>
+</div>
+</div>
+</div>
+<div id="outline-container-tile" class="outline-3">
+<h3 id="tile"><span class="section-number-3">6.38</span> tile</h3>
+<div class="outline-text-3" id="text-6-38">
 <div class="org-src-container">
 <pre class="src src-emacs-lisp"><span style="color: #e91e63;">(</span><span style="color: #fff59d;">imalison:use-package</span> tile
   <span style="color: #ff8A65;">:after</span> hydra
@@ -2882,8 +2894,8 @@ proced is an top like utility that runs inside of emacs. The following sets auto
 </div>
 </div>
 <div id="outline-container-fillcolumnindicator" class="outline-3">
-<h3 id="fillcolumnindicator"><span class="section-number-3">6.38</span> fill-column-indicator</h3>
-<div class="outline-text-3" id="text-6-38">
+<h3 id="fillcolumnindicator"><span class="section-number-3">6.39</span> fill-column-indicator</h3>
+<div class="outline-text-3" id="text-6-39">
 <p>
 This interferes with too many other packages. See
 <a href="https://github.com/alpaker/Fill-Column-Indicator/issues/21">https://github.com/alpaker/Fill-Column-Indicator/issues/21</a> for more details
@@ -7001,7 +7013,7 @@ load-theme hook (See the heading below).
       <span style="color: #EF6C00;">(</span><span style="color: #fff59d;">progn</span>
         <span style="color: #B388FF;">(</span><span style="color: #fff59d;">condition-case</span> error
             <span style="color: #76ff03;">(</span>set-face-attribute 'default nil <span style="color: #ff8A65;">:font</span> <span style="color: #9ccc65;">"source code pro"</span><span style="color: #76ff03;">)</span>
-          <span style="color: #76ff03;">(</span>'error <span style="color: #26A69A;">(</span>message <span style="color: #9ccc65;">"Error: %s, when setting font"</span><span style="color: #26A69A;">)</span><span style="color: #76ff03;">)</span><span style="color: #B388FF;">)</span>
+          <span style="color: #76ff03;">(</span>'error <span style="color: #26A69A;">(</span>message <span style="color: #9ccc65;">"Error: %s, when setting font"</span> error<span style="color: #26A69A;">)</span><span style="color: #76ff03;">)</span><span style="color: #B388FF;">)</span>
         <span style="color: #B388FF;">(</span>set-face-attribute 'default nil <span style="color: #ff8A65;">:weight</span> 'semi-bold<span style="color: #B388FF;">)</span>
         <span style="color: #B388FF;">(</span>set-face-attribute
          'default nil <span style="color: #ff8A65;">:height</span> imalison:default-font-size-pt<span style="color: #B388FF;">)</span><span style="color: #EF6C00;">)</span>
@@ -7037,7 +7049,7 @@ load-theme hook (See the heading below).
 </div>
 <div id="postamble" class="status">
 <p class="author">Author: Ivan Malison</p>
-<p class="date">Created: 2016-11-03 Thu 17:28</p>
+<p class="date">Created: 2016-11-03 Thu 17:30</p>
 <p class="validation"><a href="http://validator.w3.org/check?uri=referer">Validate</a></p>
 </div>
 </body>
