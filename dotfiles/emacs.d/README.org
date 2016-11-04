@@ -1423,6 +1423,10 @@ proced is an top like utility that runs inside of emacs. The following sets auto
   :config
   (progn (eyebrowse-mode +1)))
 #+END_SRC
+** stream
+#+BEGIN_SRC emacs-lisp
+(use-package stream)
+#+END_SRC
 ** tile
 #+BEGIN_SRC emacs-lisp
 (imalison:use-package tile
@@ -4507,7 +4511,7 @@ load-theme hook (See the heading below).
       (progn
         (condition-case error
             (set-face-attribute 'default nil :font "source code pro")
-          ('error (message "Error: %s, when setting font")))
+          ('error (message "Error: %s, when setting font" error)))
         (set-face-attribute 'default nil :weight 'semi-bold)
         (set-face-attribute
          'default nil :height imalison:default-font-size-pt))
