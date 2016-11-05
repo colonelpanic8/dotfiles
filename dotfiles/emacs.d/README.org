@@ -1120,6 +1120,23 @@ programming mode.
 (setq split-height-threshold nil)
 (setq split-width-threshold 160)
 #+END_SRC
+** Buffer Display
+*** ewmctrl
+#+BEGIN_SRC emacs-lisp
+(use-package ewmctrl
+  :demand t)
+#+END_SRC
+*** display-buffer-alist
+#+BEGIN_SRC emacs-lisp
+;; (defun imalison:display-buffer-reuse-window ()
+;;   )
+
+;; (setq display-buffer-alist
+;;       '((".*" (display-buffer-reuse-window
+;; 	           display-buffer-same-window
+;;     	       display-buffer-pop-up-frame)
+;; 	     (reusable-frames . t))))
+#+END_SRC
 ** Fill Setup
 Get rid of nags about requiring setences to end with two spaces.
 #+BEGIN_SRC emacs-lisp
