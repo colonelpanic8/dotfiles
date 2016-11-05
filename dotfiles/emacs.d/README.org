@@ -1378,23 +1378,6 @@ proced is an top like utility that runs inside of emacs. The following sets auto
 #+BEGIN_SRC emacs-lisp
 (use-package discover-my-major)
 #+END_SRC
-** frames-only-mode
-#+BEGIN_SRC emacs-lisp
-(use-package frames-only-mode
-  :ensure nil
-  :disabled t
-  :preface
-  (defun imalison:other-frame-backwards ()
-    (interactive)
-    (other-frame -1))
-  :bind (:map frames-only-mode-mode-map
-              ("C-x 3" . make-frame-command)
-              ("C-x o" . other-frame)
-              ("C-x O" . imalison:other-frame-backwards))
-  :config
-  (progn
-    (frames-only-mode +1)))
-#+END_SRC
 ** refine
 #+BEGIN_SRC emacs-lisp
 (use-package refine
