@@ -1517,6 +1517,7 @@ https://github.com/alpaker/Fill-Column-Indicator/issues/21 for more details
   ("h" imalison:set-huge-font-size "Huge")
   ("a" imalison:appearance "Set Default Appearance")
   ("f" set-frame-font "Set Frame Font")
+  ("t" helm-themes "Choose Emacs Theme")
   ("0" imalison:font-size-reset "Reset to default size"))
 #+END_SRC
 *** Yanking
