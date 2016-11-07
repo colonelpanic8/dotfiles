@@ -1135,6 +1135,7 @@ programming mode.
 #+END_SRC
 *** display-buffer-alist
 #+BEGIN_SRC emacs-lisp
+(setq pop-up-frames 'graphic-only)
 (defvar imalison:use-frames-only nil)
 
 (defun imalison:use-frames-only ()
@@ -1181,11 +1182,20 @@ programming mode.
 
 (bind-key "C-x o" 'imalison:other-window)
 (bind-key "C-x 3" 'imalison:split-window-right)
+(bind-key "C-x O" (lambda () (interactive) (imalison:other-window -1)))
 
 (setq display-buffer-alist
       '((".*popup\*" . (display-buffer-pop-up-window))
-        (".*magit-diff.*" (display-buffer-pop-up-frame . ((reusable-frames . t))))
-        (".*COMMIT_EDITMSG" . ((display-buffer-pop-up-window) ((reusable-frames . t) (inhibit-same-window . t))))
+        ;; XXX: This was a failed attempt to get magit-commit to properly use
+        ;; frames.
+
+        ;; (".*magit-diff.*" . ((display-buffer-pop-up-frame)
+        ;;                      ((reusable-frames . 0)
+        ;;                       (inhibit-switch-frame . t)
+        ;;                       (inhibit-same-window . t))))
+        ;; (".*COMMIT_.*MSG.*" . ((display-buffer-pop-up-frame)
+        ;;                          ((reusable-frames . 0)
+        ;;                           (inhibit-same-window . t))))
         (".*" . ((imalison:display-buffer display-buffer-reuse-window display-buffer-pop-up-frame)
                  (reusable-frames . t)))))
 
