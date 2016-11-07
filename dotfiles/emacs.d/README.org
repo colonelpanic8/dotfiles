@@ -1173,9 +1173,12 @@ programming mode.
 (bind-key "C-x 3" 'imalison:split-window-right)
 
 (setq display-buffer-alist
-      '(("COMMIT_EDITMSG" (display-buffer-in-side-window))
-        (".*" (imalison:display-buffer)
-	     (reusable-frames . t))))
+      '((".*popup\*" . (display-buffer-pop-up-window))
+        ("COMMIT_EDITMSG" . ((display-buffer-popup-frame) (reusable-frames . t)))
+        (".*" . ((imalison:display-buffer display-buffer-reuse-window display-buffer-pop-up-frame)
+                 (reusable-frames . t)))))
+
+(setq display-buffer-alist nil)
 #+END_SRC
 ** Fill Setup
 Get rid of nags about requiring setences to end with two spaces.
