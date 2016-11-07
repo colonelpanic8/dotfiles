@@ -2029,6 +2029,8 @@ I don't use auto-complete at all, so I have set up a hook to automatically disab
         (org-show-context 'magit-goto))))
   :config
   (progn
+    (when (imalison:use-frames-only)
+      (setq magit-commit-show-diff nil))
     (unbind-key "C-j" magit-status-mode-map)
     (unbind-key "C-j" magit-hunk-section-map)
     (unbind-key "C-j" magit-file-section-map)
@@ -2043,13 +2045,7 @@ I don't use auto-complete at all, so I have set up a hook to automatically disab
 
     (add-to-list 'org-show-context-detail '(magit-goto . lineage))
     (advice-add 'magit-diff-visit-file :after 'imalison:after-magit-visit-file)
-    (add-hook 'magit-popup-mode-hook 'imalison:disable-show-trailing-whitespace)
-    (use-package magit-filenotify
-      ;; Seems like OSX does not support filenotify.
-      :disabled t
-      :if (funcall (emacs-version-predicate 24 4))
-      :config
-      :init (add-hook 'magit-status-mode-hook 'magit-filenotify-mode))))
+    (add-hook 'magit-popup-mode-hook 'imalison:disable-show-trailing-whitespace)))
 #+END_SRC
 *** magithub
 #+BEGIN_SRC emacs-lisp
