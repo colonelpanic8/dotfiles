@@ -3290,19 +3290,20 @@ alphanumeric characters only."
   :bind (("C-c n p" . imalison:helm-org-todo))
   :config
   (progn
-    (org-projectile:prompt)
+    (require 'org-projectile-helm)
+    (org-projectile-prompt)
     (add-to-list 'org-capture-templates
-                 (org-projectile:project-todo-entry
+                 (org-projectile-project-todo-entry
                   "l" "* TODO %? %a\n" "Linked Project TODO"))
-    (add-to-list 'org-capture-templates (org-projectile:project-todo-entry "p"))
+    (add-to-list 'org-capture-templates (org-projectile-project-todo-entry "p"))
     (setq org-confirm-elisp-link-function nil)
-    (imalison:add-to-org-agenda-files (org-projectile:todo-files))
+    (imalison:add-to-org-agenda-files (org-projectile-todo-files))
     (require 'helm-source)
     (require 'helm-org)
     (defun imalison:helm-org-todo (&optional arg)
       (interactive "P")
       (helm :sources (list (helm-source-org-capture-templates)
-                           (org-projectile:helm-source
+                           (org-projectile-helm-source
                             (if arg (imalison:make-org-linked-todo-template)
                               (imalison:make-org-todo-template))))
             :candidate-number-limit 99999
