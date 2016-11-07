@@ -1173,7 +1173,7 @@ programming mode.
 (bind-key "C-x 3" 'imalison:split-window-right)
 
 (setq display-buffer-alist
-      '("COMMIT_MESSAGE"
+      '(("COMMIT_EDITMSG" (display-buffer-in-side-window))
         (".*" (imalison:display-buffer)
 	     (reusable-frames . t))))
 #+END_SRC
