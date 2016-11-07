@@ -2842,7 +2842,8 @@ Intero seems to be causing hangs, so it has been disabled
 #+END_SRC
 ** Document
 *** org
-#+BEGIN_SRC emacs-lisp
+**** config
+ #+BEGIN_SRC emacs-lisp
 (use-package org
   :ensure org-plus-contrib
   :preface
@@ -3251,6 +3252,16 @@ Intero seems to be causing hangs, so it has been disabled
     ;; EXPIRED TODO to indicate that the owner is not necessarily to
     ;; blame.
     ))
+ #+END_SRC
+**** Use frames
+#+BEGIN_SRC emacs-lisp
+(use-package org
+  :config
+  (progn
+  (setq org-src-window-setup 'current-window)
+    (when (imalison:use-frames-only)
+      (progn
+        (setcdr (assoc 'file org-link-frame-setup) 'find-file-other-frame)))))
 #+END_SRC
 **** Set Background Color of Source Blocks for Export
 This was taken from [[http://emacs.stackexchange.com/questions/3374/set-the-background-of-org-exported-code-blocks-according-to-theme][here]].
