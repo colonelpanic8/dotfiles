@@ -611,8 +611,18 @@ the ~:around~ keyword of advice-add.
 
 (imalison:named-builder imalison:let-advise-around)
 #+END_SRC
+** Let Advise
+#+BEGIN_SRC emacs-lisp
+(defmacro imalison:let-advise (advised-function &rest forms)
+  (let ((advice-fn-name (imalison:concat-symbols
+                         "around-advice-" advised-function)))
+    `(progn
+       (imalison:let-advise-around ,advice-fn-name ,@forms)
+       (advice-add (quote ,advised-function) :around (quote ,advice-fn-name)))))
+(put 'imalison:let-advise 'lisp-indent-function 1)
+#+END_SRC
 ** Compose Around Builder
-For composing functions with an apply so that they can be used with the ~:around~ keyword of advice-add. 
+For composing functions with an apply so that they can be used with the ~:around~ keyword of advice-add.
 #+BEGIN_SRC emacs-lisp
 ;; TODO/XXX: Isn't this just apply? why doesn't apply work here
 (defun imalison:around-identity (fn &rest args)
