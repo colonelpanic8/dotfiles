@@ -75,7 +75,8 @@ myStartup = spawn "systemctl --user start wm.target"
 -- Manage
 
 myManageHook = composeAll . concat $
-               [ [ hangoutsSelector --> doShift "3"] ]
+               [ [ hangoutsSelector --> doShift "2"]
+               , [ transmissionSelector --> doShift "5" ]]
 
 -- Layout
 
