@@ -1144,33 +1144,36 @@ programming mode.
 
 (defvar imalison:use-new-frame-or-window nil)
 
-(defvar imalison:use-new-frame-next-command nil)
+(defvar imalison:use-new-frame-or-window-next-command nil)
 
-(defun imalison:new-frame-next-command ()
+(defun imalison:other-window-or-frame-next-command ()
   (interactive)
-  (setq imalison:use-new-frame-next-command t))
+  (setq imalison:use-new-frame-or-window-next-command t))
 
-(defun imalison:use-new-frame-or-window (&rest args)
+(defun imalison:use-other-frame-or-window (&rest args)
   (or
-   (when imalison:use-new-frame-next-command
-     (setq imalison:use-new-frame-next-command nil)
+   (when imalison:use-new-frame-or-window-next-command
+     (setq imalison:use-new-frame-or-window-next-command nil)
      t)
    imalison:use-new-frame-or-window))
 
 (defun imalison:display-buffer (&rest args)
-  (if (imalison:use-new-frame-or-window args)
-      (imalison:new-frame-or-window args)
+  (if (imalison:use-other-frame-or-window args)
+      (apply 'imalison:display-buffer-other-frame-or-window args)
     (apply 'display-buffer-same-window args)))
 
-(defun imalison:display-new-frame-or-window (&rest args)
+(defun imalison:display-buffer-other-frame-or-window (buffer &rest args)
   (if (imalison:use-frames-only)
-      (apply 'display-buffer-pop-up-frame args)
-    (apply 'display-buffer-pop-up-window args)))
+      (display-buffer buffer '((display-buffer-reuse-window
+                                display-buffer-pop-up-frame)
+                               (reusable-frames . t)
+                               (inhibit-same-window . t)) t)
+    (apply 'display-buffer-reuse-window args)))
 
 (defun imalison:split-window-right ()
   (interactive)
   (if (imalison:use-frames-only)
-      (new-frame)
+      (make-frame)
     (split-window-right)))
 
 (defun imalison:other-window (&rest args)
@@ -1179,6 +1182,8 @@ programming mode.
   (if (imalison:use-frames-only)
       (apply 'other-frame args)
     (apply 'other-window args)))
+
+(bind-key "C-c s" 'imalison:other-window-or-frame-next-command)
 
 (bind-key "C-x o" 'imalison:other-window)
 (bind-key "C-x 3" 'imalison:split-window-right)
@@ -1196,8 +1201,9 @@ programming mode.
         ;; (".*COMMIT_.*MSG.*" . ((display-buffer-pop-up-frame)
         ;;                          ((reusable-frames . 0)
         ;;                           (inhibit-same-window . t))))
-        (".*" . ((imalison:display-buffer display-buffer-reuse-window display-buffer-pop-up-frame)
-                 (reusable-frames . t)))))
+        (".*" . ((imalison:display-buffer display-buffer-same-window
+    	       display-buffer-pop-up-frame)
+                 ((reusable-frames . t))))))
 
 (setq display-buffer-alist nil)
 #+END_SRC
