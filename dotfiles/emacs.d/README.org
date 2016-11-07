@@ -1125,14 +1125,57 @@ programming mode.
 #+END_SRC
 *** display-buffer-alist
 #+BEGIN_SRC emacs-lisp
-;; (defun imalison:display-buffer-reuse-window ()
-;;   )
+(defvar imalison:use-frames-only nil)
 
-;; (setq display-buffer-alist
-;;       '((".*" (display-buffer-reuse-window
-;; 	           display-buffer-same-window
-;;     	       display-buffer-pop-up-frame)
-;; 	     (reusable-frames . t))))
+(defun imalison:use-frames-only ()
+  (or imalison:use-frames-only
+      (member (getenv "XDG_CURRENT_DESKTOP") '("XMonad"))))
+
+(defvar imalison:use-new-frame-or-window nil)
+
+(defvar imalison:use-new-frame-next-command nil)
+
+(defun imalison:new-frame-next-command ()
+  (interactive)
+  (setq imalison:use-new-frame-next-command t))
+
+(defun imalison:use-new-frame-or-window (&rest args)
+  (or
+   (when imalison:use-new-frame-next-command
+     (setq imalison:use-new-frame-next-command nil)
+     t)
+   imalison:use-new-frame-or-window))
+
+(defun imalison:display-buffer (&rest args)
+  (if (imalison:use-new-frame-or-window args)
+      (imalison:new-frame-or-window args)
+    (apply 'display-buffer-same-window args)))
+
+(defun imalison:display-new-frame-or-window (&rest args)
+  (if (imalison:use-frames-only)
+      (apply 'display-buffer-pop-up-frame args)
+    (apply 'display-buffer-pop-up-window args)))
+
+(defun imalison:split-window-right ()
+  (interactive)
+  (if (imalison:use-frames-only)
+      (new-frame)
+    (split-window-right)))
+
+(defun imalison:other-window (&rest args)
+  (interactive
+   (list 1))
+  (if (imalison:use-frames-only)
+      (apply 'other-frame args)
+    (apply 'other-window args)))
+
+(bind-key "C-x o" 'imalison:other-window)
+(bind-key "C-x 3" 'imalison:split-window-right)
+
+(setq display-buffer-alist
+      '("COMMIT_MESSAGE"
+        (".*" (imalison:display-buffer)
+	     (reusable-frames . t))))
 #+END_SRC
 ** Fill Setup
 Get rid of nags about requiring setences to end with two spaces.
