@@ -72,175 +72,6 @@ file uses lexical scoping.
 ;;; -*- lexical-binding: t -*-
 (setq-default lexical-binding t)
 #+END_SRC
-** Setup auto-compile
-#+BEGIN_SRC emacs-lisp
-(when (boundp 'use-package)
-      (use-package auto-compile
-        :ensure t
-        :config
-        (progn
-          (auto-compile-on-load-mode)
-          (auto-compile-on-save-mode))))
-#+END_SRC
-** Prefer Newer Versions
-To reduce the risk of loading outdated byte code files, we set
-load-prefer-newer and enable auto-compile-on-load-mode as early as
-possible.
-#+BEGIN_SRC emacs-lisp
-(setq load-prefer-newer t)
-#+END_SRC
-** Custom Files
-The default value of ~custom-file~ is just the current user's ~.emacs.d/init.el~
-file. Emacs will add content to ~custom-file~ whenever a variable is customized
-or marked as safe. When init.el is version controlled, it is quite annoying to
-have random machine-generated variable settings amended to it because those
-changes are often not worth keeping permanently, so we set a different custom
-file here to avoid this situation.
-
-custom-before.el is loaded before the  rest of init.el, while custom-after.el is
-loaded afterwards. this-machine.el has customizations  that should only apply to
-the current machine.  custom-before and custom-after are  not version controlled
-in the dotfiles repo but they are shared across machines elsewhere.
-#+BEGIN_SRC emacs-lisp
-(defvar machine-custom "~/.emacs.d/this-machine.el")
-(defvar custom-after-file "~/.emacs.d/custom-after.el")
-(setq custom-file "~/.emacs.d/custom-before.el")
-(when (file-exists-p custom-file) (load custom-file))
-#+END_SRC
-** emit
-*** TODO this needs to be done better, but it works for now
-    :LOGBOOK:
-    - State "TODO"       from "TODO"       [2016-09-13 Tue 17:49]
-    :END:
-#+BEGIN_SRC emacs-lisp
-(when (file-exists-p "~/.emacs.d/load.d/emit.el")
-  (load "~/.emacs.d/load.d/emit.el"))
-#+END_SRC
-** Benchmarking
-This appears here so that it can accurately benchmark as much of
-startup as possible.
-#+BEGIN_SRC emacs-lisp
-  (defvar imalison:do-benchmark)
-  (when (and (boundp 'use-package)
-             (bound-and-true-p imalison:do-benchmark))
-    (use-package benchmark-init))
-#+END_SRC
-** GUI Disables
-Death to any gui elements in emacs! Do this EARLY so that emacs
-doesn't redisplay in a way that is visually unpleasant on startup a
-bunch of times.
-#+BEGIN_SRC emacs-lisp
-(when (fboundp 'menu-bar-mode) (menu-bar-mode -1))
-(when (fboundp 'tool-bar-mode) (tool-bar-mode -1))
-(when (fboundp 'scroll-bar-mode) (scroll-bar-mode -1))
-#+END_SRC
-Tooltips are annoying:
-#+BEGIN_SRC emacs-lisp
-(if (fboundp 'tooltip-mode) (tooltip-mode -1) (setq tooltip-use-echo-area t))'
-#+END_SRC
-** Byte-Compiler
-These definitions silence the byte-compiler.
-#+BEGIN_SRC emacs-lisp
-(defvar grep-find-ignored-directories nil)
-(defvar grep-find-ignored-files nil)
-(defvar ido-context-switch-command nil)
-(defvar ido-cur-item nil)
-(defvar ido-cur-list nil)
-(defvar ido-default-item nil)
-(defvar inherit-input-method nil)
-(defvar oauth--token-data nil)
-(defvar tls-checktrust nil)
-(defvar tls-program nil)
-(defvar url-callback-arguments nil)
-(defvar url-callback-function nil)
-(defvar url-http-extra-headers nil)
-#+END_SRC
-
-#+BEGIN_SRC emacs-lisp
-;; This variable doesn't exist in old versions of org-mode
-(defvar org-show-context-detail)
-#+END_SRC
-** exec-path-from-shell
-Sets environment variables by starting a shell.
-#+BEGIN_SRC emacs-lisp
-;; TODO: this does not seem to actually install exec-path-from-shell
-(eval-and-compile
-  (when (fboundp 'use-package)
-    (use-package exec-path-from-shell
-      :config
-      (progn
-        ;; For debugging
-        (when nil
-          (message "path: %s, setup: %s" (getenv "PATH")
-                   (getenv "ENVIRONMENT_SETUP_DONE"))
-          (setq exec-path-from-shell-debug t))
-        (setq exec-path-from-shell-arguments (list "-l"))
-        (setq exec-path-from-shell-check-startup-files nil)
-        (add-to-list 'exec-path-from-shell-variables "SHELL")
-        (add-to-list 'exec-path-from-shell-variables "GOPATH")
-        (add-to-list 'exec-path-from-shell-variables "ENVIRONMENT_SETUP_DONE")
-        (add-to-list 'exec-path-from-shell-variables "PYTHONPATH")
-        (exec-path-from-shell-initialize)))))
-#+END_SRC
-** noflet
-#+BEGIN_SRC emacs-lisp
-(use-package noflet
-  :demand t)
-#+END_SRC
-** Non-Forking Shell Command To String
-Emacs' built in ~shell-command-to-string~ function has the downside that it
-forks a new shell process every time it is executed. This means that any shell
-startup cost is incurred when this function is called.
-
-The following implementation uses eshell's ~executable-find~ to find the
-binary (which is the only reason ~shell-comand-to-string~ is typically used
-anyway), but it avoids incurring any shell-startup cost.
-
-This was originally inspired by [[https://github.com/bbatsov/projectile/issues/1044][this issue]].
-#+BEGIN_SRC emacs-lisp
-(defun imalison:call-process-to-string (program &rest args)
-  (with-temp-buffer
-    (apply 'call-process program nil (current-buffer) nil args)
-    (buffer-string)))
-
-(defun imalison:get-call-process-args-from-shell-command (command)
-  (cl-destructuring-bind
-      (the-command . args) (split-string command " ")
-    (let ((binary-path (executable-find the-command)))
-      (when binary-path
-        (cons binary-path args)))))
-
-(defun imalison:shell-command-to-string (command)
-  (let ((call-process-args
-         (imalison:get-call-process-args-from-shell-command command)))
-    (if call-process-args
-        (apply 'imalison:call-process-to-string call-process-args)
-      (shell-command-to-string command))))
-#+END_SRC
-This makes it so that we always try to call-process instead of shell-command-to-sting. It may cause undesireable behavior.
-#+BEGIN_SRC emacs-lisp
-(defun imalison:try-call-process (command)
-  (let ((call-process-args
-         (imalison:get-call-process-args-from-shell-command command)))
-    (if call-process-args
-        (apply 'imalison:call-process-to-string call-process-args))))
-#+END_SRC
-
-This had to be disabled because it was causing a bunch of issues with projectile.
-#+BEGIN_SRC emacs-lisp :tangle no
-(advice-add 'shell-command-to-string :before-until 'imalison:try-call-process)
-#+END_SRC
-
-This solution only applies it to projectile-find-file
-#+BEGIN_SRC emacs-lisp
-
-(defun imalison:call-with-quick-shell-command (fn &rest args)
-  (noflet ((shell-command-to-string (&rest args)
-                                    (or (apply 'imalison:try-call-process args) (apply this-fn args))))
-    (apply fn args)))
-
-(advice-add 'projectile-find-file :around 'imalison:call-with-quick-shell-command)
-#+END_SRC
 ** Security
 #+BEGIN_SRC emacs-lisp
 (defvar imalison:secure t)
@@ -331,6 +162,172 @@ use-package is only needed at compile time.
 Ensure by default since most of the package for which I use use-package need to be downloaded. ensure can be disabled explicitly with a ~:ensure nil~.
 #+BEGIN_SRC emacs-lisp
 (setq use-package-always-ensure t)
+#+END_SRC
+** Setup auto-compile
+#+BEGIN_SRC emacs-lisp
+(use-package auto-compile
+  :demand t
+  :ensure t
+  :config
+  (progn
+    (auto-compile-on-load-mode)
+    (auto-compile-on-save-mode)))
+#+END_SRC
+** Prefer Newer Versions
+To reduce the risk of loading outdated byte code files, we set
+load-prefer-newer and enable auto-compile-on-load-mode as early as
+possible.
+#+BEGIN_SRC emacs-lisp
+(setq load-prefer-newer t)
+#+END_SRC
+** Custom Files
+The default value of ~custom-file~ is just the current user's ~.emacs.d/init.el~
+file. Emacs will add content to ~custom-file~ whenever a variable is customized
+or marked as safe. When init.el is version controlled, it is quite annoying to
+have random machine-generated variable settings amended to it because those
+changes are often not worth keeping permanently, so we set a different custom
+file here to avoid this situation.
+
+custom-before.el is loaded before the  rest of init.el, while custom-after.el is
+loaded afterwards. this-machine.el has customizations  that should only apply to
+the current machine.  custom-before and custom-after are  not version controlled
+in the dotfiles repo but they are shared across machines elsewhere.
+#+BEGIN_SRC emacs-lisp
+(defvar machine-custom "~/.emacs.d/this-machine.el")
+(defvar custom-after-file "~/.emacs.d/custom-after.el")
+(setq custom-file "~/.emacs.d/custom-before.el")
+(when (file-exists-p custom-file) (load custom-file))
+#+END_SRC
+** emit
+*** TODO this needs to be done better, but it works for now
+    :LOGBOOK:
+    - State "TODO"       from "TODO"       [2016-09-13 Tue 17:49]
+    :END:
+#+BEGIN_SRC emacs-lisp
+(when (file-exists-p "~/.emacs.d/load.d/emit.el")
+  (load "~/.emacs.d/load.d/emit.el"))
+#+END_SRC
+** Benchmarking
+This appears here so that it can accurately benchmark as much of
+startup as possible.
+#+BEGIN_SRC emacs-lisp
+(defvar imalison:do-benchmark)
+(use-package benchmark-init
+  :if (bound-and-true-p imalison:do-benchmark)
+  :demand t)
+#+END_SRC
+** GUI Disables
+Death to any gui elements in emacs! Do this EARLY so that emacs
+doesn't redisplay in a way that is visually unpleasant on startup a
+bunch of times.
+#+BEGIN_SRC emacs-lisp
+(when (fboundp 'menu-bar-mode) (menu-bar-mode -1))
+(when (fboundp 'tool-bar-mode) (tool-bar-mode -1))
+(when (fboundp 'scroll-bar-mode) (scroll-bar-mode -1))
+#+END_SRC
+Tooltips are annoying:
+#+BEGIN_SRC emacs-lisp
+(if (fboundp 'tooltip-mode) (tooltip-mode -1) (setq tooltip-use-echo-area t))'
+#+END_SRC
+** Byte-Compiler
+These definitions silence the byte-compiler.
+#+BEGIN_SRC emacs-lisp
+(defvar grep-find-ignored-directories nil)
+(defvar grep-find-ignored-files nil)
+(defvar ido-context-switch-command nil)
+(defvar ido-cur-item nil)
+(defvar ido-cur-list nil)
+(defvar ido-default-item nil)
+(defvar inherit-input-method nil)
+(defvar oauth--token-data nil)
+(defvar tls-checktrust nil)
+(defvar tls-program nil)
+(defvar url-callback-arguments nil)
+(defvar url-callback-function nil)
+(defvar url-http-extra-headers nil)
+#+END_SRC
+
+#+BEGIN_SRC emacs-lisp
+;; This variable doesn't exist in old versions of org-mode
+(defvar org-show-context-detail)
+#+END_SRC
+** exec-path-from-shell
+Sets environment variables by starting a shell.
+#+BEGIN_SRC emacs-lisp
+(use-package exec-path-from-shell
+  :config
+  (progn
+    ;; For debugging
+    (when nil
+      (message "path: %s, setup: %s" (getenv "PATH")
+               (getenv "ENVIRONMENT_SETUP_DONE"))
+      (setq exec-path-from-shell-debug t))
+    (setq exec-path-from-shell-arguments (list "-l"))
+    (setq exec-path-from-shell-check-startup-files nil)
+    (add-to-list 'exec-path-from-shell-variables "SHELL")
+    (add-to-list 'exec-path-from-shell-variables "GOPATH")
+    (add-to-list 'exec-path-from-shell-variables "ENVIRONMENT_SETUP_DONE")
+    (add-to-list 'exec-path-from-shell-variables "PYTHONPATH")
+    (exec-path-from-shell-initialize)))
+#+END_SRC
+** noflet
+#+BEGIN_SRC emacs-lisp
+(use-package noflet
+  :demand t)
+#+END_SRC
+** Non-Forking Shell Command To String
+Emacs' built in ~shell-command-to-string~ function has the downside that it
+forks a new shell process every time it is executed. This means that any shell
+startup cost is incurred when this function is called.
+
+The following implementation uses eshell's ~executable-find~ to find the
+binary (which is the only reason ~shell-comand-to-string~ is typically used
+anyway), but it avoids incurring any shell-startup cost.
+
+This was originally inspired by [[https://github.com/bbatsov/projectile/issues/1044][this issue]].
+#+BEGIN_SRC emacs-lisp
+(defun imalison:call-process-to-string (program &rest args)
+  (with-temp-buffer
+    (apply 'call-process program nil (current-buffer) nil args)
+    (buffer-string)))
+
+(defun imalison:get-call-process-args-from-shell-command (command)
+  (cl-destructuring-bind
+      (the-command . args) (split-string command " ")
+    (let ((binary-path (executable-find the-command)))
+      (when binary-path
+        (cons binary-path args)))))
+
+(defun imalison:shell-command-to-string (command)
+  (let ((call-process-args
+         (imalison:get-call-process-args-from-shell-command command)))
+    (if call-process-args
+        (apply 'imalison:call-process-to-string call-process-args)
+      (shell-command-to-string command))))
+#+END_SRC
+This makes it so that we always try to call-process instead of shell-command-to-sting. It may cause undesireable behavior.
+#+BEGIN_SRC emacs-lisp
+(defun imalison:try-call-process (command)
+  (let ((call-process-args
+         (imalison:get-call-process-args-from-shell-command command)))
+    (if call-process-args
+        (apply 'imalison:call-process-to-string call-process-args))))
+#+END_SRC
+
+This had to be disabled because it was causing a bunch of issues with projectile.
+#+BEGIN_SRC emacs-lisp :tangle no
+(advice-add 'shell-command-to-string :before-until 'imalison:try-call-process)
+#+END_SRC
+
+This solution only applies it to projectile-find-file
+#+BEGIN_SRC emacs-lisp
+
+(defun imalison:call-with-quick-shell-command (fn &rest args)
+  (noflet ((shell-command-to-string (&rest args)
+                                    (or (apply 'imalison:try-call-process args) (apply this-fn args))))
+    (apply fn args)))
+
+(advice-add 'projectile-find-file :around 'imalison:call-with-quick-shell-command)
 #+END_SRC
 ** Set EMACS environment variable
 Emacs cask seems to depend on the EMACS environment variable being set to the
