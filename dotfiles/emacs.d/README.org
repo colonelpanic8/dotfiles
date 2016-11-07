@@ -1174,7 +1174,8 @@ programming mode.
 
 (setq display-buffer-alist
       '((".*popup\*" . (display-buffer-pop-up-window))
-        ("COMMIT_EDITMSG" . ((display-buffer-popup-frame) (reusable-frames . t)))
+        (".*magit-diff.*" (display-buffer-pop-up-frame . ((reusable-frames . t))))
+        (".*COMMIT_EDITMSG" . ((display-buffer-pop-up-window) ((reusable-frames . t) (inhibit-same-window . t))))
         (".*" . ((imalison:display-buffer display-buffer-reuse-window display-buffer-pop-up-frame)
                  (reusable-frames . t)))))
 
