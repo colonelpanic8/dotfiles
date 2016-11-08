@@ -1215,6 +1215,7 @@ programming mode.
           ;;                          ((reusable-frames . 0)
           ;;                           (inhibit-same-window . t))))
           (".*" . ((imalison:display-buffer display-buffer-same-window
+                                            display-buffer-use-some-frame
                                             display-buffer-pop-up-frame)
                    ((reusable-frames . t)))))))
 #+END_SRC
