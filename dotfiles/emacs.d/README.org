@@ -2820,7 +2820,7 @@ Intero seems to be causing hangs, so it has been disabled
 (use-package company-ghc
   :demand t
   :config
-  (add-to-list 'company-backends 'company-ghc))
+  (add-to-list 'company-backends '(company-ghc :with company-dabbrev-code)))
 #+END_SRC
 *** C/C++
 #+BEGIN_SRC emacs-lisp
