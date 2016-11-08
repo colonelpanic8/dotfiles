@@ -41,7 +41,7 @@ For some reason, org-mode uses all of your currently active fontification when e
 + [[Font Size][Font Size]] functions and an [[fontsizehydra][Awesome Hydra]] for them
 + [[downloadfile][Download a file into a buffer]] (curl straight into a file)
 + [[editscript][Edit a script on $PATH]]
-+ [[Yanking][Copy Portions of Buffer File Path Hydra]] and the associated [[Copy String Functions][Copy String Functions]]
++ [[Copy/Yanking][Copy Portions of Buffer File Path Hydra]] and the associated [[Copy/Yank String Functions][Copy String Functions]]
 + [[namedbuild][Named Build of Builder Macros]] ([[https://github.com/IvanMalison/emit#named-builder][README]]) and [[composemacros][A Compose Supporting Macros]] ([[https://github.com/IvanMalison/emit#compose][README]])
 ** Configuration of My Own Packages
 - [[term-projectile][term-projectile]] and [[term-manager][term-manager]]
@@ -770,7 +770,7 @@ This interactive functions allows the user the select a function to invoke using
   imalison:copy-shell-command-on-region
   imalison:shell-command-on-region-replace)
 #+END_SRC
-** Copy String Functions
+** Copy/Yank String Functions
 A macro for composing functions together to build an interactive command to copy a string to the kill ring.
 #+BEGIN_SRC emacs-lisp
 (defmacro imalison:compose-copy-builder-fn (&rest funcs)
@@ -796,6 +796,11 @@ A macro for composing functions together to build an interactive command to copy
 #+BEGIN_SRC emacs-lisp
 (imalison:compose-copy-builder imalison:copy-current-git-branch
                                magit-get-current-branch)
+#+END_SRC
+*** Copy the current buffer name
+#+BEGIN_SRC emacs-lisp
+(imalison:compose-copy-builder imalison:copy-current-buffer-name
+  buffer-name)
 #+END_SRC
 ** Named Compile
 #+BEGIN_SRC emacs-lisp
@@ -1603,12 +1608,13 @@ https://github.com/alpaker/Fill-Column-Indicator/issues/21 for more details
   ("t" helm-themes "Choose Emacs Theme")
   ("0" imalison:font-size-reset "Reset to default size"))
 #+END_SRC
-*** Yanking
+*** Copy/Yanking
 #+BEGIN_SRC emacs-lisp
 (defhydra imalison:hydra-yank
   nil
   "Yank text"
   ("p" imalison:copy-buffer-file-path "Projectile path")
+  ("l" imalison:copy-current-buffer-name "Buffer Name")
   ("f" imalison:copy-buffer-file-path-full "Full path")
   ("n" imalison:copy-buffer-file-name "File name")
   ("b" imalison:copy-current-git-branch "Git Branch"))
