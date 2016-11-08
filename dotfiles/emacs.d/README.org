@@ -2885,6 +2885,8 @@ Intero seems to be causing hangs, so it has been disabled
  #+BEGIN_SRC emacs-lisp
 (use-package org
   :ensure org-plus-contrib
+  :bind (:map org-mode-map
+              (("C-e" . end-of-visual-line)))
   :preface
   (progn
     ;; XXX: These should probably be moved to config, right?
