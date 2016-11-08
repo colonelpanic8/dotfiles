@@ -1140,19 +1140,21 @@ programming mode.
 #+END_SRC
 *** Handle xrefs annoying dedicated window garbage
 #+BEGIN_SRC emacs-lisp
-(defun xref--show-pos-in-buf (pos buf select)
-  (let ((xref-buf (current-buffer))
-        win)
-    (with-selected-window
-      (display-buffer buf)
-      (xref--goto-char pos)
-      (run-hooks 'xref-after-jump-hook)
-      (let ((buf (current-buffer)))
-        (setq win (selected-window))
-        (with-current-buffer xref-buf
-          (setq-local other-window-scroll-buffer buf))))
-    (when select
-      (select-window win))))
+(use-package xref
+  :config
+  (defun xref--show-pos-in-buf (pos buf select)
+    (let ((xref-buf (current-buffer))
+          win)
+      (with-selected-window
+          (display-buffer buf)
+        (xref--goto-char pos)
+        (run-hooks 'xref-after-jump-hook)
+        (let ((buf (current-buffer)))
+          (setq win (selected-window))
+          (with-current-buffer xref-buf
+            (setq-local other-window-scroll-buffer buf))))
+      (when select
+        (select-window win)))))
 #+END_SRC
 *** display-buffer-alist
 #+BEGIN_SRC emacs-lisp
