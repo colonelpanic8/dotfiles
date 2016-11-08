@@ -1179,12 +1179,9 @@ programming mode.
       (apply 'imalison:display-buffer-other-frame-or-window args)
     (apply 'display-buffer-same-window args)))
 
-(defun imalison:display-buffer-other-frame-or-window (buffer &rest args)
+(defun imalison:display-buffer-other-frame-or-window (&rest args)
   (if (imalison:use-frames-only)
-      (display-buffer buffer '((display-buffer-reuse-window
-                                display-buffer-pop-up-frame)
-                               (reusable-frames . t)
-                               (inhibit-same-window . t)) t)
+      (apply 'display-buffer-use-some-frame args)
     (apply 'display-buffer-reuse-window args)))
 
 (defun imalison:split-window-right ()
