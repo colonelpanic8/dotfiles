@@ -1465,6 +1465,7 @@ proced is an top like utility that runs inside of emacs. The following sets auto
 ** beacon
 #+BEGIN_SRC emacs-lisp
 (use-package beacon
+  :demand t
   :bind ("C-c b" . beacon-blink)
   :config
   (beacon-mode 1))
