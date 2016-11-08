@@ -1190,12 +1190,11 @@ programming mode.
       (make-frame)
     (split-window-right)))
 
-(defun imalison:other-window (&rest args)
+(defun imalison:other-window (count)
   (interactive
    (list 1))
-  (if (imalison:use-frames-only)
-      (apply 'other-frame args)
-    (apply 'other-window args)))
+  (other-window count 'visible)
+  (select-frame-set-input-focus (selected-frame)))
 
 (when imalison:use-frames-only
   (setq pop-up-frames 'graphic-only)
