@@ -1152,61 +1152,60 @@ programming mode.
 *** display-buffer-alist
 #+BEGIN_SRC emacs-lisp
 (defvar imalison:use-frames-only)
+
+(defvar imalison:use-frames-only nil)
+
+(defun imalison:use-frames-only ()
+  (or imalison:use-frames-only
+      (member (getenv "XDG_CURRENT_DESKTOP") '("XMonad"))))
+
+(defvar imalison:use-new-frame-or-window nil)
+
+(defvar imalison:use-new-frame-or-window-next-command nil)
+
+(defun imalison:other-window-or-frame-next-command ()
+  (interactive)
+  (setq imalison:use-new-frame-or-window-next-command t))
+
+(defun imalison:use-other-frame-or-window (&rest args)
+  (or
+   (when imalison:use-new-frame-or-window-next-command
+     (setq imalison:use-new-frame-or-window-next-command nil)
+     t)
+   imalison:use-new-frame-or-window))
+
+(defun imalison:display-buffer (&rest args)
+  (if (imalison:use-other-frame-or-window args)
+      (apply 'imalison:display-buffer-other-frame-or-window args)
+    (apply 'display-buffer-same-window args)))
+
+(defun imalison:display-buffer-other-frame-or-window (buffer &rest args)
+  (if (imalison:use-frames-only)
+      (display-buffer buffer '((display-buffer-reuse-window
+                                display-buffer-pop-up-frame)
+                               (reusable-frames . t)
+                               (inhibit-same-window . t)) t)
+    (apply 'display-buffer-reuse-window args)))
+
+(defun imalison:split-window-right ()
+  (interactive)
+  (if (imalison:use-frames-only)
+      (make-frame)
+    (split-window-right)))
+
+(defun imalison:other-window (&rest args)
+  (interactive
+   (list 1))
+  (if (imalison:use-frames-only)
+      (apply 'other-frame args)
+    (apply 'other-window args)))
+
 (when imalison:use-frames-only
   (setq pop-up-frames 'graphic-only)
-  (defvar imalison:use-frames-only nil)
-
-  (defun imalison:use-frames-only ()
-    (or imalison:use-frames-only
-        (member (getenv "XDG_CURRENT_DESKTOP") '("XMonad"))))
-
-  (defvar imalison:use-new-frame-or-window nil)
-
-  (defvar imalison:use-new-frame-or-window-next-command nil)
-
-  (defun imalison:other-window-or-frame-next-command ()
-    (interactive)
-    (setq imalison:use-new-frame-or-window-next-command t))
-
-  (defun imalison:use-other-frame-or-window (&rest args)
-    (or
-     (when imalison:use-new-frame-or-window-next-command
-       (setq imalison:use-new-frame-or-window-next-command nil)
-       t)
-     imalison:use-new-frame-or-window))
-
-  (defun imalison:display-buffer (&rest args)
-    (if (imalison:use-other-frame-or-window args)
-        (apply 'imalison:display-buffer-other-frame-or-window args)
-      (apply 'display-buffer-same-window args)))
-
-  (defun imalison:display-buffer-other-frame-or-window (buffer &rest args)
-    (if (imalison:use-frames-only)
-        (display-buffer buffer '((display-buffer-reuse-window
-                                  display-buffer-pop-up-frame)
-                                 (reusable-frames . t)
-                                 (inhibit-same-window . t)) t)
-      (apply 'display-buffer-reuse-window args)))
-
-  (defun imalison:split-window-right ()
-    (interactive)
-    (if (imalison:use-frames-only)
-        (make-frame)
-      (split-window-right)))
-
-  (defun imalison:other-window (&rest args)
-    (interactive
-     (list 1))
-    (if (imalison:use-frames-only)
-        (apply 'other-frame args)
-      (apply 'other-window args)))
-
   (bind-key "C-c s" 'imalison:other-window-or-frame-next-command)
-
   (bind-key "C-x o" 'imalison:other-window)
   (bind-key "C-x 3" 'imalison:split-window-right)
   (bind-key "C-x O" (lambda () (interactive) (imalison:other-window -1)))
-
   (setq display-buffer-alist
         '((".*popup\*" . (display-buffer-pop-up-window))
           ;; XXX: This was a failed attempt to get magit-commit to properly use
