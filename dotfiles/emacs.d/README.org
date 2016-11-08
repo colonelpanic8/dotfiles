@@ -1074,6 +1074,10 @@ I keep it around just in case I need it.
 (setq require-final-newline t)
 #+END_SRC
 [[(ad-redefinition-action)][This]] is set because [[(y-or-n-p-only)][this alias]] causes annoying messaging at startup.
+** System Clipboard
+#+BEGIN_SRC emacs-lisp
+(setq save-interprogram-paste-before-kill t)
+#+END_SRC
 ** Line Numbers
 #+BEGIN_SRC emacs-lisp
 (line-number-mode t)
