@@ -187,6 +187,24 @@ toggleFadingForActiveWindow = withWindowSet $ \windowSet -> do
         XS.put $ ToggleFade (M.insert window (not existingValue) toggleMap)
         return ()
 
+-- Minimize not in class
+
+withWorkspace f = withWindowSet $ \ws ->
+  maybe (return ()) f (W.stack . W.workspace . W.current $ ws)
+
+minimizeOtherClassesInWorkspace =
+    withWorkspace (windowsWithUnfocusedClass >=> mapM_ minimizeWindow)
+
+windowsWithUnfocusedClass ws = windowsWithOtherClasses ws (W.focus ws)
+
+windowsWithOtherClasses workspace window = do
+  windowClass <- getClass window
+  let predicate = (/= windowClass)
+  filterM (\w -> predicate <$> getClass w) (W.integrate workspace)
+
+restoreAllMinimized =
+  withWorkspace $ mapM_ (sendMessage . RestoreMinimizedWin) . W.integrate
+
 -- Use greedyView to switch to the correct workspace, and then focus on the
 -- appropriate window within that workspace.
 greedyFocusWindow w ws = W.focusWindow w $ W.greedyView
@@ -219,12 +237,12 @@ addKeys conf@XConfig {modMask = modm} =
     , ((modm .|. controlMask, xK_space), sendMessage $ JumpToLayout "Full")
     , ((modm, xK_slash), sendMessage $ Toggle MIRROR)
     , ((modm, xK_m), withFocused minimizeWindow)
-    , ((modm .|. shiftMask, xK_m), sendMessage RestoreNextMinimizedWin)
+    , ((modm .|. shiftMask, xK_m), restoreAllMinimized)
     , ((modm, xK_backslash), toggleWS)
 
     -- Hyper bindings
     , ((mod3Mask, xK_1), toggleFadingForActiveWindow)
-    , ((mod3Mask, xK_e), moveTo Next EmptyWS )
+    , ((mod3Mask, xK_e), moveTo Next EmptyWS)
     , ((mod3Mask .|. shiftMask, xK_e), shiftToEmptyAndView)
     , ((mod3Mask, xK_v), spawn "copyq_rofi.sh")
     , ((mod3Mask, xK_p), spawn "system_password.sh")
@@ -233,6 +251,8 @@ addKeys conf@XConfig {modMask = modm} =
 
     -- ModAlt bindings
     , ((modalt, xK_w), spawn "rofi_wallpaper.sh")
+    , ((modalt, xK_space), minimizeOtherClassesInWorkspace)
+    , ((modalt, xK_Return), restoreAllMinimized)
 
     -- playerctl
     , ((mod3Mask, xK_f), spawn "playerctl play-pause")
