@@ -1170,13 +1170,13 @@ programming mode.
 
 (defun imalison:other-window-or-frame-next-command ()
   (interactive)
-  (setq imalison:use-new-frame-or-window-next-command t))
+  (setq imalison:use-new-frame-or-window-next-command
+        (not imalison:use-new-frame-or-window-next-command))
+  (message "Using other frame: %s"
+           imalison:use-new-frame-or-window-next-command))
 
 (defun imalison:use-other-frame-or-window (&rest args)
-  (or
-   (when imalison:use-new-frame-or-window-next-command
-     (setq imalison:use-new-frame-or-window-next-command nil)
-     t)
+  (or imalison:use-new-frame-or-window-next-command
    imalison:use-new-frame-or-window))
 
 (defun imalison:display-buffer (&rest args)
@@ -1184,10 +1184,10 @@ programming mode.
       (apply 'imalison:display-buffer-other-frame-or-window args)
     (apply 'display-buffer-same-window args)))
 
-(defun imalison:display-buffer-other-frame-or-window (&rest args)
+(defun imalison:display-buffer-other-frame-or-window (buffer args)
   (if (imalison:use-frames-only)
-      (apply 'display-buffer-use-some-frame args)
-    (apply 'display-buffer-reuse-window args)))
+      (apply 'display-buffer-use-some-frame buffer (append args (inhibit-same-window t)))
+    (apply 'display-buffer-reuse-window buffer args)))
 
 (defun imalison:split-window-right ()
   (interactive)
@@ -1201,6 +1201,11 @@ programming mode.
   (other-window count 'visible)
   (select-frame-set-input-focus (selected-frame)))
 
+(defun imalison:set-use-new-frame-to-default (&rest args)
+  (setq imalison:use-new-frame-or-window-next-command nil))
+
+(advice-add 'display-buffer :after 'imalison:set-use-new-frame-to-default)
+
 (when imalison:use-frames-only
   (setq pop-up-frames 'graphic-only)
   (bind-key "C-c s" 'imalison:other-window-or-frame-next-command)
@@ -1209,19 +1214,19 @@ programming mode.
   (bind-key "C-x O" (lambda () (interactive) (imalison:other-window -1)))
   (setq display-buffer-alist
         '((".*popup\*" . (display-buffer-pop-up-window))
-          ;; XXX: This was a failed attempt to get magit-commit to properly use
-          ;; frames.
-
+          ("\\*Flycheck errors\\*" . ((display-buffer-use-some-frame) ((inhibit-same-window t))))
           (".*magit-diff.*" . ((display-buffer-pop-up-window)
                                ((reusable-frames . 0)
                                 (inhibit-switch-frame . t)
                                 (inhibit-same-window . t))))
-          ;; (".*COMMIT_.*MSG.*" . ((display-buffer-pop-up-frame)
-          ;;                          ((reusable-frames . 0)
-          ;;                           (inhibit-same-window . t))))
-          (".*" . ((imalison:display-buffer display-buffer-same-window
-                                            display-buffer-use-some-frame
-                                            display-buffer-pop-up-frame)
+          (imalison:use-other-frame-or-window
+           .
+           ((display-buffer-use-some-frame display-buffer-pop-up-frame)
+            ((inhibit-same-window . t)
+             (reusable-frames . t))))
+          (".*" . ((display-buffer-same-window
+                    display-buffer-use-some-frame
+                    display-buffer-pop-up-frame)
                    ((reusable-frames . t)))))))
 #+END_SRC
 ** Fill Setup
