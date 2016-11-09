@@ -1219,12 +1219,15 @@ programming mode.
   (bind-key "C-x 3" 'imalison:split-window-right)
   (bind-key "C-x O" (lambda () (interactive) (imalison:other-window -1)))
   (setq display-buffer-alist
-        '((".*popup\*" . (display-buffer-pop-up-window))
-          ("\\*Flycheck errors\\*" . ((display-buffer-use-some-frame) ((inhibit-same-window t))))
+        '(("\\*Flycheck errors\\*" . ((display-buffer-use-some-frame) ((inhibit-same-window t))))
+          (".*popup\*" . (display-buffer-pop-up-window))
           (".*magit-diff.*" . ((display-buffer-pop-up-window)
                                ((reusable-frames . 0)
                                 (inhibit-switch-frame . t)
                                 (inhibit-same-window . t))))
+          ("\\*helm.*" . (display-buffer-same-window
+                          dispaly-buffer-pop-up-window))
+          ("\\*Register Preview\\*" . ((display-buffer-pop-up-window)))
           (imalison:use-other-frame-or-window
            .
            ((display-buffer-use-some-frame display-buffer-pop-up-frame)
