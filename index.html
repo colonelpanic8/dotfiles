@@ -3,7 +3,7 @@
 "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
-<!-- 2016-11-08 Tue 13:47 -->
+<!-- 2016-11-08 Tue 18:25 -->
 <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title></title>
@@ -185,6 +185,8 @@
 <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js"></script>
 <script type="text/javascript" src="http://www.pirilampo.org/styles/lib/js/jquery.stickytableheaders.js"></script>
 <script type="text/javascript" src="http://www.pirilampo.org/styles/readtheorg/js/readtheorg.js"></script>
+<style type="text/css">
+ pre.src {background-color: #263238; color: #ffffff;}</style>
 <style type="text/css">
  pre.src {background-color: #263238; color: #ffffff;}</style>
 <script type="text/javascript">
@@ -2517,12 +2519,15 @@ programming mode.
   <span style="color: #2196F3;">(</span><span style="color: #fff59d;">bind-key</span> <span style="color: #9ccc65;">"C-x 3"</span> 'imalison:split-window-right<span style="color: #2196F3;">)</span>
   <span style="color: #2196F3;">(</span><span style="color: #fff59d;">bind-key</span> <span style="color: #9ccc65;">"C-x O"</span> <span style="color: #EF6C00;">(</span><span style="color: #fff59d;">lambda</span> <span style="color: #B388FF;">()</span> <span style="color: #B388FF;">(</span><span style="color: #fff59d;">interactive</span><span style="color: #B388FF;">)</span> <span style="color: #B388FF;">(</span>imalison:other-window -1<span style="color: #B388FF;">)</span><span style="color: #EF6C00;">)</span><span style="color: #2196F3;">)</span>
   <span style="color: #2196F3;">(</span><span style="color: #fff59d;">setq</span> display-buffer-alist
-        '<span style="color: #EF6C00;">(</span><span style="color: #B388FF;">(</span><span style="color: #9ccc65;">".*popup\*"</span> . <span style="color: #76ff03;">(</span>display-buffer-pop-up-window<span style="color: #76ff03;">)</span><span style="color: #B388FF;">)</span>
-          <span style="color: #B388FF;">(</span><span style="color: #9ccc65;">"\\*Flycheck errors\\*"</span> . <span style="color: #76ff03;">(</span><span style="color: #26A69A;">(</span>display-buffer-use-some-frame<span style="color: #26A69A;">)</span> <span style="color: #26A69A;">(</span><span style="color: #FFCDD2;">(</span>inhibit-same-window t<span style="color: #FFCDD2;">)</span><span style="color: #26A69A;">)</span><span style="color: #76ff03;">)</span><span style="color: #B388FF;">)</span>
+        '<span style="color: #EF6C00;">(</span><span style="color: #B388FF;">(</span><span style="color: #9ccc65;">"\\*Flycheck errors\\*"</span> . <span style="color: #76ff03;">(</span><span style="color: #26A69A;">(</span>display-buffer-use-some-frame<span style="color: #26A69A;">)</span> <span style="color: #26A69A;">(</span><span style="color: #FFCDD2;">(</span>inhibit-same-window t<span style="color: #FFCDD2;">)</span><span style="color: #26A69A;">)</span><span style="color: #76ff03;">)</span><span style="color: #B388FF;">)</span>
+          <span style="color: #B388FF;">(</span><span style="color: #9ccc65;">".*popup\*"</span> . <span style="color: #76ff03;">(</span>display-buffer-pop-up-window<span style="color: #76ff03;">)</span><span style="color: #B388FF;">)</span>
           <span style="color: #B388FF;">(</span><span style="color: #9ccc65;">".*magit-diff.*"</span> . <span style="color: #76ff03;">(</span><span style="color: #26A69A;">(</span>display-buffer-pop-up-window<span style="color: #26A69A;">)</span>
                                <span style="color: #26A69A;">(</span><span style="color: #FFCDD2;">(</span>reusable-frames . 0<span style="color: #FFCDD2;">)</span>
                                 <span style="color: #FFCDD2;">(</span>inhibit-switch-frame . t<span style="color: #FFCDD2;">)</span>
                                 <span style="color: #FFCDD2;">(</span>inhibit-same-window . t<span style="color: #FFCDD2;">)</span><span style="color: #26A69A;">)</span><span style="color: #76ff03;">)</span><span style="color: #B388FF;">)</span>
+          <span style="color: #B388FF;">(</span><span style="color: #9ccc65;">"\\*helm.*"</span> . <span style="color: #76ff03;">(</span>display-buffer-same-window
+                          dispaly-buffer-pop-up-window<span style="color: #76ff03;">)</span><span style="color: #B388FF;">)</span>
+          <span style="color: #B388FF;">(</span><span style="color: #9ccc65;">"\\*Register Preview\\*"</span> . <span style="color: #76ff03;">(</span><span style="color: #26A69A;">(</span>display-buffer-pop-up-window<span style="color: #26A69A;">)</span><span style="color: #76ff03;">)</span><span style="color: #B388FF;">)</span>
           <span style="color: #B388FF;">(</span>imalison:use-other-frame-or-window
            .
            <span style="color: #76ff03;">(</span><span style="color: #26A69A;">(</span>display-buffer-use-some-frame display-buffer-pop-up-frame<span style="color: #26A69A;">)</span>
@@ -7213,7 +7218,7 @@ load-theme hook (See the heading below).
 </div>
 <div id="postamble" class="status">
 <p class="author">Author: Ivan Malison</p>
-<p class="date">Created: 2016-11-08 Tue 13:47</p>
+<p class="date">Created: 2016-11-08 Tue 18:25</p>
 <p class="validation"><a href="http://validator.w3.org/check?uri=referer">Validate</a></p>
 </div>
 </body>
