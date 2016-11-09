@@ -27,6 +27,7 @@ import XMonad.Hooks.FadeInactive
 import XMonad.Layout.BoringWindows
 import XMonad.Layout.LayoutCombinators
 import XMonad.Layout.LayoutModifier
+import XMonad.Layout.LimitWindows
 import XMonad.Layout.MagicFocus
 import XMonad.Layout.Minimize
 import XMonad.Layout.MultiColumns
@@ -83,9 +84,10 @@ myManageHook = composeAll . concat $
 
 -- TODO: Figure out how to disable focus follows mouse for magicFocus
 layouts = multiCol [1, 1] 2 0.01 (-0.5) ||| Full |||
-          Tall 1 (3/100) (1/2) ||| magicFocus (Tall 1 (3/100) (3/4))
+          Tall 1 (3/100) (1/2) ||| magicFocus (Tall 1 (3/100) (3/4)) |||
+          limitWindows 2 (Tall 1 (3/100) (1/2))
 
-myLayoutHook = avoidStruts . smartSpacing 10 . minimize . boringWindows .
+myLayoutHook = avoidStruts . smartSpacing 10 . minimize . boringAuto . boringWindows .
                mkToggle (MIRROR ?? EOT) . workspaceNamesHook . smartBorders .
                noBorders $ layouts
 
