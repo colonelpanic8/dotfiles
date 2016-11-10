@@ -4,7 +4,7 @@ packages:
 - '.'
 - location:
     git: git@github.com:IvanMalison/xmonad-contrib.git
-    commit: 8a351cec6166f6411de0fd4041f52fd522e4f30f
+    commit: fb992e96af0d2af4344e3592d179242e72b01fca
 - location:
     git: git@github.com:IvanMalison/taffybar.git
     commit: 39e3a95e9c2eae37ff8b67eaa31bbd18503859b1

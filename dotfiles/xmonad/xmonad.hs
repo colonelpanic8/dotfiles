@@ -17,6 +17,7 @@ import Text.Printf
 import XMonad hiding ( (|||) )
 import XMonad.Actions.CycleWS
 import qualified XMonad.Actions.DynamicWorkspaceOrder as DWO
+import XMonad.Actions.Minimize
 import XMonad.Actions.WindowBringer
 import XMonad.Actions.WindowGo
 import XMonad.Actions.WorkspaceNames
@@ -88,9 +89,7 @@ layouts = multiCol [1, 1] 2 0.01 (-0.5) ||| Full |||
           Tall 1 (3/100) (1/2) ||| magicFocus (Tall 1 (3/100) (3/4)) |||
           limitWindows 2 (Tall 1 (3/100) (1/2))
 
-myLayoutHook = avoidStruts . smartSpacing 10 . minimize .
-               -- TODO: boring windows does not seem to work
-               -- boringAuto . boringWindows .
+myLayoutHook = avoidStruts . smartSpacing 10 . minimize . boringAuto .
                mkToggle (MIRROR ?? EOT) . workspaceNamesHook .
                smartBorders . noBorders $ layouts
 
@@ -134,9 +133,9 @@ getClassRemap = do
 setWorkspaceNameToFocusedWindow workspace  = do
   namedWindows <- mapM getClass $ W.integrate' $ W.stack workspace
   renamedWindows <- remapNames namedWindows
-  WorkspaceNames namesMap <- XS.get
+  getWSName <- getWorkspaceNames'
   let newName = intercalate "|" renamedWindows
-      currentName = M.findWithDefault "" (W.tag workspace) namesMap
+      currentName = fromMaybe "" (getWSName (W.tag workspace))
   when (currentName /= newName) $ setWorkspaceName (W.tag workspace) newName
 
 remapNames namedWindows = do
@@ -157,15 +156,13 @@ workspaceNamesHook = ModifiedLayout WorkspaceNamesHook
 -- EWMH support for workspace names
 
 ewmhWorkspaceNamesLogHook = do
-  WorkspaceNames namesMap <- XS.get
-  let tagRemapping = getWorkspaceNameFromTag namesMap
+  getWSName <- getWorkspaceNames'
+  let tagRemapping = getWorkspaceNameFromTag getWSName
   pagerHintsLogHookCustom tagRemapping
   ewmhDesktopsLogHookCustom id tagRemapping
 
-getWorkspaceNameFromTag namesMap tag =
-    case M.lookup tag namesMap of
-      Nothing -> tag
-      Just label -> printf "%s: %s " tag label
+getWorkspaceNameFromTag getWSName tag =
+    printf "%s: %s " tag (fromMaybe "(Empty)" (getWSName tag))
 
 -- Toggleable fade
 
@@ -195,10 +192,12 @@ toggleFadingForActiveWindow = withWindowSet $ \windowSet -> do
 
 -- Minimize not in class
 
+restoreFocus action = withFocused $ \orig -> action >> windows (W.focusWindow orig)
+
 withWorkspace f = withWindowSet $ \ws ->
   maybe (return ()) f (W.stack . W.workspace . W.current $ ws)
 
-minimizeOtherClassesInWorkspace =
+minimizeOtherClassesInWorkspace = restoreFocus $
     withWorkspace (windowsWithUnfocusedClass >=> mapM_ minimizeWindow)
 
 windowsWithUnfocusedClass ws = windowsWithOtherClasses ws (W.focus ws)
@@ -208,8 +207,13 @@ windowsWithOtherClasses workspace window = do
   let predicate = (/= windowClass)
   filterM (\w -> predicate <$> getClass w) (W.integrate workspace)
 
-restoreAllMinimized =
-  withWorkspace $ mapM_ (sendMessage . RestoreMinimizedWin) . W.integrate
+restoreAllMinimized = restoreFocus $
+  withLastMinimized $ \w -> maximizeWindow w >> restoreAllMinimized
+
+restoreOrMinimizeOtherClasses = withLastMinimized' $ \mw ->
+  case mw of
+    Just _ -> restoreAllMinimized
+    Nothing -> minimizeOtherClassesInWorkspace
 
 
 -- Window switching
@@ -222,7 +226,6 @@ greedyFocusWindow w ws = W.focusWindow w $ W.greedyView
 shiftThenView i = W.greedyView i . W.shift i
 
 shiftToEmptyAndView = doTo Next EmptyWS DWO.getSortByOrder (windows . shiftThenView)
-
 
 -- Raise or spawn
 
@@ -256,10 +259,10 @@ addKeys conf@XConfig {modMask = modm} =
     , ((modm, xK_backslash), toggleWS)
 
     -- TODO: there seems to be a bug with these bindings
-    -- -- Rebind these for boringWindows
-    -- , ((modm, xK_j), focusUp)
-    -- , ((modm, xK_k), focusDown)
-    -- , ((modm, xK_m), focusMaster)
+    -- Rebind these for boringWindows
+    , ((modm, xK_j), focusDown)
+    , ((modm, xK_k), focusUp)
+    , ((modm, xK_m), focusMaster)
 
     -- Hyper bindings
     , ((mod3Mask, xK_1), toggleFadingForActiveWindow)
@@ -272,7 +275,7 @@ addKeys conf@XConfig {modMask = modm} =
 
     -- ModAlt bindings
     , ((modalt, xK_w), spawn "rofi_wallpaper.sh")
-    , ((modalt, xK_space), minimizeOtherClassesInWorkspace)
+    , ((modalt, xK_space), restoreOrMinimizeOtherClasses)
     , ((modalt, xK_Return), restoreAllMinimized)
 
     -- playerctl
