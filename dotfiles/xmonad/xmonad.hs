@@ -40,7 +40,6 @@ import XMonad.Util.CustomKeys
 import qualified XMonad.Util.ExtensibleState as XS
 import XMonad.Util.NamedWindows (getName)
 
-
 main = xmonad $ def
        { modMask = mod4Mask
        , terminal = "urxvt"
@@ -53,6 +52,9 @@ main = xmonad $ def
        , keys = customKeys (const []) addKeys
       } where
     x +++ y = mappend y x
+
+
+-- Selectors
 
 isHangoutsTitle = isPrefixOf "Google Hangouts"
 
@@ -69,37 +71,36 @@ virtualClasses = [ (hangoutsSelector, "Hangouts")
                  , (chromeSelector, "Chrome")
                  , (transmissionSelector, "Transmission")
                  ]
-
--- Startup
-
+
+-- Startup hoo
 myStartup = spawn "systemctl --user start wm.target"
-
--- Manage
+
+-- Manage hook
 
 myManageHook = composeAll . concat $
                [ [ hangoutsSelector --> doShift "2"]
                , [ transmissionSelector --> doShift "5" ]]
-
--- Layout
+
+-- Layout setup
 
 -- TODO: Figure out how to disable focus follows mouse for magicFocus
 layouts = multiCol [1, 1] 2 0.01 (-0.5) ||| Full |||
           Tall 1 (3/100) (1/2) ||| magicFocus (Tall 1 (3/100) (3/4)) |||
           limitWindows 2 (Tall 1 (3/100) (1/2))
 
-myLayoutHook = avoidStruts . smartSpacing 10 . minimize . boringAuto . boringWindows .
-               mkToggle (MIRROR ?? EOT) . workspaceNamesHook . smartBorders .
-               noBorders $ layouts
-
+myLayoutHook = avoidStruts . smartSpacing 10 . minimize . boringAuto .
+               boringWindows . mkToggle (MIRROR ?? EOT) . workspaceNamesHook .
+               smartBorders . noBorders $ layouts
+
 -- WindowBringer
+
+findM :: (Monad m) => (a -> m (Maybe b)) -> [a] -> m (Maybe b)
+findM f = runMaybeT . msum . map (MaybeT . f)
 
 myWindowBringerConfig = WindowBringerConfig { menuCommand = "rofi"
                                             , menuArgs = ["-dmenu", "-i"]
                                             , windowTitler = myDecorateName
                                             }
-
-findM :: (Monad m) => (a -> m (Maybe b)) -> [a] -> m (Maybe b)
-findM f = runMaybeT . msum . map (MaybeT . f)
 
 classIfMatches window entry = do
   result <- runQuery (fst entry) window
@@ -119,7 +120,7 @@ myDecorateName ws w = do
   workspaceToName <- getWorkspaceNames
   return $ printf "%-20s%-40s %+30s" classTitle (take 40 name)
              "in " ++ workspaceToName (W.tag ws)
-
+
 -- Dynamic Workspace Renaming
 
 getClassRemap = do
@@ -150,7 +151,7 @@ instance LayoutModifier WorkspaceNamesHook Window where
     hook _ = setWorkspaceNames
 
 workspaceNamesHook = ModifiedLayout WorkspaceNamesHook
-
+
 -- EWMH support for workspace names
 
 ewmhWorkspaceNamesLogHook = do
@@ -163,7 +164,7 @@ getWorkspaceNameFromTag namesMap tag =
     case M.lookup tag namesMap of
       Nothing -> tag
       Just label -> printf "%s: %s " tag label
-
+
 -- Toggleable fade
 
 newtype ToggleFade = ToggleFade (M.Map Window Bool)
@@ -189,6 +190,7 @@ toggleFadingForActiveWindow = withWindowSet $ \windowSet -> do
         XS.put $ ToggleFade (M.insert window (not existingValue) toggleMap)
         return ()
 
+
 -- Minimize not in class
 
 withWorkspace f = withWindowSet $ \ws ->
@@ -207,6 +209,9 @@ windowsWithOtherClasses workspace window = do
 restoreAllMinimized =
   withWorkspace $ mapM_ (sendMessage . RestoreMinimizedWin) . W.integrate
 
+
+-- Window switching
+
 -- Use greedyView to switch to the correct workspace, and then focus on the
 -- appropriate window within that workspace.
 greedyFocusWindow w ws = W.focusWindow w $ W.greedyView
@@ -215,6 +220,9 @@ greedyFocusWindow w ws = W.focusWindow w $ W.greedyView
 shiftThenView i = W.greedyView i . W.shift i
 
 shiftToEmptyAndView = doTo Next EmptyWS DWO.getSortByOrder (windows . shiftThenView)
+
+
+-- Raise or spawn
 
 myRaiseNextMaybe = raiseNextMaybeCustomFocus greedyFocusWindow
 myBringNextMaybe = raiseNextMaybeCustomFocus bringWindow
@@ -226,6 +234,9 @@ bindBringAndRaise mask sym start query =
 
 bindBringAndRaiseMany :: [(KeyMask, KeySym, X (), Query Bool)] -> [((KeyMask, KeySym), X())]
 bindBringAndRaiseMany = concatMap (\(a, b, c, d) -> bindBringAndRaise a b c d)
+
+
+-- Key bindings
 
 addKeys conf@XConfig {modMask = modm} =
     [ ((modm, xK_p), spawn "rofi -show drun")
