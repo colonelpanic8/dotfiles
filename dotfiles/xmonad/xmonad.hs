@@ -88,8 +88,10 @@ layouts = multiCol [1, 1] 2 0.01 (-0.5) ||| Full |||
           Tall 1 (3/100) (1/2) ||| magicFocus (Tall 1 (3/100) (3/4)) |||
           limitWindows 2 (Tall 1 (3/100) (1/2))
 
-myLayoutHook = avoidStruts . smartSpacing 10 . minimize . boringAuto .
-               boringWindows . mkToggle (MIRROR ?? EOT) . workspaceNamesHook .
+myLayoutHook = avoidStruts . smartSpacing 10 . minimize .
+               -- TODO: boring windows does not seem to work
+               -- boringAuto . boringWindows .
+               mkToggle (MIRROR ?? EOT) . workspaceNamesHook .
                smartBorders . noBorders $ layouts
 
 -- WindowBringer
@@ -252,6 +254,12 @@ addKeys conf@XConfig {modMask = modm} =
     , ((modm, xK_m), withFocused minimizeWindow)
     , ((modm .|. shiftMask, xK_m), restoreAllMinimized)
     , ((modm, xK_backslash), toggleWS)
+
+    -- TODO: there seems to be a bug with these bindings
+    -- -- Rebind these for boringWindows
+    -- , ((modm, xK_j), focusUp)
+    -- , ((modm, xK_k), focusDown)
+    -- , ((modm, xK_m), focusMaster)
 
     -- Hyper bindings
     , ((mod3Mask, xK_1), toggleFadingForActiveWindow)
