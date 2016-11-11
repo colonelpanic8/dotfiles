@@ -54,7 +54,6 @@ main = xmonad $ def
        , keys = customKeys (const []) addKeys
       } where
     x +++ y = mappend y x
-
 
 -- Selectors
 
@@ -100,10 +99,10 @@ myLayoutHook = avoidStruts . smartSpacing 10 . minimize . boringAuto .
 findM :: (Monad m) => (a -> m (Maybe b)) -> [a] -> m (Maybe b)
 findM f = runMaybeT . msum . map (MaybeT . f)
 
-myWindowBringerConfig = WindowBringerConfig { menuCommand = "rofi"
-                                            , menuArgs = ["-dmenu", "-i"]
-                                            , windowTitler = myDecorateName
-                                            }
+myWindowBringerConfig =
+  WindowBringerConfig { menuCommand = "rofi"
+                      , menuArgs = ["-dmenu","-i"]
+                      , windowTitler = myDecorateName}
 
 classIfMatches window entry = do
   result <- runQuery (fst entry) window
@@ -224,7 +223,6 @@ restoreOrMinimizeOtherClasses = withLastMinimized' $ \mw ->
   case mw of
     Just _ -> restoreAllMinimized
     Nothing -> minimizeOtherClassesInWorkspace
-
 
 -- Window switching
 
@@ -249,7 +247,6 @@ bindBringAndRaise mask sym start query =
 
 bindBringAndRaiseMany :: [(KeyMask, KeySym, X (), Query Bool)] -> [((KeyMask, KeySym), X())]
 bindBringAndRaiseMany = concatMap (\(a, b, c, d) -> bindBringAndRaise a b c d)
-
 
 -- Key bindings
 
