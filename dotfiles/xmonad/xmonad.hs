@@ -39,6 +39,7 @@ import XMonad.Layout.Spacing
 import qualified XMonad.StackSet as W
 import XMonad.Util.CustomKeys
 import qualified XMonad.Util.ExtensibleState as XS
+import XMonad.Util.Minimize
 import XMonad.Util.NamedWindows (getName)
 
 main = xmonad $ def
@@ -46,7 +47,8 @@ main = xmonad $ def
        , terminal = "urxvt"
        , manageHook = manageDocks <+> myManageHook <+> manageHook def
        , layoutHook = myLayoutHook
-       , logHook = toggleFadeInactiveLogHook 0.9 +++ ewmhWorkspaceNamesLogHook
+       , logHook = toggleFadeInactiveLogHook 0.9 +++ ewmhWorkspaceNamesLogHook +++
+                   maybeUnminimizeFocused
        , handleEventHook = docksEventHook <+> fullscreenEventHook +++
                            ewmhDesktopsEventHook +++ pagerHintsEventHook
        , startupHook = myStartup +++ ewmhWorkspaceNamesLogHook
@@ -73,7 +75,8 @@ virtualClasses = [ (hangoutsSelector, "Hangouts")
                  , (transmissionSelector, "Transmission")
                  ]
 
--- Startup hoo
+-- Startup hook
+
 myStartup = spawn "systemctl --user start wm.target"
 
 -- Manage hook
@@ -188,7 +191,6 @@ toggleFadingForActiveWindow = withWindowSet $ \windowSet -> do
         let existingValue = M.findWithDefault True window toggleMap
         XS.put $ ToggleFade (M.insert window (not existingValue) toggleMap)
         return ()
-
 
 -- Minimize not in class
 
@@ -206,6 +208,13 @@ windowsWithOtherClasses workspace window = do
   windowClass <- getClass window
   let predicate = (/= windowClass)
   filterM (\w -> predicate <$> getClass w) (W.integrate workspace)
+
+windowIsMinimized w = do
+  minimized <- XS.gets minimizedStack
+  return $ w `elem` minimized
+
+maybeUnminimizeFocused = withFocused $ \w ->
+  windowIsMinimized w >>= flip when (maximizeWindow w)
 
 restoreAllMinimized = restoreFocus $
   withLastMinimized $ \w -> maximizeWindow w >> restoreAllMinimized
@@ -258,8 +267,7 @@ addKeys conf@XConfig {modMask = modm} =
     , ((modm .|. shiftMask, xK_m), restoreAllMinimized)
     , ((modm, xK_backslash), toggleWS)
 
-    -- TODO: there seems to be a bug with these bindings
-    -- Rebind these for boringWindows
+    -- These need to be rebound to support boringWindows
     , ((modm, xK_j), focusDown)
     , ((modm, xK_k), focusUp)
     , ((modm, xK_m), focusMaster)
