@@ -229,7 +229,9 @@ maybeUnminimize w = windowIsMinimized w >>= flip when (maximizeWindow w)
 
 maybeUnminimizeFocused = withFocused maybeUnminimize
 
-maybeUnminimizeAfter = (>> maximizeSameClassesInWorkspace)
+maybeUnminimizeAfter = (>> maybeUnminimizeFocused)
+
+maybeUnminimizeClassAfter = (>> maximizeSameClassesInWorkspace)
 
 restoreAllMinimized = restoreFocus $
   withLastMinimized $ \w -> maximizeWindow w >> restoreAllMinimized
@@ -252,7 +254,7 @@ shiftToEmptyAndView = doTo Next EmptyWS DWO.getSortByOrder (windows . shiftThenV
 
 -- Raise or spawn
 
-myRaiseNextMaybe = (maybeUnminimizeAfter .) . raiseNextMaybeCustomFocus greedyFocusWindow
+myRaiseNextMaybe = (maybeUnminimizeClassAfter .) . raiseNextMaybeCustomFocus greedyFocusWindow
 myBringNextMaybe = (maybeUnminimizeAfter .) . raiseNextMaybeCustomFocus bringWindow
 
 bindBringAndRaise :: KeyMask -> KeySym -> X () -> Query Bool -> [((KeyMask, KeySym), X ())]
@@ -268,8 +270,10 @@ bindBringAndRaiseMany = concatMap (\(a, b, c, d) -> bindBringAndRaise a b c d)
 addKeys conf@XConfig {modMask = modm} =
     [ ((modm, xK_p), spawn "rofi -show drun")
     , ((modm .|. shiftMask, xK_p), spawn "rofi -show run")
-    , ((modm, xK_g), actionMenu myWindowBringerConfig greedyFocusWindow)
-    , ((modm, xK_b), bringMenuConfig myWindowBringerConfig)
+    , ((modm, xK_g), maybeUnminimizeAfter $
+                   actionMenu myWindowBringerConfig greedyFocusWindow)
+    , ((modm, xK_b), maybeUnminimizeAfter $
+                   bringMenuConfig myWindowBringerConfig)
     , ((modm .|. controlMask, xK_t), spawn
        "systemctl --user restart taffybar.service")
     , ((modm, xK_v), spawn "copyq paste")
