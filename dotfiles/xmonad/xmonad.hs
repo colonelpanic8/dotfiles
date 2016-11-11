@@ -47,8 +47,7 @@ main = xmonad $ def
        , terminal = "urxvt"
        , manageHook = manageDocks <+> myManageHook <+> manageHook def
        , layoutHook = myLayoutHook
-       , logHook = toggleFadeInactiveLogHook 0.9 +++ ewmhWorkspaceNamesLogHook +++
-                   maybeUnminimizeFocused
+       , logHook = toggleFadeInactiveLogHook 0.9 +++ ewmhWorkspaceNamesLogHook
        , handleEventHook = docksEventHook <+> fullscreenEventHook +++
                            ewmhDesktopsEventHook +++ pagerHintsEventHook
        , startupHook = myStartup +++ ewmhWorkspaceNamesLogHook
@@ -216,6 +215,8 @@ windowIsMinimized w = do
 maybeUnminimizeFocused = withFocused $ \w ->
   windowIsMinimized w >>= flip when (maximizeWindow w)
 
+maybeUnminimizeAfter = (>> maybeUnminimizeFocused)
+
 restoreAllMinimized = restoreFocus $
   withLastMinimized $ \w -> maximizeWindow w >> restoreAllMinimized
 
@@ -238,8 +239,8 @@ shiftToEmptyAndView = doTo Next EmptyWS DWO.getSortByOrder (windows . shiftThenV
 
 -- Raise or spawn
 
-myRaiseNextMaybe = raiseNextMaybeCustomFocus greedyFocusWindow
-myBringNextMaybe = raiseNextMaybeCustomFocus bringWindow
+myRaiseNextMaybe = (maybeUnminimizeAfter .) . raiseNextMaybeCustomFocus greedyFocusWindow
+myBringNextMaybe = (maybeUnminimizeAfter .) . raiseNextMaybeCustomFocus bringWindow
 
 bindBringAndRaise :: KeyMask -> KeySym -> X () -> Query Bool -> [((KeyMask, KeySym), X ())]
 bindBringAndRaise mask sym start query =
