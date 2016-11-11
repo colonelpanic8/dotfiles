@@ -38,6 +38,7 @@ import XMonad.Layout.NoBorders
 import XMonad.Layout.Spacing
 import qualified XMonad.StackSet as W
 import XMonad.Util.CustomKeys
+import XMonad.Util.Dmenu (menuMapArgs)
 import qualified XMonad.Util.ExtensibleState as XS
 import XMonad.Util.Minimize
 import XMonad.Util.NamedWindows (getName)
@@ -83,16 +84,37 @@ myManageHook = composeAll . concat $
                [ [ hangoutsSelector --> doShift "2"]
                , [ transmissionSelector --> doShift "5" ]]
 
+-- Toggles
+unmodifyLayout (ModifiedLayout _ x') =  x'
+
+data MyToggles = LIMIT
+               | GAPS
+               | MAGICFOCUS
+                 deriving (Read, Show, Eq, Typeable)
+
+instance Transformer MyToggles Window where
+    transform LIMIT      x k = k (limitSlice 2 x) unmodifyLayout
+    transform GAPS       x k = k (smartSpacing 5 x) unmodifyLayout
+    transform MAGICFOCUS x k = k (magicFocus x) unmodifyLayout
+
+myToggles = [LIMIT, GAPS, MAGICFOCUS]
+
+togglesMap = M.fromList [(show toggle, toggle) | toggle <- myToggles]
+
+selectToggle = do
+  Just selectedToggle <- menuMapArgs "rofi" ["-dmenu", "-i"] togglesMap
+  sendMessage $ Toggle selectedToggle
+
 -- Layout setup
 
 -- TODO: Figure out how to disable focus follows mouse for magicFocus
-layouts = multiCol [1, 1] 2 0.01 (-0.5) ||| Full |||
-          Tall 1 (3/100) (1/2) ||| magicFocus (Tall 1 (3/100) (3/4)) |||
-          limitWindows 2 (Tall 1 (3/100) (1/2))
+layouts = multiCol [1, 1] 2 0.01 (-0.5) ||| Full ||| Tall 1 (3/100) (1/2) |||
+          Tall 1 (3/100) (3/4)
 
-myLayoutHook = avoidStruts . smartSpacing 10 . minimize . boringAuto .
-               mkToggle (MIRROR ?? EOT) . workspaceNamesHook .
-               smartBorders . noBorders $ layouts
+myLayoutHook = avoidStruts . minimize . boringAuto . mkToggle (MIRROR ?? EOT) .
+               mkToggle (LIMIT ?? EOT) . mkToggle (GAPS ?? EOT) .
+               mkToggle (MAGICFOCUS ?? EOT) . workspaceNamesHook . smartBorders .
+               noBorders $ layouts
 
 -- WindowBringer
 
@@ -101,7 +123,7 @@ findM f = runMaybeT . msum . map (MaybeT . f)
 
 myWindowBringerConfig =
   WindowBringerConfig { menuCommand = "rofi"
-                      , menuArgs = ["-dmenu","-i"]
+                      , menuArgs = ["-dmenu", "-i"]
                       , windowTitler = myDecorateName}
 
 classIfMatches window entry = do
@@ -280,6 +302,7 @@ addKeys conf@XConfig {modMask = modm} =
     , ((modm, xK_s), swapNextScreen)
     , ((modm .|. controlMask, xK_space), sendMessage $ JumpToLayout "Full")
     , ((modm, xK_slash), sendMessage $ Toggle MIRROR)
+    , ((modm, xK_5), selectToggle)
     , ((modm, xK_m), withFocused minimizeWindow)
     , ((modm .|. shiftMask, xK_m), restoreAllMinimized)
     , ((modm, xK_backslash), toggleWS)
