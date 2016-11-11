@@ -197,24 +197,39 @@ restoreFocus action = withFocused $ \orig -> action >> windows (W.focusWindow or
 withWorkspace f = withWindowSet $ \ws ->
   maybe (return ()) f (W.stack . W.workspace . W.current $ ws)
 
-minimizeOtherClassesInWorkspace = restoreFocus $
-    withWorkspace (windowsWithUnfocusedClass >=> mapM_ minimizeWindow)
+minimizeOtherClassesInWorkspace =
+  actOnWindowsInWorkspace minimizeWindow windowsWithUnfocusedClass
+maximizeSameClassesInWorkspace =
+  actOnWindowsInWorkspace maybeUnminimize windowsWithFocusedClass
 
-windowsWithUnfocusedClass ws = windowsWithOtherClasses ws (W.focus ws)
+-- Type annotation is needed to resolve ambiguity
+actOnWindowsInWorkspace :: (Window -> X ()) -> (W.Stack Window -> X [Window]) -> X ()
+actOnWindowsInWorkspace windowAction getWindowsAction = restoreFocus $
+  withWorkspace (getWindowsAction >=> mapM_ windowAction)
 
-windowsWithOtherClasses workspace window = do
-  windowClass <- getClass window
-  let predicate = (/= windowClass)
+windowsWithUnfocusedClass ws = windowsWithOtherClasses (W.focus ws) ws
+windowsWithFocusedClass ws = windowsWithSameClass (W.focus ws) ws
+windowsWithOtherClasses = windowsMatchingPredicate (/=)
+windowsWithSameClass = windowsMatchingPredicate (==)
+
+windowsMatchingPredicate predicate window workspace =
+  windowsSatisfyingPredicate workspace $ do
+    windowClass <- getClass window
+    return $ predicate windowClass
+
+windowsSatisfyingPredicate workspace getPredicate = do
+  predicate <- getPredicate
   filterM (\w -> predicate <$> getClass w) (W.integrate workspace)
 
 windowIsMinimized w = do
   minimized <- XS.gets minimizedStack
   return $ w `elem` minimized
 
-maybeUnminimizeFocused = withFocused $ \w ->
-  windowIsMinimized w >>= flip when (maximizeWindow w)
+maybeUnminimize w = windowIsMinimized w >>= flip when (maximizeWindow w)
 
-maybeUnminimizeAfter = (>> maybeUnminimizeFocused)
+maybeUnminimizeFocused = withFocused maybeUnminimize
+
+maybeUnminimizeAfter = (>> maximizeSameClassesInWorkspace)
 
 restoreAllMinimized = restoreFocus $
   withLastMinimized $ \w -> maximizeWindow w >> restoreAllMinimized
