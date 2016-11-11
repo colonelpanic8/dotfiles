@@ -216,8 +216,10 @@ toggleFadingForActiveWindow = withWindowSet $ \windowSet -> do
 
 restoreFocus action = withFocused $ \orig -> action >> windows (W.focusWindow orig)
 
+getCurrentWS = W.stack . W.workspace . W.current
+
 withWorkspace f = withWindowSet $ \ws ->
-  maybe (return ()) f (W.stack . W.workspace . W.current $ ws)
+  maybe (return ()) f (getCurrentWS ws)
 
 minimizeOtherClassesInWorkspace =
   actOnWindowsInWorkspace minimizeWindow windowsWithUnfocusedClass
@@ -273,6 +275,16 @@ greedyFocusWindow w ws = W.focusWindow w $ W.greedyView
 shiftThenView i = W.greedyView i . W.shift i
 
 shiftToEmptyAndView = doTo Next EmptyWS DWO.getSortByOrder (windows . shiftThenView)
+
+swapFocusedWith w ws = W.modify' (swapFocusedWith' w) (W.delete' w ws)
+
+swapFocusedWith' w (W.Stack current ls rs) = W.Stack w ls (rs ++ [current])
+
+swapMinimizeStateAfter action = withFocused $ \originalWindow -> do
+      _ <- action
+      restoreFocus $ do
+        maybeUnminimizeFocused
+        minimizeWindow originalWindow
 
 -- Raise or spawn
 
@@ -296,6 +308,8 @@ addKeys conf@XConfig {modMask = modm} =
                    actionMenu myWindowBringerConfig greedyFocusWindow)
     , ((modm, xK_b), maybeUnminimizeAfter $
                    bringMenuConfig myWindowBringerConfig)
+    , ((modm .|. shiftMask, xK_b), swapMinimizeStateAfter $
+                                 actionMenu myWindowBringerConfig swapFocusedWith)
     , ((modm .|. controlMask, xK_t), spawn
        "systemctl --user restart taffybar.service")
     , ((modm, xK_v), spawn "copyq paste")
