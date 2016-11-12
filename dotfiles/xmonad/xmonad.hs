@@ -320,8 +320,6 @@ addKeys conf@XConfig {modMask = modm} =
     , ((modm, xK_s), swapNextScreen)
     , ((modm .|. controlMask, xK_space), sendMessage $ JumpToLayout "Full")
     , ((modm, xK_slash), sendMessage $ Toggle MIRROR)
-    , ((modm, xK_5), selectToggle)
-    , ((modm, xK_4), selectLimit)
     , ((modm, xK_m), withFocused minimizeWindow)
     , ((modm .|. shiftMask, xK_m), restoreAllMinimized)
     , ((modm, xK_backslash), toggleWS)
@@ -344,6 +342,8 @@ addKeys conf@XConfig {modMask = modm} =
     , ((modalt, xK_w), spawn "rofi_wallpaper.sh")
     , ((modalt, xK_space), restoreOrMinimizeOtherClasses)
     , ((modalt, xK_Return), restoreAllMinimized)
+    , ((modalt, xK_5), selectToggle)
+    , ((modalt, xK_4), selectLimit)
 
     -- playerctl
     , ((mod3Mask, xK_f), spawn "playerctl play-pause")
