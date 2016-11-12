@@ -38,7 +38,7 @@ import XMonad.Layout.NoBorders
 import XMonad.Layout.Spacing
 import qualified XMonad.StackSet as W
 import XMonad.Util.CustomKeys
-import XMonad.Util.Dmenu (menuMapArgs)
+import qualified XMonad.Util.Dmenu as DM
 import qualified XMonad.Util.ExtensibleState as XS
 import XMonad.Util.Minimize
 import XMonad.Util.NamedWindows (getName)
@@ -87,6 +87,10 @@ myManageHook = composeAll . concat $
 -- Toggles
 unmodifyLayout (ModifiedLayout _ x') =  x'
 
+selectLimit = do
+  result <- DM.menuArgs "rofi" ["-dmenu", "-i"] ["2", "3", "4"]
+  setLimit $ read result
+
 data MyToggles = LIMIT
                | GAPS
                | MAGICFOCUS
@@ -102,7 +106,7 @@ myToggles = [LIMIT, GAPS, MAGICFOCUS]
 togglesMap = M.fromList [(show toggle, toggle) | toggle <- myToggles]
 
 selectToggle = do
-  Just selectedToggle <- menuMapArgs "rofi" ["-dmenu", "-i"] togglesMap
+  Just selectedToggle <- DM.menuMapArgs "rofi" ["-dmenu", "-i"] togglesMap
   sendMessage $ Toggle selectedToggle
 
 -- Layout setup
@@ -317,6 +321,7 @@ addKeys conf@XConfig {modMask = modm} =
     , ((modm .|. controlMask, xK_space), sendMessage $ JumpToLayout "Full")
     , ((modm, xK_slash), sendMessage $ Toggle MIRROR)
     , ((modm, xK_5), selectToggle)
+    , ((modm, xK_4), selectLimit)
     , ((modm, xK_m), withFocused minimizeWindow)
     , ((modm .|. shiftMask, xK_m), restoreAllMinimized)
     , ((modm, xK_backslash), toggleWS)
