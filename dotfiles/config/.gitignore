@@ -1,3 +1,4 @@
+/Popcorn-Time/
 /Trolltech.conf
 /autostart
 /browser-launcher2
@@ -11,6 +12,7 @@
 /gedit/
 /gnome-session/
 /google-chrome
+/gtk-3.0/bookmarks
 /hexchat
 /hub
 /linuxmint/
@@ -37,4 +39,3 @@
 /user-dirs.locale
 /vlc/
 /xfce4/
-/Popcorn-Time/
