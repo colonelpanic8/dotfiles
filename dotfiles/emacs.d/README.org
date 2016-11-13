@@ -2064,168 +2064,23 @@ I don't use auto-complete at all, so I have set up a hook to automatically disab
           (cons 'yas-ido-prompt
                 (cl-delete 'yas-ido-prompt yas-prompt-functions)))))
 #+END_SRC
-* Source Control
-** magit
+* flycheck
 #+BEGIN_SRC emacs-lisp
-(use-package magit
-  :commands magit-status
-  :bind (("C-x g" . imalison:magit-status))
-  :preface
-  (progn
-    (emit-let-around imalison:magit-status-traditional
-                     magit-status
-                     (magit-display-buffer-function
-                      'magit-display-buffer-traditional))
-    (emit-prefix-selector imalison:magit-status
-                          magit-status
-                          imalison:magit-status-traditional)
-    (defun imalison:after-magit-visit-file (&rest args)
-      (when (derived-mode-p 'org-mode)
-        (org-show-context 'magit-goto))))
+(use-package flycheck
   :config
   (progn
-    (when (imalison:use-frames-only)
-      (setq magit-commit-show-diff t))
-    (unbind-key "C-j" magit-status-mode-map)
-    (unbind-key "C-j" magit-hunk-section-map)
-    (unbind-key "C-j" magit-file-section-map)
-    (setq magit-last-seen-setup-instructions "1.4.0"
-          magit-display-buffer-function
-          'magit-display-buffer-same-window-except-diff-v1)
-    (magit-auto-revert-mode)
-    ;; TODO: Is this necessary now that signing is a git default
-    (when (bound-and-true-p imalison:gpg-key)
-      (add-to-list 'magit-commit-arguments
-                   (format "--gpg-sign=%s" imalison:gpg-key)))
+    (use-package flycheck-package
+      :config (flycheck-package-setup))
 
-    (add-to-list 'org-show-context-detail '(magit-goto . lineage))
-    (advice-add 'magit-diff-visit-file :after 'imalison:after-magit-visit-file)
-    (add-hook 'magit-popup-mode-hook 'imalison:disable-show-trailing-whitespace)))
-#+END_SRC
-*** magithub
-#+BEGIN_SRC emacs-lisp
-(use-package magithub
-  :if (executable-find "hub")
-  :after magit)
-#+END_SRC
-** git-link
-#+BEGIN_SRC emacs-lisp
-(use-package git-link
-  :config
-  (progn
-    (setq git-link-use-commit t)))
-#+END_SRC
-** magit-gitflow
-#+BEGIN_SRC emacs-lisp
-(use-package magit-gitflow
-  :diminish magit-gitflow-mode
-  :after magit
-  :init
-  (progn
-    (setq magit-gitflow-popup-key "C-k"))
-  :config
-  (progn
-    (add-hook 'magit-mode-hook 'turn-on-magit-gitflow)))
-#+END_SRC
-** git-timemachine
-#+BEGIN_SRC emacs-lisp
-(use-package git-timemachine
-  :commands git-timemachine)
-#+END_SRC
-** git-gutter
-#+BEGIN_SRC emacs-lisp
-(use-package git-gutter
-  :config
-  (progn
-    (global-git-gutter-mode -1)))
-#+END_SRC
-** gitolite-clone
-#+BEGIN_SRC emacs-lisp
-(use-package gitolite-clone
-  :demand t
-  :preface
-  (progn
-    (defun gitolite-clone-force-refresh ()
-      (interactive)
-      (gitolite-clone-get-projects nil nil t))))
-#+END_SRC
-** gitconfig-mode
-#+BEGIN_SRC emacs-lisp
-(use-package gitconfig-mode
-  :mode "\\.?gitconfig.?.*\\'")
-#+END_SRC
-** gitignore-mode
-#+BEGIN_SRC emacs-lisp
-(use-package gitignore-mode
-  :mode "\\.?gitignore.?.*\\'")
-#+END_SRC
-** github
-*** github-search
-#+BEGIN_SRC emacs-lisp
-(imalison:use-package github-search
-  :commands (github-search-clone-repo github-search-user-clone-repo)
-  :preface
-  (progn
-    (defun imalison:get-appropriate-path-from-gh-repo-for-go (repo)
-      (require 'go-mode)
-      (imalison:get-go-src "github.com" (oref (oref repo :owner) :login)
-                           (oref repo :name)))
+    (imalison:use-package flycheck-cask
+      :after flycheck
+      :config
+      (add-hook 'flycheck-mode-hook #'flycheck-cask-setup))
 
-    (defun imalison:get-projects-directory-target-from-repo (repo)
-      (let ((prospective-path
-             (if (equal (oref repo language) "Go")
-                 (imalison:get-appropriate-path-from-gh-repo-for-go repo)
-               (imalison:join-paths imalison:projects-directory (oref repo :name)))))
-        (if (file-exists-p prospective-path)
-            (funcall 'github-search-prompt-for-target-directory repo)
-          prospective-path))))
-  :config
-  (progn
-    (setq github-search-get-target-directory-for-repo-function
-          'imalison:get-projects-directory-target-from-repo)))
-#+END_SRC
-*** github-clone
-#+BEGIN_SRC emacs-lisp
-(imalison:use-package* github-clone "~/Projects/github-clone.el"
-                       :commands (github-clone-add-parent-remote
-                                  github-clone-add-source-remote
-                                  github-clone-fork-remote
-                                  github-clone-add-existing-remote
-                                  github-clone))
-#+END_SRC
-*** github-notifier
-This is disabled because it was causing too many issues with my
-modeline and with excessive http requests to github.
-#+BEGIN_SRC emacs-lisp
-(use-package github-notifier
-  :disabled t
-  :config
-  (progn
-    (advice-add 'github-notifier-update :around 'imalison:shut-up-around)
-    (github-notifier-mode)))
-#+END_SRC
-*** github-browse-file
-#+BEGIN_SRC emacs-lisp
-(use-package github-browse-file
-  :commands github-browse-file)
-#+END_SRC
-*** magit-gh-pulls
-#+BEGIN_SRC emacs-lisp
-(use-package magit-gh-pulls
-  :disabled t
-  :diminish magit-gh-pulls-mode
-  :after magit
-  :config
-  (progn
-    (add-hook 'magit-mode-hook 'turn-on-magit-gh-pulls)))
-#+END_SRC
-*** gist
-#+BEGIN_SRC emacs-lisp
-(use-package gist
-  :commands (gist-region gist-region-private gist-buffer gist-buffer-private
-                         gist-region-or-buffer gist-region-or-buffer-private
-                         gist-list-user gist-list gist-fetch gist-star
-                         gist-unstar gist-list-starred gist-fork))
+    (add-to-list 'flycheck-emacs-lisp-checkdoc-variables
+                 'sentence-end-double-space)
+    (global-flycheck-mode))
+  :diminish flycheck-mode)
 #+END_SRC
 * Major Modes
 ** Programming
@@ -3592,6 +3447,169 @@ alphanumeric characters only."
 (use-package jq-mode
   :mode "\\.jq\\'")
 #+END_SRC
+* Source Control
+** magit
+#+BEGIN_SRC emacs-lisp
+(use-package magit
+  :commands magit-status
+  :bind (("C-x g" . imalison:magit-status))
+  :preface
+  (progn
+    (emit-let-around imalison:magit-status-traditional
+                     magit-status
+                     (magit-display-buffer-function
+                      'magit-display-buffer-traditional))
+    (emit-prefix-selector imalison:magit-status
+                          magit-status
+                          imalison:magit-status-traditional)
+    (defun imalison:after-magit-visit-file (&rest args)
+      (when (derived-mode-p 'org-mode)
+        (org-show-context 'magit-goto))))
+  :config
+  (progn
+    (when (imalison:use-frames-only)
+      (setq magit-commit-show-diff t))
+    (unbind-key "C-j" magit-status-mode-map)
+    (unbind-key "C-j" magit-hunk-section-map)
+    (unbind-key "C-j" magit-file-section-map)
+    (setq magit-last-seen-setup-instructions "1.4.0"
+          magit-display-buffer-function
+          'magit-display-buffer-same-window-except-diff-v1)
+    (magit-auto-revert-mode)
+    ;; TODO: Is this necessary now that signing is a git default
+    (when (bound-and-true-p imalison:gpg-key)
+      (add-to-list 'magit-commit-arguments
+                   (format "--gpg-sign=%s" imalison:gpg-key)))
+
+    (add-to-list 'org-show-context-detail '(magit-goto . lineage))
+    (advice-add 'magit-diff-visit-file :after 'imalison:after-magit-visit-file)
+    (add-hook 'magit-popup-mode-hook 'imalison:disable-show-trailing-whitespace)))
+#+END_SRC
+*** magithub
+#+BEGIN_SRC emacs-lisp
+(use-package magithub
+  :if (executable-find "hub")
+  :after magit)
+#+END_SRC
+** git-link
+#+BEGIN_SRC emacs-lisp
+(use-package git-link
+  :config
+  (progn
+    (setq git-link-use-commit t)))
+#+END_SRC
+** magit-gitflow
+#+BEGIN_SRC emacs-lisp
+(use-package magit-gitflow
+  :diminish magit-gitflow-mode
+  :after magit
+  :init
+  (progn
+    (setq magit-gitflow-popup-key "C-k"))
+  :config
+  (progn
+    (add-hook 'magit-mode-hook 'turn-on-magit-gitflow)))
+#+END_SRC
+** git-timemachine
+#+BEGIN_SRC emacs-lisp
+(use-package git-timemachine
+  :commands git-timemachine)
+#+END_SRC
+** git-gutter
+#+BEGIN_SRC emacs-lisp
+(use-package git-gutter
+  :config
+  (progn
+    (global-git-gutter-mode -1)))
+#+END_SRC
+** gitolite-clone
+#+BEGIN_SRC emacs-lisp
+(use-package gitolite-clone
+  :demand t
+  :preface
+  (progn
+    (defun gitolite-clone-force-refresh ()
+      (interactive)
+      (gitolite-clone-get-projects nil nil t))))
+#+END_SRC
+** gitconfig-mode
+#+BEGIN_SRC emacs-lisp
+(use-package gitconfig-mode
+  :mode "\\.?gitconfig.?.*\\'")
+#+END_SRC
+** gitignore-mode
+#+BEGIN_SRC emacs-lisp
+(use-package gitignore-mode
+  :mode "\\.?gitignore.?.*\\'")
+#+END_SRC
+** github
+*** github-search
+#+BEGIN_SRC emacs-lisp
+(imalison:use-package github-search
+  :commands (github-search-clone-repo github-search-user-clone-repo)
+  :preface
+  (progn
+    (defun imalison:get-appropriate-path-from-gh-repo-for-go (repo)
+      (require 'go-mode)
+      (imalison:get-go-src "github.com" (oref (oref repo :owner) :login)
+                           (oref repo :name)))
+
+    (defun imalison:get-projects-directory-target-from-repo (repo)
+      (let ((prospective-path
+             (if (equal (oref repo language) "Go")
+                 (imalison:get-appropriate-path-from-gh-repo-for-go repo)
+               (imalison:join-paths imalison:projects-directory (oref repo :name)))))
+        (if (file-exists-p prospective-path)
+            (funcall 'github-search-prompt-for-target-directory repo)
+          prospective-path))))
+  :config
+  (progn
+    (setq github-search-get-target-directory-for-repo-function
+          'imalison:get-projects-directory-target-from-repo)))
+#+END_SRC
+*** github-clone
+#+BEGIN_SRC emacs-lisp
+(imalison:use-package* github-clone "~/Projects/github-clone.el"
+                       :commands (github-clone-add-parent-remote
+                                  github-clone-add-source-remote
+                                  github-clone-fork-remote
+                                  github-clone-add-existing-remote
+                                  github-clone))
+#+END_SRC
+*** github-notifier
+This is disabled because it was causing too many issues with my
+modeline and with excessive http requests to github.
+#+BEGIN_SRC emacs-lisp
+(use-package github-notifier
+  :disabled t
+  :config
+  (progn
+    (advice-add 'github-notifier-update :around 'imalison:shut-up-around)
+    (github-notifier-mode)))
+#+END_SRC
+*** github-browse-file
+#+BEGIN_SRC emacs-lisp
+(use-package github-browse-file
+  :commands github-browse-file)
+#+END_SRC
+*** magit-gh-pulls
+#+BEGIN_SRC emacs-lisp
+(use-package magit-gh-pulls
+  :disabled t
+  :diminish magit-gh-pulls-mode
+  :after magit
+  :config
+  (progn
+    (add-hook 'magit-mode-hook 'turn-on-magit-gh-pulls)))
+#+END_SRC
+*** gist
+#+BEGIN_SRC emacs-lisp
+(use-package gist
+  :commands (gist-region gist-region-private gist-buffer gist-buffer-private
+                         gist-region-or-buffer gist-region-or-buffer-private
+                         gist-list-user gist-list gist-fetch gist-star
+                         gist-unstar gist-list-starred gist-fork))
+#+END_SRC
 * Programming
 ** realgud
 realgud provides debugging support with many external debuggers in emacs
@@ -3829,24 +3847,6 @@ I don't use iedit directly, but it is used by [[*emr][emr]] and I need to disabl
   :commands tramp
   :config
   (setq tramp-default-method "scp"))
-#+END_SRC
-** flycheck
-#+BEGIN_SRC emacs-lisp
-(use-package flycheck
-  :config
-  (progn
-    (use-package flycheck-package
-      :config (flycheck-package-setup))
-
-    (imalison:use-package flycheck-cask
-      :after flycheck
-      :config
-      (add-hook 'flycheck-mode-hook #'flycheck-cask-setup))
-
-    (add-to-list 'flycheck-emacs-lisp-checkdoc-variables
-                 'sentence-end-double-space)
-    (global-flycheck-mode))
-  :diminish flycheck-mode)
 #+END_SRC
 ** narrow-indirect
 #+BEGIN_SRC emacs-lisp
