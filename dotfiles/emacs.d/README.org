@@ -421,9 +421,7 @@ but provide support for writing custom elisp.
 This is disabled for now until I figure out what to do with emit.
 #+BEGIN_SRC emacs-lisp
 (imalison:use-package emit
-  :disabled t
   :demand t)
-(require 'emit)
 #+END_SRC
 *** request
 #+BEGIN_SRC emacs-lisp
@@ -1162,8 +1160,6 @@ programming mode.
 #+END_SRC
 *** display-buffer-alist
 #+BEGIN_SRC emacs-lisp
-(defvar imalison:use-frames-only)
-
 (defvar imalison:use-frames-only nil)
 
 (defun imalison:use-frames-only ()
