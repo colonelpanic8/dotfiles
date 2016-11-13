@@ -3638,10 +3638,18 @@ emr (emacs refactor) provides support for refactoring in many programming langua
 ** term
 #+BEGIN_SRC emacs-lisp
 (use-package term
+  :preface
+  (progn
+    (defun imalison:avy-term (arg)
+      (interactive "P")
+      (term-line-mode)
+      (imalison:avy arg)))
   :bind (:map term-raw-escape-map
-         ("M-x" . helm-M-x)
+              ("M-x" . helm-M-x)
+              ("C-j" . imalison:avy-term)
          :map term-raw-map
-         ("M-x" . helm-M-x))
+              ("M-x" . helm-M-x)
+              ("C-j" . imalison:avy-term))
   :config
   (progn
     (define-key term-raw-map (kbd "C-h") help-map)
