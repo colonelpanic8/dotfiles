@@ -323,7 +323,7 @@ addKeys conf@XConfig {modMask = modm} =
     , ((modm .|. controlMask, xK_space), sendMessage $ JumpToLayout "Full")
     , ((modm, xK_slash), sendMessage $ Toggle MIRROR)
     , ((modm, xK_m), withFocused minimizeWindow)
-    , ((modm .|. shiftMask, xK_m), restoreAllMinimized)
+    , ((modm .|. shiftMask, xK_m), withLastMinimized maximizeWindowAndFocus)
     , ((modm, xK_backslash), toggleWS)
 
     -- These need to be rebound to support boringWindows
