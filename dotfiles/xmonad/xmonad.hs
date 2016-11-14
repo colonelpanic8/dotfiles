@@ -25,6 +25,7 @@ import XMonad.Config ()
 import XMonad.Hooks.EwmhDesktops
 import XMonad.Hooks.ManageDocks
 import XMonad.Hooks.FadeInactive
+import XMonad.Layout.Accordion
 import XMonad.Layout.BoringWindows
 import XMonad.Layout.LayoutCombinators
 import XMonad.Layout.LayoutModifier
@@ -113,7 +114,7 @@ selectToggle = do
 
 -- TODO: Figure out how to disable focus follows mouse for magicFocus
 layouts = multiCol [1, 1] 2 0.01 (-0.5) ||| Full ||| Tall 1 (3/100) (1/2) |||
-          Tall 1 (3/100) (3/4)
+          Tall 1 (3/100) (3/4) ||| Accordion
 
 myLayoutHook = avoidStruts . minimize . boringAuto . mkToggle (MIRROR ?? EOT) .
                mkToggle (LIMIT ?? EOT) . mkToggle (GAPS ?? EOT) .
