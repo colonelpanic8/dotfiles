@@ -38,3 +38,27 @@ def build_task_factory(ns):
 def namespace_and_factory():
     ns = Collection()
     return ns, build_task_factory(ns)
+
+
+def extension_checker(extension):
+    extension_suffix = ".{}".format(extension)
+    def ends_with(string):
+        return string.endswith(extension_suffix)
+    return ends_with
+
+
+def tasks_from_directory(directory_path, file_predicate=extension_checker("sh")):
+    ns, make_task = namespace_and_factory()
+
+    def task_from_file(filepath):
+        @make_task()
+        def run_script(ctx):
+            ctx.run(filepath)
+        return run_script
+
+    filepaths = filter(os.path.isfile,
+                       [os.path.join(directory_path, filename)
+                        for filename in os.listdir(directory_path)])
+
+    map(task_from_file, filepaths)
+    return ns
