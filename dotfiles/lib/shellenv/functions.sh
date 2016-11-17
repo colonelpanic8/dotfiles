@@ -29,7 +29,7 @@ function exists_in_path_var {
 
 function split_into_vars () {
     local string IFS
-    
+
     string="$1"
     IFS="$2"
     shift 2
@@ -39,7 +39,7 @@ EOF
 }
 
 function echo_split () {
-   local IFS    
+   local IFS
     IFS="$2" read -rA -- arr <<EOF
 $1
 EOF
@@ -175,7 +175,7 @@ function ospaste() {
     then
         reattach-to-user-namespace pbpaste
     else
-	xclip -o 
+	xclip -o
     fi
 }
 
