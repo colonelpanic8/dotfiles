@@ -350,7 +350,7 @@ function parse_timestamp2 {
 }
 
 function clear_path {
-    export PATH="/bin:/usr/local/bin"
+    export PATH="/usr/local/sbin:/usr/local/bin:/usr/bin"
     unset PATH_HELPER_RAN
     unset ENVIRONMENT_SETUP_DONE
 }
