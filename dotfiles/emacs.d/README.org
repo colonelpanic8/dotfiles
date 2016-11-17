@@ -937,6 +937,15 @@ This was stolen from https://github.com/jwiegley/dot-emacs
 (imalison:let-around imalison:projectile-helm-command-from-zsh helm-command-from-zsh
                      (default-directory (projectile-project-root)))
 #+END_SRC
+** Disable hooks
+#+BEGIN_SRC emacs-lisp
+(cl-defmacro imalison:disable-mode-hook (mode-name &optional (disable-value -1))
+  `(defun ,(imalison:concat-symbols 'imalison:disable- mode-name) ()
+       (,mode-name ,disable-value)))
+
+(imalison:disable-mode-hook linum-mode)
+(imalison:disable-mode-hook yas-minor-mode)
+#+END_SRC
 ** Other
 The stuff in this section is pretty crusty. I don't think its used anywhere, but
 I keep it around just in case I need it.
@@ -952,9 +961,6 @@ I keep it around just in case I need it.
 (defun imalison:uuid ()
   (interactive)
   (s-replace "\n" "" (shell-command-to-string "uuid")))
-
-(defun imalison:disable-linum-mode ()
-  (linum-mode 0))
 
 (defun imalison:disable-smartparens-mode ()
   (smartparens-mode 0))
@@ -3643,17 +3649,65 @@ emr (emacs refactor) provides support for refactoring in many programming langua
     (defun imalison:avy-term (arg)
       (interactive "P")
       (term-line-mode)
-      (imalison:avy arg)))
-  :bind (:map term-raw-escape-map
+      (imalison:avy arg))
+
+    (defun imalison:term-paste (&optional string)
+      (interactive)
+      (process-send-string
+       (get-buffer-process (current-buffer))
+       (if string string (current-kill 0))))
+
+    (require 'helm)
+
+    (defvar helm-kill-ring-for-term-actions
+      '(("Yank" . imalison:term-paste)
+        ("Delete" . (lambda (_candidate)
+                      (cl-loop for cand in (helm-marked-candidates)
+                               do (setq kill-ring
+                                        (delete cand kill-ring)))))))
+    (defvar helm-source-kill-ring-for-term
+      (helm-build-sync-source "Kill Ring"
+        :init (lambda () (helm-attrset 'last-command last-command))
+        :candidates #'helm-kill-ring-candidates
+        :filtered-candidate-transformer #'helm-kill-ring-transformer
+        :action 'helm-kill-ring-for-term-actions
+        :persistent-action 'ignore
+        :persistent-help "DoNothing"
+        :migemo t
+        :multiline t))
+
+    (defun helm-show-kill-ring-for-term ()
+      "Preconfigured `helm' for `kill-ring'.
+It is drop-in replacement of `yank-pop'.
+
+First call open the kill-ring browser, next calls move to next line."
+      (interactive)
+      (let ((enable-recursive-minibuffers t))
+        (helm :sources helm-source-kill-ring-for-term
+              :buffer "*helm kill ring*"
+              :resume 'noresume
+              :allow-nest t)))
+
+    (defun imalison:term-char-mode ()
+      (interactive)
+      (term-char-mode)
+      (goto-char (point-max))))
+  :bind (:map term-mode-map
+              ("C-c C-k" . imalison:term-char-mode)
+         :map term-raw-escape-map
               ("M-x" . helm-M-x)
               ("C-j" . imalison:avy-term)
          :map term-raw-map
               ("M-x" . helm-M-x)
-              ("C-j" . imalison:avy-term))
+              ("C-j" . imalison:avy-term)
+              ("M-:" . eval-expression)
+              ("C-y" . imalison:term-paste)
+              ("M-y" . helm-show-kill-ring-for-term))
   :config
   (progn
     (define-key term-raw-map (kbd "C-h") help-map)
     (add-hook 'term-mode-hook 'imalison:disable-linum-mode)
+    (add-hook 'term-mode-hook 'imalison:disable-yas-minor-mode)
     (add-hook 'term-mode-hook 'imalison:disable-show-trailing-whitespace)
     (setq term-buffer-maximum-size 0)))
 #+END_SRC
