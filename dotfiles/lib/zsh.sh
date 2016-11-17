@@ -17,3 +17,5 @@ function if_emacs_zsh {
 }
 
 environment_variable_exists INSIDE_EMACS && if_emacs_zsh || set_default_prompt
+
+environment_variable_exists INSIDE_EMACS && export PROMPT='$ '
