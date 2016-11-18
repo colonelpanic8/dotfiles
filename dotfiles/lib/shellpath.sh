@@ -63,9 +63,13 @@ function _python_setup {
 
 function _node_setup {
     # node/nvm
-    export NVM_DIR="/Users/imalison/.nvm"
-    [ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh"  # This loads nvm
-    export NODE_PATH="/usr/local/lib/node_modules/"
+    if [ -e /usr/share/nvm/init-nvm.sh ]; then
+        source /usr/share/nvm/init-nvm.sh
+    else
+        export NVM_DIR="$HOME/.nvm"
+        [ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh"  # This loads nvm
+        export NODE_PATH="/usr/local/lib/node_modules/"
+    fi
 }
 
 function _java_setup {
