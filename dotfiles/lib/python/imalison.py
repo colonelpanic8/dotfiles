@@ -29,14 +29,14 @@ def command_exists(command, run=run):
 
 
 def build_task_factory(ns):
-    def task(function):
-        ns.add_task(ctask(function))
+    def task(function, *args, **kwargs):
+        ns.add_task(ctask(function, *args, **kwargs))
         return function
     return task
 
 
-def namespace_and_factory():
-    ns = Collection()
+def namespace_and_factory(*args, **kwargs):
+    ns = Collection(*args, **kwargs)
     return ns, build_task_factory(ns)
 
 
@@ -48,17 +48,17 @@ def extension_checker(extension):
 
 
 def tasks_from_directory(directory_path, file_predicate=extension_checker("sh")):
-    ns, make_task = namespace_and_factory()
-
+    ns, make_task = namespace_and_factory(os.path.basename(directory_path))
     def task_from_file(filepath):
-        @make_task()
         def run_script(ctx):
             ctx.run(filepath)
-        return run_script
+        return make_task(run_script, name=os.path.basename(filepath).split(os.path.extsep)[0])
 
-    filepaths = filter(os.path.isfile,
-                       [os.path.join(directory_path, filename)
-                        for filename in os.listdir(directory_path)])
+    filepaths = filter(
+        os.path.isfile,
+        [os.path.join(directory_path, filename)
+         for filename in os.listdir(directory_path)],
+    )
 
-    map(task_from_file, filepaths)
+    list(map(task_from_file, filepaths))
     return ns
