@@ -26,7 +26,8 @@ heading text, and don't change when new headings are added to the document, I
 wrote a custom version of ~org-export-get-reference~.
 
 See how [[Use my own default naming scheme for org-headings][this link]] (which is just a normal internal link in the original
-document) takes you to http://ivanmalison.github.io/dotfiles/#usemyowndefaultnamingschemefororgheadings.
+document) takes you to
+http://ivanmalison.github.io/dotfiles/#usemyowndefaultnamingschemefororgheadings.
 
 In case you haven't noticed, that is where you should go grab the code that does
 this.
