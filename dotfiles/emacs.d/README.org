@@ -2027,7 +2027,17 @@ I don't use auto-complete at all, so I have set up a hook to automatically disab
 ** multi-line
 #+BEGIN_SRC emacs-lisp
 (imalison:use-package multi-line
-  :bind ("C-c d" . multi-line))
+  :bind ("C-c d" . multi-line)
+  :config
+  (progn
+    ;; This only works for array respacing
+    (multi-line-defhook sh
+      (make-instance
+       'multi-line-strategy
+       :find multi-line-lisp-find-strategy
+       :respace (multi-line-default-respacers
+                 (multi-line-clearing-reindenting-respacer
+                  multi-line-force-first-and-last-respacer))))))
 #+END_SRC
 ** comment-dwim-2
 #+BEGIN_SRC emacs-lisp
