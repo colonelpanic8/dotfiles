@@ -289,7 +289,7 @@ swapMinimizeStateAfter action = withFocused $ \originalWindow -> do
       _ <- action
       restoreFocus $ do
         maybeUnminimizeFocused
-        withFocused $ \newWindow -> do
+        withFocused $ \newWindow ->
             when (newWindow /= originalWindow)
                  $ minimizeWindow originalWindow
 
