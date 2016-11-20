@@ -129,7 +129,8 @@ findM f = runMaybeT . msum . map (MaybeT . f)
 myWindowBringerConfig =
   WindowBringerConfig { menuCommand = "rofi"
                       , menuArgs = ["-dmenu", "-i"]
-                      , windowTitler = myDecorateName}
+                      , windowTitler = myDecorateName
+                      }
 
 classIfMatches window entry = do
   result <- runQuery (fst entry) window
