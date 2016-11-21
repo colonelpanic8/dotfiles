@@ -83,7 +83,8 @@ myStartup = spawn "systemctl --user start wm.target"
 
 myManageHook = composeAll . concat $
                [ [ hangoutsSelector --> doShift "2"]
-               , [ transmissionSelector --> doShift "5" ]]
+               , [ transmissionSelector --> doShift "5" ]
+               ]
 
 -- Toggles
 unmodifyLayout (ModifiedLayout _ x') =  x'
