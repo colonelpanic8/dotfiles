@@ -54,7 +54,7 @@ main = xmonad $ def
                            ewmhDesktopsEventHook +++ pagerHintsEventHook
        , startupHook = myStartup +++ ewmhWorkspaceNamesLogHook
        , keys = customKeys (const []) addKeys
-      } where
+       } where
     x +++ y = mappend y x
 
 -- Selectors
