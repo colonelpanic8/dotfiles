@@ -36,6 +36,7 @@ import XMonad.Layout.MultiColumns
 import XMonad.Layout.MultiToggle
 import XMonad.Layout.MultiToggle.Instances
 import XMonad.Layout.NoBorders
+import qualified XMonad.Layout.Renamed as RN
 import XMonad.Layout.Spacing
 import qualified XMonad.StackSet as W
 import XMonad.Util.CustomKeys
@@ -116,13 +117,30 @@ selectToggle = do
 -- Layout setup
 
 -- TODO: Figure out how to disable focus follows mouse for magicFocus
-layouts = multiCol [1, 1] 2 0.01 (-0.5) ||| Full ||| Tall 1 (3/100) (1/2) |||
-          Tall 1 (3/100) (3/4) ||| Accordion
 
-myLayoutHook = avoidStruts . minimize . boringAuto . mkToggle (MIRROR ?? EOT) .
-               mkToggle (LIMIT ?? EOT) . mkToggle (GAPS ?? EOT) .
-               mkToggle (MAGICFOCUS ?? EOT) . workspaceNamesHook . smartBorders .
-               noBorders $ layouts
+rename newName = RN.renamed [RN.Replace newName]
+
+layoutsStart layout = (layout, [Layout layout])
+(|||!) (joined, layouts) newLayout =
+    (joined ||| newLayout, layouts ++ [Layout newLayout])
+
+layoutInfo = layoutsStart (rename "Columns" $ multiCol [1, 1] 2 0.01 (-0.5)) |||!
+             rename "Large Main" (Tall 1 (3/100) (3/4)) |||!
+             rename "2 Columns" (Tall 1 (3/100) (1/2)) |||!
+             Accordion
+
+layoutList = snd layoutInfo
+
+layoutNames = [description layout | layout <- layoutList]
+
+selectLayout = do
+  selectedLayout <- DM.menuArgs "rofi" ["-dmenu", "-i"] layoutNames
+  sendMessage $ JumpToLayout selectedLayout
+
+myLayoutHook = avoidStruts . minimize . boringAuto . mkToggle1 MIRROR .
+               mkToggle1 LIMIT . mkToggle1 GAPS . mkToggle1 MAGICFOCUS .
+               mkToggle1 FULL . workspaceNamesHook . smartBorders . noBorders $
+               fst layoutInfo
 
 -- WindowBringer
 
@@ -345,6 +363,7 @@ addKeys conf@XConfig {modMask = modm} =
     , ((mod3Mask, xK_h), spawn "screenshot.sh")
     , ((mod3Mask, xK_c), spawn "shell_command.sh")
     , ((mod3Mask, xK_l), spawn "dm-tool lock")
+    , ((mod3Mask, xK_5), selectLayout)
 
     -- ModAlt bindings
     , ((modalt, xK_w), spawn "rofi_wallpaper.sh")
