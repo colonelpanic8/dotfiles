@@ -104,12 +104,14 @@ instance Transformer MyToggles Window where
     transform MAGICFOCUS x k = k (magicFocus x) unmodifyLayout
 
 myToggles = [LIMIT, GAPS, MAGICFOCUS]
+otherToggles = [FULL, MIRROR]
 
-togglesMap = M.fromList [(show toggle, toggle) | toggle <- myToggles]
+togglesMap = M.fromList $ [ (show toggle, Toggle toggle) | toggle <- myToggles ] ++
+             [ (show toggle, Toggle toggle) | toggle <- otherToggles ]
 
 selectToggle = do
   Just selectedToggle <- DM.menuMapArgs "rofi" ["-dmenu", "-i"] togglesMap
-  sendMessage $ Toggle selectedToggle
+  sendMessage selectedToggle
 
 -- Layout setup
 
