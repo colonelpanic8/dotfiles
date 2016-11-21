@@ -23,6 +23,7 @@
 /mopidy
 /mopidy/spotify/
 /nemo/
+/pavucontrol.ini
 /pulse/
 /sparkleshare/*.key
 /sparkleshare/*.pub
