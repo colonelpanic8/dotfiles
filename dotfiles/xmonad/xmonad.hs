@@ -61,15 +61,13 @@ main = xmonad $ def
 -- Selectors
 
 isHangoutsTitle = isPrefixOf "Google Hangouts"
-
 chromeSelectorBase = className =? "Google-chrome"
-chromeSelector = chromeSelectorBase <&&>
-                 fmap (not . isHangoutsTitle) title
+
+chromeSelector = chromeSelectorBase <&&> fmap (not . isHangoutsTitle) title
 spotifySelector = className =? "Spotify"
 emacsSelector = className =? "Emacs"
 transmissionSelector = fmap (isPrefixOf "Transmission") title
-hangoutsSelector = chromeSelectorBase <&&>
-                   fmap isHangoutsTitle title
+hangoutsSelector = chromeSelectorBase <&&> fmap isHangoutsTitle title
 
 virtualClasses = [ (hangoutsSelector, "Hangouts")
                  , (chromeSelector, "Chrome")
