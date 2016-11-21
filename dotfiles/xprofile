@@ -1,3 +1,5 @@
 # -*- mode: sh; -*-
+
+# If there are issues with path, check /etc/profile for hard overrides of PATH.
 source "$HOME/.lib/shellenv.sh"
 load_xkb_map.sh
