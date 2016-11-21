@@ -105,7 +105,7 @@ instance Transformer MyToggles Window where
     transform MAGICFOCUS x k = k (magicFocus x) unmodifyLayout
 
 myToggles = [LIMIT, GAPS, MAGICFOCUS]
-otherToggles = [FULL, MIRROR]
+otherToggles = [NBFULL, MIRROR]
 
 togglesMap = M.fromList $ [ (show toggle, Toggle toggle) | toggle <- myToggles ] ++
              [ (show toggle, Toggle toggle) | toggle <- otherToggles ]
@@ -139,7 +139,7 @@ selectLayout = do
 
 myLayoutHook = avoidStruts . minimize . boringAuto . mkToggle1 MIRROR .
                mkToggle1 LIMIT . mkToggle1 GAPS . mkToggle1 MAGICFOCUS .
-               mkToggle1 FULL . workspaceNamesHook . smartBorders . noBorders $
+               mkToggle1 NBFULL . workspaceNamesHook . smartBorders . noBorders $
                fst layoutInfo
 
 -- WindowBringer
