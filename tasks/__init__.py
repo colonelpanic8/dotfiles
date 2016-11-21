@@ -5,14 +5,18 @@ from invoke import Collection, task as ctask
 
 from . import arch
 from . import linux
+from . import imalison
 from . import osx
-from .util import DOTFILES_DIRECTORY, RESOURCES_DIRECTORY, link_filenames
+from .util import DOTFILES_DIRECTORY, RESOURCES_DIRECTORY, TASKS_DIRECTORY, link_filenames
 
 
 ns = Collection()
 ns.add_collection(osx)
 ns.add_collection(linux)
 ns.add_collection(arch)
+ns.add_collection(imalison.tasks_from_directory(
+    os.path.join(TASKS_DIRECTORY, "shell"))
+)
 
 
 @ctask(default=True)
