@@ -343,7 +343,7 @@ addKeys conf@XConfig {modMask = modm} =
        "systemctl --user restart taffybar.service")
     , ((modm, xK_v), spawn "copyq paste")
     , ((modm, xK_s), swapNextScreen)
-    , ((modm .|. controlMask, xK_space), sendMessage $ JumpToLayout "Full")
+    , ((modm .|. controlMask, xK_space), sendMessage $ Toggle FULL)
     , ((modm, xK_slash), sendMessage $ Toggle MIRROR)
     , ((modm, xK_m), withFocused minimizeWindow)
     , ((modm .|. shiftMask, xK_m), withLastMinimized maximizeWindowAndFocus)
