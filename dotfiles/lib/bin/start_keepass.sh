@@ -1,2 +1,2 @@
-#!/usr/bin/env zsh
-nohup keepassx --keyfile "$HOME/SparkleShare/config/creds/keepass.key" "$HOME/SparkleShare/config/db.kdbx" &
+#!/usr/bin/env sh
+restart.sh keepassxc "$HOME/SparkleShare/config/db.kdbx" --keyfile "$HOME/SparkleShare/config/creds/keepass.key"
