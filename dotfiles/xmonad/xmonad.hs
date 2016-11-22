@@ -83,8 +83,9 @@ myStartup = spawn "systemctl --user start wm.target"
 -- Manage hook
 
 myManageHook = composeAll . concat $
-               [ [ hangoutsSelector --> doShift "2"]
-               , [ transmissionSelector --> doShift "5" ]
+               [ [ transmissionSelector --> doShift "5" ]
+               -- Hangouts being on a separate workspace freezes chrome
+               -- , [ hangoutsSelector --> doShift "2"]
                ]
 
 -- Toggles
