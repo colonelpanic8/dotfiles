@@ -452,13 +452,13 @@ addKeys conf@XConfig {modMask = modm} =
 
     -- ScratchPads
     , ((modalt, xK_m), doScratchpad "htop")
-    , ((modalt, xK_s), doScratchpad "spotify")
-    , ((modalt, xK_h), doScratchpad "hangouts")
+    , ((modalt .|. controlMask, xK_s), doScratchpad "spotify")
+    , ((modalt .|. controlMask, xK_h), doScratchpad "hangouts")
 
-    , ((modalt .|. controlMask, xK_h),
+    , ((modalt, xK_h),
        myRaiseNextMaybe (spawn hangoutsCommand) hangoutsSelector)
-    , ((modalt .|. controlMask, xK_s),
-         myRaiseNextMaybe (spawn spotifyCommand) spotifySelector)
+    , ((modalt, xK_s),
+       myRaiseNextMaybe (spawn spotifyCommand) spotifySelector)
 
     -- playerctl
     , ((mod3Mask, xK_f), spawn "playerctl play-pause")
