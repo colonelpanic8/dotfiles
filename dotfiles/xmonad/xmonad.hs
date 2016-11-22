@@ -160,6 +160,8 @@ deactivateFullOr = toggleOr NBFULL False
 deactivateFullAnd action = sequence_ [deactivateFull, action]
 
 andDeactivateFull action = sequence_ [action, deactivateFull]
+
+goFullscreen = sendMessage $ Toggle NBFULL
 
 -- Layout setup
 
@@ -410,7 +412,7 @@ addKeys conf@XConfig {modMask = modm} =
        "systemctl --user restart taffybar.service")
     , ((modm, xK_v), spawn "copyq paste")
     , ((modm, xK_s), swapNextScreen)
-    , ((modm .|. controlMask, xK_space), sendMessage $ Toggle NBFULL)
+    , ((modm .|. controlMask, xK_space), goFullscreen)
     , ((modm, xK_slash), sendMessage $ Toggle MIRROR)
     , ((modm, xK_m), withFocused minimizeWindow)
     , ((modm .|. shiftMask, xK_m), withLastMinimized maximizeWindowAndFocus)
