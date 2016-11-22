@@ -220,8 +220,8 @@ myDecorateName ws w = do
   return $ printf "%-20s%-40s %+30s" classTitle (take 40 name)
              "in " ++ workspaceToName (W.tag ws)
 
--- This needs access to the xmonad to unminimize so it can't be done with the
--- exiting window bringer interface
+-- This needs access to X in order to unminimize, which means that i can't be
+-- done with the existing window bringer interface
 myBringWindow WindowBringerConfig{ menuCommand = cmd
                                  , menuArgs = args
                                  , windowTitler = titler
