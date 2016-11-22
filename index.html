@@ -3,7 +3,7 @@
 "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
-<!-- 2016-11-21 Mon 17:45 -->
+<!-- 2016-11-21 Mon 17:49 -->
 <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title></title>
@@ -187,6 +187,8 @@
 <script type="text/javascript" src="http://www.pirilampo.org/styles/readtheorg/js/readtheorg.js"></script>
 <style type="text/css">
  pre.src {background-color: #263238; color: #ffffff;}</style>
+<style type="text/css">
+ pre.src {background-color: #263238; color: #ffffff;}</style>
 <script type="text/javascript">
 /*
 @licstart  The following is the entire license notice for the
@@ -251,10 +253,11 @@ for the JavaScript code in this tag.
 <li><a href="#setbackgroundcolorsourceblocks">2.1.4. Set Background Color Source Blocks</a></li>
 </ul>
 </li>
-<li><a href="#functionsmyfunctionssection">2.2. My functions section</a></li>
-<li><a href="#configurationofmyownpackages">2.3. Configuration of My Own Packages</a></li>
-<li><a href="#programminglanguagesprogramminglanguageconfigurations">2.4. Programming Language Configurations</a></li>
-<li><a href="#orgorgmode">2.5. org-mode</a></li>
+<li><a href="#framecontrolframecontrol">2.2. Frame control</a></li>
+<li><a href="#functionsmyfunctionssection">2.3. My functions section</a></li>
+<li><a href="#configurationofmyownpackages">2.4. Configuration of My Own Packages</a></li>
+<li><a href="#programminglanguagesprogramminglanguageconfigurations">2.5. Programming Language Configurations</a></li>
+<li><a href="#orgorgmode">2.6. org-mode</a></li>
 </ul>
 </li>
 <li><a href="#htmlheaders">3. HTML Headers</a></li>
@@ -801,25 +804,34 @@ For some reason, org-mode uses all of your currently active fontification when e
 </div>
 </div>
 </div>
-<div id="outline-container-functionsmyfunctionssection" class="outline-3">
-<h3 id="functionsmyfunctionssection"><span class="section-number-3">2.2</span> <a href="#functions">My functions section</a></h3>
+<div id="outline-container-framecontrolframecontrol" class="outline-3">
+<h3 id="framecontrolframecontrol"><span class="section-number-3">2.2</span> <a href="#orgtarget1">Frame control</a></h3>
 <div class="outline-text-3" id="text-2-2">
+<p>
+My custom <a href="#orgtarget1">frame control</a> stuff is built to integrate really nicely with xmonad. I
+think its pretty awesome!
+</p>
+</div>
+</div>
+<div id="outline-container-functionsmyfunctionssection" class="outline-3">
+<h3 id="functionsmyfunctionssection"><span class="section-number-3">2.3</span> <a href="#functions">My functions section</a></h3>
+<div class="outline-text-3" id="text-2-3">
 <p>
 &#x2026;has a bunch of generally useful functions:
 </p>
 <ul class="org-ul">
 <li><a href="https://github.com/IvanMalison/emit/blob/2e4d788abd68bac538acb06443179b8d5885052e/emit.el#L104">emit-prefix-selector</a> (SUPER USEFUL, moved to emit) See <a href="https://github.com/IvanMalison/emit#prefix-selector">README</a> for explantion</li>
-<li><a href="#fontsize">Font Size</a> functions and an <a href="#orgtarget1">Awesome Hydra</a> for them</li>
-<li><a href="#orgtarget2">Download a file into a buffer</a> (curl straight into a file)</li>
-<li><a href="#orgtarget3">Edit a script on $PATH</a></li>
+<li><a href="#fontsize">Font Size</a> functions and an <a href="#orgtarget2">Awesome Hydra</a> for them</li>
+<li><a href="#orgtarget3">Download a file into a buffer</a> (curl straight into a file)</li>
+<li><a href="#orgtarget4">Edit a script on $PATH</a></li>
 <li><a href="#copyyanking">Copy Portions of Buffer File Path Hydra</a> and the associated <a href="#copyyankstringfunctions">Copy String Functions</a></li>
-<li><a href="#orgtarget4">Named Build of Builder Macros</a> (<a href="https://github.com/IvanMalison/emit#named-builder">README</a>) and <a href="#orgtarget5">A Compose Supporting Macros</a> (<a href="https://github.com/IvanMalison/emit#compose">README</a>)</li>
+<li><a href="#orgtarget5">Named Build of Builder Macros</a> (<a href="https://github.com/IvanMalison/emit#named-builder">README</a>) and <a href="#orgtarget6">A Compose Supporting Macros</a> (<a href="https://github.com/IvanMalison/emit#compose">README</a>)</li>
 </ul>
 </div>
 </div>
 <div id="outline-container-configurationofmyownpackages" class="outline-3">
-<h3 id="configurationofmyownpackages"><span class="section-number-3">2.3</span> Configuration of My Own Packages</h3>
-<div class="outline-text-3" id="text-2-3">
+<h3 id="configurationofmyownpackages"><span class="section-number-3">2.4</span> Configuration of My Own Packages</h3>
+<div class="outline-text-3" id="text-2-4">
 <ul class="org-ul">
 <li><a href="#termprojectile">term-projectile</a> and <a href="#termmanager">term-manager</a></li>
 <li><a href="#orgprojectile">org-projectile</a></li>
@@ -831,16 +843,16 @@ For some reason, org-mode uses all of your currently active fontification when e
 </div>
 </div>
 <div id="outline-container-programminglanguagesprogramminglanguageconfigurations" class="outline-3">
-<h3 id="programminglanguagesprogramminglanguageconfigurations"><span class="section-number-3">2.4</span> <a href="#orgtarget6">Programming Language Configurations</a></h3>
-<div class="outline-text-3" id="text-2-4">
+<h3 id="programminglanguagesprogramminglanguageconfigurations"><span class="section-number-3">2.5</span> <a href="#orgtarget7">Programming Language Configurations</a></h3>
+<div class="outline-text-3" id="text-2-5">
 <p>
-My programming language major mode configurations can all be found <a href="#orgtarget6">here</a>.
+My programming language major mode configurations can all be found <a href="#orgtarget7">here</a>.
 </p>
 </div>
 </div>
 <div id="outline-container-orgorgmode" class="outline-3">
-<h3 id="orgorgmode"><span class="section-number-3">2.5</span> <a href="#org">org-mode</a></h3>
-<div class="outline-text-3" id="text-2-5">
+<h3 id="orgorgmode"><span class="section-number-3">2.6</span> <a href="#org">org-mode</a></h3>
+<div class="outline-text-3" id="text-2-6">
 <p>
 My <a href="#org">org-mode</a> configuration is pretty comprehensive, but not super well commented.
 </p>
@@ -1420,7 +1432,7 @@ This is disabled for now until I figure out what to do with emit.
 <h3 id="namedbuild"><span class="section-number-3">5.5</span> Named Build</h3>
 <div class="outline-text-3" id="text-5-5">
 <p>
-<a id="orgtarget4"></a>
+<a id="orgtarget5"></a>
 imalison:named-build provides a way to invoke a macro in such a way
 that the lambda that it produces is given a name.
 </p>
@@ -1486,7 +1498,7 @@ new macro name and the -fn suffix.
 <h4 id="aversionsupportingmacros"><span class="section-number-4">5.7.1</span> A version supporting macros</h4>
 <div class="outline-text-4" id="text-5-7-1">
 <p>
-<a id="orgtarget5"></a>
+<a id="orgtarget6"></a>
 </p>
 <div class="org-src-container">
 <pre class="src src-emacs-lisp"><span style="color: #e91e63;">(</span><span style="color: #fff59d;">defun</span> <span style="color: #84ffff;">imalison:help-function-arglist</span> <span style="color: #2196F3;">(</span>fn<span style="color: #2196F3;">)</span>
@@ -1981,7 +1993,7 @@ A macro for composing functions together to build an interactive command to copy
 <h3 id="downloadafileintoabuffer"><span class="section-number-3">5.26</span> Download a File Into a Buffer</h3>
 <div class="outline-text-3" id="text-5-26">
 <p>
-<a id="orgtarget2"></a>
+<a id="orgtarget3"></a>
 </p>
 <div class="org-src-container">
 <pre class="src src-emacs-lisp"><span style="color: #e91e63;">(</span><span style="color: #fff59d;">defun</span> <span style="color: #84ffff;">imalison:download-to-buffer</span> <span style="color: #2196F3;">(</span>uri<span style="color: #2196F3;">)</span>
@@ -2017,7 +2029,7 @@ A macro for composing functions together to build an interactive command to copy
 <h3 id="editascriptonpath"><span class="section-number-3">5.28</span> Edit a script on PATH</h3>
 <div class="outline-text-3" id="text-5-28">
 <p>
-<a id="orgtarget3"></a> Note that you'll need to make sure that emacs properly inherits
+<a id="orgtarget4"></a> Note that you'll need to make sure that emacs properly inherits
 the path variable for this work. Check out my <a href="#execpathfromshell">exec-path-from-shell</a> config for
 details.
 </p>
@@ -2470,6 +2482,9 @@ programming mode.
 <div id="outline-container-displaybufferalist" class="outline-4">
 <h4 id="displaybufferalist"><span class="section-number-4">6.8.3</span> display-buffer-alist</h4>
 <div class="outline-text-4" id="text-6-8-3">
+<p>
+<a id="orgtarget1"></a>
+</p>
 <div class="org-src-container">
 <pre class="src src-emacs-lisp"><span style="color: #e91e63;">(</span><span style="color: #fff59d;">defvar</span> <span style="color: #ffcc80;">imalison:use-frames-only</span> nil<span style="color: #e91e63;">)</span>
 
@@ -3130,7 +3145,7 @@ This interferes with too many other packages. See
 <h4 id="fontsettings"><span class="section-number-4">7.4.1</span> Font Settings</h4>
 <div class="outline-text-4" id="text-7-4-1">
 <p>
-<a id="orgtarget1"></a>
+<a id="orgtarget2"></a>
 </p>
 <div class="org-src-container">
 <pre class="src src-emacs-lisp"><span style="color: #e91e63;">(</span><span style="color: #fff59d;">defhydra</span> imalison:hydra-font
@@ -3833,7 +3848,7 @@ I don't use auto-complete at all, so I have set up a hook to automatically disab
 <h3 id="programming"><span class="section-number-3">12.1</span> Programming</h3>
 <div class="outline-text-3" id="text-12-1">
 <p>
-<a id="orgtarget6"></a>
+<a id="orgtarget7"></a>
 </p>
 </div>
 <div id="outline-container-python" class="outline-4">
@@ -7296,7 +7311,7 @@ load-theme hook (See the heading below).
 </div>
 <div id="postamble" class="status">
 <p class="author">Author: Ivan Malison</p>
-<p class="date">Created: 2016-11-21 Mon 17:45</p>
+<p class="date">Created: 2016-11-21 Mon 17:49</p>
 <p class="validation"><a href="http://validator.w3.org/check?uri=referer">Validate</a></p>
 </div>
 </body>
