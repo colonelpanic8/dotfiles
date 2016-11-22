@@ -3,7 +3,7 @@
 "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
-<!-- 2016-11-08 Tue 18:25 -->
+<!-- 2016-11-21 Mon 17:45 -->
 <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title></title>
@@ -187,8 +187,6 @@
 <script type="text/javascript" src="http://www.pirilampo.org/styles/readtheorg/js/readtheorg.js"></script>
 <style type="text/css">
  pre.src {background-color: #263238; color: #ffffff;}</style>
-<style type="text/css">
- pre.src {background-color: #263238; color: #ffffff;}</style>
 <script type="text/javascript">
 /*
 @licstart  The following is the entire license notice for the
@@ -347,14 +345,15 @@ for the JavaScript code in this tag.
 <li><a href="#useprojectileasdefaultdirectory">5.31.1. Use projectile as default directory</a></li>
 </ul>
 </li>
-<li><a href="#other">5.32. Other</a></li>
-<li><a href="#keyboardmacros">5.33. Keyboard Macros</a>
+<li><a href="#disablehooks">5.32. Disable hooks</a></li>
+<li><a href="#other">5.33. Other</a></li>
+<li><a href="#keyboardmacros">5.34. Keyboard Macros</a>
 <ul>
-<li><a href="#foreditingliterateconfig">5.33.1. For editing literate config</a>
+<li><a href="#foreditingliterateconfig">5.34.1. For editing literate config</a>
 <ul>
-<li><a href="#extractcurrentsexptosrcblock">5.33.1.1. extract-current-sexp-to-src-block</a></li>
-<li><a href="#namesourceblockforusepackagename">5.33.1.2. name-source-block-for-use-package-name</a></li>
-<li><a href="#extractandnameusepackageblock">5.33.1.3. extract-and-name-use-package-block</a></li>
+<li><a href="#extractcurrentsexptosrcblock">5.34.1.1. extract-current-sexp-to-src-block</a></li>
+<li><a href="#namesourceblockforusepackagename">5.34.1.2. name-source-block-for-use-package-name</a></li>
+<li><a href="#extractandnameusepackageblock">5.34.1.3. extract-and-name-use-package-block</a></li>
 </ul>
 </li>
 </ul>
@@ -487,32 +486,7 @@ for the JavaScript code in this tag.
 <li><a href="#yasnippet">10.10. yasnippet</a></li>
 </ul>
 </li>
-<li><a href="#sourcecontrol">11. Source Control</a>
-<ul>
-<li><a href="#magit">11.1. magit</a>
-<ul>
-<li><a href="#magithub">11.1.1. magithub</a></li>
-</ul>
-</li>
-<li><a href="#gitlink">11.2. git-link</a></li>
-<li><a href="#magitgitflow">11.3. magit-gitflow</a></li>
-<li><a href="#gittimemachine">11.4. git-timemachine</a></li>
-<li><a href="#gitgutter">11.5. git-gutter</a></li>
-<li><a href="#gitoliteclone">11.6. gitolite-clone</a></li>
-<li><a href="#gitconfigmode">11.7. gitconfig-mode</a></li>
-<li><a href="#gitignoremode">11.8. gitignore-mode</a></li>
-<li><a href="#github">11.9. github</a>
-<ul>
-<li><a href="#githubsearch">11.9.1. github-search</a></li>
-<li><a href="#githubclone">11.9.2. github-clone</a></li>
-<li><a href="#githubnotifier">11.9.3. github-notifier</a></li>
-<li><a href="#githubbrowsefile">11.9.4. github-browse-file</a></li>
-<li><a href="#magitghpulls">11.9.5. magit-gh-pulls</a></li>
-<li><a href="#gist">11.9.6. gist</a></li>
-</ul>
-</li>
-</ul>
-</li>
+<li><a href="#flycheck">11. flycheck</a></li>
 <li><a href="#majormodes">12. Major Modes</a>
 <ul>
 <li><a href="#programming">12.1. Programming</a>
@@ -609,113 +583,138 @@ for the JavaScript code in this tag.
 </li>
 </ul>
 </li>
-<li><a href="#programming1">13. Programming</a>
+<li><a href="#sourcecontrol">13. Source Control</a>
 <ul>
-<li><a href="#realgud">13.1. realgud</a></li>
-<li><a href="#emr1">13.2. emr</a></li>
-<li><a href="#semantic">13.3. semantic</a></li>
+<li><a href="#magit">13.1. magit</a>
+<ul>
+<li><a href="#magithub">13.1.1. magithub</a></li>
 </ul>
 </li>
-<li><a href="#utility1">14. Utility</a>
+<li><a href="#gitlink">13.2. git-link</a></li>
+<li><a href="#magitgitflow">13.3. magit-gitflow</a></li>
+<li><a href="#gittimemachine">13.4. git-timemachine</a></li>
+<li><a href="#gitgutter">13.5. git-gutter</a></li>
+<li><a href="#gitoliteclone">13.6. gitolite-clone</a></li>
+<li><a href="#gitconfigmode">13.7. gitconfig-mode</a></li>
+<li><a href="#gitignoremode">13.8. gitignore-mode</a></li>
+<li><a href="#github">13.9. github</a>
 <ul>
-<li><a href="#term">14.1. term</a></li>
-<li><a href="#termmanager">14.2. term-manager</a></li>
-<li><a href="#termprojectile">14.3. term-projectile</a></li>
-<li><a href="#crux">14.4. crux</a></li>
-<li><a href="#kdeconnect">14.5. kde-connect</a></li>
+<li><a href="#githubsearch">13.9.1. github-search</a></li>
+<li><a href="#githubclone">13.9.2. github-clone</a></li>
+<li><a href="#githubnotifier">13.9.3. github-notifier</a></li>
+<li><a href="#githubbrowsefile">13.9.4. github-browse-file</a></li>
+<li><a href="#magitghpulls">13.9.5. magit-gh-pulls</a></li>
+<li><a href="#gist">13.9.6. gist</a></li>
 </ul>
 </li>
-<li><a href="#chat">15. Chat</a>
-<ul>
-<li><a href="#erc">15.1. erc</a></li>
-<li><a href="#bitlbee">15.2. bitlbee</a></li>
-<li><a href="#slack">15.3. slack</a></li>
 </ul>
 </li>
-<li><a href="#cooperation">16. Cooperation</a>
+<li><a href="#programming1">14. Programming</a>
 <ul>
-<li><a href="#togetherly">16.1. togetherly</a></li>
-<li><a href="#floobits">16.2. floobits</a></li>
-<li><a href="#rudel">16.3. rudel</a></li>
+<li><a href="#realgud">14.1. realgud</a></li>
+<li><a href="#emr1">14.2. emr</a></li>
+<li><a href="#semantic">14.3. semantic</a></li>
 </ul>
 </li>
-<li><a href="#other1">17. Other</a>
+<li><a href="#utility1">15. Utility</a>
 <ul>
-<li><a href="#anzu">17.1. anzu</a></li>
-<li><a href="#fontawesome">17.2. fontawesome</a></li>
-<li><a href="#shellhistory">17.3. shell-history</a></li>
-<li><a href="#iedit">17.4. iedit</a></li>
-<li><a href="#tramp">17.5. tramp</a></li>
-<li><a href="#flycheck">17.6. flycheck</a></li>
-<li><a href="#narrowindirect">17.7. narrow-indirect</a></li>
-<li><a href="#editorconfig">17.8. editorconfig</a></li>
-<li><a href="#dtrtindent">17.9. dtrt-indent</a></li>
-<li><a href="#indentguide">17.10. indent-guide</a></li>
-<li><a href="#rainbowdelimiters">17.11. rainbow-delimiters</a></li>
-<li><a href="#undotree">17.12. undo-tree</a></li>
-<li><a href="#recentf">17.13. recentf</a></li>
-<li><a href="#keychord">17.14. key-chord</a></li>
-<li><a href="#nodejsrepl">17.15. nodejs-repl</a></li>
-<li><a href="#calcmode">17.16. calc-mode</a></li>
-<li><a href="#helmspotify">17.17. helm-spotify</a></li>
-<li><a href="#jabber">17.18. jabber</a></li>
-<li><a href="#htmlize">17.19. htmlize</a></li>
-<li><a href="#calfw">17.20. calfw</a></li>
-<li><a href="#clocker">17.21. clocker</a></li>
-<li><a href="#deft">17.22. deft</a></li>
-<li><a href="#epg">17.23. epg</a></li>
-<li><a href="#pinentry">17.24. pinentry</a></li>
-<li><a href="#twitteringmode">17.25. twittering-mode</a></li>
-<li><a href="#matrixclient">17.26. matrix-client</a></li>
-<li><a href="#mue">17.27. mu4e</a></li>
-<li><a href="#gmailmessagemode">17.28. gmail-message-mode</a></li>
-<li><a href="#hammode">17.29. ham-mode</a></li>
-<li><a href="#alert">17.30. alert</a></li>
-<li><a href="#sauron">17.31. sauron</a></li>
-<li><a href="#screenshot">17.32. screenshot</a></li>
-<li><a href="#libmpdee">17.33. libmpdee</a></li>
-<li><a href="#flyspell">17.34. flyspell</a></li>
-<li><a href="#webmode">17.35. web-mode</a></li>
-<li><a href="#helmthemes">17.36. helm-themes</a></li>
-<li><a href="#helmswoop">17.37. helm-swoop</a></li>
-<li><a href="#perspective">17.38. perspective</a></li>
-<li><a href="#smex">17.39. smex</a></li>
-<li><a href="#java">17.40. java</a></li>
-<li><a href="#androidmode">17.41. android-mode</a></li>
-<li><a href="#gradlemode">17.42. gradle-mode</a></li>
-<li><a href="#jsxmode">17.43. jsx-mode</a></li>
-<li><a href="#css">17.44. css</a></li>
-<li><a href="#robe">17.45. robe</a></li>
-<li><a href="#rinari">17.46. rinari</a></li>
-<li><a href="#helmgtags">17.47. helm-gtags</a></li>
-<li><a href="#sgmlmode">17.48. sgml-mode</a></li>
-<li><a href="#evil">17.49. evil</a></li>
-<li><a href="#hackernews">17.50. hackernews</a></li>
+<li><a href="#term">15.1. term</a></li>
+<li><a href="#termmanager">15.2. term-manager</a></li>
+<li><a href="#termprojectile">15.3. term-projectile</a></li>
+<li><a href="#crux">15.4. crux</a></li>
+<li><a href="#kdeconnect">15.5. kde-connect</a></li>
 </ul>
 </li>
-<li><a href="#appearance">18. Appearance</a>
+<li><a href="#chat">16. Chat</a>
 <ul>
-<li><a href="#basicconfig">18.1. Basic Config</a></li>
-<li><a href="#themes">18.2. Themes</a></li>
-<li><a href="#alltheicons">18.3. all-the-icons</a></li>
-<li><a href="#spaceline">18.4. spaceline</a>
-<ul>
-<li><a href="#disablesrgbcolorspacetomakepowerlineseparatorswork">18.4.1. Disable sRGB colorspace to make powerline separators work</a></li>
-<li><a href="#config1">18.4.2. config</a></li>
+<li><a href="#erc">16.1. erc</a></li>
+<li><a href="#bitlbee">16.2. bitlbee</a></li>
+<li><a href="#slack">16.3. slack</a></li>
 </ul>
 </li>
-<li><a href="#pagebreaklines">18.5. page-break-lines</a></li>
-<li><a href="#helmthemes1">18.6. helm-themes</a></li>
-<li><a href="#windownumber">18.7. window-number</a></li>
-<li><a href="#whitespacesetup">18.8. Whitespace Setup</a></li>
-<li><a href="#colorizecompliationbuffers">18.9. Colorize Compliation Buffers</a></li>
-<li><a href="#automaticthemechanger">18.10. Automatic Theme Changer</a></li>
-<li><a href="#fixansitermcolors">18.11. Fix <code>ansi-term</code> Colors</a></li>
-<li><a href="#afterloadthemehook">18.12. After <code>load-theme</code> hook</a></li>
-<li><a href="#frameinitialization">18.13. Frame Initialization</a></li>
+<li><a href="#cooperation">17. Cooperation</a>
+<ul>
+<li><a href="#togetherly">17.1. togetherly</a></li>
+<li><a href="#floobits">17.2. floobits</a></li>
+<li><a href="#rudel">17.3. rudel</a></li>
 </ul>
 </li>
-<li><a href="#postinitcustom">19. Post Init Custom</a></li>
+<li><a href="#other1">18. Other</a>
+<ul>
+<li><a href="#anzu">18.1. anzu</a></li>
+<li><a href="#fontawesome">18.2. fontawesome</a></li>
+<li><a href="#shellhistory">18.3. shell-history</a></li>
+<li><a href="#iedit">18.4. iedit</a></li>
+<li><a href="#tramp">18.5. tramp</a></li>
+<li><a href="#narrowindirect">18.6. narrow-indirect</a></li>
+<li><a href="#editorconfig">18.7. editorconfig</a></li>
+<li><a href="#dtrtindent">18.8. dtrt-indent</a></li>
+<li><a href="#indentguide">18.9. indent-guide</a></li>
+<li><a href="#rainbowdelimiters">18.10. rainbow-delimiters</a></li>
+<li><a href="#undotree">18.11. undo-tree</a></li>
+<li><a href="#recentf">18.12. recentf</a></li>
+<li><a href="#keychord">18.13. key-chord</a></li>
+<li><a href="#nodejsrepl">18.14. nodejs-repl</a></li>
+<li><a href="#calcmode">18.15. calc-mode</a></li>
+<li><a href="#helmspotify">18.16. helm-spotify</a></li>
+<li><a href="#jabber">18.17. jabber</a></li>
+<li><a href="#htmlize">18.18. htmlize</a></li>
+<li><a href="#calfw">18.19. calfw</a></li>
+<li><a href="#clocker">18.20. clocker</a></li>
+<li><a href="#deft">18.21. deft</a></li>
+<li><a href="#epg">18.22. epg</a></li>
+<li><a href="#pinentry">18.23. pinentry</a></li>
+<li><a href="#twitteringmode">18.24. twittering-mode</a></li>
+<li><a href="#matrixclient">18.25. matrix-client</a></li>
+<li><a href="#mue">18.26. mu4e</a></li>
+<li><a href="#gmailmessagemode">18.27. gmail-message-mode</a></li>
+<li><a href="#hammode">18.28. ham-mode</a></li>
+<li><a href="#alert">18.29. alert</a></li>
+<li><a href="#sauron">18.30. sauron</a></li>
+<li><a href="#screenshot">18.31. screenshot</a></li>
+<li><a href="#libmpdee">18.32. libmpdee</a></li>
+<li><a href="#flyspell">18.33. flyspell</a></li>
+<li><a href="#webmode">18.34. web-mode</a></li>
+<li><a href="#helmthemes">18.35. helm-themes</a></li>
+<li><a href="#helmswoop">18.36. helm-swoop</a></li>
+<li><a href="#perspective">18.37. perspective</a></li>
+<li><a href="#smex">18.38. smex</a></li>
+<li><a href="#java">18.39. java</a></li>
+<li><a href="#androidmode">18.40. android-mode</a></li>
+<li><a href="#gradlemode">18.41. gradle-mode</a></li>
+<li><a href="#jsxmode">18.42. jsx-mode</a></li>
+<li><a href="#css">18.43. css</a></li>
+<li><a href="#robe">18.44. robe</a></li>
+<li><a href="#rinari">18.45. rinari</a></li>
+<li><a href="#helmgtags">18.46. helm-gtags</a></li>
+<li><a href="#sgmlmode">18.47. sgml-mode</a></li>
+<li><a href="#evil">18.48. evil</a></li>
+<li><a href="#hackernews">18.49. hackernews</a></li>
+</ul>
+</li>
+<li><a href="#appearance">19. Appearance</a>
+<ul>
+<li><a href="#basicconfig">19.1. Basic Config</a></li>
+<li><a href="#themes">19.2. Themes</a></li>
+<li><a href="#alltheicons">19.3. all-the-icons</a></li>
+<li><a href="#spaceline">19.4. spaceline</a>
+<ul>
+<li><a href="#disablesrgbcolorspacetomakepowerlineseparatorswork">19.4.1. Disable sRGB colorspace to make powerline separators work</a></li>
+<li><a href="#config1">19.4.2. config</a></li>
+</ul>
+</li>
+<li><a href="#pagebreaklines">19.5. page-break-lines</a></li>
+<li><a href="#helmthemes1">19.6. helm-themes</a></li>
+<li><a href="#windownumber">19.7. window-number</a></li>
+<li><a href="#whitespacesetup">19.8. Whitespace Setup</a></li>
+<li><a href="#colorizecompliationbuffers">19.9. Colorize Compliation Buffers</a></li>
+<li><a href="#automaticthemechanger">19.10. Automatic Theme Changer</a></li>
+<li><a href="#fixansitermcolors">19.11. Fix <code>ansi-term</code> Colors</a></li>
+<li><a href="#afterloadthemehook">19.12. After <code>load-theme</code> hook</a></li>
+<li><a href="#frameinitialization">19.13. Frame Initialization</a></li>
+</ul>
+</li>
+<li><a href="#postinitcustom">20. Post Init Custom</a></li>
 </ul>
 </div>
 </div>
@@ -778,7 +777,8 @@ wrote a custom version of <code>org-export-get-reference</code>.
 
 <p>
 See how <a href="#usemyowndefaultnamingschemefororgheadings">this link</a> (which is just a normal internal link in the original
-document) takes you to <a href="http://ivanmalison.github.io/dotfiles/#usemyowndefaultnamingschemefororgheadings">http://ivanmalison.github.io/dotfiles/#usemyowndefaultnamingschemefororgheadings</a>.
+document) takes you to
+<a href="http://ivanmalison.github.io/dotfiles/#usemyowndefaultnamingschemefororgheadings">http://ivanmalison.github.io/dotfiles/#usemyowndefaultnamingschemefororgheadings</a>.
 </p>
 
 <p>
@@ -1401,9 +1401,7 @@ This is disabled for now until I figure out what to do with emit.
 </p>
 <div class="org-src-container">
 <pre class="src src-emacs-lisp"><span style="color: #e91e63;">(</span><span style="color: #fff59d;">imalison:use-package</span> emit
-  <span style="color: #ff8A65;">:disabled</span> t
   <span style="color: #ff8A65;">:demand</span> t<span style="color: #e91e63;">)</span>
-<span style="color: #e91e63;">(</span><span style="color: #fff59d;">require</span> '<span style="color: #8bc34a;">emit</span><span style="color: #e91e63;">)</span>
 </pre>
 </div>
 </div>
@@ -2131,9 +2129,23 @@ This was stolen from <a href="https://github.com/jwiegley/dot-emacs">https://git
 </div>
 </div>
 </div>
-<div id="outline-container-other" class="outline-3">
-<h3 id="other"><span class="section-number-3">5.32</span> Other</h3>
+<div id="outline-container-disablehooks" class="outline-3">
+<h3 id="disablehooks"><span class="section-number-3">5.32</span> Disable hooks</h3>
 <div class="outline-text-3" id="text-5-32">
+<div class="org-src-container">
+<pre class="src src-emacs-lisp"><span style="color: #e91e63;">(</span><span style="color: #fff59d;">cl-defmacro</span> <span style="color: #84ffff;">imalison:disable-mode-hook</span> <span style="color: #2196F3;">(</span>mode-name <span style="color: #84ffff;">&amp;optional</span> <span style="color: #EF6C00;">(</span>disable-value -1<span style="color: #EF6C00;">)</span><span style="color: #2196F3;">)</span>
+  `<span style="color: #2196F3;">(</span><span style="color: #fff59d;">defun</span> ,<span style="color: #EF6C00;">(</span>imalison:concat-symbols 'imalison:disable- mode-name<span style="color: #EF6C00;">)</span> <span style="color: #EF6C00;">()</span>
+       <span style="color: #EF6C00;">(</span>,mode-name ,disable-value<span style="color: #EF6C00;">)</span><span style="color: #2196F3;">)</span><span style="color: #e91e63;">)</span>
+
+<span style="color: #e91e63;">(</span><span style="color: #fff59d;">imalison:disable-mode-hook</span> linum-mode<span style="color: #e91e63;">)</span>
+<span style="color: #e91e63;">(</span><span style="color: #fff59d;">imalison:disable-mode-hook</span> yas-minor-mode<span style="color: #e91e63;">)</span>
+</pre>
+</div>
+</div>
+</div>
+<div id="outline-container-other" class="outline-3">
+<h3 id="other"><span class="section-number-3">5.33</span> Other</h3>
+<div class="outline-text-3" id="text-5-33">
 <p>
 The stuff in this section is pretty crusty. I don't think its used anywhere, but
 I keep it around just in case I need it.
@@ -2150,9 +2162,6 @@ I keep it around just in case I need it.
 <span style="color: #e91e63;">(</span><span style="color: #fff59d;">defun</span> <span style="color: #84ffff;">imalison:uuid</span> <span style="color: #2196F3;">()</span>
   <span style="color: #2196F3;">(</span><span style="color: #fff59d;">interactive</span><span style="color: #2196F3;">)</span>
   <span style="color: #2196F3;">(</span>s-replace <span style="color: #9ccc65;">"\n"</span> <span style="color: #9ccc65;">""</span> <span style="color: #EF6C00;">(</span>shell-command-to-string <span style="color: #9ccc65;">"uuid"</span><span style="color: #EF6C00;">)</span><span style="color: #2196F3;">)</span><span style="color: #e91e63;">)</span>
-
-<span style="color: #e91e63;">(</span><span style="color: #fff59d;">defun</span> <span style="color: #84ffff;">imalison:disable-linum-mode</span> <span style="color: #2196F3;">()</span>
-  <span style="color: #2196F3;">(</span>linum-mode 0<span style="color: #2196F3;">)</span><span style="color: #e91e63;">)</span>
 
 <span style="color: #e91e63;">(</span><span style="color: #fff59d;">defun</span> <span style="color: #84ffff;">imalison:disable-smartparens-mode</span> <span style="color: #2196F3;">()</span>
   <span style="color: #2196F3;">(</span>smartparens-mode 0<span style="color: #2196F3;">)</span><span style="color: #e91e63;">)</span>
@@ -2234,14 +2243,14 @@ I keep it around just in case I need it.
 </div>
 </div>
 <div id="outline-container-keyboardmacros" class="outline-3">
-<h3 id="keyboardmacros"><span class="section-number-3">5.33</span> Keyboard Macros</h3>
-<div class="outline-text-3" id="text-5-33">
+<h3 id="keyboardmacros"><span class="section-number-3">5.34</span> Keyboard Macros</h3>
+<div class="outline-text-3" id="text-5-34">
 </div><div id="outline-container-foreditingliterateconfig" class="outline-4">
-<h4 id="foreditingliterateconfig"><span class="section-number-4">5.33.1</span> For editing literate config</h4>
-<div class="outline-text-4" id="text-5-33-1">
+<h4 id="foreditingliterateconfig"><span class="section-number-4">5.34.1</span> For editing literate config</h4>
+<div class="outline-text-4" id="text-5-34-1">
 </div><div id="outline-container-extractcurrentsexptosrcblock" class="outline-5">
-<h5 id="extractcurrentsexptosrcblock"><span class="section-number-5">5.33.1.1</span> extract-current-sexp-to-src-block</h5>
-<div class="outline-text-5" id="text-5-33-1-1">
+<h5 id="extractcurrentsexptosrcblock"><span class="section-number-5">5.34.1.1</span> extract-current-sexp-to-src-block</h5>
+<div class="outline-text-5" id="text-5-34-1-1">
 <p>
 This keyboard macro extracts the current sexp to an emacs-lisp source block of its own
 </p>
@@ -2253,8 +2262,8 @@ This keyboard macro extracts the current sexp to an emacs-lisp source block of i
 </div>
 </div>
 <div id="outline-container-namesourceblockforusepackagename" class="outline-5">
-<h5 id="namesourceblockforusepackagename"><span class="section-number-5">5.33.1.2</span> name-source-block-for-use-package-name</h5>
-<div class="outline-text-5" id="text-5-33-1-2">
+<h5 id="namesourceblockforusepackagename"><span class="section-number-5">5.34.1.2</span> name-source-block-for-use-package-name</h5>
+<div class="outline-text-5" id="text-5-34-1-2">
 <div class="org-src-container">
 <pre class="src src-emacs-lisp"><span style="color: #e91e63;">(</span>fset 'name-source-block-for-use-package-name
       <span style="color: #2196F3;">[</span>?\C-c ?\' ?\M-&lt; ?\C-s ?u ?s ?e ?- ?p ?a ?c ?k return ?\C-\M-f ?\C-f ?\C-  ?\C-\M-f ?\M-w ?\C-c ?\' ?\C-r ?B ?E ?G ?I ?N return ?\C-a ?\C-p ?\C-e return ?* ?  ?\C-y<span style="color: #2196F3;">]</span><span style="color: #e91e63;">)</span>
@@ -2263,8 +2272,8 @@ This keyboard macro extracts the current sexp to an emacs-lisp source block of i
 </div>
 </div>
 <div id="outline-container-extractandnameusepackageblock" class="outline-5">
-<h5 id="extractandnameusepackageblock"><span class="section-number-5">5.33.1.3</span> extract-and-name-use-package-block</h5>
-<div class="outline-text-5" id="text-5-33-1-3">
+<h5 id="extractandnameusepackageblock"><span class="section-number-5">5.34.1.3</span> extract-and-name-use-package-block</h5>
+<div class="outline-text-5" id="text-5-34-1-3">
 <div class="org-src-container">
 <pre class="src src-emacs-lisp"><span style="color: #e91e63;">(</span>fset 'extract-and-name-use-package-block
       <span style="color: #2196F3;">[</span>?\C-a return ?\C-p ?# ?+ ?E ?N ?D ?_ ?S ?R ?C return ?# ?+ ?B ?E ?G ?I ?N ?_ ?S ?R ?C ?  ?e ?m ?a ?c ?s ?- ?l ?i ?s ?p ?\C-a ?\C-p ?\C-  ?\C-n ?\C-e ?\M-w ?\C-n ?\C-a ?\C-\M-f return ?\C-y ?\C-p ?\C-p ?\C-c ?\' ?\M-&lt; ?\C-s ?u ?s ?e ?- ?p ?a ?c ?k return ?\C-\M-f ?\C-f ?\C-  ?\C-\M-f ?\M-w ?\C-c ?\' ?\C-r ?B ?E ?G ?I ?N return ?\C-a ?\C-p ?\C-e return ?* ?  ?\C-y<span style="color: #2196F3;">]</span><span style="color: #e91e63;">)</span>
@@ -2462,9 +2471,7 @@ programming mode.
 <h4 id="displaybufferalist"><span class="section-number-4">6.8.3</span> display-buffer-alist</h4>
 <div class="outline-text-4" id="text-6-8-3">
 <div class="org-src-container">
-<pre class="src src-emacs-lisp"><span style="color: #e91e63;">(</span><span style="color: #fff59d;">defvar</span> <span style="color: #ffcc80;">imalison:use-frames-only</span><span style="color: #e91e63;">)</span>
-
-<span style="color: #e91e63;">(</span><span style="color: #fff59d;">defvar</span> <span style="color: #ffcc80;">imalison:use-frames-only</span> nil<span style="color: #e91e63;">)</span>
+<pre class="src src-emacs-lisp"><span style="color: #e91e63;">(</span><span style="color: #fff59d;">defvar</span> <span style="color: #ffcc80;">imalison:use-frames-only</span> nil<span style="color: #e91e63;">)</span>
 
 <span style="color: #e91e63;">(</span><span style="color: #fff59d;">defun</span> <span style="color: #84ffff;">imalison:use-frames-only</span> <span style="color: #2196F3;">()</span>
   <span style="color: #2196F3;">(</span><span style="color: #fff59d;">or</span> imalison:use-frames-only
@@ -3708,7 +3715,17 @@ I don't use auto-complete at all, so I have set up a hook to automatically disab
 <div class="outline-text-3" id="text-10-4">
 <div class="org-src-container">
 <pre class="src src-emacs-lisp"><span style="color: #e91e63;">(</span><span style="color: #fff59d;">imalison:use-package</span> multi-line
-  <span style="color: #ff8A65;">:bind</span> <span style="color: #2196F3;">(</span><span style="color: #9ccc65;">"C-c d"</span> . multi-line<span style="color: #2196F3;">)</span><span style="color: #e91e63;">)</span>
+  <span style="color: #ff8A65;">:bind</span> <span style="color: #2196F3;">(</span><span style="color: #9ccc65;">"C-c d"</span> . multi-line<span style="color: #2196F3;">)</span>
+  <span style="color: #ff8A65;">:config</span>
+  <span style="color: #2196F3;">(</span><span style="color: #fff59d;">progn</span>
+    <span style="color: #b0bec5;">;; </span><span style="color: #b0bec5;">This only works for array respacing</span>
+    <span style="color: #EF6C00;">(</span>multi-line-defhook sh
+      <span style="color: #B388FF;">(</span>make-instance
+       'multi-line-strategy
+       <span style="color: #ff8A65;">:find</span> multi-line-lisp-find-strategy
+       <span style="color: #ff8A65;">:respace</span> <span style="color: #76ff03;">(</span>multi-line-default-respacers
+                 <span style="color: #26A69A;">(</span>multi-line-clearing-reindenting-respacer
+                  multi-line-force-first-and-last-respacer<span style="color: #26A69A;">)</span><span style="color: #76ff03;">)</span><span style="color: #B388FF;">)</span><span style="color: #EF6C00;">)</span><span style="color: #2196F3;">)</span><span style="color: #e91e63;">)</span>
 </pre>
 </div>
 </div>
@@ -3786,249 +3803,26 @@ I don't use auto-complete at all, so I have set up a hook to automatically disab
 </div>
 </div>
 </div>
-<div id="outline-container-sourcecontrol" class="outline-2">
-<h2 id="sourcecontrol"><span class="section-number-2">11</span> Source Control</h2>
+<div id="outline-container-flycheck" class="outline-2">
+<h2 id="flycheck"><span class="section-number-2">11</span> flycheck</h2>
 <div class="outline-text-2" id="text-11">
-</div><div id="outline-container-magit" class="outline-3">
-<h3 id="magit"><span class="section-number-3">11.1</span> magit</h3>
-<div class="outline-text-3" id="text-11-1">
 <div class="org-src-container">
-<pre class="src src-emacs-lisp"><span style="color: #e91e63;">(</span><span style="color: #fff59d;">use-package</span> <span style="color: #8bc34a;">magit</span>
-  <span style="color: #ff8A65;">:commands</span> magit-status
-  <span style="color: #ff8A65;">:bind</span> <span style="color: #2196F3;">(</span><span style="color: #EF6C00;">(</span><span style="color: #9ccc65;">"C-x g"</span> . imalison:magit-status<span style="color: #EF6C00;">)</span><span style="color: #2196F3;">)</span>
-  <span style="color: #ff8A65;">:preface</span>
-  <span style="color: #2196F3;">(</span><span style="color: #fff59d;">progn</span>
-    <span style="color: #EF6C00;">(</span><span style="color: #fff59d;">emit-let-around</span> imalison:magit-status-traditional
-                     magit-status
-                     <span style="color: #B388FF;">(</span>magit-display-buffer-function
-                      'magit-display-buffer-traditional<span style="color: #B388FF;">)</span><span style="color: #EF6C00;">)</span>
-    <span style="color: #EF6C00;">(</span><span style="color: #fff59d;">emit-prefix-selector</span> imalison:magit-status
-                          magit-status
-                          imalison:magit-status-traditional<span style="color: #EF6C00;">)</span>
-    <span style="color: #EF6C00;">(</span><span style="color: #fff59d;">defun</span> <span style="color: #84ffff;">imalison:after-magit-visit-file</span> <span style="color: #B388FF;">(</span><span style="color: #84ffff;">&amp;rest</span> args<span style="color: #B388FF;">)</span>
-      <span style="color: #B388FF;">(</span><span style="color: #fff59d;">when</span> <span style="color: #76ff03;">(</span>derived-mode-p 'org-mode<span style="color: #76ff03;">)</span>
-        <span style="color: #76ff03;">(</span>org-show-context 'magit-goto<span style="color: #76ff03;">)</span><span style="color: #B388FF;">)</span><span style="color: #EF6C00;">)</span><span style="color: #2196F3;">)</span>
+<pre class="src src-emacs-lisp"><span style="color: #e91e63;">(</span><span style="color: #fff59d;">use-package</span> <span style="color: #8bc34a;">flycheck</span>
   <span style="color: #ff8A65;">:config</span>
   <span style="color: #2196F3;">(</span><span style="color: #fff59d;">progn</span>
-    <span style="color: #EF6C00;">(</span><span style="color: #fff59d;">when</span> <span style="color: #B388FF;">(</span>imalison:use-frames-only<span style="color: #B388FF;">)</span>
-      <span style="color: #B388FF;">(</span><span style="color: #fff59d;">setq</span> magit-commit-show-diff t<span style="color: #B388FF;">)</span><span style="color: #EF6C00;">)</span>
-    <span style="color: #EF6C00;">(</span><span style="color: #fff59d;">unbind-key</span> <span style="color: #9ccc65;">"C-j"</span> magit-status-mode-map<span style="color: #EF6C00;">)</span>
-    <span style="color: #EF6C00;">(</span><span style="color: #fff59d;">unbind-key</span> <span style="color: #9ccc65;">"C-j"</span> magit-hunk-section-map<span style="color: #EF6C00;">)</span>
-    <span style="color: #EF6C00;">(</span><span style="color: #fff59d;">unbind-key</span> <span style="color: #9ccc65;">"C-j"</span> magit-file-section-map<span style="color: #EF6C00;">)</span>
-    <span style="color: #EF6C00;">(</span><span style="color: #fff59d;">setq</span> magit-last-seen-setup-instructions <span style="color: #9ccc65;">"1.4.0"</span>
-          magit-display-buffer-function
-          'magit-display-buffer-same-window-except-diff-v1<span style="color: #EF6C00;">)</span>
-    <span style="color: #EF6C00;">(</span>magit-auto-revert-mode<span style="color: #EF6C00;">)</span>
-    <span style="color: #b0bec5;">;; </span><span style="color: #b0bec5;">TODO: Is this necessary now that signing is a git default</span>
-    <span style="color: #EF6C00;">(</span><span style="color: #fff59d;">when</span> <span style="color: #B388FF;">(</span><span style="color: #fff59d;">bound-and-true-p</span> imalison:gpg-key<span style="color: #B388FF;">)</span>
-      <span style="color: #B388FF;">(</span>add-to-list 'magit-commit-arguments
-                   <span style="color: #76ff03;">(</span>format <span style="color: #9ccc65;">"--gpg-sign=%s"</span> imalison:gpg-key<span style="color: #76ff03;">)</span><span style="color: #B388FF;">)</span><span style="color: #EF6C00;">)</span>
+    <span style="color: #EF6C00;">(</span><span style="color: #fff59d;">use-package</span> <span style="color: #8bc34a;">flycheck-package</span>
+      <span style="color: #ff8A65;">:config</span> <span style="color: #B388FF;">(</span>flycheck-package-setup<span style="color: #B388FF;">)</span><span style="color: #EF6C00;">)</span>
 
-    <span style="color: #EF6C00;">(</span>add-to-list 'org-show-context-detail '<span style="color: #B388FF;">(</span>magit-goto . lineage<span style="color: #B388FF;">)</span><span style="color: #EF6C00;">)</span>
-    <span style="color: #EF6C00;">(</span>advice-add 'magit-diff-visit-file <span style="color: #ff8A65;">:after</span> 'imalison:after-magit-visit-file<span style="color: #EF6C00;">)</span>
-    <span style="color: #EF6C00;">(</span>add-hook 'magit-popup-mode-hook 'imalison:disable-show-trailing-whitespace<span style="color: #EF6C00;">)</span><span style="color: #2196F3;">)</span><span style="color: #e91e63;">)</span>
-</pre>
-</div>
-</div>
-<div id="outline-container-magithub" class="outline-4">
-<h4 id="magithub"><span class="section-number-4">11.1.1</span> magithub</h4>
-<div class="outline-text-4" id="text-11-1-1">
-<div class="org-src-container">
-<pre class="src src-emacs-lisp"><span style="color: #e91e63;">(</span><span style="color: #fff59d;">use-package</span> <span style="color: #8bc34a;">magithub</span>
-  <span style="color: #ff8A65;">:if</span> <span style="color: #2196F3;">(</span>executable-find <span style="color: #9ccc65;">"hub"</span><span style="color: #2196F3;">)</span>
-  <span style="color: #ff8A65;">:after</span> magit<span style="color: #e91e63;">)</span>
-</pre>
-</div>
-</div>
-</div>
-</div>
-<div id="outline-container-gitlink" class="outline-3">
-<h3 id="gitlink"><span class="section-number-3">11.2</span> git-link</h3>
-<div class="outline-text-3" id="text-11-2">
-<div class="org-src-container">
-<pre class="src src-emacs-lisp"><span style="color: #e91e63;">(</span><span style="color: #fff59d;">use-package</span> <span style="color: #8bc34a;">git-link</span>
-  <span style="color: #ff8A65;">:config</span>
-  <span style="color: #2196F3;">(</span><span style="color: #fff59d;">progn</span>
-    <span style="color: #EF6C00;">(</span><span style="color: #fff59d;">setq</span> git-link-use-commit t<span style="color: #EF6C00;">)</span><span style="color: #2196F3;">)</span><span style="color: #e91e63;">)</span>
-</pre>
-</div>
-</div>
-</div>
-<div id="outline-container-magitgitflow" class="outline-3">
-<h3 id="magitgitflow"><span class="section-number-3">11.3</span> magit-gitflow</h3>
-<div class="outline-text-3" id="text-11-3">
-<div class="org-src-container">
-<pre class="src src-emacs-lisp"><span style="color: #e91e63;">(</span><span style="color: #fff59d;">use-package</span> <span style="color: #8bc34a;">magit-gitflow</span>
-  <span style="color: #ff8A65;">:diminish</span> magit-gitflow-mode
-  <span style="color: #ff8A65;">:after</span> magit
-  <span style="color: #ff8A65;">:init</span>
-  <span style="color: #2196F3;">(</span><span style="color: #fff59d;">progn</span>
-    <span style="color: #EF6C00;">(</span><span style="color: #fff59d;">setq</span> magit-gitflow-popup-key <span style="color: #9ccc65;">"C-k"</span><span style="color: #EF6C00;">)</span><span style="color: #2196F3;">)</span>
-  <span style="color: #ff8A65;">:config</span>
-  <span style="color: #2196F3;">(</span><span style="color: #fff59d;">progn</span>
-    <span style="color: #EF6C00;">(</span>add-hook 'magit-mode-hook 'turn-on-magit-gitflow<span style="color: #EF6C00;">)</span><span style="color: #2196F3;">)</span><span style="color: #e91e63;">)</span>
-</pre>
-</div>
-</div>
-</div>
-<div id="outline-container-gittimemachine" class="outline-3">
-<h3 id="gittimemachine"><span class="section-number-3">11.4</span> git-timemachine</h3>
-<div class="outline-text-3" id="text-11-4">
-<div class="org-src-container">
-<pre class="src src-emacs-lisp"><span style="color: #e91e63;">(</span><span style="color: #fff59d;">use-package</span> <span style="color: #8bc34a;">git-timemachine</span>
-  <span style="color: #ff8A65;">:commands</span> git-timemachine<span style="color: #e91e63;">)</span>
-</pre>
-</div>
-</div>
-</div>
-<div id="outline-container-gitgutter" class="outline-3">
-<h3 id="gitgutter"><span class="section-number-3">11.5</span> git-gutter</h3>
-<div class="outline-text-3" id="text-11-5">
-<div class="org-src-container">
-<pre class="src src-emacs-lisp"><span style="color: #e91e63;">(</span><span style="color: #fff59d;">use-package</span> <span style="color: #8bc34a;">git-gutter</span>
-  <span style="color: #ff8A65;">:config</span>
-  <span style="color: #2196F3;">(</span><span style="color: #fff59d;">progn</span>
-    <span style="color: #EF6C00;">(</span>global-git-gutter-mode -1<span style="color: #EF6C00;">)</span><span style="color: #2196F3;">)</span><span style="color: #e91e63;">)</span>
-</pre>
-</div>
-</div>
-</div>
-<div id="outline-container-gitoliteclone" class="outline-3">
-<h3 id="gitoliteclone"><span class="section-number-3">11.6</span> gitolite-clone</h3>
-<div class="outline-text-3" id="text-11-6">
-<div class="org-src-container">
-<pre class="src src-emacs-lisp"><span style="color: #e91e63;">(</span><span style="color: #fff59d;">use-package</span> <span style="color: #8bc34a;">gitolite-clone</span>
-  <span style="color: #ff8A65;">:demand</span> t
-  <span style="color: #ff8A65;">:preface</span>
-  <span style="color: #2196F3;">(</span><span style="color: #fff59d;">progn</span>
-    <span style="color: #EF6C00;">(</span><span style="color: #fff59d;">defun</span> <span style="color: #84ffff;">gitolite-clone-force-refresh</span> <span style="color: #B388FF;">()</span>
-      <span style="color: #B388FF;">(</span><span style="color: #fff59d;">interactive</span><span style="color: #B388FF;">)</span>
-      <span style="color: #B388FF;">(</span>gitolite-clone-get-projects nil nil t<span style="color: #B388FF;">)</span><span style="color: #EF6C00;">)</span><span style="color: #2196F3;">)</span><span style="color: #e91e63;">)</span>
-</pre>
-</div>
-</div>
-</div>
-<div id="outline-container-gitconfigmode" class="outline-3">
-<h3 id="gitconfigmode"><span class="section-number-3">11.7</span> gitconfig-mode</h3>
-<div class="outline-text-3" id="text-11-7">
-<div class="org-src-container">
-<pre class="src src-emacs-lisp"><span style="color: #e91e63;">(</span><span style="color: #fff59d;">use-package</span> <span style="color: #8bc34a;">gitconfig-mode</span>
-  <span style="color: #ff8A65;">:mode</span> <span style="color: #9ccc65;">"\\.?gitconfig.?.*\\'"</span><span style="color: #e91e63;">)</span>
-</pre>
-</div>
-</div>
-</div>
-<div id="outline-container-gitignoremode" class="outline-3">
-<h3 id="gitignoremode"><span class="section-number-3">11.8</span> gitignore-mode</h3>
-<div class="outline-text-3" id="text-11-8">
-<div class="org-src-container">
-<pre class="src src-emacs-lisp"><span style="color: #e91e63;">(</span><span style="color: #fff59d;">use-package</span> <span style="color: #8bc34a;">gitignore-mode</span>
-  <span style="color: #ff8A65;">:mode</span> <span style="color: #9ccc65;">"\\.?gitignore.?.*\\'"</span><span style="color: #e91e63;">)</span>
-</pre>
-</div>
-</div>
-</div>
-<div id="outline-container-github" class="outline-3">
-<h3 id="github"><span class="section-number-3">11.9</span> github</h3>
-<div class="outline-text-3" id="text-11-9">
-</div><div id="outline-container-githubsearch" class="outline-4">
-<h4 id="githubsearch"><span class="section-number-4">11.9.1</span> github-search</h4>
-<div class="outline-text-4" id="text-11-9-1">
-<div class="org-src-container">
-<pre class="src src-emacs-lisp"><span style="color: #e91e63;">(</span><span style="color: #fff59d;">imalison:use-package</span> github-search
-  <span style="color: #ff8A65;">:commands</span> <span style="color: #2196F3;">(</span>github-search-clone-repo github-search-user-clone-repo<span style="color: #2196F3;">)</span>
-  <span style="color: #ff8A65;">:preface</span>
-  <span style="color: #2196F3;">(</span><span style="color: #fff59d;">progn</span>
-    <span style="color: #EF6C00;">(</span><span style="color: #fff59d;">defun</span> <span style="color: #84ffff;">imalison:get-appropriate-path-from-gh-repo-for-go</span> <span style="color: #B388FF;">(</span>repo<span style="color: #B388FF;">)</span>
-      <span style="color: #B388FF;">(</span><span style="color: #fff59d;">require</span> '<span style="color: #8bc34a;">go-mode</span><span style="color: #B388FF;">)</span>
-      <span style="color: #B388FF;">(</span><span style="color: #fff59d;">imalison:get-go-src</span> <span style="color: #9ccc65;">"github.com"</span> <span style="color: #76ff03;">(</span><span style="color: #fff59d;">oref</span> <span style="color: #26A69A;">(</span><span style="color: #fff59d;">oref</span> repo <span style="color: #ff8A65;">:owner</span><span style="color: #26A69A;">)</span> <span style="color: #ff8A65;">:login</span><span style="color: #76ff03;">)</span>
-                           <span style="color: #76ff03;">(</span><span style="color: #fff59d;">oref</span> repo <span style="color: #ff8A65;">:name</span><span style="color: #76ff03;">)</span><span style="color: #B388FF;">)</span><span style="color: #EF6C00;">)</span>
+    <span style="color: #EF6C00;">(</span><span style="color: #fff59d;">imalison:use-package</span> flycheck-cask
+      <span style="color: #ff8A65;">:after</span> flycheck
+      <span style="color: #ff8A65;">:config</span>
+      <span style="color: #B388FF;">(</span>add-hook 'flycheck-mode-hook #'flycheck-cask-setup<span style="color: #B388FF;">)</span><span style="color: #EF6C00;">)</span>
 
-    <span style="color: #EF6C00;">(</span><span style="color: #fff59d;">defun</span> <span style="color: #84ffff;">imalison:get-projects-directory-target-from-repo</span> <span style="color: #B388FF;">(</span>repo<span style="color: #B388FF;">)</span>
-      <span style="color: #B388FF;">(</span><span style="color: #fff59d;">let</span> <span style="color: #76ff03;">(</span><span style="color: #26A69A;">(</span>prospective-path
-             <span style="color: #FFCDD2;">(</span><span style="color: #fff59d;">if</span> <span style="color: #795548;">(</span>equal <span style="color: #DCE775;">(</span><span style="color: #fff59d;">oref</span> repo language<span style="color: #DCE775;">)</span> <span style="color: #9ccc65;">"Go"</span><span style="color: #795548;">)</span>
-                 <span style="color: #795548;">(</span>imalison:get-appropriate-path-from-gh-repo-for-go repo<span style="color: #795548;">)</span>
-               <span style="color: #795548;">(</span>imalison:join-paths imalison:projects-directory <span style="color: #DCE775;">(</span><span style="color: #fff59d;">oref</span> repo <span style="color: #ff8A65;">:name</span><span style="color: #DCE775;">)</span><span style="color: #795548;">)</span><span style="color: #FFCDD2;">)</span><span style="color: #26A69A;">)</span><span style="color: #76ff03;">)</span>
-        <span style="color: #76ff03;">(</span><span style="color: #fff59d;">if</span> <span style="color: #26A69A;">(</span>file-exists-p prospective-path<span style="color: #26A69A;">)</span>
-            <span style="color: #26A69A;">(</span>funcall 'github-search-prompt-for-target-directory repo<span style="color: #26A69A;">)</span>
-          prospective-path<span style="color: #76ff03;">)</span><span style="color: #B388FF;">)</span><span style="color: #EF6C00;">)</span><span style="color: #2196F3;">)</span>
-  <span style="color: #ff8A65;">:config</span>
-  <span style="color: #2196F3;">(</span><span style="color: #fff59d;">progn</span>
-    <span style="color: #EF6C00;">(</span><span style="color: #fff59d;">setq</span> github-search-get-target-directory-for-repo-function
-          'imalison:get-projects-directory-target-from-repo<span style="color: #EF6C00;">)</span><span style="color: #2196F3;">)</span><span style="color: #e91e63;">)</span>
+    <span style="color: #EF6C00;">(</span>add-to-list 'flycheck-emacs-lisp-checkdoc-variables
+                 'sentence-end-double-space<span style="color: #EF6C00;">)</span>
+    <span style="color: #EF6C00;">(</span>global-flycheck-mode<span style="color: #EF6C00;">)</span><span style="color: #2196F3;">)</span>
+  <span style="color: #ff8A65;">:diminish</span> flycheck-mode<span style="color: #e91e63;">)</span>
 </pre>
-</div>
-</div>
-</div>
-<div id="outline-container-githubclone" class="outline-4">
-<h4 id="githubclone"><span class="section-number-4">11.9.2</span> github-clone</h4>
-<div class="outline-text-4" id="text-11-9-2">
-<div class="org-src-container">
-<pre class="src src-emacs-lisp"><span style="color: #e91e63;">(</span><span style="color: #fff59d;">imalison:use-package*</span> github-clone <span style="color: #9ccc65;">"~/Projects/github-clone.el"</span>
-                       <span style="color: #ff8A65;">:commands</span> <span style="color: #2196F3;">(</span>github-clone-add-parent-remote
-                                  github-clone-add-source-remote
-                                  github-clone-fork-remote
-                                  github-clone-add-existing-remote
-                                  github-clone<span style="color: #2196F3;">)</span><span style="color: #e91e63;">)</span>
-</pre>
-</div>
-</div>
-</div>
-<div id="outline-container-githubnotifier" class="outline-4">
-<h4 id="githubnotifier"><span class="section-number-4">11.9.3</span> github-notifier</h4>
-<div class="outline-text-4" id="text-11-9-3">
-<p>
-This is disabled because it was causing too many issues with my
-modeline and with excessive http requests to github.
-</p>
-<div class="org-src-container">
-<pre class="src src-emacs-lisp"><span style="color: #e91e63;">(</span><span style="color: #fff59d;">use-package</span> <span style="color: #8bc34a;">github-notifier</span>
-  <span style="color: #ff8A65;">:disabled</span> t
-  <span style="color: #ff8A65;">:config</span>
-  <span style="color: #2196F3;">(</span><span style="color: #fff59d;">progn</span>
-    <span style="color: #EF6C00;">(</span>advice-add 'github-notifier-update <span style="color: #ff8A65;">:around</span> 'imalison:shut-up-around<span style="color: #EF6C00;">)</span>
-    <span style="color: #EF6C00;">(</span>github-notifier-mode<span style="color: #EF6C00;">)</span><span style="color: #2196F3;">)</span><span style="color: #e91e63;">)</span>
-</pre>
-</div>
-</div>
-</div>
-<div id="outline-container-githubbrowsefile" class="outline-4">
-<h4 id="githubbrowsefile"><span class="section-number-4">11.9.4</span> github-browse-file</h4>
-<div class="outline-text-4" id="text-11-9-4">
-<div class="org-src-container">
-<pre class="src src-emacs-lisp"><span style="color: #e91e63;">(</span><span style="color: #fff59d;">use-package</span> <span style="color: #8bc34a;">github-browse-file</span>
-  <span style="color: #ff8A65;">:commands</span> github-browse-file<span style="color: #e91e63;">)</span>
-</pre>
-</div>
-</div>
-</div>
-<div id="outline-container-magitghpulls" class="outline-4">
-<h4 id="magitghpulls"><span class="section-number-4">11.9.5</span> magit-gh-pulls</h4>
-<div class="outline-text-4" id="text-11-9-5">
-<div class="org-src-container">
-<pre class="src src-emacs-lisp"><span style="color: #e91e63;">(</span><span style="color: #fff59d;">use-package</span> <span style="color: #8bc34a;">magit-gh-pulls</span>
-  <span style="color: #ff8A65;">:disabled</span> t
-  <span style="color: #ff8A65;">:diminish</span> magit-gh-pulls-mode
-  <span style="color: #ff8A65;">:after</span> magit
-  <span style="color: #ff8A65;">:config</span>
-  <span style="color: #2196F3;">(</span><span style="color: #fff59d;">progn</span>
-    <span style="color: #EF6C00;">(</span>add-hook 'magit-mode-hook 'turn-on-magit-gh-pulls<span style="color: #EF6C00;">)</span><span style="color: #2196F3;">)</span><span style="color: #e91e63;">)</span>
-</pre>
-</div>
-</div>
-</div>
-<div id="outline-container-gist" class="outline-4">
-<h4 id="gist"><span class="section-number-4">11.9.6</span> gist</h4>
-<div class="outline-text-4" id="text-11-9-6">
-<div class="org-src-container">
-<pre class="src src-emacs-lisp"><span style="color: #e91e63;">(</span><span style="color: #fff59d;">use-package</span> <span style="color: #8bc34a;">gist</span>
-  <span style="color: #ff8A65;">:commands</span> <span style="color: #2196F3;">(</span>gist-region gist-region-private gist-buffer gist-buffer-private
-                         gist-region-or-buffer gist-region-or-buffer-private
-                         gist-list-user gist-list gist-fetch gist-star
-                         gist-unstar gist-list-starred gist-fork<span style="color: #2196F3;">)</span><span style="color: #e91e63;">)</span>
-</pre>
-</div>
-</div>
 </div>
 </div>
 </div>
@@ -5710,12 +5504,258 @@ This function replaces the default naming scheme with a call to
 </div>
 </div>
 </div>
-<div id="outline-container-programming1" class="outline-2">
-<h2 id="programming1"><span class="section-number-2">13</span> Programming</h2>
+<div id="outline-container-sourcecontrol" class="outline-2">
+<h2 id="sourcecontrol"><span class="section-number-2">13</span> Source Control</h2>
 <div class="outline-text-2" id="text-13">
-</div><div id="outline-container-realgud" class="outline-3">
-<h3 id="realgud"><span class="section-number-3">13.1</span> realgud</h3>
+</div><div id="outline-container-magit" class="outline-3">
+<h3 id="magit"><span class="section-number-3">13.1</span> magit</h3>
 <div class="outline-text-3" id="text-13-1">
+<div class="org-src-container">
+<pre class="src src-emacs-lisp"><span style="color: #e91e63;">(</span><span style="color: #fff59d;">use-package</span> <span style="color: #8bc34a;">magit</span>
+  <span style="color: #ff8A65;">:commands</span> magit-status
+  <span style="color: #ff8A65;">:bind</span> <span style="color: #2196F3;">(</span><span style="color: #EF6C00;">(</span><span style="color: #9ccc65;">"C-x g"</span> . imalison:magit-status<span style="color: #EF6C00;">)</span><span style="color: #2196F3;">)</span>
+  <span style="color: #ff8A65;">:preface</span>
+  <span style="color: #2196F3;">(</span><span style="color: #fff59d;">progn</span>
+    <span style="color: #EF6C00;">(</span><span style="color: #fff59d;">emit-let-around</span> imalison:magit-status-traditional
+                     magit-status
+                     <span style="color: #B388FF;">(</span>magit-display-buffer-function
+                      'magit-display-buffer-traditional<span style="color: #B388FF;">)</span><span style="color: #EF6C00;">)</span>
+    <span style="color: #EF6C00;">(</span><span style="color: #fff59d;">emit-prefix-selector</span> imalison:magit-status
+                          magit-status
+                          imalison:magit-status-traditional<span style="color: #EF6C00;">)</span>
+    <span style="color: #EF6C00;">(</span><span style="color: #fff59d;">defun</span> <span style="color: #84ffff;">imalison:after-magit-visit-file</span> <span style="color: #B388FF;">(</span><span style="color: #84ffff;">&amp;rest</span> args<span style="color: #B388FF;">)</span>
+      <span style="color: #B388FF;">(</span><span style="color: #fff59d;">when</span> <span style="color: #76ff03;">(</span>derived-mode-p 'org-mode<span style="color: #76ff03;">)</span>
+        <span style="color: #76ff03;">(</span>org-show-context 'magit-goto<span style="color: #76ff03;">)</span><span style="color: #B388FF;">)</span><span style="color: #EF6C00;">)</span><span style="color: #2196F3;">)</span>
+  <span style="color: #ff8A65;">:config</span>
+  <span style="color: #2196F3;">(</span><span style="color: #fff59d;">progn</span>
+    <span style="color: #EF6C00;">(</span><span style="color: #fff59d;">when</span> <span style="color: #B388FF;">(</span>imalison:use-frames-only<span style="color: #B388FF;">)</span>
+      <span style="color: #B388FF;">(</span><span style="color: #fff59d;">setq</span> magit-commit-show-diff t<span style="color: #B388FF;">)</span><span style="color: #EF6C00;">)</span>
+    <span style="color: #EF6C00;">(</span><span style="color: #fff59d;">unbind-key</span> <span style="color: #9ccc65;">"C-j"</span> magit-status-mode-map<span style="color: #EF6C00;">)</span>
+    <span style="color: #EF6C00;">(</span><span style="color: #fff59d;">unbind-key</span> <span style="color: #9ccc65;">"C-j"</span> magit-hunk-section-map<span style="color: #EF6C00;">)</span>
+    <span style="color: #EF6C00;">(</span><span style="color: #fff59d;">unbind-key</span> <span style="color: #9ccc65;">"C-j"</span> magit-file-section-map<span style="color: #EF6C00;">)</span>
+    <span style="color: #EF6C00;">(</span><span style="color: #fff59d;">setq</span> magit-last-seen-setup-instructions <span style="color: #9ccc65;">"1.4.0"</span>
+          magit-display-buffer-function
+          'magit-display-buffer-same-window-except-diff-v1<span style="color: #EF6C00;">)</span>
+    <span style="color: #EF6C00;">(</span>magit-auto-revert-mode<span style="color: #EF6C00;">)</span>
+    <span style="color: #b0bec5;">;; </span><span style="color: #b0bec5;">TODO: Is this necessary now that signing is a git default</span>
+    <span style="color: #EF6C00;">(</span><span style="color: #fff59d;">when</span> <span style="color: #B388FF;">(</span><span style="color: #fff59d;">bound-and-true-p</span> imalison:gpg-key<span style="color: #B388FF;">)</span>
+      <span style="color: #B388FF;">(</span>add-to-list 'magit-commit-arguments
+                   <span style="color: #76ff03;">(</span>format <span style="color: #9ccc65;">"--gpg-sign=%s"</span> imalison:gpg-key<span style="color: #76ff03;">)</span><span style="color: #B388FF;">)</span><span style="color: #EF6C00;">)</span>
+
+    <span style="color: #EF6C00;">(</span>add-to-list 'org-show-context-detail '<span style="color: #B388FF;">(</span>magit-goto . lineage<span style="color: #B388FF;">)</span><span style="color: #EF6C00;">)</span>
+    <span style="color: #EF6C00;">(</span>advice-add 'magit-diff-visit-file <span style="color: #ff8A65;">:after</span> 'imalison:after-magit-visit-file<span style="color: #EF6C00;">)</span>
+    <span style="color: #EF6C00;">(</span>add-hook 'magit-popup-mode-hook 'imalison:disable-show-trailing-whitespace<span style="color: #EF6C00;">)</span><span style="color: #2196F3;">)</span><span style="color: #e91e63;">)</span>
+</pre>
+</div>
+</div>
+<div id="outline-container-magithub" class="outline-4">
+<h4 id="magithub"><span class="section-number-4">13.1.1</span> magithub</h4>
+<div class="outline-text-4" id="text-13-1-1">
+<div class="org-src-container">
+<pre class="src src-emacs-lisp"><span style="color: #e91e63;">(</span><span style="color: #fff59d;">use-package</span> <span style="color: #8bc34a;">magithub</span>
+  <span style="color: #ff8A65;">:if</span> <span style="color: #2196F3;">(</span>executable-find <span style="color: #9ccc65;">"hub"</span><span style="color: #2196F3;">)</span>
+  <span style="color: #ff8A65;">:after</span> magit<span style="color: #e91e63;">)</span>
+</pre>
+</div>
+</div>
+</div>
+</div>
+<div id="outline-container-gitlink" class="outline-3">
+<h3 id="gitlink"><span class="section-number-3">13.2</span> git-link</h3>
+<div class="outline-text-3" id="text-13-2">
+<div class="org-src-container">
+<pre class="src src-emacs-lisp"><span style="color: #e91e63;">(</span><span style="color: #fff59d;">use-package</span> <span style="color: #8bc34a;">git-link</span>
+  <span style="color: #ff8A65;">:config</span>
+  <span style="color: #2196F3;">(</span><span style="color: #fff59d;">progn</span>
+    <span style="color: #EF6C00;">(</span><span style="color: #fff59d;">setq</span> git-link-use-commit t<span style="color: #EF6C00;">)</span><span style="color: #2196F3;">)</span><span style="color: #e91e63;">)</span>
+</pre>
+</div>
+</div>
+</div>
+<div id="outline-container-magitgitflow" class="outline-3">
+<h3 id="magitgitflow"><span class="section-number-3">13.3</span> magit-gitflow</h3>
+<div class="outline-text-3" id="text-13-3">
+<div class="org-src-container">
+<pre class="src src-emacs-lisp"><span style="color: #e91e63;">(</span><span style="color: #fff59d;">use-package</span> <span style="color: #8bc34a;">magit-gitflow</span>
+  <span style="color: #ff8A65;">:diminish</span> magit-gitflow-mode
+  <span style="color: #ff8A65;">:after</span> magit
+  <span style="color: #ff8A65;">:init</span>
+  <span style="color: #2196F3;">(</span><span style="color: #fff59d;">progn</span>
+    <span style="color: #EF6C00;">(</span><span style="color: #fff59d;">setq</span> magit-gitflow-popup-key <span style="color: #9ccc65;">"C-k"</span><span style="color: #EF6C00;">)</span><span style="color: #2196F3;">)</span>
+  <span style="color: #ff8A65;">:config</span>
+  <span style="color: #2196F3;">(</span><span style="color: #fff59d;">progn</span>
+    <span style="color: #EF6C00;">(</span>add-hook 'magit-mode-hook 'turn-on-magit-gitflow<span style="color: #EF6C00;">)</span><span style="color: #2196F3;">)</span><span style="color: #e91e63;">)</span>
+</pre>
+</div>
+</div>
+</div>
+<div id="outline-container-gittimemachine" class="outline-3">
+<h3 id="gittimemachine"><span class="section-number-3">13.4</span> git-timemachine</h3>
+<div class="outline-text-3" id="text-13-4">
+<div class="org-src-container">
+<pre class="src src-emacs-lisp"><span style="color: #e91e63;">(</span><span style="color: #fff59d;">use-package</span> <span style="color: #8bc34a;">git-timemachine</span>
+  <span style="color: #ff8A65;">:commands</span> git-timemachine<span style="color: #e91e63;">)</span>
+</pre>
+</div>
+</div>
+</div>
+<div id="outline-container-gitgutter" class="outline-3">
+<h3 id="gitgutter"><span class="section-number-3">13.5</span> git-gutter</h3>
+<div class="outline-text-3" id="text-13-5">
+<div class="org-src-container">
+<pre class="src src-emacs-lisp"><span style="color: #e91e63;">(</span><span style="color: #fff59d;">use-package</span> <span style="color: #8bc34a;">git-gutter</span>
+  <span style="color: #ff8A65;">:config</span>
+  <span style="color: #2196F3;">(</span><span style="color: #fff59d;">progn</span>
+    <span style="color: #EF6C00;">(</span>global-git-gutter-mode -1<span style="color: #EF6C00;">)</span><span style="color: #2196F3;">)</span><span style="color: #e91e63;">)</span>
+</pre>
+</div>
+</div>
+</div>
+<div id="outline-container-gitoliteclone" class="outline-3">
+<h3 id="gitoliteclone"><span class="section-number-3">13.6</span> gitolite-clone</h3>
+<div class="outline-text-3" id="text-13-6">
+<div class="org-src-container">
+<pre class="src src-emacs-lisp"><span style="color: #e91e63;">(</span><span style="color: #fff59d;">use-package</span> <span style="color: #8bc34a;">gitolite-clone</span>
+  <span style="color: #ff8A65;">:demand</span> t
+  <span style="color: #ff8A65;">:preface</span>
+  <span style="color: #2196F3;">(</span><span style="color: #fff59d;">progn</span>
+    <span style="color: #EF6C00;">(</span><span style="color: #fff59d;">defun</span> <span style="color: #84ffff;">gitolite-clone-force-refresh</span> <span style="color: #B388FF;">()</span>
+      <span style="color: #B388FF;">(</span><span style="color: #fff59d;">interactive</span><span style="color: #B388FF;">)</span>
+      <span style="color: #B388FF;">(</span>gitolite-clone-get-projects nil nil t<span style="color: #B388FF;">)</span><span style="color: #EF6C00;">)</span><span style="color: #2196F3;">)</span><span style="color: #e91e63;">)</span>
+</pre>
+</div>
+</div>
+</div>
+<div id="outline-container-gitconfigmode" class="outline-3">
+<h3 id="gitconfigmode"><span class="section-number-3">13.7</span> gitconfig-mode</h3>
+<div class="outline-text-3" id="text-13-7">
+<div class="org-src-container">
+<pre class="src src-emacs-lisp"><span style="color: #e91e63;">(</span><span style="color: #fff59d;">use-package</span> <span style="color: #8bc34a;">gitconfig-mode</span>
+  <span style="color: #ff8A65;">:mode</span> <span style="color: #9ccc65;">"\\.?gitconfig.?.*\\'"</span><span style="color: #e91e63;">)</span>
+</pre>
+</div>
+</div>
+</div>
+<div id="outline-container-gitignoremode" class="outline-3">
+<h3 id="gitignoremode"><span class="section-number-3">13.8</span> gitignore-mode</h3>
+<div class="outline-text-3" id="text-13-8">
+<div class="org-src-container">
+<pre class="src src-emacs-lisp"><span style="color: #e91e63;">(</span><span style="color: #fff59d;">use-package</span> <span style="color: #8bc34a;">gitignore-mode</span>
+  <span style="color: #ff8A65;">:mode</span> <span style="color: #9ccc65;">"\\.?gitignore.?.*\\'"</span><span style="color: #e91e63;">)</span>
+</pre>
+</div>
+</div>
+</div>
+<div id="outline-container-github" class="outline-3">
+<h3 id="github"><span class="section-number-3">13.9</span> github</h3>
+<div class="outline-text-3" id="text-13-9">
+</div><div id="outline-container-githubsearch" class="outline-4">
+<h4 id="githubsearch"><span class="section-number-4">13.9.1</span> github-search</h4>
+<div class="outline-text-4" id="text-13-9-1">
+<div class="org-src-container">
+<pre class="src src-emacs-lisp"><span style="color: #e91e63;">(</span><span style="color: #fff59d;">imalison:use-package</span> github-search
+  <span style="color: #ff8A65;">:commands</span> <span style="color: #2196F3;">(</span>github-search-clone-repo github-search-user-clone-repo<span style="color: #2196F3;">)</span>
+  <span style="color: #ff8A65;">:preface</span>
+  <span style="color: #2196F3;">(</span><span style="color: #fff59d;">progn</span>
+    <span style="color: #EF6C00;">(</span><span style="color: #fff59d;">defun</span> <span style="color: #84ffff;">imalison:get-appropriate-path-from-gh-repo-for-go</span> <span style="color: #B388FF;">(</span>repo<span style="color: #B388FF;">)</span>
+      <span style="color: #B388FF;">(</span><span style="color: #fff59d;">require</span> '<span style="color: #8bc34a;">go-mode</span><span style="color: #B388FF;">)</span>
+      <span style="color: #B388FF;">(</span><span style="color: #fff59d;">imalison:get-go-src</span> <span style="color: #9ccc65;">"github.com"</span> <span style="color: #76ff03;">(</span><span style="color: #fff59d;">oref</span> <span style="color: #26A69A;">(</span><span style="color: #fff59d;">oref</span> repo <span style="color: #ff8A65;">:owner</span><span style="color: #26A69A;">)</span> <span style="color: #ff8A65;">:login</span><span style="color: #76ff03;">)</span>
+                           <span style="color: #76ff03;">(</span><span style="color: #fff59d;">oref</span> repo <span style="color: #ff8A65;">:name</span><span style="color: #76ff03;">)</span><span style="color: #B388FF;">)</span><span style="color: #EF6C00;">)</span>
+
+    <span style="color: #EF6C00;">(</span><span style="color: #fff59d;">defun</span> <span style="color: #84ffff;">imalison:get-projects-directory-target-from-repo</span> <span style="color: #B388FF;">(</span>repo<span style="color: #B388FF;">)</span>
+      <span style="color: #B388FF;">(</span><span style="color: #fff59d;">let</span> <span style="color: #76ff03;">(</span><span style="color: #26A69A;">(</span>prospective-path
+             <span style="color: #FFCDD2;">(</span><span style="color: #fff59d;">if</span> <span style="color: #795548;">(</span>equal <span style="color: #DCE775;">(</span><span style="color: #fff59d;">oref</span> repo language<span style="color: #DCE775;">)</span> <span style="color: #9ccc65;">"Go"</span><span style="color: #795548;">)</span>
+                 <span style="color: #795548;">(</span>imalison:get-appropriate-path-from-gh-repo-for-go repo<span style="color: #795548;">)</span>
+               <span style="color: #795548;">(</span>imalison:join-paths imalison:projects-directory <span style="color: #DCE775;">(</span><span style="color: #fff59d;">oref</span> repo <span style="color: #ff8A65;">:name</span><span style="color: #DCE775;">)</span><span style="color: #795548;">)</span><span style="color: #FFCDD2;">)</span><span style="color: #26A69A;">)</span><span style="color: #76ff03;">)</span>
+        <span style="color: #76ff03;">(</span><span style="color: #fff59d;">if</span> <span style="color: #26A69A;">(</span>file-exists-p prospective-path<span style="color: #26A69A;">)</span>
+            <span style="color: #26A69A;">(</span>funcall 'github-search-prompt-for-target-directory repo<span style="color: #26A69A;">)</span>
+          prospective-path<span style="color: #76ff03;">)</span><span style="color: #B388FF;">)</span><span style="color: #EF6C00;">)</span><span style="color: #2196F3;">)</span>
+  <span style="color: #ff8A65;">:config</span>
+  <span style="color: #2196F3;">(</span><span style="color: #fff59d;">progn</span>
+    <span style="color: #EF6C00;">(</span><span style="color: #fff59d;">setq</span> github-search-get-target-directory-for-repo-function
+          'imalison:get-projects-directory-target-from-repo<span style="color: #EF6C00;">)</span><span style="color: #2196F3;">)</span><span style="color: #e91e63;">)</span>
+</pre>
+</div>
+</div>
+</div>
+<div id="outline-container-githubclone" class="outline-4">
+<h4 id="githubclone"><span class="section-number-4">13.9.2</span> github-clone</h4>
+<div class="outline-text-4" id="text-13-9-2">
+<div class="org-src-container">
+<pre class="src src-emacs-lisp"><span style="color: #e91e63;">(</span><span style="color: #fff59d;">imalison:use-package*</span> github-clone <span style="color: #9ccc65;">"~/Projects/github-clone.el"</span>
+                       <span style="color: #ff8A65;">:commands</span> <span style="color: #2196F3;">(</span>github-clone-add-parent-remote
+                                  github-clone-add-source-remote
+                                  github-clone-fork-remote
+                                  github-clone-add-existing-remote
+                                  github-clone<span style="color: #2196F3;">)</span><span style="color: #e91e63;">)</span>
+</pre>
+</div>
+</div>
+</div>
+<div id="outline-container-githubnotifier" class="outline-4">
+<h4 id="githubnotifier"><span class="section-number-4">13.9.3</span> github-notifier</h4>
+<div class="outline-text-4" id="text-13-9-3">
+<p>
+This is disabled because it was causing too many issues with my
+modeline and with excessive http requests to github.
+</p>
+<div class="org-src-container">
+<pre class="src src-emacs-lisp"><span style="color: #e91e63;">(</span><span style="color: #fff59d;">use-package</span> <span style="color: #8bc34a;">github-notifier</span>
+  <span style="color: #ff8A65;">:disabled</span> t
+  <span style="color: #ff8A65;">:config</span>
+  <span style="color: #2196F3;">(</span><span style="color: #fff59d;">progn</span>
+    <span style="color: #EF6C00;">(</span>advice-add 'github-notifier-update <span style="color: #ff8A65;">:around</span> 'imalison:shut-up-around<span style="color: #EF6C00;">)</span>
+    <span style="color: #EF6C00;">(</span>github-notifier-mode<span style="color: #EF6C00;">)</span><span style="color: #2196F3;">)</span><span style="color: #e91e63;">)</span>
+</pre>
+</div>
+</div>
+</div>
+<div id="outline-container-githubbrowsefile" class="outline-4">
+<h4 id="githubbrowsefile"><span class="section-number-4">13.9.4</span> github-browse-file</h4>
+<div class="outline-text-4" id="text-13-9-4">
+<div class="org-src-container">
+<pre class="src src-emacs-lisp"><span style="color: #e91e63;">(</span><span style="color: #fff59d;">use-package</span> <span style="color: #8bc34a;">github-browse-file</span>
+  <span style="color: #ff8A65;">:commands</span> github-browse-file<span style="color: #e91e63;">)</span>
+</pre>
+</div>
+</div>
+</div>
+<div id="outline-container-magitghpulls" class="outline-4">
+<h4 id="magitghpulls"><span class="section-number-4">13.9.5</span> magit-gh-pulls</h4>
+<div class="outline-text-4" id="text-13-9-5">
+<div class="org-src-container">
+<pre class="src src-emacs-lisp"><span style="color: #e91e63;">(</span><span style="color: #fff59d;">use-package</span> <span style="color: #8bc34a;">magit-gh-pulls</span>
+  <span style="color: #ff8A65;">:disabled</span> t
+  <span style="color: #ff8A65;">:diminish</span> magit-gh-pulls-mode
+  <span style="color: #ff8A65;">:after</span> magit
+  <span style="color: #ff8A65;">:config</span>
+  <span style="color: #2196F3;">(</span><span style="color: #fff59d;">progn</span>
+    <span style="color: #EF6C00;">(</span>add-hook 'magit-mode-hook 'turn-on-magit-gh-pulls<span style="color: #EF6C00;">)</span><span style="color: #2196F3;">)</span><span style="color: #e91e63;">)</span>
+</pre>
+</div>
+</div>
+</div>
+<div id="outline-container-gist" class="outline-4">
+<h4 id="gist"><span class="section-number-4">13.9.6</span> gist</h4>
+<div class="outline-text-4" id="text-13-9-6">
+<div class="org-src-container">
+<pre class="src src-emacs-lisp"><span style="color: #e91e63;">(</span><span style="color: #fff59d;">use-package</span> <span style="color: #8bc34a;">gist</span>
+  <span style="color: #ff8A65;">:commands</span> <span style="color: #2196F3;">(</span>gist-region gist-region-private gist-buffer gist-buffer-private
+                         gist-region-or-buffer gist-region-or-buffer-private
+                         gist-list-user gist-list gist-fetch gist-star
+                         gist-unstar gist-list-starred gist-fork<span style="color: #2196F3;">)</span><span style="color: #e91e63;">)</span>
+</pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div id="outline-container-programming1" class="outline-2">
+<h2 id="programming1"><span class="section-number-2">14</span> Programming</h2>
+<div class="outline-text-2" id="text-14">
+</div><div id="outline-container-realgud" class="outline-3">
+<h3 id="realgud"><span class="section-number-3">14.1</span> realgud</h3>
+<div class="outline-text-3" id="text-14-1">
 <p>
 realgud provides debugging support with many external debuggers in emacs
 </p>
@@ -5727,8 +5767,8 @@ realgud provides debugging support with many external debuggers in emacs
 </div>
 </div>
 <div id="outline-container-emr1" class="outline-3">
-<h3 id="emr1"><span class="section-number-3">13.2</span> emr</h3>
-<div class="outline-text-3" id="text-13-2">
+<h3 id="emr1"><span class="section-number-3">14.2</span> emr</h3>
+<div class="outline-text-3" id="text-14-2">
 <p>
 emr (emacs refactor) provides support for refactoring in many programming languages
 </p>
@@ -5742,8 +5782,8 @@ emr (emacs refactor) provides support for refactoring in many programming langua
 </div>
 </div>
 <div id="outline-container-semantic" class="outline-3">
-<h3 id="semantic"><span class="section-number-3">13.3</span> semantic</h3>
-<div class="outline-text-3" id="text-13-3">
+<h3 id="semantic"><span class="section-number-3">14.3</span> semantic</h3>
+<div class="outline-text-3" id="text-14-3">
 <div class="org-src-container">
 <pre class="src src-emacs-lisp"><span style="color: #e91e63;">(</span><span style="color: #fff59d;">use-package</span> <span style="color: #8bc34a;">semantic</span>
   <span style="color: #ff8A65;">:commands</span> semantic-mode
@@ -5757,21 +5797,82 @@ emr (emacs refactor) provides support for refactoring in many programming langua
 </div>
 </div>
 <div id="outline-container-utility1" class="outline-2">
-<h2 id="utility1"><span class="section-number-2">14</span> Utility</h2>
-<div class="outline-text-2" id="text-14">
+<h2 id="utility1"><span class="section-number-2">15</span> Utility</h2>
+<div class="outline-text-2" id="text-15">
 </div><div id="outline-container-term" class="outline-3">
-<h3 id="term"><span class="section-number-3">14.1</span> term</h3>
-<div class="outline-text-3" id="text-14-1">
+<h3 id="term"><span class="section-number-3">15.1</span> term</h3>
+<div class="outline-text-3" id="text-15-1">
+<p>
+The main thing I do here is restore a bunch of keybindings that are eliminated
+in term-mode. This makes term-mode 1000% more useful
+(especially having M-x and C-y available).
+</p>
 <div class="org-src-container">
 <pre class="src src-emacs-lisp"><span style="color: #e91e63;">(</span><span style="color: #fff59d;">use-package</span> <span style="color: #8bc34a;">term</span>
-  <span style="color: #ff8A65;">:bind</span> <span style="color: #2196F3;">(</span><span style="color: #ff8A65;">:map</span> term-raw-escape-map
-         <span style="color: #EF6C00;">(</span><span style="color: #9ccc65;">"M-x"</span> . helm-M-x<span style="color: #EF6C00;">)</span>
+  <span style="color: #ff8A65;">:preface</span>
+  <span style="color: #2196F3;">(</span><span style="color: #fff59d;">progn</span>
+    <span style="color: #EF6C00;">(</span><span style="color: #fff59d;">defun</span> <span style="color: #84ffff;">imalison:avy-term</span> <span style="color: #B388FF;">(</span>arg<span style="color: #B388FF;">)</span>
+      <span style="color: #B388FF;">(</span><span style="color: #fff59d;">interactive</span> <span style="color: #9ccc65;">"P"</span><span style="color: #B388FF;">)</span>
+      <span style="color: #B388FF;">(</span>term-line-mode<span style="color: #B388FF;">)</span>
+      <span style="color: #B388FF;">(</span>imalison:avy arg<span style="color: #B388FF;">)</span><span style="color: #EF6C00;">)</span>
+
+    <span style="color: #EF6C00;">(</span><span style="color: #fff59d;">defun</span> <span style="color: #84ffff;">imalison:term-paste</span> <span style="color: #B388FF;">(</span><span style="color: #84ffff;">&amp;optional</span> string<span style="color: #B388FF;">)</span>
+      <span style="color: #B388FF;">(</span><span style="color: #fff59d;">interactive</span><span style="color: #B388FF;">)</span>
+      <span style="color: #B388FF;">(</span>process-send-string
+       <span style="color: #76ff03;">(</span>get-buffer-process <span style="color: #26A69A;">(</span>current-buffer<span style="color: #26A69A;">)</span><span style="color: #76ff03;">)</span>
+       <span style="color: #76ff03;">(</span><span style="color: #fff59d;">if</span> string string <span style="color: #26A69A;">(</span>current-kill 0<span style="color: #26A69A;">)</span><span style="color: #76ff03;">)</span><span style="color: #B388FF;">)</span><span style="color: #EF6C00;">)</span>
+
+    <span style="color: #EF6C00;">(</span><span style="color: #fff59d;">require</span> '<span style="color: #8bc34a;">helm</span><span style="color: #EF6C00;">)</span>
+
+    <span style="color: #EF6C00;">(</span><span style="color: #fff59d;">defvar</span> <span style="color: #ffcc80;">helm-kill-ring-for-term-actions</span>
+      '<span style="color: #B388FF;">(</span><span style="color: #76ff03;">(</span><span style="color: #9ccc65;">"Yank"</span> . imalison:term-paste<span style="color: #76ff03;">)</span>
+        <span style="color: #76ff03;">(</span><span style="color: #9ccc65;">"Delete"</span> . <span style="color: #26A69A;">(</span><span style="color: #fff59d;">lambda</span> <span style="color: #FFCDD2;">(</span>_candidate<span style="color: #FFCDD2;">)</span>
+                      <span style="color: #FFCDD2;">(</span><span style="color: #fff59d;">cl-loop</span> for cand in <span style="color: #795548;">(</span>helm-marked-candidates<span style="color: #795548;">)</span>
+                               do <span style="color: #795548;">(</span><span style="color: #fff59d;">setq</span> kill-ring
+                                        <span style="color: #DCE775;">(</span>delete cand kill-ring<span style="color: #DCE775;">)</span><span style="color: #795548;">)</span><span style="color: #FFCDD2;">)</span><span style="color: #26A69A;">)</span><span style="color: #76ff03;">)</span><span style="color: #B388FF;">)</span><span style="color: #EF6C00;">)</span>
+    <span style="color: #EF6C00;">(</span><span style="color: #fff59d;">defvar</span> <span style="color: #ffcc80;">helm-source-kill-ring-for-term</span>
+      <span style="color: #B388FF;">(</span><span style="color: #fff59d;">helm-build-sync-source</span> <span style="color: #9ccc65;">"Kill Ring"</span>
+        <span style="color: #ff8A65;">:init</span> <span style="color: #76ff03;">(</span><span style="color: #fff59d;">lambda</span> <span style="color: #26A69A;">()</span> <span style="color: #26A69A;">(</span>helm-attrset 'last-command last-command<span style="color: #26A69A;">)</span><span style="color: #76ff03;">)</span>
+        <span style="color: #ff8A65;">:candidates</span> #'helm-kill-ring-candidates
+        <span style="color: #ff8A65;">:filtered-candidate-transformer</span> #'helm-kill-ring-transformer
+        <span style="color: #ff8A65;">:action</span> 'helm-kill-ring-for-term-actions
+        <span style="color: #ff8A65;">:persistent-action</span> 'ignore
+        <span style="color: #ff8A65;">:persistent-help</span> <span style="color: #9ccc65;">"DoNothing"</span>
+        <span style="color: #ff8A65;">:migemo</span> t
+        <span style="color: #ff8A65;">:multiline</span> t<span style="color: #B388FF;">)</span><span style="color: #EF6C00;">)</span>
+
+    <span style="color: #EF6C00;">(</span><span style="color: #fff59d;">defun</span> <span style="color: #84ffff;">helm-show-kill-ring-for-term</span> <span style="color: #B388FF;">()</span>
+      <span style="color: #ffe4b5;">"Preconfigured `</span><span style="color: #8bc34a;">helm</span><span style="color: #ffe4b5;">' for `</span><span style="color: #8bc34a;">kill-ring</span><span style="color: #ffe4b5;">'.</span>
+<span style="color: #ffe4b5;">It is drop-in replacement of `</span><span style="color: #8bc34a;">yank-pop</span><span style="color: #ffe4b5;">'.</span>
+
+<span style="color: #ffe4b5;">First call open the kill-ring browser, next calls move to next line."</span>
+      <span style="color: #B388FF;">(</span><span style="color: #fff59d;">interactive</span><span style="color: #B388FF;">)</span>
+      <span style="color: #B388FF;">(</span><span style="color: #fff59d;">let</span> <span style="color: #76ff03;">(</span><span style="color: #26A69A;">(</span>enable-recursive-minibuffers t<span style="color: #26A69A;">)</span><span style="color: #76ff03;">)</span>
+        <span style="color: #76ff03;">(</span>helm <span style="color: #ff8A65;">:sources</span> helm-source-kill-ring-for-term
+              <span style="color: #ff8A65;">:buffer</span> <span style="color: #9ccc65;">"*helm kill ring*"</span>
+              <span style="color: #ff8A65;">:resume</span> 'noresume
+              <span style="color: #ff8A65;">:allow-nest</span> t<span style="color: #76ff03;">)</span><span style="color: #B388FF;">)</span><span style="color: #EF6C00;">)</span>
+
+    <span style="color: #EF6C00;">(</span><span style="color: #fff59d;">defun</span> <span style="color: #84ffff;">imalison:term-char-mode</span> <span style="color: #B388FF;">()</span>
+      <span style="color: #B388FF;">(</span><span style="color: #fff59d;">interactive</span><span style="color: #B388FF;">)</span>
+      <span style="color: #B388FF;">(</span>term-char-mode<span style="color: #B388FF;">)</span>
+      <span style="color: #B388FF;">(</span>goto-char <span style="color: #76ff03;">(</span>point-max<span style="color: #76ff03;">)</span><span style="color: #B388FF;">)</span><span style="color: #EF6C00;">)</span><span style="color: #2196F3;">)</span>
+  <span style="color: #ff8A65;">:bind</span> <span style="color: #2196F3;">(</span><span style="color: #ff8A65;">:map</span> term-mode-map
+              <span style="color: #EF6C00;">(</span><span style="color: #9ccc65;">"C-c C-k"</span> . imalison:term-char-mode<span style="color: #EF6C00;">)</span>
+         <span style="color: #ff8A65;">:map</span> term-raw-escape-map
+              <span style="color: #EF6C00;">(</span><span style="color: #9ccc65;">"M-x"</span> . helm-M-x<span style="color: #EF6C00;">)</span>
+              <span style="color: #EF6C00;">(</span><span style="color: #9ccc65;">"C-j"</span> . imalison:avy-term<span style="color: #EF6C00;">)</span>
          <span style="color: #ff8A65;">:map</span> term-raw-map
-         <span style="color: #EF6C00;">(</span><span style="color: #9ccc65;">"M-x"</span> . helm-M-x<span style="color: #EF6C00;">)</span><span style="color: #2196F3;">)</span>
+              <span style="color: #EF6C00;">(</span><span style="color: #9ccc65;">"M-x"</span> . helm-M-x<span style="color: #EF6C00;">)</span>
+              <span style="color: #EF6C00;">(</span><span style="color: #9ccc65;">"C-j"</span> . imalison:avy-term<span style="color: #EF6C00;">)</span>
+              <span style="color: #EF6C00;">(</span><span style="color: #9ccc65;">"M-:"</span> . eval-expression<span style="color: #EF6C00;">)</span>
+              <span style="color: #EF6C00;">(</span><span style="color: #9ccc65;">"C-y"</span> . imalison:term-paste<span style="color: #EF6C00;">)</span>
+              <span style="color: #EF6C00;">(</span><span style="color: #9ccc65;">"M-y"</span> . helm-show-kill-ring-for-term<span style="color: #EF6C00;">)</span><span style="color: #2196F3;">)</span>
   <span style="color: #ff8A65;">:config</span>
   <span style="color: #2196F3;">(</span><span style="color: #fff59d;">progn</span>
     <span style="color: #EF6C00;">(</span>define-key term-raw-map <span style="color: #B388FF;">(</span>kbd <span style="color: #9ccc65;">"C-h"</span><span style="color: #B388FF;">)</span> help-map<span style="color: #EF6C00;">)</span>
     <span style="color: #EF6C00;">(</span>add-hook 'term-mode-hook 'imalison:disable-linum-mode<span style="color: #EF6C00;">)</span>
+    <span style="color: #EF6C00;">(</span>add-hook 'term-mode-hook 'imalison:disable-yas-minor-mode<span style="color: #EF6C00;">)</span>
     <span style="color: #EF6C00;">(</span>add-hook 'term-mode-hook 'imalison:disable-show-trailing-whitespace<span style="color: #EF6C00;">)</span>
     <span style="color: #EF6C00;">(</span><span style="color: #fff59d;">setq</span> term-buffer-maximum-size 0<span style="color: #EF6C00;">)</span><span style="color: #2196F3;">)</span><span style="color: #e91e63;">)</span>
 </pre>
@@ -5779,8 +5880,8 @@ emr (emacs refactor) provides support for refactoring in many programming langua
 </div>
 </div>
 <div id="outline-container-termmanager" class="outline-3">
-<h3 id="termmanager"><span class="section-number-3">14.2</span> term-manager</h3>
-<div class="outline-text-3" id="text-14-2">
+<h3 id="termmanager"><span class="section-number-3">15.2</span> term-manager</h3>
+<div class="outline-text-3" id="text-15-2">
 <div class="org-src-container">
 <pre class="src src-emacs-lisp"><span style="color: #e91e63;">(</span><span style="color: #fff59d;">imalison:use-package</span> term-manager
   <span style="color: #ff8A65;">:defer</span> t
@@ -5798,8 +5899,8 @@ emr (emacs refactor) provides support for refactoring in many programming langua
 </div>
 </div>
 <div id="outline-container-termprojectile" class="outline-3">
-<h3 id="termprojectile"><span class="section-number-3">14.3</span> term-projectile</h3>
-<div class="outline-text-3" id="text-14-3">
+<h3 id="termprojectile"><span class="section-number-3">15.3</span> term-projectile</h3>
+<div class="outline-text-3" id="text-15-3">
 <div class="org-src-container">
 <pre class="src src-emacs-lisp"><span style="color: #e91e63;">(</span><span style="color: #fff59d;">imalison:use-package*</span> term-projectile <span style="color: #9ccc65;">"term-manager"</span>
   <span style="color: #ff8A65;">:bind</span> <span style="color: #2196F3;">(</span><span style="color: #9ccc65;">"C-c 7"</span> . imalison:term-hydra-global/body<span style="color: #2196F3;">)</span>
@@ -5878,8 +5979,8 @@ emr (emacs refactor) provides support for refactoring in many programming langua
 </div>
 </div>
 <div id="outline-container-crux" class="outline-3">
-<h3 id="crux"><span class="section-number-3">14.4</span> crux</h3>
-<div class="outline-text-3" id="text-14-4">
+<h3 id="crux"><span class="section-number-3">15.4</span> crux</h3>
+<div class="outline-text-3" id="text-15-4">
 <p>
 crux-reopen-as-root-mode makes it so that any file owned by root will automatically be opened as the root user.
 </p>
@@ -5897,8 +5998,8 @@ crux-reopen-as-root-mode makes it so that any file owned by root will automatica
 </div>
 </div>
 <div id="outline-container-kdeconnect" class="outline-3">
-<h3 id="kdeconnect"><span class="section-number-3">14.5</span> kde-connect</h3>
-<div class="outline-text-3" id="text-14-5">
+<h3 id="kdeconnect"><span class="section-number-3">15.5</span> kde-connect</h3>
+<div class="outline-text-3" id="text-15-5">
 <div class="org-src-container">
 <pre class="src src-emacs-lisp"><span style="color: #e91e63;">(</span><span style="color: #fff59d;">use-package</span> <span style="color: #8bc34a;">kdeconnect</span><span style="color: #e91e63;">)</span>
 </pre>
@@ -5907,11 +6008,11 @@ crux-reopen-as-root-mode makes it so that any file owned by root will automatica
 </div>
 </div>
 <div id="outline-container-chat" class="outline-2">
-<h2 id="chat"><span class="section-number-2">15</span> Chat</h2>
-<div class="outline-text-2" id="text-15">
+<h2 id="chat"><span class="section-number-2">16</span> Chat</h2>
+<div class="outline-text-2" id="text-16">
 </div><div id="outline-container-erc" class="outline-3">
-<h3 id="erc"><span class="section-number-3">15.1</span> erc</h3>
-<div class="outline-text-3" id="text-15-1">
+<h3 id="erc"><span class="section-number-3">16.1</span> erc</h3>
+<div class="outline-text-3" id="text-16-1">
 <div class="org-src-container">
 <pre class="src src-emacs-lisp"><span style="color: #e91e63;">(</span><span style="color: #fff59d;">use-package</span> <span style="color: #8bc34a;">erc</span>
   <span style="color: #ff8A65;">:commands</span> erc
@@ -5927,8 +6028,8 @@ crux-reopen-as-root-mode makes it so that any file owned by root will automatica
 </div>
 </div>
 <div id="outline-container-bitlbee" class="outline-3">
-<h3 id="bitlbee"><span class="section-number-3">15.2</span> bitlbee</h3>
-<div class="outline-text-3" id="text-15-2">
+<h3 id="bitlbee"><span class="section-number-3">16.2</span> bitlbee</h3>
+<div class="outline-text-3" id="text-16-2">
 <div class="org-src-container">
 <pre class="src src-emacs-lisp"><span style="color: #e91e63;">(</span><span style="color: #fff59d;">use-package</span> <span style="color: #8bc34a;">bitlbee</span>
   <span style="color: #ff8A65;">:disabled</span> t
@@ -5949,8 +6050,8 @@ crux-reopen-as-root-mode makes it so that any file owned by root will automatica
 </div>
 </div>
 <div id="outline-container-slack" class="outline-3">
-<h3 id="slack"><span class="section-number-3">15.3</span> slack</h3>
-<div class="outline-text-3" id="text-15-3">
+<h3 id="slack"><span class="section-number-3">16.3</span> slack</h3>
+<div class="outline-text-3" id="text-16-3">
 <div class="org-src-container">
 <pre class="src src-emacs-lisp"><span style="color: #e91e63;">(</span><span style="color: #fff59d;">use-package</span> <span style="color: #8bc34a;">slack</span><span style="color: #e91e63;">)</span>
 </pre>
@@ -5959,11 +6060,11 @@ crux-reopen-as-root-mode makes it so that any file owned by root will automatica
 </div>
 </div>
 <div id="outline-container-cooperation" class="outline-2">
-<h2 id="cooperation"><span class="section-number-2">16</span> Cooperation</h2>
-<div class="outline-text-2" id="text-16">
+<h2 id="cooperation"><span class="section-number-2">17</span> Cooperation</h2>
+<div class="outline-text-2" id="text-17">
 </div><div id="outline-container-togetherly" class="outline-3">
-<h3 id="togetherly"><span class="section-number-3">16.1</span> togetherly</h3>
-<div class="outline-text-3" id="text-16-1">
+<h3 id="togetherly"><span class="section-number-3">17.1</span> togetherly</h3>
+<div class="outline-text-3" id="text-17-1">
 <div class="org-src-container">
 <pre class="src src-emacs-lisp"><span style="color: #e91e63;">(</span><span style="color: #fff59d;">use-package</span> <span style="color: #8bc34a;">togetherly</span><span style="color: #e91e63;">)</span>
 </pre>
@@ -5971,8 +6072,8 @@ crux-reopen-as-root-mode makes it so that any file owned by root will automatica
 </div>
 </div>
 <div id="outline-container-floobits" class="outline-3">
-<h3 id="floobits"><span class="section-number-3">16.2</span> floobits</h3>
-<div class="outline-text-3" id="text-16-2">
+<h3 id="floobits"><span class="section-number-3">17.2</span> floobits</h3>
+<div class="outline-text-3" id="text-17-2">
 <div class="org-src-container">
 <pre class="src src-emacs-lisp"><span style="color: #e91e63;">(</span><span style="color: #fff59d;">use-package</span> <span style="color: #8bc34a;">floobits</span><span style="color: #e91e63;">)</span>
 </pre>
@@ -5980,8 +6081,8 @@ crux-reopen-as-root-mode makes it so that any file owned by root will automatica
 </div>
 </div>
 <div id="outline-container-rudel" class="outline-3">
-<h3 id="rudel"><span class="section-number-3">16.3</span> rudel</h3>
-<div class="outline-text-3" id="text-16-3">
+<h3 id="rudel"><span class="section-number-3">17.3</span> rudel</h3>
+<div class="outline-text-3" id="text-17-3">
 <div class="org-src-container">
 <pre class="src src-emacs-lisp"><span style="color: #e91e63;">(</span><span style="color: #fff59d;">use-package</span> <span style="color: #8bc34a;">rudel</span>
   <span style="color: #ff8A65;">:disabled</span> t<span style="color: #e91e63;">)</span>
@@ -5991,11 +6092,11 @@ crux-reopen-as-root-mode makes it so that any file owned by root will automatica
 </div>
 </div>
 <div id="outline-container-other1" class="outline-2">
-<h2 id="other1"><span class="section-number-2">17</span> Other</h2>
-<div class="outline-text-2" id="text-17">
+<h2 id="other1"><span class="section-number-2">18</span> Other</h2>
+<div class="outline-text-2" id="text-18">
 </div><div id="outline-container-anzu" class="outline-3">
-<h3 id="anzu"><span class="section-number-3">17.1</span> anzu</h3>
-<div class="outline-text-3" id="text-17-1">
+<h3 id="anzu"><span class="section-number-3">18.1</span> anzu</h3>
+<div class="outline-text-3" id="text-18-1">
 <div class="org-src-container">
 <pre class="src src-emacs-lisp"><span style="color: #e91e63;">(</span><span style="color: #fff59d;">use-package</span> <span style="color: #8bc34a;">anzu</span>
   <span style="color: #ff8A65;">:config</span>
@@ -6018,8 +6119,8 @@ crux-reopen-as-root-mode makes it so that any file owned by root will automatica
 </div>
 </div>
 <div id="outline-container-fontawesome" class="outline-3">
-<h3 id="fontawesome"><span class="section-number-3">17.2</span> fontawesome</h3>
-<div class="outline-text-3" id="text-17-2">
+<h3 id="fontawesome"><span class="section-number-3">18.2</span> fontawesome</h3>
+<div class="outline-text-3" id="text-18-2">
 <div class="org-src-container">
 <pre class="src src-emacs-lisp"><span style="color: #e91e63;">(</span><span style="color: #fff59d;">use-package</span> <span style="color: #8bc34a;">fontawesome</span>
   <span style="color: #ff8A65;">:commands</span> helm-fontawesome<span style="color: #e91e63;">)</span>
@@ -6028,8 +6129,8 @@ crux-reopen-as-root-mode makes it so that any file owned by root will automatica
 </div>
 </div>
 <div id="outline-container-shellhistory" class="outline-3">
-<h3 id="shellhistory"><span class="section-number-3">17.3</span> shell-history</h3>
-<div class="outline-text-3" id="text-17-3">
+<h3 id="shellhistory"><span class="section-number-3">18.3</span> shell-history</h3>
+<div class="outline-text-3" id="text-18-3">
 <p>
 I think that shell-history is causing projectile to be very slow so I have disabled it.
 </p>
@@ -6042,8 +6143,8 @@ I think that shell-history is causing projectile to be very slow so I have disab
 </div>
 </div>
 <div id="outline-container-iedit" class="outline-3">
-<h3 id="iedit"><span class="section-number-3">17.4</span> iedit</h3>
-<div class="outline-text-3" id="text-17-4">
+<h3 id="iedit"><span class="section-number-3">18.4</span> iedit</h3>
+<div class="outline-text-3" id="text-18-4">
 <p>
 I don't use iedit directly, but it is used by <a href="#emr">emr</a> and I need to disable <code>iedit-toggle-key-default</code> or else a buffer pops up complaing that the key has been bound to something else
 </p>
@@ -6055,8 +6156,8 @@ I don't use iedit directly, but it is used by <a href="#emr">emr</a> and I need 
 </div>
 </div>
 <div id="outline-container-tramp" class="outline-3">
-<h3 id="tramp"><span class="section-number-3">17.5</span> tramp</h3>
-<div class="outline-text-3" id="text-17-5">
+<h3 id="tramp"><span class="section-number-3">18.5</span> tramp</h3>
+<div class="outline-text-3" id="text-18-5">
 <div class="org-src-container">
 <pre class="src src-emacs-lisp"><span style="color: #e91e63;">(</span><span style="color: #fff59d;">use-package</span> <span style="color: #8bc34a;">tramp</span>
   <span style="color: #ff8A65;">:commands</span> tramp
@@ -6066,32 +6167,9 @@ I don't use iedit directly, but it is used by <a href="#emr">emr</a> and I need 
 </div>
 </div>
 </div>
-<div id="outline-container-flycheck" class="outline-3">
-<h3 id="flycheck"><span class="section-number-3">17.6</span> flycheck</h3>
-<div class="outline-text-3" id="text-17-6">
-<div class="org-src-container">
-<pre class="src src-emacs-lisp"><span style="color: #e91e63;">(</span><span style="color: #fff59d;">use-package</span> <span style="color: #8bc34a;">flycheck</span>
-  <span style="color: #ff8A65;">:config</span>
-  <span style="color: #2196F3;">(</span><span style="color: #fff59d;">progn</span>
-    <span style="color: #EF6C00;">(</span><span style="color: #fff59d;">use-package</span> <span style="color: #8bc34a;">flycheck-package</span>
-      <span style="color: #ff8A65;">:config</span> <span style="color: #B388FF;">(</span>flycheck-package-setup<span style="color: #B388FF;">)</span><span style="color: #EF6C00;">)</span>
-
-    <span style="color: #EF6C00;">(</span><span style="color: #fff59d;">imalison:use-package</span> flycheck-cask
-      <span style="color: #ff8A65;">:after</span> flycheck
-      <span style="color: #ff8A65;">:config</span>
-      <span style="color: #B388FF;">(</span>add-hook 'flycheck-mode-hook #'flycheck-cask-setup<span style="color: #B388FF;">)</span><span style="color: #EF6C00;">)</span>
-
-    <span style="color: #EF6C00;">(</span>add-to-list 'flycheck-emacs-lisp-checkdoc-variables
-                 'sentence-end-double-space<span style="color: #EF6C00;">)</span>
-    <span style="color: #EF6C00;">(</span>global-flycheck-mode<span style="color: #EF6C00;">)</span><span style="color: #2196F3;">)</span>
-  <span style="color: #ff8A65;">:diminish</span> flycheck-mode<span style="color: #e91e63;">)</span>
-</pre>
-</div>
-</div>
-</div>
 <div id="outline-container-narrowindirect" class="outline-3">
-<h3 id="narrowindirect"><span class="section-number-3">17.7</span> narrow-indirect</h3>
-<div class="outline-text-3" id="text-17-7">
+<h3 id="narrowindirect"><span class="section-number-3">18.6</span> narrow-indirect</h3>
+<div class="outline-text-3" id="text-18-6">
 <div class="org-src-container">
 <pre class="src src-emacs-lisp"><span style="color: #e91e63;">(</span><span style="color: #fff59d;">use-package</span> <span style="color: #8bc34a;">narrow-indirect</span>
   <span style="color: #ff8A65;">:init</span>
@@ -6104,8 +6182,8 @@ I don't use iedit directly, but it is used by <a href="#emr">emr</a> and I need 
 </div>
 </div>
 <div id="outline-container-editorconfig" class="outline-3">
-<h3 id="editorconfig"><span class="section-number-3">17.8</span> editorconfig</h3>
-<div class="outline-text-3" id="text-17-8">
+<h3 id="editorconfig"><span class="section-number-3">18.7</span> editorconfig</h3>
+<div class="outline-text-3" id="text-18-7">
 <p>
 I had to disable this mode because something that it does messes with coding settings and makes it so that I have to select the appropriate encoding every time I save gpg encrypted files.
 </p>
@@ -6121,8 +6199,8 @@ I had to disable this mode because something that it does messes with coding set
 </div>
 </div>
 <div id="outline-container-dtrtindent" class="outline-3">
-<h3 id="dtrtindent"><span class="section-number-3">17.9</span> dtrt-indent</h3>
-<div class="outline-text-3" id="text-17-9">
+<h3 id="dtrtindent"><span class="section-number-3">18.8</span> dtrt-indent</h3>
+<div class="outline-text-3" id="text-18-8">
 <div class="org-src-container">
 <pre class="src src-emacs-lisp"><span style="color: #e91e63;">(</span><span style="color: #fff59d;">use-package</span> <span style="color: #8bc34a;">dtrt-indent</span>
   <span style="color: #ff8A65;">:commands</span> 'dtrt-indent-mode
@@ -6135,8 +6213,8 @@ I had to disable this mode because something that it does messes with coding set
 </div>
 </div>
 <div id="outline-container-indentguide" class="outline-3">
-<h3 id="indentguide"><span class="section-number-3">17.10</span> indent-guide</h3>
-<div class="outline-text-3" id="text-17-10">
+<h3 id="indentguide"><span class="section-number-3">18.9</span> indent-guide</h3>
+<div class="outline-text-3" id="text-18-9">
 <div class="org-src-container">
 <pre class="src src-emacs-lisp"><span style="color: #e91e63;">(</span><span style="color: #fff59d;">use-package</span> <span style="color: #8bc34a;">indent-guide</span>
   <span style="color: #ff8A65;">:disabled</span> t
@@ -6149,8 +6227,8 @@ I had to disable this mode because something that it does messes with coding set
 </div>
 </div>
 <div id="outline-container-rainbowdelimiters" class="outline-3">
-<h3 id="rainbowdelimiters"><span class="section-number-3">17.11</span> rainbow-delimiters</h3>
-<div class="outline-text-3" id="text-17-11">
+<h3 id="rainbowdelimiters"><span class="section-number-3">18.10</span> rainbow-delimiters</h3>
+<div class="outline-text-3" id="text-18-10">
 <div class="org-src-container">
 <pre class="src src-emacs-lisp"><span style="color: #e91e63;">(</span><span style="color: #fff59d;">use-package</span> <span style="color: #8bc34a;">rainbow-delimiters</span>
   <span style="color: #ff8A65;">:commands</span> rainbow-delimiters-mode
@@ -6162,8 +6240,8 @@ I had to disable this mode because something that it does messes with coding set
 </div>
 </div>
 <div id="outline-container-undotree" class="outline-3">
-<h3 id="undotree"><span class="section-number-3">17.12</span> undo-tree</h3>
-<div class="outline-text-3" id="text-17-12">
+<h3 id="undotree"><span class="section-number-3">18.11</span> undo-tree</h3>
+<div class="outline-text-3" id="text-18-11">
 <div class="org-src-container">
 <pre class="src src-emacs-lisp"><span style="color: #e91e63;">(</span><span style="color: #fff59d;">use-package</span> <span style="color: #8bc34a;">undo-tree</span>
   <span style="color: #ff8A65;">:disabled</span> t <span style="color: #b0bec5;">;; </span><span style="color: #b0bec5;">this has been getting pretty annoying</span>
@@ -6182,8 +6260,8 @@ I had to disable this mode because something that it does messes with coding set
 </div>
 </div>
 <div id="outline-container-recentf" class="outline-3">
-<h3 id="recentf"><span class="section-number-3">17.13</span> recentf</h3>
-<div class="outline-text-3" id="text-17-13">
+<h3 id="recentf"><span class="section-number-3">18.12</span> recentf</h3>
+<div class="outline-text-3" id="text-18-12">
 <div class="org-src-container">
 <pre class="src src-emacs-lisp"><span style="color: #e91e63;">(</span><span style="color: #fff59d;">use-package</span> <span style="color: #8bc34a;">recentf</span>
   <span style="color: #ff8A65;">:config</span>
@@ -6197,8 +6275,8 @@ I had to disable this mode because something that it does messes with coding set
 </div>
 </div>
 <div id="outline-container-keychord" class="outline-3">
-<h3 id="keychord"><span class="section-number-3">17.14</span> key-chord</h3>
-<div class="outline-text-3" id="text-17-14">
+<h3 id="keychord"><span class="section-number-3">18.13</span> key-chord</h3>
+<div class="outline-text-3" id="text-18-13">
 <p>
 I have currently disabled key-chord because it may cause typing lag.
 </p>
@@ -6226,8 +6304,8 @@ I have currently disabled key-chord because it may cause typing lag.
 </div>
 </div>
 <div id="outline-container-nodejsrepl" class="outline-3">
-<h3 id="nodejsrepl"><span class="section-number-3">17.15</span> nodejs-repl</h3>
-<div class="outline-text-3" id="text-17-15">
+<h3 id="nodejsrepl"><span class="section-number-3">18.14</span> nodejs-repl</h3>
+<div class="outline-text-3" id="text-18-14">
 <div class="org-src-container">
 <pre class="src src-emacs-lisp"><span style="color: #e91e63;">(</span><span style="color: #fff59d;">use-package</span> <span style="color: #8bc34a;">nodejs-repl</span>
   <span style="color: #ff8A65;">:commands</span> nodejs-repl<span style="color: #e91e63;">)</span>
@@ -6236,8 +6314,8 @@ I have currently disabled key-chord because it may cause typing lag.
 </div>
 </div>
 <div id="outline-container-calcmode" class="outline-3">
-<h3 id="calcmode"><span class="section-number-3">17.16</span> calc-mode</h3>
-<div class="outline-text-3" id="text-17-16">
+<h3 id="calcmode"><span class="section-number-3">18.15</span> calc-mode</h3>
+<div class="outline-text-3" id="text-18-15">
 <div class="org-src-container">
 <pre class="src src-emacs-lisp"><span style="color: #e91e63;">(</span><span style="color: #fff59d;">use-package</span> <span style="color: #8bc34a;">calc-mode</span>
   <span style="color: #ff8A65;">:ensure</span> nil
@@ -6250,8 +6328,8 @@ I have currently disabled key-chord because it may cause typing lag.
 </div>
 </div>
 <div id="outline-container-helmspotify" class="outline-3">
-<h3 id="helmspotify"><span class="section-number-3">17.17</span> helm-spotify</h3>
-<div class="outline-text-3" id="text-17-17">
+<h3 id="helmspotify"><span class="section-number-3">18.16</span> helm-spotify</h3>
+<div class="outline-text-3" id="text-18-16">
 <div class="org-src-container">
 <pre class="src src-emacs-lisp"><span style="color: #e91e63;">(</span><span style="color: #fff59d;">use-package</span> <span style="color: #8bc34a;">helm-spotify</span>
   <span style="color: #ff8A65;">:commands</span> helm-spotify<span style="color: #e91e63;">)</span>
@@ -6260,8 +6338,8 @@ I have currently disabled key-chord because it may cause typing lag.
 </div>
 </div>
 <div id="outline-container-jabber" class="outline-3">
-<h3 id="jabber"><span class="section-number-3">17.18</span> jabber</h3>
-<div class="outline-text-3" id="text-17-18">
+<h3 id="jabber"><span class="section-number-3">18.17</span> jabber</h3>
+<div class="outline-text-3" id="text-18-17">
 <div class="org-src-container">
 <pre class="src src-emacs-lisp"><span style="color: #e91e63;">(</span><span style="color: #fff59d;">use-package</span> <span style="color: #8bc34a;">jabber</span>
   <span style="color: #ff8A65;">:commands</span> jabber-connect
@@ -6280,8 +6358,8 @@ I have currently disabled key-chord because it may cause typing lag.
 </div>
 </div>
 <div id="outline-container-htmlize" class="outline-3">
-<h3 id="htmlize"><span class="section-number-3">17.19</span> htmlize</h3>
-<div class="outline-text-3" id="text-17-19">
+<h3 id="htmlize"><span class="section-number-3">18.18</span> htmlize</h3>
+<div class="outline-text-3" id="text-18-18">
 <div class="org-src-container">
 <pre class="src src-emacs-lisp"><span style="color: #e91e63;">(</span><span style="color: #fff59d;">use-package</span> <span style="color: #8bc34a;">htmlize</span><span style="color: #e91e63;">)</span>
 </pre>
@@ -6289,8 +6367,8 @@ I have currently disabled key-chord because it may cause typing lag.
 </div>
 </div>
 <div id="outline-container-calfw" class="outline-3">
-<h3 id="calfw"><span class="section-number-3">17.20</span> calfw</h3>
-<div class="outline-text-3" id="text-17-20">
+<h3 id="calfw"><span class="section-number-3">18.19</span> calfw</h3>
+<div class="outline-text-3" id="text-18-19">
 <div class="org-src-container">
 <pre class="src src-emacs-lisp"><span style="color: #e91e63;">(</span><span style="color: #fff59d;">use-package</span> <span style="color: #8bc34a;">calfw</span>
   <span style="color: #ff8A65;">:config</span>
@@ -6301,8 +6379,8 @@ I have currently disabled key-chord because it may cause typing lag.
 </div>
 </div>
 <div id="outline-container-clocker" class="outline-3">
-<h3 id="clocker"><span class="section-number-3">17.21</span> clocker</h3>
-<div class="outline-text-3" id="text-17-21">
+<h3 id="clocker"><span class="section-number-3">18.20</span> clocker</h3>
+<div class="outline-text-3" id="text-18-20">
 <p>
 Not really sure what this is
 </p>
@@ -6313,8 +6391,8 @@ Not really sure what this is
 </div>
 </div>
 <div id="outline-container-deft" class="outline-3">
-<h3 id="deft"><span class="section-number-3">17.22</span> deft</h3>
-<div class="outline-text-3" id="text-17-22">
+<h3 id="deft"><span class="section-number-3">18.21</span> deft</h3>
+<div class="outline-text-3" id="text-18-21">
 <div class="org-src-container">
 <pre class="src src-emacs-lisp"><span style="color: #e91e63;">(</span><span style="color: #fff59d;">use-package</span> <span style="color: #8bc34a;">deft</span>
   <span style="color: #ff8A65;">:commands</span> deft
@@ -6332,8 +6410,8 @@ Not really sure what this is
 </div>
 </div>
 <div id="outline-container-epg" class="outline-3">
-<h3 id="epg"><span class="section-number-3">17.23</span> epg</h3>
-<div class="outline-text-3" id="text-17-23">
+<h3 id="epg"><span class="section-number-3">18.22</span> epg</h3>
+<div class="outline-text-3" id="text-18-22">
 <div class="org-src-container">
 <pre class="src src-emacs-lisp"><span style="color: #e91e63;">(</span><span style="color: #fff59d;">use-package</span> <span style="color: #8bc34a;">epg</span>
   <span style="color: #ff8A65;">:after</span> shut-up
@@ -6345,8 +6423,8 @@ Not really sure what this is
 </div>
 </div>
 <div id="outline-container-pinentry" class="outline-3">
-<h3 id="pinentry"><span class="section-number-3">17.24</span> pinentry</h3>
-<div class="outline-text-3" id="text-17-24">
+<h3 id="pinentry"><span class="section-number-3">18.23</span> pinentry</h3>
+<div class="outline-text-3" id="text-18-23">
 <div class="org-src-container">
 <pre class="src src-emacs-lisp"><span style="color: #e91e63;">(</span><span style="color: #fff59d;">use-package</span> <span style="color: #8bc34a;">pinentry</span>
   <span style="color: #ff8A65;">:defer</span> 5
@@ -6357,8 +6435,8 @@ Not really sure what this is
 </div>
 </div>
 <div id="outline-container-twitteringmode" class="outline-3">
-<h3 id="twitteringmode"><span class="section-number-3">17.25</span> twittering-mode</h3>
-<div class="outline-text-3" id="text-17-25">
+<h3 id="twitteringmode"><span class="section-number-3">18.24</span> twittering-mode</h3>
+<div class="outline-text-3" id="text-18-24">
 <div class="org-src-container">
 <pre class="src src-emacs-lisp"><span style="color: #e91e63;">(</span><span style="color: #fff59d;">use-package</span> <span style="color: #8bc34a;">twittering-mode</span>
   <span style="color: #ff8A65;">:commands</span> twittering-mode<span style="color: #e91e63;">)</span>
@@ -6367,8 +6445,8 @@ Not really sure what this is
 </div>
 </div>
 <div id="outline-container-matrixclient" class="outline-3">
-<h3 id="matrixclient"><span class="section-number-3">17.26</span> matrix-client</h3>
-<div class="outline-text-3" id="text-17-26">
+<h3 id="matrixclient"><span class="section-number-3">18.25</span> matrix-client</h3>
+<div class="outline-text-3" id="text-18-25">
 <div class="org-src-container">
 <pre class="src src-emacs-lisp"><span style="color: #e91e63;">(</span><span style="color: #fff59d;">use-package</span> <span style="color: #8bc34a;">matrix-client</span>
   <span style="color: #ff8A65;">:disabled</span> t <span style="color: #b0bec5;">;; </span><span style="color: #b0bec5;">fails to load eieio on startup</span>
@@ -6378,8 +6456,8 @@ Not really sure what this is
 </div>
 </div>
 <div id="outline-container-mue" class="outline-3">
-<h3 id="mue"><span class="section-number-3">17.27</span> mu4e</h3>
-<div class="outline-text-3" id="text-17-27">
+<h3 id="mue"><span class="section-number-3">18.26</span> mu4e</h3>
+<div class="outline-text-3" id="text-18-26">
 <div class="org-src-container">
 <pre class="src src-emacs-lisp"><span style="color: #e91e63;">(</span><span style="color: #fff59d;">eval-when-compile</span>
   <span style="color: #2196F3;">(</span><span style="color: #fff59d;">require</span> '<span style="color: #8bc34a;">s</span><span style="color: #2196F3;">)</span>
@@ -6488,8 +6566,8 @@ Not really sure what this is
 </div>
 </div>
 <div id="outline-container-gmailmessagemode" class="outline-3">
-<h3 id="gmailmessagemode"><span class="section-number-3">17.28</span> gmail-message-mode</h3>
-<div class="outline-text-3" id="text-17-28">
+<h3 id="gmailmessagemode"><span class="section-number-3">18.27</span> gmail-message-mode</h3>
+<div class="outline-text-3" id="text-18-27">
 <p>
 This is useful with server mode when editing gmail messages. I think that it is not currently working, or it may need to be manually enabled.
 </p>
@@ -6501,8 +6579,8 @@ This is useful with server mode when editing gmail messages. I think that it is 
 </div>
 </div>
 <div id="outline-container-hammode" class="outline-3">
-<h3 id="hammode"><span class="section-number-3">17.29</span> ham-mode</h3>
-<div class="outline-text-3" id="text-17-29">
+<h3 id="hammode"><span class="section-number-3">18.28</span> ham-mode</h3>
+<div class="outline-text-3" id="text-18-28">
 <div class="org-src-container">
 <pre class="src src-emacs-lisp"><span style="color: #e91e63;">(</span><span style="color: #fff59d;">use-package</span> <span style="color: #8bc34a;">ham-mode</span>
   <span style="color: #ff8A65;">:config</span>
@@ -6513,8 +6591,8 @@ This is useful with server mode when editing gmail messages. I think that it is 
 </div>
 </div>
 <div id="outline-container-alert" class="outline-3">
-<h3 id="alert"><span class="section-number-3">17.30</span> alert</h3>
-<div class="outline-text-3" id="text-17-30">
+<h3 id="alert"><span class="section-number-3">18.29</span> alert</h3>
+<div class="outline-text-3" id="text-18-29">
 <div class="org-src-container">
 <pre class="src src-emacs-lisp"><span style="color: #e91e63;">(</span><span style="color: #fff59d;">use-package</span> <span style="color: #8bc34a;">alert</span>
   <span style="color: #ff8A65;">:config</span>
@@ -6541,8 +6619,8 @@ This is useful with server mode when editing gmail messages. I think that it is 
 </div>
 </div>
 <div id="outline-container-sauron" class="outline-3">
-<h3 id="sauron"><span class="section-number-3">17.31</span> sauron</h3>
-<div class="outline-text-3" id="text-17-31">
+<h3 id="sauron"><span class="section-number-3">18.30</span> sauron</h3>
+<div class="outline-text-3" id="text-18-30">
 <div class="org-src-container">
 <pre class="src src-emacs-lisp"><span style="color: #e91e63;">(</span><span style="color: #fff59d;">use-package</span> <span style="color: #8bc34a;">sauron</span>
   <span style="color: #ff8A65;">:defer</span> 5
@@ -6589,8 +6667,8 @@ This is useful with server mode when editing gmail messages. I think that it is 
 </div>
 </div>
 <div id="outline-container-screenshot" class="outline-3">
-<h3 id="screenshot"><span class="section-number-3">17.32</span> screenshot</h3>
-<div class="outline-text-3" id="text-17-32">
+<h3 id="screenshot"><span class="section-number-3">18.31</span> screenshot</h3>
+<div class="outline-text-3" id="text-18-31">
 <div class="org-src-container">
 <pre class="src src-emacs-lisp"><span style="color: #e91e63;">(</span><span style="color: #fff59d;">use-package</span> <span style="color: #8bc34a;">screenshot</span><span style="color: #e91e63;">)</span>
 </pre>
@@ -6598,8 +6676,8 @@ This is useful with server mode when editing gmail messages. I think that it is 
 </div>
 </div>
 <div id="outline-container-libmpdee" class="outline-3">
-<h3 id="libmpdee"><span class="section-number-3">17.33</span> libmpdee</h3>
-<div class="outline-text-3" id="text-17-33">
+<h3 id="libmpdee"><span class="section-number-3">18.32</span> libmpdee</h3>
+<div class="outline-text-3" id="text-18-32">
 <div class="org-src-container">
 <pre class="src src-emacs-lisp"><span style="color: #e91e63;">(</span><span style="color: #fff59d;">use-package</span> <span style="color: #8bc34a;">libmpdee</span><span style="color: #e91e63;">)</span>
 </pre>
@@ -6607,8 +6685,8 @@ This is useful with server mode when editing gmail messages. I think that it is 
 </div>
 </div>
 <div id="outline-container-flyspell" class="outline-3">
-<h3 id="flyspell"><span class="section-number-3">17.34</span> flyspell</h3>
-<div class="outline-text-3" id="text-17-34">
+<h3 id="flyspell"><span class="section-number-3">18.33</span> flyspell</h3>
+<div class="outline-text-3" id="text-18-33">
 <div class="org-src-container">
 <pre class="src src-emacs-lisp"><span style="color: #e91e63;">(</span><span style="color: #fff59d;">use-package</span> <span style="color: #8bc34a;">flyspell</span>
   <span style="color: #ff8A65;">:disabled</span> t                           <span style="color: #b0bec5;">; </span><span style="color: #b0bec5;">kind of annoying</span>
@@ -6653,8 +6731,8 @@ This is useful with server mode when editing gmail messages. I think that it is 
 </div>
 </div>
 <div id="outline-container-webmode" class="outline-3">
-<h3 id="webmode"><span class="section-number-3">17.35</span> web-mode</h3>
-<div class="outline-text-3" id="text-17-35">
+<h3 id="webmode"><span class="section-number-3">18.34</span> web-mode</h3>
+<div class="outline-text-3" id="text-18-34">
 <div class="org-src-container">
 <pre class="src src-emacs-lisp"><span style="color: #e91e63;">(</span><span style="color: #fff59d;">use-package</span> <span style="color: #8bc34a;">web-mode</span>
   <span style="color: #ff8A65;">:mode</span> <span style="color: #2196F3;">(</span><span style="color: #EF6C00;">(</span><span style="color: #9ccc65;">"\\.tmpl\\'"</span> . web-mode<span style="color: #EF6C00;">)</span>
@@ -6669,8 +6747,8 @@ This is useful with server mode when editing gmail messages. I think that it is 
 </div>
 </div>
 <div id="outline-container-helmthemes" class="outline-3">
-<h3 id="helmthemes"><span class="section-number-3">17.36</span> helm-themes</h3>
-<div class="outline-text-3" id="text-17-36">
+<h3 id="helmthemes"><span class="section-number-3">18.35</span> helm-themes</h3>
+<div class="outline-text-3" id="text-18-35">
 <div class="org-src-container">
 <pre class="src src-emacs-lisp"><span style="color: #e91e63;">(</span><span style="color: #fff59d;">use-package</span> <span style="color: #8bc34a;">helm-themes</span><span style="color: #e91e63;">)</span>
 </pre>
@@ -6678,8 +6756,8 @@ This is useful with server mode when editing gmail messages. I think that it is 
 </div>
 </div>
 <div id="outline-container-helmswoop" class="outline-3">
-<h3 id="helmswoop"><span class="section-number-3">17.37</span> helm-swoop</h3>
-<div class="outline-text-3" id="text-17-37">
+<h3 id="helmswoop"><span class="section-number-3">18.36</span> helm-swoop</h3>
+<div class="outline-text-3" id="text-18-36">
 <div class="org-src-container">
 <pre class="src src-emacs-lisp"><span style="color: #e91e63;">(</span><span style="color: #fff59d;">use-package</span> <span style="color: #8bc34a;">helm-swoop</span>
   <span style="color: #ff8A65;">:bind</span> <span style="color: #2196F3;">(</span><span style="color: #9ccc65;">"C-S-s"</span> . helm-swoop<span style="color: #2196F3;">)</span>
@@ -6689,8 +6767,8 @@ This is useful with server mode when editing gmail messages. I think that it is 
 </div>
 </div>
 <div id="outline-container-perspective" class="outline-3">
-<h3 id="perspective"><span class="section-number-3">17.38</span> perspective</h3>
-<div class="outline-text-3" id="text-17-38">
+<h3 id="perspective"><span class="section-number-3">18.37</span> perspective</h3>
+<div class="outline-text-3" id="text-18-37">
 <p>
 I've disabled perspective because I just don't use it much.
 </p>
@@ -6745,8 +6823,8 @@ I've disabled perspective because I just don't use it much.
 </div>
 </div>
 <div id="outline-container-smex" class="outline-3">
-<h3 id="smex"><span class="section-number-3">17.39</span> smex</h3>
-<div class="outline-text-3" id="text-17-39">
+<h3 id="smex"><span class="section-number-3">18.38</span> smex</h3>
+<div class="outline-text-3" id="text-18-38">
 <div class="org-src-container">
 <pre class="src src-emacs-lisp"><span style="color: #e91e63;">(</span><span style="color: #fff59d;">use-package</span> <span style="color: #8bc34a;">smex</span>
   <span style="color: #b0bec5;">;; </span><span style="color: #b0bec5;">Using helm-M-x instead</span>
@@ -6759,8 +6837,8 @@ I've disabled perspective because I just don't use it much.
 </div>
 </div>
 <div id="outline-container-java" class="outline-3">
-<h3 id="java"><span class="section-number-3">17.40</span> java</h3>
-<div class="outline-text-3" id="text-17-40">
+<h3 id="java"><span class="section-number-3">18.39</span> java</h3>
+<div class="outline-text-3" id="text-18-39">
 <div class="org-src-container">
 <pre class="src src-emacs-lisp"><span style="color: #e91e63;">(</span>add-hook 'java-mode-hook
           <span style="color: #2196F3;">(</span><span style="color: #fff59d;">lambda</span> <span style="color: #EF6C00;">()</span>
@@ -6772,8 +6850,8 @@ I've disabled perspective because I just don't use it much.
 </div>
 </div>
 <div id="outline-container-androidmode" class="outline-3">
-<h3 id="androidmode"><span class="section-number-3">17.41</span> android-mode</h3>
-<div class="outline-text-3" id="text-17-41">
+<h3 id="androidmode"><span class="section-number-3">18.40</span> android-mode</h3>
+<div class="outline-text-3" id="text-18-40">
 <div class="org-src-container">
 <pre class="src src-emacs-lisp"><span style="color: #e91e63;">(</span><span style="color: #fff59d;">use-package</span> <span style="color: #8bc34a;">android-mode</span>
   <span style="color: #ff8A65;">:after</span> s
@@ -6786,8 +6864,8 @@ I've disabled perspective because I just don't use it much.
 </div>
 </div>
 <div id="outline-container-gradlemode" class="outline-3">
-<h3 id="gradlemode"><span class="section-number-3">17.42</span> gradle-mode</h3>
-<div class="outline-text-3" id="text-17-42">
+<h3 id="gradlemode"><span class="section-number-3">18.41</span> gradle-mode</h3>
+<div class="outline-text-3" id="text-18-41">
 <div class="org-src-container">
 <pre class="src src-emacs-lisp"><span style="color: #e91e63;">(</span><span style="color: #fff59d;">use-package</span> <span style="color: #8bc34a;">gradle-mode</span><span style="color: #e91e63;">)</span>
 </pre>
@@ -6795,8 +6873,8 @@ I've disabled perspective because I just don't use it much.
 </div>
 </div>
 <div id="outline-container-jsxmode" class="outline-3">
-<h3 id="jsxmode"><span class="section-number-3">17.43</span> jsx-mode</h3>
-<div class="outline-text-3" id="text-17-43">
+<h3 id="jsxmode"><span class="section-number-3">18.42</span> jsx-mode</h3>
+<div class="outline-text-3" id="text-18-42">
 <div class="org-src-container">
 <pre class="src src-emacs-lisp"><span style="color: #e91e63;">(</span><span style="color: #fff59d;">use-package</span> <span style="color: #8bc34a;">jsx-mode</span>
   <span style="color: #ff8A65;">:mode</span> <span style="color: #9ccc65;">"\\.jsx\\'"</span><span style="color: #e91e63;">)</span>
@@ -6805,8 +6883,8 @@ I've disabled perspective because I just don't use it much.
 </div>
 </div>
 <div id="outline-container-css" class="outline-3">
-<h3 id="css"><span class="section-number-3">17.44</span> css</h3>
-<div class="outline-text-3" id="text-17-44">
+<h3 id="css"><span class="section-number-3">18.43</span> css</h3>
+<div class="outline-text-3" id="text-18-43">
 <div class="org-src-container">
 <pre class="src src-emacs-lisp"><span style="color: #e91e63;">(</span>eval-after-load 'css-mode
   '<span style="color: #2196F3;">(</span>define-key css-mode-map <span style="color: #EF6C00;">(</span>kbd <span style="color: #9ccc65;">"C-c b"</span><span style="color: #EF6C00;">)</span> 'web-beautify-css<span style="color: #2196F3;">)</span><span style="color: #e91e63;">)</span>
@@ -6815,8 +6893,8 @@ I've disabled perspective because I just don't use it much.
 </div>
 </div>
 <div id="outline-container-robe" class="outline-3">
-<h3 id="robe"><span class="section-number-3">17.45</span> robe</h3>
-<div class="outline-text-3" id="text-17-45">
+<h3 id="robe"><span class="section-number-3">18.44</span> robe</h3>
+<div class="outline-text-3" id="text-18-44">
 <div class="org-src-container">
 <pre class="src src-emacs-lisp"><span style="color: #e91e63;">(</span><span style="color: #fff59d;">use-package</span> <span style="color: #8bc34a;">robe</span>
   <span style="color: #ff8A65;">:commands</span> robe-mode
@@ -6827,8 +6905,8 @@ I've disabled perspective because I just don't use it much.
 </div>
 </div>
 <div id="outline-container-rinari" class="outline-3">
-<h3 id="rinari"><span class="section-number-3">17.46</span> rinari</h3>
-<div class="outline-text-3" id="text-17-46">
+<h3 id="rinari"><span class="section-number-3">18.45</span> rinari</h3>
+<div class="outline-text-3" id="text-18-45">
 <div class="org-src-container">
 <pre class="src src-emacs-lisp"><span style="color: #e91e63;">(</span><span style="color: #fff59d;">use-package</span> <span style="color: #8bc34a;">rinari</span>
   <span style="color: #ff8A65;">:after</span> ruby-mode<span style="color: #e91e63;">)</span>
@@ -6837,8 +6915,8 @@ I've disabled perspective because I just don't use it much.
 </div>
 </div>
 <div id="outline-container-helmgtags" class="outline-3">
-<h3 id="helmgtags"><span class="section-number-3">17.47</span> helm-gtags</h3>
-<div class="outline-text-3" id="text-17-47">
+<h3 id="helmgtags"><span class="section-number-3">18.46</span> helm-gtags</h3>
+<div class="outline-text-3" id="text-18-46">
 <div class="org-src-container">
 <pre class="src src-emacs-lisp"><span style="color: #e91e63;">(</span><span style="color: #fff59d;">use-package</span> <span style="color: #8bc34a;">helm-gtags</span>
   <span style="color: #ff8A65;">:config</span>
@@ -6864,8 +6942,8 @@ I've disabled perspective because I just don't use it much.
 </div>
 </div>
 <div id="outline-container-sgmlmode" class="outline-3">
-<h3 id="sgmlmode"><span class="section-number-3">17.48</span> sgml-mode</h3>
-<div class="outline-text-3" id="text-17-48">
+<h3 id="sgmlmode"><span class="section-number-3">18.47</span> sgml-mode</h3>
+<div class="outline-text-3" id="text-18-47">
 <div class="org-src-container">
 <pre class="src src-emacs-lisp"><span style="color: #e91e63;">(</span><span style="color: #fff59d;">use-package</span> <span style="color: #8bc34a;">sgml-mode</span>
   <span style="color: #b0bec5;">;; </span><span style="color: #b0bec5;">:bind ("C-c b" . web-beautify-html) TODO: mode specific, change binding</span>
@@ -6875,8 +6953,8 @@ I've disabled perspective because I just don't use it much.
 </div>
 </div>
 <div id="outline-container-evil" class="outline-3">
-<h3 id="evil"><span class="section-number-3">17.49</span> evil</h3>
-<div class="outline-text-3" id="text-17-49">
+<h3 id="evil"><span class="section-number-3">18.48</span> evil</h3>
+<div class="outline-text-3" id="text-18-48">
 <div class="org-src-container">
 <pre class="src src-emacs-lisp"><span style="color: #e91e63;">(</span><span style="color: #fff59d;">use-package</span> <span style="color: #8bc34a;">evil</span> <span style="color: #ff8A65;">:commands</span> <span style="color: #2196F3;">(</span>evil-mode<span style="color: #2196F3;">)</span><span style="color: #e91e63;">)</span>
 </pre>
@@ -6884,8 +6962,8 @@ I've disabled perspective because I just don't use it much.
 </div>
 </div>
 <div id="outline-container-hackernews" class="outline-3">
-<h3 id="hackernews"><span class="section-number-3">17.50</span> hackernews</h3>
-<div class="outline-text-3" id="text-17-50">
+<h3 id="hackernews"><span class="section-number-3">18.49</span> hackernews</h3>
+<div class="outline-text-3" id="text-18-49">
 <div class="org-src-container">
 <pre class="src src-emacs-lisp"><span style="color: #e91e63;">(</span><span style="color: #fff59d;">use-package</span> <span style="color: #8bc34a;">hackernews</span> <span style="color: #ff8A65;">:commands</span> hackernews<span style="color: #e91e63;">)</span>
 </pre>
@@ -6894,11 +6972,11 @@ I've disabled perspective because I just don't use it much.
 </div>
 </div>
 <div id="outline-container-appearance" class="outline-2">
-<h2 id="appearance"><span class="section-number-2">18</span> Appearance</h2>
-<div class="outline-text-2" id="text-18">
+<h2 id="appearance"><span class="section-number-2">19</span> Appearance</h2>
+<div class="outline-text-2" id="text-19">
 </div><div id="outline-container-basicconfig" class="outline-3">
-<h3 id="basicconfig"><span class="section-number-3">18.1</span> Basic Config</h3>
-<div class="outline-text-3" id="text-18-1">
+<h3 id="basicconfig"><span class="section-number-3">19.1</span> Basic Config</h3>
+<div class="outline-text-3" id="text-19-1">
 <div class="org-src-container">
 <pre class="src src-emacs-lisp"><span style="color: #e91e63;">(</span><span style="color: #fff59d;">setq</span> inhibit-startup-screen t<span style="color: #e91e63;">)</span>
 <span style="color: #e91e63;">(</span>blink-cursor-mode -1<span style="color: #e91e63;">)</span>
@@ -6907,8 +6985,8 @@ I've disabled perspective because I just don't use it much.
 </div>
 </div>
 <div id="outline-container-themes" class="outline-3">
-<h3 id="themes"><span class="section-number-3">18.2</span> Themes</h3>
-<div class="outline-text-3" id="text-18-2">
+<h3 id="themes"><span class="section-number-3">19.2</span> Themes</h3>
+<div class="outline-text-3" id="text-19-2">
 <p>
 Ensure all themes that I use are installed:
 </p>
@@ -6930,8 +7008,8 @@ Ensure all themes that I use are installed:
 </div>
 </div>
 <div id="outline-container-alltheicons" class="outline-3">
-<h3 id="alltheicons"><span class="section-number-3">18.3</span> all-the-icons</h3>
-<div class="outline-text-3" id="text-18-3">
+<h3 id="alltheicons"><span class="section-number-3">19.3</span> all-the-icons</h3>
+<div class="outline-text-3" id="text-19-3">
 <div class="org-src-container">
 <pre class="src src-emacs-lisp"><span style="color: #e91e63;">(</span><span style="color: #fff59d;">use-package</span> <span style="color: #8bc34a;">all-the-icons</span>
   <span style="color: #ff8A65;">:demand</span> t<span style="color: #e91e63;">)</span>
@@ -6940,11 +7018,11 @@ Ensure all themes that I use are installed:
 </div>
 </div>
 <div id="outline-container-spaceline" class="outline-3">
-<h3 id="spaceline"><span class="section-number-3">18.4</span> spaceline</h3>
-<div class="outline-text-3" id="text-18-4">
+<h3 id="spaceline"><span class="section-number-3">19.4</span> spaceline</h3>
+<div class="outline-text-3" id="text-19-4">
 </div><div id="outline-container-disablesrgbcolorspacetomakepowerlineseparatorswork" class="outline-4">
-<h4 id="disablesrgbcolorspacetomakepowerlineseparatorswork"><span class="section-number-4">18.4.1</span> Disable sRGB colorspace to make powerline separators work</h4>
-<div class="outline-text-4" id="text-18-4-1">
+<h4 id="disablesrgbcolorspacetomakepowerlineseparatorswork"><span class="section-number-4">19.4.1</span> Disable sRGB colorspace to make powerline separators work</h4>
+<div class="outline-text-4" id="text-19-4-1">
 <div class="org-src-container">
 <pre class="src src-emacs-lisp"><span style="color: #e91e63;">(</span><span style="color: #fff59d;">setq</span> ns-use-srgb-colorspace nil<span style="color: #e91e63;">)</span>
 </pre>
@@ -6952,8 +7030,8 @@ Ensure all themes that I use are installed:
 </div>
 </div>
 <div id="outline-container-config1" class="outline-4">
-<h4 id="config1"><span class="section-number-4">18.4.2</span> config</h4>
-<div class="outline-text-4" id="text-18-4-2">
+<h4 id="config1"><span class="section-number-4">19.4.2</span> config</h4>
+<div class="outline-text-4" id="text-19-4-2">
 <div class="org-src-container">
 <pre class="src src-emacs-lisp"><span style="color: #e91e63;">(</span><span style="color: #fff59d;">use-package</span> <span style="color: #8bc34a;">spaceline-config</span>
   <span style="color: #ff8A65;">:ensure</span> spaceline
@@ -7004,8 +7082,8 @@ Ensure all themes that I use are installed:
 </div>
 </div>
 <div id="outline-container-pagebreaklines" class="outline-3">
-<h3 id="pagebreaklines"><span class="section-number-3">18.5</span> page-break-lines</h3>
-<div class="outline-text-3" id="text-18-5">
+<h3 id="pagebreaklines"><span class="section-number-3">19.5</span> page-break-lines</h3>
+<div class="outline-text-3" id="text-19-5">
 <div class="org-src-container">
 <pre class="src src-emacs-lisp"><span style="color: #e91e63;">(</span><span style="color: #fff59d;">use-package</span> <span style="color: #8bc34a;">page-break-lines</span>
   <span style="color: #ff8A65;">:defer</span> 1
@@ -7019,8 +7097,8 @@ Ensure all themes that I use are installed:
 </div>
 </div>
 <div id="outline-container-helmthemes1" class="outline-3">
-<h3 id="helmthemes1"><span class="section-number-3">18.6</span> helm-themes</h3>
-<div class="outline-text-3" id="text-18-6">
+<h3 id="helmthemes1"><span class="section-number-3">19.6</span> helm-themes</h3>
+<div class="outline-text-3" id="text-19-6">
 <p>
 helm-themes provides an easy way to switch between emacs-themes.
 </p>
@@ -7032,8 +7110,8 @@ helm-themes provides an easy way to switch between emacs-themes.
 </div>
 </div>
 <div id="outline-container-windownumber" class="outline-3">
-<h3 id="windownumber"><span class="section-number-3">18.7</span> window-number</h3>
-<div class="outline-text-3" id="text-18-7">
+<h3 id="windownumber"><span class="section-number-3">19.7</span> window-number</h3>
+<div class="outline-text-3" id="text-19-7">
 <div class="org-src-container">
 <pre class="src src-emacs-lisp"><span style="color: #e91e63;">(</span><span style="color: #fff59d;">use-package</span> <span style="color: #8bc34a;">window-number</span>
   <span style="color: #ff8A65;">:defer</span> t<span style="color: #e91e63;">)</span>
@@ -7042,8 +7120,8 @@ helm-themes provides an easy way to switch between emacs-themes.
 </div>
 </div>
 <div id="outline-container-whitespacesetup" class="outline-3">
-<h3 id="whitespacesetup"><span class="section-number-3">18.8</span> Whitespace Setup</h3>
-<div class="outline-text-3" id="text-18-8">
+<h3 id="whitespacesetup"><span class="section-number-3">19.8</span> Whitespace Setup</h3>
+<div class="outline-text-3" id="text-19-8">
 <p>
 Make whitespace-mode use just basic coloring:
 </p>
@@ -7066,8 +7144,8 @@ Set the character used to represent spaces to ·, and the character used for tab
 </div>
 
 <div id="outline-container-colorizecompliationbuffers" class="outline-3">
-<h3 id="colorizecompliationbuffers"><span class="section-number-3">18.9</span> Colorize Compliation Buffers</h3>
-<div class="outline-text-3" id="text-18-9">
+<h3 id="colorizecompliationbuffers"><span class="section-number-3">19.9</span> Colorize Compliation Buffers</h3>
+<div class="outline-text-3" id="text-19-9">
 <p>
 This automatically applies ansi-color interpretation of terminal escape
 sequences to compilation buffers.
@@ -7089,8 +7167,8 @@ sequences to compilation buffers.
 </div>
 </div>
 <div id="outline-container-automaticthemechanger" class="outline-3">
-<h3 id="automaticthemechanger"><span class="section-number-3">18.10</span> Automatic Theme Changer</h3>
-<div class="outline-text-3" id="text-18-10">
+<h3 id="automaticthemechanger"><span class="section-number-3">19.10</span> Automatic Theme Changer</h3>
+<div class="outline-text-3" id="text-19-10">
 <p>
 Disabled for now
 </p>
@@ -7108,8 +7186,8 @@ Disabled for now
 </div>
 </div>
 <div id="outline-container-fixansitermcolors" class="outline-3">
-<h3 id="fixansitermcolors"><span class="section-number-3">18.11</span> Fix <code>ansi-term</code> Colors</h3>
-<div class="outline-text-3" id="text-18-11">
+<h3 id="fixansitermcolors"><span class="section-number-3">19.11</span> Fix <code>ansi-term</code> Colors</h3>
+<div class="outline-text-3" id="text-19-11">
 <p>
 For some reason, loading certain themes can cause colors in
 <code>ansi-term-color-vector</code> to be undefined. The following code handles restoring
@@ -7132,11 +7210,11 @@ load-theme hook (See the heading below).
 </div>
 </div>
 <div id="outline-container-afterloadthemehook" class="outline-3">
-<h3 id="afterloadthemehook"><span class="section-number-3">18.12</span> After <code>load-theme</code> hook</h3>
-<div class="outline-text-3" id="text-18-12">
+<h3 id="afterloadthemehook"><span class="section-number-3">19.12</span> After <code>load-theme</code> hook</h3>
+<div class="outline-text-3" id="text-19-12">
 <div class="org-src-container">
 <pre class="src src-emacs-lisp"><span style="color: #e91e63;">(</span><span style="color: #fff59d;">defvar</span> <span style="color: #ffcc80;">imalison:light-theme</span> 'solarized-light<span style="color: #e91e63;">)</span>
-<span style="color: #e91e63;">(</span><span style="color: #fff59d;">defvar</span> <span style="color: #ffcc80;">imalison:dark-theme</span> 'material<span style="color: #e91e63;">)</span>
+<span style="color: #e91e63;">(</span><span style="color: #fff59d;">defvar</span> <span style="color: #ffcc80;">imalison:dark-theme</span> 'flatland<span style="color: #e91e63;">)</span>
 
 <span style="color: #e91e63;">(</span><span style="color: #fff59d;">defun</span> <span style="color: #84ffff;">imalison:after-load-theme</span> <span style="color: #2196F3;">(</span><span style="color: #84ffff;">&amp;rest</span> _args<span style="color: #2196F3;">)</span>
   <span style="color: #2196F3;">(</span><span style="color: #fff59d;">when</span> <span style="color: #EF6C00;">(</span>fboundp 'powerline-reset<span style="color: #EF6C00;">)</span>
@@ -7150,8 +7228,8 @@ load-theme hook (See the heading below).
 </div>
 </div>
 <div id="outline-container-frameinitialization" class="outline-3">
-<h3 id="frameinitialization"><span class="section-number-3">18.13</span> Frame Initialization</h3>
-<div class="outline-text-3" id="text-18-13">
+<h3 id="frameinitialization"><span class="section-number-3">19.13</span> Frame Initialization</h3>
+<div class="outline-text-3" id="text-19-13">
 <div class="org-src-container">
 <pre class="src src-emacs-lisp"><span style="color: #e91e63;">(</span><span style="color: #fff59d;">defvar</span> <span style="color: #ffcc80;">imalison:linum-format</span><span style="color: #e91e63;">)</span>
 
@@ -7206,8 +7284,8 @@ load-theme hook (See the heading below).
 </div>
 </div>
 <div id="outline-container-postinitcustom" class="outline-2">
-<h2 id="postinitcustom"><span class="section-number-2">19</span> Post Init Custom</h2>
-<div class="outline-text-2" id="text-19">
+<h2 id="postinitcustom"><span class="section-number-2">20</span> Post Init Custom</h2>
+<div class="outline-text-2" id="text-20">
 <div class="org-src-container">
 <pre class="src src-emacs-lisp"><span style="color: #e91e63;">(</span><span style="color: #fff59d;">when</span> <span style="color: #2196F3;">(</span>file-exists-p custom-after-file<span style="color: #2196F3;">)</span> <span style="color: #2196F3;">(</span>load custom-after-file<span style="color: #2196F3;">)</span><span style="color: #e91e63;">)</span>
 <span style="color: #e91e63;">(</span><span style="color: #fff59d;">when</span> <span style="color: #2196F3;">(</span>file-exists-p machine-custom<span style="color: #2196F3;">)</span> <span style="color: #2196F3;">(</span>load machine-custom<span style="color: #2196F3;">)</span><span style="color: #e91e63;">)</span>
@@ -7218,7 +7296,7 @@ load-theme hook (See the heading below).
 </div>
 <div id="postamble" class="status">
 <p class="author">Author: Ivan Malison</p>
-<p class="date">Created: 2016-11-08 Tue 18:25</p>
+<p class="date">Created: 2016-11-21 Mon 17:45</p>
 <p class="validation"><a href="http://validator.w3.org/check?uri=referer">Validate</a></p>
 </div>
 </body>
