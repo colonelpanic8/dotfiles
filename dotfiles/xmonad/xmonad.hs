@@ -137,9 +137,12 @@ setToggleActive' toggle active = toggleInState toggle (Just active) >>=
 setToggleActive :: (Transformer t Window) => t -> Bool -> X ()
 setToggleActive = (void .) . setToggleActive'
 
+deactivateFull = setToggleActive NBFULL False
+
 toggleOr toggle toState action = setToggleActive' toggle toState >>= ((`when` action) . not)
 
 deactivateFullOr = toggleOr NBFULL False
+deactivateFullAnd action = sequence_ [deactivateFull, action]
 
 -- Layout setup
 
@@ -404,8 +407,8 @@ addKeys conf@XConfig {modMask = modm} =
 
     -- ModAlt bindings
     , ((modalt, xK_w), spawn "rofi_wallpaper.sh")
-    , ((modalt, xK_space), restoreOrMinimizeOtherClasses)
-    , ((modalt, xK_Return), restoreAllMinimized)
+    , ((modalt, xK_space), deactivateFullOr restoreOrMinimizeOtherClasses)
+    , ((modalt, xK_Return), deactivateFullAnd restoreAllMinimized)
     , ((modalt, xK_5), selectToggle)
     , ((modalt, xK_4), selectLimit)
 
