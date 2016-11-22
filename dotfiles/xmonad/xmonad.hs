@@ -45,6 +45,7 @@ import XMonad.Util.CustomKeys
 import qualified XMonad.Util.Dmenu as DM
 import qualified XMonad.Util.ExtensibleState as XS
 import XMonad.Util.Minimize
+import XMonad.Util.NamedScratchpad (NamedScratchpad(NS), nonFloating, namedScratchpadAction)
 import XMonad.Util.NamedWindows (getName)
 
 main = xmonad $ def
@@ -364,6 +365,14 @@ swapMinimizeStateAfter action = withFocused $ \originalWindow -> do
             when (newWindow /= originalWindow)
                  $ minimizeWindow originalWindow
 
+-- Named Scratchpads
+scratchpads = [ NS "htop" htopCommnad (title =? "htop") nonFloating
+              , NS "spotify" spotifyCommand spotifySelector nonFloating
+              , NS "hangouts" hangoutsCommand  hangoutsSelector nonFloating
+              ]
+
+doScratchpad = deactivateFullAnd . namedScratchpadAction scratchpads
+
 -- Raise or spawn
 
 myRaiseNextMaybe = (maybeUnminimizeClassAfter .) . raiseNextMaybeCustomFocus greedyFocusWindow
@@ -421,6 +430,16 @@ addKeys conf@XConfig {modMask = modm} =
     , ((modalt, xK_5), selectToggle)
     , ((modalt, xK_4), selectLimit)
 
+    -- ScratchPads
+    , ((modalt, xK_m), doScratchpad "htop")
+    , ((modalt, xK_s), doScratchpad "spotify")
+    , ((modalt, xK_h), doScratchpad "hangouts")
+
+    , ((modalt .|. controlMask, xK_h),
+       myRaiseNextMaybe (spawn hangoutsCommand) hangoutsSelector)
+    , ((modalt .|. controlMask, xK_s),
+         myRaiseNextMaybe (spawn spotifyCommand) spotifySelector)
+
     -- playerctl
     , ((mod3Mask, xK_f), spawn "playerctl play-pause")
     , ((0, xF86XK_AudioPause), spawn "playerctl play-pause")
@@ -440,8 +459,8 @@ addKeys conf@XConfig {modMask = modm} =
 
     [ (modalt, xK_e, spawn emacsCommand, emacsSelector)
     , (modalt, xK_c, spawn chromeCommand, chromeSelector)
-    , (modalt, xK_s, spawn spotifyCommand, spotifySelector)
-    , (modalt, xK_h, spawn hangoutsCommand, hangoutsSelector)
+    -- , (modalt, xK_s, spawn spotifyCommand, spotifySelector)
+    -- , (modalt, xK_h, spawn hangoutsCommand, hangoutsSelector)
     , (modalt, xK_t, spawn transmissionCommand, transmissionSelector)
     ] ++
     -- Replace original moving stuff around + greedy view bindings
