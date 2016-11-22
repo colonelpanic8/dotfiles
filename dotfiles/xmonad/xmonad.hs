@@ -76,6 +76,15 @@ virtualClasses = [ (hangoutsSelector, "Hangouts")
                  , (transmissionSelector, "Transmission")
                  ]
 
+-- Commands
+
+hangoutsCommand = "start_hangouts.sh"
+spotifyCommand = "spotify"
+chromeCommand = "google-chrome-stable"
+emacsCommand = "emacsclient -c"
+htopCommnad = "urxvt -e htop"
+transmissionCommand = "transmission-gtk"
+
 -- Startup hook
 
 myStartup = spawn "systemctl --user start wm.target"
@@ -429,11 +438,11 @@ addKeys conf@XConfig {modMask = modm} =
 
     ] ++ bindBringAndRaiseMany
 
-    [ (modalt, xK_e, spawn "emacsclient -c", emacsSelector)
-    , (modalt, xK_s, spawn "spotify", spotifySelector)
-    , (modalt, xK_c, spawn "google-chrome-stable", chromeSelector)
-    , (modalt, xK_h, spawn "start_hangouts.sh", hangoutsSelector)
-    , (modalt, xK_t, spawn "transmission-gtk", transmissionSelector)
+    [ (modalt, xK_e, spawn emacsCommand, emacsSelector)
+    , (modalt, xK_c, spawn chromeCommand, chromeSelector)
+    , (modalt, xK_s, spawn spotifyCommand, spotifySelector)
+    , (modalt, xK_h, spawn hangoutsCommand, hangoutsSelector)
+    , (modalt, xK_t, spawn transmissionCommand, transmissionSelector)
     ] ++
     -- Replace original moving stuff around + greedy view bindings
     [((additionalMask .|. modm, key), windows $ function workspace)
