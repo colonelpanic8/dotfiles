@@ -1301,7 +1301,7 @@ whenever there is an error.
 (setq display-time-default-load-average nil)
 (setq display-time-interval 1)
 (setq display-time-format "%a|%m-%d|%r")
-(display-time-mode 1)
+(display-time-mode (if (imalison:use-frames-only) -1 +1))
 #+END_SRC
 ** Kill Ring
 #+BEGIN_SRC emacs-lisp
