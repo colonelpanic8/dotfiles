@@ -91,9 +91,8 @@ myManageHook = composeAll . concat $
 -- Toggles
 unmodifyLayout (ModifiedLayout _ x') =  x'
 
-selectLimit = do
-  result <- DM.menuArgs "rofi" ["-dmenu", "-i"] ["2", "3", "4"]
-  setLimit $ read result
+selectLimit = DM.menuArgs "rofi" ["-dmenu", "-i"] ["2", "3", "4"] >>=
+              (setLimit . read)
 
 data MyToggles = LIMIT
                | GAPS
@@ -121,10 +120,8 @@ toggleToStringWithState :: (Transformer t Window, Show t) => t -> X String
 toggleToStringWithState toggle = (printf "%s (%s)" (show toggle) . toggleStateToString) <$>
                                  isToggleActive toggle
 
-selectToggle = do
-  dmenuMap <- togglesMap
-  Just selectedToggle <- DM.menuMapArgs "rofi" ["-dmenu", "-i"] dmenuMap
-  sendMessage selectedToggle
+selectToggle = togglesMap >>= DM.menuMapArgs "rofi" ["-dmenu", "-i"] >>=
+               flip whenJust sendMessage
 
 toggleInState :: (Transformer t Window) => t -> Maybe Bool -> X Bool
 toggleInState t s = fmap (/= s) (isToggleActive t)
@@ -163,9 +160,8 @@ layoutList = snd layoutInfo
 
 layoutNames = [description layout | layout <- layoutList]
 
-selectLayout = do
-  selectedLayout <- DM.menuArgs "rofi" ["-dmenu", "-i"] layoutNames
-  sendMessage $ JumpToLayout selectedLayout
+selectLayout = DM.menuArgs "rofi" ["-dmenu", "-i"] layoutNames >>=
+               (sendMessage . JumpToLayout)
 
 myLayoutHook = avoidStruts . minimize . boringAuto . mkToggle1 MIRROR .
                mkToggle1 LIMIT . mkToggle1 GAPS . mkToggle1 MAGICFOCUS .
