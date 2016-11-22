@@ -197,6 +197,17 @@ myDecorateName ws w = do
   workspaceToName <- getWorkspaceNames
   return $ printf "%-20s%-40s %+30s" classTitle (take 40 name)
              "in " ++ workspaceToName (W.tag ws)
+
+-- This needs access to the xmonad to unminimize so it can't be done with the
+-- exiting window bringer interface
+myBringWindow WindowBringerConfig{ menuCommand = cmd
+                                 , menuArgs = args
+                                 , windowTitler = titler
+                                 } =
+  windowMap' titler >>= DM.menuMapArgs cmd args >>= flip whenJust action
+    where action window = sequence_ [ maximizeWindow window
+                                    , windows $ W.focusWindow window . bringWindow window
+                                    ]
 
 -- Dynamic Workspace Renaming
 
@@ -361,8 +372,7 @@ addKeys conf@XConfig {modMask = modm} =
     , ((modm .|. shiftMask, xK_p), spawn "rofi -show run")
     , ((modm, xK_g), maybeUnminimizeAfter $
                    actionMenu myWindowBringerConfig greedyFocusWindow)
-    , ((modm, xK_b), maybeUnminimizeAfter $
-                   bringMenuConfig myWindowBringerConfig)
+    , ((modm, xK_b), myBringWindow myWindowBringerConfig)
     , ((modm .|. shiftMask, xK_b), swapMinimizeStateAfter $
                                  actionMenu myWindowBringerConfig swapFocusedWith)
     , ((modm .|. controlMask, xK_t), spawn
