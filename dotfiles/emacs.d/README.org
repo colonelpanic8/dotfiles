@@ -36,6 +36,9 @@ I'm considering turning this snippet in to a package, so please let me know if
 that is something you are interested in.
 *** Set Background Color Source Blocks
 For some reason, org-mode uses all of your currently active fontification when exporting EXCEPT for background color. [[Set Background Color of Source Blocks for Export][This]] modification fixes this.
+** [[framecontrol][Frame control]]
+My custom [[framecontrol][frame control]] stuff is built to integrate really nicely with xmonad. I
+think its pretty awesome!
 ** [[Functions][My functions section]]
 ...has a bunch of generally useful functions:
 + [[https://github.com/IvanMalison/emit/blob/2e4d788abd68bac538acb06443179b8d5885052e/emit.el#L104][emit-prefix-selector]] (SUPER USEFUL, moved to emit) See [[https://github.com/IvanMalison/emit#prefix-selector][README]] for explantion
@@ -1166,6 +1169,7 @@ programming mode.
         (select-window win)))))
 #+END_SRC
 *** display-buffer-alist
+<<framecontrol>>
 #+BEGIN_SRC emacs-lisp
 (defvar imalison:use-frames-only nil)
 
@@ -3653,6 +3657,9 @@ emr (emacs refactor) provides support for refactoring in many programming langua
 #+END_SRC
 * Utility
 ** term
+The main thing I do here is restore a bunch of keybindings that are eliminated
+in term-mode. This makes term-mode 1000% more useful
+(especially having M-x and C-y available).
 #+BEGIN_SRC emacs-lisp
 (use-package term
   :preface

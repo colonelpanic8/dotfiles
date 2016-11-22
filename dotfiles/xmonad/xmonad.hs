@@ -117,9 +117,11 @@ instance Transformer MyToggles Window where
 myToggles = [LIMIT, GAPS, MAGICFOCUS]
 otherToggles = [NBFULL, MIRROR]
 
-togglesMap = fmap M.fromList $ sequence $ map toggleTuple myToggles ++ map toggleTuple otherToggles
+togglesMap = fmap M.fromList $ sequence $
+             map toggleTuple myToggles ++ map toggleTuple otherToggles
     where
-      toggleTuple toggle = fmap (\str -> (str, Toggle toggle)) (toggleToStringWithState toggle)
+      toggleTuple toggle = fmap (\str -> (str, Toggle toggle))
+                           (toggleToStringWithState toggle)
 
 toggleStateToString s = case s of
                               Just True -> "ON"
@@ -127,8 +129,9 @@ toggleStateToString s = case s of
                               Nothing -> "N/A"
 
 toggleToStringWithState :: (Transformer t Window, Show t) => t -> X String
-toggleToStringWithState toggle = (printf "%s (%s)" (show toggle) . toggleStateToString) <$>
-                                 isToggleActive toggle
+toggleToStringWithState toggle =
+    (printf "%s (%s)" (show toggle) . toggleStateToString) <$>
+    isToggleActive toggle
 
 selectToggle = togglesMap >>= DM.menuMapArgs "rofi" ["-dmenu", "-i"] >>=
                flip whenJust sendMessage
@@ -140,8 +143,9 @@ whenB b a = do
   when b a
   return b
 
-setToggleActive' toggle active = toggleInState toggle (Just active) >>=
-                                 flip whenB (sendMessage $ Toggle toggle)
+setToggleActive' toggle active =
+    toggleInState toggle (Just active) >>=
+    flip whenB (sendMessage $ Toggle toggle)
 
 -- Ambiguous type reference without signature
 setToggleActive :: (Transformer t Window) => t -> Bool -> X ()
@@ -149,10 +153,13 @@ setToggleActive = (void .) . setToggleActive'
 
 deactivateFull = setToggleActive NBFULL False
 
-toggleOr toggle toState action = setToggleActive' toggle toState >>= ((`when` action) . not)
+toggleOr toggle toState action = setToggleActive' toggle toState >>=
+                                 ((`when` action) . not)
 
 deactivateFullOr = toggleOr NBFULL False
 deactivateFullAnd action = sequence_ [deactivateFull, action]
+
+andDeactivateFull action = sequence_ [action, deactivateFull]
 
 -- Layout setup
 
@@ -219,7 +226,8 @@ myBringWindow WindowBringerConfig{ menuCommand = cmd
                                  } =
   windowMap' titler >>= DM.menuMapArgs cmd args >>= flip whenJust action
     where action window = sequence_ [ maximizeWindow window
-                                    , windows $ W.focusWindow window . bringWindow window
+                                    , windows $ W.focusWindow window .
+                                                bringWindow window
                                     ]
 
 -- Dynamic Workspace Renaming
@@ -375,8 +383,10 @@ doScratchpad = deactivateFullAnd . namedScratchpadAction scratchpads
 
 -- Raise or spawn
 
-myRaiseNextMaybe = (maybeUnminimizeClassAfter .) . raiseNextMaybeCustomFocus greedyFocusWindow
-myBringNextMaybe = (maybeUnminimizeAfter .) . raiseNextMaybeCustomFocus bringWindow
+myRaiseNextMaybe = (maybeUnminimizeClassAfter .) .
+                   raiseNextMaybeCustomFocus greedyFocusWindow
+myBringNextMaybe = (maybeUnminimizeAfter .) .
+                   raiseNextMaybeCustomFocus bringWindow
 
 bindBringAndRaise :: KeyMask -> KeySym -> X () -> Query Bool -> [((KeyMask, KeySym), X ())]
 bindBringAndRaise mask sym start query =
@@ -391,9 +401,9 @@ bindBringAndRaiseMany = concatMap (\(a, b, c, d) -> bindBringAndRaise a b c d)
 addKeys conf@XConfig {modMask = modm} =
     [ ((modm, xK_p), spawn "rofi -show drun")
     , ((modm .|. shiftMask, xK_p), spawn "rofi -show run")
-    , ((modm, xK_g), maybeUnminimizeAfter $
+    , ((modm, xK_g), andDeactivateFull $ maybeUnminimizeAfter $
                    actionMenu myWindowBringerConfig greedyFocusWindow)
-    , ((modm, xK_b), myBringWindow myWindowBringerConfig)
+    , ((modm, xK_b), andDeactivateFull $ myBringWindow myWindowBringerConfig)
     , ((modm .|. shiftMask, xK_b), swapMinimizeStateAfter $
                                  actionMenu myWindowBringerConfig swapFocusedWith)
     , ((modm .|. controlMask, xK_t), spawn
