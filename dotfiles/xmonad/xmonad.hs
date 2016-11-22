@@ -444,6 +444,7 @@ addKeys conf@XConfig {modMask = modm} =
 
     -- ModAlt bindings
     , ((modalt, xK_w), spawn "rofi_wallpaper.sh")
+    , ((modalt, xK_z), spawn "split_out_chrome_tab.sh")
     , ((modalt, xK_space), deactivateFullOr restoreOrMinimizeOtherClasses)
     , ((modalt, xK_Return), deactivateFullAnd restoreAllMinimized)
     , ((modalt, xK_5), selectToggle)
