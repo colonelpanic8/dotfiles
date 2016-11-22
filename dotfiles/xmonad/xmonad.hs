@@ -459,11 +459,11 @@ addKeys conf@XConfig {modMask = modm} =
     , ((0, xF86XK_AudioPrev), spawn "playerctl previous")
 
     -- volume control
-    , ((0, xF86XK_AudioRaiseVolume), spawn "pactl set-sink-volume 0 +05%")
-    , ((0, xF86XK_AudioLowerVolume), spawn "pactl set-sink-volume 0 -05%")
-    , ((0, xF86XK_AudioMute), spawn "pactl set-sink-mute 0 toggle")
-    , ((mod3Mask, xK_w), spawn "pactl set-sink-volume 0 +05%")
-    , ((mod3Mask, xK_s), spawn "pactl set-sink-volume 0 -05%")
+    , ((0, xF86XK_AudioRaiseVolume), spawn "pulseaudio-ctl up")
+    , ((0, xF86XK_AudioLowerVolume), spawn "pulseaudio-ctl down")
+    , ((0, xF86XK_AudioMute), spawn "pulseaudio-ctl mute")
+    , ((mod3Mask, xK_w), spawn "pulseaudio-ctl up")
+    , ((mod3Mask, xK_s), spawn "pulseaudio-ctl down")
 
     ] ++ bindBringAndRaiseMany
 
