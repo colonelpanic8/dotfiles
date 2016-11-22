@@ -455,6 +455,7 @@ addKeys conf@XConfig {modMask = modm} =
     -- playerctl
     , ((mod3Mask, xK_f), spawn "playerctl play-pause")
     , ((0, xF86XK_AudioPause), spawn "playerctl play-pause")
+    , ((0, xF86XK_AudioPlay), spawn "playerctl play-pause")
     , ((mod3Mask, xK_d), spawn "playerctl next")
     , ((0, xF86XK_AudioNext), spawn "playerctl next")
     , ((mod3Mask, xK_a), spawn "playerctl previous")
