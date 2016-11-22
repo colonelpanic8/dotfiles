@@ -148,6 +148,8 @@ toggleOr toggle toState action = setToggleActive' toggle toState >>=
 
 deactivateFullOr = toggleOr NBFULL False
 deactivateFullAnd action = sequence_ [deactivateFull, action]
+
+andDeactivateFull action = sequence_ [action, deactivateFull]
 
 -- Layout setup
 
@@ -381,9 +383,9 @@ bindBringAndRaiseMany = concatMap (\(a, b, c, d) -> bindBringAndRaise a b c d)
 addKeys conf@XConfig {modMask = modm} =
     [ ((modm, xK_p), spawn "rofi -show drun")
     , ((modm .|. shiftMask, xK_p), spawn "rofi -show run")
-    , ((modm, xK_g), maybeUnminimizeAfter $
+    , ((modm, xK_g), andDeactivateFull $ maybeUnminimizeAfter $
                    actionMenu myWindowBringerConfig greedyFocusWindow)
-    , ((modm, xK_b), myBringWindow myWindowBringerConfig)
+    , ((modm, xK_b), andDeactivateFull $ myBringWindow myWindowBringerConfig)
     , ((modm .|. shiftMask, xK_b), swapMinimizeStateAfter $
                                  actionMenu myWindowBringerConfig swapFocusedWith)
     , ((modm .|. controlMask, xK_t), spawn
