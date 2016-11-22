@@ -107,9 +107,11 @@ instance Transformer MyToggles Window where
 myToggles = [LIMIT, GAPS, MAGICFOCUS]
 otherToggles = [NBFULL, MIRROR]
 
-togglesMap = fmap M.fromList $ sequence $ map toggleTuple myToggles ++ map toggleTuple otherToggles
+togglesMap = fmap M.fromList $ sequence $
+             map toggleTuple myToggles ++ map toggleTuple otherToggles
     where
-      toggleTuple toggle = fmap (\str -> (str, Toggle toggle)) (toggleToStringWithState toggle)
+      toggleTuple toggle = fmap (\str -> (str, Toggle toggle))
+                           (toggleToStringWithState toggle)
 
 toggleStateToString s = case s of
                               Just True -> "ON"
@@ -117,8 +119,9 @@ toggleStateToString s = case s of
                               Nothing -> "N/A"
 
 toggleToStringWithState :: (Transformer t Window, Show t) => t -> X String
-toggleToStringWithState toggle = (printf "%s (%s)" (show toggle) . toggleStateToString) <$>
-                                 isToggleActive toggle
+toggleToStringWithState toggle =
+    (printf "%s (%s)" (show toggle) . toggleStateToString) <$>
+    isToggleActive toggle
 
 selectToggle = togglesMap >>= DM.menuMapArgs "rofi" ["-dmenu", "-i"] >>=
                flip whenJust sendMessage
@@ -130,8 +133,9 @@ whenB b a = do
   when b a
   return b
 
-setToggleActive' toggle active = toggleInState toggle (Just active) >>=
-                                 flip whenB (sendMessage $ Toggle toggle)
+setToggleActive' toggle active =
+    toggleInState toggle (Just active) >>=
+    flip whenB (sendMessage $ Toggle toggle)
 
 -- Ambiguous type reference without signature
 setToggleActive :: (Transformer t Window) => t -> Bool -> X ()
@@ -139,7 +143,8 @@ setToggleActive = (void .) . setToggleActive'
 
 deactivateFull = setToggleActive NBFULL False
 
-toggleOr toggle toState action = setToggleActive' toggle toState >>= ((`when` action) . not)
+toggleOr toggle toState action = setToggleActive' toggle toState >>=
+                                 ((`when` action) . not)
 
 deactivateFullOr = toggleOr NBFULL False
 deactivateFullAnd action = sequence_ [deactivateFull, action]
@@ -209,7 +214,8 @@ myBringWindow WindowBringerConfig{ menuCommand = cmd
                                  } =
   windowMap' titler >>= DM.menuMapArgs cmd args >>= flip whenJust action
     where action window = sequence_ [ maximizeWindow window
-                                    , windows $ W.focusWindow window . bringWindow window
+                                    , windows $ W.focusWindow window .
+                                                bringWindow window
                                     ]
 
 -- Dynamic Workspace Renaming
@@ -357,8 +363,10 @@ swapMinimizeStateAfter action = withFocused $ \originalWindow -> do
 
 -- Raise or spawn
 
-myRaiseNextMaybe = (maybeUnminimizeClassAfter .) . raiseNextMaybeCustomFocus greedyFocusWindow
-myBringNextMaybe = (maybeUnminimizeAfter .) . raiseNextMaybeCustomFocus bringWindow
+myRaiseNextMaybe = (maybeUnminimizeClassAfter .) .
+                   raiseNextMaybeCustomFocus greedyFocusWindow
+myBringNextMaybe = (maybeUnminimizeAfter .) .
+                   raiseNextMaybeCustomFocus bringWindow
 
 bindBringAndRaise :: KeyMask -> KeySym -> X () -> Query Bool -> [((KeyMask, KeySym), X ())]
 bindBringAndRaise mask sym start query =
