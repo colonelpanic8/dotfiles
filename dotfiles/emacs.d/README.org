@@ -3653,6 +3653,9 @@ emr (emacs refactor) provides support for refactoring in many programming langua
 #+END_SRC
 * Utility
 ** term
+The main thing I do here is restore a bunch of keybindings that are eliminated
+in term-mode. This makes term-mode 1000% more useful
+(especially having M-x and C-y available).
 #+BEGIN_SRC emacs-lisp
 (use-package term
   :preface
