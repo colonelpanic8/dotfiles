@@ -398,6 +398,12 @@ bindBringAndRaise mask sym start query =
 bindBringAndRaiseMany :: [(KeyMask, KeySym, X (), Query Bool)] -> [((KeyMask, KeySym), X())]
 bindBringAndRaiseMany = concatMap (\(a, b, c, d) -> bindBringAndRaise a b c d)
 
+-- Screen shift
+shiftToNextScreen = withWindowSet $ \ws ->
+  case W.visible ws of
+    W.Screen i _ _:_ -> windows $ W.view (W.tag i) . W.shift (W.tag i)
+    _ -> return ()
+
 -- Key bindings
 
 addKeys conf@XConfig {modMask = modm} =
@@ -418,6 +424,7 @@ addKeys conf@XConfig {modMask = modm} =
     , ((modm .|. shiftMask, xK_m), withLastMinimized maximizeWindowAndFocus)
     , ((modm, xK_backslash), toggleWS)
     , ((modm, xK_space), deactivateFullOr $ sendMessage NextLayout)
+    , ((modm, xK_z), shiftToNextScreen)
 
     -- These need to be rebound to support boringWindows
     , ((modm, xK_j), focusDown)
