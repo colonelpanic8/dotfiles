@@ -385,9 +385,9 @@ doScratchpad = deactivateFullAnd . namedScratchpadAction scratchpads
 
 -- Raise or spawn
 
-myRaiseNextMaybe = (maybeUnminimizeClassAfter .) .
+myRaiseNextMaybe = ((deactivateFullAnd . maybeUnminimizeClassAfter) .) .
                    raiseNextMaybeCustomFocus greedyFocusWindow
-myBringNextMaybe = (maybeUnminimizeAfter .) .
+myBringNextMaybe = ((deactivateFullAnd . maybeUnminimizeAfter) .) .
                    raiseNextMaybeCustomFocus bringWindow
 
 bindBringAndRaise :: KeyMask -> KeySym -> X () -> Query Bool -> [((KeyMask, KeySym), X ())]
