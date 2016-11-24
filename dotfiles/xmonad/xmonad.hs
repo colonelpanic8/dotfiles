@@ -409,11 +409,11 @@ shiftToNextScreen = withWindowSet $ \ws ->
 addKeys conf@XConfig {modMask = modm} =
     [ ((modm, xK_p), spawn "rofi -show drun")
     , ((modm .|. shiftMask, xK_p), spawn "rofi -show run")
-    , ((modm, xK_g), andDeactivateFull $ maybeUnminimizeAfter $
+    , ((modm, xK_g), andDeactivateFull . maybeUnminimizeAfter $
                    actionMenu myWindowBringerConfig greedyFocusWindow)
     , ((modm, xK_b), andDeactivateFull $ myBringWindow myWindowBringerConfig)
-    , ((modm .|. shiftMask, xK_b), swapMinimizeStateAfter $
-                                 actionMenu myWindowBringerConfig swapFocusedWith)
+    , ((modm .|. shiftMask, xK_b),
+       swapMinimizeStateAfter $ actionMenu myWindowBringerConfig swapFocusedWith)
     , ((modm .|. controlMask, xK_t), spawn
        "systemctl --user restart taffybar.service")
     , ((modm, xK_v), spawn "copyq paste")
