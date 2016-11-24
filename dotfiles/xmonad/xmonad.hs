@@ -442,13 +442,13 @@ addKeys conf@XConfig {modMask = modm} =
     , ((mod3Mask .|. shiftMask, xK_l), spawn "dm-tool lock")
     , ((mod3Mask, xK_l), selectLayout)
     , ((mod3Mask, xK_k), spawn "rofi_kill_process.sh")
+    , ((mod3Mask, xK_t), selectToggle)
 
     -- ModAlt bindings
     , ((modalt, xK_w), spawn "rofi_wallpaper.sh")
     , ((modalt, xK_z), spawn "split_out_chrome_tab.sh")
     , ((modalt, xK_space), deactivateFullOr restoreOrMinimizeOtherClasses)
     , ((modalt, xK_Return), deactivateFullAnd restoreAllMinimized)
-    , ((modalt, xK_5), selectToggle)
     , ((modalt, xK_4), selectLimit)
 
     -- ScratchPads
