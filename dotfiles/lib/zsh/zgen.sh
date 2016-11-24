@@ -6,6 +6,7 @@ source "$ZGEN_PATH/zgen.zsh"
 
 # if the init scipt doesn't exist
 if ! zgen saved; then
+	zgen oh-my-zsh
 	zgen oh-my-zsh plugins/git
 	zgen oh-my-zsh plugins/sudo
 	zgen oh-my-zsh plugins/command-not-found
