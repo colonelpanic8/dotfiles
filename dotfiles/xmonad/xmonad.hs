@@ -441,6 +441,7 @@ addKeys conf@XConfig {modMask = modm} =
     , ((mod3Mask, xK_c), spawn "shell_command.sh")
     , ((mod3Mask .|. shiftMask, xK_l), spawn "dm-tool lock")
     , ((mod3Mask, xK_l), selectLayout)
+    , ((mod3Mask, xK_k), spawn "rofi_kill_process.sh")
 
     -- ModAlt bindings
     , ((modalt, xK_w), spawn "rofi_wallpaper.sh")
