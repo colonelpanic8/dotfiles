@@ -301,12 +301,12 @@ toggleFadingForActiveWindow = withWindowSet $ \windowSet -> do
 
 -- Minimize not in class
 
-restoreFocus action = withFocused $ \orig -> action >> windows (W.focusWindow orig)
+restoreFocus action =
+  withFocused $ \orig -> action >> windows (W.focusWindow orig)
 
 getCurrentWS = W.stack . W.workspace . W.current
 
-withWorkspace f = withWindowSet $ \ws ->
-  maybe (return ()) f (getCurrentWS ws)
+withWorkspace f = withWindowSet $ \ws -> maybe (return ()) f (getCurrentWS ws)
 
 minimizeOtherClassesInWorkspace =
   actOnWindowsInWorkspace minimizeWindow windowsWithUnfocusedClass
