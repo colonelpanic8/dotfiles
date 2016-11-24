@@ -5,8 +5,8 @@ After=taffybar.service
 
 [Service]
 Type=simple
-ExecStart=/usr/bin/keepassx "$HOME/SparkleShare/config/creds/keepass.key" "$HOME/SparkleShare/config/db.kdbx"
-ExecStop=/usr/bin/pkill keepassx
+ExecStart=/usr/bin/env keepassxc --keyfile="$HOME/SparkleShare/config/creds/keepass.key" "$HOME/SparkleShare/config/db.kdbx"
+ExecStop=/usr/bin/pkill keepassxc
 
 [Install]
 WantedBy=wm.target

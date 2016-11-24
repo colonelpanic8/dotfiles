@@ -36,7 +36,7 @@ main = do
   defaultTaffybar defaultTaffybarConfig { startWidgets = [ pager ]
                                         , endWidgets = [ tray, clock, mem, cpu, mpris ]
                                         , monitorNumber = 1
-                                        , barPosition = Bottom
+                                        , barPosition = Top
                                         }
 
 -- Local Variables:

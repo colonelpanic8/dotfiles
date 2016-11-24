@@ -4720,13 +4720,17 @@ load-theme hook (See the heading below).
   (load-theme imalison:dark-theme t)
   (spaceline-compile)
   (imalison:remove-fringe-and-hl-line-mode))
+#+END_SRC
+*** Hooks to set everything up
+#+BEGIN_SRC emacs-lisp
+(defun imalison:initial-setup-hook (&rest args)
+  (apply 'imalison:appearance args)
+  (remove-hook 'after-make-frame-functions 'imalison:initial-setup-hook))
 
 ;; This is needed because you can't set the font or theme at daemon start-up.
 ;; (when (display-graphic-p) (imalison:appearance))
 (add-hook 'after-init-hook 'imalison:appearance)
-(add-hook 'after-make-frame-functions 'imalison:appearance)
-;; TODO/XXX: why do we immediately remove this hook?
-(remove-hook 'after-make-frame-functions 'imalison:appearance)
+(add-hook 'after-make-frame-functions 'imalison:initial-setup-hook)
 #+END_SRC
 * Post Init Custom
 #+BEGIN_SRC emacs-lisp

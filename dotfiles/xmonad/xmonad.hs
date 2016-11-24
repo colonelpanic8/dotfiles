@@ -411,11 +411,11 @@ shiftToNextScreen = withWindowSet $ \ws ->
 addKeys conf@XConfig {modMask = modm} =
     [ ((modm, xK_p), spawn "rofi -show drun")
     , ((modm .|. shiftMask, xK_p), spawn "rofi -show run")
-    , ((modm, xK_g), andDeactivateFull $ maybeUnminimizeAfter $
+    , ((modm, xK_g), andDeactivateFull . maybeUnminimizeAfter $
                    actionMenu myWindowBringerConfig greedyFocusWindow)
     , ((modm, xK_b), andDeactivateFull $ myBringWindow myWindowBringerConfig)
-    , ((modm .|. shiftMask, xK_b), swapMinimizeStateAfter $
-                                 actionMenu myWindowBringerConfig swapFocusedWith)
+    , ((modm .|. shiftMask, xK_b),
+       swapMinimizeStateAfter $ actionMenu myWindowBringerConfig swapFocusedWith)
     , ((modm .|. controlMask, xK_t), spawn
        "systemctl --user restart taffybar.service")
     , ((modm, xK_v), spawn "copyq paste")
@@ -441,26 +441,27 @@ addKeys conf@XConfig {modMask = modm} =
     , ((mod3Mask, xK_p), spawn "system_password.sh")
     , ((mod3Mask, xK_h), spawn "screenshot.sh")
     , ((mod3Mask, xK_c), spawn "shell_command.sh")
-    , ((mod3Mask, xK_l), spawn "dm-tool lock")
-    , ((mod3Mask, xK_5), selectLayout)
+    , ((mod3Mask .|. shiftMask, xK_l), spawn "dm-tool lock")
+    , ((mod3Mask, xK_l), selectLayout)
+    , ((mod3Mask, xK_k), spawn "rofi_kill_process.sh")
+    , ((mod3Mask, xK_t), selectToggle)
 
     -- ModAlt bindings
     , ((modalt, xK_w), spawn "rofi_wallpaper.sh")
     , ((modalt, xK_z), spawn "split_out_chrome_tab.sh")
     , ((modalt, xK_space), deactivateFullOr restoreOrMinimizeOtherClasses)
     , ((modalt, xK_Return), deactivateFullAnd restoreAllMinimized)
-    , ((modalt, xK_5), selectToggle)
     , ((modalt, xK_4), selectLimit)
 
     -- ScratchPads
     , ((modalt, xK_m), doScratchpad "htop")
-    , ((modalt, xK_s), doScratchpad "spotify")
-    , ((modalt, xK_h), doScratchpad "hangouts")
+    , ((modalt .|. controlMask, xK_s), doScratchpad "spotify")
+    , ((modalt .|. controlMask, xK_h), doScratchpad "hangouts")
 
-    , ((modalt .|. controlMask, xK_h),
+    , ((modalt, xK_h),
        myRaiseNextMaybe (spawn hangoutsCommand) hangoutsSelector)
-    , ((modalt .|. controlMask, xK_s),
-         myRaiseNextMaybe (spawn spotifyCommand) spotifySelector)
+    , ((modalt, xK_s),
+       myRaiseNextMaybe (spawn spotifyCommand) spotifySelector)
 
     -- playerctl
     , ((mod3Mask, xK_f), spawn "playerctl play-pause")
