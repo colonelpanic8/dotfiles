@@ -9,19 +9,6 @@ packages:
     git: git@github.com:IvanMalison/taffybar.git
     commit: 39e3a95e9c2eae37ff8b67eaa31bbd18503859b1
 extra-deps:
-  - gtk-traymanager-0.1.6
-resolver: lts-7.0
-# For advanced use and comprehensive documentation of the format, please see:
-# http://docs.haskellstack.org/en/stable/yaml_configuration/
-
-# Resolver to choose a 'specific' stackage snapshot or a compiler version.
-# A snapshot resolver dictates the compiler version and the set of packages
-# to be used for project dependencies. For example:
-# resolver: lts-3.5
-# resolver: nightly-2015-09-21
-# resolver: ghc-7.10.2
-# resolver: ghcjs-0.1.0_ghc-7.10.2
-# resolver:
-#  name: custom-snapshot
-#  location: "./custom-snapshot.yaml"
+- X11-xft-0.3.1
+- gtk-traymanager-0.1.6
 resolver: lts-7.0
