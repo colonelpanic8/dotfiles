@@ -45,7 +45,8 @@ import XMonad.Util.CustomKeys
 import qualified XMonad.Util.Dmenu as DM
 import qualified XMonad.Util.ExtensibleState as XS
 import XMonad.Util.Minimize
-import XMonad.Util.NamedScratchpad (NamedScratchpad(NS), nonFloating, namedScratchpadAction)
+import XMonad.Util.NamedScratchpad
+    (NamedScratchpad(NS), nonFloating, namedScratchpadAction)
 import XMonad.Util.NamedWindows (getName)
 
 main = xmonad $ def
@@ -220,7 +221,7 @@ myDecorateName ws w = do
   return $ printf "%-20s%-40s %+30s" classTitle (take 40 name)
              "in " ++ workspaceToName (W.tag ws)
 
--- This needs access to X in order to unminimize, which means that i can't be
+-- This needs access to X in order to unminimize, which means that I can't be
 -- done with the existing window bringer interface
 myBringWindow WindowBringerConfig{ menuCommand = cmd
                                  , menuArgs = args
