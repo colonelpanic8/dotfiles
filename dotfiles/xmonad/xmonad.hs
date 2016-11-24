@@ -439,8 +439,8 @@ addKeys conf@XConfig {modMask = modm} =
     , ((mod3Mask, xK_p), spawn "system_password.sh")
     , ((mod3Mask, xK_h), spawn "screenshot.sh")
     , ((mod3Mask, xK_c), spawn "shell_command.sh")
-    , ((mod3Mask, xK_l), spawn "dm-tool lock")
-    , ((mod3Mask, xK_5), selectLayout)
+    , ((mod3Mask .|. shiftMask, xK_l), spawn "dm-tool lock")
+    , ((mod3Mask, xK_l), selectLayout)
 
     -- ModAlt bindings
     , ((modalt, xK_w), spawn "rofi_wallpaper.sh")
