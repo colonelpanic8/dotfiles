@@ -99,6 +99,7 @@ myManageHook = composeAll . concat $
                ]
 
 -- Toggles
+
 unmodifyLayout (ModifiedLayout _ x') =  x'
 
 selectLimit = DM.menuArgs "rofi" ["-dmenu", "-i"] ["2", "3", "4"] >>=
@@ -114,6 +115,7 @@ instance Transformer MyToggles Window where
     transform GAPS       x k = k (smartSpacing 5 x) unmodifyLayout
     transform MAGICFOCUS x k = k (magicFocus x) unmodifyLayout
 
+-- TODO: Figure out how to disable focus follows mouse for magicFocus
 myToggles = [LIMIT, GAPS, MAGICFOCUS]
 otherToggles = [NBFULL, MIRROR]
 
@@ -164,8 +166,6 @@ andDeactivateFull action = sequence_ [action, deactivateFull]
 goFullscreen = sendMessage $ Toggle NBFULL
 
 -- Layout setup
-
--- TODO: Figure out how to disable focus follows mouse for magicFocus
 
 rename newName = RN.renamed [RN.Replace newName]
 
@@ -376,6 +376,7 @@ swapMinimizeStateAfter action = withFocused $ \originalWindow -> do
                  $ minimizeWindow originalWindow
 
 -- Named Scratchpads
+
 scratchpads = [ NS "htop" htopCommnad (title =? "htop") nonFloating
               , NS "spotify" spotifyCommand spotifySelector nonFloating
               , NS "hangouts" hangoutsCommand  hangoutsSelector nonFloating
@@ -399,6 +400,7 @@ bindBringAndRaiseMany :: [(KeyMask, KeySym, X (), Query Bool)] -> [((KeyMask, Ke
 bindBringAndRaiseMany = concatMap (\(a, b, c, d) -> bindBringAndRaise a b c d)
 
 -- Screen shift
+
 shiftToNextScreen = withWindowSet $ \ws ->
   case W.visible ws of
     W.Screen i _ _:_ -> windows $ W.view (W.tag i) . W.shift (W.tag i)
