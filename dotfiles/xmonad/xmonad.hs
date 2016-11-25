@@ -366,6 +366,8 @@ greedyFocusWindow w ws = W.focusWindow w $ W.greedyView
 shiftThenView i = W.greedyView i . W.shift i
 
 shiftToEmptyAndView = doTo Next EmptyWS DWO.getSortByOrder (windows . shiftThenView)
+greedyBringWindow w = greedyFocusWindow w . bringWindow w
+
 
 swapFocusedWith w ws = W.modify' (swapFocusedWith' w) (W.delete' w ws)
 
@@ -393,7 +395,7 @@ doScratchpad = deactivateFullAnd . namedScratchpadAction scratchpads
 myRaiseNextMaybe = ((deactivateFullAnd . maybeUnminimizeClassAfter) .) .
                    raiseNextMaybeCustomFocus greedyFocusWindow
 myBringNextMaybe = ((deactivateFullAnd . maybeUnminimizeAfter) .) .
-                   raiseNextMaybeCustomFocus bringWindow
+                   raiseNextMaybeCustomFocus greedyBringWindow
 
 bindBringAndRaise :: KeyMask -> KeySym -> X () -> Query Bool -> [((KeyMask, KeySym), X ())]
 bindBringAndRaise mask sym start query =
