@@ -216,17 +216,14 @@ myWindowBringerConfig =
                       , windowTitler = myDecorateName
                       }
 
-classIfMatches window entry = do
-  result <- runQuery (fst entry) window
-  return $ if result then Just $ snd entry else Nothing
+classIfMatches window entry =
+  ifL (Just $ snd entry) Nothing <$> runQuery (fst entry) window
 
-getClass w = do
-  virtualClass <- findM (classIfMatches w) virtualClasses
-  case virtualClass of
-    Nothing -> do
-               classHint <- withDisplay $ \d -> io $ getClassHint d w
-               return $ resClass classHint
-    Just name -> return name
+getClassRaw w = fmap resClass $ withDisplay $ io . flip getClassHint w
+
+getVirtualClass = flip findM virtualClasses . classIfMatches
+
+getClass w = fromMaybe <$> getClassRaw w <*> getVirtualClass w
 
 myDecorateName ws w = do
   name <- show <$> getName w
