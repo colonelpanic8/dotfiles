@@ -2669,6 +2669,7 @@ The following is taken from [[https://github.com/syl20bnr/spacemacs/blob/a650877
        ;; Disable haskell-stylish-on-save, as it breaks flycheck highlighting.
        ;; NOTE: May not be true anymore - taksuyu 2015-10-06
        haskell-stylish-on-save nil)
+    (setq haskell-indent-offset 2)
     (require 'flycheck)
     (delq 'haskell-stack-ghc flycheck-checkers)
     (add-hook 'haskell-mode-hook 'turn-on-haskell-indent)
