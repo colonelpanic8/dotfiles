@@ -2689,7 +2689,7 @@ Intero seems to be causing hangs, so it has been disabled
   :after haskell-mode
   :config
   (progn
-    (setq hindent-style "chris-done")
+    (setq hindent-style nil)
     (add-hook 'haskell-mode-hook 'hindent-mode)))
 #+END_SRC
 **** ghc-mod
