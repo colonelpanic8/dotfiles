@@ -2687,7 +2687,8 @@ Intero seems to be causing hangs, so it has been disabled
 #+BEGIN_SRC emacs-lisp
 (use-package hindent
   :after haskell-mode
-  :bind ("C-c r" . hindent-reformat-decl)
+  :bind (:map hindent-mode-map
+              ("C-c d" . hindent-reformat-decl))
   :config
   (progn
     (setq hindent-style nil)
