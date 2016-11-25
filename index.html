@@ -3,7 +3,7 @@
 "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
-<!-- 2016-11-24 Thu 19:02 -->
+<!-- 2016-11-24 Thu 19:11 -->
 <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title></title>
@@ -185,6 +185,8 @@
 <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js"></script>
 <script type="text/javascript" src="http://www.pirilampo.org/styles/lib/js/jquery.stickytableheaders.js"></script>
 <script type="text/javascript" src="http://www.pirilampo.org/styles/readtheorg/js/readtheorg.js"></script>
+<style type="text/css">
+ pre.src {background-color: #fdf6e3; color: #657b83;}</style>
 <style type="text/css">
  pre.src {background-color: #fdf6e3; color: #657b83;}</style>
 <style type="text/css">
@@ -4584,7 +4586,8 @@ Intero seems to be causing hangs, so it has been disabled
 <div class="org-src-container">
 <pre class="src src-emacs-lisp"><span style="color: #2aa198;">(</span><span style="color: #859900; font-weight: bold;">use-package</span> <span style="color: #268bd2; font-weight: bold;">hindent</span>
   <span style="color: #657b83; font-weight: bold;">:after</span> haskell-mode
-  <span style="color: #657b83; font-weight: bold;">:bind</span> <span style="color: #b58900;">(</span><span style="color: #2aa198;">"C-c r"</span> . hindent-reformat-decl<span style="color: #b58900;">)</span>
+  <span style="color: #657b83; font-weight: bold;">:bind</span> <span style="color: #b58900;">(</span><span style="color: #657b83; font-weight: bold;">:map</span> hindent-mode-map
+              <span style="color: #268bd2;">(</span><span style="color: #2aa198;">"C-c d"</span> . hindent-reformat-decl<span style="color: #268bd2;">)</span><span style="color: #b58900;">)</span>
   <span style="color: #657b83; font-weight: bold;">:config</span>
   <span style="color: #b58900;">(</span><span style="color: #859900; font-weight: bold;">progn</span>
     <span style="color: #268bd2;">(</span><span style="color: #859900; font-weight: bold;">setq</span> hindent-style nil<span style="color: #268bd2;">)</span>
@@ -7327,7 +7330,7 @@ load-theme hook (See the heading below).
 </div>
 <div id="postamble" class="status">
 <p class="author">Author: Ivan Malison</p>
-<p class="date">Created: 2016-11-24 Thu 19:02</p>
+<p class="date">Created: 2016-11-24 Thu 19:11</p>
 <p class="validation"><a href="http://validator.w3.org/check?uri=referer">Validate</a></p>
 </div>
 </body>
