@@ -249,11 +249,12 @@ myBringWindow WindowBringerConfig{ menuCommand = cmd
 
 -- Dynamic Workspace Renaming
 
-getClassRemap = do
-  home <- getHomeDirectory
-  -- TODO: handle the case where this file does not exist
-  text <- B.readFile $ home </> ".lib/resources/window_class_to_fontawesome.json"
-  return $ fromMaybe M.empty (decode text)
+windowClassFontAwesomeFile =
+  fmap (</> ".lib/resources/window_class_to_fontawesome.json") getHomeDirectory
+
+getClassRemap =
+  fmap (fromMaybe M.empty . decode) $
+       windowClassFontAwesomeFile >>= B.readFile
 
 setWorkspaceNameToFocusedWindow workspace  = do
   namedWindows <- mapM getClass $ W.integrate' $ W.stack workspace
@@ -267,9 +268,8 @@ remapNames namedWindows = do
   remap <- io getClassRemap
   return $ map (\orig -> M.findWithDefault orig orig remap) namedWindows
 
-setWorkspaceNames = do
-  ws <- gets windowset
-  mapM_ setWorkspaceNameToFocusedWindow (W.workspaces ws)
+setWorkspaceNames =
+  gets windowset >>= mapM_ setWorkspaceNameToFocusedWindow . W.workspaces
 
 data WorkspaceNamesHook a = WorkspaceNamesHook deriving (Show, Read)
 
