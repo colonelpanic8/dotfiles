@@ -8,7 +8,7 @@ function path_lines {
     # pyenv alters PATH before actually executing python, which ends
     # up changing PATH in a way that is not desireable.
     hash pyenv 2>/dev/null && python_command="$(pyenv which python)" || python_command="$(which python)"
-	"$python_command" "$HOME/.lib/python/shell_path.py" --path-lines "$@"
+    "$python_command" "$HOME/.lib/python/shell_path.py" --path-lines "$@"
 }
 
 function indirect_expand {
@@ -44,7 +44,7 @@ function echo_split () {
 $1
 EOF
     for i in "${arr[@]}"; do
-	echo $i
+        echo $i
     done
 }
 
@@ -76,7 +76,7 @@ function current_shell() {
 }
 
 function is_zsh() {
-	[ ! -z ${ZSH_VERSION+x} ]
+    [ ! -z ${ZSH_VERSION+x} ]
 }
 
 function git_diff_add() {
@@ -125,14 +125,14 @@ function set_ssh_agent_socket() {
 # Determine size of a file or total size of a directory
 function fs() {
     if du -b /dev/null > /dev/null 2>&1; then
-	local arg=-sbh
+    local arg=-sbh
     else
-	local arg=-sh
+    local arg=-sh
     fi
     if [[ -n "$@" ]]; then
-	du $arg -- "$@"
+    du $arg -- "$@"
     else
-	du $arg .[^.]* *
+    du $arg .[^.]* *
     fi
 }
 
@@ -140,8 +140,8 @@ function fs() {
 function server() {
     local port="${1:-8000}"
     sleep 1 && open "http://localhost:${port}/" &
-	# Set the default Content-Type to `text/plain` instead of `application/octet-stream`
-	# And serve everything as UTF-8 (although not technically correct, this doesn’t break anything for binary files)
+    # Set the default Content-Type to `text/plain` instead of `application/octet-stream`
+    # And serve everything as UTF-8 (although not technically correct, this doesn’t break anything for binary files)
     python -c $'import SimpleHTTPServer;\nmap = SimpleHTTPServer.SimpleHTTPRequestHandler.extensions_map;\nmap[""] = "text/plain";\nfor key, value in map.items():\n\tmap[key] = value + ";charset=UTF-8";\nSimpleHTTPServer.test();' "$port"
 }
 
@@ -166,7 +166,7 @@ function oscopy() {
     then
         reattach-to-user-namespace pbcopy
     else
-	test -n "$DISPLAY" && xclip -selection c
+    test -n "$DISPLAY" && xclip -selection c
     fi
 }
 
@@ -175,7 +175,7 @@ function ospaste() {
     then
         reattach-to-user-namespace pbpaste
     else
-	xclip -o
+    xclip -o
     fi
 }
 
@@ -330,10 +330,10 @@ function python_module_path {
 
 function mu4e_directory {
     if is_osx; then
-	echo "$(brew --prefix mu)/share/emacs/site-lisp/mu4e"
+        echo "$(brew --prefix mu)/share/emacs/site-lisp/mu4e"
     else
-	# TODO: make this cleaner.
-	echo "/usr/share/emacs/site-lisp/mu4e"
+        # TODO: make this cleaner.
+        echo "/usr/share/emacs/site-lisp/mu4e"
     fi
 }
 
@@ -388,7 +388,7 @@ function project_sync {
 
 function android_sdk_directory {
     if is_osx; then
-	brew --prefix android-sdk
+        brew --prefix android-sdk
     fi
 }
 
