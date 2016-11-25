@@ -433,6 +433,7 @@ addKeys conf@XConfig {modMask = modm} =
     , ((modm, xK_backslash), toggleWS)
     , ((modm, xK_space), deactivateFullOr $ sendMessage NextLayout)
     , ((modm, xK_z), shiftToNextScreen)
+    , ((modm, xK_x), windows $ W.shift "NSP")
 
     -- These need to be rebound to support boringWindows
     , ((modm, xK_j), focusDown)
