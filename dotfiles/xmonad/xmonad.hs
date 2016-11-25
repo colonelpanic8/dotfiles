@@ -62,6 +62,24 @@ main = xmonad $ def
        , keys = customKeys (const []) addKeys
        } where
     x +++ y = mappend y x
+
+
+-- Utility functions
+
+fork :: Monad m => (i -> m a) -> (i -> m b) -> i -> m (a, b)
+fork a b input = do
+  resA <- a input
+  resB <- b input
+  return (resA, resB)
+
+tee :: Monad m => (i -> m a) -> (i -> m b) -> i -> m a
+tee = (fmap . fmap . fmap) (fmap fst) fork
+
+(>>=/) :: Monad m => m a -> (a -> m b) -> m a
+(>>=/) a = (a >>=) . tee return
+
+findM :: (Monad m) => (a -> m (Maybe b)) -> [a] -> m (Maybe b)
+findM f = runMaybeT . msum . map (MaybeT . f)
 
 -- Selectors
 
@@ -145,13 +163,9 @@ selectToggle = togglesMap >>= DM.menuMapArgs "rofi" ["-dmenu", "-i"] >>=
 toggleInState :: (Transformer t Window) => t -> Maybe Bool -> X Bool
 toggleInState t s = fmap (/= s) (isToggleActive t)
 
-whenB b a = do
-  when b a
-  return b
-
 setToggleActive' toggle active =
-    toggleInState toggle (Just active) >>=
-    flip whenB (sendMessage $ Toggle toggle)
+  toggleInState toggle (Just active) >>=/
+  flip when (sendMessage $ Toggle toggle)
 
 -- Ambiguous type reference without signature
 setToggleActive :: (Transformer t Window) => t -> Bool -> X ()
@@ -195,9 +209,6 @@ myLayoutHook = avoidStruts . minimize . boringAuto . mkToggle1 MIRROR .
                fst layoutInfo
 
 -- WindowBringer
-
-findM :: (Monad m) => (a -> m (Maybe b)) -> [a] -> m (Maybe b)
-findM f = runMaybeT . msum . map (MaybeT . f)
 
 myWindowBringerConfig =
   WindowBringerConfig { menuCommand = "rofi"
