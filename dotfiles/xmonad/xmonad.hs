@@ -3,51 +3,51 @@
              FlexibleInstances, FlexibleContexts #-}
 module Main where
 
-import Control.Monad
-import Control.Monad.Trans.Maybe
-import Data.Aeson
+import           Control.Monad
+import           Control.Monad.Trans.Maybe
+import           Data.Aeson
 import qualified Data.ByteString.Lazy as B
-import Data.List
+import           Data.List
 import qualified Data.Map as M
-import Data.Maybe
-import Graphics.X11.ExtraTypes.XF86
-import System.Directory
-import System.FilePath.Posix
-import System.Taffybar.Hooks.PagerHints
-import Text.Printf
+import           Data.Maybe
+import           Graphics.X11.ExtraTypes.XF86
+import           System.Directory
+import           System.FilePath.Posix
+import           System.Taffybar.Hooks.PagerHints
+import           Text.Printf
 
-import XMonad hiding ( (|||) )
-import XMonad.Actions.CycleWS
+import           XMonad hiding ( (|||) )
+import           XMonad.Actions.CycleWS
 import qualified XMonad.Actions.DynamicWorkspaceOrder as DWO
-import XMonad.Actions.Minimize
-import XMonad.Actions.WindowBringer
-import XMonad.Actions.WindowGo
-import XMonad.Actions.WorkspaceNames
-import XMonad.Config ()
-import XMonad.Hooks.EwmhDesktops
-import XMonad.Hooks.ManageDocks
-import XMonad.Hooks.FadeInactive
-import XMonad.Layout.Accordion
-import XMonad.Layout.BoringWindows
-import XMonad.Layout.LayoutCombinators
-import XMonad.Layout.LayoutModifier
-import XMonad.Layout.LimitWindows
-import XMonad.Layout.MagicFocus
-import XMonad.Layout.Minimize
-import XMonad.Layout.MultiColumns
-import XMonad.Layout.MultiToggle
-import XMonad.Layout.MultiToggle.Instances
-import XMonad.Layout.NoBorders
+import           XMonad.Actions.Minimize
+import           XMonad.Actions.WindowBringer
+import           XMonad.Actions.WindowGo
+import           XMonad.Actions.WorkspaceNames
+import           XMonad.Config ()
+import           XMonad.Hooks.EwmhDesktops
+import           XMonad.Hooks.FadeInactive
+import           XMonad.Hooks.ManageDocks
+import           XMonad.Layout.Accordion
+import           XMonad.Layout.BoringWindows
+import           XMonad.Layout.LayoutCombinators
+import           XMonad.Layout.LayoutModifier
+import           XMonad.Layout.LimitWindows
+import           XMonad.Layout.MagicFocus
+import           XMonad.Layout.Minimize
+import           XMonad.Layout.MultiColumns
+import           XMonad.Layout.MultiToggle
+import           XMonad.Layout.MultiToggle.Instances
+import           XMonad.Layout.NoBorders
 import qualified XMonad.Layout.Renamed as RN
-import XMonad.Layout.Spacing
+import           XMonad.Layout.Spacing
 import qualified XMonad.StackSet as W
-import XMonad.Util.CustomKeys
+import           XMonad.Util.CustomKeys
 import qualified XMonad.Util.Dmenu as DM
 import qualified XMonad.Util.ExtensibleState as XS
-import XMonad.Util.Minimize
-import XMonad.Util.NamedScratchpad
+import           XMonad.Util.Minimize
+import           XMonad.Util.NamedScratchpad
     (NamedScratchpad(NS), nonFloating, namedScratchpadAction)
-import XMonad.Util.NamedWindows (getName)
+import           XMonad.Util.NamedWindows (getName)
 
 main = xmonad $ def
        { modMask = mod4Mask
