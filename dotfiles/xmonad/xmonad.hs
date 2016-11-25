@@ -56,7 +56,8 @@ main = xmonad $ def
        , layoutHook = myLayoutHook
        , logHook = toggleFadeInactiveLogHook 0.9 +++ ewmhWorkspaceNamesLogHook
        , handleEventHook = docksEventHook <+> fullscreenEventHook +++
-                           ewmhDesktopsEventHook +++ pagerHintsEventHook
+                           ewmhDesktopsEventHook +++ pagerHintsEventHook +++
+                           followIfNoMagicFocus
        , startupHook = myStartup +++ ewmhWorkspaceNamesLogHook
        , keys = customKeys (const []) addKeys
        } where
@@ -116,9 +117,11 @@ instance Transformer MyToggles Window where
     transform GAPS       x k = k (smartSpacing 5 x) unmodifyLayout
     transform MAGICFOCUS x k = k (magicFocus x) unmodifyLayout
 
--- TODO: Figure out how to disable focus follows mouse for magicFocus
 myToggles = [LIMIT, GAPS, MAGICFOCUS]
 otherToggles = [NBFULL, MIRROR]
+
+followIfNoMagicFocus = followOnlyIf $ fmap (fromMaybe False . fmap not) $
+                       isToggleActive MAGICFOCUS
 
 togglesMap = fmap M.fromList $ sequence $
              map toggleTuple myToggles ++ map toggleTuple otherToggles
