@@ -67,13 +67,14 @@ main = xmonad $ def
 -- Utility functions
 
 fork :: Monad m => (i -> m a) -> (i -> m b) -> i -> m (a, b)
-fork a b input = do
+forkM :: Monad m => (i -> m a) -> (i -> m b) -> i -> m (a, b)
+forkM a b input = do
   resA <- a input
   resB <- b input
   return (resA, resB)
 
 tee :: Monad m => (i -> m a) -> (i -> m b) -> i -> m a
-tee = (fmap . fmap . fmap) (fmap fst) fork
+tee = (fmap . fmap . fmap) (fmap fst) forkM
 
 (>>=/) :: Monad m => m a -> (a -> m b) -> m a
 (>>=/) a = (a >>=) . tee return
