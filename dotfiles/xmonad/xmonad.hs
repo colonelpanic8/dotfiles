@@ -485,6 +485,7 @@ addKeys conf@XConfig {modMask = modm} =
     , ((mod3Mask, xK_l), selectLayout)
     , ((mod3Mask, xK_k), spawn "rofi_kill_process.sh")
     , ((mod3Mask, xK_t), selectToggle)
+    , ((mod3Mask, xK_r), spawn "rofi_restart_service.sh")
 
     -- ModAlt bindings
     , ((modalt, xK_w), spawn "rofi_wallpaper.sh")
