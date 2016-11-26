@@ -288,28 +288,27 @@ getWorkspaceNameFromTag getWSName tag =
 
 -- Toggleable fade
 
-newtype ToggleFade = ToggleFade (M.Map Window Bool)
-    deriving (Typeable, Read, Show)
+newtype ToggleFade =
+  ToggleFade {
+    fadesMap :: (M.Map Window Bool)
+  }
+  deriving (Typeable, Read, Show)
 
 instance ExtensionClass ToggleFade where
-    initialValue = ToggleFade M.empty
-    extensionType = PersistentExtension
+  initialValue = ToggleFade M.empty
+  extensionType = PersistentExtension
 
-fadeEnabledForWindow = ask >>= \w -> liftX (do
-                         ToggleFade toggleMap <- XS.get
-                         return $ M.findWithDefault True w toggleMap)
+fadeEnabledForWindow = ask >>= \w ->
+  liftX $ (M.findWithDefault True w) . fadesMap <$> XS.get
 
-toggleFadeInactiveLogHook = fadeOutLogHook . fadeIf (isUnfocused <&&> fadeEnabledForWindow)
+toggleFadeInactiveLogHook =
+  fadeOutLogHook . fadeIf (isUnfocused <&&> fadeEnabledForWindow)
 
-toggleFadingForActiveWindow = withWindowSet $ \windowSet -> do
-  ToggleFade toggleMap <- XS.get
-  let maybeWindow = W.peek windowSet
-  case maybeWindow of
-    Nothing -> return ()
-    Just window -> do
-        let existingValue = M.findWithDefault True window toggleMap
-        XS.put $ ToggleFade (M.insert window (not existingValue) toggleMap)
-        return ()
+toggleFadingForActiveWindow = withWindowSet $
+  maybe (return()) toggleFadingForWindow . W.peek
+
+toggleFadingForWindow w =
+  fmap (ToggleFade . toggleInMap w . fadesMap) XS.get >>= XS.put
 
 -- Minimize not in class
 
