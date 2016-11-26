@@ -2,7 +2,6 @@
 # deprecated system for starting emacs that made the $EDITOR
 # environment variable work for git and other things
 
-
 # This approach is no longer in use.
 # alias emacs='_emacs -c -n '
 # is_osx && alias emacs='cocoa_emacs'
@@ -53,7 +52,7 @@ function emacs_daemon_exists {
 }
 
 function _dot_directory {
-    echo $1 | sed "s:/:.:g" 
+    echo $1 | sed "s:/:.:g"
 }
 
 function _current_dot_directory {
@@ -76,7 +75,7 @@ function emacs_make_frame_if_none_exists {
 
 function emacs_ensure_running_with_frame {
     test -z "$(emacs_get_running_instances)" && emacs || \
-	    emacs_make_frame_if_none_exists "$(emacs_get_running_instances | head -n1)"
+        emacs_make_frame_if_none_exists "$(emacs_get_running_instances | head -n1)"
 }
 
 function execute_elisp {
@@ -99,7 +98,7 @@ function emacs_get_running_instances {
 
 function emacs_open {
     if ! emacs_daemon_exists; then
-	emacs
+    emacs
     fi
     emacs_make_frame_if_none_exists
     [ ! -z "$*" ] && _emacs "$@"
@@ -112,11 +111,11 @@ function time_emacs {
 
 function emacs_editor {
     local client_path="$(which emacsclient)"
-	if is_osx; then
-		reattach-to-user-namespace "$client_path" "$@"
-	else
-		"$client_path" "$@"
-	fi
+    if is_osx; then
+        reattach-to-user-namespace "$client_path" "$@"
+    else
+        "$client_path" "$@"
+    fi
 }
 
 function emacs_pager {
