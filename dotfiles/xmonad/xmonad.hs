@@ -49,13 +49,17 @@ import           XMonad.Util.NamedScratchpad
     (NamedScratchpad(NS), nonFloating, namedScratchpadAction)
 import           XMonad.Util.NamedWindows (getName)
 
+myGetWorkspaceNameFromTag getWSName tag =
+  printf "%s: %s " tag (fromMaybe "(Empty)" (getWSName tag))
+
 main =
   xmonad $ def
   { modMask = mod4Mask
   , terminal = "urxvt"
   , manageHook = manageDocks <+> myManageHook <+> manageHook def
   , layoutHook = myLayoutHook
-  , logHook = toggleFadeInactiveLogHook 0.9 +++ ewmhWorkspaceNamesLogHook
+  , logHook = toggleFadeInactiveLogHook 0.9 +++ ewmhWorkspaceNamesLogHook' myGetWorkspaceNameFromTag +++
+              (myGetWorkspaceNameFromTag <$> getWorkspaceNames' >>= pagerHintsLogHookCustom)
   , handleEventHook =
     docksEventHook <+> fullscreenEventHook +++
     ewmhDesktopsEventHook +++ pagerHintsEventHook +++ followIfNoMagicFocus
@@ -300,17 +304,6 @@ instance LayoutModifier WorkspaceNamesHook Window where
 
 workspaceNamesHook = ModifiedLayout WorkspaceNamesHook
 
--- EWMH support for workspace names
-
-ewmhWorkspaceNamesLogHook = do
-  getWSName <- getWorkspaceNames'
-  let tagRemapping = getWorkspaceNameFromTag getWSName
-  pagerHintsLogHookCustom tagRemapping
-  ewmhDesktopsLogHookCustom id tagRemapping
-
-getWorkspaceNameFromTag getWSName tag =
-  printf "%s: %s " tag (fromMaybe "(Empty)" (getWSName tag))
-
 -- Toggleable fade
 
 newtype ToggleFade a =
@@ -335,7 +328,7 @@ toggleFadeInactiveLogHook =
   fadeIf (isUnfocused <&&> fadeEnabledForWindow <&&> fadeEnabledForWorkspace)
 
 toggleFadingForActiveWindow = withWindowSet $
-  maybe (return()) toggleFadingForWindow . W.peek
+  maybe (return ()) toggleFadingForWindow . W.peek
 
 toggleFadingForActiveWorkspace =
   withWindowSet $ \ws -> toggleFadingForWindow $ W.currentTag ws
