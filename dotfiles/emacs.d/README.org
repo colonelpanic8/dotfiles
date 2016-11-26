@@ -804,6 +804,23 @@ A macro for composing functions together to build an interactive command to copy
 (imalison:compose-copy-builder imalison:copy-current-buffer-name
   buffer-name)
 #+END_SRC
+*** Copy the last message
+#+BEGIN_SRC emacs-lisp
+(defun imalison:last-message (&optional num)
+  (or num (setq num 1))
+  (if (= num 0)
+      (current-message)
+    (save-excursion
+      (set-buffer "*Messages*")
+      (save-excursion
+    (forward-line (- 1 num))
+    (backward-char)
+    (let ((end (point)))
+      (forward-line 0)
+      (buffer-substring-no-properties (point) end))))))
+
+(imalison:compose-copy-builder imalison:copy-last-message imalison:last-message)
+#+END_SRC
 ** Named Compile
 #+BEGIN_SRC emacs-lisp
 (defun imalison:named-compile (command)
@@ -1638,7 +1655,8 @@ https://github.com/alpaker/Fill-Column-Indicator/issues/21 for more details
   ("l" imalison:copy-current-buffer-name "Buffer Name")
   ("f" imalison:copy-buffer-file-path-full "Full path")
   ("n" imalison:copy-buffer-file-name "File name")
-  ("b" imalison:copy-current-git-branch "Git Branch"))
+  ("b" imalison:copy-current-git-branch "Git Branch")
+  ("m" imalison:copy-last-message "Last Message"))
 #+END_SRC
 *** Compile
 #+BEGIN_SRC emacs-lisp
