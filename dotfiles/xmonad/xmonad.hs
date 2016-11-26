@@ -537,4 +537,5 @@ addKeys conf@XConfig {modMask = modm} =
 
 -- Local Variables:
 -- flycheck-ghc-args: ("-Wno-missing-signatures")
+-- haskell-indent-offset: 2
 -- End:
