@@ -465,6 +465,7 @@ addKeys conf@XConfig {modMask = modm} =
     , ((modm, xK_space), deactivateFullOr $ sendMessage NextLayout)
     , ((modm, xK_z), shiftToNextScreen)
     , ((modm, xK_x), windows $ W.shift "NSP")
+    , ((modm .|. shiftMask, xK_h), shiftToEmptyAndView)
 
     -- These need to be rebound to support boringWindows
     , ((modm, xK_j), focusDown)
@@ -474,7 +475,6 @@ addKeys conf@XConfig {modMask = modm} =
     -- Hyper bindings
     , ((mod3Mask, xK_1), toggleFadingForActiveWindow)
     , ((mod3Mask, xK_e), moveTo Next EmptyWS)
-    , ((mod3Mask .|. shiftMask, xK_e), shiftToEmptyAndView)
     , ((mod3Mask, xK_v), spawn "copyq_rofi.sh")
     , ((mod3Mask, xK_p), spawn "system_password.sh")
     , ((mod3Mask, xK_h), spawn "screenshot.sh")
