@@ -359,10 +359,8 @@ maybeUnminimizeClassAfter = (>> maximizeSameClassesInWorkspace)
 restoreAllMinimized = restoreFocus $
   withLastMinimized $ \w -> maximizeWindow w >> restoreAllMinimized
 
-restoreOrMinimizeOtherClasses = withLastMinimized' $ \mw ->
-  case mw of
-    Just _ -> restoreAllMinimized
-    Nothing -> minimizeOtherClassesInWorkspace
+restoreOrMinimizeOtherClasses = withLastMinimized' $
+  maybe restoreAllMinimized (`seq` minimizeOtherClassesInWorkspace)
 
 -- Window switching
 
