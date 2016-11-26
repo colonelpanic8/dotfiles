@@ -88,6 +88,14 @@ if' False _ y = y
 
 ifL :: a -> a -> Bool -> a
 ifL a b c = if' c a b
+
+toggleInMap' d k m =
+  let existingValue = M.findWithDefault d k m
+  in (M.insert k (not existingValue) m)
+
+toggleInMap = toggleInMap' True
+
+maybeRemap k = M.findWithDefault k k
 
 -- Selectors
 
