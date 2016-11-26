@@ -374,7 +374,7 @@ restoreAllMinimized = restoreFocus $
   withLastMinimized $ \w -> maximizeWindow w >> restoreAllMinimized
 
 restoreOrMinimizeOtherClasses = withLastMinimized' $
-  maybe restoreAllMinimized (`seq` minimizeOtherClassesInWorkspace)
+  maybe minimizeOtherClassesInWorkspace (`seq` restoreAllMinimized)
 
 -- Window switching
 
