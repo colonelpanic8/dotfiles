@@ -3,7 +3,7 @@
 "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
-<!-- 2016-11-25 Fri 14:09 -->
+<!-- 2016-11-26 Sat 01:47 -->
 <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title></title>
@@ -332,6 +332,7 @@ for the JavaScript code in this tag.
 <li><a href="#copyportionsofthebufferfilename">5.23.1. Copy portions of the buffer file name</a></li>
 <li><a href="#copythecurrentbranchusingmagit">5.23.2. Copy the current branch using magit</a></li>
 <li><a href="#copythecurrentbuffername">5.23.3. Copy the current buffer name</a></li>
+<li><a href="#copythelastmessage">5.23.4. Copy the last message</a></li>
 </ul>
 </li>
 <li><a href="#namedcompile">5.24. Named Compile</a></li>
@@ -1955,6 +1956,28 @@ A macro for composing functions together to build an interactive command to copy
 </div>
 </div>
 </div>
+<div id="outline-container-copythelastmessage" class="outline-4">
+<h4 id="copythelastmessage"><span class="section-number-4">5.23.4</span> Copy the last message</h4>
+<div class="outline-text-4" id="text-5-23-4">
+<div class="org-src-container">
+<pre class="src src-emacs-lisp"><span style="color: #2aa198;">(</span><span style="color: #859900; font-weight: bold;">defun</span> <span style="color: #268bd2;">imalison:last-message</span> <span style="color: #b58900;">(</span><span style="color: #b58900;">&amp;optional</span> num<span style="color: #b58900;">)</span>
+  <span style="color: #b58900;">(</span><span style="color: #859900; font-weight: bold;">or</span> num <span style="color: #268bd2;">(</span><span style="color: #859900; font-weight: bold;">setq</span> num 1<span style="color: #268bd2;">)</span><span style="color: #b58900;">)</span>
+  <span style="color: #b58900;">(</span><span style="color: #859900; font-weight: bold;">if</span> <span style="color: #268bd2;">(</span>= num 0<span style="color: #268bd2;">)</span>
+      <span style="color: #268bd2;">(</span>current-message<span style="color: #268bd2;">)</span>
+    <span style="color: #268bd2;">(</span><span style="color: #859900; font-weight: bold;">save-excursion</span>
+      <span style="color: #6c71c4;">(</span>set-buffer <span style="color: #2aa198;">"*Messages*"</span><span style="color: #6c71c4;">)</span>
+      <span style="color: #6c71c4;">(</span><span style="color: #859900; font-weight: bold;">save-excursion</span>
+    <span style="color: #859900;">(</span>forward-line <span style="color: #b58900;">(</span>- 1 num<span style="color: #b58900;">)</span><span style="color: #859900;">)</span>
+    <span style="color: #859900;">(</span>backward-char<span style="color: #859900;">)</span>
+    <span style="color: #859900;">(</span><span style="color: #859900; font-weight: bold;">let</span> <span style="color: #b58900;">(</span><span style="color: #268bd2;">(</span>end <span style="color: #6c71c4;">(</span>point<span style="color: #6c71c4;">)</span><span style="color: #268bd2;">)</span><span style="color: #b58900;">)</span>
+      <span style="color: #b58900;">(</span>forward-line 0<span style="color: #b58900;">)</span>
+      <span style="color: #b58900;">(</span>buffer-substring-no-properties <span style="color: #268bd2;">(</span>point<span style="color: #268bd2;">)</span> end<span style="color: #b58900;">)</span><span style="color: #859900;">)</span><span style="color: #6c71c4;">)</span><span style="color: #268bd2;">)</span><span style="color: #b58900;">)</span><span style="color: #2aa198;">)</span>
+
+<span style="color: #2aa198;">(</span><span style="color: #859900; font-weight: bold;">imalison:compose-copy-builder</span> imalison:copy-last-message imalison:last-message<span style="color: #2aa198;">)</span>
+</pre>
+</div>
+</div>
+</div>
 </div>
 <div id="outline-container-namedcompile" class="outline-3">
 <h3 id="namedcompile"><span class="section-number-3">5.24</span> Named Compile</h3>
@@ -3178,7 +3201,8 @@ This interferes with too many other packages. See
   <span style="color: #b58900;">(</span><span style="color: #2aa198;">"l"</span> imalison:copy-current-buffer-name <span style="color: #2aa198;">"Buffer Name"</span><span style="color: #b58900;">)</span>
   <span style="color: #b58900;">(</span><span style="color: #2aa198;">"f"</span> imalison:copy-buffer-file-path-full <span style="color: #2aa198;">"Full path"</span><span style="color: #b58900;">)</span>
   <span style="color: #b58900;">(</span><span style="color: #2aa198;">"n"</span> imalison:copy-buffer-file-name <span style="color: #2aa198;">"File name"</span><span style="color: #b58900;">)</span>
-  <span style="color: #b58900;">(</span><span style="color: #2aa198;">"b"</span> imalison:copy-current-git-branch <span style="color: #2aa198;">"Git Branch"</span><span style="color: #b58900;">)</span><span style="color: #2aa198;">)</span>
+  <span style="color: #b58900;">(</span><span style="color: #2aa198;">"b"</span> imalison:copy-current-git-branch <span style="color: #2aa198;">"Git Branch"</span><span style="color: #b58900;">)</span>
+  <span style="color: #b58900;">(</span><span style="color: #2aa198;">"m"</span> imalison:copy-last-message <span style="color: #2aa198;">"Last Message"</span><span style="color: #b58900;">)</span><span style="color: #2aa198;">)</span>
 </pre>
 </div>
 </div>
@@ -7325,7 +7349,7 @@ load-theme hook (See the heading below).
 </div>
 <div id="postamble" class="status">
 <p class="author">Author: Ivan Malison</p>
-<p class="date">Created: 2016-11-25 Fri 14:09</p>
+<p class="date">Created: 2016-11-26 Sat 01:47</p>
 <p class="validation"><a href="http://validator.w3.org/check?uri=referer">Validate</a></p>
 </div>
 </body>
