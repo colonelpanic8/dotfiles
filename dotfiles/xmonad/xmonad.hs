@@ -49,18 +49,20 @@ import           XMonad.Util.NamedScratchpad
     (NamedScratchpad(NS), nonFloating, namedScratchpadAction)
 import           XMonad.Util.NamedWindows (getName)
 
-main = xmonad $ def
-       { modMask = mod4Mask
-       , terminal = "urxvt"
-       , manageHook = manageDocks <+> myManageHook <+> manageHook def
-       , layoutHook = myLayoutHook
-       , logHook = toggleFadeInactiveLogHook 0.9 +++ ewmhWorkspaceNamesLogHook
-       , handleEventHook = docksEventHook <+> fullscreenEventHook +++
-                           ewmhDesktopsEventHook +++ pagerHintsEventHook +++
-                           followIfNoMagicFocus
-       , startupHook = myStartup +++ ewmhWorkspaceNamesLogHook
-       , keys = customKeys (const []) addKeys
-       } where
+main =
+  xmonad $ def
+  { modMask = mod4Mask
+  , terminal = "urxvt"
+  , manageHook = manageDocks <+> myManageHook <+> manageHook def
+  , layoutHook = myLayoutHook
+  , logHook = toggleFadeInactiveLogHook 0.9 +++ ewmhWorkspaceNamesLogHook
+  , handleEventHook =
+    docksEventHook <+> fullscreenEventHook +++
+    ewmhDesktopsEventHook +++ pagerHintsEventHook +++ followIfNoMagicFocus
+  , startupHook = myStartup +++ ewmhWorkspaceNamesLogHook
+  , keys = customKeys (const []) addKeys
+  }
+  where
     x +++ y = mappend y x
 
 
@@ -127,18 +129,19 @@ myStartup = spawn "systemctl --user start wm.target"
 
 -- Manage hook
 
-myManageHook = composeAll . concat $
-               [ [ transmissionSelector --> doShift "5" ]
-               -- Hangouts being on a separate workspace freezes chrome
-               -- , [ hangoutsSelector --> doShift "2"]
-               ]
+myManageHook =
+  composeAll . concat $
+  [ [transmissionSelector --> doShift "5"]
+    -- Hangouts being on a separate workspace freezes chrome
+    -- , [ hangoutsSelector --> doShift "2"]
+  ]
 
 -- Toggles
 
 unmodifyLayout (ModifiedLayout _ x') =  x'
 
-selectLimit = DM.menuArgs "rofi" ["-dmenu", "-i"] ["2", "3", "4"] >>=
-              (setLimit . read)
+selectLimit =
+  DM.menuArgs "rofi" ["-dmenu", "-i"] ["2", "3", "4"] >>= (setLimit . read)
 
 data MyToggles = LIMIT
                | GAPS
@@ -146,34 +149,37 @@ data MyToggles = LIMIT
                  deriving (Read, Show, Eq, Typeable)
 
 instance Transformer MyToggles Window where
-    transform LIMIT      x k = k (limitSlice 2 x) unmodifyLayout
-    transform GAPS       x k = k (smartSpacing 5 x) unmodifyLayout
-    transform MAGICFOCUS x k = k (magicFocus x) unmodifyLayout
+  transform LIMIT x k = k (limitSlice 2 x) unmodifyLayout
+  transform GAPS x k = k (smartSpacing 5 x) unmodifyLayout
+  transform MAGICFOCUS x k = k (magicFocus x) unmodifyLayout
 
 myToggles = [LIMIT, GAPS, MAGICFOCUS]
 otherToggles = [NBFULL, MIRROR]
 
-followIfNoMagicFocus = followOnlyIf $ fmap (fromMaybe False . fmap not) $
-                       isToggleActive MAGICFOCUS
+followIfNoMagicFocus =
+  followOnlyIf $ maybe False not <$> isToggleActive MAGICFOCUS
 
-togglesMap = fmap M.fromList $ sequence $
-             map toggleTuple myToggles ++ map toggleTuple otherToggles
-    where
-      toggleTuple toggle = fmap (\str -> (str, Toggle toggle))
-                           (toggleToStringWithState toggle)
+togglesMap =
+  fmap M.fromList $ sequence $
+       map toggleTuple myToggles ++ map toggleTuple otherToggles
+  where
+    toggleTuple toggle =
+      fmap (\str -> (str, Toggle toggle)) (toggleToStringWithState toggle)
 
-toggleStateToString s = case s of
-                              Just True -> "ON"
-                              Just False -> "OFF"
-                              Nothing -> "N/A"
+
+toggleStateToString s =
+  case s of
+    Just True -> "ON"
+    Just False -> "OFF"
+    Nothing -> "N/A"
 
 toggleToStringWithState :: (Transformer t Window, Show t) => t -> X String
 toggleToStringWithState toggle =
-    (printf "%s (%s)" (show toggle) . toggleStateToString) <$>
-    isToggleActive toggle
+  (printf "%s (%s)" (show toggle) . toggleStateToString) <$> isToggleActive toggle
 
-selectToggle = togglesMap >>= DM.menuMapArgs "rofi" ["-dmenu", "-i"] >>=
-               flip whenJust sendMessage
+selectToggle =
+  togglesMap >>= DM.menuMapArgs "rofi" ["-dmenu", "-i"] >>=
+             flip whenJust sendMessage
 
 toggleInState :: (Transformer t Window) => t -> Maybe Bool -> X Bool
 toggleInState t s = fmap (/= s) (isToggleActive t)
@@ -188,8 +194,8 @@ setToggleActive = (void .) . setToggleActive'
 
 deactivateFull = setToggleActive NBFULL False
 
-toggleOr toggle toState action = setToggleActive' toggle toState >>=
-                                 ((`when` action) . not)
+toggleOr toggle toState action =
+  setToggleActive' toggle toState >>= ((`when` action) . not)
 
 deactivateFullOr = toggleOr NBFULL False
 deactivateFullAnd action = sequence_ [deactivateFull, action]
@@ -206,22 +212,25 @@ layoutsStart layout = (layout, [Layout layout])
 (|||!) (joined, layouts) newLayout =
     (joined ||| newLayout, layouts ++ [Layout newLayout])
 
-layoutInfo = layoutsStart (rename "Columns" $ multiCol [1, 1] 2 0.01 (-0.5)) |||!
-             rename "Large Main" (Tall 1 (3/100) (3/4)) |||!
-             rename "2 Columns" (Tall 1 (3/100) (1/2)) |||!
-             Accordion
+layoutInfo =
+  layoutsStart (rename "Columns" $ multiCol [1, 1] 2 0.01 (-0.5)) |||!
+  rename "Large Main" (Tall 1 (3 / 100) (3 / 4)) |||!
+  rename "2 Columns" (Tall 1 (3 / 100) (1 / 2)) |||!
+  Accordion
 
 layoutList = snd layoutInfo
 
 layoutNames = [description layout | layout <- layoutList]
 
-selectLayout = DM.menuArgs "rofi" ["-dmenu", "-i"] layoutNames >>=
-               (sendMessage . JumpToLayout)
+selectLayout =
+  DM.menuArgs "rofi" ["-dmenu", "-i"] layoutNames >>=
+  (sendMessage . JumpToLayout)
 
-myLayoutHook = avoidStruts . minimize . boringAuto . mkToggle1 MIRROR .
-               mkToggle1 LIMIT . mkToggle1 GAPS . mkToggle1 MAGICFOCUS .
-               mkToggle1 NBFULL . workspaceNamesHook . smartBorders . noBorders $
-               fst layoutInfo
+
+myLayoutHook =
+  avoidStruts . minimize . boringAuto . mkToggle1 MIRROR . mkToggle1 LIMIT .
+  mkToggle1 GAPS . mkToggle1 MAGICFOCUS . mkToggle1 NBFULL . workspaceNamesHook .
+  smartBorders . noBorders $ fst layoutInfo
 
 -- WindowBringer
 
@@ -298,7 +307,7 @@ ewmhWorkspaceNamesLogHook = do
   ewmhDesktopsLogHookCustom id tagRemapping
 
 getWorkspaceNameFromTag getWSName tag =
-    printf "%s: %s " tag (fromMaybe "(Empty)" (getWSName tag))
+  printf "%s: %s " tag (fromMaybe "(Empty)" (getWSName tag))
 
 -- Toggleable fade
 
@@ -334,9 +343,9 @@ getCurrentWS = W.stack . W.workspace . W.current
 withWorkspace f = withWindowSet $ \ws -> maybe (return ()) f (getCurrentWS ws)
 
 minimizeOtherClassesInWorkspace =
-  actOnWindowsInWorkspace minimizeWindow windowsWithUnfocusedClass
+    actOnWindowsInWorkspace minimizeWindow windowsWithUnfocusedClass
 maximizeSameClassesInWorkspace =
-  actOnWindowsInWorkspace maybeUnminimize windowsWithFocusedClass
+    actOnWindowsInWorkspace maybeUnminimize windowsWithFocusedClass
 
 -- Type annotation is needed to resolve ambiguity
 actOnWindowsInWorkspace :: (Window -> X ()) -> (W.Stack Window -> X [Window]) -> X ()
@@ -349,13 +358,13 @@ windowsWithOtherClasses = windowsMatchingPredicate (/=)
 windowsWithSameClass = windowsMatchingPredicate (==)
 
 windowsMatchingPredicate predicate window workspace =
-  windowsSatisfyingPredicate workspace $ do
-    windowClass <- getClass window
-    return $ predicate windowClass
+    windowsSatisfyingPredicate workspace $ do
+      windowClass <- getClass window
+      return $ predicate windowClass
 
 windowsSatisfyingPredicate workspace getPredicate = do
-  predicate <- getPredicate
-  filterM (\w -> predicate <$> getClass w) (W.integrate workspace)
+    predicate <- getPredicate
+    filterM (\w -> predicate <$> getClass w) (W.integrate workspace)
 
 windowIsMinimized w = do
   minimized <- XS.gets minimizedStack
@@ -379,26 +388,29 @@ restoreOrMinimizeOtherClasses = withLastMinimized' $
 
 -- Use greedyView to switch to the correct workspace, and then focus on the
 -- appropriate window within that workspace.
-greedyFocusWindow w ws = W.focusWindow w $ W.greedyView
-                         (fromMaybe (W.currentTag ws) $ W.findTag w ws) ws
+greedyFocusWindow w ws =
+  W.focusWindow w $
+  W.greedyView (fromMaybe (W.currentTag ws) $ W.findTag w ws) ws
 
 shiftThenView i = W.greedyView i . W.shift i
 
-shiftToEmptyAndView = doTo Next EmptyWS DWO.getSortByOrder (windows . shiftThenView)
 greedyBringWindow w = greedyFocusWindow w . bringWindow w
 
+shiftToEmptyAndView =
+  doTo Next EmptyWS DWO.getSortByOrder (windows . shiftThenView)
 
 swapFocusedWith w ws = W.modify' (swapFocusedWith' w) (W.delete' w ws)
 
 swapFocusedWith' w (W.Stack current ls rs) = W.Stack w ls (rs ++ [current])
 
-swapMinimizeStateAfter action = withFocused $ \originalWindow -> do
-      _ <- action
-      restoreFocus $ do
-        maybeUnminimizeFocused
-        withFocused $ \newWindow ->
-            when (newWindow /= originalWindow)
-                 $ minimizeWindow originalWindow
+swapMinimizeStateAfter action =
+  withFocused $
+  \originalWindow -> do
+    _ <- action
+    restoreFocus $
+      do maybeUnminimizeFocused
+         withFocused $
+           \newWindow -> when (newWindow /= originalWindow) $ minimizeWindow originalWindow
 
 -- Named Scratchpads
 
