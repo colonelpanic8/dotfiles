@@ -257,15 +257,16 @@ myDecorateName ws w = do
 
 -- This needs access to X in order to unminimize, which means that I can't be
 -- done with the existing window bringer interface
-myBringWindow WindowBringerConfig{ menuCommand = cmd
-                                 , menuArgs = args
-                                 , windowTitler = titler
-                                 } =
+myBringWindow WindowBringerConfig { menuCommand = cmd
+                                  , menuArgs = args
+                                  , windowTitler = titler } =
   windowMap' titler >>= DM.menuMapArgs cmd args >>= flip whenJust action
-    where action window = sequence_ [ maximizeWindow window
-                                    , windows $ W.focusWindow window .
-                                                bringWindow window
-                                    ]
+  where
+    action window =
+      sequence_
+        [ maximizeWindow window
+        , windows $ W.focusWindow window . bringWindow window
+        ]
 
 -- Dynamic Workspace Renaming
 
@@ -345,7 +346,9 @@ maximizeSameClassesInWorkspace =
     actOnWindowsInWorkspace maybeUnminimize windowsWithFocusedClass
 
 -- Type annotation is needed to resolve ambiguity
-actOnWindowsInWorkspace :: (Window -> X ()) -> (W.Stack Window -> X [Window]) -> X ()
+actOnWindowsInWorkspace :: (Window -> X ())
+                        -> (W.Stack Window -> X [Window])
+                        -> X ()
 actOnWindowsInWorkspace windowAction getWindowsAction = restoreFocus $
   withWorkspace (getWindowsAction >=> mapM_ windowAction)
 
@@ -466,7 +469,6 @@ addKeys conf@XConfig {modMask = modm} =
     , ((modm, xK_z), shiftToNextScreen)
     , ((modm, xK_x), windows $ W.shift "NSP")
     , ((modm .|. shiftMask, xK_h), shiftToEmptyAndView)
-
     -- These need to be rebound to support boringWindows
     , ((modm, xK_j), focusDown)
     , ((modm, xK_k), focusUp)
