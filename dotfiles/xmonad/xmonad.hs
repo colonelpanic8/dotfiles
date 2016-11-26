@@ -269,17 +269,16 @@ getClassRemap =
   fmap (fromMaybe M.empty . decode) $
        windowClassFontAwesomeFile >>= B.readFile
 
-setWorkspaceNameToFocusedWindow workspace  = do
-  namedWindows <- mapM getClass $ W.integrate' $ W.stack workspace
-  renamedWindows <- remapNames namedWindows
-  getWSName <- getWorkspaceNames'
-  let newName = intercalate "|" renamedWindows
-      currentName = fromMaybe "" (getWSName (W.tag workspace))
-  when (currentName /= newName) $ setWorkspaceName (W.tag workspace) newName
+getClassRemapF = (flip maybeRemap) <$> (getClassRemap)
+getWSClassNames' w = mapM getClass $ W.integrate' $ W.stack w
+getWSClassNames w = (io $ fmap map getClassRemapF) <*> getWSClassNames' w
+currentWSName ws = (fromMaybe "") <$> (getWorkspaceNames' <*> pure (W.tag ws))
+desiredWSName = (intercalate "|" <$>) . getWSClassNames
 
-remapNames namedWindows = do
-  remap <- io getClassRemap
-  return $ map (\orig -> M.findWithDefault orig orig remap) namedWindows
+setWorkspaceNameToFocusedWindow workspace = do
+  currentName <- currentWSName workspace
+  newName <- desiredWSName workspace
+  when (currentName /= newName) $ setWorkspaceName (W.tag workspace) newName
 
 setWorkspaceNames =
   gets windowset >>= mapM_ setWorkspaceNameToFocusedWindow . W.workspaces
