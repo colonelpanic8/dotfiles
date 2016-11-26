@@ -87,10 +87,12 @@ if' :: Bool -> a -> a -> a
 if' True  x _ = x
 if' False _ y = y
 
+toggleInMap' :: Ord k => Bool -> k -> M.Map k Bool -> M.Map k Bool
 toggleInMap' d k m =
   let existingValue = M.findWithDefault d k m
   in M.insert k (not existingValue) m
 
+toggleInMap :: Ord k => k -> M.Map k Bool -> M.Map k Bool
 toggleInMap = toggleInMap' True
 
 maybeRemap k = M.findWithDefault k k
@@ -311,22 +313,32 @@ getWorkspaceNameFromTag getWSName tag =
 
 -- Toggleable fade
 
-newtype ToggleFade =
-  ToggleFade { fadesMap :: M.Map Window Bool }
+newtype ToggleFade a =
+  ToggleFade { fadesMap :: M.Map a Bool }
   deriving (Typeable, Read, Show)
 
-instance ExtensionClass ToggleFade where
+instance (Typeable a, Read a, Show a, Ord a) => ExtensionClass (ToggleFade a) where
   initialValue = ToggleFade M.empty
   extensionType = PersistentExtension
 
-fadeEnabledForWindow = ask >>= \w ->
-  liftX $ M.findWithDefault True w . fadesMap <$> XS.get
+fadeEnabledFor query =
+  M.findWithDefault True <$> query <*> liftX (fadesMap <$> XS.get)
+
+fadeEnabledForWindow = fadeEnabledFor ask
+fadeEnabledForWorkspace = fadeEnabledFor getWindowWorkspace
+
+getWindowWorkspace' = W.findTag <$> ask <*> liftX (withWindowSet return)
+getWindowWorkspace = flip fromMaybe <$> getWindowWorkspace' <*> pure "1"
 
 toggleFadeInactiveLogHook =
-  fadeOutLogHook . fadeIf (isUnfocused <&&> fadeEnabledForWindow)
+  fadeOutLogHook .
+  fadeIf (isUnfocused <&&> fadeEnabledForWindow <&&> fadeEnabledForWorkspace)
 
 toggleFadingForActiveWindow = withWindowSet $
   maybe (return()) toggleFadingForWindow . W.peek
+
+toggleFadingForActiveWorkspace =
+  withWindowSet $ \ws -> toggleFadingForWindow $ W.currentTag ws
 
 toggleFadingForWindow w =
   fmap (ToggleFade . toggleInMap w . fadesMap) XS.get >>= XS.put
@@ -476,6 +488,7 @@ addKeys conf@XConfig {modMask = modm} =
 
     -- Hyper bindings
     , ((mod3Mask, xK_1), toggleFadingForActiveWindow)
+    , ((mod3Mask .|. shiftMask, xK_1), toggleFadingForActiveWorkspace)
     , ((mod3Mask, xK_e), moveTo Next EmptyWS)
     , ((mod3Mask, xK_v), spawn "copyq_rofi.sh")
     , ((mod3Mask, xK_p), spawn "system_password.sh")
