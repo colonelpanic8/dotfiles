@@ -66,7 +66,6 @@ main = xmonad $ def
 
 -- Utility functions
 
-fork :: Monad m => (i -> m a) -> (i -> m b) -> i -> m (a, b)
 forkM :: Monad m => (i -> m a) -> (i -> m b) -> i -> m (a, b)
 forkM a b input = do
   resA <- a input
