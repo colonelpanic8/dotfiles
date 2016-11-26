@@ -80,6 +80,13 @@ tee = (fmap . fmap . fmap) (fmap fst) fork
 
 findM :: (Monad m) => (a -> m (Maybe b)) -> [a] -> m (Maybe b)
 findM f = runMaybeT . msum . map (MaybeT . f)
+
+if' :: Bool -> a -> a -> a
+if' True  x _ = x
+if' False _ y = y
+
+ifL :: a -> a -> Bool -> a
+ifL a b c = if' c a b
 
 -- Selectors
 
