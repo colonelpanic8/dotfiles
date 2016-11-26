@@ -87,9 +87,6 @@ if' :: Bool -> a -> a -> a
 if' True  x _ = x
 if' False _ y = y
 
-ifL :: a -> a -> Bool -> a
-ifL a b c = if' c a b
-
 toggleInMap' d k m =
   let existingValue = M.findWithDefault d k m
   in M.insert k (not existingValue) m
@@ -241,7 +238,9 @@ myWindowBringerConfig =
                       }
 
 classIfMatches window entry =
-  ifL (Just $ snd entry) Nothing <$> runQuery (fst entry) window
+  if' <$> runQuery (fst entry) window <*>
+      pure (Just $ snd entry) <*>
+      pure Nothing
 
 getClassRaw w = fmap resClass $ withDisplay $ io . flip getClassHint w
 
