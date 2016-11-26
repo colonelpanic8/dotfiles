@@ -279,7 +279,7 @@ getClassRemap =
 
 getClassRemapF = flip maybeRemap <$> getClassRemap
 getWSClassNames' w = mapM getClass $ W.integrate' $ W.stack w
-getWSClassNames w = io ( fmap map getClassRemapF) <*> getWSClassNames' w
+getWSClassNames w = io (fmap map getClassRemapF) <*> getWSClassNames' w
 currentWSName ws = fromMaybe "" <$> (getWorkspaceNames' <*> pure (W.tag ws))
 desiredWSName = (intercalate "|" <$>) . getWSClassNames
 
@@ -421,10 +421,13 @@ doScratchpad = deactivateFullAnd . namedScratchpadAction scratchpads
 
 -- Raise or spawn
 
-myRaiseNextMaybe = ((deactivateFullAnd . maybeUnminimizeClassAfter) .) .
-                   raiseNextMaybeCustomFocus greedyFocusWindow
-myBringNextMaybe = ((deactivateFullAnd . maybeUnminimizeAfter) .) .
-                   raiseNextMaybeCustomFocus greedyBringWindow
+myRaiseNextMaybe =
+  ((deactivateFullAnd . maybeUnminimizeClassAfter) .) .
+  raiseNextMaybeCustomFocus greedyFocusWindow
+
+myBringNextMaybe =
+  ((deactivateFullAnd . maybeUnminimizeAfter) .) .
+  raiseNextMaybeCustomFocus greedyBringWindow
 
 bindBringAndRaise :: KeyMask -> KeySym -> X () -> Query Bool -> [((KeyMask, KeySym), X ())]
 bindBringAndRaise mask sym start query =
