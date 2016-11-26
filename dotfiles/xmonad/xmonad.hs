@@ -92,7 +92,7 @@ ifL a b c = if' c a b
 
 toggleInMap' d k m =
   let existingValue = M.findWithDefault d k m
-  in (M.insert k (not existingValue) m)
+  in M.insert k (not existingValue) m
 
 toggleInMap = toggleInMap' True
 
@@ -277,10 +277,10 @@ getClassRemap =
   fmap (fromMaybe M.empty . decode) $
        windowClassFontAwesomeFile >>= B.readFile
 
-getClassRemapF = (flip maybeRemap) <$> (getClassRemap)
+getClassRemapF = flip maybeRemap <$> getClassRemap
 getWSClassNames' w = mapM getClass $ W.integrate' $ W.stack w
-getWSClassNames w = (io $ fmap map getClassRemapF) <*> getWSClassNames' w
-currentWSName ws = (fromMaybe "") <$> (getWorkspaceNames' <*> pure (W.tag ws))
+getWSClassNames w = io ( fmap map getClassRemapF) <*> getWSClassNames' w
+currentWSName ws = fromMaybe "" <$> (getWorkspaceNames' <*> pure (W.tag ws))
 desiredWSName = (intercalate "|" <$>) . getWSClassNames
 
 setWorkspaceNameToFocusedWindow workspace = do
@@ -312,9 +312,7 @@ getWorkspaceNameFromTag getWSName tag =
 -- Toggleable fade
 
 newtype ToggleFade =
-  ToggleFade {
-    fadesMap :: (M.Map Window Bool)
-  }
+  ToggleFade { fadesMap :: M.Map Window Bool }
   deriving (Typeable, Read, Show)
 
 instance ExtensionClass ToggleFade where
@@ -322,7 +320,7 @@ instance ExtensionClass ToggleFade where
   extensionType = PersistentExtension
 
 fadeEnabledForWindow = ask >>= \w ->
-  liftX $ (M.findWithDefault True w) . fadesMap <$> XS.get
+  liftX $ M.findWithDefault True w . fadesMap <$> XS.get
 
 toggleFadeInactiveLogHook =
   fadeOutLogHook . fadeIf (isUnfocused <&&> fadeEnabledForWindow)
