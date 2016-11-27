@@ -9,6 +9,7 @@ import           Data.Aeson
 import qualified Data.ByteString.Lazy as B
 import           Data.List
 import qualified Data.Map as M
+import qualified Data.MultiMap as MM
 import           Data.Maybe
 import           Graphics.X11.ExtraTypes.XF86
 import           System.Directory
@@ -100,6 +101,9 @@ toggleInMap :: Ord k => k -> M.Map k Bool -> M.Map k Bool
 toggleInMap = toggleInMap' True
 
 maybeRemap k = M.findWithDefault k k
+
+(<$.>) :: Functor f => (b -> c) -> (a -> f b) -> a -> f c
+(<$.>) l r = fmap l . r
 
 -- Selectors
 
@@ -383,11 +387,38 @@ maybeUnminimizeAfter = (>> maybeUnminimizeFocused)
 
 maybeUnminimizeClassAfter = (>> maximizeSameClassesInWorkspace)
 
+sameClassOnly action =
+  action >> minimizeOtherClassesInWorkspace >> maximizeSameClassesInWorkspace
+
 restoreAllMinimized = restoreFocus $
   withLastMinimized $ \w -> maximizeWindow w >> restoreAllMinimized
 
 restoreOrMinimizeOtherClasses = withLastMinimized' $
   maybe minimizeOtherClassesInWorkspace (`seq` restoreAllMinimized)
+
+getClassPair w = flip (,) w <$> getClass w
+
+windowClassPairs = withWindowSet $ mapM getClassPair . W.allWindows
+classToWindowMap = MM.fromList <$> windowClassPairs
+allClasses = sort . MM.keys <$> classToWindowMap
+thisClass = withWindowSet $ sequence . (getClass <$.> W.peek)
+
+nextClass = do
+  classes <- allClasses
+  current <- thisClass
+  let index = join $ elemIndex <$> current <*> pure classes
+  return $ fmap (\i -> cycle classes !! (i + 1)) index
+
+classWindow c = do
+  m <- classToWindowMap
+  return $ join $ listToMaybe <$> (flip MM.lookup m <$> c)
+
+nextClassWindow = nextClass >>= classWindow
+
+focusNextClass' = join $ windows . maybe id greedyFocusWindow <$> nextClassWindow
+focusNextClass = sameClassOnly focusNextClass'
+
+selectClass = join $ DM.menuArgs "rofi" ["-dmenu", "-i"] <$> allClasses
 
 -- Window switching
 
@@ -438,8 +469,11 @@ myBringNextMaybe =
 
 bindBringAndRaise :: KeyMask -> KeySym -> X () -> Query Bool -> [((KeyMask, KeySym), X ())]
 bindBringAndRaise mask sym start query =
-    [ ((mask, sym), myRaiseNextMaybe start query)
-    , ((mask .|. controlMask, sym), myBringNextMaybe start query)]
+    [ ((mask, sym), doRaiseNext)
+    , ((mask .|. controlMask, sym), myBringNextMaybe start query)
+    , ((mask .|. shiftMask, sym), doRaiseNext >> minimizeOtherClassesInWorkspace)
+    ]
+  where doRaiseNext = myRaiseNextMaybe start query
 
 bindBringAndRaiseMany :: [(KeyMask, KeySym, X (), Query Bool)] -> [((KeyMask, KeySym), X())]
 bindBringAndRaiseMany = concatMap (\(a, b, c, d) -> bindBringAndRaise a b c d)
@@ -457,6 +491,8 @@ addKeys conf@XConfig {modMask = modm} =
     [ ((modm, xK_p), spawn "rofi -show drun")
     , ((modm .|. shiftMask, xK_p), spawn "rofi -show run")
     , ((modm, xK_g), andDeactivateFull . maybeUnminimizeAfter $
+                   actionMenu myWindowBringerConfig greedyFocusWindow)
+    , ((modm .|. shiftMask, xK_g), andDeactivateFull . sameClassOnly $
                    actionMenu myWindowBringerConfig greedyFocusWindow)
     , ((modm, xK_b), andDeactivateFull $ myBringWindow myWindowBringerConfig)
     , ((modm .|. shiftMask, xK_b),
@@ -478,6 +514,7 @@ addKeys conf@XConfig {modMask = modm} =
     , ((modm, xK_j), focusDown)
     , ((modm, xK_k), focusUp)
     , ((modm, xK_m), focusMaster)
+    , ((modm, xK_Tab), focusNextClass)
 
     -- Hyper bindings
     , ((mod3Mask, xK_1), toggleFadingForActiveWindow)
