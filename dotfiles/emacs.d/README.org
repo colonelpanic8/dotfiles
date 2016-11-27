@@ -3530,8 +3530,10 @@ alphanumeric characters only."
     (add-hook 'magit-popup-mode-hook 'imalison:disable-show-trailing-whitespace)))
 #+END_SRC
 *** magithub
+I've disabled magithub because it causes magit to be super slow
 #+BEGIN_SRC emacs-lisp
 (use-package magithub
+  :disabled t
   :if (executable-find "hub")
   :after magit)
 #+END_SRC
