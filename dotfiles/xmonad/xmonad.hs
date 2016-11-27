@@ -28,6 +28,7 @@ import           XMonad.Config ()
 import           XMonad.Hooks.EwmhDesktops
 import           XMonad.Hooks.FadeInactive
 import           XMonad.Hooks.ManageDocks
+import           XMonad.Hooks.Minimize
 import           XMonad.Layout.Accordion
 import           XMonad.Layout.BoringWindows
 import           XMonad.Layout.LayoutCombinators
@@ -59,11 +60,14 @@ main =
   , terminal = "urxvt"
   , manageHook = manageDocks <+> myManageHook <+> manageHook def
   , layoutHook = myLayoutHook
-  , logHook = toggleFadeInactiveLogHook 0.9 +++ ewmhWorkspaceNamesLogHook' myGetWorkspaceNameFromTag +++
-              (myGetWorkspaceNameFromTag <$> getWorkspaceNames' >>= pagerHintsLogHookCustom)
+  , logHook =
+    toggleFadeInactiveLogHook 0.9 +++
+    ewmhWorkspaceNamesLogHook' myGetWorkspaceNameFromTag +++
+    (myGetWorkspaceNameFromTag <$> getWorkspaceNames' >>= pagerHintsLogHookCustom)
   , handleEventHook =
     docksEventHook <+> fullscreenEventHook +++
-    ewmhDesktopsEventHook +++ pagerHintsEventHook +++ followIfNoMagicFocus
+    ewmhDesktopsEventHook +++ pagerHintsEventHook +++
+    followIfNoMagicFocus +++ minimizeEventHook
   , startupHook = myStartup +++ ewmhWorkspaceNamesLogHook
   , keys = customKeys (const []) addKeys
   }
