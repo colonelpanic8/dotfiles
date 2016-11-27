@@ -3,7 +3,7 @@
 "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
-<!-- 2016-11-26 Sat 01:47 -->
+<!-- 2016-11-27 Sun 02:48 -->
 <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title></title>
@@ -3756,11 +3756,13 @@ I don't use auto-complete at all, so I have set up a hook to automatically disab
 <div class="outline-text-3" id="text-10-4">
 <div class="org-src-container">
 <pre class="src src-emacs-lisp"><span style="color: #2aa198;">(</span><span style="color: #859900; font-weight: bold;">imalison:use-package</span> multi-line
+  <span style="color: #93a1a1;">;; </span><span style="color: #93a1a1;">Demand multi-line to avoid failre to load mode specific strategies</span>
+  <span style="color: #657b83; font-weight: bold;">:demand</span> t
   <span style="color: #657b83; font-weight: bold;">:bind</span> <span style="color: #b58900;">(</span><span style="color: #2aa198;">"C-c d"</span> . multi-line<span style="color: #b58900;">)</span>
   <span style="color: #657b83; font-weight: bold;">:config</span>
   <span style="color: #b58900;">(</span><span style="color: #859900; font-weight: bold;">progn</span>
     <span style="color: #93a1a1;">;; </span><span style="color: #93a1a1;">This only works for array respacing</span>
-    <span style="color: #268bd2;">(</span>multi-line-defhook sh
+    <span style="color: #268bd2;">(</span><span style="color: #859900; font-weight: bold;">multi-line-defhook</span> sh
       <span style="color: #6c71c4;">(</span>make-instance
        'multi-line-strategy
        <span style="color: #657b83; font-weight: bold;">:find</span> multi-line-lisp-find-strategy
@@ -4591,7 +4593,6 @@ Intero seems to be causing hangs, so it has been disabled
 </p>
 <div class="org-src-container">
 <pre class="src src-emacs-lisp"><span style="color: #2aa198;">(</span><span style="color: #859900; font-weight: bold;">use-package</span> <span style="color: #268bd2; font-weight: bold;">intero</span>
-  <span style="color: #657b83; font-weight: bold;">:disabled</span> t
   <span style="color: #657b83; font-weight: bold;">:demand</span> t
   <span style="color: #657b83; font-weight: bold;">:after</span> haskell-mode
   <span style="color: #657b83; font-weight: bold;">:config</span> <span style="color: #b58900;">(</span>add-hook 'haskell-mode-hook 'intero-mode<span style="color: #b58900;">)</span><span style="color: #2aa198;">)</span>
@@ -4621,6 +4622,7 @@ Intero seems to be causing hangs, so it has been disabled
 <div class="org-src-container">
 <pre class="src src-emacs-lisp"><span style="color: #2aa198;">(</span><span style="color: #859900; font-weight: bold;">use-package</span> <span style="color: #268bd2; font-weight: bold;">ghc</span>
   <span style="color: #657b83; font-weight: bold;">:after</span> haskell-mode
+  <span style="color: #657b83; font-weight: bold;">:disabled</span> t
   <span style="color: #657b83; font-weight: bold;">:config</span>
   <span style="color: #b58900;">(</span><span style="color: #859900; font-weight: bold;">progn</span>
     <span style="color: #268bd2;">(</span><span style="color: #859900; font-weight: bold;">setq</span> ghc-debug t<span style="color: #268bd2;">)</span>
@@ -4634,6 +4636,7 @@ Intero seems to be causing hangs, so it has been disabled
 <div class="outline-text-5" id="text-12-1-8-4">
 <div class="org-src-container">
 <pre class="src src-emacs-lisp"><span style="color: #2aa198;">(</span><span style="color: #859900; font-weight: bold;">use-package</span> <span style="color: #268bd2; font-weight: bold;">company-ghc</span>
+  <span style="color: #657b83; font-weight: bold;">:disabled</span> t
   <span style="color: #657b83; font-weight: bold;">:demand</span> t
   <span style="color: #657b83; font-weight: bold;">:config</span>
   <span style="color: #b58900;">(</span>add-to-list 'company-backends '<span style="color: #268bd2;">(</span>company-ghc <span style="color: #657b83; font-weight: bold;">:with</span> company-dabbrev-code<span style="color: #268bd2;">)</span><span style="color: #b58900;">)</span><span style="color: #2aa198;">)</span>
@@ -5595,8 +5598,12 @@ This function replaces the default naming scheme with a call to
 <div id="outline-container-magithub" class="outline-4">
 <h4 id="magithub"><span class="section-number-4">13.1.1</span> magithub</h4>
 <div class="outline-text-4" id="text-13-1-1">
+<p>
+I've disabled magithub because it causes magit to be super slow
+</p>
 <div class="org-src-container">
 <pre class="src src-emacs-lisp"><span style="color: #2aa198;">(</span><span style="color: #859900; font-weight: bold;">use-package</span> <span style="color: #268bd2; font-weight: bold;">magithub</span>
+  <span style="color: #657b83; font-weight: bold;">:disabled</span> t
   <span style="color: #657b83; font-weight: bold;">:if</span> <span style="color: #b58900;">(</span>executable-find <span style="color: #2aa198;">"hub"</span><span style="color: #b58900;">)</span>
   <span style="color: #657b83; font-weight: bold;">:after</span> magit<span style="color: #2aa198;">)</span>
 </pre>
@@ -7303,11 +7310,11 @@ load-theme hook (See the heading below).
   <span style="color: #b58900;">(</span><span style="color: #859900; font-weight: bold;">if</span> <span style="color: #268bd2;">(</span>display-graphic-p<span style="color: #268bd2;">)</span>
       <span style="color: #268bd2;">(</span><span style="color: #859900; font-weight: bold;">progn</span>
         <span style="color: #6c71c4;">(</span><span style="color: #859900; font-weight: bold;">condition-case</span> error
-            <span style="color: #859900;">(</span>set-face-attribute 'default nil <span style="color: #657b83; font-weight: bold;">:font</span> <span style="color: #2aa198;">"source code pro"</span><span style="color: #859900;">)</span>
+            <span style="color: #859900;">(</span><span style="color: #859900; font-weight: bold;">progn</span> <span style="color: #b58900;">(</span>set-face-attribute 'default nil <span style="color: #657b83; font-weight: bold;">:font</span> <span style="color: #2aa198;">"source code pro"</span><span style="color: #b58900;">)</span>
+                   <span style="color: #b58900;">(</span>set-face-attribute
+                    'default nil <span style="color: #657b83; font-weight: bold;">:height</span> imalison:default-font-size-pt<span style="color: #b58900;">)</span><span style="color: #859900;">)</span>
           <span style="color: #859900;">(</span>'error <span style="color: #b58900;">(</span>message <span style="color: #2aa198;">"Error: %s, when setting font"</span> error<span style="color: #b58900;">)</span><span style="color: #859900;">)</span><span style="color: #6c71c4;">)</span>
-        <span style="color: #6c71c4;">(</span>set-face-attribute 'default nil <span style="color: #657b83; font-weight: bold;">:weight</span> 'semi-bold<span style="color: #6c71c4;">)</span>
-        <span style="color: #6c71c4;">(</span>set-face-attribute
-         'default nil <span style="color: #657b83; font-weight: bold;">:height</span> imalison:default-font-size-pt<span style="color: #6c71c4;">)</span><span style="color: #268bd2;">)</span>
+        <span style="color: #6c71c4;">(</span>set-face-attribute 'default nil <span style="color: #657b83; font-weight: bold;">:weight</span> 'semi-bold<span style="color: #6c71c4;">)</span><span style="color: #268bd2;">)</span>
     <span style="color: #268bd2;">(</span><span style="color: #859900; font-weight: bold;">progn</span>
       <span style="color: #6c71c4;">(</span>load-theme 'source-code-pro t<span style="color: #6c71c4;">)</span>
       <span style="color: #6c71c4;">(</span>message <span style="color: #2aa198;">"not setting font"</span><span style="color: #6c71c4;">)</span><span style="color: #268bd2;">)</span><span style="color: #b58900;">)</span>
@@ -7329,7 +7336,9 @@ load-theme hook (See the heading below).
 <span style="color: #93a1a1;">;; </span><span style="color: #93a1a1;">This is needed because you can't set the font or theme at daemon start-up.</span>
 <span style="color: #93a1a1;">;; </span><span style="color: #93a1a1;">(when (display-graphic-p) (imalison:appearance))</span>
 <span style="color: #2aa198;">(</span>add-hook 'after-init-hook 'imalison:appearance<span style="color: #2aa198;">)</span>
-<span style="color: #2aa198;">(</span>add-hook 'after-make-frame-functions 'imalison:initial-setup-hook<span style="color: #2aa198;">)</span>
+
+<span style="color: #93a1a1;">;; </span><span style="color: #93a1a1;">XXX: I think that after-init-hook is good enough</span>
+<span style="color: #93a1a1;">;; </span><span style="color: #93a1a1;">(add-hook 'after-make-frame-functions 'imalison:initial-setup-hook)</span>
 </pre>
 </div>
 </div>
@@ -7349,7 +7358,7 @@ load-theme hook (See the heading below).
 </div>
 <div id="postamble" class="status">
 <p class="author">Author: Ivan Malison</p>
-<p class="date">Created: 2016-11-26 Sat 01:47</p>
+<p class="date">Created: 2016-11-27 Sun 02:48</p>
 <p class="validation"><a href="http://validator.w3.org/check?uri=referer">Validate</a></p>
 </div>
 </body>
