@@ -124,10 +124,11 @@ emacsSelector = className =? "Emacs"
 transmissionSelector = fmap (isPrefixOf "Transmission") title
 hangoutsSelector = chromeSelectorBase <&&> fmap isHangoutsTitle title
 
-virtualClasses = [ (hangoutsSelector, "Hangouts")
-                 , (chromeSelector, "Chrome")
-                 , (transmissionSelector, "Transmission")
-                 ]
+virtualClasses =
+  [ (hangoutsSelector, "Hangouts")
+  , (chromeSelector, "Chrome")
+  , (transmissionSelector, "Transmission")
+  ]
 
 -- Commands
 
@@ -158,10 +159,11 @@ unmodifyLayout (ModifiedLayout _ x') =  x'
 selectLimit =
   DM.menuArgs "rofi" ["-dmenu", "-i"] ["2", "3", "4"] >>= (setLimit . read)
 
-data MyToggles = LIMIT
-               | GAPS
-               | MAGICFOCUS
-                 deriving (Read, Show, Eq, Typeable)
+data MyToggles
+  = LIMIT
+  | GAPS
+  | MAGICFOCUS
+  deriving (Read, Show, Eq, Typeable)
 
 instance Transformer MyToggles Window where
   transform LIMIT x k = k (limitSlice 2 x) unmodifyLayout
@@ -176,7 +178,7 @@ followIfNoMagicFocus =
 
 togglesMap =
   fmap M.fromList $ sequence $
-       map toggleTuple myToggles ++ map toggleTuple otherToggles
+  map toggleTuple myToggles ++ map toggleTuple otherToggles
   where
     toggleTuple toggle =
       fmap (\str -> (str, Toggle toggle)) (toggleToStringWithState toggle)
@@ -190,7 +192,8 @@ toggleStateToString s =
 
 toggleToStringWithState :: (Transformer t Window, Show t) => t -> X String
 toggleToStringWithState toggle =
-  (printf "%s (%s)" (show toggle) . toggleStateToString) <$> isToggleActive toggle
+  (printf "%s (%s)" (show toggle) . toggleStateToString) <$>
+  isToggleActive toggle
 
 selectToggle =
   togglesMap >>= DM.menuMapArgs "rofi" ["-dmenu", "-i"] >>=
@@ -277,7 +280,8 @@ myDecorateName ws w = do
 -- done with the existing window bringer interface
 myBringWindow WindowBringerConfig { menuCommand = cmd
                                   , menuArgs = args
-                                  , windowTitler = titler } =
+                                  , windowTitler = titler
+                                  } =
   windowMap' titler >>= DM.menuMapArgs cmd args >>= flip whenJust action
   where
     action window =
@@ -358,9 +362,9 @@ getCurrentWS = W.stack . W.workspace . W.current
 withWorkspace f = withWindowSet $ \ws -> maybe (return ()) f (getCurrentWS ws)
 
 minimizeOtherClassesInWorkspace =
-    actOnWindowsInWorkspace minimizeWindow windowsWithUnfocusedClass
+  actOnWindowsInWorkspace minimizeWindow windowsWithUnfocusedClass
 maximizeSameClassesInWorkspace =
-    actOnWindowsInWorkspace maybeUnminimize windowsWithFocusedClass
+  actOnWindowsInWorkspace maybeUnminimize windowsWithFocusedClass
 
 -- Type annotation is needed to resolve ambiguity
 actOnWindowsInWorkspace :: (Window -> X ())
@@ -371,17 +375,17 @@ actOnWindowsInWorkspace windowAction getWindowsAction = restoreFocus $
 
 windowsWithUnfocusedClass ws = windowsWithOtherClasses (W.focus ws) ws
 windowsWithFocusedClass ws = windowsWithSameClass (W.focus ws) ws
-windowsWithOtherClasses = windowsMatchingPredicate (/=)
-windowsWithSameClass = windowsMatchingPredicate (==)
+windowsWithOtherClasses = windowsMatchingClassPredicate (/=)
+windowsWithSameClass = windowsMatchingClassPredicate (==)
 
-windowsMatchingPredicate predicate window workspace =
-    windowsSatisfyingPredicate workspace $ do
-      windowClass <- getClass window
-      return $ predicate windowClass
+windowsMatchingClassPredicate predicate window workspace =
+  windowsSatisfyingPredicate workspace $ do
+    windowClass <- getClass window
+    return $ predicate windowClass
 
 windowsSatisfyingPredicate workspace getPredicate = do
-    predicate <- getPredicate
-    filterM (\w -> predicate <$> getClass w) (W.integrate workspace)
+  predicate <- getPredicate
+  filterM (\w -> predicate <$> getClass w) (W.integrate workspace)
 
 windowIsMinimized w = do
   minimized <- XS.gets minimizedStack
@@ -476,20 +480,20 @@ swapFocusedWith w ws = W.modify' (swapFocusedWith' w) (W.delete' w ws)
 swapFocusedWith' w (W.Stack current ls rs) = W.Stack w ls (rs ++ [current])
 
 swapMinimizeStateAfter action =
-  withFocused $
-  \originalWindow -> do
+  withFocused $ \originalWindow -> do
     _ <- action
-    restoreFocus $
-      do maybeUnminimizeFocused
-         withFocused $
-           \newWindow -> when (newWindow /= originalWindow) $ minimizeWindow originalWindow
+    restoreFocus $ do
+      maybeUnminimizeFocused
+      withFocused $ \newWindow ->
+        when (newWindow /= originalWindow) $ minimizeWindow originalWindow
 
 -- Named Scratchpads
 
-scratchpads = [ NS "htop" htopCommnad (title =? "htop") nonFloating
-              , NS "spotify" spotifyCommand spotifySelector nonFloating
-              , NS "hangouts" hangoutsCommand  hangoutsSelector nonFloating
-              ]
+scratchpads =
+  [ NS "htop" htopCommnad (title =? "htop") nonFloating
+  , NS "spotify" spotifyCommand spotifySelector nonFloating
+  , NS "hangouts" hangoutsCommand hangoutsSelector nonFloating
+  ]
 
 doScratchpad = deactivateFullAnd . namedScratchpadAction scratchpads
 
