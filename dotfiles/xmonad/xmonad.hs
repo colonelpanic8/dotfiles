@@ -18,7 +18,7 @@ import           System.Taffybar.Hooks.PagerHints
 import           Text.Printf
 
 import           XMonad hiding ( (|||) )
-import           XMonad.Actions.CycleWS
+import           XMonad.Actions.CycleWS hiding (nextScreen)
 import qualified XMonad.Actions.DynamicWorkspaceOrder as DWO
 import           XMonad.Actions.Minimize
 import           XMonad.Actions.WindowBringer
@@ -439,6 +439,34 @@ greedyBringWindow w = greedyFocusWindow w . bringWindow w
 shiftToEmptyAndView =
   doTo Next EmptyWS DWO.getSortByOrder (windows . shiftThenView)
 
+setFocusedScreen :: ScreenId -> WindowSet -> WindowSet
+setFocusedScreen to ws =
+  maybe ws (flip setFocusedScreen' ws) $ find ((to ==) . W.screen) (W.visible ws)
+
+setFocusedScreen' to ws @ W.StackSet
+  { W.current = prevCurr
+  , W.visible = visible
+  } = ws { W.current = to
+         , W.visible = prevCurr:(deleteBy screenEq to visible)
+         }
+
+  where screenEq a b = W.screen a == W.screen b
+
+nextScreen ws @ W.StackSet { W.visible = visible } =
+  case visible of
+    next:_ -> setFocusedScreen (W.screen next) ws
+    _ -> ws
+
+viewOtherScreen ws = W.greedyView ws . nextScreen
+
+shiftThenViewOtherScreen ws w = (viewOtherScreen ws) . (W.shiftWin ws w)
+
+shiftCurrentToWSOnOtherScreen ws s =
+  fromMaybe s (flip (shiftThenViewOtherScreen ws) s <$> W.peek s)
+
+shiftToEmptyNextScreen =
+  doTo Next EmptyWS DWO.getSortByOrder $ windows . shiftCurrentToWSOnOtherScreen
+
 swapFocusedWith w ws = W.modify' (swapFocusedWith' w) (W.delete' w ws)
 
 swapFocusedWith' w (W.Stack current ls rs) = W.Stack w ls (rs ++ [current])
@@ -512,6 +540,7 @@ addKeys conf@XConfig {modMask = modm} =
     , ((modm, xK_backslash), toggleWS)
     , ((modm, xK_space), deactivateFullOr $ sendMessage NextLayout)
     , ((modm, xK_z), shiftToNextScreen)
+    , ((modm .|. shiftMask, xK_z), shiftToEmptyNextScreen)
     , ((modm, xK_x), windows $ W.shift "NSP")
     , ((modm .|. shiftMask, xK_h), shiftToEmptyAndView)
     -- These need to be rebound to support boringWindows
