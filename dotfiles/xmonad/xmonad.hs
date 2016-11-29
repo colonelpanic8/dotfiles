@@ -108,6 +108,8 @@ maybeRemap k = M.findWithDefault k k
 
 (<$.>) :: Functor f => (b -> c) -> (a -> f b) -> a -> f c
 (<$.>) l r = fmap l . r
+
+withFocusedD d f = maybe d f <$> (withWindowSet (return . W.peek))
 
 -- Selectors
 
