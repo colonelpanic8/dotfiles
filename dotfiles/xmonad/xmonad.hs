@@ -3,15 +3,17 @@
              FlexibleInstances, FlexibleContexts #-}
 module Main where
 
+import qualified Control.Arrow as A
 import           Control.Monad
 import           Control.Monad.Trans.Maybe
 import           Data.Aeson
 import qualified Data.ByteString.Lazy as B
 import           Data.List
 import qualified Data.Map as M
-import qualified Data.MultiMap as MM
 import           Data.Maybe
+import qualified Data.MultiMap as MM
 import           Graphics.X11.ExtraTypes.XF86
+import           Network.HostName
 import           System.Directory
 import           System.FilePath.Posix
 import           System.Taffybar.Hooks.PagerHints
@@ -116,11 +118,11 @@ maybeRemap k = M.findWithDefault k k
 
 withFocusedR f = withWindowSet (f . W.peek)
 
-withFocusedD d f = maybe (return d) f <$> (withWindowSet (return . W.peek))
+withFocusedD d f = maybe (return d) f <$> withWindowSet (return . W.peek)
 
-mapP f l = mapP' id
+mapP = mapP' id
 
-mapP' f f' l = map (\i -> (f i, f' i)) l
+mapP' f f' = map (f A.&&& f')
 
 -- Selectors
 
@@ -150,7 +152,20 @@ transmissionCommand = "transmission-gtk"
 
 -- Startup hook
 
-myStartup = spawn "systemctl --user start wm.target"
+tvScreenId :: ScreenId
+tvScreenId = 0
+
+disableTVFading = setFading (Just tvScreenId) False
+
+hostNameToAction =
+  M.fromList [ ("imalison-arch", disableTVFading)
+             , ("imalison-uber-loaner", return ())
+             ]
+
+myStartup = do
+  spawn "systemctl --user start wm.target"
+  hostName <- io getHostName
+  M.findWithDefault (return ()) hostName hostNameToAction
 
 -- Manage hook
 
@@ -201,7 +216,7 @@ toggleStateToString s =
 
 toggleToStringWithState :: (Transformer t Window, Show t) => t -> X String
 toggleToStringWithState toggle =
-  (printf "%s (%s)" (show toggle) . toggleStateToString) <$>
+  printf "%s (%s)" (show toggle) . toggleStateToString <$>
   isToggleActive toggle
 
 selectToggle =
@@ -253,7 +268,6 @@ selectLayout =
   DM.menuArgs "rofi" ["-dmenu", "-i"] layoutNames >>=
   (sendMessage . JumpToLayout)
 
-
 myLayoutHook =
   avoidStruts . minimize . boringAuto . mkToggle1 MIRROR . mkToggle1 LIMIT .
   mkToggle1 GAPS . mkToggle1 MAGICFOCUS . mkToggle1 NBFULL . workspaceNamesHook .
@@ -283,7 +297,7 @@ myDecorateName ws w = do
   classTitle <- getClass w
   workspaceToName <- getWorkspaceNames
   return $ printf "%-20s%-40s %+30s" classTitle (take 40 name)
-             "in " ++ workspaceToName (W.tag ws)
+           "in " ++ workspaceToName (W.tag ws)
 
 -- This needs access to X in order to unminimize, which means that I can't be
 -- done with the existing window bringer interface
@@ -344,23 +358,28 @@ fadeEnabledFor query =
 
 fadeEnabledForWindow = fadeEnabledFor ask
 fadeEnabledForWorkspace = fadeEnabledFor getWindowWorkspace
+fadeEnabledForScreen = fadeEnabledFor getWindowScreen
 
 getScreens = withWindowSet $ return . W.screens
-
 getWindowWorkspace' = W.findTag <$> ask <*> liftX (withWindowSet return)
 getWindowWorkspace = flip fromMaybe <$> getWindowWorkspace' <*> pure "1"
 getWorkspaceToScreen = M.fromList . mapP' (W.tag . W.workspace) W.screen <$> getScreens
 getWindowScreen = M.lookup <$> getWindowWorkspace <*> liftX getWorkspaceToScreen
+getCurrentScreen = join (withFocusedD Nothing (runQuery getWindowScreen))
 
-toggleFadeInactiveLogHook =
-  fadeOutLogHook .
-  fadeIf (isUnfocused <&&> fadeEnabledForWindow <&&> fadeEnabledForWorkspace)
+fadeCondition =
+  isUnfocused <&&> fadeEnabledForWindow <&&>
+  fadeEnabledForWorkspace <&&> fadeEnabledForScreen
+
+toggleFadeInactiveLogHook = fadeOutLogHook . fadeIf fadeCondition
 
 toggleFadingForActiveWindow = withWindowSet $
   maybe (return ()) toggleFading . W.peek
 
 toggleFadingForActiveWorkspace =
   withWindowSet $ \ws -> toggleFading $ W.currentTag ws
+
+toggleFadingForActiveScreen = getCurrentScreen >>= toggleFading
 
 toggleFading w = setFading' $ toggleInMap w
 
@@ -380,7 +399,7 @@ withWorkspace f = withWindowSet $ \ws -> maybe (return ()) f (getCurrentWS ws)
 
 currentWS = withWindowSet $ return . getCurrentWS
 
-workspaceWindows = (maybe [] W.integrate) <$> currentWS
+workspaceWindows = maybe [] W.integrate <$> currentWS
 
 minimizedWindows = withMinimized return
 
@@ -425,7 +444,7 @@ windowsSatisfyingPredicate workspace getPredicate = do
 getMatchingUnmatching =
   partition <$> ((. snd) <$> getClassMatchesCurrent) <*> getWindowClassPairs
 
-getWindowClassPairs = join $ sequence . map windowToClassPair <$> workspaceWindows
+getWindowClassPairs = join $ mapM windowToClassPair <$> workspaceWindows
 
 windowToClassPair w = (,) w <$> getClass w
 
@@ -490,13 +509,13 @@ shiftToEmptyAndView =
 
 setFocusedScreen :: ScreenId -> WindowSet -> WindowSet
 setFocusedScreen to ws =
-  maybe ws (flip setFocusedScreen' ws) $ find ((to ==) . W.screen) (W.visible ws)
+  maybe ws (`setFocusedScreen'` ws) $ find ((to ==) . W.screen) (W.visible ws)
 
 setFocusedScreen' to ws @ W.StackSet
   { W.current = prevCurr
   , W.visible = visible
   } = ws { W.current = to
-         , W.visible = prevCurr:(deleteBy screenEq to visible)
+         , W.visible = prevCurr:deleteBy screenEq to visible
          }
 
   where screenEq a b = W.screen a == W.screen b
@@ -508,7 +527,7 @@ nextScreen ws @ W.StackSet { W.visible = visible } =
 
 viewOtherScreen ws = W.greedyView ws . nextScreen
 
-shiftThenViewOtherScreen ws w = (viewOtherScreen ws) . (W.shiftWin ws w)
+shiftThenViewOtherScreen ws w = viewOtherScreen ws . W.shiftWin ws w
 
 shiftCurrentToWSOnOtherScreen ws s =
   fromMaybe s (flip (shiftThenViewOtherScreen ws) s <$> W.peek s)
@@ -602,6 +621,7 @@ addKeys conf@XConfig {modMask = modm} =
     -- Hyper bindings
     , ((mod3Mask, xK_1), toggleFadingForActiveWindow)
     , ((mod3Mask .|. shiftMask, xK_1), toggleFadingForActiveWorkspace)
+    , ((mod3Mask .|. controlMask, xK_1), toggleFadingForActiveScreen)
     , ((mod3Mask, xK_e), moveTo Next EmptyWS)
     , ((mod3Mask, xK_v), spawn "copyq_rofi.sh")
     , ((mod3Mask, xK_p), spawn "system_password.sh")

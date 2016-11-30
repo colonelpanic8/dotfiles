@@ -1,0 +1,12 @@
+[Unit]
+Description=BatteryMon
+Wants=taffybar.service
+After=taffybar.service
+
+[Service]
+Type=simple
+ExecStart=/usr/bin/env batterymon
+ExecStop=/usr/bin/pkill batterymon
+
+[Install]
+WantedBy=wm.target
