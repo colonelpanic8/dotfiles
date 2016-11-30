@@ -4757,7 +4757,9 @@ load-theme hook (See the heading below).
 ;; This is needed because you can't set the font or theme at daemon start-up.
 ;; (when (display-graphic-p) (imalison:appearance))
 (add-hook 'after-init-hook 'imalison:appearance)
-(add-hook 'after-make-frame-functions 'imalison:initial-setup-hook)
+
+;; XXX: I think that after-init-hook is good enough
+;; (add-hook 'after-make-frame-functions 'imalison:initial-setup-hook)
 #+END_SRC
 * Post Init Custom
 #+BEGIN_SRC emacs-lisp
