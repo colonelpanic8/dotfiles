@@ -216,7 +216,7 @@ toggleStateToString s =
 
 toggleToStringWithState :: (Transformer t Window, Show t) => t -> X String
 toggleToStringWithState toggle =
-  (printf "%s (%s)" (show toggle) . toggleStateToString) <$>
+  printf "%s (%s)" (show toggle) . toggleStateToString <$>
   isToggleActive toggle
 
 selectToggle =
@@ -267,7 +267,6 @@ layoutNames = [description layout | layout <- layoutList]
 selectLayout =
   DM.menuArgs "rofi" ["-dmenu", "-i"] layoutNames >>=
   (sendMessage . JumpToLayout)
-
 
 myLayoutHook =
   avoidStruts . minimize . boringAuto . mkToggle1 MIRROR . mkToggle1 LIMIT .
