@@ -98,6 +98,9 @@ if' :: Bool -> a -> a -> a
 if' True  x _ = x
 if' False _ y = y
 
+ifL :: a -> a -> Bool -> a
+ifL a b c = if' c a b
+
 toggleInMap' :: Ord k => Bool -> k -> M.Map k Bool -> M.Map k Bool
 toggleInMap' d k m =
   let existingValue = M.findWithDefault d k m
@@ -111,7 +114,9 @@ maybeRemap k = M.findWithDefault k k
 (<$.>) :: Functor f => (b -> c) -> (a -> f b) -> a -> f c
 (<$.>) l r = fmap l . r
 
-withFocusedD d f = maybe d f <$> (withWindowSet (return . W.peek))
+withFocusedR f = withWindowSet (f . W.peek)
+
+withFocusedD d f = maybe (return d) f <$> (withWindowSet (return . W.peek))
 
 -- Selectors
 
@@ -361,6 +366,24 @@ getCurrentWS = W.stack . W.workspace . W.current
 
 withWorkspace f = withWindowSet $ \ws -> maybe (return ()) f (getCurrentWS ws)
 
+currentWS = withWindowSet $ return . getCurrentWS
+
+workspaceWindows = (maybe [] W.integrate) <$> currentWS
+
+minimizedWindows = withMinimized return
+
+getMinMaxWindows =
+  partition <$> (flip elem <$> minimizedWindows) <*> workspaceWindows
+
+maximizedWindows = fmap snd getMinMaxWindows
+
+maximizedOtherClass =
+  intersect <$> maximizedWindows <*>
+  (currentWS >>= maybe (return []) windowsWithUnfocusedClass)
+
+getClassMatchesWindow w = (==) <$> getClass w
+getClassMatchesCurrent = join $ withFocusedD (`seq` False) getClassMatchesWindow
+
 minimizeOtherClassesInWorkspace =
   actOnWindowsInWorkspace minimizeWindow windowsWithUnfocusedClass
 maximizeSameClassesInWorkspace =
@@ -387,6 +410,13 @@ windowsSatisfyingPredicate workspace getPredicate = do
   predicate <- getPredicate
   filterM (\w -> predicate <$> getClass w) (W.integrate workspace)
 
+getMatchingUnmatching =
+  partition <$> ((. snd) <$> getClassMatchesCurrent) <*> getWindowClassPairs
+
+getWindowClassPairs = join $ sequence . map windowToClassPair <$> workspaceWindows
+
+windowToClassPair w = (,) w <$> getClass w
+
 windowIsMinimized w = do
   minimized <- XS.gets minimizedStack
   return $ w `elem` minimized
@@ -405,8 +435,8 @@ sameClassOnly action =
 restoreAllMinimized = restoreFocus $
   withLastMinimized $ \w -> maximizeWindow w >> restoreAllMinimized
 
-restoreOrMinimizeOtherClasses = withLastMinimized' $
-  maybe minimizeOtherClassesInWorkspace (`seq` restoreAllMinimized)
+restoreOrMinimizeOtherClasses = null <$> maximizedOtherClass >>=
+  ifL restoreAllMinimized minimizeOtherClassesInWorkspace
 
 getClassPair w = flip (,) w <$> getClass w
 
