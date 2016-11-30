@@ -2699,7 +2699,6 @@ The following is taken from [[https://github.com/syl20bnr/spacemacs/blob/a650877
 Intero seems to be causing hangs, so it has been disabled
 #+BEGIN_SRC emacs-lisp
 (use-package intero
-  :disabled t
   :demand t
   :after haskell-mode
   :config (add-hook 'haskell-mode-hook 'intero-mode))
@@ -2719,6 +2718,7 @@ Intero seems to be causing hangs, so it has been disabled
 #+BEGIN_SRC emacs-lisp
 (use-package ghc
   :after haskell-mode
+  :disabled t
   :config
   (progn
     (setq ghc-debug t)
@@ -2727,6 +2727,7 @@ Intero seems to be causing hangs, so it has been disabled
 **** company-ghc
 #+BEGIN_SRC emacs-lisp
 (use-package company-ghc
+  :disabled t
   :demand t
   :config
   (add-to-list 'company-backends '(company-ghc :with company-dabbrev-code)))
