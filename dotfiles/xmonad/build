@@ -1,0 +1,9 @@
+#!/bin/bash
+
+BIN=$1
+[[ -n $BIN ]] || BIN=xmonad
+
+stack install --local-bin-path $PWD
+date >> $PWD/last_built
+
+[[ -f $BIN ]] || ln -s xmonad $BIN
