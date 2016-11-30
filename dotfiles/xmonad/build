@@ -1,9 +1,9 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 BIN=$1
-[[ -n $BIN ]] || BIN=xmonad
+[[ -n "$BIN" ]] || BIN=xmonad
 
-stack install --local-bin-path $PWD
-date >> $PWD/last_built
+stack install --local-bin-path "$PWD"
+date >> "$PWD/last_built"
 
-[[ -f $BIN ]] || ln -s xmonad $BIN
+[[ -f "$BIN" ]] || ln -s xmonad "$BIN"
