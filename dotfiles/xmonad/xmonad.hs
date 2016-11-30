@@ -432,8 +432,7 @@ maybeUnminimizeClassAfter = (>> maximizeSameClassesInWorkspace)
 sameClassOnly action =
   action >> minimizeOtherClassesInWorkspace >> maximizeSameClassesInWorkspace
 
-restoreAllMinimized = restoreFocus $
-  withLastMinimized $ \w -> maximizeWindow w >> restoreAllMinimized
+restoreAllMinimized = void $ join $ mapM maximizeWindow <$> minimizedWindows
 
 restoreOrMinimizeOtherClasses = null <$> maximizedOtherClass >>=
   ifL restoreAllMinimized minimizeOtherClassesInWorkspace
