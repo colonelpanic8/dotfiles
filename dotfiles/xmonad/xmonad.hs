@@ -368,9 +368,11 @@ getWorkspaceToScreen = M.fromList . mapP' (W.tag . W.workspace) W.screen <$> get
 getWindowScreen = M.lookup <$> getWindowWorkspace <*> liftX getWorkspaceToScreen
 getCurrentScreen = join (withFocusedD Nothing (runQuery getWindowScreen))
 
-toggleFadeInactiveLogHook =
-  fadeOutLogHook .
-  fadeIf (isUnfocused <&&> fadeEnabledForWindow <&&> fadeEnabledForWorkspace <&&> fadeEnabledForScreen)
+fadeCondition =
+  isUnfocused <&&> fadeEnabledForWindow <&&>
+  fadeEnabledForWorkspace <&&> fadeEnabledForScreen
+
+toggleFadeInactiveLogHook = fadeOutLogHook . fadeIf fadeCondition
 
 toggleFadingForActiveWindow = withWindowSet $
   maybe (return ()) toggleFading . W.peek
