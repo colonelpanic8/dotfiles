@@ -556,6 +556,7 @@ addKeys conf@XConfig {modMask = modm} =
     , ((modm, xK_k), focusUp)
     , ((modm, xK_m), focusMaster)
     , ((modm, xK_Tab), focusNextClass)
+    , ((modm .|. controlMask, xK_s), spawn "split_out.sh")
 
     -- Hyper bindings
     , ((mod3Mask, xK_1), toggleFadingForActiveWindow)
