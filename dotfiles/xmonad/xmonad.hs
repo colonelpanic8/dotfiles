@@ -3,6 +3,7 @@
              FlexibleInstances, FlexibleContexts #-}
 module Main where
 
+import qualified Control.Arrow as A
 import           Control.Monad
 import           Control.Monad.Trans.Maybe
 import           Data.Aeson
@@ -116,11 +117,11 @@ maybeRemap k = M.findWithDefault k k
 
 withFocusedR f = withWindowSet (f . W.peek)
 
-withFocusedD d f = maybe (return d) f <$> (withWindowSet (return . W.peek))
+withFocusedD d f = maybe (return d) f <$> withWindowSet (return . W.peek)
 
-mapP f l = mapP' id
+mapP = mapP' id
 
-mapP' f f' l = map (\i -> (f i, f' i)) l
+mapP' f f' = map (f A.&&& f')
 
 -- Selectors
 
@@ -380,7 +381,7 @@ withWorkspace f = withWindowSet $ \ws -> maybe (return ()) f (getCurrentWS ws)
 
 currentWS = withWindowSet $ return . getCurrentWS
 
-workspaceWindows = (maybe [] W.integrate) <$> currentWS
+workspaceWindows = maybe [] W.integrate <$> currentWS
 
 minimizedWindows = withMinimized return
 
@@ -425,7 +426,7 @@ windowsSatisfyingPredicate workspace getPredicate = do
 getMatchingUnmatching =
   partition <$> ((. snd) <$> getClassMatchesCurrent) <*> getWindowClassPairs
 
-getWindowClassPairs = join $ sequence . map windowToClassPair <$> workspaceWindows
+getWindowClassPairs = join $ mapM windowToClassPair <$> workspaceWindows
 
 windowToClassPair w = (,) w <$> getClass w
 
@@ -490,13 +491,13 @@ shiftToEmptyAndView =
 
 setFocusedScreen :: ScreenId -> WindowSet -> WindowSet
 setFocusedScreen to ws =
-  maybe ws (flip setFocusedScreen' ws) $ find ((to ==) . W.screen) (W.visible ws)
+  maybe ws (`setFocusedScreen'` ws) $ find ((to ==) . W.screen) (W.visible ws)
 
 setFocusedScreen' to ws @ W.StackSet
   { W.current = prevCurr
   , W.visible = visible
   } = ws { W.current = to
-         , W.visible = prevCurr:(deleteBy screenEq to visible)
+         , W.visible = prevCurr:deleteBy screenEq to visible
          }
 
   where screenEq a b = W.screen a == W.screen b
@@ -508,7 +509,7 @@ nextScreen ws @ W.StackSet { W.visible = visible } =
 
 viewOtherScreen ws = W.greedyView ws . nextScreen
 
-shiftThenViewOtherScreen ws w = (viewOtherScreen ws) . (W.shiftWin ws w)
+shiftThenViewOtherScreen ws w = viewOtherScreen ws . W.shiftWin ws w
 
 shiftCurrentToWSOnOtherScreen ws s =
   fromMaybe s (flip (shiftThenViewOtherScreen ws) s <$> W.peek s)
