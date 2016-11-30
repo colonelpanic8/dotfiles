@@ -298,7 +298,7 @@ myDecorateName ws w = do
   classTitle <- getClass w
   workspaceToName <- getWorkspaceNames
   return $ printf "%-20s%-40s %+30s" classTitle (take 40 name)
-             "in " ++ workspaceToName (W.tag ws)
+           "in " ++ workspaceToName (W.tag ws)
 
 -- This needs access to X in order to unminimize, which means that I can't be
 -- done with the existing window bringer interface
