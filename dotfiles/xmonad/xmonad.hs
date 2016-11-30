@@ -10,9 +10,10 @@ import           Data.Aeson
 import qualified Data.ByteString.Lazy as B
 import           Data.List
 import qualified Data.Map as M
-import qualified Data.MultiMap as MM
 import           Data.Maybe
+import qualified Data.MultiMap as MM
 import           Graphics.X11.ExtraTypes.XF86
+import           Network.HostName
 import           System.Directory
 import           System.FilePath.Posix
 import           System.Taffybar.Hooks.PagerHints
@@ -151,7 +152,20 @@ transmissionCommand = "transmission-gtk"
 
 -- Startup hook
 
-myStartup = spawn "systemctl --user start wm.target"
+tvScreenId :: ScreenId
+tvScreenId = 0
+
+disableTVFading = setFading (Just tvScreenId) False
+
+hostNameToAction =
+  M.fromList [ ("imalison-arch", disableTVFading)
+             , ("imalison-uber-loaner", return ())
+             ]
+
+myStartup = do
+  spawn "systemctl --user start wm.target"
+  hostName <- io getHostName
+  M.findWithDefault (return ()) hostName hostNameToAction
 
 -- Manage hook
 
@@ -345,23 +359,26 @@ fadeEnabledFor query =
 
 fadeEnabledForWindow = fadeEnabledFor ask
 fadeEnabledForWorkspace = fadeEnabledFor getWindowWorkspace
+fadeEnabledForScreen = fadeEnabledFor getWindowScreen
 
 getScreens = withWindowSet $ return . W.screens
-
 getWindowWorkspace' = W.findTag <$> ask <*> liftX (withWindowSet return)
 getWindowWorkspace = flip fromMaybe <$> getWindowWorkspace' <*> pure "1"
 getWorkspaceToScreen = M.fromList . mapP' (W.tag . W.workspace) W.screen <$> getScreens
 getWindowScreen = M.lookup <$> getWindowWorkspace <*> liftX getWorkspaceToScreen
+getCurrentScreen = join (withFocusedD Nothing (runQuery getWindowScreen))
 
 toggleFadeInactiveLogHook =
   fadeOutLogHook .
-  fadeIf (isUnfocused <&&> fadeEnabledForWindow <&&> fadeEnabledForWorkspace)
+  fadeIf (isUnfocused <&&> fadeEnabledForWindow <&&> fadeEnabledForWorkspace <&&> fadeEnabledForScreen)
 
 toggleFadingForActiveWindow = withWindowSet $
   maybe (return ()) toggleFading . W.peek
 
 toggleFadingForActiveWorkspace =
   withWindowSet $ \ws -> toggleFading $ W.currentTag ws
+
+toggleFadingForActiveScreen = getCurrentScreen >>= toggleFading
 
 toggleFading w = setFading' $ toggleInMap w
 
@@ -603,6 +620,7 @@ addKeys conf@XConfig {modMask = modm} =
     -- Hyper bindings
     , ((mod3Mask, xK_1), toggleFadingForActiveWindow)
     , ((mod3Mask .|. shiftMask, xK_1), toggleFadingForActiveWorkspace)
+    , ((mod3Mask .|. controlMask, xK_1), toggleFadingForActiveScreen)
     , ((mod3Mask, xK_e), moveTo Next EmptyWS)
     , ((mod3Mask, xK_v), spawn "copyq_rofi.sh")
     , ((mod3Mask, xK_p), spawn "system_password.sh")
