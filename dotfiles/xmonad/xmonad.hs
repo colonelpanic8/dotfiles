@@ -153,7 +153,7 @@ transmissionCommand = "transmission-gtk"
 -- Startup hook
 
 tvScreenId :: ScreenId
-tvScreenId = 0
+tvScreenId = 1
 
 disableTVFading = setFading (Just tvScreenId) False
 
