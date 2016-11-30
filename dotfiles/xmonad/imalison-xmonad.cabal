@@ -18,6 +18,7 @@ executable imalison-xmonad
                        xmonad-contrib>=0.12,
                        X11>=1.6.1.2,
                        gtk-traymanager>=0.1.6,
+                       -- I use a custom version
                        xmonad>=0.12,
                        -- I use a custom version
                        taffybar>=0.4.6,
@@ -27,6 +28,7 @@ executable imalison-xmonad
                        containers>=0.5.7.1,
                        directory>=1.2.6.2,
                        filepath>=1.4.1.0,
-                       multimap>=1.2.1
+                       multimap>=1.2.1,
+                       hostname>=1.0
   hs-source-dirs:      .
   default-language:    Haskell2010
