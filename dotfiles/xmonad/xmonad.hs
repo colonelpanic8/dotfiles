@@ -349,13 +349,17 @@ toggleFadeInactiveLogHook =
   fadeIf (isUnfocused <&&> fadeEnabledForWindow <&&> fadeEnabledForWorkspace)
 
 toggleFadingForActiveWindow = withWindowSet $
-  maybe (return ()) toggleFadingForWindow . W.peek
+  maybe (return ()) toggleFading . W.peek
 
 toggleFadingForActiveWorkspace =
-  withWindowSet $ \ws -> toggleFadingForWindow $ W.currentTag ws
+  withWindowSet $ \ws -> toggleFading $ W.currentTag ws
 
-toggleFadingForWindow w =
-  fmap (ToggleFade . toggleInMap w . fadesMap) XS.get >>= XS.put
+toggleFading w = setFading' $ toggleInMap w
+
+setFading w f = setFading' $ M.insert w f
+
+setFading' f =
+  fmap (ToggleFade . f . fadesMap) XS.get >>= XS.put
 
 -- Minimize not in class
 
