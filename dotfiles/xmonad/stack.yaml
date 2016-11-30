@@ -4,10 +4,10 @@ packages:
 - '.'
 - location:
     git: git@github.com:IvanMalison/xmonad-contrib.git
-    commit: e4fc2341b6c5e4c27f309a371bfc140c70d813b4
+    commit: 751bcbbfecc2b9be9811a7147524e798c7e53bec
 - location:
     git: git@github.com:IvanMalison/taffybar.git
-    commit: 39e3a95e9c2eae37ff8b67eaa31bbd18503859b1
+    commit: 43195e7697d5b36f861d7febeabdd340b07edb17
 extra-deps:
 - X11-xft-0.3.1
 - gtk-traymanager-0.1.6
