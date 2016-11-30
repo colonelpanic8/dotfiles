@@ -117,6 +117,10 @@ maybeRemap k = M.findWithDefault k k
 withFocusedR f = withWindowSet (f . W.peek)
 
 withFocusedD d f = maybe (return d) f <$> (withWindowSet (return . W.peek))
+
+mapP f l = mapP' id
+
+mapP' f f' l = map (\i -> (f i, f' i)) l
 
 -- Selectors
 
@@ -341,8 +345,12 @@ fadeEnabledFor query =
 fadeEnabledForWindow = fadeEnabledFor ask
 fadeEnabledForWorkspace = fadeEnabledFor getWindowWorkspace
 
+getScreens = withWindowSet $ return . W.screens
+
 getWindowWorkspace' = W.findTag <$> ask <*> liftX (withWindowSet return)
 getWindowWorkspace = flip fromMaybe <$> getWindowWorkspace' <*> pure "1"
+getWorkspaceToScreen = M.fromList . mapP' (W.tag . W.workspace) W.screen <$> getScreens
+getWindowScreen = M.lookup <$> getWindowWorkspace <*> liftX getWorkspaceToScreen
 
 toggleFadeInactiveLogHook =
   fadeOutLogHook .
