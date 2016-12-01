@@ -189,7 +189,7 @@ possible.
 The default value of ~custom-file~ is just the current user's ~.emacs.d/init.el~
 file. Emacs will add content to ~custom-file~ whenever a variable is customized
 or marked as safe. When init.el is version controlled, it is quite annoying to
-have random machine-generated variable settings amended to it because those
+have random machine-generated variable settings added to it because those
 changes are often not worth keeping permanently, so we set a different custom
 file here to avoid this situation.
 
