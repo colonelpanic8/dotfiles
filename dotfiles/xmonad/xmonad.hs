@@ -57,17 +57,16 @@ myGetWorkspaceNameFromTag getWSName tag =
   printf "%s: %s " tag (fromMaybe "(Empty)" (getWSName tag))
 
 main =
-  xmonad $ def
+  xmonad . docks $ def
   { modMask = mod4Mask
   , terminal = "urxvt"
-  , manageHook = manageDocks <+> myManageHook <+> manageHook def
+  , manageHook = myManageHook <+> manageHook def
   , layoutHook = myLayoutHook
   , logHook =
     toggleFadeInactiveLogHook 0.9 +++
     ewmhWorkspaceNamesLogHook' myGetWorkspaceNameFromTag +++
     (myGetWorkspaceNameFromTag <$> getWorkspaceNames' >>= pagerHintsLogHookCustom)
-  , handleEventHook =
-    docksEventHook <+> fullscreenEventHook +++
+  , handleEventHook = fullscreenEventHook +++
     ewmhDesktopsEventHook +++ pagerHintsEventHook +++
     followIfNoMagicFocus +++ minimizeEventHook
   , startupHook = myStartup +++ ewmhWorkspaceNamesLogHook
