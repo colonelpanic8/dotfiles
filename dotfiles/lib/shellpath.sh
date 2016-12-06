@@ -63,8 +63,10 @@ function _python_setup {
 
 function _node_setup {
     # node/nvm
-    if [ -e /usr/share/nvm/init-nvm.sh ]; then
-        source /usr/share/nvm/init-nvm.sh
+    if [ -e /usr/share/nvm/nvm.sh ]; then
+        # This used to be init-nvm.sh but that automatically loads bash
+        # completion which can be quite annoying.
+        source /usr/share/nvm/nvm.sh
     else
         export NVM_DIR="$HOME/.nvm"
         [ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh"  # This loads nvm
