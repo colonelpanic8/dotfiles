@@ -603,7 +603,8 @@ addKeys conf@XConfig {modMask = modm} =
     , ((modm .|. controlMask, xK_space), goFullscreen)
     , ((modm, xK_slash), sendMessage $ Toggle MIRROR)
     , ((modm, xK_m), withFocused minimizeWindow)
-    , ((modm .|. shiftMask, xK_m), withLastMinimized maximizeWindowAndFocus)
+    , ((modm .|. shiftMask, xK_m),
+       deactivateFullOr $ withLastMinimized maximizeWindowAndFocus)
     , ((modm, xK_backslash), toggleWS)
     , ((modm, xK_space), deactivateFullOr $ sendMessage NextLayout)
     , ((modm, xK_z), shiftToNextScreen)
