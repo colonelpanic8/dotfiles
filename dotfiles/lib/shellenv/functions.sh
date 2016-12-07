@@ -463,3 +463,7 @@ function localip {
             ;;
     esac
 }
+
+function system_password {
+    keepasshttp.py --get -u "http://system.com" | jq '.[].password' | unescape.py
+}
