@@ -87,7 +87,7 @@ function confirm() {
     # call with a prompt string or use a default
     read -r -p "$1" response
     case $response in
-        [yY][eE][sS]|[yY]) 
+        [yY][eE][sS]|[yY])
             return 0
             ;;
         *)
@@ -462,4 +462,14 @@ function localip {
             hostname --ip-address
             ;;
     esac
+}
+
+function keepass_system_password {
+    keepasshttp.py --get -u "http://$(hostname).systempassword" |
+        jq '.[].password' | unescape.py
+}
+
+function keepass_keepass_password {
+    keepasshttp.py --get -u "http://keepass.password" |
+        jq '.[].password' | unescape.py
 }
