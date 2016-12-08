@@ -464,12 +464,6 @@ function localip {
     esac
 }
 
-function keepass_system_password {
-    keepasshttp.py --get -u "http://$(hostname).systempassword" |
-        jq '.[].password' | unescape.py
-}
-
-function keepass_keepass_password {
-    keepasshttp.py --get -u "http://keepass.password" |
-        jq '.[].password' | unescape.py
+function all_lines_after {
+    sed -n "/$1/"'$p'
 }
