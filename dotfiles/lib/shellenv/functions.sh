@@ -87,7 +87,7 @@ function confirm() {
     # call with a prompt string or use a default
     read -r -p "$1" response
     case $response in
-        [yY][eE][sS]|[yY]) 
+        [yY][eE][sS]|[yY])
             return 0
             ;;
         *)
@@ -464,6 +464,6 @@ function localip {
     esac
 }
 
-function system_password {
-    keepasshttp.py --get -u "http://system.com" | jq '.[].password' | unescape.py
+function all_lines_after {
+    sed -n "/$1/"'$p'
 }
