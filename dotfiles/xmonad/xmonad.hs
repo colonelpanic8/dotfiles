@@ -624,7 +624,7 @@ addKeys conf@XConfig {modMask = modm} =
     , ((mod3Mask .|. controlMask, xK_1), toggleFadingForActiveScreen)
     , ((mod3Mask, xK_e), moveTo Next EmptyWS)
     , ((mod3Mask, xK_v), spawn "copyq_rofi.sh")
-    , ((mod3Mask, xK_p), spawn "type_system_password.sh")
+    , ((mod3Mask, xK_p), spawn "rofi_password.sh")
     , ((mod3Mask, xK_h), spawn "screenshot.sh")
     , ((mod3Mask, xK_c), spawn "shell_command.sh")
     , ((mod3Mask .|. shiftMask, xK_l), spawn "dm-tool lock")
