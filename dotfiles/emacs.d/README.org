@@ -2558,6 +2558,7 @@ The following is taken from [[https://github.com/syl20bnr/spacemacs/blob/a650877
   :config
   (progn
     (use-package ensime
+      :demand t
       :pin melpa-stable
       :bind (:map ensime-mode-map
                   ("M-," . ensime-pop-find-definition-stack))
