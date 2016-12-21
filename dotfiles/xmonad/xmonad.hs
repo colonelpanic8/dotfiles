@@ -133,6 +133,7 @@ spotifySelector = className =? "Spotify"
 emacsSelector = className =? "Emacs"
 transmissionSelector = fmap (isPrefixOf "Transmission") title
 hangoutsSelector = chromeSelectorBase <&&> fmap isHangoutsTitle title
+volumeSelector = className =? "Pavucontrol"
 
 virtualClasses =
   [ (hangoutsSelector, "Hangouts")
@@ -148,6 +149,7 @@ chromeCommand = "google-chrome-stable"
 emacsCommand = "emacsclient -c"
 htopCommnad = "urxvt -e htop"
 transmissionCommand = "transmission-gtk"
+volumeCommand = "pavucontrol"
 
 -- Startup hook
 
@@ -552,6 +554,7 @@ scratchpads =
   [ NS "htop" htopCommnad (title =? "htop") nonFloating
   , NS "spotify" spotifyCommand spotifySelector nonFloating
   , NS "hangouts" hangoutsCommand hangoutsSelector nonFloating
+  , NS "volume" volumeCommand volumeSelector nonFloating
   ]
 
 doScratchpad = deactivateFullAnd . namedScratchpadAction scratchpads
@@ -644,11 +647,14 @@ addKeys conf@XConfig {modMask = modm} =
     , ((modalt, xK_m), doScratchpad "htop")
     , ((modalt .|. controlMask, xK_s), doScratchpad "spotify")
     , ((modalt .|. controlMask, xK_h), doScratchpad "hangouts")
+    , ((modalt .|. controlMask, xK_v), doScratchpad "volume")
 
     , ((modalt, xK_h),
        myRaiseNextMaybe (spawn hangoutsCommand) hangoutsSelector)
     , ((modalt, xK_s),
        myRaiseNextMaybe (spawn spotifyCommand) spotifySelector)
+    , ((modalt, xK_v),
+       myRaiseNextMaybe (spawn volumeCommand) volumeSelector)
 
     -- playerctl
     , ((mod3Mask, xK_f), spawn "playerctl play-pause")
@@ -672,6 +678,7 @@ addKeys conf@XConfig {modMask = modm} =
     , (modalt, xK_c, spawn chromeCommand, chromeSelector)
     -- , (modalt, xK_s, spawn spotifyCommand, spotifySelector)
     -- , (modalt, xK_h, spawn hangoutsCommand, hangoutsSelector)
+    -- , (modalt, xK_v, spawn volumeCommand, volumeSelector)
     , (modalt, xK_t, spawn transmissionCommand, transmissionSelector)
     ] ++
     -- Replace original moving stuff around + greedy view bindings
