@@ -3,6 +3,9 @@ extra-package-dbs: []
 packages:
 - '.'
 - location:
+    git: git@github.com:xmonad/X11.git
+    commit: 0dbcb1891de8d44b3eba1200197f994a3aafabf4
+- location:
     git: git@github.com:IvanMalison/xmonad.git
     commit: 7e9c9ccb1f47c147ad19dc420361852623bd6199
 - location:
