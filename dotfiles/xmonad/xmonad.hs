@@ -22,6 +22,7 @@ import           Text.Printf
 import           XMonad hiding ( (|||) )
 import           XMonad.Actions.CycleWS hiding (nextScreen)
 import qualified XMonad.Actions.DynamicWorkspaceOrder as DWO
+import           XMonad.Actions.DynamicWorkspaces hiding (withWorkspace)
 import           XMonad.Actions.Minimize
 import           XMonad.Actions.WindowBringer
 import           XMonad.Actions.WindowGo
@@ -612,7 +613,7 @@ addKeys conf@XConfig {modMask = modm} =
     , ((modm, xK_space), deactivateFullOr $ sendMessage NextLayout)
     , ((modm, xK_z), shiftToNextScreen)
     , ((modm .|. shiftMask, xK_z), shiftToEmptyNextScreen)
-    , ((modm, xK_x), windows $ W.shift "NSP")
+    , ((modm, xK_x), addHiddenWorkspace "NSP" >> (windows $ W.shift "NSP"))
     , ((modm .|. shiftMask, xK_h), shiftToEmptyAndView)
     -- These need to be rebound to support boringWindows
     , ((modm, xK_j), focusDown)
