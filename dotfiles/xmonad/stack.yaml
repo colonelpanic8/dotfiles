@@ -14,4 +14,4 @@ packages:
 extra-deps:
 - X11-xft-0.3.1
 - gtk-traymanager-0.1.6
-resolver: lts-7.0
+resolver: lts-7.13
