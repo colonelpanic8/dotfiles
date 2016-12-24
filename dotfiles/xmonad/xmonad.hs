@@ -24,6 +24,7 @@ import           XMonad.Actions.CycleWS hiding (nextScreen)
 import qualified XMonad.Actions.DynamicWorkspaceOrder as DWO
 import           XMonad.Actions.DynamicWorkspaces hiding (withWorkspace)
 import           XMonad.Actions.Minimize
+import           XMonad.Actions.UpdatePointer
 import           XMonad.Actions.WindowBringer
 import           XMonad.Actions.WindowGo
 import           XMonad.Actions.WorkspaceNames
@@ -64,7 +65,7 @@ main =
   , manageHook = myManageHook <+> manageHook def
   , layoutHook = myLayoutHook
   , logHook =
-    toggleFadeInactiveLogHook 0.9 +++
+    updatePointer (0.5, 0.5) (0, 0) +++ toggleFadeInactiveLogHook 0.9 +++
     ewmhWorkspaceNamesLogHook' myGetWorkspaceNameFromTag +++
     (myGetWorkspaceNameFromTag <$> getWorkspaceNames' >>= pagerHintsLogHookCustom)
   , handleEventHook = fullscreenEventHook +++
