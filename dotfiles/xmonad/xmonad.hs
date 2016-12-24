@@ -588,6 +588,13 @@ shiftToNextScreen = withWindowSet $ \ws ->
   case W.visible ws of
     W.Screen i _ _:_ -> windows $ W.view (W.tag i) . W.shift (W.tag i)
     _ -> return ()
+
+goToNextScreen = windows $ \ws ->
+  case W.visible ws of
+    newVisible:rest -> ws { W.current = newVisible
+                          , W.visible = W.current ws:rest
+                          }
+    _ -> ws
 
 -- Key bindings
 
@@ -604,7 +611,8 @@ addKeys conf@XConfig {modMask = modm} =
     , ((modm .|. controlMask, xK_t), spawn
        "systemctl --user restart taffybar.service")
     , ((modm, xK_v), spawn "copyq paste")
-    , ((modm, xK_s), swapNextScreen)
+    , ((modm, xK_s), swapNextScreen >> goToNextScreen)
+    , ((modm .|. shiftMask, xK_s), goToNextScreen)
     , ((modm .|. controlMask, xK_space), goFullscreen)
     , ((modm, xK_slash), sendMessage $ Toggle MIRROR)
     , ((modm, xK_m), withFocused minimizeWindow)
