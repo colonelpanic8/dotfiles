@@ -562,7 +562,8 @@ scratchpads =
   , NS "volume" volumeCommand volumeSelector nonFloating
   ]
 
-doScratchpad = deactivateFullAnd . namedScratchpadAction scratchpads
+doScratchpad =
+  maybeUnminimizeAfter . deactivateFullAnd . namedScratchpadAction scratchpads
 
 -- Raise or spawn
 
