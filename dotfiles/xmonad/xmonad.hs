@@ -599,8 +599,27 @@ goToNextScreen = windows $ \ws ->
 -- Key bindings
 
 addKeys conf@XConfig {modMask = modm} =
-    [ ((modm, xK_p), spawn "rofi -show drun")
+
+   -- Specific program spawning
+    bindBringAndRaiseMany
+    [ (modalt, xK_e, spawn emacsCommand, emacsSelector)
+    , (modalt, xK_c, spawn chromeCommand, chromeSelector)
+    , (modalt, xK_s, spawn spotifyCommand, spotifySelector)
+    , (modalt, xK_t, spawn transmissionCommand, transmissionSelector)
+    ] ++
+
+    -- ScratchPads
+    [ ((modalt, xK_m), doScratchpad "htop")
+    , ((modalt, xK_v), doScratchpad "volume")
+    , ((modalt, xK_h), doScratchpad "hangouts")
+
+    -- Specific program spawning
+
+    , ((modm, xK_p), spawn "rofi -show drun")
     , ((modm .|. shiftMask, xK_p), spawn "rofi -show run")
+
+    -- Window manipulation
+
     , ((modm, xK_g), andDeactivateFull . maybeUnminimizeAfter $
                    actionMenu myWindowBringerConfig greedyFocusWindow)
     , ((modm .|. shiftMask, xK_g), andDeactivateFull . sameClassOnly $
@@ -608,34 +627,45 @@ addKeys conf@XConfig {modMask = modm} =
     , ((modm, xK_b), andDeactivateFull $ myBringWindow myWindowBringerConfig)
     , ((modm .|. shiftMask, xK_b),
        swapMinimizeStateAfter $ actionMenu myWindowBringerConfig swapFocusedWith)
-    , ((modm .|. controlMask, xK_t), spawn
-       "systemctl --user restart taffybar.service")
-    , ((modm, xK_v), spawn "copyq paste")
-    , ((modm, xK_s), swapNextScreen >> goToNextScreen)
-    , ((modm .|. shiftMask, xK_s), goToNextScreen)
     , ((modm .|. controlMask, xK_space), goFullscreen)
-    , ((modm, xK_slash), sendMessage $ Toggle MIRROR)
     , ((modm, xK_m), withFocused minimizeWindow)
     , ((modm .|. shiftMask, xK_m),
        deactivateFullOr $ withLastMinimized maximizeWindowAndFocus)
+    , ((modm, xK_x), addHiddenWorkspace "NSP" >> (windows $ W.shift "NSP"))
+    , ((modalt, xK_space), deactivateFullOr restoreOrMinimizeOtherClasses)
+    , ((modalt, xK_Return), deactivateFullAnd restoreAllMinimized)
+
+    -- Focus/Layout manipulation
+
+    , ((modm, xK_s), swapNextScreen >> goToNextScreen)
+    , ((modm, xK_e), goToNextScreen)
+    , ((modm, xK_slash), sendMessage $ Toggle MIRROR)
     , ((modm, xK_backslash), toggleWS)
     , ((modm, xK_space), deactivateFullOr $ sendMessage NextLayout)
     , ((modm, xK_z), shiftToNextScreen)
     , ((modm .|. shiftMask, xK_z), shiftToEmptyNextScreen)
-    , ((modm, xK_x), addHiddenWorkspace "NSP" >> (windows $ W.shift "NSP"))
     , ((modm .|. shiftMask, xK_h), shiftToEmptyAndView)
     -- These need to be rebound to support boringWindows
     , ((modm, xK_j), focusDown)
     , ((modm, xK_k), focusUp)
     , ((modm, xK_m), focusMaster)
     , ((modm, xK_Tab), focusNextClass)
-    , ((modm .|. controlMask, xK_s), spawn "split_out.sh")
+    , ((mod3Mask, xK_e), moveTo Next EmptyWS)
+
+    -- Miscellaneous XMonad
 
-    -- Hyper bindings
     , ((mod3Mask, xK_1), toggleFadingForActiveWindow)
     , ((mod3Mask .|. shiftMask, xK_1), toggleFadingForActiveWorkspace)
     , ((mod3Mask .|. controlMask, xK_1), toggleFadingForActiveScreen)
-    , ((mod3Mask, xK_e), moveTo Next EmptyWS)
+    , ((mod3Mask, xK_t), selectToggle)
+    , ((modalt, xK_4), selectLimit)
+
+    -- Non-XMonad
+
+    , ((modm .|. controlMask, xK_t), spawn
+       "systemctl --user restart taffybar.service")
+    , ((modm, xK_v), spawn "copyq paste")
+    , ((modm .|. controlMask, xK_s), spawn "split_out.sh")
     , ((mod3Mask, xK_v), spawn "copyq_rofi.sh")
     , ((mod3Mask, xK_p), spawn "rofi_password.sh")
     , ((mod3Mask, xK_h), spawn "screenshot.sh")
@@ -643,29 +673,12 @@ addKeys conf@XConfig {modMask = modm} =
     , ((mod3Mask .|. shiftMask, xK_l), spawn "dm-tool lock")
     , ((mod3Mask, xK_l), selectLayout)
     , ((mod3Mask, xK_k), spawn "rofi_kill_process.sh")
-    , ((mod3Mask, xK_t), selectToggle)
     , ((mod3Mask, xK_r), spawn "rofi_restart_service.sh")
     , ((mod3Mask, xK_0), spawn "tvpower.js")
-
-    -- ModAlt bindings
     , ((modalt, xK_w), spawn "rofi_wallpaper.sh")
     , ((modalt, xK_z), spawn "split_out_chrome_tab.sh")
-    , ((modalt, xK_space), deactivateFullOr restoreOrMinimizeOtherClasses)
-    , ((modalt, xK_Return), deactivateFullAnd restoreAllMinimized)
-    , ((modalt, xK_4), selectLimit)
-
-    -- ScratchPads
-    , ((modalt, xK_m), doScratchpad "htop")
-    , ((modalt .|. controlMask, xK_s), doScratchpad "spotify")
-    , ((modalt .|. controlMask, xK_h), doScratchpad "hangouts")
-    , ((modalt .|. controlMask, xK_v), doScratchpad "volume")
-
-    , ((modalt, xK_h),
-       myRaiseNextMaybe (spawn hangoutsCommand) hangoutsSelector)
-    , ((modalt, xK_s),
-       myRaiseNextMaybe (spawn spotifyCommand) spotifySelector)
-    , ((modalt, xK_v),
-       myRaiseNextMaybe (spawn volumeCommand) volumeSelector)
+
+    -- Media keys
 
     -- playerctl
     , ((mod3Mask, xK_f), spawn "playerctl play-pause")
@@ -676,29 +689,25 @@ addKeys conf@XConfig {modMask = modm} =
     , ((mod3Mask, xK_a), spawn "playerctl previous")
     , ((0, xF86XK_AudioPrev), spawn "playerctl previous")
 
-    -- volume control
+    -- Volume control
     , ((0, xF86XK_AudioRaiseVolume), spawn "pulseaudio-ctl up")
     , ((0, xF86XK_AudioLowerVolume), spawn "pulseaudio-ctl down")
     , ((0, xF86XK_AudioMute), spawn "pulseaudio-ctl mute")
     , ((mod3Mask, xK_w), spawn "pulseaudio-ctl up")
     , ((mod3Mask, xK_s), spawn "pulseaudio-ctl down")
 
-    ] ++ bindBringAndRaiseMany
-
-    [ (modalt, xK_e, spawn emacsCommand, emacsSelector)
-    , (modalt, xK_c, spawn chromeCommand, chromeSelector)
-    -- , (modalt, xK_s, spawn spotifyCommand, spotifySelector)
-    -- , (modalt, xK_h, spawn hangoutsCommand, hangoutsSelector)
-    -- , (modalt, xK_v, spawn volumeCommand, volumeSelector)
-    , (modalt, xK_t, spawn transmissionCommand, transmissionSelector)
     ] ++
-    -- Replace original moving stuff around + greedy view bindings
+
+    -- Replace moving bindings
+
     [((additionalMask .|. modm, key), windows $ function workspace)
          | (workspace, key) <- zip (workspaces conf) [xK_1 .. xK_9]
          , (function, additionalMask) <-
              [ (W.greedyView, 0)
              , (W.shift, shiftMask)
-             , (shiftThenView, controlMask)]]
+             , (shiftThenView, controlMask)
+             ]
+    ]
     where
       modalt = modm .|. mod1Mask
 
