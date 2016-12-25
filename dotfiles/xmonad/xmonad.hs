@@ -587,17 +587,21 @@ bindBringAndRaiseMany = concatMap (\(a, b, c, d) -> bindBringAndRaise a b c d)
 
 -- Screen shift
 
-shiftToNextScreen = withWindowSet $ \ws ->
+shiftToNextScreen ws =
   case W.visible ws of
-    W.Screen i _ _:_ -> windows $ W.view (W.tag i) . W.shift (W.tag i)
-    _ -> return ()
+    W.Screen i _ _:_ -> W.view (W.tag i) $ W.shift (W.tag i) ws
+    _ -> ws
 
-goToNextScreen = windows $ \ws ->
+shiftToNextScreenX = windows shiftToNextScreen
+
+goToNextScreen ws =
   case W.visible ws of
     newVisible:rest -> ws { W.current = newVisible
                           , W.visible = W.current ws:rest
                           }
     _ -> ws
+
+goToNextScreenX = windows goToNextScreen
 
 -- Key bindings
 
@@ -642,12 +646,12 @@ addKeys conf@XConfig {modMask = modm} =
 
     -- Focus/Layout manipulation
 
-    , ((modm, xK_s), swapNextScreen >> goToNextScreen)
-    , ((modm, xK_e), goToNextScreen)
+    , ((modm, xK_s), swapNextScreen >> goToNextScreenX)
+    , ((modm, xK_e), goToNextScreenX)
     , ((modm, xK_slash), sendMessage $ Toggle MIRROR)
     , ((modm, xK_backslash), toggleWS)
     , ((modm, xK_space), deactivateFullOr $ sendMessage NextLayout)
-    , ((modm, xK_z), shiftToNextScreen)
+    , ((modm, xK_z), shiftToNextScreenX)
     , ((modm .|. shiftMask, xK_z), shiftToEmptyNextScreen)
     , ((modm .|. shiftMask, xK_h), shiftToEmptyAndView)
     -- These need to be rebound to support boringWindows
