@@ -64,6 +64,9 @@ main =
   , terminal = "urxvt"
   , manageHook = myManageHook <+> manageHook def
   , layoutHook = myLayoutHook
+  , borderWidth = 5
+  , normalBorderColor = "#000000"
+  , focusedBorderColor = "#455a64"
   , logHook =
     updatePointer (0.5, 0.5) (0, 0) +++ toggleFadeInactiveLogHook 0.9 +++
     ewmhWorkspaceNamesLogHook' myGetWorkspaceNameFromTag +++
@@ -274,7 +277,7 @@ selectLayout =
 myLayoutHook =
   avoidStruts . minimize . boringAuto . mkToggle1 MIRROR . mkToggle1 LIMIT .
   mkToggle1 GAPS . mkToggle1 MAGICFOCUS . mkToggle1 NBFULL . workspaceNamesHook .
-  smartBorders . noBorders $ fst layoutInfo
+  lessBorders Screen $ fst layoutInfo
 
 -- WindowBringer
 
