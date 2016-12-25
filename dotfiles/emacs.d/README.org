@@ -2800,7 +2800,7 @@ Intero seems to be causing hangs, so it has been disabled
 ** Document
 *** org
 **** config
- #+BEGIN_SRC emacs-lisp
+#+BEGIN_SRC emacs-lisp
 (use-package org
   :ensure org-plus-contrib
   :bind (:map org-mode-map
@@ -3211,7 +3211,7 @@ Intero seems to be causing hangs, so it has been disabled
     ;; EXPIRED TODO to indicate that the owner is not necessarily to
     ;; blame.
     ))
- #+END_SRC
+#+END_SRC
 **** Use frames
 #+BEGIN_SRC emacs-lisp
 (use-package org
@@ -3298,7 +3298,7 @@ alphanumeric characters only."
             new-name)))))
 #+END_SRC
 **** org-projectile
- #+BEGIN_SRC emacs-lisp
+#+BEGIN_SRC emacs-lisp
 (imalison:use-package org-projectile
   :after helm
   :bind (("C-c n p" . imalison:helm-org-todo))
@@ -3321,7 +3321,7 @@ alphanumeric characters only."
                               (imalison:make-org-todo-template))))
             :candidate-number-limit 99999
             :buffer "*helm org capture templates*"))))
- #+END_SRC
+#+END_SRC
 **** org-notify
  #+BEGIN_SRC emacs-lisp
 (use-package org-notify
