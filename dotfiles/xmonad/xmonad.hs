@@ -612,6 +612,8 @@ addKeys conf@XConfig {modMask = modm} =
     [ ((modalt, xK_m), doScratchpad "htop")
     , ((modalt, xK_v), doScratchpad "volume")
     , ((modalt, xK_h), doScratchpad "hangouts")
+    , ((modalt .|. controlMask, xK_h),
+       myRaiseNextMaybe (spawn hangoutsCommand) hangoutsSelector)
 
     -- Specific program spawning
 
