@@ -15,6 +15,7 @@ packages:
     git: git@github.com:IvanMalison/taffybar.git
     commit: 43195e7697d5b36f861d7febeabdd340b07edb17
 extra-deps:
+- X11-1.7
 - X11-xft-0.3.1
 - gtk-traymanager-0.1.6
-resolver: lts-7.13
+resolver: lts-7.5
