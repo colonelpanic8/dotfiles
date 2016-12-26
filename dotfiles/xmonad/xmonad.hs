@@ -682,6 +682,7 @@ addKeys conf@XConfig {modMask = modm} =
     , ((mod3Mask, xK_0), spawn "tvpower.js")
     , ((modalt, xK_w), spawn "rofi_wallpaper.sh")
     , ((modalt, xK_z), spawn "split_out_chrome_tab.sh")
+    , ((mod3Mask, xK_9), spawn "start_synergy.sh")
 
     -- Media keys
 
