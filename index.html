@@ -3,7 +3,7 @@
 "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
-<!-- 2016-12-24 Sat 23:57 -->
+<!-- 2016-12-26 Mon 01:12 -->
 <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title></title>
@@ -514,7 +514,7 @@ for the JavaScript code in this tag.
 <li><a href="#edebug">12.1.3.6. edebug</a></li>
 <li><a href="#overseer">12.1.3.7. overseer</a></li>
 <li><a href="#misc1">12.1.3.8. Misc</a></li>
-<li><a href="#showresultofevallastsexpinline">12.1.3.9. Show result of eval-last-sexp inline</a></li>
+<li><a href="#eros">12.1.3.9. eros</a></li>
 <li><a href="#reevalutedefvarswhenrunningevallastsexp">12.1.3.10. Reevalute defvars when running eval-last-sexp</a></li>
 <li><a href="#inithook">12.1.3.11. Init hook</a></li>
 <li><a href="#keybinds">12.1.3.12. Keybinds</a></li>
@@ -4240,38 +4240,15 @@ Reduce indentation for some functions
 </div>
 </div>
 </div>
-<div id="outline-container-showresultofevallastsexpinline" class="outline-5">
-<h5 id="showresultofevallastsexpinline"><span class="section-number-5">12.1.3.9</span> Show result of eval-last-sexp inline</h5>
+<div id="outline-container-eros" class="outline-5">
+<h5 id="eros"><span class="section-number-5">12.1.3.9</span> eros</h5>
 <div class="outline-text-5" id="text-12-1-3-9">
-<p>
-Taken from <a href="http://endlessparentheses.com/eval-result-overlays-in-emacs-lisp.html">http://endlessparentheses.com/eval-result-overlays-in-emacs-lisp.html</a>
-</p>
 <div class="org-src-container">
-<pre class="src src-emacs-lisp"><span style="color: #2aa198;">(</span>autoload 'cider--make-result-overlay <span style="color: #2aa198;">"cider-overlays"</span><span style="color: #2aa198;">)</span>
-
-<span style="color: #2aa198;">(</span><span style="color: #859900; font-weight: bold;">defun</span> <span style="color: #268bd2;">imalison:eval-overlay</span> <span style="color: #b58900;">(</span>value point<span style="color: #b58900;">)</span>
-  <span style="color: #b58900;">(</span>cider--make-result-overlay <span style="color: #268bd2;">(</span>format <span style="color: #2aa198;">"%S"</span> value<span style="color: #268bd2;">)</span>
-    <span style="color: #657b83; font-weight: bold;">:where</span> point
-    <span style="color: #657b83; font-weight: bold;">:duration</span> 'command<span style="color: #b58900;">)</span>
-  value<span style="color: #2aa198;">)</span>
-
-<span style="color: #2aa198;">(</span>advice-add 'eval-region <span style="color: #657b83; font-weight: bold;">:around</span>
-            <span style="color: #b58900;">(</span><span style="color: #859900; font-weight: bold;">lambda</span> <span style="color: #268bd2;">(</span>f beg end <span style="color: #b58900;">&amp;rest</span> r<span style="color: #268bd2;">)</span>
-              <span style="color: #268bd2;">(</span>imalison:eval-overlay
-               <span style="color: #6c71c4;">(</span>apply f beg end r<span style="color: #6c71c4;">)</span>
-               end<span style="color: #268bd2;">)</span><span style="color: #b58900;">)</span><span style="color: #2aa198;">)</span>
-
-<span style="color: #2aa198;">(</span>advice-add 'eval-last-sexp <span style="color: #657b83; font-weight: bold;">:filter-return</span>
-            <span style="color: #b58900;">(</span><span style="color: #859900; font-weight: bold;">lambda</span> <span style="color: #268bd2;">(</span>r<span style="color: #268bd2;">)</span>
-              <span style="color: #268bd2;">(</span>imalison:eval-overlay r <span style="color: #6c71c4;">(</span>point<span style="color: #6c71c4;">)</span><span style="color: #268bd2;">)</span><span style="color: #b58900;">)</span><span style="color: #2aa198;">)</span>
-
-<span style="color: #2aa198;">(</span>advice-add 'eval-defun <span style="color: #657b83; font-weight: bold;">:filter-return</span>
-            <span style="color: #b58900;">(</span><span style="color: #859900; font-weight: bold;">lambda</span> <span style="color: #268bd2;">(</span>r<span style="color: #268bd2;">)</span>
-              <span style="color: #268bd2;">(</span>imalison:eval-overlay
-               r
-               <span style="color: #6c71c4;">(</span><span style="color: #859900; font-weight: bold;">save-excursion</span>
-                 <span style="color: #859900;">(</span>end-of-defun<span style="color: #859900;">)</span>
-                 <span style="color: #859900;">(</span>point<span style="color: #859900;">)</span><span style="color: #6c71c4;">)</span><span style="color: #268bd2;">)</span><span style="color: #b58900;">)</span><span style="color: #2aa198;">)</span>
+<pre class="src src-emacs-lisp"><span style="color: #2aa198;">(</span><span style="color: #859900; font-weight: bold;">use-package</span> <span style="color: #268bd2; font-weight: bold;">eros</span>
+  <span style="color: #657b83; font-weight: bold;">:commands</span> <span style="color: #b58900;">(</span>eros-mode<span style="color: #b58900;">)</span>
+  <span style="color: #657b83; font-weight: bold;">:preface</span>
+  <span style="color: #b58900;">(</span><span style="color: #859900; font-weight: bold;">progn</span>
+    <span style="color: #268bd2;">(</span>add-hook 'emacs-lisp-mode-hook 'eros-mode<span style="color: #268bd2;">)</span><span style="color: #b58900;">)</span><span style="color: #2aa198;">)</span>
 </pre>
 </div>
 </div>
@@ -5289,7 +5266,7 @@ This function replaces the default naming scheme with a call to
 <h5 id="orgprojectile"><span class="section-number-5">12.3.1.5</span> org-projectile</h5>
 <div class="outline-text-5" id="text-12-3-1-5">
 <div class="org-src-container">
-<pre class="src src-emacs-lisp"><span style="color: #2aa198;">(</span><span style="color: #859900; font-weight: bold;">imalison:use-package</span> org-projectile
+<pre class="src src-emacs-lisp"><span style="color: #2aa198;">(</span><span style="color: #859900; font-weight: bold;">use-package</span> <span style="color: #268bd2; font-weight: bold;">org-projectile</span>
   <span style="color: #657b83; font-weight: bold;">:after</span> helm
   <span style="color: #657b83; font-weight: bold;">:bind</span> <span style="color: #b58900;">(</span><span style="color: #268bd2;">(</span><span style="color: #2aa198;">"C-c n p"</span> . imalison:helm-org-todo<span style="color: #268bd2;">)</span><span style="color: #b58900;">)</span>
   <span style="color: #657b83; font-weight: bold;">:config</span>
@@ -7360,7 +7337,7 @@ load-theme hook (See the heading below).
 </div>
 <div id="postamble" class="status">
 <p class="author">Author: Ivan Malison</p>
-<p class="date">Created: 2016-12-24 Sat 23:57</p>
+<p class="date">Created: 2016-12-26 Mon 01:12</p>
 <p class="validation"><a href="http://validator.w3.org/check?uri=referer">Validate</a></p>
 </div>
 </body>
