@@ -5,3 +5,4 @@ env:
   global:
   - ENCRYPTION_LABEL: "73e6c870aa87"
   - COMMIT_AUTHOR_EMAIL: "IvanMalison@gmail.com"
+  - COMMIT_AUTHOR_NAME: "Ivan Malison"
