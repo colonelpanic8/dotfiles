@@ -14,4 +14,4 @@ curl -fsSkL https://raw.github.com/cask/cask/master/go | python
 cask install
 cask exec emacs --script generate-html.el
 
-cp "../dotfiles/emacs.d/README.html" out
+cp "$THIS_DIR/../emacs.d/README.html" out
