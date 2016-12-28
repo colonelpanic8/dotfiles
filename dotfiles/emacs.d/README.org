@@ -2779,10 +2779,14 @@ Intero seems to be causing hangs, so it has been disabled
 #+END_SRC
 ** Document
 *** org
+**** Require the latest version of org-mode
+#+BEGIN_SRC emacs-lisp
+(use-package org
+  :ensure org-plus-contrib)
+#+END_SRC
 **** config
 #+BEGIN_SRC emacs-lisp :tangle org-config.el
 (use-package org
-  :ensure org-plus-contrib
   :bind (:map org-mode-map
               (("C-e" . end-of-visual-line)))
   :preface

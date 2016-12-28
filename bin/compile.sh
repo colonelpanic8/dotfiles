@@ -9,11 +9,9 @@ git clone https://github.com/rejeep/evm.git "$HOME/.evm"
 evm config path /tmp
 evm install emacs-25.1-travis --use --skip
 
-export EMACS=$(sh -c 'type -P emacs')
-
 curl -fsSkL https://raw.github.com/cask/cask/master/go | python
 
 cask install
 cask exec emacs --script generate-html.el
 
-cp "../dotfiles/emacs.d/README.html" out
+cp "$THIS_DIR/../dotfiles/emacs.d/README.html" out
