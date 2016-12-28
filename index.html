@@ -3,7 +3,7 @@
 "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
-<!-- 2016-12-26 Mon 01:12 -->
+<!-- 2016-12-28 Wed 02:09 -->
 <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title></title>
@@ -186,7 +186,7 @@
 <script type="text/javascript" src="http://www.pirilampo.org/styles/lib/js/jquery.stickytableheaders.js"></script>
 <script type="text/javascript" src="http://www.pirilampo.org/styles/readtheorg/js/readtheorg.js"></script>
 <style type="text/css">
-  pre.src {background-color: #fdf6e3; color: #657b83;}</style>
+ pre.src {background-color: #fdf6e3; color: #657b83;}</style>
 <script type="text/javascript">
 /*
 @licstart  The following is the entire license notice for the
@@ -556,13 +556,14 @@ for the JavaScript code in this tag.
 <li><a href="#org">12.3.1. org</a>
 <ul>
 <li><a href="#config">12.3.1.1. config</a></li>
-<li><a href="#useframes">12.3.1.2. Use frames</a></li>
-<li><a href="#setbackgroundcolorofsourceblocksforexport">12.3.1.3. Set Background Color of Source Blocks for Export</a></li>
-<li><a href="#usemyowndefaultnamingschemefororgheadings">12.3.1.4. Use my own default naming scheme for org-headings</a></li>
-<li><a href="#orgprojectile">12.3.1.5. org-projectile</a></li>
-<li><a href="#orgnotify">12.3.1.6. org-notify</a></li>
-<li><a href="#orgreveal">12.3.1.7. org-reveal</a></li>
-<li><a href="#orgcaldav">12.3.1.8. org-caldav</a></li>
+<li><a href="#loadorgconfigel">12.3.1.2. Load org-config.el</a></li>
+<li><a href="#useframes">12.3.1.3. Use frames</a></li>
+<li><a href="#setbackgroundcolorofsourceblocksforexport">12.3.1.4. Set Background Color of Source Blocks for Export</a></li>
+<li><a href="#usemyowndefaultnamingschemefororgheadings">12.3.1.5. Use my own default naming scheme for org-headings</a></li>
+<li><a href="#orgprojectile">12.3.1.6. org-projectile</a></li>
+<li><a href="#orgnotify">12.3.1.7. org-notify</a></li>
+<li><a href="#orgreveal">12.3.1.8. org-reveal</a></li>
+<li><a href="#orgcaldav">12.3.1.9. org-caldav</a></li>
 </ul>
 </li>
 <li><a href="#tex">12.3.2. TeX</a>
@@ -3706,6 +3707,7 @@ I don't use auto-complete at all, so I have set up a hook to automatically disab
     <span style="color: #268bd2;">(</span><span style="color: #859900; font-weight: bold;">require</span> '<span style="color: #268bd2; font-weight: bold;">smartparens-config</span><span style="color: #268bd2;">)</span>
     <span style="color: #268bd2;">(</span>smartparens-global-mode 1<span style="color: #268bd2;">)</span>
     <span style="color: #268bd2;">(</span>sp-use-smartparens-bindings<span style="color: #268bd2;">)</span>
+    <span style="color: #268bd2;">(</span>sp-local-pair 'org-mode <span style="color: #2aa198;">"~"</span> <span style="color: #2aa198;">"~"</span><span style="color: #268bd2;">)</span>
     <span style="color: #268bd2;">(</span><span style="color: #859900; font-weight: bold;">unbind-key</span> <span style="color: #2aa198;">"C-M-&lt;backspace&gt;"</span> smartparens-mode-map<span style="color: #268bd2;">)</span>
     <span style="color: #268bd2;">(</span><span style="color: #859900; font-weight: bold;">unbind-key</span> <span style="color: #2aa198;">"C-&lt;backspace&gt;"</span> smartparens-mode-map<span style="color: #268bd2;">)</span>
     <span style="color: #268bd2;">(</span><span style="color: #859900; font-weight: bold;">unbind-key</span> <span style="color: #2aa198;">"M-&lt;backspace&gt;"</span> smartparens-mode-map<span style="color: #268bd2;">)</span><span style="color: #b58900;">)</span><span style="color: #2aa198;">)</span>
@@ -4747,14 +4749,14 @@ Intero seems to be causing hangs, so it has been disabled
               <span style="color: #268bd2;">(</span><span style="color: #6c71c4;">(</span><span style="color: #2aa198;">"C-e"</span> . end-of-visual-line<span style="color: #6c71c4;">)</span><span style="color: #268bd2;">)</span><span style="color: #b58900;">)</span>
   <span style="color: #657b83; font-weight: bold;">:preface</span>
   <span style="color: #b58900;">(</span><span style="color: #859900; font-weight: bold;">progn</span>
-    <span style="color: #93a1a1;">;; </span><span style="color: #93a1a1;">XXX: These should probably be moved to config, right?</span>
-    <span style="color: #268bd2;">(</span><span style="color: #859900; font-weight: bold;">defvar-setq</span> org-startup-indented nil<span style="color: #268bd2;">)</span>
-    <span style="color: #268bd2;">(</span><span style="color: #859900; font-weight: bold;">defvar-setq</span> org-startup-folded t<span style="color: #268bd2;">)</span>
-    <span style="color: #268bd2;">(</span><span style="color: #859900; font-weight: bold;">defvar-setq</span> org-edit-src-content-indentation 0<span style="color: #268bd2;">)</span>
-    <span style="color: #268bd2;">(</span><span style="color: #859900; font-weight: bold;">defvar-setq</span> org-src-preserve-indentation t<span style="color: #268bd2;">)</span>
-    <span style="color: #268bd2;">(</span><span style="color: #859900; font-weight: bold;">defvar-setq</span> org-directory <span style="color: #2aa198;">"~/Dropbox/org"</span><span style="color: #268bd2;">)</span>
-    <span style="color: #268bd2;">(</span><span style="color: #859900; font-weight: bold;">defvar-setq</span> org-mobile-inbox-for-pull <span style="color: #2aa198;">"~/Dropbox/org/flagged.org"</span><span style="color: #268bd2;">)</span>
-    <span style="color: #268bd2;">(</span><span style="color: #859900; font-weight: bold;">defvar-setq</span> org-mobile-directory <span style="color: #2aa198;">"~/Dropbox/Apps/MobileOrg"</span><span style="color: #268bd2;">)</span>
+        <span style="color: #93a1a1;">;; </span><span style="color: #93a1a1;">XXX: These should probably be moved to config, right?</span>
+    <span style="color: #268bd2;">(</span><span style="color: #859900; font-weight: bold;">setq</span> org-startup-indented nil
+          org-startup-folded t
+          org-edit-src-content-indentation 0
+          org-src-preserve-indentation t
+          org-directory <span style="color: #2aa198;">"~/Dropbox/org"</span>
+          org-mobile-inbox-for-pull <span style="color: #2aa198;">"~/Dropbox/org/flagged.org"</span>
+          org-mobile-directory <span style="color: #2aa198;">"~/Dropbox/Apps/MobileOrg"</span><span style="color: #268bd2;">)</span>
 
     <span style="color: #268bd2;">(</span><span style="color: #859900; font-weight: bold;">setq</span> org-goto-interface 'outline-path-completion
           org-goto-max-level 10
@@ -4875,7 +4877,7 @@ Intero seems to be causing hangs, so it has been disabled
                       <span style="color: #2aa198;">"STARTED(s!)"</span> <span style="color: #2aa198;">"WAIT(w!)"</span> <span style="color: #2aa198;">"BACKLOG(b!)"</span> <span style="color: #2aa198;">"|"</span>
                       <span style="color: #2aa198;">"DONE(d!)"</span> <span style="color: #2aa198;">"HANDLED(h!)"</span> <span style="color: #2aa198;">"EXPIRED(e!)"</span> <span style="color: #2aa198;">"CANCELED(c!)"</span><span style="color: #859900;">)</span><span style="color: #6c71c4;">)</span><span style="color: #268bd2;">)</span>
 
-    <span style="color: #268bd2;">(</span><span style="color: #859900; font-weight: bold;">defvar-setq</span> helm-org-headings-fontify t<span style="color: #268bd2;">)</span>
+    <span style="color: #268bd2;">(</span><span style="color: #859900; font-weight: bold;">setq</span> helm-org-headings-fontify t<span style="color: #268bd2;">)</span>
     <span style="color: #268bd2;">(</span><span style="color: #859900; font-weight: bold;">setq</span> org-todo-repeat-to-state <span style="color: #2aa198;">"TODO"</span><span style="color: #268bd2;">)</span>
 
     <span style="color: #268bd2;">(</span><span style="color: #859900; font-weight: bold;">setq</span> org-agenda-span 10<span style="color: #268bd2;">)</span>
@@ -4885,7 +4887,6 @@ Intero seems to be causing hangs, so it has been disabled
           <span style="color: #2aa198;">"%80ITEM(Task) %10Effort(Effort){:} %10CLOCKSUM"</span><span style="color: #268bd2;">)</span>
 
     <span style="color: #268bd2;">(</span>add-to-list 'org-show-context-detail '<span style="color: #6c71c4;">(</span>org-goto . lineage<span style="color: #6c71c4;">)</span><span style="color: #268bd2;">)</span>
-    <span style="color: #268bd2;">(</span>sp-local-pair 'org-mode <span style="color: #2aa198;">"~"</span> <span style="color: #2aa198;">"~"</span><span style="color: #268bd2;">)</span>
 
     <span style="color: #268bd2;">(</span>add-to-list
      'org-src-lang-modes '<span style="color: #6c71c4;">(</span><span style="color: #2aa198;">"plantuml"</span> . plantuml<span style="color: #6c71c4;">)</span><span style="color: #268bd2;">)</span>
@@ -5155,9 +5156,22 @@ Intero seems to be causing hangs, so it has been disabled
 </div>
 </div>
 </div>
-<div id="outline-container-useframes" class="outline-5">
-<h5 id="useframes"><span class="section-number-5">12.3.1.2</span> Use frames</h5>
+<div id="outline-container-loadorgconfigel" class="outline-5">
+<h5 id="loadorgconfigel"><span class="section-number-5">12.3.1.2</span> Load org-config.el</h5>
 <div class="outline-text-5" id="text-12-3-1-2">
+<p>
+I put some org-mode specific configs in a separate file so that they can be used
+separately. This means that I need to load this file in init.el.
+</p>
+<div class="org-src-container">
+<pre class="src src-emacs-lisp"><span style="color: #2aa198;">(</span>load-file <span style="color: #b58900;">(</span>concat <span style="color: #268bd2;">(</span>file-name-directory load-file-name<span style="color: #268bd2;">)</span> <span style="color: #2aa198;">"org-config.el"</span><span style="color: #b58900;">)</span><span style="color: #2aa198;">)</span>
+</pre>
+</div>
+</div>
+</div>
+<div id="outline-container-useframes" class="outline-5">
+<h5 id="useframes"><span class="section-number-5">12.3.1.3</span> Use frames</h5>
+<div class="outline-text-5" id="text-12-3-1-3">
 <div class="org-src-container">
 <pre class="src src-emacs-lisp"><span style="color: #2aa198;">(</span><span style="color: #859900; font-weight: bold;">use-package</span> <span style="color: #268bd2; font-weight: bold;">org</span>
   <span style="color: #657b83; font-weight: bold;">:config</span>
@@ -5171,8 +5185,8 @@ Intero seems to be causing hangs, so it has been disabled
 </div>
 </div>
 <div id="outline-container-setbackgroundcolorofsourceblocksforexport" class="outline-5">
-<h5 id="setbackgroundcolorofsourceblocksforexport"><span class="section-number-5">12.3.1.3</span> Set Background Color of Source Blocks for Export</h5>
-<div class="outline-text-5" id="text-12-3-1-3">
+<h5 id="setbackgroundcolorofsourceblocksforexport"><span class="section-number-5">12.3.1.4</span> Set Background Color of Source Blocks for Export</h5>
+<div class="outline-text-5" id="text-12-3-1-4">
 <p>
 This was taken from <a href="http://emacs.stackexchange.com/questions/3374/set-the-background-of-org-exported-code-blocks-according-to-theme">here</a>.
 </p>
@@ -5199,8 +5213,8 @@ This was taken from <a href="http://emacs.stackexchange.com/questions/3374/set-t
 </div>
 </div>
 <div id="outline-container-usemyowndefaultnamingschemefororgheadings" class="outline-5">
-<h5 id="usemyowndefaultnamingschemefororgheadings"><span class="section-number-5">12.3.1.4</span> Use my own default naming scheme for org-headings</h5>
-<div class="outline-text-5" id="text-12-3-1-4">
+<h5 id="usemyowndefaultnamingschemefororgheadings"><span class="section-number-5">12.3.1.5</span> Use my own default naming scheme for org-headings</h5>
+<div class="outline-text-5" id="text-12-3-1-5">
 <p>
 First we define a function that will generate a sanitized version of the heading
 as its link target.
@@ -5263,8 +5277,8 @@ This function replaces the default naming scheme with a call to
 </div>
 </div>
 <div id="outline-container-orgprojectile" class="outline-5">
-<h5 id="orgprojectile"><span class="section-number-5">12.3.1.5</span> org-projectile</h5>
-<div class="outline-text-5" id="text-12-3-1-5">
+<h5 id="orgprojectile"><span class="section-number-5">12.3.1.6</span> org-projectile</h5>
+<div class="outline-text-5" id="text-12-3-1-6">
 <div class="org-src-container">
 <pre class="src src-emacs-lisp"><span style="color: #2aa198;">(</span><span style="color: #859900; font-weight: bold;">use-package</span> <span style="color: #268bd2; font-weight: bold;">org-projectile</span>
   <span style="color: #657b83; font-weight: bold;">:after</span> helm
@@ -5293,8 +5307,8 @@ This function replaces the default naming scheme with a call to
 </div>
 </div>
 <div id="outline-container-orgnotify" class="outline-5">
-<h5 id="orgnotify"><span class="section-number-5">12.3.1.6</span> org-notify</h5>
-<div class="outline-text-5" id="text-12-3-1-6">
+<h5 id="orgnotify"><span class="section-number-5">12.3.1.7</span> org-notify</h5>
+<div class="outline-text-5" id="text-12-3-1-7">
 <div class="org-src-container">
 <pre class="src src-emacs-lisp"><span style="color: #2aa198;">(</span><span style="color: #859900; font-weight: bold;">use-package</span> <span style="color: #268bd2; font-weight: bold;">org-notify</span>
   <span style="color: #657b83; font-weight: bold;">:disabled</span> t
@@ -5354,8 +5368,8 @@ This function replaces the default naming scheme with a call to
 </div>
 </div>
 <div id="outline-container-orgreveal" class="outline-5">
-<h5 id="orgreveal"><span class="section-number-5">12.3.1.7</span> org-reveal</h5>
-<div class="outline-text-5" id="text-12-3-1-7">
+<h5 id="orgreveal"><span class="section-number-5">12.3.1.8</span> org-reveal</h5>
+<div class="outline-text-5" id="text-12-3-1-8">
 <div class="org-src-container">
 <pre class="src src-emacs-lisp"><span style="color: #2aa198;">(</span><span style="color: #859900; font-weight: bold;">use-package</span> <span style="color: #268bd2; font-weight: bold;">ox-reveal</span>
   <span style="color: #657b83; font-weight: bold;">:after</span> org
@@ -5367,8 +5381,8 @@ This function replaces the default naming scheme with a call to
 </div>
 </div>
 <div id="outline-container-orgcaldav" class="outline-5">
-<h5 id="orgcaldav"><span class="section-number-5">12.3.1.8</span> org-caldav</h5>
-<div class="outline-text-5" id="text-12-3-1-8">
+<h5 id="orgcaldav"><span class="section-number-5">12.3.1.9</span> org-caldav</h5>
+<div class="outline-text-5" id="text-12-3-1-9">
 <div class="org-src-container">
 <pre class="src src-emacs-lisp"><span style="color: #2aa198;">(</span><span style="color: #859900; font-weight: bold;">use-package</span> <span style="color: #268bd2; font-weight: bold;">org-caldav</span>
   <span style="color: #657b83; font-weight: bold;">:defer</span> t
@@ -6390,6 +6404,9 @@ I have currently disabled key-chord because it may cause typing lag.
 <div id="outline-container-htmlize" class="outline-3">
 <h3 id="htmlize"><span class="section-number-3">18.18</span> htmlize</h3>
 <div class="outline-text-3" id="text-18-18">
+<p>
+This package is needed to export org to html.
+</p>
 <div class="org-src-container">
 <pre class="src src-emacs-lisp"><span style="color: #2aa198;">(</span><span style="color: #859900; font-weight: bold;">use-package</span> <span style="color: #268bd2; font-weight: bold;">htmlize</span><span style="color: #2aa198;">)</span>
 </pre>
@@ -7337,7 +7354,7 @@ load-theme hook (See the heading below).
 </div>
 <div id="postamble" class="status">
 <p class="author">Author: Ivan Malison</p>
-<p class="date">Created: 2016-12-26 Mon 01:12</p>
+<p class="date">Created: 2016-12-28 Wed 02:09</p>
 <p class="validation"><a href="http://validator.w3.org/check?uri=referer">Validate</a></p>
 </div>
 </body>
