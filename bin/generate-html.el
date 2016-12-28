@@ -16,6 +16,7 @@
 (setq readme-src (concat emacs-dir "README.org"))
 
 (require 'use-package)
+(require 's)
 (org-babel-tangle-file readme-src)
 (load-file (concat emacs-dir "org-config.el"))
 
