@@ -2014,6 +2014,7 @@ I don't use auto-complete at all, so I have set up a hook to automatically disab
     (require 'smartparens-config)
     (smartparens-global-mode 1)
     (sp-use-smartparens-bindings)
+    (sp-local-pair 'org-mode "~" "~")
     (unbind-key "C-M-<backspace>" smartparens-mode-map)
     (unbind-key "C-<backspace>" smartparens-mode-map)
     (unbind-key "M-<backspace>" smartparens-mode-map)))
@@ -2779,21 +2780,21 @@ Intero seems to be causing hangs, so it has been disabled
 ** Document
 *** org
 **** config
-#+BEGIN_SRC emacs-lisp
+#+BEGIN_SRC emacs-lisp :tangle org-config.el
 (use-package org
   :ensure org-plus-contrib
   :bind (:map org-mode-map
               (("C-e" . end-of-visual-line)))
   :preface
   (progn
-    ;; XXX: These should probably be moved to config, right?
-    (defvar-setq org-startup-indented nil)
-    (defvar-setq org-startup-folded t)
-    (defvar-setq org-edit-src-content-indentation 0)
-    (defvar-setq org-src-preserve-indentation t)
-    (defvar-setq org-directory "~/Dropbox/org")
-    (defvar-setq org-mobile-inbox-for-pull "~/Dropbox/org/flagged.org")
-    (defvar-setq org-mobile-directory "~/Dropbox/Apps/MobileOrg")
+        ;; XXX: These should probably be moved to config, right?
+    (setq org-startup-indented nil
+          org-startup-folded t
+          org-edit-src-content-indentation 0
+          org-src-preserve-indentation t
+          org-directory "~/Dropbox/org"
+          org-mobile-inbox-for-pull "~/Dropbox/org/flagged.org"
+          org-mobile-directory "~/Dropbox/Apps/MobileOrg")
 
     (setq org-goto-interface 'outline-path-completion
           org-goto-max-level 10
@@ -2914,7 +2915,7 @@ Intero seems to be causing hangs, so it has been disabled
                       "STARTED(s!)" "WAIT(w!)" "BACKLOG(b!)" "|"
                       "DONE(d!)" "HANDLED(h!)" "EXPIRED(e!)" "CANCELED(c!)")))
 
-    (defvar-setq helm-org-headings-fontify t)
+    (setq helm-org-headings-fontify t)
     (setq org-todo-repeat-to-state "TODO")
 
     (setq org-agenda-span 10)
@@ -2924,7 +2925,6 @@ Intero seems to be causing hangs, so it has been disabled
           "%80ITEM(Task) %10Effort(Effort){:} %10CLOCKSUM")
 
     (add-to-list 'org-show-context-detail '(org-goto . lineage))
-    (sp-local-pair 'org-mode "~" "~")
 
     (add-to-list
      'org-src-lang-modes '("plantuml" . plantuml))
@@ -3191,6 +3191,12 @@ Intero seems to be causing hangs, so it has been disabled
     ;; blame.
     ))
 #+END_SRC
+**** Load org-config.el
+I put some org-mode specific configs in a separate file so that they can be used
+separately. This means that I need to load this file in init.el.
+#+BEGIN_SRC emacs-lisp
+(load-file (concat (file-name-directory load-file-name) "org-config.el"))
+#+END_SRC
 **** Use frames
 #+BEGIN_SRC emacs-lisp
 (use-package org
@@ -3203,7 +3209,7 @@ Intero seems to be causing hangs, so it has been disabled
 #+END_SRC
 **** Set Background Color of Source Blocks for Export
 This was taken from [[http://emacs.stackexchange.com/questions/3374/set-the-background-of-org-exported-code-blocks-according-to-theme][here]].
-#+BEGIN_SRC emacs-lisp
+#+BEGIN_SRC emacs-lisp :tangle org-config.el
 (use-package org
   :config
   (progn
@@ -3225,7 +3231,7 @@ background of code to whatever theme I'm using's background"
 **** Use my own default naming scheme for org-headings
 First we define a function that will generate a sanitized version of the heading
 as its link target.
-#+BEGIN_SRC emacs-lisp
+#+BEGIN_SRC emacs-lisp :tangle org-config.el
 (defun imalison:org-get-raw-value (item)
   (when (listp item)
     (let* ((property-list (cadr item)))
@@ -3249,7 +3255,7 @@ as its link target.
 
 This function replaces the default naming scheme with a call to
 ~imalison:generate-name~, and uses a slightly different uniquify approach.
-#+BEGIN_SRC emacs-lisp
+#+BEGIN_SRC emacs-lisp :tangle org-config.el
 (use-package ox
   :ensure nil
   :demand t
@@ -4062,6 +4068,7 @@ I have currently disabled key-chord because it may cause typing lag.
     (setq jabber-alert-message-function 'jabber-message-content-message)))
 #+END_SRC
 ** htmlize
+This package is needed to export org to html.
 #+BEGIN_SRC emacs-lisp
 (use-package htmlize)
 #+END_SRC

@@ -1,0 +1,6 @@
+(source org)
+(source melpa)
+
+(depends-on "use-package")
+(depends-on "org-plus-contrib")
+(depends-on "htmlize")

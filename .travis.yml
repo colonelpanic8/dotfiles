@@ -1,0 +1,7 @@
+language: generic
+
+script: bash
+env:
+  global:
+  - ENCRYPTION_LABEL: "73e6c870aa87"
+  - COMMIT_AUTHOR_EMAIL: "IvanMalison@gmail.com"
