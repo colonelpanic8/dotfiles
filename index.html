@@ -3,7 +3,7 @@
 "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
-<!-- 2016-12-29 Thu 01:07 -->
+<!-- 2016-12-29 Thu 01:16 -->
 <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title></title>
@@ -3644,7 +3644,12 @@ for the JavaScript code in this tag.
 <ul>
 <li><a href="#howigeneratehttpivanmalisongithubiodotfiles">2.1. How I generate </a>
 <ul>
-<li><a href="#githooks">2.1.1. Git Hooks</a></li>
+<li><a href="#orgexport">2.1.1. org-export</a>
+<ul>
+<li><a href="#travisci">2.1.1.1. travis-ci</a></li>
+<li><a href="#githooktheoldway">2.1.1.2. githook (The old way)</a></li>
+</ul>
+</li>
 <li><a href="#httpsgithubcomfniessenorghtmlthemesreadtheorg">2.1.2. Read The Org</a></li>
 <li><a href="#headinglinks">2.1.3. Heading Links</a></li>
 <li><a href="#setbackgroundcolorsourceblocks">2.1.4. Set Background Color Source Blocks</a></li>
@@ -4154,16 +4159,34 @@ others:
 <div id="outline-container-howigeneratehttpivanmalisongithubiodotfiles" class="outline-3">
 <h3 id="howigeneratehttpivanmalisongithubiodotfiles"><span class="section-number-3">2.1</span> How I generate <a href="http://ivanmalison.github.io/dotfiles/">http://ivanmalison.github.io/dotfiles/</a></h3>
 <div class="outline-text-3" id="text-2-1">
-</div><div id="outline-container-githooks" class="outline-4">
-<h4 id="githooks"><span class="section-number-4">2.1.1</span> Git Hooks</h4>
+</div><div id="outline-container-orgexport" class="outline-4">
+<h4 id="orgexport"><span class="section-number-4">2.1.1</span> org-export</h4>
 <div class="outline-text-4" id="text-2-1-1">
+</div><div id="outline-container-travisci" class="outline-5">
+<h5 id="travisci"><span class="section-number-5">2.1.1.1</span> travis-ci</h5>
+<div class="outline-text-5" id="text-2-1-1-1">
 <p>
-I wrote a <a href="https://github.com/IvanMalison/dotfiles/tree/master/dotfiles/emacs.d/bin">githook and an installer script</a> that automatically update index.html
+<a href="https://github.com/IvanMalison/dotfiles/tree/master/gen-gh-pages">This directory</a> contains a collection of scripts that exports this org document to html.
+The approach is taken (with only a few modifications) from <a href="https://gist.github.com/domenic/ec8b0fc8ab45f39403dd">here</a>.
+</p>
+</div>
+</div>
+<div id="outline-container-githooktheoldway" class="outline-5">
+<h5 id="githooktheoldway"><span class="section-number-5">2.1.1.2</span> githook (The old way)</h5>
+<div class="outline-text-5" id="text-2-1-1-2">
+<p>
+NOTE: I've left this here in case other people have an interest in this method,
+but I no longer use it.
+</p>
+
+<p>
+I wrote a <a href="https://github.com/IvanMalison/dotfiles/tree/9e56ced1dd70e50e1026aca5af51437e93add026/dotfiles/emacs.d/bin">githook and an installer script</a> that automatically update index.html
 at the root of the repository by running <code>org-html-export-to-html</code> on my
 README.org (essentially this document) . These should work no matter where they
 are placed in a repository. The org-mode file that they target is set <a href="https://github.com/IvanMalison/dotfiles/blob/16a4f6c3aadef39a45d30c15e8637b40858721ea/dotfiles/emacs.d/bin/util.sh#L4">here</a> and
 should be relatively easy to change.
 </p>
+</div>
 </div>
 </div>
 <div id="outline-container-httpsgithubcomfniessenorghtmlthemesreadtheorg" class="outline-4">
