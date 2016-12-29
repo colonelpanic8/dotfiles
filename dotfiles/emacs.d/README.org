@@ -4744,7 +4744,10 @@ load-theme hook (See the heading below).
 
 (defun imalison:restore-ansi-term-color-vector (&optional force)
   (when (or force (imalison:ansi-term-color-vector-broken?))
-    (setq ansi-term-color-vector imalison:ansi-term-color-vector)))
+    (setq ansi-term-color-vector imalison:ansi-term-color-vector)
+    (when (imalison:ansi-term-color-vector-broken?)
+      (message
+       "Oh no! ansi-term-color vector is super busted (check in custom)."))))
 #+END_SRC
 ** After ~load-theme~ hook
 #+BEGIN_SRC emacs-lisp
