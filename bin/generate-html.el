@@ -29,4 +29,20 @@
 (setq org-html-htmlize-output-type 'css)
 (setq org-confirm-babel-evaluate nil)
 
+(defun add-faces-css (exporter)
+  "Insert custom inline css to automatically set the
+background of code to whatever theme I'm using's background"
+  (setq
+   org-html-head-extra
+   (concat
+    org-html-head-extra
+    (format "<style type=\"text/css\">\n%s</style>\n"
+            (with-temp-buffer
+              (insert-file-contents
+               (concat (file-name-directory load-file-name) "faces.css"))
+              (buffer-string))))))
+
+(add-hook 'org-export-before-processing-hook 'add-faces-css)
+(remove-hook 'org-export-before-processing-hook 'imalison:org-inline-css-hook)
+
 (message (export-target readme-src))
