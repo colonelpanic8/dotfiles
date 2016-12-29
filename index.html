@@ -3,7 +3,7 @@
 "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
-<!-- 2016-12-29 Thu 02:15 -->
+<!-- 2016-12-29 Thu 02:19 -->
 <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title></title>
@@ -3651,8 +3651,9 @@ for the JavaScript code in this tag.
 </ul>
 </li>
 <li><a href="#httpsgithubcomfniessenorghtmlthemesreadtheorg">2.1.2. Read The Org</a></li>
-<li><a href="#headinglinks">2.1.3. Heading Links</a></li>
-<li><a href="#setbackgroundcolorsourceblocks">2.1.4. Set Background Color Source Blocks</a></li>
+<li><a href="#predictableandhumanreadableheadinglinks">2.1.3. Predictable and Human Readable Heading Links</a></li>
+<li><a href="#makeheadingslinktothemselves">2.1.4. Make Headings Link to Themselves</a></li>
+<li><a href="#setbackgroundcolorsourceblocks">2.1.5. Set Background Color Source Blocks</a></li>
 </ul>
 </li>
 <li><a href="#framecontrolframecontrol">2.2. Frame control</a></li>
@@ -3965,10 +3966,11 @@ for the JavaScript code in this tag.
 <li><a href="#useframes">12.3.1.4. Use frames</a></li>
 <li><a href="#setbackgroundcolorofsourceblocksforexport">12.3.1.5. Set Background Color of Source Blocks for Export</a></li>
 <li><a href="#usemyowndefaultnamingschemefororgheadings">12.3.1.6. Use my own default naming scheme for org-headings</a></li>
-<li><a href="#orgprojectile">12.3.1.7. org-projectile</a></li>
-<li><a href="#orgnotify">12.3.1.8. org-notify</a></li>
-<li><a href="#orgreveal">12.3.1.9. org-reveal</a></li>
-<li><a href="#orgcaldav">12.3.1.10. org-caldav</a></li>
+<li><a href="#makeheadingsinexportedhtmllinkstothemselves">12.3.1.7. Make headings in exported html links to themselves</a></li>
+<li><a href="#orgprojectile">12.3.1.8. org-projectile</a></li>
+<li><a href="#orgnotify">12.3.1.9. org-notify</a></li>
+<li><a href="#orgreveal">12.3.1.10. org-reveal</a></li>
+<li><a href="#orgcaldav">12.3.1.11. org-caldav</a></li>
 </ul>
 </li>
 <li><a href="#tex">12.3.2. TeX</a>
@@ -4141,7 +4143,7 @@ anywhere else (including, for example, at
 <a href="https://github.com/IvanMalison/dotfiles">https://github.com/IvanMalison/dotfiles</a>).
 </p>
 <div id="outline-container-about" class="outline-2">
-<h2 id="about"><span class="section-number-2">1</span> About</h2>
+<h2 id="about"><span class="section-number-2">1</span> <a href="#about">About</a></h2>
 <div class="outline-text-2" id="text-1">
 <p>
 This is my emacs configuration in literate form. It aspires to be
@@ -4153,7 +4155,7 @@ proud, and that others may find to be useful.
 </div>
 </div>
 <div id="outline-container-highlights" class="outline-2">
-<h2 id="highlights"><span class="section-number-2">2</span> Highlights</h2>
+<h2 id="highlights"><span class="section-number-2">2</span> <a href="#highlights">Highlights</a></h2>
 <div class="outline-text-2" id="text-2">
 <p>
 These sections are the ones that have the most potential to be interesting to
@@ -4161,13 +4163,13 @@ others:
 </p>
 </div>
 <div id="outline-container-howigeneratehttpivanmalisongithubiodotfiles" class="outline-3">
-<h3 id="howigeneratehttpivanmalisongithubiodotfiles"><span class="section-number-3">2.1</span> How I generate <a href="http://ivanmalison.github.io/dotfiles/">http://ivanmalison.github.io/dotfiles/</a></h3>
+<h3 id="howigeneratehttpivanmalisongithubiodotfiles"><span class="section-number-3">2.1</span> <a href="#howigeneratehttpivanmalisongithubiodotfiles">How I generate <a href="http://ivanmalison.github.io/dotfiles/">http://ivanmalison.github.io/dotfiles/</a></a></h3>
 <div class="outline-text-3" id="text-2-1">
 </div><div id="outline-container-orgexport" class="outline-4">
-<h4 id="orgexport"><span class="section-number-4">2.1.1</span> org-export</h4>
+<h4 id="orgexport"><span class="section-number-4">2.1.1</span> <a href="#orgexport">org-export</a></h4>
 <div class="outline-text-4" id="text-2-1-1">
 </div><div id="outline-container-travisci" class="outline-5">
-<h5 id="travisci"><span class="section-number-5">2.1.1.1</span> travis-ci</h5>
+<h5 id="travisci"><span class="section-number-5">2.1.1.1</span> <a href="#travisci">travis-ci</a></h5>
 <div class="outline-text-5" id="text-2-1-1-1">
 <p>
 <a href="https://github.com/IvanMalison/dotfiles/tree/master/gen-gh-pages">This directory</a> contains a collection of scripts that exports this org document to html.
@@ -4176,7 +4178,7 @@ The approach is taken (with only a few modifications) from <a href="https://gist
 </div>
 </div>
 <div id="outline-container-githooktheoldway" class="outline-5">
-<h5 id="githooktheoldway"><span class="section-number-5">2.1.1.2</span> githook (The old way)</h5>
+<h5 id="githooktheoldway"><span class="section-number-5">2.1.1.2</span> <a href="#githooktheoldway">githook (The old way)</a></h5>
 <div class="outline-text-5" id="text-2-1-1-2">
 <p>
 NOTE: I've left this here in case other people have an interest in this method,
@@ -4194,15 +4196,15 @@ should be relatively easy to change.
 </div>
 </div>
 <div id="outline-container-httpsgithubcomfniessenorghtmlthemesreadtheorg" class="outline-4">
-<h4 id="httpsgithubcomfniessenorghtmlthemesreadtheorg"><span class="section-number-4">2.1.2</span> <a href="https://github.com/fniessen/org-html-themes">Read The Org</a></h4>
+<h4 id="httpsgithubcomfniessenorghtmlthemesreadtheorg"><span class="section-number-4">2.1.2</span> <a href="#httpsgithubcomfniessenorghtmlthemesreadtheorg"><a href="https://github.com/fniessen/org-html-themes">Read The Org</a></a></h4>
 <div class="outline-text-4" id="text-2-1-2">
 <p>
 I use <a href="https://github.com/fniessen">fniessen</a>'s  ReadTheOrg theme which can be found at <a href="https://github.com/fniessen/org-html-themes">https://github.com/fniessen/org-html-themes</a>.
 </p>
 </div>
 </div>
-<div id="outline-container-headinglinks" class="outline-4">
-<h4 id="headinglinks"><span class="section-number-4">2.1.3</span> Heading Links</h4>
+<div id="outline-container-predictableandhumanreadableheadinglinks" class="outline-4">
+<h4 id="predictableandhumanreadableheadinglinks"><span class="section-number-4">2.1.3</span> <a href="#predictableandhumanreadableheadinglinks">Predictable and Human Readable Heading Links</a></h4>
 <div class="outline-text-4" id="text-2-1-3">
 <p>
 To make it so that internal heading links have names that correspond to the
@@ -4227,9 +4229,18 @@ that is something you are interested in.
 </p>
 </div>
 </div>
-<div id="outline-container-setbackgroundcolorsourceblocks" class="outline-4">
-<h4 id="setbackgroundcolorsourceblocks"><span class="section-number-4">2.1.4</span> Set Background Color Source Blocks</h4>
+<div id="outline-container-makeheadingslinktothemselves" class="outline-4">
+<h4 id="makeheadingslinktothemselves"><span class="section-number-4">2.1.4</span> <a href="#makeheadingslinktothemselves">Make Headings Link to Themselves</a></h4>
 <div class="outline-text-4" id="text-2-1-4">
+<p>
+See the <a href="#makeheadingsinexportedhtmllinkstothemselves">Make headings in exported html links to themselves</a>. This is another pretty nasty hack. This is useful when you are browsing the document and you want to grab a link to
+the current heading.
+</p>
+</div>
+</div>
+<div id="outline-container-setbackgroundcolorsourceblocks" class="outline-4">
+<h4 id="setbackgroundcolorsourceblocks"><span class="section-number-4">2.1.5</span> <a href="#setbackgroundcolorsourceblocks">Set Background Color Source Blocks</a></h4>
+<div class="outline-text-4" id="text-2-1-5">
 <p>
 For some reason, org-mode uses all of your currently active fontification when exporting EXCEPT for background color. <a href="#setbackgroundcolorofsourceblocksforexport">This</a> modification fixes this.
 </p>
@@ -4237,7 +4248,7 @@ For some reason, org-mode uses all of your currently active fontification when e
 </div>
 </div>
 <div id="outline-container-framecontrolframecontrol" class="outline-3">
-<h3 id="framecontrolframecontrol"><span class="section-number-3">2.2</span> <a href="#orgtarget1">Frame control</a></h3>
+<h3 id="framecontrolframecontrol"><span class="section-number-3">2.2</span> <a href="#framecontrolframecontrol"><a href="#orgtarget1">Frame control</a></a></h3>
 <div class="outline-text-3" id="text-2-2">
 <p>
 My custom <a href="#orgtarget1">frame control</a> stuff is built to integrate really nicely with xmonad. I
@@ -4246,7 +4257,7 @@ think its pretty awesome!
 </div>
 </div>
 <div id="outline-container-functionsmyfunctionssection" class="outline-3">
-<h3 id="functionsmyfunctionssection"><span class="section-number-3">2.3</span> <a href="#functions">My functions section</a></h3>
+<h3 id="functionsmyfunctionssection"><span class="section-number-3">2.3</span> <a href="#functionsmyfunctionssection"><a href="#functions">My functions section</a></a></h3>
 <div class="outline-text-3" id="text-2-3">
 <p>
 &#x2026;has a bunch of generally useful functions:
@@ -4262,7 +4273,7 @@ think its pretty awesome!
 </div>
 </div>
 <div id="outline-container-configurationofmyownpackages" class="outline-3">
-<h3 id="configurationofmyownpackages"><span class="section-number-3">2.4</span> Configuration of My Own Packages</h3>
+<h3 id="configurationofmyownpackages"><span class="section-number-3">2.4</span> <a href="#configurationofmyownpackages">Configuration of My Own Packages</a></h3>
 <div class="outline-text-3" id="text-2-4">
 <ul class="org-ul">
 <li><a href="#termprojectile">term-projectile</a> and <a href="#termmanager">term-manager</a></li>
@@ -4275,7 +4286,7 @@ think its pretty awesome!
 </div>
 </div>
 <div id="outline-container-programminglanguagesprogramminglanguageconfigurations" class="outline-3">
-<h3 id="programminglanguagesprogramminglanguageconfigurations"><span class="section-number-3">2.5</span> <a href="#orgtarget7">Programming Language Configurations</a></h3>
+<h3 id="programminglanguagesprogramminglanguageconfigurations"><span class="section-number-3">2.5</span> <a href="#programminglanguagesprogramminglanguageconfigurations"><a href="#orgtarget7">Programming Language Configurations</a></a></h3>
 <div class="outline-text-3" id="text-2-5">
 <p>
 My programming language major mode configurations can all be found <a href="#orgtarget7">here</a>.
@@ -4283,7 +4294,7 @@ My programming language major mode configurations can all be found <a href="#org
 </div>
 </div>
 <div id="outline-container-orgorgmode" class="outline-3">
-<h3 id="orgorgmode"><span class="section-number-3">2.6</span> <a href="#org">org-mode</a></h3>
+<h3 id="orgorgmode"><span class="section-number-3">2.6</span> <a href="#orgorgmode"><a href="#org">org-mode</a></a></h3>
 <div class="outline-text-3" id="text-2-6">
 <p>
 My <a href="#org">org-mode</a> configuration is pretty comprehensive, but not super well commented.
@@ -4293,19 +4304,19 @@ My <a href="#org">org-mode</a> configuration is pretty comprehensive, but not su
 </div>
 
 <div id="outline-container-htmlheaders" class="outline-2">
-<h2 id="htmlheaders"><span class="section-number-2">3</span> HTML Headers</h2>
+<h2 id="htmlheaders"><span class="section-number-2">3</span> <a href="#htmlheaders">HTML Headers</a></h2>
 <div class="outline-text-2" id="text-3">
 </div>
 </div>
 <div id="outline-container-early" class="outline-2">
-<h2 id="early"><span class="section-number-2">4</span> Early</h2>
+<h2 id="early"><span class="section-number-2">4</span> <a href="#early">Early</a></h2>
 <div class="outline-text-2" id="text-4">
 <p>
 The configurations in this section need to occur early in emacs startup for some reason or another.
 </p>
 </div>
 <div id="outline-container-lexicalbinding" class="outline-3">
-<h3 id="lexicalbinding"><span class="section-number-3">4.1</span> Lexical Binding</h3>
+<h3 id="lexicalbinding"><span class="section-number-3">4.1</span> <a href="#lexicalbinding">Lexical Binding</a></h3>
 <div class="outline-text-3" id="text-4-1">
 <p>
 This makes it so that the file that is produced from tangling this
@@ -4319,7 +4330,7 @@ file uses lexical scoping.
 </div>
 </div>
 <div id="outline-container-security" class="outline-3">
-<h3 id="security"><span class="section-number-3">4.2</span> Security</h3>
+<h3 id="security"><span class="section-number-3">4.2</span> <a href="#security">Security</a></h3>
 <div class="outline-text-3" id="text-4-2">
 <div class="org-src-container">
 <pre class="src src-emacs-lisp">(<span class="org-keyword">defvar</span> <span class="org-variable-name">imalison:secure</span> t)
@@ -4360,7 +4371,7 @@ file uses lexical scoping.
 </div>
 </div>
 <div id="outline-container-elpaarchivesetup" class="outline-3">
-<h3 id="elpaarchivesetup"><span class="section-number-3">4.3</span> ELPA Archive Setup</h3>
+<h3 id="elpaarchivesetup"><span class="section-number-3">4.3</span> <a href="#elpaarchivesetup">ELPA Archive Setup</a></h3>
 <div class="outline-text-3" id="text-4-3">
 <p>
 The org archive does not support https, so we set http as the protocol explicitly.
@@ -4392,7 +4403,7 @@ The org archive does not support https, so we set http as the protocol explicitl
 </div>
 </div>
 <div id="outline-container-bootstrappackageloading" class="outline-3">
-<h3 id="bootstrappackageloading"><span class="section-number-3">4.4</span> Bootstrap Package Loading</h3>
+<h3 id="bootstrappackageloading"><span class="section-number-3">4.4</span> <a href="#bootstrappackageloading">Bootstrap Package Loading</a></h3>
 <div class="outline-text-3" id="text-4-4">
 <p>
 Its a shame that everyone has to have some version of this function in
@@ -4438,7 +4449,7 @@ Ensure by default since most of the package for which I use use-package need to 
 </div>
 </div>
 <div id="outline-container-setupautocompile" class="outline-3">
-<h3 id="setupautocompile"><span class="section-number-3">4.5</span> Setup auto-compile</h3>
+<h3 id="setupautocompile"><span class="section-number-3">4.5</span> <a href="#setupautocompile">Setup auto-compile</a></h3>
 <div class="outline-text-3" id="text-4-5">
 <div class="org-src-container">
 <pre class="src src-emacs-lisp">(<span class="org-keyword">use-package</span> <span class="org-constant">auto-compile</span>
@@ -4453,7 +4464,7 @@ Ensure by default since most of the package for which I use use-package need to 
 </div>
 </div>
 <div id="outline-container-prefernewerversions" class="outline-3">
-<h3 id="prefernewerversions"><span class="section-number-3">4.6</span> Prefer Newer Versions</h3>
+<h3 id="prefernewerversions"><span class="section-number-3">4.6</span> <a href="#prefernewerversions">Prefer Newer Versions</a></h3>
 <div class="outline-text-3" id="text-4-6">
 <p>
 To reduce the risk of loading outdated byte code files, we set
@@ -4467,7 +4478,7 @@ possible.
 </div>
 </div>
 <div id="outline-container-customfiles" class="outline-3">
-<h3 id="customfiles"><span class="section-number-3">4.7</span> Custom Files</h3>
+<h3 id="customfiles"><span class="section-number-3">4.7</span> <a href="#customfiles">Custom Files</a></h3>
 <div class="outline-text-3" id="text-4-7">
 <p>
 The default value of <code>custom-file</code> is just the current user's <code>.emacs.d/init.el</code>
@@ -4494,10 +4505,10 @@ in the dotfiles repo but they are shared across machines elsewhere.
 </div>
 </div>
 <div id="outline-container-emit" class="outline-3">
-<h3 id="emit"><span class="section-number-3">4.8</span> emit</h3>
+<h3 id="emit"><span class="section-number-3">4.8</span> <a href="#emit">emit</a></h3>
 <div class="outline-text-3" id="text-4-8">
 </div><div id="outline-container-thisneedstobedonebetterbutitworksfornow" class="outline-4">
-<h4 id="thisneedstobedonebetterbutitworksfornow"><span class="section-number-4">4.8.1</span> <span class="todo TODO">TODO</span> this needs to be done better, but it works for now</h4>
+<h4 id="thisneedstobedonebetterbutitworksfornow"><span class="section-number-4">4.8.1</span> <span class="todo TODO">TODO</span> <a href="#thisneedstobedonebetterbutitworksfornow">this needs to be done better, but it works for now</a></h4>
 <div class="outline-text-4" id="text-4-8-1">
 <div class="org-src-container">
 <pre class="src src-emacs-lisp">(<span class="org-keyword">when</span> (file-exists-p <span class="org-string">"~/.emacs.d/load.d/emit.el"</span>)
@@ -4508,7 +4519,7 @@ in the dotfiles repo but they are shared across machines elsewhere.
 </div>
 </div>
 <div id="outline-container-benchmarking" class="outline-3">
-<h3 id="benchmarking"><span class="section-number-3">4.9</span> Benchmarking</h3>
+<h3 id="benchmarking"><span class="section-number-3">4.9</span> <a href="#benchmarking">Benchmarking</a></h3>
 <div class="outline-text-3" id="text-4-9">
 <p>
 This appears here so that it can accurately benchmark as much of
@@ -4524,7 +4535,7 @@ startup as possible.
 </div>
 </div>
 <div id="outline-container-guidisables" class="outline-3">
-<h3 id="guidisables"><span class="section-number-3">4.10</span> GUI Disables</h3>
+<h3 id="guidisables"><span class="section-number-3">4.10</span> <a href="#guidisables">GUI Disables</a></h3>
 <div class="outline-text-3" id="text-4-10">
 <p>
 Death to any gui elements in emacs! Do this EARLY so that emacs
@@ -4547,7 +4558,7 @@ Tooltips are annoying:
 </div>
 </div>
 <div id="outline-container-bytecompiler" class="outline-3">
-<h3 id="bytecompiler"><span class="section-number-3">4.11</span> Byte-Compiler</h3>
+<h3 id="bytecompiler"><span class="section-number-3">4.11</span> <a href="#bytecompiler">Byte-Compiler</a></h3>
 <div class="outline-text-3" id="text-4-11">
 <p>
 These definitions silence the byte-compiler.
@@ -4577,7 +4588,7 @@ These definitions silence the byte-compiler.
 </div>
 </div>
 <div id="outline-container-execpathfromshell" class="outline-3">
-<h3 id="execpathfromshell"><span class="section-number-3">4.12</span> exec-path-from-shell</h3>
+<h3 id="execpathfromshell"><span class="section-number-3">4.12</span> <a href="#execpathfromshell">exec-path-from-shell</a></h3>
 <div class="outline-text-3" id="text-4-12">
 <p>
 Sets environment variables by starting a shell.
@@ -4603,7 +4614,7 @@ Sets environment variables by starting a shell.
 </div>
 </div>
 <div id="outline-container-noflet" class="outline-3">
-<h3 id="noflet"><span class="section-number-3">4.13</span> noflet</h3>
+<h3 id="noflet"><span class="section-number-3">4.13</span> <a href="#noflet">noflet</a></h3>
 <div class="outline-text-3" id="text-4-13">
 <div class="org-src-container">
 <pre class="src src-emacs-lisp">(<span class="org-keyword">use-package</span> <span class="org-constant">noflet</span>
@@ -4613,7 +4624,7 @@ Sets environment variables by starting a shell.
 </div>
 </div>
 <div id="outline-container-nonforkingshellcommandtostring" class="outline-3">
-<h3 id="nonforkingshellcommandtostring"><span class="section-number-3">4.14</span> Non-Forking Shell Command To String</h3>
+<h3 id="nonforkingshellcommandtostring"><span class="section-number-3">4.14</span> <a href="#nonforkingshellcommandtostring">Non-Forking Shell Command To String</a></h3>
 <div class="outline-text-3" id="text-4-14">
 <p>
 Emacs' built in <code>shell-command-to-string</code> function has the downside that it
@@ -4686,7 +4697,7 @@ This solution only applies it to projectile-find-file
 </div>
 </div>
 <div id="outline-container-setemacsenvironmentvariable" class="outline-3">
-<h3 id="setemacsenvironmentvariable"><span class="section-number-3">4.15</span> Set EMACS environment variable</h3>
+<h3 id="setemacsenvironmentvariable"><span class="section-number-3">4.15</span> <a href="#setemacsenvironmentvariable">Set EMACS environment variable</a></h3>
 <div class="outline-text-3" id="text-4-15">
 <p>
 Emacs cask seems to depend on the EMACS environment variable being set to the
@@ -4708,10 +4719,10 @@ to cause issues. Oh well&#x2026;
 </div>
 </div>
 <div id="outline-container-functions" class="outline-2">
-<h2 id="functions"><span class="section-number-2">5</span> Functions</h2>
+<h2 id="functions"><span class="section-number-2">5</span> <a href="#functions">Functions</a></h2>
 <div class="outline-text-2" id="text-5">
 </div><div id="outline-container-joinpaths" class="outline-3">
-<h3 id="joinpaths"><span class="section-number-3">5.1</span> Join Paths</h3>
+<h3 id="joinpaths"><span class="section-number-3">5.1</span> <a href="#joinpaths">Join Paths</a></h3>
 <div class="outline-text-3" id="text-5-1">
 <p>
 Works in the same way as os.path.join in python
@@ -4727,7 +4738,7 @@ Works in the same way as os.path.join in python
 </div>
 </div>
 <div id="outline-container-variables" class="outline-3">
-<h3 id="variables"><span class="section-number-3">5.2</span> Variables</h3>
+<h3 id="variables"><span class="section-number-3">5.2</span> <a href="#variables">Variables</a></h3>
 <div class="outline-text-3" id="text-5-2">
 <div class="org-src-container">
 <pre class="src src-emacs-lisp">(<span class="org-keyword">defvar</span> <span class="org-variable-name">imalison:projects-directory</span>
@@ -4739,7 +4750,7 @@ Works in the same way as os.path.join in python
 </div>
 </div>
 <div id="outline-container-usepackagewrapperwithlocalloadpathsupport" class="outline-3">
-<h3 id="usepackagewrapperwithlocalloadpathsupport"><span class="section-number-3">5.3</span> Use Package Wrapper With Local Load Path Support</h3>
+<h3 id="usepackagewrapperwithlocalloadpathsupport"><span class="section-number-3">5.3</span> <a href="#usepackagewrapperwithlocalloadpathsupport">Use Package Wrapper With Local Load Path Support</a></h3>
 <div class="outline-text-3" id="text-5-3">
 <div class="org-src-container">
 <pre class="src src-emacs-lisp">(put 'imalison:use-package 'lisp-indent-function 'defun)
@@ -4767,7 +4778,7 @@ Works in the same way as os.path.join in python
 </div>
 </div>
 <div id="outline-container-requiredpackages" class="outline-3">
-<h3 id="requiredpackages"><span class="section-number-3">5.4</span> Required Packages</h3>
+<h3 id="requiredpackages"><span class="section-number-3">5.4</span> <a href="#requiredpackages">Required Packages</a></h3>
 <div class="outline-text-3" id="text-5-4">
 <p>
 The packages in this section provide no functionality on their own,
@@ -4775,7 +4786,7 @@ but provide support for writing custom elisp.
 </p>
 </div>
 <div id="outline-container-s" class="outline-4">
-<h4 id="s"><span class="section-number-4">5.4.1</span> s</h4>
+<h4 id="s"><span class="section-number-4">5.4.1</span> <a href="#s">s</a></h4>
 <div class="outline-text-4" id="text-5-4-1">
 <div class="org-src-container">
 <pre class="src src-emacs-lisp">(<span class="org-keyword">use-package</span> <span class="org-constant">s</span> <span class="org-builtin">:demand</span> t)
@@ -4784,7 +4795,7 @@ but provide support for writing custom elisp.
 </div>
 </div>
 <div id="outline-container-dash" class="outline-4">
-<h4 id="dash"><span class="section-number-4">5.4.2</span> dash</h4>
+<h4 id="dash"><span class="section-number-4">5.4.2</span> <a href="#dash">dash</a></h4>
 <div class="outline-text-4" id="text-5-4-2">
 <div class="org-src-container">
 <pre class="src src-emacs-lisp">(<span class="org-keyword">use-package</span> <span class="org-constant">dash</span>
@@ -4796,7 +4807,7 @@ but provide support for writing custom elisp.
 </div>
 </div>
 <div id="outline-container-gh" class="outline-4">
-<h4 id="gh"><span class="section-number-4">5.4.3</span> gh</h4>
+<h4 id="gh"><span class="section-number-4">5.4.3</span> <a href="#gh">gh</a></h4>
 <div class="outline-text-4" id="text-5-4-3">
 <div class="org-src-container">
 <pre class="src src-emacs-lisp">(imalison:use-package* gh <span class="org-string">"gh.el"</span>
@@ -4806,7 +4817,7 @@ but provide support for writing custom elisp.
 </div>
 </div>
 <div id="outline-container-shutup" class="outline-4">
-<h4 id="shutup"><span class="section-number-4">5.4.4</span> shut-up</h4>
+<h4 id="shutup"><span class="section-number-4">5.4.4</span> <a href="#shutup">shut-up</a></h4>
 <div class="outline-text-4" id="text-5-4-4">
 <div class="org-src-container">
 <pre class="src src-emacs-lisp">(<span class="org-keyword">use-package</span> <span class="org-constant">shut-up</span>
@@ -4818,7 +4829,7 @@ but provide support for writing custom elisp.
 </div>
 </div>
 <div id="outline-container-pcache" class="outline-4">
-<h4 id="pcache"><span class="section-number-4">5.4.5</span> pcache</h4>
+<h4 id="pcache"><span class="section-number-4">5.4.5</span> <a href="#pcache">pcache</a></h4>
 <div class="outline-text-4" id="text-5-4-5">
 <div class="org-src-container">
 <pre class="src src-emacs-lisp">(<span class="org-keyword">use-package</span> <span class="org-constant">pcache</span>
@@ -4828,7 +4839,7 @@ but provide support for writing custom elisp.
 </div>
 </div>
 <div id="outline-container-parsecsv" class="outline-4">
-<h4 id="parsecsv"><span class="section-number-4">5.4.6</span> parse-csv</h4>
+<h4 id="parsecsv"><span class="section-number-4">5.4.6</span> <a href="#parsecsv">parse-csv</a></h4>
 <div class="outline-text-4" id="text-5-4-6">
 <div class="org-src-container">
 <pre class="src src-emacs-lisp">(<span class="org-keyword">use-package</span> <span class="org-constant">parse-csv</span>
@@ -4838,7 +4849,7 @@ but provide support for writing custom elisp.
 </div>
 </div>
 <div id="outline-container-emit1" class="outline-4">
-<h4 id="emit1"><span class="section-number-4">5.4.7</span> emit</h4>
+<h4 id="emit1"><span class="section-number-4">5.4.7</span> <a href="#emit1">emit</a></h4>
 <div class="outline-text-4" id="text-5-4-7">
 <p>
 This is disabled for now until I figure out what to do with emit.
@@ -4851,7 +4862,7 @@ This is disabled for now until I figure out what to do with emit.
 </div>
 </div>
 <div id="outline-container-request" class="outline-4">
-<h4 id="request"><span class="section-number-4">5.4.8</span> request</h4>
+<h4 id="request"><span class="section-number-4">5.4.8</span> <a href="#request">request</a></h4>
 <div class="outline-text-4" id="text-5-4-8">
 <div class="org-src-container">
 <pre class="src src-emacs-lisp">(<span class="org-keyword">use-package</span> <span class="org-constant">request</span>)
@@ -4861,7 +4872,7 @@ This is disabled for now until I figure out what to do with emit.
 </div>
 </div>
 <div id="outline-container-namedbuild" class="outline-3">
-<h3 id="namedbuild"><span class="section-number-3">5.5</span> Named Build</h3>
+<h3 id="namedbuild"><span class="section-number-3">5.5</span> <a href="#namedbuild">Named Build</a></h3>
 <div class="outline-text-3" id="text-5-5">
 <p>
 <a id="orgtarget5"></a>
@@ -4906,7 +4917,7 @@ new macro name and the -fn suffix.
 </div>
 </div>
 <div id="outline-container-emacsversionpredicate" class="outline-3">
-<h3 id="emacsversionpredicate"><span class="section-number-3">5.6</span> Emacs Version Predicate</h3>
+<h3 id="emacsversionpredicate"><span class="section-number-3">5.6</span> <a href="#emacsversionpredicate">Emacs Version Predicate</a></h3>
 <div class="outline-text-3" id="text-5-6">
 <div class="org-src-container">
 <pre class="src src-emacs-lisp">(<span class="org-keyword">defmacro</span> <span class="org-function-name">imalison:emacs-version-predicate-fn</span> (major-version minor-version)
@@ -4924,10 +4935,10 @@ new macro name and the -fn suffix.
 </div>
 </div>
 <div id="outline-container-composefunctions" class="outline-3">
-<h3 id="composefunctions"><span class="section-number-3">5.7</span> Compose Functions</h3>
+<h3 id="composefunctions"><span class="section-number-3">5.7</span> <a href="#composefunctions">Compose Functions</a></h3>
 <div class="outline-text-3" id="text-5-7">
 </div><div id="outline-container-aversionsupportingmacros" class="outline-4">
-<h4 id="aversionsupportingmacros"><span class="section-number-4">5.7.1</span> A version supporting macros</h4>
+<h4 id="aversionsupportingmacros"><span class="section-number-4">5.7.1</span> <a href="#aversionsupportingmacros">A version supporting macros</a></h4>
 <div class="outline-text-4" id="text-5-7-1">
 <p>
 <a id="orgtarget6"></a>
@@ -4977,7 +4988,7 @@ new macro name and the -fn suffix.
 </div>
 </div>
 <div id="outline-container-arbitraryargumentsateverystep" class="outline-4">
-<h4 id="arbitraryargumentsateverystep"><span class="section-number-4">5.7.2</span> Arbitrary arguments at every step</h4>
+<h4 id="arbitraryargumentsateverystep"><span class="section-number-4">5.7.2</span> <a href="#arbitraryargumentsateverystep">Arbitrary arguments at every step</a></h4>
 <div class="outline-text-4" id="text-5-7-2">
 <div class="org-src-container">
 <pre class="src src-emacs-lisp">(<span class="org-keyword">defun</span> <span class="org-function-name">imalison:make-list</span> (thing)
@@ -5001,7 +5012,7 @@ new macro name and the -fn suffix.
 </div>
 </div>
 <div id="outline-container-simplerunaryversion" class="outline-4">
-<h4 id="simplerunaryversion"><span class="section-number-4">5.7.3</span> Simpler unary version</h4>
+<h4 id="simplerunaryversion"><span class="section-number-4">5.7.3</span> <a href="#simplerunaryversion">Simpler unary version</a></h4>
 <div class="outline-text-4" id="text-5-7-3">
 <div class="org-src-container">
 <pre class="src src-emacs-lisp">(<span class="org-keyword">defmacro</span> <span class="org-function-name">imalison:compose-unary</span> (<span class="org-type">&amp;rest</span> funcs)
@@ -5020,7 +5031,7 @@ new macro name and the -fn suffix.
 </div>
 </div>
 <div id="outline-container-withadvice" class="outline-3">
-<h3 id="withadvice"><span class="section-number-3">5.8</span> With Advice</h3>
+<h3 id="withadvice"><span class="section-number-3">5.8</span> <a href="#withadvice">With Advice</a></h3>
 <div class="outline-text-3" id="text-5-8">
 <p>
 Taken from <a href="http://emacs.stackexchange.com/questions/16490/emacs-let-bound-advice">here</a>.
@@ -5041,7 +5052,7 @@ Taken from <a href="http://emacs.stackexchange.com/questions/16490/emacs-let-bou
 </div>
 </div>
 <div id="outline-container-makeinteractive" class="outline-3">
-<h3 id="makeinteractive"><span class="section-number-3">5.9</span> Make Interactive</h3>
+<h3 id="makeinteractive"><span class="section-number-3">5.9</span> <a href="#makeinteractive">Make Interactive</a></h3>
 <div class="outline-text-3" id="text-5-9">
 <div class="org-src-container">
 <pre class="src src-emacs-lisp">(<span class="org-keyword">defmacro</span> <span class="org-function-name">imalison:make-interactive-fn</span> (<span class="org-keyword">function</span>)
@@ -5055,7 +5066,7 @@ Taken from <a href="http://emacs.stackexchange.com/questions/16490/emacs-let-bou
 </div>
 </div>
 <div id="outline-container-adviceaddaroundbuilder" class="outline-3">
-<h3 id="adviceaddaroundbuilder"><span class="section-number-3">5.10</span> Advice Add Around Builder</h3>
+<h3 id="adviceaddaroundbuilder"><span class="section-number-3">5.10</span> <a href="#adviceaddaroundbuilder">Advice Add Around Builder</a></h3>
 <div class="outline-text-3" id="text-5-10">
 <p>
 For composing functions with an apply so that they can be used with
@@ -5071,7 +5082,7 @@ the <code>:around</code> keyword of advice-add.
 </div>
 </div>
 <div id="outline-container-killnew" class="outline-4">
-<h4 id="killnew"><span class="section-number-4">5.10.1</span> Kill New</h4>
+<h4 id="killnew"><span class="section-number-4">5.10.1</span> <a href="#killnew">Kill New</a></h4>
 <div class="outline-text-4" id="text-5-10-1">
 <div class="org-src-container">
 <pre class="src src-emacs-lisp">(imalison:advice-add-around-builder imalison:kill-new-around kill-new)
@@ -5081,7 +5092,7 @@ the <code>:around</code> keyword of advice-add.
 </div>
 </div>
 <div id="outline-container-letaround" class="outline-3">
-<h3 id="letaround"><span class="section-number-3">5.11</span> Let Around</h3>
+<h3 id="letaround"><span class="section-number-3">5.11</span> <a href="#letaround">Let Around</a></h3>
 <div class="outline-text-3" id="text-5-11">
 <div class="org-src-container">
 <pre class="src src-emacs-lisp">(<span class="org-keyword">defmacro</span> <span class="org-function-name">imalison:let-around-fn</span> (orig-func <span class="org-type">&amp;rest</span> forms)
@@ -5101,7 +5112,7 @@ the <code>:around</code> keyword of advice-add.
 </div>
 </div>
 <div id="outline-container-letaroundadvice" class="outline-3">
-<h3 id="letaroundadvice"><span class="section-number-3">5.12</span> Let Around Advice</h3>
+<h3 id="letaroundadvice"><span class="section-number-3">5.12</span> <a href="#letaroundadvice">Let Around Advice</a></h3>
 <div class="outline-text-3" id="text-5-12">
 <div class="org-src-container">
 <pre class="src src-emacs-lisp">(<span class="org-keyword">defmacro</span> <span class="org-function-name">imalison:let-advise-around-fn</span> (<span class="org-type">&amp;rest</span> forms)
@@ -5115,7 +5126,7 @@ the <code>:around</code> keyword of advice-add.
 </div>
 </div>
 <div id="outline-container-letadvise" class="outline-3">
-<h3 id="letadvise"><span class="section-number-3">5.13</span> Let Advise</h3>
+<h3 id="letadvise"><span class="section-number-3">5.13</span> <a href="#letadvise">Let Advise</a></h3>
 <div class="outline-text-3" id="text-5-13">
 <div class="org-src-container">
 <pre class="src src-emacs-lisp">(<span class="org-keyword">defmacro</span> <span class="org-function-name">imalison:let-advise</span> (advised-function <span class="org-type">&amp;rest</span> forms)
@@ -5130,7 +5141,7 @@ the <code>:around</code> keyword of advice-add.
 </div>
 </div>
 <div id="outline-container-composearoundbuilder" class="outline-3">
-<h3 id="composearoundbuilder"><span class="section-number-3">5.14</span> Compose Around Builder</h3>
+<h3 id="composearoundbuilder"><span class="section-number-3">5.14</span> <a href="#composearoundbuilder">Compose Around Builder</a></h3>
 <div class="outline-text-3" id="text-5-14">
 <p>
 For composing functions with an apply so that they can be used with the <code>:around</code> keyword of advice-add.
@@ -5149,7 +5160,7 @@ For composing functions with an apply so that they can be used with the <code>:a
 </div>
 </div>
 <div id="outline-container-measuretime" class="outline-3">
-<h3 id="measuretime"><span class="section-number-3">5.15</span> Measure Time</h3>
+<h3 id="measuretime"><span class="section-number-3">5.15</span> <a href="#measuretime">Measure Time</a></h3>
 <div class="outline-text-3" id="text-5-15">
 <div class="org-src-container">
 <pre class="src src-emacs-lisp">(<span class="org-keyword">defmacro</span> <span class="org-function-name">imalison:measure-time</span> (<span class="org-type">&amp;rest</span> body)
@@ -5164,7 +5175,7 @@ For composing functions with an apply so that they can be used with the <code>:a
 </div>
 </div>
 <div id="outline-container-addfilestoorgagendafiles" class="outline-3">
-<h3 id="addfilestoorgagendafiles"><span class="section-number-3">5.16</span> Add Files to <code>org-agenda-files</code></h3>
+<h3 id="addfilestoorgagendafiles"><span class="section-number-3">5.16</span> <a href="#addfilestoorgagendafiles">Add Files to <code>org-agenda-files</code></a></h3>
 <div class="outline-text-3" id="text-5-16">
 <div class="org-src-container">
 <pre class="src src-emacs-lisp">(<span class="org-keyword">defun</span> <span class="org-function-name">imalison:add-to-org-agenda-files</span> (incoming-files)
@@ -5178,7 +5189,7 @@ For composing functions with an apply so that they can be used with the <code>:a
 </div>
 </div>
 <div id="outline-container-getstringfromfile" class="outline-3">
-<h3 id="getstringfromfile"><span class="section-number-3">5.17</span> Get String From File</h3>
+<h3 id="getstringfromfile"><span class="section-number-3">5.17</span> <a href="#getstringfromfile">Get String From File</a></h3>
 <div class="outline-text-3" id="text-5-17">
 <div class="org-src-container">
 <pre class="src src-emacs-lisp">(<span class="org-keyword">defun</span> <span class="org-function-name">imalison:get-string-from-file</span> (file-path)
@@ -5191,7 +5202,7 @@ For composing functions with an apply so that they can be used with the <code>:a
 </div>
 </div>
 <div id="outline-container-getcurrentlocation" class="outline-3">
-<h3 id="getcurrentlocation"><span class="section-number-3">5.18</span> Get Current Location</h3>
+<h3 id="getcurrentlocation"><span class="section-number-3">5.18</span> <a href="#getcurrentlocation">Get Current Location</a></h3>
 <div class="outline-text-3" id="text-5-18">
 <div class="org-src-container">
 <pre class="src src-emacs-lisp">(<span class="org-keyword">defun</span> <span class="org-function-name">imalison:get-lat-long</span> ()
@@ -5204,7 +5215,7 @@ For composing functions with an apply so that they can be used with the <code>:a
 </div>
 </div>
 <div id="outline-container-haversinedistance" class="outline-3">
-<h3 id="haversinedistance"><span class="section-number-3">5.19</span> Haversine distance</h3>
+<h3 id="haversinedistance"><span class="section-number-3">5.19</span> <a href="#haversinedistance">Haversine distance</a></h3>
 <div class="outline-text-3" id="text-5-19">
 <div class="org-src-container">
 <pre class="src src-emacs-lisp">(<span class="org-keyword">defun</span> <span class="org-function-name">imalison:sin2</span> (p)
@@ -5232,7 +5243,7 @@ For composing functions with an apply so that they can be used with the <code>:a
 </div>
 </div>
 <div id="outline-container-fontsize" class="outline-3">
-<h3 id="fontsize"><span class="section-number-3">5.20</span> Font Size</h3>
+<h3 id="fontsize"><span class="section-number-3">5.20</span> <a href="#fontsize">Font Size</a></h3>
 <div class="outline-text-3" id="text-5-20">
 <p>
 This was taken from <a href="http://emacs.stackexchange.com/questions/7583/transiently-adjust-text-size-in-mode-line-and-minibuffer">here</a> but it has diverged significantly from the original.
@@ -5275,7 +5286,7 @@ This was taken from <a href="http://emacs.stackexchange.com/questions/7583/trans
 </div>
 </div>
 <div id="outline-container-messageresultbuilder" class="outline-3">
-<h3 id="messageresultbuilder"><span class="section-number-3">5.21</span> Message Result Builder</h3>
+<h3 id="messageresultbuilder"><span class="section-number-3">5.21</span> <a href="#messageresultbuilder">Message Result Builder</a></h3>
 <div class="outline-text-3" id="text-5-21">
 <p>
 This macro is useful when writing emacs-lisp. It creates a new interactive command that shows you the result of evaluating a function, with optionally provided arguments.
@@ -5304,7 +5315,7 @@ This interactive functions allows the user the select a function to invoke using
 </div>
 </div>
 <div id="outline-container-customshellcommandonregion" class="outline-3">
-<h3 id="customshellcommandonregion"><span class="section-number-3">5.22</span> Custom <code>shell-command-on-region</code></h3>
+<h3 id="customshellcommandonregion"><span class="section-number-3">5.22</span> <a href="#customshellcommandonregion">Custom <code>shell-command-on-region</code></a></h3>
 <div class="outline-text-3" id="text-5-22">
 <div class="org-src-container">
 <pre class="src src-emacs-lisp">(<span class="org-keyword">defun</span> <span class="org-function-name">imalison:copy-shell-command-on-region</span> (start end command)
@@ -5333,7 +5344,7 @@ This interactive functions allows the user the select a function to invoke using
 </div>
 </div>
 <div id="outline-container-copyyankstringfunctions" class="outline-3">
-<h3 id="copyyankstringfunctions"><span class="section-number-3">5.23</span> Copy/Yank String Functions</h3>
+<h3 id="copyyankstringfunctions"><span class="section-number-3">5.23</span> <a href="#copyyankstringfunctions">Copy/Yank String Functions</a></h3>
 <div class="outline-text-3" id="text-5-23">
 <p>
 A macro for composing functions together to build an interactive command to copy a string to the kill ring.
@@ -5348,7 +5359,7 @@ A macro for composing functions together to build an interactive command to copy
 </div>
 </div>
 <div id="outline-container-copyportionsofthebufferfilename" class="outline-4">
-<h4 id="copyportionsofthebufferfilename"><span class="section-number-4">5.23.1</span> Copy portions of the buffer file name</h4>
+<h4 id="copyportionsofthebufferfilename"><span class="section-number-4">5.23.1</span> <a href="#copyportionsofthebufferfilename">Copy portions of the buffer file name</a></h4>
 <div class="outline-text-4" id="text-5-23-1">
 <div class="org-src-container">
 <pre class="src src-emacs-lisp">(<span class="org-keyword">defmacro</span> <span class="org-function-name">imalison:copy-buffer-file-path-builder</span> (<span class="org-type">&amp;rest</span> args)
@@ -5366,7 +5377,7 @@ A macro for composing functions together to build an interactive command to copy
 </div>
 </div>
 <div id="outline-container-copythecurrentbranchusingmagit" class="outline-4">
-<h4 id="copythecurrentbranchusingmagit"><span class="section-number-4">5.23.2</span> Copy the current branch using magit</h4>
+<h4 id="copythecurrentbranchusingmagit"><span class="section-number-4">5.23.2</span> <a href="#copythecurrentbranchusingmagit">Copy the current branch using magit</a></h4>
 <div class="outline-text-4" id="text-5-23-2">
 <div class="org-src-container">
 <pre class="src src-emacs-lisp">(imalison:compose-copy-builder imalison:copy-current-git-branch
@@ -5376,7 +5387,7 @@ A macro for composing functions together to build an interactive command to copy
 </div>
 </div>
 <div id="outline-container-copythecurrentbuffername" class="outline-4">
-<h4 id="copythecurrentbuffername"><span class="section-number-4">5.23.3</span> Copy the current buffer name</h4>
+<h4 id="copythecurrentbuffername"><span class="section-number-4">5.23.3</span> <a href="#copythecurrentbuffername">Copy the current buffer name</a></h4>
 <div class="outline-text-4" id="text-5-23-3">
 <div class="org-src-container">
 <pre class="src src-emacs-lisp">(imalison:compose-copy-builder imalison:copy-current-buffer-name
@@ -5386,7 +5397,7 @@ A macro for composing functions together to build an interactive command to copy
 </div>
 </div>
 <div id="outline-container-copythelastmessage" class="outline-4">
-<h4 id="copythelastmessage"><span class="section-number-4">5.23.4</span> Copy the last message</h4>
+<h4 id="copythelastmessage"><span class="section-number-4">5.23.4</span> <a href="#copythelastmessage">Copy the last message</a></h4>
 <div class="outline-text-4" id="text-5-23-4">
 <div class="org-src-container">
 <pre class="src src-emacs-lisp">(<span class="org-keyword">defun</span> <span class="org-function-name">imalison:last-message</span> (<span class="org-type">&amp;optional</span> num)
@@ -5409,7 +5420,7 @@ A macro for composing functions together to build an interactive command to copy
 </div>
 </div>
 <div id="outline-container-namedcompile" class="outline-3">
-<h3 id="namedcompile"><span class="section-number-3">5.24</span> Named Compile</h3>
+<h3 id="namedcompile"><span class="section-number-3">5.24</span> <a href="#namedcompile">Named Compile</a></h3>
 <div class="outline-text-3" id="text-5-24">
 <div class="org-src-container">
 <pre class="src src-emacs-lisp">(<span class="org-keyword">defun</span> <span class="org-function-name">imalison:named-compile</span> (command)
@@ -5426,7 +5437,7 @@ A macro for composing functions together to build an interactive command to copy
 </div>
 </div>
 <div id="outline-container-replaceescapesequences" class="outline-3">
-<h3 id="replaceescapesequences"><span class="section-number-3">5.25</span> Replace Escape Sequences</h3>
+<h3 id="replaceescapesequences"><span class="section-number-3">5.25</span> <a href="#replaceescapesequences">Replace Escape Sequences</a></h3>
 <div class="outline-text-3" id="text-5-25">
 <div class="org-src-container">
 <pre class="src src-emacs-lisp">(<span class="org-keyword">defun</span> <span class="org-function-name">imalison:replace-escape-sequences</span> ()
@@ -5444,7 +5455,7 @@ A macro for composing functions together to build an interactive command to copy
 </div>
 </div>
 <div id="outline-container-downloadafileintoabuffer" class="outline-3">
-<h3 id="downloadafileintoabuffer"><span class="section-number-3">5.26</span> Download a File Into a Buffer</h3>
+<h3 id="downloadafileintoabuffer"><span class="section-number-3">5.26</span> <a href="#downloadafileintoabuffer">Download a File Into a Buffer</a></h3>
 <div class="outline-text-3" id="text-5-26">
 <p>
 <a id="orgtarget3"></a>
@@ -5465,7 +5476,7 @@ A macro for composing functions together to build an interactive command to copy
 </div>
 </div>
 <div id="outline-container-concatwithsymbols" class="outline-3">
-<h3 id="concatwithsymbols"><span class="section-number-3">5.27</span> Concat With Symbols</h3>
+<h3 id="concatwithsymbols"><span class="section-number-3">5.27</span> <a href="#concatwithsymbols">Concat With Symbols</a></h3>
 <div class="outline-text-3" id="text-5-27">
 <div class="org-src-container">
 <pre class="src src-emacs-lisp">(<span class="org-keyword">defun</span> <span class="org-function-name">imalison:maybe-symbol-name</span> (arg)
@@ -5480,7 +5491,7 @@ A macro for composing functions together to build an interactive command to copy
 </div>
 </div>
 <div id="outline-container-editascriptonpath" class="outline-3">
-<h3 id="editascriptonpath"><span class="section-number-3">5.28</span> Edit a script on PATH</h3>
+<h3 id="editascriptonpath"><span class="section-number-3">5.28</span> <a href="#editascriptonpath">Edit a script on PATH</a></h3>
 <div class="outline-text-3" id="text-5-28">
 <p>
 <a id="orgtarget4"></a> Note that you'll need to make sure that emacs properly inherits
@@ -5508,7 +5519,7 @@ details.
 </div>
 </div>
 <div id="outline-container-togglelexicalbindinginthecurrentbuffer" class="outline-3">
-<h3 id="togglelexicalbindinginthecurrentbuffer"><span class="section-number-3">5.29</span> Toggle lexical binding in the current buffer</h3>
+<h3 id="togglelexicalbindinginthecurrentbuffer"><span class="section-number-3">5.29</span> <a href="#togglelexicalbindinginthecurrentbuffer">Toggle lexical binding in the current buffer</a></h3>
 <div class="outline-text-3" id="text-5-29">
 <div class="org-src-container">
 <pre class="src src-emacs-lisp">(<span class="org-keyword">defun</span> <span class="org-function-name">imalison:toggle-lexical-binding</span> ()
@@ -5521,7 +5532,7 @@ details.
 </div>
 </div>
 <div id="outline-container-synckillringwithcopyq" class="outline-3">
-<h3 id="synckillringwithcopyq"><span class="section-number-3">5.30</span> Sync kill ring with copyq</h3>
+<h3 id="synckillringwithcopyq"><span class="section-number-3">5.30</span> <a href="#synckillringwithcopyq">Sync kill ring with copyq</a></h3>
 <div class="outline-text-3" id="text-5-30">
 <div class="org-src-container">
 <pre class="src src-emacs-lisp">(<span class="org-keyword">defun</span> <span class="org-function-name">imalison:copyq-get</span> (i)
@@ -5543,7 +5554,7 @@ details.
 </div>
 </div>
 <div id="outline-container-helmzshhistory" class="outline-3">
-<h3 id="helmzshhistory"><span class="section-number-3">5.31</span> helm-zsh-history</h3>
+<h3 id="helmzshhistory"><span class="section-number-3">5.31</span> <a href="#helmzshhistory">helm-zsh-history</a></h3>
 <div class="outline-text-3" id="text-5-31">
 <p>
 This was stolen from <a href="https://github.com/jwiegley/dot-emacs">https://github.com/jwiegley/dot-emacs</a>
@@ -5585,7 +5596,7 @@ This was stolen from <a href="https://github.com/jwiegley/dot-emacs">https://git
 </div>
 </div>
 <div id="outline-container-useprojectileasdefaultdirectory" class="outline-4">
-<h4 id="useprojectileasdefaultdirectory"><span class="section-number-4">5.31.1</span> Use projectile as default directory</h4>
+<h4 id="useprojectileasdefaultdirectory"><span class="section-number-4">5.31.1</span> <a href="#useprojectileasdefaultdirectory">Use projectile as default directory</a></h4>
 <div class="outline-text-4" id="text-5-31-1">
 <div class="org-src-container">
 <pre class="src src-emacs-lisp">(imalison:let-around imalison:projectile-helm-command-from-zsh helm-command-from-zsh
@@ -5596,7 +5607,7 @@ This was stolen from <a href="https://github.com/jwiegley/dot-emacs">https://git
 </div>
 </div>
 <div id="outline-container-disablehooks" class="outline-3">
-<h3 id="disablehooks"><span class="section-number-3">5.32</span> Disable hooks</h3>
+<h3 id="disablehooks"><span class="section-number-3">5.32</span> <a href="#disablehooks">Disable hooks</a></h3>
 <div class="outline-text-3" id="text-5-32">
 <div class="org-src-container">
 <pre class="src src-emacs-lisp">(<span class="org-keyword">cl-defmacro</span> <span class="org-function-name">imalison:disable-mode-hook</span> (mode-name <span class="org-type">&amp;optional</span> (disable-value -1))
@@ -5610,7 +5621,7 @@ This was stolen from <a href="https://github.com/jwiegley/dot-emacs">https://git
 </div>
 </div>
 <div id="outline-container-other" class="outline-3">
-<h3 id="other"><span class="section-number-3">5.33</span> Other</h3>
+<h3 id="other"><span class="section-number-3">5.33</span> <a href="#other">Other</a></h3>
 <div class="outline-text-3" id="text-5-33">
 <p>
 The stuff in this section is pretty crusty. I don't think its used anywhere, but
@@ -5709,13 +5720,13 @@ I keep it around just in case I need it.
 </div>
 </div>
 <div id="outline-container-keyboardmacros" class="outline-3">
-<h3 id="keyboardmacros"><span class="section-number-3">5.34</span> Keyboard Macros</h3>
+<h3 id="keyboardmacros"><span class="section-number-3">5.34</span> <a href="#keyboardmacros">Keyboard Macros</a></h3>
 <div class="outline-text-3" id="text-5-34">
 </div><div id="outline-container-foreditingliterateconfig" class="outline-4">
-<h4 id="foreditingliterateconfig"><span class="section-number-4">5.34.1</span> For editing literate config</h4>
+<h4 id="foreditingliterateconfig"><span class="section-number-4">5.34.1</span> <a href="#foreditingliterateconfig">For editing literate config</a></h4>
 <div class="outline-text-4" id="text-5-34-1">
 </div><div id="outline-container-extractcurrentsexptosrcblock" class="outline-5">
-<h5 id="extractcurrentsexptosrcblock"><span class="section-number-5">5.34.1.1</span> extract-current-sexp-to-src-block</h5>
+<h5 id="extractcurrentsexptosrcblock"><span class="section-number-5">5.34.1.1</span> <a href="#extractcurrentsexptosrcblock">extract-current-sexp-to-src-block</a></h5>
 <div class="outline-text-5" id="text-5-34-1-1">
 <p>
 This keyboard macro extracts the current sexp to an emacs-lisp source block of its own
@@ -5728,7 +5739,7 @@ This keyboard macro extracts the current sexp to an emacs-lisp source block of i
 </div>
 </div>
 <div id="outline-container-namesourceblockforusepackagename" class="outline-5">
-<h5 id="namesourceblockforusepackagename"><span class="section-number-5">5.34.1.2</span> name-source-block-for-use-package-name</h5>
+<h5 id="namesourceblockforusepackagename"><span class="section-number-5">5.34.1.2</span> <a href="#namesourceblockforusepackagename">name-source-block-for-use-package-name</a></h5>
 <div class="outline-text-5" id="text-5-34-1-2">
 <div class="org-src-container">
 <pre class="src src-emacs-lisp">(fset 'name-source-block-for-use-package-name
@@ -5738,7 +5749,7 @@ This keyboard macro extracts the current sexp to an emacs-lisp source block of i
 </div>
 </div>
 <div id="outline-container-extractandnameusepackageblock" class="outline-5">
-<h5 id="extractandnameusepackageblock"><span class="section-number-5">5.34.1.3</span> extract-and-name-use-package-block</h5>
+<h5 id="extractandnameusepackageblock"><span class="section-number-5">5.34.1.3</span> <a href="#extractandnameusepackageblock">extract-and-name-use-package-block</a></h5>
 <div class="outline-text-5" id="text-5-34-1-3">
 <div class="org-src-container">
 <pre class="src src-emacs-lisp">(fset 'extract-and-name-use-package-block
@@ -5751,10 +5762,10 @@ This keyboard macro extracts the current sexp to an emacs-lisp source block of i
 </div>
 </div>
 <div id="outline-container-general" class="outline-2">
-<h2 id="general"><span class="section-number-2">6</span> General</h2>
+<h2 id="general"><span class="section-number-2">6</span> <a href="#general">General</a></h2>
 <div class="outline-text-2" id="text-6">
 </div><div id="outline-container-userinfo" class="outline-3">
-<h3 id="userinfo"><span class="section-number-3">6.1</span> User Info</h3>
+<h3 id="userinfo"><span class="section-number-3">6.1</span> <a href="#userinfo">User Info</a></h3>
 <div class="outline-text-3" id="text-6-1">
 <div class="org-src-container">
 <pre class="src src-emacs-lisp">(<span class="org-keyword">setq</span> user-full-name
@@ -5768,7 +5779,7 @@ This keyboard macro extracts the current sexp to an emacs-lisp source block of i
 </div>
 </div>
 <div id="outline-container-sanedefaults" class="outline-3">
-<h3 id="sanedefaults"><span class="section-number-3">6.2</span> Sane Defaults</h3>
+<h3 id="sanedefaults"><span class="section-number-3">6.2</span> <a href="#sanedefaults">Sane Defaults</a></h3>
 <div class="outline-text-3" id="text-6-2">
 <div class="org-src-container">
 <pre class="src src-emacs-lisp"><span class="linenr">1: </span>(global-auto-revert-mode)
@@ -5787,7 +5798,7 @@ This keyboard macro extracts the current sexp to an emacs-lisp source block of i
 </div>
 </div>
 <div id="outline-container-systemclipboard" class="outline-3">
-<h3 id="systemclipboard"><span class="section-number-3">6.3</span> System Clipboard</h3>
+<h3 id="systemclipboard"><span class="section-number-3">6.3</span> <a href="#systemclipboard">System Clipboard</a></h3>
 <div class="outline-text-3" id="text-6-3">
 <div class="org-src-container">
 <pre class="src src-emacs-lisp">(<span class="org-keyword">setq</span> save-interprogram-paste-before-kill t)
@@ -5796,7 +5807,7 @@ This keyboard macro extracts the current sexp to an emacs-lisp source block of i
 </div>
 </div>
 <div id="outline-container-linenumbers" class="outline-3">
-<h3 id="linenumbers"><span class="section-number-3">6.4</span> Line Numbers</h3>
+<h3 id="linenumbers"><span class="section-number-3">6.4</span> <a href="#linenumbers">Line Numbers</a></h3>
 <div class="outline-text-3" id="text-6-4">
 <div class="org-src-container">
 <pre class="src src-emacs-lisp">(line-number-mode t)
@@ -5816,10 +5827,10 @@ programming mode.
 </div>
 </div>
 <div id="outline-container-backups" class="outline-3">
-<h3 id="backups"><span class="section-number-3">6.5</span> Backups</h3>
+<h3 id="backups"><span class="section-number-3">6.5</span> <a href="#backups">Backups</a></h3>
 <div class="outline-text-3" id="text-6-5">
 </div><div id="outline-container-putthemallinonedirectory" class="outline-4">
-<h4 id="putthemallinonedirectory"><span class="section-number-4">6.5.1</span> Put them all in one directory</h4>
+<h4 id="putthemallinonedirectory"><span class="section-number-4">6.5.1</span> <a href="#putthemallinonedirectory">Put them all in one directory</a></h4>
 <div class="outline-text-4" id="text-6-5-1">
 <div class="org-src-container">
 <pre class="src src-emacs-lisp">(<span class="org-keyword">defconst</span> <span class="org-variable-name">emacs-tmp-dir</span>
@@ -5832,7 +5843,7 @@ programming mode.
 </div>
 </div>
 <div id="outline-container-completelydisablebackups" class="outline-4">
-<h4 id="completelydisablebackups"><span class="section-number-4">6.5.2</span> Completely disable backups</h4>
+<h4 id="completelydisablebackups"><span class="section-number-4">6.5.2</span> <a href="#completelydisablebackups">Completely disable backups</a></h4>
 <div class="outline-text-4" id="text-6-5-2">
 <div class="org-src-container">
 <pre class="src src-emacs-lisp">(<span class="org-keyword">setq</span> backup-inhibited t)
@@ -5844,10 +5855,10 @@ programming mode.
 </div>
 </div>
 <div id="outline-container-prompts" class="outline-3">
-<h3 id="prompts"><span class="section-number-3">6.6</span> Prompts</h3>
+<h3 id="prompts"><span class="section-number-3">6.6</span> <a href="#prompts">Prompts</a></h3>
 <div class="outline-text-3" id="text-6-6">
 </div><div id="outline-container-nopopupframes" class="outline-4">
-<h4 id="nopopupframes"><span class="section-number-4">6.6.1</span> No popup frames</h4>
+<h4 id="nopopupframes"><span class="section-number-4">6.6.1</span> <a href="#nopopupframes">No popup frames</a></h4>
 <div class="outline-text-4" id="text-6-6-1">
 <div class="org-src-container">
 <pre class="src src-emacs-lisp">(<span class="org-keyword">setq</span> ns-pop-up-frames nil)
@@ -5857,7 +5868,7 @@ programming mode.
 </div>
 </div>
 <div id="outline-container-booleanyesorno" class="outline-4">
-<h4 id="booleanyesorno"><span class="section-number-4">6.6.2</span> boolean (yes-or-no)</h4>
+<h4 id="booleanyesorno"><span class="section-number-4">6.6.2</span> <a href="#booleanyesorno">boolean (yes-or-no)</a></h4>
 <div class="outline-text-4" id="text-6-6-2">
 <div class="org-src-container">
 <pre class="src src-emacs-lisp"><span class="linenr"> 1: </span>(<span class="org-keyword">defadvice</span> <span class="org-function-name">yes-or-no-p</span> (around prevent-dialog activate)
@@ -5876,7 +5887,7 @@ programming mode.
 </div>
 </div>
 <div id="outline-container-nodialogboxes" class="outline-4">
-<h4 id="nodialogboxes"><span class="section-number-4">6.6.3</span> No dialog boxes</h4>
+<h4 id="nodialogboxes"><span class="section-number-4">6.6.3</span> <a href="#nodialogboxes">No dialog boxes</a></h4>
 <div class="outline-text-4" id="text-6-6-3">
 <div class="org-src-container">
 <pre class="src src-emacs-lisp">(<span class="org-keyword">setq</span> use-dialog-box nil)
@@ -5886,7 +5897,7 @@ programming mode.
 </div>
 </div>
 <div id="outline-container-splitting" class="outline-3">
-<h3 id="splitting"><span class="section-number-3">6.7</span> Splitting</h3>
+<h3 id="splitting"><span class="section-number-3">6.7</span> <a href="#splitting">Splitting</a></h3>
 <div class="outline-text-3" id="text-6-7">
 <div class="org-src-container">
 <pre class="src src-emacs-lisp">(<span class="org-keyword">defun</span> <span class="org-function-name">split-horizontally-for-temp-buffers</span> () (split-window-horizontally))
@@ -5898,10 +5909,10 @@ programming mode.
 </div>
 </div>
 <div id="outline-container-bufferdisplay" class="outline-3">
-<h3 id="bufferdisplay"><span class="section-number-3">6.8</span> Buffer Display</h3>
+<h3 id="bufferdisplay"><span class="section-number-3">6.8</span> <a href="#bufferdisplay">Buffer Display</a></h3>
 <div class="outline-text-3" id="text-6-8">
 </div><div id="outline-container-ewmctrl" class="outline-4">
-<h4 id="ewmctrl"><span class="section-number-4">6.8.1</span> ewmctrl</h4>
+<h4 id="ewmctrl"><span class="section-number-4">6.8.1</span> <a href="#ewmctrl">ewmctrl</a></h4>
 <div class="outline-text-4" id="text-6-8-1">
 <div class="org-src-container">
 <pre class="src src-emacs-lisp">(<span class="org-keyword">use-package</span> <span class="org-constant">ewmctrl</span>
@@ -5911,7 +5922,7 @@ programming mode.
 </div>
 </div>
 <div id="outline-container-handlexrefsannoyingdedicatedwindowgarbage" class="outline-4">
-<h4 id="handlexrefsannoyingdedicatedwindowgarbage"><span class="section-number-4">6.8.2</span> Handle xrefs annoying dedicated window garbage</h4>
+<h4 id="handlexrefsannoyingdedicatedwindowgarbage"><span class="section-number-4">6.8.2</span> <a href="#handlexrefsannoyingdedicatedwindowgarbage">Handle xrefs annoying dedicated window garbage</a></h4>
 <div class="outline-text-4" id="text-6-8-2">
 <div class="org-src-container">
 <pre class="src src-emacs-lisp">(<span class="org-keyword">use-package</span> <span class="org-constant">xref</span>
@@ -5934,7 +5945,7 @@ programming mode.
 </div>
 </div>
 <div id="outline-container-displaybufferalist" class="outline-4">
-<h4 id="displaybufferalist"><span class="section-number-4">6.8.3</span> display-buffer-alist</h4>
+<h4 id="displaybufferalist"><span class="section-number-4">6.8.3</span> <a href="#displaybufferalist">display-buffer-alist</a></h4>
 <div class="outline-text-4" id="text-6-8-3">
 <p>
 <a id="orgtarget1"></a>
@@ -6019,7 +6030,7 @@ programming mode.
 </div>
 </div>
 <div id="outline-container-fillsetup" class="outline-3">
-<h3 id="fillsetup"><span class="section-number-3">6.9</span> Fill Setup</h3>
+<h3 id="fillsetup"><span class="section-number-3">6.9</span> <a href="#fillsetup">Fill Setup</a></h3>
 <div class="outline-text-3" id="text-6-9">
 <p>
 Get rid of nags about requiring setences to end with two spaces.
@@ -6038,7 +6049,7 @@ Set the default fill-column
 </div>
 </div>
 <div id="outline-container-showtrailingwhitespace" class="outline-3">
-<h3 id="showtrailingwhitespace"><span class="section-number-3">6.10</span> Show Trailing Whitespace</h3>
+<h3 id="showtrailingwhitespace"><span class="section-number-3">6.10</span> <a href="#showtrailingwhitespace">Show Trailing Whitespace</a></h3>
 <div class="outline-text-3" id="text-6-10">
 <p>
 Trailing whitespace is really messy and annoying, which makes this a must-have
@@ -6051,7 +6062,7 @@ with random whitespace ALL over the place.
 </div>
 </div>
 <div id="outline-container-disable" class="outline-4">
-<h4 id="disable"><span class="section-number-4">6.10.1</span> Disable</h4>
+<h4 id="disable"><span class="section-number-4">6.10.1</span> <a href="#disable">Disable</a></h4>
 <div class="outline-text-4" id="text-6-10-1">
 <p>
 Unfortunately, this setting can get annoying in a lot of modes, which is why I
@@ -6066,7 +6077,7 @@ use this hook to disable it in those modes
 </div>
 </div>
 <div id="outline-container-encoding" class="outline-3">
-<h3 id="encoding"><span class="section-number-3">6.11</span> Encoding</h3>
+<h3 id="encoding"><span class="section-number-3">6.11</span> <a href="#encoding">Encoding</a></h3>
 <div class="outline-text-3" id="text-6-11">
 <p>
 UTF-8 everywhere
@@ -6094,7 +6105,7 @@ Disable CJK coding/encoding (Chinese/Japanese/Korean characters)
 </div>
 </div>
 <div id="outline-container-visiblebell" class="outline-3">
-<h3 id="visiblebell"><span class="section-number-3">6.12</span> Visible Bell</h3>
+<h3 id="visiblebell"><span class="section-number-3">6.12</span> <a href="#visiblebell">Visible Bell</a></h3>
 <div class="outline-text-3" id="text-6-12">
 <p>
 This is set to true to disable the annoying audible bell that plays
@@ -6107,7 +6118,7 @@ whenever there is an error.
 </div>
 </div>
 <div id="outline-container-configurevc" class="outline-3">
-<h3 id="configurevc"><span class="section-number-3">6.13</span> Configure <code>vc</code></h3>
+<h3 id="configurevc"><span class="section-number-3">6.13</span> <a href="#configurevc">Configure <code>vc</code></a></h3>
 <div class="outline-text-3" id="text-6-13">
 <div class="org-src-container">
 <pre class="src src-emacs-lisp">(<span class="org-keyword">setq</span> vc-follow-symlinks t)
@@ -6116,7 +6127,7 @@ whenever there is an error.
 </div>
 </div>
 <div id="outline-container-timeinmodeline" class="outline-3">
-<h3 id="timeinmodeline"><span class="section-number-3">6.14</span> Time in Mode Line</h3>
+<h3 id="timeinmodeline"><span class="section-number-3">6.14</span> <a href="#timeinmodeline">Time in Mode Line</a></h3>
 <div class="outline-text-3" id="text-6-14">
 <div class="org-src-container">
 <pre class="src src-emacs-lisp">(<span class="org-keyword">setq</span> display-time-default-load-average nil)
@@ -6128,7 +6139,7 @@ whenever there is an error.
 </div>
 </div>
 <div id="outline-container-killring" class="outline-3">
-<h3 id="killring"><span class="section-number-3">6.15</span> Kill Ring</h3>
+<h3 id="killring"><span class="section-number-3">6.15</span> <a href="#killring">Kill Ring</a></h3>
 <div class="outline-text-3" id="text-6-15">
 <div class="org-src-container">
 <pre class="src src-emacs-lisp">(<span class="org-keyword">setq</span> kill-ring-max 1000)
@@ -6137,7 +6148,7 @@ whenever there is an error.
 </div>
 </div>
 <div id="outline-container-subword" class="outline-3">
-<h3 id="subword"><span class="section-number-3">6.16</span> Subword</h3>
+<h3 id="subword"><span class="section-number-3">6.16</span> <a href="#subword">Subword</a></h3>
 <div class="outline-text-3" id="text-6-16">
 <p>
 This makes <code>forward-word</code> and <code>backward-word</code> understand snake and camel case.
@@ -6150,7 +6161,7 @@ This makes <code>forward-word</code> and <code>backward-word</code> understand s
 </div>
 </div>
 <div id="outline-container-scratchbuffer" class="outline-3">
-<h3 id="scratchbuffer"><span class="section-number-3">6.17</span> Scratch Buffer</h3>
+<h3 id="scratchbuffer"><span class="section-number-3">6.17</span> <a href="#scratchbuffer">Scratch Buffer</a></h3>
 <div class="outline-text-3" id="text-6-17">
 <div class="org-src-container">
 <pre class="src src-emacs-lisp">(<span class="org-keyword">setq</span> initial-scratch-message <span class="org-string">""</span>)
@@ -6159,7 +6170,7 @@ This makes <code>forward-word</code> and <code>backward-word</code> understand s
 </div>
 </div>
 <div id="outline-container-dontpromptaboutlocalvariables" class="outline-3">
-<h3 id="dontpromptaboutlocalvariables"><span class="section-number-3">6.18</span> Don't prompt about local variables</h3>
+<h3 id="dontpromptaboutlocalvariables"><span class="section-number-3">6.18</span> <a href="#dontpromptaboutlocalvariables">Don't prompt about local variables</a></h3>
 <div class="outline-text-3" id="text-6-18">
 <div class="org-src-container">
 <pre class="src src-emacs-lisp">(<span class="org-keyword">defun</span> <span class="org-function-name">risky-local-variable-p</span> (<span class="org-type">&amp;rest</span> args)
@@ -6169,7 +6180,7 @@ This makes <code>forward-word</code> and <code>backward-word</code> understand s
 </div>
 </div>
 <div id="outline-container-proced" class="outline-3">
-<h3 id="proced"><span class="section-number-3">6.19</span> proced</h3>
+<h3 id="proced"><span class="section-number-3">6.19</span> <a href="#proced">proced</a></h3>
 <div class="outline-text-3" id="text-6-19">
 <p>
 proced is an top like utility that runs inside of emacs. The following sets auto updating automatically and makes the update interval faster.
@@ -6183,7 +6194,7 @@ proced is an top like utility that runs inside of emacs. The following sets auto
 </div>
 </div>
 <div id="outline-container-setdefaultbrowser" class="outline-3">
-<h3 id="setdefaultbrowser"><span class="section-number-3">6.20</span> Set default browser</h3>
+<h3 id="setdefaultbrowser"><span class="section-number-3">6.20</span> <a href="#setdefaultbrowser">Set default browser</a></h3>
 <div class="outline-text-3" id="text-6-20">
 <div class="org-src-container">
 <pre class="src src-emacs-lisp">(<span class="org-keyword">when</span> (equal system-type 'gnu/linux)
@@ -6194,7 +6205,7 @@ proced is an top like utility that runs inside of emacs. The following sets auto
 </div>
 </div>
 <div id="outline-container-setepaprogram" class="outline-3">
-<h3 id="setepaprogram"><span class="section-number-3">6.21</span> Set epa program</h3>
+<h3 id="setepaprogram"><span class="section-number-3">6.21</span> <a href="#setepaprogram">Set epa program</a></h3>
 <div class="outline-text-3" id="text-6-21">
 <div class="org-src-container">
 <pre class="src src-emacs-lisp">(<span class="org-keyword">setq</span> epg-gpg-program <span class="org-string">"gpg"</span>)
@@ -6203,7 +6214,7 @@ proced is an top like utility that runs inside of emacs. The following sets auto
 </div>
 </div>
 <div id="outline-container-makefilesexecutable" class="outline-3">
-<h3 id="makefilesexecutable"><span class="section-number-3">6.22</span> Make files executable</h3>
+<h3 id="makefilesexecutable"><span class="section-number-3">6.22</span> <a href="#makefilesexecutable">Make files executable</a></h3>
 <div class="outline-text-3" id="text-6-22">
 <div class="org-src-container">
 <pre class="src src-emacs-lisp">(add-hook 'after-save-hook 'executable-make-buffer-file-executable-if-script-p)
@@ -6212,7 +6223,7 @@ proced is an top like utility that runs inside of emacs. The following sets auto
 </div>
 </div>
 <div id="outline-container-misc" class="outline-3">
-<h3 id="misc"><span class="section-number-3">6.23</span> Misc</h3>
+<h3 id="misc"><span class="section-number-3">6.23</span> <a href="#misc">Misc</a></h3>
 <div class="outline-text-3" id="text-6-23">
 <div class="org-src-container">
 <pre class="src src-emacs-lisp">(<span class="org-keyword">defvar</span> <span class="org-variable-name">iedit-toggle-key-default</span> nil)
@@ -6291,7 +6302,7 @@ proced is an top like utility that runs inside of emacs. The following sets auto
 </div>
 </div>
 <div id="outline-container-paradox" class="outline-3">
-<h3 id="paradox"><span class="section-number-3">6.24</span> paradox</h3>
+<h3 id="paradox"><span class="section-number-3">6.24</span> <a href="#paradox">paradox</a></h3>
 <div class="outline-text-3" id="text-6-24">
 <div class="org-src-container">
 <pre class="src src-emacs-lisp">(<span class="org-keyword">use-package</span> <span class="org-constant">paradox</span>
@@ -6307,7 +6318,7 @@ proced is an top like utility that runs inside of emacs. The following sets auto
 </div>
 </div>
 <div id="outline-container-diminish" class="outline-3">
-<h3 id="diminish"><span class="section-number-3">6.25</span> diminish</h3>
+<h3 id="diminish"><span class="section-number-3">6.25</span> <a href="#diminish">diminish</a></h3>
 <div class="outline-text-3" id="text-6-25">
 <div class="org-src-container">
 <pre class="src src-emacs-lisp">(<span class="org-keyword">use-package</span> <span class="org-constant">diminish</span>
@@ -6325,7 +6336,7 @@ proced is an top like utility that runs inside of emacs. The following sets auto
 </div>
 </div>
 <div id="outline-container-editserver" class="outline-3">
-<h3 id="editserver"><span class="section-number-3">6.26</span> edit-server</h3>
+<h3 id="editserver"><span class="section-number-3">6.26</span> <a href="#editserver">edit-server</a></h3>
 <div class="outline-text-3" id="text-6-26">
 <div class="org-src-container">
 <pre class="src src-emacs-lisp">(<span class="org-keyword">use-package</span> <span class="org-constant">edit-server</span>
@@ -6340,7 +6351,7 @@ proced is an top like utility that runs inside of emacs. The following sets auto
 </div>
 </div>
 <div id="outline-container-loaddir" class="outline-3">
-<h3 id="loaddir"><span class="section-number-3">6.27</span> load-dir</h3>
+<h3 id="loaddir"><span class="section-number-3">6.27</span> <a href="#loaddir">load-dir</a></h3>
 <div class="outline-text-3" id="text-6-27">
 <div class="org-src-container">
 <pre class="src src-emacs-lisp">(<span class="org-keyword">use-package</span> <span class="org-constant">load-dir</span>
@@ -6355,7 +6366,7 @@ proced is an top like utility that runs inside of emacs. The following sets auto
 </div>
 </div>
 <div id="outline-container-server" class="outline-3">
-<h3 id="server"><span class="section-number-3">6.28</span> server</h3>
+<h3 id="server"><span class="section-number-3">6.28</span> <a href="#server">server</a></h3>
 <div class="outline-text-3" id="text-6-28">
 <div class="org-src-container">
 <pre class="src src-emacs-lisp">(<span class="org-keyword">use-package</span> <span class="org-constant">server</span>
@@ -6367,7 +6378,7 @@ proced is an top like utility that runs inside of emacs. The following sets auto
 </div>
 </div>
 <div id="outline-container-listenvironment" class="outline-3">
-<h3 id="listenvironment"><span class="section-number-3">6.29</span> list-environment</h3>
+<h3 id="listenvironment"><span class="section-number-3">6.29</span> <a href="#listenvironment">list-environment</a></h3>
 <div class="outline-text-3" id="text-6-29">
 <div class="org-src-container">
 <pre class="src src-emacs-lisp">(<span class="org-keyword">use-package</span> <span class="org-constant">list-environment</span>)
@@ -6376,7 +6387,7 @@ proced is an top like utility that runs inside of emacs. The following sets auto
 </div>
 </div>
 <div id="outline-container-bughunter" class="outline-3">
-<h3 id="bughunter"><span class="section-number-3">6.30</span> bug-hunter</h3>
+<h3 id="bughunter"><span class="section-number-3">6.30</span> <a href="#bughunter">bug-hunter</a></h3>
 <div class="outline-text-3" id="text-6-30">
 <div class="org-src-container">
 <pre class="src src-emacs-lisp">(<span class="org-keyword">use-package</span> <span class="org-constant">bug-hunter</span>)
@@ -6385,7 +6396,7 @@ proced is an top like utility that runs inside of emacs. The following sets auto
 </div>
 </div>
 <div id="outline-container-shackle" class="outline-3">
-<h3 id="shackle"><span class="section-number-3">6.31</span> shackle</h3>
+<h3 id="shackle"><span class="section-number-3">6.31</span> <a href="#shackle">shackle</a></h3>
 <div class="outline-text-3" id="text-6-31">
 <div class="org-src-container">
 <pre class="src src-emacs-lisp">(<span class="org-keyword">use-package</span> <span class="org-constant">shackle</span>
@@ -6403,7 +6414,7 @@ proced is an top like utility that runs inside of emacs. The following sets auto
 </div>
 
 <div id="outline-container-beacon" class="outline-3">
-<h3 id="beacon"><span class="section-number-3">6.32</span> beacon</h3>
+<h3 id="beacon"><span class="section-number-3">6.32</span> <a href="#beacon">beacon</a></h3>
 <div class="outline-text-3" id="text-6-32">
 <div class="org-src-container">
 <pre class="src src-emacs-lisp">(<span class="org-keyword">use-package</span> <span class="org-constant">beacon</span>
@@ -6416,7 +6427,7 @@ proced is an top like utility that runs inside of emacs. The following sets auto
 </div>
 </div>
 <div id="outline-container-iregister" class="outline-3">
-<h3 id="iregister"><span class="section-number-3">6.33</span> iregister</h3>
+<h3 id="iregister"><span class="section-number-3">6.33</span> <a href="#iregister">iregister</a></h3>
 <div class="outline-text-3" id="text-6-33">
 <div class="org-src-container">
 <pre class="src src-emacs-lisp">(<span class="org-keyword">use-package</span> <span class="org-constant">iregister</span>)
@@ -6425,7 +6436,7 @@ proced is an top like utility that runs inside of emacs. The following sets auto
 </div>
 </div>
 <div id="outline-container-discovermymajor" class="outline-3">
-<h3 id="discovermymajor"><span class="section-number-3">6.34</span> discover-my-major</h3>
+<h3 id="discovermymajor"><span class="section-number-3">6.34</span> <a href="#discovermymajor">discover-my-major</a></h3>
 <div class="outline-text-3" id="text-6-34">
 <div class="org-src-container">
 <pre class="src src-emacs-lisp">(<span class="org-keyword">use-package</span> <span class="org-constant">discover-my-major</span>)
@@ -6434,7 +6445,7 @@ proced is an top like utility that runs inside of emacs. The following sets auto
 </div>
 </div>
 <div id="outline-container-refine" class="outline-3">
-<h3 id="refine"><span class="section-number-3">6.35</span> refine</h3>
+<h3 id="refine"><span class="section-number-3">6.35</span> <a href="#refine">refine</a></h3>
 <div class="outline-text-3" id="text-6-35">
 <div class="org-src-container">
 <pre class="src src-emacs-lisp">(<span class="org-keyword">use-package</span> <span class="org-constant">refine</span>
@@ -6444,7 +6455,7 @@ proced is an top like utility that runs inside of emacs. The following sets auto
 </div>
 </div>
 <div id="outline-container-winner" class="outline-3">
-<h3 id="winner"><span class="section-number-3">6.36</span> winner</h3>
+<h3 id="winner"><span class="section-number-3">6.36</span> <a href="#winner">winner</a></h3>
 <div class="outline-text-3" id="text-6-36">
 <div class="org-src-container">
 <pre class="src src-emacs-lisp">(<span class="org-keyword">use-package</span> <span class="org-constant">winner</span>
@@ -6465,7 +6476,7 @@ proced is an top like utility that runs inside of emacs. The following sets auto
 </div>
 </div>
 <div id="outline-container-eyebrowse" class="outline-3">
-<h3 id="eyebrowse"><span class="section-number-3">6.37</span> eyebrowse</h3>
+<h3 id="eyebrowse"><span class="section-number-3">6.37</span> <a href="#eyebrowse">eyebrowse</a></h3>
 <div class="outline-text-3" id="text-6-37">
 <div class="org-src-container">
 <pre class="src src-emacs-lisp">(<span class="org-keyword">use-package</span> <span class="org-constant">eyebrowse</span>
@@ -6477,7 +6488,7 @@ proced is an top like utility that runs inside of emacs. The following sets auto
 </div>
 </div>
 <div id="outline-container-stream" class="outline-3">
-<h3 id="stream"><span class="section-number-3">6.38</span> stream</h3>
+<h3 id="stream"><span class="section-number-3">6.38</span> <a href="#stream">stream</a></h3>
 <div class="outline-text-3" id="text-6-38">
 <div class="org-src-container">
 <pre class="src src-emacs-lisp">(<span class="org-keyword">use-package</span> <span class="org-constant">stream</span>)
@@ -6486,7 +6497,7 @@ proced is an top like utility that runs inside of emacs. The following sets auto
 </div>
 </div>
 <div id="outline-container-tile" class="outline-3">
-<h3 id="tile"><span class="section-number-3">6.39</span> tile</h3>
+<h3 id="tile"><span class="section-number-3">6.39</span> <a href="#tile">tile</a></h3>
 <div class="outline-text-3" id="text-6-39">
 <div class="org-src-container">
 <pre class="src src-emacs-lisp">(imalison:use-package tile
@@ -6519,7 +6530,7 @@ proced is an top like utility that runs inside of emacs. The following sets auto
 </div>
 </div>
 <div id="outline-container-fillcolumnindicator" class="outline-3">
-<h3 id="fillcolumnindicator"><span class="section-number-3">6.40</span> fill-column-indicator</h3>
+<h3 id="fillcolumnindicator"><span class="section-number-3">6.40</span> <a href="#fillcolumnindicator">fill-column-indicator</a></h3>
 <div class="outline-text-3" id="text-6-40">
 <p>
 This interferes with too many other packages. See
@@ -6543,10 +6554,10 @@ This interferes with too many other packages. See
 </div>
 </div>
 <div id="outline-container-keybindings" class="outline-2">
-<h2 id="keybindings"><span class="section-number-2">7</span> Keybindings</h2>
+<h2 id="keybindings"><span class="section-number-2">7</span> <a href="#keybindings">Keybindings</a></h2>
 <div class="outline-text-2" id="text-7">
 </div><div id="outline-container-godmode" class="outline-3">
-<h3 id="godmode"><span class="section-number-3">7.1</span> god-mode</h3>
+<h3 id="godmode"><span class="section-number-3">7.1</span> <a href="#godmode">god-mode</a></h3>
 <div class="outline-text-3" id="text-7-1">
 <div class="org-src-container">
 <pre class="src src-emacs-lisp">(<span class="org-keyword">use-package</span> <span class="org-constant">god-mode</span>
@@ -6559,7 +6570,7 @@ This interferes with too many other packages. See
 </div>
 </div>
 <div id="outline-container-bindkey" class="outline-3">
-<h3 id="bindkey"><span class="section-number-3">7.2</span> bind-key</h3>
+<h3 id="bindkey"><span class="section-number-3">7.2</span> <a href="#bindkey">bind-key</a></h3>
 <div class="outline-text-3" id="text-7-2">
 <div class="org-src-container">
 <pre class="src src-emacs-lisp">(<span class="org-keyword">use-package</span> <span class="org-constant">bind-key</span>)
@@ -6568,7 +6579,7 @@ This interferes with too many other packages. See
 </div>
 </div>
 <div id="outline-container-whichkey" class="outline-3">
-<h3 id="whichkey"><span class="section-number-3">7.3</span> which-key</h3>
+<h3 id="whichkey"><span class="section-number-3">7.3</span> <a href="#whichkey">which-key</a></h3>
 <div class="outline-text-3" id="text-7-3">
 <div class="org-src-container">
 <pre class="src src-emacs-lisp">(<span class="org-keyword">use-package</span> <span class="org-constant">which-key</span>
@@ -6582,7 +6593,7 @@ This interferes with too many other packages. See
 </div>
 </div>
 <div id="outline-container-hydra" class="outline-3">
-<h3 id="hydra"><span class="section-number-3">7.4</span> hydra</h3>
+<h3 id="hydra"><span class="section-number-3">7.4</span> <a href="#hydra">hydra</a></h3>
 <div class="outline-text-3" id="text-7-4">
 <div class="org-src-container">
 <pre class="src src-emacs-lisp">(<span class="org-keyword">use-package</span> <span class="org-constant">hydra</span>
@@ -6596,7 +6607,7 @@ This interferes with too many other packages. See
 </div>
 </div>
 <div id="outline-container-fontsettings" class="outline-4">
-<h4 id="fontsettings"><span class="section-number-4">7.4.1</span> Font Settings</h4>
+<h4 id="fontsettings"><span class="section-number-4">7.4.1</span> <a href="#fontsettings">Font Settings</a></h4>
 <div class="outline-text-4" id="text-7-4-1">
 <p>
 <a id="orgtarget2"></a>
@@ -6620,7 +6631,7 @@ This interferes with too many other packages. See
 </div>
 </div>
 <div id="outline-container-copyyanking" class="outline-4">
-<h4 id="copyyanking"><span class="section-number-4">7.4.2</span> Copy/Yanking</h4>
+<h4 id="copyyanking"><span class="section-number-4">7.4.2</span> <a href="#copyyanking">Copy/Yanking</a></h4>
 <div class="outline-text-4" id="text-7-4-2">
 <div class="org-src-container">
 <pre class="src src-emacs-lisp">(defhydra imalison:hydra-yank
@@ -6637,7 +6648,7 @@ This interferes with too many other packages. See
 </div>
 </div>
 <div id="outline-container-compile" class="outline-4">
-<h4 id="compile"><span class="section-number-4">7.4.3</span> Compile</h4>
+<h4 id="compile"><span class="section-number-4">7.4.3</span> <a href="#compile">Compile</a></h4>
 <div class="outline-text-4" id="text-7-4-3">
 <div class="org-src-container">
 <pre class="src src-emacs-lisp">(<span class="org-keyword">defun</span> <span class="org-function-name">imalison:make-test</span> ()
@@ -6663,7 +6674,7 @@ This interferes with too many other packages. See
 </div>
 </div>
 <div id="outline-container-killemacs" class="outline-3">
-<h3 id="killemacs"><span class="section-number-3">7.5</span> kill-emacs</h3>
+<h3 id="killemacs"><span class="section-number-3">7.5</span> <a href="#killemacs">kill-emacs</a></h3>
 <div class="outline-text-3" id="text-7-5">
 <p>
 This ensures that C-x C-c will always kill emacs, even if we are running in server mode.
@@ -6675,7 +6686,7 @@ This ensures that C-x C-c will always kill emacs, even if we are running in serv
 </div>
 </div>
 <div id="outline-container-imenu" class="outline-3">
-<h3 id="imenu"><span class="section-number-3">7.6</span> imenu</h3>
+<h3 id="imenu"><span class="section-number-3">7.6</span> <a href="#imenu">imenu</a></h3>
 <div class="outline-text-3" id="text-7-6">
 <p>
 imenu is the best. This should be a default binding.
@@ -6687,7 +6698,7 @@ imenu is the best. This should be a default binding.
 </div>
 </div>
 <div id="outline-container-undo" class="outline-3">
-<h3 id="undo"><span class="section-number-3">7.7</span> undo</h3>
+<h3 id="undo"><span class="section-number-3">7.7</span> <a href="#undo">undo</a></h3>
 <div class="outline-text-3" id="text-7-7">
 <p>
 I can't shake the habit of using this keybinding for undo. I should really use the default of C-/.
@@ -6699,7 +6710,7 @@ I can't shake the habit of using this keybinding for undo. I should really use t
 </div>
 </div>
 <div id="outline-container-otherwindow" class="outline-3">
-<h3 id="otherwindow"><span class="section-number-3">7.8</span> other-window</h3>
+<h3 id="otherwindow"><span class="section-number-3">7.8</span> <a href="#otherwindow">other-window</a></h3>
 <div class="outline-text-3" id="text-7-8">
 <p>
 Go the other way when you use capital O.
@@ -6711,7 +6722,7 @@ Go the other way when you use capital O.
 </div>
 </div>
 <div id="outline-container-markring" class="outline-3">
-<h3 id="markring"><span class="section-number-3">7.9</span> Mark ring</h3>
+<h3 id="markring"><span class="section-number-3">7.9</span> <a href="#markring">Mark ring</a></h3>
 <div class="outline-text-3" id="text-7-9">
 <div class="org-src-container">
 <pre class="src src-emacs-lisp">(<span class="org-keyword">bind-key</span> <span class="org-string">"C-c SPC"</span> 'imalison:mark-ring)
@@ -6720,7 +6731,7 @@ Go the other way when you use capital O.
 </div>
 </div>
 <div id="outline-container-otherbindings" class="outline-3">
-<h3 id="otherbindings"><span class="section-number-3">7.10</span> Other bindings</h3>
+<h3 id="otherbindings"><span class="section-number-3">7.10</span> <a href="#otherbindings">Other bindings</a></h3>
 <div class="outline-text-3" id="text-7-10">
 <div class="org-src-container">
 <pre class="src src-emacs-lisp">(<span class="org-keyword">bind-key</span> <span class="org-string">"C-x p"</span> 'pop-to-mark-command)
@@ -6740,7 +6751,7 @@ Go the other way when you use capital O.
 </div>
 </div>
 <div id="outline-container-globalsetkeytousepackage" class="outline-3">
-<h3 id="globalsetkeytousepackage"><span class="section-number-3">7.11</span> global-set-key-to-use-package</h3>
+<h3 id="globalsetkeytousepackage"><span class="section-number-3">7.11</span> <a href="#globalsetkeytousepackage">global-set-key-to-use-package</a></h3>
 <div class="outline-text-3" id="text-7-11">
 <p>
 This might be useless, but I believe that it is a macro that converts between
@@ -6757,7 +6768,7 @@ bind-key and global-set-key forms.
 </div>
 </div>
 <div id="outline-container-osx" class="outline-3">
-<h3 id="osx"><span class="section-number-3">7.12</span> OSX</h3>
+<h3 id="osx"><span class="section-number-3">7.12</span> <a href="#osx">OSX</a></h3>
 <div class="outline-text-3" id="text-7-12">
 <div class="org-src-container">
 <pre class="src src-emacs-lisp">(<span class="org-keyword">when</span> (equal system-type 'darwin)
@@ -6769,10 +6780,10 @@ bind-key and global-set-key forms.
 </div>
 </div>
 <div id="outline-container-navigation" class="outline-2">
-<h2 id="navigation"><span class="section-number-2">8</span> Navigation</h2>
+<h2 id="navigation"><span class="section-number-2">8</span> <a href="#navigation">Navigation</a></h2>
 <div class="outline-text-2" id="text-8">
 </div><div id="outline-container-zoptochar" class="outline-3">
-<h3 id="zoptochar"><span class="section-number-3">8.1</span> zop-to-char</h3>
+<h3 id="zoptochar"><span class="section-number-3">8.1</span> <a href="#zoptochar">zop-to-char</a></h3>
 <div class="outline-text-3" id="text-8-1">
 <div class="org-src-container">
 <pre class="src src-emacs-lisp">(<span class="org-keyword">use-package</span> <span class="org-constant">zop-to-char</span>
@@ -6786,7 +6797,7 @@ bind-key and global-set-key forms.
 </div>
 </div>
 <div id="outline-container-helm" class="outline-3">
-<h3 id="helm"><span class="section-number-3">8.2</span> helm</h3>
+<h3 id="helm"><span class="section-number-3">8.2</span> <a href="#helm">helm</a></h3>
 <div class="outline-text-3" id="text-8-2">
 <p>
 I use helm for almost all emacs completion
@@ -6841,7 +6852,7 @@ I use helm for almost all emacs completion
 </div>
 </div>
 <div id="outline-container-helmprojectile" class="outline-3">
-<h3 id="helmprojectile"><span class="section-number-3">8.3</span> helm-projectile</h3>
+<h3 id="helmprojectile"><span class="section-number-3">8.3</span> <a href="#helmprojectile">helm-projectile</a></h3>
 <div class="outline-text-3" id="text-8-3">
 <div class="org-src-container">
 <pre class="src src-emacs-lisp">(<span class="org-keyword">use-package</span> <span class="org-constant">helm-projectile</span>
@@ -6886,7 +6897,7 @@ I use helm for almost all emacs completion
 </div>
 </div>
 <div id="outline-container-projectile" class="outline-3">
-<h3 id="projectile"><span class="section-number-3">8.4</span> projectile</h3>
+<h3 id="projectile"><span class="section-number-3">8.4</span> <a href="#projectile">projectile</a></h3>
 <div class="outline-text-3" id="text-8-4">
 <div class="org-src-container">
 <pre class="src src-emacs-lisp">(<span class="org-keyword">use-package</span> <span class="org-constant">projectile</span>
@@ -6939,7 +6950,7 @@ I use helm for almost all emacs completion
 </div>
 </div>
 <div id="outline-container-ido" class="outline-3">
-<h3 id="ido"><span class="section-number-3">8.5</span> ido</h3>
+<h3 id="ido"><span class="section-number-3">8.5</span> <a href="#ido">ido</a></h3>
 <div class="outline-text-3" id="text-8-5">
 <div class="org-src-container">
 <pre class="src src-emacs-lisp">(<span class="org-keyword">use-package</span> <span class="org-constant">ido</span>
@@ -6978,7 +6989,7 @@ I use helm for almost all emacs completion
 </div>
 </div>
 <div id="outline-container-avy" class="outline-3">
-<h3 id="avy"><span class="section-number-3">8.6</span> avy</h3>
+<h3 id="avy"><span class="section-number-3">8.6</span> <a href="#avy">avy</a></h3>
 <div class="outline-text-3" id="text-8-6">
 <div class="org-src-container">
 <pre class="src src-emacs-lisp">(<span class="org-keyword">use-package</span> <span class="org-constant">avy</span>
@@ -6995,7 +7006,7 @@ I use helm for almost all emacs completion
 </div>
 </div>
 <div id="outline-container-acewindow" class="outline-3">
-<h3 id="acewindow"><span class="section-number-3">8.7</span> ace-window</h3>
+<h3 id="acewindow"><span class="section-number-3">8.7</span> <a href="#acewindow">ace-window</a></h3>
 <div class="outline-text-3" id="text-8-7">
 <div class="org-src-container">
 <pre class="src src-emacs-lisp">(<span class="org-keyword">use-package</span> <span class="org-constant">ace-window</span>
@@ -7010,7 +7021,7 @@ I use helm for almost all emacs completion
 </div>
 </div>
 <div id="outline-container-neotree" class="outline-3">
-<h3 id="neotree"><span class="section-number-3">8.8</span> neotree</h3>
+<h3 id="neotree"><span class="section-number-3">8.8</span> <a href="#neotree">neotree</a></h3>
 <div class="outline-text-3" id="text-8-8">
 <div class="org-src-container">
 <pre class="src src-emacs-lisp">(<span class="org-keyword">use-package</span> <span class="org-constant">neotree</span>)
@@ -7019,7 +7030,7 @@ I use helm for almost all emacs completion
 </div>
 </div>
 <div id="outline-container-jumpchar" class="outline-3">
-<h3 id="jumpchar"><span class="section-number-3">8.9</span> jump-char</h3>
+<h3 id="jumpchar"><span class="section-number-3">8.9</span> <a href="#jumpchar">jump-char</a></h3>
 <div class="outline-text-3" id="text-8-9">
 <div class="org-src-container">
 <pre class="src src-emacs-lisp">(<span class="org-keyword">use-package</span> <span class="org-constant">jump-char</span>
@@ -7029,7 +7040,7 @@ I use helm for almost all emacs completion
 </div>
 </div>
 <div id="outline-container-flimenu" class="outline-3">
-<h3 id="flimenu"><span class="section-number-3">8.10</span> flimenu</h3>
+<h3 id="flimenu"><span class="section-number-3">8.10</span> <a href="#flimenu">flimenu</a></h3>
 <div class="outline-text-3" id="text-8-10">
 <div class="org-src-container">
 <pre class="src src-emacs-lisp">(imalison:use-package flimenu
@@ -7041,7 +7052,7 @@ I use helm for almost all emacs completion
 </div>
 </div>
 <div id="outline-container-swiper" class="outline-3">
-<h3 id="swiper"><span class="section-number-3">8.11</span> swiper</h3>
+<h3 id="swiper"><span class="section-number-3">8.11</span> <a href="#swiper">swiper</a></h3>
 <div class="outline-text-3" id="text-8-11">
 <div class="org-src-container">
 <pre class="src src-emacs-lisp">(<span class="org-keyword">use-package</span> <span class="org-constant">swiper</span>
@@ -7053,10 +7064,10 @@ I use helm for almost all emacs completion
 </div>
 </div>
 <div id="outline-container-completion" class="outline-2">
-<h2 id="completion"><span class="section-number-2">9</span> Completion</h2>
+<h2 id="completion"><span class="section-number-2">9</span> <a href="#completion">Completion</a></h2>
 <div class="outline-text-2" id="text-9">
 </div><div id="outline-container-company" class="outline-3">
-<h3 id="company"><span class="section-number-3">9.1</span> company</h3>
+<h3 id="company"><span class="section-number-3">9.1</span> <a href="#company">company</a></h3>
 <div class="outline-text-3" id="text-9-1">
 <div class="org-src-container">
 <pre class="src src-emacs-lisp">(<span class="org-keyword">use-package</span> <span class="org-constant">company</span>
@@ -7077,7 +7088,7 @@ I use helm for almost all emacs completion
 </div>
 </div>
 <div id="outline-container-companyflx" class="outline-4">
-<h4 id="companyflx"><span class="section-number-4">9.1.1</span> company-flx</h4>
+<h4 id="companyflx"><span class="section-number-4">9.1.1</span> <a href="#companyflx">company-flx</a></h4>
 <div class="outline-text-4" id="text-9-1-1">
 <div class="org-src-container">
 <pre class="src src-emacs-lisp">(<span class="org-keyword">use-package</span> <span class="org-constant">company-flx</span>
@@ -7091,7 +7102,7 @@ I use helm for almost all emacs completion
 </div>
 </div>
 <div id="outline-container-autocomplete" class="outline-3">
-<h3 id="autocomplete"><span class="section-number-3">9.2</span> auto-complete</h3>
+<h3 id="autocomplete"><span class="section-number-3">9.2</span> <a href="#autocomplete">auto-complete</a></h3>
 <div class="outline-text-3" id="text-9-2">
 <p>
 I don't use auto-complete at all, so I have set up a hook to automatically disable it whenever it is enabled to avoid creating conflicting popups when company is activated.
@@ -7114,10 +7125,10 @@ I don't use auto-complete at all, so I have set up a hook to automatically disab
 </div>
 </div>
 <div id="outline-container-textmanipulation" class="outline-2">
-<h2 id="textmanipulation"><span class="section-number-2">10</span> Text Manipulation</h2>
+<h2 id="textmanipulation"><span class="section-number-2">10</span> <a href="#textmanipulation">Text Manipulation</a></h2>
 <div class="outline-text-2" id="text-10">
 </div><div id="outline-container-smartparens" class="outline-3">
-<h3 id="smartparens"><span class="section-number-3">10.1</span> smartparens</h3>
+<h3 id="smartparens"><span class="section-number-3">10.1</span> <a href="#smartparens">smartparens</a></h3>
 <div class="outline-text-3" id="text-10-1">
 <div class="org-src-container">
 <pre class="src src-emacs-lisp">(<span class="org-keyword">use-package</span> <span class="org-constant">smartparens</span>
@@ -7143,7 +7154,7 @@ I don't use auto-complete at all, so I have set up a hook to automatically disab
 </div>
 </div>
 <div id="outline-container-multiplecursors" class="outline-3">
-<h3 id="multiplecursors"><span class="section-number-3">10.2</span> multiple-cursors</h3>
+<h3 id="multiplecursors"><span class="section-number-3">10.2</span> <a href="#multiplecursors">multiple-cursors</a></h3>
 <div class="outline-text-3" id="text-10-2">
 <div class="org-src-container">
 <pre class="src src-emacs-lisp">(<span class="org-keyword">use-package</span> <span class="org-constant">multiple-cursors</span>
@@ -7170,7 +7181,7 @@ I don't use auto-complete at all, so I have set up a hook to automatically disab
 </div>
 </div>
 <div id="outline-container-expandregion" class="outline-3">
-<h3 id="expandregion"><span class="section-number-3">10.3</span> expand-region</h3>
+<h3 id="expandregion"><span class="section-number-3">10.3</span> <a href="#expandregion">expand-region</a></h3>
 <div class="outline-text-3" id="text-10-3">
 <div class="org-src-container">
 <pre class="src src-emacs-lisp">(<span class="org-keyword">use-package</span> <span class="org-constant">expand-region</span>
@@ -7182,7 +7193,7 @@ I don't use auto-complete at all, so I have set up a hook to automatically disab
 </div>
 </div>
 <div id="outline-container-multiline" class="outline-3">
-<h3 id="multiline"><span class="section-number-3">10.4</span> multi-line</h3>
+<h3 id="multiline"><span class="section-number-3">10.4</span> <a href="#multiline">multi-line</a></h3>
 <div class="outline-text-3" id="text-10-4">
 <div class="org-src-container">
 <pre class="src src-emacs-lisp">(imalison:use-package multi-line
@@ -7204,7 +7215,7 @@ I don't use auto-complete at all, so I have set up a hook to automatically disab
 </div>
 </div>
 <div id="outline-container-commentdwim" class="outline-3">
-<h3 id="commentdwim"><span class="section-number-3">10.5</span> comment-dwim-2</h3>
+<h3 id="commentdwim"><span class="section-number-3">10.5</span> <a href="#commentdwim">comment-dwim-2</a></h3>
 <div class="outline-text-3" id="text-10-5">
 <div class="org-src-container">
 <pre class="src src-emacs-lisp">(<span class="org-keyword">use-package</span> <span class="org-constant">comment-dwim-2</span>
@@ -7214,7 +7225,7 @@ I don't use auto-complete at all, so I have set up a hook to automatically disab
 </div>
 </div>
 <div id="outline-container-unfill" class="outline-3">
-<h3 id="unfill"><span class="section-number-3">10.6</span> unfill</h3>
+<h3 id="unfill"><span class="section-number-3">10.6</span> <a href="#unfill">unfill</a></h3>
 <div class="outline-text-3" id="text-10-6">
 <div class="org-src-container">
 <pre class="src src-emacs-lisp">(<span class="org-keyword">use-package</span> <span class="org-constant">unfill</span>
@@ -7224,7 +7235,7 @@ I don't use auto-complete at all, so I have set up a hook to automatically disab
 </div>
 </div>
 <div id="outline-container-cliphist" class="outline-3">
-<h3 id="cliphist"><span class="section-number-3">10.7</span> cliphist</h3>
+<h3 id="cliphist"><span class="section-number-3">10.7</span> <a href="#cliphist">cliphist</a></h3>
 <div class="outline-text-3" id="text-10-7">
 <div class="org-src-container">
 <pre class="src src-emacs-lisp">(<span class="org-keyword">use-package</span> <span class="org-constant">cliphist</span>
@@ -7234,7 +7245,7 @@ I don't use auto-complete at all, so I have set up a hook to automatically disab
 </div>
 </div>
 <div id="outline-container-electricoperatormode" class="outline-3">
-<h3 id="electricoperatormode"><span class="section-number-3">10.8</span> electric-operator-mode</h3>
+<h3 id="electricoperatormode"><span class="section-number-3">10.8</span> <a href="#electricoperatormode">electric-operator-mode</a></h3>
 <div class="outline-text-3" id="text-10-8">
 <div class="org-src-container">
 <pre class="src src-emacs-lisp">(<span class="org-keyword">use-package</span> <span class="org-constant">electric-operator</span>
@@ -7245,7 +7256,7 @@ I don't use auto-complete at all, so I have set up a hook to automatically disab
 </div>
 </div>
 <div id="outline-container-stringinflection" class="outline-3">
-<h3 id="stringinflection"><span class="section-number-3">10.9</span> string-inflection</h3>
+<h3 id="stringinflection"><span class="section-number-3">10.9</span> <a href="#stringinflection">string-inflection</a></h3>
 <div class="outline-text-3" id="text-10-9">
 <div class="org-src-container">
 <pre class="src src-emacs-lisp">(<span class="org-keyword">use-package</span> <span class="org-constant">string-inflection</span>
@@ -7257,7 +7268,7 @@ I don't use auto-complete at all, so I have set up a hook to automatically disab
 </div>
 
 <div id="outline-container-yasnippet" class="outline-3">
-<h3 id="yasnippet"><span class="section-number-3">10.10</span> yasnippet</h3>
+<h3 id="yasnippet"><span class="section-number-3">10.10</span> <a href="#yasnippet">yasnippet</a></h3>
 <div class="outline-text-3" id="text-10-10">
 <div class="org-src-container">
 <pre class="src src-emacs-lisp">(<span class="org-keyword">use-package</span> <span class="org-constant">yasnippet</span>
@@ -7277,7 +7288,7 @@ I don't use auto-complete at all, so I have set up a hook to automatically disab
 </div>
 </div>
 <div id="outline-container-flycheck" class="outline-2">
-<h2 id="flycheck"><span class="section-number-2">11</span> flycheck</h2>
+<h2 id="flycheck"><span class="section-number-2">11</span> <a href="#flycheck">flycheck</a></h2>
 <div class="outline-text-2" id="text-11">
 <div class="org-src-container">
 <pre class="src src-emacs-lisp">(<span class="org-keyword">use-package</span> <span class="org-constant">flycheck</span>
@@ -7300,17 +7311,17 @@ I don't use auto-complete at all, so I have set up a hook to automatically disab
 </div>
 </div>
 <div id="outline-container-majormodes" class="outline-2">
-<h2 id="majormodes"><span class="section-number-2">12</span> Major Modes</h2>
+<h2 id="majormodes"><span class="section-number-2">12</span> <a href="#majormodes">Major Modes</a></h2>
 <div class="outline-text-2" id="text-12">
 </div><div id="outline-container-programming" class="outline-3">
-<h3 id="programming"><span class="section-number-3">12.1</span> Programming</h3>
+<h3 id="programming"><span class="section-number-3">12.1</span> <a href="#programming">Programming</a></h3>
 <div class="outline-text-3" id="text-12-1">
 <p>
 <a id="orgtarget7"></a>
 </p>
 </div>
 <div id="outline-container-python" class="outline-4">
-<h4 id="python"><span class="section-number-4">12.1.1</span> python</h4>
+<h4 id="python"><span class="section-number-4">12.1.1</span> <a href="#python">python</a></h4>
 <div class="outline-text-4" id="text-12-1-1">
 <div class="org-src-container">
 <pre class="src src-emacs-lisp">(<span class="org-keyword">use-package</span> <span class="org-constant">python</span>
@@ -7346,7 +7357,7 @@ I don't use auto-complete at all, so I have set up a hook to automatically disab
 </div>
 </div>
 <div id="outline-container-pyimport" class="outline-5">
-<h5 id="pyimport"><span class="section-number-5">12.1.1.1</span> pyimport</h5>
+<h5 id="pyimport"><span class="section-number-5">12.1.1.1</span> <a href="#pyimport">pyimport</a></h5>
 <div class="outline-text-5" id="text-12-1-1-1">
 <p>
 Pyimport is disabled because it may be causing a performance problem.
@@ -7362,7 +7373,7 @@ Pyimport is disabled because it may be causing a performance problem.
 </div>
 </div>
 <div id="outline-container-jedi" class="outline-5">
-<h5 id="jedi"><span class="section-number-5">12.1.1.2</span> jedi</h5>
+<h5 id="jedi"><span class="section-number-5">12.1.1.2</span> <a href="#jedi">jedi</a></h5>
 <div class="outline-text-5" id="text-12-1-1-2">
 <p>
 The accepted way to use jedi if you prefer company to auto-complete is
@@ -7386,7 +7397,7 @@ reference to the jedi-core package.
 </div>
 </div>
 <div id="outline-container-go" class="outline-4">
-<h4 id="go"><span class="section-number-4">12.1.2</span> go</h4>
+<h4 id="go"><span class="section-number-4">12.1.2</span> <a href="#go">go</a></h4>
 <div class="outline-text-4" id="text-12-1-2">
 <div class="org-src-container">
 <pre class="src src-emacs-lisp">(<span class="org-keyword">use-package</span> <span class="org-constant">go-mode</span>
@@ -7510,7 +7521,7 @@ reference to the jedi-core package.
 </div>
 </div>
 <div id="outline-container-showdiffsoftestifyoutput" class="outline-5">
-<h5 id="showdiffsoftestifyoutput"><span class="section-number-5">12.1.2.1</span> Show diffs of testify output</h5>
+<h5 id="showdiffsoftestifyoutput"><span class="section-number-5">12.1.2.1</span> <a href="#showdiffsoftestifyoutput">Show diffs of testify output</a></h5>
 <div class="outline-text-5" id="text-12-1-2-1">
 <div class="org-src-container">
 <pre class="src src-emacs-lisp">(<span class="org-keyword">defvar</span> <span class="org-variable-name">imalison:testify-ediff-buffers</span> nil)
@@ -7552,10 +7563,10 @@ reference to the jedi-core package.
 </div>
 </div>
 <div id="outline-container-emacslisp" class="outline-4">
-<h4 id="emacslisp"><span class="section-number-4">12.1.3</span> emacs-lisp</h4>
+<h4 id="emacslisp"><span class="section-number-4">12.1.3</span> <a href="#emacslisp">emacs-lisp</a></h4>
 <div class="outline-text-4" id="text-12-1-3">
 </div><div id="outline-container-elispslimenav" class="outline-5">
-<h5 id="elispslimenav"><span class="section-number-5">12.1.3.1</span> elisp-slime-nav</h5>
+<h5 id="elispslimenav"><span class="section-number-5">12.1.3.1</span> <a href="#elispslimenav">elisp-slime-nav</a></h5>
 <div class="outline-text-5" id="text-12-1-3-1">
 <div class="org-src-container">
 <pre class="src src-emacs-lisp">(<span class="org-keyword">use-package</span> <span class="org-constant">elisp-slime-nav</span>
@@ -7573,7 +7584,7 @@ reference to the jedi-core package.
 </div>
 </div>
 <div id="outline-container-macrostep" class="outline-5">
-<h5 id="macrostep"><span class="section-number-5">12.1.3.2</span> macrostep</h5>
+<h5 id="macrostep"><span class="section-number-5">12.1.3.2</span> <a href="#macrostep">macrostep</a></h5>
 <div class="outline-text-5" id="text-12-1-3-2">
 <p>
 Macrostep is an indespensible tool for writing emacs lisp macros. It lets you see pretty printed versions of the result of macro evaluation as the macro is evaluated
@@ -7587,7 +7598,7 @@ Macrostep is an indespensible tool for writing emacs lisp macros. It lets you se
 </div>
 </div>
 <div id="outline-container-emr" class="outline-5">
-<h5 id="emr"><span class="section-number-5">12.1.3.3</span> emr</h5>
+<h5 id="emr"><span class="section-number-5">12.1.3.3</span> <a href="#emr">emr</a></h5>
 <div class="outline-text-5" id="text-12-1-3-3">
 <div class="org-src-container">
 <pre class="src src-emacs-lisp">(<span class="org-keyword">use-package</span> <span class="org-constant">emr</span>
@@ -7600,7 +7611,7 @@ Macrostep is an indespensible tool for writing emacs lisp macros. It lets you se
 </div>
 </div>
 <div id="outline-container-editingconfiguration" class="outline-5">
-<h5 id="editingconfiguration"><span class="section-number-5">12.1.3.4</span> Editing configuration</h5>
+<h5 id="editingconfiguration"><span class="section-number-5">12.1.3.4</span> <a href="#editingconfiguration">Editing configuration</a></h5>
 <div class="outline-text-5" id="text-12-1-3-4">
 <p>
 Reduce indentation for some functions
@@ -7612,7 +7623,7 @@ Reduce indentation for some functions
 </div>
 </div>
 <div id="outline-container-checkdoc" class="outline-5">
-<h5 id="checkdoc"><span class="section-number-5">12.1.3.5</span> Checkdoc</h5>
+<h5 id="checkdoc"><span class="section-number-5">12.1.3.5</span> <a href="#checkdoc">Checkdoc</a></h5>
 <div class="outline-text-5" id="text-12-1-3-5">
 <div class="org-src-container">
 <pre class="src src-emacs-lisp">(<span class="org-keyword">setq</span> checkdoc-force-docstrings-flag nil
@@ -7622,7 +7633,7 @@ Reduce indentation for some functions
 </div>
 </div>
 <div id="outline-container-edebug" class="outline-5">
-<h5 id="edebug"><span class="section-number-5">12.1.3.6</span> edebug</h5>
+<h5 id="edebug"><span class="section-number-5">12.1.3.6</span> <a href="#edebug">edebug</a></h5>
 <div class="outline-text-5" id="text-12-1-3-6">
 <div class="org-src-container">
 <pre class="src src-emacs-lisp">(<span class="org-keyword">use-package</span> <span class="org-constant">edebug</span>
@@ -7633,7 +7644,7 @@ Reduce indentation for some functions
 </div>
 </div>
 <div id="outline-container-overseer" class="outline-5">
-<h5 id="overseer"><span class="section-number-5">12.1.3.7</span> overseer</h5>
+<h5 id="overseer"><span class="section-number-5">12.1.3.7</span> <a href="#overseer">overseer</a></h5>
 <div class="outline-text-5" id="text-12-1-3-7">
 <div class="org-src-container">
 <pre class="src src-emacs-lisp">(<span class="org-keyword">use-package</span> <span class="org-constant">overseer</span>)
@@ -7642,7 +7653,7 @@ Reduce indentation for some functions
 </div>
 </div>
 <div id="outline-container-misc1" class="outline-5">
-<h5 id="misc1"><span class="section-number-5">12.1.3.8</span> Misc</h5>
+<h5 id="misc1"><span class="section-number-5">12.1.3.8</span> <a href="#misc1">Misc</a></h5>
 <div class="outline-text-5" id="text-12-1-3-8">
 <div class="org-src-container">
 <pre class="src src-emacs-lisp">(<span class="org-keyword">defun</span> <span class="org-function-name">imenu-elisp-sections</span> ()
@@ -7670,7 +7681,7 @@ Reduce indentation for some functions
 </div>
 </div>
 <div id="outline-container-eros" class="outline-5">
-<h5 id="eros"><span class="section-number-5">12.1.3.9</span> eros</h5>
+<h5 id="eros"><span class="section-number-5">12.1.3.9</span> <a href="#eros">eros</a></h5>
 <div class="outline-text-5" id="text-12-1-3-9">
 <div class="org-src-container">
 <pre class="src src-emacs-lisp">(<span class="org-keyword">use-package</span> <span class="org-constant">eros</span>
@@ -7683,7 +7694,7 @@ Reduce indentation for some functions
 </div>
 </div>
 <div id="outline-container-reevalutedefvarswhenrunningevallastsexp" class="outline-5">
-<h5 id="reevalutedefvarswhenrunningevallastsexp"><span class="section-number-5">12.1.3.10</span> Reevalute defvars when running eval-last-sexp</h5>
+<h5 id="reevalutedefvarswhenrunningevallastsexp"><span class="section-number-5">12.1.3.10</span> <a href="#reevalutedefvarswhenrunningevallastsexp">Reevalute defvars when running eval-last-sexp</a></h5>
 <div class="outline-text-5" id="text-12-1-3-10">
 <p>
 We noflet elisp&#x2013;preceding-sexp to munge defvars into sexps only for
@@ -7704,7 +7715,7 @@ eval-last-sexp.
 </div>
 </div>
 <div id="outline-container-inithook" class="outline-5">
-<h5 id="inithook"><span class="section-number-5">12.1.3.11</span> Init hook</h5>
+<h5 id="inithook"><span class="section-number-5">12.1.3.11</span> <a href="#inithook">Init hook</a></h5>
 <div class="outline-text-5" id="text-12-1-3-11">
 <div class="org-src-container">
 <pre class="src src-emacs-lisp">(<span class="org-keyword">defvar</span> <span class="org-variable-name">imalison:check-parens</span> nil)
@@ -7723,7 +7734,7 @@ eval-last-sexp.
 </div>
 </div>
 <div id="outline-container-keybinds" class="outline-5">
-<h5 id="keybinds"><span class="section-number-5">12.1.3.12</span> Keybinds</h5>
+<h5 id="keybinds"><span class="section-number-5">12.1.3.12</span> <a href="#keybinds">Keybinds</a></h5>
 <div class="outline-text-5" id="text-12-1-3-12">
 <div class="org-src-container">
 <pre class="src src-emacs-lisp">(emit-compose imalison:copy-eval-last-sexp
@@ -7744,7 +7755,7 @@ eval-last-sexp.
 </div>
 </div>
 <div id="outline-container-clojure" class="outline-4">
-<h4 id="clojure"><span class="section-number-4">12.1.4</span> clojure</h4>
+<h4 id="clojure"><span class="section-number-4">12.1.4</span> <a href="#clojure">clojure</a></h4>
 <div class="outline-text-4" id="text-12-1-4">
 <p>
 The following is taken from <a href="https://github.com/syl20bnr/spacemacs/blob/a650877bea582fed72bbca0dc1f80fcb2ec0e6d5/layers/+lang/clojure/funcs.el#L30">spacemacs</a>. It adds fancification to a clojure mode.
@@ -7798,7 +7809,7 @@ The following is taken from <a href="https://github.com/syl20bnr/spacemacs/blob/
 </div>
 </div>
 <div id="outline-container-cider" class="outline-5">
-<h5 id="cider"><span class="section-number-5">12.1.4.1</span> cider</h5>
+<h5 id="cider"><span class="section-number-5">12.1.4.1</span> <a href="#cider">cider</a></h5>
 <div class="outline-text-5" id="text-12-1-4-1">
 <div class="org-src-container">
 <pre class="src src-emacs-lisp">(<span class="org-keyword">use-package</span> <span class="org-constant">cider</span>
@@ -7817,7 +7828,7 @@ The following is taken from <a href="https://github.com/syl20bnr/spacemacs/blob/
 </div>
 </div>
 <div id="outline-container-cljrefactor" class="outline-5">
-<h5 id="cljrefactor"><span class="section-number-5">12.1.4.2</span> clj-refactor</h5>
+<h5 id="cljrefactor"><span class="section-number-5">12.1.4.2</span> <a href="#cljrefactor">clj-refactor</a></h5>
 <div class="outline-text-5" id="text-12-1-4-2">
 <div class="org-src-container">
 <pre class="src src-emacs-lisp">(<span class="org-keyword">use-package</span> <span class="org-constant">clj-refactor</span>
@@ -7828,7 +7839,7 @@ The following is taken from <a href="https://github.com/syl20bnr/spacemacs/blob/
 </div>
 </div>
 <div id="outline-container-scala" class="outline-4">
-<h4 id="scala"><span class="section-number-4">12.1.5</span> scala</h4>
+<h4 id="scala"><span class="section-number-4">12.1.5</span> <a href="#scala">scala</a></h4>
 <div class="outline-text-4" id="text-12-1-5">
 <div class="org-src-container">
 <pre class="src src-emacs-lisp">(<span class="org-keyword">use-package</span> <span class="org-constant">scala-mode</span>
@@ -7852,7 +7863,7 @@ The following is taken from <a href="https://github.com/syl20bnr/spacemacs/blob/
 </div>
 </div>
 <div id="outline-container-js" class="outline-4">
-<h4 id="js"><span class="section-number-4">12.1.6</span> js</h4>
+<h4 id="js"><span class="section-number-4">12.1.6</span> <a href="#js">js</a></h4>
 <div class="outline-text-4" id="text-12-1-6">
 <div class="org-src-container">
 <pre class="src src-emacs-lisp">(<span class="org-keyword">defun</span> <span class="org-function-name">tape-onlyify</span> ()
@@ -7930,7 +7941,7 @@ The following is taken from <a href="https://github.com/syl20bnr/spacemacs/blob/
 </div>
 </div>
 <div id="outline-container-rust" class="outline-4">
-<h4 id="rust"><span class="section-number-4">12.1.7</span> rust</h4>
+<h4 id="rust"><span class="section-number-4">12.1.7</span> <a href="#rust">rust</a></h4>
 <div class="outline-text-4" id="text-12-1-7">
 <div class="org-src-container">
 <pre class="src src-emacs-lisp">(<span class="org-keyword">use-package</span> <span class="org-constant">rust-mode</span>
@@ -7963,7 +7974,7 @@ The following is taken from <a href="https://github.com/syl20bnr/spacemacs/blob/
 </div>
 </div>
 <div id="outline-container-haskell" class="outline-4">
-<h4 id="haskell"><span class="section-number-4">12.1.8</span> haskell</h4>
+<h4 id="haskell"><span class="section-number-4">12.1.8</span> <a href="#haskell">haskell</a></h4>
 <div class="outline-text-4" id="text-12-1-8">
 <div class="org-src-container">
 <pre class="src src-emacs-lisp">(<span class="org-keyword">use-package</span> <span class="org-constant">haskell-mode</span>
@@ -7994,7 +8005,7 @@ The following is taken from <a href="https://github.com/syl20bnr/spacemacs/blob/
 </div>
 </div>
 <div id="outline-container-intero" class="outline-5">
-<h5 id="intero"><span class="section-number-5">12.1.8.1</span> intero</h5>
+<h5 id="intero"><span class="section-number-5">12.1.8.1</span> <a href="#intero">intero</a></h5>
 <div class="outline-text-5" id="text-12-1-8-1">
 <p>
 Intero seems to be causing hangs, so it has been disabled
@@ -8009,7 +8020,7 @@ Intero seems to be causing hangs, so it has been disabled
 </div>
 </div>
 <div id="outline-container-hindent" class="outline-5">
-<h5 id="hindent"><span class="section-number-5">12.1.8.2</span> hindent</h5>
+<h5 id="hindent"><span class="section-number-5">12.1.8.2</span> <a href="#hindent">hindent</a></h5>
 <div class="outline-text-5" id="text-12-1-8-2">
 <div class="org-src-container">
 <pre class="src src-emacs-lisp">(<span class="org-keyword">use-package</span> <span class="org-constant">hindent</span>
@@ -8025,7 +8036,7 @@ Intero seems to be causing hangs, so it has been disabled
 </div>
 </div>
 <div id="outline-container-ghcmod" class="outline-5">
-<h5 id="ghcmod"><span class="section-number-5">12.1.8.3</span> ghc-mod</h5>
+<h5 id="ghcmod"><span class="section-number-5">12.1.8.3</span> <a href="#ghcmod">ghc-mod</a></h5>
 <div class="outline-text-5" id="text-12-1-8-3">
 <div class="org-src-container">
 <pre class="src src-emacs-lisp">(<span class="org-keyword">use-package</span> <span class="org-constant">ghc</span>
@@ -8040,7 +8051,7 @@ Intero seems to be causing hangs, so it has been disabled
 </div>
 </div>
 <div id="outline-container-companyghc" class="outline-5">
-<h5 id="companyghc"><span class="section-number-5">12.1.8.4</span> company-ghc</h5>
+<h5 id="companyghc"><span class="section-number-5">12.1.8.4</span> <a href="#companyghc">company-ghc</a></h5>
 <div class="outline-text-5" id="text-12-1-8-4">
 <div class="org-src-container">
 <pre class="src src-emacs-lisp">(<span class="org-keyword">use-package</span> <span class="org-constant">company-ghc</span>
@@ -8054,7 +8065,7 @@ Intero seems to be causing hangs, so it has been disabled
 </div>
 </div>
 <div id="outline-container-cc" class="outline-4">
-<h4 id="cc"><span class="section-number-4">12.1.9</span> C/C++</h4>
+<h4 id="cc"><span class="section-number-4">12.1.9</span> <a href="#cc">C/C++</a></h4>
 <div class="outline-text-4" id="text-12-1-9">
 <div class="org-src-container">
 <pre class="src src-emacs-lisp">(<span class="org-keyword">use-package</span> <span class="org-constant">cc-mode</span>
@@ -8081,7 +8092,7 @@ Intero seems to be causing hangs, so it has been disabled
 </div>
 </div>
 <div id="outline-container-c" class="outline-4">
-<h4 id="c"><span class="section-number-4">12.1.10</span> C#</h4>
+<h4 id="c"><span class="section-number-4">12.1.10</span> <a href="#c">C#</a></h4>
 <div class="outline-text-4" id="text-12-1-10">
 <div class="org-src-container">
 <pre class="src src-emacs-lisp">(<span class="org-keyword">use-package</span> <span class="org-constant">csharp-mode</span>
@@ -8091,7 +8102,7 @@ Intero seems to be causing hangs, so it has been disabled
 </div>
 </div>
 <div id="outline-container-racket" class="outline-4">
-<h4 id="racket"><span class="section-number-4">12.1.11</span> racket</h4>
+<h4 id="racket"><span class="section-number-4">12.1.11</span> <a href="#racket">racket</a></h4>
 <div class="outline-text-4" id="text-12-1-11">
 <div class="org-src-container">
 <pre class="src src-emacs-lisp">(<span class="org-keyword">use-package</span> <span class="org-constant">racket-mode</span>
@@ -8102,10 +8113,10 @@ Intero seems to be causing hangs, so it has been disabled
 </div>
 </div>
 <div id="outline-container-dataconfigprotocol" class="outline-3">
-<h3 id="dataconfigprotocol"><span class="section-number-3">12.2</span> Data/Config/Protocol</h3>
+<h3 id="dataconfigprotocol"><span class="section-number-3">12.2</span> <a href="#dataconfigprotocol">Data/Config/Protocol</a></h3>
 <div class="outline-text-3" id="text-12-2">
 </div><div id="outline-container-thrift" class="outline-4">
-<h4 id="thrift"><span class="section-number-4">12.2.1</span> thrift</h4>
+<h4 id="thrift"><span class="section-number-4">12.2.1</span> <a href="#thrift">thrift</a></h4>
 <div class="outline-text-4" id="text-12-2-1">
 <div class="org-src-container">
 <pre class="src src-emacs-lisp">(<span class="org-keyword">use-package</span> <span class="org-constant">thrift</span>
@@ -8116,7 +8127,7 @@ Intero seems to be causing hangs, so it has been disabled
 </div>
 </div>
 <div id="outline-container-protobuf" class="outline-4">
-<h4 id="protobuf"><span class="section-number-4">12.2.2</span> protobuf</h4>
+<h4 id="protobuf"><span class="section-number-4">12.2.2</span> <a href="#protobuf">protobuf</a></h4>
 <div class="outline-text-4" id="text-12-2-2">
 <div class="org-src-container">
 <pre class="src src-emacs-lisp">(<span class="org-keyword">use-package</span> <span class="org-constant">protobuf-mode</span>)
@@ -8125,7 +8136,7 @@ Intero seems to be causing hangs, so it has been disabled
 </div>
 </div>
 <div id="outline-container-jsonmode" class="outline-4">
-<h4 id="jsonmode"><span class="section-number-4">12.2.3</span> json-mode</h4>
+<h4 id="jsonmode"><span class="section-number-4">12.2.3</span> <a href="#jsonmode">json-mode</a></h4>
 <div class="outline-text-4" id="text-12-2-3">
 <div class="org-src-container">
 <pre class="src src-emacs-lisp">(<span class="org-keyword">use-package</span> <span class="org-constant">json-mode</span>
@@ -8140,7 +8151,7 @@ Intero seems to be causing hangs, so it has been disabled
 </div>
 </div>
 <div id="outline-container-yamlmode" class="outline-4">
-<h4 id="yamlmode"><span class="section-number-4">12.2.4</span> yaml-mode</h4>
+<h4 id="yamlmode"><span class="section-number-4">12.2.4</span> <a href="#yamlmode">yaml-mode</a></h4>
 <div class="outline-text-4" id="text-12-2-4">
 <div class="org-src-container">
 <pre class="src src-emacs-lisp">(<span class="org-keyword">use-package</span> <span class="org-constant">yaml-mode</span>
@@ -8151,7 +8162,7 @@ Intero seems to be causing hangs, so it has been disabled
 </div>
 </div>
 <div id="outline-container-esmode" class="outline-4">
-<h4 id="esmode"><span class="section-number-4">12.2.5</span> es-mode</h4>
+<h4 id="esmode"><span class="section-number-4">12.2.5</span> <a href="#esmode">es-mode</a></h4>
 <div class="outline-text-4" id="text-12-2-5">
 <div class="org-src-container">
 <pre class="src src-emacs-lisp">(<span class="org-keyword">use-package</span> <span class="org-constant">es-mode</span>)
@@ -8161,13 +8172,13 @@ Intero seems to be causing hangs, so it has been disabled
 </div>
 </div>
 <div id="outline-container-document" class="outline-3">
-<h3 id="document"><span class="section-number-3">12.3</span> Document</h3>
+<h3 id="document"><span class="section-number-3">12.3</span> <a href="#document">Document</a></h3>
 <div class="outline-text-3" id="text-12-3">
 </div><div id="outline-container-org" class="outline-4">
-<h4 id="org"><span class="section-number-4">12.3.1</span> org</h4>
+<h4 id="org"><span class="section-number-4">12.3.1</span> <a href="#org">org</a></h4>
 <div class="outline-text-4" id="text-12-3-1">
 </div><div id="outline-container-requirethelatestversionoforgmode" class="outline-5">
-<h5 id="requirethelatestversionoforgmode"><span class="section-number-5">12.3.1.1</span> Require the latest version of org-mode</h5>
+<h5 id="requirethelatestversionoforgmode"><span class="section-number-5">12.3.1.1</span> <a href="#requirethelatestversionoforgmode">Require the latest version of org-mode</a></h5>
 <div class="outline-text-5" id="text-12-3-1-1">
 <div class="org-src-container">
 <pre class="src src-emacs-lisp">(<span class="org-keyword">use-package</span> <span class="org-constant">org</span>
@@ -8177,7 +8188,7 @@ Intero seems to be causing hangs, so it has been disabled
 </div>
 </div>
 <div id="outline-container-config" class="outline-5">
-<h5 id="config"><span class="section-number-5">12.3.1.2</span> config</h5>
+<h5 id="config"><span class="section-number-5">12.3.1.2</span> <a href="#config">config</a></h5>
 <div class="outline-text-5" id="text-12-3-1-2">
 <div class="org-src-container">
 <pre class="src src-emacs-lisp">(<span class="org-keyword">use-package</span> <span class="org-constant">org</span>
@@ -8593,7 +8604,7 @@ Intero seems to be causing hangs, so it has been disabled
 </div>
 </div>
 <div id="outline-container-loadorgconfigel" class="outline-5">
-<h5 id="loadorgconfigel"><span class="section-number-5">12.3.1.3</span> Load org-config.el</h5>
+<h5 id="loadorgconfigel"><span class="section-number-5">12.3.1.3</span> <a href="#loadorgconfigel">Load org-config.el</a></h5>
 <div class="outline-text-5" id="text-12-3-1-3">
 <p>
 I put some org-mode specific configs in a separate file so that they can be used
@@ -8606,7 +8617,7 @@ separately. This means that I need to load this file in init.el.
 </div>
 </div>
 <div id="outline-container-useframes" class="outline-5">
-<h5 id="useframes"><span class="section-number-5">12.3.1.4</span> Use frames</h5>
+<h5 id="useframes"><span class="section-number-5">12.3.1.4</span> <a href="#useframes">Use frames</a></h5>
 <div class="outline-text-5" id="text-12-3-1-4">
 <div class="org-src-container">
 <pre class="src src-emacs-lisp">(<span class="org-keyword">use-package</span> <span class="org-constant">org</span>
@@ -8621,7 +8632,7 @@ separately. This means that I need to load this file in init.el.
 </div>
 </div>
 <div id="outline-container-setbackgroundcolorofsourceblocksforexport" class="outline-5">
-<h5 id="setbackgroundcolorofsourceblocksforexport"><span class="section-number-5">12.3.1.5</span> Set Background Color of Source Blocks for Export</h5>
+<h5 id="setbackgroundcolorofsourceblocksforexport"><span class="section-number-5">12.3.1.5</span> <a href="#setbackgroundcolorofsourceblocksforexport">Set Background Color of Source Blocks for Export</a></h5>
 <div class="outline-text-5" id="text-12-3-1-5">
 <p>
 This was taken from <a href="http://emacs.stackexchange.com/questions/3374/set-the-background-of-org-exported-code-blocks-according-to-theme">here</a>.
@@ -8649,7 +8660,7 @@ This was taken from <a href="http://emacs.stackexchange.com/questions/3374/set-t
 </div>
 </div>
 <div id="outline-container-usemyowndefaultnamingschemefororgheadings" class="outline-5">
-<h5 id="usemyowndefaultnamingschemefororgheadings"><span class="section-number-5">12.3.1.6</span> Use my own default naming scheme for org-headings</h5>
+<h5 id="usemyowndefaultnamingschemefororgheadings"><span class="section-number-5">12.3.1.6</span> <a href="#usemyowndefaultnamingschemefororgheadings">Use my own default naming scheme for org-headings</a></h5>
 <div class="outline-text-5" id="text-12-3-1-6">
 <p>
 First we define a function that will generate a sanitized version of the heading
@@ -8712,9 +8723,43 @@ This function replaces the default naming scheme with a call to
 </div>
 </div>
 </div>
-<div id="outline-container-orgprojectile" class="outline-5">
-<h5 id="orgprojectile"><span class="section-number-5">12.3.1.7</span> org-projectile</h5>
+<div id="outline-container-makeheadingsinexportedhtmllinkstothemselves" class="outline-5">
+<h5 id="makeheadingsinexportedhtmllinkstothemselves"><span class="section-number-5">12.3.1.7</span> <a href="#makeheadingsinexportedhtmllinkstothemselves">Make headings in exported html links to themselves</a></h5>
 <div class="outline-text-5" id="text-12-3-1-7">
+<div class="org-src-container">
+<pre class="src src-emacs-lisp">(<span class="org-keyword">use-package</span> <span class="org-constant">ox-html</span>
+  <span class="org-builtin">:ensure</span> nil
+  <span class="org-builtin">:preface</span>
+  (<span class="org-keyword">progn</span>
+    (<span class="org-keyword">defvar</span> <span class="org-variable-name">imalison:current-html-headline</span>)
+    (<span class="org-keyword">defun</span> <span class="org-function-name">imalison:set-current-html-headline</span> (headline <span class="org-type">&amp;rest</span> args)
+      (<span class="org-keyword">setq</span> imalison:current-html-headline headline))
+    (<span class="org-keyword">defun</span> <span class="org-function-name">imalison:clear-current-html-headline</span> (<span class="org-type">&amp;rest</span> args)
+      (<span class="org-keyword">setq</span> imalison:current-html-headline nil))
+    (<span class="org-keyword">defun</span> <span class="org-function-name">imalison:org-html-format-heading-function</span> (todo todo-type priority text tags info)
+      (<span class="org-keyword">let*</span> ((reference (<span class="org-keyword">when</span> imalison:current-html-headline
+                          (org-export-get-reference imalison:current-html-headline info)))
+             <span class="org-comment-delimiter">;; </span><span class="org-comment">Don't do anything special if the current headline is not set</span>
+             (new-text (<span class="org-keyword">if</span> imalison:current-html-headline
+                           (format <span class="org-string">"&lt;a href=\"#%s\"&gt;%s&lt;/a&gt;"</span> reference text)
+                         text)))
+        (org-html-format-headline-default-function
+         todo todo-type priority new-text tags info))))
+  <span class="org-builtin">:config</span>
+  (<span class="org-keyword">progn</span>
+    <span class="org-comment-delimiter">;; </span><span class="org-comment">This is set before and cleared afterwards, so that we know when we are</span>
+    <span class="org-comment-delimiter">;; </span><span class="org-comment">generating the text for the headline itself and when we are not.</span>
+    (advice-add 'org-html-headline <span class="org-builtin">:before</span> 'imalison:set-current-html-headline)
+    (advice-add 'org-html-headline <span class="org-builtin">:after</span> 'imalison:clear-current-html-headline)
+    (<span class="org-keyword">setq</span> org-html-format-headline-function
+          'imalison:org-html-format-heading-function)))
+</pre>
+</div>
+</div>
+</div>
+<div id="outline-container-orgprojectile" class="outline-5">
+<h5 id="orgprojectile"><span class="section-number-5">12.3.1.8</span> <a href="#orgprojectile">org-projectile</a></h5>
+<div class="outline-text-5" id="text-12-3-1-8">
 <div class="org-src-container">
 <pre class="src src-emacs-lisp">(<span class="org-keyword">use-package</span> <span class="org-constant">org-projectile</span>
   <span class="org-builtin">:after</span> helm
@@ -8743,8 +8788,8 @@ This function replaces the default naming scheme with a call to
 </div>
 </div>
 <div id="outline-container-orgnotify" class="outline-5">
-<h5 id="orgnotify"><span class="section-number-5">12.3.1.8</span> org-notify</h5>
-<div class="outline-text-5" id="text-12-3-1-8">
+<h5 id="orgnotify"><span class="section-number-5">12.3.1.9</span> <a href="#orgnotify">org-notify</a></h5>
+<div class="outline-text-5" id="text-12-3-1-9">
 <div class="org-src-container">
 <pre class="src src-emacs-lisp">(<span class="org-keyword">use-package</span> <span class="org-constant">org-notify</span>
   <span class="org-builtin">:disabled</span> t
@@ -8804,8 +8849,8 @@ This function replaces the default naming scheme with a call to
 </div>
 </div>
 <div id="outline-container-orgreveal" class="outline-5">
-<h5 id="orgreveal"><span class="section-number-5">12.3.1.9</span> org-reveal</h5>
-<div class="outline-text-5" id="text-12-3-1-9">
+<h5 id="orgreveal"><span class="section-number-5">12.3.1.10</span> <a href="#orgreveal">org-reveal</a></h5>
+<div class="outline-text-5" id="text-12-3-1-10">
 <div class="org-src-container">
 <pre class="src src-emacs-lisp">(<span class="org-keyword">use-package</span> <span class="org-constant">ox-reveal</span>
   <span class="org-builtin">:after</span> org
@@ -8817,8 +8862,8 @@ This function replaces the default naming scheme with a call to
 </div>
 </div>
 <div id="outline-container-orgcaldav" class="outline-5">
-<h5 id="orgcaldav"><span class="section-number-5">12.3.1.10</span> org-caldav</h5>
-<div class="outline-text-5" id="text-12-3-1-10">
+<h5 id="orgcaldav"><span class="section-number-5">12.3.1.11</span> <a href="#orgcaldav">org-caldav</a></h5>
+<div class="outline-text-5" id="text-12-3-1-11">
 <div class="org-src-container">
 <pre class="src src-emacs-lisp">(<span class="org-keyword">use-package</span> <span class="org-constant">org-caldav</span>
   <span class="org-builtin">:defer</span> t
@@ -8834,7 +8879,7 @@ This function replaces the default naming scheme with a call to
 </div>
 </div>
 <div id="outline-container-tex" class="outline-4">
-<h4 id="tex"><span class="section-number-4">12.3.2</span> TeX</h4>
+<h4 id="tex"><span class="section-number-4">12.3.2</span> <a href="#tex">TeX</a></h4>
 <div class="outline-text-4" id="text-12-3-2">
 <div class="org-src-container">
 <pre class="src src-emacs-lisp">(<span class="org-keyword">use-package</span> <span class="org-constant">tex</span>
@@ -8860,7 +8905,7 @@ This function replaces the default naming scheme with a call to
 </div>
 </div>
 <div id="outline-container-latex" class="outline-5">
-<h5 id="latex"><span class="section-number-5">12.3.2.1</span> latex</h5>
+<h5 id="latex"><span class="section-number-5">12.3.2.1</span> <a href="#latex">latex</a></h5>
 <div class="outline-text-5" id="text-12-3-2-1">
 <div class="org-src-container">
 <pre class="src src-emacs-lisp">(<span class="org-keyword">use-package</span> <span class="org-constant">latex</span>
@@ -8874,7 +8919,7 @@ This function replaces the default naming scheme with a call to
 </div>
 </div>
 <div id="outline-container-auctexlatexmk" class="outline-5">
-<h5 id="auctexlatexmk"><span class="section-number-5">12.3.2.2</span> auctex-latexmk</h5>
+<h5 id="auctexlatexmk"><span class="section-number-5">12.3.2.2</span> <a href="#auctexlatexmk">auctex-latexmk</a></h5>
 <div class="outline-text-5" id="text-12-3-2-2">
 <div class="org-src-container">
 <pre class="src src-emacs-lisp">(<span class="org-keyword">use-package</span> <span class="org-constant">auctex-latexmk</span>
@@ -8888,7 +8933,7 @@ This function replaces the default naming scheme with a call to
 </div>
 </div>
 <div id="outline-container-companyauctex" class="outline-5">
-<h5 id="companyauctex"><span class="section-number-5">12.3.2.3</span> company-auctex</h5>
+<h5 id="companyauctex"><span class="section-number-5">12.3.2.3</span> <a href="#companyauctex">company-auctex</a></h5>
 <div class="outline-text-5" id="text-12-3-2-3">
 <div class="org-src-container">
 <pre class="src src-emacs-lisp">(<span class="org-keyword">use-package</span> <span class="org-constant">company-auctex</span>
@@ -8901,7 +8946,7 @@ This function replaces the default naming scheme with a call to
 </div>
 </div>
 <div id="outline-container-markdownmode" class="outline-4">
-<h4 id="markdownmode"><span class="section-number-4">12.3.3</span> markdown-mode</h4>
+<h4 id="markdownmode"><span class="section-number-4">12.3.3</span> <a href="#markdownmode">markdown-mode</a></h4>
 <div class="outline-text-4" id="text-12-3-3">
 <div class="org-src-container">
 <pre class="src src-emacs-lisp">(<span class="org-keyword">use-package</span> <span class="org-constant">markdown-mode</span>
@@ -8913,7 +8958,7 @@ This function replaces the default naming scheme with a call to
 </div>
 </div>
 <div id="outline-container-plantumlmode" class="outline-4">
-<h4 id="plantumlmode"><span class="section-number-4">12.3.4</span> plantuml-mode</h4>
+<h4 id="plantumlmode"><span class="section-number-4">12.3.4</span> <a href="#plantumlmode">plantuml-mode</a></h4>
 <div class="outline-text-4" id="text-12-3-4">
 <div class="org-src-container">
 <pre class="src src-emacs-lisp">(<span class="org-keyword">use-package</span> <span class="org-constant">plantuml-mode</span>
@@ -8942,7 +8987,7 @@ This function replaces the default naming scheme with a call to
 </div>
 </div>
 <div id="outline-container-wsdmode" class="outline-4">
-<h4 id="wsdmode"><span class="section-number-4">12.3.5</span> wsd-mode</h4>
+<h4 id="wsdmode"><span class="section-number-4">12.3.5</span> <a href="#wsdmode">wsd-mode</a></h4>
 <div class="outline-text-4" id="text-12-3-5">
 <div class="org-src-container">
 <pre class="src src-emacs-lisp">(<span class="org-keyword">use-package</span> <span class="org-constant">wsd-mode</span>
@@ -8953,10 +8998,10 @@ This function replaces the default naming scheme with a call to
 </div>
 </div>
 <div id="outline-container-utility" class="outline-3">
-<h3 id="utility"><span class="section-number-3">12.4</span> Utility</h3>
+<h3 id="utility"><span class="section-number-3">12.4</span> <a href="#utility">Utility</a></h3>
 <div class="outline-text-3" id="text-12-4">
 </div><div id="outline-container-restclient" class="outline-4">
-<h4 id="restclient"><span class="section-number-4">12.4.1</span> restclient</h4>
+<h4 id="restclient"><span class="section-number-4">12.4.1</span> <a href="#restclient">restclient</a></h4>
 <div class="outline-text-4" id="text-12-4-1">
 <div class="org-src-container">
 <pre class="src src-emacs-lisp">(<span class="org-keyword">use-package</span> <span class="org-constant">restclient</span>
@@ -8969,7 +9014,7 @@ This function replaces the default naming scheme with a call to
 </div>
 </div>
 <div id="outline-container-jqmode" class="outline-4">
-<h4 id="jqmode"><span class="section-number-4">12.4.2</span> jq-mode</h4>
+<h4 id="jqmode"><span class="section-number-4">12.4.2</span> <a href="#jqmode">jq-mode</a></h4>
 <div class="outline-text-4" id="text-12-4-2">
 <div class="org-src-container">
 <pre class="src src-emacs-lisp">(<span class="org-keyword">use-package</span> <span class="org-constant">jq-mode</span>
@@ -8981,10 +9026,10 @@ This function replaces the default naming scheme with a call to
 </div>
 </div>
 <div id="outline-container-sourcecontrol" class="outline-2">
-<h2 id="sourcecontrol"><span class="section-number-2">13</span> Source Control</h2>
+<h2 id="sourcecontrol"><span class="section-number-2">13</span> <a href="#sourcecontrol">Source Control</a></h2>
 <div class="outline-text-2" id="text-13">
 </div><div id="outline-container-magit" class="outline-3">
-<h3 id="magit"><span class="section-number-3">13.1</span> magit</h3>
+<h3 id="magit"><span class="section-number-3">13.1</span> <a href="#magit">magit</a></h3>
 <div class="outline-text-3" id="text-13-1">
 <div class="org-src-container">
 <pre class="src src-emacs-lisp">(<span class="org-keyword">use-package</span> <span class="org-constant">magit</span>
@@ -9025,7 +9070,7 @@ This function replaces the default naming scheme with a call to
 </div>
 </div>
 <div id="outline-container-magithub" class="outline-4">
-<h4 id="magithub"><span class="section-number-4">13.1.1</span> magithub</h4>
+<h4 id="magithub"><span class="section-number-4">13.1.1</span> <a href="#magithub">magithub</a></h4>
 <div class="outline-text-4" id="text-13-1-1">
 <p>
 I've disabled magithub because it causes magit to be super slow
@@ -9041,7 +9086,7 @@ I've disabled magithub because it causes magit to be super slow
 </div>
 </div>
 <div id="outline-container-gitlink" class="outline-3">
-<h3 id="gitlink"><span class="section-number-3">13.2</span> git-link</h3>
+<h3 id="gitlink"><span class="section-number-3">13.2</span> <a href="#gitlink">git-link</a></h3>
 <div class="outline-text-3" id="text-13-2">
 <div class="org-src-container">
 <pre class="src src-emacs-lisp">(<span class="org-keyword">use-package</span> <span class="org-constant">git-link</span>
@@ -9053,7 +9098,7 @@ I've disabled magithub because it causes magit to be super slow
 </div>
 </div>
 <div id="outline-container-magitgitflow" class="outline-3">
-<h3 id="magitgitflow"><span class="section-number-3">13.3</span> magit-gitflow</h3>
+<h3 id="magitgitflow"><span class="section-number-3">13.3</span> <a href="#magitgitflow">magit-gitflow</a></h3>
 <div class="outline-text-3" id="text-13-3">
 <div class="org-src-container">
 <pre class="src src-emacs-lisp">(<span class="org-keyword">use-package</span> <span class="org-constant">magit-gitflow</span>
@@ -9070,7 +9115,7 @@ I've disabled magithub because it causes magit to be super slow
 </div>
 </div>
 <div id="outline-container-gittimemachine" class="outline-3">
-<h3 id="gittimemachine"><span class="section-number-3">13.4</span> git-timemachine</h3>
+<h3 id="gittimemachine"><span class="section-number-3">13.4</span> <a href="#gittimemachine">git-timemachine</a></h3>
 <div class="outline-text-3" id="text-13-4">
 <div class="org-src-container">
 <pre class="src src-emacs-lisp">(<span class="org-keyword">use-package</span> <span class="org-constant">git-timemachine</span>
@@ -9080,7 +9125,7 @@ I've disabled magithub because it causes magit to be super slow
 </div>
 </div>
 <div id="outline-container-gitgutter" class="outline-3">
-<h3 id="gitgutter"><span class="section-number-3">13.5</span> git-gutter</h3>
+<h3 id="gitgutter"><span class="section-number-3">13.5</span> <a href="#gitgutter">git-gutter</a></h3>
 <div class="outline-text-3" id="text-13-5">
 <div class="org-src-container">
 <pre class="src src-emacs-lisp">(<span class="org-keyword">use-package</span> <span class="org-constant">git-gutter</span>
@@ -9092,7 +9137,7 @@ I've disabled magithub because it causes magit to be super slow
 </div>
 </div>
 <div id="outline-container-gitoliteclone" class="outline-3">
-<h3 id="gitoliteclone"><span class="section-number-3">13.6</span> gitolite-clone</h3>
+<h3 id="gitoliteclone"><span class="section-number-3">13.6</span> <a href="#gitoliteclone">gitolite-clone</a></h3>
 <div class="outline-text-3" id="text-13-6">
 <div class="org-src-container">
 <pre class="src src-emacs-lisp">(<span class="org-keyword">use-package</span> <span class="org-constant">gitolite-clone</span>
@@ -9107,7 +9152,7 @@ I've disabled magithub because it causes magit to be super slow
 </div>
 </div>
 <div id="outline-container-gitconfigmode" class="outline-3">
-<h3 id="gitconfigmode"><span class="section-number-3">13.7</span> gitconfig-mode</h3>
+<h3 id="gitconfigmode"><span class="section-number-3">13.7</span> <a href="#gitconfigmode">gitconfig-mode</a></h3>
 <div class="outline-text-3" id="text-13-7">
 <div class="org-src-container">
 <pre class="src src-emacs-lisp">(<span class="org-keyword">use-package</span> <span class="org-constant">gitconfig-mode</span>
@@ -9117,7 +9162,7 @@ I've disabled magithub because it causes magit to be super slow
 </div>
 </div>
 <div id="outline-container-gitignoremode" class="outline-3">
-<h3 id="gitignoremode"><span class="section-number-3">13.8</span> gitignore-mode</h3>
+<h3 id="gitignoremode"><span class="section-number-3">13.8</span> <a href="#gitignoremode">gitignore-mode</a></h3>
 <div class="outline-text-3" id="text-13-8">
 <div class="org-src-container">
 <pre class="src src-emacs-lisp">(<span class="org-keyword">use-package</span> <span class="org-constant">gitignore-mode</span>
@@ -9127,10 +9172,10 @@ I've disabled magithub because it causes magit to be super slow
 </div>
 </div>
 <div id="outline-container-github" class="outline-3">
-<h3 id="github"><span class="section-number-3">13.9</span> github</h3>
+<h3 id="github"><span class="section-number-3">13.9</span> <a href="#github">github</a></h3>
 <div class="outline-text-3" id="text-13-9">
 </div><div id="outline-container-githubsearch" class="outline-4">
-<h4 id="githubsearch"><span class="section-number-4">13.9.1</span> github-search</h4>
+<h4 id="githubsearch"><span class="section-number-4">13.9.1</span> <a href="#githubsearch">github-search</a></h4>
 <div class="outline-text-4" id="text-13-9-1">
 <div class="org-src-container">
 <pre class="src src-emacs-lisp">(imalison:use-package github-search
@@ -9159,7 +9204,7 @@ I've disabled magithub because it causes magit to be super slow
 </div>
 </div>
 <div id="outline-container-githubclone" class="outline-4">
-<h4 id="githubclone"><span class="section-number-4">13.9.2</span> github-clone</h4>
+<h4 id="githubclone"><span class="section-number-4">13.9.2</span> <a href="#githubclone">github-clone</a></h4>
 <div class="outline-text-4" id="text-13-9-2">
 <div class="org-src-container">
 <pre class="src src-emacs-lisp">(imalison:use-package* github-clone <span class="org-string">"~/Projects/github-clone.el"</span>
@@ -9173,7 +9218,7 @@ I've disabled magithub because it causes magit to be super slow
 </div>
 </div>
 <div id="outline-container-githubnotifier" class="outline-4">
-<h4 id="githubnotifier"><span class="section-number-4">13.9.3</span> github-notifier</h4>
+<h4 id="githubnotifier"><span class="section-number-4">13.9.3</span> <a href="#githubnotifier">github-notifier</a></h4>
 <div class="outline-text-4" id="text-13-9-3">
 <p>
 This is disabled because it was causing too many issues with my
@@ -9191,7 +9236,7 @@ modeline and with excessive http requests to github.
 </div>
 </div>
 <div id="outline-container-githubbrowsefile" class="outline-4">
-<h4 id="githubbrowsefile"><span class="section-number-4">13.9.4</span> github-browse-file</h4>
+<h4 id="githubbrowsefile"><span class="section-number-4">13.9.4</span> <a href="#githubbrowsefile">github-browse-file</a></h4>
 <div class="outline-text-4" id="text-13-9-4">
 <div class="org-src-container">
 <pre class="src src-emacs-lisp">(<span class="org-keyword">use-package</span> <span class="org-constant">github-browse-file</span>
@@ -9201,7 +9246,7 @@ modeline and with excessive http requests to github.
 </div>
 </div>
 <div id="outline-container-magitghpulls" class="outline-4">
-<h4 id="magitghpulls"><span class="section-number-4">13.9.5</span> magit-gh-pulls</h4>
+<h4 id="magitghpulls"><span class="section-number-4">13.9.5</span> <a href="#magitghpulls">magit-gh-pulls</a></h4>
 <div class="outline-text-4" id="text-13-9-5">
 <div class="org-src-container">
 <pre class="src src-emacs-lisp">(<span class="org-keyword">use-package</span> <span class="org-constant">magit-gh-pulls</span>
@@ -9216,7 +9261,7 @@ modeline and with excessive http requests to github.
 </div>
 </div>
 <div id="outline-container-gist" class="outline-4">
-<h4 id="gist"><span class="section-number-4">13.9.6</span> gist</h4>
+<h4 id="gist"><span class="section-number-4">13.9.6</span> <a href="#gist">gist</a></h4>
 <div class="outline-text-4" id="text-13-9-6">
 <div class="org-src-container">
 <pre class="src src-emacs-lisp">(<span class="org-keyword">use-package</span> <span class="org-constant">gist</span>
@@ -9231,10 +9276,10 @@ modeline and with excessive http requests to github.
 </div>
 </div>
 <div id="outline-container-programming1" class="outline-2">
-<h2 id="programming1"><span class="section-number-2">14</span> Programming</h2>
+<h2 id="programming1"><span class="section-number-2">14</span> <a href="#programming1">Programming</a></h2>
 <div class="outline-text-2" id="text-14">
 </div><div id="outline-container-realgud" class="outline-3">
-<h3 id="realgud"><span class="section-number-3">14.1</span> realgud</h3>
+<h3 id="realgud"><span class="section-number-3">14.1</span> <a href="#realgud">realgud</a></h3>
 <div class="outline-text-3" id="text-14-1">
 <p>
 realgud provides debugging support with many external debuggers in emacs
@@ -9247,7 +9292,7 @@ realgud provides debugging support with many external debuggers in emacs
 </div>
 </div>
 <div id="outline-container-emr1" class="outline-3">
-<h3 id="emr1"><span class="section-number-3">14.2</span> emr</h3>
+<h3 id="emr1"><span class="section-number-3">14.2</span> <a href="#emr1">emr</a></h3>
 <div class="outline-text-3" id="text-14-2">
 <p>
 emr (emacs refactor) provides support for refactoring in many programming languages
@@ -9262,7 +9307,7 @@ emr (emacs refactor) provides support for refactoring in many programming langua
 </div>
 </div>
 <div id="outline-container-semantic" class="outline-3">
-<h3 id="semantic"><span class="section-number-3">14.3</span> semantic</h3>
+<h3 id="semantic"><span class="section-number-3">14.3</span> <a href="#semantic">semantic</a></h3>
 <div class="outline-text-3" id="text-14-3">
 <div class="org-src-container">
 <pre class="src src-emacs-lisp">(<span class="org-keyword">use-package</span> <span class="org-constant">semantic</span>
@@ -9277,10 +9322,10 @@ emr (emacs refactor) provides support for refactoring in many programming langua
 </div>
 </div>
 <div id="outline-container-utility1" class="outline-2">
-<h2 id="utility1"><span class="section-number-2">15</span> Utility</h2>
+<h2 id="utility1"><span class="section-number-2">15</span> <a href="#utility1">Utility</a></h2>
 <div class="outline-text-2" id="text-15">
 </div><div id="outline-container-term" class="outline-3">
-<h3 id="term"><span class="section-number-3">15.1</span> term</h3>
+<h3 id="term"><span class="section-number-3">15.1</span> <a href="#term">term</a></h3>
 <div class="outline-text-3" id="text-15-1">
 <p>
 The main thing I do here is restore a bunch of keybindings that are eliminated
@@ -9360,7 +9405,7 @@ in term-mode. This makes term-mode 1000% more useful
 </div>
 </div>
 <div id="outline-container-termmanager" class="outline-3">
-<h3 id="termmanager"><span class="section-number-3">15.2</span> term-manager</h3>
+<h3 id="termmanager"><span class="section-number-3">15.2</span> <a href="#termmanager">term-manager</a></h3>
 <div class="outline-text-3" id="text-15-2">
 <div class="org-src-container">
 <pre class="src src-emacs-lisp">(imalison:use-package term-manager
@@ -9379,7 +9424,7 @@ in term-mode. This makes term-mode 1000% more useful
 </div>
 </div>
 <div id="outline-container-termprojectile" class="outline-3">
-<h3 id="termprojectile"><span class="section-number-3">15.3</span> term-projectile</h3>
+<h3 id="termprojectile"><span class="section-number-3">15.3</span> <a href="#termprojectile">term-projectile</a></h3>
 <div class="outline-text-3" id="text-15-3">
 <div class="org-src-container">
 <pre class="src src-emacs-lisp">(imalison:use-package* term-projectile <span class="org-string">"term-manager"</span>
@@ -9459,7 +9504,7 @@ in term-mode. This makes term-mode 1000% more useful
 </div>
 </div>
 <div id="outline-container-crux" class="outline-3">
-<h3 id="crux"><span class="section-number-3">15.4</span> crux</h3>
+<h3 id="crux"><span class="section-number-3">15.4</span> <a href="#crux">crux</a></h3>
 <div class="outline-text-3" id="text-15-4">
 <p>
 crux-reopen-as-root-mode makes it so that any file owned by root will automatically be opened as the root user.
@@ -9478,7 +9523,7 @@ crux-reopen-as-root-mode makes it so that any file owned by root will automatica
 </div>
 </div>
 <div id="outline-container-kdeconnect" class="outline-3">
-<h3 id="kdeconnect"><span class="section-number-3">15.5</span> kde-connect</h3>
+<h3 id="kdeconnect"><span class="section-number-3">15.5</span> <a href="#kdeconnect">kde-connect</a></h3>
 <div class="outline-text-3" id="text-15-5">
 <div class="org-src-container">
 <pre class="src src-emacs-lisp">(<span class="org-keyword">use-package</span> <span class="org-constant">kdeconnect</span>)
@@ -9488,10 +9533,10 @@ crux-reopen-as-root-mode makes it so that any file owned by root will automatica
 </div>
 </div>
 <div id="outline-container-chat" class="outline-2">
-<h2 id="chat"><span class="section-number-2">16</span> Chat</h2>
+<h2 id="chat"><span class="section-number-2">16</span> <a href="#chat">Chat</a></h2>
 <div class="outline-text-2" id="text-16">
 </div><div id="outline-container-erc" class="outline-3">
-<h3 id="erc"><span class="section-number-3">16.1</span> erc</h3>
+<h3 id="erc"><span class="section-number-3">16.1</span> <a href="#erc">erc</a></h3>
 <div class="outline-text-3" id="text-16-1">
 <div class="org-src-container">
 <pre class="src src-emacs-lisp">(<span class="org-keyword">use-package</span> <span class="org-constant">erc</span>
@@ -9508,7 +9553,7 @@ crux-reopen-as-root-mode makes it so that any file owned by root will automatica
 </div>
 </div>
 <div id="outline-container-bitlbee" class="outline-3">
-<h3 id="bitlbee"><span class="section-number-3">16.2</span> bitlbee</h3>
+<h3 id="bitlbee"><span class="section-number-3">16.2</span> <a href="#bitlbee">bitlbee</a></h3>
 <div class="outline-text-3" id="text-16-2">
 <div class="org-src-container">
 <pre class="src src-emacs-lisp">(<span class="org-keyword">use-package</span> <span class="org-constant">bitlbee</span>
@@ -9530,7 +9575,7 @@ crux-reopen-as-root-mode makes it so that any file owned by root will automatica
 </div>
 </div>
 <div id="outline-container-slack" class="outline-3">
-<h3 id="slack"><span class="section-number-3">16.3</span> slack</h3>
+<h3 id="slack"><span class="section-number-3">16.3</span> <a href="#slack">slack</a></h3>
 <div class="outline-text-3" id="text-16-3">
 <div class="org-src-container">
 <pre class="src src-emacs-lisp">(<span class="org-keyword">use-package</span> <span class="org-constant">slack</span>)
@@ -9540,10 +9585,10 @@ crux-reopen-as-root-mode makes it so that any file owned by root will automatica
 </div>
 </div>
 <div id="outline-container-cooperation" class="outline-2">
-<h2 id="cooperation"><span class="section-number-2">17</span> Cooperation</h2>
+<h2 id="cooperation"><span class="section-number-2">17</span> <a href="#cooperation">Cooperation</a></h2>
 <div class="outline-text-2" id="text-17">
 </div><div id="outline-container-togetherly" class="outline-3">
-<h3 id="togetherly"><span class="section-number-3">17.1</span> togetherly</h3>
+<h3 id="togetherly"><span class="section-number-3">17.1</span> <a href="#togetherly">togetherly</a></h3>
 <div class="outline-text-3" id="text-17-1">
 <div class="org-src-container">
 <pre class="src src-emacs-lisp">(<span class="org-keyword">use-package</span> <span class="org-constant">togetherly</span>)
@@ -9552,7 +9597,7 @@ crux-reopen-as-root-mode makes it so that any file owned by root will automatica
 </div>
 </div>
 <div id="outline-container-floobits" class="outline-3">
-<h3 id="floobits"><span class="section-number-3">17.2</span> floobits</h3>
+<h3 id="floobits"><span class="section-number-3">17.2</span> <a href="#floobits">floobits</a></h3>
 <div class="outline-text-3" id="text-17-2">
 <div class="org-src-container">
 <pre class="src src-emacs-lisp">(<span class="org-keyword">use-package</span> <span class="org-constant">floobits</span>)
@@ -9561,7 +9606,7 @@ crux-reopen-as-root-mode makes it so that any file owned by root will automatica
 </div>
 </div>
 <div id="outline-container-rudel" class="outline-3">
-<h3 id="rudel"><span class="section-number-3">17.3</span> rudel</h3>
+<h3 id="rudel"><span class="section-number-3">17.3</span> <a href="#rudel">rudel</a></h3>
 <div class="outline-text-3" id="text-17-3">
 <div class="org-src-container">
 <pre class="src src-emacs-lisp">(<span class="org-keyword">use-package</span> <span class="org-constant">rudel</span>
@@ -9572,10 +9617,10 @@ crux-reopen-as-root-mode makes it so that any file owned by root will automatica
 </div>
 </div>
 <div id="outline-container-other1" class="outline-2">
-<h2 id="other1"><span class="section-number-2">18</span> Other</h2>
+<h2 id="other1"><span class="section-number-2">18</span> <a href="#other1">Other</a></h2>
 <div class="outline-text-2" id="text-18">
 </div><div id="outline-container-anzu" class="outline-3">
-<h3 id="anzu"><span class="section-number-3">18.1</span> anzu</h3>
+<h3 id="anzu"><span class="section-number-3">18.1</span> <a href="#anzu">anzu</a></h3>
 <div class="outline-text-3" id="text-18-1">
 <div class="org-src-container">
 <pre class="src src-emacs-lisp">(<span class="org-keyword">use-package</span> <span class="org-constant">anzu</span>
@@ -9599,7 +9644,7 @@ crux-reopen-as-root-mode makes it so that any file owned by root will automatica
 </div>
 </div>
 <div id="outline-container-fontawesome" class="outline-3">
-<h3 id="fontawesome"><span class="section-number-3">18.2</span> fontawesome</h3>
+<h3 id="fontawesome"><span class="section-number-3">18.2</span> <a href="#fontawesome">fontawesome</a></h3>
 <div class="outline-text-3" id="text-18-2">
 <div class="org-src-container">
 <pre class="src src-emacs-lisp">(<span class="org-keyword">use-package</span> <span class="org-constant">fontawesome</span>
@@ -9609,7 +9654,7 @@ crux-reopen-as-root-mode makes it so that any file owned by root will automatica
 </div>
 </div>
 <div id="outline-container-shellhistory" class="outline-3">
-<h3 id="shellhistory"><span class="section-number-3">18.3</span> shell-history</h3>
+<h3 id="shellhistory"><span class="section-number-3">18.3</span> <a href="#shellhistory">shell-history</a></h3>
 <div class="outline-text-3" id="text-18-3">
 <p>
 I think that shell-history is causing projectile to be very slow so I have disabled it.
@@ -9623,7 +9668,7 @@ I think that shell-history is causing projectile to be very slow so I have disab
 </div>
 </div>
 <div id="outline-container-iedit" class="outline-3">
-<h3 id="iedit"><span class="section-number-3">18.4</span> iedit</h3>
+<h3 id="iedit"><span class="section-number-3">18.4</span> <a href="#iedit">iedit</a></h3>
 <div class="outline-text-3" id="text-18-4">
 <p>
 I don't use iedit directly, but it is used by <a href="#emr">emr</a> and I need to disable <code>iedit-toggle-key-default</code> or else a buffer pops up complaing that the key has been bound to something else
@@ -9636,7 +9681,7 @@ I don't use iedit directly, but it is used by <a href="#emr">emr</a> and I need 
 </div>
 </div>
 <div id="outline-container-tramp" class="outline-3">
-<h3 id="tramp"><span class="section-number-3">18.5</span> tramp</h3>
+<h3 id="tramp"><span class="section-number-3">18.5</span> <a href="#tramp">tramp</a></h3>
 <div class="outline-text-3" id="text-18-5">
 <div class="org-src-container">
 <pre class="src src-emacs-lisp">(<span class="org-keyword">use-package</span> <span class="org-constant">tramp</span>
@@ -9648,7 +9693,7 @@ I don't use iedit directly, but it is used by <a href="#emr">emr</a> and I need 
 </div>
 </div>
 <div id="outline-container-narrowindirect" class="outline-3">
-<h3 id="narrowindirect"><span class="section-number-3">18.6</span> narrow-indirect</h3>
+<h3 id="narrowindirect"><span class="section-number-3">18.6</span> <a href="#narrowindirect">narrow-indirect</a></h3>
 <div class="outline-text-3" id="text-18-6">
 <div class="org-src-container">
 <pre class="src src-emacs-lisp">(<span class="org-keyword">use-package</span> <span class="org-constant">narrow-indirect</span>
@@ -9662,7 +9707,7 @@ I don't use iedit directly, but it is used by <a href="#emr">emr</a> and I need 
 </div>
 </div>
 <div id="outline-container-editorconfig" class="outline-3">
-<h3 id="editorconfig"><span class="section-number-3">18.7</span> editorconfig</h3>
+<h3 id="editorconfig"><span class="section-number-3">18.7</span> <a href="#editorconfig">editorconfig</a></h3>
 <div class="outline-text-3" id="text-18-7">
 <p>
 I had to disable this mode because something that it does messes with coding settings and makes it so that I have to select the appropriate encoding every time I save gpg encrypted files.
@@ -9679,7 +9724,7 @@ I had to disable this mode because something that it does messes with coding set
 </div>
 </div>
 <div id="outline-container-dtrtindent" class="outline-3">
-<h3 id="dtrtindent"><span class="section-number-3">18.8</span> dtrt-indent</h3>
+<h3 id="dtrtindent"><span class="section-number-3">18.8</span> <a href="#dtrtindent">dtrt-indent</a></h3>
 <div class="outline-text-3" id="text-18-8">
 <div class="org-src-container">
 <pre class="src src-emacs-lisp">(<span class="org-keyword">use-package</span> <span class="org-constant">dtrt-indent</span>
@@ -9693,7 +9738,7 @@ I had to disable this mode because something that it does messes with coding set
 </div>
 </div>
 <div id="outline-container-indentguide" class="outline-3">
-<h3 id="indentguide"><span class="section-number-3">18.9</span> indent-guide</h3>
+<h3 id="indentguide"><span class="section-number-3">18.9</span> <a href="#indentguide">indent-guide</a></h3>
 <div class="outline-text-3" id="text-18-9">
 <div class="org-src-container">
 <pre class="src src-emacs-lisp">(<span class="org-keyword">use-package</span> <span class="org-constant">indent-guide</span>
@@ -9707,7 +9752,7 @@ I had to disable this mode because something that it does messes with coding set
 </div>
 </div>
 <div id="outline-container-rainbowdelimiters" class="outline-3">
-<h3 id="rainbowdelimiters"><span class="section-number-3">18.10</span> rainbow-delimiters</h3>
+<h3 id="rainbowdelimiters"><span class="section-number-3">18.10</span> <a href="#rainbowdelimiters">rainbow-delimiters</a></h3>
 <div class="outline-text-3" id="text-18-10">
 <div class="org-src-container">
 <pre class="src src-emacs-lisp">(<span class="org-keyword">use-package</span> <span class="org-constant">rainbow-delimiters</span>
@@ -9720,7 +9765,7 @@ I had to disable this mode because something that it does messes with coding set
 </div>
 </div>
 <div id="outline-container-undotree" class="outline-3">
-<h3 id="undotree"><span class="section-number-3">18.11</span> undo-tree</h3>
+<h3 id="undotree"><span class="section-number-3">18.11</span> <a href="#undotree">undo-tree</a></h3>
 <div class="outline-text-3" id="text-18-11">
 <div class="org-src-container">
 <pre class="src src-emacs-lisp">(<span class="org-keyword">use-package</span> <span class="org-constant">undo-tree</span>
@@ -9740,7 +9785,7 @@ I had to disable this mode because something that it does messes with coding set
 </div>
 </div>
 <div id="outline-container-recentf" class="outline-3">
-<h3 id="recentf"><span class="section-number-3">18.12</span> recentf</h3>
+<h3 id="recentf"><span class="section-number-3">18.12</span> <a href="#recentf">recentf</a></h3>
 <div class="outline-text-3" id="text-18-12">
 <div class="org-src-container">
 <pre class="src src-emacs-lisp">(<span class="org-keyword">use-package</span> <span class="org-constant">recentf</span>
@@ -9755,7 +9800,7 @@ I had to disable this mode because something that it does messes with coding set
 </div>
 </div>
 <div id="outline-container-keychord" class="outline-3">
-<h3 id="keychord"><span class="section-number-3">18.13</span> key-chord</h3>
+<h3 id="keychord"><span class="section-number-3">18.13</span> <a href="#keychord">key-chord</a></h3>
 <div class="outline-text-3" id="text-18-13">
 <p>
 I have currently disabled key-chord because it may cause typing lag.
@@ -9784,7 +9829,7 @@ I have currently disabled key-chord because it may cause typing lag.
 </div>
 </div>
 <div id="outline-container-nodejsrepl" class="outline-3">
-<h3 id="nodejsrepl"><span class="section-number-3">18.14</span> nodejs-repl</h3>
+<h3 id="nodejsrepl"><span class="section-number-3">18.14</span> <a href="#nodejsrepl">nodejs-repl</a></h3>
 <div class="outline-text-3" id="text-18-14">
 <div class="org-src-container">
 <pre class="src src-emacs-lisp">(<span class="org-keyword">use-package</span> <span class="org-constant">nodejs-repl</span>
@@ -9794,7 +9839,7 @@ I have currently disabled key-chord because it may cause typing lag.
 </div>
 </div>
 <div id="outline-container-calcmode" class="outline-3">
-<h3 id="calcmode"><span class="section-number-3">18.15</span> calc-mode</h3>
+<h3 id="calcmode"><span class="section-number-3">18.15</span> <a href="#calcmode">calc-mode</a></h3>
 <div class="outline-text-3" id="text-18-15">
 <div class="org-src-container">
 <pre class="src src-emacs-lisp">(<span class="org-keyword">use-package</span> <span class="org-constant">calc-mode</span>
@@ -9808,7 +9853,7 @@ I have currently disabled key-chord because it may cause typing lag.
 </div>
 </div>
 <div id="outline-container-helmspotify" class="outline-3">
-<h3 id="helmspotify"><span class="section-number-3">18.16</span> helm-spotify</h3>
+<h3 id="helmspotify"><span class="section-number-3">18.16</span> <a href="#helmspotify">helm-spotify</a></h3>
 <div class="outline-text-3" id="text-18-16">
 <div class="org-src-container">
 <pre class="src src-emacs-lisp">(<span class="org-keyword">use-package</span> <span class="org-constant">helm-spotify</span>
@@ -9818,7 +9863,7 @@ I have currently disabled key-chord because it may cause typing lag.
 </div>
 </div>
 <div id="outline-container-jabber" class="outline-3">
-<h3 id="jabber"><span class="section-number-3">18.17</span> jabber</h3>
+<h3 id="jabber"><span class="section-number-3">18.17</span> <a href="#jabber">jabber</a></h3>
 <div class="outline-text-3" id="text-18-17">
 <div class="org-src-container">
 <pre class="src src-emacs-lisp">(<span class="org-keyword">use-package</span> <span class="org-constant">jabber</span>
@@ -9838,7 +9883,7 @@ I have currently disabled key-chord because it may cause typing lag.
 </div>
 </div>
 <div id="outline-container-htmlize" class="outline-3">
-<h3 id="htmlize"><span class="section-number-3">18.18</span> htmlize</h3>
+<h3 id="htmlize"><span class="section-number-3">18.18</span> <a href="#htmlize">htmlize</a></h3>
 <div class="outline-text-3" id="text-18-18">
 <p>
 This package is needed to export org to html.
@@ -9850,7 +9895,7 @@ This package is needed to export org to html.
 </div>
 </div>
 <div id="outline-container-calfw" class="outline-3">
-<h3 id="calfw"><span class="section-number-3">18.19</span> calfw</h3>
+<h3 id="calfw"><span class="section-number-3">18.19</span> <a href="#calfw">calfw</a></h3>
 <div class="outline-text-3" id="text-18-19">
 <div class="org-src-container">
 <pre class="src src-emacs-lisp">(<span class="org-keyword">use-package</span> <span class="org-constant">calfw</span>
@@ -9862,7 +9907,7 @@ This package is needed to export org to html.
 </div>
 </div>
 <div id="outline-container-clocker" class="outline-3">
-<h3 id="clocker"><span class="section-number-3">18.20</span> clocker</h3>
+<h3 id="clocker"><span class="section-number-3">18.20</span> <a href="#clocker">clocker</a></h3>
 <div class="outline-text-3" id="text-18-20">
 <p>
 Not really sure what this is
@@ -9874,7 +9919,7 @@ Not really sure what this is
 </div>
 </div>
 <div id="outline-container-deft" class="outline-3">
-<h3 id="deft"><span class="section-number-3">18.21</span> deft</h3>
+<h3 id="deft"><span class="section-number-3">18.21</span> <a href="#deft">deft</a></h3>
 <div class="outline-text-3" id="text-18-21">
 <div class="org-src-container">
 <pre class="src src-emacs-lisp">(<span class="org-keyword">use-package</span> <span class="org-constant">deft</span>
@@ -9893,7 +9938,7 @@ Not really sure what this is
 </div>
 </div>
 <div id="outline-container-epg" class="outline-3">
-<h3 id="epg"><span class="section-number-3">18.22</span> epg</h3>
+<h3 id="epg"><span class="section-number-3">18.22</span> <a href="#epg">epg</a></h3>
 <div class="outline-text-3" id="text-18-22">
 <div class="org-src-container">
 <pre class="src src-emacs-lisp">(<span class="org-keyword">use-package</span> <span class="org-constant">epg</span>
@@ -9906,7 +9951,7 @@ Not really sure what this is
 </div>
 </div>
 <div id="outline-container-pinentry" class="outline-3">
-<h3 id="pinentry"><span class="section-number-3">18.23</span> pinentry</h3>
+<h3 id="pinentry"><span class="section-number-3">18.23</span> <a href="#pinentry">pinentry</a></h3>
 <div class="outline-text-3" id="text-18-23">
 <div class="org-src-container">
 <pre class="src src-emacs-lisp">(<span class="org-keyword">use-package</span> <span class="org-constant">pinentry</span>
@@ -9918,7 +9963,7 @@ Not really sure what this is
 </div>
 </div>
 <div id="outline-container-twitteringmode" class="outline-3">
-<h3 id="twitteringmode"><span class="section-number-3">18.24</span> twittering-mode</h3>
+<h3 id="twitteringmode"><span class="section-number-3">18.24</span> <a href="#twitteringmode">twittering-mode</a></h3>
 <div class="outline-text-3" id="text-18-24">
 <div class="org-src-container">
 <pre class="src src-emacs-lisp">(<span class="org-keyword">use-package</span> <span class="org-constant">twittering-mode</span>
@@ -9928,7 +9973,7 @@ Not really sure what this is
 </div>
 </div>
 <div id="outline-container-matrixclient" class="outline-3">
-<h3 id="matrixclient"><span class="section-number-3">18.25</span> matrix-client</h3>
+<h3 id="matrixclient"><span class="section-number-3">18.25</span> <a href="#matrixclient">matrix-client</a></h3>
 <div class="outline-text-3" id="text-18-25">
 <div class="org-src-container">
 <pre class="src src-emacs-lisp">(<span class="org-keyword">use-package</span> <span class="org-constant">matrix-client</span>
@@ -9939,7 +9984,7 @@ Not really sure what this is
 </div>
 </div>
 <div id="outline-container-mue" class="outline-3">
-<h3 id="mue"><span class="section-number-3">18.26</span> mu4e</h3>
+<h3 id="mue"><span class="section-number-3">18.26</span> <a href="#mue">mu4e</a></h3>
 <div class="outline-text-3" id="text-18-26">
 <div class="org-src-container">
 <pre class="src src-emacs-lisp">(<span class="org-keyword">eval-when-compile</span>
@@ -10049,7 +10094,7 @@ Not really sure what this is
 </div>
 </div>
 <div id="outline-container-gmailmessagemode" class="outline-3">
-<h3 id="gmailmessagemode"><span class="section-number-3">18.27</span> gmail-message-mode</h3>
+<h3 id="gmailmessagemode"><span class="section-number-3">18.27</span> <a href="#gmailmessagemode">gmail-message-mode</a></h3>
 <div class="outline-text-3" id="text-18-27">
 <p>
 This is useful with server mode when editing gmail messages. I think that it is not currently working, or it may need to be manually enabled.
@@ -10062,7 +10107,7 @@ This is useful with server mode when editing gmail messages. I think that it is 
 </div>
 </div>
 <div id="outline-container-hammode" class="outline-3">
-<h3 id="hammode"><span class="section-number-3">18.28</span> ham-mode</h3>
+<h3 id="hammode"><span class="section-number-3">18.28</span> <a href="#hammode">ham-mode</a></h3>
 <div class="outline-text-3" id="text-18-28">
 <div class="org-src-container">
 <pre class="src src-emacs-lisp">(<span class="org-keyword">use-package</span> <span class="org-constant">ham-mode</span>
@@ -10074,7 +10119,7 @@ This is useful with server mode when editing gmail messages. I think that it is 
 </div>
 </div>
 <div id="outline-container-alert" class="outline-3">
-<h3 id="alert"><span class="section-number-3">18.29</span> alert</h3>
+<h3 id="alert"><span class="section-number-3">18.29</span> <a href="#alert">alert</a></h3>
 <div class="outline-text-3" id="text-18-29">
 <div class="org-src-container">
 <pre class="src src-emacs-lisp">(<span class="org-keyword">use-package</span> <span class="org-constant">alert</span>
@@ -10102,7 +10147,7 @@ This is useful with server mode when editing gmail messages. I think that it is 
 </div>
 </div>
 <div id="outline-container-sauron" class="outline-3">
-<h3 id="sauron"><span class="section-number-3">18.30</span> sauron</h3>
+<h3 id="sauron"><span class="section-number-3">18.30</span> <a href="#sauron">sauron</a></h3>
 <div class="outline-text-3" id="text-18-30">
 <div class="org-src-container">
 <pre class="src src-emacs-lisp">(<span class="org-keyword">use-package</span> <span class="org-constant">sauron</span>
@@ -10150,7 +10195,7 @@ This is useful with server mode when editing gmail messages. I think that it is 
 </div>
 </div>
 <div id="outline-container-screenshot" class="outline-3">
-<h3 id="screenshot"><span class="section-number-3">18.31</span> screenshot</h3>
+<h3 id="screenshot"><span class="section-number-3">18.31</span> <a href="#screenshot">screenshot</a></h3>
 <div class="outline-text-3" id="text-18-31">
 <div class="org-src-container">
 <pre class="src src-emacs-lisp">(<span class="org-keyword">use-package</span> <span class="org-constant">screenshot</span>)
@@ -10159,7 +10204,7 @@ This is useful with server mode when editing gmail messages. I think that it is 
 </div>
 </div>
 <div id="outline-container-libmpdee" class="outline-3">
-<h3 id="libmpdee"><span class="section-number-3">18.32</span> libmpdee</h3>
+<h3 id="libmpdee"><span class="section-number-3">18.32</span> <a href="#libmpdee">libmpdee</a></h3>
 <div class="outline-text-3" id="text-18-32">
 <div class="org-src-container">
 <pre class="src src-emacs-lisp">(<span class="org-keyword">use-package</span> <span class="org-constant">libmpdee</span>)
@@ -10168,7 +10213,7 @@ This is useful with server mode when editing gmail messages. I think that it is 
 </div>
 </div>
 <div id="outline-container-flyspell" class="outline-3">
-<h3 id="flyspell"><span class="section-number-3">18.33</span> flyspell</h3>
+<h3 id="flyspell"><span class="section-number-3">18.33</span> <a href="#flyspell">flyspell</a></h3>
 <div class="outline-text-3" id="text-18-33">
 <div class="org-src-container">
 <pre class="src src-emacs-lisp">(<span class="org-keyword">use-package</span> <span class="org-constant">flyspell</span>
@@ -10214,7 +10259,7 @@ This is useful with server mode when editing gmail messages. I think that it is 
 </div>
 </div>
 <div id="outline-container-webmode" class="outline-3">
-<h3 id="webmode"><span class="section-number-3">18.34</span> web-mode</h3>
+<h3 id="webmode"><span class="section-number-3">18.34</span> <a href="#webmode">web-mode</a></h3>
 <div class="outline-text-3" id="text-18-34">
 <div class="org-src-container">
 <pre class="src src-emacs-lisp">(<span class="org-keyword">use-package</span> <span class="org-constant">web-mode</span>
@@ -10230,7 +10275,7 @@ This is useful with server mode when editing gmail messages. I think that it is 
 </div>
 </div>
 <div id="outline-container-helmthemes" class="outline-3">
-<h3 id="helmthemes"><span class="section-number-3">18.35</span> helm-themes</h3>
+<h3 id="helmthemes"><span class="section-number-3">18.35</span> <a href="#helmthemes">helm-themes</a></h3>
 <div class="outline-text-3" id="text-18-35">
 <div class="org-src-container">
 <pre class="src src-emacs-lisp">(<span class="org-keyword">use-package</span> <span class="org-constant">helm-themes</span>)
@@ -10239,7 +10284,7 @@ This is useful with server mode when editing gmail messages. I think that it is 
 </div>
 </div>
 <div id="outline-container-helmswoop" class="outline-3">
-<h3 id="helmswoop"><span class="section-number-3">18.36</span> helm-swoop</h3>
+<h3 id="helmswoop"><span class="section-number-3">18.36</span> <a href="#helmswoop">helm-swoop</a></h3>
 <div class="outline-text-3" id="text-18-36">
 <div class="org-src-container">
 <pre class="src src-emacs-lisp">(<span class="org-keyword">use-package</span> <span class="org-constant">helm-swoop</span>
@@ -10250,7 +10295,7 @@ This is useful with server mode when editing gmail messages. I think that it is 
 </div>
 </div>
 <div id="outline-container-perspective" class="outline-3">
-<h3 id="perspective"><span class="section-number-3">18.37</span> perspective</h3>
+<h3 id="perspective"><span class="section-number-3">18.37</span> <a href="#perspective">perspective</a></h3>
 <div class="outline-text-3" id="text-18-37">
 <p>
 I've disabled perspective because I just don't use it much.
@@ -10306,7 +10351,7 @@ I've disabled perspective because I just don't use it much.
 </div>
 </div>
 <div id="outline-container-smex" class="outline-3">
-<h3 id="smex"><span class="section-number-3">18.38</span> smex</h3>
+<h3 id="smex"><span class="section-number-3">18.38</span> <a href="#smex">smex</a></h3>
 <div class="outline-text-3" id="text-18-38">
 <div class="org-src-container">
 <pre class="src src-emacs-lisp">(<span class="org-keyword">use-package</span> <span class="org-constant">smex</span>
@@ -10320,7 +10365,7 @@ I've disabled perspective because I just don't use it much.
 </div>
 </div>
 <div id="outline-container-java" class="outline-3">
-<h3 id="java"><span class="section-number-3">18.39</span> java</h3>
+<h3 id="java"><span class="section-number-3">18.39</span> <a href="#java">java</a></h3>
 <div class="outline-text-3" id="text-18-39">
 <div class="org-src-container">
 <pre class="src src-emacs-lisp">(add-hook 'java-mode-hook
@@ -10333,7 +10378,7 @@ I've disabled perspective because I just don't use it much.
 </div>
 </div>
 <div id="outline-container-androidmode" class="outline-3">
-<h3 id="androidmode"><span class="section-number-3">18.40</span> android-mode</h3>
+<h3 id="androidmode"><span class="section-number-3">18.40</span> <a href="#androidmode">android-mode</a></h3>
 <div class="outline-text-3" id="text-18-40">
 <div class="org-src-container">
 <pre class="src src-emacs-lisp">(<span class="org-keyword">use-package</span> <span class="org-constant">android-mode</span>
@@ -10347,7 +10392,7 @@ I've disabled perspective because I just don't use it much.
 </div>
 </div>
 <div id="outline-container-gradlemode" class="outline-3">
-<h3 id="gradlemode"><span class="section-number-3">18.41</span> gradle-mode</h3>
+<h3 id="gradlemode"><span class="section-number-3">18.41</span> <a href="#gradlemode">gradle-mode</a></h3>
 <div class="outline-text-3" id="text-18-41">
 <div class="org-src-container">
 <pre class="src src-emacs-lisp">(<span class="org-keyword">use-package</span> <span class="org-constant">gradle-mode</span>)
@@ -10356,7 +10401,7 @@ I've disabled perspective because I just don't use it much.
 </div>
 </div>
 <div id="outline-container-jsxmode" class="outline-3">
-<h3 id="jsxmode"><span class="section-number-3">18.42</span> jsx-mode</h3>
+<h3 id="jsxmode"><span class="section-number-3">18.42</span> <a href="#jsxmode">jsx-mode</a></h3>
 <div class="outline-text-3" id="text-18-42">
 <div class="org-src-container">
 <pre class="src src-emacs-lisp">(<span class="org-keyword">use-package</span> <span class="org-constant">jsx-mode</span>
@@ -10366,7 +10411,7 @@ I've disabled perspective because I just don't use it much.
 </div>
 </div>
 <div id="outline-container-css" class="outline-3">
-<h3 id="css"><span class="section-number-3">18.43</span> css</h3>
+<h3 id="css"><span class="section-number-3">18.43</span> <a href="#css">css</a></h3>
 <div class="outline-text-3" id="text-18-43">
 <div class="org-src-container">
 <pre class="src src-emacs-lisp">(eval-after-load 'css-mode
@@ -10376,7 +10421,7 @@ I've disabled perspective because I just don't use it much.
 </div>
 </div>
 <div id="outline-container-robe" class="outline-3">
-<h3 id="robe"><span class="section-number-3">18.44</span> robe</h3>
+<h3 id="robe"><span class="section-number-3">18.44</span> <a href="#robe">robe</a></h3>
 <div class="outline-text-3" id="text-18-44">
 <div class="org-src-container">
 <pre class="src src-emacs-lisp">(<span class="org-keyword">use-package</span> <span class="org-constant">robe</span>
@@ -10388,7 +10433,7 @@ I've disabled perspective because I just don't use it much.
 </div>
 </div>
 <div id="outline-container-rinari" class="outline-3">
-<h3 id="rinari"><span class="section-number-3">18.45</span> rinari</h3>
+<h3 id="rinari"><span class="section-number-3">18.45</span> <a href="#rinari">rinari</a></h3>
 <div class="outline-text-3" id="text-18-45">
 <div class="org-src-container">
 <pre class="src src-emacs-lisp">(<span class="org-keyword">use-package</span> <span class="org-constant">rinari</span>
@@ -10398,7 +10443,7 @@ I've disabled perspective because I just don't use it much.
 </div>
 </div>
 <div id="outline-container-helmgtags" class="outline-3">
-<h3 id="helmgtags"><span class="section-number-3">18.46</span> helm-gtags</h3>
+<h3 id="helmgtags"><span class="section-number-3">18.46</span> <a href="#helmgtags">helm-gtags</a></h3>
 <div class="outline-text-3" id="text-18-46">
 <div class="org-src-container">
 <pre class="src src-emacs-lisp">(<span class="org-keyword">use-package</span> <span class="org-constant">helm-gtags</span>
@@ -10425,7 +10470,7 @@ I've disabled perspective because I just don't use it much.
 </div>
 </div>
 <div id="outline-container-sgmlmode" class="outline-3">
-<h3 id="sgmlmode"><span class="section-number-3">18.47</span> sgml-mode</h3>
+<h3 id="sgmlmode"><span class="section-number-3">18.47</span> <a href="#sgmlmode">sgml-mode</a></h3>
 <div class="outline-text-3" id="text-18-47">
 <div class="org-src-container">
 <pre class="src src-emacs-lisp">(<span class="org-keyword">use-package</span> <span class="org-constant">sgml-mode</span>
@@ -10436,7 +10481,7 @@ I've disabled perspective because I just don't use it much.
 </div>
 </div>
 <div id="outline-container-evil" class="outline-3">
-<h3 id="evil"><span class="section-number-3">18.48</span> evil</h3>
+<h3 id="evil"><span class="section-number-3">18.48</span> <a href="#evil">evil</a></h3>
 <div class="outline-text-3" id="text-18-48">
 <div class="org-src-container">
 <pre class="src src-emacs-lisp">(<span class="org-keyword">use-package</span> <span class="org-constant">evil</span> <span class="org-builtin">:commands</span> (evil-mode))
@@ -10445,7 +10490,7 @@ I've disabled perspective because I just don't use it much.
 </div>
 </div>
 <div id="outline-container-hackernews" class="outline-3">
-<h3 id="hackernews"><span class="section-number-3">18.49</span> hackernews</h3>
+<h3 id="hackernews"><span class="section-number-3">18.49</span> <a href="#hackernews">hackernews</a></h3>
 <div class="outline-text-3" id="text-18-49">
 <div class="org-src-container">
 <pre class="src src-emacs-lisp">(<span class="org-keyword">use-package</span> <span class="org-constant">hackernews</span> <span class="org-builtin">:commands</span> hackernews)
@@ -10455,10 +10500,10 @@ I've disabled perspective because I just don't use it much.
 </div>
 </div>
 <div id="outline-container-appearance" class="outline-2">
-<h2 id="appearance"><span class="section-number-2">19</span> Appearance</h2>
+<h2 id="appearance"><span class="section-number-2">19</span> <a href="#appearance">Appearance</a></h2>
 <div class="outline-text-2" id="text-19">
 </div><div id="outline-container-basicconfig" class="outline-3">
-<h3 id="basicconfig"><span class="section-number-3">19.1</span> Basic Config</h3>
+<h3 id="basicconfig"><span class="section-number-3">19.1</span> <a href="#basicconfig">Basic Config</a></h3>
 <div class="outline-text-3" id="text-19-1">
 <div class="org-src-container">
 <pre class="src src-emacs-lisp">(<span class="org-keyword">setq</span> inhibit-startup-screen t)
@@ -10468,7 +10513,7 @@ I've disabled perspective because I just don't use it much.
 </div>
 </div>
 <div id="outline-container-themes" class="outline-3">
-<h3 id="themes"><span class="section-number-3">19.2</span> Themes</h3>
+<h3 id="themes"><span class="section-number-3">19.2</span> <a href="#themes">Themes</a></h3>
 <div class="outline-text-3" id="text-19-2">
 <p>
 Ensure all themes that I use are installed:
@@ -10491,7 +10536,7 @@ Ensure all themes that I use are installed:
 </div>
 </div>
 <div id="outline-container-alltheicons" class="outline-3">
-<h3 id="alltheicons"><span class="section-number-3">19.3</span> all-the-icons</h3>
+<h3 id="alltheicons"><span class="section-number-3">19.3</span> <a href="#alltheicons">all-the-icons</a></h3>
 <div class="outline-text-3" id="text-19-3">
 <div class="org-src-container">
 <pre class="src src-emacs-lisp">(<span class="org-keyword">use-package</span> <span class="org-constant">all-the-icons</span>
@@ -10501,10 +10546,10 @@ Ensure all themes that I use are installed:
 </div>
 </div>
 <div id="outline-container-spaceline" class="outline-3">
-<h3 id="spaceline"><span class="section-number-3">19.4</span> spaceline</h3>
+<h3 id="spaceline"><span class="section-number-3">19.4</span> <a href="#spaceline">spaceline</a></h3>
 <div class="outline-text-3" id="text-19-4">
 </div><div id="outline-container-disablesrgbcolorspacetomakepowerlineseparatorswork" class="outline-4">
-<h4 id="disablesrgbcolorspacetomakepowerlineseparatorswork"><span class="section-number-4">19.4.1</span> Disable sRGB colorspace to make powerline separators work</h4>
+<h4 id="disablesrgbcolorspacetomakepowerlineseparatorswork"><span class="section-number-4">19.4.1</span> <a href="#disablesrgbcolorspacetomakepowerlineseparatorswork">Disable sRGB colorspace to make powerline separators work</a></h4>
 <div class="outline-text-4" id="text-19-4-1">
 <div class="org-src-container">
 <pre class="src src-emacs-lisp">(<span class="org-keyword">setq</span> ns-use-srgb-colorspace nil)
@@ -10513,7 +10558,7 @@ Ensure all themes that I use are installed:
 </div>
 </div>
 <div id="outline-container-config1" class="outline-4">
-<h4 id="config1"><span class="section-number-4">19.4.2</span> config</h4>
+<h4 id="config1"><span class="section-number-4">19.4.2</span> <a href="#config1">config</a></h4>
 <div class="outline-text-4" id="text-19-4-2">
 <div class="org-src-container">
 <pre class="src src-emacs-lisp">(<span class="org-keyword">use-package</span> <span class="org-constant">spaceline-config</span>
@@ -10565,7 +10610,7 @@ Ensure all themes that I use are installed:
 </div>
 </div>
 <div id="outline-container-pagebreaklines" class="outline-3">
-<h3 id="pagebreaklines"><span class="section-number-3">19.5</span> page-break-lines</h3>
+<h3 id="pagebreaklines"><span class="section-number-3">19.5</span> <a href="#pagebreaklines">page-break-lines</a></h3>
 <div class="outline-text-3" id="text-19-5">
 <div class="org-src-container">
 <pre class="src src-emacs-lisp">(<span class="org-keyword">use-package</span> <span class="org-constant">page-break-lines</span>
@@ -10580,7 +10625,7 @@ Ensure all themes that I use are installed:
 </div>
 </div>
 <div id="outline-container-helmthemes1" class="outline-3">
-<h3 id="helmthemes1"><span class="section-number-3">19.6</span> helm-themes</h3>
+<h3 id="helmthemes1"><span class="section-number-3">19.6</span> <a href="#helmthemes1">helm-themes</a></h3>
 <div class="outline-text-3" id="text-19-6">
 <p>
 helm-themes provides an easy way to switch between emacs-themes.
@@ -10593,7 +10638,7 @@ helm-themes provides an easy way to switch between emacs-themes.
 </div>
 </div>
 <div id="outline-container-windownumber" class="outline-3">
-<h3 id="windownumber"><span class="section-number-3">19.7</span> window-number</h3>
+<h3 id="windownumber"><span class="section-number-3">19.7</span> <a href="#windownumber">window-number</a></h3>
 <div class="outline-text-3" id="text-19-7">
 <div class="org-src-container">
 <pre class="src src-emacs-lisp">(<span class="org-keyword">use-package</span> <span class="org-constant">window-number</span>
@@ -10603,7 +10648,7 @@ helm-themes provides an easy way to switch between emacs-themes.
 </div>
 </div>
 <div id="outline-container-whitespacesetup" class="outline-3">
-<h3 id="whitespacesetup"><span class="section-number-3">19.8</span> Whitespace Setup</h3>
+<h3 id="whitespacesetup"><span class="section-number-3">19.8</span> <a href="#whitespacesetup">Whitespace Setup</a></h3>
 <div class="outline-text-3" id="text-19-8">
 <p>
 Make whitespace-mode use just basic coloring:
@@ -10627,7 +10672,7 @@ Set the character used to represent spaces to ·, and the character used for tab
 </div>
 
 <div id="outline-container-colorizecompliationbuffers" class="outline-3">
-<h3 id="colorizecompliationbuffers"><span class="section-number-3">19.9</span> Colorize Compliation Buffers</h3>
+<h3 id="colorizecompliationbuffers"><span class="section-number-3">19.9</span> <a href="#colorizecompliationbuffers">Colorize Compliation Buffers</a></h3>
 <div class="outline-text-3" id="text-19-9">
 <p>
 This automatically applies ansi-color interpretation of terminal escape
@@ -10650,7 +10695,7 @@ sequences to compilation buffers.
 </div>
 </div>
 <div id="outline-container-automaticthemechanger" class="outline-3">
-<h3 id="automaticthemechanger"><span class="section-number-3">19.10</span> Automatic Theme Changer</h3>
+<h3 id="automaticthemechanger"><span class="section-number-3">19.10</span> <a href="#automaticthemechanger">Automatic Theme Changer</a></h3>
 <div class="outline-text-3" id="text-19-10">
 <p>
 Disabled for now
@@ -10669,7 +10714,7 @@ Disabled for now
 </div>
 </div>
 <div id="outline-container-fixansitermcolors" class="outline-3">
-<h3 id="fixansitermcolors"><span class="section-number-3">19.11</span> Fix <code>ansi-term</code> Colors</h3>
+<h3 id="fixansitermcolors"><span class="section-number-3">19.11</span> <a href="#fixansitermcolors">Fix <code>ansi-term</code> Colors</a></h3>
 <div class="outline-text-3" id="text-19-11">
 <p>
 For some reason, loading certain themes can cause colors in
@@ -10693,7 +10738,7 @@ load-theme hook (See the heading below).
 </div>
 </div>
 <div id="outline-container-afterloadthemehook" class="outline-3">
-<h3 id="afterloadthemehook"><span class="section-number-3">19.12</span> After <code>load-theme</code> hook</h3>
+<h3 id="afterloadthemehook"><span class="section-number-3">19.12</span> <a href="#afterloadthemehook">After <code>load-theme</code> hook</a></h3>
 <div class="outline-text-3" id="text-19-12">
 <div class="org-src-container">
 <pre class="src src-emacs-lisp">(<span class="org-keyword">defvar</span> <span class="org-variable-name">imalison:light-theme</span> 'solarized-light)
@@ -10711,7 +10756,7 @@ load-theme hook (See the heading below).
 </div>
 </div>
 <div id="outline-container-frameinitialization" class="outline-3">
-<h3 id="frameinitialization"><span class="section-number-3">19.13</span> Frame Initialization</h3>
+<h3 id="frameinitialization"><span class="section-number-3">19.13</span> <a href="#frameinitialization">Frame Initialization</a></h3>
 <div class="outline-text-3" id="text-19-13">
 <div class="org-src-container">
 <pre class="src src-emacs-lisp">(<span class="org-keyword">defvar</span> <span class="org-variable-name">imalison:linum-format</span>)
@@ -10758,7 +10803,7 @@ load-theme hook (See the heading below).
 </div>
 </div>
 <div id="outline-container-hookstoseteverythingup" class="outline-4">
-<h4 id="hookstoseteverythingup"><span class="section-number-4">19.13.1</span> Hooks to set everything up</h4>
+<h4 id="hookstoseteverythingup"><span class="section-number-4">19.13.1</span> <a href="#hookstoseteverythingup">Hooks to set everything up</a></h4>
 <div class="outline-text-4" id="text-19-13-1">
 <div class="org-src-container">
 <pre class="src src-emacs-lisp">(<span class="org-keyword">defun</span> <span class="org-function-name">imalison:initial-setup-hook</span> (<span class="org-type">&amp;rest</span> args)
@@ -10778,7 +10823,7 @@ load-theme hook (See the heading below).
 </div>
 </div>
 <div id="outline-container-postinitcustom" class="outline-2">
-<h2 id="postinitcustom"><span class="section-number-2">20</span> Post Init Custom</h2>
+<h2 id="postinitcustom"><span class="section-number-2">20</span> <a href="#postinitcustom">Post Init Custom</a></h2>
 <div class="outline-text-2" id="text-20">
 <div class="org-src-container">
 <pre class="src src-emacs-lisp">(<span class="org-keyword">when</span> (file-exists-p custom-after-file) (load custom-after-file))
