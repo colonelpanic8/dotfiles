@@ -1,6 +1,6 @@
 language: generic
 
-script: bash ./bin/deploy.sh
+script: bash ./gen-gh-pages/deploy.sh
 env:
   global:
   - ENCRYPTION_LABEL: "73e6c870aa87"
