@@ -24,6 +24,7 @@ ido.last
 jabber-avatar-cache
 org-caldav-*
 org-caldav-backup.org
+org-config.el
 org-gcal/
 persp-confs/
 places
