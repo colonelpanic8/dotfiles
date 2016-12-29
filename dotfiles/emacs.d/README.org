@@ -1,4 +1,5 @@
 # -*- mode: org; -*-
+[[https://travis-ci.org/IvanMalison/dotfiles][file:https://travis-ci.org/IvanMalison/dotfiles.svg?branch=master]]
 This document is best read at [[http://ivanmalison.github.io/dotfiles/]] or, of
 course, in emacs, as the internal links that follow are unlikely to work
 anywhere else (including, for example, at
