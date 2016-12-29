@@ -3,7 +3,7 @@
 "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
-<!-- 2016-12-29 Thu 05:41 -->
+<!-- 2016-12-29 Thu 07:37 -->
 <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title></title>
@@ -10768,7 +10768,10 @@ load-theme hook (See the heading below).
 
 (<span class="org-keyword">defun</span> <span class="org-function-name">imalison:restore-ansi-term-color-vector</span> (<span class="org-type">&amp;optional</span> force)
   (<span class="org-keyword">when</span> (<span class="org-keyword">or</span> force (imalison:ansi-term-color-vector-broken?))
-    (<span class="org-keyword">setq</span> ansi-term-color-vector imalison:ansi-term-color-vector)))
+    (<span class="org-keyword">setq</span> ansi-term-color-vector imalison:ansi-term-color-vector)
+    (<span class="org-keyword">when</span> (imalison:ansi-term-color-vector-broken?)
+      (message
+       <span class="org-string">"Oh no! ansi-term-color vector is super busted (check in custom)."</span>))))
 </pre>
 </div>
 </div>
@@ -10784,9 +10787,17 @@ load-theme hook (See the heading below).
   (<span class="org-keyword">when</span> (fboundp 'powerline-reset)
     (powerline-reset))
   (set-face-background 'fringe (face-background 'default))
+
+  <span class="org-comment-delimiter">;; </span><span class="org-comment">Copy faces from highlight-indentation for highlight-indentation-guides</span>
+  (set-face-background 'highlight-indent-guides-even-face
+                       (face-background 'highlight-indentation-face))
+  (set-face-background 'highlight-indent-guides-odd-face
+                       (face-background
+                        'highlight-indentation-current-column-face))
+
   (imalison:restore-ansi-term-color-vector))
 
-(advice-add 'load-theme <span class="org-builtin">:after</span> #'imalison:after-load-theme)
+(advice-add 'load-theme <span class="org-builtin">:after</span> 'imalison:after-load-theme)
 </pre>
 </div>
 </div>
