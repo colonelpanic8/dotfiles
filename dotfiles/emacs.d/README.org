@@ -1609,6 +1609,16 @@ https://github.com/alpaker/Fill-Column-Indicator/issues/21 for more details
     (advice-add 'company-call-frontends :before #'fci-on-off-fci-before-company)
     (add-hook 'prog-mode-hook 'fci-mode)))
 #+END_SRC
+** highlight-indent-guides
+#+BEGIN_SRC emacs-lisp
+(use-package highlight-indent-guides
+  :commands highlight-indent-guides-mode
+  :preface
+  (add-hook 'prog-mode-hook 'highlight-indent-guides-mode)
+  :config
+  (progn
+    (setq highlight-indent-guides-method 'fill)))
+#+END_SRC
 * Keybindings
 ** god-mode
 #+BEGIN_SRC emacs-lisp
