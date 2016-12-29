@@ -4758,9 +4758,17 @@ load-theme hook (See the heading below).
   (when (fboundp 'powerline-reset)
     (powerline-reset))
   (set-face-background 'fringe (face-background 'default))
+
+  ;; Copy faces from highlight-indentation for highlight-indentation-guides
+  (set-face-background 'highlight-indent-guides-even-face
+                       (face-background 'highlight-indentation-face))
+  (set-face-background 'highlight-indent-guides-odd-face
+                       (face-background
+                        'highlight-indentation-current-column-face))
+
   (imalison:restore-ansi-term-color-vector))
 
-(advice-add 'load-theme :after #'imalison:after-load-theme)
+(advice-add 'load-theme :after 'imalison:after-load-theme)
 #+END_SRC
 ** Frame Initialization
 #+BEGIN_SRC emacs-lisp
