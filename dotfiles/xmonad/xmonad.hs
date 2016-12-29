@@ -715,11 +715,11 @@ addKeys conf@XConfig {modMask = modm} =
     , ((0, xF86XK_AudioPrev), spawn "playerctl previous")
 
     -- Volume control
-    , ((0, xF86XK_AudioRaiseVolume), spawn "pulseaudio-ctl up")
-    , ((0, xF86XK_AudioLowerVolume), spawn "pulseaudio-ctl down")
-    , ((0, xF86XK_AudioMute), spawn "pulseaudio-ctl mute")
-    , ((mod3Mask, xK_w), spawn "pulseaudio-ctl up")
-    , ((mod3Mask, xK_s), spawn "pulseaudio-ctl down")
+    , ((0, xF86XK_AudioRaiseVolume), spawn "set_volume.sh up")
+    , ((0, xF86XK_AudioLowerVolume), spawn "set_volume.sh down")
+    , ((0, xF86XK_AudioMute), spawn "set_volume.sh mute")
+    , ((mod3Mask, xK_w), spawn "set_volume.sh up")
+    , ((mod3Mask, xK_s), spawn "set_volume.sh down")
 
     ] ++
 
