@@ -3328,6 +3328,17 @@ alphanumeric characters only."
     (setq org-html-format-headline-function
           'imalison:org-html-format-heading-function)))
 #+END_SRC
+**** Allow with query params in image extentions
+#+BEGIN_SRC emacs-lisp :tangle org-config.el
+(use-package ox-html
+  :ensure nil
+  :config
+  (setq org-html-inline-image-rules
+        '(("file" . "\\.\\(jpeg\\|jpg\\|png\\|gif\\|svg\\)\\(\\?.*?\\)?\\'")
+
+          ("http" . "\\.\\(jpeg\\|jpg\\|png\\|gif\\|svg\\)\\(\\?.*?\\)?\\'")
+          ("https" . "\\.\\(jpeg\\|jpg\\|png\\|gif\\|svg\\)\\(\\?.*?\\)?\\'"))))
+#+END_SRC
 **** org-projectile
 #+BEGIN_SRC emacs-lisp
 (use-package org-projectile
