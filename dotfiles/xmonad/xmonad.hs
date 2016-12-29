@@ -612,7 +612,6 @@ addKeys conf@XConfig {modMask = modm} =
     bindBringAndRaiseMany
     [ (modalt, xK_e, spawn emacsCommand, emacsSelector)
     , (modalt, xK_c, spawn chromeCommand, chromeSelector)
-    , (modalt, xK_s, spawn spotifyCommand, spotifySelector)
     , (modalt, xK_t, spawn transmissionCommand, transmissionSelector)
     ] ++
 
@@ -620,8 +619,11 @@ addKeys conf@XConfig {modMask = modm} =
     [ ((modalt, xK_m), doScratchpad "htop")
     , ((modalt, xK_v), doScratchpad "volume")
     , ((modalt, xK_h), doScratchpad "hangouts")
+    , ((modalt, xK_s), doScratchpad "spotify")
     , ((modalt .|. controlMask, xK_h),
        myRaiseNextMaybe (spawn hangoutsCommand) hangoutsSelector)
+    , ((modalt .|. controlMask, xK_s),
+       myRaiseNextMaybe (spawn spotifyCommand) spotifySelector)
 
     -- Specific program spawning
 
