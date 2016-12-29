@@ -1750,7 +1750,7 @@ bind-key and global-set-key forms.
   :bind ("M-z" . zop-to-char)
   :init
   (progn
-    (setq zop-to-char-kill-keys '(?\C-k))
+    (setq zop-to-char-kill-keys '(?\C-k ?\C-w))
     (setq zop-to-char-quit-at-point-keys '(?\r))))
 #+END_SRC
 ** helm
