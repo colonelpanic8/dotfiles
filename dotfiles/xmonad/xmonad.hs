@@ -608,7 +608,7 @@ goToNextScreenX = windows goToNextScreen
 
 addKeys conf@XConfig {modMask = modm} =
 
-   -- Specific program spawning
+    -- Specific program spawning
     bindBringAndRaiseMany
     [ (modalt, xK_e, spawn emacsCommand, emacsSelector)
     , (modalt, xK_c, spawn chromeCommand, chromeSelector)
