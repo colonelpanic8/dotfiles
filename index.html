@@ -3,7 +3,7 @@
 "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
-<!-- 2016-12-29 Thu 03:00 -->
+<!-- 2016-12-29 Thu 03:43 -->
 <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title></title>
@@ -3830,6 +3830,7 @@ for the JavaScript code in this tag.
 <li><a href="#stream">6.38. stream</a></li>
 <li><a href="#tile">6.39. tile</a></li>
 <li><a href="#fillcolumnindicator">6.40. fill-column-indicator</a></li>
+<li><a href="#highlightindentguides">6.41. highlight-indent-guides</a></li>
 </ul>
 </li>
 <li><a href="#keybindings">7. Keybindings</a>
@@ -6550,6 +6551,21 @@ This interferes with too many other packages. See
         (turn-on-fci-mode)))
     (advice-add 'company-call-frontends <span class="org-builtin">:before</span> #'fci-on-off-fci-before-company)
     (add-hook 'prog-mode-hook 'fci-mode)))
+</pre>
+</div>
+</div>
+</div>
+<div id="outline-container-highlightindentguides" class="outline-3">
+<h3 id="highlightindentguides"><span class="section-number-3">6.41</span> highlight-indent-guides <a href="#highlightindentguides"><svg aria-hidden="true" class="octicon octicon-link" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a></h3>
+<div class="outline-text-3" id="text-6-41">
+<div class="org-src-container">
+<pre class="src src-emacs-lisp">(<span class="org-keyword">use-package</span> <span class="org-constant">highlight-indent-guides</span>
+  <span class="org-builtin">:commands</span> highlight-indent-guides-mode
+  <span class="org-builtin">:preface</span>
+  (add-hook 'prog-mode-hook 'highlight-indent-guides-mode)
+  <span class="org-builtin">:config</span>
+  (<span class="org-keyword">progn</span>
+    (<span class="org-keyword">setq</span> highlight-indent-guides-method 'fill)))
 </pre>
 </div>
 </div>
