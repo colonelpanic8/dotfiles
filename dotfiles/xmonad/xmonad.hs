@@ -419,6 +419,10 @@ maximizedOtherClass =
   intersect <$> maximizedWindows <*>
   (currentWS >>= maybe (return []) windowsWithUnfocusedClass)
 
+minimizedSameClass =
+  intersect <$> minimizedWindows <*>
+  (currentWS >>= maybe (return []) windowsWithFocusedClass)
+
 getClassMatchesWindow w = (==) <$> getClass w
 getClassMatchesCurrent = join $ withFocusedD (`seq` False) getClassMatchesWindow
 
@@ -470,10 +474,15 @@ maybeUnminimizeClassAfter = (>> maximizeSameClassesInWorkspace)
 sameClassOnly action =
   action >> minimizeOtherClassesInWorkspace >> maximizeSameClassesInWorkspace
 
-restoreAllMinimized = void $ join $ mapM maximizeWindow <$> minimizedWindows
+restoreAll windows = mapM_ maximizeWindow windows
+
+restoreAllMinimized = minimizedWindows >>= restoreAll
 
 restoreOrMinimizeOtherClasses = null <$> maximizedOtherClass >>=
   ifL restoreAllMinimized minimizeOtherClassesInWorkspace
+
+restoreThisClassOrMinimizeOtherClasses = minimizedSameClass >>= \windows ->
+  if' (null windows) minimizeOtherClassesInWorkspace $ restoreAll windows
 
 getClassPair w = flip (,) w <$> getClass w
 
@@ -569,7 +578,7 @@ doScratchpad =
 -- Raise or spawn
 
 myRaiseNextMaybe =
-  ((deactivateFullAnd . maybeUnminimizeClassAfter) .) .
+  ((deactivateFullAnd . maybeUnminimizeAfter) .) .
   raiseNextMaybeCustomFocus greedyFocusWindow
 
 myBringNextMaybe =
@@ -578,11 +587,13 @@ myBringNextMaybe =
 
 bindBringAndRaise :: KeyMask -> KeySym -> X () -> Query Bool -> [((KeyMask, KeySym), X ())]
 bindBringAndRaise mask sym start query =
-    [ ((mask, sym), doRaiseNext)
+    [ ((mask, sym),
+       alreadyFocused >>= ifL restoreThisClassOrMinimizeOtherClasses doRaiseNext)
     , ((mask .|. controlMask, sym), myBringNextMaybe start query)
-    , ((mask .|. shiftMask, sym), doRaiseNext >> minimizeOtherClassesInWorkspace)
+    , ((mask .|. shiftMask, sym), doRaiseNext)
     ]
   where doRaiseNext = myRaiseNextMaybe start query
+        alreadyFocused = join $ withFocusedD False $ runQuery query
 
 bindBringAndRaiseMany :: [(KeyMask, KeySym, X (), Query Bool)] -> [((KeyMask, KeySym), X())]
 bindBringAndRaiseMany = concatMap (\(a, b, c, d) -> bindBringAndRaise a b c d)
