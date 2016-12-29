@@ -26,7 +26,7 @@ function _setup_env {
 }
 
 function _linux_path_setup {
-    add_to_path "/usr/lib/gnome-settings-daemon"
+    add_to_path "/usr/lib/gnome-settings-daemon" "/usr/lib/notify-osd-customizable"
 }
 
 function _osx_path_setup {
