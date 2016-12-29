@@ -35,6 +35,7 @@ import           XMonad.Hooks.ManageDocks
 import           XMonad.Hooks.Minimize
 import           XMonad.Layout.Accordion
 import           XMonad.Layout.BoringWindows
+import           XMonad.Layout.Cross
 import           XMonad.Layout.LayoutCombinators
 import           XMonad.Layout.LayoutModifier
 import           XMonad.Layout.LimitWindows
@@ -264,7 +265,7 @@ layoutInfo =
   layoutsStart (rename "Columns" $ multiCol [1, 1] 2 0.01 (-0.5)) |||!
   rename "Large Main" (Tall 1 (3 / 100) (3 / 4)) |||!
   rename "2 Columns" (Tall 1 (3 / 100) (1 / 2)) |||!
-  Accordion
+  Accordion |||! simpleCross
 
 layoutList = snd layoutInfo
 
