@@ -1650,7 +1650,6 @@ https://github.com/alpaker/Fill-Column-Indicator/issues/21 for more details
     (defun imalison:set-highlight-indent-guides-faces (&rest args)
       (interactive)
       (let ((bg-color (face-background 'default)))
-        (message "bg-color %s" bg-color)
         (set-face-background 'highlight-indent-guides-odd-face
                              (imalison:modify-hsv
                               bg-color
