@@ -708,9 +708,16 @@ For composing functions with an apply so that they can be used with the ~:around
 ** Font Size
 This was taken from [[http://emacs.stackexchange.com/questions/7583/transiently-adjust-text-size-in-mode-line-and-minibuffer][here]] but it has diverged significantly from the original.
 #+BEGIN_SRC emacs-lisp
-(defvar imalison:default-font-size-pt
-      (cond ((eq system-type 'darwin) 120)
-            ((eq system-type 'gnu/linux) 105)))
+(defvar imalison:default-font-size-pt (face-attribute 'default :height))
+
+;; XXX: hack to get proper default value when default is set to something crazy
+(defun imalison:set-default-font-size (&rest args)
+  (when (or (> imalison:default-font-size-pt 150)
+            (< imalison:default-font-size-pt 50))
+    (message "default font size was set using hack")
+    (setq imalison:default-font-size-pt (face-attribute 'default :height))))
+
+(advice-add 'set-face-attribute :after 'imalison:set-default-font-size)
 
 (defvar imalison:huge-font-size 280)
 
@@ -4713,10 +4720,6 @@ Ensure all themes that I use are installed:
     (setq spaceline-workspace-numbers-unicode t
           spaceline-window-numbers-unicode t)
 
-    (if (display-graphic-p)
-        (setq-default powerline-default-separator 'wave)
-      (setq-default powerline-default-separator 'utf-8))
-
     (spaceline-define-segment imalison:muni
       "Display the number of minutes until the next muni train comes"
       (format "🚇%s" (imalison:get-cached-muni-time))
@@ -4836,9 +4839,18 @@ load-theme hook (See the heading below).
 
 (advice-add 'load-theme :after #'imalison:after-load-theme)
 #+END_SRC
-** Frame Initialization
+** Set Font
+#+BEGIN_SRC emacs-lisp
+(add-to-list 'default-frame-alist
+             '(font . "Source Code Pro-10:weight=semi-bold"))
+#+END_SRC
+** imalison:appearance
 #+BEGIN_SRC emacs-lisp
 (defvar imalison:linum-format)
+
+;; Let me control my own goddamn fonts
+;; XXX: This doesn't seem to work
+(setq font-use-system-font nil)
 
 (defun imalison:format-linum (line-text)
   (propertize (format imalison:linum-format line-text) 'face 'linum))
@@ -4861,36 +4873,29 @@ load-theme hook (See the heading below).
   (setq left-margin-width 0)
   (defvar-setq hl-line-mode nil))
 
+
 (defun imalison:appearance (&optional frame)
+  (setq font-use-system-font nil)
   (interactive (list nil))
-  (if (display-graphic-p)
-      (progn
-        (condition-case error
-            (set-face-attribute 'default nil :font "source code pro")
-          ('error (message "Error: %s, when setting font" error)))
-        (set-face-attribute 'default nil :weight 'semi-bold)
-        (set-face-attribute
-         'default nil :height imalison:default-font-size-pt))
-    (progn
-      (load-theme 'source-code-pro t)
-      (message "not setting font")))
-  (setq powerline-default-separator (if (display-graphic-p) 'wave 'utf-8))
-  (load-theme imalison:dark-theme t)
+  (unless (member imalison:dark-theme custom-enabled-themes)
+    (load-theme imalison:dark-theme t))
   (spaceline-compile)
-  (imalison:remove-fringe-and-hl-line-mode))
+  (imalison:remove-fringe-and-hl-line-mode)
+  (setq powerline-default-separator (random-choice '(butt slant wave))))
 #+END_SRC
 *** Hooks to set everything up
 #+BEGIN_SRC emacs-lisp
-(defun imalison:initial-setup-hook (&rest args)
-  (apply 'imalison:appearance args)
-  (remove-hook 'after-make-frame-functions 'imalison:initial-setup-hook))
+(defvar imalison:appearance-setup-done nil)
 
-;; This is needed because you can't set the font or theme at daemon start-up.
-;; (when (display-graphic-p) (imalison:appearance))
-(add-hook 'after-init-hook 'imalison:appearance)
+(defun imalison:appearance-setup-hook (&rest args)
+  (unless imalison:appearance-setup-done
+    (apply 'imalison:appearance args)
+    (setq imalison:default-font-size-pt (face-attribute 'default :height))
+    (setq imalison:appearance-setup-done t)))
 
-;; XXX: I think that after-init-hook is good enough
-;; (add-hook 'after-make-frame-functions 'imalison:initial-setup-hook)
+(if (daemonp)
+    (add-hook 'after-make-frame-functions 'imalison:appearance-setup-hook)
+  (add-hook 'after-init-hook 'imalison:appearance-setup-hook))
 #+END_SRC
 * Post Init Custom
 #+BEGIN_SRC emacs-lisp
