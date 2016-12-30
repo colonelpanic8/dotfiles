@@ -5,6 +5,9 @@ THIS_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 
 cd $THIS_DIR
 
+git config user.name "$COMMIT_AUTHOR_NAME"
+git config user.email "$COMMIT_AUTHOR_EMAIL"
+
 set -e # Exit with nonzero exit code if anything fails
 
 SOURCE_BRANCH="master"
@@ -26,16 +29,6 @@ REPO=`git config remote.origin.url`
 SSH_REPO=${REPO/https:\/\/github.com\//git@github.com:}
 SHA=`git rev-parse --verify HEAD`
 
-# Clone the existing gh-pages for this repo into out/
-# Create a new empty branch if gh-pages doesn't exist yet (should only happen on first deply)
-git clone $REPO out
-cd out
-git checkout $TARGET_BRANCH || git checkout --orphan $TARGET_BRANCH
-cd ..
-
-# Clean out existing contents
-rm -rf out/**/* || exit 0
-
 # Run our compile script
 doCompile
 
@@ -50,10 +43,16 @@ chmod 600 deploy_key
 eval `ssh-agent -s`
 ssh-add deploy_key
 
-# Now let's go have some fun with the cloned repo
+# Clone the existing gh-pages for this repo into out/
+# Create a new empty branch if gh-pages doesn't exist yet (should only happen on first deply)
+git clone $REPO out
 cd out
-git config user.name "$COMMIT_AUTHOR_NAME"
-git config user.email "$COMMIT_AUTHOR_EMAIL"
+git checkout $TARGET_BRANCH || git checkout --orphan $TARGET_BRANCH
+
+# Clean out existing contents
+git ls-files | xargs rm -rf
+
+mv ../README.html ./index.html
 
 # Commit the "changes", i.e. the new version.
 # The delta will show diffs between new and old versions.
