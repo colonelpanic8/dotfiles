@@ -4003,6 +4003,12 @@ crux-reopen-as-root-mode makes it so that any file owned by root will automatica
 #+BEGIN_SRC emacs-lisp
 (use-package kdeconnect)
 #+END_SRC
+** helm-systemd
+#+BEGIN_SRC emacs-lisp
+(use-package helm-systemd
+  :after helm
+  :demand t)
+#+END_SRC
 * Chat
 ** erc
 #+BEGIN_SRC emacs-lisp
