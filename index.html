@@ -3,7 +3,7 @@
 "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
-<!-- 2016-12-29 Thu 21:47 -->
+<!-- 2016-12-30 Fri 00:38 -->
 <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title></title>
@@ -6562,10 +6562,70 @@ This interferes with too many other packages. See
 <pre class="src src-emacs-lisp">(<span class="org-keyword">use-package</span> <span class="org-constant">highlight-indent-guides</span>
   <span class="org-builtin">:commands</span> highlight-indent-guides-mode
   <span class="org-builtin">:preface</span>
-  (add-hook 'prog-mode-hook 'highlight-indent-guides-mode)
+  (<span class="org-keyword">progn</span>
+    (<span class="org-keyword">use-package</span> <span class="org-constant">hexrgb</span> <span class="org-builtin">:demand</span> t)
+
+    (<span class="org-keyword">defun</span> <span class="org-function-name">imalison:change-hsv-value-by</span> (delta)
+      (<span class="org-keyword">lambda</span> (h s v)
+        (list h s (+ v delta))))
+
+    (<span class="org-keyword">defun</span> <span class="org-function-name">imalison:build-safe-change-hsv-value</span> (delta)
+      (<span class="org-keyword">lambda</span> (h s v)
+        (imalison:safe-change-hsv-value
+         h s v delta)))
+
+    (<span class="org-keyword">defun</span> <span class="org-function-name">imalison:new-hsv-value-safe</span> (value)
+      (<span class="org-keyword">or</span> (&gt; value 1) (&lt; value 0)))
+
+    (<span class="org-keyword">defun</span> <span class="org-function-name">imalison:safe-change-hsv-value</span> (h s v delta)
+      (<span class="org-keyword">let</span> ((new-value (+ v delta)))
+        (<span class="org-keyword">if</span> (imalison:new-hsv-value-safe new-value)
+            (<span class="org-keyword">let</span> ((other-direction (+ v (* delta -2))))
+              (<span class="org-keyword">if</span> (imalison:new-hsv-value-safe other-direction)
+                  (<span class="org-warning">user-error</span> <span class="org-string">"delta %s is too large"</span> delta)
+                (list h s other-direction)))
+          (list h s new-value))))
+
+    (<span class="org-keyword">defun</span> <span class="org-function-name">imalison:modify-hsv</span> (color fn)
+      (hexrgb-rgb-hex-to-rgb-hex
+       (apply 'hexrgb-hsv-to-hex (apply fn (hexrgb-hex-to-hsv color))) 2))
+
+    (<span class="org-keyword">defun</span> <span class="org-function-name">imalison:modify-hsv-value-by</span> (color delta)
+      (imalison:modify-hsv color (imalison:build-safe-change-hsv-value delta)))
+
+    (<span class="org-keyword">defvar</span> <span class="org-variable-name">imalison:hsv-value-delta</span> .03)
+
+    (<span class="org-keyword">defun</span> <span class="org-function-name">imalison:set-highlight-indent-guides-faces</span> (<span class="org-type">&amp;rest</span> args)
+      (<span class="org-keyword">interactive</span>)
+      (<span class="org-keyword">let</span> ((bg-color (face-background 'default)))
+        (message <span class="org-string">"bg-color %s"</span> bg-color)
+        (set-face-background 'highlight-indent-guides-odd-face
+                             (imalison:modify-hsv
+                              bg-color
+                              (imalison:build-safe-change-hsv-value
+                               (* -1 imalison:hsv-value-delta))))
+        (set-face-background 'highlight-indent-guides-even-face
+                             (imalison:modify-hsv
+                              bg-color
+                              (imalison:build-safe-change-hsv-value
+                               imalison:hsv-value-delta)))))
+
+    <span class="org-comment-delimiter">;; </span><span class="org-comment">XXX: This hacks around the fact that (face-background 'default) is nil at</span>
+    <span class="org-comment-delimiter">;; </span><span class="org-comment">the time of load-theme</span>
+    (<span class="org-keyword">defun</span> <span class="org-function-name">imalison:set-highlight-indent-guides-faces-load-theme</span> (<span class="org-type">&amp;rest</span> args)
+      (<span class="org-keyword">if</span> (face-background 'default)
+          (imalison:set-highlight-indent-guides-faces)
+        (run-at-time <span class="org-string">"1 sec"</span> nil 'imalison:set-highlight-indent-guides-faces-load-theme)))
+
+    (advice-add 'load-theme
+                <span class="org-builtin">:after</span> 'imalison:set-highlight-indent-guides-faces-load-theme)
+
+    (add-hook 'prog-mode-hook 'highlight-indent-guides-mode))
   <span class="org-builtin">:config</span>
   (<span class="org-keyword">progn</span>
     (<span class="org-keyword">setq</span> highlight-indent-guides-method 'fill)))
+
+(<span class="org-keyword">setq</span> lexical-binding t)
 </pre>
 </div>
 </div>
@@ -9901,9 +9961,13 @@ I have currently disabled key-chord because it may cause typing lag.
 <div id="outline-container-jabber" class="outline-3">
 <h3 id="jabber"><span class="section-number-3">18.17</span> jabber <a href="#jabber"><svg aria-hidden="true" class="octicon octicon-link" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a></h3>
 <div class="outline-text-3" id="text-18-17">
+<p>
+Disabled because it has its own version of hexrgb which might cause conflicts
+</p>
 <div class="org-src-container">
 <pre class="src src-emacs-lisp">(<span class="org-keyword">use-package</span> <span class="org-constant">jabber</span>
   <span class="org-builtin">:commands</span> jabber-connect
+  <span class="org-builtin">:disabled</span> t
   <span class="org-builtin">:config</span>
   (<span class="org-keyword">progn</span>
     (<span class="org-keyword">setq</span> jabber-alert-presence-hooks nil)
