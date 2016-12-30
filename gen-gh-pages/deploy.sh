@@ -5,8 +5,8 @@ THIS_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 
 cd $THIS_DIR
 
-git config user.name "$COMMIT_AUTHOR_NAME"
-git config user.email "$COMMIT_AUTHOR_EMAIL"
+git config --global user.name "$COMMIT_AUTHOR_NAME"
+git config --global user.email "$COMMIT_AUTHOR_EMAIL"
 
 set -e # Exit with nonzero exit code if anything fails
 
@@ -59,4 +59,11 @@ mv ../README.html ./index.html
 git add --all .
 git commit -m "Deploy to GitHub Pages: ${SHA}"
 
-git push "$SSH_REPO" "$TARGET_BRANCH"
+git fetch origin master
+
+if [ "$(git rev-parse origin/master)" == "$SHA" ]; then
+  git push "$SSH_REPO" "$TARGET_BRANCH"
+
+else
+    echo "The commit this build was started for is not the one on master. Doing nothing."
+fi
