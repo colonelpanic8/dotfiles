@@ -3,7 +3,7 @@
 "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
-<!-- 2016-12-30 Fri 04:46 -->
+<!-- 2016-12-30 Fri 20:53 -->
 <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title></title>
@@ -6622,7 +6622,9 @@ This interferes with too many other packages. See
     <span class="org-comment-delimiter">;; </span><span class="org-comment">the time of load-theme</span>
     (<span class="org-keyword">defun</span> <span class="org-function-name">imalison:set-highlight-indent-guides-faces-load-theme</span> (<span class="org-type">&amp;rest</span> args)
       (<span class="org-keyword">if</span> (face-background 'default)
-          (imalison:set-highlight-indent-guides-faces)
+          (<span class="org-keyword">progn</span>
+            (<span class="org-keyword">require</span> '<span class="org-constant">highlight-indent-guides</span>)
+            (imalison:set-highlight-indent-guides-faces))
         (run-at-time <span class="org-string">"1 sec"</span> nil 'imalison:set-highlight-indent-guides-faces-load-theme)))
 
     (advice-add 'load-theme
@@ -7772,6 +7774,10 @@ Reduce indentation for some functions
 <div class="org-src-container">
 <pre class="src src-emacs-lisp">(<span class="org-keyword">use-package</span> <span class="org-constant">eros</span>
   <span class="org-builtin">:commands</span> (eros-mode)
+  <span class="org-builtin">:config</span>
+  (<span class="org-keyword">progn</span>
+    (advice-add 'eval-defun <span class="org-builtin">:around</span> 'eros-around-eval-defun)
+    (advice-add 'eval-last-sexp <span class="org-builtin">:around</span> 'eros-around-eval-last-sexp))
   <span class="org-builtin">:preface</span>
   (<span class="org-keyword">progn</span>
     (<span class="org-keyword">defun</span> <span class="org-function-name">eros-around-eval-last-sexp</span> (fn <span class="org-type">&amp;rest</span> args)
@@ -7783,9 +7789,6 @@ Reduce indentation for some functions
        (<span class="org-keyword">save-excursion</span>
          (end-of-defun)
          (point))))
-
-    (advice-add 'eval-defun <span class="org-builtin">:around</span> 'eros-around-eval-defun)
-    (advice-add 'eval-last-sexp <span class="org-builtin">:around</span> 'eros-around-eval-last-sexp)
 
     (add-hook 'emacs-lisp-mode-hook 'eros-mode)))
 </pre>
