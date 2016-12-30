@@ -2891,7 +2891,7 @@ Intero seems to be causing hangs, so it has been disabled
               (("C-e" . end-of-visual-line)))
   :preface
   (progn
-        ;; XXX: These should probably be moved to config, right?
+    ;; XXX: These should probably be moved to config, right?
     (setq org-startup-indented nil
           org-startup-folded t
           org-edit-src-content-indentation 0
