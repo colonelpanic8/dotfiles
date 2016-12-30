@@ -2500,6 +2500,19 @@ Reduce indentation for some functions
   :commands (eros-mode)
   :preface
   (progn
+    (defun eros-around-eval-last-sexp (fn &rest args)
+      (eros--eval-overlay (apply fn args) (point)))
+
+    (defun eros-around-eval-defun (fn &rest args)
+      (eros--eval-overlay
+       (apply fn args)
+       (save-excursion
+         (end-of-defun)
+         (point))))
+
+    (advice-add 'eval-defun :around 'eros-around-eval-defun)
+    (advice-add 'eval-last-sexp :around 'eros-around-eval-last-sexp)
+
     (add-hook 'emacs-lisp-mode-hook 'eros-mode)))
 #+END_SRC
 **** Reevalute defvars when running eval-last-sexp
