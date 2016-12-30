@@ -3311,6 +3311,16 @@ separately. This means that I need to load this file in init.el.
       (progn
         (setcdr (assoc 'file org-link-frame-setup) 'find-file-other-frame)))))
 #+END_SRC
+**** Disable yasnippet in org-mode
+#+BEGIN_SRC emacs-lisp
+(use-package org
+  :ensure nil
+  :config
+  (progn
+    (defun imalison:disable-yas ()
+      (yas-minor-mode -1))
+    (add-hook 'org-mode-hook 'imalison:disable-yas)))
+#+END_SRC
 **** Set Background Color of Source Blocks for Export
 This was taken from [[http://emacs.stackexchange.com/questions/3374/set-the-background-of-org-exported-code-blocks-according-to-theme][here]].
 #+BEGIN_SRC emacs-lisp :tangle org-config.el
