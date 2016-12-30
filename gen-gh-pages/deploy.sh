@@ -63,7 +63,6 @@ git fetch origin master
 
 if [ "$(git rev-parse origin/master)" == "$SHA" ]; then
   git push "$SSH_REPO" "$TARGET_BRANCH"
-
 else
     echo "The commit this build was started for is not the one on master. Doing nothing."
 fi
