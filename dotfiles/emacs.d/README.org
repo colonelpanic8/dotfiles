@@ -2504,6 +2504,10 @@ Reduce indentation for some functions
 #+BEGIN_SRC emacs-lisp
 (use-package eros
   :commands (eros-mode)
+  :config
+  (progn
+    (advice-add 'eval-defun :around 'eros-around-eval-defun)
+    (advice-add 'eval-last-sexp :around 'eros-around-eval-last-sexp))
   :preface
   (progn
     (defun eros-around-eval-last-sexp (fn &rest args)
@@ -2515,9 +2519,6 @@ Reduce indentation for some functions
        (save-excursion
          (end-of-defun)
          (point))))
-
-    (advice-add 'eval-defun :around 'eros-around-eval-defun)
-    (advice-add 'eval-last-sexp :around 'eros-around-eval-last-sexp)
 
     (add-hook 'emacs-lisp-mode-hook 'eros-mode)))
 #+END_SRC
