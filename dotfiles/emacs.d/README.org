@@ -1672,7 +1672,9 @@ https://github.com/alpaker/Fill-Column-Indicator/issues/21 for more details
     ;; the time of load-theme
     (defun imalison:set-highlight-indent-guides-faces-load-theme (&rest args)
       (if (face-background 'default)
-          (imalison:set-highlight-indent-guides-faces)
+          (progn
+            (require 'highlight-indent-guides)
+            (imalison:set-highlight-indent-guides-faces))
         (run-at-time "1 sec" nil 'imalison:set-highlight-indent-guides-faces-load-theme)))
 
     (advice-add 'load-theme
@@ -2504,6 +2506,10 @@ Reduce indentation for some functions
 #+BEGIN_SRC emacs-lisp
 (use-package eros
   :commands (eros-mode)
+  :config
+  (progn
+    (advice-add 'eval-defun :around 'eros-around-eval-defun)
+    (advice-add 'eval-last-sexp :around 'eros-around-eval-last-sexp))
   :preface
   (progn
     (defun eros-around-eval-last-sexp (fn &rest args)
@@ -2515,9 +2521,6 @@ Reduce indentation for some functions
        (save-excursion
          (end-of-defun)
          (point))))
-
-    (advice-add 'eval-defun :around 'eros-around-eval-defun)
-    (advice-add 'eval-last-sexp :around 'eros-around-eval-last-sexp)
 
     (add-hook 'emacs-lisp-mode-hook 'eros-mode)))
 #+END_SRC
