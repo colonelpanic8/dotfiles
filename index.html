@@ -3,7 +3,7 @@
 "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
-<!-- 2016-12-31 Sat 21:53 -->
+<!-- 2016-12-31 Sat 22:21 -->
 <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title></title>
@@ -6607,29 +6607,22 @@ This interferes with too many other packages. See
 
     (<span class="org-keyword">defun</span> <span class="org-function-name">imalison:set-highlight-indent-guides-faces</span> (<span class="org-type">&amp;rest</span> args)
       (<span class="org-keyword">interactive</span>)
+      (<span class="org-keyword">require</span> '<span class="org-constant">highlight-indent-guides</span>)
       (<span class="org-keyword">let</span> ((bg-color (face-background 'default)))
-        (set-face-background 'highlight-indent-guides-odd-face
-                             (imalison:modify-hsv
-                              bg-color
-                              (imalison:build-safe-change-hsv-value
-                               (* -1 imalison:hsv-value-delta))))
-        (set-face-background 'highlight-indent-guides-even-face
-                             (imalison:modify-hsv
-                              bg-color
-                              (imalison:build-safe-change-hsv-value
-                               imalison:hsv-value-delta)))))
-
-    <span class="org-comment-delimiter">;; </span><span class="org-comment">XXX: This hacks around the fact that (face-background 'default) is nil at</span>
-    <span class="org-comment-delimiter">;; </span><span class="org-comment">the time of load-theme</span>
-    (<span class="org-keyword">defun</span> <span class="org-function-name">imalison:set-highlight-indent-guides-faces-load-theme</span> (<span class="org-type">&amp;rest</span> args)
-      (<span class="org-keyword">if</span> (face-background 'default)
-          (<span class="org-keyword">progn</span>
-            (<span class="org-keyword">require</span> '<span class="org-constant">highlight-indent-guides</span>)
-            (imalison:set-highlight-indent-guides-faces))
-        (run-at-time <span class="org-string">"1 sec"</span> nil 'imalison:set-highlight-indent-guides-faces-load-theme)))
+        (<span class="org-keyword">when</span> bg-color
+          (set-face-background 'highlight-indent-guides-odd-face
+                               (imalison:modify-hsv
+                                bg-color
+                                (imalison:build-safe-change-hsv-value
+                                 (* -1 imalison:hsv-value-delta))))
+          (set-face-background 'highlight-indent-guides-even-face
+                               (imalison:modify-hsv
+                                bg-color
+                                (imalison:build-safe-change-hsv-value
+                                 imalison:hsv-value-delta))))))
 
     (advice-add 'load-theme
-                <span class="org-builtin">:after</span> 'imalison:set-highlight-indent-guides-faces-load-theme)
+                <span class="org-builtin">:after</span> 'imalison:set-highlight-indent-guides-faces)
 
     (add-hook 'prog-mode-hook 'highlight-indent-guides-mode))
   <span class="org-builtin">:config</span>
@@ -7781,15 +7774,22 @@ Reduce indentation for some functions
     (advice-add 'eval-last-sexp <span class="org-builtin">:around</span> 'eros-around-eval-last-sexp))
   <span class="org-builtin">:preface</span>
   (<span class="org-keyword">progn</span>
+    (<span class="org-keyword">defvar</span> <span class="org-variable-name">eros-mode</span> nil)
     (<span class="org-keyword">defun</span> <span class="org-function-name">eros-around-eval-last-sexp</span> (fn <span class="org-type">&amp;rest</span> args)
-      (eros--eval-overlay (apply fn args) (point)))
+      (<span class="org-keyword">let</span> ((result (apply fn args)))
+        (<span class="org-keyword">when</span> eros-mode
+          (eros--eval-overlay result (point)))
+        result))
 
     (<span class="org-keyword">defun</span> <span class="org-function-name">eros-around-eval-defun</span> (fn <span class="org-type">&amp;rest</span> args)
-      (eros--eval-overlay
-       (apply fn args)
-       (<span class="org-keyword">save-excursion</span>
-         (end-of-defun)
-         (point))))
+      (<span class="org-keyword">let</span> ((result (apply fn args)))
+        (<span class="org-keyword">when</span> eros-mode
+          (eros--eval-overlay
+           result
+           (<span class="org-keyword">save-excursion</span>
+             (end-of-defun)
+             (point))))
+        result))
 
     (add-hook 'emacs-lisp-mode-hook 'eros-mode)))
 </pre>
