@@ -1865,7 +1865,7 @@ I use helm for almost all emacs completion
     (use-package helm-ag
       :bind ("C-c p 1" . imalison:set-helm-ag-extra-options)
       :preface
-      (progn 
+      (progn
         (defun imalison:set-helm-ag-extra-options ()
           (interactive)
           (let ((option (read-string "Extra options: " (or helm-ag--extra-options "")
