@@ -1656,29 +1656,22 @@ https://github.com/alpaker/Fill-Column-Indicator/issues/21 for more details
 
     (defun imalison:set-highlight-indent-guides-faces (&rest args)
       (interactive)
+      (require 'highlight-indent-guides)
       (let ((bg-color (face-background 'default)))
-        (set-face-background 'highlight-indent-guides-odd-face
-                             (imalison:modify-hsv
-                              bg-color
-                              (imalison:build-safe-change-hsv-value
-                               (* -1 imalison:hsv-value-delta))))
-        (set-face-background 'highlight-indent-guides-even-face
-                             (imalison:modify-hsv
-                              bg-color
-                              (imalison:build-safe-change-hsv-value
-                               imalison:hsv-value-delta)))))
-
-    ;; XXX: This hacks around the fact that (face-background 'default) is nil at
-    ;; the time of load-theme
-    (defun imalison:set-highlight-indent-guides-faces-load-theme (&rest args)
-      (if (face-background 'default)
-          (progn
-            (require 'highlight-indent-guides)
-            (imalison:set-highlight-indent-guides-faces))
-        (run-at-time "1 sec" nil 'imalison:set-highlight-indent-guides-faces-load-theme)))
+        (when bg-color
+          (set-face-background 'highlight-indent-guides-odd-face
+                               (imalison:modify-hsv
+                                bg-color
+                                (imalison:build-safe-change-hsv-value
+                                 (* -1 imalison:hsv-value-delta))))
+          (set-face-background 'highlight-indent-guides-even-face
+                               (imalison:modify-hsv
+                                bg-color
+                                (imalison:build-safe-change-hsv-value
+                                 imalison:hsv-value-delta))))))
 
     (advice-add 'load-theme
-                :after 'imalison:set-highlight-indent-guides-faces-load-theme)
+                :after 'imalison:set-highlight-indent-guides-faces)
 
     (add-hook 'prog-mode-hook 'highlight-indent-guides-mode))
   :config
@@ -2512,15 +2505,22 @@ Reduce indentation for some functions
     (advice-add 'eval-last-sexp :around 'eros-around-eval-last-sexp))
   :preface
   (progn
+    (defvar eros-mode nil)
     (defun eros-around-eval-last-sexp (fn &rest args)
-      (eros--eval-overlay (apply fn args) (point)))
+      (let ((result (apply fn args)))
+        (when eros-mode
+          (eros--eval-overlay result (point)))
+        result))
 
     (defun eros-around-eval-defun (fn &rest args)
-      (eros--eval-overlay
-       (apply fn args)
-       (save-excursion
-         (end-of-defun)
-         (point))))
+      (let ((result (apply fn args)))
+        (when eros-mode
+          (eros--eval-overlay
+           result
+           (save-excursion
+             (end-of-defun)
+             (point))))
+        result))
 
     (add-hook 'emacs-lisp-mode-hook 'eros-mode)))
 #+END_SRC
