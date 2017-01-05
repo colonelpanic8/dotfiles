@@ -47,6 +47,7 @@ import           XMonad.Layout.MultiToggle.Instances
 import           XMonad.Layout.NoBorders
 import qualified XMonad.Layout.Renamed as RN
 import           XMonad.Layout.Spacing
+import           XMonad.Layout.Tabbed
 import qualified XMonad.StackSet as W
 import           XMonad.Util.CustomKeys
 import qualified XMonad.Util.Dmenu as DM
@@ -255,6 +256,9 @@ goFullscreen = sendMessage $ Toggle NBFULL
 
 -- Layout setup
 
+myTabConfig =
+  def { activeBorderColor = "#66cccc" }
+
 rename newName = RN.renamed [RN.Replace newName]
 
 layoutsStart layout = (layout, [Layout layout])
@@ -265,7 +269,9 @@ layoutInfo =
   layoutsStart (rename "Columns" $ multiCol [1, 1] 2 0.01 (-0.5)) |||!
   rename "Large Main" (Tall 1 (3 / 100) (3 / 4)) |||!
   rename "2 Columns" (Tall 1 (3 / 100) (1 / 2)) |||!
-  Accordion |||! simpleCross
+  Accordion |||! simpleCross |||! myTabbed
+    where
+      myTabbed = tabbed shrinkText myTabConfig
 
 layoutList = snd layoutInfo
 
