@@ -578,6 +578,7 @@ scratchpads =
   , NS "volume" volumeCommand volumeSelector nonFloating
   ]
 
+-- TODO: This doesnt work well with minimized windows
 doScratchpad =
   maybeUnminimizeAfter . deactivateFullAnd . namedScratchpadAction scratchpads
 
