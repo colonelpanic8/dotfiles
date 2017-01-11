@@ -357,6 +357,12 @@ executable [[http://emacs.stackexchange.com/questions/6010/can-emacs-detect-the-
 Update: It turns out that it is term-exec-1 that is causing this environment
 variable to be set to something strange. When I tried to disable it, it seemed
 to cause issues. Oh well...
+** Don't use system font
+#+BEGIN_SRC emacs-lisp
+;; Let me control my own goddamn fonts
+;; XXX: This doesn't seem to work
+(setq font-use-system-font nil)
+#+END_SRC
 * Functions
 ** Join Paths
 Works in the same way as os.path.join in python
@@ -4871,10 +4877,6 @@ load-theme hook (See the heading below).
 ** imalison:appearance
 #+BEGIN_SRC emacs-lisp
 (defvar imalison:linum-format)
-
-;; Let me control my own goddamn fonts
-;; XXX: This doesn't seem to work
-(setq font-use-system-font nil)
 
 (defun imalison:format-linum (line-text)
   (propertize (format imalison:linum-format line-text) 'face 'linum))
