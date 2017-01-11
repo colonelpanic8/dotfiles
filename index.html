@@ -3,7 +3,7 @@
 "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
-<!-- 2016-12-31 Sat 22:21 -->
+<!-- 2017-01-11 Wed 20:53 -->
 <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title></title>
@@ -5257,10 +5257,15 @@ This was taken from <a href="http://emacs.stackexchange.com/questions/7583/trans
 <div class="org-src-container">
 <pre class="src src-emacs-lisp">(<span class="org-keyword">defvar</span> <span class="org-variable-name">imalison:default-font-size-pt</span> (face-attribute 'default <span class="org-builtin">:height</span>))
 
+(<span class="org-keyword">defmacro</span> <span class="org-function-name">imalison:acceptable-default-font-size</span> (value)
+  (<span class="org-keyword">and</span> (&lt; value 150) (&gt; value 50)))
+
 <span class="org-comment-delimiter">;; </span><span class="org-comment">XXX: hack to get proper default value when default is set to something crazy</span>
 (<span class="org-keyword">defun</span> <span class="org-function-name">imalison:set-default-font-size</span> (<span class="org-type">&amp;rest</span> args)
-  (<span class="org-keyword">when</span> (<span class="org-keyword">or</span> (&gt; imalison:default-font-size-pt 150)
-            (&lt; imalison:default-font-size-pt 50))
+  (<span class="org-keyword">when</span> (<span class="org-keyword">and</span> (imalison:acceptable-default-font-size
+              (face-attribute 'default <span class="org-builtin">:height</span>))
+         (not (imalison:acceptable-default-font-size
+               imalison:default-font-size-pt)))
     (message <span class="org-string">"default font size was set using hack"</span>)
     (<span class="org-keyword">setq</span> imalison:default-font-size-pt (face-attribute 'default <span class="org-builtin">:height</span>))))
 
