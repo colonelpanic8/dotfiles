@@ -710,10 +710,15 @@ This was taken from [[http://emacs.stackexchange.com/questions/7583/transiently-
 #+BEGIN_SRC emacs-lisp
 (defvar imalison:default-font-size-pt (face-attribute 'default :height))
 
+(defmacro imalison:acceptable-default-font-size (value)
+  (and (< value 150) (> value 50)))
+
 ;; XXX: hack to get proper default value when default is set to something crazy
 (defun imalison:set-default-font-size (&rest args)
-  (when (or (> imalison:default-font-size-pt 150)
-            (< imalison:default-font-size-pt 50))
+  (when (and (imalison:acceptable-default-font-size
+              (face-attribute 'default :height))
+         (not (imalison:acceptable-default-font-size
+               imalison:default-font-size-pt)))
     (message "default font size was set using hack")
     (setq imalison:default-font-size-pt (face-attribute 'default :height))))
 
