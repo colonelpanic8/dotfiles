@@ -714,17 +714,18 @@ For composing functions with an apply so that they can be used with the ~:around
 ** Font Size
 This was taken from [[http://emacs.stackexchange.com/questions/7583/transiently-adjust-text-size-in-mode-line-and-minibuffer][here]] but it has diverged significantly from the original.
 #+BEGIN_SRC emacs-lisp
-(defvar imalison:default-font-size-pt (face-attribute 'default :height))
+(defvar imalison:default-font-size-pt nil)
 
-(defmacro imalison:acceptable-default-font-size (value)
-  (and (< value 150) (> value 50)))
+(defun imalison:acceptable-default-font-size (value)
+  (and (numberp value) (< value 150) (> value 50)))
 
 ;; XXX: hack to get proper default value when default is set to something crazy
 (defun imalison:set-default-font-size (&rest args)
+  (interactive)
   (when (and (imalison:acceptable-default-font-size
               (face-attribute 'default :height))
-         (not (imalison:acceptable-default-font-size
-               imalison:default-font-size-pt)))
+             (not (imalison:acceptable-default-font-size
+                   imalison:default-font-size-pt)))
     (message "default font size was set using hack")
     (setq imalison:default-font-size-pt (face-attribute 'default :height))))
 
