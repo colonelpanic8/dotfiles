@@ -3,7 +3,7 @@
 "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
-<!-- 2017-01-11 Wed 20:53 -->
+<!-- 2017-01-12 Thu 23:31 -->
 <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title></title>
@@ -3685,6 +3685,7 @@ for the JavaScript code in this tag.
 <li><a href="#noflet">4.13. noflet</a></li>
 <li><a href="#nonforkingshellcommandtostring">4.14. Non-Forking Shell Command To String</a></li>
 <li><a href="#setemacsenvironmentvariable">4.15. Set EMACS environment variable</a></li>
+<li><a href="#dontusesystemfont">4.16. Don't use system font</a></li>
 </ul>
 </li>
 <li><a href="#functions">5. Functions</a>
@@ -4723,6 +4724,17 @@ to cause issues. Oh well&#x2026;
 </p>
 </div>
 </div>
+<div id="outline-container-dontusesystemfont" class="outline-3">
+<h3 id="dontusesystemfont"><span class="section-number-3">4.16</span> Don't use system font <a href="#dontusesystemfont"><svg aria-hidden="true" class="octicon octicon-link" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a></h3>
+<div class="outline-text-3" id="text-4-16">
+<div class="org-src-container">
+<pre class="src src-emacs-lisp"><span class="org-comment-delimiter">;; </span><span class="org-comment">Let me control my own goddamn fonts</span>
+<span class="org-comment-delimiter">;; </span><span class="org-comment">XXX: This doesn't seem to work</span>
+(<span class="org-keyword">setq</span> font-use-system-font nil)
+</pre>
+</div>
+</div>
+</div>
 </div>
 <div id="outline-container-functions" class="outline-2">
 <h2 id="functions"><span class="section-number-2">5</span> Functions <a href="#functions"><svg aria-hidden="true" class="octicon octicon-link" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a></h2>
@@ -5255,17 +5267,18 @@ For composing functions with an apply so that they can be used with the <code>:a
 This was taken from <a href="http://emacs.stackexchange.com/questions/7583/transiently-adjust-text-size-in-mode-line-and-minibuffer">here</a> but it has diverged significantly from the original.
 </p>
 <div class="org-src-container">
-<pre class="src src-emacs-lisp">(<span class="org-keyword">defvar</span> <span class="org-variable-name">imalison:default-font-size-pt</span> (face-attribute 'default <span class="org-builtin">:height</span>))
+<pre class="src src-emacs-lisp">(<span class="org-keyword">defvar</span> <span class="org-variable-name">imalison:default-font-size-pt</span> nil)
 
-(<span class="org-keyword">defmacro</span> <span class="org-function-name">imalison:acceptable-default-font-size</span> (value)
-  (<span class="org-keyword">and</span> (&lt; value 150) (&gt; value 50)))
+(<span class="org-keyword">defun</span> <span class="org-function-name">imalison:acceptable-default-font-size</span> (value)
+  (<span class="org-keyword">and</span> (numberp value) (&lt; value 150) (&gt; value 50)))
 
 <span class="org-comment-delimiter">;; </span><span class="org-comment">XXX: hack to get proper default value when default is set to something crazy</span>
 (<span class="org-keyword">defun</span> <span class="org-function-name">imalison:set-default-font-size</span> (<span class="org-type">&amp;rest</span> args)
+  (<span class="org-keyword">interactive</span>)
   (<span class="org-keyword">when</span> (<span class="org-keyword">and</span> (imalison:acceptable-default-font-size
               (face-attribute 'default <span class="org-builtin">:height</span>))
-         (not (imalison:acceptable-default-font-size
-               imalison:default-font-size-pt)))
+             (not (imalison:acceptable-default-font-size
+                   imalison:default-font-size-pt)))
     (message <span class="org-string">"default font size was set using hack"</span>)
     (<span class="org-keyword">setq</span> imalison:default-font-size-pt (face-attribute 'default <span class="org-builtin">:height</span>))))
 
@@ -6578,63 +6591,10 @@ This interferes with too many other packages. See
   <span class="org-builtin">:commands</span> highlight-indent-guides-mode
   <span class="org-builtin">:preface</span>
   (<span class="org-keyword">progn</span>
-    (<span class="org-keyword">use-package</span> <span class="org-constant">hexrgb</span> <span class="org-builtin">:demand</span> t)
-
-    (<span class="org-keyword">defun</span> <span class="org-function-name">imalison:change-hsv-value-by</span> (delta)
-      (<span class="org-keyword">lambda</span> (h s v)
-        (list h s (+ v delta))))
-
-    (<span class="org-keyword">defun</span> <span class="org-function-name">imalison:build-safe-change-hsv-value</span> (delta)
-      (<span class="org-keyword">lambda</span> (h s v)
-        (imalison:safe-change-hsv-value
-         h s v delta)))
-
-    (<span class="org-keyword">defun</span> <span class="org-function-name">imalison:new-hsv-value-safe</span> (value)
-      (<span class="org-keyword">or</span> (&gt; value 1) (&lt; value 0)))
-
-    (<span class="org-keyword">defun</span> <span class="org-function-name">imalison:safe-change-hsv-value</span> (h s v delta)
-      (<span class="org-keyword">let</span> ((new-value (+ v delta)))
-        (<span class="org-keyword">if</span> (imalison:new-hsv-value-safe new-value)
-            (<span class="org-keyword">let</span> ((other-direction (+ v (* delta -2))))
-              (<span class="org-keyword">if</span> (imalison:new-hsv-value-safe other-direction)
-                  (<span class="org-warning">user-error</span> <span class="org-string">"delta %s is too large"</span> delta)
-                (list h s other-direction)))
-          (list h s new-value))))
-
-    (<span class="org-keyword">defun</span> <span class="org-function-name">imalison:modify-hsv</span> (color fn)
-      (hexrgb-rgb-hex-to-rgb-hex
-       (apply 'hexrgb-hsv-to-hex (apply fn (hexrgb-hex-to-hsv color))) 2))
-
-    (<span class="org-keyword">defun</span> <span class="org-function-name">imalison:modify-hsv-value-by</span> (color delta)
-      (imalison:modify-hsv color (imalison:build-safe-change-hsv-value delta)))
-
-    (<span class="org-keyword">defvar</span> <span class="org-variable-name">imalison:hsv-value-delta</span> .03)
-
-    (<span class="org-keyword">defun</span> <span class="org-function-name">imalison:set-highlight-indent-guides-faces</span> (<span class="org-type">&amp;rest</span> args)
-      (<span class="org-keyword">interactive</span>)
-      (<span class="org-keyword">require</span> '<span class="org-constant">highlight-indent-guides</span>)
-      (<span class="org-keyword">let</span> ((bg-color (face-background 'default)))
-        (<span class="org-keyword">when</span> bg-color
-          (set-face-background 'highlight-indent-guides-odd-face
-                               (imalison:modify-hsv
-                                bg-color
-                                (imalison:build-safe-change-hsv-value
-                                 (* -1 imalison:hsv-value-delta))))
-          (set-face-background 'highlight-indent-guides-even-face
-                               (imalison:modify-hsv
-                                bg-color
-                                (imalison:build-safe-change-hsv-value
-                                 imalison:hsv-value-delta))))))
-
-    (advice-add 'load-theme
-                <span class="org-builtin">:after</span> 'imalison:set-highlight-indent-guides-faces)
-
     (add-hook 'prog-mode-hook 'highlight-indent-guides-mode))
   <span class="org-builtin">:config</span>
   (<span class="org-keyword">progn</span>
     (<span class="org-keyword">setq</span> highlight-indent-guides-method 'fill)))
-
-(<span class="org-keyword">setq</span> lexical-binding t)
 </pre>
 </div>
 </div>
@@ -7780,6 +7740,7 @@ Reduce indentation for some functions
   <span class="org-builtin">:preface</span>
   (<span class="org-keyword">progn</span>
     (<span class="org-keyword">defvar</span> <span class="org-variable-name">eros-mode</span> nil)
+
     (<span class="org-keyword">defun</span> <span class="org-function-name">eros-around-eval-last-sexp</span> (fn <span class="org-type">&amp;rest</span> args)
       (<span class="org-keyword">let</span> ((result (apply fn args)))
         (<span class="org-keyword">when</span> eros-mode
@@ -10925,10 +10886,6 @@ load-theme hook (See the heading below).
 <div class="outline-text-3" id="text-19-14">
 <div class="org-src-container">
 <pre class="src src-emacs-lisp">(<span class="org-keyword">defvar</span> <span class="org-variable-name">imalison:linum-format</span>)
-
-<span class="org-comment-delimiter">;; </span><span class="org-comment">Let me control my own goddamn fonts</span>
-<span class="org-comment-delimiter">;; </span><span class="org-comment">XXX: This doesn't seem to work</span>
-(<span class="org-keyword">setq</span> font-use-system-font nil)
 
 (<span class="org-keyword">defun</span> <span class="org-function-name">imalison:format-linum</span> (line-text)
   (propertize (format imalison:linum-format line-text) 'face 'linum))
