@@ -154,7 +154,7 @@ hangoutsCommand = "start_hangouts.sh"
 spotifyCommand = "spotify"
 chromeCommand = "google-chrome-stable"
 emacsCommand = "emacsclient -c"
-htopCommnad = "urxvt -e htop"
+htopCommand = "urxvt -e htop"
 transmissionCommand = "transmission-gtk"
 volumeCommand = "pavucontrol"
 
@@ -572,7 +572,7 @@ swapMinimizeStateAfter action =
 -- Named Scratchpads
 
 scratchpads =
-  [ NS "htop" htopCommnad (title =? "htop") nonFloating
+  [ NS "htop" htopCommand (title =? "htop") nonFloating
   , NS "spotify" spotifyCommand spotifySelector nonFloating
   , NS "hangouts" hangoutsCommand hangoutsSelector nonFloating
   , NS "volume" volumeCommand volumeSelector nonFloating
