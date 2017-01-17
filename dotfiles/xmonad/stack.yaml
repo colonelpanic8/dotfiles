@@ -7,7 +7,7 @@ packages:
     commit: 0dbcb1891de8d44b3eba1200197f994a3aafabf4
 - location:
     git: git@github.com:IvanMalison/xmonad.git
-    commit: 7e9c9ccb1f47c147ad19dc420361852623bd6199
+    commit: f2da028ff96698289a31a44bdbaea97c53aa01aa
 - location:
     git: git@github.com:IvanMalison/xmonad-contrib.git
     commit: fb0ba737fb68a8d1a2f6e0dbe4d36c4e46ef7f56
