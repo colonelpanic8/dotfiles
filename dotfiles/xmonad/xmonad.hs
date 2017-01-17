@@ -141,6 +141,7 @@ emacsSelector = className =? "Emacs"
 transmissionSelector = fmap (isPrefixOf "Transmission") title
 hangoutsSelector = chromeSelectorBase <&&> fmap isHangoutsTitle title
 volumeSelector = className =? "Pavucontrol"
+keepassSelector = className =? "keepassxc"
 
 virtualClasses =
   [ (hangoutsSelector, "Hangouts")
@@ -157,6 +158,8 @@ emacsCommand = "emacsclient -c"
 htopCommand = "urxvt -e htop"
 transmissionCommand = "transmission-gtk"
 volumeCommand = "pavucontrol"
+keepassCommand = "systemctl --user restart keepassx.service"
+taffybarCommand = "systemctl --user restart taffybar.service"
 
 -- Startup hook
 
@@ -576,6 +579,7 @@ scratchpads =
   , NS "spotify" spotifyCommand spotifySelector nonFloating
   , NS "hangouts" hangoutsCommand hangoutsSelector nonFloating
   , NS "volume" volumeCommand volumeSelector nonFloating
+  , NS "keepass" keepassCommand keepassSelector nonFloating
   ]
 
 -- TODO: This doesnt work well with minimized windows
@@ -639,6 +643,7 @@ addKeys conf@XConfig {modMask = modm} =
     , ((modalt, xK_v), doScratchpad "volume")
     , ((modalt, xK_h), doScratchpad "hangouts")
     , ((modalt, xK_s), doScratchpad "spotify")
+    , ((modalt, xK_k), doScratchpad "keepass")
     , ((modalt .|. controlMask, xK_h),
        myRaiseNextMaybe (spawn hangoutsCommand) hangoutsSelector)
     , ((modalt .|. controlMask, xK_s),
@@ -693,8 +698,7 @@ addKeys conf@XConfig {modMask = modm} =
 
     -- Non-XMonad
 
-    , ((modm .|. controlMask, xK_t), spawn
-       "systemctl --user restart taffybar.service")
+    , ((modm .|. controlMask, xK_t), spawn taffybarCommand)
     , ((modm, xK_v), spawn "copyq paste")
     , ((modm .|. controlMask, xK_s), spawn "split_out.sh")
     , ((mod3Mask, xK_v), spawn "copyq_rofi.sh")
