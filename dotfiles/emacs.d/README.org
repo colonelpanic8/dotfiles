@@ -357,6 +357,12 @@ executable [[http://emacs.stackexchange.com/questions/6010/can-emacs-detect-the-
 Update: It turns out that it is term-exec-1 that is causing this environment
 variable to be set to something strange. When I tried to disable it, it seemed
 to cause issues. Oh well...
+** Don't use system font
+#+BEGIN_SRC emacs-lisp
+;; Let me control my own goddamn fonts
+;; XXX: This doesn't seem to work
+(setq font-use-system-font nil)
+#+END_SRC
 * Functions
 ** Join Paths
 Works in the same way as os.path.join in python
@@ -708,12 +714,18 @@ For composing functions with an apply so that they can be used with the ~:around
 ** Font Size
 This was taken from [[http://emacs.stackexchange.com/questions/7583/transiently-adjust-text-size-in-mode-line-and-minibuffer][here]] but it has diverged significantly from the original.
 #+BEGIN_SRC emacs-lisp
-(defvar imalison:default-font-size-pt (face-attribute 'default :height))
+(defvar imalison:default-font-size-pt nil)
+
+(defun imalison:acceptable-default-font-size (value)
+  (and (numberp value) (< value 150) (> value 50)))
 
 ;; XXX: hack to get proper default value when default is set to something crazy
 (defun imalison:set-default-font-size (&rest args)
-  (when (or (> imalison:default-font-size-pt 150)
-            (< imalison:default-font-size-pt 50))
+  (interactive)
+  (when (and (imalison:acceptable-default-font-size
+              (face-attribute 'default :height))
+             (not (imalison:acceptable-default-font-size
+                   imalison:default-font-size-pt)))
     (message "default font size was set using hack")
     (setq imalison:default-font-size-pt (face-attribute 'default :height))))
 
@@ -1622,63 +1634,10 @@ https://github.com/alpaker/Fill-Column-Indicator/issues/21 for more details
   :commands highlight-indent-guides-mode
   :preface
   (progn
-    (use-package hexrgb :demand t)
-
-    (defun imalison:change-hsv-value-by (delta)
-      (lambda (h s v)
-        (list h s (+ v delta))))
-
-    (defun imalison:build-safe-change-hsv-value (delta)
-      (lambda (h s v)
-        (imalison:safe-change-hsv-value
-         h s v delta)))
-
-    (defun imalison:new-hsv-value-safe (value)
-      (or (> value 1) (< value 0)))
-
-    (defun imalison:safe-change-hsv-value (h s v delta)
-      (let ((new-value (+ v delta)))
-        (if (imalison:new-hsv-value-safe new-value)
-            (let ((other-direction (+ v (* delta -2))))
-              (if (imalison:new-hsv-value-safe other-direction)
-                  (user-error "delta %s is too large" delta)
-                (list h s other-direction)))
-          (list h s new-value))))
-
-    (defun imalison:modify-hsv (color fn)
-      (hexrgb-rgb-hex-to-rgb-hex
-       (apply 'hexrgb-hsv-to-hex (apply fn (hexrgb-hex-to-hsv color))) 2))
-
-    (defun imalison:modify-hsv-value-by (color delta)
-      (imalison:modify-hsv color (imalison:build-safe-change-hsv-value delta)))
-
-    (defvar imalison:hsv-value-delta .03)
-
-    (defun imalison:set-highlight-indent-guides-faces (&rest args)
-      (interactive)
-      (require 'highlight-indent-guides)
-      (let ((bg-color (face-background 'default)))
-        (when bg-color
-          (set-face-background 'highlight-indent-guides-odd-face
-                               (imalison:modify-hsv
-                                bg-color
-                                (imalison:build-safe-change-hsv-value
-                                 (* -1 imalison:hsv-value-delta))))
-          (set-face-background 'highlight-indent-guides-even-face
-                               (imalison:modify-hsv
-                                bg-color
-                                (imalison:build-safe-change-hsv-value
-                                 imalison:hsv-value-delta))))))
-
-    (advice-add 'load-theme
-                :after 'imalison:set-highlight-indent-guides-faces)
-
     (add-hook 'prog-mode-hook 'highlight-indent-guides-mode))
   :config
   (progn
     (setq highlight-indent-guides-method 'fill)))
-
-(setq lexical-binding t)
 #+END_SRC
 * Keybindings
 ** god-mode
@@ -2506,6 +2465,7 @@ Reduce indentation for some functions
   :preface
   (progn
     (defvar eros-mode nil)
+
     (defun eros-around-eval-last-sexp (fn &rest args)
       (let ((result (apply fn args)))
         (when eros-mode
@@ -4868,10 +4828,6 @@ load-theme hook (See the heading below).
 ** imalison:appearance
 #+BEGIN_SRC emacs-lisp
 (defvar imalison:linum-format)
-
-;; Let me control my own goddamn fonts
-;; XXX: This doesn't seem to work
-(setq font-use-system-font nil)
 
 (defun imalison:format-linum (line-text)
   (propertize (format imalison:linum-format line-text) 'face 'linum))
