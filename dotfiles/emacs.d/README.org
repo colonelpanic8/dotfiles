@@ -1409,7 +1409,7 @@ proced is an top like utility that runs inside of emacs. The following sets auto
       inhibit-startup-echo-area-message t)
 
 ;; This makes it so that emacs --daemon puts its files in ~/.emacs.d/server
-;; (setq server-use-tcp t)
+(setq server-use-tcp t)
 
 ;; Make buffer names unique.
 (setq uniquify-buffer-name-style 'forward)
