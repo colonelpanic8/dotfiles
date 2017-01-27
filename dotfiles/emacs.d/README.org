@@ -746,6 +746,8 @@ This was taken from [[http://emacs.stackexchange.com/questions/7583/transiently-
 
 (cl-defun imalison:modify-font-size (&optional (arg 10))
   (interactive "p")
+  (unless imalison:default-font-size-pt
+    (imalison:set-default-font-size))
   (imalison:set-font-size (+ (imalison:current-font-size) arg)))
 
 (defun imalison:font-size-incr ()
