@@ -1629,6 +1629,8 @@ https://github.com/alpaker/Fill-Column-Indicator/issues/21 for more details
     (add-hook 'prog-mode-hook 'fci-mode)))
 #+END_SRC
 ** highlight-indent-guides
+If the load-theme hook from this package starts causing trouble check for
+custom-set-faces in your custom file.
 #+BEGIN_SRC emacs-lisp
 (use-package highlight-indent-guides
   :commands highlight-indent-guides-mode
