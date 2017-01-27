@@ -4852,8 +4852,6 @@ load-theme hook (See the heading below).
 (defun imalison:appearance (&optional frame)
   (setq font-use-system-font nil)
   (interactive (list nil))
-  (unless (member imalison:dark-theme custom-enabled-themes)
-    (load-theme imalison:dark-theme t))
   (spaceline-compile)
   (imalison:remove-fringe-and-hl-line-mode)
   (setq powerline-default-separator (random-choice '(butt slant wave))))
@@ -4864,6 +4862,8 @@ load-theme hook (See the heading below).
 
 (defun imalison:appearance-setup-hook (&rest args)
   (unless imalison:appearance-setup-done
+    (unless (member imalison:dark-theme custom-enabled-themes)
+      (load-theme imalison:dark-theme t))
     (apply 'imalison:appearance args)
     (setq imalison:default-font-size-pt (face-attribute 'default :height))
     (setq imalison:appearance-setup-done t)))
