@@ -28,7 +28,11 @@ main = do
                                   , graphLabel = Just "cpu"
                                   }
   let clock = textClockNew Nothing "<span fgcolor='orange'>%a %b %_d %r</span>" 1
-      pager = taffyPagerNew defaultPagerConfig
+      pagerConfig = defaultPagerConfig
+                    { useImages = True
+                    , emptyWorkspace = id
+                    }
+      pager = taffyPagerNew pagerConfig
       mpris = mpris2New
       mem = pollingGraphNew memCfg 1 memCallback
       cpu = pollingGraphNew cpuCfg 0.5 cpuCallback
