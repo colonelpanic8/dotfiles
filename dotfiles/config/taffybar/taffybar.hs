@@ -31,6 +31,8 @@ main = do
       pagerConfig = defaultPagerConfig
                     { useImages = True
                     , emptyWorkspace = id
+                    , imageCount = 8
+                    , workspaceGap = 0
                     }
       pager = taffyPagerNew pagerConfig
       mpris = mpris2New
