@@ -27,7 +27,6 @@ import           XMonad.Actions.Minimize
 import           XMonad.Actions.UpdatePointer
 import           XMonad.Actions.WindowBringer
 import           XMonad.Actions.WindowGo
-import           XMonad.Actions.WorkspaceNames
 import           XMonad.Config ()
 import           XMonad.Hooks.EwmhDesktops
 import           XMonad.Hooks.FadeInactive
@@ -57,11 +56,9 @@ import           XMonad.Util.NamedScratchpad
     (NamedScratchpad(NS), nonFloating, namedScratchpadAction)
 import           XMonad.Util.NamedWindows (getName)
 
-myGetWorkspaceNameFromTag getWSName tag =
-  printf "%s: %s " tag (fromMaybe "(Empty)" (getWSName tag))
-
 main =
-  xmonad . docks $ def
+  xmonad . docks . pagerHints . ewmh $
+  def
   { modMask = mod4Mask
   , terminal = "urxvt"
   , manageHook = myManageHook <+> manageHook def
@@ -70,13 +67,11 @@ main =
   , normalBorderColor = "#000000"
   , focusedBorderColor = "#455a64"
   , logHook =
-    updatePointer (0.5, 0.5) (0, 0) +++ toggleFadeInactiveLogHook 0.9 +++
-    ewmhWorkspaceNamesLogHook' myGetWorkspaceNameFromTag +++
-    (myGetWorkspaceNameFromTag <$> getWorkspaceNames' >>= pagerHintsLogHookCustom)
-  , handleEventHook = fullscreenEventHook +++
-    ewmhDesktopsEventHook +++ pagerHintsEventHook +++
-    followIfNoMagicFocus +++ minimizeEventHook
-  , startupHook = myStartup +++ ewmhWorkspaceNamesLogHook
+      updatePointer (0.5, 0.5) (0, 0) +++
+      toggleFadeInactiveLogHook 0.9
+  , handleEventHook =
+      fullscreenEventHook +++ followIfNoMagicFocus +++ minimizeEventHook
+  , startupHook = myStartup
   , keys = customKeys (const []) addKeys
   }
   where
@@ -159,7 +154,7 @@ htopCommand = "urxvt -e htop"
 transmissionCommand = "transmission-gtk"
 volumeCommand = "pavucontrol"
 keepassCommand = "systemctl --user restart keepassx.service"
-taffybarCommand = "systemctl --user restart taffybar.service"
+taffybarCommand = "restart_taffybar.sh"
 
 -- Startup hook
 
@@ -328,36 +323,6 @@ myBringWindow WindowBringerConfig { menuCommand = cmd
         [ maximizeWindow window
         , windows $ W.focusWindow window . bringWindow window
         ]
-
--- Dynamic Workspace Renaming
-
-windowClassFontAwesomeFile =
-  fmap (</> ".lib/resources/window_class_to_fontawesome.json") getHomeDirectory
-
-getClassRemap =
-  fmap (fromMaybe M.empty . decode) $
-       windowClassFontAwesomeFile >>= B.readFile
-
-getClassRemapF = flip maybeRemap <$> getClassRemap
-getWSClassNames' w = mapM getClass $ W.integrate' $ W.stack w
-getWSClassNames w = io (fmap map getClassRemapF) <*> getWSClassNames' w
-currentWSName ws = fromMaybe "" <$> (getWorkspaceNames' <*> pure (W.tag ws))
-desiredWSName = (intercalate "|" <$>) . getWSClassNames
-
-setWorkspaceNameToFocusedWindow workspace = do
-  currentName <- currentWSName workspace
-  newName <- desiredWSName workspace
-  when (currentName /= newName) $ setWorkspaceName (W.tag workspace) newName
-
-setWorkspaceNames =
-  gets windowset >>= mapM_ setWorkspaceNameToFocusedWindow . W.workspaces
-
-data WorkspaceNamesHook a = WorkspaceNamesHook deriving (Show, Read)
-
-instance LayoutModifier WorkspaceNamesHook Window where
-    hook _ = setWorkspaceNames
-
-workspaceNamesHook = ModifiedLayout WorkspaceNamesHook
 
 -- Toggleable fade
 
@@ -681,6 +646,7 @@ addKeys conf@XConfig {modMask = modm} =
     , ((modm, xK_z), shiftToNextScreenX)
     , ((modm .|. shiftMask, xK_z), shiftToEmptyNextScreen)
     , ((modm .|. shiftMask, xK_h), shiftToEmptyAndView)
+
     -- These need to be rebound to support boringWindows
     , ((modm, xK_j), focusDown)
     , ((modm, xK_k), focusUp)
