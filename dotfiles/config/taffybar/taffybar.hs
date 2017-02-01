@@ -1,9 +1,10 @@
 import System.Taffybar
 
+import System.Taffybar.MPRIS2
+import System.Taffybar.Pager
+import System.Taffybar.SimpleClock
 import System.Taffybar.Systray
 import System.Taffybar.TaffyPager
-import System.Taffybar.SimpleClock
-import System.Taffybar.MPRIS2
 
 import System.Taffybar.Widgets.PollingGraph
 
@@ -28,7 +29,16 @@ main = do
                                   , graphLabel = Just "cpu"
                                   }
   let clock = textClockNew Nothing "<span fgcolor='orange'>%a %b %_d %r</span>" 1
-      pager = taffyPagerNew defaultPagerConfig
+      pagerConfig = defaultPagerConfig
+                    { useImages = True
+                    , emptyWorkspace = id
+                    , imageCount = 8
+                    , workspaceGap = 0
+                    , activeWorkspace = escape
+                    , visibleWorkspace = escape
+                    , workspaceBorder = False
+                    }
+      pager = taffyPagerNew pagerConfig
       mpris = mpris2New
       mem = pollingGraphNew memCfg 1 memCallback
       cpu = pollingGraphNew cpuCfg 0.5 cpuCallback

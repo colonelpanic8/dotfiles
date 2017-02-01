@@ -27,7 +27,6 @@ import           XMonad.Actions.Minimize
 import           XMonad.Actions.UpdatePointer
 import           XMonad.Actions.WindowBringer
 import           XMonad.Actions.WindowGo
-import           XMonad.Actions.WorkspaceNames
 import           XMonad.Config ()
 import           XMonad.Hooks.EwmhDesktops
 import           XMonad.Hooks.FadeInactive
@@ -57,11 +56,9 @@ import           XMonad.Util.NamedScratchpad
     (NamedScratchpad(NS), nonFloating, namedScratchpadAction)
 import           XMonad.Util.NamedWindows (getName)
 
-myGetWorkspaceNameFromTag getWSName tag =
-  printf "%s: %s " tag (fromMaybe "(Empty)" (getWSName tag))
-
 main =
-  xmonad . docks $ def
+  xmonad . docks . pagerHints . ewmh $
+  def
   { modMask = mod4Mask
   , terminal = "urxvt"
   , manageHook = myManageHook <+> manageHook def
@@ -70,13 +67,11 @@ main =
   , normalBorderColor = "#000000"
   , focusedBorderColor = "#455a64"
   , logHook =
-    updatePointer (0.5, 0.5) (0, 0) +++ toggleFadeInactiveLogHook 0.9 +++
-    ewmhWorkspaceNamesLogHook' myGetWorkspaceNameFromTag +++
-    (myGetWorkspaceNameFromTag <$> getWorkspaceNames' >>= pagerHintsLogHookCustom)
-  , handleEventHook = fullscreenEventHook +++
-    ewmhDesktopsEventHook +++ pagerHintsEventHook +++
-    followIfNoMagicFocus +++ minimizeEventHook
-  , startupHook = myStartup +++ ewmhWorkspaceNamesLogHook
+      updatePointer (0.5, 0.5) (0, 0) +++
+      toggleFadeInactiveLogHook 0.9
+  , handleEventHook =
+      fullscreenEventHook +++ followIfNoMagicFocus +++ minimizeEventHook
+  , startupHook = myStartup
   , keys = customKeys (const []) addKeys
   }
   where
@@ -141,6 +136,7 @@ emacsSelector = className =? "Emacs"
 transmissionSelector = fmap (isPrefixOf "Transmission") title
 hangoutsSelector = chromeSelectorBase <&&> fmap isHangoutsTitle title
 volumeSelector = className =? "Pavucontrol"
+keepassSelector = className =? "keepassxc"
 
 virtualClasses =
   [ (hangoutsSelector, "Hangouts")
@@ -154,9 +150,11 @@ hangoutsCommand = "start_hangouts.sh"
 spotifyCommand = "spotify"
 chromeCommand = "google-chrome-stable"
 emacsCommand = "emacsclient -c"
-htopCommnad = "urxvt -e htop"
+htopCommand = "urxvt -e htop"
 transmissionCommand = "transmission-gtk"
 volumeCommand = "pavucontrol"
+keepassCommand = "systemctl --user restart keepassx.service"
+taffybarCommand = "restart_taffybar.sh"
 
 -- Startup hook
 
@@ -325,36 +323,6 @@ myBringWindow WindowBringerConfig { menuCommand = cmd
         [ maximizeWindow window
         , windows $ W.focusWindow window . bringWindow window
         ]
-
--- Dynamic Workspace Renaming
-
-windowClassFontAwesomeFile =
-  fmap (</> ".lib/resources/window_class_to_fontawesome.json") getHomeDirectory
-
-getClassRemap =
-  fmap (fromMaybe M.empty . decode) $
-       windowClassFontAwesomeFile >>= B.readFile
-
-getClassRemapF = flip maybeRemap <$> getClassRemap
-getWSClassNames' w = mapM getClass $ W.integrate' $ W.stack w
-getWSClassNames w = io (fmap map getClassRemapF) <*> getWSClassNames' w
-currentWSName ws = fromMaybe "" <$> (getWorkspaceNames' <*> pure (W.tag ws))
-desiredWSName = (intercalate "|" <$>) . getWSClassNames
-
-setWorkspaceNameToFocusedWindow workspace = do
-  currentName <- currentWSName workspace
-  newName <- desiredWSName workspace
-  when (currentName /= newName) $ setWorkspaceName (W.tag workspace) newName
-
-setWorkspaceNames =
-  gets windowset >>= mapM_ setWorkspaceNameToFocusedWindow . W.workspaces
-
-data WorkspaceNamesHook a = WorkspaceNamesHook deriving (Show, Read)
-
-instance LayoutModifier WorkspaceNamesHook Window where
-    hook _ = setWorkspaceNames
-
-workspaceNamesHook = ModifiedLayout WorkspaceNamesHook
 
 -- Toggleable fade
 
@@ -572,10 +540,11 @@ swapMinimizeStateAfter action =
 -- Named Scratchpads
 
 scratchpads =
-  [ NS "htop" htopCommnad (title =? "htop") nonFloating
+  [ NS "htop" htopCommand (title =? "htop") nonFloating
   , NS "spotify" spotifyCommand spotifySelector nonFloating
   , NS "hangouts" hangoutsCommand hangoutsSelector nonFloating
   , NS "volume" volumeCommand volumeSelector nonFloating
+  , NS "keepass" keepassCommand keepassSelector nonFloating
   ]
 
 -- TODO: This doesnt work well with minimized windows
@@ -639,6 +608,7 @@ addKeys conf@XConfig {modMask = modm} =
     , ((modalt, xK_v), doScratchpad "volume")
     , ((modalt, xK_h), doScratchpad "hangouts")
     , ((modalt, xK_s), doScratchpad "spotify")
+    , ((modalt, xK_k), doScratchpad "keepass")
     , ((modalt .|. controlMask, xK_h),
        myRaiseNextMaybe (spawn hangoutsCommand) hangoutsSelector)
     , ((modalt .|. controlMask, xK_s),
@@ -676,6 +646,7 @@ addKeys conf@XConfig {modMask = modm} =
     , ((modm, xK_z), shiftToNextScreenX)
     , ((modm .|. shiftMask, xK_z), shiftToEmptyNextScreen)
     , ((modm .|. shiftMask, xK_h), shiftToEmptyAndView)
+
     -- These need to be rebound to support boringWindows
     , ((modm, xK_j), focusDown)
     , ((modm, xK_k), focusUp)
@@ -693,8 +664,7 @@ addKeys conf@XConfig {modMask = modm} =
 
     -- Non-XMonad
 
-    , ((modm .|. controlMask, xK_t), spawn
-       "systemctl --user restart taffybar.service")
+    , ((modm .|. controlMask, xK_t), spawn taffybarCommand)
     , ((modm, xK_v), spawn "copyq paste")
     , ((modm .|. controlMask, xK_s), spawn "split_out.sh")
     , ((mod3Mask, xK_v), spawn "copyq_rofi.sh")

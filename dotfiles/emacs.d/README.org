@@ -746,6 +746,8 @@ This was taken from [[http://emacs.stackexchange.com/questions/7583/transiently-
 
 (cl-defun imalison:modify-font-size (&optional (arg 10))
   (interactive "p")
+  (unless imalison:default-font-size-pt
+    (imalison:set-default-font-size))
   (imalison:set-font-size (+ (imalison:current-font-size) arg)))
 
 (defun imalison:font-size-incr ()
@@ -1409,7 +1411,7 @@ proced is an top like utility that runs inside of emacs. The following sets auto
       inhibit-startup-echo-area-message t)
 
 ;; This makes it so that emacs --daemon puts its files in ~/.emacs.d/server
-;; (setq server-use-tcp t)
+(setq server-use-tcp t)
 
 ;; Make buffer names unique.
 (setq uniquify-buffer-name-style 'forward)
@@ -1629,6 +1631,8 @@ https://github.com/alpaker/Fill-Column-Indicator/issues/21 for more details
     (add-hook 'prog-mode-hook 'fci-mode)))
 #+END_SRC
 ** highlight-indent-guides
+If the load-theme hook from this package starts causing trouble check for
+custom-set-faces in your custom file.
 #+BEGIN_SRC emacs-lisp
 (use-package highlight-indent-guides
   :commands highlight-indent-guides-mode
@@ -4854,8 +4858,6 @@ load-theme hook (See the heading below).
 (defun imalison:appearance (&optional frame)
   (setq font-use-system-font nil)
   (interactive (list nil))
-  (unless (member imalison:dark-theme custom-enabled-themes)
-    (load-theme imalison:dark-theme t))
   (spaceline-compile)
   (imalison:remove-fringe-and-hl-line-mode)
   (setq powerline-default-separator (random-choice '(butt slant wave))))
@@ -4866,6 +4868,8 @@ load-theme hook (See the heading below).
 
 (defun imalison:appearance-setup-hook (&rest args)
   (unless imalison:appearance-setup-done
+    (unless (member imalison:dark-theme custom-enabled-themes)
+      (load-theme imalison:dark-theme t))
     (apply 'imalison:appearance args)
     (setq imalison:default-font-size-pt (face-attribute 'default :height))
     (setq imalison:appearance-setup-done t)))

@@ -3,17 +3,14 @@ extra-package-dbs: []
 packages:
 - '.'
 - location:
-    git: git@github.com:xmonad/X11.git
-    commit: 0dbcb1891de8d44b3eba1200197f994a3aafabf4
-- location:
     git: git@github.com:IvanMalison/xmonad.git
-    commit: 7e9c9ccb1f47c147ad19dc420361852623bd6199
+    commit: f2da028ff96698289a31a44bdbaea97c53aa01aa
 - location:
     git: git@github.com:IvanMalison/xmonad-contrib.git
-    commit: fb0ba737fb68a8d1a2f6e0dbe4d36c4e46ef7f56
+    commit: f0feb9efd4f88b72674a165712c784ae9131197e
 - location:
     git: git@github.com:IvanMalison/taffybar.git
-    commit: 43195e7697d5b36f861d7febeabdd340b07edb17
+    commit: 3570bdbd87a5464d7280d8750c5c153cf3dcc637
 extra-deps:
 - X11-1.7
 - X11-xft-0.3.1

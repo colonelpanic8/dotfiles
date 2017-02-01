@@ -3,13 +3,47 @@ style "taffybar-default" {
   color["white"] = "#ffffff"
   color["green"] = "#00ff00"
   color["red"]   = "#ff0000"
+  color["aqua"] = "#455a64"
+  color["yellow"] = "#fff59d"
+  color["gray"] = "#263238"
 
-  bg[NORMAL]   = "#1c1f26"
+  bg[NORMAL]   = @black
   fg[NORMAL]   = @white
   text[NORMAL] = @white
   fg[PRELIGHT] = @green
   bg[PRELIGHT] = @black
 }
 
-widget "Taffybar*" style "taffybar-default"
-widget "*NotificationCloseButton" style "notification-button"
+style "taffybar-active-window" = "taffybar-default" {
+  bg[NORMAL] = @black
+  fg[NORMAL] = @green
+}
+
+style "taffybar-notification-button" = "taffybar-default" {
+  text[NORMAL] = @red
+  fg[NORMAL]   = @red
+}
+
+style "taffybar-workspace-border-active" = "taffybar-default" {
+  bg[NORMAL] = @aqua
+}
+style "taffybar-workspace-border-visible" = "taffybar-default" {
+  bg[NORMAL] = @gray
+}
+style "taffybar-workspace-border-empty" = "taffybar-default" {
+  bg[NORMAL] = @black
+}
+style "taffybar-workspace-border-hidden" = "taffybar-default" {
+  bg[NORMAL] = @black
+}
+style "taffybar-workspace-border-urgent" = "taffybar-default" {
+  bg[NORMAL] = @black
+}
+
+widget "Taffybar*WindowSwitcher*label" style "taffybar-active-window"
+widget "*NotificationCloseButton" style "taffybar-notification-button"
+widget "*Workspace-*-active*" style "taffybar-workspace-border-active"
+widget "*Workspace-*-visible*" style "taffybar-workspace-border-visible"
+widget "*Workspace-*-empty*" style "taffybar-workspace-border-empty"
+widget "*Workspace-*-hidden*" style "taffybar-workspace-border-hidden"
+widget "*Workspace-*-urgent*" style "taffybar-workspace-border-urgent"
