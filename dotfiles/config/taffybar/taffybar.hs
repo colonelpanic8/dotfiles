@@ -28,10 +28,11 @@ main = do
                                                       ]
                                   , graphLabel = Just "cpu"
                                   }
-  let clock = textClockNew Nothing "<span fgcolor='orange'>%a %b %_d %r</span>" 1
+  let clock = textClockNew Nothing "%a %b %_d %r" 1
       pagerConfig = defaultPagerConfig
                     { useImages = True
                     , emptyWorkspace = id
+                    , urgentWorkspace = id
                     , imageCount = 8
                     , workspaceGap = 0
                     , activeWorkspace = escape

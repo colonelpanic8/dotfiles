@@ -1,13 +1,15 @@
 style "taffybar-default" {
   color["black"] = "#000000"
   color["white"] = "#ffffff"
-  color["green"] = "#00ff00"
-  color["red"]   = "#ff0000"
-  color["aqua"] = "#455a64"
-  color["yellow"] = "#fff59d"
-  color["gray"] = "#263238"
 
-  bg[NORMAL]   = @black
+  color["green"] = "#4caf50"
+  color["yellow"] = "#ffeb3b"
+  color["blue"] = "#2196f3"
+  color["red"] = "#f44336"
+  color["dgrey"] = "#212121"
+  color["lgrey"] = "#bdbdbd"
+
+  bg[NORMAL]   = @dgrey
   fg[NORMAL]   = @white
   text[NORMAL] = @white
   fg[PRELIGHT] = @green
@@ -25,21 +27,25 @@ style "taffybar-notification-button" = "taffybar-default" {
 }
 
 style "taffybar-workspace-border-active" = "taffybar-default" {
-  bg[NORMAL] = @aqua
+  bg[NORMAL] = "#01579B"
+  fg[NORMAL] = @black
 }
 style "taffybar-workspace-border-visible" = "taffybar-default" {
-  bg[NORMAL] = @gray
+  bg[NORMAL] = "#80CBC4"
+  fg[NORMAL] = @black
 }
 style "taffybar-workspace-border-empty" = "taffybar-default" {
-  bg[NORMAL] = @black
+  bg[NORMAL] = @dgrey
 }
 style "taffybar-workspace-border-hidden" = "taffybar-default" {
-  bg[NORMAL] = @black
+  bg[NORMAL] = "#E57373"
+  fg[NORMAL] = @black
 }
 style "taffybar-workspace-border-urgent" = "taffybar-default" {
   bg[NORMAL] = @black
 }
 
+widget "Taffybar*" style "taffybar-default"
 widget "Taffybar*WindowSwitcher*label" style "taffybar-active-window"
 widget "*NotificationCloseButton" style "taffybar-notification-button"
 widget "*Workspace-*-active*" style "taffybar-workspace-border-active"
