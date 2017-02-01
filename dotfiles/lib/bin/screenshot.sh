@@ -1,3 +1,5 @@
 #!/usr/bin/env bash
 
-scrot "$(rofi -input /dev/null -dmenu)"
+args="$(rofi -input /dev/null -dmenu)"
+sleep 1
+scrot $args
