@@ -27,6 +27,7 @@ import           XMonad.Actions.Minimize
 import           XMonad.Actions.UpdatePointer
 import           XMonad.Actions.WindowBringer
 import           XMonad.Actions.WindowGo
+import           XMonad.Actions.WorkspaceNames
 import           XMonad.Config ()
 import           XMonad.Hooks.EwmhDesktops
 import           XMonad.Hooks.FadeInactive
@@ -323,6 +324,36 @@ myBringWindow WindowBringerConfig { menuCommand = cmd
         [ maximizeWindow window
         , windows $ W.focusWindow window . bringWindow window
         ]
+
+-- Dynamic Workspace Renaming
+
+windowClassFontAwesomeFile =
+  fmap (</> ".lib/resources/window_class_to_fontawesome.json") getHomeDirectory
+
+getClassRemap =
+  fmap (fromMaybe M.empty . decode) $
+       windowClassFontAwesomeFile >>= B.readFile
+
+getClassRemapF = flip maybeRemap <$> getClassRemap
+getWSClassNames' w = mapM getClass $ W.integrate' $ W.stack w
+getWSClassNames w = io (fmap map getClassRemapF) <*> getWSClassNames' w
+currentWSName ws = fromMaybe "" <$> (getWorkspaceNames' <*> pure (W.tag ws))
+desiredWSName = (intercalate "|" <$>) . getWSClassNames
+
+setWorkspaceNameToFocusedWindow workspace = do
+  currentName <- currentWSName workspace
+  newName <- desiredWSName workspace
+  when (currentName /= newName) $ setWorkspaceName (W.tag workspace) newName
+
+setWorkspaceNames =
+  gets windowset >>= mapM_ setWorkspaceNameToFocusedWindow . W.workspaces
+
+data WorkspaceNamesHook a = WorkspaceNamesHook deriving (Show, Read)
+
+instance LayoutModifier WorkspaceNamesHook Window where
+    hook _ = setWorkspaceNames
+
+workspaceNamesHook = ModifiedLayout WorkspaceNamesHook
 
 -- Toggleable fade
 
