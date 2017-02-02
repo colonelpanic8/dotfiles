@@ -77,7 +77,6 @@ main =
   }
   where
     x +++ y = mappend y x
-
 
 -- Utility functions
 
@@ -122,9 +121,15 @@ withFocusedR f = withWindowSet (f . W.peek)
 
 withFocusedD d f = maybe (return d) f <$> withWindowSet (return . W.peek)
 
+withWorkspaceR f = withWindowSet $ f . W.workspace . W.current
+
 mapP = mapP' id
 
 mapP' f f' = map (f A.&&& f')
+
+minimizedWindows = withMinimized return
+
+visibleWindows = (\\) <$> (withWorkspaceR $ return . W.integrate' . W.stack) <*> minimizedWindows
 
 -- Selectors
 
@@ -288,10 +293,10 @@ myLayoutHook =
 -- WindowBringer
 
 myWindowBringerConfig =
-  WindowBringerConfig { menuCommand = "rofi"
-                      , menuArgs = ["-dmenu", "-i"]
-                      , windowTitler = myDecorateName
-                      }
+  def { menuCommand = "rofi"
+      , menuArgs = ["-dmenu", "-i"]
+      , windowTitler = myDecorateName
+      }
 
 classIfMatches window entry =
   if' <$> runQuery (fst entry) window <*>
@@ -313,17 +318,19 @@ myDecorateName ws w = do
 
 -- This needs access to X in order to unminimize, which means that I can't be
 -- done with the existing window bringer interface
-myBringWindow WindowBringerConfig { menuCommand = cmd
-                                  , menuArgs = args
-                                  , windowTitler = titler
-                                  } =
-  windowMap' titler >>= DM.menuMapArgs cmd args >>= flip whenJust action
-  where
-    action window =
-      sequence_
-        [ maximizeWindow window
-        , windows $ W.focusWindow window . bringWindow window
-        ]
+myWindowAct  c@WindowBringerConfig { menuCommand = cmd
+                                     , menuArgs = args
+                                     } action =
+  do
+    visible <- visibleWindows
+    windowMap' c { windowFilter = not . flip elem visible } >>=
+               DM.menuMapArgs cmd args >>= flip whenJust action
+
+
+myBringWindow window =
+  sequence_ [ maximizeWindow window
+            , windows $ W.focusWindow window . bringWindow window
+            ]
 
 -- Dynamic Workspace Renaming
 
@@ -412,8 +419,6 @@ withWorkspace f = withWindowSet $ \ws -> maybe (return ()) f (getCurrentWS ws)
 currentWS = withWindowSet $ return . getCurrentWS
 
 workspaceWindows = maybe [] W.integrate <$> currentWS
-
-minimizedWindows = withMinimized return
 
 getMinMaxWindows =
   partition <$> (flip elem <$> minimizedWindows) <*> workspaceWindows
@@ -653,12 +658,12 @@ addKeys conf@XConfig {modMask = modm} =
     -- Window manipulation
 
     , ((modm, xK_g), andDeactivateFull . maybeUnminimizeAfter $
-                   actionMenu myWindowBringerConfig greedyFocusWindow)
+       myWindowAct myWindowBringerConfig $ windows . greedyFocusWindow)
     , ((modm .|. shiftMask, xK_g), andDeactivateFull . sameClassOnly $
-                   actionMenu myWindowBringerConfig greedyFocusWindow)
-    , ((modm, xK_b), andDeactivateFull $ myBringWindow myWindowBringerConfig)
+       actionMenu myWindowBringerConfig greedyFocusWindow)
+    , ((modm, xK_b), andDeactivateFull $ myWindowAct myWindowBringerConfig myBringWindow)
     , ((modm .|. shiftMask, xK_b),
-       swapMinimizeStateAfter $ actionMenu myWindowBringerConfig swapFocusedWith)
+       swapMinimizeStateAfter $ myWindowAct myWindowBringerConfig $ windows . swapFocusedWith)
     , ((modm .|. controlMask, xK_space), goFullscreen)
     , ((modm, xK_m), withFocused minimizeWindow)
     , ((modm .|. shiftMask, xK_m),
