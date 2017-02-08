@@ -48,6 +48,7 @@ main = do
                                         , endWidgets = [ tray, clock, mem, cpu, mpris ]
                                         , monitorNumber = 1
                                         , barPosition = Top
+                                        , barHeight = 30
                                         }
 
 -- Local Variables:

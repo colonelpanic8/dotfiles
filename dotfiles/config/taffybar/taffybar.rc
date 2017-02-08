@@ -5,9 +5,10 @@ style "taffybar-default" {
   color["green"] = "#4caf50"
   color["yellow"] = "#ffeb3b"
   color["blue"] = "#2196f3"
-  color["red"] = "#f44336"
+  color["red"] = "#E57373"
   color["dgrey"] = "#212121"
   color["lgrey"] = "#bdbdbd"
+  color["teal"] = "#80CBC4"
 
   bg[NORMAL]   = @dgrey
   fg[NORMAL]   = @white
@@ -27,18 +28,18 @@ style "taffybar-notification-button" = "taffybar-default" {
 }
 
 style "taffybar-workspace-border-active" = "taffybar-default" {
-  bg[NORMAL] = "#01579B"
+  bg[NORMAL] = @yellow
   fg[NORMAL] = @black
 }
 style "taffybar-workspace-border-visible" = "taffybar-default" {
-  bg[NORMAL] = "#80CBC4"
+  bg[NORMAL] = @red
   fg[NORMAL] = @black
 }
 style "taffybar-workspace-border-empty" = "taffybar-default" {
-  bg[NORMAL] = @dgrey
+  bg[NORMAL] = @teal
 }
 style "taffybar-workspace-border-hidden" = "taffybar-default" {
-  bg[NORMAL] = "#E57373"
+  bg[NORMAL] = @blue
   fg[NORMAL] = @black
 }
 style "taffybar-workspace-border-urgent" = "taffybar-default" {
@@ -48,8 +49,11 @@ style "taffybar-workspace-border-urgent" = "taffybar-default" {
 widget "Taffybar*" style "taffybar-default"
 widget "Taffybar*WindowSwitcher*label" style "taffybar-active-window"
 widget "*NotificationCloseButton" style "taffybar-notification-button"
-widget "*Workspace-*-active*" style "taffybar-workspace-border-active"
-widget "*Workspace-*-visible*" style "taffybar-workspace-border-visible"
-widget "*Workspace-*-empty*" style "taffybar-workspace-border-empty"
-widget "*Workspace-*-hidden*" style "taffybar-workspace-border-hidden"
-widget "*Workspace-*-urgent*" style "taffybar-workspace-border-urgent"
+
+widget "*Workspace-underline*-active*" style "taffybar-workspace-border-active"
+widget "*Workspace-underline*-visible*" style "taffybar-workspace-border-visible"
+widget "*Workspace-underline*-empty*" style "taffybar-workspace-border-empty"
+widget "*Workspace-underline*-hidden*" style "taffybar-workspace-border-hidden"
+widget "*Workspace-underline*-urgent*" style "taffybar-workspace-border-urgent"
+
+widget "*Workspace-underline*-active*" style "taffybar-workspace-underline"
