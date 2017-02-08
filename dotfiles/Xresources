@@ -33,7 +33,7 @@ rofi.font:             source code pro semibold 12
 #define ROFI1 NONE
 #define ROFI2 NONE
 #define ROFIACCENT NONE
-#define ROFITEXT _YELLOW
+#define ROFITEXT _BLUE
 
 ! border width
 rofi.fullscreen: true
@@ -41,9 +41,7 @@ rofi.bw:   0
 rofi.padding: 200
 rofi.color-enabled: true
 rofi.color-window: ROFIBG, ROFIACCENT, ROFIACCENT
-rofi.color-normal: ROFI1, ROFITEXT, ROFI1, ROFI2, ROFITEXT
-rofi.color-active: #fdf6e3, #268bd2, #eee8d5, #268bd2, #fdf6e3
-rofi.color-urgent: #fdf6e3, #dc322f, #eee8d5, #dc322f, #fdf6e3
+rofi.color-normal: ROFI1, ROFITEXT, ROFI1, ROFI2, _YELLOW
 
 ! ------------------------------------------------------------------------------
 ! URxvt
