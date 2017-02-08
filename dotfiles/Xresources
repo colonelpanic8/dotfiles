@@ -25,12 +25,13 @@ rofi.font:             source code pro semibold 12
 #define _GREEN #4CAF50
 #define _YELLOW #FFEB3B
 #define _BLUE #2196F3
+#define _TEAL #80CBC4
 #define _RED #F44336
 #define _DGREY #212121
 
 #define ROFIBG _DGREY
-#define ROFI1 _GREEN
-#define ROFI2 _BLUE
+#define ROFI1 _BLUE
+#define ROFI2 _TEAL
 #define ROFIACCENT _YELLOW
 #define ROFITEXT _YELLOW
 
