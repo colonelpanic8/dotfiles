@@ -2,8 +2,6 @@
 ! ROFI Color theme
 ! ------------------------------------------------------------------------------
 
-rofi.padding: 30
-
 rofi.font:             source code pro semibold 12
 
 #define BG
@@ -28,15 +26,19 @@ rofi.font:             source code pro semibold 12
 #define _TEAL #80CBC4
 #define _RED #F44336
 #define _DGREY #212121
+#define T_DGREY #DD212121
+#define NONE #00000000
 
-#define ROFIBG _DGREY
-#define ROFI1 _BLUE
-#define ROFI2 _TEAL
-#define ROFIACCENT _YELLOW
+#define ROFIBG T_DGREY
+#define ROFI1 NONE
+#define ROFI2 NONE
+#define ROFIACCENT NONE
 #define ROFITEXT _YELLOW
 
 ! border width
-rofi.bw:   5
+rofi.fullscreen: true
+rofi.bw:   0
+rofi.padding: 200
 rofi.color-enabled: true
 rofi.color-window: ROFIBG, ROFIACCENT, ROFIACCENT
 rofi.color-normal: ROFI1, ROFITEXT, ROFI1, ROFI2, ROFITEXT
