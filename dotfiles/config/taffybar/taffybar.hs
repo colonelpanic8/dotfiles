@@ -3,6 +3,7 @@ import System.Taffybar
 import System.Taffybar.MPRIS2
 import System.Taffybar.Pager
 import System.Taffybar.SimpleClock
+import System.Taffybar.WorkspaceHUD
 import System.Taffybar.Systray
 import System.Taffybar.TaffyPager
 
@@ -30,21 +31,16 @@ main = do
                                   }
   let clock = textClockNew Nothing "%a %b %_d %r" 1
       pagerConfig = defaultPagerConfig
-                    { useImages = True
-                    , emptyWorkspace = id
-                    , urgentWorkspace = id
-                    , imageCount = 8
-                    , workspaceGap = 0
-                    , activeWorkspace = escape
-                    , visibleWorkspace = escape
-                    , workspaceBorder = False
-                    }
-      pager = taffyPagerNew pagerConfig
       mpris = mpris2New
       mem = pollingGraphNew memCfg 1 memCallback
       cpu = pollingGraphNew cpuCfg 0.5 cpuCallback
       tray = systrayNew
-  defaultTaffybar defaultTaffybarConfig { startWidgets = [ pager ]
+      hudConfig = defaultWorkspaceHUDConfig { underlineHeight = 3
+                                            , minWSWidgetSize = Just 50
+                                            }
+      hud = taffyPagerHUDNew pagerConfig hudConfig
+
+  defaultTaffybar defaultTaffybarConfig { startWidgets = [ hud ]
                                         , endWidgets = [ tray, clock, mem, cpu, mpris ]
                                         , monitorNumber = 1
                                         , barPosition = Top

@@ -46,6 +46,10 @@ style "taffybar-workspace-border-urgent" = "taffybar-default" {
   bg[NORMAL] = @black
 }
 
+style "taffybar-icon-urgent" = "taffybar-default" {
+  bg[NORMAL] = @yellow
+}
+
 widget "Taffybar*" style "taffybar-default"
 widget "Taffybar*WindowSwitcher*label" style "taffybar-active-window"
 widget "*NotificationCloseButton" style "taffybar-notification-button"
@@ -56,4 +60,4 @@ widget "*Workspace-underline*-empty*" style "taffybar-workspace-border-empty"
 widget "*Workspace-underline*-hidden*" style "taffybar-workspace-border-hidden"
 widget "*Workspace-underline*-urgent*" style "taffybar-workspace-border-urgent"
 
-widget "*Workspace-underline*-active*" style "taffybar-workspace-underline"
+widget "*Workspace-icon*-urgent*" style "taffybar-icon-urgent"
