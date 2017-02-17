@@ -697,6 +697,9 @@ addKeys conf@XConfig {modMask = modm} =
     , ((mod3Mask .|. controlMask, xK_1), toggleFadingForActiveScreen)
     , ((mod3Mask, xK_t), selectToggle)
     , ((modalt, xK_4), selectLimit)
+    , ((mod3Mask, xK_3), addWorkspacePrompt def)
+    , ((modalt, xK_3), selectWorkspace def)
+    , ((mod3Mask .|. mod1Mask, xK_3), removeWorkspace)
 
     -- Non-XMonad
 
