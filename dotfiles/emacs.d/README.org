@@ -1647,6 +1647,7 @@ custom-set-faces in your custom file.
 ** god-mode
 #+BEGIN_SRC emacs-lisp
 (use-package god-mode
+  :disabled t
   :demand t
   :config
   (progn
