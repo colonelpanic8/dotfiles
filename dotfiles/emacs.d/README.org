@@ -2630,9 +2630,6 @@ The following is taken from [[https://github.com/syl20bnr/spacemacs/blob/a650877
 (use-package js2-mode
   :commands (js2-mode)
   :mode "\\.js\\'"
-  :bind
-  ;; (("C-c b" . web-beautify-js)) TODO: to make this mode specific
-  ;; and change binding
   :preface
   (progn
     (defvar-setq imalison:identifier-count 0)
