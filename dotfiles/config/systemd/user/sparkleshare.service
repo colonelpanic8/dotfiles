@@ -6,7 +6,7 @@ After=taffybar.service
 [Service]
 ExecStart=/usr/bin/sparkleshare start
 ExecStop=/usr/bin/sparkleshare stop
-Type=forking
+Type=simple
 
 [Install]
 WantedBy=wm.target
