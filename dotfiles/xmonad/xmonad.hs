@@ -12,6 +12,7 @@ import           Data.List
 import qualified Data.Map as M
 import           Data.Maybe
 import qualified Data.MultiMap as MM
+import           Data.Char (toLower)
 import           Graphics.X11.ExtraTypes.XF86
 import           Network.HostName
 import           System.Directory
@@ -134,9 +135,10 @@ visibleWindows = (\\) <$> (withWorkspaceR $ return . W.integrate' . W.stack) <*>
 -- Selectors
 
 isHangoutsTitle = isPrefixOf "Google Hangouts"
-chromeSelectorBase = className =? "Google-chrome"
+isChromeClass = isInfixOf "chrome"
+chromeSelectorBase = isChromeClass <$> className
 
-chromeSelector = chromeSelectorBase <&&> fmap (not . isHangoutsTitle) title
+chromeSelector = chromeSelectorBase <&&> (not . isHangoutsTitle) <$> title
 spotifySelector = className =? "Spotify"
 emacsSelector = className =? "Emacs"
 transmissionSelector = fmap (isPrefixOf "Transmission") title
@@ -154,7 +156,7 @@ virtualClasses =
 
 hangoutsCommand = "start_hangouts.sh"
 spotifyCommand = "spotify"
-chromeCommand = "google-chrome-stable"
+chromeCommand = "google-chrome-unstable"
 emacsCommand = "emacsclient -c"
 htopCommand = "urxvt -e htop"
 transmissionCommand = "transmission-gtk"
