@@ -36,10 +36,10 @@ style "taffybar-workspace-border-visible" = "taffybar-default" {
   fg[NORMAL] = @black
 }
 style "taffybar-workspace-border-empty" = "taffybar-default" {
-  bg[NORMAL] = @teal
+  bg[NORMAL] = @black
 }
 style "taffybar-workspace-border-hidden" = "taffybar-default" {
-  bg[NORMAL] = @blue
+  bg[NORMAL] = @black
   fg[NORMAL] = @black
 }
 style "taffybar-workspace-border-urgent" = "taffybar-default" {
@@ -48,6 +48,11 @@ style "taffybar-workspace-border-urgent" = "taffybar-default" {
 
 style "taffybar-icon-urgent" = "taffybar-default" {
   bg[NORMAL] = @yellow
+}
+
+style "taffybar-active-label" = "taffybar-default" {
+  bg[NORMAL] = @teal
+  fg[NORMAL] = @red
 }
 
 widget "Taffybar*" style "taffybar-default"
@@ -60,4 +65,12 @@ widget "*Workspace-underline*-empty*" style "taffybar-workspace-border-empty"
 widget "*Workspace-underline*-hidden*" style "taffybar-workspace-border-hidden"
 widget "*Workspace-underline*-urgent*" style "taffybar-workspace-border-urgent"
 
+widget "*Workspace-Border*-active*" style "taffybar-workspace-border-active"
+widget "*Workspace-Container-*-active*" style "taffybar-default"
+widget "*Workspace-Border*-visible*" style "taffybar-workspace-border-visible"
+widget "*Workspace-Container-*-visible*" style "taffybar-default"
+widget "*Workspace-Container-*-hidden*" style "taffybar-default"
+widget "*Workspace-Container-*-empty*" style "taffybar-default"
+
 widget "*Workspace-icon*-urgent*" style "taffybar-icon-urgent"
+

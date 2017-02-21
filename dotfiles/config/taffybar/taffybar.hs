@@ -1,16 +1,17 @@
-import System.Taffybar
+module Main where
 
+import qualified Data.Word8 as W
+import System.Information.CPU
+import System.Information.Memory
+import System.Taffybar
+import System.Taffybar.IconImages
 import System.Taffybar.MPRIS2
 import System.Taffybar.Pager
 import System.Taffybar.SimpleClock
-import System.Taffybar.WorkspaceHUD
 import System.Taffybar.Systray
 import System.Taffybar.TaffyPager
-
 import System.Taffybar.Widgets.PollingGraph
-
-import System.Information.Memory
-import System.Information.CPU
+import System.Taffybar.WorkspaceHUD
 
 memCallback = do
   mi <- parseMeminfo
@@ -19,6 +20,15 @@ memCallback = do
 cpuCallback = do
   (_, systemLoad, totalLoad) <- cpuLoad
   return [totalLoad, systemLoad]
+
+zero :: W.Word8
+zero = fromIntegral 0
+
+alwaysTransparent _ _ =
+  IIColor $ (fromIntegral 0xFF, fromIntegral 0, zero, fromIntegral 0xFF)
+
+myGetIconInfo =
+  windowTitleClassIconGetter False alwaysTransparent
 
 main = do
   let memCfg = defaultGraphConfig { graphDataColors = [(1, 0, 0, 1)]
@@ -36,8 +46,14 @@ main = do
       cpu = pollingGraphNew cpuCfg 0.5 cpuCallback
       tray = systrayNew
       hudConfig = defaultWorkspaceHUDConfig { underlineHeight = 3
-                                            , minWSWidgetSize = Just 50
+                                            , minWSWidgetSize = Nothing
+                                            , minIcons = 3
+                                            , getIconInfo = myGetIconInfo
+                                            , updateIconsOnTitleChange = False
+                                            , widgetBuilder = buildBorderButtonController
+                                            -- , showWorkspaceFn = hideEmpty
                                             }
+      hudPagerConfig = hudFromPagerConfig pagerConfig
       hud = taffyPagerHUDNew pagerConfig hudConfig
 
   defaultTaffybar defaultTaffybarConfig { startWidgets = [ hud ]
