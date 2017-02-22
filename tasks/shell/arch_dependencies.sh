@@ -1,4 +1,9 @@
-#!/usr/bin/env zsh
+#!/usr/bin/env sh
+
+indirect_expand() {
+    eval "value=\"\${$1}\""
+    echo $value
+}
 
 ESSENTIAL=(
 	"lightdm-git" "zsh", "git" "emacs-git" "autoconf" "pkg-config" "pyenv"
@@ -26,3 +31,12 @@ NVIDIA=(
 MACBOOK=(
 	"broadcom-wl-dkms" "pommed-light" "batterymon-clone"
 )
+
+install_deps() {
+	for dependency in indirect_expand "${1-ESSENTIAL}"
+	do
+		pacaur -S $dependency --noconfirm
+	done
+}
+
+install_deps "$@"
