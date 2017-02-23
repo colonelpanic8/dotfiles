@@ -3,7 +3,7 @@
 "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
-<!-- 2017-02-23 Thu 01:38 -->
+<!-- 2017-02-23 Thu 02:25 -->
 <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title></title>
@@ -8097,9 +8097,10 @@ Intero seems to be causing hangs, so it has been disabled
 </p>
 <div class="org-src-container">
 <pre class="src src-emacs-lisp">(<span class="org-keyword">use-package</span> <span class="org-constant">intero</span>
+  <span class="org-builtin">:disabled</span> t
   <span class="org-builtin">:demand</span> t
   <span class="org-builtin">:after</span> haskell-mode
-  <span class="org-builtin">:config</span> (add-hook 'haskell-mode-hook 'intero-mode))
+  <span class="org-builtin">:config</span> (add-hook 'haskell-mode-hook 'intero-mode-whitelist))
 </pre>
 </div>
 </div>
