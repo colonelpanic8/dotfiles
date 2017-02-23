@@ -601,8 +601,7 @@ myBringNextMaybe =
 
 bindBringAndRaise :: KeyMask -> KeySym -> X () -> Query Bool -> [((KeyMask, KeySym), X ())]
 bindBringAndRaise mask sym start query =
-    [ ((mask, sym),
-       alreadyFocused >>= ifL restoreThisClassOrMinimizeOtherClasses doRaiseNext)
+    [ ((mask, sym), doRaiseNext)
     , ((mask .|. controlMask, sym), myBringNextMaybe start query)
     , ((mask .|. shiftMask, sym), doRaiseNext)
     ]
