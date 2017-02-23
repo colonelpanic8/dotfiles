@@ -70,7 +70,7 @@ main =
   , focusedBorderColor = "#455a64"
   , logHook =
       updatePointer (0.5, 0.5) (0, 0) +++
-      toggleFadeInactiveLogHook 0.9
+      toggleFadeInactiveLogHook 0.65
   , handleEventHook =
       fullscreenEventHook +++ followIfNoMagicFocus +++ minimizeEventHook
   , startupHook = myStartup
