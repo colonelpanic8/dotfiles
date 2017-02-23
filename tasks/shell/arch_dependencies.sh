@@ -11,7 +11,7 @@ ESSENTIAL=(
 	"openjdk8-src" "ghc" "cabal-install" "sparkleshare" "rofi" "rxvt-unicode"
 	"keepassxc-git" "xorg-xrandr" "spotify" "htop" "rcm" "networkmanager-applet"
 	"pulseaudio-ctl" "pasystray" "xclip" "copyq" "notification-daemon"
-	"pavucontrol" "xsettingsd-git" "udiskie"
+	"pavucontrol" "xsettingsd-git" "udiskie", "python-pip"
 )
 
 LANGUAGES=(
@@ -33,9 +33,9 @@ MACBOOK=(
 )
 
 install_deps() {
-	for dependency in indirect_expand "${1-ESSENTIAL}"
+	for dependency in "${APPEARANCE[@]}"
 	do
-		pacaur -S $dependency --noconfirm
+		pacaur -S $dependency --noconfirm --noedit --needed
 	done
 }
 
