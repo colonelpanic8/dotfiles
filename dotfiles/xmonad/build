@@ -1,6 +1,6 @@
 #!/bin/sh -eu
 
-SRC_DIR=~/.xmonad/xmonad.hs
+SRC_DIR=~/.xmonad/
 
 EXE_NAME=imalison-xmonad
 
