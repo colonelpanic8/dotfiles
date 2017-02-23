@@ -54,7 +54,8 @@ main = do
                                             , getIconInfo = myGetIconInfo
                                             , windowIconSize = 32
                                             , updateIconsOnTitleChange = False
-                                            , widgetBuilder = buildBorderButtonController
+                                            , widgetGap = 5
+                                            -- , widgetBuilder = buildBorderButtonController
                                             -- , showWorkspaceFn = hideEmpty
                                             }
       hudPagerConfig = hudFromPagerConfig pagerConfig
