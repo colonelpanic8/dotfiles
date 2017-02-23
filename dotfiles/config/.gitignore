@@ -11,7 +11,7 @@
 /gconf/
 /gedit/
 /gnome-session/
-/google-chrome
+/google-chrome*
 /gtk-3.0/bookmarks
 /hexchat
 /hub
