@@ -1393,6 +1393,13 @@ proced is an top like utility that runs inside of emacs. The following sets auto
 #+BEGIN_SRC emacs-lisp
 (add-hook 'after-save-hook 'executable-make-buffer-file-executable-if-script-p)
 #+END_SRC
+** Use TCP Server
+I've had to stop setting this variable, because it causes problems when emacs is
+not STARTED in daemon mode. For some reason, even when the server is started, it
+is not detected properly by emacsclient by default.
+#+BEGIN_SRC emacs-lisp
+(setq server-use-tcp nil)
+#+END_SRC
 ** Misc
 #+BEGIN_SRC emacs-lisp
 (defvar iedit-toggle-key-default nil)
@@ -1409,9 +1416,6 @@ proced is an top like utility that runs inside of emacs. The following sets auto
 
 (setq inhibit-startup-message t
       inhibit-startup-echo-area-message t)
-
-;; This makes it so that emacs --daemon puts its files in ~/.emacs.d/server
-(setq server-use-tcp t)
 
 ;; Make buffer names unique.
 (setq uniquify-buffer-name-style 'forward)

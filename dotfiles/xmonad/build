@@ -1,0 +1,16 @@
+#!/bin/sh -eu
+
+SRC_DIR=~/.xmonad/
+
+EXE_NAME=imalison-xmonad
+
+################################################################################
+# This script will be given a single argument, the path to the
+# executable it should produce.
+output_file=$1; shift
+
+################################################################################
+cd $SRC_DIR
+
+stack build
+mv -u `stack path --dist-dir`/build/$EXE_NAME/$EXE_NAME $output_file
