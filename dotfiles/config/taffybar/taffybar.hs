@@ -1,6 +1,9 @@
 module Main where
 
-import qualified Data.Word8 as W
+import Data.Char (toLower)
+import Data.List
+import System.Directory
+import System.FilePath.Posix
 import System.Information.CPU
 import System.Information.Memory
 import System.Taffybar
@@ -21,14 +24,14 @@ cpuCallback = do
   (_, systemLoad, totalLoad) <- cpuLoad
   return [totalLoad, systemLoad]
 
-zero :: W.Word8
-zero = fromIntegral 0
+resourcesDirectory file =  ("/home" </> "imalison" </> ".lib" </> "resources" </> file)
 
-alwaysTransparent _ _ =
-  IIColor $ (fromIntegral 0xFF, fromIntegral 0, zero, fromIntegral 0xFF)
+fallbackIcons _ klass
+  | isInfixOf "URxvt" klass = IIFilePath $ resourcesDirectory "urxvt.png"
+  | otherwise = IIColor $ (0xFF, 0xFF, 0, 0xFF)
 
 myGetIconInfo =
-  windowTitleClassIconGetter False alwaysTransparent
+  windowTitleClassIconGetter False fallbackIcons
 
 main = do
   let memCfg = defaultGraphConfig { graphDataColors = [(1, 0, 0, 1)]
@@ -49,6 +52,7 @@ main = do
                                             , minWSWidgetSize = Nothing
                                             , minIcons = 3
                                             , getIconInfo = myGetIconInfo
+                                            , windowIconSize = 32
                                             , updateIconsOnTitleChange = False
                                             , widgetBuilder = buildBorderButtonController
                                             -- , showWorkspaceFn = hideEmpty
@@ -60,7 +64,7 @@ main = do
                                         , endWidgets = [ tray, clock, mem, cpu, mpris ]
                                         , monitorNumber = 1
                                         , barPosition = Top
-                                        , barHeight = 30
+                                        , barHeight = 40
                                         }
 
 -- Local Variables:
