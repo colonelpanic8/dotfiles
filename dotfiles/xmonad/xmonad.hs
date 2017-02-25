@@ -185,7 +185,7 @@ myStartup = do
 
 myManageHook =
   composeAll . concat $
-  [ [transmissionSelector --> doShift "5"]
+  [ -- [transmissionSelector --> doShift "5"]
     -- Hangouts being on a separate workspace freezes chrome
     -- , [ hangoutsSelector --> doShift "2"]
   ]
@@ -321,8 +321,8 @@ myDecorateName ws w = do
 -- This needs access to X in order to unminimize, which means that I can't be
 -- done with the existing window bringer interface
 myWindowAct  c@WindowBringerConfig { menuCommand = cmd
-                                     , menuArgs = args
-                                     } action =
+                                   , menuArgs = args
+                                   } action =
   do
     visible <- visibleWindows
     windowMap' c { windowFilter = not . flip elem visible } >>=
