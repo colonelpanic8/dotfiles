@@ -1,7 +1,7 @@
 WALLPAPER_DIR="$HOME/Pictures/wallpaper/"
 
 random_paper() {
-	find "$WALLPAPER_DIR"use -type l | shuf -n1
+	find "$WALLPAPER_DIR"use -type f -or -type l | shuf -n1
 }
 
 wallpaper() {
