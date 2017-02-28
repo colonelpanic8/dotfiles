@@ -34,7 +34,8 @@ PACKAGES = [
 
 
 SERVICES = [
-    "sshd.socket", "nvidia-persistenced.service", "NetworkManager.service", "teamviewerd.service", "--user vncserver@:1"
+    "sshd.socket", "nvidia-persistenced.service", "NetworkManager.service",
+    "teamviewerd.service", "--user vncserver@:1", "autorandr.service",
 ]
 
 

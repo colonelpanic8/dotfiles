@@ -6,12 +6,20 @@ indirect_expand() {
 }
 
 ESSENTIAL=(
-	"lightdm-git" "zsh", "git" "emacs-git" "autoconf" "pkg-config" "pyenv"
+	"lightdm-git" "zsh" "git" "emacs-git" "autoconf" "pkg-config" "pyenv"
 	"autoconf" "automake" "the_silver_searcher" "jdk8-openjdk" "openjdk8-doc"
 	"openjdk8-src" "ghc" "cabal-install" "sparkleshare" "rofi" "rxvt-unicode"
 	"keepassxc-git" "xorg-xrandr" "spotify" "htop" "rcm" "networkmanager-applet"
 	"pulseaudio-ctl" "pasystray" "xclip" "copyq" "notification-daemon"
-	"pavucontrol" "xsettingsd-git" "udiskie", "python-pip"
+	"pavucontrol" "xsettingsd-git" "udiskie" "python-pip" "gnome-keyring"
+)
+
+NEEDED=(
+	"playerctl" "vlc" "feh"
+)
+
+OTHER=(
+	"simplescreenrecorder"
 )
 
 LANGUAGES=(
@@ -25,7 +33,7 @@ APPEARANCE=(
 )
 
 NVIDIA=(
-	"nvidia-settings" "feh"
+	"nvidia-settings"
 )
 
 MACBOOK=(
