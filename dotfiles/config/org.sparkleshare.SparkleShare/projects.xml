@@ -1,0 +1,20 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<sparkleshare>
+  <user>
+    <name>Ivan Malison</name>
+    <email>IvanMalison@gmail.com</email>
+  </user>
+  <notifications>True</notifications>
+  <folder>
+    <name>config</name>
+    <identifier>39cd38b2e3c98ff32b1b597659e44af6fb803051a38f742c74319a85c00f021a</identifier>
+    <url>ssh://git@bitbucket.org/ivanmalison/config</url>
+    <backend>Git</backend>
+  </folder>
+  <folder>
+    <name>org</name>
+    <identifier>bfdb71914356d820aacbad80bf8880a7205e87e0aa925627d4b5f4d14b87fc45</identifier>
+    <url>ssh://git@bitbucket.org/ivanmalison/org</url>
+    <backend>Git</backend>
+  </folder>
+</sparkleshare>
