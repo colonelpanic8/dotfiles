@@ -11,6 +11,7 @@ if [ -z $dpi ]; then
         imalison-arch,DVI-D-0:HDMI-0:) dpi=96 ;;
         imalison-uber-loaner,eDP1:) dpi=96 ;;
         imalison-mpb-arch,eDP-1:) dpi=144 ;;
+        imalison-mpb-arch,*:) dpi=144 ;;
         *) dpi=96 ;;
     esac
 fi
