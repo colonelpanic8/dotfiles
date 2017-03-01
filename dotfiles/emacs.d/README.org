@@ -1306,10 +1306,15 @@ Set the default fill-column
 #+END_SRC
 ** Show Trailing Whitespace
 Trailing whitespace is really messy and annoying, which makes this a must-have
-in my opinion. It's kind of crazy how often you will encounter serious codebases
-with random whitespace ALL over the place.
+in my opinion. It's kind of crazy how often you will encounter serious codebases with random whitespace ALL over the place.
 #+BEGIN_SRC emacs-lisp
-(setq-default show-trailing-whitespace t)
+(setq-default show-trailing-whitespace nil)
+
+(defun imalison:show-trailing-whitespace ()
+  (interactive)
+  (setq show-trailing-whitespace t))
+
+(add-hook 'text-mode-hook 'imalison:show-trailing-whitespace)
 #+END_SRC
 *** Disable
 Unfortunately, this setting can get annoying in a lot of modes, which is why I
