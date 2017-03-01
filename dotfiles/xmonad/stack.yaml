@@ -4,7 +4,7 @@ packages:
 - '.'
 - location:
     git: git@github.com:IvanMalison/xmonad.git
-    commit: f2da028ff96698289a31a44bdbaea97c53aa01aa
+    commit: 76f4a162587a8c6b58afe3d76341336cfe3c9aa3
 - location:
     git: git@github.com:IvanMalison/xmonad-contrib.git
     commit: 5ec639b4dbc359634e893bcae59dae3b71b2e34a
@@ -12,7 +12,10 @@ packages:
     git: git@github.com:IvanMalison/taffybar.git
     commit: 3570bdbd87a5464d7280d8750c5c153cf3dcc637
 extra-deps:
-- X11-1.7
+- X11-1.8
 - X11-xft-0.3.1
 - gtk-traymanager-0.1.6
+- xmonad-0.13
+- xmonad-contrib-0.13
+- taffybar-0.4.6
 resolver: lts-7.5

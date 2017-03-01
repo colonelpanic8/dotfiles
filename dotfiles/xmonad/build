@@ -12,5 +12,8 @@ output_file=$1; shift
 ################################################################################
 cd $SRC_DIR
 
+stack install alex
+stack install gtk2hs-buildtools
+
 stack build
 mv -u `stack path --dist-dir`/build/$EXE_NAME/$EXE_NAME $output_file

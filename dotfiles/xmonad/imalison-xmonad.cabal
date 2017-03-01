@@ -13,7 +13,7 @@ cabal-version:       >=1.10
 
 executable imalison-xmonad
   main-is:             xmonad.hs
-  build-depends:       X11>=1.7,
+  build-depends:       X11>=1.8,
                        aeson>=0.11.2.1,
                        base >=4.9 && <4.10,
                        bytestring>=0.10.8.1,
@@ -25,7 +25,7 @@ executable imalison-xmonad
                        multimap>=1.2.1,
                        taffybar>=0.4.6,
                        transformers>=0.5.2.0,
-                       xmonad-contrib>=0.12,
-                       xmonad>=0.12
+                       xmonad-contrib>=0.13,
+                       xmonad>=0.13
   hs-source-dirs:      .
   default-language:    Haskell2010
