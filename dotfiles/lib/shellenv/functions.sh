@@ -107,7 +107,7 @@ function get_cols() {
         esac
     done
     shift $((OPTIND-1))
-    awk -f "$HOME/.lib/get_cols.awk" -v "cols=$*" -v "FS=$FS"
+    gawk -f "$HOME/.lib/get_cols.awk" -v "cols=$*" -v "FS=$FS"
 }
 
 function filter_by_column_value {
