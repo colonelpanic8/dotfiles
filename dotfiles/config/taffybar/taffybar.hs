@@ -34,39 +34,46 @@ myGetIconInfo =
   windowTitleClassIconGetter False fallbackIcons
 
 main = do
-  let memCfg = defaultGraphConfig { graphDataColors = [(1, 0, 0, 1)]
-                                  , graphLabel = Just "mem"
-                                  }
-      cpuCfg = defaultGraphConfig { graphDataColors = [ (0, 1, 0, 1)
-                                                      , (1, 0, 1, 0.5)
-                                                      ]
-                                  , graphLabel = Just "cpu"
-                                  }
+  let memCfg =
+        defaultGraphConfig
+        {graphDataColors = [(1, 0, 0, 1)], graphLabel = Just "mem"}
+      cpuCfg =
+        defaultGraphConfig
+        { graphDataColors = [(0, 1, 0, 1), (1, 0, 1, 0.5)]
+        , graphLabel = Just "cpu"
+        }
   let clock = textClockNew Nothing "%a %b %_d %r" 1
-      pagerConfig = defaultPagerConfig
+      pagerConfig = defaultPagerConfig {useImages = True}
       mpris = mpris2New
       mem = pollingGraphNew memCfg 1 memCallback
       cpu = pollingGraphNew cpuCfg 0.5 cpuCallback
       tray = systrayNew
-      hudConfig = defaultWorkspaceHUDConfig { underlineHeight = 3
-                                            , minWSWidgetSize = Nothing
-                                            , minIcons = 3
-                                            , getIconInfo = myGetIconInfo
-                                            , windowIconSize = 32
-                                            , updateIconsOnTitleChange = False
-                                            , widgetGap = 5
-                                            -- , widgetBuilder = buildBorderButtonController
-                                            -- , showWorkspaceFn = hideEmpty
-                                            }
+      hudConfig =
+        defaultWorkspaceHUDConfig
+        { underlineHeight = 3
+        , minWSWidgetSize = Nothing
+        , minIcons = 3
+        , getIconInfo = myGetIconInfo
+        , windowIconSize = 32
+        , widgetGap = 0
+        -- , widgetBuilder = buildBorderButtonController
+        , showWorkspaceFn = hideEmpty
+        , updateRateLimitMicroseconds = 100000
+        , updateIconsOnTitleChange = True
+        , updateOnWMIconChange = True
+        , debugMode = True
+        }
       hudPagerConfig = hudFromPagerConfig pagerConfig
       hud = taffyPagerHUDNew pagerConfig hudConfig
-
-  defaultTaffybar defaultTaffybarConfig { startWidgets = [ hud ]
-                                        , endWidgets = [ tray, clock, mem, cpu, mpris ]
-                                        , monitorNumber = 1
-                                        , barPosition = Top
-                                        , barHeight = 40
-                                        }
+      pager = taffyPagerNew pagerConfig
+  defaultTaffybar
+    defaultTaffybarConfig
+    { startWidgets = [hud]
+    , endWidgets = [tray, clock, mem, cpu, mpris]
+    , monitorNumber = 1
+    , barPosition = Top
+    , barHeight = 40
+    }
 
 -- Local Variables:
 -- flycheck-ghc-args: ("-Wno-missing-signatures")

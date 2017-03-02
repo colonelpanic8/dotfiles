@@ -9,12 +9,14 @@ style "taffybar-default" {
   color["dgrey"] = "#212121"
   color["lgrey"] = "#bdbdbd"
   color["teal"] = "#80CBC4"
+  color["bgrey"] = "#37474F"
+  color["bgreyl"] = "#546E7A"
 
-  bg[NORMAL]   = @dgrey
+  bg[NORMAL]   = @bgrey
   fg[NORMAL]   = @white
   text[NORMAL] = @white
   fg[PRELIGHT] = @green
-  bg[PRELIGHT] = @black
+  bg[PRELIGHT] = @teal
 }
 
 style "taffybar-active-window" = "taffybar-default" {
@@ -31,15 +33,19 @@ style "taffybar-workspace-border-active" = "taffybar-default" {
   bg[NORMAL] = @yellow
   fg[NORMAL] = @black
 }
+
+style "taffybar-workspace-contents-active" = "taffybar-default" {
+}
+
 style "taffybar-workspace-border-visible" = "taffybar-default" {
   bg[NORMAL] = @red
   fg[NORMAL] = @black
 }
 style "taffybar-workspace-border-empty" = "taffybar-default" {
-  bg[NORMAL] = @black
+  bg[NORMAL] = @blue
 }
 style "taffybar-workspace-border-hidden" = "taffybar-default" {
-  bg[NORMAL] = @black
+  bg[NORMAL] = @blue
   fg[NORMAL] = @black
 }
 style "taffybar-workspace-border-urgent" = "taffybar-default" {
@@ -58,6 +64,9 @@ style "taffybar-active-label" = "taffybar-default" {
 widget "Taffybar*" style "taffybar-default"
 widget "Taffybar*WindowSwitcher*label" style "taffybar-active-window"
 widget "*NotificationCloseButton" style "taffybar-notification-button"
+
+widget "*Workspace-underline*-active*" style "taffybar-workspace-border-active"
+widget "*Workspace-contents*-active*" style "taffybar-workspace-contents-active"
 
 widget "*Workspace-underline*-active*" style "taffybar-workspace-border-active"
 widget "*Workspace-underline*-visible*" style "taffybar-workspace-border-visible"
