@@ -740,6 +740,9 @@ addKeys conf@XConfig {modMask = modm} =
     , ((mod3Mask, xK_w), spawn "set_volume.sh up")
     , ((mod3Mask, xK_s), spawn "set_volume.sh down")
 
+    , ((0, xF86XK_MonBrightnessUp), spawn "show_brightness.sh")
+    , ((0, xF86XK_MonBrightnessDown), spawn "show_brightness.sh")
+
     ] ++
 
     -- Replace moving bindings
