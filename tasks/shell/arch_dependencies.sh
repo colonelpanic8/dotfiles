@@ -29,7 +29,7 @@ LANGUAGES=(
 
 APPEARANCE=(
 	"adobe-source-code-pro-fonts" "emojione-color-font" "fontawesome" "ttf-roboto" "compton"
-	"screenfetch" "noto-fonts-cjk" "adapta-gtk-theme" "numix-icon-theme-git"
+	"screenfetch" "noto-fonts-cjk" "adapta-gtk-theme" "numix-icon-theme-git" "volnoti"
 )
 
 NVIDIA=(
