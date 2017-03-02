@@ -714,6 +714,8 @@ addKeys conf@XConfig {modMask = modm} =
     , ((mod3Mask .|. shiftMask, xK_l), spawn "dm-tool lock")
     , ((mod3Mask, xK_l), selectLayout)
     , ((mod3Mask, xK_k), spawn "rofi_kill_process.sh")
+    , ((mod3Mask .|. shiftMask, xK_k),
+       spawn "rofi_kill_all.sh")
     , ((mod3Mask, xK_r), spawn "rofi_restart_service.sh")
     , ((mod3Mask, xK_0), spawn "tvpower.js")
     , ((modalt, xK_w), spawn "rofi_wallpaper.sh")
