@@ -38,7 +38,6 @@ style "taffybar-workspace-contents-active" = "taffybar-default" {
 }
 
 style "taffybar-workspace-border-visible" = "taffybar-default" {
-  bg[NORMAL] = @red
   fg[NORMAL] = @black
 }
 style "taffybar-workspace-border-empty" = "taffybar-default" {
