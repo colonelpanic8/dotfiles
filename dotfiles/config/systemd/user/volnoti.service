@@ -1,0 +1,10 @@
+[Unit]
+Description=volnoti
+
+[Service]
+Type=forking
+ExecStart=/usr/bin/volnoti -nw
+ExecStop=/usr/bin/pkill volnoti
+
+[Install]
+WantedBy=wm.target
