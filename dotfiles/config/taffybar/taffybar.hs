@@ -1,7 +1,10 @@
 module Main where
 
 import Data.Char (toLower)
+
+import Text.Read
 import Data.List
+import Data.Maybe
 import System.Directory
 import System.FilePath.Posix
 import System.Information.CPU
@@ -15,6 +18,7 @@ import System.Taffybar.Systray
 import System.Taffybar.TaffyPager
 import System.Taffybar.Widgets.PollingGraph
 import System.Taffybar.WorkspaceHUD
+import System.Environment
 
 memCallback = do
   mi <- parseMeminfo
@@ -34,6 +38,8 @@ myGetIconInfo =
   windowTitleClassIconGetter False fallbackIcons
 
 main = do
+  monString <- getEnv "TAFFYBAR_MONITOR"
+  let monitorNumber = fromMaybe 1 $ readMaybe monString
   let memCfg =
         defaultGraphConfig
         {graphDataColors = [(1, 0, 0, 1)], graphLabel = Just "mem"}
@@ -51,6 +57,7 @@ main = do
       hudConfig =
         defaultWorkspaceHUDConfig
         { underlineHeight = 3
+        , underlinePadding = 0
         , minWSWidgetSize = Nothing
         , minIcons = 3
         , getIconInfo = myGetIconInfo
@@ -62,6 +69,7 @@ main = do
         , updateIconsOnTitleChange = True
         , updateOnWMIconChange = True
         , debugMode = True
+        , redrawIconsOnStateChange = True
         }
       hudPagerConfig = hudFromPagerConfig pagerConfig
       hud = taffyPagerHUDNew pagerConfig hudConfig
@@ -70,7 +78,8 @@ main = do
     defaultTaffybarConfig
     { startWidgets = [hud]
     , endWidgets = [tray, clock, mem, cpu, mpris]
-    , monitorNumber = 1
+    , monitorNumber = monitorNumber
+    , monitorFilter = allMonitors
     , barPosition = Top
     , barHeight = 40
     }
