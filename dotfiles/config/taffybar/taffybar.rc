@@ -34,6 +34,7 @@ style "taffybar-workspace-border-active" = "taffybar-default" {
   bg[NORMAL] = @yellow
 }
 style "taffybar-workspace-border-visible" = "taffybar-default" {
+
   bg[NORMAL] = @red
 }
 style "taffybar-workspace-border-empty" = "taffybar-default" {
