@@ -39,12 +39,12 @@ fallbackIcons _ klass
   | isInfixOf "Kodi" klass = IIFilePath $ resourcesDirectory "kodi.png"
   | otherwise = IIColor $ (0xFF, 0xFF, 0, 0xFF)
 
-underlineWidget buildWidget name = do
+underlineWidget cfg buildWidget name = do
   w <- buildWidget
   t <- T.tableNew 2 1 False
   u <- Gtk.eventBoxNew
 
-  W.widgetSetSizeRequest u (-1) $ 2
+  W.widgetSetSizeRequest u (-1) $ underlineHeight cfg
 
   T.tableAttach t w 0 1 0 1 [T.Expand] [T.Expand] 0 0
   T.tableAttach t u 0 1 1 2 [T.Fill] [T.Shrink] 0 0
@@ -59,12 +59,12 @@ myGetIconInfo =
   windowTitleClassIconGetter False fallbackIcons
 
 main = do
-  monEither <- (try $ getEnv "TAFFYBAR_MONITOR") :: IO (Either SomeException String)
+  monEither <-
+    (try $ getEnv "TAFFYBAR_MONITOR") :: IO (Either SomeException String)
   let monNumber =
         case monEither of
           Left _ -> 0
           Right monString -> fromMaybe 0 $ readMaybe monString
-
   let memCfg =
         defaultGraphConfig
         {graphDataColors = [(1, 0, 0, 1)], graphLabel = Just "mem"}
@@ -99,10 +99,17 @@ main = do
       hudPagerConfig = hudFromPagerConfig pagerConfig
       hud = taffyPagerHUDNew pagerConfig hudConfig
       pager = taffyPagerNew pagerConfig
+  let underline = underlineWidget hudConfig
   defaultTaffybar
     defaultTaffybarConfig
     { startWidgets = [hud]
-    , endWidgets = [underlineWidget tray "tray", underlineWidget clock "clock", mem, cpu, mpris]
+    , endWidgets =
+        [ underline tray "yellow"
+        , underline clock "blue"
+        , underline mem "orange"
+        , underline cpu "green"
+        , underline mpris "red"
+        ]
     , monitorNumber = monNumber
     , monitorFilter = allMonitors
     , barPosition = Top
