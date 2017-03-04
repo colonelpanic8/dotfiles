@@ -65,6 +65,10 @@ main = do
         case monEither of
           Left _ -> 0
           Right monString -> fromMaybe 0 $ readMaybe monString
+  let monFilter =
+        case monEither of
+          Left _ -> allMonitors
+          Right monString -> Nothing
   let memCfg =
         defaultGraphConfig
         {graphDataColors = [(1, 0, 0, 1)], graphLabel = Just "mem"}
@@ -74,7 +78,9 @@ main = do
         , graphLabel = Just "cpu"
         }
   let clock = textClockNew Nothing "%a %b %_d %r" 1
-      pagerConfig = defaultPagerConfig {useImages = True}
+      pagerConfig = defaultPagerConfig {
+                      useImages = True
+                    }
       mpris = mpris2New
       mem = pollingGraphNew memCfg 1 memCallback
       cpu = pollingGraphNew cpuCfg 0.5 cpuCallback
@@ -82,7 +88,7 @@ main = do
       hudConfig =
         defaultWorkspaceHUDConfig
         { underlineHeight = 3
-        , underlinePadding = 0
+        , underlinePadding = 1
         , minWSWidgetSize = Nothing
         , minIcons = 3
         , getIconInfo = myGetIconInfo
@@ -93,7 +99,7 @@ main = do
         , updateRateLimitMicroseconds = 100000
         , updateIconsOnTitleChange = True
         , updateOnWMIconChange = True
-        , debugMode = True
+        , debugMode = False
         , redrawIconsOnStateChange = True
         }
       hudPagerConfig = hudFromPagerConfig pagerConfig
@@ -105,15 +111,16 @@ main = do
     { startWidgets = [hud]
     , endWidgets =
         [ underline tray "yellow"
-        , underline clock "blue"
-        , underline mem "orange"
+        , underline clock "teal"
+        , underline mem "red"
         , underline cpu "green"
-        , underline mpris "red"
+        , underline mpris "blue"
         ]
     , monitorNumber = monNumber
-    , monitorFilter = allMonitors
+    , monitorFilter = monFilter
     , barPosition = Top
     , barHeight = 40
+    , widgetSpacing = 5
     }
 
 -- Local Variables:
