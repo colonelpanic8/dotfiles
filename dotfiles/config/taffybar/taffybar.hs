@@ -28,6 +28,7 @@ resourcesDirectory file =  ("/home" </> "imalison" </> ".lib" </> "resources" </
 
 fallbackIcons _ klass
   | isInfixOf "URxvt" klass = IIFilePath $ resourcesDirectory "urxvt.png"
+  | isInfixOf "Kodi" klass = IIFilePath $ resourcesDirectory "kodi.png"
   | otherwise = IIColor $ (0xFF, 0xFF, 0, 0xFF)
 
 myGetIconInfo =
@@ -62,6 +63,7 @@ main = do
         , updateIconsOnTitleChange = True
         , updateOnWMIconChange = True
         , debugMode = True
+        , redrawIconsOnStateChange = True
         }
       hudPagerConfig = hudFromPagerConfig pagerConfig
       hud = taffyPagerHUDNew pagerConfig hudConfig
