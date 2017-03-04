@@ -1,24 +1,28 @@
 module Main where
 
-import Data.Char (toLower)
+import           Data.Char (toLower)
 
-import Text.Read
-import Data.List
-import Data.Maybe
-import System.Directory
-import System.FilePath.Posix
-import System.Information.CPU
-import System.Information.Memory
-import System.Taffybar
-import System.Taffybar.IconImages
-import System.Taffybar.MPRIS2
-import System.Taffybar.Pager
-import System.Taffybar.SimpleClock
-import System.Taffybar.Systray
-import System.Taffybar.TaffyPager
-import System.Taffybar.Widgets.PollingGraph
-import System.Taffybar.WorkspaceHUD
-import System.Environment
+import           Data.List
+import           Data.Maybe
+import qualified Graphics.UI.Gtk as Gtk
+import qualified Graphics.UI.Gtk.Abstract.Widget as W
+import qualified Graphics.UI.Gtk.Layout.Table as T
+import           System.Directory
+import           System.Environment
+import           System.FilePath.Posix
+import           System.Information.CPU
+import           System.Information.Memory
+import           System.Taffybar
+import           System.Taffybar.IconImages
+import           System.Taffybar.MPRIS2
+import           System.Taffybar.Pager
+import           System.Taffybar.SimpleClock
+import           System.Taffybar.Systray
+import           System.Taffybar.TaffyPager
+import           System.Taffybar.Widgets.PollingGraph
+import           System.Taffybar.WorkspaceHUD
+import           Text.Printf
+import           Text.Read
 
 memCallback = do
   mi <- parseMeminfo
@@ -34,6 +38,22 @@ fallbackIcons _ klass
   | isInfixOf "URxvt" klass = IIFilePath $ resourcesDirectory "urxvt.png"
   | isInfixOf "Kodi" klass = IIFilePath $ resourcesDirectory "kodi.png"
   | otherwise = IIColor $ (0xFF, 0xFF, 0, 0xFF)
+
+underlineWidget buildWidget name = do
+  w <- buildWidget
+  t <- T.tableNew 2 1 False
+  u <- Gtk.eventBoxNew
+
+  W.widgetSetSizeRequest u (-1) $ 2
+
+  T.tableAttach t w 0 1 0 1 [T.Expand] [T.Expand] 0 0
+  T.tableAttach t u 0 1 1 2 [T.Fill] [T.Shrink] 0 0
+
+  Gtk.widgetSetName u $ (printf "%s-underline" name :: String)
+
+  Gtk.widgetShowAll t
+
+  return $ Gtk.toWidget t
 
 myGetIconInfo =
   windowTitleClassIconGetter False fallbackIcons
@@ -78,7 +98,7 @@ main = do
   defaultTaffybar
     defaultTaffybarConfig
     { startWidgets = [hud]
-    , endWidgets = [tray, clock, mem, cpu, mpris]
+    , endWidgets = [underlineWidget tray "tray", underlineWidget clock "clock", mem, cpu, mpris]
     , monitorNumber = monitorNumber
     , monitorFilter = allMonitors
     , barPosition = Top

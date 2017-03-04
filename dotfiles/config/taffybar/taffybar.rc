@@ -84,3 +84,6 @@ widget "*Workspace-icon*-urgent*" style "taffybar-icon-urgent"
 
 widget "*WorkspaceHUD-*" style "taffybar-hover-button"
 widget "*WorkspaceHUD-*" style "taffybar-hover-button"
+
+widget "*clock-underline*" style "taffybar-workspace-border-active"
+widget "*tray-underline*" style "taffybar-workspace-border-hidden"
