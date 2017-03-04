@@ -1,7 +1,7 @@
 module Main where
 
+import           Control.Exception.Base
 import           Data.Char (toLower)
-
 import           Data.List
 import           Data.Maybe
 import qualified Graphics.UI.Gtk as Gtk
@@ -59,8 +59,12 @@ myGetIconInfo =
   windowTitleClassIconGetter False fallbackIcons
 
 main = do
-  monString <- getEnv "TAFFYBAR_MONITOR"
-  let monitorNumber = fromMaybe 1 $ readMaybe monString
+  monEither <- (try $ getEnv "TAFFYBAR_MONITOR") :: IO (Either SomeException String)
+  let monNumber =
+        case monEither of
+          Left _ -> 0
+          Right monString -> fromMaybe 0 $ readMaybe monString
+
   let memCfg =
         defaultGraphConfig
         {graphDataColors = [(1, 0, 0, 1)], graphLabel = Just "mem"}
@@ -99,7 +103,7 @@ main = do
     defaultTaffybarConfig
     { startWidgets = [hud]
     , endWidgets = [underlineWidget tray "tray", underlineWidget clock "clock", mem, cpu, mpris]
-    , monitorNumber = monitorNumber
+    , monitorNumber = monNumber
     , monitorFilter = allMonitors
     , barPosition = Top
     , barHeight = 40
