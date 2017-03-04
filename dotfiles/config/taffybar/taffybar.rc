@@ -12,6 +12,8 @@ style "taffybar-default" {
   color["teal"] = "#80CBC4"
   color["bgrey"] = "#37474F"
   color["bgreyl"] = "#546E7A"
+  color["activeWS"] = @yellow
+  color["visibleWS"] = @red
 
   bg[NORMAL]   = @dgrey
   fg[NORMAL]   = @white
@@ -22,7 +24,11 @@ style "taffybar-default" {
 
 style "taffybar-active-window" = "taffybar-default" {
   bg[NORMAL] = @black
+  bg[PRELIGHT] = @black
+  bg[SELECTED] = @black
+  bg[ACTIVE] = @black
   fg[NORMAL] = @yellow
+  text[NORMAL] = @red
 }
 
 style "taffybar-notification-button" = "taffybar-default" {
@@ -34,7 +40,6 @@ style "taffybar-workspace-border-active" = "taffybar-default" {
   bg[NORMAL] = @yellow
 }
 style "taffybar-workspace-border-visible" = "taffybar-default" {
-
   bg[NORMAL] = @red
 }
 style "taffybar-workspace-border-empty" = "taffybar-default" {
@@ -60,7 +65,7 @@ style "taffybar-hover-button" = "taffybar-default" {
 }
 
 widget "Taffybar*" style "taffybar-default"
-widget "Taffybar*WindowSwitcher*label" style "taffybar-active-window"
+widget "Taffybar*WindowSwitcher*" style "taffybar-active-window"
 widget "*NotificationCloseButton" style "taffybar-notification-button"
 
 widget "*Workspace-underline*-active*" style "taffybar-workspace-border-active"
