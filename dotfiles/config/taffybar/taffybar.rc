@@ -10,7 +10,7 @@ style "taffybar-default" {
   color["dgrey"] = "#212121"
   color["ldgrey"] = "#424242"
   color["lgrey"] = "#bdbdbd"
-  color["teal"] = "#80CBC4"
+  color["teal"] = "#00796b"
   color["bgrey"] = "#37474F"
   color["bgreyl"] = "#546E7A"
   color["activeWS"] = @yellow
@@ -77,6 +77,12 @@ style "red" = "taffybar-default" {
 style "yellow" = "taffybar-default" {
   bg[NORMAL]= @yellow
 }
+style "green" = "taffybar-default" {
+  bg[NORMAL]= @green
+}
+style "teal" = "taffybar-default" {
+  bg[NORMAL]= @teal
+}
 
 widget "Taffybar*" style "taffybar-default"
 widget "Taffybar*WindowSwitcher*" style "taffybar-active-window"
@@ -106,3 +112,4 @@ widget "*red-underline*" style "red"
 widget "*yellow-underline*" style "yellow"
 widget "*orange-underline*" style "orange"
 widget "*green-underline*" style "green"
+widget "*teal-underline*" style "teal"
