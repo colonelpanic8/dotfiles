@@ -6,7 +6,7 @@ style "taffybar-default" {
   color["yellow"] = "#ffeb3b"
   color["orange"] = "#f4511e"
   color["blue"] = "#2196f3"
-  color["red"] = "#E57373"
+  color["red"] = "#F44336"
   color["dgrey"] = "#212121"
   color["ldgrey"] = "#424242"
   color["lgrey"] = "#bdbdbd"
@@ -18,18 +18,13 @@ style "taffybar-default" {
 
   bg[NORMAL]   = @dgrey
   fg[NORMAL]   = @white
-  text[NORMAL] = @white
+  text[NORMAL] = @black
   fg[PRELIGHT] = @green
   bg[PRELIGHT] = @teal
 }
 
 style "taffybar-active-window" = "taffybar-default" {
-  bg[NORMAL] = @black
-  bg[PRELIGHT] = @black
-  bg[SELECTED] = @black
-  bg[ACTIVE] = @black
   fg[NORMAL] = @yellow
-  text[NORMAL] = @red
 }
 
 style "taffybar-notification-button" = "taffybar-default" {
@@ -41,7 +36,7 @@ style "taffybar-workspace-border-active" = "taffybar-default" {
   bg[NORMAL] = @yellow
 }
 style "taffybar-workspace-border-visible" = "taffybar-default" {
-  bg[NORMAL] = @red
+  bg[NORMAL] = @green
 }
 style "taffybar-workspace-border-empty" = "taffybar-default" {
   bg[NORMAL] = @blue
@@ -83,9 +78,14 @@ style "green" = "taffybar-default" {
 style "teal" = "taffybar-default" {
   bg[NORMAL]= @teal
 }
+style "bgrey" = "taffybar-default" {
+  bg[NORMAL]= @bgrey
+}
 
 widget "Taffybar*" style "taffybar-default"
-widget "Taffybar*WindowSwitcher*" style "taffybar-active-window"
+widget "*menu*" style "taffybar-default"
+widget "*WindowSwitcher*" style "taffybar-default"
+widget "*Taffybar*WindowSwitcher*" style "taffybar-active-window"
 widget "*NotificationCloseButton" style "taffybar-notification-button"
 
 widget "*Workspace-underline*-active*" style "taffybar-workspace-border-active"
@@ -113,3 +113,5 @@ widget "*yellow-underline*" style "yellow"
 widget "*orange-underline*" style "orange"
 widget "*green-underline*" style "green"
 widget "*teal-underline*" style "teal"
+widget "*bgrey-underline*" style "bgrey"
+widget "*Taffytray*" style "taffybar-default"
