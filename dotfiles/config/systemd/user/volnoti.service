@@ -2,7 +2,7 @@
 Description=volnoti
 
 [Service]
-Type=forking
+Type=simple
 ExecStart=/usr/bin/volnoti -n -v
 ExecStop=/usr/bin/pkill volnoti
 
