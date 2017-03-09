@@ -3,7 +3,7 @@ Description=volnoti
 
 [Service]
 Type=forking
-ExecStart=/usr/bin/volnoti -nw
+ExecStart=/usr/bin/volnoti -n -v
 ExecStop=/usr/bin/pkill volnoti
 
 [Install]
