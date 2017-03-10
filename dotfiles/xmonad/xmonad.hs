@@ -33,6 +33,7 @@ import           XMonad.Config ()
 import           XMonad.Hooks.EwmhDesktops
 import           XMonad.Hooks.FadeInactive
 import           XMonad.Hooks.ManageDocks
+import           XMonad.Hooks.ManageHelpers
 import           XMonad.Hooks.Minimize
 import           XMonad.Layout.Accordion
 import           XMonad.Layout.BoringWindows
@@ -184,8 +185,9 @@ myStartup = do
 -- Manage hook
 
 myManageHook =
-  composeAll . concat $
-  [ -- [transmissionSelector --> doShift "5"]
+  composeOne
+  [ isFullscreen -?> doFullFloat
+    -- [transmissionSelector --> doShift "5"]
     -- Hangouts being on a separate workspace freezes chrome
     -- , [ hangoutsSelector --> doShift "2"]
   ]
