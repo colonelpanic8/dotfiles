@@ -17,4 +17,10 @@
     <url>ssh://git@bitbucket.org/ivanmalison/org</url>
     <backend>Git</backend>
   </folder>
+  <folder>
+    <name>pass</name>
+    <identifier>e4c0a9b8510234fc95ff0dc2ba3357373883ed3506ed96522a3540ece7a748e6</identifier>
+    <url>ssh://git@bitbucket.org/ivanmalison/pass</url>
+    <backend>Git</backend>
+  </folder>
 </sparkleshare>
