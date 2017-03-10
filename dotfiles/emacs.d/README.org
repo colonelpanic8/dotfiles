@@ -1315,6 +1315,7 @@ in my opinion. It's kind of crazy how often you will encounter serious codebases
   (setq show-trailing-whitespace t))
 
 (add-hook 'text-mode-hook 'imalison:show-trailing-whitespace)
+(add-hook 'prog-mode-hook 'imalison:show-trailing-whitespace)
 #+END_SRC
 *** Disable
 Unfortunately, this setting can get annoying in a lot of modes, which is why I
