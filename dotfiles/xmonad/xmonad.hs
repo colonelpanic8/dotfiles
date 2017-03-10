@@ -631,7 +631,7 @@ goToNextScreenX = windows goToNextScreen
 
 -- Key bindings
 
-addKeys conf@XConfig {modMask = modm} =
+addKeys conf@XConfig { modMask = modm } =
 
     -- Specific program spawning
     bindBringAndRaiseMany
@@ -689,56 +689,57 @@ addKeys conf@XConfig {modMask = modm} =
     , ((modm, xK_k), focusUp)
     , ((modm, xK_m), focusMaster)
     , ((modm, xK_Tab), focusNextClass)
-    , ((mod3Mask, xK_e), moveTo Next EmptyWS)
+    , ((hyper, xK_e), moveTo Next EmptyWS)
 
     -- Miscellaneous XMonad
 
-    , ((mod3Mask, xK_1), toggleFadingForActiveWindow)
-    , ((mod3Mask .|. shiftMask, xK_1), toggleFadingForActiveWorkspace)
-    , ((mod3Mask .|. controlMask, xK_1), toggleFadingForActiveScreen)
-    , ((mod3Mask, xK_t), selectToggle)
+    , ((hyper, xK_1), toggleFadingForActiveWindow)
+    , ((hyper .|. shiftMask, xK_1), toggleFadingForActiveWorkspace)
+    , ((hyper .|. controlMask, xK_1), toggleFadingForActiveScreen)
+    , ((hyper, xK_t), selectToggle)
     , ((modalt, xK_4), selectLimit)
-    , ((mod3Mask, xK_3), addWorkspacePrompt def)
+    , ((hyper, xK_3), addWorkspacePrompt def)
     , ((modalt, xK_3), selectWorkspace def)
-    , ((mod3Mask .|. mod1Mask, xK_3), removeWorkspace)
+    , ((hyper .|. mod1Mask, xK_3), removeWorkspace)
 
     -- Non-XMonad
 
     , ((modm .|. controlMask, xK_t), spawn taffybarCommand)
     , ((modm, xK_v), spawn "copyq paste")
     , ((modm .|. controlMask, xK_s), spawn "split_out.sh")
-    , ((mod3Mask, xK_v), spawn "copyq_rofi.sh")
-    , ((mod3Mask, xK_p), spawn "rofi-pass")
-    , ((mod3Mask, xK_h), spawn "screenshot.sh")
-    , ((mod3Mask, xK_c), spawn "shell_command.sh")
-    , ((mod3Mask .|. shiftMask, xK_l), spawn "dm-tool lock")
-    , ((mod3Mask, xK_l), selectLayout)
-    , ((mod3Mask, xK_k), spawn "rofi_kill_process.sh")
-    , ((mod3Mask .|. shiftMask, xK_k),
+    , ((hyper, xK_v), spawn "copyq_rofi.sh")
+    , ((hyper, xK_p), spawn "rofi-pass")
+    , ((hyper, xK_h), spawn "screenshot.sh")
+    , ((hyper, xK_c), spawn "shell_command.sh")
+    , ((hyper .|. shiftMask, xK_l), spawn "dm-tool lock")
+    , ((hyper, xK_l), selectLayout)
+    , ((hyper, xK_k), spawn "rofi_kill_process.sh")
+    , ((hyper .|. shiftMask, xK_k),
        spawn "rofi_kill_all.sh")
-    , ((mod3Mask, xK_r), spawn "rofi_systemd.sh")
-    , ((mod3Mask, xK_0), spawn "tvpower.js")
+    , ((hyper, xK_r), spawn "rofi_systemd.sh")
+    , ((hyper, xK_0), spawn "tvpower.js")
     , ((modalt, xK_w), spawn "rofi_wallpaper.sh")
     , ((modalt, xK_z), spawn "split_out_chrome_tab.sh")
-    , ((mod3Mask, xK_9), spawn "start_synergy.sh")
+    , ((hyper, xK_9), spawn "start_synergy.sh")
+    , ((hyper, xK_8), spawn "rofi_paswitch.sh")
 
     -- Media keys
 
     -- playerctl
-    , ((mod3Mask, xK_f), spawn "playerctl play-pause")
+    , ((hyper, xK_f), spawn "playerctl play-pause")
     , ((0, xF86XK_AudioPause), spawn "playerctl play-pause")
     , ((0, xF86XK_AudioPlay), spawn "playerctl play-pause")
-    , ((mod3Mask, xK_d), spawn "playerctl next")
+    , ((hyper, xK_d), spawn "playerctl next")
     , ((0, xF86XK_AudioNext), spawn "playerctl next")
-    , ((mod3Mask, xK_a), spawn "playerctl previous")
+    , ((hyper, xK_a), spawn "playerctl previous")
     , ((0, xF86XK_AudioPrev), spawn "playerctl previous")
 
     -- Volume control
     , ((0, xF86XK_AudioRaiseVolume), spawn "set_volume.sh up")
     , ((0, xF86XK_AudioLowerVolume), spawn "set_volume.sh down")
     , ((0, xF86XK_AudioMute), spawn "set_volume.sh mute")
-    , ((mod3Mask, xK_w), spawn "set_volume.sh up")
-    , ((mod3Mask, xK_s), spawn "set_volume.sh down")
+    , ((hyper, xK_w), spawn "set_volume.sh up")
+    , ((hyper, xK_s), spawn "set_volume.sh down")
 
     , ((0, xF86XK_MonBrightnessUp), spawn "show_brightness.sh")
     , ((0, xF86XK_MonBrightnessDown), spawn "show_brightness.sh")
@@ -757,6 +758,8 @@ addKeys conf@XConfig {modMask = modm} =
     ]
     where
       modalt = modm .|. mod1Mask
+      hyper = hyper
+      hctrl = hyper .|. controlMask
 
 -- Local Variables:
 -- flycheck-ghc-args: ("-Wno-missing-signatures")
