@@ -1,4 +1,4 @@
-#!/usr/bin/env bash
+#!/usr/bin/env zsh
 
 export SYSTEMD_COLORS=0
 
@@ -42,8 +42,8 @@ function select_service_and_act {
             ;;
     esac
 
-    service_name="$(printf $selection | get_cols 1 | tr -d ' ')"
-    is_user="$(printf $selection | get_cols 3)"
+    service_name="$(printf $selection | awk '{ print $1 }' | tr -d ' ')"
+    is_user="$(printf $selection | awk '{ print $3 }' )"
 
     case "$is_user" in
         user*)
