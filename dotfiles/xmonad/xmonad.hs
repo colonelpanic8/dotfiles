@@ -708,7 +708,7 @@ addKeys conf@XConfig {modMask = modm} =
     , ((modm, xK_v), spawn "copyq paste")
     , ((modm .|. controlMask, xK_s), spawn "split_out.sh")
     , ((mod3Mask, xK_v), spawn "copyq_rofi.sh")
-    , ((mod3Mask, xK_p), spawn "rofi_password.sh")
+    , ((mod3Mask, xK_p), spawn "rofi-pass")
     , ((mod3Mask, xK_h), spawn "screenshot.sh")
     , ((mod3Mask, xK_c), spawn "shell_command.sh")
     , ((mod3Mask .|. shiftMask, xK_l), spawn "dm-tool lock")
