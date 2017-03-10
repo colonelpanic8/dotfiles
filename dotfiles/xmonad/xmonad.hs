@@ -716,7 +716,7 @@ addKeys conf@XConfig {modMask = modm} =
     , ((mod3Mask, xK_k), spawn "rofi_kill_process.sh")
     , ((mod3Mask .|. shiftMask, xK_k),
        spawn "rofi_kill_all.sh")
-    , ((mod3Mask, xK_r), spawn "rofi_restart_service.sh")
+    , ((mod3Mask, xK_r), spawn "rofi_systemd.sh")
     , ((mod3Mask, xK_0), spawn "tvpower.js")
     , ((modalt, xK_w), spawn "rofi_wallpaper.sh")
     , ((modalt, xK_z), spawn "split_out_chrome_tab.sh")
