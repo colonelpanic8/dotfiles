@@ -758,7 +758,7 @@ addKeys conf@XConfig { modMask = modm } =
     ]
     where
       modalt = modm .|. mod1Mask
-      hyper = hyper
+      hyper = mod3Mask
       hctrl = hyper .|. controlMask
 
 -- Local Variables:
