@@ -1,2 +1,3 @@
 source ~/.lib/shellenv.sh
 test -r ~/.customenv.sh && source ~/.customenv.sh
+source_if_exists ~/.this-machine-env.sh
