@@ -12,7 +12,6 @@ import           Data.List
 import qualified Data.Map as M
 import           Data.Maybe
 import qualified Data.MultiMap as MM
-import           Data.Char (toLower)
 import           Graphics.X11.ExtraTypes.XF86
 import           Network.HostName
 import           System.Directory
@@ -489,15 +488,15 @@ maybeUnminimizeClassAfter = (>> maximizeSameClassesInWorkspace)
 sameClassOnly action =
   action >> minimizeOtherClassesInWorkspace >> maximizeSameClassesInWorkspace
 
-restoreAll windows = mapM_ maximizeWindow windows
+restoreAll = mapM_ maximizeWindow
 
 restoreAllMinimized = minimizedWindows >>= restoreAll
 
 restoreOrMinimizeOtherClasses = null <$> maximizedOtherClass >>=
   ifL restoreAllMinimized minimizeOtherClassesInWorkspace
 
-restoreThisClassOrMinimizeOtherClasses = minimizedSameClass >>= \windows ->
-  if' (null windows) minimizeOtherClassesInWorkspace $ restoreAll windows
+restoreThisClassOrMinimizeOtherClasses = minimizedSameClass >>= \ws ->
+  if' (null ws) minimizeOtherClassesInWorkspace $ restoreAll ws
 
 getClassPair w = flip (,) w <$> getClass w
 
@@ -609,7 +608,6 @@ bindBringAndRaise mask sym start query =
     , ((mask .|. shiftMask, sym), doRaiseNext)
     ]
   where doRaiseNext = myRaiseNextMaybe start query
-        alreadyFocused = join $ withFocusedD False $ runQuery query
 
 bindBringAndRaiseMany :: [(KeyMask, KeySym, X (), Query Bool)] -> [((KeyMask, KeySym), X())]
 bindBringAndRaiseMany = concatMap (\(a, b, c, d) -> bindBringAndRaise a b c d)
