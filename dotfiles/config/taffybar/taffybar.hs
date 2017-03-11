@@ -60,14 +60,12 @@ main = do
         | "Kodi" `isInfixOf` klass = IIFilePath $ resourcesDirectory "kodi.png"
         | otherwise = IIColor (0xFF, 0xFF, 0, 0xFF)
       myGetIconInfo = windowTitleClassIconGetter False fallbackIcons
-      monNumber =
+      (monFilter, monNumber) =
         case monEither of
-          Left _ -> 0
-          Right monString -> fromMaybe 0 $ readMaybe monString
-      monFilter =
-        case monEither of
-          Left _ -> allMonitors
-          Right _ -> Nothing
+          Left _ -> (allMonitors, 0)
+          Right monString -> case readMaybe monString of
+                               Nothing -> (allMonitors, 0)
+                               Just num -> (Nothing, num)
       memCfg =
         defaultGraphConfig
         { graphDataColors = [(0.129, 0.588, 0.953, 1)]
