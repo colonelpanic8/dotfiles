@@ -49,7 +49,6 @@ import           XMonad.Layout.NoBorders
 import qualified XMonad.Layout.Renamed as RN
 import           XMonad.Layout.Spacing
 import           XMonad.Layout.Tabbed
-import           XMonad.Layout.WindowNavigation
 import qualified XMonad.StackSet as W
 import           XMonad.Util.CustomKeys
 import qualified XMonad.Util.Dmenu as DM
@@ -684,16 +683,6 @@ addKeys conf@XConfig { modMask = modm } =
     , ((modm, xK_z), shiftToNextScreenX)
     , ((modm .|. shiftMask, xK_z), shiftToEmptyNextScreen)
     , ((modm .|. shiftMask, xK_h), shiftToEmptyAndView)
-
-    -- 2D Navigation
-   , ((hctrl, xK_h), sendMessage $ Go L)
-   , ((hctrl, xK_l), sendMessage $ Go R)
-   , ((hctrl, xK_k), sendMessage $ Go U)
-   , ((hctrl, xK_j), sendMessage $ Go D)
-   , ((hctrl .|. shiftMask, xK_h), sendMessage $ Swap L)
-   , ((hctrl .|. shiftMask, xK_l), sendMessage $ Swap R)
-   , ((hctrl .|. shiftMask, xK_k), sendMessage $ Swap U)
-   , ((hctrl .|. shiftMask, xK_j), sendMessage $ Swap D)
 
     -- These need to be rebound to support boringWindows
     , ((modm, xK_j), focusDown)
