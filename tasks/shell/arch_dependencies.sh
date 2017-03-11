@@ -9,17 +9,17 @@ ESSENTIAL=(
 	"lightdm-git" "zsh" "git" "emacs-git" "autoconf" "pkg-config" "pyenv"
 	"autoconf" "automake" "the_silver_searcher" "jdk8-openjdk" "openjdk8-doc"
 	"openjdk8-src" "ghc" "cabal-install" "sparkleshare" "rofi" "rxvt-unicode"
-	"keepassxc-git" "xorg-xrandr" "spotify" "htop" "rcm" "networkmanager-applet"
-	"pulseaudio-ctl" "pasystray" "xclip" "copyq" "notification-daemon"
+	"rofi-pass" "xorg-xrandr" "spotify" "htop" "rcm" "networkmanager-applet"
+	"pulseaudio-ctl" "pasystray" "xclip" "copyq" "notification-daemon" "pass"
 	"pavucontrol" "xsettingsd-git" "udiskie" "python-pip" "gnome-keyring"
 )
 
 NEEDED=(
-	"playerctl" "vlc" "feh"
+	"playerctl" "vlc" "feh" "xdotool" "android-sdk-platform-tools" "android-sdk" "android-tools"
 )
 
 OTHER=(
-	"simplescreenrecorder"
+	"simplescreenrecorder" "git-extras"
 )
 
 LANGUAGES=(
