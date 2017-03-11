@@ -1,4 +1,4 @@
-#!/usr/bin/env zsh
+#!/usr/bin/env sh
 
 export SYSTEMD_COLORS=0
 
@@ -18,7 +18,7 @@ stop="Alt+k"
 restart="Alt+r"
 
 function select_service_and_act {
-    selection=$(rofi -dmenu -i \
+    selection=$(rofi -dmenu -i -p "systemd unit: " \
          -kb-custom-1 "${enable}" \
          -kb-custom-2 "${disable}" \
          -kb-custom-3 "${stop}" \
@@ -55,4 +55,4 @@ function select_service_and_act {
     esac
 }
 
-{ user_units; system_units } | select_service_and_act
+{ user_units; system_units; } | column -tc 1 | select_service_and_act
