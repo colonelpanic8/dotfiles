@@ -48,6 +48,7 @@ import           XMonad.Layout.MultiToggle.Instances
 import           XMonad.Layout.NoBorders
 import qualified XMonad.Layout.Renamed as RN
 import           XMonad.Layout.Spacing
+import           XMonad.Layout.SubLayouts
 import           XMonad.Layout.Tabbed
 import           XMonad.Layout.WindowNavigation
 import qualified XMonad.StackSet as W
@@ -290,9 +291,17 @@ selectLayout =
   (sendMessage . JumpToLayout)
 
 myLayoutHook =
-  avoidStruts . minimize . boringAuto . mkToggle1 MIRROR . mkToggle1 LIMIT .
-  mkToggle1 GAPS . mkToggle1 MAGICFOCUS . mkToggle1 NBFULL . workspaceNamesHook .
-  lessBorders Screen $ fst layoutInfo
+  avoidStruts .
+  minimize .
+  windowNavigation .
+  subTabbed .
+  boringAuto .
+  mkToggle1 MIRROR .
+  mkToggle1 LIMIT .
+  mkToggle1 GAPS .
+  mkToggle1 MAGICFOCUS .
+  mkToggle1 NBFULL . workspaceNamesHook . lessBorders Screen $
+  fst layoutInfo
 
 -- WindowBringer
 
