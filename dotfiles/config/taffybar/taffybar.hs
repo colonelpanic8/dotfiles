@@ -1,8 +1,7 @@
-module Main where
-
+import qualified Control.Concurrent.MVar as MV
 import           Control.Exception.Base
 import           Data.List
-import           Data.Maybe
+import qualified Data.Map as M
 import qualified Graphics.UI.Gtk as Gtk
 import qualified Graphics.UI.Gtk.Abstract.Widget as W
 import qualified Graphics.UI.Gtk.Layout.Table as T
@@ -22,7 +21,9 @@ import           System.Taffybar.Widgets.PollingGraph
 import           System.Taffybar.WindowSwitcher
 import           System.Taffybar.WorkspaceHUD
 import           Text.Printf
-import           Text.Read
+import           Text.Read hiding (get)
+import           ToggleMonitor
+
 
 memCallback = do
   mi <- parseMeminfo
@@ -53,7 +54,7 @@ main = do
     (try $ getEnv "TAFFYBAR_MONITOR") :: IO (Either SomeException String)
   homeDirectory <- getHomeDirectory
   let resourcesDirectory file =
-        (homeDirectory </> ".lib" </> "resources" </> file)
+        homeDirectory </> ".lib" </> "resources" </> file
       fallbackIcons _ klass
         | "URxvt" `isInfixOf` klass =
           IIFilePath $ resourcesDirectory "urxvt.png"
@@ -109,6 +110,7 @@ main = do
       pager = taffyPagerNew pagerConfig
       makeUnderline = underlineWidget hudConfig
   pgr <- pagerNew pagerConfig
+  enabledVar <- MV.newMVar M.empty
   let hud = buildWorkspaceHUD hudConfig pgr
       los = makeUnderline (layoutSwitcherNew pgr) "red"
       wnd = makeUnderline (windowSwitcherNew pgr) "teal"
@@ -124,10 +126,11 @@ main = do
             , makeUnderline mpris "red"
             ]
         , monitorNumber = monNumber
-        , getMonitorConfig = monFilter
         , barPosition = Top
         , barHeight = 50
         , widgetSpacing = 5
+        , startRefresher = Nothing -- Just $ handleToggleRequests enabledVar
+        , getMonitorConfig = Just $ toggleableMonitors enabledVar
         }
 
   defaultTaffybar taffyConfig
