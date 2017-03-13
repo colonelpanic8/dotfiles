@@ -63,14 +63,13 @@ main = do
       (monFilter, monNumber) =
         case monEither of
           Left _ -> (allMonitors, 0)
-          Right monString -> case readMaybe monString of
-                               Nothing -> (allMonitors, 0)
-                               Just num -> (Nothing, num)
+          Right monString ->
+            case readMaybe monString of
+              Nothing -> (allMonitors, 0)
+              Just num -> (Nothing, num)
       memCfg =
         defaultGraphConfig
-        { graphDataColors = [(0.129, 0.588, 0.953, 1)]
-        , graphLabel = Just "mem"
-        }
+        {graphDataColors = [(0.129, 0.588, 0.953, 1)], graphLabel = Just "mem"}
       cpuCfg =
         defaultGraphConfig
         { graphDataColors = [(0, 1, 0, 1), (1, 0, 1, 0.5)]
@@ -81,12 +80,12 @@ main = do
       mem = pollingGraphNew memCfg 1 memCallback
       cpu = pollingGraphNew cpuCfg 0.5 cpuCallback
       tray = do
-         tray <- systrayNew
-         container <- Gtk.eventBoxNew
-         Gtk.containerAdd container tray
-         Gtk.widgetSetName container "Taffytray"
-         Gtk.widgetSetName tray "Taffytray"
-         return $ Gtk.toWidget container
+        tray <- systrayNew
+        container <- Gtk.eventBoxNew
+        Gtk.containerAdd container tray
+        Gtk.widgetSetName container "Taffytray"
+        Gtk.widgetSetName tray "Taffytray"
+        return $ Gtk.toWidget container
       hudConfig =
         defaultWorkspaceHUDConfig
         { underlineHeight = 3
@@ -110,26 +109,28 @@ main = do
       pager = taffyPagerNew pagerConfig
       makeUnderline = underlineWidget hudConfig
   pgr <- pagerNew pagerConfig
-  let hud = buildWorkspaceHUD hudConfig pgr 
+  let hud = buildWorkspaceHUD hudConfig pgr
       los = makeUnderline (layoutSwitcherNew pgr) "red"
       wnd = makeUnderline (windowSwitcherNew pgr) "teal"
 
-  defaultTaffybar
-    defaultTaffybarConfig
-    { startWidgets = [hud, los, wnd]
-    , endWidgets =
-        [ makeUnderline tray "yellow"
-        , makeUnderline clock "teal"
-        , makeUnderline mem "blue"
-        , makeUnderline cpu "green"
-        , makeUnderline mpris "red"
-        ]
-    , monitorNumber = monNumber
-    , monitorFilter = monFilter
-    , barPosition = Top
-    , barHeight = 50
-    , widgetSpacing = 5
-    }
+      taffyConfig =
+        defaultTaffybarConfig
+        { startWidgets = [hud, los, wnd]
+        , endWidgets =
+            [ makeUnderline tray "yellow"
+            , makeUnderline clock "teal"
+            , makeUnderline mem "blue"
+            , makeUnderline cpu "green"
+            , makeUnderline mpris "red"
+            ]
+        , monitorNumber = monNumber
+        , getMonitorConfig = monFilter
+        , barPosition = Top
+        , barHeight = 50
+        , widgetSpacing = 5
+        }
+
+  defaultTaffybar taffyConfig
 
 -- Local Variables:
 -- flycheck-ghc-args: ("-Wno-missing-signatures")
