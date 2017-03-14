@@ -1,4 +1,4 @@
-#!/usr/bin/env sh
+#!/usr/bin/env zsh
 
 export SYSTEMD_COLORS=0
 
@@ -22,7 +22,7 @@ function select_service_and_act {
          -kb-custom-1 "${enable}" \
          -kb-custom-2 "${disable}" \
          -kb-custom-3 "${stop}" \
-         -kb-custom-4 "${restart}")
+         -kb-custom-4 "${restart}" | sed -n 's/ \+/ /gp')
 
     rofi_exit="$?"
 
