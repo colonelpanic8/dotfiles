@@ -723,6 +723,7 @@ addKeys conf@XConfig { modMask = modm } =
     , ((modalt, xK_z), spawn "split_out_chrome_tab.sh")
     , ((hyper, xK_9), spawn "start_synergy.sh")
     , ((hyper, xK_8), spawn "rofi_paswitch.sh")
+    , ((hyper, xK_slash), spawn "toggle_taffybar.sh")
 
     -- Media keys
 
