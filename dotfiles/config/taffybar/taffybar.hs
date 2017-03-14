@@ -129,7 +129,7 @@ main = do
         , barPosition = Top
         , barHeight = 50
         , widgetSpacing = 5
-        , startRefresher = Nothing -- Just $ handleToggleRequests enabledVar
+        , startRefresher = Just $ handleToggleRequests enabledVar
         , getMonitorConfig = Just $ toggleableMonitors enabledVar
         }
 

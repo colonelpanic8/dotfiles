@@ -8,10 +8,16 @@ import           Control.Concurrent
 import qualified Control.Concurrent.MVar as MV
 import           Control.Monad
 import           Control.Monad.Trans
+import           Control.Monad.Trans.Maybe
 import qualified Data.Map as M
 import           Data.Maybe
+import           Data.String
+import qualified Data.Text.Internal.Lazy as T
+import qualified Graphics.UI.Gtk as Gtk
+import           Graphics.UI.Gtk.Gdk.DrawWindow
+import           Graphics.UI.Gtk.Gdk.Screen
 import           System.Taffybar
-import           Text.Read hiding (get)
+import           Text.Read hiding (get, lift)
 import           Web.Scotty
 import           XMonad.Core ( whenJust )
 
@@ -19,29 +25,41 @@ toggleableMonitors :: MV.MVar (M.Map Int Bool) -> Int -> TaffybarConfig -> IO (M
 toggleableMonitors enabledVar monNumber cfg = do
   numToEnabled <- MV.readMVar enabledVar
   let enabled = fromMaybe True $ M.lookup monNumber numToEnabled
-  return $ if enabled then Nothing else Just cfg
+  return $ if enabled then Just cfg else Nothing
+
+getActiveScreenNumber :: MaybeT IO Int
+getActiveScreenNumber = do
+  screen <- MaybeT screenGetDefault
+  window <- MaybeT $ screenGetActiveWindow screen
+  lift $ screenGetMonitorAtWindow screen window
 
 handleToggleRequests :: MV.MVar (M.Map Int Bool) -> IO () -> IO ()
 handleToggleRequests enabledVar refreshTaffyWindows = do
   let toggleTaffyOnMon fn mon = do
         MV.modifyMVar_ enabledVar $ \numToEnabled -> do
-          let current = fromMaybe False $ M.lookup mon numToEnabled
+          let current = fromMaybe True $ M.lookup mon numToEnabled
           return $ M.insert mon (fn current) numToEnabled
         refreshTaffyWindows
+      toggleTaffy = do
+        num <- liftIO $ runMaybeT getActiveScreenNumber
+        let monitorNumber = fromMaybe 0 num
+        liftIO $ toggleTaffyOnMon not $ monitorNumber
       runScotty =
         scotty 3000 $ do
           get "/toggle/:monNum" $ do
             num <- param "monNum"
             liftIO $
               whenJust (readMaybe num :: Maybe Int) $ toggleTaffyOnMon not
-          get "on/:monNum" $ do
+          get "/on/:monNum" $ do
             num <- param "monNum"
             liftIO $
               whenJust (readMaybe num :: Maybe Int) $
               toggleTaffyOnMon $ const True
-          get "off/:monNum" $ do
+          get "/off/:monNum" $ do
             num <- param "monNum"
             liftIO $
               whenJust (readMaybe num :: Maybe Int) $
               toggleTaffyOnMon $ const False
+          get "/toggleCurrent" $ do
+            liftIO $ Gtk.postGUIAsync toggleTaffy
   void $ forkIO runScotty
