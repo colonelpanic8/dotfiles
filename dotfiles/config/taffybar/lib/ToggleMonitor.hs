@@ -11,10 +11,7 @@ import           Control.Monad.Trans
 import           Control.Monad.Trans.Maybe
 import qualified Data.Map as M
 import           Data.Maybe
-import           Data.String
-import qualified Data.Text.Internal.Lazy as T
 import qualified Graphics.UI.Gtk as Gtk
-import           Graphics.UI.Gtk.Gdk.DrawWindow
 import           Graphics.UI.Gtk.Gdk.Screen
 import           System.Taffybar
 import           Text.Read hiding (get, lift)
@@ -42,8 +39,7 @@ handleToggleRequests enabledVar refreshTaffyWindows = do
         refreshTaffyWindows
       toggleTaffy = do
         num <- liftIO $ runMaybeT getActiveScreenNumber
-        let monitorNumber = fromMaybe 0 num
-        liftIO $ toggleTaffyOnMon not $ monitorNumber
+        liftIO $ toggleTaffyOnMon not $ fromMaybe 0 num
       runScotty =
         scotty 3000 $ do
           get "/toggle/:monNum" $ do
