@@ -19,10 +19,10 @@ restart="Alt+r"
 
 function select_service_and_act {
     result=$(rofi -dmenu -i -p "systemd unit: " \
-         -kb-custom-1 "${enable}" \
-         -kb-custom-2 "${disable}" \
-         -kb-custom-3 "${stop}" \
-         -kb-custom-4 "${restart}")
+                  -kb-custom-1 "${enable}" \
+                  -kb-custom-2 "${disable}" \
+                  -kb-custom-3 "${stop}" \
+                  -kb-custom-4 "${restart}")
 
     rofi_exit="$?"
     selection="$(echo $result | sed -n 's/ \+/ /gp')"
