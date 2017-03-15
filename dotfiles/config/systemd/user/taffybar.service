@@ -5,6 +5,8 @@ Description=taffybar
 Type=simple
 ExecStart=/usr/bin/env taffybar
 ExecStop=/usr/bin/pkill taffybar
+Restart=always
+RestartSec=3
 
 [Install]
 WantedBy=wm.target
