@@ -2793,6 +2793,18 @@ Intero seems to be causing hangs, so it has been disabled
   :config
   (add-to-list 'company-backends '(company-ghc :with company-dabbrev-code)))
 #+END_SRC
+*** purescript
+#+BEGIN_SRC emacs-lisp
+(use-package purescript-mode)
+
+(use-package psc-ide
+  :config
+  (progn
+    (defun imalison:purescript-mode-hook ()
+      (psc-ide-mode +1)
+      (turn-on-purescript-indentation))
+    (add-hook 'purescript-mode-hook 'imalison:purescript-mode-hook)))
+#+END_SRC
 *** C/C++
 #+BEGIN_SRC emacs-lisp
 (use-package cc-mode
