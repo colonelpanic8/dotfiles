@@ -3647,6 +3647,17 @@ alphanumeric characters only."
 (use-package jq-mode
   :mode "\\.jq\\'")
 #+END_SRC
+*** systemd
+#+BEGIN_SRC emacs-lisp
+(use-package systemd
+  :commands systemd-mode
+  :preface
+  (ignore
+   (add-to-list 'auto-mode-alist
+                '("\\.service\\'" . systemd-mode))
+   (add-to-list 'auto-mode-alist
+                '("\\.socket\\'" . systemd-mode))))
+#+END_SRC
 * Source Control
 ** magit
 #+BEGIN_SRC emacs-lisp
