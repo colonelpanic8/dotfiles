@@ -2759,7 +2759,10 @@ Intero seems to be causing hangs, so it has been disabled
   :disabled t
   :demand t
   :after haskell-mode
-  :config (add-hook 'haskell-mode-hook 'intero-mode-whitelist))
+  :config
+  (progn
+    (defun intero--warn (&rest args))
+    (add-hook 'haskell-mode-hook 'intero-mode-whitelist)))
 #+END_SRC
 **** hindent
 #+BEGIN_SRC emacs-lisp
