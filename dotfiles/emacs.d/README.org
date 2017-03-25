@@ -3868,6 +3868,7 @@ in term-mode. This makes term-mode 1000% more useful
        (if string string (current-kill 0))))
 
     (require 'helm)
+    (require 'helm-ring)
 
     (defvar helm-kill-ring-for-term-actions
       '(("Yank" . imalison:term-paste)
