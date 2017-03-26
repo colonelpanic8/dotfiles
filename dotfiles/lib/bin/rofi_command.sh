@@ -15,8 +15,14 @@ get_all_aliases () {
 	alias | cut -d = -f 1
 }
 
+get_all_history () {
+	cat ~/.zsh_history | cut -d ';' -f 2- | awk '!a[$0]++'
+}
 
-selected=$({ get_all_executables; get_all_aliases; get_all_functions; } | rofi -dmenu -i -kb-custom-1 "Alt+c")
+
+selected=$({ get_all_executables; get_all_aliases; get_all_functions; get_all_history; } |
+			   rofi -dmenu -i -kb-custom-1 "Alt+c" -kb-custom-2 "Alt+t")
+
 rofi_exit="$?"
 args=""
 case "$rofi_exit" in
@@ -25,5 +31,9 @@ case "$rofi_exit" in
 		;;
 	10)
 		args=$(echo "" | rofi -dmenu)
+		;;
+	11)
+		urxvt --hold -e "$selected"
+		;;
 esac
 eval "$selected $args"
