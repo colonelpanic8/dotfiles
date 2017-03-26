@@ -13,16 +13,21 @@ import qualified Data.Map as M
 import           Data.Maybe
 import qualified Graphics.UI.Gtk as Gtk
 import           Graphics.UI.Gtk.Gdk.Screen
+import           System.Mem.StableName
 import           System.Taffybar
 import           Text.Read hiding (get, lift)
 import           Web.Scotty
 import           XMonad.Core ( whenJust )
 
-toggleableMonitors :: MV.MVar (M.Map Int Bool) -> Int -> TaffybarConfig -> IO (Maybe TaffybarConfig)
-toggleableMonitors enabledVar monNumber cfg = do
+toggleableMonitors :: MV.MVar (M.Map Int Bool)
+                   -> TaffybarConfigEQ -> IO (Int -> (Maybe TaffybarConfigEQ))
+toggleableMonitors enabledVar cfg = do
   numToEnabled <- MV.readMVar enabledVar
-  let enabled = fromMaybe True $ M.lookup monNumber numToEnabled
-  return $ if enabled then Just cfg else Nothing
+  let fn monNumber =
+        if fromMaybe True $ M.lookup monNumber numToEnabled
+        then Just cfg
+        else Nothing
+  return fn
 
 getActiveScreenNumber :: MaybeT IO Int
 getActiveScreenNumber = do
