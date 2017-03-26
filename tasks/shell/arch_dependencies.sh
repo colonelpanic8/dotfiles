@@ -24,7 +24,7 @@ OTHER=(
 
 LANGUAGES=(
 	"scala" "clojure" "leiningen" "boot" "go" "ruby" "node" "ghc" "rust" "rbenv"
-	"nvm"
+	"nvm" "purescript" "pulp"
 )
 
 APPEARANCE=(
