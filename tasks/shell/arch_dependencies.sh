@@ -15,7 +15,8 @@ ESSENTIAL=(
 )
 
 NEEDED=(
-	"playerctl" "vlc" "feh" "xdotool" "android-sdk-platform-tools" "android-sdk" "android-tools"
+	"playerctl" "vlc" "feh" "xdotool" "android-sdk-platform-tools" "android-sdk"
+	"android-tools" "skippy-xd-git"
 )
 
 OTHER=(

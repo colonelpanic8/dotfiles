@@ -1,0 +1,12 @@
+[Unit]
+Description=skippy-xd
+Wants=taffybar.service
+After=taffybar.service
+
+[Service]
+Type=simple
+ExecStart=/usr/bin/env skippy-xd --start-daemon
+ExecStop=/usr/bin/pkill skippy-xd
+
+[Install]
+WantedBy=wm.target
