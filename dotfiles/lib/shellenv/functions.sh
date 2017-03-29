@@ -467,3 +467,7 @@ function localip {
 function all_lines_after {
     sed -n "/$1/"'$p'
 }
+
+function list_interfaces {
+    ip link show | grep -vE '^ ' | get_cols -F ':' 2 | xargs -n 1
+}
