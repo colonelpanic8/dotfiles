@@ -1,7 +1,9 @@
 import qualified Control.Concurrent.MVar as MV
 import           Control.Exception.Base
+import           Control.Monad
 import           Data.List
 import qualified Data.Map as M
+import           Data.Maybe
 import qualified Graphics.UI.Gtk as Gtk
 import qualified Graphics.UI.Gtk.Abstract.Widget as W
 import qualified Graphics.UI.Gtk.Layout.Table as T
@@ -23,6 +25,7 @@ import           System.Taffybar.WorkspaceHUD
 import           Text.Printf
 import           Text.Read hiding (get)
 import           ToggleMonitor
+import           XMonad.Core ( whenJust )
 
 
 memCallback = do
@@ -88,7 +91,7 @@ main = do
           Right monString ->
             case readMaybe monString of
               Nothing -> (allMonitors, 0)
-              Just num -> (Nothing, num)
+              Just num -> (useMonitorNumber, num)
       memCfg =
         defaultGraphConfig
         {graphDataColors = [(0.129, 0.588, 0.953, 1)], graphLabel = Just "mem"}
@@ -127,20 +130,22 @@ main = do
         , innerPadding = 5
         , outerPadding = 5
         }
+      netMonitor = netMonitorMultiNew ["wlp2s0"]
       pagerConfig = defaultPagerConfig {useImages = True}
       pager = taffyPagerNew pagerConfig
       makeUnderline = underlineWidget hudConfig
   pgr <- pagerNew pagerConfig
   enabledVar <- MV.newMVar M.empty
+  tray2 <- movableWidget tray
   let hud = buildWorkspaceHUD hudConfig pgr
       los = makeUnderline (layoutSwitcherNew pgr) "red"
       wnd = makeUnderline (windowSwitcherNew pgr) "teal"
-
       taffyConfig =
         defaultTaffybarConfig
         { startWidgets = [hud, los, wnd]
         , endWidgets =
-            [ makeUnderline tray "yellow"
+            [ -- tray2
+            makeUnderline tray "yellow"
             , makeUnderline clock "teal"
             , makeUnderline mem "blue"
             , makeUnderline cpu "green"
@@ -150,8 +155,8 @@ main = do
         , barPosition = Top
         , barHeight = 50
         , widgetSpacing = 5
-        , startRefresher = Just $ handleToggleRequests enabledVar
-        , getMonitorConfig = Just $ toggleableMonitors enabledVar
+        , startRefresher = handleToggleRequests enabledVar
+        , getMonitorConfig = toggleableMonitors enabledVar
         }
 
   defaultTaffybar taffyConfig
