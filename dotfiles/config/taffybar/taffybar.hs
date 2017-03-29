@@ -49,6 +49,27 @@ underlineWidget cfg buildWidget name = do
 
   return $ Gtk.toWidget t
 
+movableWidget builder =
+  do
+    -- Delay creation of the widget or else failure from trying to get screen
+    widVar <- MV.newEmptyMVar
+    let moveWidget = do
+          isEmpty <- MV.isEmptyMVar widVar
+          when isEmpty $
+               do
+                 putwid <- builder
+                 MV.putMVar widVar putwid
+          wid <- MV.readMVar widVar
+          hbox <- Gtk.hBoxNew False 0
+          parent <- Gtk.widgetGetParent wid
+          if isJust parent
+          then
+            Gtk.widgetReparent wid hbox
+          else
+            Gtk.containerAdd hbox wid
+          return $ Gtk.toWidget hbox
+    return moveWidget
+
 main = do
   monEither <-
     (try $ getEnv "TAFFYBAR_MONITOR") :: IO (Either SomeException String)
