@@ -319,7 +319,8 @@ myDecorateName ws w = do
   return $ printf "%-20s%-40s %+30s" classTitle (take 40 name)
            "in " ++ workspaceToName (W.tag ws)
 
--- This needs access to X in order to unminimize, which means that I can't be
+
+-- This needs access to X in order to unminimize, which means that it can't be
 -- done with the existing window bringer interface
 myWindowAct  c@WindowBringerConfig { menuCommand = cmd
                                    , menuArgs = args
@@ -331,9 +332,7 @@ myWindowAct  c@WindowBringerConfig { menuCommand = cmd
 
 
 myBringWindow window =
-  sequence_ [ maximizeWindow window
-            , windows $ W.focusWindow window . bringWindow window
-            ]
+  maximizeWindow window >> (windows $ W.focusWindow window . bringWindow window)
 
 -- Dynamic Workspace Renaming
 
