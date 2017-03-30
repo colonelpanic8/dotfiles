@@ -15,6 +15,7 @@ import           System.Information.Memory
 import           System.Taffybar
 import           System.Taffybar.LayoutSwitcher
 import           System.Taffybar.MPRIS2
+import           System.Taffybar.NetMonitor
 import           System.Taffybar.Pager
 import           System.Taffybar.SimpleClock
 import           System.Taffybar.Systray
@@ -130,7 +131,7 @@ main = do
         , innerPadding = 5
         , outerPadding = 5
         }
-      netMonitor = netMonitorMultiNew ["wlp2s0"]
+      netMonitor = netMonitorMultiNew 1.5 ["enp0s31f6"]
       pagerConfig = defaultPagerConfig {useImages = True}
       pager = taffyPagerNew pagerConfig
       makeUnderline = underlineWidget hudConfig
@@ -144,11 +145,11 @@ main = do
         defaultTaffybarConfig
         { startWidgets = [hud, los, wnd]
         , endWidgets =
-            [ -- tray2
-            makeUnderline tray "yellow"
+            [ makeUnderline tray "yellow"
             , makeUnderline clock "teal"
             , makeUnderline mem "blue"
             , makeUnderline cpu "green"
+            , makeUnderline netMonitor "yellow"
             , makeUnderline mpris "red"
             ]
         , monitorNumber = monNumber
