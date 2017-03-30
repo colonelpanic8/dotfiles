@@ -2,6 +2,7 @@ import qualified Control.Concurrent.MVar as MV
 import           Control.Exception.Base
 import           Control.Monad
 import           Data.List
+import           Data.List.Split
 import qualified Data.Map as M
 import           Data.Maybe
 import qualified Graphics.UI.Gtk as Gtk
@@ -10,8 +11,10 @@ import qualified Graphics.UI.Gtk.Layout.Table as T
 import           System.Directory
 import           System.Environment
 import           System.FilePath.Posix
+import           System.IO
 import           System.Information.CPU
 import           System.Information.Memory
+import           System.Process
 import           System.Taffybar
 import           System.Taffybar.LayoutSwitcher
 import           System.Taffybar.MPRIS2
@@ -74,9 +77,14 @@ movableWidget builder =
           return $ Gtk.toWidget hbox
     return moveWidget
 
+getInterfaces = do
+  (_, output, _) <- readCreateProcessWithExitCode (shell "list_interfaces.sh") ""
+  return $ splitOn "\n" output
+
 main = do
   monEither <-
     (try $ getEnv "TAFFYBAR_MONITOR") :: IO (Either SomeException String)
+  interfaceNames <- getInterfaces
   homeDirectory <- getHomeDirectory
   let resourcesDirectory file =
         homeDirectory </> ".lib" </> "resources" </> file
@@ -131,7 +139,7 @@ main = do
         , innerPadding = 5
         , outerPadding = 5
         }
-      netMonitor = netMonitorMultiNew 1.5 ["enp0s31f6"]
+      netMonitor = netMonitorMultiNew 1.5 interfaceNames
       pagerConfig = defaultPagerConfig {useImages = True}
       pager = taffyPagerNew pagerConfig
       makeUnderline = underlineWidget hudConfig
