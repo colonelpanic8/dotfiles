@@ -16,11 +16,14 @@ main = do
       matches = catMaybes $ matchRegex sinkRegex <$> sinkInfos
       entries = map buildEntry matches
       rofiText = intercalate "\n" entries
-  selection <- snd <$> shellStrict "rofi -dmenu -i" (select $ map fromString entries)
-  let selectedSink = head $ splitOn " " $ unpack selection
-  mapM_ (setMuteAction "1" . head) matches
-  setMuteAction "0" selectedSink
-  return ()
+  (exitCode, selection) <- shellStrict "rofi -dmenu -i" (select $ map fromString entries)
+  case exitCode of
+    ExitSuccess -> do
+                  let selectedSink = head $ splitOn " " $ unpack selection
+                  mapM_ (setMuteAction "1" . head) matches
+                  setMuteAction "0" selectedSink
+                  return ()
+    ExitFailure _ -> return ()
     where getSinkText = snd <$> shellStrict "pactl list sink-inputs" empty
           sinkRegex = mkRegexWithOpts "Input .([0-9]*).*?application.name =([^\n]*)" False True
           buildEntry (num:name:_) = let app = (filter (not . (`elem` ("\"" :: String))) name) in printf "%s - %s" num $ trim app
