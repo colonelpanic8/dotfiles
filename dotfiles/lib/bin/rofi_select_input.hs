@@ -1,23 +1,25 @@
 #!/usr/bin/env runhaskell
 {-# LANGUAGE OverloadedStrings, AllowAmbiguousTypes #-}
 
+import Control.Monad
 import Data.List
 import Data.List.Split
 import Data.Maybe
 import Data.Text (unpack)
-import Text.Regex
+import System.Process
 import Text.Printf
-import Turtle hiding (printf, find)
+import Text.Regex
+import System.Exit
 
 main :: IO ()
 main = do
-  out <- unpack <$> getSinkText
+  out <- getSinkText
   let sinkInfos = splitOn "\nSink" out
       matches = catMaybes $ matchRegex sinkRegex <$> sinkInfos
       entries = map buildEntry matches
-  (exitCode, selection) <- shellStrict "rofi -dmenu -i -kb-custom-1 'Alt-o'"
-                           (select $ map fromString entries)
-  let selectedSink = head $ splitOn " " $ unpack selection
+  (exitCode, selection, _) <- readCreateProcessWithExitCode (shell "rofi -dmenu -i -kb-custom-1 'Alt-o'") $
+                           intercalate "\n" entries
+  let selectedSink = head $ splitOn " " selection
       unMuteSelected = setMuteAction "0" selectedSink
       selectedIsMuted = fromMaybe True $
                         isMuted . (!! 1) <$> find ((== selectedSink) . head) matches
@@ -32,12 +34,14 @@ main = do
         mapM_ (setMuteAction "1" . head) matches
         void unMuteSelected
     ExitFailure _ -> return ()
-    where getSinkText = snd <$> shellStrict "pactl list sink-inputs" empty
+    where getSinkText = do
+                  (_, txt, _) <- readCreateProcessWithExitCode (shell "pactl list sink-inputs") ""
+                  return txt
           sinkRegex = mkRegexWithOpts "Input .([0-9]*).*?Mute: ([^\n]*).*?application.name =([^\n]*)" False True
           buildEntry (num:status:name:_) =
             printf "%s - %s%s" num (trim $ noQuotes name) (muteString status)
           buildEntry _ = ""
-          setMuteAction status sink = shell (fromString $ setMuteCommand status sink) empty
+          setMuteAction status sink = callCommand $ setMuteCommand status sink
           setMuteCommand status sink = "pactl set-sink-input-mute " ++ sink ++ " " ++ status
           trim = dropWhileEnd (== ' ') . dropWhile (== ' ')
           isMuted = (== "yes")
