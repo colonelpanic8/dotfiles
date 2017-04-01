@@ -81,7 +81,8 @@ main =
 
 -- Utility functions
 
-(<..>) a b = (fmap . fmap) a b
+(<..>) :: Functor f => (a -> b) -> f (f a) -> f (f b)
+(<..>) = fmap . fmap
 
 forkM :: Monad m => (i -> m a) -> (i -> m b) -> i -> m (a, b)
 forkM a b input = do
@@ -130,7 +131,9 @@ mapP' f f' = map (f A.&&& f')
 
 minimizedWindows = withMinimized return
 
-visibleWindows = (\\) <$> (withWorkspaceR $ return . W.integrate' . W.stack) <*> minimizedWindows
+visibleWindows =
+  (\\) <$> withWorkspaceR (return . W.integrate' . W.stack)
+         <*> minimizedWindows
 
 -- Selectors
 
