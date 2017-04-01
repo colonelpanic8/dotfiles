@@ -9,6 +9,7 @@ import           Control.Monad.Trans.Maybe
 import           Data.Aeson
 import qualified Data.ByteString.Lazy as B
 import           Data.List
+import           Data.List.Split
 import qualified Data.Map as M
 import           Data.Maybe
 import qualified Data.MultiMap as MM
@@ -57,6 +58,7 @@ import           XMonad.Util.Minimize
 import           XMonad.Util.NamedScratchpad
     (NamedScratchpad(NS), nonFloating, namedScratchpadAction)
 import           XMonad.Util.NamedWindows (getName)
+import           XMonad.Util.Run
 
 main =
   xmonad . docks . pagerHints . ewmh $
@@ -322,20 +324,67 @@ myDecorateName ws w = do
   return $ printf "%-20s%-40s %+30s" classTitle (take 40 name)
            "in " ++ workspaceToName (W.tag ws)
 
+data ChromeInfo = ChromeInfo { tabId :: Int
+                             , tabUri :: String
+                             , tabTitle :: String
+                             } deriving (Eq, Show)
+
+getChromeTabInfo = do
+  output <- runProcessWithInput "chromix-too" ["ls"] ""
+  return $ M.fromList $ map parseChromixLine $ lines output
+    where parseChromixLine line =
+            case splitOn " " line of
+              tid:uri:rest -> let ttl = concat rest in
+                              (printf "%s - %s" tid ttl :: String,
+                               ChromeInfo { tabId = read tid
+                                          , tabUri = uri
+                                          , tabTitle = ttl
+                                          })
+
+selectChromeTab WindowBringerConfig { menuCommand = cmd
+                                    , menuArgs = args
+                                    } =
+  liftIO getChromeTabInfo >>= void . DM.menuMapArgs cmd args
+
+chromeTabAction doSplit action selected =
+  case selected of
+    Left wid -> action wid
+    Right ChromeInfo { tabId = tid } ->
+      liftIO $ do
+        let command = if doSplit then
+                "split_tab_by_id.sh"
+              else
+                "focus_tab_by_id.sh"
+        _ <- io $ runProcessWithInput command [show tid] ""
+        return ()
 
 -- This needs access to X in order to unminimize, which means that it can't be
 -- done with the existing window bringer interface
-myWindowAct  c@WindowBringerConfig { menuCommand = cmd
-                                   , menuArgs = args
-                                   } action =
+myWindowAct c@WindowBringerConfig { menuCommand = cmd
+                                  , menuArgs = args
+                                  } action =
   do
     visible <- visibleWindows
-    windowMap' c { windowFilter = not . flip elem visible } >>=
-               DM.menuMapArgs cmd args >>= flip whenJust action
+    ws <- windowMap' c { windowFilter = not . flip elem visible }
+    chromeTabs <- liftIO getChromeTabInfo
+    let options = M.union (M.map Left ws) (M.map Right chromeTabs)
+    selection <- DM.menuMapArgs cmd args options
+    whenJust selection action
 
+doBringWindow window =
+  maximizeWindow window >> windows (W.focusWindow window . bringWindow window)
 
-myBringWindow window =
-  maximizeWindow window >> (windows $ W.focusWindow window . bringWindow window)
+myWindowAction = andDeactivateFull . maybeUnminimizeAfter .
+                 myWindowAct myWindowBringerConfig
+
+myGoToWindow =
+  myWindowAction $ chromeTabAction False $ windows . greedyFocusWindow
+
+myBringWindow = myWindowAction $ chromeTabAction True doBringWindow
+
+myReplaceWindow =
+  swapMinimizeStateAfter $ myWindowAct myWindowBringerConfig $
+                         chromeTabAction True (windows . swapFocusedWith)
 
 -- Dynamic Workspace Renaming
 
@@ -660,18 +709,14 @@ addKeys conf@XConfig { modMask = modm } =
 
     -- Window manipulation
 
-    , ((modm, xK_g), andDeactivateFull . maybeUnminimizeAfter $
-       myWindowAct myWindowBringerConfig $ windows . greedyFocusWindow)
-    , ((modm .|. shiftMask, xK_g), andDeactivateFull . sameClassOnly $
-       actionMenu myWindowBringerConfig greedyFocusWindow)
-    , ((modm, xK_b), andDeactivateFull $ myWindowAct myWindowBringerConfig myBringWindow)
-    , ((modm .|. shiftMask, xK_b),
-       swapMinimizeStateAfter $ myWindowAct myWindowBringerConfig $ windows . swapFocusedWith)
+    , ((modm, xK_g), myGoToWindow)
+    , ((modm, xK_b), myBringWindow)
+    , ((modm .|. shiftMask, xK_b), myReplaceWindow)
     , ((modm .|. controlMask, xK_space), goFullscreen)
     , ((modm, xK_m), withFocused minimizeWindow)
     , ((modm .|. shiftMask, xK_m),
        deactivateFullOr $ withLastMinimized maximizeWindowAndFocus)
-    , ((modm, xK_x), addHiddenWorkspace "NSP" >> (windows $ W.shift "NSP"))
+    , ((modm, xK_x), addHiddenWorkspace "NSP" >> windows (W.shift "NSP"))
     , ((modalt, xK_space), deactivateFullOr restoreOrMinimizeOtherClasses)
     , ((modalt, xK_Return), deactivateFullAnd restoreAllMinimized)
 
