@@ -11,7 +11,8 @@ ESSENTIAL=(
 	"openjdk8-src" "ghc" "cabal-install" "sparkleshare" "rofi" "rxvt-unicode"
 	"rofi-pass" "xorg-xrandr" "spotify" "htop" "rcm" "networkmanager-applet"
 	"pulseaudio-ctl" "pasystray" "xclip" "copyq" "notification-daemon" "pass"
-	"pavucontrol" "xsettingsd-git" "udiskie" "python-pip" "gnome-keyring"
+	"pavucontrol" "xsettingsd-git" "udisks" "udiskie" "python-pip"
+	"gnome-keyring"
 )
 
 NEEDED=(
