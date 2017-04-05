@@ -773,7 +773,7 @@ addKeys conf@XConfig { modMask = modm } =
     , ((hyper, xK_slash), spawn "toggle_taffybar.sh")
     , ((hyper, xK_space), spawn "skippy-xd")
     , ((hyper, xK_i), spawn "rofi_select_input.hs")
-    , ((hyper, xK_o), spawn "rofi_paswitch.hs")
+    , ((hyper, xK_o), spawn "rofi_paswitch.sh")
 
     -- Media keys
 
