@@ -23,6 +23,7 @@ main = do
       unMuteSelected = setMuteAction "0" selectedSink
       selectedIsMuted = fromMaybe True $
                         isMuted . (!! 1) <$> find ((== selectedSink) . head) matches
+      setAll state = mapM_ (setMuteAction state . head) matches
   print selectedSink
   print matches
   print selectedIsMuted
@@ -31,9 +32,9 @@ main = do
       void $ setMuteAction (toSetString selectedIsMuted) selectedSink
     ExitFailure 10 ->
       do
-        mapM_ (setMuteAction "1" . head) matches
+        setAll "1"
         void unMuteSelected
-    ExitFailure _ -> return ()
+    ExitFailure _ -> setAll "0"
     where getSinkText = do
                   (_, txt, _) <- readCreateProcessWithExitCode (shell "pactl list sink-inputs") ""
                   return txt
