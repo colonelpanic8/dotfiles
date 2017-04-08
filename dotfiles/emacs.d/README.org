@@ -1725,10 +1725,10 @@ custom-set-faces in your custom file.
   nil
   "Yank text"
   ("p" imalison:copy-buffer-file-path "Projectile path")
-  ("l" imalison:copy-current-buffer-name "Buffer Name")
+  ("b" imalison:copy-current-buffer-name "Buffer Name")
   ("f" imalison:copy-buffer-file-path-full "Full path")
   ("n" imalison:copy-buffer-file-name "File name")
-  ("b" imalison:copy-current-git-branch "Git Branch")
+  ("g" imalison:copy-current-git-branch "Git Branch")
   ("m" imalison:copy-last-message "Last Message"))
 #+END_SRC
 *** Compile
