@@ -28,7 +28,7 @@ import           System.Taffybar.WindowSwitcher
 import           System.Taffybar.WorkspaceHUD
 import           Text.Printf
 import           Text.Read hiding (get)
-import           ToggleMonitor
+import           System.Taffybar.ToggleMonitor
 import           XMonad.Core ( whenJust )
 
 
@@ -74,6 +74,7 @@ movableWidget builder =
             Gtk.widgetReparent wid hbox
           else
             Gtk.containerAdd hbox wid
+          Gtk.widgetShowAll hbox
           return $ Gtk.toWidget hbox
     return moveWidget
 
@@ -114,12 +115,13 @@ main = do
       mem = pollingGraphNew memCfg 1 memCallback
       cpu = pollingGraphNew cpuCfg 0.5 cpuCallback
       tray = do
-        tray <- systrayNew
-        container <- Gtk.eventBoxNew
-        Gtk.containerAdd container tray
-        Gtk.widgetSetName container "Taffytray"
-        Gtk.widgetSetName tray "Taffytray"
-        return $ Gtk.toWidget container
+        theTray <- systrayNew
+        cont <- Gtk.eventBoxNew
+        Gtk.containerAdd cont theTray
+        Gtk.widgetSetName cont "Taffytray"
+        Gtk.widgetSetName theTray "Taffytray"
+        Gtk.widgetShowAll cont
+        return $ Gtk.toWidget cont
       hudConfig =
         defaultWorkspaceHUDConfig
         { underlineHeight = 3
@@ -144,8 +146,8 @@ main = do
       pager = taffyPagerNew pagerConfig
       makeUnderline = underlineWidget hudConfig
   pgr <- pagerNew pagerConfig
-  enabledVar <- MV.newMVar M.empty
   tray2 <- movableWidget tray
+
   let hud = buildWorkspaceHUD hudConfig pgr
       los = makeUnderline (layoutSwitcherNew pgr) "red"
       wnd = makeUnderline (windowSwitcherNew pgr) "teal"
@@ -164,11 +166,9 @@ main = do
         , barPosition = Top
         , barHeight = 50
         , widgetSpacing = 5
-        , startRefresher = handleToggleRequests enabledVar
-        , getMonitorConfig = toggleableMonitors enabledVar
         }
 
-  defaultTaffybar taffyConfig
+  withToggleSupport taffyConfig
 
 -- Local Variables:
 -- flycheck-ghc-args: ("-Wno-missing-signatures")

@@ -1,3 +1,3 @@
 #!/usr/bin/env sh
 
-curl localhost:3000/toggleCurrent
+dbus-send --print-reply=literal --dest=taffybar.toggle /taffybar/toggle taffybar.toggle.toggleCurrent
