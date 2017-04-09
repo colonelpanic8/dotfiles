@@ -3,7 +3,7 @@
 "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
-<!-- 2017-04-08 Sat 09:55 -->
+<!-- 2017-04-09 Sun 03:55 -->
 <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title></title>
@@ -5322,6 +5322,10 @@ This was taken from <a href="http://emacs.stackexchange.com/questions/7583/trans
 (<span class="org-keyword">defun</span> <span class="org-function-name">imalison:font-size-reset</span> ()
   (<span class="org-keyword">interactive</span>)
   (imalison:set-font-size imalison:default-font-size-pt))
+
+(<span class="org-keyword">defun</span> <span class="org-function-name">imalison:font-size-80chars</span> ()
+  (<span class="org-keyword">interactive</span>)
+  (imalison:set-font-size 120))
 </pre>
 </div>
 </div>
@@ -6725,7 +6729,8 @@ custom-set-faces in your custom file.
   (<span class="org-string">"a"</span> imalison:appearance <span class="org-string">"Set Default Appearance"</span>)
   (<span class="org-string">"f"</span> set-frame-font <span class="org-string">"Set Frame Font"</span>)
   (<span class="org-string">"t"</span> helm-themes <span class="org-string">"Choose Emacs Theme"</span>)
-  (<span class="org-string">"0"</span> imalison:font-size-reset <span class="org-string">"Reset to default size"</span>))
+  (<span class="org-string">"0"</span> imalison:font-size-reset <span class="org-string">"Reset to default size"</span>)
+  (<span class="org-string">"8"</span> imalison:font-size-80chars <span class="org-string">"80 chars 3 columns font size"</span>))
 </pre>
 </div>
 </div>
