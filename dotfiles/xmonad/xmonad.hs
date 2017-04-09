@@ -294,8 +294,15 @@ selectLayout =
   (sendMessage . JumpToLayout)
 
 myLayoutHook =
-  avoidStruts . minimize . boringAuto . mkToggle1 MIRROR . mkToggle1 LIMIT .
-  mkToggle1 GAPS . mkToggle1 MAGICFOCUS . mkToggle1 NBFULL . workspaceNamesHook .
+  avoidStruts .
+  minimize .
+  boringAuto .
+  mkToggle1 MIRROR .
+  mkToggle1 LIMIT .
+  mkToggle1 GAPS .
+  mkToggle1 MAGICFOCUS .
+  mkToggle1 NBFULL .
+  workspaceNamesHook .
   lessBorders Screen $ fst layoutInfo
 
 -- WindowBringer
@@ -383,8 +390,9 @@ myGoToWindow =
 myBringWindow = myWindowAction $ chromeTabAction True doBringWindow
 
 myReplaceWindow =
-  swapMinimizeStateAfter $ myWindowAct myWindowBringerConfig $
-                         chromeTabAction True (windows . swapFocusedWith)
+  swapMinimizeStateAfter $
+  myWindowAct myWindowBringerConfig $
+  chromeTabAction True (windows . swapFocusedWith)
 
 -- Dynamic Workspace Renaming
 
@@ -422,7 +430,8 @@ newtype ToggleFade a =
   ToggleFade { fadesMap :: M.Map a Bool }
   deriving (Typeable, Read, Show)
 
-instance (Typeable a, Read a, Show a, Ord a) => ExtensionClass (ToggleFade a) where
+instance (Typeable a, Read a, Show a, Ord a) =>
+         ExtensionClass (ToggleFade a) where
   initialValue = ToggleFade M.empty
   extensionType = PersistentExtension
 
@@ -436,7 +445,8 @@ fadeEnabledForScreen = fadeEnabledFor getWindowScreen
 getScreens = withWindowSet $ return . W.screens
 getWindowWorkspace' = W.findTag <$> ask <*> liftX (withWindowSet return)
 getWindowWorkspace = flip fromMaybe <$> getWindowWorkspace' <*> pure "1"
-getWorkspaceToScreen = M.fromList . mapP' (W.tag . W.workspace) W.screen <$> getScreens
+getWorkspaceToScreen =
+  M.fromList . mapP' (W.tag . W.workspace) W.screen <$> getScreens
 getWindowScreen = M.lookup <$> getWindowWorkspace <*> liftX getWorkspaceToScreen
 getCurrentScreen = join (withFocusedD Nothing (runQuery getWindowScreen))
 
@@ -567,7 +577,8 @@ classWindow c = do
 
 nextClassWindow = nextClass >>= classWindow
 
-focusNextClass' = join $ windows . maybe id greedyFocusWindow <$> nextClassWindow
+focusNextClass' =
+  join $ windows . maybe id greedyFocusWindow <$> nextClassWindow
 focusNextClass = sameClassOnly focusNextClass'
 
 selectClass = join $ DM.menuArgs "rofi" ["-dmenu", "-i"] <$> allClasses
@@ -651,7 +662,11 @@ myBringNextMaybe =
   ((deactivateFullAnd . maybeUnminimizeAfter) .) .
   raiseNextMaybeCustomFocus greedyBringWindow
 
-bindBringAndRaise :: KeyMask -> KeySym -> X () -> Query Bool -> [((KeyMask, KeySym), X ())]
+bindBringAndRaise :: KeyMask
+                  -> KeySym
+                  -> X ()
+                  -> Query Bool
+                  -> [((KeyMask, KeySym), X ())]
 bindBringAndRaise mask sym start query =
     [ ((mask, sym), doRaiseNext)
     , ((mask .|. controlMask, sym), myBringNextMaybe start query)
@@ -659,7 +674,8 @@ bindBringAndRaise mask sym start query =
     ]
   where doRaiseNext = myRaiseNextMaybe start query
 
-bindBringAndRaiseMany :: [(KeyMask, KeySym, X (), Query Bool)] -> [((KeyMask, KeySym), X())]
+bindBringAndRaiseMany :: [(KeyMask, KeySym, X (), Query Bool)]
+                      -> [((KeyMask, KeySym), X ())]
 bindBringAndRaiseMany = concatMap (\(a, b, c, d) -> bindBringAndRaise a b c d)
 
 -- Screen shift
