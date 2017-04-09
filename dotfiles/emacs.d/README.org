@@ -761,6 +761,10 @@ This was taken from [[http://emacs.stackexchange.com/questions/7583/transiently-
 (defun imalison:font-size-reset ()
   (interactive)
   (imalison:set-font-size imalison:default-font-size-pt))
+
+(defun imalison:font-size-80chars ()
+  (interactive)
+  (imalison:set-font-size 120))
 #+END_SRC
 ** Message Result Builder
 This macro is useful when writing emacs-lisp. It creates a new interactive command that shows you the result of evaluating a function, with optionally provided arguments.
@@ -1717,7 +1721,8 @@ custom-set-faces in your custom file.
   ("a" imalison:appearance "Set Default Appearance")
   ("f" set-frame-font "Set Frame Font")
   ("t" helm-themes "Choose Emacs Theme")
-  ("0" imalison:font-size-reset "Reset to default size"))
+  ("0" imalison:font-size-reset "Reset to default size")
+  ("8" imalison:font-size-80chars "80 chars 3 columns font size"))
 #+END_SRC
 *** Copy/Yanking
 #+BEGIN_SRC emacs-lisp
