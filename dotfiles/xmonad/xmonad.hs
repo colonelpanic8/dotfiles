@@ -108,6 +108,10 @@ if' False _ y = y
 ifL :: a -> a -> Bool -> a
 ifL a b c = if' c a b
 
+infixl 4 <$$>
+(<$$>) :: Functor f => f (a -> b) -> a -> f b
+functor <$$> value = ($ value) <$> functor
+
 toggleInMap' :: Ord k => Bool -> k -> M.Map k Bool -> M.Map k Bool
 toggleInMap' d k m =
   let existingValue = M.findWithDefault d k m
@@ -406,7 +410,7 @@ getClassRemap =
 getClassRemapF = flip maybeRemap <$> getClassRemap
 getWSClassNames' w = mapM getClass $ W.integrate' $ W.stack w
 getWSClassNames w = io (fmap map getClassRemapF) <*> getWSClassNames' w
-currentWSName ws = fromMaybe "" <$> (getWorkspaceNames' <*> pure (W.tag ws))
+currentWSName ws = fromMaybe "" <$> (getWorkspaceNames' <$$> (W.tag ws))
 desiredWSName = (intercalate "|" <$>) . getWSClassNames
 
 setWorkspaceNameToFocusedWindow workspace = do
@@ -568,7 +572,7 @@ thisClass = withWindowSet $ sequence . (getClass <$.> W.peek)
 nextClass = do
   classes <- allClasses
   current <- thisClass
-  let index = join $ elemIndex <$> current <*> pure classes
+  let index = join $ elemIndex <$> current <$$> classes
   return $ fmap (\i -> cycle classes !! (i + 1)) index
 
 classWindow c = do
