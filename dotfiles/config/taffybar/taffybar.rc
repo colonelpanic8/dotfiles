@@ -24,7 +24,8 @@ style "taffybar-default" {
 }
 
 style "taffybar-active-window" = "taffybar-default" {
-  fg[NORMAL] = @yellow
+  fg[NORMAL] = @black
+  bg[NORMAL] = @orange
 }
 
 style "taffybar-notification-button" = "taffybar-default" {
@@ -83,9 +84,8 @@ style "bgrey" = "taffybar-default" {
 }
 
 widget "Taffybar*" style "taffybar-default"
-widget "*menu*" style "taffybar-default"
-widget "*WindowSwitcher*" style "taffybar-default"
 widget "*Taffybar*WindowSwitcher*" style "taffybar-active-window"
+widget "*Taffybar*title*" style "taffybar-active-twindow"
 widget "*NotificationCloseButton" style "taffybar-notification-button"
 
 widget "*Workspace-underline*-active*" style "taffybar-workspace-border-active"
@@ -114,4 +114,3 @@ widget "*orange-underline*" style "orange"
 widget "*green-underline*" style "green"
 widget "*teal-underline*" style "teal"
 widget "*bgrey-underline*" style "bgrey"
-widget "*Taffytray*" style "taffybar-default"
