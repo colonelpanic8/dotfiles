@@ -22,6 +22,7 @@ import           Text.Printf
 
 import           XMonad hiding ( (|||) )
 import           XMonad.Actions.CycleWS hiding (nextScreen)
+import           XMonad.Actions.CycleWorkspaceByScreen
 import qualified XMonad.Actions.DynamicWorkspaceOrder as DWO
 import           XMonad.Actions.DynamicWorkspaces hiding (withWorkspace)
 import           XMonad.Actions.Minimize
@@ -35,6 +36,7 @@ import           XMonad.Hooks.FadeInactive
 import           XMonad.Hooks.ManageDocks
 import           XMonad.Hooks.ManageHelpers
 import           XMonad.Hooks.Minimize
+import           XMonad.Hooks.WorkspaceHistory
 import           XMonad.Layout.Accordion
 import           XMonad.Layout.BoringWindows
 import           XMonad.Layout.Cross
@@ -72,7 +74,7 @@ main =
   , focusedBorderColor = "#455a64"
   , logHook =
       updatePointer (0.5, 0.5) (0, 0) +++
-      toggleFadeInactiveLogHook 0.9
+      toggleFadeInactiveLogHook 0.9 +++ workspaceHistoryHook
   , handleEventHook =
       fullscreenEventHook +++ followIfNoMagicFocus +++ minimizeEventHook
   , startupHook = myStartup
@@ -82,6 +84,10 @@ main =
     x +++ y = mappend y x
 
 -- Utility functions
+
+-- Log to a file from anywhere
+writeToHomeDirLog stuff = io $ getLogFile >>= flip appendFile (stuff ++ "\n")
+  where getLogFile = (</> "temp" </> "xmonad.log") <$> getHomeDirectory
 
 (<..>) :: Functor f => (a -> b) -> f (f a) -> f (f b)
 (<..>) = fmap . fmap
@@ -410,7 +416,7 @@ getClassRemap =
 getClassRemapF = flip maybeRemap <$> getClassRemap
 getWSClassNames' w = mapM getClass $ W.integrate' $ W.stack w
 getWSClassNames w = io (fmap map getClassRemapF) <*> getWSClassNames' w
-currentWSName ws = fromMaybe "" <$> (getWorkspaceNames' <$$> (W.tag ws))
+currentWSName ws = fromMaybe "" <$> (getWorkspaceNames' <$$> W.tag ws)
 desiredWSName = (intercalate "|" <$>) . getWSClassNames
 
 setWorkspaceNameToFocusedWindow workspace = do
@@ -745,7 +751,8 @@ addKeys conf@XConfig { modMask = modm } =
     , ((modm, xK_s), swapNextScreen >> goToNextScreenX)
     , ((modm, xK_e), goToNextScreenX)
     , ((modm, xK_slash), sendMessage $ Toggle MIRROR)
-    , ((modm, xK_backslash), toggleWS)
+    , ((modm, xK_backslash),
+       cycleWorkspaceOnCurrentScreen [xK_Super_L] xK_backslash xK_slash)
     , ((modm, xK_space), deactivateFullOr $ sendMessage NextLayout)
     , ((modm, xK_z), shiftToNextScreenX)
     , ((modm .|. shiftMask, xK_z), shiftToEmptyNextScreen)
