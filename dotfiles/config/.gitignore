@@ -1,3 +1,6 @@
+/.mono/keypairs/
+/Atom/
+/Code/
 /Popcorn-Time/
 /QtProject.conf/
 /Trolltech.conf
@@ -16,6 +19,7 @@
 /gtk-3.0/bookmarks
 /hexchat
 /hub
+/libreoffice/
 /linuxmint/
 /menus/
 /menus/applications-merged/
@@ -31,6 +35,7 @@
 /sparkleshare/avatars/
 /sparkleshare/logs
 /spotify
+/sublime-text-3/
 /systemd/user/*.target.wants/
 /totem/
 /transmission/dht.dat
@@ -42,4 +47,3 @@
 /user-dirs.locale
 /vlc/
 /xfce4/
-/.mono/keypairs/
