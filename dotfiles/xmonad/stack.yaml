@@ -4,10 +4,10 @@ packages:
 - '.'
 - location:
     git: git@github.com:IvanMalison/xmonad.git
-    commit: 76f4a162587a8c6b58afe3d76341336cfe3c9aa3
+    commit: 10b843ad21614994b7e12fafaf300f4267aa9e40
 - location:
     git: git@github.com:IvanMalison/xmonad-contrib.git
-    commit: 0066445d37e69925e38970a1aa174547e28122a3
+    commit: 1a3aefb6118ac3c5e69da6da15e97551971712e1
 - location:
     git: git@github.com:IvanMalison/taffybar.git
     commit: 3570bdbd87a5464d7280d8750c5c153cf3dcc637
