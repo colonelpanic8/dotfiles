@@ -522,6 +522,16 @@ actOnWindowsInWorkspace :: (Window -> X ())
 actOnWindowsInWorkspace windowAction getWindowsAction = restoreFocus $
   withWorkspace (getWindowsAction >=> mapM_ windowAction)
 
+-- XXX: The idea behind this was that the normal fullscreen can be annoying if a
+-- new window opens, but this behavior is even more annoying than that, so
+-- nevermind
+goFullscreenDWIM =
+  withWorkspace $ \ws -> do
+    wins <- windowsWithFocusedClass ws
+    if length wins > 1
+      then goFullscreen
+      else minimizeOtherClassesInWorkspace
+
 windowsWithUnfocusedClass ws = windowsWithOtherClasses (W.focus ws) ws
 windowsWithFocusedClass ws = windowsWithSameClass (W.focus ws) ws
 windowsWithOtherClasses = windowsMatchingClassPredicate (/=)
@@ -754,7 +764,7 @@ addKeys conf@XConfig { modMask = modm } =
     , ((modm, xK_g), myGoToWindow)
     , ((modm, xK_b), myBringWindow)
     , ((modm .|. shiftMask, xK_b), myReplaceWindow)
-    , ((modm .|. controlMask, xK_space), goFullscreen)
+    , ((modm .|. controlMask, xK_space), deactivateFullOr goFullscreen)
     , ((modm, xK_m), withFocused minimizeWindow)
     , ((modm .|. shiftMask, xK_m),
        deactivateFullOr $ withLastMinimized maximizeWindowAndFocus)
