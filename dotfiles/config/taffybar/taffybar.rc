@@ -8,7 +8,8 @@ style "taffybar-default" {
   color["blue"] = "#2196f3"
   color["red"] = "#F44336"
   color["dgrey"] = "#212121"
-  color["ldgrey"] = "#424242"
+  color["ldgrey"] = "#333333"
+  color["lldgrey"] = "#424242"
   color["lgrey"] = "#bdbdbd"
   color["teal"] = "#00796b"
   color["bgrey"] = "#37474F"
@@ -19,13 +20,11 @@ style "taffybar-default" {
   bg[NORMAL]   = @dgrey
   fg[NORMAL]   = @white
   text[NORMAL] = @black
-  fg[PRELIGHT] = @green
-  bg[PRELIGHT] = @teal
+  fg[PRELIGHT] = @yellow
 }
 
 style "taffybar-active-window" = "taffybar-default" {
-  fg[NORMAL] = @black
-  bg[NORMAL] = @orange
+  fg[NORMAL] = @white
 }
 
 style "taffybar-notification-button" = "taffybar-default" {
@@ -37,7 +36,7 @@ style "taffybar-workspace-border-active" = "taffybar-default" {
   bg[NORMAL] = @yellow
 }
 style "taffybar-workspace-border-visible" = "taffybar-default" {
-  bg[NORMAL] = @green
+  bg[NORMAL] = @orange
 }
 style "taffybar-workspace-border-empty" = "taffybar-default" {
   bg[NORMAL] = @blue
@@ -51,6 +50,10 @@ style "taffybar-icon-urgent" = "taffybar-default" {
 }
 
 style "taffybar-workspace-contents-active" = "taffybar-default" {
+  bg[NORMAL] = @bgrey
+}
+
+style "taffybar-workspace-contents-visible" = "taffybar-default" {
   bg[NORMAL] = @ldgrey
 }
 
@@ -84,12 +87,12 @@ style "bgrey" = "taffybar-default" {
 }
 
 widget "Taffybar*" style "taffybar-default"
-widget "*Taffybar*WindowSwitcher*" style "taffybar-active-window"
-widget "*Taffybar*title*" style "taffybar-active-twindow"
+widget "*WindowTitle*" style "taffybar-active-window"
 widget "*NotificationCloseButton" style "taffybar-notification-button"
 
 widget "*Workspace-underline*-active*" style "taffybar-workspace-border-active"
 widget "*Workspace-contents*-active*" style "taffybar-workspace-contents-active"
+widget "*Workspace-contents*-visible*" style "taffybar-workspace-contents-visible"
 
 widget "*Workspace-underline*-visible*" style "taffybar-workspace-border-visible"
 widget "*Workspace-underline*-empty*" style "taffybar-workspace-border-empty"
