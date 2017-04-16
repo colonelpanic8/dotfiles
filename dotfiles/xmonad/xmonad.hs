@@ -697,12 +697,28 @@ shiftToNextScreen ws =
 
 shiftToNextScreenX = windows shiftToNextScreen
 
+getNextScreen ws =
+  minimumBy compareScreen candidates
+    where currentId = W.screen $ W.current ws
+          otherScreens = W.visible ws
+          largerId = filter ((> currentId) . W.screen) $ otherScreens
+          compareScreen a b = compare (W.screen a) (W.screen b)
+          candidates =
+            case largerId of
+              [] -> W.current ws:otherScreens -- Ensure a value will be selected
+              _ -> largerId
+
 goToNextScreen ws =
-  case W.visible ws of
-    newVisible:rest -> ws { W.current = newVisible
-                          , W.visible = W.current ws:rest
-                          }
-    _ -> ws
+  if screenEq nextScreen currScreen then ws
+     else ws { W.current = nextScreen
+             , W.visible = currScreen : trimmedVisible
+             }
+  where
+    currScreen = W.current ws
+    nextScreen = getNextScreen ws
+    screenEq a b = W.screen a == W.screen b
+    trimmedVisible =
+      (filter (screenEq nextScreen) $ W.visible ws)
 
 goToNextScreenX = windows goToNextScreen
 
