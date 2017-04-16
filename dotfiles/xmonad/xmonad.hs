@@ -728,7 +728,7 @@ goToNextScreen ws =
     nextScreen = getNextScreen ws
     screenEq a b = W.screen a == W.screen b
     trimmedVisible =
-      (filter (screenEq nextScreen) $ W.visible ws)
+      (filter (not . screenEq nextScreen) $ W.visible ws)
 
 goToNextScreenX = windows goToNextScreen
 
