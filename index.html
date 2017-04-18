@@ -3,7 +3,7 @@
 "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
-<!-- 2017-04-18 Tue 02:36 -->
+<!-- 2017-04-18 Tue 21:24 -->
 <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title></title>
@@ -3656,7 +3656,7 @@ for the JavaScript code in this tag.
 <li><a href="#setbackgroundcolorsourceblocks">2.1.5. Set Background Color Source Blocks</a></li>
 </ul>
 </li>
-<li><a href="#framecontrolframecontrol">2.2. Frame control</a></li>
+<li><a href="#framemodecustomframecontrol">2.2. Custom frame control</a></li>
 <li><a href="#functionsmyfunctionssection">2.3. My functions section</a></li>
 <li><a href="#configurationofmyownpackages">2.4. Configuration of My Own Packages</a></li>
 <li><a href="#programminglanguagesprogramminglanguageconfigurations">2.5. Programming Language Configurations</a></li>
@@ -3795,8 +3795,8 @@ for the JavaScript code in this tag.
 <li><a href="#bufferdisplay">6.8. Buffer Display</a>
 <ul>
 <li><a href="#ewmctrl">6.8.1. ewmctrl</a></li>
-<li><a href="#handlexrefsannoyingdedicatedwindowgarbage">6.8.2. Handle xrefs annoying dedicated window garbage</a></li>
-<li><a href="#displaybufferalist">6.8.3. display-buffer-alist</a></li>
+<li><a href="#framemode">6.8.2. frame-mode</a></li>
+<li><a href="#handlexrefsannoyingdedicatedwindowgarbage">6.8.3. Handle xrefs annoying dedicated window garbage</a></li>
 </ul>
 </li>
 <li><a href="#fillsetup">6.9. Fill Setup</a></li>
@@ -4262,11 +4262,11 @@ For some reason, org-mode uses all of your currently active fontification when e
 </div>
 </div>
 </div>
-<div id="outline-container-framecontrolframecontrol" class="outline-3">
-<h3 id="framecontrolframecontrol"><span class="section-number-3">2.2</span> <a href="#orgtarget1">Frame control</a> <a href="#framecontrolframecontrol"><svg aria-hidden="true" class="octicon octicon-link" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a></h3>
+<div id="outline-container-framemodecustomframecontrol" class="outline-3">
+<h3 id="framemodecustomframecontrol"><span class="section-number-3">2.2</span> <a href="#framemode">Custom frame control</a> <a href="#framemodecustomframecontrol"><svg aria-hidden="true" class="octicon octicon-link" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a></h3>
 <div class="outline-text-3" id="text-2-2">
 <p>
-My custom <a href="#orgtarget1">frame control</a> stuff is built to integrate really nicely with xmonad. I
+My custom <a href="#framemode">6.8.2</a> stuff is built to integrate really nicely with xmonad. I
 think its pretty awesome!
 </p>
 </div>
@@ -4279,11 +4279,11 @@ think its pretty awesome!
 </p>
 <ul class="org-ul">
 <li><a href="https://github.com/IvanMalison/emit/blob/2e4d788abd68bac538acb06443179b8d5885052e/emit.el#L104">emit-prefix-selector</a> (SUPER USEFUL, moved to emit) See <a href="https://github.com/IvanMalison/emit#prefix-selector">README</a> for explantion</li>
-<li><a href="#fontsize">Font Size</a> functions and an <a href="#orgtarget2">Awesome Hydra</a> for them</li>
-<li><a href="#orgtarget3">Download a file into a buffer</a> (curl straight into a file)</li>
-<li><a href="#orgtarget4">Edit a script on $PATH</a></li>
+<li><a href="#fontsize">Font Size</a> functions and an <a href="#orgtarget1">Awesome Hydra</a> for them</li>
+<li><a href="#orgtarget2">Download a file into a buffer</a> (curl straight into a file)</li>
+<li><a href="#orgtarget3">Edit a script on $PATH</a></li>
 <li><a href="#copyyanking">Copy Portions of Buffer File Path Hydra</a> and the associated <a href="#copyyankstringfunctions">Copy String Functions</a></li>
-<li><a href="#orgtarget5">Named Build of Builder Macros</a> (<a href="https://github.com/IvanMalison/emit#named-builder">README</a>) and <a href="#orgtarget6">A Compose Supporting Macros</a> (<a href="https://github.com/IvanMalison/emit#compose">README</a>)</li>
+<li><a href="#orgtarget4">Named Build of Builder Macros</a> (<a href="https://github.com/IvanMalison/emit#named-builder">README</a>) and <a href="#orgtarget5">A Compose Supporting Macros</a> (<a href="https://github.com/IvanMalison/emit#compose">README</a>)</li>
 </ul>
 </div>
 </div>
@@ -4296,15 +4296,16 @@ think its pretty awesome!
 <li><a href="#multiline">multi-line</a></li>
 <li><a href="#githubsearch">github-search</a></li>
 <li><a href="#flimenu">flimenu</a></li>
+<li><a href="#framemode">6.8.2</a></li>
 <li><a href="#tile">tile</a></li>
 </ul>
 </div>
 </div>
 <div id="outline-container-programminglanguagesprogramminglanguageconfigurations" class="outline-3">
-<h3 id="programminglanguagesprogramminglanguageconfigurations"><span class="section-number-3">2.5</span> <a href="#orgtarget7">Programming Language Configurations</a> <a href="#programminglanguagesprogramminglanguageconfigurations"><svg aria-hidden="true" class="octicon octicon-link" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a></h3>
+<h3 id="programminglanguagesprogramminglanguageconfigurations"><span class="section-number-3">2.5</span> <a href="#orgtarget6">Programming Language Configurations</a> <a href="#programminglanguagesprogramminglanguageconfigurations"><svg aria-hidden="true" class="octicon octicon-link" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a></h3>
 <div class="outline-text-3" id="text-2-5">
 <p>
-My programming language major mode configurations can all be found <a href="#orgtarget7">here</a>.
+My programming language major mode configurations can all be found <a href="#orgtarget6">here</a>.
 </p>
 </div>
 </div>
@@ -4779,26 +4780,31 @@ Works in the same way as os.path.join in python
 <h3 id="usepackagewrapperwithlocalloadpathsupport"><span class="section-number-3">5.3</span> Use Package Wrapper With Local Load Path Support <a href="#usepackagewrapperwithlocalloadpathsupport"><svg aria-hidden="true" class="octicon octicon-link" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a></h3>
 <div class="outline-text-3" id="text-5-3">
 <div class="org-src-container">
-<pre class="src src-emacs-lisp">(put 'imalison:use-package 'lisp-indent-function 'defun)
-(put 'imalison:use-package* 'lisp-indent-function 'defun)
+<pre class="src src-emacs-lisp">  (put 'imalison:use-package 'lisp-indent-function 'defun)
+  (put 'imalison:use-package* 'lisp-indent-function 'defun)
+  (put 'imalison:use-package** 'lisp-indent-function 'defun)
 
-(<span class="org-keyword">defmacro</span> <span class="org-function-name">imalison:use-package*</span> (package target-directory <span class="org-type">&amp;rest</span> forms)
-  (<span class="org-keyword">let*</span> ((actual-target (<span class="org-keyword">if</span> (file-exists-p target-directory)
-                            target-directory
-                          (<span class="org-keyword">let</span> ((in-projects (imalison:join-paths imalison:projects-directory
-                                                                  target-directory)))
-                            (<span class="org-keyword">when</span> (file-exists-p in-projects)
-                              in-projects))))
-         (additional-forms
-          (<span class="org-keyword">when</span> actual-target
-            (list
-             <span class="org-builtin">:load-path</span> actual-target
-             <span class="org-builtin">:ensure</span> nil))))
-    `(<span class="org-keyword">use-package</span> ,package
-       ,@additional-forms ,@forms)))
+  (<span class="org-keyword">defmacro</span> <span class="org-function-name">imalison:use-package*</span> (package target-github-name <span class="org-type">&amp;rest</span> forms)
+    (<span class="org-keyword">let*</span> ((clone-url
+            (format <span class="org-string">"git@github.com:IvanMalison/%s"</span> target-github-name))
+           (target-directory
+            (imalison:join-paths imalison:projects-directory target-github-name)))
+      `(imalison:use-package** ,package ,target-directory ,clone-url ,@forms)))
 
-(<span class="org-keyword">defmacro</span> <span class="org-function-name">imalison:use-package</span> (package <span class="org-type">&amp;rest</span> forms)
-  `(imalison:use-package* ,package ,(symbol-name package) ,@forms))
+  (<span class="org-keyword">defmacro</span> <span class="org-function-name">imalison:use-package**</span> (package target-directory target-clone-url <span class="org-type">&amp;rest</span> forms)
+    `(<span class="org-keyword">progn</span>
+       (<span class="org-keyword">or</span> (file-exists-p ,target-directory)
+           (equal (call-process
+                   (executable-find <span class="org-string">"git"</span>)
+                   nil nil nil <span class="org-string">"clone"</span> ,target-clone-url ,target-directory) <span class="org-warning">0))</span>
+       (<span class="org-keyword">use-package</span> ,package
+         <span class="org-builtin">:load-path</span> ,target-directory
+         <span class="org-builtin">:ensure</span> nil
+         <span class="org-builtin">:preface</span>
+         ,@forms)))
+
+  (<span class="org-keyword">defmacro</span> <span class="org-function-name">imalison:use-package</span> (package <span class="org-type">&amp;rest</span> forms)
+    `(imalison:use-package* ,package ,(symbol-name package) ,@forms))
 </pre>
 </div>
 </div>
@@ -4836,7 +4842,7 @@ but provide support for writing custom elisp.
 <h4 id="gh"><span class="section-number-4">5.4.3</span> gh <a href="#gh"><svg aria-hidden="true" class="octicon octicon-link" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a></h4>
 <div class="outline-text-4" id="text-5-4-3">
 <div class="org-src-container">
-<pre class="src src-emacs-lisp">(imalison:use-package* gh <span class="org-string">"gh.el"</span>
+<pre class="src src-emacs-lisp">(imalison:use-package** gh <span class="org-string">"gh.el"</span> <span class="org-string">"git@github.com:sigma/gh.el.git"</span>
   <span class="org-builtin">:demand</span> t)
 </pre>
 </div>
@@ -4901,7 +4907,7 @@ This is disabled for now until I figure out what to do with emit.
 <h3 id="namedbuild"><span class="section-number-3">5.5</span> Named Build <a href="#namedbuild"><svg aria-hidden="true" class="octicon octicon-link" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a></h3>
 <div class="outline-text-3" id="text-5-5">
 <p>
-<a id="orgtarget5"></a>
+<a id="orgtarget4"></a>
 imalison:named-build provides a way to invoke a macro in such a way
 that the lambda that it produces is given a name.
 </p>
@@ -4967,7 +4973,7 @@ new macro name and the -fn suffix.
 <h4 id="aversionsupportingmacros"><span class="section-number-4">5.7.1</span> A version supporting macros <a href="#aversionsupportingmacros"><svg aria-hidden="true" class="octicon octicon-link" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a></h4>
 <div class="outline-text-4" id="text-5-7-1">
 <p>
-<a id="orgtarget6"></a>
+<a id="orgtarget5"></a>
 </p>
 <div class="org-src-container">
 <pre class="src src-emacs-lisp">(<span class="org-keyword">defun</span> <span class="org-function-name">imalison:help-function-arglist</span> (fn)
@@ -5503,7 +5509,7 @@ A macro for composing functions together to build an interactive command to copy
 <h3 id="downloadafileintoabuffer"><span class="section-number-3">5.26</span> Download a File Into a Buffer <a href="#downloadafileintoabuffer"><svg aria-hidden="true" class="octicon octicon-link" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a></h3>
 <div class="outline-text-3" id="text-5-26">
 <p>
-<a id="orgtarget3"></a>
+<a id="orgtarget2"></a>
 </p>
 <div class="org-src-container">
 <pre class="src src-emacs-lisp">(<span class="org-keyword">defun</span> <span class="org-function-name">imalison:download-to-buffer</span> (uri)
@@ -5539,7 +5545,7 @@ A macro for composing functions together to build an interactive command to copy
 <h3 id="editascriptonpath"><span class="section-number-3">5.28</span> Edit a script on PATH <a href="#editascriptonpath"><svg aria-hidden="true" class="octicon octicon-link" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a></h3>
 <div class="outline-text-3" id="text-5-28">
 <p>
-<a id="orgtarget4"></a> Note that you'll need to make sure that emacs properly inherits
+<a id="orgtarget3"></a> Note that you'll need to make sure that emacs properly inherits
 the path variable for this work. Check out my <a href="#execpathfromshell">exec-path-from-shell</a> config for
 details.
 </p>
@@ -5987,9 +5993,23 @@ it on by default. Its probably safe to turn it on when in a programming mode.
 </div>
 </div>
 </div>
-<div id="outline-container-handlexrefsannoyingdedicatedwindowgarbage" class="outline-4">
-<h4 id="handlexrefsannoyingdedicatedwindowgarbage"><span class="section-number-4">6.8.2</span> Handle xrefs annoying dedicated window garbage <a href="#handlexrefsannoyingdedicatedwindowgarbage"><svg aria-hidden="true" class="octicon octicon-link" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a></h4>
+<div id="outline-container-framemode" class="outline-4">
+<h4 id="framemode"><span class="section-number-4">6.8.2</span> frame-mode <a href="#framemode"><svg aria-hidden="true" class="octicon octicon-link" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a></h4>
 <div class="outline-text-4" id="text-6-8-2">
+<div class="org-src-container">
+<pre class="src src-emacs-lisp">(imalison:use-package frame-mode
+  <span class="org-builtin">:demand</span> t
+  <span class="org-builtin">:config</span>
+  (<span class="org-keyword">progn</span>
+    (frame-mode +1)
+    (frame-keys-mode +1)))
+</pre>
+</div>
+</div>
+</div>
+<div id="outline-container-handlexrefsannoyingdedicatedwindowgarbage" class="outline-4">
+<h4 id="handlexrefsannoyingdedicatedwindowgarbage"><span class="section-number-4">6.8.3</span> Handle xrefs annoying dedicated window garbage <a href="#handlexrefsannoyingdedicatedwindowgarbage"><svg aria-hidden="true" class="octicon octicon-link" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a></h4>
+<div class="outline-text-4" id="text-6-8-3">
 <div class="org-src-container">
 <pre class="src src-emacs-lisp">(<span class="org-keyword">use-package</span> <span class="org-constant">xref</span>
   <span class="org-builtin">:config</span>
@@ -6006,108 +6026,6 @@ it on by default. Its probably safe to turn it on when in a programming mode.
             (<span class="org-keyword">setq-local</span> other-window-scroll-buffer buf))))
       (<span class="org-keyword">when</span> select
         (select-window win)))))
-</pre>
-</div>
-</div>
-</div>
-<div id="outline-container-displaybufferalist" class="outline-4">
-<h4 id="displaybufferalist"><span class="section-number-4">6.8.3</span> display-buffer-alist <a href="#displaybufferalist"><svg aria-hidden="true" class="octicon octicon-link" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a></h4>
-<div class="outline-text-4" id="text-6-8-3">
-<p>
-<a id="orgtarget1"></a>
-</p>
-<div class="org-src-container">
-<pre class="src src-emacs-lisp">(<span class="org-keyword">defvar</span> <span class="org-variable-name">imalison:use-frames-only</span> nil)
-
-(<span class="org-keyword">defun</span> <span class="org-function-name">imalison:use-frames-only</span> ()
-  (<span class="org-keyword">or</span> imalison:use-frames-only
-      (member (getenv <span class="org-string">"XDG_CURRENT_DESKTOP"</span>) '(<span class="org-string">"XMonad"</span>))))
-
-(<span class="org-keyword">defvar</span> <span class="org-variable-name">imalison:use-new-frame-or-window</span> nil)
-
-(<span class="org-keyword">defvar</span> <span class="org-variable-name">imalison:use-new-frame-or-window-next-command</span> nil)
-
-(<span class="org-keyword">defun</span> <span class="org-function-name">imalison:other-window-or-frame-next-command</span> ()
-  (<span class="org-keyword">interactive</span>)
-  (<span class="org-keyword">setq</span> imalison:use-new-frame-or-window-next-command
-        (not imalison:use-new-frame-or-window-next-command))
-  (message <span class="org-string">"Using other frame: %s"</span>
-           imalison:use-new-frame-or-window-next-command))
-
-(<span class="org-keyword">defun</span> <span class="org-function-name">imalison:should-use-other-frame-or-window</span> (<span class="org-type">&amp;rest</span> args)
-  (<span class="org-keyword">or</span> imalison:use-new-frame-or-window-next-command
-   imalison:use-new-frame-or-window))
-
-(<span class="org-keyword">defun</span> <span class="org-function-name">imalison:display-buffer</span> (<span class="org-type">&amp;rest</span> args)
-  (<span class="org-keyword">if</span> (imalison:should-use-other-frame-or-window args)
-      (apply 'imalison:display-buffer-other-frame-or-window args)
-    (apply 'display-buffer-same-window args)))
-
-(<span class="org-keyword">defun</span> <span class="org-function-name">imalison:display-buffer-other-frame-or-window</span> (buffer args)
-  (<span class="org-keyword">if</span> (imalison:use-frames-only)
-      (apply 'display-buffer-use-some-frame buffer (append args (inhibit-same-window t)))
-    (apply 'display-buffer-reuse-window buffer args)))
-
-(<span class="org-keyword">defun</span> <span class="org-function-name">imalison:split-window-right</span> ()
-  (<span class="org-keyword">interactive</span>)
-  (<span class="org-keyword">if</span> (imalison:use-frames-only)
-      (make-frame)
-    (split-window-right)))
-
-(<span class="org-keyword">defun</span> <span class="org-function-name">imalison:other-window</span> (count)
-  (<span class="org-keyword">interactive</span>
-   (list 1))
-  (other-window count 'visible)
-  (select-frame-set-input-focus (selected-frame)))
-
-(<span class="org-keyword">defun</span> <span class="org-function-name">imalison:set-use-new-frame-to-default</span> (<span class="org-type">&amp;rest</span> args)
-  (<span class="org-keyword">setq</span> imalison:use-new-frame-or-window-next-command nil))
-
-(<span class="org-keyword">defun</span> <span class="org-function-name">imalison:is-frame-viewable</span> (frame)
-  (s-contains-p <span class="org-string">"IsViewable"</span>
-                (shell-command-to-string
-                 (format <span class="org-string">"xwininfo -id %s"</span> (frame-parameter frame 'window-id)))))
-
-(<span class="org-keyword">defun</span> <span class="org-function-name">imalison:display-some-frame-predicate</span> (frame)
-  (<span class="org-keyword">and</span>
-   (not (eq frame (selected-frame)))
-   (not (window-dedicated-p
-         (<span class="org-keyword">or</span>
-          (get-lru-window frame)
-          (frame-first-window frame))))
-   (imalison:is-frame-viewable frame)))
-
-(advice-add 'display-buffer <span class="org-builtin">:after</span> 'imalison:set-use-new-frame-to-default)
-
-(<span class="org-keyword">when</span> imalison:use-frames-only
-  (<span class="org-keyword">setq</span> pop-up-frames 'graphic-only)
-  (<span class="org-keyword">bind-key</span> <span class="org-string">"C-c s"</span> 'imalison:other-window-or-frame-next-command)
-  (<span class="org-keyword">bind-key</span> <span class="org-string">"C-x o"</span> 'imalison:other-window)
-  (<span class="org-keyword">bind-key</span> <span class="org-string">"C-x 3"</span> 'imalison:split-window-right)
-  (<span class="org-keyword">bind-key</span> <span class="org-string">"C-x O"</span> (<span class="org-keyword">lambda</span> () (<span class="org-keyword">interactive</span>) (imalison:other-window -1)))
-  (<span class="org-keyword">setq</span> display-buffer-alist
-        '((<span class="org-string">"\\*Flycheck errors\\*"</span> . ((display-buffer-use-some-frame
-                                       display-buffer-pop-up-frame) <span class="org-warning">.</span>
-                                      ((inhibit-same-window . t)
-                                       (frame-predicate . imalison:display-some-frame-predicate))))
-          (<span class="org-string">".*popup\*"</span> . (display-buffer-pop-up-window))
-          (<span class="org-string">".*magit-diff.*"</span> . ((display-buffer-pop-up-window)
-                               ((reusable-frames . 0)
-                                (inhibit-switch-frame . t)
-                                (inhibit-same-window . t))))
-          (<span class="org-string">"\\*helm.*"</span> . (display-buffer-same-window
-                          dispaly-buffer-pop-up-window))
-          (<span class="org-string">"\\*Register Preview\\*"</span> . ((display-buffer-pop-up-window)))
-          (imalison:should-use-other-frame-or-window
-           .
-           ((display-buffer-use-some-frame display-buffer-pop-up-frame)
-            ((inhibit-same-window . t)
-             (reusable-frames . t))))
-          (<span class="org-string">".*"</span> . ((display-buffer-same-window
-                    display-buffer-use-some-frame
-                    display-buffer-pop-up-frame) <span class="org-warning">.</span>
-                   ((reusable-frames . t)
-                    (frame-predicate . imalison:display-some-frame-predicate)))))))
 </pre>
 </div>
 </div>
@@ -6223,7 +6141,7 @@ whenever there is an error.
 <pre class="src src-emacs-lisp">(<span class="org-keyword">setq</span> display-time-default-load-average nil)
 (<span class="org-keyword">setq</span> display-time-interval 1)
 (<span class="org-keyword">setq</span> display-time-format <span class="org-string">"%a|%m-%d|%r"</span>)
-(display-time-mode (<span class="org-keyword">if</span> (imalison:use-frames-only) -1 +1))
+(display-time-mode (<span class="org-keyword">if</span> frame-mode -1 +1))
 </pre>
 </div>
 </div>
@@ -6732,7 +6650,7 @@ custom-set-faces in your custom file.
 <h4 id="fontsettings"><span class="section-number-4">7.4.1</span> Font Settings <a href="#fontsettings"><svg aria-hidden="true" class="octicon octicon-link" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a></h4>
 <div class="outline-text-4" id="text-7-4-1">
 <p>
-<a id="orgtarget2"></a>
+<a id="orgtarget1"></a>
 </p>
 <div class="org-src-container">
 <pre class="src src-emacs-lisp">(defhydra imalison:hydra-font
@@ -7415,6 +7333,7 @@ I don't use auto-complete at all, so I have set up a hook to automatically disab
 <div class="outline-text-2" id="text-11">
 <div class="org-src-container">
 <pre class="src src-emacs-lisp">(<span class="org-keyword">use-package</span> <span class="org-constant">flycheck</span>
+
   <span class="org-builtin">:config</span>
   (<span class="org-keyword">progn</span>
     (<span class="org-keyword">use-package</span> <span class="org-constant">flycheck-package</span>
@@ -7440,7 +7359,7 @@ I don't use auto-complete at all, so I have set up a hook to automatically disab
 <h3 id="programming"><span class="section-number-3">12.1</span> Programming <a href="#programming"><svg aria-hidden="true" class="octicon octicon-link" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a></h3>
 <div class="outline-text-3" id="text-12-1">
 <p>
-<a id="orgtarget7"></a>
+<a id="orgtarget6"></a>
 </p>
 </div>
 <div id="outline-container-python" class="outline-4">
@@ -8166,7 +8085,6 @@ Intero seems to be causing hangs, so it has been disabled
 </p>
 <div class="org-src-container">
 <pre class="src src-emacs-lisp">(<span class="org-keyword">use-package</span> <span class="org-constant">intero</span>
-  <span class="org-builtin">:disabled</span> t
   <span class="org-builtin">:demand</span> t
   <span class="org-builtin">:after</span> haskell-mode
   <span class="org-builtin">:config</span>
@@ -8799,7 +8717,7 @@ separately. This means that I need to load this file in init.el.
   <span class="org-builtin">:config</span>
   (<span class="org-keyword">progn</span>
   (<span class="org-keyword">setq</span> org-src-window-setup 'current-window)
-    (<span class="org-keyword">when</span> (imalison:use-frames-only)
+    (<span class="org-keyword">when</span> frame-mode
       (<span class="org-keyword">progn</span>
         (setcdr (assoc 'file org-link-frame-setup) 'find-file-other-frame)))))
 </pre>
@@ -9273,7 +9191,7 @@ This function replaces the default naming scheme with a call to
         (org-show-context 'magit-goto))))
   <span class="org-builtin">:config</span>
   (<span class="org-keyword">progn</span>
-    (<span class="org-keyword">when</span> (imalison:use-frames-only)
+    (<span class="org-keyword">when</span> frame-mode
       (<span class="org-keyword">setq</span> magit-commit-show-diff t))
     (<span class="org-keyword">unbind-key</span> <span class="org-string">"C-j"</span> magit-status-mode-map)
     (<span class="org-keyword">unbind-key</span> <span class="org-string">"C-j"</span> magit-hunk-section-map)
