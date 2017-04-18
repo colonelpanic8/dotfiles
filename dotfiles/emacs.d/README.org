@@ -3736,9 +3736,10 @@ I've disabled magithub because it causes magit to be super slow
 ** git-gutter
 #+BEGIN_SRC emacs-lisp
 (use-package git-gutter
+  :disabled t
   :config
   (progn
-    (global-git-gutter-mode -1)))
+    (global-git-gutter -1)))
 #+END_SRC
 ** gitolite-clone
 #+BEGIN_SRC emacs-lisp
