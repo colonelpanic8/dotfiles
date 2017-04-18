@@ -382,26 +382,31 @@ Works in the same way as os.path.join in python
 #+END_SRC
 ** Use Package Wrapper With Local Load Path Support
 #+BEGIN_SRC emacs-lisp
-(put 'imalison:use-package 'lisp-indent-function 'defun)
-(put 'imalison:use-package* 'lisp-indent-function 'defun)
+  (put 'imalison:use-package 'lisp-indent-function 'defun)
+  (put 'imalison:use-package* 'lisp-indent-function 'defun)
+  (put 'imalison:use-package** 'lisp-indent-function 'defun)
 
-(defmacro imalison:use-package* (package target-directory &rest forms)
-  (let* ((actual-target (if (file-exists-p target-directory)
-                            target-directory
-                          (let ((in-projects (imalison:join-paths imalison:projects-directory
-                                                                  target-directory)))
-                            (when (file-exists-p in-projects)
-                              in-projects))))
-         (additional-forms
-          (when actual-target
-            (list
-             :load-path actual-target
-             :ensure nil))))
-    `(use-package ,package
-       ,@additional-forms ,@forms)))
+  (defmacro imalison:use-package* (package target-github-name &rest forms)
+    (let* ((clone-url
+            (format "git@github.com:IvanMalison/%s" target-github-name))
+           (target-directory
+            (imalison:join-paths imalison:projects-directory target-github-name)))
+      `(imalison:use-package** ,package ,target-directory ,clone-url ,@forms)))
 
-(defmacro imalison:use-package (package &rest forms)
-  `(imalison:use-package* ,package ,(symbol-name package) ,@forms))
+  (defmacro imalison:use-package** (package target-directory target-clone-url &rest forms)
+    `(progn
+       (or (file-exists-p ,target-directory)
+           (equal (call-process
+                   (executable-find "git")
+                   nil nil nil "clone" ,target-clone-url ,target-directory) 0))
+       (use-package ,package
+	 :load-path ,target-directory
+	 :ensure nil
+	 :preface
+	 ,@forms)))
+
+  (defmacro imalison:use-package (package &rest forms)
+    `(imalison:use-package* ,package ,(symbol-name package) ,@forms))
 #+END_SRC
 ** Required Packages
 The packages in this section provide no functionality on their own,
@@ -419,7 +424,7 @@ but provide support for writing custom elisp.
 #+END_SRC
 *** gh
 #+BEGIN_SRC emacs-lisp
-(imalison:use-package* gh "gh.el"
+(imalison:use-package** gh "gh.el" "git@github.com:sigma/gh.el.git"
   :demand t)
 #+END_SRC
 *** shut-up
