@@ -1258,12 +1258,12 @@ it on by default. Its probably safe to turn it on when in a programming mode.
   (message "Using other frame: %s"
            imalison:use-new-frame-or-window-next-command))
 
-(defun imalison:use-other-frame-or-window (&rest args)
+(defun imalison:should-use-other-frame-or-window (&rest args)
   (or imalison:use-new-frame-or-window-next-command
    imalison:use-new-frame-or-window))
 
 (defun imalison:display-buffer (&rest args)
-  (if (imalison:use-other-frame-or-window args)
+  (if (imalison:should-use-other-frame-or-window args)
       (apply 'imalison:display-buffer-other-frame-or-window args)
     (apply 'display-buffer-same-window args)))
 
@@ -1287,6 +1287,20 @@ it on by default. Its probably safe to turn it on when in a programming mode.
 (defun imalison:set-use-new-frame-to-default (&rest args)
   (setq imalison:use-new-frame-or-window-next-command nil))
 
+(defun imalison:is-frame-viewable (frame)
+  (s-contains-p "IsViewable"
+                (shell-command-to-string
+                 (format "xwininfo -id %s" (frame-parameter frame 'window-id)))))
+
+(defun imalison:display-some-frame-predicate (frame)
+  (and
+   (not (eq frame (selected-frame)))
+   (not (window-dedicated-p
+         (or
+          (get-lru-window frame)
+          (frame-first-window frame))))
+   (imalison:is-frame-viewable frame)))
+
 (advice-add 'display-buffer :after 'imalison:set-use-new-frame-to-default)
 
 (when imalison:use-frames-only
@@ -1296,7 +1310,10 @@ it on by default. Its probably safe to turn it on when in a programming mode.
   (bind-key "C-x 3" 'imalison:split-window-right)
   (bind-key "C-x O" (lambda () (interactive) (imalison:other-window -1)))
   (setq display-buffer-alist
-        '(("\\*Flycheck errors\\*" . ((display-buffer-use-some-frame) ((inhibit-same-window t))))
+        '(("\\*Flycheck errors\\*" . ((display-buffer-use-some-frame
+                                       display-buffer-pop-up-frame) .
+                                      ((inhibit-same-window . t)
+                                       (frame-predicate . imalison:display-some-frame-predicate))))
           (".*popup\*" . (display-buffer-pop-up-window))
           (".*magit-diff.*" . ((display-buffer-pop-up-window)
                                ((reusable-frames . 0)
@@ -1305,15 +1322,16 @@ it on by default. Its probably safe to turn it on when in a programming mode.
           ("\\*helm.*" . (display-buffer-same-window
                           dispaly-buffer-pop-up-window))
           ("\\*Register Preview\\*" . ((display-buffer-pop-up-window)))
-          (imalison:use-other-frame-or-window
+          (imalison:should-use-other-frame-or-window
            .
            ((display-buffer-use-some-frame display-buffer-pop-up-frame)
             ((inhibit-same-window . t)
              (reusable-frames . t))))
           (".*" . ((display-buffer-same-window
                     display-buffer-use-some-frame
-                    display-buffer-pop-up-frame)
-                   ((reusable-frames . t)))))))
+                    display-buffer-pop-up-frame) .
+                   ((reusable-frames . t)
+                    (frame-predicate . imalison:display-some-frame-predicate)))))))
 #+END_SRC
 ** Fill Setup
 Get rid of nags about requiring setences to end with two spaces.
