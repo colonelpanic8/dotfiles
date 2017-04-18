@@ -48,8 +48,8 @@ that is something you are interested in.
 This is another pretty nasty hack. This is useful when you are browsing the document and you want to grab a link to the current heading.
 *** Set Background Color Source Blocks
 For some reason, org-mode uses all of your currently active fontification when exporting EXCEPT for background color. [[Set Background Color of Source Blocks for Export][This]] modification fixes this.
-** [[framecontrol][Frame control]]
-My custom [[framecontrol][frame control]] stuff is built to integrate really nicely with xmonad. I
+** [[frame-mode][Custom frame control]]
+My custom [[frame-mode]] stuff is built to integrate really nicely with xmonad. I
 think its pretty awesome!
 ** [[Functions][My functions section]]
 ...has a bunch of generally useful functions:
@@ -65,6 +65,7 @@ think its pretty awesome!
 - [[multi-line][multi-line]]
 - [[github-search][github-search]]
 - [[flimenu][flimenu]]
+- [[frame-mode]]
 - [[tile][tile]]
 ** [[programminglanguages][Programming Language Configurations]]
 My programming language major mode configurations can all be found [[programminglanguages][here]].
