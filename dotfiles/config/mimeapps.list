@@ -4,3 +4,4 @@ audio/flac=vlc.desktop;
 image/jpeg=feh.desktop;
 video/x-msvideo=vlc.desktop;
 text/vnd.trolltech.linguist=vlc.desktop;
+audio/mpeg=vlc.desktop;
