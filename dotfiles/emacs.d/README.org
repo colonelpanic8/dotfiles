@@ -1225,6 +1225,15 @@ it on by default. Its probably safe to turn it on when in a programming mode.
 (use-package ewmctrl
   :demand t)
 #+END_SRC
+*** frame-mode
+#+BEGIN_SRC emacs-lisp
+(imalison:use-package frame-mode
+  :demand t
+  :config
+  (progn
+    (frame-mode +1)
+    (frame-keys-mode +1)))
+#+END_SRC
 *** Handle xrefs annoying dedicated window garbage
 #+BEGIN_SRC emacs-lisp
 (use-package xref
@@ -1242,101 +1251,6 @@ it on by default. Its probably safe to turn it on when in a programming mode.
             (setq-local other-window-scroll-buffer buf))))
       (when select
         (select-window win)))))
-#+END_SRC
-*** display-buffer-alist
-<<framecontrol>>
-#+BEGIN_SRC emacs-lisp
-(defvar imalison:use-frames-only nil)
-
-(defun imalison:use-frames-only ()
-  (or imalison:use-frames-only
-      (member (getenv "XDG_CURRENT_DESKTOP") '("XMonad"))))
-
-(defvar imalison:use-new-frame-or-window nil)
-
-(defvar imalison:use-new-frame-or-window-next-command nil)
-
-(defun imalison:other-window-or-frame-next-command ()
-  (interactive)
-  (setq imalison:use-new-frame-or-window-next-command
-        (not imalison:use-new-frame-or-window-next-command))
-  (message "Using other frame: %s"
-           imalison:use-new-frame-or-window-next-command))
-
-(defun imalison:should-use-other-frame-or-window (&rest args)
-  (or imalison:use-new-frame-or-window-next-command
-   imalison:use-new-frame-or-window))
-
-(defun imalison:display-buffer (&rest args)
-  (if (imalison:should-use-other-frame-or-window args)
-      (apply 'imalison:display-buffer-other-frame-or-window args)
-    (apply 'display-buffer-same-window args)))
-
-(defun imalison:display-buffer-other-frame-or-window (buffer args)
-  (if (imalison:use-frames-only)
-      (apply 'display-buffer-use-some-frame buffer (append args (inhibit-same-window t)))
-    (apply 'display-buffer-reuse-window buffer args)))
-
-(defun imalison:split-window-right ()
-  (interactive)
-  (if (imalison:use-frames-only)
-      (make-frame)
-    (split-window-right)))
-
-(defun imalison:other-window (count)
-  (interactive
-   (list 1))
-  (other-window count 'visible)
-  (select-frame-set-input-focus (selected-frame)))
-
-(defun imalison:set-use-new-frame-to-default (&rest args)
-  (setq imalison:use-new-frame-or-window-next-command nil))
-
-(defun imalison:is-frame-viewable (frame)
-  (s-contains-p "IsViewable"
-                (shell-command-to-string
-                 (format "xwininfo -id %s" (frame-parameter frame 'window-id)))))
-
-(defun imalison:display-some-frame-predicate (frame)
-  (and
-   (not (eq frame (selected-frame)))
-   (not (window-dedicated-p
-         (or
-          (get-lru-window frame)
-          (frame-first-window frame))))
-   (imalison:is-frame-viewable frame)))
-
-(advice-add 'display-buffer :after 'imalison:set-use-new-frame-to-default)
-
-(when imalison:use-frames-only
-  (setq pop-up-frames 'graphic-only)
-  (bind-key "C-c s" 'imalison:other-window-or-frame-next-command)
-  (bind-key "C-x o" 'imalison:other-window)
-  (bind-key "C-x 3" 'imalison:split-window-right)
-  (bind-key "C-x O" (lambda () (interactive) (imalison:other-window -1)))
-  (setq display-buffer-alist
-        '(("\\*Flycheck errors\\*" . ((display-buffer-use-some-frame
-                                       display-buffer-pop-up-frame) .
-                                      ((inhibit-same-window . t)
-                                       (frame-predicate . imalison:display-some-frame-predicate))))
-          (".*popup\*" . (display-buffer-pop-up-window))
-          (".*magit-diff.*" . ((display-buffer-pop-up-window)
-                               ((reusable-frames . 0)
-                                (inhibit-switch-frame . t)
-                                (inhibit-same-window . t))))
-          ("\\*helm.*" . (display-buffer-same-window
-                          dispaly-buffer-pop-up-window))
-          ("\\*Register Preview\\*" . ((display-buffer-pop-up-window)))
-          (imalison:should-use-other-frame-or-window
-           .
-           ((display-buffer-use-some-frame display-buffer-pop-up-frame)
-            ((inhibit-same-window . t)
-             (reusable-frames . t))))
-          (".*" . ((display-buffer-same-window
-                    display-buffer-use-some-frame
-                    display-buffer-pop-up-frame) .
-                   ((reusable-frames . t)
-                    (frame-predicate . imalison:display-some-frame-predicate)))))))
 #+END_SRC
 ** Fill Setup
 Get rid of nags about requiring setences to end with two spaces.
@@ -1400,7 +1314,7 @@ whenever there is an error.
 (setq display-time-default-load-average nil)
 (setq display-time-interval 1)
 (setq display-time-format "%a|%m-%d|%r")
-(display-time-mode (if (imalison:use-frames-only) -1 +1))
+(display-time-mode (if frame-mode -1 +1))
 #+END_SRC
 ** Kill Ring
 #+BEGIN_SRC emacs-lisp
@@ -2210,6 +2124,7 @@ I don't use auto-complete at all, so I have set up a hook to automatically disab
 * flycheck
 #+BEGIN_SRC emacs-lisp
 (use-package flycheck
+
   :config
   (progn
     (use-package flycheck-package
@@ -2805,7 +2720,6 @@ The following is taken from [[https://github.com/syl20bnr/spacemacs/blob/a650877
 Intero seems to be causing hangs, so it has been disabled
 #+BEGIN_SRC emacs-lisp
 (use-package intero
-  :disabled t
   :demand t
   :after haskell-mode
   :config
@@ -3347,7 +3261,7 @@ separately. This means that I need to load this file in init.el.
   :config
   (progn
   (setq org-src-window-setup 'current-window)
-    (when (imalison:use-frames-only)
+    (when frame-mode
       (progn
         (setcdr (assoc 'file org-link-frame-setup) 'find-file-other-frame)))))
 #+END_SRC
@@ -3706,7 +3620,7 @@ alphanumeric characters only."
         (org-show-context 'magit-goto))))
   :config
   (progn
-    (when (imalison:use-frames-only)
+    (when frame-mode
       (setq magit-commit-show-diff t))
     (unbind-key "C-j" magit-status-mode-map)
     (unbind-key "C-j" magit-hunk-section-map)
