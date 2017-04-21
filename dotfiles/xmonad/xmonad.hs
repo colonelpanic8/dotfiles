@@ -185,9 +185,11 @@ tvScreenId :: ScreenId
 tvScreenId = 1
 
 disableTVFading = setFading (Just tvScreenId) False
+enableGaps = sendMessage $ ModifySpacing const spacingSize
+disableGaps = sendMessage $ ModifySpacing const 0
 
 hostNameToAction =
-  M.fromList [ ("imalison-arch", disableTVFading)
+  M.fromList [ ("imalison-arch", disableTVFading >> enableGaps)
              , ("imalison-uber-loaner", return ())
              ]
 
@@ -236,9 +238,11 @@ layoutTogglesMap =
     toggleTuple toggle =
       fmap (\str -> (str, Toggle toggle)) (toggleToStringWithState toggle)
 
+spacingSize = 10
+
 togglesXActionsMap =
   M.fromList [ ("GAPS", sendMessage $ ModifySpacing toggleSpacing ) ]
-    where toggleSpacing 0 = 10
+    where toggleSpacing 0 = spacingSize
           toggleSpacing _ = 0
 
 togglesMap =
