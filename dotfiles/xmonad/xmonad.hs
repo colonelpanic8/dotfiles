@@ -221,22 +221,29 @@ data MyToggles
 
 instance Transformer MyToggles Window where
   transform LIMIT x k = k (limitSlice 2 x) unmodifyLayout
-  transform GAPS x k = k (smartSpacing 5 x) unmodifyLayout
   transform MAGICFOCUS x k = k (magicFocus x) unmodifyLayout
 
-myToggles = [LIMIT, GAPS, MAGICFOCUS]
+myToggles = [LIMIT, MAGICFOCUS]
 otherToggles = [NBFULL, MIRROR]
 
 followIfNoMagicFocus =
   followOnlyIf $ maybe False not <$> isToggleActive MAGICFOCUS
 
-togglesMap =
+layoutTogglesMap =
   fmap M.fromList $ sequence $
   map toggleTuple myToggles ++ map toggleTuple otherToggles
   where
     toggleTuple toggle =
       fmap (\str -> (str, Toggle toggle)) (toggleToStringWithState toggle)
 
+togglesXActionsMap =
+  M.fromList [ ("GAPS", sendMessage $ ModifySpacing toggleSpacing ) ]
+    where toggleSpacing 0 = 10
+          toggleSpacing _ = 0
+
+togglesMap =
+  M.union (M.map Left togglesXActionsMap) . M.map Right <$>
+  layoutTogglesMap
 
 toggleStateToString s =
   case s of
@@ -251,7 +258,10 @@ toggleToStringWithState toggle =
 
 selectToggle =
   togglesMap >>= DM.menuMapArgs "rofi" ["-dmenu", "-i"] >>=
-             flip whenJust sendMessage
+  flip whenJust handleToggle
+  where
+    handleToggle (Left action) = action
+    handleToggle (Right toggle) = sendMessage toggle
 
 toggleInState :: (Transformer t Window) => t -> Maybe Bool -> X Bool
 toggleInState t s = fmap (/= s) (isToggleActive t)
@@ -309,9 +319,9 @@ myLayoutHook =
   boringAuto .
   mkToggle1 MIRROR .
   mkToggle1 LIMIT .
-  mkToggle1 GAPS .
   mkToggle1 MAGICFOCUS .
   mkToggle1 NBFULL .
+  smartSpacing 10 .
   workspaceNamesHook .
   lessBorders Screen $ fst layoutInfo
 
