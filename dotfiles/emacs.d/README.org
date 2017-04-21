@@ -3977,6 +3977,10 @@ crux-reopen-as-root-mode makes it so that any file owned by root will automatica
   :after helm
   :demand t)
 #+END_SRC
+** aurel
+#+BEGIN_SRC emacs-lisp
+(use-package aurel :demand t)
+#+END_SRC
 * Chat
 ** erc
 #+BEGIN_SRC emacs-lisp
