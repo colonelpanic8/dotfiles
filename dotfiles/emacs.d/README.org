@@ -364,6 +364,12 @@ to cause issues. Oh well...
 ;; XXX: This doesn't seem to work
 (setq font-use-system-font nil)
 #+END_SRC
+** Set default browser
+#+BEGIN_SRC emacs-lisp
+(when (equal system-type 'gnu/linux)
+    (setq browse-url-browser-function 'browse-url-generic
+          browse-url-generic-program "xdg-open"))
+#+END_SRC
 * Functions
 ** Join Paths
 Works in the same way as os.path.join in python
@@ -1342,12 +1348,6 @@ proced is an top like utility that runs inside of emacs. The following sets auto
 (require 'proced)
 (setq proced-auto-update-interval 1)
 (add-hook 'proced-mode-hook (lambda () (proced-toggle-auto-update +1)))
-#+END_SRC
-** Set default browser
-#+BEGIN_SRC emacs-lisp
-(when (equal system-type 'gnu/linux)
-    (setq browse-url-browser-function 'browse-url-generic
-          browse-url-generic-program "google-chrome-stable"))
 #+END_SRC
 ** Set epa program
 #+BEGIN_SRC emacs-lisp
