@@ -1769,7 +1769,6 @@ I use helm for almost all emacs completion
          ("M-x" . helm-M-x)
          ("C-x C-i" . helm-imenu)
          ("C-h a" . helm-apropos)
-         ("C-c C-h" . helm-org-agenda-files-headings)
          ("C-c ;" . helm-recentf))
   :diminish helm-mode
   :config
@@ -3417,6 +3416,11 @@ alphanumeric characters only."
                               (imalison:make-org-todo-template))))
             :candidate-number-limit 99999
             :buffer "*helm org capture templates*"))))
+#+END_SRC
+**** helm-org-rifle
+#+BEGIN_SRC emacs-lisp
+(use-package helm-org-rifle
+  :bind ("C-c C-h" . helm-rog-rifle-agenda-files))
 #+END_SRC
 **** org-notify
  #+BEGIN_SRC emacs-lisp
