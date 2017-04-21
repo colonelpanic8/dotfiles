@@ -3,7 +3,7 @@
 "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
-<!-- 2017-04-21 Fri 01:10 -->
+<!-- 2017-04-21 Fri 22:15 -->
 <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title></title>
@@ -3686,6 +3686,7 @@ for the JavaScript code in this tag.
 <li><a href="#nonforkingshellcommandtostring">4.14. Non-Forking Shell Command To String</a></li>
 <li><a href="#setemacsenvironmentvariable">4.15. Set EMACS environment variable</a></li>
 <li><a href="#dontusesystemfont">4.16. Don't use system font</a></li>
+<li><a href="#setdefaultbrowser">4.17. Set default browser</a></li>
 </ul>
 </li>
 <li><a href="#functions">5. Functions</a>
@@ -3814,29 +3815,28 @@ for the JavaScript code in this tag.
 <li><a href="#scratchbuffer">6.17. Scratch Buffer</a></li>
 <li><a href="#dontpromptaboutlocalvariables">6.18. Don't prompt about local variables</a></li>
 <li><a href="#proced">6.19. proced</a></li>
-<li><a href="#setdefaultbrowser">6.20. Set default browser</a></li>
-<li><a href="#setepaprogram">6.21. Set epa program</a></li>
-<li><a href="#makefilesexecutable">6.22. Make files executable</a></li>
-<li><a href="#usetcpserver">6.23. Use TCP Server</a></li>
-<li><a href="#misc">6.24. Misc</a></li>
-<li><a href="#paradox">6.25. paradox</a></li>
-<li><a href="#diminish">6.26. diminish</a></li>
-<li><a href="#editserver">6.27. edit-server</a></li>
-<li><a href="#loaddir">6.28. load-dir</a></li>
-<li><a href="#server">6.29. server</a></li>
-<li><a href="#listenvironment">6.30. list-environment</a></li>
-<li><a href="#bughunter">6.31. bug-hunter</a></li>
-<li><a href="#shackle">6.32. shackle</a></li>
-<li><a href="#beacon">6.33. beacon</a></li>
-<li><a href="#iregister">6.34. iregister</a></li>
-<li><a href="#discovermymajor">6.35. discover-my-major</a></li>
-<li><a href="#refine">6.36. refine</a></li>
-<li><a href="#winner">6.37. winner</a></li>
-<li><a href="#eyebrowse">6.38. eyebrowse</a></li>
-<li><a href="#stream">6.39. stream</a></li>
-<li><a href="#tile">6.40. tile</a></li>
-<li><a href="#fillcolumnindicator">6.41. fill-column-indicator</a></li>
-<li><a href="#highlightindentguides">6.42. highlight-indent-guides</a></li>
+<li><a href="#setepaprogram">6.20. Set epa program</a></li>
+<li><a href="#makefilesexecutable">6.21. Make files executable</a></li>
+<li><a href="#usetcpserver">6.22. Use TCP Server</a></li>
+<li><a href="#misc">6.23. Misc</a></li>
+<li><a href="#paradox">6.24. paradox</a></li>
+<li><a href="#diminish">6.25. diminish</a></li>
+<li><a href="#editserver">6.26. edit-server</a></li>
+<li><a href="#loaddir">6.27. load-dir</a></li>
+<li><a href="#server">6.28. server</a></li>
+<li><a href="#listenvironment">6.29. list-environment</a></li>
+<li><a href="#bughunter">6.30. bug-hunter</a></li>
+<li><a href="#shackle">6.31. shackle</a></li>
+<li><a href="#beacon">6.32. beacon</a></li>
+<li><a href="#iregister">6.33. iregister</a></li>
+<li><a href="#discovermymajor">6.34. discover-my-major</a></li>
+<li><a href="#refine">6.35. refine</a></li>
+<li><a href="#winner">6.36. winner</a></li>
+<li><a href="#eyebrowse">6.37. eyebrowse</a></li>
+<li><a href="#stream">6.38. stream</a></li>
+<li><a href="#tile">6.39. tile</a></li>
+<li><a href="#fillcolumnindicator">6.40. fill-column-indicator</a></li>
+<li><a href="#highlightindentguides">6.41. highlight-indent-guides</a></li>
 </ul>
 </li>
 <li><a href="#keybindings">7. Keybindings</a>
@@ -3979,9 +3979,10 @@ for the JavaScript code in this tag.
 <li><a href="#addlinkiconsinheadingsthatleadtothemselves">12.3.1.8. Add link icons in headings that lead to themselves</a></li>
 <li><a href="#allowwithqueryparamsinimageextentions">12.3.1.9. Allow with query params in image extentions</a></li>
 <li><a href="#orgprojectile">12.3.1.10. org-projectile</a></li>
-<li><a href="#orgnotify">12.3.1.11. org-notify</a></li>
-<li><a href="#orgreveal">12.3.1.12. org-reveal</a></li>
-<li><a href="#orgcaldav">12.3.1.13. org-caldav</a></li>
+<li><a href="#helmorgrifle">12.3.1.11. helm-org-rifle</a></li>
+<li><a href="#orgnotify">12.3.1.12. org-notify</a></li>
+<li><a href="#orgreveal">12.3.1.13. org-reveal</a></li>
+<li><a href="#orgcaldav">12.3.1.14. org-caldav</a></li>
 </ul>
 </li>
 <li><a href="#tex">12.3.2. TeX</a>
@@ -4741,6 +4742,17 @@ to cause issues. Oh well&#x2026;
 <pre class="src src-emacs-lisp"><span class="org-comment-delimiter">;; </span><span class="org-comment">Let me control my own goddamn fonts</span>
 <span class="org-comment-delimiter">;; </span><span class="org-comment">XXX: This doesn't seem to work</span>
 (<span class="org-keyword">setq</span> font-use-system-font nil)
+</pre>
+</div>
+</div>
+</div>
+<div id="outline-container-setdefaultbrowser" class="outline-3">
+<h3 id="setdefaultbrowser"><span class="section-number-3">4.17</span> Set default browser <a href="#setdefaultbrowser"><svg aria-hidden="true" class="octicon octicon-link" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a></h3>
+<div class="outline-text-3" id="text-4-17">
+<div class="org-src-container">
+<pre class="src src-emacs-lisp">(<span class="org-keyword">when</span> (equal system-type 'gnu/linux)
+    (<span class="org-keyword">setq</span> browse-url-browser-function 'browse-url-generic
+          browse-url-generic-program <span class="org-string">"xdg-open"</span>))
 </pre>
 </div>
 </div>
@@ -6202,20 +6214,9 @@ proced is an top like utility that runs inside of emacs. The following sets auto
 </div>
 </div>
 </div>
-<div id="outline-container-setdefaultbrowser" class="outline-3">
-<h3 id="setdefaultbrowser"><span class="section-number-3">6.20</span> Set default browser <a href="#setdefaultbrowser"><svg aria-hidden="true" class="octicon octicon-link" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a></h3>
-<div class="outline-text-3" id="text-6-20">
-<div class="org-src-container">
-<pre class="src src-emacs-lisp">(<span class="org-keyword">when</span> (equal system-type 'gnu/linux)
-    (<span class="org-keyword">setq</span> browse-url-browser-function 'browse-url-generic
-          browse-url-generic-program <span class="org-string">"google-chrome-stable"</span>))
-</pre>
-</div>
-</div>
-</div>
 <div id="outline-container-setepaprogram" class="outline-3">
-<h3 id="setepaprogram"><span class="section-number-3">6.21</span> Set epa program <a href="#setepaprogram"><svg aria-hidden="true" class="octicon octicon-link" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a></h3>
-<div class="outline-text-3" id="text-6-21">
+<h3 id="setepaprogram"><span class="section-number-3">6.20</span> Set epa program <a href="#setepaprogram"><svg aria-hidden="true" class="octicon octicon-link" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a></h3>
+<div class="outline-text-3" id="text-6-20">
 <div class="org-src-container">
 <pre class="src src-emacs-lisp">(<span class="org-keyword">setq</span> epg-gpg-program <span class="org-string">"gpg"</span>)
 </pre>
@@ -6223,8 +6224,8 @@ proced is an top like utility that runs inside of emacs. The following sets auto
 </div>
 </div>
 <div id="outline-container-makefilesexecutable" class="outline-3">
-<h3 id="makefilesexecutable"><span class="section-number-3">6.22</span> Make files executable <a href="#makefilesexecutable"><svg aria-hidden="true" class="octicon octicon-link" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a></h3>
-<div class="outline-text-3" id="text-6-22">
+<h3 id="makefilesexecutable"><span class="section-number-3">6.21</span> Make files executable <a href="#makefilesexecutable"><svg aria-hidden="true" class="octicon octicon-link" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a></h3>
+<div class="outline-text-3" id="text-6-21">
 <div class="org-src-container">
 <pre class="src src-emacs-lisp">(add-hook 'after-save-hook 'executable-make-buffer-file-executable-if-script-p)
 </pre>
@@ -6232,8 +6233,8 @@ proced is an top like utility that runs inside of emacs. The following sets auto
 </div>
 </div>
 <div id="outline-container-usetcpserver" class="outline-3">
-<h3 id="usetcpserver"><span class="section-number-3">6.23</span> Use TCP Server <a href="#usetcpserver"><svg aria-hidden="true" class="octicon octicon-link" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a></h3>
-<div class="outline-text-3" id="text-6-23">
+<h3 id="usetcpserver"><span class="section-number-3">6.22</span> Use TCP Server <a href="#usetcpserver"><svg aria-hidden="true" class="octicon octicon-link" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a></h3>
+<div class="outline-text-3" id="text-6-22">
 <p>
 I've had to stop setting this variable, because it causes problems when emacs is
 not STARTED in daemon mode. For some reason, even when the server is started, it
@@ -6246,8 +6247,8 @@ is not detected properly by emacsclient by default.
 </div>
 </div>
 <div id="outline-container-misc" class="outline-3">
-<h3 id="misc"><span class="section-number-3">6.24</span> Misc <a href="#misc"><svg aria-hidden="true" class="octicon octicon-link" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a></h3>
-<div class="outline-text-3" id="text-6-24">
+<h3 id="misc"><span class="section-number-3">6.23</span> Misc <a href="#misc"><svg aria-hidden="true" class="octicon octicon-link" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a></h3>
+<div class="outline-text-3" id="text-6-23">
 <div class="org-src-container">
 <pre class="src src-emacs-lisp">(<span class="org-keyword">defvar</span> <span class="org-variable-name">iedit-toggle-key-default</span> nil)
 (put 'set-goal-column 'disabled nil)
@@ -6322,8 +6323,8 @@ is not detected properly by emacsclient by default.
 </div>
 </div>
 <div id="outline-container-paradox" class="outline-3">
-<h3 id="paradox"><span class="section-number-3">6.25</span> paradox <a href="#paradox"><svg aria-hidden="true" class="octicon octicon-link" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a></h3>
-<div class="outline-text-3" id="text-6-25">
+<h3 id="paradox"><span class="section-number-3">6.24</span> paradox <a href="#paradox"><svg aria-hidden="true" class="octicon octicon-link" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a></h3>
+<div class="outline-text-3" id="text-6-24">
 <div class="org-src-container">
 <pre class="src src-emacs-lisp">(<span class="org-keyword">use-package</span> <span class="org-constant">paradox</span>
   <span class="org-builtin">:defer</span> 10
@@ -6338,8 +6339,8 @@ is not detected properly by emacsclient by default.
 </div>
 </div>
 <div id="outline-container-diminish" class="outline-3">
-<h3 id="diminish"><span class="section-number-3">6.26</span> diminish <a href="#diminish"><svg aria-hidden="true" class="octicon octicon-link" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a></h3>
-<div class="outline-text-3" id="text-6-26">
+<h3 id="diminish"><span class="section-number-3">6.25</span> diminish <a href="#diminish"><svg aria-hidden="true" class="octicon octicon-link" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a></h3>
+<div class="outline-text-3" id="text-6-25">
 <div class="org-src-container">
 <pre class="src src-emacs-lisp">(<span class="org-keyword">use-package</span> <span class="org-constant">diminish</span>
   <span class="org-builtin">:preface</span>
@@ -6356,8 +6357,8 @@ is not detected properly by emacsclient by default.
 </div>
 </div>
 <div id="outline-container-editserver" class="outline-3">
-<h3 id="editserver"><span class="section-number-3">6.27</span> edit-server <a href="#editserver"><svg aria-hidden="true" class="octicon octicon-link" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a></h3>
-<div class="outline-text-3" id="text-6-27">
+<h3 id="editserver"><span class="section-number-3">6.26</span> edit-server <a href="#editserver"><svg aria-hidden="true" class="octicon octicon-link" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a></h3>
+<div class="outline-text-3" id="text-6-26">
 <div class="org-src-container">
 <pre class="src src-emacs-lisp">(<span class="org-keyword">use-package</span> <span class="org-constant">edit-server</span>
   <span class="org-builtin">:commands</span> edit-server-start
@@ -6371,8 +6372,8 @@ is not detected properly by emacsclient by default.
 </div>
 </div>
 <div id="outline-container-loaddir" class="outline-3">
-<h3 id="loaddir"><span class="section-number-3">6.28</span> load-dir <a href="#loaddir"><svg aria-hidden="true" class="octicon octicon-link" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a></h3>
-<div class="outline-text-3" id="text-6-28">
+<h3 id="loaddir"><span class="section-number-3">6.27</span> load-dir <a href="#loaddir"><svg aria-hidden="true" class="octicon octicon-link" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a></h3>
+<div class="outline-text-3" id="text-6-27">
 <div class="org-src-container">
 <pre class="src src-emacs-lisp">(<span class="org-keyword">use-package</span> <span class="org-constant">load-dir</span>
   <span class="org-builtin">:config</span>
@@ -6386,8 +6387,8 @@ is not detected properly by emacsclient by default.
 </div>
 </div>
 <div id="outline-container-server" class="outline-3">
-<h3 id="server"><span class="section-number-3">6.29</span> server <a href="#server"><svg aria-hidden="true" class="octicon octicon-link" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a></h3>
-<div class="outline-text-3" id="text-6-29">
+<h3 id="server"><span class="section-number-3">6.28</span> server <a href="#server"><svg aria-hidden="true" class="octicon octicon-link" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a></h3>
+<div class="outline-text-3" id="text-6-28">
 <div class="org-src-container">
 <pre class="src src-emacs-lisp">(<span class="org-keyword">use-package</span> <span class="org-constant">server</span>
   <span class="org-builtin">:config</span>
@@ -6398,8 +6399,8 @@ is not detected properly by emacsclient by default.
 </div>
 </div>
 <div id="outline-container-listenvironment" class="outline-3">
-<h3 id="listenvironment"><span class="section-number-3">6.30</span> list-environment <a href="#listenvironment"><svg aria-hidden="true" class="octicon octicon-link" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a></h3>
-<div class="outline-text-3" id="text-6-30">
+<h3 id="listenvironment"><span class="section-number-3">6.29</span> list-environment <a href="#listenvironment"><svg aria-hidden="true" class="octicon octicon-link" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a></h3>
+<div class="outline-text-3" id="text-6-29">
 <div class="org-src-container">
 <pre class="src src-emacs-lisp">(<span class="org-keyword">use-package</span> <span class="org-constant">list-environment</span>)
 </pre>
@@ -6407,8 +6408,8 @@ is not detected properly by emacsclient by default.
 </div>
 </div>
 <div id="outline-container-bughunter" class="outline-3">
-<h3 id="bughunter"><span class="section-number-3">6.31</span> bug-hunter <a href="#bughunter"><svg aria-hidden="true" class="octicon octicon-link" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a></h3>
-<div class="outline-text-3" id="text-6-31">
+<h3 id="bughunter"><span class="section-number-3">6.30</span> bug-hunter <a href="#bughunter"><svg aria-hidden="true" class="octicon octicon-link" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a></h3>
+<div class="outline-text-3" id="text-6-30">
 <div class="org-src-container">
 <pre class="src src-emacs-lisp">(<span class="org-keyword">use-package</span> <span class="org-constant">bug-hunter</span>)
 </pre>
@@ -6416,8 +6417,8 @@ is not detected properly by emacsclient by default.
 </div>
 </div>
 <div id="outline-container-shackle" class="outline-3">
-<h3 id="shackle"><span class="section-number-3">6.32</span> shackle <a href="#shackle"><svg aria-hidden="true" class="octicon octicon-link" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a></h3>
-<div class="outline-text-3" id="text-6-32">
+<h3 id="shackle"><span class="section-number-3">6.31</span> shackle <a href="#shackle"><svg aria-hidden="true" class="octicon octicon-link" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a></h3>
+<div class="outline-text-3" id="text-6-31">
 <div class="org-src-container">
 <pre class="src src-emacs-lisp">(<span class="org-keyword">use-package</span> <span class="org-constant">shackle</span>
   <span class="org-builtin">:disabled</span> t
@@ -6434,8 +6435,8 @@ is not detected properly by emacsclient by default.
 </div>
 
 <div id="outline-container-beacon" class="outline-3">
-<h3 id="beacon"><span class="section-number-3">6.33</span> beacon <a href="#beacon"><svg aria-hidden="true" class="octicon octicon-link" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a></h3>
-<div class="outline-text-3" id="text-6-33">
+<h3 id="beacon"><span class="section-number-3">6.32</span> beacon <a href="#beacon"><svg aria-hidden="true" class="octicon octicon-link" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a></h3>
+<div class="outline-text-3" id="text-6-32">
 <div class="org-src-container">
 <pre class="src src-emacs-lisp">(<span class="org-keyword">use-package</span> <span class="org-constant">beacon</span>
   <span class="org-builtin">:demand</span> t
@@ -6447,8 +6448,8 @@ is not detected properly by emacsclient by default.
 </div>
 </div>
 <div id="outline-container-iregister" class="outline-3">
-<h3 id="iregister"><span class="section-number-3">6.34</span> iregister <a href="#iregister"><svg aria-hidden="true" class="octicon octicon-link" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a></h3>
-<div class="outline-text-3" id="text-6-34">
+<h3 id="iregister"><span class="section-number-3">6.33</span> iregister <a href="#iregister"><svg aria-hidden="true" class="octicon octicon-link" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a></h3>
+<div class="outline-text-3" id="text-6-33">
 <div class="org-src-container">
 <pre class="src src-emacs-lisp">(<span class="org-keyword">use-package</span> <span class="org-constant">iregister</span>)
 </pre>
@@ -6456,8 +6457,8 @@ is not detected properly by emacsclient by default.
 </div>
 </div>
 <div id="outline-container-discovermymajor" class="outline-3">
-<h3 id="discovermymajor"><span class="section-number-3">6.35</span> discover-my-major <a href="#discovermymajor"><svg aria-hidden="true" class="octicon octicon-link" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a></h3>
-<div class="outline-text-3" id="text-6-35">
+<h3 id="discovermymajor"><span class="section-number-3">6.34</span> discover-my-major <a href="#discovermymajor"><svg aria-hidden="true" class="octicon octicon-link" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a></h3>
+<div class="outline-text-3" id="text-6-34">
 <div class="org-src-container">
 <pre class="src src-emacs-lisp">(<span class="org-keyword">use-package</span> <span class="org-constant">discover-my-major</span>)
 </pre>
@@ -6465,8 +6466,8 @@ is not detected properly by emacsclient by default.
 </div>
 </div>
 <div id="outline-container-refine" class="outline-3">
-<h3 id="refine"><span class="section-number-3">6.36</span> refine <a href="#refine"><svg aria-hidden="true" class="octicon octicon-link" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a></h3>
-<div class="outline-text-3" id="text-6-36">
+<h3 id="refine"><span class="section-number-3">6.35</span> refine <a href="#refine"><svg aria-hidden="true" class="octicon octicon-link" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a></h3>
+<div class="outline-text-3" id="text-6-35">
 <div class="org-src-container">
 <pre class="src src-emacs-lisp">(<span class="org-keyword">use-package</span> <span class="org-constant">refine</span>
   <span class="org-builtin">:disabled</span> t)
@@ -6475,8 +6476,8 @@ is not detected properly by emacsclient by default.
 </div>
 </div>
 <div id="outline-container-winner" class="outline-3">
-<h3 id="winner"><span class="section-number-3">6.37</span> winner <a href="#winner"><svg aria-hidden="true" class="octicon octicon-link" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a></h3>
-<div class="outline-text-3" id="text-6-37">
+<h3 id="winner"><span class="section-number-3">6.36</span> winner <a href="#winner"><svg aria-hidden="true" class="octicon octicon-link" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a></h3>
+<div class="outline-text-3" id="text-6-36">
 <div class="org-src-container">
 <pre class="src src-emacs-lisp">(<span class="org-keyword">use-package</span> <span class="org-constant">winner</span>
   <span class="org-builtin">:after</span> hydra
@@ -6496,8 +6497,8 @@ is not detected properly by emacsclient by default.
 </div>
 </div>
 <div id="outline-container-eyebrowse" class="outline-3">
-<h3 id="eyebrowse"><span class="section-number-3">6.38</span> eyebrowse <a href="#eyebrowse"><svg aria-hidden="true" class="octicon octicon-link" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a></h3>
-<div class="outline-text-3" id="text-6-38">
+<h3 id="eyebrowse"><span class="section-number-3">6.37</span> eyebrowse <a href="#eyebrowse"><svg aria-hidden="true" class="octicon octicon-link" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a></h3>
+<div class="outline-text-3" id="text-6-37">
 <div class="org-src-container">
 <pre class="src src-emacs-lisp">(<span class="org-keyword">use-package</span> <span class="org-constant">eyebrowse</span>
   <span class="org-builtin">:defer</span> 1
@@ -6508,8 +6509,8 @@ is not detected properly by emacsclient by default.
 </div>
 </div>
 <div id="outline-container-stream" class="outline-3">
-<h3 id="stream"><span class="section-number-3">6.39</span> stream <a href="#stream"><svg aria-hidden="true" class="octicon octicon-link" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a></h3>
-<div class="outline-text-3" id="text-6-39">
+<h3 id="stream"><span class="section-number-3">6.38</span> stream <a href="#stream"><svg aria-hidden="true" class="octicon octicon-link" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a></h3>
+<div class="outline-text-3" id="text-6-38">
 <div class="org-src-container">
 <pre class="src src-emacs-lisp">(<span class="org-keyword">use-package</span> <span class="org-constant">stream</span>)
 </pre>
@@ -6517,8 +6518,8 @@ is not detected properly by emacsclient by default.
 </div>
 </div>
 <div id="outline-container-tile" class="outline-3">
-<h3 id="tile"><span class="section-number-3">6.40</span> tile <a href="#tile"><svg aria-hidden="true" class="octicon octicon-link" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a></h3>
-<div class="outline-text-3" id="text-6-40">
+<h3 id="tile"><span class="section-number-3">6.39</span> tile <a href="#tile"><svg aria-hidden="true" class="octicon octicon-link" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a></h3>
+<div class="outline-text-3" id="text-6-39">
 <div class="org-src-container">
 <pre class="src src-emacs-lisp">(imalison:use-package tile
   <span class="org-builtin">:after</span> hydra
@@ -6550,8 +6551,8 @@ is not detected properly by emacsclient by default.
 </div>
 </div>
 <div id="outline-container-fillcolumnindicator" class="outline-3">
-<h3 id="fillcolumnindicator"><span class="section-number-3">6.41</span> fill-column-indicator <a href="#fillcolumnindicator"><svg aria-hidden="true" class="octicon octicon-link" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a></h3>
-<div class="outline-text-3" id="text-6-41">
+<h3 id="fillcolumnindicator"><span class="section-number-3">6.40</span> fill-column-indicator <a href="#fillcolumnindicator"><svg aria-hidden="true" class="octicon octicon-link" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a></h3>
+<div class="outline-text-3" id="text-6-40">
 <p>
 This interferes with too many other packages. See
 <a href="https://github.com/alpaker/Fill-Column-Indicator/issues/21">https://github.com/alpaker/Fill-Column-Indicator/issues/21</a> for more details
@@ -6573,8 +6574,8 @@ This interferes with too many other packages. See
 </div>
 </div>
 <div id="outline-container-highlightindentguides" class="outline-3">
-<h3 id="highlightindentguides"><span class="section-number-3">6.42</span> highlight-indent-guides <a href="#highlightindentguides"><svg aria-hidden="true" class="octicon octicon-link" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a></h3>
-<div class="outline-text-3" id="text-6-42">
+<h3 id="highlightindentguides"><span class="section-number-3">6.41</span> highlight-indent-guides <a href="#highlightindentguides"><svg aria-hidden="true" class="octicon octicon-link" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a></h3>
+<div class="outline-text-3" id="text-6-41">
 <p>
 If the load-theme hook from this package starts causing trouble check for
 custom-set-faces in your custom file.
@@ -6852,40 +6853,39 @@ I use helm for almost all emacs completion
 <span class="linenr"> 5: </span>         (<span class="org-string">"M-x"</span> . helm-M-x)
 <span class="linenr"> 6: </span>         (<span class="org-string">"C-x C-i"</span> . helm-imenu)
 <span class="linenr"> 7: </span>         (<span class="org-string">"C-h a"</span> . helm-apropos)
-<span class="linenr"> 8: </span>         (<span class="org-string">"C-c C-h"</span> . helm-org-agenda-files-headings)
-<span class="linenr"> 9: </span>         (<span class="org-string">"C-c ;"</span> . helm-recentf))
-<span class="linenr">10: </span>  <span class="org-builtin">:diminish</span> helm-mode
-<span class="linenr">11: </span>  <span class="org-builtin">:config</span>
-<span class="linenr">12: </span>  (<span class="org-keyword">progn</span>
-<span class="linenr">13: </span>    (<span class="org-keyword">require</span> '<span class="org-constant">helm-org</span>)
-<span id="coderef-helm split window" class="coderef-off"><span class="linenr">14: </span>    (<span class="org-keyword">setq</span> helm-split-window-default-side 'same)</span>
-<span class="linenr">15: </span>
-<span class="linenr">16: </span>    (<span class="org-keyword">cl-defun</span> <span class="org-function-name">helm-org-headings-in-buffer</span> ()
-<span class="linenr">17: </span>      (<span class="org-keyword">interactive</span>)
-<span class="linenr">18: </span>      (helm <span class="org-builtin">:sources</span> (helm-source-org-headings-for-files
-<span class="linenr">19: </span>                      (list (projectile-completing-read
-<span class="linenr">20: </span>                             <span class="org-string">"File to look at headings from: "</span>
-<span class="linenr">21: </span>                             (projectile-all-project-files))))
-<span class="linenr">22: </span>            <span class="org-builtin">:candidate-number-limit</span> 99999
-<span class="linenr">23: </span>            <span class="org-builtin">:buffer</span> <span class="org-string">"*helm org inbuffer*"</span>))
-<span class="linenr">24: </span>
-<span class="linenr">25: </span>    (<span class="org-keyword">use-package</span> <span class="org-constant">helm-descbinds</span>
-<span class="linenr">26: </span>      <span class="org-builtin">:demand</span> t
-<span class="linenr">27: </span>      <span class="org-builtin">:config</span> (helm-descbinds-mode 1))
-<span class="linenr">28: </span>
-<span class="linenr">29: </span>    (<span class="org-keyword">use-package</span> <span class="org-constant">helm-ag</span>
-<span class="linenr">30: </span>      <span class="org-builtin">:bind</span> (<span class="org-string">"C-c p 1"</span> . imalison:set-helm-ag-extra-options)
-<span class="linenr">31: </span>      <span class="org-builtin">:preface</span>
-<span class="linenr">32: </span>      (<span class="org-keyword">progn</span>
-<span class="linenr">33: </span>        (<span class="org-keyword">defun</span> <span class="org-function-name">imalison:set-helm-ag-extra-options</span> ()
-<span class="linenr">34: </span>          (<span class="org-keyword">interactive</span>)
-<span class="linenr">35: </span>          (<span class="org-keyword">let</span> ((option (read-string <span class="org-string">"Extra options: "</span> (<span class="org-keyword">or</span> helm-ag--extra-options <span class="org-string">""</span>)
-<span class="linenr">36: </span>                                     'helm-ag--extra-options-history)))
-<span class="linenr">37: </span>            (<span class="org-keyword">setq</span> helm-ag--extra-options option))))
-<span class="linenr">38: </span>      <span class="org-builtin">:config</span>
-<span class="linenr">39: </span>      (<span class="org-keyword">progn</span>
-<span class="linenr">40: </span>        (<span class="org-keyword">setq</span> helm-ag-always-set-extra-option nil)))
-<span class="linenr">41: </span>    (helm-mode 1)))
+<span class="linenr"> 8: </span>         (<span class="org-string">"C-c ;"</span> . helm-recentf))
+<span class="linenr"> 9: </span>  <span class="org-builtin">:diminish</span> helm-mode
+<span class="linenr">10: </span>  <span class="org-builtin">:config</span>
+<span class="linenr">11: </span>  (<span class="org-keyword">progn</span>
+<span class="linenr">12: </span>    (<span class="org-keyword">require</span> '<span class="org-constant">helm-org</span>)
+<span id="coderef-helm split window" class="coderef-off"><span class="linenr">13: </span>    (<span class="org-keyword">setq</span> helm-split-window-default-side 'same)</span>
+<span class="linenr">14: </span>
+<span class="linenr">15: </span>    (<span class="org-keyword">cl-defun</span> <span class="org-function-name">helm-org-headings-in-buffer</span> ()
+<span class="linenr">16: </span>      (<span class="org-keyword">interactive</span>)
+<span class="linenr">17: </span>      (helm <span class="org-builtin">:sources</span> (helm-source-org-headings-for-files
+<span class="linenr">18: </span>                      (list (projectile-completing-read
+<span class="linenr">19: </span>                             <span class="org-string">"File to look at headings from: "</span>
+<span class="linenr">20: </span>                             (projectile-all-project-files))))
+<span class="linenr">21: </span>            <span class="org-builtin">:candidate-number-limit</span> 99999
+<span class="linenr">22: </span>            <span class="org-builtin">:buffer</span> <span class="org-string">"*helm org inbuffer*"</span>))
+<span class="linenr">23: </span>
+<span class="linenr">24: </span>    (<span class="org-keyword">use-package</span> <span class="org-constant">helm-descbinds</span>
+<span class="linenr">25: </span>      <span class="org-builtin">:demand</span> t
+<span class="linenr">26: </span>      <span class="org-builtin">:config</span> (helm-descbinds-mode 1))
+<span class="linenr">27: </span>
+<span class="linenr">28: </span>    (<span class="org-keyword">use-package</span> <span class="org-constant">helm-ag</span>
+<span class="linenr">29: </span>      <span class="org-builtin">:bind</span> (<span class="org-string">"C-c p 1"</span> . imalison:set-helm-ag-extra-options)
+<span class="linenr">30: </span>      <span class="org-builtin">:preface</span>
+<span class="linenr">31: </span>      (<span class="org-keyword">progn</span>
+<span class="linenr">32: </span>        (<span class="org-keyword">defun</span> <span class="org-function-name">imalison:set-helm-ag-extra-options</span> ()
+<span class="linenr">33: </span>          (<span class="org-keyword">interactive</span>)
+<span class="linenr">34: </span>          (<span class="org-keyword">let</span> ((option (read-string <span class="org-string">"Extra options: "</span> (<span class="org-keyword">or</span> helm-ag--extra-options <span class="org-string">""</span>)
+<span class="linenr">35: </span>                                     'helm-ag--extra-options-history)))
+<span class="linenr">36: </span>            (<span class="org-keyword">setq</span> helm-ag--extra-options option))))
+<span class="linenr">37: </span>      <span class="org-builtin">:config</span>
+<span class="linenr">38: </span>      (<span class="org-keyword">progn</span>
+<span class="linenr">39: </span>        (<span class="org-keyword">setq</span> helm-ag-always-set-extra-option nil)))
+<span class="linenr">40: </span>    (helm-mode 1)))
 </pre>
 </div>
 <p>
@@ -8914,9 +8914,19 @@ This function replaces the default naming scheme with a call to
 </div>
 </div>
 </div>
-<div id="outline-container-orgnotify" class="outline-5">
-<h5 id="orgnotify"><span class="section-number-5">12.3.1.11</span> org-notify <a href="#orgnotify"><svg aria-hidden="true" class="octicon octicon-link" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a></h5>
+<div id="outline-container-helmorgrifle" class="outline-5">
+<h5 id="helmorgrifle"><span class="section-number-5">12.3.1.11</span> helm-org-rifle <a href="#helmorgrifle"><svg aria-hidden="true" class="octicon octicon-link" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a></h5>
 <div class="outline-text-5" id="text-12-3-1-11">
+<div class="org-src-container">
+<pre class="src src-emacs-lisp">(<span class="org-keyword">use-package</span> <span class="org-constant">helm-org-rifle</span>
+  <span class="org-builtin">:bind</span> (<span class="org-string">"C-c C-h"</span> . helm-rog-rifle-agenda-files))
+</pre>
+</div>
+</div>
+</div>
+<div id="outline-container-orgnotify" class="outline-5">
+<h5 id="orgnotify"><span class="section-number-5">12.3.1.12</span> org-notify <a href="#orgnotify"><svg aria-hidden="true" class="octicon octicon-link" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a></h5>
+<div class="outline-text-5" id="text-12-3-1-12">
 <div class="org-src-container">
 <pre class="src src-emacs-lisp">(<span class="org-keyword">use-package</span> <span class="org-constant">org-notify</span>
   <span class="org-builtin">:disabled</span> t
@@ -8976,8 +8986,8 @@ This function replaces the default naming scheme with a call to
 </div>
 </div>
 <div id="outline-container-orgreveal" class="outline-5">
-<h5 id="orgreveal"><span class="section-number-5">12.3.1.12</span> org-reveal <a href="#orgreveal"><svg aria-hidden="true" class="octicon octicon-link" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a></h5>
-<div class="outline-text-5" id="text-12-3-1-12">
+<h5 id="orgreveal"><span class="section-number-5">12.3.1.13</span> org-reveal <a href="#orgreveal"><svg aria-hidden="true" class="octicon octicon-link" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a></h5>
+<div class="outline-text-5" id="text-12-3-1-13">
 <div class="org-src-container">
 <pre class="src src-emacs-lisp">(<span class="org-keyword">use-package</span> <span class="org-constant">ox-reveal</span>
   <span class="org-builtin">:after</span> org
@@ -8989,8 +8999,8 @@ This function replaces the default naming scheme with a call to
 </div>
 </div>
 <div id="outline-container-orgcaldav" class="outline-5">
-<h5 id="orgcaldav"><span class="section-number-5">12.3.1.13</span> org-caldav <a href="#orgcaldav"><svg aria-hidden="true" class="octicon octicon-link" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a></h5>
-<div class="outline-text-5" id="text-12-3-1-13">
+<h5 id="orgcaldav"><span class="section-number-5">12.3.1.14</span> org-caldav <a href="#orgcaldav"><svg aria-hidden="true" class="octicon octicon-link" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a></h5>
+<div class="outline-text-5" id="text-12-3-1-14">
 <div class="org-src-container">
 <pre class="src src-emacs-lisp">(<span class="org-keyword">use-package</span> <span class="org-constant">org-caldav</span>
   <span class="org-builtin">:defer</span> t
