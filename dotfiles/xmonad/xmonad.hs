@@ -238,7 +238,7 @@ layoutTogglesMap =
     toggleTuple toggle =
       fmap (\str -> (str, Toggle toggle)) (toggleToStringWithState toggle)
 
-spacingSize = 20
+spacingSize = 12
 
 togglesXActionsMap =
   M.fromList [ ("GAPS", sendMessage $ ModifySpacing toggleSpacing ) ]
