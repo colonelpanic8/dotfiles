@@ -185,8 +185,8 @@ tvScreenId :: ScreenId
 tvScreenId = 1
 
 disableTVFading = setFading (Just tvScreenId) False
-enableGaps = sendMessage $ ModifySpacing const spacingSize
-disableGaps = sendMessage $ ModifySpacing const 0
+enableGaps = sendMessage $ ModifySpacing $ const spacingSize
+disableGaps = sendMessage $ ModifySpacing $ const 0
 
 hostNameToAction =
   M.fromList [ ("imalison-arch", disableTVFading >> enableGaps)
@@ -238,7 +238,7 @@ layoutTogglesMap =
     toggleTuple toggle =
       fmap (\str -> (str, Toggle toggle)) (toggleToStringWithState toggle)
 
-spacingSize = 10
+spacingSize = 20
 
 togglesXActionsMap =
   M.fromList [ ("GAPS", sendMessage $ ModifySpacing toggleSpacing ) ]
@@ -325,7 +325,7 @@ myLayoutHook =
   mkToggle1 LIMIT .
   mkToggle1 MAGICFOCUS .
   mkToggle1 NBFULL .
-  smartSpacing 10 .
+  smartSpacing spacingSize .
   workspaceNamesHook .
   lessBorders Screen $ fst layoutInfo
 
