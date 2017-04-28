@@ -12,10 +12,8 @@ packages:
     git: git@github.com:IvanMalison/taffybar.git
     commit: 3570bdbd87a5464d7280d8750c5c153cf3dcc637
 extra-deps:
-- X11-1.8
 - X11-xft-0.3.1
+- dbus-0.10.12
 - gtk-traymanager-0.1.6
-- xmonad-0.13
-- xmonad-contrib-0.13
-- taffybar-0.4.6
+- libxml-sax-0.7.5
 resolver: lts-8.2
