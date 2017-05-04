@@ -3,7 +3,7 @@
 "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
-<!-- 2017-04-28 Fri 21:16 -->
+<!-- 2017-05-04 Thu 21:09 -->
 <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title></title>
@@ -3591,7 +3591,7 @@ a:hover {
 @licstart  The following is the entire license notice for the
 JavaScript code in this tag.
 
-Copyright (C) 2012-2013 Free Software Foundation, Inc.
+Copyright (C) 2012-2017 Free Software Foundation, Inc.
 
 The JavaScript code in this tag is free software: you can
 redistribute it and/or modify it under the terms of the GNU
@@ -5496,6 +5496,7 @@ A macro for composing functions together to build an interactive command to copy
         command))))
   (compilation-start command nil (<span class="org-keyword">lambda</span> (<span class="org-type">&amp;rest</span> args)
                                    (format <span class="org-string">"*compilation %s*"</span> command))))
+
 </pre>
 </div>
 </div>
@@ -5799,6 +5800,7 @@ This keyboard macro extracts the current sexp to an emacs-lisp source block of i
 <div class="org-src-container">
 <pre class="src src-emacs-lisp">(fset 'extract-current-sexp-to-src-block
       [?\C-a return ?\C-p ?# ?+ ?E ?N ?D ?_ ?S ?R ?C return ?# ?+ ?B ?E ?G ?I ?N ?_ ?S ?R ?C ?  ?e ?m ?a ?c ?s ?- ?l ?i ?s ?p ?\C-a ?\C-p ?\C-  ?\C-n ?\C-e ?\M-w ?\C-n ?\C-a ?\C-\M-f return ?\C-y])
+
 </pre>
 </div>
 </div>
@@ -8919,7 +8921,7 @@ This function replaces the default naming scheme with a call to
 <div class="outline-text-5" id="text-12-3-1-11">
 <div class="org-src-container">
 <pre class="src src-emacs-lisp">(<span class="org-keyword">use-package</span> <span class="org-constant">helm-org-rifle</span>
-  <span class="org-builtin">:bind</span> (<span class="org-string">"C-c C-h"</span> . helm-rog-rifle-agenda-files))
+  <span class="org-builtin">:bind</span> (<span class="org-string">"C-c C-h"</span> . helm-org-rifle-agenda-files))
 </pre>
 </div>
 </div>
@@ -9745,6 +9747,7 @@ crux-reopen-as-root-mode makes it so that any file owned by root will automatica
         (erc-message <span class="org-string">"PRIVMSG"</span> (format <span class="org-string">"%s identify %s"</span>
                                        (erc-default-target)
                                        bitlbee-password))))))
+
 </pre>
 </div>
 </div>
@@ -10158,6 +10161,7 @@ Not really sure what this is
 <pre class="src src-emacs-lisp">(<span class="org-keyword">use-package</span> <span class="org-constant">matrix-client</span>
   <span class="org-builtin">:disabled</span> t <span class="org-comment-delimiter">;; </span><span class="org-comment">fails to load eieio on startup</span>
   )
+
 </pre>
 </div>
 </div>
@@ -10268,6 +10272,7 @@ Not really sure what this is
           smtpmail-default-smtp-server <span class="org-string">"smtp.gmail.com"</span>
           smtpmail-smtp-server <span class="org-string">"smtp.gmail.com"</span>
           smtpmail-smtp-service 587)))
+
 </pre>
 </div>
 </div>
@@ -10369,6 +10374,7 @@ This is useful with server mode when editing gmail messages. I think that it is 
     <span class="org-comment-delimiter">;; </span><span class="org-comment">Prefering alert.el for now ;; (add-hook 'sauron-event-added-functions 'sauron:dispatch-notify)</span>
     (sauron-start-hidden)
     (add-hook 'sauron-event-added-functions 'sauron-alert-el-adapter)))
+
 </pre>
 </div>
 </div>
@@ -10449,6 +10455,7 @@ This is useful with server mode when editing gmail messages. I think that it is 
     (defvar-setq web-mode-content-types-alist
       '((<span class="org-string">"gtl"</span> . <span class="org-string">"\\.tmpl\\'"</span>)
         (<span class="org-string">"gtl"</span> . <span class="org-string">"\\.cql\\'"</span>)))))
+
 </pre>
 </div>
 </div>
@@ -10644,6 +10651,7 @@ I've disabled perspective because I just don't use it much.
    (<span class="org-string">"M-,"</span> . helm-gtags-pop-stack)
    (<span class="org-string">"C-c &lt;"</span> . helm-gtags-previous-history)
    (<span class="org-string">"C-c &gt;"</span> . helm-gtags-next-history)))
+
 </pre>
 </div>
 </div>
