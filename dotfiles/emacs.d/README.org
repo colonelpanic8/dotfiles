@@ -3420,7 +3420,7 @@ alphanumeric characters only."
 **** helm-org-rifle
 #+BEGIN_SRC emacs-lisp
 (use-package helm-org-rifle
-  :bind ("C-c C-h" . helm-rog-rifle-agenda-files))
+  :bind ("C-c C-h" . helm-org-rifle-agenda-files))
 #+END_SRC
 **** org-notify
  #+BEGIN_SRC emacs-lisp
