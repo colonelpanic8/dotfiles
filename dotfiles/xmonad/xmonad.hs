@@ -17,6 +17,7 @@ import           Graphics.X11.ExtraTypes.XF86
 import           Network.HostName
 import           System.Directory
 import           System.FilePath.Posix
+import           System.Process
 import           System.Taffybar.Hooks.PagerHints
 import           Text.Printf
 
@@ -88,6 +89,8 @@ main =
 -- Log to a file from anywhere
 writeToHomeDirLog stuff = io $ getLogFile >>= flip appendFile (stuff ++ "\n")
   where getLogFile = (</> "temp" </> "xmonad.log") <$> getHomeDirectory
+
+xRunCommand cmd = void $ io $ readCreateProcess (shell cmd) ""
 
 (<..>) :: Functor f => (a -> b) -> f (f a) -> f (f b)
 (<..>) = fmap . fmap
@@ -397,7 +400,7 @@ myWindowAct c@WindowBringerConfig { menuCommand = cmd
   do
     visible <- visibleWindows
     ws <- windowMap' c { windowFilter = not . flip elem visible }
-    let chromeTabs = M.empty -- chromeTabs <- liftIO getChromeTabInfo
+    chromeTabs <- liftIO getChromeTabInfo
     let options = M.union (M.map Left ws) (M.map Right chromeTabs)
     selection <- DM.menuMapArgs cmd args options
     whenJust selection action
@@ -820,7 +823,7 @@ addKeys conf@XConfig { modMask = modm } =
 
     , ((modm .|. controlMask, xK_t), spawn taffybarCommand)
     , ((modm, xK_v), spawn "copyq paste")
-    , ((modm .|. controlMask, xK_s), spawn "split_out.sh")
+    , ((modm .|. controlMask, xK_s), spawn "split_current_chrome_tab.sh")
     , ((hyper, xK_v), spawn "copyq_rofi.sh")
     , ((hyper, xK_p), spawn "rofi-pass")
     , ((hyper, xK_h), spawn "screenshot.sh")
@@ -834,7 +837,7 @@ addKeys conf@XConfig { modMask = modm } =
     , ((hyper, xK_r), spawn "rofi_systemd.sh")
     , ((hyper, xK_0), spawn "tvpower.js")
     , ((modalt, xK_w), spawn "rofi_wallpaper.sh")
-    , ((modalt, xK_z), spawn "split_out_chrome_tab.sh")
+    , ((modalt, xK_z), spawn "split_chrome_tab_to_next_screen.sh")
     , ((hyper, xK_9), spawn "start_synergy.sh")
     , ((hyper, xK_8), spawn "rofi_paswitch.sh")
     , ((hyper, xK_slash), spawn "toggle_taffybar.sh")
