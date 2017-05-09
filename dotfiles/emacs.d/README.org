@@ -2661,6 +2661,11 @@ The following is taken from [[https://github.com/syl20bnr/spacemacs/blob/a650877
   (interactive)
   (delete-process "tern"))
 #+END_SRC
+*** coffee script
+#+BEGIN_SRC emacs-lisp
+(use-package coffee-mode
+  :mode "\\.coffee\\'")
+#+END_SRC
 *** rust
 #+BEGIN_SRC emacs-lisp
 (use-package rust-mode
