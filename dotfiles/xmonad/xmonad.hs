@@ -185,11 +185,9 @@ tvScreenId :: ScreenId
 tvScreenId = 1
 
 disableTVFading = setFading (Just tvScreenId) False
-enableGaps = sendMessage $ ModifySpacing $ const spacingSize
-disableGaps = sendMessage $ ModifySpacing $ const 0
 
 hostNameToAction =
-  M.fromList [ ("imalison-arch", disableTVFading >> enableGaps)
+  M.fromList [ ("imalison-arch", disableTVFading)
              , ("imalison-uber-loaner", return ())
              ]
 
@@ -223,31 +221,22 @@ data MyToggles
 
 instance Transformer MyToggles Window where
   transform LIMIT x k = k (limitSlice 2 x) unmodifyLayout
+  transform GAPS x k = k (smartSpacing 5 x) unmodifyLayout
   transform MAGICFOCUS x k = k (magicFocus x) unmodifyLayout
 
-myToggles = [LIMIT, MAGICFOCUS]
+myToggles = [LIMIT, GAPS, MAGICFOCUS]
 otherToggles = [NBFULL, MIRROR]
 
 followIfNoMagicFocus =
   followOnlyIf $ maybe False not <$> isToggleActive MAGICFOCUS
 
-layoutTogglesMap =
+togglesMap =
   fmap M.fromList $ sequence $
   map toggleTuple myToggles ++ map toggleTuple otherToggles
   where
     toggleTuple toggle =
       fmap (\str -> (str, Toggle toggle)) (toggleToStringWithState toggle)
 
-spacingSize = 20
-
-togglesXActionsMap =
-  M.fromList [ ("GAPS", sendMessage $ ModifySpacing toggleSpacing ) ]
-    where toggleSpacing 0 = spacingSize
-          toggleSpacing _ = 0
-
-togglesMap =
-  M.union (M.map Left togglesXActionsMap) . M.map Right <$>
-  layoutTogglesMap
 
 toggleStateToString s =
   case s of
@@ -262,10 +251,7 @@ toggleToStringWithState toggle =
 
 selectToggle =
   togglesMap >>= DM.menuMapArgs "rofi" ["-dmenu", "-i"] >>=
-  flip whenJust handleToggle
-  where
-    handleToggle (Left action) = action
-    handleToggle (Right toggle) = sendMessage toggle
+             flip whenJust sendMessage
 
 toggleInState :: (Transformer t Window) => t -> Maybe Bool -> X Bool
 toggleInState t s = fmap (/= s) (isToggleActive t)
@@ -323,9 +309,9 @@ myLayoutHook =
   boringAuto .
   mkToggle1 MIRROR .
   mkToggle1 LIMIT .
+  mkToggle1 GAPS .
   mkToggle1 MAGICFOCUS .
   mkToggle1 NBFULL .
-  smartSpacing spacingSize .
   workspaceNamesHook .
   lessBorders Screen $ fst layoutInfo
 
