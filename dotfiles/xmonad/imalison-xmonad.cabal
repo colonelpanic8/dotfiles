@@ -23,6 +23,7 @@ executable imalison-xmonad
                        gtk-traymanager>=0.1.6,
                        hostname>=1.0,
                        multimap>=1.2.1,
+                       process>=1.4.3.0,
                        split,
                        taffybar>=0.4.6,
                        transformers>=0.5.2.0,

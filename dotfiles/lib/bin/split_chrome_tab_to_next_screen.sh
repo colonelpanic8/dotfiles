@@ -1,4 +1,4 @@
 #!/usr/bin/env zsh
-split_out.sh
-sleep .2
+
+split_current_chrome_tab.sh
 xdotool key --clearmodifiers "Shift_L+Super_L+z"

@@ -2661,6 +2661,11 @@ The following is taken from [[https://github.com/syl20bnr/spacemacs/blob/a650877
   (interactive)
   (delete-process "tern"))
 #+END_SRC
+*** coffee script
+#+BEGIN_SRC emacs-lisp
+(use-package coffee-mode
+  :mode "\\.coffee\\'")
+#+END_SRC
 *** rust
 #+BEGIN_SRC emacs-lisp
 (use-package rust-mode
@@ -3420,7 +3425,7 @@ alphanumeric characters only."
 **** helm-org-rifle
 #+BEGIN_SRC emacs-lisp
 (use-package helm-org-rifle
-  :bind ("C-c C-h" . helm-rog-rifle-agenda-files))
+  :bind ("C-c C-h" . helm-org-rifle-agenda-files))
 #+END_SRC
 **** org-notify
  #+BEGIN_SRC emacs-lisp
