@@ -3873,7 +3873,8 @@ First call open the kill-ring browser, next calls move to next line."
     (add-hook 'term-mode-hook 'imalison:disable-linum-mode)
     (add-hook 'term-mode-hook 'imalison:disable-yas-minor-mode)
     (add-hook 'term-mode-hook 'imalison:disable-show-trailing-whitespace)
-    (setq term-buffer-maximum-size 0)))
+    (setq term-buffer-maximum-size 0
+          term-suppress-hard-newline t)))
 #+END_SRC
 ** term-manager
 #+BEGIN_SRC emacs-lisp
