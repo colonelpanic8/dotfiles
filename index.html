@@ -3,7 +3,7 @@
 "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
-<!-- 2017-05-14 Sun 20:31 -->
+<!-- 2017-05-16 Tue 22:47 -->
 <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title></title>
@@ -9567,7 +9567,8 @@ in term-mode. This makes term-mode 1000% more useful
     (add-hook 'term-mode-hook 'imalison:disable-linum-mode)
     (add-hook 'term-mode-hook 'imalison:disable-yas-minor-mode)
     (add-hook 'term-mode-hook 'imalison:disable-show-trailing-whitespace)
-    (<span class="org-keyword">setq</span> term-buffer-maximum-size 0)))
+    (<span class="org-keyword">setq</span> term-buffer-maximum-size 0
+          term-suppress-hard-newline t)))
 </pre>
 </div>
 </div>
