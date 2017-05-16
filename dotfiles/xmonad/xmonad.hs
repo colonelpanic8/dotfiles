@@ -230,8 +230,11 @@ instance Transformer MyToggles Window where
 myToggles = [LIMIT, GAPS, MAGICFOCUS]
 otherToggles = [NBFULL, MIRROR]
 
+currentWorkspace = W.workspace . W.current <$> gets windowset
+
 followIfNoMagicFocus =
-  followOnlyIf $ maybe False not <$> isToggleActive MAGICFOCUS
+  followOnlyIf $ return True
+  -- maybe False not <$> currentWorkspace >>= isToggleActive MAGICFOCUS
 
 togglesMap =
   fmap M.fromList $ sequence $
@@ -255,18 +258,22 @@ selectToggle =
   togglesMap >>= DM.menuMapArgs "rofi" ["-dmenu", "-i"] >>=
              flip whenJust sendMessage
 
-toggleInState :: (Transformer t Window) => t -> Maybe Bool -> X Bool
-toggleInState t s = fmap (/= s) (isToggleActive t)
+toggleInState
+  :: (Transformer t Window)
+  => t -> W.Workspace WorkspaceId (Layout Window) Window -> Maybe Bool -> X Bool
+toggleInState t w s = fmap (/= s) (isToggleActive t)
 
-setToggleActive' toggle active =
-  toggleInState toggle (Just active) >>=/
-  flip when (sendMessage $ Toggle toggle)
+setToggleActive' toggle active w =
+  toggleInState toggle w (Just active) >>=/
+  flip when (sendMessageWithNoRefresh (Toggle toggle) w)
 
 -- Ambiguous type reference without signature
-setToggleActive :: (Transformer t Window) => t -> Bool -> X ()
-setToggleActive = (void .) . setToggleActive'
+setToggleActive
+  :: (Transformer t Window)
+  => t -> W.Workspace WorkspaceId (Layout Window) Window -> Bool -> X ()
+setToggleActive t w s = void $ setToggleActive' t w s
 
-deactivateFull = setToggleActive NBFULL False
+deactivateFull = currentWorkspace >>= flip (setToggleActive NBFULL) False
 
 toggleOr toggle toState action =
   setToggleActive' toggle toState >>= ((`when` action) . not)
