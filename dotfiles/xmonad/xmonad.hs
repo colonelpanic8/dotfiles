@@ -757,6 +757,7 @@ addKeys conf@XConfig { modMask = modm } =
     [ ((modalt, xK_m), doScratchpad "htop")
     , ((modalt, xK_v), doScratchpad "volume")
     , ((modalt, xK_h), doScratchpad "hangouts")
+    , ((modalt, xK_s), doScratchpad "spotify")
     , ((modalt .|. controlMask, xK_h),
        myRaiseNextMaybe (spawn hangoutsCommand) hangoutsSelector)
     , ((modalt .|. controlMask, xK_s),
@@ -791,15 +792,15 @@ addKeys conf@XConfig { modMask = modm } =
     , ((modm .|. shiftMask, xK_a), windowSwap L True)
     , ((modm .|. shiftMask, xK_d), windowSwap R True)
 
-    , ((modalt, xK_w), followingWindow $ windowToScreen U True)
-    , ((modalt, xK_s), followingWindow $ windowToScreen D True)
-    , ((modalt, xK_a), followingWindow $ windowToScreen L True)
-    , ((modalt, xK_d), followingWindow $ windowToScreen R True)
+    , ((modm .|. controlMask, xK_w), followingWindow $ windowToScreen U True)
+    , ((modm .|. controlMask, xK_s), followingWindow $ windowToScreen D True)
+    , ((modm .|. controlMask, xK_a), followingWindow $ windowToScreen L True)
+    , ((modm .|. controlMask, xK_d), followingWindow $ windowToScreen R True)
 
-    , ((halt, xK_w), screenGo U True)
-    , ((halt, xK_s), screenGo D True)
-    , ((halt, xK_a), screenGo L True)
-    , ((halt, xK_d), screenGo R True)
+    , ((hyper, xK_w), screenGo U True)
+    , ((hyper, xK_s), screenGo D True)
+    , ((hyper, xK_a), screenGo L True)
+    , ((hyper, xK_d), screenGo R True)
 
     , ((hyper .|. shiftMask, xK_w), followingWindow $ screenSwap U True)
     , ((hyper .|. shiftMask, xK_s), followingWindow $ screenSwap D True)
@@ -861,21 +862,21 @@ addKeys conf@XConfig { modMask = modm } =
     -- Media keys
 
     -- playerctl
-    , ((hyper, xK_f), spawn "playerctl play-pause")
+    , ((modm, xK_semicolon), spawn "playerctl play-pause")
     , ((0, xF86XK_AudioPause), spawn "playerctl play-pause")
     , ((0, xF86XK_AudioPlay), spawn "playerctl play-pause")
-    , ((hyper, xK_d), spawn "playerctl next")
+    , ((modm, xK_l), spawn "playerctl next")
     , ((0, xF86XK_AudioNext), spawn "playerctl next")
-    , ((hyper, xK_a), spawn "playerctl previous")
+    , ((modm, xK_j), spawn "playerctl previous")
     , ((0, xF86XK_AudioPrev), spawn "playerctl previous")
 
     -- Volume control
     , ((0, xF86XK_AudioRaiseVolume), spawn "set_volume.sh up")
     , ((0, xF86XK_AudioLowerVolume), spawn "set_volume.sh down")
     , ((0, xF86XK_AudioMute), spawn "set_volume.sh mute")
-    , ((hyper, xK_w), spawn "set_volume.sh up")
-    , ((hyper, xK_s), spawn "set_volume.sh down")
-    , ((hyper, xK_q), spawn "set_volume.sh mute")
+    , ((modm, xK_i), spawn "set_volume.sh up")
+    , ((modm, xK_k), spawn "set_volume.sh down")
+    , ((modm, xK_u), spawn "set_volume.sh mute")
     , ((hyper .|. shiftMask, xK_q), spawn "toggle_mute_current_window.sh")
     , ((hctrl, xK_q), spawn "toggle_mute_current_window.sh only")
 
