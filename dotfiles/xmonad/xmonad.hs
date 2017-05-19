@@ -374,10 +374,10 @@ chromeTabAction doSplit action selected =
     Right ChromeInfo { tabId = tid } ->
       liftIO $ do
         let command = if doSplit then
-                "split_tab_by_id.sh"
+                "split_tab_by_id.sh %s"
               else
-                "focus_tab_by_id.sh"
-        _ <- io $ runProcessWithInput command [show tid] ""
+                "focus_tab_by_id.sh %s"
+        spawn $ printf command $ show tid
         return ()
 
 -- This needs access to X in order to unminimize, which means that it can't be
