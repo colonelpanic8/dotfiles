@@ -230,8 +230,11 @@ instance Transformer MyToggles Window where
 myToggles = [LIMIT, GAPS, MAGICFOCUS]
 otherToggles = [NBFULL, MIRROR]
 
+currentWorkspace = W.workspace . W.current <$> gets windowset
+isToggleActiveInCurrent t = currentWorkspace >>= isToggleActive t
+
 followIfNoMagicFocus =
-  followOnlyIf $ maybe False not <$> isToggleActive MAGICFOCUS
+  followOnlyIf $ maybe False not <$> isToggleActiveInCurrent MAGICFOCUS
 
 togglesMap =
   fmap M.fromList $ sequence $
@@ -249,14 +252,14 @@ toggleStateToString s =
 toggleToStringWithState :: (Transformer t Window, Show t) => t -> X String
 toggleToStringWithState toggle =
   printf "%s (%s)" (show toggle) . toggleStateToString <$>
-  isToggleActive toggle
+  isToggleActiveInCurrent toggle
 
 selectToggle =
   togglesMap >>= DM.menuMapArgs "rofi" ["-dmenu", "-i"] >>=
              flip whenJust sendMessage
 
 toggleInState :: (Transformer t Window) => t -> Maybe Bool -> X Bool
-toggleInState t s = fmap (/= s) (isToggleActive t)
+toggleInState t s = fmap (/= s) (isToggleActiveInCurrent t)
 
 setToggleActive' toggle active =
   toggleInState toggle (Just active) >>=/
