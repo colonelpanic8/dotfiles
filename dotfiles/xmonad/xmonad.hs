@@ -27,6 +27,7 @@ import           XMonad.Actions.CycleWorkspaceByScreen
 import qualified XMonad.Actions.DynamicWorkspaceOrder as DWO
 import           XMonad.Actions.DynamicWorkspaces hiding (withWorkspace)
 import           XMonad.Actions.Minimize
+import           XMonad.Actions.Navigation2D
 import           XMonad.Actions.UpdatePointer
 import           XMonad.Actions.WindowBringer
 import           XMonad.Actions.WindowGo
@@ -149,6 +150,11 @@ minimizedWindows = withMinimized return
 visibleWindows =
   (\\) <$> withWorkspaceR (return . W.integrate' . W.stack)
          <*> minimizedWindows
+
+followingWindow action = do
+  orig <- withWindowSet (return . W.peek)
+  action
+  whenJust orig (\win -> windows $ W.focusWindow win)
 
 -- Selectors
 
@@ -670,7 +676,6 @@ scratchpads =
   , NS "spotify" spotifyCommand spotifySelector nonFloating
   , NS "hangouts" hangoutsCommand hangoutsSelector nonFloating
   , NS "volume" volumeCommand volumeSelector nonFloating
-  , NS "keepass" keepassCommand keepassSelector nonFloating
   ]
 
 -- TODO: This doesnt work well with minimized windows
@@ -752,8 +757,6 @@ addKeys conf@XConfig { modMask = modm } =
     [ ((modalt, xK_m), doScratchpad "htop")
     , ((modalt, xK_v), doScratchpad "volume")
     , ((modalt, xK_h), doScratchpad "hangouts")
-    , ((modalt, xK_s), doScratchpad "spotify")
-    , ((modalt, xK_k), doScratchpad "keepass")
     , ((modalt .|. controlMask, xK_h),
        myRaiseNextMaybe (spawn hangoutsCommand) hangoutsSelector)
     , ((modalt .|. controlMask, xK_s),
@@ -776,10 +779,35 @@ addKeys conf@XConfig { modMask = modm } =
     , ((modm, xK_x), addHiddenWorkspace "NSP" >> windows (W.shift "NSP"))
     , ((modalt, xK_space), deactivateFullOr restoreOrMinimizeOtherClasses)
     , ((modalt, xK_Return), deactivateFullAnd restoreAllMinimized)
+
+    -- Directional navigation
+    , ((modm, xK_w), windowGo U True)
+    , ((modm, xK_s), windowGo D True)
+    , ((modm, xK_a), windowGo L True)
+    , ((modm, xK_d), windowGo R True)
+
+    , ((modm .|. shiftMask, xK_w), windowSwap U True)
+    , ((modm .|. shiftMask, xK_s), windowSwap D True)
+    , ((modm .|. shiftMask, xK_a), windowSwap L True)
+    , ((modm .|. shiftMask, xK_d), windowSwap R True)
+
+    , ((modalt, xK_w), followingWindow $ windowToScreen U True)
+    , ((modalt, xK_s), followingWindow $ windowToScreen D True)
+    , ((modalt, xK_a), followingWindow $ windowToScreen L True)
+    , ((modalt, xK_d), followingWindow $ windowToScreen R True)
+
+    , ((halt, xK_w), screenGo U True)
+    , ((halt, xK_s), screenGo D True)
+    , ((halt, xK_a), screenGo L True)
+    , ((halt, xK_d), screenGo R True)
+
+    , ((hyper .|. shiftMask, xK_w), followingWindow $ screenSwap U True)
+    , ((hyper .|. shiftMask, xK_s), followingWindow $ screenSwap D True)
+    , ((hyper .|. shiftMask, xK_a), followingWindow $ screenSwap L True)
+    , ((hyper .|. shiftMask, xK_d), followingWindow $ screenSwap R True)
 
     -- Focus/Layout manipulation
 
-    , ((modm, xK_s), swapNextScreen >> goToNextScreenX)
     , ((modm, xK_e), goToNextScreenX)
     , ((modm, xK_slash), sendMessage $ Toggle MIRROR)
     , ((modm, xK_backslash),
@@ -790,8 +818,6 @@ addKeys conf@XConfig { modMask = modm } =
     , ((modm .|. shiftMask, xK_h), shiftToEmptyAndView)
 
     -- These need to be rebound to support boringWindows
-    , ((modm, xK_j), focusDown)
-    , ((modm, xK_k), focusUp)
     , ((modm, xK_m), focusMaster)
     , ((modm, xK_Tab), focusNextClass)
     , ((hyper, xK_e), moveTo Next EmptyWS)
@@ -824,7 +850,6 @@ addKeys conf@XConfig { modMask = modm } =
        spawn "rofi_kill_all.sh")
     , ((hyper, xK_r), spawn "rofi_systemd.sh")
     , ((hyper, xK_0), spawn "tvpower.js")
-    , ((modalt, xK_w), spawn "rofi_wallpaper.sh")
     , ((modalt, xK_z), spawn "split_chrome_tab_to_next_screen.sh")
     , ((hyper, xK_9), spawn "start_synergy.sh")
     , ((hyper, xK_8), spawn "rofi_paswitch.sh")
@@ -873,6 +898,7 @@ addKeys conf@XConfig { modMask = modm } =
       modalt = modm .|. mod1Mask
       hyper = mod3Mask
       hctrl = hyper .|. controlMask
+      halt = hyper .|. mod1Mask
 
 -- Local Variables:
 -- flycheck-ghc-args: ("-Wno-missing-signatures")
