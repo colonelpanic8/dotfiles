@@ -92,6 +92,8 @@ main = do
       fallbackIcons _ klass
         | "URxvt" `isInfixOf` klass =
           IIFilePath $ resourcesDirectory "urxvt.png"
+        | "Termite" `isInfixOf` klass =
+          IIFilePath $ resourcesDirectory "urxvt.png"
         | "Kodi" `isInfixOf` klass = IIFilePath $ resourcesDirectory "kodi.png"
         | otherwise = IIColor (0xFF, 0xFF, 0, 0xFF)
       myGetIconInfo = windowTitleClassIconGetter False fallbackIcons
