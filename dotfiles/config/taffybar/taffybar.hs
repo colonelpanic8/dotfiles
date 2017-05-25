@@ -23,18 +23,40 @@ import           System.Taffybar.Pager
 import           System.Taffybar.SimpleClock
 import           System.Taffybar.Systray
 import           System.Taffybar.TaffyPager
+import           System.Taffybar.ToggleMonitor
 import           System.Taffybar.Widgets.PollingGraph
 import           System.Taffybar.WindowSwitcher
 import           System.Taffybar.WorkspaceHUD
 import           Text.Printf
 import           Text.Read hiding (get)
-import           System.Taffybar.ToggleMonitor
 import           XMonad.Core ( whenJust )
 
 
-memCallback = do
+memCfg =
+  defaultGraphConfig
+  {graphDataColors = [(0.129, 0.588, 0.953, 1)], graphLabel = Just "mem"}
+
+memCallback :: Gtk.Widget -> IO [Double]
+memCallback widget = do
   mi <- parseMeminfo
+  let tooltip = printf "%s/%s" (show $ memoryUsed mi) (show $ memoryTotal mi) :: String
+  Gtk.postGUIAsync $ do
+    _ <- Gtk.widgetSetTooltipText widget (Just tooltip)
+    return ()
   return [memoryUsedRatio mi]
+
+mem :: IO Gtk.Widget
+mem = do
+  ebox <- Gtk.eventBoxNew
+  btn <- pollingGraphNew memCfg 1 $ memCallback $ Gtk.toWidget ebox
+  Gtk.containerAdd ebox btn
+  _ <- Gtk.on ebox Gtk.buttonPressEvent systemEvents
+  Gtk.widgetShowAll ebox
+  return $ Gtk.toWidget ebox
+
+systemEvents :: Gtk.EventM Gtk.EButton Bool
+systemEvents = do
+  return True
 
 cpuCallback = do
   (_, systemLoad, totalLoad) <- cpuLoad
@@ -102,9 +124,6 @@ main = do
             case readMaybe monString of
               Nothing -> (allMonitors, 0)
               Just num -> (useMonitorNumber, num)
-      memCfg =
-        defaultGraphConfig
-        {graphDataColors = [(0.129, 0.588, 0.953, 1)], graphLabel = Just "mem"}
       cpuCfg =
         defaultGraphConfig
         { graphDataColors = [(0, 1, 0, 1), (1, 0, 1, 0.5)]
@@ -112,7 +131,6 @@ main = do
         }
       clock = textClockNew Nothing "%a %b %_d %r" 1
       mpris = mpris2New
-      mem = pollingGraphNew memCfg 1 memCallback
       cpu = pollingGraphNew cpuCfg 0.5 cpuCallback
       tray = do
         theTray <- systrayNew
