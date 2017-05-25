@@ -68,7 +68,7 @@ main =
   xmonad . docks . pagerHints . ewmh $
   def
   { modMask = mod4Mask
-  , terminal = "urxvt"
+  , terminal = "termite"
   , manageHook = myManageHook <+> manageHook def
   , layoutHook = myLayoutHook
   , borderWidth = 0
