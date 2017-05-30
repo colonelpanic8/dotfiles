@@ -153,8 +153,8 @@ visibleWindows =
 
 followingWindow action = do
   orig <- withWindowSet (return . W.peek)
-  action
-  whenJust orig (\win -> windows $ W.focusWindow win)
+  _ <- action
+  whenJust orig $ windows . W.focusWindow
 
 -- Selectors
 
@@ -362,12 +362,14 @@ getChromeTabInfo = do
   return $ M.fromList $ map parseChromixLine $ lines output
     where parseChromixLine line =
             case splitOn " " line of
+              [] -> undefined
               tid:uri:rest -> let ttl = concat rest in
                               (printf "%s - %s" tid ttl :: String,
                                ChromeInfo { tabId = read tid
                                           , tabUri = uri
                                           , tabTitle = ttl
                                           })
+              [_] -> undefined
 
 selectChromeTab WindowBringerConfig { menuCommand = cmd
                                     , menuArgs = args
@@ -721,7 +723,7 @@ getNextScreen ws =
   minimumBy compareScreen candidates
     where currentId = W.screen $ W.current ws
           otherScreens = W.visible ws
-          largerId = filter ((> currentId) . W.screen) $ otherScreens
+          largerId = filter ((> currentId) . W.screen) otherScreens
           compareScreen a b = compare (W.screen a) (W.screen b)
           candidates =
             case largerId of
@@ -729,16 +731,16 @@ getNextScreen ws =
               _ -> largerId
 
 goToNextScreen ws =
-  if screenEq nextScreen currScreen then ws
-     else ws { W.current = nextScreen
+  if screenEq nScreen currScreen then ws
+     else ws { W.current = nScreen
              , W.visible = currScreen : trimmedVisible
              }
   where
     currScreen = W.current ws
-    nextScreen = getNextScreen ws
+    nScreen = getNextScreen ws
     screenEq a b = W.screen a == W.screen b
     trimmedVisible =
-      (filter (not . screenEq nextScreen) $ W.visible ws)
+      filter (not . screenEq nScreen) $ W.visible ws
 
 goToNextScreenX = windows goToNextScreen
 
@@ -899,7 +901,6 @@ addKeys conf@XConfig { modMask = modm } =
       modalt = modm .|. mod1Mask
       hyper = mod3Mask
       hctrl = hyper .|. controlMask
-      halt = hyper .|. mod1Mask
 
 -- Local Variables:
 -- flycheck-ghc-args: ("-Wno-missing-signatures")
