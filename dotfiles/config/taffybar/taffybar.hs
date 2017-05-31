@@ -109,16 +109,18 @@ main = do
     (try $ getEnv "TAFFYBAR_MONITOR") :: IO (Either SomeException String)
   interfaceNames <- getInterfaces
   homeDirectory <- getHomeDirectory
-  let resourcesDirectory file =
-        homeDirectory </> ".lib" </> "resources" </> file
-      fallbackIcons _ klass
-        | "URxvt" `isInfixOf` klass =
-          IIFilePath $ resourcesDirectory "urxvt.png"
-        | "Termite" `isInfixOf` klass =
-          IIFilePath $ resourcesDirectory "urxvt.png"
-        | "Kodi" `isInfixOf` klass = IIFilePath $ resourcesDirectory "kodi.png"
-        | otherwise = IIColor (0xFF, 0xFF, 0, 0xFF)
-      myGetIconInfo = windowTitleClassIconGetter False fallbackIcons
+  let resourcesDirectory = homeDirectory </> ".lib" </> "resources"
+      inResourcesDirectory file = resourcesDirectory </> file
+      makeIcon = IIFilePath . inResourcesDirectory
+      myCustomIcon title klass
+        | "URxvt" `isInfixOf` klass = makeIcon "urxvt.png"
+        | "Termite" `isInfixOf` klass = makeIcon  "urxvt.png"
+        | "Kodi" `isInfixOf` klass = makeIcon "kodi.png"
+        | "@gmail.com" `isInfixOf` title &&
+          "chrome" `isInfixOf` klass &&
+          "Gmail" `isInfixOf` title = makeIcon "gmail.png"
+        | otherwise = IINone
+      myGetIconInfo = windowTitleClassIconGetter True myCustomIcon
       (monFilter, monNumber) =
         case monEither of
           Left _ -> (allMonitors, 0)
