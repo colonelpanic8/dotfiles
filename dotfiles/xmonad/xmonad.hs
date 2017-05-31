@@ -159,19 +159,24 @@ followingWindow action = do
 -- Selectors
 
 isHangoutsTitle = isPrefixOf "Google Hangouts"
+isGmailTitle t = isInfixOf "@gmail.com" t && isInfixOf "Gmail" t
 isChromeClass = isInfixOf "chrome"
 chromeSelectorBase = isChromeClass <$> className
 
-chromeSelector = chromeSelectorBase <&&> (not . isHangoutsTitle) <$> title
+chromeSelector =
+  chromeSelectorBase <&&>
+  (\t -> not $ any ($ t) [isHangoutsTitle, isGmailTitle]) <$> title
 spotifySelector = className =? "Spotify"
 emacsSelector = className =? "Emacs"
 transmissionSelector = fmap (isPrefixOf "Transmission") title
 hangoutsSelector = chromeSelectorBase <&&> fmap isHangoutsTitle title
+gmailSelector = chromeSelectorBase <&&> fmap isGmailTitle title
 volumeSelector = className =? "Pavucontrol"
 keepassSelector = className =? "keepassxc"
 
 virtualClasses =
   [ (hangoutsSelector, "Hangouts")
+  , (gmailSelector, "Gmail")
   , (chromeSelector, "Chrome")
   , (transmissionSelector, "Transmission")
   ]
@@ -179,6 +184,7 @@ virtualClasses =
 -- Commands
 
 hangoutsCommand = "start_hangouts.sh"
+gmailCommand = "start_chrome.sh --new-window https://mail.google.com/mail/u/0/#inbox"
 spotifyCommand = "spotify"
 chromeCommand = "google-chrome-unstable"
 emacsCommand = "emacsclient -c"
@@ -209,11 +215,7 @@ myStartup = do
 
 myManageHook =
   composeOne
-  [ isFullscreen -?> doFullFloat
-    -- [transmissionSelector --> doShift "5"]
-    -- Hangouts being on a separate workspace freezes chrome
-    -- , [ hangoutsSelector --> doShift "2"]
-  ]
+  [ isFullscreen -?> doFullFloat ]
 
 -- Toggles
 
@@ -750,8 +752,9 @@ addKeys conf@XConfig { modMask = modm } =
 
     -- Specific program spawning
     bindBringAndRaiseMany
-    [ (modalt, xK_e, spawn emacsCommand, emacsSelector)
-    , (modalt, xK_c, spawn chromeCommand, chromeSelector)
+    [ (modalt, xK_c, spawn chromeCommand, chromeSelector)
+    , (modalt, xK_e, spawn emacsCommand, emacsSelector)
+    , (modalt, xK_g, spawn gmailCommand, gmailSelector)
     , (modalt, xK_t, spawn transmissionCommand, transmissionSelector)
     ] ++
 
