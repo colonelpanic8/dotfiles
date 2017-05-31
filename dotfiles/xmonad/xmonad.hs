@@ -396,8 +396,8 @@ myWindowAct c@WindowBringerConfig { menuCommand = cmd
   do
     visible <- visibleWindows
     ws <- windowMap' c { windowFilter = not . flip elem visible }
-    chromeTabs <- liftIO getChromeTabInfo
-    let options = M.union (M.map Left ws) (M.map Right chromeTabs)
+    -- chromeTabs <- liftIO getChromeTabInfo
+    let options = M.union (M.map Left ws) (M.map Right M.empty)
     selection <- DM.menuMapArgs cmd args options
     whenJust selection action
 
