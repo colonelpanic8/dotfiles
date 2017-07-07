@@ -56,8 +56,10 @@
 (setq mc/cmds-to-run-once
       '(
         dired-toggle-read-only
+        handle-switch-frame
         helm-M-x
         ido-write-file
         isearch-delete-char
         smex
+        yank-rectangle
         ))
