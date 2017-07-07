@@ -5,3 +5,4 @@ image/jpeg=feh.desktop;
 video/x-msvideo=vlc.desktop;
 text/vnd.trolltech.linguist=vlc.desktop;
 audio/mpeg=vlc.desktop;
+application/pdf=okularApplication_pdf.desktop;
