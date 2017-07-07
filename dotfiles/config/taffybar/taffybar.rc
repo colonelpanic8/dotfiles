@@ -49,6 +49,10 @@ style "taffybar-icon-urgent" = "taffybar-default" {
   bg[NORMAL] = @yellow
 }
 
+style "taffybar-icon-active" = "taffybar-default" {
+  bg[NORMAL] = @dgrey
+}
+
 style "taffybar-workspace-contents-active" = "taffybar-default" {
   bg[NORMAL] = @bgrey
 }
@@ -104,6 +108,7 @@ widget "*Workspace-Border*-visible*" style "taffybar-workspace-border-visible"
 widget "*Workspace-Container-*-visible*" style "taffybar-default"
 
 widget "*Workspace-icon*-urgent*" style "taffybar-icon-urgent"
+widget "*Workspace-icon*-active*" style "taffybar-icon-active"
 
 widget "*WorkspaceHUD-*" style "taffybar-hover-button"
 widget "*WorkspaceHUD-*" style "taffybar-hover-button"
