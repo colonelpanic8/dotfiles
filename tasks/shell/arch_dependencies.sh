@@ -12,7 +12,7 @@ ESSENTIAL=(
 	"rofi-pass" "xorg-xrandr" "spotify" "htop" "rcm" "networkmanager-applet"
 	"pulseaudio-ctl" "pasystray" "xclip" "copyq" "notification-daemon" "pass"
 	"pavucontrol" "xsettingsd-git" "udisks" "udiskie" "python-pip"
-	"gnome-keyring" "ntp"
+	"gnome-keyring" "ntp" "nss-mdns"
 )
 
 NEEDED=(
