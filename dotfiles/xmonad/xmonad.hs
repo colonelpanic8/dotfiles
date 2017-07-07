@@ -841,7 +841,6 @@ addKeys conf@XConfig { modMask = modm } =
 
     -- Non-XMonad
 
-    , ((modm .|. controlMask, xK_t), spawn taffybarCommand)
     , ((modm, xK_v), spawn "copyq paste")
     , ((modm .|. controlMask, xK_s), spawn "split_current_chrome_tab.sh")
     , ((hyper, xK_v), spawn "copyq_rofi.sh")
