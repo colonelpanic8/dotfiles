@@ -471,3 +471,9 @@ function all_lines_after {
 function list_interfaces {
     ip link show | grep -vE '^ ' | get_cols -F ':' 2 | xargs -n 1
 }
+
+function all_after_char {
+    while read -r line; do
+          echo ${line##*$1}
+    done;
+}
