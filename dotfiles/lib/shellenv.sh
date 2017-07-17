@@ -1,5 +1,8 @@
 source "$HOME/.lib/shellpath.sh"
 
+test -r ~/.customenv.sh && source ~/.customenv.sh
+source_if_exists ~/.this-machine-env.sh
+
 environment_variable_exists ENVIRONMENT_SETUP_DONE || _setup_env
 
 # TODO(imalison): These need to run every time because of how their
