@@ -1,5 +1,3 @@
-output HDMI-1
-off
 output DP-0
 off
 output DP-1
@@ -10,10 +8,14 @@ output DP-3
 off
 output HDMI-0
 mode 3840x2160
-pos 0x0
+pos 640x0
 rate 60.00
 output DVI-D-0
 mode 2560x1440
 pos 0x2160
 primary
+rate 59.95
+output HDMI-1
+mode 2560x1440
+pos 2560x2160
 rate 59.95
