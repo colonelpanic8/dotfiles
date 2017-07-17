@@ -12,6 +12,7 @@ import           Data.List
 import           Data.List.Split
 import qualified Data.Map as M
 import           Data.Maybe
+import           Data.Monoid
 import qualified Data.MultiMap as MM
 import           Graphics.X11.ExtraTypes.XF86
 import           Network.HostName
@@ -218,7 +219,7 @@ myStartup = do
 
 -- Manage hook
 
-myManageHook =
+myManageHook = maybeReplaceTargetHook <+>
   composeOne
   [ isFullscreen -?> doFullFloat ]
 
@@ -623,6 +624,88 @@ focusNextClass = sameClassOnly focusNextClass'
 
 selectClass = join $ DM.menuArgs "rofi" ["-dmenu", "-i"] <$> allClasses
 
+-- Chrome auto minimization
+
+data ReplaceOnNew
+  = NoTarget
+  | DontTarget
+  | Target Window
+  deriving (Typeable, Read, Show)
+
+instance ExtensionClass ReplaceOnNew where
+  initialValue = NoTarget
+  extensionType = PersistentExtension
+
+mapWindows f = W.mapWorkspace workspaceHelper
+  where
+    stackHelper stack = W.Stack
+          { W.focus = f $ W.focus stack
+          , W.up = map f $ W.up stack
+          , W.down = map f $ W.down stack
+          }
+    workspaceHelper ws@W.Workspace {W.stack = stack} =
+      ws { W.stack = stackHelper <$> stack }
+
+swapWindows a b =
+  mapWindows helper
+  where helper w
+          | w == a = b
+          | w == b = a
+          | otherwise = w
+
+getTarget = do
+  t <- XS.get
+  case t of
+    Target w -> return $ Just w
+    DontTarget -> return Nothing
+    NoTarget -> return Nothing
+      -- join $ withFocusedD Nothing $ \w -> do
+      --   vClass <- getClass w
+      --   return $
+      --     if vClass == "Chrome"
+      --       then Just w
+      --       else Nothing
+
+maybeReplaceTarget :: Window -> X ()
+maybeReplaceTarget window = do
+  t <- getTarget
+      -- We have an insertUp here to ensure the target isn't deleted
+  let modifyStackSet target = W.insertUp target . swapWindows window target
+      replaceTarget target =
+        windows (modifyStackSet target) >> minimizeWindow target >>
+        XS.put (initialValue :: ReplaceOnNew)
+  whenJust t replaceTarget
+
+maybeReplaceTargetHook = ask >>= (liftX . maybeReplaceTarget) >> return (Endo id)
+
+setReplaceTarget = withFocused $ XS.put . Target
+
+getWindowWS a = withWindowSet $ \ws -> return $ listToMaybe
+    [ w | w <- W.workspaces ws, has a (W.stack w) ]
+    where has _ Nothing = False
+          has _ (Just _) = True
+
+replaceWindow original replacement =
+  W.delete original . swapWindows original replacement
+
+myKill =
+  withFocused $ \w -> do
+    vClass <- getClass w
+    if vClass == "Chrome" then
+      do
+        replacement <-
+          runMaybeT $ do
+            ws <- MaybeT $ join . fmap W.stack <$> getWindowWS w
+            MaybeT $
+              listToMaybe <$>
+              (intersect <$> minimizedWindows <*> windowsWithSameClass w ws)
+        let doReplace rep = do
+              maximizeWindow rep
+              windows $ replaceWindow w rep
+        maybe kill doReplace replacement
+    else
+      kill
+
 -- Window switching
 
 -- Use greedyView to switch to the correct workspace, and then focus on the
@@ -790,6 +873,9 @@ addKeys conf@XConfig { modMask = modm } =
     , ((modm, xK_x), addHiddenWorkspace "NSP" >> windows (W.shift "NSP"))
     , ((modalt, xK_space), deactivateFullOr restoreOrMinimizeOtherClasses)
     , ((modalt, xK_Return), deactivateFullAnd restoreAllMinimized)
+    , ((modm .|. controlMask, xK_t),
+       setReplaceTarget >> spawn "chromix-too open chrome://newtab")
+    , ((modm .|. shiftMask, xK_c), myKill)
 
     -- Directional navigation
     , ((modm, xK_w), windowGo U True)
