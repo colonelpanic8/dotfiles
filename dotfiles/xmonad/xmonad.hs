@@ -64,9 +64,7 @@ import           XMonad.Util.NamedScratchpad
 import           XMonad.Util.NamedWindows (getName)
 import           XMonad.Util.Run
 
-main =
-  xmonad . docks . pagerHints . ewmh $
-  def
+myConfig = def
   { modMask = mod4Mask
   , terminal = "termite"
   , manageHook = myManageHook <+> manageHook def
@@ -84,6 +82,8 @@ main =
   }
   where
     x +++ y = mappend y x
+
+main = xmonad . docks . pagerHints . ewmh $ myConfig
 
 -- Utility functions
 
