@@ -28,6 +28,7 @@ import qualified XMonad.Actions.DynamicWorkspaceOrder as DWO
 import           XMonad.Actions.DynamicWorkspaces hiding (withWorkspace)
 import           XMonad.Actions.Minimize
 import           XMonad.Actions.Navigation2D
+import qualified XMonad.Actions.SwapWorkspaces as SW
 import           XMonad.Actions.UpdatePointer
 import           XMonad.Actions.WindowBringer
 import           XMonad.Actions.WindowGo
@@ -155,6 +156,10 @@ followingWindow action = do
   orig <- withWindowSet (return . W.peek)
   _ <- action
   whenJust orig $ windows . W.focusWindow
+
+myDmenu = DM.menuArgs "rofi" ["-dmenu", "-i"]
+
+getWorkspaceDmenu = myDmenu (workspaces myConfig)
 
 -- Selectors
 
@@ -222,7 +227,7 @@ myManageHook =
 unmodifyLayout (ModifiedLayout _ x') =  x'
 
 selectLimit =
-  DM.menuArgs "rofi" ["-dmenu", "-i"] ["2", "3", "4"] >>= (setLimit . read)
+  myDmenu ["2", "3", "4"] >>= (setLimit . read)
 
 data MyToggles
   = LIMIT
@@ -822,6 +827,7 @@ addKeys conf@XConfig { modMask = modm } =
     , ((modm, xK_z), shiftToNextScreenX)
     , ((modm .|. shiftMask, xK_z), shiftToEmptyNextScreen)
     , ((modm .|. shiftMask, xK_h), shiftToEmptyAndView)
+    , ((hyper, xK_5), getWorkspaceDmenu >>= windows . SW.swapWithCurrent)
 
     -- These need to be rebound to support boringWindows
     , ((modm, xK_m), focusMaster)
