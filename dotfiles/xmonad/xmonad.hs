@@ -158,7 +158,9 @@ followingWindow action = do
   _ <- action
   whenJust orig $ windows . W.focusWindow
 
-myDmenu = DM.menuArgs "rofi" ["-dmenu", "-i"]
+myDmenuArgs = ["-dmenu", "-i"]
+
+myDmenu = DM.menuArgs "rofi" myDmenuArgs
 
 getWorkspaceDmenu = myDmenu (workspaces myConfig)
 
@@ -269,7 +271,7 @@ toggleToStringWithState toggle =
   isToggleActiveInCurrent toggle
 
 selectToggle =
-  togglesMap >>= DM.menuMapArgs "rofi" ["-dmenu", "-i"] >>=
+  togglesMap >>= DM.menuMapArgs "rofi" myDmenuArgs >>=
              flip whenJust sendMessage
 
 toggleInState :: (Transformer t Window) => t -> Maybe Bool -> X Bool
@@ -318,9 +320,7 @@ layoutList = snd layoutInfo
 
 layoutNames = [description layout | layout <- layoutList]
 
-selectLayout =
-  DM.menuArgs "rofi" ["-dmenu", "-i"] layoutNames >>=
-  (sendMessage . JumpToLayout)
+selectLayout = myDmenu layoutNames >>= (sendMessage . JumpToLayout)
 
 myLayoutHook =
   avoidStruts .
@@ -338,7 +338,7 @@ myLayoutHook =
 
 myWindowBringerConfig =
   def { menuCommand = "rofi"
-      , menuArgs = ["-dmenu", "-i"]
+      , menuArgs = myDmenuArgs
       , windowTitler = myDecorateName
       }
 
@@ -622,7 +622,7 @@ focusNextClass' =
   join $ windows . maybe id greedyFocusWindow <$> nextClassWindow
 focusNextClass = sameClassOnly focusNextClass'
 
-selectClass = join $ DM.menuArgs "rofi" ["-dmenu", "-i"] <$> allClasses
+selectClass = join $ myDmenu <$> allClasses
 
 -- Chrome auto minimization
 
