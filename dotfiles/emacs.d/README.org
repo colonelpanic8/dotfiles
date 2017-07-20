@@ -3800,6 +3800,14 @@ emr (emacs refactor) provides support for refactoring in many programming langua
   (progn
     (add-hook 'prog-mode-hook 'semantic-mode)))
 #+END_SRC
+** language-server-protocol (lsp)
+#+BEGIN_SRC emacs-lisp
+(use-package lsp-mode
+  :config
+  (progn
+    (add-hook 'prog-major-mode 'lsp-mode)
+    (require 'lsp-flycheck)))
+#+END_SRC
 * Utility
 ** term
 The main thing I do here is restore a bunch of keybindings that are eliminated
