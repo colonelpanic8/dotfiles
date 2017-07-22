@@ -22,6 +22,7 @@ executable imalison-xmonad
                        filepath>=1.4.1.0,
                        gtk-traymanager>=0.1.6,
                        hostname>=1.0,
+                       mtl>=2.2.1,
                        multimap>=1.2.1,
                        process>=1.4.3.0,
                        split,

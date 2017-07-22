@@ -1,10 +1,12 @@
 {-# LANGUAGE DeriveDataTypeable, TypeSynonymInstances,
              MultiParamTypeClasses, ExistentialQuantification,
-             FlexibleInstances, FlexibleContexts #-}
+             FlexibleInstances, FlexibleContexts, StandaloneDeriving,
+             ScopedTypeVariables #-}
 module Main where
 
 import qualified Control.Arrow as A
 import           Control.Monad
+import           Control.Monad.Trans
 import           Control.Monad.Trans.Maybe
 import           Data.Aeson
 import qualified Data.ByteString.Lazy as B
@@ -14,6 +16,8 @@ import qualified Data.Map as M
 import           Data.Maybe
 import           Data.Monoid
 import qualified Data.MultiMap as MM
+import           Data.Proxy
+import           Data.Typeable
 import           Graphics.X11.ExtraTypes.XF86
 import           Network.HostName
 import           System.Directory
@@ -21,6 +25,7 @@ import           System.FilePath.Posix
 import           System.Process
 import           System.Taffybar.Hooks.PagerHints
 import           Text.Printf
+import           Unsafe.Coerce
 
 import           XMonad hiding ( (|||) )
 import           XMonad.Actions.CycleWS hiding (nextScreen)
@@ -92,6 +97,9 @@ main = xmonad . docks . pagerHints . ewmh $ myConfig
 -- Log to a file from anywhere
 writeToHomeDirLog stuff = io $ getLogFile >>= flip appendFile (stuff ++ "\n")
   where getLogFile = (</> "temp" </> "xmonad.log") <$> getHomeDirectory
+
+logWindowSet message =
+  withWindowSet $ \ws -> writeToHomeDirLog $ printf "%s -- " message $ show ws
 
 xRunCommand cmd = void $ io $ readCreateProcess (shell cmd) ""
 
@@ -245,6 +253,17 @@ instance Transformer MyToggles Window where
 
 myToggles = [LIMIT, GAPS, MAGICFOCUS]
 otherToggles = [NBFULL, MIRROR]
+toggleHandlers = [(Toggle GAPS, toggleAll)]
+
+instance Eq (Toggle Window) where
+  (Toggle v) == v2 = Just v == fromToggle v2
+
+fromToggle :: forall t. Typeable t => Toggle Window -> Maybe t
+fromToggle (Toggle v) =
+  if typeOf v == typeRep (Proxy :: Proxy t) then
+    Just $ unsafeCoerce v
+  else
+    Nothing
 
 currentWorkspace = W.workspace . W.current <$> gets windowset
 isToggleActiveInCurrent t = currentWorkspace >>= isToggleActive t
@@ -256,14 +275,11 @@ togglesMap =
   fmap M.fromList $ sequence $
   map toggleTuple myToggles ++ map toggleTuple otherToggles
   where
-    toggleTuple toggle =
-      fmap (\str -> (str, Toggle toggle)) (toggleToStringWithState toggle)
+    toggleTuple toggle = do
+      toggleString <- toggleToStringWithState toggle
+      return (toggleString, Toggle toggle)
 
-toggleStateToString s =
-  case s of
-    Just True -> "ON"
-    Just False -> "OFF"
-    Nothing -> "N/A"
+toggleStateToString = maybe "N/A" (ifL "ON" "OFF")
 
 toggleToStringWithState :: (Transformer t Window, Show t) => t -> X String
 toggleToStringWithState toggle =
@@ -271,24 +287,39 @@ toggleToStringWithState toggle =
   isToggleActiveInCurrent toggle
 
 selectToggle =
-  togglesMap >>= DM.menuMapArgs "rofi" myDmenuArgs >>=
-             flip whenJust sendMessage
+  togglesMap >>= DM.menuMapArgs "rofi" myDmenuArgs >>= flip whenJust runToggle
 
-toggleInState :: (Transformer t Window) => t -> Maybe Bool -> X Bool
-toggleInState t s = fmap (/= s) (isToggleActiveInCurrent t)
+runToggle toggle =
+  let f = fromMaybe sendMessage $ lookup toggle toggleHandlers
+      in f toggle
 
-setToggleActive' toggle active =
-  toggleInState toggle (Just active) >>=/
-  flip when (sendMessage $ Toggle toggle)
+toggleAll (Toggle toggle) = void $ runMaybeT $ do
+  active <- MaybeT $ isToggleActiveInCurrent toggle
+  lift $ setToggleActiveAll toggle (not active)
+
+mapWorkspaces f = withWindowSet $ \ws -> do
+   let c = W.workspace . W.current $ ws
+       v = map W.workspace . W.visible $ ws
+       h = W.hidden ws
+   mapM f (c : v ++ h)
+
+toggleInState t s ws  = fmap (/= s) (isToggleActive t ws)
+
+setToggleActive toggle active ws =
+  toggleInState toggle (Just active) ws >>=/
+  flip when (sendMessageWithNoRefresh (Toggle toggle) ws >> windows id)
 
 -- Ambiguous type reference without signature
-setToggleActive :: (Transformer t Window) => t -> Bool -> X ()
-setToggleActive = (void .) . setToggleActive'
+setToggleActiveCurrent :: (Transformer t Window) => t -> Bool -> X ()
+setToggleActiveCurrent t a = void $ currentWorkspace >>= (setToggleActive t a)
 
-deactivateFull = setToggleActive NBFULL False
+setToggleActiveAll :: (Transformer t Window) => t -> Bool -> X ()
+setToggleActiveAll t a = void $ mapWorkspaces (setToggleActive t a)
+
+deactivateFull = setToggleActiveCurrent NBFULL False
 
 toggleOr toggle toState action =
-  setToggleActive' toggle toState >>= ((`when` action) . not)
+  (currentWorkspace >>= setToggleActive toggle toState) >>= ((`when` action) . not)
 
 deactivateFullOr = toggleOr NBFULL False
 deactivateFullAnd action = sequence_ [deactivateFull, action]
