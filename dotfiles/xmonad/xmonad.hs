@@ -218,7 +218,7 @@ tvScreenId = 1
 disableTVFading = setFading (Just tvScreenId) False
 
 hostNameToAction =
-  M.fromList [ ("imalison-arch", disableTVFading)
+  M.fromList [ ("imalison-arch", disableTVFading >> setToggleActiveAll GAPS True)
              , ("imalison-uber-loaner", return ())
              ]
 
