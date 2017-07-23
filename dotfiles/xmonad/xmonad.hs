@@ -1,7 +1,6 @@
 {-# LANGUAGE DeriveDataTypeable, TypeSynonymInstances,
              MultiParamTypeClasses, ExistentialQuantification,
-             FlexibleInstances, FlexibleContexts, StandaloneDeriving,
-             ScopedTypeVariables #-}
+             FlexibleInstances, FlexibleContexts, ScopedTypeVariables #-}
 module Main where
 
 import qualified Control.Arrow as A
@@ -248,7 +247,7 @@ data MyToggles
 
 instance Transformer MyToggles Window where
   transform LIMIT x k = k (limitSlice 2 x) unmodifyLayout
-  transform GAPS x k = k (smartSpacing 5 x) unmodifyLayout
+  transform GAPS x k = k (smartSpacing 10 x) unmodifyLayout
   transform MAGICFOCUS x k = k (magicFocus x) unmodifyLayout
 
 myToggles = [LIMIT, GAPS, MAGICFOCUS]
@@ -311,7 +310,7 @@ setToggleActive toggle active ws =
 
 -- Ambiguous type reference without signature
 setToggleActiveCurrent :: (Transformer t Window) => t -> Bool -> X ()
-setToggleActiveCurrent t a = void $ currentWorkspace >>= (setToggleActive t a)
+setToggleActiveCurrent t a = void $ currentWorkspace >>= setToggleActive t a
 
 setToggleActiveAll :: (Transformer t Window) => t -> Bool -> X ()
 setToggleActiveAll t a = void $ mapWorkspaces (setToggleActive t a)
