@@ -89,7 +89,12 @@ myConfig = def
   where
     x +++ y = mappend y x
 
-main = xmonad . docks . pagerHints . ewmh $ myConfig
+myNavigation2DConfig = def { defaultTiledNavigation = centerNavigation }
+
+main =
+  xmonad .
+  docks . pagerHints . ewmh . withNavigation2DConfig myNavigation2DConfig $
+  myConfig
 
 -- Utility functions
 
