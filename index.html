@@ -3,7 +3,7 @@
 "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
-<!-- 2017-07-25 Tue 08:24 -->
+<!-- 2017-07-25 Tue 18:43 -->
 <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title></title>
@@ -3898,6 +3898,7 @@ for the JavaScript code in this tag.
 <li><a href="#electricoperatormode">10.8. electric-operator-mode</a></li>
 <li><a href="#stringinflection">10.9. string-inflection</a></li>
 <li><a href="#yasnippet">10.10. yasnippet</a></li>
+<li><a href="#align">10.11. align</a></li>
 </ul>
 </li>
 <li><a href="#flycheck">11. flycheck</a></li>
@@ -3920,17 +3921,18 @@ for the JavaScript code in this tag.
 <li><a href="#emacslisp">12.1.3. emacs-lisp</a>
 <ul>
 <li><a href="#elispslimenav">12.1.3.1. elisp-slime-nav</a></li>
-<li><a href="#macrostep">12.1.3.2. macrostep</a></li>
-<li><a href="#emr">12.1.3.3. emr</a></li>
-<li><a href="#editingconfiguration">12.1.3.4. Editing configuration</a></li>
-<li><a href="#checkdoc">12.1.3.5. Checkdoc</a></li>
-<li><a href="#edebug">12.1.3.6. edebug</a></li>
-<li><a href="#overseer">12.1.3.7. overseer</a></li>
-<li><a href="#misc1">12.1.3.8. Misc</a></li>
-<li><a href="#eros">12.1.3.9. eros</a></li>
-<li><a href="#reevalutedefvarswhenrunningevallastsexp">12.1.3.10. Reevalute defvars when running eval-last-sexp</a></li>
-<li><a href="#inithook">12.1.3.11. Init hook</a></li>
-<li><a href="#keybinds">12.1.3.12. Keybinds</a></li>
+<li><a href="#makefindfunctionusedisplaybuffer">12.1.3.2. Make find-function use display-buffer</a></li>
+<li><a href="#macrostep">12.1.3.3. macrostep</a></li>
+<li><a href="#emr">12.1.3.4. emr</a></li>
+<li><a href="#editingconfiguration">12.1.3.5. Editing configuration</a></li>
+<li><a href="#checkdoc">12.1.3.6. Checkdoc</a></li>
+<li><a href="#edebug">12.1.3.7. edebug</a></li>
+<li><a href="#overseer">12.1.3.8. overseer</a></li>
+<li><a href="#misc1">12.1.3.9. Misc</a></li>
+<li><a href="#eros">12.1.3.10. eros</a></li>
+<li><a href="#reevalutedefvarswhenrunningevallastsexp">12.1.3.11. Reevalute defvars when running eval-last-sexp</a></li>
+<li><a href="#inithook">12.1.3.12. Init hook</a></li>
+<li><a href="#keybinds">12.1.3.13. Keybinds</a></li>
 </ul>
 </li>
 <li><a href="#clojure">12.1.4. clojure</a>
@@ -3941,20 +3943,21 @@ for the JavaScript code in this tag.
 </li>
 <li><a href="#scala">12.1.5. scala</a></li>
 <li><a href="#js">12.1.6. js</a></li>
-<li><a href="#coffeescript">12.1.7. coffee script</a></li>
-<li><a href="#rust">12.1.8. rust</a></li>
-<li><a href="#haskell">12.1.9. haskell</a>
+<li><a href="#typescript">12.1.7. typescript</a></li>
+<li><a href="#coffeescript">12.1.8. coffee script</a></li>
+<li><a href="#rust">12.1.9. rust</a></li>
+<li><a href="#haskell">12.1.10. haskell</a>
 <ul>
-<li><a href="#intero">12.1.9.1. intero</a></li>
-<li><a href="#hindent">12.1.9.2. hindent</a></li>
-<li><a href="#ghcmod">12.1.9.3. ghc-mod</a></li>
-<li><a href="#companyghc">12.1.9.4. company-ghc</a></li>
+<li><a href="#intero">12.1.10.1. intero</a></li>
+<li><a href="#hindent">12.1.10.2. hindent</a></li>
+<li><a href="#ghcmod">12.1.10.3. ghc-mod</a></li>
+<li><a href="#companyghc">12.1.10.4. company-ghc</a></li>
 </ul>
 </li>
-<li><a href="#purescript">12.1.10. purescript</a></li>
-<li><a href="#cc">12.1.11. C/C++</a></li>
-<li><a href="#c">12.1.12. C#</a></li>
-<li><a href="#racket">12.1.13. racket</a></li>
+<li><a href="#purescript">12.1.11. purescript</a></li>
+<li><a href="#cc">12.1.12. C/C++</a></li>
+<li><a href="#c">12.1.13. C#</a></li>
+<li><a href="#racket">12.1.14. racket</a></li>
 </ul>
 </li>
 <li><a href="#dataconfigprotocol">12.2. Data/Config/Protocol</a>
@@ -7332,6 +7335,27 @@ I don't use auto-complete at all, so I have set up a hook to automatically disab
 </div>
 </div>
 </div>
+<div id="outline-container-align" class="outline-3">
+<h3 id="align"><span class="section-number-3">10.11</span> align <a href="#align"><svg aria-hidden="true" class="octicon octicon-link" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a></h3>
+<div class="outline-text-3" id="text-10-11">
+<div class="org-src-container">
+<pre class="src src-emacs-lisp">(<span class="org-keyword">use-package</span> <span class="org-constant">align</span>
+  <span class="org-builtin">:disabled</span> t
+  <span class="org-builtin">:after</span> hydra
+  <span class="org-builtin">:bind</span> (<span class="org-string">"C-c C-a"</span> . imalison:align-regexp-hydra/body)
+  <span class="org-builtin">:config</span>
+  (<span class="org-keyword">progn</span>
+    (<span class="org-keyword">defun</span> <span class="org-function-name">imalison:complex-align-regexp</span> ()
+      (<span class="org-keyword">interactive</span>)
+      (<span class="org-keyword">let</span> ((current-prefix-arg t))
+        (call-interactively )))
+    (defhydra imalison:align-regexp-hydra
+      <span class="org-string">"align-regexp"</span>
+      (<span class="org-string">"r"</span> . align-regexp))))
+</pre>
+</div>
+</div>
+</div>
 </div>
 <div id="outline-container-flycheck" class="outline-2">
 <h2 id="flycheck"><span class="section-number-2">11</span> flycheck <a href="#flycheck"><svg aria-hidden="true" class="octicon octicon-link" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a></h2>
@@ -7642,9 +7666,34 @@ reference to the jedi-core package.
 </div>
 </div>
 </div>
-<div id="outline-container-macrostep" class="outline-5">
-<h5 id="macrostep"><span class="section-number-5">12.1.3.2</span> macrostep <a href="#macrostep"><svg aria-hidden="true" class="octicon octicon-link" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a></h5>
+<div id="outline-container-makefindfunctionusedisplaybuffer" class="outline-5">
+<h5 id="makefindfunctionusedisplaybuffer"><span class="section-number-5">12.1.3.2</span> Make find-function use display-buffer <a href="#makefindfunctionusedisplaybuffer"><svg aria-hidden="true" class="octicon octicon-link" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a></h5>
 <div class="outline-text-5" id="text-12-1-3-2">
+<p>
+For some reason <code>find-function</code> doesn't allow to <code>display-buffer</code> to do what
+it's supposed to do, but instead uses its own collection of functions to control
+where the definition is popped up. This fixes that.
+</p>
+<div class="org-src-container">
+<pre class="src src-emacs-lisp">(<span class="org-keyword">use-package</span> <span class="org-constant">find-func</span>
+  <span class="org-builtin">:preface</span>
+  (<span class="org-keyword">progn</span>
+    (<span class="org-keyword">defun</span> <span class="org-function-name">imalison:find-function-display-buffer</span> (<span class="org-keyword">function</span>)
+      (<span class="org-keyword">interactive</span> (find-function-read))
+      (find-function-do-it function nil 'display-buffer)))
+  <span class="org-builtin">:config</span>
+  (advice-add 'find-function <span class="org-builtin">:override</span> 'imalison:find-function-display-buffer))
+
+(<span class="org-keyword">defun</span> <span class="org-function-name">imalison:find-function-display-buffer</span> (<span class="org-keyword">function</span>)
+  (<span class="org-keyword">interactive</span> (find-function-read))
+  (find-function-do-it function nil 'switch-to-buffer-other-frame))
+</pre>
+</div>
+</div>
+</div>
+<div id="outline-container-macrostep" class="outline-5">
+<h5 id="macrostep"><span class="section-number-5">12.1.3.3</span> macrostep <a href="#macrostep"><svg aria-hidden="true" class="octicon octicon-link" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a></h5>
+<div class="outline-text-5" id="text-12-1-3-3">
 <p>
 Macrostep is an indespensible tool for writing emacs lisp macros. It lets you see pretty printed versions of the result of macro evaluation as the macro is evaluated
 </p>
@@ -7657,8 +7706,8 @@ Macrostep is an indespensible tool for writing emacs lisp macros. It lets you se
 </div>
 </div>
 <div id="outline-container-emr" class="outline-5">
-<h5 id="emr"><span class="section-number-5">12.1.3.3</span> emr <a href="#emr"><svg aria-hidden="true" class="octicon octicon-link" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a></h5>
-<div class="outline-text-5" id="text-12-1-3-3">
+<h5 id="emr"><span class="section-number-5">12.1.3.4</span> emr <a href="#emr"><svg aria-hidden="true" class="octicon octicon-link" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a></h5>
+<div class="outline-text-5" id="text-12-1-3-4">
 <div class="org-src-container">
 <pre class="src src-emacs-lisp">(<span class="org-keyword">use-package</span> <span class="org-constant">emr</span>
   <span class="org-builtin">:bind</span> (<span class="org-string">"M-RET"</span> . emr-show-refactor-menu)
@@ -7670,8 +7719,8 @@ Macrostep is an indespensible tool for writing emacs lisp macros. It lets you se
 </div>
 </div>
 <div id="outline-container-editingconfiguration" class="outline-5">
-<h5 id="editingconfiguration"><span class="section-number-5">12.1.3.4</span> Editing configuration <a href="#editingconfiguration"><svg aria-hidden="true" class="octicon octicon-link" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a></h5>
-<div class="outline-text-5" id="text-12-1-3-4">
+<h5 id="editingconfiguration"><span class="section-number-5">12.1.3.5</span> Editing configuration <a href="#editingconfiguration"><svg aria-hidden="true" class="octicon octicon-link" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a></h5>
+<div class="outline-text-5" id="text-12-1-3-5">
 <p>
 Reduce indentation for some functions
 </p>
@@ -7682,8 +7731,8 @@ Reduce indentation for some functions
 </div>
 </div>
 <div id="outline-container-checkdoc" class="outline-5">
-<h5 id="checkdoc"><span class="section-number-5">12.1.3.5</span> Checkdoc <a href="#checkdoc"><svg aria-hidden="true" class="octicon octicon-link" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a></h5>
-<div class="outline-text-5" id="text-12-1-3-5">
+<h5 id="checkdoc"><span class="section-number-5">12.1.3.6</span> Checkdoc <a href="#checkdoc"><svg aria-hidden="true" class="octicon octicon-link" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a></h5>
+<div class="outline-text-5" id="text-12-1-3-6">
 <div class="org-src-container">
 <pre class="src src-emacs-lisp">(<span class="org-keyword">setq</span> checkdoc-force-docstrings-flag nil
       checkdoc-arguments-in-order-flag nil)
@@ -7692,8 +7741,8 @@ Reduce indentation for some functions
 </div>
 </div>
 <div id="outline-container-edebug" class="outline-5">
-<h5 id="edebug"><span class="section-number-5">12.1.3.6</span> edebug <a href="#edebug"><svg aria-hidden="true" class="octicon octicon-link" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a></h5>
-<div class="outline-text-5" id="text-12-1-3-6">
+<h5 id="edebug"><span class="section-number-5">12.1.3.7</span> edebug <a href="#edebug"><svg aria-hidden="true" class="octicon octicon-link" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a></h5>
+<div class="outline-text-5" id="text-12-1-3-7">
 <div class="org-src-container">
 <pre class="src src-emacs-lisp">(<span class="org-keyword">use-package</span> <span class="org-constant">edebug</span>
   <span class="org-builtin">:config</span>
@@ -7703,8 +7752,8 @@ Reduce indentation for some functions
 </div>
 </div>
 <div id="outline-container-overseer" class="outline-5">
-<h5 id="overseer"><span class="section-number-5">12.1.3.7</span> overseer <a href="#overseer"><svg aria-hidden="true" class="octicon octicon-link" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a></h5>
-<div class="outline-text-5" id="text-12-1-3-7">
+<h5 id="overseer"><span class="section-number-5">12.1.3.8</span> overseer <a href="#overseer"><svg aria-hidden="true" class="octicon octicon-link" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a></h5>
+<div class="outline-text-5" id="text-12-1-3-8">
 <div class="org-src-container">
 <pre class="src src-emacs-lisp">(<span class="org-keyword">use-package</span> <span class="org-constant">overseer</span>)
 </pre>
@@ -7712,8 +7761,8 @@ Reduce indentation for some functions
 </div>
 </div>
 <div id="outline-container-misc1" class="outline-5">
-<h5 id="misc1"><span class="section-number-5">12.1.3.8</span> Misc <a href="#misc1"><svg aria-hidden="true" class="octicon octicon-link" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a></h5>
-<div class="outline-text-5" id="text-12-1-3-8">
+<h5 id="misc1"><span class="section-number-5">12.1.3.9</span> Misc <a href="#misc1"><svg aria-hidden="true" class="octicon octicon-link" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a></h5>
+<div class="outline-text-5" id="text-12-1-3-9">
 <div class="org-src-container">
 <pre class="src src-emacs-lisp">(<span class="org-keyword">defun</span> <span class="org-function-name">imenu-elisp-sections</span> ()
   (<span class="org-keyword">setq</span> imenu-prev-index-position-function nil)
@@ -7740,8 +7789,8 @@ Reduce indentation for some functions
 </div>
 </div>
 <div id="outline-container-eros" class="outline-5">
-<h5 id="eros"><span class="section-number-5">12.1.3.9</span> eros <a href="#eros"><svg aria-hidden="true" class="octicon octicon-link" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a></h5>
-<div class="outline-text-5" id="text-12-1-3-9">
+<h5 id="eros"><span class="section-number-5">12.1.3.10</span> eros <a href="#eros"><svg aria-hidden="true" class="octicon octicon-link" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a></h5>
+<div class="outline-text-5" id="text-12-1-3-10">
 <div class="org-src-container">
 <pre class="src src-emacs-lisp">(<span class="org-keyword">use-package</span> <span class="org-constant">eros</span>
   <span class="org-builtin">:commands</span> (eros-mode)
@@ -7775,8 +7824,8 @@ Reduce indentation for some functions
 </div>
 </div>
 <div id="outline-container-reevalutedefvarswhenrunningevallastsexp" class="outline-5">
-<h5 id="reevalutedefvarswhenrunningevallastsexp"><span class="section-number-5">12.1.3.10</span> Reevalute defvars when running eval-last-sexp <a href="#reevalutedefvarswhenrunningevallastsexp"><svg aria-hidden="true" class="octicon octicon-link" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a></h5>
-<div class="outline-text-5" id="text-12-1-3-10">
+<h5 id="reevalutedefvarswhenrunningevallastsexp"><span class="section-number-5">12.1.3.11</span> Reevalute defvars when running eval-last-sexp <a href="#reevalutedefvarswhenrunningevallastsexp"><svg aria-hidden="true" class="octicon octicon-link" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a></h5>
+<div class="outline-text-5" id="text-12-1-3-11">
 <p>
 We noflet elisp&#x2013;preceding-sexp to munge defvars into sexps only for
 eval-last-sexp.
@@ -7796,8 +7845,8 @@ eval-last-sexp.
 </div>
 </div>
 <div id="outline-container-inithook" class="outline-5">
-<h5 id="inithook"><span class="section-number-5">12.1.3.11</span> Init hook <a href="#inithook"><svg aria-hidden="true" class="octicon octicon-link" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a></h5>
-<div class="outline-text-5" id="text-12-1-3-11">
+<h5 id="inithook"><span class="section-number-5">12.1.3.12</span> Init hook <a href="#inithook"><svg aria-hidden="true" class="octicon octicon-link" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a></h5>
+<div class="outline-text-5" id="text-12-1-3-12">
 <div class="org-src-container">
 <pre class="src src-emacs-lisp">(<span class="org-keyword">defvar</span> <span class="org-variable-name">imalison:check-parens</span> nil)
 
@@ -7815,8 +7864,8 @@ eval-last-sexp.
 </div>
 </div>
 <div id="outline-container-keybinds" class="outline-5">
-<h5 id="keybinds"><span class="section-number-5">12.1.3.12</span> Keybinds <a href="#keybinds"><svg aria-hidden="true" class="octicon octicon-link" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a></h5>
-<div class="outline-text-5" id="text-12-1-3-12">
+<h5 id="keybinds"><span class="section-number-5">12.1.3.13</span> Keybinds <a href="#keybinds"><svg aria-hidden="true" class="octicon octicon-link" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a></h5>
+<div class="outline-text-5" id="text-12-1-3-13">
 <div class="org-src-container">
 <pre class="src src-emacs-lisp">(emit-compose imalison:copy-eval-last-sexp
               kill-new prin1-to-string eval-last-sexp)
@@ -8018,9 +8067,19 @@ The following is taken from <a href="https://github.com/syl20bnr/spacemacs/blob/
 </div>
 </div>
 </div>
-<div id="outline-container-coffeescript" class="outline-4">
-<h4 id="coffeescript"><span class="section-number-4">12.1.7</span> coffee script <a href="#coffeescript"><svg aria-hidden="true" class="octicon octicon-link" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a></h4>
+<div id="outline-container-typescript" class="outline-4">
+<h4 id="typescript"><span class="section-number-4">12.1.7</span> typescript <a href="#typescript"><svg aria-hidden="true" class="octicon octicon-link" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a></h4>
 <div class="outline-text-4" id="text-12-1-7">
+<div class="org-src-container">
+<pre class="src src-emacs-lisp">(<span class="org-keyword">use-package</span> <span class="org-constant">typescript-mode</span>
+  <span class="org-builtin">:mode</span> <span class="org-string">"\\.ts\\'"</span>)
+</pre>
+</div>
+</div>
+</div>
+<div id="outline-container-coffeescript" class="outline-4">
+<h4 id="coffeescript"><span class="section-number-4">12.1.8</span> coffee script <a href="#coffeescript"><svg aria-hidden="true" class="octicon octicon-link" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a></h4>
+<div class="outline-text-4" id="text-12-1-8">
 <div class="org-src-container">
 <pre class="src src-emacs-lisp">(<span class="org-keyword">use-package</span> <span class="org-constant">coffee-mode</span>
   <span class="org-builtin">:mode</span> <span class="org-string">"\\.coffee\\'"</span>)
@@ -8029,8 +8088,8 @@ The following is taken from <a href="https://github.com/syl20bnr/spacemacs/blob/
 </div>
 </div>
 <div id="outline-container-rust" class="outline-4">
-<h4 id="rust"><span class="section-number-4">12.1.8</span> rust <a href="#rust"><svg aria-hidden="true" class="octicon octicon-link" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a></h4>
-<div class="outline-text-4" id="text-12-1-8">
+<h4 id="rust"><span class="section-number-4">12.1.9</span> rust <a href="#rust"><svg aria-hidden="true" class="octicon octicon-link" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a></h4>
+<div class="outline-text-4" id="text-12-1-9">
 <div class="org-src-container">
 <pre class="src src-emacs-lisp">(<span class="org-keyword">use-package</span> <span class="org-constant">rust-mode</span>
   <span class="org-builtin">:mode</span> ((<span class="org-string">"\\.rs\\'"</span> . rust-mode))
@@ -8062,8 +8121,8 @@ The following is taken from <a href="https://github.com/syl20bnr/spacemacs/blob/
 </div>
 </div>
 <div id="outline-container-haskell" class="outline-4">
-<h4 id="haskell"><span class="section-number-4">12.1.9</span> haskell <a href="#haskell"><svg aria-hidden="true" class="octicon octicon-link" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a></h4>
-<div class="outline-text-4" id="text-12-1-9">
+<h4 id="haskell"><span class="section-number-4">12.1.10</span> haskell <a href="#haskell"><svg aria-hidden="true" class="octicon octicon-link" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a></h4>
+<div class="outline-text-4" id="text-12-1-10">
 <div class="org-src-container">
 <pre class="src src-emacs-lisp">(<span class="org-keyword">use-package</span> <span class="org-constant">haskell-mode</span>
   <span class="org-builtin">:commands</span> haskell-mode
@@ -8093,8 +8152,8 @@ The following is taken from <a href="https://github.com/syl20bnr/spacemacs/blob/
 </div>
 </div>
 <div id="outline-container-intero" class="outline-5">
-<h5 id="intero"><span class="section-number-5">12.1.9.1</span> intero <a href="#intero"><svg aria-hidden="true" class="octicon octicon-link" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a></h5>
-<div class="outline-text-5" id="text-12-1-9-1">
+<h5 id="intero"><span class="section-number-5">12.1.10.1</span> intero <a href="#intero"><svg aria-hidden="true" class="octicon octicon-link" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a></h5>
+<div class="outline-text-5" id="text-12-1-10-1">
 <p>
 Intero seems to be causing hangs, so it has been disabled
 </p>
@@ -8111,8 +8170,8 @@ Intero seems to be causing hangs, so it has been disabled
 </div>
 </div>
 <div id="outline-container-hindent" class="outline-5">
-<h5 id="hindent"><span class="section-number-5">12.1.9.2</span> hindent <a href="#hindent"><svg aria-hidden="true" class="octicon octicon-link" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a></h5>
-<div class="outline-text-5" id="text-12-1-9-2">
+<h5 id="hindent"><span class="section-number-5">12.1.10.2</span> hindent <a href="#hindent"><svg aria-hidden="true" class="octicon octicon-link" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a></h5>
+<div class="outline-text-5" id="text-12-1-10-2">
 <div class="org-src-container">
 <pre class="src src-emacs-lisp">(<span class="org-keyword">use-package</span> <span class="org-constant">hindent</span>
   <span class="org-builtin">:after</span> haskell-mode
@@ -8127,8 +8186,8 @@ Intero seems to be causing hangs, so it has been disabled
 </div>
 </div>
 <div id="outline-container-ghcmod" class="outline-5">
-<h5 id="ghcmod"><span class="section-number-5">12.1.9.3</span> ghc-mod <a href="#ghcmod"><svg aria-hidden="true" class="octicon octicon-link" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a></h5>
-<div class="outline-text-5" id="text-12-1-9-3">
+<h5 id="ghcmod"><span class="section-number-5">12.1.10.3</span> ghc-mod <a href="#ghcmod"><svg aria-hidden="true" class="octicon octicon-link" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a></h5>
+<div class="outline-text-5" id="text-12-1-10-3">
 <div class="org-src-container">
 <pre class="src src-emacs-lisp">(<span class="org-keyword">use-package</span> <span class="org-constant">ghc</span>
   <span class="org-builtin">:after</span> haskell-mode
@@ -8142,8 +8201,8 @@ Intero seems to be causing hangs, so it has been disabled
 </div>
 </div>
 <div id="outline-container-companyghc" class="outline-5">
-<h5 id="companyghc"><span class="section-number-5">12.1.9.4</span> company-ghc <a href="#companyghc"><svg aria-hidden="true" class="octicon octicon-link" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a></h5>
-<div class="outline-text-5" id="text-12-1-9-4">
+<h5 id="companyghc"><span class="section-number-5">12.1.10.4</span> company-ghc <a href="#companyghc"><svg aria-hidden="true" class="octicon octicon-link" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a></h5>
+<div class="outline-text-5" id="text-12-1-10-4">
 <div class="org-src-container">
 <pre class="src src-emacs-lisp">(<span class="org-keyword">use-package</span> <span class="org-constant">company-ghc</span>
   <span class="org-builtin">:disabled</span> t
@@ -8156,8 +8215,8 @@ Intero seems to be causing hangs, so it has been disabled
 </div>
 </div>
 <div id="outline-container-purescript" class="outline-4">
-<h4 id="purescript"><span class="section-number-4">12.1.10</span> purescript <a href="#purescript"><svg aria-hidden="true" class="octicon octicon-link" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a></h4>
-<div class="outline-text-4" id="text-12-1-10">
+<h4 id="purescript"><span class="section-number-4">12.1.11</span> purescript <a href="#purescript"><svg aria-hidden="true" class="octicon octicon-link" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a></h4>
+<div class="outline-text-4" id="text-12-1-11">
 <div class="org-src-container">
 <pre class="src src-emacs-lisp">(<span class="org-keyword">use-package</span> <span class="org-constant">purescript-mode</span>)
 
@@ -8173,8 +8232,8 @@ Intero seems to be causing hangs, so it has been disabled
 </div>
 </div>
 <div id="outline-container-cc" class="outline-4">
-<h4 id="cc"><span class="section-number-4">12.1.11</span> C/C++ <a href="#cc"><svg aria-hidden="true" class="octicon octicon-link" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a></h4>
-<div class="outline-text-4" id="text-12-1-11">
+<h4 id="cc"><span class="section-number-4">12.1.12</span> C/C++ <a href="#cc"><svg aria-hidden="true" class="octicon octicon-link" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a></h4>
+<div class="outline-text-4" id="text-12-1-12">
 <div class="org-src-container">
 <pre class="src src-emacs-lisp">(<span class="org-keyword">use-package</span> <span class="org-constant">cc-mode</span>
   <span class="org-builtin">:disabled</span> t
@@ -8200,8 +8259,8 @@ Intero seems to be causing hangs, so it has been disabled
 </div>
 </div>
 <div id="outline-container-c" class="outline-4">
-<h4 id="c"><span class="section-number-4">12.1.12</span> C# <a href="#c"><svg aria-hidden="true" class="octicon octicon-link" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a></h4>
-<div class="outline-text-4" id="text-12-1-12">
+<h4 id="c"><span class="section-number-4">12.1.13</span> C# <a href="#c"><svg aria-hidden="true" class="octicon octicon-link" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a></h4>
+<div class="outline-text-4" id="text-12-1-13">
 <div class="org-src-container">
 <pre class="src src-emacs-lisp">(<span class="org-keyword">use-package</span> <span class="org-constant">csharp-mode</span>
   <span class="org-builtin">:mode</span> <span class="org-string">"\\.cs\\'"</span>)
@@ -8210,8 +8269,8 @@ Intero seems to be causing hangs, so it has been disabled
 </div>
 </div>
 <div id="outline-container-racket" class="outline-4">
-<h4 id="racket"><span class="section-number-4">12.1.13</span> racket <a href="#racket"><svg aria-hidden="true" class="octicon octicon-link" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a></h4>
-<div class="outline-text-4" id="text-12-1-13">
+<h4 id="racket"><span class="section-number-4">12.1.14</span> racket <a href="#racket"><svg aria-hidden="true" class="octicon octicon-link" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a></h4>
+<div class="outline-text-4" id="text-12-1-14">
 <div class="org-src-container">
 <pre class="src src-emacs-lisp">(<span class="org-keyword">use-package</span> <span class="org-constant">racket-mode</span>
   <span class="org-builtin">:mode</span> <span class="org-string">"\\.rkt\\'"</span>)
@@ -8902,28 +8961,25 @@ This function replaces the default naming scheme with a call to
 <h5 id="orgprojectile"><span class="section-number-5">12.3.1.10</span> org-projectile <a href="#orgprojectile"><svg aria-hidden="true" class="octicon octicon-link" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a></h5>
 <div class="outline-text-5" id="text-12-3-1-10">
 <div class="org-src-container">
-<pre class="src src-emacs-lisp">(<span class="org-keyword">use-package</span> <span class="org-constant">org-projectile</span>
+<pre class="src src-emacs-lisp">(imalison:use-package org-projectile
   <span class="org-builtin">:after</span> helm
-  <span class="org-builtin">:bind</span> ((<span class="org-string">"C-c n p"</span> . imalison:helm-org-todo))
   <span class="org-builtin">:config</span>
   (<span class="org-keyword">progn</span>
-    (org-projectile:prompt)
+    (<span class="org-keyword">setq</span> org-projectile-projects-file
+          (imalison:join-paths imalison:org-dir <span class="org-string">"projects.org"</span>))
     (add-to-list 'org-capture-templates
-                 (org-projectile:project-todo-entry
-                  <span class="org-string">"l"</span> <span class="org-string">"* TODO %? %a\n"</span> <span class="org-string">"Linked Project TODO"</span>))
-    (add-to-list 'org-capture-templates (org-projectile:project-todo-entry <span class="org-string">"p"</span>))
+                 (org-projectile-project-todo-entry
+                  <span class="org-builtin">:capture-character</span> <span class="org-string">"l"</span>
+                  <span class="org-builtin">:capture-template</span> <span class="org-string">"* TODO %? %a\n"</span>
+                  <span class="org-builtin">:capture-heading</span> <span class="org-string">"Linked Project TODO"</span>))
+    (add-to-list 'org-capture-templates
+                 (org-projectile-project-todo-entry
+                  <span class="org-builtin">:capture-character</span> <span class="org-string">"p"</span>))
     (<span class="org-keyword">setq</span> org-confirm-elisp-link-function nil)
-    (imalison:add-to-org-agenda-files (org-projectile:todo-files))
-    (<span class="org-keyword">require</span> '<span class="org-constant">helm-source</span>)
-    (<span class="org-keyword">require</span> '<span class="org-constant">helm-org</span>)
-    (<span class="org-keyword">defun</span> <span class="org-function-name">imalison:helm-org-todo</span> (<span class="org-type">&amp;optional</span> arg)
-      (<span class="org-keyword">interactive</span> <span class="org-string">"P"</span>)
-      (helm <span class="org-builtin">:sources</span> (list (helm-source-org-capture-templates)
-                           (org-projectile:helm-source
-                            (<span class="org-keyword">if</span> arg (imalison:make-org-linked-todo-template)
-                              (imalison:make-org-todo-template))))
-            <span class="org-builtin">:candidate-number-limit</span> 99999
-            <span class="org-builtin">:buffer</span> <span class="org-string">"*helm org capture templates*"</span>))))
+    (imalison:add-to-org-agenda-files (org-projectile-todo-files))
+    (<span class="org-keyword">use-package</span> <span class="org-constant">org-projectile-helm</span>
+      <span class="org-builtin">:ensure</span> nil
+      <span class="org-builtin">:bind</span> ((<span class="org-string">"C-c n p"</span> . org-projectile-helm-template-or-project)))))
 </pre>
 </div>
 </div>
@@ -10746,6 +10802,9 @@ Ensure all themes that I use are installed:
                   cyberpunk-theme))
 
 (ensure-packages-installed packages-appearance)
+
+(<span class="org-keyword">use-package</span> <span class="org-constant">doom-themes</span>
+  <span class="org-builtin">:demand</span> t)
 </pre>
 </div>
 </div>
