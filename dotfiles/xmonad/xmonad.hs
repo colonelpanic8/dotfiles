@@ -871,6 +871,9 @@ goToNextScreenX = windows goToNextScreen
 
 -- Key bindings
 
+shiftToEmptyOnScreen direction =
+  followingWindow (windowToScreen direction True) >> shiftToEmptyAndView
+
 addKeys conf@XConfig { modMask = modm } =
 
     -- Specific program spawning
@@ -937,6 +940,12 @@ addKeys conf@XConfig { modMask = modm } =
     , ((hyper .|. shiftMask, xK_s), followingWindow $ screenSwap D True)
     , ((hyper .|. shiftMask, xK_a), followingWindow $ screenSwap L True)
     , ((hyper .|. shiftMask, xK_d), followingWindow $ screenSwap R True)
+
+    , ((hyper .|. controlMask, xK_w), shiftToEmptyOnScreen U)
+    , ((hyper .|. controlMask, xK_s), shiftToEmptyOnScreen D)
+    , ((hyper .|. controlMask, xK_a), shiftToEmptyOnScreen L)
+    , ((hyper .|. controlMask, xK_d), shiftToEmptyOnScreen R)
+
 
     -- Focus/Layout manipulation
 
