@@ -2375,6 +2375,24 @@ reference to the jedi-core package.
   :bind (:map elisp-slime-nav-mode-map
               ("M-." . imalison:elisp-slime-nav)))
 #+END_SRC
+**** Make find-function use display-buffer
+For some reason ~find-function~ doesn't allow to ~display-buffer~ to do what
+it's supposed to do, but instead uses its own collection of functions to control
+where the definition is popped up. This fixes that.
+#+BEGIN_SRC emacs-lisp
+(use-package find-func
+  :preface
+  (progn
+    (defun imalison:find-function-display-buffer (function)
+      (interactive (find-function-read))
+      (find-function-do-it function nil 'display-buffer)))
+  :config
+  (advice-add 'find-function :override 'imalison:find-function-display-buffer))
+
+(defun imalison:find-function-display-buffer (function)
+  (interactive (find-function-read))
+  (find-function-do-it function nil 'switch-to-buffer-other-frame))
+#+END_SRC
 **** macrostep
 Macrostep is an indespensible tool for writing emacs lisp macros. It lets you see pretty printed versions of the result of macro evaluation as the macro is evaluated
 #+BEGIN_SRC emacs-lisp
