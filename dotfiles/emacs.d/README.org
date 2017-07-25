@@ -2121,6 +2121,22 @@ I don't use auto-complete at all, so I have set up a hook to automatically disab
           (cons 'yas-ido-prompt
                 (cl-delete 'yas-ido-prompt yas-prompt-functions)))))
 #+END_SRC
+** align
+#+BEGIN_SRC emacs-lisp
+(use-package align
+  :disabled t
+  :after hydra
+  :bind ("C-c C-a" . imalison:align-regexp-hydra/body)
+  :config
+  (progn
+    (defun imalison:complex-align-regexp ()
+      (interactive)
+      (let ((current-prefix-arg t))
+        (call-interactively )))
+    (defhydra imalison:align-regexp-hydra
+      "align-regexp"
+      ("r" . align-regexp))))
+#+END_SRC
 * flycheck
 #+BEGIN_SRC emacs-lisp
 (use-package flycheck
