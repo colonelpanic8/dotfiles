@@ -4736,6 +4736,9 @@ Ensure all themes that I use are installed:
                   cyberpunk-theme))
 
 (ensure-packages-installed packages-appearance)
+
+(use-package doom-themes
+  :demand t)
 #+END_SRC
 ** all-the-icons
 #+BEGIN_SRC emacs-lisp
