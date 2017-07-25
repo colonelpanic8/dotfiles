@@ -2466,6 +2466,7 @@ Reduce indentation for some functions
                                   (setq indent-tabs-mode nil)
                                   (setq show-trailing-whitespace t)))
 (add-hook 'flycheck-mode-hook 'imalison:maybe-remove-flycheck-checkdoc-checker)
+(setq lisp-indent-offset 2)
 #+END_SRC
 **** eros
 #+BEGIN_SRC emacs-lisp
