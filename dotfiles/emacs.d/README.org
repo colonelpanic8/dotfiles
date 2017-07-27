@@ -2407,7 +2407,7 @@ where the definition is popped up. This fixes that.
 
 (defun imalison:find-function-display-buffer (function)
   (interactive (find-function-read))
-  (find-function-do-it function nil 'switch-to-buffer-other-frame))
+  (find-function-do-it function nil 'pop-to-buffer))
 #+END_SRC
 **** macrostep
 Macrostep is an indespensible tool for writing emacs lisp macros. It lets you see pretty printed versions of the result of macro evaluation as the macro is evaluated
