@@ -3,7 +3,6 @@ import           Control.Exception.Base
 import           Control.Monad
 import           Data.List
 import           Data.List.Split
-import qualified Data.Map as M
 import           Data.Maybe
 import qualified Graphics.UI.Gtk as Gtk
 import qualified Graphics.UI.Gtk.Abstract.Widget as W
@@ -11,7 +10,6 @@ import qualified Graphics.UI.Gtk.Layout.Table as T
 import           System.Directory
 import           System.Environment
 import           System.FilePath.Posix
-import           System.IO
 import           System.Information.CPU
 import           System.Information.Memory
 import           System.Process
@@ -22,14 +20,12 @@ import           System.Taffybar.NetMonitor
 import           System.Taffybar.Pager
 import           System.Taffybar.SimpleClock
 import           System.Taffybar.Systray
-import           System.Taffybar.TaffyPager
 import           System.Taffybar.ToggleMonitor
 import           System.Taffybar.Widgets.PollingGraph
 import           System.Taffybar.WindowSwitcher
 import           System.Taffybar.WorkspaceHUD
 import           Text.Printf
 import           Text.Read hiding (get)
-import           XMonad.Core ( whenJust )
 
 
 memCfg =
@@ -55,8 +51,7 @@ mem = do
   return $ Gtk.toWidget ebox
 
 systemEvents :: Gtk.EventM Gtk.EButton Bool
-systemEvents = do
-  return True
+systemEvents = return True
 
 cpuCallback = do
   (_, systemLoad, totalLoad) <- cpuLoad
@@ -121,7 +116,7 @@ main = do
           "Gmail" `isInfixOf` title = makeIcon "gmail.png"
         | otherwise = IINone
       myGetIconInfo = windowTitleClassIconGetter True myCustomIcon
-      (monFilter, monNumber) =
+      (_, monNumber) =
         case monEither of
           Left _ -> (allMonitors, 0)
           Right monString ->
@@ -147,7 +142,7 @@ main = do
       hudConfig =
         defaultWorkspaceHUDConfig
         { underlineHeight = 3
-        , underlinePadding = 5
+        , underlinePadding = 2
         , minWSWidgetSize = Nothing
         , minIcons = 3
         , getIconInfo = myGetIconInfo
@@ -165,7 +160,7 @@ main = do
         }
       netMonitor = netMonitorMultiNew 1.5 interfaceNames
       pagerConfig = defaultPagerConfig {useImages = True}
-      pager = taffyPagerNew pagerConfig
+      -- pager = taffyPagerNew pagerConfig
       makeUnderline = underlineWidget hudConfig
   pgr <- pagerNew pagerConfig
   tray2 <- movableWidget tray
