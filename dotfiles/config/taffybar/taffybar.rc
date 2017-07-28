@@ -53,6 +53,10 @@ style "taffybar-icon-active" = "taffybar-default" {
   bg[NORMAL] = @dgrey
 }
 
+style "taffybar-icon-minimized" = "taffybar-default" {
+  bg[NORMAL] = @red
+}
+
 style "taffybar-workspace-contents-active" = "taffybar-default" {
   bg[NORMAL] = @bgrey
 }
@@ -109,6 +113,7 @@ widget "*Workspace-Container-*-visible*" style "taffybar-default"
 
 widget "*Workspace-icon*-urgent*" style "taffybar-icon-urgent"
 widget "*Workspace-icon*-active*" style "taffybar-icon-active"
+widget "*Workspace-icon*-minimized*" style "taffybar-icon-minimized"
 
 widget "*WorkspaceHUD-*" style "taffybar-hover-button"
 widget "*WorkspaceHUD-*" style "taffybar-hover-button"
