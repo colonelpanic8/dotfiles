@@ -4269,10 +4269,8 @@ This package is needed to export org to html.
 #+END_SRC
 ** calfw
 #+BEGIN_SRC emacs-lisp
-(use-package calfw
-  :config
-  (progn
-    (require 'calfw-org)))
+(use-package calfw-org
+  :demand t)
 #+END_SRC
 ** clocker
 Not really sure what this is
