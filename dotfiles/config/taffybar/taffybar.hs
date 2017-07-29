@@ -3,6 +3,7 @@ import           Control.Exception.Base
 import           Control.Monad
 import           Data.List
 import           Data.List.Split
+import qualified Data.Map as M
 import           Data.Maybe
 import qualified Graphics.UI.Gtk as Gtk
 import qualified Graphics.UI.Gtk.Abstract.Widget as W
@@ -11,6 +12,7 @@ import           System.Directory
 import           System.Environment
 import           System.FilePath.Posix
 import           System.Information.CPU
+import           System.Information.EWMHDesktopInfo
 import           System.Information.Memory
 import           System.Process
 import           System.Taffybar
@@ -95,6 +97,13 @@ movableWidget builder =
           return $ Gtk.toWidget hbox
     return moveWidget
 
+myFormatEntry wsNames ((ws, wtitle, wclass), _) =
+  printf "%s: %s - %s" wsName wtitle wclass
+  where
+    wsName = M.findWithDefault ("WS#" ++ show wsN) ws wsNames
+    WSIdx wsN = ws
+
+
 getInterfaces = do
   (_, output, _) <- readCreateProcessWithExitCode (shell "list_interfaces.sh") ""
   return $ splitOn "\n" output
@@ -159,7 +168,11 @@ main = do
         , outerPadding = 5
         }
       netMonitor = netMonitorMultiNew 1.5 interfaceNames
-      pagerConfig = defaultPagerConfig {useImages = True}
+      pagerConfig =
+        defaultPagerConfig
+        { useImages = True
+        , windowSwitcherFormatter = myFormatEntry
+        }
       -- pager = taffyPagerNew pagerConfig
       makeUnderline = underlineWidget hudConfig
   pgr <- pagerNew pagerConfig
