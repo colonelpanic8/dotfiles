@@ -17,8 +17,8 @@ others:
 ** How I generate http://ivanmalison.github.io/dotfiles/
 *** org-export
 **** travis-ci
-[[https://github.com/IvanMalison/dotfiles/tree/master/gen-gh-pages][This directory]] contains a collection of scripts that exports this org document to html.
-The approach is taken (with only a few modifications) from [[https://gist.github.com/domenic/ec8b0fc8ab45f39403dd][here]].
+[[https://github.com/IvanMalison/dotfiles/tree/master/gen-gh-pages][This directory]] contains a collection of scripts that exports this org document
+to html. The approach is taken (with only a few modifications) from [[https://gist.github.com/domenic/ec8b0fc8ab45f39403dd][here]].
 **** githook (The old way)
 NOTE: I've left this here in case other people have an interest in this method,
 but I no longer use it.
@@ -29,7 +29,8 @@ README.org (essentially this document) . These should work no matter where they
 are placed in a repository. The org-mode file that they target is set [[https://github.com/IvanMalison/dotfiles/blob/16a4f6c3aadef39a45d30c15e8637b40858721ea/dotfiles/emacs.d/bin/util.sh#L4][here]] and
 should be relatively easy to change.
 *** [[https://github.com/fniessen/org-html-themes][Read The Org]]
-I use [[https://github.com/fniessen][fniessen]]'s  ReadTheOrg theme which can be found at https://github.com/fniessen/org-html-themes.
+I use [[https://github.com/fniessen][fniessen]]'s ReadTheOrg theme which can be found at
+https://github.com/fniessen/org-html-themes.
 *** Predictable and Human Readable Heading Links
 To make it so that internal heading links have names that correspond to the
 heading text, and don't change when new headings are added to the document, I
@@ -45,9 +46,11 @@ this.
 I'm considering turning this snippet in to a package, so please let me know if
 that is something you are interested in.
 *** [[Add link icons in headings that lead to themselves][Add link icons in headings that lead to themselves]]
-This is another pretty nasty hack. This is useful when you are browsing the document and you want to grab a link to the current heading.
+This is another pretty nasty hack. This is useful when you are browsing the
+document and you want to grab a link to the current heading.
 *** Set Background Color Source Blocks
-For some reason, org-mode uses all of your currently active fontification when exporting EXCEPT for background color. [[Set Background Color of Source Blocks for Export][This]] modification fixes this.
+For some reason, org-mode uses all of your currently active fontification when
+exporting EXCEPT for background color. [[Set Background Color of Source Blocks for Export][This]] modification fixes this.
 ** [[frame-mode][Custom frame control]]
 My custom [[frame-mode]] stuff is built to integrate really nicely with xmonad. I
 think its pretty awesome!
@@ -57,8 +60,10 @@ think its pretty awesome!
 + [[Font Size][Font Size]] functions and an [[fontsizehydra][Awesome Hydra]] for them
 + [[downloadfile][Download a file into a buffer]] (curl straight into a file)
 + [[editscript][Edit a script on $PATH]]
-+ [[Copy/Yanking][Copy Portions of Buffer File Path Hydra]] and the associated [[Copy/Yank String Functions][Copy String Functions]]
-+ [[namedbuild][Named Build of Builder Macros]] ([[https://github.com/IvanMalison/emit#named-builder][README]]) and [[composemacros][A Compose Supporting Macros]] ([[https://github.com/IvanMalison/emit#compose][README]])
++ [[Copy/Yanking][Copy Portions of Buffer File Path Hydra]] and the associated
+ [[Copy/Yank String Functions][Copy String Functions]]
++ [[namedbuild][Named Build of Builder Macros]] ([[https://github.com/IvanMalison/emit#named-builder][README]]) and [[composemacros][A Compose Supporting Macros]]
+  ([[https://github.com/IvanMalison/emit#compose][README]])
 ** Configuration of My Own Packages
 - [[term-projectile][term-projectile]] and [[term-manager][term-manager]]
 - [[org-projectile][org-projectile]]
@@ -71,7 +76,6 @@ think its pretty awesome!
 My programming language major mode configurations can all be found [[programminglanguages][here]].
 ** [[org][org-mode]]
 My [[org][org-mode]] configuration is pretty comprehensive, but not super well commented.
-
 * HTML Headers
 #+HTML_HEAD: <link rel="stylesheet" type="text/css" href="http://www.pirilampo.org/styles/readtheorg/css/htmlize.css"/>
 #+HTML_HEAD: <link rel="stylesheet" type="text/css" href="http://www.pirilampo.org/styles/readtheorg/css/readtheorg.css"/>
@@ -389,31 +393,30 @@ Works in the same way as os.path.join in python
 #+END_SRC
 ** Use Package Wrapper With Local Load Path Support
 #+BEGIN_SRC emacs-lisp
-  (put 'imalison:use-package 'lisp-indent-function 'defun)
-  (put 'imalison:use-package* 'lisp-indent-function 'defun)
-  (put 'imalison:use-package** 'lisp-indent-function 'defun)
+(put 'imalison:use-package 'lisp-indent-function 'defun)
+(put 'imalison:use-package* 'lisp-indent-function 'defun)
+(put 'imalison:use-package** 'lisp-indent-function 'defun)
 
-  (defmacro imalison:use-package* (package target-github-name &rest forms)
-    (let* ((clone-url
-            (format "git@github.com:IvanMalison/%s" target-github-name))
-           (target-directory
-            (imalison:join-paths imalison:projects-directory target-github-name)))
-      `(imalison:use-package** ,package ,target-directory ,clone-url ,@forms)))
+(defmacro imalison:use-package* (package target-github-name &rest forms)
+  (let* ((clone-url
+          (format "git@github.com:IvanMalison/%s" target-github-name)))
+    `(imalison:use-package** ,package ,target-github-name ,clone-url ,@forms)))
 
-  (defmacro imalison:use-package** (package target-directory target-clone-url &rest forms)
+(defmacro imalison:use-package** (package target-dir target-clone-url &rest forms)
+  (let ((target-directory (imalison:join-paths imalison:projects-directory target-dir)))
     `(progn
        (or (file-exists-p ,target-directory)
            (equal (call-process
                    (executable-find "git")
                    nil nil nil "clone" ,target-clone-url ,target-directory) 0))
        (use-package ,package
-	 :load-path ,target-directory
-	 :ensure nil
-	 :preface
-	 ,@forms)))
+	     :load-path ,target-directory
+	     :ensure nil
+	     :preface
+	     ,@forms))))
 
-  (defmacro imalison:use-package (package &rest forms)
-    `(imalison:use-package* ,package ,(symbol-name package) ,@forms))
+(defmacro imalison:use-package (package &rest forms)
+  `(imalison:use-package* ,package ,(symbol-name package) ,@forms))
 #+END_SRC
 ** Required Packages
 The packages in this section provide no functionality on their own,
@@ -2627,7 +2630,7 @@ The following is taken from [[https://github.com/syl20bnr/spacemacs/blob/a650877
     (add-hook 'scala-mode-hook 'ensime-scala-mode-hook)
     (setq scala-indent:align-parameters t)))
 #+END_SRC
-*** js
+*** javascript
 #+BEGIN_SRC emacs-lisp
 (defun tape-onlyify ()
   (interactive)
@@ -4826,7 +4829,6 @@ Set the character used to represent spaces to ·, and the character used for tab
       '((space-mark 32 [183] [46])
         (tab-mark 9 [9655 9] [92 9])))
 #+END_SRC
-
 ** Colorize Compliation Buffers
 This automatically applies ansi-color interpretation of terminal escape
 sequences to compilation buffers.
