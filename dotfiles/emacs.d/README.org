@@ -1816,21 +1816,18 @@ I use helm for almost all emacs completion
               ("M-t" . imalison:helm-term-projectile))
   :preface
   (progn
+    (defmacro imalison:do-in-project (project-dir &rest forms)
+      `(noflet ((projectile-project-root (&rest args) ,project-dir))
+         ,@forms))
     (defun imalison:invalidate-cache-and-open-file (_dir)
       (projectile-invalidate-cache nil)
       (projectile-find-file))
 
     (defun imalison:switch-to-project-and-search (dir)
-      (let ((default-directory dir)
-            (projectile-require-project-root nil)
-            (helm-action-buffer "this-buffer-should-not-exist"))
-        (helm-projectile-ag)))
+      (imalison:do-in-project dir (helm-projectile-ag)))
 
     (defun imalison:helm-term-projectile (dir)
-      (let ((default-directory dir)
-            (projectile-require-project-root nil)
-            (helm-action-buffer "this-buffer-should-not-exist"))
-        (term-projectile-forward))))
+      (imalison:do-in-project dir (term-projectile-forward))))
   :config
   (progn
     (helm-delete-action-from-source "Search in Project"
