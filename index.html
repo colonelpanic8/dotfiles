@@ -3,7 +3,7 @@
 "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
-<!-- 2017-07-29 Sat 07:42 -->
+<!-- 2017-07-29 Sat 08:02 -->
 <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title></title>
@@ -6914,21 +6914,18 @@ I use helm for almost all emacs completion
               (<span class="org-string">"M-t"</span> . imalison:helm-term-projectile))
   <span class="org-builtin">:preface</span>
   (<span class="org-keyword">progn</span>
+    (<span class="org-keyword">defmacro</span> <span class="org-function-name">imalison:do-in-project</span> (project-dir <span class="org-type">&amp;rest</span> forms)
+      `(noflet ((projectile-project-root (<span class="org-type">&amp;rest</span> args) ,project-dir))
+         ,@forms))
     (<span class="org-keyword">defun</span> <span class="org-function-name">imalison:invalidate-cache-and-open-file</span> (_dir)
       (projectile-invalidate-cache nil)
       (projectile-find-file))
 
     (<span class="org-keyword">defun</span> <span class="org-function-name">imalison:switch-to-project-and-search</span> (dir)
-      (<span class="org-keyword">let</span> ((default-directory dir)
-            (projectile-require-project-root nil)
-            (helm-action-buffer <span class="org-string">"this-buffer-should-not-exist"</span>))
-        (helm-projectile-ag)))
+      (imalison:do-in-project dir (helm-projectile-ag)))
 
     (<span class="org-keyword">defun</span> <span class="org-function-name">imalison:helm-term-projectile</span> (dir)
-      (<span class="org-keyword">let</span> ((default-directory dir)
-            (projectile-require-project-root nil)
-            (helm-action-buffer <span class="org-string">"this-buffer-should-not-exist"</span>))
-        (term-projectile-forward))))
+      (imalison:do-in-project dir (term-projectile-forward))))
   <span class="org-builtin">:config</span>
   (<span class="org-keyword">progn</span>
     (helm-delete-action-from-source <span class="org-string">"Search in Project"</span>
