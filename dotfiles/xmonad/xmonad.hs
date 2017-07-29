@@ -75,9 +75,9 @@ myConfig = def
   , terminal = "termite"
   , manageHook = myManageHook <+> manageHook def
   , layoutHook = myLayoutHook
-  , borderWidth = 2
+  , borderWidth = 3
   , normalBorderColor = "#000000"
-  , focusedBorderColor = "#455a64"
+  , focusedBorderColor = "#ffff00"
   , logHook =
       updatePointer (0.5, 0.5) (0, 0) +++
       toggleFadeInactiveLogHook 0.9 +++ workspaceHistoryHook
