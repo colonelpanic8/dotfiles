@@ -3,7 +3,7 @@
 "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
-<!-- 2017-07-29 Sat 08:02 -->
+<!-- 2017-07-31 Mon 21:21 -->
 <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title></title>
@@ -7342,7 +7342,6 @@ I don't use auto-complete at all, so I have set up a hook to automatically disab
 <div class="outline-text-3" id="text-10-11">
 <div class="org-src-container">
 <pre class="src src-emacs-lisp">(<span class="org-keyword">use-package</span> <span class="org-constant">align</span>
-  <span class="org-builtin">:disabled</span> t
   <span class="org-builtin">:after</span> hydra
   <span class="org-builtin">:bind</span> (<span class="org-string">"C-c C-a"</span> . imalison:align-regexp-hydra/body)
   <span class="org-builtin">:config</span>
@@ -7350,10 +7349,23 @@ I don't use auto-complete at all, so I have set up a hook to automatically disab
     (<span class="org-keyword">defun</span> <span class="org-function-name">imalison:complex-align-regexp</span> ()
       (<span class="org-keyword">interactive</span>)
       (<span class="org-keyword">let</span> ((current-prefix-arg t))
-        (call-interactively )))
-    (defhydra imalison:align-regexp-hydra
+        (call-interactively 'align-regexp)))
+    (<span class="org-keyword">defun</span> <span class="org-function-name">imalison:align-whitespace</span> ()
+      (<span class="org-keyword">interactive</span>)
+      (align-regexp
+       (region-beginning) (region-end)
+       <span class="org-string">"</span><span class="org-string"><span class="org-regexp-grouping-backslash">\\</span></span><span class="org-string"><span class="org-regexp-grouping-construct">(</span></span><span class="org-string">\\s-+</span><span class="org-string"><span class="org-regexp-grouping-backslash">\\</span></span><span class="org-string"><span class="org-regexp-grouping-construct">)</span></span><span class="org-string">"</span>) <span class="org-warning">0 1 t)</span>
+    (<span class="org-keyword">defun</span> <span class="org-function-name">imalison:align-to-character</span> (character)
+      (<span class="org-keyword">interactive</span>
+       (list (read-string <span class="org-string">"Character to align to "</span> <span class="org-string">"="</span>)))
+      (align-regexp
+       (region-beginning) (region-end)
+       (format <span class="org-string">"</span><span class="org-string"><span class="org-regexp-grouping-backslash">\\</span></span><span class="org-string"><span class="org-regexp-grouping-construct">(</span></span><span class="org-string">\\s-*</span><span class="org-string"><span class="org-regexp-grouping-backslash">\\</span></span><span class="org-string"><span class="org-regexp-grouping-construct">)</span></span><span class="org-string">%s"</span> character) 1 1 nil))
+    (defhydra imalison:align-regexp-hydra ()
       <span class="org-string">"align-regexp"</span>
-      (<span class="org-string">"r"</span> . align-regexp))))
+      (<span class="org-string">"r"</span> imalison:complex-align-regexp)
+      (<span class="org-string">"SPC"</span> imalison:align-whitespace)
+      (<span class="org-string">"c"</span> imalison:align-to-character))))
 </pre>
 </div>
 </div>
