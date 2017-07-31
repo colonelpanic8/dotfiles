@@ -2126,7 +2126,6 @@ I don't use auto-complete at all, so I have set up a hook to automatically disab
 ** align
 #+BEGIN_SRC emacs-lisp
 (use-package align
-  :disabled t
   :after hydra
   :bind ("C-c C-a" . imalison:align-regexp-hydra/body)
   :config
@@ -2134,10 +2133,23 @@ I don't use auto-complete at all, so I have set up a hook to automatically disab
     (defun imalison:complex-align-regexp ()
       (interactive)
       (let ((current-prefix-arg t))
-        (call-interactively )))
-    (defhydra imalison:align-regexp-hydra
+        (call-interactively 'align-regexp)))
+    (defun imalison:align-whitespace ()
+      (interactive)
+      (align-regexp
+       (region-beginning) (region-end)
+       "\\(\\s-+\\)") 0 1 t)
+    (defun imalison:align-to-character (character)
+      (interactive
+       (list (read-string "Character to align to " "=")))
+      (align-regexp
+       (region-beginning) (region-end)
+       (format "\\(\\s-*\\)%s" character) 1 1 nil))
+    (defhydra imalison:align-regexp-hydra ()
       "align-regexp"
-      ("r" . align-regexp))))
+      ("r" imalison:complex-align-regexp)
+      ("SPC" imalison:align-whitespace)
+      ("c" imalison:align-to-character))))
 #+END_SRC
 * flycheck
 #+BEGIN_SRC emacs-lisp
