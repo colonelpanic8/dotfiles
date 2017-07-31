@@ -1,9 +1,3 @@
-if [[ $COLORTERM = gnome-* && $TERM = xterm ]] && infocmp gnome-256color >/dev/null 2>&1; then
-    export TERM=gnome-256color
-elif infocmp xterm-256color >/dev/null 2>&1; then
-    export TERM=xterm-256color
-fi
-
 export HISTTIMEFORMAT='%F %T  '
 
 export PAGER='less -XFr'
@@ -31,3 +25,11 @@ dircolors_file="$HOME/.dircolors"
 [ ! -z "$SHELL" ] && test -r $dircolors_files  && eval "$(dircolors $dircolors_file)" && eval $(dircolors)
 
 export GO15VENDOREXPERIMENT=1
+
+if [[ $TERM == "dumb" ]]; then
+    export PS1='$ '
+elif [[ $COLORTERM = gnome-* && $TERM = xterm ]] && infocmp gnome-256color >/dev/null 2>&1; then
+    export TERM=gnome-256color
+elif infocmp xterm-256color >/dev/null 2>&1; then
+    export TERM=xterm-256color
+fi
