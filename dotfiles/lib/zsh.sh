@@ -9,13 +9,7 @@ autoload run-help
 HELPDIR=/usr/local/share/zsh/helpfiles
 
 function if_emacs_zsh {
-    if [ -z $(echo "$INSIDE_EMACS" | grep comint) ]; then
-        set_my_prompt
-    else
-        PS1="$ "
-    fi
+    echo "$INSIDE_EMACS" | grep -q term && export PS1="$ "
 }
-
-environment_variable_exists INSIDE_EMACS && if_emacs_zsh || set_default_prompt
 
 environment_variable_exists INSIDE_EMACS && export PROMPT='$ '
