@@ -946,7 +946,6 @@ addKeys conf@XConfig { modMask = modm } =
     , ((hyper .|. controlMask, xK_a), shiftToEmptyOnScreen L)
     , ((hyper .|. controlMask, xK_d), shiftToEmptyOnScreen R)
 
-
     -- Focus/Layout manipulation
 
     , ((modm, xK_e), goToNextScreenX)
