@@ -17,8 +17,8 @@ others:
 ** How I generate http://ivanmalison.github.io/dotfiles/
 *** org-export
 **** travis-ci
-[[https://github.com/IvanMalison/dotfiles/tree/master/gen-gh-pages][This directory]] contains a collection of scripts that exports this org document
-to html. The approach is taken (with only a few modifications) from [[https://gist.github.com/domenic/ec8b0fc8ab45f39403dd][here]].
+[[https://github.com/IvanMalison/dotfiles/tree/master/gen-gh-pages][This directory]] contains a collection of scripts that export this org document
+to html. This approach is taken (with only a few modifications) from [[https://gist.github.com/domenic/ec8b0fc8ab45f39403dd][here]].
 **** githook (The old way)
 NOTE: I've left this here in case other people have an interest in this method,
 but I no longer use it.
@@ -52,7 +52,7 @@ document and you want to grab a link to the current heading.
 For some reason, org-mode uses all of your currently active fontification when
 exporting EXCEPT for background color. [[Set Background Color of Source Blocks for Export][This]] modification fixes this.
 ** [[frame-mode][Custom frame control]]
-My custom [[frame-mode]] stuff is built to integrate really nicely with xmonad. I
+My custom [[frame-mode][frame-mode]] stuff is built to integrate really nicely with xmonad. I
 think its pretty awesome!
 ** [[Functions][My functions section]]
 ...has a bunch of generally useful functions:
