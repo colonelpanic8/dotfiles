@@ -1,0 +1,31 @@
+name:                imalison-taffybar
+version:             0.1.0.0
+homepage:            https://github.com/IvanMalison/dotfiles/tree/master/dotfiles/config/taffybar
+license:             BSD3
+author:              Ivan Malison
+maintainer:          IvanMalison@gmail.com
+copyright:           Ivan Malison
+category:            Web
+build-type:          Simple
+extra-source-files:  README.org
+cabal-version:       >=1.10
+
+executable imalison-taffybar
+  hs-source-dirs:      .
+  main-is:             taffybar.hs
+  ghc-options:         -threaded -rtsopts -with-rtsopts=-N
+  build-depends:       base
+                     , containers
+                     , directory
+                     , filepath
+                     , gtk
+                     , gtk-traymanager>=0.1.6
+                     , process
+                     , split
+                     , taffybar
+                     , xmonad-contrib>=0.13
+  default-language:    Haskell2010
+
+source-repository head
+  type:     git
+  location: https://github.com/IvanMalison/dotfiles
