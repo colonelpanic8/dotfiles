@@ -1,0 +1,9 @@
+#!/usr/bin/env bash
+
+SRC_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+
+EXE_NAME=imalison-xmonad
+output_file=$1; shift
+
+stack build
+cp -uf $(stack path --local-install-root)/bin/$EXE_NAME $output_file
