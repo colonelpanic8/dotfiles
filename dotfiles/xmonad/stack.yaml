@@ -5,12 +5,15 @@ packages:
 - location:
     git: git@github.com:IvanMalison/xmonad.git
     commit: 10b843ad21614994b7e12fafaf300f4267aa9e40
+  extra-dep: true
 - location:
     git: git@github.com:IvanMalison/xmonad-contrib.git
     commit: ad9c8001f6e2af7a87228c5feaf41aa230a639d5
+  extra-dep: true
 - location:
     git: git@github.com:IvanMalison/taffybar.git
     commit: 3570bdbd87a5464d7280d8750c5c153cf3dcc637
+  extra-dep: true
 extra-deps:
 - X11-xft-0.3.1
 - dbus-0.10.12
