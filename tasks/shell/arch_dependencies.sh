@@ -6,32 +6,89 @@ indirect_expand() {
 }
 
 ESSENTIAL=(
-	"lightdm-git" "zsh" "git" "emacs-git" "autoconf" "pkg-config" "pyenv"
-	"autoconf" "automake" "the_silver_searcher" "jdk8-openjdk" "openjdk8-doc"
-	"openjdk8-src" "ghc" "cabal-install" "sparkleshare" "rofi" "termite"
-	"rofi-pass" "xorg-xrandr" "spotify" "htop" "rcm" "networkmanager-applet"
-	"pulseaudio-ctl" "pasystray" "xclip" "copyq" "notification-daemon" "pass"
-	"pavucontrol" "xsettingsd-git" "udisks" "udiskie" "python-pip"
-	"gnome-keyring" "ntp" "nss-mdns" "avahi" "nss-mdns"
+	"autoconf"
+	"lightdm-git"
+	"nss-mdns"
+	"openjdk8-src"
+	"spotify"
+	"udisks"
+	"xclip"
+    "autoconf"
+    "automake"
+    "avahi"
+    "copyq"
+    "emacs-git"
+    "git"
+    "gnome-keyring"
+    "htop"
+    "jdk8-openjdk"
+    "ncurses5-compat-libs"
+    "networkmanager-applet"
+    "notification-daemon"
+    "nss-mdns"
+    "ntp"
+    "openjdk8-doc"
+    "pass"
+    "pasystray"
+    "pavucontrol"
+    "pkg-config"
+    "pulseaudio-ctl"
+    "pyenv"
+    "python-pip"
+    "rcm"
+    "rofi"
+    "rofi-pass"
+    "sparkleshare"
+    "termite"
+    "the_silver_searcher"
+    "udiskie"
+    "xorg-xrandr"
+    "xsettingsd-git"
+    "zsh"
 )
 
 NEEDED=(
-	"playerctl" "vlc" "feh" "xdotool" "android-sdk-platform-tools" "android-sdk"
-	"android-tools" "skippy-xd-git"
+	"android-tools"
+	"playerctl"
+    "android-sdk"
+    "android-sdk-platform-tools"
+    "feh"
+    "skippy-xd-git"
+    "vlc"
+    "xdotool"
 )
 
 OTHER=(
-	"simplescreenrecorder" "git-extras"
+	"simplescreenrecorder"
+    "git-extras"
 )
 
 LANGUAGES=(
-	"scala" "clojure" "leiningen" "boot" "go" "ruby" "node" "ghc" "rust" "rbenv"
-	"nvm" "purescript" "pulp"
+	"nvm"
+	"scala"
+    "boot"
+    "clojure"
+    "go"
+    "leiningen"
+    "node"
+    "pulp"
+    "purescript"
+    "rbenv"
+    "ruby"
+    "rust"
 )
 
 APPEARANCE=(
-	"adobe-source-code-pro-fonts" "emojione-color-font" "fontawesome" "ttf-roboto" "compton"
-	"screenfetch" "noto-fonts-cjk" "adapta-gtk-theme" "numix-icon-theme-git" "volnoti"
+	"adobe-source-code-pro-fonts"
+    "emojione-color-font"
+    "fontawesome"
+    "ttf-roboto"
+    "compton"
+	"screenfetch"
+    "noto-fonts-cjk"
+    "adapta-gtk-theme"
+    "numix-icon-theme-git"
+    "volnoti"
 )
 
 NVIDIA=(
@@ -39,12 +96,18 @@ NVIDIA=(
 )
 
 MACBOOK=(
-	"broadcom-wl-dkms" "pommed-light" "batterymon-clone"
+	"broadcom-wl-dkms"
+    "pommed-light"
+    "batterymon-clone"
 )
 
 SERVICES=(
-	"sshd.socket" "nvidia-persistenced.service" "NetworkManager.service"
-	"--user vncserver@:1" "autorandr.service" "avahi-daemon.service"
+	"sshd.socket"
+    "nvidia-persistenced.service"
+    "NetworkManager.service"
+	"--user vncserver@:1"
+    "autorandr.service"
+    "avahi-daemon.service"
 )
 
 install_deps() {
