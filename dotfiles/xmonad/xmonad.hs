@@ -694,12 +694,6 @@ getTarget = do
     Target w -> return $ Just w
     DontTarget -> return Nothing
     NoTarget -> return Nothing
-      -- join $ withFocusedD Nothing $ \w -> do
-      --   vClass <- getClass w
-      --   return $
-      --     if vClass == "Chrome"
-      --       then Just w
-      --       else Nothing
 
 maybeReplaceTarget :: Window -> X ()
 maybeReplaceTarget window = do
