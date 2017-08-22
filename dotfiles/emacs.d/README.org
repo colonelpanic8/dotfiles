@@ -2067,7 +2067,7 @@ I don't use auto-complete at all, so I have set up a hook to automatically disab
 ** multi-line
 #+BEGIN_SRC emacs-lisp
 (imalison:use-package multi-line
-  ;; Demand multi-line to avoid failre to load mode specific strategies
+  ;; Demand multi-line to avoid failure to load mode specific strategies
   :demand t
   :bind ("C-c d" . multi-line)
   :config
@@ -2078,6 +2078,8 @@ I don't use auto-complete at all, so I have set up a hook to automatically disab
        'multi-line-strategy
        :find multi-line-lisp-find-strategy
        :respace (multi-line-default-respacers
+                 (multi-line-clearing-reindenting-respacer
+                  multi-line-always-newline-respacer)
                  (multi-line-clearing-reindenting-respacer
                   multi-line-force-first-and-last-respacer))))))
 #+END_SRC
