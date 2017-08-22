@@ -4446,7 +4446,8 @@ This is useful with server mode when editing gmail messages. I think that it is 
 (use-package ham-mode
   :config
   (progn
-    (setq ham-mode-html-to-markdown-command '("pandoc" "--from" "html" "--to" "markdown" file))))
+    (setq ham-mode-html-to-markdown-command
+          '("pandoc" "--from" "html" "--to" "markdown" file))))
 #+END_SRC
 ** alert
 #+BEGIN_SRC emacs-lisp
