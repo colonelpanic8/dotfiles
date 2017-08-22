@@ -5,9 +5,11 @@ packages:
 - location:
     git: git@github.com:IvanMalison/taffybar.git
     commit: 3a5024368b4783084302b61cb6eb0ba27e305693
+  extra-dep: true
 - location:
     git: git@github.com:willdonnelly/dyre.git
     commit: 11412752b483135e0c151ab90be17b217f837c4b
+  extra-dep: true
 extra-deps:
 - dyre-0.8.11
 - rate-limit-1.1.1
