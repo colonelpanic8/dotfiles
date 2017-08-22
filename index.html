@@ -3,7 +3,7 @@
 "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
-<!-- 2017-08-19 Sat 17:45 -->
+<!-- 2017-08-22 Tue 02:54 -->
 <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title></title>
@@ -7248,7 +7248,7 @@ I don't use auto-complete at all, so I have set up a hook to automatically disab
 <div class="outline-text-3" id="text-10-4">
 <div class="org-src-container">
 <pre class="src src-emacs-lisp">(imalison:use-package multi-line
-  <span class="org-comment-delimiter">;; </span><span class="org-comment">Demand multi-line to avoid failre to load mode specific strategies</span>
+  <span class="org-comment-delimiter">;; </span><span class="org-comment">Demand multi-line to avoid failure to load mode specific strategies</span>
   <span class="org-builtin">:demand</span> t
   <span class="org-builtin">:bind</span> (<span class="org-string">"C-c d"</span> . multi-line)
   <span class="org-builtin">:config</span>
@@ -7259,6 +7259,8 @@ I don't use auto-complete at all, so I have set up a hook to automatically disab
        'multi-line-strategy
        <span class="org-builtin">:find</span> multi-line-lisp-find-strategy
        <span class="org-builtin">:respace</span> (multi-line-default-respacers
+                 (multi-line-clearing-reindenting-respacer
+                  multi-line-always-newline-respacer)
                  (multi-line-clearing-reindenting-respacer
                   multi-line-force-first-and-last-respacer))))))
 </pre>
@@ -10391,7 +10393,8 @@ This is useful with server mode when editing gmail messages. I think that it is 
 <pre class="src src-emacs-lisp">(<span class="org-keyword">use-package</span> <span class="org-constant">ham-mode</span>
   <span class="org-builtin">:config</span>
   (<span class="org-keyword">progn</span>
-    (<span class="org-keyword">setq</span> ham-mode-html-to-markdown-command '(<span class="org-string">"pandoc"</span> <span class="org-string">"--from"</span> <span class="org-string">"html"</span> <span class="org-string">"--to"</span> <span class="org-string">"markdown"</span> file))))
+    (<span class="org-keyword">setq</span> ham-mode-html-to-markdown-command
+          '(<span class="org-string">"pandoc"</span> <span class="org-string">"--from"</span> <span class="org-string">"html"</span> <span class="org-string">"--to"</span> <span class="org-string">"markdown"</span> file))))
 </pre>
 </div>
 </div>
