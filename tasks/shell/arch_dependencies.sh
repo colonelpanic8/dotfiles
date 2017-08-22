@@ -20,7 +20,6 @@ ESSENTIAL=(
 	"networkmanager-applet"
 	"notification-daemon"
 	"nss-mdns"
-	"nss-mdns"
 	"ntp"
 	"openjdk8-doc"
 	"openjdk8-src"
