@@ -1,3 +1,5 @@
+module Main where
+
 import qualified Control.Concurrent.MVar as MV
 import           Control.Exception.Base
 import           Control.Monad
