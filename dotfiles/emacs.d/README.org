@@ -129,61 +129,6 @@ file uses lexical scoping.
 
 (when imalison:secure (imalison:use-https-and-tls))
 #+END_SRC
-** ELPA Archive Setup
-The org archive does not support https, so we set http as the protocol explicitly.
-#+BEGIN_SRC emacs-lisp -n -r
-(require 'package)
-
-(defun imalison:build-archive-uri (uri protocol)
-  (unless protocol (setq protocol (if imalison:secure "https" "http")))
-  (format "%s://%s" protocol uri))
-
-(defvar imalison:melpa-uri nil)
-(defvar imalison:package-archive-triples
-  `(("elpa" "tromey.com/elpa/" "http")
-    ("org" "orgmode.org/elpa/" "http")
-    ("melpa" ,(or imalison:melpa-uri "melpa.org/packages/") nil)
-    ("melpa-stable" "stable.melpa.org/packages/" nil)))
-
-(defun imalison:add-package-archive (archive-name archive-uri)
-  (add-to-list 'package-archives
-               `(,archive-name . ,archive-uri) t))
-
-(cl-loop for package-triple in imalison:package-archive-triples
-         do (cl-destructuring-bind (archive-name archive-uri protocol) package-triple
-              (imalison:add-package-archive
-               archive-name (imalison:build-archive-uri archive-uri protocol))))
-#+END_SRC
-** Bootstrap Package Loading
-Its a shame that everyone has to have some version of this function in
-their init.el. I use use-package's own mechanism for ensuring packages
-are installed so my version of ~ensure-packages-installed~ is really
-only used to download use-package itself.
-#+BEGIN_SRC emacs-lisp
-(defun ensure-packages-installed (packages)
-  (unless package-archive-contents
-    (package-refresh-contents))
-  (mapcar
-   (lambda (package)
-     (if (package-installed-p package)
-         package
-       (progn (message (format "Installing package %s." package))
-              (package-install package))))
-   packages))
-#+END_SRC
-Ensure that use-package is installed.
-#+BEGIN_SRC emacs-lisp
-(package-initialize t)
-(ensure-packages-installed '(use-package))
-#+END_SRC
-use-package is only needed at compile time.
-#+BEGIN_SRC emacs-lisp
-(eval-when-compile (require 'use-package))
-#+END_SRC
-Ensure by default since most of the package for which I use use-package need to be downloaded. ensure can be disabled explicitly with a ~:ensure nil~.
-#+BEGIN_SRC emacs-lisp
-(setq use-package-always-ensure t)
-#+END_SRC
 ** Setup auto-compile
 #+BEGIN_SRC emacs-lisp
 (use-package auto-compile
@@ -218,15 +163,6 @@ in the dotfiles repo but they are shared across machines elsewhere.
 (defvar custom-after-file "~/.emacs.d/custom-after.el")
 (setq custom-file "~/.emacs.d/custom-before.el")
 (when (file-exists-p custom-file) (load custom-file))
-#+END_SRC
-** emit
-*** TODO this needs to be done better, but it works for now
-    :LOGBOOK:
-    - State "TODO"       from "TODO"       [2016-09-13 Tue 17:49]
-    :END:
-#+BEGIN_SRC emacs-lisp
-(when (file-exists-p "~/.emacs.d/load.d/emit.el")
-  (load "~/.emacs.d/load.d/emit.el"))
 #+END_SRC
 ** Benchmarking
 This appears here so that it can accurately benchmark as much of
@@ -397,33 +333,6 @@ Works in the same way as os.path.join in python
 
 (defvar imalison:gpg-key)
 #+END_SRC
-** Use Package Wrapper With Local Load Path Support
-#+BEGIN_SRC emacs-lisp
-(put 'imalison:use-package 'lisp-indent-function 'defun)
-(put 'imalison:use-package* 'lisp-indent-function 'defun)
-(put 'imalison:use-package** 'lisp-indent-function 'defun)
-
-(defmacro imalison:use-package* (package target-github-name &rest forms)
-  (let* ((clone-url
-          (format "git@github.com:IvanMalison/%s" target-github-name)))
-    `(imalison:use-package** ,package ,target-github-name ,clone-url ,@forms)))
-
-(defmacro imalison:use-package** (package target-dir target-clone-url &rest forms)
-  (let ((target-directory (imalison:join-paths imalison:projects-directory target-dir)))
-    `(progn
-       (or (file-exists-p ,target-directory)
-           (equal (call-process
-                   (executable-find "git")
-                   nil nil nil "clone" ,target-clone-url ,target-directory) 0))
-       (use-package ,package
-	     :load-path ,target-directory
-	     :ensure nil
-	     :preface
-	     ,@forms))))
-
-(defmacro imalison:use-package (package &rest forms)
-  `(imalison:use-package* ,package ,(symbol-name package) ,@forms))
-#+END_SRC
 ** Required Packages
 The packages in this section provide no functionality on their own,
 but provide support for writing custom elisp.
@@ -434,14 +343,16 @@ but provide support for writing custom elisp.
 *** dash
 #+BEGIN_SRC emacs-lisp
 (use-package dash
+  :demand t
   :config
   (progn
     (dash-enable-font-lock)))
 #+END_SRC
 *** gh
 #+BEGIN_SRC emacs-lisp
-(imalison:use-package** gh "gh.el" "git@github.com:sigma/gh.el.git"
-  :demand t)
+(use-package gh
+  :defer t
+  :recipe (gh :type git :host github :repo "IvanMalison/gh.el"))
 #+END_SRC
 *** shut-up
 #+BEGIN_SRC emacs-lisp
@@ -461,10 +372,9 @@ but provide support for writing custom elisp.
   :demand t)
 #+END_SRC
 *** emit
-This is disabled for now until I figure out what to do with emit.
 #+BEGIN_SRC emacs-lisp
-(imalison:use-package emit
-  :demand t)
+(use-package emit
+  :recipe (emit :type git :host github :repo "IvanMalison/emit"))
 #+END_SRC
 *** request
 #+BEGIN_SRC emacs-lisp
@@ -1235,18 +1145,26 @@ it on by default. Its probably safe to turn it on when in a programming mode.
 (setq split-height-threshold nil)
 (setq split-width-threshold 160)
 #+END_SRC
+** Time in Mode Line
+#+BEGIN_SRC emacs-lisp
+(setq display-time-default-load-average nil)
+(setq display-time-interval 1)
+(setq display-time-format "%a|%m-%d|%r")
+(display-time-mode +1)
+#+END_SRC
 ** Buffer Display
 *** ewmctrl
 #+BEGIN_SRC emacs-lisp
 (use-package ewmctrl
-  :demand t)
+  :defer t)
 #+END_SRC
 *** frame-mode
 #+BEGIN_SRC emacs-lisp
-(imalison:use-package frame-mode
+(use-package frame-mode
   :demand t
   :config
   (progn
+    (add-hook 'frame-mode-hook (lambda () (display-time-mode -1)))
     (frame-mode +1)
     (frame-keys-mode +1)))
 #+END_SRC
@@ -1324,13 +1242,6 @@ whenever there is an error.
 ** Configure ~vc~
 #+BEGIN_SRC emacs-lisp
 (setq vc-follow-symlinks t)
-#+END_SRC
-** Time in Mode Line
-#+BEGIN_SRC emacs-lisp
-(setq display-time-default-load-average nil)
-(setq display-time-interval 1)
-(setq display-time-format "%a|%m-%d|%r")
-(display-time-mode (if frame-mode -1 +1))
 #+END_SRC
 ** Kill Ring
 #+BEGIN_SRC emacs-lisp
@@ -1444,9 +1355,10 @@ is not detected properly by emacsclient by default.
 ;;                                  ".\\{81\\}" 'hi-blue)))
 #+END_SRC
 ** paradox
+Paradox is a package.el extension. I have no use for it now that I use straight.el.
 #+BEGIN_SRC emacs-lisp
 (use-package paradox
-  :defer 10
+  :disabled t
   :commands (paradox-upgrade-packages paradox-list-packages)
   :config
   (progn
@@ -1553,8 +1465,10 @@ is not detected properly by emacsclient by default.
     (winner-mode 1)))
 #+END_SRC
 ** eyebrowse
+I don't have any use for this now that I use frames mode, but its an interesting idea.
 #+BEGIN_SRC emacs-lisp
 (use-package eyebrowse
+  :disabled t
   :defer 1
   :config
   (progn (eyebrowse-mode +1)))
@@ -1565,7 +1479,7 @@ is not detected properly by emacsclient by default.
 #+END_SRC
 ** tile
 #+BEGIN_SRC emacs-lisp
-(imalison:use-package tile
+(use-package tile
   :after hydra
   :bind ("C-c t" . imalison:hydra-tile/body)
   :config
@@ -1955,8 +1869,10 @@ I use helm for almost all emacs completion
   :bind ("C-c w" . imalison:ace-window))
 #+END_SRC
 ** neotree
+Neotree is useless with frame mode for now, so I've disabled it.
 #+BEGIN_SRC emacs-lisp
-(use-package neotree)
+(use-package neotree
+  :disabled t)
 #+END_SRC
 ** jump-char
 #+BEGIN_SRC emacs-lisp
@@ -1965,7 +1881,7 @@ I use helm for almost all emacs completion
 #+END_SRC
 ** flimenu
 #+BEGIN_SRC emacs-lisp
-(imalison:use-package flimenu
+(use-package flimenu
   :config
   (progn
     (flimenu-global-mode)))
@@ -2006,6 +1922,7 @@ I use helm for almost all emacs completion
 I don't use auto-complete at all, so I have set up a hook to automatically disable it whenever it is enabled to avoid creating conflicting popups when company is activated.
 #+BEGIN_SRC emacs-lisp
 (use-package auto-complete
+  :defer t
   :preface
   (progn
     (defun imalison:auto-complete-hook ()
@@ -2072,7 +1989,7 @@ I don't use auto-complete at all, so I have set up a hook to automatically disab
 #+END_SRC
 ** multi-line
 #+BEGIN_SRC emacs-lisp
-(imalison:use-package multi-line
+(use-package multi-line
   ;; Demand multi-line to avoid failure to load mode specific strategies
   :demand t
   :bind ("C-c d" . multi-line)
@@ -2102,11 +2019,13 @@ I don't use auto-complete at all, so I have set up a hook to automatically disab
 ** cliphist
 #+BEGIN_SRC emacs-lisp
 (use-package cliphist
+  :disabled t
   :config (setq cliphist-use-ivy t))
 #+END_SRC
 ** electric-operator-mode
 #+BEGIN_SRC emacs-lisp
 (use-package electric-operator
+  :commands electric-operator-mode
   :config
   (add-hook 'python-mode-hook #'electric-operator-mode))
 #+END_SRC
@@ -2162,13 +2081,14 @@ I don't use auto-complete at all, so I have set up a hook to automatically disab
 * flycheck
 #+BEGIN_SRC emacs-lisp
 (use-package flycheck
-
+  :commands flycheck-mode
+  :init (add-hook 'prog-major-mode 'flycheck-mode)
   :config
   (progn
     (use-package flycheck-package
       :config (flycheck-package-setup))
 
-    (imalison:use-package flycheck-cask
+    (use-package flycheck-cask
       :after flycheck
       :config
       (add-hook 'flycheck-mode-hook #'flycheck-cask-setup))
@@ -2216,7 +2136,8 @@ I don't use auto-complete at all, so I have set up a hook to automatically disab
 **** pippel
 pippel lets one manage pip packages
 #+BEGIN_SRC emacs-lisp
-(use-package pippel)
+(use-package pippel
+  :defer t)
 #+END_SRC
 **** pyimport
 Pyimport is disabled because it may be causing a performance problem.
@@ -2233,7 +2154,6 @@ simply to require the company jedi package, which is why we make no
 reference to the jedi-core package.
 #+BEGIN_SRC emacs-lisp
 (use-package company-jedi
-  :after python
   :commands (jedi:goto-definition jedi-mode company-jedi)
   :bind (:map python-mode-map
               ("M-." . jedi:goto-definition)
@@ -2307,8 +2227,7 @@ reference to the jedi-core package.
                    "vendor")))
   :config
   (progn
-    (imalison:use-package*
-     gotest "~/Projects/gotest.el"
+    (use-package gotest
      :demand t
      :bind (:map go-mode-map
                  ("C-c t" . imalison:gotest))
@@ -2784,13 +2703,12 @@ The following is taken from [[https://github.com/syl20bnr/spacemacs/blob/a650877
 #+END_SRC
 **** haskell-ide-engine
 #+BEGIN_SRC emacs-lisp
-(use-package lsp-haskell)
+;; (use-package lsp-haskell)
 #+END_SRC
 **** intero
 Intero seems to be causing hangs, so it has been disabled
 #+BEGIN_SRC emacs-lisp
 (use-package intero
-  :demand t
   :after haskell-mode
   :config
   (progn
@@ -2828,9 +2746,11 @@ Intero seems to be causing hangs, so it has been disabled
 #+END_SRC
 *** purescript
 #+BEGIN_SRC emacs-lisp
-(use-package purescript-mode)
+(use-package purescript-mode
+  :defer t)
 
 (use-package psc-ide
+  :after purescript-mode
   :config
   (progn
     (defun imalison:purescript-mode-hook ()
@@ -2879,7 +2799,8 @@ Intero seems to be causing hangs, so it has been disabled
 #+END_SRC
 *** protobuf
 #+BEGIN_SRC emacs-lisp
-(use-package protobuf-mode)
+(use-package protobuf-mode
+  :defer t)
 #+END_SRC
 *** json-mode
 #+BEGIN_SRC emacs-lisp
@@ -2899,15 +2820,11 @@ Intero seems to be causing hangs, so it has been disabled
 #+END_SRC
 *** es-mode
 #+BEGIN_SRC emacs-lisp
-(use-package es-mode)
+(use-package es-mode
+  :defer t)
 #+END_SRC
 ** Document
 *** org
-**** Require the latest version of org-mode
-#+BEGIN_SRC emacs-lisp
-(use-package org
-  :ensure org-plus-contrib)
-#+END_SRC
 **** config
 #+BEGIN_SRC emacs-lisp :tangle org-config.el
 (use-package org
@@ -3395,8 +3312,8 @@ This function replaces the default naming scheme with a call to
 ~imalison:generate-name~, and uses a slightly different uniquify approach.
 #+BEGIN_SRC emacs-lisp :tangle org-config.el
 (use-package ox
+  :defer t
   :ensure nil
-  :demand t
   :config
   (defun org-export-get-reference (datum info)
     "Return a unique reference for DATUM, as a string.
@@ -3423,6 +3340,7 @@ alphanumeric characters only."
 **** Add link icons in headings that lead to themselves
 #+BEGIN_SRC emacs-lisp :tangle org-config.el
 (use-package ox-html
+  :commands (org-html-export-as-html org-html-export-as-html)
   :ensure nil
   :preface
   (progn
@@ -3454,6 +3372,7 @@ alphanumeric characters only."
 **** Allow with query params in image extentions
 #+BEGIN_SRC emacs-lisp :tangle org-config.el
 (use-package ox-html
+  :defer t
   :ensure nil
   :config
   (setq org-html-inline-image-rules
@@ -3464,8 +3383,8 @@ alphanumeric characters only."
 #+END_SRC
 **** org-projectile
 #+BEGIN_SRC emacs-lisp
-(imalison:use-package org-projectile
-  :after helm
+(use-package org-projectile
+  :defer t
   :config
   (progn
     (setq org-projectile-projects-file
@@ -3479,10 +3398,11 @@ alphanumeric characters only."
                  (org-projectile-project-todo-entry
                   :capture-character "p"))
     (setq org-confirm-elisp-link-function nil)
-    (imalison:add-to-org-agenda-files (org-projectile-todo-files))
-    (use-package org-projectile-helm
-      :ensure nil
-      :bind (("C-c n p" . org-projectile-helm-template-or-project)))))
+    (imalison:add-to-org-agenda-files (org-projectile-todo-files))))
+
+(use-package org-projectile-helm
+  :after org-projectile
+  :bind (("C-c n p" . org-projectile-helm-template-or-project)))
 #+END_SRC
 **** helm-org-rifle
 #+BEGIN_SRC emacs-lisp
@@ -3548,7 +3468,8 @@ alphanumeric characters only."
 **** org-reveal
 #+BEGIN_SRC emacs-lisp
 (use-package ox-reveal
-  :after org
+  :defer t
+  :commands org-reveal
   :config
   (setq org-reveal-root
       (imalison:join-paths "file://" imalison:projects-directory "reveal.js")))
@@ -3614,6 +3535,7 @@ alphanumeric characters only."
 *** markdown-mode
 #+BEGIN_SRC emacs-lisp
 (use-package markdown-mode
+  :defer t
   :init
   (progn
     (add-hook 'markdown-mode-hook 'imalison:disable-linum-mode)))
@@ -3773,7 +3695,7 @@ I've disabled magithub because it causes magit to be super slow
 ** github
 *** github-search
 #+BEGIN_SRC emacs-lisp
-(imalison:use-package github-search
+(use-package github-search
   :commands (github-search-clone-repo github-search-user-clone-repo)
   :preface
   (progn
@@ -3797,12 +3719,12 @@ I've disabled magithub because it causes magit to be super slow
 #+END_SRC
 *** github-clone
 #+BEGIN_SRC emacs-lisp
-(imalison:use-package* github-clone "~/Projects/github-clone.el"
-                       :commands (github-clone-add-parent-remote
-                                  github-clone-add-source-remote
-                                  github-clone-fork-remote
-                                  github-clone-add-existing-remote
-                                  github-clone))
+(use-package github-clone
+  :commands (github-clone-add-parent-remote
+             github-clone-add-source-remote
+             github-clone-fork-remote
+             github-clone-add-existing-remote
+             github-clone))
 #+END_SRC
 *** github-notifier
 This is disabled because it was causing too many issues with my
@@ -3865,9 +3787,10 @@ emr (emacs refactor) provides support for refactoring in many programming langua
 ** language-server-protocol (lsp)
 #+BEGIN_SRC emacs-lisp
 (use-package lsp-mode
+  :commands lsp-mode
+  :init (add-hook 'prog-major-mode 'lsp-mode)
   :config
   (progn
-    (add-hook 'prog-major-mode 'lsp-mode)
     (require 'lsp-flycheck)))
 #+END_SRC
 * Utility
@@ -3948,7 +3871,7 @@ First call open the kill-ring browser, next calls move to next line."
 #+END_SRC
 ** term-manager
 #+BEGIN_SRC emacs-lisp
-(imalison:use-package term-manager
+(use-package term-manager
   :defer t
   :preface
   (progn
@@ -3962,7 +3885,7 @@ First call open the kill-ring browser, next calls move to next line."
 #+END_SRC
 ** term-projectile
 #+BEGIN_SRC emacs-lisp
-(imalison:use-package* term-projectile "term-manager"
+(use-package term-projectile
   :bind ("C-c 7" . imalison:term-hydra-global/body)
   :commands (term-projectile-forward term-projectile-backward
                                      term-projectile-default-directory-forward
@@ -4059,7 +3982,8 @@ crux-reopen-as-root-mode makes it so that any file owned by root will automatica
 #+END_SRC
 ** aurel
 #+BEGIN_SRC emacs-lisp
-(use-package aurel :demand t)
+(use-package aurel
+  :defer t)
 #+END_SRC
 * Chat
 ** erc
@@ -4094,16 +4018,19 @@ crux-reopen-as-root-mode makes it so that any file owned by root will automatica
 #+END_SRC
 ** slack
 #+BEGIN_SRC emacs-lisp
-(use-package slack)
+(use-package slack
+  :commands slack-start)
 #+END_SRC
 * Cooperation
 ** togetherly
 #+BEGIN_SRC emacs-lisp
-(use-package togetherly)
+(use-package togetherly
+  :defer t)
 #+END_SRC
 ** floobits
 #+BEGIN_SRC emacs-lisp
-(use-package floobits)
+(use-package floobits
+  :defer t)
 #+END_SRC
 ** rudel
 #+BEGIN_SRC emacs-lisp
@@ -4291,12 +4218,14 @@ This package is needed to export org to html.
 ** calfw
 #+BEGIN_SRC emacs-lisp
 (use-package calfw-org
+  :disabled t
   :demand t)
 #+END_SRC
 ** clocker
 Not really sure what this is
 #+BEGIN_SRC emacs-lisp
-(use-package clocker)
+(use-package clocker
+  :disabled t)
 #+END_SRC
 ** deft
 #+BEGIN_SRC emacs-lisp
@@ -4337,7 +4266,6 @@ Not really sure what this is
 (use-package matrix-client
   :disabled t ;; fails to load eieio on startup
   )
-
 #+END_SRC
 ** mu4e
 #+BEGIN_SRC emacs-lisp
@@ -4449,11 +4377,12 @@ Not really sure what this is
 This is useful with server mode when editing gmail messages. I think that it is not currently working, or it may need to be manually enabled.
 #+BEGIN_SRC emacs-lisp
 (use-package gmail-message-mode
-  :demand t)
+  :mode ("\\.gmm\\'" . gmail-message-mode))
 #+END_SRC
 ** ham-mode
 #+BEGIN_SRC emacs-lisp
 (use-package ham-mode
+  :commands ham-mode
   :config
   (progn
     (setq ham-mode-html-to-markdown-command
@@ -4462,6 +4391,7 @@ This is useful with server mode when editing gmail messages. I think that it is 
 ** alert
 #+BEGIN_SRC emacs-lisp
 (use-package alert
+  :defer t
   :config
   (progn
     (defun alert-notifier-notify (info)
@@ -4528,11 +4458,13 @@ This is useful with server mode when editing gmail messages. I think that it is 
 #+END_SRC
 ** screenshot
 #+BEGIN_SRC emacs-lisp
-(use-package screenshot)
+(use-package screenshot
+  :commands screenshot)
 #+END_SRC
 ** libmpdee
 #+BEGIN_SRC emacs-lisp
-(use-package libmpdee)
+(use-package libmpdee
+  :defer t)
 #+END_SRC
 ** flyspell
 #+BEGIN_SRC emacs-lisp
@@ -4666,20 +4598,22 @@ I've disabled perspective because I just don't use it much.
 ** android-mode
 #+BEGIN_SRC emacs-lisp
 (use-package android-mode
-  :after s
+  :defer t
   :config
   (progn
+    (require 's)
     (setq android-mode-sdk-dir
           (s-trim (shell-command-to-string "android_sdk_directory")))))
 #+END_SRC
 ** gradle-mode
 #+BEGIN_SRC emacs-lisp
-(use-package gradle-mode)
+(use-package gradle-mode
+  :defer t)
 #+END_SRC
 ** jsx-mode
 #+BEGIN_SRC emacs-lisp
 (use-package jsx-mode
-  :mode "\\.jsx\\'")
+  :defer t)
 #+END_SRC
 ** css
 #+BEGIN_SRC emacs-lisp
@@ -4745,22 +4679,23 @@ I've disabled perspective because I just don't use it much.
 Ensure all themes that I use are installed:
 #+BEGIN_SRC emacs-lisp
 (use-package solarized-theme
+  :defer t
   :init
   (progn
     (setq solarized-high-contrast-mode-line t)))
 
 (defvar-setq packages-appearance
-  '(monokai-theme solarized-theme zenburn-theme base16-theme molokai-theme
+  '(monokai-theme zenburn-theme base16-theme molokai-theme
                   tango-2-theme gotham-theme sublime-themes rainbow-delimiters
                   waher-theme ample-theme material-theme zerodark-theme
                   color-theme-modern leuven-theme spacemacs-theme gruvbox-theme
                   forest-blue-theme flatland-theme afternoon-theme
                   cyberpunk-theme))
 
-(ensure-packages-installed packages-appearance)
+(mapcar 'straight-use-package packages-appearance)
 
 (use-package doom-themes
-  :demand t)
+  :defer t)
 #+END_SRC
 ** all-the-icons
 #+BEGIN_SRC emacs-lisp
