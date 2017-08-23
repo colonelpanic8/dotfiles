@@ -111,6 +111,8 @@ function _ruby_setup {
     then
         export RBENV_ROOT="$(brew --prefix rbenv)"
         add_to_path "$RBENV_ROOT/bin"
+    else
+        add_to_path "$HOME/.rbenv/shims"
     fi
     hash rbenv 2> /dev/null && eval "$(rbenv init - --no-rehash)"
 }
