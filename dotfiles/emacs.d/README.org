@@ -233,9 +233,15 @@ This appears here so that it can accurately benchmark as much of
 startup as possible.
 #+BEGIN_SRC emacs-lisp
 (defvar imalison:do-benchmark)
+
+(let ((bench-file (concat (file-name-directory user-init-file) "benchmark.el")))
+  (when (file-exists-p bench-file) (load bench-file)))
+
 (use-package benchmark-init
-  :if (bound-and-true-p imalison:do-benchmark)
-  :demand t)
+  :if imalison:do-benchmark
+  :demand t
+  :config
+  (setq max-specpdl-size 99999999))
 #+END_SRC
 ** GUI Disables
 Death to any gui elements in emacs! Do this EARLY so that emacs
@@ -4962,4 +4968,8 @@ load-theme hook (See the heading below).
 #+BEGIN_SRC emacs-lisp
 (when (file-exists-p custom-after-file) (load custom-after-file))
 (when (file-exists-p machine-custom) (load machine-custom))
+#+END_SRC
+* Finish Benchmarking
+#+BEGIN_SRC emacs-lisp
+(when imalison:do-benchmark (benchmark-init/deactivate))
 #+END_SRC
