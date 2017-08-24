@@ -3,7 +3,7 @@
 "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
-<!-- 2017-08-23 Wed 23:37 -->
+<!-- 2017-08-24 Thu 00:58 -->
 <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title></title>
@@ -3975,10 +3975,11 @@ for the JavaScript code in this tag.
 <li><a href="#addlinkiconsinheadingsthatleadtothemselves">12.3.1.7. Add link icons in headings that lead to themselves</a></li>
 <li><a href="#allowwithqueryparamsinimageextentions">12.3.1.8. Allow with query params in image extentions</a></li>
 <li><a href="#orgprojectile">12.3.1.9. org-projectile</a></li>
-<li><a href="#helmorgrifle">12.3.1.10. helm-org-rifle</a></li>
-<li><a href="#orgnotify">12.3.1.11. org-notify</a></li>
-<li><a href="#orgreveal">12.3.1.12. org-reveal</a></li>
-<li><a href="#orgcaldav">12.3.1.13. org-caldav</a></li>
+<li><a href="#orgsuperagenda">12.3.1.10. org-super-agenda</a></li>
+<li><a href="#helmorgrifle">12.3.1.11. helm-org-rifle</a></li>
+<li><a href="#orgnotify">12.3.1.12. org-notify</a></li>
+<li><a href="#orgreveal">12.3.1.13. org-reveal</a></li>
+<li><a href="#orgcaldav">12.3.1.14. org-caldav</a></li>
 </ul>
 </li>
 <li><a href="#tex">12.3.2. TeX</a>
@@ -8868,7 +8869,7 @@ This function replaces the default naming scheme with a call to
 <div class="outline-text-5" id="text-12-3-1-9">
 <div class="org-src-container">
 <pre class="src src-emacs-lisp">(<span class="org-keyword">use-package</span> <span class="org-constant">org-projectile</span>
-  <span class="org-builtin">:defer</span> t
+  <span class="org-builtin">:demand</span> t
   <span class="org-builtin">:config</span>
   (<span class="org-keyword">progn</span>
     (<span class="org-keyword">setq</span> org-projectile-projects-file
@@ -8891,9 +8892,25 @@ This function replaces the default naming scheme with a call to
 </div>
 </div>
 </div>
-<div id="outline-container-helmorgrifle" class="outline-5">
-<h5 id="helmorgrifle"><span class="section-number-5">12.3.1.10</span> helm-org-rifle <a href="#helmorgrifle"><svg aria-hidden="true" class="octicon octicon-link" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a></h5>
+<div id="outline-container-orgsuperagenda" class="outline-5">
+<h5 id="orgsuperagenda"><span class="section-number-5">12.3.1.10</span> org-super-agenda <a href="#orgsuperagenda"><svg aria-hidden="true" class="octicon octicon-link" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a></h5>
 <div class="outline-text-5" id="text-12-3-1-10">
+<div class="org-src-container">
+<pre class="src src-emacs-lisp">(<span class="org-keyword">use-package</span> <span class="org-constant">org-super-agenda</span>
+  <span class="org-builtin">:config</span>
+  (<span class="org-keyword">setq</span> org-super-agenda-groups
+        '((<span class="org-builtin">:order-multi</span> (-1 (<span class="org-builtin">:name</span> <span class="org-string">"High priority"</span>
+                                   (<span class="org-builtin">:priority&lt;=</span> <span class="org-string">"B"</span>))))
+          (<span class="org-builtin">:order-multi</span> (1 (<span class="org-builtin">:name</span> <span class="org-string">"Done today"</span>
+                                  <span class="org-builtin">:and</span> (<span class="org-builtin">:regexp</span> <span class="org-string">"State \"DONE\""</span>
+                                               <span class="org-builtin">:log</span> t)))))))
+</pre>
+</div>
+</div>
+</div>
+<div id="outline-container-helmorgrifle" class="outline-5">
+<h5 id="helmorgrifle"><span class="section-number-5">12.3.1.11</span> helm-org-rifle <a href="#helmorgrifle"><svg aria-hidden="true" class="octicon octicon-link" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a></h5>
+<div class="outline-text-5" id="text-12-3-1-11">
 <div class="org-src-container">
 <pre class="src src-emacs-lisp">(<span class="org-keyword">use-package</span> <span class="org-constant">helm-org-rifle</span>
   <span class="org-builtin">:bind</span> (<span class="org-string">"C-c C-h"</span> . helm-org-rifle-agenda-files))
@@ -8902,8 +8919,8 @@ This function replaces the default naming scheme with a call to
 </div>
 </div>
 <div id="outline-container-orgnotify" class="outline-5">
-<h5 id="orgnotify"><span class="section-number-5">12.3.1.11</span> org-notify <a href="#orgnotify"><svg aria-hidden="true" class="octicon octicon-link" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a></h5>
-<div class="outline-text-5" id="text-12-3-1-11">
+<h5 id="orgnotify"><span class="section-number-5">12.3.1.12</span> org-notify <a href="#orgnotify"><svg aria-hidden="true" class="octicon octicon-link" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a></h5>
+<div class="outline-text-5" id="text-12-3-1-12">
 <div class="org-src-container">
 <pre class="src src-emacs-lisp">(<span class="org-keyword">use-package</span> <span class="org-constant">org-notify</span>
   <span class="org-builtin">:disabled</span> t
@@ -8963,8 +8980,8 @@ This function replaces the default naming scheme with a call to
 </div>
 </div>
 <div id="outline-container-orgreveal" class="outline-5">
-<h5 id="orgreveal"><span class="section-number-5">12.3.1.12</span> org-reveal <a href="#orgreveal"><svg aria-hidden="true" class="octicon octicon-link" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a></h5>
-<div class="outline-text-5" id="text-12-3-1-12">
+<h5 id="orgreveal"><span class="section-number-5">12.3.1.13</span> org-reveal <a href="#orgreveal"><svg aria-hidden="true" class="octicon octicon-link" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a></h5>
+<div class="outline-text-5" id="text-12-3-1-13">
 <div class="org-src-container">
 <pre class="src src-emacs-lisp">(<span class="org-keyword">use-package</span> <span class="org-constant">ox-reveal</span>
   <span class="org-builtin">:defer</span> t
@@ -8977,8 +8994,8 @@ This function replaces the default naming scheme with a call to
 </div>
 </div>
 <div id="outline-container-orgcaldav" class="outline-5">
-<h5 id="orgcaldav"><span class="section-number-5">12.3.1.13</span> org-caldav <a href="#orgcaldav"><svg aria-hidden="true" class="octicon octicon-link" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a></h5>
-<div class="outline-text-5" id="text-12-3-1-13">
+<h5 id="orgcaldav"><span class="section-number-5">12.3.1.14</span> org-caldav <a href="#orgcaldav"><svg aria-hidden="true" class="octicon octicon-link" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a></h5>
+<div class="outline-text-5" id="text-12-3-1-14">
 <div class="org-src-container">
 <pre class="src src-emacs-lisp">(<span class="org-keyword">use-package</span> <span class="org-constant">org-caldav</span>
   <span class="org-builtin">:defer</span> t
