@@ -3381,7 +3381,7 @@ alphanumeric characters only."
 **** org-projectile
 #+BEGIN_SRC emacs-lisp
 (use-package org-projectile
-  :defer t
+  :demand t
   :config
   (progn
     (setq org-projectile-projects-file
