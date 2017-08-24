@@ -3401,6 +3401,17 @@ alphanumeric characters only."
   :after org-projectile
   :bind (("C-c n p" . org-projectile-helm-template-or-project)))
 #+END_SRC
+**** org-super-agenda
+#+BEGIN_SRC emacs-lisp
+(use-package org-super-agenda
+  :config
+  (setq org-super-agenda-groups
+        '((:order-multi (-1 (:name "High priority"
+                                   (:priority<= "B"))))
+          (:order-multi (1 (:name "Done today"
+                                  :and (:regexp "State \"DONE\""
+                                               :log t)))))))
+#+END_SRC
 **** helm-org-rifle
 #+BEGIN_SRC emacs-lisp
 (use-package helm-org-rifle
