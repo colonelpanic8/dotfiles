@@ -433,16 +433,13 @@ chromeTabAction doSplit action selected =
 
 -- This needs access to X in order to unminimize, which means that it can't be
 -- done with the existing window bringer interface
-myWindowAct c@WindowBringerConfig { menuCommand = cmd
-                                  , menuArgs = args
-                                  } action =
-  do
-    visible <- visibleWindows
-    ws <- windowMap' c { windowFilter = not . flip elem visible }
+myWindowAct c@WindowBringerConfig {menuCommand = cmd, menuArgs = args} action = do
+  visible <- visibleWindows
+  ws <- windowMap' c {windowFilter = not . flip elem visible}
     -- chromeTabs <- liftIO getChromeTabInfo
-    let options = M.union (M.map Left ws) (M.map Right M.empty)
-    selection <- DM.menuMapArgs cmd args options
-    whenJust selection action
+  let options = M.union (M.map Left ws) (M.map Right M.empty)
+  selection <- DM.menuMapArgs cmd args options
+  whenJust selection action
 
 doBringWindow window =
   maximizeWindow window >> windows (W.focusWindow window . bringWindow window)
