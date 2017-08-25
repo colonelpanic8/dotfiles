@@ -1158,6 +1158,12 @@ it on by default. Its probably safe to turn it on when in a programming mode.
   :demand t
   :config
   (progn
+    (defun imalison:maybe-use-frames-for-org (&rest args)
+      (let ((fn (if frame-mode 'org-switch-to-buffer-other-window
+                  'switch-to-buffer-other-frame)))
+        (apply fn args)))
+    (advice-add 'org-switch-to-buffer-other-window
+                :override 'imalison:maybe-use-frames-for-org)
     (add-hook 'frame-mode-hook (lambda () (display-time-mode -1)))
     (frame-mode +1)
     (frame-keys-mode +1)))
@@ -2917,7 +2923,7 @@ Intero seems to be causing hangs, so it has been disabled
               ((eq major-mode 'org-agenda-mode) (org-agenda-todo)))))
 
     (defun imalison:make-org-linked-todo-template ()
-      (imalison:make-org-todo-template "%? %A"))
+      (imalison:make-org-todo-template "[#C] %? %A"))
 
     (defun org-cmp-creation-times (a b)
       (let ((a-created (get-date-created-from-agenda-entry a))
@@ -3406,12 +3412,14 @@ alphanumeric characters only."
 (use-package org-super-agenda
   :defer t
   :config
-  (setq org-super-agenda-groups
-        '((:order-multi (-1 (:name "High priority"
-                                   (:priority<= "B"))))
-          (:order-multi (1 (:name "Done today"
-                                  :and (:regexp "State \"DONE\""
-                                               :log t)))))))
+  (progn
+    (org-super-agenda-mode +1)
+    (setq org-super-agenda-groups
+          '((:order-multi (1 (:name "High priority"
+                                     :priority> "C")))
+            (:order-multi (1 (:name "Done today"
+                                    :and (:regexp "State \"DONE\""
+                                                  :log t))))))))
 #+END_SRC
 **** helm-org-rifle
 #+BEGIN_SRC emacs-lisp
