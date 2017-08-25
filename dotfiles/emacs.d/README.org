@@ -1477,7 +1477,8 @@ I don't have any use for this now that I use frames mode, but its an interesting
 #+END_SRC
 ** stream
 #+BEGIN_SRC emacs-lisp
-(use-package stream)
+(use-package stream
+  :defer t)
 #+END_SRC
 ** tile
 #+BEGIN_SRC emacs-lisp
@@ -1700,7 +1701,7 @@ I use helm for almost all emacs completion
   (progn
     (use-package helm-org
       :ensure nil
-      :defer 1
+      :defer 5
       :config
       (progn
         (setq helm-split-window-default-side 'same)
@@ -1732,7 +1733,6 @@ I use helm for almost all emacs completion
         (setq helm-ag-always-set-extra-option nil)))
     (helm-mode 1)))
 #+END_SRC
-[[(helm split window)][Ensure that helm buffers are started in the window that currently holds the focus]]
 ** helm-projectile
 #+BEGIN_SRC emacs-lisp
 (use-package helm-projectile
@@ -4065,6 +4065,7 @@ crux-reopen-as-root-mode makes it so that any file owned by root will automatica
 ** anzu
 #+BEGIN_SRC emacs-lisp
 (use-package anzu
+  :defer 3
   :config
   (progn
     (global-anzu-mode +1)
@@ -4169,6 +4170,7 @@ I had to disable this mode because something that it does messes with coding set
 ** recentf
 #+BEGIN_SRC emacs-lisp
 (use-package recentf
+  :defer 1
   :config
   (progn
     (setq recentf-max-saved-items 1000
@@ -4724,7 +4726,7 @@ Ensure all themes that I use are installed:
 ** all-the-icons
 #+BEGIN_SRC emacs-lisp
 (use-package all-the-icons
-  :demand t)
+  :defer 5)
 #+END_SRC
 ** spaceline
 *** Disable sRGB colorspace to make powerline separators work

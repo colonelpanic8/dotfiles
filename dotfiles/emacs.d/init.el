@@ -26,6 +26,7 @@
 
 ;; Without this, org can behave very strangely
 (use-package org
+  :defer t
   :init
   (progn
     ;; Taken from https://github.com/raxod502/radian/blob/master/radian-emacs/radian-org.el
