@@ -3411,12 +3411,14 @@ alphanumeric characters only."
 #+BEGIN_SRC emacs-lisp
 (use-package org-super-agenda
   :config
-  (setq org-super-agenda-groups
-        '((:order-multi (-1 (:name "High priority"
-                                   (:priority<= "B"))))
-          (:order-multi (1 (:name "Done today"
-                                  :and (:regexp "State \"DONE\""
-                                               :log t)))))))
+  (progn
+    (org-super-agenda-mode +1)
+    (setq org-super-agenda-groups
+          '((:order-multi (1 (:name "High priority"
+                                     :priority> "C")))
+            (:order-multi (1 (:name "Done today"
+                                    :and (:regexp "State \"DONE\""
+                                                  :log t))))))))
 #+END_SRC
 **** helm-org-rifle
 #+BEGIN_SRC emacs-lisp
