@@ -7,7 +7,7 @@ function _setup_env {
     # This is in shellenv.sh now
     _python_setup
 
-    add_to_path "$HOME/.local/bin" "$HOME/.lib/bin" "$HOME/bin" --before
+    add_to_path "$HOME/.lib/bin" "$HOME/.local/bin" "$HOME/bin" --before
     add_to_path "/usr/local/sbin" "/usr/local/bin" "/usr/bin" --after
     _ruby_setup
 
@@ -22,6 +22,10 @@ function _setup_env {
 
     # This makes systemd aware of change to $PATH
     run_if_exists systemctl --user import-environment PATH DISPLAY XAUTHORITY HOME
+
+    # To ensure that things in ~/.lib/bin take precedence
+    add_to_path "$HOME/.lib/bin" --before
+
     export ENVIRONMENT_SETUP_DONE="$(date)"
 }
 

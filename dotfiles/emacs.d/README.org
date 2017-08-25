@@ -361,11 +361,6 @@ but provide support for writing custom elisp.
   (defun imalison:shut-up-around (function &rest args)
     (shut-up (apply function args))))
 #+END_SRC
-*** pcache
-#+BEGIN_SRC emacs-lisp
-(use-package pcache
-  :demand t)
-#+END_SRC
 *** parse-csv
 #+BEGIN_SRC emacs-lisp
 (use-package parse-csv
@@ -1271,9 +1266,12 @@ This makes ~forward-word~ and ~backward-word~ understand snake and camel case.
 ** proced
 proced is an top like utility that runs inside of emacs. The following sets auto updating automatically and makes the update interval faster.
 #+BEGIN_SRC emacs-lisp
-(require 'proced)
-(setq proced-auto-update-interval 1)
-(add-hook 'proced-mode-hook (lambda () (proced-toggle-auto-update +1)))
+(use-package proced
+  :defer t
+  :config
+  (progn
+    (setq proced-auto-update-interval 1)
+    (add-hook 'proced-mode-hook (lambda () (proced-toggle-auto-update +1)))))
 #+END_SRC
 ** Set epa program
 #+BEGIN_SRC emacs-lisp
@@ -1456,16 +1454,16 @@ Paradox is a package.el extension. I have no use for it now that I use straight.
 #+END_SRC
 ** winner
 #+BEGIN_SRC emacs-lisp
-  (use-package winner
-	:commands (winner-undo winner-redo)
-	:bind ("C-c q" . imalison:winner-hydra/body)
-	:config
-	(progn
-	  (defhydra imalison:winner-hydra ()
-		"Winner"
-		("p" winner-undo "back")
-		("n" winner-redo "forward" :exit t))
-	  (winner-mode 1)))
+(use-package winner
+  :commands (winner-undo winner-redo)
+  :bind ("C-c q" . imalison:winner-hydra/body)
+  :config
+  (progn
+    (defhydra imalison:winner-hydra ()
+      "Winner"
+      ("p" winner-undo "back")
+      ("n" winner-redo "forward" :exit t))
+    (winner-mode 1)))
 #+END_SRC
 ** eyebrowse
 I don't have any use for this now that I use frames mode, but its an interesting idea.
@@ -2386,7 +2384,8 @@ Reduce indentation for some functions
 #+END_SRC
 **** overseer
 #+BEGIN_SRC emacs-lisp
-(use-package overseer)
+(use-package overseer
+  :defer t)
 #+END_SRC
 **** Misc
 #+BEGIN_SRC emacs-lisp
