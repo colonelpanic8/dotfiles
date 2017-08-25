@@ -3,7 +3,7 @@
 "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
-<!-- 2017-08-24 Thu 19:10 -->
+<!-- 2017-08-25 Fri 19:52 -->
 <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title></title>
@@ -5900,6 +5900,12 @@ it on by default. Its probably safe to turn it on when in a programming mode.
   <span class="org-builtin">:demand</span> t
   <span class="org-builtin">:config</span>
   (<span class="org-keyword">progn</span>
+    (<span class="org-keyword">defun</span> <span class="org-function-name">imalison:maybe-use-frames-for-org</span> (<span class="org-type">&amp;rest</span> args)
+      (<span class="org-keyword">let</span> ((fn (<span class="org-keyword">if</span> frame-mode 'org-switch-to-buffer-other-window
+                  'switch-to-buffer-other-frame)))
+        (apply fn args)))
+    (advice-add 'org-switch-to-buffer-other-window
+                <span class="org-builtin">:override</span> 'imalison:maybe-use-frames-for-org)
     (add-hook 'frame-mode-hook (<span class="org-keyword">lambda</span> () (display-time-mode -1)))
     (frame-mode +1)
     (frame-keys-mode +1)))
@@ -8351,7 +8357,7 @@ Intero seems to be causing hangs, so it has been disabled
               ((eq major-mode 'org-agenda-mode) (org-agenda-todo)))))
 
     (<span class="org-keyword">defun</span> <span class="org-function-name">imalison:make-org-linked-todo-template</span> ()
-      (imalison:make-org-todo-template <span class="org-string">"%? %A"</span>))
+      (imalison:make-org-todo-template <span class="org-string">"[#C] %? %A"</span>))
 
     (<span class="org-keyword">defun</span> <span class="org-function-name">org-cmp-creation-times</span> (a b)
       (<span class="org-keyword">let</span> ((a-created (get-date-created-from-agenda-entry a))
@@ -8891,12 +8897,14 @@ This function replaces the default naming scheme with a call to
 <div class="org-src-container">
 <pre class="src src-emacs-lisp">(<span class="org-keyword">use-package</span> <span class="org-constant">org-super-agenda</span>
   <span class="org-builtin">:config</span>
-  (<span class="org-keyword">setq</span> org-super-agenda-groups
-        '((<span class="org-builtin">:order-multi</span> (-1 (<span class="org-builtin">:name</span> <span class="org-string">"High priority"</span>
-                                   (<span class="org-builtin">:priority&lt;=</span> <span class="org-string">"B"</span>))))
-          (<span class="org-builtin">:order-multi</span> (1 (<span class="org-builtin">:name</span> <span class="org-string">"Done today"</span>
-                                  <span class="org-builtin">:and</span> (<span class="org-builtin">:regexp</span> <span class="org-string">"State \"DONE\""</span>
-                                               <span class="org-builtin">:log</span> t)))))))
+  (<span class="org-keyword">progn</span>
+    (org-super-agenda-mode +1)
+    (<span class="org-keyword">setq</span> org-super-agenda-groups
+          '((<span class="org-builtin">:order-multi</span> (1 (<span class="org-builtin">:name</span> <span class="org-string">"High priority"</span>
+                                     <span class="org-builtin">:priority&gt;</span> <span class="org-string">"C"</span>)))
+            (<span class="org-builtin">:order-multi</span> (1 (<span class="org-builtin">:name</span> <span class="org-string">"Done today"</span>
+                                    <span class="org-builtin">:and</span> (<span class="org-builtin">:regexp</span> <span class="org-string">"State \"DONE\""</span>
+                                                  <span class="org-builtin">:log</span> t))))))))
 </pre>
 </div>
 </div>
