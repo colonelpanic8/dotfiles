@@ -373,7 +373,8 @@ but provide support for writing custom elisp.
 #+END_SRC
 *** request
 #+BEGIN_SRC emacs-lisp
-(use-package request)
+(use-package request
+  :defer t)
 #+END_SRC
 ** Named Build
 <<namedbuild>>
@@ -812,8 +813,9 @@ A macro for composing functions together to build an interactive command to copy
 ** Download a File Into a Buffer
 <<downloadfile>>
 #+BEGIN_SRC emacs-lisp
-(defun imalison:download-to-buffer (uri)
+(defun imalirson:download-to-buffer (uri)
   (interactive (list (read-string "Enter uri: ")))
+  (require 'request)
   (request uri
            :parser 'buffer-string
            :success (cl-function
@@ -1480,7 +1482,6 @@ I don't have any use for this now that I use frames mode, but its an interesting
 ** tile
 #+BEGIN_SRC emacs-lisp
 (use-package tile
-  :after hydra
   :bind ("C-c t" . imalison:hydra-tile/body)
   :config
   (progn
@@ -1488,6 +1489,7 @@ I don't have any use for this now that I use frames mode, but its an interesting
     (defvar imalison:wide-tile-strategy tile-wide)
     (defvar imalison:master-tile-strategy (tile-argument-buffer-fetcher
                                            :layout tile-master-left))
+    (require 'hydra)
     (defhydra imalison:hydra-tile
       nil
       "tile"
@@ -1734,6 +1736,7 @@ I use helm for almost all emacs completion
 ** helm-projectile
 #+BEGIN_SRC emacs-lisp
 (use-package helm-projectile
+  :defer 1
   :commands (helm-projectile-on)
   :bind (:map helm-projectile-projects-map
               ("M-s" . imalison:switch-to-project-and-search)
@@ -1754,6 +1757,7 @@ I use helm for almost all emacs completion
       (imalison:do-in-project dir (term-projectile-forward))))
   :config
   (progn
+    (shut-up (helm-projectile-on))
     (helm-delete-action-from-source "Search in Project"
                                     helm-source-projectile-projects)
     (helm-delete-action-from-source "Open term for project"
@@ -1810,7 +1814,6 @@ I use helm for almost all emacs completion
     (setq projectile-enable-caching nil)
     (setq projectile-completion-system 'helm)
     (add-to-list 'projectile-globally-ignored-files "Godeps")
-    (shut-up (helm-projectile-on))
     (diminish 'projectile-mode)
     (bind-key* "C-c p s" 'imalison:do-ag)
     (bind-key* "C-c p S" 'imalison:set-options-do-ag)
@@ -2053,10 +2056,10 @@ I don't use auto-complete at all, so I have set up a hook to automatically disab
 ** align
 #+BEGIN_SRC emacs-lisp
 (use-package align
-  :after hydra
   :bind ("C-c C-a" . imalison:align-regexp-hydra/body)
   :config
   (progn
+    (require 'hydra)
     (defun imalison:complex-align-regexp ()
       (interactive)
       (let ((current-prefix-arg t))
@@ -2378,6 +2381,7 @@ Reduce indentation for some functions
 **** edebug
 #+BEGIN_SRC emacs-lisp
 (use-package edebug
+  :defer t
   :config
   (progn (setq edebug-trace t)))
 #+END_SRC
@@ -3387,7 +3391,7 @@ alphanumeric characters only."
 **** org-projectile
 #+BEGIN_SRC emacs-lisp
 (use-package org-projectile
-  :demand t
+  :defer t
   :config
   (progn
     (setq org-projectile-projects-file
@@ -3660,6 +3664,7 @@ I've disabled magithub because it causes magit to be super slow
 ** git-link
 #+BEGIN_SRC emacs-lisp
 (use-package git-link
+  :defer t
   :config
   (progn
     (setq git-link-use-commit t)))
@@ -3817,7 +3822,7 @@ in term-mode. This makes term-mode 1000% more useful
 (especially having M-x and C-y available).
 #+BEGIN_SRC emacs-lisp
 (use-package term
-  :after helm
+  :demand t
   :preface
   (progn
     (defun imalison:avy-term (arg)
@@ -3844,36 +3849,39 @@ in term-mode. This makes term-mode 1000% more useful
         ("M-y" . helm-show-kill-ring-for-term))
   :config
   (progn
-    (require 'helm)
-    (require 'helm-ring)
-    (defvar helm-kill-ring-for-term-actions
-      '(("Yank" . imalison:term-paste)
-        ("Delete" . (lambda (_candidate)
-                      (cl-loop for cand in (helm-marked-candidates)
-                               do (setq kill-ring
-                                        (delete cand kill-ring)))))))
-    (defvar helm-source-kill-ring-for-term
-      (helm-build-sync-source "Kill Ring"
-        :init (lambda () (helm-attrset 'last-command last-command))
-        :candidates #'helm-kill-ring-candidates
-        :filtered-candidate-transformer #'helm-kill-ring-transformer
-        :action 'helm-kill-ring-for-term-actions
-        :persistent-action 'ignore
-        :persistent-help "DoNothing"
-        :migemo t
-        :multiline t))
+    (use-package helm-ring
+      :ensure nil
+      :defer 1
+      :config
+      (progn
+        (defvar helm-kill-ring-for-term-actions
+          '(("Yank" . imalison:term-paste)
+            ("Delete" . (lambda (_candidate)
+                          (cl-loop for cand in (helm-marked-candidates)
+                                   do (setq kill-ring
+                                            (delete cand kill-ring)))))))
+        (defvar helm-source-kill-ring-for-term
+          (helm-build-sync-source "Kill Ring"
+            :init (lambda () (helm-attrset 'last-command last-command))
+            :candidates #'helm-kill-ring-candidates
+            :filtered-candidate-transformer #'helm-kill-ring-transformer
+            :action 'helm-kill-ring-for-term-actions
+            :persistent-action 'ignore
+            :persistent-help "DoNothing"
+            :migemo t
+            :multiline t))
 
-    (defun helm-show-kill-ring-for-term ()
-      "Preconfigured `helm' for `kill-ring'.
+        (defun helm-show-kill-ring-for-term ()
+          "Preconfigured `helm' for `kill-ring'.
 It is drop-in replacement of `yank-pop'.
 
 First call open the kill-ring browser, next calls move to next line."
-      (interactive)
-      (let ((enable-recursive-minibuffers t))
-        (helm :sources helm-source-kill-ring-for-term
-              :buffer "*helm kill ring*"
-              :resume 'noresume
-              :allow-nest t)))
+          (interactive)
+          (let ((enable-recursive-minibuffers t))
+            (helm :sources helm-source-kill-ring-for-term
+                  :buffer "*helm kill ring*"
+                  :resume 'noresume
+                  :allow-nest t)))))
 
     (defun imalison:term-char-mode ()
       (interactive)
@@ -3979,7 +3987,7 @@ First call open the kill-ring browser, next calls move to next line."
 crux-reopen-as-root-mode makes it so that any file owned by root will automatically be opened as the root user.
 #+BEGIN_SRC emacs-lisp
 (use-package crux
-  :demand t
+  :defer 1
   :bind (("C-c C-s" . crux-sudo-edit)
          ("C-c C-r" . crux-eval-and-replace)
          ("C-c o" . crux-open-with))
@@ -3994,8 +4002,7 @@ crux-reopen-as-root-mode makes it so that any file owned by root will automatica
 ** helm-systemd
 #+BEGIN_SRC emacs-lisp
 (use-package helm-systemd
-  :after helm
-  :demand t)
+  :commands helm-systemd)
 #+END_SRC
 ** aurel
 #+BEGIN_SRC emacs-lisp
