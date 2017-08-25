@@ -2925,7 +2925,7 @@ Intero seems to be causing hangs, so it has been disabled
               ((eq major-mode 'org-agenda-mode) (org-agenda-todo)))))
 
     (defun imalison:make-org-linked-todo-template ()
-      (imalison:make-org-todo-template "%? %A"))
+      (imalison:make-org-todo-template "[#C] %? %A"))
 
     (defun org-cmp-creation-times (a b)
       (let ((a-created (get-date-created-from-agenda-entry a))
