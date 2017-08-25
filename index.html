@@ -3,7 +3,7 @@
 "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
-<!-- 2017-08-25 Fri 19:52 -->
+<!-- 2017-08-25 Fri 22:58 -->
 <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title></title>
@@ -4782,7 +4782,8 @@ but provide support for writing custom elisp.
 <h4 id="request"><span class="section-number-4">5.3.7</span> request <a href="#request"><svg aria-hidden="true" class="octicon octicon-link" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a></h4>
 <div class="outline-text-4" id="text-5-3-7">
 <div class="org-src-container">
-<pre class="src src-emacs-lisp">(<span class="org-keyword">use-package</span> <span class="org-constant">request</span>)
+<pre class="src src-emacs-lisp">(<span class="org-keyword">use-package</span> <span class="org-constant">request</span>
+  <span class="org-builtin">:defer</span> t)
 </pre>
 </div>
 </div>
@@ -5178,7 +5179,6 @@ This was taken from <a href="http://emacs.stackexchange.com/questions/7583/trans
               (face-attribute 'default <span class="org-builtin">:height</span>))
              (not (imalison:acceptable-default-font-size
                    imalison:default-font-size-pt)))
-    (message <span class="org-string">"default font size was set using hack"</span>)
     (<span class="org-keyword">setq</span> imalison:default-font-size-pt (face-attribute 'default <span class="org-builtin">:height</span>))))
 
 (advice-add 'set-face-attribute <span class="org-builtin">:after</span> 'imalison:set-default-font-size)
@@ -5398,8 +5398,9 @@ A macro for composing functions together to build an interactive command to copy
 <a id="orgtarget2"></a>
 </p>
 <div class="org-src-container">
-<pre class="src src-emacs-lisp">(<span class="org-keyword">defun</span> <span class="org-function-name">imalison:download-to-buffer</span> (uri)
+<pre class="src src-emacs-lisp">(<span class="org-keyword">defun</span> <span class="org-function-name">imalirson:download-to-buffer</span> (uri)
   (<span class="org-keyword">interactive</span> (list (read-string <span class="org-string">"Enter uri: "</span>)))
+  (<span class="org-keyword">require</span> '<span class="org-constant">request</span>)
   (request uri
            <span class="org-builtin">:parser</span> 'buffer-string
            <span class="org-builtin">:success</span> (<span class="org-keyword">cl-function</span>
@@ -6400,7 +6401,8 @@ I don't have any use for this now that I use frames mode, but its an interesting
 <h3 id="stream"><span class="section-number-3">6.38</span> stream <a href="#stream"><svg aria-hidden="true" class="octicon octicon-link" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a></h3>
 <div class="outline-text-3" id="text-6-38">
 <div class="org-src-container">
-<pre class="src src-emacs-lisp">(<span class="org-keyword">use-package</span> <span class="org-constant">stream</span>)
+<pre class="src src-emacs-lisp">(<span class="org-keyword">use-package</span> <span class="org-constant">stream</span>
+  <span class="org-builtin">:defer</span> t)
 </pre>
 </div>
 </div>
@@ -6410,7 +6412,6 @@ I don't have any use for this now that I use frames mode, but its an interesting
 <div class="outline-text-3" id="text-6-39">
 <div class="org-src-container">
 <pre class="src src-emacs-lisp">(<span class="org-keyword">use-package</span> <span class="org-constant">tile</span>
-  <span class="org-builtin">:after</span> hydra
   <span class="org-builtin">:bind</span> (<span class="org-string">"C-c t"</span> . imalison:hydra-tile/body)
   <span class="org-builtin">:config</span>
   (<span class="org-keyword">progn</span>
@@ -6418,6 +6419,7 @@ I don't have any use for this now that I use frames mode, but its an interesting
     (<span class="org-keyword">defvar</span> <span class="org-variable-name">imalison:wide-tile-strategy</span> tile-wide)
     (<span class="org-keyword">defvar</span> <span class="org-variable-name">imalison:master-tile-strategy</span> (tile-argument-buffer-fetcher
                                            <span class="org-builtin">:layout</span> tile-master-left))
+    (<span class="org-keyword">require</span> '<span class="org-constant">hydra</span>)
     (defhydra imalison:hydra-tile
       nil
       <span class="org-string">"tile"</span>
@@ -6736,7 +6738,7 @@ I use helm for almost all emacs completion
 <div class="org-src-container">
 <pre class="src src-emacs-lisp"><span class="linenr"> 1: </span>(<span class="org-keyword">use-package</span> <span class="org-constant">helm-config</span>
 <span class="linenr"> 2: </span>  <span class="org-builtin">:ensure</span> helm
-<span class="linenr"> 3: </span>  <span class="org-builtin">:demand</span> t
+<span class="linenr"> 3: </span>  <span class="org-builtin">:defer</span> 1
 <span class="linenr"> 4: </span>  <span class="org-builtin">:bind</span> ((<span class="org-string">"M-y"</span> . helm-show-kill-ring)
 <span class="linenr"> 5: </span>         (<span class="org-string">"M-x"</span> . helm-M-x)
 <span class="linenr"> 6: </span>         (<span class="org-string">"C-x C-i"</span> . helm-imenu)
@@ -6745,40 +6747,41 @@ I use helm for almost all emacs completion
 <span class="linenr"> 9: </span>  <span class="org-builtin">:diminish</span> helm-mode
 <span class="linenr">10: </span>  <span class="org-builtin">:config</span>
 <span class="linenr">11: </span>  (<span class="org-keyword">progn</span>
-<span class="linenr">12: </span>    (<span class="org-keyword">require</span> '<span class="org-constant">helm-org</span>)
-<span id="coderef-helm split window" class="coderef-off"><span class="linenr">13: </span>    (<span class="org-keyword">setq</span> helm-split-window-default-side 'same)</span>
-<span class="linenr">14: </span>
-<span class="linenr">15: </span>    (<span class="org-keyword">cl-defun</span> <span class="org-function-name">helm-org-headings-in-buffer</span> ()
-<span class="linenr">16: </span>      (<span class="org-keyword">interactive</span>)
-<span class="linenr">17: </span>      (helm <span class="org-builtin">:sources</span> (helm-source-org-headings-for-files
-<span class="linenr">18: </span>                      (list (projectile-completing-read
-<span class="linenr">19: </span>                             <span class="org-string">"File to look at headings from: "</span>
-<span class="linenr">20: </span>                             (projectile-all-project-files))))
-<span class="linenr">21: </span>            <span class="org-builtin">:candidate-number-limit</span> 99999
-<span class="linenr">22: </span>            <span class="org-builtin">:buffer</span> <span class="org-string">"*helm org inbuffer*"</span>))
-<span class="linenr">23: </span>
-<span class="linenr">24: </span>    (<span class="org-keyword">use-package</span> <span class="org-constant">helm-descbinds</span>
-<span class="linenr">25: </span>      <span class="org-builtin">:demand</span> t
-<span class="linenr">26: </span>      <span class="org-builtin">:config</span> (helm-descbinds-mode 1))
+<span class="linenr">12: </span>    (<span class="org-keyword">use-package</span> <span class="org-constant">helm-org</span>
+<span class="linenr">13: </span>      <span class="org-builtin">:ensure</span> nil
+<span class="linenr">14: </span>      <span class="org-builtin">:defer</span> 5
+<span class="linenr">15: </span>      <span class="org-builtin">:config</span>
+<span class="linenr">16: </span>      (<span class="org-keyword">progn</span>
+<span class="linenr">17: </span>        (<span class="org-keyword">setq</span> helm-split-window-default-side 'same)
+<span class="linenr">18: </span>
+<span class="linenr">19: </span>        (<span class="org-keyword">cl-defun</span> <span class="org-function-name">helm-org-headings-in-buffer</span> ()
+<span class="linenr">20: </span>          (<span class="org-keyword">interactive</span>)
+<span class="linenr">21: </span>          (helm <span class="org-builtin">:sources</span> (helm-source-org-headings-for-files
+<span class="linenr">22: </span>                          (list (projectile-completing-read
+<span class="linenr">23: </span>                                 <span class="org-string">"File to look at headings from: "</span>
+<span class="linenr">24: </span>                                 (projectile-all-project-files))))
+<span class="linenr">25: </span>                <span class="org-builtin">:candidate-number-limit</span> 99999
+<span class="linenr">26: </span>                <span class="org-builtin">:buffer</span> <span class="org-string">"*helm org inbuffer*"</span>))))
 <span class="linenr">27: </span>
-<span class="linenr">28: </span>    (<span class="org-keyword">use-package</span> <span class="org-constant">helm-ag</span>
-<span class="linenr">29: </span>      <span class="org-builtin">:bind</span> (<span class="org-string">"C-c p 1"</span> . imalison:set-helm-ag-extra-options)
-<span class="linenr">30: </span>      <span class="org-builtin">:preface</span>
-<span class="linenr">31: </span>      (<span class="org-keyword">progn</span>
-<span class="linenr">32: </span>        (<span class="org-keyword">defun</span> <span class="org-function-name">imalison:set-helm-ag-extra-options</span> ()
-<span class="linenr">33: </span>          (<span class="org-keyword">interactive</span>)
-<span class="linenr">34: </span>          (<span class="org-keyword">let</span> ((option (read-string <span class="org-string">"Extra options: "</span> (<span class="org-keyword">or</span> helm-ag--extra-options <span class="org-string">""</span>)
-<span class="linenr">35: </span>                                     'helm-ag--extra-options-history)))
-<span class="linenr">36: </span>            (<span class="org-keyword">setq</span> helm-ag--extra-options option))))
-<span class="linenr">37: </span>      <span class="org-builtin">:config</span>
-<span class="linenr">38: </span>      (<span class="org-keyword">progn</span>
-<span class="linenr">39: </span>        (<span class="org-keyword">setq</span> helm-ag-always-set-extra-option nil)))
-<span class="linenr">40: </span>    (helm-mode 1)))
+<span class="linenr">28: </span>    (<span class="org-keyword">use-package</span> <span class="org-constant">helm-descbinds</span>
+<span class="linenr">29: </span>      <span class="org-builtin">:demand</span> t
+<span class="linenr">30: </span>      <span class="org-builtin">:config</span> (helm-descbinds-mode 1))
+<span class="linenr">31: </span>
+<span class="linenr">32: </span>    (<span class="org-keyword">use-package</span> <span class="org-constant">helm-ag</span>
+<span class="linenr">33: </span>      <span class="org-builtin">:bind</span> (<span class="org-string">"C-c p 1"</span> . imalison:set-helm-ag-extra-options)
+<span class="linenr">34: </span>      <span class="org-builtin">:preface</span>
+<span class="linenr">35: </span>      (<span class="org-keyword">progn</span>
+<span class="linenr">36: </span>        (<span class="org-keyword">defun</span> <span class="org-function-name">imalison:set-helm-ag-extra-options</span> ()
+<span class="linenr">37: </span>          (<span class="org-keyword">interactive</span>)
+<span class="linenr">38: </span>          (<span class="org-keyword">let</span> ((option (read-string <span class="org-string">"Extra options: "</span> (<span class="org-keyword">or</span> helm-ag--extra-options <span class="org-string">""</span>)
+<span class="linenr">39: </span>                                     'helm-ag--extra-options-history)))
+<span class="linenr">40: </span>            (<span class="org-keyword">setq</span> helm-ag--extra-options option))))
+<span class="linenr">41: </span>      <span class="org-builtin">:config</span>
+<span class="linenr">42: </span>      (<span class="org-keyword">progn</span>
+<span class="linenr">43: </span>        (<span class="org-keyword">setq</span> helm-ag-always-set-extra-option nil)))
+<span class="linenr">44: </span>    (helm-mode 1)))
 </pre>
 </div>
-<p>
-<a href="#coderef-helm split window" class="coderef" onmouseover="CodeHighlightOn(this, 'coderef-helm split window');" onmouseout="CodeHighlightOff(this, 'coderef-helm split window');">Ensure that helm buffers are started in the window that currently holds the focus</a>
-</p>
 </div>
 </div>
 <div id="outline-container-helmprojectile" class="outline-3">
@@ -6786,6 +6789,7 @@ I use helm for almost all emacs completion
 <div class="outline-text-3" id="text-8-3">
 <div class="org-src-container">
 <pre class="src src-emacs-lisp">(<span class="org-keyword">use-package</span> <span class="org-constant">helm-projectile</span>
+  <span class="org-builtin">:defer</span> 1
   <span class="org-builtin">:commands</span> (helm-projectile-on)
   <span class="org-builtin">:bind</span> (<span class="org-builtin">:map</span> helm-projectile-projects-map
               (<span class="org-string">"M-s"</span> . imalison:switch-to-project-and-search)
@@ -6806,6 +6810,7 @@ I use helm for almost all emacs completion
       (imalison:do-in-project dir (term-projectile-forward))))
   <span class="org-builtin">:config</span>
   (<span class="org-keyword">progn</span>
+    (shut-up (helm-projectile-on))
     (helm-delete-action-from-source <span class="org-string">"Search in Project"</span>
                                     helm-source-projectile-projects)
     (helm-delete-action-from-source <span class="org-string">"Open term for project"</span>
@@ -6867,7 +6872,6 @@ I use helm for almost all emacs completion
     (<span class="org-keyword">setq</span> projectile-enable-caching nil)
     (<span class="org-keyword">setq</span> projectile-completion-system 'helm)
     (add-to-list 'projectile-globally-ignored-files <span class="org-string">"Godeps"</span>)
-    (shut-up (helm-projectile-on))
     (diminish 'projectile-mode)
     (<span class="org-keyword">bind-key*</span> <span class="org-string">"C-c p s"</span> 'imalison:do-ag)
     (<span class="org-keyword">bind-key*</span> <span class="org-string">"C-c p S"</span> 'imalison:set-options-do-ag)
@@ -6892,19 +6896,15 @@ I use helm for almost all emacs completion
           ido-create-new-buffer 'always)
     (ido-everywhere 1)
     (<span class="org-keyword">setq</span> ido-enable-flex-matching t)
-    (<span class="org-keyword">use-package</span> <span class="org-constant">flx</span>)
     (<span class="org-keyword">use-package</span> <span class="org-constant">flx-ido</span>
-      <span class="org-builtin">:commands</span> flx-ido-mode
-      <span class="org-builtin">:init</span> (flx-ido-mode 1)
+      <span class="org-builtin">:defer</span> 1
       <span class="org-builtin">:config</span>
       (<span class="org-keyword">progn</span>
         <span class="org-comment-delimiter">;; </span><span class="org-comment">disable ido faces to see flx highlights.</span>
         <span class="org-comment-delimiter">;; </span><span class="org-comment">This makes flx-ido much faster.</span>
         (<span class="org-keyword">setq</span> gc-cons-threshold 20000000)
+        (flx-ido-mode 1)
         (<span class="org-keyword">setq</span> ido-use-faces nil)))
-    (<span class="org-keyword">use-package</span> <span class="org-constant">ido-ubiquitous</span>
-      <span class="org-builtin">:disabled</span> t
-      <span class="org-builtin">:commands</span> (ido-ubiquitous-mode))
     (<span class="org-keyword">use-package</span> <span class="org-constant">ido-vertical-mode</span>
       <span class="org-builtin">:config</span>
       (<span class="org-keyword">progn</span>
@@ -7229,10 +7229,10 @@ I don't use auto-complete at all, so I have set up a hook to automatically disab
 <div class="outline-text-3" id="text-10-11">
 <div class="org-src-container">
 <pre class="src src-emacs-lisp">(<span class="org-keyword">use-package</span> <span class="org-constant">align</span>
-  <span class="org-builtin">:after</span> hydra
   <span class="org-builtin">:bind</span> (<span class="org-string">"C-c C-a"</span> . imalison:align-regexp-hydra/body)
   <span class="org-builtin">:config</span>
   (<span class="org-keyword">progn</span>
+    (<span class="org-keyword">require</span> '<span class="org-constant">hydra</span>)
     (<span class="org-keyword">defun</span> <span class="org-function-name">imalison:complex-align-regexp</span> ()
       (<span class="org-keyword">interactive</span>)
       (<span class="org-keyword">let</span> ((current-prefix-arg t))
@@ -7646,6 +7646,7 @@ Reduce indentation for some functions
 <div class="outline-text-5" id="text-12-1-3-7">
 <div class="org-src-container">
 <pre class="src src-emacs-lisp">(<span class="org-keyword">use-package</span> <span class="org-constant">edebug</span>
+  <span class="org-builtin">:defer</span> t
   <span class="org-builtin">:config</span>
   (<span class="org-keyword">progn</span> (<span class="org-keyword">setq</span> edebug-trace t)))
 </pre>
@@ -8409,14 +8410,16 @@ Intero seems to be causing hangs, so it has been disabled
     (add-to-list
      'org-src-lang-modes '(<span class="org-string">"plantuml"</span> . plantuml))
 
-    (org-babel-do-load-languages
-     'org-babel-load-languages
-     '((sh . t)
-       (python . t)
-       (ruby . t)
-       (octave . t)
-       (sqlite . t)
-       (plantuml . t)))
+    (add-hook 'org-mode-hook 'imalison:load-babel-languages)
+    (<span class="org-keyword">defun</span> <span class="org-function-name">imalison:load-babel-languages</span> ()
+      (org-babel-do-load-languages
+       'org-babel-load-languages
+       '((sh . t)
+         (python . t)
+         (ruby . t)
+         (octave . t)
+         (sqlite . t)
+         (plantuml . t))))
 
     (<span class="org-keyword">setq</span> org-log-into-drawer t
           org-log-reschedule t
@@ -8868,7 +8871,7 @@ This function replaces the default naming scheme with a call to
 <div class="outline-text-5" id="text-12-3-1-9">
 <div class="org-src-container">
 <pre class="src src-emacs-lisp">(<span class="org-keyword">use-package</span> <span class="org-constant">org-projectile</span>
-  <span class="org-builtin">:demand</span> t
+  <span class="org-builtin">:defer</span> t
   <span class="org-builtin">:config</span>
   (<span class="org-keyword">progn</span>
     (<span class="org-keyword">setq</span> org-projectile-projects-file
@@ -8896,6 +8899,7 @@ This function replaces the default naming scheme with a call to
 <div class="outline-text-5" id="text-12-3-1-10">
 <div class="org-src-container">
 <pre class="src src-emacs-lisp">(<span class="org-keyword">use-package</span> <span class="org-constant">org-super-agenda</span>
+  <span class="org-builtin">:defer</span> t
   <span class="org-builtin">:config</span>
   (<span class="org-keyword">progn</span>
     (org-super-agenda-mode +1)
@@ -9240,6 +9244,7 @@ I've disabled magithub because it causes magit to be super slow
 <div class="outline-text-3" id="text-13-2">
 <div class="org-src-container">
 <pre class="src src-emacs-lisp">(<span class="org-keyword">use-package</span> <span class="org-constant">git-link</span>
+  <span class="org-builtin">:defer</span> t
   <span class="org-builtin">:config</span>
   (<span class="org-keyword">progn</span>
     (<span class="org-keyword">setq</span> git-link-use-commit t)))
@@ -9292,7 +9297,7 @@ I've disabled magithub because it causes magit to be super slow
 <div class="outline-text-3" id="text-13-6">
 <div class="org-src-container">
 <pre class="src src-emacs-lisp">(<span class="org-keyword">use-package</span> <span class="org-constant">gitolite-clone</span>
-  <span class="org-builtin">:demand</span> t
+  <span class="org-builtin">:defer</span> 4
   <span class="org-builtin">:preface</span>
   (<span class="org-keyword">progn</span>
     (<span class="org-keyword">defun</span> <span class="org-function-name">gitolite-clone-force-refresh</span> ()
@@ -9499,6 +9504,7 @@ in term-mode. This makes term-mode 1000% more useful
 </p>
 <div class="org-src-container">
 <pre class="src src-emacs-lisp">(<span class="org-keyword">use-package</span> <span class="org-constant">term</span>
+  <span class="org-builtin">:demand</span> t
   <span class="org-builtin">:preface</span>
   (<span class="org-keyword">progn</span>
     (<span class="org-keyword">defun</span> <span class="org-function-name">imalison:avy-term</span> (arg)
@@ -9510,57 +9516,59 @@ in term-mode. This makes term-mode 1000% more useful
       (<span class="org-keyword">interactive</span>)
       (process-send-string
        (get-buffer-process (current-buffer))
-       (<span class="org-keyword">if</span> string string (current-kill 0))))
+       (<span class="org-keyword">if</span> string string (current-kill 0)))))
+  <span class="org-builtin">:bind</span>
+  (<span class="org-builtin">:map</span> term-mode-map
+        (<span class="org-string">"C-c C-k"</span> . imalison:term-char-mode)
+        <span class="org-builtin">:map</span> term-raw-escape-map
+        (<span class="org-string">"M-x"</span> . helm-M-x)
+        (<span class="org-string">"C-j"</span> . imalison:avy-term)
+        <span class="org-builtin">:map</span> term-raw-map
+        (<span class="org-string">"M-x"</span> . helm-M-x)
+        (<span class="org-string">"C-j"</span> . imalison:avy-term)
+        (<span class="org-string">"M-:"</span> . eval-expression)
+        (<span class="org-string">"C-y"</span> . imalison:term-paste)
+        (<span class="org-string">"M-y"</span> . helm-show-kill-ring-for-term))
+  <span class="org-builtin">:config</span>
+  (<span class="org-keyword">progn</span>
+    (<span class="org-keyword">use-package</span> <span class="org-constant">helm-ring</span>
+      <span class="org-builtin">:ensure</span> nil
+      <span class="org-builtin">:defer</span> 1
+      <span class="org-builtin">:config</span>
+      (<span class="org-keyword">progn</span>
+        (<span class="org-keyword">defvar</span> <span class="org-variable-name">helm-kill-ring-for-term-actions</span>
+          '((<span class="org-string">"Yank"</span> . imalison:term-paste)
+            (<span class="org-string">"Delete"</span> . (<span class="org-keyword">lambda</span> (_candidate)
+                          (<span class="org-keyword">cl-loop</span> for cand in (helm-marked-candidates)
+                                   do (<span class="org-keyword">setq</span> kill-ring
+                                            (delete cand kill-ring)))))))
+        (<span class="org-keyword">defvar</span> <span class="org-variable-name">helm-source-kill-ring-for-term</span>
+          (helm-build-sync-source <span class="org-string">"Kill Ring"</span>
+            <span class="org-builtin">:init</span> (<span class="org-keyword">lambda</span> () (helm-attrset 'last-command last-command))
+            <span class="org-builtin">:candidates</span> #'helm-kill-ring-candidates
+            <span class="org-builtin">:filtered-candidate-transformer</span> #'helm-kill-ring-transformer
+            <span class="org-builtin">:action</span> 'helm-kill-ring-for-term-actions
+            <span class="org-builtin">:persistent-action</span> 'ignore
+            <span class="org-builtin">:persistent-help</span> <span class="org-string">"DoNothing"</span>
+            <span class="org-builtin">:migemo</span> t
+            <span class="org-builtin">:multiline</span> t))
 
-    (<span class="org-keyword">require</span> '<span class="org-constant">helm</span>)
-    (<span class="org-keyword">require</span> '<span class="org-constant">helm-ring</span>)
-
-    (<span class="org-keyword">defvar</span> <span class="org-variable-name">helm-kill-ring-for-term-actions</span>
-      '((<span class="org-string">"Yank"</span> . imalison:term-paste)
-        (<span class="org-string">"Delete"</span> . (<span class="org-keyword">lambda</span> (_candidate)
-                      (<span class="org-keyword">cl-loop</span> for cand in (helm-marked-candidates)
-                               do (<span class="org-keyword">setq</span> kill-ring
-                                        (delete cand kill-ring)))))))
-    (<span class="org-keyword">defvar</span> <span class="org-variable-name">helm-source-kill-ring-for-term</span>
-      (helm-build-sync-source <span class="org-string">"Kill Ring"</span>
-        <span class="org-builtin">:init</span> (<span class="org-keyword">lambda</span> () (helm-attrset 'last-command last-command))
-        <span class="org-builtin">:candidates</span> #'helm-kill-ring-candidates
-        <span class="org-builtin">:filtered-candidate-transformer</span> #'helm-kill-ring-transformer
-        <span class="org-builtin">:action</span> 'helm-kill-ring-for-term-actions
-        <span class="org-builtin">:persistent-action</span> 'ignore
-        <span class="org-builtin">:persistent-help</span> <span class="org-string">"DoNothing"</span>
-        <span class="org-builtin">:migemo</span> t
-        <span class="org-builtin">:multiline</span> t))
-
-    (<span class="org-keyword">defun</span> <span class="org-function-name">helm-show-kill-ring-for-term</span> ()
-      <span class="org-doc">"Preconfigured `</span><span class="org-doc"><span class="org-constant">helm</span></span><span class="org-doc">' for `</span><span class="org-doc"><span class="org-constant">kill-ring</span></span><span class="org-doc">'.</span>
+        (<span class="org-keyword">defun</span> <span class="org-function-name">helm-show-kill-ring-for-term</span> ()
+          <span class="org-doc">"Preconfigured `</span><span class="org-doc"><span class="org-constant">helm</span></span><span class="org-doc">' for `</span><span class="org-doc"><span class="org-constant">kill-ring</span></span><span class="org-doc">'.</span>
 <span class="org-doc">It is drop-in replacement of `</span><span class="org-doc"><span class="org-constant">yank-pop</span></span><span class="org-doc">'.</span>
 
 <span class="org-doc">First call open the kill-ring browser, next calls move to next line."</span>
-      (<span class="org-keyword">interactive</span>)
-      (<span class="org-keyword">let</span> ((enable-recursive-minibuffers t))
-        (helm <span class="org-builtin">:sources</span> helm-source-kill-ring-for-term
-              <span class="org-builtin">:buffer</span> <span class="org-string">"*helm kill ring*"</span>
-              <span class="org-builtin">:resume</span> 'noresume
-              <span class="org-builtin">:allow-nest</span> t)))
+          (<span class="org-keyword">interactive</span>)
+          (<span class="org-keyword">let</span> ((enable-recursive-minibuffers t))
+            (helm <span class="org-builtin">:sources</span> helm-source-kill-ring-for-term
+                  <span class="org-builtin">:buffer</span> <span class="org-string">"*helm kill ring*"</span>
+                  <span class="org-builtin">:resume</span> 'noresume
+                  <span class="org-builtin">:allow-nest</span> t)))))
 
     (<span class="org-keyword">defun</span> <span class="org-function-name">imalison:term-char-mode</span> ()
       (<span class="org-keyword">interactive</span>)
       (term-char-mode)
-      (goto-char (point-max))))
-  <span class="org-builtin">:bind</span> (<span class="org-builtin">:map</span> term-mode-map
-              (<span class="org-string">"C-c C-k"</span> . imalison:term-char-mode)
-         <span class="org-builtin">:map</span> term-raw-escape-map
-              (<span class="org-string">"M-x"</span> . helm-M-x)
-              (<span class="org-string">"C-j"</span> . imalison:avy-term)
-         <span class="org-builtin">:map</span> term-raw-map
-              (<span class="org-string">"M-x"</span> . helm-M-x)
-              (<span class="org-string">"C-j"</span> . imalison:avy-term)
-              (<span class="org-string">"M-:"</span> . eval-expression)
-              (<span class="org-string">"C-y"</span> . imalison:term-paste)
-              (<span class="org-string">"M-y"</span> . helm-show-kill-ring-for-term))
-  <span class="org-builtin">:config</span>
-  (<span class="org-keyword">progn</span>
+      (goto-char (point-max)))
     (define-key term-raw-map (kbd <span class="org-string">"C-h"</span>) help-map)
     (add-hook 'term-mode-hook 'imalison:disable-linum-mode)
     (add-hook 'term-mode-hook 'imalison:disable-yas-minor-mode)
@@ -9678,7 +9686,7 @@ crux-reopen-as-root-mode makes it so that any file owned by root will automatica
 </p>
 <div class="org-src-container">
 <pre class="src src-emacs-lisp">(<span class="org-keyword">use-package</span> <span class="org-constant">crux</span>
-  <span class="org-builtin">:demand</span> t
+  <span class="org-builtin">:defer</span> 1
   <span class="org-builtin">:bind</span> ((<span class="org-string">"C-c C-s"</span> . crux-sudo-edit)
          (<span class="org-string">"C-c C-r"</span> . crux-eval-and-replace)
          (<span class="org-string">"C-c o"</span> . crux-open-with))
@@ -9703,8 +9711,7 @@ crux-reopen-as-root-mode makes it so that any file owned by root will automatica
 <div class="outline-text-3" id="text-15-6">
 <div class="org-src-container">
 <pre class="src src-emacs-lisp">(<span class="org-keyword">use-package</span> <span class="org-constant">helm-systemd</span>
-  <span class="org-builtin">:after</span> helm
-  <span class="org-builtin">:demand</span> t)
+  <span class="org-builtin">:commands</span> helm-systemd)
 </pre>
 </div>
 </div>
@@ -9816,6 +9823,7 @@ crux-reopen-as-root-mode makes it so that any file owned by root will automatica
 <div class="outline-text-3" id="text-18-1">
 <div class="org-src-container">
 <pre class="src src-emacs-lisp">(<span class="org-keyword">use-package</span> <span class="org-constant">anzu</span>
+  <span class="org-builtin">:defer</span> 3
   <span class="org-builtin">:config</span>
   (<span class="org-keyword">progn</span>
     (global-anzu-mode +1)
@@ -9981,6 +9989,7 @@ I had to disable this mode because something that it does messes with coding set
 <div class="outline-text-3" id="text-18-12">
 <div class="org-src-container">
 <pre class="src src-emacs-lisp">(<span class="org-keyword">use-package</span> <span class="org-constant">recentf</span>
+  <span class="org-builtin">:defer</span> 1
   <span class="org-builtin">:config</span>
   (<span class="org-keyword">progn</span>
     (<span class="org-keyword">setq</span> recentf-max-saved-items 1000
@@ -10753,7 +10762,7 @@ Ensure all themes that I use are installed:
 <div class="outline-text-3" id="text-19-3">
 <div class="org-src-container">
 <pre class="src src-emacs-lisp">(<span class="org-keyword">use-package</span> <span class="org-constant">all-the-icons</span>
-  <span class="org-builtin">:demand</span> t)
+  <span class="org-builtin">:defer</span> 5)
 </pre>
 </div>
 </div>
@@ -10931,8 +10940,7 @@ the original <code>ansi-term-color-vector</code> state. The code is exectued in 
 load-theme hook (See the heading below).
 </p>
 <div class="org-src-container">
-<pre class="src src-emacs-lisp">(<span class="org-keyword">require</span> '<span class="org-constant">term</span>)
-(<span class="org-keyword">defvar</span> <span class="org-variable-name">imalison:ansi-term-color-vector</span> ansi-term-color-vector)
+<pre class="src src-emacs-lisp">(<span class="org-keyword">defvar</span> <span class="org-variable-name">imalison:ansi-term-color-vector</span> ansi-term-color-vector)
 
 (<span class="org-keyword">defun</span> <span class="org-function-name">imalison:ansi-term-color-vector-broken?</span> ()
   (--some (<span class="org-keyword">or</span> (eq it 'unspecified) (not (symbolp it)))
