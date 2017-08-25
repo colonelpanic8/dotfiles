@@ -652,7 +652,6 @@ This was taken from [[http://emacs.stackexchange.com/questions/7583/transiently-
               (face-attribute 'default :height))
              (not (imalison:acceptable-default-font-size
                    imalison:default-font-size-pt)))
-    (message "default font size was set using hack")
     (setq imalison:default-font-size-pt (face-attribute 'default :height))))
 
 (advice-add 'set-face-attribute :after 'imalison:set-default-font-size)
@@ -1682,7 +1681,7 @@ I use helm for almost all emacs completion
 #+BEGIN_SRC emacs-lisp -n -r
 (use-package helm-config
   :ensure helm
-  :demand t
+  :defer 1
   :bind (("M-y" . helm-show-kill-ring)
          ("M-x" . helm-M-x)
          ("C-x C-i" . helm-imenu)
@@ -1691,17 +1690,21 @@ I use helm for almost all emacs completion
   :diminish helm-mode
   :config
   (progn
-    (require 'helm-org)
-    (setq helm-split-window-default-side 'same)         (ref:helm split window)
+    (use-package helm-org
+      :ensure nil
+      :defer 1
+      :config
+      (progn
+        (setq helm-split-window-default-side 'same)
 
-    (cl-defun helm-org-headings-in-buffer ()
-      (interactive)
-      (helm :sources (helm-source-org-headings-for-files
-                      (list (projectile-completing-read
-                             "File to look at headings from: "
-                             (projectile-all-project-files))))
-            :candidate-number-limit 99999
-            :buffer "*helm org inbuffer*"))
+        (cl-defun helm-org-headings-in-buffer ()
+          (interactive)
+          (helm :sources (helm-source-org-headings-for-files
+                          (list (projectile-completing-read
+                                 "File to look at headings from: "
+                                 (projectile-all-project-files))))
+                :candidate-number-limit 99999
+                :buffer "*helm org inbuffer*"))))
 
     (use-package helm-descbinds
       :demand t
@@ -1821,19 +1824,15 @@ I use helm for almost all emacs completion
           ido-create-new-buffer 'always)
     (ido-everywhere 1)
     (setq ido-enable-flex-matching t)
-    (use-package flx)
     (use-package flx-ido
-      :commands flx-ido-mode
-      :init (flx-ido-mode 1)
+      :defer 1
       :config
       (progn
         ;; disable ido faces to see flx highlights.
         ;; This makes flx-ido much faster.
         (setq gc-cons-threshold 20000000)
+        (flx-ido-mode 1)
         (setq ido-use-faces nil)))
-    (use-package ido-ubiquitous
-      :disabled t
-      :commands (ido-ubiquitous-mode))
     (use-package ido-vertical-mode
       :config
       (progn
@@ -2970,14 +2969,16 @@ Intero seems to be causing hangs, so it has been disabled
     (add-to-list
      'org-src-lang-modes '("plantuml" . plantuml))
 
-    (org-babel-do-load-languages
-     'org-babel-load-languages
-     '((sh . t)
-       (python . t)
-       (ruby . t)
-       (octave . t)
-       (sqlite . t)
-       (plantuml . t)))
+    (add-hook 'org-mode-hook 'imalison:load-babel-languages)
+    (defun imalison:load-babel-languages ()
+      (org-babel-do-load-languages
+       'org-babel-load-languages
+       '((sh . t)
+         (python . t)
+         (ruby . t)
+         (octave . t)
+         (sqlite . t)
+         (plantuml . t))))
 
     (setq org-log-into-drawer t
           org-log-reschedule t
@@ -3403,6 +3404,7 @@ alphanumeric characters only."
 **** org-super-agenda
 #+BEGIN_SRC emacs-lisp
 (use-package org-super-agenda
+  :defer t
   :config
   (setq org-super-agenda-groups
         '((:order-multi (-1 (:name "High priority"
@@ -3682,7 +3684,7 @@ I've disabled magithub because it causes magit to be super slow
 ** gitolite-clone
 #+BEGIN_SRC emacs-lisp
 (use-package gitolite-clone
-  :demand t
+  :defer 4
   :preface
   (progn
     (defun gitolite-clone-force-refresh ()
@@ -3807,6 +3809,7 @@ in term-mode. This makes term-mode 1000% more useful
 (especially having M-x and C-y available).
 #+BEGIN_SRC emacs-lisp
 (use-package term
+  :after helm
   :preface
   (progn
     (defun imalison:avy-term (arg)
@@ -3818,11 +3821,23 @@ in term-mode. This makes term-mode 1000% more useful
       (interactive)
       (process-send-string
        (get-buffer-process (current-buffer))
-       (if string string (current-kill 0))))
-
+       (if string string (current-kill 0)))))
+  :bind
+  (:map term-mode-map
+        ("C-c C-k" . imalison:term-char-mode)
+        :map term-raw-escape-map
+        ("M-x" . helm-M-x)
+        ("C-j" . imalison:avy-term)
+        :map term-raw-map
+        ("M-x" . helm-M-x)
+        ("C-j" . imalison:avy-term)
+        ("M-:" . eval-expression)
+        ("C-y" . imalison:term-paste)
+        ("M-y" . helm-show-kill-ring-for-term))
+  :config
+  (progn
     (require 'helm)
     (require 'helm-ring)
-
     (defvar helm-kill-ring-for-term-actions
       '(("Yank" . imalison:term-paste)
         ("Delete" . (lambda (_candidate)
@@ -3855,20 +3870,7 @@ First call open the kill-ring browser, next calls move to next line."
     (defun imalison:term-char-mode ()
       (interactive)
       (term-char-mode)
-      (goto-char (point-max))))
-  :bind (:map term-mode-map
-              ("C-c C-k" . imalison:term-char-mode)
-         :map term-raw-escape-map
-              ("M-x" . helm-M-x)
-              ("C-j" . imalison:avy-term)
-         :map term-raw-map
-              ("M-x" . helm-M-x)
-              ("C-j" . imalison:avy-term)
-              ("M-:" . eval-expression)
-              ("C-y" . imalison:term-paste)
-              ("M-y" . helm-show-kill-ring-for-term))
-  :config
-  (progn
+      (goto-char (point-max)))
     (define-key term-raw-map (kbd "C-h") help-map)
     (add-hook 'term-mode-hook 'imalison:disable-linum-mode)
     (add-hook 'term-mode-hook 'imalison:disable-yas-minor-mode)
@@ -4825,7 +4827,6 @@ For some reason, loading certain themes can cause colors in
 the original ~ansi-term-color-vector~ state. The code is exectued in a
 load-theme hook (See the heading below).
 #+BEGIN_SRC emacs-lisp
-(require 'term)
 (defvar imalison:ansi-term-color-vector ansi-term-color-vector)
 
 (defun imalison:ansi-term-color-vector-broken? ()
