@@ -3,7 +3,7 @@
 "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
-<!-- 2017-08-26 Sat 21:15 -->
+<!-- 2017-08-27 Sun 02:16 -->
 <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title></title>
@@ -6121,12 +6121,11 @@ proced is an top like utility that runs inside of emacs. The following sets auto
 <h3 id="usetcpserver"><span class="section-number-3">6.22</span> Use TCP Server <a href="#usetcpserver"><svg aria-hidden="true" class="octicon octicon-link" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a></h3>
 <div class="outline-text-3" id="text-6-22">
 <p>
-I've had to stop setting this variable, because it causes problems when emacs is
-not STARTED in daemon mode. For some reason, even when the server is started, it
-is not detected properly by emacsclient by default.
+This variable used to make it so that emacs client would not detect the running
+emacs server when emacs was not STARTED in daemon mode.
 </p>
 <div class="org-src-container">
-<pre class="src src-emacs-lisp">(<span class="org-keyword">setq</span> server-use-tcp nil)
+<pre class="src src-emacs-lisp">(<span class="org-keyword">setq</span> server-use-tcp t)
 </pre>
 </div>
 </div>
@@ -6736,7 +6735,7 @@ I use helm for almost all emacs completion
 </p>
 <div class="org-src-container">
 <pre class="src src-emacs-lisp"><span class="linenr"> 1: </span>(<span class="org-keyword">use-package</span> <span class="org-constant">helm-config</span>
-<span class="linenr"> 2: </span>  <span class="org-builtin">:defer</span> 1
+<span class="linenr"> 2: </span>  <span class="org-builtin">:demand</span> t
 <span class="linenr"> 3: </span>  <span class="org-builtin">:ensure</span> helm
 <span class="linenr"> 4: </span>  <span class="org-builtin">:bind</span> ((<span class="org-string">"M-y"</span> . helm-show-kill-ring)
 <span class="linenr"> 5: </span>         (<span class="org-string">"M-x"</span> . helm-M-x)
@@ -6746,12 +6745,12 @@ I use helm for almost all emacs completion
 <span class="linenr"> 9: </span>  <span class="org-builtin">:diminish</span> helm-mode
 <span class="linenr">10: </span>  <span class="org-builtin">:config</span>
 <span class="linenr">11: </span>  (<span class="org-keyword">progn</span>
-<span class="linenr">12: </span>    (<span class="org-keyword">use-package</span> <span class="org-constant">helm-org</span>
-<span class="linenr">13: </span>      <span class="org-builtin">:ensure</span> nil
-<span class="linenr">14: </span>      <span class="org-builtin">:defer</span> 10
-<span class="linenr">15: </span>      <span class="org-builtin">:config</span>
-<span class="linenr">16: </span>      (<span class="org-keyword">progn</span>
-<span class="linenr">17: </span>        (<span class="org-keyword">setq</span> helm-split-window-default-side 'same)
+<span class="linenr">12: </span>    (<span class="org-keyword">setq</span> helm-split-window-default-side 'same)
+<span class="linenr">13: </span>    (<span class="org-keyword">use-package</span> <span class="org-constant">helm-org</span>
+<span class="linenr">14: </span>      <span class="org-builtin">:ensure</span> nil
+<span class="linenr">15: </span>      <span class="org-builtin">:defer</span> 10
+<span class="linenr">16: </span>      <span class="org-builtin">:config</span>
+<span class="linenr">17: </span>      (<span class="org-keyword">progn</span>
 <span class="linenr">18: </span>
 <span class="linenr">19: </span>        (<span class="org-keyword">cl-defun</span> <span class="org-function-name">helm-org-headings-in-buffer</span> ()
 <span class="linenr">20: </span>          (<span class="org-keyword">interactive</span>)
@@ -6884,6 +6883,7 @@ I use helm for almost all emacs completion
 <div class="outline-text-3" id="text-8-5">
 <div class="org-src-container">
 <pre class="src src-emacs-lisp">(<span class="org-keyword">use-package</span> <span class="org-constant">ido</span>
+  <span class="org-builtin">:demand</span> t
   <span class="org-builtin">:commands</span> ido-mode
   <span class="org-builtin">:config</span>
   (<span class="org-keyword">progn</span>
