@@ -1283,11 +1283,10 @@ proced is an top like utility that runs inside of emacs. The following sets auto
 (add-hook 'after-save-hook 'executable-make-buffer-file-executable-if-script-p)
 #+END_SRC
 ** Use TCP Server
-I've had to stop setting this variable, because it causes problems when emacs is
-not STARTED in daemon mode. For some reason, even when the server is started, it
-is not detected properly by emacsclient by default.
+This variable used to make it so that emacs client would not detect the running
+emacs server when emacs was not STARTED in daemon mode.
 #+BEGIN_SRC emacs-lisp
-(setq server-use-tcp nil)
+(setq server-use-tcp t)
 #+END_SRC
 ** Misc
 #+BEGIN_SRC emacs-lisp
@@ -1431,7 +1430,6 @@ Paradox is a package.el extension. I have no use for it now that I use straight.
     (setq shackle-inhibit-window-quit-on-same-windows t)
     (setq shackle-default-rule '(:same t))))
 #+END_SRC
-
 ** beacon
 #+BEGIN_SRC emacs-lisp
 (use-package beacon
