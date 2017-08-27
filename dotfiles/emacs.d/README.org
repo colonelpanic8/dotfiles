@@ -1687,7 +1687,7 @@ bind-key and global-set-key forms.
 I use helm for almost all emacs completion
 #+BEGIN_SRC emacs-lisp -n -r
 (use-package helm-config
-  :defer 1
+  :demand t
   :ensure helm
   :bind (("M-y" . helm-show-kill-ring)
          ("M-x" . helm-M-x)
@@ -1697,12 +1697,12 @@ I use helm for almost all emacs completion
   :diminish helm-mode
   :config
   (progn
+    (setq helm-split-window-default-side 'same)
     (use-package helm-org
       :ensure nil
       :defer 10
       :config
       (progn
-        (setq helm-split-window-default-side 'same)
 
         (cl-defun helm-org-headings-in-buffer ()
           (interactive)
@@ -1820,6 +1820,7 @@ I use helm for almost all emacs completion
 ** ido
 #+BEGIN_SRC emacs-lisp
 (use-package ido
+  :demand t
   :commands ido-mode
   :config
   (progn
