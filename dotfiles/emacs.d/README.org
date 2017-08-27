@@ -1687,8 +1687,8 @@ bind-key and global-set-key forms.
 I use helm for almost all emacs completion
 #+BEGIN_SRC emacs-lisp -n -r
 (use-package helm-config
-  :ensure helm
   :defer 1
+  :ensure helm
   :bind (("M-y" . helm-show-kill-ring)
          ("M-x" . helm-M-x)
          ("C-x C-i" . helm-imenu)
@@ -1699,7 +1699,7 @@ I use helm for almost all emacs completion
   (progn
     (use-package helm-org
       :ensure nil
-      :defer 5
+      :defer 10
       :config
       (progn
         (setq helm-split-window-default-side 'same)
@@ -1714,7 +1714,7 @@ I use helm for almost all emacs completion
                 :buffer "*helm org inbuffer*"))))
 
     (use-package helm-descbinds
-      :demand t
+      :defer 4
       :config (helm-descbinds-mode 1))
 
     (use-package helm-ag
@@ -1729,7 +1729,7 @@ I use helm for almost all emacs completion
       :config
       (progn
         (setq helm-ag-always-set-extra-option nil)))
-    (helm-mode 1)))
+    (run-with-idle-timer 1 nil 'helm-mode 1)))
 #+END_SRC
 ** helm-projectile
 #+BEGIN_SRC emacs-lisp
@@ -1832,7 +1832,7 @@ I use helm for almost all emacs completion
     (ido-everywhere 1)
     (setq ido-enable-flex-matching t)
     (use-package flx-ido
-      :defer 1
+      :defer 5
       :config
       (progn
         ;; disable ido faces to see flx highlights.
@@ -3985,7 +3985,7 @@ First call open the kill-ring browser, next calls move to next line."
 crux-reopen-as-root-mode makes it so that any file owned by root will automatically be opened as the root user.
 #+BEGIN_SRC emacs-lisp
 (use-package crux
-  :defer 1
+  :defer 10
   :bind (("C-c C-s" . crux-sudo-edit)
          ("C-c C-r" . crux-eval-and-replace)
          ("C-c o" . crux-open-with))
@@ -4063,7 +4063,7 @@ crux-reopen-as-root-mode makes it so that any file owned by root will automatica
 ** anzu
 #+BEGIN_SRC emacs-lisp
 (use-package anzu
-  :defer 3
+  :defer 10
   :config
   (progn
     (global-anzu-mode +1)
@@ -4776,8 +4776,10 @@ Ensure all themes that I use are installed:
 ** page-break-lines
 #+BEGIN_SRC emacs-lisp
 (use-package page-break-lines
-  :defer 1
+  :defer 5
   :diminish (page-break-lines-mode)
+  :commands page-break-lines-mode
+  :init
   :config
   (progn
     (add-to-list 'page-break-lines-modes 'prog-mode)
