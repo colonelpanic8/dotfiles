@@ -9,6 +9,7 @@ style "taffybar-default" {
   color["red"] = "#F44336"
   color["dgrey"] = "#212121"
   color["ldgrey"] = "#333333"
+  color["mgrey"] = "#808080"
   color["lldgrey"] = "#424242"
   color["lgrey"] = "#bdbdbd"
   color["teal"] = "#00796b"
@@ -17,7 +18,7 @@ style "taffybar-default" {
   color["activeWS"] = @yellow
   color["visibleWS"] = @red
 
-  bg[NORMAL]   = @dgrey
+  bg[NORMAL]   = @lldgrey
   fg[NORMAL]   = @white
   text[NORMAL] = @black
   fg[PRELIGHT] = @yellow
@@ -58,7 +59,7 @@ style "taffybar-icon-minimized" = "taffybar-default" {
 }
 
 style "taffybar-workspace-contents-active" = "taffybar-default" {
-  bg[NORMAL] = @bgrey
+  bg[NORMAL] = @dgrey
 }
 
 style "taffybar-workspace-contents-visible" = "taffybar-default" {
