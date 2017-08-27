@@ -15,6 +15,17 @@
 (setq use-package-enable-imenu-support t
 	  use-package-always-ensure t)
 
+(defvar imalison:do-benchmark)
+
+(let ((bench-file (concat (file-name-directory user-init-file) "benchmark.el")))
+  (when (file-exists-p bench-file) (load bench-file)))
+
+(use-package benchmark-init
+  :if imalison:do-benchmark
+  :demand t
+  :config
+  (setq max-specpdl-size 99999999))
+
 (setq custom-file "~/.emacs.d/custom-before.el")
 (setq load-prefer-newer t)
 
