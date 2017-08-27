@@ -1970,15 +1970,21 @@ I don't use auto-complete at all, so I have set up a hook to automatically disab
     (use-package mc-extras
       :demand t
       :config
-      (define-key mc/keymap (kbd "C-. =") 'mc/compare-chars)))
+      (define-key mc/keymap (kbd "C-. =") 'mc/compare-chars))
+    (defhydra imalison:multiple-cursors-hydra (:hint nil)
+      "multiple-cursors"
+      ("l" mc/edit-lines "Edit lines" :exit t)
+      ("a" mc/mark-all-like-this "Mark all" :exit t)
+      ("n" mc/mark-next-like-this "Mark next")
+      ("N" mc/skip-to-next-like-this "Skip to next")
+      ("M-n" mc/unmark-next-like-this "Unmark next")
+      ("p" mc/mark-previous-like-this "Mark previous")
+      ("P" mc/skip-to-previous-like-this "Skip to previous")
+      ("M-p" mc/unmark-previous-like-this "Unmark previous")
+      ("r" mc/mark-all-in-region-regexp "Mark by regex in region":exit t)
+      ("q" nil "Quit")))
   :bind
-  (("C-c m a" . mc/mark-all-like-this)
-   ("C-c m m" . mc/mark-all-like-this-dwim)
-   ("C-c m l" . mc/edit-lines)
-   ("C-c m n" . mc/mark-next-like-this)
-   ("C-c m p" . mc/mark-previous-like-this)
-   ("C-c m s" . mc/mark-sgml-tag-pair)
-   ("C-c m d" . mc/mark-all-like-this-in-defun)
+  (("C-c m" . imalison:multiple-cursors-hydra/body)
    :map mc/keymap
    ("C-s" . phi-search)))
 #+END_SRC
