@@ -3,7 +3,7 @@
 "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
-<!-- 2017-08-27 Sun 06:02 -->
+<!-- 2017-08-28 Mon 20:14 -->
 <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title></title>
@@ -7098,15 +7098,21 @@ I don't use auto-complete at all, so I have set up a hook to automatically disab
     (<span class="org-keyword">use-package</span> <span class="org-constant">mc-extras</span>
       <span class="org-builtin">:demand</span> t
       <span class="org-builtin">:config</span>
-      (define-key mc/keymap (kbd <span class="org-string">"C-. ="</span>) 'mc/compare-chars)))
+      (define-key mc/keymap (kbd <span class="org-string">"C-. ="</span>) 'mc/compare-chars))
+    (defhydra imalison:multiple-cursors-hydra (<span class="org-builtin">:hint</span> nil)
+      <span class="org-string">"multiple-cursors"</span>
+      (<span class="org-string">"l"</span> mc/edit-lines <span class="org-string">"Edit lines"</span> <span class="org-builtin">:exit</span> t)
+      (<span class="org-string">"a"</span> mc/mark-all-like-this <span class="org-string">"Mark all"</span> <span class="org-builtin">:exit</span> t)
+      (<span class="org-string">"n"</span> mc/mark-next-like-this <span class="org-string">"Mark next"</span>)
+      (<span class="org-string">"N"</span> mc/skip-to-next-like-this <span class="org-string">"Skip to next"</span>)
+      (<span class="org-string">"M-n"</span> mc/unmark-next-like-this <span class="org-string">"Unmark next"</span>)
+      (<span class="org-string">"p"</span> mc/mark-previous-like-this <span class="org-string">"Mark previous"</span>)
+      (<span class="org-string">"P"</span> mc/skip-to-previous-like-this <span class="org-string">"Skip to previous"</span>)
+      (<span class="org-string">"M-p"</span> mc/unmark-previous-like-this <span class="org-string">"Unmark previous"</span>)
+      (<span class="org-string">"r"</span> mc/mark-all-in-region-regexp <span class="org-string">"Mark by regex in region"</span><span class="org-builtin">:exit</span> t)
+      (<span class="org-string">"q"</span> nil <span class="org-string">"Quit"</span>)))
   <span class="org-builtin">:bind</span>
-  ((<span class="org-string">"C-c m a"</span> . mc/mark-all-like-this)
-   (<span class="org-string">"C-c m m"</span> . mc/mark-all-like-this-dwim)
-   (<span class="org-string">"C-c m l"</span> . mc/edit-lines)
-   (<span class="org-string">"C-c m n"</span> . mc/mark-next-like-this)
-   (<span class="org-string">"C-c m p"</span> . mc/mark-previous-like-this)
-   (<span class="org-string">"C-c m s"</span> . mc/mark-sgml-tag-pair)
-   (<span class="org-string">"C-c m d"</span> . mc/mark-all-like-this-in-defun)
+  ((<span class="org-string">"C-c m"</span> . imalison:multiple-cursors-hydra/body)
    <span class="org-builtin">:map</span> mc/keymap
    (<span class="org-string">"C-s"</span> . phi-search)))
 </pre>
