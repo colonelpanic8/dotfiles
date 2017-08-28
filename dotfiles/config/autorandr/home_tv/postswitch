@@ -1,0 +1,6 @@
+#!/usr/bin/env zsh
+# -*- mode:sh
+
+hdmi_sink="$(pahelper.sh | tr -d '\\n' | tr '>' '\\n' | grep hdmi | grep -Eo ': [0-9]+' | tr -d ':')"
+
+pahelper.sh "$hdmi_sink"
