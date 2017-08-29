@@ -3,7 +3,7 @@
 "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
-<!-- 2017-08-28 Mon 23:46 -->
+<!-- 2017-08-29 Tue 00:26 -->
 <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title></title>
@@ -5901,8 +5901,8 @@ it on by default. Its probably safe to turn it on when in a programming mode.
   <span class="org-builtin">:config</span>
   (<span class="org-keyword">progn</span>
     (<span class="org-keyword">defun</span> <span class="org-function-name">imalison:maybe-use-frames-for-org</span> (<span class="org-type">&amp;rest</span> args)
-      (<span class="org-keyword">let</span> ((fn (<span class="org-keyword">if</span> frame-mode 'org-switch-to-buffer-other-window
-                  'switch-to-buffer-other-frame)))
+      (<span class="org-keyword">let</span> ((fn (<span class="org-keyword">if</span> frame-mode 'switch-to-buffer-other-frame
+                  'switch-to-buffer-other-window)))
         (apply fn args)))
     (advice-add 'org-switch-to-buffer-other-window
                 <span class="org-builtin">:override</span> 'imalison:maybe-use-frames-for-org)
