@@ -192,7 +192,6 @@ transmissionSelector = fmap (isPrefixOf "Transmission") title
 hangoutsSelector = chromeSelectorBase <&&> fmap isHangoutsTitle title
 gmailSelector = chromeSelectorBase <&&> fmap isGmailTitle title
 volumeSelector = className =? "Pavucontrol"
-keepassSelector = className =? "keepassxc"
 
 virtualClasses =
   [ (hangoutsSelector, "Hangouts")
@@ -208,10 +207,9 @@ gmailCommand = "start_chrome.sh --new-window https://mail.google.com/mail/u/0/#i
 spotifyCommand = "spotify"
 chromeCommand = "start_chrome.sh"
 emacsCommand = "emacsclient -c"
-htopCommand = "termite -e htop"
+htopCommand = "termite -e htop -t htop"
 transmissionCommand = "transmission-gtk"
 volumeCommand = "pavucontrol"
-keepassCommand = "systemctl --user restart keepassx.service"
 taffybarCommand = "restart_taffybar.sh"
 
 -- Startup hook

@@ -1161,8 +1161,8 @@ it on by default. Its probably safe to turn it on when in a programming mode.
   :config
   (progn
     (defun imalison:maybe-use-frames-for-org (&rest args)
-      (let ((fn (if frame-mode 'org-switch-to-buffer-other-window
-                  'switch-to-buffer-other-frame)))
+      (let ((fn (if frame-mode 'switch-to-buffer-other-frame
+                  'switch-to-buffer-other-window)))
         (apply fn args)))
     (advice-add 'org-switch-to-buffer-other-window
                 :override 'imalison:maybe-use-frames-for-org)
