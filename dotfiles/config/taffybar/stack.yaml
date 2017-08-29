@@ -4,7 +4,7 @@ packages:
 - '.'
 - location:
     git: git@github.com:IvanMalison/taffybar.git
-    commit: 3a5024368b4783084302b61cb6eb0ba27e305693
+    commit: e779acfe8056e6dde10638e2f7e4ec77f92b9448
   extra-dep: true
 - location:
     git: git@github.com:willdonnelly/dyre.git
