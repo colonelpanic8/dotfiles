@@ -72,6 +72,8 @@
    (straight-transaction
      (concat (file-name-directory load-file-name) "README.org"))))
 
+(when imalison:do-benchmark (benchmark-init/deactivate))
+
 ;; Local Variables:
 ;; flycheck-disabled-checkers: (emacs-lisp-checkdoc)
 ;; End:

@@ -100,7 +100,7 @@ movableWidget builder =
     return moveWidget
 
 myFormatEntry wsNames ((ws, wtitle, wclass), _) =
-  printf "%s: %s - %s" wsName wtitle wclass
+  printf "%s: %s - %s" wsName (head $ splitOn "\NUL" wclass) wtitle
   where
     wsName = M.findWithDefault ("WS#" ++ show wsN) ws wsNames
     WSIdx wsN = ws

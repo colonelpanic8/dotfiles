@@ -4178,7 +4178,6 @@ I had to disable this mode because something that it does messes with coding set
 ** recentf
 #+BEGIN_SRC emacs-lisp
 (use-package recentf
-  :defer 1
   :config
   (progn
     (setq recentf-max-saved-items 1000
@@ -4938,8 +4937,4 @@ load-theme hook (See the heading below).
 #+BEGIN_SRC emacs-lisp
 (when (file-exists-p custom-after-file) (load custom-after-file))
 (when (file-exists-p machine-custom) (load machine-custom))
-#+END_SRC
-* Finish Benchmarking
-#+BEGIN_SRC emacs-lisp
-(when imalison:do-benchmark (benchmark-init/deactivate))
 #+END_SRC
