@@ -192,7 +192,6 @@ transmissionSelector = fmap (isPrefixOf "Transmission") title
 hangoutsSelector = chromeSelectorBase <&&> fmap isHangoutsTitle title
 gmailSelector = chromeSelectorBase <&&> fmap isGmailTitle title
 volumeSelector = className =? "Pavucontrol"
-keepassSelector = className =? "keepassxc"
 
 virtualClasses =
   [ (hangoutsSelector, "Hangouts")
@@ -211,7 +210,6 @@ emacsCommand = "emacsclient -c"
 htopCommand = "termite -e htop"
 transmissionCommand = "transmission-gtk"
 volumeCommand = "pavucontrol"
-keepassCommand = "systemctl --user restart keepassx.service"
 taffybarCommand = "restart_taffybar.sh"
 
 -- Startup hook
