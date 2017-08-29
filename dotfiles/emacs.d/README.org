@@ -1282,12 +1282,6 @@ proced is an top like utility that runs inside of emacs. The following sets auto
 #+BEGIN_SRC emacs-lisp
 (add-hook 'after-save-hook 'executable-make-buffer-file-executable-if-script-p)
 #+END_SRC
-** Use TCP Server
-This variable used to make it so that emacs client would not detect the running
-emacs server when emacs was not STARTED in daemon mode.
-#+BEGIN_SRC emacs-lisp
-(setq server-use-tcp t)
-#+END_SRC
 ** Misc
 #+BEGIN_SRC emacs-lisp
 (defvar iedit-toggle-key-default nil)
@@ -1408,6 +1402,10 @@ Paradox is a package.el extension. I have no use for it now that I use straight.
 (use-package server
   :config
   (progn
+    (defun imalison:get-server-filepath ()
+      (let ((server-dir (if server-use-tcp server-auth-dir server-socket-dir)))
+        (expand-file-name server-name server-dir)))
+    (setq server-use-tcp t)
     (unless (server-running-p) (server-start))))
 #+END_SRC
 ** list-environment
