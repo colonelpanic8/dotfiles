@@ -2788,6 +2788,11 @@ Intero seems to be causing hangs, so it has been disabled
                   ("M-," . pop-tag-mark)))
     (add-hook 'c-mode-common-hook 'imalison:cc-mode-hook)))
 #+END_SRC
+*** C--
+#+BEGIN_SRC emacs-lisp
+(use-package cmm-mode
+  :defer t)
+#+END_SRC
 *** C#
 #+BEGIN_SRC emacs-lisp
 (use-package csharp-mode
