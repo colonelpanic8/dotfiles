@@ -10,6 +10,7 @@
       (eval-print-last-sexp)))
   (load bootstrap-file nil 'nomessage))
 
+(setq straight-vc-git-default-protocol 'ssh)
 (straight-use-package 'use-package)
 (require 'use-package)
 (setq use-package-enable-imenu-support t
