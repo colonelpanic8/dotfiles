@@ -3699,7 +3699,7 @@ I've disabled magithub because it causes magit to be super slow
   :disabled t
   :config
   (progn
-    (global-git-gutter -1)))
+    (global-git-gutter-mode +1)))
 #+END_SRC
 ** gitolite-clone
 #+BEGIN_SRC emacs-lisp
@@ -4717,7 +4717,7 @@ Ensure all themes that I use are installed:
     (setq solarized-high-contrast-mode-line t)))
 
 (defvar-setq packages-appearance
-  '(monokai-theme zenburn-theme base16-theme molokai-theme
+  '(monokai-theme zenburn-theme base16-theme molokai-theme moe-theme
                   tango-2-theme gotham-theme sublime-themes rainbow-delimiters
                   waher-theme ample-theme material-theme zerodark-theme
                   color-theme-modern leuven-theme spacemacs-theme gruvbox-theme
