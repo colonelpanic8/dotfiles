@@ -12,6 +12,7 @@ README.html
 ac-comphist.dat
 auto-save-list
 backups
+benchmark.el
 bookmarks
 custom-after.el
 custom-before.el
@@ -37,6 +38,7 @@ session.*
 skewer-cache
 smex-items
 speed-type/
+straight/
 this-machine.el
 tramp
 tutorial

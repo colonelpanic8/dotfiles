@@ -2839,6 +2839,7 @@ Intero seems to be causing hangs, so it has been disabled
 *** org
 **** config
 #+BEGIN_SRC emacs-lisp :tangle org-config.el
+(defvar imalison:org-dir "~/org")
 (use-package org
   :bind (:map org-mode-map
               (("C-e" . end-of-visual-line)))

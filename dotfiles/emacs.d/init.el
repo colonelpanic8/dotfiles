@@ -16,7 +16,7 @@
 (setq use-package-enable-imenu-support t
 	  use-package-always-ensure t)
 
-(defvar imalison:do-benchmark)
+(defvar imalison:do-benchmark nil)
 
 (let ((bench-file (concat (file-name-directory user-init-file) "benchmark.el")))
   (when (file-exists-p bench-file) (load bench-file)))
