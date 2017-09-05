@@ -1,3 +1,6 @@
+[options]
+dynamic_title = true
+
 [colors]
 # Base16 Default Dark
 # Author: Chris Kempson (http://chriskempson.com)
