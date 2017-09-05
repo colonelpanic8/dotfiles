@@ -1,0 +1,106 @@
+{
+    "global": {
+        "check_for_updates_on_startup": true,
+        "show_in_menu_bar": true,
+        "show_profile_name_in_menu_bar": false
+    },
+    "profiles": [
+        {
+            "complex_modifications": {
+                "parameters": {
+                    "basic.to_if_alone_timeout_milliseconds": 1000
+                },
+                "rules": [
+                    {
+                        "manipulators": [
+                            {
+                                "description": "Change right command to command+control+option+shift.",
+                                "from": {
+                                    "key_code": "right_command",
+                                    "modifiers": {
+                                        "optional": [
+                                            "any"
+                                        ]
+                                    }
+                                },
+                                "to": [
+                                    {
+                                        "key_code": "left_shift",
+                                        "modifiers": [
+                                            "left_command",
+                                            "left_control",
+                                            "left_option"
+                                        ]
+                                    }
+                                ],
+                                "to_if_alone": [
+                                    {
+                                        "key_code": "escape",
+                                        "modifiers": {
+                                            "optional": [
+                                                "any"
+                                            ]
+                                        }
+                                    }
+                                ],
+                                "type": "basic"
+                            }
+                        ]
+                    }
+                ]
+            },
+            "devices": [
+                {
+                    "disable_built_in_keyboard_if_exists": false,
+                    "fn_function_keys": {},
+                    "identifiers": {
+                        "is_keyboard": true,
+                        "is_pointing_device": false,
+                        "product_id": 610,
+                        "vendor_id": 1452
+                    },
+                    "ignore": false,
+                    "simple_modifications": {}
+                },
+                {
+                    "disable_built_in_keyboard_if_exists": false,
+                    "fn_function_keys": {},
+                    "identifiers": {
+                        "is_keyboard": true,
+                        "is_pointing_device": false,
+                        "product_id": 597,
+                        "vendor_id": 1452
+                    },
+                    "ignore": false,
+                    "simple_modifications": {}
+                }
+            ],
+            "fn_function_keys": {
+                "f1": "vk_consumer_brightness_down",
+                "f10": "mute",
+                "f11": "volume_down",
+                "f12": "volume_up",
+                "f2": "vk_consumer_brightness_up",
+                "f3": "vk_mission_control",
+                "f4": "vk_launchpad",
+                "f5": "vk_consumer_illumination_down",
+                "f6": "vk_consumer_illumination_up",
+                "f7": "vk_consumer_previous",
+                "f8": "vk_consumer_play",
+                "f9": "vk_consumer_next"
+            },
+            "name": "Default profile",
+            "one_to_many_mappings": {},
+            "selected": true,
+            "simple_modifications": {
+                "caps_lock": "left_control"
+            },
+            "standalone_keys": {},
+            "virtual_hid_keyboard": {
+                "caps_lock_delay_milliseconds": 0,
+                "keyboard_type": "ansi",
+                "standalone_keys_delay_milliseconds": 200
+            }
+        }
+    ]
+}
