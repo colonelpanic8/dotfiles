@@ -1,0 +1,3 @@
+[submodule "dotfiles/config/taffybar/taffybar"]
+	path = dotfiles/config/taffybar/taffybar
+	url = git@github.com:IvanMalison/taffybar.git

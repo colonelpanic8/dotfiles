@@ -2,9 +2,7 @@ flags: {}
 extra-package-dbs: []
 packages:
 - '.'
-- location:
-    git: git@github.com:IvanMalison/taffybar.git
-    commit: e779acfe8056e6dde10638e2f7e4ec77f92b9448
+- location: "./taffybar"
   extra-dep: true
 - location:
     git: git@github.com:willdonnelly/dyre.git
