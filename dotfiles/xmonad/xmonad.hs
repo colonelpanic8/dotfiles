@@ -981,7 +981,6 @@ addKeys conf@XConfig { modMask = modm } =
     , ((hyper, xK_0), spawn "tvpower.js")
     , ((modalt, xK_z), spawn "split_chrome_tab_to_next_screen.sh")
     , ((hyper, xK_9), spawn "start_synergy.sh")
-    , ((hyper, xK_8), spawn "rofi_paswitch.sh")
     , ((hyper, xK_slash), spawn "toggle_taffybar.sh")
     , ((hyper, xK_space), spawn "skippy-xd")
     , ((hyper, xK_i), spawn "rofi_select_input.hs")
