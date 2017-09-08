@@ -1,6 +1,9 @@
 #!/usr/bin/env zsh
 # -*- mode:sh
 
+cd "$HOME/.config/taffybar"
+stack install
+
 if command_exists "imalison-taffybar"; then
 	imalison-taffybar "$@"
 else
