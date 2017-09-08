@@ -14,6 +14,7 @@ curl -fsSkL https://raw.github.com/cask/cask/master/go | python
 export PATH="/home/travis/.cask/bin:$PATH"
 
 echo "this is PATH $PATH"
+type -a emacs
 
 cask install
 run_make_on_org
