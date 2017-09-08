@@ -2099,7 +2099,7 @@ I don't use auto-complete at all, so I have set up a hook to automatically disab
 #+BEGIN_SRC emacs-lisp
 (use-package flycheck
   :commands flycheck-mode
-  :init (add-hook 'prog-major-mode 'flycheck-mode)
+  :init (add-hook 'prog-mode-hook 'flycheck-mode)
   :config
   (progn
     (use-package flycheck-package
@@ -4743,6 +4743,8 @@ Ensure all themes that I use are installed:
 
 (use-package doom-themes
   :defer t)
+
+(use-package badwolf-theme)
 #+END_SRC
 ** all-the-icons
 #+BEGIN_SRC emacs-lisp
