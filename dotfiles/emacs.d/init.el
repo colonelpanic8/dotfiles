@@ -10,12 +10,13 @@
       (eval-print-last-sexp)))
   (load bootstrap-file nil 'nomessage))
 
+(setq straight-vc-git-default-protocol 'ssh)
 (straight-use-package 'use-package)
 (require 'use-package)
 (setq use-package-enable-imenu-support t
 	  use-package-always-ensure t)
 
-(defvar imalison:do-benchmark)
+(defvar imalison:do-benchmark nil)
 
 (let ((bench-file (concat (file-name-directory user-init-file) "benchmark.el")))
   (when (file-exists-p bench-file) (load bench-file)))

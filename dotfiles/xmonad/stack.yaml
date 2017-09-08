@@ -1,22 +1,18 @@
 flags: {}
 extra-package-dbs: []
 packages:
-- '.'
-- location:
-    git: git@github.com:IvanMalison/xmonad.git
-    commit: 2e6312776bd277c775c32e35f9c763d3858e32a4
+- .
+- location: ./xmonad
   extra-dep: true
-- location:
-    git: git@github.com:IvanMalison/xmonad-contrib.git
-    commit: ad9c8001f6e2af7a87228c5feaf41aa230a639d5
+- location: ./xmonad-contrib
   extra-dep: true
-- location:
-    git: git@github.com:IvanMalison/taffybar.git
-    commit: 3570bdbd87a5464d7280d8750c5c153cf3dcc637
+- location: ./taffybar
   extra-dep: true
 extra-deps:
 - X11-xft-0.3.1
 - dbus-0.10.12
 - gtk-traymanager-0.1.6
 - libxml-sax-0.7.5
+- rate-limit-1.1.1
+- time-units-1.0.0
 resolver: lts-8.2

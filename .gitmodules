@@ -1,0 +1,9 @@
+[submodule "dotfiles/config/taffybar/taffybar"]
+	path = dotfiles/config/taffybar/taffybar
+	url = ../taffybar.git
+[submodule "dotfiles/xmonad/xmonad"]
+	path = dotfiles/xmonad/xmonad
+	url = ../xmonad.git
+[submodule "dotfiles/xmonad/xmonad-contrib"]
+	path = dotfiles/xmonad/xmonad-contrib
+	url = ../xmonad-contrib.git

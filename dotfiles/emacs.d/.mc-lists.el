@@ -59,6 +59,7 @@
         handle-switch-frame
         helm-M-x
         ido-write-file
+        imalison:multiple-cursors-hydra/mc/edit-lines-and-exit
         isearch-delete-char
         smex
         yank-rectangle
