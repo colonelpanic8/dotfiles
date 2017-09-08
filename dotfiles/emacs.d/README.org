@@ -4654,8 +4654,12 @@ I've disabled perspective because I just don't use it much.
 #+END_SRC
 ** gradle-mode
 #+BEGIN_SRC emacs-lisp
-(use-package gradle-mode
-  :defer t)
+(use-package gradle-mode)
+#+END_SRC
+** groovy-mode
+This also adds syntax highlighting for gradle
+#+BEGIN_SRC emacs-lisp
+(use-package groovy-mode)
 #+END_SRC
 ** jsx-mode
 #+BEGIN_SRC emacs-lisp
