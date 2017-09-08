@@ -2777,6 +2777,10 @@ Intero seems to be causing hangs, so it has been disabled
       (turn-on-purescript-indentation))
     (add-hook 'purescript-mode-hook 'imalison:purescript-mode-hook)))
 #+END_SRC
+*** lua
+#+BEGIN_SRC emacs-lisp
+(use-package lua-mode)
+#+END_SRC
 *** C/C++
 #+BEGIN_SRC emacs-lisp
 (use-package cc-mode
@@ -3161,7 +3165,7 @@ Intero seems to be causing hangs, so it has been disabled
     :END:"))
 
     (let ((this-week-high-priority
-           ;; The < in the following line works has behavior that is opposite
+           ;; The < in the following line has behavior that is opposite
            ;; to what one might expect.
            '(tags-todo "+PRIORITY<\"C\"+DEADLINE<\"<+1w>\"DEADLINE>\"<+0d>\""
                        ((org-agenda-overriding-header
@@ -4634,11 +4638,9 @@ I've disabled perspective because I just don't use it much.
 #+END_SRC
 ** java
 #+BEGIN_SRC emacs-lisp
-(add-hook 'java-mode-hook
-          (lambda ()
-            (setq c-basic-offset 4
-                  tab-width 4
-                  indent-tabs-mode t)))
+(use-package java-mode
+  :config
+  (progn))
 #+END_SRC
 ** android-mode
 #+BEGIN_SRC emacs-lisp
