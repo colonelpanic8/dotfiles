@@ -1,0 +1,11 @@
+name:                imalison-global
+version:             0.1.0.0
+cabal-version:       >=1.10
+
+library
+  hs-source-dirs:      .
+  build-depends:       base >= 4.7 && < 5
+                     , split
+                     , containers
+                     , regex-compat
+  default-language:    Haskell2010

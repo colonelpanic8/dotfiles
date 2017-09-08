@@ -1,4 +1,4 @@
-#!/usr/bin/env runhaskell
+#!/usr/bin/env run_haskell_stack.sh
 {-# LANGUAGE OverloadedStrings, AllowAmbiguousTypes #-}
 
 import Control.Monad
