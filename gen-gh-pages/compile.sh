@@ -1,5 +1,15 @@
 #!/usr/bin/env bash
 
+function run_make_on_org () {
+	original="$(pwd)"
+	cd .cask
+	cd "$(ls | head)"
+	cd elpa
+	cd "$(ls | grep org-plus)"
+	make autoloads
+	cd $original
+}
+
 export PATH="$HOME/.cask/bin:$HOME/.evm/bin:$PATH"
 THIS_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 
@@ -22,13 +32,3 @@ cask exec emacs --script generate-html.el
 
 mv "$THIS_DIR/../dotfiles/emacs.d/README.html" .
 
-
-function run_make_on_org () {
-	original="$(pwd)"
-	cd .cask
-	cd "$(ls | head)"
-	cd elpa
-	cd "$(ls | grep org-plus)"
-	make autoloads
-	cd $original
-}
