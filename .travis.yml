@@ -1,11 +1,6 @@
 language: generic
 
 script: bash ./gen-gh-pages/deploy.sh
-
-before_install:
-    - sed -i 's/git@github.com:/https:\/\/github.com\//' .gitmodules
-    - git submodule update --init --recursive
-
 env:
   global:
   - ENCRYPTION_LABEL: "73e6c870aa87"
