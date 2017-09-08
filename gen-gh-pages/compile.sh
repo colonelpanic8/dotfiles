@@ -8,6 +8,7 @@ TARGET=$(readlink -f "$THIS_DIR/../dotfiles/emacs.d/README.org")
 git clone https://github.com/rejeep/evm.git "$HOME/.evm"
 evm config path /tmp
 evm install emacs-25.1-travis --use --skip
+export PATH="$HOME/.evm/bin:$PATH"
 
 curl -fsSkL https://raw.github.com/cask/cask/master/go | python
 
