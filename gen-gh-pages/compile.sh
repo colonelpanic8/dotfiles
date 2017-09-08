@@ -11,6 +11,9 @@ evm install emacs-25.1-travis --use --skip
 export PATH="$HOME/.evm/bin:$PATH"
 
 curl -fsSkL https://raw.github.com/cask/cask/master/go | python
+export PATH="/home/travis/.cask/bin:$PATH"
+
+echo "this is PATH $PATH"
 
 cask install
 run_make_on_org
