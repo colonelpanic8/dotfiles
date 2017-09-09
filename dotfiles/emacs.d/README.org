@@ -4638,12 +4638,6 @@ I've disabled perspective because I just don't use it much.
   ;; This is here because smex feels like part of ido
   :bind ("M-x" . smex))
 #+END_SRC
-** java
-#+BEGIN_SRC emacs-lisp
-(use-package java-mode
-  :config
-  (progn))
-#+END_SRC
 ** android-mode
 #+BEGIN_SRC emacs-lisp
 (use-package android-mode
