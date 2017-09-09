@@ -1156,7 +1156,9 @@ it on by default. Its probably safe to turn it on when in a programming mode.
 #+END_SRC
 *** frame-mode
 #+BEGIN_SRC emacs-lisp
+(defvar imalison:use-frame-mode t)
 (use-package frame-mode
+  :if imalison:use-frame-mode
   :demand t
   :config
   (progn
