@@ -3117,10 +3117,10 @@ Intero seems to be causing hangs, so it has been disabled
         (setq org-ehtml-everything-editable t)))
 
     ;; Agenda setup.
-    (defvar imalison:org-gtd-file "~/org/gtd.org")
-    (defvar imalison:org-habits-file "~/org/habits.org")
-    (defvar imalison:org-calendar-file "~/org/calendar.org")
-    (defvar imalison:org-inbox-file "~/org/inbox.org")
+    (defvar imalison:org-gtd-file (imalison:join-paths imalison:org-dir "gtd.org"))
+    (defvar imalison:org-habits-file (imalison:join-paths imalison:org-dir "habits.org"))
+    (defvar imalison:org-calendar-file (imalison:join-paths imalison:org-dir "calendar.org"))
+    (defvar imalison:org-inbox-file (imalison:join-paths imalison:org-dir "inbox.org"))
 
     (unless (boundp 'org-capture-templates)
       (defvar org-capture-templates nil))
