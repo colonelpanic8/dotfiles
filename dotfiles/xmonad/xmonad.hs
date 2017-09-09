@@ -167,8 +167,9 @@ visibleWindows =
 
 followingWindow action = do
   orig <- withWindowSet (return . W.peek)
-  _ <- action
+  res <- action
   whenJust orig $ windows . W.focusWindow
+  return res
 
 myDmenuArgs = ["-dmenu", "-i"]
 
