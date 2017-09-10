@@ -727,6 +727,18 @@ myKill =
     else
       kill
 
+-- Gather windows of same class
+
+allWindows = concat <$> (mapWorkspaces $ return . W.integrate' . W.stack)
+
+windowsMatchingClass klass =
+  allWindows >>= filterM (((== klass) <$>) . getClass)
+
+gatherClass klass = restoreFocus $
+  windowsMatchingClass klass >>= mapM_ (windows . bringWindow)
+
+gatherThisClass = thisClass >>= flip whenJust gatherClass
+
 -- Window switching
 
 -- Use greedyView to switch to the correct workspace, and then focus on the
@@ -900,6 +912,7 @@ addKeys conf@XConfig { modMask = modm } =
     , ((modm .|. controlMask, xK_t),
        setReplaceTarget >> spawn "chromix-too open chrome://newtab")
     , ((modm .|. shiftMask, xK_c), myKill)
+    , ((hyper, xK_g), gatherThisClass)
 
     -- Directional navigation
     , ((modm, xK_w), windowGo U True)
