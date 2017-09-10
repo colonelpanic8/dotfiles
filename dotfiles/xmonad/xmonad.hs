@@ -82,7 +82,8 @@ myConfig = def
   , focusedBorderColor = "#ffff00"
   , logHook =
       updatePointer (0.5, 0.5) (0, 0) +++
-      toggleFadeInactiveLogHook 0.9 +++ workspaceHistoryHook
+      toggleFadeInactiveLogHook 0.9 +++ workspaceHistoryHook +++
+      setWorkspaceNames
   , handleEventHook =
       fullscreenEventHook +++ followIfNoMagicFocus +++ minimizeEventHook
   , startupHook = myStartup
@@ -95,7 +96,10 @@ myNavigation2DConfig = def { defaultTiledNavigation = centerNavigation }
 
 main =
   xmonad .
-  docks . pagerHints . myEwmh . withNavigation2DConfig myNavigation2DConfig $
+  docks .
+  pagerHints .
+  ewmh .
+  withNavigation2DConfig myNavigation2DConfig $
   myConfig
 
 -- Utility functions
@@ -229,6 +233,10 @@ hostNameToAction =
 
 myStartup = do
   spawn "systemctl --user start wm.target"
+  setWorkspaceName "1" "code"
+  setWorkspaceName "2" "doc"
+  setWorkspaceName "3" "browse"
+  setWorkspaceName "4" "watch"
   hostName <- io getHostName
   M.findWithDefault (return ()) hostName hostNameToAction
 
@@ -459,8 +467,9 @@ myReplaceWindow =
 
 -- Workspace Names for EWMH
 
-mySetDesktopNames :: X ()
-mySetDesktopNames = withWindowSet $ \s -> withDisplay $ \dpy -> do
+
+setWorkspaceNames :: X ()
+setWorkspaceNames = withWindowSet $ \s -> withDisplay $ \dpy -> do
   sort' <- getSortByIndex
   let ws = sort' $ W.workspaces s
       tagNames = map W.tag ws
@@ -469,17 +478,10 @@ mySetDesktopNames = withWindowSet $ \s -> withDisplay $ \dpy -> do
       getFullName tag = printf "%s%s" tag <$> getName tag
   names <- mapM getFullName tagNames
   r <- asks theRoot
-  a <- getAtom "_NET_DESKTOP_NAMES"
+  a <- getAtom "_NET_DESKTOP_FULL_NAMES"
   c <- getAtom "UTF8_STRING"
   let names' = map fromIntegral $ concatMap ((++[0]) . UTF8String.encode) names
   io $ changeProperty8 dpy r a c propModeReplace names'
-
-myEwmh :: XConfig a -> XConfig a
-myEwmh c = c { startupHook     = startupHook c +++ ewmhDesktopsStartup
-             , handleEventHook = handleEventHook c +++ ewmhDesktopsEventHook
-             , logHook         = logHook c +++ mySetDesktopNames +++ ewmhDesktopsLogHook }
- -- @@@ will fix this correctly later with the rewrite
- where x +++ y = mappend y x
 
 
 -- Toggleable fade
