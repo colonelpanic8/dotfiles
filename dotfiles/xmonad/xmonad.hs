@@ -10,6 +10,7 @@ import           Control.Monad.Trans.Maybe
 import           Data.Aeson
 import qualified Data.ByteString.Lazy as B
 import           Data.List
+import qualified Codec.Binary.UTF8.String as UTF8String (encode)
 import           Data.List.Split
 import qualified Data.Map as M
 import           Data.Maybe
@@ -69,6 +70,7 @@ import           XMonad.Util.NamedScratchpad
     (NamedScratchpad(NS), nonFloating, namedScratchpadAction)
 import           XMonad.Util.NamedWindows (getName)
 import           XMonad.Util.Run
+import           XMonad.Util.WorkspaceCompare
 
 myConfig = def
   { modMask = mod4Mask
@@ -93,7 +95,7 @@ myNavigation2DConfig = def { defaultTiledNavigation = centerNavigation }
 
 main =
   xmonad .
-  docks . pagerHints . ewmh . withNavigation2DConfig myNavigation2DConfig $
+  docks . pagerHints . myEwmh . withNavigation2DConfig myNavigation2DConfig $
   myConfig
 
 -- Utility functions
@@ -455,6 +457,29 @@ myReplaceWindow =
   myWindowAct myWindowBringerConfig $
   chromeTabAction True (windows . swapFocusedWith)
 
+-- Workspace Names for EWMH
+
+mySetDesktopNames :: X ()
+mySetDesktopNames = withWindowSet $ \s -> withDisplay $ \dpy -> do
+  sort' <- getSortByIndex
+  let ws = sort' $ W.workspaces s
+      tagNames = map W.tag ws
+      getName tag = (maybe "" (" " ++)) <$> getWorkspaceName tag
+      getFullName :: String -> X String
+      getFullName tag = printf "%s%s" tag <$> getName tag
+  names <- mapM getFullName tagNames
+  r <- asks theRoot
+  a <- getAtom "_NET_DESKTOP_NAMES"
+  c <- getAtom "UTF8_STRING"
+  let names' = map fromIntegral $ concatMap ((++[0]) . UTF8String.encode) names
+  io $ changeProperty8 dpy r a c propModeReplace names'
+
+myEwmh :: XConfig a -> XConfig a
+myEwmh c = c { startupHook     = startupHook c +++ ewmhDesktopsStartup
+             , handleEventHook = handleEventHook c +++ ewmhDesktopsEventHook
+             , logHook         = logHook c +++ mySetDesktopNames +++ ewmhDesktopsLogHook }
+ -- @@@ will fix this correctly later with the rewrite
+ where x +++ y = mappend y x
 
 
 -- Toggleable fade
