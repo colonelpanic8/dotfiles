@@ -16,6 +16,7 @@ import           System.FilePath.Posix
 import           System.Information.CPU
 import           System.Information.EWMHDesktopInfo
 import           System.Information.Memory
+import           System.Information.X11DesktopInfo
 import           System.Process
 import           System.Taffybar
 import           System.Taffybar.LayoutSwitcher
@@ -44,6 +45,14 @@ memCallback widget = do
     _ <- Gtk.widgetSetTooltipText widget (Just tooltip)
     return ()
   return [memoryUsedRatio mi]
+
+getFullWorkspaceNames :: X11Property [(WorkspaceIdx, String)]
+getFullWorkspaceNames = go <$> readAsListOfString Nothing "_NET_DESKTOP_FULL_NAMES"
+  where go = zip [WSIdx i | i <- [0..]]
+
+workspaceNamesLabelSetter workspace = do
+  fullNames <- liftX11 getFullWorkspaceNames
+  return $ fromMaybe "" $ lookup (workspaceIdx workspace) fullNames
 
 mem :: IO Gtk.Widget
 mem = do
@@ -168,6 +177,7 @@ main = do
         , redrawIconsOnStateChange = True
         , innerPadding = 5
         , outerPadding = 5
+        , labelSetter = workspaceNamesLabelSetter
         }
       netMonitor = netMonitorMultiNew 1.5 interfaceNames
       pagerConfig =
