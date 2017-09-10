@@ -30,7 +30,7 @@ import           XMonad hiding ( (|||) )
 import           XMonad.Actions.CycleWS hiding (nextScreen)
 import           XMonad.Actions.CycleWorkspaceByScreen
 import qualified XMonad.Actions.DynamicWorkspaceOrder as DWO
-import           XMonad.Actions.DynamicWorkspaces hiding (withWorkspace)
+import           XMonad.Actions.DynamicWorkspaces hiding (withWorkspace, renameWorkspace)
 import           XMonad.Actions.Minimize
 import           XMonad.Actions.Navigation2D
 import qualified XMonad.Actions.SwapWorkspaces as SW
@@ -963,6 +963,7 @@ addKeys conf@XConfig { modMask = modm } =
     , ((hyper, xK_3), addWorkspacePrompt def)
     , ((modalt, xK_3), selectWorkspace def)
     , ((hyper .|. mod1Mask, xK_3), removeWorkspace)
+    , ((hyper .|. mod1Mask, xK_r), renameWorkspace def)
 
     -- Non-XMonad
 
