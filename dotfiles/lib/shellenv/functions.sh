@@ -477,3 +477,7 @@ function all_after_char {
           echo ${line##*$1}
     done;
 }
+
+function find_local_ssh_hosts {
+	nmap -p 22 --open -sV 10.0.0.0/24 | grep -Eo "[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}"
+}
