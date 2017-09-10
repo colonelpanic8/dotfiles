@@ -13,7 +13,7 @@ export EMACS="$(evm bin)"
 curl -fsSkL https://raw.github.com/cask/cask/master/go | python
 
 cask install
-cask exec emacs --script generate-html.el
+cask exec "$EMACS" --script generate-html.el
 
 mv "$THIS_DIR/../dotfiles/emacs.d/README.html" .
 
