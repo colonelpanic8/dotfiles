@@ -1,5 +1,6 @@
 (package-initialize)
 
+(require 'org-loaddefs)
 (require 'ox-html)
 (require 'htmlize)
 
