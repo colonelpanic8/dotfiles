@@ -3,7 +3,7 @@
 "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
-<!-- 2017-09-10 Sun 20:19 -->
+<!-- 2017-09-11 Mon 00:41 -->
 <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>&lrm;</title>
@@ -9264,10 +9264,6 @@ This function replaces the default naming scheme with a call to
           magit-display-buffer-function
           'magit-display-buffer-same-window-except-diff-v1)
     (magit-auto-revert-mode)
-    <span class="org-comment-delimiter">;; </span><span class="org-comment">TODO: Is this necessary now that signing is a git default</span>
-    (<span class="org-keyword">when</span> (<span class="org-keyword">bound-and-true-p</span> imalison:gpg-key)
-      (add-to-list 'magit-commit-arguments
-                   (format <span class="org-string">"--gpg-sign=%s"</span> imalison:gpg-key)))
 
     (add-to-list 'org-show-context-detail '(magit-goto . lineage))
     (advice-add 'magit-diff-visit-file <span class="org-builtin">:after</span> 'imalison:after-magit-visit-file)
