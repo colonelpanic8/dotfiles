@@ -3670,10 +3670,6 @@ alphanumeric characters only."
           magit-display-buffer-function
           'magit-display-buffer-same-window-except-diff-v1)
     (magit-auto-revert-mode)
-    ;; TODO: Is this necessary now that signing is a git default
-    (when (bound-and-true-p imalison:gpg-key)
-      (add-to-list 'magit-commit-arguments
-                   (format "--gpg-sign=%s" imalison:gpg-key)))
 
     (add-to-list 'org-show-context-detail '(magit-goto . lineage))
     (advice-add 'magit-diff-visit-file :after 'imalison:after-magit-visit-file)
