@@ -126,16 +126,20 @@ main = do
   homeDirectory <- getHomeDirectory
   let resourcesDirectory = homeDirectory </> ".lib" </> "resources"
       inResourcesDirectory file = resourcesDirectory </> file
-      makeIcon = IIFilePath . inResourcesDirectory
-      myCustomIcon title klass
+      makeIcon = return . IIFilePath . inResourcesDirectory
+      myGetIconInfo w@WindowData {windowTitle = title, windowClass = klass}
         | "URxvt" `isInfixOf` klass = makeIcon "urxvt.png"
-        | "Termite" `isInfixOf` klass = makeIcon  "urxvt.png"
+        | "Termite" `isInfixOf` klass = makeIcon "urxvt.png"
         | "Kodi" `isInfixOf` klass = makeIcon "kodi.png"
         | "@gmail.com" `isInfixOf` title &&
-          "chrome" `isInfixOf` klass &&
-          "Gmail" `isInfixOf` title = makeIcon "gmail.png"
-        | otherwise = IINone
-      myGetIconInfo = windowTitleClassIconGetter True myCustomIcon
+            "chrome" `isInfixOf` klass && "Gmail" `isInfixOf` title =
+          makeIcon "gmail.png"
+        | otherwise = do
+          res <- defaultGetIconInfo w
+          return $
+            case res of
+              IINone -> IIFilePath $ inResourcesDirectory "exe-icon.png"
+              _ -> res
       (_, monNumber) =
         case monEither of
           Left _ -> (allMonitors, 0)
@@ -182,14 +186,11 @@ main = do
       netMonitor = netMonitorMultiNew 1.5 interfaceNames
       pagerConfig =
         defaultPagerConfig
-        { useImages = True
-        , windowSwitcherFormatter = myFormatEntry
-        }
+        {useImages = True, windowSwitcherFormatter = myFormatEntry}
       -- pager = taffyPagerNew pagerConfig
       makeUnderline = underlineWidget hudConfig
   pgr <- pagerNew pagerConfig
   tray2 <- movableWidget tray
-
   let hud = buildWorkspaceHUD hudConfig pgr
       los = makeUnderline (layoutSwitcherNew pgr) "red"
       wnd = makeUnderline (windowSwitcherNew pgr) "teal"
@@ -209,7 +210,6 @@ main = do
         , barHeight = 50
         , widgetSpacing = 5
         }
-
   withToggleSupport taffyConfig
 
 -- Local Variables:
