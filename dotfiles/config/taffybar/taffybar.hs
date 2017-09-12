@@ -125,8 +125,6 @@ getInterfaces = do
   (_, output, _) <- readCreateProcessWithExitCode (shell "list_interfaces.sh") ""
   return $ splitOn "\n" output
 
-swapMaybeIO = maybe (return Nothing) (Just <$>)
-
 main = do
   monEither <-
     (try $ getEnv "TAFFYBAR_MONITOR") :: IO (Either SomeException String)
@@ -149,7 +147,7 @@ main = do
          cfg <- asks hudConfig
          lift $ do
            img <- Gtk.imageNew
-           pb <- swapMaybeIO $ getWorkspacePixBuf (windowIconSize cfg) ws
+           pb <- sequence $ getWorkspacePixBuf (windowIconSize cfg) ws
            setImage (windowIconSize cfg) img pb
            return $ WWC ConstantIconController { cicImage = img }
       makeIcon = return . IIFilePath . inResourcesDirectory
