@@ -20,6 +20,7 @@ executable imalison-taffybar
                      , filepath
                      , gtk
                      , gtk-traymanager>=0.1.6
+                     , mtl
                      , process
                      , split
                      , taffybar

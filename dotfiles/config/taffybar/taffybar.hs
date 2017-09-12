@@ -3,6 +3,7 @@ module Main where
 import qualified Control.Concurrent.MVar as MV
 import           Control.Exception.Base
 import           Control.Monad
+import           Control.Monad.Reader
 import           Data.List
 import           Data.List.Split
 import qualified Data.Map as M
@@ -19,6 +20,7 @@ import           System.Information.Memory
 import           System.Information.X11DesktopInfo
 import           System.Process
 import           System.Taffybar
+import           System.Taffybar.IconImages
 import           System.Taffybar.LayoutSwitcher
 import           System.Taffybar.MPRIS2
 import           System.Taffybar.NetMonitor
@@ -30,8 +32,13 @@ import           System.Taffybar.Widgets.PollingGraph
 import           System.Taffybar.WindowSwitcher
 import           System.Taffybar.WorkspaceHUD
 import           Text.Printf
-import           Text.Read hiding (get)
+import           Text.Read hiding (get, lift)
 
+data ConstantIconController = ConstantIconController { cicImage :: Gtk.Image }
+
+instance WorkspaceWidgetController ConstantIconController where
+  updateWidget cic _ = return cic
+  getWidget = Gtk.toWidget . cicImage
 
 memCfg =
   defaultGraphConfig
@@ -114,10 +121,11 @@ myFormatEntry wsNames ((ws, wtitle, wclass), _) =
     wsName = M.findWithDefault ("WS#" ++ show wsN) ws wsNames
     WSIdx wsN = ws
 
-
 getInterfaces = do
   (_, output, _) <- readCreateProcessWithExitCode (shell "list_interfaces.sh") ""
   return $ splitOn "\n" output
+
+swapMaybeIO = maybe (return Nothing) (Just <$>)
 
 main = do
   monEither <-
@@ -126,6 +134,22 @@ main = do
   homeDirectory <- getHomeDirectory
   let resourcesDirectory = homeDirectory </> ".lib" </> "resources"
       inResourcesDirectory file = resourcesDirectory </> file
+      getWorkspacePixBuf size Workspace { workspaceIdx = WSIdx wsId } =
+        pixBufFromFile size . inResourcesDirectory <$>
+                       case wsId + 1 of
+                         1 -> Just "urxvt.png"
+                         2 -> Just "stack-overflow.png"
+                         3 -> Just "bookmark.png"
+                         4 -> Just "tv.png"
+                         _ -> Nothing
+      buildConstantIconController :: ControllerConstructor
+      buildConstantIconController ws = do
+         cfg <- asks hudConfig
+         lift $ do
+           img <- Gtk.imageNew
+           pb <- swapMaybeIO $ getWorkspacePixBuf (windowIconSize cfg) ws
+           setImage (windowIconSize cfg) img pb
+           return $ WWC ConstantIconController { cicImage = img }
       makeIcon = return . IIFilePath . inResourcesDirectory
       myGetIconInfo w@WindowData {windowTitle = title, windowClass = klass}
         | "URxvt" `isInfixOf` klass = makeIcon "urxvt.png"
@@ -163,7 +187,7 @@ main = do
         Gtk.widgetSetName theTray "Taffytray"
         Gtk.widgetShowAll cont
         return $ Gtk.toWidget cont
-      hudConfig =
+      myHUDConfig =
         defaultWorkspaceHUDConfig
         { underlineHeight = 3
         , underlinePadding = 2
@@ -172,7 +196,10 @@ main = do
         , getIconInfo = myGetIconInfo
         , windowIconSize = 25
         , widgetGap = 0
-        -- , widgetBuilder = buildBorderButtonController
+        , widgetBuilder = buildButtonController $
+                          buildUnderlineController $
+                          buildContentsController
+                          [buildConstantIconController, buildLabelController, buildIconController]
         , showWorkspaceFn = hideEmpty
         , updateRateLimitMicroseconds = 100000
         , updateIconsOnTitleChange = True
@@ -188,10 +215,10 @@ main = do
         defaultPagerConfig
         {useImages = True, windowSwitcherFormatter = myFormatEntry}
       -- pager = taffyPagerNew pagerConfig
-      makeUnderline = underlineWidget hudConfig
+      makeUnderline = underlineWidget myHUDConfig
   pgr <- pagerNew pagerConfig
   tray2 <- movableWidget tray
-  let hud = buildWorkspaceHUD hudConfig pgr
+  let hud = buildWorkspaceHUD myHUDConfig pgr
       los = makeUnderline (layoutSwitcherNew pgr) "red"
       wnd = makeUnderline (windowSwitcherNew pgr) "teal"
       taffyConfig =
