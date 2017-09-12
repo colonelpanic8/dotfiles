@@ -134,13 +134,15 @@ main = do
   homeDirectory <- getHomeDirectory
   let resourcesDirectory = homeDirectory </> ".lib" </> "resources"
       inResourcesDirectory file = resourcesDirectory </> file
+      highContrastDirectory = "/" </> "usr" </> "share" </> "icons" </> "HighContrast" </> "256x256"
+      inHighContrastDirectory file = (highContrastDirectory </> file)
       getWorkspacePixBuf size Workspace { workspaceIdx = WSIdx wsId } =
-        pixBufFromFile size . inResourcesDirectory <$>
+        pixBufFromFile size . inHighContrastDirectory <$>
                        case wsId + 1 of
-                         1 -> Just "urxvt.png"
-                         2 -> Just "stack-overflow.png"
-                         3 -> Just "bookmark.png"
-                         4 -> Just "tv.png"
+                         1 -> Just $ "apps" </> "utilities-terminal.png"
+                         2 -> Just $ "emblems" </> "emblem-documents.png"
+                         3 -> Just $ "actions" </> "bookmark-add.png"
+                         4 -> Just $ "devices" </> "video-display.png"
                          _ -> Nothing
       buildConstantIconController :: ControllerConstructor
       buildConstantIconController ws = do
