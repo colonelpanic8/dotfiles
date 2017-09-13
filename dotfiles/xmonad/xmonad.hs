@@ -233,10 +233,6 @@ hostNameToAction =
 
 myStartup = do
   spawn "systemctl --user start wm.target"
-  setWorkspaceName "1" "code"
-  setWorkspaceName "2" "doc"
-  setWorkspaceName "3" "browse"
-  setWorkspaceName "4" "watch"
   hostName <- io getHostName
   M.findWithDefault (return ()) hostName hostNameToAction
 
