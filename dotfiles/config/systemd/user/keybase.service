@@ -1,0 +1,12 @@
+[Unit]
+Description=Keybase
+Wants=taffybar.service
+After=taffybar.service
+
+[Service]
+Type=simple
+ExecStart=/usr/bin/env run_keybase
+ExecStop=/usr/bin/pkill Keybase
+
+[Install]
+WantedBy=wm.target
