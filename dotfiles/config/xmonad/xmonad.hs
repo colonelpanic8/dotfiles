@@ -3,6 +3,7 @@
              FlexibleInstances, FlexibleContexts, ScopedTypeVariables #-}
 module Main where
 
+import qualified Codec.Binary.UTF8.String as UTF8String (encode)
 import qualified Control.Arrow as A
 import           Control.Monad
 import           Control.Monad.Trans
@@ -10,13 +11,13 @@ import           Control.Monad.Trans.Maybe
 import           Data.Aeson
 import qualified Data.ByteString.Lazy as B
 import           Data.List
-import qualified Codec.Binary.UTF8.String as UTF8String (encode)
 import           Data.List.Split
 import qualified Data.Map as M
 import           Data.Maybe
 import           Data.Monoid
 import qualified Data.MultiMap as MM
 import           Data.Proxy
+import           Data.Tuple.Sequence (sequenceT)
 import           Data.Typeable
 import           Graphics.X11.ExtraTypes.XF86
 import           Network.HostName
@@ -67,7 +68,6 @@ import qualified XMonad.Util.Dmenu as DM
 import qualified XMonad.Util.ExtensibleState as XS
 import           XMonad.Util.Minimize
 import           XMonad.Util.NamedScratchpad
-    (NamedScratchpad(NS), nonFloating, namedScratchpadAction)
 import           XMonad.Util.NamedWindows (getName)
 import           XMonad.Util.Run
 import           XMonad.Util.WorkspaceCompare
@@ -117,10 +117,7 @@ xRunCommand cmd = void $ io $ readCreateProcess (shell cmd) ""
 (<..>) = fmap . fmap
 
 forkM :: Monad m => (i -> m a) -> (i -> m b) -> i -> m (a, b)
-forkM a b input = do
-  resA <- a input
-  resB <- b input
-  return (resA, resB)
+forkM a b = sequenceT . (a A.&&& b)
 
 tee :: Monad m => (i -> m a) -> (i -> m b) -> i -> m a
 tee = (fmap . fmap . fmap) (fmap fst) forkM
@@ -469,7 +466,7 @@ setWorkspaceNames = withWindowSet $ \s -> withDisplay $ \dpy -> do
   sort' <- getSortByIndex
   let ws = sort' $ W.workspaces s
       tagNames = map W.tag ws
-      getName tag = (maybe "" (" " ++)) <$> getWorkspaceName tag
+      getName tag = maybe "" (" " ++) <$> getWorkspaceName tag
       getFullName :: String -> X String
       getFullName tag = printf "%s%s" tag <$> getName tag
   names <- mapM getFullName tagNames
@@ -727,7 +724,7 @@ myKill =
 
 -- Gather windows of same class
 
-allWindows = concat <$> (mapWorkspaces $ return . W.integrate' . W.stack)
+allWindows = concat <$> mapWorkspaces (return . W.integrate' . W.stack)
 
 windowsMatchingClass klass =
   allWindows >>= filterM (((== klass) <$>) . getClass)
