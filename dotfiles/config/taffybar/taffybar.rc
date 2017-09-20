@@ -51,7 +51,7 @@ style "taffybar-icon-urgent" = "taffybar-default" {
 }
 
 style "taffybar-icon-active" = "taffybar-default" {
-  bg[NORMAL] = @lldgrey
+  bg[NORMAL] = @teal
 }
 
 style "taffybar-icon-minimized" = "taffybar-default" {
