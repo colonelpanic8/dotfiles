@@ -6,6 +6,8 @@
         TeX-insert-backslash
         backward-sexp
         beginning-of-visual-line
+        c-electric-delete-forward
+        c-electric-semi&comma
         delete-horizontal-space
         dired-do-rename
         end-of-visual-line
@@ -26,6 +28,7 @@
         keyboard-quit
         kill-region
         kill-visual-line
+        nxml-electric-slash
         org-beginning-of-line
         org-delete-char
         org-end-of-line
@@ -60,6 +63,9 @@
         helm-M-x
         ido-write-file
         imalison:multiple-cursors-hydra/mc/edit-lines-and-exit
+        imalison:multiple-cursors-hydra/mc/mark-all-like-this-and-exit
+        imalison:multiple-cursors-hydra/mc/mark-next-like-this
+        imalison:multiple-cursors-hydra/nil
         isearch-delete-char
         smex
         yank-rectangle
