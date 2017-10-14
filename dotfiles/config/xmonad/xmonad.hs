@@ -730,7 +730,7 @@ windowsMatchingClass klass =
   allWindows >>= filterM (((== klass) <$>) . getClass)
 
 gatherClass klass = restoreFocus $
-  windowsMatchingClass klass >>= mapM_ (windows . bringWindow)
+  windowsMatchingClass klass >>= mapM_ doBringWindow
 
 gatherThisClass = thisClass >>= flip whenJust gatherClass
 
