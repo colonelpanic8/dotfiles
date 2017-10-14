@@ -220,7 +220,8 @@ main = do
             , makeUnderline mpris "red"
             ]
         , barPosition = Top
-        , barHeight = (underlineHeight myHUDConfig + windowIconSize myHUDConfig) + (2 * (innerPadding myHUDConfig + outerPadding myHUDConfig))
+        , barHeight = (underlineHeight myHUDConfig + windowIconSize myHUDConfig) +
+                      (2 * (innerPadding myHUDConfig + outerPadding myHUDConfig))
         , widgetSpacing = 5
         }
   withToggleSupport taffyConfig
