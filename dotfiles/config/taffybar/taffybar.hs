@@ -58,7 +58,7 @@ getFullWorkspaceNames = go <$> readAsListOfString Nothing "_NET_DESKTOP_FULL_NAM
   where go = zip [WSIdx i | i <- [0..]]
 
 workspaceNamesLabelSetter workspace = do
-  fullNames <- liftX11 getFullWorkspaceNames
+  fullNames <- liftX11Def [] getFullWorkspaceNames
   return $ fromMaybe "" $ lookup (workspaceIdx workspace) fullNames
 
 mem :: IO Gtk.Widget
@@ -126,30 +126,29 @@ getInterfaces = do
   return $ splitOn "\n" output
 
 main = do
-  monEither <-
-    (try $ getEnv "TAFFYBAR_MONITOR") :: IO (Either SomeException String)
   interfaceNames <- getInterfaces
   homeDirectory <- getHomeDirectory
   let resourcesDirectory = homeDirectory </> ".lib" </> "resources"
       inResourcesDirectory file = resourcesDirectory </> file
-      highContrastDirectory = "/" </> "usr" </> "share" </> "icons" </> "HighContrast" </> "256x256"
-      inHighContrastDirectory file = (highContrastDirectory </> file)
-      getWorkspacePixBuf size Workspace { workspaceIdx = WSIdx wsId } =
+      highContrastDirectory =
+        "/" </> "usr" </> "share" </> "icons" </> "HighContrast" </> "256x256"
+      inHighContrastDirectory file = highContrastDirectory </> file
+      getWorkspacePixBuf size Workspace {workspaceIdx = WSIdx wsId} =
         pixBufFromFile size . inHighContrastDirectory <$>
-                       case wsId + 1 of
-                         1 -> Just $ "apps" </> "utilities-terminal.png"
-                         2 -> Just $ "emblems" </> "emblem-documents.png"
-                         3 -> Just $ "actions" </> "bookmark-add.png"
-                         4 -> Just $ "devices" </> "video-display.png"
-                         _ -> Nothing
+        case wsId + 1 of
+          1 -> Just $ "apps" </> "utilities-terminal.png"
+          2 -> Just $ "emblems" </> "emblem-documents.png"
+          3 -> Just $ "actions" </> "bookmark-add.png"
+          4 -> Just $ "devices" </> "video-display.png"
+          _ -> Nothing
       buildConstantIconController :: ControllerConstructor
       buildConstantIconController ws = do
-         cfg <- asks hudConfig
-         lift $ do
-           img <- Gtk.imageNew
-           pb <- sequence $ getWorkspacePixBuf (windowIconSize cfg) ws
-           setImage (windowIconSize cfg) img pb
-           return $ WWC ConstantIconController { cicImage = img }
+        cfg <- asks hudConfig
+        lift $ do
+          img <- Gtk.imageNew
+          pb <- sequence $ getWorkspacePixBuf (windowIconSize cfg) ws
+          setImage (windowIconSize cfg) img pb
+          return $ WWC ConstantIconController {cicImage = img}
       makeIcon = return . IIFilePath . inResourcesDirectory
       myGetIconInfo w@WindowData {windowTitle = title, windowClass = klass}
         | "URxvt" `isInfixOf` klass = makeIcon "urxvt.png"
@@ -164,13 +163,6 @@ main = do
             case res of
               IINone -> IIFilePath $ inResourcesDirectory "exe-icon.png"
               _ -> res
-      (_, monNumber) =
-        case monEither of
-          Left _ -> (allMonitors, 0)
-          Right monString ->
-            case readMaybe monString of
-              Nothing -> (allMonitors, 0)
-              Just num -> (useMonitorNumber, num)
       cpuCfg =
         defaultGraphConfig
         { graphDataColors = [(0, 1, 0, 1), (1, 0, 1, 0.5)]
@@ -179,14 +171,6 @@ main = do
       clock = textClockNew Nothing "%a %b %_d %r" 1
       mpris = mpris2New
       cpu = pollingGraphNew cpuCfg 0.5 cpuCallback
-      tray = do
-        theTray <- systrayNew
-        cont <- Gtk.eventBoxNew
-        Gtk.containerAdd cont theTray
-        Gtk.widgetSetName cont "Taffytray"
-        Gtk.widgetSetName theTray "Taffytray"
-        Gtk.widgetShowAll cont
-        return $ Gtk.toWidget cont
       myHUDConfig =
         defaultWorkspaceHUDConfig
         { underlineHeight = 3
@@ -194,12 +178,16 @@ main = do
         , minWSWidgetSize = Nothing
         , minIcons = 3
         , getIconInfo = myGetIconInfo
-        , windowIconSize = 25
+        , windowIconSize = 32
         , widgetGap = 0
-        , widgetBuilder = buildButtonController $
-                          buildUnderlineController $
-                          buildContentsController
-                          [buildConstantIconController, buildLabelController, buildIconController]
+        , widgetBuilder =
+            buildButtonController $
+            buildUnderlineController $
+            buildContentsController
+              [ buildConstantIconController
+              , buildLabelController
+              , buildIconController
+              ]
         , showWorkspaceFn = hideEmpty
         , updateRateLimitMicroseconds = 100000
         , updateIconsOnTitleChange = True
@@ -214,10 +202,9 @@ main = do
       pagerConfig =
         defaultPagerConfig
         {useImages = True, windowSwitcherFormatter = myFormatEntry}
-      -- pager = taffyPagerNew pagerConfig
       makeUnderline = underlineWidget myHUDConfig
   pgr <- pagerNew pagerConfig
-  tray2 <- movableWidget tray
+  -- tray2 <- movableWidget tray
   let hud = buildWorkspaceHUD myHUDConfig pgr
       los = makeUnderline (layoutSwitcherNew pgr) "red"
       wnd = makeUnderline (windowSwitcherNew pgr) "teal"
@@ -225,16 +212,15 @@ main = do
         defaultTaffybarConfig
         { startWidgets = [hud, los, wnd]
         , endWidgets =
-            [ makeUnderline tray "yellow"
+            [ makeUnderline systrayNew "yellow"
             , makeUnderline clock "teal"
             , makeUnderline mem "blue"
             , makeUnderline cpu "green"
             , makeUnderline netMonitor "yellow"
             , makeUnderline mpris "red"
             ]
-        , monitorNumber = monNumber
         , barPosition = Top
-        , barHeight = 50
+        , barHeight = (underlineHeight myHUDConfig + windowIconSize myHUDConfig) + (2 * (innerPadding myHUDConfig + outerPadding myHUDConfig))
         , widgetSpacing = 5
         }
   withToggleSupport taffyConfig
