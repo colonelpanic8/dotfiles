@@ -3,7 +3,7 @@
 "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
-<!-- 2017-10-05 Thu 22:27 -->
+<!-- 2017-10-14 Sat 05:17 -->
 <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>&lrm;</title>
@@ -6285,16 +6285,16 @@ Paradox is a package.el extension. I have no use for it now that I use straight.
       (imalison:join-paths user-emacs-directory <span class="org-string">"server"</span> <span class="org-string">"server"</span>))
     (<span class="org-keyword">defun</span> <span class="org-function-name">imalison:main-emacs-server-name</span> ()
       (file-name-nondirectory
-       (file-truename (imalison:get-server-filepath))))
+       (file-truename (imalison:get-server-file))))
     (<span class="org-keyword">defun</span> <span class="org-function-name">imalison:make-main-emacs-server</span> ()
       (<span class="org-keyword">interactive</span>)
       (<span class="org-keyword">when</span> (not (equal server-name (imalison:main-emacs-server-name)))
         (<span class="org-keyword">let</span> ((server-file (imalison:get-server-file)))
           (shell-command-to-string
-           (format <span class="org-string">"cd '%s' &amp;&amp; rm -f server &amp;&amp; ln -s %s server"</span>
+           (format <span class="org-string">"cd %s &amp;&amp; rm -f server &amp;&amp; ln -s %s server"</span>
                    (imalison:join-paths user-emacs-directory <span class="org-string">"server"</span>)
                    server-name)))))
-    (<span class="org-keyword">defun</span> <span class="org-function-name">imalison:get-server-filepath</span> ()
+    (<span class="org-keyword">defun</span> <span class="org-function-name">imalison:get-this-server-filepath</span> ()
       (<span class="org-keyword">let</span> ((server-dir (<span class="org-keyword">if</span> server-use-tcp server-auth-dir server-socket-dir)))
         (expand-file-name server-name server-dir)))
     (<span class="org-keyword">setq</span> server-use-tcp t)
@@ -8640,7 +8640,7 @@ Intero seems to be causing hangs, so it has been disabled
                        ((org-agenda-overriding-header
                          <span class="org-string">"Due today:"</span>))))
           (recently-created '(tags-todo
-                              <span class="org-string">"+CREATED=&gt;\"&lt;-3d&gt;\""</span>
+                              <span class="org-string">"+CREATED=&gt;\"&lt;-30d&gt;\""</span>
                               ((org-agenda-overriding-header <span class="org-string">"Recently created:"</span>)
                                (org-agenda-cmp-user-defined 'org-cmp-creation-times)
                                (org-agenda-sorting-strategy '(user-defined-down)))))
