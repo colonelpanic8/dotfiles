@@ -1408,16 +1408,16 @@ Paradox is a package.el extension. I have no use for it now that I use straight.
       (imalison:join-paths user-emacs-directory "server" "server"))
     (defun imalison:main-emacs-server-name ()
       (file-name-nondirectory
-       (file-truename (imalison:get-server-filepath))))
+       (file-truename (imalison:get-server-file))))
     (defun imalison:make-main-emacs-server ()
       (interactive)
       (when (not (equal server-name (imalison:main-emacs-server-name)))
         (let ((server-file (imalison:get-server-file)))
           (shell-command-to-string
-           (format "cd '%s' && rm -f server && ln -s %s server"
+           (format "cd %s && rm -f server && ln -s %s server"
                    (imalison:join-paths user-emacs-directory "server")
                    server-name)))))
-    (defun imalison:get-server-filepath ()
+    (defun imalison:get-this-server-filepath ()
       (let ((server-dir (if server-use-tcp server-auth-dir server-socket-dir)))
         (expand-file-name server-name server-dir)))
     (setq server-use-tcp t)
@@ -3185,7 +3185,7 @@ Intero seems to be causing hangs, so it has been disabled
                        ((org-agenda-overriding-header
                          "Due today:"))))
           (recently-created '(tags-todo
-                              "+CREATED=>\"<-3d>\""
+                              "+CREATED=>\"<-30d>\""
                               ((org-agenda-overriding-header "Recently created:")
                                (org-agenda-cmp-user-defined 'org-cmp-creation-times)
                                (org-agenda-sorting-strategy '(user-defined-down)))))
