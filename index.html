@@ -3,7 +3,7 @@
 "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
-<!-- 2017-10-16 Mon 10:38 -->
+<!-- 2017-10-18 Wed 16:17 -->
 <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>&lrm;</title>
@@ -8183,7 +8183,8 @@ Intero seems to be causing hangs, so it has been disabled
 <h4 id="lua"><span class="section-number-4">12.1.12</span> lua <a href="#lua"><svg aria-hidden="true" class="octicon octicon-link" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a></h4>
 <div class="outline-text-4" id="text-12-1-12">
 <div class="org-src-container">
-<pre class="src src-emacs-lisp">(<span class="org-keyword">use-package</span> <span class="org-constant">lua-mode</span>)
+<pre class="src src-emacs-lisp">(<span class="org-keyword">use-package</span> <span class="org-constant">lua-mode</span>
+  <span class="org-builtin">:defer</span> t)
 </pre>
 </div>
 </div>
@@ -8590,6 +8591,11 @@ Intero seems to be causing hangs, so it has been disabled
     (<span class="org-keyword">unless</span> (boundp 'org-capture-templates)
       (<span class="org-keyword">defvar</span> <span class="org-variable-name">org-capture-templates</span> nil))
 
+    (<span class="org-keyword">defvar</span> <span class="org-variable-name">imalison:created-property-string</span> <span class="org-string">"</span>
+<span class="org-string">  :PROPERTIES:</span>
+<span class="org-string">  :CREATED: %U</span>
+<span class="org-string">  :END:"</span>)
+
     (imalison:add-to-org-agenda-files
      (list imalison:org-gtd-file imalison:org-habits-file
            imalison:org-calendar-file imalison:org-inbox-file))
@@ -8605,20 +8611,11 @@ Intero seems to be causing hangs, so it has been disabled
     (add-to-list 'org-capture-templates
                  `(<span class="org-string">"y"</span> <span class="org-string">"Calendar entry (Linked)"</span> entry
                    (file ,imalison:org-calendar-file)
-                   <span class="org-string">"* %? %A</span>
-<span class="org-string">  :PROPERTIES:</span>
-<span class="org-string">  :CREATED: %U</span>
-<span class="org-string">  :END:</span>
-<span class="org-string">%^T"</span>))
+                   ,(format <span class="org-string">"%s%s\n%s"</span> <span class="org-string">"* %? %A"</span> imalison:created-property-string <span class="org-string">"%^T"</span>)))
 
     (add-to-list 'org-capture-templates
                  `(<span class="org-string">"c"</span> <span class="org-string">"Calendar entry"</span> entry
-                   (file ,imalison:org-calendar-file)
-                   <span class="org-string">"* %?</span>
-<span class="org-string">  :PROPERTIES:</span>
-<span class="org-string">  :CREATED: %U</span>
-<span class="org-string">  :END:</span>
-<span class="org-string">%^T"</span>))
+                   ,(format <span class="org-string">"%s\n%s\n%s"</span> <span class="org-string">"* %?"</span> imalison:created-property-string <span class="org-string">"%^T"</span>)))
 
     (add-to-list 'org-capture-templates
                  `(<span class="org-string">"h"</span> <span class="org-string">"Habit"</span> entry (file ,imalison:org-habits-file)
@@ -8636,7 +8633,7 @@ Intero seems to be causing hangs, so it has been disabled
                        ((org-agenda-overriding-header
                          <span class="org-string">"Upcoming high priority tasks:"</span>))))
           (due-today '(tags-todo
-                       <span class="org-string">"+DEADLINE=&lt;\"&lt;+0d&gt;\""</span>
+                       <span class="org-string">"+DEADLINE=&lt;\"&lt;+1d&gt;\"|+SCHEDULED=&lt;\"&lt;+0d&gt;\""</span>
                        ((org-agenda-overriding-header
                          <span class="org-string">"Due today:"</span>))))
           (recently-created '(tags-todo
@@ -8933,11 +8930,12 @@ This function replaces the default naming scheme with a call to
   <span class="org-builtin">:config</span>
   (<span class="org-keyword">progn</span>
     (<span class="org-keyword">setq</span> org-projectile-projects-file
-          (imalison:join-paths imalison:org-dir <span class="org-string">"projects.org"</span>))
+          (imalison:join-paths imalison:org-dir <span class="org-string">"projects.org"</span>)
+          org-projectile-capture-template
+          (format <span class="org-string">"%s\n%s"</span> <span class="org-string">"* TODO %?"</span> imalison:created-property-string))
     (add-to-list 'org-capture-templates
                  (org-projectile-project-todo-entry
                   <span class="org-builtin">:capture-character</span> <span class="org-string">"l"</span>
-                  <span class="org-builtin">:capture-template</span> <span class="org-string">"* TODO %? %a\n"</span>
                   <span class="org-builtin">:capture-heading</span> <span class="org-string">"Linked Project TODO"</span>))
     (add-to-list 'org-capture-templates
                  (org-projectile-project-todo-entry
@@ -10051,6 +10049,7 @@ I had to disable this mode because something that it does messes with coding set
 <div class="outline-text-3" id="text-18-12">
 <div class="org-src-container">
 <pre class="src src-emacs-lisp">(<span class="org-keyword">use-package</span> <span class="org-constant">recentf</span>
+  <span class="org-builtin">:defer</span> 3
   <span class="org-builtin">:config</span>
   (<span class="org-keyword">progn</span>
     (<span class="org-keyword">setq</span> recentf-max-saved-items 1000
