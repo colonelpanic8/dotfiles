@@ -2789,7 +2789,8 @@ Intero seems to be causing hangs, so it has been disabled
 #+END_SRC
 *** lua
 #+BEGIN_SRC emacs-lisp
-(use-package lua-mode)
+(use-package lua-mode
+  :defer t)
 #+END_SRC
 *** C/C++
 #+BEGIN_SRC emacs-lisp
@@ -3135,6 +3136,11 @@ Intero seems to be causing hangs, so it has been disabled
     (unless (boundp 'org-capture-templates)
       (defvar org-capture-templates nil))
 
+    (defvar imalison:created-property-string "
+  :PROPERTIES:
+  :CREATED: %U
+  :END:")
+
     (imalison:add-to-org-agenda-files
      (list imalison:org-gtd-file imalison:org-habits-file
            imalison:org-calendar-file imalison:org-inbox-file))
@@ -3150,20 +3156,11 @@ Intero seems to be causing hangs, so it has been disabled
     (add-to-list 'org-capture-templates
                  `("y" "Calendar entry (Linked)" entry
                    (file ,imalison:org-calendar-file)
-                   "* %? %A
-  :PROPERTIES:
-  :CREATED: %U
-  :END:
-%^T"))
+                   ,(format "%s%s\n%s" "* %? %A" imalison:created-property-string "%^T")))
 
     (add-to-list 'org-capture-templates
                  `("c" "Calendar entry" entry
-                   (file ,imalison:org-calendar-file)
-                   "* %?
-  :PROPERTIES:
-  :CREATED: %U
-  :END:
-%^T"))
+                   ,(format "%s\n%s\n%s" "* %?" imalison:created-property-string "%^T")))
 
     (add-to-list 'org-capture-templates
                  `("h" "Habit" entry (file ,imalison:org-habits-file)
@@ -3181,7 +3178,7 @@ Intero seems to be causing hangs, so it has been disabled
                        ((org-agenda-overriding-header
                          "Upcoming high priority tasks:"))))
           (due-today '(tags-todo
-                       "+DEADLINE=<\"<+0d>\""
+                       "+DEADLINE=<\"<+1d>\"|+SCHEDULED=<\"<+0d>\""
                        ((org-agenda-overriding-header
                          "Due today:"))))
           (recently-created '(tags-todo
@@ -3429,11 +3426,12 @@ alphanumeric characters only."
   :config
   (progn
     (setq org-projectile-projects-file
-          (imalison:join-paths imalison:org-dir "projects.org"))
+          (imalison:join-paths imalison:org-dir "projects.org")
+          org-projectile-capture-template
+          (format "%s\n%s" "* TODO %?" imalison:created-property-string))
     (add-to-list 'org-capture-templates
                  (org-projectile-project-todo-entry
                   :capture-character "l"
-                  :capture-template "* TODO %? %a\n"
                   :capture-heading "Linked Project TODO"))
     (add-to-list 'org-capture-templates
                  (org-projectile-project-todo-entry
@@ -4200,6 +4198,7 @@ I had to disable this mode because something that it does messes with coding set
 ** recentf
 #+BEGIN_SRC emacs-lisp
 (use-package recentf
+  :defer 3
   :config
   (progn
     (setq recentf-max-saved-items 1000
