@@ -220,6 +220,7 @@ main = do
             , makeUnderline mpris "red"
             ]
         , barPosition = Top
+        , barPadding = 10
         , barHeight = (underlineHeight myHUDConfig + windowIconSize myHUDConfig) +
                       (2 * (innerPadding myHUDConfig + outerPadding myHUDConfig))
         , widgetSpacing = 5
