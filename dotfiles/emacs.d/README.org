@@ -3428,7 +3428,7 @@ alphanumeric characters only."
     (setq org-projectile-projects-file
           (imalison:join-paths imalison:org-dir "projects.org")
           org-projectile-capture-template
-          (format "%s\n%s" "* TODO %?" imalison:created-property-string))
+          (format "%s%s" "* TODO %?" imalison:created-property-string))
     (add-to-list 'org-capture-templates
                  (org-projectile-project-todo-entry
                   :capture-character "l"
