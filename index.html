@@ -3,7 +3,7 @@
 "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
-<!-- 2017-10-18 Wed 16:17 -->
+<!-- 2017-10-19 Thu 02:40 -->
 <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>&lrm;</title>
@@ -8932,7 +8932,7 @@ This function replaces the default naming scheme with a call to
     (<span class="org-keyword">setq</span> org-projectile-projects-file
           (imalison:join-paths imalison:org-dir <span class="org-string">"projects.org"</span>)
           org-projectile-capture-template
-          (format <span class="org-string">"%s\n%s"</span> <span class="org-string">"* TODO %?"</span> imalison:created-property-string))
+          (format <span class="org-string">"%s%s"</span> <span class="org-string">"* TODO %?"</span> imalison:created-property-string))
     (add-to-list 'org-capture-templates
                  (org-projectile-project-todo-entry
                   <span class="org-builtin">:capture-character</span> <span class="org-string">"l"</span>
