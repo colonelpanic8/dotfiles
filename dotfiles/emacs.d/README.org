@@ -1162,12 +1162,6 @@ it on by default. Its probably safe to turn it on when in a programming mode.
   :demand t
   :config
   (progn
-    (defun imalison:maybe-use-frames-for-org (&rest args)
-      (let ((fn (if frame-mode 'switch-to-buffer-other-frame
-                  'switch-to-buffer-other-window)))
-        (apply fn args)))
-    (advice-add 'org-switch-to-buffer-other-window
-                :override 'imalison:maybe-use-frames-for-org)
     (add-hook 'frame-mode-hook (lambda () (display-time-mode -1)))
     (frame-mode +1)
     (frame-keys-mode +1)))
@@ -2732,7 +2726,7 @@ The following is taken from [[https://github.com/syl20bnr/spacemacs/blob/a650877
 #+END_SRC
 **** haskell-ide-engine
 #+BEGIN_SRC emacs-lisp
-;; (use-package lsp-haskell)
+(use-package lsp-haskell)
 #+END_SRC
 **** intero
 Intero seems to be causing hangs, so it has been disabled
@@ -3422,7 +3416,7 @@ alphanumeric characters only."
 **** org-projectile
 #+BEGIN_SRC emacs-lisp
 (use-package org-projectile
-  :defer t
+  :defer 3
   :config
   (progn
     (setq org-projectile-projects-file
