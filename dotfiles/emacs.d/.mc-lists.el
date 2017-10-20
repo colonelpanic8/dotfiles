@@ -62,6 +62,7 @@
         handle-switch-frame
         helm-M-x
         ido-write-file
+        imalison:multiple-cursors-hydra/body
         imalison:multiple-cursors-hydra/mc/edit-lines-and-exit
         imalison:multiple-cursors-hydra/mc/mark-all-like-this-and-exit
         imalison:multiple-cursors-hydra/mc/mark-next-like-this

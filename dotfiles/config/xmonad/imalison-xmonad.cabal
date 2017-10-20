@@ -1,14 +1,13 @@
 name:                imalison-xmonad
 version:             0.1.0.0
 synopsis:            Ivan Malison's xmonad configuration.
-homepage:            https://github.com/IvanMalison/dotfiles/tree/master/dotfiles/xmonad
+homepage:            https://github.com/IvanMalison/dotfiles/tree/master/dotfiles/config/xmonad
 license:             GPL-3
 license-file:        LICENSE
 author:              Ivan Malison
 maintainer:          IvanMalison@gmail.com
 category:            System
 build-type:          Simple
-extra-source-files:  ChangeLog.md
 cabal-version:       >=1.10
 
 executable imalison-xmonad

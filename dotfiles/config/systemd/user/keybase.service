@@ -4,9 +4,9 @@ Wants=taffybar.service
 After=taffybar.service
 
 [Service]
-Type=simple
+Type=forking
 ExecStart=/usr/bin/env run_keybase
-ExecStop=/usr/bin/pkill Keybase
+PIDFile=$XDG_RUNTIME_DIR/keybase/keybased.pid
 
 [Install]
 WantedBy=wm.target
