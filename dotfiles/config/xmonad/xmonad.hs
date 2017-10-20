@@ -889,7 +889,7 @@ addKeys conf@XConfig { modMask = modm } =
 
     -- Specific program spawning
 
-    , ((modm, xK_p), spawn "rofi -show drun")
+    , ((modm, xK_p), spawn "rofi -show drun -show-icons")
     , ((modm .|. shiftMask, xK_p), spawn "rofi -show run")
 
     -- Window manipulation
