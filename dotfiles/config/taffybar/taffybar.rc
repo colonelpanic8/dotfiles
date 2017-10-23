@@ -18,7 +18,11 @@ style "taffybar-default" {
   color["activeWS"] = @yellow
   color["visibleWS"] = @red
 
-  bg[NORMAL]   = @lldgrey
+  color["base"] = @black
+  color["accent1"] = @dgrey
+  color["accent2"] = @ldgrey
+
+  bg[NORMAL]   = @black
   fg[NORMAL]   = @white
   text[NORMAL] = @black
   fg[PRELIGHT] = @yellow
@@ -63,7 +67,7 @@ style "taffybar-workspace-contents-active" = "taffybar-default" {
 }
 
 style "taffybar-workspace-contents-visible" = "taffybar-default" {
-  bg[NORMAL] = @ldgrey
+  bg[NORMAL] = @black
 }
 
 style "taffybar-hover-button" = "taffybar-default" {
