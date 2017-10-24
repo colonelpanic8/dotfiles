@@ -18,8 +18,8 @@ executable imalison-taffybar
                      , containers
                      , directory
                      , filepath
-                     , gtk
-                     , gtk-traymanager>=0.1.6
+                     , gtk3
+                     , gtk-traymanager>=1.0.0
                      , mtl
                      , process
                      , split

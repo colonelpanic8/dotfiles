@@ -176,7 +176,7 @@ main = do
         { underlineHeight = 3
         , underlinePadding = 2
         , minWSWidgetSize = Nothing
-        , minIcons = 3
+        , minIcons = 1
         , getIconInfo = myGetIconInfo
         , windowIconSize = 32
         , widgetGap = 0
@@ -212,11 +212,11 @@ main = do
         defaultTaffybarConfig
         { startWidgets = [hud, los, wnd]
         , endWidgets =
-            [ makeUnderline systrayNew "yellow"
-            , makeUnderline clock "teal"
-            , makeUnderline mem "blue"
-            , makeUnderline cpu "green"
-            , makeUnderline netMonitor "yellow"
+            [ makeUnderline clock "teal"
+            -- , makeUnderline systrayNew "yellow"
+            -- , makeUnderline mem "blue"
+            -- , makeUnderline cpu "green"
+            -- , makeUnderline netMonitor "yellow"
             , makeUnderline mpris "red"
             ]
         , barPosition = Top
