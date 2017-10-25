@@ -211,7 +211,7 @@ main = do
       wnd = makeUnderline (windowSwitcherNew pgr) "teal"
       taffyConfig =
         defaultTaffybarConfig
-        { startWidgets = [los, hud, wnd]
+        { startWidgets = [hud, wnd, los]
         , endWidgets =
             [ batteryBarNew defaultBatteryConfig 1.0
             , makeUnderline clock "teal"
