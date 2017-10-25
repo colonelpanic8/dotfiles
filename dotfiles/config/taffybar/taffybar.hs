@@ -20,6 +20,7 @@ import           System.Information.Memory
 import           System.Information.X11DesktopInfo
 import           System.Process
 import           System.Taffybar
+import           System.Taffybar.Battery
 import           System.Taffybar.IconImages
 import           System.Taffybar.LayoutSwitcher
 import           System.Taffybar.MPRIS2
@@ -136,10 +137,10 @@ main = do
       getWorkspacePixBuf size Workspace {workspaceIdx = WSIdx wsId} =
         pixBufFromFile size . inHighContrastDirectory <$>
         case wsId + 1 of
-          1 -> Just $ "apps" </> "utilities-terminal.png"
-          2 -> Just $ "emblems" </> "emblem-documents.png"
-          3 -> Just $ "actions" </> "bookmark-add.png"
-          4 -> Just $ "devices" </> "video-display.png"
+          -- 1 -> Just $ "apps" </> "utilities-terminal.png"
+          -- 2 -> Just $ "emblems" </> "emblem-documents.png"
+          -- 3 -> Just $ "actions" </> "bookmark-add.png"
+          -- 4 -> Just $ "devices" </> "video-display.png"
           _ -> Nothing
       buildConstantIconController :: ControllerConstructor
       buildConstantIconController ws = do
@@ -210,9 +211,10 @@ main = do
       wnd = makeUnderline (windowSwitcherNew pgr) "teal"
       taffyConfig =
         defaultTaffybarConfig
-        { startWidgets = [hud, los, wnd]
+        { startWidgets = [los, hud, wnd]
         , endWidgets =
-            [ makeUnderline clock "teal"
+            [ batteryBarNew defaultBatteryConfig 1.0
+            , makeUnderline clock "teal"
             , makeUnderline systrayNew "yellow"
             , makeUnderline mem "blue"
             , makeUnderline cpu "green"

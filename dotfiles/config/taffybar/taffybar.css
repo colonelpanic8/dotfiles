@@ -7,22 +7,40 @@
 	border-radius: 1px;
 }
 
+.IconContainer {
+	border-radius: 5px;
+}
+
 .IconContainer.Active {
 	background-color: @taffybar_highlight_color;
-    border-radius: 5px;
 }
 
 .IconContainer.Minimized {
 	opacity: .3;
 }
 
-.Active.Container {
+.IconContainer.Urgent {
+	background-color: #ffffff;
+}
+
+.Active.Container, .Visible.Container {
 	background-color: @taffybar_bg_tone;
 	border-radius: 5px;
 }
 
 .Taffybar {
 	background-color: @taffybar_bg_color;
+	border-radius: 5px;
+}
+
+.Taffybar * {
+	font-family: "Fira Sans", sans-serif;
+	font-size: 12pt;
+}
+
+.Taffybar .Container * {
+	font-family: 'Source Code Pro';
+	font-size: 16pt;
 }
 
 #WindowSwitcher {
