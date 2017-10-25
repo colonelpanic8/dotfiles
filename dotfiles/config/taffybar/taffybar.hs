@@ -213,10 +213,10 @@ main = do
         { startWidgets = [hud, los, wnd]
         , endWidgets =
             [ makeUnderline clock "teal"
-            -- , makeUnderline systrayNew "yellow"
-            -- , makeUnderline mem "blue"
-            -- , makeUnderline cpu "green"
-            -- , makeUnderline netMonitor "yellow"
+            , makeUnderline systrayNew "yellow"
+            , makeUnderline mem "blue"
+            , makeUnderline cpu "green"
+            , makeUnderline netMonitor "yellow"
             , makeUnderline mpris "red"
             ]
         , barPosition = Top
