@@ -1,1 +1,1 @@
-{:repl {:plugins [[cider/cider-nrepl "0.12.0"]]}}
+{:repl {:plugins [[cider/cider-nrepl "0.15.1"]]}}
