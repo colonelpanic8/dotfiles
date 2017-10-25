@@ -2726,7 +2726,7 @@ The following is taken from [[https://github.com/syl20bnr/spacemacs/blob/a650877
 #+END_SRC
 **** haskell-ide-engine
 #+BEGIN_SRC emacs-lisp
-(use-package lsp-haskell)
+  ;; (use-package lsp-haskell)
 #+END_SRC
 **** intero
 Intero seems to be causing hangs, so it has been disabled
@@ -3679,7 +3679,6 @@ alphanumeric characters only."
 I've disabled magithub because it causes magit to be super slow
 #+BEGIN_SRC emacs-lisp
 (use-package magithub
-  :disabled t
   :if (executable-find "hub")
   :after magit)
 #+END_SRC
@@ -4192,7 +4191,6 @@ I had to disable this mode because something that it does messes with coding set
 ** recentf
 #+BEGIN_SRC emacs-lisp
 (use-package recentf
-  :defer 3
   :config
   (progn
     (setq recentf-max-saved-items 1000
