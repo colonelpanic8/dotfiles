@@ -6,3 +6,4 @@ video/x-msvideo=vlc.desktop;
 text/vnd.trolltech.linguist=vlc.desktop;
 audio/mpeg=vlc.desktop;
 application/pdf=okularApplication_pdf.desktop;
+image/png=okularApplication_kimgio.desktop;
