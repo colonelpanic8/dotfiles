@@ -1405,7 +1405,9 @@ Paradox is a package.el extension. I have no use for it now that I use straight.
        (file-truename (imalison:get-server-file))))
     (defun imalison:make-main-emacs-server ()
       (interactive)
-      (when (not (equal server-name (imalison:main-emacs-server-name)))
+      (when (not (and
+                  (string-equal server-name "server")
+                  (string-equal server-name (imalison:main-emacs-server-name))))
         (let ((server-file (imalison:get-server-file)))
           (shell-command-to-string
            (format "cd %s && rm -f server && ln -s %s server"
