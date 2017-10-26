@@ -4176,7 +4176,6 @@ I had to disable this mode because something that it does messes with coding set
 ** undo-tree
 #+BEGIN_SRC emacs-lisp
 (use-package undo-tree
-  :disabled t ;; this has been getting pretty annoying
   :bind (("C--" . undo-redo)
          ("C-c u" . undo-tree-visualize)
          ("C-c r" . undo-tree-redo))
@@ -4185,6 +4184,8 @@ I had to disable this mode because something that it does messes with coding set
   :init
   (progn
     ;;(setq undo-tree-visualizer-diff t) ;; This causes performance problems
+    (setq undo-limit (expt 2 25)
+          undo-strong-limit (expt 2 25))
     (global-undo-tree-mode)
     (setq undo-tree-visualizer-timestamps t)))
 #+END_SRC
