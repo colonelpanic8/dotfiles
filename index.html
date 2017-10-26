@@ -3,7 +3,7 @@
 "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
-<!-- 2017-10-26 Thu 07:34 -->
+<!-- 2017-10-26 Thu 09:30 -->
 <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>&lrm;</title>
@@ -6282,7 +6282,9 @@ Paradox is a package.el extension. I have no use for it now that I use straight.
        (file-truename (imalison:get-server-file))))
     (<span class="org-keyword">defun</span> <span class="org-function-name">imalison:make-main-emacs-server</span> ()
       (<span class="org-keyword">interactive</span>)
-      (<span class="org-keyword">when</span> (not (equal server-name (imalison:main-emacs-server-name)))
+      (<span class="org-keyword">when</span> (not (<span class="org-keyword">and</span>
+                  (string-equal server-name <span class="org-string">"server"</span>)
+                  (string-equal server-name (imalison:main-emacs-server-name))))
         (<span class="org-keyword">let</span> ((server-file (imalison:get-server-file)))
           (shell-command-to-string
            (format <span class="org-string">"cd %s &amp;&amp; rm -f server &amp;&amp; ln -s %s server"</span>
