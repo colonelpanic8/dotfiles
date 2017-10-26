@@ -3,7 +3,7 @@
 "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
-<!-- 2017-10-25 Wed 08:42 -->
+<!-- 2017-10-26 Thu 07:34 -->
 <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>&lrm;</title>
@@ -10022,7 +10022,6 @@ I had to disable this mode because something that it does messes with coding set
 <div class="outline-text-3" id="text-18-11">
 <div class="org-src-container">
 <pre class="src src-emacs-lisp">(<span class="org-keyword">use-package</span> <span class="org-constant">undo-tree</span>
-  <span class="org-builtin">:disabled</span> t <span class="org-comment-delimiter">;; </span><span class="org-comment">this has been getting pretty annoying</span>
   <span class="org-builtin">:bind</span> ((<span class="org-string">"C--"</span> . undo-redo)
          (<span class="org-string">"C-c u"</span> . undo-tree-visualize)
          (<span class="org-string">"C-c r"</span> . undo-tree-redo))
@@ -10031,6 +10030,8 @@ I had to disable this mode because something that it does messes with coding set
   <span class="org-builtin">:init</span>
   (<span class="org-keyword">progn</span>
     <span class="org-comment-delimiter">;;</span><span class="org-comment">(setq undo-tree-visualizer-diff t) ;; This causes performance problems</span>
+    (<span class="org-keyword">setq</span> undo-limit (expt 2 25)
+          undo-strong-limit (expt 2 25))
     (global-undo-tree-mode)
     (<span class="org-keyword">setq</span> undo-tree-visualizer-timestamps t)))
 </pre>
