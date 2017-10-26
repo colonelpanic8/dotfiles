@@ -41,8 +41,15 @@ instance WorkspaceWidgetController ConstantIconController where
   updateWidget cic _ = return cic
   getWidget = Gtk.toWidget . cicImage
 
-memCfg =
+myGraphConfig =
   defaultGraphConfig
+  { graphPadding = 5
+  , graphBorderWidth = 0
+  , graphWidth = 75
+  }
+
+memCfg =
+  myGraphConfig
   {graphDataColors = [(0.129, 0.588, 0.953, 1)], graphLabel = Just "mem"}
 
 memCallback :: Gtk.Widget -> IO [Double]
@@ -165,7 +172,7 @@ main = do
               IINone -> IIFilePath $ inResourcesDirectory "exe-icon.png"
               _ -> res
       cpuCfg =
-        defaultGraphConfig
+        myGraphConfig
         { graphDataColors = [(0, 1, 0, 1), (1, 0, 1, 0.5)]
         , graphLabel = Just "cpu"
         }
@@ -179,16 +186,16 @@ main = do
         , minWSWidgetSize = Nothing
         , minIcons = 1
         , getIconInfo = myGetIconInfo
-        , windowIconSize = 32
+        , windowIconSize = 28
         , widgetGap = 0
-        , widgetBuilder =
-            buildButtonController $
-            buildUnderlineController $
-            buildContentsController
-              [ buildConstantIconController
-              , buildLabelController
-              , buildIconController
-              ]
+        -- , widgetBuilder =
+        --     buildButtonController $
+        --     buildUnderlineController $
+        --     buildContentsController
+        --       [ buildConstantIconController
+        --       , buildLabelController
+        --       , buildIconController
+        --       ]
         , showWorkspaceFn = hideEmpty
         , updateRateLimitMicroseconds = 100000
         , updateIconsOnTitleChange = True
@@ -203,23 +210,23 @@ main = do
       pagerConfig =
         defaultPagerConfig
         {useImages = True, windowSwitcherFormatter = myFormatEntry}
-      makeUnderline = underlineWidget myHUDConfig
+      -- makeUnderline = underlineWidget myHUDConfig
   pgr <- pagerNew pagerConfig
   -- tray2 <- movableWidget tray
   let hud = buildWorkspaceHUD myHUDConfig pgr
-      los = makeUnderline (layoutSwitcherNew pgr) "red"
-      wnd = makeUnderline (windowSwitcherNew pgr) "teal"
+      los = layoutSwitcherNew pgr
+      wnd = windowSwitcherNew pgr
       taffyConfig =
         defaultTaffybarConfig
-        { startWidgets = [hud, wnd, los]
+        { startWidgets = [hud, los, wnd]
         , endWidgets =
             [ batteryBarNew defaultBatteryConfig 1.0
-            , makeUnderline clock "teal"
-            , makeUnderline systrayNew "yellow"
-            , makeUnderline mem "blue"
-            , makeUnderline cpu "green"
-            , makeUnderline netMonitor "yellow"
-            , makeUnderline mpris "red"
+            , clock
+            , systrayNew
+            , mem
+            , cpu
+            , netMonitor
+            , mpris
             ]
         , barPosition = Top
         , barPadding = 10
