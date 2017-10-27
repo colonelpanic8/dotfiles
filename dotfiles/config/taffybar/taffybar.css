@@ -1,31 +1,50 @@
 @define-color taffybar_bg_color #000000;
 @define-color taffybar_bg_tone #212121;
-@define-color taffybar_highlight_color #ffeb3b;
-
-.Active.Underline {
-	background-color: @taffybar_highlight_color;
-	border-radius: 1px;
-}
+@define-color taffybar_active_window_color rgba(255, 255, 255, .5);
 
 .IconContainer {
 	border-radius: 5px;
 }
 
-.IconContainer.Active {
-	background-color: @taffybar_highlight_color;
+.IconImage {
+	padding: 2px;
 }
 
-.IconContainer.Minimized {
-	opacity: .3;
+.IconContainer {
+	transition: background-color .5s, opacity.5s;
+	opacity: 1;
+	background-color: @taffybar-bg-tone;
 }
 
 .IconContainer.Urgent {
-	background-color: #ffffff;
+	transition: background-color .5s;
+	background-color: #ff0000;
 }
 
-.Active.Container, .Visible.Container {
-	background-color: @taffybar_bg_tone;
+.IconContainer.Active {
+	transition: background-color .5s;
+	background-color: @taffybar_active_window_color;
+}
+
+.IconContainer.Minimized .IconImage {
+	transition: opacity .5s;
+	opacity: .3;
+}
+
+.Contents {
 	border-radius: 5px;
+	padding: 3px;
+}
+
+.Contents.Cpu {
+}
+
+.Active .Contents, .Visible .Contents {
+	background-color: @taffybar_bg_tone;
+}
+
+.InnerPad {
+	padding: 4px;
 }
 
 .Taffybar {
@@ -35,12 +54,13 @@
 
 .Taffybar * {
 	font-family: "Fira Sans", sans-serif;
-	font-size: 12pt;
+	font-size: 10pt;
 }
 
-.Taffybar .Container * {
-	font-family: 'Source Code Pro';
-	font-size: 16pt;
+.WorkspaceLabel {
+	padding-right: 3px;
+	padding-left: 2px;
+	font-size: 12pt;
 }
 
 #WindowSwitcher {

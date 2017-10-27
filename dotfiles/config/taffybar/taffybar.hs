@@ -41,9 +41,21 @@ instance WorkspaceWidgetController ConstantIconController where
   updateWidget cic _ = return cic
   getWidget = Gtk.toWidget . cicImage
 
+instance WorkspaceWidgetController Gtk.Widget where
+  updateWidget w _ = return w
+  getWidget w = w
+
+makeContents waction klass = do
+  widget <- waction
+  widgetSetClass widget "Contents"
+  widgetSetClass widget klass
+  b <- buildPadBox widget
+  Gtk.widgetShowAll b
+  return $ Gtk.toWidget b
+
 myGraphConfig =
   defaultGraphConfig
-  { graphPadding = 5
+  { graphPadding = 0
   , graphBorderWidth = 0
   , graphWidth = 75
   }
@@ -52,13 +64,9 @@ memCfg =
   myGraphConfig
   {graphDataColors = [(0.129, 0.588, 0.953, 1)], graphLabel = Just "mem"}
 
-memCallback :: Gtk.Widget -> IO [Double]
-memCallback widget = do
+memCallback :: IO [Double]
+memCallback = do
   mi <- parseMeminfo
-  let tooltip = printf "%s/%s" (show $ memoryUsed mi) (show $ memoryTotal mi) :: String
-  Gtk.postGUIAsync $ do
-    _ <- Gtk.widgetSetTooltipText widget (Just tooltip)
-    return ()
   return [memoryUsedRatio mi]
 
 getFullWorkspaceNames :: X11Property [(WorkspaceIdx, String)]
@@ -69,14 +77,14 @@ workspaceNamesLabelSetter workspace = do
   fullNames <- liftX11Def [] getFullWorkspaceNames
   return $ fromMaybe "" $ lookup (workspaceIdx workspace) fullNames
 
-mem :: IO Gtk.Widget
-mem = do
-  ebox <- Gtk.eventBoxNew
-  btn <- pollingGraphNew memCfg 1 $ memCallback $ Gtk.toWidget ebox
-  Gtk.containerAdd ebox btn
-  _ <- Gtk.on ebox Gtk.buttonPressEvent systemEvents
-  Gtk.widgetShowAll ebox
-  return $ Gtk.toWidget ebox
+-- mem :: IO Gtk.Widget
+-- mem = do
+--   ebox <- Gtk.eventBoxNew
+--   btn <- pollingGraphNew memCfg 1 $ memCallback $ Gtk.toWidget ebox
+--   Gtk.containerAdd ebox btn
+--   _ <- Gtk.on ebox Gtk.buttonPressEvent systemEvents
+--   Gtk.widgetShowAll ebox
+--   return $ Gtk.toWidget ebox
 
 systemEvents :: Gtk.EventM Gtk.EButton Bool
 systemEvents = return True
@@ -84,6 +92,9 @@ systemEvents = return True
 cpuCallback = do
   (_, systemLoad, totalLoad) <- cpuLoad
   return [totalLoad, systemLoad]
+
+containerAddReturn c w =
+  Gtk.containerAdd c w >> Gtk.widgetShowAll c >> (return $ Gtk.toWidget c)
 
 underlineWidget cfg buildWidget name = do
   w <- buildWidget
@@ -179,6 +190,7 @@ main = do
       clock = textClockNew Nothing "%a %b %_d %r" 1
       mpris = mpris2New
       cpu = pollingGraphNew cpuCfg 0.5 cpuCallback
+      mem = pollingGraphNew memCfg 1 memCallback
       myHUDConfig =
         defaultWorkspaceHUDConfig
         { underlineHeight = 3
@@ -186,7 +198,7 @@ main = do
         , minWSWidgetSize = Nothing
         , minIcons = 1
         , getIconInfo = myGetIconInfo
-        , windowIconSize = 28
+        , windowIconSize = 30
         , widgetGap = 0
         -- , widgetBuilder =
         --     buildButtonController $
@@ -198,12 +210,8 @@ main = do
         --       ]
         , showWorkspaceFn = hideEmpty
         , updateRateLimitMicroseconds = 100000
-        , updateIconsOnTitleChange = True
         , updateOnWMIconChange = True
         , debugMode = False
-        , redrawIconsOnStateChange = True
-        , innerPadding = 5
-        , outerPadding = 5
         , labelSetter = workspaceNamesLabelSetter
         }
       netMonitor = netMonitorMultiNew 1.5 interfaceNames
@@ -221,18 +229,17 @@ main = do
         { startWidgets = [hud, los, wnd]
         , endWidgets =
             [ batteryBarNew defaultBatteryConfig 1.0
-            , clock
-            , systrayNew
-            , mem
-            , cpu
-            , netMonitor
-            , mpris
+            , makeContents clock "Cpu"
+            -- , systrayNew
+            , makeContents cpu "Cpu"
+            , makeContents mem "Cpu"
+            , makeContents netMonitor "Cpu"
+            , makeContents (join $ containerAddReturn <$> Gtk.eventBoxNew <*> mpris) "Cpu"
             ]
         , barPosition = Top
         , barPadding = 10
-        , barHeight = (underlineHeight myHUDConfig + windowIconSize myHUDConfig) +
-                      (2 * (innerPadding myHUDConfig + outerPadding myHUDConfig))
-        , widgetSpacing = 5
+        , barHeight = (underlineHeight myHUDConfig + windowIconSize myHUDConfig) + 15
+        , widgetSpacing = 0
         }
   withToggleSupport taffyConfig
 
