@@ -1,60 +1,20 @@
-@define-color taffybar_bg_color #000000;
-@define-color taffybar_bg_tone #212121;
-@define-color taffybar_active_window_color rgba(255, 255, 255, .5);
-
-.IconContainer {
-	border-radius: 5px;
-}
-
-.IconImage {
-	padding: 2px;
-}
-
-.IconContainer {
-	transition: background-color .5s, opacity.5s;
-	opacity: 1;
-	background-color: @taffybar-bg-tone;
-}
-
-.IconContainer.Urgent {
-	transition: background-color .5s;
-	background-color: #ff0000;
-}
-
-.IconContainer.Active {
-	transition: background-color .5s;
-	background-color: @taffybar_active_window_color;
-}
-
-.IconContainer.Minimized .IconImage {
-	transition: opacity .5s;
-	opacity: .3;
-}
+@define-color bg-color #000000;
+@define-color bg-tone #1E1E20;
+@define-color active-window-color #374140;
+@define-color urgent-window-color #D9CB9E;
+@define-color font-color #D9CB9E;
 
 .Contents {
 	border-radius: 5px;
 	padding: 3px;
 }
 
-.Contents.Cpu {
-}
-
 .Active .Contents, .Visible .Contents {
-	background-color: @taffybar_bg_tone;
+	background-color: @bg-tone;
 }
 
 .InnerPad {
 	padding: 4px;
-}
-
-.Taffybar {
-	background-color: @taffybar_bg_color;
-	border-radius: 5px;
-}
-
-.Taffybar * {
-	font-family: "Fira Sans", sans-serif;
-	font-size: 10pt;
 }
 
 .WorkspaceLabel {
@@ -63,6 +23,51 @@
 	font-size: 12pt;
 }
 
-#WindowSwitcher {
-	background-color: @taffybar_bg_color;
+.IconContainer {
+	transition: background-color .5s;
+	border-radius: 5px;
+}
+
+@keyframes spin {
+  to { -gtk-icon-transform: rotate(1turn); }
+}
+
+.IconContainer.Active {
+	transition: background-color .5s;
+	background-color: @active-window-color;
+}
+
+.IconContainer.Urgent {
+	transition: background-color .5s;
+	background-color: @urgent-window-color;
+	animation-name: spin;
+	animation-duration: 1s;
+	animation-timing-function: linear;
+	animation-iteration-count: infinite;
+}
+
+.IconContainer.Minimized .IconImage {
+	transition: opacity .5s;
+	opacity: .3;
+}
+
+.IconImage {
+	transition: opacity .5s;
+	padding: 2px;
+	opacity: 1;
+}
+
+#WindowSwitcher, #Taffybar_WindowSwitcher {
+	background-color: @bg-color;
+}
+
+.Taffybar {
+	background-color: @bg-color;
+	border-radius: 5px;
+}
+
+.Taffybar * {
+	font-family: "Fira Sans", sans-serif;
+	font-size: 10pt;
+	color: @font-color;
 }

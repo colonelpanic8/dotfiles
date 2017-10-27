@@ -211,7 +211,7 @@ main = do
         , showWorkspaceFn = hideEmpty
         , updateRateLimitMicroseconds = 100000
         , updateOnWMIconChange = True
-        , debugMode = False
+        , debugMode = True
         , labelSetter = workspaceNamesLabelSetter
         }
       netMonitor = netMonitorMultiNew 1.5 interfaceNames
@@ -230,7 +230,7 @@ main = do
         , endWidgets =
             [ batteryBarNew defaultBatteryConfig 1.0
             , makeContents clock "Cpu"
-            -- , systrayNew
+            , makeContents systrayNew "Cpu"
             , makeContents cpu "Cpu"
             , makeContents mem "Cpu"
             , makeContents netMonitor "Cpu"
