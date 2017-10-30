@@ -28,10 +28,6 @@
 	border-radius: 5px;
 }
 
-@keyframes spin {
-  to { -gtk-icon-transform: rotate(1turn); }
-}
-
 .IconContainer.Active {
 	transition: background-color .5s;
 	background-color: @active-window-color;
@@ -40,10 +36,6 @@
 .IconContainer.Urgent {
 	transition: background-color .5s;
 	background-color: @urgent-window-color;
-	animation-name: spin;
-	animation-duration: 1s;
-	animation-timing-function: linear;
-	animation-iteration-count: infinite;
 }
 
 .IconContainer.Minimized .IconImage {

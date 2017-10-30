@@ -1,3 +1,4 @@
+{-# LANGUAGE PackageImports #-}
 module Main where
 
 import qualified Control.Concurrent.MVar as MV
@@ -8,9 +9,9 @@ import           Data.List
 import           Data.List.Split
 import qualified Data.Map as M
 import           Data.Maybe
-import qualified Graphics.UI.Gtk as Gtk
-import qualified Graphics.UI.Gtk.Abstract.Widget as W
-import qualified Graphics.UI.Gtk.Layout.Table as T
+import qualified "gtk3" Graphics.UI.Gtk as Gtk
+import qualified "gtk3" Graphics.UI.Gtk.Abstract.Widget as W
+import qualified "gtk3" Graphics.UI.Gtk.Layout.Table as T
 import           System.Directory
 import           System.Environment
 import           System.FilePath.Posix
@@ -211,7 +212,7 @@ main = do
         , showWorkspaceFn = hideEmpty
         , updateRateLimitMicroseconds = 100000
         , updateOnWMIconChange = True
-        , debugMode = True
+        , debugMode = False
         , labelSetter = workspaceNamesLabelSetter
         }
       netMonitor = netMonitorMultiNew 1.5 interfaceNames
