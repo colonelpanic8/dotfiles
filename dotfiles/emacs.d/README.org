@@ -1074,13 +1074,10 @@ I keep it around just in case I need it.
 (column-number-mode t)
 #+END_SRC
 *** nlinum
-Linum/NLinum can be really slow on large files so it does not make sense to have
-it on by default. Its probably safe to turn it on when in a programming mode.
-#+BEGIN_SRC emacs-lisp
-(global-linum-mode -1)
-#+END_SRC
+Disabling line numbers because they are slow as fuck.
 #+BEGIN_SRC emacs-lisp
 (use-package nlinum
+  :disabled t
   :demand t
   :config
   (progn
