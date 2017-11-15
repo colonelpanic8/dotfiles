@@ -1395,21 +1395,21 @@ Paradox is a package.el extension. I have no use for it now that I use straight.
 (use-package server
   :config
   (progn
-    (defun imalison:get-server-file ()
+    (defvar imalison:default-server-file
       (imalison:join-paths user-emacs-directory "server" "server"))
     (defun imalison:main-emacs-server-name ()
       (file-name-nondirectory
-       (file-truename (imalison:get-server-file))))
+       (file-truename imalison:default-server-file)))
     (defun imalison:make-main-emacs-server ()
       (interactive)
-      (when (not (and
-                  (string-equal server-name "server")
-                  (string-equal server-name (imalison:main-emacs-server-name))))
-        (let ((server-file (imalison:get-server-file)))
-          (shell-command-to-string
-           (format "cd %s && rm -f server && ln -s %s server"
-                   (imalison:join-paths user-emacs-directory "server")
-                   server-name)))))
+      (unless (string-equal server-name (imalison:main-emacs-server-name))
+        (if (string-equal server-name "server")
+              (error "Unable to set main server name 'server'.
+The file server file for this emacs instance no longer exists.")
+          (progn
+            (delete-file imalison:default-server-file)
+            (make-symbolic-link (imalison:join-paths user-emacs-directory "server" server-name)
+                                imalison:default-server-file)))))
     (defun imalison:get-this-server-filepath ()
       (let ((server-dir (if server-use-tcp server-auth-dir server-socket-dir)))
         (expand-file-name server-name server-dir)))
