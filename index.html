@@ -3,7 +3,7 @@
 "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
-<!-- 2017-10-30 Mon 02:07 -->
+<!-- 2017-11-17 Fri 04:05 -->
 <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>&lrm;</title>
@@ -5768,15 +5768,11 @@ This keyboard macro extracts the current sexp to an emacs-lisp source block of i
 <h4 id="nlinum"><span class="section-number-4">6.4.1</span> nlinum <a href="#nlinum"><svg aria-hidden="true" class="octicon octicon-link" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a></h4>
 <div class="outline-text-4" id="text-6-4-1">
 <p>
-Linum/NLinum can be really slow on large files so it does not make sense to have
-it on by default. Its probably safe to turn it on when in a programming mode.
+Disabling line numbers because they are slow as fuck.
 </p>
 <div class="org-src-container">
-<pre class="src src-emacs-lisp">(global-linum-mode -1)
-</pre>
-</div>
-<div class="org-src-container">
 <pre class="src src-emacs-lisp">(<span class="org-keyword">use-package</span> <span class="org-constant">nlinum</span>
+  <span class="org-builtin">:disabled</span> t
   <span class="org-builtin">:demand</span> t
   <span class="org-builtin">:config</span>
   (<span class="org-keyword">progn</span>
@@ -6275,21 +6271,21 @@ Paradox is a package.el extension. I have no use for it now that I use straight.
 <pre class="src src-emacs-lisp">(<span class="org-keyword">use-package</span> <span class="org-constant">server</span>
   <span class="org-builtin">:config</span>
   (<span class="org-keyword">progn</span>
-    (<span class="org-keyword">defun</span> <span class="org-function-name">imalison:get-server-file</span> ()
+    (<span class="org-keyword">defvar</span> <span class="org-variable-name">imalison:default-server-file</span>
       (imalison:join-paths user-emacs-directory <span class="org-string">"server"</span> <span class="org-string">"server"</span>))
     (<span class="org-keyword">defun</span> <span class="org-function-name">imalison:main-emacs-server-name</span> ()
       (file-name-nondirectory
-       (file-truename (imalison:get-server-file))))
+       (file-truename imalison:default-server-file)))
     (<span class="org-keyword">defun</span> <span class="org-function-name">imalison:make-main-emacs-server</span> ()
       (<span class="org-keyword">interactive</span>)
-      (<span class="org-keyword">when</span> (not (<span class="org-keyword">and</span>
-                  (string-equal server-name <span class="org-string">"server"</span>)
-                  (string-equal server-name (imalison:main-emacs-server-name))))
-        (<span class="org-keyword">let</span> ((server-file (imalison:get-server-file)))
-          (shell-command-to-string
-           (format <span class="org-string">"cd %s &amp;&amp; rm -f server &amp;&amp; ln -s %s server"</span>
-                   (imalison:join-paths user-emacs-directory <span class="org-string">"server"</span>)
-                   server-name)))))
+      (<span class="org-keyword">unless</span> (string-equal server-name (imalison:main-emacs-server-name))
+        (<span class="org-keyword">if</span> (string-equal server-name <span class="org-string">"server"</span>)
+              (<span class="org-warning">error</span> <span class="org-string">"Unable to set main server name 'server'.</span>
+<span class="org-string">The file server file for this emacs instance no longer exists."</span>)
+          (<span class="org-keyword">progn</span>
+            (delete-file imalison:default-server-file)
+            (make-symbolic-link (imalison:join-paths user-emacs-directory <span class="org-string">"server"</span> server-name)
+                                imalison:default-server-file)))))
     (<span class="org-keyword">defun</span> <span class="org-function-name">imalison:get-this-server-filepath</span> ()
       (<span class="org-keyword">let</span> ((server-dir (<span class="org-keyword">if</span> server-use-tcp server-auth-dir server-socket-dir)))
         (expand-file-name server-name server-dir)))
