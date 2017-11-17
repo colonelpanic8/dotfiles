@@ -1,40 +1,41 @@
 {-# LANGUAGE PackageImports #-}
 module Main where
 
-import qualified Control.Concurrent.MVar as MV
-import           Control.Exception.Base
-import           Control.Monad
-import           Control.Monad.Reader
-import           Data.List
-import           Data.List.Split
-import qualified Data.Map as M
-import           Data.Maybe
+import qualified        Control.Concurrent.MVar as MV
+import                  Control.Exception.Base
+import                  Control.Monad
+import                  Control.Monad.Reader
+import                  Data.List
+import                  Data.List.Split
+import qualified        Data.Map as M
+import                  Data.Maybe
 import qualified "gtk3" Graphics.UI.Gtk as Gtk
 import qualified "gtk3" Graphics.UI.Gtk.Abstract.Widget as W
 import qualified "gtk3" Graphics.UI.Gtk.Layout.Table as T
-import           System.Directory
-import           System.Environment
-import           System.FilePath.Posix
-import           System.Information.CPU
-import           System.Information.EWMHDesktopInfo
-import           System.Information.Memory
-import           System.Information.X11DesktopInfo
-import           System.Process
-import           System.Taffybar
-import           System.Taffybar.Battery
-import           System.Taffybar.IconImages
-import           System.Taffybar.LayoutSwitcher
-import           System.Taffybar.MPRIS2
-import           System.Taffybar.NetMonitor
-import           System.Taffybar.Pager
-import           System.Taffybar.SimpleClock
-import           System.Taffybar.Systray
-import           System.Taffybar.ToggleMonitor
-import           System.Taffybar.Widgets.PollingGraph
-import           System.Taffybar.WindowSwitcher
-import           System.Taffybar.WorkspaceHUD
-import           Text.Printf
-import           Text.Read hiding (get, lift)
+import                  System.Directory
+import                  System.Environment
+import                  System.FilePath.Posix
+import                  System.Information.CPU
+import                  System.Information.EWMHDesktopInfo
+import                  System.Information.Memory
+import                  System.Information.X11DesktopInfo
+import                  System.Process
+import                  System.Taffybar
+import                  System.Taffybar.Battery
+import                  System.Taffybar.IconImages
+import                  System.Taffybar.LayoutSwitcher
+import                  System.Taffybar.MPRIS2
+import                  System.Taffybar.NetMonitor
+import                  System.Taffybar.Pager
+import                  System.Taffybar.SimpleClock
+import                  System.Taffybar.Systray
+import                  System.Taffybar.ToggleMonitor
+import                  System.Taffybar.Widgets.PollingGraph
+import                  System.Taffybar.WindowSwitcher
+import                  System.Taffybar.WorkspaceHUD
+import                  System.Taffybar.WorkspaceSwitcher
+import                  Text.Printf
+import                  Text.Read hiding (get, lift)
 
 data ConstantIconController = ConstantIconController { cicImage :: Gtk.Image }
 
