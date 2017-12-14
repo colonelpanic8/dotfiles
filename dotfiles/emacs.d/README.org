@@ -133,7 +133,7 @@ file uses lexical scoping.
 #+BEGIN_SRC emacs-lisp
 (use-package auto-compile
   :demand t
-  :ensure t
+  :straight t
   :config
   (progn
     (auto-compile-on-load-mode)
@@ -352,7 +352,7 @@ but provide support for writing custom elisp.
 #+BEGIN_SRC emacs-lisp
 (use-package gh
   :defer t
-  :recipe (gh :type git :host github :repo "IvanMalison/gh.el"))
+  :straight (gh :type git :host github :repo "IvanMalison/gh.el"))
 #+END_SRC
 *** shut-up
 #+BEGIN_SRC emacs-lisp
@@ -369,7 +369,7 @@ but provide support for writing custom elisp.
 *** emit
 #+BEGIN_SRC emacs-lisp
 (use-package emit
-  :recipe (emit :type git :host github :repo "IvanMalison/emit"))
+  :straight (emit :type git :host github :repo "IvanMalison/emit"))
 #+END_SRC
 *** request
 #+BEGIN_SRC emacs-lisp
@@ -1695,7 +1695,7 @@ I use helm for almost all emacs completion
 #+BEGIN_SRC emacs-lisp -n -r
 (use-package helm-config
   :demand t
-  :ensure helm
+  :straight helm
   :bind (("M-y" . helm-show-kill-ring)
          ("M-x" . helm-M-x)
          ("C-x C-i" . helm-imenu)
@@ -1706,7 +1706,7 @@ I use helm for almost all emacs completion
   (progn
     (setq helm-split-window-default-side 'same)
     (use-package helm-org
-      :ensure nil
+      :straight nil
       :defer 10
       :config
       (progn
@@ -2527,28 +2527,29 @@ The following is taken from [[https://github.com/syl20bnr/spacemacs/blob/a650877
                                  (match-end 1) "∈")))))))
 #+END_SRC
 #+BEGIN_SRC emacs-lisp
-(use-package clojure-mode
-  :commands clojure-mode
-  :preface
-  (progn
-    (add-to-list 'magic-mode-alist '("#!.*boot\\s-*$" . clojure-mode))
-    (add-to-list 'auto-mode-alist '("\\.boot\\'" . clojure-mode))
+  (use-package clojure-mode
+	:commands clojure-mode
+	:preface
+	(progn
+	  (add-to-list 'magic-mode-alist '("#!.*boot\\s-*$" . clojure-mode))
+	  (add-to-list 'auto-mode-alist '("\\.boot\\'" . clojure-mode))
 
-    (defun imalison:clojure-mode-hook ()
-      ;; (cljr-add-keybindings-with-prefix "C-c C-m")
-      (clj-refactor-mode 1)
-      ;;for adding require/use/import statements
-      (yas-minor-mode 1))
+	  (defun imalison:clojure-mode-hook ()
+		;; (cljr-add-keybindings-with-prefix "C-c C-m")
+		;; This is disabled because seq-25 can't be loaded
+		;; (clj-refactor-mode 1)
+		;;for adding require/use/import statements
+		(yas-minor-mode 1))
 
-    (defvar imalison:clojure-level-1-symobls
-      '(describe it)))
-  :config
-  (progn
-    (cl-loop for symbol in imalison:clojure-level-1-symobls
-             do (put-clojure-indent symbol 1))
-    (add-hook 'clojure-mode-hook 'imalison:clojure-mode-hook)
-    (dolist (m '(clojure-mode clojurescript-mode clojurec-mode clojurex-mode))
-      (imalison:clojure-fancify-symbols m))))
+	  (defvar imalison:clojure-level-1-symobls
+		'(describe it)))
+	:config
+	(progn
+	  (cl-loop for symbol in imalison:clojure-level-1-symobls
+			   do (put-clojure-indent symbol 1))
+	  (add-hook 'clojure-mode-hook 'imalison:clojure-mode-hook)
+	  (dolist (m '(clojure-mode clojurescript-mode clojurec-mode clojurex-mode))
+		(imalison:clojure-fancify-symbols m))))
 #+END_SRC
 **** cider
 #+BEGIN_SRC emacs-lisp
@@ -3286,7 +3287,7 @@ separately. This means that I need to load this file in init.el.
 **** Disable yasnippet in org-mode
 #+BEGIN_SRC emacs-lisp
 (use-package org
-  :ensure nil
+  :straight nil
   :config
   (progn
     (defun imalison:disable-yas ()
@@ -3344,7 +3345,7 @@ This function replaces the default naming scheme with a call to
 #+BEGIN_SRC emacs-lisp :tangle org-config.el
 (use-package ox
   :defer t
-  :ensure nil
+  :straight nil
   :config
   (defun org-export-get-reference (datum info)
     "Return a unique reference for DATUM, as a string.
@@ -3372,7 +3373,7 @@ alphanumeric characters only."
 #+BEGIN_SRC emacs-lisp :tangle org-config.el
 (use-package ox-html
   :commands (org-html-export-as-html org-html-export-as-html)
-  :ensure nil
+  :straight nil
   :preface
   (progn
     (defvar imalison:link-svg-html
@@ -3404,7 +3405,7 @@ alphanumeric characters only."
 #+BEGIN_SRC emacs-lisp :tangle org-config.el
 (use-package ox-html
   :defer t
-  :ensure nil
+  :straight nil
   :config
   (setq org-html-inline-image-rules
         '(("file" . "\\.\\(jpeg\\|jpg\\|png\\|gif\\|svg\\)\\(\\?.*?\\)?\\'")
@@ -3534,7 +3535,7 @@ alphanumeric characters only."
 *** TeX
 #+BEGIN_SRC emacs-lisp
 (use-package tex
-  :ensure auctex
+  :straight auctex
   :commands TeX-mode
   :preface
   (progn
@@ -3556,7 +3557,7 @@ alphanumeric characters only."
 **** latex
  #+BEGIN_SRC emacs-lisp
 (use-package latex
-  :ensure auctex
+  :straight auctex
   :after tex
   :config
   (progn
@@ -3870,7 +3871,7 @@ in term-mode. This makes term-mode 1000% more useful
   :config
   (progn
     (use-package helm-ring
-      :ensure nil
+      :straight nil
       :defer 1
       :config
       (progn
@@ -4228,7 +4229,7 @@ I have currently disabled key-chord because it may cause typing lag.
 ** calc-mode
 #+BEGIN_SRC emacs-lisp
 (use-package calc-mode
-  :ensure nil
+  :straight nil
   :commands calc
   :config
   (progn
@@ -4321,7 +4322,7 @@ Not really sure what this is
     (s-trim (shell-command-to-string "mu4e_directory"))))
 (use-package mu4e
   :load-path mu4e-elisp-directory
-  :ensure nil
+  :straight nil
   :commands (mu4e mu4e-view-message-with-msgid mu4e-update-index email)
   :bind ("C-c 0" . email)
   :config
@@ -4754,7 +4755,7 @@ Ensure all themes that I use are installed:
 *** config
 #+BEGIN_SRC emacs-lisp
 (use-package spaceline-config
-  :ensure spaceline
+  :straight spaceline
   :commands spaceline-compile
   :preface
   (progn
