@@ -973,7 +973,7 @@ addKeys conf@XConfig { modMask = modm } =
 
     , ((modm, xK_v), spawn "copyq paste")
     , ((modm .|. controlMask, xK_s), spawn "split_current_chrome_tab.sh")
-    , ((hyper, xK_v), spawn "copyq_rofi.sh")
+    , ((hyper, xK_v), spawn "clipit_rofi.sh")
     , ((hyper, xK_p), spawn "rofi-pass")
     , ((hyper, xK_h), spawn "screenshot.sh")
     , ((hyper, xK_c), spawn "shell_command.sh")
