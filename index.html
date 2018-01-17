@@ -3,7 +3,7 @@
 "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
-<!-- 2017-11-17 Fri 04:05 -->
+<!-- 2018-01-17 Wed 17:10 -->
 <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>&lrm;</title>
@@ -3593,7 +3593,7 @@ a:hover {
 @licstart  The following is the entire license notice for the
 JavaScript code in this tag.
 
-Copyright (C) 2012-2017 Free Software Foundation, Inc.
+Copyright (C) 2012-2018 Free Software Foundation, Inc.
 
 The JavaScript code in this tag is free software: you can
 redistribute it and/or modify it under the terms of the GNU
@@ -4400,7 +4400,7 @@ file uses lexical scoping.
 <div class="org-src-container">
 <pre class="src src-emacs-lisp">(<span class="org-keyword">use-package</span> <span class="org-constant">auto-compile</span>
   <span class="org-builtin">:demand</span> t
-  <span class="org-builtin">:ensure</span> t
+  <span class="org-builtin">:straight</span> t
   <span class="org-builtin">:config</span>
   (<span class="org-keyword">progn</span>
     (auto-compile-on-load-mode)
@@ -4624,7 +4624,8 @@ This had to be disabled because it was causing a bunch of issues with projectile
 This solution only applies it to projectile-find-file
 </p>
 <div class="org-src-container">
-<pre class="src src-emacs-lisp">(<span class="org-keyword">defun</span> <span class="org-function-name">imalison:call-with-quick-shell-command</span> (fn <span class="org-type">&amp;rest</span> args)
+<pre class="src src-emacs-lisp">
+(<span class="org-keyword">defun</span> <span class="org-function-name">imalison:call-with-quick-shell-command</span> (fn <span class="org-type">&amp;rest</span> args)
   (noflet ((shell-command-to-string (<span class="org-type">&amp;rest</span> args)
                                     (<span class="org-keyword">or</span> (apply 'imalison:try-call-process args) (apply this-fn args))))
     (apply fn args)))
@@ -4746,7 +4747,7 @@ but provide support for writing custom elisp.
 <div class="org-src-container">
 <pre class="src src-emacs-lisp">(<span class="org-keyword">use-package</span> <span class="org-constant">gh</span>
   <span class="org-builtin">:defer</span> t
-  <span class="org-builtin">:recipe</span> (gh <span class="org-builtin">:type</span> git <span class="org-builtin">:host</span> github <span class="org-builtin">:repo</span> <span class="org-string">"IvanMalison/gh.el"</span>))
+  <span class="org-builtin">:straight</span> (gh <span class="org-builtin">:type</span> git <span class="org-builtin">:host</span> github <span class="org-builtin">:repo</span> <span class="org-string">"IvanMalison/gh.el"</span>))
 </pre>
 </div>
 </div>
@@ -4778,7 +4779,7 @@ but provide support for writing custom elisp.
 <div class="outline-text-4" id="text-5-3-6">
 <div class="org-src-container">
 <pre class="src src-emacs-lisp">(<span class="org-keyword">use-package</span> <span class="org-constant">emit</span>
-  <span class="org-builtin">:recipe</span> (emit <span class="org-builtin">:type</span> git <span class="org-builtin">:host</span> github <span class="org-builtin">:repo</span> <span class="org-string">"IvanMalison/emit"</span>))
+  <span class="org-builtin">:straight</span> (emit <span class="org-builtin">:type</span> git <span class="org-builtin">:host</span> github <span class="org-builtin">:repo</span> <span class="org-string">"IvanMalison/emit"</span>))
 </pre>
 </div>
 </div>
@@ -6749,7 +6750,7 @@ I use helm for almost all emacs completion
 <div class="org-src-container">
 <pre class="src src-emacs-lisp"><span class="linenr"> 1: </span>(<span class="org-keyword">use-package</span> <span class="org-constant">helm-config</span>
 <span class="linenr"> 2: </span>  <span class="org-builtin">:demand</span> t
-<span class="linenr"> 3: </span>  <span class="org-builtin">:ensure</span> helm
+<span class="linenr"> 3: </span>  <span class="org-builtin">:straight</span> helm
 <span class="linenr"> 4: </span>  <span class="org-builtin">:bind</span> ((<span class="org-string">"M-y"</span> . helm-show-kill-ring)
 <span class="linenr"> 5: </span>         (<span class="org-string">"M-x"</span> . helm-M-x)
 <span class="linenr"> 6: </span>         (<span class="org-string">"C-x C-i"</span> . helm-imenu)
@@ -6760,7 +6761,7 @@ I use helm for almost all emacs completion
 <span class="linenr">11: </span>  (<span class="org-keyword">progn</span>
 <span class="linenr">12: </span>    (<span class="org-keyword">setq</span> helm-split-window-default-side 'same)
 <span class="linenr">13: </span>    (<span class="org-keyword">use-package</span> <span class="org-constant">helm-org</span>
-<span class="linenr">14: </span>      <span class="org-builtin">:ensure</span> nil
+<span class="linenr">14: </span>      <span class="org-builtin">:straight</span> nil
 <span class="linenr">15: </span>      <span class="org-builtin">:defer</span> 10
 <span class="linenr">16: </span>      <span class="org-builtin">:config</span>
 <span class="linenr">17: </span>      (<span class="org-keyword">progn</span>
@@ -7843,28 +7844,29 @@ The following is taken from <a href="https://github.com/syl20bnr/spacemacs/blob/
 </pre>
 </div>
 <div class="org-src-container">
-<pre class="src src-emacs-lisp">(<span class="org-keyword">use-package</span> <span class="org-constant">clojure-mode</span>
-  <span class="org-builtin">:commands</span> clojure-mode
-  <span class="org-builtin">:preface</span>
-  (<span class="org-keyword">progn</span>
-    (add-to-list 'magic-mode-alist '(<span class="org-string">"#!.*boot\\s-*$"</span> . clojure-mode))
-    (add-to-list 'auto-mode-alist '(<span class="org-string">"\\.boot\\'"</span> . clojure-mode))
+<pre class="src src-emacs-lisp">  (<span class="org-keyword">use-package</span> <span class="org-constant">clojure-mode</span>
+        <span class="org-builtin">:commands</span> clojure-mode
+        <span class="org-builtin">:preface</span>
+        (<span class="org-keyword">progn</span>
+          (add-to-list 'magic-mode-alist '(<span class="org-string">"#!.*boot\\s-*$"</span> . clojure-mode))
+          (add-to-list 'auto-mode-alist '(<span class="org-string">"\\.boot\\'"</span> . clojure-mode))
 
-    (<span class="org-keyword">defun</span> <span class="org-function-name">imalison:clojure-mode-hook</span> ()
-      <span class="org-comment-delimiter">;; </span><span class="org-comment">(cljr-add-keybindings-with-prefix "C-c C-m")</span>
-      (clj-refactor-mode 1)
-      <span class="org-comment-delimiter">;;</span><span class="org-comment">for adding require/use/import statements</span>
-      (yas-minor-mode 1))
+          (<span class="org-keyword">defun</span> <span class="org-function-name">imalison:clojure-mode-hook</span> ()
+                <span class="org-comment-delimiter">;; </span><span class="org-comment">(cljr-add-keybindings-with-prefix "C-c C-m")</span>
+                <span class="org-comment-delimiter">;; </span><span class="org-comment">This is disabled because seq-25 can't be loaded</span>
+                <span class="org-comment-delimiter">;; </span><span class="org-comment">(clj-refactor-mode 1)</span>
+                <span class="org-comment-delimiter">;;</span><span class="org-comment">for adding require/use/import statements</span>
+                (yas-minor-mode 1))
 
-    (<span class="org-keyword">defvar</span> <span class="org-variable-name">imalison:clojure-level-1-symobls</span>
-      '(describe it)))
-  <span class="org-builtin">:config</span>
-  (<span class="org-keyword">progn</span>
-    (<span class="org-keyword">cl-loop</span> for symbol in imalison:clojure-level-1-symobls
-             do (put-clojure-indent symbol 1))
-    (add-hook 'clojure-mode-hook 'imalison:clojure-mode-hook)
-    (<span class="org-keyword">dolist</span> (m '(clojure-mode clojurescript-mode clojurec-mode clojurex-mode))
-      (imalison:clojure-fancify-symbols m))))
+          (<span class="org-keyword">defvar</span> <span class="org-variable-name">imalison:clojure-level-1-symobls</span>
+                '(describe it)))
+        <span class="org-builtin">:config</span>
+        (<span class="org-keyword">progn</span>
+          (<span class="org-keyword">cl-loop</span> for symbol in imalison:clojure-level-1-symobls
+                           do (put-clojure-indent symbol 1))
+          (add-hook 'clojure-mode-hook 'imalison:clojure-mode-hook)
+          (<span class="org-keyword">dolist</span> (m '(clojure-mode clojurescript-mode clojurec-mode clojurex-mode))
+                (imalison:clojure-fancify-symbols m))))
 </pre>
 </div>
 </div>
@@ -8757,7 +8759,7 @@ separately. This means that I need to load this file in init.el.
 <div class="outline-text-5" id="text-12-3-1-4">
 <div class="org-src-container">
 <pre class="src src-emacs-lisp">(<span class="org-keyword">use-package</span> <span class="org-constant">org</span>
-  <span class="org-builtin">:ensure</span> nil
+  <span class="org-builtin">:straight</span> nil
   <span class="org-builtin">:config</span>
   (<span class="org-keyword">progn</span>
     (<span class="org-keyword">defun</span> <span class="org-function-name">imalison:disable-yas</span> ()
@@ -8832,7 +8834,7 @@ This function replaces the default naming scheme with a call to
 <div class="org-src-container">
 <pre class="src src-emacs-lisp">(<span class="org-keyword">use-package</span> <span class="org-constant">ox</span>
   <span class="org-builtin">:defer</span> t
-  <span class="org-builtin">:ensure</span> nil
+  <span class="org-builtin">:straight</span> nil
   <span class="org-builtin">:config</span>
   (<span class="org-keyword">defun</span> <span class="org-function-name">org-export-get-reference</span> (datum info)
     <span class="org-doc">"Return a unique reference for DATUM, as a string.</span>
@@ -8865,7 +8867,7 @@ This function replaces the default naming scheme with a call to
 <div class="org-src-container">
 <pre class="src src-emacs-lisp">(<span class="org-keyword">use-package</span> <span class="org-constant">ox-html</span>
   <span class="org-builtin">:commands</span> (org-html-export-as-html org-html-export-as-html)
-  <span class="org-builtin">:ensure</span> nil
+  <span class="org-builtin">:straight</span> nil
   <span class="org-builtin">:preface</span>
   (<span class="org-keyword">progn</span>
     (<span class="org-keyword">defvar</span> <span class="org-variable-name">imalison:link-svg-html</span>
@@ -8902,7 +8904,7 @@ This function replaces the default naming scheme with a call to
 <div class="org-src-container">
 <pre class="src src-emacs-lisp">(<span class="org-keyword">use-package</span> <span class="org-constant">ox-html</span>
   <span class="org-builtin">:defer</span> t
-  <span class="org-builtin">:ensure</span> nil
+  <span class="org-builtin">:straight</span> nil
   <span class="org-builtin">:config</span>
   (<span class="org-keyword">setq</span> org-html-inline-image-rules
         '((<span class="org-string">"file"</span> . <span class="org-string">"\\.</span><span class="org-string"><span class="org-regexp-grouping-backslash">\\</span></span><span class="org-string"><span class="org-regexp-grouping-construct">(</span></span><span class="org-string">jpeg</span><span class="org-string"><span class="org-regexp-grouping-backslash">\\</span></span><span class="org-string"><span class="org-regexp-grouping-construct">|</span></span><span class="org-string">jpg</span><span class="org-string"><span class="org-regexp-grouping-backslash">\\</span></span><span class="org-string"><span class="org-regexp-grouping-construct">|</span></span><span class="org-string">png</span><span class="org-string"><span class="org-regexp-grouping-backslash">\\</span></span><span class="org-string"><span class="org-regexp-grouping-construct">|</span></span><span class="org-string">gif</span><span class="org-string"><span class="org-regexp-grouping-backslash">\\</span></span><span class="org-string"><span class="org-regexp-grouping-construct">|</span></span><span class="org-string">svg</span><span class="org-string"><span class="org-regexp-grouping-backslash">\\</span></span><span class="org-string"><span class="org-regexp-grouping-construct">)</span></span><span class="org-string"><span class="org-regexp-grouping-backslash">\\</span></span><span class="org-string"><span class="org-regexp-grouping-construct">(</span></span><span class="org-string">\\?.*?</span><span class="org-string"><span class="org-regexp-grouping-backslash">\\</span></span><span class="org-string"><span class="org-regexp-grouping-construct">)</span></span><span class="org-string">?\\'"</span>)
@@ -9068,7 +9070,7 @@ This function replaces the default naming scheme with a call to
 <div class="outline-text-4" id="text-12-3-2">
 <div class="org-src-container">
 <pre class="src src-emacs-lisp">(<span class="org-keyword">use-package</span> <span class="org-constant">tex</span>
-  <span class="org-builtin">:ensure</span> auctex
+  <span class="org-builtin">:straight</span> auctex
   <span class="org-builtin">:commands</span> TeX-mode
   <span class="org-builtin">:preface</span>
   (<span class="org-keyword">progn</span>
@@ -9094,7 +9096,7 @@ This function replaces the default naming scheme with a call to
 <div class="outline-text-5" id="text-12-3-2-1">
 <div class="org-src-container">
 <pre class="src src-emacs-lisp">(<span class="org-keyword">use-package</span> <span class="org-constant">latex</span>
-  <span class="org-builtin">:ensure</span> auctex
+  <span class="org-builtin">:straight</span> auctex
   <span class="org-builtin">:after</span> tex
   <span class="org-builtin">:config</span>
   (<span class="org-keyword">progn</span>
@@ -9580,7 +9582,7 @@ in term-mode. This makes term-mode 1000% more useful
   <span class="org-builtin">:config</span>
   (<span class="org-keyword">progn</span>
     (<span class="org-keyword">use-package</span> <span class="org-constant">helm-ring</span>
-      <span class="org-builtin">:ensure</span> nil
+      <span class="org-builtin">:straight</span> nil
       <span class="org-builtin">:defer</span> 1
       <span class="org-builtin">:config</span>
       (<span class="org-keyword">progn</span>
@@ -10095,7 +10097,7 @@ I have currently disabled key-chord because it may cause typing lag.
 <div class="outline-text-3" id="text-18-15">
 <div class="org-src-container">
 <pre class="src src-emacs-lisp">(<span class="org-keyword">use-package</span> <span class="org-constant">calc-mode</span>
-  <span class="org-builtin">:ensure</span> nil
+  <span class="org-builtin">:straight</span> nil
   <span class="org-builtin">:commands</span> calc
   <span class="org-builtin">:config</span>
   (<span class="org-keyword">progn</span>
@@ -10249,7 +10251,7 @@ Not really sure what this is
     (s-trim (shell-command-to-string <span class="org-string">"mu4e_directory"</span>))))
 (<span class="org-keyword">use-package</span> <span class="org-constant">mu4e</span>
   <span class="org-builtin">:load-path</span> mu4e-elisp-directory
-  <span class="org-builtin">:ensure</span> nil
+  <span class="org-builtin">:straight</span> nil
   <span class="org-builtin">:commands</span> (mu4e mu4e-view-message-with-msgid mu4e-update-index email)
   <span class="org-builtin">:bind</span> (<span class="org-string">"C-c 0"</span> . email)
   <span class="org-builtin">:config</span>
@@ -10837,7 +10839,7 @@ Ensure all themes that I use are installed:
 <div class="outline-text-4" id="text-19-4-2">
 <div class="org-src-container">
 <pre class="src src-emacs-lisp">(<span class="org-keyword">use-package</span> <span class="org-constant">spaceline-config</span>
-  <span class="org-builtin">:ensure</span> spaceline
+  <span class="org-builtin">:straight</span> spaceline
   <span class="org-builtin">:commands</span> spaceline-compile
   <span class="org-builtin">:preface</span>
   (<span class="org-keyword">progn</span>
