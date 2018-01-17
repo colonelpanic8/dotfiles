@@ -70,7 +70,7 @@ think its pretty awesome!
 - [[multi-line][multi-line]]
 - [[github-search][github-search]]
 - [[flimenu][flimenu]]
-- [[frame-mode]]
+- [[frame-mode][frame-mode]]
 - [[tile][tile]]
 ** [[programminglanguages][Programming Language Configurations]]
 My programming language major mode configurations can all be found [[programminglanguages][here]].
