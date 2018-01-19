@@ -1,0 +1,7 @@
+default_user='IvanMalison@gmail.com'
+action_menu="Alt+1"
+autotype="Alt+a"
+type_pass="Alt+p"
+copy_pass="Alt+2"
+type_user="Alt+u"
+copy_name="Alt+0"
