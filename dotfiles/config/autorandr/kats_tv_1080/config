@@ -12,6 +12,6 @@ pos 0x0
 rate 60.00
 output eDP-1
 mode 2880x1800
-pos 0x2160
+pos 0x1080
 primary
 rate 59.99
