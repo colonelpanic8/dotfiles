@@ -1374,11 +1374,21 @@ Paradox is a package.el extension. I have no use for it now that I use straight.
 #+BEGIN_SRC emacs-lisp
 (use-package edit-server
   :commands edit-server-start
+  :disabled t
   :defer 1
   :config
   (progn
     (edit-server-start)
     (setq edit-server-new-frame nil)))
+#+END_SRC
+** atomic-chrome
+#+BEGIN_SRC emacs-lisp
+(use-package atomic-chrome
+  :defer 1
+  :config
+  (progn
+    (atomic-chrome-start-server)
+    (setq atomic-chrome-buffer-open-style 'frame)))
 #+END_SRC
 ** load-dir
 #+BEGIN_SRC emacs-lisp
@@ -3679,7 +3689,7 @@ alphanumeric characters only."
 I've disabled magithub because it causes magit to be super slow
 #+BEGIN_SRC emacs-lisp
 (use-package magithub
-  :if (executable-find "hub")
+  :disabled t
   :after magit)
 #+END_SRC
 ** git-link
