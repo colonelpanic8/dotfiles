@@ -1424,7 +1424,7 @@ The file server file for this emacs instance no longer exists.")
       (let ((server-dir (if server-use-tcp server-auth-dir server-socket-dir)))
         (expand-file-name server-name server-dir)))
     (setq server-use-tcp t)
-    (unless (server-running-p) (server-start))
+    (unless (equal nil (server-running-p)) (server-start))
     (run-with-timer 0 60 'imalison:make-main-emacs-server)))
 #+END_SRC
 ** list-environment
