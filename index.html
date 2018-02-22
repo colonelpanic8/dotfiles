@@ -3,7 +3,7 @@
 "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
-<!-- 2018-02-14 Wed 02:06 -->
+<!-- 2018-02-22 Thu 10:04 -->
 <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>&lrm;</title>
@@ -6307,7 +6307,7 @@ Paradox is a package.el extension. I have no use for it now that I use straight.
       (<span class="org-keyword">let</span> ((server-dir (<span class="org-keyword">if</span> server-use-tcp server-auth-dir server-socket-dir)))
         (expand-file-name server-name server-dir)))
     (<span class="org-keyword">setq</span> server-use-tcp t)
-    (<span class="org-keyword">unless</span> (server-running-p) (server-start))
+    (<span class="org-keyword">unless</span> (equal nil (server-running-p)) (server-start))
     (run-with-timer 0 60 'imalison:make-main-emacs-server)))
 </pre>
 </div>
