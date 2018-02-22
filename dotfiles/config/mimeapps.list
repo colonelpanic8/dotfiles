@@ -7,3 +7,11 @@ text/vnd.trolltech.linguist=vlc.desktop;
 audio/mpeg=vlc.desktop;
 application/pdf=okularApplication_pdf.desktop;
 image/png=okularApplication_kimgio.desktop;
+video/mp4=vlc.desktop;org.gnome.Totem.desktop;
+
+[Default Applications]
+text/html=google-chrome-unstable.desktop
+x-scheme-handler/http=google-chrome-unstable.desktop
+x-scheme-handler/https=google-chrome-unstable.desktop
+x-scheme-handler/about=google-chrome-unstable.desktop
+x-scheme-handler/unknown=google-chrome-unstable.desktop
