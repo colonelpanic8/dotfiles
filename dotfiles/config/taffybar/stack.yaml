@@ -17,8 +17,10 @@ packages:
 extra-deps:
 - X11-xft-0.3.1
 - dbus-0.10.13
+- gio-0.13.4.1
+- gtk3-0.14.8
 - libxml-sax-0.7.5
 - rate-limit-1.1.1
 - time-units-1.0.0
 - xml-helpers-1.0.0
-resolver: lts-8.2
+resolver: lts-10.5
