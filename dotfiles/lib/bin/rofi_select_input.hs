@@ -24,9 +24,6 @@ main = do
       selectedIsMuted = fromMaybe True $
                         isMuted . (!! 1) <$> find ((== selectedSink) . head) matches
       setAll state = mapM_ (setMuteAction state . head) matches
-  print selectedSink
-  print matches
-  print selectedIsMuted
   case exitCode of
     ExitSuccess ->
       void $ setMuteAction (toSetString selectedIsMuted) selectedSink
