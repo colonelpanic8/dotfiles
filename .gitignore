@@ -18,3 +18,4 @@
 /dotfiles/vim/bundle/*
 /dotfiles/wemo/cache
 gotools
+/dotfiles/config/gtk-2.0/gtkfilechooser.ini
