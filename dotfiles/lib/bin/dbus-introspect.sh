@@ -5,4 +5,4 @@ dbus-send --session           \
   --type=method_call          \
   --print-reply               \
   $2       \
-  org.freedesktop.DBus.Introspectable.Introspect | tail -n +2 | sed -e "s/^ *string//" | tr -d '\n' | unescape.py | xmllint --format -
+  org.freedesktop.DBus.Introspectable.Introspect | tail -n +2 | sed -e "s/^ *string//"
