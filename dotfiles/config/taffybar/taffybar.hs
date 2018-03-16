@@ -31,6 +31,7 @@ import                  System.Taffybar.SimpleClock
 import                  System.Taffybar.Systray
 import                  System.Taffybar.ToggleMonitor
 import                  System.Taffybar.Widgets.PollingGraph
+import                  System.Taffybar.Widgets.StatusNotifierTray
 import                  System.Taffybar.WindowSwitcher
 import                  System.Taffybar.WorkspaceHUD
 import                  System.Taffybar.WorkspaceSwitcher
@@ -233,6 +234,7 @@ main = do
             [ batteryBarNew defaultBatteryConfig 1.0
             , makeContents clock "Cpu"
             , makeContents systrayNew "Cpu"
+            , makeContents buildTray "Cpu"
             , makeContents cpu "Cpu"
             , makeContents mem "Cpu"
             , makeContents netMonitor "Cpu"
