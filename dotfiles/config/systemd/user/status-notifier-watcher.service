@@ -1,0 +1,12 @@
+[Unit]
+Description=status-notifier-watcher
+Wants=taffybar.service
+After=taffybar.service
+
+[Service]
+Type=simple
+ExecStart=/usr/bin/env status-notifier-watcher
+ExecStop=/usr/bin/pkill status-notifier-watcher
+
+[Install]
+WantedBy=wm.target
