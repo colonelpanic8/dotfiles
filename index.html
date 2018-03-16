@@ -3,7 +3,7 @@
 "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
-<!-- 2018-03-15 Thu 05:28 -->
+<!-- 2018-03-16 Fri 07:12 -->
 <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>&lrm;</title>
@@ -6620,10 +6620,16 @@ custom-set-faces in your custom file.
   (<span class="org-keyword">interactive</span>)
   (imalison:named-compile <span class="org-string">"glide up"</span>))
 
+(<span class="org-keyword">defun</span> <span class="org-function-name">imalison:stack-build</span> ()
+  (<span class="org-keyword">interactive</span>)
+  (<span class="org-keyword">let</span> ((frame-mode-use-new-frame-or-window t))
+    (imalison:named-compile <span class="org-string">"stack build"</span>)))
+
 (defhydra imalison:compile nil <span class="org-string">"Compile"</span>
   (<span class="org-string">"p"</span> imalison:projectile-helm-command-from-zsh <span class="org-string">"Run a command in projectile root"</span>)
   (<span class="org-string">"d"</span> helm-command-from-zsh <span class="org-string">"Run a command in default directory"</span>)
   (<span class="org-string">"c"</span> imalison:named-compile <span class="org-string">"Enter Custom Command"</span>)
+  (<span class="org-string">"s"</span> imalison:stack-build <span class="org-string">"Stack build"</span>)
   (<span class="org-string">"t"</span> imalison:make-test <span class="org-string">"Test"</span>)
   (<span class="org-string">"u"</span> imalison:glide-up <span class="org-string">"Update Dependencies"</span>))
 <span class="org-comment-delimiter">;; </span><span class="org-comment">The following parens close the use-package/progn created several blocks above</span>
