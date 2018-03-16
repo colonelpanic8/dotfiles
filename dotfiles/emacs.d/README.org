@@ -1626,10 +1626,16 @@ custom-set-faces in your custom file.
   (interactive)
   (imalison:named-compile "glide up"))
 
+(defun imalison:stack-build ()
+  (interactive)
+  (let ((frame-mode-use-new-frame-or-window t))
+    (imalison:named-compile "stack build")))
+
 (defhydra imalison:compile nil "Compile"
   ("p" imalison:projectile-helm-command-from-zsh "Run a command in projectile root")
   ("d" helm-command-from-zsh "Run a command in default directory")
   ("c" imalison:named-compile "Enter Custom Command")
+  ("s" imalison:stack-build "Stack build")
   ("t" imalison:make-test "Test")
   ("u" imalison:glide-up "Update Dependencies"))
 ;; The following parens close the use-package/progn created several blocks above
