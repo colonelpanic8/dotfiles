@@ -2742,7 +2742,9 @@ The following is taken from [[https://github.com/syl20bnr/spacemacs/blob/a650877
 #+END_SRC
 **** haskell-ide-engine
 #+BEGIN_SRC emacs-lisp
-  ;; (use-package lsp-haskell)
+(use-package lsp-haskell
+  :config
+  (add-hook 'haskell-mode-hook 'lsp-haskell-enable))
 #+END_SRC
 **** intero
 Intero seems to be causing hangs, so it has been disabled
@@ -3845,12 +3847,16 @@ emr (emacs refactor) provides support for refactoring in many programming langua
 #+END_SRC
 ** language-server-protocol (lsp)
 #+BEGIN_SRC emacs-lisp
-(use-package lsp-mode
-  :commands lsp-mode
-  :init (add-hook 'prog-major-mode 'lsp-mode)
+(use-package lsp-ui
   :config
   (progn
-    (require 'lsp-flycheck)))
+    (add-hook 'lsp-mode-hook 'lsp-ui-mode)
+    (progn
+      (require 'lsp-ui-flycheck))))
+
+(use-package lsp-mode
+  :commands lsp-mode
+  :init (add-hook 'prog-major-mode 'lsp-mode))
 #+END_SRC
 * Utility
 ** term
