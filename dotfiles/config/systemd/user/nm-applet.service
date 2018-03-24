@@ -1,11 +1,11 @@
 [Unit]
 Description=NM Applet
 Wants=taffybar.service
-After=taffybar.service
+After=status-notifier-watcher.service
 
 [Service]
 Type=simple
-ExecStart=/usr/bin/nm-applet --sm-disable
+ExecStart=/usr/bin/nm-applet --sm-disable --indicator
 ExecStop=/usr/bin/pkill nm-applet
 
 [Install]

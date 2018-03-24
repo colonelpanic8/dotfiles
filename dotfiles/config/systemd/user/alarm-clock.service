@@ -1,7 +1,7 @@
 [Unit]
 Description=Alarm Clock
 Wants=taffybar.service
-After=taffybar.service
+After=status-notifier-watcher.service
 
 [Service]
 Type=simple
