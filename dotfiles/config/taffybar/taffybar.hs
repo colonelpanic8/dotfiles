@@ -253,7 +253,7 @@ main = do
             [ batteryBarNew defaultBatteryConfig 1.0
             , makeContents clock "Cpu"
             -- , makeContents systrayNew "Cpu"
-            , makeContents buildSNITray "Cpu" 
+            , makeContents buildSNITray "Cpu"
             , makeContents cpu "Cpu"
             , makeContents mem "Cpu"
             , makeContents netMonitor "Cpu"
