@@ -45,12 +45,27 @@
 
 .IconImage {
 	transition: opacity .5s;
-	padding: 2px;
+	padding: 0px;
 	opacity: 1;
 }
 
-#WindowSwitcher, #Taffybar_WindowSwitcher {
+.WindowSwitcher * {
 	background-color: @bg-color;
+}
+
+.TrayContainer {
+	background-color: @urgent-window-color;
+	padding: 20px;
+}
+
+.TrayWidget {
+	background-color: @urgent-window-color;
+	padding: 20px;
+}
+
+.TrayWidgetContainer {
+	background-color: @urgent-window-color;
+	padding: 20px;
 }
 
 .Taffybar {

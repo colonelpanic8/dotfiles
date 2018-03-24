@@ -5,16 +5,24 @@ import qualified        Control.Concurrent.MVar as MV
 import                  Control.Exception.Base
 import                  Control.Monad
 import                  Control.Monad.Reader
+import                  Data.GI.Base
+import                  Data.GI.Base.ManagedPtr
 import                  Data.List
 import                  Data.List.Split
 import qualified        Data.Map as M
 import                  Data.Maybe
+import                  Foreign.ForeignPtr
+import                  Foreign.Ptr
+import qualified GI.Gtk.Objects.Widget as GI
 import qualified "gtk3" Graphics.UI.Gtk as Gtk
 import qualified "gtk3" Graphics.UI.Gtk.Abstract.Widget as W
 import qualified "gtk3" Graphics.UI.Gtk.Layout.Table as T
+import                  Graphics.UI.Gtk.Types
+import                  StatusNotifier.Tray
 import                  System.Directory
 import                  System.Environment
 import                  System.FilePath.Posix
+import                  System.Glib.GObject
 import                  System.Information.CPU
 import                  System.Information.EWMHDesktopInfo
 import                  System.Information.Memory
@@ -31,12 +39,12 @@ import                  System.Taffybar.SimpleClock
 import                  System.Taffybar.Systray
 import                  System.Taffybar.ToggleMonitor
 import                  System.Taffybar.Widgets.PollingGraph
-import                  System.Taffybar.Widgets.StatusNotifierTray
 import                  System.Taffybar.WindowSwitcher
 import                  System.Taffybar.WorkspaceHUD
 import                  System.Taffybar.WorkspaceSwitcher
 import                  Text.Printf
-import                  Text.Read hiding (get, lift)
+import                  Text.Read hiding (lift)
+import                  Unsafe.Coerce
 
 data ConstantIconController = ConstantIconController { cicImage :: Gtk.Image }
 
@@ -76,9 +84,9 @@ getFullWorkspaceNames :: X11Property [(WorkspaceIdx, String)]
 getFullWorkspaceNames = go <$> readAsListOfString Nothing "_NET_DESKTOP_FULL_NAMES"
   where go = zip [WSIdx i | i <- [0..]]
 
-workspaceNamesLabelSetter workspace = do
-  fullNames <- liftX11Def [] getFullWorkspaceNames
-  return $ fromMaybe "" $ lookup (workspaceIdx workspace) fullNames
+workspaceNamesLabelSetter workspace =
+  fromMaybe "" . lookup (workspaceIdx workspace) <$>
+            liftX11Def [] getFullWorkspaceNames
 
 -- mem :: IO Gtk.Widget
 -- mem = do
@@ -146,6 +154,17 @@ myFormatEntry wsNames ((ws, wtitle, wclass), _) =
 getInterfaces = do
   (_, output, _) <- readCreateProcessWithExitCode (shell "list_interfaces.sh") ""
   return $ splitOn "\n" output
+
+addClass klass action = do
+  widget <- action
+  widgetSetClass widget klass
+  return widget
+
+(buildWidgetCons, _) = mkWidget
+
+buildSNITray = do
+  GI.Widget trayGIWidgetMP <- buildTrayWithHost
+  wrapNewGObject mkWidget (castPtr <$> disownManagedPtr trayGIWidgetMP)
 
 main = do
   interfaceNames <- getInterfaces
@@ -229,20 +248,20 @@ main = do
       wnd = windowSwitcherNew pgr
       taffyConfig =
         defaultTaffybarConfig
-        { startWidgets = [hud, los, wnd]
+        { startWidgets = [hud, los, addClass "WindowSwitcher" wnd]
         , endWidgets =
             [ batteryBarNew defaultBatteryConfig 1.0
             , makeContents clock "Cpu"
-            , makeContents systrayNew "Cpu"
-            , makeContents buildTray "Cpu"
+            -- , makeContents systrayNew "Cpu"
+            , makeContents buildSNITray "Cpu" 
             , makeContents cpu "Cpu"
             , makeContents mem "Cpu"
             , makeContents netMonitor "Cpu"
             , makeContents (join $ containerAddReturn <$> Gtk.eventBoxNew <*> mpris) "Cpu"
             ]
         , barPosition = Top
-        , barPadding = 10
-        , barHeight = (underlineHeight myHUDConfig + windowIconSize myHUDConfig) + 15
+        , barPadding = 5
+        , barHeight = (underlineHeight myHUDConfig + windowIconSize myHUDConfig + 10)
         , widgetSpacing = 0
         }
   withToggleSupport taffyConfig
