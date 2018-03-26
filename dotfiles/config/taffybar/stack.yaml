@@ -20,7 +20,11 @@ packages:
   extra-dep: true
 - location: ../../../../Projects/gtk-sni-tray
   extra-dep: true
-- location: ./gtk2hs/gtk
+- location:
+    git: https://github.com/IvanMalison/gtk2hs
+    commit: 757f9ae509096aed4ab6a18e354845be759f5d14
+    subdirs:
+      - gtk
   extra-dep: true
 extra-deps:
 - spool-0.1
