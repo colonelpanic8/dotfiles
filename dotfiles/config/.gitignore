@@ -3,6 +3,7 @@
 /Clementine/
 /Code/
 /Google Play Music Desktop Player/
+/Keybase/
 /Popcorn-Time/
 /QtProject.conf/
 /Trolltech.conf
@@ -12,6 +13,7 @@
 /chromium/Avatars/
 /configstore
 /dconf/
+/discord/
 /dleyna-renderer-service.conf
 /evolution/
 /gconf/
@@ -50,4 +52,3 @@
 /user-dirs.locale
 /vlc/
 /xfce4/
-/discord/
