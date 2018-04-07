@@ -13,7 +13,7 @@ import qualified        Data.Map as M
 import                  Data.Maybe
 import                  Foreign.ForeignPtr
 import                  Foreign.Ptr
-import qualified GI.Gtk.Objects.Widget as GI
+import qualified        GI.Gtk as GI
 import qualified "gtk3" Graphics.UI.Gtk as Gtk
 import qualified "gtk3" Graphics.UI.Gtk.Abstract.Widget as W
 import qualified "gtk3" Graphics.UI.Gtk.Layout.Table as T
@@ -41,7 +41,6 @@ import                  System.Taffybar.ToggleMonitor
 import                  System.Taffybar.Widgets.PollingGraph
 import                  System.Taffybar.WindowSwitcher
 import                  System.Taffybar.WorkspaceHUD
-import                  System.Taffybar.WorkspaceSwitcher
 import                  Text.Printf
 import                  Text.Read hiding (lift)
 import                  Unsafe.Coerce
@@ -123,28 +122,6 @@ underlineWidget cfg buildWidget name = do
 
   return $ Gtk.toWidget t
 
-movableWidget builder =
-  do
-    -- Delay creation of the widget or else failure from trying to get screen
-    widVar <- MV.newEmptyMVar
-    let moveWidget = do
-          isEmpty <- MV.isEmptyMVar widVar
-          when isEmpty $
-               do
-                 putwid <- builder
-                 MV.putMVar widVar putwid
-          wid <- MV.readMVar widVar
-          hbox <- Gtk.hBoxNew False 0
-          parent <- Gtk.widgetGetParent wid
-          if isJust parent
-          then
-            Gtk.widgetReparent wid hbox
-          else
-            Gtk.containerAdd hbox wid
-          Gtk.widgetShowAll hbox
-          return $ Gtk.toWidget hbox
-    return moveWidget
-
 myFormatEntry wsNames ((ws, wtitle, wclass), _) =
   printf "%s: %s - %s" wsName (head $ splitOn "\NUL" wclass) wtitle
   where
@@ -163,7 +140,7 @@ addClass klass action = do
 (buildWidgetCons, _) = mkWidget
 
 buildSNITray = do
-  GI.Widget trayGIWidgetMP <- buildTrayWithHost
+  GI.Widget trayGIWidgetMP <- buildTrayWithHost GI.OrientationHorizontal
   wrapNewGObject mkWidget (castPtr <$> disownManagedPtr trayGIWidgetMP)
 
 main = do
@@ -261,7 +238,7 @@ main = do
             ]
         , barPosition = Top
         , barPadding = 5
-        , barHeight = (underlineHeight myHUDConfig + windowIconSize myHUDConfig + 10)
+        , barHeight = (underlineHeight myHUDConfig + windowIconSize myHUDConfig + 15)
         , widgetSpacing = 0
         }
   withToggleSupport taffyConfig
