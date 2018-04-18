@@ -11,6 +11,7 @@ import                  Data.List
 import                  Data.List.Split
 import qualified        Data.Map as M
 import                  Data.Maybe
+import                  Debug.Trace
 import                  Foreign.ForeignPtr
 import                  Foreign.Ptr
 import qualified        GI.Gtk as GI
@@ -23,10 +24,13 @@ import                  System.Directory
 import                  System.Environment
 import                  System.FilePath.Posix
 import                  System.Glib.GObject
+import                  System.IO
 import                  System.Information.CPU
 import                  System.Information.EWMHDesktopInfo
 import                  System.Information.Memory
 import                  System.Information.X11DesktopInfo
+import                  System.Log.Handler.Simple
+import                  System.Log.Logger
 import                  System.Process
 import                  System.Taffybar
 import                  System.Taffybar.Battery
@@ -34,8 +38,8 @@ import                  System.Taffybar.IconImages
 import                  System.Taffybar.LayoutSwitcher
 import                  System.Taffybar.MPRIS2
 import                  System.Taffybar.NetMonitor
-import                  System.Taffybar.Pager
 import                  System.Taffybar.SimpleClock
+import                  System.Taffybar.SimpleConfig
 import                  System.Taffybar.Systray
 import                  System.Taffybar.ToggleMonitor
 import                  System.Taffybar.Widgets.PollingGraph
@@ -134,18 +138,28 @@ getInterfaces = do
 
 addClass klass action = do
   widget <- action
-  widgetSetClass widget klass
+  lift $ widgetSetClass widget klass
   return widget
 
 (buildWidgetCons, _) = mkWidget
 
 buildSNITray = do
+  -- XXX: this won't work for multiple taffybars because it will attempt to
+  -- register a second host with a name that already exists on the dbus tray.
+  -- Need to take an approach similar to that of gtk-sni-tray to get that to
+  -- work.
   GI.Widget trayGIWidgetMP <- buildTrayWithHost GI.OrientationHorizontal
   wrapNewGObject mkWidget (castPtr <$> disownManagedPtr trayGIWidgetMP)
+
+logDebug = do
+  handler <- streamHandler stdout DEBUG
+  logger <- getLogger "System.Taffybar"
+  saveGlobalLogger $ setLevel DEBUG logger
 
 main = do
   interfaceNames <- getInterfaces
   homeDirectory <- getHomeDirectory
+  logDebug
   let resourcesDirectory = homeDirectory </> ".lib" </> "resources"
       inResourcesDirectory file = resourcesDirectory </> file
       highContrastDirectory =
@@ -209,24 +223,21 @@ main = do
         --       ]
         , showWorkspaceFn = hideEmpty
         , updateRateLimitMicroseconds = 100000
-        , updateOnWMIconChange = True
         , debugMode = False
         , labelSetter = workspaceNamesLabelSetter
         }
       netMonitor = netMonitorMultiNew 1.5 interfaceNames
-      pagerConfig =
-        defaultPagerConfig
-        {useImages = True, windowSwitcherFormatter = myFormatEntry}
       -- makeUnderline = underlineWidget myHUDConfig
-  pgr <- pagerNew pagerConfig
+  -- pgr <- pagerNew pagerConfig
   -- tray2 <- movableWidget tray
-  let hud = buildWorkspaceHUD myHUDConfig pgr
-      los = layoutSwitcherNew pgr
-      wnd = windowSwitcherNew pgr
-      taffyConfig =
-        defaultTaffybarConfig
+  let hud = buildWorkspaceHUD myHUDConfig
+      los = layoutSwitcherNew defaultLayoutSwitcherConfig
+      wnd = windowSwitcherNew defaultWindowSwitcherConfig
+      simpleTaffyConfig =
+        defaultSimpleTaffyConfig
         { startWidgets = [hud, los, addClass "WindowSwitcher" wnd]
-        , endWidgets =
+        , centerWidgets = []
+        , endWidgets = map lift
             [ batteryBarNew defaultBatteryConfig 1.0
             , makeContents clock "Cpu"
             -- , makeContents systrayNew "Cpu"
@@ -241,7 +252,7 @@ main = do
         , barHeight = (underlineHeight myHUDConfig + windowIconSize myHUDConfig + 15)
         , widgetSpacing = 0
         }
-  withToggleSupport taffyConfig
+  dyreTaffybar $ handleDBusToggles $ toTaffyConfig simpleTaffyConfig
 
 -- Local Variables:
 -- flycheck-ghc-args: ("-Wno-missing-signatures")

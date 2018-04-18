@@ -18,10 +18,12 @@ executable imalison-taffybar
                      , containers
                      , directory
                      , filepath
+                     , gtk-strut
                      , gi-gtk
                      , glib
                      , gtk3>=0.14.8
                      , gtk-sni-tray
+                     , hslogger
                      , mtl
                      , haskell-gi-base
                      , process
