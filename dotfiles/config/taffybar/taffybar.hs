@@ -250,7 +250,7 @@ main = do
         defaultTaffybarConfig
         { startWidgets = [hud, los, addClass "WindowSwitcher" wnd]
         , endWidgets =
-            [ batteryBarNew defaultBatteryConfig 1.0
+            [ batteryBarNewWithFormat defaultBatteryConfig "$percentage$% ($time$) - $status$" 1.0
             , makeContents clock "Cpu"
             -- , makeContents systrayNew "Cpu"
             , makeContents buildSNITray "Cpu"
