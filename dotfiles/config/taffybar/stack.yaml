@@ -22,7 +22,7 @@ packages:
   extra-dep: true
 extra-deps:
 - X11-xft-0.3.1
-- dbus-1.0.0
+- dbus-1.0.1
 - gi-dbusmenu-0.4.1
 - gi-dbusmenugtk3-0.4.1
 - gi-gdk-3.0.15
@@ -35,10 +35,12 @@ extra-deps:
 - gio-0.13.4.1
 - gtk-strut-0.1.2.0
 - gtk-traymanager-1.0.1
+- haskell-gi-0.21.2
+- haskell-gi-base-0.21.1
 - libxml-sax-0.7.5
 - rate-limit-1.1.1
 - spool-0.1
 - time-units-1.0.0
 - xml-helpers-1.0.0
-resolver: lts-11.4
+resolver: lts-11.5
 allow-newer: true
