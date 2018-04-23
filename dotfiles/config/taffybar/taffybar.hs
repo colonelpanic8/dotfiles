@@ -5,6 +5,7 @@ import qualified        Control.Concurrent.MVar as MV
 import                  Control.Exception.Base
 import                  Control.Monad
 import                  Control.Monad.Reader
+import                  Control.Monad.Trans
 import                  Data.GI.Base
 import                  Data.GI.Base.ManagedPtr
 import                  Data.List
@@ -38,9 +39,9 @@ import                  System.Taffybar.IconImages
 import                  System.Taffybar.LayoutSwitcher
 import                  System.Taffybar.MPRIS2
 import                  System.Taffybar.NetMonitor
+import                  System.Taffybar.SNITray
 import                  System.Taffybar.SimpleClock
 import                  System.Taffybar.SimpleConfig
-import                  System.Taffybar.Systray
 import                  System.Taffybar.ToggleMonitor
 import                  System.Taffybar.Widgets.PollingGraph
 import                  System.Taffybar.WindowSwitcher
@@ -49,7 +50,7 @@ import                  Text.Printf
 import                  Text.Read hiding (lift)
 import                  Unsafe.Coerce
 
-data ConstantIconController = ConstantIconController { cicImage :: Gtk.Image }
+newtype ConstantIconController = ConstantIconController { cicImage :: Gtk.Image }
 
 instance WorkspaceWidgetController ConstantIconController where
   updateWidget cic _ = return cic
@@ -61,11 +62,12 @@ instance WorkspaceWidgetController Gtk.Widget where
 
 makeContents waction klass = do
   widget <- waction
-  widgetSetClass widget "Contents"
-  widgetSetClass widget klass
-  b <- buildPadBox widget
-  Gtk.widgetShowAll b
-  return $ Gtk.toWidget b
+  liftIO $ do
+    widgetSetClass widget "Contents"
+    widgetSetClass widget klass
+    b <- buildPadBox widget
+    Gtk.widgetShowAll b
+    return $ Gtk.toWidget b
 
 myGraphConfig =
   defaultGraphConfig
@@ -108,7 +110,7 @@ cpuCallback = do
   return [totalLoad, systemLoad]
 
 containerAddReturn c w =
-  Gtk.containerAdd c w >> Gtk.widgetShowAll c >> (return $ Gtk.toWidget c)
+  Gtk.containerAdd c w >> Gtk.widgetShowAll c >> return (Gtk.toWidget c)
 
 underlineWidget cfg buildWidget name = do
   w <- buildWidget
@@ -143,17 +145,9 @@ addClass klass action = do
 
 (buildWidgetCons, _) = mkWidget
 
-buildSNITray = do
-  -- XXX: this won't work for multiple taffybars because it will attempt to
-  -- register a second host with a name that already exists on the dbus tray.
-  -- Need to take an approach similar to that of gtk-sni-tray to get that to
-  -- work.
-  GI.Widget trayGIWidgetMP <- buildTrayWithHost GI.OrientationHorizontal
-  wrapNewGObject mkWidget (castPtr <$> disownManagedPtr trayGIWidgetMP)
-
 logDebug = do
   handler <- streamHandler stdout DEBUG
-  logger <- getLogger "System.Taffybar"
+  logger <- getLogger "System"
   saveGlobalLogger $ setLevel DEBUG logger
 
 main = do
@@ -238,21 +232,13 @@ main = do
         { startWidgets = [hud, los, addClass "WindowSwitcher" wnd]
         , endWidgets =
             [ batteryBarNewWithFormat defaultBatteryConfig "$percentage$% ($time$) - $status$" 1.0
-||||||| merged common ancestors
-        , endWidgets =
-            [ batteryBarNew defaultBatteryConfig 1.0
-=======
-        , centerWidgets = []
-        , endWidgets = map lift
-            [ batteryBarNew defaultBatteryConfig 1.0
->>>>>>> b44e57a9f4ec822e99649b1ccc5516cbcbad4fb8
+            , makeContents buildSNITray "Cpu"
             , makeContents clock "Cpu"
             -- , makeContents systrayNew "Cpu"
-            , makeContents buildSNITray "Cpu"
             , makeContents cpu "Cpu"
             , makeContents mem "Cpu"
             , makeContents netMonitor "Cpu"
-            , makeContents (join $ containerAddReturn <$> Gtk.eventBoxNew <*> mpris) "Cpu"
+            , mpris
             ]
         , barPosition = Top
         , barPadding = 5
