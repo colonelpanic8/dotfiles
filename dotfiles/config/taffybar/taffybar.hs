@@ -147,13 +147,14 @@ addClass klass action = do
 
 logDebug = do
   handler <- streamHandler stdout DEBUG
-  logger <- getLogger "System"
+  logger <- getLogger "System.Taffybar"
   saveGlobalLogger $ setLevel DEBUG logger
+  infoLogger <- getLogger "System.Information"
+  saveGlobalLogger $ setLevel DEBUG infoLogger
 
 main = do
   interfaceNames <- getInterfaces
   homeDirectory <- getHomeDirectory
-  logDebug
   let resourcesDirectory = homeDirectory </> ".lib" </> "resources"
       inResourcesDirectory file = resourcesDirectory </> file
       highContrastDirectory =
