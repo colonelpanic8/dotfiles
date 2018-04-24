@@ -42,10 +42,10 @@ import                  System.Taffybar.NetMonitor
 import                  System.Taffybar.SNITray
 import                  System.Taffybar.SimpleClock
 import                  System.Taffybar.SimpleConfig
-import                  System.Taffybar.ToggleMonitor
+import                  System.Taffybar.DBus.Toggle
 import                  System.Taffybar.Widgets.PollingGraph
 import                  System.Taffybar.WindowSwitcher
-import                  System.Taffybar.WorkspaceHUD
+import                  System.Taffybar.Workspaces
 import                  Text.Printf
 import                  Text.Read hiding (lift)
 import                  Unsafe.Coerce
@@ -199,8 +199,8 @@ main = do
       mpris = mpris2New
       cpu = pollingGraphNew cpuCfg 0.5 cpuCallback
       mem = pollingGraphNew memCfg 1 memCallback
-      myHUDConfig =
-        defaultWorkspaceHUDConfig
+      myWorkspacesConfig =
+        defaultWorkspacesConfig
         { underlineHeight = 3
         , underlinePadding = 2
         , minWSWidgetSize = Nothing
@@ -222,15 +222,14 @@ main = do
         , labelSetter = workspaceNamesLabelSetter
         }
       netMonitor = netMonitorMultiNew 1.5 interfaceNames
-      -- makeUnderline = underlineWidget myHUDConfig
   -- pgr <- pagerNew pagerConfig
   -- tray2 <- movableWidget tray
-  let hud = buildWorkspaceHUD myHUDConfig
+  let workspaces = workspacesNew myWorkspacesConfig
       los = layoutSwitcherNew defaultLayoutSwitcherConfig
       wnd = windowSwitcherNew defaultWindowSwitcherConfig
       simpleTaffyConfig =
         defaultSimpleTaffyConfig
-        { startWidgets = [hud, los, addClass "WindowSwitcher" wnd]
+        { startWidgets = [workspaces, los, addClass "WindowSwitcher" wnd]
         , endWidgets =
             [ batteryBarNewWithFormat defaultBatteryConfig "$percentage$% ($time$) - $status$" 1.0
             , makeContents buildSNITray "Cpu"
@@ -243,7 +242,7 @@ main = do
             ]
         , barPosition = Top
         , barPadding = 5
-        , barHeight = (underlineHeight myHUDConfig + windowIconSize myHUDConfig + 15)
+        , barHeight = (underlineHeight myWorkspacesConfig + windowIconSize myWorkspacesConfig + 15)
         , widgetSpacing = 0
         }
   dyreTaffybar $ handleDBusToggles $ toTaffyConfig simpleTaffyConfig
