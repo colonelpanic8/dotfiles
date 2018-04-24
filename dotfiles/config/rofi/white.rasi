@@ -1,0 +1,129 @@
+/* ================================================= */
+/*  Rofi config by lans9831                          */
+/*  Suggested icon pack: Papirus                     */
+/* ================================================= */
+
+* {
+  /* Make text color white and background fully transparent */
+  text-color:        #45373c;
+  background-color:  rgba(0,0,0,0);
+
+  /* This variables change other elements color
+   * Change here and it will change over all the
+   * theme (for an unified experience) */
+  fc-color: #45373c;
+  bg-color: #e9e9e9;
+  fc-color-trans: #45373c; 
+  bg-color-trans: #e9e9e9;
+
+  font: "Open Sans 11";
+}
+
+/* ================================================= */
+/* Main container                                    */
+/* ================================================= */
+#window {
+  fullscreen:    true;
+  location:      west;
+  anchor:        west;
+  border:        0px 0px 0px 0px;
+  transparency:  "real";
+
+  orientation:  horizontal;
+  children:     [mainbox, dummy];
+}
+
+/* First container */
+#mainbox {
+  expand:            false;
+  background-color:  @bg-color-trans;
+  spacing:           0.8em;
+}
+
+/* Dummy container */
+#dummy { 
+  expand: true; 
+}
+/* ================================================= */
+
+/* ================================================= */
+/* Sidebar and its elements                          */
+/* ================================================= */
+#sidebar {
+  border:  0px 0px 0px 0px;
+}
+
+#button {
+  padding:    10px;
+}
+
+#button selected {
+  font:              "Open Sans SemiBold 11";
+  background-color:  @fc-color-trans;
+}
+/* ================================================= */
+
+/* ================================================= */
+/*  Input bar                                        */
+/* ================================================= */
+#inputbar {
+  background-color:  @bg-color;
+  padding:           5px;
+  spacing:           5px;
+}
+
+#prompt {
+  font: "Open Sans SemiBold Italic 11";
+}
+
+#entry {
+  font: "Open Sans Italic 11";
+  width: 15em;
+}
+/* ================================================= */
+
+
+/* ================================================= */
+/* List view                                         */
+/* ================================================= */
+#listview {
+  /*spacing: 0.5em;*/
+}
+
+#element {
+  font:     "Open Sans 13";
+  padding:  12px 1.5em 12px 14px;
+}
+
+#element selected normal {
+  background-color: #a6a6a6;
+}
+
+#element normal active {
+  background-color: #a6a6a6;
+}
+
+#element normal urgent {
+  background-color: Orange;
+}
+
+#element alternate normal {
+}
+
+#element alternate active {
+  text-color: @focus-col;
+}
+
+#element alternate urgent {
+  background-color: OrangeRed;
+}
+
+#element selected active {
+  background-color:  #a6a6a6;
+}
+
+#element selected urgent {
+  background-color:  DarkOrange;
+}
+
+/* vim:ft=css */

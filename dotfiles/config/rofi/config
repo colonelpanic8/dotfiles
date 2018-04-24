@@ -1,0 +1,5 @@
+rofi.terminal:         alacritty
+rofi.sidebar-mode:     false
+rofi.theme:            white.rasi
+rofi.drun-icon-theme:  Papirus
+rofi.show-icons:       true
