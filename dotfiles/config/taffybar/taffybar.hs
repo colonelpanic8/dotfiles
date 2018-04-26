@@ -37,9 +37,9 @@ import                  System.Taffybar.Information.EWMHDesktopInfo
 import                  System.Taffybar.Information.Memory
 import                  System.Taffybar.Information.X11DesktopInfo
 import                  System.Taffybar.SimpleConfig
-import                  System.Taffybar.Widgets
-import                  System.Taffybar.Widgets.Generic.PollingGraph
-import                  System.Taffybar.Widgets.Workspaces
+import                  System.Taffybar.Widget
+import                  System.Taffybar.Widget.Generic.PollingGraph
+import                  System.Taffybar.Widget.Workspaces
 import                  Text.Printf
 import                  Text.Read hiding (lift)
 import                  Unsafe.Coerce
