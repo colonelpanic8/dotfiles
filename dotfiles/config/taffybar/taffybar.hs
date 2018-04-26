@@ -26,26 +26,20 @@ import                  System.Environment
 import                  System.FilePath.Posix
 import                  System.Glib.GObject
 import                  System.IO
-import                  System.Information.CPU
-import                  System.Information.EWMHDesktopInfo
-import                  System.Information.Memory
-import                  System.Information.X11DesktopInfo
 import                  System.Log.Handler.Simple
 import                  System.Log.Logger
 import                  System.Process
 import                  System.Taffybar
-import                  System.Taffybar.Battery
-import                  System.Taffybar.IconImages
-import                  System.Taffybar.LayoutSwitcher
-import                  System.Taffybar.MPRIS2
-import                  System.Taffybar.NetMonitor
-import                  System.Taffybar.SNITray
-import                  System.Taffybar.SimpleClock
-import                  System.Taffybar.SimpleConfig
 import                  System.Taffybar.DBus.Toggle
-import                  System.Taffybar.Widgets.PollingGraph
-import                  System.Taffybar.WindowSwitcher
-import                  System.Taffybar.Workspaces
+import                  System.Taffybar.IconImages
+import                  System.Taffybar.Information.CPU
+import                  System.Taffybar.Information.EWMHDesktopInfo
+import                  System.Taffybar.Information.Memory
+import                  System.Taffybar.Information.X11DesktopInfo
+import                  System.Taffybar.SimpleConfig
+import                  System.Taffybar.Widgets
+import                  System.Taffybar.Widgets.Generic.PollingGraph
+import                  System.Taffybar.Widgets.Workspaces
 import                  Text.Printf
 import                  Text.Read hiding (lift)
 import                  Unsafe.Coerce
@@ -218,33 +212,38 @@ main = do
         --       ]
         , showWorkspaceFn = hideEmpty
         , updateRateLimitMicroseconds = 100000
-        , debugMode = False
         , labelSetter = workspaceNamesLabelSetter
         }
       netMonitor = netMonitorMultiNew 1.5 interfaceNames
-  -- pgr <- pagerNew pagerConfig
-  -- tray2 <- movableWidget tray
-  let workspaces = workspacesNew myWorkspacesConfig
-      los = layoutSwitcherNew defaultLayoutSwitcherConfig
-      wnd = windowSwitcherNew defaultWindowSwitcherConfig
-      simpleTaffyConfig =
-        defaultSimpleTaffyConfig
-        { startWidgets = [workspaces, los, addClass "WindowSwitcher" wnd]
-        , endWidgets =
-            [ batteryBarNewWithFormat defaultBatteryConfig "$percentage$% ($time$) - $status$" 1.0
-            , makeContents buildSNITray "Cpu"
-            , makeContents clock "Cpu"
-            -- , makeContents systrayNew "Cpu"
-            , makeContents cpu "Cpu"
-            , makeContents mem "Cpu"
-            , makeContents netMonitor "Cpu"
-            , mpris
+      baseConfig = defaultSimpleTaffyConfig
+        { startWidgets =
+            [ workspaces
+            , makeContents los "Layout"
+            , makeContents wnd "Windows"
             ]
+        , endWidgets =
+          [ batteryBarNewWithFormat defaultBatteryConfig "$percentage$% ($time$) - $status$" 1.0
+          , makeContents sniTrayNew "Cpu"
+          , makeContents clock "Cpu"
+          , makeContents cpu "Cpu"
+          , makeContents mem "Cpu"
+          , makeContents netMonitor "Cpu"
+          , mpris
+          ]
         , barPosition = Top
         , barPadding = 5
         , barHeight = (underlineHeight myWorkspacesConfig + windowIconSize myWorkspacesConfig + 15)
         , widgetSpacing = 0
         }
+      workspaces = workspacesNew myWorkspacesConfig
+      los = layoutNew defaultLayoutConfig
+      wnd = windowsNew defaultWindowsConfig
+      simpleTaffyConfig =
+        baseConfig
+        -- { startWidgets = [workspaces]
+        -- , centerWidgets = [makeContents (addClass "Window" wnd) "Cpu"]
+        -- , endWidgets = [makeContents los "Cpu"]
+        -- }
   dyreTaffybar $ handleDBusToggles $ toTaffyConfig simpleTaffyConfig
 
 -- Local Variables:

@@ -2,7 +2,7 @@
 @define-color bg-tone #1E1E20;
 @define-color active-window-color #374140;
 @define-color urgent-window-color #D9CB9E;
-@define-color font-color #D9CB9E;
+@define-color font-color #FFFFFF;
 
 .Contents {
 	border-radius: 5px;
@@ -10,7 +10,8 @@
 }
 
 .Active .Contents, .Visible .Contents {
-	background-color: @bg-tone;
+	background-color: #000000;
+	transition: background-color 1s;
 }
 
 .InnerPad {
@@ -49,8 +50,9 @@
 	opacity: 1;
 }
 
-.WindowSwitcher * {
-	background-color: @bg-color;
+.Windows * {
+	color: @bg-color;
+	border-color: @bg-color;
 }
 
 .TrayContainer {
@@ -68,13 +70,8 @@
 	padding: 20px;
 }
 
-.Taffybar {
-	background-color: @bg-color;
-	border-radius: 5px;
-}
-
 .Taffybar * {
 	font-family: "Fira Sans", sans-serif;
-	font-size: 10pt;
+	font-size: 12pt;
 	color: @font-color;
 }
