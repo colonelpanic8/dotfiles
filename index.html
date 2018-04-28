@@ -3,7 +3,7 @@
 "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
-<!-- 2018-04-28 Sat 09:00 -->
+<!-- 2018-04-28 Sat 09:03 -->
 <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>&lrm;</title>
@@ -3964,6 +3964,7 @@ for the JavaScript code in this tag.
 <li><a href="#jsonmode">13.2.3. json-mode</a></li>
 <li><a href="#yamlmode">13.2.4. yaml-mode</a></li>
 <li><a href="#esmode">13.2.5. es-mode</a></li>
+<li><a href="#docker">13.2.6. docker</a></li>
 </ul>
 </li>
 <li><a href="#document">13.3. Document</a>
@@ -7326,6 +7327,7 @@ I don't use auto-complete at all, so I have set up a hook to automatically disab
 
     (add-to-list 'flycheck-emacs-lisp-checkdoc-variables
                  'sentence-end-double-space)
+    (<span class="org-keyword">setq</span> flycheck-display-errors-delay 10000)
     (global-flycheck-mode))
   <span class="org-builtin">:diminish</span> flycheck-mode)
 </pre>
@@ -8122,6 +8124,7 @@ The following is taken from <a href="https://github.com/syl20bnr/spacemacs/blob/
 <div class="outline-text-5" id="text-13-1-10-1">
 <div class="org-src-container">
 <pre class="src src-emacs-lisp">(<span class="org-keyword">use-package</span> <span class="org-constant">lsp-haskell</span>
+  <span class="org-builtin">:disabled</span> t
   <span class="org-builtin">:config</span>
   (add-hook 'haskell-mode-hook 'lsp-haskell-enable))
 </pre>
@@ -8334,6 +8337,16 @@ Intero seems to be causing hangs, so it has been disabled
 <div class="org-src-container">
 <pre class="src src-emacs-lisp">(<span class="org-keyword">use-package</span> <span class="org-constant">es-mode</span>
   <span class="org-builtin">:defer</span> t)
+</pre>
+</div>
+</div>
+</div>
+<div id="outline-container-docker" class="outline-4">
+<h4 id="docker"><span class="section-number-4">13.2.6</span> docker <a href="#docker"><svg aria-hidden="true" class="octicon octicon-link" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a></h4>
+<div class="outline-text-4" id="text-13-2-6">
+<div class="org-src-container">
+<pre class="src src-emacs-lisp">(<span class="org-keyword">use-package</span> <span class="org-constant">dockerfile-mode</span>
+  <span class="org-builtin">:mode</span> (<span class="org-string">"Dockerfile\\'"</span> . dockerfile-mode))
 </pre>
 </div>
 </div>
@@ -9146,7 +9159,6 @@ This function replaces the default naming scheme with a call to
 <div class="outline-text-5" id="text-13-3-2-2">
 <div class="org-src-container">
 <pre class="src src-emacs-lisp">(<span class="org-keyword">use-package</span> <span class="org-constant">auctex-latexmk</span>
-  <span class="org-builtin">:after</span> tex
   <span class="org-builtin">:config</span>
   (<span class="org-keyword">progn</span>
     (<span class="org-keyword">setq</span> auctex-latexmk-inherit-TeX-PDF-mode t)
@@ -10285,11 +10297,12 @@ Not really sure what this is
 <h3 id="mue"><span class="section-number-3">19.26</span> mu4e <a href="#mue"><svg aria-hidden="true" class="octicon octicon-link" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a></h3>
 <div class="outline-text-3" id="text-19-26">
 <div class="org-src-container">
-<pre class="src src-emacs-lisp">(<span class="org-keyword">eval-when-compile</span>
-  (<span class="org-keyword">require</span> '<span class="org-constant">s</span>)
-  (<span class="org-keyword">defvar</span> <span class="org-variable-name">mu4e-elisp-directory</span>
-    (s-trim (shell-command-to-string <span class="org-string">"mu4e_directory"</span>))))
+<pre class="src src-emacs-lisp"><span class="org-comment-delimiter">;; </span><span class="org-comment">(eval-when-compile</span>
+<span class="org-comment-delimiter">;;   </span><span class="org-comment">(require 's)</span>
+<span class="org-comment-delimiter">;;   </span><span class="org-comment">(defvar mu4e-elisp-directory</span>
+<span class="org-comment-delimiter">;;     </span><span class="org-comment">(s-trim (shell-command-to-string "mu4e_directory"))))</span>
 (<span class="org-keyword">use-package</span> <span class="org-constant">mu4e</span>
+  <span class="org-builtin">:disabled</span> t
   <span class="org-builtin">:load-path</span> mu4e-elisp-directory
   <span class="org-builtin">:straight</span> nil
   <span class="org-builtin">:commands</span> (mu4e mu4e-view-message-with-msgid mu4e-update-index email)
@@ -10453,6 +10466,7 @@ This is useful with server mode when editing gmail messages. I think that it is 
 <div class="outline-text-3" id="text-19-30">
 <div class="org-src-container">
 <pre class="src src-emacs-lisp">(<span class="org-keyword">use-package</span> <span class="org-constant">sauron</span>
+  <span class="org-builtin">:disabled</span> t
   <span class="org-builtin">:defer</span> 5
   <span class="org-builtin">:commands</span> (sauron-start sauron-start-hidden)
   <span class="org-builtin">:init</span>
@@ -10720,8 +10734,9 @@ This also adds syntax highlighting for gradle
 <h3 id="css"><span class="section-number-3">19.43</span> css <a href="#css"><svg aria-hidden="true" class="octicon octicon-link" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a></h3>
 <div class="outline-text-3" id="text-19-43">
 <div class="org-src-container">
-<pre class="src src-emacs-lisp">(eval-after-load 'css-mode
-  '(define-key css-mode-map (kbd <span class="org-string">"C-c b"</span>) 'web-beautify-css))
+<pre class="src src-emacs-lisp">(<span class="org-keyword">use-package</span> <span class="org-constant">css-mode</span>
+  <span class="org-builtin">:mode</span> ((<span class="org-string">"\\.css\\'"</span> . css-mode)
+         (<span class="org-string">"\\.rasi\\'"</span> . css-mode)))
 </pre>
 </div>
 </div>
