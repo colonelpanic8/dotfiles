@@ -131,9 +131,7 @@ logDebug = do
 
 github = do
   Right (token, _) <- passGet "github-token"
-  githubNotificationsNew GitHubConfig { ghAuth = Auth.OAuth $ BS.pack token
-                                      , ghIcon = undefined
-                                      }
+  githubNotificationsNew $ defaultGithubConfig $ Auth.OAuth $ BS.pack token
 
 main = do
   interfaceNames <- getInterfaces
@@ -206,12 +204,12 @@ main = do
           [ batteryBarNewWithFormat defaultBatteryConfig "$percentage$% ($time$) - $status$" 1.0
           , makeContents sniTrayNew "Cpu"
           , makeContents clock "Cpu"
+          , github >>= buildPadBox
           , makeContents cpu "Cpu"
           , makeContents mem "Cpu"
           , makeContents netMonitor "Cpu"
           , makeContents (fsMonitorNew 60 ["/dev/sdd2"]) "Cpu"
           , mpris >>= buildPadBox
-          , github >>= buildPadBox
           ]
         , barPosition = Top
         , barPadding = 0
