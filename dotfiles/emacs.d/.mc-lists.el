@@ -8,6 +8,7 @@
         beginning-of-visual-line
         c-electric-delete-forward
         c-electric-semi&comma
+        comment-dwim-2
         delete-horizontal-space
         dired-do-rename
         end-of-visual-line
@@ -53,6 +54,7 @@
         universal-argument-minus
         wdired-finish-edit
         yaml-electric-backspace
+        yaml-electric-dash-and-dot
         yas-expand
         ))
 
@@ -62,6 +64,7 @@
         handle-switch-frame
         helm-M-x
         ido-write-file
+        iedit-switch-to-mc-mode
         imalison:multiple-cursors-hydra/body
         imalison:multiple-cursors-hydra/mc/edit-lines-and-exit
         imalison:multiple-cursors-hydra/mc/mark-all-like-this-and-exit
