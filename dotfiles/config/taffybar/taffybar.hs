@@ -6,6 +6,7 @@ import                  Control.Exception.Base
 import                  Control.Monad
 import                  Control.Monad.Reader
 import                  Control.Monad.Trans
+import qualified        Data.ByteString.Char8 as BS
 import                  Data.GI.Base
 import                  Data.GI.Base.ManagedPtr
 import                  Data.List
@@ -16,6 +17,7 @@ import                  Debug.Trace
 import                  Foreign.ForeignPtr
 import                  Foreign.Ptr
 import qualified        GI.Gtk as GI
+import qualified        GitHub.Auth as Auth
 import qualified "gtk3" Graphics.UI.Gtk as Gtk
 import qualified "gtk3" Graphics.UI.Gtk.Abstract.Widget as W
 import qualified "gtk3" Graphics.UI.Gtk.Layout.Table as T
@@ -30,6 +32,7 @@ import                  System.Log.Handler.Simple
 import                  System.Log.Logger
 import                  System.Process
 import                  System.Taffybar
+import                  System.Taffybar.Auth
 import                  System.Taffybar.DBus.Toggle
 import                  System.Taffybar.IconImages
 import                  System.Taffybar.Information.CPU
@@ -43,16 +46,6 @@ import                  System.Taffybar.Widget.Workspaces
 import                  Text.Printf
 import                  Text.Read hiding (lift)
 import                  Unsafe.Coerce
-
-newtype ConstantIconController = ConstantIconController { cicImage :: Gtk.Image }
-
-instance WorkspaceWidgetController ConstantIconController where
-  updateWidget cic _ = return cic
-  getWidget = Gtk.toWidget . cicImage
-
-instance WorkspaceWidgetController Gtk.Widget where
-  updateWidget w _ = return w
-  getWidget w = w
 
 makeContents waction klass = do
   widget <- waction
@@ -72,7 +65,9 @@ myGraphConfig =
 
 memCfg =
   myGraphConfig
-  {graphDataColors = [(0.129, 0.588, 0.953, 1)], graphLabel = Just "mem"}
+  { graphDataColors = [(0.129, 0.588, 0.953, 1)]
+  , graphLabel = Just "mem"
+  }
 
 memCallback :: IO [Double]
 memCallback = do
@@ -86,18 +81,6 @@ getFullWorkspaceNames = go <$> readAsListOfString Nothing "_NET_DESKTOP_FULL_NAM
 workspaceNamesLabelSetter workspace =
   fromMaybe "" . lookup (workspaceIdx workspace) <$>
             liftX11Def [] getFullWorkspaceNames
-
--- mem :: IO Gtk.Widget
--- mem = do
---   ebox <- Gtk.eventBoxNew
---   btn <- pollingGraphNew memCfg 1 $ memCallback $ Gtk.toWidget ebox
---   Gtk.containerAdd ebox btn
---   _ <- Gtk.on ebox Gtk.buttonPressEvent systemEvents
---   Gtk.widgetShowAll ebox
---   return $ Gtk.toWidget ebox
-
-systemEvents :: Gtk.EventM Gtk.EButton Bool
-systemEvents = return True
 
 cpuCallback = do
   (_, systemLoad, totalLoad) <- cpuLoad
@@ -146,6 +129,12 @@ logDebug = do
   infoLogger <- getLogger "System.Information"
   saveGlobalLogger $ setLevel DEBUG infoLogger
 
+github = do
+  Right (token, _) <- passGet "github-token"
+  githubNotificationsNew GitHubConfig { ghAuth = Auth.OAuth $ BS.pack token
+                                      , ghIcon = undefined
+                                      }
+
 main = do
   interfaceNames <- getInterfaces
   homeDirectory <- getHomeDirectory
@@ -162,14 +151,14 @@ main = do
           -- 3 -> Just $ "actions" </> "bookmark-add.png"
           -- 4 -> Just $ "devices" </> "video-display.png"
           _ -> Nothing
-      buildConstantIconController :: ControllerConstructor
-      buildConstantIconController ws = do
-        cfg <- asks hudConfig
-        lift $ do
-          img <- Gtk.imageNew
-          pb <- sequence $ getWorkspacePixBuf (windowIconSize cfg) ws
-          setImage (windowIconSize cfg) img pb
-          return $ WWC ConstantIconController {cicImage = img}
+      -- buildConstantIconController :: ControllerConstructor
+      -- buildConstantIconController ws = do
+      --   cfg <- asks hudConfig
+      --   lift $ do
+      --     img <- Gtk.imageNew
+      --     pb <- sequence $ getWorkspacePixBuf (windowIconSize cfg) ws
+      --     setImage (windowIconSize cfg) img pb
+      --     return $ WWC ConstantIconController {cicImage = img}
       makeIcon = return . IIFilePath . inResourcesDirectory
       myGetIconInfo w@WindowData {windowTitle = title, windowClass = klass}
         | "URxvt" `isInfixOf` klass = makeIcon "urxvt.png"
@@ -202,14 +191,6 @@ main = do
         , getIconInfo = myGetIconInfo
         , windowIconSize = 30
         , widgetGap = 0
-        -- , widgetBuilder =
-        --     buildButtonController $
-        --     buildUnderlineController $
-        --     buildContentsController
-        --       [ buildConstantIconController
-        --       , buildLabelController
-        --       , buildIconController
-        --       ]
         , showWorkspaceFn = hideEmpty
         , updateRateLimitMicroseconds = 100000
         , labelSetter = workspaceNamesLabelSetter
@@ -228,10 +209,12 @@ main = do
           , makeContents cpu "Cpu"
           , makeContents mem "Cpu"
           , makeContents netMonitor "Cpu"
-          , mpris
+          , makeContents (fsMonitorNew 60 ["/dev/sdd2"]) "Cpu"
+          , mpris >>= buildPadBox
+          , github >>= buildPadBox
           ]
         , barPosition = Top
-        , barPadding = 5
+        , barPadding = 0
         , barHeight = (underlineHeight myWorkspacesConfig + windowIconSize myWorkspacesConfig + 15)
         , widgetSpacing = 0
         }

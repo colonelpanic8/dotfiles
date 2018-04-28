@@ -5,13 +5,16 @@
 @define-color font-color #FFFFFF;
 
 .Contents {
-	border-radius: 5px;
 	padding: 3px;
+	transition: border-color .5s;
+	border-radius: 5px;
+	border-style: solid;
+	border-width: 1;
+	border-color: rgba(1.0, 1.0, 1.0, 0.0);
 }
 
 .Active .Contents, .Visible .Contents {
-	background-color: #000000;
-	transition: background-color 1s;
+	border-color: #FFFFFF;
 }
 
 .InnerPad {
@@ -25,13 +28,15 @@
 }
 
 .IconContainer {
-	transition: background-color .5s;
-	border-radius: 5px;
+	transition: border-color .5s;
+	border-radius: 0px;
+	border-bottom: solid;
+	border-width: 1;
+	border-color: rgba(1.0, 1.0, 1.0, 0.0);
 }
 
 .IconContainer.Active {
-	transition: background-color .5s;
-	background-color: @active-window-color;
+	border-color: #FFFFFF;
 }
 
 .IconContainer.Urgent {
@@ -68,6 +73,12 @@
 .TrayWidgetContainer {
 	background-color: @urgent-window-color;
 	padding: 20px;
+}
+
+.TaffyBox {
+	border-bottom: solid;
+	border-width: 1;
+	border-color: #FFFFFF;
 }
 
 .Taffybar * {
