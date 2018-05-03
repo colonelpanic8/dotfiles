@@ -4,7 +4,6 @@ import appdirs
 import argparse
 import os
 import struct
-import string
 
 
 clipit_history_file = os.path.join(appdirs.user_data_dir(), "clipit/history")
@@ -17,7 +16,7 @@ def get_clipit_history(filename):
         while (size > 0):
             item = f.read(size)
             if item:
-                yield item
+                yield item.decode('utf-8')
             _, _, _, size, _ = struct.unpack('5i', f.read(20))
 
 
@@ -57,6 +56,6 @@ if __name__ == '__main__':
         text = history[args.index]
     else:
         selected = history[args.begin_index:args.end_index]
-        text = args.separator.join([string.replace(s, args.separator, args.separator_replacement)
+        text = args.separator.join([s.replace(args.separator, args.separator_replacement)
                                     for s in selected])
     print(text, end='')
