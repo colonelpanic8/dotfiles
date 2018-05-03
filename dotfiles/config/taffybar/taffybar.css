@@ -79,10 +79,16 @@
 	border-bottom: solid;
 	border-width: 1;
 	border-color: #FFFFFF;
+	background-color: rgba(0.0, 0.0, 0.0, 0.3);
 }
 
 .Taffybar * {
 	font-family: "Fira Sans", sans-serif;
 	font-size: 12pt;
 	color: @font-color;
+}
+
+.menubar * {
+	background-color: rgba(1.0, 1.0, 1.0, 0.0);
+	color: #000000;
 }

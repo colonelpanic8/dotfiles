@@ -33,6 +33,7 @@ import                  System.Log.Logger
 import                  System.Process
 import                  System.Taffybar
 import                  System.Taffybar.Auth
+import                  System.Taffybar.DBus
 import                  System.Taffybar.DBus.Toggle
 import                  System.Taffybar.IconImages
 import                  System.Taffybar.Information.CPU
@@ -208,6 +209,7 @@ main = do
           , makeContents cpu "Cpu"
           , makeContents mem "Cpu"
           , makeContents netMonitor "Cpu"
+          -- TODO: make support all devices
           , makeContents (fsMonitorNew 60 ["/dev/sdd2"]) "Cpu"
           , mpris >>= buildPadBox
           ]
@@ -225,7 +227,7 @@ main = do
         -- , centerWidgets = [makeContents (addClass "Window" wnd) "Cpu"]
         -- , endWidgets = [makeContents los "Cpu"]
         -- }
-  dyreTaffybar $ handleDBusToggles $ toTaffyConfig simpleTaffyConfig
+  dyreTaffybar $ withLogServer $ withToggleServer $ toTaffyConfig simpleTaffyConfig
 
 -- Local Variables:
 -- flycheck-ghc-args: ("-Wno-missing-signatures")
