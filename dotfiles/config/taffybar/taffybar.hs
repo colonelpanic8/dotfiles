@@ -33,8 +33,10 @@ import                  System.Log.Logger
 import                  System.Process
 import                  System.Taffybar
 import                  System.Taffybar.Auth
+import                  System.Taffybar.Compat.GtkLibs
 import                  System.Taffybar.DBus
 import                  System.Taffybar.DBus.Toggle
+import                  System.Taffybar.Hooks
 import                  System.Taffybar.IconImages
 import                  System.Taffybar.Information.CPU
 import                  System.Taffybar.Information.EWMHDesktopInfo
@@ -48,6 +50,15 @@ import                  Text.Printf
 import                  Text.Read hiding (lift)
 import                  Unsafe.Coerce
 
+buildPadBoxNoShrink orig  = liftIO $ do
+  widget <- buildPadBox orig
+  -- toGIWidget widget >>= widgetPreventShrink
+  return widget
+
+setMinWidth width widget = liftIO $ do
+  Gtk.widgetSetSizeRequest widget width (-1)
+  return widget
+
 makeContents waction klass = do
   widget <- waction
   liftIO $ do
@@ -57,11 +68,25 @@ makeContents waction klass = do
     Gtk.widgetShowAll b
     return $ Gtk.toWidget b
 
+mkRGBA (r, g, b, a) = (r/256, g/256, b/256, a/256)
+blue = mkRGBA (42, 99, 140, 256)
+yellow1 = mkRGBA (242, 163, 54, 256)
+yellow2 = mkRGBA (254, 204, 83, 256)
+yellow3 = mkRGBA (227, 134, 18, 256)
+red = mkRGBA (210, 77, 37, 256)
+
 myGraphConfig =
   defaultGraphConfig
   { graphPadding = 0
   , graphBorderWidth = 0
   , graphWidth = 75
+  , graphBackgroundColor = (1.0, 1.0, 1.0, 0.0)
+  }
+
+netCfg =
+  myGraphConfig
+  { graphDataColors = [yellow1, yellow2]
+  , graphLabel = Just "net"
   }
 
 memCfg =
@@ -175,12 +200,15 @@ main = do
       cpuCfg =
         myGraphConfig
         { graphDataColors = [(0, 1, 0, 1), (1, 0, 1, 0.5)]
+        , graphBackgroundColor = (1.0, 1.0, 1.0, 0.0)
         , graphLabel = Just "cpu"
         }
       clock = textClockNew Nothing "%a %b %_d %r" 1
       mpris = mpris2New
       cpu = pollingGraphNew cpuCfg 0.5 cpuCallback
       mem = pollingGraphNew memCfg 1 memCallback
+      battery = batteryBarNewWithFormat defaultBatteryConfig
+                "$percentage$% ($time$) - $status$" 1.0
       myWorkspacesConfig =
         defaultWorkspacesConfig
         { underlineHeight = 3
@@ -194,24 +222,23 @@ main = do
         , updateRateLimitMicroseconds = 100000
         , labelSetter = workspaceNamesLabelSetter
         }
-      netMonitor = netMonitorMultiNew 1.5 interfaceNames
       baseConfig = defaultSimpleTaffyConfig
         { startWidgets =
             [ workspaces
-            , makeContents los "Layout"
-            , makeContents wnd "Windows"
+            , los >>= buildPadBox
+            , wnd >>= buildPadBox
             ]
-        , endWidgets =
-          [ batteryBarNewWithFormat defaultBatteryConfig "$percentage$% ($time$) - $status$" 1.0
-          , makeContents sniTrayNew "Cpu"
-          , makeContents clock "Cpu"
-          , github >>= buildPadBox
-          , makeContents cpu "Cpu"
-          , makeContents mem "Cpu"
-          , makeContents netMonitor "Cpu"
-          -- TODO: make support all devices
-          , makeContents (fsMonitorNew 60 ["/dev/sdd2"]) "Cpu"
-          , mpris >>= buildPadBox
+        , endWidgets = map (>>= buildPadBoxNoShrink)
+          [ clock >>= setMinWidth 200
+          , sniTrayNew
+          , github
+          , battery
+          , cpu
+          , mem
+          , netMonitorGraphNew netCfg Nothing
+          , networkMonitorNew defaultNetFormat Nothing >>= setMinWidth 200
+          , fsMonitorNew 60 ["/dev/sdd2"]
+          , mpris
           ]
         , barPosition = Top
         , barPadding = 0
