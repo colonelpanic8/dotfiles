@@ -24,7 +24,7 @@ import           Network.HostName
 import           System.Directory
 import           System.FilePath.Posix
 import           System.Process
-import           System.Taffybar.Hooks.PagerHints
+import           PagerHints
 import           Text.Printf
 import           Unsafe.Coerce
 
