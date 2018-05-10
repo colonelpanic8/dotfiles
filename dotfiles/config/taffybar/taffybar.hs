@@ -45,6 +45,7 @@ import                  System.Taffybar.Information.X11DesktopInfo
 import                  System.Taffybar.SimpleConfig
 import                  System.Taffybar.Widget
 import                  System.Taffybar.Widget.Generic.PollingGraph
+import                  System.Taffybar.Widget.Generic.PollingLabel
 import                  System.Taffybar.Widget.Workspaces
 import                  Text.Printf
 import                  Text.Read hiding (lift)
@@ -229,14 +230,14 @@ main = do
             , wnd >>= buildPadBox
             ]
         , endWidgets = map (>>= buildPadBoxNoShrink)
-          [ clock >>= setMinWidth 200
+          [ battery
+          , clock >>= setMinWidth 200
           , sniTrayNew
           , github
-          , battery
           , cpu
           , mem
           , netMonitorGraphNew netCfg Nothing
-          , networkMonitorNew defaultNetFormat Nothing >>= setMinWidth 200
+          -- , networkMonitorNew defaultNetFormat Nothing >>= setMinWidth 200
           , fsMonitorNew 60 ["/dev/sdd2"]
           , mpris
           ]
