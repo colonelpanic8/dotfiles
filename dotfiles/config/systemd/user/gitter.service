@@ -1,0 +1,11 @@
+[Unit]
+Description=gitter
+Wants=taffybar.service
+After=taffybar.service
+
+[Service]
+ExecStart=/usr/bin/env run_unity.sh gitter
+Restart=always
+
+[Install]
+WantedBy=wm.target
