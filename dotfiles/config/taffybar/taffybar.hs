@@ -46,6 +46,7 @@ import                  System.Taffybar.SimpleConfig
 import                  System.Taffybar.Widget
 import                  System.Taffybar.Widget.Generic.PollingGraph
 import                  System.Taffybar.Widget.Generic.PollingLabel
+import                  System.Taffybar.Widget.Util
 import                  System.Taffybar.Widget.Workspaces
 import                  Text.Printf
 import                  Text.Read hiding (lift)
@@ -53,6 +54,7 @@ import                  Unsafe.Coerce
 
 buildPadBoxNoShrink orig  = liftIO $ do
   widget <- buildPadBox orig
+  widgetSetClass orig "Contents"
   -- toGIWidget widget >>= widgetPreventShrink
   return widget
 
@@ -217,7 +219,7 @@ main = do
         , minWSWidgetSize = Nothing
         , minIcons = 1
         , getIconInfo = myGetIconInfo
-        , windowIconSize = 30
+        , windowIconSize = 25
         , widgetGap = 0
         , showWorkspaceFn = hideEmpty
         , updateRateLimitMicroseconds = 100000
@@ -243,7 +245,7 @@ main = do
           ]
         , barPosition = Top
         , barPadding = 0
-        , barHeight = (underlineHeight myWorkspacesConfig + windowIconSize myWorkspacesConfig + 15)
+        , barHeight = (windowIconSize myWorkspacesConfig + 25)
         , widgetSpacing = 0
         }
       workspaces = workspacesNew myWorkspacesConfig
