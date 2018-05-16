@@ -155,8 +155,8 @@ logDebug = do
   handler <- streamHandler stdout DEBUG
   logger <- getLogger "System.Taffybar"
   saveGlobalLogger $ setLevel DEBUG logger
-  infoLogger <- getLogger "System.Information"
-  saveGlobalLogger $ setLevel DEBUG infoLogger
+  workspacesLogger <- getLogger "System.Taffybar.Widget.Workspaces"
+  saveGlobalLogger $ setLevel WARNING workspacesLogger
 
 github = do
   Right (token, _) <- passGet "github-token"
@@ -165,6 +165,7 @@ github = do
 main = do
   interfaceNames <- getInterfaces
   homeDirectory <- getHomeDirectory
+  -- logDebug
   let resourcesDirectory = homeDirectory </> ".lib" </> "resources"
       inResourcesDirectory file = resourcesDirectory </> file
       highContrastDirectory =
@@ -257,7 +258,8 @@ main = do
         -- , centerWidgets = [makeContents (addClass "Window" wnd) "Cpu"]
         -- , endWidgets = [makeContents los "Cpu"]
         -- }
-  dyreTaffybar $ withLogServer $ withToggleServer $ toTaffyConfig simpleTaffyConfig
+  dyreTaffybar $ withBatteryRefresh $ withLogServer $ withToggleServer $
+               toTaffyConfig simpleTaffyConfig
 
 -- Local Variables:
 -- flycheck-ghc-args: ("-Wno-missing-signatures")
