@@ -52,24 +52,9 @@ import                  Text.Printf
 import                  Text.Read hiding (lift)
 import                  Unsafe.Coerce
 
-buildPadBoxNoShrink orig  = liftIO $ do
-  widget <- buildPadBox orig
-  widgetSetClass orig "Contents"
-  -- toGIWidget widget >>= widgetPreventShrink
-  return widget
-
 setMinWidth width widget = liftIO $ do
   Gtk.widgetSetSizeRequest widget width (-1)
   return widget
-
-makeContents waction klass = do
-  widget <- waction
-  liftIO $ do
-    widgetSetClass widget "Contents"
-    widgetSetClass widget klass
-    b <- buildPadBox widget
-    Gtk.widgetShowAll b
-    return $ Gtk.toWidget b
 
 mkRGBA (r, g, b, a) = (r/256, g/256, b/256, a/256)
 blue = mkRGBA (42, 99, 140, 256)
@@ -86,22 +71,29 @@ myGraphConfig =
   , graphBackgroundColor = (1.0, 1.0, 1.0, 0.0)
   }
 
-netCfg =
-  myGraphConfig
+netCfg = myGraphConfig
   { graphDataColors = [yellow1, yellow2]
   , graphLabel = Just "net"
   }
 
-memCfg =
-  myGraphConfig
+memCfg = myGraphConfig
   { graphDataColors = [(0.129, 0.588, 0.953, 1)]
   , graphLabel = Just "mem"
+  }
+
+cpuCfg = myGraphConfig
+  { graphDataColors = [(0, 1, 0, 1), (1, 0, 1, 0.5)]
+  , graphLabel = Just "cpu"
   }
 
 memCallback :: IO [Double]
 memCallback = do
   mi <- parseMeminfo
   return [memoryUsedRatio mi]
+
+cpuCallback = do
+  (_, systemLoad, totalLoad) <- cpuLoad
+  return [totalLoad, systemLoad]
 
 getFullWorkspaceNames :: X11Property [(WorkspaceIdx, String)]
 getFullWorkspaceNames = go <$> readAsListOfString Nothing "_NET_DESKTOP_FULL_NAMES"
@@ -110,46 +102,6 @@ getFullWorkspaceNames = go <$> readAsListOfString Nothing "_NET_DESKTOP_FULL_NAM
 workspaceNamesLabelSetter workspace =
   fromMaybe "" . lookup (workspaceIdx workspace) <$>
             liftX11Def [] getFullWorkspaceNames
-
-cpuCallback = do
-  (_, systemLoad, totalLoad) <- cpuLoad
-  return [totalLoad, systemLoad]
-
-containerAddReturn c w =
-  Gtk.containerAdd c w >> Gtk.widgetShowAll c >> return (Gtk.toWidget c)
-
-underlineWidget cfg buildWidget name = do
-  w <- buildWidget
-  t <- T.tableNew 2 1 False
-  u <- Gtk.eventBoxNew
-
-  W.widgetSetSizeRequest u (-1) $ underlineHeight cfg
-
-  T.tableAttach t w 0 1 0 1 [T.Expand] [T.Expand] 0 0
-  T.tableAttach t u 0 1 1 2 [T.Fill] [T.Shrink] 0 0
-
-  Gtk.widgetSetName u (printf "%s-underline" name :: String)
-
-  Gtk.widgetShowAll t
-
-  return $ Gtk.toWidget t
-
-myFormatEntry wsNames ((ws, wtitle, wclass), _) =
-  printf "%s: %s - %s" wsName (head $ splitOn "\NUL" wclass) wtitle
-  where
-    wsName = M.findWithDefault ("WS#" ++ show wsN) ws wsNames
-    WSIdx wsN = ws
-
-getInterfaces = do
-  (_, output, _) <- readCreateProcessWithExitCode (shell "list_interfaces.sh") ""
-  return $ splitOn "\n" output
-
-addClass klass action = do
-  widget <- action
-  lift $ widgetSetClass widget klass
-  return widget
-
-(buildWidgetCons, _) = mkWidget
 
 logDebug = do
   handler <- streamHandler stdout DEBUG
@@ -163,29 +115,13 @@ github = do
   githubNotificationsNew $ defaultGithubConfig $ Auth.OAuth $ BS.pack token
 
 main = do
-  interfaceNames <- getInterfaces
   homeDirectory <- getHomeDirectory
+  logDebug
   let resourcesDirectory = homeDirectory </> ".lib" </> "resources"
       inResourcesDirectory file = resourcesDirectory </> file
       highContrastDirectory =
         "/" </> "usr" </> "share" </> "icons" </> "HighContrast" </> "256x256"
       inHighContrastDirectory file = highContrastDirectory </> file
-      getWorkspacePixBuf size Workspace {workspaceIdx = WSIdx wsId} =
-        pixBufFromFile size . inHighContrastDirectory <$>
-        case wsId + 1 of
-          -- 1 -> Just $ "apps" </> "utilities-terminal.png"
-          -- 2 -> Just $ "emblems" </> "emblem-documents.png"
-          -- 3 -> Just $ "actions" </> "bookmark-add.png"
-          -- 4 -> Just $ "devices" </> "video-display.png"
-          _ -> Nothing
-      -- buildConstantIconController :: ControllerConstructor
-      -- buildConstantIconController ws = do
-      --   cfg <- asks hudConfig
-      --   lift $ do
-      --     img <- Gtk.imageNew
-      --     pb <- sequence $ getWorkspacePixBuf (windowIconSize cfg) ws
-      --     setImage (windowIconSize cfg) img pb
-      --     return $ WWC ConstantIconController {cicImage = img}
       makeIcon = return . IIFilePath . inResourcesDirectory
       myGetIconInfo w@WindowData {windowTitle = title, windowClass = klass}
         | "URxvt" `isInfixOf` klass = makeIcon "urxvt.png"
@@ -200,16 +136,11 @@ main = do
             case res of
               IINone -> IIFilePath $ inResourcesDirectory "exe-icon.png"
               _ -> res
-      cpuCfg =
-        myGraphConfig
-        { graphDataColors = [(0, 1, 0, 1), (1, 0, 1, 0.5)]
-        , graphBackgroundColor = (1.0, 1.0, 1.0, 0.0)
-        , graphLabel = Just "cpu"
-        }
       clock = textClockNew Nothing "%a %b %_d %r" 1
-      mpris = mpris2New
       cpu = pollingGraphNew cpuCfg 0.5 cpuCallback
       mem = pollingGraphNew memCfg 1 memCallback
+      layout = layoutNew defaultLayoutConfig
+      windows = windowsNew defaultWindowsConfig
       myWorkspacesConfig =
         defaultWorkspacesConfig
         { underlineHeight = 3
@@ -217,19 +148,20 @@ main = do
         , minWSWidgetSize = Nothing
         , minIcons = 1
         , getIconInfo = myGetIconInfo
-        , windowIconSize = 25
+        , windowIconSize = 33
         , widgetGap = 0
         , showWorkspaceFn = hideEmpty
         , updateRateLimitMicroseconds = 100000
         , labelSetter = workspaceNamesLabelSetter
         }
+      workspaces = workspacesNew myWorkspacesConfig
       baseConfig = defaultSimpleTaffyConfig
         { startWidgets =
             [ workspaces
-            , los >>= buildPadBox
-            , wnd >>= buildPadBox
+            , layout >>= buildPadBox
+            , windows >>= buildPadBox
             ]
-        , endWidgets = map (>>= buildPadBoxNoShrink)
+        , endWidgets = map (>>= buildPadBox)
           [ clock >>= setMinWidth 200
           , sniTrayNew
           , github
@@ -238,22 +170,15 @@ main = do
           , networkGraphNew netCfg Nothing
           -- , networkMonitorNew defaultNetFormat Nothing >>= setMinWidth 200
           , fsMonitorNew 60 ["/dev/sdd2"]
-          , mpris
+          , mpris2New
           ]
         , barPosition = Top
         , barPadding = 0
-        , barHeight = (windowIconSize myWorkspacesConfig + 25)
+        , barHeight = 100
         , widgetSpacing = 0
         }
-      workspaces = workspacesNew myWorkspacesConfig
-      los = layoutNew defaultLayoutConfig
-      wnd = windowsNew defaultWindowsConfig
       simpleTaffyConfig =
         baseConfig
-        -- { startWidgets = [workspaces]
-        -- , centerWidgets = [makeContents (addClass "Window" wnd) "Cpu"]
-        -- , endWidgets = [makeContents los "Cpu"]
-        -- }
   dyreTaffybar $ withLogServer $ withToggleServer $ toTaffyConfig simpleTaffyConfig
 
 -- Local Variables:
