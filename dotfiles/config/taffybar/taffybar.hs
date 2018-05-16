@@ -211,8 +211,6 @@ main = do
       mpris = mpris2New
       cpu = pollingGraphNew cpuCfg 0.5 cpuCallback
       mem = pollingGraphNew memCfg 1 memCallback
-      battery = batteryBarNewWithFormat defaultBatteryConfig
-                "$percentage$% ($time$) - $status$" 1.0
       myWorkspacesConfig =
         defaultWorkspacesConfig
         { underlineHeight = 3
@@ -233,13 +231,12 @@ main = do
             , wnd >>= buildPadBox
             ]
         , endWidgets = map (>>= buildPadBoxNoShrink)
-          [ battery
-          , clock >>= setMinWidth 200
+          [ clock >>= setMinWidth 200
           , sniTrayNew
           , github
           , cpu
           , mem
-          , netMonitorGraphNew netCfg Nothing
+          , networkGraphNew netCfg Nothing
           -- , networkMonitorNew defaultNetFormat Nothing >>= setMinWidth 200
           , fsMonitorNew 60 ["/dev/sdd2"]
           , mpris
