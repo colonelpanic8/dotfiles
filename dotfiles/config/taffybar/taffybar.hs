@@ -163,6 +163,8 @@ main = do
             ]
         , endWidgets = map (>>= buildPadBox)
           [ clock >>= setMinWidth 200
+          , textBatteryNew "$percentage$% ($time$)"
+          , batteryIconNew
           , sniTrayNew
           , github
           , cpu
