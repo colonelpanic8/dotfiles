@@ -137,7 +137,6 @@ main = do
             case res of
               IINone -> IIFilePath $ inResourcesDirectory "exe-icon.png"
               _ -> res
-      clock = textClockNew Nothing "%a %b %_d %r" 1
       cpu = pollingGraphNew cpuCfg 0.5 cpuCallback
       mem = pollingGraphNew memCfg 1 memCallback
       layout = layoutNew defaultLayoutConfig
@@ -158,12 +157,12 @@ main = do
       workspaces = workspacesNew myWorkspacesConfig
       baseConfig = defaultSimpleTaffyConfig
         { startWidgets =
-            [ workspaces
+            [ flip widgetSetClass "Workspaces" =<< workspaces
             , layout >>= buildPadBox
             , windows >>= buildPadBox
             ]
         , endWidgets = map (>>= buildPadBox)
-          [ clock >>= setMinWidth 200
+          [ textClockNew Nothing "%a %b %_d %r" 1
           , textBatteryNew "$percentage$% ($time$)"
           , batteryIconNew
           , sniTrayNew
