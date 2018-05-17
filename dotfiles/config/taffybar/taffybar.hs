@@ -4,8 +4,9 @@ module Main where
 import qualified        Control.Concurrent.MVar as MV
 import                  Control.Exception.Base
 import                  Control.Monad
-import                  Control.Monad.Reader
-import                  Control.Monad.Trans
+import                  Control.Monad.IO.Class
+import                  Control.Monad.Trans.Class
+import                  Control.Monad.Trans.Reader
 import qualified        Data.ByteString.Char8 as BS
 import                  Data.GI.Base
 import                  Data.GI.Base.ManagedPtr
@@ -148,7 +149,7 @@ main = do
         , minWSWidgetSize = Nothing
         , minIcons = 1
         , getIconInfo = myGetIconInfo
-        , windowIconSize = 33
+        , windowIconSize = 31
         , widgetGap = 0
         , showWorkspaceFn = hideEmpty
         , updateRateLimitMicroseconds = 100000
@@ -174,7 +175,7 @@ main = do
           ]
         , barPosition = Top
         , barPadding = 0
-        , barHeight = 100
+        , barHeight = 55
         , widgetSpacing = 0
         }
       simpleTaffyConfig =
