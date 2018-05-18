@@ -4,38 +4,24 @@
 @define-color urgent-window-color #D9CB9E;
 @define-color font-color #FFFFFF;
 
-.Contents {
-	padding-bottom: 2px;
-	padding-top: 2px;
-	padding-right: 2px;
-	padding-left: 2px;
-	transition: border-color .5s, background-color .5s;
-	border-radius: 5px;
-	border-style: solid;
-	border-width: 1px;
-	border-color: rgba(1.0, 1.0, 1.0, 0.0);
-}
-
-.Active .Contents, .Visible .Contents {
-	background-color: rgba(0.0, 0.0, 0.0, 0.5);
-}
-
-.Contents {
-	padding: 5px;
-}
-
 .InnerPad {
-	padding-bottom: 12px;
-	padding-top: 12px;
-	padding-left: 4px;
-	padding-right: 4px;
-}
-
-.Workspaces .InnerPad {
 	padding-bottom: 5px;
 	padding-top: 5px;
 	padding-left: 2px;
 	padding-right: 2px;
+}
+
+.Contents {
+	padding-bottom: 4px;
+	padding-top: 4px;
+	padding-right: 2px;
+	padding-left: 2px;
+	transition: background-color .5s;
+	border-radius: 5px;
+}
+
+.Active .Contents, .Visible .Contents {
+	background-color: rgba(0.0, 0.0, 0.0, 0.5);
 }
 
 .WorkspaceLabel {
@@ -98,6 +84,8 @@
 .IconImage {
 	transition: opacity .5s, background-color .5s;
 	opacity: 1;
+	padding-bottom: 1px;
+	padding-top: 1px;
 }
 
 .IconContainer {
@@ -112,7 +100,7 @@
 	/* background-color: rgba(255, 255, 255, 0.3); */
 	border-radius: 0px;
 	opacity: 1;
-	box-shadow: inset 0 -2px #FFFFFF;
+	box-shadow: inset 0 -1px #FFFFFF;
 }
 
 .IconContainer.Urgent {

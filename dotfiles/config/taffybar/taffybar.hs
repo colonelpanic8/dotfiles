@@ -53,6 +53,13 @@ import                  Text.Printf
 import                  Text.Read hiding (lift)
 import                  Unsafe.Coerce
 
+buildContentsBox widget = liftIO $ do
+  contents <- Gtk.hBoxNew False 0
+  Gtk.containerAdd contents widget
+  _ <- widgetSetClass contents "Contents"
+  Gtk.widgetShowAll contents
+  buildPadBox contents
+
 setMinWidth width widget = liftIO $ do
   Gtk.widgetSetSizeRequest widget width (-1)
   return widget
@@ -157,11 +164,8 @@ main = do
       workspaces = workspacesNew myWorkspacesConfig
       baseConfig = defaultSimpleTaffyConfig
         { startWidgets =
-            [ flip widgetSetClass "Workspaces" =<< workspaces
-            , layout >>= buildPadBox
-            , windows >>= buildPadBox
-            ]
-        , endWidgets = map (>>= buildPadBox)
+            workspaces : map (>>= buildContentsBox) [ layout, windows ]
+        , endWidgets = map (>>= buildContentsBox)
           [ textClockNew Nothing "%a %b %_d %r" 1
           , textBatteryNew "$percentage$% ($time$)"
           , batteryIconNew
