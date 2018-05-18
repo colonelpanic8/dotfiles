@@ -15,25 +15,25 @@ executable imalison-taffybar
   main-is:             taffybar.hs
   ghc-options:         -threaded -rtsopts -with-rtsopts=-N
   build-depends:       base
+                     , X11>=1.8
                      , bytestring
                      , containers
                      , directory
                      , filepath
-                     , gtk-strut
-                     , github
                      , gi-gtk
+                     , github
                      , glib
-                     , gtk3>=0.14.8
                      , gtk-sni-tray
-                     , hslogger
-                     , mtl
+                     , gtk-strut
+                     , gtk3>=0.14.8
                      , haskell-gi-base
+                     , hslogger
                      , process
                      , split
                      , taffybar
+                     , transformers
                      , xmonad-contrib>=0.13
                      , xmonad>=0.13
-                     , X11>=1.8
   default-language:    Haskell2010
 
 source-repository head
