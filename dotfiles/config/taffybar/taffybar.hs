@@ -1,28 +1,17 @@
 {-# LANGUAGE PackageImports #-}
 module Main where
 
-import qualified        Control.Concurrent.MVar as MV
 import                  Control.Exception.Base
 import                  Control.Monad
 import                  Control.Monad.IO.Class
 import                  Control.Monad.Trans.Class
 import                  Control.Monad.Trans.Reader
 import qualified        Data.ByteString.Char8 as BS
-import                  Data.GI.Base
-import                  Data.GI.Base.ManagedPtr
 import                  Data.List
 import                  Data.List.Split
 import qualified        Data.Map as M
 import                  Data.Maybe
-import                  Debug.Trace
-import                  Foreign.ForeignPtr
-import                  Foreign.Ptr
-import qualified        GI.Gtk as GI
 import qualified        GitHub.Auth as Auth
-import qualified "gtk3" Graphics.UI.Gtk as Gtk
-import qualified "gtk3" Graphics.UI.Gtk.Abstract.Widget as W
-import qualified "gtk3" Graphics.UI.Gtk.Layout.Table as T
-import                  Graphics.UI.Gtk.Types
 import                  StatusNotifier.Tray
 import                  System.Directory
 import                  System.Environment
@@ -38,7 +27,6 @@ import                  System.Taffybar.Compat.GtkLibs
 import                  System.Taffybar.DBus
 import                  System.Taffybar.DBus.Toggle
 import                  System.Taffybar.Hooks
-import                  System.Taffybar.IconImages
 import                  System.Taffybar.Information.CPU
 import                  System.Taffybar.Information.EWMHDesktopInfo
 import                  System.Taffybar.Information.Memory
@@ -51,18 +39,6 @@ import                  System.Taffybar.Widget.Util
 import                  System.Taffybar.Widget.Workspaces
 import                  Text.Printf
 import                  Text.Read hiding (lift)
-import                  Unsafe.Coerce
-
-buildContentsBox widget = liftIO $ do
-  contents <- Gtk.hBoxNew False 0
-  Gtk.containerAdd contents widget
-  _ <- widgetSetClass contents "Contents"
-  Gtk.widgetShowAll contents
-  buildPadBox contents
-
-setMinWidth width widget = liftIO $ do
-  Gtk.widgetSetSizeRequest widget width (-1)
-  return widget
 
 mkRGBA (r, g, b, a) = (r/256, g/256, b/256, a/256)
 blue = mkRGBA (42, 99, 140, 256)
@@ -76,7 +52,7 @@ myGraphConfig =
   { graphPadding = 0
   , graphBorderWidth = 0
   , graphWidth = 75
-  , graphBackgroundColor = (1.0, 1.0, 1.0, 0.0)
+  , graphBackgroundColor = (0.0, 0.0, 0.0, 0.0)
   }
 
 netCfg = myGraphConfig
@@ -112,19 +88,20 @@ workspaceNamesLabelSetter workspace =
             liftX11Def [] getFullWorkspaceNames
 
 logDebug = do
-  handler <- streamHandler stdout DEBUG
-  logger <- getLogger "System.Taffybar"
+  logger <- getLogger "System.Taffybar.Widget.Generic.AutoSizeImage"
   saveGlobalLogger $ setLevel DEBUG logger
+  logger2 <- getLogger "StatusNotifier.Tray"
+  saveGlobalLogger $ setLevel DEBUG logger2
   workspacesLogger <- getLogger "System.Taffybar.Widget.Workspaces"
   saveGlobalLogger $ setLevel WARNING workspacesLogger
 
-github = do
-  Right (token, _) <- passGet "github-token"
-  githubNotificationsNew $ defaultGithubConfig $ Auth.OAuth $ BS.pack token
+-- github = do
+--   Right (token, _) <- passGet "github-token"
+--   githubNotificationsNew $ defaultGithubConfig $ Auth.OAuth $ BS.pack token
 
 main = do
   homeDirectory <- getHomeDirectory
-  logDebug
+  -- logDebug
   let resourcesDirectory = homeDirectory </> ".lib" </> "resources"
       inResourcesDirectory file = resourcesDirectory </> file
       highContrastDirectory =
@@ -155,7 +132,7 @@ main = do
         , minWSWidgetSize = Nothing
         , minIcons = 1
         , getIconInfo = myGetIconInfo
-        , windowIconSize = 31
+        -- , windowIconSize = 31
         , widgetGap = 0
         , showWorkspaceFn = hideEmpty
         , updateRateLimitMicroseconds = 100000
@@ -170,23 +147,26 @@ main = do
           , textBatteryNew "$percentage$% ($time$)"
           , batteryIconNew
           , sniTrayNew
-          , github
+          -- , github
           , cpu
           , mem
           , networkGraphNew netCfg Nothing
           -- , networkMonitorNew defaultNetFormat Nothing >>= setMinWidth 200
-          , fsMonitorNew 60 ["/dev/sdd2"]
+          -- , fsMonitorNew 60 ["/dev/sdd2"]
           , mpris2New
           ]
         , barPosition = Top
-        , barPadding = 0
-        , barHeight = 55
+        , barPadding = 5
+        , barHeight = 50
         , widgetSpacing = 0
         }
       simpleTaffyConfig =
         baseConfig
-  dyreTaffybar $ withBatteryRefresh $ withLogServer $ withToggleServer $
-               toTaffyConfig simpleTaffyConfig
+        -- { endWidgets = []
+        -- , startWidgets = [flip widgetSetClass "Workspaces" =<< workspaces]
+        -- }
+  startTaffybar $ withBatteryRefresh $ withLogServer $ withToggleServer $
+                toTaffyConfig simpleTaffyConfig
 
 -- Local Variables:
 -- flycheck-ghc-args: ("-Wno-missing-signatures")
