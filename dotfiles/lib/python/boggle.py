@@ -50,9 +50,9 @@ def build_trie():
     return node
 
 
+unit = (1, 0, -1)
 class Boggle(object):
 
-    unit = (1, 0, -1)
     deltas = [(i, j) for i in unit for j in unit]
 
     @classmethod
@@ -69,7 +69,8 @@ class Boggle(object):
         for i in range(self.width):
             for j in range(self.height):
                 for word in self.find(i, j):
-                    yield word
+                    if len(word) > 2:
+                        yield word
 
     def adjacency(self, i, j):
         for i_d, j_d in self.deltas:
@@ -82,10 +83,16 @@ class Boggle(object):
         trie = trie or self.trie
         visited = visited or set()
         visited = set(visited)
-        character = self.board[i][j]
+        characters = self.board[i][j]
         visited.add((i, j))
-        if character in trie.children:
-            current_word += character
+        new_trie = trie
+        for character in characters:
+            if character in new_trie.children:
+                new_trie = new_trie.children[character]
+            else:
+                break
+        else:
+            current_word += characters
             new_trie = trie.children[character]
             if new_trie.is_word:
                 yield current_word
@@ -98,5 +105,54 @@ class Boggle(object):
                     yield word
 
 
+boggle_dice = [
+    ["a", "a", 'e', 'e', 'g',  'n'],
+    ["e", "l", 'r', 't', 't',  'y'],
+    ["a", "o", 'o', 't', 't',  'w'],
+    ["a", "b", 'b', 'j', 'o',  'o'],
+    ["e", "h", 'r', 't', 'v',  'w'],
+    ["c", "i", 'm', 'o', 't',  'u'],
+    ["d", "i", 's', 't', 't',  'y'],
+    ["e", "i", 'o', 's', 's',  't'],
+    ["d", "e", 'l', 'r', 'v',  'y'],
+    ["a", "c", 'h', 'o', 'p',  's'],
+    ["h", "i", 'm', 'n', 'qu', 'u'],
+    ["e", "e", 'i', 'n', 's',  'u'],
+    ["e", "e", 'g', 'h', 'n',  'w'],
+    ["a", "f", 'f', 'k', 'p',  's'],
+    ["h", "l", 'n', 'n', 'r',  'z'],
+    ["d", "e", 'i', 'l', 'r',  'x'],
+]
+
+
+def random_permutation_of_size(n):
+    remaining = list(range(n))
+    for i in range(n-1, -1, -1):
+        yield remaining.pop(random.randint(0, i))
+
+
+def random_permutation(the_list):
+    for index in random_permutation_of_size(len(the_list)):
+        yield the_list[index]
+
+
+def chunks(l, n):
+    for i in range(0, len(l), n):
+        yield l[i:i + n]
+
+
+def roll_dice(dice):
+    for die in random_permutation(dice):
+        yield random.choice(die)
+
+
+def build_board_from_dice_roll(dice=None, row_size=4):
+    dice = dice or boggle_dice
+    return list(chunks(list(roll_dice(dice)), row_size))
+
+
 if __name__ == '__main__':
-    print list(Boggle.new_random(build_trie()))
+    dict_trie = build_trie()
+    board = build_board_from_dice_roll()
+    print(board)
+    print(list(Boggle(board, dict_trie).run()))
