@@ -2807,6 +2807,14 @@ Intero seems to be causing hangs, so it has been disabled
       (turn-on-purescript-indentation))
     (add-hook 'purescript-mode-hook 'imalison:purescript-mode-hook)))
 #+END_SRC
+*** kotlin
+#+BEGIN_SRC emacs-lisp
+(use-package kotlin-mode)
+#+END_SRC
+*** vala
+#+BEGIN_SRC emacs-lisp
+(use-package vala-mode)
+#+END_SRC
 *** lua
 #+BEGIN_SRC emacs-lisp
 (use-package lua-mode
