@@ -3720,6 +3720,20 @@ I've disabled magithub because it causes magit to be super slow
   :disabled t
   :after magit)
 #+END_SRC
+** vc
+#+begin_src emacs-lisp
+(use-package vc
+  :config
+  (progn
+    (defun vc-find-revision-of-file (revision)
+      (interactive
+       (list (vc-read-revision
+              "Revision to visit: "
+              (list (imalison:join-paths (magit-toplevel) (car (magit-list-files)))))))
+      (let* ((file (completing-read "Select file to visit: " (magit-revision-files revision)))
+             (full-file (imalison:join-paths (magit-toplevel) file)))
+        (switch-to-buffer (vc-find-revision full-file revision))))))
+#+end_src
 ** git-link
 #+BEGIN_SRC emacs-lisp
 (use-package git-link
