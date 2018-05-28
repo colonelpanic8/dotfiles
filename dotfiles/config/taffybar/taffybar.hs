@@ -1,44 +1,45 @@
 {-# LANGUAGE PackageImports #-}
 module Main where
 
-import                  Control.Exception.Base
-import                  Control.Monad
-import                  Control.Monad.IO.Class
-import                  Control.Monad.Trans.Class
-import                  Control.Monad.Trans.Reader
-import qualified        Data.ByteString.Char8 as BS
-import                  Data.List
-import                  Data.List.Split
-import qualified        Data.Map as M
-import                  Data.Maybe
-import qualified        GitHub.Auth as Auth
-import                  StatusNotifier.Tray
-import                  System.Directory
-import                  System.Environment
-import                  System.FilePath.Posix
-import                  System.Glib.GObject
-import                  System.IO
-import                  System.Log.Handler.Simple
-import                  System.Log.Logger
-import                  System.Process
-import                  System.Taffybar
-import                  System.Taffybar.Auth
-import                  System.Taffybar.Compat.GtkLibs
-import                  System.Taffybar.DBus
-import                  System.Taffybar.DBus.Toggle
-import                  System.Taffybar.Hooks
-import                  System.Taffybar.Information.CPU
-import                  System.Taffybar.Information.EWMHDesktopInfo
-import                  System.Taffybar.Information.Memory
-import                  System.Taffybar.Information.X11DesktopInfo
-import                  System.Taffybar.SimpleConfig
-import                  System.Taffybar.Widget
-import                  System.Taffybar.Widget.Generic.PollingGraph
-import                  System.Taffybar.Widget.Generic.PollingLabel
-import                  System.Taffybar.Widget.Util
-import                  System.Taffybar.Widget.Workspaces
-import                  Text.Printf
-import                  Text.Read hiding (lift)
+import           Control.Exception.Base
+import           Control.Monad
+import           Control.Monad.IO.Class
+import           Control.Monad.Trans.Class
+import           Control.Monad.Trans.Reader
+import qualified Data.ByteString.Char8 as BS
+import           Data.List
+import           Data.List.Split
+import qualified Data.Map as M
+import           Data.Maybe
+import qualified GitHub.Auth as Auth
+import           StatusNotifier.Tray
+import           System.Directory
+import           System.Environment
+import           System.FilePath.Posix
+import           System.Glib.GObject
+import           System.IO
+import           System.Log.Handler.Simple
+import           System.Log.Logger
+import           System.Process
+import           System.Taffybar
+import           System.Taffybar.Auth
+import           System.Taffybar.Compat.GtkLibs
+import           System.Taffybar.DBus
+import           System.Taffybar.DBus.Toggle
+import           System.Taffybar.Hooks
+import           System.Taffybar.Information.CPU
+import           System.Taffybar.Information.EWMHDesktopInfo
+import           System.Taffybar.Information.Memory
+import           System.Taffybar.Information.X11DesktopInfo
+import           System.Taffybar.SimpleConfig
+import           System.Taffybar.Util
+import           System.Taffybar.Widget
+import           System.Taffybar.Widget.Generic.PollingGraph
+import           System.Taffybar.Widget.Generic.PollingLabel
+import           System.Taffybar.Widget.Util
+import           System.Taffybar.Widget.Workspaces
+import           Text.Printf
+import           Text.Read hiding (lift)
 
 mkRGBA (r, g, b, a) = (r/256, g/256, b/256, a/256)
 blue = mkRGBA (42, 99, 140, 256)
@@ -87,6 +88,10 @@ workspaceNamesLabelSetter workspace =
   fromMaybe "" . lookup (workspaceIdx workspace) <$>
             liftX11Def [] getFullWorkspaceNames
 
+enableLogger logger level = do
+  logger <- getLogger logger
+  saveGlobalLogger $ setLevel level logger
+
 logDebug = do
   logger <- getLogger "System.Taffybar.Widget.Generic.AutoSizeImage"
   saveGlobalLogger $ setLevel DEBUG logger
@@ -102,25 +107,27 @@ logDebug = do
 main = do
   homeDirectory <- getHomeDirectory
   -- logDebug
+  -- enableLogger "System.Taffybar.Widget.Util" DEBUG
+  -- enableLogger "System.Taffybar.Information.XDG.DesktopEntry" DEBUG
+  -- enableLogger "System.Taffybar.WindowIcon" DEBUG
   let resourcesDirectory = homeDirectory </> ".lib" </> "resources"
       inResourcesDirectory file = resourcesDirectory </> file
       highContrastDirectory =
         "/" </> "usr" </> "share" </> "icons" </> "HighContrast" </> "256x256"
       inHighContrastDirectory file = highContrastDirectory </> file
-      makeIcon = return . IIFilePath . inResourcesDirectory
-      myGetIconInfo w@WindowData {windowTitle = title, windowClass = klass}
-        | "URxvt" `isInfixOf` klass = makeIcon "urxvt.png"
-        | "Termite" `isInfixOf` klass = makeIcon "urxvt.png"
-        | "Kodi" `isInfixOf` klass = makeIcon "kodi.png"
+      getIconFileName w@WindowData {windowTitle = title, windowClass = klass}
+        -- | "URxvt" `isInfixOf` klass = Just "urxvt.png"
+        -- | "Termite" `isInfixOf` klass = Just "urxvt.png"
+        -- | "Kodi" `isInfixOf` klass = Just "kodi.png"r
         | "@gmail.com" `isInfixOf` title &&
             "chrome" `isInfixOf` klass && "Gmail" `isInfixOf` title =
-          makeIcon "gmail.png"
-        | otherwise = do
-          res <- defaultGetIconInfo w
-          return $
-            case res of
-              IINone -> IIFilePath $ inResourcesDirectory "exe-icon.png"
-              _ -> res
+          Just "gmail.png"
+        | otherwise = Nothing
+      myIcons =
+        addCustomIconsAndFallback
+          (fmap inResourcesDirectory . getIconFileName)
+          (inResourcesDirectory "exe-icon.png")
+          (getWindowIconPixbufFromClass <|||> getWindowIconPixbufFromEWMH)
       cpu = pollingGraphNew cpuCfg 0.5 cpuCallback
       mem = pollingGraphNew memCfg 1 memCallback
       layout = layoutNew defaultLayoutConfig
@@ -130,43 +137,45 @@ main = do
         { underlineHeight = 3
         , underlinePadding = 2
         , minWSWidgetSize = Nothing
-        , minIcons = 1
-        , getIconInfo = myGetIconInfo
+        , minIcons = 3
+        , getWindowIconPixbuf = myIcons
         -- , windowIconSize = 31
         , widgetGap = 0
-        , showWorkspaceFn = hideEmpty
+        , showWorkspaceFn = const True
         , updateRateLimitMicroseconds = 100000
         , labelSetter = workspaceNamesLabelSetter
         }
       workspaces = workspacesNew myWorkspacesConfig
-      baseConfig = defaultSimpleTaffyConfig
+      baseConfig =
+        defaultSimpleTaffyConfig
         { startWidgets =
-            workspaces : map (>>= buildContentsBox) [ layout, windows ]
-        , endWidgets = map (>>= buildContentsBox)
-          [ textClockNew Nothing "%a %b %_d %r" 1
-          , textBatteryNew "$percentage$% ($time$)"
-          , batteryIconNew
-          , sniTrayNew
+            workspaces : map (>>= buildContentsBox) [layout, windows]
+        , endWidgets =
+            map
+              (>>= buildContentsBox)
+              [ textBatteryNew "$percentage$%"
+              , batteryIconNew
+              , textClockNew Nothing "%a %b %_d %r" 1
+              , sniTrayNew
           -- , github
-          , cpu
-          , mem
-          , networkGraphNew netCfg Nothing
+              , cpu
+              , mem
+              , networkGraphNew netCfg Nothing
           -- , networkMonitorNew defaultNetFormat Nothing >>= setMinWidth 200
           -- , fsMonitorNew 60 ["/dev/sdd2"]
-          , mpris2New
-          ]
+              , mpris2New
+              ]
         , barPosition = Top
-        , barPadding = 5
-        , barHeight = 50
-        , widgetSpacing = 0
+        , barPadding = 10
+        , barHeight = 53
         }
-      simpleTaffyConfig =
-        baseConfig
+      simpleTaffyConfig = baseConfig
         -- { endWidgets = []
         -- , startWidgets = [flip widgetSetClass "Workspaces" =<< workspaces]
         -- }
-  startTaffybar $ withBatteryRefresh $ withLogServer $ withToggleServer $
-                toTaffyConfig simpleTaffyConfig
+  startTaffybar $
+    withBatteryRefresh $
+    withLogServer $ withToggleServer $ toTaffyConfig simpleTaffyConfig
 
 -- Local Variables:
 -- flycheck-ghc-args: ("-Wno-missing-signatures")
