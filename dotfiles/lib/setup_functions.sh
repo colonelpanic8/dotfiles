@@ -27,6 +27,16 @@ function _set_python_command {
         echo "Warning: setting python command to shim"
 }
 
+function environment_variable_exists {
+    eval "value=\"\${$1+x}\""
+    [ ! -z $value ]
+}
+
+function setup_unless_environment_variable_exists {
+	environment_variable_exists "$1" || $2
+	export "$1=$(date)"
+}
+
 function add_to_path {
     environment_variable_exists _python_command || _set_python_command
     # We need to get a path to the ACTUAL python command because
@@ -73,11 +83,6 @@ function is_osx() {
             return 1;
             ;;
     esac
-}
-
-function environment_variable_exists {
-    eval "value=\"\${$1+x}\""
-    [ ! -z $value ]
 }
 
 function source_directory_files {

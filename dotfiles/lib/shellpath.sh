@@ -1,6 +1,6 @@
 source "$HOME/.lib/setup_functions.sh"
 
-function _setup_env {
+function _setup_path {
     _path_helper
 
     # XXX/TODO:
@@ -20,13 +20,11 @@ function _setup_env {
     _rust_setup
     _tex_setup
 
-    # This makes systemd aware of change to $PATH
-    run_if_exists systemctl --user import-environment PATH DISPLAY XAUTHORITY HOME
-
     # To ensure that things in ~/.lib/bin take precedence
     add_to_path "$HOME/.lib/bin" --before
 
-    export ENVIRONMENT_SETUP_DONE="$(date)"
+	# This makes systemd aware of change to $PATH
+    run_if_exists systemctl --user import-environment PATH DISPLAY XAUTHORITY HOME
 }
 
 function _linux_path_setup {
