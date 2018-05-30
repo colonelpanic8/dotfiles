@@ -1,0 +1,23 @@
+nix:
+    enable: true
+    # `pure` set to `true` means that environment variables won't get forwarded
+    # when running `stack build` and `stack exec`.  This is generally not what
+    # we want when doing day-to-day development.
+    pure: false
+    # These are packages passed to the nix environment when running `stack
+    # build` or `stack exec`.  Note that `stack` will NOT be able to see a
+    # library that has not been passed in here.
+    packages:
+        - cairo
+        - gcc
+        - gnome2.pango
+        - gtk2-x11
+        - libxml2
+        - pkgconfig
+        - upower
+        - x11
+        - xorg.libX11
+        - xorg.libXext
+        - xorg.libXinerama
+        - xorg.libXrandr
+        - xorg.libXrender

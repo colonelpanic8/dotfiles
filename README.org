@@ -1,1 +1,1 @@
-dotfiles/emacs.d/README.org
+dotfiles/emacs/.emacs.d/README.org

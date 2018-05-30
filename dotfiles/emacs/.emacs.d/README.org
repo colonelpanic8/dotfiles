@@ -1,0 +1,4992 @@
+# -*- mode: org; -*-
+[[https://travis-ci.org/IvanMalison/dotfiles][file:https://travis-ci.org/IvanMalison/dotfiles.svg?branch=master]]
+
+This document is best read at [[http://ivanmalison.github.io/dotfiles/]] or, of
+course, in emacs, as the internal links that follow are unlikely to work
+anywhere else (including, for example, at
+https://github.com/IvanMalison/dotfiles).
+* About
+This is my emacs configuration in literate form. It aspires to be
+like the incredibly well commented literate configurations of [[http://pages.sachachua.com/.emacs.d/Sacha.html][Sacha Chua]] and
+[[http://doc.rix.si/cce/cce.html][Ryan Rix]], but I haven't quite gotten around to polishing it to the point that
+those two have. Still, there are definitely a few sections of which I am quite
+proud, and that others may find to be useful.
+* Highlights
+These sections are the ones that have the most potential to be interesting to
+others:
+** How I generate http://ivanmalison.github.io/dotfiles/
+*** org-export
+**** travis-ci
+[[https://github.com/IvanMalison/dotfiles/tree/master/gen-gh-pages][This directory]] contains a collection of scripts that export this org document
+to html. This approach is taken (with only a few modifications) from [[https://gist.github.com/domenic/ec8b0fc8ab45f39403dd][here]].
+**** githook (The old way)
+NOTE: I've left this here in case other people have an interest in this method,
+but I no longer use it.
+
+I wrote a [[https://github.com/IvanMalison/dotfiles/tree/9e56ced1dd70e50e1026aca5af51437e93add026/dotfiles/emacs.d/bin][githook and an installer script]] that automatically update index.html
+at the root of the repository by running ~org-html-export-to-html~ on my
+README.org (essentially this document) . These should work no matter where they
+are placed in a repository. The org-mode file that they target is set [[https://github.com/IvanMalison/dotfiles/blob/16a4f6c3aadef39a45d30c15e8637b40858721ea/dotfiles/emacs.d/bin/util.sh#L4][here]] and
+should be relatively easy to change.
+*** [[https://github.com/fniessen/org-html-themes][Read The Org]]
+I use [[https://github.com/fniessen][fniessen]]'s ReadTheOrg theme which can be found at
+https://github.com/fniessen/org-html-themes.
+*** Predictable and Human Readable Heading Links
+To make it so that internal heading links have names that correspond to the
+heading text, and don't change when new headings are added to the document, I
+wrote a custom version of ~org-export-get-reference~.
+
+See how [[Use my own default naming scheme for org-headings][this link]] (which is just a normal internal link in the original
+document) takes you to
+http://ivanmalison.github.io/dotfiles/#usemyowndefaultnamingschemefororgheadings.
+
+In case you haven't noticed, that is where you should go grab the code that does
+this.
+
+I'm considering turning this snippet in to a package, so please let me know if
+that is something you are interested in.
+*** [[Add link icons in headings that lead to themselves][Add link icons in headings that lead to themselves]]
+This is another pretty nasty hack. This is useful when you are browsing the
+document and you want to grab a link to the current heading.
+*** Set Background Color Source Blocks
+For some reason, org-mode uses all of your currently active fontification when
+exporting EXCEPT for background color. [[Set Background Color of Source Blocks for Export][This]] modification fixes this.
+** [[frame-mode][Custom frame control]]
+My custom [[frame-mode][frame-mode]] stuff is built to integrate really nicely with xmonad. I
+think its pretty awesome!
+** [[Functions][My functions section]]
+...has a bunch of generally useful functions:
++ [[https://github.com/IvanMalison/emit/blob/2e4d788abd68bac538acb06443179b8d5885052e/emit.el#L104][emit-prefix-selector]] (SUPER USEFUL, moved to emit) See [[https://github.com/IvanMalison/emit#prefix-selector][README]] for explantion
++ [[Font Size][Font Size]] functions and an [[fontsizehydra][Awesome Hydra]] for them
++ [[downloadfile][Download a file into a buffer]] (curl straight into a file)
++ [[editscript][Edit a script on $PATH]]
++ [[Copy/Yanking][Copy Portions of Buffer File Path Hydra]] and the associated
+ [[Copy/Yank String Functions][Copy String Functions]]
++ [[namedbuild][Named Build of Builder Macros]] ([[https://github.com/IvanMalison/emit#named-builder][README]]) and [[composemacros][A Compose Supporting Macros]]
+  ([[https://github.com/IvanMalison/emit#compose][README]])
+** Configuration of My Own Packages
+- [[term-projectile][term-projectile]] and [[term-manager][term-manager]]
+- [[org-projectile][org-projectile]]
+- [[multi-line][multi-line]]
+- [[github-search][github-search]]
+- [[flimenu][flimenu]]
+- [[frame-mode][frame-mode]]
+- [[tile][tile]]
+** [[programminglanguages][Programming Language Configurations]]
+My programming language major mode configurations can all be found [[programminglanguages][here]].
+** [[org][org-mode]]
+My [[org][org-mode]] configuration is pretty comprehensive, but not super well commented.
+* HTML Headers
+#+HTML_HEAD: <link rel="stylesheet" type="text/css" href="http://www.pirilampo.org/styles/readtheorg/css/htmlize.css"/>
+#+HTML_HEAD: <link rel="stylesheet" type="text/css" href="http://www.pirilampo.org/styles/readtheorg/css/readtheorg.css"/>
+
+#+HTML_HEAD: <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
+#+HTML_HEAD: <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js"></script>
+#+HTML_HEAD: <script type="text/javascript" src="http://www.pirilampo.org/styles/lib/js/jquery.stickytableheaders.js"></script>
+#+HTML_HEAD: <script type="text/javascript" src="http://www.pirilampo.org/styles/readtheorg/js/readtheorg.js"></script>
+* Early
+The configurations in this section need to occur early in emacs startup for some reason or another.
+** Lexical Binding
+This makes it so that the file that is produced from tangling this
+file uses lexical scoping.
+#+BEGIN_SRC emacs-lisp
+;;; -*- lexical-binding: t -*-
+(setq-default lexical-binding t)
+#+END_SRC
+** Security
+#+BEGIN_SRC emacs-lisp
+(defvar imalison:secure t)
+
+(defun imalison:use-https-and-tls ()
+  (setq tls-checktrust t)
+  (let ((trustfile
+         (replace-regexp-in-string
+          "\\\\" "/"
+          (replace-regexp-in-string
+           "\n" ""
+           (shell-command-to-string "python -m certifi")))))
+    (setq tls-program
+          (list
+           (format "gnutls-cli%s --x509cafile %s -p %%p %%h"
+                   (if (eq window-system 'w32) ".exe" "") trustfile)))))
+
+(defun imalison:test-security ()
+  (interactive)
+  (let ((bad-hosts
+         (loop for bad
+               in `("https://wrong.host.badssl.com/"
+                    "https://self-signed.badssl.com/")
+               if (condition-case _e
+                      (url-retrieve
+                       bad (lambda (_retrieved) t))
+                    (error nil))
+               collect bad)))
+    (if bad-hosts
+        (error (format "tls misconfigured; retrieved %s ok"
+                       bad-hosts))
+      (url-retrieve "https://badssl.com"
+                    (lambda (_retrieved) t)))))
+
+(when imalison:secure (imalison:use-https-and-tls))
+#+END_SRC
+** Setup auto-compile
+#+BEGIN_SRC emacs-lisp
+(use-package auto-compile
+  :demand t
+  :straight t
+  :config
+  (progn
+    (auto-compile-on-load-mode)
+    (auto-compile-on-save-mode)))
+#+END_SRC
+** Prefer Newer Versions
+To reduce the risk of loading outdated byte code files, we set
+load-prefer-newer and enable auto-compile-on-load-mode as early as
+possible.
+#+BEGIN_SRC emacs-lisp
+(setq load-prefer-newer t)
+#+END_SRC
+** Custom Files
+The default value of ~custom-file~ is just the current user's ~.emacs.d/init.el~
+file. Emacs will add content to ~custom-file~ whenever a variable is customized
+or marked as safe. When init.el is version controlled, it is quite annoying to
+have random machine-generated variable settings added to it because those
+changes are often not worth keeping permanently, so we set a different custom
+file here to avoid this situation.
+
+custom-before.el is loaded before the  rest of init.el, while custom-after.el is
+loaded afterwards. this-machine.el has customizations  that should only apply to
+the current machine.  custom-before and custom-after are  not version controlled
+in the dotfiles repo but they are shared across machines elsewhere.
+#+BEGIN_SRC emacs-lisp
+(defvar machine-custom "~/.emacs.d/this-machine.el")
+(defvar custom-after-file "~/.emacs.d/custom-after.el")
+(setq custom-file "~/.emacs.d/custom-before.el")
+(when (file-exists-p custom-file) (load custom-file))
+#+END_SRC
+** Benchmarking
+This appears here so that it can accurately benchmark as much of
+startup as possible.
+#+BEGIN_SRC emacs-lisp
+(defvar imalison:do-benchmark)
+
+(let ((bench-file (concat (file-name-directory user-init-file) "benchmark.el")))
+  (when (file-exists-p bench-file) (load bench-file)))
+
+(use-package benchmark-init
+  :if imalison:do-benchmark
+  :demand t
+  :config
+  (setq max-specpdl-size 99999999))
+#+END_SRC
+** GUI Disables
+Death to any gui elements in emacs! Do this EARLY so that emacs
+doesn't redisplay in a way that is visually unpleasant on startup a
+bunch of times.
+#+BEGIN_SRC emacs-lisp
+(when (fboundp 'menu-bar-mode) (menu-bar-mode -1))
+(when (fboundp 'tool-bar-mode) (tool-bar-mode -1))
+(when (fboundp 'scroll-bar-mode) (scroll-bar-mode -1))
+#+END_SRC
+Tooltips are annoying:
+#+BEGIN_SRC emacs-lisp
+(if (fboundp 'tooltip-mode) (tooltip-mode -1) (setq tooltip-use-echo-area t))'
+#+END_SRC
+** Byte-Compiler
+These definitions silence the byte-compiler.
+#+BEGIN_SRC emacs-lisp
+(defvar grep-find-ignored-directories nil)
+(defvar grep-find-ignored-files nil)
+(defvar ido-context-switch-command nil)
+(defvar ido-cur-item nil)
+(defvar ido-cur-list nil)
+(defvar ido-default-item nil)
+(defvar inherit-input-method nil)
+(defvar oauth--token-data nil)
+(defvar tls-checktrust nil)
+(defvar tls-program nil)
+(defvar url-callback-arguments nil)
+(defvar url-callback-function nil)
+(defvar url-http-extra-headers nil)
+#+END_SRC
+
+#+BEGIN_SRC emacs-lisp
+;; This variable doesn't exist in old versions of org-mode
+(defvar org-show-context-detail)
+#+END_SRC
+** exec-path-from-shell
+Sets environment variables by starting a shell.
+#+BEGIN_SRC emacs-lisp
+(use-package exec-path-from-shell
+  :config
+  (progn
+    ;; For debugging
+    (when nil
+      (message "path: %s, setup: %s" (getenv "PATH")
+               (getenv "ENVIRONMENT_SETUP_DONE"))
+      (setq exec-path-from-shell-debug t))
+    (setq exec-path-from-shell-arguments (list "-l"))
+    (setq exec-path-from-shell-check-startup-files nil)
+    (add-to-list 'exec-path-from-shell-variables "SHELL")
+    (add-to-list 'exec-path-from-shell-variables "GOPATH")
+    (add-to-list 'exec-path-from-shell-variables "ENVIRONMENT_SETUP_DONE")
+    (add-to-list 'exec-path-from-shell-variables "PYTHONPATH")
+    (exec-path-from-shell-initialize)))
+#+END_SRC
+** noflet
+#+BEGIN_SRC emacs-lisp
+(use-package noflet
+  :demand t)
+#+END_SRC
+** Non-Forking Shell Command To String
+Emacs' built in ~shell-command-to-string~ function has the downside that it
+forks a new shell process every time it is executed. This means that any shell
+startup cost is incurred when this function is called.
+
+The following implementation uses eshell's ~executable-find~ to find the
+binary (which is the only reason ~shell-comand-to-string~ is typically used
+anyway), but it avoids incurring any shell-startup cost.
+
+This was originally inspired by [[https://github.com/bbatsov/projectile/issues/1044][this issue]].
+#+BEGIN_SRC emacs-lisp
+(defun imalison:call-process-to-string (program &rest args)
+  (with-temp-buffer
+    (apply 'call-process program nil (current-buffer) nil args)
+    (buffer-string)))
+
+(defun imalison:get-call-process-args-from-shell-command (command)
+  (cl-destructuring-bind
+      (the-command . args) (split-string command " ")
+    (let ((binary-path (executable-find the-command)))
+      (when binary-path
+        (cons binary-path args)))))
+
+(defun imalison:shell-command-to-string (command)
+  (let ((call-process-args
+         (imalison:get-call-process-args-from-shell-command command)))
+    (if call-process-args
+        (apply 'imalison:call-process-to-string call-process-args)
+      (shell-command-to-string command))))
+#+END_SRC
+This makes it so that we always try to call-process instead of shell-command-to-sting. It may cause undesireable behavior.
+#+BEGIN_SRC emacs-lisp
+(defun imalison:try-call-process (command)
+  (let ((call-process-args
+         (imalison:get-call-process-args-from-shell-command command)))
+    (if call-process-args
+        (apply 'imalison:call-process-to-string call-process-args))))
+#+END_SRC
+
+This had to be disabled because it was causing a bunch of issues with projectile.
+#+BEGIN_SRC emacs-lisp :tangle no
+(advice-add 'shell-command-to-string :before-until 'imalison:try-call-process)
+#+END_SRC
+
+This solution only applies it to projectile-find-file
+#+BEGIN_SRC emacs-lisp
+
+(defun imalison:call-with-quick-shell-command (fn &rest args)
+  (noflet ((shell-command-to-string (&rest args)
+                                    (or (apply 'imalison:try-call-process args) (apply this-fn args))))
+    (apply fn args)))
+
+(advice-add 'projectile-find-file :around 'imalison:call-with-quick-shell-command)
+#+END_SRC
+** Set EMACS environment variable
+Emacs cask seems to depend on the EMACS environment variable being set to the
+binary path of emacs. I found the method for getting the path to the emacs
+executable [[http://emacs.stackexchange.com/questions/6010/can-emacs-detect-the-path-of-its-executable][here]].
+#+BEGIN_SRC emacs-lisp
+(setenv "EMACS"
+        (file-truename (expand-file-name invocation-name invocation-directory)))
+#+END_SRC
+
+Update: It turns out that it is term-exec-1 that is causing this environment
+variable to be set to something strange. When I tried to disable it, it seemed
+to cause issues. Oh well...
+** Don't use system font
+#+BEGIN_SRC emacs-lisp
+;; Let me control my own goddamn fonts
+;; XXX: This doesn't seem to work
+(setq font-use-system-font nil)
+#+END_SRC
+** Set default browser
+#+BEGIN_SRC emacs-lisp
+(when (equal system-type 'gnu/linux)
+    (setq browse-url-browser-function 'browse-url-generic
+          browse-url-generic-program "xdg-open"))
+#+END_SRC
+* Functions
+** Join Paths
+Works in the same way as os.path.join in python
+#+BEGIN_SRC emacs-lisp
+(defun imalison:join-paths (root &rest dirs)
+  (let ((result root))
+    (cl-loop for dir in dirs do
+             (setq result (concat (file-name-as-directory result) dir)))
+    result))
+#+END_SRC
+** Variables
+#+BEGIN_SRC emacs-lisp
+(defvar imalison:projects-directory
+  (imalison:join-paths (substitute-in-file-name "$HOME") "Projects"))
+
+(defvar imalison:gpg-key)
+#+END_SRC
+** Required Packages
+The packages in this section provide no functionality on their own,
+but provide support for writing custom elisp.
+*** s
+#+BEGIN_SRC emacs-lisp
+(use-package s :demand t)
+#+END_SRC
+*** dash
+#+BEGIN_SRC emacs-lisp
+(use-package dash
+  :demand t
+  :config
+  (progn
+    (dash-enable-font-lock)))
+#+END_SRC
+*** gh
+#+BEGIN_SRC emacs-lisp
+(use-package gh
+  :defer t
+  :straight (gh :type git :host github :repo "IvanMalison/gh.el"))
+#+END_SRC
+*** shut-up
+#+BEGIN_SRC emacs-lisp
+(use-package shut-up
+  :config
+  (defun imalison:shut-up-around (function &rest args)
+    (shut-up (apply function args))))
+#+END_SRC
+*** parse-csv
+#+BEGIN_SRC emacs-lisp
+(use-package parse-csv
+  :demand t)
+#+END_SRC
+*** emit
+#+BEGIN_SRC emacs-lisp
+(use-package emit
+  :straight (emit :type git :host github :repo "IvanMalison/emit"))
+#+END_SRC
+*** request
+#+BEGIN_SRC emacs-lisp
+(use-package request
+  :defer t)
+#+END_SRC
+** Named Build
+<<namedbuild>>
+imalison:named-build provides a way to invoke a macro in such a way
+that the lambda that it produces is given a name.
+#+BEGIN_SRC emacs-lisp
+(defmacro imalison:named-build (name builder &rest args)
+  `(defalias (quote ,name) (,builder ,@args)))
+(put 'imalison:named-build 'lisp-indent-function 1)
+#+END_SRC
+~imalison:named-builder-builder~ builds a macro from another macro
+that builds lambda functions. The arguments to the macro that results
+are exactly the same as those of the original macro, except that the
+first argument of the new macro is used to name the lambda produced by
+the original macro (which is passed as the second argument to
+~imalison:named-builder-builder~).
+#+BEGIN_SRC emacs-lisp
+(defmacro imalison:named-builder-builder (named-builder-name builder-name)
+  `(progn
+       (defmacro ,named-builder-name (function-name &rest args)
+         (cons 'imalison:named-build
+               (cons function-name
+                     (cons (quote ,builder-name) args))))
+       (put (quote ,named-builder-name) 'lisp-indent-function 1)))
+#+END_SRC
+~imalison:named-builder~ runs ~imalison:named-builder-builder~ with the
+convention that original macro to modify is the concatenation of the
+new macro name and the -fn suffix.
+#+BEGIN_SRC emacs-lisp
+(defmacro imalison:named-builder (name)
+  `(imalison:named-builder-builder
+    ,name ,(intern (concat (symbol-name name) "-fn"))))
+#+END_SRC
+** Emacs Version Predicate
+#+BEGIN_SRC emacs-lisp
+(defmacro imalison:emacs-version-predicate-fn (major-version minor-version)
+  `(lambda ()
+     (or (> emacs-major-version ,major-version)
+         (and (>= emacs-major-version ,major-version)
+              (>= emacs-minor-version ,minor-version)))))
+
+(defun imalison:check-emacs-version (major-version minor-version)
+  (funcall (imalison:emacs-version-predicate-fn major-version minor-version)))
+
+(imalison:named-builder imalison:emacs-version-predicate)
+#+END_SRC
+** Compose Functions
+*** A version supporting macros
+<<composemacros>>
+#+BEGIN_SRC emacs-lisp
+(defun imalison:help-function-arglist (fn)
+  (let ((result (help-function-arglist fn)))
+    (if (eq result t) '(&rest args) result)))
+
+(defmacro imalison:compose-fn (&rest funcs)
+  (let* ((last-function (car (last funcs)))
+         (arguments (imalison:help-function-arglist last-function))
+         (call-arguments (delq '&optional arguments)))
+    ;; When we have an &rest arguments there is no point in taking any
+    ;; of the arguments by name, so we simply pass them all as an
+    ;; argument list. See the comment below to understand how this
+    ;; impacts the evaluation of the last function.
+    (when (memq '&rest arguments)
+      (setq arguments '(&rest args))
+      (setq call-arguments '(args)))
+    `(imalison:compose-argspec ,arguments ,call-arguments ,@funcs)))
+
+(defmacro imalison:compose-argspec (arguments call-arguments &rest funcs)
+  "Build a new function with NAME that is the composition of FUNCS."
+  `(lambda ,arguments
+     (imalison:compose-helper ,funcs ,call-arguments)))
+
+(defmacro imalison:compose-helper (funcs arguments)
+  "Builds funcalls of FUNCS applied to the arg."
+  (if (equal (length funcs) 1)
+      (let ((last-function (car funcs)))
+        ;; This hideous clause is here because it is the only way to
+        ;; handle functions that take &rest args.
+        (when (memq '&rest (imalison:help-function-arglist last-function))
+          (setq last-function (apply-partially 'apply last-function)))
+        `(,last-function ,@arguments))
+    `(,(car funcs)
+      (imalison:compose-helper ,(cdr funcs) ,arguments))))
+
+(defmacro imalison:compose-macro-fn (&rest args)
+  `(cons 'macro (imalison:compose-fn ,@args)))
+
+(imalison:named-builder imalison:compose)
+(imalison:named-builder imalison:compose-macro)
+#+END_SRC
+*** Arbitrary arguments at every step
+#+BEGIN_SRC emacs-lisp
+(defun imalison:make-list (thing)
+  (if (listp thing)
+      thing
+    (list thing)))
+
+(defmacro imalison:compose-with-apply (&rest funcs)
+  "Build a new function with NAME that is the composition of FUNCS."
+  `(lambda (&rest args)
+     (imalison:compose-with-apply-helper ,funcs)))
+
+(defmacro imalison:compose-with-apply-helper (funcs)
+  "Builds funcalls of FUNCS applied to the arg."
+  (if (equal (length funcs) 0)
+      (quote args)
+    `(apply ,(car funcs)
+            (imalison:make-list (imalison:compose-with-apply-helper ,(cdr funcs))))))
+#+END_SRC
+*** Simpler unary version
+#+BEGIN_SRC emacs-lisp
+(defmacro imalison:compose-unary (&rest funcs)
+  "Build a new function with NAME that is the composition of FUNCS."
+  `(lambda (arg)
+     (imalison:compose-helper-unary ,funcs)))
+
+(defmacro imalison:compose-helper-unary (funcs)
+  "Builds funcalls of FUNCS applied to the arg."
+  (if (equal (length funcs) 0)
+      'arg
+    `(funcall ,(car funcs) (imalison:compose-helper-unary ,(cdr funcs)))))
+#+END_SRC
+** With Advice
+Taken from [[http://emacs.stackexchange.com/questions/16490/emacs-let-bound-advice][here]].
+#+BEGIN_SRC emacs-lisp
+(defmacro imalison:with-advice (args &rest body)
+  (declare (indent 1))
+  (let ((fun-name (car args))
+        (advice   (cadr args))
+        (orig-sym (make-symbol "orig")))
+    `(cl-letf* ((,orig-sym  (symbol-function ',fun-name))
+                ((symbol-function ',fun-name)
+                 (lambda (&rest args)
+                   (apply ,advice ,orig-sym args))))
+       ,@body)))
+#+END_SRC
+** Make Interactive
+#+BEGIN_SRC emacs-lisp
+(defmacro imalison:make-interactive-fn (function)
+  `(lambda (&rest args)
+     (interactive)
+     (apply ,function args)))
+
+(imalison:named-builder imalison:make-interactive)
+#+END_SRC
+** Advice Add Around Builder
+For composing functions with an apply so that they can be used with
+the ~:around~ keyword of advice-add.
+#+BEGIN_SRC emacs-lisp
+(defmacro imalison:advice-add-around-builder-fn (&rest functions)
+  `(imalison:compose-argspec
+    (function &rest args) (function args) ,@functions apply))
+
+(imalison:named-builder imalison:advice-add-around-builder)
+#+END_SRC
+*** Kill New
+#+BEGIN_SRC emacs-lisp
+(imalison:advice-add-around-builder imalison:kill-new-around kill-new)
+#+END_SRC
+** Let Around
+#+BEGIN_SRC emacs-lisp
+(defmacro imalison:let-around-fn (orig-func &rest forms)
+  (let* ((orig-interactive-form (interactive-form orig-func))
+         (docstring-form (format "Call `%s' with bindings: %s." orig-func forms))
+         (additional-forms (list docstring-form)))
+    (when orig-interactive-form
+      (nconc additional-forms (list orig-interactive-form)))
+    `(lambda (&rest args)
+       ,@additional-forms
+       (let ,forms
+         (apply (quote ,orig-func) args)))))
+
+(imalison:named-builder imalison:let-around)
+#+END_SRC
+** Let Around Advice
+#+BEGIN_SRC emacs-lisp
+(defmacro imalison:let-advise-around-fn (&rest forms)
+  `(lambda (orig-func &rest args)
+     (let ,forms
+       (apply orig-func args))))
+
+(imalison:named-builder imalison:let-advise-around)
+#+END_SRC
+** Let Advise
+#+BEGIN_SRC emacs-lisp
+(defmacro imalison:let-advise (advised-function &rest forms)
+  (let ((advice-fn-name (imalison:concat-symbols
+                         "around-advice-" advised-function)))
+    `(progn
+       (imalison:let-advise-around ,advice-fn-name ,@forms)
+       (advice-add (quote ,advised-function) :around (quote ,advice-fn-name)))))
+(put 'imalison:let-advise 'lisp-indent-function 1)
+#+END_SRC
+** Compose Around Builder
+For composing functions with an apply so that they can be used with the ~:around~ keyword of advice-add.
+#+BEGIN_SRC emacs-lisp
+;; TODO/XXX: Isn't this just apply? why doesn't apply work here
+(defun imalison:around-identity (fn &rest args)
+  (apply fn args))
+
+(defmacro imalison:compose-around-builder-fn (&rest functions)
+  `(imalison:compose-fn ,@functions imalison:around-identity))
+
+(imalison:named-builder imalison:compose-around-builder)
+#+END_SRC
+** Measure Time
+#+BEGIN_SRC emacs-lisp
+(defmacro imalison:measure-time (&rest body)
+  "Measure and return the running time of the code block."
+  (declare (indent defun))
+  (let ((start (make-symbol "start")))
+    `(let ((,start (float-time)))
+       ,@body
+       (- (float-time) ,start))))
+#+END_SRC
+** Add Files to ~org-agenda-files~
+#+BEGIN_SRC emacs-lisp
+(defun imalison:add-to-org-agenda-files (incoming-files)
+  (setq org-agenda-files
+        (delete-dups
+         (cl-loop for filepath in (append org-agenda-files incoming-files)
+                  when (and filepath (file-exists-p (file-truename filepath)))
+                  collect (file-truename filepath)))))
+#+END_SRC
+** Get String From File
+#+BEGIN_SRC emacs-lisp
+(defun imalison:get-string-from-file (file-path)
+  "Return file-path's file content."
+  (with-temp-buffer
+    (insert-file-contents file-path)
+    (buffer-string)))
+#+END_SRC
+** Get Current Location
+#+BEGIN_SRC emacs-lisp
+(defun imalison:get-lat-long ()
+  (condition-case _ex
+      (mapcar 'string-to-number (s-split "," (s-trim (shell-command-to-string
+                                                      "whereami"))))
+    (error (list 37.7879312624533 -122.402388853402))))
+#+END_SRC
+** Haversine distance
+#+BEGIN_SRC emacs-lisp
+(defun imalison:sin2 (p)
+  (let ((sin-p (sin p)))
+    (* sin-p sin-p) ))
+
+(defun imalison:haversine-distance
+    (left-lat-long right-lat-long &optional radius)
+  ;; Default to earth radius in km
+  (unless radius (setq radius 6378.1))
+  (interactive)
+  (cl-destructuring-bind (left-lat left-long) left-lat-long
+    (cl-destructuring-bind (right-lat right-long) right-lat-long
+      (let ((l1 (degrees-to-radians left-lat))
+            (f1 (degrees-to-radians left-long))
+            (l2 (degrees-to-radians right-lat))
+            (f2 (degrees-to-radians right-long)) )
+        (* 2 radius
+           (asin
+            (sqrt
+             (+ (imalison:sin2 (/ (- f2 f1) 2))
+                (* (cos f2) (cos f1) (imalison:sin2 (/ (- l2 l1) 2))) ))))))))
+#+END_SRC
+** Font Size
+This was taken from [[http://emacs.stackexchange.com/questions/7583/transiently-adjust-text-size-in-mode-line-and-minibuffer][here]] but it has diverged significantly from the original.
+#+BEGIN_SRC emacs-lisp
+(defvar imalison:default-font-size-pt nil)
+
+(defun imalison:acceptable-default-font-size (value)
+  (and (numberp value) (< value 150) (> value 50)))
+
+;; XXX: hack to get proper default value when default is set to something crazy
+(defun imalison:set-default-font-size (&rest args)
+  (interactive)
+  (when (and (imalison:acceptable-default-font-size
+              (face-attribute 'default :height))
+             (not (imalison:acceptable-default-font-size
+                   imalison:default-font-size-pt)))
+    (setq imalison:default-font-size-pt (face-attribute 'default :height))))
+
+(advice-add 'set-face-attribute :after 'imalison:set-default-font-size)
+
+(defvar imalison:huge-font-size 280)
+
+(defun imalison:current-font-size ()
+  (plist-get (custom-face-attributes-get 'default nil) :height))
+
+(defun imalison:set-font-size (size)
+  (interactive (list (string-to-number (read-string "Enter a font size: "))))
+  (set-face-attribute 'default nil :height size))
+
+(defun imalison:set-huge-font-size ()
+  (interactive)
+  (imalison:set-font-size imalison:huge-font-size))
+
+(cl-defun imalison:modify-font-size (&optional (arg 10))
+  (interactive "p")
+  (unless imalison:default-font-size-pt
+    (imalison:set-default-font-size))
+  (imalison:set-font-size (+ (imalison:current-font-size) arg)))
+
+(defun imalison:font-size-incr ()
+  (interactive)
+  (imalison:modify-font-size +10))
+
+(defun imalison:font-size-decr ()
+  (interactive)
+  (imalison:modify-font-size -10))
+
+(defun imalison:font-size-reset ()
+  (interactive)
+  (imalison:set-font-size imalison:default-font-size-pt))
+
+(defun imalison:font-size-80chars ()
+  (interactive)
+  (imalison:set-font-size 120))
+#+END_SRC
+** Message Result Builder
+This macro is useful when writing emacs-lisp. It creates a new interactive command that shows you the result of evaluating a function, with optionally provided arguments.
+#+BEGIN_SRC emacs-lisp
+(defmacro imalison:message-result-builder (new-function-name function-to-call &rest args)
+  `(defun ,new-function-name ()
+     (interactive)
+     (message "%s" (apply (quote ,function-to-call) (list ,@args)))))
+#+END_SRC
+This interactive functions allows the user the select a function to invoke using a freshly minted imalison:message-result-builder
+#+BEGIN_SRC emacs-lisp
+(defun imalison:message-result-builder-runtime (function &rest args)
+  (lambda ()
+    (interactive)
+    (message "%s" (apply function-to-call args))))
+
+(defun imalison:message-function-result (function)
+  (interactive (find-function-read))
+  (message "%s" (funcall function)))
+#+END_SRC
+** Custom ~shell-command-on-region~
+#+BEGIN_SRC emacs-lisp
+(defun imalison:copy-shell-command-on-region (start end command)
+  (interactive (list (region-beginning) (region-end)
+                     (read-shell-command "Shell command on region: ")))
+  (let ((original-buffer (current-buffer)))
+    (with-temp-buffer
+      (let ((temp-buffer (current-buffer)))
+        (with-current-buffer original-buffer
+          (shell-command-on-region start end command temp-buffer))
+        (let ((min (point-min))
+              (max (point-max)))
+          (kill-ring-save min max)
+          (buffer-substring min max))))))
+
+(defun imalison:shell-command-on-region-replace (start end command)
+  (interactive (list (region-beginning) (region-end)
+                     (read-shell-command "Shell command on region: ")))
+  (shell-command-on-region start end command nil t))
+
+(emit-prefix-selector imalison:shell-command-on-region
+  imalison:copy-shell-command-on-region
+  imalison:shell-command-on-region-replace)
+#+END_SRC
+** Copy/Yank String Functions
+A macro for composing functions together to build an interactive command to copy a string to the kill ring.
+#+BEGIN_SRC emacs-lisp
+(defmacro imalison:compose-copy-builder-fn (&rest funcs)
+  `(imalison:make-interactive-fn
+    (imalison:compose-fn kill-new ,@funcs)))
+
+(imalison:named-builder imalison:compose-copy-builder)
+#+END_SRC
+*** Copy portions of the buffer file name
+#+BEGIN_SRC emacs-lisp
+(defmacro imalison:copy-buffer-file-path-builder (&rest args)
+  `(imalison:compose-copy-builder ,@args buffer-file-name))
+
+(imalison:copy-buffer-file-path-builder imalison:copy-buffer-file-path-full)
+(imalison:copy-buffer-file-path-builder imalison:copy-buffer-file-name
+                                        file-name-nondirectory)
+(imalison:copy-buffer-file-path-builder imalison:copy-buffer-file-path
+                                        car
+                                        projectile-make-relative-to-root
+                                        list)
+#+END_SRC
+*** Copy the current branch using magit
+#+BEGIN_SRC emacs-lisp
+(imalison:compose-copy-builder imalison:copy-current-git-branch
+                               magit-get-current-branch)
+#+END_SRC
+*** Copy the current buffer name
+#+BEGIN_SRC emacs-lisp
+(imalison:compose-copy-builder imalison:copy-current-buffer-name
+  buffer-name)
+#+END_SRC
+*** Copy the last message
+#+BEGIN_SRC emacs-lisp
+(defun imalison:last-message (&optional num)
+  (or num (setq num 1))
+  (if (= num 0)
+      (current-message)
+    (save-excursion
+      (set-buffer "*Messages*")
+      (save-excursion
+    (forward-line (- 1 num))
+    (backward-char)
+    (let ((end (point)))
+      (forward-line 0)
+      (buffer-substring-no-properties (point) end))))))
+
+(imalison:compose-copy-builder imalison:copy-last-message imalison:last-message)
+#+END_SRC
+** Named Compile
+#+BEGIN_SRC emacs-lisp
+(defun imalison:named-compile (command)
+  (interactive
+   (list
+    (let ((command (eval compile-command)))
+      (if (or compilation-read-command current-prefix-arg)
+          (compilation-read-command command)
+        command))))
+  (compilation-start command nil (lambda (&rest args)
+                                   (format "*compilation %s*" command))))
+
+#+END_SRC
+** Replace Escape Sequences
+#+BEGIN_SRC emacs-lisp
+(defun imalison:replace-escape-sequences ()
+  (interactive)
+  (shut-up
+    (let* ((delimited (and transient-mark-mode mark-active))
+           (beg (when delimited (region-beginning)))
+           (end (when delimited (region-end))))
+      (save-excursion
+        (perform-replace "\\t" "    " nil nil delimited nil nil beg end nil))
+      (save-excursion
+        (perform-replace "\\n" "\n" nil nil delimited nil nil beg end nil)))))
+#+END_SRC
+** Download a File Into a Buffer
+<<downloadfile>>
+#+BEGIN_SRC emacs-lisp
+(defun imalirson:download-to-buffer (uri)
+  (interactive (list (read-string "Enter uri: ")))
+  (require 'request)
+  (request uri
+           :parser 'buffer-string
+           :success (cl-function
+                     (lambda (&key data &allow-other-keys)
+                       (let ((created-buffer (get-buffer-create uri)))
+                         (with-current-buffer created-buffer
+                           (insert data))
+                         (switch-to-buffer created-buffer))))))
+#+END_SRC
+** Concat With Symbols
+#+BEGIN_SRC emacs-lisp
+(defun imalison:maybe-symbol-name (arg)
+  (if (symbolp arg)
+      (symbol-name arg)
+    arg))
+
+(defun imalison:concat-symbols (&rest args)
+  (intern (mapconcat 'imalison:maybe-symbol-name args "")))
+#+END_SRC
+** Edit a script on PATH
+<<editscript>> Note that you'll need to make sure that emacs properly inherits
+the path variable for this work. Check out my [[exec-path-from-shell][exec-path-from-shell]] config for
+details.
+#+BEGIN_SRC emacs-lisp
+(defun imalison:get-executables-at-path (filepath)
+  (when (and (file-exists-p filepath) (f-directory? filepath))
+    (--filter (let ((fullpath (imalison:join-paths filepath it)))
+                (and (file-executable-p fullpath)
+                     (not (f-directory? fullpath))))
+              (directory-files filepath))))
+
+(defun imalison:get-executables-on-path ()
+  (mapcan 'imalison:get-executables-at-path (eshell-parse-colon-path (getenv "PATH"))))
+
+(defun imalison:edit-script ()
+  (interactive)
+  (find-file (executable-find
+              (ido-completing-read "Select a script to edit: "
+                                   (imalison:get-executables-on-path)))))
+#+END_SRC
+** Toggle lexical binding in the current buffer
+#+BEGIN_SRC emacs-lisp
+(defun imalison:toggle-lexical-binding ()
+  (interactive)
+  (let ((new-binding (not lexical-binding)))
+    (message "Setting lexical-binding to: %s" new-binding)
+    (setq lexical-binding new-binding)))
+#+END_SRC
+** Sync kill ring with copyq
+#+BEGIN_SRC emacs-lisp
+(defun imalison:copyq-get (i)
+  (imalison:shell-command-to-string (format "copyq eval read(%s)" i)))
+
+(defun imalison:copyq-sync ()
+  (interactive)
+  (let ((missing-items (cl-loop for i from 0 to (string-to-number
+                         (imalison:shell-command-to-string "copyq eval size()"))
+         for item = (imalison:copyq-get i)
+         when (not (member item kill-ring))
+         collect item)))
+    (setq kill-ring (nconc kill-ring missing-items))))
+
+(when (executable-find "copyq")
+ (run-with-idle-timer 10 nil 'imalison:copyq-sync))
+#+END_SRC
+** helm-zsh-history
+This was stolen from https://github.com/jwiegley/dot-emacs
+#+BEGIN_SRC emacs-lisp
+(defvar helm-c-source-zsh-history
+  '((name . "Zsh History")
+    (candidates . helm-c-zsh-history-set-candidates)
+    (action . (("Execute Command" . helm-c-zsh-history-action)))
+    (volatile)
+    (requires-pattern . 3)
+    (delayed)))
+
+(defun helm-c-zsh-history-set-candidates (&optional request-prefix)
+  (let ((pattern (replace-regexp-in-string
+                  " " ".*"
+                  (or (and request-prefix
+                           (concat request-prefix
+                                   " " helm-pattern))
+                      helm-pattern))))
+    (with-current-buffer (find-file-noselect "~/.zsh_history" t t)
+      (auto-revert-mode -1)
+      (goto-char (point-max))
+      (loop for pos = (re-search-backward pattern nil t)
+            while pos
+            collect (replace-regexp-in-string
+                     "\\`:.+?;" ""
+                     (buffer-substring (line-beginning-position)
+                                       (line-end-position)))))))
+
+(defun helm-c-zsh-history-action (candidate)
+  (imalison:named-compile candidate))
+
+(defun helm-command-from-zsh ()
+  (interactive)
+  (require 'helm)
+  (helm-other-buffer 'helm-c-source-zsh-history "*helm zsh history*"))
+#+END_SRC
+*** Use projectile as default directory
+#+BEGIN_SRC emacs-lisp
+(imalison:let-around imalison:projectile-helm-command-from-zsh helm-command-from-zsh
+                     (default-directory (projectile-project-root)))
+#+END_SRC
+** Disable hooks
+#+BEGIN_SRC emacs-lisp
+(cl-defmacro imalison:disable-mode-hook (mode-name &optional (disable-value -1))
+  `(defun ,(imalison:concat-symbols 'imalison:disable- mode-name) ()
+       (,mode-name ,disable-value)))
+
+(imalison:disable-mode-hook linum-mode)
+(imalison:disable-mode-hook nlinum-mode)
+(imalison:disable-mode-hook yas-minor-mode)
+#+END_SRC
+** Other
+The stuff in this section is pretty crusty. I don't think its used anywhere, but
+I keep it around just in case I need it.
+#+BEGIN_SRC emacs-lisp
+(defun random-choice (choices)
+  (nth (random (length choices)) choices))
+
+(defun display-prefix (arg)
+  "Display the value of the raw prefix arg."
+  (interactive "p")
+  (message "%s" arg))
+
+(defun imalison:uuid ()
+  (interactive)
+  (s-replace "\n" "" (shell-command-to-string "uuid")))
+
+(defun imalison:disable-smartparens-mode ()
+  (smartparens-mode 0))
+
+(defun imalison:insert-uuid ()
+  (interactive)
+  (insert (imalison:uuid)))
+
+(defun imalison:compare-int-list (a b)
+  (when (and a b)
+    (cond ((> (car a) (car b)) 1)
+          ((< (car a) (car b)) -1)
+          (t (imalison:compare-int-list (cdr a) (cdr b))))))
+
+(defun get-date-created-from-agenda-entry (agenda-entry)
+  (org-time-string-to-time
+   (org-entry-get (get-text-property 1 'org-marker agenda-entry) "CREATED")))
+
+(defmacro defvar-setq (name value)
+  `(if (boundp (quote ,name))
+       (setq ,name ,value)
+     (defvar ,name ,value)))
+
+(defun eval-region-or-last-sexp ()
+  (interactive)
+  (if (region-active-p) (call-interactively 'eval-region)
+    (call-interactively 'eval-last-sexp)))
+
+(defun undo-redo (&optional arg)
+  (interactive "P")
+  (if arg (undo-tree-redo) (undo-tree-undo)))
+
+(defun up-list-region ()
+  (interactive)
+  (up-list) (set-mark-command nil) (backward-sexp))
+
+(defun up-list-back ()
+  (interactive)
+  (up-list) (backward-sexp))
+
+(defun frame-exists ()
+  (cl-find-if
+   (lambda (frame)
+     (assoc 'display (frame-parameters frame))) (frame-list)))
+
+(defun make-frame-if-none-exists ()
+  (let* ((existing-frame (frame-exists)))
+    (if existing-frame
+        existing-frame
+      (make-frame-on-display (getenv "DISPLAY")))))
+
+(defun make-frame-if-none-exists-and-focus ()
+  (make-frame-visible (select-frame (make-frame-if-none-exists))))
+
+(defun notification-center (title message)
+  (cl-flet ((encfn (s) (encode-coding-string s (keyboard-coding-system))))
+    (shell-command
+     (format "osascript -e 'display notification \"%s\" with title \"%s\"'"
+             (encfn message) (encfn title)))))
+
+(defun growl-notify (title message)
+  (shell-command (format "grownotify -t %s -m %s" title message)))
+
+(defun notify-send (title message)
+  (shell-command (format "notify-send -u critical %s %s" title message)))
+
+(defvar notify-function
+  (cond ((eq system-type 'darwin) 'notification-center)
+        ((eq system-type 'gnu/linux) 'notify-send)))
+#+END_SRC
+
+#+BEGIN_SRC emacs-lisp
+(emit-prefix-selector imalison:mark-ring
+  helm-mark-ring
+  helm-global-mark-ring)
+#+END_SRC
+** Keyboard Macros
+*** For editing literate config
+**** extract-current-sexp-to-src-block
+ This keyboard macro extracts the current sexp to an emacs-lisp source block of its own
+ #+BEGIN_SRC emacs-lisp
+(fset 'extract-current-sexp-to-src-block
+      [?\C-a return ?\C-p ?# ?+ ?E ?N ?D ?_ ?S ?R ?C return ?# ?+ ?B ?E ?G ?I ?N ?_ ?S ?R ?C ?  ?e ?m ?a ?c ?s ?- ?l ?i ?s ?p ?\C-a ?\C-p ?\C-  ?\C-n ?\C-e ?\M-w ?\C-n ?\C-a ?\C-\M-f return ?\C-y])
+
+ #+END_SRC
+**** name-source-block-for-use-package-name
+ #+BEGIN_SRC emacs-lisp
+(fset 'name-source-block-for-use-package-name
+      [?\C-c ?\' ?\M-< ?\C-s ?u ?s ?e ?- ?p ?a ?c ?k return ?\C-\M-f ?\C-f ?\C-  ?\C-\M-f ?\M-w ?\C-c ?\' ?\C-r ?B ?E ?G ?I ?N return ?\C-a ?\C-p ?\C-e return ?* ?  ?\C-y])
+ #+END_SRC
+**** extract-and-name-use-package-block
+ #+BEGIN_SRC emacs-lisp
+(fset 'extract-and-name-use-package-block
+      [?\C-a return ?\C-p ?# ?+ ?E ?N ?D ?_ ?S ?R ?C return ?# ?+ ?B ?E ?G ?I ?N ?_ ?S ?R ?C ?  ?e ?m ?a ?c ?s ?- ?l ?i ?s ?p ?\C-a ?\C-p ?\C-  ?\C-n ?\C-e ?\M-w ?\C-n ?\C-a ?\C-\M-f return ?\C-y ?\C-p ?\C-p ?\C-c ?\' ?\M-< ?\C-s ?u ?s ?e ?- ?p ?a ?c ?k return ?\C-\M-f ?\C-f ?\C-  ?\C-\M-f ?\M-w ?\C-c ?\' ?\C-r ?B ?E ?G ?I ?N return ?\C-a ?\C-p ?\C-e return ?* ?  ?\C-y])
+ #+END_SRC
+* General
+** User Info
+#+BEGIN_SRC emacs-lisp
+(setq user-full-name
+      (replace-regexp-in-string "\n$" "" (shell-command-to-string
+                                          "git config --get user.name")))
+(setq user-mail-address
+      (replace-regexp-in-string "\n$" "" (shell-command-to-string
+                                          "git config --get user.email")))
+#+END_SRC
+** Sane Defaults
+#+BEGIN_SRC emacs-lisp -n -r
+(global-auto-revert-mode)
+(show-paren-mode 1)
+(setq reb-re-syntax 'string)
+(setq ad-redefinition-action 'accept)              (ref:ad-redefinition-action)
+(setq-default find-file-visit-truename t)
+(setq large-file-warning-threshold (* 25 1024 1024))
+(setq line-move-visual t)
+(setq require-final-newline t)
+#+END_SRC
+[[(ad-redefinition-action)][This]] is set because [[(y-or-n-p-only)][this alias]] causes annoying messaging at startup.
+** System Clipboard
+#+BEGIN_SRC emacs-lisp
+(setq save-interprogram-paste-before-kill t)
+#+END_SRC
+** Line Numbers
+#+BEGIN_SRC emacs-lisp
+(line-number-mode t)
+(column-number-mode t)
+#+END_SRC
+*** nlinum
+Disabling line numbers because they are slow as fuck.
+#+BEGIN_SRC emacs-lisp
+(use-package nlinum
+  :disabled t
+  :demand t
+  :config
+  (progn
+    (add-hook 'prog-mode-hook (lambda () (nlinum-mode t)))
+    (defun imalison-nlinum-mode-hook ()
+      (when nlinum-mode
+        (setq-local nlinum-format
+                    (concat "%" (number-to-string
+                                 ;; Guesstimate number of buffer lines.
+                                 (ceiling (log (max 1 (/ (buffer-size) 80)) 10)))
+                            "d"))))
+
+    (add-hook 'nlinum-mode-hook #'imalison-nlinum-mode-hook)))
+#+END_SRC
+** Backups
+*** Put them all in one directory
+#+BEGIN_SRC emacs-lisp
+(defconst emacs-tmp-dir
+  (format "%s/%s%s/" temporary-file-directory "emacs" (user-uid)))
+(setq backup-directory-alist `((".*" . ,emacs-tmp-dir)))
+(setq auto-save-file-name-transforms `((".*" ,emacs-tmp-dir t)))
+(setq auto-save-list-file-prefix emacs-tmp-dir)
+#+END_SRC
+*** Completely disable backups
+#+BEGIN_SRC emacs-lisp
+(setq backup-inhibited t)
+(setq make-backup-files nil)
+(setq auto-save-default nil)
+#+END_SRC
+** Prompts
+*** No popup frames
+#+BEGIN_SRC emacs-lisp
+(setq ns-pop-up-frames nil)
+(setq pop-up-frames nil)
+#+END_SRC
+*** boolean (yes-or-no)
+#+BEGIN_SRC emacs-lisp -n -r
+(defadvice yes-or-no-p (around prevent-dialog activate)
+  "Prevent yes-or-no-p from activating a dialog"
+  (let ((use-dialog-box nil))
+    ad-do-it))
+
+(defadvice y-or-n-p (around prevent-dialog-yorn activate)
+  "Prevent y-or-n-p from activating a dialog"
+  (let ((use-dialog-box nil))
+    ad-do-it))
+
+(defalias 'yes-or-no-p 'y-or-n-p)                           (ref:y-or-n-p-only)
+#+END_SRC
+*** No dialog boxes
+#+BEGIN_SRC emacs-lisp
+(setq use-dialog-box nil)
+#+END_SRC
+** Splitting
+#+BEGIN_SRC emacs-lisp
+(defun split-horizontally-for-temp-buffers () (split-window-horizontally))
+(add-hook 'temp-buffer-setup-hook 'split-horizontally-for-temp-buffers)
+(setq split-height-threshold nil)
+(setq split-width-threshold 160)
+#+END_SRC
+** Time in Mode Line
+#+BEGIN_SRC emacs-lisp
+(setq display-time-default-load-average nil)
+(setq display-time-interval 1)
+(setq display-time-format "%a|%m-%d|%r")
+(display-time-mode +1)
+#+END_SRC
+** Buffer Display
+*** ewmctrl
+#+BEGIN_SRC emacs-lisp
+(use-package ewmctrl
+  :defer t)
+#+END_SRC
+*** frame-mode
+#+BEGIN_SRC emacs-lisp
+(defvar imalison:use-frame-mode nil)
+(use-package frame-mode
+  :if imalison:use-frame-mode
+  :demand t
+  :config
+  (progn
+    (add-hook 'frame-mode-hook (lambda () (display-time-mode -1)))
+    (frame-mode +1)
+    (frame-keys-mode +1)))
+#+END_SRC
+*** Handle xrefs annoying dedicated window garbage
+#+BEGIN_SRC emacs-lisp
+(use-package xref
+  :config
+  (defun xref--show-pos-in-buf (pos buf select)
+    (let ((xref-buf (current-buffer))
+          win)
+      (with-selected-window
+          (display-buffer buf)
+        (xref--goto-char pos)
+        (run-hooks 'xref-after-jump-hook)
+        (let ((buf (current-buffer)))
+          (setq win (selected-window))
+          (with-current-buffer xref-buf
+            (setq-local other-window-scroll-buffer buf))))
+      (when select
+        (select-window win)))))
+#+END_SRC
+** Fill Setup
+Get rid of nags about requiring setences to end with two spaces.
+#+BEGIN_SRC emacs-lisp
+(setq sentence-end-double-space nil)
+#+END_SRC
+Set the default fill-column
+#+BEGIN_SRC emacs-lisp
+(setq-default fill-column 80)
+#+END_SRC
+** Show Trailing Whitespace
+Trailing whitespace is really messy and annoying, which makes this a must-have
+in my opinion. It's kind of crazy how often you will encounter serious codebases with random whitespace ALL over the place.
+#+BEGIN_SRC emacs-lisp
+(setq-default show-trailing-whitespace nil)
+
+(defun imalison:show-trailing-whitespace ()
+  (interactive)
+  (setq show-trailing-whitespace t))
+
+(add-hook 'text-mode-hook 'imalison:show-trailing-whitespace)
+(add-hook 'prog-mode-hook 'imalison:show-trailing-whitespace)
+#+END_SRC
+*** Disable
+Unfortunately, this setting can get annoying in a lot of modes, which is why I
+use this hook to disable it in those modes
+#+BEGIN_SRC emacs-lisp
+(defun imalison:disable-show-trailing-whitespace ()
+  (setq show-trailing-whitespace nil))
+#+END_SRC
+** Encoding
+UTF-8 everywhere
+#+BEGIN_SRC emacs-lisp
+(defun imalison:set-coding-systems ()
+  (interactive)
+  (set-language-environment "Latin-1")
+  (set-default-coding-systems 'utf-8)
+  (unless (eq system-type 'windows-nt)
+    (set-selection-coding-system 'utf-8))
+  (set-terminal-coding-system 'utf-8)
+  (setq locale-coding-system 'utf-8)
+  (prefer-coding-system 'utf-8))
+(imalison:set-coding-systems)
+#+END_SRC
+Disable CJK coding/encoding (Chinese/Japanese/Korean characters)
+#+BEGIN_SRC emacs-lisp
+(setq utf-translate-cjk-mode nil)
+#+END_SRC
+** Visible Bell
+This is set to true to disable the annoying audible bell that plays
+whenever there is an error.
+#+BEGIN_SRC emacs-lisp
+(setq visible-bell t)
+#+END_SRC
+** Configure ~vc~
+#+BEGIN_SRC emacs-lisp
+(setq vc-follow-symlinks t)
+#+END_SRC
+** Kill Ring
+#+BEGIN_SRC emacs-lisp
+(setq kill-ring-max 1000)
+#+END_SRC
+** Subword
+This makes ~forward-word~ and ~backward-word~ understand snake and camel case.
+#+BEGIN_SRC emacs-lisp
+(setq c-subword-mode t)
+(global-subword-mode)
+#+END_SRC
+** Scratch Buffer
+#+BEGIN_SRC emacs-lisp
+(setq initial-scratch-message "")
+#+END_SRC
+** Don't prompt about local variables
+#+BEGIN_SRC emacs-lisp
+(defun risky-local-variable-p (&rest args)
+  nil)
+#+END_SRC
+** proced
+proced is an top like utility that runs inside of emacs. The following sets auto updating automatically and makes the update interval faster.
+#+BEGIN_SRC emacs-lisp
+(use-package proced
+  :defer t
+  :config
+  (progn
+    (setq proced-auto-update-interval 1)
+    (add-hook 'proced-mode-hook (lambda () (proced-toggle-auto-update +1)))))
+#+END_SRC
+** Set epa program
+#+BEGIN_SRC emacs-lisp
+(setq epg-gpg-program "gpg")
+#+END_SRC
+** Make files executable
+#+BEGIN_SRC emacs-lisp
+(add-hook 'after-save-hook 'executable-make-buffer-file-executable-if-script-p)
+#+END_SRC
+** Misc
+#+BEGIN_SRC emacs-lisp
+(defvar iedit-toggle-key-default nil)
+(put 'set-goal-column 'disabled nil)
+(auto-fill-mode -1)
+(setq indent-tabs-mode nil)
+
+(setq confirm-nonexistent-file-or-buffer nil)
+
+;; No prompt for killing a buffer with processes attached.
+(setq kill-buffer-query-functions
+      (remq 'process-kill-buffer-query-function
+            kill-buffer-query-functions))
+
+(setq inhibit-startup-message t
+      inhibit-startup-echo-area-message t)
+
+;; Make buffer names unique.
+(setq uniquify-buffer-name-style 'forward)
+
+;; Don't disable commands...
+(setq disabled-command-function nil)
+
+;; Make forward word understand camel and snake case.
+
+;; Preserve pastes from OS when saving a new item to the kill
+;; ring. Why wouldn't this be enabled by default?
+
+(setq-default cursor-type 'box)
+(setq-default cursor-in-non-selected-windows 'bar)
+
+(when nil ;; Causing too many annoying issues
+  (add-hook 'after-init-hook '(lambda () (setq debug-on-error t))))
+
+;; Make mouse scrolling less jumpy.
+(setq mouse-wheel-scroll-amount '(1 ((shift) . 1)))
+
+(setq ediff-split-window-function 'split-window-horizontally)
+(setq ediff-window-setup-function 'ediff-setup-windows-plain)
+
+;; Disable this per major mode or maybe using file size if it causes
+;; performance issues?
+(setq imenu-auto-rescan t)
+(setq imenu-max-item-length 300)
+
+(put 'narrow-to-region 'disabled nil)
+(put 'narrow-to-page 'disabled nil)
+
+(setq echo-keystrokes 0.25)
+
+
+;; text mode stuff:
+(remove-hook 'text-mode-hook #'turn-on-auto-fill)
+(add-hook 'text-mode-hook 'turn-on-visual-line-mode)
+(setq sentence-end-double-space nil)
+
+;; y and n instead of yes and no
+#+END_SRC
+
+#+BEGIN_SRC emacs-lisp
+(setq-default c-basic-offset 4
+              tab-width 4
+              indent-tabs-mode t)
+
+(add-hook 'prog-mode-hook (lambda () (auto-fill-mode -1)))
+;; (add-hook 'prog-mode-hook 'flyspell-prog-mode)
+
+;; (add-hook 'prog-mode-hook (lambda () (highlight-lines-matching-regexp
+;;                                  ".\\{81\\}" 'hi-blue)))
+#+END_SRC
+** paradox
+Paradox is a package.el extension. I have no use for it now that I use straight.el.
+#+BEGIN_SRC emacs-lisp
+(use-package paradox
+  :disabled t
+  :commands (paradox-upgrade-packages paradox-list-packages)
+  :config
+  (progn
+    (require 'gh)
+    (setq paradox-execute-asynchronously t
+          paradox-github-token (gh-auth-get-oauth-token))))
+#+END_SRC
+** diminish
+#+BEGIN_SRC emacs-lisp
+(use-package diminish
+  :preface
+  (defvar imalison:packages-to-diminish
+    '(auto-revert-mode smartparens-mode eldoc-mode tern-mode js2-refactor-mode))
+  :config
+  (progn
+    (cl-loop for package in imalison:packages-to-diminish
+             do (diminish package))
+    (eval-after-load 'subword '(diminish 'subword-mode))
+    (eval-after-load 'simple '(diminish 'visual-line-mode))))
+#+END_SRC
+** edit-server
+#+BEGIN_SRC emacs-lisp
+(use-package edit-server
+  :commands edit-server-start
+  :disabled t
+  :defer 1
+  :config
+  (progn
+    (edit-server-start)
+    (setq edit-server-new-frame nil)))
+#+END_SRC
+** atomic-chrome
+#+BEGIN_SRC emacs-lisp
+(use-package atomic-chrome
+  :defer 1
+  :config
+  (progn
+    (atomic-chrome-start-server)
+    (setq atomic-chrome-buffer-open-style 'frame)))
+#+END_SRC
+** load-dir
+#+BEGIN_SRC emacs-lisp
+(use-package load-dir
+  :config
+  (progn
+    (setq load-dir-debug nil)
+    (add-to-list 'load-dirs "~/.emacs.d/load.d")
+    (defvar site-lisp "/usr/share/emacs24/site-lisp/")
+    (when (file-exists-p site-lisp) (add-to-list 'load-dirs site-lisp))))
+#+END_SRC
+** server
+#+BEGIN_SRC emacs-lisp
+(use-package server
+  :config
+  (progn
+    (defvar imalison:default-server-file
+      (imalison:join-paths user-emacs-directory "server" "server"))
+    (defun imalison:main-emacs-server-name ()
+      (file-name-nondirectory
+       (file-truename imalison:default-server-file)))
+    (defun imalison:make-main-emacs-server ()
+      (interactive)
+      (unless (string-equal server-name (imalison:main-emacs-server-name))
+        (if (string-equal server-name "server")
+              (error "Unable to set main server name 'server'.
+The file server file for this emacs instance no longer exists.")
+          (progn
+            (delete-file imalison:default-server-file)
+            (make-symbolic-link (imalison:join-paths user-emacs-directory "server" server-name)
+                                imalison:default-server-file)))))
+    (defun imalison:get-this-server-filepath ()
+      (let ((server-dir (if server-use-tcp server-auth-dir server-socket-dir)))
+        (expand-file-name server-name server-dir)))
+    (setq server-use-tcp t)
+    (unless (equal nil (server-running-p)) (server-start))
+    (run-with-timer 0 60 'imalison:make-main-emacs-server)))
+#+END_SRC
+** list-environment
+#+BEGIN_SRC emacs-lisp
+(use-package list-environment)
+#+END_SRC
+** bug-hunter
+#+BEGIN_SRC emacs-lisp
+(use-package bug-hunter)
+#+END_SRC
+** shackle
+#+BEGIN_SRC emacs-lisp
+(use-package shackle
+  :disabled t
+  :config
+  (progn
+    (diminish 'shackle-mode)
+    (when nil                           ; disabled for now
+      (shackle-mode))
+    (setq shackle-inhibit-window-quit-on-same-windows t)
+    (setq shackle-default-rule '(:same t))))
+#+END_SRC
+** beacon
+#+BEGIN_SRC emacs-lisp
+(use-package beacon
+  :demand t
+  :bind ("C-c b" . beacon-blink)
+  :config
+  (beacon-mode 1))
+#+END_SRC
+** iregister
+#+BEGIN_SRC emacs-lisp
+(use-package iregister)
+#+END_SRC
+** discover-my-major
+#+BEGIN_SRC emacs-lisp
+(use-package discover-my-major)
+#+END_SRC
+** refine
+#+BEGIN_SRC emacs-lisp
+(use-package refine
+  :disabled t)
+#+END_SRC
+** winner
+#+BEGIN_SRC emacs-lisp
+(use-package winner
+  :commands (winner-undo winner-redo)
+  :bind ("C-c q" . imalison:winner-hydra/body)
+  :config
+  (progn
+    (defhydra imalison:winner-hydra ()
+      "Winner"
+      ("p" winner-undo "back")
+      ("n" winner-redo "forward" :exit t))
+    (winner-mode 1)))
+#+END_SRC
+** eyebrowse
+I don't have any use for this now that I use frames mode, but its an interesting idea.
+#+BEGIN_SRC emacs-lisp
+(use-package eyebrowse
+  :disabled t
+  :defer 1
+  :config
+  (progn (eyebrowse-mode +1)))
+#+END_SRC
+** stream
+#+BEGIN_SRC emacs-lisp
+(use-package stream
+  :defer t)
+#+END_SRC
+** tile
+#+BEGIN_SRC emacs-lisp
+(use-package tile
+  :bind ("C-c t" . imalison:hydra-tile/body)
+  :config
+  (progn
+    (defvar imalison:tall-tile-strategy (tile-split-n-tall 3))
+    (defvar imalison:wide-tile-strategy tile-wide)
+    (defvar imalison:master-tile-strategy (tile-argument-buffer-fetcher
+                                           :layout tile-master-left))
+    (require 'hydra)
+    (defhydra imalison:hydra-tile
+      nil
+      "tile"
+      ("t" (tile :strategy imalison:tall-tile-strategy))
+      ("w" (tile :strategy imalison:wide-tile-strategy))
+      ("m" (tile :strategy imalison:master-tile-strategy))
+      ("s" tile-select)
+      ("0" (tile :strategy tile-one))
+      ("n" tile)
+      ("l" winner-undo))
+    (setq tile-cycler
+          (tile-strategies :strategies
+                           (list imalison:tall-tile-strategy
+                                 imalison:master-tile-strategy
+                                 imalison:wide-tile-strategy
+                                 tile-one)))))
+#+END_SRC
+** fill-column-indicator
+This interferes with too many other packages. See
+https://github.com/alpaker/Fill-Column-Indicator/issues/21 for more details
+#+BEGIN_SRC emacs-lisp
+(use-package fill-column-indicator
+  :disabled t
+  :config
+  (progn
+    (defun fci-on-off-fci-before-company (command)
+      (when (string= "show" command)
+        (turn-off-fci-mode))
+      (when (string= "hide" command)
+        (turn-on-fci-mode)))
+    (advice-add 'company-call-frontends :before #'fci-on-off-fci-before-company)
+    (add-hook 'prog-mode-hook 'fci-mode)))
+#+END_SRC
+** highlight-indent-guides
+If the load-theme hook from this package starts causing trouble check for
+custom-set-faces in your custom file.
+#+BEGIN_SRC emacs-lisp
+(use-package highlight-indent-guides
+  :commands highlight-indent-guides-mode
+  :preface
+  (progn
+    (add-hook 'prog-mode-hook 'highlight-indent-guides-mode))
+  :config
+  (progn
+    (setq highlight-indent-guides-method 'fill)))
+#+END_SRC
+* Keybindings
+** god-mode
+#+BEGIN_SRC emacs-lisp
+(use-package god-mode
+  :disabled t
+  :demand t
+  :config
+  (progn
+    (global-set-key (kbd "<escape>") 'god-local-mode)))
+#+END_SRC
+** bind-key
+#+BEGIN_SRC emacs-lisp
+(use-package bind-key)
+#+END_SRC
+** which-key
+#+BEGIN_SRC emacs-lisp
+(use-package which-key
+  :config
+  (progn
+    (setq which-key-idle-delay .50)
+    (diminish 'which-key-mode)
+    (which-key-mode)))
+#+END_SRC
+** hydra
+#+BEGIN_SRC emacs-lisp
+(use-package hydra
+  :demand t
+  :bind (("C-c f" . imalison:hydra-font/body)
+         ("C-c y" . imalison:hydra-yank/body)
+         ("C-c 6" . imalison:compile/body))
+  :config
+  (progn
+#+END_SRC
+*** Font Settings
+<<fontsizehydra>>
+ #+BEGIN_SRC emacs-lisp
+(defhydra imalison:hydra-font
+  nil
+  "Font Settings"
+  ("-" imalison:font-size-decr "Decrease")
+  ("d" imalison:font-size-decr "Decrease")
+  ("=" imalison:font-size-incr "Increase")
+  ("+" imalison:font-size-incr "Increase")
+  ("i" imalison:font-size-incr "Increase")
+  ("h" imalison:set-huge-font-size "Huge")
+  ("a" imalison:appearance "Set Default Appearance")
+  ("f" set-frame-font "Set Frame Font")
+  ("t" helm-themes "Choose Emacs Theme")
+  ("0" imalison:font-size-reset "Reset to default size")
+  ("8" imalison:font-size-80chars "80 chars 3 columns font size"))
+#+END_SRC
+*** Copy/Yanking
+#+BEGIN_SRC emacs-lisp
+(defhydra imalison:hydra-yank
+  nil
+  "Yank text"
+  ("p" imalison:copy-buffer-file-path "Projectile path")
+  ("b" imalison:copy-current-buffer-name "Buffer Name")
+  ("f" imalison:copy-buffer-file-path-full "Full path")
+  ("n" imalison:copy-buffer-file-name "File name")
+  ("g" imalison:copy-current-git-branch "Git Branch")
+  ("m" imalison:copy-last-message "Last Message"))
+#+END_SRC
+*** Compile
+#+BEGIN_SRC emacs-lisp
+(defun imalison:make-test ()
+  (interactive)
+  (let ((default-directory (projectile-project-root)))
+    (imalison:named-compile "make test")))
+
+(defun imalison:glide-up ()
+  (interactive)
+  (imalison:named-compile "glide up"))
+
+(defun imalison:stack-build ()
+  (interactive)
+  (let ((frame-mode-use-new-frame-or-window t))
+    (imalison:named-compile "stack build")))
+
+(defhydra imalison:compile nil "Compile"
+  ("p" imalison:projectile-helm-command-from-zsh "Run a command in projectile root")
+  ("d" helm-command-from-zsh "Run a command in default directory")
+  ("c" imalison:named-compile "Enter Custom Command")
+  ("s" imalison:stack-build "Stack build")
+  ("t" imalison:make-test "Test")
+  ("u" imalison:glide-up "Update Dependencies"))
+;; The following parens close the use-package/progn created several blocks above
+))
+#+END_SRC
+** kill-emacs
+This ensures that C-x C-c will always kill emacs, even if we are running in server mode.
+#+BEGIN_SRC emacs-lisp
+(bind-key "C-x C-c" 'kill-emacs)
+#+END_SRC
+** imenu
+imenu is the best. This should be a default binding.
+#+BEGIN_SRC emacs-lisp
+(bind-key "C-x C-i" 'imenu)
+#+END_SRC
+** undo
+I can't shake the habit of using this keybinding for undo. I should really use the default of C-/.
+#+BEGIN_SRC emacs-lisp
+(bind-key "C--" 'undo)
+#+END_SRC
+** other-window
+Go the other way when you use capital O.
+#+BEGIN_SRC emacs-lisp
+(bind-key "C-x O" (lambda () (interactive) (other-window -1)))
+#+END_SRC
+** Mark ring
+#+BEGIN_SRC emacs-lisp
+(bind-key "C-c SPC" 'imalison:mark-ring)
+#+END_SRC
+** Other bindings
+#+BEGIN_SRC emacs-lisp
+(bind-key "C-x p" 'pop-to-mark-command)
+(setq set-mark-command-repeat-pop t)
+(bind-key "C-x C-b" 'buffer-menu)
+(bind-key "C-x C-r" (lambda () (interactive) (revert-buffer t t)))
+(bind-key "C-x w" 'whitespace-mode)
+(bind-key "M-n" 'forward-paragraph)
+(bind-key "M-p" 'backward-paragraph)
+(bind-key "C-M-<backspace>" 'backward-kill-sexp)
+(bind-key "s-<return>" 'toggle-frame-fullscreen)
+(bind-key "M-|" 'imalison:shell-command-on-region)
+(bind-key "C-x 9" 'previous-buffer)
+(bind-key "s-v" 'clipboard-yank)
+#+END_SRC
+** global-set-key-to-use-package
+This might be useless, but I believe that it is a macro that converts between
+bind-key and global-set-key forms.
+#+BEGIN_SRC emacs-lisp
+(fset 'global-set-key-to-use-package
+      (lambda (&optional arg) "Keyboard macro." (interactive "p")
+        (kmacro-exec-ring-item
+         (quote ([1 67108896 19 100 6 23 40 19 41 return
+                    backspace 32 46 6 4] 0 "%d")) arg)))
+#+END_SRC
+** OSX
+#+BEGIN_SRC emacs-lisp
+(when (equal system-type 'darwin)
+  (setq mac-option-modifier 'meta)
+  (setq mac-command-modifier 'super))
+#+END_SRC
+* Navigation
+** zop-to-char
+#+BEGIN_SRC emacs-lisp
+(use-package zop-to-char
+  :bind ("M-z" . zop-to-char)
+  :init
+  (progn
+    (setq zop-to-char-kill-keys '(?\C-k ?\C-w))
+    (setq zop-to-char-quit-at-point-keys '(?\r))))
+#+END_SRC
+** helm
+I use helm for almost all emacs completion
+#+BEGIN_SRC emacs-lisp -n -r
+(use-package helm-config
+  :demand t
+  :straight helm
+  :bind (("M-y" . helm-show-kill-ring)
+         ("M-x" . helm-M-x)
+         ("C-x C-i" . helm-imenu)
+         ("C-h a" . helm-apropos)
+         ("C-c ;" . helm-recentf))
+  :diminish helm-mode
+  :config
+  (progn
+    (setq helm-split-window-default-side 'same)
+    (use-package helm-org
+      :straight nil
+      :defer 10
+      :config
+      (progn
+
+        (cl-defun helm-org-headings-in-buffer ()
+          (interactive)
+          (helm :sources (helm-source-org-headings-for-files
+                          (list (projectile-completing-read
+                                 "File to look at headings from: "
+                                 (projectile-all-project-files))))
+                :candidate-number-limit 99999
+                :buffer "*helm org inbuffer*"))))
+
+    (use-package helm-descbinds
+      :defer 4
+      :config (helm-descbinds-mode 1))
+
+    (use-package helm-ag
+      :bind ("C-c p 1" . imalison:set-helm-ag-extra-options)
+      :preface
+      (progn
+        (defun imalison:set-helm-ag-extra-options ()
+          (interactive)
+          (let ((option (read-string "Extra options: " (or helm-ag--extra-options "")
+                                     'helm-ag--extra-options-history)))
+            (setq helm-ag--extra-options option))))
+      :config
+      (progn
+        (setq helm-ag-always-set-extra-option nil)))
+    (run-with-idle-timer 1 nil 'helm-mode 1)))
+#+END_SRC
+** helm-projectile
+#+BEGIN_SRC emacs-lisp
+(use-package helm-projectile
+  :defer 1
+  :commands (helm-projectile-on)
+  :bind (:map helm-projectile-projects-map
+              ("M-s" . imalison:switch-to-project-and-search)
+              ("M-t" . imalison:helm-term-projectile))
+  :preface
+  (progn
+    (defmacro imalison:do-in-project (project-dir &rest forms)
+      `(noflet ((projectile-project-root (&rest args) ,project-dir))
+         ,@forms))
+    (defun imalison:invalidate-cache-and-open-file (_dir)
+      (projectile-invalidate-cache nil)
+      (projectile-find-file))
+
+    (defun imalison:switch-to-project-and-search (dir)
+      (imalison:do-in-project dir (helm-projectile-ag)))
+
+    (defun imalison:helm-term-projectile (dir)
+      (imalison:do-in-project dir (term-projectile-forward))))
+  :config
+  (progn
+    (shut-up (helm-projectile-on))
+    (helm-delete-action-from-source "Search in Project"
+                                    helm-source-projectile-projects)
+    (helm-delete-action-from-source "Open term for project"
+                                    helm-source-projectile-projects)
+    (helm-add-action-to-source "Search in Project"
+                               'imalison:switch-to-project-and-search
+                               helm-source-projectile-projects)
+    (helm-add-action-to-source "Open term for project"
+                               'imalison:helm-term-projectile
+                               helm-source-projectile-projects)
+    (helm-add-action-to-source "Invalidate Cache and Open File"
+                               'imalison:invalidate-cache-and-open-file
+                               helm-source-projectile-projects)))
+#+END_SRC
+** projectile
+#+BEGIN_SRC emacs-lisp
+(use-package projectile
+  :demand t
+  :bind (("C-x f" . projectile-find-file-in-known-projects)
+         ("C-c p f" . imalison:projectile-find-file))
+  :preface
+  (progn
+    (defun imalison:do-ag-default-directory ()
+      (interactive)
+      (helm-do-ag default-directory (car (projectile-parse-dirconfig-file))))
+
+    (emit-prefix-selector imalison:do-ag
+      helm-projectile-ag
+      imalison:do-ag-default-directory
+      helm-do-ag)
+
+    (emit-prefix-selector imalison:projectile-find-file
+      projectile-find-file
+      projectile-find-file-other-window)
+
+    (imalison:let-around imalison:set-options-do-ag
+      imalison:do-ag
+      (helm-ag-always-set-extra-option t))
+
+    (defun imalison:projectile-make-all-subdirs-projects (directory)
+      (cl-loop for file-info in (directory-files-and-attributes directory)
+               do (when (nth 1 file-info)
+                    (write-region "" nil
+                                  (expand-file-name
+                                   (concat directory "/"
+                                           (nth 0 file-info) "/.projectile")))))))
+  :config
+  (progn
+    (use-package persp-projectile
+      :commands projectile-persp-switch-project)
+
+    (projectile-global-mode)
+    (setq projectile-require-project-root nil)
+    (setq projectile-enable-caching nil)
+    (setq projectile-completion-system 'helm)
+    (add-to-list 'projectile-globally-ignored-files "Godeps")
+    (diminish 'projectile-mode)
+    (bind-key* "C-c p s" 'imalison:do-ag)
+    (bind-key* "C-c p S" 'imalison:set-options-do-ag)
+    (bind-key* "C-c p f" 'imalison:projectile-find-file)))
+#+END_SRC
+** ido
+#+BEGIN_SRC emacs-lisp
+(use-package ido
+  :demand t
+  :commands ido-mode
+  :config
+  (progn
+    (ido-mode 1)
+    (setq ido-auto-merge-work-directories-length -1
+          ido-default-buffer-method 'selected-window
+          ido-use-virtual-buffers t
+          ido-use-filename-at-point nil
+          ido-create-new-buffer 'always)
+    (ido-everywhere 1)
+    (setq ido-enable-flex-matching t)
+    (use-package flx-ido
+      :defer 5
+      :config
+      (progn
+        ;; disable ido faces to see flx highlights.
+        ;; This makes flx-ido much faster.
+        (setq gc-cons-threshold 20000000)
+        (flx-ido-mode 1)
+        (setq ido-use-faces nil)))
+    (use-package ido-vertical-mode
+      :config
+      (progn
+        (ido-vertical-mode 1)
+        (setq ido-vertical-define-keys 'C-n-C-p-up-and-down)))
+    (use-package flx-ido)))
+#+END_SRC
+** avy
+#+BEGIN_SRC emacs-lisp
+(use-package avy
+  :preface
+  (progn
+    (emit-prefix-selector imalison:avy
+      avy-goto-word-1
+      avy-goto-char))
+  :bind (("C-j" . imalison:avy)
+         ("M-g l" . avy-goto-line)
+         ("C-'" . avy-goto-char-2)))
+#+END_SRC
+** ace-window
+#+BEGIN_SRC emacs-lisp
+(use-package ace-window
+  :preface
+  (emit-prefix-selector imalison:ace-window
+    ace-select-window
+    ace-swap-window)
+  :config (setq aw-keys '(?a ?s ?d ?f ?g ?h ?j ?k ?l))
+  :bind ("C-c w" . imalison:ace-window))
+#+END_SRC
+** neotree
+Neotree is useless with frame mode for now, so I've disabled it.
+#+BEGIN_SRC emacs-lisp
+(use-package neotree
+  :disabled t)
+#+END_SRC
+** jump-char
+#+BEGIN_SRC emacs-lisp
+(use-package jump-char
+  :bind (("C-;" . jump-char-forward)))
+#+END_SRC
+** flimenu
+#+BEGIN_SRC emacs-lisp
+(use-package flimenu
+  :config
+  (progn
+    (flimenu-global-mode)))
+#+END_SRC
+** swiper
+#+BEGIN_SRC emacs-lisp
+(use-package swiper
+  :disabled t
+  :bind ("C-s" . swiper))
+#+END_SRC
+* Completion
+** company
+#+BEGIN_SRC emacs-lisp
+(use-package company
+  :commands company-mode imalison:company
+  :bind (("C-\\" . imalison:company))
+  :config
+  (progn
+    (emit-prefix-selector imalison:company
+      company-complete
+      company-yasnippet)
+
+    (setq company-idle-delay .25)
+    (global-company-mode)
+    (diminish 'company-mode))
+  :init
+  (add-hook 'prog-mode-hook (lambda () (company-mode t))))
+#+END_SRC
+*** company-flx
+#+BEGIN_SRC emacs-lisp
+(use-package company-flx
+  :disabled t
+  :after company
+  :config
+  (company-flx-mode +1))
+#+END_SRC
+** auto-complete
+I don't use auto-complete at all, so I have set up a hook to automatically disable it whenever it is enabled to avoid creating conflicting popups when company is activated.
+#+BEGIN_SRC emacs-lisp
+(use-package auto-complete
+  :defer t
+  :preface
+  (progn
+    (defun imalison:auto-complete-hook ()
+      (debug)
+      (warn "auto-complete-mode was activated, but is being automatically disabled.")
+      (let ((auto-complete-mode-hook nil))
+        (auto-complete-mode -1))))
+  :config
+  (progn
+    (add-hook 'auto-complete-mode-hook 'imalison:auto-complete-hook)))
+#+END_SRC
+* Text Manipulation
+** smartparens
+#+BEGIN_SRC emacs-lisp
+(use-package smartparens
+  :demand t
+  :diminish smartparens-mode
+  :bind (:map smartparens-mode-map
+              ("H-z" . sp-kill-symbol)
+              ("C-)" . sp-forward-slurp-sexp)
+              ("C-}" . sp-forward-barf-sexp)
+              ("C-(" . sp-backward-slurp-sexp)
+              ("C-{" . sp-backward-barf-sexp))
+  :config
+  (progn
+    (require 'smartparens-config)
+    (smartparens-global-mode 1)
+    (sp-use-smartparens-bindings)
+    (sp-local-pair 'org-mode "~" "~")
+    (unbind-key "C-M-<backspace>" smartparens-mode-map)
+    (unbind-key "C-<backspace>" smartparens-mode-map)
+    (unbind-key "M-<backspace>" smartparens-mode-map)))
+#+END_SRC
+** multiple-cursors
+#+BEGIN_SRC emacs-lisp
+(use-package multiple-cursors
+  :config
+  (progn
+    (use-package phi-search-mc
+      :demand t
+      :config
+      (phi-search-mc/setup-keys))
+    (use-package mc-extras
+      :demand t
+      :config
+      (define-key mc/keymap (kbd "C-. =") 'mc/compare-chars))
+    (defhydra imalison:multiple-cursors-hydra (:hint nil)
+      "multiple-cursors"
+      ("l" mc/edit-lines "Edit lines" :exit t)
+      ("a" mc/mark-all-like-this "Mark all" :exit t)
+      ("n" mc/mark-next-like-this "Mark next")
+      ("N" mc/skip-to-next-like-this "Skip to next")
+      ("M-n" mc/unmark-next-like-this "Unmark next")
+      ("p" mc/mark-previous-like-this "Mark previous")
+      ("P" mc/skip-to-previous-like-this "Skip to previous")
+      ("M-p" mc/unmark-previous-like-this "Unmark previous")
+      ("r" mc/mark-all-in-region-regexp "Mark by regex in region":exit t)
+      ("q" nil "Quit")))
+  :bind
+  (("C-c m" . imalison:multiple-cursors-hydra/body)
+   :map mc/keymap
+   ("C-s" . phi-search)))
+#+END_SRC
+** expand-region
+#+BEGIN_SRC emacs-lisp
+(use-package expand-region
+  :commands er/expand-region
+  :config (setq expand-region-contract-fast-key "j")
+  :bind (("C-c k" . er/expand-region)))
+#+END_SRC
+** multi-line
+#+BEGIN_SRC emacs-lisp
+(use-package multi-line
+  ;; Demand multi-line to avoid failure to load mode specific strategies
+  :demand t
+  :bind ("C-c d" . multi-line)
+  :config
+  (progn
+    (multi-line-defhook java
+      (make-instance
+       'multi-line-strategy
+       :respace (multi-line-respacers-with-single-line
+                 (list (multi-line-clearing-reindenting-respacer
+                        multi-line-skip-first-and-last-respacer)))))
+    ;; This only works for array respacing
+    (multi-line-defhook sh
+      (make-instance
+       'multi-line-strategy
+       :find multi-line-lisp-find-strategy
+       :respace (multi-line-default-respacers
+                 (multi-line-clearing-reindenting-respacer
+                  multi-line-always-newline-respacer)
+                 (multi-line-clearing-reindenting-respacer
+                  multi-line-force-first-and-last-respacer))))))
+#+END_SRC
+** comment-dwim-2
+#+BEGIN_SRC emacs-lisp
+(use-package comment-dwim-2
+  :bind ("M-;" . comment-dwim-2))
+#+END_SRC
+** unfill
+#+BEGIN_SRC emacs-lisp
+(use-package unfill
+  :bind ("M-q" . unfill-toggle))
+#+END_SRC
+** cliphist
+#+BEGIN_SRC emacs-lisp
+(use-package cliphist
+  :disabled t
+  :config (setq cliphist-use-ivy t))
+#+END_SRC
+** electric-operator-mode
+#+BEGIN_SRC emacs-lisp
+(use-package electric-operator
+  :commands electric-operator-mode
+  :config
+  (add-hook 'python-mode-hook #'electric-operator-mode))
+#+END_SRC
+** string-inflection
+#+BEGIN_SRC emacs-lisp
+(use-package string-inflection
+  :commands string-inflection-toggle
+  :bind ("C-c l" . string-inflection-toggle))
+#+END_SRC
+** yasnippet
+#+BEGIN_SRC emacs-lisp
+(use-package yasnippet
+  :defer 5
+  :commands (yas-global-mode)
+  :config
+  (progn
+    (yas-global-mode)
+    (diminish 'yas-minor-mode)
+    (add-hook 'term-mode-hook (lambda() (yas-minor-mode -1)))
+    (setq yas-prompt-functions
+          (cons 'yas-ido-prompt
+                (cl-delete 'yas-ido-prompt yas-prompt-functions)))))
+#+END_SRC
+** align
+#+BEGIN_SRC emacs-lisp
+(use-package align
+  :bind ("C-c C-a" . imalison:align-regexp-hydra/body)
+  :config
+  (progn
+    (require 'hydra)
+    (defun imalison:complex-align-regexp ()
+      (interactive)
+      (let ((current-prefix-arg t))
+        (call-interactively 'align-regexp)))
+    (defun imalison:align-whitespace ()
+      (interactive)
+      (align-regexp
+       (region-beginning) (region-end)
+       "\\(\\s-+\\)") 0 1 t)
+    (defun imalison:align-to-character (character)
+      (interactive
+       (list (read-string "Character to align to " "=")))
+      (align-regexp
+       (region-beginning) (region-end)
+       (format "\\(\\s-*\\)%s" character) 1 1 nil))
+    (defhydra imalison:align-regexp-hydra ()
+      "align-regexp"
+      ("r" imalison:complex-align-regexp)
+      ("SPC" imalison:align-whitespace)
+      ("c" imalison:align-to-character))))
+#+END_SRC
+* flycheck
+#+BEGIN_SRC emacs-lisp
+(use-package flycheck
+  :commands flycheck-mode
+  :init (add-hook 'prog-mode-hook 'flycheck-mode)
+  :config
+  (progn
+    (use-package flycheck-package
+      :config (flycheck-package-setup))
+
+    (use-package flycheck-cask
+      :after flycheck
+      :config
+      (add-hook 'flycheck-mode-hook #'flycheck-cask-setup))
+
+    (add-to-list 'flycheck-emacs-lisp-checkdoc-variables
+                 'sentence-end-double-space)
+    (setq flycheck-display-errors-delay 10000)
+    (global-flycheck-mode))
+  :diminish flycheck-mode)
+#+END_SRC
+* straight
+#+BEGIN_SRC emacs-lisp
+(use-package straight
+  :config
+  (setq straight-vc-git-auto-fast-forward t))
+#+END_SRC
+* Major Modes
+** Programming
+<<programminglanguages>>
+*** python
+#+BEGIN_SRC emacs-lisp
+(use-package python
+  :commands python-mode
+  :mode ("\\.py\\'" . python-mode)
+  :preface
+  (defun imalison:python-mode ()
+    (setq show-trailing-whitespace t)
+    ;; TODO: This was likely fixed and can probably be removed
+    ;; Somehow this is sometimes set to jedi:ac-setup which we
+    ;; don't want. This binding avoids starting auto-complete mode.
+    (let ((jedi:setup-function nil))
+      (jedi:setup))
+
+    ;; XXX: This has become pretty annoying
+    ;; (add-hook 'before-save-hook 'pyimport-remove-unused t t)
+
+    ;; Ensure company is active
+    (company-mode +1)
+    ;; Only use company-jedi for completion
+    (set (make-local-variable 'company-backends) '(company-jedi))
+
+    ;; Remove default python completion, as we are going to rely on
+    ;; company-jedi.
+    (remove-hook 'completion-at-point-functions
+                 'python-completion-complete-at-point 'local))
+  :config
+  (progn
+    (use-package sphinx-doc)
+    (unbind-key "C-j" python-mode-map)
+    (add-hook 'python-mode-hook #'imalison:python-mode)))
+#+END_SRC
+**** pippel
+pippel lets one manage pip packages
+#+BEGIN_SRC emacs-lisp
+(use-package pippel
+  :defer t)
+#+END_SRC
+**** pyimport
+Pyimport is disabled because it may be causing a performance problem.
+#+BEGIN_SRC emacs-lisp
+(use-package pyimport
+  :disabled t
+  :bind (:map python-mode-map
+              ("C-c C-i" . pyimport-insert-missing))
+  :commands pyimport-remove-unused)
+#+END_SRC
+**** jedi
+The accepted way to use jedi if you prefer company to auto-complete is
+simply to require the company jedi package, which is why we make no
+reference to the jedi-core package.
+#+BEGIN_SRC emacs-lisp
+(use-package company-jedi
+  :commands (jedi:goto-definition jedi-mode company-jedi)
+  :bind (:map python-mode-map
+              ("M-." . jedi:goto-definition)
+              ("M-," . jedi:goto-definition-pop-marker))
+  :config
+  (progn
+    (setq jedi:complete-on-dot t)
+    (setq jedi:imenu-create-index-function 'jedi:create-flat-imenu-index)))
+#+END_SRC
+*** go
+#+BEGIN_SRC emacs-lisp
+(use-package go-mode
+  :mode (("\\.go\\'" . go-mode))
+  :preface
+  (progn
+    (defun imalison:glide-novendor ()
+      (projectile-with-default-dir (projectile-project-root)
+        (shell-command-to-string "glide novendor")))
+
+    (defun imalison:go-mode-create-imenu-index ()
+      "Create and return an imenu index alist. Unlike the default
+  alist created by go-mode, this method creates an alist where
+  items follow a style that is consistent with other prog-modes."
+      (let* ((patterns '(("type" "^type *\\([^ \t\n\r\f]*\\)" 1)))
+             (type-index (imenu--generic-function patterns))
+             (func-index))
+        (save-excursion
+          (goto-char (point-min))
+          (while (re-search-forward go-func-meth-regexp (point-max) t)
+            (let* ((var (match-string-no-properties 1))
+                   (func (match-string-no-properties 2))
+                   (name (if var
+                             (concat (substring var 0 -1) "." func)
+                           func))
+                   (beg (match-beginning 0))
+                   (marker (copy-marker beg))
+                   (item (cons name marker)))
+              (setq func-index (cons item func-index)))))
+        (nconc type-index (list (cons "func" func-index)))))
+
+    (defun imalison:go-workspace-path ()
+      (file-relative-name (projectile-project-root)
+                          (concat (file-name-as-directory
+                                   (imalison:get-go-path)) "src")))
+
+    (defun imalison:install-current-go-project ()
+      (interactive)
+      (start-process
+       "go install" "go install log" "go" "install"
+       (concat (file-name-as-directory (imalison:go-workspace-path)) "...")))
+
+    (defun imalison:get-go-path ()
+      (let ((environment-go-path (getenv "GOPATH")))
+        (if environment-go-path
+            (file-name-as-directory (car (s-split ":" environment-go-path)))
+          "~/go")))
+
+    (defmacro imalison:get-go-src (&rest paths)
+      `(imalison:join-paths (imalison:get-go-path) "src" ,@paths))
+
+    (imalison:let-advise-around imalison:advise-normal-go-command
+                                (go-command "go"))
+
+    (defun imalison:go-mode-hook ()
+      (go-eldoc-setup)
+      (set (make-local-variable 'company-backends) '(company-go))
+      (make-local-variable 'projectile-globally-ignored-files)
+      (add-hook 'after-save-hook 'imalison:install-current-go-project nil
+                'yes-do-local)
+      (add-to-list 'projectile-globally-ignored-files
+                   "vendor")))
+  :config
+  (progn
+    (use-package gotest
+     :demand t
+     :bind (:map go-mode-map
+                 ("C-c t" . imalison:gotest))
+     :preface
+     (progn
+       (emit-prefix-selector imalison:gotest
+         go-test-current-test
+         go-test-current-file)
+
+       (defun imalison:add-expected-test-name-for-suite (suite-name test-name)
+         (if (> (length suite-name) 0)
+             (concat " -run Test" suite-name)
+           "")))
+     :config
+     (progn
+       (setq go-test-verbose t
+             go-test-additional-arguments-function
+             'imalison:add-expected-test-name-for-suite)))
+    (use-package company-go
+      :config (setq company-go-show-annotation t))
+    (use-package go-projectile :demand t)
+    (use-package go-eldoc :demand t)
+    (use-package go-guru
+      :demand t
+      :bind (:map go-mode-map
+                  ("M-." . go-guru-definition)
+                  ("M-," . pop-tag-mark))
+      :preface
+      (progn
+        (defun imalison:set-go-guru-scope ()
+          (setq go-guru-scope (go-mode-parse-glide-novendor)))
+        (defun go-mode-parse-glide-novendor ()
+          (s-join ","
+                  (cl-loop for path in (s-split "\n" (imalison:glide-novendor))
+                           collect (if (string-equal path ".")
+                                       (imalison:go-workspace-path)
+                                     (s-replace "\./" (imalison:go-workspace-path) path))))))
+      :config
+      (progn
+        (advice-add 'go-guru--set-scope-if-empty :before 'imalison:set-go-guru-scope)
+        (advice-add 'go-guru-start :before 'imalison:set-go-guru-scope)
+        (advice-add 'go-guru-definition :around 'imalison:advise-normal-go-command)
+        (advice-add 'go-guru-definition :before
+                    (lambda ()
+                      (with-no-warnings
+                        (ring-insert find-tag-marker-ring (point-marker)))))))
+
+    (advice-add 'go-import-add :around 'imalison:advise-normal-go-command)
+
+    (setq gofmt-command "goimports")
+
+    (add-hook 'go-mode-hook 'imalison:go-mode-hook)
+    (add-hook 'before-save-hook 'gofmt-before-save t)))
+#+END_SRC
+**** Show diffs of testify output
+#+BEGIN_SRC emacs-lisp
+(defvar imalison:testify-ediff-buffers nil)
+(defun imalison:purge-ediff-buffers (&rest args)
+  (cl-loop for buffer in imalison:testify-ediff-buffers
+           do (kill-buffer buffer))
+  (setq imalison:testify-ediff-buffers nil))
+
+(add-hook 'ediff-cleanup-hook 'imalison:purge-ediff-buffers)
+
+(defun imalison:go-testify-show-ediff ()
+  (interactive)
+  (let ((buffer (get-buffer-create "*Testify JSON*"))
+        json-result)
+    (shell-command-on-region (point-min) (point-max) "parse_go_testify_for_emacs.py" buffer)
+    (with-current-buffer buffer
+      (goto-char (point-min))
+      (setq json-result (json-read)))
+    (let ((actual-buffer (generate-new-buffer "*Testify Actual*"))
+          (expected-buffer (generate-new-buffer "*Testify Expected*")))
+      (add-to-list 'imalison:testify-ediff-buffers actual-buffer)
+      (add-to-list 'imalison:testify-ediff-buffers expected-buffer)
+      (with-current-buffer actual-buffer
+        (insert (cdr (assoc 'actual json-result)))
+        (with-current-buffer expected-buffer
+          (insert (cdr (assoc 'expected json-result)))
+          (ediff-buffers actual-buffer expected-buffer))))))
+
+(defun imalison:go-testify-show-icdiff ()
+  (interactive)
+  (let ((buffer (get-buffer-create "*Testify Comparison*")))
+    (shell-command-on-region (point-min) (point-max) "parse_go_testify_not_equal.py" buffer)
+    (with-current-buffer buffer
+      (fundamental-ansi-mode))
+    (switch-to-buffer buffer)))
+#+END_SRC
+*** emacs-lisp
+**** elisp-slime-nav
+#+BEGIN_SRC emacs-lisp
+(use-package elisp-slime-nav
+  :commands elisp-slime-nav-mode
+  :config
+  (diminish 'elisp-slime-nav-mode)
+  :preface
+  (emit-prefix-selector imalison:elisp-slime-nav
+    elisp-slime-nav-find-elisp-thing-at-point
+    elisp-slime-nav-describe-elisp-thing-at-point)
+  :bind (:map elisp-slime-nav-mode-map
+              ("M-." . imalison:elisp-slime-nav)))
+#+END_SRC
+**** Make find-function use display-buffer
+For some reason ~find-function~ doesn't allow to ~display-buffer~ to do what
+it's supposed to do, but instead uses its own collection of functions to control
+where the definition is popped up. This fixes that.
+#+BEGIN_SRC emacs-lisp
+(use-package find-func
+  :preface
+  (progn
+    (defun imalison:find-function-display-buffer (function)
+      (interactive (find-function-read))
+      (find-function-do-it function nil 'display-buffer)))
+  :config
+  (advice-add 'find-function :override 'imalison:find-function-display-buffer))
+
+(defun imalison:find-function-display-buffer (function)
+  (interactive (find-function-read))
+  (find-function-do-it function nil 'pop-to-buffer))
+#+END_SRC
+**** macrostep
+Macrostep is an indespensible tool for writing emacs lisp macros. It lets you see pretty printed versions of the result of macro evaluation as the macro is evaluated
+#+BEGIN_SRC emacs-lisp
+(use-package macrostep
+  :bind (:map lisp-mode-shared-map
+              ("C-c e" . macrostep-expand)))
+#+END_SRC
+**** emr
+#+BEGIN_SRC emacs-lisp
+(use-package emr
+  :bind ("M-RET" . emr-show-refactor-menu)
+  :config
+  (progn
+    (add-hook 'prog-mode-hook 'emr-initialize)))
+#+END_SRC
+**** Editing configuration
+Reduce indentation for some functions
+#+BEGIN_SRC emacs-lisp
+(put 'use-package 'lisp-indent-function 1)
+#+END_SRC
+**** Checkdoc
+#+BEGIN_SRC emacs-lisp
+(setq checkdoc-force-docstrings-flag nil
+      checkdoc-arguments-in-order-flag nil)
+#+END_SRC
+**** edebug
+#+BEGIN_SRC emacs-lisp
+(use-package edebug
+  :defer t
+  :config
+  (progn (setq edebug-trace t)))
+#+END_SRC
+**** overseer
+#+BEGIN_SRC emacs-lisp
+(use-package overseer
+  :defer t)
+#+END_SRC
+**** Misc
+#+BEGIN_SRC emacs-lisp
+(defun imenu-elisp-sections ()
+  (setq imenu-prev-index-position-function nil)
+  (setq imenu-space-replacement nil)
+  (add-to-list 'imenu-generic-expression
+               `("Package"
+                 ,"(use-package \\(.+\\)$" 1))
+  (add-to-list 'imenu-generic-expression
+               `("Section"
+                 ,(concat ";\\{1,4\\} =\\{10,80\\}\n;\\{1,4\\} \\{10,80\\}"
+                          "\\(.+\\)$") 1) t))
+
+(defun imalison:maybe-remove-flycheck-checkdoc-checker ()
+  (when (s-starts-with? "*" (buffer-name))
+    (flycheck-disable-checker 'emacs-lisp-checkdoc)))
+
+(add-hook 'emacs-lisp-mode-hook 'imenu-elisp-sections)
+(add-hook 'emacs-lisp-mode-hook (lambda ()
+                                  (setq indent-tabs-mode nil)
+                                  (setq show-trailing-whitespace t)))
+(add-hook 'flycheck-mode-hook 'imalison:maybe-remove-flycheck-checkdoc-checker)
+#+END_SRC
+**** eros
+#+BEGIN_SRC emacs-lisp
+(use-package eros
+  :commands (eros-mode)
+  :config
+  (progn
+    (advice-add 'eval-defun :around 'eros-around-eval-defun)
+    (advice-add 'eval-last-sexp :around 'eros-around-eval-last-sexp))
+  :preface
+  (progn
+    (defvar eros-mode nil)
+
+    (defun eros-around-eval-last-sexp (fn &rest args)
+      (let ((result (apply fn args)))
+        (when eros-mode
+          (eros--eval-overlay result (point)))
+        result))
+
+    (defun eros-around-eval-defun (fn &rest args)
+      (let ((result (apply fn args)))
+        (when eros-mode
+          (eros--eval-overlay
+           result
+           (save-excursion
+             (end-of-defun)
+             (point))))
+        result))
+
+    (add-hook 'emacs-lisp-mode-hook 'eros-mode)))
+#+END_SRC
+**** Reevalute defvars when running eval-last-sexp
+We noflet elisp--preceding-sexp to munge defvars into sexps only for
+eval-last-sexp.
+#+BEGIN_SRC emacs-lisp
+(defun imalison:maybe-setq-instead (fn &rest args)
+  (noflet ((elisp--preceding-sexp (&rest preceding-args)
+                                  (let* ((preceding-sexp (apply this-fn preceding-args)))
+                                    (if (and (listp preceding-sexp) (equal (car preceding-sexp) 'defvar))
+                                        `(setq ,@(cdr preceding-sexp))
+                                      preceding-sexp))))
+    (apply fn args)))
+
+(advice-add 'eval-last-sexp :around 'imalison:maybe-setq-instead)
+#+END_SRC
+**** Init hook
+#+BEGIN_SRC emacs-lisp
+(defvar imalison:check-parens nil)
+
+(defun imalison:maybe-check-parens ()
+  (if imalison:check-parens
+      (check-parens)))
+
+(defun imalison:emacs-lisp-hook ()
+  (elisp-slime-nav-mode t)
+  (add-hook 'write-file-functions 'imalison:maybe-check-parens nil t))
+
+(add-hook 'emacs-lisp-mode-hook 'imalison:emacs-lisp-hook)
+#+END_SRC
+**** Keybinds
+#+BEGIN_SRC emacs-lisp
+(emit-compose imalison:copy-eval-last-sexp
+              kill-new prin1-to-string eval-last-sexp)
+
+(emit-prefix-selector imalison:eval-last-sexp
+                      eval-region-or-last-sexp
+                      imalison:copy-eval-last-sexp)
+
+(define-key lisp-mode-shared-map (kbd "C-c C-c") 'eval-defun)
+(define-key lisp-mode-shared-map (kbd "C-c o r") 'up-list-region)
+(define-key lisp-mode-shared-map (kbd "C-c o o") 'up-list-back)
+(define-key lisp-mode-shared-map (kbd "C-x C-e") 'imalison:eval-last-sexp)
+(unbind-key "C-j" lisp-interaction-mode-map)
+#+END_SRC
+*** clojure
+The following is taken from [[https://github.com/syl20bnr/spacemacs/blob/a650877bea582fed72bbca0dc1f80fcb2ec0e6d5/layers/+lang/clojure/funcs.el#L30][spacemacs]]. It adds fancification to a clojure mode.
+#+BEGIN_SRC emacs-lisp
+(defun imalison:clojure-fancify-symbols (mode)
+  "Pretty symbols for Clojure's anonymous functions and sets,
+   like (λ [a] (+ a 5)), ƒ(+ % 5), and ∈{2 4 6}."
+  (font-lock-add-keywords mode
+    `(("(\\(fn\\)[\n\[[:space:]]"
+       (0 (progn (compose-region (match-beginning 1)
+                                 (match-end 1) "λ"))))
+      ("(\\(partial\\)[\[[:space:]]"
+       (0 (progn (compose-region (match-beginning 1)
+                                 (match-end 1) "Ƥ"))))
+      ("(\\(comp\\)[\n\[[:space:]]"
+       (0 (progn (compose-region (match-beginning 1)
+                                 (match-end 1) "∘"))))
+      ("\\(#\\)("
+       (0 (progn (compose-region (match-beginning 1)
+                                 (match-end 1) "ƒ"))))
+      ("\\(#\\){"
+       (0 (progn (compose-region (match-beginning 1)
+                                 (match-end 1) "∈")))))))
+#+END_SRC
+#+BEGIN_SRC emacs-lisp
+  (use-package clojure-mode
+	:commands clojure-mode
+	:preface
+	(progn
+	  (add-to-list 'magic-mode-alist '("#!.*boot\\s-*$" . clojure-mode))
+	  (add-to-list 'auto-mode-alist '("\\.boot\\'" . clojure-mode))
+
+	  (defun imalison:clojure-mode-hook ()
+		;; (cljr-add-keybindings-with-prefix "C-c C-m")
+		;; This is disabled because seq-25 can't be loaded
+		;; (clj-refactor-mode 1)
+		;;for adding require/use/import statements
+		(yas-minor-mode 1))
+
+	  (defvar imalison:clojure-level-1-symobls
+		'(describe it)))
+	:config
+	(progn
+	  (cl-loop for symbol in imalison:clojure-level-1-symobls
+			   do (put-clojure-indent symbol 1))
+	  (add-hook 'clojure-mode-hook 'imalison:clojure-mode-hook)
+	  (dolist (m '(clojure-mode clojurescript-mode clojurec-mode clojurex-mode))
+		(imalison:clojure-fancify-symbols m))))
+#+END_SRC
+**** cider
+#+BEGIN_SRC emacs-lisp
+(use-package cider
+  :commands (cider-jack-in)
+  :config
+  (progn
+    (setq cider-stacktrace-default-filters '(tooling dup)
+          cider-repl-pop-to-buffer-on-connect nil
+          cider-prompt-save-file-on-load nil
+          cider-repl-use-clojure-font-lock t
+          cider-prompt-for-symbol nil
+          cider-preferred-build-tool "boot")
+    (add-hook 'clojure-mode-hook 'cider-mode)))
+#+END_SRC
+**** clj-refactor
+#+BEGIN_SRC emacs-lisp
+(use-package clj-refactor
+  :commands clj-refactor-mode)
+#+END_SRC
+*** scala
+#+BEGIN_SRC emacs-lisp
+(use-package scala-mode
+  :mode (("\\.scala\\'" . scala-mode)
+         ("\\.sc\\'" . scala-mode))
+  :config
+  (progn
+    (use-package ensime
+      :demand t
+      :pin melpa-stable
+      :bind (:map ensime-mode-map
+                  ("M-," . ensime-pop-find-definition-stack))
+      :commands ensime-mode
+      :config
+      (progn
+        (setq ensime-startup-snapshot-notification nil)))
+    (add-hook 'scala-mode-hook 'ensime-scala-mode-hook)
+    (setq scala-indent:align-parameters t)))
+#+END_SRC
+*** javascript
+#+BEGIN_SRC emacs-lisp
+(defun tape-onlyify ()
+  (interactive)
+  (save-excursion
+    (move-end-of-line nil)
+    (re-search-backward "^test")
+    (forward-sexp)
+    (if (looking-at ".only") (progn (zap-to-char 1 (string-to-char "(")) (insert "("))
+      (insert ".only"))))
+
+(use-package js2-mode
+  :commands (js2-mode)
+  :mode "\\.js\\'"
+  :preface
+  (progn
+    (defvar-setq imalison:identifier-count 0)
+    (defun imalison:console-log-unique ()
+      (interactive)
+      (let* ((identifier-string (int-to-string imalison:identifier-count))
+             (uuid (imalison:uuid)))
+        (insert (format "console.log('%s//////////%s//////////');" identifier-string uuid))
+        (setq imalison:identifier-count (+ imalison:identifier-count 1))))
+    (defun imalison:js2-mode-hook ()
+      ;; Sensible defaults
+      (setq js2-bounce-indent-p nil
+            js2-indent-level 4
+            js2-basic-offset 4
+            js2-highlight-level 3
+            js2-include-node-externs t
+            js2-mode-show-parse-errors nil
+            js2-mode-show-strict-warnings nil
+            indent-tabs-mode nil
+            js2-indent-switch-body t)
+      ;; (edconf-find-file-hook) ;; Make sure that editorconfig takes precedence
+      (tern-mode t)
+      (when nil (skewer-mode)) ;; TODO: reenable
+      (setq imenu-create-index-function
+            (lambda ()
+              (imalison:flatten-imenu-index
+               (js2-mode-create-imenu-index))))))
+  :init
+  (progn
+    (add-hook 'js2-mode-hook 'imalison:js2-mode-hook)
+    (add-hook 'js2-mode-hook 'js2-imenu-extras-mode)))
+
+(use-package js2-refactor
+  :after js2-mode
+  :config
+  (progn
+    (js2r-add-keybindings-with-prefix "C-c C-m")
+    (add-hook 'js2-mode-hook #'js2-refactor-mode)))
+
+(use-package skewer-mode
+  :commands skewer-mode
+  :config
+  (progn
+    (add-hook 'css-mode-hook #'skewer-css-mode)
+    (add-hook 'html-mode-hook #'skewer-html-mode)))
+
+(use-package tern
+  :commands tern-mode
+  :config
+  (use-package company-tern
+    :config (add-to-list 'company-backends 'company-tern)))
+
+(defun delete-tern-process ()
+  (interactive)
+  (delete-process "tern"))
+#+END_SRC
+*** typescript
+#+BEGIN_SRC emacs-lisp
+(use-package typescript-mode
+  :mode "\\.ts\\'")
+#+END_SRC
+*** coffee script
+#+BEGIN_SRC emacs-lisp
+(use-package coffee-mode
+  :mode "\\.coffee\\'")
+#+END_SRC
+*** rust
+#+BEGIN_SRC emacs-lisp
+(use-package rust-mode
+  :mode (("\\.rs\\'" . rust-mode))
+  :preface
+  (progn
+    (defun imalison:rust-mode-hook ()
+      (racer-mode 1)))
+  :config
+  (progn
+    (use-package flycheck-rust
+      :demand t
+      :config
+      (progn
+        (add-hook 'flycheck-mode-hook #'flycheck-rust-setup)))
+    (use-package racer
+      :demand t
+      :config
+      (progn
+        (setq racer-cmd "~/.cargo/bin/racer")
+        (setq racer-rust-src-path "~/Projects/rust/src")))
+    (use-package cargo
+      :demand t
+      :config
+      (progn
+        (add-hook 'rust-mode-hook 'cargo-minor-mode)))
+    (add-hook 'rust-mode-hook 'imalison:rust-mode-hook)))
+#+END_SRC
+*** haskell
+#+BEGIN_SRC emacs-lisp
+(use-package haskell-mode
+  :commands haskell-mode
+  :bind (:map haskell-mode-map
+              ("C-c h" . haskell-hoogle))
+  :config
+  (progn
+    (setq haskell-hoogle-command "hoogle")
+    (setq
+       ;; Use notify.el (if you have it installed) at the end of running
+       ;; Cabal commands or generally things worth notifying.
+       haskell-notify-p t
+       ;; Remove annoying error popups
+       haskell-interactive-popup-errors nil
+       ;; Better import handling
+       haskell-process-suggest-remove-import-lines t
+       haskell-process-auto-import-loaded-modules t
+       ;; Disable haskell-stylish-on-save, as it breaks flycheck highlighting.
+       ;; NOTE: May not be true anymore - taksuyu 2015-10-06
+       haskell-stylish-on-save nil)
+    (setq haskell-indent-offset 2)
+    (require 'flycheck)
+    (delq 'haskell-stack-ghc flycheck-checkers)
+    (add-hook 'haskell-mode-hook 'turn-on-haskell-indent)
+    (setq haskell-tags-on-save t)))
+#+END_SRC
+**** haskell-ide-engine
+#+BEGIN_SRC emacs-lisp
+(use-package lsp-haskell
+  :disabled t
+  :config
+  (add-hook 'haskell-mode-hook 'lsp-haskell-enable))
+#+END_SRC
+**** intero
+Intero seems to be causing hangs, so it has been disabled
+#+BEGIN_SRC emacs-lisp
+(use-package intero
+  :after haskell-mode
+  :config
+  (progn
+    (defun intero--warn (&rest args))
+    (add-hook 'haskell-mode-hook 'intero-mode-whitelist)))
+#+END_SRC
+**** hindent
+#+BEGIN_SRC emacs-lisp
+(use-package hindent
+  :after haskell-mode
+  :bind (:map hindent-mode-map
+              ("C-c d" . hindent-reformat-decl))
+  :config
+  (progn
+    (setq hindent-style nil)
+    (add-hook 'haskell-mode-hook 'hindent-mode)))
+#+END_SRC
+**** ghc-mod
+#+BEGIN_SRC emacs-lisp
+(use-package ghc
+  :after haskell-mode
+  :disabled t
+  :config
+  (progn
+    (setq ghc-debug t)
+    (add-hook 'haskell-mode-hook 'ghc-init)))
+#+END_SRC
+**** company-ghc
+#+BEGIN_SRC emacs-lisp
+(use-package company-ghc
+  :disabled t
+  :demand t
+  :config
+  (add-to-list 'company-backends '(company-ghc :with company-dabbrev-code)))
+#+END_SRC
+*** purescript
+#+BEGIN_SRC emacs-lisp
+(use-package purescript-mode
+  :defer t)
+
+(use-package psc-ide
+  :after purescript-mode
+  :config
+  (progn
+    (defun imalison:purescript-mode-hook ()
+      (psc-ide-mode +1)
+      (turn-on-purescript-indentation))
+    (add-hook 'purescript-mode-hook 'imalison:purescript-mode-hook)))
+#+END_SRC
+*** lua
+#+BEGIN_SRC emacs-lisp
+(use-package lua-mode
+  :defer t)
+#+END_SRC
+*** C/C++
+#+BEGIN_SRC emacs-lisp
+(use-package cc-mode
+  :disabled t
+  :preface
+  (defun imalison:cc-mode-hook ()
+    (when (derived-mode-p 'c-mode 'c++-mode 'java-mode 'asm-mode)
+      (ggtags-mode 1)))
+  :config
+  (progn
+    (use-package ggtags
+      :demand t
+      :bind (:map ggtags-mode-map
+                  ("C-c g s" . ggtags-find-other-symbol)
+                  ("C-c g h" . ggtags-view-tag-history)
+                  ("C-c g r" . ggtags-find-reference)
+                  ("C-c g f" . ggtags-find-file)
+                  ("C-c g c" . ggtags-create-tags)
+                  ("C-c g u" . ggtags-update-tags)
+                  ("M-," . pop-tag-mark)))
+    (add-hook 'c-mode-common-hook 'imalison:cc-mode-hook)))
+#+END_SRC
+*** C--
+#+BEGIN_SRC emacs-lisp
+(use-package cmm-mode
+  :defer t)
+#+END_SRC
+*** C#
+#+BEGIN_SRC emacs-lisp
+(use-package csharp-mode
+  :mode "\\.cs\\'")
+#+END_SRC
+*** racket
+#+BEGIN_SRC emacs-lisp
+(use-package racket-mode
+  :mode "\\.rkt\\'")
+#+END_SRC
+** Data/Config/Protocol
+*** thrift
+#+BEGIN_SRC emacs-lisp
+(use-package thrift
+  :commands thrift-mode
+  :mode (("\\.thrift\\'" . thrift-mode)))
+#+END_SRC
+*** protobuf
+#+BEGIN_SRC emacs-lisp
+(use-package protobuf-mode
+  :defer t)
+#+END_SRC
+*** json-mode
+#+BEGIN_SRC emacs-lisp
+(use-package json-mode
+  :mode "\\.json\\'"
+  :init
+  (add-hook 'json-mode-hook
+            (lambda ()
+              (setq indent-tabs-mode nil)
+              (setq js-indent-level 4))))
+#+END_SRC
+*** yaml-mode
+#+BEGIN_SRC emacs-lisp
+(use-package yaml-mode
+  :mode (("\\.yaml\\'" . yaml-mode)
+         ("\\.yml\\'" . yaml-mode)))
+#+END_SRC
+*** es-mode
+#+BEGIN_SRC emacs-lisp
+(use-package es-mode
+  :defer t)
+#+END_SRC
+*** docker
+#+BEGIN_SRC emacs-lisp
+(use-package dockerfile-mode
+  :mode ("Dockerfile\\'" . dockerfile-mode))
+#+END_SRC
+** Document
+*** org
+**** config
+#+BEGIN_SRC emacs-lisp :tangle org-config.el
+(defvar imalison:org-dir "~/org")
+(use-package org
+  :bind (:map org-mode-map
+              (("C-e" . end-of-visual-line)))
+  :preface
+  (progn
+    ;; XXX: These should probably be moved to config, right?
+    (setq org-startup-indented nil
+          org-startup-folded t
+          org-edit-src-content-indentation 0
+          org-src-preserve-indentation t
+          org-directory "~/Dropbox/org"
+          org-mobile-inbox-for-pull "~/Dropbox/org/flagged.org"
+          org-mobile-directory "~/Dropbox/Apps/MobileOrg")
+
+    (setq org-goto-interface 'outline-path-completion
+          org-goto-max-level 10
+          org-export-headline-levels 3)
+    (add-hook 'org-mode-hook 'imalison:disable-linum-mode)
+    (add-hook 'org-mode-hook (lambda () (setq org-todo-key-trigger t)))
+    (add-hook 'org-agenda-mode-hook 'imalison:disable-linum-mode)
+
+    (defun org-archive-if (condition-function)
+      (if (funcall condition-function)
+          (let ((next-point-marker
+                 (save-excursion (org-forward-heading-same-level 1) (point-marker))))
+            (org-archive-subtree)
+            (setq org-map-continue-from (marker-position next-point-marker)))))
+
+    (defun org-archive-if-completed ()
+      (interactive)
+      (org-archive-if 'org-entry-is-done-p))
+
+    (defun org-archive-completed-in-buffer ()
+      (interactive)
+      (org-map-entries 'org-archive-if-completed))
+
+    (cl-defun imalison:make-org-template (&key (content "%?"))
+      (with-temp-buffer
+        (org-mode)
+        (insert content)
+        (org-set-property "CREATED"
+                          (with-temp-buffer
+                            (org-insert-time-stamp
+                             (org-current-effective-time) t t)))
+        (buffer-substring-no-properties (point-min) (point-max))))
+
+    (defun imalison:make-org-template-from-file (filename)
+      (imalison:make-org-template (imalison:get-string-from-file filename)))
+
+    (cl-defun imalison:make-org-todo-template
+        (&key (content "%?") (creation-state "TODO"))
+      (with-temp-buffer
+        (org-mode)
+        (org-insert-heading)
+        (insert content)
+        (org-todo creation-state)
+        (org-set-property "CREATED"
+                          (with-temp-buffer
+                            (org-insert-time-stamp
+                             (org-current-effective-time) t t)))
+        (remove-hook 'post-command-hook 'org-add-log-note)
+        (let ((org-log-note-purpose 'state)
+              (org-log-note-return-to (point-marker))
+              (org-log-note-marker (progn (goto-char (org-log-beginning t))
+                                          (point-marker)))
+              (org-log-note-state creation-state))
+          (org-add-log-note))
+        (buffer-substring-no-properties (point-min) (point-max))))
+
+    (defun org-todo-force-notes ()
+      (interactive)
+      (let ((org-todo-log-states
+             (mapcar (lambda (state)
+                       (list state 'note 'time))
+                     (apply 'append org-todo-sets))))
+        (cond ((eq major-mode 'org-mode)  (org-todo))
+              ((eq major-mode 'org-agenda-mode) (org-agenda-todo)))))
+
+    (defun org-make-habit ()
+      (interactive)
+      (org-set-property "STYLE" "habit"))
+
+    (defun org-insert-habit ()
+      (interactive)
+      (org-insert-todo-heading nil)
+      (org-make-habit))
+
+    (defun org-todo-at-date (date)
+      (interactive (list (org-time-string-to-time (org-read-date))))
+      (cl-flet ((org-current-effective-time (&rest r) date)
+                (org-today (&rest r) (time-to-days date)))
+        (cond ((eq major-mode 'org-mode) (org-todo))
+              ((eq major-mode 'org-agenda-mode) (org-agenda-todo)))))
+
+    (defun imalison:make-org-linked-todo-template ()
+      (imalison:make-org-todo-template "[#C] %? %A"))
+
+    (defun org-cmp-creation-times (a b)
+      (let ((a-created (get-date-created-from-agenda-entry a))
+            (b-created (get-date-created-from-agenda-entry b)))
+        (imalison:compare-int-list a-created b-created)))
+
+    (defun org-agenda-done (&optional arg)
+      "Mark current TODO as done.
+  This changes the line at point, all other lines in the agenda referring to
+  the same tree node, and the headline of the tree node in the Org-mode file."
+      (interactive "P")
+      (org-agenda-todo "DONE")))
+  :commands (org-mode org org-mobile-push org-mobile-pull org-agenda)
+  :mode ("\\.org\\'" . org-mode)
+  :bind (("C-c a" . org-agenda)
+         ("C-c c" . org-capture)
+         :map org-mode-map
+         ("C-c n t" . org-insert-todo-heading)
+         ("C-c n s" . org-insert-todo-subheading)
+         ("C-c n h" . org-insert-habit)
+         ("C-c n m" . org-make-habit)
+         ("C-c n l" . org-store-link)
+         ("C-c n i" . org-insert-link)
+         ("C-c C-t" . org-todo)
+         ("C-c C-S-t" . org-todo-force-notes)
+         ("M-." . elisp-slime-nav-find-elisp-thing-at-point))
+  :config
+  (progn
+    (setq org-global-properties
+          '(quote (("Effort_ALL" . "0:15 0:30 0:45 1:00 2:00 3:00 4:00 5:00 6:00 0:00")
+                   ("STYLE_ALL" . "habit"))))
+          ;; Record changes to todo states
+    (setq org-todo-keywords
+          '((sequence "IDEA(i!)" "RESEARCH(r!)" "TODO(t!)" "NEXT(n!)"
+                      "STARTED(s!)" "WAIT(w!)" "BACKLOG(b!)" "|"
+                      "DONE(d!)" "HANDLED(h!)" "EXPIRED(e!)" "CANCELED(c!)")))
+
+    (setq helm-org-headings-fontify t)
+    (setq org-todo-repeat-to-state "TODO")
+
+    (setq org-agenda-span 10)
+    (setq org-agenda-start-day "-2d")
+
+    (setq org-columns-default-format
+          "%80ITEM(Task) %10Effort(Effort){:} %10CLOCKSUM")
+
+    (add-to-list 'org-show-context-detail '(org-goto . lineage))
+
+    (add-to-list
+     'org-src-lang-modes '("plantuml" . plantuml))
+
+    (add-hook 'org-mode-hook 'imalison:load-babel-languages)
+    (defun imalison:load-babel-languages ()
+      (org-babel-do-load-languages
+       'org-babel-load-languages
+       '((sh . t)
+         (python . t)
+         (ruby . t)
+         (octave . t)
+         (sqlite . t)
+         (plantuml . t))))
+
+    (setq org-log-into-drawer t
+          org-log-reschedule t
+          org-log-redeadline t
+          org-treat-insert-todo-heading-as-state-change t)
+
+    (when nil
+      ;; Enable appointment notifications.
+      (defadvice org-agenda-to-appt (before wickedcool activate)
+        "Clear the appt-time-msg-list."
+        (setq appt-time-msg-list nil))
+      (appt-activate)
+      (defun org-agenda-to-appt-no-message ()
+        (shut-up (org-agenda-to-appt)))
+      (run-at-time "00:00" 60 'org-agenda-to-appt-no-message))
+
+
+    ;; Override the key definition for org-exit
+    ;; TODO why does this cause an error
+    ;; (define-key org-agenda-mode-map "x" #'org-agenda-done)
+
+    ;; org-mode add-ons
+    (use-package org-present
+      :commands org-present)
+    (use-package org-pomodoro
+      :disabled t)
+
+    ;; variable configuration
+    (add-to-list 'org-modules 'org-habit)
+    (add-to-list 'org-modules 'org-expiry)
+    (add-to-list 'org-modules 'org-notify)
+
+    (setq org-src-fontify-natively t)
+    (setq org-habit-graph-column 50)
+    (setq org-habit-show-habits-only-for-today t)
+
+    ;; My priority system:
+
+    ;; A - Absolutely MUST, at all costs, be completed by the provided
+    ;;     due date. TODO: implement some type of extreme nagging
+    ;;     system that alerts in an intrusive way for overdue A
+    ;;     priority tasks.
+
+    ;; B - Should be given immediate attention if the due date is any
+    ;;     time in the next two days. Failure to meet due date would
+    ;;     be bad but not catastrophic.
+
+    ;; C - The highest priority to which tasks for which failure to
+    ;;     complete on time would not have considerable significant
+    ;;     consequences. There is still significant reason to prefer
+    ;;     the completion of these tasks sooner rather than later.
+
+    ;; D - Failure to complete within a few days (or ever) of any
+    ;;     deadline would be completely okay. As such, any deadline
+    ;;     present on such a task is necessarily self imposed. Still
+    ;;     probably worth doing
+
+    ;; E - Potentially not even worth doing at all, but worth taking a
+    ;;     note about in case it comes up again, or becomes more
+    ;;     interesting later.
+
+    ;; F - Almost certainly not worth attempting in the immediate future.
+    ;;     Just brain dump.
+
+    ;; Priorities are somewhat contextual within each category. Things
+    ;; in the gtd or work categories are generally regarded as much
+    ;; more important than things with the same priority from the
+    ;; dotfiles category.
+
+    ;; Items without deadlines or scheduled times of a given priority
+    ;; can be regarded as less important than items that DO have
+    ;; deadlines of that same priority.
+
+    (setq org-lowest-priority 69) ;; The character E
+    (setq org-completion-use-ido t)
+    (setq org-enforce-todo-dependencies t)
+    (setq org-deadline-warning-days 0)
+    (setq org-default-priority ?D)
+    (setq org-agenda-skip-scheduled-if-done t)
+    (setq org-agenda-skip-deadline-if-done t)
+    ;;(add-to-list org-agenda-tag-filter-preset "+PRIORITY<\"C\"")
+
+    (setq org-imenu-depth 10)
+
+    ;; Stop starting agenda from deleting frame setup!
+    (setq org-agenda-window-setup 'other-window)
+    (define-key mode-specific-map [?a] 'org-agenda)
+    (unbind-key "C-j" org-mode-map)
+
+    (use-package org-bullets
+      :config
+      (progn
+        (add-hook 'org-mode-hook (lambda () (org-bullets-mode 1)))))
+
+    (use-package org-ehtml
+      :disabled t
+      :config
+      (progn
+        (setq org-ehtml-docroot (expand-file-name "~/Dropbox/org"))
+        (setq org-ehtml-allow-agenda t)
+        (setq org-ehtml-editable-headlines t)
+        (setq org-ehtml-everything-editable t)))
+
+    ;; Agenda setup.
+    (defvar imalison:org-gtd-file (imalison:join-paths imalison:org-dir "gtd.org"))
+    (defvar imalison:org-habits-file (imalison:join-paths imalison:org-dir "habits.org"))
+    (defvar imalison:org-calendar-file (imalison:join-paths imalison:org-dir "calendar.org"))
+    (defvar imalison:org-inbox-file (imalison:join-paths imalison:org-dir "inbox.org"))
+
+    (unless (boundp 'org-capture-templates)
+      (defvar org-capture-templates nil))
+
+    (defvar imalison:created-property-string "
+  :PROPERTIES:
+  :CREATED: %U
+  :END:")
+
+    (imalison:add-to-org-agenda-files
+     (list imalison:org-gtd-file imalison:org-habits-file
+           imalison:org-calendar-file imalison:org-inbox-file))
+
+    (add-to-list 'org-capture-templates
+                 `("t" "GTD Todo (Linked)" entry (file ,imalison:org-gtd-file)
+                   (function imalison:make-org-linked-todo-template)))
+
+    (add-to-list 'org-capture-templates
+                 `("g" "GTD Todo" entry (file ,imalison:org-gtd-file)
+                   (function imalison:make-org-todo-template)))
+
+    (add-to-list 'org-capture-templates
+                 `("y" "Calendar entry (Linked)" entry
+                   (file ,imalison:org-calendar-file)
+                   ,(format "%s%s\n%s" "* %? %A" imalison:created-property-string "%^T")))
+
+    (add-to-list 'org-capture-templates
+                 `("c" "Calendar entry" entry
+                   ,(format "%s\n%s\n%s" "* %?" imalison:created-property-string "%^T")))
+
+    (add-to-list 'org-capture-templates
+                 `("h" "Habit" entry (file ,imalison:org-habits-file)
+                   "* TODO
+    SCHEDULED: %^t
+    :PROPERTIES:
+    :CREATED: %U
+    :STYLE: habit
+    :END:"))
+
+    (let ((this-week-high-priority
+           ;; The < in the following line has behavior that is opposite
+           ;; to what one might expect.
+           '(tags-todo "+PRIORITY<\"C\"+DEADLINE<\"<+1w>\"DEADLINE>\"<+0d>\""
+                       ((org-agenda-overriding-header
+                         "Upcoming high priority tasks:"))))
+          (due-today '(tags-todo
+                       "+DEADLINE=<\"<+1d>\"|+SCHEDULED=<\"<+0d>\""
+                       ((org-agenda-overriding-header
+                         "Due today:"))))
+          (recently-created '(tags-todo
+                              "+CREATED=>\"<-30d>\""
+                              ((org-agenda-overriding-header "Recently created:")
+                               (org-agenda-cmp-user-defined 'org-cmp-creation-times)
+                               (org-agenda-sorting-strategy '(user-defined-down)))))
+          (next '(todo "NEXT"))
+          (started '(todo "STARTED"))
+          (missing-deadline
+           '(tags-todo "-DEADLINE={.}/!"
+                       ((org-agenda-overriding-header
+                         "These don't have deadlines:"))))
+          (missing-priority
+           '(tags-todo "-PRIORITY={.}/!"
+                       ((org-agenda-overriding-header
+                         "These don't have priorities:")))))
+
+      (setq org-agenda-custom-commands
+            `(("M" "Main agenda view"
+               ((agenda ""
+                        ((org-agenda-overriding-header "Agenda:")
+                         (org-agenda-ndays 5)
+                         (org-deadline-warning-days 0)))
+                ,due-today
+                ,next
+                ,started
+                ,this-week-high-priority
+                ,recently-created)
+               nil nil)
+              ,(cons "A" (cons "High priority upcoming" this-week-high-priority))
+              ,(cons "d" (cons "Overdue tasks and due today" due-today))
+              ,(cons "r" (cons "Recently created" recently-created))
+              ("h" "A, B priority:" tags-todo "+PRIORITY<\"C\""
+               ((org-agenda-overriding-header
+                 "High Priority:")))
+              ("c" "At least priority C:" tags-todo "+PRIORITY<\"D\""
+               ((org-agenda-overriding-header
+                 "At least priority C:"))))))
+
+    ;; What follows is a description of the significance of each of
+    ;; the values available in `org-todo-keywords'. All headings with
+    ;; one of these keywords deal with the concept of the completion
+    ;; of some task or collection of tasks to bring about a particular
+    ;; state of affairs. In some cases, the actual tasks involved may
+    ;; not be known at the time of task creation.
+
+    ;; Incomplete States:
+
+    ;; IDEA - This TODO exists in only the most abstract sense: it is
+    ;; an imagined state of affairs that requires tasks that are
+    ;; either not yet known, or have not thoroughly been considered.
+
+    ;; RESEARCH - This TODO needs to be investigated further before
+    ;; action can be taken to achieve the desired outcome. It is not
+    ;; known how much time and effort will be consumed in the actual
+    ;; completion of the task.
+
+    ;; TODO - The scope and work involved in this TODO are well
+    ;; understood, but for some reason or another, it is not something
+    ;; that should be attempted in the immediate future. Typically
+    ;; this is because the task is not considered a top priority, but
+    ;; it may also be for some other reason.
+
+    ;; NEXT - This TODO is immediately actionable and should be
+    ;; started in the immediate future.
+
+    ;; STARTED - Work on this TODO has already started, further work
+    ;; is immediately actionable.
+
+    ;; WAIT - The work involved in this TODO is well understood, but
+    ;; it is blocked for the time being.
+
+    ;; BACKLOG - While technically actionable, this task is not only
+    ;; not worth pursuing in the immediate future, but the foreseable
+    ;; future. It exists as a task mostly as a note/reminder, in case
+    ;; it becomes higher priority in the future.
+
+    ;; Complete States:
+
+    ;; DONE - This TODO has been completed exactly as imagined.
+
+    ;; HANDLED - This TODO was completed in spirit, though not by the
+    ;; means that were originally imagined/outlined in the TODO.
+
+    ;; EXPIRED - The owner of this TODO failed to take action on it
+    ;; within the appropriate time period, and there is now no point in
+    ;; attempting it.
+
+    ;; CANCELED - For whatever reason, this TODO should no longer be
+    ;; attempted. This TODO is typically used in contrast to the
+    ;; EXPIRED TODO to indicate that the owner is not necessarily to
+    ;; blame.
+    ))
+#+END_SRC
+**** Load org-config.el
+I put some org-mode specific configs in a separate file so that they can be used
+separately. This means that I need to load this file in init.el.
+#+BEGIN_SRC emacs-lisp
+(load-file (concat (file-name-directory load-file-name) "org-config.el"))
+#+END_SRC
+**** Use frames
+#+BEGIN_SRC emacs-lisp
+(use-package org
+  :config
+  (progn
+  (setq org-src-window-setup 'current-window)
+    (when frame-mode
+      (progn
+        (setcdr (assoc 'file org-link-frame-setup) 'find-file-other-frame)))))
+#+END_SRC
+**** Disable yasnippet in org-mode
+#+BEGIN_SRC emacs-lisp
+(use-package org
+  :straight nil
+  :config
+  (progn
+    (defun imalison:disable-yas ()
+      (yas-minor-mode -1))
+    (add-hook 'org-mode-hook 'imalison:disable-yas)))
+#+END_SRC
+**** Set Background Color of Source Blocks for Export
+This was taken from [[http://emacs.stackexchange.com/questions/3374/set-the-background-of-org-exported-code-blocks-according-to-theme][here]].
+#+BEGIN_SRC emacs-lisp :tangle org-config.el
+(use-package org
+  :config
+  (progn
+    (defun imalison:org-inline-css-hook (exporter)
+      "Insert custom inline css to automatically set the
+background of code to whatever theme I'm using's background"
+      (when (eq exporter 'html)
+        (let* ((my-pre-bg (face-background 'default))
+               (my-pre-fg (face-foreground 'default)))
+          (setq
+           org-html-head-extra
+           (concat
+            org-html-head-extra
+            (format "<style type=\"text/css\">\n pre.src {background-color: %s; color: %s;}</style>\n"
+                    my-pre-bg my-pre-fg))))))
+
+    (add-hook 'org-export-before-processing-hook 'imalison:org-inline-css-hook)))
+#+END_SRC
+**** Use my own default naming scheme for org-headings
+First we define a function that will generate a sanitized version of the heading
+as its link target.
+#+BEGIN_SRC emacs-lisp :tangle org-config.el
+(defun imalison:org-get-raw-value (item)
+  (when (listp item)
+    (let* ((property-list (cadr item)))
+      (when property-list (plist-get property-list :raw-value)))))
+
+(defun imalison:sanitize-name (name)
+  (replace-regexp-in-string "[^[:alpha:]]" "" (s-downcase name)))
+
+(defun imalison:generate-name (datum cache)
+  (let ((raw-value (imalison:org-get-raw-value datum)))
+    (if raw-value
+        (imalison:sanitize-name raw-value)
+      ;; This is the default implementation from org
+      (let ((type (org-element-type datum)))
+        (format "org%s%d"
+                (if type
+                    (replace-regexp-in-string "-" "" (symbol-name type))
+                    "secondarystring")
+                (incf (gethash type cache 0)))))))
+#+END_SRC
+
+This function replaces the default naming scheme with a call to
+~imalison:generate-name~, and uses a slightly different uniquify approach.
+#+BEGIN_SRC emacs-lisp :tangle org-config.el
+(use-package ox
+  :defer t
+  :straight nil
+  :config
+  (defun org-export-get-reference (datum info)
+    "Return a unique reference for DATUM, as a string.
+DATUM is either an element or an object.  INFO is the current
+export state, as a plist.  Returned reference consists of
+alphanumeric characters only."
+    (let ((type (org-element-type datum))
+          (cache (or (plist-get info :internal-references)
+                     (let ((h (make-hash-table :test #'eq)))
+                       (plist-put info :internal-references h)
+                       h)))
+          (reverse-cache (or (plist-get info :taken-internal-references)
+                             (let ((h (make-hash-table :test 'equal)))
+                               (plist-put info :taken-internal-references h)
+                               h))))
+      (or (gethash datum cache)
+          (let* ((name (imalison:generate-name datum cache))
+                 (number (+ 1 (gethash name reverse-cache -1)))
+                 (new-name (format "%s%s" name (if (< 0 number) number ""))))
+            (puthash name number reverse-cache)
+            (puthash datum new-name cache)
+            new-name)))))
+#+END_SRC
+**** Add link icons in headings that lead to themselves
+#+BEGIN_SRC emacs-lisp :tangle org-config.el
+(use-package ox-html
+  :commands (org-html-export-as-html org-html-export-as-html)
+  :straight nil
+  :preface
+  (progn
+    (defvar imalison:link-svg-html
+      "<svg aria-hidden=\"true\" class=\"octicon octicon-link\" height=\"16\" version=\"1.1\" viewBox=\"0 0 16 16\" width=\"16\"><path fill-rule=\"evenodd\" d=\"M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z\"></path></svg>")
+    (defvar imalison:current-html-headline)
+    (defun imalison:set-current-html-headline (headline &rest args)
+      (setq imalison:current-html-headline headline))
+    (defun imalison:clear-current-html-headline (&rest args)
+      (setq imalison:current-html-headline nil))
+    (defun imalison:org-html-format-heading-function (todo todo-type priority text tags info)
+      (let* ((reference (when imalison:current-html-headline
+                          (org-export-get-reference imalison:current-html-headline info)))
+             ;; Don't do anything special if the current headline is not set
+             (new-text (if reference
+                           (format "%s <a href=\"#%s\">%s</a>" text reference imalison:link-svg-html)
+                         text)))
+        (org-html-format-headline-default-function
+         todo todo-type priority new-text tags info))))
+  :config
+  (progn
+    ;; This is set before and cleared afterwards, so that we know when we are
+    ;; generating the text for the headline itself and when we are not.
+    (advice-add 'org-html-headline :before 'imalison:set-current-html-headline)
+    (advice-add 'org-html-headline :after 'imalison:clear-current-html-headline)
+    (setq org-html-format-headline-function
+          'imalison:org-html-format-heading-function)))
+#+END_SRC
+**** Allow with query params in image extentions
+#+BEGIN_SRC emacs-lisp :tangle org-config.el
+(use-package ox-html
+  :defer t
+  :straight nil
+  :config
+  (setq org-html-inline-image-rules
+        '(("file" . "\\.\\(jpeg\\|jpg\\|png\\|gif\\|svg\\)\\(\\?.*?\\)?\\'")
+
+          ("http" . "\\.\\(jpeg\\|jpg\\|png\\|gif\\|svg\\)\\(\\?.*?\\)?\\'")
+          ("https" . "\\.\\(jpeg\\|jpg\\|png\\|gif\\|svg\\)\\(\\?.*?\\)?\\'"))))
+#+END_SRC
+**** org-projectile
+#+BEGIN_SRC emacs-lisp
+(use-package org-projectile
+  :defer 3
+  :config
+  (progn
+    (setq org-projectile-projects-file
+          (imalison:join-paths imalison:org-dir "projects.org")
+          org-projectile-capture-template
+          (format "%s%s" "* TODO %?" imalison:created-property-string))
+    (add-to-list 'org-capture-templates
+                 (org-projectile-project-todo-entry
+                  :capture-character "l"
+                  :capture-heading "Linked Project TODO"))
+    (add-to-list 'org-capture-templates
+                 (org-projectile-project-todo-entry
+                  :capture-character "p"))
+    (setq org-confirm-elisp-link-function nil)
+    (imalison:add-to-org-agenda-files (org-projectile-todo-files))))
+
+(use-package org-projectile-helm
+  :after org-projectile
+  :bind (("C-c n p" . org-projectile-helm-template-or-project)))
+#+END_SRC
+**** org-super-agenda
+#+BEGIN_SRC emacs-lisp
+(use-package org-super-agenda
+  :defer t
+  :config
+  (progn
+    (org-super-agenda-mode +1)
+    (setq org-super-agenda-groups
+          '((:order-multi (1 (:name "High priority"
+                                     :priority> "C")))
+            (:order-multi (1 (:name "Done today"
+                                    :and (:regexp "State \"DONE\""
+                                                  :log t))))))))
+#+END_SRC
+**** helm-org-rifle
+#+BEGIN_SRC emacs-lisp
+(use-package helm-org-rifle
+  :bind ("C-c C-h" . helm-org-rifle-agenda-files))
+#+END_SRC
+**** org-notify
+ #+BEGIN_SRC emacs-lisp
+(use-package org-notify
+  :disabled t
+  :after org
+  :config
+  (progn
+    (defun imalison:org-notify-notification-handler (plist)
+      (sauron-add-event 'org-notify 4 (format "%s, %s.\n" (plist-get plist :heading)
+                                              (org-notify-body-text plist))))
+
+    (setq org-show-notification-handler 'imalison:org-notify-notification-handler)
+
+    (org-notify-add 'default '(:time "1h" :actions imalison:org-notify-notification-handler
+                                     :period "2m" :duration 60))
+    (org-notify-add 'default '(:time "100m" :actions imalison:org-notify-notification-handler
+                                     :period "2m" :duration 60))
+    (org-notify-add 'urgent-second '(:time "3m" :actions (-notify/window -ding)
+                                           :period "15s" :duration 10))
+    (org-notify-add 'minute '(:time "5m" :actions -notify/window
+                                    :period "100s" :duration 70))
+    (org-notify-add '12hours
+                    '(:time "3m" :actions (-notify/window -ding)
+                            :period "15s" :duration 10)
+                    '(:time "100m" :actions -notify/window
+                            :period "2m" :duration 60)
+                    '(:time "12h" :actions -notify/window :audible nil
+                            :period "10m" :duration 200))
+    (org-notify-add '5days
+                    '(:time "100m" :actions -notify/window
+                            :period "2m" :duration 60)
+                    '(:time "2d" :actions -notify/window
+                            :period "15m" :duration 100)
+                    '(:time "5d" :actions -notify/window
+                            :period "2h" :duration 200))
+    (org-notify-add 'long-20days
+                    '(:time "2d" :actions -notify/window
+                            :period "15m" :duration 60)
+                    '(:time "5d" :actions -notify/window
+                            :period "2h" :duration 60)
+                    '(:time "20d" :actions -email :period "2d" :audible nil))
+    (org-notify-add 'long-50days
+                    '(:time "4d" :actions -notify/window
+                            :period "30m" :duration 100)
+                    '(:time "10d" :actions -notify/window
+                            :period "4h" :duration 200)
+                    '(:time "50d" :actions -email :period "3d" :audible nil))
+    (org-notify-add 'long-100days
+                    '(:time "2d" :actions -notify/window
+                            :period "1h" :duration 200)
+                    '(:time "10d" :actions -notify/window
+                            :period "10h" :duration 300)
+                    '(:time "50d" :actions -email :period "3d" :audible nil)
+                    '(:time "100d" :actions -email :period "5d" :audible nil))
+    (org-notify-start 10)))
+ #+END_SRC
+**** org-reveal
+#+BEGIN_SRC emacs-lisp
+(use-package ox-reveal
+  :defer t
+  :commands org-reveal
+  :config
+  (setq org-reveal-root
+      (imalison:join-paths "file://" imalison:projects-directory "reveal.js")))
+#+END_SRC
+**** org-caldav
+#+BEGIN_SRC emacs-lisp
+(use-package org-caldav
+  :defer t
+  :config
+  (progn
+    (setq org-caldav-url "https://www.google.com/calendar/dav"
+          org-caldav-inbox imalison:org-inbox-file
+          org-caldav-files (list imalison:org-calendar-file)
+          org-icalendar-timezone "America/Los_Angeles")))
+#+END_SRC
+*** TeX
+#+BEGIN_SRC emacs-lisp
+(use-package tex
+  :disabled t
+  :straight auctex
+  :commands TeX-mode
+  :preface
+  (progn
+    (defun imalison:TeX-mode-hook ()
+      (turn-on-reftex)
+      (TeX-source-correlate-mode +1)
+      (TeX-PDF-mode +1)))
+  :config
+  (progn
+    (unbind-key "C-j" TeX-mode-map)
+    (TeX-global-PDF-mode)
+    (setq TeX-auto-save t
+          TeX-parse-self t
+          TeX-save-query nil
+          TeX-PDF-mode t)
+    (TeX-global-PDF-mode t)
+    (add-hook 'TeX-mode-hook 'imalison:TeX-mode-hook)))
+#+END_SRC
+**** latex
+ #+BEGIN_SRC emacs-lisp
+(use-package latex
+  :straight auctex
+  :after tex
+  :config
+  (progn
+    (unbind-key "C-j" LaTeX-mode-map)))
+ #+END_SRC
+**** auctex-latexmk
+#+BEGIN_SRC emacs-lisp
+(use-package auctex-latexmk
+  :after tex
+  :config
+  (progn
+    (setq auctex-latexmk-inherit-TeX-PDF-mode t)
+    (auctex-latexmk-setup)))
+#+END_SRC
+**** company-auctex
+#+BEGIN_SRC emacs-lisp
+(use-package company-auctex
+  :after tex
+  :config
+  (company-auctex-init))
+#+END_SRC
+*** markdown-mode
+#+BEGIN_SRC emacs-lisp
+(use-package markdown-mode
+  :defer t
+  :init
+  (progn
+    (add-hook 'markdown-mode-hook 'imalison:disable-linum-mode)))
+#+END_SRC
+*** plantuml-mode
+#+BEGIN_SRC emacs-lisp
+(use-package plantuml-mode
+  :commands plantuml-mode
+  :mode ("\\.puml\\'" "\\.plantuml\\'")
+  :preface
+  (progn
+    (cond ((equal system-type 'darwin)
+           (let* ((plantuml-dir
+                   (s-trim (shell-command-to-string "brew --prefix plantuml")))
+                  (filename
+                   (when (file-exists-p plantuml-dir)
+                     (--first (s-ends-with? ".jar" it) (directory-files plantuml-dir))))
+                  (filepath (when filename
+                              (imalison:join-paths plantuml-dir filename))))
+             (setq plantuml-jar-path filepath
+                   org-plantuml-jar-path filepath)))
+          ((equal system-type 'gnu/linux)
+           (let ((filepath "/opt/plantuml/plantuml.jar"))
+             (setq plantuml-jar-path filepath
+                   org-plantuml-jar-path filepath))))
+    (add-to-list
+     'org-src-lang-modes '("plantuml" . plantuml))))
+#+END_SRC
+*** wsd-mode
+#+BEGIN_SRC emacs-lisp
+(use-package wsd-mode
+  :commands (wsd-mode))
+#+END_SRC
+** Utility
+*** restclient
+#+BEGIN_SRC emacs-lisp
+(use-package restclient
+  :mode (("\\.restclient\\'" . restclient-mode))
+  :config
+  (progn
+    (use-package company-restclient)))
+#+END_SRC
+*** jq-mode
+#+BEGIN_SRC emacs-lisp
+(use-package jq-mode
+  :mode "\\.jq\\'")
+#+END_SRC
+*** systemd
+#+BEGIN_SRC emacs-lisp
+(use-package systemd
+  :commands systemd-mode
+  :preface
+  (ignore
+   (add-to-list 'auto-mode-alist
+                '("\\.service\\'" . systemd-mode))
+   (add-to-list 'auto-mode-alist
+                '("\\.socket\\'" . systemd-mode))))
+#+END_SRC
+* Source Control
+** magit
+#+BEGIN_SRC emacs-lisp
+(use-package magit
+  :commands magit-status
+  :bind (("C-x g" . imalison:magit-status))
+  :preface
+  (progn
+    (emit-let-around imalison:magit-status-traditional
+                     magit-status
+                     (magit-display-buffer-function
+                      'magit-display-buffer-traditional))
+    (emit-prefix-selector imalison:magit-status
+                          magit-status
+                          imalison:magit-status-traditional)
+    (defun imalison:after-magit-visit-file (&rest args)
+      (when (derived-mode-p 'org-mode)
+        (org-show-context 'magit-goto))))
+  :config
+  (progn
+    (when frame-mode
+      (setq magit-commit-show-diff t))
+    (unbind-key "C-j" magit-status-mode-map)
+    (unbind-key "C-j" magit-hunk-section-map)
+    (unbind-key "C-j" magit-file-section-map)
+    (setq magit-last-seen-setup-instructions "1.4.0"
+          magit-display-buffer-function
+          'magit-display-buffer-same-window-except-diff-v1)
+    (magit-auto-revert-mode)
+
+    (add-to-list 'org-show-context-detail '(magit-goto . lineage))
+    (advice-add 'magit-diff-visit-file :after 'imalison:after-magit-visit-file)
+    (add-hook 'magit-popup-mode-hook 'imalison:disable-show-trailing-whitespace)))
+#+END_SRC
+*** magithub
+I've disabled magithub because it causes magit to be super slow
+#+BEGIN_SRC emacs-lisp
+(use-package magithub
+  :disabled t
+  :after magit)
+#+END_SRC
+** git-link
+#+BEGIN_SRC emacs-lisp
+(use-package git-link
+  :defer t
+  :config
+  (progn
+    (setq git-link-use-commit t)))
+#+END_SRC
+** magit-gitflow
+#+BEGIN_SRC emacs-lisp
+(use-package magit-gitflow
+  :diminish magit-gitflow-mode
+  :after magit
+  :init
+  (progn
+    (setq magit-gitflow-popup-key "C-k"))
+  :config
+  (progn
+    (add-hook 'magit-mode-hook 'turn-on-magit-gitflow)))
+#+END_SRC
+** git-timemachine
+#+BEGIN_SRC emacs-lisp
+(use-package git-timemachine
+  :commands git-timemachine)
+#+END_SRC
+** git-gutter
+#+BEGIN_SRC emacs-lisp
+(use-package git-gutter
+  :disabled t
+  :config
+  (progn
+    (global-git-gutter-mode +1)))
+#+END_SRC
+** gitolite-clone
+#+BEGIN_SRC emacs-lisp
+(use-package gitolite-clone
+  :defer 4
+  :preface
+  (progn
+    (defun gitolite-clone-force-refresh ()
+      (interactive)
+      (gitolite-clone-get-projects nil nil t))))
+#+END_SRC
+** gitconfig-mode
+#+BEGIN_SRC emacs-lisp
+(use-package gitconfig-mode
+  :mode "\\.?gitconfig.?.*\\'")
+#+END_SRC
+** gitignore-mode
+#+BEGIN_SRC emacs-lisp
+(use-package gitignore-mode
+  :mode "\\.?gitignore.?.*\\'")
+#+END_SRC
+** github
+*** github-search
+#+BEGIN_SRC emacs-lisp
+(use-package github-search
+  :commands (github-search-clone-repo github-search-user-clone-repo)
+  :preface
+  (progn
+    (defun imalison:get-appropriate-path-from-gh-repo-for-go (repo)
+      (require 'go-mode)
+      (imalison:get-go-src "github.com" (oref (oref repo :owner) :login)
+                           (oref repo :name)))
+
+    (defun imalison:get-projects-directory-target-from-repo (repo)
+      (let ((prospective-path
+             (if (equal (oref repo language) "Go")
+                 (imalison:get-appropriate-path-from-gh-repo-for-go repo)
+               (imalison:join-paths imalison:projects-directory (oref repo :name)))))
+        (if (file-exists-p prospective-path)
+            (funcall 'github-search-prompt-for-target-directory repo)
+          prospective-path))))
+  :config
+  (progn
+    (setq github-search-get-target-directory-for-repo-function
+          'imalison:get-projects-directory-target-from-repo)))
+#+END_SRC
+*** github-clone
+#+BEGIN_SRC emacs-lisp
+(use-package github-clone
+  :commands (github-clone-add-parent-remote
+             github-clone-add-source-remote
+             github-clone-fork-remote
+             github-clone-add-existing-remote
+             github-clone))
+#+END_SRC
+*** github-notifier
+This is disabled because it was causing too many issues with my
+modeline and with excessive http requests to github.
+#+BEGIN_SRC emacs-lisp
+(use-package github-notifier
+  :disabled t
+  :config
+  (progn
+    (advice-add 'github-notifier-update :around 'imalison:shut-up-around)
+    (github-notifier-mode)))
+#+END_SRC
+*** github-browse-file
+#+BEGIN_SRC emacs-lisp
+(use-package github-browse-file
+  :commands github-browse-file)
+#+END_SRC
+*** magit-gh-pulls
+#+BEGIN_SRC emacs-lisp
+(use-package magit-gh-pulls
+  :disabled t
+  :diminish magit-gh-pulls-mode
+  :after magit
+  :config
+  (progn
+    (add-hook 'magit-mode-hook 'turn-on-magit-gh-pulls)))
+#+END_SRC
+*** gist
+#+BEGIN_SRC emacs-lisp
+(use-package gist
+  :commands (gist-region gist-region-private gist-buffer gist-buffer-private
+                         gist-region-or-buffer gist-region-or-buffer-private
+                         gist-list-user gist-list gist-fetch gist-star
+                         gist-unstar gist-list-starred gist-fork))
+#+END_SRC
+* Programming
+** realgud
+realgud provides debugging support with many external debuggers in emacs
+#+BEGIN_SRC emacs-lisp
+(use-package realgud
+  :defer 10)
+#+END_SRC
+** emr
+emr (emacs refactor) provides support for refactoring in many programming languages
+#+BEGIN_SRC emacs-lisp
+(use-package emr
+  :bind (:map prog-mode-map
+              ("M-RET" . emr-show-refactor-menu))
+  :config (emr-initialize))
+#+END_SRC
+** semantic
+#+BEGIN_SRC emacs-lisp
+(use-package semantic
+  :commands semantic-mode
+  :disabled t
+  :preface
+  (progn
+    (add-hook 'prog-mode-hook 'semantic-mode)))
+#+END_SRC
+** language-server-protocol (lsp)
+#+BEGIN_SRC emacs-lisp
+(use-package lsp-ui
+  :config
+  (progn
+    (add-hook 'lsp-mode-hook 'lsp-ui-mode)
+    (progn
+      (require 'lsp-ui-flycheck))))
+
+(use-package lsp-mode
+  :commands lsp-mode
+  :init (add-hook 'prog-major-mode 'lsp-mode))
+#+END_SRC
+* Utility
+** term
+The main thing I do here is restore a bunch of keybindings that are eliminated
+in term-mode. This makes term-mode 1000% more useful
+(especially having M-x and C-y available).
+#+BEGIN_SRC emacs-lisp
+(use-package term
+  :demand t
+  :preface
+  (progn
+    (defun imalison:avy-term (arg)
+      (interactive "P")
+      (term-line-mode)
+      (imalison:avy arg))
+
+    (defun imalison:term-paste (&optional string)
+      (interactive)
+      (process-send-string
+       (get-buffer-process (current-buffer))
+       (if string string (current-kill 0)))))
+  :bind
+  (:map term-mode-map
+        ("C-c C-k" . imalison:term-char-mode)
+        :map term-raw-escape-map
+        ("M-x" . helm-M-x)
+        ("C-j" . imalison:avy-term)
+        :map term-raw-map
+        ("M-x" . helm-M-x)
+        ("C-j" . imalison:avy-term)
+        ("M-:" . eval-expression)
+        ("C-y" . imalison:term-paste)
+        ("M-y" . helm-show-kill-ring-for-term))
+  :config
+  (progn
+    (use-package helm-ring
+      :straight nil
+      :defer 1
+      :config
+      (progn
+        (defvar helm-kill-ring-for-term-actions
+          '(("Yank" . imalison:term-paste)
+            ("Delete" . (lambda (_candidate)
+                          (cl-loop for cand in (helm-marked-candidates)
+                                   do (setq kill-ring
+                                            (delete cand kill-ring)))))))
+        (defvar helm-source-kill-ring-for-term
+          (helm-build-sync-source "Kill Ring"
+            :init (lambda () (helm-attrset 'last-command last-command))
+            :candidates #'helm-kill-ring-candidates
+            :filtered-candidate-transformer #'helm-kill-ring-transformer
+            :action 'helm-kill-ring-for-term-actions
+            :persistent-action 'ignore
+            :persistent-help "DoNothing"
+            :migemo t
+            :multiline t))
+
+        (defun helm-show-kill-ring-for-term ()
+          "Preconfigured `helm' for `kill-ring'.
+It is drop-in replacement of `yank-pop'.
+
+First call open the kill-ring browser, next calls move to next line."
+          (interactive)
+          (let ((enable-recursive-minibuffers t))
+            (helm :sources helm-source-kill-ring-for-term
+                  :buffer "*helm kill ring*"
+                  :resume 'noresume
+                  :allow-nest t)))))
+
+    (defun imalison:term-char-mode ()
+      (interactive)
+      (term-char-mode)
+      (goto-char (point-max)))
+    (define-key term-raw-map (kbd "C-h") help-map)
+    (add-hook 'term-mode-hook 'imalison:disable-linum-mode)
+    (add-hook 'term-mode-hook 'imalison:disable-yas-minor-mode)
+    (add-hook 'term-mode-hook 'imalison:disable-show-trailing-whitespace)
+    (setq term-buffer-maximum-size 0
+          term-suppress-hard-newline t)))
+#+END_SRC
+** term-manager
+#+BEGIN_SRC emacs-lisp
+(use-package term-manager
+  :defer t
+  :preface
+  (progn
+    (defun imalison:set-escape-char (&rest _args)
+      (let (term-escape-char)
+        (term-set-escape-char ?\C-x))))
+  :config
+  (progn
+    (advice-add
+     'term-manager-default-build-term :after 'imalison:set-escape-char)))
+#+END_SRC
+** term-projectile
+#+BEGIN_SRC emacs-lisp
+(use-package term-projectile
+  :bind ("C-c 7" . imalison:term-hydra-global/body)
+  :commands (term-projectile-forward term-projectile-backward
+                                     term-projectile-default-directory-forward
+                                     term-projectile-default-directory-backward
+                                     term-projectile-create-new
+                                     term-projectile-create-new-default-directory)
+  :config
+  (progn
+    (emit-prefix-selector imalison:term
+                          term-projectile-forward
+                          term-projectile-create-new)
+
+    (defvar imalison:term-hydra-original-default-directory)
+
+    (defhydra imalison:term-hydra-default-directory
+      (:body-pre
+       (term-projectile-default-directory-forward-restored))
+      "term - default-directory"
+      ("s" term-projectile-switch-to)
+      ("f" term-projectile-default-directory-forward-restored)
+      ("b" term-projectile-default-directory-backward-restored)
+      ("c" term-projectile-default-directory-create-new-restored)
+      ("d" term-projectile-default-directory-forward-restored)
+      ("g" imalison:term-hydra-global/body-restored :exit t)
+      ("p" imalison:term-hydra-projectile/body-restored :exit t))
+
+    (defhydra imalison:term-hydra-projectile
+      (:body-pre
+       (progn
+         (term-projectile-forward-restored)))
+      "term - projectile"
+      ("s" term-projectile-switch-to)
+      ("f" term-projectile-forward-restored)
+      ("b" term-projectile-backward-restored)
+      ("c" term-projectile-create-new-restored)
+      ("d" imalison:term-hydra-default-directory/body-restored :exit t)
+      ("g" imalison:term-hydra-global/body-restored :exit t)
+      ("p" term-projectile-forward-restored))
+
+
+    (defhydra imalison:term-hydra-global
+      (:body-pre
+       (progn (setq imalison:term-hydra-original-default-directory
+                    default-directory)))
+      "term - global"
+      ("s" term-projectile-switch-to)
+      ("f" term-projectile-global-forward-restored)
+      ("b" term-projectile-global-backward-restored)
+      ("c" term-projectile-global-create-new-restored)
+      ("d" imalison:term-hydra-default-directory/body-restored :exit t)
+      ("g" term-projectile-global-forward-restored)
+      ("p" imalison:term-hydra-projectile/body-restored :exit t))
+
+    (mapcar (lambda (term-projectile-function)
+              (defalias (imalison:concat-symbols term-projectile-function '-restored)
+                (lambda (&rest args)
+                  (interactive)
+                  (let ((default-directory imalison:term-hydra-original-default-directory))
+                    (apply term-projectile-function args)))))
+            '(term-projectile-default-directory-forward
+              term-projectile-default-directory-backward
+              term-projectile-default-directory-create-new
+              term-projectile-forward
+              term-projectile-backward
+              term-projectile-create-new
+              term-projectile-global-forward
+              term-projectile-global-backward
+              term-projectile-global-create-new
+              imalison:term-hydra-global/body
+              imalison:term-hydra-projectile/body
+              imalison:term-hydra-default-directory/body))))
+#+END_SRC
+** crux
+crux-reopen-as-root-mode makes it so that any file owned by root will automatically be opened as the root user.
+#+BEGIN_SRC emacs-lisp
+(use-package crux
+  :defer 10
+  :bind (("C-c C-s" . crux-sudo-edit)
+         ("C-c C-r" . crux-eval-and-replace)
+         ("C-c o" . crux-open-with))
+  :config
+  (progn
+    (crux-reopen-as-root-mode)))
+#+END_SRC
+** kde-connect
+#+BEGIN_SRC emacs-lisp
+(use-package kdeconnect)
+#+END_SRC
+** helm-systemd
+#+BEGIN_SRC emacs-lisp
+(use-package helm-systemd
+  :commands helm-systemd)
+#+END_SRC
+** aurel
+#+BEGIN_SRC emacs-lisp
+(use-package aurel
+  :defer t)
+#+END_SRC
+* Chat
+** erc
+#+BEGIN_SRC emacs-lisp
+(use-package erc
+  :commands erc
+  :config
+  (progn
+    ;; (add-to-list 'erc-modules 'notifications)
+    ;; logging:
+    (use-package erc-colorize
+      :config
+      (erc-colorize-mode 1))))
+#+END_SRC
+** bitlbee
+#+BEGIN_SRC emacs-lisp
+(use-package bitlbee
+  :disabled t
+  :config
+  (progn
+    (defvar bitlbee-password "geheim")
+    (add-hook 'erc-join-hook 'bitlbee-identify)
+    (defun bitlbee-identify ()
+      "If we're on the bitlbee server, send the identify command to the
+   &bitlbee channel."
+      (when (and (string= "localhost" erc-session-server)
+                 (string= "&bitlbee" (buffer-name)))
+        (erc-message "PRIVMSG" (format "%s identify %s"
+                                       (erc-default-target)
+                                       bitlbee-password))))))
+
+#+END_SRC
+** slack
+#+BEGIN_SRC emacs-lisp
+(use-package slack
+  :commands slack-start)
+#+END_SRC
+* Cooperation
+** togetherly
+#+BEGIN_SRC emacs-lisp
+(use-package togetherly
+  :defer t)
+#+END_SRC
+** floobits
+#+BEGIN_SRC emacs-lisp
+(use-package floobits
+  :defer t)
+#+END_SRC
+** rudel
+#+BEGIN_SRC emacs-lisp
+(use-package rudel
+  :disabled t)
+#+END_SRC
+* Other
+** anzu
+#+BEGIN_SRC emacs-lisp
+(use-package anzu
+  :defer 10
+  :config
+  (progn
+    (global-anzu-mode +1)
+
+    (custom-set-variables
+     '(anzu-mode-lighter "")
+     '(anzu-deactivate-region t)
+     '(anzu-search-threshold 1000)
+     '(anzu-replace-threshold 50)
+     '(anzu-replace-to-string-separator " => "))
+
+    (define-key isearch-mode-map [remap isearch-query-replace]
+      #'anzu-isearch-query-replace)
+    (define-key isearch-mode-map [remap isearch-query-replace-regexp]
+      #'anzu-isearch-query-replace-regexp)))
+#+END_SRC
+** fontawesome
+#+BEGIN_SRC emacs-lisp
+(use-package fontawesome
+  :commands helm-fontawesome)
+#+END_SRC
+** shell-history
+I think that shell-history is causing projectile to be very slow so I have disabled it.
+#+BEGIN_SRC emacs-lisp
+(use-package shell-history
+  :demand t
+  :disabled t)
+#+END_SRC
+** iedit
+I don't use iedit directly, but it is used by [[*emr][emr]] and I need to disable ~iedit-toggle-key-default~ or else a buffer pops up complaing that the key has been bound to something else
+#+BEGIN_SRC emacs-lisp
+(use-package iedit
+  :defer t)
+#+END_SRC
+** tramp
+#+BEGIN_SRC emacs-lisp
+(use-package tramp
+  :commands tramp
+  :config
+  (setq tramp-default-method "scp"))
+#+END_SRC
+** narrow-indirect
+#+BEGIN_SRC emacs-lisp
+(use-package narrow-indirect
+  :init
+  (progn
+    (define-key ctl-x-4-map "nd" 'ni-narrow-to-defun-indirect-other-window)
+    (define-key ctl-x-4-map "nn" 'ni-narrow-to-region-indirect-other-window)
+    (define-key ctl-x-4-map "np" 'ni-narrow-to-page-indirect-other-window)))
+#+END_SRC
+** editorconfig
+I had to disable this mode because something that it does messes with coding settings and makes it so that I have to select the appropriate encoding every time I save gpg encrypted files.
+#+BEGIN_SRC emacs-lisp
+(use-package editorconfig
+  :disabled t
+  :config
+  (progn
+    (add-to-list 'editorconfig-exclude-modes '(org-mode))
+    (editorconfig-mode 1)))
+#+END_SRC
+** dtrt-indent
+#+BEGIN_SRC emacs-lisp
+(use-package dtrt-indent
+  :commands 'dtrt-indent-mode
+  :init (add-hook 'prog-mode-hook 'dtrt-indent-mode)
+  :config
+  (progn
+    (setq dtrt-indent-active-mode-line-info " [⟼]")))
+#+END_SRC
+** indent-guide
+#+BEGIN_SRC emacs-lisp
+(use-package indent-guide
+  :disabled t
+  :config
+  (progn
+    (indent-guide-global-mode -1)
+    (setq indent-guide-delay 0.1)))
+#+END_SRC
+** rainbow-delimiters
+#+BEGIN_SRC emacs-lisp
+(use-package rainbow-delimiters
+  :commands rainbow-delimiters-mode
+  :init
+  (progn
+    (add-hook 'prog-mode-hook (lambda () (rainbow-delimiters-mode t)))))
+#+END_SRC
+** undo-tree
+#+BEGIN_SRC emacs-lisp
+(use-package undo-tree
+  :bind (("C--" . undo-redo)
+         ("C-c u" . undo-tree-visualize)
+         ("C-c r" . undo-tree-redo))
+  :config
+  (diminish 'undo-tree-mode)
+  :init
+  (progn
+    ;;(setq undo-tree-visualizer-diff t) ;; This causes performance problems
+    (setq undo-limit (expt 2 25)
+          undo-strong-limit (expt 2 25))
+    (global-undo-tree-mode)
+    (setq undo-tree-visualizer-timestamps t)))
+#+END_SRC
+** recentf
+#+BEGIN_SRC emacs-lisp
+(use-package recentf
+  :config
+  (progn
+    (setq recentf-max-saved-items 1000
+          recentf-max-menu-items 1000)
+    (advice-add 'recentf-cleanup :around 'imalison:shut-up-around)
+    (recentf-mode 1)))
+#+END_SRC
+** key-chord
+I have currently disabled key-chord because it may cause typing lag.
+#+BEGIN_SRC emacs-lisp
+(use-package key-chord
+  :disabled t
+  :preface
+  (defun imalison:disable-keychord-around (function &rest args)
+    (let ((key-chord-mode-was-enabled (bound-and-true-p key-chord-mode)))
+      (when key-chord-mode-was-enabled (key-chord-mode -1))
+      (condition-case err (progn (apply function args)) (error))
+      (when key-chord-mode-was-enabled (key-chord-mode 1))))
+  :config
+  (progn
+    (advice-add 'key-chord-mode :around 'imalison:shut-up-around)
+    (key-chord-mode 1)
+    (advice-add 'imalison:avy :around 'imalison:disable-keychord-around)
+    (key-chord-define-global "tg" 'imalison:term-hydra/body)
+    (key-chord-define-global "pj" 'imalison:projectile-find-file)
+    (key-chord-define-global "p[" 'projectile-switch-project)
+    (key-chord-define-global "fj" 'imalison:do-ag)
+    (key-chord-define-global "jh" 'imalison:avy)))
+#+END_SRC
+** nodejs-repl
+#+BEGIN_SRC emacs-lisp
+(use-package nodejs-repl
+  :commands nodejs-repl)
+#+END_SRC
+** calc-mode
+#+BEGIN_SRC emacs-lisp
+(use-package calc-mode
+  :straight nil
+  :commands calc
+  :config
+  (progn
+    (setq calc-context-sensitive-enter t)))
+#+END_SRC
+** helm-spotify
+#+BEGIN_SRC emacs-lisp
+(use-package helm-spotify
+  :commands helm-spotify)
+#+END_SRC
+** jabber
+Disabled because it has its own version of hexrgb which might cause conflicts
+#+BEGIN_SRC emacs-lisp
+(use-package jabber
+  :commands jabber-connect
+  :disabled t
+  :config
+  (progn
+    (setq jabber-alert-presence-hooks nil)
+    (defun jabber-message-content-message (from buffer text)
+      (when (or jabber-message-alert-same-buffer
+                (not (memq (selected-window) (get-buffer-window-list buffer))))
+        (if (jabber-muc-sender-p from)
+            (format "%s: %s" (jabber-jid-resource from) text)
+          (format "%s: %s" (jabber-jid-displayname from) text))))
+    (setq jabber-alert-message-function 'jabber-message-content-message)))
+#+END_SRC
+** htmlize
+This package is needed to export org to html.
+#+BEGIN_SRC emacs-lisp
+(use-package htmlize)
+#+END_SRC
+** calfw
+#+BEGIN_SRC emacs-lisp
+(use-package calfw-org
+  :disabled t
+  :demand t)
+#+END_SRC
+** clocker
+Not really sure what this is
+#+BEGIN_SRC emacs-lisp
+(use-package clocker
+  :disabled t)
+#+END_SRC
+** deft
+#+BEGIN_SRC emacs-lisp
+(use-package deft
+  :commands deft
+  :config
+  (progn
+    (setq deft-default-extension "org")
+    (setq deft-extensions '("org"))
+    (setq deft-use-filter-string-for-filename t)
+    (setq deft-file-naming-rules '((noslash . "_")
+                                   (nospace . "_")
+                                   (case-fn . downcase)))
+    (setq deft-directory "~/SparkleShare/org/notes")))
+#+END_SRC
+** epg
+#+BEGIN_SRC emacs-lisp
+(use-package epg
+  :after shut-up
+  :config
+  (shut-up
+    (epa-file-enable)))
+#+END_SRC
+** pinentry
+#+BEGIN_SRC emacs-lisp
+(use-package pinentry
+  :defer 5
+  :config
+  (pinentry-start))
+#+END_SRC
+** twittering-mode
+#+BEGIN_SRC emacs-lisp
+(use-package twittering-mode
+  :commands twittering-mode)
+#+END_SRC
+** matrix-client
+#+BEGIN_SRC emacs-lisp
+(use-package matrix-client
+  :disabled t ;; fails to load eieio on startup
+  )
+#+END_SRC
+** mu4e
+#+BEGIN_SRC emacs-lisp
+;; (eval-when-compile
+;;   (require 's)
+;;   (defvar mu4e-elisp-directory
+;;     (s-trim (shell-command-to-string "mu4e_directory"))))
+(use-package mu4e
+  :disabled t
+  :load-path mu4e-elisp-directory
+  :straight nil
+  :commands (mu4e mu4e-view-message-with-msgid mu4e-update-index email)
+  :bind ("C-c 0" . email)
+  :config
+  (progn
+    (defun email (&optional arg)
+      (interactive "P")
+      (if (string-equal (persp-name persp-curr) "email")
+          (progn (delete-other-windows) (mu4e))
+        (progn
+          (persp-switch "email")
+          (when (or (not (mu4e-running-p)) arg)
+            (delete-other-windows) (mu4e)))))
+    ;; enable inline images
+    (setq mu4e-view-show-images t)
+    ;; show images
+    (setq mu4e-show-images t)
+    ;; Try to display html as text
+    (setq mu4e-view-prefer-html nil)
+
+    (setq mu4e-html2text-command "html2text -width 80 -nobs -utf8")
+
+    ;; use imagemagick, if available
+    (when (fboundp 'imagemagick-register-types)
+      (imagemagick-register-types))
+    (setq mail-user-agent 'mu4e-user-agent)
+    (require 'org-mu4e)
+    (setq mu4e-compose-complete-only-after nil)
+    (setq mu4e-maildir "~/Mail")
+
+    (setq mu4e-drafts-folder "/[Gmail].Drafts")
+    (setq mu4e-sent-folder   "/[Gmail].Sent Mail")
+    (setq mu4e-trash-folder  "/[Gmail].Trash")
+
+    (setq mu4e-sent-messages-behavior 'delete)
+    (setq mu4e-headers-skip-duplicates t)
+    (setq mu4e-update-interval (* 60 20))
+    (setq message-kill-buffer-on-exit t)
+    (setq mail-user-agent 'mu4e-user-agent) ;; make mu4e the default mail client
+
+    ;; don't save message to Sent Messages, Gmail/IMAP takes care of this
+    (setq mu4e-sent-messages-behavior 'delete)
+
+    ;; allow for updating mail using 'U' in the main view:
+    (setq mu4e-get-mail-command "timeout 60 offlineimap")
+
+    (add-hook 'mu4e-compose-mode-hook
+              (defun my-do-compose-stuff () (flyspell-mode)))
+
+    (add-to-list 'mu4e-headers-actions '("view in browser" . mu4e-action-view-in-browser))
+    (add-to-list 'mu4e-view-actions '("view in browser" . mu4e-action-view-in-browser))
+
+    (defun mu4e-view (msg headersbuf)
+      "Display the message MSG in a new buffer, and keep in sync with HDRSBUF.
+  'In sync' here means that moving to the next/previous message in
+  the the message view affects HDRSBUF, as does marking etc.
+
+  As a side-effect, a message that is being viewed loses its 'unread'
+  marking if it still had that."
+      (let* ((embedded ;; is it as an embedded msg (ie. message/rfc822 att)?
+              (when (gethash (mu4e-message-field msg :path)
+                             mu4e~path-parent-docid-map) t))
+             (buf
+              (if embedded
+                  (mu4e~view-embedded-winbuf)
+                (get-buffer-create mu4e~view-buffer-name))))
+        ;; note: mu4e~view-mark-as-read will pseudo-recursively call mu4e-view again
+        ;; by triggering mu4e~view again as it marks the message as read
+        (with-current-buffer buf
+          (switch-to-buffer buf)
+          (setq mu4e~view-msg msg)
+          ;;(or embedded (not (mu4e~view-mark-as-read msg)))
+          (when (or (mu4e~view-mark-as-read msg) t)
+            (let ((inhibit-read-only t))
+              (erase-buffer)
+              (mu4e~delete-all-overlays)
+              (insert (mu4e-view-message-text msg))
+              (goto-char (point-min))
+              (mu4e~fontify-cited)
+              (mu4e~fontify-signature)
+              (mu4e~view-make-urls-clickable)
+              (mu4e~view-show-images-maybe msg)
+              (setq
+               mu4e~view-buffer buf
+               mu4e~view-headers-buffer headersbuf)
+              (when embedded (local-set-key "q" 'kill-buffer-and-window))
+              (mu4e-view-mode))))))
+
+    (require 'smtpmail)
+
+    ;; alternatively, for emacs-24 you can use:
+    (setq message-send-mail-function 'smtpmail-send-it
+          smtpmail-stream-type 'starttls
+          smtpmail-default-smtp-server "smtp.gmail.com"
+          smtpmail-smtp-server "smtp.gmail.com"
+          smtpmail-smtp-service 587)))
+
+#+END_SRC
+** gmail-message-mode
+This is useful with server mode when editing gmail messages. I think that it is not currently working, or it may need to be manually enabled.
+#+BEGIN_SRC emacs-lisp
+(use-package gmail-message-mode
+  :mode ("\\.gmm\\'" . gmail-message-mode))
+#+END_SRC
+** ham-mode
+#+BEGIN_SRC emacs-lisp
+(use-package ham-mode
+  :commands ham-mode
+  :config
+  (progn
+    (setq ham-mode-html-to-markdown-command
+          '("pandoc" "--from" "html" "--to" "markdown" file))))
+#+END_SRC
+** alert
+#+BEGIN_SRC emacs-lisp
+(use-package alert
+  :defer t
+  :config
+  (progn
+    (defun alert-notifier-notify (info)
+      (if alert-notifier-command
+          (let ((args
+                 (list "-title"   (alert-encode-string (plist-get info :title))
+                       "-activate" "org.gnu.Emacs"
+                       "-message" (alert-encode-string (plist-get info :message))
+                       "-execute" (format "\"%s\"" (switch-to-buffer-command (plist-get info :buffer))))))
+            (apply #'call-process alert-notifier-command nil nil nil args))
+        (alert-message-notify info)))
+
+    (defun switch-to-buffer-command (buffer-name)
+      (emacsclient-command (format "(switch-to-buffer \\\"%s\\\")" buffer-name)))
+
+    (defun emacsclient-command (command)
+      (format "emacsclient --server-file='%s' -e '%s'" server-name command))
+
+    (setq alert-default-style 'notifier)))
+#+END_SRC
+** sauron
+#+BEGIN_SRC emacs-lisp
+(use-package sauron
+  :disabled t
+  :defer 5
+  :commands (sauron-start sauron-start-hidden)
+  :init
+  (progn
+    (when (eq system-type 'darwin)
+      (setq sauron-modules '(sauron-erc sauron-org sauron-notifications
+                                        sauron-twittering sauron-jabber sauron-identica))
+      (defun sauron-dbus-start ()
+        nil)
+      (makunbound 'dbus-path-emacs)))
+  :config
+  (progn
+    (sauron-start-hidden)
+    ;; This should really check (featurep 'dbus) but for some reason
+    ;; this is always true even if support is not there.
+    (setq sauron-prio-sauron-started 2)
+    (setq sauron-min-priority 3)
+    ;; (setq sauron-dbus-cookie t) ;; linux only?
+    (setq sauron-separate-frame nil)
+    (setq sauron-nick-insensitivity 1)
+    (defun sauron:jabber-notify (origin priority message &optional properties)
+      (funcall notify-function "gtalk" message))
+    (defun sauron:erc-notify (origin priority message &optional properties)
+      (let ((event (plist-get properties :event)))
+        (funcall notify-function "IRC" message)))
+    (defun sauron:mu4e-notify (origin priority message &optional properties)
+      nil)
+    (defun sauron:dbus-notify (origin priority message &optional properties)
+      (funcall notify-function "GMail" message))
+    (defun sauron:dispatch-notify (origin priority message &optional properties)
+      (let ((handler (cond ((string= origin "erc") 'sauron:erc-notify)
+                           ((string= origin "jabber") 'sauron:jabber-notify)
+                           ((string= origin "mu4e") 'sauron:mu4e-notify)
+                           ((string= origin "dbus") 'sauron:dbus-notify)
+                           (t (lambda (&rest r) nil)))))
+        (funcall handler origin priority message properties)))
+    ;; Prefering alert.el for now ;; (add-hook 'sauron-event-added-functions 'sauron:dispatch-notify)
+    (sauron-start-hidden)
+    (add-hook 'sauron-event-added-functions 'sauron-alert-el-adapter)))
+
+#+END_SRC
+** screenshot
+#+BEGIN_SRC emacs-lisp
+(use-package screenshot
+  :commands screenshot)
+#+END_SRC
+** libmpdee
+#+BEGIN_SRC emacs-lisp
+(use-package libmpdee
+  :defer t)
+#+END_SRC
+** flyspell
+#+BEGIN_SRC emacs-lisp
+(use-package flyspell
+  :disabled t                           ; kind of annoying
+  :preface (setq flyspell-issue-welcome-flag nil)
+  :config
+  (progn
+    (diminish 'flyspell-mode)
+    (bind-key "M-s" 'flyspell-correct-word-before-point flyspell-mode-map)
+    (unbind-key "C-;" flyspell-mode-map)
+    (defun flyspell-emacs-popup-textual (event poss word)
+      "A textual flyspell popup menu."
+      (let* ((corrects (if flyspell-sort-corrections
+                           (sort (car (cdr (cdr poss))) 'string<)
+                         (car (cdr (cdr poss)))))
+             (cor-menu (if (consp corrects)
+                           (mapcar (lambda (correct)
+                                     (list correct correct))
+                                   corrects)
+                         '()))
+             (affix (car (cdr (cdr (cdr poss)))))
+             show-affix-info
+             (base-menu  (let ((save (if (and (consp affix) show-affix-info)
+                                         (list
+                                          (list (concat "Save affix: "
+                                                        (car affix))
+                                                'save)
+                                          '("Accept (session)" session)
+                                          '("Accept (buffer)" buffer))
+                                       '(("Save word" save)
+                                         ("Accept (session)" session)
+                                         ("Accept (buffer)" buffer)))))
+                           (if (consp cor-menu)
+                               (append cor-menu (cons "" save))
+                             save)))
+             (menu (mapcar
+                    (lambda (arg) (if (consp arg) (car arg) arg))
+                    base-menu)))
+        (cadr (assoc (popup-menu* menu :scroll-bar t) base-menu))))
+    (fset 'flyspell-emacs-popup 'flyspell-emacs-popup-textual)))
+#+END_SRC
+** web-mode
+#+BEGIN_SRC emacs-lisp
+(use-package web-mode
+  :mode (("\\.tmpl\\'" . web-mode)
+         ("\\.cql\\'" . web-mode))
+  :config
+  (progn
+    (defvar-setq web-mode-content-types-alist
+      '(("gtl" . "\\.tmpl\\'")
+        ("gtl" . "\\.cql\\'")))))
+
+#+END_SRC
+** helm-themes
+#+BEGIN_SRC emacs-lisp
+(use-package helm-themes)
+#+END_SRC
+** helm-swoop
+#+BEGIN_SRC emacs-lisp
+(use-package helm-swoop
+  :bind ("C-S-s" . helm-swoop)
+  :commands helm-swoop)
+#+END_SRC
+** perspective
+I've disabled perspective because I just don't use it much.
+#+BEGIN_SRC emacs-lisp
+(use-package perspective
+  :disabled t
+  :demand t
+  :config
+  (progn
+    (persp-mode)
+    (defun persp-get-perspectives-for-buffer (buffer)
+      "Get the names of all of the perspectives of which `buffer` is a member."
+      (cl-loop for perspective being the hash-value of perspectives-hash
+               if (member buffer (persp-buffers perspective))
+               collect (persp-name perspective)))
+
+    (defun persp-pick-perspective-by-buffer (buffer)
+      "Select a buffer and go to the perspective to which that buffer
+    belongs. If the buffer belongs to more than one perspective
+    completion will be used to pick the perspective to switch to.
+    Switch the focus to the window in which said buffer is displayed
+    if such a window exists. Otherwise display the buffer in whatever
+    window is active in the perspective."
+      (interactive (list (funcall persp-interactive-completion-function
+                                  "Buffer: " (mapcar 'buffer-name (buffer-list)))))
+      (let* ((perspectives (persp-get-perspectives-for-buffer (get-buffer buffer)))
+             (perspective (if (> (length perspectives) 1)
+                              (funcall persp-interactive-completion-function
+                                       (format "Select the perspective in which you would like to visit %s."
+                                               buffer)
+                                       perspectives)
+                            (car perspectives))))
+        (if (string= (persp-name persp-curr) perspective)
+            ;; This allows the opening of a single buffer in more than one window
+            ;; in a single perspective.
+            (switch-to-buffer buffer)
+          (progn
+            (persp-switch perspective)
+            (if (get-buffer-window buffer)
+                (set-frame-selected-window nil (get-buffer-window buffer))
+              (switch-to-buffer buffer))))))
+
+    (defun persp-mode-switch-buffers (arg)
+      (interactive "P")
+      (if arg (call-interactively 'ido-switch-buffer)
+        (call-interactively 'persp-pick-perspective-by-buffer)))
+
+    (define-key persp-mode-map (kbd "C-x b") 'persp-mode-switch-buffers))
+  :bind ("C-c 9" . persp-switch))
+#+END_SRC
+** smex
+#+BEGIN_SRC emacs-lisp
+(use-package smex
+  ;; Using helm-M-x instead
+  :disabled t
+  :commands smex
+  ;; This is here because smex feels like part of ido
+  :bind ("M-x" . smex))
+#+END_SRC
+** android-mode
+#+BEGIN_SRC emacs-lisp
+(use-package android-mode
+  :defer t
+  :config
+  (progn
+    (require 's)
+    (setq android-mode-sdk-dir
+          (s-trim (shell-command-to-string "android_sdk_directory")))))
+#+END_SRC
+** gradle-mode
+#+BEGIN_SRC emacs-lisp
+(use-package gradle-mode)
+#+END_SRC
+** groovy-mode
+This also adds syntax highlighting for gradle
+#+BEGIN_SRC emacs-lisp
+(use-package groovy-mode)
+#+END_SRC
+** jsx-mode
+#+BEGIN_SRC emacs-lisp
+(use-package jsx-mode
+  :defer t)
+#+END_SRC
+** css
+#+BEGIN_SRC emacs-lisp
+(use-package css-mode
+  :mode (("\\.css\\'" . css-mode)
+         ("\\.rasi\\'" . css-mode)))
+#+END_SRC
+** robe
+#+BEGIN_SRC emacs-lisp
+(use-package robe
+  :commands robe-mode
+  :init
+  (progn (add-hook 'ruby-mode-hook 'robe-mode)))
+#+END_SRC
+** rinari
+#+BEGIN_SRC emacs-lisp
+(use-package rinari
+  :after ruby-mode)
+#+END_SRC
+** helm-gtags
+#+BEGIN_SRC emacs-lisp
+(use-package helm-gtags
+  :config
+  (progn
+    (setq helm-gtags-ignore-case t
+          helm-gtags-auto-update t
+          helm-gtags-use-input-at-cursor t
+          helm-gtags-pulse-at-cursor t
+          helm-gtags-prefix-key "\C-cg"
+          helm-gtags-suggested-key-mapping t)
+    (cl-loop for hook in '(dired-mode-hook eshell-mode-hook c-mode-hook
+                                           c++-mode-hook asm-mode-hook)
+             do (add-hook hook 'helm-gtags-mode)))
+  :bind (:map helm-gtags-mode-map
+   ("C-c g a" . helm-gtags-tags-in-this-function)
+   ("C-j" . helm-gtags-select)
+   ("M-." . helm-gtags-dwim)
+   ("M-," . helm-gtags-pop-stack)
+   ("C-c <" . helm-gtags-previous-history)
+   ("C-c >" . helm-gtags-next-history)))
+
+#+END_SRC
+** sgml-mode
+#+BEGIN_SRC emacs-lisp
+(use-package sgml-mode
+  ;; :bind ("C-c b" . web-beautify-html) TODO: mode specific, change binding
+  :commands sgml-mode)
+#+END_SRC
+** evil
+#+BEGIN_SRC emacs-lisp
+(use-package evil :commands (evil-mode))
+#+END_SRC
+** hackernews
+#+BEGIN_SRC emacs-lisp
+(use-package hackernews :commands hackernews)
+#+END_SRC
+* Appearance
+** Basic Config
+#+BEGIN_SRC emacs-lisp
+(setq inhibit-startup-screen t)
+(blink-cursor-mode -1)
+#+END_SRC
+** Themes
+Ensure all themes that I use are installed:
+#+BEGIN_SRC emacs-lisp
+(use-package solarized-theme
+  :defer t
+  :init
+  (progn
+    (setq solarized-high-contrast-mode-line t)))
+
+(defvar-setq packages-appearance
+  '(monokai-theme zenburn-theme base16-theme molokai-theme moe-theme
+                  tango-2-theme gotham-theme sublime-themes rainbow-delimiters
+                  waher-theme ample-theme material-theme zerodark-theme
+                  color-theme-modern leuven-theme spacemacs-theme gruvbox-theme
+                  forest-blue-theme flatland-theme afternoon-theme
+                  cyberpunk-theme))
+
+(mapcar 'straight-use-package packages-appearance)
+
+(use-package doom-themes
+  :defer t)
+
+(use-package badwolf-theme)
+#+END_SRC
+** all-the-icons
+#+BEGIN_SRC emacs-lisp
+(use-package all-the-icons
+  :defer 5)
+#+END_SRC
+** spaceline
+*** Disable sRGB colorspace to make powerline separators work
+#+BEGIN_SRC emacs-lisp
+(setq ns-use-srgb-colorspace nil)
+#+END_SRC
+*** config
+#+BEGIN_SRC emacs-lisp
+(use-package spaceline-config
+  :straight spaceline
+  :commands spaceline-compile
+  :preface
+  (progn
+    (defun spaceline-gh-notifier-disable-default-notifier-modeline (&rest args)
+      (delq 'github-notifier-mode-line global-mode-string)))
+  :config
+  (progn
+    (advice-add 'github-notifier-mode :after
+                'spaceline-gh-notifier-disable-default-notifier-modeline)
+    (advice-add 'github-notifier-update :after
+                'spaceline-gh-notifier-disable-default-notifier-modeline)
+
+    (setq powerline-default-separator (random-choice '(butt slant wave)))
+    (setq spaceline-workspace-numbers-unicode t
+          spaceline-window-numbers-unicode t)
+
+    (spaceline-define-segment imalison:muni
+      "Display the number of minutes until the next muni train comes"
+      (format "🚇%s" (imalison:get-cached-muni-time))
+      :when active)
+
+    (spaceline-define-segment spaceline-gh-notifier
+      "Display the number of github notifications the user has"
+      (format "✉%s" github-notifier-unread-count)
+      :when (> github-notifier-unread-count 0))
+
+    (advice-add 'pl/separator-height :around
+                (lambda (function &rest args)
+                  (+ (apply function args) 10)))
+
+    ;; This needs to be executed after setting the font because the separators
+    ;; need to get regenerated
+    (advice-add 'imalison:set-font-size :after 'spaceline-compile)
+
+    (spaceline-helm-mode)
+    ;; 'spaceline-gh-notifier and 'imalison:muni disabled for now
+    (spaceline-spacemacs-theme)))
+#+END_SRC
+** page-break-lines
+#+BEGIN_SRC emacs-lisp
+(use-package page-break-lines
+  :defer 5
+  :diminish (page-break-lines-mode)
+  :commands page-break-lines-mode
+  :init
+  :config
+  (progn
+    (add-to-list 'page-break-lines-modes 'prog-mode)
+    (global-page-break-lines-mode +1)))
+#+END_SRC
+** helm-themes
+helm-themes provides an easy way to switch between emacs-themes.
+#+BEGIN_SRC emacs-lisp
+(use-package helm-themes
+  :after helm)
+#+END_SRC
+** window-number
+#+BEGIN_SRC emacs-lisp
+(use-package window-number
+  :defer t)
+#+END_SRC
+** Whitespace Setup
+
+Make whitespace-mode use just basic coloring:
+#+BEGIN_SRC emacs-lisp
+(setq whitespace-style
+      '(spaces tabs newline space-mark tab-mark newline-mark))
+#+END_SRC
+
+Set the character used to represent spaces to ·, and the character used for tabs to be ▷.
+#+BEGIN_SRC emacs-lisp
+(setq whitespace-display-mappings
+      '((space-mark 32 [183] [46])
+        (tab-mark 9 [9655 9] [92 9])))
+#+END_SRC
+** Colorize Compliation Buffers
+This automatically applies ansi-color interpretation of terminal escape
+sequences to compilation buffers.
+#+BEGIN_SRC emacs-lisp
+(defun imalison:colorize-compilation-buffer ()
+  (let ((was-read-only buffer-read-only))
+    (unwind-protect
+        (progn
+          (when was-read-only
+            (read-only-mode -1))
+          (ansi-color-apply-on-region (point-min) (point-max)))
+      (when was-read-only
+        (read-only-mode +1)))))
+
+(add-hook 'compilation-filter-hook 'imalison:colorize-compilation-buffer)
+#+END_SRC
+** Automatic Theme Changer
+Disabled for now
+#+BEGIN_SRC emacs-lisp
+(use-package theme-changer
+  :disabled t
+  :config
+  (progn
+    (destructuring-bind (latitude longitude)
+        (imalison:get-lat-long)
+      (setq calendar-latitude latitude)
+      (setq calendar-longitude longitude))))
+#+END_SRC
+** Fix ~ansi-term~ Colors
+For some reason, loading certain themes can cause colors in
+~ansi-term-color-vector~ to be undefined. The following code handles restoring
+the original ~ansi-term-color-vector~ state. The code is exectued in a
+load-theme hook (See the heading below).
+#+BEGIN_SRC emacs-lisp
+(defvar imalison:ansi-term-color-vector ansi-term-color-vector)
+
+(defun imalison:ansi-term-color-vector-broken? ()
+  (--some (or (eq it 'unspecified) (not (symbolp it)))
+          (append ansi-term-color-vector nil)))
+
+(defun imalison:restore-ansi-term-color-vector (&optional force)
+  (when (or force (imalison:ansi-term-color-vector-broken?))
+    (setq ansi-term-color-vector imalison:ansi-term-color-vector)
+    (when (imalison:ansi-term-color-vector-broken?)
+      (message
+       "Oh no! ansi-term-color vector is super busted (check in custom)."))))
+#+END_SRC
+** After ~load-theme~ hook
+#+BEGIN_SRC emacs-lisp
+(defvar imalison:light-theme 'solarized-light)
+(defvar imalison:dark-theme 'flatland)
+
+(defun imalison:after-load-theme (&rest _args)
+  (when (fboundp 'powerline-reset)
+    (powerline-reset))
+  (set-face-background 'fringe (face-background 'default))
+  (imalison:restore-ansi-term-color-vector))
+
+(advice-add 'load-theme :after #'imalison:after-load-theme)
+#+END_SRC
+** Set Font
+#+BEGIN_SRC emacs-lisp
+;; fix in nix
+;; (add-to-list 'default-frame-alist
+;;              '(font . "Source Code Pro-10:weight=semi-bold"))
+#+END_SRC
+** imalison:appearance
+#+BEGIN_SRC emacs-lisp
+(defvar imalison:linum-format)
+
+(defun imalison:format-linum (line-text)
+  (propertize (format imalison:linum-format line-text) 'face 'linum))
+
+(make-variable-buffer-local 'imalison:linum-format)
+(defun imalison:linum-before-numbering-hook ()
+  (setq imalison:linum-format
+        (concat "%" (number-to-string
+                     (max (length
+                           (number-to-string
+                            (count-lines (point-min) (point-max)))) 3)) "d")))
+
+(defun imalison:remove-fringe-and-hl-line-mode (&rest _stuff)
+  (interactive)
+  (if (fboundp 'scroll-bar-mode) (scroll-bar-mode -1))
+  (if (fboundp 'tool-bar-mode) (tool-bar-mode -1))
+  (if (fboundp 'menu-bar-mode) (menu-bar-mode -1))
+  (defvar-setq linum-format 'imalison:format-linum)
+  (add-hook 'linum-before-numbering-hook 'imalison:linum-before-numbering-hook)
+  (setq left-margin-width 0)
+  (defvar-setq hl-line-mode nil))
+
+
+(defun imalison:appearance (&optional frame)
+  (setq font-use-system-font nil)
+  (interactive (list nil))
+  (spaceline-compile)
+  (imalison:remove-fringe-and-hl-line-mode)
+  (setq powerline-default-separator (random-choice '(butt slant wave))))
+#+END_SRC
+*** Hooks to set everything up
+#+BEGIN_SRC emacs-lisp
+(defvar imalison:appearance-setup-done nil)
+
+(defun imalison:appearance-setup-hook (&rest args)
+  (unless imalison:appearance-setup-done
+    (unless (member imalison:dark-theme custom-enabled-themes)
+      (load-theme imalison:dark-theme t))
+    (apply 'imalison:appearance args)
+    (setq imalison:default-font-size-pt (face-attribute 'default :height))
+    (setq imalison:appearance-setup-done t)))
+
+(if (daemonp)
+    (add-hook 'after-make-frame-functions 'imalison:appearance-setup-hook)
+  (add-hook 'after-init-hook 'imalison:appearance-setup-hook))
+#+END_SRC
+* Post Init Custom
+#+BEGIN_SRC emacs-lisp
+(when (file-exists-p custom-after-file) (load custom-after-file))
+(when (file-exists-p machine-custom) (load machine-custom))
+#+END_SRC
