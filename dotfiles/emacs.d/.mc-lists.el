@@ -71,6 +71,7 @@
         imalison:multiple-cursors-hydra/mc/mark-next-like-this
         imalison:multiple-cursors-hydra/nil
         isearch-delete-char
+        make-frame
         smex
         yank-rectangle
         ))

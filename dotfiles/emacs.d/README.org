@@ -2744,12 +2744,12 @@ The following is taken from [[https://github.com/syl20bnr/spacemacs/blob/a650877
        haskell-process-auto-import-loaded-modules t
        ;; Disable haskell-stylish-on-save, as it breaks flycheck highlighting.
        ;; NOTE: May not be true anymore - taksuyu 2015-10-06
-       haskell-stylish-on-save nil)
-    (setq haskell-indent-offset 2)
+       haskell-stylish-on-save nil
+	   haskell-tags-on-save nil
+	   haskell-indent-offset 2)
     (require 'flycheck)
     (delq 'haskell-stack-ghc flycheck-checkers)
-    (add-hook 'haskell-mode-hook 'turn-on-haskell-indent)
-    (setq haskell-tags-on-save t)))
+    (add-hook 'haskell-mode-hook 'turn-on-haskell-indent)))
 #+END_SRC
 **** haskell-ide-engine
 #+BEGIN_SRC emacs-lisp
