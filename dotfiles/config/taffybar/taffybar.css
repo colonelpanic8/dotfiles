@@ -18,24 +18,19 @@
 }
 
 .taffy-box {
-	border-radius: 10px;
-	background-color: rgba(0.0, 0.0, 0.0, 0.3);
+	border-color: @white;
+	border-width: 5px;
+	border-style: solid;
+	border-radius: 5px;
 }
 
 .inner-pad {
-	padding-bottom: 5px;
-	padding-top: 5px;
-	padding-left: 2px;
-	padding-right: 2px;
+	padding: 0px;
 }
 
 .contents {
-	padding-bottom: 4px;
-	padding-top: 4px;
-	padding-right: 2px;
-	padding-left: 2px;
+	padding: 7px;
 	transition: background-color .5s;
-	border-radius: 5px;
 }
 
 /* Workspaces styling */
@@ -43,11 +38,11 @@
 .workspace-label {
 	padding-right: 3px;
 	padding-left: 2px;
-	font-size: 12pt;
+	font-size: 10pt;
 }
 
 .active .contents {
-	background-color: rgba(0.0, 0.0, 0.0, 0.5);
+	background-color: #e21d3b;
 }
 
 .visible .contents {

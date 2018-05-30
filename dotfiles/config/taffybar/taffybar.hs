@@ -1,4 +1,5 @@
 {-# LANGUAGE PackageImports #-}
+{-# LANGUAGE OverloadedStrings #-}
 module Main where
 
 import           Control.Exception.Base
@@ -107,6 +108,7 @@ logDebug = do
 main = do
   homeDirectory <- getHomeDirectory
   -- logDebug
+  -- logM "What" WARNING "Why"
   -- enableLogger "System.Taffybar.Widget.Util" DEBUG
   -- enableLogger "System.Taffybar.Information.XDG.DesktopEntry" DEBUG
   -- enableLogger "System.Taffybar.WindowIcon" DEBUG
@@ -118,16 +120,14 @@ main = do
       getIconFileName w@WindowData {windowTitle = title, windowClass = klass}
         -- | "URxvt" `isInfixOf` klass = Just "urxvt.png"
         -- | "Termite" `isInfixOf` klass = Just "urxvt.png"
-        -- | "Kodi" `isInfixOf` klass = Just "kodi.png"r
+        -- | "Kodi" `isInfixOf` klass = Just "kodi.png"
         | "@gmail.com" `isInfixOf` title &&
             "chrome" `isInfixOf` klass && "Gmail" `isInfixOf` title =
           Just "gmail.png"
         | otherwise = Nothing
-      myIcons =
-        addCustomIconsAndFallback
-          (fmap inResourcesDirectory . getIconFileName)
-          (inResourcesDirectory "exe-icon.png")
-          (getWindowIconPixbufFromClass <|||> getWindowIconPixbufFromEWMH)
+      myIcons = scaledWindowIconPixbufGetter $
+                unscaledDefaultGetWindowIconPixbuf <|||>
+                (\size _ -> lift $ loadPixbufByName size "application-default-icon")
       cpu = pollingGraphNew cpuCfg 0.5 cpuCallback
       mem = pollingGraphNew memCfg 1 memCallback
       layout = layoutNew defaultLayoutConfig
