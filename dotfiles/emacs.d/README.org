@@ -2526,6 +2526,10 @@ eval-last-sexp.
 (define-key lisp-mode-shared-map (kbd "C-x C-e") 'imalison:eval-last-sexp)
 (unbind-key "C-j" lisp-interaction-mode-map)
 #+END_SRC
+*** nix
+#+BEGIN_SRC emacs-lisp
+(use-package nix-mode)
+#+END_SRC
 *** clojure
 The following is taken from [[https://github.com/syl20bnr/spacemacs/blob/a650877bea582fed72bbca0dc1f80fcb2ec0e6d5/layers/+lang/clojure/funcs.el#L30][spacemacs]]. It adds fancification to a clojure mode.
 #+BEGIN_SRC emacs-lisp
