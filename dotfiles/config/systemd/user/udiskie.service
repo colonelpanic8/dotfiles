@@ -4,7 +4,7 @@ Wants=taffybar.service
 After=taffybar.service
 
 [Service]
-ExecStart=/usr/bin/udiskie --tray
+ExecStart=/usr/bin/env udiskie --tray --appindicator
 Restart=always
 
 [Install]
