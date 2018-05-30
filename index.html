@@ -3,7 +3,7 @@
 "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
-<!-- 2018-05-30 Wed 04:02 -->
+<!-- 2018-05-30 Wed 04:05 -->
 <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>&lrm;</title>
@@ -8123,12 +8123,12 @@ The following is taken from <a href="https://github.com/syl20bnr/spacemacs/blob/
        haskell-process-auto-import-loaded-modules t
        <span class="org-comment-delimiter">;; </span><span class="org-comment">Disable haskell-stylish-on-save, as it breaks flycheck highlighting.</span>
        <span class="org-comment-delimiter">;; </span><span class="org-comment">NOTE: May not be true anymore - taksuyu 2015-10-06</span>
-       haskell-stylish-on-save nil)
-    (<span class="org-keyword">setq</span> haskell-indent-offset 2)
+       haskell-stylish-on-save nil
+           haskell-tags-on-save nil
+           haskell-indent-offset 2)
     (<span class="org-keyword">require</span> '<span class="org-constant">flycheck</span>)
     (delq 'haskell-stack-ghc flycheck-checkers)
-    (add-hook 'haskell-mode-hook 'turn-on-haskell-indent)
-    (<span class="org-keyword">setq</span> haskell-tags-on-save t)))
+    (add-hook 'haskell-mode-hook 'turn-on-haskell-indent)))
 </pre>
 </div>
 </div>
