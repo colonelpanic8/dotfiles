@@ -13,10 +13,10 @@
    * theme (for an unified experience) */
   fc-color: #39393A;
   bg-color: #262626;
-  fc-color-trans: #39393AC5; 
+  fc-color-trans: #39393AC5;
   bg-color-trans: #262626F0;
 
-  font: "Open Sans 11";
+  font: "Source Code Pro 11";
 }
 
 /* ================================================= */
@@ -30,19 +30,19 @@
   transparency:  "real";
 
   orientation:  horizontal;
-  children:     [mainbox, dummy];
+  children:     [mainbox];
 }
 
 /* First container */
 #mainbox {
-  expand:            false;
+  expand:            true;
   background-color:  @bg-color-trans;
   spacing:           0.8em;
 }
 
 /* Dummy container */
-#dummy { 
-  expand: true; 
+#dummy {
+  expand: true;
 }
 /* ================================================= */
 
@@ -125,5 +125,3 @@
 #element selected urgent {
   background-color:  DarkOrange;
 }
-
-/* vim:ft=css */
