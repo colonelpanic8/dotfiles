@@ -2528,7 +2528,10 @@ eval-last-sexp.
 #+END_SRC
 *** nix
 #+BEGIN_SRC emacs-lisp
-(use-package nix-mode)
+(use-package nix-mode
+  :config
+  (progn
+    (setq nix-indent-function 'nix-indent-line)))
 #+END_SRC
 *** clojure
 The following is taken from [[https://github.com/syl20bnr/spacemacs/blob/a650877bea582fed72bbca0dc1f80fcb2ec0e6d5/layers/+lang/clojure/funcs.el#L30][spacemacs]]. It adds fancification to a clojure mode.
