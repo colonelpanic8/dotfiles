@@ -8,6 +8,7 @@ function _setup_path {
     _ruby_setup
 
     is_osx && _osx_path_setup || _linux_path_setup
+	_nix_setup
     _emacs_setup
     _haskell_setup
     _java_setup
@@ -135,4 +136,10 @@ function _haskell_setup {
     # We put cabal after local/bin because we want stack installs to take
     # precedence.
     add_to_path "$HOME/.cabal/bin" --after --target "$HOME/.local/bin"
+}
+
+function _nix_setup {
+	if [ -e /home/imalison/.nix-profile/etc/profile.d/nix.sh ]; then
+		. /home/imalison/.nix-profile/etc/profile.d/nix.sh;
+	fi
 }
