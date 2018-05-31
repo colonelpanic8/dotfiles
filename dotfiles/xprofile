@@ -1,7 +1,9 @@
 # -*- mode: sh; -*-
 
+
 # If there are issues with path, check /etc/profile for hard overrides of PATH.
-source "$HOME/.lib/shellenv.sh"
+. "$HOME/.lib/login.sh"
 # XXX: prevents https://github.com/xmonad/xmonad/issues/86 from affecting startup
+
 rm -f ~/.xmonad/xmonad.state
 load_xkb_map.sh

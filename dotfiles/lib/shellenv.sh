@@ -1,21 +1,12 @@
 source "$HOME/.lib/shellpath.sh"
 
-environment_variable_exists ENVIRONMENT_SETUP_DONE || _setup_env
+# XXX: This PATH setup var is only actually set in login.sh which is definitely
+# strange. The reason for this is that because env runs BEFORE profile, things
+# in places like /etc/profile can actually clobber the path setup that we do.
 
-# TODO(imalison): These need to run every time because of how their
-# version managers work. This could cause problems with the situation
-# where we want to intentionally override the python/ruby/node
-# versions in use in a given shell.
-
-# TODO: Ruby and node are disabled to speed up shell startup...
-# See https://github.com/creationix/nvm/issues/709 for nvm
-# _node_setup
-
-# XXX: these were moved to _setup_env
-# _ruby_setup
-_python_setup
+# Disbled setup here. Doing it in profile instead
+if command_exists python; then
+	environment_variable_exists LOGIN_PATH_SETUP_DONE || setup_unless_environment_variable_exists ENV_PATH_SETUP_DONE _setup_path
+fi
 
 source_directory_files "$HOME/.lib/shellenv"
-
-test -r ~/.customenv.sh && source ~/.customenv.sh
-source_if_exists ~/.this-machine-env.sh
