@@ -3,10 +3,6 @@ source "$HOME/.lib/setup_functions.sh"
 function _setup_path {
     _path_helper
 
-    # XXX/TODO:
-    # This is in shellenv.sh now
-    _python_setup
-
     add_to_path "$HOME/.lib/bin" "$HOME/.local/bin" "$HOME/bin" --before
     add_to_path "/usr/local/sbin" "/usr/local/bin" "/usr/bin" --after
     _ruby_setup
@@ -16,6 +12,7 @@ function _setup_path {
     _haskell_setup
     _java_setup
     _go_setup
+	_python_setup
     _racket_setup
     _rust_setup
     _tex_setup
@@ -49,17 +46,7 @@ function _osx_path_setup {
 }
 
 function _python_setup {
-    export PYENV_ROOT="/usr/local/var/pyenv"
-
-    if which pyenv > /dev/null; then
-        eval "$(pyenv init - --no-rehash)"
-    else
-        echo "WARNING: pyenv is not installed on this machine and python will likely not function correctly"
-    fi
-
     add_to_path "$HOME/.lib/python" --after
-    # if which pyenv-virtualenv-init > /dev/null; then eval "$(pyenv virtualenv-init -)"; fi
-
     add_to_path "$HOME/.lib/python" --path-var 'PYTHONPATH'
 }
 

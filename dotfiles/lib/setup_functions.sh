@@ -14,35 +14,17 @@ function shell_contains () {
   return 1
 }
 
-function _set_python_command {
-    # See comment in add_to_path about why this is necessary
-    if command_exists pyenv;
-    then
-        _python_command="$(pyenv which python)"
-    else
-        which pyenv
-        _python_command="$(which python)"
-    fi
-    shell_contains "$_python_command" "shim" && \
-        echo "Warning: setting python command to shim"
-}
-
 function environment_variable_exists {
     eval "value=\"\${$1+x}\""
     [ ! -z $value ]
 }
 
 function setup_unless_environment_variable_exists {
-	environment_variable_exists "$1" || $2
-	export "$1=$(date)"
+	environment_variable_exists "$1" || { $2 && export "$1=$(date)"; }
 }
 
 function add_to_path {
-    environment_variable_exists _python_command || _set_python_command
-    # We need to get a path to the ACTUAL python command because
-    # pyenv alters PATH before actually executing python, which ends
-    # up changing PATH in a way that is not desireable.
-    eval "$($_python_command $HOME/.lib/python/shell_path.py --include-assignment "$@")"
+    eval "$(python $HOME/.lib/python/shell_path.py --include-assignment "$@")"
 }
 
 # Taken from http://www.unix.com/shell-programming-and-scripting/27932-how-know-linux-distribution-i-am-using.html
@@ -65,6 +47,11 @@ function get_linux_distro {
        [ -n "$dist" ] && echo "$dist" && return 0
    fi
 
+   if [ -r /etc/os-release ]; then
+	   dist=$(grep 'ID=' /etc/os-release | sed 's/ID=//' | head -1)
+	   [ -n "$dist" ] && echo "$dist" && return 0
+   fi
+
    dist=$(find /etc/ -maxdepth 1 -name '*release' 2> /dev/null | sed 's/\/etc\///' | sed 's/-release//' | head -1)
    [ -n "$dist" ] && echo "$dist" && return 0
 
@@ -75,14 +62,18 @@ function get_linux_distro {
 
 
 function is_osx() {
-    case `uname` in
-        'Darwin')
-            return 0
-	    ;;
-        *)
-            return 1;
-            ;;
-    esac
+	if command_exists uname; then
+			case `uname` in
+				'Darwin')
+					return 0;
+					;;
+				*)
+					return 1;
+					;;
+			esac
+	else
+		return 1
+	fi
 }
 
 function source_directory_files {
