@@ -3,7 +3,7 @@
 "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
-<!-- 2018-05-31 Thu 23:01 -->
+<!-- 2018-06-01 Fri 22:52 -->
 <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>&lrm;</title>
@@ -8548,14 +8548,19 @@ Intero seems to be causing hangs, so it has been disabled
 
     (add-hook 'org-mode-hook 'imalison:load-babel-languages)
     (<span class="org-keyword">defun</span> <span class="org-function-name">imalison:load-babel-languages</span> ()
-      (org-babel-do-load-languages
-       'org-babel-load-languages
-       '((sh . t)
-         (python . t)
-         (ruby . t)
-         (octave . t)
-         (sqlite . t)
-         (plantuml . t))))
+      (<span class="org-keyword">let*</span> ((loaded-ob (<span class="org-keyword">or</span> (<span class="org-keyword">require</span> '<span class="org-constant">ob-sh</span> nil t) (<span class="org-keyword">require</span> '<span class="org-constant">ob-shell</span> nil t)))
+             (ob-shell-name
+              (<span class="org-keyword">when</span> loaded-ob
+                (intern (substring-no-properties (imalison:maybe-symbol-name loaded-ob) 3))))
+             (added-modes (<span class="org-keyword">when</span> ob-shell-name `((,ob-shell-name . t)))))
+        (org-babel-do-load-languages
+         'org-babel-load-languages
+         `((python . t)
+           (ruby . t)
+           (octave . t)
+           (sqlite . t)
+           (plantuml . t)
+           ,@added-modes))))
 
     (<span class="org-keyword">setq</span> org-log-into-drawer t
           org-log-reschedule t
