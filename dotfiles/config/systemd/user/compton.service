@@ -3,8 +3,8 @@ Description=compton
 
 [Service]
 Type=simple
-ExecStart=/usr/bin/compton -cC
-ExecStop=/usr/bin/pkill compton
+ExecStart=/usr/bin/env compton -cC
+ExecStop=/usr/bin/env pkill compton
 
 [Install]
 WantedBy=wm.target

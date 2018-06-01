@@ -14,7 +14,9 @@ packages:
 #   extra-dep: true
 # - location: ../../../../Projects/gtk-sni-tray
 #   extra-dep: true
-- location: '../../../../Projects/github'
+- location:
+    git: git@github.com:IvanMalison/github.git
+    commit: af73bd9e193b045a25bccf86061858db21091508
   extra-dep: true
 extra-deps:
 - X11-xft-0.3.1
