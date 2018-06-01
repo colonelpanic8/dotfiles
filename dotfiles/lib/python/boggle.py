@@ -42,6 +42,15 @@ def build_board(size=4):
     ]
 
 
+def board_string(board_to_draw):
+    border_line = "+{0}+".format((len(board_to_draw[0]) * 2 - 1) * "-")
+    return "{border_line}\n{contents}\n{border_line}".format(
+        contents="\n".join("|{0}|".format(" ".join(letter_line))
+                           for letter_line in board_to_draw),
+        border_line=border_line,
+    )
+
+
 def build_trie():
     node = TrieNode()
     with open('/usr/share/dict/words') as the_file:
@@ -57,7 +66,7 @@ class Boggle(object):
 
     @classmethod
     def new_random(cls, trie):
-        return cls(build_board(), trie)
+        return cls(build_Board(), trie)
 
     def __init__(self, board, trie):
         self.height = len(board)
@@ -154,5 +163,5 @@ def build_board_from_dice_roll(dice=None, row_size=4):
 if __name__ == '__main__':
     dict_trie = build_trie()
     board = build_board_from_dice_roll()
-    print(board)
+    print(board_string(board))
     print(list(Boggle(board, dict_trie).run()))
