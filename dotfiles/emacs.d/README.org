@@ -3056,14 +3056,19 @@ Intero seems to be causing hangs, so it has been disabled
 
     (add-hook 'org-mode-hook 'imalison:load-babel-languages)
     (defun imalison:load-babel-languages ()
-      (org-babel-do-load-languages
-       'org-babel-load-languages
-       '((sh . t)
-         (python . t)
-         (ruby . t)
-         (octave . t)
-         (sqlite . t)
-         (plantuml . t))))
+      (let* ((loaded-ob (or (require 'ob-sh nil t) (require 'ob-shell nil t)))
+             (ob-shell-name
+              (when loaded-ob
+                (intern (substring-no-properties (imalison:maybe-symbol-name loaded-ob) 3))))
+             (added-modes (when ob-shell-name `((,ob-shell-name . t)))))
+        (org-babel-do-load-languages
+         'org-babel-load-languages
+         `((python . t)
+           (ruby . t)
+           (octave . t)
+           (sqlite . t)
+           (plantuml . t)
+           ,@added-modes))))
 
     (setq org-log-into-drawer t
           org-log-reschedule t
