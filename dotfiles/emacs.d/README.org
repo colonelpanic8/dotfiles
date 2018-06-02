@@ -1153,7 +1153,7 @@ Disabling line numbers because they are slow as fuck.
 #+END_SRC
 *** frame-mode
 #+BEGIN_SRC emacs-lisp
-(defvar imalison:use-frame-mode t)
+(defvar imalison:use-frame-mode nil)
 (use-package frame-mode
   :if imalison:use-frame-mode
   :demand t
@@ -2757,7 +2757,6 @@ The following is taken from [[https://github.com/syl20bnr/spacemacs/blob/a650877
 **** haskell-ide-engine
 #+BEGIN_SRC emacs-lisp
 (use-package lsp-haskell
-  :disabled t
   :config
   (add-hook 'haskell-mode-hook 'lsp-haskell-enable))
 #+END_SRC
