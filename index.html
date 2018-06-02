@@ -3,7 +3,7 @@
 "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
-<!-- 2018-06-01 Fri 22:52 -->
+<!-- 2018-06-02 Sat 23:46 -->
 <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>&lrm;</title>
@@ -3983,11 +3983,12 @@ for the JavaScript code in this tag.
 <li><a href="#addlinkiconsinheadingsthatleadtothemselves">13.3.1.7. Add link icons in headings that lead to themselves</a></li>
 <li><a href="#allowwithqueryparamsinimageextentions">13.3.1.8. Allow with query params in image extentions</a></li>
 <li><a href="#orgprojectile">13.3.1.9. org-projectile</a></li>
-<li><a href="#orgsuperagenda">13.3.1.10. org-super-agenda</a></li>
-<li><a href="#helmorgrifle">13.3.1.11. helm-org-rifle</a></li>
-<li><a href="#orgnotify">13.3.1.12. org-notify</a></li>
-<li><a href="#orgreveal">13.3.1.13. org-reveal</a></li>
-<li><a href="#orgcaldav">13.3.1.14. org-caldav</a></li>
+<li><a href="#orgpomodoro">13.3.1.10. org-pomodoro</a></li>
+<li><a href="#orgsuperagenda">13.3.1.11. org-super-agenda</a></li>
+<li><a href="#helmorgrifle">13.3.1.12. helm-org-rifle</a></li>
+<li><a href="#orgnotify">13.3.1.13. org-notify</a></li>
+<li><a href="#orgreveal">13.3.1.14. org-reveal</a></li>
+<li><a href="#orgcaldav">13.3.1.15. org-caldav</a></li>
 </ul>
 </li>
 <li><a href="#tex">13.3.2. TeX</a>
@@ -5913,7 +5914,7 @@ Disabling line numbers because they are slow as fuck.
 <h4 id="framemode"><span class="section-number-4">6.9.2</span> frame-mode <a href="#framemode"><svg aria-hidden="true" class="octicon octicon-link" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a></h4>
 <div class="outline-text-4" id="text-6-9-2">
 <div class="org-src-container">
-<pre class="src src-emacs-lisp">(<span class="org-keyword">defvar</span> <span class="org-variable-name">imalison:use-frame-mode</span> t)
+<pre class="src src-emacs-lisp">(<span class="org-keyword">defvar</span> <span class="org-variable-name">imalison:use-frame-mode</span> nil)
 (<span class="org-keyword">use-package</span> <span class="org-constant">frame-mode</span>
   <span class="org-builtin">:if</span> imalison:use-frame-mode
   <span class="org-builtin">:demand</span> t
@@ -8140,7 +8141,6 @@ The following is taken from <a href="https://github.com/syl20bnr/spacemacs/blob/
 <div class="outline-text-5" id="text-13-1-11-1">
 <div class="org-src-container">
 <pre class="src src-emacs-lisp">(<span class="org-keyword">use-package</span> <span class="org-constant">lsp-haskell</span>
-  <span class="org-builtin">:disabled</span> t
   <span class="org-builtin">:config</span>
   (add-hook 'haskell-mode-hook 'lsp-haskell-enable))
 </pre>
@@ -8697,6 +8697,7 @@ Intero seems to be causing hangs, so it has been disabled
 
     (add-to-list 'org-capture-templates
                  `(<span class="org-string">"c"</span> <span class="org-string">"Calendar entry"</span> entry
+                   (file ,imalison:org-calendar-file)
                    ,(format <span class="org-string">"%s\n%s\n%s"</span> <span class="org-string">"* %?"</span> imalison:created-property-string <span class="org-string">"%^T"</span>)))
 
     (add-to-list 'org-capture-templates
@@ -9032,9 +9033,19 @@ This function replaces the default naming scheme with a call to
 </div>
 </div>
 </div>
-<div id="outline-container-orgsuperagenda" class="outline-5">
-<h5 id="orgsuperagenda"><span class="section-number-5">13.3.1.10</span> org-super-agenda <a href="#orgsuperagenda"><svg aria-hidden="true" class="octicon octicon-link" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a></h5>
+<div id="outline-container-orgpomodoro" class="outline-5">
+<h5 id="orgpomodoro"><span class="section-number-5">13.3.1.10</span> org-pomodoro <a href="#orgpomodoro"><svg aria-hidden="true" class="octicon octicon-link" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a></h5>
 <div class="outline-text-5" id="text-13-3-1-10">
+<div class="org-src-container">
+<pre class="src src-emacs-lisp">(<span class="org-keyword">use-package</span> <span class="org-constant">org-pomodoro</span>
+  <span class="org-builtin">:after</span> org)
+</pre>
+</div>
+</div>
+</div>
+<div id="outline-container-orgsuperagenda" class="outline-5">
+<h5 id="orgsuperagenda"><span class="section-number-5">13.3.1.11</span> org-super-agenda <a href="#orgsuperagenda"><svg aria-hidden="true" class="octicon octicon-link" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a></h5>
+<div class="outline-text-5" id="text-13-3-1-11">
 <div class="org-src-container">
 <pre class="src src-emacs-lisp">(<span class="org-keyword">use-package</span> <span class="org-constant">org-super-agenda</span>
   <span class="org-builtin">:defer</span> t
@@ -9052,8 +9063,8 @@ This function replaces the default naming scheme with a call to
 </div>
 </div>
 <div id="outline-container-helmorgrifle" class="outline-5">
-<h5 id="helmorgrifle"><span class="section-number-5">13.3.1.11</span> helm-org-rifle <a href="#helmorgrifle"><svg aria-hidden="true" class="octicon octicon-link" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a></h5>
-<div class="outline-text-5" id="text-13-3-1-11">
+<h5 id="helmorgrifle"><span class="section-number-5">13.3.1.12</span> helm-org-rifle <a href="#helmorgrifle"><svg aria-hidden="true" class="octicon octicon-link" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a></h5>
+<div class="outline-text-5" id="text-13-3-1-12">
 <div class="org-src-container">
 <pre class="src src-emacs-lisp">(<span class="org-keyword">use-package</span> <span class="org-constant">helm-org-rifle</span>
   <span class="org-builtin">:bind</span> (<span class="org-string">"C-c C-h"</span> . helm-org-rifle-agenda-files))
@@ -9062,8 +9073,8 @@ This function replaces the default naming scheme with a call to
 </div>
 </div>
 <div id="outline-container-orgnotify" class="outline-5">
-<h5 id="orgnotify"><span class="section-number-5">13.3.1.12</span> org-notify <a href="#orgnotify"><svg aria-hidden="true" class="octicon octicon-link" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a></h5>
-<div class="outline-text-5" id="text-13-3-1-12">
+<h5 id="orgnotify"><span class="section-number-5">13.3.1.13</span> org-notify <a href="#orgnotify"><svg aria-hidden="true" class="octicon octicon-link" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a></h5>
+<div class="outline-text-5" id="text-13-3-1-13">
 <div class="org-src-container">
 <pre class="src src-emacs-lisp">(<span class="org-keyword">use-package</span> <span class="org-constant">org-notify</span>
   <span class="org-builtin">:disabled</span> t
@@ -9123,8 +9134,8 @@ This function replaces the default naming scheme with a call to
 </div>
 </div>
 <div id="outline-container-orgreveal" class="outline-5">
-<h5 id="orgreveal"><span class="section-number-5">13.3.1.13</span> org-reveal <a href="#orgreveal"><svg aria-hidden="true" class="octicon octicon-link" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a></h5>
-<div class="outline-text-5" id="text-13-3-1-13">
+<h5 id="orgreveal"><span class="section-number-5">13.3.1.14</span> org-reveal <a href="#orgreveal"><svg aria-hidden="true" class="octicon octicon-link" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a></h5>
+<div class="outline-text-5" id="text-13-3-1-14">
 <div class="org-src-container">
 <pre class="src src-emacs-lisp">(<span class="org-keyword">use-package</span> <span class="org-constant">ox-reveal</span>
   <span class="org-builtin">:defer</span> t
@@ -9137,8 +9148,8 @@ This function replaces the default naming scheme with a call to
 </div>
 </div>
 <div id="outline-container-orgcaldav" class="outline-5">
-<h5 id="orgcaldav"><span class="section-number-5">13.3.1.14</span> org-caldav <a href="#orgcaldav"><svg aria-hidden="true" class="octicon octicon-link" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a></h5>
-<div class="outline-text-5" id="text-13-3-1-14">
+<h5 id="orgcaldav"><span class="section-number-5">13.3.1.15</span> org-caldav <a href="#orgcaldav"><svg aria-hidden="true" class="octicon octicon-link" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a></h5>
+<div class="outline-text-5" id="text-13-3-1-15">
 <div class="org-src-container">
 <pre class="src src-emacs-lisp">(<span class="org-keyword">use-package</span> <span class="org-constant">org-caldav</span>
   <span class="org-builtin">:defer</span> t
@@ -10498,23 +10509,7 @@ This is useful with server mode when editing gmail messages. I think that it is 
   <span class="org-builtin">:defer</span> t
   <span class="org-builtin">:config</span>
   (<span class="org-keyword">progn</span>
-    (<span class="org-keyword">defun</span> <span class="org-function-name">alert-notifier-notify</span> (info)
-      (<span class="org-keyword">if</span> alert-notifier-command
-          (<span class="org-keyword">let</span> ((args
-                 (list <span class="org-string">"-title"</span>   (alert-encode-string (plist-get info <span class="org-builtin">:title</span>))
-                       <span class="org-string">"-activate"</span> <span class="org-string">"org.gnu.Emacs"</span>
-                       <span class="org-string">"-message"</span> (alert-encode-string (plist-get info <span class="org-builtin">:message</span>))
-                       <span class="org-string">"-execute"</span> (format <span class="org-string">"\"%s\""</span> (switch-to-buffer-command (plist-get info <span class="org-builtin">:buffer</span>))))))
-            (apply #'call-process alert-notifier-command nil nil nil args))
-        (alert-message-notify info)))
-
-    (<span class="org-keyword">defun</span> <span class="org-function-name">switch-to-buffer-command</span> (buffer-name)
-      (emacsclient-command (format <span class="org-string">"(switch-to-buffer \\\"%s\\\")"</span> buffer-name)))
-
-    (<span class="org-keyword">defun</span> <span class="org-function-name">emacsclient-command</span> (command)
-      (format <span class="org-string">"emacsclient --server-file='%s' -e '%s'"</span> server-name command))
-
-    (<span class="org-keyword">setq</span> alert-default-style 'notifier)))
+    (<span class="org-keyword">setq</span> alert-default-style 'libnotify)))
 </pre>
 </div>
 </div>
@@ -10989,7 +10984,8 @@ Ensure all themes that I use are installed:
 
     (spaceline-helm-mode)
     <span class="org-comment-delimiter">;; </span><span class="org-comment">'spaceline-gh-notifier and 'imalison:muni disabled for now</span>
-    (spaceline-spacemacs-theme)))
+    (spaceline-spacemacs-theme)
+    (spaceline-toggle-org-pomodoro-on)))
 </pre>
 </div>
 </div>
