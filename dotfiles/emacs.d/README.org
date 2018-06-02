@@ -3204,6 +3204,7 @@ Intero seems to be causing hangs, so it has been disabled
 
     (add-to-list 'org-capture-templates
                  `("c" "Calendar entry" entry
+                   (file ,imalison:org-calendar-file)
                    ,(format "%s\n%s\n%s" "* %?" imalison:created-property-string "%^T")))
 
     (add-to-list 'org-capture-templates
@@ -3486,6 +3487,11 @@ alphanumeric characters only."
 (use-package org-projectile-helm
   :after org-projectile
   :bind (("C-c n p" . org-projectile-helm-template-or-project)))
+#+END_SRC
+**** org-pomodoro
+#+BEGIN_SRC emacs-lisp
+(use-package org-pomodoro
+  :after org)
 #+END_SRC
 **** org-super-agenda
 #+BEGIN_SRC emacs-lisp
@@ -4509,23 +4515,7 @@ This is useful with server mode when editing gmail messages. I think that it is 
   :defer t
   :config
   (progn
-    (defun alert-notifier-notify (info)
-      (if alert-notifier-command
-          (let ((args
-                 (list "-title"   (alert-encode-string (plist-get info :title))
-                       "-activate" "org.gnu.Emacs"
-                       "-message" (alert-encode-string (plist-get info :message))
-                       "-execute" (format "\"%s\"" (switch-to-buffer-command (plist-get info :buffer))))))
-            (apply #'call-process alert-notifier-command nil nil nil args))
-        (alert-message-notify info)))
-
-    (defun switch-to-buffer-command (buffer-name)
-      (emacsclient-command (format "(switch-to-buffer \\\"%s\\\")" buffer-name)))
-
-    (defun emacsclient-command (command)
-      (format "emacsclient --server-file='%s' -e '%s'" server-name command))
-
-    (setq alert-default-style 'notifier)))
+    (setq alert-default-style 'libnotify)))
 #+END_SRC
 ** sauron
 #+BEGIN_SRC emacs-lisp
@@ -4862,7 +4852,8 @@ Ensure all themes that I use are installed:
 
     (spaceline-helm-mode)
     ;; 'spaceline-gh-notifier and 'imalison:muni disabled for now
-    (spaceline-spacemacs-theme)))
+    (spaceline-spacemacs-theme)
+    (spaceline-toggle-org-pomodoro-on)))
 #+END_SRC
 ** page-break-lines
 #+BEGIN_SRC emacs-lisp
