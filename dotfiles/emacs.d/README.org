@@ -218,6 +218,7 @@ These definitions silence the byte-compiler.
 Sets environment variables by starting a shell.
 #+BEGIN_SRC emacs-lisp
 (use-package exec-path-from-shell
+  :disabled (not (equal system-type 'darwin))
   :config
   (progn
     ;; For debugging
