@@ -2,4 +2,12 @@
 # -*- mode:sh
 
 cd "$HOME/.config/taffybar"
-stack run
+stack install
+
+if command_exists "imalison-taffybar"; then
+	imalison-taffybar "$@"
+else
+	# Move .lib/bin to the end of PATH so that this script is not called again
+	add_to_path "$HOME/.lib/bin" --after
+	taffybar "$@"
+fi
