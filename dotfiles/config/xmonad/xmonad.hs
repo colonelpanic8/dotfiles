@@ -436,7 +436,8 @@ chromeTabAction doSplit action selected =
 -- done with the existing window bringer interface
 myWindowAct c@WindowBringerConfig {menuCommand = cmd, menuArgs = args} action = do
   visible <- visibleWindows
-  ws <- windowMap' c {windowFilter = not . flip elem visible}
+  -- Uncomment filter to remove windows that are visible
+  ws <- windowMap' c -- {windowFilter = not . flip elem visible}
     -- chromeTabs <- liftIO getChromeTabInfo
   let options = M.union (M.map Left ws) (M.map Right M.empty)
   selection <- DM.menuMapArgs cmd args options
@@ -704,7 +705,7 @@ getWindowWS a = withWindowSet $ \ws -> return $ listToMaybe
 replaceWindow original replacement =
   W.delete original . swapWindows original replacement
 
-myKill =
+chromeReplaceKill =
   withFocused $ \w -> do
     vClass <- getClass w
     if vClass == "Chrome" then
@@ -906,7 +907,7 @@ addKeys conf@XConfig { modMask = modm } =
     , ((modalt, xK_Return), deactivateFullAnd restoreAllMinimized)
     , ((modm .|. controlMask, xK_t),
        setReplaceTarget >> spawn "chromix-too open chrome://newtab")
-    , ((modm .|. shiftMask, xK_c), myKill)
+    , ((mod .|. controlMask, xK_c), chromeReplaceKill)
     , ((hyper, xK_g), gatherThisClass)
 
     -- Directional navigation
