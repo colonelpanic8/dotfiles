@@ -1042,6 +1042,20 @@ I keep it around just in case I need it.
 (fset 'extract-and-name-use-package-block
       [?\C-a return ?\C-p ?# ?+ ?E ?N ?D ?_ ?S ?R ?C return ?# ?+ ?B ?E ?G ?I ?N ?_ ?S ?R ?C ?  ?e ?m ?a ?c ?s ?- ?l ?i ?s ?p ?\C-a ?\C-p ?\C-  ?\C-n ?\C-e ?\M-w ?\C-n ?\C-a ?\C-\M-f return ?\C-y ?\C-p ?\C-p ?\C-c ?\' ?\M-< ?\C-s ?u ?s ?e ?- ?p ?a ?c ?k return ?\C-\M-f ?\C-f ?\C-  ?\C-\M-f ?\M-w ?\C-c ?\' ?\C-r ?B ?E ?G ?I ?N return ?\C-a ?\C-p ?\C-e return ?* ?  ?\C-y])
  #+END_SRC
+* Man-mode
+Man page escape sequences aren't properly handled by emacs pager. This function
+fixes that, but for now, it needs to be run manually, since I haven't figured
+out how to detect that a buffer is a man mode buffer.
+#+BEGIN_SRC emacs-lisp
+(use-package man
+  :config
+  (progn
+    (defun imalison:fontify-man-page-buffer ()
+      (interactive)
+      (read-only-mode -1)
+      (Man-fontify-manpage)
+      (read-only-mode +1))))
+#+END_SRC
 * General
 ** User Info
 #+BEGIN_SRC emacs-lisp
