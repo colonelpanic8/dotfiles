@@ -1,5 +1,6 @@
 [options]
 dynamic_title = true
+scrollback_lines = -1
 
 [colors]
 # Base16 Default Dark
@@ -49,3 +50,4 @@ color18 = #282828
 color19 = #383838
 color20 = #b8b8b8
 color21 = #e8e8e8
+
