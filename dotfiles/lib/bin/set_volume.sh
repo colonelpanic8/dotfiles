@@ -10,7 +10,8 @@ function switch_sink_applications()
 }
 
 current_default=$(pahelper.sh list | grep '*' | all_after_char ":" | xargs)
-environment_variable_exists USE_ONLY_ONE_PASINK && pahelper.sh "$current_default"
+environment_variable_exists USE_ONLY_O_PASINK && pahelper.sh "$current_default"
 
-pulseaudio-ctl "$@"
+# XXX: this does not prevent volumes higher than 100
+pulsemixer "$@"
 pashowvolume
