@@ -1418,6 +1418,7 @@ Paradox is a package.el extension. I have no use for it now that I use straight.
 ** server
 #+BEGIN_SRC emacs-lisp
 (use-package server
+  :demand t
   :config
   (progn
     (defvar imalison:default-server-file
