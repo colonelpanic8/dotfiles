@@ -9,3 +9,12 @@ packages:
 extra-deps:
 - X11-xft-0.3.1
 resolver: lts-11.7
+nix:
+  packages:
+    - pkgconfig
+    - x11
+    - xorg.libX11
+    - xorg.libXext
+    - xorg.libXinerama
+    - xorg.libXrandr
+    - xorg.libXrender

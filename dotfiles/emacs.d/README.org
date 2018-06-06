@@ -2774,7 +2774,8 @@ The following is taken from [[https://github.com/syl20bnr/spacemacs/blob/a650877
 #+BEGIN_SRC emacs-lisp
 (use-package lsp-haskell
   :config
-  (add-hook 'haskell-mode-hook 'lsp-haskell-enable))
+  (when (executable-find "hie")
+    (add-hook 'haskell-mode-hook 'lsp-haskell-enable)))
 #+END_SRC
 **** intero
 Intero seems to be causing hangs, so it has been disabled
