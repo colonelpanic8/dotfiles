@@ -3,7 +3,7 @@
 "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
-<!-- 2018-06-04 Mon 20:49 -->
+<!-- 2018-06-06 Wed 04:39 -->
 <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>&lrm;</title>
@@ -6316,6 +6316,7 @@ Paradox is a package.el extension. I have no use for it now that I use straight.
 <div class="outline-text-3" id="text-7-28">
 <div class="org-src-container">
 <pre class="src src-emacs-lisp">(<span class="org-keyword">use-package</span> <span class="org-constant">server</span>
+  <span class="org-builtin">:demand</span> t
   <span class="org-builtin">:config</span>
   (<span class="org-keyword">progn</span>
     (<span class="org-keyword">defvar</span> <span class="org-variable-name">imalison:default-server-file</span>
@@ -8165,7 +8166,8 @@ The following is taken from <a href="https://github.com/syl20bnr/spacemacs/blob/
 <div class="org-src-container">
 <pre class="src src-emacs-lisp">(<span class="org-keyword">use-package</span> <span class="org-constant">lsp-haskell</span>
   <span class="org-builtin">:config</span>
-  (add-hook 'haskell-mode-hook 'lsp-haskell-enable))
+  (<span class="org-keyword">when</span> (executable-find <span class="org-string">"hie"</span>)
+    (add-hook 'haskell-mode-hook 'lsp-haskell-enable)))
 </pre>
 </div>
 </div>
@@ -9192,7 +9194,9 @@ This function replaces the default naming scheme with a call to
 <div class="outline-text-4" id="text-14-3-2">
 <div class="org-src-container">
 <pre class="src src-emacs-lisp">(<span class="org-keyword">use-package</span> <span class="org-constant">tex</span>
-  <span class="org-builtin">:straight</span> auctex
+  <span class="org-builtin">:straight</span> (auctex <span class="org-builtin">:host</span> github <span class="org-builtin">:repo</span> <span class="org-string">"raxod502/auctex"</span>
+                    <span class="org-builtin">:branch</span> <span class="org-string">"fork/1"</span>
+                    <span class="org-builtin">:files</span> (<span class="org-builtin">:defaults</span> (<span class="org-builtin">:exclude</span> <span class="org-string">"doc/*.texi"</span>)))
   <span class="org-builtin">:commands</span> TeX-mode
   <span class="org-builtin">:preface</span>
   (<span class="org-keyword">progn</span>
