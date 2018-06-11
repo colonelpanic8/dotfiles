@@ -139,7 +139,7 @@ function _haskell_setup {
 }
 
 function _nix_setup {
-	if [ -e /home/imalison/.nix-profile/etc/profile.d/nix.sh ]; then
-		. /home/imalison/.nix-profile/etc/profile.d/nix.sh;
+	if [ -e $HOME/.nix-profile/etc/profile.d/nix.sh ]; then
+		. $HOME/.nix-profile/etc/profile.d/nix.sh;
 	fi
 }
