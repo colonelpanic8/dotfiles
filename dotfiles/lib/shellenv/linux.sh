@@ -13,7 +13,7 @@ pasink() {
 pavolume () {
     pacmd list-sinks |
         awk '/^\s+name: /{indefault = $2 == "<'"$(pasink)"'>"}
-            /^\s+volume: / && indefault {print $5; exit}'
+            /^\s+volume: / && indefault {print $5; exit}' | grep -Eo "[0-9]*"
 }
 
 paismuted () {
@@ -24,7 +24,7 @@ pashowvolume () {
 	if paismuted; then
 		volnoti-show -m
 	else
-		volnoti-show "$(pavolume)"
+		volnoti-show "$(min $(pavolume) 100)"
 	fi
 }
 

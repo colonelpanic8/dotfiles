@@ -1,9 +1,36 @@
 #!/usr/bin/env bash
 
+function min {
+	[ $1 -le $2 ] && echo "$1" || echo "$2"
+}
+
+function get_exe_dir {
+	# XXX: This exists because calling in to stack is kind of slow with nix
+	# integration enabled, even when just using it to get a path.
+	if [ -e ./.cached-stack-install-path ]; then
+		cat .cached-stack-install-path
+	else
+		stack path --local-install-root
+	fi
+}
+
+function do_rebuild {
+
+}
+
 SRC_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 
 EXE_NAME=imalison-xmonad
+EXE_LOCATION=$(get_exe_dir)/bin/$EXE_NAME
 output_file=$1; shift
 
-stack install
-cp -uf $(stack path --local-install-root)/bin/$EXE_NAME $output_file
+if [ -e ./.cached-stack-install-path ]; then
+	last_built=$(stat -c '%Y' $EXE_LOCATION)
+	xmonad_modified=$(stat -c '%Y' ./xmonad.hs)
+
+	[ $last_built -lt $xmonad_modified ] && stack install
+else
+	stack install
+fi
+
+cp -uf $EXE_LOCATION $output_file

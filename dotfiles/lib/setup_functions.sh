@@ -60,7 +60,6 @@ function get_linux_distro {
    return 1
 }
 
-
 function is_osx() {
 	if command_exists uname; then
 			case `uname` in
@@ -81,4 +80,8 @@ function source_directory_files {
 		environment_variable_exists SHELL_STARTUP_DEBUG && echo "Sourcing $filename"
         source "$filename"
     done
+}
+
+function min {
+	[ $1 -le $2 ] && echo "$1" || echo "$2"
 }

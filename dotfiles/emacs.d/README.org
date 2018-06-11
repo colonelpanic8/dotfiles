@@ -218,6 +218,7 @@ These definitions silence the byte-compiler.
 Sets environment variables by starting a shell.
 #+BEGIN_SRC emacs-lisp
 (use-package exec-path-from-shell
+  :disabled (not (equal system-type 'darwin))
   :config
   (progn
     ;; For debugging
@@ -1417,6 +1418,7 @@ Paradox is a package.el extension. I have no use for it now that I use straight.
 ** server
 #+BEGIN_SRC emacs-lisp
 (use-package server
+  :demand t
   :config
   (progn
     (defvar imalison:default-server-file
@@ -2772,7 +2774,8 @@ The following is taken from [[https://github.com/syl20bnr/spacemacs/blob/a650877
 #+BEGIN_SRC emacs-lisp
 (use-package lsp-haskell
   :config
-  (add-hook 'haskell-mode-hook 'lsp-haskell-enable))
+  (when (executable-find "hie")
+    (add-hook 'haskell-mode-hook 'lsp-haskell-enable)))
 #+END_SRC
 **** intero
 Intero seems to be causing hangs, so it has been disabled
@@ -3605,7 +3608,9 @@ alphanumeric characters only."
 *** TeX
 #+BEGIN_SRC emacs-lisp
 (use-package tex
-  :straight auctex
+  :straight (auctex :host github :repo "raxod502/auctex"
+                    :branch "fork/1"
+                    :files (:defaults (:exclude "doc/*.texi")))
   :commands TeX-mode
   :preface
   (progn

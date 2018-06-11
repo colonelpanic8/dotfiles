@@ -91,7 +91,7 @@
 }
 
 #element {
-  font:     "Open Sans 13";
+  font:     "Source Code Pro 13";
   padding:  12px 1.5em 12px 14px;
 }
 

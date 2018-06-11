@@ -461,7 +461,6 @@ myReplaceWindow =
 
 -- Workspace Names for EWMH
 
-
 setWorkspaceNames :: X ()
 setWorkspaceNames = withWindowSet $ \s -> withDisplay $ \dpy -> do
   sort' <- getSortByIndex
@@ -865,6 +864,10 @@ goToNextScreenX = windows goToNextScreen
 
 -- Key bindings
 
+volumeUp = spawn "set_volume.sh --unmute --change-volume +5"
+volumeDown = spawn "set_volume.sh --unmute --change-volume -5"
+mute = spawn "set_volume.sh --toggle-mute"
+
 shiftToEmptyOnScreen direction =
   followingWindow (windowToScreen direction True) >> shiftToEmptyAndView
 
@@ -907,7 +910,7 @@ addKeys conf@XConfig { modMask = modm } =
     , ((modalt, xK_Return), deactivateFullAnd restoreAllMinimized)
     , ((modm .|. controlMask, xK_t),
        setReplaceTarget >> spawn "chromix-too open chrome://newtab")
-    , ((mod .|. controlMask, xK_c), chromeReplaceKill)
+    , ((modm .|. controlMask, xK_c), chromeReplaceKill)
     , ((hyper, xK_g), gatherThisClass)
 
     -- Directional navigation
@@ -1005,12 +1008,12 @@ addKeys conf@XConfig { modMask = modm } =
     , ((0, xF86XK_AudioPrev), spawn "playerctl previous")
 
     -- Volume control
-    , ((0, xF86XK_AudioRaiseVolume), spawn "set_volume.sh up")
-    , ((0, xF86XK_AudioLowerVolume), spawn "set_volume.sh down")
-    , ((0, xF86XK_AudioMute), spawn "set_volume.sh mute")
-    , ((modm, xK_i), spawn "set_volume.sh up")
-    , ((modm, xK_k), spawn "set_volume.sh down")
-    , ((modm, xK_u), spawn "set_volume.sh mute")
+    , ((0, xF86XK_AudioRaiseVolume), volumeUp)
+    , ((0, xF86XK_AudioLowerVolume), volumeDown)
+    , ((0, xF86XK_AudioMute), mute)
+    , ((modm, xK_i), volumeUp)
+    , ((modm, xK_k), volumeDown)
+    , ((modm, xK_u), mute)
     , ((hyper .|. shiftMask, xK_q), spawn "toggle_mute_current_window.sh")
     , ((hctrl, xK_q), spawn "toggle_mute_current_window.sh only")
 
