@@ -4,14 +4,20 @@ export SYSTEMD_COLORS=0
 term=${ROFI_SYSTEMD_TERM-termite -e}
 default_action=${ROFI_SYSTEMD_DEFAULT_ACTION-"list_actions"}
 
-function user_units {
-	SYSTEMD_COLORS=0 systemctl --user list-unit-files | tail -n +2 | head -n -2 |
-		awk '{print $0 "  user"}'
+function unit_files {
+	systemctl "$1" list-unit-files --no-legend
 }
 
-function system_units {
-	systemctl list-unit-files | tail -n +2 | head -n -2 |
-		awk '{print $0 "  system"}'
+# This is needed to list services started from template units
+function running_units {
+	systemctl "$1" list-units --all --type=service --no-legend |
+		awk '{print $1 " " $3}'
+}
+
+
+function get_units {
+	{ unit_files "--$1"; running_units "--$1"; } |
+		awk -v unit_type="$1" '{print $0 " " unit_type}'
 }
 
 enable="Alt+e"
@@ -104,4 +110,4 @@ function get_command_with_args {
 	esac
 }
 
-{ user_units; system_units; } | column -tc 1 | select_service_and_act
+{ get_units user; get_units system; } | column -tc 1 | select_service_and_act
