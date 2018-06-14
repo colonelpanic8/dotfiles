@@ -132,6 +132,7 @@ in
     # Miscellaneous
     android-udev-rules
     librsvg
+    transmission-gtk
   ];
 
   # Some programs need SUID wrappers, can be configured further or are

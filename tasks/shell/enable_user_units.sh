@@ -6,8 +6,6 @@ enable_git_sync () {
 	systemctl --user enable "$unit_name"
 }
 
-	unit_name=$(systemd-escape -p "$HOME/.password-store" --template git-sync@.service)
-
 
 cd "$HOME/.config/systemd/user/"
 find * -type f | grep -v git-sync | grep -E "\.service$" | xargs -I unitname sh -c 'echo unitname && systemctl --user enable unitname'

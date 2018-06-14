@@ -1,4 +1,5 @@
 # emacs
+.#*
 .emacs.desktop
 .emacs*
 projectile.cache
