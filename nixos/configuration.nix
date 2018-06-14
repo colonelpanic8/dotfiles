@@ -10,9 +10,16 @@ let
     pip
   ];
   python-with-my-packages = pkgs.python3.withPackages my-python-packages;
+  # clipit-master = pkgs.clipt.overrideAttrs (oldAttrs: rec {
+  #   src = fetchFromGitHub {
+  #     owner = "shantzu";
+  #     repo = "ClipIt";
+  #     rev = "eb9adaf2b5fd65aac1e83d6544b9076aae6af5b7";
+  #     sha256 = "01if8y93wa0mwbkzkzx2v1vqh47zlz4k1dysl6yh5rmppd1psknz";
+  #   };
+  # });
 in
 {
-  boot.loader.systemd-boot.enable = true;
   nixpkgs.config.allowUnfree = true;
   security.sudo.wheelNeedsPassword = false;
   networking.networkmanager.enable = true;
@@ -76,12 +83,13 @@ in
     clipit
     compton
     feh
-    sddm-kcm
     networkmanagerapplet
     pinentry
     pommed_light
     rofi
     rofi-pass
+    sddm-kcm
+    udiskie
     volnoti
     xclip
     xdotool
@@ -107,6 +115,7 @@ in
     gnumake
     gnupg
     htop
+    inotify-tools
     ncdu
     pass
     python-with-my-packages
@@ -117,7 +126,11 @@ in
     wget
     zsh
 
+    # Nix
+    nix-prefetch-git
+
     # Miscellaneous
+    android-udev-rules
     librsvg
   ];
 
