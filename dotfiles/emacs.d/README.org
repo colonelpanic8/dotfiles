@@ -4378,7 +4378,7 @@ Not really sure what this is
     (setq deft-file-naming-rules '((noslash . "_")
                                    (nospace . "_")
                                    (case-fn . downcase)))
-    (setq deft-directory "~/SparkleShare/org/notes")))
+    (setq deft-directory (imalison:join-paths imalison:org-dir "notes"))))
 #+END_SRC
 ** epg
 #+BEGIN_SRC emacs-lisp
