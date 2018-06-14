@@ -6,7 +6,7 @@ module Main where
 import qualified Codec.Binary.UTF8.String as UTF8String (encode)
 import qualified Control.Arrow as A
 import           Control.Monad
-import           Control.Monad.Trans
+import           Control.Monad.Trans.Class
 import           Control.Monad.Trans.Maybe
 import           Data.Aeson
 import qualified Data.ByteString.Lazy as B
@@ -21,13 +21,12 @@ import           Data.Tuple.Sequence (sequenceT)
 import           Data.Typeable
 import           Graphics.X11.ExtraTypes.XF86
 import           Network.HostName
+import           PagerHints
 import           System.Directory
 import           System.FilePath.Posix
 import           System.Process
-import           PagerHints
 import           Text.Printf
 import           Unsafe.Coerce
-
 import           XMonad hiding ( (|||) )
 import           XMonad.Actions.CycleWS hiding (nextScreen)
 import           XMonad.Actions.CycleWorkspaceByScreen

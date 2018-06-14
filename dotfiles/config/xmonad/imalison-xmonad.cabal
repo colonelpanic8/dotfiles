@@ -20,7 +20,6 @@ executable imalison-xmonad
                      , directory>=1.2.6.2
                      , filepath>=1.4.1.0
                      , hostname>=1.0
-                     , mtl>=2.2.1
                      , multimap>=1.2.1
                      , process>=1.4.3.0
                      , split
