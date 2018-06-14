@@ -1,7 +1,7 @@
 #!/usr/bin/env sh
 
 export SYSTEMD_COLORS=0
-term=${ROFI_SYSTEMD_TERM-termite -e}
+term=${ROFI_SYSTEMD_TERM-urxvt -e}
 default_action=${ROFI_SYSTEMD_DEFAULT_ACTION-"list_actions"}
 
 function unit_files {
@@ -16,7 +16,7 @@ function running_units {
 
 
 function get_units {
-	{ unit_files "--$1"; running_units "--$1"; } |
+	{ unit_files "--$1"; running_units "--$1"; } | sort -u -k1,1 |
 		awk -v unit_type="$1" '{print $0 " " unit_type}'
 }
 
@@ -74,7 +74,7 @@ function select_service_and_act {
 	esac
 
 	selection="$(echo $result | sed -n 's/ \+/ /gp')"
-	service_name="$(echo $selection | awk '{ print $1 }' | tr -d ' ')"
+	service_name=$(echo "$selection" | awk '{ print $1 }' | tr -d ' ')
 	is_user="$(echo $selection | awk '{ print $3 }' )"
 
 	case "$is_user" in
@@ -92,20 +92,20 @@ function select_service_and_act {
 
 	to_run="$(get_command_with_args)"
 	echo "Running $to_run"
-	eval "$to_run"
+	eval "$term $to_run"
 }
 
 function get_command_with_args {
 	case "$action" in
 		"tail")
-			echo "$term 'journalctl $user_arg -u $service_name -f'"
+			echo "journalctl $user_arg -u '$service_name' -f"
 			;;
 		"list_actions")
 			action=$(echo "$all_actions" | rofi -dmenu -i -p "Select action: ")
 			get_command_with_args
 			;;
 		*)
-			echo "$command $action $service_name"
+			echo "$command $action '$service_name'"
 			;;
 	esac
 }
