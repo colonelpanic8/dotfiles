@@ -7,3 +7,4 @@
 /xmonad.o
 /xmonad.state
 /prompt-history
+/.cached-stack-install-path
