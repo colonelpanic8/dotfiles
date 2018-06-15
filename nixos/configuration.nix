@@ -10,6 +10,16 @@ let
     pip
   ];
   python-with-my-packages = pkgs.python3.withPackages my-python-packages;
+  udiskie-appindicator = pkgs.udiskie.overrideAttrs (oldAttrs: rec {
+    version = "1.7.5";
+    src = pkgs.fetchFromGitHub {
+      owner = "coldfix";
+      repo = "udiskie";
+      rev = version;
+      sha256 = "1mcdn8ha5d5nsmrzk6xnnsqrmk94rdrzym9sqm38zk5r8gpyl1k4";
+    };
+    propagatedBuildInputs = oldAttrs.propagatedBuildInputs ++ [pkgs.libappindicator-gtk3];
+  });
   # clipit-master = pkgs.clipt.overrideAttrs (oldAttrs: rec {
   #   src = fetchFromGitHub {
   #     owner = "shantzu";
@@ -89,7 +99,7 @@ in
     rofi
     rofi-pass
     sddm-kcm
-    udiskie
+    udiskie-appindicator
     volnoti
     xclip
     xdotool
