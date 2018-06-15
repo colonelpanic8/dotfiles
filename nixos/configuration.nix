@@ -135,6 +135,10 @@ in
     transmission-gtk
   ];
 
+  environment.variables = {
+    GDK_PIXBUF_MODULE_FILE = "${pkgs.librsvg.out}/lib/gdk-pixbuf-2.0/2.10.0/loaders.cache";
+  };
+
   # Some programs need SUID wrappers, can be configured further or are
   # started in user sessions.
   # programs.mtr.enable = true;
@@ -190,6 +194,9 @@ in
       sddm = {
         enable = true;
       };
+      sessionCommands = ''
+        systemctl --user import-environment GDK_PIXBUF_MODULE_FILE
+      '';
     };
 
   };
