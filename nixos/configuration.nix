@@ -113,17 +113,18 @@ in
   environment.systemPackages = with pkgs; [
 
     # Applications
-    google-chrome
+    emacs
     firefox
+    google-chrome
     hexchat
+    keybase-gui
     kodi
-    vlc
-    xfce.thunar
+    rxvt_unicode
     spotify
     steam
     termite
-    rxvt_unicode
-    emacs
+    vlc
+    xfce.thunar
 
     # Appearance
     numix-icon-theme-circle
@@ -200,8 +201,6 @@ in
   services.avahi.enable = true;
   sound.enable = true;
   hardware.pulseaudio.enable = true;
-
-  environment.loginShellInit = ". ~/.lib/nix_login.sh";
 
   services.xserver = {
     exportConfiguration = true;
