@@ -115,6 +115,7 @@ in
     stow
     tmux
     wget
+    wmctrl
     zsh
 
     # Miscellaneous
@@ -197,5 +198,5 @@ in
     shell = pkgs.zsh;
   };
 
-  system.stateVersion = "18.03"; # Did you read the comment?
+  system.stateVersion = "18.03";
 }
