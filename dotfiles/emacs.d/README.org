@@ -1443,7 +1443,7 @@ The file server file for this emacs instance no longer exists.")
         (expand-file-name server-name server-dir)))
     (setq server-use-tcp t)
     (when (equal nil (server-running-p)) (server-start))
-    (run-with-timer 0 60 'imalison:make-main-emacs-server)))
+    (imalison:make-main-emacs-server)))
 #+END_SRC
 ** list-environment
 #+BEGIN_SRC emacs-lisp
@@ -1649,11 +1649,17 @@ custom-set-faces in your custom file.
   (let ((frame-mode-use-new-frame-or-window t))
     (imalison:named-compile "stack build")))
 
+(defun imalison:stack-build ()
+  (interactive)
+  (let ((frame-mode-use-new-frame-or-window t))
+    (imalison:named-compile "nix-build default.nix")))
+
 (defhydra imalison:compile nil "Compile"
   ("p" imalison:projectile-helm-command-from-zsh "Run a command in projectile root")
   ("d" helm-command-from-zsh "Run a command in default directory")
   ("c" imalison:named-compile "Enter Custom Command")
   ("s" imalison:stack-build "Stack build")
+  ("n" imalison:nix-build "Nix build")
   ("t" imalison:make-test "Test")
   ("u" imalison:glide-up "Update Dependencies"))
 ;; The following parens close the use-package/progn created several blocks above
@@ -2550,6 +2556,10 @@ eval-last-sexp.
   :config
   (progn
     (setq nix-indent-function 'nix-indent-line)))
+#+END_SRC
+#+BEGIN_SRC emacs-lisp
+(use-package nix-update
+  :after nix)
 #+END_SRC
 *** clojure
 The following is taken from [[https://github.com/syl20bnr/spacemacs/blob/a650877bea582fed72bbca0dc1f80fcb2ec0e6d5/layers/+lang/clojure/funcs.el#L30][spacemacs]]. It adds fancification to a clojure mode.
@@ -4268,8 +4278,10 @@ I had to disable this mode because something that it does messes with coding set
     (add-hook 'prog-mode-hook (lambda () (rainbow-delimiters-mode t)))))
 #+END_SRC
 ** undo-tree
+Disabled because it makes it hard to redo things
 #+BEGIN_SRC emacs-lisp
 (use-package undo-tree
+  :disabled t
   :bind (("C--" . undo-redo)
          ("C-c u" . undo-tree-visualize)
          ("C-c r" . undo-tree-redo))
@@ -4286,6 +4298,7 @@ I had to disable this mode because something that it does messes with coding set
 ** recentf
 #+BEGIN_SRC emacs-lisp
 (use-package recentf
+  :demand t
   :config
   (progn
     (setq recentf-max-saved-items 1000

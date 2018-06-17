@@ -20,14 +20,21 @@ let
     };
     propagatedBuildInputs = oldAttrs.propagatedBuildInputs ++ [pkgs.libappindicator-gtk3];
   });
-  # clipit-master = pkgs.clipt.overrideAttrs (oldAttrs: rec {
-  #   src = fetchFromGitHub {
-  #     owner = "shantzu";
-  #     repo = "ClipIt";
-  #     rev = "eb9adaf2b5fd65aac1e83d6544b9076aae6af5b7";
-  #     sha256 = "01if8y93wa0mwbkzkzx2v1vqh47zlz4k1dysl6yh5rmppd1psknz";
-  #   };
-  # });
+  clipit-master = pkgs.clipit.overrideAttrs (oldAttrs: rec {
+    version = "9741c39382a3f6e4c03eac6905a49794d07c465a";
+    preConfigure = "./autogen.sh";
+    configureFlags = ["--with-gtk3" "--enable-appindicator"];
+    src = pkgs.fetchFromGitHub {
+      owner = "IvanMalison";
+      repo = "ClipIt";
+      sha256 = "13lddvbsp16nir9ibllr403qxhwyh4h2bh6774icbb250pghykjx";
+      rev = version;
+    };
+    buildInputs = with pkgs; [
+      autoconf automake intltool gtk3 xdotool hicolor-icon-theme
+      libappindicator-gtk3
+    ];
+  });
 in
 {
   nixpkgs.config.allowUnfree = true;
@@ -92,9 +99,10 @@ in
 
     # Desktop
     autorandr
-    clipit
+    clipit-master
     compton
     feh
+    gnome3.gpaste
     networkmanagerapplet
     pinentry
     pommed_light
@@ -104,6 +112,7 @@ in
     volnoti
     xclip
     xdotool
+    # haskellPackages.status-notifier-item
     xorg.xkbcomp
     xsettingsd
 
@@ -130,6 +139,7 @@ in
     ncdu
     pass
     python-with-my-packages
+    # qttools
     rcm
     silver-searcher
     stow
@@ -151,27 +161,9 @@ in
     GDK_PIXBUF_MODULE_FILE = "${pkgs.librsvg.out}/lib/gdk-pixbuf-2.0/2.10.0/loaders.cache";
   };
 
-  # Some programs need SUID wrappers, can be configured further or are
-  # started in user sessions.
-  # programs.mtr.enable = true;
   programs.gnupg.agent = { enable = true; enableSSHSupport = true; };
-
-  # List services that you want to enable:
-
-  # Enable the OpenSSH daemon.
   services.openssh.enable = true;
-  services.kbfs.enable = true;
-
-  # Open ports in the firewall.
-  # networking.firewall.allowedTCPPorts = [ ... ];
-  # networking.firewall.allowedUDPPorts = [ ... ];
-  # Or disable the firewall altogether.
-  # networking.firewall.enable = false;
-
-  # Enable CUPS to print documents.
-  # services.printing.enable = true;
-
-  # Enable sound.
+  services.avahi.enable = true;
   sound.enable = true;
   hardware.pulseaudio.enable = true;
 
