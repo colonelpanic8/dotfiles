@@ -52,15 +52,18 @@
   networking.hostName = "imalison-home";
   boot.loader.efi.canTouchEfiVariables = true;
 
-  services.xserver.screenSection = ''
-    DefaultDepth 24
-    Option "RegistryDwords" "PerfLevelSrc=0x3322; PowerMizerDefaultAC=0x1"
-    Option "TripleBuffer" "True"
-    Option "Stereo" "0"
-    Option "nvidiaXineramaInfoOrder" "DFP-0"
-    Option "metamodes" "DVI-D-0: nvidia-auto-select +0+2160 {ForceCompositionPipeline=On, ForceFullCompositionPipeline=On}, HDMI-0: nvidia-auto-select +640+0 {ForceCompositionPipeline=On, ForceFullCompositionPipeline=On}, HDMI-1: nvidia-auto-select +2560+2160 {ForceCompositionPipeline=On, ForceFullCompositionPipeline=On}"
-    Option "SLI" "Off"
-    Option "MultiGPU" "Off"
-    Option "BaseMosaic" "off"
-  '';
+  services.xserver = {
+    screenSection = ''
+      DefaultDepth 24
+      Option "RegistryDwords" "PerfLevelSrc=0x3322; PowerMizerDefaultAC=0x1"
+      Option "TripleBuffer" "True"
+      Option "Stereo" "0"
+      Option "nvidiaXineramaInfoOrder" "DFP-0"
+      Option "metamodes" "DVI-D-0: nvidia-auto-select +0+2160 {ForceCompositionPipeline=On, ForceFullCompositionPipeline=On}, HDMI-0: nvidia-auto-select +640+0 {ForceCompositionPipeline=On, ForceFullCompositionPipeline=On}, HDMI-1: nvidia-auto-select +2560+2160 {ForceCompositionPipeline=On, ForceFullCompositionPipeline=On}"
+      Option "SLI" "Off"
+      Option "MultiGPU" "Off"
+      Option "BaseMosaic" "off"
+    '';
+    videoDrivers = [ "nvidia" ];
+  };
 }

@@ -98,7 +98,6 @@ in
     pommed_light
     rofi
     rofi-pass
-    sddm-kcm
     udiskie-appindicator
     volnoti
     xclip
@@ -179,7 +178,6 @@ in
     exportConfiguration = true;
     enable = true;
     layout = "us";
-    videoDrivers = [ "nvidia" ];
     desktopManager = {
       gnome3.enable = true;
       default = "none";
