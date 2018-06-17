@@ -169,6 +169,7 @@ in
   # services.printing.enable = true;
 
   # Enable sound.
+  services.avahi.enable = true;
   sound.enable = true;
   hardware.pulseaudio.enable = true;
 
