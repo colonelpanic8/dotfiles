@@ -20,14 +20,21 @@ let
     };
     propagatedBuildInputs = oldAttrs.propagatedBuildInputs ++ [pkgs.libappindicator-gtk3];
   });
-  # clipit-master = pkgs.clipt.overrideAttrs (oldAttrs: rec {
-  #   src = fetchFromGitHub {
-  #     owner = "shantzu";
-  #     repo = "ClipIt";
-  #     rev = "eb9adaf2b5fd65aac1e83d6544b9076aae6af5b7";
-  #     sha256 = "01if8y93wa0mwbkzkzx2v1vqh47zlz4k1dysl6yh5rmppd1psknz";
-  #   };
-  # });
+  clipit-master = pkgs.clipit.overrideAttrs (oldAttrs: rec {
+    version = "9741c39382a3f6e4c03eac6905a49794d07c465a";
+    preConfigure = "./autogen.sh";
+    configureFlags = ["--with-gtk3" "--enable-appindicator"];
+    src = pkgs.fetchFromGitHub {
+      owner = "IvanMalison";
+      repo = "ClipIt";
+      sha256 = "13lddvbsp16nir9ibllr403qxhwyh4h2bh6774icbb250pghykjx";
+      rev = version;
+    };
+    buildInputs = with pkgs; [
+      autoconf automake intltool gtk3 xdotool hicolor-icon-theme
+      libappindicator-gtk3
+    ];
+  });
 in
 {
   nixpkgs.config.allowUnfree = true;
@@ -90,7 +97,7 @@ in
 
     # Desktop
     autorandr
-    clipit
+    clipit-master
     compton
     feh
     networkmanagerapplet
