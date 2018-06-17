@@ -107,7 +107,6 @@ in
     pommed_light
     rofi
     rofi-pass
-    sddm-kcm
     udiskie-appindicator
     volnoti
     xclip
@@ -145,6 +144,7 @@ in
     stow
     tmux
     wget
+    wmctrl
     zsh
 
     # Nix
@@ -172,7 +172,6 @@ in
     exportConfiguration = true;
     enable = true;
     layout = "us";
-    videoDrivers = [ "nvidia" ];
     desktopManager = {
       gnome3.enable = true;
       default = "none";
@@ -222,5 +221,5 @@ in
     shell = pkgs.zsh;
   };
 
-  system.stateVersion = "18.03"; # Did you read the comment?
+  system.stateVersion = "18.03";
 }

@@ -1168,7 +1168,9 @@ Disabling line numbers because they are slow as fuck.
 #+END_SRC
 *** frame-mode
 #+BEGIN_SRC emacs-lisp
-(defvar imalison:use-frame-mode nil)
+(defvar imalison:use-frame-mode
+  (s-contains? "xmonad" (shell-command-to-string "wmctrl -m")))
+
 (use-package frame-mode
   :if imalison:use-frame-mode
   :demand t
