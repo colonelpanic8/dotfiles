@@ -74,6 +74,7 @@ in
   nixpkgs.config.allowUnfree = true;
   security.sudo.wheelNeedsPassword = false;
   networking.networkmanager.enable = true;
+  networking.enableIPv6 = false;
 
   i18n = {
     consoleKeyMap = "us";
