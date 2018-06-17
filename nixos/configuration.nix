@@ -86,6 +86,7 @@ in
     vlc
     xfce.thunar
     spotify
+    steam
     termite
     rxvt_unicode
     emacs
@@ -100,6 +101,7 @@ in
     clipit-master
     compton
     feh
+    gnome3.gpaste
     networkmanagerapplet
     pinentry
     pommed_light
@@ -110,6 +112,7 @@ in
     volnoti
     xclip
     xdotool
+    # haskellPackages.status-notifier-item
     xorg.xkbcomp
     xsettingsd
 
@@ -136,6 +139,7 @@ in
     ncdu
     pass
     python-with-my-packages
+    # qttools
     rcm
     silver-searcher
     stow
@@ -156,26 +160,8 @@ in
     GDK_PIXBUF_MODULE_FILE = "${pkgs.librsvg.out}/lib/gdk-pixbuf-2.0/2.10.0/loaders.cache";
   };
 
-  # Some programs need SUID wrappers, can be configured further or are
-  # started in user sessions.
-  # programs.mtr.enable = true;
   programs.gnupg.agent = { enable = true; enableSSHSupport = true; };
-
-  # List services that you want to enable:
-
-  # Enable the OpenSSH daemon.
   services.openssh.enable = true;
-
-  # Open ports in the firewall.
-  # networking.firewall.allowedTCPPorts = [ ... ];
-  # networking.firewall.allowedUDPPorts = [ ... ];
-  # Or disable the firewall altogether.
-  # networking.firewall.enable = false;
-
-  # Enable CUPS to print documents.
-  # services.printing.enable = true;
-
-  # Enable sound.
   services.avahi.enable = true;
   sound.enable = true;
   hardware.pulseaudio.enable = true;
