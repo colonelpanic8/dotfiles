@@ -130,6 +130,8 @@ in
     numix-icon-theme-circle
     gnome3.adwaita-icon-theme
     hicolor-icon-theme
+    plasma5.breeze-gtk
+    plasma5.breeze-qt5
 
     # Desktop
     autorandr
@@ -174,7 +176,7 @@ in
     ncdu
     pass
     python-with-my-packages
-    # qttools
+    qt5.qttools
     rcm
     silver-searcher
     stow
