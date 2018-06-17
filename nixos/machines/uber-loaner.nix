@@ -8,7 +8,7 @@
 
   boot.initrd.availableKernelModules = [ "xhci_pci" "ahci" "usbhid" "sd_mod" ];
   boot.kernelModules = [ "kvm-intel" ];
-  boot.extraModulePackages = [ ];
+  boot.extraModulePackages = [ pkgs.linuxPackages.rtl8814au ];
   boot.loader.grub.efiSupport = true;
   boot.loader.grub.device = "nodev";
   boot.loader.grub.enable = true;
@@ -27,10 +27,6 @@
     { device = "tmpfs";
       fsType = "tmpfs";
     };
-
-  environment.systemPackages = [
-    pkgs.linuxPackages.rtl8814au
-  ];
 
   swapDevices = [ ];
 
