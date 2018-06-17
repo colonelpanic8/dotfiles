@@ -72,16 +72,18 @@ in
   environment.systemPackages = with pkgs; [
 
     # Applications
-    google-chrome
+    emacs
     firefox
+    google-chrome
     hexchat
+    keybase-gui
     kodi
+    rxvt_unicode
+    spotify
+    steam
+    termite
     vlc
     xfce.thunar
-    spotify
-    termite
-    rxvt_unicode
-    emacs
 
     # Appearance
     numix-icon-theme-circle
@@ -158,6 +160,7 @@ in
 
   # Enable the OpenSSH daemon.
   services.openssh.enable = true;
+  services.kbfs.enable = true;
 
   # Open ports in the firewall.
   # networking.firewall.allowedTCPPorts = [ ... ];
@@ -171,8 +174,6 @@ in
   # Enable sound.
   sound.enable = true;
   hardware.pulseaudio.enable = true;
-
-  environment.loginShellInit = ". ~/.lib/nix_login.sh";
 
   services.xserver = {
     exportConfiguration = true;
