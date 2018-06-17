@@ -1442,7 +1442,7 @@ The file server file for this emacs instance no longer exists.")
       (let ((server-dir (if server-use-tcp server-auth-dir server-socket-dir)))
         (expand-file-name server-name server-dir)))
     (setq server-use-tcp t)
-    (unless (equal nil (server-running-p)) (server-start))
+    (when (equal nil (server-running-p)) (server-start))
     (run-with-timer 0 60 'imalison:make-main-emacs-server)))
 #+END_SRC
 ** list-environment
@@ -4380,7 +4380,7 @@ Not really sure what this is
     (setq deft-file-naming-rules '((noslash . "_")
                                    (nospace . "_")
                                    (case-fn . downcase)))
-    (setq deft-directory "~/SparkleShare/org/notes")))
+    (setq deft-directory (imalison:join-paths imalison:org-dir "notes"))))
 #+END_SRC
 ** epg
 #+BEGIN_SRC emacs-lisp

@@ -9,6 +9,7 @@
   boot.initrd.availableKernelModules = [ "xhci_pci" "ahci" "usbhid" "sd_mod" ];
   boot.kernelModules = [ "kvm-intel" ];
   boot.extraModulePackages = [ ];
+  boot.loader.systemd-boot.enable = true;
 
   fileSystems."/" = {
     device = "/dev/disk/by-uuid/110e3bf8-19b7-4a39-8e2a-b4c3c0d59d0e";
@@ -24,6 +25,11 @@
     device = "/dev/disk/by-uuid/9095e51e-33f9-440d-a272-46e129800f81";
     fsType = "ext4";
   };
+
+  # fileSystems."/shared" = {
+  #   device = "/dev/disk/by-uuid/4b6f1ca8-6b68-4bdb-b92c-d2d7ba080928";
+  #   fsType = "ntfs";
+  # };
 
   swapDevices =
     [ { device = "/dev/disk/by-uuid/a6933b22-c7f4-4c57-b330-1450f313922e"; }

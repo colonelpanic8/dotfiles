@@ -21,9 +21,7 @@
   bind "<ctrl>d" { "delete-from-cursor" (chars, 1) };
   bind "<alt>d" { "delete-from-cursor" (word-ends, 1) };
   bind "<alt>BackSpace" { "delete-from-cursor" (word-ends, -1) };
-  bind "<alt>backspace" { "delete-from-cursor" (word-ends, -1) };
   bind "<ctrl>k" { "delete-from-cursor" (paragraph-ends, 1) };
-  bind "<alt>backslash" { "delete-from-cursor" (whitespace, 1) };
 
   bind "<alt>space" { "delete-from-cursor" (whitespace, 1)
                       "insert-at-cursor" (" ") };

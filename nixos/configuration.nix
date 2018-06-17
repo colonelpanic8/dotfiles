@@ -10,9 +10,26 @@ let
     pip
   ];
   python-with-my-packages = pkgs.python3.withPackages my-python-packages;
+  udiskie-appindicator = pkgs.udiskie.overrideAttrs (oldAttrs: rec {
+    version = "1.7.5";
+    src = pkgs.fetchFromGitHub {
+      owner = "coldfix";
+      repo = "udiskie";
+      rev = version;
+      sha256 = "1mcdn8ha5d5nsmrzk6xnnsqrmk94rdrzym9sqm38zk5r8gpyl1k4";
+    };
+    propagatedBuildInputs = oldAttrs.propagatedBuildInputs ++ [pkgs.libappindicator-gtk3];
+  });
+  # clipit-master = pkgs.clipt.overrideAttrs (oldAttrs: rec {
+  #   src = fetchFromGitHub {
+  #     owner = "shantzu";
+  #     repo = "ClipIt";
+  #     rev = "eb9adaf2b5fd65aac1e83d6544b9076aae6af5b7";
+  #     sha256 = "01if8y93wa0mwbkzkzx2v1vqh47zlz4k1dysl6yh5rmppd1psknz";
+  #   };
+  # });
 in
 {
-  boot.loader.systemd-boot.enable = true;
   nixpkgs.config.allowUnfree = true;
   security.sudo.wheelNeedsPassword = false;
   networking.networkmanager.enable = true;
@@ -76,12 +93,13 @@ in
     clipit
     compton
     feh
-    sddm-kcm
     networkmanagerapplet
     pinentry
     pommed_light
     rofi
     rofi-pass
+    sddm-kcm
+    udiskie-appindicator
     volnoti
     xclip
     xdotool
@@ -107,6 +125,7 @@ in
     gnumake
     gnupg
     htop
+    inotify-tools
     ncdu
     pass
     python-with-my-packages
@@ -118,9 +137,18 @@ in
     wmctrl
     zsh
 
+    # Nix
+    nix-prefetch-git
+
     # Miscellaneous
+    android-udev-rules
     librsvg
+    transmission-gtk
   ];
+
+  environment.variables = {
+    GDK_PIXBUF_MODULE_FILE = "${pkgs.librsvg.out}/lib/gdk-pixbuf-2.0/2.10.0/loaders.cache";
+  };
 
   # Some programs need SUID wrappers, can be configured further or are
   # started in user sessions.
@@ -177,6 +205,9 @@ in
       sddm = {
         enable = true;
       };
+      sessionCommands = ''
+        systemctl --user import-environment GDK_PIXBUF_MODULE_FILE
+      '';
     };
 
   };

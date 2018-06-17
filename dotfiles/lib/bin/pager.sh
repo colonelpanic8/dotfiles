@@ -1,6 +1,6 @@
 #!/usr/bin/env zsh
 if environment_variable_exists INSIDE_EMACS; then
-	emacs_pager "$@"
+	emacs_pager -a less "$@"
 else
 	less -FXr
 fi

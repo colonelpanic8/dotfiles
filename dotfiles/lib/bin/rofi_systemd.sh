@@ -1,17 +1,23 @@
 #!/usr/bin/env sh
 
 export SYSTEMD_COLORS=0
-term=${ROFI_SYSTEMD_TERM-termite -e}
+term=${ROFI_SYSTEMD_TERM-urxvt -e}
 default_action=${ROFI_SYSTEMD_DEFAULT_ACTION-"list_actions"}
 
-function user_units {
-	SYSTEMD_COLORS=0 systemctl --user list-unit-files | tail -n +2 | head -n -2 |
-		awk '{print $0 "  user"}'
+function unit_files {
+	systemctl "$1" list-unit-files --no-legend
 }
 
-function system_units {
-	systemctl list-unit-files | tail -n +2 | head -n -2 |
-		awk '{print $0 "  system"}'
+# This is needed to list services started from template units
+function running_units {
+	systemctl "$1" list-units --all --type=service --no-legend |
+		awk '{print $1 " " $3}'
+}
+
+
+function get_units {
+	{ unit_files "--$1"; running_units "--$1"; } | sort -u -k1,1 |
+		awk -v unit_type="$1" '{print $0 " " unit_type}'
 }
 
 enable="Alt+e"
@@ -68,7 +74,7 @@ function select_service_and_act {
 	esac
 
 	selection="$(echo $result | sed -n 's/ \+/ /gp')"
-	service_name="$(echo $selection | awk '{ print $1 }' | tr -d ' ')"
+	service_name=$(echo "$selection" | awk '{ print $1 }' | tr -d ' ')
 	is_user="$(echo $selection | awk '{ print $3 }' )"
 
 	case "$is_user" in
@@ -86,22 +92,22 @@ function select_service_and_act {
 
 	to_run="$(get_command_with_args)"
 	echo "Running $to_run"
-	eval "$to_run"
+	eval "$term $to_run"
 }
 
 function get_command_with_args {
 	case "$action" in
 		"tail")
-			echo "$term 'journalctl $user_arg -u $service_name -f'"
+			echo "journalctl $user_arg -u '$service_name' -f"
 			;;
 		"list_actions")
 			action=$(echo "$all_actions" | rofi -dmenu -i -p "Select action: ")
 			get_command_with_args
 			;;
 		*)
-			echo "$command $action $service_name"
+			echo "$command $action '$service_name'"
 			;;
 	esac
 }
 
-{ user_units; system_units; } | column -tc 1 | select_service_and_act
+{ get_units user; get_units system; } | column -tc 1 | select_service_and_act

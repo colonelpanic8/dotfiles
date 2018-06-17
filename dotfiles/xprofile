@@ -3,8 +3,8 @@
 # If there are issues with path, check /etc/profile for hard overrides of PATH.
 . "$HOME/.lib/login.sh"
 # XXX: prevents https://github.com/xmonad/xmonad/issues/86 from affecting startup
+rm -f ~/.xmonad
 
-rm -f ~/.xmonad/xmonad.state
 load_xkb_map.sh
 
 run_if_exists systemctl --user import-environment XDG_DATA_DIRS
