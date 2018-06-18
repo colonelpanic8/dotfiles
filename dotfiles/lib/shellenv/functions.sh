@@ -459,7 +459,10 @@ function localip {
             ifconfig | grep -Eo 'inet (addr:)?([0-9]*\.){3}[0-9]*' | grep -Eo '([0-9]*\.){3}[0-9]*' | grep -v '127.0.0.1'
             ;;
         'Linux')
-            hostname --ip-address
+			ip -4 addr | grep -oP '(?<=inet\s)\d+(\.\d+){3}' | grep -v 127.0.0.1 | head -n 1
+			# This was a nicer solution, but it returns ipv6 addresses on
+            # machines that have them:
+			# hostname --ip-address
             ;;
     esac
 }
