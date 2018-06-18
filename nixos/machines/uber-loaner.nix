@@ -28,6 +28,7 @@
       fsType = "tmpfs";
     };
 
+  networking.hostName = "uber-loaner";
   swapDevices = [ ];
 
   nix.maxJobs = lib.mkDefault 4;
