@@ -113,6 +113,7 @@ in
   environment.systemPackages = with pkgs; [
 
     # Applications
+    calibre
     emacs
     firefox
     google-chrome
@@ -200,7 +201,15 @@ in
 
   programs.gnupg.agent = { enable = true; enableSSHSupport = true; };
   services.openssh.enable = true;
-  services.avahi.enable = true;
+  services.avahi = {
+    enable = true;
+    nssmdns = true;
+    publish = {
+      enable = true;
+      domain = true;
+      userServices = true;
+    };
+  };
   sound.enable = true;
   hardware.pulseaudio.enable = true;
 
