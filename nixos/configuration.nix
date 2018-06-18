@@ -201,6 +201,7 @@ in
   };
 
   programs.gnupg.agent = { enable = true; enableSSHSupport = true; };
+  programs.zsh.enable = true;
   services.openssh.enable = true;
   services.avahi = {
     enable = true;
