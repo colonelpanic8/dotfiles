@@ -113,6 +113,7 @@ in
   environment.systemPackages = with pkgs; [
 
     # Applications
+    calibre
     emacs
     firefox
     google-chrome
