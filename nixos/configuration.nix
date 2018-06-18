@@ -145,6 +145,7 @@ in
     pommed_light
     rofi
     rofi-pass
+    synergy
     udiskie-appindicator
     volnoti
     xclip
