@@ -118,8 +118,10 @@ in
 
     # Applications
     calibre
+    discord
     emacs
     firefox
+    kleopatra
     google-chrome
     hexchat
     keybase-gui
@@ -146,6 +148,7 @@ in
     compton
     feh
     gnome3.gpaste
+    kdeconnect
     networkmanagerapplet
     pasystray-appindicator
     pinentry
@@ -183,6 +186,7 @@ in
     inotify-tools
     ncdu
     pass
+    plasma-workspace
     python-with-my-packages
     qt5.qttools
     rcm
@@ -207,7 +211,14 @@ in
   };
 
   programs.gnupg.agent = { enable = true; enableSSHSupport = true; };
-  programs.zsh.enable = true;
+  # Enabling zsh will clobber path because of the way it sets up /etc/zshenv
+  # programs.zsh.enable = true;
+  # Instead we just make sure to source profile from zsh
+  environment.etc."zshenv".text =
+    ''
+      if [ -n "$__ETC_PROFILE_DONE" ]; then return; fi
+      source /etc/profile
+    '';
   services.openssh.enable = true;
   services.avahi = {
     enable = true;
