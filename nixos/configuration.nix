@@ -69,6 +69,9 @@ let
         --prefix PATH : "${wrapperPath}"
       '';
   };
+  pasystray-appindicator = with pkgs; pasystray.overrideAttrs (oldAttrs: rec {
+    buildInputs = oldAttrs.buildInputs ++ [libappindicator-gtk3];
+  });
 in
 {
   nixpkgs.config.allowUnfree = true;
@@ -121,9 +124,9 @@ in
     hexchat
     keybase-gui
     kodi
+    lxappearance
     rxvt_unicode
     spotify
-    steam
     termite
     vlc
     xfce.thunar
@@ -134,14 +137,17 @@ in
     hicolor-icon-theme
     plasma5.breeze-gtk
     plasma5.breeze-qt5
+    gnome-breeze
 
     # Desktop
+    # haskellPackages.status-notifier-item
     autorandr
     clipit-master
     compton
     feh
     gnome3.gpaste
     networkmanagerapplet
+    pasystray-appindicator
     pinentry
     pommed_light
     rofi
@@ -151,7 +157,6 @@ in
     volnoti
     xclip
     xdotool
-    # haskellPackages.status-notifier-item
     xorg.xkbcomp
     xsettingsd
 
