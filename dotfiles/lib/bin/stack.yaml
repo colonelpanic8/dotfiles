@@ -1,5 +1,4 @@
-resolver: 11.7
-
+resolver: lts-11.7
 packages:
-- .
+  - .
 extra-deps: []
