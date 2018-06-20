@@ -184,7 +184,9 @@ in
     gnupg
     htop
     inotify-tools
+    ispell
     ncdu
+    neofetch
     pass
     plasma-workspace
     python-with-my-packages
