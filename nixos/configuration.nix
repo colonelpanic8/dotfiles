@@ -149,7 +149,7 @@ in
     feh
     gnome3.gpaste
     kdeconnect
-    lxqt-powermanagement
+    lxqt.lxqt-powermanagement
     networkmanagerapplet
     pasystray-appindicator
     pinentry
