@@ -27,10 +27,10 @@
     fsType = "ext4";
   };
 
-  # fileSystems."/shared" = {
-  #   device = "/dev/disk/by-uuid/4b6f1ca8-6b68-4bdb-b92c-d2d7ba080928";
-  #   fsType = "ntfs";
-  # };
+  fileSystems."/backups" = {
+    device = "/dev/disk/by-uuid/752E628C67697A81";
+    fsType = "ntfs";
+  };
 
   swapDevices =
     [ { device = "/dev/disk/by-uuid/a6933b22-c7f4-4c57-b330-1450f313922e"; }
