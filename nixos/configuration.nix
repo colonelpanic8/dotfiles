@@ -149,6 +149,7 @@ in
     feh
     gnome3.gpaste
     kdeconnect
+    lxqt-powermanagement
     networkmanagerapplet
     pasystray-appindicator
     pinentry
@@ -177,6 +178,7 @@ in
 
     # Tools
     binutils
+    dfeet
     gcc
     gitFull
     git-sync
@@ -192,6 +194,7 @@ in
     python-with-my-packages
     qt5.qttools
     rcm
+    scrot
     silver-searcher
     stow
     tmux
