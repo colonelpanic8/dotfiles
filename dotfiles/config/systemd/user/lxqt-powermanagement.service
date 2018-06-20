@@ -1,0 +1,12 @@
+[Unit]
+Description=lxqt-powermanagement
+Wants=taffybar.service
+After=taffybar.service
+
+[Service]
+Type=simple
+ExecStart=/usr/bin/env lxqt-powermanagement
+ExecStop=/usr/bin/pkill lxqt-powermanagement
+
+[Install]
+WantedBy=wm.target
