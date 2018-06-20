@@ -13,7 +13,7 @@
    * theme (for an unified experience) */
   fc-color: #45373c;
   bg-color: #e9e9e9;
-  fc-color-trans: #45373c; 
+  fc-color-trans: #45373c;
   bg-color-trans: #e9e9e9;
 
   font: "Open Sans 11";
@@ -41,8 +41,8 @@
 }
 
 /* Dummy container */
-#dummy { 
-  expand: true; 
+#dummy {
+  expand: true;
 }
 /* ================================================= */
 

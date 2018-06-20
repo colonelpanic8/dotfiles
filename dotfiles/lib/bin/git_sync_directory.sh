@@ -5,7 +5,7 @@ cd "$1"
 
 counter=0
 while true; do
-	changedFile=$(inotifywait ./ -r -e modify,move,create,delete --format "%w%f" --exclude '\.git' -t 20 2>/dev/null)
+	changedFile=$(inotifywait ./ -r -e modify,move,create,delete --format "%w%f" --exclude '\.git' -t 60 2>/dev/null)
 	if [ -z "$changedFile" ]
 	then
 		counter=$((counter+1))

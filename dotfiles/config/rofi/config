@@ -3,3 +3,4 @@ rofi.sidebar-mode:     false
 rofi.theme:            sidestyle.rasi
 rofi.drun-icon-theme:  Papirus
 rofi.show-icons:       true
+rofi.dpi: 100

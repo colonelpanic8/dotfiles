@@ -191,6 +191,7 @@ in
     neofetch
     pass
     plasma-workspace
+    powertop
     python-with-my-packages
     qt5.qttools
     rcm
