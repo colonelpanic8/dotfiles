@@ -5,6 +5,7 @@
     <nixpkgs/nixos/modules/installer/scan/not-detected.nix>
     ../configuration.nix
     ../games.nix
+    ../extra.nix
   ];
 
   boot.initrd.availableKernelModules = [ "xhci_pci" "ahci" "usbhid" "sd_mod" ];
