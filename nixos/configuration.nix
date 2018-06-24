@@ -90,15 +90,16 @@ in
 
   fonts = {
     fonts = with pkgs; [
-      fira-mono
       dejavu_fonts
-      noto-fonts-emoji
       emojione
-      twemoji-color-font
-      source-code-pro
+      fira-mono
+      font-awesome-ttf
+      noto-fonts-emoji
       roboto
+      source-code-pro
       source-sans-pro
       source-serif-pro
+      twemoji-color-font
     ];
     fontconfig = {
       defaultFonts = {
