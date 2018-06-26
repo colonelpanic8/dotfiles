@@ -21,13 +21,13 @@ let
     propagatedBuildInputs = oldAttrs.propagatedBuildInputs ++ [pkgs.libappindicator-gtk3];
   });
   clipit-master = pkgs.clipit.overrideAttrs (oldAttrs: rec {
-    version = "45e46d03b3ff315b5b380004d85fb499b4c139db";
+    version = "50d983514386029a1f133187902084b753458f32";
     preConfigure = "./autogen.sh";
     configureFlags = ["--with-gtk3" "--enable-appindicator"];
     src = pkgs.fetchFromGitHub {
       owner = "IvanMalison";
       repo = "ClipIt";
-      sha256 = "13myjcc95x1957p92j28kfm6xngwg3bw5ifmvdaddz6pzfddd40h";
+      sha256 = "1d52zjnxmcp2kr4wvq2yn9fhr61v9scp91fxfvasvz5m7k1zagdn";
       rev = version;
     };
     buildInputs = with pkgs; [
