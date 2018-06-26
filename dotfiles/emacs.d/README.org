@@ -1570,6 +1570,13 @@ custom-set-faces in your custom file.
   (progn
     (setq highlight-indent-guides-method 'fill)))
 #+END_SRC
+* helpful
+#+begin_src emacs-lisp
+(use-package helpful
+  :bind (("C-h f" . helpful-callable)
+         ("C-h v" . helpful-variable)
+         ("C-h k" . helpful-key)))
+#+end_src
 * Keybindings
 ** god-mode
 #+BEGIN_SRC emacs-lisp
@@ -2940,6 +2947,7 @@ Intero seems to be causing hangs, so it has been disabled
               (("C-e" . end-of-visual-line)))
   :preface
   (progn
+    (require 'org-tempo)
     ;; XXX: These should probably be moved to config, right?
     (setq org-startup-indented nil
           org-startup-folded t
