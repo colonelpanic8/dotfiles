@@ -6,7 +6,7 @@ After=taffybar.service
 [Service]
 Type=simple
 ExecStart=/usr/bin/env clipit
-ExecStop=/usr/bin/pkill clipit
+ExecStop=/usr/bin/env pkill clipit
 
 [Install]
 WantedBy=wm.target
