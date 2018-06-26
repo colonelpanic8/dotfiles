@@ -14,10 +14,6 @@ function get_exe_dir {
 	fi
 }
 
-function do_rebuild {
-
-}
-
 SRC_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 
 EXE_NAME=imalison-xmonad

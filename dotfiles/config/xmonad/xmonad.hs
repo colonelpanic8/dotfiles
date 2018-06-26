@@ -433,11 +433,19 @@ chromeTabAction doSplit action selected =
 
 -- This needs access to X in order to unminimize, which means that it can't be
 -- done with the existing window bringer interface
-myWindowAct c@WindowBringerConfig {menuCommand = cmd, menuArgs = args} action = do
+myWindowAct c@WindowBringerConfig {menuCommand = cmd, menuArgs = args} filterVisible action = do
   visible <- visibleWindows
+  currentlyFullscreen <- isToggleActiveInCurrent NBFULL
   -- Uncomment filter to remove windows that are visible
-  ws <- windowMap' c -- {windowFilter = not . flip elem visible}
-    -- chromeTabs <- liftIO getChromeTabInfo
+  let actualConfig =
+        if fromMaybe False currentlyFullscreen
+        then c
+        else
+          if filterVisible
+          then c {windowFilter = not . flip elem visible}
+          else c
+  ws <- windowMap' actualConfig
+  -- chromeTabs <- liftIO getChromeTabInfo
   let options = M.union (M.map Left ws) (M.map Right M.empty)
   selection <- DM.menuMapArgs cmd args options
   whenJust selection action
@@ -445,17 +453,17 @@ myWindowAct c@WindowBringerConfig {menuCommand = cmd, menuArgs = args} action = 
 doBringWindow window =
   maximizeWindow window >> windows (W.focusWindow window . bringWindow window)
 
-myWindowAction = andDeactivateFull . maybeUnminimizeAfter .
-                 myWindowAct myWindowBringerConfig
+myWindowAction filterVisible =
+  andDeactivateFull . maybeUnminimizeAfter . myWindowAct myWindowBringerConfig filterVisible
 
 myGoToWindow =
-  myWindowAction $ chromeTabAction False $ windows . greedyFocusWindow
+  myWindowAction False $ chromeTabAction False $ windows . greedyFocusWindow
 
-myBringWindow = myWindowAction $ chromeTabAction True doBringWindow
+myBringWindow = myWindowAction True $ chromeTabAction True doBringWindow
 
 myReplaceWindow =
   swapMinimizeStateAfter $
-  myWindowAct myWindowBringerConfig $
+  myWindowAct myWindowBringerConfig True $
   chromeTabAction True (windows . swapFocusedWith)
 
 -- Workspace Names for EWMH
