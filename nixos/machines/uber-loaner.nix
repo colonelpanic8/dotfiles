@@ -14,6 +14,7 @@
   boot.loader.grub.efiSupport = true;
   boot.loader.grub.device = "nodev";
   boot.loader.grub.enable = true;
+  hardware.facetimehd.enable = true;
 
   fileSystems."/boot" = {
     device = "/dev/disk/by-label/EFI";
