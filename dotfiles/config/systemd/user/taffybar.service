@@ -1,5 +1,7 @@
 [Unit]
 Description=taffybar
+Wants=status-notifier-watcher.service
+After=status-notifier-watcher.service
 
 [Service]
 Type=simple
