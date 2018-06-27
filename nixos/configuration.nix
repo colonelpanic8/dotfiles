@@ -150,8 +150,10 @@ in
     feh
     gnome3.gpaste
     kdeconnect
+    libnotify
     lxqt.lxqt-powermanagement
     networkmanagerapplet
+    notify-osd
     pasystray-appindicator
     pinentry
     pommed_light
@@ -279,18 +281,31 @@ in
   hardware.opengl.driSupport32Bit = true;
 
   # Define a user account. Don't forget to set a password with ‘passwd’.
-  users.extraUsers.imalison = {
-    name = "imalison";
-    group = "users";
-    isNormalUser = true;
+  users.extraUsers = let
     extraGroups = [
       "wheel" "disk" "audio" "video"
       "networkmanager" "systemd-journal"
     ];
-    createHome = true;
-    uid = 1000;
-    home = "/home/imalison";
-    shell = pkgs.zsh;
+    userDefaults = {
+      inherit extraGroups;
+      group = "users";
+      isNormalUser = true;
+      createHome = true;
+      shell = pkgs.zsh;
+    };
+  in {
+    imalison = userDefaults // {
+      name = "imalison";
+      uid = 1000;
+      home = "/home/imalison";
+      shell = pkgs.zsh;
+    };
+    kat = userDefaults // {
+      name = "kat";
+      uid = 1001;
+      home = "/home/kat";
+      shell = pkgs.zsh;
+    };
   };
 
   system.stateVersion = "18.03";
