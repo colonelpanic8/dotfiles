@@ -159,6 +159,7 @@ in
     pommed_light
     rofi
     rofi-pass
+    skippy-xd
     synergy
     udiskie-appindicator
     volnoti
@@ -203,6 +204,7 @@ in
     silver-searcher
     stow
     tmux
+    valgrind
     wget
     wmctrl
     zsh
