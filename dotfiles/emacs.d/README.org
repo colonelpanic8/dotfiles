@@ -814,7 +814,7 @@ A macro for composing functions together to build an interactive command to copy
 ** Download a File Into a Buffer
 <<downloadfile>>
 #+BEGIN_SRC emacs-lisp
-(defun imalirson:download-to-buffer (uri)
+(defun imalison:download-to-buffer (uri)
   (interactive (list (read-string "Enter uri: ")))
   (require 'request)
   (request uri
