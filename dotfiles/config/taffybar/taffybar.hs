@@ -17,14 +17,12 @@ import           StatusNotifier.Tray
 import           System.Directory
 import           System.Environment
 import           System.FilePath.Posix
-import           System.Glib.GObject
 import           System.IO
 import           System.Log.Handler.Simple
 import           System.Log.Logger
 import           System.Process
 import           System.Taffybar
 import           System.Taffybar.Auth
-import           System.Taffybar.Compat.GtkLibs
 import           System.Taffybar.DBus
 import           System.Taffybar.DBus.Toggle
 import           System.Taffybar.Hooks
@@ -136,7 +134,6 @@ main = do
         defaultWorkspacesConfig
         { underlineHeight = 3
         , underlinePadding = 2
-        , minWSWidgetSize = Nothing
         , minIcons = 3
         , getWindowIconPixbuf = myIcons
         -- , windowIconSize = 31
