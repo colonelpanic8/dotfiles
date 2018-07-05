@@ -1751,7 +1751,8 @@ I use helm for almost all emacs completion
   :diminish helm-mode
   :config
   (progn
-    (setq helm-split-window-default-side 'same)
+    (setq helm-split-window-default-side 'same
+          helm-exit-idle-delay 0)
     (use-package helm-org
       :straight nil
       :defer 10
