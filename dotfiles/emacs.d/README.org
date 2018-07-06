@@ -2780,7 +2780,7 @@ The following is taken from [[https://github.com/syl20bnr/spacemacs/blob/a650877
        haskell-interactive-popup-errors nil
        ;; Better import handling
        haskell-process-suggest-remove-import-lines t
-       haskell-process-auto-import-loaded-modules t
+       haskell-process-auto-import-loaded-modules nil
        ;; Disable haskell-stylish-on-save, as it breaks flycheck highlighting.
        ;; NOTE: May not be true anymore - taksuyu 2015-10-06
        haskell-stylish-on-save nil
@@ -2948,7 +2948,6 @@ Intero seems to be causing hangs, so it has been disabled
               (("C-e" . end-of-visual-line)))
   :preface
   (progn
-    (require 'org-tempo)
     ;; XXX: These should probably be moved to config, right?
     (setq org-startup-indented nil
           org-startup-folded t
@@ -3502,6 +3501,12 @@ alphanumeric characters only."
           ("http" . "\\.\\(jpeg\\|jpg\\|png\\|gif\\|svg\\)\\(\\?.*?\\)?\\'")
           ("https" . "\\.\\(jpeg\\|jpg\\|png\\|gif\\|svg\\)\\(\\?.*?\\)?\\'"))))
 #+END_SRC
+**** Use org-tempo to allow inserting templates using e.g. <s
+#+begin_src emacs-lisp
+(use-package org-tempo
+  :straight nil
+  :after org)
+#+end_src
 **** org-projectile
 #+BEGIN_SRC emacs-lisp
 (use-package org-projectile
