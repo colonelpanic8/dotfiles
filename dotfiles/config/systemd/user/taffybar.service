@@ -4,11 +4,12 @@ Wants=status-notifier-watcher.service
 After=status-notifier-watcher.service
 
 [Service]
-Type=simple
-ExecStart=/usr/bin/env taffybar
-ExecStop=/usr/bin/env pkill taffybar
+Type=notify
+ExecStart=/usr/bin/env imalison-taffybar
+ExecStop=/usr/bin/env pkill imalison-taffybar
 Restart=always
 RestartSec=3
+NotifyAccess=all
 
 [Install]
 WantedBy=wm.target
