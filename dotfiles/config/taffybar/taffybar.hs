@@ -134,11 +134,11 @@ main = do
         defaultWorkspacesConfig
         { underlineHeight = 3
         , underlinePadding = 2
-        , minIcons = 3
+        , minIcons = 1
         , getWindowIconPixbuf = myIcons
         -- , windowIconSize = 31
         , widgetGap = 0
-        , showWorkspaceFn = const True
+        , showWorkspaceFn = hideEmpty
         , updateRateLimitMicroseconds = 100000
         , labelSetter = workspaceNamesLabelSetter
         }
@@ -163,8 +163,8 @@ main = do
               , mpris2New
               ]
         , barPosition = Top
-        , barPadding = 10
-        , barHeight = 53
+        , barPadding = 0
+        , barHeight = 45
         }
       simpleTaffyConfig = baseConfig
         -- { endWidgets = []

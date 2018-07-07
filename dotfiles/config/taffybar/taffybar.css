@@ -5,7 +5,7 @@
 
 @define-color active-window-color @white;
 @define-color urgent-window-color @taffy-blue;
-@define-color font-color @black;
+@define-color font-color @white;
 @define-color menu-background-color @white;
 @define-color menu-font-color @black;
 
@@ -28,10 +28,7 @@
 }
 
 .contents {
-	padding-top: 3px;
-	padding-bottom: 3px;
-	padding-right: 3px;
-	padding-left: 3px;
+	padding: 7px;
 	transition: background-color .5s;
 }
 
