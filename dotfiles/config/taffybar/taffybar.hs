@@ -23,6 +23,7 @@ import           System.Log.Logger
 import           System.Process
 import           System.Taffybar
 import           System.Taffybar.Auth
+import           System.Taffybar.Context (appendHook)
 import           System.Taffybar.DBus
 import           System.Taffybar.DBus.Toggle
 import           System.Taffybar.Hooks
@@ -130,6 +131,7 @@ main = do
       mem = pollingGraphNew memCfg 1 memCallback
       layout = layoutNew defaultLayoutConfig
       windows = windowsNew defaultWindowsConfig
+      notifySystemD = void $ runCommandFromPath ["systemd-notify", "--ready"]
       myWorkspacesConfig =
         defaultWorkspacesConfig
         { underlineHeight = 3
@@ -171,8 +173,12 @@ main = do
         -- , startWidgets = [flip widgetSetClass "Workspaces" =<< workspaces]
         -- }
   startTaffybar $
+    appendHook notifySystemD $
+    appendHook (void $ getHost False) $
     withBatteryRefresh $
-    withLogServer $ withToggleServer $ toTaffyConfig simpleTaffyConfig
+    withLogServer $
+    withToggleServer $
+    toTaffyConfig simpleTaffyConfig
 
 -- Local Variables:
 -- flycheck-ghc-args: ("-Wno-missing-signatures")
