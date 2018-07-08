@@ -181,12 +181,15 @@ in
     stack
 
     # Tools
+    bazaar
     binutils
     dfeet
     gcc
     gdb
-    gitFull
     git-sync
+    gitAndTools.git-fame
+    gitAndTools.hub
+    gitFull
     gnumake
     gnupg
     htop
