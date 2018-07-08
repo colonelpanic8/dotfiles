@@ -1,0 +1,12 @@
+[Unit]
+Description=github-notifications
+Wants=taffybar.service
+After=taffybar.service
+
+[Service]
+Type=simple
+ExecStart=/usr/bin/env notifications-tray-icon --github-pass-token github-token
+ExecStop=/usr/bin/pkill 'notifications-tray-icon --github-pass-token github-token'
+
+[Install]
+WantedBy=wm.target
