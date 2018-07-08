@@ -72,6 +72,20 @@ let
   pasystray-appindicator = with pkgs; pasystray.overrideAttrs (oldAttrs: rec {
     buildInputs = oldAttrs.buildInputs ++ [libappindicator-gtk3];
   });
+  customizable-notify-osd = with pkgs; notify-osd.overrideAttrs (oldAttrs: rec {
+    version = "0.9.35+16.04.20160415";
+    baseURI = "https://launchpad.net/~leolik/+archive/leolik";
+    src = fetchurl {
+      url = "${baseURI}/+files/notify-osd_${version}-0ubuntu1-leolik~ppa0.tar.gz";
+      sha256 = "026dr46jh3xc4103wnslzy7pxbxkkpflh52c59j8vzwaa7bvvzkv";
+      name = "notify-osd-customizable.tar.gz";
+    };
+    preConfigure = "./autogen.sh --libexecdir=$(out)/bin";
+    buildInputs = with pkgs; [
+      glib libwnck3 libnotify dbus-glib gnome3.gsettings-desktop-schemas
+      makeWrapper libtool gnome3.gnome-common
+    ];
+  });
 in
 {
   nixpkgs.config.allowUnfree = true;
@@ -153,7 +167,7 @@ in
     libnotify
     lxqt.lxqt-powermanagement
     networkmanagerapplet
-    notify-osd
+    customizable-notify-osd
     pasystray-appindicator
     pinentry
     pommed_light
