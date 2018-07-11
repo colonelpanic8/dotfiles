@@ -51,8 +51,8 @@ processFenceHeight index allHeights@(height:heights) problemState =
            then stackPush theStack (index, height)
            else theStack
   in case lastHeight of
-       h | lastHeight < height -> handleTaller
-       h | lastHeight > height -> handleShorter
+       _ | lastHeight < height -> handleTaller
+       _ | lastHeight > height -> handleShorter
        _ -> processFenceHeight (index + 1) heights problemState
 
 processFences fences =
