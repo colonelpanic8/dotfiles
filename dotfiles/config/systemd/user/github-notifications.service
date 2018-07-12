@@ -5,8 +5,8 @@ After=taffybar.service
 
 [Service]
 Type=simple
-ExecStart=/usr/bin/env notifications-tray-icon --github-pass-token github-token
-ExecStop=/usr/bin/pkill 'notifications-tray-icon --github-pass-token github-token'
+ExecStart=/usr/bin/env notifications-tray-icon --github-token-pass github-token
+ExecStop=/usr/bin/pkill 'notifications-tray-icon --github-token-pass github-token'
 
 [Install]
 WantedBy=wm.target
