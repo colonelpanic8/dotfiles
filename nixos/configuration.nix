@@ -195,6 +195,7 @@ in
     valgrind
     wget
     wmctrl
+    xorg.xev
     zsh
 
     # Nix
