@@ -275,7 +275,6 @@ in
     };
     windowManager = {
       default = "xmonad";
-      i3.enable = true;
       session = [{
         name = "xmonad";
         start = ''
