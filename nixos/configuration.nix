@@ -52,6 +52,37 @@ let
       makeWrapper libtool gnome3.gnome-common
     ];
   });
+  keybase-gui-fixed = with pkgs; keybase-gui.overrideAttrs (oldAttrs: rec {
+    installPhase = ''
+    mkdir -p $out/bin
+    mv usr/share $out/share
+    mv opt/keybase $out/share/
+    cat > $out/bin/keybase-gui <<EOF
+    #!${stdenv.shell}
+    checkFailed() {
+      if [ "\$NIX_SKIP_KEYBASE_CHECKS" = "1" ]; then
+        return
+      fi
+      echo "Set NIX_SKIP_KEYBASE_CHECKS=1 if you want to skip this check." >&2
+      exit 1
+    }
+    if [ ! -S "\$XDG_RUNTIME_DIR/keybase/keybased.sock" ]; then
+      echo "Keybase service doesn't seem to be running." >&2
+      echo "You might need to run: keybase service" >&2
+      checkFailed
+    fi
+    if [ -z "\$(keybase status | grep kbfsfuse)" ]; then
+      echo "Could not find kbfsfuse client in keybase status." >&2
+      echo "You might need to run: kbfsfuse" >&2
+      checkFailed
+    fi
+    exec $out/share/keybase/Keybase "\$@"
+    EOF
+    chmod +x $out/bin/keybase-gui
+    substituteInPlace $out/share/applications/keybase.desktop \
+      --replace run_keybase $out/bin/keybase-gui
+  '';
+  });
 in
 {
   nixpkgs.config.allowUnfree = true;
@@ -105,7 +136,7 @@ in
     kleopatra
     google-chrome
     hexchat
-    keybase-gui
+    keybase-gui-fixed
     kodi
     lxappearance
     rxvt_unicode
@@ -195,6 +226,7 @@ in
     valgrind
     wget
     wmctrl
+    xorg.xev
     zsh
 
     # Nix
@@ -229,6 +261,7 @@ in
       userServices = true;
     };
   };
+  services.kbfs.enable = true;
   sound.enable = true;
   hardware.pulseaudio.enable = true;
 
@@ -242,7 +275,6 @@ in
     };
     windowManager = {
       default = "xmonad";
-      i3.enable = true;
       session = [{
         name = "xmonad";
         start = ''
