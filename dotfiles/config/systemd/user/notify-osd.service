@@ -4,7 +4,7 @@ Description=notify-osd
 [Service]
 Type=simple
 ExecStart=/usr/bin/env notify-osd
-ExecStop=/usr/bin/pkill notify-osd
+ExecStop=/usr/bin/env pkill notify-osd
 
 [Install]
 WantedBy=wm.target
