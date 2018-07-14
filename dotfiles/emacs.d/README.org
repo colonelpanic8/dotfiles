@@ -64,6 +64,7 @@ think its pretty awesome!
  [[Copy/Yank String Functions][Copy String Functions]]
 + [[namedbuild][Named Build of Builder Macros]] ([[https://github.com/IvanMalison/emit#named-builder][README]]) and [[composemacros][A Compose Supporting Macros]]
   ([[https://github.com/IvanMalison/emit#compose][README]])
++ [[Add a blacklist to a major mode]]
 ** Configuration of My Own Packages
 - [[term-projectile][term-projectile]] and [[term-manager][term-manager]]
 - [[org-projectile][org-projectile]]
