@@ -137,7 +137,9 @@ in
     kleopatra
     gitter
     google-chrome
+
     hexchat
+    quassel
     keybase-gui-fixed
     kodi
     lxappearance
@@ -200,6 +202,9 @@ in
     # Node
     nodePackages.npm
     nodejs
+
+    # Rust
+    cargo
 
     # Tools
     bazaar
