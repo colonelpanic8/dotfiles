@@ -1,5 +1,6 @@
 { config, pkgs, ... }:
 let
+  gitter = with pkgs; callPackage ./gitter.nix { };
   my-python-packages = python-packages: with python-packages; [
     appdirs
     requests
@@ -134,6 +135,7 @@ in
     emacs
     firefox
     kleopatra
+    gitter
     google-chrome
     hexchat
     keybase-gui-fixed
