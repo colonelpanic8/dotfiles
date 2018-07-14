@@ -246,9 +246,10 @@ in
     transmission-gtk
   ];
 
-  environment.variables = {
-    GDK_PIXBUF_MODULE_FILE = "${pkgs.librsvg.out}/lib/gdk-pixbuf-2.0/2.10.0/loaders.cache";
-  };
+  # XXX: Plasma seems to set this
+  # environment.variables = {
+  #   GDK_PIXBUF_MODULE_FILE = "${pkgs.librsvg.out}/lib/gdk-pixbuf-2.0/2.10.0/loaders.cache";
+  # };
 
   programs.gnupg.agent = { enable = true; enableSSHSupport = true; };
   # Enabling zsh will clobber path because of the way it sets up /etc/zshenv
@@ -278,7 +279,7 @@ in
     enable = true;
     layout = "us";
     desktopManager = {
-      gnome3.enable = true;
+      plasma5.enable = true;
       default = "none";
     };
     windowManager = {
