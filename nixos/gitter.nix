@@ -5,7 +5,19 @@
 , libnotify, libpulseaudio, libxcb, makeDesktopItem, makeWrapper, nspr, nss
 , nwjs, pango, systemd }:
 
-stdenv.mkDerivation rec {
+let gitterDirectorySuffix = "opt/gitter";
+    doELFPatch = target: ''
+      patchelf --set-interpreter ${stdenv.cc.bintools.dynamicLinker} \
+         --set-rpath "$out/${gitterDirectorySuffix}/lib:${libPath}" \
+         $out/${gitterDirectorySuffix}/${target}
+       '';
+   libPath = stdenv.lib.makeLibraryPath [
+     alsaLib atk cairo cups dbus expat fontconfig freetype gdk_pixbuf glib
+     gnome3.gconf gtk3 libX11 libXScrnSaver libXcomposite libXcursor libXdamage
+     libXext libXfixes libXi libXrandr libXrender libXtst libappindicator-gtk3
+     libcxx libnotify libpulseaudio libxcb nspr nss pango stdenv.cc.cc systemd
+  ];
+in stdenv.mkDerivation rec {
   pname = "gitter";
   version = "4.1.0";
   name = "${pname}-${version}";
@@ -19,24 +31,18 @@ stdenv.mkDerivation rec {
 
   unpackPhase = "dpkg -x $src .";
 
-  libPath = stdenv.lib.makeLibraryPath [
-    alsaLib atk cairo cups dbus expat fontconfig freetype gdk_pixbuf glib
-    gnome3.gconf gtk3 libX11 libXScrnSaver libXcomposite libXcursor libXdamage
-    libXext libXfixes libXi libXrandr libXrender libXtst libappindicator-gtk3
-    libcxx libnotify libpulseaudio libxcb nspr nss pango stdenv.cc.cc systemd
-  ];
-
-  gitterDirectorySuffix = "opt/gitter";
-
   installPhase = ''
     mkdir -p $out/{bin,opt/gitter,share/pixmaps}
     mv ./opt/Gitter/linux64/* $out/opt/gitter
 
-    patchelf --debug --set-interpreter ${stdenv.cc.bintools.dynamicLinker} \
-         --set-rpath "$out/${gitterDirectorySuffix}/lib:${libPath}" \
-         $out/${gitterDirectorySuffix}/Gitter
+    ${doELFPatch "Gitter"}
+    ${doELFPatch "nacl_helper"}
+    ${doELFPatch "minidump_stackwalk"}
+    ${doELFPatch "nwjc"}
+    ${doELFPatch "chromedriver"}
+    ${doELFPatch "payload"}
 
-    patchelf --debug --set-rpath "$out/${gitterDirectorySuffix}/lib:${libPath}" \
+    patchelf --set-rpath "$out/${gitterDirectorySuffix}/lib:${libPath}" \
          $out/${gitterDirectorySuffix}/lib/libnw.so
 
     wrapProgram $out/${gitterDirectorySuffix}/Gitter --prefix LD_LIBRARY_PATH : ${libPath}

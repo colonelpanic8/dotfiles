@@ -313,8 +313,7 @@ in
   # Define a user account. Don't forget to set a password with ‘passwd’.
   users.extraUsers = let
     extraGroups = [
-      "wheel" "disk" "audio" "video"
-      "networkmanager" "systemd-journal"
+      "wheel" "disk" "audio" "video" "networkmanager" "systemd-journal"
     ];
     userDefaults = {
       inherit extraGroups;
