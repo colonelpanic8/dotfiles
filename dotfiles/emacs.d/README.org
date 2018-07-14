@@ -2581,6 +2581,10 @@ eval-last-sexp.
 *** nix
 #+BEGIN_SRC emacs-lisp
 (use-package nix-mode
+  :preface
+  (progn
+    (imalison:add-blacklist-to-major nix-mode)
+    (setq nix-mode-blacklist '("all-packages.nix")))
   :config
   (progn
     (setq nix-indent-function 'nix-indent-line)))
