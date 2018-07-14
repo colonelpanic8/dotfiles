@@ -195,10 +195,15 @@ in
     sbt
     scala
 
+    # Node
+    nodePackages.npm
+    nodejs
+
     # Tools
     bazaar
     binutils
     dfeet
+    dpkg
     gcc
     gdb
     gitAndTools.git-sync
@@ -214,6 +219,7 @@ in
     ncdu
     neofetch
     pass
+    patchelf
     plasma-workspace
     powertop
     python-with-my-packages
