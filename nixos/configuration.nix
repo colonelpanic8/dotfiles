@@ -1,5 +1,6 @@
 { config, pkgs, ... }:
 let
+  gitter = with pkgs; callPackage ./gitter.nix { };
   my-python-packages = python-packages: with python-packages; [
     appdirs
     requests
@@ -134,8 +135,11 @@ in
     emacs
     firefox
     kleopatra
+    gitter
     google-chrome
+
     hexchat
+    quassel
     keybase-gui-fixed
     kodi
     lxappearance
@@ -195,10 +199,18 @@ in
     sbt
     scala
 
+    # Node
+    nodePackages.npm
+    nodejs
+
+    # Rust
+    cargo
+
     # Tools
     bazaar
     binutils
     dfeet
+    dpkg
     gcc
     gdb
     gitAndTools.git-sync
@@ -214,6 +226,7 @@ in
     ncdu
     neofetch
     pass
+    patchelf
     plasma-workspace
     powertop
     python-with-my-packages
@@ -238,9 +251,10 @@ in
     transmission-gtk
   ];
 
-  environment.variables = {
-    GDK_PIXBUF_MODULE_FILE = "${pkgs.librsvg.out}/lib/gdk-pixbuf-2.0/2.10.0/loaders.cache";
-  };
+  # XXX: Plasma seems to set this
+  # environment.variables = {
+  #   GDK_PIXBUF_MODULE_FILE = "${pkgs.librsvg.out}/lib/gdk-pixbuf-2.0/2.10.0/loaders.cache";
+  # };
 
   programs.gnupg.agent = { enable = true; enableSSHSupport = true; };
   # Enabling zsh will clobber path because of the way it sets up /etc/zshenv
@@ -270,7 +284,7 @@ in
     enable = true;
     layout = "us";
     desktopManager = {
-      gnome3.enable = true;
+      plasma5.enable = true;
       default = "none";
     };
     windowManager = {
@@ -305,8 +319,7 @@ in
   # Define a user account. Don't forget to set a password with ‘passwd’.
   users.extraUsers = let
     extraGroups = [
-      "wheel" "disk" "audio" "video"
-      "networkmanager" "systemd-journal"
+      "wheel" "disk" "audio" "video" "networkmanager" "systemd-journal"
     ];
     userDefaults = {
       inherit extraGroups;

@@ -64,6 +64,7 @@ think its pretty awesome!
  [[Copy/Yank String Functions][Copy String Functions]]
 + [[namedbuild][Named Build of Builder Macros]] ([[https://github.com/IvanMalison/emit#named-builder][README]]) and [[composemacros][A Compose Supporting Macros]]
   ([[https://github.com/IvanMalison/emit#compose][README]])
++ [[Add a blacklist to a major mode]]
 ** Configuration of My Own Packages
 - [[term-projectile][term-projectile]] and [[term-manager][term-manager]]
 - [[org-projectile][org-projectile]]
@@ -933,6 +934,26 @@ This was stolen from https://github.com/jwiegley/dot-emacs
 (imalison:disable-mode-hook nlinum-mode)
 (imalison:disable-mode-hook yas-minor-mode)
 #+END_SRC
+** Add a blacklist to a major mode
+Sometimes a major mode's syntax highlighting can take a really long time to load
+in certain buffers. Usually you can just set a header to tell emacs not to run
+the major mode, but for cases where you can't always edit the file ahead of time
+this macro allows you to define a blacklist for your major mode that will
+prevent the major mode from being enabled on that file.
+#+begin_src emacs-lisp
+(defmacro imalison:add-blacklist-to-major (major-mode-fn-symbol)
+  (let ((blacklist-var-symbol (imalison:concat-symbols major-mode-fn-symbol "-blacklist"))
+        (check-blacklist-symbol (imalison:concat-symbols major-mode-fn-symbol "-check-blacklist")))
+    `(progn
+       (defvar ,blacklist-var-symbol nil)
+       (defun ,check-blacklist-symbol (mode-fn &rest args)
+         (unless (and (not (equal major-mode (quote ,major-mode-fn-symbol)))
+                      (equal nil args)
+                      (cl-loop for blacklist-regex in ,blacklist-var-symbol
+                               thereis (string-match blacklist-regex (buffer-name))))
+           (apply mode-fn args)))
+       (advice-add (quote ,major-mode-fn-symbol) :around (quote ,check-blacklist-symbol)))))
+#+end_src
 ** Other
 The stuff in this section is pretty crusty. I don't think its used anywhere, but
 I keep it around just in case I need it.
@@ -1423,6 +1444,7 @@ Paradox is a package.el extension. I have no use for it now that I use straight.
   :demand t
   :config
   (progn
+  (setq server-use-tcp nil)
     (defvar imalison:default-server-file
       (imalison:join-paths user-emacs-directory "server" "server"))
     (defun imalison:main-emacs-server-name ()
@@ -1441,7 +1463,6 @@ The file server file for this emacs instance no longer exists.")
     (defun imalison:get-this-server-filepath ()
       (let ((server-dir (if server-use-tcp server-auth-dir server-socket-dir)))
         (expand-file-name server-name server-dir)))
-    (setq server-use-tcp t)
     (when (equal nil (server-running-p)) (server-start)
           (imalison:make-main-emacs-server))))
 #+END_SRC
@@ -2561,6 +2582,10 @@ eval-last-sexp.
 *** nix
 #+BEGIN_SRC emacs-lisp
 (use-package nix-mode
+  :preface
+  (progn
+    (imalison:add-blacklist-to-major nix-mode)
+    (setq nix-mode-blacklist '("all-packages.nix")))
   :config
   (progn
     (setq nix-indent-function 'nix-indent-line)))
