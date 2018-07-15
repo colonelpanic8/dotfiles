@@ -26,13 +26,16 @@
       fsType = "ext4";
     };
 
+  swapDevices =
+    [ { device = "/dev/disk/by-uuid/33c38b23-af1a-4bc4-913e-c774f1030817"; }
+    ];
+
   fileSystems."/tmp" =
     { device = "tmpfs";
       fsType = "tmpfs";
     };
 
   networking.hostName = "uber-loaner";
-  swapDevices = [ ];
 
   nix.maxJobs = lib.mkDefault 4;
   powerManagement.cpuFreqGovernor = lib.mkDefault "powersave";
