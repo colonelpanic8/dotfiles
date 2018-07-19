@@ -1,6 +1,6 @@
-{ config, pkgs, ... }:
+{ config, pkgs, options, ... }:
 let
-  gitter = with pkgs; callPackage ./gitter.nix { };
+  my-overlays = import ./overlays.nix;
   my-python-packages = python-packages: with python-packages; [
     appdirs
     requests
@@ -11,81 +11,16 @@ let
     pip
   ];
   python-with-my-packages = pkgs.python3.withPackages my-python-packages;
-  udiskie-appindicator = pkgs.udiskie.overrideAttrs (oldAttrs: rec {
-    version = "1.7.5";
-    src = pkgs.fetchFromGitHub {
-      owner = "coldfix";
-      repo = "udiskie";
-      rev = version;
-      sha256 = "1mcdn8ha5d5nsmrzk6xnnsqrmk94rdrzym9sqm38zk5r8gpyl1k4";
-    };
-    propagatedBuildInputs = oldAttrs.propagatedBuildInputs ++ [pkgs.libappindicator-gtk3];
-  });
-  clipit-master = pkgs.clipit.overrideAttrs (oldAttrs: rec {
-    version = "50d983514386029a1f133187902084b753458f32";
-    preConfigure = "./autogen.sh";
-    configureFlags = ["--with-gtk3" "--enable-appindicator"];
-    src = pkgs.fetchFromGitHub {
-      owner = "IvanMalison";
-      repo = "ClipIt";
-      sha256 = "1d52zjnxmcp2kr4wvq2yn9fhr61v9scp91fxfvasvz5m7k1zagdn";
-      rev = version;
-    };
-    buildInputs = with pkgs; [
-      autoconf automake intltool gtk3 xdotool hicolor-icon-theme
-      libappindicator-gtk3
-    ];
-  });
-  pasystray-appindicator = with pkgs; pasystray.overrideAttrs (oldAttrs: rec {
-    buildInputs = oldAttrs.buildInputs ++ [libappindicator-gtk3];
-  });
-  customizable-notify-osd = with pkgs; notify-osd.overrideAttrs (oldAttrs: rec {
-    version = "0.9.35+16.04.20160415";
-    baseURI = "https://launchpad.net/~leolik/+archive/leolik";
-    src = fetchurl {
-      url = "${baseURI}/+files/notify-osd_${version}-0ubuntu1-leolik~ppa0.tar.gz";
-      sha256 = "026dr46jh3xc4103wnslzy7pxbxkkpflh52c59j8vzwaa7bvvzkv";
-      name = "notify-osd-customizable.tar.gz";
-    };
-    preConfigure = "./autogen.sh --libexecdir=$(out)/bin";
-    buildInputs = with pkgs; [
-      glib libwnck3 libnotify dbus-glib gnome3.gsettings-desktop-schemas
-      makeWrapper libtool gnome3.gnome-common
-    ];
-  });
-  keybase-gui-fixed = with pkgs; keybase-gui.overrideAttrs (oldAttrs: rec {
-    installPhase = ''
-    mkdir -p $out/bin
-    mv usr/share $out/share
-    mv opt/keybase $out/share/
-    cat > $out/bin/keybase-gui <<EOF
-    #!${stdenv.shell}
-    checkFailed() {
-      if [ "\$NIX_SKIP_KEYBASE_CHECKS" = "1" ]; then
-        return
-      fi
-      echo "Set NIX_SKIP_KEYBASE_CHECKS=1 if you want to skip this check." >&2
-      exit 1
-    }
-    if [ ! -S "\$XDG_RUNTIME_DIR/keybase/keybased.sock" ]; then
-      echo "Keybase service doesn't seem to be running." >&2
-      echo "You might need to run: keybase service" >&2
-      checkFailed
-    fi
-    if [ -z "\$(keybase status | grep kbfsfuse)" ]; then
-      echo "Could not find kbfsfuse client in keybase status." >&2
-      echo "You might need to run: kbfsfuse" >&2
-      checkFailed
-    fi
-    exec $out/share/keybase/Keybase "\$@"
-    EOF
-    chmod +x $out/bin/keybase-gui
-    substituteInPlace $out/share/applications/keybase.desktop \
-      --replace run_keybase $out/bin/keybase-gui
-  '';
-  });
 in
 {
+  nixpkgs.overlays = [ my-overlays ];
+  # XXX: This ensures that all nix tools pick up the overlays that are set here
+  nix.nixPath =
+    # Prepend default nixPath values.
+    options.nix.nixPath.default ++
+    # Append our nixpkgs-overlays.
+    [ "nixpkgs-overlays=/etc/nixos/overlays-compat/" ];
+
   nixpkgs.config.allowUnfree = true;
   security.sudo.wheelNeedsPassword = false;
   networking.networkmanager.enable = true;
@@ -137,13 +72,14 @@ in
     kleopatra
     gitter
     google-chrome
-
+    dfeet
     hexchat
     quassel
     keybase-gui-fixed
     kodi
     lxappearance
     rxvt_unicode
+    pulseeffects
     spotify
     termite
     vlc
@@ -160,7 +96,7 @@ in
     # Desktop
     # haskellPackages.status-notifier-item
     autorandr
-    clipit-master
+    clipit
     compton
     feh
     gnome3.gpaste
@@ -209,8 +145,9 @@ in
     # Tools
     bazaar
     binutils
-    dfeet
+    dex
     dpkg
+    file
     gcc
     gdb
     gitAndTools.git-sync
@@ -236,6 +173,7 @@ in
     silver-searcher
     stow
     tmux
+    unzip
     valgrind
     wget
     wmctrl

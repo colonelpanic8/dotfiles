@@ -6,9 +6,13 @@
 , nwjs, pango, systemd }:
 
 let gitterDirectorySuffix = "opt/gitter";
-    doELFPatch = target: ''
+    doELFExePatch = target: ''
       patchelf --set-interpreter ${stdenv.cc.bintools.dynamicLinker} \
          --set-rpath "$out/${gitterDirectorySuffix}/lib:${libPath}" \
+         $out/${gitterDirectorySuffix}/${target}
+       '';
+   doELFLibPatch = target: ''
+      patchelf --set-rpath "$out/${gitterDirectorySuffix}/lib:${libPath}" \
          $out/${gitterDirectorySuffix}/${target}
        '';
    libPath = stdenv.lib.makeLibraryPath [
@@ -35,15 +39,16 @@ in stdenv.mkDerivation rec {
     mkdir -p $out/{bin,opt/gitter,share/pixmaps}
     mv ./opt/Gitter/linux64/* $out/opt/gitter
 
-    ${doELFPatch "Gitter"}
-    ${doELFPatch "nacl_helper"}
-    ${doELFPatch "minidump_stackwalk"}
-    ${doELFPatch "nwjc"}
-    ${doELFPatch "chromedriver"}
-    ${doELFPatch "payload"}
+    ${doELFExePatch "Gitter"}
+    ${doELFExePatch "nacl_helper"}
+    ${doELFExePatch "minidump_stackwalk"}
+    ${doELFExePatch "nwjc"}
+    ${doELFExePatch "chromedriver"}
+    ${doELFExePatch "payload"}
 
-    patchelf --set-rpath "$out/${gitterDirectorySuffix}/lib:${libPath}" \
-         $out/${gitterDirectorySuffix}/lib/libnw.so
+    ${doELFLibPatch "lib/libnw.so"}
+    ${doELFLibPatch "lib/libnode.so"}
+    ${doELFLibPatch "lib/libffmpeg.so"}
 
     wrapProgram $out/${gitterDirectorySuffix}/Gitter --prefix LD_LIBRARY_PATH : ${libPath}
 
@@ -54,7 +59,7 @@ in stdenv.mkDerivation rec {
 
   desktopItem = makeDesktopItem {
     name = pname;
-    exec = "Gitter";
+    exec = "/usr/bin/env Gitter";
     icon = pname;
     desktopName = "Gitter";
     genericName = meta.description;
