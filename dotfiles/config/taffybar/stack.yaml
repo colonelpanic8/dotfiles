@@ -10,6 +10,8 @@ packages:
   extra-dep: true
 - location: ../xmonad/xmonad-contrib
   extra-dep: true
+- location: ../xmonad/xmonad
+  extra-dep: true
 # - location: ../../../../Projects/status-notifier-item
 #   extra-dep: true
 # - location: ../../../../Projects/gtk-sni-tray
@@ -19,7 +21,9 @@ packages:
     commit: af73bd9e193b045a25bccf86061858db21091508
   extra-dep: true
 extra-deps:
+- ConfigFile-1.1.4
 - X11-xft-0.3.1
+- X11-1.8
 - dbus-1.0.1
 - dbus-hslogger-0.1.0.1
 - gi-dbusmenu-0.4.1
@@ -28,22 +32,23 @@ extra-deps:
 - gi-gdkpixbuf-2.0.16
 - gi-gdkx11-3.0.2
 - gi-gio-2.0.16
+- gi-glib-2.0.17
 - gi-gtk-3.0.21
 - gi-gtk-hs-0.3.6.1
 - gi-pango-1.0.16
 - gi-xlib-2.0.2
 - gio-0.13.4.1
-- gtk-sni-tray-0.1.4.0
+- gtk-sni-tray-0.1.5.0
 - gtk-strut-0.1.2.1
 - haskell-gi-0.21.2
 - haskell-gi-base-0.21.1
 - libxml-sax-0.7.5
-- rate-limit-1.1.1
+- rate-limit-1.4.0
 - spool-0.1
 - status-notifier-item-0.3.0.0
 - time-units-1.0.0
 - xml-helpers-1.0.0
-resolver: lts-11.7
+resolver: lts-12.0
 nix:
   packages:
     - cairo
