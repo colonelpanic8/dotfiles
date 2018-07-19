@@ -23,6 +23,11 @@
     fsType = "vfat";
   };
 
+  fileSystems."/windows" = {
+    device = "/dev/disk/by-uuid/DEFA1F27FA1EFC09";
+    fsType = "ntfs";
+  };
+
   fileSystems."/arch-linux-root" = {
     device = "/dev/disk/by-uuid/9095e51e-33f9-440d-a272-46e129800f81";
     fsType = "ext4";
@@ -50,6 +55,7 @@
   ];
 
   boot.loader.grub.device = "/dev/sda";
+  boot.loader.grub.useOSProber = true;
 
   networking.hostName = "imalison-home";
   boot.loader.efi.canTouchEfiVariables = true;
