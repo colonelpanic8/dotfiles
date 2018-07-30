@@ -9,6 +9,7 @@ let
     ipdb
     virtualenvwrapper
     pip
+    python-language-server
   ];
   python-with-my-packages = pkgs.python3.withPackages my-python-packages;
 in
@@ -143,6 +144,7 @@ in
     cargo
 
     # Tools
+    automake
     bazaar
     binutils
     dex
@@ -193,16 +195,18 @@ in
   # environment.variables = {
   #   GDK_PIXBUF_MODULE_FILE = "${pkgs.librsvg.out}/lib/gdk-pixbuf-2.0/2.10.0/loaders.cache";
   # };
-
-  programs.gnupg.agent = { enable = true; enableSSHSupport = true; };
   # Enabling zsh will clobber path because of the way it sets up /etc/zshenv
   # programs.zsh.enable = true;
   # Instead we just make sure to source profile from zsh
+
   environment.etc."zshenv".text =
     ''
       if [ -n "$__ETC_PROFILE_DONE" ]; then return; fi
       source /etc/profile
     '';
+
+
+  programs.gnupg.agent = { enable = true; enableSSHSupport = true; };
   services.openssh.enable = true;
   services.avahi = {
     enable = true;
@@ -213,6 +217,7 @@ in
       userServices = true;
     };
   };
+  services.gnome3.at-spi2-core.enable = true;
   services.kbfs.enable = true;
   sound.enable = true;
   hardware.pulseaudio.enable = true;
@@ -223,6 +228,7 @@ in
     layout = "us";
     desktopManager = {
       plasma5.enable = true;
+      gnome3.enable = true;
       default = "none";
     };
     windowManager = {
