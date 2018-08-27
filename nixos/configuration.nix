@@ -143,6 +143,10 @@ in
     # Rust
     cargo
 
+    # Clojure
+    boot
+    leiningen
+
     # Tools
     automake
     bazaar
