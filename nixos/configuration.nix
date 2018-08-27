@@ -85,6 +85,7 @@ in
     termite
     vlc
     xfce.thunar
+    wire-desktop
 
     # Appearance
     numix-icon-theme-circle
@@ -103,8 +104,7 @@ in
     gnome3.gpaste
     kdeconnect
     libnotify
-    # XXX: renable this
-    # lxqt.lxqt-powermanagement
+    lxqt.lxqt-powermanagement
     networkmanagerapplet
     customizable-notify-osd
     pasystray-appindicator

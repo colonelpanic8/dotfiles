@@ -1,7 +1,6 @@
 self: super:
 
 {
-  gitter = super.callPackage ./gitter.nix { };
   clipit = super.clipit.overrideAttrs (oldAttrs: rec {
     version = "50d983514386029a1f133187902084b753458f32";
     preConfigure = "./autogen.sh";
