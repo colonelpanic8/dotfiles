@@ -4,7 +4,6 @@ Description=wallpaper
 [Service]
 Type=oneshot
 ExecStart=/usr/bin/env wallpaper.sh
-ExecStop=/usr/bin/pkill wallpaper.sh
 
 [Install]
 WantedBy=wm.target

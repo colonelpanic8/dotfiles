@@ -6,7 +6,7 @@ After=status-notifier-watcher.service
 [Service]
 Type=simple
 ExecStart=/usr/bin/env nm-applet --sm-disable --indicator
-ExecStop=/usr/bin/pkill nm-applet
+ExecStop=/usr/bin/env pkill nm-applet
 
 [Install]
 WantedBy=wm.target
