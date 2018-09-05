@@ -1,6 +1,6 @@
 [submodule "dotfiles/config/taffybar/taffybar"]
 	path = dotfiles/config/taffybar/taffybar
-	url = ../../travitch/taffybar.git
+	url = ../../taffybar/taffybar.git
 [submodule "dotfiles/xmonad/xmonad"]
 	path = dotfiles/config/xmonad/xmonad
 	url = ../xmonad.git
