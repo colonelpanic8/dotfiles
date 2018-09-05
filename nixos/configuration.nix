@@ -175,6 +175,7 @@ in
     python-with-my-packages
     qt5.qttools
     rcm
+    rr
     scrot
     silver-searcher
     stow
