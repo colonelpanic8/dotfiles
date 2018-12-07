@@ -1884,6 +1884,7 @@ I use helm for almost all emacs completion
   (progn
     (use-package persp-projectile
       :commands projectile-persp-switch-project)
+    (define-key projectile-mode-map (kbd "C-c p") 'projectile-command-map)
 
     (projectile-global-mode)
     (setq projectile-require-project-root nil)
