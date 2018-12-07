@@ -3971,16 +3971,12 @@ emr (emacs refactor) provides support for refactoring in many programming langua
 #+END_SRC
 ** language-server-protocol (lsp)
 #+BEGIN_SRC emacs-lisp
-(use-package lsp-ui
-  :config
-  (progn
-    (add-hook 'lsp-mode-hook 'lsp-ui-mode)
-    (progn
-      (require 'lsp-ui-flycheck))))
-
 (use-package lsp-mode
   :commands lsp-mode
-  :init (add-hook 'prog-major-mode 'lsp-mode))
+  :config
+  (progn
+    (require 'lsp-clients)
+    (add-hook 'programming-mode-hook 'lsp)))
 #+END_SRC
 * Utility
 ** term
