@@ -1,7 +1,7 @@
 slot-allocation = dynamic
 bubble-expire-timeout = 5sec
-bubble-vertical-gap = 5px
-bubble-horizontal-gap = 5px
+bubble-vertical-gap = 50px
+bubble-horizontal-gap = 30px
 bubble-corner-radius = 37px
 bubble-icon-size = 30px
 bubble-gauge-size = 6px
@@ -22,3 +22,4 @@ location = 3
 bubble-prevent-fade = 0
 bubble-close-on-click = 1
 bubble-as-desktop-bg = 0
+gravity = 4
