@@ -7,19 +7,17 @@ class MemoryManager(object):
         self._allocations = []
 
     def malloc(self, size):
-        if size > 5:
-            print (size)
         next_startpoint = 0
         minimum_size = None
         minimum_start = None
 
-        for (allocation_start_point, size) in self._allocations:
+        for (allocation_start_point, allocation_size) in self._allocations:
             current_block_size = allocation_start_point - next_startpoint
             if (current_block_size > size):
                 if (minimum_size is None or minimum_size > current_block_size):
                     minimum_size = current_block_size
                     minimum_start = next_startpoint
-            next_startpoint = allocation_start_point + size - 1
+            next_startpoint = allocation_start_point + allocation_size - 1
 
         current_block_size = self._memory_size - next_startpoint
         if (current_block_size > size):
@@ -55,7 +53,7 @@ if __name__ == '__main__':
         mm.free(allocation)
 
     print("nice", mm.malloc(200))
-    print("cool", mm.malloc(500))
+    print("cool", mm.malloc(400))
     print(mm._allocations)
     # a = mm.malloc(100)
     # b = mm.malloc(500)
