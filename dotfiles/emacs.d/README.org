@@ -1490,6 +1490,7 @@ The file server file for this emacs instance no longer exists.")
 #+BEGIN_SRC emacs-lisp
 (use-package beacon
   :demand t
+  :diminish beacon-mode
   :bind ("C-c b" . beacon-blink)
   :config
   (beacon-mode 1))
@@ -1763,6 +1764,7 @@ I use helm for almost all emacs completion
 #+BEGIN_SRC emacs-lisp -n -r
 (use-package helm-config
   :demand t
+  :diminish helm-mode
   :straight helm
   :bind (("M-y" . helm-show-kill-ring)
          ("M-x" . helm-M-x)
