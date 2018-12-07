@@ -29,6 +29,7 @@
         keyboard-quit
         kill-region
         kill-visual-line
+        markdown-outdent-or-delete
         nxml-electric-slash
         org-beginning-of-line
         org-delete-char
