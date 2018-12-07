@@ -3,7 +3,7 @@
 "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
-<!-- 2018-09-05 Wed 18:58 -->
+<!-- 2018-12-07 Fri 21:44 -->
 <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>&lrm;</title>
@@ -6418,6 +6418,7 @@ Paradox is a package.el extension. I have no use for it now that I use straight.
 <div class="org-src-container">
 <pre class="src src-emacs-lisp">(<span class="org-keyword">use-package</span> <span class="org-constant">beacon</span>
   <span class="org-builtin">:demand</span> t
+  <span class="org-builtin">:diminish</span> beacon-mode
   <span class="org-builtin">:bind</span> (<span class="org-string">"C-c b"</span> . beacon-blink)
   <span class="org-builtin">:config</span>
   (beacon-mode 1))
@@ -6854,49 +6855,50 @@ I use helm for almost all emacs completion
 <div class="org-src-container">
 <pre class="src src-emacs-lisp"><span class="linenr"> 1: </span>(<span class="org-keyword">use-package</span> <span class="org-constant">helm-config</span>
 <span class="linenr"> 2: </span>  <span class="org-builtin">:demand</span> t
-<span class="linenr"> 3: </span>  <span class="org-builtin">:straight</span> helm
-<span class="linenr"> 4: </span>  <span class="org-builtin">:bind</span> ((<span class="org-string">"M-y"</span> . helm-show-kill-ring)
-<span class="linenr"> 5: </span>         (<span class="org-string">"M-x"</span> . helm-M-x)
-<span class="linenr"> 6: </span>         (<span class="org-string">"C-x C-i"</span> . helm-imenu)
-<span class="linenr"> 7: </span>         (<span class="org-string">"C-h a"</span> . helm-apropos)
-<span class="linenr"> 8: </span>         (<span class="org-string">"C-c ;"</span> . helm-recentf))
-<span class="linenr"> 9: </span>  <span class="org-builtin">:diminish</span> helm-mode
-<span class="linenr">10: </span>  <span class="org-builtin">:config</span>
-<span class="linenr">11: </span>  (<span class="org-keyword">progn</span>
-<span class="linenr">12: </span>    (<span class="org-keyword">setq</span> helm-split-window-default-side 'same
-<span class="linenr">13: </span>          helm-exit-idle-delay 0)
-<span class="linenr">14: </span>    (<span class="org-keyword">use-package</span> <span class="org-constant">helm-org</span>
-<span class="linenr">15: </span>      <span class="org-builtin">:straight</span> nil
-<span class="linenr">16: </span>      <span class="org-builtin">:defer</span> 10
-<span class="linenr">17: </span>      <span class="org-builtin">:config</span>
-<span class="linenr">18: </span>      (<span class="org-keyword">progn</span>
-<span class="linenr">19: </span>
-<span class="linenr">20: </span>        (<span class="org-keyword">cl-defun</span> <span class="org-function-name">helm-org-headings-in-buffer</span> ()
-<span class="linenr">21: </span>          (<span class="org-keyword">interactive</span>)
-<span class="linenr">22: </span>          (helm <span class="org-builtin">:sources</span> (helm-source-org-headings-for-files
-<span class="linenr">23: </span>                          (list (projectile-completing-read
-<span class="linenr">24: </span>                                 <span class="org-string">"File to look at headings from: "</span>
-<span class="linenr">25: </span>                                 (projectile-all-project-files))))
-<span class="linenr">26: </span>                <span class="org-builtin">:candidate-number-limit</span> 99999
-<span class="linenr">27: </span>                <span class="org-builtin">:buffer</span> <span class="org-string">"*helm org inbuffer*"</span>))))
-<span class="linenr">28: </span>
-<span class="linenr">29: </span>    (<span class="org-keyword">use-package</span> <span class="org-constant">helm-descbinds</span>
-<span class="linenr">30: </span>      <span class="org-builtin">:defer</span> 4
-<span class="linenr">31: </span>      <span class="org-builtin">:config</span> (helm-descbinds-mode 1))
-<span class="linenr">32: </span>
-<span class="linenr">33: </span>    (<span class="org-keyword">use-package</span> <span class="org-constant">helm-ag</span>
-<span class="linenr">34: </span>      <span class="org-builtin">:bind</span> (<span class="org-string">"C-c p 1"</span> . imalison:set-helm-ag-extra-options)
-<span class="linenr">35: </span>      <span class="org-builtin">:preface</span>
-<span class="linenr">36: </span>      (<span class="org-keyword">progn</span>
-<span class="linenr">37: </span>        (<span class="org-keyword">defun</span> <span class="org-function-name">imalison:set-helm-ag-extra-options</span> ()
-<span class="linenr">38: </span>          (<span class="org-keyword">interactive</span>)
-<span class="linenr">39: </span>          (<span class="org-keyword">let</span> ((option (read-string <span class="org-string">"Extra options: "</span> (<span class="org-keyword">or</span> helm-ag--extra-options <span class="org-string">""</span>)
-<span class="linenr">40: </span>                                     'helm-ag--extra-options-history)))
-<span class="linenr">41: </span>            (<span class="org-keyword">setq</span> helm-ag--extra-options option))))
-<span class="linenr">42: </span>      <span class="org-builtin">:config</span>
-<span class="linenr">43: </span>      (<span class="org-keyword">progn</span>
-<span class="linenr">44: </span>        (<span class="org-keyword">setq</span> helm-ag-always-set-extra-option nil)))
-<span class="linenr">45: </span>    (run-with-idle-timer 1 nil 'helm-mode 1)))
+<span class="linenr"> 3: </span>  <span class="org-builtin">:diminish</span> helm-mode
+<span class="linenr"> 4: </span>  <span class="org-builtin">:straight</span> helm
+<span class="linenr"> 5: </span>  <span class="org-builtin">:bind</span> ((<span class="org-string">"M-y"</span> . helm-show-kill-ring)
+<span class="linenr"> 6: </span>         (<span class="org-string">"M-x"</span> . helm-M-x)
+<span class="linenr"> 7: </span>         (<span class="org-string">"C-x C-i"</span> . helm-imenu)
+<span class="linenr"> 8: </span>         (<span class="org-string">"C-h a"</span> . helm-apropos)
+<span class="linenr"> 9: </span>         (<span class="org-string">"C-c ;"</span> . helm-recentf))
+<span class="linenr">10: </span>  <span class="org-builtin">:diminish</span> helm-mode
+<span class="linenr">11: </span>  <span class="org-builtin">:config</span>
+<span class="linenr">12: </span>  (<span class="org-keyword">progn</span>
+<span class="linenr">13: </span>    (<span class="org-keyword">setq</span> helm-split-window-default-side 'same
+<span class="linenr">14: </span>          helm-exit-idle-delay 0)
+<span class="linenr">15: </span>    (<span class="org-keyword">use-package</span> <span class="org-constant">helm-org</span>
+<span class="linenr">16: </span>      <span class="org-builtin">:straight</span> nil
+<span class="linenr">17: </span>      <span class="org-builtin">:defer</span> 10
+<span class="linenr">18: </span>      <span class="org-builtin">:config</span>
+<span class="linenr">19: </span>      (<span class="org-keyword">progn</span>
+<span class="linenr">20: </span>
+<span class="linenr">21: </span>        (<span class="org-keyword">cl-defun</span> <span class="org-function-name">helm-org-headings-in-buffer</span> ()
+<span class="linenr">22: </span>          (<span class="org-keyword">interactive</span>)
+<span class="linenr">23: </span>          (helm <span class="org-builtin">:sources</span> (helm-source-org-headings-for-files
+<span class="linenr">24: </span>                          (list (projectile-completing-read
+<span class="linenr">25: </span>                                 <span class="org-string">"File to look at headings from: "</span>
+<span class="linenr">26: </span>                                 (projectile-all-project-files))))
+<span class="linenr">27: </span>                <span class="org-builtin">:candidate-number-limit</span> 99999
+<span class="linenr">28: </span>                <span class="org-builtin">:buffer</span> <span class="org-string">"*helm org inbuffer*"</span>))))
+<span class="linenr">29: </span>
+<span class="linenr">30: </span>    (<span class="org-keyword">use-package</span> <span class="org-constant">helm-descbinds</span>
+<span class="linenr">31: </span>      <span class="org-builtin">:defer</span> 4
+<span class="linenr">32: </span>      <span class="org-builtin">:config</span> (helm-descbinds-mode 1))
+<span class="linenr">33: </span>
+<span class="linenr">34: </span>    (<span class="org-keyword">use-package</span> <span class="org-constant">helm-ag</span>
+<span class="linenr">35: </span>      <span class="org-builtin">:bind</span> (<span class="org-string">"C-c p 1"</span> . imalison:set-helm-ag-extra-options)
+<span class="linenr">36: </span>      <span class="org-builtin">:preface</span>
+<span class="linenr">37: </span>      (<span class="org-keyword">progn</span>
+<span class="linenr">38: </span>        (<span class="org-keyword">defun</span> <span class="org-function-name">imalison:set-helm-ag-extra-options</span> ()
+<span class="linenr">39: </span>          (<span class="org-keyword">interactive</span>)
+<span class="linenr">40: </span>          (<span class="org-keyword">let</span> ((option (read-string <span class="org-string">"Extra options: "</span> (<span class="org-keyword">or</span> helm-ag--extra-options <span class="org-string">""</span>)
+<span class="linenr">41: </span>                                     'helm-ag--extra-options-history)))
+<span class="linenr">42: </span>            (<span class="org-keyword">setq</span> helm-ag--extra-options option))))
+<span class="linenr">43: </span>      <span class="org-builtin">:config</span>
+<span class="linenr">44: </span>      (<span class="org-keyword">progn</span>
+<span class="linenr">45: </span>        (<span class="org-keyword">setq</span> helm-ag-always-set-extra-option nil)))
+<span class="linenr">46: </span>    (run-with-idle-timer 1 nil 'helm-mode 1)))
 </pre>
 </div>
 </div>
@@ -6983,6 +6985,7 @@ I use helm for almost all emacs completion
   (<span class="org-keyword">progn</span>
     (<span class="org-keyword">use-package</span> <span class="org-constant">persp-projectile</span>
       <span class="org-builtin">:commands</span> projectile-persp-switch-project)
+    (define-key projectile-mode-map (kbd <span class="org-string">"C-c p"</span>) 'projectile-command-map)
 
     (projectile-global-mode)
     (<span class="org-keyword">setq</span> projectile-require-project-root nil)
