@@ -132,6 +132,7 @@ in
     cabal2nix
     ghc
     stack
+    haskell.compiler.ghc862
 
     # Scala
     sbt
