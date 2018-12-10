@@ -24,12 +24,13 @@
 }
 
 .inner-pad {
-	padding: 0px;
+	padding: 3px;
 }
 
 .contents {
-	padding: 7px;
+	padding: 3px;
 	transition: background-color .5s;
+	border-radius: 6px;
 }
 
 /* Workspaces styling */

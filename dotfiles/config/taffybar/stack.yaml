@@ -12,6 +12,12 @@ packages:
   extra-dep: true
 - location: ../xmonad/xmonad
   extra-dep: true
+- location:
+    git: git@github.com:gtk2hs/gtk2hs.git
+    commit: 7bccd432e2f962d80b2b804fa2a59712e402753c
+  subdirs:
+    - tools
+  extra-dep: true
 # - location: ../../../../Projects/status-notifier-item
 #   extra-dep: true
 # - location: ../../../../Projects/gtk-sni-tray
@@ -22,8 +28,10 @@ packages:
   extra-dep: true
 extra-deps:
 - ConfigFile-1.1.4
-- X11-xft-0.3.1
 - X11-1.8
+- X11-xft-0.3.1
+- cairo-0.13.5.0
+- containers-0.5.11.0
 - dbus-1.0.1
 - dbus-hslogger-0.1.0.1
 - gi-dbusmenu-0.4.1
@@ -33,22 +41,25 @@ extra-deps:
 - gi-gdkx11-3.0.2
 - gi-gio-2.0.16
 - gi-glib-2.0.17
-- gi-gtk-3.0.21
-- gi-gtk-hs-0.3.6.1
+- gi-gtk-3.0.26
+- gi-gtk-hs-0.3.6.3
 - gi-pango-1.0.16
 - gi-xlib-2.0.2
 - gio-0.13.4.1
+- glib-0.13.6.0
 - gtk-sni-tray-0.1.5.0
-- gtk-strut-0.1.2.1
+- gtk-strut-0.1.3.0
 - haskell-gi-0.21.2
-- haskell-gi-base-0.21.1
+- haskell-gi-base-0.21.2
 - libxml-sax-0.7.5
-- rate-limit-1.4.0
+- rate-limit-1.4.1
 - spool-0.1
 - status-notifier-item-0.3.0.0
+- stm-2.5.0.0
 - time-units-1.0.0
 - xml-helpers-1.0.0
-resolver: lts-12.0
+resolver: nightly-2018-12-07
+allow-newer: true
 nix:
   packages:
     - cairo
