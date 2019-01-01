@@ -4,7 +4,7 @@ Description=volnoti
 [Service]
 Type=simple
 ExecStart=/usr/bin/env volnoti -n -v
-ExecStop=/usr/bin/pkill volnoti
+ExecStop=/usr/bin/env pkill volnoti
 
 [Install]
 WantedBy=wm.target

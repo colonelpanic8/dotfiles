@@ -4,7 +4,7 @@ Description=mopidy
 [Service]
 Type=simple
 ExecStart=/usr/bin/env mopidy
-ExecStop=/usr/bin/pkill mopidy
+ExecStop=/usr/bin/env pkill mopidy
 
 [Install]
 WantedBy=wm.target

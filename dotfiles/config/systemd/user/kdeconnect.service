@@ -6,7 +6,7 @@ After=taffybar.service
 [Service]
 Type=simple
 ExecStart=/usr/bin/env kdeconnect-indicator
-ExecStop=/usr/bin/pkill kdeconnect-indicator
+ExecStop=/usr/bin/env pkill kdeconnect-indicator
 
 [Install]
 WantedBy=wm.target

@@ -6,7 +6,7 @@ After=taffybar.service
 [Service]
 Type=simple
 ExecStart=/usr/bin/env chromix-too-server
-ExecStop=/usr/bin/pkill chromix-too
+ExecStop=/usr/bin/env pkill chromix-too
 
 [Install]
 WantedBy=wm.target

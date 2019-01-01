@@ -6,7 +6,7 @@ After=status-notifier-watcher.service
 [Service]
 Type=simple
 ExecStart=/usr/bin/env alarm-clock-applet
-ExecStop=/usr/bin/pkill alarm-clock-applet
+ExecStop=/usr/bin/env pkill alarm-clock-applet
 
 [Install]
 WantedBy=wm.target
