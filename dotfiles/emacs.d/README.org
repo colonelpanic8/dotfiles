@@ -1588,6 +1588,7 @@ custom-set-faces in your custom file.
 #+BEGIN_SRC emacs-lisp
 (use-package highlight-indent-guides
   :commands highlight-indent-guides-mode
+  :diminish highlight-indent-guides-mode
   :preface
   (progn
     (add-hook 'prog-mode-hook 'highlight-indent-guides-mode))
@@ -1766,7 +1767,6 @@ bind-key and global-set-key forms.
 I use helm for almost all emacs completion
 #+BEGIN_SRC emacs-lisp -n -r
 (use-package helm-config
-  :demand t
   :diminish helm-mode
   :straight helm
   :bind (("M-y" . helm-show-kill-ring)
@@ -1774,11 +1774,11 @@ I use helm for almost all emacs completion
          ("C-x C-i" . helm-imenu)
          ("C-h a" . helm-apropos)
          ("C-c ;" . helm-recentf))
-  :diminish helm-mode
   :config
   (progn
     (setq helm-split-window-default-side 'same
           helm-exit-idle-delay 0)
+
     (use-package helm-org
       :straight nil
       :defer 10
@@ -4295,6 +4295,7 @@ I had to disable this mode because something that it does messes with coding set
 ** dtrt-indent
 #+BEGIN_SRC emacs-lisp
 (use-package dtrt-indent
+  :diminish 'dtrt-indent-mode
   :commands 'dtrt-indent-mode
   :init (add-hook 'prog-mode-hook 'dtrt-indent-mode)
   :config

@@ -5,6 +5,7 @@
       '(
         TeX-insert-backslash
         backward-sexp
+        beginning-of-buffer
         beginning-of-visual-line
         c-electric-delete-forward
         c-electric-semi&comma
