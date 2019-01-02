@@ -286,13 +286,16 @@ This had to be disabled because it was causing a bunch of issues with projectile
 
 This solution only applies it to projectile-find-file
 #+BEGIN_SRC emacs-lisp
-
 (defun imalison:call-with-quick-shell-command (fn &rest args)
-  (noflet ((shell-command-to-string (&rest args)
-                                    (or (apply 'imalison:try-call-process args) (apply this-fn args))))
+  (noflet
+    ((shell-command-to-string (&rest args)
+                              (condition-case _e
+                                  (or (apply 'imalison:try-call-process args) (apply this-fn args))
+                                (error (apply this-fn args)))))
     (apply fn args)))
 
-(advice-add 'projectile-find-file :around 'imalison:call-with-quick-shell-command)
+;; I've had to disable this becuase newer versions of projectile use a ton of shell commands
+;; (advice-add 'projectile-files-via-ext-command :around 'imalison:call-with-quick-shell-command)
 #+END_SRC
 ** Set EMACS environment variable
 Emacs cask seems to depend on the EMACS environment variable being set to the
