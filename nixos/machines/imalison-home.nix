@@ -5,6 +5,7 @@
     <nixpkgs/nixos/modules/installer/scan/not-detected.nix>
     ../configuration.nix
     ../games.nix
+    ../cachix.nix
     ../extra.nix
   ];
 
