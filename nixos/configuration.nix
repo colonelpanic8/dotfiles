@@ -174,6 +174,7 @@ in
     patchelf
     plasma-workspace
     powertop
+    pscircle
     python-with-my-packages
     qt5.qttools
     rcm
@@ -214,6 +215,7 @@ in
 
 
   programs.gnupg.agent = { enable = true; enableSSHSupport = true; };
+  programs.adb.enable = true;
   services.openssh.enable = true;
   services.avahi = {
     enable = true;
@@ -270,7 +272,13 @@ in
   # Define a user account. Don't forget to set a password with ‘passwd’.
   users.extraUsers = let
     extraGroups = [
-      "wheel" "disk" "audio" "video" "networkmanager" "systemd-journal"
+      "audio"
+      "adbusers"
+      "disk"
+      "networkmanager"
+      "systemd-journal"
+      "video"
+      "wheel"
     ];
     userDefaults = {
       inherit extraGroups;
@@ -294,5 +302,5 @@ in
     };
   };
 
-  system.nixos.stateVersion = "18.03";
+  system.stateVersion = "18.03";
 }
