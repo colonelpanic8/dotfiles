@@ -125,6 +125,7 @@ main = do
           Just "gmail.png"
         | otherwise = Nothing
       myIcons = scaledWindowIconPixbufGetter $
+                getWindowIconPixbufFromChrome <|||>
                 unscaledDefaultGetWindowIconPixbuf <|||>
                 (\size _ -> lift $ loadPixbufByName size "application-default-icon")
       cpu = pollingGraphNew cpuCfg 0.5 cpuCallback
