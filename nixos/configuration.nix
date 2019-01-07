@@ -155,6 +155,7 @@ in
     binutils
     dex
     dpkg
+    fd
     file
     gcc
     gdb
@@ -167,6 +168,7 @@ in
     htop
     inotify-tools
     ispell
+    jq
     mercurial
     ncdu
     neofetch
