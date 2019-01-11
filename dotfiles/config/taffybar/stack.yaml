@@ -4,41 +4,32 @@ packages:
 - .
 - location: ./taffybar
   extra-dep: true
-- location:
-    git: git@github.com:willdonnelly/dyre.git
-    commit: 11412752b483135e0c151ab90be17b217f837c4b
-  extra-dep: true
 - location: ../xmonad/xmonad-contrib
   extra-dep: true
 - location: ../xmonad/xmonad
   extra-dep: true
 - location:
-    git: git@github.com:gtk2hs/gtk2hs.git
-    commit: 7bccd432e2f962d80b2b804fa2a59712e402753c
-  subdirs:
-    - tools
+    git: git@github.com:IvanMalison/github.git
+    commit: af73bd9e193b045a25bccf86061858db21091508
   extra-dep: true
 # - location: ../../../../Projects/status-notifier-item
 #   extra-dep: true
 # - location: ../../../../Projects/gtk-sni-tray
 #   extra-dep: true
-- location:
-    git: git@github.com:IvanMalison/github.git
-    commit: af73bd9e193b045a25bccf86061858db21091508
-  extra-dep: true
 extra-deps:
 - ConfigFile-1.1.4
 - X11-1.8
 - X11-xft-0.3.1
-- cairo-0.13.5.0
 - containers-0.5.11.0
 - dbus-1.0.1
 - dbus-hslogger-0.1.0.1
+- gi-cairo-connector-0.0.1
+- gi-cairo-render-0.0.1
 - gi-dbusmenu-0.4.1
 - gi-dbusmenugtk3-0.4.1
 - gi-gdk-3.0.15
 - gi-gdkpixbuf-2.0.16
-- gi-gdkx11-3.0.2
+- gi-gdkx11-3.0.4
 - gi-gio-2.0.16
 - gi-glib-2.0.17
 - gi-gtk-3.0.26
@@ -46,8 +37,7 @@ extra-deps:
 - gi-pango-1.0.16
 - gi-xlib-2.0.2
 - gio-0.13.4.1
-- glib-0.13.6.0
-- gtk-sni-tray-0.1.5.0
+- gtk-sni-tray-0.1.6.0
 - gtk-strut-0.1.3.0
 - haskell-gi-0.21.2
 - haskell-gi-base-0.21.2
@@ -58,7 +48,7 @@ extra-deps:
 - stm-2.5.0.0
 - time-units-1.0.0
 - xml-helpers-1.0.0
-resolver: nightly-2018-12-07
+resolver: lts-13.2
 allow-newer: true
 nix:
   packages:
