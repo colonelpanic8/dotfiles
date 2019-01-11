@@ -103,6 +103,7 @@ in
     # Desktop
     # haskellPackages.status-notifier-item
     autorandr
+    blueman
     clipit
     compton
     feh
