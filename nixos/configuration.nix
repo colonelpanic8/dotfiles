@@ -31,6 +31,12 @@ in
   networking.networkmanager.enable = true;
   networking.firewall.enable = false;
 
+  # Audio
+  sound.enable = true;
+  hardware.pulseaudio.enable = true;
+
+  hardware.opengl.driSupport32Bit = true;
+
   i18n = {
     consoleKeyMap = "us";
     defaultLocale = "en_US.UTF-8";
@@ -221,9 +227,9 @@ in
       source /etc/profile
     '';
 
-
   programs.gnupg.agent = { enable = true; enableSSHSupport = true; };
   programs.adb.enable = true;
+
   services.openssh.enable = true;
   services.avahi = {
     enable = true;
@@ -236,9 +242,6 @@ in
   };
   services.gnome3.at-spi2-core.enable = true;
   services.kbfs.enable = true;
-  sound.enable = true;
-  hardware.pulseaudio.enable = true;
-
   services.xserver = {
     exportConfiguration = true;
     enable = true;
@@ -274,8 +277,6 @@ in
     };
 
   };
-
-  hardware.opengl.driSupport32Bit = true;
 
   # Define a user account. Don't forget to set a password with ‘passwd’.
   users.extraUsers = let
