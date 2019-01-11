@@ -3,7 +3,7 @@
 "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
-<!-- 2019-01-11 Fri 08:26 -->
+<!-- 2019-01-11 Fri 21:43 -->
 <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>&lrm;</title>
@@ -6871,50 +6871,55 @@ I use helm for almost all emacs completion
 </p>
 <div class="org-src-container">
 <pre class="src src-emacs-lisp"><span class="linenr"> 1: </span>(<span class="org-keyword">use-package</span> <span class="org-constant">helm-config</span>
-<span class="linenr"> 2: </span>  <span class="org-builtin">:diminish</span> helm-mode
-<span class="linenr"> 3: </span>  <span class="org-builtin">:straight</span> helm
-<span class="linenr"> 4: </span>  <span class="org-builtin">:bind</span> ((<span class="org-string">"M-y"</span> . helm-show-kill-ring)
-<span class="linenr"> 5: </span>         (<span class="org-string">"M-x"</span> . helm-M-x)
-<span class="linenr"> 6: </span>         (<span class="org-string">"C-x C-i"</span> . helm-imenu)
-<span class="linenr"> 7: </span>         (<span class="org-string">"C-h a"</span> . helm-apropos)
-<span class="linenr"> 8: </span>         (<span class="org-string">"C-c ;"</span> . helm-recentf))
-<span class="linenr"> 9: </span>  <span class="org-builtin">:config</span>
-<span class="linenr">10: </span>  (<span class="org-keyword">progn</span>
-<span class="linenr">11: </span>    (<span class="org-keyword">setq</span> helm-split-window-default-side 'same
-<span class="linenr">12: </span>          helm-exit-idle-delay 0)
-<span class="linenr">13: </span>
-<span class="linenr">14: </span>    (<span class="org-keyword">use-package</span> <span class="org-constant">helm-org</span>
-<span class="linenr">15: </span>      <span class="org-builtin">:straight</span> nil
-<span class="linenr">16: </span>      <span class="org-builtin">:defer</span> 10
-<span class="linenr">17: </span>      <span class="org-builtin">:config</span>
-<span class="linenr">18: </span>      (<span class="org-keyword">progn</span>
-<span class="linenr">19: </span>
-<span class="linenr">20: </span>        (<span class="org-keyword">cl-defun</span> <span class="org-function-name">helm-org-headings-in-buffer</span> ()
-<span class="linenr">21: </span>          (<span class="org-keyword">interactive</span>)
-<span class="linenr">22: </span>          (helm <span class="org-builtin">:sources</span> (helm-source-org-headings-for-files
-<span class="linenr">23: </span>                          (list (projectile-completing-read
-<span class="linenr">24: </span>                                 <span class="org-string">"File to look at headings from: "</span>
-<span class="linenr">25: </span>                                 (projectile-all-project-files))))
-<span class="linenr">26: </span>                <span class="org-builtin">:candidate-number-limit</span> 99999
-<span class="linenr">27: </span>                <span class="org-builtin">:buffer</span> <span class="org-string">"*helm org inbuffer*"</span>))))
-<span class="linenr">28: </span>
-<span class="linenr">29: </span>    (<span class="org-keyword">use-package</span> <span class="org-constant">helm-descbinds</span>
-<span class="linenr">30: </span>      <span class="org-builtin">:defer</span> 4
-<span class="linenr">31: </span>      <span class="org-builtin">:config</span> (helm-descbinds-mode 1))
-<span class="linenr">32: </span>
-<span class="linenr">33: </span>    (<span class="org-keyword">use-package</span> <span class="org-constant">helm-ag</span>
-<span class="linenr">34: </span>      <span class="org-builtin">:bind</span> (<span class="org-string">"C-c p 1"</span> . imalison:set-helm-ag-extra-options)
-<span class="linenr">35: </span>      <span class="org-builtin">:preface</span>
-<span class="linenr">36: </span>      (<span class="org-keyword">progn</span>
-<span class="linenr">37: </span>        (<span class="org-keyword">defun</span> <span class="org-function-name">imalison:set-helm-ag-extra-options</span> ()
-<span class="linenr">38: </span>          (<span class="org-keyword">interactive</span>)
-<span class="linenr">39: </span>          (<span class="org-keyword">let</span> ((option (read-string <span class="org-string">"Extra options: "</span> (<span class="org-keyword">or</span> helm-ag--extra-options <span class="org-string">""</span>)
-<span class="linenr">40: </span>                                     'helm-ag--extra-options-history)))
-<span class="linenr">41: </span>            (<span class="org-keyword">setq</span> helm-ag--extra-options option))))
-<span class="linenr">42: </span>      <span class="org-builtin">:config</span>
-<span class="linenr">43: </span>      (<span class="org-keyword">progn</span>
-<span class="linenr">44: </span>        (<span class="org-keyword">setq</span> helm-ag-always-set-extra-option nil)))
-<span class="linenr">45: </span>    (run-with-idle-timer 1 nil 'helm-mode 1)))
+<span class="linenr"> 2: </span>  <span class="org-builtin">:demand</span> t
+<span class="linenr"> 3: </span>  <span class="org-builtin">:diminish</span> helm-mode
+<span class="linenr"> 4: </span>  <span class="org-builtin">:straight</span> helm
+<span class="linenr"> 5: </span>  <span class="org-builtin">:bind</span> ((<span class="org-string">"M-y"</span> . helm-show-kill-ring)
+<span class="linenr"> 6: </span>         (<span class="org-string">"M-x"</span> . helm-M-x)
+<span class="linenr"> 7: </span>         (<span class="org-string">"C-x C-i"</span> . helm-imenu)
+<span class="linenr"> 8: </span>         (<span class="org-string">"C-h a"</span> . helm-apropos)
+<span class="linenr"> 9: </span>         (<span class="org-string">"C-c ;"</span> . helm-recentf))
+<span class="linenr">10: </span>  <span class="org-builtin">:config</span>
+<span class="linenr">11: </span>  (<span class="org-keyword">progn</span>
+<span class="linenr">12: </span>    (<span class="org-keyword">setq</span> helm-split-window-default-side 'same
+<span class="linenr">13: </span>          helm-exit-idle-delay 0)
+<span class="linenr">14: </span>
+<span class="linenr">15: </span>    (<span class="org-keyword">use-package</span> <span class="org-constant">helm-org</span>
+<span class="linenr">16: </span>      <span class="org-builtin">:straight</span> nil
+<span class="linenr">17: </span>      <span class="org-builtin">:defer</span> 10
+<span class="linenr">18: </span>      <span class="org-builtin">:config</span>
+<span class="linenr">19: </span>      (<span class="org-keyword">progn</span>
+<span class="linenr">20: </span>
+<span class="linenr">21: </span>        (<span class="org-keyword">cl-defun</span> <span class="org-function-name">helm-org-headings-in-buffer</span> ()
+<span class="linenr">22: </span>          (<span class="org-keyword">interactive</span>)
+<span class="linenr">23: </span>          (helm <span class="org-builtin">:sources</span> (helm-source-org-headings-for-files
+<span class="linenr">24: </span>                          (list (projectile-completing-read
+<span class="linenr">25: </span>                                 <span class="org-string">"File to look at headings from: "</span>
+<span class="linenr">26: </span>                                 (projectile-all-project-files))))
+<span class="linenr">27: </span>                <span class="org-builtin">:candidate-number-limit</span> 99999
+<span class="linenr">28: </span>                <span class="org-builtin">:buffer</span> <span class="org-string">"*helm org inbuffer*"</span>))))
+<span class="linenr">29: </span>
+<span class="linenr">30: </span>    (<span class="org-keyword">use-package</span> <span class="org-constant">helm-descbinds</span>
+<span class="linenr">31: </span>      <span class="org-builtin">:defer</span> 4
+<span class="linenr">32: </span>      <span class="org-builtin">:config</span> (helm-descbinds-mode 1))
+<span class="linenr">33: </span>
+<span class="linenr">34: </span>    (<span class="org-keyword">use-package</span> <span class="org-constant">helm-ag</span>
+<span class="linenr">35: </span>      <span class="org-builtin">:bind</span> (<span class="org-string">"C-c p 1"</span> . imalison:set-helm-ag-extra-options)
+<span class="linenr">36: </span>      <span class="org-builtin">:preface</span>
+<span class="linenr">37: </span>      (<span class="org-keyword">progn</span>
+<span class="linenr">38: </span>        (<span class="org-keyword">defun</span> <span class="org-function-name">imalison:set-helm-ag-extra-options</span> ()
+<span class="linenr">39: </span>          (<span class="org-keyword">interactive</span>)
+<span class="linenr">40: </span>          (<span class="org-keyword">let</span> ((option (read-string <span class="org-string">"Extra options: "</span> (<span class="org-keyword">or</span> helm-ag--extra-options <span class="org-string">""</span>)
+<span class="linenr">41: </span>                                     'helm-ag--extra-options-history)))
+<span class="linenr">42: </span>            (<span class="org-keyword">setq</span> helm-ag--extra-options option))))
+<span class="linenr">43: </span>      <span class="org-builtin">:config</span>
+<span class="linenr">44: </span>      (<span class="org-keyword">progn</span>
+<span class="linenr">45: </span>        (<span class="org-keyword">setq</span> helm-ag-always-set-extra-option nil)))))
+<span class="linenr">46: </span>
+<span class="linenr">47: </span>(<span class="org-keyword">use-package</span> <span class="org-constant">helm</span>
+<span class="linenr">48: </span>  <span class="org-builtin">:diminish</span> helm-mode
+<span class="linenr">49: </span>  <span class="org-builtin">:config</span>
+<span class="linenr">50: </span>  (helm-mode +1))
 </pre>
 </div>
 </div>
@@ -7031,7 +7036,8 @@ I use helm for almost all emacs completion
           ido-use-virtual-buffers t
           ido-use-filename-at-point nil
           ido-create-new-buffer 'always)
-    (ido-everywhere 1)
+    <span class="org-comment-delimiter">;; </span><span class="org-comment">This is incompatible with helm-mode</span>
+        <span class="org-comment-delimiter">;; </span><span class="org-comment">(ido-everywhere 1)</span>
     (<span class="org-keyword">setq</span> ido-enable-flex-matching t)
     (<span class="org-keyword">use-package</span> <span class="org-constant">flx-ido</span>
       <span class="org-builtin">:defer</span> 5
@@ -7460,35 +7466,38 @@ I don't use auto-complete at all, so I have set up a hook to automatically disab
 <h4 id="python"><span class="section-number-4">15.1.1</span> python <a href="#python"><svg aria-hidden="true" class="octicon octicon-link" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a></h4>
 <div class="outline-text-4" id="text-15-1-1">
 <div class="org-src-container">
-<pre class="src src-emacs-lisp">(<span class="org-keyword">use-package</span> <span class="org-constant">python</span>
+<pre class="src src-emacs-lisp">(<span class="org-keyword">defvar</span> <span class="org-variable-name">imalison:use-lsp-python</span> t)
+(<span class="org-keyword">use-package</span> <span class="org-constant">python</span>
   <span class="org-builtin">:commands</span> python-mode
   <span class="org-builtin">:mode</span> (<span class="org-string">"\\.py\\'"</span> . python-mode)
   <span class="org-builtin">:preface</span>
-  (<span class="org-keyword">defun</span> <span class="org-function-name">imalison:python-mode</span> ()
-    (<span class="org-keyword">setq</span> show-trailing-whitespace t)
-    <span class="org-comment-delimiter">;; </span><span class="org-comment">TODO: This was likely fixed and can probably be removed</span>
-    <span class="org-comment-delimiter">;; </span><span class="org-comment">Somehow this is sometimes set to jedi:ac-setup which we</span>
-    <span class="org-comment-delimiter">;; </span><span class="org-comment">don't want. This binding avoids starting auto-complete mode.</span>
-    (<span class="org-keyword">let</span> ((jedi:setup-function nil))
-      (jedi:setup))
+  (<span class="org-keyword">progn</span>
+        (<span class="org-keyword">defun</span> <span class="org-function-name">imalison:jedi-setup</span> ()
+          <span class="org-comment-delimiter">;; </span><span class="org-comment">TODO: This was likely fixed and can probably be removed</span>
+          <span class="org-comment-delimiter">;; </span><span class="org-comment">Somehow this is sometimes set to jedi:ac-setup which we</span>
+          <span class="org-comment-delimiter">;; </span><span class="org-comment">don't want. This binding avoids starting auto-complete mode.</span>
+          (<span class="org-keyword">let</span> ((jedi:setup-function nil))
+                (jedi:setup))
 
-    <span class="org-comment-delimiter">;; </span><span class="org-comment">XXX: This has become pretty annoying</span>
-    <span class="org-comment-delimiter">;; </span><span class="org-comment">(add-hook 'before-save-hook 'pyimport-remove-unused t t)</span>
+          <span class="org-comment-delimiter">;; </span><span class="org-comment">XXX: This has become pretty annoying</span>
+          <span class="org-comment-delimiter">;; </span><span class="org-comment">(add-hook 'before-save-hook 'pyimport-remove-unused t t)</span>
 
-    <span class="org-comment-delimiter">;; </span><span class="org-comment">Ensure company is active</span>
-    (company-mode +1)
-    <span class="org-comment-delimiter">;; </span><span class="org-comment">Only use company-jedi for completion</span>
-    (set (make-local-variable 'company-backends) '(company-jedi))
+          <span class="org-comment-delimiter">;; </span><span class="org-comment">Only use company-jedi for completion</span>
+          (set (make-local-variable 'company-backends) '(company-jedi)))
 
-    <span class="org-comment-delimiter">;; </span><span class="org-comment">Remove default python completion, as we are going to rely on</span>
-    <span class="org-comment-delimiter">;; </span><span class="org-comment">company-jedi.</span>
-    (remove-hook 'completion-at-point-functions
-                 'python-completion-complete-at-point 'local))
+        (<span class="org-keyword">defun</span> <span class="org-function-name">imalison:python-mode</span> ()
+          (<span class="org-keyword">setq</span> show-trailing-whitespace t)
+          <span class="org-comment-delimiter">;; </span><span class="org-comment">Remove default python completion, as we are going to rely on</span>
+          <span class="org-comment-delimiter">;; </span><span class="org-comment">company-jedi or company-lsp.</span>
+          <span class="org-comment-delimiter">;; </span><span class="org-comment">(remove-hook 'completion-at-point-functions</span>
+          <span class="org-comment-delimiter">;;              </span><span class="org-comment">'python-completion-complete-at-point 'local)</span>
+          (<span class="org-keyword">unless</span> imalison:use-lsp-python
+                (imalison:jedi-setup))))
   <span class="org-builtin">:config</span>
   (<span class="org-keyword">progn</span>
-    (<span class="org-keyword">use-package</span> <span class="org-constant">sphinx-doc</span>)
-    (<span class="org-keyword">unbind-key</span> <span class="org-string">"C-j"</span> python-mode-map)
-    (add-hook 'python-mode-hook #'imalison:python-mode)))
+        (<span class="org-keyword">use-package</span> <span class="org-constant">sphinx-doc</span>)
+        (<span class="org-keyword">unbind-key</span> <span class="org-string">"C-j"</span> python-mode-map)
+        (add-hook 'python-mode-hook #'imalison:python-mode)))
 </pre>
 </div>
 </div>
@@ -8068,13 +8077,13 @@ The following is taken from <a href="https://github.com/syl20bnr/spacemacs/blob/
   (<span class="org-keyword">progn</span>
     (<span class="org-keyword">use-package</span> <span class="org-constant">ensime</span>
       <span class="org-builtin">:demand</span> t
-      <span class="org-builtin">:pin</span> melpa-stable
       <span class="org-builtin">:bind</span> (<span class="org-builtin">:map</span> ensime-mode-map
                   (<span class="org-string">"M-,"</span> . ensime-pop-find-definition-stack))
       <span class="org-builtin">:commands</span> ensime-mode
       <span class="org-builtin">:config</span>
       (<span class="org-keyword">progn</span>
-        (<span class="org-keyword">setq</span> ensime-startup-snapshot-notification nil)))
+        (<span class="org-keyword">setq</span> ensime-startup-snapshot-notification nil
+              ensime-startup-notification nil)))
     (add-hook 'scala-mode-hook 'ensime-scala-mode-hook)
     (<span class="org-keyword">setq</span> scala-indent:align-parameters t)))
 </pre>
@@ -8118,7 +8127,7 @@ The following is taken from <a href="https://github.com/syl20bnr/spacemacs/blob/
             indent-tabs-mode nil
             js2-indent-switch-body t)
       <span class="org-comment-delimiter">;; </span><span class="org-comment">(edconf-find-file-hook) ;; Make sure that editorconfig takes precedence</span>
-      (tern-mode t)
+      <span class="org-comment-delimiter">;; </span><span class="org-comment">(tern-mode t)</span>
       (<span class="org-keyword">when</span> nil (skewer-mode)) <span class="org-comment-delimiter">;; </span><span class="org-comment">TODO: reenable</span>
       (<span class="org-keyword">setq</span> imenu-create-index-function
             (<span class="org-keyword">lambda</span> ()
@@ -10220,6 +10229,12 @@ I had to disable this mode because something that it does messes with coding set
 <pre class="src src-emacs-lisp">(<span class="org-keyword">use-package</span> <span class="org-constant">dtrt-indent</span>
   <span class="org-builtin">:diminish</span> 'dtrt-indent-mode
   <span class="org-builtin">:commands</span> 'dtrt-indent-mode
+  <span class="org-builtin">:preface</span>
+  (<span class="org-keyword">progn</span>
+    (<span class="org-keyword">defun</span> <span class="org-function-name">dtrt-indent-force-adapt</span> ()
+      (<span class="org-keyword">interactive</span>)
+      (<span class="org-keyword">setq</span> dtrt-indent-original-indent nil)
+      (dtrt-indent-adapt)))
   <span class="org-builtin">:init</span> (add-hook 'prog-mode-hook 'dtrt-indent-mode)
   <span class="org-builtin">:config</span>
   (<span class="org-keyword">progn</span>
