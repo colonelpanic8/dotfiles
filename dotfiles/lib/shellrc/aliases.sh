@@ -10,6 +10,7 @@ alias reload_tmux='tmux source-file ~/.tmux.conf'
 alias ssh='ssh -A '
 alias dusage='du -ch -d 0'
 alias subl='reattach-to-user-namespace subl'
+alias stack-profile='stack --work-dir .stack-work-profile --profile'
 
 # enables the sudoing of aliases.
 alias sudo='sudo '
