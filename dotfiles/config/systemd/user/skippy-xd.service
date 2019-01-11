@@ -6,7 +6,7 @@ After=taffybar.service
 [Service]
 Type=simple
 ExecStart=/usr/bin/env skippy-xd --start-daemon
-ExecStop=/usr/bin/pkill skippy-xd
+ExecStop=/usr/bin/env pkill skippy-xd
 
 [Install]
 WantedBy=wm.target

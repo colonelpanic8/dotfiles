@@ -1,4 +1,3 @@
-{-# LANGUAGE PackageImports #-}
 {-# LANGUAGE OverloadedStrings #-}
 module Main where
 
@@ -100,10 +99,6 @@ logDebug = do
   workspacesLogger <- getLogger "System.Taffybar.Widget.Workspaces"
   saveGlobalLogger $ setLevel WARNING workspacesLogger
 
--- github = do
---   Right (token, _) <- passGet "github-token"
---   githubNotificationsNew $ defaultGithubConfig $ Auth.OAuth $ BS.pack token
-
 main = do
   homeDirectory <- getHomeDirectory
   -- logDebug
@@ -116,15 +111,8 @@ main = do
       highContrastDirectory =
         "/" </> "usr" </> "share" </> "icons" </> "HighContrast" </> "256x256"
       inHighContrastDirectory file = highContrastDirectory </> file
-      getIconFileName w@WindowData {windowTitle = title, windowClass = klass}
-        -- | "URxvt" `isInfixOf` klass = Just "urxvt.png"
-        -- | "Termite" `isInfixOf` klass = Just "urxvt.png"
-        -- | "Kodi" `isInfixOf` klass = Just "kodi.png"
-        | "@gmail.com" `isInfixOf` title &&
-            "chrome" `isInfixOf` klass && "Gmail" `isInfixOf` title =
-          Just "gmail.png"
-        | otherwise = Nothing
       myIcons = scaledWindowIconPixbufGetter $
+                getWindowIconPixbufFromChrome <|||>
                 unscaledDefaultGetWindowIconPixbuf <|||>
                 (\size _ -> lift $ loadPixbufByName size "application-default-icon")
       cpu = pollingGraphNew cpuCfg 0.5 cpuCallback
@@ -156,12 +144,11 @@ main = do
               , batteryIconNew
               , textClockNew Nothing "%a %b %_d %r" 1
               , sniTrayNew
-          -- , github
               , cpu
               , mem
               , networkGraphNew netCfg Nothing
-          -- , networkMonitorNew defaultNetFormat Nothing >>= setMinWidth 200
-          -- , fsMonitorNew 60 ["/dev/sdd2"]
+              -- , networkMonitorNew defaultNetFormat Nothing >>= setMinWidth 200
+              -- , fsMonitorNew 60 ["/dev/sdd2"]
               , mpris2New
               ]
         , barPosition = Top
@@ -169,9 +156,10 @@ main = do
         , barHeight = 45
         }
       simpleTaffyConfig = baseConfig
-        -- { endWidgets = []
+        { centerWidgets = map (>>= buildContentsBox) []
+        -- , endWidgets = map (>>= buildContentsBox) [ sniTrayNew,  mpris2New ]
         -- , startWidgets = [flip widgetSetClass "Workspaces" =<< workspaces]
-        -- }
+        }
   startTaffybar $
     appendHook notifySystemD $
     appendHook (void $ getHost False) $

@@ -286,13 +286,16 @@ This had to be disabled because it was causing a bunch of issues with projectile
 
 This solution only applies it to projectile-find-file
 #+BEGIN_SRC emacs-lisp
-
 (defun imalison:call-with-quick-shell-command (fn &rest args)
-  (noflet ((shell-command-to-string (&rest args)
-                                    (or (apply 'imalison:try-call-process args) (apply this-fn args))))
+  (noflet
+    ((shell-command-to-string (&rest args)
+                              (condition-case _e
+                                  (or (apply 'imalison:try-call-process args) (apply this-fn args))
+                                (error (apply this-fn args)))))
     (apply fn args)))
 
-(advice-add 'projectile-find-file :around 'imalison:call-with-quick-shell-command)
+;; I've had to disable this becuase newer versions of projectile use a ton of shell commands
+;; (advice-add 'projectile-files-via-ext-command :around 'imalison:call-with-quick-shell-command)
 #+END_SRC
 ** Set EMACS environment variable
 Emacs cask seems to depend on the EMACS environment variable being set to the
@@ -1585,6 +1588,7 @@ custom-set-faces in your custom file.
 #+BEGIN_SRC emacs-lisp
 (use-package highlight-indent-guides
   :commands highlight-indent-guides-mode
+  :diminish highlight-indent-guides-mode
   :preface
   (progn
     (add-hook 'prog-mode-hook 'highlight-indent-guides-mode))
@@ -1763,7 +1767,6 @@ bind-key and global-set-key forms.
 I use helm for almost all emacs completion
 #+BEGIN_SRC emacs-lisp -n -r
 (use-package helm-config
-  :demand t
   :diminish helm-mode
   :straight helm
   :bind (("M-y" . helm-show-kill-ring)
@@ -1771,11 +1774,11 @@ I use helm for almost all emacs completion
          ("C-x C-i" . helm-imenu)
          ("C-h a" . helm-apropos)
          ("C-c ;" . helm-recentf))
-  :diminish helm-mode
   :config
   (progn
     (setq helm-split-window-default-side 'same
           helm-exit-idle-delay 0)
+
     (use-package helm-org
       :straight nil
       :defer 10
@@ -2822,8 +2825,7 @@ The following is taken from [[https://github.com/syl20bnr/spacemacs/blob/a650877
 #+BEGIN_SRC emacs-lisp
 (use-package lsp-haskell
   :config
-  (when (executable-find "hie")
-    (add-hook 'haskell-mode-hook 'lsp-haskell-enable)))
+  (add-hook 'haskell-mode-hook 'lsp))
 #+END_SRC
 **** intero
 Intero seems to be causing hangs, so it has been disabled
@@ -3972,9 +3974,12 @@ emr (emacs refactor) provides support for refactoring in many programming langua
 ** language-server-protocol (lsp)
 #+BEGIN_SRC emacs-lisp
 (use-package lsp-mode
-  :commands lsp-mode
   :config
   (progn
+    (setq lsp-prefer-flymake nil)
+    (use-package lsp-ui
+      :config
+      (add-hook 'lsp-mode-hook 'lsp-ui-mode))
     (require 'lsp-clients)
     (add-hook 'programming-mode-hook 'lsp)))
 #+END_SRC
@@ -4292,6 +4297,7 @@ I had to disable this mode because something that it does messes with coding set
 ** dtrt-indent
 #+BEGIN_SRC emacs-lisp
 (use-package dtrt-indent
+  :diminish 'dtrt-indent-mode
   :commands 'dtrt-indent-mode
   :init (add-hook 'prog-mode-hook 'dtrt-indent-mode)
   :config
