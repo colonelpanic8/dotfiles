@@ -1767,6 +1767,7 @@ bind-key and global-set-key forms.
 I use helm for almost all emacs completion
 #+BEGIN_SRC emacs-lisp -n -r
 (use-package helm-config
+  :demand t
   :diminish helm-mode
   :straight helm
   :bind (("M-y" . helm-show-kill-ring)
@@ -1809,8 +1810,12 @@ I use helm for almost all emacs completion
             (setq helm-ag--extra-options option))))
       :config
       (progn
-        (setq helm-ag-always-set-extra-option nil)))
-    (run-with-idle-timer 1 nil 'helm-mode 1)))
+        (setq helm-ag-always-set-extra-option nil)))))
+
+(use-package helm
+  :diminish helm-mode
+  :config
+  (helm-mode +1))
 #+END_SRC
 ** helm-projectile
 #+BEGIN_SRC emacs-lisp
@@ -1912,7 +1917,8 @@ I use helm for almost all emacs completion
           ido-use-virtual-buffers t
           ido-use-filename-at-point nil
           ido-create-new-buffer 'always)
-    (ido-everywhere 1)
+    ;; This is incompatible with helm-mode
+	;; (ido-everywhere 1)
     (setq ido-enable-flex-matching t)
     (use-package flx-ido
       :defer 5
