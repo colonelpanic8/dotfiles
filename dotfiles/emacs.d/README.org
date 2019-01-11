@@ -2685,13 +2685,13 @@ The following is taken from [[https://github.com/syl20bnr/spacemacs/blob/a650877
   (progn
     (use-package ensime
       :demand t
-      :pin melpa-stable
       :bind (:map ensime-mode-map
                   ("M-," . ensime-pop-find-definition-stack))
       :commands ensime-mode
       :config
       (progn
-        (setq ensime-startup-snapshot-notification nil)))
+        (setq ensime-startup-snapshot-notification nil
+              ensime-startup-notification nil)))
     (add-hook 'scala-mode-hook 'ensime-scala-mode-hook)
     (setq scala-indent:align-parameters t)))
 #+END_SRC
@@ -2730,7 +2730,7 @@ The following is taken from [[https://github.com/syl20bnr/spacemacs/blob/a650877
             indent-tabs-mode nil
             js2-indent-switch-body t)
       ;; (edconf-find-file-hook) ;; Make sure that editorconfig takes precedence
-      (tern-mode t)
+      ;; (tern-mode t)
       (when nil (skewer-mode)) ;; TODO: reenable
       (setq imenu-create-index-function
             (lambda ()
@@ -4308,6 +4308,12 @@ I had to disable this mode because something that it does messes with coding set
 (use-package dtrt-indent
   :diminish 'dtrt-indent-mode
   :commands 'dtrt-indent-mode
+  :preface
+  (progn
+    (defun dtrt-indent-force-adapt ()
+      (interactive)
+      (setq dtrt-indent-original-indent nil)
+      (dtrt-indent-adapt)))
   :init (add-hook 'prog-mode-hook 'dtrt-indent-mode)
   :config
   (progn
