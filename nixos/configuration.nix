@@ -22,7 +22,11 @@ in
     # Append our nixpkgs-overlays.
     [ "nixpkgs-overlays=/etc/nixos/overlays-compat/" ];
 
+  # Allow all the things
   nixpkgs.config.allowUnfree = true;
+  nixpkgs.config.android_sdk.accept_license = true;
+
+  # Security and networking
   security.sudo.wheelNeedsPassword = false;
   networking.networkmanager.enable = true;
   networking.firewall.enable = false;
@@ -133,6 +137,7 @@ in
     ghc
     stack
     haskell.compiler.ghc862
+    haskell.compiler.ghc863
 
     # Scala
     sbt
