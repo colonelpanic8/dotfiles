@@ -7,6 +7,7 @@
 /dotfiles/boot/cache
 /dotfiles/chrome-remote-desktop-session
 /dotfiles/cider/.cache/
+/dotfiles/config/gtk-2.0/gtkfilechooser.ini
 /dotfiles/pip/cache/
 /dotfiles/pip/download_cache/
 /dotfiles/pip/pip.conf
@@ -18,4 +19,3 @@
 /dotfiles/vim/bundle/*
 /dotfiles/wemo/cache
 gotools
-/dotfiles/config/gtk-2.0/gtkfilechooser.ini
