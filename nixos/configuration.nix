@@ -176,8 +176,10 @@ in
     ispell
     jq
     mercurial
+    networkmanager-openvpn
     ncdu
     neofetch
+    openvpn
     pass
     patchelf
     plasma-workspace
@@ -192,6 +194,7 @@ in
     stow
     tmux
     unzip
+    usbutils
     valgrind
     wget
     wmctrl
