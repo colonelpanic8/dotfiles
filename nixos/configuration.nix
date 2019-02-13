@@ -3,13 +3,14 @@ let
   my-overlays = import ./overlays.nix;
   my-python-packages = python-packages: with python-packages; [
     appdirs
-    requests
-    virtualenv
-    ipython
     ipdb
-    virtualenvwrapper
+    ipython
     pip
     python-language-server
+    requests
+    tox
+    virtualenv
+    virtualenvwrapper
   ];
   python-with-my-packages = pkgs.python3.withPackages my-python-packages;
 in
