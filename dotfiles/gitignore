@@ -5,6 +5,7 @@
 projectile.cache
 projectile-bookmarks.eld
 .dir-locals.el
+*_flymake\.*
 # Org produces folders with temp files when editing source blocks.
 *Org Src*
 

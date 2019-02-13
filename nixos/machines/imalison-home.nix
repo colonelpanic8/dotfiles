@@ -61,6 +61,32 @@
   networking.hostName = "imalison-home";
   boot.loader.efi.canTouchEfiVariables = true;
 
+  services.samba = {
+    enable = true;
+    syncPasswordsByPam = true;
+    extraConfig = ''
+      workgroup = WORKGROUP
+      server string = smbnix
+      netbios name = smbnix
+      #use sendfile = yes
+      #max protocol = smb2
+      hosts allow = 192.168.0  localhost
+      hosts deny = 0.0.0.0/0
+    '';
+    shares = {
+      private = {
+        path = "/backups";
+        browseable = "yes";
+        "read only" = "no";
+        "guest ok" = "no";
+        "create mask" = "0644";
+        "directory mask" = "0755";
+        "force user" = "username";
+        "force group" = "groupname";
+      };
+    };
+  };
+
   services.xserver = {
     screenSection = ''
       DefaultDepth 24

@@ -31,8 +31,10 @@ xVisibleProp = getAtom "_XMONAD_VISIBLE_WORKSPACES"
 -- | Add support for the \"Current Layout\" and \"Visible Workspaces\" custom
 -- hints to the given config.
 pagerHints :: XConfig a -> XConfig a
-pagerHints c = c { handleEventHook = handleEventHook c +++ pagerHintsEventHook
-           , logHook = logHook c +++ pagerHintsLogHook }
+pagerHints c =
+  c { handleEventHook = handleEventHook c +++ pagerHintsEventHook
+    , logHook = logHook c +++ pagerHintsLogHook
+    }
   where x +++ y = x `mappend` y
 
 -- | Update the current values of both custom hints.
