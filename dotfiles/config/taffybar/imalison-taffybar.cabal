@@ -27,11 +27,13 @@ executable imalison-taffybar
                      , gtk-sni-tray
                      , gtk-strut
                      , haskell-gi-base
+                     , hostname
                      , hslogger
                      , process
                      , split
                      , taffybar
                      , transformers
+                     , xdg-basedir
                      , xmonad-contrib>=0.13
                      , xmonad>=0.13
   default-language:    Haskell2010

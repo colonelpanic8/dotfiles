@@ -11,7 +11,7 @@ import           Data.List
 import           Data.List.Split
 import qualified Data.Map as M
 import           Data.Maybe
-import qualified GitHub.Auth as Auth
+import           Network.HostName
 import           StatusNotifier.Tray
 import           System.Directory
 import           System.Environment
@@ -30,6 +30,7 @@ import           System.Taffybar.Information.CPU
 import           System.Taffybar.Information.EWMHDesktopInfo
 import           System.Taffybar.Information.Memory
 import           System.Taffybar.Information.X11DesktopInfo
+import           System.Environment.XDG.BaseDir
 import           System.Taffybar.SimpleConfig
 import           System.Taffybar.Util
 import           System.Taffybar.Widget
@@ -99,8 +100,16 @@ logDebug = do
   workspacesLogger <- getLogger "System.Taffybar.Widget.Workspaces"
   saveGlobalLogger $ setLevel WARNING workspacesLogger
 
+cssFileByHostname =
+  [ ("uber-loaner", "uber-loaner.css")
+  , ("imalison-home", "taffybar.css")
+  ]
+
 main = do
+  hostName <- getHostName
   homeDirectory <- getHomeDirectory
+  let cssFileName = lookup hostName cssFileByHostname
+  cssFilePath <- traverse (getUserConfigFile "taffybar") cssFileName
   -- logDebug
   -- logM "What" WARNING "Why"
   -- enableLogger "System.Taffybar.Widget.Util" DEBUG
@@ -153,7 +162,8 @@ main = do
               ]
         , barPosition = Top
         , barPadding = 0
-        , barHeight = 45
+        , barHeight = 30
+        , cssPath = cssFilePath
         }
       simpleTaffyConfig = baseConfig
         { centerWidgets = map (>>= buildContentsBox) []
@@ -163,11 +173,6 @@ main = do
   startTaffybar $
     appendHook notifySystemD $
     appendHook (void $ getHost False) $
-    withBatteryRefresh $
     withLogServer $
     withToggleServer $
     toTaffyConfig simpleTaffyConfig
-
--- Local Variables:
--- flycheck-ghc-args: ("-Wno-missing-signatures")
--- End:
