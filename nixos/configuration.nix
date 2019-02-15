@@ -235,6 +235,7 @@ in
   programs.adb.enable = true;
 
   services.openssh.enable = true;
+
   services.avahi = {
     enable = true;
     nssmdns = true;
@@ -244,8 +245,13 @@ in
       userServices = true;
     };
   };
+
   services.gnome3.at-spi2-core.enable = true;
+
   services.kbfs.enable = true;
+
+  services.autorandr.enable = true;
+
   services.xserver = {
     exportConfiguration = true;
     enable = true;
