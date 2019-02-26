@@ -23,7 +23,6 @@ executable imalison-taffybar
                      , directory
                      , filepath
                      , gi-gtk
-                     , github
                      , gtk-sni-tray
                      , gtk-strut
                      , haskell-gi-base
