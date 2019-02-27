@@ -97,7 +97,8 @@ in
     termite
     vlc
     xfce.thunar
-    zoom
+    wire-desktop
+    zoom-us
 
     # Appearance
     numix-icon-theme-circle
