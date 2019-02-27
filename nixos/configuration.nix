@@ -97,7 +97,7 @@ in
     vlc
     xfce.thunar
     wire-desktop
-    zoom
+    zoom-us
 
     # Appearance
     numix-icon-theme-circle
