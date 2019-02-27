@@ -99,6 +99,12 @@ logDebug = do
   saveGlobalLogger $ setLevel DEBUG logger2
   workspacesLogger <- getLogger "System.Taffybar.Widget.Workspaces"
   saveGlobalLogger $ setLevel WARNING workspacesLogger
+  -- logDebug
+  -- logM "What" WARNING "Why"
+  -- enableLogger "System.Taffybar.Widget.Util" DEBUG
+  -- enableLogger "System.Taffybar.Information.XDG.DesktopEntry" DEBUG
+  -- enableLogger "System.Taffybar.WindowIcon" DEBUG
+  -- enableLogger "System.Taffybar.Widget.Generic.PollingLabel" DEBUG
 
 cssFileByHostname =
   [ ("uber-loaner", "uber-loaner.css")
@@ -108,24 +114,14 @@ cssFileByHostname =
 main = do
   hostName <- getHostName
   homeDirectory <- getHomeDirectory
-  let cssFileName = lookup hostName cssFileByHostname
-  cssFilePath <- traverse (getUserConfigFile "taffybar") cssFileName
-  -- logDebug
-  -- logM "What" WARNING "Why"
-  -- enableLogger "System.Taffybar.Widget.Util" DEBUG
-  -- enableLogger "System.Taffybar.Information.XDG.DesktopEntry" DEBUG
-  -- enableLogger "System.Taffybar.WindowIcon" DEBUG
-  let resourcesDirectory = homeDirectory </> ".lib" </> "resources"
-      inResourcesDirectory file = resourcesDirectory </> file
-      highContrastDirectory =
-        "/" </> "usr" </> "share" </> "icons" </> "HighContrast" </> "256x256"
-      inHighContrastDirectory file = highContrastDirectory </> file
+  cssFilePath <-
+    traverse (getUserConfigFile "taffybar") $ lookup hostName cssFileByHostname
+  let cpuGraph = pollingGraphNew cpuCfg 5 cpuCallback
+      memoryGraph = pollingGraphNew memCfg 5 memCallback
       myIcons = scaledWindowIconPixbufGetter $
                 getWindowIconPixbufFromChrome <|||>
                 unscaledDefaultGetWindowIconPixbuf <|||>
                 (\size _ -> lift $ loadPixbufByName size "application-default-icon")
-      cpu = pollingGraphNew cpuCfg 0.5 cpuCallback
-      mem = pollingGraphNew memCfg 1 memCallback
       layout = layoutNew defaultLayoutConfig
       windows = windowsNew defaultWindowsConfig
       notifySystemD = void $ runCommandFromPath ["systemd-notify", "--ready"]
@@ -135,40 +131,50 @@ main = do
         , underlinePadding = 2
         , minIcons = 1
         , getWindowIconPixbuf = myIcons
-        -- , windowIconSize = 31
         , widgetGap = 0
         , showWorkspaceFn = hideEmpty
         , updateRateLimitMicroseconds = 100000
         , labelSetter = workspaceNamesLabelSetter
         }
       workspaces = workspacesNew myWorkspacesConfig
-      baseConfig =
-        defaultSimpleTaffyConfig
-        { startWidgets =
-            workspaces : map (>>= buildContentsBox) [layout, windows]
-        , endWidgets =
-            map
-              (>>= buildContentsBox)
+      fullEndWidgets =
+        map (>>= buildContentsBox)
               [ textBatteryNew "$percentage$%"
               , batteryIconNew
-              , textClockNew Nothing "%a %b %_d %r" 1
+              , textClockNewWith defaultClockConfig
               , sniTrayNew
-              , cpu
-              , mem
+              , cpuGraph
+              , memoryGraph
               , networkGraphNew netCfg Nothing
               -- , networkMonitorNew defaultNetFormat Nothing >>= setMinWidth 200
               -- , fsMonitorNew 60 ["/dev/sdd2"]
               , mpris2New
               ]
+      shortLaptopEndWidgets =
+        map (>>= buildContentsBox)
+                       [ batteryIconNew
+                       , textBatteryNew "$percentage$%"
+                       , textClockNewWith defaultClockConfig
+                       , sniTrayNew
+                       ]
+      baseConfig =
+        defaultSimpleTaffyConfig
+        { startWidgets =
+            workspaces : map (>>= buildContentsBox) [layout, windows]
+        , endWidgets = fullEndWidgets
         , barPosition = Top
         , barPadding = 0
         , barHeight = 30
         , cssPath = cssFilePath
         }
+      selectedConfig = fromMaybe baseConfig $
+        lookup hostName
+        [ ("uber-loaner", baseConfig { endWidgets = shortLaptopEndWidgets } )
+        , ("imalison-home", baseConfig { endWidgets = fullEndWidgets } )
+        ]
       simpleTaffyConfig = baseConfig
         { centerWidgets = map (>>= buildContentsBox) []
-        -- , endWidgets = map (>>= buildContentsBox) [ sniTrayNew,  mpris2New ]
-        -- , startWidgets = [flip widgetSetClass "Workspaces" =<< workspaces]
+        -- , endWidgets = []
         }
   startTaffybar $
     appendHook notifySystemD $
