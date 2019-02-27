@@ -14,6 +14,9 @@
   boot.loader.grub.efiSupport = true;
   boot.loader.grub.device = "nodev";
   boot.loader.grub.enable = true;
+  services.xserver = {
+    libinput.enable = true;
+  };
   hardware.facetimehd.enable = true;
 
   fileSystems."/boot" = {
