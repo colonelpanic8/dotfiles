@@ -78,25 +78,25 @@ in
 
     # Applications
     calibre
+    dfeet
     discord
     emacs
     firefox
-    kleopatra
     gitter
     google-chrome
-    dfeet
     hexchat
-    quassel
     keybase-gui-fixed
+    kleopatra
     kodi
     lxappearance
-    rxvt_unicode
     pulseeffects
+    quassel
+    rxvt_unicode
+    simplescreenrecorder
     spotify
     termite
     vlc
     xfce.thunar
-    wire-desktop
     zoom
 
     # Appearance
