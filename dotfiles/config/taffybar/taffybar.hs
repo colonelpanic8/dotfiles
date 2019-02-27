@@ -139,9 +139,7 @@ main = do
       workspaces = workspacesNew myWorkspacesConfig
       fullEndWidgets =
         map (>>= buildContentsBox)
-              [ textBatteryNew "$percentage$%"
-              , batteryIconNew
-              , textClockNewWith defaultClockConfig
+              [ textClockNewWith defaultClockConfig
               , sniTrayNew
               , cpuGraph
               , memoryGraph
@@ -170,9 +168,9 @@ main = do
       selectedConfig = fromMaybe baseConfig $
         lookup hostName
         [ ("uber-loaner", baseConfig { endWidgets = shortLaptopEndWidgets } )
-        , ("imalison-home", baseConfig { endWidgets = fullEndWidgets } )
+        , ("imalison-home", baseConfig { endWidgets = fullEndWidgets, barHeight = 42 } )
         ]
-      simpleTaffyConfig = baseConfig
+      simpleTaffyConfig = selectedConfig
         { centerWidgets = map (>>= buildContentsBox) []
         -- , endWidgets = []
         }
