@@ -211,6 +211,7 @@ in
     wget
     wmctrl
     xorg.xev
+    xorg.xwininfo
     zsh
 
     # Nix
