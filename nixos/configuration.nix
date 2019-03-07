@@ -163,12 +163,16 @@ in
     boot
     leiningen
 
+    # Ruby
+    ruby
+
     # Tools
     automake
     bazaar
     binutils
     dex
     dpkg
+    emacs26Packages.cask
     fd
     file
     gcc
