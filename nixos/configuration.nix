@@ -130,7 +130,7 @@ in
     rofi-pass
     skippy-xd
     synergy
-    udiskie-appindicator
+    udiskie
     volnoti
     xclip
     xdotool
@@ -147,7 +147,6 @@ in
     cabal2nix
     ghc
     stack
-    haskell.compiler.ghc862
     haskell.compiler.ghc863
 
     # Scala
