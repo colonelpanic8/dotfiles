@@ -5,9 +5,11 @@ let
     appdirs
     ipdb
     ipython
+    numpy
     pip
     python-language-server
     requests
+    tensorflow
     tox
     virtualenv
     virtualenvwrapper
