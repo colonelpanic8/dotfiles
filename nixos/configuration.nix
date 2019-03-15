@@ -130,9 +130,14 @@ in
     synergy
     udiskie-appindicator
     volnoti
+
+    # xorg
+    wmctrl
     xclip
     xdotool
+    xorg.xev
     xorg.xkbcomp
+    xorg.xwininfo
     xsettingsd
 
     # Audio
@@ -209,9 +214,6 @@ in
     usbutils
     valgrind
     wget
-    wmctrl
-    xorg.xev
-    xorg.xwininfo
     zsh
 
     # Nix
