@@ -16,16 +16,6 @@ self: super:
       libappindicator-gtk3
     ];
   });
-  udiskie-appindicator = super.udiskie.overrideAttrs (oldAttrs: rec {
-    version = "1.7.5";
-    src = super.fetchFromGitHub {
-      owner = "coldfix";
-      repo = "udiskie";
-      rev = version;
-      sha256 = "1mcdn8ha5d5nsmrzk6xnnsqrmk94rdrzym9sqm38zk5r8gpyl1k4";
-    };
-    propagatedBuildInputs = oldAttrs.propagatedBuildInputs ++ [self.libappindicator-gtk3];
-  });
   pasystray-appindicator = super.pasystray.overrideAttrs (oldAttrs: rec {
     buildInputs = oldAttrs.buildInputs ++ [self.libappindicator-gtk3];
   });
