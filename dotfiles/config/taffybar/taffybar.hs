@@ -165,11 +165,15 @@ main = do
         , barHeight = 30
         , cssPath = cssFilePath
         }
-      selectedConfig = fromMaybe baseConfig $
-        lookup hostName
-        [ ("uber-loaner", baseConfig { endWidgets = shortLaptopEndWidgets } )
-        , ("imalison-home", baseConfig { endWidgets = fullEndWidgets, barHeight = 42 } )
-        ]
+      selectedConfig =
+        fromMaybe baseConfig $ lookup hostName
+          [ ( "uber-loaner"
+            , baseConfig { endWidgets = shortLaptopEndWidgets }
+            )
+          , ( "imalison-home"
+            , baseConfig { endWidgets = fullEndWidgets, barHeight = 42 }
+          )
+          ]
       simpleTaffyConfig = selectedConfig
         { centerWidgets = map (>>= buildContentsBox) []
         -- , endWidgets = []
