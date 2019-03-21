@@ -176,11 +176,12 @@ main = do
           ]
       simpleTaffyConfig = selectedConfig
         { centerWidgets = map (>>= buildContentsBox) []
-        -- , endWidgets = []
+        , endWidgets = []
+        , startWidgets = []
         }
   startTaffybar $
     appendHook notifySystemD $
-    appendHook (void $ getHost False) $
+    appendHook (getHost False) $
     withLogServer $
     withToggleServer $
     toTaffyConfig simpleTaffyConfig
