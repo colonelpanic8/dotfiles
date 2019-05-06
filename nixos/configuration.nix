@@ -19,11 +19,6 @@ in
 {
   nixpkgs.overlays = [ my-overlays ];
   # XXX: This ensures that all nix tools pick up the overlays that are set here
-  nix.nixPath =
-    # Prepend default nixPath values.
-    options.nix.nixPath.default ++
-    # Append our nixpkgs-overlays.
-    [ "nixpkgs-overlays=/etc/nixos/overlays-compat/" ];
 
   # Allow all the things
   nixpkgs.config.allowUnfree = true;
@@ -281,12 +276,6 @@ in
       }];
     };
     displayManager = {
-      # lightdm = {
-      #   enable = true;
-      #   extraSeatDefaults=''
-      #     greeter-hide-users=false
-      #   '';
-      # };
       sddm = {
         enable = true;
       };
@@ -297,7 +286,6 @@ in
 
   };
 
-  # Define a user account. Don't forget to set a password with ‘passwd’.
   users.extraUsers = let
     extraGroups = [
       "audio"
