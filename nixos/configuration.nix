@@ -241,6 +241,8 @@ in
   programs.gnupg.agent = { enable = true; enableSSHSupport = true; };
   programs.adb.enable = true;
 
+  services.acpid.enable = true;
+
   services.openssh.enable = true;
 
   services.avahi = {
