@@ -1,5 +1,6 @@
 { config, pkgs, options, ... }:
 let
+  all-hies = import (fetchTarball "https://github.com/infinisil/all-hies/tarball/master") {};
   my-overlays = import ./overlays.nix;
   my-python-packages = python-packages: with python-packages; [
     appdirs
@@ -146,6 +147,7 @@ in
     ghc
     stack
     haskell.compiler.ghc863
+    (all-hies.selection { selector = p: { inherit (p) ghc864 ghc863 ghc843; }; })
 
     # Scala
     sbt
