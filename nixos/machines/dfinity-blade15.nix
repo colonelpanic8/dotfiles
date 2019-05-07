@@ -7,6 +7,7 @@
   imports =
     [ <nixpkgs/nixos/modules/installer/scan/not-detected.nix>
     ../configuration.nix
+    ../dfinity.nix
     ];
 
   boot.initrd.availableKernelModules = [ "xhci_pci" "nvme" "usb_storage" "usbhid" "sd_mod" ];
