@@ -147,9 +147,8 @@ in
     cabal2nix
     ghc
     stack
-    haskell.compiler.ghc863
-    (all-hies.selection { selector = p: { inherit (p) ghc864 ghc863 ghc843; }; })
-    # (all-hies.selection { selector = p: { inherit (p) ghc864 ghc863 ghc843; }; })
+    haskellPackages.hasktags
+    # haskell.compiler.ghc863
 
     # Scala
     sbt
@@ -174,6 +173,7 @@ in
     bazaar
     binutils
     dex
+    direnv
     dpkg
     emacs26Packages.cask
     fd
