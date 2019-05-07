@@ -93,6 +93,8 @@ enableLogger logger level = do
   saveGlobalLogger $ setLevel level logger
 
 logDebug = do
+  logger3 <- getLogger "System.Taffybar"
+  saveGlobalLogger $ setLevel DEBUG logger3
   logger <- getLogger "System.Taffybar.Widget.Generic.AutoSizeImage"
   saveGlobalLogger $ setLevel DEBUG logger
   logger2 <- getLogger "StatusNotifier.Tray"
@@ -109,6 +111,7 @@ logDebug = do
 cssFileByHostname =
   [ ("uber-loaner", "uber-loaner.css")
   , ("imalison-home", "taffybar.css")
+  , ("ivanm-dfinity-razr", "ivanm-dfinity-razr.css")
   ]
 
 main = do
@@ -172,16 +175,19 @@ main = do
             )
           , ( "imalison-home"
             , baseConfig { endWidgets = fullEndWidgets, barHeight = 42 }
-          )
+            )
+          , ( "ivanm-dfinity-razr"
+            , baseConfig { endWidgets = fullEndWidgets, barHeight = 42 }
+            )
           ]
       simpleTaffyConfig = selectedConfig
         { centerWidgets = map (>>= buildContentsBox) []
-        , endWidgets = []
-        , startWidgets = []
+        -- , endWidgets = []
+        -- , startWidgets = []
         }
   startTaffybar $
     appendHook notifySystemD $
-    appendHook (getHost False) $
+    appendHook (void $ getHost False) $
     withLogServer $
     withToggleServer $
     toTaffyConfig simpleTaffyConfig

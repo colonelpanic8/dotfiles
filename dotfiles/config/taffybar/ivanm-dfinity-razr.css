@@ -24,11 +24,11 @@
 }
 
 .inner-pad {
-	padding: 2px;
+	padding: 3px;
 }
 
 .contents {
-	padding: 2px;
+	padding: 3px;
 	transition: background-color .5s;
 	border-radius: 6px;
 }

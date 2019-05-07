@@ -44,7 +44,8 @@ extra-deps:
 - stm-2.5.0.0
 - time-units-1.0.0
 - xml-helpers-1.0.0
-resolver: lts-13.2
+- broadcast-chan-0.2.0.2
+resolver: lts-13.19
 allow-newer: true
 nix:
   packages:
