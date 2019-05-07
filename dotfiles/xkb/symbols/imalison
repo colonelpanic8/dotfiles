@@ -9,3 +9,9 @@ xkb_symbols "home_as_hyper" {
     replace key <HOME> { [ Hyper_L ] };
     modifier_map Mod3 { <HOME>, Hyper_L, Hyper_R };
 };
+
+partial modifier_keys
+xkb_symbols "ralt_as_hyper" {
+    replace key <RALT> { [ Hyper_L, Hyper_L ] };
+	modifier_map Mod3 { <RALT>, Hyper_L };
+};
