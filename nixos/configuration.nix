@@ -123,6 +123,7 @@ in
     rofi
     rofi-pass
     skippy-xd
+    slack
     synergy
     udiskie
     volnoti
@@ -148,6 +149,7 @@ in
     stack
     haskell.compiler.ghc863
     (all-hies.selection { selector = p: { inherit (p) ghc864 ghc863 ghc843; }; })
+    # (all-hies.selection { selector = p: { inherit (p) ghc864 ghc863 ghc843; }; })
 
     # Scala
     sbt
