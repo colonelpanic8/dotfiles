@@ -184,6 +184,7 @@ in
     gitAndTools.git-fame
     gitAndTools.hub
     gitFull
+    glxinfo
     gnumake
     gnupg
     htop
@@ -197,6 +198,7 @@ in
     openvpn
     pass
     patchelf
+    pciutils
     plasma-workspace
     powertop
     pscircle
