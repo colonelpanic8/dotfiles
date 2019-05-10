@@ -4,7 +4,6 @@
     gimp
     android-studio
     texlive.combined.scheme-full
-    slack
   ];
   boot.extraModulePackages = with pkgs; [ xboxdrv ];
 }
