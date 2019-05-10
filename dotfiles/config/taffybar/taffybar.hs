@@ -158,6 +158,17 @@ main = do
                        , textClockNewWith defaultClockConfig
                        , sniTrayNew
                        ]
+      longLaptopWidgets =
+        map (>>= buildContentsBox)
+              [ batteryIconNew
+              , textBatteryNew "$percentage$%"
+              , textClockNewWith defaultClockConfig
+              , sniTrayNew
+              , cpuGraph
+              , memoryGraph
+              , networkGraphNew netCfg Nothing
+              , mpris2New
+              ]
       baseConfig =
         defaultSimpleTaffyConfig
         { startWidgets =
@@ -177,7 +188,7 @@ main = do
             , baseConfig { endWidgets = fullEndWidgets, barHeight = 42 }
             )
           , ( "ivanm-dfinity-razr"
-            , baseConfig { endWidgets = fullEndWidgets, barHeight = 42 }
+            , baseConfig { endWidgets = longLaptopWidgets, barHeight = 42 }
             )
           ]
       simpleTaffyConfig = selectedConfig
