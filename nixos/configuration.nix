@@ -88,6 +88,7 @@ in
     pulseeffects
     quassel
     rxvt_unicode
+    slack-appindicator
     simplescreenrecorder
     spotify
     termite
@@ -123,7 +124,6 @@ in
     rofi
     rofi-pass
     skippy-xd
-    slack
     synergy
     udiskie
     volnoti
