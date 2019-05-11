@@ -6,6 +6,7 @@ let
     ipdb
     ipython
     numpy
+    openpyxl
     pip
     python-language-server
     requests
@@ -45,8 +46,6 @@ in
     defaultLocale = "en_US.UTF-8";
   };
 
-  # Set your time zone.
-  # TODO: this should be set dynamically
   time.timeZone = "America/Los_Angeles";
 
   fonts = {
@@ -88,6 +87,7 @@ in
     keybase-gui-fixed
     kleopatra
     kodi
+    libreoffice
     lxappearance
     pulseeffects
     quassel
@@ -259,6 +259,8 @@ in
 
   services.autorandr.enable = true;
 
+  services.locate.enable = true;
+
   services.xserver = {
     exportConfiguration = true;
     enable = true;
@@ -279,12 +281,6 @@ in
       }];
     };
     displayManager = {
-      # lightdm = {
-      #   enable = true;
-      #   extraSeatDefaults=''
-      #     greeter-hide-users=false
-      #   '';
-      # };
       sddm = {
         enable = true;
       };
