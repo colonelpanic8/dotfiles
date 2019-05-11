@@ -1,5 +1,6 @@
 { config, pkgs, options, ... }:
 let
+  all-hies = import (fetchTarball "https://github.com/infinisil/all-hies/tarball/master") {};
   my-overlays = import ./overlays.nix;
   my-python-packages = python-packages: with python-packages; [
     appdirs
@@ -20,11 +21,6 @@ in
 {
   nixpkgs.overlays = [ my-overlays ];
   # XXX: This ensures that all nix tools pick up the overlays that are set here
-  nix.nixPath =
-    # Prepend default nixPath values.
-    options.nix.nixPath.default ++
-    # Append our nixpkgs-overlays.
-    [ "nixpkgs-overlays=/etc/nixos/overlays-compat/" ];
 
   # Allow all the things
   nixpkgs.config.allowUnfree = true;
@@ -92,6 +88,7 @@ in
     pulseeffects
     quassel
     rxvt_unicode
+    slack-appindicator
     simplescreenrecorder
     spotify
     termite
@@ -150,7 +147,8 @@ in
     cabal2nix
     ghc
     stack
-    haskell.compiler.ghc863
+    haskellPackages.hasktags
+    # haskell.compiler.ghc863
 
     # Scala
     sbt
@@ -175,6 +173,7 @@ in
     bazaar
     binutils
     dex
+    direnv
     dpkg
     emacs26Packages.cask
     fd
@@ -185,6 +184,7 @@ in
     gitAndTools.git-fame
     gitAndTools.hub
     gitFull
+    glxinfo
     gnumake
     gnupg
     htop
@@ -198,6 +198,7 @@ in
     openvpn
     pass
     patchelf
+    pciutils
     plasma-workspace
     powertop
     pscircle
@@ -240,6 +241,8 @@ in
 
   programs.gnupg.agent = { enable = true; enableSSHSupport = true; };
   programs.adb.enable = true;
+
+  services.acpid.enable = true;
 
   services.openssh.enable = true;
 
@@ -291,7 +294,6 @@ in
 
   };
 
-  # Define a user account. Don't forget to set a password with ‘passwd’.
   users.extraUsers = let
     extraGroups = [
       "audio"
