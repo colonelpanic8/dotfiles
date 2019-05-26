@@ -4292,6 +4292,12 @@ I had to disable this mode because something that it does messes with coding set
     (add-to-list 'editorconfig-exclude-modes '(org-mode))
     (editorconfig-mode 1)))
 #+END_SRC
+** direnv
+#+begin_src emacs-lisp
+(use-package direnv
+  :config
+  (direnv-mode +1))
+#+end_src
 ** dtrt-indent
 #+BEGIN_SRC emacs-lisp
 (use-package dtrt-indent
