@@ -108,6 +108,7 @@ in
     # Desktop
     # haskellPackages.status-notifier-item
     autorandr
+    betterlockscreen
     blueman
     clipit
     compton
@@ -187,6 +188,7 @@ in
     glxinfo
     gnumake
     gnupg
+    gparted
     htop
     inotify-tools
     ispell
@@ -196,11 +198,13 @@ in
     ncdu
     neofetch
     openvpn
+    parallel
     pass
     patchelf
     pciutils
     plasma-workspace
     powertop
+    prometheus_2
     pscircle
     python-with-my-packages
     qt5.qttools
@@ -242,7 +246,8 @@ in
   programs.gnupg.agent = { enable = true; enableSSHSupport = true; };
   programs.adb.enable = true;
 
-  services.acpid.enable = true;
+  services.tlp.enable = true;
+  services.acpid.enable = false;
 
   services.openssh.enable = true;
 
