@@ -7,6 +7,7 @@
   imports =
     [ <nixpkgs/nixos/modules/installer/scan/not-detected.nix>
     ../configuration.nix
+    ../extra.nix
     ../dfinity.nix
     ];
 
@@ -33,7 +34,7 @@
 
   swapDevices = [ ];
 
-  networking.hostName = "ivanm-dfinity-razr";
+  networking.hostName = "ivanm-dfinity-razer";
 
   nix.maxJobs = lib.mkDefault 12;
   powerManagement.cpuFreqGovernor = lib.mkDefault "powersave";
