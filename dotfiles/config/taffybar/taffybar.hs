@@ -111,7 +111,7 @@ logDebug = do
 cssFileByHostname =
   [ ("uber-loaner", "uber-loaner.css")
   , ("imalison-home", "taffybar.css")
-  , ("ivanm-dfinity-razr", "ivanm-dfinity-razr.css")
+  , ("ivanm-dfinity-razer", "ivanm-dfinity-razer.css")
   ]
 
 main = do
@@ -158,7 +158,7 @@ main = do
                        , textClockNewWith defaultClockConfig
                        , sniTrayNew
                        ]
-      longLaptopWidgets =
+      longLaptopEndWidgets =
         map (>>= buildContentsBox)
               [ batteryIconNew
               , textBatteryNew "$percentage$%"
@@ -187,8 +187,8 @@ main = do
           , ( "imalison-home"
             , baseConfig { endWidgets = fullEndWidgets, barHeight = 42 }
             )
-          , ( "ivanm-dfinity-razr"
-            , baseConfig { endWidgets = longLaptopWidgets, barHeight = 42 }
+          , ( "ivanm-dfinity-razer"
+            , baseConfig { endWidgets = shortLaptopEndWidgets, barHeight = 42 }
             )
           ]
       simpleTaffyConfig = selectedConfig
