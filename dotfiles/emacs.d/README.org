@@ -3905,7 +3905,9 @@ I've disabled magithub because it causes magit to be super slow
   :config
   (progn
     (setq github-search-get-target-directory-for-repo-function
-          'imalison:get-projects-directory-target-from-repo)))
+          'imalison:get-projects-directory-target-from-repo
+          ;; See https://github.com/sigma/gh.el/issues/102
+          gnutls-algorithm-priority "NORMAL:-VERS-TLS1.3")))
 #+END_SRC
 *** github-clone
 #+BEGIN_SRC emacs-lisp
