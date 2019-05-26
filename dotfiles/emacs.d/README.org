@@ -2821,10 +2821,10 @@ The following is taken from [[https://github.com/syl20bnr/spacemacs/blob/a650877
        ;; Better import handling
        haskell-process-suggest-remove-import-lines t
        haskell-process-auto-import-loaded-modules nil
-       ;; Disable haskell-stylish-on-save, as it breaks flycheck highlighting.
-       ;; NOTE: May not be true anymore - taksuyu 2015-10-06
        haskell-stylish-on-save nil
-	   haskell-tags-on-save nil
+	   haskell-tags-on-save t
+	   haskell-mode-stylish-haskell-path "brittany"
+	   haskell-mode-stylish-haskell-args '("-")
 	   haskell-indent-offset 2)
     (require 'flycheck)
     (delq 'haskell-stack-ghc flycheck-checkers)
@@ -2833,6 +2833,7 @@ The following is taken from [[https://github.com/syl20bnr/spacemacs/blob/a650877
 **** haskell-ide-engine
 #+BEGIN_SRC emacs-lisp
 (use-package lsp-haskell
+  :disabled t
   :config
   (add-hook 'haskell-mode-hook 'lsp))
 #+END_SRC
@@ -2840,6 +2841,7 @@ The following is taken from [[https://github.com/syl20bnr/spacemacs/blob/a650877
 Intero seems to be causing hangs, so it has been disabled
 #+BEGIN_SRC emacs-lisp
 (use-package intero
+  :disabled t
   :after haskell-mode
   :config
   (progn
@@ -2849,6 +2851,7 @@ Intero seems to be causing hangs, so it has been disabled
 **** hindent
 #+BEGIN_SRC emacs-lisp
 (use-package hindent
+  :disabled t
   :after haskell-mode
   :bind (:map hindent-mode-map
               ("C-c d" . hindent-reformat-decl))
