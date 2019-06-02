@@ -32,6 +32,18 @@
       fsType = "vfat";
     };
 
+    systemd.services.resume-fix = {
+      description = "Fixes acpi immediate resume after suspend";
+      wantedBy = [ "multi-user.target" "post-resume.target" ];
+      after = [ "multi-user.target" "post-resume.target" ];
+      script = ''
+        if ${pkgs.gnugrep}/bin/grep -q '\bXHC\b.*\benabled\b' /proc/acpi/wakeup; then
+          echo XHC > /proc/acpi/wakeup
+        fi
+      '';
+      serviceConfig.Type = "oneshot";
+    };
+
   swapDevices = [ ];
 
   networking.hostName = "ivanm-dfinity-razer";
