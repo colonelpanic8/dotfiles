@@ -19,7 +19,9 @@ let
   taffySource = pkgs.lib.sourceByRegex ../dotfiles/config/taffybar [
     "taffybar.hs" "imalison-taffybar.cabal"
   ];
-  xmonadSource = ../dotfiles/config/xmonad;
+  xmonadSource = pkgs.lib.sourceByRegex ../dotfiles/config/xmonad [
+    "xmonad.hs" "imalison-xmonad.cabal" "PagerHints.hs" "LICENSE"
+  ];
 in
 {
   nixpkgs.overlays = [
