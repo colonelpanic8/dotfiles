@@ -1,7 +1,6 @@
 { config, pkgs, options, ... }:
 let
   all-hies = import (fetchTarball "https://github.com/infinisil/all-hies/tarball/master") {};
-  my-overlays = import ./overlays.nix;
   my-python-packages = python-packages: with python-packages; [
     appdirs
     ipdb
@@ -17,10 +16,17 @@ let
     virtualenvwrapper
   ];
   python-with-my-packages = pkgs.python3.withPackages my-python-packages;
+  taffySource = pkgs.lib.sourceByRegex ../dotfiles/config/taffybar [
+    "taffybar.hs" "imalison-taffybar.cabal"
+  ];
+  xmonadSource = ../dotfiles/config/xmonad;
 in
 {
-  nixpkgs.overlays = [ my-overlays ];
-  # XXX: This ensures that all nix tools pick up the overlays that are set here
+  nixpkgs.overlays = [
+    (import ./overlays.nix)
+    (import ../dotfiles/config/taffybar/taffybar/overlay.nix)
+    (import ../dotfiles/config/xmonad/overlay.nix)
+  ];
 
   # Allow all the things
   nixpkgs.config.allowUnfree = true;
@@ -106,7 +112,9 @@ in
     gnome-breeze
 
     # Desktop
-    # haskellPackages.status-notifier-item
+    (haskellPackages.callCabal2nix "imalison-taffybar" taffySource { })
+    (haskellPackages.callCabal2nix "imalison-xmonad" xmonadSource { })
+    haskellPackages.status-notifier-item
     autorandr
     betterlockscreen
     blueman
