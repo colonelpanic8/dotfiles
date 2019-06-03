@@ -79,6 +79,7 @@ in
 
     # Applications
     calibre
+    gnome3.cheese
     dfeet
     discord
     emacs
