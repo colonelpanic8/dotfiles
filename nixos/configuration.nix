@@ -1,6 +1,5 @@
 { config, pkgs, options, ... }:
 let
-  all-hies = import (fetchTarball "https://github.com/infinisil/all-hies/tarball/master") {};
   my-python-packages = python-packages: with python-packages; [
     appdirs
     ipdb
@@ -22,6 +21,15 @@ let
   xmonadSource = pkgs.lib.sourceByRegex ../dotfiles/config/xmonad [
     "xmonad.hs" "imalison-xmonad.cabal" "PagerHints.hs" "LICENSE"
   ];
+  notifications-tray-icon-source = pkgs.fetchFromGitHub {
+    owner = "IvanMalison";
+    repo = "notifications-tray-icon";
+    rev = "6f3b8da1d32dd655c5e484940cfb9d7e392f3235";
+    sha256 = "0ag4gqiihgyiw3dfinz7a1c1dcnj30bs62f63zyk11fs37ys93rz";
+  };
+  ntiHaskellPackages =
+    (import (notifications-tray-icon-source.outPath + "/overlay.nix"))
+    (import /home/imalison/Projects/nixpkgs {});
 in
 {
   nixpkgs.overlays = [
@@ -118,6 +126,8 @@ in
     (haskellPackages.callCabal2nix "imalison-taffybar" taffySource { })
     (haskellPackages.callCabal2nix "imalison-xmonad" xmonadSource { })
     haskellPackages.status-notifier-item
+    haskellPackages.xmonad
+    (ntiHaskellPackages.callCabal2nix "notifications-tray-icon" notifications-tray-icon-source { })
     autorandr
     betterlockscreen
     blueman
@@ -130,6 +140,7 @@ in
     lxqt.lxqt-powermanagement
     networkmanagerapplet
     customizable-notify-osd
+
     pasystray-appindicator
     pinentry
     pommed_light
@@ -160,7 +171,6 @@ in
     ghc
     stack
     haskellPackages.hasktags
-    # haskell.compiler.ghc863
 
     # Scala
     sbt
@@ -244,6 +254,7 @@ in
   # environment.variables = {
   #   GDK_PIXBUF_MODULE_FILE = "${pkgs.librsvg.out}/lib/gdk-pixbuf-2.0/2.10.0/loaders.cache";
   # };
+
   # Enabling zsh will clobber path because of the way it sets up /etc/zshenv
   # programs.zsh.enable = true;
   # Instead we just make sure to source profile from zsh
