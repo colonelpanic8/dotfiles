@@ -93,6 +93,8 @@ enableLogger logger level = do
   saveGlobalLogger $ setLevel level logger
 
 logDebug = do
+  global <- getLogger ""
+  saveGlobalLogger $ setLevel DEBUG global
   logger3 <- getLogger "System.Taffybar"
   saveGlobalLogger $ setLevel DEBUG logger3
   logger <- getLogger "System.Taffybar.Widget.Generic.AutoSizeImage"
@@ -140,9 +142,15 @@ main = do
         , labelSetter = workspaceNamesLabelSetter
         }
       workspaces = workspacesNew myWorkspacesConfig
+      myClock =
+        textClockNewWith
+        defaultClockConfig
+        { clockUpdateStrategy = RoundedTargetInterval 60 0.0
+        , clockFormatString = "%a %b %_d %I:%M %p"
+        }
       fullEndWidgets =
         map (>>= buildContentsBox)
-              [ textClockNewWith defaultClockConfig
+              [ myClock
               , sniTrayNew
               , cpuGraph
               , memoryGraph
@@ -155,8 +163,9 @@ main = do
         map (>>= buildContentsBox)
                        [ batteryIconNew
                        , textBatteryNew "$percentage$%"
-                       , textClockNewWith defaultClockConfig
+                       , myClock
                        , sniTrayNew
+                       , mpris2New
                        ]
       longLaptopEndWidgets =
         map (>>= buildContentsBox)
@@ -172,7 +181,7 @@ main = do
       baseConfig =
         defaultSimpleTaffyConfig
         { startWidgets =
-            workspaces : map (>>= buildContentsBox) [layout, windows]
+             workspaces : map (>>= buildContentsBox) [layout, windows]
         , endWidgets = fullEndWidgets
         , barPosition = Top
         , barPadding = 0

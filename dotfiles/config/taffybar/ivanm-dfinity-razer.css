@@ -5,7 +5,7 @@
 
 @define-color active-window-color @white;
 @define-color urgent-window-color @taffy-blue;
-@define-color font-color @white;
+@define-color font-color @black;
 @define-color menu-background-color @white;
 @define-color menu-font-color @black;
 

@@ -30,7 +30,7 @@ executable imalison-taffybar
                      , hslogger
                      , process
                      , split
-                     , taffybar
+                     , taffybar>=3.2.0
                      , transformers
                      , xdg-basedir
                      , xmonad-contrib>=0.13

@@ -24,12 +24,11 @@ let
   notifications-tray-icon-source = pkgs.fetchFromGitHub {
     owner = "IvanMalison";
     repo = "notifications-tray-icon";
-    rev = "6f3b8da1d32dd655c5e484940cfb9d7e392f3235";
-    sha256 = "0ag4gqiihgyiw3dfinz7a1c1dcnj30bs62f63zyk11fs37ys93rz";
+    rev = "f28288849a39feec8972a4181ce18ccdde6cc483";
+    sha256 = "11r95m316x93bs1dj0bvas8adpd0xgql2jz8a8dnzv0fv4mw7aj4";
   };
-  ntiHaskellPackages =
-    (import (notifications-tray-icon-source.outPath + "/overlay.nix"))
-    (import /home/imalison/Projects/nixpkgs {});
+  ntiOverlay = (import (notifications-tray-icon-source.outPath + "/overlay.nix"));
+  ntiHaskellPackages = (ntiOverlay pkgs pkgs).haskellPackages;
 in
 {
   nixpkgs.overlays = [
@@ -125,9 +124,10 @@ in
     # Desktop
     (haskellPackages.callCabal2nix "imalison-taffybar" taffySource { })
     (haskellPackages.callCabal2nix "imalison-xmonad" xmonadSource { })
+    (ntiHaskellPackages.callCabal2nix "notifications-tray-icon" notifications-tray-icon-source { })
     haskellPackages.status-notifier-item
     haskellPackages.xmonad
-    (ntiHaskellPackages.callCabal2nix "notifications-tray-icon" notifications-tray-icon-source { })
+
     autorandr
     betterlockscreen
     blueman
@@ -193,6 +193,7 @@ in
     # Tools
     automake
     bazaar
+    bind
     binutils
     dex
     direnv
@@ -202,8 +203,9 @@ in
     file
     gcc
     gdb
-    gitAndTools.git-sync
+    gitAndTools.git-crypt
     gitAndTools.git-fame
+    gitAndTools.git-sync
     gitAndTools.hub
     gitFull
     glxinfo
@@ -216,6 +218,7 @@ in
     jq
     mercurial
     networkmanager-openvpn
+    networkmanager_strongswan
     ncdu
     neofetch
     openvpn
