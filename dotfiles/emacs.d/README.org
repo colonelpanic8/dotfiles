@@ -945,17 +945,21 @@ this macro allows you to define a blacklist for your major mode that will
 prevent the major mode from being enabled on that file.
 #+begin_src emacs-lisp
 (defmacro imalison:add-blacklist-to-major (major-mode-fn-symbol)
-  (let ((blacklist-var-symbol (imalison:concat-symbols major-mode-fn-symbol "-blacklist"))
-        (check-blacklist-symbol (imalison:concat-symbols major-mode-fn-symbol "-check-blacklist")))
+  (let ((blacklist-var-symbol
+         (imalison:concat-symbols major-mode-fn-symbol "-blacklist"))
+        (check-blacklist-symbol
+         (imalison:concat-symbols major-mode-fn-symbol "-check-blacklist")))
     `(progn
        (defvar ,blacklist-var-symbol nil)
        (defun ,check-blacklist-symbol (mode-fn &rest args)
          (unless (and (not (equal major-mode (quote ,major-mode-fn-symbol)))
                       (equal nil args)
                       (cl-loop for blacklist-regex in ,blacklist-var-symbol
-                               thereis (string-match blacklist-regex (buffer-name))))
+                               thereis (string-match blacklist-regex
+                                                     (buffer-name))))
            (apply mode-fn args)))
-       (advice-add (quote ,major-mode-fn-symbol) :around (quote ,check-blacklist-symbol)))))
+       (advice-add (quote ,major-mode-fn-symbol)
+                   :around (quote ,check-blacklist-symbol)))))
 #+end_src
 ** Other
 The stuff in this section is pretty crusty. I don't think its used anywhere, but
@@ -1535,8 +1539,7 @@ I don't have any use for this now that I use frames mode, but its an interesting
 #+END_SRC
 ** stream
 #+BEGIN_SRC emacs-lisp
-(use-package stream
-  :defer t)
+(use-package stream :defer t)
 #+END_SRC
 ** tile
 #+BEGIN_SRC emacs-lisp
