@@ -4,6 +4,6 @@
     gimp
     android-studio
     texlive.combined.scheme-full
+    tor
   ];
-  boot.extraModulePackages = with pkgs; [ xboxdrv ];
 }

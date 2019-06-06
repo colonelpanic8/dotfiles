@@ -1,7 +1,5 @@
 { config, pkgs, options, ... }:
 let
-  all-hies = import (fetchTarball "https://github.com/infinisil/all-hies/tarball/master") {};
-  my-overlays = import ./overlays.nix;
   my-python-packages = python-packages: with python-packages; [
     appdirs
     ipdb
@@ -17,10 +15,27 @@ let
     virtualenvwrapper
   ];
   python-with-my-packages = pkgs.python3.withPackages my-python-packages;
+  taffySource = pkgs.lib.sourceByRegex ../dotfiles/config/taffybar [
+    "taffybar.hs" "imalison-taffybar.cabal"
+  ];
+  xmonadSource = pkgs.lib.sourceByRegex ../dotfiles/config/xmonad [
+    "xmonad.hs" "imalison-xmonad.cabal" "PagerHints.hs" "LICENSE"
+  ];
+  notifications-tray-icon-source = pkgs.fetchFromGitHub {
+    owner = "IvanMalison";
+    repo = "notifications-tray-icon";
+    rev = "f28288849a39feec8972a4181ce18ccdde6cc483";
+    sha256 = "11r95m316x93bs1dj0bvas8adpd0xgql2jz8a8dnzv0fv4mw7aj4";
+  };
+  ntiOverlay = (import (notifications-tray-icon-source.outPath + "/overlay.nix"));
+  ntiHaskellPackages = (ntiOverlay pkgs pkgs).haskellPackages;
 in
 {
-  nixpkgs.overlays = [ my-overlays ];
-  # XXX: This ensures that all nix tools pick up the overlays that are set here
+  nixpkgs.overlays = [
+    (import ./overlays.nix)
+    (import ../dotfiles/config/taffybar/taffybar/overlay.nix)
+    (import ../dotfiles/config/xmonad/overlay.nix)
+  ];
 
   # Allow all the things
   nixpkgs.config.allowUnfree = true;
@@ -73,6 +88,7 @@ in
 
     # Applications
     calibre
+    gnome3.cheese
     dfeet
     discord
     emacs
@@ -106,8 +122,15 @@ in
     gnome-breeze
 
     # Desktop
-    # haskellPackages.status-notifier-item
+    (haskellPackages.callCabal2nix "imalison-taffybar" taffySource { })
+    (haskellPackages.callCabal2nix "imalison-xmonad" xmonadSource { })
+    (ntiHaskellPackages.callCabal2nix "notifications-tray-icon" notifications-tray-icon-source { })
+    haskellPackages.gtk-sni-tray
+    haskellPackages.status-notifier-item
+    haskellPackages.xmonad
+
     autorandr
+    betterlockscreen
     blueman
     clipit
     compton
@@ -118,6 +141,7 @@ in
     lxqt.lxqt-powermanagement
     networkmanagerapplet
     customizable-notify-osd
+
     pasystray-appindicator
     pinentry
     pommed_light
@@ -148,7 +172,6 @@ in
     ghc
     stack
     haskellPackages.hasktags
-    # haskell.compiler.ghc863
 
     # Scala
     sbt
@@ -171,6 +194,7 @@ in
     # Tools
     automake
     bazaar
+    bind
     binutils
     dex
     direnv
@@ -180,27 +204,32 @@ in
     file
     gcc
     gdb
-    gitAndTools.git-sync
+    gitAndTools.git-crypt
     gitAndTools.git-fame
+    gitAndTools.git-sync
     gitAndTools.hub
     gitFull
     glxinfo
     gnumake
     gnupg
+    gparted
     htop
     inotify-tools
     ispell
     jq
     mercurial
     networkmanager-openvpn
+    networkmanager_strongswan
     ncdu
     neofetch
     openvpn
+    parallel
     pass
     patchelf
     pciutils
     plasma-workspace
     powertop
+    prometheus_2
     pscircle
     python-with-my-packages
     qt5.qttools
@@ -229,6 +258,7 @@ in
   # environment.variables = {
   #   GDK_PIXBUF_MODULE_FILE = "${pkgs.librsvg.out}/lib/gdk-pixbuf-2.0/2.10.0/loaders.cache";
   # };
+
   # Enabling zsh will clobber path because of the way it sets up /etc/zshenv
   # programs.zsh.enable = true;
   # Instead we just make sure to source profile from zsh
@@ -242,7 +272,8 @@ in
   programs.gnupg.agent = { enable = true; enableSSHSupport = true; };
   programs.adb.enable = true;
 
-  services.acpid.enable = true;
+  services.tlp.enable = true;
+  services.acpid.enable = false;
 
   services.openssh.enable = true;
 

@@ -1210,21 +1210,7 @@ Disabling line numbers because they are slow as fuck.
 #+END_SRC
 *** Handle xrefs annoying dedicated window garbage
 #+BEGIN_SRC emacs-lisp
-(use-package xref
-  :config
-  (defun xref--show-pos-in-buf (pos buf select)
-    (let ((xref-buf (current-buffer))
-          win)
-      (with-selected-window
-          (display-buffer buf)
-        (xref--goto-char pos)
-        (run-hooks 'xref-after-jump-hook)
-        (let ((buf (current-buffer)))
-          (setq win (selected-window))
-          (with-current-buffer xref-buf
-            (setq-local other-window-scroll-buffer buf))))
-      (when select
-        (select-window win)))))
+(use-package xref)
 #+END_SRC
 ** Fill Setup
 Get rid of nags about requiring setences to end with two spaces.
@@ -2121,6 +2107,11 @@ I don't use auto-complete at all, so I have set up a hook to automatically disab
 (use-package unfill
   :bind ("M-q" . unfill-toggle))
 #+END_SRC
+** format-all
+#+begin_src emacs-lisp
+(use-package format-all
+  :commands format-all-buffer)
+#+end_src
 ** cliphist
 #+BEGIN_SRC emacs-lisp
 (use-package cliphist
@@ -2603,7 +2594,7 @@ eval-last-sexp.
   :preface
   (progn
     (imalison:add-blacklist-to-major nix-mode)
-    (setq nix-mode-blacklist '("all-packages.nix")))
+    (setq nix-mode-blacklist '("all-packages.nix" "hackage-packages.nix")))
   :config
   (progn
     (setq nix-indent-function 'nix-indent-line)))
@@ -2824,10 +2815,10 @@ The following is taken from [[https://github.com/syl20bnr/spacemacs/blob/a650877
        ;; Better import handling
        haskell-process-suggest-remove-import-lines t
        haskell-process-auto-import-loaded-modules nil
-       ;; Disable haskell-stylish-on-save, as it breaks flycheck highlighting.
-       ;; NOTE: May not be true anymore - taksuyu 2015-10-06
        haskell-stylish-on-save nil
-	   haskell-tags-on-save nil
+	   haskell-tags-on-save t
+	   haskell-mode-stylish-haskell-path "brittany"
+	   haskell-mode-stylish-haskell-args '("-")
 	   haskell-indent-offset 2)
     (require 'flycheck)
     (delq 'haskell-stack-ghc flycheck-checkers)
@@ -2836,6 +2827,7 @@ The following is taken from [[https://github.com/syl20bnr/spacemacs/blob/a650877
 **** haskell-ide-engine
 #+BEGIN_SRC emacs-lisp
 (use-package lsp-haskell
+  :disabled t
   :config
   (add-hook 'haskell-mode-hook 'lsp))
 #+END_SRC
@@ -2843,6 +2835,7 @@ The following is taken from [[https://github.com/syl20bnr/spacemacs/blob/a650877
 Intero seems to be causing hangs, so it has been disabled
 #+BEGIN_SRC emacs-lisp
 (use-package intero
+  :disabled t
   :after haskell-mode
   :config
   (progn
@@ -2852,6 +2845,7 @@ Intero seems to be causing hangs, so it has been disabled
 **** hindent
 #+BEGIN_SRC emacs-lisp
 (use-package hindent
+  :disabled t
   :after haskell-mode
   :bind (:map hindent-mode-map
               ("C-c d" . hindent-reformat-decl))
@@ -3914,7 +3908,9 @@ I've disabled magithub because it causes magit to be super slow
   :config
   (progn
     (setq github-search-get-target-directory-for-repo-function
-          'imalison:get-projects-directory-target-from-repo)))
+          'imalison:get-projects-directory-target-from-repo
+          ;; See https://github.com/sigma/gh.el/issues/102
+          gnutls-algorithm-priority "NORMAL:-VERS-TLS1.3")))
 #+END_SRC
 *** github-clone
 #+BEGIN_SRC emacs-lisp
@@ -4306,6 +4302,12 @@ I had to disable this mode because something that it does messes with coding set
     (add-to-list 'editorconfig-exclude-modes '(org-mode))
     (editorconfig-mode 1)))
 #+END_SRC
+** direnv
+#+begin_src emacs-lisp
+(use-package direnv
+  :config
+  (direnv-mode +1))
+#+end_src
 ** dtrt-indent
 #+BEGIN_SRC emacs-lisp
 (use-package dtrt-indent

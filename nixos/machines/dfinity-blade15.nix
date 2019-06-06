@@ -7,6 +7,7 @@
   imports =
     [ <nixpkgs/nixos/modules/installer/scan/not-detected.nix>
     ../configuration.nix
+    ../extra.nix
     ../dfinity.nix
     ];
 
@@ -31,9 +32,21 @@
       fsType = "vfat";
     };
 
+    systemd.services.resume-fix = {
+      description = "Fixes acpi immediate resume after suspend";
+      wantedBy = [ "multi-user.target" "post-resume.target" ];
+      after = [ "multi-user.target" "post-resume.target" ];
+      script = ''
+        if ${pkgs.gnugrep}/bin/grep -q '\bXHC\b.*\benabled\b' /proc/acpi/wakeup; then
+          echo XHC > /proc/acpi/wakeup
+        fi
+      '';
+      serviceConfig.Type = "oneshot";
+    };
+
   swapDevices = [ ];
 
-  networking.hostName = "ivanm-dfinity-razr";
+  networking.hostName = "ivanm-dfinity-razer";
 
   nix.maxJobs = lib.mkDefault 12;
   powerManagement.cpuFreqGovernor = lib.mkDefault "powersave";

@@ -213,7 +213,6 @@ emacsCommand = "emacsclient -c"
 htopCommand = "termite -e htop -t htop"
 transmissionCommand = "transmission-gtk"
 volumeCommand = "pavucontrol"
-taffybarCommand = "restart_taffybar.sh"
 
 -- Startup hook
 
@@ -341,11 +340,13 @@ myTabConfig =
 rename newName = RN.renamed [RN.Replace newName]
 
 layoutsStart layout = (layout, [Layout layout])
+
 (|||!) (joined, layouts) newLayout =
     (joined ||| newLayout, layouts ++ [Layout newLayout])
 
 layoutInfo =
-  layoutsStart (rename "Columns" $ multiCol [1, 1] 2 0.01 (-0.5)) |||!
+  layoutsStart (rename "4 Columns" $ (multiCol [1, 1, 1] 2 0.0 (-0.5))) |||!
+  rename "3 Columns" (multiCol [1, 1] 2 0.01 (-0.5)) |||!
   rename "Large Main" (Tall 1 (3 / 100) (3 / 4)) |||!
   rename "2 Columns" (Tall 1 (3 / 100) (1 / 2)) |||!
   Accordion |||! simpleCross |||! myTabbed

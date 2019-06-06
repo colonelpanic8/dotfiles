@@ -80,9 +80,9 @@ cpuCallback = do
   (_, systemLoad, totalLoad) <- cpuLoad
   return [totalLoad, systemLoad]
 
-getFullWorkspaceNames :: X11Property [(WorkspaceIdx, String)]
+getFullWorkspaceNames :: X11Property [(WorkspaceId, String)]
 getFullWorkspaceNames = go <$> readAsListOfString Nothing "_NET_DESKTOP_FULL_NAMES"
-  where go = zip [WSIdx i | i <- [0..]]
+  where go = zip [WorkspaceId i | i <- [0..]]
 
 workspaceNamesLabelSetter workspace =
   fromMaybe "" . lookup (workspaceIdx workspace) <$>
@@ -93,14 +93,16 @@ enableLogger logger level = do
   saveGlobalLogger $ setLevel level logger
 
 logDebug = do
+  global <- getLogger ""
+  saveGlobalLogger $ setLevel DEBUG global
   logger3 <- getLogger "System.Taffybar"
   saveGlobalLogger $ setLevel DEBUG logger3
   logger <- getLogger "System.Taffybar.Widget.Generic.AutoSizeImage"
   saveGlobalLogger $ setLevel DEBUG logger
   logger2 <- getLogger "StatusNotifier.Tray"
   saveGlobalLogger $ setLevel DEBUG logger2
-  workspacesLogger <- getLogger "System.Taffybar.Widget.Workspaces"
-  saveGlobalLogger $ setLevel WARNING workspacesLogger
+  -- workspacesLogger <- getLogger "System.Taffybar.Widget.Workspaces"
+  -- saveGlobalLogger $ setLevel WARNING workspacesLogger
   -- logDebug
   -- logM "What" WARNING "Why"
   -- enableLogger "System.Taffybar.Widget.Util" DEBUG
@@ -111,10 +113,11 @@ logDebug = do
 cssFileByHostname =
   [ ("uber-loaner", "uber-loaner.css")
   , ("imalison-home", "taffybar.css")
-  , ("ivanm-dfinity-razr", "ivanm-dfinity-razr.css")
+  , ("ivanm-dfinity-razer", "ivanm-dfinity-razer.css")
   ]
 
 main = do
+  -- logDebug
   hostName <- getHostName
   homeDirectory <- getHomeDirectory
   cssFilePath <-
@@ -140,9 +143,15 @@ main = do
         , labelSetter = workspaceNamesLabelSetter
         }
       workspaces = workspacesNew myWorkspacesConfig
+      myClock =
+        textClockNewWith
+        defaultClockConfig
+        { clockUpdateStrategy = RoundedTargetInterval 60 0.0
+        , clockFormatString = "%a %b %_d %I:%M %p"
+        }
       fullEndWidgets =
         map (>>= buildContentsBox)
-              [ textClockNewWith defaultClockConfig
+              [ myClock
               , sniTrayNew
               , cpuGraph
               , memoryGraph
@@ -155,10 +164,11 @@ main = do
         map (>>= buildContentsBox)
                        [ batteryIconNew
                        , textBatteryNew "$percentage$%"
-                       , textClockNewWith defaultClockConfig
+                       , myClock
                        , sniTrayNew
+                       , mpris2New
                        ]
-      longLaptopWidgets =
+      longLaptopEndWidgets =
         map (>>= buildContentsBox)
               [ batteryIconNew
               , textBatteryNew "$percentage$%"
@@ -172,7 +182,7 @@ main = do
       baseConfig =
         defaultSimpleTaffyConfig
         { startWidgets =
-            workspaces : map (>>= buildContentsBox) [layout, windows]
+             workspaces : map (>>= buildContentsBox) [layout, windows]
         , endWidgets = fullEndWidgets
         , barPosition = Top
         , barPadding = 0
@@ -187,8 +197,8 @@ main = do
           , ( "imalison-home"
             , baseConfig { endWidgets = fullEndWidgets, barHeight = 42 }
             )
-          , ( "ivanm-dfinity-razr"
-            , baseConfig { endWidgets = longLaptopWidgets, barHeight = 42 }
+          , ( "ivanm-dfinity-razer"
+            , baseConfig { endWidgets = shortLaptopEndWidgets, barHeight = 42 }
             )
           ]
       simpleTaffyConfig = selectedConfig
