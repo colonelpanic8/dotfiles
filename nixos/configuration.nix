@@ -128,6 +128,7 @@ in
     haskellPackages.gtk-sni-tray
     haskellPackages.status-notifier-item
     haskellPackages.xmonad
+    haskellPackages.taffybar
 
     autorandr
     betterlockscreen
@@ -271,9 +272,6 @@ in
 
   programs.gnupg.agent = { enable = true; enableSSHSupport = true; };
   programs.adb.enable = true;
-
-  services.tlp.enable = true;
-  services.acpid.enable = false;
 
   services.openssh.enable = true;
 

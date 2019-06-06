@@ -19,6 +19,8 @@
   boot.loader.efi.canTouchEfiVariables = true;
 
   services.xserver.libinput.enable = true;
+  services.tlp.enable = true;
+  services.acpid.enable = false;
 
   fileSystems."/" =
     { device = "/dev/disk/by-uuid/58218a04-3ba1-4295-86bb-ada59f75e3b6";
