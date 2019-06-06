@@ -213,7 +213,6 @@ emacsCommand = "emacsclient -c"
 htopCommand = "termite -e htop -t htop"
 transmissionCommand = "transmission-gtk"
 volumeCommand = "pavucontrol"
-taffybarCommand = "restart_taffybar.sh"
 
 -- Startup hook
 

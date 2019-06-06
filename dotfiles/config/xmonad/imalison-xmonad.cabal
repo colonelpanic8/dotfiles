@@ -29,6 +29,5 @@ executable imalison-xmonad
                      , xmonad-contrib>=0.13
                      , xmonad>=0.13
   hs-source-dirs:      .
-                       src
-  other-modules: PagerHints
+  other-modules:     PagerHints
   default-language:    Haskell2010
