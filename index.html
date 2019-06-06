@@ -3,7 +3,7 @@
 "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
-<!-- 2019-06-06 Thu 07:37 -->
+<!-- 2019-06-06 Thu 07:41 -->
 <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>&lrm;</title>
@@ -5610,17 +5610,21 @@ prevent the major mode from being enabled on that file.
 </p>
 <div class="org-src-container">
 <pre class="src src-emacs-lisp">(<span class="org-keyword">defmacro</span> <span class="org-function-name">imalison:add-blacklist-to-major</span> (major-mode-fn-symbol)
-  (<span class="org-keyword">let</span> ((blacklist-var-symbol (imalison:concat-symbols major-mode-fn-symbol <span class="org-string">"-blacklist"</span>))
-        (check-blacklist-symbol (imalison:concat-symbols major-mode-fn-symbol <span class="org-string">"-check-blacklist"</span>)))
+  (<span class="org-keyword">let</span> ((blacklist-var-symbol
+         (imalison:concat-symbols major-mode-fn-symbol <span class="org-string">"-blacklist"</span>))
+        (check-blacklist-symbol
+         (imalison:concat-symbols major-mode-fn-symbol <span class="org-string">"-check-blacklist"</span>)))
     `(<span class="org-keyword">progn</span>
        (<span class="org-keyword">defvar</span> ,blacklist-var-symbol nil)
        (<span class="org-keyword">defun</span> ,check-blacklist-symbol (mode-fn <span class="org-type">&amp;rest</span> args)
          (<span class="org-keyword">unless</span> (<span class="org-keyword">and</span> (not (equal major-mode (<span class="org-keyword">quote</span> ,major-mode-fn-symbol)))
                       (equal nil args)
                       (<span class="org-keyword">cl-loop</span> for blacklist-regex in ,blacklist-var-symbol
-                               thereis (string-match blacklist-regex (buffer-name))))
+                               thereis (string-match blacklist-regex
+                                                     (buffer-name))))
            (apply mode-fn args)))
-       (advice-add (<span class="org-keyword">quote</span> ,major-mode-fn-symbol) <span class="org-builtin">:around</span> (<span class="org-keyword">quote</span> ,check-blacklist-symbol)))))
+       (advice-add (<span class="org-keyword">quote</span> ,major-mode-fn-symbol)
+                   <span class="org-builtin">:around</span> (<span class="org-keyword">quote</span> ,check-blacklist-symbol)))))
 </pre>
 </div>
 </div>
@@ -6496,8 +6500,7 @@ I don't have any use for this now that I use frames mode, but its an interesting
 <h3 id="stream"><span class="section-number-3">7.38</span> stream <a href="#stream"><svg aria-hidden="true" class="octicon octicon-link" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a></h3>
 <div class="outline-text-3" id="text-7-38">
 <div class="org-src-container">
-<pre class="src src-emacs-lisp">(<span class="org-keyword">use-package</span> <span class="org-constant">stream</span>
-  <span class="org-builtin">:defer</span> t)
+<pre class="src src-emacs-lisp">(<span class="org-keyword">use-package</span> <span class="org-constant">stream</span> <span class="org-builtin">:defer</span> t)
 </pre>
 </div>
 </div>
