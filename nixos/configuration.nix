@@ -125,6 +125,7 @@ in
     (haskellPackages.callCabal2nix "imalison-taffybar" taffySource { })
     (haskellPackages.callCabal2nix "imalison-xmonad" xmonadSource { })
     (ntiHaskellPackages.callCabal2nix "notifications-tray-icon" notifications-tray-icon-source { })
+    haskellPackages.gtk-sni-tray
     haskellPackages.status-notifier-item
     haskellPackages.xmonad
 
