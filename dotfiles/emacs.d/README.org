@@ -2591,7 +2591,7 @@ eval-last-sexp.
   :preface
   (progn
     (imalison:add-blacklist-to-major nix-mode)
-    (setq nix-mode-blacklist '("all-packages.nix")))
+    (setq nix-mode-blacklist '("all-packages.nix" "hackage-packages.nix")))
   :config
   (progn
     (setq nix-indent-function 'nix-indent-line)))
