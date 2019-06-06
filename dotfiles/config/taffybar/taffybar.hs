@@ -80,9 +80,9 @@ cpuCallback = do
   (_, systemLoad, totalLoad) <- cpuLoad
   return [totalLoad, systemLoad]
 
-getFullWorkspaceNames :: X11Property [(WorkspaceIdx, String)]
+getFullWorkspaceNames :: X11Property [(WorkspaceId, String)]
 getFullWorkspaceNames = go <$> readAsListOfString Nothing "_NET_DESKTOP_FULL_NAMES"
-  where go = zip [WSIdx i | i <- [0..]]
+  where go = zip [WorkspaceId i | i <- [0..]]
 
 workspaceNamesLabelSetter workspace =
   fromMaybe "" . lookup (workspaceIdx workspace) <$>
@@ -101,8 +101,8 @@ logDebug = do
   saveGlobalLogger $ setLevel DEBUG logger
   logger2 <- getLogger "StatusNotifier.Tray"
   saveGlobalLogger $ setLevel DEBUG logger2
-  workspacesLogger <- getLogger "System.Taffybar.Widget.Workspaces"
-  saveGlobalLogger $ setLevel WARNING workspacesLogger
+  -- workspacesLogger <- getLogger "System.Taffybar.Widget.Workspaces"
+  -- saveGlobalLogger $ setLevel WARNING workspacesLogger
   -- logDebug
   -- logM "What" WARNING "Why"
   -- enableLogger "System.Taffybar.Widget.Util" DEBUG
@@ -117,6 +117,7 @@ cssFileByHostname =
   ]
 
 main = do
+  -- logDebug
   hostName <- getHostName
   homeDirectory <- getHomeDirectory
   cssFilePath <-
