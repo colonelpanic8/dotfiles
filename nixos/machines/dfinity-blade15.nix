@@ -4,12 +4,14 @@
 { config, lib, pkgs, ... }:
 
 {
-  imports =
-    [ <nixpkgs/nixos/modules/installer/scan/not-detected.nix>
+  imports = [
+    <nixpkgs/nixos/modules/installer/scan/not-detected.nix>
     ../configuration.nix
     ../extra.nix
     ../dfinity.nix
-    ];
+  ];
+
+  hardware.bumblebee.enable = true;
 
   boot.initrd.availableKernelModules = [ "xhci_pci" "nvme" "usb_storage" "usbhid" "sd_mod" ];
   boot.kernelModules = [ "kvm-intel" ];
@@ -20,29 +22,29 @@
 
   services.xserver.libinput.enable = true;
 
-  fileSystems."/" =
-    { device = "/dev/disk/by-uuid/58218a04-3ba1-4295-86bb-ada59f75e3b6";
-      fsType = "ext4";
-    };
+  fileSystems."/" = {
+    device = "/dev/disk/by-uuid/58218a04-3ba1-4295-86bb-ada59f75e3b6";
+    fsType = "ext4";
+  };
 
   boot.initrd.luks.devices."cryptroot".device = "/dev/disk/by-uuid/8142784e-45c6-4a2b-91f1-09df741ac00f";
 
-  fileSystems."/boot" =
-    { device = "/dev/disk/by-uuid/36E1-BE93";
-      fsType = "vfat";
-    };
+  fileSystems."/boot" = {
+    device = "/dev/disk/by-uuid/36E1-BE93";
+    fsType = "vfat";
+  };
 
-    systemd.services.resume-fix = {
-      description = "Fixes acpi immediate resume after suspend";
-      wantedBy = [ "multi-user.target" "post-resume.target" ];
-      after = [ "multi-user.target" "post-resume.target" ];
-      script = ''
-        if ${pkgs.gnugrep}/bin/grep -q '\bXHC\b.*\benabled\b' /proc/acpi/wakeup; then
-          echo XHC > /proc/acpi/wakeup
-        fi
-      '';
-      serviceConfig.Type = "oneshot";
-    };
+  systemd.services.resume-fix = {
+    description = "Fixes acpi immediate resume after suspend";
+    wantedBy = [ "multi-user.target" "post-resume.target" ];
+    after = [ "multi-user.target" "post-resume.target" ];
+    script = ''
+      if ${pkgs.gnugrep}/bin/grep -q '\bXHC\b.*\benabled\b' /proc/acpi/wakeup; then
+      echo XHC > /proc/acpi/wakeup
+      fi
+    '';
+    serviceConfig.Type = "oneshot";
+  };
 
   swapDevices = [ ];
 
