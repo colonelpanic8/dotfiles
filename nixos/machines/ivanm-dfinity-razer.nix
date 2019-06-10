@@ -9,6 +9,7 @@
     ../configuration.nix
     ../extra.nix
     ../dfinity.nix
+    /etc/nixos/cachix.nix
   ];
 
   hardware.bumblebee.enable = true;
