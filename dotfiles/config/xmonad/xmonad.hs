@@ -361,7 +361,7 @@ selectLayout = myDmenu layoutNames >>= (sendMessage . JumpToLayout)
 
 myLayoutHook =
   avoidStruts .
-  minimize .
+  minimizeNoDescription .
   boringAuto .
   mkToggle1 MIRROR .
   mkToggle1 LIMIT .

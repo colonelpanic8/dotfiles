@@ -1,8 +1,4 @@
-module PagerHints (
-  -- * Usage
-  -- $usage
-  pagerHints
-) where
+module PagerHints where
 
 import Codec.Binary.UTF8.String (encode)
 import Control.Monad
@@ -66,10 +62,10 @@ setVisibleWorkspaces vis = withDisplay $ \dpy -> do
 -- | Handle all \"Current Layout\" events received from pager widgets, and
 -- set the current layout accordingly.
 pagerHintsEventHook :: Event -> X All
-pagerHintsEventHook ClientMessageEvent {
-    ev_message_type = mt,
-    ev_data = d
-  } = withWindowSet $ \_ -> do
+pagerHintsEventHook ClientMessageEvent
+                      { ev_message_type = mt
+                      , ev_data = d
+                      } = withWindowSet $ \_ -> do
   a <- xLayoutProp
   when (mt == a) $ sendLayoutMessage d
   return (All True)

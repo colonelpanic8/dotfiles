@@ -202,7 +202,7 @@ main = do
             )
           ]
       simpleTaffyConfig = selectedConfig
-        { centerWidgets = map (>>= buildContentsBox) []
+        { centerWidgets = []
         -- , endWidgets = []
         -- , startWidgets = []
         }

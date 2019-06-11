@@ -15,6 +15,7 @@ let
     virtualenvwrapper
   ];
   python-with-my-packages = pkgs.python3.withPackages my-python-packages;
+  all-hies = import (fetchTarball "https://github.com/infinisil/all-hies/tarball/master") {};
   taffySource = pkgs.lib.sourceByRegex ../dotfiles/config/taffybar [
     "taffybar.hs" "imalison-taffybar.cabal"
   ];
@@ -84,6 +85,7 @@ in
     };
   };
 
+  xdg.menus.enable = true;
   environment.systemPackages = with pkgs; [
 
     # Applications
@@ -121,7 +123,7 @@ in
     plasma5.breeze-qt5
     gnome-breeze
 
-    # Desktop
+    # Haskell Desktop
     (haskellPackages.callCabal2nix "imalison-taffybar" taffySource { })
     (haskellPackages.callCabal2nix "imalison-xmonad" xmonadSource { })
     (ntiHaskellPackages.callCabal2nix "notifications-tray-icon" notifications-tray-icon-source { })
@@ -130,6 +132,8 @@ in
     haskellPackages.xmonad
     haskellPackages.taffybar
 
+    # Desktop
+    taffybar
     autorandr
     betterlockscreen
     blueman
@@ -173,6 +177,8 @@ in
     ghc
     stack
     haskellPackages.hasktags
+    haskellPackages.hoogle
+    (all-hies.selection { selector = p: { inherit (p) ghc864; }; })
 
     # Scala
     sbt
@@ -248,6 +254,7 @@ in
 
     # Nix
     nix-prefetch-git
+    cachix
 
     # Miscellaneous
     android-udev-rules
