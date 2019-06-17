@@ -1,5 +1,5 @@
 let
-  pkgs = import <nixpkgs> { overlays = [
+  pkgs = (import ./taffybar/nixpkgs.nix) { overlays = [
     (import ./taffybar/overlay.nix) (import ../xmonad/overlay.nix)
   ]; };
   source = pkgs.lib.sourceByRegex ./. ["taffybar.hs" "imalison-taffybar.cabal"];
