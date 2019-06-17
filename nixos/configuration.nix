@@ -16,9 +16,6 @@ let
   ];
   python-with-my-packages = pkgs.python3.withPackages my-python-packages;
   all-hies = import (fetchTarball "https://github.com/infinisil/all-hies/tarball/master") {};
-  taffySource = pkgs.lib.sourceByRegex ../dotfiles/config/taffybar [
-    "taffybar.hs" "imalison-taffybar.cabal"
-  ];
   xmonadSource = pkgs.lib.sourceByRegex ../dotfiles/config/xmonad [
     "xmonad.hs" "imalison-xmonad.cabal" "PagerHints.hs" "LICENSE"
   ];
@@ -34,7 +31,6 @@ in
 {
   nixpkgs.overlays = [
     (import ./overlays.nix)
-    (import ../dotfiles/config/taffybar/taffybar/overlay.nix)
     (import ../dotfiles/config/xmonad/overlay.nix)
   ];
 
@@ -128,15 +124,15 @@ in
     gnome-breeze
 
     # Haskell Desktop
-    (haskellPackages.callCabal2nix "imalison-taffybar" taffySource { })
+    (import ../dotfiles/config/taffybar/default.nix)
     (haskellPackages.callCabal2nix "imalison-xmonad" xmonadSource { })
     (ntiHaskellPackages.callCabal2nix "notifications-tray-icon" notifications-tray-icon-source { })
     haskellPackages.gtk-sni-tray
     haskellPackages.status-notifier-item
     haskellPackages.xmonad
+    haskellPackages.dbus-hslogger
 
     # Desktop
-    taffybar
     autorandr
     betterlockscreen
     blueman
@@ -228,8 +224,6 @@ in
     ispell
     jq
     mercurial
-    networkmanager-openvpn
-    networkmanager_strongswan
     ncdu
     neofetch
     openvpn

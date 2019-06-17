@@ -12,7 +12,10 @@
     /etc/nixos/cachix.nix
   ];
 
-  hardware.bumblebee.enable = true;
+  hardware.bumblebee = {
+    enable = true;
+    pmMethod = "bbswitch";
+  };
 
   boot.initrd.availableKernelModules = [ "xhci_pci" "nvme" "usb_storage" "usbhid" "sd_mod" ];
   boot.kernelModules = [ "kvm-intel" ];
