@@ -1,0 +1,33 @@
+From 71c28adfc1da51bb112ba1c83909d4292f2353cf Mon Sep 17 00:00:00 2001
+From: Ivan Malison <IvanMalison@gmail.com>
+Date: Fri, 14 Jun 2019 16:03:58 -0700
+Subject: [PATCH] Remove dumbass restriction on length of used PSK
+
+---
+ src/charon-nm/nm/nm_service.c | 10 ----------
+ 1 file changed, 10 deletions(-)
+
+diff --git a/src/charon-nm/nm/nm_service.c b/src/charon-nm/nm/nm_service.c
+index fb9044d29..ccad2f635 100644
+--- a/src/charon-nm/nm/nm_service.c
++++ b/src/charon-nm/nm/nm_service.c
+@@ -409,16 +409,6 @@ static gboolean connect_(NMVpnServicePlugin *plugin, NMConnection *connection,
+ 		{
+ 			user = identification_create_from_string((char*)str);
+ 			str = nm_setting_vpn_get_secret(vpn, "password");
+-			if (auth_class == AUTH_CLASS_PSK &&
+-				strlen(str) < 20)
+-			{
+-				g_set_error(err, NM_VPN_PLUGIN_ERROR,
+-							NM_VPN_PLUGIN_ERROR_BAD_ARGUMENTS,
+-							"pre-shared key is too short.");
+-				gateway->destroy(gateway);
+-				user->destroy(user);
+-				return FALSE;
+-			}
+ 			priv->creds->set_username_password(priv->creds, user, (char*)str);
+ 		}
+ 	}
+-- 
+2.21.0
+

@@ -44,7 +44,11 @@ in
 
   # Security and networking
   security.sudo.wheelNeedsPassword = false;
-  networking.networkmanager.enable = true;
+  networking.networkmanager = {
+    enable = true;
+    enableStrongSwan = true;
+    packages = [ pkgs.networkmanager-l2tp ];
+  };
   networking.firewall.enable = false;
 
   # Audio

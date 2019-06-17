@@ -65,4 +65,15 @@ self: super:
       --replace run_keybase $out/bin/keybase-gui
   '';
   });
+  networkmanager_strongswan = super.networkmanager_strongswan.overrideAttrs (oldAttrs: rec {
+    src = super.fetchFromGitHub {
+      owner = "IvanMalison";
+      repo = "NetworkManager-strongswan";
+      sha256 = "0vcg58xrjacdswz2fxahgi7shgf2v14mfpscnwza6wns8qx37yzb";
+      rev = "2849b1817926b7973a5dc530bed7250c95c733bf";
+    };
+  });
+  strongswanNM = super.strongswanNM.overrideAttrs (oldAttrs: rec {
+    patches = oldAttrs.patches ++ [ ./patch-strongswan.patch ];
+  });
 }
