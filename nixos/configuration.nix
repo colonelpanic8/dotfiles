@@ -277,9 +277,6 @@ in
   programs.gnupg.agent = { enable = true; enableSSHSupport = true; };
   programs.adb.enable = true;
 
-  services.tlp.enable = true;
-  services.acpid.enable = false;
-
   services.openssh.enable = true;
 
   services.avahi = {
