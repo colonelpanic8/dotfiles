@@ -1,0 +1,11 @@
+output DP-2
+off
+output DP-1
+mode 3440x1440
+pos 0x0
+rate 59.97
+output eDP-1
+mode 1920x1080
+pos 3440x0
+primary
+rate 144.00
