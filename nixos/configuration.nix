@@ -175,6 +175,7 @@ in
     cabal2nix
     ghc
     stack
+    haskellPackages.hpack
     haskellPackages.hasktags
     haskellPackages.hoogle
     (all-hies.selection { selector = p: { inherit (p) ghc864; }; })
@@ -188,6 +189,7 @@ in
     nodejs
 
     # Rust
+    rustc
     cargo
 
     # Clojure
