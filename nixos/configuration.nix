@@ -191,6 +191,7 @@ in
     # Rust
     rustc
     cargo
+    carnix
 
     # Clojure
     boot
@@ -225,6 +226,7 @@ in
     inotify-tools
     ispell
     jq
+    lsof
     mercurial
     ncdu
     neofetch
@@ -234,6 +236,7 @@ in
     patchelf
     pciutils
     plasma-workspace
+    pijul
     powertop
     prometheus_2
     pscircle
