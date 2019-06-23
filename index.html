@@ -3,7 +3,7 @@
 "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
-<!-- 2019-06-21 Fri 05:36 -->
+<!-- 2019-06-23 Sun 20:55 -->
 <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>&lrm;</title>
@@ -4149,12 +4149,7 @@ for the JavaScript code in this tag.
 <li><a href="#basicconfig">22.1. Basic Config</a></li>
 <li><a href="#themes">22.2. Themes</a></li>
 <li><a href="#alltheicons">22.3. all-the-icons</a></li>
-<li><a href="#spaceline">22.4. spaceline</a>
-<ul>
-<li><a href="#disablesrgbcolorspacetomakepowerlineseparatorswork">22.4.1. Disable sRGB colorspace to make powerline separators work</a></li>
-<li><a href="#config1">22.4.2. config</a></li>
-</ul>
-</li>
+<li><a href="#doommodeline">22.4. doom-modeline</a></li>
 <li><a href="#pagebreaklines">22.5. page-break-lines</a></li>
 <li><a href="#helmthemes1">22.6. helm-themes</a></li>
 <li><a href="#windownumber">22.7. window-number</a></li>
@@ -11083,65 +11078,13 @@ Ensure all themes that I use are installed:
 </div>
 </div>
 </div>
-<div id="outline-container-spaceline" class="outline-3">
-<h3 id="spaceline"><span class="section-number-3">22.4</span> spaceline <a href="#spaceline"><svg aria-hidden="true" class="octicon octicon-link" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a></h3>
+<div id="outline-container-doommodeline" class="outline-3">
+<h3 id="doommodeline"><span class="section-number-3">22.4</span> doom-modeline <a href="#doommodeline"><svg aria-hidden="true" class="octicon octicon-link" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a></h3>
 <div class="outline-text-3" id="text-22-4">
-</div>
-<div id="outline-container-disablesrgbcolorspacetomakepowerlineseparatorswork" class="outline-4">
-<h4 id="disablesrgbcolorspacetomakepowerlineseparatorswork"><span class="section-number-4">22.4.1</span> Disable sRGB colorspace to make powerline separators work <a href="#disablesrgbcolorspacetomakepowerlineseparatorswork"><svg aria-hidden="true" class="octicon octicon-link" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a></h4>
-<div class="outline-text-4" id="text-22-4-1">
 <div class="org-src-container">
-<pre class="src src-emacs-lisp">(<span class="org-keyword">setq</span> ns-use-srgb-colorspace nil)
+<pre class="src src-emacs-lisp">(<span class="org-keyword">use-package</span> <span class="org-constant">doom-modeline</span>
+  <span class="org-builtin">:hook</span> (after-init . doom-modeline-mode))
 </pre>
-</div>
-</div>
-</div>
-<div id="outline-container-config1" class="outline-4">
-<h4 id="config1"><span class="section-number-4">22.4.2</span> config <a href="#config1"><svg aria-hidden="true" class="octicon octicon-link" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a></h4>
-<div class="outline-text-4" id="text-22-4-2">
-<div class="org-src-container">
-<pre class="src src-emacs-lisp">(<span class="org-keyword">use-package</span> <span class="org-constant">spaceline-config</span>
-  <span class="org-builtin">:straight</span> spaceline
-  <span class="org-builtin">:commands</span> spaceline-compile
-  <span class="org-builtin">:preface</span>
-  (<span class="org-keyword">progn</span>
-    (<span class="org-keyword">defun</span> <span class="org-function-name">spaceline-gh-notifier-disable-default-notifier-modeline</span> (<span class="org-type">&amp;rest</span> args)
-      (delq 'github-notifier-mode-line global-mode-string)))
-  <span class="org-builtin">:config</span>
-  (<span class="org-keyword">progn</span>
-    (advice-add 'github-notifier-mode <span class="org-builtin">:after</span>
-                'spaceline-gh-notifier-disable-default-notifier-modeline)
-    (advice-add 'github-notifier-update <span class="org-builtin">:after</span>
-                'spaceline-gh-notifier-disable-default-notifier-modeline)
-
-    (<span class="org-keyword">setq</span> powerline-default-separator (random-choice '(butt slant wave)))
-    (<span class="org-keyword">setq</span> spaceline-workspace-numbers-unicode t
-          spaceline-window-numbers-unicode t)
-
-    (spaceline-define-segment imalison:muni
-      <span class="org-string">"Display the number of minutes until the next muni train comes"</span>
-      (format <span class="org-string">"&#128647;%s"</span> (imalison:get-cached-muni-time))
-      <span class="org-builtin">:when</span> active)
-
-    (spaceline-define-segment spaceline-gh-notifier
-      <span class="org-string">"Display the number of github notifications the user has"</span>
-      (format <span class="org-string">"&#9993;%s"</span> github-notifier-unread-count)
-      <span class="org-builtin">:when</span> (&gt; github-notifier-unread-count 0))
-
-    (advice-add 'pl/separator-height <span class="org-builtin">:around</span>
-                (<span class="org-keyword">lambda</span> (<span class="org-keyword">function</span> <span class="org-type">&amp;rest</span> args)
-                  (+ (apply function args) 10)))
-
-    <span class="org-comment-delimiter">;; </span><span class="org-comment">This needs to be executed after setting the font because the separators</span>
-    <span class="org-comment-delimiter">;; </span><span class="org-comment">need to get regenerated</span>
-    (advice-add 'imalison:set-font-size <span class="org-builtin">:after</span> 'spaceline-compile)
-
-    (spaceline-helm-mode)
-    <span class="org-comment-delimiter">;; </span><span class="org-comment">'spaceline-gh-notifier and 'imalison:muni disabled for now</span>
-    (spaceline-spacemacs-theme)
-    (spaceline-toggle-org-pomodoro-on)))
-</pre>
-</div>
 </div>
 </div>
 </div>
@@ -11335,7 +11278,6 @@ load-theme hook (See the heading below).
 (<span class="org-keyword">defun</span> <span class="org-function-name">imalison:appearance</span> (<span class="org-type">&amp;optional</span> frame)
   (<span class="org-keyword">setq</span> font-use-system-font nil)
   (<span class="org-keyword">interactive</span> (list nil))
-  (spaceline-compile)
   (imalison:remove-fringe-and-hl-line-mode)
   (<span class="org-keyword">setq</span> powerline-default-separator (random-choice '(butt slant wave))))
 </pre>
