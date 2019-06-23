@@ -4905,54 +4905,11 @@ Ensure all themes that I use are installed:
 (use-package all-the-icons
   :defer 5)
 #+END_SRC
-** spaceline
-*** Disable sRGB colorspace to make powerline separators work
-#+BEGIN_SRC emacs-lisp
-(setq ns-use-srgb-colorspace nil)
-#+END_SRC
-*** config
-#+BEGIN_SRC emacs-lisp
-(use-package spaceline-config
-  :straight spaceline
-  :commands spaceline-compile
-  :preface
-  (progn
-    (defun spaceline-gh-notifier-disable-default-notifier-modeline (&rest args)
-      (delq 'github-notifier-mode-line global-mode-string)))
-  :config
-  (progn
-    (advice-add 'github-notifier-mode :after
-                'spaceline-gh-notifier-disable-default-notifier-modeline)
-    (advice-add 'github-notifier-update :after
-                'spaceline-gh-notifier-disable-default-notifier-modeline)
-
-    (setq powerline-default-separator (random-choice '(butt slant wave)))
-    (setq spaceline-workspace-numbers-unicode t
-          spaceline-window-numbers-unicode t)
-
-    (spaceline-define-segment imalison:muni
-      "Display the number of minutes until the next muni train comes"
-      (format "🚇%s" (imalison:get-cached-muni-time))
-      :when active)
-
-    (spaceline-define-segment spaceline-gh-notifier
-      "Display the number of github notifications the user has"
-      (format "✉%s" github-notifier-unread-count)
-      :when (> github-notifier-unread-count 0))
-
-    (advice-add 'pl/separator-height :around
-                (lambda (function &rest args)
-                  (+ (apply function args) 10)))
-
-    ;; This needs to be executed after setting the font because the separators
-    ;; need to get regenerated
-    (advice-add 'imalison:set-font-size :after 'spaceline-compile)
-
-    (spaceline-helm-mode)
-    ;; 'spaceline-gh-notifier and 'imalison:muni disabled for now
-    (spaceline-spacemacs-theme)
-    (spaceline-toggle-org-pomodoro-on)))
-#+END_SRC
+** doom-modeline
+#+begin_src emacs-lisp
+(use-package doom-modeline
+  :hook (after-init . doom-modeline-mode))
+#+end_src
 ** page-break-lines
 #+BEGIN_SRC emacs-lisp
 (use-package page-break-lines
@@ -5084,7 +5041,6 @@ load-theme hook (See the heading below).
 (defun imalison:appearance (&optional frame)
   (setq font-use-system-font nil)
   (interactive (list nil))
-  (spaceline-compile)
   (imalison:remove-fringe-and-hl-line-mode)
   (setq powerline-default-separator (random-choice '(butt slant wave))))
 #+END_SRC
