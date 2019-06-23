@@ -90,6 +90,7 @@ in
   };
 
   xdg.menus.enable = true;
+
   environment.systemPackages = with pkgs; [
 
     # Applications
@@ -182,7 +183,7 @@ in
     haskellPackages.hpack
     haskellPackages.hasktags
     haskellPackages.hoogle
-    (all-hies.selection { selector = p: { inherit (p) ghc864; }; })
+    (all-hies.selection { selector = p: { inherit (p) ghc864 ghc865; }; })
 
     # Scala
     sbt
