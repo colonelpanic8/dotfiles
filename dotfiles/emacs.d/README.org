@@ -2773,28 +2773,20 @@ The following is taken from [[https://github.com/syl20bnr/spacemacs/blob/a650877
 #+BEGIN_SRC emacs-lisp
 (use-package rust-mode
   :mode (("\\.rs\\'" . rust-mode))
+  :hook (rust-mode . lsp)
   :preface
   (progn
-    (defun imalison:rust-mode-hook ()
-      (racer-mode 1)))
+    (defun imalison:rust-mode-hook ()))
   :config
   (progn
-    (use-package flycheck-rust
-      :demand t
-      :config
-      (progn
-        (add-hook 'flycheck-mode-hook #'flycheck-rust-setup)))
-    (use-package racer
-      :demand t
-      :config
-      (progn
-        (setq racer-cmd "~/.cargo/bin/racer")
-        (setq racer-rust-src-path "~/Projects/rust/src")))
+    (use-package toml-mode)
+
+    ;; Add keybindings for interacting with Cargo
     (use-package cargo
-      :demand t
-      :config
-      (progn
-        (add-hook 'rust-mode-hook 'cargo-minor-mode)))
+      :hook (rust-mode . cargo-minor-mode))
+
+    (use-package flycheck-rust
+      :config (add-hook 'flycheck-mode-hook #'flycheck-rust-setup))
     (add-hook 'rust-mode-hook 'imalison:rust-mode-hook)))
 #+END_SRC
 *** haskell
