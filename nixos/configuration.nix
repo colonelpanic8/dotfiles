@@ -106,7 +106,7 @@ in
     pulseeffects
     quassel
     rxvt_unicode
-    slack-appindicator
+    slack
     simplescreenrecorder
     spotify
     termite

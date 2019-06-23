@@ -19,7 +19,6 @@ self: super:
   pasystray-appindicator = super.pasystray.overrideAttrs (oldAttrs: rec {
     buildInputs = oldAttrs.buildInputs ++ [self.libappindicator-gtk3];
   });
-  slack-appindicator = self.callPackage ./slack.nix { };
   customizable-notify-osd = super.notify-osd.overrideAttrs (oldAttrs: rec {
     version = "0.9.35+16.04.20160415";
     baseURI = "https://launchpad.net/~leolik/+archive/leolik";
