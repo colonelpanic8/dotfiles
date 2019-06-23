@@ -44,6 +44,10 @@ in
     enable = true;
     enableStrongSwan = true;
     packages = [ pkgs.networkmanager-l2tp ];
+    extraConfig = ''
+      [main]
+      rc-manager=resolvconf
+    '';
   };
   networking.firewall.enable = false;
 
