@@ -3,7 +3,7 @@
 "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
-<!-- 2019-06-23 Sun 20:55 -->
+<!-- 2019-06-23 Sun 20:58 -->
 <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>&lrm;</title>
@@ -8187,28 +8187,20 @@ The following is taken from <a href="https://github.com/syl20bnr/spacemacs/blob/
 <div class="org-src-container">
 <pre class="src src-emacs-lisp">(<span class="org-keyword">use-package</span> <span class="org-constant">rust-mode</span>
   <span class="org-builtin">:mode</span> ((<span class="org-string">"\\.rs\\'"</span> . rust-mode))
+  <span class="org-builtin">:hook</span> (rust-mode . lsp)
   <span class="org-builtin">:preface</span>
   (<span class="org-keyword">progn</span>
-    (<span class="org-keyword">defun</span> <span class="org-function-name">imalison:rust-mode-hook</span> ()
-      (racer-mode 1)))
+    (<span class="org-keyword">defun</span> <span class="org-function-name">imalison:rust-mode-hook</span> ()))
   <span class="org-builtin">:config</span>
   (<span class="org-keyword">progn</span>
-    (<span class="org-keyword">use-package</span> <span class="org-constant">flycheck-rust</span>
-      <span class="org-builtin">:demand</span> t
-      <span class="org-builtin">:config</span>
-      (<span class="org-keyword">progn</span>
-        (add-hook 'flycheck-mode-hook #'flycheck-rust-setup)))
-    (<span class="org-keyword">use-package</span> <span class="org-constant">racer</span>
-      <span class="org-builtin">:demand</span> t
-      <span class="org-builtin">:config</span>
-      (<span class="org-keyword">progn</span>
-        (<span class="org-keyword">setq</span> racer-cmd <span class="org-string">"~/.cargo/bin/racer"</span>)
-        (<span class="org-keyword">setq</span> racer-rust-src-path <span class="org-string">"~/Projects/rust/src"</span>)))
+    (<span class="org-keyword">use-package</span> <span class="org-constant">toml-mode</span>)
+
+    <span class="org-comment-delimiter">;; </span><span class="org-comment">Add keybindings for interacting with Cargo</span>
     (<span class="org-keyword">use-package</span> <span class="org-constant">cargo</span>
-      <span class="org-builtin">:demand</span> t
-      <span class="org-builtin">:config</span>
-      (<span class="org-keyword">progn</span>
-        (add-hook 'rust-mode-hook 'cargo-minor-mode)))
+      <span class="org-builtin">:hook</span> (rust-mode . cargo-minor-mode))
+
+    (<span class="org-keyword">use-package</span> <span class="org-constant">flycheck-rust</span>
+      <span class="org-builtin">:config</span> (add-hook 'flycheck-mode-hook #'flycheck-rust-setup))
     (add-hook 'rust-mode-hook 'imalison:rust-mode-hook)))
 </pre>
 </div>
