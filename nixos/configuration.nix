@@ -194,9 +194,11 @@ in
     nodejs
 
     # Rust
-    rustc
     cargo
     carnix
+    racer
+    rls
+    rustc
 
     # Clojure
     boot
