@@ -22,6 +22,7 @@ executable imalison-xmonad
                      , hostname>=1.0
                      , multimap>=1.2.1
                      , process>=1.4.3.0
+                     , safe
                      , split
                      , taffybar
                      , transformers>=0.5.2.0

@@ -3,6 +3,7 @@
              FlexibleInstances, FlexibleContexts, ScopedTypeVariables #-}
 module Main where
 
+import           Codec.Binary.UTF8.String as UTF8
 import qualified Codec.Binary.UTF8.String as UTF8String (encode)
 import qualified Control.Arrow as A
 import           Control.Monad
@@ -21,9 +22,11 @@ import qualified Data.MultiMap as MM
 import           Data.Proxy
 import           Data.Tuple.Sequence (sequenceT)
 import           Data.Typeable
+import           Foreign.C.Types
 import           Graphics.X11.ExtraTypes.XF86
 import           Network.HostName
 import           PagerHints
+import           Safe
 import           System.Directory
 import           System.FilePath.Posix
 import           System.IO.Unsafe
@@ -379,7 +382,7 @@ myLayoutHook =
 
 myWindowBringerConfig =
   def { menuCommand = "rofi"
-      , menuArgs = myDmenuArgs
+      , menuArgs = myDmenuArgs ++ ["-format", "i"]
       , windowTitler = myDecorateName
       }
 
@@ -401,15 +404,24 @@ desktopEntriesMap =
         directoryEntriesByClassName <$> getDirectoryEntriesDefault
 
 lookupIconFromClasses classes =
-  getFirst $ fold $ First . deIcon <$> (classes >>= idAndLower >>= flip MM.lookup desktopEntriesMap)
+  getFirst $ fold $ First . deIcon <$>
+             (classes >>= idAndLower >>= flip MM.lookup desktopEntriesMap)
     where idAndLower value = [value, map toLower value]
+
+xGetWindowProperty8 :: Atom -> Window -> X (Maybe [CChar])
+xGetWindowProperty8 a w = withDisplay $ \dpy -> io $ getWindowProperty8 dpy a w
+
+getEWMHClasses w = do
+  atom <- withDisplay $ \d -> io $ internAtom d "WM_CLASS" False
+  mValue <- fmap (UTF8.decode . map fromIntegral) <$> xGetWindowProperty8 atom w
+  pure $ filter (not . null) $ splitOn "\NUL" $ join $ maybeToList mValue
 
 myDecorateName ws w = do
   name <- show <$> getName w
-  rawClass <- getClassRaw w
+  classes <- getEWMHClasses w
   classTitle <- getClass w
   workspaceToName <- getWorkspaceNames
-  let iconName = fromMaybe "" $ lookupIconFromClasses [rawClass, classTitle]
+  let iconName = fromMaybe (map toLower $ head classes) $ lookupIconFromClasses classes
       entryString = printf "%-20s%-40s %+30s in %s \0icon\x1f%s"
                     classTitle (take 40 name) " " (workspaceToName (W.tag ws)) iconName
   return entryString
@@ -451,6 +463,14 @@ chromeTabAction doSplit action selected =
         spawn $ printf command $ show tid
         return ()
 
+menuIndexArgs :: MonadIO m => String -> [String] -> [(String, a)] ->
+               m (Maybe a)
+menuIndexArgs menuCmd args selectionPairs = do
+  selection <- menuFunction (map fst selectionPairs)
+  pure $ snd <$> (readMay selection >>= atMay selectionPairs)
+      where
+        menuFunction = DM.menuArgs menuCmd args
+
 -- This needs access to X in order to unminimize, which means that it can't be
 -- done with the existing window bringer interface
 myWindowAct c@WindowBringerConfig {menuCommand = cmd, menuArgs = args}
@@ -464,9 +484,8 @@ myWindowAct c@WindowBringerConfig {menuCommand = cmd, menuArgs = args}
           if filterVisible
           then c {windowFilter = not . flip elem visible}
           else c
-  ws <- windowMap' actualConfig
-  let options = M.union (M.map Left ws) (M.map Right M.empty)
-  selection <- DM.menuMapArgs cmd args options
+  ws <- M.toList <$> windowMap' actualConfig
+  selection <- menuIndexArgs cmd args ws
   whenJust selection action
 
 doBringWindow window =
@@ -476,14 +495,13 @@ myWindowAction filterVisible =
   andDeactivateFull . maybeUnminimizeAfter . myWindowAct myWindowBringerConfig filterVisible
 
 myGoToWindow =
-  myWindowAction False $ chromeTabAction False $ windows . greedyFocusWindow
+  myWindowAction False $ windows . greedyFocusWindow
 
-myBringWindow = myWindowAction True $ chromeTabAction True doBringWindow
+myBringWindow = myWindowAction True $ doBringWindow
 
 myReplaceWindow =
   swapMinimizeStateAfter $
-  myWindowAct myWindowBringerConfig True $
-  chromeTabAction True (windows . swapFocusedWith)
+  myWindowAct myWindowBringerConfig True $ (windows . swapFocusedWith)
 
 -- Workspace Names for EWMH
 
