@@ -103,7 +103,7 @@ in
     gitter
     google-chrome
     hexchat
-    keybase-gui-fixed
+    keybase-gui
     kleopatra
     kodi
     libreoffice
