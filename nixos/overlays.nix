@@ -1,6 +1,13 @@
 self: super:
 
 {
+  rofi = super.rofi.overrideAttrs(_: rec {
+    version = "1.5.3";
+    src = super.fetchurl {
+      url = "https://github.com/DaveDavenport/rofi/releases/download/${version}/rofi-${version}.tar.gz";
+      sha256 = "1mskknfnpgmaghplwcyc44qc8swb1f9qiyi67fz9i77jijjpj1lx";
+    };
+  });
   clipit = super.clipit.overrideAttrs (oldAttrs: rec {
     version = "50d983514386029a1f133187902084b753458f32";
     preConfigure = "./autogen.sh";
