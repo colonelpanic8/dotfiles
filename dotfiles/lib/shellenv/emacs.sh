@@ -130,7 +130,11 @@ function emacs_pager {
 
 # Make emacs the default editor.
 export EDITOR="$HOME/.lib/bin/editor.sh"
-export ALTERNATE_EDITOR=""
+# XXX: Set alternate editor to less on purpose to avoid having a new emacs
+# daemon start. For some reason the client doesn't detect some running emacs
+# serves and I'd rather it not try to start a new daemon when I'm already inside
+# emacs.
+export ALTERNATE_EDITOR="less"
 export VISUAL="$EDITOR"
 export GIT_EDITOR="$EDITOR"
 
