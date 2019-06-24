@@ -121,12 +121,13 @@ in
     zoom-us
 
     # Appearance
-    numix-icon-theme-circle
+    gnome-breeze
     gnome3.adwaita-icon-theme
     hicolor-icon-theme
+    materia-theme
+    numix-icon-theme-circle
     plasma5.breeze-gtk
     plasma5.breeze-qt5
-    gnome-breeze
 
     # Haskell Desktop
     (import ../dotfiles/config/taffybar/default.nix)
