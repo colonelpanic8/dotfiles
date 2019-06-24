@@ -23,11 +23,12 @@ executable imalison-xmonad
                      , multimap>=1.2.1
                      , process>=1.4.3.0
                      , split
+                     , taffybar
                      , transformers>=0.5.2.0
                      , tuple >= 0.3.0.2
                      , utf8-string
-                     , xmonad-contrib>=0.13
-                     , xmonad>=0.13
+                     , xmonad-contrib
+                     , xmonad
   hs-source-dirs:      .
   other-modules:     PagerHints
   default-language:    Haskell2010

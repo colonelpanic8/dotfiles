@@ -10,6 +10,8 @@ import           Control.Monad.Trans.Class
 import           Control.Monad.Trans.Maybe
 import           Data.Aeson
 import qualified Data.ByteString.Lazy as B
+import           Data.Char
+import           Data.Foldable
 import           Data.List
 import           Data.List.Split
 import qualified Data.Map as M
@@ -24,7 +26,10 @@ import           Network.HostName
 import           PagerHints
 import           System.Directory
 import           System.FilePath.Posix
+import           System.IO.Unsafe
 import           System.Process
+import           System.Taffybar.Hooks
+import           System.Taffybar.Information.XDG.DesktopEntry
 import           Text.Printf
 import           Unsafe.Coerce
 import           XMonad hiding ( (|||) )
@@ -173,7 +178,7 @@ followingWindow action = do
   whenJust orig $ windows . W.focusWindow
   return res
 
-myDmenuArgs = ["-dmenu", "-i"]
+myDmenuArgs = ["-dmenu", "-i", "-show-icons"]
 
 myDmenu = DM.menuArgs "rofi" myDmenuArgs
 
@@ -330,7 +335,7 @@ deactivateFullAnd action = sequence_ [deactivateFull, action]
 
 andDeactivateFull action = sequence_ [action, deactivateFull]
 
-goFullscreen = sendMessage $ Toggle NBFULL
+goFullscreen = sendMessage $ JumpToLayout "Tabbed Simplest"
 
 -- Layout setup
 
@@ -389,17 +394,31 @@ getVirtualClass = flip findM virtualClasses . classIfMatches
 
 getClass w = fromMaybe <$> getClassRaw w <*> getVirtualClass w
 
+desktopEntriesMap :: MM.MultiMap String DesktopEntry
+desktopEntriesMap =
+  unsafePerformIO $ do
+    tee id (>>= writeToHomeDirLog . show . MM.keys) $
+        directoryEntriesByClassName <$> getDirectoryEntriesDefault
+
+lookupIconFromClasses classes =
+  getFirst $ fold $ First . deIcon <$> (classes >>= idAndLower >>= flip MM.lookup desktopEntriesMap)
+    where idAndLower value = [value, map toLower value]
+
 myDecorateName ws w = do
   name <- show <$> getName w
+  rawClass <- getClassRaw w
   classTitle <- getClass w
   workspaceToName <- getWorkspaceNames
-  return $ printf "%-20s%-40s %+30s" classTitle (take 40 name)
-           "in " ++ workspaceToName (W.tag ws)
+  let iconName = fromMaybe "" $ lookupIconFromClasses [rawClass, classTitle]
+      entryString = printf "%-20s%-40s %+30s in %s \0icon\x1f%s"
+                    classTitle (take 40 name) " " (workspaceToName (W.tag ws)) iconName
+  return entryString
 
-data ChromeInfo = ChromeInfo { tabId :: Int
-                             , tabUri :: String
-                             , tabTitle :: String
-                             } deriving (Eq, Show)
+data ChromeInfo = ChromeInfo
+  { tabId :: Int
+  , tabUri :: String
+  , tabTitle :: String
+  } deriving (Eq, Show)
 
 getChromeTabInfo = do
   output <- runProcessWithInput "chromix-too" ["ls"] ""
@@ -434,10 +453,10 @@ chromeTabAction doSplit action selected =
 
 -- This needs access to X in order to unminimize, which means that it can't be
 -- done with the existing window bringer interface
-myWindowAct c@WindowBringerConfig {menuCommand = cmd, menuArgs = args} filterVisible action = do
+myWindowAct c@WindowBringerConfig {menuCommand = cmd, menuArgs = args}
+            filterVisible action = do
   visible <- visibleWindows
   currentlyFullscreen <- isToggleActiveInCurrent NBFULL
-  -- Uncomment filter to remove windows that are visible
   let actualConfig =
         if fromMaybe False currentlyFullscreen
         then c
@@ -446,7 +465,6 @@ myWindowAct c@WindowBringerConfig {menuCommand = cmd, menuArgs = args} filterVis
           then c {windowFilter = not . flip elem visible}
           else c
   ws <- windowMap' actualConfig
-  -- chromeTabs <- liftIO getChromeTabInfo
   let options = M.union (M.map Left ws) (M.map Right M.empty)
   selection <- DM.menuMapArgs cmd args options
   whenJust selection action
