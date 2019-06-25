@@ -24,7 +24,7 @@ executable imalison-xmonad
                      , process>=1.4.3.0
                      , safe
                      , split
-                     , taffybar
+                     , xdg-desktop-entry
                      , transformers>=0.5.2.0
                      , tuple >= 0.3.0.2
                      , utf8-string

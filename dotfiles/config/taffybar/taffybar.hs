@@ -117,7 +117,6 @@ cssFileByHostname =
   ]
 
 main = do
-  -- logDebug
   hostName <- getHostName
   homeDirectory <- getHomeDirectory
   cssFilePath <-

@@ -28,11 +28,10 @@ import           Network.HostName
 import           PagerHints
 import           Safe
 import           System.Directory
+import           System.Environment.XDG.DesktopEntry
 import           System.FilePath.Posix
 import           System.IO.Unsafe
 import           System.Process
-import           System.Taffybar.Hooks
-import           System.Taffybar.Information.XDG.DesktopEntry
 import           Text.Printf
 import           Unsafe.Coerce
 import           XMonad hiding ( (|||) )
@@ -401,7 +400,7 @@ desktopEntriesMap :: MM.MultiMap String DesktopEntry
 desktopEntriesMap =
   unsafePerformIO $ do
     tee id (>>= writeToHomeDirLog . show . MM.keys) $
-        directoryEntriesByClassName <$> getDirectoryEntriesDefault
+        indexDesktopEntriesByClassName <$> getDirectoryEntriesDefault
 
 lookupIconFromClasses classes =
   getFirst $ fold $ First . deIcon <$>
