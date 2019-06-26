@@ -154,6 +154,7 @@ in
     pommed_light
     rofi
     rofi-pass
+    rofi-systemd
     skippy-xd
     synergy
     udiskie
@@ -334,7 +335,6 @@ in
         systemctl --user import-environment GDK_PIXBUF_MODULE_FILE
       '';
     };
-
   };
 
   virtualisation.docker.enable = true;

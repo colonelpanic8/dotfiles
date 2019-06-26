@@ -1030,7 +1030,7 @@ addKeys conf@XConfig { modMask = modm } =
     , ((hyper, xK_k), spawn "rofi_kill_process.sh")
     , ((hyper .|. shiftMask, xK_k),
        spawn "rofi_kill_all.sh")
-    , ((hyper, xK_r), spawn "rofi_systemd.sh")
+    , ((hyper, xK_r), spawn "rofi-systemd")
     , ((hyper, xK_0), spawn "tvpower.js")
     , ((modalt, xK_z), spawn "split_chrome_tab_to_next_screen.sh")
     , ((hyper, xK_9), spawn "start_synergy.sh")
@@ -1038,6 +1038,8 @@ addKeys conf@XConfig { modMask = modm } =
     , ((hyper, xK_space), spawn "skippy-xd")
     , ((hyper, xK_i), spawn "rofi_select_input.hs")
     , ((hyper, xK_o), spawn "rofi_paswitch.sh")
+    , ((modm, xK_apostrophe), spawn "load_default_map.sh")
+    , ((modalt, xK_apostrophe), spawn "load_xkb_map.sh")
 
     -- Media keys
 
