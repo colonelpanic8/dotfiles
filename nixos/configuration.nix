@@ -16,9 +16,6 @@ let
   ];
   python-with-my-packages = pkgs.python3.withPackages my-python-packages;
   all-hies = import (fetchTarball "https://github.com/infinisil/all-hies/tarball/master") {};
-  xmonadSource = pkgs.lib.sourceByRegex ../dotfiles/config/xmonad [
-    "xmonad.hs" "imalison-xmonad.cabal" "PagerHints.hs" "LICENSE"
-  ];
   notifications-tray-icon-source = pkgs.fetchFromGitHub {
     owner = "IvanMalison";
     repo = "notifications-tray-icon";
@@ -131,7 +128,7 @@ in
 
     # Haskell Desktop
     (import ../dotfiles/config/taffybar/default.nix)
-    (haskellPackages.callCabal2nix "imalison-xmonad" xmonadSource { })
+    (import ../dotfiles/config/xmonad/default.nix)
     (ntiHaskellPackages.callCabal2nix "notifications-tray-icon" notifications-tray-icon-source { })
     haskellPackages.gtk-sni-tray
     haskellPackages.status-notifier-item
