@@ -340,11 +340,14 @@ in
 
   };
 
+  virtualisation.docker.enable = true;
+
   users.extraUsers = let
     extraGroups = [
       "audio"
       "adbusers"
       "disk"
+      "docker"
       "networkmanager"
       "systemd-journal"
       "video"
