@@ -5,7 +5,7 @@
 
 @define-color active-window-color @white;
 @define-color urgent-window-color @taffy-blue;
-@define-color font-color @black;
+@define-color font-color @white;
 @define-color menu-background-color @white;
 @define-color menu-font-color @black;
 
@@ -28,9 +28,14 @@
 }
 
 .contents {
-	padding: 3px;
-	transition: background-color .5s;
+	padding: 1px;
+	transition: border-color .5s, background-color .5s;
 	border-radius: 6px;
+	/* This transparent border is needed because we will run in to sizing issues
+	   without it because we only check sizing one time. */
+	border-color: @transparent;
+	border-width: 2px;
+	border-style: solid;
 }
 
 /* Workspaces styling */
@@ -43,6 +48,8 @@
 
 .active .contents {
 	background-color: rgba(0.0, 0.0, 0.0, 0.2);
+	border-color: @font-color;
+	border-style: solid;
 }
 
 .visible .contents {
@@ -60,18 +67,22 @@
    This will actually affect all widgets, (not just the workspace icons), but
    that is what we want since we want the icons to look the same. */
 .auto-size-image, .sni-tray  {
-	padding: 1px;
+	border-color: @transparent;
+	border-style: solid;
+	border-width: 1px;
+	/* padding: 1px; */
 }
 
 .window-icon-container.active {
 	background-color: rgba(255.0, 255.0, 255.0, 0.3);
+	border-color: @font-color;
 }
 
 .window-icon-container.urgent {
 }
 
 .window-icon-container.inactive .window-icon {
-  padding: 0px;
+	padding: 0px;
 }
 
 .window-icon-container.minimized .window-icon {
