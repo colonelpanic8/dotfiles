@@ -125,4 +125,4 @@ if __name__ == '__main__':
     else:
         output = output_path
 
-    print(output)
+    print(output, end='')
