@@ -24,8 +24,21 @@ let
   };
   ntiOverlay = (import (notifications-tray-icon-source.outPath + "/overlay.nix"));
   ntiHaskellPackages = (ntiOverlay pkgs pkgs).haskellPackages;
+  # XXX: Can't use pkgs here because it would cause infinite recursion
+  lorriSource = (import <nixpkgs> {}).fetchurl {
+    url = "https://raw.githubusercontent.com/target/lorri/master/direnv/nixos.nix";
+    sha256 = "057kqbivf4xbhakz1j1b19sxd5c6p6rqhg6pwnq2zfvvmp8nmylm";
+  };
+  lorriBinSource = pkgs.fetchFromGitHub {
+    owner = "target";
+    repo = "lorri";
+    rev = "80ca3e7c12f74af035cdeff289ba2aa3c8950cb2";
+    sha256 = "05a0nrg9hp4li5nmyf4a5975p4amq19f17rqxncf7pcagyw0sax2";
+  };
+  lorri = (import (lorriBinSource.outPath + "/default.nix")) { inherit pkgs; };
 in
 {
+  imports = [ lorriSource.outPath ];
   nixpkgs.overlays = [
     (import ./overlays.nix)
     (import ../dotfiles/config/xmonad/overlay.nix)
@@ -263,6 +276,7 @@ in
     # Nix
     nix-prefetch-git
     cachix
+    lorri
 
     # Miscellaneous
     android-udev-rules
