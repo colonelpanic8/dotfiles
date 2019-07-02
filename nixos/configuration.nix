@@ -271,7 +271,6 @@ in
     usbutils
     valgrind
     wget
-    zsh
 
     # Nix
     nix-prefetch-git
@@ -290,14 +289,7 @@ in
   # };
 
   # Enabling zsh will clobber path because of the way it sets up /etc/zshenv
-  # programs.zsh.enable = true;
-  # Instead we just make sure to source profile from zsh
-
-  environment.etc."zshenv".text =
-    ''
-      if [ -n "$__ETC_PROFILE_DONE" ]; then return; fi
-      source /etc/profile
-    '';
+  programs.zsh.enable = true;
 
   programs.gnupg.agent = { enable = true; enableSSHSupport = true; };
   programs.adb.enable = true;
