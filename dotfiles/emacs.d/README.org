@@ -2799,37 +2799,41 @@ The following is taken from [[https://github.com/syl20bnr/spacemacs/blob/a650877
 #+END_SRC
 *** haskell
 #+BEGIN_SRC emacs-lisp
+(defvar imalison:use-lsp-haskell nil)
+(defvar imalison:dfinity nil)
 (use-package haskell-mode
   :commands haskell-mode
-  :bind (:map haskell-mode-map
-              ("C-c h" . haskell-hoogle))
+  :bind
+  (:map haskell-mode-map
+        ("C-c h" . haskell-hoogle))
+  :preface
+  (progn
+    (defun imalison:haskell-mode ()
+      (turn-on-haskell-indent)
+      (when imalison:dfinity
+        (setq
+         haskell-mode-stylish-haskell-path "brittany"
+         haskell-mode-stylish-haskell-args '("-")))
+      (when imalison:use-lsp-haskell
+        (lsp))))
   :config
   (progn
-    (setq haskell-hoogle-command "hoogle")
     (setq
-       ;; Use notify.el (if you have it installed) at the end of running
-       ;; Cabal commands or generally things worth notifying.
-       haskell-notify-p t
-       ;; Remove annoying error popups
-       haskell-interactive-popup-errors nil
-       ;; Better import handling
-       haskell-process-suggest-remove-import-lines t
-       haskell-process-auto-import-loaded-modules nil
-       haskell-stylish-on-save nil
-	   haskell-tags-on-save t
-	   haskell-mode-stylish-haskell-path "brittany"
-	   haskell-mode-stylish-haskell-args '("-")
-	   haskell-indent-offset 2)
-    (require 'flycheck)
-    (delq 'haskell-stack-ghc flycheck-checkers)
-    (add-hook 'haskell-mode-hook 'turn-on-haskell-indent)))
+     haskell-hoogle-command "hoogle"
+     haskell-interactive-popup-errors nil
+     haskell-process-auto-import-loaded-modules nil
+     haskell-process-show-overlays nil
+     haskell-stylish-on-save nil
+     haskell-tags-on-save t
+     haskell-indent-offset 2)
+
+	(require 'flycheck)
+    (cl-loop for checker in '(haskell-stack-ghc haskell-ghc haskell-hlint)
+             do (delq checker flycheck-checkers))))
 #+END_SRC
-**** haskell-ide-engine
+**** haskell-ide-engine (lsp-haskell)
 #+BEGIN_SRC emacs-lisp
-(use-package lsp-haskell
-  :disabled t
-  :config
-  (add-hook 'haskell-mode-hook 'lsp))
+
 #+END_SRC
 **** intero
 Intero seems to be causing hangs, so it has been disabled
