@@ -4315,6 +4315,7 @@ I had to disable this mode because something that it does messes with coding set
 ** direnv
 #+begin_src emacs-lisp
 (use-package direnv
+  :demand t
   :config
   (direnv-mode +1))
 #+end_src
