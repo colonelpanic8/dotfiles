@@ -17,6 +17,13 @@
     pmMethod = "bbswitch";
   };
 
+  # disable card with bbswitch by default since we turn it on only on demand!
+  hardware.nvidiaOptimus.disable = true;
+
+  # install nvidia drivers in addition to intel one
+  hardware.opengl.extraPackages = [ pkgs.linuxPackages.nvidia_x11.out ];
+  hardware.opengl.extraPackages32 = [ pkgs.linuxPackages.nvidia_x11.lib32 ];
+
   boot.initrd.availableKernelModules = [ "xhci_pci" "nvme" "usb_storage" "usbhid" "sd_mod" ];
   boot.kernelModules = [ "kvm-intel" ];
   boot.extraModulePackages = [ ];

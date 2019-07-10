@@ -30,15 +30,16 @@ let
     sha256 = "057kqbivf4xbhakz1j1b19sxd5c6p6rqhg6pwnq2zfvvmp8nmylm";
   };
   lorriBinSource = pkgs.fetchFromGitHub {
-    owner = "target";
+    owner = "IvanMalison";
     repo = "lorri";
-    rev = "80ca3e7c12f74af035cdeff289ba2aa3c8950cb2";
-    sha256 = "05a0nrg9hp4li5nmyf4a5975p4amq19f17rqxncf7pcagyw0sax2";
+    rev = "d3e452ebc2b24ab86aec18af44c8217b2e469b2a";
+    sha256 = "07yf3gl9sixh7acxayq4q8h7z4q8a66412z0r49sr69yxb7b4q89";
   };
   lorri = (import (lorriBinSource.outPath + "/default.nix")) { inherit pkgs; };
 in
 {
   imports = [ lorriSource.outPath ];
+
   nixpkgs.overlays = [
     (import ./overlays.nix)
     (import ../dotfiles/config/xmonad/overlay.nix)
@@ -118,6 +119,7 @@ in
     kodi
     libreoffice
     lxappearance
+    okular
     pulseeffects
     quassel
     rxvt_unicode
@@ -136,6 +138,7 @@ in
     hicolor-icon-theme
     materia-theme
     numix-icon-theme-circle
+    papirus-icon-theme
     plasma5.breeze-gtk
     plasma5.breeze-qt5
 
@@ -266,6 +269,7 @@ in
     scrot
     silver-searcher
     stow
+    subversion
     tmux
     unzip
     usbutils
@@ -288,7 +292,6 @@ in
   #   GDK_PIXBUF_MODULE_FILE = "${pkgs.librsvg.out}/lib/gdk-pixbuf-2.0/2.10.0/loaders.cache";
   # };
 
-  # Enabling zsh will clobber path because of the way it sets up /etc/zshenv
   programs.zsh.enable = true;
 
   programs.gnupg.agent = { enable = true; enableSSHSupport = true; };
@@ -325,13 +328,22 @@ in
     };
     windowManager = {
       default = "xmonad";
-      session = [{
-        name = "xmonad";
-        start = ''
-          /usr/bin/env imalison-xmonad &
-          waitPID=$!
-        '';
-      }];
+      session = [
+        {
+          name = "xmonad";
+          start = ''
+            /usr/bin/env imalison-xmonad &
+            waitPID=$!
+          '';
+        }
+        {
+          name = "waymonad";
+          start = ''
+            /usr/bin/env waymonad
+            waitPID=$!
+          '';
+        }
+      ];
     };
     displayManager = {
       sddm = {

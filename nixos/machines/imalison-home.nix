@@ -53,9 +53,6 @@
     }
   ];
 
-  boot.loader.grub.device = "/dev/sda";
-  boot.loader.grub.useOSProber = true;
-
   networking.hostName = "imalison-home";
   boot.loader.efi.canTouchEfiVariables = true;
 
