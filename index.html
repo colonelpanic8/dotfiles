@@ -3,7 +3,7 @@
 "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
-<!-- 2019-06-27 Thu 04:26 -->
+<!-- 2019-07-10 Wed 20:35 -->
 <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>&lrm;</title>
@@ -3961,7 +3961,7 @@ for the JavaScript code in this tag.
 <li><a href="#rust">16.1.10. rust</a></li>
 <li><a href="#haskell">16.1.11. haskell</a>
 <ul>
-<li><a href="#haskellideengine">16.1.11.1. haskell-ide-engine</a></li>
+<li><a href="#haskellideenginelsphaskell">16.1.11.1. haskell-ide-engine (lsp-haskell)</a></li>
 <li><a href="#intero">16.1.11.2. intero</a></li>
 <li><a href="#hindent">16.1.11.3. hindent</a></li>
 <li><a href="#ghcmod">16.1.11.4. ghc-mod</a></li>
@@ -4020,6 +4020,7 @@ for the JavaScript code in this tag.
 <li><a href="#markdownmode">16.3.3. markdown-mode</a></li>
 <li><a href="#plantumlmode">16.3.4. plantuml-mode</a></li>
 <li><a href="#wsdmode">16.3.5. wsd-mode</a></li>
+<li><a href="#adocmode">16.3.6. adoc-mode</a></li>
 </ul>
 </li>
 <li><a href="#utility">16.4. Utility</a>
@@ -4035,7 +4036,8 @@ for the JavaScript code in this tag.
 <ul>
 <li><a href="#magit">17.1. magit</a>
 <ul>
-<li><a href="#magithub">17.1.1. magithub</a></li>
+<li><a href="#forge">17.1.1. forge</a></li>
+<li><a href="#magithub">17.1.2. magithub</a></li>
 </ul>
 </li>
 <li><a href="#vc">17.2. vc</a></li>
@@ -8224,41 +8226,45 @@ The following is taken from <a href="https://github.com/syl20bnr/spacemacs/blob/
 <h4 id="haskell"><span class="section-number-4">16.1.11</span> haskell <a href="#haskell"><svg aria-hidden="true" class="octicon octicon-link" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a></h4>
 <div class="outline-text-4" id="text-16-1-11">
 <div class="org-src-container">
-<pre class="src src-emacs-lisp">(<span class="org-keyword">use-package</span> <span class="org-constant">haskell-mode</span>
+<pre class="src src-emacs-lisp">(<span class="org-keyword">defvar</span> <span class="org-variable-name">imalison:use-lsp-haskell</span> nil)
+(<span class="org-keyword">defvar</span> <span class="org-variable-name">imalison:dfinity</span> nil)
+(<span class="org-keyword">use-package</span> <span class="org-constant">haskell-mode</span>
   <span class="org-builtin">:commands</span> haskell-mode
-  <span class="org-builtin">:bind</span> (<span class="org-builtin">:map</span> haskell-mode-map
-              (<span class="org-string">"C-c h"</span> . haskell-hoogle))
+  <span class="org-builtin">:bind</span>
+  (<span class="org-builtin">:map</span> haskell-mode-map
+        (<span class="org-string">"C-c h"</span> . haskell-hoogle))
+  <span class="org-builtin">:preface</span>
+  (<span class="org-keyword">progn</span>
+    (<span class="org-keyword">defun</span> <span class="org-function-name">imalison:haskell-mode</span> ()
+      (turn-on-haskell-indent)
+      (<span class="org-keyword">when</span> imalison:dfinity
+        (<span class="org-keyword">setq</span>
+         haskell-mode-stylish-haskell-path <span class="org-string">"brittany"</span>
+         haskell-mode-stylish-haskell-args '(<span class="org-string">"-"</span>)))
+      (<span class="org-keyword">when</span> imalison:use-lsp-haskell
+        (lsp))))
   <span class="org-builtin">:config</span>
   (<span class="org-keyword">progn</span>
-    (<span class="org-keyword">setq</span> haskell-hoogle-command <span class="org-string">"hoogle"</span>)
     (<span class="org-keyword">setq</span>
-       <span class="org-comment-delimiter">;; </span><span class="org-comment">Use notify.el (if you have it installed) at the end of running</span>
-       <span class="org-comment-delimiter">;; </span><span class="org-comment">Cabal commands or generally things worth notifying.</span>
-       haskell-notify-p t
-       <span class="org-comment-delimiter">;; </span><span class="org-comment">Remove annoying error popups</span>
-       haskell-interactive-popup-errors nil
-       <span class="org-comment-delimiter">;; </span><span class="org-comment">Better import handling</span>
-       haskell-process-suggest-remove-import-lines t
-       haskell-process-auto-import-loaded-modules nil
-       haskell-stylish-on-save nil
-           haskell-tags-on-save t
-           haskell-mode-stylish-haskell-path <span class="org-string">"brittany"</span>
-           haskell-mode-stylish-haskell-args '(<span class="org-string">"-"</span>)
-           haskell-indent-offset 2)
-    (<span class="org-keyword">require</span> '<span class="org-constant">flycheck</span>)
-    (delq 'haskell-stack-ghc flycheck-checkers)
-    (add-hook 'haskell-mode-hook 'turn-on-haskell-indent)))
+     haskell-hoogle-command <span class="org-string">"hoogle"</span>
+     haskell-interactive-popup-errors nil
+     haskell-process-auto-import-loaded-modules nil
+     haskell-process-show-overlays nil
+     haskell-stylish-on-save nil
+     haskell-tags-on-save t
+     haskell-indent-offset 2)
+
+        (<span class="org-keyword">require</span> '<span class="org-constant">flycheck</span>)
+    (<span class="org-keyword">cl-loop</span> for checker in '(haskell-stack-ghc haskell-ghc haskell-hlint)
+             do (delq checker flycheck-checkers))))
 </pre>
 </div>
 </div>
-<div id="outline-container-haskellideengine" class="outline-5">
-<h5 id="haskellideengine"><span class="section-number-5">16.1.11.1</span> haskell-ide-engine <a href="#haskellideengine"><svg aria-hidden="true" class="octicon octicon-link" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a></h5>
+<div id="outline-container-haskellideenginelsphaskell" class="outline-5">
+<h5 id="haskellideenginelsphaskell"><span class="section-number-5">16.1.11.1</span> haskell-ide-engine (lsp-haskell) <a href="#haskellideenginelsphaskell"><svg aria-hidden="true" class="octicon octicon-link" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a></h5>
 <div class="outline-text-5" id="text-16-1-11-1">
 <div class="org-src-container">
-<pre class="src src-emacs-lisp">(<span class="org-keyword">use-package</span> <span class="org-constant">lsp-haskell</span>
-  <span class="org-builtin">:disabled</span> t
-  <span class="org-builtin">:config</span>
-  (add-hook 'haskell-mode-hook 'lsp))
+<pre class="src src-emacs-lisp">
 </pre>
 </div>
 </div>
@@ -9413,6 +9419,16 @@ This function replaces the default naming scheme with a call to
 </div>
 </div>
 </div>
+<div id="outline-container-adocmode" class="outline-4">
+<h4 id="adocmode"><span class="section-number-4">16.3.6</span> adoc-mode <a href="#adocmode"><svg aria-hidden="true" class="octicon octicon-link" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a></h4>
+<div class="outline-text-4" id="text-16-3-6">
+<div class="org-src-container">
+<pre class="src src-emacs-lisp">(<span class="org-keyword">use-package</span> <span class="org-constant">adoc-mode</span>
+  <span class="org-builtin">:mode</span> <span class="org-string">"\\.adoc\\'"</span>)
+</pre>
+</div>
+</div>
+</div>
 </div>
 <div id="outline-container-utility" class="outline-3">
 <h3 id="utility"><span class="section-number-3">16.4</span> Utility <a href="#utility"><svg aria-hidden="true" class="octicon octicon-link" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a></h3>
@@ -9500,9 +9516,19 @@ This function replaces the default naming scheme with a call to
 </pre>
 </div>
 </div>
-<div id="outline-container-magithub" class="outline-4">
-<h4 id="magithub"><span class="section-number-4">17.1.1</span> magithub <a href="#magithub"><svg aria-hidden="true" class="octicon octicon-link" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a></h4>
+<div id="outline-container-forge" class="outline-4">
+<h4 id="forge"><span class="section-number-4">17.1.1</span> forge <a href="#forge"><svg aria-hidden="true" class="octicon octicon-link" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a></h4>
 <div class="outline-text-4" id="text-17-1-1">
+<div class="org-src-container">
+<pre class="src src-emacs-lisp">(<span class="org-keyword">use-package</span> <span class="org-constant">forge</span>
+  <span class="org-builtin">:after</span> magit)
+</pre>
+</div>
+</div>
+</div>
+<div id="outline-container-magithub" class="outline-4">
+<h4 id="magithub"><span class="section-number-4">17.1.2</span> magithub <a href="#magithub"><svg aria-hidden="true" class="octicon octicon-link" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a></h4>
+<div class="outline-text-4" id="text-17-1-2">
 <p>
 I've disabled magithub because it causes magit to be super slow
 </p>
@@ -10191,6 +10217,7 @@ I don't use iedit directly, but it is used by <a href="#emr">emr</a> and I need 
 <div class="outline-text-3" id="text-22-5">
 <div class="org-src-container">
 <pre class="src src-emacs-lisp">(<span class="org-keyword">use-package</span> <span class="org-constant">tramp</span>
+  <span class="org-builtin">:straight</span> nil
   <span class="org-builtin">:commands</span> tramp
   <span class="org-builtin">:config</span>
   (<span class="org-keyword">setq</span> tramp-default-method <span class="org-string">"scp"</span>))
@@ -10234,6 +10261,7 @@ I had to disable this mode because something that it does messes with coding set
 <div class="outline-text-3" id="text-22-8">
 <div class="org-src-container">
 <pre class="src src-emacs-lisp">(<span class="org-keyword">use-package</span> <span class="org-constant">direnv</span>
+  <span class="org-builtin">:demand</span> t
   <span class="org-builtin">:config</span>
   (direnv-mode +1))
 </pre>
@@ -11099,7 +11127,7 @@ Ensure all themes that I use are installed:
 <div class="outline-text-3" id="text-23-5">
 <div class="org-src-container">
 <pre class="src src-emacs-lisp">(<span class="org-keyword">use-package</span> <span class="org-constant">page-break-lines</span>
-  <span class="org-builtin">:defer</span> 5
+  <span class="org-builtin">:demand</span> t
   <span class="org-builtin">:diminish</span> (page-break-lines-mode)
   <span class="org-builtin">:commands</span> page-break-lines-mode
   <span class="org-builtin">:init</span>
