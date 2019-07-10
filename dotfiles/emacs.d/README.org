@@ -4293,6 +4293,7 @@ I don't use iedit directly, but it is used by [[*emr][emr]] and I need to disabl
 ** tramp
 #+BEGIN_SRC emacs-lisp
 (use-package tramp
+  :straight nil
   :commands tramp
   :config
   (setq tramp-default-method "scp"))
@@ -4928,7 +4929,7 @@ Ensure all themes that I use are installed:
 ** page-break-lines
 #+BEGIN_SRC emacs-lisp
 (use-package page-break-lines
-  :defer 5
+  :demand t
   :diminish (page-break-lines-mode)
   :commands page-break-lines-mode
   :init
