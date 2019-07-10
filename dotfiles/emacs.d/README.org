@@ -3816,6 +3816,11 @@ alphanumeric characters only."
     (advice-add 'magit-diff-visit-file :after 'imalison:after-magit-visit-file)
     (add-hook 'magit-popup-mode-hook 'imalison:disable-show-trailing-whitespace)))
 #+END_SRC
+*** forge
+#+begin_src emacs-lisp
+(use-package forge
+  :after magit)
+#+end_src
 *** magithub
 I've disabled magithub because it causes magit to be super slow
 #+BEGIN_SRC emacs-lisp
