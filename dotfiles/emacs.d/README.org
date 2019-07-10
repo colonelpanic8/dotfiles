@@ -3752,6 +3752,11 @@ alphanumeric characters only."
 (use-package wsd-mode
   :commands (wsd-mode))
 #+END_SRC
+*** adoc-mode
+#+begin_src emacs-lisp
+(use-package adoc-mode
+  :mode "\\.adoc\\'")
+#+end_src
 ** Utility
 *** restclient
 #+BEGIN_SRC emacs-lisp
