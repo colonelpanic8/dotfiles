@@ -19,8 +19,8 @@ let
   notifications-tray-icon-source = pkgs.fetchFromGitHub {
     owner = "IvanMalison";
     repo = "notifications-tray-icon";
-    rev = "f28288849a39feec8972a4181ce18ccdde6cc483";
-    sha256 = "11r95m316x93bs1dj0bvas8adpd0xgql2jz8a8dnzv0fv4mw7aj4";
+    rev = "e2a412922438e46f0a67bf2c09f66b5285c51a68";
+    sha256 = "07401ic45b7a343146avy4466mbqqx1f86bad8d9dy2qmi8hlhx4";
   };
   ntiOverlay = (import (notifications-tray-icon-source.outPath + "/overlay.nix"));
   ntiHaskellPackages = (ntiOverlay pkgs pkgs).haskellPackages;
@@ -36,6 +36,7 @@ let
     sha256 = "07yf3gl9sixh7acxayq4q8h7z4q8a66412z0r49sr69yxb7b4q89";
   };
   lorri = (import (lorriBinSource.outPath + "/default.nix")) { inherit pkgs; };
+  notifications-tray-icon = (import (notifications-tray-icon-source.outPath + "/default.nix"));
 in
 {
   imports = [ lorriSource.outPath ];
