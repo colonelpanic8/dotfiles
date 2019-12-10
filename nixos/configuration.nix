@@ -310,7 +310,6 @@ in
     layout = "us";
     desktopManager = {
       plasma5.enable = true;
-      gnome3.enable = true;
       default = "none";
     };
     windowManager = {
