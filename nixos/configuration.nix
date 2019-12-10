@@ -22,28 +22,12 @@ let
     rev = "e2a412922438e46f0a67bf2c09f66b5285c51a68";
     sha256 = "07401ic45b7a343146avy4466mbqqx1f86bad8d9dy2qmi8hlhx4";
   };
-  ntiOverlay = (import (notifications-tray-icon-source.outPath + "/overlay.nix"));
-  ntiHaskellPackages = (ntiOverlay pkgs pkgs).haskellPackages;
-  # XXX: Can't use pkgs here because it would cause infinite recursion
-  lorriSource = (import <nixpkgs> {}).fetchurl {
-    url = "https://raw.githubusercontent.com/target/lorri/master/direnv/nixos.nix";
-    sha256 = "057kqbivf4xbhakz1j1b19sxd5c6p6rqhg6pwnq2zfvvmp8nmylm";
-  };
-  lorriBinSource = pkgs.fetchFromGitHub {
-    owner = "IvanMalison";
-    repo = "lorri";
-    rev = "d3e452ebc2b24ab86aec18af44c8217b2e469b2a";
-    sha256 = "07yf3gl9sixh7acxayq4q8h7z4q8a66412z0r49sr69yxb7b4q89";
-  };
-  lorri = (import (lorriBinSource.outPath + "/default.nix")) { inherit pkgs; };
   notifications-tray-icon = (import (notifications-tray-icon-source.outPath + "/default.nix"));
 in
 {
-  imports = [ lorriSource.outPath ];
-
   nixpkgs.overlays = [
     (import ./overlays.nix)
-    (import ../dotfiles/config/xmonad/overlay.nix)
+    (import ../dotfiles/config/taffybar/taffybar/environment.nix)
   ];
 
   # Allow all the things
@@ -317,6 +301,8 @@ in
   services.autorandr.enable = true;
 
   services.locate.enable = true;
+
+  services.lorri.enable = true;
 
   services.xserver = {
     exportConfiguration = true;

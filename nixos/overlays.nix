@@ -51,4 +51,13 @@ self: super:
   strongswanNM = super.strongswanNM.overrideAttrs (oldAttrs: rec {
     patches = oldAttrs.patches ++ [ ./patch-strongswan.patch ];
   });
+
+  lorri = super.lorri.overrideAttrs (_: {
+    src = super.fetchFromGitHub {
+      owner = "target";
+      repo = "lorri";
+      rev = "3e57656a536aada13eb7b33c07e0d637772d095d";
+      sha256 = "1q9ddbndnda1njp8nwqklbckqxpsv2g7936b566imipmmfdb67y0";
+    };
+  });
 }
