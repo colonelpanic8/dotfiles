@@ -19,8 +19,8 @@ let
   notifications-tray-icon-source = pkgs.fetchFromGitHub {
     owner = "IvanMalison";
     repo = "notifications-tray-icon";
-    rev = "e2a412922438e46f0a67bf2c09f66b5285c51a68";
-    sha256 = "07401ic45b7a343146avy4466mbqqx1f86bad8d9dy2qmi8hlhx4";
+    rev = "a855ebf924af3d695c5a10caca34b4eb88f58afb";
+    sha256 = "1pd7jhapz080v9q9iv7g8jk9an24zkipmfgg9fmfjr1qjv1zdbib";
   };
   notifications-tray-icon = (import (notifications-tray-icon-source.outPath + "/default.nix"));
 in
