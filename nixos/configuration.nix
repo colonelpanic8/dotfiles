@@ -115,6 +115,7 @@ in
     vlc
     xfce.thunar
     wire-desktop
+    yubikey-manager
     zoom-us
 
     # Appearance
@@ -197,7 +198,7 @@ in
     cargo
     carnix
     racer
-    rls
+    # rls
     rustc
 
     # Clojure
@@ -212,6 +213,7 @@ in
     bazaar
     bind
     binutils
+    cmake
     dex
     direnv
     dpkg
@@ -233,6 +235,7 @@ in
     inotify-tools
     ispell
     jq
+    libtool
     lsof
     mercurial
     ncdu
@@ -245,7 +248,7 @@ in
     plasma-workspace
     pijul
     powertop
-    prometheus_2
+    prometheus
     pscircle
     python-with-my-packages
     qt5.qttools
@@ -264,7 +267,6 @@ in
     # Nix
     nix-prefetch-git
     cachix
-    lorri
 
     # Miscellaneous
     android-udev-rules
