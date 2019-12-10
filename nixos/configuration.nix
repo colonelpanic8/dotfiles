@@ -337,7 +337,7 @@ in
         enable = true;
       };
       sessionCommands = ''
-        systemctl --user import-environment GDK_PIXBUF_MODULE_FILE
+        systemctl --user import-environment GDK_PIXBUF_MODULE_FILE DBUS_SESSION_BUS_ADDRESS
       '';
     };
   };
