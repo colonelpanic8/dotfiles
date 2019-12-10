@@ -1,5 +1,17 @@
 self: super:
 
+let
+  lorriSource = (import <nixpkgs> {}).fetchurl {
+    url = "https://raw.githubusercontent.com/target/lorri/master/direnv/nixos.nix";
+    sha256 = "057kqbivf4xbhakz1j1b19sxd5c6p6rqhg6pwnq2zfvvmp8nmylm";
+  };
+  lorriBinSource = super.fetchFromGitHub {
+    owner = "IvanMalison";
+    repo = "lorri";
+    rev = "f8efa0a10d05f2d8223e6243eafa459120eb30dc";
+    sha256 = "1bagm9bd0ybi36lypnj96cvig95qaq5bh6fdqh2wbw18awlk6vzh";
+  };
+in
 {
   rofi = super.rofi.overrideAttrs(_: rec {
     version = "1.5.3";
@@ -51,13 +63,5 @@ self: super:
   strongswanNM = super.strongswanNM.overrideAttrs (oldAttrs: rec {
     patches = oldAttrs.patches ++ [ ./patch-strongswan.patch ];
   });
-
-  lorri = super.lorri.overrideAttrs (_: {
-    src = super.fetchFromGitHub {
-      owner = "target";
-      repo = "lorri";
-      rev = "3e57656a536aada13eb7b33c07e0d637772d095d";
-      sha256 = "1q9ddbndnda1njp8nwqklbckqxpsv2g7936b566imipmmfdb67y0";
-    };
-  });
+  lorri = (import (lorriBinSource.outPath + "/default.nix")) { pkgs = super; };
 }
