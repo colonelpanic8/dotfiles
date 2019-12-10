@@ -131,8 +131,7 @@ in
     # Haskell Desktop
     (import ../dotfiles/config/taffybar/default.nix)
     (import ../dotfiles/config/xmonad/default.nix)
-    (ntiHaskellPackages.callCabal2nix "notifications-tray-icon" notifications-tray-icon-source { })
-    haskellPackages.gtk-sni-tray
+    notifications-tray-icon
     haskellPackages.status-notifier-item
     haskellPackages.xmonad
     haskellPackages.dbus-hslogger
@@ -184,7 +183,7 @@ in
     haskellPackages.hpack
     haskellPackages.hasktags
     haskellPackages.hoogle
-    (all-hies.selection { selector = p: { inherit (p) ghc864 ghc865; }; })
+    # (all-hies.selection { selector = p: { inherit (p) ghc864 ghc865; }; })
 
     # Scala
     sbt
