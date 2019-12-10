@@ -53,6 +53,8 @@ in
 
   hardware.opengl.driSupport32Bit = true;
 
+  hardware.bluetooth.enable = true;
+
   i18n = {
     consoleKeyMap = "us";
     defaultLocale = "en_US.UTF-8";
