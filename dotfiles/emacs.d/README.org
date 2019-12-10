@@ -2784,7 +2784,8 @@ The following is taken from [[https://github.com/syl20bnr/spacemacs/blob/a650877
   :hook (rust-mode . lsp)
   :preface
   (progn
-    (defun imalison:rust-mode-hook ()))
+    (defun imalison:rust-mode-hook ()
+      (setq rust-format-on-save t)))
   :config
   (progn
     (use-package toml-mode)
