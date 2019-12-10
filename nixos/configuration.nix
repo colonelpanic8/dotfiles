@@ -79,9 +79,6 @@ in
         sansSerif = [ "Roboto" ];
         serif     = [ "Source Serif Pro" ];
       };
-      ultimate = {
-        enable = false;
-      };
     };
   };
 
