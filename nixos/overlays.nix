@@ -8,18 +8,11 @@ let
   lorriBinSource = super.fetchFromGitHub {
     owner = "IvanMalison";
     repo = "lorri";
-    rev = "f8efa0a10d05f2d8223e6243eafa459120eb30dc";
-    sha256 = "1bagm9bd0ybi36lypnj96cvig95qaq5bh6fdqh2wbw18awlk6vzh";
+    rev = "94c7152745688c1268262a42d1d0fa0b7b2f6309";
+    sha256 = "07mcmj44f35yb2ifzr4zmazqv54dh0vhvkdikbymm2vdmjh8xdw8";
   };
 in
 {
-  rofi = super.rofi.overrideAttrs(_: rec {
-    version = "1.5.3";
-    src = super.fetchurl {
-      url = "https://github.com/DaveDavenport/rofi/releases/download/${version}/rofi-${version}.tar.gz";
-      sha256 = "1mskknfnpgmaghplwcyc44qc8swb1f9qiyi67fz9i77jijjpj1lx";
-    };
-  });
   clipit = super.clipit.overrideAttrs (oldAttrs: rec {
     version = "50d983514386029a1f133187902084b753458f32";
     preConfigure = "./autogen.sh";
@@ -51,17 +44,6 @@ in
       glib libwnck3 libnotify dbus-glib gnome3.gsettings-desktop-schemas
       makeWrapper libtool gnome3.gnome-common
     ];
-  });
-  networkmanager_strongswan = super.networkmanager_strongswan.overrideAttrs (oldAttrs: rec {
-    src = super.fetchFromGitHub {
-      owner = "IvanMalison";
-      repo = "NetworkManager-strongswan";
-      sha256 = "0vcg58xrjacdswz2fxahgi7shgf2v14mfpscnwza6wns8qx37yzb";
-      rev = "2849b1817926b7973a5dc530bed7250c95c733bf";
-    };
-  });
-  strongswanNM = super.strongswanNM.overrideAttrs (oldAttrs: rec {
-    patches = oldAttrs.patches ++ [ ./patch-strongswan.patch ];
   });
   lorri = (import (lorriBinSource.outPath + "/default.nix")) { pkgs = super; };
 }
