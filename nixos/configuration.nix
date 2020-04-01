@@ -34,17 +34,23 @@ in
   nixpkgs.config.allowUnfree = true;
   nixpkgs.config.android_sdk.accept_license = true;
 
+  nixpkgs.config.permittedInsecurePackages = [
+    "openssl-1.0.2u"
+  ];
+
+
   # Security and networking
   security.sudo.wheelNeedsPassword = false;
   networking.networkmanager = {
     enable = true;
-    enableStrongSwan = true;
-    packages = [ pkgs.networkmanager-l2tp ];
     extraConfig = ''
       [main]
       rc-manager=resolvconf
     '';
   };
+  # Disabling these waits disables the stuck on boot up issue
+  systemd.services.systemd-udev-settle.enable = false;
+  systemd.services.NetworkManager-wait-online.enable = false;
   networking.firewall.enable = false;
 
   # Audio
@@ -55,8 +61,9 @@ in
 
   hardware.bluetooth.enable = true;
 
+  console.keyMap = "us";
+
   i18n = {
-    consoleKeyMap = "us";
     defaultLocale = "en_US.UTF-8";
   };
 
@@ -130,7 +137,7 @@ in
     # Haskell Desktop
     (import ../dotfiles/config/taffybar/default.nix)
     (import ../dotfiles/config/xmonad/default.nix)
-    notifications-tray-icon
+    # notifications-tray-icon
     haskellPackages.status-notifier-item
     haskellPackages.xmonad
     haskellPackages.dbus-hslogger
@@ -178,7 +185,7 @@ in
     cabal-install
     cabal2nix
     ghc
-    stack
+    # stack
     haskellPackages.hpack
     haskellPackages.hasktags
     haskellPackages.hoogle
@@ -195,7 +202,6 @@ in
     # Rust
     cargo
     carnix
-    racer
     # rls
     rustc
 
@@ -234,6 +240,7 @@ in
     ispell
     jq
     libtool
+    lorri
     lsof
     mercurial
     ncdu
@@ -302,7 +309,20 @@ in
 
   services.locate.enable = true;
 
-  services.lorri.enable = true;
+  # services.lorri.enable = true;
+  systemd.user.services.lorri = {
+      description = "Lorri Daemon";
+      requires = [ "lorri.socket" ];
+      after = [ "lorri.socket" ];
+      path = with pkgs; [ config.nix.package gnutar gzip gitFull ];
+      serviceConfig = {
+        ExecStart = "${pkgs.lorri}/bin/lorri daemon";
+        PrivateTmp = true;
+        ProtectSystem = "strict";
+        ProtectHome = "read-only";
+        Restart = "on-failure";
+      };
+    };
 
   services.xserver = {
     exportConfiguration = true;
@@ -310,10 +330,8 @@ in
     layout = "us";
     desktopManager = {
       plasma5.enable = true;
-      default = "none";
     };
     windowManager = {
-      default = "xmonad";
       session = [
         {
           name = "xmonad";
@@ -336,7 +354,7 @@ in
         enable = true;
       };
       sessionCommands = ''
-        systemctl --user import-environment GDK_PIXBUF_MODULE_FILE DBUS_SESSION_BUS_ADDRESS
+        systemctl --user import-environment GDK_PIXBUF_MODULE_FILE DBUS_SESSION_BUS_ADDRESS PATH
       '';
     };
   };
