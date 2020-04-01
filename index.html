@@ -3,7 +3,7 @@
 "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
-<!-- 2019-12-10 Tue 22:04 -->
+<!-- 2020-04-01 Wed 02:52 -->
 <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>&lrm;</title>
@@ -3606,7 +3606,7 @@ a:hover {
 @licstart  The following is the entire license notice for the
 JavaScript code in this tag.
 
-Copyright (C) 2012-2019 Free Software Foundation, Inc.
+Copyright (C) 2012-2020 Free Software Foundation, Inc.
 
 The JavaScript code in this tag is free software: you can
 redistribute it and/or modify it under the terms of the GNU
@@ -8206,7 +8206,8 @@ The following is taken from <a href="https://github.com/syl20bnr/spacemacs/blob/
   <span class="org-builtin">:hook</span> (rust-mode . lsp)
   <span class="org-builtin">:preface</span>
   (<span class="org-keyword">progn</span>
-    (<span class="org-keyword">defun</span> <span class="org-function-name">imalison:rust-mode-hook</span> ()))
+    (<span class="org-keyword">defun</span> <span class="org-function-name">imalison:rust-mode-hook</span> ()
+      (<span class="org-keyword">setq</span> rust-format-on-save t)))
   <span class="org-builtin">:config</span>
   (<span class="org-keyword">progn</span>
     (<span class="org-keyword">use-package</span> <span class="org-constant">toml-mode</span>)
