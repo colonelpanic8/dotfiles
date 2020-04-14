@@ -154,9 +154,9 @@ in
     libnotify
     lxqt.lxqt-powermanagement
     networkmanagerapplet
-    customizable-notify-osd
+    notify-osd-customizable
 
-    pasystray-appindicator
+    pasystray
     pinentry
     pommed_light
     rofi
@@ -211,6 +211,9 @@ in
 
     # Ruby
     ruby
+
+    # purescript
+    purescript
 
     # Tools
     automake
