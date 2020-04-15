@@ -41,8 +41,14 @@ in
 
   # Security and networking
   security.sudo.wheelNeedsPassword = false;
+
+  environment.etc."ipsec.secrets".text = ''
+    include ipsec.d/ipsec.nm-l2tp.secrets
+  '';
   networking.networkmanager = {
     enable = true;
+    enableStrongSwan = true;
+    packages = [ pkgs.networkmanager-l2tp ];
     extraConfig = ''
       [main]
       rc-manager=resolvconf
@@ -312,20 +318,7 @@ in
 
   services.locate.enable = true;
 
-  # services.lorri.enable = true;
-  systemd.user.services.lorri = {
-      description = "Lorri Daemon";
-      requires = [ "lorri.socket" ];
-      after = [ "lorri.socket" ];
-      path = with pkgs; [ config.nix.package gnutar gzip gitFull ];
-      serviceConfig = {
-        ExecStart = "${pkgs.lorri}/bin/lorri daemon";
-        PrivateTmp = true;
-        ProtectSystem = "strict";
-        ProtectHome = "read-only";
-        Restart = "on-failure";
-      };
-    };
+  services.lorri.enable = true;
 
   services.xserver = {
     exportConfiguration = true;
@@ -396,6 +389,7 @@ in
       shell = pkgs.zsh;
     };
   };
+  nix.trustedUsers = ["imalison"];
 
   system.stateVersion = "18.03";
 }
