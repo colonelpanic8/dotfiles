@@ -220,6 +220,11 @@ in
 
     # purescript
     purescript
+    spago
+
+    # dhall
+    haskellPackages.dhall
+    haskellPackages.dhall-json
 
     # Tools
     automake
