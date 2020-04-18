@@ -2979,6 +2979,11 @@ Intero seems to be causing hangs, so it has been disabled
 (use-package dockerfile-mode
   :mode ("Dockerfile\\'" . dockerfile-mode))
 #+END_SRC
+*** dhall
+#+begin_src emacs-lisp
+(use-package dhall-mode
+  :mode "\\.dhall\\'")
+#+end_src
 ** Document
 *** org
 **** config
