@@ -113,11 +113,11 @@ in
     hexchat
     keybase-gui
     kleopatra
-    kodi
+    # kodi
     libreoffice
     lxappearance
     okular
-    pulseeffects
+    # pulseeffects
     quassel
     rxvt_unicode
     slack
@@ -241,6 +241,7 @@ in
     gcc
     gdb
     gitAndTools.git-crypt
+    gitAndTools.git-extras
     gitAndTools.git-fame
     gitAndTools.git-sync
     gitAndTools.hub
@@ -269,6 +270,7 @@ in
     powertop
     prometheus
     pscircle
+    pstree
     python-with-my-packages
     qt5.qttools
     rcm
