@@ -153,7 +153,6 @@ in
     betterlockscreen
     blueman
     clipit
-    compton
     feh
     gnome3.gpaste
     kdeconnect
@@ -163,6 +162,7 @@ in
     notify-osd-customizable
 
     pasystray
+    picom
     pinentry
     pommed_light
     rofi
