@@ -65,7 +65,9 @@ in
 
   hardware.opengl.driSupport32Bit = true;
 
+  # bluetooth
   hardware.bluetooth.enable = true;
+  services.blueman.enable = true;
 
   console.keyMap = "us";
 
@@ -102,7 +104,7 @@ in
   environment.systemPackages = with pkgs; [
 
     # Applications
-    calibre
+    # calibre
     gnome3.cheese
     dfeet
     discord
@@ -160,7 +162,6 @@ in
     lxqt.lxqt-powermanagement
     networkmanagerapplet
     notify-osd-customizable
-
     pasystray
     picom
     pinentry
@@ -228,7 +229,6 @@ in
 
     # Tools
     automake
-    bazaar
     bind
     binutils
     cmake
