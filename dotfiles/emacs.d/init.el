@@ -72,8 +72,7 @@
 
 (let ((debug-on-error t))
   (org-babel-load-file
-   (straight-transaction
-     (concat (file-name-directory load-file-name) "README.org"))))
+   (concat (file-name-directory load-file-name) "README.org")))
 
 (when imalison:do-benchmark (benchmark-init/deactivate))
 
