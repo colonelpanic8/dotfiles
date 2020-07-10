@@ -3880,11 +3880,6 @@ I've disabled magithub because it causes magit to be super slow
   (progn
     (add-hook 'magit-mode-hook 'turn-on-magit-gitflow)))
 #+END_SRC
-** git-timemachine
-#+BEGIN_SRC emacs-lisp
-(use-package git-timemachine
-  :commands git-timemachine)
-#+END_SRC
 ** git-gutter
 #+BEGIN_SRC emacs-lisp
 (use-package git-gutter
