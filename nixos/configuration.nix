@@ -25,7 +25,6 @@ in
 {
   nixpkgs.overlays = [
     (import ./overlays.nix)
-    (import ../dotfiles/config/taffybar/taffybar/environment.nix)
   ];
 
   # Allow all the things
@@ -141,14 +140,6 @@ in
     plasma5.breeze-gtk
     plasma5.breeze-qt5
 
-    # Haskell Desktop
-    (import ../dotfiles/config/taffybar/default.nix)
-    (import ../dotfiles/config/xmonad/default.nix)
-    # notifications-tray-icon
-    haskellPackages.status-notifier-item
-    haskellPackages.xmonad
-    haskellPackages.dbus-hslogger
-
     # Desktop
     autorandr
     betterlockscreen
@@ -156,6 +147,7 @@ in
     clipit
     feh
     gnome3.gpaste
+    gnome3.gnome-tweaks
     kdeconnect
     libnotify
     lxqt.lxqt-powermanagement
@@ -334,35 +326,13 @@ in
     desktopManager = {
       plasma5.enable = true;
     };
-    windowManager = {
-      session = [
-        {
-          name = "xmonad";
-          start = ''
-            /usr/bin/env imalison-xmonad &
-            waitPID=$!
-          '';
-        }
-        {
-          name = "waymonad";
-          start = ''
-            /usr/bin/env waymonad
-            waitPID=$!
-          '';
-        }
-      ];
-    };
     displayManager = {
-      sddm = {
-        enable = true;
-      };
+      sddm.enable = true;
       sessionCommands = ''
         systemctl --user import-environment GDK_PIXBUF_MODULE_FILE DBUS_SESSION_BUS_ADDRESS PATH
       '';
     };
   };
-
-  virtualisation.docker.enable = true;
 
   users.extraUsers = let
     extraGroups = [
@@ -385,16 +355,14 @@ in
   in {
     imalison = userDefaults // {
       name = "imalison";
-      uid = 1000;
       home = "/home/imalison";
       shell = pkgs.zsh;
     };
     kat = userDefaults // {
       name = "kat";
-      uid = 1001;
       home = "/home/kat";
       shell = pkgs.zsh;
     };
   };
-  nix.trustedUsers = ["imalison"];
+  nix.trustedUsers = ["imalison" "kat"];
 }
