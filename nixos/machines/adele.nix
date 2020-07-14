@@ -20,7 +20,6 @@
   boot.loader.efi.canTouchEfiVariables = true;
 
   services.xserver.libinput.enable = true;
-  services.xserver.videoDrivers = [ "nvidia" ];
 
   fileSystems."/" =
     { device = "/dev/disk/by-uuid/bfe4586b-2538-4aae-ad2f-b1277378de4a";
@@ -34,12 +33,9 @@
 
   swapDevices = [ ];
 
-  networking.hostName = "katboon";
+  networking.hostName = "adele";
 
   nix.maxJobs = lib.mkDefault 12;
   powerManagement.cpuFreqGovernor = lib.mkDefault "powersave";
-
-  hardware.opengl.extraPackages = [ pkgs.linuxPackages.nvidia_x11.out ];
-  hardware.opengl.extraPackages32 = [ pkgs.linuxPackages.nvidia_x11.lib32 ];
 
 }
