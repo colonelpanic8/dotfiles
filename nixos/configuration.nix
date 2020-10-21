@@ -7,9 +7,7 @@ let
     numpy
     openpyxl
     pip
-    python-language-server
     requests
-    tensorflow
     tox
     virtualenv
     virtualenvwrapper
@@ -104,6 +102,7 @@ in
   environment.systemPackages = with pkgs; [
 
     # Applications
+    alacritty
     # calibre
     gnome3.cheese
     dfeet
@@ -114,6 +113,7 @@ in
     google-chrome
     hexchat
     keybase-gui
+    kitty
     kleopatra
     # kodi
     libreoffice
@@ -125,7 +125,6 @@ in
     slack
     simplescreenrecorder
     spotify
-    termite
     vlc
     xfce.thunar
     wire-desktop
@@ -251,6 +250,7 @@ in
     gnupg
     gparted
     htop
+    inetutils
     inotify-tools
     ispell
     jq
