@@ -1,3 +1,4 @@
+
 # -*- mode: org; -*-
 [[https://travis-ci.org/IvanMalison/dotfiles][file:https://travis-ci.org/IvanMalison/dotfiles.svg?branch=master]]
 
@@ -1671,7 +1672,7 @@ custom-set-faces in your custom file.
   (let ((frame-mode-use-new-frame-or-window t))
     (imalison:named-compile "stack build")))
 
-(defun imalison:stack-build ()
+(defun imalison:nix-build ()
   (interactive)
   (let ((frame-mode-use-new-frame-or-window t))
     (imalison:named-compile "nix-build default.nix")))
@@ -2175,24 +2176,25 @@ I don't use auto-complete at all, so I have set up a hook to automatically disab
 #+END_SRC
 * flycheck
 #+BEGIN_SRC emacs-lisp
-(use-package flycheck
-  :commands flycheck-mode
-  :init (add-hook 'prog-mode-hook 'flycheck-mode)
-  :config
-  (progn
-    (use-package flycheck-package
-      :config (flycheck-package-setup))
+  (use-package flycheck
+	:commands flycheck-mode
+	:init (add-hook 'prog-mode-hook 'flycheck-mode)
+	:config
+	(progn
+	  (use-package flycheck-package
+		:disabled t
+		:config (flycheck-package-setup))
 
-    (use-package flycheck-cask
-      :after flycheck
-      :config
-      (add-hook 'flycheck-mode-hook #'flycheck-cask-setup))
+	  (use-package flycheck-cask
+		:after flycheck
+		:config
+		(add-hook 'flycheck-mode-hook #'flycheck-cask-setup))
 
-    (add-to-list 'flycheck-emacs-lisp-checkdoc-variables
-                 'sentence-end-double-space)
-    (setq flycheck-display-errors-delay 10000)
-    (global-flycheck-mode))
-  :diminish flycheck-mode)
+	  (add-to-list 'flycheck-emacs-lisp-checkdoc-variables
+				   'sentence-end-double-space)
+	  (setq flycheck-display-errors-delay 10000)
+	  (global-flycheck-mode))
+	:diminish flycheck-mode)
 #+END_SRC
 * straight
 #+BEGIN_SRC emacs-lisp
@@ -2815,8 +2817,10 @@ The following is taken from [[https://github.com/syl20bnr/spacemacs/blob/a650877
         (setq
          haskell-mode-stylish-haskell-path "brittany"
          haskell-mode-stylish-haskell-args '("-")))
+      (message "imalison:use-lsp-haskell: %s" imalison:use-lsp-haskell)
       (when imalison:use-lsp-haskell
-        (lsp))))
+        (lsp)))
+    (add-hook 'haskell-mode-hook 'imalison:haskell-mode))
   :config
   (progn
     (setq
@@ -2831,10 +2835,6 @@ The following is taken from [[https://github.com/syl20bnr/spacemacs/blob/a650877
 	(require 'flycheck)
     (cl-loop for checker in '(haskell-stack-ghc haskell-ghc haskell-hlint)
              do (delq checker flycheck-checkers))))
-#+END_SRC
-**** haskell-ide-engine (lsp-haskell)
-#+BEGIN_SRC emacs-lisp
-
 #+END_SRC
 **** intero
 Intero seems to be causing hangs, so it has been disabled
@@ -2882,12 +2882,20 @@ Intero seems to be causing hangs, so it has been disabled
 (use-package purescript-mode
   :defer t)
 
+(use-package purty
+  :commands purty-on-save-mode
+  :straight (purty :repo "joneshf/purty"
+                   :type git
+                   :host gitlab
+                   :files ("purty.el")))
+
 (use-package psc-ide
   :after purescript-mode
   :config
   (progn
     (defun imalison:purescript-mode-hook ()
       (psc-ide-mode +1)
+	  (purty-on-save-mode +1)
       (turn-on-purescript-indentation))
     (add-hook 'purescript-mode-hook 'imalison:purescript-mode-hook)))
 #+END_SRC
@@ -4008,7 +4016,6 @@ emr (emacs refactor) provides support for refactoring in many programming langua
     (use-package lsp-ui
       :config
       (add-hook 'lsp-mode-hook 'lsp-ui-mode))
-    (require 'lsp-clients)
     (add-hook 'programming-mode-hook 'lsp)))
 #+END_SRC
 * Utility
@@ -4090,6 +4097,10 @@ First call open the kill-ring browser, next calls move to next line."
     (setq term-buffer-maximum-size 0
           term-suppress-hard-newline t)))
 #+END_SRC
+** vterm
+#+begin_src emacs-lisp
+;; (use-package vterm)
+#+end_src
 ** term-manager
 #+BEGIN_SRC emacs-lisp
 (use-package term-manager
