@@ -17,6 +17,7 @@ function _setup_path {
     _racket_setup
     _rust_setup
     _tex_setup
+	add_to_path "$HOME/node_modules/.bin/"
 
     # To ensure that things in ~/.lib/bin take precedence
     add_to_path "$HOME/.lib/bin" --before
