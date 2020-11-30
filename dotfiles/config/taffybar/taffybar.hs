@@ -114,6 +114,7 @@ cssFileByHostname =
   [ ("uber-loaner", "uber-loaner.css")
   , ("imalison-home", "taffybar.css")
   , ("ivanm-dfinity-razer", "ivanm-dfinity-razer.css")
+  , ("ryzen-shine", "taffybar.css")
   ]
 
 main = do

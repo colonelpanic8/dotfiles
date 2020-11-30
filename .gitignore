@@ -19,3 +19,5 @@
 /dotfiles/vim/bundle/*
 /dotfiles/wemo/cache
 gotools
+/dotfiles/config/xmonad/result
+/dotfiles/config/taffybar/result
