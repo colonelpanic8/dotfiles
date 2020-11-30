@@ -29,7 +29,7 @@
 
 .contents {
 	padding: 1px;
-	transition: border-color .5s, background-color .5s;
+	transition: border-color .5s, background-color .5s, border-style 3s;
 	border-radius: 6px;
 	/* This transparent border is needed because we will run in to sizing issues
 	   without it because we only check sizing one time. */
@@ -54,28 +54,25 @@
 
 .visible .contents {
 	background-color: rgba(0.0, 0.0, 0.0, 0.2);
+	border-style: dotted;
+	border-color: @font-color;
 }
 
 .window-icon-container {
-	transition: opacity .5s, box-shadow .5s;
+	transition: opacity .5s, box-shadow .5s, background-color .5s;
 	opacity: 1;
 	border-radius: 5px;
-	transition: background-color 1s;
 }
 
 /* This gives space for the box-shadow (they look like underlines) that follow.
    This will actually affect all widgets, (not just the workspace icons), but
    that is what we want since we want the icons to look the same. */
 .auto-size-image, .sni-tray  {
-	border-color: @transparent;
-	border-style: solid;
-	border-width: 1px;
-	/* padding: 1px; */
+	padding: 0px;
 }
 
 .window-icon-container.active {
-	background-color: rgba(255.0, 255.0, 255.0, 0.3);
-	border-color: @font-color;
+	background-color: @font-color;
 }
 
 .window-icon-container.urgent {
