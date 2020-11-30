@@ -12,11 +12,6 @@
     /etc/nixos/cachix.nix
   ];
 
-  hardware.bumblebee = {
-    enable = true;
-    pmMethod = "bbswitch";
-  };
-
   # disable card with bbswitch by default since we turn it on only on demand!
   hardware.nvidiaOptimus.disable = true;
 
@@ -32,8 +27,6 @@
   boot.loader.efi.canTouchEfiVariables = true;
 
   services.xserver.libinput.enable = true;
-  services.tlp.enable = true;
-  services.acpid.enable = false;
 
   fileSystems."/" = {
     device = "/dev/disk/by-uuid/58218a04-3ba1-4295-86bb-ada59f75e3b6";
@@ -59,7 +52,13 @@
     serviceConfig.Type = "oneshot";
   };
 
-  swapDevices = [ ];
+  swapDevices = [
+    {
+      device = "/swapfile";
+      priority = 0;
+      size = 4096;
+    }
+  ];
 
   networking.hostName = "ivanm-dfinity-razer";
 
