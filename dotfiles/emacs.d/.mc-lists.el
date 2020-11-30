@@ -9,6 +9,7 @@
         beginning-of-visual-line
         c-electric-delete-forward
         c-electric-semi&comma
+        c-indent-line-or-region
         comment-dwim-2
         delete-horizontal-space
         dired-do-rename
@@ -41,11 +42,14 @@
         org-yank
         phi-search
         phi-search-backward
+        purescript-indentation-delete-backward-char
+        purescript-indentation-delete-char
         python-indent-electric-colon
         sgml-slash
         skeleton-pair-insert-maybe
         sp-backward-sexp
         sp-forward-sexp
+        sp-remove-active-pair-overlay
         sp-splice-sexp
         sp-splice-sexp-killing-backward
         string-inflection-toggle
@@ -67,13 +71,18 @@
         helm-M-x
         ido-write-file
         iedit-switch-to-mc-mode
+        imalison:hydra-font/body
+        imalison:hydra-font/imalison:font-size-decr
+        imalison:hydra-font/imalison:font-size-incr
         imalison:multiple-cursors-hydra/body
         imalison:multiple-cursors-hydra/mc/edit-lines-and-exit
         imalison:multiple-cursors-hydra/mc/mark-all-like-this-and-exit
         imalison:multiple-cursors-hydra/mc/mark-next-like-this
+        imalison:multiple-cursors-hydra/mc/mark-previous-like-this
         imalison:multiple-cursors-hydra/nil
         isearch-delete-char
         make-frame
+        overwrite-mode
         smex
         yank-rectangle
         ))
