@@ -397,6 +397,4 @@ in
     };
   };
   nix.trustedUsers = ["imalison"];
-
-  system.stateVersion = "18.03";
 }
