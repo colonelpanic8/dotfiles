@@ -8,8 +8,8 @@ let
     });
   });
 in pkgs.haskellPackages.shellFor {
-  packages = _: [
-    (pkgs.haskell.lib.doBenchmark pkgs.haskellPackages.imalison-taffybar) pkgs.haskellPackages.taffybar
+  packages = p: [
+    (pkgs.haskell.lib.doBenchmark p.imalison-taffybar)
+    (pkgs.haskell.lib.doBenchmark p.taffybar)
   ];
 }
-
