@@ -80,7 +80,7 @@ import           XMonad.Util.WorkspaceCompare
 
 myConfig = def
   { modMask = mod4Mask
-  , terminal = "termite"
+  , terminal = "alacritty"
   , manageHook = myManageHook <+> manageHook def
   , layoutHook = myLayoutHook
   , borderWidth = 0
@@ -217,7 +217,7 @@ gmailCommand = "start_chrome.sh --new-window https://mail.google.com/mail/u/0/#i
 spotifyCommand = "spotify"
 chromeCommand = "start_chrome.sh"
 emacsCommand = "emacsclient -c"
-htopCommand = "termite -e htop -t htop"
+htopCommand = "alacritty -e htop -t htop"
 transmissionCommand = "transmission-gtk"
 volumeCommand = "pavucontrol"
 
