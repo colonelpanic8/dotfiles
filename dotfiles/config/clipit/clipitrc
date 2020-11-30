@@ -1,7 +1,7 @@
 [rc]
 use_copy=true
-use_primary=true
-synchronize=true
+use_primary=false
+synchronize=false
 automatic_paste=false
 show_indexes=true
 save_uris=true
