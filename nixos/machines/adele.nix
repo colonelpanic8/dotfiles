@@ -39,4 +39,10 @@
   nix.maxJobs = lib.mkDefault 12;
   powerManagement.cpuFreqGovernor = lib.mkDefault "powersave";
 
+  services.redshift.enable = true;
+
+  location = {
+    latitude = 37.8104601;
+    longitude = -122.2572529;
+  };
 }
