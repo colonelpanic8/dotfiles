@@ -1,4 +1,4 @@
-(import ../taffybar/taffybar/nixpkgs.nix) {
+pkgs: pkgs {
   overlays = [
     (import ../taffybar/taffybar/overlay.nix)
     (import ./overlay.nix)

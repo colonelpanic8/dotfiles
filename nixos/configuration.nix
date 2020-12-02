@@ -25,7 +25,9 @@ in
 {
   nixpkgs.overlays = [
     (import ./overlays.nix)
-    (import ../dotfiles/config/taffybar/taffybar/environment.nix)
+    (import ../dotfiles/config/taffybar/taffybar/overlay.nix)
+    (import ../dotfiles/config/xmonad/overlay.nix)
+    (import ../dotfiles/config/taffybar/overlay.nix)
   ];
 
   # Allow all the things
@@ -142,8 +144,8 @@ in
     plasma5.breeze-qt5
 
     # Haskell Desktop
-    (import ../dotfiles/config/taffybar/default.nix)
-    (import ../dotfiles/config/xmonad/default.nix)
+    haskellPackages.imalison-xmonad
+    haskellPackages.imalison-taffybar
     # notifications-tray-icon
     haskellPackages.status-notifier-item
     haskellPackages.xmonad
