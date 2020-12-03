@@ -136,7 +136,7 @@ main = do
         { underlineHeight = 3
         , underlinePadding = 2
         , minIcons = 1
-        , getWindowIconPixbuf = scaledWindowIconPixbufGetter getWindowIconPixbufFromEWMH
+        , getWindowIconPixbuf = myIcons
         , widgetGap = 0
         , showWorkspaceFn = hideEmpty
         , updateRateLimitMicroseconds = 100000
@@ -195,6 +195,9 @@ main = do
             , baseConfig { endWidgets = shortLaptopEndWidgets }
             )
           , ( "imalison-home"
+            , baseConfig { endWidgets = fullEndWidgets, barHeight = 42 }
+            )
+          , ( "ryzen-shine"
             , baseConfig { endWidgets = fullEndWidgets, barHeight = 42 }
             )
           , ( "ivanm-dfinity-razer"

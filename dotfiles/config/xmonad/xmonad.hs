@@ -398,8 +398,7 @@ getClass w = fromMaybe <$> getClassRaw w <*> getVirtualClass w
 
 desktopEntriesMap :: MM.MultiMap String DesktopEntry
 desktopEntriesMap =
-  unsafePerformIO $ do
-    tee id (>>= writeToHomeDirLog . show . MM.keys) $
+  unsafePerformIO $
         indexDesktopEntriesByClassName <$> getDirectoryEntriesDefault
 
 lookupIconFromClasses classes =

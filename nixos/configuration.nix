@@ -25,6 +25,9 @@ in
 {
   nixpkgs.overlays = [
     (import ./overlays.nix)
+    (import ../dotfiles/config/taffybar/taffybar/overlay.nix)
+    (import ../dotfiles/config/xmonad/overlay.nix)
+    (import ../dotfiles/config/taffybar/overlay.nix)
   ];
 
   # Allow all the things
@@ -139,6 +142,14 @@ in
     papirus-icon-theme
     plasma5.breeze-gtk
     plasma5.breeze-qt5
+
+    # Haskell Desktop
+    haskellPackages.imalison-xmonad
+    haskellPackages.imalison-taffybar
+    # notifications-tray-icon
+    haskellPackages.status-notifier-item
+    haskellPackages.xmonad
+    haskellPackages.dbus-hslogger
 
     # Desktop
     autorandr
