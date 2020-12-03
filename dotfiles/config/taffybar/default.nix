@@ -1,1 +1,3 @@
-(import ./base.nix).haskellPackages.imalison-taffybar (import ./taffybar/nixpkgs.nix)
+let pkgs = ((import ./base.nix) (import <nixpkgs>)) ;
+in
+pkgs.haskellPackages.imalison-taffybar

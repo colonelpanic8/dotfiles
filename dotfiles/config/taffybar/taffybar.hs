@@ -197,6 +197,9 @@ main = do
           , ( "imalison-home"
             , baseConfig { endWidgets = fullEndWidgets, barHeight = 42 }
             )
+          , ( "ryzen-shine"
+            , baseConfig { endWidgets = fullEndWidgets, barHeight = 42 }
+            )
           , ( "ivanm-dfinity-razer"
             , baseConfig { endWidgets = shortLaptopEndWidgets, barHeight = 42 }
             )
