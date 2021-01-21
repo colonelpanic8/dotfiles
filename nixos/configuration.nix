@@ -161,7 +161,6 @@ in
     clipit
     feh
     gnome3.gpaste
-    gnome3.gnome-tweaks
     kdeconnect
     libnotify
     lxqt.lxqt-powermanagement
@@ -216,6 +215,7 @@ in
     carnix
     # rls
     rustc
+    rustfmt
 
     # Clojure
     boot
@@ -340,13 +340,28 @@ in
     desktopManager = {
       plasma5.enable = true;
     };
+    windowManager = {
+      session = [
+        {
+          name = "xmonad";
+          start = ''
+            /usr/bin/env imalison-xmonad &
+            waitPID=$!
+          '';
+        }
+      ];
+    };
     displayManager = {
-      sddm.enable = true;
+      sddm = {
+        enable = true;
+      };
       sessionCommands = ''
         systemctl --user import-environment GDK_PIXBUF_MODULE_FILE DBUS_SESSION_BUS_ADDRESS PATH
       '';
     };
   };
+
+  virtualisation.docker.enable = true;
 
   users.extraUsers = let
     extraGroups = [
@@ -370,21 +385,17 @@ in
   in {
     imalison = userDefaults // {
       name = "imalison";
+      uid = 1000;
       home = "/home/imalison";
       shell = pkgs.zsh;
     };
     kat = userDefaults // {
       name = "kat";
+      uid = 1001;
       home = "/home/kat";
       shell = pkgs.zsh;
     };
   };
 
-  nix = {
-    package = pkgs.nixFlakes;
-    extraOptions = ''
-      experimental-features = nix-command flakes
-    '';
-   };
   nix.trustedUsers = ["imalison" "kat"];
 }
