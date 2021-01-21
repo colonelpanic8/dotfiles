@@ -63,13 +63,16 @@ in
   sound.enable = true;
   hardware.pulseaudio.enable = true;
 
+  # Video
   hardware.opengl.driSupport32Bit = true;
 
-  # bluetooth
+  # Bluetooth
   hardware.bluetooth.enable = true;
   services.blueman.enable = true;
 
+  # Keyboard
   console.keyMap = "us";
+  hardware.keyboard.zsa.enable = true;
 
   i18n = {
     defaultLocale = "en_US.UTF-8";
@@ -373,6 +376,7 @@ in
       "disk"
       "docker"
       "networkmanager"
+      "plugdev"
       "systemd-journal"
       "video"
       "wheel"
@@ -399,4 +403,11 @@ in
     };
   };
   nix.trustedUsers = ["imalison"];
+
+  nix = {
+    package = pkgs.nixFlakes;
+    extraOptions = ''
+      experimental-features = nix-command flakes
+    '';
+   };
 }
