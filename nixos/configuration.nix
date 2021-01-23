@@ -280,7 +280,7 @@ in
     python-with-my-packages
     qt5.qttools
     rcm
-    rr
+    # rr
     scrot
     silver-searcher
     stow
