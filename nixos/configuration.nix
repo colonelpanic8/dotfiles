@@ -143,8 +143,8 @@ in
     materia-theme
     numix-icon-theme-circle
     papirus-icon-theme
-    plasma5.breeze-gtk
-    plasma5.breeze-qt5
+    # plasma5.breeze-gtk
+    # plasma5.breeze-qt5
 
     # Haskell Desktop
     haskellPackages.imalison-xmonad
@@ -240,7 +240,7 @@ in
     dex
     direnv
     dpkg
-    emacs26Packages.cask
+    emacs27Packages.cask
     fd
     file
     gcc
@@ -261,7 +261,7 @@ in
     ispell
     jq
     libtool
-    lorri
+    # lorri
     lsof
     mercurial
     ncdu
@@ -332,7 +332,7 @@ in
 
   services.locate.enable = true;
 
-  services.lorri.enable = true;
+  # services.lorri.enable = true;
 
   services.xserver = {
     exportConfiguration = true;
