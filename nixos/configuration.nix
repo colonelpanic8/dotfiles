@@ -78,7 +78,7 @@ in
     defaultLocale = "en_US.UTF-8";
   };
 
-  time.timeZone = "America/Los_Angeles";
+  services.tzupdate.enable = true;
 
   fonts = {
     fonts = with pkgs; [
@@ -286,6 +286,7 @@ in
     stow
     subversion
     tmux
+    tzupdate
     unzip
     usbutils
     valgrind
