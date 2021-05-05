@@ -33,15 +33,21 @@ in
   # Allow all the things
   nixpkgs.config.allowUnfree = true;
   nixpkgs.config.android_sdk.accept_license = true;
-
   nixpkgs.config.permittedInsecurePackages = [
     "openssl-1.0.2u"
   ];
 
+  # Disabling these waits disables the stuck on boot up issue
+  systemd.services.systemd-udev-settle.enable = false;
+  systemd.services.NetworkManager-wait-online.enable = false;
+  networking.firewall.enable = false;
 
-  # Security and networking
+  # Security
   security.sudo.wheelNeedsPassword = false;
+  programs.gnupg.agent = { enable = true; enableSSHSupport = true; };
+  services.pcscd.enable = true;
 
+  # Networking
   environment.etc."ipsec.secrets".text = ''
     include ipsec.d/ipsec.nm-l2tp.secrets
   '';
@@ -54,10 +60,6 @@ in
       rc-manager=resolvconf
     '';
   };
-  # Disabling these waits disables the stuck on boot up issue
-  systemd.services.systemd-udev-settle.enable = false;
-  systemd.services.NetworkManager-wait-online.enable = false;
-  networking.firewall.enable = false;
 
   # Audio
   sound.enable = true;
@@ -91,9 +93,11 @@ in
       source-code-pro
       source-sans-pro
       source-serif-pro
-      twemoji-color-font
+      # twemoji-color-font
     ];
     fontconfig = {
+      allowBitmaps = true;
+      useEmbeddedBitmaps = true;
       defaultFonts = {
         monospace = [ "Source Code Pro" ];
         sansSerif = [ "Roboto" ];
@@ -285,12 +289,14 @@ in
     silver-searcher
     stow
     subversion
+    swig
     tmux
     tzupdate
     unzip
     usbutils
     valgrind
     wget
+    yubikey-manager
 
     # Nix
     nix-prefetch-git
@@ -309,7 +315,6 @@ in
 
   programs.zsh.enable = true;
 
-  programs.gnupg.agent = { enable = true; enableSSHSupport = true; };
   programs.adb.enable = true;
 
   services.openssh.enable = true;
