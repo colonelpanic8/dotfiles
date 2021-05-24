@@ -1,7 +1,7 @@
 [Unit]
 Description=NM Applet
 Wants=taffybar.service
-After=status-notifier-watcher.service
+After=taffybar.service
 
 [Service]
 Type=simple
