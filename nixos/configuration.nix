@@ -81,6 +81,10 @@ in
   };
 
   services.tzupdate.enable = true;
+  xdg.menus.enable = true;
+
+  # Enable the gtk icon cache
+  gtk.iconCache.enable = true;
 
   fonts = {
     fonts = with pkgs; [
@@ -105,8 +109,6 @@ in
       };
     };
   };
-
-  xdg.menus.enable = true;
 
   environment.systemPackages = with pkgs; [
 
@@ -329,7 +331,8 @@ in
     };
   };
 
-  services.gnome3.at-spi2-core.enable = true;
+  # TODO: Add a comment explaining what this does.
+  services.gnome.at-spi2-core.enable = true;
 
   services.kbfs.enable = true;
 
