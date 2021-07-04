@@ -17,8 +17,9 @@ executable imalison-taffybar
   -- ghc-options:      -threaded -g -rtsopts
   ghc-prof-options: -fprof-auto
   build-depends:       base
-                     , X11>=1.8
+                     , X11
                      , bytestring
+                     , coinbase-pro
                      , containers
                      , directory
                      , filepath
@@ -30,6 +31,8 @@ executable imalison-taffybar
                      , hslogger
                      , process
                      , split
+                     , text
+                     , time
                      , taffybar>=3.2.0
                      , transformers
                      , xdg-basedir

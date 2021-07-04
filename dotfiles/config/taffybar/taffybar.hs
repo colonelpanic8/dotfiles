@@ -1,6 +1,11 @@
 {-# LANGUAGE OverloadedStrings #-}
 module Main where
 
+import qualified CoinbasePro.Environment as CB
+import qualified CoinbasePro.Headers as CB
+import qualified CoinbasePro.Request as CB
+import qualified CoinbasePro.Types as CB
+import qualified CoinbasePro.Unauthenticated.API as CB
 import           Control.Exception.Base
 import           Control.Monad
 import           Control.Monad.IO.Class
@@ -11,10 +16,13 @@ import           Data.List
 import           Data.List.Split
 import qualified Data.Map as M
 import           Data.Maybe
+import qualified Data.Text
+import           Data.Time
 import           Network.HostName
 import           StatusNotifier.Tray
 import           System.Directory
 import           System.Environment
+import           System.Environment.XDG.BaseDir
 import           System.FilePath.Posix
 import           System.IO
 import           System.Log.Handler.Simple
@@ -30,7 +38,6 @@ import           System.Taffybar.Information.CPU
 import           System.Taffybar.Information.EWMHDesktopInfo
 import           System.Taffybar.Information.Memory
 import           System.Taffybar.Information.X11DesktopInfo
-import           System.Environment.XDG.BaseDir
 import           System.Taffybar.SimpleConfig
 import           System.Taffybar.Util
 import           System.Taffybar.Widget
@@ -40,6 +47,14 @@ import           System.Taffybar.Widget.Util
 import           System.Taffybar.Widget.Workspaces
 import           Text.Printf
 import           Text.Read hiding (lift)
+
+getDaysCandles productString = do
+  oneDayAgo <- addUTCTime(-60*60*24) <$> getCurrentTime
+  let candles = CB.candles (CB.ProductId productString) (Just oneDayAgo) Nothing CB.Minute
+  CB.run CB.Production (candles CB.userAgent)
+
+coinbaseProductLabel productString =
+  pollingLabelNew 60.0 $ Data.Text.pack . ((productString ++ ": ") ++) . show . CB.unPrice . CB.close . head <$> getDaysCandles (Data.Text.pack productString)
 
 mkRGBA (r, g, b, a) = (r/256, g/256, b/256, a/256)
 blue = mkRGBA (42, 99, 140, 256)
@@ -153,6 +168,10 @@ main = do
         map (>>= buildContentsBox)
               [ myClock
               , sniTrayNew
+              , coinbaseProductLabel "ICP-USD"
+              , coinbaseProductLabel "ICP-BTC"
+              , coinbaseProductLabel "BTC-USD"
+              , coinbaseProductLabel "ETH-USD"
               , cpuGraph
               , memoryGraph
               , networkGraphNew netCfg Nothing
