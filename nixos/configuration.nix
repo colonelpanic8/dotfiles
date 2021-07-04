@@ -309,7 +309,9 @@ in
     librsvg
     transmission-gtk
 
+    # Internet computer
     ic-keysmith
+    quill
   ];
 
   # XXX: Plasma seems to set this
