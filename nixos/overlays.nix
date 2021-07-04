@@ -14,4 +14,19 @@ let
 in
 {
   lorri = (import (lorriBinSource.outPath + "/default.nix")) { pkgs = super; };
+  ic-keysmith = super.buildGoModule rec {
+    pname = "keysmith";
+    version = "1.6.0";
+
+    src = super.fetchFromGitHub {
+      owner = "dfinity";
+      repo = "keysmith";
+      rev = "v${version}";
+      sha256 = "1z0sxirk71yabgilq8v5lz4nd2bbm1xyrd5zppif8k9jqhr6v3v3";
+    };
+
+    vendorSha256 = "1qnj1x8ydnbw5zb3hrsd1pd2lh3qbd340sbsjyrhcrksl1hdrrax";
+
+    runVend = true;
+  };
 }

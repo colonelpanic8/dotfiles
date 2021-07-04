@@ -161,17 +161,14 @@
     prometheus
     pscircle
     pstree
-    qt5.qttools
     rcm
     scrot
     silver-searcher
-    stow
     swig
     tmux
     tzupdate
     unzip
     usbutils
-    valgrind
     wget
     yubikey-manager
 
@@ -182,6 +179,8 @@
     # Miscellaneous
     android-udev-rules
     librsvg
+
+    ic-keysmith
   ];
 
   programs.zsh.enable = true;

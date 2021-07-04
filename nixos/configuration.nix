@@ -308,6 +308,8 @@ in
     android-udev-rules
     librsvg
     transmission-gtk
+
+    ic-keysmith
   ];
 
   # XXX: Plasma seems to set this
