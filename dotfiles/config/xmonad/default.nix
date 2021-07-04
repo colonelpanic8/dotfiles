@@ -1,1 +1,1 @@
-(import ./base.nix).haskellPackages.imalison-xmonad
+(import ./base.nix (import <nixpkgs>)).haskellPackages.imalison-xmonad
