@@ -181,6 +181,7 @@
     librsvg
 
     ic-keysmith
+    quill
   ];
 
   programs.zsh.enable = true;
