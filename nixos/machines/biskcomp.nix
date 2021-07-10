@@ -4,4 +4,5 @@
   ];
 
   networking.hostName = "biskcomp";
+  hardware.video.hidpi.enable = true;
 }
