@@ -1,4 +1,4 @@
-{ pkgs }:
+{ pkgs, ... }:
 {
   security.sudo.wheelNeedsPassword = false;
   users.extraUsers = let
