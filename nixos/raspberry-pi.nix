@@ -3,6 +3,7 @@
 {
   imports = [
     <nixos-hardware/raspberry-pi/4>
+    ./essential-packages.nix
   ];
 
   nixpkgs.overlays = [
@@ -10,12 +11,6 @@
   ];
 
   hardware.raspberry-pi."4".fkms-3d.enable = true;
-
-  nixpkgs.config.allowUnfree = true;
-  nixpkgs.config.android_sdk.accept_license = true;
-  nixpkgs.config.permittedInsecurePackages = [
-    "openssl-1.0.2u"
-  ];
 
   boot = {
     kernelPackages = pkgs.linuxPackages_rpi4;
@@ -83,10 +78,7 @@
   # List packages installed in system profile. To search, run:
   # $ nix search wget
   environment.systemPackages = with pkgs; [
-    emacs
-    firefox
     raspberrypi-eeprom
-    transmission-gtk
     vlc
     yubikey-manager
     networkmanagerapplet
