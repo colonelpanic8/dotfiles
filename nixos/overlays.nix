@@ -14,7 +14,7 @@ let
 in
 {
   lorri = (import (lorriBinSource.outPath + "/default.nix")) { pkgs = super; };
-  ic-keysmith = super.buildGoModule rec {
+  ic-keysmith = self.buildGoModule rec {
     pname = "keysmith";
     version = "1.6.0";
 
