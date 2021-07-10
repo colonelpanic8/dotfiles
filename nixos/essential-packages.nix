@@ -4,7 +4,7 @@
     firefox
     vlc
     transmission-gtk
-    nautilus
+    dolphin
 
     # Appearance
     gnome-breeze
