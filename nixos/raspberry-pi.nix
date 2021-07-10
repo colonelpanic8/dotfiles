@@ -94,6 +94,7 @@
     jq
     rcm
     ic-keysmith
+    quill
   ];
 
   services.openssh.enable = true;
