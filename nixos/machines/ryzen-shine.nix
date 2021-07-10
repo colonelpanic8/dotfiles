@@ -4,11 +4,11 @@
 { config, lib, pkgs, ... }:
 
 {
-  imports =
-    [ <nixpkgs/nixos/modules/installer/scan/not-detected.nix>
+  imports = [
+    <nixpkgs/nixos/modules/installer/scan/not-detected.nix>
     ../configuration.nix
     ../dfinity.nix
-    ];
+  ];
 
   networking.interfaces.enp5s0.useDHCP = true;
   networking.interfaces.wlp4s0.useDHCP = true;
