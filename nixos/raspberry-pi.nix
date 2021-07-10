@@ -4,9 +4,6 @@
   imports = [
     <nixos-hardware/raspberry-pi/4>
     ./base.nix
-    ./fonts.nix
-    ./internet-computer.nix
-    ./essential-packages.nix
   ];
 
   hardware.raspberry-pi."4".fkms-3d.enable = true;
@@ -53,29 +50,11 @@
     options = [ "noatime" ];
   };
 
-  # Define a user account. Don't forget to set a password with ‘passwd’.
-  users.users.imalison = {
-    isNormalUser = true;
-    extraGroups = [ "wheel" ]; # Enable ‘sudo’ for the user.
-  };
-
   # List packages installed in system profile. To search, run:
   # $ nix search wget
   environment.systemPackages = with pkgs; [
     raspberrypi-eeprom
   ];
-
-  services.openssh.enable = true;
-
-  services.avahi = {
-    enable = true;
-    nssmdns = true;
-    publish = {
-      enable = true;
-      domain = true;
-      userServices = true;
-    };
-  };
 
   nix = {
     autoOptimiseStore = true;
@@ -85,6 +64,4 @@
       options = "--delete-older-than 30d";
     };
   };
-
-  system.stateVersion = "21.05"; # Did you read the comment?
 }

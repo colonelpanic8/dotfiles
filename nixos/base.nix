@@ -3,6 +3,7 @@
   imports = [
     ./users.nix
     ./fonts.nix
+    ./essential-packages.nix
   ];
 
   nixpkgs.overlays = [
@@ -34,6 +35,24 @@
   '';
   networking.networkmanager = {
     enable = true;
+    enableStrongSwan = true;
+    packages = [ pkgs.networkmanager-l2tp ];
+    extraConfig = ''
+      [main]
+      rc-manager=resolvconf
+    '';
+  };
+
+  programs.zsh.enable = true;
+
+  services.avahi = {
+    enable = true;
+    nssmdns = true;
+    publish = {
+      enable = true;
+      domain = true;
+      userServices = true;
+    };
   };
 
   # Audio
@@ -44,16 +63,30 @@
   hardware.bluetooth.enable = true;
   services.blueman.enable = true;
 
-  # Keyboard
+  # Keyboard/Keymap
   console.keyMap = "us";
+
+  i18n = {
+    defaultLocale = "en_US.UTF-8";
+  };
 
   # Update timezone automatically
   services.tzupdate.enable = true;
 
-  programs.zsh.enable = true;
-
   # TODO: Add a comment explaining what this does.
   services.gnome.at-spi2-core.enable = true;
+
+  services.openssh.enable = true;
+
+  services.autorandr.enable = true;
+
+  services.locate.enable = true;
+
+  virtualisation.docker.enable = true;
+
+  programs.adb.enable = true;
+
+  hardware.keyboard.zsa.enable = true;
 
   services.xserver = {
     exportConfiguration = true;

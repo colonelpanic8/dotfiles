@@ -2,7 +2,7 @@
   imports = [
     ../raspberry-pi.nix
     # ../plex.nix
-    ./internet-computer.nix
+    ../internet-computer.nix
   ];
 
   networking.hostName = "biskcomp";
