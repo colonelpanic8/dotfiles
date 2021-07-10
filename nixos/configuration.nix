@@ -23,19 +23,7 @@ let
   notifications-tray-icon = (import (notifications-tray-icon-source.outPath + "/default.nix"));
 in
 {
-  nixpkgs.overlays = [
-    (import ./overlays.nix)
-    (import ../dotfiles/config/taffybar/taffybar/overlay.nix)
-    (import ../dotfiles/config/xmonad/overlay.nix)
-    (import ../dotfiles/config/taffybar/overlay.nix)
-  ];
 
-  # Allow all the things
-  nixpkgs.config.allowUnfree = true;
-  nixpkgs.config.android_sdk.accept_license = true;
-  nixpkgs.config.permittedInsecurePackages = [
-    "openssl-1.0.2u"
-  ];
 
   # Disabling these waits disables the stuck on boot up issue
   systemd.services.systemd-udev-settle.enable = false;
@@ -43,7 +31,6 @@ in
   networking.firewall.enable = false;
 
   # Security
-  security.sudo.wheelNeedsPassword = false;
   programs.gnupg.agent = { enable = true; enableSSHSupport = true; };
   services.pcscd.enable = true;
 
@@ -83,33 +70,6 @@ in
   services.tzupdate.enable = true;
   xdg.menus.enable = true;
 
-  # Enable the gtk icon cache
-  gtk.iconCache.enable = true;
-
-  fonts = {
-    fonts = with pkgs; [
-      dejavu_fonts
-      emojione
-      fira-mono
-      font-awesome-ttf
-      noto-fonts-emoji
-      roboto
-      source-code-pro
-      source-sans-pro
-      source-serif-pro
-      # twemoji-color-font
-    ];
-    fontconfig = {
-      allowBitmaps = true;
-      useEmbeddedBitmaps = true;
-      defaultFonts = {
-        monospace = [ "Source Code Pro" ];
-        sansSerif = [ "Roboto" ];
-        serif     = [ "Source Serif Pro" ];
-      };
-    };
-  };
-
   environment.systemPackages = with pkgs; [
 
     # Applications
@@ -132,10 +92,10 @@ in
     okular
     # pulseeffects
     quassel
-    rxvt_unicode
     slack
     simplescreenrecorder
     spotify
+    transmission-gtk
     vlc
     xfce.thunar
     wire-desktop
@@ -155,10 +115,9 @@ in
     # Haskell Desktop
     haskellPackages.imalison-xmonad
     haskellPackages.imalison-taffybar
-    # notifications-tray-icon
     haskellPackages.status-notifier-item
-    haskellPackages.xmonad
     haskellPackages.dbus-hslogger
+    # notifications-tray-icon
 
     # Desktop
     autorandr
@@ -307,7 +266,6 @@ in
     # Miscellaneous
     android-udev-rules
     librsvg
-    transmission-gtk
 
     # Internet computer
     ic-keysmith
@@ -375,40 +333,4 @@ in
   };
 
   virtualisation.docker.enable = true;
-
-  users.extraUsers = let
-    extraGroups = [
-      "audio"
-      "adbusers"
-      "disk"
-      "docker"
-      "networkmanager"
-      "plugdev"
-      "systemd-journal"
-      "video"
-      "wheel"
-    ];
-    userDefaults = {
-      inherit extraGroups;
-      group = "users";
-      isNormalUser = true;
-      createHome = true;
-      shell = pkgs.zsh;
-    };
-  in {
-    imalison = userDefaults // {
-      name = "imalison";
-      uid = 1000;
-      home = "/home/imalison";
-      shell = pkgs.zsh;
-    };
-    kat = userDefaults // {
-      name = "kat";
-      uid = 1001;
-      home = "/home/kat";
-      shell = pkgs.zsh;
-    };
-  };
-
-  nix.trustedUsers = ["imalison" "kat"];
 }
