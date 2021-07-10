@@ -15,7 +15,6 @@
 
   # Allow all the things
   nixpkgs.config.allowUnfree = true;
-  nixpkgs.config.android_sdk.accept_license = true;
   nixpkgs.config.permittedInsecurePackages = [
     "openssl-1.0.2u"
   ];
@@ -83,8 +82,6 @@
   services.locate.enable = true;
 
   virtualisation.docker.enable = true;
-
-  programs.adb.enable = true;
 
   hardware.keyboard.zsa.enable = true;
 
