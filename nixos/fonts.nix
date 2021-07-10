@@ -1,4 +1,4 @@
-{ pkgs }:
+{ pkgs, ... }:
 {
   # Enable the gtk icon cache
   gtk.iconCache.enable = true;

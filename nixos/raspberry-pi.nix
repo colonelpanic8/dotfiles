@@ -4,6 +4,8 @@
   imports = [
     <nixos-hardware/raspberry-pi/4>
     ./base.nix
+    ./fonts.nix
+    ./internet-computer.nix
     ./essential-packages.nix
   ];
 
