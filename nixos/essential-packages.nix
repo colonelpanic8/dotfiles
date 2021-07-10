@@ -1,8 +1,9 @@
-{ pkgs }:
+{ pkgs, ... }:
 {
   environment.systemPackages = with pkgs; [
     firefox
     vlc
+    transmission-gtk
     nautilus
 
     # Appearance
@@ -64,5 +65,6 @@
     usbutils
     tmux
     wget
+    yubikey-manager
   ];
 }
