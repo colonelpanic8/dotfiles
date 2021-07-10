@@ -44,7 +44,6 @@
     pasystray
     picom
     pinentry
-    pommed_light
     rofi
     rofi-pass
     rofi-systemd
