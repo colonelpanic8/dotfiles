@@ -1,6 +1,7 @@
 { pkgs, ... }:
 {
   environment.systemPackages = with pkgs; [
+    emacs
     firefox
     vlc
     transmission-gtk
