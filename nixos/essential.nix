@@ -54,6 +54,8 @@
     # Tools
     binutils
     gitFull
+    htop
+    ncdu
     rcm
     silver-searcher
     ripgrep
