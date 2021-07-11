@@ -2,6 +2,7 @@
   imports = [
     ../raspberry-pi.nix
     ../jellyfin.nix
+    
     # ../internet-computer.nix
   ];
 
