@@ -14,7 +14,7 @@ if ! zgen saved; then
 	zgen load zsh-users/zsh-syntax-highlighting
 	zgen load kennethreitz/autoenv
 	zgen load mafredri/zsh-async
-	zgen load sindresorhus/pure
+	zgen load spaceship-prompt/spaceship-prompt spaceship
 
 	# generate the init script from plugins above
 	zgen save
