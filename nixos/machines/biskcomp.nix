@@ -1,9 +1,8 @@
 {
   imports = [
-    ../raspberry-pi.nix
     ../jellyfin.nix
-    
-    # ../internet-computer.nix
+    ../internet-computer.nix
+    ../raspberry-pi.nix
   ];
 
   networking.hostName = "biskcomp";

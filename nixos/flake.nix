@@ -19,6 +19,11 @@
     nix.registry.nixpkgs.flake = nixpkgs;
     nixpkgs.overlays = [ taffybar.overlay xmonad.overlay xmonad-contrib.overlay ];
   });
+  piHardware = ({ ... }: {
+      imports = [
+        nixos-hardware.nixosModules.raspberry-pi-4
+      ];
+  });
   in
   {
     nixosConfigurations = {
@@ -27,7 +32,8 @@
         modules = [ tweaks ./machines/ryzen-shine.nix ];
       };
       biskcomp = nixpkgs.lib.nixosSystem {
-        modules = [ tweaks ./machines/biskcomp.nix ];
+        system = "aarch64-linux";
+        modules = [ tweaks piHardware ./machines/biskcomp.nix ];
       };
     };
   };

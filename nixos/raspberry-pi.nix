@@ -2,7 +2,6 @@
 
 {
   imports = [
-    <nixos-hardware/raspberry-pi/4>
     ./base.nix
   ];
 
@@ -31,17 +30,6 @@
   networking.interfaces.eth0.useDHCP = true;
   networking.interfaces.wlan0.useDHCP = true;
 
-  # Enable the X11 windowing system.
-  services.xserver = {
-    exportConfiguration = true;
-    layout = "us";
-    enable = true;
-    desktopManager = {
-      plasma5.enable = true;
-    };
-    displayManager.sddm.enable = true;
-  };
-
   powerManagement.cpuFreqGovernor = "ondemand";
 
   fileSystems."/" = {
@@ -50,8 +38,6 @@
     options = [ "noatime" ];
   };
 
-  # List packages installed in system profile. To search, run:
-  # $ nix search wget
   environment.systemPackages = with pkgs; [
     raspberrypi-eeprom
   ];
