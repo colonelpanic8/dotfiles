@@ -1,8 +1,8 @@
 {
   imports = [
     ../raspberry-pi.nix
-    ../emby.nix
-    ../internet-computer.nix
+    ../jellyfin.nix
+    # ../internet-computer.nix
   ];
 
   networking.hostName = "biskcomp";

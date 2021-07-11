@@ -1,6 +1,6 @@
 { pkgs, ... }:
 {
-  services.emby = {
+  services.jellyfin = {
     enable = true;
   };
 }
