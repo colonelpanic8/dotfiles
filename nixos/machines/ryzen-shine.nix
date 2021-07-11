@@ -7,6 +7,7 @@
   imports = [
     ../full.nix
     ../dfinity.nix
+    ../jellyfin.nix
   ];
 
   networking.interfaces.enp5s0.useDHCP = true;
