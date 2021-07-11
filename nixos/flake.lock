@@ -74,12 +74,11 @@
     },
     "nixpkgs_4": {
       "locked": {
-        "lastModified": 1625997078,
-        "narHash": "sha256-Ba3eO3gol+zFdX6zW3xiNey7giJ28VKhKq+U8hvZWfM=",
-        "owner": "NixOS",
-        "repo": "nixpkgs",
-        "rev": "1ba95cc7c9c4240b78661f130bee38f90835bea0",
-        "type": "github"
+        "lastModified": 1625977875,
+        "narHash": "sha256-rI9IhR2aKTQoknUXAa13/OlVzmthN3Ai7YNYzVvslO4=",
+        "path": "/nix/store/hw96qq9d96lj003rg6vqy2w8p6ycr2jn-source",
+        "rev": "b6eeca1e7322e74520eb518cebda8c9596dd55b9",
+        "type": "path"
       },
       "original": {
         "id": "nixpkgs",
@@ -88,12 +87,11 @@
     },
     "nixpkgs_5": {
       "locked": {
-        "lastModified": 1625997078,
-        "narHash": "sha256-Ba3eO3gol+zFdX6zW3xiNey7giJ28VKhKq+U8hvZWfM=",
-        "owner": "NixOS",
-        "repo": "nixpkgs",
-        "rev": "1ba95cc7c9c4240b78661f130bee38f90835bea0",
-        "type": "github"
+        "lastModified": 1625977875,
+        "narHash": "sha256-rI9IhR2aKTQoknUXAa13/OlVzmthN3Ai7YNYzVvslO4=",
+        "path": "/nix/store/hw96qq9d96lj003rg6vqy2w8p6ycr2jn-source",
+        "rev": "b6eeca1e7322e74520eb518cebda8c9596dd55b9",
+        "type": "path"
       },
       "original": {
         "id": "nixpkgs",
@@ -115,7 +113,7 @@
         "nixpkgs": "nixpkgs_3"
       },
       "locked": {
-        "narHash": "sha256-A6x2734T9WHViDZNMQ91g+egDeM2FGEv3Ngx7DfOjIc=",
+        "narHash": "sha256-ZqfLW/FYY3XpvfOR18Tmu/TxqZLjkUQ4n2yuTB9zhkw=",
         "path": "../dotfiles/config/taffybar/taffybar",
         "type": "path"
       },
@@ -129,7 +127,7 @@
         "nixpkgs": "nixpkgs_4"
       },
       "locked": {
-        "narHash": "sha256-uyUYdDfz61AFZOj27IJHq1hGh4I4H8WahsenjKn/QRg=",
+        "narHash": "sha256-wrruQzvSPGiYrHnqql5qLjK/2Ypf4PMgGpmWvxZ7OHw=",
         "path": "../dotfiles/config/xmonad/xmonad",
         "type": "path"
       },
@@ -143,7 +141,7 @@
         "nixpkgs": "nixpkgs_5"
       },
       "locked": {
-        "narHash": "sha256-U+FcJ5c1EDc1ce0gbHyhiK5XFI1e9+HTwfRqxktPJts=",
+        "narHash": "sha256-zFAhbrj7kW5oEY6EhZAAcic9b8biSezTQEb3F3m0afA=",
         "path": "../dotfiles/config/xmonad/xmonad-contrib",
         "type": "path"
       },
