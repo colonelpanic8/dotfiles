@@ -23,14 +23,10 @@
   in {
     imalison = userDefaults // {
       name = "imalison";
-      uid = 1000;
-      home = "/home/imalison";
       shell = pkgs.zsh;
     };
     kat = userDefaults // {
       name = "kat";
-      uid = 1001;
-      home = "/home/kat";
       shell = pkgs.zsh;
     };
   };
