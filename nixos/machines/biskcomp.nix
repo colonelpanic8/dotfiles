@@ -1,7 +1,7 @@
 {
   imports = [
     ../raspberry-pi.nix
-    # ../plex.nix
+    ../emby.nix
     ../internet-computer.nix
   ];
 
