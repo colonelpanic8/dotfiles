@@ -6,10 +6,9 @@
 {
   imports = [
     <nixpkgs/nixos/modules/installer/scan/not-detected.nix>
-    ../configuration.nix
+    ../full.nix
     ../extra.nix
     ../dfinity.nix
-    /etc/nixos/cachix.nix
   ];
 
   # disable card with bbswitch by default since we turn it on only on demand!

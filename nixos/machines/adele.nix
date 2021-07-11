@@ -6,7 +6,7 @@
 {
   imports =
     [ <nixpkgs/nixos/modules/installer/scan/not-detected.nix>
-      ../minimal.nix
+      ../base.nix
     ];
 
   system.stateVersion = "20.03";

@@ -3,12 +3,12 @@
   imports = [
     ./users.nix
     # ./fonts.nix
-    ./essential-packages.nix
+    ./essential.nix
+    ./flakes.nix
   ];
 
   nixpkgs.overlays = [
     (import ./overlays.nix)
-    (import ../dotfiles/config/taffybar/taffybar/overlay.nix)
     (import ../dotfiles/config/xmonad/overlay.nix)
     (import ../dotfiles/config/taffybar/overlay.nix)
   ];

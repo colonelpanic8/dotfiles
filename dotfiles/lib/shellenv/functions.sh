@@ -484,3 +484,7 @@ function all_after_char {
 function find_local_ssh_hosts {
 	nmap -p 22 --open -sV 10.0.0.0/24 | grep -Eo "[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}"
 }
+
+function rwhich {
+	readlink -f $(which $1)
+}

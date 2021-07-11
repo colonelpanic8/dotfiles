@@ -1,7 +1,8 @@
 { pkgs, ... }:
 {
   environment.systemPackages = with pkgs; [
-    # ic-keysmith
-    # quill
+    spotify
+    google-chrome
+    pommed_light
   ];
 }

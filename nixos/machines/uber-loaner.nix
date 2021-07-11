@@ -3,7 +3,7 @@
 {
   imports = [
     <nixpkgs/nixos/modules/installer/scan/not-detected.nix>
-    ../configuration.nix
+    ../full.nix
     ../games.nix
     ../extra.nix
   ];
