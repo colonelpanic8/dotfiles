@@ -53,12 +53,13 @@
 
     # Tools
     binutils
+    direnv
     gitFull
     rcm
-    silver-searcher
     ripgrep
-    usbutils
+    silver-searcher
     tmux
+    usbutils
     wget
     yubikey-manager
   ];
