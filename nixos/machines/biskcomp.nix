@@ -1,6 +1,5 @@
 {
   imports = [
-    ../jellyfin.nix
     ../internet-computer.nix
     ../raspberry-pi.nix
   ];
