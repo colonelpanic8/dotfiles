@@ -5,7 +5,6 @@
 
 {
   imports = [
-    <nixpkgs/nixos/modules/installer/scan/not-detected.nix>
     ../full.nix
     ../extra.nix
     ../dfinity.nix

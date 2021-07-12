@@ -27,6 +27,10 @@
   in
   {
     nixosConfigurations = {
+      ivanm-dfinity-razer = nixpkgs.lib.nixosSystem {
+        system = "x86_64-linux";
+        modules = [ tweaks ./machines/ivanm-dfinity-razer.nix ];
+      };
       ryzen-shine = nixpkgs.lib.nixosSystem {
         system = "x86_64-linux";
         modules = [ tweaks ./machines/ryzen-shine.nix ];

@@ -72,6 +72,8 @@ in
     binutils
     # direnv
     gitFull
+    htop
+    ncdu
     rcm
     ripgrep
     silver-searcher
