@@ -10,6 +10,8 @@
     ../dfinity.nix
   ];
 
+  hardware.enableRedistributableFirmware = true;
+
   # disable card with bbswitch by default since we turn it on only on demand!
   hardware.nvidiaOptimus.disable = true;
 

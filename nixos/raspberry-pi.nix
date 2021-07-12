@@ -40,6 +40,7 @@
 
   environment.systemPackages = with pkgs; [
     raspberrypi-eeprom
+    piclone
   ];
 
   nix = {
