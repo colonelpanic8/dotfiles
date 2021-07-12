@@ -14,7 +14,8 @@
       source-code-pro
       source-sans-pro
       source-serif-pro
-      # twemoji-color-font
+      twemoji-color-font
+      emacs-all-the-icons-fonts
     ];
     fontconfig = {
       allowBitmaps = true;
