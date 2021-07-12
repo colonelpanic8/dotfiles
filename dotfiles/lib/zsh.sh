@@ -15,4 +15,4 @@ function if_emacs_zsh {
 environment_variable_exists INSIDE_EMACS && export PROMPT='$ '
 
 # Enable direnv
-eval "$(direnv hook zsh)"
+command_exists direnv && eval "$(direnv hook zsh)"
