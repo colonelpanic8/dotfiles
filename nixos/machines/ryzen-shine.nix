@@ -7,8 +7,9 @@
   imports = [
     ../full.nix
     ../dfinity.nix
-    ../jellyfin.nix
   ];
+
+  hardware.enableRedistributableFirmware = true;
 
   networking.interfaces.enp5s0.useDHCP = true;
   networking.interfaces.wlp4s0.useDHCP = true;
