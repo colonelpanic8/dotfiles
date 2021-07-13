@@ -22,3 +22,4 @@ gotools
 /dotfiles/config/xmonad/result
 /dotfiles/config/taffybar/result
 /dotfiles/emacs.d/*.sqlite
+/dotfiles/config/gtk-3.0/colors.css

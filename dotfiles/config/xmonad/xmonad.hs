@@ -80,7 +80,7 @@ import           XMonad.Util.WorkspaceCompare
 
 myConfig = def
   { modMask = mod4Mask
-  , terminal = "konsole"
+  , terminal = "alacritty"
   , manageHook = myManageHook <+> manageHook def
   , layoutHook = myLayoutHook
   , borderWidth = 0
