@@ -1,11 +1,13 @@
 { pkgs, ... }: {
-  home.sessionVariablesExtra = ''
-    ROFI_SYSTEMD_TERM="alacritty"
-  '';
-
   xsession = {
+    enable = true;
     preferStatusNotifierItems = true;
+    windowManager.command = "${pkgs.haskellPackages.imalison-xmonad}/bin/imalison-xmonad";
+    profileExtra = ''
+      export ROFI_SYSTEMD_TERM="alacritty -e"
+    '';
   };
+
   home.emptyActivationPath = false;
   programs.home-manager.enable = true;
 
