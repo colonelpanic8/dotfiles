@@ -21,7 +21,7 @@
       allowBitmaps = true;
       useEmbeddedBitmaps = true;
       defaultFonts = {
-        monospace = [ "Source Code Pro" ];
+        monospace = [ "Fira Code" ];
         sansSerif = [ "Roboto" ];
         serif     = [ "Source Serif Pro" ];
       };
