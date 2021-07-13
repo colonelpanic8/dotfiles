@@ -3002,6 +3002,11 @@ Intero seems to be causing hangs, so it has been disabled
               (("C-e" . end-of-visual-line)))
   :preface
   (progn
+    (require 'cl-lib)
+    (defun imalison:maybe-symbol-name (arg)
+      (if (symbolp arg)
+          (symbol-name arg)
+        arg))
     ;; XXX: These should probably be moved to config, right?
     (setq org-startup-indented nil
           org-startup-folded t
