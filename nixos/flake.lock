@@ -19,6 +19,26 @@
         "type": "github"
       }
     },
+    "home-manager": {
+      "inputs": {
+        "nixpkgs": [
+          "nixpkgs"
+        ]
+      },
+      "locked": {
+        "lastModified": 1626168714,
+        "narHash": "sha256-LivElv4aPfojh8HxJy6VAmDAf7zA40S7jGGSV7+wLvg=",
+        "owner": "IvanMalison",
+        "repo": "home-manager",
+        "rev": "557c159dfaf17eff3bd55ad6e8433bf59f40fab0",
+        "type": "github"
+      },
+      "original": {
+        "owner": "IvanMalison",
+        "repo": "home-manager",
+        "type": "github"
+      }
+    },
     "nixos-hardware": {
       "locked": {
         "lastModified": 1625333638,
@@ -74,7 +94,7 @@
     },
     "nixpkgs_4": {
       "locked": {
-        "narHash": "sha256-vAvfFQe4KHWheJHI4cEc2CYTzXnuRAvPu/bTH4GXhcc=",
+        "narHash": "sha256-oHUlQvEu4A9dWu52bZdxg29z5Xy6NVJGZjmsKwb6yo4=",
         "path": "/home/imalison/Projects/nixpkgs",
         "type": "path"
       },
@@ -85,7 +105,7 @@
     },
     "nixpkgs_5": {
       "locked": {
-        "narHash": "sha256-vAvfFQe4KHWheJHI4cEc2CYTzXnuRAvPu/bTH4GXhcc=",
+        "narHash": "sha256-oHUlQvEu4A9dWu52bZdxg29z5Xy6NVJGZjmsKwb6yo4=",
         "path": "/home/imalison/Projects/nixpkgs",
         "type": "path"
       },
@@ -96,6 +116,7 @@
     },
     "root": {
       "inputs": {
+        "home-manager": "home-manager",
         "nixos-hardware": "nixos-hardware",
         "nixpkgs": "nixpkgs",
         "taffybar": "taffybar",

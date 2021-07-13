@@ -34,6 +34,8 @@ import           System.IO.Unsafe
 import           System.Process
 import           Text.Printf
 import           Unsafe.Coerce
+import           XMonad.Main (launch)
+import           XMonad.Core (getDirectories)
 import           XMonad hiding ( (|||) )
 import           XMonad.Actions.CycleWS hiding (nextScreen)
 import           XMonad.Actions.CycleWorkspaceByScreen
@@ -100,14 +102,10 @@ myConfig = def
 
 myNavigation2DConfig = def { defaultTiledNavigation = centerNavigation }
 
-main =
-  xmonad .
-  docks .
-  pagerHints .
-  ewmh .
-  withNavigation2DConfig myNavigation2DConfig $
-  myConfig
-
+main = do
+  dirs <- getDirectories
+  (flip launch dirs) . docks . pagerHints . ewmh . withNavigation2DConfig myNavigation2DConfig $ myConfig
+
 -- Utility functions
 
 -- Log to a file from anywhere

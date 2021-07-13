@@ -70,7 +70,7 @@ in
 
     # Tools
     binutils
-    # direnv
+    gawk
     gitFull
     htop
     ncdu
