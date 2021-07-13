@@ -5,5 +5,5 @@
   bg:  #000000ff;
   se:  #101010ff;
   fg:  #FFFFFFff;
-  ac:  #42A5F5ff;
+  ac:  #FFFF00ff;
 }

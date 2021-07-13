@@ -32,7 +32,7 @@ prompt {
     enabled: 						true;
 	padding: 						1% 0.75% 1% 0.75%;
 	background-color: 				@ac;
-	text-color: 					@fg;
+	text-color: 					@bg;
     border-radius:                  100%;
 }
 
