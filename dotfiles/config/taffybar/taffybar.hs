@@ -185,6 +185,7 @@ main = do
                        , textBatteryNew "$percentage$%"
                        , myClock
                        , sniTrayNew
+                       , coinbaseProductLabel "ICP-USD"
                        , mpris2New
                        ]
       longLaptopEndWidgets =
