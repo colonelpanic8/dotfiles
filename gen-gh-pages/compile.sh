@@ -10,7 +10,8 @@ evm config path /tmp
 evm install emacs-25.1-travis --use --skip
 export EMACS="$(evm bin)"
 
-curl -fsSkL https://raw.github.com/cask/cask/master/go | python
+git clone https://github.com/cask/cask
+export PATH=$(pwd)/cask/bin:$PATH
 
 cask install
 cask exec "$EMACS" --script generate-html.el

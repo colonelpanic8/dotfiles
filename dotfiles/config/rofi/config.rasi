@@ -1,0 +1,10 @@
+configuration {
+	bw: 0;
+	padding: 50;
+	show-icons: true;
+	terminal: "alacritty";
+	sidebar-mode: false;
+	fullscreen: true;
+	theme: "colorful/style_10.rasi";
+	dpi: 100;
+}

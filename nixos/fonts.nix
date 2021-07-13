@@ -7,6 +7,7 @@
     fonts = with pkgs; [
       dejavu_fonts
       emojione
+      fira-code
       fira-mono
       font-awesome-ttf
       noto-fonts-emoji
@@ -21,7 +22,7 @@
       allowBitmaps = true;
       useEmbeddedBitmaps = true;
       defaultFonts = {
-        monospace = [ "Source Code Pro" ];
+        monospace = [ "Fira Code" ];
         sansSerif = [ "Roboto" ];
         serif     = [ "Source Serif Pro" ];
       };

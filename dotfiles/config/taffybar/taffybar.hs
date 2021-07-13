@@ -145,7 +145,7 @@ main = do
                 (\size _ -> lift $ loadPixbufByName size "application-default-icon")
       layout = layoutNew defaultLayoutConfig
       windows = windowsNew defaultWindowsConfig
-      notifySystemD = void $ runCommandFromPath ["systemd-notify", "--ready"]
+
       myWorkspacesConfig =
         defaultWorkspacesConfig
         { underlineHeight = 3
@@ -230,7 +230,6 @@ main = do
         -- , startWidgets = []
         }
   startTaffybar $
-    appendHook notifySystemD $
     appendHook (void $ getHost False) $
     withLogServer $
     withToggleServer $

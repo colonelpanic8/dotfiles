@@ -23,7 +23,7 @@ function _setup_path {
     add_to_path "$HOME/.lib/bin" --before
 
 	# This makes systemd aware of change to $PATH
-    run_if_exists systemctl --user import-environment PATH DISPLAY XAUTHORITY HOME
+    run_if_exists systemctl --user import-environment PATH DISPLAY XAUTHORITY HOME 2> /dev/null
 }
 
 function _linux_path_setup {
