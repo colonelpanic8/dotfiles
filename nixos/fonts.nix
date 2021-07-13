@@ -7,6 +7,7 @@
     fonts = with pkgs; [
       dejavu_fonts
       emojione
+      fira-code
       fira-mono
       font-awesome-ttf
       noto-fonts-emoji
