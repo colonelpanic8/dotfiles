@@ -5,6 +5,8 @@
     windowManager.command = "${pkgs.haskellPackages.imalison-xmonad}/bin/imalison-xmonad";
     profileExtra = ''
       export ROFI_SYSTEMD_TERM="alacritty -e"
+      . "$HOME/.lib/login.sh"
+      load_xkb_map.sh
     '';
   };
 

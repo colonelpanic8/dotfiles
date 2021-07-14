@@ -24,8 +24,6 @@ dircolors_file="$HOME/.dircolors"
 
 [ ! -z "$SHELL" ] && test -r $dircolors_files  && eval "$(dircolors $dircolors_file)" && eval $(dircolors)
 
-export GO15VENDOREXPERIMENT=1
-
 if [[ $TERM == "dumb" ]]; then
     export PS1='$ '
 fi
