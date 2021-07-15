@@ -18,6 +18,7 @@ in
   environment.systemPackages = with pkgs; [
     python-with-my-packages
 
+    alacritty
     emacs
     firefox
     vlc
