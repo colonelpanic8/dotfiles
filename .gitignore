@@ -24,3 +24,4 @@ gotools
 /dotfiles/emacs.d/*.sqlite
 /dotfiles/config/gtk-3.0/colors.css
 /dotfiles/emacs.d/.cache/
+/dotfiles/config/fontconfig/conf.d/10-hm-fonts.conf

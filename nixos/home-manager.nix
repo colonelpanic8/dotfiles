@@ -82,6 +82,11 @@
         path = "/home/imalison/org";
         uri = "git@bitbucket.org:ivanmalison/org.git";
       }
+      {
+        name = "password-store";
+        path = "/home/imalison/.password-store";
+        uri = "git@github.com:IvanMalison/.password-store.git";
+      }
     ];
   };
 }
