@@ -26,11 +26,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1626316916,
-        "narHash": "sha256-rTSxPV4QKCg8Tl37p8rIsbQf/roisAY1gfEC+5rqBE8=",
+        "lastModified": 1626317009,
+        "narHash": "sha256-rx+U8lQM+gu072VQsa63DEHtR4IVQ1zA/Fg4CpDUsVc=",
         "owner": "IvanMalison",
         "repo": "home-manager",
-        "rev": "fc49acfa52da5bb80e6a3112ee5c03d1e24beac4",
+        "rev": "bc44222fe944712ba4e5065119f77eeb540937e3",
         "type": "github"
       },
       "original": {
