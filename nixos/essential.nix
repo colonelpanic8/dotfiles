@@ -74,6 +74,8 @@ in
     gitFull
     htop
     ncdu
+    lsof
+    tzupdate
     rcm
     ripgrep
     silver-searcher

@@ -4,9 +4,9 @@
     preferStatusNotifierItems = true;
     windowManager.command = "${pkgs.haskellPackages.imalison-xmonad}/bin/imalison-xmonad";
     profileExtra = ''
+      load_xkb_map.sh
       export ROFI_SYSTEMD_TERM="alacritty -e"
       . "$HOME/.lib/login.sh"
-      load_xkb_map.sh
     '';
   };
 
@@ -43,7 +43,6 @@
 
   # notifyosd
   # skippyxd
-  # volnoti
 
   services.kdeconnect = {
     enable = true;
@@ -67,4 +66,22 @@
   };
 
   services.xsettingsd.enable = true;
+
+  services.volnoti.enable = true;
+
+  services.git-sync = {
+    enable = true;
+    repositories = [
+      {
+        name = "config";
+        path = "/home/imalison/config";
+        uri = "git@bitbucket.org:ivanmalison/config.git";
+      }
+      {
+        name = "org";
+        path = "/home/imalison/org";
+        uri = "git@bitbucket.org:ivanmalison/org.git";
+      }
+    ];
+  };
 }
