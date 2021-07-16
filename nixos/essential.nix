@@ -18,6 +18,7 @@ in
   environment.systemPackages = with pkgs; [
     python-with-my-packages
 
+    alacritty
     emacs
     firefox
     vlc
@@ -74,6 +75,8 @@ in
     gitFull
     htop
     ncdu
+    lsof
+    tzupdate
     rcm
     ripgrep
     silver-searcher

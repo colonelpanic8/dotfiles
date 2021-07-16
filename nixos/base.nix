@@ -32,6 +32,7 @@
   environment.etc."ipsec.secrets".text = ''
     include ipsec.d/ipsec.nm-l2tp.secrets
   '';
+
   networking.networkmanager = {
     enable = true;
     enableStrongSwan = true;
