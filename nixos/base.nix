@@ -4,7 +4,6 @@
     ./users.nix
     ./fonts.nix
     ./essential.nix
-    ./flakes.nix
   ];
 
   nixpkgs.overlays = [

@@ -2,7 +2,7 @@
   "nodes": {
     "gitIgnoreSource": {
       "inputs": {
-        "nixpkgs": "nixpkgs_2"
+        "nixpkgs": "nixpkgs_3"
       },
       "locked": {
         "lastModified": 1625992881,
@@ -26,16 +26,53 @@
         ]
       },
       "locked": {
-        "lastModified": 1626317009,
-        "narHash": "sha256-rx+U8lQM+gu072VQsa63DEHtR4IVQ1zA/Fg4CpDUsVc=",
+        "lastModified": 1626387497,
+        "narHash": "sha256-b+KjkO0+wXKIpfPWrVEsaKpZusUOS005Vx3FiP1aS0A=",
         "owner": "IvanMalison",
         "repo": "home-manager",
-        "rev": "bc44222fe944712ba4e5065119f77eeb540937e3",
+        "rev": "2f5b9e26bf5bc441dfc83a44d8cbbf203eddac14",
         "type": "github"
       },
       "original": {
         "owner": "IvanMalison",
         "repo": "home-manager",
+        "type": "github"
+      }
+    },
+    "lowdown-src": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1617481909,
+        "narHash": "sha256-SqnfOFuLuVRRNeVJr1yeEPJue/qWoCp5N6o5Kr///p4=",
+        "owner": "kristapsdz",
+        "repo": "lowdown",
+        "rev": "148f9b2f586c41b7e36e73009db43ea68c7a1a4d",
+        "type": "github"
+      },
+      "original": {
+        "owner": "kristapsdz",
+        "ref": "VERSION_0_8_4",
+        "repo": "lowdown",
+        "type": "github"
+      }
+    },
+    "nix": {
+      "inputs": {
+        "lowdown-src": "lowdown-src",
+        "nixpkgs": "nixpkgs"
+      },
+      "locked": {
+        "lastModified": 1626394428,
+        "narHash": "sha256-KZpyYrZIRgzO9OnLXzCzNc0TqSsAQXapLAPAsQ20j0A=",
+        "owner": "IvanMalison",
+        "repo": "nix",
+        "rev": "f92beacb67d4c2cfe1c0080fe351d5fd4d45eae8",
+        "type": "github"
+      },
+      "original": {
+        "owner": "IvanMalison",
+        "ref": "master",
+        "repo": "nix",
         "type": "github"
       }
     },
@@ -56,11 +93,26 @@
     },
     "nixpkgs": {
       "locked": {
-        "lastModified": 1626311920,
-        "narHash": "sha256-6kZKVvYEbsYioboSgLZD6AKDqI6SnnurUattCWsAsmY=",
+        "lastModified": 1624862269,
+        "narHash": "sha256-JFcsh2+7QtfKdJFoPibLFPLgIW6Ycnv8Bts9a7RYme0=",
+        "owner": "NixOS",
+        "repo": "nixpkgs",
+        "rev": "f77036342e2b690c61c97202bf48f2ce13acc022",
+        "type": "github"
+      },
+      "original": {
+        "id": "nixpkgs",
+        "ref": "nixos-21.05-small",
+        "type": "indirect"
+      }
+    },
+    "nixpkgs_2": {
+      "locked": {
+        "lastModified": 1626384428,
+        "narHash": "sha256-cllqP3lJ9DdVRD1SEOf3s7U3dWqYqGicayxwGTsq/lc=",
         "owner": "IvanMalison",
         "repo": "nixpkgs",
-        "rev": "db3b4f84cb0aeab66cce1ab0ce8f51e7f4f864f1",
+        "rev": "cb2bdbe09bfc1ec11386c524b3bbfb55e5d2f376",
         "type": "github"
       },
       "original": {
@@ -68,17 +120,6 @@
         "ref": "my-unstable",
         "repo": "nixpkgs",
         "type": "github"
-      }
-    },
-    "nixpkgs_2": {
-      "locked": {
-        "narHash": "sha256-2VpqiYwgoTLYeQnNz+YbMdtGrQQkjZjEH0UqVl5vm2s=",
-        "path": "/home/imalison/Projects/nixpkgs",
-        "type": "path"
-      },
-      "original": {
-        "id": "nixpkgs",
-        "type": "indirect"
       }
     },
     "nixpkgs_3": {
@@ -94,7 +135,7 @@
     },
     "nixpkgs_4": {
       "locked": {
-        "narHash": "sha256-jW8aPg5rlg3aSgY1Atb6810VkBNtX0Gf5irEhcdwP5s=",
+        "narHash": "sha256-2VpqiYwgoTLYeQnNz+YbMdtGrQQkjZjEH0UqVl5vm2s=",
         "path": "/home/imalison/Projects/nixpkgs",
         "type": "path"
       },
@@ -105,7 +146,18 @@
     },
     "nixpkgs_5": {
       "locked": {
-        "narHash": "sha256-jW8aPg5rlg3aSgY1Atb6810VkBNtX0Gf5irEhcdwP5s=",
+        "narHash": "sha256-UlUBl0x3MKu9ZdVJJxmZcI2MrAeUU+RLUojqtSiRkzw=",
+        "path": "/home/imalison/Projects/nixpkgs",
+        "type": "path"
+      },
+      "original": {
+        "id": "nixpkgs",
+        "type": "indirect"
+      }
+    },
+    "nixpkgs_6": {
+      "locked": {
+        "narHash": "sha256-UlUBl0x3MKu9ZdVJJxmZcI2MrAeUU+RLUojqtSiRkzw=",
         "path": "/home/imalison/Projects/nixpkgs",
         "type": "path"
       },
@@ -117,8 +169,9 @@
     "root": {
       "inputs": {
         "home-manager": "home-manager",
+        "nix": "nix",
         "nixos-hardware": "nixos-hardware",
-        "nixpkgs": "nixpkgs",
+        "nixpkgs": "nixpkgs_2",
         "taffybar": "taffybar",
         "xmonad": "xmonad",
         "xmonad-contrib": "xmonad-contrib"
@@ -127,7 +180,7 @@
     "taffybar": {
       "inputs": {
         "gitIgnoreSource": "gitIgnoreSource",
-        "nixpkgs": "nixpkgs_3"
+        "nixpkgs": "nixpkgs_4"
       },
       "locked": {
         "narHash": "sha256-ulmlBKbUqYhFz7CDFrZAEjP677bpwTVXkYcPBo4rzIs=",
@@ -141,7 +194,7 @@
     },
     "xmonad": {
       "inputs": {
-        "nixpkgs": "nixpkgs_4"
+        "nixpkgs": "nixpkgs_5"
       },
       "locked": {
         "narHash": "sha256-wrruQzvSPGiYrHnqql5qLjK/2Ypf4PMgGpmWvxZ7OHw=",
@@ -155,7 +208,7 @@
     },
     "xmonad-contrib": {
       "inputs": {
-        "nixpkgs": "nixpkgs_5"
+        "nixpkgs": "nixpkgs_6"
       },
       "locked": {
         "narHash": "sha256-U+FcJ5c1EDc1ce0gbHyhiK5XFI1e9+HTwfRqxktPJts=",

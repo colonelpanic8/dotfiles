@@ -33,7 +33,7 @@
   };
 
   services.blueman-applet = {
-    enable = true;
+    enable = false;
   };
 
   services.taffybar = {

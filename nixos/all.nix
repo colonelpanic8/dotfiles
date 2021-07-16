@@ -110,7 +110,6 @@
     ispell
     jq
     libtool
-    # lorri
     lsof
     mercurial
     ncdu
@@ -144,7 +143,7 @@
 
     # Nix
     nix-prefetch-git
-    cachix
+    # cachix
 
     # Miscellaneous
     android-udev-rules

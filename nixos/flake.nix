@@ -1,5 +1,8 @@
 {
   inputs = {
+    nix = {
+      url = github:IvanMalison/nix/master;
+    };
     nixpkgs = {
       url = github:IvanMalison/nixpkgs/my-unstable;
     };
@@ -18,10 +21,17 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
   };
-  outputs = { self, nixpkgs, nixos-hardware, home-manager, taffybar, xmonad, xmonad-contrib }:
-  let forAll = ({...}: {
-    nix.registry.nixpkgs.flake = nixpkgs;
-    nixpkgs.overlays = [ taffybar.overlay xmonad.overlay xmonad-contrib.overlay ];
+  outputs = { self, nix, nixpkgs, nixos-hardware, home-manager, taffybar, xmonad, xmonad-contrib }:
+  let forAll = ({ ... }: {
+    nix = {
+      extraOptions = ''
+        experimental-features = nix-command flakes
+      '';
+      registry.nixpkgs.flake = nixpkgs;
+    };
+    nixpkgs.overlays = [
+      taffybar.overlay xmonad.overlay xmonad-contrib.overlay nix.overlay
+    ];
     imports = [
       home-manager.nixosModule
     ];
