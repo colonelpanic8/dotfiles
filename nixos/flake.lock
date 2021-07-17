@@ -2,7 +2,7 @@
   "nodes": {
     "gitIgnoreNix": {
       "inputs": {
-        "nixpkgs": "nixpkgs"
+        "nixpkgs": "nixpkgs_2"
       },
       "locked": {
         "lastModified": 1626413882,
@@ -21,7 +21,7 @@
     },
     "gitIgnoreNix_2": {
       "inputs": {
-        "nixpkgs": "nixpkgs_2"
+        "nixpkgs": "nixpkgs_3"
       },
       "locked": {
         "lastModified": 1626413882,
@@ -39,7 +39,7 @@
     },
     "gitIgnoreNix_3": {
       "inputs": {
-        "nixpkgs": "nixpkgs_3"
+        "nixpkgs": "nixpkgs_4"
       },
       "locked": {
         "lastModified": 1626413882,
@@ -58,7 +58,7 @@
     "home-manager": {
       "inputs": {
         "nixpkgs": [
-          "my_unstable"
+          "nixpkgs"
         ]
       },
       "locked": {
@@ -88,22 +88,11 @@
         "type": "github"
       }
     },
-    "my_unstable": {
-      "locked": {
-        "narHash": "sha256-ejJE3m7ymOKpPE6NBDlWla1FitMw04hB8JAUeW9WIn8=",
-        "path": "./nixpkgs",
-        "type": "path"
-      },
-      "original": {
-        "path": "./nixpkgs",
-        "type": "path"
-      }
-    },
     "nix": {
       "inputs": {
         "lowdown-src": "lowdown-src",
         "nixpkgs": [
-          "my_unstable"
+          "nixpkgs"
         ]
       },
       "locked": {
@@ -139,12 +128,12 @@
     "nixpkgs": {
       "locked": {
         "narHash": "sha256-ejJE3m7ymOKpPE6NBDlWla1FitMw04hB8JAUeW9WIn8=",
-        "path": "/nix/store/z30j15qd7l90y8c9fb3nd2703g65dskp-source",
+        "path": "./nixpkgs",
         "type": "path"
       },
       "original": {
-        "id": "nixpkgs",
-        "type": "indirect"
+        "path": "./nixpkgs",
+        "type": "path"
       }
     },
     "nixpkgs_2": {
@@ -169,12 +158,23 @@
         "type": "indirect"
       }
     },
+    "nixpkgs_4": {
+      "locked": {
+        "narHash": "sha256-ejJE3m7ymOKpPE6NBDlWla1FitMw04hB8JAUeW9WIn8=",
+        "path": "/nix/store/z30j15qd7l90y8c9fb3nd2703g65dskp-source",
+        "type": "path"
+      },
+      "original": {
+        "id": "nixpkgs",
+        "type": "indirect"
+      }
+    },
     "root": {
       "inputs": {
         "home-manager": "home-manager",
-        "my_unstable": "my_unstable",
         "nix": "nix",
         "nixos-hardware": "nixos-hardware",
+        "nixpkgs": "nixpkgs",
         "taffybar": "taffybar",
         "xmonad": "xmonad",
         "xmonad-contrib": "xmonad-contrib"
@@ -184,7 +184,7 @@
       "inputs": {
         "gitIgnoreNix": "gitIgnoreNix",
         "nixpkgs": [
-          "my_unstable"
+          "nixpkgs"
         ]
       },
       "locked": {
@@ -201,7 +201,7 @@
       "inputs": {
         "gitIgnoreNix": "gitIgnoreNix_2",
         "nixpkgs": [
-          "my_unstable"
+          "nixpkgs"
         ]
       },
       "locked": {
@@ -218,7 +218,7 @@
       "inputs": {
         "gitIgnoreNix": "gitIgnoreNix_3",
         "nixpkgs": [
-          "my_unstable"
+          "nixpkgs"
         ]
       },
       "locked": {

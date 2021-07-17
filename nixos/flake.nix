@@ -3,30 +3,30 @@
     nixos-hardware.url = github:nixos/nixos-hardware;
     nix = {
       url = github:IvanMalison/nix/master;
-      inputs.nixpkgs.follows = "my_unstable";
+      inputs.nixpkgs.follows = "nixpkgs";
     };
-    my_unstable = {
+    nixpkgs = {
       url = path:./nixpkgs;
     };
     home-manager = {
       url = path:./home-manager;
-      inputs.nixpkgs.follows = "my_unstable";
+      inputs.nixpkgs.follows = "nixpkgs";
     };
     xmonad-contrib = {
       url = path:../dotfiles/config/xmonad/xmonad-contrib;
-      inputs.nixpkgs.follows = "my_unstable";
+      inputs.nixpkgs.follows = "nixpkgs";
     };
     xmonad = {
       url = path:../dotfiles/config/xmonad/xmonad;
-      inputs.nixpkgs.follows = "my_unstable";
+      inputs.nixpkgs.follows = "nixpkgs";
     };
     taffybar = {
       url = path:../dotfiles/config/taffybar/taffybar;
-      inputs.nixpkgs.follows = "my_unstable";
+      inputs.nixpkgs.follows = "nixpkgs";
     };
   };
   outputs = {
-    self, nix, my_unstable, nixos-hardware, home-manager, taffybar, xmonad,
+    self, nix, nixpkgs, nixos-hardware, home-manager, taffybar, xmonad,
     xmonad-contrib
   }:
   let forAll = ({ ... }: {
@@ -34,7 +34,7 @@
       extraOptions = ''
         experimental-features = nix-command flakes
       '';
-      registry.nixpkgs.flake = my_unstable;
+      registry.nixpkgs.flake = nixpkgs;
     };
     nixpkgs.overlays = [
       nix.overlay taffybar.overlay xmonad.overlay xmonad-contrib.overlay
@@ -51,15 +51,15 @@
   in
   {
     nixosConfigurations = {
-      ivanm-dfinity-razer = my_unstable.lib.nixosSystem {
+      ivanm-dfinity-razer = nixpkgs.lib.nixosSystem {
         system = "x86_64-linux";
         modules = [ forAll ./machines/ivanm-dfinity-razer.nix ];
       };
-      ryzen-shine = my_unstable.lib.nixosSystem {
+      ryzen-shine = nixpkgs.lib.nixosSystem {
         system = "x86_64-linux";
         modules = [ forAll ./machines/ryzen-shine.nix ];
       };
-      biskcomp = my_unstable.lib.nixosSystem {
+      biskcomp = nixpkgs.lib.nixosSystem {
         system = "aarch64-linux";
         modules = [ forAll piHardware ./machines/biskcomp.nix ];
       };
