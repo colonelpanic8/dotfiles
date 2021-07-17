@@ -24,6 +24,7 @@ in
     vlc
     transmission-gtk
     dolphin
+    element-desktop
 
     # Appearance
     hicolor-icon-theme

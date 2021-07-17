@@ -1,58 +1,65 @@
 {
   inputs = {
+    nixos-hardware.url = github:nixos/nixos-hardware;
     nix = {
       url = github:IvanMalison/nix/master;
+      inputs.nixpkgs.follows = "my_unstable";
     };
-    nixpkgs = {
-      url = github:IvanMalison/nixpkgs/my-unstable;
+    my_unstable = {
+      url = path:./nixpkgs;
     };
-    taffybar = {
-      url = path:../dotfiles/config/taffybar/taffybar;
+    home-manager = {
+      url = path:./home-manager;
+      inputs.nixpkgs.follows = "my_unstable";
     };
     xmonad-contrib = {
       url = path:../dotfiles/config/xmonad/xmonad-contrib;
+      inputs.nixpkgs.follows = "my_unstable";
     };
     xmonad = {
       url = path:../dotfiles/config/xmonad/xmonad;
+      inputs.nixpkgs.follows = "my_unstable";
     };
-    nixos-hardware.url = github:nixos/nixos-hardware;
-    home-manager = {
-      url = github:IvanMalison/home-manager;
-      inputs.nixpkgs.follows = "nixpkgs";
+    taffybar = {
+      url = path:../dotfiles/config/taffybar/taffybar;
+      inputs.nixpkgs.follows = "my_unstable";
     };
   };
-  outputs = { self, nix, nixpkgs, nixos-hardware, home-manager, taffybar, xmonad, xmonad-contrib }:
+  outputs = {
+    self, nix, my_unstable, nixos-hardware, home-manager, taffybar, xmonad,
+    xmonad-contrib
+  }:
   let forAll = ({ ... }: {
     nix = {
       extraOptions = ''
         experimental-features = nix-command flakes
       '';
-      registry.nixpkgs.flake = nixpkgs;
+      registry.nixpkgs.flake = my_unstable;
     };
     nixpkgs.overlays = [
-      taffybar.overlay xmonad.overlay xmonad-contrib.overlay nix.overlay
+      nix.overlay taffybar.overlay xmonad.overlay xmonad-contrib.overlay
     ];
     imports = [
       home-manager.nixosModule
     ];
   });
   piHardware = ({ ... }: {
-      imports = [
-        nixos-hardware.nixosModules.raspberry-pi-4
-      ];
+    imports = [
+      nixos-hardware.nixosModules.raspberry-pi-4
+    ];
   });
   in
   {
     nixosConfigurations = {
-      ivanm-dfinity-razer = nixpkgs.lib.nixosSystem {
+      ivanm-dfinity-razer = my_unstable.lib.nixosSystem {
         system = "x86_64-linux";
         modules = [ forAll ./machines/ivanm-dfinity-razer.nix ];
       };
-      ryzen-shine = nixpkgs.lib.nixosSystem {
+      ryzen-shine = my_unstable.lib.nixosSystem {
         system = "x86_64-linux";
         modules = [ forAll ./machines/ryzen-shine.nix ];
       };
-      biskcomp = nixpkgs.lib.nixosSystem {
+      biskcomp = my_unstable.lib.nixosSystem {
         system = "aarch64-linux";
         modules = [ forAll piHardware ./machines/biskcomp.nix ];
       };
