@@ -74,6 +74,7 @@ in
     binutils
     gawk
     gitFull
+    git-sync
     htop
     ncdu
     lsof
