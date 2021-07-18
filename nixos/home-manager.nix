@@ -75,12 +75,12 @@
       {
         name = "config";
         path = "/home/imalison/config";
-        uri = "git@bitbucket.org:ivanmalison/config.git";
+        uri = "git@github.com:IvanMalison/config.git";
       }
       {
         name = "org";
         path = "/home/imalison/org";
-        uri = "git@bitbucket.org:ivanmalison/org.git";
+        uri = "git@github.com:IvanMalison/org.git";
       }
       {
         name = "password-store";
