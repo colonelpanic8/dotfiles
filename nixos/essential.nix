@@ -41,6 +41,7 @@ in
     # Haskell Desktop
     haskellPackages.imalison-xmonad
     haskellPackages.imalison-taffybar
+    haskellPackages.gtk-sni-tray
     haskellPackages.status-notifier-item
     haskellPackages.dbus-hslogger
 

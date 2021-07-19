@@ -2,6 +2,7 @@
 
 {
   imports = [
+    ../users.nix
     ../full.nix
     ../dfinity.nix
   ];
@@ -24,6 +25,10 @@
   services.xserver = {
     videoDrivers = [ "nvidia" ];
   };
+
+  hardware.nvidia.modesetting.enable = true;
+
+  hardware.opengl.driSupport32Bit = true;
 
   boot.kernelModules = [ "kvm-amd" ];
   boot.extraModulePackages = [ ];

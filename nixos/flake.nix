@@ -42,6 +42,9 @@
     imports = [
       home-manager.nixosModule
     ];
+    home-manager.useGlobalPkgs = true;
+    home-manager.useUserPackages = true;
+    home-manager.users.imalison = import ./home-manager.nix;
   });
   piHardware = ({ ... }: {
     imports = [

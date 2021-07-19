@@ -2,7 +2,6 @@
   xsession = {
     enable = true;
     preferStatusNotifierItems = true;
-    windowManager.command = "${pkgs.haskellPackages.imalison-xmonad}/bin/imalison-xmonad";
     profileExtra = ''
       export ROFI_SYSTEMD_TERM="alacritty -e"
       . "$HOME/.lib/login.sh"
@@ -41,7 +40,10 @@
     package = pkgs.haskellPackages.imalison-taffybar;
   };
 
-  # notifyosd
+  services.notify-osd = {
+    enable = true;
+    package = pkgs.notify-osd-customizable;
+  };
   # skippyxd
 
   services.kdeconnect = {
