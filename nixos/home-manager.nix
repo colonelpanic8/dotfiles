@@ -1,7 +1,8 @@
-{ pkgs, ... }: {
+{ pkgs, config, ... }: {
   xsession = {
     enable = true;
     preferStatusNotifierItems = true;
+    importedVariables = [ "GDK_PIXBUF_ICON_LOADER" ];
     profileExtra = ''
       export ROFI_SYSTEMD_TERM="alacritty -e"
       . "$HOME/.lib/login.sh"
@@ -25,10 +26,6 @@
     defaultCacheTtl = 8 * 60 * 60;
     maxCacheTtl = 8 * 60 * 60;
     enableSshSupport = true;
-  };
-
-  services.picom = {
-    enable = true;
   };
 
   services.blueman-applet = {
@@ -90,5 +87,23 @@
         uri = "git@github.com:IvanMalison/.password-store.git";
       }
     ];
+  };
+
+  systemd.user.services.picom = {
+    Unit = {
+      Description = "Picom X11 compositor";
+      After = [ "graphical-session-pre.target" ];
+      PartOf = [ "graphical-session.target" ];
+    };
+
+    Install = { WantedBy = [ "graphical-session.target" ]; };
+
+    Service = {
+      # Temporarily fixes corrupt colours with Mesa 18.
+      Environment = [ "allow_rgb10_configs=false" ];
+      ExecStart = "${pkgs.picom}/bin/picom";
+      Restart = "always";
+      RestartSec = 3;
+    };
   };
 }

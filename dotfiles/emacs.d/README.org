@@ -1483,6 +1483,7 @@ The file server file for this emacs instance no longer exists.")
 ** beacon
 #+BEGIN_SRC emacs-lisp
 (use-package beacon
+  :disabled t
   :demand t
   :diminish beacon-mode
   :bind ("C-c b" . beacon-blink)
