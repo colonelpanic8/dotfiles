@@ -4,15 +4,26 @@
 { config, lib, pkgs, ... }:
 
 {
-  imports =
-    [ <nixpkgs/nixos/modules/installer/scan/not-detected.nix>
-      ../base.nix
-    ];
+  imports = [
+    ../full.nix
+    ../base.nix
+  ];
 
-  system.stateVersion = "20.03";
+  nix = {
+    package = pkgs.nixUnstable;
+    extraOptions = ''
+      experimental-features = nix-command flakes ca-references
+    '';
+  };
+
+  hardware.enableRedistributableFirmware = true;
 
   boot.initrd.availableKernelModules = [ "xhci_pci" "nvme" "usb_storage" "sd_mod" "rtsx_pci_sdmmc" ];
   boot.kernelPackages = pkgs.linuxPackages_latest;
+
+
+  hardware.opengl.extraPackages = [ pkgs.linuxPackages.nvidia_x11.out ];
+  hardware.opengl.extraPackages32 = [ pkgs.linuxPackages.nvidia_x11.lib32 ];
   boot.initrd.kernelModules = [ ];
   boot.kernelModules = [ "kvm-intel" ];
   boot.extraModulePackages = [ ];
@@ -45,4 +56,6 @@
     latitude = 37.8104601;
     longitude = -122.2572529;
   };
+
+  system.stateVersion = "20.03";
 }

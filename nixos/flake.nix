@@ -62,6 +62,10 @@
         system = "x86_64-linux";
         modules = [ forAll ./machines/ryzen-shine.nix ];
       };
+      adele = nixpkgs.lib.nixosSystem {
+        system = "x86_64-linux";
+        modules = [ forAll ./machines/adele.nix ];
+      };
       biskcomp = nixpkgs.lib.nixosSystem {
         system = "aarch64-linux";
         modules = [ forAll piHardware ./machines/biskcomp.nix ];
