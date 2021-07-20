@@ -2,10 +2,11 @@
   xsession = {
     enable = true;
     preferStatusNotifierItems = true;
-    importedVariables = [ "GDK_PIXBUF_ICON_LOADER" "PATH" ];
+    importedVariables = [ "GDK_PIXBUF_ICON_LOADER" ];
     profileExtra = ''
       export ROFI_SYSTEMD_TERM="alacritty -e"
       . "$HOME/.lib/login.sh"
+      load_xkb_map.sh
     '';
   };
 
