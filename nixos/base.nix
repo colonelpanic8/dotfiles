@@ -87,26 +87,14 @@
 
     xkbOptions = "ctrl:swapcaps";
     layout = "us+rwin_as_hyper";
-    extraLayouts.hyper = {
+    extraLayouts.rwin_as_hyper = {
       description = "Right Alt as Hyper key";
       languages = [ ];
-      symbolsFile = pkgs.writeText "hyper" ''
+      symbolsFile = pkgs.writeText "rwin_as_hyper" ''
         partial modifier_keys
         xkb_symbols "rwin_as_hyper" {
           replace key <RWIN> { [ Hyper_R ] };
           modifier_map Mod3 { <HYPR>, Hyper_L, Hyper_R };
-        };
-
-        partial modifier_keys
-        xkb_symbols "home_as_hyper" {
-          replace key <HOME> { [ Hyper_L ] };
-          modifier_map Mod3 { <HOME>, Hyper_L, Hyper_R };
-        };
-
-        partial modifier_keys
-        xkb_symbols "ralt_as_hyper" {
-          replace key <RALT> { [ Hyper_L, Hyper_L ] };
-	        modifier_map Mod3 { <RALT>, Hyper_L };
         };
       '';
     };
