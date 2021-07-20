@@ -41,6 +41,7 @@ in
     # Haskell Desktop
     haskellPackages.imalison-xmonad
     haskellPackages.imalison-taffybar
+    haskellPackages.notifications-tray-icon
     haskellPackages.gtk-sni-tray
     haskellPackages.status-notifier-item
     haskellPackages.dbus-hslogger
@@ -79,10 +80,11 @@ in
     htop
     ncdu
     lsof
-    tzupdate
+    pass
     rcm
     ripgrep
     silver-searcher
+    tzupdate
     tmux
     usbutils
     wget
