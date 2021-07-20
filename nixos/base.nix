@@ -61,10 +61,12 @@
   hardware.bluetooth.enable = true;
   services.blueman.enable = true;
 
+  # Keyboard/Keymap
+  console.keyMap = "us";
+
   i18n = {
     defaultLocale = "en_US.UTF-8";
   };
-  console.useXkbConfig = true;
 
   # Update timezone automatically
   services.tzupdate.enable = true;
@@ -83,22 +85,9 @@
   hardware.keyboard.zsa.enable = true;
 
   services.xserver = {
+    exportConfiguration = true;
     enable = true;
-
-    xkbOptions = "ctrl:swapcaps";
-    layout = "us+rwin_as_hyper";
-    extraLayouts.rwin_as_hyper = {
-      description = "Right Alt as Hyper key";
-      languages = [ ];
-      symbolsFile = pkgs.writeText "rwin_as_hyper" ''
-        partial modifier_keys
-        xkb_symbols "rwin_as_hyper" {
-          replace key <RWIN> { [ Hyper_R ] };
-          modifier_map Mod3 { <HYPR>, Hyper_L, Hyper_R };
-        };
-      '';
-    };
-
+    layout = "us";
     desktopManager = {
       plasma5.enable = true;
     };
