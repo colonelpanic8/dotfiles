@@ -24,10 +24,13 @@
       url = path:../dotfiles/config/taffybar/taffybar;
       inputs.nixpkgs.follows = "nixpkgs";
     };
+    notifications-tray-icon = {
+      url = github:IvanMalison/notifications-tray-icon/master;
+    };
   };
   outputs = {
     self, nix, nixpkgs, nixos-hardware, home-manager, taffybar, xmonad,
-    xmonad-contrib
+    xmonad-contrib, notifications-tray-icon
   }:
   let forAll = ({ ... }: {
     nix = {
@@ -38,6 +41,7 @@
     };
     nixpkgs.overlays = [
       nix.overlay taffybar.overlay xmonad.overlay xmonad-contrib.overlay
+      notifications-tray-icon.overlay
     ];
     imports = [
       home-manager.nixosModule

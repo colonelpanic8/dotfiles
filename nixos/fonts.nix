@@ -22,7 +22,7 @@
       allowBitmaps = true;
       useEmbeddedBitmaps = true;
       defaultFonts = {
-        monospace = [ "Fira Code" ];
+        monospace = [ "Source Code Pro" ];
         sansSerif = [ "Roboto" ];
         serif     = [ "Source Serif Pro" ];
       };
