@@ -1,6 +1,6 @@
 {
   inputs = {
-    nixos-hardware.url = github:nixos/nixos-hardware;
+    nixos-hardware.url = github:IvanMalison/nixos-hardware;
     nix = {
       url = github:IvanMalison/nix/master;
       inputs.nixpkgs.follows = "nixpkgs";
@@ -68,7 +68,11 @@
       };
       adele = nixpkgs.lib.nixosSystem {
         system = "x86_64-linux";
-        modules = [ forAll ./machines/adele.nix ];
+        modules = [ forAll ./machines/adele.nix ({ ... }: {
+          imports = [
+            nixos-hardware.nixosModules.dell-xps-17-9700-intel
+          ];
+        })];
       };
       biskcomp = nixpkgs.lib.nixosSystem {
         system = "aarch64-linux";
