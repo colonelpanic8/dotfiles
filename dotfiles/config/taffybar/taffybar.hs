@@ -171,7 +171,9 @@ main = do
       fullEndWidgets =
         map (>>= buildContentsBox)
               [ myClock
-              , sniTrayNew
+              , sniTrayNewFromParams defaultTrayParams { trayLeftClickAction = PopupMenu
+                                                       , trayRightClickAction = Activate
+                                                       }
               , coinbaseProductLabel "ICP-USD"
               , coinbaseProductLabel "ICP-BTC"
               , coinbaseProductLabel "BTC-USD"
