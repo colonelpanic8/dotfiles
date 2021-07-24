@@ -8,7 +8,6 @@
 
   nixpkgs.overlays = [
     (import ../dotfiles/config/xmonad/overlay.nix)
-    (import ../dotfiles/config/taffybar/overlay.nix)
   ];
 
   # Allow all the things
