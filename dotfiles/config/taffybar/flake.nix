@@ -28,7 +28,7 @@
   in
   rec {
     devShell = pkgs.haskellPackages.shellFor {
-      packages = p: [ p.imalison-taffybar ];
+      packages = p: [ p.imalison-taffybar p.taffybar ];
     };
     defaultPackage = pkgs.haskellPackages.imalison-taffybar;
   }) // { inherit overlay overlays; } ;
