@@ -91,7 +91,7 @@ myConfig = def
   , logHook =
       updatePointer (0.5, 0.5) (0, 0) +++
       toggleFadeInactiveLogHook 0.9 +++ workspaceHistoryHook +++
-      setWorkspaceNames
+      setWorkspaceNames +++ activateLogHook (reader W.focusWindow >>= doF) <+> logHook def
   , handleEventHook =
       fullscreenEventHook +++ followIfNoMagicFocus +++ minimizeEventHook
   , startupHook = myStartup
