@@ -27,6 +27,8 @@ in
     element-desktop
 
     # Appearance
+    numix-icon-theme-circle
+    papirus-icon-theme
     hicolor-icon-theme
 
     # XOrg
