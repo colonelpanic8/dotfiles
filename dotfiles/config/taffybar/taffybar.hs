@@ -41,6 +41,7 @@ import           System.Taffybar.Information.X11DesktopInfo
 import           System.Taffybar.SimpleConfig
 import           System.Taffybar.Util
 import           System.Taffybar.Widget
+import           System.Taffybar.Widget.Generic.Icon
 import           System.Taffybar.Widget.Generic.PollingGraph
 import           System.Taffybar.Widget.Generic.PollingLabel
 import           System.Taffybar.Widget.Util
@@ -54,7 +55,10 @@ getDaysCandles productString = do
   CB.run CB.Production (candles CB.userAgent)
 
 coinbaseProductLabel productString =
-  pollingLabelNew 60.0 $ Data.Text.pack . ((productString ++ ": ") ++) . show . CB.unPrice . CB.close . head <$> getDaysCandles (Data.Text.pack productString)
+  pollingLabelNew 60.0 $ Data.Text.pack . show . CB.unPrice . CB.close . head <$>
+                  getDaysCandles (Data.Text.pack productString)
+
+
 
 mkRGBA (r, g, b, a) = (r/256, g/256, b/256, a/256)
 blue = mkRGBA (42, 99, 140, 256)
