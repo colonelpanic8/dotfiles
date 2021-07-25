@@ -78,6 +78,10 @@
         system = "aarch64-linux";
         modules = [ forAll piHardware ./machines/biskcomp.nix ];
       };
+      air-gapped-pi = nixpkgs.lib.nixosSystem {
+        system = "aarch64-linux";
+        modules = [ forAll piHardware ./machines/air-gapped-pi.nix ];
+      };
     };
   };
 }

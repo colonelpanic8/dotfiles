@@ -15,6 +15,9 @@ let
   python-with-my-packages = pkgs.python3.withPackages my-python-packages;
 in
 {
+  nixpkgs.overlays = [
+    (import ../dotfiles/config/xmonad/overlay.nix)
+  ];
   environment.systemPackages = with pkgs; [
     python-with-my-packages
 
@@ -75,6 +78,7 @@ in
     playerctl
 
     # Tools
+    cachix
     binutils
     gawk
     gitFull

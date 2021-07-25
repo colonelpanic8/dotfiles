@@ -6,10 +6,6 @@
     ./essential.nix
   ];
 
-  nixpkgs.overlays = [
-    (import ../dotfiles/config/xmonad/overlay.nix)
-  ];
-
   # Allow all the things
   nixpkgs.config.allowUnfree = true;
   nixpkgs.config.permittedInsecurePackages = [
@@ -19,7 +15,6 @@
   # Disabling these waits disables the stuck on boot up issue
   systemd.services.systemd-udev-settle.enable = false;
   systemd.services.NetworkManager-wait-online.enable = false;
-  networking.firewall.enable = false;
 
   # Security
   programs.gnupg.agent = { enable = true; enableSSHSupport = true; };
@@ -30,6 +25,7 @@
     include ipsec.d/ipsec.nm-l2tp.secrets
   '';
 
+  networking.firewall.enable = false;
   networking.networkmanager = {
     enable = true;
     enableStrongSwan = true;
