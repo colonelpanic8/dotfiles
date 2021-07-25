@@ -40,8 +40,6 @@
     '';
   };
 
-  programs.zsh.enable = true;
-
   services.avahi = {
     enable = true;
     nssmdns = true;
@@ -72,6 +70,19 @@
 
   # TODO: Add a comment explaining what this does.
   services.gnome.at-spi2-core.enable = true;
+
+  # Shell configuration
+  programs.zsh = {
+    enable = true;
+    syntaxHighlighting = {
+      enable = true;
+    };
+    ohMyZsh = {
+      enable = true;
+      plugins = [ "git" "sudo" "pip" ];
+    };
+    spaceship-prompt.enable = true;
+  };
 
   services.openssh.enable = true;
 
