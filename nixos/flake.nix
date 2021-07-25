@@ -21,7 +21,7 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
     taffybar = {
-      url = path:../dotfiles/config/taffybar;
+      url = path:../dotfiles/config/taffybar/taffybar;
       inputs.nixpkgs.follows = "nixpkgs";
     };
     notifications-tray-icon = {
@@ -41,7 +41,7 @@
     };
     nixpkgs.overlays = [
       nix.overlay xmonad.overlay xmonad-contrib.overlay
-      notifications-tray-icon.overlay
+      notifications-tray-icon.overlay (import ../dotfiles/config/taffybar/overlay.nix)
     ] ++ taffybar.overlays;
     imports = [
       home-manager.nixosModule
