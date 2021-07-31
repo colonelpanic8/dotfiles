@@ -38,5 +38,5 @@
     };
   };
 
-  nix.trustedUsers = ["imalison" "kat"];
+  nix.trustedUsers = [ "root" "imalison" "kat" ];
 }

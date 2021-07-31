@@ -11,6 +11,5 @@
       "taffy.cachix.org-1:H0iiOGeXnLOAptADO4i3AiDIOladTcZYxXp+P0lOvHw="
       "waymonad.cachix.org-1:Z4Nbjc3iYJNFZi0eAgzqLWFBuDRClAy1prZBv7eK64A="
     ];
-    trustedUsers = [ "root" "imalison" "kat" ];
   };
 }
