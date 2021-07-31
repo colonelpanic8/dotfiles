@@ -2,5 +2,5 @@
 import sys
 
 import random
-print sys.argv[1:]
-print random.choice(sys.argv[1:])
+print(sys.argv[1:])
+print(random.choice(sys.argv[1:]))
