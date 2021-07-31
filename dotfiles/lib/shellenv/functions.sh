@@ -1,24 +1,38 @@
-function get_python_scripts_path {
-    python -c "import sysconfig; print sysconfig.get_path('scripts')"
+function command_exists {
+    hash "$1" 2>/dev/null 1>/dev/null
 }
 
-function path_lines {
-    local python_command
-    # We need to get a path to the ACTUAL python command because
-    # pyenv alters PATH before actually executing python, which ends
-    # up changing PATH in a way that is not desireable.
-    hash pyenv 2>/dev/null && python_command="$(pyenv which python)" || python_command="$(which python)"
-    "$python_command" "$HOME/.lib/python/shell_path.py" --path-lines "$@"
+function run_if_exists {
+	command_exists "$@" && "$@"
 }
 
-function indirect_expand {
-    eval "value=\"\${$1}\""
-    echo $value
+function shell_contains () {
+  local e
+  for e in "${@:2}"; do
+      [[  "$1" == *"$e"* ]] && return 0
+  done
+  return 1
 }
 
 function environment_variable_exists {
     eval "value=\"\${$1+x}\""
     [ ! -z $value ]
+}
+
+function get_python_scripts_path {
+    python -c "import sysconfig; print sysconfig.get_path('scripts')"
+}
+
+function path_lines {
+	IFS=':' read -A ADDR <<< "$PATH"
+	for one_path in "${ADDR[@]}"; do
+		echo $one_path
+	done
+}
+
+function indirect_expand {
+    eval "value=\"\${$1}\""
+    echo $value
 }
 
 function exists_in_path_var {
@@ -40,7 +54,7 @@ EOF
 
 function echo_split {
    local IFS
-    IFS="$2" read -rA -- arr <<EOF
+   IFS="$2" read -rA -- arr <<EOF
 $1
 EOF
     for i in "${arr[@]}"; do
@@ -56,19 +70,11 @@ function shell_contains {
   return 1
 }
 
-function dotfiles_directory {
-    echo $(dirname `readlink -f ~/.zshrc | xargs dirname`)
-}
-
-function go2dotfiles {
-    cd $(dotfiles_directory)
-}
-
-function current_shell() {
+function current_shell {
     which "$(ps -p $$ | tail -1 | awk '{print $NF}' | sed 's/\-//')"
 }
 
-function is_zsh() {
+function is_zsh {
     [ ! -z ${ZSH_VERSION+x} ]
 }
 
@@ -94,20 +100,6 @@ function filter_by_column_value {
     awk '$'"$1"' == '"$2"'  { print $0 }'
 }
 
-# Determine size of a file or total size of a directory
-function fs {
-    if du -b /dev/null > /dev/null 2>&1; then
-    local arg=-sbh
-    else
-    local arg=-sh
-    fi
-    if [[ -n "$@" ]]; then
-    du $arg -- "$@"
-    else
-    du $arg .[^.]* *
-    fi
-}
-
 # Start an HTTP server from a directory, optionally specifying the port
 function server {
     local port="${1:-8000}"
@@ -124,35 +116,6 @@ function digga {
 
 function shell_stats() {
     history 0 | awk '{CMD[$2]++;count++;}END { for (a in CMD)print CMD[a] " " CMD[a]/count*100 "% " a;}' | grep -v "./" | column -c3 -s " " -t | sort -nr | nl |  head -n20
-}
-
-function is_ssh() {
-    test $SSH_CLIENT
-}
-
-# TODO: Remove this.
-alias clipboard='oscopy'
-
-function oscopy() {
-    if is_osx;
-    then
-        reattach-to-user-namespace pbcopy
-    else
-    test -n "$DISPLAY" && xclip -selection c
-    fi
-}
-
-function ospaste() {
-    if is_osx;
-    then
-        reattach-to-user-namespace pbpaste
-    else
-    xclip -o
-    fi
-}
-
-function git_root() {
-    cd "$(git root)"
 }
 
 function git_diff_replacing() {
