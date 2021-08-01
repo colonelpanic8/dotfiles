@@ -1,6 +1,11 @@
-{-# LANGUAGE DeriveDataTypeable, TypeSynonymInstances,
-             MultiParamTypeClasses, ExistentialQuantification,
-             FlexibleInstances, FlexibleContexts, ScopedTypeVariables #-}
+{-# LANGUAGE DeriveDataTypeable #-}
+{-# LANGUAGE ExistentialQuantification #-}
+{-# LANGUAGE FlexibleContexts #-}
+{-# LANGUAGE FlexibleInstances #-}
+{-# LANGUAGE MultiParamTypeClasses #-}
+{-# LANGUAGE ScopedTypeVariables #-}
+{-# LANGUAGE TypeSynonymInstances #-}
+
 module Main where
 
 import           Codec.Binary.UTF8.String as UTF8
@@ -186,31 +191,27 @@ getWorkspaceDmenu = myDmenu (workspaces myConfig)
 
 -- Selectors
 
-isHangoutsTitle = isPrefixOf "Google Hangouts"
 isGmailTitle t = isInfixOf "@gmail.com" t && isInfixOf "Gmail" t
 isChromeClass = isInfixOf "chrome"
 chromeSelectorBase = isChromeClass <$> className
 
 chromeSelector =
   chromeSelectorBase <&&>
-  (\t -> not $ any ($ t) [isHangoutsTitle, isGmailTitle]) <$> title
+  (\t -> not $ any ($ t) [isGmailTitle]) <$> title
 spotifySelector = className =? "Spotify"
 emacsSelector = className =? "Emacs"
 transmissionSelector = fmap (isPrefixOf "Transmission") title
-hangoutsSelector = chromeSelectorBase <&&> fmap isHangoutsTitle title
 gmailSelector = chromeSelectorBase <&&> fmap isGmailTitle title
 volumeSelector = className =? "Pavucontrol"
 
 virtualClasses =
-  [ (hangoutsSelector, "Hangouts")
-  , (gmailSelector, "Gmail")
+  [ (gmailSelector, "Gmail")
   , (chromeSelector, "Chrome")
   , (transmissionSelector, "Transmission")
   ]
 
 -- Commands
 
-hangoutsCommand = "start_hangouts.sh"
 gmailCommand = "start_chrome.sh --new-window https://mail.google.com/mail/u/0/#inbox"
 spotifyCommand = "spotify"
 chromeCommand = "start_chrome.sh"
@@ -428,37 +429,6 @@ data ChromeInfo = ChromeInfo
   , tabUri :: String
   , tabTitle :: String
   } deriving (Eq, Show)
-
-getChromeTabInfo = do
-  output <- runProcessWithInput "chromix-too" ["ls"] ""
-  return $ M.fromList $ map parseChromixLine $ lines output
-    where parseChromixLine line =
-            case splitOn " " line of
-              [] -> undefined
-              tid:uri:rest -> let ttl = concat rest in
-                              (printf "%s - %s" tid ttl :: String,
-                               ChromeInfo { tabId = read tid
-                                          , tabUri = uri
-                                          , tabTitle = ttl
-                                          })
-              [_] -> undefined
-
-selectChromeTab WindowBringerConfig { menuCommand = cmd
-                                    , menuArgs = args
-                                    } =
-  liftIO getChromeTabInfo >>= void . DM.menuMapArgs cmd args
-
-chromeTabAction doSplit action selected =
-  case selected of
-    Left wid -> action wid
-    Right ChromeInfo { tabId = tid } ->
-      liftIO $ do
-        let command = if doSplit then
-                "split_tab_by_id.sh %s"
-              else
-                "focus_tab_by_id.sh %s"
-        spawn $ printf command $ show tid
-        return ()
 
 menuIndexArgs :: MonadIO m => String -> [String] -> [(String, a)] ->
                m (Maybe a)
@@ -835,7 +805,6 @@ swapMinimizeStateAfter action =
 scratchpads =
   [ NS "htop" htopCommand (title =? "htop") nonFloating
   , NS "spotify" spotifyCommand spotifySelector nonFloating
-  , NS "hangouts" hangoutsCommand hangoutsSelector nonFloating
   , NS "volume" volumeCommand volumeSelector nonFloating
   ]
 
@@ -912,7 +881,34 @@ mute = spawn "set_volume.sh --toggle-mute"
 shiftToEmptyOnScreen direction =
   followingWindow (windowToScreen direction True) >> shiftToEmptyAndView
 
+directionalUp = xK_k
+directionalDown = xK_j
+directionalLeft = xK_h
+directionalRight = xK_l
+
+buildDirectionalBindings mask commandFn =
+  [ ((mask, directionalUp   ), commandFn U)
+  , ((mask, directionalDown ), commandFn D)
+  , ((mask, directionalLeft ), commandFn L)
+  , ((mask, directionalRight), commandFn R)
+  ]
+
 addKeys conf@XConfig { modMask = modm } =
+
+    -- Directional navigation
+
+    (buildDirectionalBindings
+     modm $ flip windowGo True) ++
+    (buildDirectionalBindings
+     (modm .|. shiftMask) $ flip windowSwap True) ++
+    (buildDirectionalBindings
+     (modm .|. controlMask) $ followingWindow . (flip windowToScreen True)) ++
+    (buildDirectionalBindings
+     hyper $ flip screenGo True) ++
+    (buildDirectionalBindings
+     (hyper .|. shiftMask) $ followingWindow . (flip screenSwap True)) ++
+    (buildDirectionalBindings
+     (hyper .|. controlMask) $ shiftToEmptyOnScreen) ++
 
     -- Specific program spawning
     bindBringAndRaiseMany
@@ -925,10 +921,7 @@ addKeys conf@XConfig { modMask = modm } =
     -- ScratchPads
     [ ((modalt, xK_m), doScratchpad "htop")
     , ((modalt, xK_v), doScratchpad "volume")
-    , ((modalt, xK_h), doScratchpad "hangouts")
     , ((modalt, xK_s), doScratchpad "spotify")
-    , ((modalt .|. controlMask, xK_h),
-       myRaiseNextMaybe (spawn hangoutsCommand) hangoutsSelector)
     , ((modalt .|. controlMask, xK_s),
        myRaiseNextMaybe (spawn spotifyCommand) spotifySelector)
 
@@ -954,36 +947,6 @@ addKeys conf@XConfig { modMask = modm } =
     , ((modm .|. controlMask, xK_c), chromeReplaceKill)
     , ((hyper, xK_g), gatherThisClass)
 
-    -- Directional navigation
-    , ((modm, xK_w), windowGo U True)
-    , ((modm, xK_s), windowGo D True)
-    , ((modm, xK_a), windowGo L True)
-    , ((modm, xK_d), windowGo R True)
-
-    , ((modm .|. shiftMask, xK_w), windowSwap U True)
-    , ((modm .|. shiftMask, xK_s), windowSwap D True)
-    , ((modm .|. shiftMask, xK_a), windowSwap L True)
-    , ((modm .|. shiftMask, xK_d), windowSwap R True)
-
-    , ((modm .|. controlMask, xK_w), followingWindow $ windowToScreen U True)
-    , ((modm .|. controlMask, xK_s), followingWindow $ windowToScreen D True)
-    , ((modm .|. controlMask, xK_a), followingWindow $ windowToScreen L True)
-    , ((modm .|. controlMask, xK_d), followingWindow $ windowToScreen R True)
-
-    , ((hyper, xK_w), screenGo U True)
-    , ((hyper, xK_s), screenGo D True)
-    , ((hyper, xK_a), screenGo L True)
-    , ((hyper, xK_d), screenGo R True)
-
-    , ((hyper .|. shiftMask, xK_w), followingWindow $ screenSwap U True)
-    , ((hyper .|. shiftMask, xK_s), followingWindow $ screenSwap D True)
-    , ((hyper .|. shiftMask, xK_a), followingWindow $ screenSwap L True)
-    , ((hyper .|. shiftMask, xK_d), followingWindow $ screenSwap R True)
-
-    , ((hyper .|. controlMask, xK_w), shiftToEmptyOnScreen U)
-    , ((hyper .|. controlMask, xK_s), shiftToEmptyOnScreen D)
-    , ((hyper .|. controlMask, xK_a), shiftToEmptyOnScreen L)
-    , ((hyper .|. controlMask, xK_d), shiftToEmptyOnScreen R)
 
     -- Focus/Layout manipulation
 
