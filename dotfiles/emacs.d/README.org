@@ -1889,6 +1889,7 @@ I use helm for almost all emacs completion
     (setq projectile-require-project-root nil)
     (setq projectile-enable-caching nil)
     (setq projectile-completion-system 'helm)
+    (setq projectile-git-submodule-command nil)
     (add-to-list 'projectile-globally-ignored-files "Godeps")
     (diminish 'projectile-mode)
     (bind-key* "C-c p s" 'imalison:do-ag)
