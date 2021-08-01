@@ -30,7 +30,6 @@ import           Data.Typeable
 import           Foreign.C.Types
 import           Graphics.X11.ExtraTypes.XF86
 import           Network.HostName
-import           XMonad.Util.TaffybarPagerHints
 import           Safe
 import           System.Directory
 import           System.Environment.XDG.DesktopEntry
@@ -39,8 +38,6 @@ import           System.IO.Unsafe
 import           System.Process
 import           Text.Printf
 import           Unsafe.Coerce
-import           XMonad.Main (launch)
-import           XMonad.Core (getDirectories)
 import           XMonad hiding ( (|||) )
 import           XMonad.Actions.CycleWS hiding (nextScreen)
 import           XMonad.Actions.CycleWorkspaceByScreen
@@ -54,11 +51,13 @@ import           XMonad.Actions.WindowBringer
 import           XMonad.Actions.WindowGo
 import           XMonad.Actions.WorkspaceNames
 import           XMonad.Config ()
+import           XMonad.Core (getDirectories)
 import           XMonad.Hooks.EwmhDesktops
 import           XMonad.Hooks.FadeInactive
 import           XMonad.Hooks.ManageDocks
 import           XMonad.Hooks.ManageHelpers
 import           XMonad.Hooks.Minimize
+import           XMonad.Hooks.TaffybarPagerHints
 import           XMonad.Hooks.WorkspaceHistory
 import           XMonad.Layout.Accordion
 import           XMonad.Layout.BoringWindows
@@ -75,6 +74,7 @@ import           XMonad.Layout.NoBorders
 import qualified XMonad.Layout.Renamed as RN
 import           XMonad.Layout.Spacing
 import           XMonad.Layout.Tabbed
+import           XMonad.Main (launch)
 import qualified XMonad.StackSet as W
 import           XMonad.Util.CustomKeys
 import qualified XMonad.Util.Dmenu as DM
