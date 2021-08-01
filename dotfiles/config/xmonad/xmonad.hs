@@ -30,7 +30,7 @@ import           Data.Typeable
 import           Foreign.C.Types
 import           Graphics.X11.ExtraTypes.XF86
 import           Network.HostName
-import           PagerHints
+import           XMonad.Util.TaffybarPagerHints
 import           Safe
 import           System.Directory
 import           System.Environment.XDG.DesktopEntry
