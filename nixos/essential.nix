@@ -78,7 +78,6 @@ in
     playerctl
 
     # Tools
-    cachix
     binutils
     gawk
     gitFull
