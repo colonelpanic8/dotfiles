@@ -881,10 +881,10 @@ mute = spawn "set_volume.sh --toggle-mute"
 shiftToEmptyOnScreen direction =
   followingWindow (windowToScreen direction True) >> shiftToEmptyAndView
 
-directionalUp = xK_k
-directionalDown = xK_j
-directionalLeft = xK_h
-directionalRight = xK_l
+directionalUp = xK_w
+directionalDown = xK_s
+directionalLeft = xK_a
+directionalRight = xK_d
 
 buildDirectionalBindings mask commandFn =
   [ ((mask, directionalUp   ), commandFn U)
@@ -992,7 +992,6 @@ addKeys conf@XConfig { modMask = modm } =
     , ((hyper .|. shiftMask, xK_k),
        spawn "rofi_kill_all.sh")
     , ((hyper, xK_r), spawn "rofi-systemd")
-    , ((hyper, xK_0), spawn "tvpower.js")
     , ((modalt, xK_z), spawn "split_chrome_tab_to_next_screen.sh")
     , ((hyper, xK_9), spawn "start_synergy.sh")
     , ((hyper, xK_slash), spawn "toggle_taffybar.sh")
