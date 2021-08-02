@@ -1,0 +1,8 @@
+#!/usr/bin/env sh
+
+function timestamp {
+    date +%s
+}
+
+timestamp
+

@@ -1,0 +1,11 @@
+#!/usr/bin/env sh
+
+function shell_contains () {
+  local e
+  for e in "${@:2}"; do
+      [[  "$1" == *"$e"* ]] && return 0
+  done
+  return 1
+}
+
+shell_contains

@@ -1,0 +1,7 @@
+#!/usr/bin/env sh
+
+function command_exists {
+    hash "$1" 2>/dev/null 1>/dev/null
+}
+
+command_exists

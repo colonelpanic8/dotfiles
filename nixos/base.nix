@@ -4,6 +4,7 @@
     ./users.nix
     ./fonts.nix
     ./essential.nix
+    ./environment.nix
   ];
 
   # Allow all the things
@@ -67,19 +68,6 @@
   # TODO: Add a comment explaining what this does.
   services.gnome.at-spi2-core.enable = true;
 
-  # Shell configuration
-  programs.zsh = {
-    enable = true;
-    syntaxHighlighting = {
-      enable = true;
-    };
-    ohMyZsh = {
-      enable = true;
-      plugins = [ "git" "sudo" "pip" ];
-    };
-    spaceship-prompt.enable = true;
-  };
-
   services.openssh.enable = true;
 
   services.autorandr.enable = true;
@@ -89,14 +77,6 @@
   virtualisation.docker.enable = true;
 
   hardware.keyboard.zsa.enable = true;
-
-  environment = {
-    homeBinInPath = true;
-    localBinInPath = true;
-    extraInit = ''
-      export PATH="$HOME/.lib/bin:$PATH"
-    '';
-  };
 
   services.xserver = {
     exportConfiguration = true;

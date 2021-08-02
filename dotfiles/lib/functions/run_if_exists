@@ -1,0 +1,7 @@
+#!/usr/bin/env sh
+
+function run_if_exists {
+	command_exists "$0" && "$@"
+}
+
+run_if_exists

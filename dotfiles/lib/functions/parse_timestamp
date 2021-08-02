@@ -1,0 +1,7 @@
+#!/usr/bin/env sh
+
+function parse_timestamp {
+    date -d "@$1"
+}
+
+parse_timestamp

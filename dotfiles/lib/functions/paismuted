@@ -1,0 +1,7 @@
+#!/usr/bin/env sh
+
+function paismuted {
+	pactl list sinks | grep "$(pasink)" -A 10 | grep Mute | grep -q yes
+}
+
+paismuted

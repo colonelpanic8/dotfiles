@@ -52,7 +52,7 @@ function switch_sink_kmix_master()
 
 function switch_sink()
 {
-  switch_sink_default      "$@"
+  xexswitch_sink_default      "$@"
   switch_sink_applications "$@"
   switch_sink_kmix_master  "$@"
 }
@@ -90,9 +90,13 @@ function help_me()
   echo "Usage: $0 [gui|list|<sink name to switch to>]"
 }
 
-case "${1:-}" in
-  (""|list) list_sinks       ;;
-  ([0-9]*)  switch_sink "$@" ;;
-  (gui)     switch_gui       ;;
-  (*)       help_me          ;;
-esac
+function pahelper {
+  case "${1:-}" in
+	(""|list) list_sinks       ;;
+	([0-9]*)  switch_sink "$@" ;;
+	(gui)     switch_gui       ;;
+	(*)       help_me          ;;
+  esac
+}
+
+pahelper

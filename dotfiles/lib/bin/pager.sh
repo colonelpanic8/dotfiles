@@ -1,6 +1,7 @@
-#!/usr/bin/env zsh
+#!/usr/bin/env sh
+
 if environment_variable_exists INSIDE_EMACS; then
-	emacs_pager -a less "$@"
+	emacsclient -n "$@"
 else
 	less -FXr
 fi

@@ -1,0 +1,9 @@
+#!/usr/bin/env sh
+
+function environment_variable_exists {
+    eval "value=\"\${$1+x}\""
+    [ ! -z $value ]
+}
+
+environment_variable_exists
+

@@ -212,9 +212,9 @@ virtualClasses =
 
 -- Commands
 
-gmailCommand = "start_chrome.sh --new-window https://mail.google.com/mail/u/0/#inbox"
+gmailCommand = "google-chrome-stable --new-window https://mail.google.com/mail/u/0/#inbox"
 spotifyCommand = "spotify"
-chromeCommand = "start_chrome.sh"
+chromeCommand = "start_chrome"
 emacsCommand = "emacsclient -c"
 htopCommand = "alacritty -e htop -t htop"
 transmissionCommand = "transmission-gtk"
@@ -239,9 +239,7 @@ myStartup = do
 
 -- Manage hook
 
-myManageHook = maybeReplaceTargetHook <+>
-  composeOne
-  [ isFullscreen -?> doFullFloat ]
+myManageHook = composeOne [ isFullscreen -?> doFullFloat ]
 
 -- Toggles
 
@@ -656,82 +654,7 @@ focusNextClass' =
 focusNextClass = sameClassOnly focusNextClass'
 
 selectClass = join $ myDmenu <$> allClasses
-
--- Chrome auto minimization
 
-data ReplaceOnNew
-  = NoTarget
-  | DontTarget
-  | Target Window
-  deriving (Typeable, Read, Show)
-
-instance ExtensionClass ReplaceOnNew where
-  initialValue = NoTarget
-  extensionType = PersistentExtension
-
-mapWindows f = W.mapWorkspace workspaceHelper
-  where
-    stackHelper stack = W.Stack
-          { W.focus = f $ W.focus stack
-          , W.up = map f $ W.up stack
-          , W.down = map f $ W.down stack
-          }
-    workspaceHelper ws@W.Workspace {W.stack = stack} =
-      ws { W.stack = stackHelper <$> stack }
-
-swapWindows a b =
-  mapWindows helper
-  where helper w
-          | w == a = b
-          | w == b = a
-          | otherwise = w
-
-getTarget = do
-  t <- XS.get
-  case t of
-    Target w -> return $ Just w
-    DontTarget -> return Nothing
-    NoTarget -> return Nothing
-
-maybeReplaceTarget :: Window -> X ()
-maybeReplaceTarget window = do
-  t <- getTarget
-      -- We have an insertUp here to ensure the target isn't deleted
-  let modifyStackSet target = W.insertUp target . swapWindows window target
-      replaceTarget target =
-        windows (modifyStackSet target) >> minimizeWindow target >>
-        XS.put (initialValue :: ReplaceOnNew)
-  whenJust t replaceTarget
-
-maybeReplaceTargetHook = ask >>= (liftX . maybeReplaceTarget) >> return (Endo id)
-
-setReplaceTarget = withFocused $ XS.put . Target
-
-getWindowWS a = withWindowSet $ \ws -> return $ listToMaybe
-    [ w | w <- W.workspaces ws, has a (W.stack w) ]
-    where has _ Nothing = False
-          has _ (Just _) = True
-
-replaceWindow original replacement =
-  W.delete original . swapWindows original replacement
-
-chromeReplaceKill =
-  withFocused $ \w -> do
-    vClass <- getClass w
-    if vClass == "Chrome" then
-      do
-        replacement <-
-          runMaybeT $ do
-            ws <- MaybeT $ join . fmap W.stack <$> getWindowWS w
-            MaybeT $
-              listToMaybe <$>
-              (intersect <$> minimizedWindows <*> windowsWithSameClass w ws)
-        let doReplace rep = do
-              maximizeWindow rep
-              windows $ replaceWindow w rep
-        maybe kill doReplace replacement
-    else
-      kill
 
 -- Gather windows of same class
 
@@ -874,9 +797,9 @@ goToNextScreenX = windows goToNextScreen
 
 -- Key bindings
 
-volumeUp = spawn "set_volume.sh --unmute --change-volume +5"
-volumeDown = spawn "set_volume.sh --unmute --change-volume -5"
-mute = spawn "set_volume.sh --toggle-mute"
+volumeUp = spawn "set_volume --unmute --change-volume +5"
+volumeDown = spawn "set_volume --unmute --change-volume -5"
+mute = spawn "set_volume --toggle-mute"
 
 shiftToEmptyOnScreen direction =
   followingWindow (windowToScreen direction True) >> shiftToEmptyAndView
@@ -942,9 +865,6 @@ addKeys conf@XConfig { modMask = modm } =
     , ((modm, xK_x), addHiddenWorkspace "NSP" >> windows (W.shift "NSP"))
     , ((modalt, xK_space), deactivateFullOr restoreOrMinimizeOtherClasses)
     , ((modalt, xK_Return), deactivateFullAnd restoreAllMinimized)
-    , ((modm .|. controlMask, xK_t),
-       setReplaceTarget >> spawn "chromix-too open chrome://newtab")
-    , ((modm .|. controlMask, xK_c), chromeReplaceKill)
     , ((hyper, xK_g), gatherThisClass)
 
 
@@ -980,7 +900,6 @@ addKeys conf@XConfig { modMask = modm } =
     -- Non-XMonad
 
     , ((modm, xK_v), spawn "xclip -o | xdotool type --file -")
-    , ((modm .|. controlMask, xK_s), spawn "split_current_chrome_tab.sh")
     , ((hyper, xK_v), spawn "rofi_clipit.sh")
     , ((hyper, xK_p), spawn "rofi-pass")
     , ((hyper, xK_h), spawn "screenshot.sh")
@@ -992,14 +911,13 @@ addKeys conf@XConfig { modMask = modm } =
     , ((hyper .|. shiftMask, xK_k),
        spawn "rofi_kill_all.sh")
     , ((hyper, xK_r), spawn "rofi-systemd")
-    , ((modalt, xK_z), spawn "split_chrome_tab_to_next_screen.sh")
     , ((hyper, xK_9), spawn "start_synergy.sh")
-    , ((hyper, xK_slash), spawn "toggle_taffybar.sh")
+    , ((hyper, xK_slash), spawn "toggle_taffybar")
     , ((hyper, xK_space), spawn "skippy-xd")
     , ((hyper, xK_i), spawn "rofi_select_input.hs")
-    , ((hyper, xK_o), spawn "rofi_paswitch.sh")
-    , ((modm, xK_apostrophe), spawn "load_default_map.sh")
-    , ((modalt, xK_apostrophe), spawn "load_xkb_map.sh")
+    , ((hyper, xK_o), spawn "rofi_paswitch")
+    , ((modm, xK_apostrophe), spawn "load_default_map")
+    , ((modalt, xK_apostrophe), spawn "load_xkb_map")
 
     -- Media keys
 

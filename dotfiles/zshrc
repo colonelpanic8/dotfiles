@@ -1,7 +1,7 @@
 # This is necessary for tramp.
 [[ $TERM == "dumb" ]] && unsetopt zle && PS1='$ ' && return
 
-test -r ~/.custom.sh && source ~/.custom.sh
+source_if_exists ~/.custom.sh
 source_if_exists ~/.this-machine.sh
 
 function emacs_ansi_term_support {

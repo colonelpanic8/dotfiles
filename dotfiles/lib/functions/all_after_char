@@ -1,0 +1,9 @@
+#!/usr/bin/env sh
+
+function all_after_char {
+    while read -r line; do
+          echo ${line##*$1}
+    done;
+}
+
+all_after_char "$@"

@@ -1,0 +1,15 @@
+#!/usr/bin/env sh
+
+function pashowvolume {
+	if paismuted; then
+		volnoti-show -m
+	else
+		actual=$(pavolume)
+		max=100
+		show=$(( actual < max ? actual : max ))
+		volnoti-show "$show"
+	fi
+}
+
+pashowvolume
+

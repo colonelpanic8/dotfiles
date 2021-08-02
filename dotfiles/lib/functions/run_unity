@@ -1,0 +1,8 @@
+#!/usr/bin/env sh
+
+function run_unity {
+	XDG_CURRENT_DESKTOP='Unity' "$@"
+}
+
+run_unity "$@"
+

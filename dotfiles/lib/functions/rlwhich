@@ -1,0 +1,8 @@
+#!/usr/bin/env sh
+
+function rlwhich {
+    readlink -f "$(which $1)"
+}
+
+rlwhich "$@"
+

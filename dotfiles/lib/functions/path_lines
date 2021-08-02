@@ -1,0 +1,10 @@
+#!/usr/bin/env sh
+
+function path_lines {
+	IFS=':' read -A ADDR <<< "$PATH"
+	for one_path in "${ADDR[@]}"; do
+		echo $one_path
+	done
+}
+
+path_lines

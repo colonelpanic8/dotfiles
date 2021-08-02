@@ -1,0 +1,7 @@
+#!/usr/bin/env sh
+
+function rofi_paswitch {
+	pahelper | tr -d '\n' | tr '>' '|' | rofi -i -dmenu -sep '|' | grep -Eo ' [0-9]*' | xargs pahelper
+}
+
+rofi_paswitch
