@@ -1,0 +1,14 @@
+#!/usr/bin/env sh
+
+function split_by_char {
+	flags="-ra"
+	environment_variable_exists ZSH_VERSION && flags="-A"
+	IFS="$1" read $flags ADDR <<< "$2"
+	for i in ${ADDR[@]}; do
+		echo "$i"
+	done
+}
+
+split_by_char "$@"
+
+
