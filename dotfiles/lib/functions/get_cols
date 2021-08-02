@@ -1,0 +1,8 @@
+#!/usr/bin/env sh
+
+function get_cols {
+	FS="${FS:- }"
+    gawk -f "$HOME/.lib/get_cols.awk" -v "cols=$*" -v "FS=$FS"
+}
+
+get_cols "$@"

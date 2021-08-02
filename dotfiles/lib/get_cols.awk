@@ -1,4 +1,5 @@
 #!/usr/bin/env gawk -f
+
 BEGIN {
     column_count=split(cols,column_numbers," ");
 }
