@@ -1,4 +1,3 @@
-
 # -*- mode: org; -*-
 [[https://travis-ci.org/IvanMalison/dotfiles][file:https://travis-ci.org/IvanMalison/dotfiles.svg?branch=master]]
 
@@ -2821,7 +2820,8 @@ The following is taken from [[https://github.com/syl20bnr/spacemacs/blob/a650877
          haskell-mode-stylish-haskell-args '("-")))
       (message "imalison:use-lsp-haskell: %s" imalison:use-lsp-haskell)
       (when imalison:use-lsp-haskell
-        (lsp)))
+        (use-package lsp-haskell)
+        (lsp-deferred)))
     (add-hook 'haskell-mode-hook 'imalison:haskell-mode))
   :config
   (progn
