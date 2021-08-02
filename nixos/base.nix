@@ -90,6 +90,14 @@
 
   hardware.keyboard.zsa.enable = true;
 
+  environment = {
+    homeBinInPath = true;
+    localBinInPath = true;
+    extraInit = ''
+      export PATH="$HOME/.lib/bin:$PATH"
+    '';
+  };
+
   services.xserver = {
     exportConfiguration = true;
     enable = true;
