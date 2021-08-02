@@ -9,4 +9,4 @@ function dbus-introspect {
 			  org.freedesktop.DBus.Introspectable.Introspect | tail -n +2 | sed -e "s/^ *string//"
 }
 
-dbus-introspect
+dbus-introspect "$@"

@@ -4,5 +4,5 @@ function get_sink_input_by_pid {
 	get_sink_input_info.hs | jq 'select(.application_process_id == "'"$thePID"'")'
 }
 
-get_sink_input_by_pid
+get_sink_input_by_pid "$@"
 

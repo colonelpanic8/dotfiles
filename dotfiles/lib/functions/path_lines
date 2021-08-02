@@ -1,10 +1,7 @@
 #!/usr/bin/env sh
 
 function path_lines {
-	IFS=':' read -A ADDR <<< "$PATH"
-	for one_path in "${ADDR[@]}"; do
-		echo $one_path
-	done
+	split_by_char ":" "$PATH"
 }
 
 path_lines

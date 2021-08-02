@@ -5,5 +5,5 @@ function environment_variable_exists {
     [ ! -z $value ]
 }
 
-environment_variable_exists
+environment_variable_exists "$@"
 
