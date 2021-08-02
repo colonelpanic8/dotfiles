@@ -2831,7 +2831,7 @@ The following is taken from [[https://github.com/syl20bnr/spacemacs/blob/a650877
      haskell-process-auto-import-loaded-modules nil
      haskell-process-show-overlays nil
      haskell-stylish-on-save nil
-     haskell-tags-on-save t
+     haskell-tags-on-save nil
      haskell-indent-offset 2)
 
 	(require 'flycheck)
