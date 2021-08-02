@@ -3832,6 +3832,7 @@ alphanumeric characters only."
     (unbind-key "C-j" magit-status-mode-map)
     (unbind-key "C-j" magit-hunk-section-map)
     (unbind-key "C-j" magit-file-section-map)
+    (unbind-key "C-j" magit-diff-section-base-map)
     (setq magit-last-seen-setup-instructions "1.4.0"
           magit-display-buffer-function
           'magit-display-buffer-same-window-except-diff-v1)
