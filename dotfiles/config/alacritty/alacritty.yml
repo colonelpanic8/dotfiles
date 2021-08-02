@@ -49,3 +49,9 @@ colors:
     magenta: '0x888ba5'
     cyan: '0x599caa'
     white: '0xd3ebe9'
+
+window:
+  padding:
+    x: 10
+    y: 10
+  decorations: full
