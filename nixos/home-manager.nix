@@ -3,13 +3,9 @@
     enable = true;
     preferStatusNotifierItems = true;
     importedVariables = [ "GDK_PIXBUF_ICON_LOADER" ];
-    profileExtra = ''
-      export ROFI_SYSTEMD_TERM="alacritty -e"
-      . "$HOME/.lib/login.sh"
-      load_xkb_map.sh
-    '';
   };
 
+  home.keyboard = null;
   home.emptyActivationPath = false;
   programs.home-manager.enable = true;
 
@@ -88,6 +84,23 @@
       }
     ];
   };
+
+  systemd.user.services.setxkbmap = {
+    Unit = {
+      Description = "Set up keyboard in X";
+      After = [ "graphical-session-pre.target" ];
+      PartOf = [ "graphical-session.target" ];
+    };
+
+    Install = { WantedBy = [ "graphical-session.target" ]; };
+
+    Service = {
+      Type = "oneshot";
+      RemainAfterExit = true;
+      ExecStart = "/usr/bin/env load_xkb_map";
+    };
+  };
+
 
   systemd.user.services.picom = {
     Unit = {

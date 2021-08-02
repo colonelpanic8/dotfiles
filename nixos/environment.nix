@@ -34,6 +34,7 @@ with lib;
       homeBinInPath = true;
       localBinInPath = true;
       extraInit = ''
+        export ROFI_SYSTEMD_TERM="alacritty -e"
         export PATH="${libDir}/bin:$PATH"
         export PATH="${libDir}/functions:$PATH"
       '';
