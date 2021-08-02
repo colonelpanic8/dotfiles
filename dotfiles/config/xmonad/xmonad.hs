@@ -1025,6 +1025,10 @@ addKeys conf@XConfig { modMask = modm } =
     , ((0, xF86XK_MonBrightnessUp), spawn "brightness.sh 5")
     , ((0, xF86XK_MonBrightnessDown), spawn "brightness.sh -5")
 
+    -- LOL Broken keyboard
+    , ((hyper, xK_m), spawn "xdotool .")
+    , ((hyper, xK_n), spawn "xdotool /")
+
     ] ++
 
     -- Replace moving bindings
