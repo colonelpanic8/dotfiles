@@ -1,3 +1,3 @@
 #!/usr/bin/env sh
 
-XDG_CURRENT_DESKTOP='Unity' $@
+XDG_CURRENT_DESKTOP='Unity' "$@"

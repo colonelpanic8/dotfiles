@@ -270,3 +270,29 @@ function all_after_char {
           echo ${line##*$1}
     done;
 }
+
+function pasink {
+    pacmd stat | awk -F": " '/^Default sink name: /{print $2}'
+}
+
+function pavolume {
+    pacmd list-sinks |
+        awk '/^\s+name: /{indefault = $2 == "<'"$(pasink)"'>"}
+            /^\s+volume: / && indefault {print $5; exit}' | grep -Eo "[0-9]*"
+}
+
+function paismuted {
+	pactl list sinks | grep "$(pasink)" -A 10 | grep Mute | grep -q yes
+}
+
+function pashowvolume {
+	if paismuted; then
+		volnoti-show -m
+	else
+		volnoti-show "$(min $(pavolume) 100)"
+	fi
+}
+
+function pashowinputbypid {
+	get_sink_input_info.hs | jq 'select(.application_process_id == "'"$1"'")'
+}
