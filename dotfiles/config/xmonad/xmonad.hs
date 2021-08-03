@@ -832,13 +832,13 @@ buildDirectionalBindings mask commandFn =
 
 myWindowGo direction = do
   layoutName <- description . W.layout <$> currentWorkspace
-  if layoutName == "Tabbed"
+  if isInfixOf "Tabbed" layoutName
   then
     case direction of
-      U -> windows W.focusUp
-      R -> windows W.focusUp
-      L -> windows W.focusDown
-      D -> windows W.focusDown
+      D -> windows W.focusUp
+      L -> windows W.focusUp
+      R -> windows W.focusDown
+      U -> windows W.focusDown
   else windowGo direction True
 
 addKeys conf@XConfig { modMask = modm } =
