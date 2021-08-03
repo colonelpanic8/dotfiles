@@ -64,6 +64,11 @@
 
   services.volnoti.enable = true;
 
+  services.parcellite = {
+    enable = true;
+    package = pkgs.clipit;
+  };
+
   services.git-sync = {
     enable = true;
     repositories = [
