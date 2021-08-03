@@ -57,6 +57,7 @@ import           XMonad.Hooks.FadeInactive
 import           XMonad.Hooks.ManageDocks
 import           XMonad.Hooks.ManageHelpers
 import           XMonad.Hooks.Minimize
+import qualified XMonad.Operations
 import           XMonad.Hooks.TaffybarPagerHints
 import           XMonad.Hooks.WorkspaceHistory
 import           XMonad.Layout.Accordion
@@ -94,16 +95,21 @@ myConfig = def
   , normalBorderColor = "#000000"
   , focusedBorderColor = "#ffff00"
   , logHook =
-      updatePointer (0.5, 0.5) (0, 0) +++
-      toggleFadeInactiveLogHook 0.9 +++ workspaceHistoryHook +++
-      setWorkspaceNames +++ activateLogHook (reader W.focusWindow >>= doF) <+> logHook def
+      updatePointer (0.5, 0.5) (0, 0) <>
+      toggleFadeInactiveLogHook 0.9 <> workspaceHistoryHook <>
+      setWorkspaceNames <> activateLogHook (reader W.focusWindow >>= doF) <+> logHook def
   , handleEventHook =
-      fullscreenEventHook +++ followIfNoMagicFocus +++ minimizeEventHook
+      fullscreenEventHook <> followIfNoMagicFocus <> minimizeEventHook <> restartEventHook
   , startupHook = myStartup
   , keys = customKeys (const []) addKeys
   }
-  where
-    x +++ y = mappend y x
+
+restartEventHook e@ClientMessageEvent { ev_message_type = mt } = do
+  a <- getAtom "XMONAD_RESTART"
+  if (mt == a)
+    then XMonad.Operations.restart "imalison-xmonad" True >> return (All True)
+    else return $ All True
+restartEventHook _ = return $ All True
 
 myNavigation2DConfig = def { defaultTiledNavigation = centerNavigation }
 
