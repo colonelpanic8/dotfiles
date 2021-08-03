@@ -245,7 +245,6 @@ hostNameToAction =
 myStartup = do
   setToggleActiveAll GAPS True
   setToggleActiveAll NOBORDERS True
-  setToggleActiveAll SMARTBORDERS True
   hostName <- io getHostName
   M.findWithDefault (return ()) hostName hostNameToAction
 
