@@ -62,6 +62,7 @@ import           XMonad.Hooks.WorkspaceHistory
 import           XMonad.Layout.Accordion
 import           XMonad.Layout.BoringWindows
 import           XMonad.Layout.Cross
+import           XMonad.Layout.Grid
 import           XMonad.Layout.LayoutCombinators
 import           XMonad.Layout.LayoutModifier
 import           XMonad.Layout.LimitWindows
@@ -360,6 +361,7 @@ layoutsStart layout = (layout, [Layout layout])
 layoutInfo =
   layoutsStart (rename "4 Columns" $ (multiCol [1, 1, 1] 2 0.0 (-0.5))) |||!
   rename "3 Columns" (multiCol [1, 1] 2 0.01 (-0.5)) |||!
+  rename "Grid" Grid |||!
   rename "Large Main" (Tall 1 (3 / 100) (3 / 4)) |||!
   rename "2 Columns" (Tall 1 (3 / 100) (1 / 2)) |||!
   Accordion |||! simpleCross |||! myTabbed
