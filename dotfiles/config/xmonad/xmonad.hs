@@ -84,6 +84,7 @@ import           XMonad.Util.Minimize
 import           XMonad.Util.NamedScratchpad
 import           XMonad.Util.NamedWindows (getName)
 import           XMonad.Util.Run
+import           XMonad.Util.Themes
 import           XMonad.Util.WorkspaceCompare
 
 myConfig = def
@@ -91,8 +92,8 @@ myConfig = def
   , terminal = "alacritty"
   , manageHook = myManageHook <+> manageHook def
   , layoutHook = myLayoutHook
-  , borderWidth = 0
-  , normalBorderColor = "#000000"
+  , borderWidth = 2
+  , normalBorderColor = "#0096ff"
   , focusedBorderColor = "#ffff00"
   , logHook =
       updatePointer (0.5, 0.5) (0, 0) <>
@@ -220,7 +221,7 @@ virtualClasses =
 
 gmailCommand = "google-chrome-stable --new-window https://mail.google.com/mail/u/0/#inbox"
 spotifyCommand = "spotify"
-chromeCommand = "start_chrome"
+chromeCommand = "google-chrome-stable"
 emacsCommand = "emacsclient -c"
 htopCommand = "alacritty --title htop -e htop"
 transmissionCommand = "transmission-gtk"
@@ -231,15 +232,14 @@ volumeCommand = "pavucontrol"
 tvScreenId :: ScreenId
 tvScreenId = 1
 
-disableTVFading = setFading (Just tvScreenId) False
-
 hostNameToAction =
-  M.fromList [ ("imalison-arch", disableTVFading >> setToggleActiveAll GAPS True)
-             , ("imalison-uber-loaner", return ())
+  M.fromList [ ("imalison-uber-loaner", return ())
              ]
 
 myStartup = do
-  spawn "systemctl --user start wm.target"
+  setToggleActiveAll GAPS True
+  setToggleActiveAll NOBORDERS True
+  setToggleActiveAll SMARTBORDERS True
   hostName <- io getHostName
   M.findWithDefault (return ()) hostName hostNameToAction
 
@@ -262,11 +262,11 @@ data MyToggles
 
 instance Transformer MyToggles Window where
   transform LIMIT x k = k (limitSlice 2 x) unmodifyLayout
-  transform GAPS x k = k (smartSpacing 10 x) unmodifyLayout
+  transform GAPS x k = k (smartSpacing 5 x) unmodifyLayout
   transform MAGICFOCUS x k = k (magicFocus x) unmodifyLayout
 
 myToggles = [LIMIT, GAPS, MAGICFOCUS]
-otherToggles = [NBFULL, MIRROR]
+otherToggles = [NBFULL, MIRROR, NOBORDERS, SMARTBORDERS]
 toggleHandlers = [(Toggle GAPS, toggleAll)]
 
 instance Eq (Toggle Window) where
@@ -361,7 +361,7 @@ layoutInfo =
   rename "2 Columns" (Tall 1 (3 / 100) (1 / 2)) |||!
   Accordion |||! simpleCross |||! myTabbed
     where
-      myTabbed = tabbed shrinkText myTabConfig
+      myTabbed = tabbed shrinkText (theme robertTheme)
 
 layoutList = snd layoutInfo
 
@@ -427,12 +427,6 @@ myDecorateName ws w = do
       entryString = printf "%-20s%-40s %+30s in %s \0icon\x1f%s"
                     classTitle (take 40 name) " " (fromMaybe "" $ workspaceToName (W.tag ws)) iconName
   return entryString
-
-data ChromeInfo = ChromeInfo
-  { tabId :: Int
-  , tabUri :: String
-  , tabTitle :: String
-  } deriving (Eq, Show)
 
 menuIndexArgs :: MonadIO m => String -> [String] -> [(String, a)] ->
                m (Maybe a)
