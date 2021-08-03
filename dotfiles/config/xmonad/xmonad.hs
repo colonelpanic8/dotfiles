@@ -270,7 +270,7 @@ instance Transformer MyToggles Window where
 
 myToggles = [LIMIT, GAPS, MAGICFOCUS, MAGNIFY]
 otherToggles = [NBFULL, MIRROR, NOBORDERS, SMARTBORDERS]
-toggleHandlers = [(Toggle GAPS, toggleAll)]
+toggleHandlers = [(Toggle GAPS, toggleAll), (Toggle MAGNIFY, toggleAll)]
 
 instance Eq (Toggle Window) where
   (Toggle v) == v2 = Just v == fromToggle v2
