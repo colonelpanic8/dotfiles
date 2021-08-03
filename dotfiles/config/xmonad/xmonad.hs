@@ -216,7 +216,7 @@ gmailCommand = "google-chrome-stable --new-window https://mail.google.com/mail/u
 spotifyCommand = "spotify"
 chromeCommand = "start_chrome"
 emacsCommand = "emacsclient -c"
-htopCommand = "alacritty -e htop -t htop"
+htopCommand = "alacritty --title htop -e htop"
 transmissionCommand = "transmission-gtk"
 volumeCommand = "pavucontrol"
 
