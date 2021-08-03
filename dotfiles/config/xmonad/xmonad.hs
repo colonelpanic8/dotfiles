@@ -344,7 +344,7 @@ deactivateFullAnd action = sequence_ [deactivateFull, action]
 
 andDeactivateFull action = sequence_ [action, deactivateFull]
 
-goFullscreen = sendMessage $ JumpToLayout "Tabbed Simplest"
+goFullscreen = sendMessage $ JumpToLayout "Tabbed"
 
 -- Layout setup
 
@@ -366,7 +366,7 @@ layoutInfo =
   rename "2 Columns" (Tall 1 (3 / 100) (1 / 2)) |||!
   Accordion |||! simpleCross |||! myTabbed
     where
-      myTabbed = tabbed shrinkText (theme robertTheme)
+      myTabbed = rename "Tabbed" $ tabbed shrinkText (theme robertTheme)
 
 layoutList = snd layoutInfo
 
@@ -431,9 +431,11 @@ myDecorateName ws w = do
   classes <- getEWMHClasses w
   classTitle <- getClass w
   workspaceToName <- getWorkspaceNames'
-  let iconName = fromMaybe (map toLower $ head classes) $ lookupIconFromClasses classes
+  let iconName = fromMaybe (map toLower $ head classes) $
+                 lookupIconFromClasses classes
       entryString = printf "%-20s%-40s %+30s in %s \0icon\x1f%s"
-                    classTitle (take 40 name) " " (fromMaybe "" $ workspaceToName (W.tag ws)) iconName
+                    classTitle (take 40 name) " "
+                    (fromMaybe "" $ workspaceToName (W.tag ws)) iconName
   return entryString
 
 menuIndexArgs :: MonadIO m => String -> [String] -> [(String, a)] ->
@@ -824,12 +826,22 @@ buildDirectionalBindings mask commandFn =
   , ((mask, directionalRight), commandFn R)
   ]
 
+myWindowGo direction = do
+  layoutName <- description . W.layout <$> currentWorkspace
+  if layoutName == "Tabbed"
+  then
+    case direction of
+      U -> windows W.focusUp
+      R -> windows W.focusUp
+      L -> windows W.focusDown
+      D -> windows W.focusDown
+  else windowGo direction True
+
 addKeys conf@XConfig { modMask = modm } =
 
     -- Directional navigation
 
-    (buildDirectionalBindings
-     modm $ flip windowGo True) ++
+    (buildDirectionalBindings modm myWindowGo) ++
     (buildDirectionalBindings
      (modm .|. shiftMask) $ flip windowSwap True) ++
     (buildDirectionalBindings
