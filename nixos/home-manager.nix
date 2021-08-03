@@ -112,9 +112,7 @@
     Install = { WantedBy = [ "graphical-session.target" ]; };
 
     Service = {
-      # Temporarily fixes corrupt colours with Mesa 18.
-      Environment = [ "allow_rgb10_configs=false" ];
-      ExecStart = "${pkgs.picom}/bin/picom";
+      ExecStart = "${pkgs.picom}/bin/picom --experimental-backends";
       Restart = "always";
       RestartSec = 3;
     };
