@@ -57,7 +57,6 @@ import           XMonad.Hooks.FadeInactive
 import           XMonad.Hooks.ManageDocks
 import           XMonad.Hooks.ManageHelpers
 import           XMonad.Hooks.Minimize
-import qualified XMonad.Operations
 import           XMonad.Hooks.TaffybarPagerHints
 import           XMonad.Hooks.WorkspaceHistory
 import           XMonad.Layout.Accordion
@@ -67,6 +66,7 @@ import           XMonad.Layout.LayoutCombinators
 import           XMonad.Layout.LayoutModifier
 import           XMonad.Layout.LimitWindows
 import           XMonad.Layout.MagicFocus
+import           XMonad.Layout.Magnifier hiding (Toggle)
 import           XMonad.Layout.Minimize
 import           XMonad.Layout.MultiColumns
 import           XMonad.Layout.MultiToggle
@@ -76,6 +76,7 @@ import qualified XMonad.Layout.Renamed as RN
 import           XMonad.Layout.Spacing
 import           XMonad.Layout.Tabbed
 import           XMonad.Main (launch)
+import qualified XMonad.Operations
 import qualified XMonad.StackSet as W
 import           XMonad.Util.CustomKeys
 import qualified XMonad.Util.Dmenu as DM
@@ -258,14 +259,16 @@ data MyToggles
   = LIMIT
   | GAPS
   | MAGICFOCUS
+  | MAGNIFY
   deriving (Read, Show, Eq, Typeable)
 
 instance Transformer MyToggles Window where
   transform LIMIT x k = k (limitSlice 2 x) unmodifyLayout
   transform GAPS x k = k (smartSpacing 5 x) unmodifyLayout
   transform MAGICFOCUS x k = k (magicFocus x) unmodifyLayout
+  transform MAGNIFY x k = k (magnify (1.3) (AllWins 1) True x) unmodifyLayout
 
-myToggles = [LIMIT, GAPS, MAGICFOCUS]
+myToggles = [LIMIT, GAPS, MAGICFOCUS, MAGNIFY]
 otherToggles = [NBFULL, MIRROR, NOBORDERS, SMARTBORDERS]
 toggleHandlers = [(Toggle GAPS, toggleAll)]
 
@@ -378,6 +381,9 @@ myLayoutHook =
   mkToggle1 GAPS .
   mkToggle1 MAGICFOCUS .
   mkToggle1 NBFULL .
+  mkToggle1 MAGNIFY .
+  mkToggle1 NOBORDERS .
+  mkToggle1 SMARTBORDERS .
   lessBorders Screen $ fst layoutInfo
 
 -- WindowBringer
