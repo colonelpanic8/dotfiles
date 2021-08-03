@@ -118,7 +118,11 @@ myNavigation2DConfig = def { defaultTiledNavigation = centerNavigation }
 
 main = do
   dirs <- getDirectories
-  (flip launch dirs) . docks . pagerHints . ewmh . withNavigation2DConfig myNavigation2DConfig $ myConfig
+  (flip launch dirs)
+       . docks
+       . pagerHints
+       . ewmh
+       . withNavigation2DConfig myNavigation2DConfig $ myConfig
 
 -- Utility functions
 
