@@ -44,6 +44,7 @@ in
     xsettingsd
 
     # Haskell Desktop
+    haskellPackages.xmonad
     haskellPackages.imalison-xmonad
     haskellPackages.imalison-taffybar
     haskellPackages.notifications-tray-icon
