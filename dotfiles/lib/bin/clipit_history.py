@@ -6,7 +6,9 @@ import os
 import struct
 
 
-clipit_history_file = os.path.join(appdirs.user_data_dir(), "clipit/history")
+clipit_history_file = os.path.join(
+    appdirs.user_data_dir(), "clipit/history",
+)
 
 
 def get_clipit_history(filename):
