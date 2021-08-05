@@ -6,6 +6,7 @@
 {-# LANGUAGE ScopedTypeVariables #-}
 {-# LANGUAGE TypeSynonymInstances #-}
 {-# LANGUAGE TupleSections #-}
+{-# LANGUAGE PartialTypeSignatures #-}
 
 module Main where
 
@@ -94,7 +95,7 @@ import           XMonad.Util.WorkspaceCompare
 myConfig = def
   { modMask = mod4Mask
   , terminal = "alacritty"
-  , manageHook = myManageHook <+> manageHook def
+  , manageHook = composeOne [ isFullscreen -?> doFullFloat ] <+> manageHook def
   , layoutHook = myLayoutHook
   , borderWidth = 0
   , normalBorderColor = "#0096ff"
@@ -237,11 +238,8 @@ volumeCommand = "pavucontrol"
 
 -- Startup hook
 
-tvScreenId :: ScreenId
-tvScreenId = 1
-
 hostNameToAction =
-  M.fromList [ ("imalison-uber-loaner", return ())
+  M.fromList [ ("ryzen-shine", return ())
              ]
 
 myStartup = do
@@ -250,12 +248,19 @@ myStartup = do
   hostName <- io getHostName
   M.findWithDefault (return ()) hostName hostNameToAction
 
--- Manage hook
+-- Magnify
 
-myManageHook = composeOne [ isFullscreen -?> doFullFloat ]
+data DisableOnTabbedCondition = DisableOnTabbedCondition deriving (Read, Show)
+
+instance ModifierCondition DisableOnTabbedCondition where
+  shouldApply _ = do
+    not . isInfixOf "Tabbed" . description . W.layout <$> currentWorkspace
+
+disableOnTabbed = ConditionalLayoutModifier DisableOnTabbedCondition
+
+myMagnify = ModifiedLayout $ disableOnTabbed (Mag 1 (1.3, 1.3) On (AllWins 1))
 
 -- Toggles
-
 unmodifyLayout (ModifiedLayout _ x') =  x'
 
 selectLimit =
@@ -267,16 +272,6 @@ data MyToggles
   | MAGICFOCUS
   | MAGNIFY
   deriving (Read, Show, Eq, Typeable)
-
-data DisableOnTabbedCondition = DisableOnTabbedCondition deriving (Read, Show)
-
-instance ModifierCondition DisableOnTabbedCondition where
-  shouldApply _ = do
-    not . isInfixOf "Tabbed" . description . W.layout <$> currentWorkspace
-
-disableOnTabbed = ConditionalLayoutModifier DisableOnTabbedCondition
-
-myMagnify = ModifiedLayout $ disableOnTabbed (Mag 1 (1.3, 1.3) On (AllWins 1))
 
 instance Transformer MyToggles Window where
   transform LIMIT x k = k (limitSlice 2 x) unmodifyLayout
@@ -556,7 +551,6 @@ setFading w f = setFading' $ M.insert w f
 setFading' f =
   XS.get >>= XS.put . (ToggleFade . f . fadesMap)
 
-
 -- Minimize not in class
 
 restoreFocus action =
@@ -678,9 +672,6 @@ focusNextClass' =
 focusNextClass = sameClassOnly focusNextClass'
 
 selectClass = myDmenu =<< allClasses
-
-
-
 
 -- Gather windows of same class
 
@@ -944,8 +935,7 @@ addKeys conf@XConfig { modMask = modm } =
     , ((hyper .|. shiftMask, xK_l), spawn "dm-tool lock")
     , ((hyper, xK_l), selectLayout)
     , ((hyper, xK_k), spawn "rofi_kill_process.sh")
-    , ((hyper .|. shiftMask, xK_k),
-       spawn "rofi_kill_all.sh")
+    , ((hyper .|. shiftMask, xK_k), spawn "rofi_kill_all.sh")
     , ((hyper, xK_r), spawn "rofi-systemd")
     , ((hyper, xK_9), spawn "start_synergy.sh")
     , ((hyper, xK_slash), spawn "toggle_taffybar")
