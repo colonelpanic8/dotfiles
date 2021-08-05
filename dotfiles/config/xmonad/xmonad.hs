@@ -61,6 +61,7 @@ import           XMonad.Hooks.TaffybarPagerHints
 import           XMonad.Hooks.WorkspaceHistory
 import           XMonad.Layout.Accordion
 import           XMonad.Layout.BoringWindows
+import           XMonad.Layout.ConditionalModifier
 import           XMonad.Layout.Cross
 import           XMonad.Layout.Grid
 import           XMonad.Layout.LayoutCombinators
@@ -266,11 +267,21 @@ data MyToggles
   | MAGNIFY
   deriving (Read, Show, Eq, Typeable)
 
+data DisableOnTabbedCondition = DisableOnTabbedCondition deriving (Read, Show)
+
+instance ModifierCondition DisableOnTabbedCondition where
+  shouldApply _ = do
+    not . isInfixOf "Tabbed" . description . W.layout <$> currentWorkspace
+
+disableOnTabbed = ConditionalLayoutModifier DisableOnTabbedCondition
+
+myMagnify = ModifiedLayout $ disableOnTabbed (Mag 1 (1.3, 1.3) On (AllWins 1))
+
 instance Transformer MyToggles Window where
   transform LIMIT x k = k (limitSlice 2 x) unmodifyLayout
   transform GAPS x k = k (smartSpacing 5 x) unmodifyLayout
   transform MAGICFOCUS x k = k (magicFocus x) unmodifyLayout
-  transform MAGNIFY x k = k (magnify (1.3) (AllWins 1) True x) unmodifyLayout
+  transform MAGNIFY x k = k (myMagnify x) unmodifyLayout
 
 myToggles = [LIMIT, GAPS, MAGICFOCUS, MAGNIFY]
 otherToggles = [NBFULL, MIRROR, NOBORDERS, SMARTBORDERS]
