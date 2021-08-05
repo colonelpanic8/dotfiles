@@ -5,6 +5,7 @@
 {-# LANGUAGE MultiParamTypeClasses #-}
 {-# LANGUAGE ScopedTypeVariables #-}
 {-# LANGUAGE TypeSynonymInstances #-}
+{-# LANGUAGE TupleSections #-}
 
 module Main where
 
@@ -110,7 +111,7 @@ myConfig = def
 
 restartEventHook e@ClientMessageEvent { ev_message_type = mt } = do
   a <- getAtom "XMONAD_RESTART"
-  if (mt == a)
+  if mt == a
     then XMonad.Operations.restart "imalison-xmonad" True >> return (All True)
     else return $ All True
 restartEventHook _ = return $ All True
@@ -119,7 +120,7 @@ myNavigation2DConfig = def { defaultTiledNavigation = centerNavigation }
 
 main = do
   dirs <- getDirectories
-  (flip launch dirs)
+  (`launch` dirs)
        . docks
        . pagerHints
        . ewmh
@@ -373,7 +374,7 @@ layoutsStart layout = (layout, [Layout layout])
     (joined ||| newLayout, layouts ++ [Layout newLayout])
 
 layoutInfo =
-  layoutsStart (rename "4 Columns" $ (multiCol [1, 1, 1] 2 0.0 (-0.5))) |||!
+  layoutsStart (rename "4 Columns" (multiCol [1, 1, 1] 2 0.0 (-0.5))) |||!
   rename "3 Columns" (multiCol [1, 1] 2 0.01 (-0.5)) |||!
   rename "Grid" Grid |||!
   rename "Large Main" (Tall 1 (3 / 100) (3 / 4)) |||!
@@ -421,6 +422,7 @@ getVirtualClass = flip findM virtualClasses . classIfMatches
 
 getClass w = fromMaybe <$> getClassRaw w <*> getVirtualClass w
 
+{-# NOINLINE desktopEntriesMap #-}
 desktopEntriesMap :: MM.MultiMap String DesktopEntry
 desktopEntriesMap =
   unsafePerformIO $
@@ -466,13 +468,10 @@ myWindowAct c@WindowBringerConfig {menuCommand = cmd, menuArgs = args}
             filterVisible action = do
   visible <- visibleWindows
   currentlyFullscreen <- isToggleActiveInCurrent NBFULL
-  let actualConfig =
-        if fromMaybe False currentlyFullscreen
-        then c
-        else
-          if filterVisible
-          then c {windowFilter = not . flip elem visible}
-          else c
+  let actualConfig
+        | fromMaybe False currentlyFullscreen = c
+        | filterVisible = c {windowFilter = not . flip elem visible}
+        | otherwise = c
   ws <- M.toList <$> windowMap' actualConfig
   selection <- menuIndexArgs cmd args ws
   whenJust selection action
@@ -486,11 +485,11 @@ myWindowAction filterVisible =
 myGoToWindow =
   myWindowAction False $ windows . greedyFocusWindow
 
-myBringWindow = myWindowAction True $ doBringWindow
+myBringWindow = myWindowAction True doBringWindow
 
 myReplaceWindow =
   swapMinimizeStateAfter $
-  myWindowAct myWindowBringerConfig True $ (windows . swapFocusedWith)
+  myWindowAct myWindowBringerConfig True $ windows . swapFocusedWith
 
 -- Workspace Names for EWMH
 
@@ -555,8 +554,9 @@ toggleFading w = setFading' $ toggleInMap w
 setFading w f = setFading' $ M.insert w f
 
 setFading' f =
-  fmap (ToggleFade . f . fadesMap) XS.get >>= XS.put
+  XS.get >>= XS.put . (ToggleFade . f . fadesMap)
 
+
 -- Minimize not in class
 
 restoreFocus action =
@@ -620,12 +620,12 @@ windowsMatchingClassPredicate predicate window workspace =
 
 windowsSatisfyingPredicate workspace getPredicate = do
   predicate <- getPredicate
-  filterM (\w -> predicate <$> getClass w) (W.integrate workspace)
+  filterM (fmap predicate . getClass) (W.integrate workspace)
 
 getMatchingUnmatching =
   partition <$> ((. snd) <$> getClassMatchesCurrent) <*> getWindowClassPairs
 
-getWindowClassPairs = join $ mapM windowToClassPair <$> workspaceWindows
+getWindowClassPairs = mapM windowToClassPair =<< workspaceWindows
 
 windowToClassPair w = (,) w <$> getClass w
 
@@ -648,13 +648,13 @@ restoreAll = mapM_ maximizeWindow
 
 restoreAllMinimized = minimizedWindows >>= restoreAll
 
-restoreOrMinimizeOtherClasses = null <$> maximizedOtherClass >>=
-  ifL restoreAllMinimized minimizeOtherClassesInWorkspace
+restoreOrMinimizeOtherClasses = maximizedOtherClass >>=
+  ifL restoreAllMinimized minimizeOtherClassesInWorkspace . null
 
 restoreThisClassOrMinimizeOtherClasses = minimizedSameClass >>= \ws ->
   if' (null ws) minimizeOtherClassesInWorkspace $ restoreAll ws
 
-getClassPair w = flip (,) w <$> getClass w
+getClassPair w = (, w) <$> getClass w
 
 windowClassPairs = withWindowSet $ mapM getClassPair . W.allWindows
 classToWindowMap = MM.fromList <$> windowClassPairs
@@ -669,15 +669,17 @@ nextClass = do
 
 classWindow c = do
   m <- classToWindowMap
-  return $ join $ listToMaybe <$> (flip MM.lookup m <$> c)
+  return (listToMaybe . flip MM.lookup m =<< c)
 
 nextClassWindow = nextClass >>= classWindow
 
 focusNextClass' =
-  join $ windows . maybe id greedyFocusWindow <$> nextClassWindow
+  (windows . maybe id greedyFocusWindow) =<< nextClassWindow
 focusNextClass = sameClassOnly focusNextClass'
 
-selectClass = join $ myDmenu <$> allClasses
+selectClass = myDmenu =<< allClasses
+
+
 
 
 -- Gather windows of same class
@@ -705,7 +707,7 @@ shiftThenView i = W.greedyView i . W.shift i
 greedyBringWindow w = greedyFocusWindow w . bringWindow w
 
 shiftToEmptyAndView =
-  doTo Next EmptyWS DWO.getSortByOrder (windows . shiftThenView)
+  doTo Next emptyWS DWO.getSortByOrder (windows . shiftThenView)
 
 setFocusedScreen :: ScreenId -> WindowSet -> WindowSet
 setFocusedScreen to ws =
@@ -730,10 +732,10 @@ viewOtherScreen ws = W.greedyView ws . nextScreen
 shiftThenViewOtherScreen ws w = viewOtherScreen ws . W.shiftWin ws w
 
 shiftCurrentToWSOnOtherScreen ws s =
-  fromMaybe s (flip (shiftThenViewOtherScreen ws) s <$> W.peek s)
+  maybe s (flip (shiftThenViewOtherScreen ws) s) (W.peek s)
 
 shiftToEmptyNextScreen =
-  doTo Next EmptyWS DWO.getSortByOrder $ windows . shiftCurrentToWSOnOtherScreen
+  doTo Next emptyWS DWO.getSortByOrder $ windows . shiftCurrentToWSOnOtherScreen
 
 swapFocusedWith w ws = W.modify' (swapFocusedWith' w) (W.delete' w ws)
 
@@ -842,7 +844,7 @@ buildDirectionalBindings mask commandFn =
 
 myWindowGo direction = do
   layoutName <- description . W.layout <$> currentWorkspace
-  if isInfixOf "Tabbed" layoutName
+  if "Tabbed" `isInfixOf` layoutName
   then
     case direction of
       D -> windows W.focusUp
@@ -855,18 +857,17 @@ addKeys conf@XConfig { modMask = modm } =
 
     -- Directional navigation
 
-    (buildDirectionalBindings modm myWindowGo) ++
-    (buildDirectionalBindings
-     (modm .|. shiftMask) $ flip windowSwap True) ++
-    (buildDirectionalBindings
-     (modm .|. controlMask) $ followingWindow . (flip windowToScreen True)) ++
-    (buildDirectionalBindings
-     hyper $ flip screenGo True) ++
-    (buildDirectionalBindings
-     (hyper .|. shiftMask) $ followingWindow . (flip screenSwap True)) ++
-    (buildDirectionalBindings
-     (hyper .|. controlMask) $ shiftToEmptyOnScreen) ++
-
+    buildDirectionalBindings modm myWindowGo ++
+    buildDirectionalBindings
+     (modm .|. shiftMask) (`windowSwap` True) ++
+    buildDirectionalBindings
+     (modm .|. controlMask)  (followingWindow . (`windowToScreen` True)) ++
+    buildDirectionalBindings hyper (`screenGo` True) ++
+    buildDirectionalBindings
+     (hyper .|. shiftMask) (followingWindow . (`screenSwap` True)) ++
+    buildDirectionalBindings
+     (hyper .|. controlMask) shiftToEmptyOnScreen ++
+
     -- Specific program spawning
     bindBringAndRaiseMany
     [ (modalt, xK_c, spawn chromeCommand, chromeSelector)
@@ -917,8 +918,9 @@ addKeys conf@XConfig { modMask = modm } =
     -- These need to be rebound to support boringWindows
     , ((modm, xK_m), focusMaster)
     , ((modm, xK_Tab), focusNextClass)
-    , ((hyper, xK_e), moveTo Next EmptyWS)
+    , ((hyper, xK_e), moveTo Next emptyWS)
 
+
     -- Miscellaneous XMonad
 
     , ((hyper, xK_1), toggleFadingForActiveWindow)
@@ -976,10 +978,6 @@ addKeys conf@XConfig { modMask = modm } =
 
     , ((0, xF86XK_MonBrightnessUp), spawn "brightness.sh 5")
     , ((0, xF86XK_MonBrightnessDown), spawn "brightness.sh -5")
-
-    -- LOL Broken keyboard
-    , ((hyper, xK_m), spawn "xdotool type .")
-    , ((hyper, xK_n), spawn "xdotool type /")
 
     ] ++
 
