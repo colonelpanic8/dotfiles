@@ -20,7 +20,6 @@ with lib;
         enable = true;
         plugins = [ "git" "sudo" "pip" ];
       };
-      spaceship-prompt.enable = true;
       shellInit = ''
         fpath+="${libDir}/functions"
         for file in "${libDir}/functions/"*
@@ -30,9 +29,34 @@ with lib;
       '';
     };
 
+    programs.starship = {
+      enableBashIntegration = true;
+      enableZshIntegration = true;
+      enable = true;
+    };
+
     environment = {
       homeBinInPath = true;
       localBinInPath = true;
+      interactiveShellInit = ''
+                vterm_printf(){
+            if [ -n "$TMUX" ] && ([ "''${TERM%%-*}" = "tmux" ] || [ "''${TERM%%-*}" = "screen" ] ); then
+                # Tell tmux to pass the escape sequences through
+                printf "\ePtmux;\e\e]%s\007\e\\" "$1"
+            elif [ "''${TERM%%-*}" = "screen" ]; then
+                # GNU screen (screen, screen-256color, screen-256color-bce)
+                printf "\eP\e]%s\007\e\\" "$1"
+            else
+                printf "\e]%s\e\\" "$1"
+            fi
+        }
+        if [[ "$INSIDE_EMACS" = 'vterm' ]] \
+        && [[ -n ''${EMACS_VTERM_PATH} ]] \
+        && [[ -f ''${EMACS_VTERM_PATH}/etc/emacs-vterm-bash.sh ]]; then
+	      source ''${EMACS_VTERM_PATH}/etc/emacs-vterm-bash.sh
+        fi
+        export STARSHIP_INSIDE_EMACS="yes"
+      '';
       extraInit = ''
         export ROFI_SYSTEMD_TERM="alacritty -e"
         export PATH="${libDir}/bin:$PATH"
