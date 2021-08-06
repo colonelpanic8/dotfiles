@@ -17,6 +17,8 @@ import           Data.List.Split
 import qualified Data.Map as M
 import           Data.Maybe
 import qualified Data.Text
+import qualified GI.Gtk as Gtk
+import qualified GI.Gtk.Objects.Overlay as Gtk
 import           Data.Time
 import           Network.HostName
 import           StatusNotifier.Tray
@@ -86,7 +88,7 @@ memCfg = myGraphConfig
   }
 
 cpuCfg = myGraphConfig
-  { graphDataColors = [(0, 1, 0, 1), (1, 0, 1, 0.5)]
+  { graphDataColors = [red, (1, 0, 1, 0.5)]
   , graphLabel = Just "cpu"
   }
 
@@ -160,6 +162,7 @@ main = do
         , showWorkspaceFn = hideEmpty
         , updateRateLimitMicroseconds = 100000
         , labelSetter = workspaceNamesLabelSetter
+        , widgetBuilder = buildLabelOverlayController
         }
       workspaces = workspacesNew myWorkspacesConfig
       myClock =
@@ -212,7 +215,7 @@ main = do
         , endWidgets = fullEndWidgets
         , barPosition = Top
         , barPadding = 0
-        , barHeight = 30
+        , barHeight = 50
         , cssPath = cssFilePath
         }
       selectedConfig =
@@ -224,7 +227,7 @@ main = do
             , baseConfig { endWidgets = fullEndWidgets, barHeight = 42 }
             )
           , ( "ryzen-shine"
-            , baseConfig { endWidgets = fullEndWidgets, barHeight = 42 }
+            , baseConfig { endWidgets = fullEndWidgets, barHeight = 45 }
             )
           , ( "ivanm-dfinity-razer"
             , baseConfig { endWidgets = shortLaptopEndWidgets, barHeight = 42 }
