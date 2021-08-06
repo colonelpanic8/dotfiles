@@ -2,6 +2,7 @@
 @define-color white #FFFFFF;
 @define-color black #000000;
 @define-color taffy-blue #0c7cd5;
+@define-color taffy-navy rgb(25, 30, 55);
 
 @define-color active-window-color @white;
 @define-color urgent-window-color @taffy-blue;
@@ -14,14 +15,17 @@
 .taffy-window * {
 	font-family: "Noto Sans", sans-serif;
 	font-size: 10pt;
+	font-weight: bold;2
 	color: @font-color;
+	border-radius: 4px;
 }
 
 .taffy-box {
 	border-color: @white;
 	border-style: solid;
-	border-radius: 0px;
-	background-color: @black;
+	background-color: @taffy-navy;
+	padding: 3px;
+	margin: 4px;
 }
 
 .inner-pad {
@@ -29,7 +33,7 @@
 }
 
 .contents {
-	padding: 4px;
+	padding: 3px;
 	transition: background-color .5s;
 	/* border-radius: 6px; */
 }
@@ -39,9 +43,10 @@
 .workspace-label {
 	padding-right: 3px;
 	padding-left: 2px;
-	font-size: 14pt;
+	font-size: 12pt;
 	color: rgba(255.0, 255.0, 255.0, 1.0);
 	opacity: 1;
+	font-weight: bold;
 }
 
 .active .workspace-label {
@@ -53,7 +58,7 @@
 
 
 .contents {
-	background-color: rgba(0.0, 0.0, 0.0, 0.85);
+	/* background-color: rgba(0.0, 0.0, 0.0, 0.85); */
 }
 
 .contents .window-icon {
@@ -88,7 +93,7 @@
 }
 
 .window-icon-container.active {
-	background-color: rgba(255.0, 255.0, 255.0, 0.3);
+	background-color: rgba(255.0, 255.0, 255.0, 0.4);
 }
 
 .window-icon-container.urgent {
