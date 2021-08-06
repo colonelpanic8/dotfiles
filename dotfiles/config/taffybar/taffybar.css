@@ -21,16 +21,17 @@
 	border-color: @white;
 	border-style: solid;
 	border-radius: 0px;
+	background-color: @black;
 }
 
 .inner-pad {
-	padding: 2px;
+	padding: 0px;
 }
 
 .contents {
-	padding: 2px;
+	padding: 4px;
 	transition: background-color .5s;
-	border-radius: 6px;
+	/* border-radius: 6px; */
 }
 
 /* Workspaces styling */
@@ -38,15 +39,38 @@
 .workspace-label {
 	padding-right: 3px;
 	padding-left: 2px;
-	font-size: 10pt;
+	font-size: 14pt;
+	color: rgba(255.0, 255.0, 255.0, 1.0);
+	opacity: 1;
+}
+
+.active .workspace-label {
+	padding-right: 3px;
+	padding-left: 2px;
+	font-size: 14pt;
+	color: rgba(1.0, 1.0, 1.0, 0.0);
+}
+
+
+.contents {
+	background-color: rgba(0.0, 0.0, 0.0, 0.85);
+}
+
+.contents .window-icon {
+	opacity: .5;
+}
+
+.active .contents .window-icon {
+	opacity: 1;
 }
 
 .active .contents {
-	background-color: rgba(0.0, 0.0, 0.0, 0.2);
+	background-color: rgba(255, 65, 81, 1.0);
+	opacity: 1;
 }
 
 .visible .contents {
-	background-color: rgba(0.0, 0.0, 0.0, 0.2);
+	background-color: rgba(255, 65, 81, 1.0);
 }
 
 .window-icon-container {
