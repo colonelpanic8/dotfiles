@@ -1,11 +1,8 @@
 {-# LANGUAGE OverloadedStrings #-}
+{-# LANGUAGE TypeApplications #-}
+{-# LANGUAGE DataKinds #-}
 module Main where
 
-import qualified CoinbasePro.Environment as CB
-import qualified CoinbasePro.Headers as CB
-import qualified CoinbasePro.Request as CB
-import qualified CoinbasePro.Types as CB
-import qualified CoinbasePro.Unauthenticated.API as CB
 import           Control.Exception.Base
 import           Control.Monad
 import           Control.Monad.IO.Class
@@ -17,9 +14,9 @@ import           Data.List.Split
 import qualified Data.Map as M
 import           Data.Maybe
 import qualified Data.Text
+import           Data.Time
 import qualified GI.Gtk as Gtk
 import qualified GI.Gtk.Objects.Overlay as Gtk
-import           Data.Time
 import           Network.HostName
 import           StatusNotifier.Tray
 import           System.Directory
@@ -43,6 +40,7 @@ import           System.Taffybar.Information.X11DesktopInfo
 import           System.Taffybar.SimpleConfig
 import           System.Taffybar.Util
 import           System.Taffybar.Widget
+import           System.Taffybar.Widget.Crypto
 import           System.Taffybar.Widget.Generic.Icon
 import           System.Taffybar.Widget.Generic.PollingGraph
 import           System.Taffybar.Widget.Generic.PollingLabel
@@ -51,16 +49,11 @@ import           System.Taffybar.Widget.Workspaces
 import           Text.Printf
 import           Text.Read hiding (lift)
 
-getDaysCandles productString = do
-  oneDayAgo <- addUTCTime(-60*60*24) <$> getCurrentTime
-  let candles = CB.candles (CB.ProductId productString) (Just oneDayAgo) Nothing CB.Minute
-  CB.run CB.Production (candles CB.userAgent)
+setClassAndBoundingBoxes :: MonadIO m => Data.Text.Text -> Gtk.Widget -> m Gtk.Widget
+setClassAndBoundingBoxes klass = buildContentsBox >=> flip widgetSetClassGI klass
 
-coinbaseProductLabel productString =
-  pollingLabelNew 60.0 $ Data.Text.pack . show . CB.unPrice . CB.close . head <$>
-                  getDaysCandles (Data.Text.pack productString)
-
-
+deocrateWithSetClassAndBoxes :: MonadIO m => Data.Text.Text -> m Gtk.Widget -> m Gtk.Widget
+deocrateWithSetClassAndBoxes klass builder = builder >>= setClassAndBoundingBoxes klass
 
 mkRGBA (r, g, b, a) = (r/256, g/256, b/256, a/256)
 blue = mkRGBA (42, 99, 140, 256)
@@ -143,80 +136,71 @@ main = do
   homeDirectory <- getHomeDirectory
   cssFilePath <-
     traverse (getUserConfigFile "taffybar") $ lookup hostName cssFileByHostname
-  let cpuGraph = pollingGraphNew cpuCfg 5 cpuCallback
-      memoryGraph = pollingGraphNew memCfg 5 memCallback
-      myIcons = scaledWindowIconPixbufGetter $
-                getWindowIconPixbufFromChrome <|||>
-                unscaledDefaultGetWindowIconPixbuf <|||>
-                (\size _ -> lift $ loadPixbufByName size "application-default-icon")
-      layout = layoutNew defaultLayoutConfig
-      windows = windowsNew defaultWindowsConfig
 
-      myWorkspacesConfig =
-        defaultWorkspacesConfig
-        { underlineHeight = 3
-        , underlinePadding = 2
-        , minIcons = 1
-        , getWindowIconPixbuf = myIcons
-        , widgetGap = 0
-        , showWorkspaceFn = hideEmpty
-        , updateRateLimitMicroseconds = 100000
-        , labelSetter = workspaceNamesLabelSetter
-        , widgetBuilder = buildLabelOverlayController
-        }
-      workspaces = workspacesNew myWorkspacesConfig
-      myClock =
-        textClockNewWith
-        defaultClockConfig
-        { clockUpdateStrategy = RoundedTargetInterval 60 0.0
-        , clockFormatString = "%a %b %_d %I:%M %p"
-        }
+  let myCPU = deocrateWithSetClassAndBoxes "cpu" $ pollingGraphNew cpuCfg 5 cpuCallback
+      myMem = deocrateWithSetClassAndBoxes "mem" $ pollingGraphNew memCfg 5 memCallback
+      myNet = deocrateWithSetClassAndBoxes "net" $ networkGraphNew netCfg Nothing
+      myLayout = deocrateWithSetClassAndBoxes "layout" $ layoutNew defaultLayoutConfig
+      myWindows = deocrateWithSetClassAndBoxes "windows" $ windowsNew defaultWindowsConfig
+      myWorkspaces =
+        flip widgetSetClassGI "workspaces" =<<
+        workspacesNew defaultWorkspacesConfig
+                        { minIcons = 1
+                        , getWindowIconPixbuf =
+                          scaledWindowIconPixbufGetter $
+                          getWindowIconPixbufFromChrome <|||>
+                          unscaledDefaultGetWindowIconPixbuf <|||>
+                          (\size _ -> lift $ loadPixbufByName size "application-default-icon")
+                        , widgetGap = 0
+                        , showWorkspaceFn = hideEmpty
+                        , updateRateLimitMicroseconds = 100000
+                        , labelSetter = workspaceNamesLabelSetter
+                        , widgetBuilder = buildLabelOverlayController
+                        }
+      myClock = deocrateWithSetClassAndBoxes "clock" $
+                textClockNewWith
+                defaultClockConfig
+                { clockUpdateStrategy = RoundedTargetInterval 60 0.0
+                , clockFormatString = "%a %b %_d, %I:%M %p"
+                }
+      myICP = deocrateWithSetClassAndBoxes "icp" $ cryptoPriceLabelWithIcon @"ICP-USD"
+      myBTC = deocrateWithSetClassAndBoxes "btc" $ cryptoPriceLabelWithIcon @"BTC-USD"
+      myETH = deocrateWithSetClassAndBoxes "eth" $ cryptoPriceLabelWithIcon @"ETH-USD"
+      myTray = deocrateWithSetClassAndBoxes "tray" $
+               sniTrayNewFromParams defaultTrayParams { trayLeftClickAction = PopupMenu
+                                                      , trayRightClickAction = Activate
+                                                      }
+      myMpris = deocrateWithSetClassAndBoxes "mpris" mpris2New
+      myBatteryIcon = deocrateWithSetClassAndBoxes "battery-icon" batteryIconNew
+      myBatteryText =
+        deocrateWithSetClassAndBoxes "battery-text" $ textBatteryNew "$percentage$%"
       fullEndWidgets =
-        map (>>= buildContentsBox)
-              [ myClock
-              , sniTrayNewFromParams defaultTrayParams { trayLeftClickAction = PopupMenu
-                                                       , trayRightClickAction = Activate
-                                                       }
-              , coinbaseProductLabel "ICP-USD"
-              , coinbaseProductLabel "ICP-BTC"
-              , coinbaseProductLabel "BTC-USD"
-              , coinbaseProductLabel "ETH-USD"
-              , cpuGraph
-              , memoryGraph
-              , networkGraphNew netCfg Nothing
-              -- , networkMonitorNew defaultNetFormat Nothing >>= setMinWidth 200
-              -- , fsMonitorNew 60 ["/dev/sdd2"]
-              , mpris2New
-              ]
+        [ myTray
+        , myICP
+        , myBTC
+        , myETH
+        , myCPU
+        , myMem
+        , myNet
+        , myMpris
+        ]
       shortLaptopEndWidgets =
-        map (>>= buildContentsBox)
-                       [ batteryIconNew
-                       , textBatteryNew "$percentage$%"
-                       , myClock
-                       , sniTrayNew
-                       , coinbaseProductLabel "ICP-USD"
-                       , mpris2New
-                       ]
-      longLaptopEndWidgets =
-        map (>>= buildContentsBox)
-              [ batteryIconNew
-              , textBatteryNew "$percentage$%"
-              , textClockNewWith defaultClockConfig
-              , sniTrayNew
-              , cpuGraph
-              , memoryGraph
-              , networkGraphNew netCfg Nothing
-              , mpris2New
-              ]
+        [ myBatteryIcon
+        , myBatteryText
+        , myClock
+        , myTray
+        , myICP
+        , myMpris
+        ]
       baseConfig =
         defaultSimpleTaffyConfig
-        { startWidgets =
-             workspaces : map (>>= buildContentsBox) [layout, windows]
+        { startWidgets = [myWorkspaces, myLayout, myWindows]
         , endWidgets = fullEndWidgets
         , barPosition = Top
         , barPadding = 0
         , barHeight = 50
         , cssPath = cssFilePath
+        , startupHook = void $ setCMCAPIKey "f9e66366-9d42-4c6e-8d40-4194a0aaa329"
         }
       selectedConfig =
         fromMaybe baseConfig $ lookup hostName
@@ -234,7 +218,7 @@ main = do
             )
           ]
       simpleTaffyConfig = selectedConfig
-        { centerWidgets = []
+        { centerWidgets = [ myClock ]
         -- , endWidgets = []
         -- , startWidgets = []
         }
