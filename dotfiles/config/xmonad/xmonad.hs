@@ -105,7 +105,7 @@ myConfig = def
       toggleFadeInactiveLogHook 0.9 <> workspaceHistoryHook <>
       setWorkspaceNames <> activateLogHook (reader W.focusWindow >>= doF) <+> logHook def
   , handleEventHook =
-      fullscreenEventHook <> followIfNoMagicFocus <> minimizeEventHook <> restartEventHook
+      followIfNoMagicFocus <> minimizeEventHook <> restartEventHook
   , startupHook = myStartup
   , keys = customKeys (const []) addKeys
   }
@@ -125,6 +125,7 @@ main = do
        . docks
        . pagerHints
        . ewmh
+       . ewmhFullscreen
        . withNavigation2DConfig myNavigation2DConfig $ myConfig
 
 -- Utility functions
