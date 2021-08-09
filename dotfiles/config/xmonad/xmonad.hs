@@ -244,6 +244,7 @@ hostNameToAction =
              ]
 
 myStartup = do
+  setToggleActiveAll AVOIDSTRUTS True
   setToggleActiveAll GAPS True
   setToggleActiveAll NOBORDERS True
   hostName <- io getHostName
@@ -272,6 +273,7 @@ data MyToggles
   | GAPS
   | MAGICFOCUS
   | MAGNIFY
+  | AVOIDSTRUTS
   deriving (Read, Show, Eq, Typeable)
 
 instance Transformer MyToggles Window where
@@ -279,10 +281,15 @@ instance Transformer MyToggles Window where
   transform GAPS x k = k (smartSpacing 5 x) unmodifyLayout
   transform MAGICFOCUS x k = k (magicFocus x) unmodifyLayout
   transform MAGNIFY x k = k (myMagnify x) unmodifyLayout
+  transform AVOIDSTRUTS x k = k (avoidStruts x) unmodifyLayout
 
-myToggles = [LIMIT, GAPS, MAGICFOCUS, MAGNIFY]
+myToggles = [LIMIT, GAPS, MAGICFOCUS, MAGNIFY, AVOIDSTRUTS]
 otherToggles = [NBFULL, MIRROR, NOBORDERS, SMARTBORDERS]
-toggleHandlers = [(Toggle GAPS, toggleAll), (Toggle MAGNIFY, toggleAll)]
+toggleHandlers =
+  [ (Toggle GAPS, toggleAll)
+  , (Toggle MAGNIFY, toggleAll)
+  , (Toggle AVOIDSTRUTS, toggleAll)
+  ]
 
 instance Eq (Toggle Window) where
   (Toggle v) == v2 = Just v == fromToggle v2
@@ -386,9 +393,9 @@ layoutNames = [description layout | layout <- layoutList]
 selectLayout = myDmenu layoutNames >>= (sendMessage . JumpToLayout)
 
 myLayoutHook =
-  avoidStruts .
   minimizeNoDescription .
   boringAuto .
+  mkToggle1 AVOIDSTRUTS .
   mkToggle1 MIRROR .
   mkToggle1 LIMIT .
   mkToggle1 GAPS .
