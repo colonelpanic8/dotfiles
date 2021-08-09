@@ -161,7 +161,7 @@ main = do
                 textClockNewWith
                 defaultClockConfig
                 { clockUpdateStrategy = RoundedTargetInterval 60 0.0
-                , clockFormatString = "%a %b %_d, %I:%M %p"
+                , clockFormatString = "%a %b %_d, 🕑%I:%M %p"
                 }
       myICP = deocrateWithSetClassAndBoxes "icp" $ cryptoPriceLabelWithIcon @"ICP-USD"
       myBTC = deocrateWithSetClassAndBoxes "btc" $ cryptoPriceLabelWithIcon @"BTC-USD"
@@ -170,7 +170,13 @@ main = do
                sniTrayNewFromParams defaultTrayParams { trayLeftClickAction = PopupMenu
                                                       , trayRightClickAction = Activate
                                                       }
-      myMpris = deocrateWithSetClassAndBoxes "mpris" mpris2New
+      myMpris = mpris2NewWithConfig
+                MPRIS2Config { mprisWidgetWrapper = deocrateWithSetClassAndBoxes "mpris" . return
+                             , updatePlayerWidget =
+                               simplePlayerWidget
+                               defaultPlayerConfig
+                               { setNowPlayingLabel = playingText 10 10 }
+                             }
       myBatteryIcon = deocrateWithSetClassAndBoxes "battery-icon" batteryIconNew
       myBatteryText =
         deocrateWithSetClassAndBoxes "battery-text" $ textBatteryNew "$percentage$%"
@@ -197,8 +203,9 @@ main = do
         { startWidgets = [myWorkspaces, myLayout, myWindows]
         , endWidgets = fullEndWidgets
         , barPosition = Top
+        , widgetSpacing = 0
         , barPadding = 0
-        , barHeight = 50
+        , barHeight = 60
         , cssPath = cssFilePath
         , startupHook = void $ setCMCAPIKey "f9e66366-9d42-4c6e-8d40-4194a0aaa329"
         }
@@ -211,7 +218,7 @@ main = do
             , baseConfig { endWidgets = fullEndWidgets, barHeight = 42 }
             )
           , ( "ryzen-shine"
-            , baseConfig { endWidgets = fullEndWidgets, barHeight = 45 }
+            , baseConfig { endWidgets = fullEndWidgets, barHeight = 50 }
             )
           , ( "ivanm-dfinity-razer"
             , baseConfig { endWidgets = shortLaptopEndWidgets, barHeight = 42 }
