@@ -187,7 +187,6 @@ main = do
       shortLaptopEndWidgets =
         [ myBatteryIcon
         , myBatteryText
-        , myClock
         , myTray
         , myICP
         , myMpris
