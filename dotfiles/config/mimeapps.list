@@ -9,6 +9,7 @@ application/pdf=okularApplication_pdf.desktop;
 image/png=okularApplication_kimgio.desktop;
 video/mp4=vlc.desktop;org.gnome.Totem.desktop;
 x-scheme-handler/magnet=userapp-transmission-gtk-24GQLZ.desktop;
+element=element-desktop.desktop
 
 [Default Applications]
 text/html=google-chrome.desktop
