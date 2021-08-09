@@ -20,6 +20,9 @@
   rec {
     devShell = pkgs.haskellPackages.shellFor {
       packages = p: [ p.imalison-xmonad ];
+      buildInputs = with pkgs.haskellPackages; [
+        cabal-install haskell-language-server hlint ghcid ormolu implicit-hie
+      ];
     };
     defaultPackage = pkgs.haskellPackages.imalison-xmonad;
   }) // { inherit overlay overlays; } ;

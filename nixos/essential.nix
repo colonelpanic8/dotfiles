@@ -22,12 +22,15 @@ in
     python-with-my-packages
 
     alacritty
-    emacs
+    (emacsWithPackages (epkgs: with epkgs.melpaPackages; [
+      vterm
+    ]))
     firefox
     vlc
     transmission-gtk
     dolphin
     element-desktop
+    gpick
 
     # Appearance
     numix-icon-theme-circle

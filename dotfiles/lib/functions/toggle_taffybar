@@ -1,7 +1,8 @@
 #!/usr/bin/env sh
 
 function toggle_taffybar {
-	dbus-send --print-reply=literal --dest=taffybar.toggle /taffybar/toggle taffybar.toggle.toggleCurrent
+	dbus-send --print-reply=literal --dest=taffybar.toggle \
+			  /taffybar/toggle taffybar.toggle.toggleCurrent
 }
 
 toggle_taffybar

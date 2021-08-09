@@ -5,6 +5,7 @@
   environment.systemPackages = with pkgs; [
     asciidoctor
     vscode
+    signal-desktop
     gource
     gimp
     texlive.combined.scheme-full
