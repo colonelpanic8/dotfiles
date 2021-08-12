@@ -95,7 +95,8 @@ import           XMonad.Util.WorkspaceCompare
 myConfig = def
   { modMask = mod4Mask
   , terminal = "alacritty"
-  , manageHook = composeOne [ isFullscreen -?> doFullFloat ] <+> manageHook def
+  , manageHook
+    = namedScratchpadManageHook scratchpads
   , layoutHook = myLayoutHook
   , borderWidth = 0
   , normalBorderColor = "#0096ff"
@@ -209,31 +210,41 @@ getWorkspaceDmenu = myDmenu (workspaces myConfig)
 -- Selectors
 
 isGmailTitle t = isInfixOf "@gmail.com" t && isInfixOf "Gmail" t
+isMessagesTitle = isPrefixOf "Messages"
 isChromeClass = isInfixOf "chrome"
+noSpecialChromeTitles = helper <$> title
+  where helper t = not $ any ($ t) [isGmailTitle, isMessagesTitle]
 chromeSelectorBase = isChromeClass <$> className
 
-chromeSelector =
-  chromeSelectorBase <&&>
-  (\t -> not $ any ($ t) [isGmailTitle]) <$> title
-spotifySelector = className =? "Spotify"
+chromeSelector = chromeSelectorBase <&&> noSpecialChromeTitles
+elementSelector = className =? "Element"
 emacsSelector = className =? "Emacs"
-transmissionSelector = fmap (isPrefixOf "Transmission") title
 gmailSelector = chromeSelectorBase <&&> fmap isGmailTitle title
+messagesSelector = chromeSelectorBase <&&> isMessagesTitle <$> title
+slackSelector = className =? "Slack"
+spotifySelector = className =? "Spotify"
+transmissionSelector = fmap (isPrefixOf "Transmission") title
 volumeSelector = className =? "Pavucontrol"
 
 virtualClasses =
   [ (gmailSelector, "Gmail")
+  , (messagesSelector, "Messages")
   , (chromeSelector, "Chrome")
   , (transmissionSelector, "Transmission")
   ]
 
 -- Commands
 
-gmailCommand = "google-chrome-stable --new-window https://mail.google.com/mail/u/0/#inbox"
-spotifyCommand = "spotify"
 chromeCommand = "google-chrome-stable"
+elementCommand = "element-desktop"
 emacsCommand = "emacsclient -c"
+gmailCommand =
+  "google-chrome-stable --new-window https://mail.google.com/mail/u/0/#inbox"
 htopCommand = "alacritty --title htop -e htop"
+messagesCommand =
+  "google-chrome-stable --new-window https://messages.google.com/web/conversations"
+slackCommand = "slack"
+spotifyCommand = "spotify"
 transmissionCommand = "transmission-gtk"
 volumeCommand = "pavucontrol"
 
@@ -743,10 +754,23 @@ swapMinimizeStateAfter action =
 
 -- Named Scratchpads
 
+nearFullFloat = customFloating $ W.RationalRect l t w h
+  where
+    h = 0.9
+    w = 0.9
+    t = 0.95 -h
+    l = 0.95 -w
+
+
 scratchpads =
-  [ NS "htop" htopCommand (title =? "htop") nonFloating
-  , NS "spotify" spotifyCommand spotifySelector nonFloating
-  , NS "volume" volumeCommand volumeSelector nonFloating
+  [ NS "element" elementCommand elementSelector nearFullFloat
+  , NS "gmail" gmailCommand gmailSelector nearFullFloat
+  , NS "htop" htopCommand (title =? "htop") nearFullFloat
+  , NS "messages" messagesCommand messagesSelector nearFullFloat
+  , NS "slack" slackCommand slackSelector nearFullFloat
+  , NS "spotify" spotifyCommand spotifySelector nearFullFloat
+  , NS "transmission" transmissionCommand transmissionSelector nearFullFloat
+  , NS "volume" volumeCommand volumeSelector nearFullFloat
   ]
 
 -- TODO: This doesnt work well with minimized windows
@@ -863,17 +887,17 @@ addKeys conf@XConfig { modMask = modm } =
     -- Specific program spawning
     bindBringAndRaiseMany
     [ (modalt, xK_c, spawn chromeCommand, chromeSelector)
-    , (modalt, xK_e, spawn emacsCommand, emacsSelector)
-    , (modalt, xK_g, spawn gmailCommand, gmailSelector)
-    , (modalt, xK_t, spawn transmissionCommand, transmissionSelector)
     ] ++
 
     -- ScratchPads
-    [ ((modalt, xK_m), doScratchpad "htop")
-    , ((modalt, xK_v), doScratchpad "volume")
+    [ ((modalt, xK_e), doScratchpad "element")
+    , ((modalt, xK_g), doScratchpad "gmail")
+    , ((modalt, xK_h), doScratchpad "htop")
+    , ((modalt, xK_m), doScratchpad "messages")
+    , ((modalt, xK_k), doScratchpad "slack")
     , ((modalt, xK_s), doScratchpad "spotify")
-    , ((modalt .|. controlMask, xK_s),
-       myRaiseNextMaybe (spawn spotifyCommand) spotifySelector)
+    , ((modalt, xK_t), doScratchpad "transmission")
+    , ((modalt, xK_v), doScratchpad "volume")
 
     -- Specific program spawning
 
