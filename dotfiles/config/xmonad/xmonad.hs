@@ -54,6 +54,7 @@ import           XMonad.Actions.WindowGo
 import           XMonad.Actions.WorkspaceNames
 import           XMonad.Config ()
 import           XMonad.Core (getDirectories)
+import           XMonad.Hooks.DynamicProperty
 import           XMonad.Hooks.EwmhDesktops
 import           XMonad.Hooks.FadeInactive
 import           XMonad.Hooks.ManageDocks
@@ -86,7 +87,7 @@ import           XMonad.Util.CustomKeys
 import qualified XMonad.Util.Dmenu as DM
 import qualified XMonad.Util.ExtensibleState as XS
 import           XMonad.Util.Minimize
-import           XMonad.Util.NamedScratchpad
+import           XMonad.Util.NamedScratchpad as NS
 import           XMonad.Util.NamedWindows (getName)
 import           XMonad.Util.Run
 import           XMonad.Util.Themes
@@ -101,12 +102,18 @@ myConfig = def
   , borderWidth = 0
   , normalBorderColor = "#0096ff"
   , focusedBorderColor = "#ffff00"
-  , logHook =
-      updatePointer (0.5, 0.5) (0, 0) <>
-      toggleFadeInactiveLogHook 0.9 <> workspaceHistoryHook <>
-      setWorkspaceNames <> activateLogHook (reader W.focusWindow >>= doF) <+> logHook def
-  , handleEventHook =
-      followIfNoMagicFocus <> minimizeEventHook <> restartEventHook
+  , logHook
+  = updatePointer (0.5, 0.5) (0, 0)
+  <> toggleFadeInactiveLogHook 0.9
+  <> workspaceHistoryHook
+  <> setWorkspaceNames
+  <> activateLogHook (reader W.focusWindow >>= doF)
+  <> logHook def
+  , handleEventHook
+  =  followIfNoMagicFocus
+  <> minimizeEventHook
+  <> restartEventHook
+  <> myScratchPadEventHook
   , startupHook = myStartup
   , keys = customKeys (const []) addKeys
   }
@@ -780,9 +787,29 @@ scratchpads =
   , NS "volume" volumeCommand volumeSelector nearFullFloat
   ]
 
+
+myScratchPadManageHook = namedScratchpadManageHook scratchpads
+-- We need this event hook because some scratchpad applications (Spotify) don't
+-- actually properly set their class at startup.
+myScratchPadEventHook
+  =  dynamicPropertyChange "WM_CLASS" myScratchPadManageHook
+  <> dynamicPropertyChange "WM_NAME" myScratchPadManageHook
+
+runScratchPadManageHookOnCurrent =
+  join (withFocusedD (Endo id) $ runQuery myScratchPadManageHook) >>= windows . appEndo
+
+scratchPadIsDisplayed name = join $ withFocusedD False query
+  where
+    query = maybe (const $ return False) (runQuery . NS.query) scratchpadInfo
+    scratchpadInfo = find ((name ==) . NS.name) scratchpads
+
+manageIfScratchPadIsDisplayed name =
+  scratchPadIsDisplayed name >>= (`when` runScratchPadManageHookOnCurrent)
+
 -- TODO: This doesnt work well with minimized windows
-doScratchpad =
-  maybeUnminimizeAfter . deactivateFullAnd . namedScratchpadAction scratchpads
+doScratchpad name = do
+  maybeUnminimizeAfter $ deactivateFullAnd $ namedScratchpadAction scratchpads name
+  manageIfScratchPadIsDisplayed name
 
 -- Raise or spawn
 
