@@ -127,7 +127,7 @@ logDebug = do
 cssFileByHostname =
   [ ("uber-loaner", "uber-loaner.css")
   , ("imalison-home", "taffybar.css")
-  , ("ivanm-dfinity-razer", "ivanm-dfinity-razer.css")
+  , ("ivanm-dfinity-razer", "taffybar.css")
   , ("ryzen-shine", "taffybar.css")
   ]
 
@@ -193,7 +193,6 @@ main = do
       shortLaptopEndWidgets =
         [ myBatteryIcon
         , myBatteryText
-        , myClock
         , myTray
         , myICP
         , myMpris
