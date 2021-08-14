@@ -13,6 +13,9 @@
   rec {
     devShell = pkgs.haskellPackages.shellFor {
       packages = p: [ p.imalison-taffybar p.taffybar ];
+      nativeBuildInputs = with pkgs.haskellPackages; [
+        cabal-install hlint ghcid ormolu implicit-hie haskell-language-server
+      ];
     };
     defaultPackage = pkgs.haskellPackages.imalison-taffybar;
   }) // { inherit overlay overlays; } ;
