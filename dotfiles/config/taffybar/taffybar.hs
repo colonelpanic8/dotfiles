@@ -134,8 +134,8 @@ cssFilesByHostname =
 main = do
   hostName <- getHostName
   homeDirectory <- getHomeDirectory
-  cssFiles <-
-    traverse (getUserConfigFile "taffybar") $ lookup hostName cssFilesByHostname
+  let relativeFiles = fromMaybe ["gotham.css", "taffybar.css"] $ lookup hostName cssFilesByHostname
+  cssFiles <- mapM (getUserConfigFile "taffybar") relativeFiles
 
   let myCPU = deocrateWithSetClassAndBoxes "cpu" $
               pollingGraphNew cpuCfg 5 cpuCallback
