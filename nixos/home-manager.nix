@@ -116,7 +116,7 @@
     Install = { WantedBy = [ "graphical-session.target" ]; };
 
     Service = {
-      ExecStart = "${pkgs.haskellPackages.notifications-tray-icon}/bin/notifications-tray-icon  --github-token-pass github-token";
+      ExecStart = "${pkgs.haskellPackages.notifications-tray-icon}/bin/notifications-tray-icon  --github-token-pass dfinity-github-api-token";
       Restart = "always";
       RestartSec = 3;
     };
