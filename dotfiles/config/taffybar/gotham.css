@@ -1,0 +1,25 @@
+@define-color base0   #0c1014;
+@define-color base1   #11151c;
+@define-color base2   #091f2e;
+@define-color base3   #0a3749;
+@define-color base4   #245361;
+@define-color base5   #599cab;
+@define-color base6   #99d1ce;
+@define-color base7   #d3ebe9;
+@define-color red     #c23127;
+@define-color orange  #d26937;
+@define-color yellow  #edb443;
+@define-color magenta #888ca6;
+@define-color violet  #4e5166;
+@define-color blue    #195466;
+@define-color cyan    #33859e;
+@define-color green   #2aa889;
+
+@define-color active-window-color @white;
+@define-color urgent-window-color @taffy-blue;
+@define-color font-color @base5;
+@define-color menu-background-color @white;
+@define-color menu-font-color @black;
+@define-color bar-background @base0;
+@define-color accent @red;
+@define-color menu-highlight @magenta;
