@@ -64,7 +64,7 @@ import           XMonad.Hooks.TaffybarPagerHints
 import           XMonad.Hooks.WorkspaceHistory
 import           XMonad.Layout.Accordion
 import           XMonad.Layout.BoringWindows
-import           XMonad.Layout.ConditionalModifier
+import           XMonad.Layout.ConditionalLayout
 import           XMonad.Layout.Cross
 import           XMonad.Layout.Grid
 import           XMonad.Layout.LayoutCombinators
@@ -273,8 +273,12 @@ myStartup = do
 data DisableOnTabbedCondition = DisableOnTabbedCondition deriving (Read, Show)
 
 instance ModifierCondition DisableOnTabbedCondition where
-  shouldApply _ = do
-    not . isInfixOf "Tabbed" . description . W.layout <$> currentWorkspace
+  shouldApply _ workspaceId = fromMaybe True <$> final
+      where allWorkspaces = withWindowSet $ return . W.workspaces
+            relevantWorkspace = find idMatches <$> allWorkspaces
+            idMatches ws = W.tag ws == workspaceId
+            final = fmap (not . isInfixOf "Tabbed" . description . W.layout) <$>
+                    relevantWorkspace
 
 disableOnTabbed = ConditionalLayoutModifier DisableOnTabbedCondition
 
@@ -411,7 +415,7 @@ layoutNames = [description layout | layout <- layoutList]
 selectLayout = myDmenu layoutNames >>= (sendMessage . JumpToLayout)
 
 myLayoutHook =
-  minimizeNoDescription .
+  minimize .
   boringAuto .
   mkToggle1 AVOIDSTRUTS .
   mkToggle1 MIRROR .
@@ -491,7 +495,7 @@ myWindowAct c@WindowBringerConfig {menuCommand = cmd, menuArgs = args}
   currentlyFullscreen <- isToggleActiveInCurrent NBFULL
   let actualConfig
         | fromMaybe False currentlyFullscreen = c
-        | filterVisible = c {windowFilter = not . flip elem visible}
+        | filterVisible = c { windowFilter = return . not . flip elem visible }
         | otherwise = c
   ws <- M.toList <$> windowMap' actualConfig
   selection <- menuIndexArgs cmd args ws

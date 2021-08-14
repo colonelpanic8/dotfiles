@@ -19,7 +19,7 @@
   in
   rec {
     devShell = pkgs.haskellPackages.shellFor {
-      packages = p: [ p.imalison-xmonad ];
+      packages = p: [ p.imalison-xmonad p.xmonad-contrib ];
       buildInputs = with pkgs.haskellPackages; [
         cabal-install haskell-language-server hlint ghcid ormolu implicit-hie
       ];
