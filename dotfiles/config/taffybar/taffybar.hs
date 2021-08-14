@@ -124,24 +124,29 @@ logDebug = do
   -- enableLogger "System.Taffybar.WindowIcon" DEBUG
   -- enableLogger "System.Taffybar.Widget.Generic.PollingLabel" DEBUG
 
-cssFileByHostname =
-  [ ("uber-loaner", "uber-loaner.css")
-  , ("imalison-home", "taffybar.css")
-  , ("ivanm-dfinity-razer", "taffybar.css")
-  , ("ryzen-shine", "taffybar.css")
+cssFilesByHostname =
+  [ ("uber-loaner", ["uber-loaner.css"])
+  , ("imalison-home", ["taffybar.css"])
+  , ("ivanm-dfinity-razer", ["taffybar.css"])
+  , ("ryzen-shine", ["taffybar.css"])
   ]
 
 main = do
   hostName <- getHostName
   homeDirectory <- getHomeDirectory
-  cssFilePath <-
-    traverse (getUserConfigFile "taffybar") $ lookup hostName cssFileByHostname
+  cssFiles <-
+    traverse (getUserConfigFile "taffybar") $ lookup hostName cssFilesByHostname
 
-  let myCPU = deocrateWithSetClassAndBoxes "cpu" $ pollingGraphNew cpuCfg 5 cpuCallback
-      myMem = deocrateWithSetClassAndBoxes "mem" $ pollingGraphNew memCfg 5 memCallback
-      myNet = deocrateWithSetClassAndBoxes "net" $ networkGraphNew netCfg Nothing
-      myLayout = deocrateWithSetClassAndBoxes "layout" $ layoutNew defaultLayoutConfig
-      myWindows = deocrateWithSetClassAndBoxes "windows" $ windowsNew defaultWindowsConfig
+  let myCPU = deocrateWithSetClassAndBoxes "cpu" $
+              pollingGraphNew cpuCfg 5 cpuCallback
+      myMem = deocrateWithSetClassAndBoxes "mem" $
+              pollingGraphNew memCfg 5 memCallback
+      myNet = deocrateWithSetClassAndBoxes "net" $
+              networkGraphNew netCfg Nothing
+      myLayout = deocrateWithSetClassAndBoxes "layout" $
+                 layoutNew defaultLayoutConfig
+      myWindows = deocrateWithSetClassAndBoxes "windows" $
+                  windowsNew defaultWindowsConfig
       myWorkspaces =
         flip widgetSetClassGI "workspaces" =<<
         workspacesNew defaultWorkspacesConfig
@@ -205,7 +210,7 @@ main = do
         , widgetSpacing = 0
         , barPadding = 0
         , barHeight = 60
-        , cssPath = cssFilePath
+        , cssPaths = cssFiles
         , startupHook = void $ setCMCAPIKey "f9e66366-9d42-4c6e-8d40-4194a0aaa329"
         }
       selectedConfig =
