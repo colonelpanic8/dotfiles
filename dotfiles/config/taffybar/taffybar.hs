@@ -175,28 +175,20 @@ main = do
                              , updatePlayerWidget =
                                simplePlayerWidget
                                defaultPlayerConfig
-                               { setNowPlayingLabel = playingText 10 10 }
+                               { setNowPlayingLabel = playingText 20 20 }
                              }
       myBatteryIcon = deocrateWithSetClassAndBoxes "battery-icon" batteryIconNew
       myBatteryText =
         deocrateWithSetClassAndBoxes "battery-text" $ textBatteryNew "$percentage$%"
-      fullEndWidgets =
+      batteryWidgets = [myBatteryIcon, myBatteryText]
+      baseEndWidgets =
         [ myTray
         , myICP
         , myBTC
         , myETH
-        , myCPU
-        , myMem
-        , myNet
-        , myMpris
         ]
-      shortLaptopEndWidgets =
-        [ myBatteryIcon
-        , myBatteryText
-        , myTray
-        , myICP
-        , myMpris
-        ]
+      fullEndWidgets = baseEndWidgets ++ [ myCPU, myMem, myNet, myMpris ]
+      laptopEndWidgets = batteryWidgets ++ baseEndWidgets ++ [ myMpris ]
       baseConfig =
         defaultSimpleTaffyConfig
         { startWidgets = [myWorkspaces, myLayout, myWindows]
@@ -204,14 +196,14 @@ main = do
         , barPosition = Top
         , widgetSpacing = 0
         , barPadding = 0
-        , barHeight = 60
+        , barHeight = 50
         , cssPath = cssFilePath
         , startupHook = void $ setCMCAPIKey "f9e66366-9d42-4c6e-8d40-4194a0aaa329"
         }
       selectedConfig =
         fromMaybe baseConfig $ lookup hostName
           [ ( "uber-loaner"
-            , baseConfig { endWidgets = shortLaptopEndWidgets }
+            , baseConfig { endWidgets = laptopEndWidgets }
             )
           , ( "imalison-home"
             , baseConfig { endWidgets = fullEndWidgets, barHeight = 42 }
@@ -220,7 +212,10 @@ main = do
             , baseConfig { endWidgets = fullEndWidgets, barHeight = 50 }
             )
           , ( "ivanm-dfinity-razer"
-            , baseConfig { endWidgets = shortLaptopEndWidgets, barHeight = 42 }
+            , baseConfig { endWidgets = laptopEndWidgets, barHeight = 42 }
+            )
+          , ( "adele"
+            , baseConfig { endWidgets = laptopEndWidgets, barHeight = 45 }
             )
           ]
       simpleTaffyConfig = selectedConfig
