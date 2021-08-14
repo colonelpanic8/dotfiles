@@ -2820,8 +2820,10 @@ The following is taken from [[https://github.com/syl20bnr/spacemacs/blob/a650877
          haskell-mode-stylish-haskell-path "brittany"
          haskell-mode-stylish-haskell-args '("-")))
       (message "imalison:use-lsp-haskell: %s" imalison:use-lsp-haskell)
-      (when imalison:use-lsp-haskell
-        (use-package lsp-haskell)
+      (when t
+        (require 'lsp)
+        (use-package lsp-haskell
+          :demand t)
         (lsp-deferred)))
     (add-hook 'haskell-mode-hook 'imalison:haskell-mode))
   :config
@@ -4016,11 +4018,16 @@ emr (emacs refactor) provides support for refactoring in many programming langua
 (use-package lsp-mode
   :config
   (progn
+    (defun imalison:nix-develop-lsp-wrapper-function (argv)
+      (append
+       (append (list "nix" "develop" "-I" "." "--command")
+               argv)))
     (setq lsp-prefer-flymake nil)
     (use-package lsp-ui
       :config
-      (add-hook 'lsp-mode-hook 'lsp-ui-mode))
-    (add-hook 'programming-mode-hook 'lsp)))
+      (progn
+        (add-hook 'lsp-mode-hook 'lsp-ui-mode)
+        (setq lsp-ui-doc-position 'bottom)))))
 #+END_SRC
 * Utility
 ** term
