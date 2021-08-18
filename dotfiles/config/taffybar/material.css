@@ -266,10 +266,11 @@
 @define-color white #FFFFFF;
 
 @define-color active-window-color @white;
-@define-color urgent-window-color @;
-@define-color font-color @base5;
+@define-color urgent-window-color @blue-grey;
+@define-color font-color @white;
+@define-color font-shadow-color @black;
 @define-color menu-background-color @white;
 @define-color menu-font-color @black;
-@define-color bar-background @base0;
+@define-color bar-background @pink-darken-4;
 @define-color accent @red;
-@define-color menu-highlight @magenta;
+@define-color menu-highlight @deep-orange;
