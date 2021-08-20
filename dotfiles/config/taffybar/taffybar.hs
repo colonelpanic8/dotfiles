@@ -99,8 +99,10 @@ getFullWorkspaceNames = go <$> readAsListOfString Nothing "_NET_DESKTOP_FULL_NAM
   where go = zip [WorkspaceId i | i <- [0..]]
 
 workspaceNamesLabelSetter workspace =
-  fromMaybe "" . lookup (workspaceIdx workspace) <$>
+  remapNSP . fromMaybe "" . lookup (workspaceIdx workspace) <$>
             liftX11Def [] getFullWorkspaceNames
+  where remapNSP "NSP" = "S"
+        remapNSP n = n
 
 enableLogger logger level = do
   logger <- getLogger logger
