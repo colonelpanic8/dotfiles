@@ -21,6 +21,9 @@ scrolling:
   # to the terminal.
   auto_scroll: false
 
+font:
+  size: 8
+
 # Colors (Gotham)
 colors:
   # Default colors
