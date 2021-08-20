@@ -28,7 +28,7 @@
       url = github:IvanMalison/notifications-tray-icon/master;
     };
   };
-  outputs = {
+  outputs = inputs@{
     self, nix, nixpkgs, nixos-hardware, home-manager, taffybar, xmonad,
     xmonad-contrib, notifications-tray-icon
   }:
@@ -56,30 +56,29 @@
       nixos-hardware.nixosModules.raspberry-pi-4
     ];
   });
+  mkNixosConfig = args@{ system ? "x86_64-linux", baseModules ? [ forAll ], modules ? [], specialArgs ? {}, ... }:
+  nixpkgs.lib.nixosSystem (args // {
+    inherit system;
+    modules = baseModules ++ modules;
+    specialArgs = { inherit inputs; } // specialArgs;
+  });
   in
   {
     nixosConfigurations = {
-      ivanm-dfinity-razer = nixpkgs.lib.nixosSystem {
-        system = "x86_64-linux";
-        modules = [ forAll ./machines/ivanm-dfinity-razer.nix ];
+      ivanm-dfinity-razer = mkNixosConfig {
+        modules = [ ./machines/ivanm-dfinity-razer.nix ];
       };
-      ryzen-shine = nixpkgs.lib.nixosSystem {
-        system = "x86_64-linux";
-        modules = [ forAll ./machines/ryzen-shine.nix ];
+      ryzen-shine = mkNixosConfig {
+        modules = [ ./machines/ryzen-shine.nix ];
       };
-      adele = nixpkgs.lib.nixosSystem {
-        system = "x86_64-linux";
-        modules = [ forAll ./machines/adele.nix ({ ... }: {
-          imports = [
-            nixos-hardware.nixosModules.dell-xps-17-9700-intel
-          ];
-        })];
+      adele = mkNixosConfig {
+        modules = [ ./machines/adele.nix ];
       };
-      biskcomp = nixpkgs.lib.nixosSystem {
+      biskcomp = mkNixosConfig {
         system = "aarch64-linux";
         modules = [ forAll piHardware ./machines/biskcomp.nix ];
       };
-      air-gapped-pi = nixpkgs.lib.nixosSystem {
+      air-gapped-pi = mkNixosConfig {
         system = "aarch64-linux";
         modules = [ forAll piHardware ./machines/air-gapped-pi.nix ];
       };
