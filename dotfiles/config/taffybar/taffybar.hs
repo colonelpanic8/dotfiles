@@ -134,7 +134,7 @@ cssFilesByHostname =
 main = do
   hostName <- getHostName
   homeDirectory <- getHomeDirectory
-  let relativeFiles = fromMaybe ["gotham.css", "taffybar.css"] $ lookup hostName cssFilesByHostname
+  let relativeFiles = fromMaybe ["taffybar.css"] $ lookup hostName cssFilesByHostname
   cssFiles <- mapM (getUserConfigFile "taffybar") relativeFiles
 
   let myCPU = deocrateWithSetClassAndBoxes "cpu" $
