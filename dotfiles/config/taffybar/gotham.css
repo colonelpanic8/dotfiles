@@ -17,7 +17,7 @@
 
 @define-color active-window-color @white;
 @define-color urgent-window-color @taffy-blue;
-@define-color font-color @base5;
+@define-color font-color @white;
 @define-color menu-background-color @white;
 @define-color menu-font-color @black;
 @define-color bar-background @base0;
