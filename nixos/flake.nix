@@ -51,11 +51,6 @@
     home-manager.useUserPackages = true;
     home-manager.users.imalison = import ./home-manager.nix;
   });
-  piHardware = ({ ... }: {
-    imports = [
-      nixos-hardware.nixosModules.raspberry-pi-4
-    ];
-  });
   mkNixosConfig = args@{ system ? "x86_64-linux", baseModules ? [ forAll ], modules ? [], specialArgs ? {}, ... }:
   nixpkgs.lib.nixosSystem (args // {
     inherit system;
@@ -76,11 +71,11 @@
       };
       biskcomp = mkNixosConfig {
         system = "aarch64-linux";
-        modules = [ forAll piHardware ./machines/biskcomp.nix ];
+        modules = [ ./machines/biskcomp.nix ];
       };
       air-gapped-pi = mkNixosConfig {
         system = "aarch64-linux";
-        modules = [ forAll piHardware ./machines/air-gapped-pi.nix ];
+        modules = [ ./machines/air-gapped-pi.nix ];
       };
     };
   };
