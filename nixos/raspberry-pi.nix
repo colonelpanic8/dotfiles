@@ -43,6 +43,13 @@
     raspberrypi-eeprom
   ];
 
+  environment = {
+    # This allows alacritty to run
+    extraInit = ''
+      export LIBGL_ALWAYS_SOFTWARE=1
+    '';
+  };
+
   nix = {
     autoOptimiseStore = true;
     gc = {
