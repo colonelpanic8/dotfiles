@@ -66,6 +66,7 @@ import           XMonad.Layout.Accordion
 import           XMonad.Layout.BoringWindows
 import           XMonad.Layout.ConditionalLayout
 import           XMonad.Layout.Cross
+import           XMonad.Layout.Decoration
 import           XMonad.Layout.Grid
 import           XMonad.Layout.LayoutCombinators
 import           XMonad.Layout.LayoutModifier
@@ -90,7 +91,6 @@ import           XMonad.Util.Minimize
 import           XMonad.Util.NamedScratchpad as NS
 import           XMonad.Util.NamedWindows (getName)
 import           XMonad.Util.Run
-import           XMonad.Util.Themes
 import           XMonad.Util.WorkspaceCompare
 
 myConfig = def
@@ -100,8 +100,6 @@ myConfig = def
     = namedScratchpadManageHook scratchpads
   , layoutHook = myLayoutHook
   , borderWidth = 0
-  , normalBorderColor = "#0096ff"
-  , focusedBorderColor = "#ffff00"
   , logHook
   = updatePointer (0.5, 0.5) (0, 0)
   <> toggleFadeInactiveLogHook 0.9
@@ -116,6 +114,18 @@ myConfig = def
   <> myScratchPadEventHook
   , startupHook = myStartup
   , keys = customKeys (const []) addKeys
+  }
+
+gothamTheme =
+  def
+  { inactiveBorderColor = "#000"
+  , activeBorderColor = "#edb443"
+  , activeColor = "#edb443"
+  , inactiveColor = "#091f2e"
+  , inactiveTextColor = "#edb443"
+  , activeTextColor = "#091f2e"
+  , fontName = "xft:Source Code Pro:style=Semibold"
+  , decoHeight = 25
   }
 
 restartEventHook e@ClientMessageEvent { ev_message_type = mt } = do
@@ -406,7 +416,7 @@ layoutInfo =
   rename "2 Columns" (Tall 1 (3 / 100) (1 / 2)) |||!
   Accordion |||! simpleCross |||! myTabbed
     where
-      myTabbed = rename "Tabbed" $ tabbed shrinkText (theme robertTheme)
+      myTabbed = rename "Tabbed" $ tabbed shrinkText gothamTheme
 
 layoutList = snd layoutInfo
 
