@@ -1,0 +1,9 @@
+#!/usr/bin/env sh
+
+function start_chrome_for {
+	email=$1
+	shift
+	google-chrome-stable --profile-directory="$(get_chrome_folder_from_address "$email")" "$@"
+}
+
+start_chrome_for "$@"

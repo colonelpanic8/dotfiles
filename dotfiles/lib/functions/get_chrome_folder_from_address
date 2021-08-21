@@ -1,0 +1,8 @@
+#!/usr/bin/env sh
+
+function get_chrome_folder_from_address {
+	cat ~/.config/google-chrome/Local\ State |
+		jq -r ".profile.info_cache | to_entries | .[] |  select(.value.user_name == \"$1\") | .key"
+}
+
+get_chrome_folder_from_address "$@"
