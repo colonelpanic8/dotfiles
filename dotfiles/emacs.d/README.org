@@ -3166,7 +3166,6 @@ Intero seems to be causing hangs, so it has been disabled
          `((python . t)
            (ruby . t)
            (octave . t)
-           (sqlite . t)
            (plantuml . t)
            ,@added-modes))))
 
@@ -3848,6 +3847,7 @@ alphanumeric characters only."
 *** forge
 #+begin_src emacs-lisp
 (use-package forge
+  :disabled t
   :after magit)
 #+end_src
 *** magithub
@@ -4231,6 +4231,7 @@ crux-reopen-as-root-mode makes it so that any file owned by root will automatica
 ** erc
 #+BEGIN_SRC emacs-lisp
 (use-package erc
+  :disabled t
   :commands erc
   :config
   (progn
@@ -4852,7 +4853,8 @@ I've disabled perspective because I just don't use it much.
 ** groovy-mode
 This also adds syntax highlighting for gradle
 #+BEGIN_SRC emacs-lisp
-(use-package groovy-mode)
+(use-package groovy-mode
+  :disabled t)
 #+END_SRC
 ** jsx-mode
 #+BEGIN_SRC emacs-lisp
