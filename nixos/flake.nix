@@ -51,32 +51,38 @@
     home-manager.useUserPackages = true;
     home-manager.users.imalison = import ./home-manager.nix;
   });
-  mkNixosConfig = args@{ system ? "x86_64-linux", baseModules ? [ forAll ], modules ? [], specialArgs ? {}, ... }:
+  mkConfig = args@{ system ? "x86_64-linux", baseModules ? [ forAll ], modules ? [], specialArgs ? {}, ... }:
   nixpkgs.lib.nixosSystem (args // {
     inherit system;
     modules = baseModules ++ modules;
     specialArgs = { inherit inputs; } // specialArgs;
   });
+  machineFilenames = builtins.attrNames (builtins.readDir ./machines);
+  machineNameFromFilename = filename: builtins.head (builtins.split "\\." filename);
+  mkConfigurationParams = filename: {
+    name = machineNameFromFilename filename;
+    value = {
+      modules = [ (./machines + ("/" + filename)) ];
+    };
+  };
+  defaultConfigurationParams =
+    builtins.listToAttrs (map mkConfigurationParams machineFilenames);
+  customParams = {
+    biskcomp = {
+      system = "aarch64-linux";
+    };
+    air-gapped-pi = {
+      system = "aarch64-linux";
+    };
+  };
   in
   {
-    nixosConfigurations = {
-      ivanm-dfinity-razer = mkNixosConfig {
-        modules = [ ./machines/ivanm-dfinity-razer.nix ];
-      };
-      ryzen-shine = mkNixosConfig {
-        modules = [ ./machines/ryzen-shine.nix ];
-      };
-      adele = mkNixosConfig {
-        modules = [ ./machines/adele.nix ];
-      };
-      biskcomp = mkNixosConfig {
-        system = "aarch64-linux";
-        modules = [ ./machines/biskcomp.nix ];
-      };
-      air-gapped-pi = mkNixosConfig {
-        system = "aarch64-linux";
-        modules = [ ./machines/air-gapped-pi.nix ];
-      };
-    };
+    nixosConfigurations = builtins.mapAttrs (machineName: params:
+    let machineParams =
+      if builtins.hasAttr machineName customParams
+      then (builtins.getAttr machineName customParams)
+      else {};
+    in mkConfig (params // machineParams)
+    ) defaultConfigurationParams;
   };
 }

@@ -2,10 +2,11 @@
 
 {
   imports = [
-    <nixpkgs/nixos/modules/installer/scan/not-detected.nix>
+    ../users.nix
     ../full.nix
-    # ../cachix.nix
   ];
+
+  hardware.enableRedistributableFirmware = true;
 
   boot.initrd.availableKernelModules = [ "xhci_pci" "ahci" "usbhid" "sd_mod" ];
   boot.kernelModules = [ "kvm-intel" ];
@@ -45,42 +46,14 @@
   nix.maxJobs = lib.mkDefault 4;
   powerManagement.cpuFreqGovernor = lib.mkDefault "powersave";
 
-  boot.initrd.luks.devices = [
-    {
-      name = "root";
-      device = "/dev/sda3";
-      preLVM = true;
-    }
-  ];
+  # boot.initrd.luks.devices."cryptroot" = {
+  #   name = "root";
+  #   device = "/dev/sda3";
+  #   preLVM = true;
+  # };
 
   networking.hostName = "imalison-home";
   boot.loader.efi.canTouchEfiVariables = true;
-
-  services.samba = {
-    enable = true;
-    syncPasswordsByPam = true;
-    extraConfig = ''
-      workgroup = WORKGROUP
-      server string = smbnix
-      netbios name = smbnix
-      #use sendfile = yes
-      #max protocol = smb2
-      hosts allow = 192.168.0  localhost
-      hosts deny = 0.0.0.0/0
-    '';
-    shares = {
-      private = {
-        path = "/backups";
-        browseable = "yes";
-        "read only" = "no";
-        "guest ok" = "no";
-        "create mask" = "0644";
-        "directory mask" = "0755";
-        "force user" = "username";
-        "force group" = "groupname";
-      };
-    };
-  };
 
   services.xserver = {
     screenSection = ''

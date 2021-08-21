@@ -2,11 +2,12 @@
 
 {
   imports = [
-    <nixpkgs/nixos/modules/installer/scan/not-detected.nix>
     ../full.nix
     ../games.nix
     ../extra.nix
   ];
+
+  hardware.enableRedistributableFirmware = true;
 
   boot.initrd.availableKernelModules = [ "xhci_pci" "ahci" "usbhid" "sd_mod" ];
   boot.kernelModules = [ "kvm-intel" ];
