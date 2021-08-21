@@ -1,4 +1,4 @@
-{ pkgs, ... }:
+{ pkgs, inputs, ... }:
 {
   security.sudo.wheelNeedsPassword = false;
   users.extraUsers = let
@@ -39,4 +39,12 @@
   };
 
   nix.trustedUsers = [ "root" "imalison" "kat" ];
+
+  imports = [
+    inputs.home-manager.nixosModule
+  ];
+
+  home-manager.useGlobalPkgs = true;
+  home-manager.useUserPackages = true;
+  home-manager.users.imalison = import ./home-manager.nix;
 }

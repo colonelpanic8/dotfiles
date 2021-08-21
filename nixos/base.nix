@@ -1,4 +1,4 @@
-{ config, pkgs, options, ... }:
+{ config, pkgs, options, inputs, ... }:
 {
   imports = [
     ./users.nix
@@ -6,6 +6,22 @@
     ./essential.nix
     ./environment.nix
   ];
+
+  nix = {
+    extraOptions = ''
+      experimental-features = nix-command flakes ca-references
+    '';
+    registry.nixpkgs.flake = inputs.nixpkgs;
+  };
+
+  nixpkgs.overlays = with inputs; [
+    nix.overlay
+    xmonad.overlay
+    xmonad-contrib.overlay
+    notifications-tray-icon.overlay
+    (import ../dotfiles/config/taffybar/overlay.nix)
+    (import ./overlay.nix)
+  ] ++ taffybar.overlays;
 
   # Allow all the things
   nixpkgs.config.allowUnfree = true;
