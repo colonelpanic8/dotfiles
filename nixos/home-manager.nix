@@ -81,7 +81,7 @@
         uri = "git@github.com:IvanMalison/org.git";
       };
       password-store = {
-        path = config.home.homeDirectory + "/org";
+        path = config.home.homeDirectory + "/.password-store";
         uri = "git@github.com:IvanMalison/.password-store.git";
       };
     };
