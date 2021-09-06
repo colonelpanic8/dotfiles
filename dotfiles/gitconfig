@@ -98,3 +98,6 @@
 [user]
 	email = IvanMalison@gmail.com
 	name = Ivan Malison
+
+[init]
+	defaultBranch = master
