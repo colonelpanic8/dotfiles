@@ -131,6 +131,7 @@ cssFilesByHostname =
   , ("imalison-home", ["taffybar.css"])
   , ("ivanm-dfinity-razer", ["taffybar.css"])
   , ("ryzen-shine", ["taffybar.css"])
+  , ("stevie-nixos", ["taffybar.css"])
   ]
 
 main = do
@@ -224,6 +225,9 @@ main = do
           , ( "adele"
             , baseConfig { endWidgets = laptopEndWidgets, barHeight = 45 }
             )
+          , ( "stevie-nixos"
+            , baseConfig { endWidgets = laptopEndWidgets, barHeight = 70 }
+            )
           ]
       simpleTaffyConfig = selectedConfig
         { centerWidgets = [ myClock ]
@@ -231,7 +235,7 @@ main = do
         -- , startWidgets = []
         }
   startTaffybar $
-    appendHook (void $ getHost False) $
+    appendHook (void $ getTrayHost False) $
     withLogServer $
     withToggleServer $
     toTaffyConfig simpleTaffyConfig
