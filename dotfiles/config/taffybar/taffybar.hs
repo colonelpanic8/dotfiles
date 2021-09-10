@@ -203,7 +203,7 @@ main = do
         defaultSimpleTaffyConfig
         { startWidgets = [myWorkspaces, myLayout, myWindows]
         , endWidgets = fullEndWidgets
-        , barPosition = Bottom
+        , barPosition = Top
         , widgetSpacing = 0
         , barPadding = 0
         , barHeight = ScreenRatio $ 1/27
