@@ -135,6 +135,8 @@ cssFilesByHostname =
   ]
 
 main = do
+  enableLogger "Graphics.UI.GIGtkStrut" DEBUG
+
   hostName <- getHostName
   homeDirectory <- getHomeDirectory
   let relativeFiles = fromMaybe ["taffybar.css"] $ lookup hostName cssFilesByHostname
@@ -201,10 +203,10 @@ main = do
         defaultSimpleTaffyConfig
         { startWidgets = [myWorkspaces, myLayout, myWindows]
         , endWidgets = fullEndWidgets
-        , barPosition = Top
+        , barPosition = Bottom
         , widgetSpacing = 0
         , barPadding = 0
-        , barHeight = 50
+        , barHeight = ScreenRatio $ 1/27
         , cssPaths = cssFiles
         , startupHook = void $ setCMCAPIKey "f9e66366-9d42-4c6e-8d40-4194a0aaa329"
         }
@@ -214,19 +216,19 @@ main = do
             , baseConfig { endWidgets = laptopEndWidgets }
             )
           , ( "imalison-home"
-            , baseConfig { endWidgets = fullEndWidgets, barHeight = 42 }
+            , baseConfig { endWidgets = fullEndWidgets }
             )
           , ( "ryzen-shine"
-            , baseConfig { endWidgets = fullEndWidgets, barHeight = 50 }
+            , baseConfig { endWidgets = fullEndWidgets }
             )
           , ( "ivanm-dfinity-razer"
-            , baseConfig { endWidgets = laptopEndWidgets, barHeight = 42 }
+            , baseConfig { endWidgets = laptopEndWidgets }
             )
           , ( "adele"
-            , baseConfig { endWidgets = laptopEndWidgets, barHeight = 45 }
+            , baseConfig { endWidgets = laptopEndWidgets }
             )
           , ( "stevie-nixos"
-            , baseConfig { endWidgets = laptopEndWidgets, barHeight = 70 }
+            , baseConfig { endWidgets = laptopEndWidgets }
             )
           ]
       simpleTaffyConfig = selectedConfig
