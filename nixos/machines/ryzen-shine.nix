@@ -5,6 +5,7 @@
     ../users.nix
     ../full.nix
     ../dfinity.nix
+    ../games.nix
   ];
 
   hardware.enableRedistributableFirmware = true;
