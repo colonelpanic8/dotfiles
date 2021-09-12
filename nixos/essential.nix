@@ -31,6 +31,7 @@ in
     dolphin
     element-desktop
     gpick
+    torbrowser
 
     # Appearance
     numix-icon-theme-circle

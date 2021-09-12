@@ -73,15 +73,15 @@
     enable = true;
     repositories = {
       config = {
-        path = "/home/imalison/config";
+        path = config.home.homeDirectory + "/config";
         uri = "git@github.com:IvanMalison/config.git";
       };
       org = {
-        path = "/home/imalison/org";
+        path = config.home.homeDirectory + "/org";
         uri = "git@github.com:IvanMalison/org.git";
       };
       password-store = {
-        path = "/home/imalison/.password-store";
+        path = config.home.homeDirectory + "/.password-store";
         uri = "git@github.com:IvanMalison/.password-store.git";
       };
     };

@@ -5043,7 +5043,7 @@ load-theme hook (See the heading below).
 ** After ~load-theme~ hook
 #+BEGIN_SRC emacs-lisp
 (defvar imalison:light-theme 'solarized-light)
-(defvar imalison:dark-theme 'flatland)
+(defvar imalison:dark-theme 'gotham)
 
 (defun imalison:after-load-theme (&rest _args)
   (when (fboundp 'powerline-reset)

@@ -4,7 +4,7 @@
   imports = [
     ../full.nix
     ../base.nix
-    inputs.nixos-hardware.nixosModules.dell-xps-17-9700-intel
+    inputs.nixos-hardware.nixosModules.dell-xps-17-9700-nvidia
   ];
 
   hardware.enableRedistributableFirmware = true;
@@ -21,28 +21,26 @@
   services.xserver.libinput.enable = true;
 
   fileSystems."/" =
-    { device = "/dev/disk/by-uuid/bfe4586b-2538-4aae-ad2f-b1277378de4a";
+    { device = "/dev/disk/by-uuid/7c999009-1ff1-42f7-a64a-3fa91fc777a8";
       fsType = "ext4";
     };
 
+  boot.initrd.luks.devices."cryptroot".device = "/dev/disk/by-uuid/97c1eee7-b161-4186-9c14-6b1771d49afb";
+
   fileSystems."/boot" =
-    { device = "/dev/disk/by-uuid/5C09-F06F";
+    { device = "/dev/disk/by-label/ESP";
       fsType = "vfat";
     };
 
+
   swapDevices = [ ];
 
-  networking.hostName = "adele";
+  networking.hostName = "stevie-nixos";
 
-  nix.maxJobs = lib.mkDefault 12;
+  nix.maxJobs = lib.mkDefault 16;
   powerManagement.cpuFreqGovernor = lib.mkDefault "powersave";
 
-  services.redshift.enable = true;
+  hardware.video.hidpi.enable = true;
 
-  location = {
-    latitude = 37.8104601;
-    longitude = -122.2572529;
-  };
-
-  system.stateVersion = "20.03";
+  system.stateVersion = "21.05";
 }
