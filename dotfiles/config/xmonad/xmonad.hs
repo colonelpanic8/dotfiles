@@ -110,7 +110,7 @@ myConfig = def
   , handleEventHook
   =  followIfNoMagicFocus
   <> minimizeEventHook
-  <> restartEventHook
+  -- <> restartEventHook
   <> myScratchPadEventHook
   , startupHook = myStartup
   , keys = customKeys (const []) addKeys
@@ -137,14 +137,13 @@ restartEventHook _ = return $ All True
 
 myNavigation2DConfig = def { defaultTiledNavigation = centerNavigation }
 
-main = do
-  dirs <- getDirectories
-  (`launch` dirs)
-       . docks
-       . pagerHints
-       . ewmh
-       . ewmhFullscreen
-       . withNavigation2DConfig myNavigation2DConfig $ myConfig
+main =
+  xmonad
+      . docks
+      . pagerHints
+      . ewmh
+      . ewmhFullscreen
+      . withNavigation2DConfig myNavigation2DConfig $ myConfig
 
 -- Utility functions
 
@@ -316,7 +315,7 @@ instance Transformer MyToggles Window where
   transform AVOIDSTRUTS x k = k (avoidStruts x) unmodifyLayout
 
 myToggles = [LIMIT, GAPS, MAGICFOCUS, MAGNIFY, AVOIDSTRUTS]
-otherToggles = [NBFULL, MIRROR, NOBORDERS, SMARTBORDERS]
+otherToggles = [NBFULL, NOBORDERS, MIRROR, SMARTBORDERS]
 toggleHandlers =
   [ (Toggle GAPS, toggleAll)
   , (Toggle MAGNIFY, toggleAll)
