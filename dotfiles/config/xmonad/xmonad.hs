@@ -294,10 +294,25 @@ disableOnTabbed = ConditionalLayoutModifier DisableOnTabbedCondition
 myMagnify = ModifiedLayout $ disableOnTabbed (Mag 1 (1.3, 1.3) On (AllWins 1))
 
 -- Toggles
-unmodifyLayout (ModifiedLayout _ x') =  x'
+unmodifyLayout (ModifiedLayout _ x') = x'
+unmodifyMuted (MutedModifiedLayout m) = unmodifyLayout m
 
-selectLimit =
-  myDmenu ["2", "3", "4"] >>= (setLimit . read)
+data MutedModifiedLayout m l a =
+  MutedModifiedLayout (ModifiedLayout m l a) deriving (Read, Show)
+
+instance (LayoutModifier m Window, LayoutClass l Window, Typeable m) =>
+  LayoutClass (MutedModifiedLayout m l) Window where
+    runLayout (W.Workspace i (MutedModifiedLayout l) ms) r =
+      fmap (fmap MutedModifiedLayout) `fmap` runLayout (W.Workspace i l ms) r
+    doLayout (MutedModifiedLayout l) r s =
+      fmap (fmap MutedModifiedLayout) `fmap` doLayout l r s
+    emptyLayout (MutedModifiedLayout l) r =
+      fmap (fmap MutedModifiedLayout) `fmap` emptyLayout l r
+    handleMessage (MutedModifiedLayout l) =
+      fmap (fmap MutedModifiedLayout) . handleMessage l
+    description (MutedModifiedLayout (ModifiedLayout m l)) = description l
+
+selectLimit = myDmenu ["2", "3", "4"] >>= (setLimit . read)
 
 data MyToggles
   = LIMIT
@@ -308,11 +323,11 @@ data MyToggles
   deriving (Read, Show, Eq, Typeable)
 
 instance Transformer MyToggles Window where
-  transform LIMIT x k = k (limitSlice 2 x) unmodifyLayout
-  transform GAPS x k = k (smartSpacing 5 x) unmodifyLayout
-  transform MAGICFOCUS x k = k (magicFocus x) unmodifyLayout
-  transform MAGNIFY x k = k (myMagnify x) unmodifyLayout
-  transform AVOIDSTRUTS x k = k (avoidStruts x) unmodifyLayout
+  transform LIMIT x k = k (MutedModifiedLayout $ limitSlice 2 x) unmodifyMuted
+  transform GAPS x k = k (MutedModifiedLayout $ smartSpacing 5 x) unmodifyMuted
+  transform MAGICFOCUS x k = k (MutedModifiedLayout $ magicFocus x) unmodifyMuted
+  transform MAGNIFY x k = k (MutedModifiedLayout $ myMagnify x) unmodifyMuted
+  transform AVOIDSTRUTS x k = k (MutedModifiedLayout $ avoidStruts x) unmodifyMuted
 
 myToggles = [LIMIT, GAPS, MAGICFOCUS, MAGNIFY, AVOIDSTRUTS]
 otherToggles = [NBFULL, NOBORDERS, MIRROR, SMARTBORDERS]
@@ -424,6 +439,7 @@ layoutNames = [description layout | layout <- layoutList]
 selectLayout = myDmenu layoutNames >>= (sendMessage . JumpToLayout)
 
 myLayoutHook =
+  MutedModifiedLayout .
   minimize .
   boringAuto .
   mkToggle1 AVOIDSTRUTS .
