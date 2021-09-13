@@ -4,5 +4,6 @@
     spotify
     google-chrome
     pommed_light
+    torbrowser
   ];
 }
