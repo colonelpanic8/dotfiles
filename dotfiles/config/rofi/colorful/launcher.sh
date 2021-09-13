@@ -12,7 +12,7 @@
 # style_7     style_8     style_9     style_10    style_11    style_12
 
 theme="style_1"
-dir="$HOME/.config/rofi/colorful"
+dir="$HOME/.config/rofi/launchers/colorful"
 
 # dark
 ALPHA="#00000000"
