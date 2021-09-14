@@ -3702,6 +3702,7 @@ alphanumeric characters only."
                     :branch "fork/1"
                     :files (:defaults (:exclude "doc/*.texi")))
   :commands TeX-mode
+  :defer t
   :preface
   (progn
     (defun imalison:TeX-mode-hook ()
@@ -3740,6 +3741,7 @@ alphanumeric characters only."
 #+BEGIN_SRC emacs-lisp
 (use-package company-auctex
   :after tex
+  :defer t
   :config
   (company-auctex-init))
 #+END_SRC
