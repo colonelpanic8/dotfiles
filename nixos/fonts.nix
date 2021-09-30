@@ -6,17 +6,19 @@
   fonts = {
     fonts = with pkgs; [
       dejavu_fonts
+      emacs-all-the-icons-fonts
       emojione
       fira-code
       fira-mono
       font-awesome-ttf
+      iosevka
       noto-fonts-emoji
       roboto
       source-code-pro
       source-sans-pro
       source-serif-pro
       twemoji-color-font
-      emacs-all-the-icons-fonts
+      (nerdfonts.override { fonts = [ "JetBrainsMono" "FantasqueSansMono" ]; })
     ];
     fontconfig = {
       allowBitmaps = true;
