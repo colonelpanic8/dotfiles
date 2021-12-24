@@ -5,6 +5,7 @@ configuration {
 	terminal: "alacritty";
 	sidebar-mode: false;
 	fullscreen: true;
-	theme: "colorful/style_10.rasi";
 	dpi: 100;
 }
+
+@theme "colorful/style_10.rasi"
