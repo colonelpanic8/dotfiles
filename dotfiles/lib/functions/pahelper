@@ -52,7 +52,7 @@ function switch_sink_kmix_master()
 
 function switch_sink()
 {
-  xexswitch_sink_default      "$@"
+  switch_sink_default      "$@"
   switch_sink_applications "$@"
   switch_sink_kmix_master  "$@"
 }
