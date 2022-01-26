@@ -62,6 +62,7 @@ with lib;
         export ROFI_SYSTEMD_TERM="alacritty -e"
         export PATH="${libDir}/bin:$PATH"
         export PATH="${libDir}/functions:$PATH"
+        export PATH="$HOME/.cargo/bin:$PATH"
       '';
     };
   };
