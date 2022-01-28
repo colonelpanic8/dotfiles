@@ -1,7 +1,7 @@
 { config, pkgs, ... }:
 {
   environment.systemPackages = with pkgs; [
-    steam
+    # steam
   ];
   boot.extraModulePackages = with pkgs; [ xboxdrv ];
 }
