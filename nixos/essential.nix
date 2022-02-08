@@ -90,6 +90,7 @@ in
     ncdu
     lsof
     pass
+    protobuf
     rcm
     ripgrep
     silver-searcher
