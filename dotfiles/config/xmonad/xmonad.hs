@@ -679,9 +679,7 @@ getWindowClassPairs = mapM windowToClassPair =<< workspaceWindows
 
 windowToClassPair w = (,) w <$> getClass w
 
-windowIsMinimized w = do
-  minimized <- XS.gets minimizedStack
-  return $ w `elem` minimized
+windowIsMinimized w = elem w <$> XS.gets minimizedStack
 
 maybeUnminimize w = windowIsMinimized w >>= flip when (maximizeWindow w)
 
