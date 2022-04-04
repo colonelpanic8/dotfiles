@@ -8,6 +8,7 @@
       "disk"
       "docker"
       "networkmanager"
+      "openrazer"
       "plugdev"
       "systemd-journal"
       "video"

@@ -103,21 +103,21 @@
     };
   };
 
-  systemd.user.services.notifications-tray-icon = {
-    Unit = {
-      Description = "Notifications tray icon";
-      After = [ "graphical-session-pre.target" "tray.target" ];
-      PartOf = [ "graphical-session.target" ];
-    };
+  # systemd.user.services.notifications-tray-icon = {
+  #   Unit = {
+  #     Description = "Notifications tray icon";
+  #     After = [ "graphical-session-pre.target" "tray.target" ];
+  #     PartOf = [ "graphical-session.target" ];
+  #   };
 
-    Install = { WantedBy = [ "graphical-session.target" ]; };
+  #   Install = { WantedBy = [ "graphical-session.target" ]; };
 
-    Service = {
-      ExecStart = "${pkgs.haskellPackages.notifications-tray-icon}/bin/notifications-tray-icon  --github-token-pass dfinity-github-api-token";
-      Restart = "always";
-      RestartSec = 3;
-    };
-  };
+  #   Service = {
+  #     ExecStart = "${pkgs.haskellPackages.notifications-tray-icon}/bin/notifications-tray-icon  --github-token-pass dfinity-github-api-token";
+  #     Restart = "always";
+  #     RestartSec = 3;
+  #   };
+  # };
 
   systemd.user.services.picom = {
     Unit = {

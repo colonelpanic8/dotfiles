@@ -50,7 +50,7 @@ in
     haskellPackages.xmonad
     haskellPackages.imalison-xmonad
     haskellPackages.imalison-taffybar
-    haskellPackages.notifications-tray-icon
+    # haskellPackages.notifications-tray-icon
     haskellPackages.gtk-sni-tray
     haskellPackages.status-notifier-item
     haskellPackages.dbus-hslogger
