@@ -30,8 +30,6 @@ with lib;
     };
 
     programs.starship = {
-      enableBashIntegration = true;
-      enableZshIntegration = true;
       enable = true;
     };
 
