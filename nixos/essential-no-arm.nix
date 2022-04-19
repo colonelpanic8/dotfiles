@@ -4,7 +4,7 @@
     spotify
     google-chrome
     pommed_light
-    torbrowser
+    tor-browser-bundle-bin
     spicetify-cli
   ];
 }
