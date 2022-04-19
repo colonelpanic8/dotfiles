@@ -140,6 +140,7 @@
     valgrind
     wget
     yubikey-manager
+    rustup
 
     # Nix
     nix-prefetch-git
