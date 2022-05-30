@@ -3907,15 +3907,6 @@ I've disabled magithub because it causes magit to be super slow
       (interactive)
       (gitolite-clone-get-projects nil nil t))))
 #+END_SRC
-** gitconfig-mode
-#+BEGIN_SRC emacs-lisp
-(use-package gitconfig-mode
-  :mode "\\.?gitconfig.?.*\\'")
-#+END_SRC
-** gitignore-mode
-#+BEGIN_SRC emacs-lisp
-(use-package gitignore-mode
-  :mode "\\.?gitignore.?.*\\'")
 #+END_SRC
 ** github
 *** github-search

@@ -760,7 +760,7 @@ setFocusedScreen :: ScreenId -> WindowSet -> WindowSet
 setFocusedScreen to ws =
   maybe ws (`setFocusedScreen'` ws) $ find ((to ==) . W.screen) (W.visible ws)
 
-setFocusedScreen' to ws @ W.StackSet
+setFocusedScreen' to ws@W.StackSet
   { W.current = prevCurr
   , W.visible = visible
   } = ws { W.current = to
@@ -769,7 +769,7 @@ setFocusedScreen' to ws @ W.StackSet
 
   where screenEq a b = W.screen a == W.screen b
 
-nextScreen ws @ W.StackSet { W.visible = visible } =
+nextScreen ws@W.StackSet { W.visible = visible } =
   case visible of
     next:_ -> setFocusedScreen (W.screen next) ws
     _ -> ws

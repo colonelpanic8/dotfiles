@@ -55,7 +55,7 @@
 
   services.random-background = {
     enable = true;
-    display = "scale";
+    display = "center";
     interval = "1h";
     imageDirectory = "%h/Pictures/wallpaper/use";
   };

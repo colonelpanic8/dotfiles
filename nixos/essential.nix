@@ -18,6 +18,7 @@ in
   nixpkgs.overlays = [
     (import ../dotfiles/config/xmonad/overlay.nix)
   ];
+  nixpkgs.config.allowBroken = true;
   environment.systemPackages = with pkgs; [
     python-with-my-packages
 

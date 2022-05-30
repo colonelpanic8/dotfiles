@@ -32,6 +32,7 @@
   # Disabling these waits disables the stuck on boot up issue
   systemd.services.systemd-udev-settle.enable = false;
   systemd.services.NetworkManager-wait-online.enable = false;
+  systemd.services.systemd-user-sessions.enable = false;
 
   # Security
   programs.gnupg.agent = { enable = true; enableSSHSupport = true; };
@@ -46,7 +47,7 @@
   networking.networkmanager = {
     enable = true;
     enableStrongSwan = true;
-    packages = [ pkgs.networkmanager-l2tp ];
+    plugins = [ pkgs.networkmanager-l2tp ];
     extraConfig = ''
       [main]
       rc-manager=resolvconf

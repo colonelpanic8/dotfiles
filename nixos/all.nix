@@ -32,7 +32,7 @@
     zoom-us
 
     # Appearance
-    gnome-breeze
+    libsForQt5.breeze-gtk
     gnome3.adwaita-icon-theme
     hicolor-icon-theme
     materia-theme
@@ -79,8 +79,6 @@
     pavucontrol
     playerctl
 
-
-
     # Tools
     automake
     bind
@@ -89,7 +87,6 @@
     dex
     direnv
     dpkg
-    emacs27Packages.cask
     fd
     file
     gcc

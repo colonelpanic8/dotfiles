@@ -18,7 +18,6 @@ executable taffybar
   build-depends:       base
                      , X11
                      , bytestring
-                     , coinbase-pro
                      , containers
                      , directory
                      , filepath
