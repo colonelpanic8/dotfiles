@@ -15,7 +15,6 @@
   };
 
   nixpkgs.overlays = with inputs; [
-    nix.overlay
     xmonad.overlay
     xmonad-contrib.overlay
     notifications-tray-icon.overlay
@@ -72,6 +71,9 @@
   hardware.bluetooth.enable = true;
   services.blueman.enable = true;
 
+  # Printing
+  # services.printing.enable = true;
+
   # Keyboard/Keymap
   console.keyMap = "us";
 
@@ -85,6 +87,8 @@
   # TODO: Add a comment explaining what this does.
   services.gnome.at-spi2-core.enable = true;
 
+  services.gnome.gnome-keyring.enable = true;
+
   services.openssh.enable = true;
 
   services.autorandr.enable = true;
@@ -94,6 +98,10 @@
   virtualisation.docker.enable = true;
 
   hardware.keyboard.zsa.enable = true;
+
+  services.logind.extraConfig = "RuntimeDirectorySize=5G";
+
+  services.dbus.packages = [ pkgs.gcr ];
 
   services.xserver = {
     exportConfiguration = true;
