@@ -1,10 +1,6 @@
 {
   inputs = {
-    nixos-hardware.url = github:IvanMalison/nixos-hardware;
-    nix = {
-      url = github:IvanMalison/nix/master;
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
+    nixos-hardware.url = github:NixOS/nixos-hardware;
     nixpkgs = {
       url = path:./nixpkgs;
     };
@@ -29,7 +25,7 @@
     };
   };
   outputs = inputs@{
-    self, nix, nixpkgs, nixos-hardware, home-manager, taffybar, xmonad,
+    self, nixpkgs, nixos-hardware, home-manager, taffybar, xmonad,
     xmonad-contrib, notifications-tray-icon
   }:
   let
