@@ -43,7 +43,6 @@
     enable = true;
     package = pkgs.notify-osd-customizable;
   };
-  # skippyxd
 
   services.kdeconnect = {
     enable = true;
@@ -140,4 +139,6 @@
       RestartSec = 3;
     };
   };
+
+  home.stateVersion = "21.05";
 }
