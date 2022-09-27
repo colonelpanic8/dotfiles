@@ -73,7 +73,7 @@
 
   networking.hostName = "stevie-nixos";
 
-  nix.maxJobs = lib.mkDefault 16;
+  nix.settings.maxJobs = lib.mkDefault 16;
   powerManagement.cpuFreqGovernor = lib.mkDefault "powersave";
 
   hardware.video.hidpi.enable = true;

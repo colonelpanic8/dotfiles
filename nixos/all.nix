@@ -4,7 +4,7 @@
     # Applications
     alacritty
     # calibre
-    gnome3.cheese
+    gnome.cheese
     dfeet
     discord
     emacs
@@ -33,7 +33,7 @@
 
     # Appearance
     libsForQt5.breeze-gtk
-    gnome3.adwaita-icon-theme
+    gnome.adwaita-icon-theme
     hicolor-icon-theme
     materia-theme
     numix-icon-theme-circle
@@ -47,8 +47,7 @@
     blueman
     clipit
     feh
-    gnome3.gpaste
-    kdeconnect
+    gnome.gpaste
     libnotify
     lxqt.lxqt-powermanagement
     networkmanagerapplet

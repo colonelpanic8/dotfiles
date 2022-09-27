@@ -34,7 +34,7 @@
 
   networking.hostName = "adele";
 
-  nix.maxJobs = lib.mkDefault 12;
+  nix.settings.maxJobs = lib.mkDefault 12;
   powerManagement.cpuFreqGovernor = lib.mkDefault "powersave";
 
   services.redshift.enable = true;

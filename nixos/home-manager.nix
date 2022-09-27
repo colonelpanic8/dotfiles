@@ -1,4 +1,5 @@
 { pkgs, config, ... }: {
+  home.stateVersion = "20.03";
   xsession = {
     enable = true;
     preferStatusNotifierItems = true;
@@ -17,11 +18,16 @@
   #   enable = true;
   # };
 
+  services.xscreensaver = {
+    enable = true;
+  };
+
   services.gpg-agent = {
     enable = true;
     defaultCacheTtl = 8 * 60 * 60;
     maxCacheTtl = 8 * 60 * 60;
     enableSshSupport = true;
+    pinentryFlavor = "qt";
   };
 
   services.blueman-applet = {
@@ -55,7 +61,7 @@
 
   services.random-background = {
     enable = true;
-    display = "center";
+    display = "fill";
     interval = "1h";
     imageDirectory = "%h/Pictures/wallpaper/use";
   };

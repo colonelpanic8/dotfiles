@@ -23,7 +23,7 @@ in
     python-with-my-packages
 
     alacritty
-    (emacsWithPackages (epkgs: with epkgs.melpaPackages; [
+    (emacs.pkgs.withPackages (epkgs: with epkgs.melpaPackages; [
       vterm
     ]))
     firefox
@@ -62,8 +62,7 @@ in
     blueman
     clipit
     feh
-    gnome3.gpaste
-    kdeconnect
+    gnome.gpaste
     libnotify
     lxqt.lxqt-powermanagement
     networkmanagerapplet
@@ -83,6 +82,7 @@ in
     playerctl
 
     # Tools
+    bazel
     binutils
     gawk
     gitFull
@@ -92,6 +92,7 @@ in
     lsof
     pass
     protobuf
+    rclone
     rcm
     ripgrep
     silver-searcher
