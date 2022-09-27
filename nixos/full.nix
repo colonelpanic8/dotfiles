@@ -9,5 +9,6 @@
     ./essential-no-arm.nix
     ./extra.nix
     ./internet-computer.nix
+    ./dfinity.nix
   ];
 }
