@@ -228,7 +228,9 @@ main = do
             , baseConfig { endWidgets = laptopEndWidgets }
             )
           , ( "stevie-nixos"
-            , baseConfig { endWidgets = laptopEndWidgets }
+            , baseConfig { endWidgets = laptopEndWidgets
+                         , startWidgets = [myWorkspaces, myLayout]
+                         }
             )
           ]
       simpleTaffyConfig = selectedConfig
