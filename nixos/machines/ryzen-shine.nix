@@ -55,7 +55,7 @@
 
   networking.hostName = "ryzen-shine";
 
-  nix.maxJobs = lib.mkDefault 16;
+  # nix.settings.maxJobs = lib.mkDefault 16;
   # High-DPI console
   console.font = lib.mkDefault "${pkgs.terminus_font}/share/consolefonts/ter-u28n.psf.gz";
 

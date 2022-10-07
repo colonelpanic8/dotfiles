@@ -41,7 +41,7 @@
 
   networking.hostName = "uber-loaner";
 
-  nix.maxJobs = lib.mkDefault 4;
+  nix.settings.maxJobs = lib.mkDefault 4;
   powerManagement.cpuFreqGovernor = lib.mkDefault "powersave";
   users.extraUsers.root.initialHashedPassword = "";
 }

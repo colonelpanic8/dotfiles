@@ -62,7 +62,7 @@
 
   networking.hostName = "ivanm-dfinity-razer";
 
-  nix.maxJobs = lib.mkDefault 12;
+  nix.settings.maxJobs = lib.mkDefault 12;
 
   powerManagement.cpuFreqGovernor = lib.mkDefault "powersave";
   system.stateVersion = "18.03";

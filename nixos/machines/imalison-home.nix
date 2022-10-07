@@ -43,7 +43,7 @@
       { device = "/dev/disk/by-uuid/dbd49a76-4b3e-4b5c-9a88-68a9e61f6210"; }
     ];
 
-  nix.maxJobs = lib.mkDefault 4;
+  nix.settings.maxJobs = lib.mkDefault 4;
   powerManagement.cpuFreqGovernor = lib.mkDefault "powersave";
 
   # boot.initrd.luks.devices."cryptroot" = {
