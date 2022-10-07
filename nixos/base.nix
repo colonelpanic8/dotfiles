@@ -7,6 +7,13 @@
     ./environment.nix
   ];
 
+  nix = {
+    extraOptions = ''
+      experimental-features = nix-command flakes ca-references
+    '';
+    registry.nixpkgs.flake = inputs.nixpkgs;
+  };
+
   nixpkgs.overlays = with inputs; [
     xmonad.overlay
     xmonad-contrib.overlay
