@@ -11,7 +11,7 @@
       fira-code
       fira-mono
       font-awesome
-      iosevka
+      # iosevka
       noto-fonts-emoji
       roboto
       source-code-pro
