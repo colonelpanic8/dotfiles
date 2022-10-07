@@ -44,6 +44,11 @@
       fsType = "vfat";
     };
 
+  fileSystems."/shared" =
+    { device = "/dev/disk/by-uuid/D4009CE8009CD33A";
+      fsType = "ntfs";
+    };
+
   swapDevices =
     [ { device = "/dev/disk/by-uuid/f719b44e-295a-4909-9a60-84f87acb7f77"; }
     ];
