@@ -23,10 +23,13 @@
     notifications-tray-icon = {
       url = github:IvanMalison/notifications-tray-icon/master;
     };
+    nix = {
+      url = github:IvanMalison/nix/master;
+    };
   };
   outputs = inputs@{
     self, nixpkgs, nixos-hardware, home-manager, taffybar, xmonad,
-    xmonad-contrib, notifications-tray-icon
+    xmonad-contrib, notifications-tray-icon, nix
   }:
   let
     mkConfig =

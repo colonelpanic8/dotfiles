@@ -15,6 +15,7 @@
   };
 
   nixpkgs.overlays = with inputs; [
+    nix.overlays.default
     xmonad.overlay
     xmonad-contrib.overlay
     notifications-tray-icon.overlay
