@@ -1,4 +1,6 @@
 ;; -*- no-byte-compile: t -*-
+
+
 (let ((bootstrap-file (concat user-emacs-directory "straight/bootstrap.el"))
       (bootstrap-version 2))
   (unless (file-exists-p bootstrap-file)
@@ -9,6 +11,14 @@
       (goto-char (point-max))
       (eval-print-last-sexp)))
   (load bootstrap-file nil 'nomessage))
+
+;; This is a workaround for an issue in emacs28 with symlinks. See https://github.com/radian-software/straight.el/issues/701
+(defun my-patch-package-find-file-visit-truename (oldfun &rest r)
+  (let ((find-file-visit-truename nil))
+    (apply oldfun r)))
+
+(advice-add #'straight--build-autoloads :around
+            #'my-patch-package-find-file-visit-truename)
 
 (setq package-enable-at-startup nil
       straight-use-package-by-default t
@@ -37,6 +47,9 @@
 (when (equal system-type 'darwin)
   (setq mac-option-modifier 'meta)
   (setq mac-command-modifier 'super))
+
+;; This seems to fix issues with helm not explicitly declaring its dependency on async
+(use-package async :demand t)
 
 ;; Without this, org can behave very strangely
 (use-package org
