@@ -61,6 +61,7 @@ import           XMonad.Hooks.Focus hiding (currentWorkspace)
 import           XMonad.Hooks.ManageDocks
 import           XMonad.Hooks.ManageHelpers
 import           XMonad.Hooks.Minimize
+import           XMonad.Hooks.Place
 import           XMonad.Hooks.TaffybarPagerHints
 import           XMonad.Hooks.WorkspaceHistory
 import           XMonad.Layout.Accordion
@@ -98,7 +99,10 @@ myConfig = def
   { modMask = mod4Mask
   , terminal = "alacritty"
   , manageHook
-    = namedScratchpadManageHook scratchpads
+    = composeAll [ placeHook (fixed (0.5, 0.5))
+                 , isDialog --> doFloat
+                 , isFullscreen --> doFullFloat
+                 ]
   , layoutHook = myLayoutHook
   , borderWidth = 0
   , logHook
@@ -109,9 +113,10 @@ myConfig = def
   <> logHook def
   , handleEventHook
   =  followIfNoMagicFocus
-  <> minimizeEventHook
+  -- <> minimizeEventHook
   -- <> restartEventHook
-  <> myScratchPadEventHook
+  -- XXX: Disabled because this is annoying as shit
+  -- <> myScratchPadEventHook
   , startupHook = myStartup
   , keys = customKeys (const []) addKeys
   }
@@ -275,6 +280,7 @@ myStartup = do
   setToggleActiveAll AVOIDSTRUTS True
   setToggleActiveAll GAPS True
   setToggleActiveAll NOBORDERS True
+  writeToHomeDirLog "This is real"
   hostName <- io getHostName
   M.findWithDefault (return ()) hostName hostNameToAction
 
