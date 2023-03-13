@@ -1789,6 +1789,9 @@ I use helm for almost all emacs completion
       :defer 4
       :config (helm-descbinds-mode 1))
 
+    (use-package helm-rg
+      :demand t)
+
     (use-package helm-ag
       :bind ("C-c p 1" . imalison:set-helm-ag-extra-options)
       :preface
@@ -1825,7 +1828,7 @@ I use helm for almost all emacs completion
       (projectile-find-file))
 
     (defun imalison:switch-to-project-and-search (dir)
-      (imalison:do-in-project dir (helm-projectile-ag)))
+      (imalison:do-in-project dir (helm-projectile-rg)))
 
     (defun imalison:helm-term-projectile (dir)
       (imalison:do-in-project dir (term-projectile-forward))))
@@ -1854,22 +1857,22 @@ I use helm for almost all emacs completion
          ("C-c p f" . imalison:projectile-find-file))
   :preface
   (progn
-    (defun imalison:do-ag-default-directory ()
+    (defun imalison:do-rg-default-directory ()
       (interactive)
-      (helm-do-ag default-directory (car (projectile-parse-dirconfig-file))))
+      (helm-rg--do-helm-rg default-directory (car (projectile-parse-dirconfig-file))))
 
-    (emit-prefix-selector imalison:do-ag
-      helm-projectile-ag
-      imalison:do-ag-default-directory
-      helm-do-ag)
+    (emit-prefix-selector imalison:do-rg
+      helm-projectile-rg
+      imalison:do-rg-default-directory
+      helm-rg--do-helm-rg)
 
     (emit-prefix-selector imalison:projectile-find-file
       projectile-find-file
       projectile-find-file-other-window)
 
-    (imalison:let-around imalison:set-options-do-ag
-      imalison:do-ag
-      (helm-ag-always-set-extra-option t))
+    (imalison:let-around imalison:set-options-do-rg
+      imalison:do-rg
+      (helm-rg-always-set-extra-option t))
 
     (defun imalison:projectile-make-all-subdirs-projects (directory)
       (cl-loop for file-info in (directory-files-and-attributes directory)
@@ -1891,8 +1894,8 @@ I use helm for almost all emacs completion
     (setq projectile-git-submodule-command nil)
     (add-to-list 'projectile-globally-ignored-files "Godeps")
     (diminish 'projectile-mode)
-    (bind-key* "C-c p s" 'imalison:do-ag)
-    (bind-key* "C-c p S" 'imalison:set-options-do-ag)
+    (bind-key* "C-c p s" 'imalison:do-rg)
+    (bind-key* "C-c p S" 'imalison:set-options-do-rg)
     (bind-key* "C-c p f" 'imalison:projectile-find-file)))
 #+END_SRC
 ** ido
