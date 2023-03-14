@@ -2954,6 +2954,11 @@ Intero seems to be causing hangs, so it has been disabled
 (use-package racket-mode
   :mode "\\.rkt\\'")
 #+END_SRC
+*** ein
+#+BEGIN_SRC emacs-lisp
+(use-package ein
+  :mode "\\.ipynb\\'")
+#+END_SRC
 ** Data/Config/Protocol
 *** thrift
 #+BEGIN_SRC emacs-lisp
