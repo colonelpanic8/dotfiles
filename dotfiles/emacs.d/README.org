@@ -3993,8 +3993,7 @@ modeline and with excessive http requests to github.
 ** realgud
 realgud provides debugging support with many external debuggers in emacs
 #+BEGIN_SRC emacs-lisp
-(use-package realgud
-  :defer 10)
+(use-package realgud)
 #+END_SRC
 ** emr
 emr (emacs refactor) provides support for refactoring in many programming languages
