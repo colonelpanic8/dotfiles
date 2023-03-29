@@ -1,5 +1,4 @@
 { pkgs, config, ... }: {
-  home.stateVersion = "20.03";
   xsession = {
     enable = true;
     preferStatusNotifierItems = true;
