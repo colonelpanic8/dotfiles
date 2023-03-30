@@ -87,3 +87,4 @@ treeview {
 GtkMenuShell {
   -gtk-key-bindings: gtk-emacs-menu;
 }
+@import 'colors.css';
