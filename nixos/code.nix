@@ -21,7 +21,6 @@
 
     # Rust
     cargo
-    carnix
     # rls
     rustc
     rustfmt
@@ -36,6 +35,9 @@
     # purescript
     purescript
     spago
+
+    # python
+    poetry
 
     # dhall
     haskellPackages.dhall
