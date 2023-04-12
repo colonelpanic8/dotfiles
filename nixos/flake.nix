@@ -2,12 +2,12 @@
   inputs = {
     nixos-hardware.url = github:NixOS/nixos-hardware;
     nixpkgs = {
-      # url = github:IvanMalison/nixpkgs/my-unstable;
-      url = path:./nixpkgs;
+      url = github:IvanMalison/nixpkgs/my-unstable;
+      # url = path:./nixpkgs;
     };
     home-manager = {
-      url = path:./home-manager;
-      # url = github:IvanMalison/home-manager/master;
+      url = github:IvanMalison/home-manager/master;
+      # url = path:./home-manager;
       inputs.nixpkgs.follows = "nixpkgs";
     };
     xmonad-contrib = {
@@ -15,13 +15,13 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
     xmonad = {
-      # url = github:IvanMalison/xmonad/master;
-      url = path:../dotfiles/config/xmonad/xmonad;
+      url = github:IvanMalison/xmonad/master;
+      # url = path:../dotfiles/config/xmonad/xmonad;
       inputs.nixpkgs.follows = "nixpkgs";
     };
     taffybar = {
-      url = path:../dotfiles/config/taffybar/taffybar;
-      # url = github:taffybar/taffybar;
+      # url = path:../dotfiles/config/taffybar/taffybar;
+      url = github:taffybar/taffybar;
       inputs.nixpkgs.follows = "nixpkgs";
     };
     notifications-tray-icon = {
