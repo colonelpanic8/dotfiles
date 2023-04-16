@@ -1790,7 +1790,8 @@ I use helm for almost all emacs completion
       :config (helm-descbinds-mode 1))
 
     (use-package helm-rg
-      :demand t)
+      :demand t
+      :config (setq helm-rg-thing-at-point nil))
 
     (use-package helm-ag
       :bind ("C-c p 1" . imalison:set-helm-ag-extra-options)
