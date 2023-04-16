@@ -2799,7 +2799,10 @@ The following is taken from [[https://github.com/syl20bnr/spacemacs/blob/a650877
   ;; :hook (rust-mode . lsp)
   :preface
   (progn
+    (defvar imalison:use-lsp-rust t)
     (defun imalison:rust-mode-hook ()
+      (when imalison:use-lsp-rust
+        (lsp-deferred))
       (add-to-list 'flycheck-disabled-checkers 'rust-cargo)
       (add-to-list 'flycheck-disabled-checkers 'rust)
       (add-to-list 'flycheck-disabled-checkers 'rust-clippy)
@@ -3998,7 +4001,8 @@ modeline and with excessive http requests to github.
 ** realgud
 realgud provides debugging support with many external debuggers in emacs
 #+BEGIN_SRC emacs-lisp
-(use-package realgud)
+(use-package realgud
+  :disabled t)
 #+END_SRC
 ** emr
 emr (emacs refactor) provides support for refactoring in many programming languages
