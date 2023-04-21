@@ -21,6 +21,8 @@
       (nerdfonts.override { fonts = [ "JetBrainsMono" "FantasqueSansMono" ]; })
     ];
     fontconfig = {
+      hinting.autohint = true;
+      antialias = true;
       allowBitmaps = true;
       useEmbeddedBitmaps = true;
       defaultFonts = {
