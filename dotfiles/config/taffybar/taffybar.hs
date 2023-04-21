@@ -201,7 +201,7 @@ main = do
       laptopEndWidgets = batteryWidgets ++ baseEndWidgets ++ [ myMpris ]
       baseConfig =
         defaultSimpleTaffyConfig
-        { startWidgets = [myWorkspaces, myLayout, myWindows]
+        { startWidgets = [ myWorkspaces, myLayout, myWindows ]
         , endWidgets = fullEndWidgets
         , barPosition = Top
         , widgetSpacing = 0
@@ -209,6 +209,7 @@ main = do
         , barHeight = ScreenRatio $ 1/27
         , cssPaths = cssFiles
         , startupHook = void $ setCMCAPIKey "f9e66366-9d42-4c6e-8d40-4194a0aaa329"
+        , centerWidgets = [ myClock ]
         }
       selectedConfig =
         fromMaybe baseConfig $ lookup hostName
@@ -231,6 +232,9 @@ main = do
             , baseConfig { endWidgets = laptopEndWidgets
                          , startWidgets = [myWorkspaces, myLayout]
                          }
+            )
+          , ( "jay-lenovo"
+            , baseConfig { endWidgets = laptopEndWidgets }
             )
           ]
       simpleTaffyConfig = selectedConfig
