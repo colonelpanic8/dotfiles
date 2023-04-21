@@ -5072,7 +5072,7 @@ load-theme hook (See the heading below).
 ** Set Font
 #+BEGIN_SRC emacs-lisp
 (add-to-list 'default-frame-alist
-             '(font . "Source Code Pro-10:weight=semi-bold"))
+             '(font . "Source Code Pro-10:weight=semi-bold:antialias=true"))
 #+END_SRC
 ** imalison:appearance
 #+BEGIN_SRC emacs-lisp
