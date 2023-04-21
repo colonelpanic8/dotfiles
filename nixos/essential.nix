@@ -27,6 +27,7 @@ in
     (emacs.pkgs.withPackages (epkgs: with epkgs.melpaPackages; [
       vterm
     ]))
+    vscode
     firefox
     kitty
     vlc
@@ -85,14 +86,17 @@ in
     # Tools
     bazel
     binutils
+    direnv
     gawk
     gitFull
     git-sync
     htop
+    jq
     lsof
     ncdu
     nix-index
     pass
+    pciutils
     protobuf
     rclone
     rcm
@@ -100,6 +104,7 @@ in
     silver-searcher
     tzupdate
     tmux
+    unzip
     usbutils
     wget
     yubikey-manager
