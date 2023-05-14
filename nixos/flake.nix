@@ -2,8 +2,8 @@
   inputs = {
     nixos-hardware.url = github:NixOS/nixos-hardware;
     nixpkgs = {
-      url = github:IvanMalison/nixpkgs/my-unstable;
-      # url = path:./nixpkgs;
+      # url = github:IvanMalison/nixpkgs/my-unstable;
+      url = path:./nixpkgs;
     };
     home-manager = {
       url = github:IvanMalison/home-manager/master;
