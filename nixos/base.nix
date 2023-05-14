@@ -47,7 +47,7 @@
   networking.networkmanager = {
     enable = true;
     enableStrongSwan = true;
-    plugins = [ pkgs.networkmanager-l2tp ];
+    plugins = [ pkgs.networkmanager-l2tp pkgs.networkmanager-openvpn ];
     extraConfig = ''
       [main]
       rc-manager=resolvconf
