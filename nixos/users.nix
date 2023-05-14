@@ -41,7 +41,7 @@
     };
   };
 
-  nix.trustedUsers = [ "root" "imalison" "kat" ];
+  nix.settings.trustedUsers = [ "root" "imalison" "kat" ];
 
   imports = [
     inputs.home-manager.nixosModule

@@ -1,7 +1,7 @@
 {
-  nix = {
-    trustedBinaryCaches = [ https://nix.oregon.dfinity.build ];
-    binaryCachePublicKeys = [
+  nix.settings = {
+    trusted-binary-caches = [ https://nix.oregon.dfinity.build ];
+    trusted-public-keys = [
       "hydra.oregon.dfinity.build-2:KMTixHrh9DpAjF/0xU/49VEtNuGzQ71YaVIUSOLUaCM="
       "cache.dfinity.systems-1:IcOn/2SVyPGOi8i3hKhQOlyiSQotiOBKwTFmyPX5YNw="
     ];
