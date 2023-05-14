@@ -88,8 +88,9 @@ in
     gitFull
     git-sync
     htop
-    ncdu
     lsof
+    ncdu
+    nix-index
     pass
     protobuf
     rclone
