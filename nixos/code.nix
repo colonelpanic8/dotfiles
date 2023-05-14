@@ -42,5 +42,8 @@
     # dhall
     haskellPackages.dhall
     haskellPackages.dhall-json
+
+    # misc
+    perf-tools
   ];
 }
