@@ -1586,6 +1586,14 @@ custom-set-faces in your custom file.
   (progn
     (setq highlight-indent-guides-method 'fill)))
 #+END_SRC
+** chat-gpt
+#+begin_src emacs-lisp
+(use-package gptel
+  :config
+  (progn
+    ;; (setq gptel-model "gpt-4")
+    ))
+#+end_src
 * helpful
 #+begin_src emacs-lisp
 (use-package helpful
