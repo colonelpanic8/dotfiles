@@ -19,6 +19,7 @@ in
     (import ../dotfiles/config/xmonad/overlay.nix)
   ];
   nixpkgs.config.allowBroken = true;
+  programs.hyprland.enable = true;
   environment.systemPackages = with pkgs; [
     python-with-my-packages
 
@@ -27,6 +28,7 @@ in
       vterm
     ]))
     firefox
+    kitty
     vlc
     transmission-gtk
     dolphin
