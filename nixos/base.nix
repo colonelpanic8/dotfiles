@@ -19,7 +19,6 @@
     xmonad.overlay
     xmonad-contrib.overlay
     notifications-tray-icon.overlay
-    (import ../dotfiles/config/taffybar/overlay.nix)
     (import ./overlay.nix)
   ] ++ taffybar.overlays;
 

@@ -1,4 +1,4 @@
-{ pkgs, config, ... }: {
+inputs: { pkgs, config, ... }: {
   xsession = {
     enable = true;
     preferStatusNotifierItems = true;
@@ -35,7 +35,7 @@
 
   services.taffybar = {
     enable = true;
-    package = pkgs.haskellPackages.imalison-taffybar;
+    package = inputs.imalison-taffybar.defaultPackage."${pkgs.system}";
   };
 
   services.notify-osd = {

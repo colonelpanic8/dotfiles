@@ -20,8 +20,11 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
     taffybar = {
-      # url = path:../dotfiles/config/taffybar/taffybar;
-      url = github:taffybar/taffybar;
+      url = path:../dotfiles/config/taffybar/taffybar;
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+    imalison-taffybar = {
+      url = path:../dotfiles/config/taffybar;
       inputs.nixpkgs.follows = "nixpkgs";
     };
     notifications-tray-icon = {
@@ -33,7 +36,7 @@
   };
   outputs = inputs@{
     self, nixpkgs, nixos-hardware, home-manager, taffybar, xmonad,
-    xmonad-contrib, notifications-tray-icon, nix
+    xmonad-contrib, notifications-tray-icon, nix, imalison-taffybar,
   }:
   let
     mkConfig =

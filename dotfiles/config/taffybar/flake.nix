@@ -2,21 +2,48 @@
   inputs = {
     taffybar.url = path:./taffybar;
     flake-utils.url = github:numtide/flake-utils;
+    xmonad.url = github:xmonad/xmonad/master;
   };
-  outputs = { self, flake-utils, taffybar, nixpkgs }:
-    let
-    overlay = import ./overlay.nix;
-    overlays = taffybar.overlays ++ [ overlay ];
+  outputs = { self, flake-utils, taffybar, nixpkgs, xmonad }:
+  let
+    hoverlay = final: prev: hself: hsuper: {
+      imalison-taffybar = prev.haskell.lib.addPkgconfigDepends (
+        hself.callCabal2nix "imalison-taffybar"
+        (
+          final.lib.sourceByRegex ./.
+          ["taffybar.hs" "imalison-taffybar.cabal"]
+        )
+        { }) [
+          final.util-linux.dev
+          final.pcre2
+          final.pcre
+          final.libselinux.dev
+          final.libsepol.dev
+          final.fribidi.out
+          final.fribidi.dev
+          final.libthai.dev
+          final.libdatrie.dev
+          final.xorg.libXdmcp.dev
+          final.libxkbcommon.dev
+          final.libepoxy.dev
+          final.xorg.libXtst.out
+        ];
+    };
+    defComp = { compiler = "ghc94"; };
+    overlay = xmonad.lib.fromHOL hoverlay defComp;
+    overlays = [ taffybar.overlay overlay ];
   in flake-utils.lib.eachDefaultSystem (system:
   let pkgs = import nixpkgs { inherit system overlays; config.allowBroken = true; };
+      hpkgs = pkgs.lib.attrsets.getAttrFromPath (xmonad.lib.hpath defComp) pkgs;
   in
   rec {
-    devShell = pkgs.haskellPackages.shellFor {
+    devShell = hpkgs.shellFor {
       packages = p: [ p.imalison-taffybar p.taffybar ];
-      nativeBuildInputs = with pkgs.haskellPackages; [
-        cabal-install hlint ghcid ormolu implicit-hie haskell-language-server
+      nativeBuildInputs = with hpkgs; [
+        cabal-install
+        # ghcid ormolu implicit-hie haskell-language-server hlint
       ];
     };
-    defaultPackage = pkgs.haskellPackages.imalison-taffybar;
+    defaultPackage = hpkgs.imalison-taffybar;
   }) // { inherit overlay overlays; } ;
 }
