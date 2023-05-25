@@ -1,7 +1,6 @@
 repository hackage.haskell.org
   url: http://hackage.haskell.org/
 
-nix: True
 remote-repo-cache: /home/imalison/.cabal/packages
 world-file: /home/imalison/.cabal/world
 extra-prog-path: /home/imalison/.cabal/bin
