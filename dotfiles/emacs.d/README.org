@@ -1586,11 +1586,13 @@ custom-set-faces in your custom file.
   (progn
     (setq highlight-indent-guides-method 'fill)))
 #+END_SRC
-** chat-gpt
+** gptel
 #+begin_src emacs-lisp
 (use-package gptel
+  :bind (("C-c g" . gptel-menu))
   :config
   (progn
+    (add-to-list 'gptel-directives '(finish-code . "You are a large language model and a careful programmer. Provide code that completes what is provided and only code as output without any additional text, prompt or note."))
     ;; (setq gptel-model "gpt-4")
     ))
 #+end_src
@@ -2808,6 +2810,7 @@ The following is taken from [[https://github.com/syl20bnr/spacemacs/blob/a650877
   :preface
   (progn
     (defvar imalison:use-lsp-rust t)
+    (setq lsp-rust-analyzer-diagnostics-disabled ["unresolved-proc-macro"])
     (defun imalison:rust-mode-hook ()
       (when imalison:use-lsp-rust
         (lsp-deferred))
@@ -4953,7 +4956,7 @@ Ensure all themes that I use are installed:
                   waher-theme ample-theme material-theme zerodark-theme
                   color-theme-modern leuven-theme spacemacs-theme gruvbox-theme
                   forest-blue-theme flatland-theme afternoon-theme
-                  cyberpunk-theme))
+                  cyberpunk-theme modus-themes))
 
 (mapcar 'straight-use-package packages-appearance)
 
