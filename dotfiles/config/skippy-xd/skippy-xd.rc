@@ -1,5 +1,5 @@
 [general]
 showAllDesktops = true
-showUnmapped = true
-clientDisplayModes = thumbnail icon fill none
+showMinimized = true
 switchDesktopOnActivate = true
+showIconsOnThumbnails = false
