@@ -6,8 +6,7 @@
       url = path:./nixpkgs;
     };
     home-manager = {
-      url = github:IvanMalison/home-manager/master;
-      # url = path:./home-manager;
+      url = github:nix-community/home-manager/master;
       inputs.nixpkgs.follows = "nixpkgs";
     };
     xmonad-contrib = {
@@ -15,8 +14,7 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
     xmonad = {
-      url = github:IvanMalison/xmonad/master;
-      # url = path:../dotfiles/config/xmonad/xmonad;
+      url = path:../dotfiles/config/xmonad/xmonad;
       inputs.nixpkgs.follows = "nixpkgs";
     };
     taffybar = {
@@ -32,6 +30,7 @@
     };
     nix = {
       url = github:IvanMalison/nix/master;
+      inputs.nixpkgs.follows = "nixpkgs";
     };
   };
   outputs = inputs@{
