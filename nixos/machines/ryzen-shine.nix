@@ -8,6 +8,10 @@
     ../games.nix
   ];
 
+  environment.systemPackages = with pkgs; [
+    linuxPackages_latest.perf
+  ];
+
   hardware.enableRedistributableFirmware = true;
 
   networking.interfaces.enp5s0.useDHCP = true;
