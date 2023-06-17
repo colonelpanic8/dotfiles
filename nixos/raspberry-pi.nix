@@ -8,23 +8,6 @@
   hardware.raspberry-pi."4".fkms-3d.enable = true;
   hardware.raspberry-pi."4".audio.enable = true;
 
-  boot = {
-    kernelPackages = pkgs.linuxPackages_rpi4;
-    tmpOnTmpfs = true;
-    loader = {
-      grub.enable = false;
-      generic-extlinux-compatible.enable = true;
-      raspberryPi = {
-        enable = true;
-	      version = 4;
-	      firmwareConfig = ''
-          dtparam=audio=on
-          hdmi_drive=2
-	      '';
-      };
-    };
-  };
-
   hardware.enableRedistributableFirmware = true;
 
   networking.useDHCP = false;
