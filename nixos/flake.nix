@@ -1,41 +1,116 @@
 {
   inputs = {
-    nixos-hardware.url = github:NixOS/nixos-hardware;
-    nixpkgs = {
-      # url = github:IvanMalison/nixpkgs/my-unstable;
-      url = path:./nixpkgs;
-    };
+    nixos-hardware = { url = github:NixOS/nixos-hardware; };
+
+    nixpkgs = { url = path:./nixpkgs; };
+
     home-manager = {
-      url = github:nix-community/home-manager/master;
+      url = github:nix-community/home-manager;
       inputs.nixpkgs.follows = "nixpkgs";
     };
+
     xmonad-contrib = {
       url = github:IvanMalison/xmonad-contrib/withMyChanges;
-      inputs.nixpkgs.follows = "nixpkgs";
+      inputs = {
+        nixpkgs.follows = "nixpkgs";
+        flake-utils.follows = "flake-utils";
+        git-ignore-nix.follows = "git-ignore-nix";
+        xmonad.follows = "xmonad";
+      };
     };
+
     xmonad = {
       url = path:../dotfiles/config/xmonad/xmonad;
-      inputs.nixpkgs.follows = "nixpkgs";
+      inputs = {
+        nixpkgs.follows = "nixpkgs";
+        flake-utils.follows = "flake-utils";
+        git-ignore-nix.follows = "git-ignore-nix";
+      };
     };
+
     taffybar = {
       url = path:../dotfiles/config/taffybar/taffybar;
-      inputs.nixpkgs.follows = "nixpkgs";
+      inputs = {
+        nixpkgs.follows = "nixpkgs";
+        flake-utils.follows = "flake-utils";
+        git-ignore-nix.follows = "git-ignore-nix";
+        xmonad.follows = "xmonad";
+        gtk-sni-tray.follows = "gtk-sni-tray";
+        gtk-strut.follows = "gtk-strut";
+      };
     };
+
     imalison-taffybar = {
       url = path:../dotfiles/config/taffybar;
-      inputs.nixpkgs.follows = "nixpkgs";
+      inputs = {
+        nixpkgs.follows = "nixpkgs";
+        flake-utils.follows = "flake-utils";
+        git-ignore-nix.follows = "git-ignore-nix";
+        xmonad.follows = "xmonad";
+        gtk-sni-tray.follows = "gtk-sni-tray";
+        gtk-strut.follows = "gtk-strut";
+        taffybar.follows = "taffybar";
+      };
     };
+
     notifications-tray-icon = {
-      url = github:IvanMalison/notifications-tray-icon/master;
-    };
-    nix = {
-      url = github:IvanMalison/nix/master;
+      url = github:IvanMalison/notifications-tray-icon;
+      inputs.flake-utils.follows = "flake-utils";
+      inputs.git-ignore-nix.follows = "git-ignore-nix";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+
+    nix = {
+      url = github:IvanMalison/nix;
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+
+    flake-utils = {
+      url = github:numtide/flake-utils;
+      inputs.systems.follows = "systems";
+    };
+
+    systems = { url = github:nix-systems/default; };
+
+    git-ignore-nix = {
+      url = github:hercules-ci/gitignore.nix;
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+
+    gtk-sni-tray = {
+      url = github:taffybar/gtk-sni-tray;
+      inputs = {
+        nixpkgs.follows = "nixpkgs";
+        flake-utils.follows = "flake-utils";
+        git-ignore-nix.follows = "git-ignore-nix";
+        status-notifier-item.follows = "status-notifier-item";
+      };
+    };
+
+    status-notifier-item = {
+      url = github:taffybar/status-notifier-item;
+      inputs = {
+        nixpkgs.follows = "nixpkgs";
+        flake-utils.follows = "flake-utils";
+        git-ignore-nix.follows = "git-ignore-nix";
+      };
+    };
+
+    gtk-strut = {
+      url = github:taffybar/gtk-strut;
+      inputs = {
+        nixpkgs.follows = "nixpkgs";
+        flake-utils.follows = "flake-utils";
+        git-ignore-nix.follows = "git-ignore-nix";
+      };
+    };
+
+    nixpkgs-regression = { url = github:NixOS/nixpkgs; };
   };
+
   outputs = inputs@{
     self, nixpkgs, nixos-hardware, home-manager, taffybar, xmonad,
-    xmonad-contrib, notifications-tray-icon, nix, imalison-taffybar,
+    xmonad-contrib, notifications-tray-icon, nix, imalison-taffybar, ...
   }:
   let
     mkConfig =
