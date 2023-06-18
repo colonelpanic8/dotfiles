@@ -1,7 +1,7 @@
 [rc]
 use_copy=true
 use_primary=true
-synchronize=true
+synchronize=false
 automatic_paste=false
 show_indexes=true
 save_uris=true
@@ -10,12 +10,12 @@ save_history=true
 history_limit=1000
 history_timeout_seconds=30
 history_timeout=false
-items_menu=20
+items_menu=50
 statics_show=true
 statics_items=10
 hyperlinks_only=false
 confirm_clear=false
-single_line=true
+single_line=false
 reverse_history=false
 item_length=50
 ellipsize=2
