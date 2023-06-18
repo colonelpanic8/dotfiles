@@ -6,6 +6,7 @@
 {
   imports = [
     ../base.nix
+    ../full.nix
     ../essential-no-arm.nix
     ../essential.nix
     ../code.nix
@@ -41,8 +42,6 @@
   networking.hostName = "jay-lenovo";
 
   powerManagement.cpuFreqGovernor = lib.mkDefault "powersave";
-
-  hardware.video.hidpi.enable = lib.mkDefault true;
 
   system.stateVersion = "23.05";
 }
