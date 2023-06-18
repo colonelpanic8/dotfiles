@@ -85,12 +85,23 @@ in
     playerctl
 
     # Tools
+    automake
     bazel
+    bind
     binutils
+    binutils
+    cmake
+    dex
     direnv
+    direnv
+    dpkg
+    fd
+    file
     gawk
-    gitFull
+    gcc
+    gdb
     git-sync
+    gitFull
     htop
     jq
     lsof
@@ -103,8 +114,8 @@ in
     rcm
     ripgrep
     silver-searcher
-    tzupdate
     tmux
+    tzupdate
     unzip
     usbutils
     wget
