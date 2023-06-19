@@ -1,0 +1,7 @@
+#!/usr/bin/env sh
+
+function ballchasing_lookup {
+	xdg-open "https://ballchasing.com/replay/$(rofi -dmenu)"
+}
+
+ballchasing_lookup
