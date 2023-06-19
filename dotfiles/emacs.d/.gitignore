@@ -1,5 +1,6 @@
 *.elc
 .cask
+.lsp-session-v1
 .org-id-locations
 .project-roots
 .python-environments/
@@ -7,6 +8,7 @@
 .sx
 .tern-port
 .tutor
+/eln-cache
 /transient
 README.el
 README.html
@@ -47,4 +49,3 @@ uber.el
 url
 var
 xkcd
-.lsp-session-v1
