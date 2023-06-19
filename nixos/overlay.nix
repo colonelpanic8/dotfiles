@@ -1,4 +1,13 @@
 final: prev: {
+  git-sync = prev.git-sync.overrideAttrs(_: {
+    src = prev.fetchFromGitHub {
+      repo = "git-sync";
+      owner = "IvanMalison";
+      rev = "92544e76553c25da2d40d06a230ecd0a6e13c114";
+      sha256 = "sha256-hBtdvxAtFUMtLqGmy1wbDk796LQcYCth29fv8L0WQyQ=";
+    };
+  });
+
   picom = prev.picom.overrideAttrs(_: {
     src = prev.fetchFromGitHub {
       repo = "picom";
