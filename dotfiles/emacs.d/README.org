@@ -931,7 +931,8 @@ This was stolen from https://github.com/jwiegley/dot-emacs
 #+BEGIN_SRC emacs-lisp
 (cl-defmacro imalison:disable-mode-hook (mode-name &optional (disable-value -1))
   `(defun ,(imalison:concat-symbols 'imalison:disable- mode-name) ()
-       (,mode-name ,disable-value)))
+     (when (fboundp ',mode-name)
+       (,mode-name ,disable-value))))
 
 (imalison:disable-mode-hook linum-mode)
 (imalison:disable-mode-hook nlinum-mode)
@@ -1105,6 +1106,8 @@ out how to detect that a buffer is a man mode buffer.
 (setq large-file-warning-threshold (* 25 1024 1024))
 (setq line-move-visual t)
 (setq require-final-newline t)
+(when (fboundp 'pixel-scroll-mode)
+  (pixel-scroll-mode 1))
 #+END_SRC
 [[(ad-redefinition-action)][This]] is set because [[(y-or-n-p-only)][this alias]] causes annoying messaging at startup.
 ** System Clipboard
@@ -1753,6 +1756,11 @@ bind-key and global-set-key forms.
   (setq mac-option-modifier 'meta)
   (setq mac-command-modifier 'super))
 #+END_SRC
+** xref
+#+begin_src emacs-lisp
+(use-package xref
+  :bind ("M-," . xref-go-back))
+#+end_src
 * Navigation
 ** zop-to-char
 #+BEGIN_SRC emacs-lisp
@@ -2391,8 +2399,7 @@ reference to the jedi-core package.
     (use-package go-guru
       :demand t
       :bind (:map go-mode-map
-                  ("M-." . go-guru-definition)
-                  ("M-," . pop-tag-mark))
+                  ("M-." . go-guru-definition))
       :preface
       (progn
         (defun imalison:set-go-guru-scope ()
@@ -2956,8 +2963,7 @@ Intero seems to be causing hangs, so it has been disabled
                   ("C-c g r" . ggtags-find-reference)
                   ("C-c g f" . ggtags-find-file)
                   ("C-c g c" . ggtags-create-tags)
-                  ("C-c g u" . ggtags-update-tags)
-                  ("M-," . pop-tag-mark)))
+                  ("C-c g u" . ggtags-update-tags)))
     (add-hook 'c-mode-common-hook 'imalison:cc-mode-hook)))
 #+END_SRC
 *** C--
@@ -3757,6 +3763,7 @@ alphanumeric characters only."
 **** auctex-latexmk
 #+BEGIN_SRC emacs-lisp
 (use-package auctex-latexmk
+  :disabled t
   :config
   (progn
     (setq auctex-latexmk-inherit-TeX-PDF-mode t)

@@ -18,15 +18,16 @@ in
   nixpkgs.overlays = [
     (import ../dotfiles/config/xmonad/overlay.nix)
   ];
+
   nixpkgs.config.allowBroken = true;
   programs.hyprland.enable = true;
   environment.systemPackages = with pkgs; [
     python-with-my-packages
-
     alacritty
-    (emacs.pkgs.withPackages (epkgs: with epkgs.melpaPackages; [
-      vterm
-    ]))
+    (emacs29.override {
+      withNativeCompilation = true;
+      withTreeSitter = true;
+    })
     vscode
     firefox
     kitty

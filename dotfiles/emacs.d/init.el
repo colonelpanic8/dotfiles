@@ -1,6 +1,5 @@
 ;; -*- no-byte-compile: t -*-
 
-
 (let ((bootstrap-file (concat user-emacs-directory "straight/bootstrap.el"))
       (bootstrap-version 2))
   (unless (file-exists-p bootstrap-file)
@@ -11,6 +10,8 @@
       (goto-char (point-max))
       (eval-print-last-sexp)))
   (load bootstrap-file nil 'nomessage))
+
+(setq native-comp-deferred-compilation-deny-list nil)
 
 ;; This is a workaround for an issue in emacs28 with symlinks. See https://github.com/radian-software/straight.el/issues/701
 (defun my-patch-package-find-file-visit-truename (oldfun &rest r)
