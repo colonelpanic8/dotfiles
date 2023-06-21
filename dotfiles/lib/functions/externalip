@@ -1,0 +1,7 @@
+#!/usr/bin/env sh
+
+function externalip {
+	curl -s ifconfig.co
+}
+
+externalip
