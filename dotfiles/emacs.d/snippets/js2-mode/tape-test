@@ -1,7 +1,0 @@
-# -*- mode: snippet -*-
-# name: tape-test
-# key: !
-# --
-test('$1', function t(assert) {
-
-});
