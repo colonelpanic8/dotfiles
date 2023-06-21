@@ -1404,6 +1404,11 @@ Paradox is a package.el extension. I have no use for it now that I use straight.
     (setq paradox-execute-asynchronously t
           paradox-github-token (gh-auth-get-oauth-token))))
 #+END_SRC
+** gcmh
+#+begin_src emacs-lisp
+(use-package gcmh
+  :config (gcmh-mode 1))
+#+end_src
 ** diminish
 #+BEGIN_SRC emacs-lisp
 (use-package diminish
