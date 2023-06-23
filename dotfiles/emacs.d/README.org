@@ -731,6 +731,13 @@ This interactive functions allows the user the select a function to invoke using
           (kill-ring-save min max)
           (buffer-substring min max))))))
 
+(defun region-if-active-otherwise-buffer ()
+  (if (region-active-p)
+      (list (region-beginning) (region-end))
+    (list (buffer-end -1) (buffer-end 1))))
+
+(region-if-active-otherwise-buffer)
+
 (defun imalison:shell-command-on-region-replace (start end command)
   (interactive (list (region-beginning) (region-end)
                      (read-shell-command "Shell command on region: ")))
@@ -738,7 +745,13 @@ This interactive functions allows the user the select a function to invoke using
 
 (emit-prefix-selector imalison:shell-command-on-region
   imalison:copy-shell-command-on-region
-  imalison:shell-command-on-region-replace)
+  imalison:shell-command-on-region-replace
+  imalison:jq-replace)
+
+(defun imalison:jq-replace (start end)
+  (interactive (region-if-active-otherwise-buffer))
+  (imalison:shell-command-on-region-replace start end "jq ."))
+
 #+END_SRC
 ** Copy/Yank String Functions
 A macro for composing functions together to build an interactive command to copy a string to the kill ring.
