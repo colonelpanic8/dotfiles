@@ -46,6 +46,7 @@ in
     ispell
     jq
     lsof
+    magic-wormhole-rs
     ncdu
     neofetch
     nix-index
