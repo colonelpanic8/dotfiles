@@ -45,9 +45,14 @@
 
   environment.systemPackages = with pkgs; [
     # Appearance
+    gnome.adwaita-icon-theme
+    hicolor-icon-theme
+    libsForQt5.breeze-gtk
+    materia-theme
     numix-icon-theme-circle
     papirus-icon-theme
-    hicolor-icon-theme
+    tela-icon-theme
+    tela-circle-icon-theme
 
     # XOrg
     autorandr
@@ -62,7 +67,7 @@
     # Haskell Desktop
     haskellPackages.xmonad
     haskellPackages.imalison-xmonad
-    # haskellPackages.notifications-tray-icon
+    haskellPackages.notifications-tray-icon
     haskellPackages.gtk-sni-tray
     haskellPackages.status-notifier-item
     haskellPackages.dbus-hslogger
