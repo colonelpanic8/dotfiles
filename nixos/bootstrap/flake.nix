@@ -2,7 +2,7 @@
   inputs = {
     nixos-hardware = { url = github:NixOS/nixos-hardware; };
 
-    nixpkgs = { url = github:NixOS/nipxkgs/nixos-unstable; };
+    nixpkgs = { url = github:NixOS/nixpkgs/nixos-unstable; };
 
     home-manager = {
       url = github:nix-community/home-manager;
@@ -41,7 +41,7 @@
     };
 
     imalison-taffybar = {
-      url = path:../dotfiles/config/taffybar;
+      url = path:../../dotfiles/config/taffybar;
       inputs = {
         nixpkgs.follows = "nixpkgs";
         flake-utils.follows = "flake-utils";
