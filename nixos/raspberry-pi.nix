@@ -1,12 +1,29 @@
 { config, pkgs, inputs, ... }:
 
 {
-  imports = [
-    inputs.nixos-hardware.nixosModules.raspberry-pi-4
-  ];
+  # https://github.com/NixOS/nixos-hardware/issues/631
+  # imports = [
+  #   inputs.nixos-hardware.nixosModules.raspberry-pi-4
+  # ];
+  # hardware.raspberry-pi."4".fkms-3d.enable = true;
+  # hardware.raspberry-pi."4".audio.enable = true;
 
-  hardware.raspberry-pi."4".fkms-3d.enable = true;
-  hardware.raspberry-pi."4".audio.enable = true;
+  boot = {
+    initrd.availableKernelModules = [
+      "usbhid"
+      "usb_storage"
+      "vc4"
+      "pcie_brcmstb" # required for the pcie bus to work
+      "reset-raspberrypi" # required for vl805 firmware to load
+    ];
+
+    loader = {
+      grub.enable = false;
+      generic-extlinux-compatible.enable = true;
+    };
+  };
+  boot.extraModulePackages = [ ];
+  boot.kernelParams = [ ];
 
   hardware.enableRedistributableFirmware = true;
 
