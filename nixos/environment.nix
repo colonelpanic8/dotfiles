@@ -3,7 +3,7 @@ with lib;
 {
   options = {
     dotfiles-directory = mkOption {
-      type = types.str;
+      type = types.path;
       default = ../.;
     };
   };
