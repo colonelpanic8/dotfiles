@@ -4,6 +4,7 @@
     ../base.nix
     ../essential-no-arm.nix
     ../desktop.nix
+    ../kat.nix
   ];
 
   networking.hostName = "nixquick";
