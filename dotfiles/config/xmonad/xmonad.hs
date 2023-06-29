@@ -274,13 +274,13 @@ volumeCommand = "pavucontrol"
 
 hostNameToAction =
   M.fromList [ ("ryzen-shine", return ())
+               ("jay-lenovo", return ())
              ]
 
 myStartup = do
   setToggleActiveAll AVOIDSTRUTS True
   setToggleActiveAll GAPS True
   setToggleActiveAll NOBORDERS True
-  writeToHomeDirLog "This is real"
   hostName <- io getHostName
   M.findWithDefault (return ()) hostName hostNameToAction
 

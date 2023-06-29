@@ -5,13 +5,7 @@
 
 {
   imports = [
-    ../base.nix
     ../full.nix
-    ../essential-no-arm.nix
-    ../essential.nix
-    ../code.nix
-    ../essential.nix
-    ../desktop.nix
   ];
 
   hardware.enableRedistributableFirmware = true;
