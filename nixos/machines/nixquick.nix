@@ -3,6 +3,7 @@
   imports = [
     ../base.nix
     ../essential-no-arm.nix
+    ../desktop.nix
   ];
 
   networking.hostName = "nixquick";
