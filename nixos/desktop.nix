@@ -116,6 +116,7 @@
 
     # Audio
     playerctl
+    pulsemixer
   ];
 
   home-manager.useGlobalPkgs = true;
