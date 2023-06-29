@@ -4981,7 +4981,7 @@ Ensure all themes that I use are installed:
                   waher-theme ample-theme material-theme zerodark-theme
                   color-theme-modern leuven-theme spacemacs-theme gruvbox-theme
                   forest-blue-theme flatland-theme afternoon-theme
-                  cyberpunk-theme modus-themes))
+                  cyberpunk-theme))
 
 (mapcar 'straight-use-package packages-appearance)
 
