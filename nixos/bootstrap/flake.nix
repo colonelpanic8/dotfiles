@@ -50,7 +50,7 @@
       mkConfigurationParams = filename: {
         name = machineNameFromFilename filename;
         value = {
-          modules = [ (machinesPath + ("/" + filename)) ];
+          modules = [ (machinesPath + ("/" + filename)) ../base.nix ];
         };
       };
       defaultConfigurationParams =
