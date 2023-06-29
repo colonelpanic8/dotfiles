@@ -42,12 +42,4 @@
   };
 
   nix.settings.trusted-users = [ "root" "imalison" "kat" ];
-
-  imports = [
-    inputs.home-manager.nixosModule
-  ];
-
-  home-manager.useGlobalPkgs = true;
-  home-manager.useUserPackages = true;
-  home-manager.users.imalison = (import ./home-manager.nix) inputs;
 }

@@ -3,10 +3,9 @@
 {
   imports = [
     ../full.nix
-    ../games.nix
-    ../essential.nix
-    ../desktop.nix
   ];
+
+  networking.hostName = "ryzen-shine";
 
   environment.systemPackages = with pkgs; [
     linuxPackages_latest.perf
@@ -38,26 +37,25 @@
   boot.kernelModules = [ "kvm-amd" ];
   boot.extraModulePackages = [ ];
 
-  fileSystems."/" =
-    { device = "/dev/disk/by-uuid/356173ab-d076-43e0-aeb6-6a6829c4402b";
-      fsType = "ext4";
-    };
+  fileSystems."/" = {
+    device = "/dev/disk/by-uuid/356173ab-d076-43e0-aeb6-6a6829c4402b";
+    fsType = "ext4";
+  };
 
-  fileSystems."/boot" =
-    { device = "/dev/disk/by-uuid/B270-C7E6";
-      fsType = "vfat";
-    };
+  fileSystems."/boot" = {
+    device = "/dev/disk/by-uuid/B270-C7E6";
+    fsType = "vfat";
+  };
 
-  fileSystems."/shared" =
-    { device = "/dev/disk/by-uuid/D4009CE8009CD33A";
-      fsType = "ntfs";
-    };
+  fileSystems."/shared" = {
+    device = "/dev/disk/by-uuid/D4009CE8009CD33A";
+    fsType = "ntfs";
+    options = [ "nofail" ];
+  };
 
-  swapDevices =
-    [ { device = "/dev/disk/by-uuid/f719b44e-295a-4909-9a60-84f87acb7f77"; }
-    ];
-
-  networking.hostName = "ryzen-shine";
+  swapDevices =[
+    { device = "/dev/disk/by-uuid/f719b44e-295a-4909-9a60-84f87acb7f77"; }
+  ];
 
   # nix.settings.maxJobs = lib.mkDefault 16;
   # High-DPI console

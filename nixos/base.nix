@@ -2,7 +2,6 @@
 {
   imports = [
     ./users.nix
-    ./fonts.nix
     ./essential.nix
     ./environment.nix
   ];

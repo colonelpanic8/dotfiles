@@ -2,6 +2,7 @@
 {
   imports = [
     ./fonts.nix
+    inputs.home-manager.nixosModule
   ];
   nixpkgs.overlays = with inputs; [
     xmonad.overlay
@@ -116,4 +117,8 @@
     # Audio
     playerctl
   ];
+
+  home-manager.useGlobalPkgs = true;
+  home-manager.useUserPackages = true;
+  home-manager.users.imalison = (import ./home-manager.nix) inputs;
 }
