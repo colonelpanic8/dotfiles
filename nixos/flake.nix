@@ -121,26 +121,31 @@
     nixpkgs.lib.nixosSystem (args // {
       inherit system;
       modules = baseModules ++ modules;
-      specialArgs = { inherit inputs; } // specialArgs;
+      specialArgs = {
+        inherit inputs;
+        myPackages = {
+          taffybar = inputs.imalison-taffybar.defaultPackage."${system}";
+        };
+      } // specialArgs;
     });
     machineFilenames = builtins.attrNames (builtins.readDir ./machines);
     machineNameFromFilename = filename: builtins.head (builtins.split "\\." filename);
     mkConfigurationParams = filename: {
       name = machineNameFromFilename filename;
       value = {
-        modules = [ (./machines + ("/" + filename)) ];
+        modules = [ (./machines + ("/" + filename)) ./base.nix ];
       };
     };
     defaultConfigurationParams =
       builtins.listToAttrs (map mkConfigurationParams machineFilenames);
-      customParams = {
-        biskcomp = {
-          system = "aarch64-linux";
-        };
-        air-gapped-pi = {
-          system = "aarch64-linux";
-        };
+    customParams = {
+      biskcomp = {
+        system = "aarch64-linux";
       };
+      air-gapped-pi = {
+        system = "aarch64-linux";
+      };
+    };
   in
   {
     nixosConfigurations = builtins.mapAttrs (machineName: params:
