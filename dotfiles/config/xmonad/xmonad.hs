@@ -274,7 +274,7 @@ volumeCommand = "pavucontrol"
 
 hostNameToAction =
   M.fromList [ ("ryzen-shine", return ())
-               ("jay-lenovo", return ())
+             , ("jay-lenovo", return ())
              ]
 
 myStartup = do
