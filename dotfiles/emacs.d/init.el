@@ -56,6 +56,8 @@
 (use-package org
   :defer t)
 
+(use-package dash :demand t)
+
 (let ((debug-on-error t))
   (org-babel-load-file
    (concat (file-name-directory load-file-name) "README.org")))

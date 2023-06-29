@@ -123,12 +123,13 @@
         modules = baseModules ++ modules;
         specialArgs = { inherit inputs; } // specialArgs;
       });
-      machineFilenames = builtins.attrNames (builtins.readDir ../machines);
+      machinesPath = ../machines;
+      machineFilenames = builtins.attrNames (builtins.readDir machinesPath);
       machineNameFromFilename = filename: builtins.head (builtins.split "\\." filename);
       mkConfigurationParams = filename: {
         name = machineNameFromFilename filename;
         value = {
-          modules = [ (./machines + ("/" + filename)) ];
+          modules = [ (machinesPath + ("/" + filename)) ];
         };
       };
       defaultConfigurationParams =
