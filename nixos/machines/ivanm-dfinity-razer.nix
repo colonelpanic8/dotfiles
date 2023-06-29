@@ -6,8 +6,6 @@
 {
   imports = [
     ../full.nix
-    ../extra.nix
-    ../dfinity.nix
   ];
 
   hardware.enableRedistributableFirmware = true;

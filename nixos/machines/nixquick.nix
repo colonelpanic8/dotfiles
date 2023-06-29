@@ -1,9 +1,7 @@
 { config, lib, pkgs, ... }:
 {
   imports = [
-    ../base.nix
-    ../essential-no-arm.nix
-    ../desktop.nix
+    ../full.nix
     ../kat.nix
   ];
 

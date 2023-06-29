@@ -1,14 +1,11 @@
 { pkgs, ... }:
 {
   imports = [
-    ./all.nix
     ./android.nix
-    ./base.nix
-    # ./cachix.nix
+    ./arm-incompatible.nix
+    ./games.nix
     ./code.nix
-    ./essential-no-arm.nix
     ./extra.nix
     ./internet-computer.nix
-    ./dfinity.nix
   ];
 }

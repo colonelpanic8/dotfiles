@@ -13,10 +13,6 @@ inputs: { pkgs, config, ... }: {
     forwardAgent = true;
   };
 
-  # programs.zsh = {
-  #   enable = true;
-  # };
-
   services.xscreensaver = {
     enable = true;
   };

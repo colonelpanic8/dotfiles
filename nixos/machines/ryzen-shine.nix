@@ -2,9 +2,7 @@
 
 {
   imports = [
-    ../users.nix
     ../full.nix
-    ../dfinity.nix
     ../games.nix
     ../essential.nix
     ../desktop.nix
