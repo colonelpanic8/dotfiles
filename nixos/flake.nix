@@ -2,7 +2,9 @@
   inputs = {
     nixos-hardware = { url = github:NixOS/nixos-hardware; };
 
-    nixpkgs = { url = github:NixOS/nixpkgs/nixos-unstable; };
+    nixpkgs = {
+      url = path:./nixpkgs;
+    };
 
     home-manager = {
       url = github:nix-community/home-manager;
