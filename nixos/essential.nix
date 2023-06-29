@@ -24,9 +24,6 @@ in
       withTreeSitter = true;
     })
 
-    # Audio
-    playerctl
-
     # Tools
     automake
     bazel

@@ -112,5 +112,8 @@
     wire-desktop
     xfce.thunar
     # zoom-us
+
+    # Audio
+    playerctl
   ];
 }
