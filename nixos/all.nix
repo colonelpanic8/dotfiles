@@ -3,7 +3,6 @@
   environment.systemPackages = with pkgs; [
     # Applications
     alacritty
-    # calibre
     gnome.cheese
     dfeet
     discord
@@ -15,11 +14,9 @@
     keybase-gui
     kitty
     kleopatra
-    # kodi
     libreoffice
     lxappearance
     okular
-    # pulseeffects
     quassel
     slack
     simplescreenrecorder

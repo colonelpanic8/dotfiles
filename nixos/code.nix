@@ -5,11 +5,9 @@
     cabal-install
     cabal2nix
     ghc
-    # stack
     haskellPackages.hpack
     haskellPackages.hasktags
     haskellPackages.hoogle
-    # (all-hies.selection { selector = p: { inherit (p) ghc864 ghc865; }; })
 
     # Scala
     sbt
@@ -20,10 +18,7 @@
     nodejs
 
     # Rust
-    cargo
-    # rls
-    rustc
-    rustfmt
+    rustup
 
     # Clojure
     boot
@@ -45,5 +40,6 @@
 
     # misc
     perf-tools
+    protobuf
   ];
 }
