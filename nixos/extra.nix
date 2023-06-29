@@ -7,7 +7,6 @@
     ffmpeg
     rust-analyzer
     asciidoctor
-    vscode
     roomeqwizard
     razergenie
     expressvpn

@@ -40,6 +40,8 @@
     };
   };
 
+  environment.sessionVariables.NIXOS_OZONE_WL = "1";
+
   environment.systemPackages = with pkgs; [
     # Appearance
     numix-icon-theme-circle
@@ -104,6 +106,7 @@
     spotify
     synergy
     transmission-gtk
+    vscode
     vlc
     volnoti
     wire-desktop
