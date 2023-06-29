@@ -2,7 +2,6 @@
   imports = [
     ../internet-computer.nix
     ../raspberry-pi.nix
-    ../base.nix
   ];
 
   services.xrdp.enable = true;

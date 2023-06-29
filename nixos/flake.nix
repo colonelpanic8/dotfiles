@@ -128,12 +128,13 @@
         };
       } // specialArgs;
     });
-    machineFilenames = builtins.attrNames (builtins.readDir ./machines);
+    machinesFilepath = ./machines;
+    machineFilenames = builtins.attrNames (builtins.readDir machinesFilepath);
     machineNameFromFilename = filename: builtins.head (builtins.split "\\." filename);
     mkConfigurationParams = filename: {
       name = machineNameFromFilename filename;
       value = {
-        modules = [ (./machines + ("/" + filename)) ./base.nix ];
+        modules = [ (machinesFilepath + ("/" + filename)) ./base.nix ];
       };
     };
     defaultConfigurationParams =
