@@ -1,4 +1,4 @@
-{ config, lib, pkgs, ... }:
+{ config, lib, pkgs, inputs, ... }:
 
 {
   imports = [
@@ -9,6 +9,7 @@
 
   environment.systemPackages = with pkgs; [
     linuxPackages_latest.perf
+    inputs.nixified-ai.packages.${system}.invokeai-nvidia
   ];
 
   hardware.enableRedistributableFirmware = true;

@@ -103,6 +103,8 @@
     };
 
     nixpkgs-regression = { url = github:NixOS/nixpkgs; };
+
+    nixified-ai = { url = github:nixified-ai/flake; };
   };
 
   outputs = inputs@{
