@@ -6,6 +6,8 @@
     ../full.nix
     ../dfinity.nix
     ../games.nix
+    ../essential.nix
+    ../desktop.nix
   ];
 
   environment.systemPackages = with pkgs; [

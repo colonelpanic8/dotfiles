@@ -16,11 +16,8 @@
 
   nixpkgs.overlays = with inputs; [
     nix.overlays.default
-    xmonad.overlay
-    xmonad-contrib.overlay
-    notifications-tray-icon.overlay
     (import ./overlay.nix)
-  ] ++ taffybar.overlays;
+  ];
 
   # Allow all the things
   nixpkgs.config.allowUnfree = true;
@@ -72,7 +69,7 @@
   services.blueman.enable = true;
 
   # Printing
-  # services.printing.enable = true;
+  services.printing.enable = true;
 
   # Keyboard/Keymap
   console.keyMap = "us";
@@ -91,8 +88,6 @@
 
   services.openssh.enable = true;
 
-  services.autorandr.enable = true;
-
   services.locate.enable = true;
 
   virtualisation.docker.enable = true;
@@ -102,32 +97,4 @@
   services.logind.extraConfig = "RuntimeDirectorySize=5G";
 
   services.dbus.packages = [ pkgs.gcr ];
-
-  services.xserver = {
-    exportConfiguration = true;
-    enable = true;
-    layout = "us";
-    desktopManager = {
-      plasma5.enable = true;
-    };
-    windowManager = {
-      session = [
-        {
-          name = "xmonad";
-          start = ''
-            /usr/bin/env imalison-xmonad &
-            waitPID=$!
-          '';
-        }
-      ];
-    };
-    displayManager = {
-      sddm = {
-        enable = true;
-      };
-      sessionCommands = ''
-        systemctl --user import-environment GDK_PIXBUF_MODULE_FILE DBUS_SESSION_BUS_ADDRESS PATH
-      '';
-    };
-  };
 }
