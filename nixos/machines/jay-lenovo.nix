@@ -6,6 +6,7 @@
 {
   imports = [
     ../full.nix
+    ../kat.nix
   ];
 
   hardware.enableRedistributableFirmware = true;
