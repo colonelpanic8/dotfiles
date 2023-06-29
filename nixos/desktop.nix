@@ -111,6 +111,6 @@
     volnoti
     wire-desktop
     xfce.thunar
-    zoom-us
+    # zoom-us
   ];
 }
