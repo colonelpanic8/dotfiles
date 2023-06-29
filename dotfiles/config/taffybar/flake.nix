@@ -1,8 +1,8 @@
 {
   inputs = {
-    taffybar.url = path:./taffybar;
     flake-utils.url = github:numtide/flake-utils;
     xmonad.url = github:xmonad/xmonad/master;
+    taffybar.url = path:./taffybar;
   };
   outputs = { self, flake-utils, taffybar, nixpkgs, xmonad }:
   let
