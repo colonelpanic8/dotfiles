@@ -38,15 +38,21 @@ in
     gawk
     gcc
     gdb
-    git-sync
     gitFull
+    git-sync
+    gnumake
     htop
+    inotify-tools
+    ispell
     jq
     lsof
     ncdu
+    neofetch
     nix-index
     pass
+    patchelf
     pciutils
+    pstree
     rclone
     rcm
     ripgrep
