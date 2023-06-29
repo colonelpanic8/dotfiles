@@ -4,7 +4,7 @@ with lib;
   options = {
     dotfiles-directory = mkOption {
       type = types.str;
-      default = "/home/imalison/dotfiles";
+      default = ../.;
     };
   };
 
