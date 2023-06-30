@@ -3,13 +3,20 @@
 {
   imports = [
     ../full.nix
+    inputs.nixified-ai.nixosModules.invokeai
   ];
+
+  services.invokeai = {
+    enable = true;
+    host = "0.0.0.0";
+    nsfwChecker = false;
+    package = inputs.nixified-ai.packages.${config.nixpkgs.system}.invokeai-nvidia;
+  };
 
   networking.hostName = "ryzen-shine";
 
   environment.systemPackages = with pkgs; [
     linuxPackages_latest.perf
-    inputs.nixified-ai.packages.${system}.invokeai-nvidia
   ];
 
   hardware.enableRedistributableFirmware = true;
