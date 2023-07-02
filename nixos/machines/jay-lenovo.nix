@@ -38,7 +38,7 @@
 
   networking.hostName = "jay-lenovo";
 
-  powerManagement.cpuFreqGovernor = lib.mkDefault "powersave";
+  powerManagement.cpuFreqGovernor = lib.mkDefault "performance";
 
   system.stateVersion = "23.05";
 }
