@@ -122,6 +122,7 @@
     # Audio
     playerctl
     pulsemixer
+    espeak
   ];
 
   home-manager.useGlobalPkgs = true;
