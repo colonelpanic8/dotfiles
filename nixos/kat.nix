@@ -25,6 +25,7 @@
         obsidian = {
           path = config.home.homeDirectory + "/obsidian";
           uri = "git@github.com:katandtonic/obsidian.git";
+          interval = 60;
         };
       };
     };
