@@ -3,6 +3,7 @@
   environment.systemPackages = with pkgs; [
     bitwarden
     obsidian
+    vlc
   ];
 
   home-manager.users.kat = { pkgs, config, ... }: {
