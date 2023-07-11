@@ -1792,6 +1792,9 @@ bind-key and global-set-key forms.
 ** helm
 I use helm for almost all emacs completion
 #+BEGIN_SRC emacs-lisp -n -r
+(use-package helm-rg
+  :demand t
+  :config (setq helm-rg-thing-at-point nil))
 (use-package helm-config
   :demand t
   :diminish helm-mode
@@ -1824,10 +1827,6 @@ I use helm for almost all emacs completion
     (use-package helm-descbinds
       :defer 4
       :config (helm-descbinds-mode 1))
-
-    (use-package helm-rg
-      :demand t
-      :config (setq helm-rg-thing-at-point nil))
 
     (use-package helm-ag
       :bind ("C-c p 1" . imalison:set-helm-ag-extra-options)
