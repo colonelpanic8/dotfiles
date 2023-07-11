@@ -4,6 +4,8 @@
     bitwarden
     obsidian
     vlc
+    obs-studio
+    ffmpeg
   ];
 
   home-manager.users.kat = { pkgs, config, ... }: {
