@@ -102,6 +102,7 @@
     pasystray
     picom
     pinentry
+    psensor
     quassel
     rofi
     rofi-pass
