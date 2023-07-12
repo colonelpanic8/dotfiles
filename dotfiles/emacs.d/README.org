@@ -1824,10 +1824,6 @@ I use helm for almost all emacs completion
                 :candidate-number-limit 99999
                 :buffer "*helm org inbuffer*"))))
 
-    (use-package helm-descbinds
-      :defer 4
-      :config (helm-descbinds-mode 1))
-
     (use-package helm-ag
       :bind ("C-c p 1" . imalison:set-helm-ag-extra-options)
       :preface
@@ -3899,16 +3895,8 @@ alphanumeric characters only."
 *** forge
 #+begin_src emacs-lisp
 (use-package forge
-  :disabled t
   :after magit)
 #+end_src
-*** magithub
-I've disabled magithub because it causes magit to be super slow
-#+BEGIN_SRC emacs-lisp
-(use-package magithub
-  :disabled t
-  :after magit)
-#+END_SRC
 ** vc
 #+begin_src emacs-lisp
 (use-package vc
