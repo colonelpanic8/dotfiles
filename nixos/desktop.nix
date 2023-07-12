@@ -4,12 +4,6 @@
     ./fonts.nix
     inputs.home-manager.nixosModule
   ];
-  nixpkgs.overlays = with inputs; [
-    xmonad.overlay
-    xmonad-contrib.overlay
-    notifications-tray-icon.overlay
-    (import ../dotfiles/config/xmonad/overlay.nix)
-  ] ++ taffybar.overlays;
 
   services.autorandr.enable = true;
 
@@ -19,17 +13,6 @@
     layout = "us";
     desktopManager = {
       plasma5.enable = true;
-    };
-    windowManager = {
-      session = [
-        {
-          name = "xmonad";
-          start = ''
-            /usr/bin/env imalison-xmonad &
-            waitPID=$!
-          '';
-        }
-      ];
     };
     displayManager = {
       sddm = {
@@ -63,14 +46,6 @@
     xorg.xkbcomp
     xorg.xwininfo
     xsettingsd
-
-    # Haskell Desktop
-    haskellPackages.xmonad
-    haskellPackages.imalison-xmonad
-    haskellPackages.notifications-tray-icon
-    haskellPackages.gtk-sni-tray
-    haskellPackages.status-notifier-item
-    haskellPackages.dbus-hslogger
 
     # Desktop
     alacritty

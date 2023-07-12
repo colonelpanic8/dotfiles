@@ -2,6 +2,9 @@
   imports = [
     ../internet-computer.nix
     ../raspberry-pi.nix
+    ../desktop.nix
+    ../xmonad.nix
+    ../code.nix
   ];
 
   services.xrdp.enable = true;
@@ -23,7 +26,6 @@
   };
 
   networking.hostName = "biskcomp";
-  # hardware.video.hidpi.enable = true;
 
   system.stateVersion = "21.05";
 }
