@@ -17,6 +17,7 @@
 
   environment.systemPackages = with pkgs; [
     linuxPackages_latest.perf
+    inputs.nixified-ai.packages.${config.nixpkgs.system}.invokeai-nvidia
   ];
 
   hardware.enableRedistributableFirmware = true;
