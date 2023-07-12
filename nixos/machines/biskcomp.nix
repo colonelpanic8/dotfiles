@@ -2,6 +2,7 @@
   imports = [
     ../internet-computer.nix
     ../raspberry-pi.nix
+    ../base.nix
     ../desktop.nix
     ../xmonad.nix
     ../code.nix
