@@ -1,8 +1,9 @@
-{ config, lib, pkgs, ... }:
+{ config, lib, pkgs, inputs, ... }:
 {
   imports = [
     ../full.nix
     ../kat.nix
+    ../nixified.ai.nix
   ];
 
   networking.hostName = "nixquick";
