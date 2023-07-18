@@ -26,6 +26,9 @@
 
   hardware.nvidia.modesetting.enable = true;
 
+  # This also enables v4l2loopback
+  programs.droidcam.enable = true;
+
   fileSystems."/" =
     { device = "/dev/disk/by-uuid/64a7c1f5-727a-413c-81a2-cb108728cff6";
       fsType = "ext4";
