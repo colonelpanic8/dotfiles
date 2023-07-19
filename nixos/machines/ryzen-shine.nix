@@ -63,4 +63,6 @@
   console.font = lib.mkDefault "${pkgs.terminus_font}/share/consolefonts/ter-u28n.psf.gz";
 
   system.stateVersion = "20.03";
+
+  users.extraUsers.dean.home = "/shared/dean";
 }
