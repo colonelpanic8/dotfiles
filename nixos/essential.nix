@@ -39,6 +39,7 @@ in
     gcc
     gdb
     gitFull
+    git-lfs
     git-sync
     gnumake
     htop
