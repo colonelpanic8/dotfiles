@@ -1,14 +1,19 @@
-{ inputs, ... }:
+{ inputs, pkgs, ... }:
 {
   imports = [
     inputs.nixos-wsl.nixosModules.wsl
+    ./environment.nix
+    ./essential.nix
+    ./fonts.nix
     ./nix.nix
     ./users.nix
-    ./essential.nix
-    ./environment.nix
   ];
 
   programs.gnupg.agent = { enable = true; enableSSHSupport = true; };
+
+  environment.variables = {
+    SHELL = "${pkgs.zsh}/bin/zsh";
+  };
 
   wsl = {
     enable = true;
