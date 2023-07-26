@@ -25,6 +25,7 @@
       url = github:hercules-ci/gitignore.nix;
       inputs.nixpkgs.follows = "nixpkgs";
     };
+    nixos-wsl = { url = github:nix-community/NixOS-WSL; };
   };
 
   outputs = inputs@{
@@ -50,7 +51,7 @@
       mkConfigurationParams = filename: {
         name = machineNameFromFilename filename;
         value = {
-          modules = [ (machinesPath + ("/" + filename)) ../base.nix ];
+          modules = [ (machinesPath + ("/" + filename)) ];
         };
       };
       defaultConfigurationParams =

@@ -1,25 +1,12 @@
 { config, pkgs, options, inputs, ... }:
 {
   imports = [
+    ./nix.nix
     ./users.nix
     ./essential.nix
     ./environment.nix
   ];
 
-  nix = {
-    extraOptions = ''
-      experimental-features = nix-command flakes
-    '';
-    registry.nixpkgs.flake = inputs.nixpkgs;
-  };
-
-  nixpkgs.overlays = with inputs; [
-    nix.overlays.default
-    (import ./overlay.nix)
-  ];
-
-  # Allow all the things
-  nixpkgs.config.allowUnfree = true;
   nixpkgs.config.permittedInsecurePackages = [
     "openssl-1.0.2u"
   ];

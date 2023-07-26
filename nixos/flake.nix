@@ -107,6 +107,8 @@
     nixpkgs-regression = { url = github:NixOS/nixpkgs; };
 
     nixified-ai = { url = github:nixified-ai/flake; };
+
+    nixos-wsl = { url = github:nix-community/NixOS-WSL; };
   };
 
   outputs = inputs@{
@@ -138,7 +140,7 @@
     mkConfigurationParams = filename: {
       name = machineNameFromFilename filename;
       value = {
-        modules = [ (machinesFilepath + ("/" + filename)) ./base.nix ];
+        modules = [ (machinesFilepath + ("/" + filename)) ];
       };
     };
     defaultConfigurationParams =

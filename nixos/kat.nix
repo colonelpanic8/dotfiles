@@ -1,5 +1,8 @@
-{ pkgs, ... }:
+{ pkgs, inputs, ... }:
 {
+  imports = [
+    inputs.home-manager.nixosModule
+  ];
   environment.systemPackages = with pkgs; [
     bitwarden
     obsidian
@@ -7,6 +10,8 @@
     obs-studio
     ffmpeg
   ];
+
+  networking.hostName = "jay-lenovo-wsl";
 
   home-manager.users.kat = { pkgs, config, ... }: {
     services.gpg-agent = {

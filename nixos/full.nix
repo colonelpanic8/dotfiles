@@ -3,6 +3,7 @@
   imports = [
     ./android.nix
     ./arm-incompatible.nix
+    ./base.nix
     ./games.nix
     ./desktop.nix
     ./xmonad.nix
