@@ -5,6 +5,7 @@
 
   fonts = {
     packages = with pkgs; [
+      cascadia-code
       dejavu_fonts
       emacs-all-the-icons-fonts
       emojione
