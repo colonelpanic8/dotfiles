@@ -7,6 +7,7 @@
     ./fonts.nix
     ./nix.nix
     ./users.nix
+    ./code.nix
   ];
 
   programs.gnupg.agent = { enable = true; enableSSHSupport = true; };
