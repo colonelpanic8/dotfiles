@@ -899,47 +899,6 @@ details.
 (when (executable-find "copyq")
  (run-with-idle-timer 10 nil 'imalison:copyq-sync))
 #+END_SRC
-** helm-zsh-history
-This was stolen from https://github.com/jwiegley/dot-emacs
-#+BEGIN_SRC emacs-lisp
-(defvar helm-c-source-zsh-history
-  '((name . "Zsh History")
-    (candidates . helm-c-zsh-history-set-candidates)
-    (action . (("Execute Command" . helm-c-zsh-history-action)))
-    (volatile)
-    (requires-pattern . 3)
-    (delayed)))
-
-(defun helm-c-zsh-history-set-candidates (&optional request-prefix)
-  (let ((pattern (replace-regexp-in-string
-                  " " ".*"
-                  (or (and request-prefix
-                           (concat request-prefix
-                                   " " helm-pattern))
-                      helm-pattern))))
-    (with-current-buffer (find-file-noselect "~/.zsh_history" t t)
-      (auto-revert-mode -1)
-      (goto-char (point-max))
-      (loop for pos = (re-search-backward pattern nil t)
-            while pos
-            collect (replace-regexp-in-string
-                     "\\`:.+?;" ""
-                     (buffer-substring (line-beginning-position)
-                                       (line-end-position)))))))
-
-(defun helm-c-zsh-history-action (candidate)
-  (imalison:named-compile candidate))
-
-(defun helm-command-from-zsh ()
-  (interactive)
-  (require 'helm)
-  (helm-other-buffer 'helm-c-source-zsh-history "*helm zsh history*"))
-#+END_SRC
-*** Use projectile as default directory
-#+BEGIN_SRC emacs-lisp
-(imalison:let-around imalison:projectile-helm-command-from-zsh helm-command-from-zsh
-                     (default-directory (projectile-project-root)))
-#+END_SRC
 ** Disable hooks
 #+BEGIN_SRC emacs-lisp
 (cl-defmacro imalison:disable-mode-hook (mode-name &optional (disable-value -1))
@@ -1062,9 +1021,9 @@ I keep it around just in case I need it.
 #+END_SRC
 
 #+BEGIN_SRC emacs-lisp
+;; TODO: fix
 (emit-prefix-selector imalison:mark-ring
-  helm-mark-ring
-  helm-global-mark-ring)
+                      mark-ring)
 #+END_SRC
 ** Keyboard Macros
 *** For editing literate config
@@ -1622,7 +1581,8 @@ custom-set-faces in your custom file.
 (use-package helpful
   :bind (("C-h f" . helpful-callable)
          ("C-h v" . helpful-variable)
-         ("C-h k" . helpful-key)))
+         ("C-h k" . helpful-key)
+         ("C-h a" . describe-symbol)))
 #+end_src
 * Keybindings
 ** god-mode
@@ -1671,7 +1631,7 @@ custom-set-faces in your custom file.
   ("h" imalison:set-huge-font-size "Huge")
   ("a" imalison:appearance "Set Default Appearance")
   ("f" set-frame-font "Set Frame Font")
-  ("t" helm-themes "Choose Emacs Theme")
+  ("t" load-theme "Choose Emacs Theme")
   ("0" imalison:font-size-reset "Reset to default size")
   ("8" imalison:font-size-80chars "80 chars 3 columns font size"))
 #+END_SRC
@@ -1709,8 +1669,6 @@ custom-set-faces in your custom file.
     (imalison:named-compile "nix-build default.nix")))
 
 (defhydra imalison:compile nil "Compile"
-  ("p" imalison:projectile-helm-command-from-zsh "Run a command in projectile root")
-  ("d" helm-command-from-zsh "Run a command in default directory")
   ("c" imalison:named-compile "Enter Custom Command")
   ("s" imalison:stack-build "Stack build")
   ("n" imalison:nix-build "Nix build")
@@ -1789,98 +1747,9 @@ bind-key and global-set-key forms.
     (setq zop-to-char-kill-keys '(?\C-k ?\C-w))
     (setq zop-to-char-quit-at-point-keys '(?\r))))
 #+END_SRC
-** helm
-I use helm for almost all emacs completion
-#+BEGIN_SRC emacs-lisp -n -r
-(use-package helm-rg
-  :demand t
-  :config (setq helm-rg-thing-at-point nil))
-(use-package helm-config
-  :demand t
-  :diminish helm-mode
-  :straight helm
-  :bind (("M-y" . helm-show-kill-ring)
-         ("M-x" . helm-M-x)
-         ("C-x C-i" . helm-imenu)
-         ("C-h a" . helm-apropos)
-         ("C-c ;" . helm-recentf))
-  :config
-  (progn
-    (setq helm-split-window-default-side 'same
-          helm-exit-idle-delay 0)
 
-    (use-package helm-org
-      :straight nil
-      :defer 10
-      :config
-      (progn
 
-        (cl-defun helm-org-headings-in-buffer ()
-          (interactive)
-          (helm :sources (helm-source-org-headings-for-files
-                          (list (projectile-completing-read
-                                 "File to look at headings from: "
-                                 (projectile-all-project-files))))
-                :candidate-number-limit 99999
-                :buffer "*helm org inbuffer*"))))
 
-    (use-package helm-ag
-      :bind ("C-c p 1" . imalison:set-helm-ag-extra-options)
-      :preface
-      (progn
-        (defun imalison:set-helm-ag-extra-options ()
-          (interactive)
-          (let ((option (read-string "Extra options: " (or helm-ag--extra-options "")
-                                     'helm-ag--extra-options-history)))
-            (setq helm-ag--extra-options option))))
-      :config
-      (progn
-        (setq helm-ag-always-set-extra-option nil)))))
-
-(use-package helm
-  :diminish helm-mode
-  :config
-  (helm-mode +1))
-#+END_SRC
-** helm-projectile
-#+BEGIN_SRC emacs-lisp
-(use-package helm-projectile
-  :defer 1
-  :commands (helm-projectile-on)
-  :bind (:map helm-projectile-projects-map
-              ("M-s" . imalison:switch-to-project-and-search)
-              ("M-t" . imalison:helm-term-projectile))
-  :preface
-  (progn
-    (defmacro imalison:do-in-project (project-dir &rest forms)
-      `(noflet ((projectile-project-root (&rest args) ,project-dir))
-         ,@forms))
-    (defun imalison:invalidate-cache-and-open-file (_dir)
-      (projectile-invalidate-cache nil)
-      (projectile-find-file))
-
-    (defun imalison:switch-to-project-and-search (dir)
-      (imalison:do-in-project dir (helm-projectile-rg)))
-
-    (defun imalison:helm-term-projectile (dir)
-      (imalison:do-in-project dir (term-projectile-forward))))
-  :config
-  (progn
-    (shut-up (helm-projectile-on))
-    (helm-delete-action-from-source "Search in Project"
-                                    helm-source-projectile-projects)
-    (helm-delete-action-from-source "Open term for project"
-                                    helm-source-projectile-projects)
-    (helm-add-action-to-source "Search in Project"
-                               'imalison:switch-to-project-and-search
-                               helm-source-projectile-projects)
-    (helm-add-action-to-source "Open term for project"
-                               'imalison:helm-term-projectile
-                               helm-source-projectile-projects)
-    (helm-add-action-to-source "Invalidate Cache and Open File"
-                               'imalison:invalidate-cache-and-open-file
-                               helm-source-projectile-projects)))
-#+END_SRC
 ** projectile
 #+BEGIN_SRC emacs-lisp
 (use-package projectile
@@ -1889,22 +1758,29 @@ I use helm for almost all emacs completion
          ("C-c p f" . imalison:projectile-find-file))
   :preface
   (progn
-    (defun imalison:do-rg-default-directory ()
+    (defmacro imalison:projectile-do-in-project (project-dir &rest forms)
+      `(imalison:with-default-directory ,project-dir
+        (noflet ((projectile-project-root (&rest args) ,project-dir))
+          ,@forms)))
+
+    (defmacro imalison:with-default-directory (directory &rest forms)
+      `(let ((default-directory ,directory))
+         ,@forms))
+
+    (defun imalison:do-rg-default-directory (&rest args)
       (interactive)
-      (helm-rg--do-helm-rg default-directory (car (projectile-parse-dirconfig-file))))
+      (apply consult-ripgrep default-directory args))
 
     (emit-prefix-selector imalison:do-rg
-      helm-projectile-rg
-      imalison:do-rg-default-directory
-      helm-rg--do-helm-rg)
+                          consult-ripgrep
+                          imalison:do-rg-default-directory)
 
     (emit-prefix-selector imalison:projectile-find-file
-      projectile-find-file
-      projectile-find-file-other-window)
+                          projectile-find-file
+                          projectile-find-file-other-window)
 
     (imalison:let-around imalison:set-options-do-rg
-      imalison:do-rg
-      (helm-rg-always-set-extra-option t))
+      imalison:do-rg)
 
     (defun imalison:projectile-make-all-subdirs-projects (directory)
       (cl-loop for file-info in (directory-files-and-attributes directory)
@@ -1915,24 +1791,20 @@ I use helm for almost all emacs completion
                                            (nth 0 file-info) "/.projectile")))))))
   :config
   (progn
-    (use-package persp-projectile
-      :commands projectile-persp-switch-project)
     (define-key projectile-mode-map (kbd "C-c p") 'projectile-command-map)
 
     (projectile-global-mode)
     (setq projectile-require-project-root nil)
     (setq projectile-enable-caching nil)
-    (setq projectile-completion-system 'helm)
     (setq projectile-git-submodule-command nil)
-    (add-to-list 'projectile-globally-ignored-files "Godeps")
     (diminish 'projectile-mode)
     (bind-key* "C-c p s" 'imalison:do-rg)
-    (bind-key* "C-c p S" 'imalison:set-options-do-rg)
     (bind-key* "C-c p f" 'imalison:projectile-find-file)))
 #+END_SRC
 ** ido
 #+BEGIN_SRC emacs-lisp
 (use-package ido
+  :disabled t
   :demand t
   :commands ido-mode
   :config
@@ -1943,8 +1815,7 @@ I use helm for almost all emacs completion
           ido-use-virtual-buffers t
           ido-use-filename-at-point nil
           ido-create-new-buffer 'always)
-    ;; This is incompatible with helm-mode
-	;; (ido-everywhere 1)
+    (ido-everywhere +1)
     (setq ido-enable-flex-matching t)
     (use-package flx-ido
       :defer 5
@@ -1962,6 +1833,16 @@ I use helm for almost all emacs completion
         (setq ido-vertical-define-keys 'C-n-C-p-up-and-down)))
     (use-package flx-ido)))
 #+END_SRC
+** icomplete
+#+begin_src emacs-lisp
+(use-package icomplete
+  :disabled t
+  :config
+  (progn
+    (fido-mode +1)
+    (fido-vertical-mode)))
+#+end_src
+
 ** avy
 #+BEGIN_SRC emacs-lisp
 (use-package avy
@@ -1990,11 +1871,6 @@ Neotree is useless with frame mode for now, so I've disabled it.
 (use-package neotree
   :disabled t)
 #+END_SRC
-** jump-char
-#+BEGIN_SRC emacs-lisp
-(use-package jump-char
-  :bind (("C-;" . jump-char-forward)))
-#+END_SRC
 ** flimenu
 #+BEGIN_SRC emacs-lisp
 (use-package flimenu
@@ -2009,6 +1885,99 @@ Neotree is useless with frame mode for now, so I've disabled it.
   :bind ("C-s" . swiper))
 #+END_SRC
 * Completion
+** vertico
+#+begin_src emacs-lisp
+(use-package vertico
+  :demand t
+  :config
+  (progn
+    (vertico-mode +1)))
+#+end_src
+** orderless
+#+begin_src emacs-lisp
+(use-package orderless
+  :demand t
+  :config
+  (defun basic-remote-try-completion (string table pred point)
+    (and (vertico--remote-p string)
+         (completion-basic-try-completion string table pred point)))
+
+  (defun basic-remote-all-completions (string table pred point)
+    (and (vertico--remote-p string)
+         (completion-basic-all-completions string table pred point)))
+
+   (setq completion-styles '(orderless basic)
+         completion-category-overrides '((file (styles basic partial-completion)))))
+#+end_src
+** marginalia
+#+begin_src emacs-lisp
+(use-package marginalia
+  :demand t
+  :config (marginalia-mode +1))
+#+end_src
+** embark
+#+begin_src emacs-lisp
+(use-package embark
+  :demand t
+  :bind
+  (("C-." . embark-act)         ;; pick some comfortable binding
+   ("C-;" . embark-dwim)
+   ("C-h B" . embark-bindings)) ;; alternative for `describe-bindings'
+  :init
+  ;; Optionally replace the key help with a completing-read interface
+  (setq prefix-help-command #'embark-prefix-help-command)
+  (setq embark-prompter #'embark-completing-read-prompter)
+
+  ;; Show the Embark target at point via Eldoc.  You may adjust the Eldoc
+  ;; strategy, if you want to see the documentation from multiple providers.
+  (add-hook 'eldoc-documentation-functions #'embark-eldoc-first-target)
+  ;; (setq eldoc-documentation-strategy #'eldoc-documentation-compose-eagerly)
+
+  :config
+  (progn
+    (setq embark-mixed-indicator-delay 1.0)
+    (defmacro imalison:embark-projectile-act-for-file (file &rest forms)
+      `(let ((default-directory (projectile-project-root ,file)))
+        (imalison:projectile-do-in-project default-directory ,@forms)))
+
+    (defmacro imalison:build-embark-projectile-for-file (command)
+      `(defun ,(intern (concat "imalison:embark-projectile-file-" (symbol-name command))) (filepath)
+         (imalison:embark-projectile-act-for-file filepath (,command))))
+
+    (imalison:build-embark-projectile-for-file term-projectile-switch)
+    (imalison:build-embark-projectile-for-file magit-status)
+    (imalison:build-embark-projectile-for-file consult-ripgrep)
+
+    (setq embark-prompter #'embark-keymap-prompter)
+
+    (define-key embark-general-map (kbd "t")
+      #'imalison:embark-projectile-file-term-projectile-switch)
+
+    (define-key embark-general-map (kbd "m")
+      #'imalison:embark-projectile-file-magit-status)
+
+    (define-key embark-general-map (kbd "s")
+      #'imalison:embark-projectile-file-consult-ripgrep)
+
+    (defvar-keymap imalison:projectile-embark-map
+      :doc "Keymap for actions on projectile projects"
+      "m" #'imalison:embark-projectile-file-magit-status
+      "t" #'imalison:embark-projectile-file-term-projectile-switch
+      "s" #'imalison:embark-projectile-file-consult-ripgrep)))
+
+(use-package embark-consult
+  :hook
+  (embark-collect-mode . consult-preview-at-point-mode))
+#+end_src
+
+#+RESULTS:
+| embark-consult--upgrade-markers | consult-preview-at-point-mode |
+
+** consult
+#+begin_src emacs-lisp
+(use-package consult
+  :bind (("C-x C-b" . consult-buffer)))
+#+end_src
 ** company
 #+BEGIN_SRC emacs-lisp
 (use-package company
@@ -2021,6 +1990,9 @@ Neotree is useless with frame mode for now, so I've disabled it.
       company-yasnippet)
 
     (setq company-idle-delay .25)
+    (use-package company-prescient
+      :demand t
+      :config (company-prescient-mode +1))
     (global-company-mode)
     (diminish 'company-mode))
   :init
@@ -3185,7 +3157,6 @@ Intero seems to be causing hangs, so it has been disabled
                       "STARTED(s!)" "WAIT(w!)" "BACKLOG(b!)" "|"
                       "DONE(d!)" "HANDLED(h!)" "EXPIRED(e!)" "CANCELED(c!)")))
 
-    (setq helm-org-headings-fontify t)
     (setq org-todo-repeat-to-state "TODO")
 
     (setq org-agenda-span 10)
@@ -3634,10 +3605,6 @@ alphanumeric characters only."
                   :capture-character "p"))
     (setq org-confirm-elisp-link-function nil)
     (imalison:add-to-org-agenda-files (org-projectile-todo-files))))
-
-(use-package org-projectile-helm
-  :after org-projectile
-  :bind (("C-c n p" . org-projectile-helm-template-or-project)))
 #+END_SRC
 **** org-pomodoro
 #+BEGIN_SRC emacs-lisp
@@ -3657,11 +3624,6 @@ alphanumeric characters only."
             (:order-multi (1 (:name "Done today"
                                     :and (:regexp "State \"DONE\""
                                                   :log t))))))))
-#+END_SRC
-**** helm-org-rifle
-#+BEGIN_SRC emacs-lisp
-(use-package helm-org-rifle
-  :bind ("C-c C-h" . helm-org-rifle-agenda-files))
 #+END_SRC
 **** org-notify
  #+BEGIN_SRC emacs-lisp
@@ -4084,54 +4046,22 @@ in term-mode. This makes term-mode 1000% more useful
   (:map term-mode-map
         ("C-c C-k" . imalison:term-char-mode)
         :map term-raw-escape-map
-        ("M-x" . helm-M-x)
+        ("M-x" . execute-extended-command)
         ("C-j" . imalison:avy-term)
         :map term-raw-map
-        ("M-x" . helm-M-x)
+        ("M-x" . execute-extended-command)
         ("C-j" . imalison:avy-term)
         ("M-:" . eval-expression)
         ("C-y" . imalison:term-paste)
-        ("M-y" . helm-show-kill-ring-for-term))
+        ("M-y" . yank-pop))
   :config
   (progn
-    (use-package helm-ring
-      :straight nil
-      :defer 1
-      :config
-      (progn
-        (defvar helm-kill-ring-for-term-actions
-          '(("Yank" . imalison:term-paste)
-            ("Delete" . (lambda (_candidate)
-                          (cl-loop for cand in (helm-marked-candidates)
-                                   do (setq kill-ring
-                                            (delete cand kill-ring)))))))
-        (defvar helm-source-kill-ring-for-term
-          (helm-build-sync-source "Kill Ring"
-            :init (lambda () (helm-attrset 'last-command last-command))
-            :candidates #'helm-kill-ring-candidates
-            :filtered-candidate-transformer #'helm-kill-ring-transformer
-            :action 'helm-kill-ring-for-term-actions
-            :persistent-action 'ignore
-            :persistent-help "DoNothing"
-            :migemo t
-            :multiline t))
-
-        (defun helm-show-kill-ring-for-term ()
-          "Preconfigured `helm' for `kill-ring'.
-It is drop-in replacement of `yank-pop'.
-
-First call open the kill-ring browser, next calls move to next line."
-          (interactive)
-          (let ((enable-recursive-minibuffers t))
-            (helm :sources helm-source-kill-ring-for-term
-                  :buffer "*helm kill ring*"
-                  :resume 'noresume
-                  :allow-nest t)))))
 
     (defun imalison:term-char-mode ()
       (interactive)
       (term-char-mode)
       (goto-char (point-max)))
+
     (define-key term-raw-map (kbd "C-h") help-map)
     (add-hook 'term-mode-hook 'imalison:disable-linum-mode)
     (add-hook 'term-mode-hook 'imalison:disable-yas-minor-mode)
@@ -4248,11 +4178,6 @@ crux-reopen-as-root-mode makes it so that any file owned by root will automatica
 #+BEGIN_SRC emacs-lisp
 (use-package kdeconnect)
 #+END_SRC
-** helm-systemd
-#+BEGIN_SRC emacs-lisp
-(use-package helm-systemd
-  :commands helm-systemd)
-#+END_SRC
 ** aurel
 #+BEGIN_SRC emacs-lisp
 (use-package aurel
@@ -4331,11 +4256,6 @@ crux-reopen-as-root-mode makes it so that any file owned by root will automatica
       #'anzu-isearch-query-replace)
     (define-key isearch-mode-map [remap isearch-query-replace-regexp]
       #'anzu-isearch-query-replace-regexp)))
-#+END_SRC
-** fontawesome
-#+BEGIN_SRC emacs-lisp
-(use-package fontawesome
-  :commands helm-fontawesome)
 #+END_SRC
 ** shell-history
 I think that shell-history is causing projectile to be very slow so I have disabled it.
@@ -4444,7 +4364,7 @@ Disabled because it makes it hard to redo things
     (setq recentf-max-saved-items 1000
           recentf-max-menu-items 1000)
     (advice-add 'recentf-cleanup :around 'imalison:shut-up-around)
-    (recentf-mode 1)))
+    (recentf-mode +1)))
 #+END_SRC
 ** key-chord
 I have currently disabled key-chord because it may cause typing lag.
@@ -4481,11 +4401,6 @@ I have currently disabled key-chord because it may cause typing lag.
   :config
   (progn
     (setq calc-context-sensitive-enter t)))
-#+END_SRC
-** helm-spotify
-#+BEGIN_SRC emacs-lisp
-(use-package helm-spotify
-  :commands helm-spotify)
 #+END_SRC
 ** jabber
 Disabled because it has its own version of hexrgb which might cause conflicts
@@ -4799,16 +4714,6 @@ This is useful with server mode when editing gmail messages. I think that it is 
         ("gtl" . "\\.cql\\'")))))
 
 #+END_SRC
-** helm-themes
-#+BEGIN_SRC emacs-lisp
-(use-package helm-themes)
-#+END_SRC
-** helm-swoop
-#+BEGIN_SRC emacs-lisp
-(use-package helm-swoop
-  :bind ("C-S-s" . helm-swoop)
-  :commands helm-swoop)
-#+END_SRC
 ** perspective
 I've disabled perspective because I just don't use it much.
 #+BEGIN_SRC emacs-lisp
@@ -4858,15 +4763,6 @@ I've disabled perspective because I just don't use it much.
     (define-key persp-mode-map (kbd "C-x b") 'persp-mode-switch-buffers))
   :bind ("C-c 9" . persp-switch))
 #+END_SRC
-** smex
-#+BEGIN_SRC emacs-lisp
-(use-package smex
-  ;; Using helm-M-x instead
-  :disabled t
-  :commands smex
-  ;; This is here because smex feels like part of ido
-  :bind ("M-x" . smex))
-#+END_SRC
 ** android-mode
 #+BEGIN_SRC emacs-lisp
 (use-package android-mode
@@ -4909,29 +4805,6 @@ This also adds syntax highlighting for gradle
 #+BEGIN_SRC emacs-lisp
 (use-package rinari
   :after ruby-mode)
-#+END_SRC
-** helm-gtags
-#+BEGIN_SRC emacs-lisp
-(use-package helm-gtags
-  :config
-  (progn
-    (setq helm-gtags-ignore-case t
-          helm-gtags-auto-update t
-          helm-gtags-use-input-at-cursor t
-          helm-gtags-pulse-at-cursor t
-          helm-gtags-prefix-key "\C-cg"
-          helm-gtags-suggested-key-mapping t)
-    (cl-loop for hook in '(dired-mode-hook eshell-mode-hook c-mode-hook
-                                           c++-mode-hook asm-mode-hook)
-             do (add-hook hook 'helm-gtags-mode)))
-  :bind (:map helm-gtags-mode-map
-   ("C-c g a" . helm-gtags-tags-in-this-function)
-   ("C-j" . helm-gtags-select)
-   ("M-." . helm-gtags-dwim)
-   ("M-," . helm-gtags-pop-stack)
-   ("C-c <" . helm-gtags-previous-history)
-   ("C-c >" . helm-gtags-next-history)))
-
 #+END_SRC
 ** sgml-mode
 #+BEGIN_SRC emacs-lisp
@@ -4998,12 +4871,6 @@ Ensure all themes that I use are installed:
   (progn
     (add-to-list 'page-break-lines-modes 'prog-mode)
     (global-page-break-lines-mode +1)))
-#+END_SRC
-** helm-themes
-helm-themes provides an easy way to switch between emacs-themes.
-#+BEGIN_SRC emacs-lisp
-(use-package helm-themes
-  :after helm)
 #+END_SRC
 ** window-number
 #+BEGIN_SRC emacs-lisp
