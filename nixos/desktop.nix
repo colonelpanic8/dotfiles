@@ -33,8 +33,6 @@
     materia-theme
     numix-icon-theme-circle
     papirus-icon-theme
-    tela-icon-theme
-    tela-circle-icon-theme
 
     # XOrg
     autorandr
@@ -48,7 +46,6 @@
 
     # Desktop
     alacritty
-    betterlockscreen
     blueman
     clipit
     dfeet
@@ -60,8 +57,7 @@
     firefox
     gnome.cheese
     gnome.gpaste
-    hexchat
-    kitty
+
     kleopatra
     libnotify
     libreoffice
@@ -70,7 +66,6 @@
     networkmanagerapplet
     notify-osd-customizable
     okular
-    pasystray
     picom
     pinentry
     psensor
@@ -83,10 +78,8 @@
     skippy-xd
     synergy
     transmission-gtk
-    vscode
     vlc
     volnoti
-    wire-desktop
     xfce.thunar
     zoom-us
 

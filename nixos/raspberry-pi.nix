@@ -51,7 +51,7 @@
   };
 
   nix = {
-    auto-optimise-store = true;
+    # auto-optimise-store = true;
     gc = {
       automatic = true;
       dates = "weekly";
