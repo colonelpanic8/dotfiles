@@ -5,8 +5,6 @@
     inputs.home-manager.nixosModule
   ];
 
-  services.autorandr.enable = true;
-
   services.xserver = {
     exportConfiguration = true;
     enable = true;
