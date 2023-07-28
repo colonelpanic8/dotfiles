@@ -1023,7 +1023,7 @@ I keep it around just in case I need it.
 #+BEGIN_SRC emacs-lisp
 ;; TODO: fix
 (emit-prefix-selector imalison:mark-ring
-                      mark-ring)
+  mark-ring)
 #+END_SRC
 ** Keyboard Macros
 *** For editing literate config
@@ -1760,8 +1760,8 @@ bind-key and global-set-key forms.
   (progn
     (defmacro imalison:projectile-do-in-project (project-dir &rest forms)
       `(imalison:with-default-directory ,project-dir
-        (noflet ((projectile-project-root (&rest args) ,project-dir))
-          ,@forms)))
+                                        (noflet ((projectile-project-root (&rest args) ,project-dir))
+                                          ,@forms)))
 
     (defmacro imalison:with-default-directory (directory &rest forms)
       `(let ((default-directory ,directory))
@@ -1772,12 +1772,12 @@ bind-key and global-set-key forms.
       (apply 'consult-ripgrep default-directory args))
 
     (emit-prefix-selector imalison:do-rg
-                          consult-ripgrep
-                          imalison:do-rg-default-directory)
+      consult-ripgrep
+      imalison:do-rg-default-directory)
 
     (emit-prefix-selector imalison:projectile-find-file
-                          projectile-find-file
-                          projectile-find-file-other-window)
+      projectile-find-file
+      projectile-find-file-other-window)
 
     (imalison:let-around imalison:set-options-do-rg
       imalison:do-rg)
@@ -2384,7 +2384,7 @@ reference to the jedi-core package.
       `(imalison:join-paths (imalison:get-go-path) "src" ,@paths))
 
     (imalison:let-advise-around imalison:advise-normal-go-command
-                                (go-command "go"))
+      (go-command "go"))
 
     (defun imalison:go-mode-hook ()
       (go-eldoc-setup)
@@ -2397,51 +2397,26 @@ reference to the jedi-core package.
   :config
   (progn
     (use-package gotest
-     :demand t
-     :bind (:map go-mode-map
-                 ("C-c t" . imalison:gotest))
-     :preface
-     (progn
-       (emit-prefix-selector imalison:gotest
-         go-test-current-test
-         go-test-current-file)
-
-       (defun imalison:add-expected-test-name-for-suite (suite-name test-name)
-         (if (> (length suite-name) 0)
-             (concat " -run Test" suite-name)
-           "")))
-     :config
-     (progn
-       (setq go-test-verbose t
-             go-test-additional-arguments-function
-             'imalison:add-expected-test-name-for-suite)))
-    (use-package company-go
-      :config (setq company-go-show-annotation t))
-    (use-package go-projectile :demand t)
-    (use-package go-eldoc :demand t)
-    (use-package go-guru
       :demand t
       :bind (:map go-mode-map
-                  ("M-." . go-guru-definition))
+                  ("C-c t" . imalison:gotest))
       :preface
       (progn
-        (defun imalison:set-go-guru-scope ()
-          (setq go-guru-scope (go-mode-parse-glide-novendor)))
-        (defun go-mode-parse-glide-novendor ()
-          (s-join ","
-                  (cl-loop for path in (s-split "\n" (imalison:glide-novendor))
-                           collect (if (string-equal path ".")
-                                       (imalison:go-workspace-path)
-                                     (s-replace "\./" (imalison:go-workspace-path) path))))))
+        (emit-prefix-selector imalison:gotest
+          go-test-current-test
+          go-test-current-file)
+
+        (defun imalison:add-expected-test-name-for-suite (suite-name test-name)
+          (if (> (length suite-name) 0)
+              (concat " -run Test" suite-name)
+            "")))
       :config
       (progn
-        (advice-add 'go-guru--set-scope-if-empty :before 'imalison:set-go-guru-scope)
-        (advice-add 'go-guru-start :before 'imalison:set-go-guru-scope)
-        (advice-add 'go-guru-definition :around 'imalison:advise-normal-go-command)
-        (advice-add 'go-guru-definition :before
-                    (lambda ()
-                      (with-no-warnings
-                        (ring-insert find-tag-marker-ring (point-marker)))))))
+        (setq go-test-verbose t
+              go-test-additional-arguments-function
+              'imalison:add-expected-test-name-for-suite)))
+    (use-package company-go
+      :config (setq company-go-show-annotation t))
 
     (advice-add 'go-import-add :around 'imalison:advise-normal-go-command)
 
@@ -2638,12 +2613,12 @@ eval-last-sexp.
 #+END_SRC
 **** Keybinds
 #+BEGIN_SRC emacs-lisp
-(emit-compose imalison:copy-eval-last-sexp
-              kill-new prin1-to-string eval-last-sexp)
+(emit-compose
+ imalison:copy-eval-last-sexp kill-new prin1-to-string eval-last-sexp)
 
 (emit-prefix-selector imalison:eval-last-sexp
-                      eval-region-or-last-sexp
-                      imalison:copy-eval-last-sexp)
+  eval-region-or-last-sexp
+  imalison:copy-eval-last-sexp)
 
 (define-key lisp-mode-shared-map (kbd "C-c C-c") 'eval-defun)
 (define-key lisp-mode-shared-map (kbd "C-c o r") 'up-list-region)
@@ -3874,8 +3849,8 @@ alphanumeric characters only."
                      (magit-display-buffer-function
                       'magit-display-buffer-traditional))
     (emit-prefix-selector imalison:magit-status
-                          magit-status
-                          imalison:magit-status-traditional)
+      magit-status
+      imalison:magit-status-traditional)
     (defun imalison:after-magit-visit-file (&rest args)
       (when (derived-mode-p 'org-mode)
         (org-show-context 'magit-goto))))
@@ -4147,8 +4122,8 @@ in term-mode. This makes term-mode 1000% more useful
   :config
   (progn
     (emit-prefix-selector imalison:term
-                          term-projectile-forward
-                          term-projectile-create-new)
+      term-projectile-forward
+      term-projectile-create-new)
 
     (defvar imalison:term-hydra-original-default-directory)
 
@@ -4901,7 +4876,7 @@ Ensure all themes that I use are installed:
 ** all-the-icons
 #+BEGIN_SRC emacs-lisp
 (use-package all-the-icons
-  :defer 5)
+  :demand t)
 #+END_SRC
 ** doom-modeline
 #+begin_src emacs-lisp
