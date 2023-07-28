@@ -135,6 +135,22 @@ inputs: { pkgs, config, ... }: {
     };
   };
 
+  systemd.user.services.discord = {
+    Unit = {
+      Description = "Discord";
+      After = [ "graphical-session-pre.target" "tray.target" ];
+      PartOf = [ "graphical-session.target" ];
+    };
+
+    Install = { WantedBy = [ "graphical-session.target" ]; };
+
+    Service = {
+      ExecStart = "${pkgs.discord}/opt/Discord/Discord --start-minimized";
+      Restart = "always";
+      RestartSec = 3;
+    };
+  };
+
   systemd.user.services.picom = {
     Unit = {
       Description = "Picom X11 compositor";
