@@ -2953,11 +2953,14 @@ Intero seems to be causing hangs, so it has been disabled
 #+END_SRC
 *** kotlin
 #+BEGIN_SRC emacs-lisp
-(use-package kotlin-mode)
+(use-package kotlin-mode
+  :defer t
+  :mode ("\\.kt\\'"))
 #+END_SRC
 *** vala
 #+BEGIN_SRC emacs-lisp
-(use-package vala-mode)
+(use-package vala-mode
+  :disabled t)
 #+END_SRC
 *** lua
 #+BEGIN_SRC emacs-lisp
@@ -3790,6 +3793,7 @@ alphanumeric characters only."
 #+BEGIN_SRC emacs-lisp
 (use-package markdown-mode
   :defer t
+  :mode ("\\.md\\'")
   :init
   (progn
     (add-hook 'markdown-mode-hook 'imalison:disable-linum-mode)))
@@ -4044,6 +4048,8 @@ emr (emacs refactor) provides support for refactoring in many programming langua
 ** language-server-protocol (lsp)
 #+BEGIN_SRC emacs-lisp
 (use-package lsp-mode
+  :defer 3
+  :commands lsp
   :config
   (progn
     (defun imalison:nix-develop-lsp-wrapper-function (argv)
