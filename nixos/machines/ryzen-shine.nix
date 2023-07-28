@@ -28,7 +28,7 @@
             position = "0x1440";
             primary = true;
           };
-          HDMI-0.enable = {
+          HDMI-0 = {
             enable = true;
             rate = "59.95";
             mode = "2560x1440";
