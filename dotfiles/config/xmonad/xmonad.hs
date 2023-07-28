@@ -1022,7 +1022,7 @@ addKeys conf@XConfig { modMask = modm } =
     , ((modm, xK_v), spawn "xclip -o | xdotool type --file -")
     , ((hyper, xK_v), spawn "rofi_clipit.sh")
     , ((hyper, xK_p), spawn "rofi-pass")
-    , ((hyper, xK_h), spawn "screenshot.sh")
+    , ((hyper, xK_h), spawn "rofi_shutter")
     , ((hyper, xK_c), spawn "shell_command.sh")
     , ((hyper, xK_x), spawn "rofi_command.sh")
     , ((hyper .|. shiftMask, xK_l), spawn "dm-tool lock")

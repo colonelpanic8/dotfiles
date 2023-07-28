@@ -1,0 +1,7 @@
+#!/usr/bin/env sh
+
+function rofi_shutter {
+	rofi -i -dmenu | xargs shutter -n -e
+}
+
+rofi_shutter
