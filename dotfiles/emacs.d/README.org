@@ -1891,16 +1891,37 @@ Neotree is useless with frame mode for now, so I've disabled it.
   :demand t
   :config
   (progn
-    (use-package vertico-directory
-      :after vertico
-      :straight (vertico-directory
-                 :repo "emacs-straight/vertico"
-                 :host github
-                 :files ("extensions/vertico-directory.el"))
+
+    (defmacro imalison:use-vertico-extension (extension-name &rest forms)
+      (let ((extension-symbol (intern (concat "vertico-" (symbol-name extension-name)))))
+        `(use-package vertico-directory
+           :after vertico
+           :straight (,extension-symbol
+                      :repo "emacs-straight/vertico"
+                      :host github
+                      :files ,(list (concat "extensions/" (symbol-name extension-symbol) ".el")))
+           ,@forms)))
+
+    (put 'imalison:use-vertico-extension 'lisp-indent-function 'defun)
+
+    (imalison:use-vertico-extension directory
       :bind (:map vertico-map
                   ("RET" . vertico-directory-enter)
                   ("DEL" . vertico-directory-delete-char)
                   ("M-DEL" . vertico-directory-delete-word)))
+
+    (imalison:use-vertico-extension grid)
+    (imalison:use-vertico-extension buffer)
+    (imalison:use-vertico-extension unobtrusive)
+    (imalison:use-vertico-extension flat)
+    (imalison:use-vertico-extension multiform
+      :config
+      (progn
+        (vertico-multiform-mode +1)
+        (setq vertico-multiform-commands
+              '((consult-imenu grid)
+                (consult-ripgrep buffer)))))
+
     (vertico-mode +1)))
 #+end_src
 ** orderless
@@ -1986,7 +2007,8 @@ Neotree is useless with frame mode for now, so I've disabled it.
 ** consult
 #+begin_src emacs-lisp
 (use-package consult
-  :bind (("C-x b" . consult-buffer)))
+  :bind (("C-x b" . consult-buffer)
+         ("C-x C-i" . consult-imenu)))
 #+end_src
 ** company
 #+BEGIN_SRC emacs-lisp
