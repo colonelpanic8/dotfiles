@@ -1769,7 +1769,7 @@ bind-key and global-set-key forms.
 
     (defun imalison:do-rg-default-directory (&rest args)
       (interactive)
-      (apply consult-ripgrep default-directory args))
+      (apply 'consult-ripgrep default-directory args))
 
     (emit-prefix-selector imalison:do-rg
                           consult-ripgrep
