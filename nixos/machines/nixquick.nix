@@ -49,5 +49,9 @@
   powerManagement.cpuFreqGovernor = lib.mkDefault "powersave";
   hardware.cpu.intel.updateMicrocode = lib.mkDefault config.hardware.enableRedistributableFirmware;
 
+  services.xrdp.enable = true;
+  services.xrdp.defaultWindowManager = "startplasma-x11";
+  networking.firewall.allowedTCPPorts = [ 3389 ];
+
   system.stateVersion = "23.11";
 }
