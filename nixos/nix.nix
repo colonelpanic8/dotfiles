@@ -5,6 +5,10 @@
       experimental-features = nix-command flakes
     '';
     registry.nixpkgs.flake = inputs.nixpkgs;
+    settings = {
+      keep-outputs = true;
+      keep-derivations = true;
+    };
   };
 
   nixpkgs.overlays = with inputs; [

@@ -60,8 +60,7 @@
     };
 
     nix = {
-      url = github:IvanMalison/nix;
-      inputs.nixpkgs.follows = "nixpkgs";
+      url = github:IvanMalison/nix/my2.15.1;
     };
 
     flake-utils = {
