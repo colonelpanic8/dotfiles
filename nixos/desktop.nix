@@ -70,6 +70,7 @@
     pinentry
     psensor
     quassel
+    remmina
     rofi
     rofi-pass
     rofi-systemd
