@@ -4124,11 +4124,14 @@ in term-mode. This makes term-mode 1000% more useful
 #+BEGIN_SRC emacs-lisp
 (use-package term-projectile
   :bind ("C-c 7" . imalison:term-hydra-global/body)
-  :commands (term-projectile-forward term-projectile-backward
-                                     term-projectile-default-directory-forward
-                                     term-projectile-default-directory-backward
-                                     term-projectile-create-new
-                                     term-projectile-create-new-default-directory)
+  :commands
+  (term-projectile-backward
+   term-projectile-create-new
+   term-projectile-create-new-default-directory
+   term-projectile-default-directory-backward
+   term-projectile-default-directory-forward
+   term-projectile-forward
+   term-projectile-switch)
   :config
   (progn
     (emit-prefix-selector imalison:term
