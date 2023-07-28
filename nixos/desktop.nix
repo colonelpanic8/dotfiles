@@ -90,7 +90,7 @@
     volnoti
     wire-desktop
     xfce.thunar
-    # zoom-us
+    zoom-us
 
     # Audio
     playerctl
