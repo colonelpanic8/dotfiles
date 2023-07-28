@@ -24,6 +24,7 @@
     };
   };
 
+  # This is for the benefit of VSCODE running natively in wayland
   environment.sessionVariables.NIXOS_OZONE_WL = "1";
 
   environment.systemPackages = with pkgs; [

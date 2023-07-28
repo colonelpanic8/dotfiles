@@ -11,6 +11,8 @@
     "openssl-1.0.2u"
   ];
 
+  boot.loader.systemd-boot.configurationLimit = 7;
+
   # Disabling these waits disables the stuck on boot up issue
   systemd.services.systemd-udev-settle.enable = false;
   systemd.services.NetworkManager-wait-online.enable = false;
