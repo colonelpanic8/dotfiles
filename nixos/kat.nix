@@ -11,8 +11,6 @@
     ffmpeg
   ];
 
-  networking.hostName = "jay-lenovo-wsl";
-
   home-manager.users.kat = { pkgs, config, ... }: {
     services.gpg-agent = {
       enable = true;
