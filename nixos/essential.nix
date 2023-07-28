@@ -12,7 +12,7 @@ let
     virtualenv
     virtualenvwrapper
   ];
-  python-with-my-packages = pkgs.python3.withPackages my-python-packages;
+  python-with-my-packages = pkgs.python311.withPackages my-python-packages;
 in
 {
   nixpkgs.config.allowBroken = true;
@@ -29,6 +29,7 @@ in
     bazel
     bind
     binutils
+    cachix
     cmake
     dex
     direnv
