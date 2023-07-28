@@ -62,7 +62,7 @@
 }
 
 .active .contents {
-	background-color: rgba(255.0, 255.0, 255.0, 0.2);
+	background-color: rgba(255.0, 255.0, 255.0, 0.3);
 	opacity: 1;
 }
 
@@ -79,7 +79,7 @@
 }
 
 .visible .contents {
-	border-color: @white;
+	background-color: rgba(255.0, 255.0, 255.0, 0.15);
 }
 
 .window-icon-container {
