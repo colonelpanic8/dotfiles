@@ -1976,7 +1976,7 @@ Neotree is useless with frame mode for now, so I've disabled it.
 ** consult
 #+begin_src emacs-lisp
 (use-package consult
-  :bind (("C-x C-b" . consult-buffer)))
+  :bind (("C-x b" . consult-buffer)))
 #+end_src
 ** company
 #+BEGIN_SRC emacs-lisp
@@ -3857,6 +3857,7 @@ alphanumeric characters only."
 *** forge
 #+begin_src emacs-lisp
 (use-package forge
+  :disabled t
   :after magit)
 #+end_src
 ** vc
