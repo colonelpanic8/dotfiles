@@ -1981,10 +1981,13 @@ Neotree is useless with frame mode for now, so I've disabled it.
     (setq embark-prompter #'embark-keymap-prompter)
 
     (define-key embark-general-map (kbd "t")
-      #'imalison:embark-projectile-file-term-projectile-switch)
+                #'imalison:embark-projectile-file-term-projectile-switch)
 
     (define-key embark-general-map (kbd "m")
-      #'imalison:embark-projectile-file-magit-status)
+                #'imalison:embark-projectile-file-magit-status)
+
+    (define-key embark-general-map (kbd "g")
+                #'imalison:embark-projectile-file-magit-status)
 
     (define-key embark-general-map (kbd "s")
       #'imalison:embark-projectile-file-consult-ripgrep)
