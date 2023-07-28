@@ -4,7 +4,7 @@
   gtk.iconCache.enable = true;
 
   fonts = {
-    fonts = with pkgs; [
+    packages = with pkgs; [
       dejavu_fonts
       emacs-all-the-icons-fonts
       emojione
