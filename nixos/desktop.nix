@@ -80,6 +80,7 @@
     rofi
     rofi-pass
     rofi-systemd
+    shutter
     simplescreenrecorder
     skippy-xd
     synergy
