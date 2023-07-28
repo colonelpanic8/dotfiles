@@ -1891,6 +1891,16 @@ Neotree is useless with frame mode for now, so I've disabled it.
   :demand t
   :config
   (progn
+    (use-package vertico-directory
+      :after vertico
+      :straight (vertico-directory
+                 :repo "emacs-straight/vertico"
+                 :host github
+                 :files ("extensions/vertico-directory.el"))
+      :bind (:map vertico-map
+                  ("RET" . vertico-directory-enter)
+                  ("DEL" . vertico-directory-delete-char)
+                  ("M-DEL" . vertico-directory-delete-word)))
     (vertico-mode +1)))
 #+end_src
 ** orderless
