@@ -1891,10 +1891,9 @@ Neotree is useless with frame mode for now, so I've disabled it.
   :demand t
   :config
   (progn
-
     (defmacro imalison:use-vertico-extension (extension-name &rest forms)
       (let ((extension-symbol (intern (concat "vertico-" (symbol-name extension-name)))))
-        `(use-package vertico-directory
+        `(use-package ,extension-symbol
            :after vertico
            :straight (,extension-symbol
                       :repo "emacs-straight/vertico"
@@ -1908,11 +1907,11 @@ Neotree is useless with frame mode for now, so I've disabled it.
       :bind (:map vertico-map
                   ("RET" . vertico-directory-enter)
                   ("DEL" . vertico-directory-delete-char)
-                  ("M-DEL" . vertico-directory-delete-word)))
+                  ("M-DEL" . vertico-directory-delete-word)
+                  ("TAB" . embark-act)))
 
     (imalison:use-vertico-extension grid)
     (imalison:use-vertico-extension buffer)
-    (imalison:use-vertico-extension unobtrusive)
     (imalison:use-vertico-extension flat)
     (imalison:use-vertico-extension multiform
       :config
