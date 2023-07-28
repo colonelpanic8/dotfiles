@@ -64,6 +64,8 @@ inputs: { pkgs, config, ... }: {
 
   services.volnoti.enable = true;
 
+  services.pasystray.enable = true;
+
   services.parcellite = {
     enable = true;
     package = pkgs.clipit;
