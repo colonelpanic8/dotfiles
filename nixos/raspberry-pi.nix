@@ -27,7 +27,7 @@
 
   hardware.enableRedistributableFirmware = true;
 
-  networking.useDHCP = true;
+  # networking.useDHCP = true;
   networking.interfaces.eth0.useDHCP = true;
   networking.interfaces.wlan0.useDHCP = true;
 
@@ -51,7 +51,7 @@
   };
 
   nix = {
-    autoOptimiseStore = true;
+    auto-optimise-store = true;
     gc = {
       automatic = true;
       dates = "weekly";

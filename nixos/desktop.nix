@@ -53,18 +53,15 @@
     blueman
     clipit
     dfeet
-    discord
     dolphin
     element-desktop
     emacs
+
     feh
     firefox
-    gitter
     gnome.cheese
     gnome.gpaste
-    google-chrome
     hexchat
-    keybase-gui
     kitty
     kleopatra
     libnotify
@@ -84,8 +81,6 @@
     rofi-systemd
     simplescreenrecorder
     skippy-xd
-    slack
-    spotify
     synergy
     transmission-gtk
     vscode

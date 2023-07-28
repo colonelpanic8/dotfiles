@@ -1,10 +1,13 @@
 { pkgs, ... }:
 {
   environment.systemPackages = with pkgs; [
-    spotify
+    discord
     google-chrome
+    keybase-gui
     pommed_light
-    tor-browser-bundle-bin
+    slack
     spicetify-cli
+    spotify
+    tor-browser-bundle-bin
   ];
 }

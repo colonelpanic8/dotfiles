@@ -3,9 +3,8 @@
     ../internet-computer.nix
     ../raspberry-pi.nix
     ../base.nix
-    ../desktop.nix
-    ../xmonad.nix
-    ../code.nix
+    # ../desktop.nix
+    # ../xmonad.nix
   ];
 
   services.xrdp.enable = true;
