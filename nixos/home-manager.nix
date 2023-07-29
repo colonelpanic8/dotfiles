@@ -89,6 +89,71 @@ inputs: { pkgs, config, ... }: {
     };
   };
 
+  services.picom = {
+    enable = true;
+    vSync = true;
+    backend = "glx";
+    extraArgs = ["--experimental-backends"];
+
+    settings = {
+      animations = true;
+      animation-window-mass = 1;
+      animation-dampening = 20;
+      animation-stiffness = 250;
+      animation-clamping = false;
+      animation-for-open-window = "zoom";
+      animation-for-unmap-window = "zoom";
+      animation-for-transient-window = "slide-up";
+    };
+
+    wintypes = {
+      dock = {animation = "slide-down";};
+      toolbar = {animation = "slide-down";};
+    };
+
+    settings = {
+      inactive-dim = 0.2;
+      focus-exclude = ["class_g ?= 'rofi'" "class_g ?= 'Steam'"];
+      rounded-corners-exclude = [
+        "! name~=''" # Qtile == empty wm_class..
+        "window_type = 'dock'"
+        "window_type = 'desktop'"
+      ];
+
+      corner-radius = 10;
+      round-borders = 0;
+      round-borders-exclude = [
+        "! name~=''" # Qtile == empty wm_class..
+      ];
+
+      blur = {
+        method = "dual_kawase";
+        strength = 10.0;
+        background = true;
+        background-frame = false;
+        background-fixed = false;
+      };
+      blur-background-exclude = ["window_type != 'dock'"];
+
+      daemon = false;
+      dbus = false;
+      mark-wmwin-focused = false;
+      mark-ovredir-focused = false;
+      detect-rounded-corners = true;
+      detect-client-opacity = true;
+
+      unredir-if-possible = false;
+      unredir-if-possible-exclude = [];
+      detect-transient = true;
+      detect-client-leader = true;
+
+      invert-color-include = [];
+      glx-no-stencil = true;
+      use-damage = false;
+      transparent-clipping = false;
+    };
+  };
+
   systemd.user.services.setxkbmap = {
     Unit = {
       Description = "Set up keyboard in X";
@@ -148,22 +213,6 @@ inputs: { pkgs, config, ... }: {
 
     Service = {
       ExecStart = "${pkgs.discord}/opt/Discord/Discord --start-minimized";
-      Restart = "always";
-      RestartSec = 3;
-    };
-  };
-
-  systemd.user.services.picom = {
-    Unit = {
-      Description = "Picom X11 compositor";
-      After = [ "graphical-session-pre.target" ];
-      PartOf = [ "graphical-session.target" ];
-    };
-
-    Install = { WantedBy = [ "graphical-session.target" ]; };
-
-    Service = {
-      ExecStart = "${pkgs.picom}/bin/picom --experimental-backends";
       Restart = "always";
       RestartSec = 3;
     };
