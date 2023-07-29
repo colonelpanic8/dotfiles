@@ -2268,29 +2268,14 @@ I don't use auto-complete at all, so I have set up a hook to automatically disab
   :commands python-mode
   :mode ("\\.py\\'" . python-mode)
   :preface
-  (progn
-	(defun imalison:jedi-setup ()
-	  ;; TODO: This was likely fixed and can probably be removed
-	  ;; Somehow this is sometimes set to jedi:ac-setup which we
-	  ;; don't want. This binding avoids starting auto-complete mode.
-	  (let ((jedi:setup-function nil))
-		(jedi:setup))
-
-	  ;; XXX: This has become pretty annoying
-	  ;; (add-hook 'before-save-hook 'pyimport-remove-unused t t)
-
-	  ;; Only use company-jedi for completion
-	  (set (make-local-variable 'company-backends) '(company-jedi)))
-
-	(defun imalison:python-mode ()
-	  (setq show-trailing-whitespace t)
-	  ;; Remove default python completion, as we are going to rely on
-	  ;; company-jedi or company-lsp.
-	  ;; (remove-hook 'completion-at-point-functions
-	  ;;              'python-completion-complete-at-point 'local)
-	  (if imalison:use-lsp-python
-          (lsp-deferred)
-		(imalison:jedi-setup))))
+  (defun imalison:python-mode ()
+	(setq show-trailing-whitespace t)
+	;; Remove default python completion, as we are going to rely on
+	;; company-jedi or company-lsp.
+	;; (remove-hook 'completion-at-point-functions
+	;;              'python-completion-complete-at-point 'local)
+	(if imalison:use-lsp-python
+        (lsp-deferred)))
   :config
   (progn
     (use-package lsp-mode
@@ -2301,36 +2286,6 @@ I don't use auto-complete at all, so I have set up a hook to automatically disab
 	(use-package sphinx-doc)
 	(unbind-key "C-j" python-mode-map)
 	(add-hook 'python-mode-hook #'imalison:python-mode)))
-#+END_SRC
-**** pippel
-pippel lets one manage pip packages
-#+BEGIN_SRC emacs-lisp
-(use-package pippel
-  :defer t)
-#+END_SRC
-**** pyimport
-Pyimport is disabled because it may be causing a performance problem.
-#+BEGIN_SRC emacs-lisp
-(use-package pyimport
-  :disabled t
-  :bind (:map python-mode-map
-              ("C-c C-i" . pyimport-insert-missing))
-  :commands pyimport-remove-unused)
-#+END_SRC
-**** jedi
-The accepted way to use jedi if you prefer company to auto-complete is
-simply to require the company jedi package, which is why we make no
-reference to the jedi-core package.
-#+BEGIN_SRC emacs-lisp
-(use-package company-jedi
-  :commands (jedi:goto-definition jedi-mode company-jedi)
-  :bind (:map python-mode-map
-              ("M-." . jedi:goto-definition)
-              ("M-," . jedi:goto-definition-pop-marker))
-  :config
-  (progn
-    (setq jedi:complete-on-dot t)
-    (setq jedi:imenu-create-index-function 'jedi:create-flat-imenu-index)))
 #+END_SRC
 *** go
 #+BEGIN_SRC emacs-lisp
