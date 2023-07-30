@@ -1,4 +1,12 @@
-@import url("gotham.css");
+@define-color active-window-color @white;
+@define-color urgent-window-color @taffy-blue;
+@define-color font-color @white;
+@define-color menu-background-color @white;
+@define-color menu-font-color @black;
+@define-color bar-background rgba(0, 0, 0, .6);
+@define-color accent @red;
+@define-color menu-highlight @magenta;
+
 @define-color transparent rgba(0.0, 0.0, 0.0, 0.0);
 @define-color white #FFFFFF;
 @define-color black #000000;
@@ -62,7 +70,7 @@
 }
 
 .active .contents {
-	background-color: rgba(255.0, 255.0, 255.0, 0.3);
+	background-color: rgba(0, 0, 0, 0.3);
 	opacity: 1;
 }
 
