@@ -196,13 +196,14 @@ main = do
         , myICP
         , myBTC
         , myETH
+        , myMpris
         ]
       fullEndWidgets = baseEndWidgets ++ [ myCPU, myMem, myNet, myMpris ]
-      laptopEndWidgets = batteryWidgets ++ baseEndWidgets ++ [ myMpris ]
+      laptopEndWidgets = batteryWidgets ++ baseEndWidgets
       baseConfig =
         defaultSimpleTaffyConfig
         { startWidgets = [ myWorkspaces, myLayout, myWindows ]
-        , endWidgets = fullEndWidgets
+        , endWidgets = baseEndWidgets
         , barPosition = Top
         , widgetSpacing = 0
         , barPadding = 0
@@ -214,15 +215,6 @@ main = do
       selectedConfig =
         fromMaybe baseConfig $ lookup hostName
           [ ( "uber-loaner"
-            , baseConfig { endWidgets = laptopEndWidgets }
-            )
-          , ( "imalison-home"
-            , baseConfig { endWidgets = fullEndWidgets }
-            )
-          , ( "ryzen-shine"
-            , baseConfig { endWidgets = fullEndWidgets }
-            )
-          , ( "ivanm-dfinity-razer"
             , baseConfig { endWidgets = laptopEndWidgets }
             )
           , ( "adele"
