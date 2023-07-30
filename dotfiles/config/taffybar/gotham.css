@@ -20,6 +20,6 @@
 @define-color font-color @white;
 @define-color menu-background-color @white;
 @define-color menu-font-color @black;
-@define-color bar-background @base0;
+@define-color bar-background rgba(11, 11, 10, 0.6);
 @define-color accent @red;
 @define-color menu-highlight @magenta;
