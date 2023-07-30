@@ -47,7 +47,7 @@
     dean = userDefaults // {
       name = "dean";
       shell = pkgs.zsh;
-      openssh.authorizedKeys.keys = [
+      openssh.authorizedKeys.keys = allKeys ++ [
         "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAICDvbEVL+y7eV4+mtxOuHwyomBBQ6uYMesctstua20+e deanwenstrand@deans-mbp-2.lan"
       ];
     };
