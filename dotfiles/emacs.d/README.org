@@ -1576,6 +1576,16 @@ out how to detect that a buffer is a man mode buffer.
 	(setq treesit-auto-install t)
 	(global-treesit-auto-mode +1)
 
+    (defun treesit-auto-for-each (fn)
+      (cl-loop for recipe in treesit-auto-recipe-list
+               do
+               (let ((from (treesit-auto-recipe-remap recipe))
+					 (to (treesit-auto-recipe-ts-mode recipe)))
+                 (funcall fn from to))))
+
+    (defun treesit-auto-get-mode-hook-symbol (mode)
+      (intern (concat (symbol-name mode) "-mode-hook")))
+
 	(defun treesit-auto-copy-all-lsp-languages ()
 	  (cl-loop for recipe in treesit-auto-recipe-list
 			   do
@@ -1595,7 +1605,8 @@ out how to detect that a buffer is a man mode buffer.
 			   do
                (let ((major-modes (lsp--client-major-modes client)))
 				 (when (memq from major-modes)
-				   (setf (lsp--client-major-modes client) (append major-modes (list to)))))))
+				   (setf (lsp--client-major-modes client)
+                         (append major-modes (list to)))))))
 
 	(use-package lsp-mode
 	  :config
