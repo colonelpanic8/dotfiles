@@ -22,6 +22,10 @@
     nodePackages.npm
     nodejs
 
+    # Typescript
+    typescript
+    nodePackages.typescript-language-server
+
     # Rust
     rustup
 
