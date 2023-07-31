@@ -2287,6 +2287,17 @@ I don't use auto-complete at all, so I have set up a hook to automatically disab
 	(unbind-key "C-j" python-mode-map)
 	(add-hook 'python-mode-hook #'imalison:python-mode)))
 #+END_SRC
+**** tree-sitter
+#+begin_src emacs-lisp
+(use-package python-ts-mode
+  :ensure nil
+  :commands python-ts-mode
+  :mode ("\\.py\\'" . python-ts-mode)
+  :if (and (fboundp 'treesit-ready-p) (treesit-ready-p 'python))
+  :init
+  (add-to-list 'treesit-language-source-alist
+               '(python "https://github.com/tree-sitter/tree-sitter-python/"))))
+#+end_src
 *** go
 #+BEGIN_SRC emacs-lisp
 (use-package go-mode
@@ -2759,6 +2770,25 @@ The following is taken from [[https://github.com/syl20bnr/spacemacs/blob/a650877
   :config
   (progn
     (add-hook 'typescript-mode-hook 'lsp-deferred)))
+#+end_src
+**** tree-sitter
+#+begin_src emacs-lisp
+(use-package typescript-ts-mode
+  :disabled t
+  :if (and (fboundp 'treesit-ready-p) (treesit-ready-p 'typescript))
+  :ensure nil
+  :mode ("\\.ts\\'" "\\.tsx\\'")
+  :init
+  (progn
+    (add-to-list 'treesit-language-source-alist
+                 '(typescript . ("https://github.com/tree-sitter/tree-sitter-typescript"
+                                 "master" "typescript/src")))
+    (add-to-list 'treesit-language-source-alist
+                 '(tsx . ("https://github.com/tree-sitter/tree-sitter-typescript"
+                                 "master" "tsx/src"))))
+  :config
+  (progn
+    (add-hook 'typescript-mode-hoook 'lsp-deferred)))
 #+end_src
 *** coffee script
 #+BEGIN_SRC emacs-lisp
