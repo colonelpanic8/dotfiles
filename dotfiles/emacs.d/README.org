@@ -2753,10 +2753,13 @@ The following is taken from [[https://github.com/syl20bnr/spacemacs/blob/a650877
   (delete-process "tern"))
 #+END_SRC
 *** typescript
-#+BEGIN_SRC emacs-lisp
+#+begin_src emacs-lisp
 (use-package typescript-mode
-  :mode "\\.ts\\'")
-#+END_SRC
+  :mode ("\\.ts\\'" "\\.tsx\\'")
+  :config
+  (progn
+    (add-hook 'typescript-mode-hook 'lsp-deferred)))
+#+end_src
 *** coffee script
 #+BEGIN_SRC emacs-lisp
 (use-package coffee-mode
