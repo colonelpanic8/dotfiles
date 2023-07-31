@@ -1566,7 +1566,41 @@ out how to detect that a buffer is a man mode buffer.
       (Man-fontify-manpage)
       (read-only-mode +1))))
 #+END_SRC
+** treesit
+*** treesit-auto
+#+begin_src emacs-lisp
+(use-package treesit-auto
+  :demand t
+  :config
+  (progn
+	(setq treesit-auto-install t)
+	(global-treesit-auto-mode +1)
 
+	(defun treesit-auto-copy-all-lsp-languages ()
+	  (cl-loop for recipe in treesit-auto-recipe-list
+			   do
+			   (let ((from (treesit-auto-recipe-remap recipe))
+					 (to (treesit-auto-recipe-ts-mode recipe)))
+				 (treesit-auto-copy-lsp-language from to)
+				 (treesit-auto-copy-lsp-client-languages from to))))
+
+	(defun treesit-auto-copy-lsp-language (from to)
+	  (let ((from-value (alist-get from lsp-language-id-configuration)))
+		(when from-value
+		  (add-to-list 'lsp-language-id-configuration `(,to . ,from-value))
+		  from-value)))
+
+	(defun treesit-auto-copy-lsp-client-languages (from to)
+	  (cl-loop for client in (hash-table-values lsp-clients)
+			   do
+               (let ((major-modes (lsp--client-major-modes client)))
+				 (when (memq from major-modes)
+				   (setf (lsp--client-major-modes client) (append major-modes (list to)))))))
+
+	(use-package lsp-mode
+	  :config
+	  (treesit-auto-copy-all-lsp-languages))))
+#+end_src
 * helpful
 #+begin_src emacs-lisp
 (use-package helpful
