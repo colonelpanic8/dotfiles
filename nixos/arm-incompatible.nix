@@ -9,5 +9,6 @@
     spicetify-cli
     spotify
     tor-browser-bundle-bin
+    vscode
   ];
 }
