@@ -1583,45 +1583,32 @@ out how to detect that a buffer is a man mode buffer.
 					 (to (treesit-auto-recipe-ts-mode recipe)))
 				 (funcall fn from to))))
 
-	;; (treesit-auto-for-each
-	;;  (lambda (from to)
-	;;    (letrec ((to-hook (treesit-auto-get-mode-hook-symbol to))
-	;;          (from-hook (treesit-auto-get-mode-hook-symbol from))
-	;;          (set-exp (list 'setq to-hook from-hook)))
-	;;      (message (format "%s" set-exp))
-	;;      (when (boundp from-hook)
-	;;        (eval result)))))
-
 	(defun treesit-auto-get-mode-hook-symbol (mode)
 	  (intern (concat (symbol-name mode) "-hook")))
 
-	(treesit-auto-get-mode-hook-symbol 'python-mode)
+	(defvar treesit-auto-run-original-hooks t)
+	(defvar treesit-auto-hook-copy-blacklist '((rust-mode . rust-ts-mode)))
 
-	(defun treesit-auto-copy-all-lsp-languages ()
-	  (cl-loop for recipe in treesit-auto-recipe-list
-			   do
-			   (let ((from (treesit-auto-recipe-remap recipe))
-					 (to (treesit-auto-recipe-ts-mode recipe)))
-				 (treesit-auto-copy-lsp-language from to)
-				 (treesit-auto-copy-lsp-client-languages from to))))
-
-	(defun treesit-auto-copy-lsp-language (from to)
-	  (let ((from-value (alist-get from lsp-language-id-configuration)))
-		(when from-value
-		  (add-to-list 'lsp-language-id-configuration `(,to . ,from-value))
-		  from-value)))
-
-	(defun treesit-auto-copy-lsp-client-languages (from to)
-	  (cl-loop for client in (hash-table-values lsp-clients)
-			   do
-			   (let ((major-modes (lsp--client-major-modes client)))
-				 (when (memq from major-modes)
-				   (setf (lsp--client-major-modes client)
-						 (append major-modes (list to)))))))
-
-	(use-package lsp-mode
-	  :config
-	  (treesit-auto-copy-all-lsp-languages))))
+	(treesit-auto-for-each
+	 (lambda (from to)
+	   (let ((targets (if (listp from) from (list from))))
+		 (cl-loop for from in targets
+				  do
+				  (letrec ((to-hook (treesit-auto-get-mode-hook-symbol to))
+						   (from-hook (treesit-auto-get-mode-hook-symbol from))
+						   (treesit-auto-hook-name
+							(intern
+							 (concat "treesit-auto-run-"
+									 (symbol-name from-hook)
+									 "-for-" (symbol-name to)))))
+					(defalias treesit-auto-hook-name
+					  `(lambda ()
+						 (when (and treesit-auto-run-original-hooks
+									(boundp ',from-hook)
+									(not (memq '(,from . ,to) treesit-auto-hook-copy-blacklist)))
+						   (message "Running hooks from %s for %s" ',from-hook ',to)
+						   (run-mode-hooks ',from-hook))))
+					(add-hook to-hook treesit-auto-hook-name))))))))
 #+end_src
 * helpful
 #+begin_src emacs-lisp
