@@ -24,7 +24,6 @@ in
       withTreeSitter = true;
     })
 
-    # Tools
     automake
     bazel
     bind
@@ -45,6 +44,7 @@ in
     gnumake
     htop
     inotify-tools
+    iotop
     ispell
     jq
     lsof
