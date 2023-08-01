@@ -1576,15 +1576,26 @@ out how to detect that a buffer is a man mode buffer.
 	(setq treesit-auto-install t)
 	(global-treesit-auto-mode +1)
 
-    (defun treesit-auto-for-each (fn)
-      (cl-loop for recipe in treesit-auto-recipe-list
-               do
-               (let ((from (treesit-auto-recipe-remap recipe))
+	(defun treesit-auto-for-each (fn)
+	  (cl-loop for recipe in treesit-auto-recipe-list
+			   do
+			   (let ((from (treesit-auto-recipe-remap recipe))
 					 (to (treesit-auto-recipe-ts-mode recipe)))
-                 (funcall fn from to))))
+				 (funcall fn from to))))
 
-    (defun treesit-auto-get-mode-hook-symbol (mode)
-      (intern (concat (symbol-name mode) "-mode-hook")))
+	;; (treesit-auto-for-each
+	;;  (lambda (from to)
+	;;    (letrec ((to-hook (treesit-auto-get-mode-hook-symbol to))
+	;;          (from-hook (treesit-auto-get-mode-hook-symbol from))
+	;;          (set-exp (list 'setq to-hook from-hook)))
+	;;      (message (format "%s" set-exp))
+	;;      (when (boundp from-hook)
+	;;        (eval result)))))
+
+	(defun treesit-auto-get-mode-hook-symbol (mode)
+	  (intern (concat (symbol-name mode) "-hook")))
+
+	(treesit-auto-get-mode-hook-symbol 'python-mode)
 
 	(defun treesit-auto-copy-all-lsp-languages ()
 	  (cl-loop for recipe in treesit-auto-recipe-list
@@ -1603,10 +1614,10 @@ out how to detect that a buffer is a man mode buffer.
 	(defun treesit-auto-copy-lsp-client-languages (from to)
 	  (cl-loop for client in (hash-table-values lsp-clients)
 			   do
-               (let ((major-modes (lsp--client-major-modes client)))
+			   (let ((major-modes (lsp--client-major-modes client)))
 				 (when (memq from major-modes)
 				   (setf (lsp--client-major-modes client)
-                         (append major-modes (list to)))))))
+						 (append major-modes (list to)))))))
 
 	(use-package lsp-mode
 	  :config
