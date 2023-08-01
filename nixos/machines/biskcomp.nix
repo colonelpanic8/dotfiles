@@ -3,13 +3,18 @@
     ../internet-computer.nix
     ../raspberry-pi.nix
     ../base.nix
-    ../desktop.nix
+    # ../desktop.nix
     # ../xmonad.nix
   ];
 
   services.xrdp.enable = true;
   services.xrdp.defaultWindowManager = "startplasma-x11";
   networking.firewall.allowedTCPPorts = [ 3389 ];
+
+  fileSystems."/" = {
+    device = "/dev/disk/by-label/NIXOS";
+    fsType = "ext4";
+  };
 
   services.home-assistant = {
     enable = true;
@@ -27,5 +32,5 @@
 
   networking.hostName = "biskcomp";
 
-  system.stateVersion = "21.05";
+  system.stateVersion = "23.10";
 }

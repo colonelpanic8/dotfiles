@@ -22,6 +22,7 @@
       generic-extlinux-compatible.enable = true;
     };
   };
+
   boot.extraModulePackages = [ ];
   boot.kernelParams = [ ];
 
@@ -32,12 +33,6 @@
   networking.interfaces.wlan0.useDHCP = true;
 
   powerManagement.cpuFreqGovernor = "ondemand";
-
-  fileSystems."/" = {
-    device = "/dev/disk/by-label/NIXOS_SD";
-    fsType = "ext4";
-    options = [ "noatime" ];
-  };
 
   environment.systemPackages = with pkgs; [
     raspberrypi-eeprom
