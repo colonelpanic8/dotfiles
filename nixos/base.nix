@@ -1,10 +1,11 @@
 { config, pkgs, options, inputs, ... }:
 {
   imports = [
-    ./nix.nix
-    ./users.nix
-    ./essential.nix
     ./environment.nix
+    ./essential.nix
+    ./nix.nix
+    ./ssh.nix
+    ./users.nix
   ];
 
   nixpkgs.config.permittedInsecurePackages = [
@@ -46,22 +47,6 @@
     '';
   };
 
-  services.avahi = {
-    enable = true;
-    nssmdns = true;
-    publish = {
-      enable = true;
-      domain = true;
-      workstation = true;
-      userServices = true;
-      addresses = true;
-      hinfo = true;
-    };
-    extraServiceFiles = {
-      ssh = "''${pkgs.avahi}/etc/avahi/services/ssh.service";
-    };
-  };
-
   # Audio
   sound.enable = true;
   hardware.pulseaudio.enable = true;
@@ -87,8 +72,6 @@
   services.gnome.at-spi2-core.enable = true;
 
   services.gnome.gnome-keyring.enable = true;
-
-  services.openssh.enable = true;
 
   services.locate.enable = true;
 

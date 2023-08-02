@@ -2,6 +2,7 @@
 {
   imports = [
     inputs.nixos-wsl.nixosModules.wsl
+    ./ssh.nix
     ./environment.nix
     ./essential.nix
     ./fonts.nix
@@ -22,8 +23,7 @@
     startMenuLaunchers = true;
     nativeSystemd = true;
 
-    # Enable native Docker support
-    # docker-native.enable = true;
+    docker-native.enable = true;
 
     # Enable integration with Docker Desktop (needs to be installed)
     # docker-desktop.enable = true;
