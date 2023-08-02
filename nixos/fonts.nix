@@ -3,12 +3,14 @@
   # Enable the gtk icon cache
   gtk.iconCache.enable = true;
 
+  nixpkgs.config.joypixels.acceptLicense = true;
+
   fonts = {
     packages = with pkgs; [
       cascadia-code
       dejavu_fonts
       emacs-all-the-icons-fonts
-      emojione
+      joypixels
       fira-code
       fira-mono
       font-awesome
