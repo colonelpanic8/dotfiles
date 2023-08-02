@@ -9,6 +9,7 @@
 
   nixpkgs.config.permittedInsecurePackages = [
     "openssl-1.0.2u"
+    "electron-12.2.3"
     "etcher"
   ];
 
@@ -45,7 +46,13 @@
     publish = {
       enable = true;
       domain = true;
+      workstation = true;
       userServices = true;
+      addresses = true;
+      hinfo = true;
+    };
+    extraServiceFiles = {
+      ssh = "''${pkgs.avahi}/etc/avahi/services/ssh.service";
     };
   };
 
