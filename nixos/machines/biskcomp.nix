@@ -12,7 +12,7 @@
   networking.firewall.allowedTCPPorts = [ 3389 ];
 
   fileSystems."/" = {
-    device = "/dev/disk/by-label/NIXOS";
+    device = "/dev/disk/by-label/NIXOS_SD";
     fsType = "ext4";
   };
 
@@ -31,6 +31,5 @@
   };
 
   networking.hostName = "biskcomp";
-
-  system.stateVersion = "23.10";
+  system.stateVersion = "23.11";
 }

@@ -1,10 +1,10 @@
 { config, pkgs, inputs, ... }:
 
 {
+  imports = [
+    inputs.nixos-hardware.nixosModules.raspberry-pi-4
+  ];
   # https://github.com/NixOS/nixos-hardware/issues/631
-  # imports = [
-  #   inputs.nixos-hardware.nixosModules.raspberry-pi-4
-  # ];
   # hardware.raspberry-pi."4".fkms-3d.enable = true;
   # hardware.raspberry-pi."4".audio.enable = true;
 
