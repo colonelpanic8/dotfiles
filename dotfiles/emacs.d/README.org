@@ -1828,9 +1828,10 @@ bind-key and global-set-key forms.
     (define-key projectile-mode-map (kbd "C-c p") 'projectile-command-map)
 
     (projectile-global-mode)
-    (setq projectile-require-project-root nil)
-    (setq projectile-enable-caching nil)
-    (setq projectile-git-submodule-command nil)
+    (setq projectile-require-project-root nil
+          projectile-enable-caching nil
+          projectile-git-submodule-command nil
+          project-vc-merge-submodules nil)
     (diminish 'projectile-mode)
     (bind-key* "C-c p s" 'imalison:do-rg)
     (bind-key* "C-c p f" 'imalison:projectile-find-file)))
@@ -2203,9 +2204,7 @@ I don't use auto-complete at all, so I have set up a hook to automatically disab
 ** electric-operator-mode
 #+BEGIN_SRC emacs-lisp
 (use-package electric-operator
-  :commands electric-operator-mode
-  :init
-  (add-hook 'python-mode-hook #'electric-operator-mode))
+  :commands electric-operator-mode)
 #+END_SRC
 ** string-inflection
 #+BEGIN_SRC emacs-lisp
