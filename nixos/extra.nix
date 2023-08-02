@@ -4,8 +4,8 @@
   programs.hyprland.enable = true;
 
   environment.systemPackages = with pkgs; [
+    android-studio
     ffmpeg
-    rust-analyzer
     asciidoctor
     roomeqwizard
     razergenie
