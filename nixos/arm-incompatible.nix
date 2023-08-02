@@ -1,6 +1,7 @@
 { pkgs, ... }:
 {
   environment.systemPackages = with pkgs; [
+    etcher
     discord
     google-chrome
     keybase-gui

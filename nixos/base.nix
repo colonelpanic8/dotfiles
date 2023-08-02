@@ -9,6 +9,7 @@
 
   nixpkgs.config.permittedInsecurePackages = [
     "openssl-1.0.2u"
+    "etcher"
   ];
 
   boot.loader.systemd-boot.configurationLimit = 7;

@@ -41,12 +41,14 @@ in
     gitFull
     git-lfs
     git-sync
+    glxinfo
     gnumake
     htop
     inotify-tools
     iotop
     ispell
     jq
+    lshw
     lsof
     magic-wormhole-rs
     ncdu
