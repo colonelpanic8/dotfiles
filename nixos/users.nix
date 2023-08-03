@@ -55,7 +55,9 @@
     alex = userDefaults // {
       name = "alex";
       shell = pkgs.zsh;
-      openssh.authorizedKeys.keys = allKeys;
+      openssh.authorizedKeys.keys = allKeys ++ [
+        "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIP2SQkJenAX67Ze99SKOVpKDD1XvAZnxQ8RLP0dL/Ej2 alexm@MALISONSERVER"
+      ];
     };
   };
 
