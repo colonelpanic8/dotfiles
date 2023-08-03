@@ -52,6 +52,11 @@
         "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAICDvbEVL+y7eV4+mtxOuHwyomBBQ6uYMesctstua20+e deanwenstrand@deans-mbp-2.lan"
       ];
     };
+    alex = userDefaults // {
+      name = "alex";
+      shell = pkgs.zsh;
+      openssh.authorizedKeys.keys = allKeys;
+    };
   };
 
   nix.settings.trusted-users = [ "root" "imalison" "kat" "dean" ];
