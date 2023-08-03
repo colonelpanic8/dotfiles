@@ -11,5 +11,6 @@
     spotify
     tor-browser-bundle-bin
     vscode
+    zoom-us
   ];
 }

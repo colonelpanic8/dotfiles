@@ -82,7 +82,6 @@
     vlc
     volnoti
     xfce.thunar
-    zoom-us
 
     # Audio
     playerctl
