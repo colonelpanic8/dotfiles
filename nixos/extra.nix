@@ -5,6 +5,7 @@
 
   environment.systemPackages = with pkgs; [
     android-studio
+    gradle
     ffmpeg
     asciidoctor
     roomeqwizard

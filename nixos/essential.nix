@@ -43,6 +43,7 @@ in
     git-sync
     glxinfo
     gnumake
+    gparted
     htop
     inotify-tools
     iotop

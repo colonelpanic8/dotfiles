@@ -51,7 +51,7 @@
 
   services.xrdp.enable = true;
   services.xrdp.defaultWindowManager = "startplasma-x11";
-  networking.firewall.allowedTCPPorts = [ 3389 ];
+  services.xrdp.openFirewall = true;
 
   system.stateVersion = "23.11";
 }
