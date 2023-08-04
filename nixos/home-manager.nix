@@ -17,12 +17,14 @@ inputs: { pkgs, config, ... }: {
     enable = true;
   };
 
+  programs.gpg.package = pkgs.gnupg_2_4_0;
+
   services.gpg-agent = {
     enable = true;
     defaultCacheTtl = 8 * 60 * 60;
     maxCacheTtl = 8 * 60 * 60;
     enableSshSupport = true;
-    pinentryFlavor = "qt";
+    pinentryFlavor = "gnome3";
   };
 
   services.blueman-applet = {

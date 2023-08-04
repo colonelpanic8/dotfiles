@@ -21,7 +21,13 @@
   systemd.services.systemd-user-sessions.enable = false;
 
   # Security
-  programs.gnupg.agent = { enable = true; enableSSHSupport = true; };
+  programs.gnupg = {
+    agent = {
+      enable = true;
+      enableSSHSupport = true;
+    };
+    package = pkgs.gnupg_2_4_0;
+  };
   services.pcscd.enable = true;
 
   # Networking
