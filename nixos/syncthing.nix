@@ -29,6 +29,10 @@ in
           devices = allDevices;
         };
       };
+      options = {
+        relaysEnabled = true;
+        localAnnounceEnabled = true;
+      };
     };
   };
 }
