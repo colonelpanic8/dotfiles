@@ -4,11 +4,12 @@
     ./android.nix
     ./arm-incompatible.nix
     ./base.nix
-    ./games.nix
-    ./desktop.nix
-    ./xmonad.nix
     ./code.nix
+    ./desktop.nix
     ./extra.nix
+    ./games.nix
     ./internet-computer.nix
+    ./syncthing.nix
+    ./xmonad.nix
   ];
 }

@@ -3,6 +3,7 @@
     ../internet-computer.nix
     ../raspberry-pi.nix
     ../base.nix
+    ../syncthing.nix
     # ../desktop.nix
     # ../xmonad.nix
   ];
