@@ -12,7 +12,7 @@
   };
 
   nixpkgs.overlays = with inputs; [
-    nix.overlays.default
+    # nix.overlays.default
     (import ./overlay.nix)
   ];
 

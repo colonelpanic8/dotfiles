@@ -1,6 +1,7 @@
 { lib, pkgs, config, inputs, ... }:
 {
   imports = [
+    ../syncthing.nix
     ../wsl.nix
     ../kat.nix
   ];
