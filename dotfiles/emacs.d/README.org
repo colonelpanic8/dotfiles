@@ -4043,11 +4043,14 @@ in term-mode. This makes term-mode 1000% more useful
       (term-line-mode)
       (imalison:avy arg))
 
-    (defun imalison:term-paste (&optional string)
+    (defun imalison:term-yank (&optional string)
       (interactive)
       (process-send-string
        (get-buffer-process (current-buffer))
-       (if string string (current-kill 0)))))
+       (if string string (current-kill 0))))
+    (defun imalison:term-yank-pop ()
+      (interactive)
+      (imalison:term-yank (read-from-kill-ring "Yank from kill-ring: "))))
   :bind
   (:map term-mode-map
         ("C-c C-k" . imalison:term-char-mode)
@@ -4058,8 +4061,8 @@ in term-mode. This makes term-mode 1000% more useful
         ("M-x" . execute-extended-command)
         ("C-j" . imalison:avy-term)
         ("M-:" . eval-expression)
-        ("C-y" . imalison:term-paste)
-        ("M-y" . yank-pop))
+        ("C-y" . imalison:term-yank)
+        ("M-y" . imalison:term-yank-pop))
   :config
   (progn
 
