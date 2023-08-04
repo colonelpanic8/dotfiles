@@ -4,7 +4,7 @@
     enable = true;
     folders = {
       sync = {
-        path = "/home/syncthing/sync/";
+        path = "~/sync/";
       };
     };
     settings = {
