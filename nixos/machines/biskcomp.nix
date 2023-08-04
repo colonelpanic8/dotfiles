@@ -4,13 +4,14 @@
     ../raspberry-pi.nix
     ../base.nix
     ../syncthing.nix
-    # ../desktop.nix
+    ../desktop.nix
+    ../code.nix
     # ../xmonad.nix
   ];
 
-  services.xrdp.enable = true;
-  services.xrdp.defaultWindowManager = "startplasma-x11";
-  networking.firewall.allowedTCPPorts = [ 3389 ];
+  services.plex = {
+    enable = true;
+  };
 
   fileSystems."/" = {
     device = "/dev/disk/by-label/NIXOS_SD";
