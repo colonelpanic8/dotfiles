@@ -1,11 +1,18 @@
 { pkgs, ... }:
 {
+  system.activationScripts.syncthingPermissions = {
+    text = ''
+      chown -R syncthing:syncthing /var/lib/syncthing
+      chmod -R 2770 /var/lib/syncthing
+      mkdir -p /var/lib/syncthing/sync
+    '';
+  };
   services.syncthing = {
     enable = true;
     settings = {
       folders = {
         sync = {
-          path = "~/";
+          path = "~/sync";
         };
       };
       devices = {

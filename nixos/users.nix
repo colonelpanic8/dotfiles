@@ -1,7 +1,7 @@
 { pkgs, inputs, ... }:
 {
   security.sudo.wheelNeedsPassword = false;
-  users.extraUsers = let
+  users.users = let
     extraGroups = [
       "audio"
       "adbusers"
@@ -10,6 +10,7 @@
       "networkmanager"
       "openrazer"
       "plugdev"
+      "syncthing"
       "systemd-journal"
       "video"
       "wheel"
@@ -35,6 +36,11 @@
       "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIO3tlMePru6ZlSuf8yUii3N1dy3WwJnSQAt3EgETkctK kat@jay-lenovo.local"
     ];
   in {
+    syncthing = {
+      extraGroups = [ "syncthing" ];
+      home = "/var/lib/syncthing";
+      createHome = true;
+    };
     imalison = userDefaults // {
       name = "imalison";
       shell = pkgs.zsh;
