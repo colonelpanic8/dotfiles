@@ -2,7 +2,6 @@
 {
   services.syncthing = {
     enable = true;
-    relaysEnabled = true;
     settings = {
       devices = {
         ryzen-shine = { id = "63NX4LF-DHG7DLP-P6BHDKL-QL7TFXE-3DEGJ6G-TUBNXYS-UMI35KF-BV67WQP"; };
