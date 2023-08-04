@@ -11,5 +11,5 @@
 	path = nixos/home-manager
 	url = git@github.com:IvanMalison/home-manager.git
 [submodule "nixos/nixpkgs"]
-	path = nixos/nixpkgs
+	path = nixpkgs
 	url = git@github.com:IvanMalison/nixpkgs.git
