@@ -31,13 +31,13 @@ with lib;
 
     programs.starship = {
       enable = true;
-      settings = '''
+      settings = """
         add_newline = false
 
         [character]
         success_symbol = "[➜](bold green)"
         error_symbol = "[➜](bold red)"
-      '''
+      """;
     };
 
     environment = {
