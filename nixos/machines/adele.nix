@@ -2,8 +2,7 @@
 
 {
   imports = [
-    ../full.nix
-    ../base.nix
+    ../laptop.nix
     inputs.nixos-hardware.nixosModules.dell-xps-17-9700-intel
   ];
 
@@ -36,13 +35,6 @@
 
   nix.settings.maxJobs = lib.mkDefault 12;
   powerManagement.cpuFreqGovernor = lib.mkDefault "powersave";
-
-  services.redshift.enable = true;
-
-  location = {
-    latitude = 37.8104601;
-    longitude = -122.2572529;
-  };
 
   system.stateVersion = "20.03";
 }
