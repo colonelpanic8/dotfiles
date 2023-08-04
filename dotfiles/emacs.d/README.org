@@ -4779,18 +4779,6 @@ This also adds syntax highlighting for gradle
   :mode (("\\.css\\'" . css-mode)
          ("\\.rasi\\'" . css-mode)))
 #+END_SRC
-** robe
-#+BEGIN_SRC emacs-lisp
-(use-package robe
-  :commands robe-mode
-  :init
-  (progn (add-hook 'ruby-mode-hook 'robe-mode)))
-#+END_SRC
-** rinari
-#+BEGIN_SRC emacs-lisp
-(use-package rinari
-  :after ruby-mode)
-#+END_SRC
 ** sgml-mode
 #+BEGIN_SRC emacs-lisp
 (use-package sgml-mode
