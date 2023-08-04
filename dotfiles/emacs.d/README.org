@@ -3993,12 +3993,6 @@ modeline and with excessive http requests to github.
                          gist-unstar gist-list-starred gist-fork))
 #+END_SRC
 * Programming
-** realgud
-realgud provides debugging support with many external debuggers in emacs
-#+BEGIN_SRC emacs-lisp
-(use-package realgud
-  :disabled t)
-#+END_SRC
 ** emr
 emr (emacs refactor) provides support for refactoring in many programming languages
 #+BEGIN_SRC emacs-lisp
