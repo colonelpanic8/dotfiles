@@ -16,5 +16,6 @@
     gimp
     texlive.combined.scheme-full
     tor
+    yt-dlp
   ];
 }
