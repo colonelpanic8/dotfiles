@@ -41,6 +41,10 @@
     };
   };
 
+  swapDevices = [
+    { device = "/swapfile"; size = 8192; } # size is in MiB
+  ];
+
   networking.hostName = "biskcomp";
   system.stateVersion = "23.11";
 }
