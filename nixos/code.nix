@@ -53,5 +53,6 @@
 
     # nix
     nixd
+    nil
   ];
 }

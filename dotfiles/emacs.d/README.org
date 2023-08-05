@@ -2618,6 +2618,7 @@ eval-last-sexp.
 *** nix
 #+BEGIN_SRC emacs-lisp
 (use-package nix-mode
+  :hook (nix-mode . lsp-deferred)
   :preface
   (progn
     (imalison:add-blacklist-to-major nix-mode)
@@ -2625,6 +2626,13 @@ eval-last-sexp.
   :config
   (progn
     (setq nix-indent-function 'nix-indent-line)))
+
+(use-package lsp-nix
+  :straight nil
+  :after (lsp-mode)
+  :config
+  (progn
+    (setq lsp-nix-nil-formatter ["nixpkgs-fmt"])))
 #+END_SRC
 #+BEGIN_SRC emacs-lisp
 (use-package nix-update
