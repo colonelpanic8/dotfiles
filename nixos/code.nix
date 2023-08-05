@@ -50,5 +50,8 @@
     # misc
     perf-tools
     protobuf
+
+    # nix
+    nixd
   ];
 }
