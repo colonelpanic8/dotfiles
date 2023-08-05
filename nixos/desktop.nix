@@ -51,7 +51,6 @@
     dfeet
     dolphin
     element-desktop
-    emacs
 
     feh
     firefox
