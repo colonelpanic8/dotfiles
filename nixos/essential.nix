@@ -44,6 +44,7 @@ in
     glxinfo
     gnumake
     gparted
+    home-manager
     htop
     inotify-tools
     iotop
