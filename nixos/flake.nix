@@ -3,7 +3,7 @@
     nixos-hardware = { url = github:NixOS/nixos-hardware; };
 
     nixpkgs = {
-      url = path:../nixpkgs;
+      url = github:NixOS/nixpkgs/nixos-unstable;
     };
 
     home-manager = {

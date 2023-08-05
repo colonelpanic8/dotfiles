@@ -7,9 +7,3 @@
 [submodule "dotfiles/xmonad/xmonad-contrib"]
 	path = dotfiles/config/xmonad/xmonad-contrib
 	url = ../xmonad-contrib.git
-[submodule "nixos/home-manager"]
-	path = nixos/home-manager
-	url = git@github.com:IvanMalison/home-manager.git
-[submodule "nixos/nixpkgs"]
-	path = nixpkgs
-	url = git@github.com:IvanMalison/nixpkgs.git
