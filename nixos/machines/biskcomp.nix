@@ -16,6 +16,10 @@
   services.gitea = {
     enable = true;
     lfs.enable = true;
+    server = {
+      DOMAIN = "1896Folsom.duckdns.org";
+      SSH_PORT = 1123;
+    };
   };
 
   fileSystems."/" = {
