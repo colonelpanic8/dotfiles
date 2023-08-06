@@ -55,6 +55,8 @@ inputs: { pkgs, config, ... }: {
 
   services.status-notifier-watcher.enable = true;
 
+  services.autorandr.enable = true;
+
   services.random-background = {
     enable = true;
     display = "fill";

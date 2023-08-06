@@ -37,7 +37,7 @@
     ];
   in {
     syncthing = {
-      extraGroups = [ "syncthing" ];
+      extraGroups = [ "syncthing" "wheel" ];
       home = "/var/lib/syncthing";
       createHome = true;
     };
@@ -67,5 +67,5 @@
     };
   };
 
-  nix.settings.trusted-users = [ "root" "imalison" "kat" "dean" ];
+  nix.settings.trusted-users = [ "root" "imalison" "kat" "dean" "alex" ];
 }

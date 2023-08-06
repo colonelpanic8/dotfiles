@@ -29,6 +29,7 @@ in
         sync = {
           path = "~/sync";
           devices = allDevices;
+          copyOwnershipFromParent = true;
         };
       };
       options = {
