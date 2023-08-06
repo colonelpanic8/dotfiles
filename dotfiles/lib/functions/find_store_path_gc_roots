@@ -1,4 +1,4 @@
-#!/usr/bin/env bash
+#!/usr/bin/env sh
 
 function find_store_path_gc_roots {
     store_path="$(realpath $1)"

@@ -1,4 +1,4 @@
-{ config, pkgs, options, lib, ... }:
+{ config, pkgs, options, lib, inputs, ... }:
 with lib;
 {
   options = {
@@ -46,6 +46,11 @@ with lib;
       shellAliases = {
         df_ssh = "TERM='xterm-256color ssh -o StrictHostKeyChecking=no'";
       };
+      variables = {
+        ROFI_SYSTEMD_TERM = "alacritty -e";
+        NIXPKGS_GIT_REV = "${inputs.nixpkgs.rev}";
+        NIXPKGS_SOURCE = "${inputs.nixpkgs.outPath}";
+      };
       interactiveShellInit = ''
         vterm_printf(){
             if [ -n "$TMUX" ] && ([ "''${TERM%%-*}" = "tmux" ] || [ "''${TERM%%-*}" = "screen" ] ); then
@@ -66,10 +71,8 @@ with lib;
         export STARSHIP_INSIDE_EMACS="yes"
       '';
       extraInit = ''
-        export ROFI_SYSTEMD_TERM="alacritty -e"
-        export PATH="${libDir}/bin:$PATH"
-        export PATH="${libDir}/functions:$PATH"
-        export PATH="$HOME/.cargo/bin:$PATH"
+        export NIX_PATH="nixpkgs=${inputs.nixpkgs.outPath}:$NIX_PATH";
+        export PATH="$HOME/.cargo/bin:${libDir}/bin:${libDir}/functions:$PATH";
       '';
     };
   };
