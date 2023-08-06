@@ -28,7 +28,7 @@ inputs: { pkgs, config, ... }: {
   };
 
   services.blueman-applet = {
-    enable = false;
+    enable = true;
   };
 
   services.taffybar = {

@@ -19,6 +19,10 @@
       sessionCommands = ''
         systemctl --user import-environment GDK_PIXBUF_MODULE_FILE DBUS_SESSION_BUS_ADDRESS PATH
       '';
+      setupCommands = ''
+        autorandr -c
+        systemctl restart autorandr.service
+      '';
     };
   };
 
@@ -26,16 +30,15 @@
     enable = true;
   };
 
-  systemd.services.autorandr-startup = {
-    partOf = [ "graphical-session.target" ];
-    description = "autorandr";
+  systemd.services.autorandr-startup-after-dm = {
+    wantedBy = [ "display-manager.service" ];
+    after = [ "display-manager.service" ];
+    description = "autorandr after display manager";
 
     serviceConfig = {
       Type = "oneshot";
       ExecStart = "${pkgs.autorandr}/bin/autorandr --change";
     };
-
-    wantedBy = [ "graphical-session.target" ];
   };
 
   # This is for the benefit of VSCODE running natively in wayland
