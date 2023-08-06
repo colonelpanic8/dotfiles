@@ -56,7 +56,7 @@
   services.blueman.enable = true;
 
   # Printing
-  services.printing.enable = true;
+  # services.printing.enable = true;
 
   # Keyboard/Keymap
   console.keyMap = "us";

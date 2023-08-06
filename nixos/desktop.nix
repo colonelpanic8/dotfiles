@@ -22,6 +22,22 @@
     };
   };
 
+  services.autorandr = {
+    enable = true;
+  };
+
+  systemd.services.autorandr-startup = {
+    partOf = [ "graphical-session.target" ];
+    description = "autorandr";
+
+    serviceConfig = {
+      Type = "oneshot";
+      ExecStart = "${pkgs.autorandr}/bin/autorandr --change";
+    };
+
+    wantedBy = [ "graphical-session.target" ];
+  };
+
   # This is for the benefit of VSCODE running natively in wayland
   environment.sessionVariables.NIXOS_OZONE_WL = "1";
 

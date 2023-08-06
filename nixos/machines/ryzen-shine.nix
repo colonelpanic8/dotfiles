@@ -32,7 +32,7 @@
             enable = true;
             rate = "59.95";
             mode = "2560x1440";
-            position = "0x0";
+            position = "440x0";
           };
         };
       };

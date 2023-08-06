@@ -107,7 +107,7 @@ inputs: { pkgs, config, ... }: {
       animation-clamping = false;
       animation-for-open-window = "zoom";
       animation-for-unmap-window = "zoom";
-      animation-for-transient-window = "slide-up";
+      animation-for-transient-window = "slide-down";
     };
 
     wintypes = {
