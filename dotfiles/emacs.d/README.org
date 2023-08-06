@@ -2623,6 +2623,10 @@ eval-last-sexp.
   (progn
     (imalison:add-blacklist-to-major nix-mode)
     (setq nix-mode-blacklist '("all-packages.nix" "hackage-packages.nix")))
+  (defun imalison:goto-nixpkgs ()
+    (interactive)
+    (shell-command-to-string "nix eval  --expr '<nixpkgs>' --impure")
+    (find-file ))
   :config
   (progn
     (setq nix-indent-function 'nix-indent-line)))
