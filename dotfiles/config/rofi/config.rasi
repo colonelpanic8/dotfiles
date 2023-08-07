@@ -8,4 +8,4 @@ configuration {
 	dpi: 100;
 }
 
-@theme "colorful/style_10.rasi"
+@theme "colorful/style_7.rasi"
