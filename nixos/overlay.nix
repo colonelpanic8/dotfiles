@@ -8,13 +8,18 @@ final: prev: {
     };
   });
 
-  picom = prev.picom.overrideAttrs(_: {
+  picom = prev.picom.overrideAttrs(oldAttrs: {
     src = prev.fetchFromGitHub {
       repo = "picom";
-      owner = "dccsillag";
-      rev = "51b21355696add83f39ccdb8dd82ff5009ba0ae5";
-      sha256 = "sha256-crCwRJd859DCIC0pEerpDqdX2j8ZrNAzVaSSB3mTPN8==";
+      owner = "IvanMalison";
+      rev = "267683ef7a5a63372afba98b1c2db21b825f2b18";
+      sha256 = "sha256-OI1aiSf6I+KXSIEJIxE9Aj7rP0QsExJ8daitsP2YG38=";
     };
+    buildInputs = [
+     final.pcre2 final.xorg.xcbutil
+    ] ++ final.lib.remove final.xorg.libXinerama (
+      final.lib.remove final.pcre oldAttrs.buildInputs
+    );
   });
 
   expressvpn = prev.expressvpn.overrideAttrs(_: {
