@@ -2193,7 +2193,7 @@ I don't use auto-complete at all, so I have set up a hook to automatically disab
 ** format-all
 #+begin_src emacs-lisp
 (use-package format-all
-  :commands format-all-buffer)
+  :commands (format-all-buffer format-all-mode))
 #+end_src
 ** cliphist
 #+BEGIN_SRC emacs-lisp
@@ -2298,18 +2298,21 @@ I don't use auto-complete at all, so I have set up a hook to automatically disab
 *** python
 #+BEGIN_SRC emacs-lisp
 (defvar imalison:use-lsp-python t)
+(defvar imalison:use-black nil)
+
 (use-package python
   :commands python-mode
   :mode ("\\.py\\'" . python-mode)
   :preface
   (defun imalison:python-mode ()
-	(setq show-trailing-whitespace t)
-	;; Remove default python completion, as we are going to rely on
-	;; company-jedi or company-lsp.
-	;; (remove-hook 'completion-at-point-functions
-	;;              'python-completion-complete-at-point 'local)
-	(if imalison:use-lsp-python
-        (lsp-deferred)))
+    (add-hook 'hack-local-variables-hook
+              (lambda ()
+                (when imalison:use-black
+                  (setq format-all-formatters nil)
+                  (add-to-list 'format-all-formatters '("Python" . (black)))
+                  (format-all-mode))
+                (when imalison:use-lsp-python
+                  (lsp-deferred))) nil t))
   :config
   (progn
     (use-package lsp-mode
@@ -2317,6 +2320,7 @@ I don't use auto-complete at all, so I have set up a hook to automatically disab
       (progn
         (require 'lsp-pylsp)
         (setq lsp-pylsp-plugins-pydocstyle-enabled nil)))
+
 	(use-package sphinx-doc)
 	(unbind-key "C-j" python-mode-map)
 	(add-hook 'python-mode-hook #'imalison:python-mode)))
@@ -2941,24 +2945,7 @@ The following is taken from [[https://github.com/syl20bnr/spacemacs/blob/a650877
 #+END_SRC
 *** C/C++
 #+BEGIN_SRC emacs-lisp
-(use-package cc-mode
-  :disabled t
-  :preface
-  (defun imalison:cc-mode-hook ()
-    (when (derived-mode-p 'c-mode 'c++-mode 'java-mode 'asm-mode)
-      (ggtags-mode 1)))
-  :config
-  (progn
-    (use-package ggtags
-      :demand t
-      :bind (:map ggtags-mode-map
-                  ("C-c g s" . ggtags-find-other-symbol)
-                  ("C-c g h" . ggtags-view-tag-history)
-                  ("C-c g r" . ggtags-find-reference)
-                  ("C-c g f" . ggtags-find-file)
-                  ("C-c g c" . ggtags-create-tags)
-                  ("C-c g u" . ggtags-update-tags)))
-    (add-hook 'c-mode-common-hook 'imalison:cc-mode-hook)))
+(use-package cc-mode)
 #+END_SRC
 *** C--
 #+BEGIN_SRC emacs-lisp

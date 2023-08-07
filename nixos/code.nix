@@ -42,6 +42,7 @@
 
     # python
     poetry
+    black
 
     # dhall
     haskellPackages.dhall
