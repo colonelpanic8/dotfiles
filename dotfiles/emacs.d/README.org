@@ -2871,17 +2871,6 @@ The following is taken from [[https://github.com/syl20bnr/spacemacs/blob/a650877
     (cl-loop for checker in '(haskell-stack-ghc haskell-ghc haskell-hlint)
              do (delq checker flycheck-checkers))))
 #+END_SRC
-**** intero
-Intero seems to be causing hangs, so it has been disabled
-#+BEGIN_SRC emacs-lisp
-(use-package intero
-  :disabled t
-  :after haskell-mode
-  :config
-  (progn
-    (defun intero--warn (&rest args))
-    (add-hook 'haskell-mode-hook 'intero-mode-whitelist)))
-#+END_SRC
 **** hindent
 #+BEGIN_SRC emacs-lisp
 (use-package hindent
