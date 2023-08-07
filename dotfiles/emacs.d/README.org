@@ -4288,7 +4288,6 @@ I don't use iedit directly, but it is used by [[*emr][emr]] and I need to disabl
 I had to disable this mode because something that it does messes with coding settings and makes it so that I have to select the appropriate encoding every time I save gpg encrypted files.
 #+BEGIN_SRC emacs-lisp
 (use-package editorconfig
-  :disabled t
   :config
   (progn
     (add-to-list 'editorconfig-exclude-modes '(org-mode))
