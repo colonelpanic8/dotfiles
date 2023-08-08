@@ -4,8 +4,11 @@
   imports = [
     inputs.nixos-hardware.nixosModules.raspberry-pi-4
   ];
+  # These are needed to allow hardware acceleration again
   # https://github.com/NixOS/nixos-hardware/issues/631
-  # hardware.raspberry-pi."4".fkms-3d.enable = true;
+  boot.kernelParams = [ "kunit.enable=0" ];
+  hardware.deviceTree.filter = "bcm2711-rpi-4*.dtb";
+  hardware.raspberry-pi."4".fkms-3d.enable = true;
   # hardware.raspberry-pi."4".audio.enable = true;
 
   boot = {
@@ -24,7 +27,6 @@
   };
 
   boot.extraModulePackages = [ ];
-  boot.kernelParams = [ ];
 
   hardware.enableRedistributableFirmware = true;
 
