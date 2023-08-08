@@ -14,14 +14,20 @@
       fira-code
       fira-mono
       font-awesome
-      # iosevka
+
       noto-fonts-emoji
       roboto
       source-code-pro
       source-sans-pro
       source-serif-pro
       twemoji-color-font
-      (nerdfonts.override { fonts = [ "JetBrainsMono" "FantasqueSansMono" ]; })
+      (nerdfonts.override { fonts = [
+        "JetBrainsMono"
+        "FantasqueSansMono"
+        "Iosevka"
+        "VictorMono"
+        "SourceCodePro"
+      ]; })
     ];
     fontconfig = {
       hinting.autohint = true;
