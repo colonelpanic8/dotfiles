@@ -6,6 +6,9 @@
   };
 
   environment.systemPackages = with pkgs; [
+    # C
+    clang
+
     # Haskell
     cabal-install
     cabal2nix
