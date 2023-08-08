@@ -3582,6 +3582,13 @@ alphanumeric characters only."
   :straight nil
   :after org)
 #+end_src
+**** org-modern
+#+begin_src emacs-lisp
+(use-package org-modern
+  :disabled t
+  :after org
+  :hook (org-mode . org-modern-mode))
+#+end_src
 **** org-projectile
 #+BEGIN_SRC emacs-lisp
 (use-package org-projectile
@@ -3621,6 +3628,27 @@ alphanumeric characters only."
                                     :and (:regexp "State \"DONE\""
                                                   :log t))))))))
 #+END_SRC
+**** org-roam
+#+begin_src emacs-lisp
+(use-package org-roam
+  :config
+  (when (version<= "29.0" emacs-version)
+    (use-package emacsql-sqlite-builtin
+      :demand t)
+    (setq org-roam-database-connector 'sqlite-builtin))
+  :custom
+  (org-roam-directory (file-truename "~/org/roam/")))
+#+end_src
+***** ui
+#+begin_src emacs-lisp
+(use-package org-roam-ui
+  :after org-roam
+  :custom
+  (org-roam-ui-sync-theme t)
+  (org-roam-ui-follow t)
+  (org-roam-ui-update-on-save t)
+  (org-roam-ui-open-on-start nil))
+#+end_src
 **** org-notify
  #+BEGIN_SRC emacs-lisp
 (use-package org-notify
@@ -3685,17 +3713,6 @@ alphanumeric characters only."
   :config
   (setq org-reveal-root
       (imalison:join-paths "file://" imalison:projects-directory "reveal.js")))
-#+END_SRC
-**** org-caldav
-#+BEGIN_SRC emacs-lisp
-(use-package org-caldav
-  :defer t
-  :config
-  (progn
-    (setq org-caldav-url "https://www.google.com/calendar/dav"
-          org-caldav-inbox imalison:org-inbox-file
-          org-caldav-files (list imalison:org-calendar-file)
-          org-icalendar-timezone "America/Los_Angeles")))
 #+END_SRC
 *** TeX
 #+BEGIN_SRC emacs-lisp
