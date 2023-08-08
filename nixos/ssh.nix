@@ -19,7 +19,7 @@
   services.openssh = {
     enable = true;
     settings = {
-      passwordAuthentication = false;
+      PasswordAuthentication = false;
     };
   };
 }
