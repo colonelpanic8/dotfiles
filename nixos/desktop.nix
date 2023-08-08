@@ -105,5 +105,8 @@
     playerctl
     pulsemixer
     espeak
+
+    #Misc
+    graphviz
   ];
 }
