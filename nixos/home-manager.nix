@@ -95,7 +95,7 @@ inputs: { pkgs, config, ... }: {
 
   services.picom = {
     enable = true;
-    vSync = true;
+    vSync = false;
     backend = "glx";
     extraArgs = ["--experimental-backends"];
 
@@ -108,6 +108,9 @@ inputs: { pkgs, config, ... }: {
       animation-for-open-window = "zoom";
       animation-for-unmap-window = "zoom";
       animation-for-transient-window = "slide-down";
+      fade-in-step = 0.028;
+      fade-out-step = 0.028;
+      fading = true;
     };
 
     wintypes = {
