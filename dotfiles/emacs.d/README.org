@@ -4839,7 +4839,9 @@ Ensure all themes that I use are installed:
 ** doom-modeline
 #+begin_src emacs-lisp
 (use-package doom-modeline
-  :hook (after-init . doom-modeline-mode))
+  :hook (after-init . doom-modeline-mode)
+  :custom
+  (doom-modeline-height 40))
 #+end_src
 ** page-break-lines
 #+BEGIN_SRC emacs-lisp
