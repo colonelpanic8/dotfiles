@@ -8,9 +8,8 @@
  */
 
 configuration {
-	font:							"Iosevka Nerd Font 10";
+    font:							"Noto Sans 10";
     show-icons:                     true;
-	icon-theme: 					"Papirus";
     display-drun: 					"";
     drun-display-format:            "{name}";
     disable-history:                false;
@@ -37,7 +36,7 @@ prompt {
 	padding: 						0.30% 1% 0% -0.5%;
 	background-color: 				@al;
 	text-color: 					@fg;
-	font:							"FantasqueSansMono Nerd Font 12";
+	font:							"Fira Code 12";
 }
 
 entry {
