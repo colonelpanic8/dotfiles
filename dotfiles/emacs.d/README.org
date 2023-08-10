@@ -310,9 +310,8 @@ Update: It turns out that it is term-exec-1 that is causing this environment
 variable to be set to something strange. When I tried to disable it, it seemed
 to cause issues. Oh well...
 ** Don't use system font
+I want to control my own font for emacs
 #+BEGIN_SRC emacs-lisp
-;; Let me control my own goddamn fonts
-;; XXX: This doesn't seem to work
 (setq font-use-system-font nil)
 #+END_SRC
 ** Set default browser
@@ -2825,7 +2824,6 @@ The following is taken from [[https://github.com/syl20bnr/spacemacs/blob/a650877
 #+BEGIN_SRC emacs-lisp
 (use-package rust-mode
   :mode (("\\.rs\\'" . rust-mode))
-  ;; :hook (rust-mode . lsp)
   :preface
   (progn
     (defvar imalison:use-lsp-rust t)
@@ -2839,7 +2837,6 @@ The following is taken from [[https://github.com/syl20bnr/spacemacs/blob/a650877
       (setq rust-format-on-save t)))
   :config
   (progn
-    (use-package toml-mode)
     (add-hook 'rust-mode-hook 'imalison:rust-mode-hook)))
 #+END_SRC
 *** haskell
@@ -3015,6 +3012,11 @@ The following is taken from [[https://github.com/syl20bnr/spacemacs/blob/a650877
 #+begin_src emacs-lisp
 (use-package dhall-mode
   :mode "\\.dhall\\'")
+#+end_src
+*** toml
+#+begin_src emacs-lisp
+(use-package toml-mode
+  :mode (("\\.toml\\'" . toml-mode)))
 #+end_src
 ** Document
 *** org
@@ -4937,7 +4939,7 @@ load-theme hook (See the heading below).
 ** Set Font
 #+BEGIN_SRC emacs-lisp
 (add-to-list 'default-frame-alist
-             '(font . "Source Code Pro-10:weight=semi-bold:antialias=true"))
+             '(font . "JetBrainsMono Nerd Font-10:weight=medium"))
 #+END_SRC
 ** imalison:appearance
 #+BEGIN_SRC emacs-lisp
