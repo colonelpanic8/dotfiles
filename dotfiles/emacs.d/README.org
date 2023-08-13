@@ -3720,6 +3720,16 @@ alphanumeric characters only."
   (setq org-reveal-root
       (imalison:join-paths "file://" imalison:projects-directory "reveal.js")))
 #+END_SRC
+**** org-fc
+#+begin_src emacs-lisp
+(use-package org-fc
+  :bind ("C-c 9" . org-fc-hydra/body)
+  :config
+  (progn
+    (require 'org-fc-hydra))
+  :straight (org-fc :type git :host github :repo "l3kn/org-fc"
+                    :files ("*.el" "awk" "demo.org")))
+#+end_src
 *** TeX
 #+BEGIN_SRC emacs-lisp
 (use-package tex
