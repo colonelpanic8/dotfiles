@@ -40,6 +40,7 @@
   :config
   (setq max-specpdl-size 99999999))
 
+(defvar imalison:kat-mode nil)
 (setq custom-file "~/.emacs.d/custom-before.el")
 (setq load-prefer-newer t)
 
@@ -61,6 +62,11 @@
 (let ((debug-on-error t))
   (org-babel-load-file
    (concat (file-name-directory load-file-name) "README.org")))
+
+(when imalison:kat-mode
+  (let ((debug-on-error t))
+    (org-babel-load-file
+     (concat (file-name-directory load-file-name) "kat-mode.org"))))
 
 (when imalison:do-benchmark (benchmark-init/deactivate))
 

@@ -10,6 +10,7 @@
 .tutor
 /eln-cache
 /transient
+/tree-sitter
 README.el
 README.html
 ac-comphist.dat
@@ -26,6 +27,7 @@ eproject.lst
 eshell
 ido.last
 jabber-avatar-cache
+kat-mode.el
 org-caldav-*
 org-caldav-backup.org
 org-config.el
@@ -49,4 +51,3 @@ uber.el
 url
 var
 xkcd
-/tree-sitter
