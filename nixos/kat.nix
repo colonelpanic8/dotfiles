@@ -33,6 +33,11 @@
           uri = "git@github.com:katandtonic/obsidian.git";
           interval = 60;
         };
+        org = {
+          path = config.home.homeDirectory + "/org";
+          uri = "ssh://gitea@1896Folsom.duckdns.org:1123/kkathuang/org.git";
+          interval = 60;
+        };
       };
     };
 
