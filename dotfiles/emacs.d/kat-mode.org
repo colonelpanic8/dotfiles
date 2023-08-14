@@ -49,7 +49,6 @@ This makes evil-mode play nice with org-fc
 * org-mode
 #+begin_src emacs-lisp
 (setq org-directory "~/org/")  ; This is the directory where you want to save your Org files. Change as necessary.
-(setq org-capture-templates nil)
 (add-to-list 'org-capture-templates
              '("j" "Journal" entry (file+datetree "~/org/daily-journal.org")
                "* %?\nEntered on %U\n  %i\n  %a"))
