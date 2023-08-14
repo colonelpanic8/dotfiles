@@ -11,6 +11,10 @@
     ffmpeg
   ];
 
+  environment.extraInit = ''
+    export PAGER=cat
+  '';
+
   home-manager.users.kat = { pkgs, config, ... }: {
     services.gpg-agent = {
       enable = true;
@@ -36,11 +40,10 @@
         org = {
           path = config.home.homeDirectory + "/org";
           uri = "ssh://gitea@1896Folsom.duckdns.org:1123/kkathuang/org.git";
-          interval = 60;
+          interval = 45;
         };
       };
     };
-
     home.stateVersion = "23.11";
   };
 }
