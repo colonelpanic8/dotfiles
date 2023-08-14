@@ -3659,7 +3659,34 @@ alphanumeric characters only."
       (use-package emacsql-sqlite-builtin
         :demand t)
       (setq org-roam-database-connector 'sqlite-builtin))
-    (org-roam-db-autosync-mode +1))
+    (org-roam-db-autosync-mode +1)
+
+    (defun imalison:frames-displaying-buffer (buf)
+      "Return a list of frames in which BUF is displayed."
+      (let ((target-buffer (if (bufferp buf) buf (get-buffer buf))))
+        (if target-buffer
+            (delq nil
+                  (mapcar (lambda (frame)
+                            (if (get-buffer-window target-buffer frame)
+                                frame))
+                          (frame-list)))
+          nil)))
+
+    (defun imalison:org-roam-frame-based-buffer-visibility-fn ()
+      (cond
+       ((--any (funcall frame-mode-is-frame-viewable-fn it)
+               (imalison:frames-displaying-buffer org-roam-buffer)) 'visible)
+       ((get-buffer org-roam-buffer) 'exists)
+       (t 'none)))
+
+    (use-package frame-mode
+      :demand t
+      :config
+      (progn
+        (emit-variable-set-mode
+         imalison:org-roam-set-frame-visibility-mode
+         org-roam-buffer-visibility-fn 'imalison:org-roam-frame-based-buffer-visibility-fn)
+        (emit-make-mode-dependent imalison:org-roam-set-frame-visibility-mode frame-mode))))
   :custom
   (org-roam-directory (file-truename "~/org/roam/")))
 #+end_src
