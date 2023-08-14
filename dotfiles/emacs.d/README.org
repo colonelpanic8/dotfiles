@@ -3598,22 +3598,30 @@ alphanumeric characters only."
 **** org-projectile
 #+BEGIN_SRC emacs-lisp
 (use-package org-projectile
-  :defer 3
+  :straight (org-projectile :type git :flavor melpa
+                :files ("org-projectile.el" "org-project-capture.el"
+                        "org-projectile-pkg.el" "org-project-capture-backend.el")
+                :branch "org-project-capture"
+                :host github
+                :repo "colonelpanic8/org-project-capture")
+  :bind ("C-c n p" . org-project-capture-project-todo-completing-read)
   :config
   (progn
-    (setq org-projectile-projects-file
+    (setq org-project-capture-default-backend
+          (make-instance 'org-project-capture-projectile-backend))
+    (setq org-project-capture-projects-file
           (imalison:join-paths imalison:org-dir "projects.org")
-          org-projectile-capture-template
+          org-project-capture-capture-template
           (format "%s%s" "* TODO %?" imalison:created-property-string))
     (add-to-list 'org-capture-templates
-                 (org-projectile-project-todo-entry
+                 (org-project-capture-project-todo-entry
                   :capture-character "l"
                   :capture-heading "Linked Project TODO"))
     (add-to-list 'org-capture-templates
-                 (org-projectile-project-todo-entry
+                 (org-project-capture-project-todo-entry
                   :capture-character "p"))
     (setq org-confirm-elisp-link-function nil)
-    (imalison:add-to-org-agenda-files (org-projectile-todo-files))))
+    (imalison:add-to-org-agenda-files (org-project-capture-todo-files))))
 #+END_SRC
 **** org-pomodoro
 #+BEGIN_SRC emacs-lisp
@@ -3637,11 +3645,14 @@ alphanumeric characters only."
 **** org-roam
 #+begin_src emacs-lisp
 (use-package org-roam
+  :defer 1
   :config
-  (when (version<= "29.0" emacs-version)
-    (use-package emacsql-sqlite-builtin
-      :demand t)
-    (setq org-roam-database-connector 'sqlite-builtin))
+  (progn
+    (when (version<= "29.0" emacs-version)
+      (use-package emacsql-sqlite-builtin
+        :demand t)
+      (setq org-roam-database-connector 'sqlite-builtin))
+    (org-roam-db-autosync-mode +1))
   :custom
   (org-roam-directory (file-truename "~/org/roam/")))
 #+end_src
