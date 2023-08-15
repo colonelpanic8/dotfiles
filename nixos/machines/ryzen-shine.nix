@@ -95,9 +95,9 @@
   # High-DPI console
   console.font = lib.mkDefault "${pkgs.terminus_font}/share/consolefonts/ter-u28n.psf.gz";
 
-  services.xrdp.enable = true;
-  services.xrdp.defaultWindowManager = "startplasma-x11";
-  services.xrdp.openFirewall = true;
+  # services.xrdp.enable = true;
+  # services.xrdp.defaultWindowManager = "startplasma-x11";
+  # services.xrdp.openFirewall = true;
 
   system.stateVersion = "20.03";
 
