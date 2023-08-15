@@ -19,10 +19,7 @@ in
 
   environment.systemPackages = with pkgs; [
     python-with-my-packages
-    (emacs29.override {
-      withNativeCompilation = true;
-      withTreeSitter = true;
-    })
+    emacs
 
     automake
     bazel

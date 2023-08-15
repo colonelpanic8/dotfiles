@@ -33,4 +33,9 @@ final: prev: {
       hash = "sha256-HXkVjdAdmSQx3S4/rLif2slxJ/iXhOosthDGAPsMFIM=";
     };
   });
+
+  emacs = prev.emacs29.override {
+    withNativeCompilation = true;
+    withTreeSitter = true;
+  };
 }
