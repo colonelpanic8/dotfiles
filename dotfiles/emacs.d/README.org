@@ -1366,17 +1366,11 @@ Paradox is a package.el extension. I have no use for it now that I use straight.
     (eval-after-load 'subword '(diminish 'subword-mode))
     (eval-after-load 'simple '(diminish 'visual-line-mode))))
 #+END_SRC
-** edit-server
-#+BEGIN_SRC emacs-lisp
-(use-package edit-server
-  :commands edit-server-start
-  :disabled t
-  :defer 1
-  :config
-  (progn
-    (edit-server-start)
-    (setq edit-server-new-frame nil)))
-#+END_SRC
+** emacs-everywhere
+#+begin_src emacs-lisp
+(use-package emacs-everywhere
+  :commands emacs-everywhere)
+#+end_src
 ** atomic-chrome
 #+BEGIN_SRC emacs-lisp
 (use-package atomic-chrome
