@@ -6,6 +6,8 @@
     ../nixified.ai.nix
   ];
 
+  boot.loader.systemd-boot.configurationLimit = 5;
+
   networking.hostName = "ryzen-shine";
 
   environment.systemPackages = with pkgs; [
