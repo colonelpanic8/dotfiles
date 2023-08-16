@@ -989,7 +989,6 @@ addKeys conf@XConfig { modMask = modm } =
 
     -- Focus/Layout manipulation
 
-    , ((modm, xK_e), goToNextScreenX)
     , ((modm, xK_slash), sendMessage $ Toggle MIRROR)
     , ((modm, xK_backslash),
        cycleWorkspaceOnCurrentScreen [xK_Super_L] xK_backslash xK_slash)
@@ -1037,6 +1036,7 @@ addKeys conf@XConfig { modMask = modm } =
     , ((hyper, xK_o), spawn "rofi_paswitch")
     , ((modm, xK_apostrophe), spawn "load_default_map")
     , ((modalt, xK_apostrophe), spawn "load_xkb_map")
+    , ((modm, xK_e), spawn "emacsclient --eval '(emacs-everywhere)'")
 
     -- Media keys
 
