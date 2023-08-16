@@ -3598,18 +3598,15 @@ alphanumeric characters only."
 #+end_src
 **** org-projectile
 #+BEGIN_SRC emacs-lisp
-(use-package org-projectile
-  :straight (org-projectile :type git :flavor melpa
-                :files ("org-projectile.el" "org-project-capture.el"
-                        "org-projectile-pkg.el" "org-project-capture-backend.el")
-                :branch "org-project-capture"
-                :host github
-                :repo "colonelpanic8/org-project-capture")
+(use-package org-project-capture
   :bind ("C-c n p" . org-project-capture-project-todo-completing-read)
   :config
   (progn
-    (setq org-project-capture-default-backend
-          (make-instance 'org-project-capture-projectile-backend))
+    (use-package org-projectile
+      :demand t
+      :config
+      (setq org-project-capture-default-backend
+          (make-instance 'org-project-capture-projectile-backend)))
     (setq org-project-capture-projects-file
           (imalison:join-paths imalison:org-dir "projects.org")
           org-project-capture-capture-template
