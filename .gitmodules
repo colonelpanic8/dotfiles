@@ -7,3 +7,6 @@
 [submodule "dotfiles/xmonad/xmonad-contrib"]
 	path = dotfiles/config/xmonad/xmonad-contrib
 	url = ../xmonad-contrib.git
+[submodule "dotfiles/config/alacritty/themes"]
+	path = dotfiles/config/alacritty/themes
+	url = https://github.com/alacritty/alacritty-theme
