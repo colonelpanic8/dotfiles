@@ -3596,17 +3596,20 @@ alphanumeric characters only."
   :after org
   :hook (org-mode . org-modern-mode))
 #+end_src
-**** org-projectile
+**** org-project-capture
 #+BEGIN_SRC emacs-lisp
 (use-package org-project-capture
   :bind ("C-c n p" . org-project-capture-project-todo-completing-read)
+  ;; We want this to load somewhat quickly because we need to update the list of agenda files
+  :defer 2
   :config
   (progn
     (use-package org-projectile
       :demand t
       :config
       (setq org-project-capture-default-backend
-          (make-instance 'org-project-capture-projectile-backend)))
+            (make-instance 'org-project-capture-projectile-backend)))
+    (org-project-capture-single-file)
     (setq org-project-capture-projects-file
           (imalison:join-paths imalison:org-dir "projects.org")
           org-project-capture-capture-template
@@ -3843,20 +3846,6 @@ alphanumeric characters only."
   :mode ("\\.puml\\'" "\\.plantuml\\'")
   :preface
   (progn
-    (cond ((equal system-type 'darwin)
-           (let* ((plantuml-dir
-                   (s-trim (shell-command-to-string "brew --prefix plantuml")))
-                  (filename
-                   (when (file-exists-p plantuml-dir)
-                     (--first (s-ends-with? ".jar" it) (directory-files plantuml-dir))))
-                  (filepath (when filename
-                              (imalison:join-paths plantuml-dir filename))))
-             (setq plantuml-jar-path filepath
-                   org-plantuml-jar-path filepath)))
-          ((equal system-type 'gnu/linux)
-           (let ((filepath "/opt/plantuml/plantuml.jar"))
-             (setq plantuml-jar-path filepath
-                   org-plantuml-jar-path filepath))))
     (add-to-list
      'org-src-lang-modes '("plantuml" . plantuml))))
 #+END_SRC
