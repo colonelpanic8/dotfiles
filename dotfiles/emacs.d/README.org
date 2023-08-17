@@ -1,5 +1,6 @@
 # -*- mode: org; -*-
-[[https://travis-ci.org/IvanMalison/dotfiles][file:https://travis-ci.org/IvanMalison/dotfiles.svg?branch=master]]
+[[https://travis-ci.org/IvanMalison/dotfiles][
+file:https://travis-ci.org/IvanMalison/dotfiles.svg?branch=master]]
 
 This document is best read at [[http://ivanmalison.github.io/dotfiles/]] or, of
 course, in emacs, as the internal links that follow are unlikely to work
@@ -3598,6 +3599,14 @@ alphanumeric characters only."
 #+end_src
 **** org-project-capture
 #+BEGIN_SRC emacs-lisp
+;; TODO: remove once melpa recipe fixed to point to right repo
+(use-package org-category-capture
+  :straight
+  (org-category-capture
+   :type git :flavor melpa
+   :files ("org-category-capture*.el" "org-category-capture-pkg.el")
+   :host github :repo "colonelpanic8/org-project-capture"))
+
 (use-package org-project-capture
   :bind ("C-c n p" . org-project-capture-project-todo-completing-read)
   ;; We want this to load somewhat quickly because we need to update the list of agenda files
@@ -3609,7 +3618,10 @@ alphanumeric characters only."
       :config
       (setq org-project-capture-default-backend
             (make-instance 'org-project-capture-projectile-backend)))
-    (org-project-capture-single-file)
+    (setq org-project-capture-strategy
+          (make-instance 'org-project-capture-combine-strategies
+                         :strategies (list (make-instance 'org-project-capture-single-file-strategy)
+                                           (make-instance 'org-project-capture-per-project-strategy))))
     (setq org-project-capture-projects-file
           (imalison:join-paths imalison:org-dir "projects.org")
           org-project-capture-capture-template
@@ -4342,7 +4354,9 @@ I had to disable this mode because something that it does messes with coding set
 (use-package direnv
   :demand t
   :config
-  (direnv-mode +1))
+  (direnv-mode +1)
+  :custom
+  (direnv-always-show-summary nil))
 #+end_src
 ** dtrt-indent
 #+BEGIN_SRC emacs-lisp
