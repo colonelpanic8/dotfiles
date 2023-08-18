@@ -107,6 +107,8 @@
     espeak
 
     #Misc
+    # Visualization
     graphviz
+    nodePackages.mermaid-cli
   ];
 }
