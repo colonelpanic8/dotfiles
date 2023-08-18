@@ -3210,6 +3210,11 @@ The following is taken from [[https://github.com/syl20bnr/spacemacs/blob/a650877
         (org-babel-do-load-languages
          'org-babel-load-languages '((typescript . t)))))
 
+    (use-package ob-mermaid
+      :config
+      (org-babel-do-load-languages
+         'org-babel-load-languages '((mermaid . t))))
+
     (setq org-log-into-drawer t
           org-log-reschedule t
           org-log-redeadline t
@@ -3907,6 +3912,12 @@ alphanumeric characters only."
   (progn
     (add-hook 'markdown-mode-hook 'imalison:disable-linum-mode)))
 #+END_SRC
+*** mermaid-mode
+#+begin_src emacs-lisp
+(use-package mermaid-mode
+  :mode (("\\.mermaid\\'" . mermaid-mode)
+         ("\\.mmd\\'" . mermaid-mode)))
+#+end_src
 *** plantuml-mode
 #+BEGIN_SRC emacs-lisp
 (use-package plantuml-mode
