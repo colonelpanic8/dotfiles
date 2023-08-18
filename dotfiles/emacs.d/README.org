@@ -3017,8 +3017,20 @@ The following is taken from [[https://github.com/syl20bnr/spacemacs/blob/a650877
 #+BEGIN_SRC emacs-lisp :tangle org-config.el
 (defvar imalison:org-dir "~/org")
 (use-package org
-  :bind (:map org-mode-map
-              (("C-e" . end-of-visual-line)))
+  :commands (org-mode org org-mobile-push org-mobile-pull org-agenda)
+  :mode ("\\.org\\'" . org-mode)
+  :bind (("C-c c" . org-capture)
+         :map org-mode-map
+         (("C-e" . end-of-visual-line)
+          ("C-c n t" . org-insert-todo-heading)
+          ("C-c n s" . org-insert-todo-subheading)
+          ("C-c n h" . org-insert-habit)
+          ("C-c n m" . org-make-habit)
+          ("C-c n l" . org-store-link)
+          ("C-c n i" . org-insert-link)
+          ("C-c C-t" . org-todo)
+          ("C-c C-S-t" . org-todo-force-notes)
+          ("M-." . elisp-slime-nav-find-elisp-thing-at-point)))
   :preface
   (progn
     (require 'cl-lib)
@@ -3039,6 +3051,20 @@ The following is taken from [[https://github.com/syl20bnr/spacemacs/blob/a650877
     (add-hook 'org-mode-hook 'imalison:disable-linum-mode)
     (add-hook 'org-mode-hook (lambda () (setq org-todo-key-trigger t)))
     (add-hook 'org-agenda-mode-hook 'imalison:disable-linum-mode)
+
+    (cl-defun imalison:org-time-condition-met-p (&key (property "CREATED") (days 30) (future nil))
+      (let* ((property-value (org-entry-get (point) property))
+             (comparison-time
+              (if future
+                  (time-add (current-time) (days-to-time days))
+                (time-subtract (current-time) (days-to-time days))))
+             (formatted-time-string (format-time-string "<%Y-%m-%d %H:%M>" comparison-time))
+             (compare-time (org-time-string-to-time formatted-time-string))
+             (node-time (when property-value (org-time-string-to-time property-value))))
+        (when node-time
+          (if future
+              (time-less-p node-time compare-time)
+            (time-less-p compare-time node-time)))))
 
     (defun org-archive-if (condition-function)
       (if (funcall condition-function)
@@ -3131,20 +3157,6 @@ The following is taken from [[https://github.com/syl20bnr/spacemacs/blob/a650877
   the same tree node, and the headline of the tree node in the Org-mode file."
       (interactive "P")
       (org-agenda-todo "DONE")))
-  :commands (org-mode org org-mobile-push org-mobile-pull org-agenda)
-  :mode ("\\.org\\'" . org-mode)
-  :bind (("C-c a" . org-agenda)
-         ("C-c c" . org-capture)
-         :map org-mode-map
-         ("C-c n t" . org-insert-todo-heading)
-         ("C-c n s" . org-insert-todo-subheading)
-         ("C-c n h" . org-insert-habit)
-         ("C-c n m" . org-make-habit)
-         ("C-c n l" . org-store-link)
-         ("C-c n i" . org-insert-link)
-         ("C-c C-t" . org-todo)
-         ("C-c C-S-t" . org-todo-force-notes)
-         ("M-." . elisp-slime-nav-find-elisp-thing-at-point))
   :config
   (progn
     (setq org-global-properties
@@ -3338,20 +3350,6 @@ The following is taken from [[https://github.com/syl20bnr/spacemacs/blob/a650877
     :STYLE: habit
     :END:"))
 
-    (cl-defun imalison:org-time-condition-met-p (&key (property "CREATED") (days 30) (future nil))
-      (let* ((property-value (org-entry-get (point) property))
-             (comparison-time
-              (if future
-                  (time-add (current-time) (days-to-time days))
-                (time-subtract (current-time) (days-to-time days))))
-             (formatted-time-string (format-time-string "<%Y-%m-%d %H:%M>" comparison-time))
-             (compare-time (org-time-string-to-time formatted-time-string))
-             (node-time (when property-value (org-time-string-to-time property-value))))
-        (when node-time
-          (if future
-              (time-less-p node-time compare-time)
-            (time-less-p compare-time node-time)))))
-
     (defmacro imalison:def-agenda-pred (&rest forms)
       `(lambda ()
          (unless ,@forms
@@ -3388,7 +3386,9 @@ The following is taken from [[https://github.com/syl20bnr/spacemacs/blob/a650877
              ((org-agenda-overriding-header "Recently Created:")
               (org-agenda-skip-function
                ,(imalison:def-agenda-pred
-                 (imalison:org-time-condition-met-p :property "DEADLINE" :days 10))))))
+                 (imalison:org-time-condition-met-p :days 10)))
+              (org-agenda-cmp-user-defined 'org-cmp-creation-times)
+              (org-agenda-sorting-strategy '(user-defined-down)))))
           (next '(todo "NEXT"))
           (started '(todo "STARTED"))
           (missing-deadline
@@ -3421,6 +3421,10 @@ The following is taken from [[https://github.com/syl20bnr/spacemacs/blob/a650877
               ("c" "At least priority C:" tags-todo "+PRIORITY<\"D\""
                ((org-agenda-overriding-header
                  "At least priority C:"))))))
+
+    (require 'org-agenda)
+    (when (fboundp 'org-agenda-transient)
+      (bind-key "C-c a" 'org-agenda-transient))
 
     ;; What follows is a description of the significance of each of
     ;; the values available in `org-todo-keywords'. All headings with
