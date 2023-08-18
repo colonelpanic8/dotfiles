@@ -1057,6 +1057,7 @@ I keep it around just in case I need it.
 ** Sane Defaults
 #+BEGIN_SRC emacs-lisp -n -r
 (global-auto-revert-mode)
+(auto-save-mode +1)
 (show-paren-mode 1)
 (setq reb-re-syntax 'string)
 (setq ad-redefinition-action 'accept)              (ref:ad-redefinition-action)
@@ -3170,6 +3171,12 @@ The following is taken from [[https://github.com/syl20bnr/spacemacs/blob/a650877
 
     (setq org-todo-repeat-to-state "TODO")
 
+    (defun imalison:org-todo-save (&rest args)
+      (when (eq major-mode 'org-mode)
+        (save-buffer)))
+
+    (advice-add 'org-todo :after 'imalison:org-todo-save)
+
     (setq org-agenda-span 10)
     (setq org-agenda-start-day "-2d")
 
@@ -3226,6 +3233,7 @@ The following is taken from [[https://github.com/syl20bnr/spacemacs/blob/a650877
     ;; org-mode add-ons
     (use-package org-present
       :commands org-present)
+
     (use-package org-pomodoro
       :disabled t)
 
