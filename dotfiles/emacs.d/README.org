@@ -2614,8 +2614,6 @@ eval-last-sexp.
   imalison:copy-eval-last-sexp)
 
 (define-key lisp-mode-shared-map (kbd "C-c C-c") 'eval-defun)
-(define-key lisp-mode-shared-map (kbd "C-c o r") 'up-list-region)
-(define-key lisp-mode-shared-map (kbd "C-c o o") 'up-list-back)
 (define-key lisp-mode-shared-map (kbd "C-x C-e") 'imalison:eval-last-sexp)
 (unbind-key "C-j" lisp-interaction-mode-map)
 #+END_SRC
@@ -3056,6 +3054,10 @@ The following is taken from [[https://github.com/syl20bnr/spacemacs/blob/a650877
     (defun org-archive-completed-in-buffer ()
       (interactive)
       (org-map-entries 'org-archive-if-completed))
+
+    (defun org-archive-all-in-buffer ()
+      (interactive)
+      (org-map-entries 'org-archive-subtree))
 
     (cl-defun imalison:make-org-template (&key (content "%?"))
       (with-temp-buffer
@@ -3608,7 +3610,7 @@ alphanumeric characters only."
    :host github :repo "colonelpanic8/org-project-capture"))
 
 (use-package org-project-capture
-  :bind ("C-c n p" . org-project-capture-project-todo-completing-read)
+  :bind ("C-c o p" . org-project-capture-project-todo-completing-read)
   ;; We want this to load somewhat quickly because we need to update the list of agenda files
   :defer 2
   :config
@@ -3790,6 +3792,12 @@ alphanumeric characters only."
     (require 'org-fc-hydra))
   :straight (org-fc :type git :host github :repo "l3kn/org-fc"
                     :files ("*.el" "awk" "demo.org")))
+#+end_src
+**** org-ql
+#+begin_src emacs-lisp
+(use-package org-ql
+  :bind ("C-c o s" . org-ql-find-in-agenda)
+  :commands org-ql-find-in-agenda)
 #+end_src
 *** TeX
 #+BEGIN_SRC emacs-lisp
@@ -4248,8 +4256,7 @@ crux-reopen-as-root-mode makes it so that any file owned by root will automatica
 (use-package crux
   :defer 10
   :bind (("C-c C-s" . crux-sudo-edit)
-         ("C-c C-r" . crux-eval-and-replace)
-         ("C-c o" . crux-open-with))
+         ("C-c C-r" . crux-eval-and-replace))
   :config
   (progn
     (crux-reopen-as-root-mode)))
