@@ -3046,11 +3046,18 @@ The following is taken from [[https://github.com/syl20bnr/spacemacs/blob/a650877
           org-edit-src-content-indentation 0
           org-src-preserve-indentation t)
 
+    (defun imalison:set-display-custom-times ()
+      (setq org-display-custom-times t))
+
     (setq org-goto-interface 'outline-path-completion
           org-goto-max-level 10
           org-export-headline-levels 3)
     (add-hook 'org-mode-hook 'imalison:disable-linum-mode)
     (add-hook 'org-mode-hook (lambda () (setq org-todo-key-trigger t)))
+    (add-hook 'org-mode-hook 'imalison:set-display-custom-times)
+    (add-hook 'org-agenda-mode-hook 'imalison:disable-linum-mode)
+    (add-hook 'org-agenda-mode-hook 'imalison:set-display-custom-times)
+
     (add-hook 'org-agenda-mode-hook 'imalison:disable-linum-mode)
 
     (cl-defun imalison:org-time-condition-met-p (&key (property "CREATED") (days 30) (future nil))
@@ -3170,12 +3177,6 @@ The following is taken from [[https://github.com/syl20bnr/spacemacs/blob/a650877
                       "DONE(d!)" "HANDLED(h!)" "EXPIRED(e!)" "CANCELED(c!)")))
 
     (setq org-todo-repeat-to-state "TODO")
-
-    (defun imalison:org-todo-save (&rest args)
-      (when (eq major-mode 'org-mode)
-        (save-buffer)))
-
-    (advice-add 'org-todo :after 'imalison:org-todo-save)
 
     (setq org-agenda-span 10)
     (setq org-agenda-start-day "-2d")
