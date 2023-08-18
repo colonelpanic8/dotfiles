@@ -3338,21 +3338,57 @@ The following is taken from [[https://github.com/syl20bnr/spacemacs/blob/a650877
     :STYLE: habit
     :END:"))
 
+    (cl-defun imalison:org-time-condition-met-p (&key (property "CREATED") (days 30) (future nil))
+      (let* ((property-value (org-entry-get (point) property))
+             (comparison-time
+              (if future
+                  (time-add (current-time) (days-to-time days))
+                (time-subtract (current-time) (days-to-time days))))
+             (formatted-time-string (format-time-string "<%Y-%m-%d %H:%M>" comparison-time))
+             (compare-time (org-time-string-to-time formatted-time-string))
+             (node-time (when property-value (org-time-string-to-time property-value))))
+        (when node-time
+          (if future
+              (time-less-p node-time compare-time)
+            (time-less-p compare-time node-time)))))
+
+    (defmacro imalison:def-agenda-pred (&rest forms)
+      `(lambda ()
+         (unless ,@forms
+           (or (outline-next-heading)
+               (point-max)))))
+
     (let ((this-week-high-priority
            ;; The < in the following line has behavior that is opposite
            ;; to what one might expect.
-           '(tags-todo "+PRIORITY<\"C\"+DEADLINE<\"<+1w>\"DEADLINE>\"<+0d>\""
-                       ((org-agenda-overriding-header
-                         "Upcoming high priority tasks:"))))
-          (due-today '(tags-todo
-                       "+DEADLINE=<\"<+1d>\"|+SCHEDULED=<\"<+0d>\""
-                       ((org-agenda-overriding-header
-                         "Due today:"))))
-          (recently-created '(tags-todo
-                              "+CREATED=>\"<-30d>\""
-                              ((org-agenda-overriding-header "Recently created:")
-                               (org-agenda-cmp-user-defined 'org-cmp-creation-times)
-                               (org-agenda-sorting-strategy '(user-defined-down)))))
+           `(tags-todo
+             "+PRIORITY<\"C\""
+             ((org-agenda-overriding-header "Upcoming high priority tasks:")
+              (org-agenda-skip-function
+               ,(imalison:def-agenda-pred
+                 (or
+                  (imalison:org-time-condition-met-p
+                   :property "DEADLINE" :days 7 :future t)
+                  (imalison:org-time-condition-met-p
+                   :property "SCHEDULED" :days 7 :future t)))))))
+          (due-today
+           `(alltodo
+             ""
+             ((org-agenda-overriding-header "Due today:")
+              (org-agenda-skip-function
+               ,(imalison:def-agenda-pred
+                 (or
+                  (imalison:org-time-condition-met-p
+                   :property "DEADLINE" :days 1 :future t)
+                  (imalison:org-time-condition-met-p
+                   :property "SCHEDULED" :days 0 :future t)))))))
+          (recently-created
+           `(alltodo
+             ""
+             ((org-agenda-overriding-header "Recently Created:")
+              (org-agenda-skip-function
+               ,(imalison:def-agenda-pred
+                 (imalison:org-time-condition-met-p :property "DEADLINE" :days 10))))))
           (next '(todo "NEXT"))
           (started '(todo "STARTED"))
           (missing-deadline
