@@ -1780,8 +1780,17 @@ bind-key and global-set-key forms.
 #+BEGIN_SRC emacs-lisp
 (use-package projectile
   :demand t
-  :bind (("C-x f" . projectile-find-file-in-known-projects)
-         ("C-c p f" . imalison:projectile-find-file))
+  :bind (:map projectile-mode-map
+              ("C-c p f" . imalison:projectile-find-file)
+              ("C-c p" . projectile-command-map)
+              ("C-c p s" . imalison:do-rg)
+              ("C-c p f" . imalison:projectile-find-file))
+  :custom
+  ((projectile-require-project-root nil)
+   (projectile-enable-caching nil)
+   (projectile-git-submodule-command nil)
+   (project-vc-merge-submodules nil)
+   (projectile-current-project-on-switch 'keep))
   :preface
   (progn
     (defmacro imalison:projectile-do-in-project (project-dir &rest forms)
@@ -1817,16 +1826,8 @@ bind-key and global-set-key forms.
                                            (nth 0 file-info) "/.projectile")))))))
   :config
   (progn
-    (define-key projectile-mode-map (kbd "C-c p") 'projectile-command-map)
-
     (projectile-global-mode)
-    (setq projectile-require-project-root nil
-          projectile-enable-caching nil
-          projectile-git-submodule-command nil
-          project-vc-merge-submodules nil)
-    (diminish 'projectile-mode)
-    (bind-key* "C-c p s" 'imalison:do-rg)
-    (bind-key* "C-c p f" 'imalison:projectile-find-file)))
+    (diminish 'projectile-mode)))
 #+END_SRC
 ** ido
 #+BEGIN_SRC emacs-lisp
