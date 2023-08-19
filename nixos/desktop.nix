@@ -78,7 +78,8 @@
 
     kleopatra
     libnotify
-    libreoffice
+    # Seems to be broken
+    # libreoffice
     lxappearance
     lxqt.lxqt-powermanagement
     networkmanagerapplet
@@ -106,7 +107,6 @@
     pulsemixer
     espeak
 
-    #Misc
     # Visualization
     graphviz
     nodePackages.mermaid-cli
