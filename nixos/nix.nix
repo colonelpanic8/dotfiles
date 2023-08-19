@@ -9,6 +9,7 @@
       keep-outputs = true;
       keep-derivations = true;
     };
+    channel.enable = false;
   };
 
   nixpkgs.overlays = with inputs; [
