@@ -1,7 +1,6 @@
 { pkgs, ... }:
 {
   imports = [
-    ./arm-incompatible.nix
     ./base.nix
     ./code.nix
     ./desktop.nix

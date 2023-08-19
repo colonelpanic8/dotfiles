@@ -2,7 +2,6 @@
 {
   imports = [
     ./android.nix
-    ./arm-incompatible.nix
     ./base.nix
     ./code.nix
     ./desktop.nix

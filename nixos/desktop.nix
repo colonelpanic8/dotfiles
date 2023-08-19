@@ -110,5 +110,17 @@
     # Visualization
     graphviz
     nodePackages.mermaid-cli
-  ];
+  ] ++ (if config.system.platform.system == "x86_64-linux" then with pkgs; [
+    etcher
+    discord
+    google-chrome
+    keybase-gui
+    pommed_light
+    slack
+    spicetify-cli
+    spotify
+    tor-browser-bundle-bin
+    vscode
+    zoom-us
+  ] else []);
 }

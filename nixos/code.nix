@@ -1,4 +1,4 @@
-{ pkgs, ... }:
+{ pkgs, config, ... }:
 {
   programs.direnv = {
     enable = true;
@@ -39,10 +39,6 @@
     # Ruby
     ruby
 
-    # purescript
-    purescript
-    spago
-
     # python
     poetry
     black
@@ -58,5 +54,9 @@
     # nix
     nixd
     nil
-  ];
+  ] ++ (if config.system.platform.system == "x86_64-linux" then with pkgs; [
+    # purescript
+    purescript
+    spago
+  ] else []);
 }
