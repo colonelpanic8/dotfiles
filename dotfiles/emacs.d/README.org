@@ -3715,6 +3715,11 @@ alphanumeric characters only."
 #+begin_src emacs-lisp
 (use-package org-roam
   :defer 1
+  :bind
+  (("C-c r f" . org-roam-node-find)
+   ("C-c r i" . org-roam-node-insert)
+   ("C-c r b" . imalison:org-roam-browse-backlink)
+   ("C-c r t" . org-roam-buffer-toggle))
   :config
   (progn
     (when (version<= "29.0" emacs-version)
