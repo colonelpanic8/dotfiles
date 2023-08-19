@@ -1,0 +1,7 @@
+#!/usr/bin/env sh
+
+function add_to_path {
+	path_lines "$2" | { cat -; echo "$1" } | path_from_lines
+}
+
+add_to_path "$@"

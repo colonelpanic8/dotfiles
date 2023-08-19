@@ -1,7 +1,8 @@
 #!/usr/bin/env sh
 
 function path_lines {
-	split_by_char ":" "$PATH"
+	var="${1:-PATH}"
+	split_by_char ":" "${!var}"
 }
 
-path_lines
+path_lines "$@"

@@ -1,0 +1,7 @@
+#!/usr/bin/env sh
+
+function path_from_lines {
+	join_by_char ":"
+}
+
+path_from_lines "$@"

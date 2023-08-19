@@ -1,0 +1,22 @@
+#!/usr/bin/env sh
+
+function join_by_char {
+    delimiter="$1"
+    if [ -z "$delimiter" ]; then
+        echo "Please specify a delimiter."
+        return 1
+    fi
+
+    while IFS= read -r line; do
+        # Append the line to the result with the delimiter, but not for the first line
+        if [ -z "$result" ]; then
+            result="$line"
+        else
+            result="$result$delimiter$line"
+        fi
+    done
+
+    echo "$result"
+}
+
+join_by_char "$@"

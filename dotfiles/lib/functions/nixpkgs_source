@@ -1,0 +1,7 @@
+#!/usr/bin/env sh
+
+function nixpkgs_source {
+	nix eval  --expr '<nixpkgs>' --impure
+}
+
+nixpkgs_source
