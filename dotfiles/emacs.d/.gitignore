@@ -53,3 +53,5 @@ var
 xkcd
 org-roam.db
 /projects
+/multisession
+gptel-crowdsourced-prompts.csv
