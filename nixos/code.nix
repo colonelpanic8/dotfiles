@@ -54,9 +54,10 @@
     # nix
     nixd
     nil
-  ] ++ (if config.system.platform.system == "x86_64-linux" then with pkgs; [
+  ] ++ (if pkgs.system == "x86_64-linux" then with pkgs; [
     # purescript
     purescript
-    spago
+    # Broken
+    # spago
   ] else []);
 }

@@ -110,7 +110,7 @@
     # Visualization
     graphviz
     nodePackages.mermaid-cli
-  ] ++ (if config.system.platform.system == "x86_64-linux" then with pkgs; [
+  ] ++ (if pkgs.system == "x86_64-linux" then with pkgs; [
     etcher
     discord
     google-chrome
