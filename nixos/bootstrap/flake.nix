@@ -25,6 +25,38 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
     nixos-wsl = { url = github:nix-community/NixOS-WSL; };
+
+    taffybar = {
+      url = "github:taffybar/taffybar";
+      inputs = {
+        nixpkgs.follows = "nixpkgs";
+        flake-utils.follows = "flake-utils";
+        git-ignore-nix.follows = "git-ignore-nix";
+        xmonad.follows = "xmonad";
+      };
+    };
+
+    xmonad = {
+      url = "github:xmonad/xmonad";
+            inputs = {
+        nixpkgs.follows = "nixpkgs";
+        flake-utils.follows = "flake-utils";
+        git-ignore-nix.follows = "git-ignore-nix";
+      };
+    };
+
+    xmonad-contrib = {
+      url = "github:xmonad/xmonad-contrib";
+    };
+
+    notifications-tray-icon = {
+      url = "github:IvanMalison/notifications-tray-icon";
+      inputs.flake-utils.follows = "flake-utils";
+      inputs.git-ignore-nix.follows = "git-ignore-nix";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+
+    nixified-ai = { url = "github:nixified-ai/flake"; };
   };
 
   outputs = inputs@{
@@ -42,8 +74,13 @@
       nixpkgs.lib.nixosSystem (args // {
         inherit system;
         modules = baseModules ++ modules;
-        specialArgs = { inherit inputs; } // specialArgs;
-        makeEnable = (import ../make-enable.nix) nixpkgs.lib;
+        specialArgs = rec {
+          inherit inputs;
+          makeEnable = (import ../make-enable.nix) nixpkgs.lib;
+          mapValueToKeys = keys: value: builtins.listToAttrs (map (name: { inherit name value; }) keys);
+          realUsers = [ "root" "imalison" "kat" "dean" "alex" ];
+          forEachUser = mapValueToKeys realUsers;
+        } // specialArgs;
       });
       machinesPath = ../machines;
       machineFilenames = builtins.attrNames (builtins.readDir machinesPath);
