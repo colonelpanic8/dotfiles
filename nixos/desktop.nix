@@ -106,6 +106,7 @@ makeEnable config "modules.desktop" true {
     xfce.thunar
 
     # Audio
+    picard
     playerctl
     pulsemixer
     espeak
