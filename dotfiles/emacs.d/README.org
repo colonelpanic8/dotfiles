@@ -2629,8 +2629,8 @@ eval-last-sexp.
     (setq nix-mode-blacklist '("all-packages.nix" "hackage-packages.nix")))
   (defun imalison:goto-nixpkgs ()
     (interactive)
-    (shell-command-to-string "nix eval  --expr '<nixpkgs>' --impure")
-    (find-file ))
+    (find-file (s-trim
+     (shell-command-to-string "nix eval -I \"$NIX_PATH\" --expr '<nixpkgs>' --impure"))))
   :config
   (progn
     (setq nix-indent-function 'nix-indent-line)))
