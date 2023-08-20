@@ -21,6 +21,10 @@
       keep-derivations = true;
     };
     channel.enable = false;
+    nixPath = [
+      "nixpkgs=${inputs.nixpkgs.outPath}"
+      "configuration"
+    ];
   };
 
   nixpkgs.overlays = with inputs; [

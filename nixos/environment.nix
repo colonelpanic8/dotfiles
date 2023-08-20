@@ -72,7 +72,6 @@ with lib;
         export STARSHIP_INSIDE_EMACS="yes"
       '';
       extraInit = ''
-        export NIX_PATH="nixpkgs=${inputs.nixpkgs.outPath}:$NIX_PATH";
         export PATH="$HOME/.cargo/bin:${libDir}/bin:${libDir}/functions:$PATH";
       '';
     };
