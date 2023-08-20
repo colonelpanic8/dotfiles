@@ -3017,6 +3017,7 @@ The following is taken from [[https://github.com/syl20bnr/spacemacs/blob/a650877
 (defvar imalison:org-dir "~/org")
 (defvar imalison:shared-org-dir "~/katnivan")
 (defvar imalison:org-whoami nil)
+(defvar imalison:org-default-initial-state "TODO")
 (use-package org
   :commands (org-mode org org-mobile-push org-mobile-pull org-agenda)
   :mode ("\\.org\\'" . org-mode)
@@ -3038,7 +3039,7 @@ The following is taken from [[https://github.com/syl20bnr/spacemacs/blob/a650877
    (org-fold-catch-invisible-edits 'show)
    (org-edit-src-content-indentation 0)
    (org-src-preserve-indentation t)
-   (org-refile-targets '((org-agenda-files . (:maxlevel . 1))
+   (org-refile-targets '((org-agenda-files . (:maxlevel . 2))
                          (org-agenda-files . (:level . 0))))
    (org-refile-use-outline-path 'file)
    (org-log-into-drawer t)
@@ -3052,7 +3053,8 @@ The following is taken from [[https://github.com/syl20bnr/spacemacs/blob/a650877
    (org-agenda-skip-scheduled-if-done t)
    (org-agenda-skip-deadline-if-done t)
    (org-agenda-window-setup 'other-window)
-   (org-imenu-depth 10))
+   (org-imenu-depth 10)
+   (org-agenda-timegrid-use-ampm 1))
   :preface
   (progn
     (require 'cl-lib)
@@ -3062,7 +3064,7 @@ The following is taken from [[https://github.com/syl20bnr/spacemacs/blob/a650877
         arg))
 
     (defun imalison:set-display-custom-times ()
-      (setq org-display-custom-times t))
+      (setq org-display-custom-times nil))
 
     (setq org-goto-interface 'outline-path-completion
           org-goto-max-level 10
@@ -3122,7 +3124,7 @@ The following is taken from [[https://github.com/syl20bnr/spacemacs/blob/a650877
       (imalison:make-org-template (imalison:get-string-from-file filename)))
 
     (cl-defun imalison:make-org-todo-template
-        (&key (content "%?") (creation-state "TODO"))
+        (&key (content "%?") (creation-state imalison:org-default-initial-state))
       (with-temp-buffer
         (org-mode)
         (org-insert-heading)
@@ -3187,9 +3189,9 @@ The following is taken from [[https://github.com/syl20bnr/spacemacs/blob/a650877
                    ("STYLE_ALL" . "habit"))))
     ;; Record changes to todo states
     (setq org-todo-keywords
-          '((sequence "IDEA(i!)" "RESEARCH(r!)" "TODO(t!)" "NEXT(n!)"
-                      "STARTED(s!)" "WAIT(w!)" "BACKLOG(b!)" "|"
-                      "DONE(d!)" "HANDLED(h!)" "EXPIRED(e!)" "CANCELED(c!)")))
+          '((sequence "INBOX(i!)" "TODO(t!)" "NEXT(n!)" "STARTED(s!)" "WAIT(w!)"
+                      "BACKLOG(b!)" "|" "DONE(d!)" "HANDLED(h!)" "EXPIRED(e!)"
+                      "CANCELED(c!)")))
 
     (setq org-todo-repeat-to-state "TODO")
 
@@ -3313,7 +3315,6 @@ The following is taken from [[https://github.com/syl20bnr/spacemacs/blob/a650877
       :disabled t
       :config
       (progn
-        (setq org-ehtml-docroot (expand-file-name "~/Dropbox/org"))
         (setq org-ehtml-allow-agenda t)
         (setq org-ehtml-editable-headlines t)
         (setq org-ehtml-everything-editable t)))
