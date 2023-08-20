@@ -3045,7 +3045,9 @@ The following is taken from [[https://github.com/syl20bnr/spacemacs/blob/a650877
           org-startup-folded t
           org-fold-catch-invisible-edits 'show
           org-edit-src-content-indentation 0
-          org-src-preserve-indentation t)
+          org-src-preserve-indentation t
+          org-refile-targets '((org-agenda-files . (:maxlevel . 1))
+                               (org-agenda-files . (:level . 0))))
 
     (defun imalison:set-display-custom-times ()
       (setq org-display-custom-times t))
