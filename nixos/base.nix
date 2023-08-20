@@ -1,13 +1,5 @@
-{ config, pkgs, options, inputs, ... }:
-{
-  imports = [
-    ./environment.nix
-    ./essential.nix
-    ./nix.nix
-    ./ssh.nix
-    ./users.nix
-  ];
-
+{ config, pkgs, options, inputs, makeEnable, ... }:
+makeEnable config "modules.base" true {
   nixpkgs.config.permittedInsecurePackages = [
     "openssl-1.0.2u"
     "electron-12.2.3"
@@ -67,10 +59,6 @@
   services.tzupdate.enable = true;
 
   # TODO: Add a comment explaining what this does.
-  services.gnome.at-spi2-core.enable = true;
-
-  services.gnome.gnome-keyring.enable = true;
-
   services.locate.enable = true;
 
   virtualisation.docker.enable = true;

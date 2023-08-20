@@ -1,5 +1,5 @@
-{ pkgs, config, ... }:
-{
+{ pkgs, config, makeEnable, ... }:
+makeEnable config "modules.code" true {
   programs.direnv = {
     enable = true;
     nix-direnv.enable = true;

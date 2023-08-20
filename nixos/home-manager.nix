@@ -1,4 +1,4 @@
-username: { pkgs, config, specialArgs, ... }:
+{ pkgs, config, specialArgs, ... }:
 {
   xsession = {
     enable = true;

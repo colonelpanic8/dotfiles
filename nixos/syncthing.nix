@@ -1,4 +1,4 @@
-{ pkgs, ... }:
+{ pkgs, makeEnable, config, ... }:
 let
   devices = {
     biskcomp = {
@@ -13,7 +13,7 @@ let
   };
   allDevices = builtins.attrNames devices;
 in
-{
+makeEnable config "modules.syncthing" true {
   system.activationScripts.syncthingPermissions = {
     text = ''
       chown -R syncthing:syncthing /var/lib/syncthing

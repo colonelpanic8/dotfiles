@@ -1,10 +1,10 @@
 { config, lib, pkgs, inputs, ... }:
 {
   imports = [
-    ../full.nix
-    ../kat.nix
-    ../nixified.ai.nix
+    ../configuration.nix
   ];
+
+  features.full.enable = true;
 
   networking.hostName = "nixquick";
 

@@ -1,5 +1,5 @@
-{ config, pkgs, options, inputs, ... }:
-{
+{ config, pkgs, options, inputs, makeEnable, ... }:
+makeEnable config "modules.desktop" true {
   imports = [
     ./fonts.nix
   ];
@@ -42,6 +42,10 @@
 
   # This is for the benefit of VSCODE running natively in wayland
   environment.sessionVariables.NIXOS_OZONE_WL = "1";
+
+  services.gnome.at-spi2-core.enable = true;
+
+  services.gnome.gnome-keyring.enable = true;
 
   environment.systemPackages = with pkgs; [
     # Appearance

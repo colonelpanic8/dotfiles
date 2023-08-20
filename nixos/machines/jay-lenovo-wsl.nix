@@ -1,12 +1,10 @@
 { lib, pkgs, config, inputs, ... }:
 {
   imports = [
-    ../syncthing.nix
-    ../wsl.nix
-    ../kat.nix
+    ../configuration.nix
   ];
 
-  networking.hostName = "jay-lenovo-wsl";
+  modules.wls.enable = true;tworking.hostName = "jay-lenovo-wsl";
 
   wsl.defaultUser = "kat";
   system.stateVersion = "22.05";

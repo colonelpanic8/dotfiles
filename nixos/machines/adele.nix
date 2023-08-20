@@ -2,9 +2,19 @@
 
 {
   imports = [
-    ../laptop.nix
+    ../configuration.nix
     inputs.nixos-hardware.nixosModules.dell-xps-17-9700-intel
   ];
+
+  modules.base.enable = true;
+  modules.desktop.enable = true;
+  modules.xmonad.enable = true;
+  modules.extra.enable = false;
+  modules.code.enable = true;
+  modules.games.enable = false;
+  modules.syncthing.enable = true;
+  modules.fonts.enable = true;
+  modules.nixified-ai.enable = false;
 
   hardware.enableRedistributableFirmware = true;
 

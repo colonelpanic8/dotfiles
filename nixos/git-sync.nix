@@ -37,6 +37,10 @@
           uri = "ssh://gitea@1896Folsom.duckdns.org:1123/kkathuang/org.git";
           interval = 45;
         };
+        katnivan = {
+          path = config.home.homeDirectory + "/katnivan";
+          uri = "ssh://gitea@1896Folsom.duckdns.org:1123/colonelpanic/katnivan.git";
+        };
       };
     };
   });

@@ -1,13 +1,20 @@
 {
   imports = [
-    ../internet-computer.nix
+    ../configuration.nix
     ../raspberry-pi.nix
-    ../base.nix
-    ../syncthing.nix
-    ../desktop.nix
-    ../code.nix
-    # ../xmonad.nix
   ];
+
+  modules.raspberry-pi.enable = true;
+
+  modules.base.enable = true;
+  modules.desktop.enable = true;
+  modules.xmonad.enable = true;
+  modules.extra.enable = false;
+  modules.code.enable = true;
+  modules.games.enable = false;
+  modules.syncthing.enable = true;
+  modules.fonts.enable = true;
+  modules.nixified-ai.enable = false;
 
   services.plex = {
     enable = true;

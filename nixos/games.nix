@@ -1,5 +1,5 @@
-{ config, pkgs, ... }:
-{
+{ config, pkgs, makeEnable, ... }:
+makeEnable config "modules.games" false {
   environment.systemPackages = with pkgs; [
     steam
     heroic

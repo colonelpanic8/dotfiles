@@ -2,10 +2,10 @@
 
 {
   imports = [
-    ../full.nix
+    ../configuration.nix
   ];
 
-  modules.nixified-ai.enable = true;
+  features.full.enable = true;
 
   boot.loader.systemd-boot.configurationLimit = 5;
 

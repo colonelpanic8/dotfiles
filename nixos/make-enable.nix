@@ -17,7 +17,7 @@ let
     };
   };
 
-  cfg = lib.attrByPath (lib.splitString "." pathStr) { enable = false; defaulted = true; } config;
+  cfg = lib.attrByPath (lib.splitString "." pathStr) { enable = false; } config;
 
   # Extract 'imports' from configAttrs, if it exists
   importsAttr = if configAttrs ? imports then configAttrs.imports else [];

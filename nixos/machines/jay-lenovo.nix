@@ -2,9 +2,10 @@
 
 {
   imports = [
-    ../full.nix
-    ../kat.nix
+    ../configuration.nix
   ];
+
+  features.full.enable = true;
 
   environment.systemPackages = with pkgs; [
     linuxPackages_latest.perf
