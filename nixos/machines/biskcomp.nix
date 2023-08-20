@@ -1,4 +1,4 @@
-{
+{ forEachUser, ... }: {
   imports = [
     ../configuration.nix
     ../raspberry-pi.nix
@@ -54,4 +54,8 @@
 
   networking.hostName = "biskcomp";
   system.stateVersion = "23.11";
+
+  home-manager.users = forEachUser {
+    home.stateVersion = "23.11";
+  };
 }

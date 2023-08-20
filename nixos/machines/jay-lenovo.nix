@@ -1,4 +1,4 @@
-{ config, lib, pkgs, ... }:
+{ config, lib, pkgs, forEachUser, ... }:
 
 {
   imports = [
@@ -51,4 +51,8 @@
   services.tlp.enable = true;
 
   system.stateVersion = "23.05";
+
+  home-manager.users = forEachUser {
+    home.stateVersion = "23.05";
+  };
 }

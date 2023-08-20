@@ -1,4 +1,4 @@
-{ config, lib, pkgs, inputs, ... }:
+{ config, lib, pkgs, inputs, forEachUser, ... }:
 {
   imports = [
     ../configuration.nix
@@ -52,6 +52,10 @@
   services.xrdp.enable = true;
   services.xrdp.defaultWindowManager = "startplasma-x11";
   services.xrdp.openFirewall = true;
+
+  home-manager.users = forEachUser {
+    home.stateVersion = "23.11";
+  };
 
   system.stateVersion = "23.11";
 }
