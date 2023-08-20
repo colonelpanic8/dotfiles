@@ -1,8 +1,10 @@
-#!/usr/bin/env sh
+#!/usr/bin/env zsh
 
 function path_lines {
-	var="${1:-PATH}"
-	split_by_char ":" "${!var}"
+	local var="${1:-PATH}"
+	# This is a workaround to achieve variable indirection for both Bash and Zsh
+	eval "local value=\$$var"
+	split_by_char ":" "$value"
 }
 
 path_lines "$@"
