@@ -67,11 +67,12 @@ with lib;
         if [[ "$INSIDE_EMACS" = 'vterm' ]] \
         && [[ -n ''${EMACS_VTERM_PATH} ]] \
         && [[ -f ''${EMACS_VTERM_PATH}/etc/emacs-vterm-bash.sh ]]; then
-	      source ''${EMACS_VTERM_PATH}/etc/emacs-vterm-bash.sh
+        source ''${EMACS_VTERM_PATH}/etc/emacs-vterm-bash.sh
         fi
         export STARSHIP_INSIDE_EMACS="yes"
       '';
       extraInit = ''
+        export TERM=xterm-256color
         export PATH="$HOME/.cargo/bin:${libDir}/bin:${libDir}/functions:$PATH";
       '';
     };
