@@ -2031,9 +2031,6 @@ Neotree is useless with frame mode for now, so I've disabled it.
   (embark-collect-mode . consult-preview-at-point-mode))
 #+end_src
 
-#+RESULTS:
-| embark-consult--upgrade-markers | consult-preview-at-point-mode |
-
 ** consult
 #+begin_src emacs-lisp
 (use-package consult
@@ -3018,6 +3015,8 @@ The following is taken from [[https://github.com/syl20bnr/spacemacs/blob/a650877
 **** config
 #+BEGIN_SRC emacs-lisp :tangle org-config.el
 (defvar imalison:org-dir "~/org")
+(defvar imalison:shared-org-dir "~/katnivan")
+(defvar imalison:org-whoami nil)
 (use-package org
   :commands (org-mode org org-mobile-push org-mobile-pull org-agenda)
   :mode ("\\.org\\'" . org-mode)
@@ -3033,6 +3032,27 @@ The following is taken from [[https://github.com/syl20bnr/spacemacs/blob/a650877
           ("C-c C-t" . org-todo)
           ("C-c C-S-t" . org-todo-force-notes)
           ("M-." . elisp-slime-nav-find-elisp-thing-at-point)))
+  :custom
+  ((org-startup-indented nil)
+   (org-startup-folded t)
+   (org-fold-catch-invisible-edits 'show)
+   (org-edit-src-content-indentation 0)
+   (org-src-preserve-indentation t)
+   (org-refile-targets '((org-agenda-files . (:maxlevel . 1))
+                         (org-agenda-files . (:level . 0))))
+   (org-refile-use-outline-path 'file)
+   (org-log-into-drawer t)
+   (org-log-reschedule t)
+   (org-log-redeadline t)
+   (org-treat-insert-todo-heading-as-state-change t)
+   (org-lowest-priority 69) ;; The character E
+   (org-enforce-todo-dependencies t)
+   (org-deadline-warning-days 0)
+   (org-default-priority ?D)
+   (org-agenda-skip-scheduled-if-done t)
+   (org-agenda-skip-deadline-if-done t)
+   (org-agenda-window-setup 'other-window)
+   (org-imenu-depth 10))
   :preface
   (progn
     (require 'cl-lib)
@@ -3040,15 +3060,6 @@ The following is taken from [[https://github.com/syl20bnr/spacemacs/blob/a650877
       (if (symbolp arg)
           (symbol-name arg)
         arg))
-    ;; XXX: These should probably be moved to config, right?
-    (setq org-startup-indented nil
-          org-startup-folded t
-          org-fold-catch-invisible-edits 'show
-          org-edit-src-content-indentation 0
-          org-src-preserve-indentation t
-          org-refile-targets '((org-agenda-files . (:maxlevel . 1))
-                               (org-agenda-files . (:level . 0)))
-          org-refile-use-outline-path 'file)
 
     (defun imalison:set-display-custom-times ()
       (setq org-display-custom-times t))
@@ -3218,12 +3229,7 @@ The following is taken from [[https://github.com/syl20bnr/spacemacs/blob/a650877
     (use-package ob-mermaid
       :config
       (org-babel-do-load-languages
-         'org-babel-load-languages '((mermaid . t))))
-
-    (setq org-log-into-drawer t
-          org-log-reschedule t
-          org-log-redeadline t
-          org-treat-insert-todo-heading-as-state-change t)
+       'org-babel-load-languages '((mermaid . t))))
 
     (when nil
       ;; Enable appointment notifications.
@@ -3293,26 +3299,15 @@ The following is taken from [[https://github.com/syl20bnr/spacemacs/blob/a650877
     ;; can be regarded as less important than items that DO have
     ;; deadlines of that same priority.
 
-    (setq org-lowest-priority 69) ;; The character E
-    (setq org-completion-use-ido t)
-    (setq org-enforce-todo-dependencies t)
-    (setq org-deadline-warning-days 0)
-    (setq org-default-priority ?D)
-    (setq org-agenda-skip-scheduled-if-done t)
-    (setq org-agenda-skip-deadline-if-done t)
-    ;;(add-to-list org-agenda-tag-filter-preset "+PRIORITY<\"C\"")
 
-    (setq org-imenu-depth 10)
-
-    ;; Stop starting agenda from deleting frame setup!
-    (setq org-agenda-window-setup 'other-window)
     (define-key mode-specific-map [?a] 'org-agenda)
     (unbind-key "C-j" org-mode-map)
 
     (use-package org-bullets
-      :config
-      (progn
-        (add-hook 'org-mode-hook (lambda () (org-bullets-mode 1)))))
+      :commands org-bullets-mode
+      :preface
+      (add-hook 'org-mode-hook
+                  (lambda () (org-bullets-mode 1))))
 
     (use-package org-ehtml
       :disabled t
@@ -3324,10 +3319,18 @@ The following is taken from [[https://github.com/syl20bnr/spacemacs/blob/a650877
         (setq org-ehtml-everything-editable t)))
 
     ;; Agenda setup.
-    (defvar imalison:org-gtd-file (imalison:join-paths imalison:org-dir "gtd.org"))
-    (defvar imalison:org-habits-file (imalison:join-paths imalison:org-dir "habits.org"))
-    (defvar imalison:org-calendar-file (imalison:join-paths imalison:org-dir "calendar.org"))
-    (defvar imalison:org-inbox-file (imalison:join-paths imalison:org-dir "inbox.org"))
+    (defvar imalison:org-gtd-file
+      (imalison:join-paths imalison:org-dir "gtd.org"))
+    (defvar imalison:org-habits-file
+      (imalison:join-paths imalison:org-dir "habits.org"))
+    (defvar imalison:org-calendar-file
+      (imalison:join-paths imalison:org-dir "calendar.org"))
+    (defvar imalison:org-inbox-file
+      (imalison:join-paths imalison:org-dir "inbox.org"))
+    (defvar imalison:shared-org-gtd-file
+      (imalison:join-paths imalison:shared-org-dir "gtd.org"))
+    (defvar imalison:shared-habits-gtd-file
+      (imalison:join-paths imalison:shared-org-dir "habits.org"))
 
     (unless (boundp 'org-capture-templates)
       (defvar org-capture-templates nil))
@@ -3339,7 +3342,8 @@ The following is taken from [[https://github.com/syl20bnr/spacemacs/blob/a650877
 
     (imalison:add-to-org-agenda-files
      (list imalison:org-gtd-file imalison:org-habits-file
-           imalison:org-calendar-file imalison:org-inbox-file))
+           imalison:org-calendar-file imalison:org-inbox-file
+           imalison:shared-org-gtd-file imalison:shared-habits-gtd-file))
 
     (add-to-list 'org-capture-templates
                  `("t" "GTD Todo (Linked)" entry (file ,imalison:org-gtd-file)
@@ -3347,6 +3351,10 @@ The following is taken from [[https://github.com/syl20bnr/spacemacs/blob/a650877
 
     (add-to-list 'org-capture-templates
                  `("g" "GTD Todo" entry (file ,imalison:org-gtd-file)
+                   (function imalison:make-org-todo-template)))
+
+    (add-to-list 'org-capture-templates
+                 `("s" "Shared GTD Todo" entry (file ,imalison:shared-org-gtd-file)
                    (function imalison:make-org-todo-template)))
 
     (add-to-list 'org-capture-templates
@@ -3373,6 +3381,8 @@ The following is taken from [[https://github.com/syl20bnr/spacemacs/blob/a650877
          (unless ,@forms
            (or (outline-next-heading)
                (point-max)))))
+
+    
 
     (let ((this-week-high-priority
            ;; The < in the following line has behavior that is opposite
@@ -3720,10 +3730,11 @@ alphanumeric characters only."
 (use-package org-roam
   :defer 1
   :bind
-  (("C-c r f" . org-roam-node-find)
-   ("C-c r i" . org-roam-node-insert)
-   ("C-c r b" . imalison:org-roam-browse-backlink)
-   ("C-c r t" . org-roam-buffer-toggle))
+  (:map org-mode-map
+        ("C-c r f" . org-roam-node-find)
+        ("C-c r i" . org-roam-node-insert)
+        ("C-c r b" . imalison:org-roam-browse-backlink)
+        ("C-c r t" . org-roam-buffer-toggle))
   :config
   (progn
     (when (version<= "29.0" emacs-version)
