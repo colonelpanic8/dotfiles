@@ -23,7 +23,6 @@
     channel.enable = false;
     nixPath = [
       "nixpkgs=${inputs.nixpkgs.outPath}"
-      "configuration"
     ];
   };
 
