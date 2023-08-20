@@ -126,12 +126,15 @@
     nixpkgs.lib.nixosSystem (args // {
       inherit system;
       modules = baseModules ++ modules;
-      specialArgs = {
+      specialArgs = rec {
         inherit inputs;
         myPackages = {
           taffybar = inputs.imalison-taffybar.defaultPackage."${system}";
         };
         makeEnable = (import ./make-enable.nix) nixpkgs.lib;
+        mapValueToKeys = keys: value: builtins.listToAttrs (map (name: { inherit name value; }) keys);
+        realUsers = [ "root" "imalison" "kat" "dean" "alex" ];
+        forEachUser = mapValueToKeys realUsers;
       } // specialArgs;
     });
     machinesFilepath = ./machines;

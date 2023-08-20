@@ -19,8 +19,14 @@ let
 
   cfg = lib.attrByPath (lib.splitString "." pathStr) { enable = false; defaulted = true; } config;
 
+  # Extract 'imports' from configAttrs, if it exists
+  importsAttr = if configAttrs ? imports then configAttrs.imports else [];
+  # Remove 'imports' from configAttrs
+  configAttrsWithoutImports = lib.attrsets.removeAttrs configAttrs ["imports"];
+
 in
 {
   options = optionsSet;
-  config = lib.mkIf cfg.enable configAttrs;
+  config = lib.mkIf cfg.enable configAttrsWithoutImports;
+  imports = importsAttr;
 }

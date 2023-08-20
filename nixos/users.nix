@@ -1,4 +1,4 @@
-{ pkgs, inputs, ... }:
+{ pkgs, inputs, realUsers, forEachUser, ... }:
 {
   security.sudo.wheelNeedsPassword = false;
   users.users = let
@@ -67,5 +67,7 @@
     };
   };
 
-  nix.settings.trusted-users = [ "root" "imalison" "kat" "dean" "alex" ];
+  nix.settings.trusted-users = realUsers;
+
+  home-manager.users = forEachUser (import ./home-manager.nix);
 }

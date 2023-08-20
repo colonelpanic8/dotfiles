@@ -1,10 +1,11 @@
-{ config, lib, pkgs, inputs, ... }:
+{ config, lib, pkgs, inputs, forEachUser, ... }:
 
 {
   imports = [
     ../full.nix
-    ../nixified.ai.nix
   ];
+
+  modules.nixified-ai.enable = true;
 
   boot.loader.systemd-boot.configurationLimit = 5;
 
@@ -18,7 +19,7 @@
   boot.plymouth = {
     enable = false;
   };
-  boot.kernelParams = ["quiet"];
+  boot.kernelParams = [ "quiet" ];
 
   services.autorandr = {
     enable = true;
@@ -102,6 +103,9 @@
   # services.xrdp.openFirewall = true;
 
   system.stateVersion = "20.03";
+  home-manager.users = forEachUser {
+    home.stateVersion = "21.05";
+  };
 
   users.extraUsers.dean.home = "/shared/dean";
 }
