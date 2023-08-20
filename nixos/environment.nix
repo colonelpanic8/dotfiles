@@ -1,4 +1,6 @@
 { config, pkgs, options, lib, inputs, ... }:
+let libDir = "${config.dotfiles-directory}/dotfiles/lib";
+in
 with lib;
 {
   options = {
@@ -8,8 +10,7 @@ with lib;
     };
   };
 
-  config = let libDir = "${config.dotfiles-directory}/dotfiles/lib";
-  in {
+  config = {
     # Shell configuration
     programs.zsh = {
       enable = true;

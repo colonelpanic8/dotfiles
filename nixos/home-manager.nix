@@ -1,4 +1,4 @@
-inputs: { pkgs, config, ... }: {
+{ pkgs, config, specialArgs, ... }: {
   xsession = {
     enable = true;
     preferStatusNotifierItems = true;
@@ -33,7 +33,7 @@ inputs: { pkgs, config, ... }: {
 
   services.taffybar = {
     enable = true;
-    package = inputs.imalison-taffybar.defaultPackage."${pkgs.system}";
+    package = specialArgs.nixos.specialArgs.inputs.imalison-taffybar.defaultPackage."${pkgs.system}";
   };
 
   services.notify-osd = {

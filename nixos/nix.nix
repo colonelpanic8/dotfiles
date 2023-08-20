@@ -1,5 +1,16 @@
-{ inputs, ... }:
+{ inputs, specialArgs, config, ... }:
 {
+  imports = [
+    inputs.home-manager.nixosModule
+  ];
+  home-manager.extraSpecialArgs = {
+    nixos = {
+      inherit specialArgs config;
+    };
+  };
+  home-manager.useGlobalPkgs = true;
+  home-manager.useUserPackages = true;
+
   nix = {
     extraOptions = ''
       experimental-features = nix-command flakes

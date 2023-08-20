@@ -131,6 +131,7 @@
         myPackages = {
           taffybar = inputs.imalison-taffybar.defaultPackage."${system}";
         };
+        makeEnable = (import ./make-enable.nix) nixpkgs.lib;
       } // specialArgs;
     });
     machinesFilepath = ./machines;

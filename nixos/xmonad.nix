@@ -1,5 +1,5 @@
-{ config, pkgs, options, inputs, ... }:
-{
+{ config, pkgs, options, inputs, specialArgs, ... }:
+specialArgs.makeEnable config "modules.xmonad" true  {
   nixpkgs.overlays = with inputs; [
     xmonad.overlay
     xmonad-contrib.overlay
@@ -31,7 +31,5 @@
     haskellPackages.dbus-hslogger
   ];
 
-  home-manager.useGlobalPkgs = true;
-  home-manager.useUserPackages = true;
-  home-manager.users.imalison = (import ./home-manager.nix) inputs;
+  home-manager.users.imalison = (import ./home-manager.nix);
 }

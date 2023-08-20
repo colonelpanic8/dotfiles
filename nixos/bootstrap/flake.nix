@@ -43,6 +43,7 @@
         inherit system;
         modules = baseModules ++ modules;
         specialArgs = { inherit inputs; } // specialArgs;
+        makeEnable = (import ../make-enable.nix) nixpkgs.lib;
       });
       machinesPath = ../machines;
       machineFilenames = builtins.attrNames (builtins.readDir machinesPath);

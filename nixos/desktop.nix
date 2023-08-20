@@ -2,7 +2,6 @@
 {
   imports = [
     ./fonts.nix
-    inputs.home-manager.nixosModule
   ];
 
   services.xserver = {
