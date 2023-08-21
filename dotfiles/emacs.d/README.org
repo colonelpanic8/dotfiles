@@ -3330,9 +3330,11 @@ The following is taken from [[https://github.com/syl20bnr/spacemacs/blob/a650877
     (defvar imalison:org-inbox-file
       (imalison:join-paths imalison:org-dir "inbox.org"))
     (defvar imalison:shared-org-gtd-file
-      (imalison:join-paths imalison:shared-org-dir "gtd.org"))
-    (defvar imalison:shared-habits-gtd-file
-      (imalison:join-paths imalison:shared-org-dir "habits.org"))
+      (imalison:join-paths imalison:shared-org-dir "shared_gtd.org"))
+    (defvar imalison:shared-habits-file
+      (imalison:join-paths imalison:shared-org-dir "shared_habits.org"))
+    (defvar imalison:shared-calendar-file
+      (imalison:join-paths imalison:shared-org-dir "shared_calendar.org"))
 
     (unless (boundp 'org-capture-templates)
       (defvar org-capture-templates nil))
@@ -3345,7 +3347,8 @@ The following is taken from [[https://github.com/syl20bnr/spacemacs/blob/a650877
     (imalison:add-to-org-agenda-files
      (list imalison:org-gtd-file imalison:org-habits-file
            imalison:org-calendar-file imalison:org-inbox-file
-           imalison:shared-org-gtd-file imalison:shared-habits-gtd-file))
+           imalison:shared-org-gtd-file imalison:shared-habits-file
+           imalison:shared-calendar-file))
 
     (add-to-list 'org-capture-templates
                  `("t" "GTD Todo (Linked)" entry (file ,imalison:org-gtd-file)
