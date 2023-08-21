@@ -1902,6 +1902,7 @@ Neotree is useless with frame mode for now, so I've disabled it.
 ** flimenu
 #+BEGIN_SRC emacs-lisp
 (use-package flimenu
+  :disabled t
   :config
   (progn
     (flimenu-global-mode)))
