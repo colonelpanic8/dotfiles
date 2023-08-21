@@ -12,6 +12,7 @@
   (load bootstrap-file nil 'nomessage))
 
 (setq native-comp-deferred-compilation-deny-list nil)
+(setq warning-minimum-level :emergency)
 
 ;; This is a workaround for an issue in emacs28 with symlinks. See https://github.com/radian-software/straight.el/issues/701
 (defun my-patch-package-find-file-visit-truename (oldfun &rest r)
