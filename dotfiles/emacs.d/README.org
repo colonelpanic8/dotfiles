@@ -3018,7 +3018,7 @@ The following is taken from [[https://github.com/syl20bnr/spacemacs/blob/a650877
 (defvar imalison:org-dir "~/org")
 (defvar imalison:shared-org-dir "~/katnivan")
 (defvar imalison:org-whoami "Ivan Malison")
-(defvar imalison:org-potential-assignees (list "Ivan Malison" "Kat Huang"))
+(defvar imalison:org-people (list "Ivan Malison" "Kat Huang"))
 (defvar imalison:org-default-initial-state "TODO")
 (use-package org
   :commands (org-mode org org-mobile-push org-mobile-pull org-agenda)
@@ -3090,7 +3090,7 @@ The following is taken from [[https://github.com/syl20bnr/spacemacs/blob/a650877
                (point-max)))))
 
     (defun imalison:org-known-assignees ()
-      imalison:org-potential-assignees)
+      imalison:org-people)
 
     (cl-defun imalison:set-assignee (&key assignee (override t))
       (interactive)
