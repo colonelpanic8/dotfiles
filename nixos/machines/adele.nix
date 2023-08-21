@@ -30,12 +30,12 @@
   services.xserver.libinput.enable = true;
 
   fileSystems."/" =
-    { device = "/dev/disk/by-uuid/bfe4586b-2538-4aae-ad2f-b1277378de4a";
+    { device = "/dev/disk/by-uuid/18af5b4c-69c7-41a8-865e-bc3f5269d2f9";
       fsType = "ext4";
     };
 
   fileSystems."/boot" =
-    { device = "/dev/disk/by-uuid/5C09-F06F";
+    { device = "/dev/disk/by-uuid/8A9F-D7D2";
       fsType = "vfat";
     };
 
@@ -46,5 +46,5 @@
   nix.settings.maxJobs = lib.mkDefault 12;
   powerManagement.cpuFreqGovernor = lib.mkDefault "powersave";
 
-  system.stateVersion = "20.03";
+  system.stateVersion = "23.05";
 }
