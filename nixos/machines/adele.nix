@@ -1,4 +1,4 @@
-{ config, lib, pkgs, inputs, ... }:
+{ config, lib, pkgs, inputs, forEachUser, ... }:
 
 {
   imports = [
@@ -45,6 +45,10 @@
 
   nix.settings.maxJobs = lib.mkDefault 12;
   powerManagement.cpuFreqGovernor = lib.mkDefault "powersave";
+
+  home-manager.users = forEachUser {
+    home.stateVersion = "23.05";
+  };
 
   system.stateVersion = "23.05";
 }
