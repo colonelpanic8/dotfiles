@@ -3017,7 +3017,7 @@ The following is taken from [[https://github.com/syl20bnr/spacemacs/blob/a650877
 #+BEGIN_SRC emacs-lisp :tangle org-config.el
 (defvar imalison:org-dir "~/org")
 (defvar imalison:shared-org-dir "~/katnivan")
-(defvar imalison:org-whoami nil)
+(defvar imalison:org-whoami "Ivan Malison")
 (defvar imalison:org-default-initial-state "TODO")
 (use-package org
   :commands (org-mode org org-mobile-push org-mobile-pull org-agenda)
@@ -3043,6 +3043,8 @@ The following is taken from [[https://github.com/syl20bnr/spacemacs/blob/a650877
    (org-refile-targets '((org-agenda-files . (:maxlevel . 2))
                          (org-agenda-files . (:level . 0))))
    (org-refile-use-outline-path 'file)
+   (org-refile-allow-creating-parent-nodes t)
+   (org-outline-path-complete-in-steps nil)
    (org-log-into-drawer t)
    (org-log-reschedule t)
    (org-log-redeadline t)
@@ -3055,7 +3057,10 @@ The following is taken from [[https://github.com/syl20bnr/spacemacs/blob/a650877
    (org-agenda-skip-deadline-if-done t)
    (org-agenda-window-setup 'other-window)
    (org-imenu-depth 10)
-   (org-agenda-timegrid-use-ampm 1))
+   (org-agenda-timegrid-use-ampm 1)
+   (org-todo-repeat-to-state "TODO")
+   (org-agenda-span 10)
+   (org-agenda-start-day "-0d"))
   :preface
   (progn
     (require 'cl-lib)
@@ -3250,11 +3255,6 @@ The following is taken from [[https://github.com/syl20bnr/spacemacs/blob/a650877
           '((sequence "INBOX(i!)" "TODO(t!)" "NEXT(n!)" "STARTED(s!)" "WAIT(w!)"
                       "BACKLOG(b!)" "|" "DONE(d!)" "HANDLED(h!)" "EXPIRED(e!)"
                       "CANCELED(c!)")))
-
-    (setq org-todo-repeat-to-state "TODO")
-
-    (setq org-agenda-span 10)
-    (setq org-agenda-start-day "-2d")
 
     (setq org-columns-default-format
           "%80ITEM(Task) %10Effort(Effort){:} %10CLOCKSUM")
@@ -3451,6 +3451,10 @@ The following is taken from [[https://github.com/syl20bnr/spacemacs/blob/a650877
       `(imalison:def-agenda-pred
         (>= (org-get-priority-at-point) ,priority)))
 
+    (require 'org-agenda)
+    (when (fboundp 'org-agenda-transient)
+      (bind-key "C-c a" 'org-agenda-transient))
+
     (let ((this-week-high-priority
            ;; The < in the following line has behavior that is opposite
            ;; to what one might expect.
@@ -3486,6 +3490,7 @@ The following is taken from [[https://github.com/syl20bnr/spacemacs/blob/a650877
               (org-agenda-sorting-strategy '(user-defined-down)))))
           (next '(todo "NEXT"))
           (started '(todo "STARTED"))
+          (inbox '(todo "INBOX"))
           (missing-deadline
            '(tags-todo "-DEADLINE={.}/!"
                        ((org-agenda-overriding-header
@@ -3504,7 +3509,7 @@ The following is taken from [[https://github.com/syl20bnr/spacemacs/blob/a650877
                          (org-agenda-skip-function 'imalison:assigned-to-me-agenda-pred)))
                 ,due-today
                 ,next
-                ,started
+                ,inbox
                 ,this-week-high-priority
                 ,recently-created)
                nil nil)
