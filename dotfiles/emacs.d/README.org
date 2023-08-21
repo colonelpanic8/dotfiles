@@ -3049,7 +3049,7 @@ The following is taken from [[https://github.com/syl20bnr/spacemacs/blob/a650877
    (org-lowest-priority 69) ;; The character E
    (org-enforce-todo-dependencies t)
    (org-deadline-warning-days 0)
-   (org-default-priority ?D)
+   (org-default-priority ?C)
    (org-agenda-skip-scheduled-if-done t)
    (org-agenda-skip-deadline-if-done t)
    (org-agenda-window-setup 'other-window)
@@ -3309,7 +3309,7 @@ The following is taken from [[https://github.com/syl20bnr/spacemacs/blob/a650877
       :commands org-bullets-mode
       :preface
       (add-hook 'org-mode-hook
-                  (lambda () (org-bullets-mode 1))))
+                (lambda () (org-bullets-mode 1))))
 
     (use-package org-ehtml
       :disabled t
@@ -3383,7 +3383,17 @@ The following is taken from [[https://github.com/syl20bnr/spacemacs/blob/a650877
            (or (outline-next-heading)
                (point-max)))))
 
-    
+    (defun org-get-priority-at-point ()
+      (save-excursion
+        (beginning-of-line)
+        (org-back-to-heading t)
+        (when (looking-at org-priority-regexp)
+	      (let ((ms (match-string 2)))
+	        (org-priority-to-value ms)))))
+
+    (defmacro imalison:def-agenda-priority-pred (priority)
+      `(imalison:def-agenda-pred
+        (>= (org-get-priority-at-point) ,priority)))
 
     (let ((this-week-high-priority
            ;; The < in the following line has behavior that is opposite
