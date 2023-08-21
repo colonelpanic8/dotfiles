@@ -45,9 +45,9 @@ This makes evil-mode play nice with org-fc
 (setq imalison:dark-theme 'dracula)
 #+end_src
 
-
 * org-mode
 #+begin_src emacs-lisp
+(setq imalison:org-whoami "Kat Huang")
 (setq org-directory "~/org/")  ; This is the directory where you want to save your Org files. Change as necessary.
 (add-to-list 'org-capture-templates
              '("j" "Journal" entry (file+datetree "~/org/daily-journal.org")
