@@ -3784,20 +3784,6 @@ alphanumeric characters only."
 (use-package org-pomodoro
   :after org)
 #+END_SRC
-**** org-super-agenda
-#+BEGIN_SRC emacs-lisp
-(use-package org-super-agenda
-  :defer t
-  :config
-  (progn
-    (org-super-agenda-mode +1)
-    (setq org-super-agenda-groups
-          '((:order-multi (1 (:name "High priority"
-                                     :priority> "C")))
-            (:order-multi (1 (:name "Done today"
-                                    :and (:regexp "State \"DONE\""
-                                                  :log t))))))))
-#+END_SRC
 **** org-roam
 #+begin_src emacs-lisp
 (use-package org-roam
