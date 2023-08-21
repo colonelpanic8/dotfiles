@@ -3075,8 +3075,65 @@ The following is taken from [[https://github.com/syl20bnr/spacemacs/blob/a650877
     (add-hook 'org-mode-hook 'imalison:set-display-custom-times)
     (add-hook 'org-agenda-mode-hook 'imalison:disable-linum-mode)
     (add-hook 'org-agenda-mode-hook 'imalison:set-display-custom-times)
-
     (add-hook 'org-agenda-mode-hook 'imalison:disable-linum-mode)
+
+    (defmacro imalison:def-agenda-pred (&rest forms)
+      `(lambda ()
+         (unless ,@forms
+           (or (outline-next-heading)
+               (point-max)))))
+
+    (defun imalison:org-known-assignees ()
+      (list imalison:org-whoami))
+
+    (cl-defun imalison:set-assignee (&key assignee (override t))
+      (interactive)
+      (let ((chosen-assignee (if (called-interactively-p 'interactive)
+                                 (completing-read "Choose assignee: "
+                                                  (imalison:org-known-assignees)
+                                                  nil t)
+                               (or assignee imalison:org-whoami))))
+        (when (or override (not (org-entry-get nil "ASSIGNEE")))
+          (org-set-property "ASSIGNEE" chosen-assignee))))
+
+    (defun imalison:assign-to-self-if-unassigned ()
+      (interactive)
+      (imalison:set-assignee :assignee imalison:org-whoami :override nil))
+
+    (defun imalison:shared-org-file-p ()
+      (string-prefix-p (file-truename imalison:shared-org-dir)
+                       (file-truename default-directory)))
+
+    (defun imalison:habit-or-repeating-heading ()
+      (org-is-habit-p))
+
+    (defun imalison:shared-non-habit-p ()
+      (and (not (imalison:habit-or-repeating-heading))
+           (imalison:shared-org-file-p)))
+
+    (defvar imalison:auto-assign-to-self-predicates
+      (list 'imalison:shared-non-habit-p))
+
+    (defun imalison:auto-assign-to-self-when ()
+      (cl-loop for pred in imalison:auto-assign-to-self-predicates
+               when (funcall pred)
+               return t
+               finally return nil))
+
+    (defun imalison:maybe-auto-assign-to-self (&rest args)
+      (when (imalison:auto-assign-to-self-when)
+        (imalison:assign-to-self-if-unassigned)))
+
+    (advice-add 'org-schedule :after 'imalison:maybe-auto-assign-to-self)
+
+    (cl-defun imalison:assigned-to-me (&key (include-unassigned t))
+      (let ((assignee (org-entry-get nil "ASSIGNEE")))
+        (or (string-equal assignee imalison:org-whoami)
+            (and include-unassigned (null assignee)))))
+
+    (defalias 'imalison:assigned-to-me-agenda-pred
+      (imalison:def-agenda-pred
+       (imalison:assigned-to-me)))
 
     (cl-defun imalison:org-time-condition-met-p (&key (property "CREATED") (days 30) (future nil))
       (let* ((property-value (org-entry-get (point) property))
@@ -3381,11 +3438,6 @@ The following is taken from [[https://github.com/syl20bnr/spacemacs/blob/a650877
     :STYLE: habit
     :END:"))
 
-    (defmacro imalison:def-agenda-pred (&rest forms)
-      `(lambda ()
-         (unless ,@forms
-           (or (outline-next-heading)
-               (point-max)))))
 
     (defun org-get-priority-at-point ()
       (save-excursion
@@ -3448,7 +3500,8 @@ The following is taken from [[https://github.com/syl20bnr/spacemacs/blob/a650877
                ((agenda ""
                         ((org-agenda-overriding-header "Agenda:")
                          (org-agenda-ndays 5)
-                         (org-deadline-warning-days 0)))
+                         (org-deadline-warning-days 0)
+                         (org-agenda-skip-function 'imalison:assigned-to-me-agenda-pred)))
                 ,due-today
                 ,next
                 ,started
