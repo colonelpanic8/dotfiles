@@ -3317,7 +3317,6 @@ The following is taken from [[https://github.com/syl20bnr/spacemacs/blob/a650877
     ;; variable configuration
     (add-to-list 'org-modules 'org-habit)
     (add-to-list 'org-modules 'org-expiry)
-    (add-to-list 'org-modules 'org-notify)
 
     (setq org-src-fontify-natively t)
     (setq org-habit-graph-column 50)
