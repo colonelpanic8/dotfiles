@@ -18,12 +18,10 @@
 
   hardware.enableRedistributableFirmware = true;
 
+  boot.kernelPackages = pkgs.linuxPackages_latest;
   boot.initrd.availableKernelModules = [ "xhci_pci" "nvme" "usb_storage" "sd_mod" "rtsx_pci_sdmmc" ];
-
   boot.initrd.kernelModules = [ ];
   boot.kernelModules = [ "kvm-intel" ];
-  boot.extraModulePackages = with config.boot.kernelPackages; [ ];
-
   boot.loader.systemd-boot.enable = true;
   boot.loader.efi.canTouchEfiVariables = true;
 
@@ -43,7 +41,6 @@
 
   networking.hostName = "adele";
 
-  nix.settings.maxJobs = lib.mkDefault 12;
   powerManagement.cpuFreqGovernor = lib.mkDefault "powersave";
 
   home-manager.users = forEachUser {
