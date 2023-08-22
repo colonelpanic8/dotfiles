@@ -3500,7 +3500,7 @@ The following is taken from [[https://github.com/syl20bnr/spacemacs/blob/a650877
                ,(imalison:def-agenda-pred
                  (or
                   (imalison:org-time-condition-met-p
-                   :property "DEADLINE" :days 1 :future t)
+                   :property "DEADLINE" :days 0 :future t)
                   (imalison:org-time-condition-met-p
                    :property "SCHEDULED" :days 0 :future t)))))))
           (recently-created
