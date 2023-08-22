@@ -1,36 +1,44 @@
-{ inputs, specialArgs, config, ... }:
+{ inputs, specialArgs, config, lib, ... }:
 {
   imports = [
     inputs.home-manager.nixosModule
   ];
-  home-manager.extraSpecialArgs = {
-    nixos = {
-      inherit specialArgs config;
+
+  options = {
+    imalison.nixOverlay.enable = lib.mkOption {
+      default = true;
+      type = lib.types.bool;
     };
   };
-  home-manager.useGlobalPkgs = true;
-  home-manager.useUserPackages = true;
-
-  nix = {
-    extraOptions = ''
-      experimental-features = nix-command flakes
-    '';
-    registry.nixpkgs.flake = inputs.nixpkgs;
-    settings = {
-      keep-outputs = true;
-      keep-derivations = true;
+  config = {
+    home-manager.extraSpecialArgs = {
+      nixos = {
+        inherit specialArgs config;
+      };
     };
-    channel.enable = false;
-    nixPath = [
-      "nixpkgs=${inputs.nixpkgs.outPath}"
-    ];
+    home-manager.useGlobalPkgs = true;
+    home-manager.useUserPackages = true;
+
+    nix = {
+      extraOptions = ''
+        experimental-features = nix-command flakes
+      '';
+      registry.nixpkgs.flake = inputs.nixpkgs;
+      settings = {
+        keep-outputs = true;
+        keep-derivations = true;
+      };
+      channel.enable = false;
+      nixPath = [
+        "nixpkgs=${inputs.nixpkgs.outPath}"
+      ];
+    };
+
+    nixpkgs.overlays = [
+      (import ./overlay.nix)
+    ] ++ (if config.imalison.nixOverlay.enable then [ inputs.nix.overlays.default ] else []);
+
+    # Allow all the things
+    nixpkgs.config.allowUnfree = true;
   };
-
-  nixpkgs.overlays = with inputs; [
-    nix.overlays.default
-    (import ./overlay.nix)
-  ];
-
-  # Allow all the things
-  nixpkgs.config.allowUnfree = true;
 }
