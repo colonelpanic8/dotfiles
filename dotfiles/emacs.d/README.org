@@ -3111,6 +3111,11 @@ The following is taken from [[https://github.com/syl20bnr/spacemacs/blob/a650877
       (string-prefix-p (file-truename imalison:shared-org-dir)
                        (file-truename default-directory)))
 
+    (require 'org-habit)
+    (when (not (fboundp 'org-is-habit-p))
+      (defun org-is-habit-p ()
+        (string-equal (org-entry-get nil "STYLE") "habit")))
+
     (defun imalison:habit-or-repeating-heading ()
       (org-is-habit-p))
 
@@ -3393,6 +3398,9 @@ The following is taken from [[https://github.com/syl20bnr/spacemacs/blob/a650877
       (imalison:join-paths imalison:shared-org-dir "shared_habits.org"))
     (defvar imalison:shared-calendar-file
       (imalison:join-paths imalison:shared-org-dir "shared_calendar.org"))
+    (defvar imalison:shared-shopping-file
+      (imalison:join-paths imalison:shared-org-dir "shared_shopping.org"))
+
 
     (defvar imalison:orgzly-files
       (list (imalison:join-paths imalison:shared-org-dir "kat_orgzly.org")
@@ -3411,7 +3419,7 @@ The following is taken from [[https://github.com/syl20bnr/spacemacs/blob/a650877
      (nconc (list imalison:org-gtd-file imalison:org-habits-file
                   imalison:org-calendar-file imalison:org-inbox-file
                   imalison:shared-org-gtd-file imalison:shared-habits-file
-                  imalison:shared-calendar-file)
+                  imalison:shared-calendar-file imalison:shared-shopping-file)
             imalison:orgzly-files))
 
     (add-to-list 'org-capture-templates
@@ -3435,6 +3443,10 @@ The following is taken from [[https://github.com/syl20bnr/spacemacs/blob/a650877
                  `("c" "Calendar entry" entry
                    (file ,imalison:org-calendar-file)
                    ,(format "%s\n%s\n%s" "* %?" imalison:created-property-string "%^T")))
+
+    (add-to-list 'org-capture-templates
+                 `("z" "Shopping Todo" entry (file ,imalison:shared-shopping-file)
+                   (function (lambda (&rest args) (imalison:make-org-todo-template :creation-state "TODO")))))
 
     (add-to-list 'org-capture-templates
                  `("h" "Habit" entry (file ,imalison:org-habits-file)
