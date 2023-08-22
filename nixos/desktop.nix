@@ -29,17 +29,6 @@ makeEnable config "modules.desktop" true {
     enable = true;
   };
 
-  systemd.services.autorandr-startup-after-dm = {
-    wantedBy = [ "display-manager.service" ];
-    after = [ "display-manager.service" ];
-    description = "autorandr after display manager";
-
-    serviceConfig = {
-      Type = "oneshot";
-      ExecStart = "${pkgs.autorandr}/bin/autorandr --change";
-    };
-  };
-
   # This is for the benefit of VSCODE running natively in wayland
   environment.sessionVariables.NIXOS_OZONE_WL = "1";
 
