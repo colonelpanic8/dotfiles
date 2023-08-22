@@ -15,6 +15,7 @@
     ./keybase.nix
     ./nix.nix
     ./nixified.ai.nix
+    ./options.nix
     ./ssh.nix
     ./syncthing.nix
     ./users.nix
