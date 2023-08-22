@@ -1,4 +1,13 @@
 final: prev: {
+  rofi-systemd = prev.rofi-systemd.overrideAttrs(_: {
+    src = prev.fetchFromGitHub {
+      repo = "rofi-systemd";
+      owner = "IvanMalison";
+      rev = "078bdb833a32cc84538d329085fbfe00c7d4d1b6";
+      sha256 = "sha256-ikwIc8vR2VV3bHXEtLrGgKklpz1NSRUJoJny0iRNViQ=";
+    };
+  });
+
   git-sync = prev.git-sync.overrideAttrs(_: {
     src = prev.fetchFromGitHub {
       repo = "git-sync";
