@@ -3061,6 +3061,7 @@ The following is taken from [[https://github.com/syl20bnr/spacemacs/blob/a650877
    (org-agenda-timegrid-use-ampm 1)
    (org-todo-repeat-to-state "TODO")
    (org-agenda-span 10)
+   (org-habit-show-all-today t)
    (org-agenda-start-day "-0d"))
   :preface
   (progn
