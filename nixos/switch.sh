@@ -3,4 +3,4 @@ nix flake lock --update-input taffybar
 nix flake lock --update-input imalison-taffybar
 nix flake lock --update-input xmonad
 nix flake lock --update-input xmonad-contrib
-sudo nixos-rebuild switch --flake '.#' --impure
+sudo nixos-rebuild switch --flake '.#' --impure "$@"
