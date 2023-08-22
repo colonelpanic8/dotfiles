@@ -12,7 +12,7 @@
     };
 
     xmonad-contrib = {
-      url = "github:IvanMalison/xmonad-contrib/withMyChanges";
+      url = "git+file:..?dir=/dotfiles/config/xmonad/xmonad-contrib";
       inputs = {
         nixpkgs.follows = "nixpkgs";
         flake-utils.follows = "flake-utils";
@@ -22,7 +22,7 @@
     };
 
     xmonad = {
-      url = "path:../dotfiles/config/xmonad/xmonad";
+      url = "git+file:..?dir=/dotfiles/config/xmonad/xmonad";
       inputs = {
         nixpkgs.follows = "nixpkgs";
         flake-utils.follows = "flake-utils";
@@ -31,7 +31,7 @@
     };
 
     taffybar = {
-      url = "path:../dotfiles/config/taffybar/taffybar";
+      url = "git+file:..?dir=dotfiles/config/taffybar/taffybar";
       inputs = {
         nixpkgs.follows = "nixpkgs";
         flake-utils.follows = "flake-utils";
@@ -43,7 +43,7 @@
     };
 
     imalison-taffybar = {
-      url = "path:../dotfiles/config/taffybar";
+      url = "git+file:..?dir=dotfiles/config/taffybar";
       inputs = {
         nixpkgs.follows = "nixpkgs";
         flake-utils.follows = "flake-utils";

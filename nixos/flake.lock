@@ -363,14 +363,16 @@
         ]
       },
       "locked": {
-        "lastModified": 1,
-        "narHash": "sha256-6ajc7VyCOsoTb8Gxv0vDXnq+fW7jqgLRB7gbvuzM+ng=",
-        "path": "../dotfiles/config/taffybar",
-        "type": "path"
+        "dir": "dotfiles/config/taffybar",
+        "lastModified": 1692733498,
+        "narHash": "sha256-J/7IU7JNxdJrrvzCAYvMP7J4TUCbAAcz2eY0R8oJJ7M=",
+        "type": "git",
+        "url": "file:..?dir=dotfiles/config/taffybar"
       },
       "original": {
-        "path": "../dotfiles/config/taffybar",
-        "type": "path"
+        "dir": "dotfiles/config/taffybar",
+        "type": "git",
+        "url": "file:..?dir=dotfiles/config/taffybar"
       }
     },
     "invokeai-src": {
@@ -851,14 +853,16 @@
         ]
       },
       "locked": {
-        "lastModified": 1,
-        "narHash": "sha256-BlSP4JJ1pYvGtiuvYh7royLWoyC9xts6WS28c4KeIgQ=",
-        "path": "../dotfiles/config/taffybar/taffybar",
-        "type": "path"
+        "dir": "dotfiles/config/taffybar/taffybar",
+        "lastModified": 1692733498,
+        "narHash": "sha256-J/7IU7JNxdJrrvzCAYvMP7J4TUCbAAcz2eY0R8oJJ7M=",
+        "type": "git",
+        "url": "file:..?dir=dotfiles/config/taffybar/taffybar"
       },
       "original": {
-        "path": "../dotfiles/config/taffybar/taffybar",
-        "type": "path"
+        "dir": "dotfiles/config/taffybar/taffybar",
+        "type": "git",
+        "url": "file:..?dir=dotfiles/config/taffybar/taffybar"
       }
     },
     "unstable": {
@@ -891,14 +895,16 @@
         "unstable": "unstable"
       },
       "locked": {
-        "lastModified": 1,
-        "narHash": "sha256-dOrvPpypuNn/fAWY2XjMacpsAXEiMZ4Dll3Ot81iQL4=",
-        "path": "../dotfiles/config/xmonad/xmonad",
-        "type": "path"
+        "dir": "/dotfiles/config/xmonad/xmonad",
+        "lastModified": 1692733498,
+        "narHash": "sha256-bpsMNACmbA7osOfAldVdBFB8J/j5Injd+SRLOF11OUI=",
+        "type": "git",
+        "url": "file:..?dir=/dotfiles/config/xmonad/xmonad"
       },
       "original": {
-        "path": "../dotfiles/config/xmonad/xmonad",
-        "type": "path"
+        "dir": "/dotfiles/config/xmonad/xmonad",
+        "type": "git",
+        "url": "file:..?dir=/dotfiles/config/xmonad/xmonad"
       }
     },
     "xmonad-contrib": {
@@ -917,18 +923,16 @@
         ]
       },
       "locked": {
-        "lastModified": 1692232716,
-        "narHash": "sha256-MwbeBTfcf6vE7bQvha4ueg5zLZxBiU3678ESYrXD4lw=",
-        "owner": "IvanMalison",
-        "repo": "xmonad-contrib",
-        "rev": "b5ef6265b87338f30dc9fc055c86d1ec021527a7",
-        "type": "github"
+        "dir": "/dotfiles/config/xmonad/xmonad-contrib",
+        "lastModified": 1692733498,
+        "narHash": "sha256-bpsMNACmbA7osOfAldVdBFB8J/j5Injd+SRLOF11OUI=",
+        "type": "git",
+        "url": "file:..?dir=/dotfiles/config/xmonad/xmonad-contrib"
       },
       "original": {
-        "owner": "IvanMalison",
-        "ref": "withMyChanges",
-        "repo": "xmonad-contrib",
-        "type": "github"
+        "dir": "/dotfiles/config/xmonad/xmonad-contrib",
+        "type": "git",
+        "url": "file:..?dir=/dotfiles/config/xmonad/xmonad-contrib"
       }
     }
   },
