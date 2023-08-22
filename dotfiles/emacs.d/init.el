@@ -57,7 +57,8 @@
 ;; Without this, org can behave very strangely
 (use-package org
   :straight
-  (org :type git :host github :repo "IvanMalison/org-mode" :local-repo "org"
+  (org :type git :host github :repo "colonelpanic8/org-mode" :local-repo "org"
+       :branch "add-org-agenda-transient"
        :depth full :pre-build (straight-recipes-org-elpa--build) :build
        (:not autoloads) :files
        (:defaults "lisp/*.el" ("etc/styles/" "etc/styles/*")))
