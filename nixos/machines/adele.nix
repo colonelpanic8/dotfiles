@@ -41,7 +41,7 @@
 
   networking.hostName = "adele";
 
-  powerManagement.cpuFreqGovernor = lib.mkDefault "powersave";
+  powerManagement.cpuFreqGovernor = lib.mkDefault "performance";
 
   home-manager.users = forEachUser {
     home.stateVersion = "23.05";
