@@ -865,14 +865,19 @@ details.
                      (not (f-directory? fullpath))))
               (directory-files filepath))))
 
-(defun imalison:get-executables-on-path ()
-  (mapcan 'imalison:get-executables-at-path (eshell-parse-colon-path (getenv "PATH"))))
+(use-package eshell
+  :commands (eshell-parse-colon-path imalison:get-executables-on-path)
+  :config
+  (defun imalison:get-executables-on-path ()
+    (mapcan 'imalison:get-executables-at-path
+            (eshell-parse-colon-path (getenv "PATH")))))
 
 (defun imalison:edit-script ()
   (interactive)
-  (find-file (executable-find
-              (ido-completing-read "Select a script to edit: "
-                                   (imalison:get-executables-on-path)))))
+  (find-file
+   (executable-find
+    (completing-read "Select a script to edit: "
+                     (imalison:get-executables-on-path)))))
 #+END_SRC
 ** Toggle lexical binding in the current buffer
 #+BEGIN_SRC emacs-lisp
