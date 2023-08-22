@@ -3394,6 +3394,11 @@ The following is taken from [[https://github.com/syl20bnr/spacemacs/blob/a650877
     (defvar imalison:shared-calendar-file
       (imalison:join-paths imalison:shared-org-dir "shared_calendar.org"))
 
+    (defvar imalison:orgzly-files
+      (list (imalison:join-paths imalison:shared-org-dir "kat_orgzly.org")
+            (imalison:join-paths imalison:shared-org-dir "ivan_orgzly.org")
+            (imalison:join-paths imalison:org-dir "orgzly.org")))
+
     (unless (boundp 'org-capture-templates)
       (defvar org-capture-templates nil))
 
@@ -3403,10 +3408,11 @@ The following is taken from [[https://github.com/syl20bnr/spacemacs/blob/a650877
   :END:")
 
     (imalison:add-to-org-agenda-files
-     (list imalison:org-gtd-file imalison:org-habits-file
-           imalison:org-calendar-file imalison:org-inbox-file
-           imalison:shared-org-gtd-file imalison:shared-habits-file
-           imalison:shared-calendar-file))
+     (nconc (list imalison:org-gtd-file imalison:org-habits-file
+                  imalison:org-calendar-file imalison:org-inbox-file
+                  imalison:shared-org-gtd-file imalison:shared-habits-file
+                  imalison:shared-calendar-file)
+            imalison:orgzly-files))
 
     (add-to-list 'org-capture-templates
                  `("t" "GTD Todo (Linked)" entry (file ,imalison:org-gtd-file)
