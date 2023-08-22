@@ -1,6 +1,7 @@
 { pkgs, makeEnable, config, ... }:
 let
   devices = {
+    adele = { id = "DAU7EFY-PDPH4H6-PIIWMPI-3CSTDZK-SZOINSZ-VCHOHGV-G54TEYD-A27S4QQ"; };
     biskcomp = {
       id = "PVGY6OH-WJEA5SD-SL5YI3F-72AZKVL-ZXHIWEW-D5V245P-VUM2BST-CH47JQD";
       addresses = [ "tcp://192.168.1.44:22000" "tcp://1896Folsom.duckdns.org:22000" ];
