@@ -63,6 +63,26 @@
     self, nixpkgs, nixos-hardware, home-manager, nix, ...
   }:
   let
+    machinesPath = ../machines;
+    machineFilenames = builtins.attrNames (builtins.readDir machinesPath);
+    machineNameFromFilename = filename: builtins.head (builtins.split "\\." filename);
+    machineNames = map machineNameFromFilename machineFilenames;
+    mkConfigurationParams = filename: {
+      name = machineNameFromFilename filename;
+      value = {
+        modules = [ (machinesPath + ("/" + filename)) ];
+      };
+    };
+    defaultConfigurationParams =
+      builtins.listToAttrs (map mkConfigurationParams machineFilenames);
+      customParams = {
+        biskcomp = {
+          system = "aarch64-linux";
+        };
+        air-gapped-pi = {
+          system = "aarch64-linux";
+        };
+      };
     mkConfig =
       args@
       { system ? "x86_64-linux"
@@ -75,32 +95,13 @@
         inherit system;
         modules = baseModules ++ modules;
         specialArgs = rec {
-          inherit inputs;
+          inherit inputs machineNames;
           makeEnable = (import ../make-enable.nix) nixpkgs.lib;
           mapValueToKeys = keys: value: builtins.listToAttrs (map (name: { inherit name value; }) keys);
           realUsers = [ "root" "imalison" "kat" "dean" "alex" ];
           forEachUser = mapValueToKeys realUsers;
-        } // specialArgs;
+        } // specialArgs // (import ../keys.nix);
       });
-      machinesPath = ../machines;
-      machineFilenames = builtins.attrNames (builtins.readDir machinesPath);
-      machineNameFromFilename = filename: builtins.head (builtins.split "\\." filename);
-      mkConfigurationParams = filename: {
-        name = machineNameFromFilename filename;
-        value = {
-          modules = [ (machinesPath + ("/" + filename)) ];
-        };
-      };
-      defaultConfigurationParams =
-        builtins.listToAttrs (map mkConfigurationParams machineFilenames);
-        customParams = {
-          biskcomp = {
-            system = "aarch64-linux";
-          };
-          air-gapped-pi = {
-            system = "aarch64-linux";
-          };
-        };
   in
   {
     nixosConfigurations = builtins.mapAttrs (machineName: params:

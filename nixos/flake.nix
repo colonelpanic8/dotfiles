@@ -108,42 +108,25 @@
     nixified-ai = { url = "github:nixified-ai/flake"; };
 
     nixos-wsl = { url = "github:nix-community/NixOS-WSL"; };
+
+    agenix.url = "github:ryantm/agenix";
   };
 
   outputs = inputs@{
     self, nixpkgs, nixos-hardware, home-manager, taffybar, xmonad,
-    xmonad-contrib, notifications-tray-icon, nix, imalison-taffybar, ...
+    xmonad-contrib, notifications-tray-icon, nix, agenix, imalison-taffybar, ...
   }:
   let
-    mkConfig =
-      args@
-      { system ? "x86_64-linux"
-      , baseModules ? []
-      , modules ? []
-      , specialArgs ? {}
-      , ...
-      }:
-    nixpkgs.lib.nixosSystem (args // {
-      inherit system;
-      modules = baseModules ++ modules;
-      specialArgs = rec {
-        inherit inputs;
-        myPackages = {
-          taffybar = inputs.imalison-taffybar.defaultPackage."${system}";
-        };
-        makeEnable = (import ./make-enable.nix) nixpkgs.lib;
-        mapValueToKeys = keys: value: builtins.listToAttrs (map (name: { inherit name value; }) keys);
-        realUsers = [ "root" "imalison" "kat" "dean" "alex" ];
-        forEachUser = mapValueToKeys realUsers;
-      } // specialArgs;
-    });
     machinesFilepath = ./machines;
     machineFilenames = builtins.attrNames (builtins.readDir machinesFilepath);
     machineNameFromFilename = filename: builtins.head (builtins.split "\\." filename);
+    machineNames = map machineNameFromFilename machineFilenames;
     mkConfigurationParams = filename: {
       name = machineNameFromFilename filename;
       value = {
-        modules = [ (machinesFilepath + ("/" + filename)) ];
+        modules = [
+          (machinesFilepath + ("/" + filename)) agenix.nixosModules.default
+        ];
       };
     };
     defaultConfigurationParams =
@@ -156,6 +139,25 @@
         system = "aarch64-linux";
       };
     };
+    mkConfig =
+      args@
+      { system ? "x86_64-linux"
+      , baseModules ? []
+      , modules ? []
+      , specialArgs ? {}
+      , ...
+      }:
+    nixpkgs.lib.nixosSystem (args // {
+      inherit system;
+      modules = baseModules ++ modules;
+      specialArgs = rec {
+        inherit inputs machineNames;
+        makeEnable = (import ./make-enable.nix) nixpkgs.lib;
+        mapValueToKeys = keys: value: builtins.listToAttrs (map (name: { inherit name value; }) keys);
+        realUsers = [ "root" "imalison" "kat" "dean" "alex" ];
+        forEachUser = mapValueToKeys realUsers;
+      } // specialArgs // (import ./keys.nix);
+    });
   in
   {
     nixosConfigurations = builtins.mapAttrs (machineName: params:

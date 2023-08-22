@@ -3,6 +3,7 @@
   imports = [
     ./android.nix
     ./base.nix
+    ./cache.nix
     ./code.nix
     ./desktop.nix
     ./environment.nix
