@@ -16,6 +16,7 @@
     ./nix.nix
     ./nixified.ai.nix
     ./options.nix
+    ./secrets.nix
     ./ssh.nix
     ./syncthing.nix
     ./users.nix
