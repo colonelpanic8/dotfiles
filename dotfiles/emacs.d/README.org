@@ -3855,6 +3855,7 @@ alphanumeric characters only."
        (t 'none)))
 
     (use-package frame-mode
+      :if imalison:use-frame-mode
       :demand t
       :config
       (progn
