@@ -1,7 +1,5 @@
 { machineNames, ... }:
 {
-  nix = {
-    binaryCaches = map (machineName: "ssh://${machineName}.local") machineNames;
-  };
+  nix.settings.substituters = map (machineName: "ssh://${machineName}.local") machineNames;
 }
 
