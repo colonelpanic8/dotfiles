@@ -4,6 +4,7 @@
     ./android.nix
     ./base.nix
     ./cache.nix
+    ./cache-server.nix
     ./code.nix
     ./desktop.nix
     ./environment.nix
