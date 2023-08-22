@@ -11,7 +11,9 @@
     ./extra.nix
     ./games.nix
     ./git-sync.nix
+    ./imalison.nix
     ./internet-computer.nix
+    ./kat.nix
     ./keybase.nix
     ./nix.nix
     ./nixified.ai.nix
