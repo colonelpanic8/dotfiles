@@ -52,4 +52,9 @@ This makes evil-mode play nice with org-fc
 (add-to-list 'org-capture-templates
              '("j" "Journal" entry (file+datetree "~/org/daily-journal.org")
                "* %?\nEntered on %U\n  %i\n  %a"))
+(setq org-capture-templates
+      (append org-capture-templates
+              '(("r" "Weekly Review" entry
+                 (file+datetree "~/org/weekly_reviews.org")
+                 (file "~/org/weekly_review_template.org")))))
 #+end_src
