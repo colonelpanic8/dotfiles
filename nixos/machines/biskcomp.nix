@@ -15,6 +15,7 @@
   modules.syncthing.enable = true;
   modules.fonts.enable = true;
   modules.nixified-ai.enable = false;
+  modules.cache-server.enable = true;
 
   services.plex = {
     enable = true;

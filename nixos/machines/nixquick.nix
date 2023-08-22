@@ -5,6 +5,7 @@
   ];
 
   features.full.enable = true;
+  modules.cache-server.enable = true;
 
   networking.hostName = "nixquick";
 
