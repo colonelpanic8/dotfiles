@@ -7,7 +7,7 @@
     };
 
     home-manager = {
-      url = "github:IvanMalison/home-manager";
+      url = "github:nix-community/home-manager";
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
