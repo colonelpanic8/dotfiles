@@ -83,7 +83,7 @@ makeEnable config "modules.xmonad" true  {
 
     services.picom = {
       enable = true;
-      vSync = false;
+      vSync = config.modules.xmonad.picom.vSync.enable;
       backend = "glx";
       extraArgs = ["--experimental-backends"];
 
