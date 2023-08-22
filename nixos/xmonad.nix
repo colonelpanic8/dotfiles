@@ -29,6 +29,7 @@ makeEnable config "modules.xmonad" true  {
     haskellPackages.gtk-sni-tray
     haskellPackages.status-notifier-item
     haskellPackages.dbus-hslogger
+    inputs.imalison-taffybar.defaultPackage."${pkgs.system}"
   ];
 
   home-manager.users = forEachUser {
