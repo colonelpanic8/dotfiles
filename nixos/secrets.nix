@@ -11,11 +11,16 @@
       Unit = {
         Description = "Import GPG private key";
         After = [ "agenix.service" ];
+        # 3 total retries
+        StartLimitIntervalSec = 0;
+        StartLimitBurst = 3;
       };
 
       Install.WantedBy = [ "default.target" ];
       Service = {
         Type = "oneshot";
+        RestartSec = 5;
+        Restart = "onfailure";
         ExecStart =
           let path = config.age.secrets.gpg-keys.path;
           in "${pkgs.gnupg}/bin/gpg --batch --import ${path}";
