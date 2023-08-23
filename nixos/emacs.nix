@@ -1,9 +1,9 @@
 { pkgs, config, specialArgs, ... }:
 {
   services.emacs = {
-    enable = false;
+    enable = true;
     defaultEditor = true;
-    startWithUserSession = "graphical";
+    startWithUserSession = false;
     socketActivation.enable = true;
   };
 }
