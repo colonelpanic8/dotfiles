@@ -1062,7 +1062,7 @@ I keep it around just in case I need it.
 ** Sane Defaults
 #+BEGIN_SRC emacs-lisp -n -r
 (global-auto-revert-mode)
-(auto-save-mode +1)
+(auto-save-visited-mode +1)
 (show-paren-mode 1)
 (setq reb-re-syntax 'string)
 (setq ad-redefinition-action 'accept)              (ref:ad-redefinition-action)
