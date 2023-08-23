@@ -10,11 +10,15 @@
     systemd.user.services.import-gpg-key = {
       Unit = {
         Description = "Import GPG private key";
+        After = [ "agenix.service" ];
       };
+
       Install.WantedBy = [ "default.target" ];
       Service = {
         Type = "oneshot";
-        ExecStart = "${pkgs.gnupg}/bin/gpg --batch --import /run/user/%U/agenix/gpg-keys";
+        ExecStart =
+          let path = config.age.secrets.gpg-keys.path;
+          in "${pkgs.gnupg}/bin/gpg --batch --import ${path}";
       };
     };
   });
