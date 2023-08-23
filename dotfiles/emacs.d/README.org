@@ -2769,9 +2769,6 @@ The following is taken from [[https://github.com/syl20bnr/spacemacs/blob/a650877
             js2-mode-show-strict-warnings nil
             indent-tabs-mode nil
             js2-indent-switch-body t)
-      ;; (edconf-find-file-hook) ;; Make sure that editorconfig takes precedence
-      ;; (tern-mode t)
-      (when nil (skewer-mode)) ;; TODO: reenable
       (setq imenu-create-index-function
             (lambda ()
               (imalison:flatten-imenu-index
@@ -2787,23 +2784,6 @@ The following is taken from [[https://github.com/syl20bnr/spacemacs/blob/a650877
   (progn
     (js2r-add-keybindings-with-prefix "C-c C-m")
     (add-hook 'js2-mode-hook #'js2-refactor-mode)))
-
-(use-package skewer-mode
-  :commands skewer-mode
-  :config
-  (progn
-    (add-hook 'css-mode-hook #'skewer-css-mode)
-    (add-hook 'html-mode-hook #'skewer-html-mode)))
-
-(use-package tern
-  :commands tern-mode
-  :config
-  (use-package company-tern
-    :config (add-to-list 'company-backends 'company-tern)))
-
-(defun delete-tern-process ()
-  (interactive)
-  (delete-process "tern"))
 #+END_SRC
 *** typescript
 #+begin_src emacs-lisp
@@ -2813,11 +2793,6 @@ The following is taken from [[https://github.com/syl20bnr/spacemacs/blob/a650877
   (progn
     (add-hook 'typescript-mode-hook 'lsp-deferred)))
 #+end_src
-*** coffee script
-#+BEGIN_SRC emacs-lisp
-(use-package coffee-mode
-  :mode "\\.coffee\\'")
-#+END_SRC
 *** rust
 #+BEGIN_SRC emacs-lisp
 (use-package rust-mode
