@@ -3001,6 +3001,7 @@ The following is taken from [[https://github.com/syl20bnr/spacemacs/blob/a650877
 (defvar imalison:org-people (list "Ivan Malison" "Kat Huang"))
 (defvar imalison:org-default-initial-state "TODO")
 (use-package org
+  :defer 1
   :commands (org-mode org org-mobile-push org-mobile-pull org-agenda)
   :mode ("\\.org\\'" . org-mode)
   :bind (("C-c c" . org-capture)
