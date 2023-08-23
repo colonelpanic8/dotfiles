@@ -26,8 +26,8 @@
 	border-color: @white;
 	border-style: solid;
 	background-color: @bar-background;
-	padding: 3px;
-	margin: 4px;
+	padding: 2px;
+	margin: 1px;
 	border-radius: 4px;
 }
 

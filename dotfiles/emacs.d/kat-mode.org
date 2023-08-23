@@ -58,3 +58,8 @@ This makes evil-mode play nice with org-fc
                  (file+datetree "~/org/weekly_reviews.org")
                  (file "~/org/weekly_review_template.org")))))
 #+end_src
+
+* kat forgets to save her files
+#+begin_src emacs-lisp
+(auto-save-visited-mode +1)
+#+end_src
