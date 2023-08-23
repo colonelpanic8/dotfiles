@@ -1,7 +1,7 @@
 { pkgs, config, specialArgs, ... }:
 {
   services.emacs = {
-    enable = true;
+    enable = false;
     defaultEditor = true;
     socketActivation.enable = true;
   };
