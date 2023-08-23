@@ -51,6 +51,7 @@ with lib;
         ROFI_SYSTEMD_TERM = "alacritty -e";
         NIXPKGS_GIT_REV = "${inputs.nixpkgs.rev}";
         NIXPKGS_SOURCE = "${inputs.nixpkgs.outPath}";
+        EDITOR = "emacsclient --alternate-editor emacs";
       };
       interactiveShellInit = ''
         vterm_printf(){
