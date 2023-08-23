@@ -23,8 +23,9 @@
         RestartSec = 5;
         Restart = "onfailure";
         ExecStart =
-          let path = config.age.secrets.gpg-keys.path;
-              passphrasePath = config.age.secrets.gpg-passphrase.path;
+          let replace = builtins.replaceStrings [ "$XDG_RUNTIME_DIR" ] [ "\${XDG_RUNTIME_DIR}" ];
+              path = replace config.age.secrets.gpg-keys.path;
+              passphrasePath = replace config.age.secrets.gpg-passphrase.path;
           in "${pkgs.gnupg}/bin/gpg --pinentry-mode loopback --passphrase-file ${passphrasePath} --import ${path}";
       };
     };
