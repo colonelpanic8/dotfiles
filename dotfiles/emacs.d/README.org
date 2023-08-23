@@ -3392,9 +3392,9 @@ The following is taken from [[https://github.com/syl20bnr/spacemacs/blob/a650877
       (defvar org-capture-templates nil))
 
     (defvar imalison:created-property-string "
-  :PROPERTIES:
-  :CREATED: %U
-  :END:")
+:PROPERTIES:
+:CREATED: %U
+:END:")
 
     (imalison:add-to-org-agenda-files
      (nconc (list imalison:org-gtd-file imalison:org-habits-file
@@ -3432,11 +3432,11 @@ The following is taken from [[https://github.com/syl20bnr/spacemacs/blob/a650877
     (add-to-list 'org-capture-templates
                  `("h" "Habit" entry (file ,imalison:org-habits-file)
                    "* TODO
-    SCHEDULED: %^t
-    :PROPERTIES:
-    :CREATED: %U
-    :STYLE: habit
-    :END:"))
+SCHEDULED: %^t
+:PROPERTIES:
+:CREATED: %U
+:STYLE: habit
+:END:"))
 
 
     (defun org-get-priority-at-point ()
