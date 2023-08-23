@@ -18,9 +18,6 @@ in
   nixpkgs.config.allowBroken = true;
 
   environment.systemPackages = with pkgs; [
-    python-with-my-packages
-    emacs
-
     automake
     bazel
     bind
@@ -30,14 +27,16 @@ in
     dex
     direnv
     dpkg
+    efibootmgr
+    emacs
     fd
     file
     gawk
     gcc
     gdb
-    gitFull
     git-lfs
     git-sync
+    gitFull
     glxinfo
     gnumake
     gparted
@@ -57,6 +56,7 @@ in
     patchelf
     pciutils
     pstree
+    python-with-my-packages
     rclone
     rcm
     ripgrep
