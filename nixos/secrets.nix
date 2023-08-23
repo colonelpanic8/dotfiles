@@ -6,6 +6,7 @@
       inputs.agenix.packages."${pkgs.system}".default
     ];
     age.secrets.gpg-keys.file = ./secrets/gpg-keys.age;
+    age.secrets.gpg-passphrase.file = ./secrets/gpg-passphrase.age;
 
     systemd.user.services.import-gpg-key = {
       Unit = {
@@ -23,7 +24,8 @@
         Restart = "onfailure";
         ExecStart =
           let path = config.age.secrets.gpg-keys.path;
-          in "${pkgs.gnupg}/bin/gpg --batch --import ${path}";
+              passphrasePath = config.age.secrets.gpg-passphrase.path;
+          in "${pkgs.gnupg}/bin/gpg --pinentry-mode loopback --passphrase-file ${passphrasePath} --import ${path}";
       };
     };
   });
