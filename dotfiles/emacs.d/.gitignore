@@ -30,7 +30,7 @@ jabber-avatar-cache
 kat-mode.el
 org-caldav-*
 org-caldav-backup.org
-org-config.el
+org-config*.el
 org-gcal/
 persp-confs/
 places

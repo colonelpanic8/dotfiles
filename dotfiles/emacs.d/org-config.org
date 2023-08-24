@@ -1,0 +1,871 @@
+* include-file-as-forms
+We're going to use this to write separate parts of our config to different sections that will then be provided to our use package statment
+#+begin_src emacs-lisp
+(defun imalison:include-file-as-forms (filename)
+  "Include the contents of FILENAME into the source as s-expressions."
+  (with-temp-buffer
+    (insert-file-contents-literally filename)
+    (goto-char (point-min))
+    (let (forms form)
+      (condition-case nil
+          (while t
+            (setq form (read (current-buffer)))
+            (push form forms))
+        (end-of-file nil))
+      `,@(nreverse forms))))
+#+end_src
+* use-package
+#+begin_src emacs-lisp
+  (defmacro imalison:org-config ()
+    `(use-package org
+       :commands (org-mode org org-mobile-push org-mobile-pull org-agenda)
+       :mode ("\\.org\\'" . org-mode)
+       :preface (progn ,@(imalison:include-file-as-forms (imalison:join-paths user-emacs-directory "org-config-preface.el")))
+       :custom ,(imalison:include-file-as-forms (imalison:join-paths user-emacs-directory "org-config-custom.el"))
+       :config (progn ,@(imalison:include-file-as-forms (imalison:join-paths user-emacs-directory "org-config-config.el")))
+       :bind ,(imalison:include-file-as-forms (imalison:join-paths user-emacs-directory "org-config-bind.el"))))
+
+  (imalison:org-config)
+#+end_src
+* My Customization Variables
+#+begin_src emacs-lisp :tangle org-config-preface.el
+(defvar imalison:org-dir "~/org")
+(defvar imalison:shared-org-dir "~/katnivan")
+(defvar imalison:org-whoami "Ivan Malison")
+(defvar imalison:org-people (list "Ivan Malison" "Kat Huang"))
+(defvar imalison:org-default-initial-state "TODO")
+
+(defvar imalison:org-gtd-file
+  (imalison:join-paths imalison:org-dir "gtd.org"))
+(defvar imalison:org-habits-file
+  (imalison:join-paths imalison:org-dir "habits.org"))
+(defvar imalison:org-calendar-file
+  (imalison:join-paths imalison:org-dir "calendar.org"))
+(defvar imalison:org-inbox-file
+  (imalison:join-paths imalison:org-dir "inbox.org"))
+(defvar imalison:shared-org-gtd-file
+  (imalison:join-paths imalison:shared-org-dir "shared_gtd.org"))
+(defvar imalison:shared-habits-file
+  (imalison:join-paths imalison:shared-org-dir "shared_habits.org"))
+(defvar imalison:shared-calendar-file
+  (imalison:join-paths imalison:shared-org-dir "shared_calendar.org"))
+(defvar imalison:shared-shopping-file
+  (imalison:join-paths imalison:shared-org-dir "shared_shopping.org"))
+
+(defvar imalison:orgzly-files
+  (list (imalison:join-paths imalison:shared-org-dir "kat_orgzly.org")
+        (imalison:join-paths imalison:shared-org-dir "ivan_orgzly.org")
+        (imalison:join-paths imalison:org-dir "orgzly.org")))
+
+(defun imalison:add-to-org-agenda-files (incoming-files)
+  (setq org-agenda-files
+        (delete-dups
+         (cl-loop for filepath in (append org-agenda-files incoming-files)
+                  when (and filepath (file-exists-p (file-truename filepath)))
+                  collect (file-truename filepath)))))
+
+(defvar imalison:created-property-string "
+:PROPERTIES:
+:CREATED: %U
+:END:")
+#+end_src
+* Bindings
+#+begin_src emacs-lisp :tangle org-config-bind.el
+(("C-c c" . org-capture)
+ :map org-mode-map
+ (("C-e" . end-of-visual-line)
+  ("C-c n t" . org-insert-todo-heading)
+  ("C-c n s" . org-insert-todo-subheading)
+  ("C-c n h" . org-insert-habit)
+  ("C-c n m" . org-make-habit)
+  ("C-c n l" . org-store-link)
+  ("C-c n i" . org-insert-link)
+  ("C-c C-t" . org-todo)
+  ("C-c C-S-t" . org-todo-force-notes)
+  ("M-." . elisp-slime-nav-find-elisp-thing-at-point)))
+#+end_src
+* Org Variable Customization
+#+begin_src emacs-lisp :tangle org-config-custom.el
+(org-agenda-skip-deadline-if-done nil)
+(org-agenda-skip-scheduled-if-done nil)
+(org-agenda-span 10)
+(org-agenda-start-day "-0d")
+(org-agenda-timegrid-use-ampm 1)
+(org-agenda-window-setup 'other-window)
+(org-columns-default-format "%80ITEM(Task) %10Effort(Effort){:} %10CLOCKSUM")
+(org-deadline-warning-days 0)
+(org-default-priority ?C)
+(org-edit-src-content-indentation 0)
+(org-enforce-todo-dependencies t)
+(org-export-headline-levels 3)
+(org-fold-catch-invisible-edits 'show)
+(org-goto-interface 'outline-path-completion)
+(org-goto-max-level 10)
+(org-habit-graph-column 50)
+(org-habit-show-all-today t)
+(org-imenu-depth 10)
+(org-log-into-drawer t)
+(org-log-redeadline t)
+(org-log-reschedule t)
+(org-lowest-priority 69) ;; The character E
+(org-outline-path-complete-in-steps nil)
+(org-refile-allow-creating-parent-nodes t)
+(org-refile-use-outline-path 'file)
+(org-src-fontify-natively t)
+(org-src-preserve-indentation t)
+(org-startup-folded t)
+(org-startup-indented nil)
+(org-todo-repeat-to-state "TODO")
+(org-treat-insert-todo-heading-as-state-change t)
+(org-habit-show-habits-only-for-today t)
+(org-refile-targets '((org-agenda-files . (:maxlevel . 2))
+                      (org-agenda-files . (:level . 0))))
+(org-global-properties
+ '(quote (("Effort_ALL" . "0:15 0:30 0:45 1:00 2:00 3:00 4:00 5:00 6:00 0:00")
+          ("STYLE_ALL" . "habit"))))
+(org-todo-keywords
+ '((sequence "INBOX(i!)" "TODO(t!)" "NEXT(n!)" "STARTED(s!)" "WAIT(w!)"
+             "BACKLOG(b!)" "|" "DONE(d!)" "HANDLED(h!)" "EXPIRED(e!)"
+             "CANCELED(c!)")))
+#+end_src
+* Config
+** Miscellaneous Functions
+#+begin_src emacs-lisp :tangle org-config-config.el
+(require 'cl-lib)
+(require 'org-habit)
+
+(defun imalison:maybe-symbol-name (arg)
+  (if (symbolp arg)
+      (symbol-name arg)
+    arg))
+
+(defun imalison:set-display-custom-times ()
+  (setq org-display-custom-times nil))
+
+(when (not (fboundp 'org-is-habit-p))
+  (defun org-is-habit-p ()
+    (string-equal (org-entry-get nil "STYLE") "habit")))
+
+(defun org-todo-force-notes ()
+  (interactive)
+  (let ((org-todo-log-states
+         (mapcar (lambda (state)
+                   (list state 'note 'time))
+                 (apply 'append org-todo-sets))))
+    (cond ((eq major-mode 'org-mode)  (org-todo))
+          ((eq major-mode 'org-agenda-mode) (org-agenda-todo)))))
+
+(defun org-make-habit ()
+  (interactive)
+  (org-set-property "STYLE" "habit"))
+
+(defun org-insert-habit ()
+  (interactive)
+  (org-insert-todo-heading nil)
+  (org-make-habit))
+
+(defun org-todo-at-date (date)
+  (interactive (list (org-time-string-to-time (org-read-date))))
+  (cl-flet ((org-current-effective-time (&rest r) date)
+            (org-today (&rest r) (time-to-days date)))
+    (cond ((eq major-mode 'org-mode) (org-todo))
+          ((eq major-mode 'org-agenda-mode) (org-agenda-todo)))))
+#+end_src
+** Miscellaneous
+#+begin_src emacs-lisp :tangle org-config-config.el
+(add-to-list 'org-show-context-detail '(org-goto . lineage))
+(add-to-list 'org-src-lang-modes '("plantuml" . plantuml))
+
+(define-key mode-specific-map [?a] 'org-agenda)
+(unbind-key "C-j" org-mode-map)
+#+end_src
+** Hooks
+#+begin_src emacs-lisp :tangle org-config-config.el
+(add-hook 'org-mode-hook 'imalison:disable-linum-mode)
+(add-hook 'org-mode-hook (lambda () (setq org-todo-key-trigger t)))
+(add-hook 'org-mode-hook 'imalison:set-display-custom-times)
+(add-hook 'org-agenda-mode-hook 'imalison:disable-linum-mode)
+(add-hook 'org-agenda-mode-hook 'imalison:set-display-custom-times)
+(add-hook 'org-agenda-mode-hook 'imalison:disable-linum-mode)
+#+end_src
+** Modules
+#+begin_src emacs-lisp :tangle org-config-config.el
+(add-to-list 'org-modules 'org-habit)
+(add-to-list 'org-modules 'org-expiry)
+#+end_src
+** Assignee
+#+begin_src emacs-lisp :tangle org-config-config.el
+(defmacro imalison:def-agenda-pred (&rest forms)
+  `(lambda ()
+     (unless ,@forms
+       (or (outline-next-heading)
+           (point-max)))))
+
+(defun imalison:org-known-assignees ()
+  imalison:org-people)
+
+(cl-defun imalison:set-assignee (&key assignee (override t))
+  (interactive)
+  (let ((chosen-assignee (if (called-interactively-p 'interactive)
+                             (completing-read "Choose assignee: "
+                                              (imalison:org-known-assignees)
+                                              nil t)
+                           (or assignee imalison:org-whoami))))
+    (when (or override (not (org-entry-get nil "ASSIGNEE")))
+      (org-set-property "ASSIGNEE" chosen-assignee))))
+
+(defun imalison:assign-to-self-if-unassigned ()
+  (interactive)
+  (imalison:set-assignee :assignee imalison:org-whoami :override nil))
+
+(defun imalison:shared-org-file-p ()
+  (string-prefix-p (file-truename imalison:shared-org-dir)
+                   (file-truename default-directory)))
+
+(defun imalison:habit-or-repeating-heading ()
+  (org-is-habit-p))
+
+(defun imalison:shared-non-habit-p ()
+  (and (not (imalison:habit-or-repeating-heading))
+       (imalison:shared-org-file-p)))
+
+(defvar imalison:auto-assign-to-self-predicates
+  (list 'imalison:shared-non-habit-p))
+
+(defun imalison:auto-assign-to-self-when ()
+  (cl-loop for pred in imalison:auto-assign-to-self-predicates
+           when (funcall pred)
+           return t
+           finally return nil))
+
+(defun imalison:maybe-auto-assign-to-self (&rest args)
+  (when (imalison:auto-assign-to-self-when)
+    (imalison:assign-to-self-if-unassigned)))
+
+(advice-add 'org-schedule :after 'imalison:maybe-auto-assign-to-self)
+
+(cl-defun imalison:assigned-to-me (&key (include-unassigned t))
+  (let ((assignee (org-entry-get nil "ASSIGNEE")))
+    (or (string-equal assignee imalison:org-whoami)
+        (and include-unassigned (null assignee)))))
+
+(defalias 'imalison:assigned-to-me-agenda-pred
+  (imalison:def-agenda-pred
+   (imalison:assigned-to-me)))
+#+end_src
+** Agenda
+#+begin_src emacs-lisp :tangle org-config-config.el
+(require 'org-agenda)
+#+end_src
+*** Agenda Files
+#+begin_src emacs-lisp :tangle org-config-config.el
+(imalison:add-to-org-agenda-files
+ (nconc (list imalison:org-gtd-file imalison:org-habits-file
+              imalison:org-calendar-file imalison:org-inbox-file
+              imalison:shared-org-gtd-file imalison:shared-habits-file
+              imalison:shared-calendar-file imalison:shared-shopping-file)
+        imalison:orgzly-files))
+#+end_src
+*** Predicates
+#+begin_src emacs-lisp :tangle org-config-config.el
+(defun org-get-priority-at-point ()
+  (save-excursion
+    (beginning-of-line)
+    (org-back-to-heading t)
+    (when (looking-at org-priority-regexp)
+	  (let ((ms (match-string 2)))
+	    (org-priority-to-value ms)))))
+
+(defmacro imalison:def-agenda-priority-pred (priority)
+  `(imalison:def-agenda-pred
+    (>= (org-get-priority-at-point) ,priority)))
+
+(cl-defun imalison:org-time-condition-met-p (&key (property "CREATED") (days 30) (future nil))
+  (let* ((property-value (org-entry-get (point) property))
+         (comparison-time
+          (if future
+              (time-add (current-time) (days-to-time days))
+            (time-subtract (current-time) (days-to-time days))))
+         (formatted-time-string (format-time-string "<%Y-%m-%d %H:%M>" comparison-time))
+         (compare-time (org-time-string-to-time formatted-time-string))
+         (node-time (when property-value (org-time-string-to-time property-value))))
+    (when node-time
+      (if future
+          (time-less-p node-time compare-time)
+        (time-less-p compare-time node-time)))))
+
+(defun org-cmp-creation-times (a b)
+  (let ((a-created (get-date-created-from-agenda-entry a))
+        (b-created (get-date-created-from-agenda-entry b)))
+    (imalison:compare-int-list a-created b-created)))
+#+end_src
+*** Transient support
+#+begin_src emacs-lisp :tangle org-config-config.el
+(when (fboundp 'org-agenda-transient)
+  (bind-key "C-c a" 'org-agenda-transient))
+#+end_src
+*** Agenda Commands (Views)
+#+begin_src emacs-lisp :tangle org-config-config.el
+(let ((this-week-high-priority
+       ;; The < in the following line has behavior that is opposite
+       ;; to what one might expect.
+       `(tags-todo
+         "+PRIORITY<\"C\""
+         ((org-agenda-overriding-header "Upcoming high priority tasks:")
+          (org-agenda-skip-function
+           ,(imalison:def-agenda-pred
+             (or
+              (imalison:org-time-condition-met-p
+               :property "DEADLINE" :days 7 :future t)
+              (imalison:org-time-condition-met-p
+               :property "SCHEDULED" :days 7 :future t)))))))
+      (due-today
+       `(alltodo
+         ""
+         ((org-agenda-overriding-header "Due today:")
+          (org-agenda-skip-function
+           ,(imalison:def-agenda-pred
+             (or
+              (imalison:org-time-condition-met-p
+               :property "DEADLINE" :days 0 :future t)
+              (imalison:org-time-condition-met-p
+               :property "SCHEDULED" :days 0 :future t)))))))
+      (recently-created
+       `(alltodo
+         ""
+         ((org-agenda-overriding-header "Recently Created:")
+          (org-agenda-skip-function
+           ,(imalison:def-agenda-pred
+             (imalison:org-time-condition-met-p :days 10)))
+          (org-agenda-cmp-user-defined 'org-cmp-creation-times)
+          (org-agenda-sorting-strategy '(user-defined-down)))))
+      (next '(todo "NEXT"))
+      (started '(todo "STARTED"))
+      (inbox '(todo "INBOX"))
+      (missing-deadline
+       '(tags-todo "-DEADLINE={.}/!"
+                   ((org-agenda-overriding-header
+                     "These don't have deadlines:"))))
+      (missing-priority
+       '(tags-todo "-PRIORITY={.}/!"
+                   ((org-agenda-overriding-header
+                     "These don't have priorities:")))))
+
+  (setq org-agenda-custom-commands
+        `(("M" "Main agenda view"
+           ((agenda ""
+                    ((org-agenda-overriding-header "Agenda:")
+                     (org-agenda-ndays 5)
+                     (org-deadline-warning-days 0)
+                     (org-agenda-skip-function 'imalison:assigned-to-me-agenda-pred)))
+            ,due-today
+            ,next
+            ,inbox
+            ,this-week-high-priority
+            ,recently-created)
+           nil nil)
+          ,(cons "A" (cons "High priority upcoming" this-week-high-priority))
+          ,(cons "d" (cons "Overdue tasks and due today" due-today))
+          ,(cons "r" (cons "Recently created" recently-created))
+          ("h" "A, B priority:" tags-todo "+PRIORITY<\"C\""
+           ((org-agenda-overriding-header
+             "High Priority:")))
+          ("c" "At least priority C:" tags-todo "+PRIORITY<\"D\""
+           ((org-agenda-overriding-header
+             "At least priority C:"))))))
+#+end_src
+** Archive
+#+begin_src emacs-lisp :tangle org-config-config.el
+(defun org-archive-if (condition-function)
+  (if (funcall condition-function)
+      (let ((next-point-marker
+             (save-excursion (org-forward-heading-same-level 1) (point-marker))))
+        (org-archive-subtree)
+        (setq org-map-continue-from (marker-position next-point-marker)))))
+
+(defun org-archive-if-completed ()
+  (interactive)
+  (org-archive-if 'org-entry-is-done-p))
+
+(defun org-archive-completed-in-buffer ()
+  (interactive)
+  (org-map-entries 'org-archive-if-completed))
+
+(defun org-archive-all-in-buffer ()
+  (interactive)
+  (org-map-entries 'org-archive-subtree))
+#+end_src
+** Capture
+*** Helper Functions
+#+begin_src emacs-lisp :tangle org-config-config.el
+(cl-defun imalison:make-org-template (&key (content "%?"))
+  (with-temp-buffer
+    (org-mode)
+    (insert content)
+    (org-set-property "CREATED"
+                      (with-temp-buffer
+                        (org-insert-time-stamp
+                         (org-current-effective-time) t t)))
+    (buffer-substring-no-properties (point-min) (point-max))))
+
+(defun imalison:make-org-template-from-file (filename)
+  (imalison:make-org-template (imalison:get-string-from-file filename)))
+
+(cl-defun imalison:make-org-todo-template
+    (&key (content "%?") (creation-state imalison:org-default-initial-state))
+  (with-temp-buffer
+    (org-mode)
+    (org-insert-heading)
+    (insert content)
+    (org-todo creation-state)
+    (org-set-property "CREATED"
+                      (with-temp-buffer
+                        (org-insert-time-stamp
+                         (org-current-effective-time) t t)))
+    (remove-hook 'post-command-hook 'org-add-log-note)
+    (let ((org-log-note-purpose 'state)
+          (org-log-note-return-to (point-marker))
+          (org-log-note-marker (progn (goto-char (org-log-beginning t))
+                                      (point-marker)))
+          (org-log-note-state creation-state))
+      (org-add-log-note))
+    (buffer-substring-no-properties (point-min) (point-max))))
+
+(defun imalison:make-org-linked-todo-template ()
+  (imalison:make-org-todo-template "[#C] %? %A"))
+#+end_src
+*** Templates
+#+begin_src emacs-lisp :tangle org-config-config.el
+(use-package org-capture
+  :straight nil
+  :config
+  (add-to-list 'org-capture-templates
+               `("t" "GTD Todo (Linked)" entry (file ,imalison:org-gtd-file)
+                 (function imalison:make-org-linked-todo-template)))
+
+  (add-to-list 'org-capture-templates
+               `("g" "GTD Todo" entry (file ,imalison:org-gtd-file)
+                 (function imalison:make-org-todo-template)))
+
+  (add-to-list 'org-capture-templates
+               `("s" "Shared GTD Todo" entry (file ,imalison:shared-org-gtd-file)
+                 (function imalison:make-org-todo-template)))
+
+  (add-to-list 'org-capture-templates
+               `("y" "Calendar entry (Linked)" entry
+                 (file ,imalison:org-calendar-file)
+                 ,(format "%s%s\n%s" "* %? %A" imalison:created-property-string "%^T")))
+
+  (add-to-list 'org-capture-templates
+               `("c" "Calendar entry" entry
+                 (file ,imalison:org-calendar-file)
+                 ,(format "%s\n%s\n%s" "* %?" imalison:created-property-string "%^T")))
+
+  (add-to-list 'org-capture-templates
+               `("z" "Shopping Todo" entry (file ,imalison:shared-shopping-file)
+                 (function (lambda (&rest args) (imalison:make-org-todo-template :creation-state "TODO")))))
+
+  (add-to-list 'org-capture-templates
+               `("h" "Habit" entry (file ,imalison:org-habits-file)
+                 "* TODO
+SCHEDULED: %^t
+:PROPERTIES:
+:CREATED: %U
+:STYLE: habit
+:END:")))
+#+end_src
+** Babel
+#+begin_src emacs-lisp :tangle org-config-config.el
+(add-hook 'org-mode-hook 'imalison:load-babel-languages)
+(defun imalison:load-babel-languages ()
+  (let* ((loaded-ob (or (require 'ob-sh nil t) (require 'ob-shell nil t)))
+         (ob-shell-name
+          (when loaded-ob
+            (intern (substring-no-properties (imalison:maybe-symbol-name loaded-ob) 3))))
+         (added-modes (when ob-shell-name `((,ob-shell-name . t)))))
+    (org-babel-do-load-languages
+     'org-babel-load-languages
+     `((python . t)
+       (ruby . t)
+       (octave . t)
+       (plantuml . t)
+       (js . t)
+       ,@added-modes))))
+
+(use-package ob-typescript
+  :config
+  (progn
+    (org-babel-do-load-languages
+     'org-babel-load-languages '((typescript . t)))))
+
+(use-package ob-mermaid
+  :config
+  (org-babel-do-load-languages
+   'org-babel-load-languages '((mermaid . t))))
+#+end_src
+** frame-mode handling
+Note that this does not go into org-config-config.el. This is on purpose
+#+begin_src emacs-lisp
+(use-package org
+  :after frame-mode
+  :config
+  (progn
+    (defun imalison:org-frame-mode-hook ()
+      (setq org-src-window-setup 'current-window)
+      (when frame-mode
+        (progn
+          (setcdr (assoc 'file org-link-frame-setup) 'find-file-other-frame))))
+    (add-hook 'frame-mode-hook 'imalison:org-frame-mode-hook)))
+#+end_src
+** Disable yasnippet in org-mode
+#+BEGIN_SRC emacs-lisp
+(use-package org
+  :straight nil
+  :config
+  (progn
+    (defun imalison:disable-yas ()
+      (yas-minor-mode -1))
+    (add-hook 'org-mode-hook 'imalison:disable-yas)))
+#+END_SRC
+** Set Background Color of Source Blocks for Export
+This was taken from [[http://emacs.stackexchange.com/questions/3374/set-the-background-of-org-exported-code-blocks-according-to-theme][here]].
+#+BEGIN_SRC emacs-lisp
+(use-package org
+  :config
+  (progn
+    (defun imalison:org-inline-css-hook (exporter)
+      "Insert custom inline css to automatically set the
+background of code to whatever theme I'm using's background"
+      (when (eq exporter 'html)
+        (let* ((my-pre-bg (face-background 'default))
+               (my-pre-fg (face-foreground 'default)))
+          (setq
+           org-html-head-extra
+           (concat
+            org-html-head-extra
+            (format "<style type=\"text/css\">\n pre.src {background-color: %s; color: %s;}</style>\n"
+                    my-pre-bg my-pre-fg))))))
+
+    (add-hook 'org-export-before-processing-hook 'imalison:org-inline-css-hook)))
+#+END_SRC
+** Use my own default naming scheme for org-headings
+First we define a function that will generate a sanitized version of the heading
+as its link target.
+#+BEGIN_SRC emacs-lisp
+(defun imalison:org-get-raw-value (item)
+  (when (listp item)
+    (let* ((property-list (cadr item)))
+      (when property-list (plist-get property-list :raw-value)))))
+
+(defun imalison:sanitize-name (name)
+  (replace-regexp-in-string "[^[:alpha:]]" "" (s-downcase name)))
+
+(defun imalison:generate-name (datum cache)
+  (let ((raw-value (imalison:org-get-raw-value datum)))
+    (if raw-value
+        (imalison:sanitize-name raw-value)
+      ;; This is the default implementation from org
+      (let ((type (org-element-type datum)))
+        (format "org%s%d"
+                (if type
+                    (replace-regexp-in-string "-" "" (symbol-name type))
+                    "secondarystring")
+                (incf (gethash type cache 0)))))))
+#+END_SRC
+
+This function replaces the default naming scheme with a call to
+~imalison:generate-name~, and uses a slightly different uniquify approach.
+#+BEGIN_SRC emacs-lisp
+(use-package ox
+  :defer t
+  :straight nil
+  :config
+  (defun org-export-get-reference (datum info)
+    "Return a unique reference for DATUM, as a string.
+DATUM is either an element or an object.  INFO is the current
+export state, as a plist.  Returned reference consists of
+alphanumeric characters only."
+    (let ((type (org-element-type datum))
+          (cache (or (plist-get info :internal-references)
+                     (let ((h (make-hash-table :test #'eq)))
+                       (plist-put info :internal-references h)
+                       h)))
+          (reverse-cache (or (plist-get info :taken-internal-references)
+                             (let ((h (make-hash-table :test 'equal)))
+                               (plist-put info :taken-internal-references h)
+                               h))))
+      (or (gethash datum cache)
+          (let* ((name (imalison:generate-name datum cache))
+                 (number (+ 1 (gethash name reverse-cache -1)))
+                 (new-name (format "%s%s" name (if (< 0 number) number ""))))
+            (puthash name number reverse-cache)
+            (puthash datum new-name cache)
+            new-name)))))
+#+END_SRC
+** Add link icons in headings that lead to themselves
+#+BEGIN_SRC emacs-lisp
+(use-package ox-html
+  :commands (org-html-export-as-html org-html-export-as-html)
+  :straight nil
+  :preface
+  (progn
+    (defvar imalison:link-svg-html
+      "<svg aria-hidden=\"true\" class=\"octicon octicon-link\" height=\"16\" version=\"1.1\" viewBox=\"0 0 16 16\" width=\"16\"><path fill-rule=\"evenodd\" d=\"M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z\"></path></svg>")
+    (defvar imalison:current-html-headline)
+    (defun imalison:set-current-html-headline (headline &rest args)
+      (setq imalison:current-html-headline headline))
+    (defun imalison:clear-current-html-headline (&rest args)
+      (setq imalison:current-html-headline nil))
+    (defun imalison:org-html-format-heading-function (todo todo-type priority text tags info)
+      (let* ((reference (when imalison:current-html-headline
+                          (org-export-get-reference imalison:current-html-headline info)))
+             ;; Don't do anything special if the current headline is not set
+             (new-text (if reference
+                           (format "%s <a href=\"#%s\">%s</a>" text reference imalison:link-svg-html)
+                         text)))
+        (org-html-format-headline-default-function
+         todo todo-type priority new-text tags info))))
+  :config
+  (progn
+    ;; This is set before and cleared afterwards, so that we know when we are
+    ;; generating the text for the headline itself and when we are not.
+    (advice-add 'org-html-headline :before 'imalison:set-current-html-headline)
+    (advice-add 'org-html-headline :after 'imalison:clear-current-html-headline)
+    (setq org-html-format-headline-function
+          'imalison:org-html-format-heading-function)))
+#+END_SRC
+** Allow with query params in image extentions
+#+BEGIN_SRC emacs-lisp
+(use-package ox-html
+  :defer t
+  :straight nil
+  :config
+  (setq org-html-inline-image-rules
+        '(("file" . "\\.\\(jpeg\\|jpg\\|png\\|gif\\|svg\\)\\(\\?.*?\\)?\\'")
+
+          ("http" . "\\.\\(jpeg\\|jpg\\|png\\|gif\\|svg\\)\\(\\?.*?\\)?\\'")
+          ("https" . "\\.\\(jpeg\\|jpg\\|png\\|gif\\|svg\\)\\(\\?.*?\\)?\\'"))))
+#+END_SRC
+** Use org-tempo to allow inserting templates using e.g. <s
+#+begin_src emacs-lisp
+(use-package org-tempo
+  :straight nil
+  :after org)
+#+end_src
+* Packages
+** org-present :tangle org-config-config.el
+#+begin_src emacs-lisp
+(use-package org-present
+  :after org
+  :commands org-present)
+#+end_src
+** org-bullets
+#+begin_src emacs-lisp :tangle org-config-config.el
+(use-package org-bullets
+  :commands org-bullets-mode
+  :after org
+  :preface
+  (add-hook 'org-mode-hook (lambda () (org-bullets-mode 1))))
+#+end_src
+** org-ehtml
+#+begin_src emacs-lisp
+(use-package org-ehtml
+  :disabled t
+  :config
+  (progn
+    (setq org-ehtml-allow-agenda t)
+    (setq org-ehtml-editable-headlines t)
+    (setq org-ehtml-everything-editable t)))
+#+end_src
+** org-modern
+#+begin_src emacs-lisp
+(use-package org-modern
+  :disabled t
+  :after org
+  :hook (org-mode . org-modern-mode))
+#+end_src
+** org-project-capture
+#+BEGIN_SRC emacs-lisp
+(use-package org-project-capture
+  :bind ("C-c o p" . org-project-capture-project-todo-completing-read)
+  ;; We want this to load somewhat quickly because we need to update the list of agenda files
+  :defer 2
+  :config
+  (progn
+    (use-package org-projectile
+      :demand t
+      :config
+      (setq org-project-capture-default-backend
+            (make-instance 'org-project-capture-projectile-backend)))
+    (setq org-project-capture-strategy
+          (make-instance 'org-project-capture-combine-strategies
+                         :strategies (list (make-instance 'org-project-capture-single-file-strategy)
+                                           (make-instance 'org-project-capture-per-project-strategy))))
+    (setq org-project-capture-projects-file
+          (imalison:join-paths imalison:org-dir "projects.org")
+          org-project-capture-capture-template
+          (format "%s%s" "* TODO %?" imalison:created-property-string))
+    (add-to-list 'org-capture-templates
+                 (org-project-capture-project-todo-entry
+                  :capture-character "l"
+                  :capture-heading "Linked Project TODO"))
+    (add-to-list 'org-capture-templates
+                 (org-project-capture-project-todo-entry
+                  :capture-character "p"))
+    (setq org-confirm-elisp-link-function nil)
+    (imalison:add-to-org-agenda-files (org-project-capture-todo-files))))
+#+END_SRC
+** org-pomodoro
+#+BEGIN_SRC emacs-lisp
+(use-package org-pomodoro
+  :after org)
+#+END_SRC
+** org-roam
+#+begin_src emacs-lisp
+(use-package org-roam
+  :defer 1
+  :bind
+  (:map org-mode-map
+        ("C-c r f" . org-roam-node-find)
+        ("C-c r i" . org-roam-node-insert)
+        ("C-c r b" . imalison:org-roam-browse-backlink)
+        ("C-c r t" . org-roam-buffer-toggle))
+  :config
+  (progn
+    (when (version<= "29.0" emacs-version)
+      (use-package emacsql-sqlite-builtin
+        :demand t)
+      (setq org-roam-database-connector 'sqlite-builtin))
+    (org-roam-db-autosync-mode +1)
+
+    (defun imalison:frames-displaying-buffer (buf)
+      "Return a list of frames in which BUF is displayed."
+      (let ((target-buffer (if (bufferp buf) buf (get-buffer buf))))
+        (if target-buffer
+            (delq nil
+                  (mapcar (lambda (frame)
+                            (if (get-buffer-window target-buffer frame)
+                                frame))
+                          (frame-list)))
+          nil)))
+
+    (defun imalison:org-roam-browse-backlink ()
+      (interactive)
+      (let* ((node-alist
+              (cl-loop for backlink in (org-roam-backlinks-get (org-roam-node-at-point))
+                       for node = (org-roam-backlink-source-node backlink)
+                       collect `(,(org-roam-node-title node) . ,node)))
+             (selected-name (completing-read "Select a backlink to visit: " node-alist))
+             (selected-node (alist-get selected-name node-alist nil nil 'string-equal)))
+        (org-roam-node-visit selected-node)))
+
+    (defun imalison:org-roam-frame-based-buffer-visibility-fn ()
+      (cond
+       ((--any (funcall frame-mode-is-frame-viewable-fn it)
+               (imalison:frames-displaying-buffer org-roam-buffer)) 'visible)
+       ((get-buffer org-roam-buffer) 'exists)
+       (t 'none)))
+
+    (use-package frame-mode
+      :if imalison:use-frame-mode
+      :demand t
+      :config
+      (progn
+        (emit-variable-set-mode
+         imalison:org-roam-set-frame-visibility-mode
+         org-roam-buffer-visibility-fn 'imalison:org-roam-frame-based-buffer-visibility-fn)
+        (emit-make-mode-dependent imalison:org-roam-set-frame-visibility-mode frame-mode))))
+  :custom
+  (org-roam-directory (file-truename "~/org/roam/")))
+#+end_src
+***** ui
+#+begin_src emacs-lisp
+(use-package org-roam-ui
+  :after org-roam
+  :custom
+  (org-roam-ui-sync-theme t)
+  (org-roam-ui-follow t)
+  (org-roam-ui-update-on-save t)
+  (org-roam-ui-open-on-start nil))
+#+end_src
+** org-notify
+ #+BEGIN_SRC emacs-lisp
+(use-package org-notify
+  :disabled t
+  :after org
+  :config
+  (progn
+    (defun imalison:org-notify-notification-handler (plist)
+      (sauron-add-event 'org-notify 4 (format "%s, %s.\n" (plist-get plist :heading)
+                                              (org-notify-body-text plist))))
+
+    (setq org-show-notification-handler 'imalison:org-notify-notification-handler)
+
+    (org-notify-add 'default '(:time "1h" :actions imalison:org-notify-notification-handler
+                                     :period "2m" :duration 60))
+    (org-notify-add 'default '(:time "100m" :actions imalison:org-notify-notification-handler
+                                     :period "2m" :duration 60))
+    (org-notify-add 'urgent-second '(:time "3m" :actions (-notify/window -ding)
+                                           :period "15s" :duration 10))
+    (org-notify-add 'minute '(:time "5m" :actions -notify/window
+                                    :period "100s" :duration 70))
+    (org-notify-add '12hours
+                    '(:time "3m" :actions (-notify/window -ding)
+                            :period "15s" :duration 10)
+                    '(:time "100m" :actions -notify/window
+                            :period "2m" :duration 60)
+                    '(:time "12h" :actions -notify/window :audible nil
+                            :period "10m" :duration 200))
+    (org-notify-add '5days
+                    '(:time "100m" :actions -notify/window
+                            :period "2m" :duration 60)
+                    '(:time "2d" :actions -notify/window
+                            :period "15m" :duration 100)
+                    '(:time "5d" :actions -notify/window
+                            :period "2h" :duration 200))
+    (org-notify-add 'long-20days
+                    '(:time "2d" :actions -notify/window
+                            :period "15m" :duration 60)
+                    '(:time "5d" :actions -notify/window
+                            :period "2h" :duration 60)
+                    '(:time "20d" :actions -email :period "2d" :audible nil))
+    (org-notify-add 'long-50days
+                    '(:time "4d" :actions -notify/window
+                            :period "30m" :duration 100)
+                    '(:time "10d" :actions -notify/window
+                            :period "4h" :duration 200)
+                    '(:time "50d" :actions -email :period "3d" :audible nil))
+    (org-notify-add 'long-100days
+                    '(:time "2d" :actions -notify/window
+                            :period "1h" :duration 200)
+                    '(:time "10d" :actions -notify/window
+                            :period "10h" :duration 300)
+                    '(:time "50d" :actions -email :period "3d" :audible nil)
+                    '(:time "100d" :actions -email :period "5d" :audible nil))
+    (org-notify-start 10)))
+ #+END_SRC
+** org-reveal
+#+BEGIN_SRC emacs-lisp
+(use-package ox-reveal
+  :defer t
+  :commands org-reveal
+  :config
+  (setq org-reveal-root
+      (imalison:join-paths "file://" imalison:projects-directory "reveal.js")))
+#+END_SRC
+** org-fc
+#+begin_src emacs-lisp
+(use-package org-fc
+  :bind ("C-c 9" . org-fc-hydra/body)
+  :config
+  (progn
+    (require 'org-fc-hydra))
+  :straight (org-fc :type git :host github :repo "l3kn/org-fc"
+                    :files ("*.el" "awk" "demo.org")))
+#+end_src
+** org-ql
+#+begin_src emacs-lisp
+(use-package org-ql
+  :bind ("C-c o s" . org-ql-find-in-agenda)
+  :commands org-ql-find-in-agenda)
+#+end_src
