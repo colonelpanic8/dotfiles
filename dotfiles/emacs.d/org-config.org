@@ -101,8 +101,9 @@ We're going to use this to write separate parts of our config to different secti
 (org-fold-catch-invisible-edits 'show)
 (org-goto-interface 'outline-path-completion)
 (org-goto-max-level 10)
-(org-habit-graph-column 50)
-(org-habit-show-all-today t)
+(org-habit-graph-column 60)
+(org-habit-show-all-today nil)
+(org-habit-show-habits-only-for-today t)
 (org-imenu-depth 10)
 (org-log-into-drawer t)
 (org-log-redeadline t)
@@ -117,7 +118,6 @@ We're going to use this to write separate parts of our config to different secti
 (org-startup-indented nil)
 (org-todo-repeat-to-state "TODO")
 (org-treat-insert-todo-heading-as-state-change t)
-(org-habit-show-habits-only-for-today t)
 (org-refile-targets '((org-agenda-files . (:maxlevel . 2))
                       (org-agenda-files . (:level . 0))))
 (org-global-properties
@@ -330,6 +330,17 @@ We're going to use this to write separate parts of our config to different secti
                :property "DEADLINE" :days 0 :future t)
               (imalison:org-time-condition-met-p
                :property "SCHEDULED" :days 0 :future t)))))))
+      (all-habits
+       `(agenda
+         ""
+         ((org-agenda-overriding-header "Habits:")
+          (org-agenda-ndays 1)
+          (org-agenda-span 1)
+          (org-agenda-use-time-grid nil)
+          (org-agenda-skip-function
+           ,(imalison:def-agenda-pred
+             (org-is-habit-p)))
+          (org-habit-show-all-today t))))
       (recently-created
        `(alltodo
          ""
@@ -358,7 +369,7 @@ We're going to use this to write separate parts of our config to different secti
                      (org-agenda-ndays 5)
                      (org-deadline-warning-days 0)
                      (org-agenda-skip-function 'imalison:assigned-to-me-agenda-pred)))
-            ,due-today
+            ,all-habits
             ,next
             ,inbox
             ,this-week-high-priority
