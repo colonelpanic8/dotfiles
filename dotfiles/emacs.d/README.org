@@ -4247,9 +4247,9 @@ load-theme hook (See the heading below).
     (setq imalison:default-font-size-pt (face-attribute 'default :height))
     (setq imalison:appearance-setup-done t)))
 
-(if (daemonp)
-    (add-hook 'after-make-frame-functions 'imalison:appearance-setup-hook)
-  (add-hook 'after-init-hook 'imalison:appearance-setup-hook))
+(when (daemonp)
+    (add-hook 'after-make-frame-functions 'imalison:appearance-setup-hook))
+(add-hook 'after-init-hook 'imalison:appearance-setup-hook)
 #+END_SRC
 * Post Init Custom
 #+BEGIN_SRC emacs-lisp
