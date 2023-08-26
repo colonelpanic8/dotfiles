@@ -57,6 +57,7 @@ makeEnable config "modules.desktop" true {
 
     # Desktop
     alacritty
+    bitwarden
     blueman
     clipit
     dfeet
