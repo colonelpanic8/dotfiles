@@ -16,16 +16,16 @@ We're going to use this to write separate parts of our config to different secti
 #+end_src
 * use-package
 #+begin_src emacs-lisp
-  (defmacro imalison:org-config ()
-    `(use-package org
-       :commands (org-mode org org-mobile-push org-mobile-pull org-agenda)
-       :mode ("\\.org\\'" . org-mode)
-       :preface (progn ,@(imalison:include-file-as-forms (imalison:join-paths user-emacs-directory "org-config-preface.el")))
-       :custom ,(imalison:include-file-as-forms (imalison:join-paths user-emacs-directory "org-config-custom.el"))
-       :config (progn ,@(imalison:include-file-as-forms (imalison:join-paths user-emacs-directory "org-config-config.el")))
-       :bind ,(imalison:include-file-as-forms (imalison:join-paths user-emacs-directory "org-config-bind.el"))))
+(defmacro imalison:org-config ()
+  `(use-package org
+     :commands (org-mode org org-mobile-push org-mobile-pull org-agenda)
+     :mode ("\\.org\\'" . org-mode)
+     :preface (progn ,@(imalison:include-file-as-forms (imalison:join-paths user-emacs-directory "org-config-preface.el")))
+     :custom ,(imalison:include-file-as-forms (imalison:join-paths user-emacs-directory "org-config-custom.el"))
+     :config (progn ,@(imalison:include-file-as-forms (imalison:join-paths user-emacs-directory "org-config-config.el")))
+     :bind ,(imalison:include-file-as-forms (imalison:join-paths user-emacs-directory "org-config-bind.el"))))
 
-  (imalison:org-config)
+(imalison:org-config)
 #+end_src
 * My Customization Variables
 #+begin_src emacs-lisp :tangle org-config-preface.el
@@ -182,11 +182,10 @@ We're going to use this to write separate parts of our config to different secti
 ** Hooks
 #+begin_src emacs-lisp :tangle org-config-config.el
 (add-hook 'org-mode-hook 'imalison:disable-linum-mode)
+;; TODO why is this set
 (add-hook 'org-mode-hook (lambda () (setq org-todo-key-trigger t)))
-(add-hook 'org-mode-hook 'imalison:set-display-custom-times)
 (add-hook 'org-agenda-mode-hook 'imalison:disable-linum-mode)
 (add-hook 'org-agenda-mode-hook 'imalison:set-display-custom-times)
-(add-hook 'org-agenda-mode-hook 'imalison:disable-linum-mode)
 #+end_src
 ** Modules
 #+begin_src emacs-lisp :tangle org-config-config.el
@@ -664,9 +663,9 @@ alphanumeric characters only."
   :after org)
 #+end_src
 * Packages
-** org-present :tangle org-config-config.el
+** org-present
 #+begin_src emacs-lisp
-(use-package org-present
+(use-package org-present :tangle org-config-config.el
   :after org
   :commands org-present)
 #+end_src
@@ -698,6 +697,7 @@ alphanumeric characters only."
 ** org-project-capture
 #+BEGIN_SRC emacs-lisp
 (use-package org-project-capture
+  :after org
   :bind ("C-c o p" . org-project-capture-project-todo-completing-read)
   ;; We want this to load somewhat quickly because we need to update the list of agenda files
   :defer 2
@@ -734,6 +734,7 @@ alphanumeric characters only."
 ** org-roam
 #+begin_src emacs-lisp
 (use-package org-roam
+  :after org
   :defer 1
   :bind
   (:map org-mode-map
@@ -802,18 +803,17 @@ alphanumeric characters only."
 ** org-notify
  #+BEGIN_SRC emacs-lisp
 (use-package org-notify
-  :disabled t
   :after org
   :config
   (progn
     (defun imalison:org-notify-notification-handler (plist)
-      (sauron-add-event 'org-notify 4 (format "%s, %s.\n" (plist-get plist :heading)
-                                              (org-notify-body-text plist))))
+      (imalison:notify-send (plist-get plist :heading) (org-notify-body-text plist)))
 
     (setq org-show-notification-handler 'imalison:org-notify-notification-handler)
 
-    (org-notify-add 'default '(:time "1h" :actions imalison:org-notify-notification-handler
-                                     :period "2m" :duration 60))
+    (org-notify-add 'default
+                    '(:time "1h" :actions imalison:org-notify-notification-handler
+                            :period "2m" :duration 60))
     (org-notify-add 'default '(:time "100m" :actions imalison:org-notify-notification-handler
                                      :period "2m" :duration 60))
     (org-notify-add 'urgent-second '(:time "3m" :actions (-notify/window -ding)
@@ -834,25 +834,6 @@ alphanumeric characters only."
                             :period "15m" :duration 100)
                     '(:time "5d" :actions -notify/window
                             :period "2h" :duration 200))
-    (org-notify-add 'long-20days
-                    '(:time "2d" :actions -notify/window
-                            :period "15m" :duration 60)
-                    '(:time "5d" :actions -notify/window
-                            :period "2h" :duration 60)
-                    '(:time "20d" :actions -email :period "2d" :audible nil))
-    (org-notify-add 'long-50days
-                    '(:time "4d" :actions -notify/window
-                            :period "30m" :duration 100)
-                    '(:time "10d" :actions -notify/window
-                            :period "4h" :duration 200)
-                    '(:time "50d" :actions -email :period "3d" :audible nil))
-    (org-notify-add 'long-100days
-                    '(:time "2d" :actions -notify/window
-                            :period "1h" :duration 200)
-                    '(:time "10d" :actions -notify/window
-                            :period "10h" :duration 300)
-                    '(:time "50d" :actions -email :period "3d" :audible nil)
-                    '(:time "100d" :actions -email :period "5d" :audible nil))
     (org-notify-start 10)))
  #+END_SRC
 ** org-reveal
