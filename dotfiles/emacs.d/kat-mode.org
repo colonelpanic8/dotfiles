@@ -96,3 +96,26 @@ This makes evil-mode play nice with org-fc
 
 (bind-key "C-c j" 'imalison:open-todays-org-journal)
 #+end_src
+
+* Insert a link to a task selected from agenda
+#+begin_src emacs-lisp
+(defun imalison:insert-link-to-agenda ()
+  (interactive)
+  (let ((all-tasks '()))
+    ;; Step 1: Get the list of all org-agenda-files
+    (dolist (file (org-agenda-files))
+      ;; Step 2: For each file, search for all TODO headings
+      (with-current-buffer (find-file-noselect file)
+        (org-map-entries
+         (lambda ()
+           (let ((heading (org-get-heading t t t t))
+                 (marker (point-marker)))
+             (add-to-list 'all-tasks (cons heading marker)))))))
+    ;; Step 3: Prompt the user to select a task from the list of all TODO headings
+    (let* ((selected-task (completing-read "Select a task: " all-tasks nil t))
+           (selected-marker (cdr (assoc selected-task all-tasks)))
+           (file (marker-buffer selected-marker))
+           (pos (marker-position selected-marker)))
+      ;; Step 4: Insert a link to the selected task
+      (insert (format "[[file:%s::%d][%s]]" (buffer-file-name file) pos selected-task)))))
+#+end_src
