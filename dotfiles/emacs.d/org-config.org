@@ -664,8 +664,8 @@ alphanumeric characters only."
 #+end_src
 * Packages
 ** org-present
-#+begin_src emacs-lisp
-(use-package org-present :tangle org-config-config.el
+#+begin_src emacs-lisp :tangle org-config-config.el
+(use-package org-present
   :after org
   :commands org-present)
 #+end_src
@@ -806,16 +806,12 @@ alphanumeric characters only."
   :after org
   :config
   (progn
-    (defun imalison:org-notify-notification-handler (plist)
-      (imalison:notify-send (plist-get plist :heading) (org-notify-body-text plist)))
 
-    (setq org-show-notification-handler 'imalison:org-notify-notification-handler)
+    (setq org-show-notification-handler 'org-notify-action-notify)
 
     (org-notify-add 'default
-                    '(:time "1h" :actions imalison:org-notify-notification-handler
+                    '(:time "0s"
                             :period "2m" :duration 60))
-    (org-notify-add 'default '(:time "100m" :actions imalison:org-notify-notification-handler
-                                     :period "2m" :duration 60))
     (org-notify-add 'urgent-second '(:time "3m" :actions (-notify/window -ding)
                                            :period "15s" :duration 10))
     (org-notify-add 'minute '(:time "5m" :actions -notify/window
