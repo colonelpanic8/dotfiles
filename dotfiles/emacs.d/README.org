@@ -3392,26 +3392,26 @@ in term-mode. This makes term-mode 1000% more useful
       (:body-pre
        (term-projectile-default-directory-forward-restored))
       "term - default-directory"
-      ("s" term-projectile-switch-to)
-      ("f" term-projectile-default-directory-forward-restored)
-      ("b" term-projectile-default-directory-backward-restored)
-      ("c" term-projectile-default-directory-create-new-restored)
-      ("d" term-projectile-default-directory-forward-restored)
-      ("g" imalison:term-hydra-global/body-restored :exit t)
-      ("p" imalison:term-hydra-projectile/body-restored :exit t))
+      ("s" term-projectile-switch-to "Switch to existing")
+      ("f" term-projectile-default-directory-forward-restored "Forward for current directory terminals")
+      ("b" term-projectile-default-directory-backward-restored "Backward for current directory terminals")
+      ("c" term-projectile-default-directory-create-new-restored "Create new current directory terminal")
+      ("d" term-projectile-default-directory-forward-restored "Switch/Create default directory terminal")
+      ("g" imalison:term-hydra-global/body-restored "Switch/Create global terminal" :exit t)
+      ("p" imalison:term-hydra-projectile/body-restored  "Switch/Create project terminal" :exit t))
 
     (defhydra imalison:term-hydra-projectile
       (:body-pre
        (progn
          (term-projectile-forward-restored)))
       "term - projectile"
-      ("s" term-projectile-switch-to)
-      ("f" term-projectile-forward-restored)
-      ("b" term-projectile-backward-restored)
-      ("c" term-projectile-create-new-restored)
-      ("d" imalison:term-hydra-default-directory/body-restored :exit t)
-      ("g" imalison:term-hydra-global/body-restored :exit t)
-      ("p" term-projectile-forward-restored))
+      ("s" term-projectile-switch-to "Switch to existing")
+      ("f" term-projectile-forward-restored "Forward for project terminals")
+      ("b" term-projectile-backward-restored "Backward for project terminals")
+      ("c" term-projectile-create-new-restored "Create new project terminal")
+      ("d" imalison:term-hydra-default-directory/body-restored "Switch/Create default directory terminal" :exit t)
+      ("g" imalison:term-hydra-global/body-restored "Switch/Create global terminal" :exit t)
+      ("p" term-projectile-forward-restored "Switch/Create project terminal"))
 
 
     (defhydra imalison:term-hydra-global
@@ -3419,13 +3419,13 @@ in term-mode. This makes term-mode 1000% more useful
        (progn (setq imalison:term-hydra-original-default-directory
                     default-directory)))
       "term - global"
-      ("s" term-projectile-switch-to)
-      ("f" term-projectile-global-forward-restored)
-      ("b" term-projectile-global-backward-restored)
-      ("c" term-projectile-global-create-new-restored)
-      ("d" imalison:term-hydra-default-directory/body-restored :exit t)
-      ("g" term-projectile-global-forward-restored)
-      ("p" imalison:term-hydra-projectile/body-restored :exit t))
+      ("s" term-projectile-switch-to "Switch to existing")
+      ("f" term-projectile-global-forward-restored "Forward for project terminals")
+      ("b" term-projectile-global-backward-restored "Backward for project terminals")
+      ("c" term-projectile-global-create-new-restored "Create new project terminal")
+      ("d" imalison:term-hydra-default-directory/body-restored "Switch/Create default directory terminal" :exit t)
+      ("g" term-projectile-global-forward-restored "Switch/Create global terminal")
+      ("p" imalison:term-hydra-projectile/body-restored "Switch/Create project terminal" :exit t))
 
     (mapcar (lambda (term-projectile-function)
               (defalias (imalison:concat-symbols term-projectile-function '-restored)
