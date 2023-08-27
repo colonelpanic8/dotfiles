@@ -19,7 +19,7 @@
         katnivan = {
           path = config.home.homeDirectory + "/katnivan";
           uri = "ssh://gitea@1896Folsom.duckdns.org:1123/colonelpanic/katnivan.git";
-          interval = 180;
+          interval = 45;
         };
       };
     };
