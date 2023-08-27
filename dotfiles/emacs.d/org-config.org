@@ -871,3 +871,15 @@ alphanumeric characters only."
   :bind ("C-c o s" . org-ql-find-in-agenda)
   :commands org-ql-find-in-agenda)
 #+end_src
+** org-window-habit
+#+begin_src emacs-lisp
+(use-package org-window-habit
+  :straight nil
+  :demand t
+  :config
+  (progn
+    (require 'org)
+    (require 'org-habit)
+    (require 'org-agenda)
+    (org-window-habit-mode +1)))
+#+end_src

@@ -1381,12 +1381,14 @@ Paradox is a package.el extension. I have no use for it now that I use straight.
 ** load-dir
 #+BEGIN_SRC emacs-lisp
 (use-package load-dir
+  :demand t
   :config
   (progn
     (setq load-dir-debug nil)
     (add-to-list 'load-dirs "~/.emacs.d/load.d")
     (defvar site-lisp "/usr/share/emacs24/site-lisp/")
-    (when (file-exists-p site-lisp) (add-to-list 'load-dirs site-lisp))))
+    (when (file-exists-p site-lisp) (add-to-list 'load-dirs site-lisp))
+    (load-dirs-reload)))
 #+END_SRC
 ** server
 #+BEGIN_SRC emacs-lisp
