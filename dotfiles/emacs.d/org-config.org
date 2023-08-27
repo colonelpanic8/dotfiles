@@ -384,6 +384,16 @@ We're going to use this to write separate parts of our config to different secti
            ((org-agenda-overriding-header
              "At least priority C:"))))))
 #+end_src
+*** Sorting
+I don't want habits to be sorted separately. If they are scheduled for a
+specific time, they should appear in the agenda at that time!
+#+begin_src emacs-lisp :tangle org-config-config.el
+(let ((entry (assoc 'agenda org-agenda-sorting-strategy)))
+  (setf (cdr entry) (remove 'habit-down (cdr entry))))
+
+(let ((entry (assoc 'agenda org-agenda-sorting-strategy)))
+  (setf (cdr entry) (remove 'habit-up (cdr entry))))
+#+end_src
 ** Archive
 #+begin_src emacs-lisp :tangle org-config-config.el
 (defun org-archive-if (condition-function)
