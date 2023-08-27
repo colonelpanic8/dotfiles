@@ -185,11 +185,15 @@ We're going to use this to write separate parts of our config to different secti
 #+end_src
 ** Hooks
 #+begin_src emacs-lisp :tangle org-config-config.el
-(add-hook 'org-mode-hook 'imalison:disable-linum-mode)
 ;; TODO why is this set
 (add-hook 'org-mode-hook (lambda () (setq org-todo-key-trigger t)))
+#+end_src
+*** Disables
+#+begin_src emacs-lisp :tangle org-config-config.el
+(add-hook 'org-mode-hook 'imalison:disable-linum-mode)
 (add-hook 'org-agenda-mode-hook 'imalison:disable-linum-mode)
 (add-hook 'org-agenda-mode-hook 'imalison:set-display-custom-times)
+(add-hook 'org-agenda-mode-hook (lambda () (eldoc-mode -1)))
 #+end_src
 ** Modules
 #+begin_src emacs-lisp :tangle org-config-config.el
