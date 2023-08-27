@@ -128,6 +128,10 @@ We're going to use this to write separate parts of our config to different secti
              "BACKLOG(b!)" "|" "DONE(d!)" "HANDLED(h!)" "EXPIRED(e!)"
              "CANCELED(c!)")))
 #+end_src
+** Skip showing deadline when we are scheduled
+#+begin_src emacs-lisp :tangle org-config-custom.el
+(org-agenda-skip-deadline-prewarning-if-scheduled t)
+#+end_src
 * Config
 ** Miscellaneous Functions
 #+begin_src emacs-lisp :tangle org-config-config.el

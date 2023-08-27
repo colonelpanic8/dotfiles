@@ -2237,9 +2237,8 @@ I don't use auto-complete at all, so I have set up a hook to automatically disab
         (call-interactively 'align-regexp)))
     (defun imalison:align-whitespace ()
       (interactive)
-      (align-regexp
-       (region-beginning) (region-end)
-       "\\(\\s-+\\)") 0 1 t)
+      (align-regexp (region-beginning) (region-end)
+                    "\\(\\s-*\\)\\s-" 1 1 t))
     (defun imalison:align-to-character (character)
       (interactive
        (list (read-string "Character to align to " "=")))
