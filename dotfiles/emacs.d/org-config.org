@@ -195,10 +195,13 @@ We're going to use this to write separate parts of our config to different secti
 (add-hook 'org-agenda-mode-hook 'imalison:set-display-custom-times)
 (add-hook 'org-agenda-mode-hook (lambda () (eldoc-mode -1)))
 #+end_src
+*** auto-revert-mode
+#+begin_src emacs-lisp :tangle org-config-config.el
+(add-hook 'org-mode-hook (lambda () (auto-revert-mode +1)))
+#+end_src
 ** Modules
 #+begin_src emacs-lisp :tangle org-config-config.el
 (add-to-list 'org-modules 'org-habit)
-(add-to-list 'org-modules 'org-expiry)
 #+end_src
 ** Assignee
 #+begin_src emacs-lisp :tangle org-config-config.el
