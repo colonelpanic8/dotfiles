@@ -59,11 +59,7 @@ This makes evil-mode play nice with org-fc
                  (file "~/org/weekly_review_template.org")))))
 #+end_src
 
-* kat forgets to save her files
-#+begin_src emacs-lisp
-(auto-save-visited-mode +1)
-#+end_src
-* org daily journal entries
+** Daily Journal Entries
 #+begin_src emacs-lisp
 (defun imalison:journal-filepath-for-date (&optional date)
   (interactive (list (org-read-date)))
@@ -97,7 +93,7 @@ This makes evil-mode play nice with org-fc
 (bind-key "C-c j" 'imalison:open-todays-org-journal)
 #+end_src
 
-* Insert a link to a task selected from agenda
+** Insert a link to a task selected from agenda
 #+begin_src emacs-lisp
 (defun imalison:insert-link-to-agenda ()
   (interactive)
@@ -118,4 +114,21 @@ This makes evil-mode play nice with org-fc
            (pos (marker-position selected-marker)))
       ;; Step 4: Insert a link to the selected task
       (insert (format "[[file:%s::%d][%s]]" (buffer-file-name file) pos selected-task)))))
+#+end_src
+
+** org-babel
+*** javascript
+#+begin_src emacs-lisp
+(use-package ob-js
+  :straight nil
+  :after org
+  :config
+  (progn
+    (add-to-list 'org-babel-load-languages '(js . t))
+    (org-babel-do-load-languages 'org-babel-load-languages org-babel-load-languages)
+    (add-to-list 'org-babel-tangle-lang-exts '("js" . "js"))))
+#+end_src
+* kat forgets to save her files
+#+begin_src emacs-lisp
+(auto-save-visited-mode +1)
 #+end_src
