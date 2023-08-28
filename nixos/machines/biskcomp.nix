@@ -22,6 +22,14 @@
     path = "/nix-cache";
   };
 
+  services.vaultwarden = {
+    enable = true;
+    config = {
+      ROCKET_ADDRESS = "::";
+      ROCKET_PORT = 8222;
+    };
+  };
+
   services.nginx = {
     enable = true;
     recommendedProxySettings = true;
