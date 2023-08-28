@@ -22,7 +22,6 @@
   boot.plymouth = {
     enable = false;
   };
-  boot.kernelParams = [ "quiet" ];
 
   services.autorandr = {
     enable = true;
