@@ -57,7 +57,6 @@ makeEnable config "modules.desktop" true {
 
     # Desktop
     alacritty
-    bitwarden
     blueman
     clipit
     dfeet
@@ -105,8 +104,9 @@ makeEnable config "modules.desktop" true {
     graphviz
     nodePackages.mermaid-cli
   ] ++ (if pkgs.system == "x86_64-linux" then with pkgs; [
-    etcher
+    bitwarden
     discord
+    etcher
     google-chrome
     keybase-gui
     pommed_light
