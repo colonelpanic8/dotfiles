@@ -106,8 +106,8 @@ We're going to use this to write separate parts of our config to different secti
 (org-habit-show-habits-only-for-today t)
 (org-imenu-depth 10)
 (org-log-into-drawer t)
-(org-log-redeadline t)
-(org-log-reschedule t)
+(org-log-redeadline nil)
+(org-log-reschedule nil)
 (org-lowest-priority 69) ;; The character E
 (org-outline-path-complete-in-steps nil)
 (org-refile-allow-creating-parent-nodes t)
