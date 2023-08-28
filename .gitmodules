@@ -10,3 +10,6 @@
 [submodule "dotfiles/config/alacritty/themes"]
 	path = dotfiles/config/alacritty/themes
 	url = https://github.com/alacritty/alacritty-theme
+[submodule "nixos/railbird.ai"]
+	path = nixos/railbird.ai
+	url = git@github.com:billnerds/railbird.ai.git

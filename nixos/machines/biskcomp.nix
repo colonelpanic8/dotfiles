@@ -15,7 +15,28 @@
   modules.syncthing.enable = true;
   modules.fonts.enable = true;
   modules.nixified-ai.enable = false;
-  modules.cache-server.enable = true;
+  modules.cache-server = {
+    enable = true;
+    host-string = "192.168.1.44 railbird.ai 1896Folsom.duckdns.org 0.0.0.0 67.162.131.71";
+    port = 80;
+    path = "/nix-cache";
+  };
+
+  services.nginx = {
+    enable = true;
+    recommendedProxySettings = true;
+    recommendedGzipSettings = true;
+    recommendedTlsSettings = true;
+    virtualHosts = let conf = {
+      root = ../railbird.ai;
+      locations."/" = {
+        index = "index.html";
+      };
+    };
+    in {
+      "192.168.1.44 railbird.ai 1896Folsom.duckdns.org 0.0.0.0 67.162.131.71" = conf;
+    };
+  };
 
   services.plex = {
     enable = true;
