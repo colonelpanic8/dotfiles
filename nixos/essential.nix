@@ -62,6 +62,7 @@ in
     ripgrep
     silver-searcher
     sysz
+    sshfs
     tmux
     tzupdate
     udiskie
