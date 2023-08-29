@@ -711,13 +711,19 @@ alphanumeric characters only."
 #+end_src
 ** org-ehtml
 #+begin_src emacs-lisp
+(use-package web-server
+  :straight (web-server
+             :repo "eschulte/emacs-web-server"
+             :host github))
+
 (use-package org-ehtml
-  :disabled t
+  :after web-server
   :config
   (progn
     (setq org-ehtml-allow-agenda t)
     (setq org-ehtml-editable-headlines t)
-    (setq org-ehtml-everything-editable t)))
+    (setq org-ehtml-everything-editable t)
+    (ws-start org-ehtml-handler 8888)))
 #+end_src
 ** org-modern
 #+begin_src emacs-lisp

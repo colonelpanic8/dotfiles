@@ -1,4 +1,7 @@
-{ forEachUser, ... }: {
+{ forEachUser, ... }:
+let biskcomp-nginx-hostnames = "192.168.1.44 railbird.ai 1896Folsom.duckdns.org biskcomp.local 0.0.0.0 67.162.131.71";
+in
+{
   imports = [
     ../configuration.nix
     ../raspberry-pi.nix
@@ -17,7 +20,7 @@
   modules.nixified-ai.enable = false;
   modules.cache-server = {
     enable = true;
-    host-string = "192.168.1.44 railbird.ai 1896Folsom.duckdns.org 0.0.0.0 67.162.131.71";
+    host-string = biskcomp-nginx-hostnames;
     port = 80;
     path = "/nix-cache";
   };
@@ -25,7 +28,7 @@
   services.vaultwarden = {
     enable = true;
     config = {
-      ROCKET_ADDRESS = "::";
+      ROCKET_ADDRESS = "::1";
       ROCKET_PORT = 8222;
     };
   };
@@ -35,14 +38,28 @@
     recommendedProxySettings = true;
     recommendedGzipSettings = true;
     recommendedTlsSettings = true;
-    virtualHosts = let conf = {
-      root = ../railbird.ai;
-      locations."/" = {
-        index = "index.html";
+    virtualHosts = {
+      "192.168.1.44 railbird.ai 1896Folsom.duckdns.org 0.0.0.0 67.162.131.71" = {
+        root = ../railbird.ai;
+        locations."/" = {
+          index = "index.html";
+        };
       };
-    };
-    in {
-      "192.168.1.44 railbird.ai 1896Folsom.duckdns.org 0.0.0.0 67.162.131.71" = conf;
+      # Server block for Vaultwarden on a different port
+      "_:8222" = {
+        listen = [ { addr = "::"; port = 8222; } ];  # Listen on IPv6 and port 8222
+        forceSSL = false;  # Assuming you're not using HTTPS for this one
+        locations."/" = {
+          proxyPass = "http://::1:8222";
+          proxySetHeaders = {
+            Host = "$host";
+            X-Real-IP = "$remote_addr";
+            X-Forwarded-For = "$proxy_add_x_forwarded_for";
+            X-Forwarded-Proto = "$scheme";
+          };
+          proxyRedirect = "off";
+        };
+      };
     };
   };
 

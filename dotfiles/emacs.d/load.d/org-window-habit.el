@@ -317,15 +317,15 @@
 (defvar org-window-habit-face-fn 'org-window-habit-default-face-fn)
 
 (defface org-window-habit-conformed-with-completion-face
-  '((((background light)) (:background "#007F7F"))
-    (((background dark)) (:background "cyan")))
+  '((((background light)) (:background "#40778f"))
+    (((background dark)) (:background "#40778f")))
   "Face for intervals on which a the user was conforming with their completion but not without it."
   :group 'org-window-habit
   :group 'org-faces)
 
 (defface org-window-habit-conforming-without-completion-face
-  '((((background light)) (:background "#8270f9"))
-    (((background dark)) (:background "blue")))
+  '((((background light)) (:background "#40578f"))
+    (((background dark)) (:background "#40578f")))
   "Face for intervals for which the user is conforming without any completions."
   :group 'org-window-habit
   :group 'org-faces)
@@ -527,19 +527,16 @@
 
 ;; TODO: check for completion WITHIN the current interval
 (defun org-window-habit-auto-repeat (&rest args)
+  (interactive)
   (let* ((required-interval-start
           (car (org-window-habit-get-next-required-interval
                 (org-window-habit-create-instance-from-heading-at-point))))
          (repeat (org-get-repeat))
-         (deadline-time-string
+         (target-time-string
           (format-time-string (car org-timestamp-formats)
                               required-interval-start)))
-    (org-deadline nil deadline-time-string))
-  ;; Always unschedule
-  (save-excursion
-    (let ((scheduled (org-entry-get (point) "SCHEDULED")))
-      (when scheduled
-	    (org-remove-timestamp-with-keyword org-scheduled-string)))))
+    (org-deadline nil target-time-string)
+    (org-schedule nil target-time-string)))
 
 (defun org-window-habit-auto-repeat-maybe-advice (orig &rest args)
   (apply orig args)
