@@ -32,6 +32,7 @@ with lib;
 
     programs.starship = {
       enable = true;
+      interactiveOnly = true;
       settings = {
         add_newline = false;
         character = {
@@ -73,7 +74,6 @@ with lib;
         export STARSHIP_INSIDE_EMACS="yes"
       '';
       extraInit = ''
-        export TERM=xterm-256color
         export PATH="$HOME/.cargo/bin:${libDir}/bin:${libDir}/functions:$PATH";
       '';
     };
