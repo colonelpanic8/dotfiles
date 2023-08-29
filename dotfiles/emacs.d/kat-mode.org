@@ -132,3 +132,9 @@ This makes evil-mode play nice with org-fc
 #+begin_src emacs-lisp
 (auto-save-visited-mode +1)
 #+end_src
+* Display line numbers in programming modes
+#+begin_src emacs-lisp
+(defun imalison:enable-display-line-numbers-mode ()
+  (display-line-numbers-mode +1))
+(add-hook 'prog-mode-hook 'imalison:enable-display-line-numbers-mode)
+#+end_src
