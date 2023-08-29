@@ -539,11 +539,16 @@
     (org-schedule nil target-time-string)))
 
 (defun org-window-habit-auto-repeat-maybe-advice (orig &rest args)
-  (apply orig args)
-  (when (and org-window-habit-mode (org-is-habit-p))
-      (apply 'org-window-habit-auto-repeat args)))
+  (let ((res (apply orig args)))
+    (when (and org-window-habit-mode (org-is-habit-p))
+      (apply 'org-window-habit-auto-repeat args))
+    res))
 
 (advice-add 'org-auto-repeat-maybe
+            :around 'org-window-habit-auto-repeat-maybe-advice)
+
+;; This seems to be the actually important annotation
+(advice-add 'org-add-log-note
             :around 'org-window-habit-auto-repeat-maybe-advice)
 
 (defun org-window-habit-insert-consistency-graphs (&optional line)
