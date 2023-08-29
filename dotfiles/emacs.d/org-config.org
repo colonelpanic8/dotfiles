@@ -198,6 +198,7 @@ We're going to use this to write separate parts of our config to different secti
 *** auto-revert-mode
 #+begin_src emacs-lisp :tangle org-config-config.el
 (add-hook 'org-mode-hook (lambda () (auto-revert-mode +1)))
+(add-to-list 'revert-without-query "\\.org\\'")
 #+end_src
 ** Modules
 #+begin_src emacs-lisp :tangle org-config-config.el
