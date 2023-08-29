@@ -8,6 +8,9 @@ makeEnable config "modules.wsl" false {
   modules.desktop.enable = false;
   modules.xmonad.enable = false;
 
+  # Update timezone automatically
+  services.tzupdate.enable = true;
+
   wsl = {
     enable = true;
     automountPath = "/mnt";
