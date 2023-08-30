@@ -56,3 +56,6 @@ org-roam.db
 /multisession
 gptel-crowdsourced-prompts.csv
 org-fc-reviews.tsv
+/oauth2-auto.plist
+/.org-generic-id-locations
+/persist
