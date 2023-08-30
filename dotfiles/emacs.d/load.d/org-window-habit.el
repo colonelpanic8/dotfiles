@@ -1,6 +1,7 @@
 (require 'eieio)
 (require 'calendar)
 (require 'org)
+(require 'org-habit)
 (require 'cl-lib)
 
 (defun org-window-habit-time-max (&rest args)
@@ -319,7 +320,7 @@
 (defface org-window-habit-conformed-with-completion-face
   '((((background light)) (:background "#40778f"))
     (((background dark)) (:background "#40778f")))
-  "Face for intervals on which a the user was conforming with their completion but not without it."
+  "Face for intervals for which the user was conforming only with their completion."
   :group 'org-window-habit
   :group 'org-faces)
 
@@ -378,11 +379,6 @@
           okay-repetitions-required)
       'org-window-habit-okay-conforming-face)
      (t 'org-window-habit-not-conforming-face)))
-
-(defun org-window-habit-duration-proportion (start-time end-time between-time)
-  (let* ((full-interval (float-time (time-subtract end-time start-time)))
-         (partial-interval (float-time (time-subtract end-time between-time))))
-    (/ partial-interval full-interval)))
 
 (defcustom org-window-habit-preceding-intervals 21
   "Number of days before today to appear in consistency graphs."
