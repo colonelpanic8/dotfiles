@@ -1073,25 +1073,9 @@ I keep it around just in case I need it.
 #+BEGIN_SRC emacs-lisp
 (line-number-mode t)
 (column-number-mode t)
-#+END_SRC
-*** nlinum
-Disabling line numbers because they are slow as fuck.
-#+BEGIN_SRC emacs-lisp
-(use-package nlinum
-  :disabled t
-  :demand t
-  :config
-  (progn
-    (add-hook 'prog-mode-hook (lambda () (nlinum-mode t)))
-    (defun imalison-nlinum-mode-hook ()
-      (when nlinum-mode
-        (setq-local nlinum-format
-                    (concat "%" (number-to-string
-                                 ;; Guesstimate number of buffer lines.
-                                 (ceiling (log (max 1 (/ (buffer-size) 80)) 10)))
-                            "d"))))
-
-    (add-hook 'nlinum-mode-hook #'imalison-nlinum-mode-hook)))
+(defun imalison:enable-display-line-numbers-mode ()
+  (display-line-numbers-mode +1))
+(add-hook 'prog-mode-hook 'imalison:enable-display-line-numbers-mode)
 #+END_SRC
 ** Backups
 *** Put them all in one directory
