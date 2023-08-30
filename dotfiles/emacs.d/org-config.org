@@ -208,8 +208,6 @@ We're going to use this to write separate parts of our config to different secti
 #+end_src
 *** Disables
 #+begin_src emacs-lisp :tangle org-config-config.el
-(add-hook 'org-mode-hook 'imalison:disable-linum-mode)
-(add-hook 'org-agenda-mode-hook 'imalison:disable-linum-mode)
 (add-hook 'org-agenda-mode-hook 'imalison:set-display-custom-times)
 (add-hook 'org-agenda-mode-hook (lambda () (eldoc-mode -1)))
 #+end_src
@@ -854,7 +852,8 @@ alphanumeric characters only."
   :custom
   ((org-wild-notifier-keyword-whitelist nil)
    (org-wild-notifier-tags-blacklist '("nonotify"))
-   (org-wild-notifier-alert-time '(30 5 0)))
+   (org-wild-notifier-alert-time '(30 5 0))
+   (org-wild-notifier-extra-alert-plist '(:persistent t)))
   :config
   (org-wild-notifier-mode +1)
   (defun org-wild-notify-check-at-time ()
@@ -866,7 +865,16 @@ alphanumeric characters only."
                     (-map 'org-wild-notifier--check-event)
                     (-flatten)
                     (-uniq))
-             'org-wild-notifier--notify)))))
+             'org-wild-notifier--notify))))
+  (defun org-wild-notify-list-at-time ()
+    (interactive)
+    (imalison:org-at-time
+     :fn (lambda ()
+           (message "%s"
+                    (->> (funcall (org-wild-notifier--retrieve-events))
+                         (-map 'org-wild-notifier--check-event)
+                         (-flatten)
+                         (-uniq)))))))
 #+end_src
 ** org-reveal
 #+BEGIN_SRC emacs-lisp
