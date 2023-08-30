@@ -62,9 +62,9 @@
 (defun org-window-habit-keyed-duration-add-plist (base-time plist)
   (apply 'org-window-habit-keyed-duration-add :base-time base-time plist))
 
-(defun org-window-habit-string-duration-to-plist (string-value)
+(cl-defun org-window-habit-string-duration-to-plist (string-value &key (default nil))
   (if (null string-value)
-      (list :days 1)
+      default
     (let ((read-value (read string-value)))
       (cond
        ((plistp read-value) read-value)
@@ -162,6 +162,7 @@
 (defclass org-window-habit ()
   ((duration-plist :initarg :duration-plist :initform '(:days 1))
    (assessment-interval :initarg :assessment-interval :initform '(:days 1))
+   (reschedule-interval :initarg :reschedule-interval :initform '(:days 1))
    (repetitions-required :initarg :repetitions-required :initform 1)
    (okay-repetitions-required :initarg :okay-repetitions-required :initform 1)
    (done-times :initarg :done-times :initform nil)
@@ -175,21 +176,37 @@
                      if (member (nth 0 state-change-info) org-done-keywords)
                      collect (nth 2 state-change-info)))
            (done-times-vector (vconcat done-times))
-           (window-length (org-window-habit-string-duration-to-plist
-                           (org-entry-get nil "WINDOW_DURATION" "1d")))
-           (assessment-interval (org-window-habit-string-duration-to-plist
-                                 (org-entry-get nil "ASSESMENT_INTERVAL")))
-           (repetitions-required (string-to-number
-                                  (or (org-entry-get nil "REPETITIONS_REQUIRED" t) "1")))
-           (okay-repetitions-required (string-to-number
-                                       (or (org-entry-get nil "OKAY_REPETITIONS_REQUIRED" t) "1"))))
+           (window-length
+            (org-window-habit-string-duration-to-plist
+             (org-entry-get nil "WINDOW_DURATION" "1d") :default '(:days 1)))
+           (assessment-interval
+            (org-window-habit-string-duration-to-plist
+             (org-entry-get nil "ASSESMENT_INTERVAL") :default '(:days 1)))
+           (reschedule-interval
+            (org-window-habit-string-duration-to-plist
+             (org-entry-get nil "RESCHEDULE_INTERVAL")))
+           (repetitions-required
+            (string-to-number
+             (or (org-entry-get nil "REPETITIONS_REQUIRED" t) "1")))
+           (okay-repetitions-required
+            (string-to-number
+             (or (org-entry-get nil "OKAY_REPETITIONS_REQUIRED" t) "1"))))
       (make-instance 'org-window-habit
                      :duration-plist window-length
                      :assessment-interval assessment-interval
+                     :reschedule-interval reschedule-interval
                      :repetitions-required repetitions-required
                      :okay-repetitions-required okay-repetitions-required
-                     :done-times done-times-vector
-                     :window-decrement-plist (org-window-habit-negate-plist assessment-interval)))))
+                     :done-times done-times-vector))))
+
+(cl-defmethod initialize-instance :after ((habit org-window-habit) &rest _args)
+  (when (null (oref habit assessment-interval))
+    (oset habit assessment-interval (oref habit duration-plist)))
+  (when (null (oref habit reschedule-interval))
+    (oset habit reschedule-interval (oref habit reschedule-interval)))
+  (when (null (oref habit window-decrement-plist))
+    (oset habit window-decrement-plist
+          (org-window-habit-negate-plist (oref habit assessment-interval)))))
 
 (cl-defun org-window-habit-find-array-forward
     (array time &key (start-index nil) (comparison '<))
@@ -498,6 +515,8 @@
    (org-window-habit-keyed-duration-add-plist
     end-time
     (oref habit window-decrement-plist))
+   with reschedule-decrement-plist =
+   (org-window-habit-negate-plist (oref habit reschedule-interval))
    for (start-index end-index) =
    (org-window-habit-get-completion-window-indices
     habit
@@ -511,16 +530,24 @@
    for proportion =
    (org-window-habit-duration-proportion start-time end-time actual-start)
    for required = (* proportion (oref habit repetitions-required))
-   for interval-start-time =
+   for reschedule-start-time =
    (org-window-habit-keyed-duration-add-plist
-    end-time (oref habit window-decrement-plist))
-   for (interval-start-index interval-end-index) =
+    end-time reschedule-decrement-plist)
+   for (reschedule-start-index reschedule-end-index) =
    (org-window-habit-get-completion-window-indices
-    habit interval-start-time end-time
+    habit reschedule-start-time end-time
     :start-index start-index
     :end-index end-index
     :reverse t)
-   for interval-has-completion = (not (eq interval-start-index interval-end-index))
+   for interval-has-completion = (not (eq reschedule-start-index reschedule-end-index))
+   do
+   (message
+    "h: %s %s %s %s %s"
+    interval-has-completion
+    reschedule-decrement-plist
+    (org-window-habit-show-time-string reschedule-start-time)
+    (org-window-habit-show-time-string end-time)
+    (org-window-habit-show-time-string last-end-time))
    until (and (not interval-has-completion) (< expected-completions required))
    for (new-start-time new-end-time) =
    (org-window-habit-advance-window habit start-time end-time)
