@@ -508,9 +508,20 @@
    for actual-completions = (- end-index start-index)
    for expected-completions = actual-completions
    for actual-start = (org-window-habit-time-max effective-start start-time)
-   for proportion = (org-window-habit-duration-proportion start-time end-time actual-start)
+   for proportion =
+   (org-window-habit-duration-proportion start-time end-time actual-start)
    for required = (* proportion (oref habit repetitions-required))
-   until (< expected-completions required)
+   for interval-start-time =
+   (org-window-habit-keyed-duration-add-plist
+    end-time (oref habit window-decrement-plist))
+   for (interval-start-index interval-end-index) =
+   (org-window-habit-get-completion-window-indices
+    habit interval-start-time end-time
+    :start-index start-index
+    :end-index end-index
+    :reverse t)
+   for interval-has-completion = (not (eq interval-start-index interval-end-index))
+   until (and (not interval-has-completion) (< expected-completions required))
    for (new-start-time new-end-time) =
    (org-window-habit-advance-window habit start-time end-time)
    do
