@@ -185,7 +185,7 @@ We're going to use this to write separate parts of our config to different secti
    nil
    'agenda))
 
-(cl-defun imalison:org-at-time (&optional time &key (fn 'org-wild-notifier-check))
+(cl-defun imalison:org-at-time (&key time (fn 'org-wild-notifier-check))
   (interactive)
   (setq time (or time (time-convert (encode-time (parse-time-string (org-read-date))) 'list)))
   (message "%s" time)
