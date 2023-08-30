@@ -852,13 +852,13 @@ alphanumeric characters only."
   :after org
   :custom
   ((org-wild-notifier-keyword-whitelist nil)
-   (org-wild-notifier-tags-blacklist '("nonotify")))
+   (org-wild-notifier-tags-blacklist '("nonotify"))
+   (org-wild-notifier-alert-time '(30 5 0)))
   :config
   (org-wild-notifier-mode +1)
   (defun org-wild-notify-check-at-time ()
     (interactive)
     (imalison:org-at-time
-     nil
      :fn (lambda ()
            (-each
                (->> (funcall (org-wild-notifier--retrieve-events))
