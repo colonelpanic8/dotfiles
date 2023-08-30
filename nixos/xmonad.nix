@@ -33,6 +33,8 @@ makeEnable config "modules.xmonad" true  {
   ];
 
   home-manager.users = forEachUser {
+    imports = [ ./dunst.nix ];
+
     services.blueman-applet = {
       enable = true;
     };
@@ -40,11 +42,6 @@ makeEnable config "modules.xmonad" true  {
     services.taffybar = {
       enable = true;
       package = inputs.imalison-taffybar.defaultPackage."${pkgs.system}";
-    };
-
-    services.notify-osd = {
-      enable = true;
-      package = pkgs.notify-osd-customizable;
     };
 
     services.kdeconnect = {
