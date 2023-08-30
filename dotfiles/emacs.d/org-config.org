@@ -761,7 +761,8 @@ alphanumeric characters only."
     (setq org-project-capture-projects-file
           (imalison:join-paths imalison:org-dir "projects.org")
           org-project-capture-capture-template
-          (format "%s%s" "* TODO %?" imalison:created-property-string))
+          (format "%s%s" "* TODO %?" imalison:created-property-string)
+          occ-auto-insert-category-heading t)
     (add-to-list 'org-capture-templates
                  (org-project-capture-project-todo-entry
                   :capture-character "l"
