@@ -184,6 +184,14 @@ We're going to use this to write separate parts of our config to different secti
        (org-priority-down)))
    nil
    'agenda))
+
+(cl-defun imalison:org-at-time (&optional time &key (fn 'org-wild-notifier-check))
+  (interactive)
+  (setq time (or time (time-convert (encode-time (parse-time-string (org-read-date))) 'list)))
+  (message "%s" time)
+  (flet
+      ((current-time (&rest args) time))
+    (funcall fn)))
 #+end_src
 ** Miscellaneous
 #+begin_src emacs-lisp :tangle org-config-config.el
@@ -838,38 +846,27 @@ alphanumeric characters only."
   (org-roam-ui-update-on-save t)
   (org-roam-ui-open-on-start nil))
 #+end_src
-** org-notify
- #+BEGIN_SRC emacs-lisp
-(use-package org-notify
+** org-wild-notifier
+#+begin_src emacs-lisp
+(use-package org-wild-notifier
   :after org
+  :custom
+  ((org-wild-notifier-keyword-whitelist nil)
+   (org-wild-notifier-tags-blacklist '("nonotify")))
   :config
-  (progn
-
-    (setq org-show-notification-handler 'org-notify-action-notify)
-
-    (org-notify-add 'default
-                    '(:time "0s"
-                            :period "2m" :duration 60))
-    (org-notify-add 'urgent-second '(:time "3m" :actions (-notify/window -ding)
-                                           :period "15s" :duration 10))
-    (org-notify-add 'minute '(:time "5m" :actions -notify/window
-                                    :period "100s" :duration 70))
-    (org-notify-add '12hours
-                    '(:time "3m" :actions (-notify/window -ding)
-                            :period "15s" :duration 10)
-                    '(:time "100m" :actions -notify/window
-                            :period "2m" :duration 60)
-                    '(:time "12h" :actions -notify/window :audible nil
-                            :period "10m" :duration 200))
-    (org-notify-add '5days
-                    '(:time "100m" :actions -notify/window
-                            :period "2m" :duration 60)
-                    '(:time "2d" :actions -notify/window
-                            :period "15m" :duration 100)
-                    '(:time "5d" :actions -notify/window
-                            :period "2h" :duration 200))
-    (org-notify-start 10)))
- #+END_SRC
+  (org-wild-notifier-mode +1)
+  (defun org-wild-notify-check-at-time ()
+    (interactive)
+    (imalison:org-at-time
+     nil
+     :fn (lambda ()
+           (-each
+               (->> (funcall (org-wild-notifier--retrieve-events))
+                    (-map 'org-wild-notifier--check-event)
+                    (-flatten)
+                    (-uniq))
+             'org-wild-notifier--notify)))))
+#+end_src
 ** org-reveal
 #+BEGIN_SRC emacs-lisp
 (use-package ox-reveal
