@@ -4,6 +4,48 @@
 (require 'org-habit)
 (require 'cl-lib)
 
+(defface org-window-habit-conformed-with-completion-face
+  '((((background light)) (:background "#40778f"))
+    (((background dark)) (:background "#40778f")))
+  "Face for intervals for which the user was conforming only with their completion."
+  :group 'org-window-habit
+  :group 'org-faces)
+
+(defface org-window-habit-conforming-without-completion-face
+  '((((background light)) (:background "#40578f"))
+    (((background dark)) (:background "#40578f")))
+  "Face for intervals for which the user is conforming without any completions."
+  :group 'org-window-habit
+  :group 'org-faces)
+
+(defface org-window-habit-conforming-with-completion-face
+  '((((background light)) (:background "#f5f946"))
+    (((background dark)) (:background "gold")))
+  "Face for currently ongoing interval where user is conforming with completion."
+  :group 'org-window-habit
+  :group 'org-faces)
+
+(defface org-window-habit-okay-conforming-face
+  '((((background light)) (:background "#FF00FF"))
+    (((background dark)) (:background "#FF00FF")))
+  "Face for interval in which the user is only okay conforming ."
+  :group 'org-window-habit
+  :group 'org-faces)
+
+(defface org-window-habit-extreme-not-conforming-face
+  '((((background light)) (:background "#fc9590"))
+    (((background dark)) (:background "darkred")))
+  "Face for interval in which the user is not conforming by a large ."
+  :group 'org-window-habit
+  :group 'org-faces)
+
+(defface org-window-habit-not-conforming-face
+  '((((background light)) (:background "#f9372d"))
+    (((background dark)) (:background "firebrick")))
+  "Face for interval in which the user is not conforming."
+  :group 'org-window-habit
+  :group 'org-faces)
+
 (defun org-window-habit-time-max (&rest args)
   "Return the maximum time value from ARGS."
   (let ((max-time (car args)))
@@ -289,7 +331,6 @@
         :comparison 'time-greater-or-equal-p
         :start-index end-index)))))
 
-;; TODO avoid using current-time
 (cl-defmethod org-window-habit-get-windows
   ((window-habit org-window-habit) &key (max-intervals nil))
   (with-slots (duration-plist done-times window-decrement-plist) window-habit
@@ -347,48 +388,6 @@
        (org-window-habit-keyed-duration-add-plist end-time interval-movement-plist)))))
 
 (defvar org-window-habit-face-fn 'org-window-habit-default-face-fn)
-
-(defface org-window-habit-conformed-with-completion-face
-  '((((background light)) (:background "#40778f"))
-    (((background dark)) (:background "#40778f")))
-  "Face for intervals for which the user was conforming only with their completion."
-  :group 'org-window-habit
-  :group 'org-faces)
-
-(defface org-window-habit-conforming-without-completion-face
-  '((((background light)) (:background "#40578f"))
-    (((background dark)) (:background "#40578f")))
-  "Face for intervals for which the user is conforming without any completions."
-  :group 'org-window-habit
-  :group 'org-faces)
-
-(defface org-window-habit-conforming-with-completion-face
-  '((((background light)) (:background "#f5f946"))
-    (((background dark)) (:background "gold")))
-  "Face for currently ongoing interval where user is conforming with completion."
-  :group 'org-window-habit
-  :group 'org-faces)
-
-(defface org-window-habit-okay-conforming-face
-  '((((background light)) (:background "#FF00FF"))
-    (((background dark)) (:background "#FF00FF")))
-  "Face for interval in which the user is only okay conforming ."
-  :group 'org-window-habit
-  :group 'org-faces)
-
-(defface org-window-habit-extreme-not-conforming-face
-  '((((background light)) (:background "#fc9590"))
-    (((background dark)) (:background "darkred")))
-  "Face for interval in which the user is not conforming by a large ."
-  :group 'org-window-habit
-  :group 'org-faces)
-
-(defface org-window-habit-not-conforming-face
-  '((((background light)) (:background "#f9372d"))
-    (((background dark)) (:background "firebrick")))
-  "Face for interval in which the user is not conforming."
-  :group 'org-window-habit
-  :group 'org-faces)
 
 (cl-defun org-window-habit-default-face-fn
     (perfect-repetitions-required
