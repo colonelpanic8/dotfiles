@@ -4088,7 +4088,6 @@ Ensure all themes that I use are installed:
 ** doom-modeline
 #+begin_src emacs-lisp
 (use-package doom-modeline
-  :hook (after-init . doom-modeline-mode)
   :commands doom-modeline-mode
   :custom
   (doom-modeline-height 40))
