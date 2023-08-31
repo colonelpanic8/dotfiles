@@ -853,19 +853,16 @@ alphanumeric characters only."
   ((org-wild-notifier-keyword-whitelist nil)
    (org-wild-notifier-tags-blacklist '("nonotify"))
    (org-wild-notifier-alert-time '(30 5 0))
-   (org-wild-notifier-extra-alert-plist '(:persistent t)))
+   (org-wild-notifier-extra-alert-plist '(:persistent t))
+   (org-wild-notifier-predicate-blacklist
+    '(org-wild-notifier-done-keywords-predicate)))
   :config
   (org-wild-notifier-mode +1)
   (defun org-wild-notify-check-at-time ()
     (interactive)
     (imalison:org-at-time
      :fn (lambda ()
-           (-each
-               (->> (funcall (org-wild-notifier--retrieve-events))
-                    (-map 'org-wild-notifier--check-event)
-                    (-flatten)
-                    (-uniq))
-             'org-wild-notifier--notify))))
+           (org-wild-notifier--check-events (funcall (org-wild-notifier--retrieve-events))))))
   (defun org-wild-notify-list-at-time ()
     (interactive)
     (imalison:org-at-time
