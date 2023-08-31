@@ -271,10 +271,10 @@ We're going to use this to write separate parts of our config to different secti
 
 (advice-add 'org-schedule :after 'imalison:maybe-auto-assign-to-self)
 
-(cl-defun imalison:assigned-to-me (&key (include-unassigned t))
-  (let ((assignee (org-entry-get nil "ASSIGNEE")))
+(defmacro imalison:assigned-to-me ()
+  `(let ((assignee (org-entry-get nil "ASSIGNEE")))
     (or (string-equal assignee imalison:org-whoami)
-        (and include-unassigned (null assignee)))))
+        (null assignee))))
 
 (defalias 'imalison:assigned-to-me-agenda-pred
   (imalison:def-agenda-pred
@@ -856,11 +856,12 @@ alphanumeric characters only."
    (org-wild-notifier-alert-time '(30 5 0))
    (org-wild-notifier-extra-alert-plist '(:persistent t))
    (org-wild-notifier-predicate-whitelist
-    '((lambda (marker)
+    `((lambda (marker)
+        ,(async-inject-variables (rx (or "org-whoami")))
         (save-excursion
           (set-buffer (marker-buffer marker))
           (goto-char (marker-position marker))
-          (imalison:assigned-to-me)))))
+          ,(macroexpand '(imalison:assigned-to-me))))))
    (org-wild-notifier-predicate-blacklist
     '(org-wild-notifier-done-keywords-predicate))
    (org-wild-notifier-show-any-overdue-with-day-wide-alerts t)
