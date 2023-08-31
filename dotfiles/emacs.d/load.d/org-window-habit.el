@@ -102,20 +102,28 @@
     ;; Align time based on the smallest duration type and its value
     (cond
      ((eq smallest-duration-type :seconds)
-      (encode-time (* smallest-duration-value (floor second smallest-duration-value)) minute hour day month year))
+      (encode-time
+       (* smallest-duration-value (floor second smallest-duration-value)) minute
+       hour day month year))
 
      ((eq smallest-duration-type :minutes)
-      (encode-time 0 (* smallest-duration-value (floor minute smallest-duration-value)) hour day month year))
+      (encode-time
+       0 (* smallest-duration-value
+            (floor minute smallest-duration-value)) hour day month year))
 
      ((eq smallest-duration-type :hours)
-      (encode-time 0 0 (* smallest-duration-value (floor hour smallest-duration-value)) day month year))
+      (encode-time
+       0 0 (* smallest-duration-value (floor hour smallest-duration-value))
+       day month year))
 
      ((eq smallest-duration-type :days)
       (let* ((aligned-day (- day (1- smallest-duration-value))))
         (encode-time 0 0 0 aligned-day month year)))
 
      ((eq smallest-duration-type :months)
-      (encode-time 0 0 0 1 (* smallest-duration-value (floor month smallest-duration-value)) year))
+      (encode-time 0 0 0 1
+                   (* smallest-duration-value (floor month smallest-duration-value))
+                   year))
 
      ((eq smallest-duration-type :years)
       (let* ((aligned-year (- year (1- smallest-duration-value))))
