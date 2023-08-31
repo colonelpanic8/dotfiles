@@ -855,6 +855,12 @@ alphanumeric characters only."
    (org-wild-notifier-tags-blacklist '("nonotify"))
    (org-wild-notifier-alert-time '(30 5 0))
    (org-wild-notifier-extra-alert-plist '(:persistent t))
+   (org-wild-notifier-predicate-whitelist
+    '((lambda (marker)
+        (save-excursion
+          (set-buffer (marker-buffer marker))
+          (goto-char (marker-position marker))
+          (imalison:assigned-to-me)))))
    (org-wild-notifier-predicate-blacklist
     '(org-wild-notifier-done-keywords-predicate))
    (org-wild-notifier-show-any-overdue-with-day-wide-alerts t)
