@@ -848,6 +848,7 @@ alphanumeric characters only."
 ** org-wild-notifier
 #+begin_src emacs-lisp
 (use-package org-wild-notifier
+  :straight (org-wild-notifier :type git :host github :repo "colonelpanic8/org-wild-notifier.el")
   :after org
   :custom
   ((org-wild-notifier-keyword-whitelist nil)

@@ -374,7 +374,7 @@ but provide support for writing custom elisp.
 *** emit
 #+BEGIN_SRC emacs-lisp
 (use-package emit
-  :straight (emit :type git :host github :repo "IvanMalison/emit"))
+  :straight (emit :type git :host github :repo "colonelpanic8/emit"))
 #+END_SRC
 *** request
 #+BEGIN_SRC emacs-lisp
