@@ -260,7 +260,7 @@
   (when (null (oref habit assessment-interval))
     (oset habit assessment-interval (oref habit duration-plist)))
   (when (null (oref habit reschedule-interval))
-    (oset habit reschedule-interval (oref habit reschedule-interval)))
+    (oset habit reschedule-interval (oref habit assessment-interval)))
   (when (null (oref habit window-decrement-plist))
     (oset habit window-decrement-plist
           (org-window-habit-negate-plist (oref habit assessment-interval)))))
@@ -585,6 +585,15 @@
     :end-index end-index
     :reverse t)
    for interval-has-completion = (not (eq reschedule-start-index reschedule-end-index))
+    do
+   (message
+    "h: %s %s %s %s %s %s"
+    interval-has-completion
+    actual-completions
+    (org-window-habit-show-time-string reschedule-start-time)
+    (org-window-habit-show-time-string start-time)
+    (org-window-habit-show-time-string end-time)
+    reschedule-decrement-plist)
    until (and (not interval-has-completion) (< expected-completions required))
    for (new-start-time new-end-time) =
    (org-window-habit-advance-window habit start-time end-time)
