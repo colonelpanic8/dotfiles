@@ -848,16 +848,16 @@ alphanumeric characters only."
 ** org-wild-notifier
 #+begin_src emacs-lisp
 (use-package org-wild-notifier
-  :straight (org-wild-notifier :type git :host github :repo "colonelpanic8/org-wild-notifier.el")
   :after org
   :custom
   ((org-wild-notifier-keyword-whitelist nil)
    (org-wild-notifier-tags-blacklist '("nonotify"))
    (org-wild-notifier-alert-time '(30 5 0))
    (org-wild-notifier-extra-alert-plist '(:persistent t))
+   (org-wild-notifier-additional-environment-regexes
+    (list (rx string-start "imalison:org-whoami")))
    (org-wild-notifier-predicate-whitelist
     `((lambda (marker)
-        ,(async-inject-variables (rx (or "org-whoami")))
         (save-excursion
           (set-buffer (marker-buffer marker))
           (goto-char (marker-position marker))

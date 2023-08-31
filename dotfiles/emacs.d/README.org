@@ -135,7 +135,6 @@ file uses lexical scoping.
 #+BEGIN_SRC emacs-lisp
 (use-package auto-compile
   :demand t
-  :straight t
   :config
   (progn
     (auto-compile-on-load-mode)
