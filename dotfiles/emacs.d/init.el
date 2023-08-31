@@ -70,7 +70,8 @@
   (org-babel-load-file
    (concat (file-name-directory load-file-name) "README.org")))
 
-(when imalison:kat-mode
+(when (or (equal (s-trim (shell-command-to-string "whoami")) "kat")
+          imalison:kat-mode)
   (let ((debug-on-error t))
     (org-babel-load-file
      (concat (file-name-directory load-file-name) "kat-mode.org"))))
