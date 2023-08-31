@@ -855,7 +855,9 @@ alphanumeric characters only."
    (org-wild-notifier-alert-time '(30 5 0))
    (org-wild-notifier-extra-alert-plist '(:persistent t))
    (org-wild-notifier-predicate-blacklist
-    '(org-wild-notifier-done-keywords-predicate)))
+    '(org-wild-notifier-done-keywords-predicate))
+   (org-wild-notifier-show-any-overdue-with-day-wide-alerts t)
+   (org-wild-notifier-day-wide-alert-times '("10pm")))
   :config
   (org-wild-notifier-mode +1)
   (defun org-wild-notify-check-at-time ()

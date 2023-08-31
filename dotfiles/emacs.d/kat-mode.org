@@ -128,6 +128,13 @@ This makes evil-mode play nice with org-fc
     (org-babel-do-load-languages 'org-babel-load-languages org-babel-load-languages)
     (add-to-list 'org-babel-tangle-lang-exts '("js" . "js"))))
 #+end_src
+** Show daily scheduled tasks at a few points in the day
+#+begin_src emacs-lisp
+(use-package org-wild-notifier
+  :after org
+  :custom
+  ((org-wild-notifier-day-wide-alert-times '("10am" "5pm" "10pm"))))
+#+end_src
 * kat forgets to save her files
 #+begin_src emacs-lisp
 (auto-save-visited-mode +1)
