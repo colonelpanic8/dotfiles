@@ -4089,6 +4089,7 @@ Ensure all themes that I use are installed:
 #+begin_src emacs-lisp
 (use-package doom-modeline
   :hook (after-init . doom-modeline-mode)
+  :commands doom-modeline-mode
   :custom
   (doom-modeline-height 40))
 #+end_src
@@ -4229,11 +4230,12 @@ load-theme hook (See the heading below).
     (unless (member imalison:dark-theme custom-enabled-themes)
       (load-theme imalison:dark-theme t))
     (apply 'imalison:appearance args)
+    (message "running appearance")
+    (doom-modeline-mode +1)
     (setq imalison:default-font-size-pt (face-attribute 'default :height))
     (setq imalison:appearance-setup-done t)))
 
-(when (daemonp)
-    (add-hook 'after-make-frame-functions 'imalison:appearance-setup-hook))
+(add-hook 'after-make-frame-functions 'imalison:appearance-setup-hook)
 (add-hook 'after-init-hook 'imalison:appearance-setup-hook)
 #+END_SRC
 * Post Init Custom
