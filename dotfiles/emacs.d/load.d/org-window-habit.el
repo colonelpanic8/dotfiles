@@ -586,14 +586,6 @@
     :end-index end-index
     :reverse t)
    for interval-has-completion = (not (eq reschedule-start-index reschedule-end-index))
-   do
-   (message
-    "h: %s %s %s %s %s"
-    interval-has-completion
-    old-completions
-    actual-completions
-    (org-window-habit-show-time-string start-time)
-    (org-window-habit-show-time-string end-time))
    until (and (not interval-has-completion) (< expected-completions required))
    for (new-start-time new-end-time) =
    (org-window-habit-advance-window habit start-time end-time)
