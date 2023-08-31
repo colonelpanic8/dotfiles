@@ -62,7 +62,8 @@
 (defun org-window-habit-keyed-duration-add-plist (base-time plist)
   (apply 'org-window-habit-keyed-duration-add :base-time base-time plist))
 
-(cl-defun org-window-habit-string-duration-to-plist (string-value &key (default nil))
+(cl-defun org-window-habit-string-duration-to-plist
+    (string-value &key (default nil))
   (if (null string-value)
       default
     (let ((read-value (read string-value)))
@@ -88,7 +89,8 @@
         (list :hours (string-to-number (match-string 1 string-value))))
        (t (list :days read-value))))))
 
-(defun org-window-habit-normalize-time-to-duration (time-value &optional duration-plist alignment-time)
+(defun org-window-habit-normalize-time-to-duration
+    (time-value &optional duration-plist alignment-time)
   (let* ((alignment-decoded (decode-time (or alignment-time time-value)))
          (year (nth 5 alignment-decoded))
          (month (nth 4 alignment-decoded))
@@ -174,7 +176,8 @@
    (repetitions-required :initarg :repetitions-required :initform 1)
    (okay-repetitions-required :initarg :okay-repetitions-required :initform 1)
    (done-times :initarg :done-times :initform nil)
-   (window-decrement-plist :initarg :window-decrement-plist :initform nil)))
+   (window-decrement-plist :initarg :window-decrement-plist :initform nil)
+   (max-repetitions-per-interval :initarg :max-repetitions-per-interval :initform 1)))
 
 (defun org-window-habit-create-instance-from-heading-at-point ()
   "Construct an org-window-habit instance from the current org entry."
@@ -198,14 +201,18 @@
              (or (org-entry-get nil "REPETITIONS_REQUIRED" t) "1")))
            (okay-repetitions-required
             (string-to-number
-             (or (org-entry-get nil "OKAY_REPETITIONS_REQUIRED" t) "1"))))
+             (or (org-entry-get nil "OKAY_REPETITIONS_REQUIRED" t) "1")))
+           (max-repetitions-per-interval
+            (string-to-number
+             (or (org-entry-get nil "MAX_REPETITIONS_PER_INTERVAL" t) "1"))))
       (make-instance 'org-window-habit
                      :duration-plist window-length
                      :assessment-interval assessment-interval
                      :reschedule-interval reschedule-interval
                      :repetitions-required repetitions-required
                      :okay-repetitions-required okay-repetitions-required
-                     :done-times done-times-vector))))
+                     :done-times done-times-vector
+                     :max-repetitions-per-interval max-repetitions-per-interval))))
 
 (cl-defmethod initialize-instance :after ((habit org-window-habit) &rest _args)
   (when (null (oref habit assessment-interval))
@@ -313,9 +320,8 @@
              current-window-start
            (org-window-habit-time-max
             current-window-start
-            (org-window-habit-find-aligned-bounding-time earliest-completion
-                                                         window-decrement-plist
-                                                         current-window-end)))
+            (org-window-habit-find-aligned-bounding-time
+             earliest-completion window-decrement-plist current-window-end)))
          collect
          (list current-window-start effective-start current-window-end
                start-index end-index interval-ongoing)
@@ -431,9 +437,12 @@
         for (start-time actual-start-time end-time start-index end-index interval-ongoing)
         in past-and-present-windows
         for duration-proportion =
-        (org-window-habit-duration-proportion start-time end-time actual-start-time)
-        for scaled-repetitions-required = (* duration-proportion repetitions-required)
-        for scaled-okay-repetitions-required = (* duration-proportion okay-repetitions-required)
+        (org-window-habit-duration-proportion
+         start-time end-time actual-start-time)
+        for scaled-repetitions-required =
+        (* duration-proportion repetitions-required)
+        for scaled-okay-repetitions-required =
+        (* duration-proportion okay-repetitions-required)
         for interval-start-time =
         (org-window-habit-keyed-duration-add-plist
          end-time window-decrement-plist)
@@ -441,6 +450,9 @@
         (org-window-habit-get-completion-window-indices
          habit interval-start-time end-time
          :start-index start-index :end-index start-index)
+        for strict-completions =
+        (org-window-habit-get-completion-count
+         habit start-time end-time :start-index start-index)
         for total-completions = (- end-index start-index)
         for completions-in-interval = (- interval-end-index interval-start-index)
         for completions-outside-interval = (- total-completions completions-in-interval)
@@ -513,6 +525,30 @@
    (org-window-habit-get-next-required-interval
     (org-window-habit-create-instance-from-heading-at-point))))
 
+(cl-defmethod org-window-habit-get-completion-count
+  ((habit org-window-habit) start-time end-time &key (start-index 0))
+  (cl-loop
+   with next-start-index = start-index
+   with interval-end-time = end-time
+   for interval-start-time =
+   ;; This is just a sanity check for the case where the interval does not
+   ;; evenly divide the window. But you shouldn't do that anyway.
+   (org-window-habit-time-max
+    start-time
+    (org-window-habit-keyed-duration-add-plist
+     interval-end-time (oref habit window-decrement-plist)))
+   for (start-index end-index) =
+   (org-window-habit-get-completion-window-indices
+    habit interval-start-time interval-end-time
+    :start-index next-start-index
+    :end-index next-start-index)
+   for completions-within-interval =
+   (min (oref habit max-repetitions-per-interval) (- end-index start-index))
+   sum completions-within-interval
+   do (setq next-start-index end-index
+            interval-end-time interval-start-time)
+   while (time-less-p start-time interval-start-time)))
+
 (cl-defmethod org-window-habit-get-next-required-interval ((habit org-window-habit))
   (cl-loop
    with
@@ -532,7 +568,9 @@
     :start-index last-start-index
     :end-index last-end-index
     :reverse t)
-   for actual-completions = (- end-index start-index)
+   for actual-completions =
+   (org-window-habit-get-completion-count
+    habit start-time end-time :start-index start-index)
    for expected-completions = actual-completions
    for actual-start = (org-window-habit-time-max effective-start start-time)
    for proportion =
@@ -552,10 +590,10 @@
    (message
     "h: %s %s %s %s %s"
     interval-has-completion
-    reschedule-decrement-plist
-    (org-window-habit-show-time-string reschedule-start-time)
-    (org-window-habit-show-time-string end-time)
-    (org-window-habit-show-time-string last-end-time))
+    old-completions
+    actual-completions
+    (org-window-habit-show-time-string start-time)
+    (org-window-habit-show-time-string end-time))
    until (and (not interval-has-completion) (< expected-completions required))
    for (new-start-time new-end-time) =
    (org-window-habit-advance-window habit start-time end-time)
@@ -567,7 +605,6 @@
          last-end-index end-index)
    finally return (list last-end-time end-time)))
 
-;; TODO: check for completion WITHIN the current interval
 (defun org-window-habit-auto-repeat (&rest args)
   (interactive)
   (let* ((required-interval-start
