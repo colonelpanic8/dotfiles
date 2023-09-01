@@ -43,4 +43,42 @@
       ExecStart = "/usr/bin/env load_xkb_map";
     };
   };
+
+  gtk = {
+    enable = true;
+    iconTheme = {
+      package = pkgs.numix-icon-theme-circle;
+      name = "Numix-Circle";
+    };
+
+    font = {
+      package = pkgs.noto-fonts-emoji;
+      name = "Noto Sans";
+      size = 10;
+    };
+
+    gtk3.extraConfig = {
+      gtk-application-prefer-dark-theme = true;
+      gtk-button-images = 1;
+      gtk-cursor-theme-name = "breeze_cursors";
+      gtk-cursor-theme-size = 24;
+      gtk-decoration-layout = "icon:minimize,maximize,close";
+      gtk-enable-animations = true;
+      gtk-enable-event-sounds = 1;
+      gtk-enable-input-feedback-sounds = 1;
+      gtk-fallback-icon-theme = "gnome";
+      gtk-key-theme-name = "Emacs";
+      gtk-menu-images = 1;
+      gtk-modules = "colorreload-gtk-module";
+      gtk-primary-button-warps-slider = false;
+      gtk-theme-name = "Arc";
+      gtk-toolbar-icon-size = "GTK_ICON_SIZE_LARGE_TOOLBAR";
+      gtk-toolbar-style = "GTK_TOOLBAR_BOTH_HORIZ";
+      gtk-xft-antialias = 1;
+      gtk-xft-dpi = 98304;
+      gtk-xft-hinting = 1;
+      gtk-xft-hintstyle = "hintslight";
+      gtk-xft-rgba = "rgb";
+    };
+  };
 }
