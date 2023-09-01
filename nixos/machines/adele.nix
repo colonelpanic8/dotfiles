@@ -27,6 +27,7 @@
 
   services.xserver.libinput.enable = true;
 
+  security.pam.services.login.fprintAuth = true;
   services.fprintd = {
     enable = true;
     tod = {

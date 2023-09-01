@@ -67,5 +67,8 @@ makeEnable config "modules.base" true {
 
   services.logind.extraConfig = "RuntimeDirectorySize=5G";
 
+  # For supporting gnome stuff
   services.dbus.packages = [ pkgs.gcr ];
+
+  programs.dconf.enable = true;
 }
