@@ -27,6 +27,14 @@
 
   services.xserver.libinput.enable = true;
 
+  services.fprintd = {
+    enable = true;
+    tod = {
+      enable = true;
+      driver = pkgs.libfprint-2-tod1-goodix;
+    };
+  };
+
   fileSystems."/" =
     { device = "/dev/disk/by-uuid/18af5b4c-69c7-41a8-865e-bc3f5269d2f9";
       fsType = "ext4";
