@@ -32,7 +32,7 @@ We're going to use this to write separate parts of our config to different secti
 (defvar imalison:org-dir "~/org")
 (defvar imalison:shared-org-dir "~/katnivan")
 (defvar imalison:org-whoami "Ivan Malison")
-(defvar imalison:org-people (list "Ivan Malison" "Kat Huang"))
+(defvar imalison:org-people (list nil "Ivan Malison" "Kat Huang"))
 (defvar imalison:org-default-initial-state "TODO")
 
 (defvar imalison:org-gtd-file
@@ -51,6 +51,8 @@ We're going to use this to write separate parts of our config to different secti
   (imalison:join-paths imalison:shared-org-dir "shared_calendar.org"))
 (defvar imalison:shared-shopping-file
   (imalison:join-paths imalison:shared-org-dir "shared_shopping.org"))
+(defvar imalison:shared-repeating-file
+  (imalison:join-paths imalison:shared-org-dir "repeating.org"))
 
 (defvar imalison:orgzly-files
   (list (imalison:join-paths imalison:shared-org-dir "kat_orgzly.org")
@@ -290,7 +292,8 @@ We're going to use this to write separate parts of our config to different secti
  (nconc (list imalison:org-gtd-file imalison:org-habits-file
               imalison:org-calendar-file imalison:org-inbox-file
               imalison:shared-org-gtd-file imalison:shared-habits-file
-              imalison:shared-calendar-file imalison:shared-shopping-file)
+              imalison:shared-calendar-file imalison:shared-shopping-file
+              imalison:shared-repeating-file)
         imalison:orgzly-files))
 #+end_src
 *** Predicates
