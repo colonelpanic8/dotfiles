@@ -19,7 +19,7 @@
     home-manager.useGlobalPkgs = true;
     home-manager.useUserPackages = true;
 
-    nix = {
+    nix = rec {
       extraOptions = ''
         experimental-features = nix-command flakes
       '';
@@ -32,6 +32,7 @@
       nixPath = [
         "nixpkgs=${inputs.nixpkgs.outPath}"
       ];
+      settings.nix-path = nixPath;
     };
 
     nixpkgs.overlays = [
