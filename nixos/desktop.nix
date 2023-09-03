@@ -1,4 +1,4 @@
-{ config, pkgs, options, inputs, makeEnable, ... }:
+{ config, pkgs, options, inputs, makeEnable, forEachUser, ... }:
 makeEnable config "modules.desktop" true {
   imports = [
     ./fonts.nix
@@ -117,4 +117,22 @@ makeEnable config "modules.desktop" true {
     vscode
     zoom-us
   ] else []);
+
+  home-manager.users = forEachUser (if pkgs.system == "x86_64-linux" then {
+    systemd.user.services.bitwarden = {
+      Unit = {
+        Description = "Bitwarden";
+        After = [ "graphical-session-pre.target" "tray.target" ];
+        PartOf = [ "graphical-session.target" ];
+      };
+
+      Install = { WantedBy = [ "graphical-session.target" ]; };
+
+      Service = {
+        ExecStart = "${pkgs.bitwarden}/bin/bitwarden";
+        Restart = "always";
+        RestartSec = 3;
+      };
+    };
+  } else {});
 }
