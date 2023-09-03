@@ -3843,9 +3843,20 @@ This is useful with server mode when editing gmail messages. I think that it is 
 #+BEGIN_SRC emacs-lisp
 (use-package alert
   :defer t
+  :preface
+  (defun imalison:windows-toast-notify (info)
+    (let ((message (plist-get info :message))
+          (title (plist-get info :title)))
+      (shell-command (format "windows_toast '%s' '%s'" (or title "No title") (or message "No message")))))
   :config
   (progn
-    (setq alert-default-style 'libnotify)))
+    (setq alert-default-style 'libnotify)
+    (when (not (string-empty-p (shell-command-to-string "grep -i microsoft /proc/version")))
+      (alert-define-style
+       'windows-toast
+       :title "Windows Toast"
+       :notifier 'imalison:windows-toast-notify)
+      (setq alert-default-style 'windows-toast))))
 #+END_SRC
 ** sauron
 #+BEGIN_SRC emacs-lisp

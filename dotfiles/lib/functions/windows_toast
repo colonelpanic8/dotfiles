@@ -1,0 +1,7 @@
+#!/usr/bin/env sh
+
+function windows_toast {
+	powershell.exe -File ~/dotfiles/dotfiles/lib/bin/windows-toast.ps1 -Title "$@" 2>/dev/null
+}
+
+windows_toast "$@"
