@@ -23,7 +23,7 @@ We're going to use this to write separate parts of our config to different secti
      :preface (progn ,@(imalison:include-file-as-forms (imalison:join-paths user-emacs-directory "org-config-preface.el")))
      :custom ,(imalison:include-file-as-forms (imalison:join-paths user-emacs-directory "org-config-custom.el"))
      :config (progn ,@(imalison:include-file-as-forms (imalison:join-paths user-emacs-directory "org-config-config.el")))
-     :bind ,(imalison:include-file-as-forms (imalison:join-paths user-emacs-directory "org-config-bind.el"))))
+     :bind (,(imalison:include-file-as-forms (imalison:join-paths user-emacs-directory "org-config-bind.el")))))
 
 (imalison:org-config)
 #+end_src
@@ -73,18 +73,18 @@ We're going to use this to write separate parts of our config to different secti
 #+end_src
 * Bindings
 #+begin_src emacs-lisp :tangle org-config-bind.el
-(("C-c c" . org-capture)
- :map org-mode-map
- (("C-e" . end-of-visual-line)
-  ("C-c n t" . org-insert-todo-heading)
-  ("C-c n s" . org-insert-todo-subheading)
-  ("C-c n h" . org-insert-habit)
-  ("C-c n m" . org-make-habit)
-  ("C-c n l" . org-store-link)
-  ("C-c n i" . org-insert-link)
-  ("C-c C-t" . org-todo)
-  ("C-c C-S-t" . org-todo-force-notes)
-  ("M-." . elisp-slime-nav-find-elisp-thing-at-point)))
+("C-c c" . org-capture)
+:map org-mode-map
+(("C-e" . end-of-visual-line)
+ ("C-c n t" . org-insert-todo-heading)
+ ("C-c n s" . org-insert-todo-subheading)
+ ("C-c n h" . org-insert-habit)
+ ("C-c n m" . org-make-habit)
+ ("C-c n l" . org-store-link)
+ ("C-c n i" . org-insert-link)
+ ("C-c C-t" . org-todo)
+ ("C-c C-S-t" . org-todo-force-notes)
+ ("M-." . elisp-slime-nav-find-elisp-thing-at-point))
 #+end_src
 * Org Variable Customization
 #+begin_src emacs-lisp :tangle org-config-custom.el
@@ -414,6 +414,29 @@ We're going to use this to write separate parts of our config to different secti
           ("c" "At least priority C:" tags-todo "+PRIORITY<\"D\""
            ((org-agenda-overriding-header
              "At least priority C:"))))))
+#+end_src
+*** Filters
+**** Regexp Presets
+#+begin_src emacs-lisp :tangle org-config-config.el
+(defvar imalison:org-agenda-regexp-presets
+  `(("incomplete" . (lambda ()
+                      (concat "-"
+                              (rx--to-expr (cons 'or org-done-keywords-for-agenda)))))))
+
+(defun imalison:org-agenda-filter-by-regexp-preset ()
+  (interactive)
+  (let* ((regex-fn
+          (cdr (assoc (completing-read "Select a preset:"
+                                       imalison:org-agenda-regexp-presets)
+                      imalison:org-agenda-regexp-presets)))
+         (new-regex (funcall regex-fn)))
+    (push new-regex org-agenda-regexp-filter)
+    (org-agenda-filter-apply org-agenda-regexp-filter 'regexp)))
+#+end_src
+***** Binding
+#+begin_src emacs-lisp :tangle org-config-bind.el
+:map org-agenda-mode-map
+(("p" . imalison:org-agenda-filter-by-regexp-preset))
 #+end_src
 *** Sorting
 I don't want habits to be sorted separately. If they are scheduled for a
