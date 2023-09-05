@@ -1051,7 +1051,7 @@ I keep it around just in case I need it.
 #+END_SRC
 ** Sane Defaults
 #+BEGIN_SRC emacs-lisp -n -r
-(global-auto-revert-mode)
+(global-auto-revert-mode +1)
 (auto-save-visited-mode +1)
 (show-paren-mode 1)
 (setq reb-re-syntax 'string)
@@ -2838,16 +2838,6 @@ The following is taken from [[https://github.com/syl20bnr/spacemacs/blob/a650877
     (setq hindent-style nil)
     (add-hook 'haskell-mode-hook 'hindent-mode)))
 #+END_SRC
-**** ghc-mod
-#+BEGIN_SRC emacs-lisp
-(use-package ghc
-  :after haskell-mode
-  :disabled t
-  :config
-  (progn
-    (setq ghc-debug t)
-    (add-hook 'haskell-mode-hook 'ghc-init)))
-#+END_SRC
 **** company-ghc
 #+BEGIN_SRC emacs-lisp
 (use-package company-ghc
@@ -3271,12 +3261,13 @@ emr (emacs refactor) provides support for refactoring in many programming langua
 (use-package lsp-mode
   :defer 3
   :commands lsp
+  :preface
+  (defun imalison:nix-develop-lsp-wrapper-function (argv)
+    (append
+     (append (list "nix" "develop" "-I" "." "--impure" "--command")
+             argv)))
   :config
   (progn
-    (defun imalison:nix-develop-lsp-wrapper-function (argv)
-      (append
-       (append (list "nix" "develop" "-I" "." "--command")
-               argv)))
     (setq lsp-prefer-flymake nil)
     (use-package lsp-ui
       :config
