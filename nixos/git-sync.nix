@@ -10,7 +10,7 @@
         org = {
           path = config.home.homeDirectory + "/org";
           uri = "git@github.com:IvanMalison/org.git";
-          interval = 180;
+          interval = 30;
         };
         password-store = {
           path = config.home.homeDirectory + "/.password-store";
@@ -19,7 +19,7 @@
         katnivan = {
           path = config.home.homeDirectory + "/katnivan";
           uri = "ssh://gitea@1896Folsom.duckdns.org:1123/colonelpanic/katnivan.git";
-          interval = 45;
+          interval = 30;
         };
       };
     };
