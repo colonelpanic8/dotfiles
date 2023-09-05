@@ -74,3 +74,4 @@ cabal.project.local
 
 #
 .direnv
+/dotfiles/config/gtk-3.0/settings.ini
