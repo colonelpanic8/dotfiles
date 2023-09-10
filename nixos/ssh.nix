@@ -20,10 +20,13 @@
     enable = true;
     settings = {
       PasswordAuthentication = false;
+      X11Forwarding = true;
     };
   };
 
   programs.ssh = {
+    forwardX11 = true;
+    setXAuthLocation = true;
     knownHosts = {
       github = {
         hostNames = ["github.com"];
