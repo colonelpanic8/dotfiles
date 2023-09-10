@@ -172,7 +172,7 @@ We're going to use this to write separate parts of our config to different secti
 
 (defun org-todo-at-date (date)
   (interactive (list (org-time-string-to-time (org-read-date))))
-  (cl-flet ((org-current-effective-time (&rest r) date)
+  (flet ((org-current-effective-time (&rest r) date)
             (org-today (&rest r) (time-to-days date)))
     (cond ((eq major-mode 'org-mode) (org-todo))
           ((eq major-mode 'org-agenda-mode) (org-agenda-todo)))))
