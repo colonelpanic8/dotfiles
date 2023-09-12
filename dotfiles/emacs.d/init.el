@@ -12,7 +12,7 @@
   (load bootstrap-file nil 'nomessage))
 
 (setq native-comp-deferred-compilation-deny-list nil)
-(setq native-comp-always-compile t)
+(setq native-comp-always-compile nil)
 (setq load-no-native t)
 (setq warning-minimum-level :emergency)
 
