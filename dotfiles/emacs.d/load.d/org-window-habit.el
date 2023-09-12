@@ -1,4 +1,4 @@
- (require 'eieio)
+(require 'eieio)
 (require 'calendar)
 (require 'org)
 (require 'org-habit)
@@ -9,47 +9,61 @@
   :group 'org-window-habit
   :type 'integer)
 
-(defface org-window-habit-conformed-with-completion-face
-  '((((background light)) (:background "#40778f"))
-    (((background dark)) (:background "#40778f")))
-  "Face for intervals for which the user was conforming only with their completion."
+(defcustom org-window-habit-following-days 7
+  "Number of days after today to appear in consistency graphs."
   :group 'org-window-habit
-  :group 'org-faces)
+  :type 'integer)
 
-(defface org-window-habit-conforming-without-completion-face
-  '((((background light)) (:background "#40578f"))
-    (((background dark)) (:background "#40578f")))
-  "Face for intervals for which the user is conforming without any completions."
-  :group 'org-window-habit
-  :group 'org-faces)
+(defvar org-window-habit-graph-assessment-fn
+  'org-window-habit-default-graph-assessment-fn)
 
-(defface org-window-habit-conforming-with-completion-face
-  '((((background light)) (:background "#f5f946"))
-    (((background dark)) (:background "gold")))
-  "Face for currently ongoing interval where user is conforming with completion."
+(define-minor-mode org-window-habit-mode
+  "Minor mode that replaces the normal org-habit functionality."
+  :lighter nil
+  :global t
   :group 'org-window-habit
-  :group 'org-faces)
+  :require 'org-window-habit)
 
-(defface org-window-habit-okay-conforming-face
-  '((((background light)) (:background "#FF00FF"))
-    (((background dark)) (:background "#FF00FF")))
-  "Face for interval in which the user is only okay conforming ."
-  :group 'org-window-habit
-  :group 'org-faces)
+(defvar org-window-habit-conforming-color "#0000FF")
+(defvar org-window-habit-not-conforming-color "#FF0000")
+(defvar org-window-habit-required-completion-foreground-color "#000000")
+(defvar org-window-habit-non-required-completion-foreground-color "#FFFFFF")
+(defvar org-window-habit-required-completion-today-foreground-color "#00FF00")
 
-(defface org-window-habit-extreme-not-conforming-face
-  '((((background light)) (:background "#fc9590"))
-    (((background dark)) (:background "darkred")))
-  "Face for interval in which the user is not conforming by a large ."
-  :group 'org-window-habit
-  :group 'org-faces)
+(defun org-window-habit-create-face (bg-color foreground-color)
+  (let* ((bg-name (replace-regexp-in-string "#" "" bg-color))
+         (fg-name (replace-regexp-in-string "#" "" foreground-color))
+         (face-name (intern (format "org-window-habit-face-bg-%s-fg-%s" bg-name fg-name))))
+    (if (facep face-name)
+        face-name
+      (progn
+        (make-face face-name)
+        (set-face-attribute face-name nil :background bg-color :foreground foreground-color)
+        face-name))))
 
-(defface org-window-habit-not-conforming-face
-  '((((background light)) (:background "#f9372d"))
-    (((background dark)) (:background "firebrick")))
-  "Face for interval in which the user is not conforming."
-  :group 'org-window-habit
-  :group 'org-faces)
+(defcustom org-window-habit-completion-needed-today-glyph ?▂
+  "Glyph character used to show days on which a completion is expected."
+  :group 'org-habit
+  :version "24.1"
+  :type 'character)
+
+(defvar org-window-habit-non-conforming-scale .8)
+
+(defun org-window-habit-rescale-assessment-value (value)
+  (if (>= value 1.0) value
+    (*  org-window-habit-non-conforming-scale value)))
+
+(defun org-window-habit-lerp-color (color1 color2 proportion)
+  (let ((r1 (string-to-number (substring color1 1 3) 16))
+        (g1 (string-to-number (substring color1 3 5) 16))
+        (b1 (string-to-number (substring color1 5 7) 16))
+        (r2 (string-to-number (substring color2 1 3) 16))
+        (g2 (string-to-number (substring color2 3 5) 16))
+        (b2 (string-to-number (substring color2 5 7) 16)))
+    (format "#%02x%02x%02x"
+            (round (+ (* (- r2 r1) proportion) r1))
+            (round (+ (* (- g2 g1) proportion) g1))
+            (round (+ (* (- b2 b1) proportion) b1)))))
 
 (defun org-window-habit-time-max (&rest args)
   "Return the maximum time value from ARGS."
@@ -216,6 +230,16 @@
    (* space)
    (regexp org-ts-regexp-inactive)))
 
+(defun time-less-or-equal-p (time1 time2)
+  (or (time-less-p time1 time2)
+      (time-equal-p time1 time2)))
+
+(defun time-greater-p (time1 time2)
+  (time-less-p time2 time1))
+
+(defun time-greater-or-equal-p (time1 time2)
+  (time-less-or-equal-p time2 time1))
+
 (defun org-window-habit-default-aggregation-fn (collection)
   (cl-loop for el in collection minimize (car el)))
 
@@ -228,6 +252,7 @@
    (assessment-decrement-plist :initarg :assessment-decrement-plist :initform nil)
    (max-repetitions-per-interval :initarg :max-repetitions-per-interval :initform 1)
    (aggregation-fn :initarg :aggregation-fn :initform 'org-window-habit-default-aggregation-fn)
+   (graph-assessment-fn :initarg :graph-assessment-fn :initform nil)
    (start-time :initarg :start-time)))
 
 (defclass org-window-habit-iterator ()
@@ -382,21 +407,6 @@
            while (funcall comparison time testing-value)
            finally return index))
 
-(defun time-less-or-equal-p (time1 time2)
-  (or (time-less-p time1 time2)
-      (time-equal-p time1 time2)))
-
-(defun time-greater-p (time1 time2)
-  (time-less-p time2 time1))
-
-(defun time-greater-or-equal-p (time1 time2)
-  (time-less-or-equal-p time2 time1))
-
-(defun test-org-window-habit-get-completion-window-indices (start-time end-time)
-  (interactive)
-  (org-window-habit-get-completion-window-indices
-   (org-window-habit-create-instance-from-heading-at-point) start-time end-time))
-
 (cl-defmethod org-window-habit-get-completion-window-indices
   ((habit org-window-habit) start-time end-time
    &key (start-index nil) (end-index nil) (reverse nil))
@@ -428,20 +438,6 @@
         done-times start-time
         :comparison 'time-greater-or-equal-p
         :start-index end-index)))))
-
-(cl-defmethod org-window-habit-advance-window
-  ((window-habit org-window-habit) start-time end-time &key (direction 1))
-  (with-slots (assessment-interval) window-habit
-    (let ((interval-movement-plist (org-window-habit-multiply-plist
-                                    assessment-interval direction)))
-      (list
-       (org-window-habit-keyed-duration-add-plist start-time interval-movement-plist)
-       (org-window-habit-keyed-duration-add-plist end-time interval-movement-plist)))))
-
-(defcustom org-window-habit-following-days 7
-  "Number of days after today to appear in consistency graphs."
-  :group 'org-window-habit
-  :type 'integer)
 
 (cl-defmethod org-window-habit-advance
   ((iterator org-window-habit-iterator) &key (amount nil))
@@ -510,8 +506,11 @@
   (with-slots
       (assessment-decrement-plist window-specs reschedule-interval
                                   max-repetitions-per-interval start-time aggregation-fn
-                                  assessment-interval)
+                                  assessment-interval graph-assessment-fn)
       habit
+    (unless graph-assessment-fn
+      (setq graph-assessment-fn
+            org-window-habit-graph-assessment-fn))
     (cl-destructuring-bind (actual-intervals actual-start-time)
         (cl-loop
          with target-start-time = (org-window-habit-normalize-time-to-duration
@@ -533,8 +532,10 @@
                  collect
                  (org-window-habit-iterator-from-time
                   window-spec actual-start-time))
-        for current-assessment-start = (oref (oref (car iterators) window) assessment-start-time)
-        for current-assessment-end = (oref (oref (car iterators) window) assessment-end-time)
+        for current-assessment-start =
+        (oref (oref (car iterators) window) assessment-start-time)
+        for current-assessment-end =
+        (oref (oref (car iterators) window) assessment-end-time)
         while (time-less-p current-assessment-end now)
         for conforming-values-no-comp =
         (cl-loop for iterator in iterators
@@ -550,15 +551,9 @@
         (cl-loop for iterator in iterators
                  collect (org-window-habit-get-conforming-value iterator))
         for assessment-value = (funcall aggregation-fn conforming-values)
-        do
-        (message "%s %s %s"
-                 (org-window-habit-time-to-string current-assessment-start)
-                 (org-window-habit-time-to-string current-assessment-end)
-                 (org-window-habit-get-completion-count
-                  habit current-assessment-start current-assessment-end))
         collect
         (funcall
-         org-window-habit-graph-assessment-fn
+         graph-assessment-fn
          assessment-value-no-comp
          assessment-value
          (org-window-habit-get-completion-count
@@ -591,7 +586,7 @@
               (funcall aggregation-fn with-completion-conforming-values))
              (current-assessment
               (funcall
-               org-window-habit-graph-assessment-fn
+               graph-assessment-fn
                assessment-value
                with-completion-assessment-value
                (org-window-habit-get-completion-count
@@ -611,16 +606,9 @@
                (put-text-property index (1+ index) 'face face graph)))
     graph))
 
-(define-minor-mode org-window-habit-mode
-  "Minor mode that replaces the normal org-habit functionality."
-  :lighter nil
-  :global t
-  :group 'org-window-habit
-  :require 'org-window-habit)
-
 (defun org-window-habit-parse-todo-advice (orig &rest args)
   (if org-window-habit-mode
-      (org-window-habit-parse-todo)
+      (org-window-habit-create-instance-from-heading-at-point)
     (apply orig args)))
 
 (advice-add 'org-habit-parse-todo
@@ -671,12 +659,6 @@
          fill-completions-fn
          interval-start-time
          (- end-index start-index)))
-   do
-   (message "%s %s %s %s"
-            (org-window-habit-time-to-string interval-start-time)
-            (org-window-habit-time-to-string interval-end-time)
-            start-index
-            end-index)
    sum completions-within-interval
    do (setq next-start-index end-index
             interval-end-time interval-start-time)
@@ -711,49 +693,6 @@
      (cl-loop for iterator in iterators
               do (org-window-habit-advance iterator))
      finally return current-assessment-start)))
-
-(defvar org-window-habit-face-fn 'org-window-habit-default-face-fn)
-
-(defun org-window-habit-lerp-color (color1 color2 proportion)
-  (let ((r1 (string-to-number (substring color1 1 3) 16))
-        (g1 (string-to-number (substring color1 3 5) 16))
-        (b1 (string-to-number (substring color1 5 7) 16))
-        (r2 (string-to-number (substring color2 1 3) 16))
-        (g2 (string-to-number (substring color2 3 5) 16))
-        (b2 (string-to-number (substring color2 5 7) 16)))
-    (format "#%02x%02x%02x"
-            (round (+ (* (- r2 r1) proportion) r1))
-            (round (+ (* (- g2 g1) proportion) g1))
-            (round (+ (* (- b2 b1) proportion) b1)))))
-
-(defvar org-window-habit-conforming-color "#0000FF")
-(defvar org-window-habit-not-conforming-color "#FF0000")
-(defvar org-window-habit-required-completion-foreground-color "#000000")
-(defvar org-window-habit-non-required-completion-foreground-color "#FFFFFF")
-(defvar org-window-habit-required-completion-today-foreground-color "#00FF00")
-
-(defun org-window-habit-create-face (bg-color foreground-color)
-  (let* ((bg-name (replace-regexp-in-string "#" "" bg-color))
-         (fg-name (replace-regexp-in-string "#" "" foreground-color))
-         (face-name (intern (format "org-window-habit-face-bg-%s-fg-%s" bg-name fg-name))))
-    (if (facep face-name)
-        face-name
-      (progn
-        (make-face face-name)
-        (set-face-attribute face-name nil :background bg-color :foreground foreground-color)
-        face-name))))
-
-(defcustom org-window-habit-completion-needed-today-glyph ?▂
-  "Glyph character used to show days on which a completion is expected."
-  :group 'org-habit
-  :version "24.1"
-  :type 'character)
-
-(defvar org-window-habit-non-conforming-scale .8)
-
-(defun org-window-habit-rescale-assessment-value (value)
-  (if (>= value 1.0) value
-    (*  org-window-habit-non-conforming-scale value)))
 
 (cl-defun org-window-habit-default-graph-assessment-fn
     (without-completion-assessment-value
@@ -801,9 +740,6 @@
             org-window-habit-completion-needed-today-glyph)
            (t ?\s))))
     (list character face)))
-
-(defvar org-window-habit-graph-assessment-fn
-  'org-window-habit-default-graph-assessment-fn)
 
 (defun org-window-habit-auto-repeat (&rest args)
   (interactive)
