@@ -55,6 +55,7 @@
   (setq mac-option-modifier 'meta)
   (setq mac-command-modifier 'super))
 
+;; See https://github.com/magit/magit/discussions/4997 . Without this magit is broken.
 (use-package magit
   :demand t)
 
