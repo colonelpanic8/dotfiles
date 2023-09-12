@@ -921,6 +921,7 @@ alphanumeric characters only."
 ** org-fc
 #+begin_src emacs-lisp
 (use-package org-fc
+  :after org
   :bind ("C-c 9" . org-fc-hydra/body)
   :config
   (progn
