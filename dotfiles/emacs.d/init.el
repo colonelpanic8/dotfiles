@@ -11,7 +11,7 @@
       (eval-print-last-sexp)))
   (load bootstrap-file nil 'nomessage))
 
-(setq native-comp-deferred-compilation-deny-list nil)
+(setq native-comp-deferred-compilation-deny-list '("magit"))
 (setq native-comp-always-compile t)
 (setq load-no-native t)
 (setq no-native-compile t)
@@ -54,6 +54,9 @@
 (when (equal system-type 'darwin)
   (setq mac-option-modifier 'meta)
   (setq mac-command-modifier 'super))
+
+(use-package magit
+  :demand t)
 
 ;; This seems to fix issues with helm not explicitly declaring its dependency on async
 (use-package async :demand t)

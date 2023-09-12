@@ -750,6 +750,7 @@ alphanumeric characters only."
 
 (use-package org-ehtml
   :after web-server
+  :disabled t
   :config
   (progn
     (setq org-ehtml-allow-agenda t)
