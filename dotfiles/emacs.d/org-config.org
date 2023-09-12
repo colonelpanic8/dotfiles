@@ -937,12 +937,13 @@ alphanumeric characters only."
 ** org-window-habit
 #+begin_src emacs-lisp
 (use-package org-window-habit
-  :straight nil
   :demand t
+  :straight
+  (org-window-habit
+   :repo "colonelpanic8/org-window-habit"
+   :host github
+   :files ("org-window-habit.el"))
   :config
   (progn
-    (require 'org)
-    (require 'org-habit)
-    (require 'org-agenda)
     (org-window-habit-mode +1)))
 #+end_src
