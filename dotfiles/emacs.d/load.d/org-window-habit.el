@@ -1,8 +1,13 @@
-(require 'eieio)
+ (require 'eieio)
 (require 'calendar)
 (require 'org)
 (require 'org-habit)
 (require 'cl-lib)
+
+(defcustom org-window-habit-preceding-intervals 30
+  "Number of days before today to appear in consistency graphs."
+  :group 'org-window-habit
+  :type 'integer)
 
 (defface org-window-habit-conformed-with-completion-face
   '((((background light)) (:background "#40778f"))
@@ -132,8 +137,8 @@
        (t (list :days read-value))))))
 
 (defun org-window-habit-normalize-time-to-duration
-    (time-value &optional duration-plist alignment-time)
-  (let* ((alignment-decoded (decode-time (or alignment-time time-value)))
+    (time-value duration-plist)
+  (let* ((alignment-decoded (decode-time time-value))
          (year (nth 5 alignment-decoded))
          (month (nth 4 alignment-decoded))
          (day (nth 3 alignment-decoded))
@@ -211,15 +216,77 @@
    (* space)
    (regexp org-ts-regexp-inactive)))
 
+(defun org-window-habit-default-aggregation-fn (collection)
+  (cl-loop for el in collection minimize (car el)))
+
 (defclass org-window-habit ()
-  ((duration-plist :initarg :duration-plist :initform '(:days 1))
+  ((window-specs :initarg :window-specs :initform nil)
    (assessment-interval :initarg :assessment-interval :initform '(:days 1))
    (reschedule-interval :initarg :reschedule-interval :initform '(:days 1))
-   (repetitions-required :initarg :repetitions-required :initform 1)
-   (okay-repetitions-required :initarg :okay-repetitions-required :initform 1)
+   (reschedule-threshold :initarg :reschedule-threshold :initform 1.0)
    (done-times :initarg :done-times :initform nil)
-   (window-decrement-plist :initarg :window-decrement-plist :initform nil)
-   (max-repetitions-per-interval :initarg :max-repetitions-per-interval :initform 1)))
+   (assessment-decrement-plist :initarg :assessment-decrement-plist :initform nil)
+   (max-repetitions-per-interval :initarg :max-repetitions-per-interval :initform 1)
+   (aggregation-fn :initarg :aggregation-fn :initform 'org-window-habit-default-aggregation-fn)
+   (start-time :initarg :start-time)))
+
+(defclass org-window-habit-iterator ()
+  ((window-spec :initarg :window-spec)
+   (window :initarg :window)
+   (start-index :initarg :start-index)
+   (end-index :initarg :end-index)))
+
+(defclass org-window-habit-window-spec ()
+  ((duration-plist :initarg :duration :initform '(:days 1))
+   (target-repetitions :initarg :repetitions :initform 1)
+   (conforming-value :initarg :value :initform 1.0)
+   (find-window :initarg :find-window :initform nil)
+   (habit :initarg :habit)))
+
+(defclass org-window-habit-assessment-window ()
+  ((assessment-start-time :initarg :assessment-start-time)
+   (assessment-end-time :initarg :assessment-end-time)
+   (start-time :initarg :start-time)
+   (end-time :initarg :end-time)))
+
+(defun org-window-habit-get-window-where-time-in-last-assessment (spec time)
+  (let* ((habit (oref spec habit))
+         (assessment-plist
+          (oref habit assessment-interval))
+         (assessment-start
+          (org-window-habit-normalize-time-to-duration
+           time assessment-plist))
+         (assessment-end
+          (org-window-habit-keyed-duration-add-plist
+           assessment-start
+           assessment-plist))
+         (window-start
+          (org-window-habit-keyed-duration-add-plist
+           assessment-end
+           (org-window-habit-negate-plist (oref spec duration-plist)))))
+    (make-instance
+     'org-window-habit-assessment-window
+     :assessment-start-time assessment-start
+     :assessment-end-time assessment-end
+     :start-time window-start
+     :end-time assessment-end)))
+
+(cl-defmethod org-window-habit-get-assessment-window
+  ((spec org-window-habit-window-spec) time)
+  (funcall (or (oref spec find-window)
+               'org-window-habit-get-window-where-time-in-last-assessment)
+           spec time))
+
+(cl-defun org-window-habit-iterator-from-time (window-spec &optional time)
+  (setq time (or time (current-time)))
+  (let* ((iterator
+          (make-instance 'org-window-habit-iterator
+                         :window-spec window-spec
+                         :window (org-window-habit-get-assessment-window window-spec time)
+                         :start-index 0
+                         :end-index 0)))
+    (org-window-habit-adjust-iterator-indicies iterator)
+    iterator))
 
 (defun org-window-habit-create-instance-from-heading-at-point ()
   "Construct an org-window-habit instance from the current org entry."
@@ -229,41 +296,75 @@
                      if (member (nth 0 state-change-info) org-done-keywords)
                      collect (nth 2 state-change-info)))
            (done-times-vector (vconcat done-times))
-           (window-length
-            (org-window-habit-string-duration-to-plist
-             (org-entry-get nil "WINDOW_DURATION" "1d") :default '(:days 1)))
            (assessment-interval
             (org-window-habit-string-duration-to-plist
-             (org-entry-get nil "ASSESMENT_INTERVAL") :default '(:days 1)))
+             (org-entry-get nil "ASSESSMENT_INTERVAL") :default '(:days 1)))
            (reschedule-interval
             (org-window-habit-string-duration-to-plist
              (org-entry-get nil "RESCHEDULE_INTERVAL")))
-           (repetitions-required
-            (string-to-number
-             (or (org-entry-get nil "REPETITIONS_REQUIRED" t) "1")))
-           (okay-repetitions-required
-            (string-to-number
-             (or (org-entry-get nil "OKAY_REPETITIONS_REQUIRED" t) "1")))
            (max-repetitions-per-interval
             (string-to-number
              (or (org-entry-get nil "MAX_REPETITIONS_PER_INTERVAL" t) "1"))))
       (make-instance 'org-window-habit
-                     :duration-plist window-length
+                     :start-time nil
+                     :window-specs (or
+                                    (org-window-habit-create-specs)
+                                    (org-window-habit-create-specs-from-perfect-okay))
                      :assessment-interval assessment-interval
                      :reschedule-interval reschedule-interval
-                     :repetitions-required repetitions-required
-                     :okay-repetitions-required okay-repetitions-required
                      :done-times done-times-vector
                      :max-repetitions-per-interval max-repetitions-per-interval))))
+
+(defun org-window-habit-create-specs ()
+  (let ((spec-text (org-entry-get nil "WINDOW_SPECS" t)))
+    (when spec-text
+      (cl-loop for args in (car (read-from-string spec-text))
+               collect (apply 'make-instance 'org-window-habit-window-spec args)))))
+
+(defun org-window-habit-create-specs-from-perfect-okay ()
+  (let*
+      ((window-length
+        (org-window-habit-string-duration-to-plist
+         (org-entry-get nil "WINDOW_DURATION" "1d") :default '(:days 1)))
+       (repetitions-required
+        (string-to-number
+         (or (org-entry-get nil "REPETITIONS_REQUIRED" t) "1")))
+       (okay-repetitions-required
+        (string-to-number
+         (or (org-entry-get nil "OKAY_REPETITIONS_REQUIRED" t) "1"))))
+    (list
+     (make-instance
+      'org-window-habit-window-spec
+      :duration window-length
+      :repetitions repetitions-required
+      :value 1.0)
+     (make-instance
+      'org-window-habit-window-spec
+      :duration window-length
+      :repetitions okay-repetitions-required
+      :value .5))))
+
+(cl-defmethod org-window-habit-earliest-completion ((habit org-window-habit))
+  (with-slots (done-times) habit
+    (let ((done-times-count (length done-times)))
+      (when (> done-times-count 0)
+        (aref done-times (- done-times-count 1))))))
 
 (cl-defmethod initialize-instance :after ((habit org-window-habit) &rest _args)
   (when (null (oref habit assessment-interval))
     (oset habit assessment-interval (oref habit duration-plist)))
   (when (null (oref habit reschedule-interval))
     (oset habit reschedule-interval (oref habit assessment-interval)))
-  (when (null (oref habit window-decrement-plist))
-    (oset habit window-decrement-plist
-          (org-window-habit-negate-plist (oref habit assessment-interval)))))
+  (when (null (oref habit assessment-decrement-plist))
+    (oset habit assessment-decrement-plist
+          (org-window-habit-negate-plist (oref habit assessment-interval))))
+  (when (null (oref habit start-time))
+    (oset habit start-time
+          (org-window-habit-normalize-time-to-duration
+           (org-window-habit-earliest-completion habit)
+           (oref habit assessment-interval))))
+  (cl-loop for window-spec in (oref habit window-specs)
+           do (oset window-spec habit habit)))
 
 (cl-defun org-window-habit-find-array-forward
     (array time &key (start-index nil) (comparison '<))
@@ -291,6 +392,11 @@
 (defun time-greater-or-equal-p (time1 time2)
   (time-less-or-equal-p time2 time1))
 
+(defun test-org-window-habit-get-completion-window-indices (start-time end-time)
+  (interactive)
+  (org-window-habit-get-completion-window-indices
+   (org-window-habit-create-instance-from-heading-at-point) start-time end-time))
+
 (cl-defmethod org-window-habit-get-completion-window-indices
   ((habit org-window-habit) start-time end-time
    &key (start-index nil) (end-index nil) (reverse nil))
@@ -301,82 +407,27 @@
          ;; order
          (org-window-habit-find-array-forward
           done-times end-time
-          ;; This actually makes this value exclusive because this function
-          ;; will now pass over equal values
-          :comparison 'time-less-or-equal-p
+          :comparison 'time-less-p
           :start-index start-index)
          ;; We use start-time to compute the end index because the list is in
          ;; descending order
          (org-window-habit-find-array-forward
           done-times start-time
-          ;; Again, this is counter-intuitive but using strict less here
-          ;; actually makes this interval inclusive
-          :comparison 'time-less-p
+          :comparison 'time-less-or-equal-p
           :start-index end-index))
       (list
        ;; We use end-time and not start time because the array is in descending
        ;; order
        (org-window-habit-find-array-backward
         done-times end-time
-        ;; Here, because we are searching backwards, this actually does the more
-        ;; intuitve thing of giving us an exclusive bound index.
         :comparison 'time-greater-p
         :start-index start-index)
        ;; We use start-time to compute the end index because the list is in
        ;; descending order
        (org-window-habit-find-array-backward
         done-times start-time
-        ;; Here, because we are searching backwards, this actually does the more
-        ;; intuitve thing of giving us an exclusive bound index.
         :comparison 'time-greater-or-equal-p
         :start-index end-index)))))
-
-(cl-defmethod org-window-habit-get-windows
-  ((window-habit org-window-habit) &key (max-intervals nil))
-  (with-slots (duration-plist done-times window-decrement-plist) window-habit
-    (let* ((done-times-count (length done-times))
-           (earliest-completion (when (> done-times-count 0)
-                                  (aref done-times (- done-times-count 1)))))
-      (when earliest-completion
-        (cl-loop
-         with start-index = 0
-         with end-index = 0
-         with interval-ongoing = t
-         with current-window-start =
-         (org-window-habit-normalize-time-to-duration (current-time) duration-plist)
-         for current-window-end =
-         (org-window-habit-keyed-duration-add-plist current-window-start duration-plist)
-         for (new-start-index new-end-index) =
-         (org-window-habit-get-completion-window-indices
-          window-habit current-window-start current-window-end
-          :start-index start-index :end-index (or end-index 0))
-         for last-start = current-window-start
-         do
-         (setq start-index new-start-index
-               end-index new-end-index)
-         when (>= start-index done-times-count)
-         return windows
-         for effective-start =
-         (if (time-less-p earliest-completion current-window-start)
-             current-window-start
-           (org-window-habit-time-max
-            current-window-start
-            (org-window-habit-find-aligned-bounding-time
-             earliest-completion window-decrement-plist current-window-end)))
-         collect
-         (list current-window-start effective-start current-window-end
-               start-index end-index interval-ongoing)
-         into windows
-         do (setq interval-ongoing nil)
-         when (and max-intervals (>= (length windows) max-intervals))
-         return windows
-         do
-         (setq current-window-start
-               (org-window-habit-keyed-duration-add-plist
-                current-window-start
-                window-decrement-plist))
-         when (not (time-less-p current-window-start last-start))
-         do (error "The window start did not get smaller"))))))
 
 (cl-defmethod org-window-habit-advance-window
   ((window-habit org-window-habit) start-time end-time &key (direction 1))
@@ -387,87 +438,168 @@
        (org-window-habit-keyed-duration-add-plist start-time interval-movement-plist)
        (org-window-habit-keyed-duration-add-plist end-time interval-movement-plist)))))
 
-(defvar org-window-habit-face-fn 'org-window-habit-default-face-fn)
-
-(cl-defun org-window-habit-default-face-fn
-    (perfect-repetitions-required
-     okay-repetitions-required
-     completions-without-interval
-     completions-in-interval
-     interval-ongoing &key
-     (completions-per-interval 1))
-    (cond
-     ((>= completions-without-interval perfect-repetitions-required)
-      'org-window-habit-conforming-without-completion-face)
-     ((>= (+ completions-without-interval completions-in-interval) perfect-repetitions-required)
-      'org-window-habit-conformed-with-completion-face)
-     ((and interval-ongoing
-           (>= (+ completions-without-interval completions-per-interval)
-               perfect-repetitions-required))
-      'org-window-habit-conforming-with-completion-face)
-     ((>= (+ completions-without-interval completions-in-interval)
-          okay-repetitions-required)
-      'org-window-habit-okay-conforming-face)
-     (t 'org-window-habit-not-conforming-face)))
-
-(defcustom org-window-habit-preceding-intervals 21
-  "Number of days before today to appear in consistency graphs."
-  :group 'org-window-habit
-  :type 'integer)
-
 (defcustom org-window-habit-following-days 7
   "Number of days after today to appear in consistency graphs."
   :group 'org-window-habit
   :type 'integer)
 
-(cl-defmethod org-window-habit-build-graph ((habit org-window-habit))
+(cl-defmethod org-window-habit-advance
+  ((iterator org-window-habit-iterator) &key (amount nil))
+  (with-slots (window window-spec) iterator
+    (unless amount
+      (setq amount (oref (oref window-spec habit) assessment-interval)))
+    (let*
+        ((new-start-time (org-window-habit-keyed-duration-add-plist
+                          (oref window assessment-start-time)
+                          amount))
+         (window-moved-backward
+          (time-less-p new-start-time (oref window assessment-start-time)))
+         (new-window (org-window-habit-get-assessment-window window-spec new-start-time)))
+      (oset iterator window new-window)
+      (org-window-habit-adjust-iterator-indicies
+       iterator (not window-moved-backward)))))
+
+(cl-defmethod org-window-habit-effective-start ((iterator org-window-habit-iterator))
+  (org-window-habit-time-max (oref (oref iterator window) start-time)
+                             (oref (oref (oref iterator window-spec) habit) start-time)))
+
+(cl-defmethod org-window-habit-adjust-iterator-indicies
+  ((iterator org-window-habit-iterator)
+   &optional window-moved-forward)
+  (with-slots (window start-index end-index window-spec) iterator
+      (cl-destructuring-bind (new-start-index new-end-index)
+          (org-window-habit-get-completion-window-indices
+           (oref window-spec habit)
+           (oref window start-time) (oref window end-time)
+           :start-index start-index
+           :end-index end-index
+           :reverse window-moved-forward)
+        (oset iterator start-index new-start-index)
+        (oset iterator end-index new-end-index))))
+
+(cl-defmethod org-window-habit-conforming-ratio
+  ((iterator org-window-habit-iterator) &rest args)
+  (with-slots (window-spec window start-index) iterator
+    (min
+     1.0
+     (/
+      (apply 'org-window-habit-get-completion-count
+             (oref window-spec habit)
+             (oref window start-time)
+             (oref window end-time)
+             :start-index start-index
+             args)
+      (* (org-window-habit-actual-window-scale iterator)
+         (oref window-spec target-repetitions))))))
+
+(cl-defmethod org-window-habit-actual-window-scale
+  ((iterator org-window-habit-iterator))
+  (with-slots (window) iterator
+    (org-window-habit-duration-proportion
+     (oref window start-time) (oref window end-time)
+     (org-window-habit-effective-start iterator))))
+
+(cl-defmethod org-window-habit-get-conforming-value
+  ((iterator org-window-habit-iterator) &rest args)
+  (with-slots (window-spec) iterator
+    (list (apply 'org-window-habit-conforming-ratio iterator args)
+          (oref window-spec conforming-value))))
+
+(cl-defmethod org-window-habit-build-graph ((habit org-window-habit) &optional now)
+  (setq now (or now (current-time)))
   (with-slots
-      (duration-plist repetitions-required okay-repetitions-required window-decrement-plist)
+      (assessment-decrement-plist window-specs reschedule-interval
+                                  max-repetitions-per-interval start-time aggregation-fn
+                                  assessment-interval)
       habit
-    (let* ((past-and-present-windows
-            (nreverse (org-window-habit-get-windows
-                       habit :max-intervals org-window-habit-preceding-intervals)))
-           (filler-count (- org-window-habit-preceding-intervals
-                            (length past-and-present-windows))))
+    (cl-destructuring-bind (actual-intervals actual-start-time)
+        (cl-loop
+         with target-start-time = (org-window-habit-normalize-time-to-duration
+                                   now assessment-interval)
+         for i from 0 to org-window-habit-preceding-intervals
+         while (time-less-p start-time target-start-time)
+         do
+         (setq target-start-time
+               (org-window-habit-keyed-duration-add-plist
+                target-start-time
+                assessment-decrement-plist))
+         finally return (list i target-start-time))
       (nconc
-       (cl-loop for i from 0 to filler-count
-                collect (list ?\s 'org-window-habit-conforming-without-completion-face))
+       (cl-loop for i from 0 to (- org-window-habit-preceding-intervals actual-intervals)
+                collect (list ?\s 'default))
        (cl-loop
-        for (start-time actual-start-time end-time start-index end-index interval-ongoing)
-        in past-and-present-windows
-        for duration-proportion =
-        (org-window-habit-duration-proportion
-         start-time end-time actual-start-time)
-        for scaled-repetitions-required =
-        (* duration-proportion repetitions-required)
-        for scaled-okay-repetitions-required =
-        (* duration-proportion okay-repetitions-required)
-        for interval-start-time =
-        (org-window-habit-keyed-duration-add-plist
-         end-time window-decrement-plist)
-        for (interval-start-index interval-end-index) =
-        (org-window-habit-get-completion-window-indices
-         habit interval-start-time end-time
-         :start-index start-index :end-index start-index)
-        for strict-completions =
-        (org-window-habit-get-completion-count
-         habit start-time end-time :start-index start-index)
-        for total-completions = (- end-index start-index)
-        for completions-in-interval = (- interval-end-index interval-start-index)
-        for completions-outside-interval = (- total-completions completions-in-interval)
-        for face =
-        (funcall org-window-habit-face-fn
-                 scaled-repetitions-required
-                 scaled-okay-repetitions-required
-                 completions-outside-interval
-                 completions-in-interval
-                 interval-ongoing)
-        for character =
-        (cond
-         ((>= completions-in-interval 1) org-habit-completed-glyph)
-         (interval-ongoing org-habit-today-glyph)
-         (t ?\s))
-        collect (list character face))))))
+        with iterators =
+        (cl-loop for window-spec in window-specs
+                 collect
+                 (org-window-habit-iterator-from-time
+                  window-spec actual-start-time))
+        for current-assessment-start = (oref (oref (car iterators) window) assessment-start-time)
+        for current-assessment-end = (oref (oref (car iterators) window) assessment-end-time)
+        while (time-less-p current-assessment-end now)
+        for conforming-values-no-comp =
+        (cl-loop for iterator in iterators
+                 collect (org-window-habit-get-conforming-value
+                          iterator
+                          :fill-completions-fn
+                          (lambda (time actual-completions)
+                            (if (time-equal-p current-assessment-start time)
+                                0
+                              actual-completions))))
+        for assessment-value-no-comp = (or (funcall aggregation-fn conforming-values) 0.0)
+        for conforming-values =
+        (cl-loop for iterator in iterators
+                 collect (org-window-habit-get-conforming-value iterator))
+        for assessment-value = (funcall aggregation-fn conforming-values)
+        do
+        (message "%s %s %s"
+                 (org-window-habit-time-to-string current-assessment-start)
+                 (org-window-habit-time-to-string current-assessment-end)
+                 (org-window-habit-get-completion-count
+                  habit current-assessment-start current-assessment-end))
+        collect
+        (funcall
+         org-window-habit-graph-assessment-fn
+         assessment-value-no-comp
+         assessment-value
+         (org-window-habit-get-completion-count
+          habit current-assessment-start current-assessment-end)
+         'past
+         habit
+         (oref (car iterators) window))
+        into past-assessments
+        do
+        (cl-loop for iterator in iterators
+                 do (org-window-habit-advance iterator))
+        finally
+        return
+        (let*
+            ((current-assessment-start (oref (oref (car iterators) window) assessment-start-time))
+             (current-assessment-end (oref (oref (car iterators) window) assessment-end-time))
+             (conforming-values (cl-loop for iterator in iterators collect
+                                         (org-window-habit-get-conforming-value iterator)))
+             (assessment-value (funcall aggregation-fn conforming-values))
+             (with-completion-conforming-values
+              (cl-loop for iterator in iterators
+                       collect (org-window-habit-get-conforming-value
+                                iterator
+                                :fill-completions-fn
+                                (lambda (time actual-completions)
+                                  (if (time-equal-p current-assessment-start time)
+                                      (+ actual-completions max-repetitions-per-interval)
+                                    actual-completions)))))
+             (with-completion-assessment-value
+              (funcall aggregation-fn with-completion-conforming-values))
+             (current-assessment
+              (funcall
+               org-window-habit-graph-assessment-fn
+               assessment-value
+               with-completion-assessment-value
+               (org-window-habit-get-completion-count
+                habit current-assessment-start current-assessment-end)
+               'present
+               habit
+               (oref (car iterators) window))))
+          (nconc past-assessments (list current-assessment))))))))
 
 (defun org-window-habit-make-graph-string (graph-info)
   (let ((graph (make-string (length graph-info) ?\s)))
@@ -485,9 +617,6 @@
   :global t
   :group 'org-window-habit
   :require 'org-window-habit)
-
-(defun org-window-habit-parse-todo ()
-  (org-window-habit-create-instance-from-heading-at-point))
 
 (defun org-window-habit-parse-todo-advice (orig &rest args)
   (if org-window-habit-mode
@@ -513,19 +642,14 @@
 (advice-add 'org-habit-get-urgency
             :around 'org-window-habit-get-urgency-advice)
 
-(defun org-window-habit-show-time-string (time)
+(defun org-window-habit-time-to-string (time)
   (format-time-string
    "%Y-%m-%d %H:%M"
    time))
 
-(defun org-window-habit-get-next-required-interval-test ()
-  (mapcar
-   'org-window-habit-show-time-string
-   (org-window-habit-get-next-required-interval
-    (org-window-habit-create-instance-from-heading-at-point))))
-
 (cl-defmethod org-window-habit-get-completion-count
-  ((habit org-window-habit) start-time end-time &key (start-index 0))
+  ((habit org-window-habit) start-time end-time &key (start-index 0)
+   (fill-completions-fn (lambda (time actual-completions) actual-completions)))
   (cl-loop
    with next-start-index = start-index
    with interval-end-time = end-time
@@ -535,72 +659,157 @@
    (org-window-habit-time-max
     start-time
     (org-window-habit-keyed-duration-add-plist
-     interval-end-time (oref habit window-decrement-plist)))
+     interval-end-time (oref habit assessment-decrement-plist)))
    for (start-index end-index) =
    (org-window-habit-get-completion-window-indices
     habit interval-start-time interval-end-time
     :start-index next-start-index
     :end-index next-start-index)
    for completions-within-interval =
-   (min (oref habit max-repetitions-per-interval) (- end-index start-index))
+   (min (oref habit max-repetitions-per-interval)
+        (funcall
+         fill-completions-fn
+         interval-start-time
+         (- end-index start-index)))
+   do
+   (message "%s %s %s %s"
+            (org-window-habit-time-to-string interval-start-time)
+            (org-window-habit-time-to-string interval-end-time)
+            start-index
+            end-index)
    sum completions-within-interval
    do (setq next-start-index end-index
             interval-end-time interval-start-time)
    while (time-less-p start-time interval-start-time)))
 
-(cl-defmethod org-window-habit-get-next-required-interval ((habit org-window-habit))
-  (cl-loop
-   with
-   (start-time effective-start
-               end-time last-start-index last-end-index ongoing) =
-               (car (org-window-habit-get-windows habit :max-intervals 1))
-   with last-end-time =
-   (org-window-habit-keyed-duration-add-plist
-    end-time
-    (oref habit window-decrement-plist))
-   with reschedule-decrement-plist =
-   (org-window-habit-negate-plist (oref habit reschedule-interval))
-   for (start-index end-index) =
-   (org-window-habit-get-completion-window-indices
-    habit
-    start-time end-time
-    :start-index last-start-index
-    :end-index last-end-index
-    :reverse t)
-   for actual-completions =
-   (org-window-habit-get-completion-count
-    habit start-time end-time :start-index start-index)
-   for expected-completions = actual-completions
-   for actual-start = (org-window-habit-time-max effective-start start-time)
-   for proportion =
-   (org-window-habit-duration-proportion start-time end-time actual-start)
-   for required = (* proportion (oref habit repetitions-required))
-   for reschedule-start-time =
-   (org-window-habit-keyed-duration-add-plist
-    end-time reschedule-decrement-plist)
-   for (reschedule-start-index reschedule-end-index) =
-   (org-window-habit-get-completion-window-indices
-    habit reschedule-start-time end-time
-    :start-index start-index
-    :end-index end-index
-    :reverse t)
-   for interval-has-completion = (not (eq reschedule-start-index reschedule-end-index))
-   until (and (not interval-has-completion) (< expected-completions required))
-   for (new-start-time new-end-time) =
-   (org-window-habit-advance-window habit start-time end-time)
-   do
-   (setq last-end-time end-time
-         start-time new-start-time
-         end-time new-end-time
-         last-start-index start-index
-         last-end-index end-index)
-   finally return (list last-end-time end-time)))
+(cl-defmethod org-window-habit-get-next-required-interval
+  ((habit org-window-habit) &optional now) (setq now (or now (current-time)))
+  (with-slots
+      (window-specs reschedule-interval reschedule-threshold assessment-interval
+                    aggregation-fn done-times)
+      habit
+    (cl-loop
+     with start-time =
+     (org-window-habit-normalize-time-to-duration
+      (org-window-habit-time-max
+       now
+       (org-window-habit-keyed-duration-add-plist (aref done-times 0)
+                                                  reschedule-interval))
+      assessment-interval)
+     with iterators =
+     (cl-loop for window-spec in window-specs
+              collect
+              (org-window-habit-iterator-from-time window-spec start-time))
+     for current-assessment-start = (oref (oref (car iterators) window) assessment-start-time)
+     for current-assessment-end = (oref (oref (car iterators) window) assessment-end-time)
+     for conforming-values =
+     (cl-loop for iterator in iterators
+              collect (org-window-habit-get-conforming-value iterator))
+     for assessment-value = (funcall aggregation-fn conforming-values)
+     until (< assessment-value reschedule-threshold)
+     do
+     (cl-loop for iterator in iterators
+              do (org-window-habit-advance iterator))
+     finally return current-assessment-start)))
+
+(defvar org-window-habit-face-fn 'org-window-habit-default-face-fn)
+
+(defun org-window-habit-lerp-color (color1 color2 proportion)
+  (let ((r1 (string-to-number (substring color1 1 3) 16))
+        (g1 (string-to-number (substring color1 3 5) 16))
+        (b1 (string-to-number (substring color1 5 7) 16))
+        (r2 (string-to-number (substring color2 1 3) 16))
+        (g2 (string-to-number (substring color2 3 5) 16))
+        (b2 (string-to-number (substring color2 5 7) 16)))
+    (format "#%02x%02x%02x"
+            (round (+ (* (- r2 r1) proportion) r1))
+            (round (+ (* (- g2 g1) proportion) g1))
+            (round (+ (* (- b2 b1) proportion) b1)))))
+
+(defvar org-window-habit-conforming-color "#0000FF")
+(defvar org-window-habit-not-conforming-color "#FF0000")
+(defvar org-window-habit-required-completion-foreground-color "#000000")
+(defvar org-window-habit-non-required-completion-foreground-color "#FFFFFF")
+(defvar org-window-habit-required-completion-today-foreground-color "#00FF00")
+
+(defun org-window-habit-create-face (bg-color foreground-color)
+  (let* ((bg-name (replace-regexp-in-string "#" "" bg-color))
+         (fg-name (replace-regexp-in-string "#" "" foreground-color))
+         (face-name (intern (format "org-window-habit-face-bg-%s-fg-%s" bg-name fg-name))))
+    (if (facep face-name)
+        face-name
+      (progn
+        (make-face face-name)
+        (set-face-attribute face-name nil :background bg-color :foreground foreground-color)
+        face-name))))
+
+(defcustom org-window-habit-completion-needed-today-glyph ?▂
+  "Glyph character used to show days on which a completion is expected."
+  :group 'org-habit
+  :version "24.1"
+  :type 'character)
+
+(defvar org-window-habit-non-conforming-scale .8)
+
+(defun org-window-habit-rescale-assessment-value (value)
+  (if (>= value 1.0) value
+    (*  org-window-habit-non-conforming-scale value)))
+
+(cl-defun org-window-habit-default-graph-assessment-fn
+    (without-completion-assessment-value
+     with-completion-assessment-value
+     completions-in-interval
+     current-interval-time-type
+     habit
+     window)
+  (let* ((with-completion-color
+          (org-window-habit-lerp-color
+           org-window-habit-not-conforming-color
+           org-window-habit-conforming-color
+           (org-window-habit-rescale-assessment-value
+            with-completion-assessment-value)))
+         (without-completion-color
+          (org-window-habit-lerp-color
+           org-window-habit-not-conforming-color
+           org-window-habit-conforming-color
+           (org-window-habit-rescale-assessment-value
+            without-completion-assessment-value)))
+         (completion-today-matters
+          (< without-completion-assessment-value with-completion-assessment-value))
+         (interval-is-present (eq current-interval-time-type 'present))
+         (completion-expected-today
+          (and interval-is-present
+                 (time-less-p
+                  (org-window-habit-get-next-required-interval habit)
+                  (oref window assessment-end-time))))
+         (bg-color
+          (if completion-expected-today
+              without-completion-color
+              with-completion-color))
+         (fg-color
+          (cond
+           (completion-expected-today
+            with-completion-color)
+           (completion-today-matters
+            org-window-habit-required-completion-foreground-color)
+           (t org-window-habit-non-required-completion-foreground-color)))
+         (face (org-window-habit-create-face bg-color fg-color))
+         (character
+          (cond
+           ((> completions-in-interval 0) org-habit-completed-glyph)
+           (completion-expected-today
+            org-window-habit-completion-needed-today-glyph)
+           (t ?\s))))
+    (list character face)))
+
+(defvar org-window-habit-graph-assessment-fn
+  'org-window-habit-default-graph-assessment-fn)
 
 (defun org-window-habit-auto-repeat (&rest args)
   (interactive)
   (let* ((required-interval-start
-          (car (org-window-habit-get-next-required-interval
-                (org-window-habit-create-instance-from-heading-at-point))))
+          (org-window-habit-get-next-required-interval
+           (org-window-habit-create-instance-from-heading-at-point)))
          (repeat (org-get-repeat))
          (target-time-string
           (format-time-string (car org-timestamp-formats)
