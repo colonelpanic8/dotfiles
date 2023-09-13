@@ -222,7 +222,7 @@ We're going to use this to write separate parts of our config to different secti
 #+begin_src emacs-lisp :tangle org-config-config.el
 (add-to-list 'org-modules 'org-habit)
 #+end_src
-** Assignee
+** Assignee/Completer
 #+begin_src emacs-lisp :tangle org-config-config.el
 (defmacro imalison:def-agenda-pred (&rest forms)
   `(lambda ()
@@ -281,6 +281,15 @@ We're going to use this to write separate parts of our config to different secti
 (defalias 'imalison:assigned-to-me-agenda-pred
   (imalison:def-agenda-pred
    (imalison:assigned-to-me)))
+#+end_src
+*** Add a hook to automatically set completer
+#+begin_src emacs-lisp :tangle org-config-config.el
+(defun imalison:maybe-add-completer (state-change)
+  (when
+      (and (eq (plist-get state-change :type) 'todo-state-change)
+           (null (org-entry-get nil "COMPLETER")))
+    (org-set-property "COMPLETER" imalison:org-whoami)))
+(add-hook 'org-trigger-hook 'imalison:maybe-add-completer)
 #+end_src
 ** Agenda
 #+begin_src emacs-lisp :tangle org-config-config.el
@@ -944,6 +953,8 @@ alphanumeric characters only."
    :repo "colonelpanic8/org-window-habit"
    :host github
    :files ("org-window-habit.el"))
+  :custom
+  ((org-window-habit-property-prefix nil))
   :config
   (progn
     (org-window-habit-mode +1)))

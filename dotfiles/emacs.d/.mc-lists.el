@@ -22,6 +22,7 @@
         helm-show-kill-ring
         imalison:avy
         imalison:multi-line
+        increase-left-margin
         indent-for-tab-command
         indent-region
         insert-register
@@ -49,6 +50,7 @@
         skeleton-pair-insert-maybe
         sp-backward-sexp
         sp-forward-sexp
+        sp-forward-slurp-sexp
         sp-remove-active-pair-overlay
         sp-splice-sexp
         sp-splice-sexp-killing-backward
