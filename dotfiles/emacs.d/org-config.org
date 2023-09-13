@@ -297,6 +297,7 @@ We're going to use this to write separate parts of our config to different secti
 (defun imalison:maybe-add-completer (state-change)
   (when
       (and (eq (plist-get state-change :type) 'todo-state-change)
+           (member (plist-get state-change :to) org-done-keywords)
            (imalison:shared-non-habit-p)
            (null (org-entry-get nil "COMPLETER")))
     (org-set-property "COMPLETER" imalison:org-whoami)))
