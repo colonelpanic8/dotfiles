@@ -33,6 +33,9 @@ We're going to use this to write separate parts of our config to different secti
 (defvar imalison:shared-org-dir "~/katnivan")
 (defvar imalison:org-whoami "Ivan Malison")
 (defvar imalison:org-people (list nil "Ivan Malison" "Kat Huang"))
+(defvar imalison:org-people-associated-states
+  '(("Ivan Malison" . ("IVANDONE"))
+    ("Kat Huang" . ("KATDONE"))))
 (defvar imalison:org-default-initial-state "TODO")
 
 (defvar imalison:org-gtd-file
@@ -281,7 +284,11 @@ We're going to use this to write separate parts of our config to different secti
      (null person)
      (string-equal assignee person)
      (string-equal completer person)
-     (null assignee))))
+     (and
+      (null (or assignee completer))
+      (or
+       (imalison:shared-org-file-p)
+       (equal person imalison:org-whoami))))))
 
 (defmacro imalison:assigned-to-me ()
   `(let ((assignee (org-entry-get nil "ASSIGNEE")))
@@ -313,13 +320,26 @@ We're going to use this to write separate parts of our config to different secti
   (when (eq major-mode 'org-agenda-mode)
     (org-agenda-redo)))
 
+(defun imalison:state-belongs-to (state person)
+  (member
+   state (cdr (assoc person imalison:org-people-associated-states))))
+
+(defun imalison:state-relevant-to (state person)
+  (not (member state
+               (mapcan 'cdr (--filter (not (equal (car it) person))
+                                      imalison:org-people-associated-states)))))
+
 (defun org-agenda-states-filter (state &optional marker)
   (and (member state org-done-keywords-for-agenda)
-         (or (null imalison:org-agenda-filter-to)
-            (save-excursion
-              (set-buffer (marker-buffer marker))
-              (goto-char (marker-position marker))
-              (imalison:relevant-to imalison:org-agenda-filter-to)))))
+       (or (null imalison:org-agenda-filter-to)
+           (save-excursion
+             (set-buffer (marker-buffer marker))
+             (goto-char (marker-position marker))
+             (or
+              (imalison:state-belongs-to state imalison:org-agenda-filter-to)
+              (and
+               (imalison:relevant-to imalison:org-agenda-filter-to)
+               (imalison:state-relevant-to state imalison:org-agenda-filter-to)))))))
 #+end_src
 ** Agenda
 #+begin_src emacs-lisp :tangle org-config-config.el
