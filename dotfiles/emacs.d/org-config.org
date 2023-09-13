@@ -88,6 +88,7 @@ We're going to use this to write separate parts of our config to different secti
 #+end_src
 * Org Variable Customization
 #+begin_src emacs-lisp :tangle org-config-custom.el
+(org-agenda-log-mode-items '(closed))
 (org-agenda-skip-deadline-if-done nil)
 (org-agenda-skip-scheduled-if-done nil)
 (org-agenda-span 10)
@@ -273,6 +274,15 @@ We're going to use this to write separate parts of our config to different secti
 
 (advice-add 'org-schedule :after 'imalison:maybe-auto-assign-to-self)
 
+(defun imalison:relevant-to (person)
+  (let ((assignee (org-entry-get nil "ASSIGNEE"))
+         (completer (org-entry-get nil "COMPLETER")))
+    (or
+     (null person)
+     (string-equal assignee person)
+     (string-equal completer person)
+     (null assignee))))
+
 (defmacro imalison:assigned-to-me ()
   `(let ((assignee (org-entry-get nil "ASSIGNEE")))
     (or (string-equal assignee imalison:org-whoami)
@@ -287,9 +297,28 @@ We're going to use this to write separate parts of our config to different secti
 (defun imalison:maybe-add-completer (state-change)
   (when
       (and (eq (plist-get state-change :type) 'todo-state-change)
+           (imalison:shared-non-habit-p)
            (null (org-entry-get nil "COMPLETER")))
     (org-set-property "COMPLETER" imalison:org-whoami)))
 (add-hook 'org-trigger-hook 'imalison:maybe-add-completer)
+#+end_src
+*** Tools for controlling the log book
+#+begin_src emacs-lisp :tangle org-config-config.el
+(defvar imalison:org-agenda-filter-to nil)
+
+(defun imalison:filter-agenda-log-to-completions-for (person)
+  (interactive (list (completing-read "Choose a person" imalison:org-people)))
+  (setq imalison:org-agenda-filter-to person)
+  (when (eq major-mode 'org-agenda-mode)
+    (org-agenda-redo)))
+
+(defun org-agenda-states-filter (state &optional marker)
+  (and (member state org-done-keywords-for-agenda)
+         (or (null imalison:org-agenda-filter-to)
+            (save-excursion
+              (set-buffer (marker-buffer marker))
+              (goto-char (marker-position marker))
+              (imalison:relevant-to imalison:org-agenda-filter-to)))))
 #+end_src
 ** Agenda
 #+begin_src emacs-lisp :tangle org-config-config.el
@@ -422,7 +451,13 @@ We're going to use this to write separate parts of our config to different secti
              "High Priority:")))
           ("c" "At least priority C:" tags-todo "+PRIORITY<\"D\""
            ((org-agenda-overriding-header
-             "At least priority C:"))))))
+             "At least priority C:")))
+          ("l" "Completions"
+           . (agenda ""
+                   ((org-agenda-overriding-header "Completion History:")
+                    (org-agenda-ndays 5)
+                    (org-agenda-entry-types '(:none))
+                    (org-agenda-start-with-log-mode '(state))))))))
 #+end_src
 *** Filters
 **** Regexp Presets
