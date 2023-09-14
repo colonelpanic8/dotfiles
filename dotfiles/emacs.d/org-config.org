@@ -809,11 +809,6 @@ alphanumeric characters only."
 #+end_src
 ** org-ehtml
 #+begin_src emacs-lisp
-(use-package web-server
-  :straight (web-server
-             :repo "eschulte/emacs-web-server"
-             :host github))
-
 (use-package org-ehtml
   :after web-server
   :disabled t
@@ -929,6 +924,9 @@ alphanumeric characters only."
 #+end_src
 ***** ui
 #+begin_src emacs-lisp
+(use-package emacs-http-server
+  :demand t)
+
 (use-package org-roam-ui
   :after org-roam
   :custom
@@ -1012,7 +1010,8 @@ alphanumeric characters only."
    :files ("org-window-habit.el"))
   :custom
   ((org-window-habit-property-prefix nil)
-   (org-window-habit-repeat-to-scheduled t))
+   (org-window-habit-repeat-to-scheduled t)
+   (org-window-habit-preceding-intervals 21))
   :config
   (progn
     (org-window-habit-mode +1)))
