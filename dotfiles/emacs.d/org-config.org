@@ -325,9 +325,11 @@ We're going to use this to write separate parts of our config to different secti
    state (cdr (assoc person imalison:org-people-associated-states))))
 
 (defun imalison:state-relevant-to (state person)
-  (not (member state
-               (mapcan 'cdr (--filter (not (equal (car it) person))
-                                      imalison:org-people-associated-states)))))
+  (not
+   (member
+    state
+    (--mapcat it (--filter (not (equal (car it) person))
+                           imalison:org-people-associated-states)))))
 
 (defun org-agenda-states-filter (state &optional marker)
   (and (member state org-done-keywords-for-agenda)
