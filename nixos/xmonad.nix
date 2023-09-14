@@ -110,6 +110,7 @@ makeEnable config "modules.xmonad" true  {
           "! name~=''" # Qtile == empty wm_class..
           "window_type = 'dock'"
           "window_type = 'desktop'"
+          "class_g ?= 'Dunst'"
         ];
 
         corner-radius = 10;

@@ -54,7 +54,7 @@
           # in "${family} ${weight} 11";
           frame_width = 2;
           separator_color = "frame";
-          transparency = 0;
+          transparency = 30;
 
           line_height = 1;
           idle_threshold = 120;
@@ -80,6 +80,12 @@
 
         experimental = {per_monitor_dpi = true;};
         fullscreen_pushback_everything = {fullscreen = "pushback";};
+        global = {
+          highlight = "#ffffff";
+          foreground = "#ffffff";
+          background = "#000000";
+          frame_color = "#ffffff";
+        };
     };
     # // optionalAttrs (active != null) {
     #   urgency_low = let
