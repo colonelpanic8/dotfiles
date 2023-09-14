@@ -399,19 +399,16 @@ We're going to use this to write separate parts of our config to different secti
 #+end_src
 *** Agenda Commands (Views)
 #+begin_src emacs-lisp :tangle org-config-config.el
-(let ((this-week-high-priority
+(let ((high-priority
        ;; The < in the following line has behavior that is opposite
        ;; to what one might expect.
        `(tags-todo
          "+PRIORITY<\"C\""
-         ((org-agenda-overriding-header "Upcoming high priority tasks:")
+         ((org-agenda-overriding-header "High priority tasks:")
           (org-agenda-skip-function
            ,(imalison:def-agenda-pred
-             (or
-              (imalison:org-time-condition-met-p
-               :property "DEADLINE" :days 7 :future t)
-              (imalison:org-time-condition-met-p
-               :property "SCHEDULED" :days 7 :future t)))))))
+             (not (org-is-habit-p))))
+          )))
       (due-today
        `(alltodo
          ""
@@ -462,13 +459,13 @@ We're going to use this to write separate parts of our config to different secti
                      (org-agenda-ndays 5)
                      (org-deadline-warning-days 0)
                      (org-agenda-skip-function 'imalison:assigned-to-me-agenda-pred)))
+            ,high-priority
             ,all-habits
             ,next
-            ,inbox
-            ,this-week-high-priority
-            ,recently-created)
+            ,recently-created
+            ,inbox)
            nil nil)
-          ,(cons "A" (cons "High priority upcoming" this-week-high-priority))
+          ,(cons "A" (cons "High priority" high-priority))
           ,(cons "d" (cons "Overdue tasks and due today" due-today))
           ,(cons "r" (cons "Recently created" recently-created))
           ("h" "A, B priority:" tags-todo "+PRIORITY<\"C\""
@@ -479,10 +476,10 @@ We're going to use this to write separate parts of our config to different secti
              "At least priority C:")))
           ("l" "Completions"
            . (agenda ""
-                   ((org-agenda-overriding-header "Completion History:")
-                    (org-agenda-ndays 5)
-                    (org-agenda-entry-types '(:none))
-                    (org-agenda-start-with-log-mode '(state))))))))
+                     ((org-agenda-overriding-header "Completion History:")
+                      (org-agenda-ndays 5)
+                      (org-agenda-entry-types '(:none))
+                      (org-agenda-start-with-log-mode '(state))))))))
 #+end_src
 *** Filters
 **** Regexp Presets
