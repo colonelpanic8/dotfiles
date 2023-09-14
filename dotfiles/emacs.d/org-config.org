@@ -877,6 +877,16 @@ alphanumeric characters only."
 (use-package org-roam
   :after org
   :defer 1
+  :preface
+  (defun imalison:org-roam-browse-backlink ()
+      (interactive)
+      (let* ((node-alist
+              (cl-loop for backlink in (org-roam-backlinks-get (org-roam-node-at-point))
+                       for node = (org-roam-backlink-source-node backlink)
+                       collect `(,(org-roam-node-title node) . ,node)))
+             (selected-name (completing-read "Select a backlink to visit: " node-alist))
+             (selected-node (alist-get selected-name node-alist nil nil 'string-equal)))
+        (org-roam-node-visit selected-node)))
   :bind
   (("C-c r f" . org-roam-node-find)
    ("C-c r i" . org-roam-node-insert)
@@ -900,16 +910,6 @@ alphanumeric characters only."
                                 frame))
                           (frame-list)))
           nil)))
-
-    (defun imalison:org-roam-browse-backlink ()
-      (interactive)
-      (let* ((node-alist
-              (cl-loop for backlink in (org-roam-backlinks-get (org-roam-node-at-point))
-                       for node = (org-roam-backlink-source-node backlink)
-                       collect `(,(org-roam-node-title node) . ,node)))
-             (selected-name (completing-read "Select a backlink to visit: " node-alist))
-             (selected-node (alist-get selected-name node-alist nil nil 'string-equal)))
-        (org-roam-node-visit selected-node)))
 
     (defun imalison:org-roam-frame-based-buffer-visibility-fn ()
       (cond
@@ -1014,7 +1014,8 @@ alphanumeric characters only."
    :host github
    :files ("org-window-habit.el"))
   :custom
-  ((org-window-habit-property-prefix nil))
+  ((org-window-habit-property-prefix nil)
+   (org-window-habit-repeat-to-scheduled t))
   :config
   (progn
     (org-window-habit-mode +1)))
