@@ -25,7 +25,10 @@
   boot.loader.systemd-boot.enable = true;
   boot.loader.efi.canTouchEfiVariables = true;
 
-  services.xserver.libinput.enable = true;
+  services.xserver.libinput = {
+    enable = true;
+    touchpad.tapping = false;
+  };
 
   security.pam.services.login.fprintAuth = true;
   services.fprintd = {
