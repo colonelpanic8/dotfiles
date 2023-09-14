@@ -316,6 +316,8 @@ We're going to use this to write separate parts of our config to different secti
 
 (defun imalison:filter-agenda-log-to-completions-for (person)
   (interactive (list (completing-read "Choose a person" imalison:org-people)))
+  (when (string-equal person "nil")
+    (setq person nil))
   (setq imalison:org-agenda-filter-to person)
   (when (eq major-mode 'org-agenda-mode)
     (org-agenda-redo)))
