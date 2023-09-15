@@ -237,15 +237,29 @@ We're going to use this to write separate parts of our config to different secti
 (defun imalison:org-known-assignees ()
   imalison:org-people)
 
-(cl-defun imalison:set-assignee (&key assignee (override t))
+(defun imalison:set-person-for-prop (&rest args)
   (interactive)
-  (let ((chosen-assignee (if (called-interactively-p 'interactive)
-                             (completing-read "Choose assignee: "
-                                              (imalison:org-known-assignees)
-                                              nil t)
-                           (or assignee imalison:org-whoami))))
-    (when (or override (not (org-entry-get nil "ASSIGNEE")))
-      (org-set-property "ASSIGNEE" chosen-assignee))))
+  (if (eq major-mode 'org-agenda-mode)
+      (org-agenda-with-point-at-orig-entry nil
+        (apply 'imalison--set-person-for-prop args))
+    (apply 'imalison--set-person-for-prop args)))
+
+(cl-defun imalison--set-person-for-prop (&key assignee (override t) (property "ASSIGNEE"))
+  (interactive)
+  (let ((chosen-person
+         (if (null assignee)
+             (completing-read "Choose person: "
+                              (imalison:org-known-assignees)
+                              nil t)
+           (or assignee imalison:org-whoami))))
+    (when (or override (not (org-entry-get nil property)))
+      (org-set-property property chosen-person))))
+
+(defalias 'imalison:set-assignee 'imalison:set-person-for-prop)
+
+(defun imalison:set-completer (&rest args)
+  (interactive)
+  (apply 'imalison:set-person-for-prop :property "COMPLETER" args))
 
 (defun imalison:assign-to-self-if-unassigned ()
   (interactive)
@@ -279,7 +293,7 @@ We're going to use this to write separate parts of our config to different secti
 
 (defun imalison:relevant-to (person)
   (let ((assignee (org-entry-get nil "ASSIGNEE"))
-         (completer (org-entry-get nil "COMPLETER")))
+        (completer (org-entry-get nil "COMPLETER")))
     (or
      (null person)
      (string-equal assignee person)
@@ -292,8 +306,8 @@ We're going to use this to write separate parts of our config to different secti
 
 (defmacro imalison:assigned-to-me ()
   `(let ((assignee (org-entry-get nil "ASSIGNEE")))
-    (or (string-equal assignee imalison:org-whoami)
-        (null assignee))))
+     (or (string-equal assignee imalison:org-whoami)
+         (null assignee))))
 
 (defalias 'imalison:assigned-to-me-agenda-pred
   (imalison:def-agenda-pred
