@@ -71,7 +71,7 @@ makeEnable config "modules.desktop" true {
     kleopatra
     libnotify
     # Seems to be broken
-    # libreoffice
+    libreoffice
     lxappearance
     lxqt.lxqt-powermanagement
     networkmanagerapplet
