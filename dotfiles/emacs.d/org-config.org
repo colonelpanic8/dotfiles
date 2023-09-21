@@ -1025,7 +1025,8 @@ alphanumeric characters only."
   :custom
   ((org-window-habit-property-prefix nil)
    (org-window-habit-repeat-to-scheduled t)
-   (org-window-habit-preceding-intervals 21))
+   (org-window-habit-preceding-intervals 21)
+   (org-window-habit-following-days 2))
   :config
   (progn
     (org-window-habit-mode +1)))
