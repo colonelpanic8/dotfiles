@@ -64,7 +64,7 @@ makeEnable config "modules.xmonad" true  {
       enable = true;
       display = "fill";
       interval = "1h";
-      imageDirectory = "%h/Pictures/wallpaper/use";
+      imageDirectory = "/var/lib/syncthing/sync/Wallpaper/";
     };
 
     services.xsettingsd.enable = true;
@@ -118,15 +118,6 @@ makeEnable config "modules.xmonad" true  {
         round-borders-exclude = [
           "! name~=''" # Qtile == empty wm_class..
         ];
-
-        blur = {
-          method = "dual_kawase";
-          strength = 10.0;
-          background = true;
-          background-frame = false;
-          background-fixed = false;
-        };
-        blur-background-exclude = ["window_type != 'dock'"];
 
         daemon = false;
         dbus = false;
