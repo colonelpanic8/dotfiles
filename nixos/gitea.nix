@@ -13,7 +13,7 @@ makeEnable config "modules.gitea" false {
 
   services.gitea-actions-runner.instances-nix-runner = {
     enable = true;
-    url = config.service.gitea.settings.server.ROOT_URL;
+    url = config.services.gitea.settings.server.ROOT_URL;
     tokenFile = config.age.secrets.gitea-runner-token.path;
     labels = [ "nixos:host" ];
   };
