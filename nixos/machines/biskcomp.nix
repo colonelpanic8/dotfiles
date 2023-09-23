@@ -24,6 +24,7 @@ in
     port = 80;
     path = "/nix-cache";
   };
+  modules.gitea.enable = true;
 
   services.vaultwarden = {
     enable = true;
@@ -59,20 +60,6 @@ in
 
   services.plex = {
     enable = true;
-  };
-
-  services.gitea = {
-    enable = true;
-    lfs.enable = true;
-    settings.server = {
-      DOMAIN = "1896Folsom.duckdns.org";
-      SSH_PORT = 1123;
-    };
-  };
-
-  services.gitea-actions-runner = {
-    enable = true;
-    url = "http://1896Folsom.duckdns.org:3000";
   };
 
   fileSystems."/" = {
