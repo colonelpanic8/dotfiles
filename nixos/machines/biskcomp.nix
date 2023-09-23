@@ -76,6 +76,11 @@ in
     };
   };
 
+  services.gitea-actions-runner = {
+    enable = true;
+    url = "http://1896Folsom.duckdns.org:3000";
+  };
+
   fileSystems."/" = {
     device = "/dev/disk/by-label/NIXOS_SD";
     fsType = "ext4";
