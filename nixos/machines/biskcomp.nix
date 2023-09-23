@@ -19,7 +19,7 @@ in
   modules.fonts.enable = true;
   modules.nixified-ai.enable = false;
   modules.cache-server = {
-    enable = true;
+    enable = false;
     host-string = biskcomp-nginx-hostnames;
     port = 80;
     path = "/nix-cache";
@@ -33,32 +33,26 @@ in
     };
   };
 
+  security.acme = {
+    acceptTerms = true;
+    email = "IvanMalison@gmail.com";
+  };
+
   services.nginx = {
     enable = true;
     recommendedProxySettings = true;
     recommendedGzipSettings = true;
     recommendedTlsSettings = true;
     virtualHosts = {
-      "192.168.1.44 railbird.ai 1896Folsom.duckdns.org 0.0.0.0 67.162.131.71" = {
-        root = ../railbird.ai;
+      "1896Folsom.duckdns.org" = {
+        enableACME = true;
+        forceSSL = true;
         locations."/" = {
-          index = "index.html";
+          proxyPass = "http://[::1]:8222";
         };
-      };
-      # Server block for Vaultwarden on a different port
-      "_:8222" = {
-        listen = [ { addr = "::"; port = 8222; } ];  # Listen on IPv6 and port 8222
-        forceSSL = false;  # Assuming you're not using HTTPS for this one
-        locations."/" = {
-          proxyPass = "http://::1:8222";
-          proxySetHeaders = {
-            Host = "$host";
-            X-Real-IP = "$remote_addr";
-            X-Forwarded-For = "$proxy_add_x_forwarded_for";
-            X-Forwarded-Proto = "$scheme";
-          };
-          proxyRedirect = "off";
-        };
+        # listen = [
+        #   { addr = "0.0.0.0"; port = 8443; }
+        # ];
       };
     };
   };
