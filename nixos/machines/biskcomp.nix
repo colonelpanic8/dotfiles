@@ -36,7 +36,7 @@ in
 
   security.acme = {
     acceptTerms = true;
-    email = "IvanMalison@gmail.com";
+    defaults.email = "IvanMalison@gmail.com";
   };
 
   services.nginx = {
