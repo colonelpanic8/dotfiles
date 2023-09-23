@@ -12,6 +12,7 @@
     ./extra.nix
     ./games.nix
     ./git-sync.nix
+    ./gitea.nix
     ./imalison.nix
     ./internet-computer.nix
     ./kat.nix
