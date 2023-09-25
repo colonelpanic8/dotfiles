@@ -11,7 +11,7 @@ in
 
   modules.base.enable = true;
   modules.desktop.enable = true;
-  modules.xmonad.enable = true;
+  modules.xmonad.enable = false;
   modules.extra.enable = false;
   modules.code.enable = true;
   modules.games.enable = false;
