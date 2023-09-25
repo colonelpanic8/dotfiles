@@ -9,6 +9,7 @@
   # Needed for now because monitors have different refresh rates
   modules.xmonad.picom.vSync.enable = false;
   modules.cache-server.enable = true;
+  modules.gitea-runner.enable = true;
 
   boot.loader.systemd-boot.configurationLimit = 5;
 
