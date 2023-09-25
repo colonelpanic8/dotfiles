@@ -6,6 +6,7 @@
 
   features.full.enable = true;
   modules.cache-server.enable = true;
+  modules.gitea-runner.enable = true;
 
   networking.hostName = "nixquick";
 
