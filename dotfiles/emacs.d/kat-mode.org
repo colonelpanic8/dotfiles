@@ -145,3 +145,14 @@ This makes evil-mode play nice with org-fc
   (display-line-numbers-mode +1))
 (add-hook 'prog-mode-hook 'imalison:enable-display-line-numbers-mode)
 #+end_src
+
+* Disable autoflake
+#+begin_src emacs-lisp
+(use-package apheleia
+  :config
+  (progn
+    (setf (alist-get 'python-mode apheleia-mode-alist)
+              '(isort black))
+        (setf (alist-get 'python-ts-mode apheleia-mode-alist)
+              (alist-get 'python-mode apheleia-mode-alist))))
+#+end_src
