@@ -2171,8 +2171,6 @@ I don't use auto-complete at all, so I have set up a hook to automatically disab
 ** apheleia
 #+begin_src emacs-lisp
 (use-package apheleia
-  :init
-  (defvar imalison:apheleia-allowed nil)
   :config
   (progn
     (setq-default apheleia-inhibit t)
@@ -2284,7 +2282,6 @@ I don't use auto-complete at all, so I have set up a hook to automatically disab
 *** python
 #+BEGIN_SRC emacs-lisp
 (defvar imalison:use-lsp-python t)
-(defvar imalison:use-black nil)
 
 (use-package python
   :commands python-mode
@@ -2293,12 +2290,22 @@ I don't use auto-complete at all, so I have set up a hook to automatically disab
   (defun imalison:python-mode ()
     (add-hook 'hack-local-variables-hook
               (lambda ()
-                (when imalison:use-black
-                  (setq imalison:apheleia-allowed t))
                 (when imalison:use-lsp-python
                   (lsp-deferred))) nil t))
   :config
   (progn
+    (use-package apheleia
+      :config
+      (progn
+        (setf (alist-get 'isort apheleia-formatters)
+              '("isort" "--stdout" "-"))
+        (setf (alist-get 'autoflake apheleia-formatters)
+              '("autoflake" "--stdout" "--remove-all-unused-imports"
+                "--ignore-init-module-imports" "-"))
+        (setf (alist-get 'python-mode apheleia-mode-alist)
+              '(autoflake isort black))
+        (setf (alist-get 'python-ts-mode apheleia-mode-alist)
+              (alist-get 'python-mode apheleia-mode-alist))))
     (use-package lsp-mode
       :config
       (progn
