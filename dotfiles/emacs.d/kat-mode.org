@@ -149,10 +149,11 @@ This makes evil-mode play nice with org-fc
 * Disable autoflake
 #+begin_src emacs-lisp
 (use-package apheleia
+  :demand t
   :config
   (progn
     (setf (alist-get 'python-mode apheleia-mode-alist)
-              '(isort black))
-        (setf (alist-get 'python-ts-mode apheleia-mode-alist)
-              (alist-get 'python-mode apheleia-mode-alist))))
+          '(isort black))
+    (setf (alist-get 'python-ts-mode apheleia-mode-alist)
+          (alist-get 'python-mode apheleia-mode-alist))))
 #+end_src
