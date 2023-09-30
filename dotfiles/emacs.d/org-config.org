@@ -328,7 +328,7 @@ We're going to use this to write separate parts of our config to different secti
 #+begin_src emacs-lisp :tangle org-config-config.el
 (defvar imalison:org-agenda-filter-to nil)
 
-(defun imalison:filter-agenda-log-to-completions-for (person)
+(defun imalison:org-agenda-filter-log-to-completions-for (person)
   (interactive (list (completing-read "Choose a person" imalison:org-people)))
   (when (string-equal person "nil")
     (setq person nil))
