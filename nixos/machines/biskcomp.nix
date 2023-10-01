@@ -52,9 +52,6 @@ in
         locations."/" = {
           proxyPass = "http://[::1]:8222";
         };
-        # listen = [
-        #   { addr = "0.0.0.0"; port = 8443; }
-        # ];
       };
     };
   };
