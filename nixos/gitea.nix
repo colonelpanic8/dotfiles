@@ -18,6 +18,7 @@ makeEnable config "modules.gitea" false {
     enable = true;
     virtualHosts = {
       "1896Folsom.duckdns.org:3001" = {
+        serverName = "1896Folsom.duckdns.org";
         enableACME = true;
         listen = [{
           addr = "0.0.0.0";
