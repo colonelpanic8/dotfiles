@@ -17,7 +17,7 @@ makeEnable config "modules.gitea" false {
   services.nginx = {
     enable = true;
     virtualHosts = {
-      "1896Folsom.duckdns.org:3001" = {
+      "gitea" = {
         serverName = "1896Folsom.duckdns.org";
         enableACME = true;
         listen = [{
