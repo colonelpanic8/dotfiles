@@ -1,0 +1,11 @@
+#!/usr/bin/env bash
+
+SRC_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+
+output_file=$1; shift
+
+cd "$SRC_DIR"
+nix build
+exe_location="$SRC_DIR/result/bin/imalison-xmonad"
+nix-build
+cp -f "$exe_location" "$output_file"
