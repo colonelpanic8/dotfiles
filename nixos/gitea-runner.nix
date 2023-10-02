@@ -2,7 +2,6 @@
 makeEnable config "modules.gitea-runner" false {
   age.secrets.gitea-runner-token = {
     file = ./secrets/gitea-runner-token.${config.networking.hostName}.age;
-    owner = "gitea";
     group = "docker";
   };
 
