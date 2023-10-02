@@ -4,6 +4,7 @@ makeEnable config "modules.base" true {
     "openssl-1.0.2u"
     "electron-12.2.3"
     "etcher"
+    "electron-19.1.9"
   ];
 
   # Disabling these waits disables the stuck on boot up issue
