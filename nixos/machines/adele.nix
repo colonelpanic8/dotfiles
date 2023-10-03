@@ -28,7 +28,7 @@
 
   services.xserver.libinput = {
     enable = true;
-    touchpad.tapping = false;
+    touchpad.tapping = true;
   };
 
   security.pam.services.login.fprintAuth = true;
