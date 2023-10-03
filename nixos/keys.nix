@@ -28,6 +28,12 @@ rec {
   alexKeys = [
     "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIP2SQkJenAX67Ze99SKOVpKDD1XvAZnxQ8RLP0dL/Ej2 alexm@MALISONSERVER"
   ];
+  mikeKeys = [
+    "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIPnXd6c9xwr1yxBmxauj/FF3gnY8G11ospoM8i11mD2n countablecloud.com"
+  ];
+  loewyKeys = [
+    "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDROb8zcXAgqR3xNpStjt8kSL2Tnic+aWVlQRkmmLveay0RDPatHVKiWtscBoFYvL19xwpi692nZjyPAGQBLMquVx8rexHUFVbs6UVM41Y/QV0UZLSlVM7xNl3nL/dQoxT8OC2a9WJThNm41EjFzzKAuUaWqjm4+uEsC9felBIzndlA5/bIn6EUkMb2X8qmOOIOod1UeVZeK0fWMoDdKsHtQjiQrrP4nLjOmrTQ+BF2yUHwFbW6SCQiXT1Jzq4zymnI717ZraTK0nXzl8amLrGGrh36TrR7pv9hWLeNIMCARvOtABMdQmrT1dI4FxLK1uKM696uzfoaZDUn58G2VGrd loewy gitlab"
+  ];
   agenixKeys = hostKeys ++ kanivanKeys;
-  allKeys = kanivanKeys ++ deanKeys ++ alexKeys ++ hostKeys;
+  allKeys = loewyKeys ++ mikeKeys ++ kanivanKeys ++ deanKeys ++ alexKeys ++ hostKeys;
 }

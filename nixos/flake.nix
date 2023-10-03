@@ -156,7 +156,8 @@
         mapValueToKeys = keys: value: builtins.listToAttrs (map (name: { inherit name value; }) keys);
         realUsers = [ "root" "imalison" "kat" "dean" "alex" ];
         forEachUser = mapValueToKeys realUsers;
-      } // specialArgs // (import ./keys.nix);
+        keys = (import ./keys.nix);
+      } // specialArgs;
     });
   in
   {
