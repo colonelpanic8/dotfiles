@@ -1,4 +1,4 @@
-{ pkgs, makeEnable, config, ... }:
+{ makeEnable, config, ... }:
 let
   devices = {
     adele = { id = "DAU7EFY-PDPH4H6-PIIWMPI-3CSTDZK-SZOINSZ-VCHOHGV-G54TEYD-A27S4QQ"; };
@@ -11,6 +11,7 @@ let
     pixel-7-pro = { id = "RZGPHX3-W5BPHLT-I4VLQVI-ZW4K7CE-X525NEN-XRG6MOH-GPEUXAD-4VG3XAR"; };
     jay-lenovo-wsl = { id = "F3HW6DZ-B7BFACJ-SRAUM7Z-56TXQJ5-5WKZT5A-GKXAHVD-YLXFJ4M-G7OJQQC"; };
     jay-lenovo = { id = "AP5ZUKJ-QBVYWCN-DYHR3UB-JJXRWNI-CAORGYM-HWRKHEH-ZJSTRLN-PP5USQX"; };
+    jimi-hendnix = { id = "55JWW5K-4NY5DKT-TR4MVPO-UNOMQKM-J7TYCRF-CCCZGPM-FVRKHID-JVFLAAV"; };
   };
   allDevices = builtins.attrNames devices;
 in
