@@ -1,4 +1,4 @@
-{ config, lib, pkgs, ... }:
+{ config, lib, pkgs, forEachUser, ... }:
 
 {
   imports = [
@@ -42,6 +42,10 @@
     { device = "/dev/disk/by-uuid/CE95-E46C";
       fsType = "vfat";
     };
+
+  home-manager.users = forEachUser {
+    home.stateVersion = "23.11";
+  };
 
   networking.hostName = "jimi-hendnix";
 
