@@ -161,6 +161,21 @@
     });
   in
   {
+    nixConfig = {
+      substituters = [
+        "https://cache.nixos.org/"
+      ];
+      trusted-public-keys = [
+        "cache.nixos.org-1:6NCHdD59X431o0gWypbMrAURkbJ16ZPMQFGspcDShjY="
+      ];
+      extra-substituters = [
+        "http://1896Folsom.duckdns.org"
+        "http://192.168.1.26:5050"
+      ];
+      extra-trusted-public-keys = [
+        "1896Folsom.duckdns.org:U2FTjvP95qwAJo0oGpvmUChJCgi5zQoG1YisoI08Qoo="
+      ];
+    };
     nixosConfigurations = builtins.mapAttrs (machineName: params:
     let machineParams =
       if builtins.hasAttr machineName customParams
