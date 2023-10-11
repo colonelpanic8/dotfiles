@@ -14,6 +14,7 @@
   modules.syncthing.enable = true;
   modules.fonts.enable = true;
   modules.nixified-ai.enable = false;
+  modules.gitea-runner.enable = true;
 
   hardware.enableRedistributableFirmware = true;
 

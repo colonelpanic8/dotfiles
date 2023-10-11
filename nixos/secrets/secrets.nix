@@ -7,5 +7,6 @@ in
   "gitea-runner-token.biskcomp.age".publicKeys = keys.agenixKeys;
   "gitea-runner-token.ryzen-shine.age".publicKeys = keys.agenixKeys;
   "gitea-runner-token.nixquick.age".publicKeys = keys.agenixKeys;
+  "gitea-runner-token.jimi-hendnix.age".publicKeys = keys.agenixKeys;
   "gitea-runner-token.adele.age".publicKeys = keys.agenixKeys;
 }
