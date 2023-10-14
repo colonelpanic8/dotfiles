@@ -160,7 +160,8 @@ main = do
                           scaledWindowIconPixbufGetter $
                           getWindowIconPixbufFromChrome <|||>
                           unscaledDefaultGetWindowIconPixbuf <|||>
-                          (\size _ -> lift $ loadPixbufByName size "application-default-icon")
+                          (\size _ -> lift $ loadPixbufByName size
+                                      "application-default-icon")
                         , widgetGap = 0
                         , showWorkspaceFn = hideEmpty
                         , updateRateLimitMicroseconds = 100000
@@ -227,7 +228,12 @@ main = do
             )
           , ( "jay-lenovo"
             , baseConfig { endWidgets = laptopEndWidgets }
+            ),
+            ( "nixquick"
+          , baseConfig { endWidgets = [ myTray , myMpris ]
+                       }
             )
+
           ]
       simpleTaffyConfig = selectedConfig
         { centerWidgets = [ myClock ]
