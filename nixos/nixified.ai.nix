@@ -11,7 +11,6 @@ specialArgs.makeEnable config "modules.nixified-ai" false {
   services.invokeai = {
     enable = false;
     host = "0.0.0.0";
-    nsfwChecker = false;
     package = inputs.nixified-ai.packages.${config.nixpkgs.system}.invokeai-nvidia;
   };
 }
