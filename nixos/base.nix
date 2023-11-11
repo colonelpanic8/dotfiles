@@ -5,7 +5,6 @@ makeEnable config "modules.base" true {
     "electron-12.2.3"
     "etcher"
     "electron-19.1.9"
-    "electron-24.8.6"
   ];
 
   # Disabling these waits disables the stuck on boot up issue
