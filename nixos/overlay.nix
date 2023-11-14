@@ -48,12 +48,13 @@ final: prev: {
     withTreeSitter = true;
   };
 
-  gitea = prev.gitea.overrideAttrs(_: {
-    src = prev.fetchFromGitHub {
-      repo = "gitea";
-      owner = "colonelpanic8";
-      rev = "40e15b12bf104f8018f56e5b826d8a2f8e2587ea";
-      sha256 = "sha256-VXP8Ga681rcKn548rOZq9I19abY0GzXRpdiYGpwyMJ4=";
-    };
-  });
+  # gitea = prev.gitea.overrideAttrs(_: {
+  #   src = prev.fetchFromGitHub {
+  #     repo = "gitea";
+  #     owner = "colonelpanic8";
+  #     rev = "40e15b12bf104f8018f56e5b826d8a2f8e2587ea";
+  #     sha256 = "sha256-VXP8Ga681rcKn548rOZq9I19abY0GzXRpdiYGpwyMJ4=";
+  #   };
+  #   go = final.buildPackages.go_1_21;
+  # });
 }
