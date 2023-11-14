@@ -8,6 +8,7 @@ makeEnable config "modules.gitea" false {
       DOMAIN = "1896Folsom.duckdns.org";
       SSH_PORT = 1123;
       HTTP_PORT = 3001;
+      ROOT_URL = "https://1896Folsom.duckdns.org:3000";
     };
     settings.actions = {
       ENABLED = true;
