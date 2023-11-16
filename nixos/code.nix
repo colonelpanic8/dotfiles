@@ -29,6 +29,9 @@ makeEnable config "modules.code" true {
     typescript
     nodePackages.typescript-language-server
 
+    # golang
+    go
+
     # Rust
     rustup
 

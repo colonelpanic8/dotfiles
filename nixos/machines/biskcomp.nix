@@ -46,22 +46,11 @@ in
     recommendedGzipSettings = true;
     recommendedTlsSettings = true;
     virtualHosts = {
-      "1896Folsom.duckdns.org" = {
-        # enableACME = true;
-        # forceSSL = true;
-        locations."/" = {
-          proxyPass = "http://[::1]:8222";
-        };
-      };
-      "dev.railbird.ai" = {
+      "vaultwarden.railbird.ai" = {
         enableACME = true;
         forceSSL = true;
-        listen = [{
-          addr = "0.0.0.0";
-          ssl = true;
-        }];
         locations."/" = {
-          proxyPass = "http://localhost:3001";
+          proxyPass = "http://[::1]:8222";
         };
       };
     };
