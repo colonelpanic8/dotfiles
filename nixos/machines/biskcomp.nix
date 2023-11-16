@@ -25,7 +25,7 @@ in
     path = "/nix-cache";
   };
   modules.gitea.enable = true;
-  modules.gitea-runner.enable = true;
+  modules.gitea-runner.enable = false;
 
   services.vaultwarden = {
     enable = true;
