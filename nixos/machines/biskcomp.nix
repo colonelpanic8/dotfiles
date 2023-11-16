@@ -53,13 +53,6 @@ in
           proxyPass = "http://[::1]:8222";
         };
       };
-      "vault.railbird.ai" = {
-        enableACME = true;
-        forceSSL = true;
-        locations."/" = {
-          proxyPass = "http://[::1]:8222";
-        };
-      };
       "dev.railbird.ai" = {
         enableACME = true;
         forceSSL = true;
