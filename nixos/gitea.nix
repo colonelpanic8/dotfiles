@@ -20,8 +20,8 @@ makeEnable config "modules.gitea" false {
     virtualHosts = {
       "gitea" = {
         serverName = "1896Folsom.duckdns.org";
-        enableACME = true;
-        forceSSL = true;
+        # enableACME = true;
+        # forceSSL = true;
         listen = [{
           addr = "0.0.0.0";
           port = 3000;
