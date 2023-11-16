@@ -17,15 +17,14 @@ makeEnable config "modules.gitea" false {
 
   services.nginx = {
     enable = true;
+    recommendedProxySettings = true;
+    recommendedGzipSettings = true;
+    recommendedTlsSettings = true;
     virtualHosts = {
       "dev.railbird.ai" = {
         serverName = "dev.railbird.ai";
         enableACME = true;
         forceSSL = true;
-        listen = [{
-          addr = "0.0.0.0";
-          ssl = true;
-        }];
         locations."/" = {
           proxyPass = "http://localhost:3001";
         };
