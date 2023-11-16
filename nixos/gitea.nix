@@ -18,7 +18,7 @@ makeEnable config "modules.gitea" false {
   services.nginx = {
     enable = true;
     virtualHosts = {
-      "gitea" = {
+      "dev.railbird.ai" = {
         serverName = "dev.railbird.ai";
         enableACME = true;
         forceSSL = true;
