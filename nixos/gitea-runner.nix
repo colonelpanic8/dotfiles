@@ -33,7 +33,7 @@ makeEnable config "modules.gitea-runner" false {
       ];
       enable = true;
       name = config.networking.hostName;
-      url = "https://1896Folsom.duckdns.org:3000";
+      url = "https://dev.railbird.ai";
       tokenFile = config.age.secrets.gitea-runner-token.path;
       labels = [
         "nixos-${pkgs.system}:host"

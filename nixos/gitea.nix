@@ -5,10 +5,10 @@ makeEnable config "modules.gitea" false {
     enable = true;
     lfs.enable = true;
     settings.server = {
-      DOMAIN = "1896Folsom.duckdns.org";
+      DOMAIN = "dev.railbird.ai";
       SSH_PORT = 1123;
       HTTP_PORT = 3001;
-      ROOT_URL = "https://1896Folsom.duckdns.org:3000";
+      ROOT_URL = "https://dev.railbird.ai";
     };
     settings.actions = {
       ENABLED = true;
