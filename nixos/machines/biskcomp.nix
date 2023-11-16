@@ -47,7 +47,7 @@ in
     recommendedTlsSettings = true;
     virtualHosts = {
       "1896Folsom.duckdns.org" = {
-        enableACME = true;
+        # enableACME = true;
         forceSSL = true;
         locations."/" = {
           proxyPass = "http://[::1]:8222";
