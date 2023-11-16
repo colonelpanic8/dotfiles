@@ -40,21 +40,21 @@ in
     defaults.email = "IvanMalison@gmail.com";
   };
 
-  services.nginx = {
-    enable = true;
-    recommendedProxySettings = true;
-    recommendedGzipSettings = true;
-    recommendedTlsSettings = true;
-    virtualHosts = {
-      "vaultwarden.railbird.ai" = {
-        enableACME = true;
-        forceSSL = true;
-        locations."/" = {
-          proxyPass = "http://[::1]:8222";
-        };
-      };
-    };
-  };
+  # services.nginx = {
+  #   enable = true;
+  #   recommendedProxySettings = true;
+  #   recommendedGzipSettings = true;
+  #   recommendedTlsSettings = true;
+  #   virtualHosts = {
+  #     "vaultwarden.railbird.ai" = {
+  #       enableACME = true;
+  #       forceSSL = true;
+  #       locations."/" = {
+  #         proxyPass = "http://[::1]:8222";
+  #       };
+  #     };
+  #   };
+  # };
 
   services.plex = {
     enable = true;
