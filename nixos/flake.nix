@@ -22,7 +22,7 @@
     };
 
     xmonad = {
-      url = "path:../dotfiles/config/xmonad/xmonad";
+      url = "github:xmonad/xmonad";
       inputs = {
         nixpkgs.follows = "nixpkgs";
         flake-utils.follows = "flake-utils";
@@ -31,7 +31,7 @@
     };
 
     taffybar = {
-      url = "path:../dotfiles/config/taffybar/taffybar";
+      url = "github:taffybar/taffybar";
       inputs = {
         nixpkgs.follows = "nixpkgs";
         flake-utils.follows = "flake-utils";
