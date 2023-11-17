@@ -46,6 +46,12 @@ in
       shell = pkgs.zsh;
       openssh.authorizedKeys.keys = kanivanKeys ++ deanKeys;
     };
+    will = userDefaults // {
+      extraGroups = extraGroupsWithWheel;
+      name = "will";
+      shell = pkgs.zsh;
+      openssh.authorizedKeys.keys = kanivanKeys ++ willKeys;
+    };
     alex = userDefaults // {
       extraGroups = extraGroupsWithWheel;
       name = "alex";
