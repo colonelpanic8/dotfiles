@@ -154,7 +154,7 @@
         inherit inputs machineNames;
         makeEnable = (import ./make-enable.nix) nixpkgs.lib;
         mapValueToKeys = keys: value: builtins.listToAttrs (map (name: { inherit name value; }) keys);
-        realUsers = [ "root" "imalison" "kat" "dean" "alex" ];
+        realUsers = [ "root" "imalison" "kat" "dean" "alex", "will" ];
         forEachUser = mapValueToKeys realUsers;
         keys = (import ./keys.nix);
       } // specialArgs;
