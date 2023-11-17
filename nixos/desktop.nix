@@ -1,4 +1,4 @@
-{ config, pkgs, options, inputs, makeEnable, forEachUser, ... }:
+{ config, pkgs, makeEnable, forEachUser, ... }:
 makeEnable config "modules.desktop" true {
   imports = [
     ./fonts.nix
@@ -8,13 +8,7 @@ makeEnable config "modules.desktop" true {
     exportConfiguration = true;
     enable = true;
     layout = "us";
-    desktopManager = {
-      plasma5.enable = true;
-    };
     displayManager = {
-      sddm = {
-        enable = true;
-      };
       sessionCommands = ''
         systemctl --user import-environment GDK_PIXBUF_MODULE_FILE DBUS_SESSION_BUS_ADDRESS PATH
       '';
