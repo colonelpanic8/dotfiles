@@ -22,7 +22,7 @@
     };
 
     xmonad = {
-      url = "path:../dotfiles/config/xmonad/xmonad";
+      url = "github:xmonad/xmonad";
       inputs = {
         nixpkgs.follows = "nixpkgs";
         flake-utils.follows = "flake-utils";
@@ -31,7 +31,7 @@
     };
 
     taffybar = {
-      url = "path:../dotfiles/config/taffybar/taffybar";
+      url = "github:taffybar/taffybar";
       inputs = {
         nixpkgs.follows = "nixpkgs";
         flake-utils.follows = "flake-utils";
@@ -154,7 +154,7 @@
         inherit inputs machineNames;
         makeEnable = (import ./make-enable.nix) nixpkgs.lib;
         mapValueToKeys = keys: value: builtins.listToAttrs (map (name: { inherit name value; }) keys);
-        realUsers = [ "root" "imalison" "kat" "dean" "alex" ];
+        realUsers = [ "root" "imalison" "kat" "dean" "alex" "will" ];
         forEachUser = mapValueToKeys realUsers;
         keys = (import ./keys.nix);
       } // specialArgs;

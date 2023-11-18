@@ -55,7 +55,6 @@ makeEnable config "modules.desktop" true {
     clipit
     dfeet
     dolphin
-    element-desktop
 
     feh
     firefox
@@ -98,35 +97,12 @@ makeEnable config "modules.desktop" true {
     graphviz
     nodePackages.mermaid-cli
   ] ++ (if pkgs.system == "x86_64-linux" then with pkgs; [
-    bitwarden
-    discord
-    etcher
     google-chrome
-    keybase-gui
     pommed_light
     slack
     spicetify-cli
     spotify
     tor-browser-bundle-bin
     vscode
-    zoom-us
   ] else []);
-
-  home-manager.users = forEachUser (if pkgs.system == "x86_64-linux" then {
-    systemd.user.services.bitwarden = {
-      Unit = {
-        Description = "Bitwarden";
-        After = [ "graphical-session-pre.target" "tray.target" ];
-        PartOf = [ "graphical-session.target" ];
-      };
-
-      Install = { WantedBy = [ "graphical-session.target" ]; };
-
-      Service = {
-        ExecStart = "${pkgs.bitwarden}/bin/bitwarden";
-        Restart = "always";
-        RestartSec = 3;
-      };
-    };
-  } else {});
 }
