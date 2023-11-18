@@ -62,6 +62,7 @@
   modules.code.enable = true;
   modules.syncthing.enable = true;
   modules.fonts.enable = true;
+  modules.plasma.enable = false;
 
   fileSystems."/" =
     { device = "/dev/disk/by-uuid/a317d456-6f84-41ee-a149-8e466e414aae";
@@ -77,13 +78,15 @@
     [ { device = "/dev/disk/by-uuid/129345f3-e1e1-4d45-9db9-643160c6d564"; }
     ];
 
+  environment.systemPackages = with pkgs; [
+    android-studio
+  ];
 
   networking.useDHCP = lib.mkDefault true;
   nixpkgs.hostPlatform = lib.mkDefault "x86_64-linux";
   powerManagement.cpuFreqGovernor = lib.mkDefault "powersave";
   hardware.cpu.amd.updateMicrocode = lib.mkDefault config.hardware.enableRedistributableFirmware;
-
-
+  
   home-manager.users = forEachUser {
      home.stateVersion = "23.11";
   };
