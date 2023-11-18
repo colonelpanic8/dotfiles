@@ -15,6 +15,7 @@
     ./gitea-runner.nix
     ./gitea.nix
     ./gnome.nix
+    ./electron.nix
     ./imalison.nix
     ./internet-computer.nix
     ./kat.nix
@@ -42,6 +43,7 @@
     modules.gnome.enable = false;
     modules.xmonad.enable = true;
     modules.extra.enable = true;
+    modules.electron.enable = true;
     modules.code.enable = true;
     modules.games.enable = true;
     modules.syncthing.enable = true;
