@@ -700,11 +700,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1700118404,
-        "narHash": "sha256-XkqpZpVoy1FV7UbiLkP+fQxxv/6KnwLYkFEHgE8z2IQ=",
+        "lastModified": 1700261679,
+        "narHash": "sha256-jpQq/rJnjhkUHXz/KOQxk6fSfF7H0vV9PjFvfgTFHG8=",
         "owner": "nix-community",
         "repo": "home-manager",
-        "rev": "c1a033122df8a3c74fda3780c83a104a7d60873c",
+        "rev": "3feeb7715584fd45ed1389cec8fb15f6930e8dab",
         "type": "github"
       },
       "original": {
@@ -730,7 +730,7 @@
       },
       "locked": {
         "lastModified": 1,
-        "narHash": "sha256-9mlpz8H063Vu4YJ7Ioj3BRDeeGpX3CBz7xSw3HmAnKc=",
+        "narHash": "sha256-rua03PcdrDhQoRjqAVHqUHfTUazlK0L1Pw8iIMM+YDA=",
         "path": "../dotfiles/config/taffybar",
         "type": "path"
       },
@@ -975,11 +975,11 @@
     },
     "nixpkgs-regression_2": {
       "locked": {
-        "lastModified": 1700260241,
-        "narHash": "sha256-hd1b6Mi5ttIb8j5yd0r9EP7D7ySp1alLcpq2LPnzrcE=",
+        "lastModified": 1700284104,
+        "narHash": "sha256-oNsJfAyAuBCTkusesiK0LWuO59F6vEGcP4wwa7kc1ZA=",
         "owner": "NixOS",
         "repo": "nixpkgs",
-        "rev": "c3094f371b98163abeba48e1acc5f32155ba1f61",
+        "rev": "005617587ee2b7c003388b4539b9120ebcc90e44",
         "type": "github"
       },
       "original": {
