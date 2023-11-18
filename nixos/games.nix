@@ -2,7 +2,7 @@
 makeEnable config "modules.games" false {
   environment.systemPackages = with pkgs; [
     steam
-    heroic
+    # heroic
   ];
   boot.extraModulePackages = with pkgs; [
     xboxdrv
