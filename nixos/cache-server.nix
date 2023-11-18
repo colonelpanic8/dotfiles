@@ -1,4 +1,4 @@
-{ config, makeEnable, lib, ... }:
+{ config, lib, ... }:
 with lib;
 let cfg = config.modules.cache-server;
 in
@@ -8,7 +8,7 @@ in
       enable = mkEnableOption "nix cache server";
       port = mkOption {
         type = types.int;
-        default = 8080;
+        default = 5050;
       };
       host-string = mkOption {
         type = types.string;
@@ -27,18 +27,7 @@ in
     services.nix-serve = {
       enable = true;
       secretKeyFile = config.age.secrets."cache-priv-key.pem".path;
-      port = 5050;
-    };
-
-    services.nginx = {
-      enable = true;
-      recommendedProxySettings = true;
-      virtualHosts = {
-        "${cfg.host-string}" = {
-          locations."${cfg.path}".proxyPass = "http://${config.services.nix-serve.bindAddress}:${toString config.services.nix-serve.port}";
-          listen = [ { addr = "0.0.0.0"; port = cfg.port; } ];
-        };
-      };
+      port = cfg.port;
     };
   };
 }
