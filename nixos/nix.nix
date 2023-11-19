@@ -33,6 +33,12 @@
         "nixpkgs=${inputs.nixpkgs.outPath}"
       ];
       settings.nix-path = nixPath;
+      binaryCaches = [
+        "https://cache.railbird.ai"
+      ];
+      binaryCachePublicKeys = [
+        "cache.railbird.ai:KhnvcouxtIU2zxUcjJsm4bUK3o1S3p8xMf9qfZGF7/A="
+      ];
     };
 
     nixpkgs.overlays = [
