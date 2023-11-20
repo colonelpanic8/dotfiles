@@ -57,7 +57,7 @@
   features.full.enable = false;
   modules.base.enable = true;
   modules.desktop.enable = true;
-  modules.xmonad.enable = true;
+  modules.xmonad.enable = false;
   modules.gnome.enable = true;
   modules.code.enable = true;
   modules.syncthing.enable = true;

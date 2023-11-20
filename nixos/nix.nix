@@ -34,6 +34,7 @@
       ];
       settings.nix-path = nixPath;
       binaryCaches = [
+        "https://cache.nixos.org"
         "https://cache.railbird.ai"
       ];
       binaryCachePublicKeys = [
