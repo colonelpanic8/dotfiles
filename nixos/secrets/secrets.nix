@@ -9,4 +9,5 @@ in
   "gitea-runner-token.nixquick.age".publicKeys = keys.agenixKeys;
   "gitea-runner-token.jimi-hendnix.age".publicKeys = keys.agenixKeys;
   "gitea-runner-token.adele.age".publicKeys = keys.agenixKeys;
+  "gitea-runner-token.railbird-sf.age".publicKeys = keys.agenixKeys ++ keys.railbird-sf;
 }

@@ -42,4 +42,7 @@ rec {
   ];
   agenixKeys = hostKeys ++ kanivanKeys;
   allKeys = loewyKeys ++ mikeKeys ++ kanivanKeys ++ deanKeys ++ alexKeys ++ hostKeys;
+  railbird-sf = [
+    "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIDozY/3Cd9npaYPCgIn/E7MjW9c7Zb5/wTO5Qi7yRU45 root@railbird-sf"
+  ];
 }

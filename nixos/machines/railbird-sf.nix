@@ -57,12 +57,13 @@
   features.full.enable = false;
   modules.base.enable = true;
   modules.desktop.enable = true;
-  modules.xmonad.enable = false;
+  modules.xmonad.enable = true;
   modules.gnome.enable = true;
   modules.code.enable = true;
   modules.syncthing.enable = true;
   modules.fonts.enable = true;
   modules.plasma.enable = false;
+  modules.gitea-runner.enable = true;
 
   fileSystems."/" =
     { device = "/dev/disk/by-uuid/a317d456-6f84-41ee-a149-8e466e414aae";
