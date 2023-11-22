@@ -27,18 +27,18 @@
       settings = {
         keep-outputs = true;
         keep-derivations = true;
+        substituters = [
+          "https://cache.nixos.org"
+          "https://cache.railbird.ai"
+        ];
+        trusted-public-keys = [
+          "cache.railbird.ai:KhnvcouxtIU2zxUcjJsm4bUK3o1S3p8xMf9qfZGF7/A="
+        ];
+        nix-path = nixPath;
       };
       channel.enable = false;
       nixPath = [
         "nixpkgs=${inputs.nixpkgs.outPath}"
-      ];
-      settings.nix-path = nixPath;
-      binaryCaches = [
-        "https://cache.nixos.org"
-        "https://cache.railbird.ai"
-      ];
-      binaryCachePublicKeys = [
-        "cache.railbird.ai:KhnvcouxtIU2zxUcjJsm4bUK3o1S3p8xMf9qfZGF7/A="
       ];
     };
 
