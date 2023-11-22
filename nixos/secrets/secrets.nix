@@ -10,4 +10,5 @@ in
   "gitea-runner-token.jimi-hendnix.age".publicKeys = keys.agenixKeys;
   "gitea-runner-token.adele.age".publicKeys = keys.agenixKeys;
   "gitea-runner-token.railbird-sf.age".publicKeys = keys.agenixKeys ++ keys.railbird-sf;
+  "nextcloud-admin.age".publicKeys = keys.agenixKeys;
 }
