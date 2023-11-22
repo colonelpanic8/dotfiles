@@ -40,6 +40,15 @@ in
     defaults.email = "IvanMalison@gmail.com";
   };
 
+  services.nextcloud = {
+    enable = true;
+    hostName = "nextcloud.railbird.ai";
+    config = {
+      dbtype = "pgsql";
+      database.createLocally = true;
+    };
+  };
+
   services.nginx = {
     enable = true;
     recommendedProxySettings = true;
