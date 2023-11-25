@@ -3459,7 +3459,7 @@ crux-reopen-as-root-mode makes it so that any file owned by root will automatica
   :config
   (progn
     (add-to-list 'gptel-directives '(finish-code . "You are a large language model and a careful programmer. Provide code that completes what is provided and only code as output without any additional text, prompt or note."))
-    ;; (setq gptel-model "gpt-4")
+    (setq gptel-model "gpt-4")
     ))
 #+end_src
 * Cooperation
