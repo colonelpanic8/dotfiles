@@ -83,6 +83,7 @@
         imalison:multiple-cursors-hydra/mc/mark-previous-like-this
         imalison:multiple-cursors-hydra/nil
         isearch-delete-char
+        lsp-ui-doc--handle-mouse-movement
         make-frame
         overwrite-mode
         smex
