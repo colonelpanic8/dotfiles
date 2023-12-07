@@ -69,6 +69,13 @@ in
           proxyPass = "http://192.168.1.26:3090";
         };
       };
+      "syncthing.railbird.ai" = {
+        enableACME = true;
+        forceSSL = true;
+        locations."/" = {
+          proxyPass = "http://[::1]:8384";
+        };
+      };
     };
   };
 
