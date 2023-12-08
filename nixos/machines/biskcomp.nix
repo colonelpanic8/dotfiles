@@ -40,14 +40,14 @@ in
     defaults.email = "IvanMalison@gmail.com";
   };
 
-  services.nextcloud = {
-    enable = true;
-    hostName = "nextcloud.railbird.ai";
-    config = {
-      dbtype = "pgsql";
-      database.createLocally = true;
-    };
-  };
+  # services.nextcloud = {
+  #   enable = true;
+  #   hostName = "nextcloud.railbird.ai";
+  #   config = {
+  #     dbtype = "pgsql";
+  #     database.createLocally = true;
+  #   };
+  # };
 
   services.nginx = {
     enable = true;
@@ -72,8 +72,11 @@ in
       "syncthing.railbird.ai" = {
         enableACME = true;
         forceSSL = true;
+        root = "/var/lib/syncthing/sync";
         locations."/" = {
-          proxyPass = "http://[::1]:8384";
+          extraConfig = ''
+            autoindex on;
+          '';
         };
       };
     };
