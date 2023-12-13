@@ -144,7 +144,7 @@
     mkConfig =
       args@
       { system ? "x86_64-linux"
-      , baseModules ? [inputs.vscode-server.nixosModules.default]
+      , baseModules ? []
       , modules ? []
       , specialArgs ? {}
       , ...
@@ -156,7 +156,7 @@
         inherit inputs machineNames;
         makeEnable = (import ./make-enable.nix) nixpkgs.lib;
         mapValueToKeys = keys: value: builtins.listToAttrs (map (name: { inherit name value; }) keys);
-        realUsers = [ "root" "imalison" "kat" "dean" "alex" "will" ];
+        realUsers = [ "root" "imalison" "kat" "dean" "alex" "will" "mike" ];
         forEachUser = mapValueToKeys realUsers;
         keys = (import ./keys.nix);
       } // specialArgs;
