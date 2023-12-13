@@ -29,6 +29,7 @@ in
       createHome = true;
     };
     nginx = {
+      group = ["nginx"];
       extraGroups = ["syncthing"];
     };
     imalison = userDefaults // {
