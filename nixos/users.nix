@@ -28,11 +28,6 @@ in
       home = "/var/lib/syncthing";
       createHome = true;
     };
-    nginx = {
-      group = "nginx";
-      isSystemUser = true;
-      extraGroups = ["syncthing"];
-    };
     imalison = userDefaults // {
       extraGroups = extraGroupsWithWheel;
       name = "imalison";

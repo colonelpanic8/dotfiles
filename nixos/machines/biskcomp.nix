@@ -7,6 +7,12 @@ in
     ../raspberry-pi.nix
   ];
 
+  users.users.nginx = {
+    group = "nginx";
+    isSystemUser = true;
+    extraGroups = ["syncthing"];
+  };
+
   modules.raspberry-pi.enable = true;
 
   modules.base.enable = true;
