@@ -103,6 +103,8 @@
       };
     };
 
+    vscode-server.url = "github:nix-community/nixos-vscode-server";
+
     nixpkgs-regression = { url = "github:NixOS/nixpkgs"; };
 
     nixified-ai = { url = "github:nixified-ai/flake"; };
@@ -143,7 +145,7 @@
       args@
       { system ? "x86_64-linux"
       , baseModules ? []
-      , modules ? []
+      , modules ? [inputs.vscode-server.nixosModules.default]
       , specialArgs ? {}
       , ...
       }:
