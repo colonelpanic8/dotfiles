@@ -30,6 +30,7 @@ in
     };
     nginx = {
       group = "nginx";
+      isSystemUser = true;
       extraGroups = ["syncthing"];
     };
     imalison = userDefaults // {
