@@ -144,8 +144,8 @@
     mkConfig =
       args@
       { system ? "x86_64-linux"
-      , baseModules ? []
-      , modules ? [inputs.vscode-server.nixosModules.default]
+      , baseModules ? [inputs.vscode-server.nixosModules.default]
+      , modules ? []
       , specialArgs ? {}
       , ...
       }:
