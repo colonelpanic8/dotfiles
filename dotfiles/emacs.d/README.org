@@ -2622,6 +2622,13 @@ eval-last-sexp.
      (shell-command-to-string "nix eval -I \"$NIX_PATH\" --expr '<nixpkgs>' --impure"))))
   :config
   (progn
+    (use-package apheleia
+      :demand t
+      :config
+      (progn
+        (add-to-list 'apheleia-formatters '(alejandra . ("alejandra")))
+        (setf (alist-get 'nix-mode apheleia-mode-alist)
+              '(alejandra))))
     (setq nix-indent-function 'nix-indent-line)))
 
 (use-package lsp-nix

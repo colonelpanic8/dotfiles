@@ -57,6 +57,7 @@ makeEnable config "modules.code" true {
     # nix
     nixd
     nil
+    alejandra
   ] ++ (if pkgs.system == "x86_64-linux" then with pkgs; [
     # purescript
     purescript
