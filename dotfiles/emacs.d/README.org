@@ -2971,6 +2971,11 @@ The following is taken from [[https://github.com/syl20bnr/spacemacs/blob/a650877
 (use-package toml-mode
   :mode (("\\.toml\\'" . toml-mode)))
 #+end_src
+*** terraform
+#+begin_src emacs-lisp
+(use-package terraform-mode
+  :mode (("\\.tf\\'" . terraform-mode)))
+#+end_src
 ** Document
 *** org
 My org-mode configuration now lives in its own file org-config.org.
