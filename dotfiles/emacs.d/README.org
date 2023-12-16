@@ -2885,6 +2885,10 @@ The following is taken from [[https://github.com/syl20bnr/spacemacs/blob/a650877
   :defer t
   :mode ("\\.kt\\'"))
 #+END_SRC
+*** groovy
+#+begin_src emacs-lisp
+(use-package groovy-mode)
+#+end_src
 *** vala
 #+BEGIN_SRC emacs-lisp
 (use-package vala-mode
