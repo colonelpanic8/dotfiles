@@ -59,10 +59,6 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
-    nix = {
-      url = "github:IvanMalison/nix/my2.15.1";
-    };
-
     flake-utils = {
       url = "github:numtide/flake-utils";
       inputs.systems.follows = "systems";

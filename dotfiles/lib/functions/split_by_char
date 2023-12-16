@@ -10,5 +10,3 @@ function split_by_char {
 }
 
 split_by_char "$@"
-
-
