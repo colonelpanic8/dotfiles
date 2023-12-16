@@ -3150,7 +3150,21 @@ My org-mode configuration now lives in its own file org-config.org.
   :defer t
   :config
   (progn
-    (setq git-link-use-commit t)))
+    (setq git-link-use-commit t)
+    (defun git-link-commit-gitea (hostname dirname commit)
+      (format "https://%s/%s/commit/%s"
+	          hostname
+	          dirname
+	          commit))
+    (defun git-link-gitea (hostname dirname filename branch commit start end)
+      (format "https://%s/%s/src/commit/%s/%s#L%s"
+              hostname
+              dirname
+              commit
+              filename
+              start))
+    (add-to-list 'git-link-remote-alist '("dev.railbird.ai" git-link-gitea))
+    (add-to-list 'git-link-commit-remote-alist '("dev.railbird.ai" git-link-gitea))))
 #+END_SRC
 ** magit-gitflow
 #+BEGIN_SRC emacs-lisp
