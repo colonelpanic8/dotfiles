@@ -8,6 +8,7 @@
   features.full.enable = true;
 
   environment.systemPackages = with pkgs; [
+    android-studio
     linuxPackages_latest.perf
     zenmonitor
   ];
