@@ -73,6 +73,11 @@ in
       name = "andy";
       openssh.authorizedKeys.keys = kanivanKeys ++ andyKeys;
     };
+    micah = userDefaults // {
+      inherit extraGroups;
+      name = "micah";
+      openssh.authorizedKeys.keys = kanivanKeys ++ micahKeys;
+    };
   };
 
   nix.settings.trusted-users = realUsers;
