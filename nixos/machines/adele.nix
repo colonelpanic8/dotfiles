@@ -3,7 +3,7 @@
 {
   imports = [
     ../configuration.nix
-    inputs.nixos-hardware.nixosModules.dell-xps-17-9700-intel
+    inputs.nixos-hardware.nixosModules.dell-xps-17-9700-nvidia
   ];
 
   modules.base.enable = true;
@@ -15,7 +15,7 @@
   modules.syncthing.enable = true;
   modules.fonts.enable = true;
   modules.nixified-ai.enable = false;
-  modules.gitea-runner.enable = true;
+  modules.gitea-runner.enable = false;
 
   hardware.enableRedistributableFirmware = true;
 
@@ -23,6 +23,9 @@
   boot.initrd.availableKernelModules = [ "xhci_pci" "nvme" "usb_storage" "sd_mod" "rtsx_pci_sdmmc" ];
   boot.initrd.kernelModules = [ ];
   boot.kernelModules = [ "kvm-intel" ];
+  services.xserver = {
+    videoDrivers = [ "nvidia" ];
+  };
   boot.loader.systemd-boot.enable = true;
   boot.loader.efi.canTouchEfiVariables = true;
 
