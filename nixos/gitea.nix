@@ -4,6 +4,10 @@ makeEnable config "modules.gitea" false {
   services.gitea = {
     enable = true;
     lfs.enable = true;
+    dump = {
+      enable = true;
+      interval = "23:05";
+    };
     settings.server = {
       DOMAIN = "dev.railbird.ai";
       SSH_PORT = 1123;
