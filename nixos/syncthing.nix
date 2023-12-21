@@ -13,6 +13,7 @@ let
     jay-lenovo = { id = "AP5ZUKJ-QBVYWCN-DYHR3UB-JJXRWNI-CAORGYM-HWRKHEH-ZJSTRLN-PP5USQX"; };
     jimi-hendnix = { id = "55JWW5K-4NY5DKT-TR4MVPO-UNOMQKM-J7TYCRF-CCCZGPM-FVRKHID-JVFLAAV"; };
     railbird-sf = { id = "5F4FPJM-KRBFVIH-CTTB2NC-7CPVGAM-CONMH2Q-SQPRODO-CWKRFPF-HVN4AAD"; };
+    dean = { id = "RIVW4FP-NZNGGGD-4ET26IC-R6CZHEU-4EBIDHX-U756VWB-W7EM3LE-3YQ6YA3"; };
   };
   allDevices = builtins.attrNames devices;
 in
@@ -22,6 +23,7 @@ makeEnable config "modules.syncthing" true {
       chown -R syncthing:syncthing /var/lib/syncthing
       chmod -R 2770 /var/lib/syncthing
       mkdir -p /var/lib/syncthing/sync
+      mkdir -p /var/lib/syncthing/railbird
     '';
   };
   services.syncthing = {
@@ -31,6 +33,11 @@ makeEnable config "modules.syncthing" true {
       folders = {
         sync = {
           path = "~/sync";
+          devices = allDevices;
+          copyOwnershipFromParent = true;
+        };
+        railbird = {
+          path = "~/railbird";
           devices = allDevices;
           copyOwnershipFromParent = true;
         };
