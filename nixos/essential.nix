@@ -51,6 +51,7 @@ in
     magic-wormhole-rs
     ncdu
     neofetch
+    neovim
     nix-index
     pass
     patchelf
