@@ -28,6 +28,7 @@
     ./ssh.nix
     ./syncthing.nix
     ./users.nix
+    ./user-specific.nix
     ./vscode.nix
     ./wsl.nix
     ./xmonad.nix

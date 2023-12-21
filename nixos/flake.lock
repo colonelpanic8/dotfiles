@@ -693,7 +693,7 @@
       },
       "locked": {
         "lastModified": 1,
-        "narHash": "sha256-rua03PcdrDhQoRjqAVHqUHfTUazlK0L1Pw8iIMM+YDA=",
+        "narHash": "sha256-9mlpz8H063Vu4YJ7Ioj3BRDeeGpX3CBz7xSw3HmAnKc=",
         "path": "../dotfiles/config/taffybar",
         "type": "path"
       },
