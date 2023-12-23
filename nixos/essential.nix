@@ -30,6 +30,7 @@ in
     efibootmgr
     emacs
     fd
+    ffmpeg
     file
     gawk
     gcc
