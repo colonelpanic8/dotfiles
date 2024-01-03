@@ -13,6 +13,7 @@
     port = 3090;
   };
   modules.gitea-runner.enable = true;
+  modules.postgres.enable = true;
 
   boot.loader.systemd-boot.configurationLimit = 5;
 

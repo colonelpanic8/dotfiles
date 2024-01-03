@@ -24,6 +24,7 @@
     ./nixified.ai.nix
     ./options.nix
     ./plasma.nix
+    ./postgres.nix
     ./secrets.nix
     ./ssh.nix
     ./syncthing.nix
