@@ -1,4 +1,4 @@
-{ config, pkgs, options, inputs, makeEnable, ... }:
+{ config, pkgs, forEachUser, makeEnable, realUsers, ... }:
 makeEnable config "modules.base" true {
   nixpkgs.config.permittedInsecurePackages = [
     "openssl-1.0.2u"
@@ -73,4 +73,7 @@ makeEnable config "modules.base" true {
   services.dbus.packages = [ pkgs.gcr ];
 
   programs.dconf.enable = true;
+
+  home-manager.users = forEachUser (import ./home-manager.nix);
+  nix.settings.trusted-users = realUsers;
 }

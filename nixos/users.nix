@@ -1,4 +1,4 @@
-{ pkgs, realUsers, forEachUser, keys, ... }:
+{ pkgs, keys, ... }:
 let
   extraGroups = [
     "audio"
@@ -31,31 +31,26 @@ in
     imalison = userDefaults // {
       extraGroups = extraGroupsWithWheel;
       name = "imalison";
-      shell = pkgs.zsh;
       openssh.authorizedKeys.keys = kanivanKeys;
     };
     kat = userDefaults // {
       extraGroups = extraGroupsWithWheel;
       name = "kat";
-      shell = pkgs.zsh;
       openssh.authorizedKeys.keys = kanivanKeys;
     };
     dean = userDefaults // {
       extraGroups = extraGroupsWithWheel;
       name = "dean";
-      shell = pkgs.zsh;
       openssh.authorizedKeys.keys = kanivanKeys ++ deanKeys;
     };
     will = userDefaults // {
       extraGroups = extraGroupsWithWheel;
       name = "will";
-      shell = pkgs.zsh;
       openssh.authorizedKeys.keys = kanivanKeys ++ willKeys;
     };
     alex = userDefaults // {
       extraGroups = extraGroupsWithWheel;
       name = "alex";
-      shell = pkgs.zsh;
       openssh.authorizedKeys.keys = kanivanKeys ++ alexKeys;
     };
     loewy = userDefaults // {
@@ -80,11 +75,8 @@ in
     };
   };
 
-  nix.settings.trusted-users = realUsers;
   nix.sshServe = {
     enable = true;
     keys = keys.allKeys;
   };
-
-  home-manager.users = forEachUser (import ./home-manager.nix);
 }

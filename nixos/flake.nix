@@ -151,10 +151,14 @@
       specialArgs = rec {
         inherit inputs machineNames;
         makeEnable = (import ./make-enable.nix) nixpkgs.lib;
-        mapValueToKeys = keys: value: builtins.listToAttrs (map (name: { inherit name value; }) keys);
-        realUsers = [ "root" "imalison" "kat" "dean" "alex" "will" "mike" "micah" ];
-        forEachUser = mapValueToKeys realUsers;
         keys = (import ./keys.nix);
+        usersInfo = (import ./users.nix) { pkgs = { zsh = "zsh"; }; keys = keys; };
+        realUsers = (builtins.attrNames
+        (nixpkgs.lib.filterAttrs
+           (_: value: (builtins.elem "isNormalUser" (builtins.attrNames value)) && value.isNormalUser) usersInfo.users.users)
+        );
+        mapAllKeysToValue = keys: value: builtins.listToAttrs (map (name: { inherit name value; }) keys);
+        forEachUser = mapAllKeysToValue realUsers;
       } // specialArgs;
     });
   in

@@ -1,4 +1,4 @@
-{ config, lib, ... }:
+{ config, lib, forEachUser, ... }:
 {
   imports = [
     ./android.nix
