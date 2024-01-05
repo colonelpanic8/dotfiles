@@ -26,6 +26,8 @@
   boot.loader.systemd-boot.enable = true;
   boot.loader.efi.canTouchEfiVariables = true;
 
+  modules.postgres.enable = true;
+
   networking.networkmanager.enable = true;
 
   services.xserver = {
