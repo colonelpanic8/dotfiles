@@ -18,11 +18,11 @@ makeEnable config "modules.postgres" false {
           createdb = true;
         };
     }) realUsers;
-    initialScript = pkgs.writeText "init-sql-script" ''
-      CREATE DATABASE IF NOT EXISTS railbird;
-      \c railbird
-      CREATE SCHEMA IF NOT EXISTS railbird;
-    '';
+    # initialScript = pkgs.writeText "init-sql-script" ''
+    #   CREATE DATABASE IF NOT EXISTS railbird;
+    #   \c railbird
+    #   CREATE SCHEMA IF NOT EXISTS railbird;
+    # '';
   };
   services.pgadmin = {
     enable = true;
