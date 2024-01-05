@@ -15,6 +15,7 @@
   modules.fonts.enable = true;
   modules.nixified-ai.enable = false;
   modules.gitea-runner.enable = true;
+  modules.postgres.enable = true;
 
   hardware.enableRedistributableFirmware = true;
 
