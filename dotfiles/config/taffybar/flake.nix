@@ -7,6 +7,9 @@
   outputs = { self, flake-utils, taffybar, nixpkgs, xmonad }:
   let
     hoverlay = final: prev: hself: hsuper: {
+      taffybar = hsuper.taffybar.overrideAttrs (old: {
+        doHaddock = false;
+      });
       imalison-taffybar = prev.haskell.lib.addPkgconfigDepends (
         hself.callCabal2nix "imalison-taffybar"
         (
