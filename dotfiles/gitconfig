@@ -10,7 +10,7 @@
 	cpr = cherry-pick-range
 	cam = commit -am
 	clean-branches = "!r() { git branch --merged ${1-origin/master} | grep -v '*' | xargs -n1 git branch -d; }; r"
-	del-merged-branches = "!f() { git fetch $1 && git branch -r --merged $1/$2 | awk -F/ \"/$1/ && !/$2$/ {print \\$2}\" | xargs -I {} git push $1 --delete {}; }; f"
+	del-merged-branches = "!f() { git fetch $1 && git branch -r --merged $1/$2 | grep -v \"$1/$2$\" | sed \"s:$1/::\" | xargs -I {} sh -c \"git push $1 :{}\" _; }; f"
 	clone = clone --recursive
 	credit = "!f() { git commit --amend --author \"$1 <$2>\" -C HEAD; }; f" # Credit an author on the latest commit
 	co = checkout
