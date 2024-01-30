@@ -7,6 +7,7 @@
     ./cache.nix
     ./code.nix
     ./desktop.nix
+    ./electron.nix
     ./environment.nix
     ./essential.nix
     ./extra.nix
@@ -15,7 +16,6 @@
     ./gitea-runner.nix
     ./gitea.nix
     ./gnome.nix
-    ./electron.nix
     ./imalison.nix
     ./internet-computer.nix
     ./kat.nix
@@ -25,11 +25,12 @@
     ./options.nix
     ./plasma.nix
     ./postgres.nix
+    ./rabbitmq.nix
     ./secrets.nix
     ./ssh.nix
     ./syncthing.nix
-    ./users.nix
     ./user-specific.nix
+    ./users.nix
     ./vscode.nix
     ./wsl.nix
     ./xmonad.nix
