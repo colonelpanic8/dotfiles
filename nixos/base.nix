@@ -19,7 +19,6 @@ makeEnable config "modules.base" true {
       enable = true;
       enableSSHSupport = true;
     };
-    package = pkgs.gnupg_2_4_0;
   };
   services.pcscd.enable = true;
 

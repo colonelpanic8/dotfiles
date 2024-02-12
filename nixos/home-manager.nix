@@ -14,8 +14,6 @@
     forwardAgent = true;
   };
 
-  programs.gpg.package = pkgs.gnupg_2_4_0;
-
   services.gpg-agent = {
     enable = true;
     defaultCacheTtl = 8 * 60 * 60;
