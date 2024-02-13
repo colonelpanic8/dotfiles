@@ -4,8 +4,6 @@ import = ["/home/imalison/.config/alacritty/themes/themes/dracula.toml"]
 size = 8
 
 [scrolling]
-auto_scroll = false
-faux_multiplier = 3
 history = 10000
 multiplier = 3
 
