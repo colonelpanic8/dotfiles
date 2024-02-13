@@ -1,0 +1,17 @@
+import = ["/home/imalison/.config/alacritty/themes/themes/dracula.toml"]
+
+[font]
+size = 8
+
+[scrolling]
+auto_scroll = false
+faux_multiplier = 3
+history = 10000
+multiplier = 3
+
+[window]
+decorations = "full"
+
+[window.padding]
+x = 10
+y = 10
