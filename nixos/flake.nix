@@ -1,6 +1,6 @@
 {
   inputs = {
-    nixos-hardware = { url = "github:NixOS/nixos-hardware"; };
+    nixos-hardware = { url = "github:colonelpanic8/nixos-hardware"; };
 
     nixpkgs = {
       url = "github:NixOS/nixpkgs/nixos-unstable";
