@@ -3303,10 +3303,15 @@ emr (emacs refactor) provides support for refactoring in many programming langua
 #+END_SRC
 ** language-server-protocol (lsp)
 #+BEGIN_SRC emacs-lisp
+(defvar imalison:use-lsp nil)
 (use-package lsp-mode
-  :defer 3
   :commands lsp
   :preface
+  (defun imalison:lsp-deferred-when-enabled ()
+    (add-hook 'hack-local-variables-hook
+              (lambda ()
+                (when imalison:use-lsp
+                  (lsp-deferred))) nil t))
   (defun imalison:nix-develop-lsp-wrapper-function (argv)
     (append
      (append (list "nix" "develop" "-I" "." "--impure" "--command")
@@ -3317,6 +3322,7 @@ emr (emacs refactor) provides support for refactoring in many programming langua
     (use-package lsp-ui
       :config
       (progn
+        (add-hook 'prog-mode-hook 'imalison:lsp-deferred-when-enabled)
         (add-hook 'lsp-mode-hook 'lsp-ui-mode)
         (setq lsp-ui-doc-position 'bottom)))))
 #+END_SRC
