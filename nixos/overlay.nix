@@ -17,7 +17,7 @@ final: prev: {
     };
   });
 
-  picom = prev.picom.overrideAttrs(_: {
+  picom-ivan = prev.picom-jonaburg.overrideAttrs(old: {
     src = prev.fetchFromGitHub {
       repo = "picom";
       owner = "dccsillag";
