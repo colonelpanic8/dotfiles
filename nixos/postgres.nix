@@ -25,7 +25,7 @@ makeEnable config "modules.postgres" true {
     # '';
   };
   services.pgadmin = {
-    enable = true;
+    enable = false;
     initialEmail = "IvanMalison@gmail.com";
     initialPasswordFile = (builtins.toFile "password" "This is the content of the file.");
   };
