@@ -2958,6 +2958,10 @@ The following is taken from [[https://github.com/syl20bnr/spacemacs/blob/a650877
   :mode (("\\.yaml\\'" . yaml-mode)
          ("\\.yml\\'" . yaml-mode)))
 #+END_SRC
+*** just-mode
+#+begin_src emacs-lisp
+(use-package just-mode)
+#+end_src
 *** es-mode
 #+BEGIN_SRC emacs-lisp
 (use-package es-mode
