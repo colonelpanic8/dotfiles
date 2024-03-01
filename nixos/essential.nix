@@ -36,6 +36,7 @@ in
     gcc
     gdb
     git-lfs
+    git-fame
     git-sync
     gitFull
     glxinfo
