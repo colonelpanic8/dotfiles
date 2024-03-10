@@ -2942,6 +2942,10 @@ The following is taken from [[https://github.com/syl20bnr/spacemacs/blob/a650877
 (use-package protobuf-mode
   :defer t)
 #+END_SRC
+*** graphql
+#+begin_src emacs-lisp
+(use-package graphql-mode)
+#+end_src
 *** json-mode
 #+BEGIN_SRC emacs-lisp
 (use-package json-mode
