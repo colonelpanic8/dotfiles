@@ -21,6 +21,7 @@ makeEnable config "modules.gitea-runner" false {
       };
       hostPackages = with pkgs; [
         bash
+        direnv
         coreutils
         curl
         gawk
@@ -29,6 +30,8 @@ makeEnable config "modules.gitea-runner" false {
         gitFull
         gnused
         nodejs
+        docker
+        openssh
         wget
       ];
       enable = true;
@@ -46,4 +49,8 @@ makeEnable config "modules.gitea-runner" false {
         XDG_CONFIG_HOME = gitea-runner-directory;
         XDG_CACHE_HOME = "${gitea-runner-directory}/.cache";
       };
+    users.users.gitea-runner = {
+      extraGroups = ["docker"];
+      home = "/var/lib/gitea-runner";
+    };
 }
