@@ -50,6 +50,8 @@ makeEnable config "modules.gitea-runner" false {
         XDG_CACHE_HOME = "${gitea-runner-directory}/.cache";
       };
     users.users.gitea-runner = {
+      isSystemUser = true;
+      group = "gitea-runner";
       extraGroups = ["docker"];
       home = "/var/lib/gitea-runner";
     };
