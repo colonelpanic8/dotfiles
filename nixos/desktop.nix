@@ -53,7 +53,7 @@ makeEnable config "modules.desktop" true {
     alacritty
     blueman
     clipit
-    dfeet
+    d-spy
     dolphin
 
     feh
