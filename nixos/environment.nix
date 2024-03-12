@@ -47,6 +47,7 @@ with lib;
       localBinInPath = true;
       shellAliases = {
         df_ssh = "TERM='xterm-256color ssh -o StrictHostKeyChecking=no'";
+        fix_nix = "LD_LIBRARY_PATH='' nix";
       };
       variables = {
         ROFI_SYSTEMD_TERM = "alacritty -e";
