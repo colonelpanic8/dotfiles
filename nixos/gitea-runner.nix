@@ -49,6 +49,7 @@ makeEnable config "modules.gitea-runner" false {
         XDG_CONFIG_HOME = gitea-runner-directory;
         XDG_CACHE_HOME = "${gitea-runner-directory}/.cache";
       };
+    users.groups.gitea-runner = {};
     users.users.gitea-runner = {
       isSystemUser = true;
       group = "gitea-runner";
