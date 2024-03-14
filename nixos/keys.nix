@@ -21,6 +21,7 @@ rec {
     "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIMCJ08qswd3OoApAIHQwojEUJ4sre89vSngbM3x5pBP2 imalison@jay-lenovo.local" # Kat's Lenovo Legion
     "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIOVGIGnpkU7HNQ/zl/Ffi562M+laWY9/yIjB63BCMiTS kat@nixcomp.local"
     "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIO3tlMePru6ZlSuf8yUii3N1dy3WwJnSQAt3EgETkctK kat@jay-lenovo.local"
+    "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIFrOYD3ReFc2+xFUylBFHREcm1lO7BRJGW5JrOoY3I8s ivanm@strixy-minaj"
   ];
   deanKeys = [
     "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAICDvbEVL+y7eV4+mtxOuHwyomBBQ6uYMesctstua20+e deanwenstrand@deans-mbp-2.lan"
