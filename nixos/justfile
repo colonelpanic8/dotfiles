@@ -1,0 +1,14 @@
+switch *args:
+	sudo nixos-rebuild switch --flake '.#' --impure {{args}}
+
+fix-local-path-issue:
+	nix flake lock --update-input imalison-taffybar
+
+
+expire-home-manager-generations:
+	#!/usr/bin/env bash
+	set -euxo pipefail
+	for user in $(awk -F':' '{ if ($3 >= 1000 && $7 !~ /nologin|false|sync|shutdown|halt/) print $1 }' /etc/passwd); do
+	    echo $user
+	    sudo su - $user -c 'home-manager expire-generations -1days'
+	done
