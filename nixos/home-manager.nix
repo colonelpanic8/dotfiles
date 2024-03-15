@@ -19,7 +19,6 @@
     defaultCacheTtl = 8 * 60 * 60;
     maxCacheTtl = 8 * 60 * 60;
     enableSshSupport = true;
-    pinentryFlavor = "qt";
     extraConfig = ''
       allow-emacs-pinentry
       allow-loopback-pinentry

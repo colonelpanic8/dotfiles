@@ -28,6 +28,11 @@ in
       home = "/var/lib/syncthing";
       createHome = true;
     };
+    ivanm = userDefaults // {
+      extraGroups = extraGroupsWithWheel;
+      name = "ivanm";
+      openssh.authorizedKeys.keys = kanivanKeys;
+    };
     imalison = userDefaults // {
       extraGroups = extraGroupsWithWheel;
       name = "imalison";
