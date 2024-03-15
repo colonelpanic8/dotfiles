@@ -33,6 +33,8 @@
   boot.loader.systemd-boot.enable = true;
   boot.loader.efi.canTouchEfiVariables = true;
 
+  services.asusd.enable = true;
+
   # hardware.opengl.extraPackages = [ pkgs.linuxPackages.nvidia_x11.out ];
   # hardware.opengl.extraPackages32 = [ pkgs.linuxPackages.nvidia_x11.lib32 ];
   # hardware.nvidia.modesetting.enable = true;
