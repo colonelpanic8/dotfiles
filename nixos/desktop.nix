@@ -7,7 +7,9 @@ makeEnable config "modules.desktop" true {
   services.xserver = {
     exportConfiguration = true;
     enable = true;
-    layout = "us";
+    xkb = {
+      layout = "us";
+    };
     displayManager = {
       sessionCommands = ''
         systemctl --user import-environment GDK_PIXBUF_MODULE_FILE DBUS_SESSION_BUS_ADDRESS PATH
