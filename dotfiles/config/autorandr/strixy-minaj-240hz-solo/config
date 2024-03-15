@@ -1,0 +1,20 @@
+output DP-0
+off
+output DP-1
+off
+output HDMI-0
+off
+output DP-3
+off
+output DP-4
+off
+output DP-5
+off
+output DP-6
+off
+output DP-2
+crtc 0
+mode 2560x1600
+pos 0x0
+rate 240.00
+x-prop-non_desktop 0

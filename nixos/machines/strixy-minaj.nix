@@ -22,22 +22,26 @@
     android-studio
   ];
 
+  services.xserver.dpi = 96;
   boot.kernelPackages = pkgs.linuxPackages_latest;
   boot.initrd.availableKernelModules = [ "vmd" "xhci_pci" "thunderbolt" "nvme" "usbhid" "usb_storage" "sd_mod" ];
   boot.initrd.kernelModules = [ ];
   boot.kernelModules = [ "kvm-intel" ];
   boot.extraModulePackages = [ ];
   services.xserver = {
-    videoDrivers = [ "intel" ];
+    videoDrivers = [ "nvidia" ];
   };
+  hardware.opengl = {
+    enable = true;
+    driSupport = true;
+    driSupport32Bit = true;
+  };
+  hardware.nvidia.package = config.boot.kernelPackages.nvidiaPackages.production;
+  hardware.nvidia.modesetting.enable = true;
   boot.loader.systemd-boot.enable = true;
   boot.loader.efi.canTouchEfiVariables = true;
 
   services.asusd.enable = true;
-
-  # hardware.opengl.extraPackages = [ pkgs.linuxPackages.nvidia_x11.out ];
-  # hardware.opengl.extraPackages32 = [ pkgs.linuxPackages.nvidia_x11.lib32 ];
-  # hardware.nvidia.modesetting.enable = true;
 
   fileSystems."/" =
     { device = "/dev/disk/by-uuid/fc06a54c-cc45-423a-914b-8dfcb5939106";
