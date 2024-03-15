@@ -29,7 +29,7 @@
         keep-derivations = true;
         substituters = [
           "https://cache.nixos.org"
-          "https://cache.railbird.ai"
+          "https://cache.railbird.ai?priority=45"
         ];
         trusted-public-keys = [
           "cache.railbird.ai:KhnvcouxtIU2zxUcjJsm4bUK3o1S3p8xMf9qfZGF7/A="
