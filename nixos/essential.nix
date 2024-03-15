@@ -48,6 +48,7 @@ in
     iotop
     ispell
     jq
+    just
     lshw
     lsof
     magic-wormhole-rs
