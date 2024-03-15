@@ -226,12 +226,14 @@ main = do
                          , startWidgets = [myWorkspaces, myLayout]
                          }
             )
+          , ( "strixy-minaj"
+            , baseConfig { endWidgets = laptopEndWidgets }
+            ),
           , ( "jay-lenovo"
             , baseConfig { endWidgets = laptopEndWidgets }
             ),
             ( "nixquick"
-          , baseConfig { endWidgets = [ myTray , myMpris ]
-                       }
+          , baseConfig { endWidgets = [ myTray , myMpris ] }
             )
 
           ]
