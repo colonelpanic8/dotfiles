@@ -1,0 +1,7 @@
+#!/usr/bin/env sh
+
+function nr {
+    nix run nixpkgs#"$@"
+}
+
+nr "$@"
