@@ -57,7 +57,7 @@
     [ { device = "/dev/disk/by-uuid/27f277a0-b552-43a0-904d-625e48922bb9"; }
     ];
 
-  networking.hostName = "strixy-minaj";
+  networking.hostName = "strixi-minaj";
 
   powerManagement.cpuFreqGovernor = lib.mkDefault "performance";
   hardware.cpu.intel.updateMicrocode = lib.mkDefault config.hardware.enableRedistributableFirmware;

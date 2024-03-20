@@ -226,7 +226,7 @@ main = do
                          , startWidgets = [myWorkspaces, myLayout]
                          }
             )
-          , ( "strixy-minaj"
+          , ( "strixi-minaj"
             , baseConfig { endWidgets = laptopEndWidgets }
             ),
           , ( "jay-lenovo"
