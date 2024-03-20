@@ -7,6 +7,12 @@ import sys
 class BrightnessManager(object):
 
     @classmethod
+    def find_brightness(cls):
+        return cls.from_path(
+            os.path.join("/sys/class/backlight", os.listdir("/sys/class/backlight")[0])
+        )
+
+    @classmethod
     def from_path(cls, path):
         return cls(
             set_brightness_filepath=os.path.join(path, "brightness"),
@@ -46,11 +52,6 @@ class BrightnessManager(object):
         return float(self.current_brightness) / self.max_brightness
 
 
-IntelBrightnessManager = BrightnessManager.from_path(
-    "/sys/class/backlight/intel_backlight",
-)
-
-
 def build_parser():
     parser = argparse.ArgumentParser(
         description='Interact with macbook brightness',
@@ -70,6 +71,6 @@ def build_parser():
 
 if __name__ == '__main__':
     args = build_parser().parse_args()
-    IntelBrightnessManager.increment_by_proportion(float(args.change) / 100)
+    BrightnessManager.find_brightness().increment_by_proportion(float(args.change) / 100)
     if args.do_print:
         print(int(IntelBrightnessManager.current_proportion * 100))
