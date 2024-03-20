@@ -231,9 +231,9 @@ main = do
             )
           , ( "jay-lenovo"
             , baseConfig { endWidgets = laptopEndWidgets }
-            ),
-            ( "nixquick"
-          , baseConfig { endWidgets = [ myTray , myMpris ] }
+            )
+          , ( "nixquick"
+            , baseConfig { endWidgets = [ myTray , myMpris ] }
             )
 
           ]
