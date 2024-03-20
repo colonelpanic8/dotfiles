@@ -228,7 +228,7 @@ main = do
             )
           , ( "strixi-minaj"
             , baseConfig { endWidgets = laptopEndWidgets }
-            ),
+            )
           , ( "jay-lenovo"
             , baseConfig { endWidgets = laptopEndWidgets }
             ),
