@@ -29,6 +29,12 @@ makeEnable config "modules.syncthing" true {
       mkdir -p /var/lib/syncthing/railbird
     '';
   };
+  systemd.services.syncthing = {
+    serviceConfig = {
+      AmbientCapabilities = "CAP_CHOWN";
+      CapabilityBoundingSet = "CAP_CHOWN";
+    };
+  };
   services.syncthing = {
     enable = true;
     settings = {
@@ -37,11 +43,13 @@ makeEnable config "modules.syncthing" true {
         sync = {
           path = "~/sync";
           devices = allDevices;
+          ignorePerms = true;
           copyOwnershipFromParent = true;
         };
         railbird = {
           path = "~/railbird";
           devices = allDevices;
+          ignorePerms = true;
           copyOwnershipFromParent = true;
         };
       };
