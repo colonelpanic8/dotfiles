@@ -1,4 +1,4 @@
-{ config, pkgs, options, inputs, forEachUser, makeEnable, ... }:
+{ config, pkgs, inputs, forEachUser, makeEnable, ... }:
 makeEnable config "modules.xmonad" true  {
   nixpkgs.overlays = with inputs; [
     xmonad.overlay
@@ -104,7 +104,6 @@ makeEnable config "modules.xmonad" true  {
       };
 
       settings = {
-        inactive-dim = 0.2;
         focus-exclude = ["class_g ?= 'rofi'" "class_g ?= 'Steam'"];
         rounded-corners-exclude = [
           "! name~=''" # Qtile == empty wm_class..
