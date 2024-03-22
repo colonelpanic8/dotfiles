@@ -5,7 +5,10 @@
   ];
 
   features.full.enable = true;
-  modules.cache-server.enable = true;
+  modules.cache-server = {
+    enable = true;
+    port = 3090;
+  };
   modules.gitea-runner.enable = true;
 
   networking.hostName = "nixquick";
