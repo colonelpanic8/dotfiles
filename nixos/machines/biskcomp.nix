@@ -78,7 +78,7 @@ in
       "syncthing.railbird.ai" = {
         enableACME = true;
         forceSSL = true;
-        root = "/var/lib/syncthing/sync";
+        root = "/var/lib/syncthing/railbird";
         locations."/" = {
           extraConfig = ''
             autoindex on;
