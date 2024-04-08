@@ -27,6 +27,7 @@ in
       extraGroups = [ "syncthing" "wheel" ];
       home = "/var/lib/syncthing";
       createHome = true;
+      openssh.authorizedKeys.keys = [giteaSecret];
     };
     ivanm = userDefaults // {
       extraGroups = extraGroupsWithWheel;

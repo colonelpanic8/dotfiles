@@ -1,4 +1,5 @@
 rec {
+  giteaSecret = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIHRNHlKPGVnOATsbnkPccyK+C15TWGKbBwqNKt0UcQ81 imalison@adele";
   hostKeys = [
     "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIG3UqIYs/NY0okKuiIO+dU2OM7A8vv3b6//GedagvLoX ryzen-shine.local"
     "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAINFbM1sL/vlDhrqPV1OMIGi4dKG0tMKhWSXx95ccbfyM biskcomp.local"
