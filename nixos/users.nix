@@ -79,9 +79,9 @@ in
       name = "micah";
       openssh.authorizedKeys.keys = kanivanKeys ++ micahKeys;
     };
-    unpriveleged = userDefaults // {
+    unprivileged = userDefaults // {
       extraGroups = ["syncthing"];
-      name = "unpriveleged";
+      name = "unprivileged";
       openssh.authorizedKeys.keys = [giteaSecret] ++ kanivanKeys;
     };
   };
