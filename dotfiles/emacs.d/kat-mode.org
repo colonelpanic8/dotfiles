@@ -157,3 +157,9 @@ This makes evil-mode play nice with org-fc
     (setf (alist-get 'python-ts-mode apheleia-mode-alist)
           (alist-get 'python-mode apheleia-mode-alist))))
 #+end_src
+
+* Packages
+#+begin_src emacs-lisp
+(use-package org-drill)
+
+#+end_src
