@@ -27,6 +27,7 @@ with lib;
         do
             autoload "''${file##*/}"
         done
+        fpath+="${pkgs.python-with-my-packages}/lib/python3.11/site-packages/argcomplete/bash_completion.d"
       '';
     };
 
