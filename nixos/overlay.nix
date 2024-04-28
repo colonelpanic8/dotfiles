@@ -1,5 +1,5 @@
 final: prev: {
-  rofi-systemd = prev.rofi-systemd.overrideAttrs(_: {
+  rofi-systemd = prev.rofi-systemd.overrideAttrs (_: {
     src = prev.fetchFromGitHub {
       repo = "rofi-systemd";
       owner = "IvanMalison";
@@ -8,7 +8,7 @@ final: prev: {
     };
   });
 
-  git-sync = prev.git-sync.overrideAttrs(_: {
+  git-sync = prev.git-sync.overrideAttrs (_: {
     src = prev.fetchFromGitHub {
       repo = "git-sync";
       owner = "IvanMalison";
@@ -17,24 +17,24 @@ final: prev: {
     };
   });
 
-  picom = prev.picom.overrideAttrs(old: {
+  picom = prev.picom.overrideAttrs (old: {
     src = prev.fetchFromGitHub {
       repo = "picom";
       owner = "dccsillag";
       rev = "51b21355696add83f39ccdb8dd82ff5009ba0ae5";
       sha256 = "sha256-crCwRJd859DCIC0pEerpDqdX2j8ZrNAzVaSSB3mTPN8==";
     };
-    nativeBuildInputs = old.nativeBuildInputs ++ [ final.pcre ];
+    nativeBuildInputs = old.nativeBuildInputs ++ [final.pcre];
   });
 
-  expressvpn = prev.expressvpn.overrideAttrs(_: {
+  expressvpn = prev.expressvpn.overrideAttrs (_: {
     src = prev.fetchurl {
       url = "https://www.expressvpn.works/clients/linux/expressvpn_3.46.0.7-1_amd64.deb";
       hash = "sha256-v0rr1s32jj79A8IGfJgSGJVlz7rSnZYn4ealOpqee0w=";
     };
   });
 
-  gnupg_2_4_0 = prev.gnupg.overrideAttrs(_: rec {
+  gnupg_2_4_0 = prev.gnupg.overrideAttrs (_: rec {
     pname = "gnupg";
     # 2.4.1 breaks emacs
     version = "2.4.0";
@@ -48,6 +48,24 @@ final: prev: {
     withNativeCompilation = true;
     withTreeSitter = true;
   };
+
+  python-with-my-packages = let
+    my-python-packages = python-packages:
+      with python-packages; [
+        argcomplete
+        appdirs
+        ipdb
+        ipython
+        numpy
+        openpyxl
+        pip
+        requests
+        tox
+        virtualenv
+        virtualenvwrapper
+      ];
+  in
+    final.python311.withPackages my-python-packages;
 
   # gitea = prev.gitea.overrideAttrs(_: {
   #   src = prev.fetchFromGitHub {

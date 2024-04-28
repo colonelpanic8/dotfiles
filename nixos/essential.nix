@@ -1,19 +1,4 @@
 { pkgs, ... }:
-let
-  my-python-packages = python-packages: with python-packages; [
-    appdirs
-    ipdb
-    ipython
-    numpy
-    openpyxl
-    pip
-    requests
-    tox
-    virtualenv
-    virtualenvwrapper
-  ];
-  python-with-my-packages = pkgs.python311.withPackages my-python-packages;
-in
 {
   nixpkgs.config.allowBroken = true;
 
@@ -31,6 +16,7 @@ in
     emacs
     fd
     ffmpeg
+    bento4
     file
     gawk
     gcc
