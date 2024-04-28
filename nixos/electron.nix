@@ -1,7 +1,7 @@
 { pkgs, config, makeEnable, forEachUser, ... }:
 makeEnable config "modules.electron" false {
   environment.systemPackages = with pkgs; [
-    # element-desktop
+    element-desktop
     # bitwarden
     discord
     # etcher
