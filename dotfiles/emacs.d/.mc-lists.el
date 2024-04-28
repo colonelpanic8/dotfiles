@@ -54,12 +54,14 @@
         sp-remove-active-pair-overlay
         sp-splice-sexp
         sp-splice-sexp-killing-backward
+        string-inflection-all-cycle
         string-inflection-toggle
         tern-ac-dot-complete
         transpose-sexps
         transpose-words
         undo-redo
         universal-argument-minus
+        upcase-region
         wdired-finish-edit
         yaml-electric-backspace
         yaml-electric-dash-and-dot
