@@ -50,6 +50,7 @@
 	tb = rev-parse --abbrev-ref --symbolic-full-name @{u}
 	untracked = "!u() { git status -s | grep "??" | awk '{print $2}'; }; u"
 	which-branch = "!wb() { b="$(git symbolic-ref HEAD)" && echo ${b#refs/heads/}; }; wb"
+	find-merge = "!sh -c 'commit=$0 && branch=${1:-HEAD} && (git rev-list $commit..$branch --ancestry-path | cat -n; git rev-list $commit..$branch --first-parent | cat -n) | sort -k2 -s | uniq -f1 -d | sort -n | tail -1 | cut -f2'"
 
 [core]
 	# Use custom `.gitignore` and `.gitattributes`
