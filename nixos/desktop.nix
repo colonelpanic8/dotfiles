@@ -62,10 +62,8 @@ makeEnable config "modules.desktop" true {
     firefox
     gnome.cheese
     gnome.gpaste
-
     kleopatra
     libnotify
-    # Seems to be broken
     libreoffice
     lxappearance
     lxqt.lxqt-powermanagement
@@ -88,6 +86,7 @@ makeEnable config "modules.desktop" true {
     vlc
     volnoti
     xfce.thunar
+    zulip
 
     # Audio
     picard
