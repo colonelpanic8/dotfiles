@@ -10,6 +10,7 @@
     port = 3090;
   };
   modules.gitea-runner.enable = true;
+  modules.vscode.enable = true;
 
   networking.hostName = "nixquick";
 
