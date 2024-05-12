@@ -1,4 +1,4 @@
-{ config, pkgs, makeEnable, forEachUser, ... }:
+{ config, pkgs, makeEnable, ... }:
 makeEnable config "modules.desktop" true {
   imports = [
     ./fonts.nix
