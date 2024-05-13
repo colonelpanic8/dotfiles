@@ -16,6 +16,5 @@ makeEnable config "modules.wsl" false {
     automountPath = "/mnt";
     startMenuLaunchers = true;
     nativeSystemd = true;
-    docker-native.enable = true;
   };
 }
