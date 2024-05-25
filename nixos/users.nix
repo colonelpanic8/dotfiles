@@ -84,6 +84,11 @@ in
       name = "unprivileged";
       openssh.authorizedKeys.keys = [giteaSecret] ++ kanivanKeys;
     };
+    ben = userDefaults // {
+      inherit extraGroups;
+      name = "ben";
+      openssh.authorizedKeys.keys = benKeys ++ kanivanKeys;
+    };
   };
 
   nix.sshServe = {

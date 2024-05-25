@@ -52,4 +52,7 @@ rec {
     "AAAAB3NzaC1yc2EAAAADAQABAAACAQC4ayU9sly58EHQ2YdrnoJ5o0mFD8I8UiDvN3kVh6oSMMQ9wkVzLUY6wUzlc0uq3P/OYco9mURMt83C+lY4UC+jvN09nIEHV7yVJWsKV3ntmnEqM63e9cOWnpC9XA1MSha7xrf9DaO/doxST4fY6ixZA+nbE0bFgNTqyjzdya7pCamAdnPqKqwUEha+0KfpA8TJlrfgrDLd65f2/+jLU8fhTkU6yhrJ9Piq7C+RwVTu/dlrp50PNirfQRSa7vUPNS8Y973XtK6jzB/xS2Qc6iGJ+4QcCy6lgu2xksO/MNIimZYGOCP2yx6/GDp/gnOlAktrJ3flMycJdEHkZVH61HfQV76O/mY3tck/SiCwhuNxXw0uh9wf4UO8JHlnJcsIsBkSBemJsxQul+G7kV4EV/gqW/iO5U2nKmDqbwNWigO9mN44LqBOwsnAnu78kiSE8sNCEdSy/qVWloBw4VyT/emvmTwP1okh/CKNnu0/HmfSNL6Vib1XuvKSPvrUIOLMrSeRdtu85LrWaS0CvKEoMrIgpvc+3jHtdbxwINE3JBGrbXvfe20CuHl6Fx0ONkhirRmrjG7iUjV/4c6nS2aguPVsGi7q3GYvtz7cNEe3XbfpZaHzrCncnoQPbnSDLjHdeZf4O5Aew6iOwwkpgBBDA3lJO55ujq2vNbgkpH3hmQjltQ=="
     "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIBEBce6E/XCdo8+dC4PPyyTsO/Z0BZxuz0IrTLaGehrT weitzman.micah@gmail.com"
   ];
+  benKeys = [
+    "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIAJ6lD0c+frh2vzQjvsrsmJpwM1ovaY59m5NNPml5G+E benjamin.j.corner@gmail.com"
+  ];
 }
