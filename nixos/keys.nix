@@ -26,6 +26,7 @@ rec {
   ];
   deanKeys = [
     "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAICDvbEVL+y7eV4+mtxOuHwyomBBQ6uYMesctstua20+e deanwenstrand@deans-mbp-2.lan"
+    "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIFeXvPyHIYBPtn6QJtOrjlBUsZjDonVRfmWqTTM2ITWx nixos@nixos"
   ];
   alexKeys = [
     "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIP2SQkJenAX67Ze99SKOVpKDD1XvAZnxQ8RLP0dL/Ej2 alexm@MALISONSERVER"
