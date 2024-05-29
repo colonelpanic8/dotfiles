@@ -21,4 +21,19 @@
   home-manager.users = forEachUser {
     home.stateVersion = "22.05";
   };
+
+  users.users.ben = {
+    extraGroups = [
+      "audio"
+      "adbusers"
+      "disk"
+      "docker"
+      "networkmanager"
+      "openrazer"
+      "plugdev"
+      "syncthing"
+      "systemd-journal"
+      "video"
+    ] ++ ["wheel"];
+  };
 }
