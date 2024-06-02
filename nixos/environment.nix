@@ -29,6 +29,11 @@ with lib;
         done
         fpath+="${pkgs.python-with-my-packages}/lib/python3.11/site-packages/argcomplete/bash_completion.d"
       '';
+      interactiveShellInit = ''
+        eval "$(register-python-argcomplete prb)"
+        eval "$(register-python-argcomplete prod-prb)"
+        eval "$(register-python-argcomplete railbird)"
+      '';
     };
 
     programs.starship = {
