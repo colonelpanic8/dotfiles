@@ -3334,7 +3334,25 @@ emr (emacs refactor) provides support for refactoring in many programming langua
 ** eat
 #+begin_src emacs-lisp
 (use-package eat
-  :config (setq eat--install-path (f-dirname (file-truename (imalison:join-paths eat--install-path "eat.el")))))
+  :preface
+  (progn
+    (defun imalison:avy-eat (arg)
+      (interactive "P")
+      (eat-emacs-mode)
+      (imalison:avy arg)))
+  :bind
+  (:map eat-mode-map
+        ("C-c C-k" . eat-semi-char-mode)
+        :map eat-semi-char-mode-map
+        ("C-c C-j" . eat-emacs-mode)
+        ("C-j" . imalison:avy-term))
+  :config
+  (progn
+    (setq eat--install-path
+          (file-name-directory
+           (file-truename (imalison:join-paths eat--install-path "eat.el"))))
+    (eat-compile-terminfo)
+    (setq eat-term-shell-integration-directory (imalison:join-paths eat--install-path "integration"))))
 #+end_src
 ** term
 The main thing I do here is restore a bunch of keybindings that are eliminated
@@ -3417,6 +3435,12 @@ in term-mode. This makes term-mode 1000% more useful
    term-projectile-switch)
   :config
   (progn
+    (use-package term-manager-eat
+      :demand t
+      :straight
+      (term-manager-eat :type git :files ("term-manager-eat.el")
+                        :host github :repo "colonelpanic8/term-manager"))
+    (setq term-projectile-term-manager (term-projectile :build-term 'term-manager-eat-build-term))
     (emit-prefix-selector imalison:term
       term-projectile-forward
       term-projectile-create-new)
@@ -4105,7 +4129,12 @@ This also adds syntax highlighting for gradle
 #+END_SRC
 ** evil
 #+BEGIN_SRC emacs-lisp
-(use-package evil :commands (evil-mode))
+(use-package evil
+  :commands (evil-mode)
+  :config
+  (use-package evil-collection
+    :config
+    (with-eval-after-load 'eat (evil-collection-eat-setup))))
 #+END_SRC
 ** hackernews
 #+BEGIN_SRC emacs-lisp
