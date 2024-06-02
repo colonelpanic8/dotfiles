@@ -3331,6 +3331,11 @@ emr (emacs refactor) provides support for refactoring in many programming langua
         (setq lsp-ui-doc-position 'bottom)))))
 #+END_SRC
 * Utility
+** eat
+#+begin_src emacs-lisp
+(use-package eat
+  :config (setq eat--install-path (f-dirname (file-truename (imalison:join-paths eat--install-path "eat.el")))))
+#+end_src
 ** term
 The main thing I do here is restore a bunch of keybindings that are eliminated
 in term-mode. This makes term-mode 1000% more useful
