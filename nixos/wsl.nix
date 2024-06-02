@@ -7,13 +7,15 @@ makeEnable config "modules.wsl" false {
   modules.base.enable = false;
   modules.desktop.enable = false;
   modules.xmonad.enable = false;
+  modules.plasma.enable = false;
 
   # Update timezone automatically
   services.tzupdate.enable = true;
 
+  wsl.wslConf.automount.root = "/mnt";
+
   wsl = {
     enable = true;
-    automountPath = "/mnt";
     startMenuLaunchers = true;
     nativeSystemd = true;
   };
