@@ -1,5 +1,6 @@
 { config, pkgs, ... }:
 {
+  security.pam.sshAgentAuth.enable = true;
   services.avahi = {
     enable = true;
     nssmdns4 = true;
@@ -25,7 +26,7 @@
   };
 
   programs.ssh = {
-    forwardX11 = true;
+    forwardX11 = false;
     setXAuthLocation = true;
     knownHosts = {
       github = {
