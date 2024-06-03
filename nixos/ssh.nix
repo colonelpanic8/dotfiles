@@ -20,6 +20,8 @@
   services.openssh = {
     enable = true;
     settings = {
+      AllowAgentForwarding = true;
+      AllowTcpForwarding = true;
       PasswordAuthentication = false;
       X11Forwarding = true;
     };
