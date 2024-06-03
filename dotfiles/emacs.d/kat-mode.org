@@ -163,3 +163,8 @@ This makes evil-mode play nice with org-fc
 (use-package org-drill)
 
 #+end_src
+
+* Disable wild notifactions
+#+begin_src emacs-lisp
+(setq org-wild-notifier-day-wide-alert-times nil)
+#+end_src
