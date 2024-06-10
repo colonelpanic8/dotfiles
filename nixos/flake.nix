@@ -1,5 +1,8 @@
 {
   inputs = {
+    railbird-secrets = {
+      url = "git+ssh://gitea@dev.railbird.ai:1123/railbird/secrets-flake.git";
+    };
     nixos-hardware = { url = "github:colonelpanic8/nixos-hardware"; };
 
     nixpkgs = {
@@ -152,7 +155,10 @@
         inherit inputs machineNames;
         makeEnable = (import ./make-enable.nix) nixpkgs.lib;
         keys = (import ./keys.nix);
-        usersInfo = (import ./users.nix) { pkgs = { zsh = "zsh"; }; keys = keys; };
+        usersInfo = (import ./users.nix) {
+          pkgs = { zsh = "zsh"; };
+          inherit keys inputs system;
+        };
         realUsers = (builtins.attrNames
         (nixpkgs.lib.filterAttrs
            (_: value: (builtins.elem "isNormalUser" (builtins.attrNames value)) && value.isNormalUser) usersInfo.users.users)

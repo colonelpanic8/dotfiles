@@ -1,4 +1,4 @@
-{ pkgs, keys, ... }:
+{ pkgs, keys, inputs, system, ... }:
 let
   extraGroups = [
     "audio"
@@ -88,6 +88,11 @@ in
       inherit extraGroups;
       name = "ben";
       openssh.authorizedKeys.keys = benKeys ++ kanivanKeys;
+    };
+    railbird = userDefaults // {
+      inherit extraGroups;
+      name = "railbird";
+      openssh.authorizedKeys.keys = inputs.railbird-secrets.keys.railbirdAdminKeys;
     };
   };
 
