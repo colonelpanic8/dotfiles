@@ -1297,11 +1297,11 @@
         "nixpkgs": "nixpkgs_7"
       },
       "locked": {
-        "lastModified": 1718057406,
-        "narHash": "sha256-PUqnLMxAOlWVkNIpltxP8lNlz5OyxpYN6K9hl45WrAk=",
+        "lastModified": 1718069159,
+        "narHash": "sha256-L66mczMl8BPLwZrTVKrXMZRyxHiPvA3CHywbsQyFHW0=",
         "ref": "refs/heads/master",
-        "rev": "971e616e67e07c1ef5a8933fbb0a504178353be2",
-        "revCount": 49,
+        "rev": "609f1d32fd1112068d97df0f7d4de82cec878002",
+        "revCount": 52,
         "type": "git",
         "url": "ssh://gitea@dev.railbird.ai:1123/railbird/secrets-flake.git"
       },
