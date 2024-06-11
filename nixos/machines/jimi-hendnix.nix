@@ -45,6 +45,10 @@
       fsType = "vfat";
     };
 
+  swapDevices = [
+    { device = "/dev/disk/by-uuid/598e9aa1-4940-4410-a2fa-3dfd8b7d2c0d"; }
+  ];
+
   home-manager.users = forEachUser {
     home.stateVersion = "23.11";
   };
