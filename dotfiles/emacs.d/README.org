@@ -3345,7 +3345,7 @@ emr (emacs refactor) provides support for refactoring in many programming langua
         ("C-c C-k" . eat-semi-char-mode)
         :map eat-semi-char-mode-map
         ("C-c C-j" . eat-emacs-mode)
-        ("C-j" . imalison:avy-term))
+        ("C-j" . imalison:avy-eat))
   :config
   (progn
     (setq eat--install-path
