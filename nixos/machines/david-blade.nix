@@ -1,4 +1,4 @@
-{ config, lib, pkgs, ... }:
+{ config, lib, pkgs, forEachUser, ... }:
 
 {
   imports = [
@@ -7,7 +7,7 @@
 
   modules.base.enable = true;
   modules.desktop.enable = true;
-  modules.xmonad.enable = true;
+  modules.xmonad.enable = false;
   modules.extra.enable = false;
   modules.code.enable = true;
   modules.games.enable = false;
@@ -34,27 +34,13 @@
   services.xserver.libinput.enable = true;
 
   fileSystems."/" = {
-    device = "/dev/disk/by-uuid/58218a04-3ba1-4295-86bb-ada59f75e3b6";
+    device = "/dev/disk/by-uuid/36864608-8e74-42b8-a075-27b59ef2701d";
     fsType = "ext4";
   };
-
-  boot.initrd.luks.devices."cryptroot".device = "/dev/disk/by-uuid/8142784e-45c6-4a2b-91f1-09df741ac00f";
 
   fileSystems."/boot" = {
     device = "/dev/disk/by-uuid/36E1-BE93";
     fsType = "vfat";
-  };
-
-  systemd.services.resume-fix = {
-    description = "Fixes acpi immediate resume after suspend";
-    wantedBy = [ "multi-user.target" "post-resume.target" ];
-    after = [ "multi-user.target" "post-resume.target" ];
-    script = ''
-      if ${pkgs.gnugrep}/bin/grep -q '\bXHC\b.*\benabled\b' /proc/acpi/wakeup; then
-      echo XHC > /proc/acpi/wakeup
-      fi
-    '';
-    serviceConfig.Type = "oneshot";
   };
 
   swapDevices = [
@@ -65,10 +51,12 @@
     }
   ];
 
-  networking.hostName = "ivanm-dfinity-razer";
+  networking.hostName = "david-blade";
 
-  nix.settings.maxJobs = lib.mkDefault 12;
+  home-manager.users = forEachUser {
+    home.stateVersion = "24.05";
+  };
 
   powerManagement.cpuFreqGovernor = lib.mkDefault "powersave";
-  system.stateVersion = "18.03";
+  system.stateVersion = "24.05";
 }
