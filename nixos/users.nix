@@ -92,7 +92,7 @@ in
     railbird = userDefaults // {
       inherit extraGroups;
       name = "railbird";
-      openssh.authorizedKeys.keys = inputs.railbird-secrets.keys.railbirdAdminKeys;
+      openssh.authorizedKeys.keys = inputs.railbird-secrets.keys.railbirdDevKeys;
     };
   };
 
