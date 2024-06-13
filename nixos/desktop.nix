@@ -86,7 +86,6 @@ makeEnable config "modules.desktop" true {
     vlc
     volnoti
     xfce.thunar
-    zulip
 
     # Audio
     picard
@@ -105,5 +104,6 @@ makeEnable config "modules.desktop" true {
     spotify
     tor-browser-bundle-bin
     vscode
+    zulip
   ] else []);
 }
