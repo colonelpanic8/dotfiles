@@ -803,7 +803,7 @@ alphanumeric characters only."
 ** Use org-tempo to allow inserting templates using e.g. <s
 #+begin_src emacs-lisp
 (use-package org-tempo
-  :straight nil
+  :ensure nil
   :after org)
 #+end_src
 * Packages
@@ -938,9 +938,6 @@ alphanumeric characters only."
 #+end_src
 ***** ui
 #+begin_src emacs-lisp
-(use-package emacs-http-server
-  :demand t)
-
 (use-package org-roam-ui
   :after org-roam
   :custom

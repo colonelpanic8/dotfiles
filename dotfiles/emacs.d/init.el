@@ -1,40 +1,27 @@
 ;; -*- no-byte-compile: t -*-
 
-(let ((bootstrap-file (concat user-emacs-directory "straight/bootstrap.el"))
-      (bootstrap-version 2))
-  (unless (file-exists-p bootstrap-file)
-    (with-current-buffer
-        (url-retrieve-synchronously
-         "https://raw.githubusercontent.com/raxod502/straight.el/develop/install.el"
-         'silent 'inhibit-cookies)
-      (goto-char (point-max))
-      (eval-print-last-sexp)))
-  (load bootstrap-file nil 'nomessage))
-
 (setq native-comp-deferred-compilation-deny-list '("magit"))
 (setq native-comp-always-compile t)
 (setq load-no-native t)
 (setq no-native-compile t)
 (setq warning-minimum-level :emergency)
-(setq straight-disable-native-compile t)
-
-;; This is a workaround for an issue in emacs28 with symlinks. See https://github.com/radian-software/straight.el/issues/701
-(defun my-patch-package-find-file-visit-truename (oldfun &rest r)
-  (let ((find-file-visit-truename nil))
-    (apply oldfun r)))
-
-(advice-add #'straight--build-autoloads :around
-            #'my-patch-package-find-file-visit-truename)
 
 (setq package-enable-at-startup nil
       straight-use-package-by-default t
       straight-vc-git-default-protocol 'ssh)
-(straight-use-package 'use-package)
+
 (require 'use-package)
 (setq use-package-enable-imenu-support t)
-(setq use-package-ensure-function 'straight-use-package-ensure-function)
+(setq use-package-always-ensure t)
 
 (defvar imalison:do-benchmark nil)
+
+(defun emacs-directory-filepath (filename)
+  (concat (file-name-directory load-file-name) filename))
+
+(load (emacs-directory-filepath "elpaca.el"))
+
+(setq use-package-always-ensure t)
 
 (let ((bench-file (concat (file-name-directory user-init-file) "benchmark.el")))
   (when (file-exists-p bench-file) (load bench-file)))
@@ -55,6 +42,9 @@
   (setq mac-option-modifier 'meta)
   (setq mac-command-modifier 'super))
 
+(use-package transient
+  :demand t)
+
 ;; See https://github.com/magit/magit/discussions/4997 . Without this magit is broken.
 (use-package magit
   :demand t)
@@ -62,29 +52,56 @@
 ;; This seems to fix issues with helm not explicitly declaring its dependency on async
 (use-package async :demand t)
 
+(use-package s :demand t)
+
 ;; Without this, org can behave very strangely
 (use-package org
-  :straight
+  :ensure
   (org :type git :host github :repo "colonelpanic8/org-mode" :local-repo "org"
        :branch "my-main"
-       :depth full :pre-build (straight-recipes-org-elpa--build) :build
+       :depth full
+	   :build
+       :wait t
        (:not autoloads) :files
-       (:defaults "lisp/*.el" ("etc/styles/" "etc/styles/*")))
-  :defer t)
+       (:defaults "lisp/*.el" ("etc/styles/" "etc/styles/*"))))
 
 (use-package dash :demand t)
+
+(use-package emit
+  :ensure (emit :type git :host github :repo "colonelpanic8/emit")
+  :demand t
+  :config
+  (progn
+    (emit-prefix-selector imalison:mark-ring mark-ring)
+    (emit-prefix-selector imalison:shell-command-on-region
+      imalison:copy-shell-command-on-region
+      imalison:shell-command-on-region-replace
+      imalison:jq-replace)
+
+    (defun imalison:jq-replace (start end)
+      (interactive (region-if-active-otherwise-buffer))
+      (imalison:shell-command-on-region-replace start end "jq ."))
+    (emit-compose
+      imalison:copy-eval-last-sexp kill-new prin1-to-string eval-last-sexp)
+
+    (emit-prefix-selector imalison:eval-last-sexp
+      eval-region-or-last-sexp
+      imalison:copy-eval-last-sexp)))
+
+(use-package s
+  :ensure (:inherit t :wait t)
+  :config
+  (when (or (equal (s-trim (shell-command-to-string "whoami")) "kat")
+            imalison:kat-mode)
+    (let ((debug-on-error t))
+      (org-babel-load-file
+       (concat (file-name-directory load-file-name) "kat-mode.org")))))
 
 (let ((debug-on-error t))
   (org-babel-load-file
    (concat (file-name-directory load-file-name) "README.org")))
 
-(when (or (equal (s-trim (shell-command-to-string "whoami")) "kat")
-          imalison:kat-mode)
-  (let ((debug-on-error t))
-    (org-babel-load-file
-     (concat (file-name-directory load-file-name) "kat-mode.org"))))
-
-(when imalison:do-benchmark (benchmark-init/deactivate))
+;; (when imalison:do-benchmark (benchmark-init/deactivate))
 
 ;; Local Variables:
 ;; flycheck-disabled-checkers: (emacs-lisp-checkdoc)
