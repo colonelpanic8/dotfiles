@@ -1,36 +1,19 @@
-;; -*- no-byte-compile: t -*-
+;; -*- no-byte-compile: t; lexical-binding: t; -*-
 
 (setq native-comp-deferred-compilation-deny-list '("magit"))
 (setq native-comp-always-compile t)
 (setq load-no-native t)
 (setq no-native-compile t)
-(setq warning-minimum-level :emergency)
-
-(setq package-enable-at-startup nil
-      straight-use-package-by-default t
-      straight-vc-git-default-protocol 'ssh)
-
-(require 'use-package)
-(setq use-package-enable-imenu-support t)
-(setq use-package-always-ensure t)
 
 (defvar imalison:do-benchmark nil)
 
 (defun emacs-directory-filepath (filename)
   (concat (file-name-directory load-file-name) filename))
 
-(load (emacs-directory-filepath "elpaca.el"))
-
+(load-file (expand-file-name "elpaca-installer.el" user-emacs-directory))
+(elpaca elpaca-use-package (elpaca-use-package-mode))
+(setq use-package-enable-imenu-support t)
 (setq use-package-always-ensure t)
-
-(let ((bench-file (concat (file-name-directory user-init-file) "benchmark.el")))
-  (when (file-exists-p bench-file) (load bench-file)))
-
-(use-package benchmark-init
-  :if imalison:do-benchmark
-  :demand t
-  :config
-  (setq max-specpdl-size 99999999))
 
 (defvar imalison:kat-mode nil)
 (setq custom-file "~/.emacs.d/custom-before.el")
@@ -42,29 +25,25 @@
   (setq mac-option-modifier 'meta)
   (setq mac-command-modifier 'super))
 
-(use-package transient
-  :demand t)
-
-;; See https://github.com/magit/magit/discussions/4997 . Without this magit is broken.
-(use-package magit
-  :demand t)
-
-;; This seems to fix issues with helm not explicitly declaring its dependency on async
-(use-package async :demand t)
-
+;;The packages in this section are used to as utilities in the rest of this init file.
+;;Ensure they are installed/activated first.
 (use-package s :demand t)
 
-;; Without this, org can behave very strangely
-(use-package org
-  :ensure
-  (org :type git :host github :repo "colonelpanic8/org-mode" :local-repo "org"
-       :branch "my-main-2025"
-       :depth full
-       :build (:not autoloads)
-       :files (:defaults "lisp/*.el" ("etc/styles/" "etc/styles/*"))
-       :wait t))
+(use-package dash
+  :demand t
+  :config
+  (progn (dash-enable-font-lock)))
 
-(use-package dash :demand t)
+(use-package gh
+  :defer t
+  :ensure (:host github :repo "IvanMalison/gh.el"))
+
+(use-package shut-up
+  :config
+  (defun imalison:shut-up-around (function &rest args)
+    (shut-up (apply function args))))
+
+(use-package parse-csv :demand t)
 
 (use-package emit
   :ensure (emit :type git :host github :repo "colonelpanic8/emit")
@@ -87,18 +66,29 @@
       eval-region-or-last-sexp
       imalison:copy-eval-last-sexp)))
 
-(use-package s
-  :ensure (:inherit t :wait t)
-  :config
-  (when (or (equal (s-trim (shell-command-to-string "whoami")) "kat")
+(use-package request :defer t)
+
+;; Without this, org can behave very strangely
+(use-package org
+  :ensure
+  (org :type git :host github :repo "colonelpanic8/org-mode" :local-repo "org"
+       :branch "my-main-2025"
+       :depth full
+       :build (:not autoloads)
+       :files (:defaults "lisp/*.el" ("etc/styles/" "etc/styles/*"))
+       :wait t))
+
+(elpaca-wait)
+
+(when (or (equal (s-trim (shell-command-to-string "whoami")) "kat")
             imalison:kat-mode)
     (let ((debug-on-error t))
       (org-babel-load-file
-       (concat (file-name-directory load-file-name) "kat-mode.org")))))
+       (concat (file-name-directory load-file-name) "kat-mode.org"))))
 
 (let ((debug-on-error t))
   (org-babel-load-file
-   (concat (file-name-directory load-file-name) "README.org")))
+   (expand-file-name "README.org" user-emacs-directory)))
 
 ;; (when imalison:do-benchmark (benchmark-init/deactivate))
 
