@@ -675,7 +675,7 @@ specific time, they should appear in the agenda at that time!
 *** Templates
 #+begin_src emacs-lisp :tangle org-config-config.el
 (use-package org-capture
-  :straight nil
+  :ensure nil
   :config
   (add-to-list 'org-capture-templates
                `("t" "GTD Todo (Linked)" entry (file ,imalison:org-gtd-file)
@@ -774,7 +774,7 @@ Note that this does not go into org-config-config.el. This is on purpose
 ** Disable yasnippet in org-mode
 #+BEGIN_SRC emacs-lisp
 (use-package org
-  :straight nil
+  :ensure nil
   :config
   (progn
     (defun imalison:disable-yas ()
@@ -832,7 +832,7 @@ This function replaces the default naming scheme with a call to
 #+BEGIN_SRC emacs-lisp
 (use-package ox
   :defer t
-  :straight nil
+  :ensure nil
   :config
   (defun org-export-get-reference (datum info)
     "Return a unique reference for DATUM, as a string.
@@ -860,7 +860,7 @@ alphanumeric characters only."
 #+BEGIN_SRC emacs-lisp
 (use-package ox-html
   :commands (org-html-export-as-html org-html-export-as-html)
-  :straight nil
+  :ensure nil
   :preface
   (progn
     (defvar imalison:link-svg-html
@@ -892,7 +892,7 @@ alphanumeric characters only."
 #+BEGIN_SRC emacs-lisp
 (use-package ox-html
   :defer t
-  :straight nil
+  :ensure nil
   :config
   (setq org-html-inline-image-rules
         '(("file" . "\\.\\(jpeg\\|jpg\\|png\\|gif\\|svg\\)\\(\\?.*?\\)?\\'")
@@ -1101,7 +1101,7 @@ alphanumeric characters only."
   :config
   (progn
     (require 'org-fc-hydra))
-  :straight (org-fc :type git :host github :repo "l3kn/org-fc"
+  :ensure (:host github :repo "l3kn/org-fc"
                     :files ("*.el" "awk" "demo.org")))
 #+end_src
 ** org-ql
@@ -1114,9 +1114,8 @@ alphanumeric characters only."
 #+begin_src emacs-lisp
 (use-package org-window-habit
   :demand t
-  :straight
-  (org-window-habit
-   :repo "colonelpanic8/org-window-habit"
+  :ensure
+  (:repo "colonelpanic8/org-window-habit"
    :host github
    :files ("org-window-habit.el"))
   :custom
