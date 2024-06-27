@@ -1895,6 +1895,7 @@ Neotree is useless with frame mode for now, so I've disabled it.
   (vertico-mode))
 
 (use-package vertico-directory :ensure nil
+  :after (vertico)
   :bind (:map vertico-map
               ("RET" . vertico-directory-enter)
               ("DEL" . vertico-directory-delete-char)
@@ -2971,7 +2972,7 @@ The following is taken from [[https://github.com/syl20bnr/spacemacs/blob/a650877
 My org-mode configuration now lives in its own file org-config.org.
 #+BEGIN_SRC emacs-lisp
 (org-babel-load-file
- (concat (file-name-directory load-file-name) "org-config.org"))
+ (expand-file-name "org-config.org" user-emacs-directory))
 #+END_SRC
 *** TeX
 #+BEGIN_SRC emacs-lisp
