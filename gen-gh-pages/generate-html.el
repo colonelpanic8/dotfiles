@@ -19,12 +19,6 @@
 (require 's)
 (org-babel-tangle-file readme-src)
 
-;; This makes it so that any dependencies specified with :straight, will
-;; actually just be installed with the default melpa use-package ensure logic.
-(defalias 'use-package-handler/:straight
-  #'use-package-handler/:ensure)
-(add-to-list 'use-package-keywords :straight)
-
 (load-file (concat emacs-dir "org-config.el"))
 
 (defun export-target (target)

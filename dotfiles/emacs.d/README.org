@@ -238,6 +238,7 @@ Sets environment variables by starting a shell.
 ** noflet
 #+BEGIN_SRC emacs-lisp
 (use-package noflet
+  :after (dash) ;;@HACK: noflet does not properly declare dependencies
   :demand t)
 #+END_SRC
 ** Non-Forking Shell Command To String
@@ -336,51 +337,6 @@ Works in the same way as os.path.join in python
   (imalison:join-paths (substitute-in-file-name "$HOME") "Projects"))
 
 (defvar imalison:gpg-key)
-#+END_SRC
-** Required Packages
-The packages in this section provide no functionality on their own,
-but provide support for writing custom elisp.
-*** s
-#+BEGIN_SRC emacs-lisp
-(use-package s :demand t)
-#+END_SRC
-*** dash
-#+BEGIN_SRC emacs-lisp
-(use-package dash
-  :demand t
-  :config
-  (progn
-    (dash-enable-font-lock)))
-#+END_SRC
-*** gh
-#+BEGIN_SRC emacs-lisp
-(use-package gh
-  :defer t
-  :straight (gh :type git :host github :repo "IvanMalison/gh.el"))
-#+END_SRC
-*** shut-up
-#+BEGIN_SRC emacs-lisp
-(use-package shut-up
-  :demand t
-  :ensure (:inherit t :wait t)
-  :config
-  (defun imalison:shut-up-around (function &rest args)
-    (shut-up (apply function args))))
-#+END_SRC
-*** parse-csv
-#+BEGIN_SRC emacs-lisp
-(use-package parse-csv
-  :demand t)
-#+END_SRC
-*** emit
-#+BEGIN_SRC emacs-lisp
-(use-package emit
-  :straight (emit :type git :host github :repo "colonelpanic8/emit"))
-#+END_SRC
-*** request
-#+BEGIN_SRC emacs-lisp
-(use-package request
-  :defer t)
 #+END_SRC
 ** Named Build
 <<namedbuild>>
@@ -1152,10 +1108,6 @@ I keep it around just in case I need it.
     (frame-mode +1)
     (frame-keys-mode +1)))
 #+END_SRC
-*** Handle xrefs annoying dedicated window garbage
-#+BEGIN_SRC emacs-lisp
-(use-package xref)
-#+END_SRC
 ** Fill Setup
 Get rid of nags about requiring setences to end with two spaces.
 #+BEGIN_SRC emacs-lisp
@@ -1449,6 +1401,20 @@ The file server file for this emacs instance no longer exists.")
 (use-package refine
   :disabled t)
 #+END_SRC
+** winner
+#+BEGIN_SRC emacs-lisp
+(use-package winner
+  :ensure nil
+  :commands (winner-undo winner-redo)
+  :bind ("C-c q" . imalison:winner-hydra/body)
+  :config
+  (progn
+    (defhydra imalison:winner-hydra ()
+      "Winner"
+      ("p" winner-undo "back")
+      ("n" winner-redo "forward" :exit t))
+    (winner-mode 1)))
+#+END_SRC
 ** eyebrowse
 I don't have any use for this now that I use frames mode, but its an interesting idea.
 #+BEGIN_SRC emacs-lisp
@@ -1513,10 +1479,11 @@ custom-set-faces in your custom file.
 (use-package highlight-indent-guides
   :commands highlight-indent-guides-mode
   :diminish highlight-indent-guides-mode
-  :demand t
+  :preface
+  (progn
+    (add-hook 'prog-mode-hook 'highlight-indent-guides-mode))
   :config
   (progn
-    (add-hook 'prog-mode-hook 'highlight-indent-guides-mode)
     (setq highlight-indent-guides-method 'fill)))
 #+END_SRC
 ** man-mode
@@ -1595,10 +1562,6 @@ out how to detect that a buffer is a man mode buffer.
   :config
   (progn
     (global-set-key (kbd "<escape>") 'god-local-mode)))
-#+END_SRC
-** bind-key
-#+BEGIN_SRC emacs-lisp
-(use-package bind-key)
 #+END_SRC
 ** which-key
 #+BEGIN_SRC emacs-lisp
@@ -1797,7 +1760,9 @@ bind-key and global-set-key forms.
                     (write-region "" nil
                                   (expand-file-name
                                    (concat directory "/"
-                                           (nth 0 file-info) "/.projectile"))))))
+                                           (nth 0 file-info) "/.projectile")))))))
+  :config
+  (progn
     (projectile-global-mode)
     (diminish 'projectile-mode)))
 #+END_SRC
@@ -1846,8 +1811,7 @@ bind-key and global-set-key forms.
 ** avy
 #+BEGIN_SRC emacs-lisp
 (use-package avy
-  :after emit
-  :config
+  :preface
   (progn
     (emit-prefix-selector imalison:avy
       avy-goto-word-1
@@ -1859,13 +1823,11 @@ bind-key and global-set-key forms.
 ** ace-window
 #+BEGIN_SRC emacs-lisp
 (use-package ace-window
-  :after emit
-  :config
-  (progn
-    (emit-prefix-selector imalison:ace-window
-      ace-select-window
-      ace-swap-window)
-    (setq aw-keys '(?a ?s ?d ?f ?g ?h ?j ?k ?l)))
+  :preface
+  (emit-prefix-selector imalison:ace-window
+    ace-select-window
+    ace-swap-window)
+  :config (setq aw-keys '(?a ?s ?d ?f ?g ?h ?j ?k ?l))
   :bind ("C-c w" . imalison:ace-window))
 #+END_SRC
 ** neotree
@@ -1891,41 +1853,28 @@ Neotree is useless with frame mode for now, so I've disabled it.
 * Completion
 ** vertico
 #+begin_src emacs-lisp
-  (use-package vertico
-	:demand t
-	:config
-	(progn
-	  (defmacro imalison:use-vertico-extension (extension-name &rest forms)
-		(let ((extension-symbol (intern (concat "vertico-" (symbol-name extension-name)))))
-		  `(use-package ,extension-symbol
-			 :after vertico
-			 :straight (,extension-symbol
-						:repo "emacs-straight/vertico"
-						:host github
-						:files ,(list (concat "extensions/" (symbol-name extension-symbol) ".el")))
-			 ,@forms)))
+(use-package vertico
+  :demand t
+  :config
+  (vertico-mode))
 
-	  (put 'imalison:use-vertico-extension 'lisp-indent-function 'defun)
+(use-package vertico-directory :ensure nil
+  :bind (:map vertico-map
+              ("RET" . vertico-directory-enter)
+              ("DEL" . vertico-directory-delete-char)
+              ("M-DEL" . vertico-directory-delete-word)
+              ("TAB" . embark-act)))
 
-	  (imalison:use-vertico-extension directory
-		:bind (:map vertico-map
-					("RET" . vertico-directory-enter)
-					("DEL" . vertico-directory-delete-char)
-					("M-DEL" . vertico-directory-delete-word)
-					("TAB" . embark-act)))
-
-	  (imalison:use-vertico-extension grid)
-	  (imalison:use-vertico-extension buffer)
-	  (imalison:use-vertico-extension flat)
-	  (imalison:use-vertico-extension multiform
-		:config
-		(progn
-		  (vertico-multiform-mode +1)
-		  (setq vertico-multiform-commands
-				'((consult-imenu grid)
-				  (consult-ripgrep buffer)))))
-
-	  (vertico-mode +1)))
+(use-package vertico-grid :ensure nil :after (vertico))
+(use-package vertico-buffer :ensure nil :after (vertico))
+(use-package vertico-flat :ensure nil :after (vertico))
+(use-package vertico-multiform :ensure nil :after (vertico)
+  :config
+  (progn
+    (vertico-multiform-mode +1)
+    (setq vertico-multiform-commands
+          '((consult-imenu grid)
+            (consult-ripgrep buffer)))))
 #+end_src
 ** orderless
 #+begin_src emacs-lisp
@@ -2020,12 +1969,10 @@ Neotree is useless with frame mode for now, so I've disabled it.
 ** company
 #+BEGIN_SRC emacs-lisp
 (use-package company
-  :after emit
   :commands company-mode imalison:company
   :bind (("C-\\" . imalison:company))
   :config
   (progn
-    (add-hook 'prog-mode-hook (lambda () (company-mode t)))
     (emit-prefix-selector imalison:company
       company-complete
       company-yasnippet)
@@ -2035,7 +1982,9 @@ Neotree is useless with frame mode for now, so I've disabled it.
       :demand t
       :config (company-prescient-mode +1))
     (global-company-mode)
-    (diminish 'company-mode)))
+    (diminish 'company-mode))
+  :init
+  (add-hook 'prog-mode-hook (lambda () (company-mode t))))
 #+END_SRC
 *** company-flx
 #+BEGIN_SRC emacs-lisp
@@ -2237,10 +2186,9 @@ I don't use auto-complete at all, so I have set up a hook to automatically disab
 #+BEGIN_SRC emacs-lisp
   (use-package flycheck
 	:commands flycheck-mode
-    :defer 1
+	:init (add-hook 'prog-mode-hook 'flycheck-mode)
 	:config
 	(progn
-      (add-hook 'prog-mode-hook 'flycheck-mode)
 	  (use-package flycheck-package
 		:disabled t
 		:config (flycheck-package-setup))
@@ -2260,7 +2208,7 @@ I don't use auto-complete at all, so I have set up a hook to automatically disab
 * auth-source
 #+begin_src emacs-lisp
 (use-package auth-source
-  :straight nil
+  :ensure nil
   :config
   (progn
     (setq auth-sources '("~/.authinfo.gpg"))))
@@ -2308,96 +2256,96 @@ I don't use auto-complete at all, so I have set up a hook to automatically disab
 #+END_SRC
 *** go
 #+BEGIN_SRC emacs-lisp
-;; (use-package go-mode
-;;   :mode (("\\.go\\'" . go-mode))
-;;   :after emit
-;;   :config
-;;   (progn
-;;     (defun imalison:glide-novendor ()
-;;       (projectile-with-default-dir (projectile-project-root)
-;;         (shell-command-to-string "glide novendor")))
+(use-package go-mode
+  :mode (("\\.go\\'" . go-mode))
+  :preface
+  (progn
+    (defun imalison:glide-novendor ()
+      (projectile-with-default-dir (projectile-project-root)
+        (shell-command-to-string "glide novendor")))
 
-;;     (defun imalison:go-mode-create-imenu-index ()
-;;       "Create and return an imenu index alist. Unlike the default
-;;   alist created by go-mode, this method creates an alist where
-;;   items follow a style that is consistent with other prog-modes."
-;;       (let* ((patterns '(("type" "^type *\\([^ \t\n\r\f]*\\)" 1)))
-;;              (type-index (imenu--generic-function patterns))
-;;              (func-index))
-;;         (save-excursion
-;;           (goto-char (point-min))
-;;           (while (re-search-forward go-func-meth-regexp (point-max) t)
-;;             (let* ((var (match-string-no-properties 1))
-;;                    (func (match-string-no-properties 2))
-;;                    (name (if var
-;;                              (concat (substring var 0 -1) "." func)
-;;                            func))
-;;                    (beg (match-beginning 0))
-;;                    (marker (copy-marker beg))
-;;                    (item (cons name marker)))
-;;               (setq func-index (cons item func-index)))))
-;;         (nconc type-index (list (cons "func" func-index)))))
+    (defun imalison:go-mode-create-imenu-index ()
+      "Create and return an imenu index alist. Unlike the default
+  alist created by go-mode, this method creates an alist where
+  items follow a style that is consistent with other prog-modes."
+      (let* ((patterns '(("type" "^type *\\([^ \t\n\r\f]*\\)" 1)))
+             (type-index (imenu--generic-function patterns))
+             (func-index))
+        (save-excursion
+          (goto-char (point-min))
+          (while (re-search-forward go-func-meth-regexp (point-max) t)
+            (let* ((var (match-string-no-properties 1))
+                   (func (match-string-no-properties 2))
+                   (name (if var
+                             (concat (substring var 0 -1) "." func)
+                           func))
+                   (beg (match-beginning 0))
+                   (marker (copy-marker beg))
+                   (item (cons name marker)))
+              (setq func-index (cons item func-index)))))
+        (nconc type-index (list (cons "func" func-index)))))
 
-;;     (defun imalison:go-workspace-path ()
-;;       (file-relative-name (projectile-project-root)
-;;                           (concat (file-name-as-directory
-;;                                    (imalison:get-go-path)) "src")))
+    (defun imalison:go-workspace-path ()
+      (file-relative-name (projectile-project-root)
+                          (concat (file-name-as-directory
+                                   (imalison:get-go-path)) "src")))
 
-;;     (defun imalison:install-current-go-project ()
-;;       (interactive)
-;;       (start-process
-;;        "go install" "go install log" "go" "install"
-;;        (concat (file-name-as-directory (imalison:go-workspace-path)) "...")))
+    (defun imalison:install-current-go-project ()
+      (interactive)
+      (start-process
+       "go install" "go install log" "go" "install"
+       (concat (file-name-as-directory (imalison:go-workspace-path)) "...")))
 
-;;     (defun imalison:get-go-path ()
-;;       (let ((environment-go-path (getenv "GOPATH")))
-;;         (if environment-go-path
-;;             (file-name-as-directory (car (s-split ":" environment-go-path)))
-;;           "~/go")))
+    (defun imalison:get-go-path ()
+      (let ((environment-go-path (getenv "GOPATH")))
+        (if environment-go-path
+            (file-name-as-directory (car (s-split ":" environment-go-path)))
+          "~/go")))
 
-;;     (defmacro imalison:get-go-src (&rest paths)
-;;       `(imalison:join-paths (imalison:get-go-path) "src" ,@paths))
+    (defmacro imalison:get-go-src (&rest paths)
+      `(imalison:join-paths (imalison:get-go-path) "src" ,@paths))
 
-;;     (imalison:let-advise-around imalison:advise-normal-go-command
-;;       (go-command "go"))
+    (imalison:let-advise-around imalison:advise-normal-go-command
+      (go-command "go"))
 
-;;     (defun imalison:go-mode-hook ()
-;;       (go-eldoc-setup)
-;;       (set (make-local-variable 'company-backends) '(company-go))
-;;       (make-local-variable 'projectile-globally-ignored-files)
-;;       (add-hook 'after-save-hook 'imalison:install-current-go-project nil
-;;                 'yes-do-local)
-;;       (add-to-list 'projectile-globally-ignored-files
-;;                    "vendor"))
-;;     (use-package gotest
-;;       :demand t
-;;       :after emit
-;;       :bind (:map go-mode-map
-;;                   ("C-c t" . imalison:gotest))
-;;       :preface
-;;       (progn
-;;         (emit-prefix-selector imalison:gotest
-;;           go-test-current-test
-;;           go-test-current-file)
+    (defun imalison:go-mode-hook ()
+      (go-eldoc-setup)
+      (set (make-local-variable 'company-backends) '(company-go))
+      (make-local-variable 'projectile-globally-ignored-files)
+      (add-hook 'after-save-hook 'imalison:install-current-go-project nil
+                'yes-do-local)
+      (add-to-list 'projectile-globally-ignored-files
+                   "vendor")))
+  :config
+  (progn
+    (use-package gotest
+      :demand t
+      :bind (:map go-mode-map
+                  ("C-c t" . imalison:gotest))
+      :preface
+      (progn
+        (emit-prefix-selector imalison:gotest
+          go-test-current-test
+          go-test-current-file)
 
-;;         (defun imalison:add-expected-test-name-for-suite (suite-name test-name)
-;;           (if (> (length suite-name) 0)
-;;               (concat " -run Test" suite-name)
-;;             "")))
-;;       :config
-;;       (progn
-;;         (setq go-test-verbose t
-;;               go-test-additional-arguments-function
-;;               'imalison:add-expected-test-name-for-suite)))
-;;     (use-package company-go
-;;       :config (setq company-go-show-annotation t))
+        (defun imalison:add-expected-test-name-for-suite (suite-name test-name)
+          (if (> (length suite-name) 0)
+              (concat " -run Test" suite-name)
+            "")))
+      :config
+      (progn
+        (setq go-test-verbose t
+              go-test-additional-arguments-function
+              'imalison:add-expected-test-name-for-suite)))
+    (use-package company-go
+      :config (setq company-go-show-annotation t))
 
-;;     (advice-add 'go-import-add :around 'imalison:advise-normal-go-command)
+    (advice-add 'go-import-add :around 'imalison:advise-normal-go-command)
 
-;;     (setq gofmt-command "goimports")
+    (setq gofmt-command "goimports")
 
-;;     (add-hook 'go-mode-hook 'imalison:go-mode-hook)
-;;     (add-hook 'before-save-hook 'gofmt-before-save t)))
+    (add-hook 'go-mode-hook 'imalison:go-mode-hook)
+    (add-hook 'before-save-hook 'gofmt-before-save t)))
 #+END_SRC
 **** Show diffs of testify output
 #+BEGIN_SRC emacs-lisp
@@ -2439,25 +2387,13 @@ I don't use auto-complete at all, so I have set up a hook to automatically disab
 **** elisp-slime-nav
 #+BEGIN_SRC emacs-lisp
 (use-package elisp-slime-nav
-  :after emit
   :commands elisp-slime-nav-mode
   :config
-  (progn
-    (defvar imalison:check-parens nil)
-
-    (defun imalison:maybe-check-parens ()
-      (if imalison:check-parens
-          (check-parens)))
-
-    (defun imalison:emacs-lisp-hook ()
-      (elisp-slime-nav-mode t)
-      (add-hook 'write-file-functions 'imalison:maybe-check-parens nil t))
-
-    (add-hook 'emacs-lisp-mode-hook 'imalison:emacs-lisp-hook)
-    (diminish 'elisp-slime-nav-mode)
-    (emit-prefix-selector imalison:elisp-slime-nav
-      elisp-slime-nav-find-elisp-thing-at-point
-      elisp-slime-nav-describe-elisp-thing-at-point))
+  (diminish 'elisp-slime-nav-mode)
+  :preface
+  (emit-prefix-selector imalison:elisp-slime-nav
+    elisp-slime-nav-find-elisp-thing-at-point
+    elisp-slime-nav-describe-elisp-thing-at-point)
   :bind (:map elisp-slime-nav-mode-map
               ("M-." . imalison:elisp-slime-nav)))
 #+END_SRC
@@ -2539,7 +2475,6 @@ Reduce indentation for some functions
   :commands (eros-mode)
   :config
   (progn
-    (add-hook 'emacs-lisp-mode-hook 'eros-mode)
     (advice-add 'eval-defun :around 'eros-around-eval-defun)
     (advice-add 'eval-last-sexp :around 'eros-around-eval-last-sexp))
   :preface
@@ -2560,7 +2495,9 @@ Reduce indentation for some functions
            (save-excursion
              (end-of-defun)
              (point))))
-        result))))
+        result))
+
+    (add-hook 'emacs-lisp-mode-hook 'eros-mode)))
 #+END_SRC
 **** Reevalute defvars when running eval-last-sexp
 We noflet elisp--preceding-sexp to munge defvars into sexps only for
@@ -2578,10 +2515,27 @@ eval-last-sexp.
 #+END_SRC
 **** Init hook
 #+BEGIN_SRC emacs-lisp
+(defvar imalison:check-parens nil)
 
+(defun imalison:maybe-check-parens ()
+  (if imalison:check-parens
+      (check-parens)))
+
+(defun imalison:emacs-lisp-hook ()
+  (when (fboundp 'elisp-slime-nav-mode) (elisp-slime-nav-mode t))
+  (add-hook 'write-file-functions 'imalison:maybe-check-parens nil t))
+
+(add-hook 'emacs-lisp-mode-hook 'imalison:emacs-lisp-hook)
 #+END_SRC
 **** Keybinds
 #+BEGIN_SRC emacs-lisp
+(emit-compose
+ imalison:copy-eval-last-sexp kill-new prin1-to-string eval-last-sexp)
+
+(emit-prefix-selector imalison:eval-last-sexp
+  eval-region-or-last-sexp
+  imalison:copy-eval-last-sexp)
+
 (define-key lisp-mode-shared-map (kbd "C-c C-c") 'eval-defun)
 (define-key lisp-mode-shared-map (kbd "C-x C-e") 'imalison:eval-last-sexp)
 (unbind-key "C-j" lisp-interaction-mode-map)
@@ -2610,7 +2564,7 @@ eval-last-sexp.
     (setq nix-indent-function 'nix-indent-line)))
 
 (use-package lsp-nix
-  :straight nil
+  :ensure nil
   :after (lsp-mode)
   :config
   (progn
@@ -2681,6 +2635,13 @@ The following is taken from [[https://github.com/syl20bnr/spacemacs/blob/a650877
           cider-prompt-for-symbol nil
           cider-preferred-build-tool "boot")
     (add-hook 'clojure-mode-hook 'cider-mode)))
+#+END_SRC
+**** clj-refactor
+#+BEGIN_SRC emacs-lisp
+;;@WORKAROUND clj-refactor dependency inflections Version metadata
+(use-package inflections :ensure (:depth nil :version elpaca-latest-tag :version-regexp "[[:digit:]]\\.[[:digit:]]"))
+(use-package clj-refactor
+  :commands clj-refactor-mode)
 #+END_SRC
 *** scala
 #+BEGIN_SRC emacs-lisp
@@ -2844,10 +2805,9 @@ The following is taken from [[https://github.com/syl20bnr/spacemacs/blob/a650877
 
 (use-package purty
   :commands purty-on-save-mode
-  :straight (purty :repo "joneshf/purty"
-                   :type git
-                   :host gitlab
-                   :files ("purty.el")))
+  :ensure (purty :repo "joneshf/purty"
+                 :host gitlab
+                 :files ("purty.el")))
 
 (use-package psc-ide
   :after purescript-mode
@@ -2881,7 +2841,7 @@ The following is taken from [[https://github.com/syl20bnr/spacemacs/blob/a650877
 #+END_SRC
 *** C/C++
 #+BEGIN_SRC emacs-lisp
-(use-package cc-mode :ensure nil)
+(use-package cc-mode :ensure nil :defer t)
 #+END_SRC
 *** C--
 #+BEGIN_SRC emacs-lisp
@@ -2974,7 +2934,7 @@ My org-mode configuration now lives in its own file org-config.org.
 *** TeX
 #+BEGIN_SRC emacs-lisp
 (use-package tex
-  :straight (auctex :host github :repo "raxod502/auctex"
+  :ensure (auctex :host github :repo "raxod502/auctex"
                     :branch "fork/1"
                     :files (:defaults (:exclude "doc/*.texi")))
   :commands TeX-mode
@@ -2999,7 +2959,7 @@ My org-mode configuration now lives in its own file org-config.org.
 **** latex
  #+BEGIN_SRC emacs-lisp
 (use-package latex
-  :straight auctex
+  :ensure nil
   :after tex
   :config
   (progn
@@ -3086,10 +3046,9 @@ My org-mode configuration now lives in its own file org-config.org.
 ** magit
 #+BEGIN_SRC emacs-lisp
 (use-package magit
-  :after emit
   :commands magit-status
   :bind (("C-x g" . imalison:magit-status))
-  :config
+  :preface
   (progn
     (emit-let-around imalison:magit-status-traditional
                      magit-status
@@ -3100,7 +3059,9 @@ My org-mode configuration now lives in its own file org-config.org.
       imalison:magit-status-traditional)
     (defun imalison:after-magit-visit-file (&rest args)
       (when (derived-mode-p 'org-mode)
-        (org-show-context 'magit-goto)))
+        (org-show-context 'magit-goto))))
+  :config
+  (progn
     (when frame-mode
       (setq magit-commit-show-diff t))
     (unbind-key "C-j" magit-status-mode-map)
@@ -3111,6 +3072,7 @@ My org-mode configuration now lives in its own file org-config.org.
           magit-display-buffer-function
           'magit-display-buffer-same-window-except-diff-v1)
     (magit-auto-revert-mode)
+
     (add-to-list 'org-show-context-detail '(magit-goto . lineage))
     (advice-add 'magit-diff-visit-file :after 'imalison:after-magit-visit-file)
     (add-hook 'magit-popup-mode-hook 'imalison:disable-show-trailing-whitespace)))
@@ -3120,6 +3082,21 @@ My org-mode configuration now lives in its own file org-config.org.
 (use-package forge
   :disabled t
   :after magit)
+#+end_src
+** vc
+#+begin_src emacs-lisp
+(use-package vc
+  :ensure nil
+  :config
+  (progn
+    (defun vc-find-revision-of-file (revision)
+      (interactive
+       (list (vc-read-revision
+              "Revision to visit: "
+              (list (imalison:join-paths (magit-toplevel) (car (magit-list-files)))))))
+      (let* ((file (completing-read "Select file to visit: " (magit-revision-files revision)))
+             (full-file (imalison:join-paths (magit-toplevel) file)))
+        (switch-to-buffer (vc-find-revision full-file revision))))))
 #+end_src
 ** git-link
 #+BEGIN_SRC emacs-lisp
@@ -3245,6 +3222,14 @@ modeline and with excessive http requests to github.
                          gist-unstar gist-list-starred gist-fork))
 #+END_SRC
 * Programming
+** emr
+emr (emacs refactor) provides support for refactoring in many programming languages
+#+BEGIN_SRC emacs-lisp
+(use-package emr
+  :bind (:map prog-mode-map
+              ("M-RET" . emr-show-refactor-menu))
+  :config (emr-initialize))
+#+END_SRC
 ** semantic
 #+BEGIN_SRC emacs-lisp
 (use-package semantic
@@ -3309,8 +3294,8 @@ in term-mode. This makes term-mode 1000% more useful
 (especially having M-x and C-y available).
 #+BEGIN_SRC emacs-lisp
 (use-package term
-  :demand t
   :ensure nil
+  :demand t
   :preface
   (progn
     (defun imalison:avy-term (arg)
@@ -3375,7 +3360,6 @@ in term-mode. This makes term-mode 1000% more useful
 #+BEGIN_SRC emacs-lisp
 (use-package term-projectile
   :bind ("C-c 7" . imalison:term-hydra-global/body)
-  :after emit
   :commands
   (term-projectile-backward
    term-projectile-create-new
@@ -3388,8 +3372,8 @@ in term-mode. This makes term-mode 1000% more useful
   (progn
     (use-package term-manager-eat
       :demand t
-      :straight
-      (term-manager-eat :type git :files ("term-manager-eat.el")
+      :ensure
+      (term-manager-eat  :files ("term-manager-eat.el")
                         :host github :repo "colonelpanic8/term-manager"))
     (setq term-projectile-term-manager (term-projectile :build-term 'term-manager-eat-build-term))
     (emit-prefix-selector imalison:term
@@ -3533,13 +3517,14 @@ I think that shell-history is causing projectile to be very slow so I have disab
 ** iedit
 I don't use iedit directly, but it is used by [[*emr][emr]] and I need to disable ~iedit-toggle-key-default~ or else a buffer pops up complaing that the key has been bound to something else
 #+BEGIN_SRC emacs-lisp
-(use-package iedit
+;;@WORKAROUND iedit has oddball version scheme. Report upstream bug.
+(use-package iedit :ensure (:depth nil :version (lambda (_) "0.99"))
   :defer t)
 #+END_SRC
 ** tramp
 #+BEGIN_SRC emacs-lisp
 (use-package tramp
-  :straight nil
+  :ensure nil
   :commands tramp
   :config
   (setq tramp-default-method "scp"))
@@ -3547,6 +3532,7 @@ I don't use iedit directly, but it is used by [[*emr][emr]] and I need to disabl
 ** narrow-indirect
 #+BEGIN_SRC emacs-lisp
 (use-package narrow-indirect
+  :disabled t ;;@FIX where is it hosted? locally? add :ensure nil + use-package :load-path keyword
   :ensure nil
   :init
   (progn
@@ -3583,9 +3569,9 @@ I had to disable this mode because something that it does messes with coding set
       (interactive)
       (setq dtrt-indent-original-indent nil)
       (dtrt-indent-adapt)))
+  :init (add-hook 'prog-mode-hook 'dtrt-indent-mode)
   :config
   (progn
-    (add-hook 'prog-mode-hook 'dtrt-indent-mode)
     (setq dtrt-indent-active-mode-line-info " [⟼]")))
 #+END_SRC
 ** indent-guide
@@ -3628,7 +3614,6 @@ Disabled because it makes it hard to redo things
 (use-package recentf
   :ensure nil
   :demand t
-  :after shut-up
   :config
   (progn
     (setq recentf-max-saved-items 1000
@@ -3666,7 +3651,7 @@ I have currently disabled key-chord because it may cause typing lag.
 ** calc-mode
 #+BEGIN_SRC emacs-lisp
 (use-package calc-mode
-  :straight nil
+  :ensure nil
   :commands calc
   :config
   (progn
@@ -3723,8 +3708,8 @@ Not really sure what this is
 ** epg
 #+BEGIN_SRC emacs-lisp
 (use-package epg
-  :after shut-up
   :ensure nil
+  :after shut-up
   :config
   (shut-up
     (epa-file-enable)))
@@ -3746,6 +3731,113 @@ Not really sure what this is
 (use-package matrix-client
   :disabled t ;; fails to load eieio on startup
   )
+#+END_SRC
+** mu4e
+#+BEGIN_SRC emacs-lisp
+;; (eval-when-compile
+;;   (require 's)
+;;   (defvar mu4e-elisp-directory
+;;     (s-trim (shell-command-to-string "mu4e_directory"))))
+(use-package mu4e
+  :disabled t
+  :load-path mu4e-elisp-directory
+  :ensure nil
+  :commands (mu4e mu4e-view-message-with-msgid mu4e-update-index email)
+  :bind ("C-c 0" . email)
+  :config
+  (progn
+    (defun email (&optional arg)
+      (interactive "P")
+      (if (string-equal (persp-name persp-curr) "email")
+          (progn (delete-other-windows) (mu4e))
+        (progn
+          (persp-switch "email")
+          (when (or (not (mu4e-running-p)) arg)
+            (delete-other-windows) (mu4e)))))
+    ;; enable inline images
+    (setq mu4e-view-show-images t)
+    ;; show images
+    (setq mu4e-show-images t)
+    ;; Try to display html as text
+    (setq mu4e-view-prefer-html nil)
+
+    (setq mu4e-html2text-command "html2text -width 80 -nobs -utf8")
+
+    ;; use imagemagick, if available
+    (when (fboundp 'imagemagick-register-types)
+      (imagemagick-register-types))
+    (setq mail-user-agent 'mu4e-user-agent)
+    (require 'org-mu4e)
+    (setq mu4e-compose-complete-only-after nil)
+    (setq mu4e-maildir "~/Mail")
+
+    (setq mu4e-drafts-folder "/[Gmail].Drafts")
+    (setq mu4e-sent-folder   "/[Gmail].Sent Mail")
+    (setq mu4e-trash-folder  "/[Gmail].Trash")
+
+    (setq mu4e-sent-messages-behavior 'delete)
+    (setq mu4e-headers-skip-duplicates t)
+    (setq mu4e-update-interval (* 60 20))
+    (setq message-kill-buffer-on-exit t)
+    (setq mail-user-agent 'mu4e-user-agent) ;; make mu4e the default mail client
+
+    ;; don't save message to Sent Messages, Gmail/IMAP takes care of this
+    (setq mu4e-sent-messages-behavior 'delete)
+
+    ;; allow for updating mail using 'U' in the main view:
+    (setq mu4e-get-mail-command "timeout 60 offlineimap")
+
+    (add-hook 'mu4e-compose-mode-hook
+              (defun my-do-compose-stuff () (flyspell-mode)))
+
+    (add-to-list 'mu4e-headers-actions '("view in browser" . mu4e-action-view-in-browser))
+    (add-to-list 'mu4e-view-actions '("view in browser" . mu4e-action-view-in-browser))
+
+    (defun mu4e-view (msg headersbuf)
+      "Display the message MSG in a new buffer, and keep in sync with HDRSBUF.
+  'In sync' here means that moving to the next/previous message in
+  the the message view affects HDRSBUF, as does marking etc.
+
+  As a side-effect, a message that is being viewed loses its 'unread'
+  marking if it still had that."
+      (let* ((embedded ;; is it as an embedded msg (ie. message/rfc822 att)?
+              (when (gethash (mu4e-message-field msg :path)
+                             mu4e~path-parent-docid-map) t))
+             (buf
+              (if embedded
+                  (mu4e~view-embedded-winbuf)
+                (get-buffer-create mu4e~view-buffer-name))))
+        ;; note: mu4e~view-mark-as-read will pseudo-recursively call mu4e-view again
+        ;; by triggering mu4e~view again as it marks the message as read
+        (with-current-buffer buf
+          (switch-to-buffer buf)
+          (setq mu4e~view-msg msg)
+          ;;(or embedded (not (mu4e~view-mark-as-read msg)))
+          (when (or (mu4e~view-mark-as-read msg) t)
+            (let ((inhibit-read-only t))
+              (erase-buffer)
+              (mu4e~delete-all-overlays)
+              (insert (mu4e-view-message-text msg))
+              (goto-char (point-min))
+              (mu4e~fontify-cited)
+              (mu4e~fontify-signature)
+              (mu4e~view-make-urls-clickable)
+              (mu4e~view-show-images-maybe msg)
+              (setq
+               mu4e~view-buffer buf
+               mu4e~view-headers-buffer headersbuf)
+              (when embedded (local-set-key "q" 'kill-buffer-and-window))
+              (mu4e-view-mode))))))
+
+    (require 'smtpmail)
+
+    ;; alternatively, for emacs-24 you can use:
+    (setq message-send-mail-function 'smtpmail-send-it
+          smtpmail-stream-type 'starttls
+          smtpmail-default-smtp-server "smtp.gmail.com"
+          smtpmail-smtp-server "smtp.gmail.com"
+          smtpmail-smtp-service 587)))
+
 #+END_SRC
 ** gmail-message-mode
 This is useful with server mode when editing gmail messages. I think that it is not currently working, or it may need to be manually enabled.
@@ -3780,6 +3872,57 @@ This is useful with server mode when editing gmail messages. I think that it is 
        :title "Windows Toast"
        :notifier 'imalison:windows-toast-notify)
       (setq alert-default-style 'windows-toast))))
+#+END_SRC
+** sauron
+#+BEGIN_SRC emacs-lisp
+(use-package sauron
+  :disabled t
+  :defer 5
+  :commands (sauron-start sauron-start-hidden)
+  :init
+  (progn
+    (when (eq system-type 'darwin)
+      (setq sauron-modules '(sauron-erc sauron-org sauron-notifications
+                                        sauron-twittering sauron-jabber sauron-identica))
+      (defun sauron-dbus-start ()
+        nil)
+      (makunbound 'dbus-path-emacs)))
+  :config
+  (progn
+    (sauron-start-hidden)
+    ;; This should really check (featurep 'dbus) but for some reason
+    ;; this is always true even if support is not there.
+    (setq sauron-prio-sauron-started 2)
+    (setq sauron-min-priority 3)
+    ;; (setq sauron-dbus-cookie t) ;; linux only?
+    (setq sauron-separate-frame nil)
+    (setq sauron-nick-insensitivity 1)
+    (defun sauron:jabber-notify (origin priority message &optional properties)
+      (funcall notify-function "gtalk" message))
+    (defun sauron:erc-notify (origin priority message &optional properties)
+      (let ((event (plist-get properties :event)))
+        (funcall notify-function "IRC" message)))
+    (defun sauron:mu4e-notify (origin priority message &optional properties)
+      nil)
+    (defun sauron:dbus-notify (origin priority message &optional properties)
+      (funcall notify-function "GMail" message))
+    (defun sauron:dispatch-notify (origin priority message &optional properties)
+      (let ((handler (cond ((string= origin "erc") 'sauron:erc-notify)
+                           ((string= origin "jabber") 'sauron:jabber-notify)
+                           ((string= origin "mu4e") 'sauron:mu4e-notify)
+                           ((string= origin "dbus") 'sauron:dbus-notify)
+                           (t (lambda (&rest r) nil)))))
+        (funcall handler origin priority message properties)))
+    ;; Prefering alert.el for now ;; (add-hook 'sauron-event-added-functions 'sauron:dispatch-notify)
+    (sauron-start-hidden)
+    (add-hook 'sauron-event-added-functions 'sauron-alert-el-adapter)))
+
+#+END_SRC
+** screenshot
+#+BEGIN_SRC emacs-lisp
+(use-package screenshot
+  :disabled t ;;@FIX :ensure (:host github :repo "tecosaur/screenshot")?
+  :commands screenshot)
 #+END_SRC
 ** libmpdee
 #+BEGIN_SRC emacs-lisp
@@ -3911,7 +4054,7 @@ This also adds syntax highlighting for gradle
 ** jsx-mode
 #+BEGIN_SRC emacs-lisp
 (use-package jsx-mode
-  :ensure nil
+  :disabled t ;;@FIX Add :ensure with package recipe. Could not find "jsx-mode" hosted anywhere
   :defer t)
 #+END_SRC
 ** css
@@ -3920,6 +4063,13 @@ This also adds syntax highlighting for gradle
   :ensure nil
   :mode (("\\.css\\'" . css-mode)
          ("\\.rasi\\'" . css-mode)))
+#+END_SRC
+** sgml-mode
+#+BEGIN_SRC emacs-lisp
+(use-package sgml-mode
+  :ensure nil
+  ;; :bind ("C-c b" . web-beautify-html) TODO: mode specific, change binding
+  :commands sgml-mode)
 #+END_SRC
 ** evil
 #+BEGIN_SRC emacs-lisp
@@ -3949,18 +4099,15 @@ Ensure all themes that I use are installed:
   (progn
     (setq solarized-high-contrast-mode-line t)))
 
-(defun elpaca-function (pkg)
-  (eval `(elpaca ,pkg)))
-
 (defvar-setq packages-appearance
   '(monokai-theme zenburn-theme base16-theme molokai-theme moe-theme
-                  tango-2-theme gotham-theme sublime-themes rainbow-delimiters
+                  tango-2-theme gotham-theme sublime-themes
                   waher-theme ample-theme material-theme zerodark-theme
                   color-theme-modern leuven-theme spacemacs-theme gruvbox-theme
                   forest-blue-theme flatland-theme afternoon-theme
                   cyberpunk-theme dracula-theme))
 
-(mapcar 'elpaca-function packages-appearance)
+(mapcar #'elpaca-try packages-appearance)
 
 (use-package doom-themes
   :defer t)
@@ -4071,7 +4218,7 @@ load-theme hook (See the heading below).
 (advice-add 'load-theme :after #'imalison:after-load-theme)
 #+END_SRC
 ** Set Font
-#+BEGIN_SRC emacs-lisp
+#+BEGIN_SRC emacs-lisp :tangle no
 (add-to-list 'default-frame-alist
              '(font . "JetBrainsMono Nerd Font-10:weight=medium"))
 #+END_SRC
@@ -4115,14 +4262,12 @@ load-theme hook (See the heading below).
   (unless imalison:appearance-setup-done
     (unless (member imalison:dark-theme custom-enabled-themes)
       (load-theme imalison:dark-theme t))
-    (doom-modeline-mode +1)
     (apply 'imalison:appearance args)
     (message "running appearance")
+    (doom-modeline-mode +1)
     (setq imalison:default-font-size-pt (face-attribute 'default :height))
     (setq imalison:appearance-setup-done t)))
 
-(add-hook 'elpaca-after-init-hook
-          (lambda () (add-hook 'after-make-frame-functions 'imalison:appearance-setup-hook)))
 (add-hook 'elpaca-after-init-hook 'imalison:appearance-setup-hook)
 #+END_SRC
 * Post Init Custom
