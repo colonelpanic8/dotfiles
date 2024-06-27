@@ -18,6 +18,7 @@ We're going to use this to write separate parts of our config to different secti
 #+begin_src emacs-lisp
 (defmacro imalison:org-config ()
   `(use-package org
+     :ensure nil
      :commands (org-mode org org-mobile-push org-mobile-pull org-agenda)
      :mode ("\\.org\\'" . org-mode)
      :preface (progn ,@(imalison:include-file-as-forms (imalison:join-paths user-emacs-directory "org-config-preface.el")))
@@ -761,6 +762,7 @@ SCHEDULED: %^t
 Note that this does not go into org-config-config.el. This is on purpose
 #+begin_src emacs-lisp
 (use-package org
+  :ensure nil
   :after frame-mode
   :config
   (progn
@@ -785,6 +787,7 @@ Note that this does not go into org-config-config.el. This is on purpose
 This was taken from [[http://emacs.stackexchange.com/questions/3374/set-the-background-of-org-exported-code-blocks-according-to-theme][here]].
 #+BEGIN_SRC emacs-lisp
 (use-package org
+  :ensure nil
   :config
   (progn
     (defun imalison:org-inline-css-hook (exporter)
