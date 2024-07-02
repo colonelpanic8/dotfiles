@@ -29,16 +29,12 @@
   boot.kernelModules = [ "kvm-intel" ];
   boot.extraModulePackages = [ ];
   services.xserver = {
-    videoDrivers = [ "intel" ];
+    videoDrivers = [ "nvidia" ];
   };
   hardware.opengl = {
     enable = true;
+    driSupport = true;
     driSupport32Bit = true;
-    extraPackages = with pkgs; [
-      intel-media-driver
-      intel-vaapi-driver
-      libvdpau-va-gl
-    ];
   };
   hardware.nvidia.package = config.boot.kernelPackages.nvidiaPackages.production;
   hardware.nvidia.modesetting.enable = true;
