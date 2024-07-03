@@ -3,6 +3,7 @@
 {
   imports = [
     ../configuration.nix
+    inputs.nixos-hardware.nixosModules.asus-rog-strix-g834jzr
   ];
 
   modules.base.enable = true;
@@ -28,16 +29,10 @@
   boot.initrd.kernelModules = [ ];
   boot.kernelModules = [ "kvm-intel" ];
   boot.extraModulePackages = [ ];
-  services.xserver = {
-    videoDrivers = [ "nvidia" ];
-  };
-  hardware.opengl = {
+  hardware.graphics = {
     enable = true;
-    driSupport = true;
-    driSupport32Bit = true;
+    enable32Bit = true;
   };
-  hardware.nvidia.package = config.boot.kernelPackages.nvidiaPackages.production;
-  hardware.nvidia.modesetting.enable = true;
   boot.loader.systemd-boot.enable = true;
   boot.loader.efi.canTouchEfiVariables = true;
 

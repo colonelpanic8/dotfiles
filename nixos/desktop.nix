@@ -82,7 +82,7 @@ makeEnable config "modules.desktop" true {
     simplescreenrecorder
     skippy-xd
     synergy
-    transmission-gtk
+    transmission_3-gtk
     vlc
     volnoti
     xfce.thunar

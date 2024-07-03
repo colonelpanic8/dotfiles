@@ -3,7 +3,7 @@
     railbird-secrets = {
       url = "git+ssh://gitea@dev.railbird.ai:1123/railbird/secrets-flake.git";
     };
-    nixos-hardware = { url = "github:colonelpanic8/nixos-hardware"; };
+    nixos-hardware = { url = "github:colonelpanic8/nixos-hardware/add-g834jzr"; };
 
     nixpkgs = {
       url = "github:NixOS/nixpkgs/nixos-unstable";
