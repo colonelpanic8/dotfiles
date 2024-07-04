@@ -2,18 +2,25 @@
 import argparse
 import os
 import sys
+import logging
+
+logger = logging.getLogger(__name__)
 
 
 class BrightnessManager(object):
 
     @classmethod
     def find_brightness(cls):
+        items_in_backlight_directory = os.listdir("/sys/class/backlight")
+        if len(items_in_backlight_directory) > 1:
+            logger.warning(f"More than one entry in the backlight directory {items_in_backlight_directory}")
         return cls.from_path(
-            os.path.join("/sys/class/backlight", os.listdir("/sys/class/backlight")[0])
+            os.path.join("/sys/class/backlight", items_in_backlight_directory[0])
         )
 
     @classmethod
     def from_path(cls, path):
+        logger.warning(f"Using path {path}")
         return cls(
             set_brightness_filepath=os.path.join(path, "brightness"),
             actual_brightness_filepath=os.path.join(path, "actual_brightness"),
@@ -21,7 +28,7 @@ class BrightnessManager(object):
         )
 
     def __init__(
-            self, set_brightness_filepath, max_brightness_filepath, actual_brightness_filepath
+        self, set_brightness_filepath, max_brightness_filepath, actual_brightness_filepath
     ):
         self.set_brightness_filepath = set_brightness_filepath
         self.max_brightness_filepath = max_brightness_filepath
@@ -71,6 +78,11 @@ def build_parser():
 
 if __name__ == '__main__':
     args = build_parser().parse_args()
-    BrightnessManager.find_brightness().increment_by_proportion(float(args.change) / 100)
+    symlink_path = os.readlink("/home/imalison/.config/brightness_manager/symlink")
+    if os.path.exists(symlink_path):
+        manager = BrightnessManager.from_path(symlink_path)
+    else:
+        manager = BrightnessManager.find_brightness()
+    manager.increment_by_proportion(float(args.change) / 100)
     if args.do_print:
-        print(int(IntelBrightnessManager.current_proportion * 100))
+        print(int(manager.current_proportion * 100))
