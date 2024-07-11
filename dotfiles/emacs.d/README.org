@@ -1514,20 +1514,25 @@ https://github.com/alpaker/Fill-Column-Indicator/issues/21 for more details
     (advice-add 'company-call-frontends :before #'fci-on-off-fci-before-company)
     (add-hook 'prog-mode-hook 'fci-mode)))
 #+END_SRC
-** highlight-indent-guides
-If the load-theme hook from this package starts causing trouble check for
-custom-set-faces in your custom file.
-#+BEGIN_SRC emacs-lisp
-(use-package highlight-indent-guides
-  :commands highlight-indent-guides-mode
-  :diminish highlight-indent-guides-mode
-  :preface
-  (progn
-    (add-hook 'prog-mode-hook 'highlight-indent-guides-mode))
+** indent-bars
+#+begin_src emacs-lisp
+(use-package indent-bars
+  :straight (indent-bars :type git :host github :repo "jdtsmith/indent-bars")
   :config
-  (progn
-    (setq highlight-indent-guides-method 'fill)))
-#+END_SRC
+  (require 'indent-bars-ts) 		; not needed with straight
+  :custom
+  (indent-bars-treesit-support t)
+  (indent-bars-treesit-ignore-blank-lines-types '("module"))
+  ;; Add other languages as needed
+  (indent-bars-treesit-scope '((python function_definition class_definition for_statement
+	  if_statement with_statement while_statement)))
+  ;; wrap may not be needed if no-descend-list is enough
+  ;; (indent-bars-treesit-wrap '((python argument_list parameters ; for python, as an example
+  ;;   			                      list list_comprehension
+  ;;   			                      dictionary dictionary_comprehension
+  ;;   			                      parenthesized_expression subscript)))
+  :hook ((prog-mode) . indent-bars-mode))
+#+end_src
 ** man-mode
 Man page escape sequences aren't properly handled by emacs pager. This function
 fixes that, but for now, it needs to be run manually, since I haven't figured
@@ -3352,7 +3357,8 @@ emr (emacs refactor) provides support for refactoring in many programming langua
           (file-name-directory
            (file-truename (imalison:join-paths eat--install-path "eat.el"))))
     (eat-compile-terminfo)
-    (setq eat-term-shell-integration-directory (imalison:join-paths eat--install-path "integration"))))
+    (setq eat-term-shell-integration-directory
+          (imalison:join-paths eat--install-path "integration"))))
 #+end_src
 ** term
 The main thing I do here is restore a bunch of keybindings that are eliminated
