@@ -16,6 +16,7 @@ makeEnable config "modules.gitea" false {
     };
     settings.actions = {
       ENABLED = true;
+      DISABLE_REGISTRATION = true;
     };
   };
 
