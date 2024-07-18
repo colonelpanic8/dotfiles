@@ -36,7 +36,6 @@ makeEnable config "modules.base" true {
   };
 
   # Audio
-  sound.enable = true;
   hardware.pulseaudio.enable = true;
 
   # Bluetooth
