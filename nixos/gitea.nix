@@ -13,10 +13,10 @@ makeEnable config "modules.gitea" false {
       SSH_PORT = 1123;
       HTTP_PORT = 3001;
       ROOT_URL = "https://dev.railbird.ai";
+      DISABLE_REGISTRATION = true;
     };
     settings.actions = {
       ENABLED = true;
-      DISABLE_REGISTRATION = true;
     };
   };
 
