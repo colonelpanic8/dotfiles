@@ -24,7 +24,6 @@ pom.xml
 TAGS
 
 # Vim
-*.sw*
 *.tmp*
 
 # JavaScript
