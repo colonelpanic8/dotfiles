@@ -131,6 +131,10 @@ This makes evil-mode play nice with org-fc
 * Packages
 #+begin_src emacs-lisp
 (use-package org-drill)
+(require 'package)
+(add-to-list 'package-archives
+             '("melpa" . "https://melpa.org/packages/") t)
+(package-initialize)
 
 #+end_src
 
@@ -138,3 +142,35 @@ This makes evil-mode play nice with org-fc
 #+begin_src emacs-lisp
 (setq org-wild-notifier-day-wide-alert-times nil)
 #+end_src
+
+* Swift
+#+begin_src emacs-lisp
+(require 'package)
+(add-to-list 'package-archives
+             '("melpa" . "https://melpa.org/packages/") t)
+(package-initialize)
+
+(unless (package-installed-p 'swift-mode)
+  (package-refresh-contents)
+  (package-install 'swift-mode))
+
+(unless (package-installed-p 'lsp-mode)
+  (package-refresh-contents)
+  (package-install 'lsp-mode))
+
+;; Swift Mode
+(require 'swift-mode)
+(add-to-list 'auto-mode-alist '("\\.swift\\'" . swift-mode))
+
+;; LSP Mode
+(require 'lsp-mode)
+(add-hook 'swift-mode-hook #'lsp)
+
+;; Set the path to SourceKit-LSP if it's not in your PATH
+(setq lsp-sourcekit-executable "/path/to/sourcekit-lsp")
+
+;; Optional: Set the path to your Swift toolchain if necessary
+(setq lsp-sourcekit-executable-args '("-toolchain" "/path/to/swift-toolchain"))
+
+#+end_src
+
