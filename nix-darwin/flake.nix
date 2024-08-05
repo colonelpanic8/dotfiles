@@ -34,6 +34,7 @@
         nodePackages.prettier
         vim
         just
+        cocoapods
       ];
 
       nixpkgs.config.allowUnfree = true;
