@@ -1,0 +1,7 @@
+#!/usr/bin/env sh
+
+function nr {
+    sk --ansi -i -c 'nix-search "{}"' | get_cols 1
+}
+
+nr "$@"

@@ -5,6 +5,7 @@
   environment.systemPackages = with pkgs; [
     automake
     bazel
+    bento4
     bind
     binutils
     cachix
@@ -16,13 +17,12 @@
     emacs
     fd
     ffmpeg
-    bento4
     file
     gawk
     gcc
     gdb
-    git-lfs
     git-fame
+    git-lfs
     git-sync
     gitFull
     glxinfo
@@ -42,6 +42,7 @@
     neofetch
     neovim
     nix-index
+    nix-search-cli
     pass
     patchelf
     pciutils
@@ -51,8 +52,9 @@
     rcm
     ripgrep
     silver-searcher
-    sysz
+    skim
     sshfs
+    sysz
     tmux
     tzupdate
     udiskie
