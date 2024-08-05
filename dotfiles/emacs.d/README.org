@@ -2897,6 +2897,10 @@ The following is taken from [[https://github.com/syl20bnr/spacemacs/blob/a650877
   :defer t
   :mode ("\\.kt\\'"))
 #+END_SRC
+*** swift
+#+begin_src emacs-lisp
+(use-package swift-mode)
+#+end_src
 *** groovy
 #+begin_src emacs-lisp
 (use-package groovy-mode)
