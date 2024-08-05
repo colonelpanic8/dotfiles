@@ -3642,15 +3642,6 @@ I had to disable this mode because something that it does messes with coding set
   (progn
     (setq dtrt-indent-active-mode-line-info " [⟼]")))
 #+END_SRC
-** indent-guide
-#+BEGIN_SRC emacs-lisp
-(use-package indent-guide
-  :disabled t
-  :config
-  (progn
-    (indent-guide-global-mode -1)
-    (setq indent-guide-delay 0.1)))
-#+END_SRC
 ** rainbow-delimiters
 #+BEGIN_SRC emacs-lisp
 (use-package rainbow-delimiters
