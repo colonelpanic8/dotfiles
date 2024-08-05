@@ -25,8 +25,6 @@
   outputs = inputs@{ self, nix-darwin, nixpkgs, ... }:
   let
     configuration = { pkgs, config, ... }: {
-      # List packages installed in system profile. To search by name, run:
-      # $ nix-env -qaP | grep wget
       environment.systemPackages = with pkgs; [
 	      emacs
         slack
@@ -35,6 +33,7 @@
         yarn
         nodePackages.prettier
         vim
+        just
       ];
 
       nixpkgs.config.allowUnfree = true;
@@ -42,7 +41,6 @@
 
       # Auto upgrade nix package and the daemon service.
       services.nix-daemon.enable = true;
-      services.yabai.enable = false;
       launchd.user.envVariables.PATH = config.environment.systemPath;
 
       programs.direnv.enable = true;
@@ -52,7 +50,6 @@
 
       # Create /etc/zshrc that loads the nix-darwin environment.
       programs.zsh.enable = true;
-      program.bash.enable = true;
 
       # Set Git commit hash for darwin-version.
       system.configurationRevision = self.rev or self.dirtyRev or null;
