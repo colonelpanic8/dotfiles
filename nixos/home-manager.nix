@@ -1,4 +1,4 @@
-{ pkgs, config, specialArgs, ... }:
+{ pkgs, ... }:
 {
   xsession = {
     enable = true;
