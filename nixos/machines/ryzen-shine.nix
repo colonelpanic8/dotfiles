@@ -45,15 +45,15 @@
   boot.initrd.kernelModules = [ "dm-snapshot" ];
 
   # install nvidia drivers in addition to intel one
-  hardware.opengl.extraPackages = [ pkgs.linuxPackages.nvidia_x11.out ];
-  hardware.opengl.extraPackages32 = [ pkgs.linuxPackages.nvidia_x11.lib32 ];
+  hardware.graphics.extraPackages = [ pkgs.linuxPackages.nvidia_x11.out ];
+  hardware.graphics.extraPackages32 = [ pkgs.linuxPackages.nvidia_x11.lib32 ];
   services.xserver = {
     videoDrivers = [ "nvidia" ];
   };
 
   hardware.nvidia.modesetting.enable = true;
 
-  hardware.opengl.driSupport32Bit = true;
+  hardware.graphics.enable32Bit = true;
 
   boot.kernelModules = [ "kvm-amd" ];
   boot.extraModulePackages = [ ];
