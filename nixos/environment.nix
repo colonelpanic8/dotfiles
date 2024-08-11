@@ -34,6 +34,10 @@ with lib;
         eval "$(register-python-argcomplete prod-prb)"
         eval "$(register-python-argcomplete railbird)"
         [ -n "$EAT_SHELL_INTEGRATION_DIR" ] && source "$EAT_SHELL_INTEGRATION_DIR/zsh"
+
+        # Enable bracketed paste
+        autoload -Uz bracketed-paste-magic
+        zle -N bracketed-paste bracketed-paste-magic
       '';
     };
 
