@@ -20,11 +20,11 @@ final: prev: {
   picom = prev.picom.overrideAttrs (old: {
     src = prev.fetchFromGitHub {
       repo = "picom";
-      owner = "dccsillag";
-      rev = "51b21355696add83f39ccdb8dd82ff5009ba0ae5";
-      sha256 = "sha256-crCwRJd859DCIC0pEerpDqdX2j8ZrNAzVaSSB3mTPN8==";
+      owner = "colonelpanic8";
+      rev = "ad18423bb809822c35ab22049db3269b3275c3b9";
+      sha256 = "sha256-7BkuBR27prlNyh3QW3Z/vy6O08mBQ0g88zqekJyhqSc=";
     };
-    nativeBuildInputs = old.nativeBuildInputs ++ [final.pcre];
+    nativeBuildInputs = old.nativeBuildInputs ++ [final.pcre final.asciidoctor];
   });
 
   expressvpn = prev.expressvpn.overrideAttrs (_: {
