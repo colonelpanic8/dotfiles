@@ -34,7 +34,7 @@ makeEnable config "modules.desktop" true {
 
   environment.systemPackages = with pkgs; [
     # Appearance
-    gnome.adwaita-icon-theme
+    adwaita-icon-theme
     hicolor-icon-theme
     libsForQt5.breeze-gtk
     # materia-theme
@@ -60,8 +60,8 @@ makeEnable config "modules.desktop" true {
 
     feh
     firefox
-    gnome.cheese
-    gnome.gpaste
+    cheese
+    gpaste
     kleopatra
     libnotify
     libreoffice
