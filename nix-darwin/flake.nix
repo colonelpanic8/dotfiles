@@ -19,22 +19,26 @@
       url = "github:homebrew/homebrew-cask";
       flake = false;
     };
-
+    home-manager.url = "github:nix-community/home-manager";
+    home-manager.inputs.nixpkgs.follows = "nixpkgs";
   };
 
-  outputs = inputs@{ self, nix-darwin, nixpkgs, ... }:
+  outputs = inputs@{ self, nix-darwin, nixpkgs, home-manager, ... }:
   let
     configuration = { pkgs, config, ... }: {
       environment.systemPackages = with pkgs; [
 	      emacs
-        slack
-        gitFull
-        ripgrep
-        yarn
-        nodePackages.prettier
-        vim
-        just
+        alejandra
         cocoapods
+        gitFull
+        just
+        nodePackages.prettier
+        nodejs
+        ripgrep
+        slack
+        typescript
+        vim
+        yarn
       ];
 
       nixpkgs.config.allowUnfree = true;
@@ -62,6 +66,9 @@
       # The platform the configuration will be used on.
       nixpkgs.hostPlatform = "aarch64-darwin";
       users.users.kat.openssh.authorizedKeys.keys = inputs.railbird-secrets.keys.kanivanKeys;
+
+      home-manager.useGlobalPkgs = true;
+      home-manager.useUserPackages = true;
     };
   in
   {
@@ -69,6 +76,7 @@
     # $ darwin-rebuild build --flake .#Kats-Mac-mini
     darwinConfigurations."Kats-Mac-mini" = nix-darwin.lib.darwinSystem {
       modules = [
+        home-manager.darwinModules.home-manager
         configuration
       ];
     };
