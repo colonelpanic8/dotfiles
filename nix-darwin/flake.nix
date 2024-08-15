@@ -30,6 +30,7 @@
       networking.hostName = "mac-demarco-mini";
       imports = [ (import ./gitea-actions-runner.nix) ];
       services.gitea-actions-runner = {
+        user = "kat";
         instances.nix = {
           enable = true;
           name = config.networking.hostName;

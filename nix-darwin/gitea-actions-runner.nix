@@ -112,11 +112,8 @@ in {
       }
     ];
 
-    # Create the user and group
     users.users.${cfg.user} = {
       name = cfg.user;
-      home = "/var/lib/gitea-runner";
-      createHome = true;
       description = "Gitea Actions Runner user";
     };
 
@@ -127,6 +124,7 @@ in {
         serviceConfig = {
           ProgramArguments = [
             "${pkgs.writeShellScript "gitea-runner-start-${name}" ''
+              sudo su - ${cfg.user}
               export HOME="/var/lib/gitea-runner/${name}"
               mkdir -p "$HOME"
               cd "$HOME"
@@ -144,7 +142,7 @@ in {
 
               # Start the runner
               exec ${cfg.package}/bin/act_runner daemon --config ${settingsFormat.generate "config.yaml" instance.settings}
-            ''
+            ''}"
           ];
           KeepAlive = true;
           RunAtLoad = true;
@@ -152,7 +150,6 @@ in {
           StandardOutPath = "/var/log/gitea-runner/${name}.log";
           StandardErrorPath = "/var/log/gitea-runner/${name}.error.log";
           UserName = cfg.user;
-          GroupName = cfg.group;
           EnvironmentVariables = {
             PATH = (lib.makeBinPath (instance.hostPackages ++ [ cfg.package ])) + ":/usr/local/bin:/usr/bin:/usr/sbin:/bin:/sbin";
           } // optionalAttrs (instance.token != null) {
