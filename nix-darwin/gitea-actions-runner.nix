@@ -19,7 +19,24 @@ let
 
 in {
   options.services.gitea-actions-runner = {
-    package = mkPackageOption pkgs "gitea-actions-runner" { };
+    package = mkOption {
+      type = types.package;
+      default = pkgs.gitea-actions-runner;
+      defaultText = literalExpression "pkgs.gitea-actions-runner";
+      description = "The gitea-actions-runner package to use.";
+    };
+
+    user = mkOption {
+      type = types.str;
+      default = "gitea-runner";
+      description = "The user account under which the Gitea Actions Runner should run.";
+    };
+
+    group = mkOption {
+      type = types.str;
+      default = "gitea-runner";
+      description = "The group under which the Gitea Actions Runner should run.";
+    };
 
     instances = mkOption {
       default = {};
@@ -95,6 +112,16 @@ in {
       }
     ];
 
+    # Create the user and group
+    users.users.${cfg.user} = {
+      name = cfg.user;
+      home = "/var/lib/gitea-runner";
+      createHome = true;
+      description = "Gitea Actions Runner user";
+    };
+
+    users.groups.${cfg.group} = {};
+
     launchd.daemons = mapAttrs' (name: instance:
       nameValuePair "gitea-runner-${name}" {
         serviceConfig = {
@@ -104,7 +131,6 @@ in {
               mkdir -p "$HOME"
               cd "$HOME"
               touch run_started
-              date -d > $HOME/last-run
 
               # Register the runner if not already registered
               if [ ! -e "$HOME/.runner" ]; then
@@ -118,13 +144,15 @@ in {
 
               # Start the runner
               exec ${cfg.package}/bin/act_runner daemon --config ${settingsFormat.generate "config.yaml" instance.settings}
-            ''}"
+            ''
           ];
           KeepAlive = true;
           RunAtLoad = true;
           WorkingDirectory = "/var/lib/gitea-runner/${name}";
-          StandardOutPath = "/var/log/gitea-runner-${name}.log";
-          StandardErrorPath = "/var/log/gitea-runner-${name}.error.log";
+          StandardOutPath = "/var/log/gitea-runner/${name}.log";
+          StandardErrorPath = "/var/log/gitea-runner/${name}.error.log";
+          UserName = cfg.user;
+          GroupName = cfg.group;
           EnvironmentVariables = {
             PATH = (lib.makeBinPath (instance.hostPackages ++ [ cfg.package ])) + ":/usr/local/bin:/usr/bin:/usr/sbin:/bin:/sbin";
           } // optionalAttrs (instance.token != null) {
@@ -136,10 +164,17 @@ in {
       }
     ) cfg.instances;
 
-    # Ensure the log directory exists
-    system.activationScripts.gitea-runner-logs = ''
-      mkdir -p /var/log/gitea-runner
-      mkdir -p /var/lib/gitea-runner
-    '';
+    # Ensure the log directory exists and has correct permissions
+    system.activationScripts.gitea-runner-setup = {
+      text = ''
+        mkdir -p /var/log/gitea-runner
+        chown ${cfg.user}:${cfg.group} /var/log/gitea-runner
+        chmod 755 /var/log/gitea-runner
+
+        mkdir -p /var/lib/gitea-runner
+        chown ${cfg.user}:${cfg.group} /var/lib/gitea-runner
+        chmod 755 /var/lib/gitea-runner
+      '';
+    };
   };
 }
