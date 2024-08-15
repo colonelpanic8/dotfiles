@@ -25,13 +25,69 @@
 
   outputs = inputs@{ self, nix-darwin, nixpkgs, home-manager, ... }:
   let
+    libDir = ../dotfiles/lib;
     configuration = { pkgs, config, ... }: {
+      networking.hostName = "mac-demarco-mini";
+      imports = [ (import ./gitea-actions-runner.nix) ];
+      services.gitea-actions-runner = {
+        instances.nix = {
+          enable = true;
+          name = config.networking.hostName;
+          url = "https://dev.railbird.ai";
+          token = "kf8TgHEf2JwWiusV80ZWo3t7lkEyB1pVgqRdK5ES";
+          labels = [
+            "nix-darwin-${pkgs.system}:host"
+            "nix:host"
+          ];
+          settings = {
+            cache = {
+              enabled = true;
+            };
+            container = {
+              workdir_parent = "/var/lib/gitea-runner/workspace";
+            };
+            host = {
+              workdir_parent = "/var/lib/gitea-runner/action-cache-dir";
+            };
+          };
+          hostPackages = with pkgs; [
+            bash
+            direnv
+            coreutils
+            curl
+            gawk
+            git-lfs
+            nixFlakes
+            gitFull
+            gnused
+            nodejs
+            openssh
+            wget
+          ];
+        };
+      };
+
+      # Create the necessary directories
+      system.activationScripts.giteaRunnerDirs = ''
+        mkdir -p /var/lib/gitea-runner/workspace
+        mkdir -p /var/lib/gitea-runner/action-cache-dir
+        chown -R kat:staff /var/lib/gitea-runner
+      '';
+
+      # Set environment variables
+      launchd.daemons.gitea-runner-nix.serviceConfig.EnvironmentVariables = {
+        XDG_CONFIG_HOME = "/var/lib/gitea-runner";
+        XDG_CACHE_HOME = "/var/lib/gitea-runner/.cache";
+      };
+      nixpkgs.overlays = [(import ../nixos/overlay.nix)];
       environment.systemPackages = with pkgs; [
+        python-with-my-packages
 	      emacs
         alejandra
         cocoapods
         gitFull
         just
+        tmux
         nodePackages.prettier
         nodejs
         ripgrep
@@ -53,14 +109,11 @@
       # Necessary for using flakes on this system.
       nix.settings.experimental-features = "nix-command flakes";
 
-      # Create /etc/zshrc that loads the nix-darwin environment.
-      programs.zsh.enable = true;
 
       # Set Git commit hash for darwin-version.
       system.configurationRevision = self.rev or self.dirtyRev or null;
 
-      # Used for backwards compatibility, please read the changelog before changing.
-      # $ darwin-rebuild changelog
+      # Used for backwards compatibility, please read the changelog before changing
       system.stateVersion = 4;
 
       # The platform the configuration will be used on.
@@ -69,12 +122,42 @@
 
       home-manager.useGlobalPkgs = true;
       home-manager.useUserPackages = true;
+
+      users.users.kat = {
+        name = "kat";
+        home = "/Users/kat";
+      };
+
+      programs.zsh = {
+        enable = true;
+        shellInit = ''
+          fpath+="${libDir}/functions"
+          for file in "${libDir}/functions/"*
+          do
+          autoload "''${file##*/}"
+          done
+        '';
+        interactiveShellInit = ''
+          # eval "$(register-python-argcomplete prb)"
+          # eval "$(register-python-argcomplete prod-prb)"
+          # eval "$(register-python-argcomplete railbird)"
+          # [ -n "$EAT_SHELL_INTEGRATION_DIR" ] && source "$EAT_SHELL_INTEGRATION_DIR/zsh"
+
+          autoload -Uz bracketed-paste-magic
+          zle -N bracketed-paste bracketed-paste-magic
+        '';
+      };
+
+      home-manager.users.kat = {
+        programs.starship = {
+          enable = true;
+        };
+        home.stateVersion = "24.05";
+      };
     };
   in
   {
-    # Build darwin flake using:
-    # $ darwin-rebuild build --flake .#Kats-Mac-mini
-    darwinConfigurations."Kats-Mac-mini" = nix-darwin.lib.darwinSystem {
+    darwinConfigurations."mac-demarco-mini" = nix-darwin.lib.darwinSystem {
       modules = [
         home-manager.darwinModules.home-manager
         configuration
