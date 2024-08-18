@@ -12,4 +12,5 @@ in
   "gitea-runner-token.railbird-sf.age".publicKeys = keys.agenixKeys ++ keys.railbird-sf;
   "gitea-runner-token.mac-demarco-mini.age".publicKeys = keys.agenixKeys ++ keys.railbird-sf;
   "nextcloud-admin.age".publicKeys = keys.agenixKeys;
+  "ryzen-shine-kubernetes-token.age".publicKeys = keys.agenixKeys;
 }
