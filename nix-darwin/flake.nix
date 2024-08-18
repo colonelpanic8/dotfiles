@@ -30,22 +30,20 @@
       networking.hostName = "mac-demarco-mini";
       imports = [ (import ./gitea-actions-runner.nix) ];
       services.gitea-actions-runner = {
-        user = "kat";
+        user = "gitearunner";
         instances.nix = {
           enable = true;
           name = config.networking.hostName;
           url = "https://dev.railbird.ai";
-          token = "kf8TgHEf2JwWiusV80ZWo3t7lkEyB1pVgqRdK5ES";
+          token = "H0A7YXAWsKSp9QzvMymfJI12hbxwR7UerEHpCJUe";
           labels = [
             "nix-darwin-${pkgs.system}:host"
+            "macos-aarch64-darwin"
             "nix:host"
           ];
           settings = {
             cache = {
               enabled = true;
-            };
-            container = {
-              workdir_parent = "/var/lib/gitea-runner/workspace";
             };
             host = {
               workdir_parent = "/var/lib/gitea-runner/action-cache-dir";
@@ -53,14 +51,15 @@
           };
           hostPackages = with pkgs; [
             bash
-            direnv
             coreutils
             curl
+            direnv
             gawk
             git-lfs
-            nixFlakes
             gitFull
             gnused
+            ncdu
+            nixFlakes
             nodejs
             openssh
             wget
@@ -68,14 +67,6 @@
         };
       };
 
-      # Create the necessary directories
-      system.activationScripts.giteaRunnerDirs = ''
-        mkdir -p /var/lib/gitea-runner/workspace
-        mkdir -p /var/lib/gitea-runner/action-cache-dir
-        chown -R kat:staff /var/lib/gitea-runner
-      '';
-
-      # Set environment variables
       launchd.daemons.gitea-runner-nix.serviceConfig.EnvironmentVariables = {
         XDG_CONFIG_HOME = "/var/lib/gitea-runner";
         XDG_CACHE_HOME = "/var/lib/gitea-runner/.cache";
@@ -89,6 +80,7 @@
         gitFull
         just
         tmux
+        htop
         nodePackages.prettier
         nodejs
         ripgrep
@@ -120,9 +112,14 @@
       # The platform the configuration will be used on.
       nixpkgs.hostPlatform = "aarch64-darwin";
       users.users.kat.openssh.authorizedKeys.keys = inputs.railbird-secrets.keys.kanivanKeys;
+      users.users.gitea-runner = {
+         name = "gitea-runner";
+         isHidden = false;
+         home = "/Users/gitea-runner";
+         createHome = false;
+       };
 
-      home-manager.useGlobalPkgs = true;
-      home-manager.useUserPackages = true;
+      home-manager.useGlobalPkgs = true;      home-manager.useUserPackages = true;
 
       users.users.kat = {
         name = "kat";

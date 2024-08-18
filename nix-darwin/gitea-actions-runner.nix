@@ -32,12 +32,6 @@ in {
       description = "The user account under which the Gitea Actions Runner should run.";
     };
 
-    group = mkOption {
-      type = types.str;
-      default = "gitea-runner";
-      description = "The group under which the Gitea Actions Runner should run.";
-    };
-
     instances = mkOption {
       default = {};
       description = "Gitea Actions Runner instances.";
@@ -117,18 +111,22 @@ in {
       description = "Gitea Actions Runner user";
     };
 
-    users.groups.${cfg.group} = {};
-
     launchd.daemons = mapAttrs' (name: instance:
       nameValuePair "gitea-runner-${name}" {
         serviceConfig = {
           ProgramArguments = [
             "${pkgs.writeShellScript "gitea-runner-start-${name}" ''
+              echo "home is $HOME"
+              mkdir -p /var/log/gitea-runner/
+              chown -R ${cfg.user} /var/log/gitea-runner
+              chmod 755 /var/log/gitea-runner
+
+              mkdir -p /var/lib/gitea-runner/${name}
+              chown -R ${cfg.user} /var/lib/gitea-runner
+              chmod 755 /var/lib/gitea-runner
+
               sudo su - ${cfg.user}
-              export HOME="/var/lib/gitea-runner/${name}"
-              mkdir -p "$HOME"
-              cd "$HOME"
-              touch run_started
+              echo "STARTING"
 
               # Register the runner if not already registered
               if [ ! -e "$HOME/.runner" ]; then
@@ -146,10 +144,10 @@ in {
           ];
           KeepAlive = true;
           RunAtLoad = true;
-          WorkingDirectory = "/var/lib/gitea-runner/${name}";
-          StandardOutPath = "/var/log/gitea-runner/${name}.log";
-          StandardErrorPath = "/var/log/gitea-runner/${name}.error.log";
+          SessionCreate = true;
           UserName = cfg.user;
+          GroupName = "staff";
+          WorkingDirectory = "/var/lib/gitea-runner/${name}";
           EnvironmentVariables = {
             PATH = (lib.makeBinPath (instance.hostPackages ++ [ cfg.package ])) + ":/usr/local/bin:/usr/bin:/usr/sbin:/bin:/sbin";
           } // optionalAttrs (instance.token != null) {
@@ -161,15 +159,14 @@ in {
       }
     ) cfg.instances;
 
-    # Ensure the log directory exists and has correct permissions
     system.activationScripts.gitea-runner-setup = {
       text = ''
-        mkdir -p /var/log/gitea-runner
-        chown ${cfg.user}:${cfg.group} /var/log/gitea-runner
+        mkdir -p /var/log/gitea-runner/
+        mkdir -p /var/lib/gitea-runner/${name}
+        chown -R ${cfg.user} /var/log/gitea-runner
         chmod 755 /var/log/gitea-runner
 
-        mkdir -p /var/lib/gitea-runner
-        chown ${cfg.user}:${cfg.group} /var/lib/gitea-runner
+        chown -R ${cfg.user} /var/lib/gitea-runner
         chmod 755 /var/lib/gitea-runner
       '';
     };
