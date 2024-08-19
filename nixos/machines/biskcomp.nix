@@ -85,6 +85,16 @@ in
           '';
         };
       };
+      "docs.railbird.ai" = {
+        enableACME = true;
+        forceSSL = true;
+        root = "/var/lib/syncthing/railbird/docs";
+        locations."/" = {
+          extraConfig = ''
+            autoindex on;
+          '';
+        };
+      };
     };
   };
 
