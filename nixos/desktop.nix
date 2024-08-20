@@ -70,7 +70,6 @@ makeEnable config "modules.desktop" true {
     networkmanagerapplet
     notify-osd-customizable
     okular
-    picom
     pinentry
     psensor
     quassel
