@@ -6,7 +6,7 @@
     nixos-hardware = { url = "github:colonelpanic8/nixos-hardware/add-g834jzr"; };
 
     nixpkgs = {
-      url = "github:NixOS/nixpkgs/nixos-unstable";
+      url = "github:colonelpanic8/nixpkgs/with-cursor";
     };
 
     home-manager = {
