@@ -82,7 +82,8 @@ makeEnable config "modules.xmonad" true  {
       enable = true;
       vSync = config.modules.xmonad.picom.vSync.enable;
       backend = "glx";
-      extraArgs = ["--experimental-backends"];
+      # extraArgs = ["--experimental-backends"];
+      package = pkgs.picom-pijulius;
 
       settings = {
         animations = true;
