@@ -11,6 +11,7 @@
   };
   modules.gitea-runner.enable = true;
   modules.vscode.enable = true;
+  modules.kat.enable = true;
 
   networking.hostName = "nixquick";
 

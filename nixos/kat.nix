@@ -5,6 +5,7 @@ makeEnable config "modules.kat" false {
     obsidian
     obs-studio
     ffmpeg
+    code-cursor
   ];
 
   environment.extraInit = ''
