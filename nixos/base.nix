@@ -60,6 +60,8 @@ makeEnable config "modules.base" true {
 
   virtualisation.docker.enable = true;
   virtualisation.docker.enableNvidia = true;
+  hardware.nvidia-container-toolkit.enable = true;
+  hardware.nvidia.open = false;
 
   hardware.keyboard.zsa.enable = true;
 
