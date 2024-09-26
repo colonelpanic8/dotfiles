@@ -8,10 +8,10 @@
     sublime
     vlc
   ];
-  modules.desktop.enable = false;
-  modules.plasma.enable = false;
+  myModules.desktop.enable = false;
+  myModules.plasma.enable = false;
   imalison.nixOverlay.enable = false;
-  modules.wsl.enable = true;
+  myModules.wsl.enable = true;
 
   networking.hostName = "bencbox";
 

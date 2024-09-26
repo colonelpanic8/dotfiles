@@ -5,15 +5,15 @@
     ../configuration.nix
   ];
 
-  modules.base.enable = true;
-  modules.desktop.enable = true;
-  modules.xmonad.enable = false;
-  modules.extra.enable = false;
-  modules.code.enable = true;
-  modules.games.enable = false;
-  modules.syncthing.enable = true;
-  modules.fonts.enable = true;
-  modules.nixified-ai.enable = false;
+  myModules.base.enable = true;
+  myModules.desktop.enable = true;
+  myModules.xmonad.enable = false;
+  myModules.extra.enable = false;
+  myModules.code.enable = true;
+  myModules.games.enable = false;
+  myModules.syncthing.enable = true;
+  myModules.fonts.enable = true;
+  myModules.nixified-ai.enable = false;
 
   hardware.enableRedistributableFirmware = true;
 

@@ -6,16 +6,16 @@
     inputs.nixos-hardware.nixosModules.dell-xps-17-9700-nvidia
   ];
 
-  modules.base.enable = true;
-  modules.desktop.enable = true;
-  modules.xmonad.enable = true;
-  modules.extra.enable = false;
-  modules.code.enable = true;
-  modules.games.enable = false;
-  modules.syncthing.enable = true;
-  modules.fonts.enable = true;
-  modules.nixified-ai.enable = false;
-  modules.gitea-runner.enable = false;
+  myModules.base.enable = true;
+  myModules.desktop.enable = true;
+  myModules.xmonad.enable = true;
+  myModules.extra.enable = false;
+  myModules.code.enable = true;
+  myModules.games.enable = false;
+  myModules.syncthing.enable = true;
+  myModules.fonts.enable = true;
+  myModules.nixified-ai.enable = false;
+  myModules.gitea-runner.enable = false;
 
   hardware.enableRedistributableFirmware = true;
 

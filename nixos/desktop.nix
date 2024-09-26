@@ -1,5 +1,5 @@
 { config, pkgs, makeEnable, ... }:
-makeEnable config "modules.desktop" true {
+makeEnable config "myModules.desktop" true {
   imports = [
     ./fonts.nix
   ];

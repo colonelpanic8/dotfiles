@@ -1,5 +1,5 @@
 { config, makeEnable, ... }:
-makeEnable config "modules.gitea" false {
+makeEnable config "myModules.gitea" false {
 
   services.gitea = {
     enable = true;

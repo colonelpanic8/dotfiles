@@ -1,5 +1,5 @@
 { pkgs, inputs, config, makeEnable, ... }:
-makeEnable config "modules.ben" true {
+makeEnable config "myModules.ben" true {
   home-manager.backupFileExtension = "backup"; # Add this line
   home-manager.users.ben = {
     programs.zsh = {

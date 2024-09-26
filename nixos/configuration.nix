@@ -42,17 +42,17 @@
   };
 
   config = lib.mkIf config.features.full.enable {
-    modules.base.enable = true;
-    modules.desktop.enable = true;
-    modules.plasma.enable = true;
-    modules.gnome.enable = false;
-    modules.xmonad.enable = true;
-    modules.extra.enable = true;
-    modules.electron.enable = true;
-    modules.code.enable = true;
-    modules.games.enable = true;
-    modules.syncthing.enable = true;
-    modules.fonts.enable = true;
-    modules.nixified-ai.enable = false;
+    myModules.base.enable = true;
+    myModules.desktop.enable = true;
+    myModules.plasma.enable = true;
+    myModules.gnome.enable = false;
+    myModules.xmonad.enable = true;
+    myModules.extra.enable = true;
+    myModules.electron.enable = true;
+    myModules.code.enable = true;
+    myModules.games.enable = true;
+    myModules.syncthing.enable = true;
+    myModules.fonts.enable = true;
+    myModules.nixified-ai.enable = false;
   };
 }

@@ -1,5 +1,5 @@
 { config, pkgs, forEachUser, makeEnable, realUsers, ... }:
-makeEnable config "modules.base" true {
+makeEnable config "myModules.base" true {
   nixpkgs.config.permittedInsecurePackages = [
     "openssl-1.0.2u"
     "electron-12.2.3"

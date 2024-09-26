@@ -1,5 +1,5 @@
 { inputs, config, specialArgs, ... }:
-specialArgs.makeEnable config "modules.nixified-ai" false {
+specialArgs.makeEnable config "myModules.nixified-ai" false {
   imports = [
     inputs.nixified-ai.nixosModules.invokeai
   ];

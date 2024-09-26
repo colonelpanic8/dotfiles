@@ -55,15 +55,15 @@
   };
 
   features.full.enable = false;
-  modules.base.enable = true;
-  modules.desktop.enable = true;
-  modules.xmonad.enable = false;
-  modules.gnome.enable = true;
-  modules.code.enable = true;
-  modules.syncthing.enable = true;
-  modules.fonts.enable = true;
-  modules.plasma.enable = false;
-  modules.gitea-runner.enable = true;
+  myModules.base.enable = true;
+  myModules.desktop.enable = true;
+  myModules.xmonad.enable = false;
+  myModules.gnome.enable = true;
+  myModules.code.enable = true;
+  myModules.syncthing.enable = true;
+  myModules.fonts.enable = true;
+  myModules.plasma.enable = false;
+  myModules.gitea-runner.enable = true;
 
   fileSystems."/" =
     { device = "/dev/disk/by-uuid/a317d456-6f84-41ee-a149-8e466e414aae";

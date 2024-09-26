@@ -5,7 +5,7 @@
   ];
 
   imalison.nixOverlay.enable = false;
-  modules.wsl.enable = true;
+  myModules.wsl.enable = true;
 
   networking.hostName = "jay-lenovo-wsl";
 

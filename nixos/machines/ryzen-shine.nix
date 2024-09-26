@@ -7,13 +7,13 @@
 
   features.full.enable = true;
   # Needed for now because monitors have different refresh rates
-  modules.xmonad.picom.vSync.enable = false;
-  modules.cache-server = {
+  myModules.xmonad.picom.vSync.enable = false;
+  myModules.cache-server = {
     enable = true;
     port = 3090;
   };
-  modules.gitea-runner.enable = true;
-  modules.postgres.enable = true;
+  myModules.gitea-runner.enable = true;
+  myModules.postgres.enable = true;
 
   boot.loader.systemd-boot.configurationLimit = 5;
 

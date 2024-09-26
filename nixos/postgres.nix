@@ -1,5 +1,5 @@
 { pkgs, config, makeEnable, realUsers, ... }:
-makeEnable config "modules.postgres" true {
+makeEnable config "myModules.postgres" true {
   services.postgresql = {
     enable = true;
     package = pkgs.postgresql_15;

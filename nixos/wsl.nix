@@ -1,13 +1,13 @@
 { config, inputs, pkgs, makeEnable, ... }:
-makeEnable config "modules.wsl" false {
+makeEnable config "myModules.wsl" false {
   imports = [
     inputs.nixos-wsl.nixosModules.wsl
   ];
 
-  modules.base.enable = false;
-  modules.desktop.enable = false;
-  modules.xmonad.enable = false;
-  modules.plasma.enable = false;
+  myModules.base.enable = false;
+  myModules.desktop.enable = false;
+  myModules.xmonad.enable = false;
+  myModules.plasma.enable = false;
 
   # Update timezone automatically
   services.tzupdate.enable = true;

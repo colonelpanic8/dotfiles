@@ -1,6 +1,6 @@
 { config, pkgs, inputs, makeEnable, ... }:
 
-makeEnable config "modules.raspberry-pi" false {
+makeEnable config "myModules.raspberry-pi" false {
   imports = [
     inputs.nixos-hardware.nixosModules.raspberry-pi-4
   ];

@@ -1,5 +1,5 @@
 { config, pkgs, inputs, forEachUser, makeEnable, ... }:
-makeEnable config "modules.xmonad" true  {
+makeEnable config "myModules.xmonad" true  {
   nixpkgs.overlays = with inputs; [
     xmonad.overlay
     xmonad-contrib.overlay
@@ -25,7 +25,7 @@ makeEnable config "modules.xmonad" true  {
     # Haskell Desktop
     haskellPackages.xmonad
     haskellPackages.imalison-xmonad
-    haskellPackages.notifications-tray-icon
+    # haskellPackages.notifications-tray-icon
     haskellPackages.gtk-sni-tray
     haskellPackages.status-notifier-item
     haskellPackages.dbus-hslogger
@@ -80,7 +80,7 @@ makeEnable config "modules.xmonad" true  {
 
     services.picom = {
       enable = true;
-      vSync = config.modules.xmonad.picom.vSync.enable;
+      vSync = config.myModules.xmonad.picom.vSync.enable;
       backend = "glx";
       extraArgs = ["--experimental-backends"];
 
@@ -137,21 +137,21 @@ makeEnable config "modules.xmonad" true  {
       };
     };
 
-    systemd.user.services.notifications-tray-icon = {
-      Unit = {
-        Description = "Notifications tray icon";
-        After = [ "graphical-session-pre.target" "tray.target" ];
-        PartOf = [ "graphical-session.target" ];
-      };
+    # systemd.user.services.notifications-tray-icon = {
+    #   Unit = {
+    #     Description = "Notifications tray icon";
+    #     After = [ "graphical-session-pre.target" "tray.target" ];
+    #     PartOf = [ "graphical-session.target" ];
+    #   };
 
-      Install = { WantedBy = [ "graphical-session.target" ]; };
+    #   Install = { WantedBy = [ "graphical-session.target" ]; };
 
-      Service = {
-        ExecStart = "${pkgs.haskellPackages.notifications-tray-icon}/bin/notifications-tray-icon  --github-token-pass dfinity-github-api-token";
-        Restart = "always";
-        RestartSec = 3;
-      };
-    };
+    #   Service = {
+    #     ExecStart = "${pkgs.haskellPackages.notifications-tray-icon}/bin/notifications-tray-icon  --github-token-pass dfinity-github-api-token";
+    #     Restart = "always";
+    #     RestartSec = 3;
+    #   };
+    # };
 
     systemd.user.services.shutter = {
       Unit = {

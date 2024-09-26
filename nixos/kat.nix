@@ -1,5 +1,5 @@
 { pkgs, inputs, config, makeEnable, ... }:
-makeEnable config "modules.kat" false {
+makeEnable config "myModules.kat" false {
   environment.systemPackages = with pkgs; [
     bitwarden
     obsidian

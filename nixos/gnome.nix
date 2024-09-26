@@ -1,5 +1,5 @@
 { config, makeEnable, ... }:
-makeEnable config "modules.gnome" false {
+makeEnable config "myModules.gnome" false {
   services.xserver = {
     desktopManager.gnome.enable = true;
     displayManager.gdm.enable = true;

@@ -13,25 +13,25 @@ in
     extraGroups = ["syncthing"];
   };
 
-  modules.raspberry-pi.enable = true;
+  myModules.raspberry-pi.enable = true;
 
-  modules.base.enable = true;
-  modules.desktop.enable = true;
-  modules.xmonad.enable = false;
-  modules.extra.enable = false;
-  modules.code.enable = true;
-  modules.games.enable = false;
-  modules.syncthing.enable = true;
-  modules.fonts.enable = true;
-  modules.nixified-ai.enable = false;
-  modules.cache-server = {
+  myModules.base.enable = true;
+  myModules.desktop.enable = true;
+  myModules.xmonad.enable = false;
+  myModules.extra.enable = false;
+  myModules.code.enable = true;
+  myModules.games.enable = false;
+  myModules.syncthing.enable = true;
+  myModules.fonts.enable = true;
+  myModules.nixified-ai.enable = false;
+  myModules.cache-server = {
     enable = false;
     host-string = biskcomp-nginx-hostnames;
     port = 80;
     path = "/nix-cache";
   };
-  modules.gitea.enable = true;
-  modules.gitea-runner.enable = false;
+  myModules.gitea.enable = true;
+  myModules.gitea-runner.enable = false;
 
   services.vaultwarden = {
     enable = true;

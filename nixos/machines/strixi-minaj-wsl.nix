@@ -4,7 +4,7 @@
     ../configuration.nix
   ];
 
-  modules.wsl.enable = true;
+  myModules.wsl.enable = true;
 
   networking.hostName = "strixi-minaj-wsl";
 

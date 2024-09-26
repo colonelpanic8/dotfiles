@@ -1,5 +1,5 @@
 { pkgs, makeEnable, config, ... }:
-makeEnable config "modules.fonts" true {
+makeEnable config "myModules.fonts" true {
   # Enable the gtk icon cache
   gtk.iconCache.enable = true;
 

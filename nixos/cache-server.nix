@@ -1,10 +1,10 @@
 { config, lib, ... }:
 with lib;
-let cfg = config.modules.cache-server;
+let cfg = config.myModules.cache-server;
 in
 {
   options = {
-    modules.cache-server = {
+    myModules.cache-server = {
       enable = mkEnableOption "nix cache server";
       port = mkOption {
         type = types.int;

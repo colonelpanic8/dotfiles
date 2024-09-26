@@ -21,7 +21,7 @@ let
   };
   allDevices = builtins.attrNames devices;
 in
-makeEnable config "modules.syncthing" true {
+makeEnable config "myModules.syncthing" true {
   system.activationScripts.syncthingPermissions = {
     text = ''
       chown -R syncthing:syncthing /var/lib/syncthing

@@ -1,5 +1,5 @@
 { pkgs, config, makeEnable, forEachUser, ... }:
-makeEnable config "modules.electron" false {
+makeEnable config "myModules.electron" false {
   environment.systemPackages = with pkgs; [
     element-desktop
     # bitwarden

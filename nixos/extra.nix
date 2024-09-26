@@ -1,5 +1,5 @@
 { config, pkgs, makeEnable, ... }:
-makeEnable config "modules.extra" false {
+makeEnable config "myModules.extra" false {
   services.expressvpn.enable = true;
   programs.hyprland.enable = true;
 
