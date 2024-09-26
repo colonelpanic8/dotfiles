@@ -59,6 +59,7 @@ makeEnable config "modules.base" true {
   services.locate.enable = true;
 
   virtualisation.docker.enable = true;
+  virtualisation.docker.enableNvidia = true;
 
   hardware.keyboard.zsa.enable = true;
 
