@@ -6,7 +6,7 @@
     nixos-hardware = { url = "github:colonelpanic8/nixos-hardware/add-g834jzr"; };
 
     nixpkgs = {
-      url = "github:colonelpanic8/nixpkgs/with-cursor";
+      url = "github:NixOS/nixpkgs/nixos-unstable";
     };
 
     home-manager = {
@@ -34,7 +34,7 @@
     };
 
     taffybar = {
-      url = "github:taffybar/taffybar";
+      url = "github:taffybar/taffybar/old-master";
       inputs = {
         nixpkgs.follows = "nixpkgs";
         flake-utils.follows = "flake-utils";
@@ -103,8 +103,6 @@
     };
 
     vscode-server.url = "github:nix-community/nixos-vscode-server";
-
-    nixpkgs-regression = { url = "github:NixOS/nixpkgs"; };
 
     nixified-ai = { url = "github:nixified-ai/flake"; };
 

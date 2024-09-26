@@ -71,7 +71,7 @@ makeEnable config "myModules.desktop" true {
     notify-osd-customizable
     okular
     pinentry
-    psensor
+    mission-center
     quassel
     remmina
     rofi

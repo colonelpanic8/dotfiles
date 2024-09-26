@@ -36,7 +36,7 @@ makeEnable config "myModules.base" true {
   };
 
   # Audio
-  hardware.pulseaudio.enable = true;
+  hardware.pulseaudio.enable = false;
 
   # Bluetooth
   hardware.bluetooth.enable = true;

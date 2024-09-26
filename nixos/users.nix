@@ -92,12 +92,12 @@ in
     railbird = userDefaults // {
       inherit extraGroups;
       name = "railbird";
-      openssh.authorizedKeys.keys = inputs.railbird-secrets.keys.railbirdDevKeys;
+      openssh.authorizedKeys.keys = inputs.railbird-secrets.keys.railbirdFullstackDevKeys;
     };
     interview = userDefaults // {
       inherit extraGroups;
       name = "interview";
-      openssh.authorizedKeys.keys = interviewKeys ++ inputs.railbird-secrets.keys.railbirdDevKeys;
+      openssh.authorizedKeys.keys = interviewKeys ++ inputs.railbird-secrets.keys.railbirdFullstackDevKeys;
     };
   };
 
