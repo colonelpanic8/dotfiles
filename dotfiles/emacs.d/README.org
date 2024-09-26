@@ -1517,6 +1517,7 @@ https://github.com/alpaker/Fill-Column-Indicator/issues/21 for more details
 ** indent-bars
 #+begin_src emacs-lisp
 (use-package indent-bars
+  :disabled t
   :straight (indent-bars :type git :host github :repo "jdtsmith/indent-bars")
   :config
   (require 'indent-bars-ts) 		; not needed with straight
