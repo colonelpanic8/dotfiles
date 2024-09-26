@@ -23,13 +23,12 @@
   boot.loader.systemd-boot.enable = true;
 
   # install nvidia drivers in addition to intel one
-  hardware.opengl.extraPackages = [ pkgs.linuxPackages.nvidia_x11.out ];
-  hardware.opengl.extraPackages32 = [ pkgs.linuxPackages.nvidia_x11.lib32 ];
+  hardware.graphics.extraPackages = [ pkgs.linuxPackages.nvidia_x11.out ];
+  hardware.graphics.extraPackages32 = [ pkgs.linuxPackages.nvidia_x11.lib32 ];
+  hardware.graphics.enable32Bit = true;
   services.xserver = {
     videoDrivers = [ "nvidia" ];
   };
-
-  hardware.opengl.driSupport32Bit = true;
 
   hardware.nvidia.modesetting.enable = true;
 
