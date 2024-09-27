@@ -4,6 +4,7 @@
 (setq mc/cmds-to-run-for-all
       '(
         TeX-insert-backslash
+        align
         backward-sexp
         beginning-of-buffer
         beginning-of-visual-line
