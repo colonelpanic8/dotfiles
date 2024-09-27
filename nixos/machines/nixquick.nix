@@ -12,6 +12,7 @@
   myModules.gitea-runner.enable = true;
   myModules.vscode.enable = true;
   myModules.kat.enable = true;
+  myModules.nvidia.enable = true;
 
   networking.hostName = "nixquick";
 
@@ -21,14 +22,6 @@
   boot.kernelModules = [ "kvm-intel" ];
   boot.extraModulePackages = [ ];
   boot.loader.systemd-boot.enable = true;
-
-  # install nvidia drivers in addition to intel one
-  hardware.graphics.extraPackages = [ pkgs.linuxPackages.nvidia_x11.out ];
-  hardware.graphics.extraPackages32 = [ pkgs.linuxPackages.nvidia_x11.lib32 ];
-  hardware.graphics.enable32Bit = true;
-  services.xserver = {
-    videoDrivers = [ "nvidia" ];
-  };
 
   hardware.nvidia.modesetting.enable = true;
 
