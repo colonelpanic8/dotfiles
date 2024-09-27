@@ -1,5 +1,6 @@
 {
   inputs = {
+    nixtheplanet.url = "github:matthewcroughan/nixtheplanet";
     railbird-secrets = {
       url = "git+ssh://gitea@dev.railbird.ai:1123/railbird/secrets-flake.git";
     };
@@ -112,7 +113,7 @@
   };
 
   outputs = inputs@{
-    self, nixpkgs, nixos-hardware, home-manager, taffybar, xmonad,
+    self, nixpkgs, nixos-hardware, home-manager, taffybar, xmonad, nixtheplanet,
     xmonad-contrib, notifications-tray-icon, nix, agenix, imalison-taffybar, ...
   }:
   let
@@ -124,7 +125,7 @@
       name = machineNameFromFilename filename;
       value = {
         modules = [
-          (machinesFilepath + ("/" + filename)) agenix.nixosModules.default
+          (machinesFilepath + ("/" + filename)) agenix.nixosModules.default nixtheplanet.nixosModules.macos-ventura
         ];
       };
     };

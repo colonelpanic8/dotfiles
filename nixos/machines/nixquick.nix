@@ -4,6 +4,12 @@
     ../configuration.nix
   ];
 
+  services.macos-ventura = {
+    enable = true;
+    openFirewall = true;
+    vncListenAddr = "0.0.0.0";
+  };
+
   features.full.enable = true;
   myModules.cache-server = {
     enable = true;
