@@ -59,8 +59,6 @@ makeEnable config "myModules.base" true {
   services.locate.enable = true;
 
   virtualisation.docker.enable = true;
-  hardware.nvidia-container-toolkit.enable = true;
-  hardware.nvidia.open = false;
 
   hardware.keyboard.zsa.enable = true;
 

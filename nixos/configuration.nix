@@ -23,6 +23,7 @@
     ./keybase.nix
     ./nix.nix
     ./nixified.ai.nix
+    ./nvidia.nix
     ./options.nix
     ./plasma.nix
     ./postgres.nix
