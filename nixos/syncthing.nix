@@ -18,6 +18,7 @@ let
     strixi-minaj-wsl = { id = "DOAEFFI-W6EZY3K-GDUHDLX-6DQPVFC-XU3G65X-5KX6RKK-EMF7ZT7-YKKKOAM"; };
     strixi-minaj = { id = "IF76WOS-WVYFAQG-ZZMIT3R-ZR6EQQH-YQP3FGZ-BJ3LJKO-56FK2XA-UREADQM"; };
     dean-zephyrus = { id = "UVIQVZQ-WFWVUQT-OTXPK7V-RXFKAVV-RY5DV2Z-XZEH3Q2-JQZIQLW-XMSB6AT"; };
+    bencbox = { id = "FZFDBDG-J56RKLU-JZUHEAB-SAGB6CM-LRR6QFC-ZLNQG22-R2DEXAC-MY4BXQN"; };
   };
   allDevices = builtins.attrNames devices;
 in
