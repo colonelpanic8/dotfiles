@@ -4,7 +4,6 @@ makeEnable config "myModules.nvidia" false {
   environment.systemPackages = with pkgs; [
     nvidia-container-toolkit
   ];
-  virtualisation.docker.enableNvidia = true;
   hardware.nvidia-container-toolkit.enable = true;
   hardware.nvidia.open = false;
   hardware.graphics.extraPackages = [ pkgs.linuxPackages.nvidia_x11.out ];
