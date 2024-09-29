@@ -21,6 +21,7 @@
     ./internet-computer.nix
     ./kat.nix
     ./keybase.nix
+    ./kubelet.nix
     ./nix.nix
     ./nixified.ai.nix
     ./nvidia.nix
