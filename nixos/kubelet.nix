@@ -6,16 +6,17 @@ makeEnable config "myModules.kubelet" false {
     kubeconfig = {
       server = "https://34.31.205.230";
       caFile = ./railbird-kubernetes.crt;
+      certFile = ./kubelet-client.crt;
       keyFile = config.age.secrets."api_service_account_key.json.age".path;
     };
     registerNode = true;
     cni = {
-      packages = [ pkgs.cni-plugins ];
+      packages = [ pkgs.cni-plugins pkgs.calico-cni-plugin ];
     };
     extraOpts = ''
       --fail-swap-on=false
-      --container-runtime=remote
-      --container-runtime-endpoint=unix:///run/containerd/containerd.sock
+      # --container-runtime=remote
+      # --container-runtime-endpoint=unix:///run/containerd/containerd.sock
     '';
   };
 }
