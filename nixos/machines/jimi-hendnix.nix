@@ -7,7 +7,7 @@
 
   myModules.railbird-k3s = {
     enable = true;
-    serverAddr = "https://ryzen-shine.local:6433";
+    serverAddr = "https://ryzen-shine.local:6443";
   };
   myModules.base.enable = true;
   myModules.desktop.enable = true;
