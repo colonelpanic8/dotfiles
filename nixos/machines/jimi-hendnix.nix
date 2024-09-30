@@ -5,6 +5,10 @@
     ../configuration.nix
   ];
 
+  myModules.railbird-k3s = {
+    enable = true;
+    serverAddr = "https://ryzen-shine.local:6433";
+  };
   myModules.base.enable = true;
   myModules.desktop.enable = true;
   myModules.xmonad.enable = true;
@@ -18,7 +22,6 @@
   myModules.postgres.enable = true;
 
   hardware.enableRedistributableFirmware = true;
-
   myModules.nvidia.enable = true;
 
   boot.initrd.availableKernelModules = [ "xhci_pci" "nvme" "usb_storage" "usbhid" "sd_mod" ];

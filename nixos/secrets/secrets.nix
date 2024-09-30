@@ -13,5 +13,6 @@ in
   "gitea-runner-token.mac-demarco-mini.age".publicKeys = keys.agenixKeys ++ keys.railbird-sf;
   "nextcloud-admin.age".publicKeys = keys.agenixKeys;
   "ryzen-shine-kubernetes-token.age".publicKeys = keys.agenixKeys;
+  "1896Folsom-k3s-token.age".publicKeys = keys.agenixKeys;
   "api_service_account_key.json.age".publicKeys = keys.agenixKeys;
 }
