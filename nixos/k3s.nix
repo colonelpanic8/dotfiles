@@ -26,6 +26,9 @@ in {
       clusterInit = cfg.serverAddr == "";
       serverAddr = cfg.serverAddr;
       tokenFile = config.age.secrets."1896Folsom-k3s-token.age".path;
+      extraFlags = [
+        "--insecure-skip-tls-verify"
+      ];
       containerdConfigTemplate = ''
         {{ template "base" . }}
 
