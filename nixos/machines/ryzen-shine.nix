@@ -6,7 +6,7 @@
   ];
 
   features.full.enable = true;
-  myModules.kubelet.enable = true;
+  myModules.kubelet.enable = false;
   myModules.nvidia.enable = true;
   # Needed for now because monitors have different refresh rates
   myModules.xmonad.picom.vSync.enable = false;

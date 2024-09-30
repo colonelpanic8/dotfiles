@@ -19,6 +19,7 @@
     ./gnome.nix
     ./imalison.nix
     ./internet-computer.nix
+    ./k3s.nix
     ./kat.nix
     ./keybase.nix
     ./kubelet.nix
