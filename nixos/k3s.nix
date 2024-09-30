@@ -3,13 +3,15 @@ with lib;
 let cfg = config.myModules.railbird-k3s;
 in {
   options = {
-    enable = mkEnableOption "railbird k3s";
-    serverAddr = {
-      type = lib.types.str;
-      default = "";
+    myModules.railbird-k3s = {
+      enable = mkEnableOption "railbird k3s";
+      serverAddr = mkOption {
+        type = lib.types.str;
+        default = "";
+      };
     };
   };
-  config = {
+  config = mkIf cfg.enable {
     age.secrets."1896Folsom-k3s-token.age".file = ./secrets/1896Folsom-k3s-token.age;
     services.dockerRegistry = {
       enable = true;

@@ -7,7 +7,6 @@
 
   features.full.enable = true;
   myModules.kubelet.enable = false;
-  myModules.railbird-k3s.enable = true;
   myModules.nvidia.enable = true;
   # Needed for now because monitors have different refresh rates
   myModules.xmonad.picom.vSync.enable = false;
@@ -17,6 +16,7 @@
   };
   myModules.gitea-runner.enable = true;
   myModules.postgres.enable = true;
+  myModules.railbird-k3s.enable = true;
 
   boot.loader.systemd-boot.configurationLimit = 5;
 
