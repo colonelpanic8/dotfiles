@@ -27,6 +27,10 @@ in {
       serverAddr = cfg.serverAddr;
       tokenFile = config.age.secrets."1896Folsom-k3s-token.age".path;
       extraFlags = [
+        "--tls-san ryzen-shine.local"
+        "--tls-san nixquick.local"
+        "--tls-san biskcomp.local"
+        "--tls-san jimi-hendnix.local"
         ''--kube-apiserver-arg="--insecure-skip-tls-verify"''
       ];
       containerdConfigTemplate = ''
