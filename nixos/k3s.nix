@@ -31,7 +31,6 @@ in {
         "--tls-san nixquick.local"
         "--tls-san biskcomp.local"
         "--tls-san jimi-hendnix.local"
-        ''--kube-apiserver-arg="--insecure-skip-tls-verify"''
       ];
       containerdConfigTemplate = ''
         {{ template "base" . }}
