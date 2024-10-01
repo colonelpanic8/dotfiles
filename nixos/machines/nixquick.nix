@@ -19,6 +19,10 @@
   myModules.vscode.enable = true;
   myModules.kat.enable = true;
   myModules.nvidia.enable = true;
+  myModules.railbird-k3s = {
+    enable = true;
+    serverAddr = "https://dev.railbird.ai:6443";
+  };
 
   networking.hostName = "nixquick";
 

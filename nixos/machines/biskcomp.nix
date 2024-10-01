@@ -33,6 +33,12 @@ in
   myModules.gitea.enable = true;
   myModules.gitea-runner.enable = false;
 
+  myModules.railbird-k3s = {
+    enable = true;
+    serverAddr = "https://dev.railbird.ai:6443";
+  };
+  services.k3s.disableAgent = true;
+
   services.vaultwarden = {
     enable = true;
     config = {

@@ -22,7 +22,6 @@ in {
     };
     services.k3s = {
       enable = true;
-      role = "server";
       clusterInit = cfg.serverAddr == "";
       serverAddr = cfg.serverAddr;
       tokenFile = config.age.secrets."1896Folsom-k3s-token.age".path;

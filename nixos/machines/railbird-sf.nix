@@ -41,6 +41,10 @@
   myModules.plasma.enable = true;
   myModules.nvidia.enable = true;
   myModules.gitea-runner.enable = true;
+  myModules.railbird-k3s = {
+    enable = true;
+    serverAddr = "https://dev.railbird.ai:6443";
+  };
 
   fileSystems."/" =
     { device = "/dev/disk/by-uuid/a317d456-6f84-41ee-a149-8e466e414aae";
