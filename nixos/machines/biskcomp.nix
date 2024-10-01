@@ -35,7 +35,7 @@ in
 
   myModules.railbird-k3s = {
     enable = true;
-    serverAddr = "https://dev.railbird.ai:6443";
+    serverAddr = "https://192.168.1.17:6443";
   };
   services.k3s.disableAgent = true;
 
