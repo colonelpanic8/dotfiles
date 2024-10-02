@@ -42,7 +42,6 @@ in {
         "--tls-san biskcomp.local"
         "--tls-san jimi-hendnix.local"
         "--tls-san dev.railbird.ai"
-        "--container-runtime-endpoint unix:///run/containerd/containerd.sock"
       ];
       containerdConfigTemplate = ''
         {{ template "base" . }}
