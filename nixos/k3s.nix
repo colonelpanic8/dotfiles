@@ -14,7 +14,7 @@ in {
   config = mkIf cfg.enable {
     age.secrets."1896Folsom-k3s-token.age".file = ./secrets/1896Folsom-k3s-token.age;
     age.secrets."k3s-registry.yaml.age".file = ./secrets/k3s-registry.yaml.age;
-    environment.etc."rancher/k3s/registry.yaml".source = config.age.secrets."k3s-registry.yaml.age".path;
+    environment.etc."rancher/k3s/registries.yaml".source = config.age.secrets."k3s-registry.yaml.age".path;
     services.dockerRegistry = {
       enable = true;
       listenAddress = "0.0.0.0";
