@@ -59,9 +59,6 @@ in {
       gracefulNodeShutdown = {
         enable = true;
       };
-        labels = {
-          "nixos-nvidia-cdi" = "enabled";
-        };
     };
   };
 }
