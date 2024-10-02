@@ -22,6 +22,15 @@ in {
       enableDelete = true;
       enableGarbageCollect = true;
     };
+    virtualisation.containerd = {
+      enable = true;
+      settings = {
+        plugins."io.containerd.grpc.v1.cri" = {
+          enable_cdi = true;
+          cdi_spec_dirs = [ "/var/run/cdi" ];
+        };
+      };
+    };
     services.k3s = {
       enable = true;
       clusterInit = cfg.serverAddr == "";
