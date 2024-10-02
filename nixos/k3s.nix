@@ -42,6 +42,7 @@ in {
         "--tls-san biskcomp.local"
         "--tls-san jimi-hendnix.local"
         "--tls-san dev.railbird.ai"
+        "--node-label nixos-nvidia-cdi=enabled"
       ];
       containerdConfigTemplate = ''
         {{ template "base" . }}
