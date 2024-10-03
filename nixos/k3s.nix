@@ -29,7 +29,6 @@ in {
       configPath = pkgs.writeTextFile {
         name = "k3s-config.yaml";
         text = ''
-          write-kubeconfig-mode: "0644"
           kubelet-arg:
           - "eviction-hard=nodefs.available<2Gi"
           - "eviction-soft=nodefs.available<5Gi"
