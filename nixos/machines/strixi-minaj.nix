@@ -6,6 +6,7 @@
     inputs.nixos-hardware.nixosModules.asus-rog-strix-g834jzr
   ];
 
+  hardware.nvidia.open = false;
   myModules.base.enable = true;
   myModules.desktop.enable = true;
   myModules.xmonad.enable = true;
