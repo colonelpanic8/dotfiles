@@ -14,11 +14,7 @@
   boot.loader.systemd-boot.enable = true;
   modules.postgres.enable = true;
 
-  # Enable OpenGL
-  hardware.opengl = {
-    enable = true;
-    driSupport32Bit = true;
-  };
+  services.k3s.role = "agent";
 
   hardware.nvidia = {
     powerManagement.enable = false;
