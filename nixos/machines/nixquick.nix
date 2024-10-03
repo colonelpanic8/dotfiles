@@ -15,7 +15,7 @@
     enable = true;
     port = 3090;
   };
-  myModules.gitea-runner.enable = true;
+  myModules.gitea-runner.enable = false;
   myModules.vscode.enable = true;
   myModules.kat.enable = true;
   myModules.nvidia.enable = true;
