@@ -1,7 +1,7 @@
 { pkgs, config, makeEnable, ... }:
 makeEnable config "myModules.gitea-runner" false {
   age.secrets.gitea-runner-token = {
-    file = ./secrets/gitea-runner-token.${config.networking.hostName}.age;
+    file = ./secrets/gitea-runner-token.age;
     group = "docker";
   };
 
