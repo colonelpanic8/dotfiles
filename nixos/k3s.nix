@@ -1,4 +1,4 @@
-{ config, lib, ... }:
+{ pkgs, config, lib, ... }:
 with lib;
 let cfg = config.myModules.railbird-k3s;
 in {
@@ -22,19 +22,20 @@ in {
       enableDelete = true;
       enableGarbageCollect = true;
     };
-    virtualisation.containerd = {
-      enable = true;
-      settings = {
-        plugins."io.containerd.grpc.v1.cri" = {
-          enable_cdi = true;
-          cdi_spec_dirs = [ "/var/run/cdi" ];
-        };
-      };
-    };
     services.k3s = {
       enable = true;
       clusterInit = cfg.serverAddr == "";
       serverAddr = cfg.serverAddr;
+      configPath = pkgs.writeTextFile {
+        name = "k3s-config.yaml";
+        text = ''
+          write-kubeconfig-mode: "0644"
+          kubelet-arg:
+          - "eviction-hard=nodefs.available<2Gi"
+          - "eviction-soft=nodefs.available<5Gi"
+          - "eviction-soft-grace-period=nodefs.available=5m"
+        '';
+      };
       tokenFile = config.age.secrets."1896Folsom-k3s-token.age".path;
       extraFlags = [
         "--tls-san ryzen-shine.local"
@@ -46,6 +47,9 @@ in {
       ];
       containerdConfigTemplate = ''
         {{ template "base" . }}
+
+        [plugins]
+        "io.containerd.grpc.v1.cri".enable_cdi = true
 
         [plugins."io.containerd.grpc.v1.cri".containerd.runtimes.nvidia]
         privileged_without_host_devices = false
