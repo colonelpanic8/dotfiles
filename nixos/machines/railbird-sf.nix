@@ -15,7 +15,7 @@
   modules.postgres.enable = true;
 
   services.k3s.role = "agent";
-  services.k3s.extraFlages = lib.mkForce ["--node-label nixos-nvidia-cdi=enabled"];
+  services.k3s.extraFlags = lib.mkForce ["--node-label nixos-nvidia-cdi=enabled"];
 
   hardware.nvidia = {
     powerManagement.enable = false;
