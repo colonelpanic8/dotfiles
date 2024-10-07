@@ -42,13 +42,14 @@ in {
         RemainAfterExit = true;
         # ExecStartPre runs as root (the default), to perform the setup steps
         ExecStartPre = [
-          "-${pkgs.util-linux}/bin/umount -f ${mount-path}"
-          "${pkgs.coreutils}/bin/mkdir -p ${mount-path}"
-          "${pkgs.coreutils}/bin/chown -R railbird ${mount-path}"
-          "${pkgs.coreutils}/bin/chmod 0777 ${mount-path}"
+          "-${pkgs.util-linux}/bin/umount -f ${mount-path}"    # Ensure unmount if already mounted
+          "${pkgs.coreutils}/bin/mkdir -p ${mount-path}"        # Create the mount point
+          "${pkgs.coreutils}/bin/chown railbird:users ${mount-path}"  # Ensure the directory is owned by railbird and group users
+          "${pkgs.coreutils}/bin/chmod 0775 ${mount-path}"      # Give read/write/execute to owner and group, and read/execute to others
         ];
-        # Use su to run the main command as the railbird user
-        ExecStart = "${pkgs.gcsfuse}/bin/gcsfuse --implicit-dirs --key-file ${config.age.secrets.api-service-key.path} ${bucket-name} ${mount-path}";
+        # Mount the GCS bucket
+        ExecStart = "${pkgs.gcsfuse}/bin/gcsfuse --implicit-dirs --key-file ${config.age.secrets.api-service-key.path} --uid $(id -u railbird) --gid $(id -g users) ${bucket-name} ${mount-path}";
+        User = "root";  # Needs to run as root for mounting
       };
     };
 
