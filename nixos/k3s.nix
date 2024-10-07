@@ -1,6 +1,13 @@
-{ pkgs, config, lib, ... }:
-with lib;
-let cfg = config.myModules.railbird-k3s;
+{
+  pkgs,
+  config,
+  lib,
+  ...
+}:
+with lib; let
+  cfg = config.myModules.railbird-k3s;
+  mount-path = "/var/lib/railbird/bucket";
+  bucket-name = "railbird-dev-videos";
 in {
   options = {
     myModules.railbird-k3s = {
@@ -14,6 +21,11 @@ in {
   config = mkIf cfg.enable {
     age.secrets."1896Folsom-k3s-token.age".file = ./secrets/1896Folsom-k3s-token.age;
     age.secrets."k3s-registry.yaml.age".file = ./secrets/k3s-registry.yaml.age;
+    age.secrets.api-service-key = {
+      file = ./secrets/api_service_account_key.json.age;
+      owner = "railbird";
+      group = "users";
+    };
     environment.etc."rancher/k3s/registries.yaml".source = config.age.secrets."k3s-registry.yaml.age".path;
     services.dockerRegistry = {
       enable = true;
@@ -22,6 +34,24 @@ in {
       enableDelete = true;
       enableGarbageCollect = true;
     };
+    systemd.services.mount-railbird-bucket = {
+      after = ["agenix.service"];
+      description = "Mount railbird bucket";
+      serviceConfig = {
+        Type = "simple";
+        RemainAfterExit = true;
+        # ExecStartPre runs as root (the default), to perform the setup steps
+        ExecStartPre = [
+          "-${pkgs.util-linux}/bin/umount -f ${mount-path}"
+          "${pkgs.coreutils}/bin/mkdir -p ${mount-path}"
+          "${pkgs.coreutils}/bin/chown -R railbird ${mount-path}"
+          "${pkgs.coreutils}/bin/chmod 0777 ${mount-path}"
+        ];
+        # Use su to run the main command as the railbird user
+        ExecStart = "${pkgs.su}/bin/su -c '${pkgs.gcsfuse}/bin/gcsfuse --implicit-dirs --key-file ${config.age.secrets.api-service-key.path} ${bucket-name} ${mount-path}' railbird";
+      };
+    };
+
     services.k3s = {
       enable = true;
       clusterInit = cfg.serverAddr == "";
