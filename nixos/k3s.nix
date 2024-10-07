@@ -48,7 +48,7 @@ in {
           "${pkgs.coreutils}/bin/chmod 0777 ${mount-path}"
         ];
         # Use su to run the main command as the railbird user
-        ExecStart = "${pkgs.su}/bin/su -c '${pkgs.gcsfuse}/bin/gcsfuse --implicit-dirs --key-file ${config.age.secrets.api-service-key.path} ${bucket-name} ${mount-path}' railbird";
+        ExecStart = "${pkgs.gcsfuse}/bin/gcsfuse --implicit-dirs --key-file ${config.age.secrets.api-service-key.path} ${bucket-name} ${mount-path}";
       };
     };
 
