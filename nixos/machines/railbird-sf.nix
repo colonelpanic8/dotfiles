@@ -39,7 +39,7 @@
   myModules.nvidia.enable = true;
   myModules.gitea-runner.enable = true;
   myModules.railbird-k3s = {
-    enable = true;
+    enable = false;
     serverAddr = "https://dev.railbird.ai:6443";
   };
 
