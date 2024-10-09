@@ -38,6 +38,7 @@ in {
       enableDelete = true;
       enableGarbageCollect = true;
     };
+
     systemd.services.mount-railbird-bucket = {
       after = ["agenix.service"];
       description = "Mount railbird bucket";
@@ -50,7 +51,21 @@ in {
           "${pkgs.coreutils}/bin/chown railbird:users ${mount-path}"
           "${pkgs.coreutils}/bin/chmod 0775 ${mount-path}"
         ];
-        ExecStart = "${pkgs.gcsfuse}/bin/gcsfuse --implicit-dirs --key-file ${config.age.secrets.api-service-key.path} ${bucket-name} ${mount-path}";
+        ExecStart = let
+          key-file = config.age.secrets.api-service-key.path;
+        in
+          pkgs.writeShellScript "mount-railbird-bucket" ''
+            while true; do
+            if ${pkgs.util-linux}/bin/mount | grep -q "${mount-path}" && [ -d "${mount-path}/dev" ]; then
+            echo "Mount path ${mount-path} is mounted and valid (contains directory 'dev')."
+            else
+            echo "Mount path is not valid or not mounted, attempting remount."
+            ${pkgs.util-linux}/bin/umount -f "${mount-path}" || true
+            ${pkgs.gcsfuse}/bin/gcsfuse --implicit-dirs --key-file "${key-file}" "${bucket-name}" "${mount-path}"
+            fi
+            sleep 60
+            done
+          '';
         User = "root";
       };
     };
@@ -69,14 +84,16 @@ in {
         '';
       };
       tokenFile = config.age.secrets."1896Folsom-k3s-token.age".path;
-      extraFlags = [
-        "--tls-san ryzen-shine.local"
-        "--tls-san nixquick.local"
-        "--tls-san biskcomp.local"
-        "--tls-san jimi-hendnix.local"
-        "--tls-san dev.railbird.ai"
-        "--node-label nixos-nvidia-cdi=enabled"
-      ] ++ cfg.extraFlags;
+      extraFlags =
+        [
+          "--tls-san ryzen-shine.local"
+          "--tls-san nixquick.local"
+          "--tls-san biskcomp.local"
+          "--tls-san jimi-hendnix.local"
+          "--tls-san dev.railbird.ai"
+          "--node-label nixos-nvidia-cdi=enabled"
+        ]
+        ++ cfg.extraFlags;
       containerdConfigTemplate = ''
         {{ template "base" . }}
 
