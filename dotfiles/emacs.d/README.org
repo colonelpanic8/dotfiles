@@ -3153,10 +3153,32 @@ My org-mode configuration now lives in its own file org-config.org.
     (unbind-key "C-j" magit-hunk-section-map)
     (unbind-key "C-j" magit-file-section-map)
     (unbind-key "C-j" magit-diff-section-base-map)
+    (remove-hook 'magit-status-headers-hook 'magit-insert-tags-header)
+    (setq magit-revision-insert-related-refs nil)
+    (remove-hook 'magit-status-sections-hook 'magit-insert-unpulled-from-upstream)
+    (remove-hook 'magit-status-sections-hook 'magit-insert-unpushed-to-upstream-or-recent)
     (setq magit-last-seen-setup-instructions "1.4.0"
           magit-display-buffer-function
           'magit-display-buffer-same-window-except-diff-v1)
     (magit-auto-revert-mode)
+    (dir-locals-set-class-variables
+     'huge-git-repository
+     '((nil
+        . ((magit-refresh-buffers . nil)
+           (magit-revision-insert-related-refs . nil)))
+       (magit-status-mode
+        . ((eval . (magit-disable-section-inserter 'magit-insert-tags-header))
+           (eval . (magit-disable-section-inserter 'magit-insert-recent-commits))
+           (eval . (magit-disable-section-inserter 'magit-insert-unpushed-to-pushremote))
+           (eval . (magit-disable-section-inserter 'magit-insert-unpushed-to-upstream-or-recent))
+           (eval . (magit-disable-section-inserter 'magit-insert-unpulled-from-pushremote))
+           (eval . (magit-disable-section-inserter 'magit-insert-unpulled-from-pushremote))
+           (eval . (magit-disable-section-inserter 'magit-insert-unpulled-from-upstream))
+           ))
+       ))
+
+    (dir-locals-set-directory-class
+     "/home/imalison/Projects/nixpkgs" 'huge-git-repository)
 
     (add-to-list 'org-show-context-detail '(magit-goto . lineage))
     (advice-add 'magit-diff-visit-file :after 'imalison:after-magit-visit-file)
