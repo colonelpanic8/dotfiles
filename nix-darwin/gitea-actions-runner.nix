@@ -1,11 +1,13 @@
-{ config, lib, pkgs, ... }:
-
-with lib;
-
-let
+{
+  config,
+  lib,
+  pkgs,
+  ...
+}:
+with lib; let
   cfg = config.services.gitea-actions-runner;
 
-  settingsFormat = pkgs.formats.yaml { };
+  settingsFormat = pkgs.formats.yaml {};
 
   hasDockerScheme = instance:
     instance.labels == [] || any (label: hasInfix ":docker:" label) instance.labels;
@@ -14,9 +16,8 @@ let
   hasHostScheme = instance: any (label: hasSuffix ":host" label) instance.labels;
 
   tokenXorTokenFile = instance:
-    (instance.token == null && instance.tokenFile != null) ||
-    (instance.token != null && instance.tokenFile == null);
-
+    (instance.token == null && instance.tokenFile != null)
+    || (instance.token != null && instance.tokenFile == null);
 in {
   options.services.gitea-actions-runner = {
     package = mkOption {
@@ -66,7 +67,7 @@ in {
           labels = mkOption {
             type = types.listOf types.str;
             default = [];
-            example = [ "macos:host" "x86_64:host" ];
+            example = ["macos:host" "x86_64:host"];
             description = "Labels used to map jobs to their runtime environment.";
           };
 
@@ -75,7 +76,7 @@ in {
             type = types.submodule {
               freeformType = settingsFormat.type;
             };
-            default = { };
+            default = {};
           };
 
           hostPackages = mkOption {
@@ -111,64 +112,65 @@ in {
       description = "Gitea Actions Runner user";
     };
 
-    launchd.daemons = mapAttrs' (name: instance:
-      nameValuePair "gitea-runner-${name}" {
-        serviceConfig = {
-          ProgramArguments = [
-            "${pkgs.writeShellScript "gitea-runner-start-${name}" ''
-              echo "home is $HOME"
-              mkdir -p /var/log/gitea-runner/
-              chown -R ${cfg.user} /var/log/gitea-runner
-              chmod 755 /var/log/gitea-runner
+    launchd.daemons =
+      (mapAttrs' (
+          name: instance:
+            nameValuePair "gitea-runner-${name}" {
+              serviceConfig = {
+                ProgramArguments = [
+                  "/usr/bin/env"
+                  "bash"
+                  "-c"
+                  ''
+                    cd /var/lib/gitea-runner/${name}
+                    exec ${cfg.package}/bin/act_runner daemon --config ${settingsFormat.generate "config.yaml" instance.settings}
+                  ''
+                ];
+                KeepAlive = true;
+                ThrottleInterval = 5;
+                SessionCreate = true;
+                UserName = cfg.user;
+                GroupName = "staff";
+                WorkingDirectory = "/var/lib/gitea-runner/${name}";
+                EnvironmentVariables = {
+                  PATH = (lib.makeBinPath (instance.hostPackages ++ [cfg.package])) + ":/usr/local/bin:/usr/bin:/usr/sbin:/bin:/sbin";
+                };
+              };
+            }
+        )
+        cfg.instances)
+      // (mapAttrs' (
+          name: instance:
+            nameValuePair "gitea-runner-setup-${name}"
+            {
+              serviceConfig = {
+                EnvironmentVariables =
+                  {}
+                  // optionalAttrs (instance.token != null) {
+                    TOKEN = instance.token;
+                  };
+                RunAtLoad = true;
+                ProgramArguments = [
+                  "${pkgs.writeShellScript "gitea-runner-setup-${name}" ''
+                    mkdir -p /var/lib/gitea-runner/${name}
+                    cd /var/lib/gitea-runner/${name}
+                    if [ ! -e "/var/lib/gitea-runner/${name}/.runner" ]; then
+                        ${cfg.package}/bin/act_runner register --no-interactive \
+                        --instance ${escapeShellArg instance.url} \
+                        --token "$TOKEN" \
+                        --name ${escapeShellArg instance.name} \
+                        --labels ${escapeShellArg (concatStringsSep "," instance.labels)} \
+                        --config ${settingsFormat.generate "config.yaml" instance.settings}
+                    fi
 
-              mkdir -p /var/lib/gitea-runner/${name}
-              chown -R ${cfg.user} /var/lib/gitea-runner
-              chmod 755 /var/lib/gitea-runner
-
-              sudo su - ${cfg.user}
-              echo "STARTING"
-
-              # Register the runner if not already registered
-              if [ ! -e "$HOME/.runner" ]; then
-                ${cfg.package}/bin/act_runner register --no-interactive \
-                  --instance ${escapeShellArg instance.url} \
-                  --token "$TOKEN" \
-                  --name ${escapeShellArg instance.name} \
-                  --labels ${escapeShellArg (concatStringsSep "," instance.labels)} \
-                  --config ${settingsFormat.generate "config.yaml" instance.settings}
-              fi
-
-              # Start the runner
-              exec ${cfg.package}/bin/act_runner daemon --config ${settingsFormat.generate "config.yaml" instance.settings}
-            ''}"
-          ];
-          KeepAlive = true;
-          RunAtLoad = true;
-          SessionCreate = true;
-          UserName = cfg.user;
-          GroupName = "staff";
-          WorkingDirectory = "/var/lib/gitea-runner/${name}";
-          EnvironmentVariables = {
-            PATH = (lib.makeBinPath (instance.hostPackages ++ [ cfg.package ])) + ":/usr/local/bin:/usr/bin:/usr/sbin:/bin:/sbin";
-          } // optionalAttrs (instance.token != null) {
-            TOKEN = instance.token;
-          };
-        } // optionalAttrs (instance.tokenFile != null) {
-          EnvironmentVariables.__TokenFile = instance.tokenFile;
-        };
-      }
-    ) cfg.instances;
-
-    system.activationScripts.gitea-runner-setup = {
-      text = ''
-        mkdir -p /var/log/gitea-runner/
-        mkdir -p /var/lib/gitea-runner/${name}
-        chown -R ${cfg.user} /var/log/gitea-runner
-        chmod 755 /var/log/gitea-runner
-
-        chown -R ${cfg.user} /var/lib/gitea-runner
-        chmod 755 /var/lib/gitea-runner
-      '';
-    };
+                    # Start the runner
+                    chown -R ${cfg.user} /var/lib/gitea-runner
+                    chown -R ${cfg.user} /var/log/gitea-runner
+                  ''}"
+                ];
+              };
+            }
+        )
+        cfg.instances);
   };
 }

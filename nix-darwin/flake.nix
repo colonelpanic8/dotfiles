@@ -30,7 +30,7 @@
       networking.hostName = "mac-demarco-mini";
       imports = [ (import ./gitea-actions-runner.nix) ];
       services.gitea-actions-runner = {
-        user = "gitearunner";
+        user = "gitea-runner";
         instances.nix = {
           enable = true;
           name = config.networking.hostName;
@@ -55,7 +55,9 @@
             curl
             direnv
             gawk
+            just
             git-lfs
+            isort
             gitFull
             gnused
             ncdu
@@ -70,7 +72,44 @@
       launchd.daemons.gitea-runner-nix.serviceConfig.EnvironmentVariables = {
         XDG_CONFIG_HOME = "/var/lib/gitea-runner";
         XDG_CACHE_HOME = "/var/lib/gitea-runner/.cache";
+        XDG_RUNTIME_DIR = "/var/lib/gitea-runner/tmp";
       };
+
+      # launchd.daemons.gitea-runner-restarter = {
+      #   serviceConfig = {
+      #     ProgramArguments = [
+      #       "/usr/bin/env"
+      #       "bash"
+      #       "-c"
+      #       ''
+      #         SERVICE_NAME="org.nixos.gitea-runner-nix"
+      #         while true; do
+      #         # Check the second column of launchctl list output for our service
+      #         EXIT_CODE=$(sudo launchctl list | grep "$SERVICE_NAME" | awk '{print $2}')
+      #         if [ -z "$EXIT_CODE" ]; then
+      #         echo "$(date): $SERVICE_NAME is running correctly. Terminating the restarter."
+      #         exit 0
+      #         else
+      #         echo "$(date): $SERVICE_NAME is not running or in error state. Attempting to restart..."
+      #         sudo launchctl bootout system/$SERVICE_NAME 2>/dev/null || true
+      #         sudo launchctl load /Library/LaunchDaemons/$SERVICE_NAME.plist
+      #         sleep 2  # Give the service some time to start
+      #         fi
+      #         done
+      #       ''
+      #     ];
+      #     RunAtLoad = true;
+      #     ThrottleInterval = 300;
+      #   };
+      # };
+
+      launchd.daemons.does-anything-work = {
+        serviceConfig = {
+          ProgramArguments = ["/usr/bin/env" "bash" "-c" "date > /var/log/does-anything-work"];
+          RunAtLoad = true;
+        };
+      };
+
       nixpkgs.overlays = [(import ../nixos/overlay.nix)];
       environment.systemPackages = with pkgs; [
         python-with-my-packages
@@ -113,11 +152,11 @@
       nixpkgs.hostPlatform = "aarch64-darwin";
       users.users.kat.openssh.authorizedKeys.keys = inputs.railbird-secrets.keys.kanivanKeys;
       users.users.gitea-runner = {
-         name = "gitea-runner";
-         isHidden = false;
-         home = "/Users/gitea-runner";
-         createHome = false;
-       };
+        name = "gitea-runner";
+        isHidden = false;
+        home = "/Users/gitea-runner";
+        createHome = false;
+      };
 
       home-manager.useGlobalPkgs = true;      home-manager.useUserPackages = true;
 
@@ -150,6 +189,7 @@
         programs.starship = {
           enable = true;
         };
+        programs.zsh.enable = true;
         home.stateVersion = "24.05";
       };
     };
