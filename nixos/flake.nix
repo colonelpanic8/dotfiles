@@ -11,7 +11,7 @@
     };
 
     home-manager = {
-      url = "github:nix-community/home-manager";
+      url = "github:colonelpanic8/home-manager/colonelpanic8/multiple-backup-files";
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
