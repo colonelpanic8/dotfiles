@@ -16,6 +16,10 @@ in {
         type = lib.types.str;
         default = "";
       };
+      extraFlags = mkOption {
+        type = lib.types.listOf lib.types.str;
+        default = [];
+      };
     };
   };
   config = mkIf cfg.enable {
@@ -72,7 +76,7 @@ in {
         "--tls-san jimi-hendnix.local"
         "--tls-san dev.railbird.ai"
         "--node-label nixos-nvidia-cdi=enabled"
-      ];
+      ] ++ cfg.extraFlags;
       containerdConfigTemplate = ''
         {{ template "base" . }}
 

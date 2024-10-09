@@ -16,7 +16,10 @@
   };
   myModules.gitea-runner.enable = true;
   myModules.postgres.enable = true;
-  myModules.railbird-k3s.enable = true;
+  myModules.railbird-k3s = {
+    enable = true;
+    extraFlags = ["--node-taint preferNoSchedule=true:NoSchedule"];
+  };
 
   boot.loader.systemd-boot.configurationLimit = 5;
 
