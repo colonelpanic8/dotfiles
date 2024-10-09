@@ -1,9 +1,7 @@
 #!/usr/bin/env sh
 
 function pavolume {
-    pacmd list-sinks |
-        awk '/^\s+name: /{indefault = $2 == "<'"$(pasink)"'>"}
-            /^\s+volume: / && indefault {print $5; exit}' | grep -Eo "[0-9]*"
+	pactl get-sink-volume $(pactl get-default-sink) | FS="/" get_cols 2 | grep -oE '[0-9]*'
 }
 
 pavolume

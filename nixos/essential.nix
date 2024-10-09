@@ -47,6 +47,7 @@
     patchelf
     pciutils
     pstree
+    pulseaudio
     python-with-my-packages
     rclone
     rcm
