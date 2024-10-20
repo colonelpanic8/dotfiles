@@ -31,9 +31,16 @@ makeEnable config "myModules.base" true {
   networking.firewall.enable = false;
   networking.networkmanager = {
     enable = true;
+    dns = "default";
+    extraConfig = ''
+      [main]
+      rc-manager=symlink
+    '';
     enableStrongSwan = true;
     plugins = [ pkgs.networkmanager-l2tp pkgs.networkmanager-openvpn ];
   };
+  networking.resolvconf.enable = false;
+  services.mullvad-vpn.enable = true;
 
   # Audio
   hardware.pulseaudio.enable = false;
