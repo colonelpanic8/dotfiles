@@ -1,4 +1,4 @@
-{ forEachUser, ... }:
+{ pkgs, forEachUser, ... }:
 let biskcomp-nginx-hostnames = "192.168.1.44 railbird.ai 1896Folsom.duckdns.org biskcomp.local 0.0.0.0 67.162.131.71";
 in
 {
@@ -52,14 +52,17 @@ in
     defaults.email = "IvanMalison@gmail.com";
   };
 
-  # services.nextcloud = {
-  #   enable = true;
-  #   hostName = "nextcloud.railbird.ai";
-  #   config = {
-  #     dbtype = "pgsql";
-  #     database.createLocally = true;
-  #   };
-  # };
+  services.gitlab = {
+    enable = true;
+    databasePasswordFile = pkgs.writeText "dbPassword" "zgvcyfwsxzcwr85l";
+    initialRootPasswordFile = pkgs.writeText "rootPassword" "dakqdvp4ovhksxer";
+    secrets = {
+      secretFile = pkgs.writeText "secret" "Aig5zaic";
+      otpFile = pkgs.writeText "otpsecret" "Riew9mue";
+      dbFile = pkgs.writeText "dbsecret" "we2quaeZ";
+      jwsFile = pkgs.runCommand "oidcKeyBase" {} "${pkgs.openssl}/bin/openssl genrsa 2048 > $out";
+    };
+  };
 
   services.nginx = {
     enable = true;
@@ -67,6 +70,11 @@ in
     recommendedGzipSettings = true;
     recommendedTlsSettings = true;
     virtualHosts = {
+      "gitlab.railbird.ai" = {
+        enableACME = true;
+        forceSSL = true;
+        locations."/".proxyPass = "http://unix:/run/gitlab/gitlab-workhorse.socket";
+      };
       "vaultwarden.railbird.ai" = {
         enableACME = true;
         forceSSL = true;
