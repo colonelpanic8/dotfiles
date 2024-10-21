@@ -56,6 +56,7 @@ in
     enable = true;
     databasePasswordFile = pkgs.writeText "dbPassword" "zgvcyfwsxzcwr85l";
     initialRootPasswordFile = pkgs.writeText "rootPassword" "dakqdvp4ovhksxer";
+    host = "gitlab.railbird.ai";
     secrets = {
       secretFile = pkgs.writeText "secret" "Aig5zaic";
       otpFile = pkgs.writeText "otpsecret" "Riew9mue";
