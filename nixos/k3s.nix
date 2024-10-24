@@ -45,6 +45,8 @@ in {
       serviceConfig = {
         Type = "simple";
         RemainAfterExit = true;
+        Restart = "on-failure";  # Restart the service on failure
+        RestartSec = 5;  # Wait 5 seconds before restarti
         ExecStartPre = [
           "-${pkgs.util-linux}/bin/umount -f ${mount-path}"
           "${pkgs.coreutils}/bin/mkdir -p ${mount-path}"
@@ -54,7 +56,7 @@ in {
         ExecStart = let
           key-file = config.age.secrets.api-service-key.path;
         in
-          pkgs.writeShellScript "mount-railbird-bucket" ''
+        pkgs.writeShellScript "mount-railbird-bucket" ''
             while true; do
             if ${pkgs.util-linux}/bin/mount | grep -q "${mount-path}" && [ -d "${mount-path}/dev" ]; then
             echo "Mount path ${mount-path} is mounted and valid (contains directory 'dev')."
@@ -63,7 +65,8 @@ in {
             ${pkgs.util-linux}/bin/umount -f "${mount-path}" || true
             ${pkgs.gcsfuse}/bin/gcsfuse --implicit-dirs --key-file "${key-file}" "${bucket-name}" "${mount-path}"
             fi
-            sleep 60
+            echo "Sleeping"
+            sleep 30
             done
           '';
         User = "root";
