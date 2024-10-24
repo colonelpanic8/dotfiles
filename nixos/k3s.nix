@@ -41,6 +41,7 @@ in {
 
     systemd.services.mount-railbird-bucket = {
       after = ["agenix.service"];
+      wantedBy = [ "multi-user.target" ];
       description = "Mount railbird bucket";
       serviceConfig = {
         Type = "simple";
