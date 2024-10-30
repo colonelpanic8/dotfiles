@@ -31,7 +31,6 @@ makeEnable config "myModules.base" true {
   networking.firewall.enable = false;
   networking.networkmanager = {
     enable = true;
-    dns = "default";
     enableStrongSwan = true;
     plugins = [ pkgs.networkmanager-l2tp pkgs.networkmanager-openvpn ];
   };
