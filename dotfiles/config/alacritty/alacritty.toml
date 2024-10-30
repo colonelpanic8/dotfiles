@@ -1,3 +1,4 @@
+[general]
 import = ["/home/imalison/.config/alacritty/themes/themes/dracula.toml"]
 
 [font]
