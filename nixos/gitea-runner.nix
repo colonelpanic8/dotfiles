@@ -26,7 +26,7 @@ makeEnable config "myModules.gitea-runner" false {
         curl
         gawk
         git-lfs
-        nixFlakes
+        nixVersions.stable
         gitFull
         gnused
         nodejs
