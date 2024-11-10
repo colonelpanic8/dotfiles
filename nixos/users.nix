@@ -38,6 +38,7 @@ in
       extraGroups = extraGroupsWithWheel;
       name = "imalison";
       openssh.authorizedKeys.keys = kanivanKeys;
+      uid = 1000;
     };
     kat = userDefaults // {
       extraGroups = extraGroupsWithWheel;
