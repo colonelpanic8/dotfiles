@@ -62,8 +62,6 @@ final: prev: {
         pip
         requests
         tox
-        virtualenv
-        virtualenvwrapper
       ];
   in
     final.python311.withPackages my-python-packages;

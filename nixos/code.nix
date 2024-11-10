@@ -46,6 +46,10 @@ makeEnable config "myModules.code" true {
     poetry
     black
 
+    # kotlin
+    kotlin
+    kotlin-language-server
+
     # dhall
     haskellPackages.dhall
     haskellPackages.dhall-json
