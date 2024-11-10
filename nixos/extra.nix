@@ -1,6 +1,5 @@
 { config, pkgs, makeEnable, ... }:
 makeEnable config "myModules.extra" false {
-  services.expressvpn.enable = true;
   programs.hyprland.enable = true;
 
   environment.systemPackages = with pkgs; [
@@ -10,7 +9,6 @@ makeEnable config "myModules.extra" false {
     asciidoctor
     roomeqwizard
     razergenie
-    expressvpn
     signal-desktop
     gource
     gimp
