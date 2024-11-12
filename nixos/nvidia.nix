@@ -6,7 +6,9 @@ makeEnable config "myModules.nvidia" false {
   ];
   hardware.nvidia-container-toolkit = {
     enable = true;
+    mount-nvidia-executables = false;
   };
+  hardware.opengl.enable = true;
   hardware.nvidia.open = true;
   hardware.graphics.extraPackages = [ pkgs.linuxPackages.nvidia_x11.out ];
   hardware.graphics.extraPackages32 = [ pkgs.linuxPackages.nvidia_x11.lib32 ];
