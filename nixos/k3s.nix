@@ -103,15 +103,6 @@ in {
 
         [plugins]
         "io.containerd.grpc.v1.cri".enable_cdi = true
-
-        [plugins."io.containerd.grpc.v1.cri".containerd.runtimes.nvidia]
-        privileged_without_host_devices = false
-        runtime_engine = ""
-        runtime_root = ""
-        runtime_type = "io.containerd.runc.v2"
-
-        [plugins."io.containerd.grpc.v1.cri".containerd.runtimes.nvidia.options]
-        BinaryName = "/run/current-system/sw/bin/nvidia-container-runtime"
       '';
       gracefulNodeShutdown = {
         enable = true;
