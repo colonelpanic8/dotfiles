@@ -1,18 +1,44 @@
+
 {
   inputs = {
-    nixtheplanet.url = "github:matthewcroughan/nixtheplanet";
-    railbird-secrets = {
-      url = "git+ssh://gitea@dev.railbird.ai:1123/railbird/secrets-flake.git";
-    };
-    nixos-hardware = { url = "github:colonelpanic8/nixos-hardware/add-g834jzr"; };
-
     nixpkgs = {
       url = "github:NixOS/nixpkgs/nixos-unstable";
+    };
+
+    flake-utils = {
+      url = "github:numtide/flake-utils";
+      inputs.systems.follows = "systems";
+    };
+
+    systems = { url = "github:nix-systems/default"; };
+
+    git-ignore-nix = {
+      url = "github:hercules-ci/gitignore.nix";
+      inputs.nixpkgs.follows = "nixpkgs";
     };
 
     home-manager = {
       url = "github:colonelpanic8/home-manager/colonelpanic8/multiple-backup-files";
       inputs.nixpkgs.follows = "nixpkgs";
+    };
+
+    nixos-hardware = { url = "github:colonelpanic8/nixos-hardware/add-g834jzr"; };
+
+    nixos-wsl = { url = "github:nix-community/NixOS-WSL"; };
+
+    agenix = { url = "github:ryantm/agenix"; };
+
+    railbird-secrets = {
+      url = "git+ssh://gitea@dev.railbird.ai:1123/railbird/secrets-flake.git";
+    };
+
+    xmonad = {
+      url = "github:xmonad/xmonad";
+      inputs = {
+        nixpkgs.follows = "nixpkgs";
+        flake-utils.follows = "flake-utils";
+        git-ignore-nix.follows = "git-ignore-nix";
+      };
     };
 
     xmonad-contrib = {
@@ -22,15 +48,6 @@
         flake-utils.follows = "flake-utils";
         git-ignore-nix.follows = "git-ignore-nix";
         xmonad.follows = "xmonad";
-      };
-    };
-
-    xmonad = {
-      url = "github:xmonad/xmonad";
-      inputs = {
-        nixpkgs.follows = "nixpkgs";
-        flake-utils.follows = "flake-utils";
-        git-ignore-nix.follows = "git-ignore-nix";
       };
     };
 
@@ -60,18 +77,6 @@
       url = "github:IvanMalison/notifications-tray-icon";
       inputs.flake-utils.follows = "flake-utils";
       inputs.git-ignore-nix.follows = "git-ignore-nix";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
-
-    flake-utils = {
-      url = "github:numtide/flake-utils";
-      inputs.systems.follows = "systems";
-    };
-
-    systems = { url = "github:nix-systems/default"; };
-
-    git-ignore-nix = {
-      url = "github:hercules-ci/gitignore.nix";
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
@@ -107,9 +112,7 @@
 
     nixified-ai = { url = "github:nixified-ai/flake"; };
 
-    nixos-wsl = { url = "github:nix-community/NixOS-WSL"; };
-
-    agenix.url = "github:ryantm/agenix";
+    nixtheplanet.url = "github:matthewcroughan/nixtheplanet";
   };
 
   outputs = inputs@{
