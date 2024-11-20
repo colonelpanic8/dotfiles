@@ -97,5 +97,5 @@
     home.stateVersion = "21.05";
   };
 
-  users.extraUsers.dean.home = "/shared/dean";
+  # users.extraUsers.dean.home = "/shared/dean";
 }
