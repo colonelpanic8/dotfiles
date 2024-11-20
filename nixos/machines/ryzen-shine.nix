@@ -77,7 +77,7 @@
   fileSystems."/shared" = {
     device = "/dev/disk/by-uuid/D4009CE8009CD33A";
     fsType = "ntfs";
-    options = [ "nofail" ];
+    options = [ "nofail" "uid=0" "gid=users" "umask=002" ];
   };
 
   swapDevices = [
