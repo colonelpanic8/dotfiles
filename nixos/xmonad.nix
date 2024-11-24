@@ -24,12 +24,8 @@ makeEnable config "myModules.xmonad" true  {
   environment.systemPackages = with pkgs; [
     # Haskell Desktop
     haskellPackages.xmonad
-    haskellPackages.imalison-xmonad
     # haskellPackages.notifications-tray-icon
-    haskellPackages.gtk-sni-tray
     haskellPackages.status-notifier-item
-    haskellPackages.dbus-hslogger
-    inputs.imalison-taffybar.defaultPackage."${pkgs.system}"
   ];
 
   home-manager.users = forEachUser {
@@ -41,7 +37,6 @@ makeEnable config "myModules.xmonad" true  {
 
     services.taffybar = {
       enable = true;
-      package = inputs.imalison-taffybar.defaultPackage."${pkgs.system}";
     };
 
     services.kdeconnect = {
