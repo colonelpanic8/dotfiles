@@ -8,7 +8,20 @@
   myModules.fonts.enable = true;
   myModules.base.enable = true;
   myModules.desktop.enable = true;
-  services.home-assistant.enable = true;
+  services.home-assistant = {
+    enable = true;
+    config = {
+      homeassistant = {
+        name = "Home";
+        latitude = "39.631431415930564";
+        longitude = "-106.52015264624013";
+        elevation = "7400'";
+        unit_system = "imperial";
+        time_zone = "UTC";
+      };
+      feedreader.urls = [ "https://nixos.org/blogs.xml" ];
+    };
+  };
 
   boot.initrd.availableKernelModules = [ "xhci_pci" "ahci" "usbhid" "usb_storage" "sd_mod" ];
   boot.initrd.kernelModules = [ ];
