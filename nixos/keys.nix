@@ -24,7 +24,7 @@ rec {
     "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIO3tlMePru6ZlSuf8yUii3N1dy3WwJnSQAt3EgETkctK kat@jay-lenovo.local"
     "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIFrOYD3ReFc2+xFUylBFHREcm1lO7BRJGW5JrOoY3I8s ivanm@strixi-minaj"
     "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAINYy93265G59aA1ksckjqlfeHq0vpEpzC8BwqCrpeXdh kat@Kats-Mac-mini.local"
-    "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIG60q//rVd2JESQT59XLvLdsH9AdYfQXTkXMjx9pH3xp imalison@beelink"
+    "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIG60q//rVd2JESQT59XLvLdsH9AdYfQXTkXMjx9pH3xp imalison@justin-bieber-creek"
   ];
   deanKeys = [
     "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAICDvbEVL+y7eV4+mtxOuHwyomBBQ6uYMesctstua20+e deanwenstrand@deans-mbp-2.lan"
