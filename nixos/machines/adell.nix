@@ -59,7 +59,7 @@
 
   swapDevices = [ ];
 
-  networking.hostName = "adele";
+  networking.hostName = "adell";
 
   powerManagement.cpuFreqGovernor = lib.mkDefault "performance";
 
