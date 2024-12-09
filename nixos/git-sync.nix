@@ -18,7 +18,7 @@
         };
         katnivan = {
           path = config.home.homeDirectory + "/katnivan";
-          uri = "ssh://gitea@1896Folsom.duckdns.org:1123/colonelpanic/katnivan.git";
+          uri = "ssh://gitea@dev.railbird.ai:1123/colonelpanic/katnivan.git";
           interval = 30;
         };
       };
