@@ -83,7 +83,7 @@ makeEnable config "myModules.desktop" true {
     synergy
     transmission_3-gtk
     vlc
-    volnoti
+    # volnoti
     xfce.thunar
 
     # Audio

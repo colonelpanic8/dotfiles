@@ -64,7 +64,7 @@ makeEnable config "myModules.xmonad" true  {
 
     services.xsettingsd.enable = true;
 
-    services.volnoti.enable = true;
+    # services.volnoti.enable = true;
 
     services.pasystray.enable = true;
 
