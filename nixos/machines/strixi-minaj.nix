@@ -3,7 +3,7 @@
 {
   imports = [
     ../configuration.nix
-    inputs.nixos-hardware.nixosModules.asus-rog-strix-g834jzr
+    # inputs.nixos-hardware.nixosModules.asus-rog-strix-g834jzr
   ];
 
   hardware.nvidia.open = true;
@@ -17,6 +17,8 @@
   myModules.fonts.enable = true;
   myModules.nixified-ai.enable = false;
   myModules.gitea-runner.enable = false;
+  myModules.nvidia.enable = true;
+  myModules.electron.enable = true;
 
   hardware.enableRedistributableFirmware = true;
 
@@ -31,10 +33,6 @@
   boot.kernelModules = [ "kvm-intel" ];
   boot.extraModulePackages = [ ];
   hardware.nvidia.powerManagement.enable = true;
-  hardware.graphics = {
-    enable = true;
-    enable32Bit = true;
-  };
   boot.loader.systemd-boot.enable = true;
   boot.loader.efi.canTouchEfiVariables = true;
 

@@ -23,6 +23,7 @@
     ./kat.nix
     ./keybase.nix
     ./kubelet.nix
+    ./laptop.nix
     ./nix.nix
     ./nixified.ai.nix
     ./nvidia.nix

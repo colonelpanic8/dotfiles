@@ -18,7 +18,7 @@
     };
 
     home-manager = {
-      url = "github:colonelpanic8/home-manager/colonelpanic8/multiple-backup-files";
+      url = "github:nix-community/home-manager/master";
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
@@ -31,6 +31,7 @@
     railbird-secrets = {
       url = "git+ssh://gitea@dev.railbird.ai:1123/railbird/secrets-flake.git";
     };
+
 
     xmonad = {
       url = "github:xmonad/xmonad";
