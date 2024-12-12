@@ -62,6 +62,7 @@
     unzip
     usbutils
     wget
+    xkcdpass
     yubikey-manager
   ];
 }
