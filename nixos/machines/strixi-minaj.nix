@@ -3,7 +3,7 @@
 {
   imports = [
     ../configuration.nix
-    # inputs.nixos-hardware.nixosModules.asus-rog-strix-g834jzr
+    inputs.nixos-hardware.nixosModules.asus-rog-strix-g834jzr
   ];
 
   hardware.nvidia.open = true;
