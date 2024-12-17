@@ -25,7 +25,6 @@ makeEnable config "myModules.fonts" true {
       nerd-fonts.fantasque-sans-mono
       nerd-fonts.iosevka
       nerd-fonts.victor-mono
-      nerd-fonts.source-code-pro
     ];
     fontconfig = {
       hinting.autohint = true;
@@ -33,7 +32,7 @@ makeEnable config "myModules.fonts" true {
       allowBitmaps = true;
       useEmbeddedBitmaps = true;
       defaultFonts = {
-        monospace = [ "Source Code Pro" ];
+        monospace = [ "JetBrains Mono" ];
         sansSerif = [ "Roboto" ];
         serif     = [ "Source Serif Pro" ];
       };
