@@ -29,6 +29,10 @@
   boot.extraModulePackages = [ ];
   boot.loader.systemd-boot.enable = true;
 
+  # Add Intel Wi-Fi firmware
+  hardware.enableAllFirmware = true;
+  hardware.firmware = [ pkgs.iwlwifi ];
+
   fileSystems."/" =
     { device = "/dev/disk/by-uuid/453d28a1-26f2-4b25-ac72-c6d301fd0bb8";
       fsType = "ext4";
