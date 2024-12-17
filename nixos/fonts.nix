@@ -21,13 +21,11 @@ makeEnable config "myModules.fonts" true {
       source-sans-pro
       source-serif-pro
       twemoji-color-font
-      # (nerdfonts.override { fonts = [
-      #   "JetBrainsMono"
-      #   "FantasqueSansMono"
-      #   "Iosevka"
-      #   "VictorMono"
-      #   "SourceCodePro"
-      # ]; })
+      nerd-fonts.jetbrains-mono
+      nerd-fonts.fantasque-sans-mono
+      nerd-fonts.iosevka
+      nerd-fonts.victor-mono
+      nerd-fonts.source-code-pro
     ];
     fontconfig = {
       hinting.autohint = true;
