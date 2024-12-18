@@ -1,4 +1,3 @@
-
 {
   inputs = {
     nixpkgs = {
@@ -22,7 +21,7 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
-    nixos-hardware = { url = "github:colonelpanic8/nixos-hardware/add-g834jzr"; };
+    nixos-hardware = { url = "github:colonelpanic8/nixos-hardware/my-master"; };
 
     nixos-wsl = { url = "github:nix-community/NixOS-WSL"; };
 

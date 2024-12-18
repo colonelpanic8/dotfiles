@@ -1,4 +1,4 @@
-{ config, lib, pkgs, inputs, forEachUser, ... }:
+{ lib, pkgs, inputs, forEachUser, ... }:
 
 {
   imports = [
@@ -16,6 +16,7 @@
   myModules.fonts.enable = true;
   myModules.nixified-ai.enable = false;
   myModules.gitea-runner.enable = false;
+  hardware.nvidia.open = true;
 
   hardware.enableRedistributableFirmware = true;
 
@@ -33,7 +34,7 @@
   boot.loader.systemd-boot.enable = true;
   boot.loader.efi.canTouchEfiVariables = true;
 
-  services.xserver.libinput = {
+  services.libinput = {
     enable = true;
     touchpad.tapping = true;
   };
