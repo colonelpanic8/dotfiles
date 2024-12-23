@@ -1,4 +1,4 @@
-{ pkgs, forEachUser, ... }:
+{ pkgs, forEachUser, config, ... }:
 let biskcomp-nginx-hostnames = "192.168.1.44 railbird.ai 1896Folsom.duckdns.org biskcomp.local 0.0.0.0 67.162.131.71";
 in
 {
@@ -63,6 +63,17 @@ in
       dbFile = pkgs.writeText "dbsecret" "we2quaeZ";
       jwsFile = pkgs.runCommand "oidcKeyBase" {} "${pkgs.openssl}/bin/openssl genrsa 2048 > $out";
     };
+  };
+
+  age.secrets.discourse-admin-password = {
+    file = ./secrets/discourse-admin-password.age;
+  };
+
+  services.discourse = {
+    enable = true;
+    enableACME = true;
+    hostname = "discourse.railbird.ai";
+    admin.passwordFile = config.age.secrets.discourse-admin-password.path;
   };
 
   services.nginx = {
