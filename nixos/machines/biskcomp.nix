@@ -74,6 +74,7 @@ in
     enableACME = true;
     hostname = "discourse.railbird.ai";
     admin.passwordFile = config.age.secrets.discourse-admin-password.path;
+    database.ignorePostgresqlVersion = true;
   };
 
   services.nginx = {
