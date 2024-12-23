@@ -73,7 +73,10 @@ in
     enable = true;
     enableACME = true;
     hostname = "discourse.railbird.ai";
-    admin.passwordFile = config.age.secrets.discourse-admin-password.path;
+    admin = {
+      passwordFile = config.age.secrets.discourse-admin-password.path;
+      email = "support@railbird.ai";
+    };
     database.ignorePostgresqlVersion = true;
   };
 
