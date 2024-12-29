@@ -76,7 +76,6 @@ in
     file = ../secrets/discourse-secret-key-base.age;
     group = "users";
     owner = "discourse";
->>>>>>> 03012f56 ([NixOS] Fail to fix discourse-admin-password)
   };
 
   services.discourse = {
