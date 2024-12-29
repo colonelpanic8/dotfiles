@@ -1,6 +1,6 @@
-{ config, pkgs, ... }:
+{ pkgs, ... }:
 {
-  security.pam.sshAgentAuth.enable = true;
+  # security.pam.sshAgentAuth.enable = true;
   services.avahi = {
     enable = true;
     nssmdns4 = true;

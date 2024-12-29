@@ -4,8 +4,5 @@ makeEnable config "myModules.games" false {
     steam
     # heroic
   ];
-  boot.extraModulePackages = with pkgs; [
-    xboxdrv
-  ];
   hardware.xone.enable = true;
 }
