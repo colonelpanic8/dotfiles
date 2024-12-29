@@ -8,7 +8,6 @@ makeEnable config "myModules.nvidia" false {
     enable = true;
     mount-nvidia-executables = true;
   };
-  virtualisation.docker.enableNvidia = true;
   hardware.nvidia.open = true;
   hardware.graphics.enable32Bit = true;
   hardware.graphics.extraPackages = [ config.boot.kernelPackages.nvidia_x11.out ];

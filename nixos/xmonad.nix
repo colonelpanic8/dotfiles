@@ -82,7 +82,6 @@ makeEnable config "myModules.xmonad" true  {
       enable = true;
       vSync = config.myModules.xmonad.picom.vSync.enable;
       backend = "glx";
-      extraArgs = ["--experimental-backends"];
 
       settings = {
         animations = true;

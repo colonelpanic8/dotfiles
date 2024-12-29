@@ -25,7 +25,7 @@
     ./kubelet.nix
     ./laptop.nix
     ./nix.nix
-    ./nixified.ai.nix
+    # ./nixified.ai.nix
     ./nvidia.nix
     ./options.nix
     ./plasma.nix
@@ -57,6 +57,6 @@
     myModules.games.enable = true;
     myModules.syncthing.enable = true;
     myModules.fonts.enable = true;
-    myModules.nixified-ai.enable = false;
+    # myModules.nixified-ai.enable = false;
   };
 }
