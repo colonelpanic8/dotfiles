@@ -52,12 +52,10 @@
     };
 
     taffybar = {
-      url = "github:taffybar/taffybar/old-master";
+      url = "github:taffybar/taffybar/master";
       inputs = {
-        nixpkgs.follows = "nixpkgs";
         flake-utils.follows = "flake-utils";
         git-ignore-nix.follows = "git-ignore-nix";
-        xmonad.follows = "xmonad";
         gtk-sni-tray.follows = "gtk-sni-tray";
         gtk-strut.follows = "gtk-strut";
       };
@@ -66,9 +64,7 @@
     imalison-taffybar = {
       url = "path:../dotfiles/config/taffybar";
       inputs = {
-        nixpkgs.follows = "nixpkgs";
         flake-utils.follows = "flake-utils";
-        xmonad.follows = "xmonad";
         taffybar.follows = "taffybar";
       };
     };
