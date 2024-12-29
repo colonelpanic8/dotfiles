@@ -6,7 +6,7 @@ makeEnable config "myModules.nvidia" false {
   ];
   hardware.nvidia-container-toolkit = {
     enable = true;
-    mount-nvidia-executables = false;
+    mount-nvidia-executables = true;
   };
   virtualisation.docker.enableNvidia = true;
   hardware.nvidia.open = true;
