@@ -68,7 +68,6 @@ makeEnable config "myModules.desktop" true {
     lxappearance
     lxqt.lxqt-powermanagement
     networkmanagerapplet
-    notify-osd-customizable
     okular
     pinentry
     # mission-center
@@ -81,7 +80,8 @@ makeEnable config "myModules.desktop" true {
     simplescreenrecorder
     skippy-xd
     synergy
-    transmission_3-gtk
+    # TODO: reenable
+    # transmission_3-gtk
     vlc
     # volnoti
     xfce.thunar

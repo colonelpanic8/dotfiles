@@ -1,5 +1,6 @@
 { pkgs, ... }:
 {
+  # TODO: reenable
   # security.pam.sshAgentAuth.enable = true;
   services.avahi = {
     enable = true;
