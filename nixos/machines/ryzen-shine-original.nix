@@ -20,7 +20,6 @@
     enable = true;
     # extraFlags = ["--node-taint preferNoSchedule=true:NoSchedule"];
   };
-  boot.kernelPackages = pkgs.linuxPackages_latest;
 
   boot.loader.systemd-boot.configurationLimit = 5;
 
@@ -48,6 +47,15 @@
   boot.loader.efi.canTouchEfiVariables = true;
 
   boot.initrd.availableKernelModules = [ "nvme" "xhci_pci" "ahci" "usb_storage" "usbhid" "sd_mod" ];
+  boot.initrd.luks.devices."cryptroot".device = "/dev/nvme0n1p5";
+  boot.initrd.kernelModules = [ "dm-snapshot" ];
+
+  # install nvidia drivers in addition to intel one
+  hardware.graphics.extraPackages = [ pkgs.linuxPackages.nvidia_x11.out ];
+  hardware.graphics.extraPackages32 = [ pkgs.linuxPackages.nvidia_x11.lib32 ];
+  services.xserver = {
+    videoDrivers = [ "nvidia" ];
+  };
 
   hardware.nvidia.modesetting.enable = true;
 
@@ -57,12 +65,12 @@
   boot.extraModulePackages = [ ];
 
   fileSystems."/" = {
-    device = "/dev/disk/by-uuid/9bd06145-8151-4f7b-bcfe-f1809e0db1ea";
+    device = "/dev/disk/by-uuid/356173ab-d076-43e0-aeb6-6a6829c4402b";
     fsType = "ext4";
   };
 
   fileSystems."/boot" = {
-    device = "/dev/disk/by-uuid/E1E1-909E";
+    device = "/dev/disk/by-uuid/B270-C7E6";
     fsType = "vfat";
   };
 
@@ -71,6 +79,10 @@
     fsType = "ntfs";
     options = [ "nofail" "uid=0" "gid=users" "umask=002" ];
   };
+
+  swapDevices = [
+    { device = "/dev/disk/by-uuid/f719b44e-295a-4909-9a60-84f87acb7f77"; }
+  ];
 
   # nix.settings.maxJobs = lib.mkDefault 16;
   # High-DPI console
