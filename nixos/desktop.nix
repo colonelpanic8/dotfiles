@@ -1,4 +1,4 @@
-{ config, pkgs, makeEnable, ... }:
+{ inputs, config, pkgs, makeEnable, ... }:
 makeEnable config "myModules.desktop" true {
   imports = [
     ./fonts.nix
@@ -57,6 +57,7 @@ makeEnable config "myModules.desktop" true {
     # clipit
     d-spy
     dolphin
+    inputs.ghostty.packages."${system}".default
 
     feh
     firefox

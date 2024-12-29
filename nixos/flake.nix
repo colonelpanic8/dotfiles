@@ -108,6 +108,10 @@
     nixified-ai = { url = "github:nixified-ai/flake"; };
 
     nixtheplanet.url = "github:matthewcroughan/nixtheplanet";
+
+    ghostty = {
+      url = "github:ghostty-org/ghostty";
+    };
   };
 
   outputs = inputs@{
