@@ -54,7 +54,7 @@ makeEnable config "myModules.desktop" true {
     # Desktop
     alacritty
     blueman
-    # clipit
+    clipit
     d-spy
     dolphin
 
@@ -68,6 +68,7 @@ makeEnable config "myModules.desktop" true {
     lxappearance
     lxqt.lxqt-powermanagement
     networkmanagerapplet
+    notify-osd-customizable
     okular
     pinentry
     # mission-center
@@ -76,11 +77,11 @@ makeEnable config "myModules.desktop" true {
     rofi
     rofi-pass
     rofi-systemd
-    # shutter
+    shutter
     simplescreenrecorder
     skippy-xd
     synergy
-    # transmission_3-gtk
+    transmission_3-gtk
     vlc
     # volnoti
     xfce.thunar
