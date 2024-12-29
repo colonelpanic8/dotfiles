@@ -66,10 +66,17 @@ in
   };
 
   age.secrets.discourse-admin-password = {
-    file = ./secrets/discourse-admin-password.age;
+    file = ../secrets/discourse-admin-password.age;
     mode = "770";
     owner = "discourse";
     group = "users";
+  };
+
+  age.secrets.discourse-secret-key-base = {
+    file = ../secrets/discourse-secret-key-base.age;
+    group = "users";
+    owner = "discourse";
+>>>>>>> 03012f56 ([NixOS] Fail to fix discourse-admin-password)
   };
 
   services.discourse = {
@@ -79,7 +86,10 @@ in
     admin = {
       passwordFile = config.age.secrets.discourse-admin-password.path;
       email = "support@railbird.ai";
+      fullName = "Admin";
+      username = "admin";
     };
+    secretKeyBaseFile = config.age.secrets.discourse-secret-key-base.path;
     database.ignorePostgresqlVersion = true;
   };
 
