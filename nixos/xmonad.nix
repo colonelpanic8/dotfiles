@@ -73,10 +73,10 @@ makeEnable config "myModules.xmonad" true  {
 
     services.pasystray.enable = true;
 
-    services.parcellite = {
-      enable = true;
-      package = pkgs.clipit;
-    };
+    # services.parcellite = {
+    #   enable = true;
+    #   package = pkgs.clipit;
+    # };
 
     services.picom = {
       enable = true;

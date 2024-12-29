@@ -54,7 +54,7 @@ makeEnable config "myModules.desktop" true {
     # Desktop
     alacritty
     blueman
-    clipit
+    # clipit
     d-spy
     dolphin
 
