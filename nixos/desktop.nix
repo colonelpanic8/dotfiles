@@ -77,7 +77,7 @@ makeEnable config "myModules.desktop" true {
     rofi
     rofi-pass
     rofi-systemd
-    shutter
+    # shutter
     simplescreenrecorder
     skippy-xd
     synergy
