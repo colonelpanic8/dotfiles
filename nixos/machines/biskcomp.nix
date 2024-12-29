@@ -67,6 +67,9 @@ in
 
   age.secrets.discourse-admin-password = {
     file = ./secrets/discourse-admin-password.age;
+    mode = "770";
+    owner = "discourse";
+    group = "users";
   };
 
   services.discourse = {
