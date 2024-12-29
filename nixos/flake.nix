@@ -55,6 +55,7 @@
       url = "github:taffybar/taffybar/old-master";
       inputs = {
         nixpkgs.follows = "nixpkgs";
+        xmonad.follows = "xmonad";
       };
     };
 
