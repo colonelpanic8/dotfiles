@@ -145,7 +145,7 @@ in {
         [debug]
         level = "trace"
 
-        [plugins.'io.containerd.runc']
+        [plugins.'io.containerd.runc.runtime']
         enable_cdi = true
         cdi_spec_dirs = ['/var/run/cdi']
 
