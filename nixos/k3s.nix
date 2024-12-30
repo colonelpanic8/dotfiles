@@ -8,6 +8,12 @@ with lib; let
   cfg = config.myModules.railbird-k3s;
   mount-path = "/var/lib/railbird/bucket";
   bucket-name = "railbird-dev-videos";
+  plugins-path = pkgs.buildEnv {
+    name = "combined-cni-plugins";
+    paths = [
+      pkgs.cni-plugins pkgs.calico-cni-plugin
+    ];
+  };
 in {
   options = {
     myModules.railbird-k3s = {
@@ -45,12 +51,7 @@ in {
         plugins."io.containerd.grpc.v1.cri" = {
           enable_cdi = true;
           cdi_spec_dirs = [ "/var/run/cdi" ];
-          cni.bin_dir = pkgs.buildEnv {
-            name = "combined-cni-plugins";
-            paths = [
-              pkgs.cni-plugins pkgs.calico-cni-plugin
-            ];
-          };
+          cni.bin_dir = "${plugins-path}/bin";
         };
       };
     };
