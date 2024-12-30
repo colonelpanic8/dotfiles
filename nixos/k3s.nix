@@ -45,6 +45,12 @@ in {
         plugins."io.containerd.grpc.v1.cri" = {
           enable_cdi = true;
           cdi_spec_dirs = [ "/var/run/cdi" ];
+          cni.bin_dir = pkgs.buildEnv {
+            name = "combined-cni-plugins";
+            paths = [
+              pkgs.cni-plugins pkgs.calico-cni-plugin
+            ];
+          };
         };
       };
     };
