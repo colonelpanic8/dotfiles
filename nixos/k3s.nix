@@ -46,6 +46,7 @@ in {
       enableDelete = true;
       enableGarbageCollect = true;
     };
+    services.flannel.enable = true;
 
     virtualisation.containerd = {
       enable = true;
