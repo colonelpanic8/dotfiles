@@ -474,11 +474,11 @@
         "zig": "zig"
       },
       "locked": {
-        "lastModified": 1735591300,
-        "narHash": "sha256-Gu77BaKn3+ClrHp671aXISpYHE8K+woUEMo1LKsdEYs=",
+        "lastModified": 1735597925,
+        "narHash": "sha256-znyKiXlrkPL+2xQwAR6G4/DKCgsutyIPo+d1dGeh2W4=",
         "owner": "ghostty-org",
         "repo": "ghostty",
-        "rev": "0da8801dc9cd2764623df1c8ae8db54b303c4ac4",
+        "rev": "478fe3917c2882a1c321f9d1eec808b71698974d",
         "type": "github"
       },
       "original": {
@@ -1406,16 +1406,16 @@
     },
     "nixpkgs_5": {
       "locked": {
-        "lastModified": 1735471104,
-        "narHash": "sha256-0q9NGQySwDQc7RhAV2ukfnu7Gxa5/ybJ2ANT8DQrQrs=",
-        "owner": "NixOS",
+        "lastModified": 1735602766,
+        "narHash": "sha256-fu6LqEoR7WsINjGQHdhi1es/zkucJfZi5xMmR/fBvsw=",
+        "owner": "colonelpanic8",
         "repo": "nixpkgs",
-        "rev": "88195a94f390381c6afcdaa933c2f6ff93959cb4",
+        "rev": "5d6958e7bcb72e7720d01843e8778f640cffc113",
         "type": "github"
       },
       "original": {
-        "owner": "NixOS",
-        "ref": "nixos-unstable",
+        "owner": "colonelpanic8",
+        "ref": "nvidia-container-toolkit-bump",
         "repo": "nixpkgs",
         "type": "github"
       }

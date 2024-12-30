@@ -1,7 +1,7 @@
 {
   inputs = {
     nixpkgs = {
-      url = "github:NixOS/nixpkgs/nixos-unstable";
+      url = "github:colonelpanic8/nixpkgs/nvidia-container-toolkit-bump";
     };
 
     flake-utils = {
