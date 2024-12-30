@@ -60,7 +60,9 @@ in {
 
     virtualisation.containers = {
       containersConf.cniPlugins = [
+        pkgs.cni-plugins
         pkgs.calico-cni-plugin
+        pkgs.calico-kube-controllers
       ];
     };
 
