@@ -48,16 +48,16 @@ in {
       enableGarbageCollect = true;
     };
 
-    virtualisation.containerd = {
-      enable = false;
-      settings = {
-        plugins."io.containerd.grpc.v1.cri" = {
-          enable_cdi = true;
-          cdi_spec_dirs = [ "/var/run/cdi" ];
-          cni.bin_dir = "${plugins-path}/bin";
-        };
-      };
-    };
+    # virtualisation.containerd = {
+    #   enable = false;
+    #   settings = {
+    #     plugins."io.containerd.grpc.v1.cri" = {
+    #       enable_cdi = true;
+    #       cdi_spec_dirs = [ "/var/run/cdi" ];
+    #       cni.bin_dir = "${plugins-path}/bin";
+    #     };
+    #   };
+    # };
 
     virtualisation.containers = {
       containersConf.cniPlugins = [
@@ -74,20 +74,20 @@ in {
         # unless I bodge their path into the environment.
         environment.LD_LIBRARY_PATH = "${config.hardware.nvidia.package}/lib";
       };
-      # k3s-containerd-setup = {
-      #     # `virtualisation.containerd.settings` has no effect on k3s' bundled containerd.
-      #     serviceConfig.Type = "oneshot";
-      #     requiredBy = ["k3s.service"];
-      #     before = ["k3s.service"];
-      #     script = ''
-      #       cat << EOF > /var/lib/rancher/k3s/agent/etc/containerd/config.toml.tmpl
-      #       {{ template "base" . }}
+      k3s-containerd-setup = {
+          # `virtualisation.containerd.settings` has no effect on k3s' bundled containerd.
+          serviceConfig.Type = "oneshot";
+          requiredBy = ["k3s.service"];
+          before = ["k3s.service"];
+          script = ''
+            cat << EOF > /var/lib/rancher/k3s/agent/etc/containerd/config.toml.tmpl
+            {{ template "base" . }}
 
-      #       [plugins]
-      #       "io.containerd.grpc.v1.cri".enable_cdi = true
-      #       EOF
-      #     '';
-      # };
+            [plugins]
+            "io.containerd.grpc.v1.cri".enable_cdi = true
+            EOF
+          '';
+      };
     };
 
     systemd.services.mount-railbird-bucket = {
