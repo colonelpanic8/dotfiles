@@ -49,6 +49,13 @@ in {
       };
     };
 
+    virtualization.containers = {
+      cniPlugins = [
+        pkgs.calico
+        pkgs.flannel
+      ];
+    };
+
     systemd.services = {
       nvidia-container-toolkit-cdi-generator = {
         # Even with `--library-search-path`, `nvidia-ctk` won't find the libs

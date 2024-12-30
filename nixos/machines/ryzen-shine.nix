@@ -18,6 +18,7 @@
   myModules.postgres.enable = true;
   myModules.railbird-k3s = {
     enable = true;
+    serverAddr = "https://jimi-hendnix.local:6443";
     # extraFlags = ["--node-taint preferNoSchedule=true:NoSchedule"];
   };
   boot.kernelPackages = pkgs.linuxPackages_latest;
