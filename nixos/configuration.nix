@@ -48,8 +48,8 @@
   config = lib.mkIf config.features.full.enable {
     myModules.base.enable = true;
     myModules.desktop.enable = true;
-    myModules.plasma.enable = false;
-    myModules.gnome.enable = true;
+    myModules.plasma.enable = true;
+    myModules.gnome.enable = false;
     myModules.xmonad.enable = true;
     myModules.extra.enable = true;
     myModules.electron.enable = true;
