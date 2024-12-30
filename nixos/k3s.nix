@@ -11,7 +11,9 @@ with lib; let
   plugins-path = pkgs.buildEnv {
     name = "combined-cni-plugins";
     paths = [
-      pkgs.cni-plugins pkgs.calico-cni-plugin
+      pkgs.cni-plugins
+      pkgs.calico-cni-plugin
+      pkgs.calico-kube-controllers
     ];
   };
 in {
@@ -51,7 +53,7 @@ in {
         plugins."io.containerd.grpc.v1.cri" = {
           enable_cdi = true;
           cdi_spec_dirs = [ "/var/run/cdi" ];
-          cni.bin_dir = "${plugins-path}/bin";
+          cni.bin_dir = "/opt/cni/bin";
         };
       };
     };
