@@ -78,32 +78,6 @@ in {
         # unless I bodge their path into the environment.
         environment.LD_LIBRARY_PATH = "${config.hardware.nvidia.package}/lib";
       };
-      k3s-containerd-setup = {
-          # `virtualisation.containerd.settings` has no effect on k3s' bundled containerd.
-          serviceConfig.Type = "oneshot";
-          requiredBy = ["k3s.service"];
-          before = ["k3s.service"];
-          script = ''
-            cat << EOF > /var/lib/rancher/k3s/agent/etc/containerd/config.toml.tmpl
-            {{ template "base" . }}
-
-            [debug]
-            level = "trace"
-
-            [plugins.'io.containerd.runc']
-            enable_cdi = true
-            cdi_spec_dirs = ['/var/run/cdi']
-
-            [plugins.'io.containerd.grpc.v1.cri']
-            enable_cdi = true
-            cdi_spec_dirs = ['/var/run/cdi']
-
-            [plugins.'io.containerd.cri.v1.runtime']
-            enable_cdi = true
-            cdi_spec_dirs = ['/var/run/cdi']
-            EOF
-          '';
-      };
     };
 
     systemd.services.mount-railbird-bucket = {
@@ -168,9 +142,20 @@ in {
       containerdConfigTemplate = ''
         {{ template "base" . }}
 
-        [plugins]
-        "io.containerd.grpc.v1.cri".enable_cdi = true
-        "io.containerd.grpc.v1.cri".cdi_spec_dirs = [ "/var/run/cdi" ]
+        [debug]
+        level = "trace"
+
+        [plugins.'io.containerd.runc']
+        enable_cdi = true
+        cdi_spec_dirs = ['/var/run/cdi']
+
+        [plugins.'io.containerd.grpc.v1.cri']
+        enable_cdi = true
+        cdi_spec_dirs = ['/var/run/cdi']
+
+        [plugins.'io.containerd.cri.v1.runtime']
+        enable_cdi = true
+        cdi_spec_dirs = ['/var/run/cdi']
       '';
       gracefulNodeShutdown = {
         enable = true;
