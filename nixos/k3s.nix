@@ -49,7 +49,7 @@ in {
     };
 
     virtualisation.containerd = {
-      enable = true;
+      enable = false;
       settings = {
         plugins."io.containerd.grpc.v1.cri" = {
           enable_cdi = true;
@@ -141,7 +141,6 @@ in {
       tokenFile = config.age.secrets."1896Folsom-k3s-token.age".path;
       extraFlags =
         [
-          "--container-runtime-endpoint unix:///run/containerd/containerd.sock"
           "--tls-san ryzen-shine.local"
           "--tls-san nixquick.local"
           "--tls-san biskcomp.local"
