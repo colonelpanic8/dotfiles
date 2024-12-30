@@ -48,16 +48,20 @@ in {
       enableGarbageCollect = true;
     };
 
-    # virtualisation.containerd = {
-    #   enable = false;
-    #   settings = {
-    #     plugins."io.containerd.grpc.v1.cri" = {
-    #       enable_cdi = true;
-    #       cdi_spec_dirs = [ "/var/run/cdi" ];
-    #       cni.bin_dir = "${plugins-path}/bin";
-    #     };
-    #   };
-    # };
+    virtualisation.containerd = {
+      enable = true;
+      settings = {
+        plugins."io.containerd.cri.v1.runtime" = {
+          enable_cdi = true;
+          cdi_spec_dirs = [ "/var/run/cdi" ];
+        };
+        plugins."io.containerd.grpc.v1.cri" = {
+          enable_cdi = true;
+          cdi_spec_dirs = [ "/var/run/cdi" ];
+          cni.bin_dir = "${plugins-path}/bin";
+        };
+      };
+    };
 
     virtualisation.containers = {
       containersConf.cniPlugins = [
@@ -83,8 +87,20 @@ in {
             cat << EOF > /var/lib/rancher/k3s/agent/etc/containerd/config.toml.tmpl
             {{ template "base" . }}
 
-            [plugins]
-            "io.containerd.grpc.v1.cri".enable_cdi = true
+            [debug]
+            level = "trace"
+
+            [plugins.'io.containerd.runc']
+            enable_cdi = true
+            cdi_spec_dirs = ['/var/run/cdi']
+
+            [plugins.'io.containerd.grpc.v1.cri']
+            enable_cdi = true
+            cdi_spec_dirs = ['/var/run/cdi']
+
+            [plugins.'io.containerd.cri.v1.runtime']
+            enable_cdi = true
+            cdi_spec_dirs = ['/var/run/cdi']
             EOF
           '';
       };
