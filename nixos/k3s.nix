@@ -14,6 +14,7 @@ with lib; let
       pkgs.cni-plugins
       pkgs.calico-cni-plugin
       pkgs.calico-kube-controllers
+      pkgs.cni-plugin-flannel
     ];
   };
 in {
@@ -53,6 +54,7 @@ in {
         plugins."io.containerd.grpc.v1.cri" = {
           enable_cdi = true;
           cdi_spec_dirs = [ "/var/run/cdi" ];
+          cni.bin_dir = "${plugins-path}/bin";
         };
       };
     };
@@ -62,6 +64,7 @@ in {
         pkgs.cni-plugins
         pkgs.calico-cni-plugin
         pkgs.calico-kube-controllers
+        pkgs.cni-plugin-flannel
       ];
     };
 
