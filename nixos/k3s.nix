@@ -49,10 +49,9 @@ in {
       };
     };
 
-    virtualization.containers = {
-      cniPlugins = [
-        pkgs.calico
-        pkgs.flannel
+    virtualisation.containers = {
+      containersConf.cniPlugins = [
+        pkgs.calico-cni-plugin
       ];
     };
 
