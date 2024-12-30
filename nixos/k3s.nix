@@ -54,6 +54,7 @@ in {
         plugins."io.containerd.grpc.v1.cri" = {
           enable_cdi = true;
           cdi_spec_dirs = [ "/var/run/cdi" ];
+          cni.bin_dir = "/opt/cni/bin";
         };
       };
     };
