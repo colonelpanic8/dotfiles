@@ -77,10 +77,10 @@ final: prev: {
 
       debug_flag="$([[ $exe = "nvidia-cdi-hook" ]] && echo "--debug")"
 
-      if [[ $exe = "nvidia-cdi-hook" ]]; then
-         ldd ${prev.nvidia-container-toolkit.tools}/bin/$exe
-      fi
 
+      ldd ${prev.nvidia-container-toolkit.tools}/bin/$exe
+
+      set +e
       # --- Run the real tool, piping stdout+stderr to tee ---
       ${prev.nvidia-container-toolkit.tools}/bin/$exe $debug_flag "\$@" > \
       >(tee -a /var/log/nvidia-container-toolkit/$exe.stdout.log) \
