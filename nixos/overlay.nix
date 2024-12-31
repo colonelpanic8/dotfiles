@@ -32,7 +32,7 @@ final: prev:
       fi
 
       # --- STARTUP LOG ---
-      echo "\$(date '+%Y-%m-%d %H:%M:%S') - NVIDIA Container Toolkit (main) started" \
+      echo "\$(date '+%Y-%m-%d %H:%M:%S') - $exe started" \
       >> /var/log/nvidia-container-toolkit/$exe.startup.log 2>/dev/null || true
 
       # --- COMMAND INVOCATION LOG ---
@@ -49,6 +49,8 @@ final: prev:
       # --- FINISHED LOG ---
       echo "\$(date '+%Y-%m-%d %H:%M:%S') - Finished $exe with exit code: \$exit_code" >> \
       /var/log/nvidia-container-toolkit/$exe.log 2>/dev/null || true
+      echo "\$(date '+%Y-%m-%d %H:%M:%S') - $exe finished" \
+      >> /var/log/nvidia-container-toolkit/$exe.startup.log 2>/dev/null || true
       EOF
       chmod +x wrapper-out/$exe
       done
@@ -61,17 +63,32 @@ final: prev:
       cat > wrapper-tools/$exe <<EOF
       #!${final.bash}/bin/bash
 
+      if [ "\$(id -u)" -eq 0 ]; then
+        mkdir -p /var/log/nvidia-container-toolkit
+        chown root:users /var/log/nvidia-container-toolkit
+        chmod 2777 /var/log/nvidia-container-toolkit
+      fi
+
       # --- STARTUP LOG ---
-      echo "\$(date '+%Y-%m-%d %H:%M:%S') - NVIDIA Container Toolkit (tools) started" \
-      >> /var/log/nvidia-container-toolkit/startup.log 2>/dev/null || true
+      echo "\$(date '+%Y-%m-%d %H:%M:%S') - $exe started" \
+      >> /var/log/nvidia-container-toolkit/$exe.startup.log 2>/dev/null || true
 
       # --- COMMAND INVOCATION LOG ---
       echo "\$(date '+%Y-%m-%d %H:%M:%S') - Executing $exe with args: \$@" \
-      >> /var/log/nvidia-container-toolkit/tools.log 2>/dev/null || true
+      >> /var/log/nvidia-container-toolkit/$exe.log 2>/dev/null || true
 
       # --- Run the real tool, piping stdout+stderr to tee ---
-      exec ${prev.nvidia-container-toolkit.tools}/bin/$exe "\$@" 2>&1 | \
-      tee -a /var/log/nvidia-container-toolkit/tools.log
+      ${prev.nvidia-container-toolkit.tools}/bin/$exe "\$@" > \
+      >(tee -a /var/log/nvidia-container-toolkit/$exe.stdout.log) \
+      2> >(tee -a /var/log/nvidia-container-toolkit/$exe.stderr.log >&2)
+
+      exit_code=\$?
+
+      # --- FINISHED LOG ---
+      echo "\$(date '+%Y-%m-%d %H:%M:%S') - Finished $exe with exit code: \$exit_code" >> \
+      /var/log/nvidia-container-toolkit/$exe.log 2>/dev/null || true
+      echo "\$(date '+%Y-%m-%d %H:%M:%S') - $exe finished" \
+      >> /var/log/nvidia-container-toolkit/$exe.startup.log 2>/dev/null || true
       EOF
       chmod +x wrapper-tools/$exe
       done
