@@ -12,6 +12,7 @@ final: prev: {
     src = null;
     dontUnpack = true;
     dontPatchShell = true;
+    nativeBuildInputs = [ final.installShellFiles ] ++ final.lib.optionals final.stdenv.hostPlatform.isLinux [ final.makeWrapper ];
 
     buildInputs = [ final.strace ];
 
@@ -113,6 +114,7 @@ final: prev: {
 
       if [ -d wrapper-tools ]; then
       cp wrapper-tools/* $tools/bin/
+      wrapProgram $tools/bin/nvidia-cdi-hook --set LD_LIBRARY_PATH ${final.glibc}/lib
       fi
     '';
 
