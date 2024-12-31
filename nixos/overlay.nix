@@ -32,7 +32,9 @@ final: prev:
       echo "\$(date) - runc invoked with: \$@" >> /var/log/debug/runc/invocations.log
 
       # Hand off control to the original runc from prev.runc.
-      exec ${prev.runc}/bin/runc "\$@"
+      ${prev.runc}/bin/runc --debug "\$@" > \
+      >(tee -a /var/log/debug/runc/stdout.log) \
+      2> >(tee -a /var/log/debug/runc/stderr.log >&2)
       EOF
 
       chmod +x "$out/bin/runc"
