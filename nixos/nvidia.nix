@@ -1,12 +1,18 @@
-{ config, pkgs, makeEnable, ... }:
+{ config, pkgs, makeEnable, lib, ... }:
 
 makeEnable config "myModules.nvidia" false {
   environment.systemPackages = with pkgs; [
     nvidia-container-toolkit
+    nvidia-container-toolkit.tools
   ];
   hardware.nvidia-container-toolkit = {
     enable = true;
     mount-nvidia-executables = true;
+    additionalEdit = ''
+      ${lib.getExe pkgs.jq} '
+          .devices |= map(
+          .containerEdits.hooks |= map(select(.args | index("create-symlinks") < 0))
+          )' | ${lib.getExe pkgs.jq} '.containerEdits.hooks |= map(select(.args | index("create-symlinks") < 0 ))' '';
   };
   hardware.nvidia.open = true;
   hardware.graphics.enable32Bit = true;
