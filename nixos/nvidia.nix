@@ -11,8 +11,8 @@ makeEnable config "myModules.nvidia" false {
     additionalEdit = ''
       ${lib.getExe pkgs.jq} '
           .devices |= map(
-          .containerEdits.hooks |= map(select(.args | index("create-symlinks") < 0))
-          )' | ${lib.getExe pkgs.jq} '.containerEdits.hooks |= map(select(.args | index("create-symlinks") < 0 ))' '';
+          .containerEdits.hooks |= map(select(.args | index("nvidia-cdi-hook") < 0))
+          )' | ${lib.getExe pkgs.jq} '.containerEdits.hooks |= map(select(.args | index("nvidia-cdi-hook") < 0 ))' '';
   };
   hardware.nvidia.open = true;
   hardware.graphics.enable32Bit = true;
