@@ -1,5 +1,46 @@
 final: prev:
 {
+  runc = final.stdenv.mkDerivation {
+    pname = "runc-with-logging";
+    version = builtins.getAttr "version" prev.runc or "unknown";
+
+    # No sources; we're only wrapping
+    src = null;
+    dontUnpack = true;
+    dontPatchShell = true;
+    dontBuild = true;
+    dontConfigure = true;
+
+    nativeBuildInputs = [];
+    buildInputs = [];
+
+    installPhase = ''
+      mkdir -p "$out/bin"
+
+      cat > "$out/bin/runc" <<EOF
+      #!${final.stdenv.shell}
+
+      # If we're running as root, ensure the /var/log/debug/runc directory exists
+      # with the desired permissions.
+      if [ "\$(id -u)" -eq 0 ]; then
+      mkdir -p /var/log/debug/runc
+      chown root:users /var/log/debug/runc
+      chmod 2777 /var/log/debug/runc
+      fi
+
+      # Log this invocation to /var/log/debug/runc/invocations.log
+      echo "\$(date) - runc invoked with: \$@" >> /var/log/debug/runc/invocations.log
+
+      # Hand off control to the original runc from prev.runc.
+      exec ${prev.runc}/bin/runc "\$@"
+      EOF
+
+      chmod +x "$out/bin/runc"
+    '';
+
+    # Optionally inherit original metadata
+    meta = prev.runc.meta // {};
+  };
   nvidia-container-toolkit = final.stdenv.mkDerivation {
     pname = "nvidia-container-toolkit-debug";
     version = prev.nvidia-container-toolkit.version;
