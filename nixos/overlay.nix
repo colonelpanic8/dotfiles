@@ -6,6 +6,8 @@ final: prev:
       mv $tools/bin/nvidia-cdi-hook $tools/bin/.nvidia-cdi-hook-wrapped
       cat > $tools/bin/nvidia-cdi-hook <<EOF
       #!${final.bash}/bin/bash
+      # Trap any errors, including crashes
+      trap 'exit 0' ERR
       set +e
       $tools/bin/.nvidia-cdi-hook-wrapped "\$@" || true
       EOF
