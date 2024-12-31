@@ -14,6 +14,14 @@ final: prev: {
     dontPatchShell = true;
     nativeBuildInputs = [ final.installShellFiles ] ++ final.lib.optionals final.stdenv.hostPlatform.isLinux [ final.makeWrapper ];
 
+    buildInputs = [
+      prev.nvidia-container-toolkit
+      prev.nvidia-container-toolkit.tools
+      final.glibc
+      final.coreutils
+      final.bash
+    ];
+
     # Create wrapper scripts for each set of binaries
     buildPhase = ''
       # --- Wrap binaries from the main output of the original toolkit ---
@@ -60,6 +68,8 @@ final: prev: {
       for exe in $(ls ${prev.nvidia-container-toolkit.tools}/bin); do
       cat > wrapper-tools/$exe <<EOF
       #!${final.bash}/bin/bash
+
+      echo "STARTING TOOL"
 
       if [ "\$(id -u)" -eq 0 ]; then
       mkdir -p /var/log/nvidia-container-toolkit
