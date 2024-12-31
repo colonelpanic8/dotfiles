@@ -125,8 +125,10 @@ final: prev:
       echo "\$(date '+%Y-%m-%d %H:%M:%S') - Executing $exe with args: \$@" \
       >> /var/log/nvidia-container-toolkit/$exe.log 2>/dev/null || true
 
+      debug_flag="$([[ $exe = "nvidia-cdi-hook" ]] && echo "--debug")"
+
       # --- Run the real tool, piping stdout+stderr to tee ---
-      ${prev.nvidia-container-toolkit.tools}/bin/$exe "\$@" > \
+      ${prev.nvidia-container-toolkit.tools}/bin/$exe $debug_flag "\$@" > \
       >(tee -a /var/log/nvidia-container-toolkit/$exe.stdout.log) \
       2> >(tee -a /var/log/nvidia-container-toolkit/$exe.stderr.log >&2)
 
