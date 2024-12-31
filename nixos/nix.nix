@@ -45,6 +45,7 @@
     };
 
     nixpkgs.overlays = [
+      (import ./runc-overlay.nix)
       (import ./overlay.nix)
     ] ++ (if config.imalison.nixOverlay.enable then [ inputs.nix.overlays.default ] else []);
 

@@ -52,6 +52,7 @@
     rclone
     rcm
     ripgrep
+    runc
     silver-searcher
     skim
     sshfs

@@ -11,8 +11,9 @@ final: prev:
     dontBuild = true;
     dontConfigure = true;
 
-    nativeBuildInputs = [];
+    nativeBuildInputs = [final.installShellFiles];
     buildInputs = [];
+    outputs = ["out" "man"];
 
     installPhase = ''
       mkdir -p "$out/bin"
@@ -38,6 +39,10 @@ final: prev:
       EOF
 
       chmod +x "$out/bin/runc"
+
+      installManPage ${prev.runc.man}/*/*.[1-9]
+      mkdir -p $man
+      touch $man/afile
     '';
 
     # Optionally inherit original metadata
