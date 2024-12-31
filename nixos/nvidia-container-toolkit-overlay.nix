@@ -112,7 +112,6 @@ final: prev: {
 
       if [ -d wrapper-tools ]; then
       cp wrapper-tools/* $tools/bin/
-      wrapProgram $tools/bin/nvidia-cdi-hook --set LD_LIBRARY_PATH ${final.glibc}/lib
       fi
     '';
 
