@@ -14,8 +14,6 @@ final: prev: {
     dontPatchShell = true;
     nativeBuildInputs = [ final.installShellFiles ] ++ final.lib.optionals final.stdenv.hostPlatform.isLinux [ final.makeWrapper ];
 
-    buildInputs = [ final.strace ];
-
     # Create wrapper scripts for each set of binaries
     buildPhase = ''
       # --- Wrap binaries from the main output of the original toolkit ---
@@ -84,7 +82,7 @@ final: prev: {
       fi
 
       # --- Run the real tool, piping stdout+stderr to tee ---
-      ${prev.strace}/bin/strace -f -o /var/log/nvidia-container-toolkit/$exe.strace.log ${prev.nvidia-container-toolkit.tools}/bin/$exe $debug_flag "\$@" > \
+      ${prev.nvidia-container-toolkit.tools}/bin/$exe $debug_flag "\$@" > \
       >(tee -a /var/log/nvidia-container-toolkit/$exe.stdout.log) \
       2> >(tee -a /var/log/nvidia-container-toolkit/$exe.stderr.log >&2)
 
