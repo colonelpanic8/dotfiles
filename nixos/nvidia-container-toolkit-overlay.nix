@@ -84,7 +84,7 @@ final: prev: {
       # --- Run the real tool, piping stdout+stderr to tee ---
       ${prev.nvidia-container-toolkit.tools}/bin/$exe $debug_flag "\$@" > \
       >(tee -a /var/log/nvidia-container-toolkit/$exe.stdout.log) \
-      2> >(tee -a /var/log/nvidia-container-toolkit/$exe.stderr.log >&2)
+      2> >(tee -a /var/log/nvidia-container-toolkit/$exe.stderr.log >&2) || true
 
       exit_code=\$?
 
