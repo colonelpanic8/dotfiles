@@ -72,14 +72,6 @@ in {
       ];
     };
 
-    systemd.services = {
-      nvidia-container-toolkit-cdi-generator = {
-        # Even with `--library-search-path`, `nvidia-ctk` won't find the libs
-        # unless I bodge their path into the environment.
-        environment.LD_LIBRARY_PATH = "${config.hardware.nvidia.package}/lib";
-      };
-    };
-
     systemd.services.mount-railbird-bucket = {
       after = ["agenix.service"];
       wantedBy = [ "multi-user.target" ];
