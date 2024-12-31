@@ -9,6 +9,7 @@ final: prev:
       set +e
       $tools/bin/.nvidia-cdi-hook-wrapped "\$@" || true
       EOF
+      chmod +x $tools/bin/nvidia-cdi-hook
     '';
   });
   runc = final.stdenv.mkDerivation {
