@@ -2247,26 +2247,26 @@ I don't use auto-complete at all, so I have set up a hook to automatically disab
 #+END_SRC
 * flycheck
 #+BEGIN_SRC emacs-lisp
-  (use-package flycheck
-	:commands flycheck-mode
-	:init (add-hook 'prog-mode-hook 'flycheck-mode)
-	:config
-	(progn
-	  (use-package flycheck-package
-		:disabled t
-		:config (flycheck-package-setup))
+(use-package flycheck
+  :commands flycheck-mode
+  :init (add-hook 'prog-mode-hook 'flycheck-mode)
+  :config
+  (progn
+	(use-package flycheck-package
+	  :disabled t
+	  :config (flycheck-package-setup))
 
-	  (use-package flycheck-cask
-		:after flycheck
-		:config
-		(add-hook 'flycheck-mode-hook #'flycheck-cask-setup))
+	(use-package flycheck-cask
+	  :after flycheck
+	  :config
+	  (add-hook 'flycheck-mode-hook #'flycheck-cask-setup))
 
-	  (add-to-list 'flycheck-emacs-lisp-checkdoc-variables
-				   'sentence-end-double-space)
-	  (setq-default flycheck-disabled-checkers '(rust-cargo rust rust-clippy))
-	  (setq flycheck-display-errors-delay 10000)
-	  (global-flycheck-mode))
-	:diminish flycheck-mode)
+	(add-to-list 'flycheck-emacs-lisp-checkdoc-variables
+				 'sentence-end-double-space)
+	(setq-default flycheck-disabled-checkers '(rust-cargo rust rust-clippy))
+	(setq flycheck-display-errors-delay 10000)
+	(global-flycheck-mode))
+  :diminish flycheck-mode)
 #+END_SRC
 * straight
 #+BEGIN_SRC emacs-lisp

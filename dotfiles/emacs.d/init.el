@@ -66,7 +66,7 @@
 (use-package org
   :straight
   (org :type git :host github :repo "colonelpanic8/org-mode" :local-repo "org"
-       :branch "my-main"
+       :branch "my-main-2025"
        :depth full :pre-build (straight-recipes-org-elpa--build) :build
        (:not autoloads) :files
        (:defaults "lisp/*.el" ("etc/styles/" "etc/styles/*")))
