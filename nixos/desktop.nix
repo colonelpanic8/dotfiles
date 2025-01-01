@@ -57,7 +57,7 @@ makeEnable config "myModules.desktop" true {
     # clipit
     d-spy
     dolphin
-    inputs.ghostty.packages."${system}".default
+    # inputs.ghostty.packages."${system}".default
 
     feh
     firefox
