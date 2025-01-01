@@ -65,7 +65,7 @@ We're going to use this to write separate parts of our config to different secti
 (defvar imalison:repeating-org-files
   (list imalison:org-habits-file imalison:shared-habits-file imalison:shared-repeating-file))
 
-(defvar imalison:include-repeating-in-agenda nil)
+(defvar imalison:include-repeating-in-agenda t)
 
 (defun imalison:add-to-org-agenda-files (incoming-files)
   (setq org-agenda-files
