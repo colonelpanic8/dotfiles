@@ -31,7 +31,6 @@
       url = "git+ssh://gitea@dev.railbird.ai:1123/railbird/secrets-flake.git";
     };
 
-
     xmonad = {
       url = "github:xmonad/xmonad";
       inputs = {

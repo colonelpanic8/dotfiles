@@ -78,6 +78,10 @@ makeEnable config "myModules.xmonad" true  {
     #   package = pkgs.clipit;
     # };
 
+    services.flameshot = {
+      enable = true;
+    };
+
     services.picom = {
       enable = true;
       vSync = config.myModules.xmonad.picom.vSync.enable;
@@ -147,22 +151,6 @@ makeEnable config "myModules.xmonad" true  {
 
     #   Service = {
     #     ExecStart = "${pkgs.haskellPackages.notifications-tray-icon}/bin/notifications-tray-icon  --github-token-pass dfinity-github-api-token";
-    #     Restart = "always";
-    #     RestartSec = 3;
-    #   };
-    # };
-
-    # systemd.user.services.shutter = {
-    #   Unit = {
-    #     Description = "Shutter";
-    #     After = [ "graphical-session-pre.target" "tray.target" ];
-    #     PartOf = [ "graphical-session.target" ];
-    #   };
-
-    #   Install = { WantedBy = [ "graphical-session.target" ]; };
-
-    #   Service = {
-    #     ExecStart = "${pkgs.shutter}/bin/shutter --min_at_startup";
     #     Restart = "always";
     #     RestartSec = 3;
     #   };
