@@ -63,6 +63,13 @@ makeEnable config "myModules.base" true {
 
   virtualisation.docker.enable = true;
 
+  virtualisation.podman = {
+    enable = true;
+    autoPrune = {
+      enable = true;
+    };
+  };
+
   hardware.keyboard.zsa.enable = true;
 
   services.logind.extraConfig = "RuntimeDirectorySize=5G";
