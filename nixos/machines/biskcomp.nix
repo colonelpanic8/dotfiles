@@ -41,6 +41,7 @@ in
 
   services.vaultwarden = {
     enable = true;
+    backupDir = "/var/backup/vaultwarden";
     config = {
       ROCKET_ADDRESS = "::1";
       ROCKET_PORT = 8222;
