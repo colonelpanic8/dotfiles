@@ -39,9 +39,15 @@ in
   };
   services.k3s.disableAgent = true;
 
+  age.secrets.vaultwarden-environment-file = {
+    file = ../secrets/vaultwarden-environment-file.age;
+    owner = "vaultwarden";
+  };
+
   services.vaultwarden = {
     enable = true;
     backupDir = "/var/backup/vaultwarden";
+    environmentFile = config.age.secrets.vaultwarden-environment-file.path;
     config = {
       ROCKET_ADDRESS = "::1";
       ROCKET_PORT = 8222;

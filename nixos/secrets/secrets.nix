@@ -19,4 +19,5 @@ in
   "k3s-registry.yaml.age".publicKeys = keys.agenixKeys ++ keys.railbird-sf;
   "discourse-admin-password.age".publicKeys = keys.hostKeys;
   "discourse-secret-key-base.age".publicKeys = keys.hostKeys;
+  "vaultwarden-environment-file.age".publicKeys = keys.hostKeys;
 }
