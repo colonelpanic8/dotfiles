@@ -34,7 +34,7 @@ in
   myModules.gitea-runner.enable = false;
 
   myModules.railbird-k3s = {
-    enable = true;
+    enable = false;
     serverAddr = "https://dev.railbird.ai:6443";
   };
   services.k3s.disableAgent = true;
