@@ -1,16 +1,11 @@
 { inputs, config, specialArgs, ... }:
 specialArgs.makeEnable config "myModules.nixified-ai" false {
-  # imports = [
-  #   inputs.nixified-ai.nixosModules.invokeai
-  # ];
+   imports = [
+     inputs.nixified-ai.nixosModules.comfyui
+   ];
 
-  # environment.systemPackages = [
-  #   inputs.nixified-ai.packages.${config.nixpkgs.system}.invokeai-nvidia
-  # ];
-
-  # services.invokeai = {
-  #   enable = false;
-  #   host = "0.0.0.0";
-  #   package = inputs.nixified-ai.packages.${config.nixpkgs.system}.invokeai-nvidia;
-  # };
+   services.comfyui = {
+     enable = true;
+     host = "0.0.0.0";
+   };
 }
