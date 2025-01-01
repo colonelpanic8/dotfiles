@@ -79,7 +79,7 @@ in
   };
 
   services.discourse = {
-    enable = true;
+    enable = false;
     enableACME = true;
     hostname = "discourse.railbird.ai";
     admin = {
