@@ -8,7 +8,6 @@ makeEnable config "myModules.gitea" false {
       enable = true;
       interval = "23:05";
     };
-    disableRegistration = true;
     settings.service = {
       DISABLE_REGISTRATION = true;
     };
