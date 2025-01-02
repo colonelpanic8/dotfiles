@@ -58,41 +58,11 @@ This makes evil-mode play nice with org-fc
                  (file+datetree "~/org/weekly_reviews.org")
                  (file "~/org/weekly_review_template.org")))))
 #+end_src
-
-** Daily Journal Entries
+** Journal
 #+begin_src emacs-lisp
-(defun imalison:journal-filepath-for-date (&optional date)
-  (interactive (list (org-read-date)))
-  (let ((date-str (or date (format-time-string "%Y-%m-%d"))))
-    (imalison:join-paths
-     org-directory "journal" (concat date-str ".org"))))
-
-(defun imalison:open-todays-org-journal ()
-  (interactive)
-  (imalison:open-org-journal (format-time-string "%Y-%m-%d")))
-
-(defun imalison:get-journal-template ()
-  (with-temp-buffer
-  (insert-file-contents (imalison:join-paths org-directory "templates" "daily-journal-template.org"))
-  (buffer-string)))
-
-(defun imalison:open-org-journal (&optional date)
-  (interactive (list (org-read-date nil nil nil "Select a date:")))
-  (let* ((filepath (imalison:journal-filepath-for-date date))
-         (file-existed (file-exists-p filepath))
-         (date-str (or date (format-time-string "%Y-%m-%d")))
-         (time-vals (append '(0 0 0) (nthcdr 3 (parse-time-string date-str))))
-         (original-format-time-string (symbol-function 'format-time-string)))
-    (find-file filepath)
-    (when (not file-existed)
-      (cl-letf (((symbol-function 'format-time-string)
-                 (lambda (format-string &optional _time _universal)
-                   (funcall original-format-time-string format-string (apply #'encode-time time-vals)))))
-        (insert (org-capture-fill-template (imalison:get-journal-template)))))))
-
-(bind-key "C-c j" 'imalison:open-todays-org-journal)
+(setq imalison:journal-template-filepath
+      (imalison:join-paths org-directory "templates" "daily-journal-template.org"))
 #+end_src
-
 ** Insert a link to a task selected from agenda
 #+begin_src emacs-lisp
 (defun imalison:insert-link-to-agenda ()

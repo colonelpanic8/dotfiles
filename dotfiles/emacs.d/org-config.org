@@ -594,6 +594,43 @@ specific time, they should appear in the agenda at that time!
 (defun imalison:make-org-linked-todo-template ()
   (imalison:make-org-todo-template "[#C] %? %A"))
 #+end_src
+*** Journal
+#+begin_src emacs-lisp :tangle org-config-config.el
+(defun imalison:journal-filepath-for-date (&optional date)
+  (interactive (list (org-read-date)))
+  (let ((date-str (or date (format-time-string "%Y-%m-%d"))))
+    (imalison:join-paths
+     org-directory "journal" (concat date-str ".org"))))
+
+(defun imalison:open-todays-org-journal ()
+  (interactive)
+  (imalison:open-org-journal (format-time-string "%Y-%m-%d")))
+
+(defvar imalison:journal-template-filepath
+  (imalison:join-paths org-directory "capture-templates" "journal.org"))
+
+(defun imalison:get-journal-template ()
+  (with-temp-buffer
+    (insert-file-contents imalison:journal-template-filepath)
+    (buffer-string)))
+
+(defun imalison:open-org-journal (&optional date)
+  (interactive (list (org-read-date nil nil nil "Select a date:")))
+  (let* ((filepath (imalison:journal-filepath-for-date date))
+         (file-existed (file-exists-p filepath))
+         (date-str (or date (format-time-string "%Y-%m-%d")))
+         (time-vals (append '(0 0 0) (nthcdr 3 (parse-time-string date-str))))
+         (original-format-time-string (symbol-function 'format-time-string)))
+    (find-file filepath)
+    (when (not file-existed)
+      (cl-letf (((symbol-function 'format-time-string)
+                 (lambda (format-string &optional _time _universal)
+                   (funcall original-format-time-string format-string (apply #'encode-time time-vals)))))
+        (insert (org-capture-fill-template (imalison:get-journal-template)))))))
+
+(bind-key "C-c j" 'imalison:open-todays-org-journal)
+#+end_src
+
 *** Templates
 #+begin_src emacs-lisp :tangle org-config-config.el
 (use-package org-capture
@@ -632,7 +669,15 @@ SCHEDULED: %^t
 :PROPERTIES:
 :CREATED: %U
 :STYLE: habit
-:END:")))
+:END:"))
+  (add-to-list 'org-capture-templates
+               '("w" "Weekly Planning and Self Assesment"
+                 plain
+                 (function (lambda ()
+                             (find-file (let ((date (format-time-string "%Y-%m-%d")))
+                                    (expand-file-name (concat date ".org")
+                                                      "~/org/weekly")))))
+                 (file "~/org/capture-templates/weekly.org"))))
 #+end_src
 ** Babel
 #+begin_src emacs-lisp :tangle org-config-config.el
