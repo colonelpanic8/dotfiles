@@ -99,12 +99,28 @@ in
     database.ignorePostgresqlVersion = true;
   };
 
+  systemd.services.emacs-org-api = {
+    description = "Emacs org api";
+    after = [ "network.target" ];
+    wantedBy = [ "multi-user.target" ];
+    serviceConfig = {
+      Restart = "on-failure";
+      User = "imalison";
+    };
+    ExecStart = "${pkgs.emacs} --load /home/imalison/org-api.el --daemon=org-api";
+  };
+
   services.nginx = {
     enable = true;
     recommendedProxySettings = true;
     recommendedGzipSettings = true;
     recommendedTlsSettings = true;
     virtualHosts = {
+      "org-mode.1896folsom.duckdns.org" = {
+        enableACME = true;
+        forceSSL = true;
+        locations."/".proxyPass = "http://localhost:2025";
+      };
       "gitlab.railbird.ai" = {
         enableACME = true;
         forceSSL = true;
