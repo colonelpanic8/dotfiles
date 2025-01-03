@@ -1,4 +1,4 @@
-{ pkgs, forEachUser, config, ... }:
+{ pkgs, lib, forEachUser, config, ... }:
 let biskcomp-nginx-hostnames = "192.168.1.44 railbird.ai 1896Folsom.duckdns.org biskcomp.local 0.0.0.0 67.162.131.71";
 in
 {
@@ -104,10 +104,16 @@ in
     after = [ "network.target" ];
     wantedBy = [ "multi-user.target" ];
     serviceConfig = {
+      ExecStart = ''${pkgs.runtimeShell} -l -c "${lib.getExe' pkgs.emacs "emacs"} --load /home/imalison/.emacs.d/org-api.el --daemon=org-api"'';
+      RemainAfterExit = true;
       Restart = "on-failure";
       User = "imalison";
     };
-    ExecStart = "${pkgs.emacs} --load /home/imalison/org-api.el --daemon=org-api";
+  };
+
+  age.secrets.org-api-passwords = {
+    file = ../secrets/org-api-passwords.age;
+    owner = "nginx";
   };
 
   services.nginx = {
@@ -116,10 +122,13 @@ in
     recommendedGzipSettings = true;
     recommendedTlsSettings = true;
     virtualHosts = {
-      "org-mode.1896folsom.duckdns.org" = {
+      "org-mode.1896Folsom.duckdns.org" = {
         enableACME = true;
         forceSSL = true;
-        locations."/".proxyPass = "http://localhost:2025";
+        locations."/" = {
+          proxyPass = "http://localhost:2025";
+          basicAuthFile = config.age.secrets.org-api-passwords.path;
+        };
       };
       "gitlab.railbird.ai" = {
         enableACME = true;
