@@ -20,4 +20,5 @@ in
   "discourse-admin-password.age".publicKeys = keys.hostKeys;
   "discourse-secret-key-base.age".publicKeys = keys.hostKeys;
   "vaultwarden-environment-file.age".publicKeys = keys.hostKeys;
+  "org-api-passwords.age".publicKeys = keys.hostKeys ++ keys.kanivanKeys;
 }
