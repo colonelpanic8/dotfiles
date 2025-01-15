@@ -218,7 +218,7 @@ main = do
           [ ( "uber-loaner"
             , baseConfig { endWidgets = laptopEndWidgets }
             )
-          , ( "adele"
+          , ( "adell"
             , baseConfig { endWidgets = laptopEndWidgets }
             )
           , ( "stevie-nixos"
