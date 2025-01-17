@@ -8,9 +8,12 @@
   myModules.fonts.enable = true;
   myModules.base.enable = true;
   myModules.desktop.enable = true;
+  myModules.xmonad.enable = true;
+
   services.matter-server = {
     enable = true;
   };
+
   services.home-assistant = {
     enable = true;
     config = {
@@ -28,6 +31,8 @@
       feedreader.urls = [ "https://nixos.org/blogs.xml" ];
     };
   };
+
+  boot.loader.systemd-boot.configurationLimit = 3;
 
   boot.initrd.availableKernelModules = [ "xhci_pci" "ahci" "usbhid" "usb_storage" "sd_mod" ];
   boot.initrd.kernelModules = [ ];
