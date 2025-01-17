@@ -20,6 +20,10 @@
         # longitude = "-106.52015264624013";
         unit_system = "imperial";
         time_zone = "UTC";
+        config = {
+            default_config = {};
+            met = {};
+        };
       };
       feedreader.urls = [ "https://nixos.org/blogs.xml" ];
     };
