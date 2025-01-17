@@ -17,7 +17,6 @@
   services.home-assistant = {
     enable = true;
     extraComponents = [
-      "matter_server"
       "esphome"
       "met"
       "radio_browser"
