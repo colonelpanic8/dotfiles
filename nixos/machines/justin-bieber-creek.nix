@@ -17,24 +17,15 @@
   services.home-assistant = {
     enable = true;
     config = {
-      homeassistant = {
-        name = "140 Hurd Lane #B104";
-        # latitude = "39.631431415930564";
-        # longitude = "-106.52015264624013";
-        unit_system = "imperial";
-        time_zone = "UTC";
-        extraComponents = [
-          # Components required to complete the onboarding
-          "esphome"
-          "met"
-          "radio_browser"
-        ];
-        config = {
-            default_config = {};
-            met = {};
-        };
+      extraComponents = [
+        "esphome"
+        "met"
+        "radio_browser"
+      ];
+      config = {
+        default_config = {};
+        met = {};
       };
-      feedreader.urls = [ "https://nixos.org/blogs.xml" ];
     };
   };
 
