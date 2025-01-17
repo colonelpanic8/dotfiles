@@ -8,6 +8,9 @@
   myModules.fonts.enable = true;
   myModules.base.enable = true;
   myModules.desktop.enable = true;
+  services.matter-server = {
+    enable = true;
+  };
   services.home-assistant = {
     enable = true;
     config = {
