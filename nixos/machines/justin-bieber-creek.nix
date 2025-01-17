@@ -23,6 +23,12 @@
         # longitude = "-106.52015264624013";
         unit_system = "imperial";
         time_zone = "UTC";
+        extraComponents = [
+          # Components required to complete the onboarding
+          "esphome"
+          "met"
+          "radio_browser"
+        ];
         config = {
             default_config = {};
             met = {};
