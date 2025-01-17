@@ -15,10 +15,9 @@
     enable = true;
     config = {
       homeassistant = {
-        name = "Home";
-        latitude = "39.631431415930564";
-        longitude = "-106.52015264624013";
-        elevation = 7400;
+        name = "140 Hurd Lane #B104";
+        # latitude = "39.631431415930564";
+        # longitude = "-106.52015264624013";
         unit_system = "imperial";
         time_zone = "UTC";
       };
