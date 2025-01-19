@@ -17,15 +17,33 @@
   services.home-assistant = {
     enable = true;
     extraComponents = [
+      "anthropic"
+      "cast"
+      "dlna_dmr"
       "esphome"
+      "google_assistant"
+      "homeassistant_hardware"
+      "homeassistant_sky_connect"
+      "isal"
+      "kef"
+      "matter"
       "met"
+      "opensky"
+      "otbr"
       "radio_browser"
+      "roomba"
+      "samsungtv"
+      "thread"
+      "webostv"
+      "yale"
+    ];
+    extraPackages = python3Packages: with python3Packages; [
+      numpy
+      python-matter-server
+      universal-silabs-flasher
     ];
     config = {
-      config = {
-        default_config = {};
-        met = {};
-      };
+      default_config = {};
     };
   };
 
