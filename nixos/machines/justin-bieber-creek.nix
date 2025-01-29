@@ -10,8 +10,47 @@
   myModules.desktop.enable = true;
   myModules.xmonad.enable = true;
 
+  networking.enableIPv6 = true;
+
+  boot.kernel.sysctl = {
+    # For all interfaces (e.g. if you want to accept RA on all):
+    "net.ipv6.conf.all.accept_ra" = lib.mkForce "1";
+    "net.ipv6.conf.all.accept_ra_rt_info_max_plen" = lib.mkForce "64";
+    "net.ipv6.conf.default.accept_ra" = lib.mkForce "1";
+    "net.ipv6.conf.default.accept_ra_rt_info_max_plen" = lib.mkForce "64";
+    "net.ipv6.conf.wlo1.accept_ra" = lib.mkForce "1";
+    "net.ipv6.conf.wlo1.accept_ra_rt_info_max_plen" = lib.mkForce "64";
+
+    # Ensure forwarding is off on all interfaces unless needed
+    "net.ipv6.conf.all.forwarding" = lib.mkForce "0";
+  };
+
+  systemd.services.otbr-agent = {
+    wants = [ "network-online.target" ];
+    after = [ "network-online.target" ];
+  };
+
+  services.openthread-border-router = {
+    enable = true;
+    backboneInterface = "wpan0";
+    logLevel = "debug";
+    radio =  {
+      device = "/dev/serial/by-id/usb-Nabu_Casa_Home_Assistant_Connect_ZBT-1_0cd053abfa38ef119c66e1d154516304-if00-port0";
+      baudRate = 460800;
+      flowControl = true;
+    };
+    web = {
+      listenPort = 8087;
+    };
+    rest = {
+      listenPort = 8089;
+    };
+  };
+
   services.matter-server = {
     enable = true;
+    logLevel = "debug";
+    extraArgs = ["--bluetooth-adapter=0"];
   };
 
   services.home-assistant = {
@@ -24,8 +63,11 @@
       "google_assistant"
       "homeassistant_hardware"
       "homeassistant_sky_connect"
+      "homekit_controller"
+      "ibeacon"
       "isal"
       "kef"
+      "kegtron"
       "matter"
       "met"
       "opensky"
@@ -48,6 +90,8 @@
   };
 
   boot.loader.systemd-boot.configurationLimit = 3;
+
+  boot.kernelPackages = pkgs.linuxPackages_latest;
 
   boot.initrd.availableKernelModules = [ "xhci_pci" "ahci" "usbhid" "usb_storage" "sd_mod" ];
   boot.initrd.kernelModules = [ ];
@@ -73,7 +117,7 @@
 
   networking.hostName = "justin-bieber-creek";
 
-  networking.useDHCP = lib.mkDefault true;
+  networking.useDHCP = false;
   nixpkgs.hostPlatform = lib.mkDefault "x86_64-linux";
   powerManagement.cpuFreqGovernor = lib.mkDefault "powersave";
   hardware.cpu.intel.updateMicrocode = lib.mkDefault config.hardware.enableRedistributableFirmware;
