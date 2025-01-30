@@ -25,6 +25,22 @@
     android-studio
   ];
 
+  services.matter-server = {
+    enable = true;
+    logLevel = "debug";
+    extraArgs = ["--bluetooth-adapter=0" "--enable-test-net-dcl"];
+  };
+
+  programs.virt-manager.enable = true;
+  virtualisation.libvirtd.enable = true;
+  virtualisation.spiceUSBRedirection.enable = true;
+
+  virtualisation.virtualbox.host = {
+    enable = true;
+    enableKvm = true;
+    addNetworkInterface = false;
+  };
+
   services.xserver.dpi = 96;
   boot.kernelPackages = pkgs.linuxPackages_latest;
   boot.initrd.availableKernelModules = [ "vmd" "xhci_pci" "thunderbolt" "nvme" "usbhid" "usb_storage" "sd_mod" ];

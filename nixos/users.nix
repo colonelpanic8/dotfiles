@@ -5,11 +5,15 @@ let
     "adbusers"
     "disk"
     "docker"
+    "libvirtd"
+    "libvirtd-qemu"
+    "qemu-libvirtd"
     "networkmanager"
     "openrazer"
     "plugdev"
     "syncthing"
     "systemd-journal"
+    "vboxusers"
     "video"
   ];
   extraGroupsWithWheel = extraGroups ++ ["wheel"];
