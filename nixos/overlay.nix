@@ -134,13 +134,23 @@ final: prev:
   in
   final.python311.withPackages my-python-packages;
 
-  # gitea = prev.gitea.overrideAttrs(_: {
-    #   src = prev.fetchFromGitHub {
-      #     repo = "gitea";
-      #     owner = "colonelpanic8";
-      #     rev = "40e15b12bf104f8018f56e5b826d8a2f8e2587ea";
-      #     sha256 = "sha256-VXP8Ga681rcKn548rOZq9I19abY0GzXRpdiYGpwyMJ4=";
-      #   };
-      #   go = final.buildPackages.go_1_21;
-      # });
+  pythonPackagesExtensions = prev.pythonPackagesExtensions ++ [
+    (
+      python-final: python-prev: {
+        home-assistant-chip-wheels = python-prev.home-assistant-chip-wheels.overrideAttrs
+        (oldAttrs: rec {
+          bypassAttestationVerificationPatch = final.fetchpatch {
+            url = "https://raw.githubusercontent.com/tronikos/chip-wheels/8a5ec21d114010723cf428ffe79e244da7562390/8766-Bypass-attestation-verification.patch";
+            # You will need to compute or look up the correct sha256:
+            sha256 = "sha256-RgmlPRSfw1PPMdHBzpoK2Drrb8nEagATY8Y5ngi7x0k=";
+          };
+          postPatch = ''
+            pushd connectedhomeip
+            patch -p1 < ${bypassAttestationVerificationPatch}
+            popd
+          '' + oldAttrs.postPatch;
+        });
+      }
+    )
+  ];
 }
