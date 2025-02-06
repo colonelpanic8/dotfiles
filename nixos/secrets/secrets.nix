@@ -21,4 +21,5 @@ in
   "discourse-secret-key-base.age".publicKeys = keys.hostKeys;
   "vaultwarden-environment-file.age".publicKeys = keys.hostKeys;
   "org-api-passwords.age".publicKeys = keys.hostKeys ++ keys.kanivanKeys;
+  "google-assistant-integration-service-key.age".publicKeys = keys.hostKeys ++ keys.kanivanKeys;
 }
