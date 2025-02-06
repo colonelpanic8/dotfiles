@@ -18,12 +18,19 @@
   myModules.gitea-runner.enable = false;
   myModules.nvidia.enable = true;
   myModules.electron.enable = true;
+  myModules.wyoming.enable = true;
 
   hardware.enableRedistributableFirmware = true;
 
   environment.systemPackages = with pkgs; [
     android-studio
   ];
+
+  services.synergy.server = {
+    enable = true;
+    autoStart = true;
+    configFile = ../../dotfiles/synergy.conf;
+  };
 
   services.matter-server = {
     enable = true;

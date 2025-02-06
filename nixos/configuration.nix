@@ -38,6 +38,7 @@
     ./users.nix
     ./vscode.nix
     ./wsl.nix
+    ./wyoming.nix
     ./xmonad.nix
   ];
 
