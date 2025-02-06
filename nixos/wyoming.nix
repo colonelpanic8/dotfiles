@@ -1,9 +1,17 @@
-{ config, makeEnable, ... }:
+{ pkgs, config, makeEnable, ... }:
 makeEnable config "myModules.wyoming" false {
+  environment.systemPackages = with pkgs; [
+    alsa-utils
+  ];
+  systemd.services."wyoming-satellite".path = with pkgs; [pipewire];
   services.wyoming = {
     satellite = {
       enable = true;
+      package = pkgs.wyoming-satellite;
       user = "imalison";
+      microphone = {
+        command = "pw-record --channels 1 -";
+      };
     };
     faster-whisper.servers.strixi = {
       enable = true;

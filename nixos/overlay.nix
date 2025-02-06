@@ -72,6 +72,19 @@ final: prev:
     };
   });
 
+  wyoming-satellite = prev.wyoming-satellite.overridePythonAttrs (_: {
+    src = prev.fetchFromGitHub {
+      owner = "colonelpanic8";
+      repo = "wyoming-satellite";
+      rev = "509628a9be2cf61116b6d0475e19c0b92a855e0b";
+      hash = "sha256-ewSxVv+8r2VGYNOoj8jiMogXtp1GPApcRc2BH3Q+8W8=";
+    };
+    build-system = with final.python3.pkgs; [ poetry-core ];
+    pythonImportsCheck = [
+      "wyoming_satellite"
+    ];
+  });
+
   git-sync = prev.git-sync.overrideAttrs (_: {
     src = prev.fetchFromGitHub {
       repo = "git-sync";

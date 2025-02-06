@@ -6,6 +6,7 @@
     inputs.nixos-hardware.nixosModules.dell-xps-17-9700-nvidia
   ];
 
+  myModules.wyoming.enable = true;
   myModules.base.enable = true;
   myModules.desktop.enable = true;
   myModules.xmonad.enable = true;
