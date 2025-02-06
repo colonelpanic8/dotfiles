@@ -7,6 +7,7 @@ rec {
     "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIIaA0tRVTqwBDxY6X03wx+50pbB37y5e8gqFpFMDa/Bj adele.local"
     "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAID4j70BoksIEiX+OMBCsSG8wvMIEwoRQf5Gz5ppbm7Iy jimi-hendnix.local"
     "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIOYAoN3l15Avweu5fcfcnlRzmFPHtlYIpo02sxBHANZ+ strixy-minaj.local"
+    "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIFTYwBuQ3CNbkj6gAQ0oqxhPlKZ+X6tUaZotccowzjCW justin-bieber-creek.local"
   ];
   kanivanKeys = [
     "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDUSkj7587e+MAUNyU/KRpw9Vk++53Wv5nB+0V1QgiTO3rMQe6HJt0Tm2wi/o/T8GNjueT2D69YgkqOIF1FQwsj2EFLObcMzeBgs5gTSglqggA2I91BIc1vvgjCDpogOMAzAQGlTxRnqrEXhqG0jJtw8KIzLr9WrvWLdTT4rHtWS8RoOBgkQ8oxbggZ4vtbMBIwoIAYGRr70KBRNCsLTPLa8yEf+DDQxq1entzxSjHXHgyeBSVVpPCrBVmhjandk+lIFInjvAiAE1ZkJHSRccL73ORmgb1crwH7xlD9NwBPmypowMi8UIRMKfL2lNehT0AQIlEAikUBLMDzPIPhnwLZ imalison@ivanm-dfinity-razer.local"
