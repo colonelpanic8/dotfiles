@@ -7,7 +7,6 @@ makeEnable config "myModules.wyoming" false {
   services.wyoming = {
     satellite = {
       enable = true;
-      package = pkgs.wyoming-satellite;
       user = "imalison";
       microphone = {
         command = "pw-record --channels 1 -";

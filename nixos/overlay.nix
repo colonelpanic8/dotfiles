@@ -72,7 +72,7 @@ final: prev:
     };
   });
 
-  wyoming-satellite = prev.wyoming-satellite.overridePythonAttrs (_: {
+  wyoming-satellite = prev.wyoming-satellite.overridePythonAttrs (oldAttrs: {
     src = prev.fetchFromGitHub {
       owner = "colonelpanic8";
       repo = "wyoming-satellite";
@@ -83,6 +83,7 @@ final: prev:
     pythonImportsCheck = [
       "wyoming_satellite"
     ];
+    propagatedBuildInputs = [];
   });
 
   git-sync = prev.git-sync.overrideAttrs (_: {
