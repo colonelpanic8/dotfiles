@@ -40,7 +40,12 @@ makeEnable config "myModules.base" true {
 
   # Audio
   hardware.pulseaudio.enable = false;
-  services.pipewire.audio.enable = true;
+  services.pipewire = {
+    enable = true;
+    alsa.enable = true;
+    alsa.support32Bit = true;
+    pulse.enable = true;
+  };
 
   # Bluetooth
   hardware.bluetooth.enable = true;

@@ -88,6 +88,7 @@ makeEnable config "myModules.desktop" true {
 
     # Audio
     picard
+    pavucontrol
     playerctl
     pulsemixer
     espeak

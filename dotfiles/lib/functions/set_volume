@@ -1,10 +1,6 @@
 #!/usr/bin/env sh
 
 function set_volume {
-  current_default=$(pahelper list | grep '*' | all_after_char ":" | xargs)
-  environment_variable_exists USE_ONLY_O_PASINK && pahelper "$current_default"
-
-  # XXX: this does not prevent volumes higher than 100
   pulsemixer "$@"
   pashowvolume
 }
