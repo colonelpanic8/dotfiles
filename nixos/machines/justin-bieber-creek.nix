@@ -5,12 +5,21 @@
     ../configuration.nix
   ];
 
+  services.synergy.server = {
+    enable = true;
+  };
+
   myModules.fonts.enable = true;
   myModules.base.enable = true;
   myModules.desktop.enable = true;
   myModules.xmonad.enable = true;
 
   networking.enableIPv6 = true;
+
+  services.synergy.client = {
+    enable = true;
+    serverAddress = "strixi-minaj.local:24800";
+  };
 
   boot.kernel.sysctl = {
     # For all interfaces (e.g. if you want to accept RA on all):
@@ -50,7 +59,18 @@
   services.matter-server = {
     enable = true;
     logLevel = "debug";
-    extraArgs = ["--bluetooth-adapter=0"];
+    extraArgs = let cert-dir = pkgs.fetchFromGitHub {
+      repo = "connectedhomeip";
+      owner = "project-chip";
+      rev = "6e8676be6142bb541fa68048c77f2fc56a21c7b1";
+      hash = "sha256-QwPKn2R4mflTKMyr1k4xF04t0PJIlzNCOdXEiQwX5wk=";
+    }; in
+    ["--bluetooth-adapter=0" "--paa-root-cert-dir=${cert-dir}/credentials/production/paa-root-certs" "--enable-test-net-dcl"];
+  };
+
+  age.secrets.google-service-account = {
+    file = ../secrets/google-assistant-integration-service-key.age;
+    owner = "hass";
   };
 
   services.home-assistant = {
@@ -85,7 +105,54 @@
       universal-silabs-flasher
     ];
     config = {
+      http = {
+        use_x_forwarded_for = true;
+        trusted_proxies = ["0.0.0.0" "127.0.0.1" "::1" "192.168.50.1"];
+      };
+      google_assistant = {
+        project_id = "canyon-run-b104-home-assistant";
+        service_account = "!include ${config.age.secrets.google-service-account.path}";
+        report_state = true;
+        exposed_domains = ["switch" "light"];
+      };
       default_config = {};
+    };
+  };
+
+  security.acme = {
+    acceptTerms = true;
+    defaults.email = "IvanMalison@gmail.com";
+  };
+
+  services.nginx = {
+    enable = true;
+    recommendedProxySettings = true;
+    recommendedGzipSettings = true;
+    recommendedTlsSettings = true;
+
+    virtualHosts = {
+      "homeassistant.canyonrunb104.duckdns.org" = {
+        enableACME = true;
+        addSSL = true;
+        locations."/" = {
+          proxyPass = "http://localhost:8123";
+          extraConfig = ''
+            proxy_set_header Upgrade $http_upgrade;
+            proxy_set_header Connection "upgrade";
+          '';
+        };
+      };
+      "ha.canyonrunb104.duckdns.org" = {
+        enableACME = true;
+        addSSL = true;
+        locations."/" = {
+          proxyPass = "http://localhost:8123";
+          extraConfig = ''
+            proxy_set_header Upgrade $http_upgrade;
+            proxy_set_header Connection "upgrade";
+          '';
+        };
+      };
     };
   };
 
