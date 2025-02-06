@@ -12,6 +12,10 @@ makeEnable config "myModules.wyoming" false {
       microphone = {
         command = "pw-record --channels 1 -";
       };
+      extraArgs = [
+        "--wake-uri=tcp://0.0.0.0:10400"
+        "--wake-word-name=ok_nabu"
+      ];
     };
     faster-whisper.servers.strixi = {
       enable = true;
