@@ -92,11 +92,15 @@
       "met"
       "opensky"
       "otbr"
+      "piper"
       "radio_browser"
       "roomba"
       "samsungtv"
       "thread"
+      "wake_word"
       "webostv"
+      "whisper"
+      "wyoming"
       "yale"
     ];
     extraPackages = python3Packages: with python3Packages; [
