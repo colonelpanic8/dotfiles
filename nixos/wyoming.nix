@@ -27,7 +27,7 @@ makeEnable config "myModules.wyoming" false {
     faster-whisper.servers."${config.networking.hostName}-whisper" = {
       enable = true;
       uri = "tcp://0.0.0.0:10300";
-      device = "cuda";
+      device = "auto";
       language = "en";
       model = "turbo";
     };

@@ -34,6 +34,7 @@
     ./secrets.nix
     ./ssh.nix
     ./syncthing.nix
+    ./tts.nix
     ./user-specific.nix
     ./users.nix
     ./vscode.nix
