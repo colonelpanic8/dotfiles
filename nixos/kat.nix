@@ -4,6 +4,7 @@ makeEnable config "myModules.kat" false {
     bitwarden
     ffmpeg
     code-cursor
+    obsidian
   ];
 
   environment.extraInit = ''

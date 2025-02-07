@@ -29,7 +29,7 @@
   boot.loader.efi.canTouchEfiVariables = true;
 
   myModules.postgres.enable = true;
-
+  myModules.kat.enable = true;
   networking.networkmanager.enable = true;
 
   services.xserver = {
