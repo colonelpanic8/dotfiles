@@ -39,13 +39,17 @@ makeEnable config "myModules.base" true {
   services.mullvad-vpn.enable = true;
 
   # Audio
-  hardware.pulseaudio.enable = false;
+
+  services.pulseaudio.enable = true;
   services.pipewire = {
-    enable = true;
+    enable = false;
+    systemWide = true;
     alsa.enable = true;
     alsa.support32Bit = true;
+    jack.enable = true;
     pulse.enable = true;
   };
+
 
   # Bluetooth
   hardware.bluetooth.enable = true;

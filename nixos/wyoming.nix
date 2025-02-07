@@ -8,8 +8,10 @@ makeEnable config "myModules.wyoming" false {
     satellite = {
       enable = true;
       user = "imalison";
+      uri = "tcp://0.0.0.0:10700";
       microphone = {
-        command = "pw-record --channels 1 -";
+        # command = "pw-record --channels 1 -";
+        command = "pacat --record --raw --format=s16le --channels=1 --rate=16000";
       };
       extraArgs = [
         "--wake-uri=tcp://0.0.0.0:10400"
@@ -21,13 +23,15 @@ makeEnable config "myModules.wyoming" false {
       preloadModels = ["alexa" "ok_nabu" "hey_rhasspy"];
       uri = "tcp://0.0.0.0:10400";
     };
+
     faster-whisper.servers."${config.networking.hostName}-whisper" = {
       enable = true;
       uri = "tcp://0.0.0.0:10300";
-      device = "auto";
+      device = "cuda";
       language = "en";
       model = "turbo";
     };
+
     piper.servers."${config.networking.hostName}-piper" = {
       enable = true;
       uri = "tcp://0.0.0.0:10200";
