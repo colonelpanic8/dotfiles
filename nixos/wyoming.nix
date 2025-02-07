@@ -21,6 +21,7 @@ makeEnable config "myModules.wyoming" false {
       uri = "tcp://0.0.0.0:10300";
       device = "auto";
       language = "en";
+      model = "turbo";
     };
     piper.servers.strixi = {
       enable = true;

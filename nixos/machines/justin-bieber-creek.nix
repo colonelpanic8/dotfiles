@@ -13,6 +13,7 @@
   myModules.base.enable = true;
   myModules.desktop.enable = true;
   myModules.xmonad.enable = true;
+  myModules.wyoming.enable = true;
 
   networking.enableIPv6 = true;
 
