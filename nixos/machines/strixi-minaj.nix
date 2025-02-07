@@ -22,6 +22,7 @@
   myModules.wyoming.enable = true;
 
   hardware.enableRedistributableFirmware = true;
+  # nixpkgs.config.cudaSupport = true;
 
   environment.systemPackages = with pkgs; [
     android-studio
@@ -72,7 +73,7 @@
   networking.hostName = "strixi-minaj";
 
   powerManagement.cpuFreqGovernor = lib.mkDefault "performance";
-  hardware.cpu.intel.updateMicrocode = lib.mkDefault config.hardware.enableRedistributableFirmware;
+  hardware.cpu.intel.updateMicrocode = lib.mkDefault true;
 
   home-manager.users = forEachUser {
     home.stateVersion = "23.05";

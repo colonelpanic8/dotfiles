@@ -3,7 +3,7 @@ makeEnable config "myModules.wyoming" false {
   environment.systemPackages = with pkgs; [
     alsa-utils
   ];
-  systemd.services."wyoming-satellite".path = with pkgs; [pipewire];
+  systemd.services."wyoming-satellite".path = with pkgs; [pipewire pulseaudio];
   services.wyoming = {
     satellite = {
       enable = true;
@@ -16,21 +16,22 @@ makeEnable config "myModules.wyoming" false {
         "--wake-word-name=ok_nabu"
       ];
     };
-    faster-whisper.servers.strixi = {
+    openwakeword = {
+      enable = true;
+      preloadModels = ["alexa" "ok_nabu" "hey_rhasspy"];
+      uri = "tcp://0.0.0.0:10400";
+    };
+    faster-whisper.servers."${config.networking.hostName}-whisper" = {
       enable = true;
       uri = "tcp://0.0.0.0:10300";
       device = "auto";
       language = "en";
       model = "turbo";
     };
-    piper.servers.strixi = {
+    piper.servers."${config.networking.hostName}-piper" = {
       enable = true;
       uri = "tcp://0.0.0.0:10200";
       voice = "en-us-ryan-medium";
-    };
-    openwakeword = {
-      enable = true;
-      preloadModels = ["alexa" "ok_nabu" "hey_rhasspy"];
     };
   };
 }

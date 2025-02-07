@@ -151,11 +151,18 @@ final: prev:
   pythonPackagesExtensions = prev.pythonPackagesExtensions ++ [
     (
       python-final: python-prev: {
+        pysilero-vad = python-prev.pysilero-vad.overridePythonAttrs (_: {
+          src = final.fetchFromGitHub {
+            owner = "colonelpanic8";
+            repo = "pysilero-vad";
+            rev = "846caf4aa6c5f5319b87d3127dfe0aa9e88b338e";
+            hash = "sha256-SjoyiHm2RiLDFbwduKsoPK4/AvQiwZ39ZsPj2etXRV0=";
+          };
+        });
         home-assistant-chip-wheels = python-prev.home-assistant-chip-wheels.overrideAttrs
         (oldAttrs: rec {
           bypassAttestationVerificationPatch = final.fetchpatch {
             url = "https://raw.githubusercontent.com/tronikos/chip-wheels/8a5ec21d114010723cf428ffe79e244da7562390/8766-Bypass-attestation-verification.patch";
-            # You will need to compute or look up the correct sha256:
             sha256 = "sha256-RgmlPRSfw1PPMdHBzpoK2Drrb8nEagATY8Y5ngi7x0k=";
           };
           postPatch = ''

@@ -2,7 +2,7 @@ switch *args:
 	sudo nixos-rebuild switch --flake '.#' --impure {{args}}
 
 fix-local-path-issue:
-	nix flake lock --update-input imalison-taffybar
+	nix flake update imalison-taffybar
 
 
 expire-home-manager-generations:

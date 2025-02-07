@@ -21,4 +21,5 @@ makeEnable config "myModules.nvidia" false {
   services.xserver = {
     videoDrivers = [ "nvidia" ];
   };
+  nixpkgs.config.cudaSupport = true;
 }
