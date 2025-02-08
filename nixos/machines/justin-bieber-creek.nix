@@ -66,7 +66,12 @@
       rev = "6e8676be6142bb541fa68048c77f2fc56a21c7b1";
       hash = "sha256-QwPKn2R4mflTKMyr1k4xF04t0PJIlzNCOdXEiQwX5wk=";
     }; in
-    ["--bluetooth-adapter=0" "--paa-root-cert-dir=${cert-dir}/credentials/production/paa-root-certs" "--enable-test-net-dcl"];
+    [
+      "--bluetooth-adapter=0"
+      "--paa-root-cert-dir=${cert-dir}/credentials/production/paa-root-certs"
+      "--enable-test-net-dcl"
+      "--ota-provider-dir=/var/lib/matter-server/ota-provider"
+    ];
   };
 
   age.secrets.google-service-account = {
