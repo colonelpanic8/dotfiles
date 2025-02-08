@@ -16,6 +16,7 @@ makeEnable config "myModules.wyoming" false {
       extraArgs = [
         "--wake-uri=tcp://0.0.0.0:10400"
         "--wake-word-name=ok_nabu"
+        "--awake-wav=${./notification-sound.wav}"
       ];
     };
     openwakeword = {
