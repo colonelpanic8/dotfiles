@@ -128,6 +128,10 @@ in
         locations."/" = {
           proxyPass = "http://localhost:2025";
           basicAuthFile = config.age.secrets.org-api-passwords.path;
+          extraConfig = ''
+            add_header 'Access-Control-Allow-Origin' '*' always;
+            add_header 'Access-Control-Allow-Methods' 'POST, PUT, DELETE, GET, PATCH, OPTIONS' always;
+          '';
         };
       };
       "gitlab.railbird.ai" = {
@@ -140,13 +144,6 @@ in
         forceSSL = true;
         locations."/" = {
           proxyPass = "http://[::1]:8222";
-        };
-      };
-      "cache.railbird.ai" = {
-        enableACME = true;
-        forceSSL = true;
-        locations."/" = {
-          proxyPass = "http://192.168.1.20:3090";
         };
       };
       "syncthing.railbird.ai" = {
