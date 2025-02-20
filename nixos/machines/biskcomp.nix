@@ -13,10 +13,11 @@ in
     extraGroups = ["syncthing"];
   };
 
+  myModules.home-assistant.enable = true;
   myModules.raspberry-pi.enable = true;
-
+  myModules.plasma.enable = false;
   myModules.base.enable = true;
-  myModules.desktop.enable = true;
+  myModules.desktop.enable = false;
   myModules.xmonad.enable = false;
   myModules.extra.enable = false;
   myModules.code.enable = true;
@@ -176,20 +177,6 @@ in
   fileSystems."/" = {
     device = "/dev/disk/by-label/NIXOS_SD";
     fsType = "ext4";
-  };
-
-  services.home-assistant = {
-    enable = false;
-    extraComponents = [
-      # Components required to complete the onboarding
-      "met"
-      "radio_browser"
-    ];
-    config = {
-      # Includes dependencies for a basic setup
-      # https://www.home-assistant.io/integrations/default_config/
-      default_config = {};
-    };
   };
 
   swapDevices = [
