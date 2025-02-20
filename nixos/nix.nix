@@ -1,7 +1,7 @@
 { inputs, specialArgs, config, lib, ... }:
 {
   imports = [
-    inputs.home-manager.nixosModule
+    inputs.home-manager.nixosModules.home-manager
   ];
 
   options = {
