@@ -35,13 +35,32 @@ makeEnable config "myModules.home-assistant" false {
   #   owner = "hass";
   # };
 
+  age.secrets.zwave-js-config-filepath = {
+    file = ./secrets/zwave-js.json.age;
+    owner = "imalison";
+    group = "users";
+    mode = "777";
+  };
+
   services.zwave-js = {
     enable = true;
     serialPort = "/dev/serial/by-id/usb-Silicon_Labs_Zooz_ZST10_700_Z-Wave_Stick_fec41d5809caec11843b63a341be1031-if00-port0";
+    secretsConfigFile = config.age.secrets.zwave-js-config-filepath.path;
+  };
+
+  systemd.services.zwave-js = {
+    serviceConfig = {
+      # DynamicUser = lib.mkForce false;
+    };
   };
 
   services.zwave-js-ui = {
     enable = true;
+    serialPort = "/dev/serial/by-id/usb-Silicon_Labs_Zooz_ZST10_700_Z-Wave_Stick_fec41d5809caec11843b63a341be1031-if00-port0";
+    settings = {
+      HOST = "::";
+      PORT = "8091";
+    };
   };
 
   services.home-assistant = {
