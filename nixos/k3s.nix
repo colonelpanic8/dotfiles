@@ -144,18 +144,6 @@ in {
 
         [debug]
         level = "trace"
-
-        [plugins.'io.containerd.runc.runtime']
-        enable_cdi = true
-        cdi_spec_dirs = ['/var/run/cdi']
-
-        [plugins.'io.containerd.grpc.v1.cri']
-        enable_cdi = true
-        cdi_spec_dirs = ['/var/run/cdi']
-
-        [plugins.'io.containerd.cri.v1.runtime']
-        enable_cdi = true
-        cdi_spec_dirs = ['/var/run/cdi']
       '';
       gracefulNodeShutdown = {
         enable = true;
