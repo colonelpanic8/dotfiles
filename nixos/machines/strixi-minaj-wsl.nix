@@ -30,5 +30,6 @@
     "electron-19.1.9"
     "openssl-1.1.1w"
     "nix-2.16.2"
+    "electron-32.3.3"
   ];
 }

@@ -1,12 +1,13 @@
 { config, pkgs, forEachUser, makeEnable, realUsers, ... }:
 makeEnable config "myModules.base" true {
   nixpkgs.config.permittedInsecurePackages = [
-    "openssl-1.0.2u"
     "electron-12.2.3"
-    "etcher"
     "electron-19.1.9"
-    "openssl-1.1.1w"
+    "electron-32.3.3"
+    "etcher"
     "nix-2.16.2"
+    "openssl-1.0.2u"
+    "openssl-1.1.1w"
   ];
 
   # Disabling these waits disables the stuck on boot up issue
