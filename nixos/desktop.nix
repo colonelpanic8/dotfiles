@@ -69,7 +69,7 @@ makeEnable config "myModules.desktop" true {
     lxappearance
     lxqt.lxqt-powermanagement
     networkmanagerapplet
-    okular
+    kdePackages.okular
     pinentry
     # mission-center
     quassel
