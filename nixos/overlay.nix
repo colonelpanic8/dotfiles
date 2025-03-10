@@ -126,7 +126,7 @@ final: prev:
     };
   });
 
-  emacs = prev.emacs29.override {
+  emacs = prev.emacs30.override {
     withNativeCompilation = true;
     withTreeSitter = true;
   };
