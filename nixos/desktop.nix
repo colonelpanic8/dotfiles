@@ -63,7 +63,7 @@ makeEnable config "myModules.desktop" true {
     firefox
     cheese
     gpaste
-    kleopatra
+    kdePackages.kleopatra
     libnotify
     libreoffice
     lxappearance
