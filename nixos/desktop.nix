@@ -56,7 +56,7 @@ makeEnable config "myModules.desktop" true {
     blueman
     # clipit
     d-spy
-    dolphin
+    kdePackages.dolphin
     # inputs.ghostty.packages."${system}".default
 
     feh
