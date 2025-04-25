@@ -21,6 +21,7 @@
     serverAddr = "https://jimi-hendnix.local:6443";
     # extraFlags = ["--node-taint preferNoSchedule=true:NoSchedule"];
   };
+  myModules.nixified-ai.enable = true;
   boot.kernelPackages = pkgs.linuxPackages_latest;
 
   boot.loader.systemd-boot.configurationLimit = 5;
