@@ -1,4 +1,4 @@
-{ pkgs, config, lib, ... }:
+{ pkgs, ... }:
 {
   imports = [
     ./essential.nix
@@ -36,7 +36,7 @@
       '';
     };
   };
-  nix = rec {
+  nix = {
     extraOptions = ''
       experimental-features = nix-command flakes
     '';
