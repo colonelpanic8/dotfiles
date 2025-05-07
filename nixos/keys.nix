@@ -42,6 +42,7 @@ rec {
     "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQCqBnDZXcZIMtOTPxg4pJWyMyNp84kpU2uH88aCkrhMBY2TI4dqAXGY4h1DOyOEyQo9nTgyvdlv4M1Hlp5tzfbuapdTWtt36gb+FKpsTUy8dz45fhKJerUszNbVQ+SpZu4ZFN4Nv9eP3AHO+Mzjcvbf666VMDEzZWu2totd7jxyI9PdK78TD5AOi+kGTtbEgqMpJCcZmJlzJ9NJJ2ejhPCRwcfDrShHcfMeEwWL5MmnzT+WstkRwJAM0f9/ks77jWDnB1Eu55rQykU8zVZ1nz1GiXZcxUpm6B0IRhwn8NGH6nVzSLITtO5eJ7LPQR9XNUODpbrsVGNK6jgGql9gZpYp andy@nixos"
   ];
   willKeys = [
+    "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIDqBw9QBC0t1TGu7JdryJ6vX3hkBjNnDLe4GFptN2Y3k willgester@gmail.com"
     "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAILgLjW6R+dTEmlUoPfE4GA8gRn93UlcSJqlJP1xw0KWl willgester@gmail.com"
   ];
   loewyKeys = [
