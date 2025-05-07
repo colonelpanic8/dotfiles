@@ -8,11 +8,11 @@ makeEnable config "myModules.nvidia" false {
   hardware.nvidia-container-toolkit = {
     enable = true;
     mount-nvidia-executables = true;
-    additionalEdit = ''
-      ${lib.getExe pkgs.jq} '
-          .devices |= map(
-          .containerEdits.hooks |= map(select(.args | index("nvidia-cdi-hook") < 0))
-          )' | ${lib.getExe pkgs.jq} '.containerEdits.hooks |= map(select(.args | index("nvidia-cdi-hook") < 0 ))' '';
+    # additionalEdit = ''
+    #   ${lib.getExe pkgs.jq} '
+    #       .devices |= map(
+    #       .containerEdits.hooks |= map(select(.args | index("nvidia-cdi-hook") < 0))
+    #       )' | ${lib.getExe pkgs.jq} '.containerEdits.hooks |= map(select(.args | index("nvidia-cdi-hook") < 0 ))' '';
   };
   hardware.nvidia.open = true;
   hardware.graphics.enable32Bit = true;

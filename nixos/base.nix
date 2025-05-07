@@ -66,8 +66,8 @@ makeEnable config "myModules.base" true {
     defaultLocale = "en_US.UTF-8";
   };
 
-  # Update timezone automatically
-  services.tzupdate.enable = true;
+  # # Update timezone automatically
+  # services.tzupdate.enable = true;
 
   # TODO: Add a comment explaining what this does.
   services.locate.enable = true;

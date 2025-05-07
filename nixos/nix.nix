@@ -31,10 +31,12 @@
         substituters = [
           "https://cache.nixos.org"
           "https://cuda-maintainers.cachix.org"
+          "https://ai.cachix.org"
         ];
         trusted-public-keys = [
           "cache.railbird.ai:KhnvcouxtIU2zxUcjJsm4bUK3o1S3p8xMf9qfZGF7/A="
           "cuda-maintainers.cachix.org-1:0dq3bujKpuEPMCX6U4WylrUDZ9JyUG0VpVZa7CNfq5E="
+          "ai.cachix.org-1:N9dzRK+alWwoKXQlnn0H6aUx0lU/mspIoz8hMvGvbbc="
         ];
         nix-path = nixPath;
       };

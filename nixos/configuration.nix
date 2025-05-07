@@ -60,6 +60,5 @@
     myModules.games.enable = true;
     myModules.syncthing.enable = true;
     myModules.fonts.enable = true;
-    myModules.nixified-ai.enable = false;
   };
 }

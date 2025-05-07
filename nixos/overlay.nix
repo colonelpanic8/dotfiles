@@ -1,19 +1,19 @@
 final: prev:
 {
-  nvidia-container-toolkit = prev.nvidia-container-toolkit.overrideAttrs(old: {
-    postInstall = ''
-      ${old.postInstall or ""}
-      mv $tools/bin/nvidia-cdi-hook $tools/bin/.nvidia-cdi-hook-wrapped
-      cat > $tools/bin/nvidia-cdi-hook <<EOF
-      #!${final.bash}/bin/bash
-      # Trap any errors, including crashes
-      trap 'exit 0' ERR
-      set +e
-      $tools/bin/.nvidia-cdi-hook-wrapped "\$@" || true
-      EOF
-      chmod +x $tools/bin/nvidia-cdi-hook
-    '';
-  });
+  # nvidia-container-toolkit = prev.nvidia-container-toolkit.overrideAttrs(old: {
+  #   postInstall = ''
+  #     ${old.postInstall or ""}
+  #     mv $tools/bin/nvidia-cdi-hook $tools/bin/.nvidia-cdi-hook-wrapped
+  #     cat > $tools/bin/nvidia-cdi-hook <<EOF
+  #     #!${final.bash}/bin/bash
+  #     # Trap any errors, including crashes
+  #     trap 'exit 0' ERR
+  #     set +e
+  #     $tools/bin/.nvidia-cdi-hook-wrapped "\$@" || true
+  #     EOF
+  #     chmod +x $tools/bin/nvidia-cdi-hook
+  #   '';
+  # });
   runc = final.stdenv.mkDerivation {
     pname = "runc-with-logging";
     version = builtins.getAttr "version" prev.runc or "unknown";

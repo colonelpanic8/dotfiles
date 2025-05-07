@@ -1,7 +1,7 @@
 {
   inputs = {
     nixpkgs = {
-      url = "github:colonelpanic8/nixpkgs/my-unstable";
+      url = "github:NixOS/nixpkgs/nixos-unstable";
     };
 
     flake-utils = {

@@ -9,7 +9,6 @@ makeEnable config "myModules.wsl" false {
   myModules.xmonad.enable = false;
   myModules.plasma.enable = false;
 
-  # Update timezone automatically
   services.tzupdate.enable = true;
 
   wsl.wslConf.automount.root = "/mnt";
