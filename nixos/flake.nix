@@ -59,12 +59,12 @@
 
     imalison-taffybar = {
       url = "path:../dotfiles/config/taffybar";
-      inputs = {
-        nixpkgs.follows = "nixpkgs";
-        flake-utils.follows = "flake-utils";
-        xmonad.follows = "xmonad";
-        taffybar.follows = "taffybar";
-      };
+      # inputs = {
+      #   nixpkgs.follows = "nixpkgs";
+      #   flake-utils.follows = "flake-utils";
+      #   xmonad.follows = "xmonad";
+      #   taffybar.follows = "taffybar";
+      # };
     };
 
     notifications-tray-icon = {

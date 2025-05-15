@@ -1,4 +1,3 @@
-
 { config, lib, pkgs, inputs, forEachUser, ... }:
 
 {
@@ -19,7 +18,7 @@
   myModules.gitea-runner.enable = false;
   myModules.nvidia.enable = true;
   myModules.electron.enable = true;
-  myModules.wyoming.enable = true;
+  myModules.wyoming.enable = false;
   myModules.tts.enable = true;
 
   hardware.enableRedistributableFirmware = true;
