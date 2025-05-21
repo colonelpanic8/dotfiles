@@ -89,6 +89,7 @@ in {
         RemainAfterExit = true;
         Restart = "on-failure";  # Restart the service on failure
         RestartSec = 5;  # Wait 5 seconds before restarti
+        TimeoutStopSec = 2;
         ExecStartPre = [
           "-${pkgs.util-linux}/bin/umount -f ${mount-path}"
           "${pkgs.coreutils}/bin/mkdir -p ${mount-path}"
