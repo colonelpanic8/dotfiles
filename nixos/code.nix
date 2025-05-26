@@ -43,8 +43,9 @@ makeEnable config "myModules.code" true {
     ruby
 
     # python
-    poetry
     black
+    poetry
+    uv
 
     # kotlin
     kotlin
