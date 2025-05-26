@@ -67,7 +67,7 @@ makeEnable config "myModules.base" true {
   };
 
   # # Update timezone automatically
-  # services.tzupdate.enable = true;
+  services.tzupdate.enable = true;
 
   # TODO: Add a comment explaining what this does.
   services.locate.enable = true;
