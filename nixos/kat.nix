@@ -5,6 +5,7 @@ makeEnable config "myModules.kat" false {
     bitwarden
     code-cursor
     obsidian
+    windsurf
   ];
 
   environment.extraInit = ''
