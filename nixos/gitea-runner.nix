@@ -21,16 +21,17 @@ makeEnable config "myModules.gitea-runner" false {
       };
       hostPackages = with pkgs; [
         bash
-        direnv
         coreutils
         curl
+        direnv
+        docker
         gawk
         git-lfs
-        nixVersions.stable
         gitFull
         gnused
+        just
+        nixVersions.stable
         nodejs
-        docker
         openssh
         wget
       ];
