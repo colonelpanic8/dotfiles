@@ -147,6 +147,12 @@ in {
         plugins."io.containerd.grpc.v1.cri".cdi_spec_dirs = [ "/var/run/cdi" ]
         plugins."io.containerd.grpc.v1.cri".enable_cdi = true
 
+        [plugins."io.containerd.grpc.v1.cri".containerd.runtimes.nvidia]
+        runtime_type = "io.containerd.runc.v2"
+
+        [plugins."io.containerd.grpc.v1.cri".containerd.runtimes.nvidia.options]
+        BinaryName = "/run/current-system/sw/bin/nvidia-container-runtime.cdi"
+
         [debug]
         level = "trace"
       '';
