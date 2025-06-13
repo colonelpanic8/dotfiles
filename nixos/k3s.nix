@@ -119,9 +119,6 @@ in {
     services.k3s = {
       enable = true;
       clusterInit = cfg.serverAddr == "";
-      label = {
-        "nixos-nvidia-cdi" = "enabled";
-      };
       serverAddr = cfg.serverAddr;
       configPath = pkgs.writeTextFile {
         name = "k3s-config.yaml";
