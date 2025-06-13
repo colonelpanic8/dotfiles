@@ -143,14 +143,8 @@ in {
       containerdConfigTemplate = ''
         {{ template "base" . }}
 
-        [plugins."io.containerd.cri.v1.runtime"]
-          enable_cdi = true
-          cdi_spec_dirs = [ "/var/run/cdi" ]
-
-        [plugins."io.containerd.grpc.v1.cri"]
-          enable_cdi = true
-          cdi_spec_dirs = [ "/var/run/cdi" ]
-          cni.bin_dir = "${plugins-path}/bin"
+        plugins."io.containerd.grpc.v1.cri".cdi_spec_dirs = [ "/var/run/cdi" ]
+        plugins."io.containerd.grpc.v1.cri".enable_cdi = true
 
         [debug]
         level = "trace"
