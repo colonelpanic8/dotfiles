@@ -19,6 +19,7 @@ with lib; let
   };
 in {
   options = {
+    hardware.nvidia-container-toolkit.enable = true;
     myModules.railbird-k3s = {
       enable = mkEnableOption "railbird k3s";
       serverAddr = mkOption {
