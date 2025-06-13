@@ -138,11 +138,19 @@ in {
           "--tls-san jimi-hendnix.local"
           "--tls-san dev.railbird.ai"
           "--node-label nixos-nvidia-cdi=enabled"
-          "--container-runtime-endpoint unix:///run/containerd/containerd.sock"
         ]
         ++ cfg.extraFlags;
       containerdConfigTemplate = ''
         {{ template "base" . }}
+
+        [plugins."io.containerd.cri.v1.runtime"]
+          enable_cdi = true
+          cdi_spec_dirs = [ "/var/run/cdi" ]
+
+        [plugins."io.containerd.grpc.v1.cri"]
+          enable_cdi = true
+          cdi_spec_dirs = [ "/var/run/cdi" ]
+          cni.bin_dir = "${plugins-path}/bin"
 
         [debug]
         level = "trace"
