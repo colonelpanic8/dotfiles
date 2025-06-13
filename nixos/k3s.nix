@@ -119,6 +119,9 @@ in {
     services.k3s = {
       enable = true;
       clusterInit = cfg.serverAddr == "";
+      label = {
+        "nixos-nvidia-cdi" = "enabled";
+      };
       serverAddr = cfg.serverAddr;
       configPath = pkgs.writeTextFile {
         name = "k3s-config.yaml";
@@ -138,6 +141,7 @@ in {
           "--tls-san jimi-hendnix.local"
           "--tls-san dev.railbird.ai"
           "--node-label nixos-nvidia-cdi=enabled"
+          "--container-runtime-endpoint unix:///run/containerd/containerd.sock"
         ]
         ++ cfg.extraFlags;
       containerdConfigTemplate = ''
