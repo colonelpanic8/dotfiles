@@ -2523,11 +2523,6 @@ Reduce indentation for some functions
   :config
   (progn (setq edebug-trace t)))
 #+END_SRC
-**** overseer
-#+BEGIN_SRC emacs-lisp
-(use-package overseer
-  :defer t)
-#+END_SRC
 **** Misc
 #+BEGIN_SRC emacs-lisp
 (defun imenu-elisp-sections ()
