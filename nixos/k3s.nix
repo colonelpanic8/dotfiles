@@ -139,7 +139,7 @@ in {
           "--tls-san jimi-hendnix.local"
           "--tls-san dev.railbird.ai"
           "--node-label nixos-nvidia-cdi=enabled"
-          "--etcd-arg=quota-backend-bytes=$((8*1024*1024*1024))"
+          "--etcd-arg=quota-backend-bytes=8589934592"
         ]
         ++ cfg.extraFlags;
       containerdConfigTemplate = ''
