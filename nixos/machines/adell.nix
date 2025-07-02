@@ -1,12 +1,18 @@
 { lib, pkgs, inputs, forEachUser, ... }:
 
 {
-  imports = [
+   imports = [
     ../configuration.nix
     inputs.nixos-hardware.nixosModules.dell-xps-17-9700-nvidia
   ];
 
-  myModules.wyoming.enable = true;
+  services.tts.servers.coqui = {
+    enable = true;
+    useCuda = false;
+    port = 11400;
+  };
+
+  myModules.wyoming.enable = false;
   myModules.base.enable = true;
   myModules.desktop.enable = true;
   myModules.xmonad.enable = true;
@@ -25,7 +31,7 @@
     android-studio
   ];
 
-  boot.kernelPackages = pkgs.linuxPackages_latest;
+  # boot.kernelPackages = pkgs.linuxPackages_latest;
   boot.initrd.availableKernelModules = [ "xhci_pci" "nvme" "usb_storage" "sd_mod" "rtsx_pci_sdmmc" ];
   boot.initrd.kernelModules = [ ];
   boot.kernelModules = [ "kvm-intel" ];
