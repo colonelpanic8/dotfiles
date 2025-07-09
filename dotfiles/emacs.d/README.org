@@ -3680,24 +3680,10 @@ I had to disable this mode because something that it does messes with coding set
   (progn
     (add-hook 'prog-mode-hook (lambda () (rainbow-delimiters-mode t)))))
 #+END_SRC
-** undo-tree
-Disabled because it makes it hard to redo things
-#+BEGIN_SRC emacs-lisp
-(use-package undo-tree
-  :disabled t
-  :bind (("C--" . undo-redo)
-         ("C-c u" . undo-tree-visualize)
-         ("C-c r" . undo-tree-redo))
-  :config
-  (diminish 'undo-tree-mode)
-  :init
-  (progn
-    ;;(setq undo-tree-visualizer-diff t) ;; This causes performance problems
-    (setq undo-limit (expt 2 25)
-          undo-strong-limit (expt 2 25))
-    (global-undo-tree-mode)
-    (setq undo-tree-visualizer-timestamps t)))
-#+END_SRC
+** vundo
+#+begin_src emacs-lisp
+(use-package vundo)
+#+end_src
 ** recentf
 #+BEGIN_SRC emacs-lisp
 (use-package recentf
