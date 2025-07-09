@@ -78,8 +78,9 @@ def build_parser():
 
 if __name__ == '__main__':
     args = build_parser().parse_args()
-    symlink_path = os.readlink("/home/imalison/.config/brightness_manager/symlink")
+    symlink_path = os.path.expanduser("~/.config/brightness_manager/symlink")
     if os.path.exists(symlink_path):
+        symlink_path = os.readlink(symlink_path)
         manager = BrightnessManager.from_path(symlink_path)
     else:
         manager = BrightnessManager.find_brightness()

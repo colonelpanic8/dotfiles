@@ -1,5 +1,5 @@
 [general]
-import = ["/home/imalison/.config/alacritty/themes/themes/dracula.toml"]
+import = ["~/.config/alacritty/themes/themes/dracula.toml"]
 
 [font]
 size = 8
