@@ -21,6 +21,8 @@ makeEnable config "myModules.desktop" true {
     };
   };
 
+  programs.hyprland.enable = true;
+
   services.autorandr = {
     enable = true;
   };
@@ -75,6 +77,7 @@ makeEnable config "myModules.desktop" true {
     quassel
     remmina
     rofi
+    wofi
     rofi-pass
     rofi-systemd
     simplescreenrecorder
