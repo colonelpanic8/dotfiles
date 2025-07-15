@@ -25,6 +25,7 @@ makeEnable config "myModules.code" true {
     nodePackages.npm
     nodejs
     yarn
+    prettier
 
     # Typescript
     typescript
