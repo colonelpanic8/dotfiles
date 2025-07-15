@@ -24,6 +24,7 @@ makeEnable config "myModules.code" true {
     # Node
     nodePackages.npm
     nodejs
+    yarn
 
     # Typescript
     typescript
