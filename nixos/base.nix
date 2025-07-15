@@ -33,7 +33,6 @@ makeEnable config "myModules.base" true {
   networking.nameservers = [ "8.8.8.8" "8.8.4.4" ];
   networking.networkmanager = {
     enable = true;
-    enableStrongSwan = true;
     plugins = [ pkgs.networkmanager-l2tp pkgs.networkmanager-openvpn ];
   };
   networking.resolvconf.enable = false;
