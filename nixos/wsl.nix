@@ -16,6 +16,5 @@ makeEnable config "myModules.wsl" false {
   wsl = {
     enable = true;
     startMenuLaunchers = true;
-    nativeSystemd = true;
   };
 }
