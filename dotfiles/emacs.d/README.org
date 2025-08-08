@@ -1138,7 +1138,8 @@ I keep it around just in case I need it.
 *** frame-mode
 #+BEGIN_SRC emacs-lisp
 (defvar imalison:use-frame-mode
-  (s-contains? "xmonad" (shell-command-to-string "wmctrl -m")))
+  (or (s-contains? "xmonad" (shell-command-to-string "wmctrl -m"))
+      (s-contains? "Hyprland" (shell-command-to-string "wmctrl -m"))))
 
 (use-package frame-mode
   :if imalison:use-frame-mode
@@ -3570,6 +3571,15 @@ crux-reopen-as-root-mode makes it so that any file owned by root will automatica
     (add-to-list 'gptel-directives '(finish-code . "You are a large language model and a careful programmer. Provide code that completes what is provided and only code as output without any additional text, prompt or note."))
     (setq gptel-model "gpt-4")
     ))
+#+end_src
+** claude-code-ide
+#+begin_src emacs-lisp
+(use-package claude-code-ide
+  :straight (:type git :host github :repo "manzaltu/claude-code-ide.el")
+  :bind ("C-c C-'" . claude-code-ide-menu)
+  :config
+  (claude-code-ide-emacs-tools-setup)
+  (setq claude-code-ide-terminal-backend 'eat))
 #+end_src
 * Cooperation
 ** togetherly
