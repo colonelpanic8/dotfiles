@@ -6,6 +6,9 @@ makeEnable config "myModules.code" true {
   };
 
   environment.systemPackages = with pkgs; [
+    claude-code
+    codex
+
     # C
     clang
 

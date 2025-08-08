@@ -8,7 +8,6 @@
     bento4
     bind
     binutils
-    claude-code
     cachix
     cmake
     dex
