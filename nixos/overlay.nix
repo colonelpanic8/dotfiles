@@ -148,6 +148,15 @@ final: prev:
   in
   final.python311.withPackages my-python-packages;
 
+  claude-code = prev.claude-code.overrideAttrs (oldAttrs: rec {
+    version = "1.0.71";
+    src = prev.fetchzip {
+      url = "https://registry.npmjs.org/@anthropic-ai/claude-code/-/claude-code-${version}.tgz";
+      hash = "sha256-ZJUvscbEaWHILL77R5/sPdNcxCLc2BL9P6tR+S7QnHg=";
+    };
+    npmDepsHash = "sha256-wQ/DRPefziSRv6aFZXRpmz2vC6mQRqgc7r3++cDpYSg=";
+  });
+
   pythonPackagesExtensions = prev.pythonPackagesExtensions ++ [
     (
       python-final: python-prev: {
