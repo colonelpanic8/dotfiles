@@ -159,7 +159,7 @@
           # Rumno service PR
           (bootstrapPkgs.fetchpatch {
             url = "https://github.com/NixOS/nixpkgs/pull/433540.patch";
-            hash = "sha256-6JP2XzqQniPT2PR3+s+IaGfw1/ft91Dikx5PC9pUGuk=";
+            hash = "sha256-zXtiUBYtGdhhkEhJlnmQ4Qk2CEUiSWWQ/2UipwmL7jM=";
           })
         ];
       };
