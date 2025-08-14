@@ -5,8 +5,8 @@ ARG="${1:-}"
 
 # Function to get current brightness percentage
 get_brightness_percentage() {
-    # Get list of devices
-    local devices=$(brightnessctl --list 2>/dev/null | cut -d' ' -f2 | cut -d"'" -f2)
+    # Get list of display backlight devices only (filter by class 'backlight')
+    local devices=$(brightnessctl --list 2>/dev/null | grep 'class.*backlight' | cut -d' ' -f2 | cut -d"'" -f2)
     local device_count=$(echo "$devices" | wc -w)
 
     if [ "$device_count" -eq 0 ]; then
@@ -59,8 +59,8 @@ if [ -n "$ARG" ]; then
     fi
 
     # Try to apply to all devices
-    # First, try to get list of devices
-    DEVICES=$(brightnessctl --list 2>/dev/null | cut -d' ' -f2 | cut -d"'" -f2)
+    # Get list of display backlight devices only (filter by class 'backlight')
+    DEVICES=$(brightnessctl --list 2>/dev/null | grep 'class.*backlight' | cut -d' ' -f2 | cut -d"'" -f2)
 
     if [ -n "$DEVICES" ]; then
         # Apply to each device
