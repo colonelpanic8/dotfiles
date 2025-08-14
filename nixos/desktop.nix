@@ -35,7 +35,6 @@ makeEnable config "myModules.desktop" true {
   services.gnome.gnome-keyring.enable = true;
 
   # Visual notification manager
-  services.rumno.enable = true;
 
   environment.systemPackages = with pkgs; [
     # Appearance
@@ -89,7 +88,6 @@ makeEnable config "myModules.desktop" true {
     # TODO: reenable
     # transmission_3-gtk
     vlc
-    # volnoti
     xfce.thunar
 
     # Audio

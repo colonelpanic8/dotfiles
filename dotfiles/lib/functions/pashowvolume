@@ -2,12 +2,12 @@
 
 function pashowvolume {
 	if paismuted; then
-		volnoti-show -m
+		rumno notify -m
 	else
 		actual=$(pavolume)
 		max=100
 		show=$(( actual < max ? actual : max ))
-		volnoti-show "$show"
+		rumno notify -v "$show"
 	fi
 }
 

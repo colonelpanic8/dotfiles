@@ -76,9 +76,9 @@ fi
 # Get current brightness percentage for display
 BRIGHTNESS=$(get_brightness_percentage)
 
-# Show notification if volnoti-show is available
-if command -v volnoti-show &> /dev/null; then
-    volnoti-show "$BRIGHTNESS"
+# Show notification if rumno is available
+if command -v rumno &> /dev/null; then
+    rumno notify -b "$BRIGHTNESS"
 else
     echo "$BRIGHTNESS"
 fi

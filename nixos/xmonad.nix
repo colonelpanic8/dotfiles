@@ -7,6 +7,8 @@ makeEnable config "myModules.xmonad" true  {
     (import ../dotfiles/config/xmonad/overlay.nix)
   ] ++ taffybar.overlays;
 
+  services.rumno.enable = true;
+
   services.xserver = {
     windowManager = {
       session = [
@@ -68,8 +70,6 @@ makeEnable config "myModules.xmonad" true  {
     };
 
     services.xsettingsd.enable = true;
-
-    # services.volnoti.enable = true;
 
     services.pasystray.enable = true;
 
