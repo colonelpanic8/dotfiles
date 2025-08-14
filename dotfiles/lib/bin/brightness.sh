@@ -23,21 +23,19 @@ get_brightness_percentage() {
             echo "50"
         fi
     else
-        # Multiple devices - output each device's brightness
-        local output=""
+        # Multiple devices - calculate average brightness
+        local total=0
+        local count=0
         for device in $devices; do
             local info=$(brightnessctl -d "$device" 2>/dev/null | grep -oP '\d+%' | head -1 | tr -d '%')
             if [ -n "$info" ]; then
-                if [ -z "$output" ]; then
-                    output="${device}:${info}"
-                else
-                    output="${output} ${device}:${info}"
-                fi
+                total=$((total + info))
+                count=$((count + 1))
             fi
         done
 
-        if [ -n "$output" ]; then
-            echo "$output"
+        if [ "$count" -gt 0 ]; then
+            echo $((total / count))
         else
             echo "50"
         fi
@@ -67,6 +65,36 @@ if [ -n "$ARG" ]; then
         for device in $DEVICES; do
             brightnessctl -d "$device" set "$BRIGHTNESS_CMD" >/dev/null 2>&1
         done
+
+        # Check if devices have different brightness values and sync them
+        device_count=$(echo "$DEVICES" | wc -w)
+        if [ "$device_count" -gt 1 ]; then
+            # Get all brightness values
+            max_brightness=0
+            all_same=true
+            first_brightness=""
+
+            for device in $DEVICES; do
+                brightness=$(brightnessctl -d "$device" 2>/dev/null | grep -oP '\d+%' | head -1 | tr -d '%')
+                if [ -n "$brightness" ]; then
+                    if [ -z "$first_brightness" ]; then
+                        first_brightness=$brightness
+                    elif [ "$brightness" != "$first_brightness" ]; then
+                        all_same=false
+                    fi
+                    if [ "$brightness" -gt "$max_brightness" ]; then
+                        max_brightness=$brightness
+                    fi
+                fi
+            done
+
+            # If not all the same, set them all to the maximum
+            if [ "$all_same" = false ] && [ "$max_brightness" -gt 0 ]; then
+                for device in $DEVICES; do
+                    brightnessctl -d "$device" set "${max_brightness}%" >/dev/null 2>&1
+                done
+            fi
+        fi
     else
         # Fallback: just run brightnessctl without specifying device
         brightnessctl set "$BRIGHTNESS_CMD" >/dev/null 2>&1
