@@ -21,6 +21,7 @@
     gawk
     gcc
     gdb
+    gh
     git-fame
     git-lfs
     git-sync
