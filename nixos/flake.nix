@@ -156,10 +156,10 @@
         name = "nixpkgs-patched";
         src = nixpkgs;
         patches = [
-          # Add your patches here
+          # Rumno service PR
           (bootstrapPkgs.fetchpatch {
-            url = "https://github.com/colonelpanic8/nixpkgs/commit/4a98b6d1faccd6d572596c5d867b479aebf8cef8.patch";
-            hash = "sha256-eZ7vQQho+ksrZvTjP0U/qDDYCJZq3NC2Ki44cBLfnkM=";
+            url = "https://github.com/NixOS/nixpkgs/pull/433540.patch";
+            hash = "sha256-4Qe/RPKXJV77/MyeCpyajJGZrcesAH82UlhtD9Sn6ds=";
           })
         ];
       };
