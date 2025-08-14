@@ -96,6 +96,9 @@ makeEnable config "myModules.desktop" true {
     pulsemixer
     espeak
 
+    #
+    brightnessctl
+
     # Visualization
     graphviz
     nodePackages.mermaid-cli

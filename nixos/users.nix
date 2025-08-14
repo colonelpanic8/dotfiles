@@ -1,16 +1,17 @@
-{ pkgs, keys, inputs, system, ... }:
+{ pkgs, keys, inputs, ... }:
 let
   extraGroups = [
-    "audio"
     "adbusers"
+    "audio"
     "disk"
     "docker"
+    "input"
     "libvirtd"
     "libvirtd-qemu"
-    "qemu-libvirtd"
     "networkmanager"
     "openrazer"
     "plugdev"
+    "qemu-libvirtd"
     "syncthing"
     "systemd-journal"
     "vboxusers"
