@@ -1059,8 +1059,8 @@ addKeys conf@XConfig { modMask = modm } =
     , ((hyper .|. shiftMask, xK_q), spawn "toggle_mute_current_window.sh")
     , ((hctrl, xK_q), spawn "toggle_mute_current_window.sh only")
 
-    , ((0, xF86XK_MonBrightnessUp), spawn "brightness.sh +5")
-    , ((0, xF86XK_MonBrightnessDown), spawn "brightness.sh -5")
+    , ((0, xF86XK_MonBrightnessUp), spawn "brightness.sh up")
+    , ((0, xF86XK_MonBrightnessDown), spawn "brightness.sh down")
 
     ] ++
 
