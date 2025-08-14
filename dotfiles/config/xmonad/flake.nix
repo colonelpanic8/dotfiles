@@ -17,7 +17,7 @@
   in flake-utils.lib.eachDefaultSystem (system:
   let pkgs = import nixpkgs { inherit system overlays; config.allowBroken = true; };
   in
-  rec {
+  {
     devShell = pkgs.haskellPackages.shellFor {
       packages = p: [ p.imalison-xmonad p.xmonad-contrib ];
       buildInputs = with pkgs.haskellPackages; [

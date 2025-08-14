@@ -1,7 +1,7 @@
 {
   inputs = {
-    flake-utils.url = github:numtide/flake-utils;
-    xmonad.url = github:xmonad/xmonad/master;
+    flake-utils.url = "github:numtide/flake-utils";
+    xmonad.url = "github:xmonad/xmonad/master";
     taffybar.url = "github:taffybar/taffybar";
   };
   outputs = { self, flake-utils, taffybar, nixpkgs, xmonad }:
@@ -39,7 +39,7 @@
   let pkgs = import nixpkgs { inherit system overlays; config.allowBroken = true; };
       hpkgs = pkgs.lib.attrsets.getAttrFromPath (xmonad.lib.hpath defComp) pkgs;
   in
-  rec {
+  {
     devShell = hpkgs.shellFor {
       packages = p: [ p.imalison-taffybar p.taffybar ];
       nativeBuildInputs = with hpkgs; [
