@@ -19,7 +19,7 @@
   myModules.nvidia.enable = true;
   myModules.electron.enable = true;
   myModules.wyoming.enable = false;
-  myModules.tts.enable = true;
+  myModules.tts.enable = false;
 
   hardware.enableRedistributableFirmware = true;
   # nixpkgs.config.cudaSupport = true;
