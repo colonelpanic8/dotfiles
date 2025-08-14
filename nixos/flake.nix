@@ -144,7 +144,29 @@
       , specialArgs ? {}
       , ...
       }:
-    nixpkgs.lib.nixosSystem (args // {
+    let
+      # Bootstrap nixpkgs for this specific system
+      bootstrapPkgs = import nixpkgs {
+        inherit system;
+        config = {};
+        overlays = [];
+      };
+      # Apply patches to nixpkgs source
+      patchedSource = bootstrapPkgs.applyPatches {
+        name = "nixpkgs-patched";
+        src = nixpkgs;
+        patches = [
+          # Add your patches here
+          (bootstrapPkgs.fetchpatch {
+            url = "https://github.com/colonelpanic8/nixpkgs/commit/4a98b6d1faccd6d572596c5d867b479aebf8cef8.patch";
+            hash = "sha256-eZ7vQQho+ksrZvTjP0U/qDDYCJZq3NC2Ki44cBLfnkM=";
+          })
+        ];
+      };
+      # Get eval-config from patched source
+      evalConfig = import "${patchedSource}/nixos/lib/eval-config.nix";
+    in
+    evalConfig {
       inherit system;
       modules = baseModules ++ modules;
       specialArgs = rec {
@@ -162,7 +184,7 @@
         mapAllKeysToValue = keys: value: builtins.listToAttrs (map (name: { inherit name value; }) keys);
         forEachUser = mapAllKeysToValue realUsers;
       } // specialArgs;
-    });
+    };
   in
   {
     nixConfig = {
