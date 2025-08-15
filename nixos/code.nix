@@ -6,8 +6,15 @@ makeEnable config "myModules.code" true {
   };
 
   environment.systemPackages = with pkgs; [
+    # LLM Tools
     claude-code
     codex
+
+    # MCP
+    github-mcp-server
+    gitea-mcp-server
+    mcp-nixos
+    playwright-mcp
 
     # C
     clang
