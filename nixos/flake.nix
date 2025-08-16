@@ -137,7 +137,6 @@
       };
     };
     mkConfig =
-      args@
       { system ? "x86_64-linux"
       , baseModules ? []
       , modules ? []
@@ -164,7 +163,7 @@
           # git-sync-rs package
           (bootstrapPkgs.fetchpatch {
             url = "https://patch-diff.githubusercontent.com/raw/NixOS/nixpkgs/pull/434160.patch";
-            hash = "sha256-Ma38c1w1K8AOR1EwbQ5iMTeTU/9YqosozBgohA6F+Hk=";
+            hash = "sha256-1xm75lWEKWbX0qsbeXWX3lRRZIFO3/sdrZZYJxKGD2o=";
           })
         ];
       };
