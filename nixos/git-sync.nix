@@ -1,7 +1,8 @@
-{ ... }: {
+{ pkgs, ... }: {
   home-manager.users.imalison = ({ config, ... }: {
     services.git-sync = {
       enable = true;
+      package = pkgs.git-sync-rs;
       repositories = {
         config = {
           path = config.home.homeDirectory + "/config";

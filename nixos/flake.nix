@@ -161,6 +161,11 @@
             url = "https://github.com/NixOS/nixpkgs/pull/433540.patch";
             hash = "sha256-G4eJaX351/HMB0z4QNfgob+bVuqCcTEMGE7IPNcIGbw=";
           })
+          # git-sync-rs package
+          (bootstrapPkgs.fetchpatch {
+            url = "https://patch-diff.githubusercontent.com/raw/NixOS/nixpkgs/pull/434160.patch";
+            hash = "sha256-Ma38c1w1K8AOR1EwbQ5iMTeTU/9YqosozBgohA6F+Hk=";
+          })
         ];
       };
       # Get eval-config from patched source
