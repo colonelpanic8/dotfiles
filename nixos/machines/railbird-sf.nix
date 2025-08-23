@@ -29,10 +29,8 @@
     nvidiaSettings = true;
   };
 
-  features.full.enable = false;
   myModules.base.enable = true;
   myModules.desktop.enable = true;
-  myModules.xmonad.enable = false;
   myModules.code.enable = true;
   myModules.syncthing.enable = true;
   myModules.fonts.enable = true;
