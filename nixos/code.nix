@@ -15,6 +15,7 @@ makeEnable config "myModules.code" true {
     gitea-mcp-server
     mcp-nixos
     playwright-mcp
+    mcp-language-server
 
     # C
     clang

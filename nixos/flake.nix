@@ -165,6 +165,10 @@
             url = "https://patch-diff.githubusercontent.com/raw/NixOS/nixpkgs/pull/434160.patch";
             hash = "sha256-1xm75lWEKWbX0qsbeXWX3lRRZIFO3/sdrZZYJxKGD2o=";
           })
+          (bootstrapPkgs.fetchpatch {
+            url = "https://patch-diff.githubusercontent.com/raw/NixOS/nixpkgs/pull/436061.patch";
+            hash = "sha256-HZquaNBB+w5Hm5kdzvaGg7QAOgAf/EPBO7o7pKkIrMY=";
+          })
         ];
       };
       # Get eval-config from patched source
