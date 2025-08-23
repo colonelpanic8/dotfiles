@@ -12,7 +12,8 @@
   boot.kernelModules = [ "kvm-amd" ];
   boot.extraModulePackages = [ ];
   boot.loader.systemd-boot.enable = true;
-  modules.postgres.enable = true;
+  myModules.postgres.enable = true;
+  features.full.enable = true;
 
   services.k3s.role = "agent";
   services.k3s.extraFlags = lib.mkForce ["--node-label nixos-nvidia-cdi=enabled"];
@@ -24,7 +25,7 @@
     powerManagement.finegrained = false;
 
     # Enable the Nvidia settings menu,
-	  # accessible via `nvidia-settings`.
+    # accessible via `nvidia-settings`.
     nvidiaSettings = true;
   };
 

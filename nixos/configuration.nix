@@ -57,7 +57,7 @@
     myModules.extra.enable = true;
     myModules.electron.enable = true;
     myModules.code.enable = true;
-    myModules.games.enable = true;
+    myModules.games.enable = false;
     myModules.syncthing.enable = true;
     myModules.fonts.enable = true;
   };
