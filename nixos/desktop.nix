@@ -40,7 +40,7 @@ makeEnable config "myModules.desktop" true {
     # Appearance
     adwaita-icon-theme
     hicolor-icon-theme
-    libsForQt5.breeze-gtk
+    # libsForQt5.breeze-gtk
     # materia-theme
     numix-icon-theme-circle
     papirus-icon-theme
