@@ -82,8 +82,6 @@ makeEnable config "myModules.base" true {
 
   hardware.keyboard.zsa.enable = true;
 
-  services.logind.extraConfig = "RuntimeDirectorySize=5G";
-
   # For supporting gnome stuff
   services.dbus.packages = [ pkgs.gcr ];
 
