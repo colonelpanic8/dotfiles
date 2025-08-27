@@ -19,6 +19,63 @@
   myModules.fonts.enable = true;
   myModules.gitea-runner.enable = true;
   myModules.postgres.enable = true;
+  myModules.gitea.enable = true;
+
+  age.secrets.vaultwarden-environment-file = {
+    file = ../secrets/vaultwarden-environment-file.age;
+    owner = "vaultwarden";
+  };
+
+  services.vaultwarden = {
+    enable = true;
+    backupDir = "/var/backup/vaultwarden";
+    environmentFile = config.age.secrets.vaultwarden-environment-file.path;
+    config = {
+      ROCKET_ADDRESS = "::1";
+      ROCKET_PORT = 8222;
+    };
+  };
+
+  services.nginx = {
+    enable = true;
+    recommendedProxySettings = true;
+    recommendedGzipSettings = true;
+    recommendedTlsSettings = true;
+    virtualHosts = {
+      "vaultwarden.railbird.ai" = {
+        enableACME = true;
+        forceSSL = true;
+        locations."/" = {
+          proxyPass = "http://[::1]:8222";
+        };
+      };
+      "syncthing.railbird.ai" = {
+        enableACME = true;
+        forceSSL = true;
+        root = "/var/lib/syncthing/railbird";
+        locations."/" = {
+          extraConfig = ''
+            autoindex on;
+          '';
+        };
+      };
+      "docs.railbird.ai" = {
+        enableACME = true;
+        forceSSL = true;
+        root = "/var/lib/syncthing/railbird/docs";
+        locations."/" = {
+          extraConfig = ''
+            autoindex on;
+          '';
+        };
+      };
+    };
+  };
+
+  security.acme = {
+    acceptTerms = true;
+    defaults.email = "IvanMalison@gmail.com";
+  };
 
   hardware.enableRedistributableFirmware = true;
   myModules.nvidia.enable = true;
