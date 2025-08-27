@@ -13,7 +13,6 @@ makeEnable config "myModules.code" true {
     # MCP
     github-mcp-server
     gitea-mcp-server
-    mcp-nixos
     playwright-mcp
     mcp-language-server
 
