@@ -134,7 +134,7 @@ final: prev:
   python-with-my-packages = let
     my-python-packages = python-packages:
     with python-packages; [
-      universal-silabs-flasher
+      # universal-silabs-flasher
       argcomplete
       appdirs
       ipdb
