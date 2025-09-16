@@ -143,19 +143,18 @@ final: prev:
       openpyxl
       pip
       requests
-      tox
     ];
   in
-  final.python311.withPackages my-python-packages;
+  final.python3.withPackages my-python-packages;
 
-  claude-code = prev.claude-code.overrideAttrs (oldAttrs: rec {
-    version = "1.0.86";
-    src = prev.fetchzip {
-      url = "https://registry.npmjs.org/@anthropic-ai/claude-code/-/claude-code-${version}.tgz";
-      hash = "sha256-mVXS75KgeKgD7EI5t9X6+TkwjBFyBLOo4/m50sS9XdA=";
-    };
-    npmDepsHash = "";
-  });
+  # claude-code = prev.claude-code.overrideAttrs (oldAttrs: rec {
+  #   version = "1.0.86";
+  #   src = prev.fetchzip {
+  #     url = "https://registry.npmjs.org/@anthropic-ai/claude-code/-/claude-code-${version}.tgz";
+  #     hash = "sha256-mVXS75KgeKgD7EI5t9X6+TkwjBFyBLOo4/m50sS9XdA=";
+  #   };
+  #   npmDepsHash = "";
+  # });
 
   pythonPackagesExtensions = prev.pythonPackagesExtensions ++ [
     (
@@ -174,11 +173,11 @@ final: prev:
             url = "https://raw.githubusercontent.com/tronikos/chip-wheels/8a5ec21d114010723cf428ffe79e244da7562390/8766-Bypass-attestation-verification.patch";
             sha256 = "sha256-RgmlPRSfw1PPMdHBzpoK2Drrb8nEagATY8Y5ngi7x0k=";
           };
-          postPatch = ''
+          postPatch = (oldAttrs.postPatch or "") + ''
             pushd connectedhomeip
             patch -p1 < ${bypassAttestationVerificationPatch}
             popd
-          '' + oldAttrs.postPatch;
+          '';
         });
       }
     )

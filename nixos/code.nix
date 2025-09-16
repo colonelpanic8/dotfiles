@@ -46,6 +46,7 @@ makeEnable config "myModules.code" true {
 
     # Rust
     rustup
+    cargo-sweep
 
     # Clojure
     boot

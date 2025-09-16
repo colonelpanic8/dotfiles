@@ -22,7 +22,10 @@
   myModules.tts.enable = false;
 
   hardware.enableRedistributableFirmware = true;
+
   # nixpkgs.config.cudaSupport = true;
+
+  boot.loader.systemd-boot.configurationLimit = 5;
 
   environment.systemPackages = with pkgs; [
     android-studio
@@ -35,7 +38,7 @@
   };
 
   services.matter-server = {
-    enable = true;
+    enable = false;
     logLevel = "debug";
     extraArgs = ["--bluetooth-adapter=0" "--enable-test-net-dcl"];
   };

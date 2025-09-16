@@ -154,22 +154,32 @@
       patchedSource = bootstrapPkgs.applyPatches {
         name = "nixpkgs-patched";
         src = nixpkgs;
-        patches = [
-          # Rumno service PR
-          (bootstrapPkgs.fetchpatch {
-            url = "https://github.com/NixOS/nixpkgs/pull/433540.patch";
-            hash = "sha256-G4eJaX351/HMB0z4QNfgob+bVuqCcTEMGE7IPNcIGbw=";
-          })
-          # git-sync-rs package
-          (bootstrapPkgs.fetchpatch {
-            url = "https://patch-diff.githubusercontent.com/raw/NixOS/nixpkgs/pull/434160.patch";
-            hash = "sha256-1xm75lWEKWbX0qsbeXWX3lRRZIFO3/sdrZZYJxKGD2o=";
-          })
-          (bootstrapPkgs.fetchpatch {
-            url = "https://patch-diff.githubusercontent.com/raw/NixOS/nixpkgs/pull/436061.patch";
-            hash = "sha256-HZquaNBB+w5Hm5kdzvaGg7QAOgAf/EPBO7o7pKkIrMY=";
-          })
-        ];
+        patches =
+          map bootstrapPkgs.fetchpatch [
+            # Rumno service PR
+            {
+              url = "https://github.com/NixOS/nixpkgs/pull/433540.patch";
+              hash = "sha256-G4eJaX351/HMB0z4QNfgob+bVuqCcTEMGE7IPNcIGbw=";
+            }
+            # git-sync-rs package
+            {
+              url = "https://patch-diff.githubusercontent.com/raw/NixOS/nixpkgs/pull/434160.patch";
+              hash = "sha256-Tiz2ydzlWbxx7jW32afN0RBvmXnsbt7lUvj/RUkpNbc=";
+            }
+            {
+              url = "https://patch-diff.githubusercontent.com/raw/NixOS/nixpkgs/pull/436061.patch";
+              hash = "sha256-HZquaNBB+w5Hm5kdzvaGg7QAOgAf/EPBO7o7pKkIrMY=";
+            }
+            # The next two are codex bumps
+            {
+              url = "https://patch-diff.githubusercontent.com/raw/NixOS/nixpkgs/pull/442764.patch";
+              hash = "sha256-ag5NZrEVbTPtadoPYm4RsaCglHzF5R+iZSxP5R0A3Xo=";
+            }
+            {
+              url = "https://patch-diff.githubusercontent.com/raw/NixOS/nixpkgs/pull/443228.patch";
+              hash = "sha256-L//rNkk/2xduHLIhU6lnboLrHXieJTmfENLc8cR3qpg==";
+            }
+          ];
       };
       # Get eval-config from patched source
       evalConfig = import "${patchedSource}/nixos/lib/eval-config.nix";
