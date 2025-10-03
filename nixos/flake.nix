@@ -214,9 +214,11 @@
       ];
       extra-substituters = [
         "http://192.168.1.26:5050"
+        "https://cache.flox.dev"
       ];
       extra-trusted-public-keys = [
         "1896Folsom.duckdns.org:U2FTjvP95qwAJo0oGpvmUChJCgi5zQoG1YisoI08Qoo="
+        "flox-cache-public-1:7F4OyH7ZCnFhcze3fJdfyXYLQw/aV7GEed86nQ7IsOs="
       ];
     };
     nixosConfigurations = builtins.mapAttrs (machineName: params:
