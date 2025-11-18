@@ -15,7 +15,7 @@ makeEnable config "myModules.fonts" true {
       fira-mono
       font-awesome
 
-      noto-fonts-emoji
+      noto-fonts-color-emoji
       roboto
       source-code-pro
       source-sans-pro

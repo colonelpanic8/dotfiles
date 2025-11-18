@@ -49,7 +49,7 @@
     };
 
     font = {
-      package = pkgs.noto-fonts-emoji;
+      package = pkgs.noto-fonts-color-emoji;
       name = "Noto Sans";
       size = 10;
     };

@@ -74,7 +74,7 @@ makeEnable config "myModules.desktop" true {
     lxqt.lxqt-powermanagement
     networkmanagerapplet
     kdePackages.okular
-    pinentry
+    pinentry-gnome3
     # mission-center
     quassel
     remmina
@@ -109,7 +109,7 @@ makeEnable config "myModules.desktop" true {
     slack
     spicetify-cli
     spotify
-    tor-browser-bundle-bin
+    tor-browser
     vscode
     zulip
   ] else []);

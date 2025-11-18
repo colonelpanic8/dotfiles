@@ -26,7 +26,6 @@
     git-lfs
     git-sync
     gitFull
-    glxinfo
     gnumake
     gparted
     home-manager
@@ -39,6 +38,7 @@
     lshw
     lsof
     magic-wormhole-rs
+    mesa-demos
     ncdu
     neofetch
     neovim

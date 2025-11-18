@@ -159,7 +159,7 @@
             # Rumno service PR
             {
               url = "https://github.com/NixOS/nixpkgs/pull/433540.patch";
-              hash = "sha256-G4eJaX351/HMB0z4QNfgob+bVuqCcTEMGE7IPNcIGbw=";
+              hash = "sha256-8GRhLYva7+uXNIvobLFPyeQwJ2zhBrH4WCFN6B0BAJg=";
             }
             # git-sync-rs package
             {
@@ -170,15 +170,20 @@
               url = "https://patch-diff.githubusercontent.com/raw/NixOS/nixpkgs/pull/436061.patch";
               hash = "sha256-HZquaNBB+w5Hm5kdzvaGg7QAOgAf/EPBO7o7pKkIrMY=";
             }
-            # The next two are codex bumps
-            {
-              url = "https://patch-diff.githubusercontent.com/raw/NixOS/nixpkgs/pull/442764.patch";
-              hash = "sha256-ag5NZrEVbTPtadoPYm4RsaCglHzF5R+iZSxP5R0A3Xo=";
-            }
-            {
-              url = "https://patch-diff.githubusercontent.com/raw/NixOS/nixpkgs/pull/443228.patch";
-              hash = "sha256-L//rNkk/2xduHLIhU6lnboLrHXieJTmfENLc8cR3qpg==";
-            }
+            # {
+            #   url = "https://patch-diff.githubusercontent.com/raw/NixOS/nixpkgs/pull/462960.patch";
+            #   hash = "sha256-QZbucsuBtMfN5tYUnWT3CJTEv7hh3rqvY1tEW9VXdUs=";
+            # }
+            # claude-code: 1.0.126 -> 1.0.128
+            # {
+            #   url = "https://patch-diff.githubusercontent.com/raw/NixOS/nixpkgs/pull/446609.patch";
+            #   hash = "sha256-3Ndad1nvxM2K4J2cbZBC+bo13ESpOGnaCCGeMWG/eq8=";
+            # }
+            # claude-code: switch to binary releases and update to 2.0.0
+            # {
+            #   url = "https://patch-diff.githubusercontent.com/raw/NixOS/nixpkgs/pull/447265.patch";
+            #   hash = "sha256-f7G2Ukr0N3S+au4F6KmFHxQWr6rXrlguqh+KK0Ffbfw=";
+            # }
           ];
       };
       # Get eval-config from patched source
