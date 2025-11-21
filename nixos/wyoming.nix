@@ -21,7 +21,8 @@ makeEnable config "myModules.wyoming" false {
     };
     openwakeword = {
       enable = true;
-      preloadModels = ["alexa" "ok_nabu" "hey_rhasspy"];
+      # wyoming-openwakeword >=2.0 eagerly loads bundled models, so the
+      # previous preloadModels setting is no longer available.
       uri = "tcp://0.0.0.0:10400";
     };
 

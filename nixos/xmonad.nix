@@ -28,7 +28,7 @@ makeEnable config "myModules.xmonad" true  {
     haskellPackages.xmonad
     haskellPackages.imalison-xmonad
     # haskellPackages.notifications-tray-icon
-    haskellPackages.gtk-sni-tray
+    # haskellPackages.gtk-sni-tray
     haskellPackages.status-notifier-item
     haskellPackages.dbus-hslogger
     inputs.imalison-taffybar.defaultPackage."${pkgs.system}"
