@@ -72,6 +72,7 @@ makeEnable config "myModules.base" true {
   services.locate.enable = true;
 
   virtualisation.docker.enable = true;
+  services.orca.enable = false;
 
   virtualisation.podman = {
     enable = true;
