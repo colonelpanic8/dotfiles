@@ -9,7 +9,7 @@
       inputs.systems.follows = "systems";
     };
 
-    systems = { url = "github:nix-systems/default"; };
+    systems = {url = "github:nix-systems/default";};
 
     git-ignore-nix = {
       url = "github:hercules-ci/gitignore.nix";
@@ -21,15 +21,18 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
-    nixos-hardware = { url = "github:colonelpanic8/nixos-hardware/my-master"; };
+    nixos-hardware = {url = "github:colonelpanic8/nixos-hardware/my-master";};
 
-    nixos-wsl = { url = "github:nix-community/NixOS-WSL"; };
+    nixos-wsl = {url = "github:nix-community/NixOS-WSL";};
 
-    agenix = { url = "github:ryantm/agenix"; };
+    agenix = {url = "github:ryantm/agenix";};
 
     railbird-secrets = {
       url = "git+ssh://gitea@dev.railbird.ai:1123/railbird/secrets-flake.git";
     };
+    # railbird-secrets = {
+    #   url = "git+ssh://gitea@dev.railbird.ai:1123/railbird/secrets-flake.git";
+    # };
 
     xmonad = {
       url = "github:xmonad/xmonad";
@@ -104,16 +107,26 @@
 
     vscode-server.url = "github:nix-community/nixos-vscode-server";
 
-    nixified-ai = { url = "github:nixified-ai/flake"; };
+    nixified-ai = {url = "github:nixified-ai/flake";};
 
     nixtheplanet.url = "github:matthewcroughan/nixtheplanet";
   };
 
-  outputs = inputs@{
-    self, nixpkgs, nixos-hardware, home-manager, taffybar, xmonad, nixtheplanet,
-    xmonad-contrib, notifications-tray-icon, nix, agenix, imalison-taffybar, ...
-  }:
-  let
+  outputs = inputs @ {
+    self,
+    nixpkgs,
+    nixos-hardware,
+    home-manager,
+    taffybar,
+    xmonad,
+    nixtheplanet,
+    xmonad-contrib,
+    notifications-tray-icon,
+    nix,
+    agenix,
+    imalison-taffybar,
+    ...
+  }: let
     machinesFilepath = ./machines;
     machineFilenames = builtins.attrNames (builtins.readDir machinesFilepath);
     machineNameFromFilename = filename: builtins.head (builtins.split "\\." filename);
@@ -122,7 +135,9 @@
       name = machineNameFromFilename filename;
       value = {
         modules = [
-          (machinesFilepath + ("/" + filename)) agenix.nixosModules.default nixtheplanet.nixosModules.macos-ventura
+          (machinesFilepath + ("/" + filename))
+          agenix.nixosModules.default
+          nixtheplanet.nixosModules.macos-ventura
         ];
       };
     };
@@ -136,14 +151,13 @@
         system = "aarch64-linux";
       };
     };
-    mkConfig =
-      { system ? "x86_64-linux"
-      , baseModules ? []
-      , modules ? []
-      , specialArgs ? {}
-      , ...
-      }:
-    let
+    mkConfig = {
+      system ? "x86_64-linux",
+      baseModules ? [],
+      modules ? [],
+      specialArgs ? {},
+      ...
+    }: let
       # Bootstrap nixpkgs for this specific system
       bootstrapPkgs = import nixpkgs {
         inherit system;
@@ -154,62 +168,63 @@
       patchedSource = bootstrapPkgs.applyPatches {
         name = "nixpkgs-patched";
         src = nixpkgs;
-        patches =
-          map bootstrapPkgs.fetchpatch [
-            # Rumno service PR
-            {
-              url = "https://github.com/NixOS/nixpkgs/pull/433540.patch";
-              hash = "sha256-8GRhLYva7+uXNIvobLFPyeQwJ2zhBrH4WCFN6B0BAJg=";
-            }
-            # git-sync-rs package
-            {
-              url = "https://patch-diff.githubusercontent.com/raw/NixOS/nixpkgs/pull/434160.patch";
-              hash = "sha256-Tiz2ydzlWbxx7jW32afN0RBvmXnsbt7lUvj/RUkpNbc=";
-            }
-            {
-              url = "https://patch-diff.githubusercontent.com/raw/NixOS/nixpkgs/pull/436061.patch";
-              hash = "sha256-HZquaNBB+w5Hm5kdzvaGg7QAOgAf/EPBO7o7pKkIrMY=";
-            }
-            # {
-            #   url = "https://patch-diff.githubusercontent.com/raw/NixOS/nixpkgs/pull/462960.patch";
-            #   hash = "sha256-QZbucsuBtMfN5tYUnWT3CJTEv7hh3rqvY1tEW9VXdUs=";
-            # }
-            # claude-code: 1.0.126 -> 1.0.128
-            # {
-            #   url = "https://patch-diff.githubusercontent.com/raw/NixOS/nixpkgs/pull/446609.patch";
-            #   hash = "sha256-3Ndad1nvxM2K4J2cbZBC+bo13ESpOGnaCCGeMWG/eq8=";
-            # }
-            # claude-code: switch to binary releases and update to 2.0.0
-            # {
-            #   url = "https://patch-diff.githubusercontent.com/raw/NixOS/nixpkgs/pull/447265.patch";
-            #   hash = "sha256-f7G2Ukr0N3S+au4F6KmFHxQWr6rXrlguqh+KK0Ffbfw=";
-            # }
-          ];
+        patches = map bootstrapPkgs.fetchpatch [
+          # Rumno service PR
+          {
+            url = "https://github.com/NixOS/nixpkgs/pull/433540.patch";
+            hash = "sha256-8GRhLYva7+uXNIvobLFPyeQwJ2zhBrH4WCFN6B0BAJg=";
+          }
+          # git-sync-rs package
+          {
+            url = "https://patch-diff.githubusercontent.com/raw/NixOS/nixpkgs/pull/434160.patch";
+            hash = "sha256-zjzjmC1XJmwfHr/YXFyYsqUFR5MHSoxWWyxIR35YNbM=";
+          }
+          {
+            url = "https://patch-diff.githubusercontent.com/raw/NixOS/nixpkgs/pull/436061.patch";
+            hash = "sha256-HZquaNBB+w5Hm5kdzvaGg7QAOgAf/EPBO7o7pKkIrMY=";
+          }
+          # claude-code: 1.0.126 -> 1.0.128
+          # {
+          #   url = "https://patch-diff.githubusercontent.com/raw/NixOS/nixpkgs/pull/446609.patch";
+          #   hash = "sha256-3Ndad1nvxM2K4J2cbZBC+bo13ESpOGnaCCGeMWG/eq8=";
+          # }
+          # claude-code: switch to binary releases and update to 2.0.0
+          # {
+          #   url = "https://patch-diff.githubusercontent.com/raw/NixOS/nixpkgs/pull/447265.patch";
+          #   hash = "sha256-f7G2Ukr0N3S+au4F6KmFHxQWr6rXrlguqh+KK0Ffbfw=";
+          # }
+        ];
+        prePatch = ''
+          mkdir -p pkgs/by-name/an/antigravity
+        '';
       };
       # Get eval-config from patched source
       evalConfig = import "${patchedSource}/nixos/lib/eval-config.nix";
     in
-    evalConfig {
-      inherit system;
-      modules = baseModules ++ modules;
-      specialArgs = rec {
-        inherit inputs machineNames;
-        makeEnable = (import ./make-enable.nix) nixpkgs.lib;
-        keys = (import ./keys.nix);
-        usersInfo = (import ./users.nix) {
-          pkgs = { zsh = "zsh"; };
-          inherit keys inputs system;
-        };
-        realUsers = (builtins.attrNames
-        (nixpkgs.lib.filterAttrs
-           (_: value: (builtins.elem "isNormalUser" (builtins.attrNames value)) && value.isNormalUser) usersInfo.users.users)
-        );
-        mapAllKeysToValue = keys: value: builtins.listToAttrs (map (name: { inherit name value; }) keys);
-        forEachUser = mapAllKeysToValue realUsers;
-      } // specialArgs;
-    };
-  in
-  {
+      evalConfig {
+        inherit system;
+        modules = baseModules ++ modules;
+        specialArgs =
+          rec {
+            inherit inputs machineNames;
+            makeEnable = (import ./make-enable.nix) nixpkgs.lib;
+            keys = import ./keys.nix;
+            usersInfo = (import ./users.nix) {
+              pkgs = {zsh = "zsh";};
+              inherit keys inputs system;
+            };
+            realUsers = (
+              builtins.attrNames
+              (nixpkgs.lib.filterAttrs
+                (_: value: (builtins.elem "isNormalUser" (builtins.attrNames value)) && value.isNormalUser)
+                usersInfo.users.users)
+            );
+            mapAllKeysToValue = keys: value: builtins.listToAttrs (map (name: {inherit name value;}) keys);
+            forEachUser = mapAllKeysToValue realUsers;
+          }
+          // specialArgs;
+      };
+  in {
     nixConfig = {
       substituters = [
         "https://cache.nixos.org/"
@@ -226,12 +241,16 @@
         "flox-cache-public-1:7F4OyH7ZCnFhcze3fJdfyXYLQw/aV7GEed86nQ7IsOs="
       ];
     };
-    nixosConfigurations = builtins.mapAttrs (machineName: params:
-    let machineParams =
-      if builtins.hasAttr machineName customParams
-      then (builtins.getAttr machineName customParams)
-      else {};
-    in mkConfig (params // machineParams)
-    ) defaultConfigurationParams;
+    nixosConfigurations =
+      builtins.mapAttrs (
+        machineName: params: let
+          machineParams =
+            if builtins.hasAttr machineName customParams
+            then (builtins.getAttr machineName customParams)
+            else {};
+        in
+          mkConfig (params // machineParams)
+      )
+      defaultConfigurationParams;
   };
 }
