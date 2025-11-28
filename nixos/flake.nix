@@ -131,7 +131,7 @@
     nixpkgsPRPatches = [
       {
         pr = 433540; # Rumno service PR
-        hash = "sha256-8GRhLYva7+uXNIvobLFPyeQwJ2zhBrH4WCFN6B0BAJg=";
+        hash = "sha256-CC1fyR2hjEgKjtsm6t9ZrYFG+ebYs5vjapZ3g5IaPvg=";
       }
       {
         pr = 434160; # git-sync-rs package
