@@ -21,7 +21,7 @@ executable taffybar
                      , containers
                      , directory
                      , filepath
-                     , gi-gtk
+                     , gi-gtk3
                      , gtk-sni-tray
                      , gtk-strut
                      , haskell-gi-base
