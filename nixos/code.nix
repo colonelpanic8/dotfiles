@@ -7,8 +7,10 @@ makeEnable config "myModules.code" true {
 
   environment.systemPackages = with pkgs; [
     # LLM Tools
+    antigravity
     claude-code
     codex
+    gemini-cli
 
     # MCP
     github-mcp-server

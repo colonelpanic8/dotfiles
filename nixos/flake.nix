@@ -127,6 +127,50 @@
     imalison-taffybar,
     ...
   }: let
+    # Nixpkgs PR patches - just specify PR number and hash
+    nixpkgsPRPatches = [
+      {
+        pr = 433540; # Rumno service PR
+        hash = "sha256-8GRhLYva7+uXNIvobLFPyeQwJ2zhBrH4WCFN6B0BAJg=";
+      }
+      {
+        pr = 434160; # git-sync-rs package
+        hash = "sha256-zjzjmC1XJmwfHr/YXFyYsqUFR5MHSoxWWyxIR35YNbM=";
+      }
+      {
+        pr = 436061;
+        hash = "sha256-HZquaNBB+w5Hm5kdzvaGg7QAOgAf/EPBO7o7pKkIrMY=";
+      }
+      # claude-code
+      # {
+      #   pr = 464698;
+      #   hash = "sha256-Pe9G6b/rI0874mM7FIOSEKiaubk95NcFhTQ7paAeLTU=";
+      # }
+      # {
+      #   pr = 464816;
+      #   hash = "sha256-bKEoRy4dzP5TyRBjYskwEzr7tj8/ez/Y1XHiQgu5q5I=";
+      # }
+    ];
+
+    # Custom patches that don't fit the PR template
+    customPatches = [
+      {
+        url = "https://github.com/colonelpanic8/nixpkgs/commit/e1fc6c25b91d3d49dd02a156237721f12dbd86b2.patch";
+        hash = "sha256-cKXudynZcZno5xGo7M0J9jl7ABUjZgDyhNhXrn8nBPY=";
+      }
+    ];
+
+    # Convert PR patches to full patch format
+    prPatchesToPatches = prPatches:
+      map (p: {
+        url = "https://patch-diff.githubusercontent.com/raw/NixOS/nixpkgs/pull/${toString p.pr}.patch";
+        hash = p.hash;
+      })
+      prPatches;
+
+    # Combine all patches
+    allPatches = (prPatchesToPatches nixpkgsPRPatches) ++ customPatches;
+
     machinesFilepath = ./machines;
     machineFilenames = builtins.attrNames (builtins.readDir machinesFilepath);
     machineNameFromFilename = filename: builtins.head (builtins.split "\\." filename);
@@ -168,32 +212,7 @@
       patchedSource = bootstrapPkgs.applyPatches {
         name = "nixpkgs-patched";
         src = nixpkgs;
-        patches = map bootstrapPkgs.fetchpatch [
-          # Rumno service PR
-          {
-            url = "https://github.com/NixOS/nixpkgs/pull/433540.patch";
-            hash = "sha256-8GRhLYva7+uXNIvobLFPyeQwJ2zhBrH4WCFN6B0BAJg=";
-          }
-          # git-sync-rs package
-          {
-            url = "https://patch-diff.githubusercontent.com/raw/NixOS/nixpkgs/pull/434160.patch";
-            hash = "sha256-zjzjmC1XJmwfHr/YXFyYsqUFR5MHSoxWWyxIR35YNbM=";
-          }
-          {
-            url = "https://patch-diff.githubusercontent.com/raw/NixOS/nixpkgs/pull/436061.patch";
-            hash = "sha256-HZquaNBB+w5Hm5kdzvaGg7QAOgAf/EPBO7o7pKkIrMY=";
-          }
-          # claude-code: 1.0.126 -> 1.0.128
-          # {
-          #   url = "https://patch-diff.githubusercontent.com/raw/NixOS/nixpkgs/pull/446609.patch";
-          #   hash = "sha256-3Ndad1nvxM2K4J2cbZBC+bo13ESpOGnaCCGeMWG/eq8=";
-          # }
-          # claude-code: switch to binary releases and update to 2.0.0
-          # {
-          #   url = "https://patch-diff.githubusercontent.com/raw/NixOS/nixpkgs/pull/447265.patch";
-          #   hash = "sha256-f7G2Ukr0N3S+au4F6KmFHxQWr6rXrlguqh+KK0Ffbfw=";
-          # }
-        ];
+        patches = map bootstrapPkgs.fetchpatch allPatches;
         prePatch = ''
           mkdir -p pkgs/by-name/an/antigravity
         '';
