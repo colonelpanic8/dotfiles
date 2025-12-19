@@ -1,5 +1,20 @@
 final: prev:
+let
+  # Claude Code version override - update these values to bump the version
+  claudeCodeVersion = {
+    version = "2.0.67";
+    hash = "sha256-HwT9YfoX44b18Sr1VdXMo0X7nIBrai1AAGPbV9l0zv8=";
+    npmDepsHash = "sha256-DNdRkN/rpCsN8fnZbz18r2KRUTl5HCur+GyrofH+T/Y=";
+  };
+in
 {
+  # claude-code = prev.claude-code.overrideAttrs (oldAttrs: {
+  #   inherit (claudeCodeVersion) version npmDepsHash;
+  #   src = prev.fetchurl {
+  #     url = "https://registry.npmjs.org/@anthropic-ai/claude-code/-/claude-code-${claudeCodeVersion.version}.tgz";
+  #     inherit (claudeCodeVersion) hash;
+  #   };
+  # });
   # nvidia-container-toolkit = prev.nvidia-container-toolkit.overrideAttrs(old: {
   #   postInstall = ''
   #     ${old.postInstall or ""}
@@ -146,15 +161,6 @@ final: prev:
     ];
   in
   final.python3.withPackages my-python-packages;
-
-  # claude-code = prev.claude-code.overrideAttrs (oldAttrs: rec {
-  #   version = "1.0.86";
-  #   src = prev.fetchzip {
-  #     url = "https://registry.npmjs.org/@anthropic-ai/claude-code/-/claude-code-${version}.tgz";
-  #     hash = "sha256-mVXS75KgeKgD7EI5t9X6+TkwjBFyBLOo4/m50sS9XdA=";
-  #   };
-  #   npmDepsHash = "";
-  # });
 
   pythonPackagesExtensions = prev.pythonPackagesExtensions ++ [
     (
