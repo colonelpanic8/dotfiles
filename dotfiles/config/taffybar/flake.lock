@@ -310,17 +310,18 @@
         ]
       },
       "locked": {
-        "lastModified": 1764319014,
-        "narHash": "sha256-OM69cuN5IIIkEy7UUDSsgkwzIvOnWvzYm/F1+ptpMjA=",
-        "ref": "refs/heads/bump-flake-dependencies",
-        "rev": "a7a7e620da2d9b51a6b841bbaf763ac1313e7d4e",
-        "revCount": 1617,
-        "type": "git",
-        "url": "file:./taffybar"
+        "lastModified": 1760591109,
+        "narHash": "sha256-O21ayp5v2eccXdcwNjTK5ZB99ruK0Zt9CUaw5Rye42g=",
+        "owner": "taffybar",
+        "repo": "taffybar",
+        "rev": "b256a711416036ca124fc9b3f89e7c957535e465",
+        "type": "github"
       },
       "original": {
-        "type": "git",
-        "url": "file:./taffybar"
+        "owner": "taffybar",
+        "ref": "master",
+        "repo": "taffybar",
+        "type": "github"
       }
     },
     "unstable": {
