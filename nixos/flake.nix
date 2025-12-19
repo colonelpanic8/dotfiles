@@ -129,17 +129,19 @@
   }: let
     # Nixpkgs PR patches - just specify PR number and hash
     nixpkgsPRPatches = [
+      # codex
       {
-        pr = 433540; # Rumno service PR
-        hash = "sha256-CC1fyR2hjEgKjtsm6t9ZrYFG+ebYs5vjapZ3g5IaPvg=";
+        pr = 471196;
+        hash = "sha256-ga72k+HHFWBh32E5TyUgXgAQNaIlT6gTunHJtlLT8bM=";
       }
+      {
+        pr = 472157;
+        hash = "sha256-UU6TtoNXb2UpRPXrW4jLhfcNyvf4yCR0bvf9O/1j7gY=";
+      }
+      ## end codex
       {
         pr = 434160; # git-sync-rs package
         hash = "sha256-zjzjmC1XJmwfHr/YXFyYsqUFR5MHSoxWWyxIR35YNbM=";
-      }
-      {
-        pr = 436061;
-        hash = "sha256-HZquaNBB+w5Hm5kdzvaGg7QAOgAf/EPBO7o7pKkIrMY=";
       }
       # claude-code
       # {
@@ -153,23 +155,51 @@
     ];
 
     # Custom patches that don't fit the PR template
-    customPatches = [
+    nixpkgsCustomPatches = [
       {
         url = "https://github.com/colonelpanic8/nixpkgs/commit/e1fc6c25b91d3d49dd02a156237721f12dbd86b2.patch";
         hash = "sha256-cKXudynZcZno5xGo7M0J9jl7ABUjZgDyhNhXrn8nBPY=";
       }
     ];
 
-    # Convert PR patches to full patch format
-    prPatchesToPatches = prPatches:
+    # Home-manager PR patches - just specify PR number and hash
+    homeManagerPRPatches = [
+      # Example:
+      # {
+      #   pr = 1234;
+      #   hash = "sha256-...";
+      # }
+    ];
+
+    # Custom home-manager patches that don't fit the PR template
+    homeManagerCustomPatches = [
+      {
+        url = "https://github.com/colonelpanic8/home-manager/commit/92f4b7aa5254f8bcddc9ef86e04ea5314410d10b.patch";
+        hash = "sha256-RQl5daVpCqQi05l9QfTEz2PpQxmsv/HYnXrgXbqbwWk=";
+      }
+    ];
+
+    # Convert PR patches to full patch format for nixpkgs
+    nixpkgsPrPatchesToPatches = prPatches:
       map (p: {
         url = "https://patch-diff.githubusercontent.com/raw/NixOS/nixpkgs/pull/${toString p.pr}.patch";
         hash = p.hash;
       })
       prPatches;
 
-    # Combine all patches
-    allPatches = (prPatchesToPatches nixpkgsPRPatches) ++ customPatches;
+    # Convert PR patches to full patch format for home-manager
+    homeManagerPrPatchesToPatches = prPatches:
+      map (p: {
+        url = "https://patch-diff.githubusercontent.com/raw/nix-community/home-manager/pull/${toString p.pr}.patch";
+        hash = p.hash;
+      })
+      prPatches;
+
+    # Combine all nixpkgs patches
+    allNixpkgsPatches = (nixpkgsPrPatchesToPatches nixpkgsPRPatches) ++ nixpkgsCustomPatches;
+
+    # Combine all home-manager patches
+    allHomeManagerPatches = (homeManagerPrPatchesToPatches homeManagerPRPatches) ++ homeManagerCustomPatches;
 
     machinesFilepath = ./machines;
     machineFilenames = builtins.attrNames (builtins.readDir machinesFilepath);
@@ -212,25 +242,57 @@
       patchedSource = bootstrapPkgs.applyPatches {
         name = "nixpkgs-patched";
         src = nixpkgs;
-        patches = map bootstrapPkgs.fetchpatch allPatches;
+        patches = map bootstrapPkgs.fetchpatch allNixpkgsPatches;
         prePatch = ''
           mkdir -p pkgs/by-name/an/antigravity
         '';
       };
       # Get eval-config from patched source
       evalConfig = import "${patchedSource}/nixos/lib/eval-config.nix";
+      # Apply patches to home-manager source (only if there are patches)
+      patchedHomeManagerSource =
+        if allHomeManagerPatches == []
+        then home-manager
+        else
+          bootstrapPkgs.applyPatches {
+            name = "home-manager-patched";
+            src = home-manager;
+            patches = map bootstrapPkgs.fetchpatch allHomeManagerPatches;
+          };
+      # Import the patched home-manager flake
+      patchedHomeManager =
+        if allHomeManagerPatches == []
+        then home-manager
+        else import "${patchedHomeManagerSource}/flake.nix";
+      # Get the NixOS module from the patched source
+      patchedHomeManagerModule =
+        if allHomeManagerPatches == []
+        then home-manager.nixosModules.home-manager
+        else import "${patchedHomeManagerSource}/nixos";
+      # Create a modified inputs with patched home-manager
+      patchedInputs = inputs // {
+        home-manager = inputs.home-manager // {
+          nixosModules = inputs.home-manager.nixosModules // {
+            home-manager = patchedHomeManagerModule;
+          };
+          # Also provide the patched source path for any direct imports
+          outPath = patchedHomeManagerSource.outPath or "${patchedHomeManagerSource}";
+        };
+      };
     in
       evalConfig {
         inherit system;
         modules = baseModules ++ modules;
         specialArgs =
           rec {
-            inherit inputs machineNames;
+            inputs = patchedInputs;
+            inherit machineNames;
             makeEnable = (import ./make-enable.nix) nixpkgs.lib;
             keys = import ./keys.nix;
             usersInfo = (import ./users.nix) {
               pkgs = {zsh = "zsh";};
-              inherit keys inputs system;
+              inherit keys system;
+              inputs = patchedInputs;
             };
             realUsers = (
               builtins.attrNames

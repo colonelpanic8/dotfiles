@@ -6,7 +6,6 @@
     inputs.nixos-hardware.nixosModules.asus-rog-strix-g834jzr
   ];
 
-  hardware.nvidia.open = true;
   myModules.base.enable = true;
   myModules.desktop.enable = true;
   myModules.xmonad.enable = true;
@@ -49,6 +48,8 @@
 
   services.xserver.dpi = 96;
   boot.kernelPackages = pkgs.linuxPackages_latest;
+  # See https://github.com/NixOS/nixpkgs/issues/467814 for why this was needed
+  hardware.nvidia.package = config.boot.kernelPackages.nvidiaPackages.beta;
   boot.initrd.availableKernelModules = [ "vmd" "xhci_pci" "thunderbolt" "nvme" "usbhid" "usb_storage" "sd_mod" ];
   boot.initrd.kernelModules = [ "nvidia" "nvidia_drm" "nvidia_uvm" "nvidia_modeset" ];
   boot.kernelModules = [ "kvm-intel" ];

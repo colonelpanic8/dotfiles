@@ -16,8 +16,8 @@ makeEnable config "myModules.nvidia" false {
   };
   hardware.nvidia.open = true;
   hardware.graphics.enable32Bit = true;
-  hardware.graphics.extraPackages = [ config.boot.kernelPackages.nvidia_x11.out ];
-  hardware.graphics.extraPackages32 = [ config.boot.kernelPackages.nvidia_x11.lib32 ];
+  hardware.graphics.extraPackages = [ config.hardware.nvidia.package.out ];
+  hardware.graphics.extraPackages32 = [ config.hardware.nvidia.package.lib32 ];
   services.xserver = {
     videoDrivers = [ "nvidia" ];
   };
