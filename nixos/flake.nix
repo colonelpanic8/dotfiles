@@ -129,16 +129,6 @@
   }: let
     # Nixpkgs PR patches - just specify PR number and hash
     nixpkgsPRPatches = [
-      # codex
-      {
-        pr = 471196;
-        hash = "sha256-ga72k+HHFWBh32E5TyUgXgAQNaIlT6gTunHJtlLT8bM=";
-      }
-      {
-        pr = 472157;
-        hash = "sha256-UU6TtoNXb2UpRPXrW4jLhfcNyvf4yCR0bvf9O/1j7gY=";
-      }
-      ## end codex
       {
         pr = 434160; # git-sync-rs package
         hash = "sha256-zjzjmC1XJmwfHr/YXFyYsqUFR5MHSoxWWyxIR35YNbM=";
@@ -156,10 +146,6 @@
 
     # Custom patches that don't fit the PR template
     nixpkgsCustomPatches = [
-      {
-        url = "https://github.com/colonelpanic8/nixpkgs/commit/e1fc6c25b91d3d49dd02a156237721f12dbd86b2.patch";
-        hash = "sha256-cKXudynZcZno5xGo7M0J9jl7ABUjZgDyhNhXrn8nBPY=";
-      }
     ];
 
     # Home-manager PR patches - just specify PR number and hash
