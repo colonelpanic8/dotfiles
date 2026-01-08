@@ -45,11 +45,13 @@ makeEnable config "myModules.gitea-runner" false {
       ];
     };
 
-    systemd.services.gitea-runner-nix.environment =
-      let gitea-runner-directory = "/var/lib/gitea-runner"; in {
+    systemd.services.gitea-runner-nix = {
+      environment = let gitea-runner-directory = "/var/lib/gitea-runner"; in {
         XDG_CONFIG_HOME = gitea-runner-directory;
         XDG_CACHE_HOME = "${gitea-runner-directory}/.cache";
       };
+      serviceConfig.PrivateTmp = false;
+    };
     users.groups.gitea-runner = {};
     users.users.gitea-runner = {
       isSystemUser = true;
