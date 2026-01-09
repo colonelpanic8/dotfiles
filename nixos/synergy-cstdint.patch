@@ -1,0 +1,12 @@
+diff --git a/src/lib/server/InputFilter.cpp b/src/lib/server/InputFilter.cpp
+index 1234567..abcdefg 100644
+--- a/src/lib/server/InputFilter.cpp
++++ b/src/lib/server/InputFilter.cpp
+@@ -26,6 +26,7 @@
+ #include <cstdlib>
+ #include <sstream>
+ #include <cstring>
++#include <cstdint>
+
+ // -----------------------------------------------------------------------------
+ // Input Filter Condition

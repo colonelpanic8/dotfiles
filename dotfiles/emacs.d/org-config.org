@@ -204,6 +204,35 @@ We're going to use this to write separate parts of our config to different secti
       ((current-time (&rest args) time))
     (funcall fn)))
 #+end_src
+** Reschedule Past Items to Today
+This function finds all incomplete items in the agenda files that are scheduled
+in the past and reschedules them to today. Useful for catching up on tasks that
+have slipped past their original scheduled date.
+#+begin_src emacs-lisp :tangle org-config-config.el
+(defun imalison:reschedule-past-to-today ()
+  "Reschedule all incomplete items scheduled in the past to today.
+Iterates through all org-agenda files and reschedules any TODO items
+that have a SCHEDULED date before today to the current date."
+  (interactive)
+  (let* ((today-time (org-time-string-to-time (format-time-string "<%Y-%m-%d>")))
+         (rescheduled-count 0))
+    (org-map-entries
+     (lambda ()
+       (let* ((scheduled (org-entry-get nil "SCHEDULED"))
+              (scheduled-time (when scheduled (org-time-string-to-time scheduled))))
+         (when (and scheduled-time
+                    (not (org-entry-is-done-p))
+                    (time-less-p scheduled-time today-time))
+           (org-schedule nil ".")
+           (cl-incf rescheduled-count))))
+     nil
+     'agenda)
+    (message "Rescheduled %d items to today" rescheduled-count)))
+#+end_src
+
+#+RESULTS:
+: imalison:reschedule-past-to-today
+
 ** Miscellaneous
 #+begin_src emacs-lisp :tangle org-config-config.el
 (add-to-list 'org-show-context-detail '(org-goto . lineage))
