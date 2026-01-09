@@ -61,7 +61,7 @@
             gitFull
             gnused
             ncdu
-            nixFlakes
+            nixVersions.stable
             nodejs
             openssh
             wget
@@ -74,6 +74,8 @@
         XDG_CACHE_HOME = "/var/lib/gitea-runner/.cache";
         XDG_RUNTIME_DIR = "/var/lib/gitea-runner/tmp";
       };
+
+      system.primaryUser = "kat";
 
       # launchd.daemons.gitea-runner-restarter = {
       #   serviceConfig = {
@@ -112,8 +114,8 @@
 
       nixpkgs.overlays = [(import ../nixos/overlay.nix)];
       environment.systemPackages = with pkgs; [
-        python-with-my-packages
-	      emacs
+        #python-with-my-packages
+        emacs
         alejandra
         cocoapods
         gitFull
@@ -124,6 +126,7 @@
         nodejs
         ripgrep
         slack
+	      claude-code
         typescript
         vim
         yarn
@@ -133,7 +136,6 @@
 
 
       # Auto upgrade nix package and the daemon service.
-      services.nix-daemon.enable = true;
       launchd.user.envVariables.PATH = config.environment.systemPath;
 
       programs.direnv.enable = true;
@@ -149,6 +151,7 @@
       system.stateVersion = 4;
 
       # The platform the configuration will be used on.
+
       nixpkgs.hostPlatform = "aarch64-darwin";
       users.users.kat.openssh.authorizedKeys.keys = inputs.railbird-secrets.keys.kanivanKeys;
       users.users.gitea-runner = {
@@ -203,6 +206,6 @@
     };
 
     # Expose the package set, including overlays, for convenience.
-    darwinPackages = self.darwinConfigurations."Kats-Mac-mini".pkgs;
+    darwinPackages = self.darwinConfigurations."mac-demarco-mini".pkgs;
   };
 }
