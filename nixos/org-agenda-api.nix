@@ -60,6 +60,25 @@ let
   (when (file-exists-p (expand-file-name "org-config-config.el" config-dir))
     (load (expand-file-name "org-config-config.el" config-dir))))
 
+;; Define no-op stubs for unavailable packages (overwrite autoloads)
+(defun org-bullets-mode (&optional _arg)
+  "No-op stub for org-bullets-mode (package not available in container)."
+  nil)
+
+;; Helper functions used by org-agenda-custom-commands
+;; These are defined in README.org but needed for custom views
+(defun imalison:compare-int-list (a b)
+  "Compare two lists of integers lexicographically."
+  (when (and a b)
+    (cond ((> (car a) (car b)) 1)
+          ((< (car a) (car b)) -1)
+          (t (imalison:compare-int-list (cdr a) (cdr b))))))
+
+(defun get-date-created-from-agenda-entry (agenda-entry)
+  "Get the CREATED property timestamp from an agenda entry."
+  (org-time-string-to-time
+   (org-entry-get (get-text-property 1 'org-marker agenda-entry) "CREATED")))
+
 ;; Capture templates for API
 (setq org-agenda-api-capture-templates
       `(("gtd-todo"
