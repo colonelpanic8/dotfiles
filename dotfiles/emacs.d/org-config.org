@@ -96,7 +96,7 @@ We're going to use this to write separate parts of our config to different secti
 #+end_src
 * Org Variable Customization
 #+begin_src emacs-lisp :tangle org-config-custom.el
-(org-agenda-log-mode-items '(closed))
+(org-agenda-log-mode-items '(closed state))
 (org-agenda-skip-deadline-if-done t)
 (org-agenda-skip-scheduled-if-done t)
 (org-agenda-span 10)
