@@ -371,6 +371,46 @@
           echo "Warning: org-config-custom.el not found after tangle"
           touch $out/custom-config.el
         fi
+
+        # Append custom agenda commands and capture templates for the API
+        cat >> $out/custom-config.el << 'ELISP'
+
+;; Custom agenda commands for API
+(setq org-agenda-custom-commands
+      '(("n" "Next actions" todo "NEXT")
+        ("s" "Started tasks" todo "STARTED")
+        ("i" "Inbox" todo "INBOX")
+        ("w" "Waiting tasks" todo "WAIT")
+        ("h" "High priority" tags-todo "+PRIORITY<\"C\"")
+        ("M" "Main view"
+         ((agenda "" ((org-agenda-span 5)))
+          (todo "NEXT")
+          (todo "STARTED")
+          (todo "INBOX")))))
+
+;; Capture templates for API
+(setq org-agenda-api-capture-templates
+      '(("gtd-todo"
+         :name "GTD Todo"
+         :template ("t" "Todo" entry (file "/data/org/inbox.org")
+                    "* INBOX %^{Title}\n:PROPERTIES:\n:CREATED: %U\n:END:\n"
+                    :immediate-finish t)
+         :prompts (("Title" :type string :required t)))
+        ("scheduled-todo"
+         :name "Scheduled Todo"
+         :template ("s" "Scheduled" entry (file "/data/org/inbox.org")
+                    "* INBOX %^{Title}\nSCHEDULED: %^{When}t\n:PROPERTIES:\n:CREATED: %U\n:END:\n"
+                    :immediate-finish t)
+         :prompts (("Title" :type string :required t)
+                   ("When" :type date :required t)))
+        ("deadline-todo"
+         :name "Todo with Deadline"
+         :template ("d" "Deadline" entry (file "/data/org/inbox.org")
+                    "* INBOX %^{Title}\nDEADLINE: %^{When}t\n:PROPERTIES:\n:CREATED: %U\n:END:\n"
+                    :immediate-finish t)
+         :prompts (("Title" :type string :required t)
+                   ("When" :type date :required t)))))
+ELISP
       '';
 
       # Build customized org-agenda-api container
