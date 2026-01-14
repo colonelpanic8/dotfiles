@@ -324,7 +324,7 @@ I want to control my own font for emacs
 * Functions
 ** Join Paths
 Works in the same way as os.path.join in python
-#+BEGIN_SRC emacs-lisp
+#+BEGIN_SRC emacs-lisp :tangle org-config-bootstrap.el
 (defun imalison:join-paths (root &rest dirs)
   (let ((result root))
     (cl-loop for dir in dirs do
@@ -332,10 +332,15 @@ Works in the same way as os.path.join in python
     result))
 #+END_SRC
 ** Variables
-#+BEGIN_SRC emacs-lisp
+#+BEGIN_SRC emacs-lisp :tangle org-config-bootstrap.el
 (defvar imalison:projects-directory
   (imalison:join-paths (substitute-in-file-name "$HOME") "Projects"))
 
+;; For org-config-bootstrap: frame-mode not needed in server/container context
+(defvar imalison:use-frame-mode nil)
+#+END_SRC
+
+#+BEGIN_SRC emacs-lisp
 (defvar imalison:gpg-key)
 #+END_SRC
 ** Required Packages
