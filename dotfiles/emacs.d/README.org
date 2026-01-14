@@ -1,6 +1,6 @@
 # -*- mode: org; -*-
-[[https://travis-ci.org/IvanMalison/dotfiles][
-file:https://travis-ci.org/IvanMalison/dotfiles.svg?branch=master]]
+[[https://github.com/IvanMalison/dotfiles/actions/workflows/gh-pages.yml][
+file:https://github.com/IvanMalison/dotfiles/actions/workflows/gh-pages.yml/badge.svg?branch=master]]
 
 This document is best read at [[http://ivanmalison.github.io/dotfiles/]] or, of
 course, in emacs, as the internal links that follow are unlikely to work
@@ -17,9 +17,10 @@ These sections are the ones that have the most potential to be interesting to
 others:
 ** How I generate http://ivanmalison.github.io/dotfiles/
 *** org-export
-**** travis-ci
+**** GitHub Actions
 [[https://github.com/IvanMalison/dotfiles/tree/master/gen-gh-pages][This directory]] contains a collection of scripts that export this org document
-to html. This approach is taken (with only a few modifications) from [[https://gist.github.com/domenic/ec8b0fc8ab45f39403dd][here]].
+to html. A [[https://github.com/IvanMalison/dotfiles/blob/master/.github/workflows/gh-pages.yml][GitHub Actions workflow]] runs on every push to master, generating the
+HTML and deploying it to GitHub Pages.
 **** githook (The old way)
 NOTE: I've left this here in case other people have an interest in this method,
 but I no longer use it.

@@ -1,20 +1,25 @@
 #!/usr/bin/env bash
+# Local compilation script for generating HTML from README.org
+# Note: For CI, this is now handled by GitHub Actions (.github/workflows/gh-pages.yml)
 
-export PATH="$HOME/.cask/bin:$HOME/.evm/bin:$PATH"
+set -e
+
 THIS_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 
-TARGET=$(readlink -f "$THIS_DIR/../dotfiles/emacs.d/README.org")
+# Use system emacs or EMACS environment variable
+EMACS="${EMACS:-emacs}"
 
-git clone https://github.com/rejeep/evm.git "$HOME/.evm"
-evm config path /tmp
-evm install emacs-25.1-travis --use --skip
-export EMACS="$(evm bin)"
+cd "$THIS_DIR"
 
-git clone https://github.com/cask/cask
-export PATH=$(pwd)/cask/bin:$PATH
+# Install cask dependencies if needed
+if [ ! -d ".cask" ]; then
+    cask install
+fi
 
-cask install
+# Generate HTML
 cask exec "$EMACS" --script generate-html.el
 
+# Move the generated file
 mv "$THIS_DIR/../dotfiles/emacs.d/README.html" .
 
+echo "Generated README.html in $THIS_DIR"

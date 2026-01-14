@@ -1,0 +1,54 @@
+name: Deploy to GitHub Pages
+
+on:
+  push:
+    branches:
+      - master
+  pull_request:
+    branches:
+      - master
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Emacs
+        uses: purcell/setup-emacs@master
+        with:
+          version: 29.1
+
+      - name: Setup Cask
+        uses: conao3/setup-cask@master
+        with:
+          version: snapshot
+
+      - name: Install dependencies
+        working-directory: gen-gh-pages
+        run: cask install
+
+      - name: Generate HTML
+        working-directory: gen-gh-pages
+        run: |
+          cask exec emacs --script generate-html.el
+          mv ../dotfiles/emacs.d/README.html ./index.html
+
+      - name: Deploy to GitHub Pages
+        if: github.event_name == 'push' && github.ref == 'refs/heads/master'
+        uses: peaceiris/actions-gh-pages@v4
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./gen-gh-pages
+          publish_branch: gh-pages
+          user_name: 'github-actions[bot]'
+          user_email: 'github-actions[bot]@users.noreply.github.com'
+          commit_message: 'Deploy to GitHub Pages: ${{ github.sha }}'
+          keep_files: false
