@@ -377,8 +377,17 @@
 (let ((config-dir (file-name-directory load-file-name)))
   (when (file-exists-p (expand-file-name "org-config-preface.el" config-dir))
     (load (expand-file-name "org-config-preface.el" config-dir)))
+  ;; org-config-custom.el uses customize format (var value), convert to setq
   (when (file-exists-p (expand-file-name "org-config-custom.el" config-dir))
-    (load (expand-file-name "org-config-custom.el" config-dir)))
+    (with-temp-buffer
+      (insert-file-contents (expand-file-name "org-config-custom.el" config-dir))
+      (goto-char (point-min))
+      (condition-case nil
+          (while t
+            (let ((form (read (current-buffer))))
+              (when (and (listp form) (symbolp (car form)))
+                (set (car form) (eval (cadr form))))))
+        (end-of-file nil))))
   (when (file-exists-p (expand-file-name "org-config-config.el" config-dir))
     (load (expand-file-name "org-config-config.el" config-dir))))
 
