@@ -335,7 +335,7 @@
       # Path to org-config.org in the dotfiles
       orgConfigOrg = ../dotfiles/emacs.d/org-config.org;
 
-      # Tangle org-config.org and convert to setq format
+      # Tangle org-config.org and create a loader for the container
       orgAgendaCustomConfig = pkgs.runCommand "org-agenda-custom-config" {
         buildInputs = [ pkgs.emacs-nox ];
       } ''
@@ -350,62 +350,56 @@
           --eval '(require (quote org))' \
           --eval '(org-babel-tangle-file "work/org-config.org")'
 
-        if [ -f "work/org-config-custom.el" ]; then
-          # Use emacs to properly parse and convert s-expressions to setq
-          emacs --batch \
-            --eval "(with-temp-buffer
-                      (insert-file-contents \"work/org-config-custom.el\")
-                      (goto-char (point-min))
-                      (let ((forms nil))
-                        (condition-case nil
-                            (while t
-                              (let ((form (read (current-buffer))))
-                                (when (and (listp form) (symbolp (car form)))
-                                  (push (list 'setq (car form) (cadr form)) forms))))
-                          (end-of-file nil))
-                        (with-temp-file \"$out/custom-config.el\"
-                          (dolist (form (nreverse forms))
-                            (prin1 form (current-buffer))
-                            (insert \"\n\")))))"
-        else
-          echo "Warning: org-config-custom.el not found after tangle"
-          touch $out/custom-config.el
-        fi
+        # Copy all tangled files to output
+        for f in work/org-config-*.el; do
+          if [ -f "$f" ]; then
+            cp "$f" $out/
+          fi
+        done
 
-        # Append custom agenda commands and capture templates for the API
-        cat >> $out/custom-config.el << 'ELISP'
+        # Create a loader that sets up paths and loads files in order
+        cat > $out/custom-config.el << 'ELISP'
+;;; custom-config.el --- Container config loader -*- lexical-binding: t; -*-
 
-;; Custom agenda commands for API
-(setq org-agenda-custom-commands
-      '(("n" "Next actions" todo "NEXT")
-        ("s" "Started tasks" todo "STARTED")
-        ("i" "Inbox" todo "INBOX")
-        ("w" "Waiting tasks" todo "WAIT")
-        ("h" "High priority" tags-todo "+PRIORITY<\"C\"")
-        ("M" "Main view"
-         ((agenda "" ((org-agenda-span 5)))
-          (todo "NEXT")
-          (todo "STARTED")
-          (todo "INBOX")))))
+;; Set org directory for container
+(defvar imalison:org-dir "/data/org")
+(defvar imalison:shared-org-dir "/data/org/katnivan")
+
+;; Helper function used by org-config
+(defun imalison:join-paths (&rest paths)
+  "Join PATHS together into a single path."
+  (let ((result (car paths)))
+    (dolist (p (cdr paths))
+      (setq result (expand-file-name p result)))
+    result))
+
+;; Load tangled config files in order
+(let ((config-dir (file-name-directory load-file-name)))
+  (when (file-exists-p (expand-file-name "org-config-preface.el" config-dir))
+    (load (expand-file-name "org-config-preface.el" config-dir)))
+  (when (file-exists-p (expand-file-name "org-config-custom.el" config-dir))
+    (load (expand-file-name "org-config-custom.el" config-dir)))
+  (when (file-exists-p (expand-file-name "org-config-config.el" config-dir))
+    (load (expand-file-name "org-config-config.el" config-dir))))
 
 ;; Capture templates for API
 (setq org-agenda-api-capture-templates
-      '(("gtd-todo"
+      `(("gtd-todo"
          :name "GTD Todo"
-         :template ("t" "Todo" entry (file "/data/org/inbox.org")
+         :template ("t" "Todo" entry (file ,(imalison:join-paths imalison:org-dir "inbox.org"))
                     "* INBOX %^{Title}\n:PROPERTIES:\n:CREATED: %U\n:END:\n"
                     :immediate-finish t)
          :prompts (("Title" :type string :required t)))
         ("scheduled-todo"
          :name "Scheduled Todo"
-         :template ("s" "Scheduled" entry (file "/data/org/inbox.org")
+         :template ("s" "Scheduled" entry (file ,(imalison:join-paths imalison:org-dir "inbox.org"))
                     "* INBOX %^{Title}\nSCHEDULED: %^{When}t\n:PROPERTIES:\n:CREATED: %U\n:END:\n"
                     :immediate-finish t)
          :prompts (("Title" :type string :required t)
                    ("When" :type date :required t)))
         ("deadline-todo"
          :name "Todo with Deadline"
-         :template ("d" "Deadline" entry (file "/data/org/inbox.org")
+         :template ("d" "Deadline" entry (file ,(imalison:join-paths imalison:org-dir "inbox.org"))
                     "* INBOX %^{Title}\nDEADLINE: %^{When}t\n:PROPERTIES:\n:CREATED: %U\n:END:\n"
                     :immediate-finish t)
          :prompts (("Title" :type string :required t)
