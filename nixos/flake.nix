@@ -363,7 +363,7 @@
 
 ;; Set org directory for container
 (defvar imalison:org-dir "/data/org")
-(defvar imalison:shared-org-dir "/data/org/katnivan")
+(defvar imalison:shared-org-dir nil)
 
 ;; Helper function used by org-config
 (defun imalison:join-paths (&rest paths)
