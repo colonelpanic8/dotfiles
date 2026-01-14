@@ -110,6 +110,11 @@
     nixified-ai = {url = "github:nixified-ai/flake";};
 
     nixtheplanet.url = "github:matthewcroughan/nixtheplanet";
+
+    org-agenda-api = {
+      url = "github:colonelpanic8/org-agenda-api";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
   };
 
   outputs = inputs @ {
@@ -198,6 +203,7 @@
           (machinesFilepath + ("/" + filename))
           agenix.nixosModules.default
           nixtheplanet.nixosModules.macos-ventura
+          inputs.org-agenda-api.nixosModules.default
         ];
       };
     };
@@ -319,5 +325,64 @@
           mkConfig (params // machineParams)
       )
       defaultConfigurationParams;
-  };
+  }
+  //
+  # Per-system packages (using flake-utils)
+  inputs.flake-utils.lib.eachDefaultSystem (system:
+    let
+      pkgs = import nixpkgs { inherit system; };
+
+      # Path to org-config.org in the dotfiles
+      orgConfigOrg = ../dotfiles/emacs.d/org-config.org;
+
+      # Tangle org-config.org and convert to setq format
+      orgAgendaCustomConfig = pkgs.runCommand "org-agenda-custom-config" {
+        buildInputs = [ pkgs.emacs-nox ];
+      } ''
+        mkdir -p $out
+        mkdir -p work
+
+        # Copy org file to writable location (tangle writes to same directory)
+        cp ${orgConfigOrg} work/org-config.org
+
+        # Tangle org-config.org
+        emacs --batch \
+          --eval '(require (quote org))' \
+          --eval '(org-babel-tangle-file "work/org-config.org")'
+
+        if [ -f "work/org-config-custom.el" ]; then
+          # Use emacs to properly parse and convert s-expressions to setq
+          emacs --batch \
+            --eval "(with-temp-buffer
+                      (insert-file-contents \"work/org-config-custom.el\")
+                      (goto-char (point-min))
+                      (let ((forms nil))
+                        (condition-case nil
+                            (while t
+                              (let ((form (read (current-buffer))))
+                                (when (and (listp form) (symbolp (car form)))
+                                  (push (list 'setq (car form) (cadr form)) forms))))
+                          (end-of-file nil))
+                        (with-temp-file \"$out/custom-config.el\"
+                          (dolist (form (nreverse forms))
+                            (prin1 form (current-buffer))
+                            (insert \"\n\")))))"
+        else
+          echo "Warning: org-config-custom.el not found after tangle"
+          touch $out/custom-config.el
+        fi
+      '';
+
+      # Build customized org-agenda-api container
+      orgAgendaApiContainer = inputs.org-agenda-api.lib.${system}.mkContainer {
+        customElispFile = "${orgAgendaCustomConfig}/custom-config.el";
+      };
+
+    in {
+      packages = {
+        org-agenda-custom-config = orgAgendaCustomConfig;
+        org-agenda-api-container = orgAgendaApiContainer;
+      };
+    }
+  );
 }
