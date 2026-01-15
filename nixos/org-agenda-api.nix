@@ -19,10 +19,12 @@ let
       --eval '(require (quote org))' \
       --eval '(org-babel-tangle-file "work/org-config.org")'
 
-    # Copy all tangled files to output
+    # Copy all tangled files to output, stripping :straight keywords
+    # (straight.el is not available in the minimal container Emacs)
     for f in work/org-config-*.el; do
       if [ -f "$f" ]; then
-        cp "$f" $out/
+        # Remove :straight nil and :straight t from use-package declarations
+        sed -e 's/:straight nil//g' -e 's/:straight t//g' "$f" > "$out/$(basename "$f")"
       fi
     done
 
