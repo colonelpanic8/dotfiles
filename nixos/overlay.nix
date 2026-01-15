@@ -162,6 +162,13 @@ in
   in
   final.python3.withPackages my-python-packages;
 
+  # Fix synergy build with GCC 15 - missing #include <cstdint>
+  synergy = prev.synergy.overrideAttrs (oldAttrs: {
+    postPatch = (oldAttrs.postPatch or "") + ''
+      sed -i '/#include <cstring>/a #include <cstdint>' src/lib/server/InputFilter.cpp
+    '';
+  });
+
   pythonPackagesExtensions = prev.pythonPackagesExtensions ++ [
     (
       python-final: python-prev: {
