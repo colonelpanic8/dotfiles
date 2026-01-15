@@ -1756,11 +1756,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1768512311,
-        "narHash": "sha256-Wm/0THcvCVpQuAlRnCDrfwInqSIBGoMoHwE15MH4dSk=",
+        "lastModified": 1768513053,
+        "narHash": "sha256-lWhMF/lQ0+i0IdXgqE7RJLhEooafkzcJG49O1yura8g=",
         "owner": "colonelpanic8",
         "repo": "org-agenda-api",
-        "rev": "7506a27291c55629e4aaa63874157e4f61ab6801",
+        "rev": "4dab9e81715b05e35e7dfa7d5f992b9ca7864152",
         "type": "github"
       },
       "original": {
