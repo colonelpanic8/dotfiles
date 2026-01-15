@@ -67,6 +67,15 @@ let
   "No-op stub for org-bullets-mode (package not available in container)."
   nil)
 
+;; Override shared-org-file-p to handle nil imalison:shared-org-dir
+;; The original calls (file-truename imalison:shared-org-dir) which errors when nil
+(defun imalison:shared-org-file-p ()
+  "Check if current file is in the shared org directory.
+Returns nil if imalison:shared-org-dir is not set."
+  (and imalison:shared-org-dir
+       (string-prefix-p (file-truename imalison:shared-org-dir)
+                        (file-truename default-directory))))
+
 ;; Helper functions used by org-agenda-custom-commands
 ;; These are defined in README.org but needed for custom views
 (defun imalison:compare-int-list (a b)
