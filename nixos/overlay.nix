@@ -2,9 +2,10 @@ final: prev:
 let
   # Claude Code version override - update these values to bump the version
   claudeCodeVersion = {
-    version = "2.0.67";
-    hash = "sha256-HwT9YfoX44b18Sr1VdXMo0X7nIBrai1AAGPbV9l0zv8=";
-    npmDepsHash = "sha256-DNdRkN/rpCsN8fnZbz18r2KRUTl5HCur+GyrofH+T/Y=";
+    version = "2.1.2";
+    hash = "sha256-yCRQtK286EOGVs+0SMokATpvwCeZC4irV1bmhU0kgiI=";
+    npmDepsHash = "";
+  };
 
   # Codex version override - update these values to bump the version
   codexVersion = {
@@ -98,6 +99,10 @@ in
     # Optionally inherit original metadata
     meta = prev.runc.meta // {};
   };
+
+  synergy = prev.synergy.overrideAttrs (old: {
+    patches = (old.patches or []) ++ [ ./synergy-cstdint.patch ];
+  });
 
   rofi-systemd = prev.rofi-systemd.overrideAttrs (_: {
     src = prev.fetchFromGitHub {
