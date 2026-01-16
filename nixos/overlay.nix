@@ -5,6 +5,12 @@ let
     version = "2.0.67";
     hash = "sha256-HwT9YfoX44b18Sr1VdXMo0X7nIBrai1AAGPbV9l0zv8=";
     npmDepsHash = "sha256-DNdRkN/rpCsN8fnZbz18r2KRUTl5HCur+GyrofH+T/Y=";
+
+  # Codex version override - update these values to bump the version
+  codexVersion = {
+    version = "0.86.0";
+    hash = "sha256-sypqDp67nMnxSmdUs2W8TCmfe2Ye9jO3vXLOpNeqjlI=";
+    cargoHash = "sha256-Ryr5mFc+StT1d+jBtRsrOzMtyEJf7W1HbMbnC84ps4s=";
   };
 in
 {
@@ -15,6 +21,21 @@ in
   #     inherit (claudeCodeVersion) hash;
   #   };
   # });
+
+  codex = prev.codex.overrideAttrs (oldAttrs: rec {
+    inherit (codexVersion) version cargoHash;
+    src = prev.fetchFromGitHub {
+      owner = "openai";
+      repo = "codex";
+      tag = "rust-v${codexVersion.version}";
+      inherit (codexVersion) hash;
+    };
+    cargoDeps = prev.rustPlatform.fetchCargoVendor {
+      inherit src;
+      sourceRoot = "${src.name}/codex-rs";
+      hash = cargoHash;
+    };
+  });
   # nvidia-container-toolkit = prev.nvidia-container-toolkit.overrideAttrs(old: {
   #   postInstall = ''
   #     ${old.postInstall or ""}
