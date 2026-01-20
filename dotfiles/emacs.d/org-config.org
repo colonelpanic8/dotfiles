@@ -76,6 +76,7 @@ We're going to use this to write separate parts of our config to different secti
 
 (defvar imalison:created-property-string "
 :PROPERTIES:
+:ID: %(org-id-new)
 :CREATED: %U
 :END:")
 #+end_src
@@ -591,6 +592,7 @@ specific time, they should appear in the agenda at that time!
   (with-temp-buffer
     (org-mode)
     (insert content)
+    (org-set-property "ID" (org-id-new))
     (org-set-property "CREATED"
                       (with-temp-buffer
                         (org-insert-time-stamp
@@ -607,6 +609,7 @@ specific time, they should appear in the agenda at that time!
     (org-insert-heading)
     (insert content)
     (org-todo creation-state)
+    (org-set-property "ID" (org-id-new))
     (org-set-property "CREATED"
                       (with-temp-buffer
                         (org-insert-time-stamp
@@ -696,6 +699,7 @@ specific time, they should appear in the agenda at that time!
                  "* TODO
 SCHEDULED: %^t
 :PROPERTIES:
+:ID: %(org-id-new)
 :CREATED: %U
 :STYLE: habit
 :END:"))
