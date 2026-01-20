@@ -324,17 +324,33 @@ I want to control my own font for emacs
 * Functions
 ** Join Paths
 Works in the same way as os.path.join in python
-#+BEGIN_SRC emacs-lisp :tangle org-config-bootstrap.el
+#+NAME: imalison-join-paths
+#+BEGIN_SRC emacs-lisp :tangle no
 (defun imalison:join-paths (root &rest dirs)
   (let ((result root))
     (cl-loop for dir in dirs do
              (setq result (concat (file-name-as-directory result) dir)))
     result))
 #+END_SRC
+
+#+BEGIN_SRC emacs-lisp :noweb yes
+<<imalison-join-paths>>
+#+END_SRC
 ** Variables
-#+BEGIN_SRC emacs-lisp :tangle org-config-bootstrap.el
+#+NAME: imalison-projects-directory
+#+BEGIN_SRC emacs-lisp :tangle no
 (defvar imalison:projects-directory
   (imalison:join-paths (substitute-in-file-name "$HOME") "Projects"))
+#+END_SRC
+
+#+BEGIN_SRC emacs-lisp :noweb yes
+<<imalison-projects-directory>>
+#+END_SRC
+
+#+BEGIN_SRC emacs-lisp :tangle org-config-bootstrap.el :noweb yes
+<<imalison-join-paths>>
+
+<<imalison-projects-directory>>
 
 ;; For org-config-bootstrap: frame-mode not needed in server/container context
 (defvar imalison:use-frame-mode nil)
