@@ -710,7 +710,11 @@ SCHEDULED: %^t
                              (find-file (let ((date (format-time-string "%Y-%m-%d")))
                                     (expand-file-name (concat date ".org")
                                                       "~/org/weekly")))))
-                 (file "~/org/capture-templates/weekly.org"))))
+                 (file "~/org/capture-templates/weekly.org")))
+  (add-to-list 'org-capture-templates
+               `("n" "Next (Scheduled Today)" entry (file ,imalison:org-gtd-file)
+                 ,(format "%s%s\n%s" "* NEXT %?" imalison:created-property-string
+                          "SCHEDULED: %(format-time-string \"<%Y-%m-%d %a>\")"))))
 #+end_src
 ** Babel
 #+begin_src emacs-lisp :tangle org-config-config.el
