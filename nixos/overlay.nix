@@ -15,6 +15,13 @@ let
   };
 in
 {
+  # Fix poetry pbs-installer version constraint issue
+  poetry = prev.poetry.overrideAttrs (oldAttrs: {
+    dontCheckRuntimeDeps = true;
+  });
+
+  # Hyprland and hy3 are provided via flakes for proper plugin compatibility
+  # See flake.nix inputs: hyprland and hy3
   # claude-code = prev.claude-code.overrideAttrs (oldAttrs: {
   #   inherit (claudeCodeVersion) version npmDepsHash;
   #   src = prev.fetchurl {
@@ -23,20 +30,21 @@ in
   #   };
   # });
 
-  codex = prev.codex.overrideAttrs (oldAttrs: rec {
-    inherit (codexVersion) version cargoHash;
-    src = prev.fetchFromGitHub {
-      owner = "openai";
-      repo = "codex";
-      tag = "rust-v${codexVersion.version}";
-      inherit (codexVersion) hash;
-    };
-    cargoDeps = prev.rustPlatform.fetchCargoVendor {
-      inherit src;
-      sourceRoot = "${src.name}/codex-rs";
-      hash = cargoHash;
-    };
-  });
+  # codex = prev.codex.overrideAttrs (oldAttrs: rec {
+  #   inherit (codexVersion) version cargoHash;
+  #   src = prev.fetchFromGitHub {
+  #     owner = "openai";
+  #     repo = "codex";
+  #     tag = "rust-v${codexVersion.version}";
+  #     inherit (codexVersion) hash;
+  #   };
+  #   cargoDeps = prev.rustPlatform.fetchCargoVendor {
+  #     inherit src;
+  #     sourceRoot = "${src.name}/codex-rs";
+  #     hash = cargoHash;
+  #   };
+  # });
+
   # nvidia-container-toolkit = prev.nvidia-container-toolkit.overrideAttrs(old: {
   #   postInstall = ''
   #     ${old.postInstall or ""}
@@ -187,13 +195,6 @@ in
     ];
   in
   final.python3.withPackages my-python-packages;
-
-  # Fix synergy build with GCC 15 - missing #include <cstdint>
-  synergy = prev.synergy.overrideAttrs (oldAttrs: {
-    postPatch = (oldAttrs.postPatch or "") + ''
-      sed -i '/#include <cstring>/a #include <cstdint>' src/lib/server/InputFilter.cpp
-    '';
-  });
 
   pythonPackagesExtensions = prev.pythonPackagesExtensions ++ [
     (
