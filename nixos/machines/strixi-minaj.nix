@@ -55,6 +55,8 @@
   boot.kernelModules = [ "kvm-intel" ];
   boot.extraModulePackages = [ ];
   hardware.nvidia.powerManagement.enable = true;
+  hardware.nvidia.prime.offload.enable = lib.mkForce false;
+  hardware.nvidia.prime.sync.enable = lib.mkForce true;
   boot.loader.systemd-boot.enable = true;
   boot.loader.efi.canTouchEfiVariables = true;
 
