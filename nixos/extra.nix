@@ -1,7 +1,5 @@
 { config, pkgs, makeEnable, ... }:
 makeEnable config "myModules.extra" false {
-  programs.hyprland.enable = true;
-
   environment.systemPackages = with pkgs; [
     android-studio
     gradle

@@ -2,6 +2,7 @@
 makeEnable config "myModules.desktop" true {
   imports = [
     ./fonts.nix
+    ./hyprland.nix
   ];
 
   services.xserver = {
@@ -20,8 +21,6 @@ makeEnable config "myModules.desktop" true {
       '';
     };
   };
-
-  programs.hyprland.enable = true;
 
   services.autorandr = {
     enable = true;

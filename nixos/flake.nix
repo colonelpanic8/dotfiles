@@ -27,6 +27,16 @@
 
     agenix = {url = "github:ryantm/agenix";};
 
+    # Hyprland and plugins from official flakes for proper plugin compatibility
+    hyprland = {
+      url = "git+https://github.com/hyprwm/Hyprland?submodules=1&ref=refs/tags/v0.53.0";
+    };
+
+    hy3 = {
+      url = "github:outfoxxed/hy3?ref=hl0.53.0";
+      inputs.hyprland.follows = "hyprland";
+    };
+
     railbird-secrets = {
       url = "git+ssh://gitea@dev.railbird.ai:1123/railbird/secrets-flake.git";
     };
@@ -111,10 +121,6 @@
 
     nixtheplanet.url = "github:matthewcroughan/nixtheplanet";
 
-    org-agenda-api = {
-      url = "github:colonelpanic8/org-agenda-api";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
   };
 
   outputs = inputs @ {
@@ -130,6 +136,8 @@
     nix,
     agenix,
     imalison-taffybar,
+    hyprland,
+    hy3,
     ...
   }: let
     # Nixpkgs PR patches - just specify PR number and hash
@@ -199,11 +207,10 @@
     mkConfigurationParams = filename: {
       name = machineNameFromFilename filename;
       value = {
-        modules = [
+        baseModules = [
           (machinesFilepath + ("/" + filename))
           agenix.nixosModules.default
           nixtheplanet.nixosModules.macos-ventura
-          inputs.org-agenda-api.nixosModules.default
         ];
       };
     };
@@ -325,15 +332,5 @@
           mkConfig (params // machineParams)
       )
       defaultConfigurationParams;
-  }
-  //
-  # Per-system packages (using flake-utils)
-  inputs.flake-utils.lib.eachDefaultSystem (system:
-    let
-      pkgs = import nixpkgs { inherit system; };
-      orgAgendaPackages = import ./org-agenda-api.nix { inherit pkgs inputs system; };
-    in {
-      packages = orgAgendaPackages;
-    }
-  );
+  };
 }

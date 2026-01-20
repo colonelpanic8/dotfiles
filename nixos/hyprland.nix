@@ -1,12 +1,9 @@
-{ config, pkgs, lib, makeEnable, ... }:
+{ config, pkgs, lib, makeEnable, inputs, ... }:
 makeEnable config "myModules.hyprland" true {
   programs.hyprland = {
     enable = true;
-    # Plugins for XMonad-like experience
-    plugins = [
-      pkgs.hyprlandPlugins.hy3        # Dynamic tiling like XMonad
-      pkgs.hyprlandPlugins.hyprexpo   # Expose/overview (like skippy-xd)
-    ];
+    # Use Hyprland from the flake for proper plugin compatibility
+    package = inputs.hyprland.packages.${pkgs.system}.hyprland;
   };
 
   # Hyprland-specific packages
@@ -23,7 +20,10 @@ makeEnable config "myModules.hyprland" true {
     swappy         # Screenshot annotation
     wlsunset       # Night light / blue light filter
 
-    # For hy3 directional focus
-    jq             # JSON processing (used in scripts)
+    # hy3 plugin from flake (properly built against matching Hyprland)
+    inputs.hy3.packages.${pkgs.system}.hy3
+
+    # For scripts
+    jq
   ];
 }
