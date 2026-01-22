@@ -100,41 +100,12 @@ in
     database.ignorePostgresqlVersion = true;
   };
 
-  systemd.services.emacs-org-api = {
-    description = "Emacs org api";
-    after = [ "network.target" ];
-    wantedBy = [ "multi-user.target" ];
-    serviceConfig = {
-      ExecStart = ''${pkgs.runtimeShell} -l -c "${lib.getExe' pkgs.emacs "emacs"} --load /home/imalison/.emacs.d/org-api.el --daemon=org-api"'';
-      RemainAfterExit = true;
-      Restart = "on-failure";
-      User = "imalison";
-    };
-  };
-
-  age.secrets.org-api-passwords = {
-    file = ../secrets/org-api-passwords.age;
-    owner = "nginx";
-  };
-
   services.nginx = {
     enable = true;
     recommendedProxySettings = true;
     recommendedGzipSettings = true;
     recommendedTlsSettings = true;
     virtualHosts = {
-      "org-mode.1896Folsom.duckdns.org" = {
-        enableACME = true;
-        forceSSL = true;
-        locations."/" = {
-          proxyPass = "http://localhost:2025";
-          basicAuthFile = config.age.secrets.org-api-passwords.path;
-          extraConfig = ''
-            add_header 'Access-Control-Allow-Origin' '*' always;
-            add_header 'Access-Control-Allow-Methods' 'POST, PUT, DELETE, GET, PATCH, OPTIONS' always;
-          '';
-        };
-      };
       "gitlab.railbird.ai" = {
         enableACME = true;
         forceSSL = true;
