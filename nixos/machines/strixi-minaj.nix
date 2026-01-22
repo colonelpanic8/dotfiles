@@ -28,6 +28,8 @@
 
   environment.systemPackages = with pkgs; [
     android-studio
+    gimp
+    inkscape
   ];
 
   services.synergy.server = {
