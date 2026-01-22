@@ -529,7 +529,11 @@ that have a SCHEDULED date before today to the current date."
                      ((org-agenda-overriding-header "Completion History:")
                       (org-agenda-ndays 5)
                       (org-agenda-entry-types '(:none))
-                      (org-agenda-start-with-log-mode '(state))))))))
+                      (org-agenda-start-with-log-mode '(state)))))
+          ,(cons "i" (cons "Inbox" inbox))
+          ,(cons "n" (cons "Next" next))
+          ("w" "Wait" todo "WAIT"
+           ((org-agenda-overriding-header "Waiting:"))))))
 #+end_src
 *** Filters
 **** Regexp Presets
