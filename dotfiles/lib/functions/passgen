@@ -1,0 +1,18 @@
+#!/usr/bin/env sh
+
+function passgen {
+    if [ -z "$1" ]; then
+        echo "Usage: passgen <pass-entry-name>" >&2
+        return 1
+    fi
+
+    local base_pass upper symbol password
+    base_pass="$(xkcdpass -n 3 | tr -d ' ')"
+    upper="$(echo {A..Z} | tr ' ' '\n' | shuf -n1)"
+    symbol="$(echo '!@#$%^&*' | fold -w1 | shuf -n1)"
+    password="${base_pass}${upper}${symbol}"
+
+    echo "$password" | pass insert -e "$1"
+}
+
+passgen
