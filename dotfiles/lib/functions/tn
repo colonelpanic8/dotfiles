@@ -1,0 +1,31 @@
+#!/usr/bin/env sh
+
+function tn {
+    if [ -z "$TMUX" ]; then
+        echo "Not in a tmux session"
+        return 1
+    fi
+
+    base=$(basename "$PWD")
+    current=$(tmux display-message -p '#{session_name}')
+
+    # Don't rename if already named correctly
+    if [ "$current" = "$base" ]; then
+        echo "Session already named '$base'"
+        return 0
+    fi
+
+    if tmux has-session -t "$base" 2>/dev/null; then
+        i=2
+        while tmux has-session -t "${base}-${i}" 2>/dev/null; do
+            i=$((i+1))
+        done
+        tmux rename-session "${base}-${i}"
+        echo "Renamed session to '${base}-${i}'"
+    else
+        tmux rename-session "$base"
+        echo "Renamed session to '$base'"
+    fi
+}
+
+tn "$@"
