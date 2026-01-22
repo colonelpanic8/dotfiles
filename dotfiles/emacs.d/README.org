@@ -776,8 +776,14 @@ A macro for composing functions together to build an interactive command to copy
 #+END_SRC
 *** Copy portions of the buffer file name
 #+BEGIN_SRC emacs-lisp
+(defun imalison:buffer-file-name-or-directory ()
+  "Return `buffer-file-name' if available, otherwise `default-directory'.
+This allows copy functions to work with buffers like magit that
+aren't visiting a file but are associated with a directory."
+  (or buffer-file-name default-directory))
+
 (defmacro imalison:copy-buffer-file-path-builder (&rest args)
-  `(imalison:compose-copy-builder ,@args buffer-file-name))
+  `(imalison:compose-copy-builder ,@args imalison:buffer-file-name-or-directory))
 
 (imalison:copy-buffer-file-path-builder imalison:copy-buffer-file-path-full)
 (imalison:copy-buffer-file-path-builder imalison:copy-buffer-file-name
