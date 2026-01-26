@@ -500,7 +500,11 @@ that have a SCHEDULED date before today to the current date."
       (missing-priority
        '(tags-todo "-PRIORITY={.}/!"
                    ((org-agenda-overriding-header
-                     "These don't have priorities:")))))
+                     "These don't have priorities:"))))
+      (high-priority-unscheduled
+       '(tags-todo "+PRIORITY<\"C\"-SCHEDULED={.}-DEADLINE={.}/!"
+                   ((org-agenda-overriding-header
+                     "High priority without scheduled/deadline:")))))
 
   (setq org-agenda-custom-commands
         `(("M" "Main agenda view"
@@ -533,7 +537,8 @@ that have a SCHEDULED date before today to the current date."
           ,(cons "i" (cons "Inbox" inbox))
           ,(cons "n" (cons "Next" next))
           ("w" "Wait" todo "WAIT"
-           ((org-agenda-overriding-header "Waiting:"))))))
+           ((org-agenda-overriding-header "Waiting:")))
+          ,(cons "u" (cons "High priority unscheduled" high-priority-unscheduled)))))
 #+end_src
 *** Filters
 **** Regexp Presets
