@@ -144,7 +144,7 @@
     nixpkgsPRPatches = [
       {
         pr = 434160; # git-sync-rs package
-        hash = "sha256-zjzjmC1XJmwfHr/YXFyYsqUFR5MHSoxWWyxIR35YNbM=";
+        hash = "sha256-0j0IcyHd7rE+MXc0SHu8UixW7Jbtzu1NnzSjEVeZmTA=";
       }
       # claude-code
       # {

@@ -1,12 +1,5 @@
 final: prev:
 let
-  # Claude Code version override - update these values to bump the version
-  claudeCodeVersion = {
-    version = "2.1.14";
-    hash = "sha256-fgDSKCrauOXbgPc+FmwFX3Ro8CGxwW0Jki0wZz53gpg=";
-    npmDepsHash = "";
-  };
-
   # Codex version override - update these values to bump the version
   codexVersion = {
     version = "0.86.0";
@@ -18,16 +11,6 @@ in
   # Fix poetry pbs-installer version constraint issue
   poetry = prev.poetry.overrideAttrs (oldAttrs: {
     dontCheckRuntimeDeps = true;
-  });
-
-  # Hyprland and hy3 are provided via flakes for proper plugin compatibility
-  # See flake.nix inputs: hyprland and hy3
-  claude-code = prev.claude-code.overrideAttrs (oldAttrs: {
-    inherit (claudeCodeVersion) version npmDepsHash;
-    src = prev.fetchurl {
-      url = "https://registry.npmjs.org/@anthropic-ai/claude-code/-/claude-code-${claudeCodeVersion.version}.tgz";
-      inherit (claudeCodeVersion) hash;
-    };
   });
 
   # codex = prev.codex.overrideAttrs (oldAttrs: rec {
