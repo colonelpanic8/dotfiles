@@ -362,10 +362,8 @@
       };
     in {
       packages = {
-        container-colonelpanic = containerLib.containers.colonelpanic;
-        container-kat = containerLib.containers.kat;
-        # Default container
-        container = containerLib.containers.colonelpanic;
+        colonelpanic-org-agenda-api = containerLib.containers.colonelpanic;
+        kat-org-agenda-api = containerLib.containers.kat;
       };
 
       # Dev shell for org-agenda-api deployment

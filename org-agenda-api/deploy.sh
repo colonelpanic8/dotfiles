@@ -68,11 +68,11 @@ echo "  dotfiles:       $DOTFILES_REV"
 # Build container from nixos flake for this instance
 # Use --refresh to ensure we're not using stale cached builds
 echo "Building container from flake..."
-nix build "$NIXOS_DIR#container-$INSTANCE" -o "result-container-$INSTANCE" --refresh
+nix build "$NIXOS_DIR#${INSTANCE}-org-agenda-api" -o "result-${INSTANCE}-org-agenda-api" --refresh
 
 # Load into Docker
 echo "Loading container into Docker..."
-LOADED_IMAGE=$(docker load < "result-container-$INSTANCE" 2>&1 | grep -oP 'Loaded image: \K.*')
+LOADED_IMAGE=$(docker load < "result-${INSTANCE}-org-agenda-api" 2>&1 | grep -oP 'Loaded image: \K.*')
 echo "Loaded: $LOADED_IMAGE"
 
 # Tag with both versions for full reproducibility
@@ -131,7 +131,7 @@ echo "Deploying $IMAGE_NAME..."
 flyctl deploy --image "$IMAGE_NAME" -c "$CONFIG_DIR/fly.toml" "$@"
 
 # Cleanup
-rm -f "result-container-$INSTANCE"
+rm -f "result-${INSTANCE}-org-agenda-api"
 
 echo ""
 echo "Done! Deployed to $FLY_APP"
