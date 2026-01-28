@@ -11,6 +11,7 @@ makeEnable config "myModules.code" true {
     claude-code
     codex
     gemini-cli
+    opencode
 
     # MCP
     github-mcp-server
