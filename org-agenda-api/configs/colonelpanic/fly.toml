@@ -1,0 +1,35 @@
+# fly.toml - Fly.io deployment configuration
+# See https://fly.io/docs/reference/configuration/
+
+app = "colonelpanic-org-agenda"
+primary_region = "ord"
+
+# Image is built from flake and passed via deploy.sh --image flag
+
+[env]
+  TZ = "America/Los_Angeles"
+
+[http_service]
+  internal_port = 80
+  force_https = true
+  auto_stop_machines = false
+  auto_start_machines = true
+  min_machines_running = 1
+
+  # Give services time to start (nginx + emacs)
+  [http_service.concurrency]
+    type = "connections"
+    hard_limit = 25
+    soft_limit = 20
+
+[[http_service.checks]]
+  grace_period = "120s"
+  interval = "30s"
+  timeout = "10s"
+  method = "GET"
+  path = "/health"
+
+[[vm]]
+  cpu_kind = "shared"
+  cpus = 1
+  memory_mb = 512

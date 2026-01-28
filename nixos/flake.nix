@@ -27,6 +27,11 @@
 
     agenix = {url = "github:ryantm/agenix";};
 
+    org-agenda-api = {
+      url = "github:colonelpanic8/org-agenda-api";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+
     # Hyprland and plugins from official flakes for proper plugin compatibility
     hyprland = {
       url = "git+https://github.com/hyprwm/Hyprland?submodules=1&ref=refs/tags/v0.53.0";
@@ -138,6 +143,8 @@
     imalison-taffybar,
     hyprland,
     hy3,
+    org-agenda-api,
+    flake-utils,
     ...
   }: let
     # Nixpkgs PR patches - just specify PR number and hash
@@ -315,10 +322,12 @@
       extra-substituters = [
         "http://192.168.1.26:5050"
         "https://cache.flox.dev"
+        "https://org-agenda-api.cachix.org"
       ];
       extra-trusted-public-keys = [
         "1896Folsom.duckdns.org:U2FTjvP95qwAJo0oGpvmUChJCgi5zQoG1YisoI08Qoo="
         "flox-cache-public-1:7F4OyH7ZCnFhcze3fJdfyXYLQw/aV7GEed86nQ7IsOs="
+        "org-agenda-api.cachix.org-1:liKFemKkOLV/rJt2txDNcpDjRsqLuBneBjkSw/UVXKA="
       ];
     };
     nixosConfigurations =
@@ -332,5 +341,57 @@
           mkConfig (params // machineParams)
       )
       defaultConfigurationParams;
-  };
+  } // flake-utils.lib.eachDefaultSystem (system:
+    let
+      pkgs = import nixpkgs { inherit system; };
+
+      # Get short revs for tagging
+      orgApiRev = builtins.substring 0 7 (org-agenda-api.rev or "unknown");
+      dotfilesRev = builtins.substring 0 7 (self.rev or self.dirtyRev or "dirty");
+
+      # Get tangled config files from org-agenda-api.nix
+      dotfilesOrgApi = import ./org-agenda-api.nix {
+        inherit pkgs system;
+        inherit inputs;
+      };
+      tangledConfig = dotfilesOrgApi.org-agenda-custom-config;
+
+      # Import container build logic
+      containerLib = import ../org-agenda-api/container.nix {
+        inherit pkgs system tangledConfig org-agenda-api orgApiRev dotfilesRev;
+      };
+    in {
+      packages = {
+        container-colonelpanic = containerLib.containers.colonelpanic;
+        container-kat = containerLib.containers.kat;
+        # Default container
+        container = containerLib.containers.colonelpanic;
+      };
+
+      # Dev shell for org-agenda-api deployment
+      devShells.org-agenda-api = pkgs.mkShell {
+        buildInputs = [
+          pkgs.flyctl
+          agenix.packages.${system}.default
+          pkgs.age
+          pkgs.ssh-to-age
+          pkgs.git
+          pkgs.jq
+          pkgs.just
+          pkgs.curl
+        ];
+        shellHook = ''
+          echo ""
+          echo "org-agenda-api deployment shell"
+          echo ""
+          echo "Commands:"
+          echo "  just --list             - Show available API commands"
+          echo "  ./deploy.sh <instance>  - Deploy to Fly.io (colonelpanic or kat)"
+          echo "  flyctl                  - Fly.io CLI"
+          echo "  agenix -e <file>        - Edit encrypted secrets"
+          echo ""
+        '';
+      };
+    }
+  );
 }
