@@ -30,7 +30,7 @@ We're going to use this to write separate parts of our config to different secti
 * My Customization Variables
 #+begin_src emacs-lisp :tangle org-config-preface.el
 (defvar imalison:org-dir "~/org")
-(defvar imalison:shared-org-dir "~/katnivan")
+(defvar imalison:shared-org-dir "~/org")
 (defvar imalison:org-whoami "Ivan Malison")
 (defvar imalison:org-people (list nil "Ivan Malison" "Kat Huang"))
 (defvar imalison:org-people-associated-states
