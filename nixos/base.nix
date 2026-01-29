@@ -65,8 +65,13 @@ makeEnable config "myModules.base" true {
     defaultLocale = "en_US.UTF-8";
   };
 
-  # # Update timezone automatically
+  # Update timezone automatically
+  # The tzupdate.timer handles triggering with OnStartupSec=30s delay.
+  # We disable the service's direct WantedBy since network-online.target
+  # is reached before network is actually online (because we disable
+  # NetworkManager-wait-online.service to avoid boot hangs).
   services.tzupdate.enable = true;
+  systemd.services.tzupdate.wantedBy = pkgs.lib.mkForce [];
 
   # TODO: Add a comment explaining what this does.
   services.locate.enable = true;
