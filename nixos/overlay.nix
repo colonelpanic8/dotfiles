@@ -1,10 +1,19 @@
 final: prev:
 let
+  # Enable/disable version overrides (set to false to use nixpkgs versions)
+  enableCodexOverride = true;
+  enableClaudeCodeOverride = true;
+
   # Codex version override - update these values to bump the version
   codexVersion = {
-    version = "0.86.0";
-    hash = "sha256-sypqDp67nMnxSmdUs2W8TCmfe2Ye9jO3vXLOpNeqjlI=";
-    cargoHash = "sha256-Ryr5mFc+StT1d+jBtRsrOzMtyEJf7W1HbMbnC84ps4s=";
+    version = "0.88.0";
+    hash = "sha256-Ff6Ut1GwRPd2oB4/YojKgS/CYMG0TVizXOHKfpKClqY=";
+    cargoHash = "sha256-eLao+Jaq7+Bu9QNHDJYD3zX2BQvlX/BSTYr4gpCD++Q=";
+  };
+  claudeCodeVersion = {
+    version = "2.1.22";
+    hash = "sha256-OqvLiwB5TwZaxDvyN/+/+eueBdWNaYxd81cd5AZK/mA=";
+    npmDepsHash = "";
   };
 in
 {
@@ -13,20 +22,32 @@ in
     dontCheckRuntimeDeps = true;
   });
 
-  # codex = prev.codex.overrideAttrs (oldAttrs: rec {
-  #   inherit (codexVersion) version cargoHash;
-  #   src = prev.fetchFromGitHub {
-  #     owner = "openai";
-  #     repo = "codex";
-  #     tag = "rust-v${codexVersion.version}";
-  #     inherit (codexVersion) hash;
-  #   };
-  #   cargoDeps = prev.rustPlatform.fetchCargoVendor {
-  #     inherit src;
-  #     sourceRoot = "${src.name}/codex-rs";
-  #     hash = cargoHash;
-  #   };
-  # });
+  # XXX: Don't remove this code - use enableCodexOverride flag instead.
+  # nixpkgs often lags behind and codex moves extremely quickly
+  codex = if enableCodexOverride then prev.codex.overrideAttrs (oldAttrs: rec {
+    inherit (codexVersion) version cargoHash;
+    src = prev.fetchFromGitHub {
+      owner = "openai";
+      repo = "codex";
+      tag = "rust-v${codexVersion.version}";
+      inherit (codexVersion) hash;
+    };
+    cargoDeps = prev.rustPlatform.fetchCargoVendor {
+      inherit src;
+      sourceRoot = "${src.name}/codex-rs";
+      hash = cargoHash;
+    };
+  }) else prev.codex;
+
+  # XXX: Don't remove this code - use enableClaudeCodeOverride flag instead.
+  # nixpkgs often lags behind and claude-code moves extremely quickly
+  claude-code = if enableClaudeCodeOverride then prev.claude-code.overrideAttrs (oldAttrs: {
+    inherit (claudeCodeVersion) version npmDepsHash;
+    src = prev.fetchurl {
+      url = "https://registry.npmjs.org/@anthropic-ai/claude-code/-/claude-code-${claudeCodeVersion.version}.tgz";
+      inherit (claudeCodeVersion) hash;
+    };
+  }) else prev.claude-code;
 
   # nvidia-container-toolkit = prev.nvidia-container-toolkit.overrideAttrs(old: {
   #   postInstall = ''
