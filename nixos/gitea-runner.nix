@@ -14,6 +14,8 @@ makeEnable config "myModules.gitea-runner" false {
         };
         container = {
           workdir_parent = "${gitea-runner-directory}/workspace";
+          # Increase shared memory for containers (default 64MB is too small for Metro/Gradle)
+          options = "--shm-size=2g";
         };
         host = {
           workdir_parent = "${gitea-runner-directory}/action-cache-dir";
