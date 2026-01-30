@@ -67,8 +67,11 @@ echo "  dotfiles:       $DOTFILES_REV"
 
 # Build container from nixos flake for this instance
 # Use --refresh to ensure we're not using stale cached builds
+# Use org-agenda-api cachix for faster builds
 echo "Building container from flake..."
-nix build "$NIXOS_DIR#${INSTANCE}-org-agenda-api" -o "result-${INSTANCE}-org-agenda-api" --refresh
+nix build "$NIXOS_DIR#${INSTANCE}-org-agenda-api" -o "result-${INSTANCE}-org-agenda-api" --refresh \
+  --option extra-substituters "https://org-agenda-api.cachix.org" \
+  --option extra-trusted-public-keys "org-agenda-api.cachix.org-1:MzzlSeQpJ/erP9/qYU6EiS4LM4AHA/mpc8s4thtEvNI="
 
 # Load into Docker
 echo "Loading container into Docker..."
