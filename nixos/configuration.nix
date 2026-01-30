@@ -42,6 +42,7 @@
     ./wsl.nix
     ./wyoming.nix
     ./xmonad.nix
+    ./org-agenda-api-host.nix
   ];
 
   options = {

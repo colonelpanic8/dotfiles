@@ -1,10 +1,25 @@
-{ config, lib, pkgs, forEachUser, ... }:
+{ config, lib, pkgs, forEachUser, inputs, orgAgendaApiContainer ? null, ... }:
 {
   imports = [
     ../configuration.nix
+    inputs.agenix.nixosModules.default
   ];
 
   networking.hostName = "railbird-sf";
+
+  # org-agenda-api hosting with nginx + Let's Encrypt
+  age.secrets.org-api-env = {
+    file = ../secrets/org-api-passwords.age;
+    # Readable by the podman container service
+  };
+
+  services.org-agenda-api-host = {
+    enable = true;
+    domain = "rbsf.tplinkdns.com";
+    containerImage = "colonelpanic-org-agenda-api";
+    containerImageFile = orgAgendaApiContainer;
+    secretsFile = config.age.secrets.org-api-env.path;
+  };
 
   hardware.enableRedistributableFirmware = true;
   boot.initrd.availableKernelModules = [ "nvme" "xhci_pci" "ahci" "usbhid" "usb_storage" "sd_mod" ];
