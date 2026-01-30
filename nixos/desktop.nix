@@ -1,5 +1,6 @@
 { inputs, config, pkgs, makeEnable, ... }:
 makeEnable config "myModules.desktop" true {
+  services.greenclip.enable = true;
   imports = [
     ./fonts.nix
     ./hyprland.nix
@@ -65,7 +66,6 @@ makeEnable config "myModules.desktop" true {
     feh
     firefox
     cheese
-    gpaste
     kdePackages.kleopatra
     libnotify
     libreoffice
