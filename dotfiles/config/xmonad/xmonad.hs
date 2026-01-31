@@ -1019,7 +1019,7 @@ addKeys conf@XConfig { modMask = modm } =
     -- Non-XMonad
 
     , ((modm, xK_v), spawn "xclip -o | xdotool type --file -")
-    , ((hyper, xK_v), spawn "rofi_clipboard.sh")
+    , ((hyper, xK_v), spawn "rofi -modi 'clipboard:greenclip print' -show clipboard")
     , ((hyper, xK_p), spawn "rofi-pass")
     , ((hyper, xK_h), spawn "rofi_shutter")
     , ((hyper, xK_c), spawn "shell_command.sh")
