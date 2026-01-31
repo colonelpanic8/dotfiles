@@ -249,4 +249,8 @@ Returns nil for non-entry templates or templates that can't be converted."
 ;; The org-agenda-api-window-habit.el module is now included in the container,
 ;; providing /habit-config and /habit-status endpoints for window-habit integration.
 
+;; Register exposed functions for remote execution via /call-function endpoint
+(setq org-agenda-api-exposed-functions
+      '((org-reschedule-past-to-today :name "Reschedule Overdue to Today")))
+
 ;;; custom-config.el ends here
