@@ -1,8 +1,8 @@
 final: prev:
 let
   # Enable/disable version overrides (set to false to use nixpkgs versions)
-  enableCodexOverride = true;
-  enableClaudeCodeOverride = true;
+  enableCodexOverride = false; # Using PR patches instead
+  enableClaudeCodeOverride = false; # Disabled - needs proper buildNpmPackage override
 
   # Codex version override - update these values to bump the version
   codexVersion = {
@@ -13,7 +13,7 @@ let
   claudeCodeVersion = {
     version = "2.1.22";
     hash = "sha256-OqvLiwB5TwZaxDvyN/+/+eueBdWNaYxd81cd5AZK/mA=";
-    npmDepsHash = "";
+    npmDepsHash = "sha256-vy7osk3UAOEgsJx9jdcGe2wICOk5Urzxh1WLAHyHM+U=";
   };
 in
 {

@@ -3,7 +3,7 @@
     imports = [ inputs.agenix.homeManagerModules.default ];
     age.identityPaths = [ "${config.home.homeDirectory}/.ssh/id_ed25519" ];
     home.packages = [
-      inputs.agenix.packages."${pkgs.system}".default
+      inputs.agenix.packages."${pkgs.stdenv.hostPlatform.system}".default
     ];
     age.secrets.gpg-keys.file = ./secrets/gpg-keys.age;
     age.secrets.gpg-passphrase.file = ./secrets/gpg-passphrase.age;

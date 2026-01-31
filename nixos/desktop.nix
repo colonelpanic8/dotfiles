@@ -87,7 +87,7 @@ makeEnable config "myModules.desktop" true {
     # TODO: reenable
     # transmission_3-gtk
     vlc
-    xfce.thunar
+    thunar
 
     # Audio
     picard
@@ -102,7 +102,7 @@ makeEnable config "myModules.desktop" true {
     # Visualization
     graphviz
     nodePackages.mermaid-cli
-  ] ++ (if pkgs.system == "x86_64-linux" then with pkgs; [
+  ] ++ (if pkgs.stdenv.hostPlatform.system == "x86_64-linux" then with pkgs; [
     google-chrome
     pommed_light
     slack

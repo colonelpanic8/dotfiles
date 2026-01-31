@@ -78,7 +78,7 @@ makeEnable config "myModules.code" true {
     nixd
     nil
     alejandra
-  ] ++ (if pkgs.system == "x86_64-linux" then with pkgs; [
+  ] ++ (if pkgs.stdenv.hostPlatform.system == "x86_64-linux" then with pkgs; [
     # purescript
     purescript
     # Broken

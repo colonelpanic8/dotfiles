@@ -153,6 +153,10 @@
         pr = 434160; # git-sync-rs package
         hash = "sha256-0j0IcyHd7rE+MXc0SHu8UixW7Jbtzu1NnzSjEVeZmTA=";
       }
+      {
+        pr = 483705; # codex: 0.89.0 -> 0.92.0
+        hash = "sha256-tkZP0ATAAuBNnJGo+xjXJD0byXAgeKoB+U3ZUaoCTHM=";
+      }
       # claude-code
       # {
       #   pr = 464698;

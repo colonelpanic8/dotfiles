@@ -8,7 +8,7 @@ makeEnable config "myModules.electron" false {
     # keybase-gui
     zoom-us
   ];
-  home-manager.users = forEachUser (if pkgs.system == "x86_64-linux" then {
+  home-manager.users = forEachUser (if pkgs.stdenv.hostPlatform.system == "x86_64-linux" then {
     # systemd.user.services.bitwarden = {
     #   Unit = {
     #     Description = "Bitwarden";

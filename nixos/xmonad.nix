@@ -31,7 +31,7 @@ makeEnable config "myModules.xmonad" true  {
     # haskellPackages.gtk-sni-tray
     haskellPackages.status-notifier-item
     haskellPackages.dbus-hslogger
-    inputs.imalison-taffybar.defaultPackage."${pkgs.system}"
+    inputs.imalison-taffybar.defaultPackage."${pkgs.stdenv.hostPlatform.system}"
   ];
 
   home-manager.users = forEachUser {
@@ -43,7 +43,7 @@ makeEnable config "myModules.xmonad" true  {
 
     services.taffybar = {
       enable = true;
-      package = inputs.imalison-taffybar.defaultPackage."${pkgs.system}";
+      package = inputs.imalison-taffybar.defaultPackage."${pkgs.stdenv.hostPlatform.system}";
     };
 
     services.kdeconnect = {

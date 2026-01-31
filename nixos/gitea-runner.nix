@@ -40,7 +40,7 @@ makeEnable config "myModules.gitea-runner" false {
       url = "https://dev.railbird.ai";
       tokenFile = config.age.secrets.gitea-runner-token.path;
       labels = [
-        "nixos-${pkgs.system}:host"
+        "nixos-${pkgs.stdenv.hostPlatform.system}:host"
         "nix:docker://localhost:5921/nix-runner"
       ];
     };

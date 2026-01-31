@@ -3,7 +3,7 @@ makeEnable config "myModules.hyprland" true {
   programs.hyprland = {
     enable = true;
     # Use Hyprland from the flake for proper plugin compatibility
-    package = inputs.hyprland.packages.${pkgs.system}.hyprland;
+    package = inputs.hyprland.packages.${pkgs.stdenv.hostPlatform.system}.hyprland;
   };
 
   # Hyprland-specific packages
@@ -21,7 +21,7 @@ makeEnable config "myModules.hyprland" true {
     wlsunset       # Night light / blue light filter
 
     # hy3 plugin from flake (properly built against matching Hyprland)
-    inputs.hy3.packages.${pkgs.system}.hy3
+    inputs.hy3.packages.${pkgs.stdenv.hostPlatform.system}.hy3
 
     # For scripts
     jq
