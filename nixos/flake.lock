@@ -1725,11 +1725,11 @@
     "mova": {
       "flake": false,
       "locked": {
-        "lastModified": 1769760863,
-        "narHash": "sha256-+y8JpufkUh+LrLvHCidVdI8IV6Usw2C9Hv+DFCL1bQc=",
+        "lastModified": 1769896762,
+        "narHash": "sha256-tWAqCTbe3lGdWAD/Ht2+eT4TzuIXAmAxFZxB5cMM808=",
         "owner": "colonelpanic8",
         "repo": "mova",
-        "rev": "69a0519f35570608143c5d44ad78b722504df4bd",
+        "rev": "8ffbe37b644f649e02757b9bda10aafd56a7f207",
         "type": "github"
       },
       "original": {
@@ -2206,11 +2206,11 @@
         "org-window-habit": "org-window-habit"
       },
       "locked": {
-        "lastModified": 1769814284,
-        "narHash": "sha256-QTLVkkpwAXVGxtqz9QAUGVXxk4t+h+mYAL1+xqjWaG4=",
+        "lastModified": 1769896795,
+        "narHash": "sha256-qxuHF4R23tq7ozuFhYymslwzCUlNZz5M8h4xsJ4pH5A=",
         "owner": "colonelpanic8",
         "repo": "org-agenda-api",
-        "rev": "9f5b9d48c629d69f6a6fabd77fecf868502a92ce",
+        "rev": "73a823dd9831e57c4dceff1712079cfe81d6a1c9",
         "type": "github"
       },
       "original": {
@@ -2254,11 +2254,11 @@
     "org-window-habit": {
       "flake": false,
       "locked": {
-        "lastModified": 1769811286,
-        "narHash": "sha256-ph4d9o4GI4VTGHhtnaQrLuCcH+MH/mHAyNSdHD64mQM=",
+        "lastModified": 1769839162,
+        "narHash": "sha256-JEiw4ctu0qxOOsn3y8TiDDTDTQF/rhbq0qNcziclOSE=",
         "owner": "colonelpanic8",
         "repo": "org-window-habit",
-        "rev": "ffd87c630a98cd5527b50ef5f8d826bd92424aec",
+        "rev": "4eecdaa8adf93a837071796e4580f4f729ff2a9e",
         "type": "github"
       },
       "original": {
