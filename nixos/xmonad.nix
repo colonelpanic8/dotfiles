@@ -206,8 +206,9 @@ makeEnable config "myModules.xmonad" true  {
     '';
 
     # Override picom service to include animations config
+    # Use %h for home directory since XDG_CONFIG_HOME may not be set
     systemd.user.services.picom = {
-      Service.ExecStart = pkgs.lib.mkForce "${pkgs.picom}/bin/picom --config \${XDG_CONFIG_HOME}/picom/picom.conf --config \${XDG_CONFIG_HOME}/picom/animations.conf";
+      Service.ExecStart = pkgs.lib.mkForce "${pkgs.picom}/bin/picom --config %h/.config/picom/picom.conf --config %h/.config/picom/animations.conf";
     };
 
     # systemd.user.services.notifications-tray-icon = {
