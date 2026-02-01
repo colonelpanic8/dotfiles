@@ -92,133 +92,124 @@ makeEnable config "myModules.xmonad" true  {
       enable = true;
     };
 
+    # Disable home-manager's picom config generation - we'll write a complete config
+    # ourselves to work around the libconfig list vs array syntax issue
     services.picom = {
       enable = true;
       vSync = config.myModules.xmonad.picom.vSync.enable;
       backend = "glx";
-
-      settings = {
-        # Note: animations must use () not [] in libconfig, so we put them in extraArgs
-        # via xdg.configFile below
-
-        fade-in-step = 0.028;
-        fade-out-step = 0.028;
-        fading = true;
-
-        focus-exclude = ["class_g ?= 'rofi'" "class_g ?= 'Steam'"];
-        rounded-corners-exclude = [
-          "! name~=''" # Qtile == empty wm_class..
-          "window_type = 'dock'"
-          "window_type = 'desktop'"
-          "class_g ?= 'Dunst'"
-        ];
-
-        corner-radius = 10;
-        round-borders = 0;
-        round-borders-exclude = [
-          "! name~=''" # Qtile == empty wm_class..
-        ];
-
-        daemon = false;
-        dbus = false;
-        mark-wmwin-focused = false;
-        mark-ovredir-focused = false;
-        detect-rounded-corners = true;
-        detect-client-opacity = true;
-
-        unredir-if-possible = false;
-        unredir-if-possible-exclude = [];
-        detect-transient = true;
-        detect-client-leader = true;
-
-        invert-color-include = [];
-        glx-no-stencil = true;
-        use-damage = false;
-        transparent-clipping = false;
-      };
     };
 
-    # Spring physics animations config - written separately because home-manager
-    # generates [] (arrays) but picom needs () (lists) for animations
-    # Use @include directive in main config to include this
-    xdg.configFile."picom/animations.conf".text = ''
-      # Spring physics animations (mainline picom with spring-physics branch)
-      # Syntax: spring(stiffness, dampening, mass) or spring(stiffness, dampening, mass, clamping)
-      # Set clamping to false for bounce/overshoot effects
-      animations = (
-        # Window move/resize animation with spring physics
-        {
-          triggers = ["geometry"];
-          offset-x = {
-            curve = "spring(250, 20, 1, false)";
-            start = "window-x-before - window-x";
-            end = 0;
-          };
-          offset-y = {
-            curve = "spring(250, 20, 1, false)";
-            start = "window-y-before - window-y";
-            end = 0;
-          };
-        },
-        # Opacity fade animation
-        {
-          triggers = ["open", "show"];
-          opacity = {
-            curve = "cubic-bezier(0.25, 0.1, 0.25, 1)";
-            duration = 0.2;
-            start = 0;
-            end = "window-raw-opacity";
-          };
-          scale-x = {
-            curve = "cubic-bezier(0.25, 0.1, 0.25, 1)";
-            duration = 0.2;
-            start = 0.9;
-            end = 1;
-          };
-          scale-y = {
-            curve = "cubic-bezier(0.25, 0.1, 0.25, 1)";
-            duration = 0.2;
-            start = 0.9;
-            end = 1;
-          };
-        },
-        {
-          triggers = ["close", "hide"];
-          opacity = {
-            curve = "cubic-bezier(0.25, 0.1, 0.25, 1)";
-            duration = 0.2;
-            start = "window-raw-opacity";
-            end = 0;
-          };
-          scale-x = {
-            curve = "cubic-bezier(0.25, 0.1, 0.25, 1)";
-            duration = 0.2;
-            start = 1;
-            end = 0.9;
-          };
-          scale-y = {
-            curve = "cubic-bezier(0.25, 0.1, 0.25, 1)";
-            duration = 0.2;
-            start = 1;
-            end = 0.9;
-          };
-        }
-      );
-    '';
+    # Write complete picom config directly to avoid home-manager's libconfig generator
+    # which incorrectly uses [] instead of () for the animations list
+    xdg.configFile."picom/picom.conf" = {
+      force = true;  # Override home-manager's generated config
+      text = ''
+        # Backend and basic settings
+        backend = "glx";
+        vsync = ${if config.myModules.xmonad.picom.vSync.enable then "true" else "false"};
 
-    # Wrapper config that includes both home-manager generated config and animations
-    # This works around picom not supporting multiple --config flags
-    # Must use absolute paths since files are symlinks to nix store
-    xdg.configFile."picom/picom-with-animations.conf".text = ''
-      # Include home-manager generated base config
-      @include "~/.config/picom/picom.conf"
-      # Include spring physics animations (uses () list syntax)
-      @include "~/.config/picom/animations.conf"
-    '';
+        # Spring physics animations (mainline picom with spring-physics branch)
+        # Syntax: spring(stiffness, dampening, mass) or spring(stiffness, dampening, mass, clamping)
+        # Set clamping to false for bounce/overshoot effects
+        animations = (
+          # Window move/resize animation with spring physics
+          {
+            triggers = ["geometry"];
+            offset-x = {
+              curve = "spring(250, 20, 1, false)";
+              start = "window-x-before - window-x";
+              end = 0;
+            };
+            offset-y = {
+              curve = "spring(250, 20, 1, false)";
+              start = "window-y-before - window-y";
+              end = 0;
+            };
+          },
+          # Opacity fade animation
+          {
+            triggers = ["open", "show"];
+            opacity = {
+              curve = "cubic-bezier(0.25, 0.1, 0.25, 1)";
+              duration = 0.2;
+              start = 0;
+              end = "window-raw-opacity";
+            };
+            scale-x = {
+              curve = "cubic-bezier(0.25, 0.1, 0.25, 1)";
+              duration = 0.2;
+              start = 0.9;
+              end = 1;
+            };
+            scale-y = {
+              curve = "cubic-bezier(0.25, 0.1, 0.25, 1)";
+              duration = 0.2;
+              start = 0.9;
+              end = 1;
+            };
+          },
+          {
+            triggers = ["close", "hide"];
+            opacity = {
+              curve = "cubic-bezier(0.25, 0.1, 0.25, 1)";
+              duration = 0.2;
+              start = "window-raw-opacity";
+              end = 0;
+            };
+            scale-x = {
+              curve = "cubic-bezier(0.25, 0.1, 0.25, 1)";
+              duration = 0.2;
+              start = 1;
+              end = 0.9;
+            };
+            scale-y = {
+              curve = "cubic-bezier(0.25, 0.1, 0.25, 1)";
+              duration = 0.2;
+              start = 1;
+              end = 0.9;
+            };
+          }
+        );
 
-    # Override picom service to use our wrapper config
-    systemd.user.services.picom = {
-      Service.ExecStart = pkgs.lib.mkForce "${pkgs.picom}/bin/picom --config %h/.config/picom/picom-with-animations.conf";
+        # Fading
+        fading = true;
+        fade-in-step = 0.028;
+        fade-out-step = 0.028;
+
+        # Corners
+        corner-radius = 10;
+        round-borders = 0;
+        rounded-corners-exclude = [
+          "! name~='''",
+          "window_type = 'dock'",
+          "window_type = 'desktop'",
+          "class_g ?= 'Dunst'"
+        ];
+        round-borders-exclude = [
+          "! name~='''"
+        ];
+
+        # Focus and opacity
+        focus-exclude = ["class_g ?= 'rofi'", "class_g ?= 'Steam'"];
+        invert-color-include = [];
+
+        # Detection
+        detect-rounded-corners = true;
+        detect-client-opacity = true;
+        detect-transient = true;
+        detect-client-leader = true;
+        mark-wmwin-focused = false;
+        mark-ovredir-focused = false;
+
+        # Other settings
+        daemon = false;
+        dbus = false;
+        unredir-if-possible = false;
+        unredir-if-possible-exclude = [];
+        use-damage = false;
+        transparent-clipping = false;
+      '';
     };
 
     # systemd.user.services.notifications-tray-icon = {
