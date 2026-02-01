@@ -15,7 +15,7 @@ in
     domain = mkOption {
       type = types.str;
       default = "rbsf.tplinkdns.com";
-      description = "Domain name for the service (used for Let's Encrypt)";
+      description = "Base domain name (service will be at org-agenda-api.<domain>)";
     };
 
     acmeEmail = mkOption {
@@ -62,7 +62,13 @@ in
 
     secretsFile = mkOption {
       type = types.path;
-      description = "Path to agenix-decrypted secrets file containing AUTH_PASSWORD and GIT_SSH_PRIVATE_KEY";
+      description = "Path to agenix-decrypted secrets file containing AUTH_PASSWORD";
+    };
+
+    sshKeyFile = mkOption {
+      type = types.nullOr types.path;
+      default = null;
+      description = "Path to agenix-decrypted SSH private key file (mounted at /secrets/ssh_key in container)";
     };
 
     timezone = mkOption {
@@ -87,7 +93,7 @@ in
       recommendedOptimisation = true;
       recommendedGzipSettings = true;
 
-      virtualHosts.${cfg.domain} = {
+      virtualHosts."org-agenda-api.${cfg.domain}" = {
         enableACME = true;
         forceSSL = true;
         locations."/" = {
@@ -120,6 +126,9 @@ in
           AUTH_USER = cfg.authUser;
         };
         environmentFiles = [ cfg.secretsFile ];
+        volumes = lib.optionals (cfg.sshKeyFile != null) [
+          "${cfg.sshKeyFile}:/secrets/ssh_key:ro"
+        ];
         extraOptions = [
           "--pull=never"  # Image is from nix store, don't try to pull
         ];

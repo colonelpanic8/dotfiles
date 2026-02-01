@@ -228,7 +228,7 @@
     defaultConfigurationParams =
       builtins.listToAttrs (map mkConfigurationParams machineFilenames);
     # Build org-agenda-api container for a given system
-    mkOrgAgendaApiContainer = system: let
+    mkOrgAgendaApiContainerInfo = system: let
       pkgs = import nixpkgs { inherit system; };
       orgApiRev = builtins.substring 0 7 (org-agenda-api.rev or "unknown");
       dotfilesRev = builtins.substring 0 7 (self.rev or self.dirtyRev or "dirty");
@@ -239,7 +239,11 @@
       containerLib = import ../org-agenda-api/container.nix {
         inherit pkgs system tangledConfig org-agenda-api orgApiRev dotfilesRev;
       };
-    in containerLib.containers.colonelpanic;
+      tag = "colonelpanic-${orgApiRev}-${dotfilesRev}";
+    in {
+      imageFile = containerLib.containers.colonelpanic;
+      imageName = "org-agenda-api:${tag}";
+    };
 
     customParams = {
       biskcomp = {
@@ -249,8 +253,11 @@
         system = "aarch64-linux";
       };
       railbird-sf = {
-        specialArgs = {
-          orgAgendaApiContainer = mkOrgAgendaApiContainer "x86_64-linux";
+        specialArgs = let
+          containerInfo = mkOrgAgendaApiContainerInfo "x86_64-linux";
+        in {
+          orgAgendaApiContainer = containerInfo.imageFile;
+          orgAgendaApiImageName = containerInfo.imageName;
         };
       };
     };

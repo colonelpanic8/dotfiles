@@ -1,4 +1,4 @@
-{ config, lib, pkgs, forEachUser, inputs, orgAgendaApiContainer ? null, ... }:
+{ config, lib, pkgs, forEachUser, inputs, orgAgendaApiContainer ? null, orgAgendaApiImageName ? "org-agenda-api", ... }:
 {
   imports = [
     ../configuration.nix
@@ -8,17 +8,22 @@
   networking.hostName = "railbird-sf";
 
   # org-agenda-api hosting with nginx + Let's Encrypt
-  age.secrets.org-api-env = {
-    file = ../secrets/org-api-passwords.age;
-    # Readable by the podman container service
+  # Separate secrets for org-agenda-api: auth password (env format) and SSH key (raw file)
+  age.secrets.org-api-auth-password = {
+    file = ../secrets/org-api-auth-password.age;
+  };
+  age.secrets.org-api-ssh-key = {
+    file = ../secrets/org-api-ssh-key.age;
+    mode = "0400";  # Restrictive permissions for SSH key
   };
 
   services.org-agenda-api-host = {
     enable = true;
     domain = "rbsf.tplinkdns.com";
-    containerImage = "colonelpanic-org-agenda-api";
+    containerImage = orgAgendaApiImageName;
     containerImageFile = orgAgendaApiContainer;
-    secretsFile = config.age.secrets.org-api-env.path;
+    secretsFile = config.age.secrets.org-api-auth-password.path;
+    sshKeyFile = config.age.secrets.org-api-ssh-key.path;
   };
 
   hardware.enableRedistributableFirmware = true;
