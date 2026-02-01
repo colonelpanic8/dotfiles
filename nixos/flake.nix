@@ -155,7 +155,7 @@
       }
       {
         pr = 483705; # codex: 0.89.0 -> 0.92.0
-        hash = "sha256-tkZP0ATAAuBNnJGo+xjXJD0byXAgeKoB+U3ZUaoCTHM=";
+        hash = "sha256-ZaiuRfl7gei0AyjPvLJidP3qfIaNbrvKROhKwmoiE5o=";
       }
       # claude-code
       # {

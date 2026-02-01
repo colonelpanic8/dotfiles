@@ -1,5 +1,12 @@
 { pkgs, ... }:
 {
+  # Automatic garbage collection of old home-manager generations
+  nix.gc = {
+    automatic = true;
+    dates = "weekly";
+    options = "--delete-older-than 7d";
+  };
+
   xdg.configFile."greenclip.toml".text = ''
     [greenclip]
       history_file = "~/.cache/greenclip.history"

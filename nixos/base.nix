@@ -93,6 +93,5 @@ makeEnable config "myModules.base" true {
 
   programs.dconf.enable = true;
 
-  home-manager.users = forEachUser (import ./home-manager.nix);
   nix.settings.trusted-users = realUsers ++ ["gitea-runner"];
 }
