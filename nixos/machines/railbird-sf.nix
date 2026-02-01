@@ -20,6 +20,7 @@
   services.org-agenda-api-host = {
     enable = true;
     domain = "rbsf.tplinkdns.com";
+    extraDomains = [ "org-agenda-api.rbsf.railbird.ai" ];
     containerImage = orgAgendaApiImageName;
     containerImageFile = orgAgendaApiContainer;
     secretsFile = config.age.secrets.org-api-auth-password.path;

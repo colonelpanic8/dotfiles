@@ -18,6 +18,13 @@ in
       description = "Base domain name (service will be at org-agenda-api.<domain>)";
     };
 
+    extraDomains = mkOption {
+      type = types.listOf types.str;
+      default = [];
+      description = "Additional full domain names to serve (each gets its own ACME cert)";
+      example = [ "org-agenda-api.example.com" ];
+    };
+
     acmeEmail = mkOption {
       type = types.str;
       default = "IvanMalison@gmail.com";
@@ -93,18 +100,24 @@ in
       recommendedOptimisation = true;
       recommendedGzipSettings = true;
 
-      virtualHosts."org-agenda-api.${cfg.domain}" = {
-        enableACME = true;
-        forceSSL = true;
-        locations."/" = {
-          proxyPass = "http://127.0.0.1:${toString containerPort}";
-          proxyWebsockets = true;
-          extraConfig = ''
-            proxy_read_timeout 300s;
-            proxy_connect_timeout 75s;
-          '';
+      virtualHosts = let
+        mkVirtualHost = domain: {
+          name = domain;
+          value = {
+            enableACME = true;
+            forceSSL = true;
+            locations."/" = {
+              proxyPass = "http://127.0.0.1:${toString containerPort}";
+              proxyWebsockets = true;
+              extraConfig = ''
+                proxy_read_timeout 300s;
+                proxy_connect_timeout 75s;
+              '';
+            };
+          };
         };
-      };
+        allDomains = [ "org-agenda-api.${cfg.domain}" ] ++ cfg.extraDomains;
+      in builtins.listToAttrs (map mkVirtualHost allDomains);
     };
 
     # Open firewall for HTTP/HTTPS
