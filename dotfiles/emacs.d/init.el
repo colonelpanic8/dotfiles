@@ -27,9 +27,12 @@
 
 ;;The packages in this section are used to as utilities in the rest of this init file.
 ;;Ensure they are installed/activated first.
-(use-package s :demand t)
+(use-package s
+  :ensure (:wait t)
+  :demand t)
 
 (use-package dash
+  :ensure (:wait t)
   :demand t
   :config
   (progn (dash-enable-font-lock)))
@@ -78,6 +81,12 @@
        :files (:defaults "lisp/*.el" ("etc/styles/" "etc/styles/*"))
        :wait t))
 
+(elpaca-wait)
+
+;; Install transient early to prevent built-in version from loading
+(use-package transient
+  :ensure (:host github :repo "magit/transient" :wait t)
+  :demand t)
 (elpaca-wait)
 
 (when (or (equal (s-trim (shell-command-to-string "whoami")) "kat")

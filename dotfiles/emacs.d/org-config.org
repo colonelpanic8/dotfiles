@@ -1004,8 +1004,6 @@ alphanumeric characters only."
   :config
   (progn
     (when (version<= "29.0" emacs-version)
-      (use-package emacsql-sqlite-builtin
-        :demand t)
       (setq org-roam-database-connector 'sqlite-builtin))
     (org-roam-db-autosync-mode +1)
 
@@ -1027,20 +1025,23 @@ alphanumeric characters only."
        ((get-buffer org-roam-buffer) 'exists)
        (t 'none)))
 
-    (use-package frame-mode
-      :if imalison:use-frame-mode
-      :demand t
-      :config
-      (progn
-        (emit-variable-set-mode
-         imalison:org-roam-set-frame-visibility-mode
-         org-roam-buffer-visibility-fn 'imalison:org-roam-frame-based-buffer-visibility-fn)
-        (emit-make-mode-dependent imalison:org-roam-set-frame-visibility-mode frame-mode))))
+    ;; org-roam-buffer-visibility-fn was removed in newer org-roam versions
+    (when (and imalison:use-frame-mode (boundp 'org-roam-buffer-visibility-fn))
+      (require 'frame-mode)
+      (emit-variable-set-mode
+       imalison:org-roam-set-frame-visibility-mode
+       org-roam-buffer-visibility-fn 'imalison:org-roam-frame-based-buffer-visibility-fn)
+      (emit-make-mode-dependent imalison:org-roam-set-frame-visibility-mode frame-mode)))
   :custom
   (org-roam-directory (file-truename "~/org/roam/")))
 #+end_src
 ***** ui
 #+begin_src emacs-lisp
+(use-package simple-httpd
+  :ensure (:host github :repo "skeeto/emacs-web-server"
+           :local-repo "simple-httpd"
+           :files ("simple-httpd.el")))
+
 (use-package org-roam-ui
   :after org-roam
   :custom
@@ -1120,7 +1121,7 @@ alphanumeric characters only."
   :ensure
   (:repo "colonelpanic8/org-window-habit"
    :host github
-   :files ("org-window-habit.el"))
+   :files (:defaults "*.el"))
   :custom
   ((org-window-habit-property-prefix nil)
    (org-window-habit-repeat-to-scheduled t)

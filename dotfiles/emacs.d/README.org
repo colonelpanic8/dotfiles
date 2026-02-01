@@ -172,8 +172,9 @@ startup as possible.
 #+BEGIN_SRC emacs-lisp
 (defvar imalison:do-benchmark)
 
-(let ((bench-file (concat (file-name-directory user-init-file) "benchmark.el")))
-  (when (file-exists-p bench-file) (load bench-file)))
+(when user-init-file
+  (let ((bench-file (concat (file-name-directory user-init-file) "benchmark.el")))
+    (when (file-exists-p bench-file) (load bench-file))))
 
 (use-package benchmark-init
   :if imalison:do-benchmark
@@ -1735,6 +1736,7 @@ bind-key and global-set-key forms.
 ** xref
 #+begin_src emacs-lisp
 (use-package xref
+  :ensure nil
   :bind ("M-," . xref-go-back))
 #+end_src
 * Navigation
@@ -1899,8 +1901,10 @@ Neotree is useless with frame mode for now, so I've disabled it.
   :bind (:map vertico-map
               ("RET" . vertico-directory-enter)
               ("DEL" . vertico-directory-delete-char)
-              ("M-DEL" . vertico-directory-delete-word)
-              ("TAB" . embark-act)))
+              ("M-DEL" . vertico-directory-delete-word))
+  :config
+  (with-eval-after-load 'embark
+    (define-key vertico-map (kbd "TAB") #'embark-act)))
 
 (use-package vertico-grid :ensure nil :after (vertico))
 (use-package vertico-buffer :ensure nil :after (vertico))
@@ -2259,6 +2263,7 @@ I don't use auto-complete at all, so I have set up a hook to automatically disab
 (defvar imalison:use-lsp-python t)
 
 (use-package python
+  :ensure nil
   :commands python-mode
   :mode ("\\.py\\'" . python-mode)
   :preface
@@ -2294,9 +2299,11 @@ I don't use auto-complete at all, so I have set up a hook to automatically disab
 *** ruby
 #+begin_src emacs-lisp
 (use-package ruby-mode
+  :ensure nil
   :config
-  (setf (alist-get 'ruby-ts-mode apheleia-mode-alist)
-        '(rubocop)))
+  (with-eval-after-load 'apheleia
+    (setf (alist-get 'ruby-ts-mode apheleia-mode-alist)
+          '(rubocop))))
 #+end_src
 *** go
 #+BEGIN_SRC emacs-lisp
@@ -3298,6 +3305,7 @@ emr (emacs refactor) provides support for refactoring in many programming langua
 ** semantic
 #+BEGIN_SRC emacs-lisp
 (use-package semantic
+  :ensure nil
   :commands semantic-mode
   :disabled t
   :preface
@@ -3539,7 +3547,7 @@ crux-reopen-as-root-mode makes it so that any file owned by root will automatica
 ** claude-code-ide
 #+begin_src emacs-lisp
 (use-package claude-code-ide
-  :straight (:type git :host github :repo "manzaltu/claude-code-ide.el")
+  :ensure (:type git :host github :repo "manzaltu/claude-code-ide.el")
   :bind ("C-c C-'" . claude-code-ide-menu)
   :config
   (claude-code-ide-emacs-tools-setup)
@@ -3776,6 +3784,7 @@ Not really sure what this is
 ** twittering-mode
 #+BEGIN_SRC emacs-lisp
 (use-package twittering-mode
+  :ensure (:host github :repo "hayamiz/twittering-mode")
   :commands twittering-mode)
 #+END_SRC
 ** matrix-client
@@ -3984,6 +3993,7 @@ This is useful with server mode when editing gmail messages. I think that it is 
 ** flyspell
 #+BEGIN_SRC emacs-lisp
 (use-package flyspell
+  :ensure nil
   :disabled t                           ; kind of annoying
   :preface (setq flyspell-issue-welcome-flag nil)
   :config
