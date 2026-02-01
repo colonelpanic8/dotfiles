@@ -210,7 +210,7 @@ This function finds all incomplete items in the agenda files that are scheduled
 in the past and reschedules them to today. Useful for catching up on tasks that
 have slipped past their original scheduled date.
 #+begin_src emacs-lisp :tangle org-config-config.el
-(defun org-reschedule-past-to-today ()
+(defun imalison:reschedule-past-to-today ()
   "Reschedule all incomplete items scheduled in the past to today.
 Iterates through all org-agenda files and reschedules any TODO items
 that have a SCHEDULED date before today to the current date."
@@ -229,9 +229,6 @@ that have a SCHEDULED date before today to the current date."
      nil
      'agenda)
     (message "Rescheduled %d items to today" rescheduled-count)))
-
-;; Keep old name as alias for backwards compatibility
-(defalias 'imalison:reschedule-past-to-today 'org-reschedule-past-to-today)
 #+end_src
 
 #+RESULTS:

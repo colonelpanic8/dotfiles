@@ -251,6 +251,6 @@ Returns nil for non-entry templates or templates that can't be converted."
 
 ;; Register exposed functions for remote execution via /call-function endpoint
 (setq org-agenda-api-exposed-functions
-      '((org-reschedule-past-to-today :name "Reschedule Overdue to Today")))
+      '((imalison:reschedule-past-to-today :name "Reschedule Overdue to Today")))
 
 ;;; custom-config.el ends here
