@@ -208,11 +208,12 @@ makeEnable config "myModules.xmonad" true  {
 
     # Wrapper config that includes both home-manager generated config and animations
     # This works around picom not supporting multiple --config flags
+    # Must use absolute paths since files are symlinks to nix store
     xdg.configFile."picom/picom-with-animations.conf".text = ''
       # Include home-manager generated base config
-      @include "picom.conf"
+      @include "~/.config/picom/picom.conf"
       # Include spring physics animations (uses () list syntax)
-      @include "animations.conf"
+      @include "~/.config/picom/animations.conf"
     '';
 
     # Override picom service to use our wrapper config
