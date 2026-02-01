@@ -1,20 +1,36 @@
 final: prev:
 let
-  # Enable/disable version overrides (set to false to use nixpkgs versions)
-  enableCodexOverride = false; # Using PR patches instead
-  enableClaudeCodeOverride = false; # Disabled - needs proper buildNpmPackage override
+  # XXX: codex and claude-code are now provided by dedicated flakes in nix.nix:
+  #   - inputs.codex-cli-nix (github:sadjow/codex-cli-nix)
+  #   - inputs.claude-code-nix (github:sadjow/claude-code-nix)
+  # These use cachix caches for pre-built binaries.
+  # The old manual version override code is preserved below for reference.
 
-  # Codex version override - update these values to bump the version
-  codexVersion = {
-    version = "0.88.0";
-    hash = "sha256-Ff6Ut1GwRPd2oB4/YojKgS/CYMG0TVizXOHKfpKClqY=";
-    cargoHash = "sha256-eLao+Jaq7+Bu9QNHDJYD3zX2BQvlX/BSTYr4gpCD++Q=";
-  };
-  claudeCodeVersion = {
-    version = "2.1.22";
-    hash = "sha256-OqvLiwB5TwZaxDvyN/+/+eueBdWNaYxd81cd5AZK/mA=";
-    npmDepsHash = "sha256-vy7osk3UAOEgsJx9jdcGe2wICOk5Urzxh1WLAHyHM+U=";
-  };
+  # # Enable/disable version overrides (set to false to use nixpkgs versions)
+  # enableCodexOverride = true; # Override to get 0.93.0
+  # enableClaudeCodeOverride = false; # Disabled - needs proper buildNpmPackage override
+
+  # # Codex version override - update these values to bump the version
+  # codexVersion = {
+  #   version = "0.93.0";
+  #   hash = "sha256-JwCwFPa4+BAMUSp567s9l2QdanL7XEhtGSR8mvlws6Q=";
+  #   # Using importCargoLock requires outputHashes for git dependencies
+  #   outputHashes = {
+  #     "crossterm-0.28.1" = "sha256-6qCtfSMuXACKFb9ATID39XyFDIEMFDmbx6SSmNe+728=";
+  #     "nucleo-0.5.0" = "sha256-Hm4SxtTSBrcWpXrtSqeO0TACbUxq3gizg1zD/6Yw/sI=";
+  #     "nucleo-matcher-0.3.1" = "sha256-Hm4SxtTSBrcWpXrtSqeO0TACbUxq3gizg1zD/6Yw/sI=";
+  #     "ratatui-0.29.0" = "sha256-HBvT5c8GsiCxMffNjJGLmHnvG77A6cqEL+1ARurBXho=";
+  #     "runfiles-0.1.0" = "sha256-uJpVLcQh8wWZA3GPv9D8Nt43EOirajfDJ7eq/FB+tek=";
+  #     "tokio-tungstenite-0.28.0" = "sha256-vJZ3S41gHtRt4UAODsjAoSCaTksgzCALiBmbWgyDCi8=";
+  #     "tungstenite-0.28.0" = "sha256-CyXZp58zGlUhEor7WItjQoS499IoSP55uWqr++ia+0A=";
+  #   };
+  # };
+  # claudeCodeVersion = {
+  #   version = "2.1.22";
+  #   hash = "sha256-OqvLiwB5TwZaxDvyN/+/+eueBdWNaYxd81cd5AZK/mA=";
+  #   npmDepsHash = "sha256-vy7osk3UAOEgsJx9jdcGe2wICOk5Urzxh1WLAHyHM+U=";
+  # };
+  placeholder = null; # Dummy binding to keep let block valid
 in
 {
   # Fix poetry pbs-installer version constraint issue
@@ -22,32 +38,36 @@ in
     dontCheckRuntimeDeps = true;
   });
 
-  # XXX: Don't remove this code - use enableCodexOverride flag instead.
-  # nixpkgs often lags behind and codex moves extremely quickly
-  codex = if enableCodexOverride then prev.codex.overrideAttrs (oldAttrs: rec {
-    inherit (codexVersion) version cargoHash;
-    src = prev.fetchFromGitHub {
-      owner = "openai";
-      repo = "codex";
-      tag = "rust-v${codexVersion.version}";
-      inherit (codexVersion) hash;
-    };
-    cargoDeps = prev.rustPlatform.fetchCargoVendor {
-      inherit src;
-      sourceRoot = "${src.name}/codex-rs";
-      hash = cargoHash;
-    };
-  }) else prev.codex;
+  # XXX: codex and claude-code are now provided by flakes in nix.nix
+  # See the overlay at the end of nixpkgs.overlays in nix.nix
 
-  # XXX: Don't remove this code - use enableClaudeCodeOverride flag instead.
-  # nixpkgs often lags behind and claude-code moves extremely quickly
-  claude-code = if enableClaudeCodeOverride then prev.claude-code.overrideAttrs (oldAttrs: {
-    inherit (claudeCodeVersion) version npmDepsHash;
-    src = prev.fetchurl {
-      url = "https://registry.npmjs.org/@anthropic-ai/claude-code/-/claude-code-${claudeCodeVersion.version}.tgz";
-      inherit (claudeCodeVersion) hash;
-    };
-  }) else prev.claude-code;
+  # # XXX: Don't remove this code - use enableCodexOverride flag instead.
+  # # nixpkgs often lags behind and codex moves extremely quickly
+  # codex = if enableCodexOverride then prev.codex.overrideAttrs (oldAttrs: rec {
+  #   inherit (codexVersion) version;
+  #   src = prev.fetchFromGitHub {
+  #     owner = "openai";
+  #     repo = "codex";
+  #     tag = "rust-v${codexVersion.version}";
+  #     inherit (codexVersion) hash;
+  #   };
+  #   # Use importCargoLock instead of fetchCargoVendor to avoid workspace parsing issues
+  #   cargoDeps = prev.rustPlatform.importCargoLock {
+  #     lockFile = "${src}/codex-rs/Cargo.lock";
+  #     outputHashes = codexVersion.outputHashes or {};
+  #   };
+  #   cargoHash = null; # Not used with importCargoLock
+  # }) else prev.codex;
+
+  # # XXX: Don't remove this code - use enableClaudeCodeOverride flag instead.
+  # # nixpkgs often lags behind and claude-code moves extremely quickly
+  # claude-code = if enableClaudeCodeOverride then prev.claude-code.overrideAttrs (oldAttrs: {
+  #   inherit (claudeCodeVersion) version npmDepsHash;
+  #   src = prev.fetchurl {
+  #     url = "https://registry.npmjs.org/@anthropic-ai/claude-code/-/claude-code-${claudeCodeVersion.version}.tgz";
+  #     inherit (claudeCodeVersion) hash;
+  #   };
+  # }) else prev.claude-code;
 
   # nvidia-container-toolkit = prev.nvidia-container-toolkit.overrideAttrs(old: {
   #   postInstall = ''
