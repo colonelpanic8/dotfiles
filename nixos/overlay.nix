@@ -171,6 +171,7 @@ in
   # Using mainline picom with spring physics animation support
   # Branch: spring-physics on colonelpanic8/picom
   picom = prev.picom.overrideAttrs (old: {
+    version = "13";
     src = prev.fetchFromGitHub {
       repo = "picom";
       owner = "colonelpanic8";
