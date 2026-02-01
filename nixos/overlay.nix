@@ -168,16 +168,15 @@ in
     };
   });
 
+  # Using mainline picom with spring physics animation support
+  # Branch: spring-physics on colonelpanic8/picom
   picom = prev.picom.overrideAttrs (old: {
     src = prev.fetchFromGitHub {
       repo = "picom";
-      owner = "dccsillag";
-      rev = "51b21355696add83f39ccdb8dd82ff5009ba0ae5";
-      sha256 = "sha256-crCwRJd859DCIC0pEerpDqdX2j8ZrNAzVaSSB3mTPN8==";
+      owner = "colonelpanic8";
+      rev = "spring-physics";
+      sha256 = "sha256-sN15PffeRV6x+K2XjCxx2bIh0ujb/C1GAGTUuo2wPL4=";
     };
-    nativeBuildInputs = old.nativeBuildInputs ++ [final.pcre final.gnugrep.pcre2 final.asciidoc];
-    buildInputs = old.buildInputs ++ [final.pcre];
-    nativeInstallCheckInputs = [];
     doCheck = false;
     dontCheck = true;
   });

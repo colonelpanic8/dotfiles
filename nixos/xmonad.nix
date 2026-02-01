@@ -98,25 +98,73 @@ makeEnable config "myModules.xmonad" true  {
       backend = "glx";
 
       settings = {
-        animations = true;
-        animation-window-mass = 1;
-        animation-dampening = 20;
-        animation-stiffness = 250;
-        animation-clamping = false;
-        animation-for-open-window = "zoom";
-        animation-for-unmap-window = "zoom";
-        animation-for-transient-window = "slide-down";
+        # Spring physics animations (mainline picom with spring-physics branch)
+        # Syntax: spring(stiffness, dampening, mass) or spring(stiffness, dampening, mass, clamping)
+        # Set clamping to false for bounce/overshoot effects
+        animations = [
+          # Window move/resize animation with spring physics
+          {
+            triggers = ["geometry"];
+            offset-x = {
+              curve = "spring(250, 20, 1, false)";
+              start = "window-x-before - window-x";
+              end = 0;
+            };
+            offset-y = {
+              curve = "spring(250, 20, 1, false)";
+              start = "window-y-before - window-y";
+              end = 0;
+            };
+          }
+          # Opacity fade animation
+          {
+            triggers = ["open" "show"];
+            opacity = {
+              curve = "cubic-bezier(0.25, 0.1, 0.25, 1)";
+              duration = 0.2;
+              start = 0;
+              end = "window-raw-opacity";
+            };
+            scale-x = {
+              curve = "cubic-bezier(0.25, 0.1, 0.25, 1)";
+              duration = 0.2;
+              start = 0.9;
+              end = 1;
+            };
+            scale-y = {
+              curve = "cubic-bezier(0.25, 0.1, 0.25, 1)";
+              duration = 0.2;
+              start = 0.9;
+              end = 1;
+            };
+          }
+          {
+            triggers = ["close" "hide"];
+            opacity = {
+              curve = "cubic-bezier(0.25, 0.1, 0.25, 1)";
+              duration = 0.2;
+              start = "window-raw-opacity";
+              end = 0;
+            };
+            scale-x = {
+              curve = "cubic-bezier(0.25, 0.1, 0.25, 1)";
+              duration = 0.2;
+              start = 1;
+              end = 0.9;
+            };
+            scale-y = {
+              curve = "cubic-bezier(0.25, 0.1, 0.25, 1)";
+              duration = 0.2;
+              start = 1;
+              end = 0.9;
+            };
+          }
+        ];
+
         fade-in-step = 0.028;
         fade-out-step = 0.028;
         fading = true;
-      };
 
-      wintypes = {
-        dock = {animation = "slide-down";};
-        toolbar = {animation = "slide-down";};
-      };
-
-      settings = {
         focus-exclude = ["class_g ?= 'rofi'" "class_g ?= 'Steam'"];
         rounded-corners-exclude = [
           "! name~=''" # Qtile == empty wm_class..
