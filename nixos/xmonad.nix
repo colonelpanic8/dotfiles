@@ -92,12 +92,12 @@ makeEnable config "myModules.xmonad" true  {
       enable = true;
     };
 
-    # Disable home-manager's picom config generation - we'll write a complete config
-    # ourselves to work around the libconfig list vs array syntax issue
+    # Enable picom service but disable its config generation - we write our own config
+    # to work around the libconfig list vs array syntax issue for animations
     services.picom = {
       enable = true;
-      vSync = config.myModules.xmonad.picom.vSync.enable;
-      backend = "glx";
+      # Don't let home-manager generate any settings - we handle everything in xdg.configFile
+      settings = {};
     };
 
     # Write complete picom config directly to avoid home-manager's libconfig generator
