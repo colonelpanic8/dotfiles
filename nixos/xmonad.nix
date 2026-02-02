@@ -92,12 +92,25 @@ makeEnable config "myModules.xmonad" true  {
       enable = true;
     };
 
-    # Enable picom service but disable its config generation - we write our own config
+    # Completely disable home-manager's picom - we manage everything ourselves
     # to work around the libconfig list vs array syntax issue for animations
-    services.picom = {
-      enable = true;
-      # Don't let home-manager generate any settings - we handle everything in xdg.configFile
-      settings = {};
+    services.picom.enable = false;
+
+    # Our own picom systemd service
+    systemd.user.services.picom = {
+      Unit = {
+        Description = "Picom X11 compositor";
+        After = [ "graphical-session.target" ];
+        PartOf = [ "graphical-session.target" ];
+      };
+      Service = {
+        ExecStart = "${pkgs.picom}/bin/picom --config %h/.config/picom/picom.conf";
+        Restart = "always";
+        RestartSec = 3;
+      };
+      Install = {
+        WantedBy = [ "graphical-session.target" ];
+      };
     };
 
     # Write complete picom config directly to avoid home-manager's libconfig generator
