@@ -104,7 +104,8 @@ makeEnable config "myModules.xmonad" true  {
         PartOf = [ "graphical-session.target" ];
       };
       Service = {
-        ExecStart = "${pkgs.picom}/bin/picom --config %h/.config/picom/picom.conf";
+        # Debug logging to file for monitoring
+        ExecStart = "${pkgs.picom}/bin/picom --config %h/.config/picom/picom.conf --log-level=debug --log-file=%h/.local/share/picom/debug.log";
         Restart = "always";
         RestartSec = 3;
       };
@@ -112,6 +113,9 @@ makeEnable config "myModules.xmonad" true  {
         WantedBy = [ "graphical-session.target" ];
       };
     };
+
+    # Ensure log directory exists
+    xdg.dataFile."picom/.keep".text = "";
 
     # Write complete picom config directly to avoid home-manager's libconfig generator
     # which incorrectly uses [] instead of () for the animations list
@@ -132,22 +136,22 @@ makeEnable config "myModules.xmonad" true  {
           {
             triggers = ["geometry"];
             offset-x = {
-              curve = "spring(250, 20, 1, false)";
+              curve = "spring(150, 18, 1.5, false)";
               start = "window-x-before - window-x";
               end = 0;
             };
             offset-y = {
-              curve = "spring(250, 20, 1, false)";
+              curve = "spring(150, 18, 1.5, false)";
               start = "window-y-before - window-y";
               end = 0;
             };
             scale-x = {
-              curve = "spring(250, 20, 1, false)";
+              curve = "spring(150, 18, 1.5, false)";
               start = "window-width-before / window-width";
               end = 1;
             };
             scale-y = {
-              curve = "spring(250, 20, 1, false)";
+              curve = "spring(150, 18, 1.5, false)";
               start = "window-height-before / window-height";
               end = 1;
             };
