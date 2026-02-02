@@ -127,6 +127,8 @@ makeEnable config "myModules.xmonad" true  {
         # Set clamping to false for bounce/overshoot effects
         animations = (
           # Window move/resize animation with spring physics
+          # Note: "geometry" is alias for "size" + "position" triggers
+          # position_changed is FALSE if size also changed, so we need scale-x/y too
           {
             triggers = ["geometry"];
             offset-x = {
@@ -138,6 +140,16 @@ makeEnable config "myModules.xmonad" true  {
               curve = "spring(250, 20, 1, false)";
               start = "window-y-before - window-y";
               end = 0;
+            };
+            scale-x = {
+              curve = "spring(250, 20, 1, false)";
+              start = "window-width-before / window-width";
+              end = 1;
+            };
+            scale-y = {
+              curve = "spring(250, 20, 1, false)";
+              start = "window-height-before / window-height";
+              end = 1;
             };
           },
           # Opacity fade animation
