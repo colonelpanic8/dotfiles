@@ -4181,9 +4181,15 @@ Ensure all themes that I use are installed:
 (use-package all-the-icons
   :demand t)
 #+END_SRC
+** nerd-icons
+#+BEGIN_SRC emacs-lisp
+(use-package nerd-icons
+  :demand t)
+#+END_SRC
 ** doom-modeline
 #+begin_src emacs-lisp
 (use-package doom-modeline
+  :after nerd-icons
   :commands doom-modeline-mode
   :custom
   (doom-modeline-height 40))
@@ -4280,7 +4286,7 @@ load-theme hook (See the heading below).
 (advice-add 'load-theme :after #'imalison:after-load-theme)
 #+END_SRC
 ** Set Font
-#+BEGIN_SRC emacs-lisp :tangle no
+#+BEGIN_SRC emacs-lisp
 (add-to-list 'default-frame-alist
              '(font . "JetBrainsMono Nerd Font-10:weight=medium"))
 #+END_SRC
