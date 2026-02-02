@@ -156,45 +156,42 @@ makeEnable config "myModules.xmonad" true  {
               end = 1;
             };
           },
-          # Opacity fade animation
+          # Window open/show animation with spring physics
           {
             triggers = ["open", "show"];
+            # Opacity uses spring with clamping to prevent going above 1
             opacity = {
-              curve = "cubic-bezier(0.25, 0.1, 0.25, 1)";
-              duration = 0.2;
+              curve = "spring(150, 18, 1.5, true)";
               start = 0;
               end = "window-raw-opacity";
             };
+            # Scale uses spring with bounce for a nice "pop" effect
             scale-x = {
-              curve = "cubic-bezier(0.25, 0.1, 0.25, 1)";
-              duration = 0.2;
-              start = 0.9;
+              curve = "spring(150, 18, 1.5, false)";
+              start = 0.85;
               end = 1;
             };
             scale-y = {
-              curve = "cubic-bezier(0.25, 0.1, 0.25, 1)";
-              duration = 0.2;
-              start = 0.9;
+              curve = "spring(150, 18, 1.5, false)";
+              start = 0.85;
               end = 1;
             };
           },
+          # Window close/hide animation with spring physics
           {
             triggers = ["close", "hide"];
             opacity = {
-              curve = "cubic-bezier(0.25, 0.1, 0.25, 1)";
-              duration = 0.2;
+              curve = "spring(150, 18, 1.5, true)";
               start = "window-raw-opacity";
               end = 0;
             };
             scale-x = {
-              curve = "cubic-bezier(0.25, 0.1, 0.25, 1)";
-              duration = 0.2;
+              curve = "spring(150, 18, 1.5, true)";
               start = 1;
               end = 0.9;
             };
             scale-y = {
-              curve = "cubic-bezier(0.25, 0.1, 0.25, 1)";
-              duration = 0.2;
+              curve = "spring(150, 18, 1.5, true)";
               start = 1;
               end = 0.9;
             };
