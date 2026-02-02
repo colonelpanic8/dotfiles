@@ -28,7 +28,6 @@ import           System.Log.Handler.Simple
 import           System.Log.Logger
 import           System.Process
 import           System.Taffybar
-import           System.Taffybar.Auth
 import           System.Taffybar.Context (appendHook)
 import           System.Taffybar.DBus
 import           System.Taffybar.DBus.Toggle
@@ -40,7 +39,6 @@ import           System.Taffybar.Information.X11DesktopInfo
 import           System.Taffybar.SimpleConfig
 import           System.Taffybar.Util
 import           System.Taffybar.Widget
-import           System.Taffybar.Widget.Crypto
 import           System.Taffybar.Widget.Generic.Icon
 import           System.Taffybar.Widget.Generic.PollingGraph
 import           System.Taffybar.Widget.Generic.PollingLabel
@@ -174,9 +172,6 @@ main = do
                 { clockUpdateStrategy = RoundedTargetInterval 60 0.0
                 , clockFormatString = "%a %b %_d, 🕑%I:%M %p"
                 }
-      myICP = deocrateWithSetClassAndBoxes "icp" $ cryptoPriceLabelWithIcon @"ICP-USD"
-      myBTC = deocrateWithSetClassAndBoxes "btc" $ cryptoPriceLabelWithIcon @"BTC-USD"
-      myETH = deocrateWithSetClassAndBoxes "eth" $ cryptoPriceLabelWithIcon @"ETH-USD"
       myTray = deocrateWithSetClassAndBoxes "tray" $
                sniTrayNewFromParams defaultTrayParams { trayLeftClickAction = PopupMenu
                                                       , trayRightClickAction = Activate
@@ -194,9 +189,6 @@ main = do
       batteryWidgets = [myBatteryIcon, myBatteryText]
       baseEndWidgets =
         [ myTray
-        , myICP
-        , myBTC
-        , myETH
         , myMpris
         ]
       fullEndWidgets = baseEndWidgets ++ [ myCPU, myMem, myNet, myMpris ]
@@ -210,7 +202,6 @@ main = do
         , barPadding = 0
         , barHeight = ScreenRatio $ 1/27
         , cssPaths = cssFiles
-        , startupHook = void $ setCMCAPIKey "f9e66366-9d42-4c6e-8d40-4194a0aaa329"
         , centerWidgets = [ myClock ]
         }
       selectedConfig =
