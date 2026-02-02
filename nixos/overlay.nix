@@ -176,7 +176,7 @@ in
       repo = "picom";
       owner = "colonelpanic8";
       rev = "spring-physics";
-      sha256 = "sha256-sN15PffeRV6x+K2XjCxx2bIh0ujb/C1GAGTUuo2wPL4=";
+      sha256 = "sha256-yyUs8E8K59b1tJkJ0sdTh2hi83Uhw6fIYvBWPx0jEIw=";
     };
     doCheck = false;
     dontCheck = true;
