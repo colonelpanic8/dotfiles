@@ -76,6 +76,7 @@
 
   swapDevices = [
     { device = "/dev/disk/by-uuid/27f277a0-b552-43a0-904d-625e48922bb9"; }
+    { device = "/swapfile"; size = 16384; } # size is in MiB (adds 16 GiB)
   ];
 
   networking.hostName = "strixi-minaj";
@@ -86,6 +87,10 @@
   home-manager.sharedModules = [
     {
       home.stateVersion = "23.05";
+      xdg.configFile."waybar/disks".text = ''
+        # One mountpoint per line (comments with # are ignored).
+        /
+      '';
     }
   ];
 

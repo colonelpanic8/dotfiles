@@ -1,0 +1,45 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+config_dir="${XDG_CONFIG_HOME:-$HOME/.config}/waybar"
+list_file="${config_dir}/disks"
+
+mounts=()
+
+if [[ -n "${WAYBAR_DISKS:-}" ]]; then
+  # Accept comma or space separated values.
+  IFS=', ' read -r -a mounts <<< "${WAYBAR_DISKS//:/,}"
+elif [[ -f "$list_file" ]]; then
+  while IFS= read -r line; do
+    line="${line%%#*}"
+    line="${line#"${line%%[![:space:]]*}"}"
+    line="${line%"${line##*[![:space:]]}"}"
+    [[ -z "$line" ]] && continue
+    mounts+=("$line")
+  done < "$list_file"
+fi
+
+if [[ ${#mounts[@]} -eq 0 ]]; then
+  mounts=("/")
+fi
+
+items=()
+for mount in "${mounts[@]}"; do
+  if df_out=$(df -h --output=avail,target "$mount" 2>/dev/null | awk 'NR==2 {print $2, $1}'); then
+    items+=("$df_out")
+  fi
+done
+
+if [[ ${#items[@]} -eq 0 ]]; then
+  exit 0
+fi
+
+output=""
+for item in "${items[@]}"; do
+  if [[ -n "$output" ]]; then
+    output+=" | "
+  fi
+  output+="$item"
+done
+
+printf '%s\n' "$output"
