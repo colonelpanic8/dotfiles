@@ -22,18 +22,16 @@ makeEnable config "myModules.keyd" true {
       };
     };
 
-    # TODO: Add per-keyboard overrides here once device IDs are known.
-    # Example:
-    # keyboards.externalKinesis = {
-    #   ids = [ "1ea7:0907" ];
-    #   settings = {
-    #     main = {
-    #       leftalt = "leftmeta";
-    #       leftmeta = "leftalt";
-    #       rightalt = "layer(hyper)";
-    #     };
-    #     "hyper:C-A-M-S" = { };
-    #   };
-    # };
+    # MoErgo Glove80: only map Right Meta/Super to Hyper.
+    keyboards.moErgo = {
+      ids = [ "16c0:27db" ];
+      settings = {
+        main = {
+          rightmeta = "layer(hyper)";
+        };
+        # Hyper = Ctrl+Alt+Meta while held (matches $hyper = SUPER CTRL ALT)
+        "hyper:C-A-M" = { };
+      };
+    };
   };
 }
