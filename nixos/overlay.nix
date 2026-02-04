@@ -153,6 +153,32 @@ in
       rev = "0fb508a93ab5f653b63d68ce569e79c8bb27e87b";
       sha256 = "sha256-49kdaqCp6O4RrZMbAKYJKDJaAzHBUqYZT2O7OjtQ8W0=";
     };
+    fixupPhase = ''
+      runHook preFixup
+
+      patchShebangs $out/bin
+
+      wrapProgram $out/bin/rofi-pass \
+        --prefix PATH : "${prev.lib.makeBinPath [
+          prev.coreutils
+          prev.findutils
+          prev.gawk
+          prev.gnugrep
+          prev.gnused
+          prev.libnotify
+          prev.pwgen
+          prev.rofi
+          prev."util-linuxMinimal"
+          (prev.pass.withExtensions (ext: [ ext.pass-otp ]))
+          prev.xclip
+          prev.xdotool
+          (prev."pass-wayland".withExtensions (ext: [ ext.pass-otp ]))
+          prev."wl-clipboard"
+          prev.wtype
+        ]}"
+
+      runHook postFixup
+    '';
   });
 
   wyoming-satellite = prev.wyoming-satellite.overridePythonAttrs (oldAttrs: {
