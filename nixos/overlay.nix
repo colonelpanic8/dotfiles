@@ -168,15 +168,16 @@ in
     };
   });
 
-  # Using mainline picom with spring physics animation support
-  # Branch: spring-physics on colonelpanic8/picom
+  # Using mainline picom with spring physics + animation fixes
+  # Branch: my-picom on colonelpanic8/picom
+  # Includes: spring physics curve, adaptive settling threshold, position detection fix
   picom = prev.picom.overrideAttrs (old: {
     version = "13";
     src = prev.fetchFromGitHub {
       repo = "picom";
       owner = "colonelpanic8";
-      rev = "spring-physics";
-      sha256 = "sha256-yyUs8E8K59b1tJkJ0sdTh2hi83Uhw6fIYvBWPx0jEIw=";
+      rev = "my-picom";
+      sha256 = "sha256-XeciIK5q6WE9wirWEHdevfGiNzRANudFcRcRhouWTFE=";
     };
     doCheck = false;
     dontCheck = true;
