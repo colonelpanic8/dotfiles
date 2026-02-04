@@ -1,0 +1,18 @@
+{
+  "enabledPlugins": {
+    "superpowers@superpowers-marketplace": true,
+    "agent-browser@agent-browser": true
+  },
+  "hooks": {
+    "UserPromptSubmit": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "~/.agents/hooks/tmux-title.sh"
+          }
+        ]
+      }
+    ]
+  }
+}
