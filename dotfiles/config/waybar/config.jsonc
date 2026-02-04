@@ -3,7 +3,7 @@
     "height": 30,
     "spacing": 4,
     "modules-left": [
-        "wlr/taskbar",
+        "hyprland/workspaces",
         "hyprland/submap"
     ],
     "modules-center": [
@@ -82,14 +82,15 @@
         "format-source-muted": "MIC muted",
         "on-click": "pavucontrol"
     },
-    "wlr/taskbar": {
-        "format": "{icon}",
-        "icon-size": 16,
-        "tooltip-format": "{title}",
+    "hyprland/workspaces": {
+        "format": "{id}",
         "on-click": "activate",
-        "on-click-middle": "close",
-        "ignore-list": [
-            "waybar"
-        ]
+        "workspace-taskbar": {
+            "enable": true,
+            "update-active-window": true,
+            "format": "{icon}",
+            "icon-size": 16,
+            "on-click-window": "hyprctl dispatch focuswindow address:{address}"
+        }
     }
 }

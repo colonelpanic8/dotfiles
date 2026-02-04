@@ -77,6 +77,23 @@ button:hover {
     background-color: #eb4d4b;
 }
 
+#workspaces .workspace-label {
+    padding: 0 6px;
+}
+
+#workspaces .taskbar-window {
+    padding: 0 4px;
+}
+
+#workspaces .taskbar-window.active {
+    background-color: #64727D;
+    box-shadow: inset 0 -3px #ffffff;
+}
+
+#workspaces .taskbar-window image {
+    margin: 0 2px;
+}
+
 #mode {
     background-color: #64727D;
     box-shadow: inset 0 -3px #ffffff;
