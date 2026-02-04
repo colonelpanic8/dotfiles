@@ -58,12 +58,11 @@ makeEnable config "myModules.desktop" true {
     xsettingsd
 
     # Desktop
-    alacritty
+    ghostty
     blueman
     # clipit
     d-spy
     kdePackages.dolphin
-    # inputs.ghostty.packages."${system}".default
 
     feh
     firefox

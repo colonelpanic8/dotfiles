@@ -2,7 +2,7 @@ configuration {
 	bw: 0;
 	padding: 50;
 	show-icons: true;
-	terminal: "alacritty";
+	terminal: "ghostty";
 	sidebar-mode: false;
 	fullscreen: true;
 	/* Let rofi auto-detect DPI under Wayland/Xwayland to avoid blurry scaling. */

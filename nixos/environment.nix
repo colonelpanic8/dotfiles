@@ -70,7 +70,7 @@ with lib;
         fix_nix = "LD_LIBRARY_PATH='' nix";
       };
       variables = {
-        ROFI_SYSTEMD_TERM = "alacritty -e";
+        ROFI_SYSTEMD_TERM = "ghostty -e";
         NIXPKGS_GIT_REV = "${inputs.nixpkgs.rev}";
         NIXPKGS_SOURCE = "${inputs.nixpkgs.outPath}";
         EDITOR = "emacsclient --alternate-editor emacs";
