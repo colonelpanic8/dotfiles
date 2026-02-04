@@ -42,6 +42,11 @@
       inputs.hyprland.follows = "hyprland";
     };
 
+    hyprspace = {
+      url = "github:KZDKM/Hyprspace";
+      inputs.hyprland.follows = "hyprland";
+    };
+
     railbird-secrets = {
       url = "git+ssh://gitea@dev.railbird.ai:1123/railbird/secrets-flake.git";
     };
@@ -153,6 +158,7 @@
     imalison-taffybar,
     hyprland,
     hy3,
+    hyprspace,
     org-agenda-api,
     flake-utils,
     ...

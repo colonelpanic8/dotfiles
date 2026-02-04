@@ -1,0 +1,85 @@
+// -*- mode: jsonc -*-
+{
+    "height": 30,
+    "spacing": 4,
+    "modules-left": [
+        "hyprland/workspaces",
+        "hyprland/submap"
+    ],
+    "modules-center": [
+        "hyprland/window"
+    ],
+    "modules-right": [
+        "idle_inhibitor",
+        "pulseaudio",
+        "network",
+        "power-profiles-daemon",
+        "cpu",
+        "memory",
+        "temperature",
+        "backlight",
+        "battery",
+        "clock",
+        "tray"
+    ],
+    "idle_inhibitor": {
+        "format": "INHIB {icon}",
+        "format-icons": {
+            "activated": "ON",
+            "deactivated": "OFF"
+        }
+    },
+    "tray": {
+        "spacing": 10
+    },
+    "clock": {
+        "format": "{:%H:%M}",
+        "tooltip-format": "{:%Y %B}\n{calendar}",
+        "format-alt": "{:%Y-%m-%d}"
+    },
+    "cpu": {
+        "format": "CPU {usage}%",
+        "tooltip": false
+    },
+    "memory": {
+        "format": "MEM {}%"
+    },
+    "temperature": {
+        "critical-threshold": 80,
+        "format": "TEMP {temperatureC}C"
+    },
+    "backlight": {
+        "format": "BL {percent}%"
+    },
+    "battery": {
+        "states": {
+            "warning": 30,
+            "critical": 15
+        },
+        "format": "BAT {capacity}%",
+        "format-full": "BAT {capacity}%",
+        "format-charging": "BAT {capacity}% charging",
+        "format-plugged": "BAT {capacity}% plugged",
+        "format-alt": "BAT {time}"
+    },
+    "power-profiles-daemon": {
+        "format": "PWR {profile}",
+        "tooltip-format": "Power profile: {profile}\nDriver: {driver}",
+        "tooltip": true
+    },
+    "network": {
+        "format-wifi": "WIFI {essid} {signalStrength}%",
+        "format-ethernet": "ETH {ipaddr}/{cidr}",
+        "tooltip-format": "{ifname} via {gwaddr}",
+        "format-linked": "{ifname} (No IP)",
+        "format-disconnected": "NET disconnected",
+        "format-alt": "{ifname}: {ipaddr}/{cidr}"
+    },
+    "pulseaudio": {
+        "format": "VOL {volume}%",
+        "format-muted": "VOL muted",
+        "format-source": "MIC {volume}%",
+        "format-source-muted": "MIC muted",
+        "on-click": "pavucontrol"
+    }
+}
