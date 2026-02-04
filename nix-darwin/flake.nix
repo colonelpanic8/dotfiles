@@ -21,6 +21,16 @@
     };
     home-manager.url = "github:nix-community/home-manager";
     home-manager.inputs.nixpkgs.follows = "nixpkgs";
+
+    codex-cli-nix = {
+      url = "github:sadjow/codex-cli-nix";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+
+    claude-code-nix = {
+      url = "github:sadjow/claude-code-nix";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
   };
 
   outputs = inputs@{ self, nix-darwin, nixpkgs, home-manager, ... }:
@@ -112,7 +122,14 @@
         };
       };
 
-      nixpkgs.overlays = [(import ../nixos/overlay.nix)];
+      nixpkgs.overlays = [
+        (import ../nixos/overlay.nix)
+        # Use codex and claude-code from dedicated flakes with cachix
+        (final: prev: {
+          codex = inputs.codex-cli-nix.packages.${prev.stdenv.hostPlatform.system}.default;
+          claude-code = inputs.claude-code-nix.packages.${prev.stdenv.hostPlatform.system}.default;
+        })
+      ];
       environment.systemPackages = with pkgs; [
         #python-with-my-packages
         emacs
@@ -126,7 +143,8 @@
         nodejs
         ripgrep
         slack
-	      claude-code
+        claude-code
+        codex
         typescript
         vim
         yarn
@@ -141,7 +159,18 @@
       programs.direnv.enable = true;
 
       # Necessary for using flakes on this system.
-      nix.settings.experimental-features = "nix-command flakes";
+      nix.settings = {
+        experimental-features = "nix-command flakes";
+        substituters = [
+          "https://cache.nixos.org"
+          "https://codex-cli.cachix.org"
+          "https://claude-code.cachix.org"
+        ];
+        trusted-public-keys = [
+          "codex-cli.cachix.org-1:1Br3H1hHoRYG22n//cGKJOk3cQXgYobUel6O8DgSing="
+          "claude-code.cachix.org-1:YeXf2aNu7UTX8Vwrze0za1WEDS+4DuI2kVeWEE4fsRk="
+        ];
+      };
 
 
       # Set Git commit hash for darwin-version.
