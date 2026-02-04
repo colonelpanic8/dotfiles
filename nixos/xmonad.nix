@@ -38,37 +38,9 @@ makeEnable config "myModules.xmonad" true  {
     {
       imports = [ ./dunst.nix ];
 
-      services.blueman-applet = {
-        enable = true;
-      };
-
       services.taffybar = {
         enable = true;
         package = inputs.imalison-taffybar.defaultPackage."${pkgs.stdenv.hostPlatform.system}";
-      };
-
-      services.kdeconnect = {
-        enable = true;
-        indicator = true;
-      };
-
-      services.network-manager-applet.enable = true;
-
-      # Disable the XDG autostart for nm-applet since we're managing it via systemd.
-      # The XDG autostart races with the systemd service and doesn't use --indicator.
-      xdg.configFile."autostart/nm-applet.desktop".text = ''
-        [Desktop Entry]
-        Hidden=true
-      '';
-
-      services.udiskie = {
-        enable = true;
-        tray = "always";
-      };
-
-      services.status-notifier-watcher = {
-        enable = true;
-        flags = ["--log-level" "DEBUG"];
       };
 
       services.autorandr.enable = true;
@@ -82,16 +54,10 @@ makeEnable config "myModules.xmonad" true  {
 
       services.xsettingsd.enable = true;
 
-      services.pasystray.enable = true;
-
       # services.parcellite = {
       #   enable = true;
       #   package = pkgs.clipit;
       # };
-
-      services.flameshot = {
-        enable = true;
-      };
 
       # Completely disable home-manager's picom - we manage everything ourselves
       # to work around the libconfig list vs array syntax issue for animations

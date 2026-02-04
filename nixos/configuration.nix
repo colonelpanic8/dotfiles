@@ -35,6 +35,7 @@
     ./rabbitmq.nix
     ./secrets.nix
     ./ssh.nix
+    ./sni.nix
     ./syncthing.nix
     ./tts.nix
     ./user-specific.nix
