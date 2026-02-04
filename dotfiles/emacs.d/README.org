@@ -1445,15 +1445,6 @@ The file server file for this emacs instance no longer exists.")
       ("n" winner-redo "forward" :exit t))
     (winner-mode 1)))
 #+END_SRC
-** eyebrowse
-I don't have any use for this now that I use frames mode, but its an interesting idea.
-#+BEGIN_SRC emacs-lisp
-(use-package eyebrowse
-  :disabled t
-  :defer 1
-  :config
-  (progn (eyebrowse-mode +1)))
-#+END_SRC
 ** stream
 #+BEGIN_SRC emacs-lisp
 (use-package stream :defer t)
@@ -1868,12 +1859,6 @@ bind-key and global-set-key forms.
   :config (setq aw-keys '(?a ?s ?d ?f ?g ?h ?j ?k ?l))
   :bind ("C-c w" . imalison:ace-window))
 #+END_SRC
-** neotree
-Neotree is useless with frame mode for now, so I've disabled it.
-#+BEGIN_SRC emacs-lisp
-(use-package neotree
-  :disabled t)
-#+END_SRC
 ** flimenu
 #+BEGIN_SRC emacs-lisp
 (use-package flimenu
@@ -2034,22 +2019,6 @@ Neotree is useless with frame mode for now, so I've disabled it.
   :after company
   :config
   (company-flx-mode +1))
-#+END_SRC
-** auto-complete
-I don't use auto-complete at all, so I have set up a hook to automatically disable it whenever it is enabled to avoid creating conflicting popups when company is activated.
-#+BEGIN_SRC emacs-lisp
-(use-package auto-complete
-  :defer t
-  :preface
-  (progn
-    (defun imalison:auto-complete-hook ()
-      (debug)
-      (warn "auto-complete-mode was activated, but is being automatically disabled.")
-      (let ((auto-complete-mode-hook nil))
-        (auto-complete-mode -1))))
-  :config
-  (progn
-    (add-hook 'auto-complete-mode-hook 'imalison:auto-complete-hook)))
 #+END_SRC
 * Text Manipulation
 ** smartparens
@@ -3590,13 +3559,6 @@ crux-reopen-as-root-mode makes it so that any file owned by root will automatica
     (define-key isearch-mode-map [remap isearch-query-replace-regexp]
       #'anzu-isearch-query-replace-regexp)))
 #+END_SRC
-** shell-history
-I think that shell-history is causing projectile to be very slow so I have disabled it.
-#+BEGIN_SRC emacs-lisp
-(use-package shell-history
-  :demand t
-  :disabled t)
-#+END_SRC
 ** iedit
 I don't use iedit directly, but it is used by [[*emr][emr]] and I need to disable ~iedit-toggle-key-default~ or else a buffer pops up complaing that the key has been bound to something else
 #+BEGIN_SRC emacs-lisp
@@ -3781,125 +3743,6 @@ Not really sure what this is
   :config
   (pinentry-start))
 #+END_SRC
-** twittering-mode
-#+BEGIN_SRC emacs-lisp
-(use-package twittering-mode
-  :ensure (:host github :repo "hayamiz/twittering-mode")
-  :commands twittering-mode)
-#+END_SRC
-** matrix-client
-#+BEGIN_SRC emacs-lisp
-(use-package matrix-client
-  :disabled t ;; fails to load eieio on startup
-  )
-#+END_SRC
-** mu4e
-#+BEGIN_SRC emacs-lisp
-;; (eval-when-compile
-;;   (require 's)
-;;   (defvar mu4e-elisp-directory
-;;     (s-trim (shell-command-to-string "mu4e_directory"))))
-(use-package mu4e
-  :disabled t
-  :load-path mu4e-elisp-directory
-  :ensure nil
-  :commands (mu4e mu4e-view-message-with-msgid mu4e-update-index email)
-  :bind ("C-c 0" . email)
-  :config
-  (progn
-    (defun email (&optional arg)
-      (interactive "P")
-      (if (string-equal (persp-name persp-curr) "email")
-          (progn (delete-other-windows) (mu4e))
-        (progn
-          (persp-switch "email")
-          (when (or (not (mu4e-running-p)) arg)
-            (delete-other-windows) (mu4e)))))
-    ;; enable inline images
-    (setq mu4e-view-show-images t)
-    ;; show images
-    (setq mu4e-show-images t)
-    ;; Try to display html as text
-    (setq mu4e-view-prefer-html nil)
-
-    (setq mu4e-html2text-command "html2text -width 80 -nobs -utf8")
-
-    ;; use imagemagick, if available
-    (when (fboundp 'imagemagick-register-types)
-      (imagemagick-register-types))
-    (setq mail-user-agent 'mu4e-user-agent)
-    (require 'org-mu4e)
-    (setq mu4e-compose-complete-only-after nil)
-    (setq mu4e-maildir "~/Mail")
-
-    (setq mu4e-drafts-folder "/[Gmail].Drafts")
-    (setq mu4e-sent-folder   "/[Gmail].Sent Mail")
-    (setq mu4e-trash-folder  "/[Gmail].Trash")
-
-    (setq mu4e-sent-messages-behavior 'delete)
-    (setq mu4e-headers-skip-duplicates t)
-    (setq mu4e-update-interval (* 60 20))
-    (setq message-kill-buffer-on-exit t)
-    (setq mail-user-agent 'mu4e-user-agent) ;; make mu4e the default mail client
-
-    ;; don't save message to Sent Messages, Gmail/IMAP takes care of this
-    (setq mu4e-sent-messages-behavior 'delete)
-
-    ;; allow for updating mail using 'U' in the main view:
-    (setq mu4e-get-mail-command "timeout 60 offlineimap")
-
-    (add-hook 'mu4e-compose-mode-hook
-              (defun my-do-compose-stuff () (flyspell-mode)))
-
-    (add-to-list 'mu4e-headers-actions '("view in browser" . mu4e-action-view-in-browser))
-    (add-to-list 'mu4e-view-actions '("view in browser" . mu4e-action-view-in-browser))
-
-    (defun mu4e-view (msg headersbuf)
-      "Display the message MSG in a new buffer, and keep in sync with HDRSBUF.
-  'In sync' here means that moving to the next/previous message in
-  the the message view affects HDRSBUF, as does marking etc.
-
-  As a side-effect, a message that is being viewed loses its 'unread'
-  marking if it still had that."
-      (let* ((embedded ;; is it as an embedded msg (ie. message/rfc822 att)?
-              (when (gethash (mu4e-message-field msg :path)
-                             mu4e~path-parent-docid-map) t))
-             (buf
-              (if embedded
-                  (mu4e~view-embedded-winbuf)
-                (get-buffer-create mu4e~view-buffer-name))))
-        ;; note: mu4e~view-mark-as-read will pseudo-recursively call mu4e-view again
-        ;; by triggering mu4e~view again as it marks the message as read
-        (with-current-buffer buf
-          (switch-to-buffer buf)
-          (setq mu4e~view-msg msg)
-          ;;(or embedded (not (mu4e~view-mark-as-read msg)))
-          (when (or (mu4e~view-mark-as-read msg) t)
-            (let ((inhibit-read-only t))
-              (erase-buffer)
-              (mu4e~delete-all-overlays)
-              (insert (mu4e-view-message-text msg))
-              (goto-char (point-min))
-              (mu4e~fontify-cited)
-              (mu4e~fontify-signature)
-              (mu4e~view-make-urls-clickable)
-              (mu4e~view-show-images-maybe msg)
-              (setq
-               mu4e~view-buffer buf
-               mu4e~view-headers-buffer headersbuf)
-              (when embedded (local-set-key "q" 'kill-buffer-and-window))
-              (mu4e-view-mode))))))
-
-    (require 'smtpmail)
-
-    ;; alternatively, for emacs-24 you can use:
-    (setq message-send-mail-function 'smtpmail-send-it
-          smtpmail-stream-type 'starttls
-          smtpmail-default-smtp-server "smtp.gmail.com"
-          smtpmail-smtp-server "smtp.gmail.com"
-          smtpmail-smtp-service 587)))
-
-#+END_SRC
 ** gmail-message-mode
 This is useful with server mode when editing gmail messages. I think that it is not currently working, or it may need to be manually enabled.
 #+BEGIN_SRC emacs-lisp
@@ -3944,7 +3787,7 @@ This is useful with server mode when editing gmail messages. I think that it is 
   (progn
     (when (eq system-type 'darwin)
       (setq sauron-modules '(sauron-erc sauron-org sauron-notifications
-                                        sauron-twittering sauron-jabber sauron-identica))
+                                        sauron-jabber sauron-identica))
       (defun sauron-dbus-start ()
         nil)
       (makunbound 'dbus-path-emacs)))
@@ -3963,14 +3806,11 @@ This is useful with server mode when editing gmail messages. I think that it is 
     (defun sauron:erc-notify (origin priority message &optional properties)
       (let ((event (plist-get properties :event)))
         (funcall notify-function "IRC" message)))
-    (defun sauron:mu4e-notify (origin priority message &optional properties)
-      nil)
     (defun sauron:dbus-notify (origin priority message &optional properties)
       (funcall notify-function "GMail" message))
     (defun sauron:dispatch-notify (origin priority message &optional properties)
       (let ((handler (cond ((string= origin "erc") 'sauron:erc-notify)
                            ((string= origin "jabber") 'sauron:jabber-notify)
-                           ((string= origin "mu4e") 'sauron:mu4e-notify)
                            ((string= origin "dbus") 'sauron:dbus-notify)
                            (t (lambda (&rest r) nil)))))
         (funcall handler origin priority message properties)))
@@ -4043,55 +3883,6 @@ This is useful with server mode when editing gmail messages. I think that it is 
       '(("gtl" . "\\.tmpl\\'")
         ("gtl" . "\\.cql\\'")))))
 
-#+END_SRC
-** perspective
-I've disabled perspective because I just don't use it much.
-#+BEGIN_SRC emacs-lisp
-(use-package perspective
-  :disabled t
-  :demand t
-  :config
-  (progn
-    (persp-mode)
-    (defun persp-get-perspectives-for-buffer (buffer)
-      "Get the names of all of the perspectives of which `buffer` is a member."
-      (cl-loop for perspective being the hash-value of perspectives-hash
-               if (member buffer (persp-buffers perspective))
-               collect (persp-name perspective)))
-
-    (defun persp-pick-perspective-by-buffer (buffer)
-      "Select a buffer and go to the perspective to which that buffer
-    belongs. If the buffer belongs to more than one perspective
-    completion will be used to pick the perspective to switch to.
-    Switch the focus to the window in which said buffer is displayed
-    if such a window exists. Otherwise display the buffer in whatever
-    window is active in the perspective."
-      (interactive (list (funcall persp-interactive-completion-function
-                                  "Buffer: " (mapcar 'buffer-name (buffer-list)))))
-      (let* ((perspectives (persp-get-perspectives-for-buffer (get-buffer buffer)))
-             (perspective (if (> (length perspectives) 1)
-                              (funcall persp-interactive-completion-function
-                                       (format "Select the perspective in which you would like to visit %s."
-                                               buffer)
-                                       perspectives)
-                            (car perspectives))))
-        (if (string= (persp-name persp-curr) perspective)
-            ;; This allows the opening of a single buffer in more than one window
-            ;; in a single perspective.
-            (switch-to-buffer buffer)
-          (progn
-            (persp-switch perspective)
-            (if (get-buffer-window buffer)
-                (set-frame-selected-window nil (get-buffer-window buffer))
-              (switch-to-buffer buffer))))))
-
-    (defun persp-mode-switch-buffers (arg)
-      (interactive "P")
-      (if arg (call-interactively 'ido-switch-buffer)
-        (call-interactively 'persp-pick-perspective-by-buffer)))
-
-    (define-key persp-mode-map (kbd "C-x b") 'persp-mode-switch-buffers))
-  :bind ("C-c 9" . persp-switch))
 #+END_SRC
 ** android-mode
 #+BEGIN_SRC emacs-lisp
