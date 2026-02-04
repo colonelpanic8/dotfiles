@@ -36,8 +36,8 @@
   myModules.postgres.enable = true;
   features.full.enable = true;
 
-  services.k3s.role = "agent";
-  services.k3s.extraFlags = lib.mkForce ["--node-label nixos-nvidia-cdi=enabled"];
+  # Single-node k3s with GPU/CDI support
+  myModules.k3s-single-node.enable = true;
 
   hardware.nvidia = {
     powerManagement.enable = false;
@@ -58,10 +58,8 @@
   myModules.plasma.enable = true;
   myModules.nvidia.enable = true;
   myModules.gitea-runner.enable = true;
-  myModules.railbird-k3s = {
-    enable = false;
-    serverAddr = "https://dev.railbird.ai:6443";
-  };
+  # Disable the old multi-node railbird k3s setup
+  myModules.railbird-k3s.enable = false;
 
   fileSystems."/" =
     { device = "/dev/disk/by-uuid/a317d456-6f84-41ee-a149-8e466e414aae";
