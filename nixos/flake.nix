@@ -42,8 +42,8 @@
       inputs.hyprland.follows = "hyprland";
     };
 
-    hyprspace = {
-      url = "github:KZDKM/Hyprspace";
+    hyprland-plugins = {
+      url = "github:hyprwm/hyprland-plugins?ref=v0.53.0";
       inputs.hyprland.follows = "hyprland";
     };
 
@@ -158,7 +158,7 @@
     imalison-taffybar,
     hyprland,
     hy3,
-    hyprspace,
+    hyprland-plugins,
     org-agenda-api,
     flake-utils,
     ...

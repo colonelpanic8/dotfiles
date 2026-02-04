@@ -29,8 +29,9 @@ makeEnable config "myModules.hyprland" true {
           After = [ "hyprland-session.target" ];
         };
         Service = {
+          ExecStartPre = "${pkgs.bash}/bin/bash -lc 'uid=$(id -u); for i in $(seq 1 50); do runtime_dir=\"$XDG_RUNTIME_DIR\"; if [ -z \"$runtime_dir\" ]; then runtime_dir=\"/run/user/$uid\"; fi; if [ -n \"$WAYLAND_DISPLAY\" ] && [ -S \"$runtime_dir/$WAYLAND_DISPLAY\" ]; then exit 0; fi; sleep 0.1; done; exit 1'";
           ExecStart = "${pkgs.waybar}/bin/waybar";
-          Restart = "on-failure";
+          Restart = "always";
           RestartSec = 1;
         };
         Install = {
@@ -59,8 +60,8 @@ makeEnable config "myModules.hyprland" true {
     # hy3 plugin from flake (properly built against matching Hyprland)
     inputs.hy3.packages.${pkgs.stdenv.hostPlatform.system}.hy3
 
-    # Hyprspace plugin from flake (workspace overview)
-    inputs.hyprspace.packages.${pkgs.stdenv.hostPlatform.system}.Hyprspace
+    # Hyprexpo plugin from hyprland-plugins (workspace overview)
+    inputs.hyprland-plugins.packages.${pkgs.stdenv.hostPlatform.system}.hyprexpo
 
     # For scripts
     jq
