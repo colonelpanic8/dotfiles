@@ -7,11 +7,19 @@ set -euo pipefail
 
 DIRECTION="$1"
 
-# First, move focus to the screen in that direction
+# Track the current monitor so we can return
+ORIG_MONITOR=$(hyprctl activeworkspace -j | jq -r '.monitor')
+
+# Move focus to the screen in that direction
 hyprctl dispatch focusmonitor "$DIRECTION"
 
-# Get the monitor we're now on
+# Get the monitor we're now on (target monitor)
 MONITOR=$(hyprctl activeworkspace -j | jq -r '.monitor')
+
+# If there is no monitor in that direction, bail
+if [ "$MONITOR" = "$ORIG_MONITOR" ]; then
+    exit 0
+fi
 
 # Find an empty workspace or create one
 # First check if there's an empty workspace on this monitor
@@ -23,8 +31,9 @@ if [ -z "$EMPTY_WS" ]; then
     EMPTY_WS=$((MAX_WS + 1))
 fi
 
-# Go back to original monitor and move the window
-hyprctl dispatch focusmonitor "$DIRECTION"  # This actually toggles back
+# Ensure the workspace exists on the target monitor
+hyprctl dispatch workspace "$EMPTY_WS"
 
-# Move window to the empty workspace and follow
-hyprctl dispatch movetoworkspace "$EMPTY_WS"
+# Go back to original monitor and move the window (without following)
+hyprctl dispatch focusmonitor "$ORIG_MONITOR"
+hyprctl dispatch movetoworkspacesilent "$EMPTY_WS"
