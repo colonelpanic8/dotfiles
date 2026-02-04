@@ -49,3 +49,8 @@ args = ["-y", "@google-cloud/observability-mcp"]
 [mcp_servers.gmail]
 command = "nix"
 args = ["run", "/home/imalison/Projects/gmail-mcp#gmail-mcp-server"]
+
+[features]
+unified_exec = true
+apps = true
+steer = true
