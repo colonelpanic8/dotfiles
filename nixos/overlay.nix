@@ -200,7 +200,7 @@ in
     };
   });
 
-  emacs = prev.emacs30.override {
+  emacs = prev."emacs30-pgtk".override {
     withNativeCompilation = true;
     withTreeSitter = true;
   };
