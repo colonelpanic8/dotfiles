@@ -226,9 +226,14 @@ in
     };
   });
 
-  # Local Waybar for workspace taskbar support.
+  # Custom Waybar fork for workspace taskbar support + external SNI watcher option.
   waybar = prev.waybar.overrideAttrs (old: {
-    src = final.lib.cleanSource /home/imalison/Projects/waybar;
+    src = prev.fetchFromGitHub {
+      owner = "colonelpanic8";
+      repo = "Waybar";
+      rev = "b17f2f6ec8635bf2a83eea29f75c67d3f1324d36";
+      hash = "sha256-VIJyuhzyRnPK/uE+laZ6SBJUMXM/n+CsZHyllHH+zCQ=";
+    };
     version = old.version;
     mesonFlags = (old.mesonFlags or []) ++ [ "-Dcava=disabled" ];
   });
