@@ -1117,7 +1117,15 @@ I keep it around just in case I need it.
 *** frame-mode
 #+BEGIN_SRC emacs-lisp
 (defvar imalison:use-frame-mode
-  (s-contains? "xmonad" (shell-command-to-string "wmctrl -m")))
+  (let ((xdg-current (downcase (or (getenv "XDG_CURRENT_DESKTOP") "")))
+        (xdg-session (downcase (or (getenv "XDG_SESSION_DESKTOP") "")))
+        (desktop-session (downcase (or (getenv "DESKTOP_SESSION") ""))))
+    (or (getenv "HYPRLAND_INSTANCE_SIGNATURE")
+        (s-contains? "hyprland" xdg-current)
+        (s-contains? "hyprland" xdg-session)
+        (s-contains? "hyprland" desktop-session)
+        (and (executable-find "wmctrl")
+             (s-contains? "xmonad" (shell-command-to-string "wmctrl -m"))))))
 
 (use-package frame-mode
   :if imalison:use-frame-mode
