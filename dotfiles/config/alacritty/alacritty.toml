@@ -2,7 +2,7 @@
 import = ["~/.config/alacritty/themes/themes/dracula.toml"]
 
 [font]
-size = 8
+size = 12
 
 [scrolling]
 history = 10000

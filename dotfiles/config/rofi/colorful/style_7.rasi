@@ -8,7 +8,7 @@
  */
 
 configuration {
-    font:							"Noto Sans 10";
+    font:							"Noto Sans 8";
     show-icons:                     true;
     display-drun: 					"";
     drun-display-format:            "{name}";
@@ -25,7 +25,7 @@ window {
 	border:							0px;
 	border-color:					@ac;
     border-radius:                  12px;
-	width:							30%;
+	width:							40%;
     location:                       center;
     x-offset:                       0;
     y-offset:                       0;
@@ -36,7 +36,7 @@ prompt {
 	padding: 						0.30% 1% 0% -0.5%;
 	background-color: 				@al;
 	text-color: 					@fg;
-	font:							"Fira Code 12";
+	font:							"Fira Code 10";
 }
 
 entry {
