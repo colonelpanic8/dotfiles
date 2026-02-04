@@ -21,15 +21,6 @@ others:
 [[https://github.com/IvanMalison/dotfiles/tree/master/gen-gh-pages][This directory]] contains a collection of scripts that export this org document
 to html. A [[https://github.com/IvanMalison/dotfiles/blob/master/.github/workflows/gh-pages.yml][GitHub Actions workflow]] runs on every push to master, generating the
 HTML and deploying it to GitHub Pages.
-**** githook (The old way)
-NOTE: I've left this here in case other people have an interest in this method,
-but I no longer use it.
-
-I wrote a [[https://github.com/IvanMalison/dotfiles/tree/9e56ced1dd70e50e1026aca5af51437e93add026/dotfiles/emacs.d/bin][githook and an installer script]] that automatically update index.html
-at the root of the repository by running ~org-html-export-to-html~ on my
-README.org (essentially this document) . These should work no matter where they
-are placed in a repository. The org-mode file that they target is set [[https://github.com/IvanMalison/dotfiles/blob/16a4f6c3aadef39a45d30c15e8637b40858721ea/dotfiles/emacs.d/bin/util.sh#L4][here]] and
-should be relatively easy to change.
 *** [[https://github.com/fniessen/org-html-themes][Read The Org]]
 I use [[https://github.com/fniessen][fniessen]]'s ReadTheOrg theme which can be found at
 https://github.com/fniessen/org-html-themes.
