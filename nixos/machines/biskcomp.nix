@@ -1,4 +1,4 @@
-{ pkgs, lib, forEachUser, config, ... }:
+{ pkgs, lib, config, ... }:
 let biskcomp-nginx-hostnames = "192.168.1.44 railbird.ai 1896Folsom.duckdns.org biskcomp.local 0.0.0.0 67.162.131.71";
 in
 {
@@ -157,7 +157,9 @@ in
   networking.hostName = "biskcomp";
   system.stateVersion = "23.11";
 
-  home-manager.users = forEachUser {
-    home.stateVersion = "23.11";
-  };
+  home-manager.sharedModules = [
+    {
+      home.stateVersion = "23.11";
+    }
+  ];
 }

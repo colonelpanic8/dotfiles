@@ -342,8 +342,6 @@
                 (_: value: (builtins.elem "isNormalUser" (builtins.attrNames value)) && value.isNormalUser)
                 usersInfo.users.users)
             );
-            mapAllKeysToValue = keys: value: builtins.listToAttrs (map (name: {inherit name value;}) keys);
-            forEachUser = mapAllKeysToValue realUsers;
           }
           // specialArgs;
       };

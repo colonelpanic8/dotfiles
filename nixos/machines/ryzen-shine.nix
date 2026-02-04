@@ -1,4 +1,4 @@
-{ lib, pkgs, forEachUser, ... }:
+{ lib, pkgs, ... }:
 
 {
   imports = [
@@ -83,9 +83,11 @@
   # services.xrdp.openFirewall = true;
 
   system.stateVersion = "20.03";
-  home-manager.users = forEachUser {
-    home.stateVersion = "21.05";
-  };
+  home-manager.sharedModules = [
+    {
+      home.stateVersion = "21.05";
+    }
+  ];
 
   # users.extraUsers.dean.home = "/shared/dean";
 }

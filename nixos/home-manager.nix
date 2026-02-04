@@ -60,22 +60,6 @@
     '';
   };
 
-  systemd.user.services.setxkbmap = {
-    Unit = {
-      Description = "Set up keyboard in X";
-      After = [ "graphical-session-pre.target" ];
-      PartOf = [ "graphical-session.target" ];
-    };
-
-    Install = { WantedBy = [ "graphical-session.target" ]; };
-
-    Service = {
-      Type = "oneshot";
-      RemainAfterExit = true;
-      ExecStart = "/usr/bin/env load_xkb_map";
-    };
-  };
-
   gtk = {
     enable = true;
     iconTheme = {

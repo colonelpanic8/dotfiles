@@ -1,4 +1,4 @@
-{ config, lib, pkgs, forEachUser, ... }:
+{ config, lib, pkgs, ... }:
 
 {
   imports = [
@@ -53,9 +53,11 @@
 
   networking.hostName = "david-blade";
 
-  home-manager.users = forEachUser {
-    home.stateVersion = "24.05";
-  };
+  home-manager.sharedModules = [
+    {
+      home.stateVersion = "24.05";
+    }
+  ];
 
   powerManagement.cpuFreqGovernor = lib.mkDefault "powersave";
   system.stateVersion = "24.05";

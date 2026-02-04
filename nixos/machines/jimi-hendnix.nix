@@ -1,4 +1,4 @@
-{ config, lib, pkgs, forEachUser, ... }:
+{ config, lib, pkgs, ... }:
 
 {
   imports = [
@@ -106,9 +106,11 @@
     { device = "/dev/disk/by-uuid/598e9aa1-4940-4410-a2fa-3dfd8b7d2c0d"; }
   ];
 
-  home-manager.users = forEachUser {
-    home.stateVersion = "23.11";
-  };
+  home-manager.sharedModules = [
+    {
+      home.stateVersion = "23.11";
+    }
+  ];
 
   networking.hostName = "jimi-hendnix";
 

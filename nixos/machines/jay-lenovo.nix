@@ -1,4 +1,4 @@
-{ config, lib, pkgs, forEachUser, ... }:
+{ config, lib, pkgs, ... }:
 
 {
   imports = [
@@ -55,7 +55,9 @@
 
   system.stateVersion = "23.05";
 
-  home-manager.users = forEachUser {
-    home.stateVersion = "23.05";
-  };
+  home-manager.sharedModules = [
+    {
+      home.stateVersion = "23.05";
+    }
+  ];
 }

@@ -1,4 +1,4 @@
-{ inputs, specialArgs, config, lib, ... }:
+{ inputs, specialArgs, config, lib, realUsers, ... }:
 {
   imports = [
     inputs.home-manager.nixosModules.home-manager
@@ -11,6 +11,7 @@
     };
   };
   config = {
+    home-manager.users = lib.genAttrs realUsers (_: {});
     home-manager.extraSpecialArgs = {
       nixos = {
         inherit specialArgs config;

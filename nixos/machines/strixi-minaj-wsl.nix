@@ -1,4 +1,4 @@
-{ lib, pkgs, config, inputs, forEachUser, ... }:
+{ lib, pkgs, config, inputs, ... }:
 {
   imports = [
     ../configuration.nix
@@ -11,9 +11,11 @@
   wsl.defaultUser = "imalison";
   system.stateVersion = "23.11"; # Did you read the comment?
 
-  home-manager.users = forEachUser {
-    home.stateVersion = "23.11";
-  };
+  home-manager.sharedModules = [
+    {
+      home.stateVersion = "23.11";
+    }
+  ];
 
   programs.gnupg = {
     agent = {

@@ -1,4 +1,4 @@
-{ config, lib, pkgs, forEachUser, inputs, orgAgendaApiContainer ? null, orgAgendaApiImageName ? "org-agenda-api", ... }:
+{ config, lib, pkgs, inputs, orgAgendaApiContainer ? null, orgAgendaApiImageName ? "org-agenda-api", ... }:
 {
   imports = [
     ../configuration.nix
@@ -86,9 +86,11 @@
   powerManagement.cpuFreqGovernor = lib.mkDefault "powersave";
   hardware.cpu.amd.updateMicrocode = lib.mkDefault config.hardware.enableRedistributableFirmware;
 
-  home-manager.users = forEachUser {
-     home.stateVersion = "23.11";
-  };
+  home-manager.sharedModules = [
+    {
+      home.stateVersion = "23.11";
+    }
+  ];
 
   system.stateVersion = "23.11";
 }

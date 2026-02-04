@@ -1,5 +1,5 @@
-{ forEachUser, ... }: {
-  home-manager.users = forEachUser {
-    services.kbfs.enable = true;
-  };
+{ ... }: {
+  home-manager.sharedModules = [
+    { services.kbfs.enable = true; }
+  ];
 }

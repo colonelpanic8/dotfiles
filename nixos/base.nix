@@ -1,4 +1,4 @@
-{ config, pkgs, forEachUser, makeEnable, realUsers, ... }:
+{ config, pkgs, makeEnable, realUsers, ... }:
 makeEnable config "myModules.base" true {
   nixpkgs.config.permittedInsecurePackages = [
     "electron-12.2.3"

@@ -4,6 +4,7 @@ makeEnable config "myModules.desktop" true {
   imports = [
     ./fonts.nix
     ./hyprland.nix
+    ./keyd.nix
   ];
 
   services.xserver = {
@@ -47,6 +48,7 @@ makeEnable config "myModules.desktop" true {
 
     # XOrg
     autorandr
+    keyd
     wmctrl
     xclip
     xdotool

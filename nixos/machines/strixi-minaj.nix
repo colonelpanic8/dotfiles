@@ -1,4 +1,4 @@
-{ config, lib, pkgs, inputs, forEachUser, ... }:
+{ config, lib, pkgs, inputs, ... }:
 
 {
   imports = [
@@ -83,9 +83,11 @@
   powerManagement.cpuFreqGovernor = lib.mkDefault "performance";
   hardware.cpu.intel.updateMicrocode = lib.mkDefault true;
 
-  home-manager.users = forEachUser {
-    home.stateVersion = "23.05";
-  };
+  home-manager.sharedModules = [
+    {
+      home.stateVersion = "23.05";
+    }
+  ];
 
   system.stateVersion = "23.05";
 }

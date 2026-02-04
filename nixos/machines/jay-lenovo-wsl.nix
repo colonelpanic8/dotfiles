@@ -1,4 +1,4 @@
-{ lib, pkgs, config, inputs, forEachUser, ... }:
+{ lib, pkgs, config, inputs, ... }:
 {
   imports = [
     ../configuration.nix
@@ -12,7 +12,9 @@
   wsl.defaultUser = "kat";
   system.stateVersion = "22.05";
 
-  home-manager.users = forEachUser {
-    home.stateVersion = "22.05";
-  };
+  home-manager.sharedModules = [
+    {
+      home.stateVersion = "22.05";
+    }
+  ];
 }
