@@ -19,6 +19,9 @@
 (require 's)
 (org-babel-tangle-file readme-src)
 
+(require 'cl-lib)
+(load-file (concat emacs-dir "org-config-bootstrap.el"))
+(org-babel-tangle-file (concat emacs-dir "org-config.org"))
 (load-file (concat emacs-dir "org-config.el"))
 
 (defun export-target (target)

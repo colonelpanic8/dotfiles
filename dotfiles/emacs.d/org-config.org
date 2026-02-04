@@ -1,6 +1,6 @@
 * include-file-as-forms
 We're going to use this to write separate parts of our config to different sections that will then be provided to our use package statment
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :tangle org-config.el
 (defun imalison:include-file-as-forms (filename)
   "Include the contents of FILENAME into the source as s-expressions."
   (with-temp-buffer
@@ -15,7 +15,7 @@ We're going to use this to write separate parts of our config to different secti
       `,@(nreverse forms))))
 #+end_src
 * use-package
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :tangle org-config.el
 (defmacro imalison:org-config ()
   `(use-package org
      :ensure nil
@@ -29,6 +29,15 @@ We're going to use this to write separate parts of our config to different secti
 (imalison:org-config)
 #+end_src
 * My Customization Variables
+#+begin_src emacs-lisp :tangle org-config.el
+;; Ensure core org variables exist even when org-config.el is loaded directly.
+(defvar imalison:org-dir "~/org")
+(defvar imalison:created-property-string "
+:PROPERTIES:
+:ID: %(org-id-new)
+:CREATED: %U
+:END:")
+#+end_src
 #+begin_src emacs-lisp :tangle org-config-preface.el
 (defvar imalison:org-dir "~/org")
 (defvar imalison:shared-org-dir "~/org")
