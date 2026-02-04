@@ -1,7 +1,7 @@
 * {
     /* `otf-font-awesome` is required to be installed for icons */
     font-family: FontAwesome, Roboto, Helvetica, Arial, sans-serif;
-    font-size: 13px;
+    font-size: 14px;
 }
 
 window#waybar {
@@ -55,7 +55,7 @@ button:hover {
 
 #workspaces button,
 #taskbar button {
-    padding: 0 5px;
+    padding: 0 3px;
     background-color: transparent;
     color: #ffffff;
 }
@@ -78,7 +78,7 @@ button:hover {
 }
 
 #workspaces .workspace-label {
-    padding: 0 6px;
+    padding: 0 2px;
 }
 
 #workspaces .taskbar-window {
@@ -108,6 +108,7 @@ button:hover {
 #cpu,
 #memory,
 #disk,
+#custom-diskfree,
 #temperature,
 #backlight,
 #network,
@@ -120,7 +121,7 @@ button:hover {
 #scratchpad,
 #power-profiles-daemon,
 #mpd {
-    padding: 0 10px;
+    padding: 0 8px;
     color: #ffffff;
 }
 
@@ -207,6 +208,10 @@ label:focus {
 }
 
 #disk {
+    background-color: #964B00;
+}
+
+#custom-diskfree {
     background-color: #964B00;
 }
 

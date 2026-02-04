@@ -1,6 +1,6 @@
 // -*- mode: jsonc -*-
 {
-    "height": 30,
+    "height": 42,
     "spacing": 4,
     "modules-left": [
         "hyprland/workspaces",
@@ -16,6 +16,7 @@
         "power-profiles-daemon",
         "cpu",
         "memory",
+        "custom/diskfree",
         "temperature",
         "backlight",
         "battery",
@@ -43,6 +44,12 @@
     },
     "memory": {
         "format": "MEM {}%"
+    },
+    "custom/diskfree": {
+        "exec": "~/.config/waybar/scripts/diskfree",
+        "interval": 30,
+        "format": "DISK {text}",
+        "tooltip": false
     },
     "temperature": {
         "critical-threshold": 80,
@@ -89,7 +96,7 @@
             "enable": true,
             "update-active-window": true,
             "format": "{icon}",
-            "icon-size": 16,
+            "icon-size": 24,
             "on-click-window": "hyprctl dispatch focuswindow address:{address}"
         }
     }
