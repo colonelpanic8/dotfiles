@@ -25,3 +25,4 @@ gotools
 /dotfiles/config/gtk-3.0/colors.css
 /dotfiles/emacs.d/.cache/
 /dotfiles/config/fontconfig/conf.d/10-hm-fonts.conf
+/dotfiles/config/fontconfig/conf.d/52-hm-default-fonts.conf
