@@ -9,6 +9,7 @@
 .tern-port
 .tutor
 /eln-cache
+/elpaca
 /transient
 /tree-sitter
 README.el
