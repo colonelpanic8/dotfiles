@@ -4,29 +4,19 @@ makeEnable config "myModules.hyprland" true {
     enable = true;
     # Use Hyprland from the flake for proper plugin compatibility
     package = inputs.hyprland.packages.${pkgs.stdenv.hostPlatform.system}.hyprland;
+    # Let UWSM manage the Hyprland session targets
+    withUWSM = true;
   };
 
   home-manager.sharedModules = [
     {
-      xdg.configFile."waybar" = {
-        source = ../dotfiles/config/waybar;
-        recursive = true;
-        force = true;
-      };
-
       programs.waybar.enable = true;
-
-      systemd.user.targets.hyprland-session = {
-        Unit = {
-          Description = "Hyprland session";
-        };
-      };
 
       systemd.user.services.waybar = {
         Unit = {
           Description = "Waybar";
-          PartOf = [ "hyprland-session.target" ];
-          After = [ "hyprland-session.target" ];
+          PartOf = [ "wayland-session@Hyprland.target" ];
+          After = [ "wayland-session@Hyprland.target" ];
         };
         Service = {
           ExecStartPre = "${pkgs.bash}/bin/bash -lc 'uid=$(id -u); for i in $(seq 1 50); do runtime_dir=\"$XDG_RUNTIME_DIR\"; if [ -z \"$runtime_dir\" ]; then runtime_dir=\"/run/user/$uid\"; fi; if [ -n \"$WAYLAND_DISPLAY\" ] && [ -S \"$runtime_dir/$WAYLAND_DISPLAY\" ]; then exit 0; fi; sleep 0.1; done; exit 1'";
@@ -35,11 +25,9 @@ makeEnable config "myModules.hyprland" true {
           RestartSec = 1;
         };
         Install = {
-          WantedBy = [ "hyprland-session.target" ];
+          WantedBy = [ "wayland-session@Hyprland.target" ];
         };
       };
-
-      programs.hyprpanel.enable = false;
     }
   ];
 
@@ -51,6 +39,7 @@ makeEnable config "myModules.hyprland" true {
     hyprlock       # Screen locker
     hyprcursor     # Cursor themes
     wl-clipboard   # Clipboard for Wayland
+    wtype          # Wayland input typing
     cliphist       # Clipboard history
     grim           # Screenshot utility
     slurp          # Region selection
