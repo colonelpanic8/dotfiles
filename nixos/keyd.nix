@@ -17,8 +17,8 @@ makeEnable config "myModules.keyd" true {
           # Right Alt -> Hyper chord
           rightalt = "layer(hyper)";
         };
-        # Hyper = Ctrl+Alt+Meta+Shift while held
-        "hyper:C-A-M-S" = { };
+        # Hyper = Ctrl+Alt+Meta while held (matches $hyper = SUPER CTRL ALT)
+        "hyper:C-A-M" = { };
       };
     };
 
