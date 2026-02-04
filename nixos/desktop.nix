@@ -58,7 +58,7 @@ makeEnable config "myModules.desktop" true {
     xsettingsd
 
     # Desktop
-    ghostty
+    alacritty
     blueman
     # clipit
     d-spy
