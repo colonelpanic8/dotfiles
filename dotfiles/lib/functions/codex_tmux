@@ -1,0 +1,18 @@
+#!/usr/bin/env sh
+
+function codex_tmux {
+    base=$(basename "$PWD")
+    name="$base"
+
+    if tmux has-session -t "$name" 2>/dev/null; then
+        i=2
+        while tmux has-session -t "${name}-${i}" 2>/dev/null; do
+            i=$((i+1))
+        done
+        name="${name}-${i}"
+    fi
+
+    tmux new-session -s "$name" -c "$PWD" codex --dangerously-bypass-approvals-and-sandbox "$@"
+}
+
+codex_tmux "$@"
