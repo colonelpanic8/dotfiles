@@ -1,0 +1,51 @@
+model = "gpt-5.2-codex"
+model_reasoning_effort = "high"
+personality = "pragmatic"
+[projects."/home/imalison/Projects/nixpkgs"]
+trust_level = "trusted"
+
+[projects."/home/imalison/dotfiles"]
+trust_level = "trusted"
+
+[projects."/home/imalison/Projects/railbird"]
+trust_level = "trusted"
+
+[projects."/home/imalison/Projects/subtr-actor"]
+trust_level = "trusted"
+
+[projects."/home/imalison/Projects/google-messages-api"]
+trust_level = "trusted"
+
+[projects."/home/imalison"]
+trust_level = "trusted"
+
+[projects."/home/imalison/Projects/scrobble-scrubber"]
+trust_level = "trusted"
+
+[projects."/home/imalison/temp"]
+trust_level = "trusted"
+
+[projects."/home/imalison/Projects/org-agenda-api"]
+trust_level = "untrusted"
+
+[projects."/home/imalison/org"]
+trust_level = "trusted"
+
+[notice]
+hide_gpt5_1_migration_prompt = true
+"hide_gpt-5.1-codex-max_migration_prompt" = true
+
+[notice.model_migrations]
+"gpt-5.2" = "gpt-5.2-codex"
+
+[mcp_servers.chrome-devtools]
+command = "npx"
+args = ["-y", "chrome-devtools-mcp@latest", "--auto-connect"]
+
+[mcp_servers.observability]
+command = "npx"
+args = ["-y", "@google-cloud/observability-mcp"]
+
+[mcp_servers.gmail]
+command = "nix"
+args = ["run", "/home/imalison/Projects/gmail-mcp#gmail-mcp-server"]

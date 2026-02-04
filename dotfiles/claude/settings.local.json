@@ -1,0 +1,51 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(find:*)",
+      "Bash(cat:*)"
+    ],
+    "deny": []
+  },
+  "mcp": {
+    "servers": {
+      "gitea-mcp": {
+        "command": "docker",
+        "args": [
+          "run",
+          "-i",
+          "--rm",
+          "-e",
+          "GITEA_ACCESS_TOKEN=ad1e513137d5a15b638f7b4b5f65e1bda1c70cd7",
+          "-e",
+          "GITEA_BASE_URL=https://dev.railbird.ai",
+          "docker.gitea.com/gitea-mcp-server"
+        ],
+        "env": {
+          "GITEA_ACCESS_TOKEN": "ad1e513137d5a15b638f7b4b5f65e1bda1c70cd7",
+          "GITEA_BASE_URL": "https://dev.railbird.ai"
+        }
+      },
+      "chrome-devtools": {
+        "command": "npx",
+        "args": [
+          "chrome-devtools-mcp@latest",
+          "--auto-connect"
+        ]
+      },
+      "imap-email": {
+        "command": "npx",
+        "args": ["-y", "imap-email-mcp"],
+        "env": {
+          "IMAP_USER": "IvanMalison@gmail.com",
+          "IMAP_PASSWORD": "iiobqyuuczibsnmi",
+          "IMAP_HOST": "imap.gmail.com"
+        }
+      }
+    }
+  },
+  "enabledMcpjsonServers": [
+    "chrome-devtools",
+    "imap-email"
+  ],
+  "enableAllProjectMcpServers": true
+}
