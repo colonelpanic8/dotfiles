@@ -19,3 +19,8 @@
 
 ## Pane usage
 - Do not create extra panes or windows unless the user asks.
+
+## NixOS workflow
+- This system is managed with a Nix flake at `~/dotfiles/nixos`.
+- Use `just switch` from that directory for rebuilds instead of plain `nixos-rebuild`.
+- Host configs live under `machines/`; choose the appropriate host when needed.
