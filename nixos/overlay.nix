@@ -145,6 +145,16 @@ in
     };
   });
 
+  rofi-pass = prev.rofi-pass.overrideAttrs (_: {
+    version = "git-0fb508a";
+    src = prev.fetchFromGitHub {
+      owner = "colonelpanic8";
+      repo = "rofi-pass";
+      rev = "0fb508a93ab5f653b63d68ce569e79c8bb27e87b";
+      sha256 = "sha256-49kdaqCp6O4RrZMbAKYJKDJaAzHBUqYZT2O7OjtQ8W0=";
+    };
+  });
+
   wyoming-satellite = prev.wyoming-satellite.overridePythonAttrs (oldAttrs: {
     src = prev.fetchFromGitHub {
       owner = "colonelpanic8";
@@ -188,6 +198,13 @@ in
       url = "https://www.expressvpn.works/clients/linux/expressvpn_3.46.0.7-1_amd64.deb";
       hash = "sha256-v0rr1s32jj79A8IGfJgSGJVlz7rSnZYn4ealOpqee0w=";
     };
+  });
+
+  # Local Waybar for workspace taskbar support.
+  waybar = prev.waybar.overrideAttrs (old: {
+    src = final.lib.cleanSource /home/imalison/Projects/waybar;
+    version = old.version;
+    mesonFlags = (old.mesonFlags or []) ++ [ "-Dcava=disabled" ];
   });
 
   gnupg_2_4_0 = prev.gnupg.overrideAttrs (_: rec {

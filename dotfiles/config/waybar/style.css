@@ -82,7 +82,7 @@ button:hover {
 }
 
 #workspaces .taskbar-window {
-    padding: 0 4px;
+    padding: 0 2px;
 }
 
 #workspaces .taskbar-window.active {
@@ -90,8 +90,12 @@ button:hover {
     box-shadow: inset 0 -3px #ffffff;
 }
 
+#workspaces .taskbar-window label {
+    color: #ffffff;
+}
+
 #workspaces .taskbar-window image {
-    margin: 0 2px;
+    margin: 0 1px;
 }
 
 #mode {

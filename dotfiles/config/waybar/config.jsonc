@@ -83,7 +83,7 @@
         "on-click": "pavucontrol"
     },
     "hyprland/workspaces": {
-        "format": "{id}",
+        "format": "{id} {windows}",
         "on-click": "activate",
         "workspace-taskbar": {
             "enable": true,
