@@ -2938,8 +2938,14 @@ The following is taken from [[https://github.com/syl20bnr/spacemacs/blob/a650877
 *** org
 My org-mode configuration now lives in its own file org-config.org.
 #+BEGIN_SRC emacs-lisp
-(org-babel-load-file
- (expand-file-name "org-config.org" user-emacs-directory))
+(let* ((org-config (expand-file-name "org-config.org" user-emacs-directory))
+       (org-config-el (expand-file-name "org-config.el" user-emacs-directory)))
+  (when (file-newer-than-file-p org-config org-config-el)
+    ;; Tangle all outputs so org-config-bind.el/org-config-config.el are fresh.
+    (org-babel-tangle-file org-config)
+    (when (file-exists-p org-config-el)
+      (set-file-times org-config-el)))
+  (load-file org-config-el))
 #+END_SRC
 *** TeX
 #+BEGIN_SRC emacs-lisp
