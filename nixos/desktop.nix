@@ -59,6 +59,7 @@ makeEnable config "myModules.desktop" true {
 
     # Desktop
     alacritty
+    ghostty
     blueman
     # clipit
     d-spy
