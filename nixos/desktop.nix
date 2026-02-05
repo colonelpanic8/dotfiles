@@ -1,4 +1,4 @@
-{ inputs, config, pkgs, makeEnable, ... }:
+{ inputs, config, pkgs, lib, makeEnable, ... }:
 makeEnable config "myModules.desktop" true {
   services.greenclip.enable = true;
   imports = [
@@ -7,6 +7,16 @@ makeEnable config "myModules.desktop" true {
     ./keyd.nix
     ./xremap.nix
   ];
+
+  assertions = [
+    {
+      assertion = config.myModules.taffybar.enable != config.myModules.waybar.enable;
+      message = "Enable exactly one of myModules.taffybar or myModules.waybar.";
+    }
+  ];
+
+  myModules.taffybar.enable = lib.mkDefault config.myModules.xmonad.enable;
+  myModules.waybar.enable = lib.mkDefault (!config.myModules.xmonad.enable);
 
   services.xserver = {
     exportConfiguration = true;

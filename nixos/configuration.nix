@@ -33,14 +33,17 @@
     ./plasma.nix
     ./postgres.nix
     ./rabbitmq.nix
+    ./quickshell.nix
     ./secrets.nix
     ./ssh.nix
     ./sni.nix
     ./syncthing.nix
+    ./taffybar.nix
     ./tts.nix
     ./user-specific.nix
     ./users.nix
     ./vscode.nix
+    ./waybar.nix
     ./wsl.nix
     ./wyoming.nix
     ./xmonad.nix

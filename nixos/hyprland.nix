@@ -1,4 +1,4 @@
-{ config, pkgs, lib, makeEnable, inputs, ... }:
+{ config, pkgs, makeEnable, inputs, ... }:
 makeEnable config "myModules.hyprland" true {
   programs.hyprland = {
     enable = true;
@@ -7,29 +7,6 @@ makeEnable config "myModules.hyprland" true {
     # Let UWSM manage the Hyprland session targets
     withUWSM = true;
   };
-
-  home-manager.sharedModules = [
-    {
-      programs.waybar.enable = true;
-
-      systemd.user.services.waybar = {
-        Unit = {
-          Description = "Waybar";
-          PartOf = [ "wayland-session@Hyprland.target" ];
-          After = [ "wayland-session@Hyprland.target" ];
-        };
-        Service = {
-          ExecStartPre = "${pkgs.bash}/bin/bash -lc 'uid=$(id -u); for i in $(seq 1 50); do runtime_dir=\"$XDG_RUNTIME_DIR\"; if [ -z \"$runtime_dir\" ]; then runtime_dir=\"/run/user/$uid\"; fi; if [ -n \"$WAYLAND_DISPLAY\" ] && [ -S \"$runtime_dir/$WAYLAND_DISPLAY\" ]; then exit 0; fi; sleep 0.1; done; exit 1'";
-          ExecStart = "${pkgs.waybar}/bin/waybar";
-          Restart = "always";
-          RestartSec = 1;
-        };
-        Install = {
-          WantedBy = [ "wayland-session@Hyprland.target" ];
-        };
-      };
-    }
-  ];
 
   # Hyprland-specific packages
   environment.systemPackages = with pkgs; [

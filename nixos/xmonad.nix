@@ -5,7 +5,7 @@ makeEnable config "myModules.xmonad" true  {
     xmonad-contrib.overlay
     notifications-tray-icon.overlay
     (import ../dotfiles/config/xmonad/overlay.nix)
-  ] ++ taffybar.overlays;
+  ];
 
   services.rumno.enable = true;
 
@@ -29,19 +29,12 @@ makeEnable config "myModules.xmonad" true  {
     haskellPackages.imalison-xmonad
     # haskellPackages.notifications-tray-icon
     # haskellPackages.gtk-sni-tray
-    haskellPackages.status-notifier-item
     haskellPackages.dbus-hslogger
-    inputs.imalison-taffybar.defaultPackage."${pkgs.stdenv.hostPlatform.system}"
   ];
 
   home-manager.sharedModules = [
     {
       imports = [ ./dunst.nix ];
-
-      services.taffybar = {
-        enable = true;
-        package = inputs.imalison-taffybar.defaultPackage."${pkgs.stdenv.hostPlatform.system}";
-      };
 
       services.autorandr.enable = true;
 

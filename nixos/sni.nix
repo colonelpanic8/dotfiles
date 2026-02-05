@@ -1,7 +1,23 @@
-{ config, makeEnable, ... }:
+{ config, lib, makeEnable, ... }:
 makeEnable config "myModules.sni" true {
   home-manager.sharedModules = [
     {
+      systemd.user.services =
+        let
+          wantGraphicalPre = {
+            Install.WantedBy = lib.mkAfter [ "graphical-session-pre.target" ];
+          };
+        in
+        {
+          blueman-applet = wantGraphicalPre;
+          kdeconnect = wantGraphicalPre;
+          kdeconnect-indicator = wantGraphicalPre;
+          network-manager-applet = wantGraphicalPre;
+          pasystray = wantGraphicalPre;
+          udiskie = wantGraphicalPre;
+          flameshot = wantGraphicalPre;
+        };
+
       services.blueman-applet = {
         enable = true;
       };
@@ -23,11 +39,6 @@ makeEnable config "myModules.sni" true {
       services.udiskie = {
         enable = true;
         tray = "always";
-      };
-
-      services.status-notifier-watcher = {
-        enable = true;
-        flags = ["--log-level" "DEBUG"];
       };
 
       services.pasystray.enable = true;

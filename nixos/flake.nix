@@ -74,7 +74,7 @@
     };
 
     taffybar = {
-      url = "github:taffybar/taffybar/old-master";
+      url = "path:/home/imalison/dotfiles/dotfiles/config/taffybar/taffybar";
       inputs = {
         nixpkgs.follows = "nixpkgs";
       };
@@ -82,12 +82,12 @@
 
     imalison-taffybar = {
       url = "path:../dotfiles/config/taffybar";
-      # inputs = {
-      #   nixpkgs.follows = "nixpkgs";
-      #   flake-utils.follows = "flake-utils";
-      #   xmonad.follows = "xmonad";
-      #   taffybar.follows = "taffybar";
-      # };
+      inputs = {
+        nixpkgs.follows = "nixpkgs";
+        flake-utils.follows = "flake-utils";
+        xmonad.follows = "xmonad";
+        taffybar.follows = "taffybar";
+      };
     };
 
     notifications-tray-icon = {
@@ -132,12 +132,17 @@
     nixtheplanet.url = "github:matthewcroughan/nixtheplanet";
 
     codex-cli-nix = {
-      url = "github:sadjow/codex-cli-nix";
+      url = "github:colonelpanic8/codex-cli-nix/fix/add-libcap-to-rpath";
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
     claude-code-nix = {
       url = "github:sadjow/claude-code-nix";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+
+    caelestia-shell = {
+      url = "github:caelestia-dots/shell";
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
