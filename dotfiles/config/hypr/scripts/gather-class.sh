@@ -24,7 +24,7 @@ fi
 COUNT=0
 for ADDR in $WINDOWS; do
     hyprctl dispatch movetoworkspace "$CURRENT_WS,address:$ADDR"
-    ((COUNT++))
+    COUNT=$((COUNT + 1))
 done
 
 notify-send "Gather Class" "Gathered $COUNT windows of class '$FOCUSED_CLASS'"
