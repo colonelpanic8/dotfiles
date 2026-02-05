@@ -6,7 +6,7 @@
 
 window#waybar {
     background-color: rgba(43, 48, 59, 0.5);
-    border-bottom: 3px solid rgba(100, 114, 125, 0.5);
+    border-bottom: 5px solid rgba(100, 114, 125, 0.7);
     color: #ffffff;
     transition-property: background-color;
     transition-duration: .5s;
@@ -36,7 +36,7 @@ window#waybar.chromium {
 
 button {
     /* Use box-shadow instead of border so the text isn't offset */
-    box-shadow: inset 0 -3px transparent;
+    box-shadow: inset 0 -5px transparent;
     /* Avoid rounded borders under each button name */
     border: none;
     border-radius: 0;
@@ -45,7 +45,7 @@ button {
 /* https://github.com/Alexays/Waybar/wiki/FAQ#the-workspace-buttons-have-a-strange-hover-effect */
 button:hover {
     background: inherit;
-    box-shadow: inset 0 -3px #ffffff;
+    box-shadow: inset 0 -5px #ffffff;
 }
 
 /* you can set a style on hover for any module like this */
@@ -56,6 +56,7 @@ button:hover {
 #workspaces button,
 #taskbar button {
     padding: 0 3px;
+    min-height: 42px;
     background-color: transparent;
     color: #ffffff;
 }
@@ -69,7 +70,7 @@ button:hover {
 #taskbar button.active,
 #taskbar button.focused {
     background-color: #64727D;
-    box-shadow: inset 0 -3px #ffffff;
+    box-shadow: inset 0 -5px #ffffff;
 }
 
 #workspaces button.urgent,
@@ -87,7 +88,7 @@ button:hover {
 
 #workspaces .taskbar-window.active {
     background-color: #64727D;
-    box-shadow: inset 0 -3px #ffffff;
+    box-shadow: inset 0 -5px #ffffff;
 }
 
 #workspaces .taskbar-window label {
@@ -100,7 +101,7 @@ button:hover {
 
 #mode {
     background-color: #64727D;
-    box-shadow: inset 0 -3px #ffffff;
+    box-shadow: inset 0 -5px #ffffff;
 }
 
 #clock,
@@ -109,6 +110,7 @@ button:hover {
 #memory,
 #disk,
 #custom-diskfree,
+#custom-nowplaying,
 #temperature,
 #backlight,
 #network,
@@ -122,6 +124,9 @@ button:hover {
 #power-profiles-daemon,
 #mpd {
     padding: 0 8px;
+    min-height: 42px;
+    margin-top: 5px;
+    margin-bottom: 5px;
     color: #ffffff;
 }
 
@@ -129,6 +134,8 @@ button:hover {
 #workspaces,
 #taskbar {
     margin: 0 4px;
+    margin-top: 5px;
+    margin-bottom: 5px;
 }
 
 /* If workspaces is the leftmost module, omit left margin */
@@ -250,6 +257,22 @@ label:focus {
     background-color: #66cc99;
     color: #2a5c45;
     min-width: 100px;
+}
+
+#custom-nowplaying {
+    background-color: #3d4a5c;
+    color: #ffffff;
+    min-width: 100px;
+}
+
+#custom-nowplaying.playing {
+    background-color: #1db954;
+    color: #000000;
+}
+
+#custom-nowplaying.paused {
+    background-color: #90b1b1;
+    color: #000000;
 }
 
 #custom-media.custom-spotify {

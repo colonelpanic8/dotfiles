@@ -1,0 +1,76 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+config_dir="${XDG_CONFIG_HOME:-$HOME/.config}/waybar"
+template="${config_dir}/config.jsonc"
+style_template="${config_dir}/style.css"
+vars_file="${config_dir}/vars.env"
+
+icon_size_default=24
+height_default=42
+line_size_default=5
+
+if [[ -f "$vars_file" ]]; then
+  # shellcheck disable=SC1090
+  source "$vars_file"
+fi
+
+icon_size="${WAYBAR_ICON_SIZE:-$icon_size_default}"
+bar_height="${WAYBAR_HEIGHT:-$height_default}"
+line_size="${WAYBAR_LINE_SIZE:-$line_size_default}"
+inner_gap_default=1
+inner_gap="${WAYBAR_INNER_GAP:-$inner_gap_default}"
+
+if [[ ! "$icon_size" =~ ^[0-9]+$ ]]; then
+  printf 'Invalid WAYBAR_ICON_SIZE: %s\n' "$icon_size" >&2
+  exit 1
+fi
+if [[ ! "$bar_height" =~ ^[0-9]+$ ]]; then
+  printf 'Invalid WAYBAR_HEIGHT: %s\n' "$bar_height" >&2
+  exit 1
+fi
+if [[ ! "$line_size" =~ ^[0-9]+$ ]]; then
+  printf 'Invalid WAYBAR_LINE_SIZE: %s\n' "$line_size" >&2
+  exit 1
+fi
+if [[ ! "$inner_gap" =~ ^[0-9]+$ ]]; then
+  printf 'Invalid WAYBAR_INNER_GAP: %s\n' "$inner_gap" >&2
+  exit 1
+fi
+top_margin=$inner_gap
+bottom_margin=$((inner_gap + line_size))
+content_height=$((bar_height - top_margin - bottom_margin))
+if (( content_height <= 0 )); then
+  printf 'WAYBAR_HEIGHT (%s) must be greater than WAYBAR_LINE_SIZE (%s) + 2 * WAYBAR_INNER_GAP (%s)\n' \
+    "$bar_height" "$line_size" "$inner_gap" >&2
+  exit 1
+fi
+
+runtime_dir="${XDG_RUNTIME_DIR:-/run/user/$(id -u)}"
+out_dir="${runtime_dir}/waybar"
+out_file="${out_dir}/config.jsonc"
+style_out_file="${out_dir}/style.css"
+
+if [[ ! -f "$template" ]]; then
+  printf 'Waybar config template not found: %s\n' "$template" >&2
+  exit 1
+fi
+if [[ ! -f "$style_template" ]]; then
+  printf 'Waybar style template not found: %s\n' "$style_template" >&2
+  exit 1
+fi
+
+mkdir -p "$out_dir"
+
+sed -E \
+  -e "s/(\"icon-size\"[[:space:]]*:[[:space:]]*)[0-9]+/\\1${icon_size}/g" \
+  -e "s/(\"height\"[[:space:]]*:[[:space:]]*)[0-9]+/\\1${bar_height}/g" \
+  "$template" > "$out_file"
+
+sed -E \
+  -e "s/(border-bottom:[[:space:]]*)[0-9]+px/\\1${line_size}px/g" \
+  -e "s/(box-shadow:[[:space:]]*inset[[:space:]]+0[[:space:]]+)-[0-9]+px/\\1-${line_size}px/g" \
+  -e "s/(margin-top:[[:space:]]*)[0-9]+px/\\1${top_margin}px/g" \
+  -e "s/(margin-bottom:[[:space:]]*)[0-9]+px/\\1${bottom_margin}px/g" \
+  -e "s/(min-height:[[:space:]]*)[0-9]+px/\\1${content_height}px/g" \
+  "$style_template" > "$style_out_file"
