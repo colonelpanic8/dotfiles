@@ -1,0 +1,113 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+if ! command -v playerctl >/dev/null 2>&1; then
+  exit 0
+fi
+
+preferred_players="${WAYBAR_NOWPLAYING_PLAYERS:-spotify,spotifyd,playerctld,vlc,mpv,firefox,chromium}"
+IFS=',' read -r -a preferred_list <<< "$preferred_players"
+
+mapfile -t players < <(playerctl -l 2>/dev/null || true)
+if [[ ${#players[@]} -eq 0 ]]; then
+  exit 0
+fi
+
+has_player() {
+  local target="$1"
+  for player in "${players[@]}"; do
+    if [[ "$player" == "$target" ]]; then
+      return 0
+    fi
+  done
+  return 1
+}
+
+selected=""
+selected_status=""
+
+for player in "${preferred_list[@]}"; do
+  player="${player//[[:space:]]/}"
+  [[ -z "$player" ]] && continue
+  if has_player "$player"; then
+    status=$(playerctl --player "$player" status 2>/dev/null || true)
+    if [[ "$status" == "Playing" ]]; then
+      selected="$player"
+      selected_status="$status"
+      break
+    fi
+    if [[ "$status" == "Paused" && -z "$selected" ]]; then
+      selected="$player"
+      selected_status="$status"
+    fi
+  fi
+done
+
+if [[ -z "$selected" ]]; then
+  for player in "${players[@]}"; do
+    status=$(playerctl --player "$player" status 2>/dev/null || true)
+    if [[ "$status" == "Playing" ]]; then
+      selected="$player"
+      selected_status="$status"
+      break
+    fi
+    if [[ "$status" == "Paused" && -z "$selected" ]]; then
+      selected="$player"
+      selected_status="$status"
+    fi
+  done
+fi
+
+if [[ -z "$selected" ]]; then
+  exit 0
+fi
+
+if [[ -z "$selected_status" ]]; then
+  selected_status=$(playerctl --player "$selected" status 2>/dev/null || true)
+fi
+
+if [[ "$selected_status" != "Playing" && "$selected_status" != "Paused" ]]; then
+  exit 0
+fi
+
+artist=$(playerctl --player "$selected" metadata artist 2>/dev/null || true)
+title=$(playerctl --player "$selected" metadata title 2>/dev/null || true)
+artist="${artist//$'\n'/ }"
+artist="${artist//$'\r'/ }"
+title="${title//$'\n'/ }"
+title="${title//$'\r'/ }"
+
+if [[ -z "$artist" && -z "$title" ]]; then
+  exit 0
+fi
+
+text="$title"
+if [[ -n "$artist" && -n "$title" ]]; then
+  text="$artist - $title"
+elif [[ -n "$artist" ]]; then
+  text="$artist"
+fi
+
+if [[ "${WAYBAR_NOWPLAYING_SHOW_PLAYER:-0}" == "1" ]]; then
+  text="${selected}: ${text}"
+fi
+
+json_escape() {
+  local input="$1"
+  input=${input//\\/\\\\}
+  input=${input//\"/\\\"}
+  input=${input//$'\n'/\\n}
+  printf '%s' "$input"
+}
+
+class="paused"
+if [[ "$selected_status" == "Playing" ]]; then
+  class="playing"
+fi
+
+tooltip="${selected}\n${selected_status}\n${text}"
+
+printf '{"text":"%s","class":"%s","tooltip":"%s"}\n' \
+  "$(json_escape "$text")" \
+  "$(json_escape "$class")" \
+  "$(json_escape "$tooltip")"

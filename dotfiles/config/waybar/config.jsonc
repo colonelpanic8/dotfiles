@@ -1,4 +1,5 @@
 // -*- mode: jsonc -*-
+// Icon sizes are synced at runtime from vars.env via scripts/render-config.
 {
     "height": 42,
     "spacing": 4,
@@ -7,7 +8,8 @@
         "hyprland/submap"
     ],
     "modules-center": [
-        "hyprland/window"
+        "hyprland/window",
+        "custom/nowplaying"
     ],
     "modules-right": [
         "idle_inhibitor",
@@ -31,10 +33,12 @@
         }
     },
     "tray": {
-        "spacing": 10
+        "spacing": 10,
+        "icon-size": 24,
+        "watcher": "internal"
     },
     "clock": {
-        "format": "{:%H:%M}",
+        "format": "{:%I:%M %p}",
         "tooltip-format": "{:%Y %B}\n{calendar}",
         "format-alt": "{:%Y-%m-%d}"
     },
@@ -50,6 +54,15 @@
         "interval": 30,
         "format": "DISK {text}",
         "tooltip": false
+    },
+    "custom/nowplaying": {
+        "exec": "~/.config/waybar/scripts/nowplaying",
+        "exec-if": "command -v playerctl",
+        "return-type": "json",
+        "format": "NP {text}",
+        "interval": 2,
+        "max-length": 50,
+        "tooltip": true
     },
     "temperature": {
         "critical-threshold": 80,
