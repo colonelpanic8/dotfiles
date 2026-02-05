@@ -3,9 +3,10 @@
 @define-color bar-gradient-start rgba(20, 26, 40, 0.68);
 @define-color bar-gradient-end rgba(12, 18, 30, 0.68);
 @define-color bar-border rgba(255, 255, 255, 0.06);
-@define-color menu-background-color #1f202a;
-@define-color menu-font-color #e7e4ee;
-@define-color menu-highlight #3a3550;
+/* Temporary: keep menus high-contrast and readable while debugging theme issues. */
+@define-color menu-background-color #ffffff;
+@define-color menu-font-color #000000;
+@define-color menu-highlight rgba(0, 0, 0, 0.08);
 @define-color font-color #e7e4ee;
 @define-color font-muted #b8b1c6;
 @define-color pill-background rgba(48, 52, 69, 0.92);

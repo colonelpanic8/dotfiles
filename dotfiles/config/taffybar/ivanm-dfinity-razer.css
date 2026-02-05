@@ -93,14 +93,14 @@
 
 /* Button styling */
 
-button {
+.taffy-window button {
 	all: initial;
 	background-color: @transparent;
 	border-width: 0px;
 	border-radius: 0px;
 }
 
-button:checked, button:hover .Contents:hover {
+.taffy-window button:checked, .taffy-window button:hover .Contents:hover {
 	box-shadow: inset 0 -3px @taffy-blue;
 }
 
@@ -112,7 +112,46 @@ button:checked, button:hover .Contents:hover {
 	color: @menu-font-color;
 }
 
+/* Force an opaque background for menus, regardless of the system GTK theme. */
+.taffy-window menu, menu,
+.taffy-window menu.background, menu.background,
+.taffy-window .menu, .menu,
+.taffy-window .menu.background, .menu.background,
+GtkMenu, GtkMenu.background {
+	background-color: @menu-background-color;
+	background-image: none;
+	border: 1px solid rgba(0, 0, 0, 0.20);
+	padding: 4px 0px;
+}
+
+.taffy-window menu, menu {
+	background-color: @menu-background-color;
+	background-image: none;
+}
+
+/* Some themes apply transparency to the menu's toplevel popup window. */
+window.popup, window.popup.background,
+window.menu, window.menu.background,
+.menu, .menu.background {
+	background-color: @menu-background-color;
+	background-image: none;
+}
+
+window.popup *, window.menu * {
+	background-color: @menu-background-color;
+	background-image: none;
+}
+
+window.popup decoration, window.menu decoration {
+	background-color: @menu-background-color;
+	background-image: none;
+}
+
 .taffy-window menuitem, menuitem {
+	background-color: @menu-background-color;
+}
+
+menu menuitem, GtkMenu menuitem, .menu menuitem {
 	background-color: @menu-background-color;
 }
 
@@ -120,6 +159,53 @@ button:checked, button:hover .Contents:hover {
 	background-color: @taffy-blue;
 }
 
+menu menuitem:hover, GtkMenu menuitem:hover, .menu menuitem:hover {
+	background-color: @taffy-blue;
+}
+
+window.popup menuitem:hover *, window.menu menuitem:hover * {
+	background-color: @taffy-blue;
+}
+
+menu *, GtkMenu *, .menu * {
+	background-color: @menu-background-color;
+	background-image: none;
+}
+
+menu menuitem:hover *, GtkMenu menuitem:hover *, .menu menuitem:hover * {
+	background-color: @taffy-blue;
+}
+
 .taffy-window menuitem:hover > label, menuitem:hover > label {
-	color: @white;
+	color: @menu-font-color;
+}
+
+/* Some menus (notably a few StatusNotifierItem menus) are rendered as popovers
+   containing modelbuttons instead of menuitems. */
+popover, popover.background, popover > contents {
+	background-color: @menu-background-color;
+	background-image: none;
+	border: 1px solid rgba(0, 0, 0, 0.20);
+}
+
+popover modelbutton, popover modelbutton * {
+	background-color: @menu-background-color;
+	color: @menu-font-color;
+}
+
+popover modelbutton:hover {
+	background-color: @taffy-blue;
+}
+
+popover modelbutton:hover > label {
+	color: @menu-font-color;
+}
+
+popover * {
+	background-color: @menu-background-color;
+	background-image: none;
+}
+
+popover modelbutton:hover * {
+	background-color: @taffy-blue;
 }
