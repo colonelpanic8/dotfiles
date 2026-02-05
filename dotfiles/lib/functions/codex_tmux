@@ -3,7 +3,6 @@
 function codex_tmux {
     base=$(basename "$PWD")
     name="$base"
-
     if tmux has-session -t "$name" 2>/dev/null; then
         i=2
         while tmux has-session -t "${name}-${i}" 2>/dev/null; do
