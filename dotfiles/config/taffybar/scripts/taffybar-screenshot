@@ -1,0 +1,16 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+monitors="$(hyprctl monitors -j)"
+height="$(jq -r '.[] | select(.focused) | .reserved[1]' <<<"$monitors")"
+geo="$(jq -r '.[] | select(.focused) | "\(.x),\(.y) \(.width)x\(.reserved[1])"' <<<"$monitors")"
+
+if [[ -z "$geo" || "$height" == "0" ]]; then
+  echo "No top reserved area found on focused monitor." >&2
+  echo "Is taffybar reserving space?" >&2
+  exit 1
+fi
+
+out="/tmp/taffybar-$(date +%Y%m%d-%H%M%S).png"
+grim -g "$geo" "$out"
+echo "$out"

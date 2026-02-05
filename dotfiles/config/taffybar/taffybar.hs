@@ -167,6 +167,13 @@ iconNameVariants raw =
         in [dotted, dashed, dashedDotted, underscored, underscoredDotted, name]
   in nub $ concatMap variantsFor baseNames
 
+-- Hyprland "special" workspaces (e.g. "special:slack") are scratchpad-like and
+-- usually not something we want visible in the workspace widget.
+isSpecialHyprWorkspace :: Hyprland.HyprlandWorkspace -> Bool
+isSpecialHyprWorkspace ws =
+  let name = Data.Text.toLower $ Data.Text.pack $ Hyprland.workspaceName ws
+  in Data.Text.isPrefixOf "special" name || Hyprland.workspaceIdx ws < 0
+
 hyprlandIconCandidates :: Hyprland.HyprlandWindow -> [Data.Text.Text]
 hyprlandIconCandidates windowData =
   let baseNames = map Data.Text.pack $ catMaybes
@@ -224,11 +231,11 @@ hyprlandFallbackIcon size _ =
   fallbackIconPixbuf size
 
 cssFilesByHostname =
-  [ ("uber-loaner", ["uber-loaner.css"])
-  , ("imalison-home", ["taffybar.css"])
-  , ("ivanm-dfinity-razer", ["taffybar.css"])
-  , ("ryzen-shine", ["taffybar.css"])
-  , ("stevie-nixos", ["taffybar.css"])
+  [ ("uber-loaner", ["palette.css", "uber-loaner.css"])
+  , ("imalison-home", ["palette.css", "taffybar.css"])
+  , ("ivanm-dfinity-razer", ["palette.css", "taffybar.css"])
+  , ("ryzen-shine", ["palette.css", "taffybar.css"])
+  , ("stevie-nixos", ["palette.css", "taffybar.css"])
   ]
 
 main = do
@@ -236,7 +243,7 @@ main = do
 
   hostName <- getHostName
   backend <- detectBackend
-  let relativeFiles = fromMaybe ["taffybar.css"] $ lookup hostName cssFilesByHostname
+  let relativeFiles = fromMaybe ["palette.css", "taffybar.css"] $ lookup hostName cssFilesByHostname
   cssFiles <- mapM (getUserConfigFile "taffybar") relativeFiles
 
   let myCPU = deocrateWithSetClassAndBoxes "cpu" $
@@ -252,23 +259,27 @@ main = do
       myWorkspaces =
         flip widgetSetClassGI "workspaces" =<<
         X11Workspaces.workspacesNew X11Workspaces.defaultWorkspacesConfig
-                        { minIcons = 1
-                        , getWindowIconPixbuf =
+                        { X11Workspaces.minIcons = 1
+                        , X11Workspaces.getWindowIconPixbuf =
                           X11Workspaces.scaledWindowIconPixbufGetter $
                           X11Workspaces.getWindowIconPixbufFromChrome <|||>
                           X11Workspaces.unscaledDefaultGetWindowIconPixbuf <|||>
                           (\size _ -> fallbackIconPixbuf size)
-                        , widgetGap = 0
-                        , showWorkspaceFn = X11Workspaces.hideEmpty
-                        , updateRateLimitMicroseconds = 100000
-                        , labelSetter = workspaceNamesLabelSetter
-                        , widgetBuilder = X11Workspaces.buildLabelOverlayController
+                        , X11Workspaces.widgetGap = 0
+                        , X11Workspaces.showWorkspaceFn = X11Workspaces.hideEmpty
+                        , X11Workspaces.updateRateLimitMicroseconds = 100000
+                        , X11Workspaces.labelSetter = workspaceNamesLabelSetter
+                        , X11Workspaces.widgetBuilder = X11Workspaces.buildLabelOverlayController
                         }
       myHyprWorkspaces =
         flip widgetSetClassGI "workspaces" =<<
         Hyprland.hyprlandWorkspacesNew Hyprland.defaultHyprlandWorkspacesConfig
           { Hyprland.widgetGap = 0
           , Hyprland.minIcons = 1
+          -- Don't show Hyprland "special:*" workspaces.
+          , Hyprland.showWorkspaceFn =
+            (\ws -> Hyprland.workspaceState ws /= X11Workspaces.Empty &&
+                    not (isSpecialHyprWorkspace ws))
           , Hyprland.getWindowIconPixbuf =
             hyprlandManualIconGetter <|||>
             Hyprland.defaultHyprlandGetWindowIconPixbuf <|||>
@@ -280,10 +291,11 @@ main = do
                 { clockUpdateStrategy = RoundedTargetInterval 60 0.0
                 , clockFormatString = "%a %b %_d, 🕑%I:%M %p"
                 }
-      myTray = deocrateWithSetClassAndBoxes "tray" $
-               sniTrayNewFromParams defaultTrayParams { trayLeftClickAction = PopupMenu
-                                                      , trayRightClickAction = Activate
-                                                      }
+      -- Disabled for now: StatusNotifierWatcher errors under Hyprland.
+      -- myTray = deocrateWithSetClassAndBoxes "tray" $
+      --          sniTrayNewFromParams defaultTrayParams { trayLeftClickAction = PopupMenu
+      --                                                 , trayRightClickAction = Activate
+      --                                                 }
       myMpris = mpris2NewWithConfig
                 MPRIS2Config { mprisWidgetWrapper = deocrateWithSetClassAndBoxes "mpris" . return
                              , updatePlayerWidget =
@@ -296,8 +308,7 @@ main = do
         deocrateWithSetClassAndBoxes "battery-text" $ textBatteryNew "$percentage$%"
       batteryWidgets = [myBatteryIcon, myBatteryText]
       baseEndWidgets =
-        [ myTray
-        , myMpris
+        [ myMpris
         ]
       fullEndWidgets = baseEndWidgets ++ [ myCPU, myMem, myNet, myMpris ]
       laptopEndWidgets = batteryWidgets ++ baseEndWidgets
@@ -307,8 +318,8 @@ main = do
         , endWidgets = baseEndWidgets
         , barPosition = Top
         , widgetSpacing = 0
-        , barPadding = 0
-        , barHeight = ScreenRatio $ 1/27
+        , barPadding = 4
+        , barHeight = ScreenRatio $ 1/36
         , cssPaths = cssFiles
         , centerWidgets = [ myClock ]
         }
@@ -318,8 +329,8 @@ main = do
         , endWidgets = baseEndWidgets
         , barPosition = Top
         , widgetSpacing = 0
-        , barPadding = 0
-        , barHeight = ScreenRatio $ 1/27
+        , barPadding = 4
+        , barHeight = ScreenRatio $ 1/36
         , cssPaths = cssFiles
         , centerWidgets = [ myClock ]
         }
@@ -342,7 +353,7 @@ main = do
           , baseConfigX11 { endWidgets = laptopEndWidgets }
           )
         , ( "nixquick"
-          , baseConfigX11 { endWidgets = [ myTray , myMpris ] }
+          , baseConfigX11 { endWidgets = [ myMpris ] }
           )
         ]
       waylandOverrides =
@@ -362,7 +373,7 @@ main = do
           , baseConfigWayland { endWidgets = laptopEndWidgets }
           )
         , ( "nixquick"
-          , baseConfigWayland { endWidgets = [ myTray , myMpris ] }
+          , baseConfigWayland { endWidgets = [ myMpris ] }
           )
         ]
       selectedConfig =
@@ -377,7 +388,6 @@ main = do
         -- , startWidgets = []
         }
   startTaffybar $
-    appendHook (void $ getTrayHost False) $
     withLogServer $
     withToggleServer $
     toTaffybarConfig simpleTaffyConfig

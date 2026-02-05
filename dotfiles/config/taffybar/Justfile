@@ -1,0 +1,17 @@
+set shell := ["bash", "-euo", "pipefail", "-c"]
+
+# Run taffybar in the foreground (blocks the terminal).
+run:
+	@scripts/taffybar-run
+
+# Restart taffybar in the background using cabal run.
+restart:
+	@scripts/taffybar-restart
+
+# Capture the reserved top area (taffybar) on the focused monitor.
+screenshot:
+	@scripts/taffybar-screenshot
+
+# Capture the reserved top area on all monitors (one file per monitor).
+screenshot-all:
+	@scripts/taffybar-screenshot-all

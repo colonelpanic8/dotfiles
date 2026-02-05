@@ -1,0 +1,17 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+ts="$(date +%Y%m%d-%H%M%S)"
+found="0"
+
+while IFS=$'\t' read -r name geo; do
+  found="1"
+  out="/tmp/taffybar-${name}-${ts}.png"
+  grim -g "$geo" "$out"
+  echo "$out"
+done < <(hyprctl monitors -j | jq -r '.[] | select(.reserved[1] > 0) | "\(.name)\t\(.x),\(.y) \(.width)x\(.reserved[1])"')
+
+if [[ "$found" == "0" ]]; then
+  echo "No monitors with a top reserved area found." >&2
+  exit 1
+fi

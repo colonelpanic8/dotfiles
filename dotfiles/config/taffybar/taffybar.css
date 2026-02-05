@@ -1,40 +1,46 @@
-@define-color magenta #888ca6;
-@define-color active-window-color @white;
-@define-color urgent-window-color @taffy-blue;
-@define-color font-color @white;
-@define-color menu-background-color @white;
-@define-color menu-font-color @black;
-@define-color bar-background rgba(0, 0, 0, .6);
-@define-color accent @red;
-@define-color menu-highlight @magenta;
-
-@define-color transparent rgba(0.0, 0.0, 0.0, 0.0);
-@define-color white #FFFFFF;
-@define-color black #000000;
-
 /* Top level styling */
 
+.taffy-window {
+	background-color: @bar-background;
+	background-image: linear-gradient(to bottom, @bar-gradient-start, @bar-gradient-end);
+	border-bottom: 1px solid @bar-border;
+	box-shadow: 0 6px 18px rgba(0, 0, 0, 0.45);
+}
+
 .taffy-window * {
-	font-family: "Noto Sans", sans-serif;
-	font-size: 10pt;
-	font-weight: bold;
+	font-family: "Iosevka Aile", "Noto Sans", sans-serif;
+	font-size: 9pt;
+	font-weight: 600;
 	color: @font-color;
 	background-color: @transparent;
-	text-shadow: 1px 1px @font-shadow-color;
+	text-shadow: none;
 }
 
 .taffy-box {
-	border-color: @white;
-	border-style: solid;
-	background-color: @bar-background;
-	padding: 2px;
-	margin: 1px;
-	border-radius: 4px;
+	border-width: 0px;
+	background-color: @transparent;
+	padding: 0px;
+	margin: 0px;
+	border-radius: 0px;
+	box-shadow: none;
+}
+
+.outer-pad {
+	background-color: @pill-background;
+	border: 1px solid @pill-border;
+	border-radius: 6px;
+	margin: 4px 6px;
+	box-shadow: 0 1px 0 @pill-highlight, 0 6px 14px @pill-shadow;
+}
+
+.inner-pad {
+	padding: 1px 8px;
+	border-radius: 5px;
 }
 
 .contents {
-	padding: 2px;
-	transition: background-color .5s;
+	padding: 0px;
+	transition: background-color .2s;
 	opacity: 1;
 }
 
@@ -47,20 +53,21 @@
 
 .workspaces .contents {
 	box-shadow: none;
-	border-radius: 4px;
-	border-width: 1px;
+	border-radius: 5px;
+	border-width: 0px;
 	border-style: solid;
 	border-color: @transparent;
+	padding: 0px 4px;
 }
 
 .workspace-label {
-	padding-right: 4px;
+	padding-right: 6px;
 	padding-left: 2px;
 	padding-top: 0px;
-	font-size: 10pt;
-	opacity: 1;
-	font-weight: bold;
-	transition: color .5s;
+	font-size: 9pt;
+	opacity: 0.95;
+	font-weight: 600;
+	transition: color .2s;
 }
 
 .contents .window-icon {
@@ -72,7 +79,8 @@
 }
 
 .active .contents {
-	background-color: rgba(0, 0, 0, 0.3);
+	background-color: rgba(255, 255, 255, 0.10);
+	border-radius: 999px;
 	opacity: 1;
 }
 
@@ -82,32 +90,35 @@
 
 .active .overlay-box {
 	padding: 0px;
-	/* background-color: rgba(0, 0, 0, 1.0); */
-	border-color: @white;
-	border-width: 3px;
+	border-color: @transparent;
+	border-width: 0px;
 	opacity: 1;
 }
 
 .visible .contents {
-	background-color: rgba(255.0, 255.0, 255.0, 0.15);
+	background-color: rgba(255, 255, 255, 0.06);
 }
 
 .window-icon-container {
-	transition: opacity .5s, box-shadow .5s;
+	transition: opacity .2s, box-shadow .2s;
 	opacity: 1;
 	border-radius: 5px;
-	transition: background-color 1s;
+	transition: background-color .2s;
+	background-color: rgba(255, 255, 255, 0.04);
+	padding: 1px 4px;
+	border: 1px solid rgba(255, 255, 255, 0.08);
 }
 
 /* This gives space for the box-shadow (they look like underlines) that follow.
    This will actually affect all widgets, (not just the workspace icons), but
    that is what we want since we want the icons to look the same. */
 .auto-size-image, .sni-tray  {
-	padding: 1px;
+	padding: 1px 4px;
 }
 
 .window-icon-container.active {
-	background-color: rgba(255.0, 255.0, 255.0, 0.4);
+	background-color: rgba(255, 255, 255, 0.13);
+	border-color: rgba(255, 255, 255, 0.16);
 }
 
 .window-icon-container.urgent {
@@ -132,7 +143,8 @@ button {
 }
 
 button:checked, button:hover .Contents:hover {
-	box-shadow: inset 0 -3px @accent;
+	box-shadow: inset 0 -2px @accent;
+	background-color: rgba(255, 255, 255, 0.06);
 }
 
 /* Menu styling */
@@ -154,4 +166,14 @@ button:checked, button:hover .Contents:hover {
 
 .taffy-window menuitem:hover > label, menuitem:hover > label {
 	color: @white;
+}
+
+.clock label,
+.mpris label,
+.battery-text label {
+	letter-spacing: 0.2px;
+}
+
+.mpris label {
+	color: @font-muted;
 }
