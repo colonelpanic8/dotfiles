@@ -4,6 +4,8 @@
 
 set -euo pipefail
 
+max_ws="${HYPR_MAX_WORKSPACE:-9}"
+
 CURRENT_WS="$(hyprctl activeworkspace -j | jq -r '.id')"
 if [[ -z "${CURRENT_WS}" || "${CURRENT_WS}" == "null" ]]; then
   exit 0
@@ -13,7 +15,7 @@ TARGET_WS="${1:-}"
 
 if [[ -z "${TARGET_WS}" ]]; then
   WS_LIST="$({
-    seq 1 10
+    seq 1 "${max_ws}"
     hyprctl workspaces -j | jq -r '.[].id' 2>/dev/null || true
   } | awk 'NF {print $1}' | awk '!seen[$0]++' | sort -n)"
 
@@ -30,6 +32,11 @@ fi
 
 if ! [[ "${TARGET_WS}" =~ ^-?[0-9]+$ ]]; then
   notify-send "Swap Workspace" "Invalid workspace: ${TARGET_WS}"
+  exit 1
+fi
+
+if (( TARGET_WS < 1 || TARGET_WS > max_ws )); then
+  notify-send "Swap Workspace" "Workspace out of range (1-${max_ws}): ${TARGET_WS}"
   exit 1
 fi
 

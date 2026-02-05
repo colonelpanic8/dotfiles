@@ -1,6 +1,8 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
+max_ws="${HYPR_MAX_WORKSPACE:-9}"
+
 runtime_dir="${XDG_RUNTIME_DIR:-/run/user/$(id -u)}"
 sig="${HYPRLAND_INSTANCE_SIGNATURE:-}"
 if [[ -z "$sig" ]]; then
@@ -42,6 +44,11 @@ nc -U "${sock}" | while read -r line; do
 
       # Ignore special/negative workspaces.
       if [[ "${ws_id}" =~ ^- ]] || [[ "${ws_name}" == special:* ]]; then
+        continue
+      fi
+
+      # Ignore workspaces outside the configured cap.
+      if [[ "${ws_id}" =~ ^[0-9]+$ ]] && (( ws_id < 1 || ws_id > max_ws )); then
         continue
       fi
 

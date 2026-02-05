@@ -6,6 +6,7 @@
 set -euo pipefail
 
 DIRECTION="$1"
+max_ws="${HYPR_MAX_WORKSPACE:-9}"
 
 # Track the current monitor so we can return
 ORIG_MONITOR=$(hyprctl activeworkspace -j | jq -r '.monitor')
@@ -21,14 +22,17 @@ if [ "$MONITOR" = "$ORIG_MONITOR" ]; then
     exit 0
 fi
 
-# Find an empty workspace or create one
-# First check if there's an empty workspace on this monitor
-EMPTY_WS=$(hyprctl workspaces -j | jq -r ".[] | select(.windows == 0 and .monitor == \"$MONITOR\") | .id" | head -1)
+# Find an empty workspace within 1..$HYPR_MAX_WORKSPACE.
+EMPTY_WS="$(~/.config/hypr/scripts/find-empty-workspace.sh "${MONITOR}" 2>/dev/null || true)"
+if [[ -z "${EMPTY_WS}" ]]; then
+    # No empty workspace available within the cap; restore focus and bail.
+    hyprctl dispatch focusmonitor "$ORIG_MONITOR"
+    exit 0
+fi
 
-if [ -z "$EMPTY_WS" ]; then
-    # No empty workspace, find next available workspace number
-    MAX_WS=$(hyprctl workspaces -j | jq -r 'map(.id) | max')
-    EMPTY_WS=$((MAX_WS + 1))
+if (( EMPTY_WS < 1 || EMPTY_WS > max_ws )); then
+    hyprctl dispatch focusmonitor "$ORIG_MONITOR"
+    exit 0
 fi
 
 # Ensure the workspace exists on the target monitor
