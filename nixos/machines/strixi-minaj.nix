@@ -88,10 +88,6 @@
   home-manager.sharedModules = [
     {
       home.stateVersion = "23.05";
-      xdg.configFile."waybar/disks".text = ''
-        # One mountpoint per line (comments with # are ignored).
-        /
-      '';
     }
   ];
 
