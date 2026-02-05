@@ -1034,8 +1034,6 @@ addKeys conf@XConfig { modMask = modm } =
     , ((hyper, xK_space), spawn "skippy-xd")
     , ((hyper, xK_i), spawn "rofi_select_input.hs")
     , ((hyper, xK_o), spawn "rofi_paswitch")
-    , ((modm, xK_apostrophe), spawn "load_default_map")
-    , ((modalt, xK_apostrophe), spawn "load_xkb_map")
     , ((modm, xK_e), spawn "emacsclient --eval '(emacs-everywhere)'")
 
     -- Media keys

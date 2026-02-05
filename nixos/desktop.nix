@@ -10,9 +10,6 @@ makeEnable config "myModules.desktop" true {
   services.xserver = {
     exportConfiguration = true;
     enable = true;
-    xkb = {
-      layout = "us";
-    };
     displayManager = {
       sessionCommands = ''
         systemctl --user import-environment GDK_PIXBUF_MODULE_FILE DBUS_SESSION_BUS_ADDRESS PATH
@@ -53,7 +50,6 @@ makeEnable config "myModules.desktop" true {
     xclip
     xdotool
     xorg.xev
-    xorg.xkbcomp
     xorg.xwininfo
     xsettingsd
 
