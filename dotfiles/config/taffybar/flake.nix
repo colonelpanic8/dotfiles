@@ -1,10 +1,10 @@
 {
   inputs = {
     flake-utils.url = "github:numtide/flake-utils";
-    nixpkgs.url = "github:colonelpanic8/nixpkgs/remove-gi-gtk-hs-patch";
+    nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
     xmonad.url = "github:xmonad/xmonad/master";
     taffybar = {
-      url = "github:taffybar/taffybar/master";
+      url = "path:/home/imalison/dotfiles/dotfiles/config/taffybar/taffybar";
       inputs.nixpkgs.follows = "nixpkgs";
       inputs.xmonad.follows = "xmonad";
     };
@@ -16,7 +16,7 @@
       taffybar = prev.haskell.lib.overrideCabal hsuper.taffybar (oa: {
         doHaddock = false;
         doCheck = false;
-        # Fix for GHC 9.4 where liftA2 is not in Prelude
+        # Legacy fix for older GHC (harmless on newer)
         postPatch = (oa.postPatch or "") + ''
           substituteInPlace src/System/Taffybar/DBus/Client/Util.hs \
             --replace-fail "import Control.Monad (forM)" \
@@ -47,7 +47,7 @@ import Control.Applicative (liftA2)"
           final.xorg.libXtst.out
         ];
     };
-    defComp = { compiler = "ghc94"; };
+    defComp = { compiler = "ghc98"; };
     overlay = xmonad.lib.fromHOL hoverlay defComp;
     overlayList = [ taffybar.overlays.default overlay ];
   in flake-utils.lib.eachDefaultSystem (system:
@@ -57,10 +57,21 @@ import Control.Applicative (liftA2)"
   {
     devShell = hpkgs.shellFor {
       packages = p: [ p.imalison-taffybar p.taffybar ];
-      nativeBuildInputs = with hpkgs; [
+      nativeBuildInputs = (with hpkgs; [
         cabal-install
         # ghcid ormolu implicit-hie haskell-language-server hlint
+      ]) ++ [
+        pkgs.gdk-pixbuf
+        pkgs.librsvg
       ];
+      shellHook = ''
+        if [ -z "''${GDK_PIXBUF_MODULE_FILE:-}" ]; then
+          export GDK_PIXBUF_MODULE_FILE="${pkgs.gdk-pixbuf}/lib/gdk-pixbuf-2.0/${pkgs.gdk-pixbuf.version}/loaders.cache"
+        fi
+        if [ -z "''${GDK_PIXBUF_MODULEDIR:-}" ]; then
+          export GDK_PIXBUF_MODULEDIR="${pkgs.gdk-pixbuf}/lib/gdk-pixbuf-2.0/${pkgs.gdk-pixbuf.version}/loaders"
+        fi
+      '';
     };
     defaultPackage = hpkgs.imalison-taffybar;
   }) // {

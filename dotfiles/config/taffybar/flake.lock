@@ -115,11 +115,11 @@
     "gtk-sni-tray": {
       "flake": false,
       "locked": {
-        "lastModified": 1760550917,
-        "narHash": "sha256-oELopLiVb7D1fzYHAiw/cbfNPHLQcOJ3Rz/I1gbk8IY=",
+        "lastModified": 1770069502,
+        "narHash": "sha256-jreuryLGfbyNwx5yEtOYGt2PX+uyGRsgmakYfCQ+OdM=",
         "owner": "taffybar",
         "repo": "gtk-sni-tray",
-        "rev": "f6d1bf5dd64ac0f532b03ae01f5e1cc051116f09",
+        "rev": "733a43f187b35bf65b443a7ede70d62f684932ef",
         "type": "github"
       },
       "original": {
@@ -148,16 +148,16 @@
     },
     "nixpkgs": {
       "locked": {
-        "lastModified": 1764252443,
-        "narHash": "sha256-U4G4dUSYWZYKtrF7/ozebD1B96at08SIhY4R9OaK1nw=",
-        "owner": "colonelpanic8",
+        "lastModified": 1770181073,
+        "narHash": "sha256-ksTL7P9QC1WfZasNlaAdLOzqD8x5EPyods69YBqxSfk=",
+        "owner": "NixOS",
         "repo": "nixpkgs",
-        "rev": "e1fc6c25b91d3d49dd02a156237721f12dbd86b2",
+        "rev": "bf922a59c5c9998a6584645f7d0de689512e444c",
         "type": "github"
       },
       "original": {
-        "owner": "colonelpanic8",
-        "ref": "remove-gi-gtk-hs-patch",
+        "owner": "NixOS",
+        "ref": "nixos-unstable",
         "repo": "nixpkgs",
         "type": "github"
       }
@@ -310,18 +310,14 @@
         ]
       },
       "locked": {
-        "lastModified": 1760591109,
-        "narHash": "sha256-O21ayp5v2eccXdcwNjTK5ZB99ruK0Zt9CUaw5Rye42g=",
-        "owner": "taffybar",
-        "repo": "taffybar",
-        "rev": "b256a711416036ca124fc9b3f89e7c957535e465",
-        "type": "github"
+        "lastModified": 1770273353,
+        "narHash": "sha256-0VQfT0bxyU+xmEMLDRQq+hbJX35+PWPjSXiAVFGOlzQ=",
+        "path": "/home/imalison/dotfiles/dotfiles/config/taffybar/taffybar",
+        "type": "path"
       },
       "original": {
-        "owner": "taffybar",
-        "ref": "master",
-        "repo": "taffybar",
-        "type": "github"
+        "path": "/home/imalison/dotfiles/dotfiles/config/taffybar/taffybar",
+        "type": "path"
       }
     },
     "unstable": {
@@ -349,11 +345,11 @@
         "pre-commit-hooks": "pre-commit-hooks"
       },
       "locked": {
-        "lastModified": 1748252779,
-        "narHash": "sha256-kSyD/VDUX2m9c2vcuLBT2wnpYiVSHHlP9vuDTtsAtD8=",
+        "lastModified": 1764753633,
+        "narHash": "sha256-6552zbHzdNnkREnOluE6xePIib5cc/8Nc5OnPyHORUo=",
         "owner": "NorfairKing",
         "repo": "weeder-nix",
-        "rev": "388df7a6f00220d1960118e1ad37cd86150d2c5a",
+        "rev": "2203c43ab9f1c4e52c2cff8e3d01bbb53159b922",
         "type": "github"
       },
       "original": {

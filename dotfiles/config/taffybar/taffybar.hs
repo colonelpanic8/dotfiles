@@ -15,6 +15,7 @@ import qualified Data.Map as M
 import           Data.Maybe
 import qualified Data.Text
 import           Data.Time
+import qualified GI.GdkPixbuf.Objects.Pixbuf as Gdk
 import qualified GI.Gtk as Gtk
 import qualified GI.Gtk.Objects.Overlay as Gtk
 import           Network.HostName
@@ -28,7 +29,7 @@ import           System.Log.Handler.Simple
 import           System.Log.Logger
 import           System.Process
 import           System.Taffybar
-import           System.Taffybar.Context (appendHook)
+import           System.Taffybar.Context (Backend(..), TaffyIO, appendHook, detectBackend)
 import           System.Taffybar.DBus
 import           System.Taffybar.DBus.Toggle
 import           System.Taffybar.Hooks
@@ -43,9 +44,12 @@ import           System.Taffybar.Widget.Generic.Icon
 import           System.Taffybar.Widget.Generic.PollingGraph
 import           System.Taffybar.Widget.Generic.PollingLabel
 import           System.Taffybar.Widget.Util
-import           System.Taffybar.Widget.Workspaces
+import qualified System.Taffybar.Widget.HyprlandWorkspaces as Hyprland
+import qualified System.Taffybar.Widget.Workspaces as X11Workspaces
+import           System.Taffybar.WindowIcon (pixBufFromColor)
 import           Text.Printf
 import           Text.Read hiding (lift)
+import           Data.Int (Int32)
 
 setClassAndBoundingBoxes :: MonadIO m => Data.Text.Text -> Gtk.Widget -> m Gtk.Widget
 setClassAndBoundingBoxes klass = buildContentsBox >=> flip widgetSetClassGI klass
@@ -97,7 +101,7 @@ getFullWorkspaceNames = go <$> readAsListOfString Nothing "_NET_DESKTOP_FULL_NAM
   where go = zip [WorkspaceId i | i <- [0..]]
 
 workspaceNamesLabelSetter workspace =
-  remapNSP . fromMaybe "" . lookup (workspaceIdx workspace) <$>
+  remapNSP . fromMaybe "" . lookup (X11Workspaces.workspaceIdx workspace) <$>
             liftX11Def [] getFullWorkspaceNames
   where remapNSP "NSP" = "S"
         remapNSP n = n
@@ -124,6 +128,106 @@ logDebug = do
   -- enableLogger "System.Taffybar.WindowIcon" DEBUG
   -- enableLogger "System.Taffybar.Widget.Generic.PollingLabel" DEBUG
 
+iconRemap :: [(Data.Text.Text, [Data.Text.Text])]
+iconRemap =
+  [ ("spotify", ["spotify-client", "spotify"])
+  ]
+
+iconRemapMap :: M.Map Data.Text.Text [Data.Text.Text]
+iconRemapMap =
+  M.fromList [ (Data.Text.toLower k, v) | (k, v) <- iconRemap ]
+
+lookupIconRemap :: Data.Text.Text -> [Data.Text.Text]
+lookupIconRemap name = fromMaybe [] $ M.lookup (Data.Text.toLower name) iconRemapMap
+
+iconNameVariants :: Data.Text.Text -> [Data.Text.Text]
+iconNameVariants raw =
+  let lower = Data.Text.toLower raw
+      stripped = fromMaybe lower (Data.Text.stripSuffix ".desktop" lower)
+      suffixes = ["-gtk", "-client", "-desktop"]
+      stripSuffixes name =
+        let variants = mapMaybe (`Data.Text.stripSuffix` name) suffixes
+        in nub $ variants ++ [name]
+      baseNames = stripSuffixes stripped ++ [raw]
+      toDash c
+        | c == ' ' || c == '_' || c == '.' || c == '/' = '-'
+        | otherwise = c
+      toUnderscore c
+        | c == ' ' || c == '-' || c == '.' || c == '/' = '_'
+        | otherwise = c
+      variantsFor name =
+        let dotted =
+              case Data.Text.splitOn "." name of
+                [] -> name
+                xs -> last xs
+            dashed = Data.Text.map toDash name
+            dashedDotted = Data.Text.map toDash dotted
+            underscored = Data.Text.map toUnderscore name
+            underscoredDotted = Data.Text.map toUnderscore dotted
+        in [dotted, dashed, dashedDotted, underscored, underscoredDotted, name]
+  in nub $ concatMap variantsFor baseNames
+
+isSpecialHyprWorkspace :: Hyprland.HyprlandWorkspace -> Bool
+isSpecialHyprWorkspace ws =
+  let name = Data.Text.toLower $ Data.Text.pack $ Hyprland.workspaceName ws
+  in Data.Text.isPrefixOf "special" name || Hyprland.workspaceIdx ws < 0
+
+hyprlandIconCandidates :: Hyprland.HyprlandWindow -> [Data.Text.Text]
+hyprlandIconCandidates windowData =
+  let baseNames = map Data.Text.pack $ catMaybes
+        [ Hyprland.windowClass windowData
+        , Hyprland.windowInitialClass windowData
+        ]
+      remapped = concatMap lookupIconRemap baseNames
+      remappedExpanded = concatMap iconNameVariants remapped
+      baseExpanded = concatMap iconNameVariants baseNames
+  in nub (remappedExpanded ++ baseExpanded)
+
+isPathCandidate :: Data.Text.Text -> Bool
+isPathCandidate name =
+  Data.Text.isInfixOf "/" name ||
+  any (`Data.Text.isSuffixOf` name) [".png", ".svg", ".xpm"]
+
+hyprlandIconFromCandidate size name
+  | isPathCandidate name =
+      liftIO $ getPixbufFromFilePath (Data.Text.unpack name)
+  | otherwise =
+      maybeTCombine
+        (Hyprland.getWindowIconFromDesktopEntryByAppId size (Data.Text.unpack name))
+        (liftIO $ loadPixbufByName size name)
+
+hyprlandManualIconGetter :: Hyprland.HyprlandWindowIconPixbufGetter
+hyprlandManualIconGetter =
+  Hyprland.handleIconGetterException $ \size windowData ->
+    foldl maybeTCombine (return Nothing) $
+      map (hyprlandIconFromCandidate size) (hyprlandIconCandidates windowData)
+
+fallbackIconPixbuf :: Int32 -> TaffyIO (Maybe Gdk.Pixbuf)
+fallbackIconPixbuf size = do
+  let fallbackNames =
+        [ "application-x-executable"
+        , "application"
+        , "image-missing"
+        , "gtk-missing-image"
+        , "dialog-question"
+        , "utilities-terminal"
+        , "system-run"
+        , "window"
+        ]
+      tryNames =
+        foldl
+          maybeTCombine
+          (return Nothing)
+          (map (liftIO . loadPixbufByName size) fallbackNames)
+  result <- tryNames
+  case result of
+    Just _ -> return result
+    Nothing -> Just <$> pixBufFromColor size 0x5f5f5fff
+
+hyprlandFallbackIcon :: Hyprland.HyprlandWindowIconPixbufGetter
+hyprlandFallbackIcon size _ =
+  fallbackIconPixbuf size
+
 cssFilesByHostname =
   [ ("uber-loaner", ["uber-loaner.css"])
   , ("imalison-home", ["taffybar.css"])
@@ -136,7 +240,7 @@ main = do
   enableLogger "Graphics.UI.GIGtkStrut" DEBUG
 
   hostName <- getHostName
-  homeDirectory <- getHomeDirectory
+  backend <- detectBackend
   let relativeFiles = fromMaybe ["taffybar.css"] $ lookup hostName cssFilesByHostname
   cssFiles <- mapM (getUserConfigFile "taffybar") relativeFiles
 
@@ -152,20 +256,32 @@ main = do
                   windowsNew defaultWindowsConfig
       myWorkspaces =
         flip widgetSetClassGI "workspaces" =<<
-        workspacesNew defaultWorkspacesConfig
+        X11Workspaces.workspacesNew X11Workspaces.defaultWorkspacesConfig
                         { minIcons = 1
                         , getWindowIconPixbuf =
-                          scaledWindowIconPixbufGetter $
-                          getWindowIconPixbufFromChrome <|||>
-                          unscaledDefaultGetWindowIconPixbuf <|||>
-                          (\size _ -> lift $ loadPixbufByName size
-                                      "application-default-icon")
+                          X11Workspaces.scaledWindowIconPixbufGetter $
+                          X11Workspaces.getWindowIconPixbufFromChrome <|||>
+                          X11Workspaces.unscaledDefaultGetWindowIconPixbuf <|||>
+                          (\size _ -> fallbackIconPixbuf size)
                         , widgetGap = 0
-                        , showWorkspaceFn = hideEmpty
+                        , showWorkspaceFn = X11Workspaces.hideEmpty
                         , updateRateLimitMicroseconds = 100000
                         , labelSetter = workspaceNamesLabelSetter
-                        , widgetBuilder = buildLabelOverlayController
+                        , widgetBuilder = X11Workspaces.buildLabelOverlayController
                         }
+      myHyprWorkspaces =
+        flip widgetSetClassGI "workspaces" =<<
+        Hyprland.hyprlandWorkspacesNew Hyprland.defaultHyprlandWorkspacesConfig
+          { Hyprland.widgetGap = 0
+          , Hyprland.minIcons = 1
+          , Hyprland.showWorkspaceFn =
+            (\ws -> Hyprland.workspaceState ws /= Hyprland.Empty &&
+                    not (isSpecialHyprWorkspace ws))
+          , Hyprland.getWindowIconPixbuf =
+            hyprlandManualIconGetter <|||>
+            Hyprland.defaultHyprlandGetWindowIconPixbuf <|||>
+            hyprlandFallbackIcon
+          }
       myClock = deocrateWithSetClassAndBoxes "clock" $
                 textClockNewWith
                 defaultClockConfig
@@ -193,7 +309,7 @@ main = do
         ]
       fullEndWidgets = baseEndWidgets ++ [ myCPU, myMem, myNet, myMpris ]
       laptopEndWidgets = batteryWidgets ++ baseEndWidgets
-      baseConfig =
+      baseConfigX11 =
         defaultSimpleTaffyConfig
         { startWidgets = [ myWorkspaces, myLayout, myWindows ]
         , endWidgets = baseEndWidgets
@@ -204,30 +320,65 @@ main = do
         , cssPaths = cssFiles
         , centerWidgets = [ myClock ]
         }
+      baseConfigWayland =
+        defaultSimpleTaffyConfig
+        { startWidgets = [ myHyprWorkspaces ]
+        , endWidgets = baseEndWidgets
+        , barPosition = Top
+        , widgetSpacing = 0
+        , barPadding = 0
+        , barHeight = ScreenRatio $ 1/27
+        , cssPaths = cssFiles
+        , centerWidgets = [ myClock ]
+        }
+      x11Overrides =
+        [ ( "uber-loaner"
+          , baseConfigX11 { endWidgets = laptopEndWidgets }
+          )
+        , ( "adell"
+          , baseConfigX11 { endWidgets = laptopEndWidgets }
+          )
+        , ( "stevie-nixos"
+          , baseConfigX11 { endWidgets = laptopEndWidgets
+                          , startWidgets = [ myWorkspaces, myLayout ]
+                          }
+          )
+        , ( "strixi-minaj"
+          , baseConfigX11 { endWidgets = laptopEndWidgets }
+          )
+        , ( "jay-lenovo"
+          , baseConfigX11 { endWidgets = laptopEndWidgets }
+          )
+        , ( "nixquick"
+          , baseConfigX11 { endWidgets = [ myTray , myMpris ] }
+          )
+        ]
+      waylandOverrides =
+        [ ( "uber-loaner"
+          , baseConfigWayland { endWidgets = laptopEndWidgets }
+          )
+        , ( "adell"
+          , baseConfigWayland { endWidgets = laptopEndWidgets }
+          )
+        , ( "stevie-nixos"
+          , baseConfigWayland { endWidgets = laptopEndWidgets }
+          )
+        , ( "strixi-minaj"
+          , baseConfigWayland { endWidgets = laptopEndWidgets }
+          )
+        , ( "jay-lenovo"
+          , baseConfigWayland { endWidgets = laptopEndWidgets }
+          )
+        , ( "nixquick"
+          , baseConfigWayland { endWidgets = [ myTray , myMpris ] }
+          )
+        ]
       selectedConfig =
-        fromMaybe baseConfig $ lookup hostName
-          [ ( "uber-loaner"
-            , baseConfig { endWidgets = laptopEndWidgets }
-            )
-          , ( "adell"
-            , baseConfig { endWidgets = laptopEndWidgets }
-            )
-          , ( "stevie-nixos"
-            , baseConfig { endWidgets = laptopEndWidgets
-                         , startWidgets = [myWorkspaces, myLayout]
-                         }
-            )
-          , ( "strixi-minaj"
-            , baseConfig { endWidgets = laptopEndWidgets }
-            )
-          , ( "jay-lenovo"
-            , baseConfig { endWidgets = laptopEndWidgets }
-            )
-          , ( "nixquick"
-            , baseConfig { endWidgets = [ myTray , myMpris ] }
-            )
-
-          ]
+        case backend of
+          BackendX11 ->
+            fromMaybe baseConfigX11 $ lookup hostName x11Overrides
+          BackendWayland ->
+            fromMaybe baseConfigWayland $ lookup hostName waylandOverrides
       simpleTaffyConfig = selectedConfig
         { centerWidgets = [ myClock ]
         -- , endWidgets = []
@@ -237,4 +388,4 @@ main = do
     appendHook (void $ getTrayHost False) $
     withLogServer $
     withToggleServer $
-    toTaffyConfig simpleTaffyConfig
+    toTaffybarConfig simpleTaffyConfig
