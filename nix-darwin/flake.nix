@@ -23,7 +23,7 @@
     home-manager.inputs.nixpkgs.follows = "nixpkgs";
 
     codex-cli-nix = {
-      url = "github:sadjow/codex-cli-nix";
+      url = "github:colonelpanic8/codex-cli-nix/fix/add-libcap-to-rpath";
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
@@ -36,7 +36,10 @@
   outputs = inputs@{ self, nix-darwin, nixpkgs, home-manager, ... }:
   let
     libDir = ../dotfiles/lib;
-    configuration = { pkgs, config, ... }: {
+    configuration = { pkgs, lib, config, ... }:
+    let
+      essentialPkgs = (import ../nixos/essential.nix { inherit pkgs lib; }).environment.systemPackages;
+    in {
       networking.hostName = "mac-demarco-mini";
       imports = [ (import ./gitea-actions-runner.nix) ];
       services.gitea-actions-runner = {
@@ -130,25 +133,21 @@
           claude-code = inputs.claude-code-nix.packages.${prev.stdenv.hostPlatform.system}.default;
         })
       ];
-      environment.systemPackages = with pkgs; [
-        #python-with-my-packages
-        emacs
-        alejandra
-        cocoapods
-        gitFull
-        just
-        tmux
-        htop
-        nodePackages.prettier
-        nodejs
-        ripgrep
-        slack
-        claude-code
-        codex
-        typescript
-        vim
-        yarn
-      ];
+      environment.systemPackages =
+        essentialPkgs
+        ++ (with pkgs; [
+          alejandra
+          claude-code
+          cocoapods
+          codex
+          nodePackages.prettier
+          nodejs
+          slack
+          tea
+          typescript
+          vim
+          yarn
+        ]);
 
       nixpkgs.config.allowUnfree = true;
 

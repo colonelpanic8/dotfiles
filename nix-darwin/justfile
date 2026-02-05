@@ -1,2 +1,5 @@
 switch:
-	nix run nix-darwin -- switch --flake .#
+	sudo -H /run/current-system/sw/bin/nix run nix-darwin -- switch --flake .#
+
+update-nix-darwin:
+	nix flake lock --update-input nix-darwin
