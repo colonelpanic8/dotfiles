@@ -5,6 +5,7 @@ makeEnable config "myModules.desktop" true {
     ./fonts.nix
     ./hyprland.nix
     ./keyd.nix
+    ./xremap.nix
   ];
 
   services.xserver = {
@@ -62,6 +63,7 @@ makeEnable config "myModules.desktop" true {
     kdePackages.dolphin
 
     feh
+    gthumb
     firefox
     cheese
     kdePackages.kleopatra
@@ -82,8 +84,7 @@ makeEnable config "myModules.desktop" true {
     simplescreenrecorder
     skippy-xd
     synergy
-    # TODO: reenable
-    # transmission_3-gtk
+    transmission_4-gtk
     vlc
     thunar
 

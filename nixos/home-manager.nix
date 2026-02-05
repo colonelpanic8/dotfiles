@@ -1,4 +1,4 @@
-{ pkgs, ... }:
+{ pkgs, lib, nixos, ... }:
 {
   # Automatic garbage collection of old home-manager generations
   nix.gc = {
@@ -19,6 +19,38 @@
       image_cache_directory = "~/.cache/greenclip"
       static_history = []
   '';
+
+  xdg.mimeApps = lib.mkIf nixos.config.myModules.desktop.enable {
+    enable = true;
+
+    associations.added = {
+      "video/x-matroska" = "vlc.desktop";
+      "audio/flac" = "vlc.desktop";
+      "image/jpeg" = "feh.desktop";
+      "video/x-msvideo" = "vlc.desktop";
+      "text/vnd.trolltech.linguist" = "vlc.desktop";
+      "audio/mpeg" = "vlc.desktop";
+      "application/pdf" = "okularApplication_pdf.desktop";
+      "image/png" = "okularApplication_kimgio.desktop";
+      "video/mp4" = [ "vlc.desktop" "org.gnome.Totem.desktop" ];
+      "x-scheme-handler/magnet" = "userapp-transmission-gtk-24GQLZ.desktop";
+      "element" = "element-desktop.desktop";
+    };
+
+    defaultApplications = {
+      "text/html" = "google-chrome.desktop";
+      "x-scheme-handler/http" = "google-chrome.desktop";
+      "x-scheme-handler/https" = "google-chrome.desktop";
+      "x-scheme-handler/about" = "google-chrome.desktop";
+      "x-scheme-handler/unknown" = "google-chrome.desktop";
+      "x-scheme-handler/magnet" = "userapp-transmission-gtk-24GQLZ.desktop";
+      "x-scheme-handler/element" = "element-desktop.desktop";
+    };
+
+    defaultApplicationPackages = [
+      pkgs.gthumb
+    ];
+  };
 
   xsession = {
     enable = true;
