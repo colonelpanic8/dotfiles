@@ -167,11 +167,6 @@ iconNameVariants raw =
         in [dotted, dashed, dashedDotted, underscored, underscoredDotted, name]
   in nub $ concatMap variantsFor baseNames
 
-isSpecialHyprWorkspace :: Hyprland.HyprlandWorkspace -> Bool
-isSpecialHyprWorkspace ws =
-  let name = Data.Text.toLower $ Data.Text.pack $ Hyprland.workspaceName ws
-  in Data.Text.isPrefixOf "special" name || Hyprland.workspaceIdx ws < 0
-
 hyprlandIconCandidates :: Hyprland.HyprlandWindow -> [Data.Text.Text]
 hyprlandIconCandidates windowData =
   let baseNames = map Data.Text.pack $ catMaybes
@@ -274,9 +269,6 @@ main = do
         Hyprland.hyprlandWorkspacesNew Hyprland.defaultHyprlandWorkspacesConfig
           { Hyprland.widgetGap = 0
           , Hyprland.minIcons = 1
-          , Hyprland.showWorkspaceFn =
-            (\ws -> Hyprland.workspaceState ws /= Hyprland.Empty &&
-                    not (isSpecialHyprWorkspace ws))
           , Hyprland.getWindowIconPixbuf =
             hyprlandManualIconGetter <|||>
             Hyprland.defaultHyprlandGetWindowIconPixbuf <|||>
