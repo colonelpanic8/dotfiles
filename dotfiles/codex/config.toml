@@ -1,4 +1,4 @@
-model = "gpt-5.2-codex"
+model = "gpt-5.3-codex"
 model_reasoning_effort = "high"
 personality = "pragmatic"
 [projects."/home/imalison/Projects/nixpkgs"]
