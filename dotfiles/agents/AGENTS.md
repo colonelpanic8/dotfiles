@@ -24,3 +24,17 @@
 - This system is managed with a Nix flake at `~/dotfiles/nixos`.
 - Use `just switch` from that directory for rebuilds instead of plain `nixos-rebuild`.
 - Host configs live under `machines/`; choose the appropriate host when needed.
+
+## Ad-hoc utilities via Nix
+- If you want to use a CLI utility you know about but it is not currently available on PATH, prefer using `nix run` / `nix shell` to get it temporarily rather than installing it globally.
+- Use `nix run` for a single command:
+
+  nix run nixpkgs#ripgrep -- rg -n "pattern" .
+
+- Use `nix shell` when you need multiple tools available for a short sequence of commands:
+
+  nix shell nixpkgs#{jq,ripgrep} --command bash -lc 'rg -n "pattern" . | head'
+
+- If you are not sure what the package is called in nixpkgs, use:
+
+  nix search nixpkgs <name-or-keyword>
