@@ -110,6 +110,45 @@ enableLogger logger level = do
   logger <- getLogger logger
   saveGlobalLogger $ setLevel level logger
 
+-- Systemd --user's manager environment can be stale across logins (e.g. still
+-- containing WAYLAND_DISPLAY from an older session). `detectBackend` will pick
+-- Wayland if WAYLAND_DISPLAY is set, even when no compositor is running.
+--
+-- Prefer a backend that's actually usable, and sanitize the process environment
+-- so taffybar's internal context backend detection makes the same decision.
+detectBackendRobust :: IO Backend
+detectBackendRobust = do
+  mRuntime <- lookupEnv "XDG_RUNTIME_DIR"
+  mWaylandDisplay <- lookupEnv "WAYLAND_DISPLAY"
+  mDisplay <- lookupEnv "DISPLAY"
+  mSessionType <- lookupEnv "XDG_SESSION_TYPE"
+  mHyprSig <- lookupEnv "HYPRLAND_INSTANCE_SIGNATURE"
+
+  let mWaylandPath = do
+        runtime <- mRuntime
+        wl <- mWaylandDisplay
+        guard (not (null runtime) && not (null wl))
+        pure (runtime </> wl)
+
+  waylandOk <- case mWaylandPath of
+    Nothing -> pure False
+    Just wlPath -> do
+      ok <- doesPathExist wlPath
+      when (not ok) $
+        logM "Main" DEBUG $
+          "WAYLAND_DISPLAY is set but no socket at " ++ wlPath ++ "; preferring X11 when available"
+      pure ok
+
+  when (not waylandOk && maybe False (not . null) mDisplay) $ do
+    when (isJust mWaylandDisplay) $ unsetEnv "WAYLAND_DISPLAY"
+    when (isJust mHyprSig) $ unsetEnv "HYPRLAND_INSTANCE_SIGNATURE"
+    when (mSessionType == Just "wayland") $ setEnv "XDG_SESSION_TYPE" "x11"
+
+  case () of
+    _ | waylandOk -> pure BackendWayland
+      | maybe False (not . null) mDisplay -> pure BackendX11
+      | otherwise -> detectBackend
+
 logDebug = do
   global <- getLogger ""
   saveGlobalLogger $ setLevel DEBUG global
@@ -242,7 +281,7 @@ main = do
   enableLogger "Graphics.UI.GIGtkStrut" DEBUG
 
   hostName <- getHostName
-  backend <- detectBackend
+  backend <- detectBackendRobust
   let relativeFiles = fromMaybe ["palette.css", "taffybar.css"] $ lookup hostName cssFilesByHostname
   cssFiles <- mapM (getUserConfigFile "taffybar") relativeFiles
 
