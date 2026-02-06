@@ -17,6 +17,7 @@ import           Control.Monad
 import           Control.Monad.Trans.Class
 import           Control.Monad.Trans.Maybe
 import           Data.Aeson
+import           Data.Bits ((.&.), complement)
 import qualified Data.ByteString.Lazy as B
 import           Data.Char
 import           Data.Foldable
@@ -911,6 +912,69 @@ volumeUp = spawn "set_volume --unmute --change-volume +5"
 volumeDown = spawn "set_volume --unmute --change-volume -5"
 mute = spawn "set_volume --toggle-mute"
 
+-- keyd can't emit a "real" Hyper modifier (Mod3) the way xkb can, so we treat
+-- Hyper bindings as also reachable via a chord: Ctrl+Alt+Super.
+--
+-- This auto-duplicates every binding that includes `hyperMask`. If multiple
+-- Hyper bindings collapse onto the same chorded key (e.g. Hyper+Shift+K vs
+-- Hyper+K), we deterministically prefer the binding with fewer extra modifiers
+-- beyond Hyper so plain Hyper bindings win.
+addHyperChordBindings
+  :: KeyMask               -- ^ hyper modifier (old way)
+  -> KeyMask               -- ^ chord that should behave like hyper (new way)
+  -> [((KeyMask, KeySym), X ())]
+  -> [((KeyMask, KeySym), X ())]
+addHyperChordBindings hyperMask chordMask bindings =
+  bindings ++ [ (k, a) | (k, (_score, a)) <- M.toList chosen ]
+  where
+    existingKeys :: M.Map (KeyMask, KeySym) ()
+    existingKeys = M.fromList [ (k, ()) | (k, _a) <- bindings ]
+
+    chordKey :: (KeyMask, KeySym) -> (KeyMask, KeySym)
+    chordKey (mask, sym) =
+      let withoutHyper = mask .&. complement hyperMask
+      in (withoutHyper .|. chordMask, sym)
+
+    countMods :: KeyMask -> Int
+    countMods m =
+      length $
+        filter (/= 0)
+          [ m .&. shiftMask
+          , m .&. controlMask
+          , m .&. mod1Mask
+          , m .&. mod2Mask
+          , m .&. mod3Mask
+          , m .&. mod4Mask
+          , m .&. mod5Mask
+          ]
+
+    score :: KeyMask -> Int
+    score mask = countMods (mask .&. complement hyperMask)
+
+    candidates :: [((KeyMask, KeySym), (Int, X ()))]
+    candidates =
+      [ (ck, (score mask, action))
+      | ((k@(mask, _sym)), action) <- bindings
+      , mask .&. hyperMask /= 0
+      , let ck = chordKey k
+      , M.notMember ck existingKeys
+      ]
+
+    chosen :: M.Map (KeyMask, KeySym) (Int, X ())
+    chosen = foldl' step M.empty candidates
+
+    step
+      :: M.Map (KeyMask, KeySym) (Int, X ())
+      -> ((KeyMask, KeySym), (Int, X ()))
+      -> M.Map (KeyMask, KeySym) (Int, X ())
+    step m (k, candidate@(s, _a)) =
+      case M.lookup k m of
+        Nothing -> M.insert k candidate m
+        Just (bestS, _bestA) ->
+          if s < bestS
+          then M.insert k candidate m
+          else m
+
 shiftToEmptyOnScreen direction =
   followingWindow (windowToScreen direction True) >> shiftToEmptyAndView
 
@@ -939,6 +1003,8 @@ myWindowGo direction = do
 
 addKeys conf@XConfig { modMask = modm } =
 
+    addHyperChordBindings hyper hyperChord $
+
     -- Directional navigation
 
     buildDirectionalBindings modm myWindowGo ++
@@ -1075,6 +1141,8 @@ addKeys conf@XConfig { modMask = modm } =
     where
       modalt = modm .|. mod1Mask
       hyper = mod3Mask
+      -- Matches nixos/keyd.nix: "hyper:C-A-M" (Ctrl+Alt+Super/Meta)
+      hyperChord = controlMask .|. mod1Mask .|. mod4Mask
       hctrl = hyper .|. controlMask
 
 -- Local Variables:
