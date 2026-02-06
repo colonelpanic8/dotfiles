@@ -1,7 +1,23 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-monitors="$(hyprctl monitors -j)"
+hyprctl_cmd=(hyprctl)
+
+# Hyprland can restart and change the instance signature, leaving old shells with
+# a stale HYPRLAND_INSTANCE_SIGNATURE. Detect the live instance and use it.
+if ! hyprctl monitors -j >/dev/null 2>&1; then
+  if [[ -n "${WAYLAND_DISPLAY:-}" ]]; then
+    inst="$(hyprctl instances -j | jq -r --arg sock "$WAYLAND_DISPLAY" '.[] | select(.wl_socket == $sock) | .instance' | head -n1)"
+  else
+    inst="$(hyprctl instances -j | jq -r '.[0].instance // empty')"
+  fi
+
+  if [[ -n "${inst:-}" ]]; then
+    hyprctl_cmd=(hyprctl --instance "$inst")
+  fi
+fi
+
+monitors="$("${hyprctl_cmd[@]}" monitors -j)"
 height="$(jq -r '.[] | select(.focused) | .reserved[1]' <<<"$monitors")"
 geo="$(jq -r '.[] | select(.focused) | "\(.x),\(.y) \(.width)x\(.reserved[1])"' <<<"$monitors")"
 
@@ -11,6 +27,7 @@ if [[ -z "$geo" || "$height" == "0" ]]; then
   exit 1
 fi
 
-out="/tmp/taffybar-$(date +%Y%m%d-%H%M%S).png"
+# Include nanoseconds so consecutive screenshots don't overwrite each other.
+out="/tmp/taffybar-$(date +%Y%m%d-%H%M%S-%N).png"
 grim -g "$geo" "$out"
 echo "$out"

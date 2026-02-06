@@ -1,18 +1,7 @@
-@define-color accent #f1b2b2;
-@define-color bar-background rgba(12, 15, 24, 0.55);
-@define-color bar-gradient-start rgba(20, 26, 40, 0.68);
-@define-color bar-gradient-end rgba(12, 18, 30, 0.68);
-@define-color bar-border rgba(255, 255, 255, 0.06);
-/* Temporary: keep menus high-contrast and readable while debugging theme issues. */
-@define-color menu-background-color #ffffff;
-@define-color menu-font-color #000000;
-@define-color menu-highlight rgba(0, 0, 0, 0.08);
-@define-color font-color #e7e4ee;
-@define-color font-muted #b8b1c6;
-@define-color pill-background rgba(48, 52, 69, 0.92);
-@define-color pill-border rgba(92, 95, 120, 0.85);
-@define-color pill-highlight rgba(255, 255, 255, 0.10);
-@define-color pill-shadow rgba(0, 0, 0, 0.28);
-@define-color transparent rgba(0.0, 0.0, 0.0, 0.0);
-@define-color white #ffffff;
-@define-color black #000000;
+/* Compatibility wrapper.
+ *
+ * Historically this config loaded "palette.css". Keep that stable, but source
+ * all actual color definitions from "theme.css".
+ */
+@import url("theme.css");
+

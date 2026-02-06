@@ -132,7 +132,8 @@
     nixtheplanet.url = "github:matthewcroughan/nixtheplanet";
 
     codex-cli-nix = {
-      url = "github:colonelpanic8/codex-cli-nix/fix/add-libcap-to-rpath";
+      # Default branch is `main` on GitHub (not `master`).
+      url = "github:sadjow/codex-cli-nix/main";
       inputs.nixpkgs.follows = "nixpkgs";
     };
 

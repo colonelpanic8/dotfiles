@@ -1,7 +1,24 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-ts="$(date +%Y%m%d-%H%M%S)"
+hyprctl_cmd=(hyprctl)
+
+# Hyprland can restart and change the instance signature, leaving old shells with
+# a stale HYPRLAND_INSTANCE_SIGNATURE. Detect the live instance and use it.
+if ! hyprctl monitors -j >/dev/null 2>&1; then
+  if [[ -n "${WAYLAND_DISPLAY:-}" ]]; then
+    inst="$(hyprctl instances -j | jq -r --arg sock "$WAYLAND_DISPLAY" '.[] | select(.wl_socket == $sock) | .instance' | head -n1)"
+  else
+    inst="$(hyprctl instances -j | jq -r '.[0].instance // empty')"
+  fi
+
+  if [[ -n "${inst:-}" ]]; then
+    hyprctl_cmd=(hyprctl --instance "$inst")
+  fi
+fi
+
+# Include nanoseconds so consecutive screenshots don't overwrite each other.
+ts="$(date +%Y%m%d-%H%M%S-%N)"
 found="0"
 
 while IFS=$'\t' read -r name geo; do
@@ -9,7 +26,7 @@ while IFS=$'\t' read -r name geo; do
   out="/tmp/taffybar-${name}-${ts}.png"
   grim -g "$geo" "$out"
   echo "$out"
-done < <(hyprctl monitors -j | jq -r '.[] | select(.reserved[1] > 0) | "\(.name)\t\(.x),\(.y) \(.width)x\(.reserved[1])"')
+done < <("${hyprctl_cmd[@]}" monitors -j | jq -r '.[] | select(.reserved[1] > 0) | "\(.name)\t\(.x),\(.y) \(.width)x\(.reserved[1])"')
 
 if [[ "$found" == "0" ]]; then
   echo "No monitors with a top reserved area found." >&2

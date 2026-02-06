@@ -15,3 +15,7 @@ screenshot:
 # Capture the reserved top area on all monitors (one file per monitor).
 screenshot-all:
 	@scripts/taffybar-screenshot-all
+
+# Crop the top bar out of an existing screenshot (defaults to 56px high).
+crop in out="":
+	@if [[ -n "{{out}}" ]]; then scripts/taffybar-crop-bar "{{in}}" "{{out}}"; else scripts/taffybar-crop-bar "{{in}}"; fi

@@ -4,4 +4,21 @@ set -euo pipefail
 root="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 cd "$root"
 
+# Hyprland can restart and change the instance signature, leaving old shells with
+# a stale HYPRLAND_INSTANCE_SIGNATURE. Fix it before launching taffybar so any
+# `hyprctl` calls inside the bar work.
+if command -v hyprctl >/dev/null 2>&1 && command -v jq >/dev/null 2>&1; then
+  if ! hyprctl monitors -j >/dev/null 2>&1; then
+    if [[ -n "${WAYLAND_DISPLAY:-}" ]]; then
+      inst="$(hyprctl instances -j | jq -r --arg sock "$WAYLAND_DISPLAY" '.[] | select(.wl_socket == $sock) | .instance' | head -n1)"
+    else
+      inst="$(hyprctl instances -j | jq -r '.[0].instance // empty')"
+    fi
+
+    if [[ -n "${inst:-}" ]]; then
+      export HYPRLAND_INSTANCE_SIGNATURE="$inst"
+    fi
+  fi
+fi
+
 exec direnv exec . cabal run

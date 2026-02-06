@@ -43,6 +43,8 @@ import           System.Taffybar.Widget
 import           System.Taffybar.Widget.Generic.Icon
 import           System.Taffybar.Widget.Generic.PollingGraph
 import           System.Taffybar.Widget.Generic.PollingLabel
+import qualified System.Taffybar.Widget.NetworkManager as NetworkManager
+import qualified System.Taffybar.Widget.PulseAudio as PulseAudio
 import           System.Taffybar.Widget.Util
 import qualified System.Taffybar.Widget.HyprlandWorkspaces as Hyprland
 import qualified System.Taffybar.Widget.Workspaces as X11Workspaces
@@ -285,147 +287,101 @@ main = do
   let relativeFiles = fromMaybe ["palette.css", "taffybar.css"] $ lookup hostName cssFilesByHostname
   cssFiles <- mapM (getUserConfigFile "taffybar") relativeFiles
 
-  let myCPU = deocrateWithSetClassAndBoxes "cpu" $
-              pollingGraphNew cpuCfg 5 cpuCallback
-      myMem = deocrateWithSetClassAndBoxes "mem" $
-              pollingGraphNew memCfg 5 memCallback
-      myNet = deocrateWithSetClassAndBoxes "net" $
-              networkGraphNew netCfg Nothing
+  let myCPU =
+        ( deocrateWithSetClassAndBoxes "cpu" $
+            pollingGraphNew cpuCfg 5 cpuCallback
+        ) :: TaffyIO Gtk.Widget
+      myMem =
+        ( deocrateWithSetClassAndBoxes "mem" $
+            pollingGraphNew memCfg 5 memCallback
+        ) :: TaffyIO Gtk.Widget
+      myNet =
+        ( deocrateWithSetClassAndBoxes "net" $
+            networkGraphNew netCfg Nothing
+        ) :: TaffyIO Gtk.Widget
+      myAudio = deocrateWithSetClassAndBoxes "audio" $
+        PulseAudio.pulseAudioLabelNew
+      myNetwork = deocrateWithSetClassAndBoxes "network" $
+        NetworkManager.networkManagerWifiLabelNew
       myLayout = deocrateWithSetClassAndBoxes "layout" $
-                 layoutNew defaultLayoutConfig
+        layoutNew defaultLayoutConfig
       myWindows = deocrateWithSetClassAndBoxes "windows" $
-                  windowsNew defaultWindowsConfig
+        windowsNew defaultWindowsConfig
       myWorkspaces =
         flip widgetSetClassGI "workspaces" =<<
-        X11Workspaces.workspacesNew X11Workspaces.defaultWorkspacesConfig
-                        { X11Workspaces.minIcons = 1
-                        , X11Workspaces.getWindowIconPixbuf =
-                          X11Workspaces.scaledWindowIconPixbufGetter $
-                          X11Workspaces.getWindowIconPixbufFromChrome <|||>
-                          X11Workspaces.unscaledDefaultGetWindowIconPixbuf <|||>
-                          (\size _ -> fallbackIconPixbuf size)
-                        , X11Workspaces.widgetGap = 0
-                        , X11Workspaces.showWorkspaceFn = X11Workspaces.hideEmpty
-                        , X11Workspaces.updateRateLimitMicroseconds = 100000
-                        , X11Workspaces.labelSetter = workspaceNamesLabelSetter
-                        , X11Workspaces.widgetBuilder = X11Workspaces.buildLabelOverlayController
-                        }
+          X11Workspaces.workspacesNew X11Workspaces.defaultWorkspacesConfig
+            { X11Workspaces.minIcons = 1
+            , X11Workspaces.getWindowIconPixbuf =
+              X11Workspaces.scaledWindowIconPixbufGetter $
+                X11Workspaces.getWindowIconPixbufFromChrome <|||>
+                X11Workspaces.unscaledDefaultGetWindowIconPixbuf <|||>
+                (\size _ -> fallbackIconPixbuf size)
+            , X11Workspaces.widgetGap = 0
+            , X11Workspaces.showWorkspaceFn = X11Workspaces.hideEmpty
+            , X11Workspaces.updateRateLimitMicroseconds = 100000
+            , X11Workspaces.labelSetter = workspaceNamesLabelSetter
+            , X11Workspaces.widgetBuilder = X11Workspaces.buildLabelOverlayController
+            }
       myHyprWorkspaces =
         flip widgetSetClassGI "workspaces" =<<
-        Hyprland.hyprlandWorkspacesNew Hyprland.defaultHyprlandWorkspacesConfig
-          { Hyprland.widgetGap = 0
-          , Hyprland.minIcons = 1
-          -- Don't show Hyprland "special:*" workspaces.
-          , Hyprland.showWorkspaceFn =
-            (\ws -> Hyprland.workspaceState ws /= X11Workspaces.Empty &&
-                    not (isSpecialHyprWorkspace ws))
-          , Hyprland.getWindowIconPixbuf =
-            hyprlandManualIconGetter <|||>
-            Hyprland.defaultHyprlandGetWindowIconPixbuf <|||>
-            hyprlandFallbackIcon
-          }
+          Hyprland.hyprlandWorkspacesNew Hyprland.defaultHyprlandWorkspacesConfig
+            { Hyprland.widgetGap = 0
+            , Hyprland.minIcons = 1
+            -- Don't show Hyprland "special:*" workspaces.
+            , Hyprland.showWorkspaceFn =
+              (\ws -> Hyprland.workspaceState ws /= X11Workspaces.Empty &&
+                      not (isSpecialHyprWorkspace ws))
+            , Hyprland.getWindowIconPixbuf =
+              hyprlandManualIconGetter <|||>
+              Hyprland.defaultHyprlandGetWindowIconPixbuf <|||>
+              hyprlandFallbackIcon
+            }
       myClock = deocrateWithSetClassAndBoxes "clock" $
-                textClockNewWith
-                defaultClockConfig
-                { clockUpdateStrategy = RoundedTargetInterval 60 0.0
-                , clockFormatString = "%a %b %_d, 🕑%I:%M %p"
-                }
-      -- Disabled for now: StatusNotifierWatcher errors under Hyprland.
-      -- myTray = deocrateWithSetClassAndBoxes "tray" $
-      --          sniTrayNewFromParams defaultTrayParams { trayLeftClickAction = PopupMenu
-      --                                                 , trayRightClickAction = Activate
-      --                                                 }
-      myMpris = mpris2NewWithConfig
-                MPRIS2Config { mprisWidgetWrapper = deocrateWithSetClassAndBoxes "mpris" . return
-                             , updatePlayerWidget =
-                               simplePlayerWidget
-                               defaultPlayerConfig
-                               { setNowPlayingLabel = playingText 20 20 }
-                             }
+        textClockNewWith
+          defaultClockConfig
+          { clockUpdateStrategy = RoundedTargetInterval 60 0.0
+          , clockFormatString = "%a %b %_d, 🕑%I:%M %p"
+          }
+      myMpris =
+        mpris2NewWithConfig
+          MPRIS2Config
+            { mprisWidgetWrapper = deocrateWithSetClassAndBoxes "mpris" . return
+            , updatePlayerWidget =
+              simplePlayerWidget
+                defaultPlayerConfig
+                  { setNowPlayingLabel = playingText 20 20
+                  }
+            }
       myBatteryIcon = deocrateWithSetClassAndBoxes "battery-icon" batteryIconNew
       myBatteryText =
         deocrateWithSetClassAndBoxes "battery-text" $ textBatteryNew "$percentage$%"
-      batteryWidgets = [myBatteryIcon, myBatteryText]
-      baseEndWidgets =
-        [ myMpris
-        ]
-      fullEndWidgets = baseEndWidgets ++ [ myCPU, myMem, myNet, myMpris ]
+      batteryWidgets = [ myBatteryIcon, myBatteryText ]
+      baseEndWidgets = [ myAudio, myNetwork, myMpris ]
       laptopEndWidgets = batteryWidgets ++ baseEndWidgets
-      baseConfigX11 =
-        defaultSimpleTaffyConfig
-        { startWidgets = [ myWorkspaces, myLayout, myWindows ]
-        , endWidgets = baseEndWidgets
-        , barPosition = Top
-        , widgetSpacing = 0
-        , barPadding = 4
-        , barHeight = ScreenRatio $ 1/36
-        , cssPaths = cssFiles
-        , centerWidgets = [ myClock ]
-        }
-      baseConfigWayland =
-        defaultSimpleTaffyConfig
-        { startWidgets = [ myHyprWorkspaces ]
-        , endWidgets = baseEndWidgets
-        , barPosition = Top
-        , widgetSpacing = 0
-        , barPadding = 4
-        , barHeight = ScreenRatio $ 1/36
-        , cssPaths = cssFiles
-        , centerWidgets = [ myClock ]
-        }
-      x11Overrides =
-        [ ( "uber-loaner"
-          , baseConfigX11 { endWidgets = laptopEndWidgets }
-          )
-        , ( "adell"
-          , baseConfigX11 { endWidgets = laptopEndWidgets }
-          )
-        , ( "stevie-nixos"
-          , baseConfigX11 { endWidgets = laptopEndWidgets
-                          , startWidgets = [ myWorkspaces, myLayout ]
-                          }
-          )
-        , ( "strixi-minaj"
-          , baseConfigX11 { endWidgets = laptopEndWidgets }
-          )
-        , ( "jay-lenovo"
-          , baseConfigX11 { endWidgets = laptopEndWidgets }
-          )
-        , ( "nixquick"
-          , baseConfigX11 { endWidgets = [ myMpris ] }
-          )
-        ]
-      waylandOverrides =
-        [ ( "uber-loaner"
-          , baseConfigWayland { endWidgets = laptopEndWidgets }
-          )
-        , ( "adell"
-          , baseConfigWayland { endWidgets = laptopEndWidgets }
-          )
-        , ( "stevie-nixos"
-          , baseConfigWayland { endWidgets = laptopEndWidgets }
-          )
-        , ( "strixi-minaj"
-          , baseConfigWayland { endWidgets = laptopEndWidgets }
-          )
-        , ( "jay-lenovo"
-          , baseConfigWayland { endWidgets = laptopEndWidgets }
-          )
-        , ( "nixquick"
-          , baseConfigWayland { endWidgets = [ myMpris ] }
-          )
-        ]
-      selectedConfig =
+      startWidgetsForBackend =
         case backend of
-          BackendX11 ->
-            fromMaybe baseConfigX11 $ lookup hostName x11Overrides
-          BackendWayland ->
-            fromMaybe baseConfigWayland $ lookup hostName waylandOverrides
-      simpleTaffyConfig = selectedConfig
-        { centerWidgets = [ myClock ]
-        -- , endWidgets = []
-        -- , startWidgets = []
-        }
+          BackendX11 -> [ myWorkspaces, myLayout, myWindows ]
+          BackendWayland -> [ myHyprWorkspaces ]
+      baseConfig =
+        defaultSimpleTaffyConfig
+          { startWidgets = startWidgetsForBackend
+          , endWidgets = baseEndWidgets
+          , barPosition = Top
+          , widgetSpacing = 0
+          , barPadding = 4
+          , barHeight = ScreenRatio $ 1 / 36
+          , cssPaths = cssFiles
+          , centerWidgets = [ myClock ]
+          }
+      hostOverrides =
+        [ ("uber-loaner", \cfg -> cfg { endWidgets = laptopEndWidgets })
+        , ("adell", \cfg -> cfg { endWidgets = laptopEndWidgets })
+        , ("stevie-nixos", \cfg -> cfg { endWidgets = laptopEndWidgets })
+        , ("strixi-minaj", \cfg -> cfg { endWidgets = laptopEndWidgets })
+        , ("jay-lenovo", \cfg -> cfg { endWidgets = laptopEndWidgets })
+        ]
+      simpleTaffyConfig =
+        fromMaybe baseConfig $ ($ baseConfig) <$> lookup hostName hostOverrides
   startTaffybar $
     withLogServer $
     withToggleServer $

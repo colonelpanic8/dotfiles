@@ -70,16 +70,16 @@
         ]
       },
       "locked": {
-        "lastModified": 1770321000,
-        "narHash": "sha256-g5Q2VES3eKkLiHfRTeuhmStxZvgb+/oTtRnSEXrPZQk=",
-        "owner": "colonelpanic8",
+        "lastModified": 1770406581,
+        "narHash": "sha256-5EBQV4crivXXwhrA+1s9ApMWryES/eadcNETtHin6Ko=",
+        "owner": "sadjow",
         "repo": "codex-cli-nix",
-        "rev": "9386e1dfd5555b949bb934f062e8cb7971868f8d",
+        "rev": "d3abf748ac6a06016a6fff14b5a99dedacf72378",
         "type": "github"
       },
       "original": {
-        "owner": "colonelpanic8",
-        "ref": "fix/add-libcap-to-rpath",
+        "owner": "sadjow",
+        "ref": "main",
         "repo": "codex-cli-nix",
         "type": "github"
       }
