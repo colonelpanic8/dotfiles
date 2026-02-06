@@ -19,7 +19,6 @@ import qualified GI.GdkPixbuf.Objects.Pixbuf as Gdk
 import qualified GI.Gtk as Gtk
 import qualified GI.Gtk.Objects.Overlay as Gtk
 import           Network.HostName
-import           StatusNotifier.Tray
 import           System.Directory
 import           System.Environment
 import           System.Environment.XDG.BaseDir
@@ -45,6 +44,10 @@ import           System.Taffybar.Widget.Generic.PollingGraph
 import           System.Taffybar.Widget.Generic.PollingLabel
 import qualified System.Taffybar.Widget.NetworkManager as NetworkManager
 import qualified System.Taffybar.Widget.PulseAudio as PulseAudio
+import           System.Taffybar.Widget.SNITray
+                 ( sniTrayNew
+                 , sniTrayThatStartsWatcherEvenThoughThisIsABadWayToDoIt
+                 )
 import           System.Taffybar.Widget.Util
 import qualified System.Taffybar.Widget.HyprlandWorkspaces as Hyprland
 import qualified System.Taffybar.Widget.Workspaces as X11Workspaces
@@ -356,12 +359,19 @@ main = do
       myBatteryText =
         deocrateWithSetClassAndBoxes "battery-text" $ textBatteryNew "$percentage$%"
       batteryWidgets = [ myBatteryIcon, myBatteryText ]
-      baseEndWidgets = [ myAudio, myNetwork, myMpris ]
+      mySNITray = deocrateWithSetClassAndBoxes "sni-tray" $
+        case backend of
+          BackendWayland -> sniTrayThatStartsWatcherEvenThoughThisIsABadWayToDoIt
+          BackendX11 -> sniTrayNew
+      baseEndWidgets = [ myAudio, myNetwork, myMpris, mySNITray ]
       laptopEndWidgets = batteryWidgets ++ baseEndWidgets
+      x11StartWidgets = [ myWorkspaces, myLayout, myWindows ]
+      hyprlandStartWidgets = [ myHyprWorkspaces ]
       startWidgetsForBackend =
         case backend of
-          BackendX11 -> [ myWorkspaces, myLayout, myWindows ]
-          BackendWayland -> [ myHyprWorkspaces ]
+          BackendX11 -> x11StartWidgets
+          -- These Wayland widgets are Hyprland-specific.
+          BackendWayland -> hyprlandStartWidgets
       baseConfig =
         defaultSimpleTaffyConfig
           { startWidgets = startWidgetsForBackend
