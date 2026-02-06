@@ -307,11 +307,12 @@
         "weeder-nix": "weeder-nix",
         "xmonad": [
           "xmonad"
-        ]
+        ],
+        "xmonad-contrib": "xmonad-contrib"
       },
       "locked": {
-        "lastModified": 1770273353,
-        "narHash": "sha256-0VQfT0bxyU+xmEMLDRQq+hbJX35+PWPjSXiAVFGOlzQ=",
+        "lastModified": 1770357832,
+        "narHash": "sha256-yQd5OJOdmluGW1OCgozjsY9lemOtP+UmWoN7KcnxzAw=",
         "path": "/home/imalison/dotfiles/dotfiles/config/taffybar/taffybar",
         "type": "path"
       },
@@ -377,6 +378,23 @@
         "owner": "xmonad",
         "ref": "master",
         "repo": "xmonad",
+        "type": "github"
+      }
+    },
+    "xmonad-contrib": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1769258911,
+        "narHash": "sha256-YGEKXs4UmS5QOIELJTdCiMzTktuue+Bd3yFoIKSHuBU=",
+        "owner": "xmonad",
+        "repo": "xmonad-contrib",
+        "rev": "803bc3d12bdcc512ec06856c4f119d37de1ba338",
+        "type": "github"
+      },
+      "original": {
+        "owner": "xmonad",
+        "ref": "master",
+        "repo": "xmonad-contrib",
         "type": "github"
       }
     }

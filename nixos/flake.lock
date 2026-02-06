@@ -132,11 +132,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1770315205,
-        "narHash": "sha256-yOYprNUvMHRBC7EfmhNOYYLqNm43cLtydV39ITnCfZk=",
+        "lastModified": 1770346435,
+        "narHash": "sha256-B6gy3AeCk9GkoyXAH2qt0bcDsX2sUuWebrspZGvtt38=",
         "owner": "sadjow",
         "repo": "claude-code-nix",
-        "rev": "b774ffcdcd9987f4a2e6e3809130d04438e29a13",
+        "rev": "13b7acb0fd769f7072e908d6aa08ae55b3f48981",
         "type": "github"
       },
       "original": {
@@ -756,11 +756,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1770069502,
-        "narHash": "sha256-jreuryLGfbyNwx5yEtOYGt2PX+uyGRsgmakYfCQ+OdM=",
+        "lastModified": 1770331321,
+        "narHash": "sha256-I4CgwQKg8I+3oD1FOHyjqaKtI2+5SsLLFgYtuvEP+dM=",
         "owner": "taffybar",
         "repo": "gtk-sni-tray",
-        "rev": "733a43f187b35bf65b443a7ede70d62f684932ef",
+        "rev": "db358fb072d2ae31b28e8903fa1486f108a4bc28",
         "type": "github"
       },
       "original": {
@@ -2145,7 +2145,7 @@
         "taffybar": "taffybar",
         "vscode-server": "vscode-server",
         "xmonad": "xmonad_2",
-        "xmonad-contrib": "xmonad-contrib"
+        "xmonad-contrib": "xmonad-contrib_2"
       }
     },
     "rust-overlay": {
@@ -2410,11 +2410,12 @@
         ],
         "status-notifier-item": "status-notifier-item_2",
         "weeder-nix": "weeder-nix",
-        "xmonad": "xmonad"
+        "xmonad": "xmonad",
+        "xmonad-contrib": "xmonad-contrib"
       },
       "locked": {
-        "lastModified": 1770321875,
-        "narHash": "sha256-0vIlqzJoGb9sPKkCK5DANJfdZJCQsGADkqg0XKLyrmw=",
+        "lastModified": 1770358100,
+        "narHash": "sha256-bh7MDmHl8WkIwLnsg6a7UYlTVMDulaHZoYb8HWDWqbc=",
         "path": "/home/imalison/dotfiles/dotfiles/config/taffybar/taffybar",
         "type": "path"
       },
@@ -2539,6 +2540,23 @@
       }
     },
     "xmonad-contrib": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1769258911,
+        "narHash": "sha256-YGEKXs4UmS5QOIELJTdCiMzTktuue+Bd3yFoIKSHuBU=",
+        "owner": "xmonad",
+        "repo": "xmonad-contrib",
+        "rev": "803bc3d12bdcc512ec06856c4f119d37de1ba338",
+        "type": "github"
+      },
+      "original": {
+        "owner": "xmonad",
+        "ref": "master",
+        "repo": "xmonad-contrib",
+        "type": "github"
+      }
+    },
+    "xmonad-contrib_2": {
       "inputs": {
         "flake-utils": [
           "flake-utils"
