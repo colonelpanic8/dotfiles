@@ -4,7 +4,7 @@
     ./essential.nix
   ];
   environment.systemPackages = with pkgs; [
-    emacs
+    emacs-auto
   ];
   programs.zsh.enable = true;
   networking.firewall.enable = false;

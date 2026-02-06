@@ -248,11 +248,6 @@ in
     };
   });
 
-  emacs = prev."emacs30-pgtk".override {
-    withNativeCompilation = true;
-    withTreeSitter = true;
-  };
-
   python-with-my-packages = let
     my-python-packages = python-packages:
     with python-packages; [

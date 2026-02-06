@@ -14,7 +14,7 @@
     direnv
     dpkg
     efibootmgr
-    emacs
+    emacs-auto
     fd
     ffmpeg
     file
