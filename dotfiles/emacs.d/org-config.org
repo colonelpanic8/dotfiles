@@ -1131,7 +1131,7 @@ alphanumeric characters only."
   :commands org-ql-find-in-agenda)
 #+end_src
 ** org-window-habit
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :tangle org-config-config.el
 (use-package org-window-habit
   :demand t
   :ensure
