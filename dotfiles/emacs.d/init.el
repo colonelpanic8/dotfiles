@@ -84,6 +84,11 @@
 (elpaca-wait)
 
 ;; Install transient early to prevent built-in version from loading
+;; Workaround: overriding-text-conversion-style is void on pgtk builds (no
+;; HAVE_TEXT_CONVERSION) but transient's .elc compiled on X11 has static-if
+;; expanded to reference it directly
+(unless (boundp 'overriding-text-conversion-style)
+  (defvar overriding-text-conversion-style nil))
 (use-package transient
   :ensure (:host github :repo "magit/transient" :wait t)
   :demand t)
