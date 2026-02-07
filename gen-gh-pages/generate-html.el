@@ -12,6 +12,7 @@
 (setq emacs-dir
       (expand-file-name "../dotfiles/emacs.d/"
                         (file-name-directory load-file-name)))
+(setq user-emacs-directory emacs-dir)
 
 (setq readme-src (concat emacs-dir "README.org"))
 
