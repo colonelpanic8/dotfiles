@@ -5,7 +5,6 @@ makeEnable config "myModules.desktop" true {
     ./fonts.nix
     ./hyprland.nix
     ./keyd.nix
-    ./xremap.nix
   ];
 
   assertions = [
