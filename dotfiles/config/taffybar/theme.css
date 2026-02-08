@@ -7,7 +7,7 @@
 @define-color accent #f1b2b2;
 
 /* Bar chrome */
-@define-color bar-background rgba(0, 0, 0, 0.55);
+@define-color bar-background rgba(0, 0, 0, 0.35);
 @define-color bar-gradient-start rgba(20, 26, 40, 0.68);
 @define-color bar-gradient-end rgba(12, 18, 30, 0.68);
 @define-color bar-border rgba(255, 255, 255, 0.06);

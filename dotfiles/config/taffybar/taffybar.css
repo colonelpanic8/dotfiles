@@ -22,7 +22,7 @@
 	border-width: 0px;
 	padding: 0px;
 	margin: 0px;
-	border-radius: 0px;
+	border-radius: 6px;
 	box-shadow: none;
 	background-color: @bar-background;
 	background-image: none;
