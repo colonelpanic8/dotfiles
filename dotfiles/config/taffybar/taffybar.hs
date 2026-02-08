@@ -291,7 +291,15 @@ mprisWidget :: TaffyIO Gtk.Widget
 mprisWidget =
   mpris2NewWithConfig
     MPRIS2Config
-      { mprisWidgetWrapper = decorateWithClassAndBox "mpris"
+      { mprisWidgetWrapper = \grid -> do
+          icon <- Gtk.labelNew (Just "\xF075A")
+          _ <- widgetSetClassGI icon "icon"
+          Gtk.widgetSetName icon "mpris-icon"
+          box <- Gtk.boxNew Gtk.OrientationHorizontal 0
+          Gtk.containerAdd box icon
+          Gtk.containerAdd box grid
+          Gtk.widgetShowAll box
+          Gtk.toWidget box >>= decorateWithClassAndBox "mpris"
       , updatePlayerWidget =
           simplePlayerWidget
             defaultPlayerConfig
