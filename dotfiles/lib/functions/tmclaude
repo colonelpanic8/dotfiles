@@ -1,7 +1,7 @@
 #!/usr/bin/env sh
 
 function tmclaude {
-    trw claude "$@"
+    trw claude --dangerously-skip-permissions "$@"
 }
 
 tmclaude "$@"
