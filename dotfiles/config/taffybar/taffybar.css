@@ -10,7 +10,7 @@
 	/* Most text should come from Iosevka Aile; icon glyphs (Font Awesome / Nerd
 	   Font PUA) should come from a Nerd Font family to avoid tiny fallback glyphs. */
 	font-family: "Iosevka Aile", "Iosevka Nerd Font", "Iosevka NF", "Noto Sans", sans-serif;
-	font-size: 9pt;
+	font-size: 11pt;
 	font-weight: 600;
 	color: @font-color;
 	/* Bar background is painted on `.taffy-box`; most widget nodes stay
@@ -23,6 +23,7 @@
    uses a nerd font character, so force the nerd font family on it. */
 .icon-label > .icon {
 	font-family: "Iosevka Nerd Font";
+	padding-right: 11px;
 }
 
 /* The main bar container. border-radius matches the widget squircles (6px)
@@ -132,14 +133,12 @@
 	color: @widget-tray-fg;
 }
 
-.outer-pad.battery-icon,
-.outer-pad.battery-text {
+.outer-pad.battery {
 	background-color: @widget-battery-bg;
 	border-color: @widget-battery-border;
 	box-shadow: 0 1px 0 rgba(255, 255, 255, 0.06), 0 10px 24px rgba(0, 0, 0, 0.30);
 }
-.outer-pad.battery-icon *,
-.outer-pad.battery-text * {
+.outer-pad.battery * {
 	color: @widget-battery-fg;
 }
 
@@ -240,23 +239,14 @@
 	background-color: rgba(255, 255, 255, 0.06);
 }
 
-/* Inside workspaces the squircle pill IS the background, so individual
-   icon containers stay transparent. */
-.workspaces .window-icon-container {
+.workspaces .window-icon-container,
+.workspaces .window-icon-container.active {
+	/* Don't give each window icon its own background/border; the workspace
+	   squircle is the background. */
 	background-color: transparent;
 	border: 0px;
 	box-shadow: none;
 	padding: 0px 2px;
-}
-
-/* Subtle bright ring around the focused window's icon so it stands out
-   from the other icons in the same workspace pill. */
-.workspaces .window-icon-container.active {
-	background-color: rgba(255, 255, 255, 0.10);
-	border: 0px;
-	border-radius: 50%;
-	box-shadow: 0 0 6px rgba(255, 255, 255, 0.45);
-	padding: 2px;
 }
 
 .workspaces .active .contents,
@@ -464,7 +454,7 @@ popover modelbutton:hover * {
 
 .clock label,
 .mpris label,
-.battery-text label {
+.battery label {
 	letter-spacing: 0.2px;
 }
 
