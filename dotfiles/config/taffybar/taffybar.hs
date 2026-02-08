@@ -32,7 +32,7 @@ import           System.Taffybar.Widget.SNITray
                  ( sniTrayNew
                  , sniTrayThatStartsWatcherEvenThoughThisIsABadWayToDoIt
                  )
-import           System.Taffybar.Widget.Util (buildContentsBox, loadPixbufByName, widgetSetClassGI)
+import           System.Taffybar.Widget.Util (buildContentsBox, buildIconLabelBox, loadPixbufByName, widgetSetClassGI)
 import qualified System.Taffybar.Widget.Workspaces as X11Workspaces
 import           System.Taffybar.WindowIcon (pixBufFromColor)
 
@@ -299,20 +299,11 @@ mprisWidget =
               }
       }
 
-batteryIconWidget :: TaffyIO Gtk.Widget
-batteryIconWidget =
-  decorateWithClassAndBoxM "battery-icon" batteryIconNew
-
-batteryTextWidget :: TaffyIO Gtk.Widget
-batteryTextWidget =
-  decorateWithClassAndBoxM "battery-text" (textBatteryNew "$percentage$%")
-
-batteryWidgets :: [TaffyIO Gtk.Widget]
-batteryWidgets = [batteryIconWidget, batteryTextWidget]
-
--- Note: end widgets are packed with Gtk.boxPackEnd; list order is right-to-left.
-batteryEndWidgets :: [TaffyIO Gtk.Widget]
-batteryEndWidgets = reverse batteryWidgets
+batteryWidget :: TaffyIO Gtk.Widget
+batteryWidget = do
+  iconWidget <- batteryTextIconNew
+  labelWidget <- textBatteryNew "$percentage$%"
+  decorateWithClassAndBox "battery" =<< liftIO (buildIconLabelBox iconWidget labelWidget)
 
 backlightWidget :: TaffyIO Gtk.Widget
 backlightWidget =
@@ -329,7 +320,7 @@ backlightWidget =
 
 diskUsageWidget :: TaffyIO Gtk.Widget
 diskUsageWidget =
-  decorateWithClassAndBoxM "disk-usage" diskUsageLabelNew
+  decorateWithClassAndBoxM "disk-usage" diskUsageNew
 
 sniTrayWidget :: TaffyIO Gtk.Widget
 sniTrayWidget =
@@ -350,10 +341,9 @@ endWidgetsForHost :: String -> Backend -> [TaffyIO Gtk.Widget]
 endWidgetsForHost hostName backend =
   let tray = sniTrayWidget
       baseEndWidgets = [tray, audioWidget, diskUsageWidget, networkWidget, mprisWidget]
-      -- Keep battery widgets visually *after* the tray (i.e. further to the right).
       laptopEndWidgets =
-        batteryEndWidgets ++
-          [ tray
+          [ batteryWidget
+          , tray
           , audioWidget
           , diskUsageWidget
           , backlightWidget
