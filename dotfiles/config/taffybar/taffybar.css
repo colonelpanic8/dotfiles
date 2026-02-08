@@ -141,6 +141,7 @@
 .workspaces .inner-pad {
 	box-shadow: none;
 	border-width: 0;
+	padding: 2px 3px 2px 10px;
 }
 
 .workspaces .contents {
