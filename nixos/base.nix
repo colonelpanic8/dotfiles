@@ -41,6 +41,7 @@ makeEnable config "myModules.base" true {
   # Audio
 
   services.pulseaudio.enable = true;
+  services.pulseaudio.extraConfig = "load-module module-dbus-protocol";
   services.pipewire = {
     enable = false;
     systemWide = true;
