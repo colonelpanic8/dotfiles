@@ -2,7 +2,7 @@
  *
  * Colors live in `theme.css` (loaded via `palette.css`).
  */
-import theme.css
+@import url("theme.css");
 
 .taffy-window * {
 	/* Most text should come from Iosevka Aile; icon glyphs (Font Awesome / Nerd
@@ -87,6 +87,53 @@ import theme.css
 }
 .outer-pad.mpris * {
 	color: @widget-mpris-fg;
+}
+
+.outer-pad.clock {
+	background-color: @widget-clock-bg;
+	border-color: @widget-clock-border;
+	box-shadow: 0 1px 0 rgba(255, 255, 255, 0.06), 0 10px 24px rgba(0, 0, 0, 0.30);
+}
+.outer-pad.clock * {
+	color: @widget-clock-fg;
+}
+
+.outer-pad.disk-usage {
+	background-color: @widget-disk-bg;
+	border-color: @widget-disk-border;
+	box-shadow: 0 1px 0 rgba(255, 255, 255, 0.06), 0 10px 24px rgba(0, 0, 0, 0.30);
+}
+.outer-pad.disk-usage * {
+	color: @widget-disk-fg;
+}
+
+.outer-pad.sni-tray {
+	background-color: @widget-tray-bg;
+	border-color: @widget-tray-border;
+	box-shadow: 0 1px 0 rgba(255, 255, 255, 0.06), 0 10px 24px rgba(0, 0, 0, 0.30);
+}
+.outer-pad.sni-tray * {
+	color: @widget-tray-fg;
+}
+
+.outer-pad.battery-icon,
+.outer-pad.battery-text {
+	background-color: @widget-battery-bg;
+	border-color: @widget-battery-border;
+	box-shadow: 0 1px 0 rgba(255, 255, 255, 0.06), 0 10px 24px rgba(0, 0, 0, 0.30);
+}
+.outer-pad.battery-icon *,
+.outer-pad.battery-text * {
+	color: @widget-battery-fg;
+}
+
+.outer-pad.backlight {
+	background-color: @widget-backlight-bg;
+	border-color: @widget-backlight-border;
+	box-shadow: 0 1px 0 rgba(255, 255, 255, 0.06), 0 10px 24px rgba(0, 0, 0, 0.30);
+}
+.outer-pad.backlight * {
+	color: @widget-backlight-fg;
 }
 
 /* Workspaces styling */

@@ -21,6 +21,39 @@
 @define-color pill-highlight rgba(255, 255, 255, 0.10);
 @define-color pill-shadow rgba(0, 0, 0, 0.28);
 
+/* Per-widget backgrounds — distinct tinted squircles */
+@define-color widget-audio-bg      rgba(110, 45, 160, 0.92);
+@define-color widget-audio-fg      #e8d5f8;
+@define-color widget-audio-border  rgba(155, 85, 210, 0.60);
+
+@define-color widget-network-bg     rgba(20, 120, 140, 0.92);
+@define-color widget-network-fg     #d0f2f8;
+@define-color widget-network-border rgba(50, 175, 200, 0.60);
+
+@define-color widget-mpris-bg      rgba(160, 40, 70, 0.92);
+@define-color widget-mpris-fg      #f8d5e0;
+@define-color widget-mpris-border  rgba(210, 80, 115, 0.60);
+
+@define-color widget-clock-bg      rgba(50, 60, 160, 0.92);
+@define-color widget-clock-fg      #d5d8f8;
+@define-color widget-clock-border  rgba(90, 100, 210, 0.60);
+
+@define-color widget-disk-bg       rgba(25, 130, 75, 0.92);
+@define-color widget-disk-fg       #c8f5e0;
+@define-color widget-disk-border   rgba(55, 190, 115, 0.60);
+
+@define-color widget-tray-bg       rgba(65, 70, 100, 0.92);
+@define-color widget-tray-fg       #d8dae8;
+@define-color widget-tray-border   rgba(110, 115, 160, 0.60);
+
+@define-color widget-battery-bg    rgba(160, 115, 20, 0.92);
+@define-color widget-battery-fg    #f8ecc5;
+@define-color widget-battery-border rgba(210, 165, 50, 0.60);
+
+@define-color widget-backlight-bg    rgba(170, 120, 15, 0.92);
+@define-color widget-backlight-fg    #f8efc5;
+@define-color widget-backlight-border rgba(220, 170, 45, 0.60);
+
 /* Text */
 @define-color font-color #e7e4ee;
 @define-color font-muted #b8b1c6;
