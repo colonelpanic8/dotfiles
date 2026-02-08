@@ -31,7 +31,7 @@
 .outer-pad {
 	background-color: @pill-background;
 	border: 0px;
-	border-radius: 12px;
+	border-radius: 6px;
 	margin: 4px 6px;
 	/* No white outline; define shape with subtle inner highlight + dark stroke. */
 	box-shadow:
@@ -42,7 +42,7 @@
 
 .inner-pad {
 	padding: 2px 10px;
-	border-radius: 9px;
+	border-radius: 4px;
 }
 
 .contents {
