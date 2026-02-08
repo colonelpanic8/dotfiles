@@ -756,11 +756,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1770331321,
-        "narHash": "sha256-I4CgwQKg8I+3oD1FOHyjqaKtI2+5SsLLFgYtuvEP+dM=",
+        "lastModified": 1770539512,
+        "narHash": "sha256-cBVG9qW6cx2H1CGRfxcFnH+GuLYCqqdkDXv08SGYFqE=",
         "owner": "taffybar",
         "repo": "gtk-sni-tray",
-        "rev": "db358fb072d2ae31b28e8903fa1486f108a4bc28",
+        "rev": "a58ece09b9fb2d7b610feb6a5aa06c03914f7bba",
         "type": "github"
       },
       "original": {
@@ -772,11 +772,11 @@
     "gtk-sni-tray_2": {
       "flake": false,
       "locked": {
-        "lastModified": 1770069502,
-        "narHash": "sha256-jreuryLGfbyNwx5yEtOYGt2PX+uyGRsgmakYfCQ+OdM=",
+        "lastModified": 1770539512,
+        "narHash": "sha256-cBVG9qW6cx2H1CGRfxcFnH+GuLYCqqdkDXv08SGYFqE=",
         "owner": "taffybar",
         "repo": "gtk-sni-tray",
-        "rev": "733a43f187b35bf65b443a7ede70d62f684932ef",
+        "rev": "a58ece09b9fb2d7b610feb6a5aa06c03914f7bba",
         "type": "github"
       },
       "original": {
@@ -2195,11 +2195,11 @@
     "status-notifier-item_2": {
       "flake": false,
       "locked": {
-        "lastModified": 1641783528,
-        "narHash": "sha256-wJymJfYPFj4/r1e4kT/wt9FEsyCXo5JkkcOoozpuhag=",
+        "lastModified": 1770253964,
+        "narHash": "sha256-tBbdN+xJmxNEZZSXYUxvVEeldzEjoL8WA45h3xU9U4w=",
         "owner": "taffybar",
         "repo": "status-notifier-item",
-        "rev": "f4f9c66ab57fc42eeed0de8cfac9f5f9d30d9dc7",
+        "rev": "08294f53c666aa85375364d5e08e952aa7510991",
         "type": "github"
       },
       "original": {
@@ -2414,8 +2414,8 @@
         "xmonad-contrib": "xmonad-contrib"
       },
       "locked": {
-        "lastModified": 1770459494,
-        "narHash": "sha256-mtyD7P+Qzu3Hu6CwHbk2egIfTgYJoTF2If9khnmYfzs=",
+        "lastModified": 1770539755,
+        "narHash": "sha256-RrPrzkok70wFI3uLPZYUFvhJWtHsbKgZEjr/ZbW4PVQ=",
         "path": "/home/imalison/dotfiles/dotfiles/config/taffybar/taffybar",
         "type": "path"
       },

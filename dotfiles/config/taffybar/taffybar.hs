@@ -348,10 +348,10 @@ startWidgetsForBackend backend =
 endWidgetsForHost :: String -> Backend -> [TaffyIO Gtk.Widget]
 endWidgetsForHost hostName backend =
   let tray = sniTrayWidget
-      baseEndWidgets = [tray, audioWidget, diskUsageWidget, networkWidget, mprisWidget]
+      baseEndWidgets = [clockWidget, audioWidget, diskUsageWidget, networkWidget, mprisWidget]
       laptopEndWidgets =
           [ batteryWidget
-          , tray
+          , clockWidget
           , audioWidget
           , diskUsageWidget
           , backlightWidget
@@ -370,9 +370,9 @@ mkSimpleTaffyConfig hostName backend cssFiles =
     , barPosition = Top
     , widgetSpacing = 0
     , barPadding = 4
-    , barHeight = ScreenRatio $ 1 / 36
+    , barHeight = ScreenRatio $ 1 / 33
     , cssPaths = cssFiles
-    , centerWidgets = [clockWidget, sniTrayWidget]
+    , centerWidgets = [sniTrayWidget]
     }
 
 -- ** Entry Point
