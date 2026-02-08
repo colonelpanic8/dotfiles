@@ -169,22 +169,16 @@
 .workspaces .overlay-box {
 	transition: background-color .2s, border-color .2s;
 
-	/* Offset from the bottom-left anchor into the pill area.
-	   Increase margin-left to push right, margin-bottom to push up. */
-	margin-left: 6px;
-	margin-top: 4px;
-
 	background-color: transparent;
 	border: none;
+	margin: 0px;
 	padding: 0px;
 }
 
 .workspaces .overlay-box .workspace-label {
-	/* GtkLabel often doesn't paint its own background, so style the eventbox and
-	   keep the label itself transparent. */
 	background-color: transparent;
 	border: none;
-	padding: 0px;
+	padding: 2px 5px 5px 12px;
 	color: rgba(255, 255, 255, 0.92);
 }
 
