@@ -98,7 +98,7 @@ import           XMonad.Util.WorkspaceCompare
 
 myConfig = def
   { modMask = mod4Mask
-  , terminal = "alacritty"
+  , terminal = "ghostty"
   , manageHook
     = composeAll [ placeHook (fixed (0.5, 0.5))
                  , isDialog --> doFloat
@@ -263,7 +263,7 @@ elementCommand = "element-desktop"
 emacsCommand = "emacsclient -c"
 gmailCommand =
   "google-chrome-stable --new-window https://mail.google.com/mail/u/0/#inbox"
-htopCommand = "alacritty --title htop -e htop"
+htopCommand = "ghostty --title=htop -e htop"
 messagesCommand =
   "google-chrome-stable --new-window https://messages.google.com/web/conversations"
 slackCommand = "slack"

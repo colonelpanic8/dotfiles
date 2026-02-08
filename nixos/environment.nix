@@ -71,7 +71,7 @@ with lib;
         ta = "tmux attach";
       };
       variables = {
-        ROFI_SYSTEMD_TERM = "alacritty -e";
+        ROFI_SYSTEMD_TERM = "ghostty -e";
         NIXPKGS_GIT_REV = "${inputs.nixpkgs.rev}";
         NIXPKGS_SOURCE = "${inputs.nixpkgs.outPath}";
         EDITOR = "emacsclient --alternate-editor emacs";
