@@ -2,6 +2,7 @@
  *
  * Colors live in `theme.css` (loaded via `palette.css`).
  */
+import theme.css
 
 .taffy-window * {
 	/* Most text should come from Iosevka Aile; icon glyphs (Font Awesome / Nerd
@@ -19,15 +20,12 @@
 
 .taffy-box {
 	border-width: 0px;
-
-
-
 	padding: 0px;
 	margin: 0px;
 	border-radius: 0px;
 	box-shadow: none;
 	background-color: @bar-background;
-	background-image: linear-gradient(to bottom, @bar-gradient-start, @bar-gradient-end);
+	background-image: none;
 }
 
 .outer-pad {
@@ -118,14 +116,16 @@
 	background-color: @transparent;
 }
 
-/* The workspace label is overlaid bottom-left over the workspace icon strip. */
+/* The workspace label is overlaid bottom-left over the workspace icon strip.
+   Positioning: halign=start (left), valign=end (bottom) set in Haskell code.
+   Margins offset from that anchor point. */
 .workspaces .overlay-box {
 	transition: background-color .2s, border-color .2s;
 
-	/* The workspace widget's outer-pad has margin; without this, the overlay
-	   sits in the margin area and looks "outside" the squircle. */
-	margin-left: 10px;
-	margin-bottom: 10px;
+	/* Offset from the bottom-left anchor into the pill area.
+	   Increase margin-left to push right, margin-bottom to push up. */
+	margin-left: 6px;
+	margin-top: 4px;
 
 	background-color: transparent;
 	border: none;
@@ -199,6 +199,11 @@
    that is what we want since we want the icons to look the same. */
 .auto-size-image, .sni-tray  {
 	padding: 1px 4px;
+}
+
+/* If the SNI tray is wrapped in our standard widget box, avoid double-padding. */
+.sni-tray .sni-tray {
+	padding: 0px;
 }
 
 .window-icon-container.active {

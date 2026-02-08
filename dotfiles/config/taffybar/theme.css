@@ -1,0 +1,35 @@
+/* Taffybar palette/theme variables.
+ *
+ * `palette.css` imports this file so host configs can keep referencing the
+ * historical filename while we iterate on a more structured theme.
+ */
+
+@define-color accent #f1b2b2;
+
+/* Bar chrome */
+@define-color bar-background rgba(0, 0, 0, 0.55);
+@define-color bar-gradient-start rgba(20, 26, 40, 0.68);
+@define-color bar-gradient-end rgba(12, 18, 30, 0.68);
+@define-color bar-border rgba(255, 255, 255, 0.06);
+
+/* The subtle translucent "sheet" behind all widgets. */
+@define-color bar-overlay rgba(0, 0, 0, .2);
+
+/* Widgets (pill/squircle containers) */
+@define-color pill-background rgba(48, 52, 69, 0.92);
+@define-color pill-border rgba(92, 95, 120, 0.85);
+@define-color pill-highlight rgba(255, 255, 255, 0.10);
+@define-color pill-shadow rgba(0, 0, 0, 0.28);
+
+/* Text */
+@define-color font-color #e7e4ee;
+@define-color font-muted #b8b1c6;
+
+/* Menus: keep high-contrast and readable while iterating. */
+@define-color menu-background-color #ffffff;
+@define-color menu-font-color #000000;
+@define-color menu-highlight rgba(0, 0, 0, 0.08);
+
+@define-color transparent rgba(0.0, 0.0, 0.0, 0.0);
+@define-color white #ffffff;
+@define-color black #000000;
