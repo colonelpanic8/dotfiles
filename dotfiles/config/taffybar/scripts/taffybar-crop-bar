@@ -1,0 +1,27 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+in="${1:?usage: taffybar-crop-bar INPUT_IMAGE [OUTPUT_IMAGE]}"
+out="${2:-/tmp/taffybar-crop-$(date +%Y%m%d-%H%M%S-%N).png}"
+
+# Prefer Hyprland's reserved-top height if available; otherwise fall back to 56px.
+h="${BAR_HEIGHT:-}"
+if [[ -z "${h}" ]] && command -v hyprctl >/dev/null 2>&1 && command -v jq >/dev/null 2>&1; then
+  # Best-effort: use the focused monitor's reserved top. If hyprctl fails (stale
+  # instance signature, non-hypr session), we just fall back.
+  if hyprctl monitors -j >/dev/null 2>&1; then
+    h="$(hyprctl monitors -j | jq -r '.[] | select(.focused) | .reserved[1]' 2>/dev/null || true)"
+  fi
+fi
+
+if [[ -z "${h}" || "${h}" == "0" ]]; then
+  h="56"
+fi
+
+ffmpeg -hide_banner -loglevel error -y \
+  -i "$in" \
+  -vf "crop=in_w:${h}:0:0" \
+  "$out"
+
+echo "$out"
+
