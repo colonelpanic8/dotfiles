@@ -1,6 +1,8 @@
 /* Widget/layout styling for taffybar.
  *
  * Colors live in `theme.css` (loaded via `palette.css`).
+ * IMPORTANT: use `@import url("...")` — bare `import` is silently ignored
+ * by GTK's CSS parser.
  */
 @import url("theme.css");
 
@@ -18,6 +20,8 @@
 }
 
 
+/* The main bar container. border-radius matches the widget squircles (6px)
+   so the bar itself has softly rounded corners. */
 .taffy-box {
 	border-width: 0px;
 	padding: 0px;
@@ -28,6 +32,10 @@
 	background-image: none;
 }
 
+/* Each widget is wrapped in outer-pad > inner-pad > contents by
+   buildContentsBox (Haskell).  The outer-pad draws the squircle
+   background pill.  border-radius kept low (6px) for a more squared
+   "squircle" shape rather than a fully rounded pill. */
 .outer-pad {
 	background-color: @pill-background;
 	border: 0px;
@@ -61,7 +69,10 @@
 	background-color: transparent;
 }
 
-/* Right side widget palette overrides */
+/* Per-widget colored squircle overrides.
+   decorateWithClassAndBox "name" (in taffybar.hs) adds the widget class to
+   the same element that has .outer-pad, so `.outer-pad.audio` etc. target
+   each widget's pill.  Colors come from @widget-*-bg/fg/border in theme.css. */
 .outer-pad.audio {
 	background-color: @widget-audio-bg;
 	border-color: @widget-audio-border;
@@ -138,6 +149,8 @@
 
 /* Workspaces styling */
 
+/* Asymmetric padding: 10px left leaves room for the overlaid workspace number
+   label; 3px right keeps the pill tight against the trailing icon edge. */
 .workspaces .inner-pad {
 	box-shadow: none;
 	border-width: 0;
@@ -176,6 +189,10 @@
 	padding: 0px;
 }
 
+/* Position the workspace number inside the squircle pill.  GTK overlays ignore
+   CSS margin for child positioning, so we use padding on the label itself:
+   padding-bottom pushes the text up from the bottom edge, padding-left pushes
+   it inward from the left corner to clear the border-radius. */
 .workspaces .overlay-box .workspace-label {
 	background-color: transparent;
 	border: none;
@@ -183,6 +200,10 @@
 	color: rgba(255, 255, 255, 0.92);
 }
 
+/* White inset outline on the active workspace's squircle pill.
+   .active is set on the GtkOverlay (by setWorkspaceWidgetStatusClass in
+   Haskell), and .outer-pad is a child of that overlay, so
+   `.workspaces .active .outer-pad` correctly targets the pill. */
 .workspaces .active .outer-pad {
 	box-shadow:
 		inset 0 0 0 2px rgba(255, 255, 255, 0.75),
