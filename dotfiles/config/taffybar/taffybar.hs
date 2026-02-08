@@ -4,21 +4,17 @@
 
 module Main (main) where
 
-import           Control.Monad (guard, when)
 import           Control.Monad.IO.Class (MonadIO, liftIO)
 import           Data.Int (Int32)
-import           Data.List (isPrefixOf, isSuffixOf, nub)
+import           Data.List (nub)
 import qualified Data.Map as M
-import           Data.Maybe (catMaybes, fromMaybe, isJust, mapMaybe)
+import           Data.Maybe (catMaybes, fromMaybe, mapMaybe)
 import           Data.Text (Text)
 import qualified Data.Text as T
 import qualified GI.GdkPixbuf.Objects.Pixbuf as Gdk
 import qualified GI.Gtk as Gtk
 import           Network.HostName (getHostName)
-import           System.Directory (doesPathExist, listDirectory)
-import           System.Environment (lookupEnv, setEnv, unsetEnv)
 import           System.Environment.XDG.BaseDir (getUserConfigFile)
-import           System.FilePath.Posix ((</>))
 import           System.Log.Logger (Priority (..), getLogger, logM, rootLoggerName, saveGlobalLogger, setLevel, updateGlobalLogger)
 import           System.Taffybar (startTaffybar)
 import           System.Taffybar.Context (Backend (BackendWayland, BackendX11), TaffyIO, detectBackend)
@@ -72,111 +68,6 @@ enableLogger :: String -> Priority -> IO ()
 enableLogger loggerName level = do
   logger <- getLogger loggerName
   saveGlobalLogger $ setLevel level logger
-
--- | Try to find a @wayland-*@ socket in the given runtime directory.
-discoverWaylandSocket :: FilePath -> IO (Maybe String)
-discoverWaylandSocket runtime = do
-  entries <- listDirectory runtime
-  let candidates =
-        [ e | e <- entries
-        , "wayland-" `isPrefixOf` e
-        , not (".lock" `isSuffixOf` e)
-        ]
-  go candidates
-  where
-    go [] = pure Nothing
-    go (c:cs) = do
-      ok <- doesPathExist (runtime </> c)
-      if ok then pure (Just c) else go cs
-
--- | Try to find a Hyprland instance signature in @XDG_RUNTIME_DIR/hypr/@.
-discoverHyprlandSignature :: FilePath -> IO (Maybe String)
-discoverHyprlandSignature runtime = do
-  let hyprDir = runtime </> "hypr"
-  exists <- doesPathExist hyprDir
-  if not exists
-    then pure Nothing
-    else do
-      entries <- listDirectory hyprDir
-      go hyprDir entries
-  where
-    go _ [] = pure Nothing
-    go hyprDir (e:es) = do
-      isSig <- doesPathExist (hyprDir </> e </> "hyprland.lock")
-      if isSig then pure (Just e) else go hyprDir es
-
--- Systemd --user's manager environment can be stale across logins.  It may
--- carry a leftover WAYLAND_DISPLAY pointing at a dead socket, or conversely
--- have WAYLAND_DISPLAY/HYPRLAND_INSTANCE_SIGNATURE completely absent while a
--- compositor is actually running.
---
--- This function discovers the real state, fixes up the process environment so
--- taffybar's internal backend detection makes the same decision, and returns
--- the appropriate backend.
-detectBackendRobust :: IO Backend
-detectBackendRobust = do
-  mRuntime <- lookupEnv "XDG_RUNTIME_DIR"
-  mDisplay <- lookupEnv "DISPLAY"
-  mSessionType <- lookupEnv "XDG_SESSION_TYPE"
-
-  -- Discover and fix up WAYLAND_DISPLAY if it is missing or empty.
-  mWaylandDisplay <- do
-    raw <- lookupEnv "WAYLAND_DISPLAY"
-    case (mRuntime, raw) of
-      (Just runtime, val) | maybe True null val -> do
-        mSock <- discoverWaylandSocket runtime
-        case mSock of
-          Just sock -> do
-            logM "Main" INFO $ "Discovered wayland socket: " ++ sock
-            setEnv "WAYLAND_DISPLAY" sock
-            pure (Just sock)
-          Nothing -> pure raw
-      _ -> pure raw
-
-  -- Discover and fix up HYPRLAND_INSTANCE_SIGNATURE if it is missing or empty.
-  do
-    raw <- lookupEnv "HYPRLAND_INSTANCE_SIGNATURE"
-    case (mRuntime, raw) of
-      (Just runtime, val) | maybe True null val -> do
-        mSig <- discoverHyprlandSignature runtime
-        case mSig of
-          Just sig -> do
-            logM "Main" INFO $ "Discovered Hyprland signature: " ++ sig
-            setEnv "HYPRLAND_INSTANCE_SIGNATURE" sig
-          Nothing -> pure ()
-      _ -> pure ()
-
-  let mWaylandPath = do
-        runtime <- mRuntime
-        wl <- mWaylandDisplay
-        guard (not (null runtime) && not (null wl))
-        pure (runtime </> wl)
-
-  waylandOk <- case mWaylandPath of
-    Nothing -> pure False
-    Just wlPath -> do
-      ok <- doesPathExist wlPath
-      when (not ok) $
-        logM "Main" DEBUG $
-          "WAYLAND_DISPLAY is set but no socket at " ++ wlPath ++ "; preferring X11 when available"
-      pure ok
-
-  -- Clean up the environment when falling back to X11.
-  when (not waylandOk && maybe False (not . null) mDisplay) $ do
-    unsetEnv "WAYLAND_DISPLAY"
-    unsetEnv "HYPRLAND_INSTANCE_SIGNATURE"
-    when (mSessionType == Just "wayland") $ setEnv "XDG_SESSION_TYPE" "x11"
-
-  -- Fix XDG_SESSION_TYPE when selecting Wayland.
-  when (waylandOk && mSessionType /= Just "wayland") $
-    setEnv "XDG_SESSION_TYPE" "wayland"
-
-  let x11Ok = maybe False (not . null) mDisplay
-  if waylandOk
-    then pure BackendWayland
-    else if x11Ok
-      then pure BackendX11
-      else detectBackend
 
 -- ** Hyprland Icon Finding
 
@@ -489,7 +380,7 @@ main = do
   enableLogger "Graphics.UI.GIGtkStrut" DEBUG
 
   hostName <- getHostName
-  backend <- detectBackendRobust
+  backend <- detectBackend
   logM "Main" INFO $ "Selected backend: " ++ show backend
   cssFiles <- mapM (getUserConfigFile "taffybar") (cssFilesForHost hostName)
 
