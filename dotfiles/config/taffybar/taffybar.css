@@ -19,6 +19,11 @@
 	text-shadow: none;
 }
 
+/* Icon-label combined widgets (PulseAudio, NetworkManager): the `.icon` label
+   uses a nerd font character, so force the nerd font family on it. */
+.icon-label > .icon {
+	font-family: "Iosevka Nerd Font";
+}
 
 /* The main bar container. border-radius matches the widget squircles (6px)
    so the bar itself has softly rounded corners. */
@@ -235,14 +240,23 @@
 	background-color: rgba(255, 255, 255, 0.06);
 }
 
-.workspaces .window-icon-container,
-.workspaces .window-icon-container.active {
-	/* Don't give each window icon its own background/border; the workspace
-	   squircle is the background. */
+/* Inside workspaces the squircle pill IS the background, so individual
+   icon containers stay transparent. */
+.workspaces .window-icon-container {
 	background-color: transparent;
 	border: 0px;
 	box-shadow: none;
 	padding: 0px 2px;
+}
+
+/* Subtle bright ring around the focused window's icon so it stands out
+   from the other icons in the same workspace pill. */
+.workspaces .window-icon-container.active {
+	background-color: rgba(255, 255, 255, 0.10);
+	border: 0px;
+	border-radius: 50%;
+	box-shadow: 0 0 6px rgba(255, 255, 255, 0.45);
+	padding: 2px;
 }
 
 .workspaces .active .contents,

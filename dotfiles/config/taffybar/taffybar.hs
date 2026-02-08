@@ -202,11 +202,11 @@ cssFilesForHost hostName =
 
 audioWidget :: TaffyIO Gtk.Widget
 audioWidget =
-  decorateWithClassAndBoxM "audio" PulseAudio.pulseAudioLabelNew
+  decorateWithClassAndBoxM "audio" PulseAudio.pulseAudioNew
 
 networkWidget :: TaffyIO Gtk.Widget
 networkWidget =
-  decorateWithClassAndBoxM "network" NetworkManager.networkManagerWifiLabelNew
+  decorateWithClassAndBoxM "network" NetworkManager.networkManagerWifiIconLabelNew
 
 layoutWidget :: TaffyIO Gtk.Widget
 layoutWidget =
@@ -327,6 +327,10 @@ backlightWidget =
           }
     )
 
+diskUsageWidget :: TaffyIO Gtk.Widget
+diskUsageWidget =
+  decorateWithClassAndBoxM "disk-usage" diskUsageLabelNew
+
 sniTrayWidget :: TaffyIO Gtk.Widget
 sniTrayWidget =
   decorateWithClassAndBoxM
@@ -345,12 +349,13 @@ startWidgetsForBackend backend =
 endWidgetsForHost :: String -> Backend -> [TaffyIO Gtk.Widget]
 endWidgetsForHost hostName backend =
   let tray = sniTrayWidget
-      baseEndWidgets = [tray, audioWidget, networkWidget, mprisWidget]
+      baseEndWidgets = [tray, audioWidget, diskUsageWidget, networkWidget, mprisWidget]
       -- Keep battery widgets visually *after* the tray (i.e. further to the right).
       laptopEndWidgets =
         batteryEndWidgets ++
           [ tray
           , audioWidget
+          , diskUsageWidget
           , backlightWidget
           , networkWidget
           , mprisWidget
@@ -369,7 +374,7 @@ mkSimpleTaffyConfig hostName backend cssFiles =
     , barPadding = 4
     , barHeight = ScreenRatio $ 1 / 36
     , cssPaths = cssFiles
-    , centerWidgets = [clockWidget]
+    , centerWidgets = [clockWidget, sniTrayWidget]
     }
 
 -- ** Entry Point
