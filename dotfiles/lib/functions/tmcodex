@@ -1,0 +1,7 @@
+#!/usr/bin/env sh
+
+function tmcodex {
+    trw codex --dangerously-bypass-approvals-and-sandbox "$@"
+}
+
+tmcodex "$@"
