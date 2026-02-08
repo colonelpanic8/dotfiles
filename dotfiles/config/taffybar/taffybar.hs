@@ -364,21 +364,26 @@ buildAlignedOverlay halign valign iconsWidget labelWidget = liftIO $ do
 hyprlandWorkspacesWidget :: TaffyIO Gtk.Widget
 hyprlandWorkspacesWidget =
   flip widgetSetClassGI "workspaces" =<<
-    Hyprland.hyprlandWorkspacesNew
-      Hyprland.defaultHyprlandWorkspacesConfig
-        { Hyprland.widgetGap = 0
-        , Hyprland.minIcons = 1
-        , Hyprland.widgetBuilder = buildAlignedOverlay Gtk.AlignStart Gtk.AlignEnd
-        -- Don't show Hyprland "special:*" workspaces.
-        , Hyprland.showWorkspaceFn =
-            \ws ->
-              Hyprland.workspaceState ws /= X11Workspaces.Empty &&
-              not (isSpecialHyprWorkspace ws)
-        , Hyprland.getWindowIconPixbuf =
-            hyprlandManualIconGetter <|||>
-            Hyprland.defaultHyprlandGetWindowIconPixbuf <|||>
-            hyprlandFallbackIcon
-        }
+    Hyprland.hyprlandWorkspacesNew cfg
+  where
+    cfg = Hyprland.defaultHyprlandWorkspacesConfig
+      { Hyprland.widgetGap = 0
+      , Hyprland.minIcons = 1
+      , Hyprland.widgetBuilder =
+          Hyprland.hyprlandBuildButtonController cfg
+            (Hyprland.hyprlandBuildCustomOverlayController
+              (buildAlignedOverlay Gtk.AlignStart Gtk.AlignEnd)
+              cfg)
+      -- Don't show Hyprland "special:*" workspaces.
+      , Hyprland.showWorkspaceFn =
+          \ws ->
+            Hyprland.workspaceState ws /= X11Workspaces.Empty &&
+            not (isSpecialHyprWorkspace ws)
+      , Hyprland.getWindowIconPixbuf =
+          hyprlandManualIconGetter <|||>
+          Hyprland.defaultHyprlandGetWindowIconPixbuf <|||>
+          hyprlandFallbackIcon
+      }
 
 clockWidget :: TaffyIO Gtk.Widget
 clockWidget =
