@@ -54,17 +54,22 @@
     features.full.enable = lib.mkEnableOption "Do everything";
   };
 
-  config = lib.mkIf config.features.full.enable {
-    myModules.base.enable = true;
-    myModules.desktop.enable = true;
-    myModules.plasma.enable = true;
-    myModules.gnome.enable = false;
-    myModules.xmonad.enable = true;
-    myModules.extra.enable = true;
-    myModules.electron.enable = true;
-    myModules.code.enable = true;
-    myModules.games.enable = false;
-    myModules.syncthing.enable = true;
-    myModules.fonts.enable = true;
-  };
+  config = lib.mkMerge [
+    {
+      system.autoUpgrade.flake = "github:colonelpanic8/dotfiles?dir=nixos#${config.networking.hostName}";
+    }
+    (lib.mkIf config.features.full.enable {
+      myModules.base.enable = true;
+      myModules.desktop.enable = true;
+      myModules.plasma.enable = true;
+      myModules.gnome.enable = false;
+      myModules.xmonad.enable = true;
+      myModules.extra.enable = true;
+      myModules.electron.enable = true;
+      myModules.code.enable = true;
+      myModules.games.enable = false;
+      myModules.syncthing.enable = true;
+      myModules.fonts.enable = true;
+    })
+  ];
 }

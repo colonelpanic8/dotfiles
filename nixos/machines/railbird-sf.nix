@@ -90,5 +90,10 @@
     }
   ];
 
+  system.autoUpgrade = {
+    enable = true;
+    dates = "daily";
+  };
+
   system.stateVersion = "23.11";
 }

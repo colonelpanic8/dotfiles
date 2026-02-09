@@ -82,6 +82,11 @@
   # services.xrdp.defaultWindowManager = "startplasma-x11";
   # services.xrdp.openFirewall = true;
 
+  system.autoUpgrade = {
+    enable = true;
+    dates = "daily";
+  };
+
   system.stateVersion = "20.03";
   home-manager.sharedModules = [
     {
