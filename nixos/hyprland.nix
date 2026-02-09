@@ -11,6 +11,7 @@ makeEnable config "myModules.hyprland" true {
   # Hyprland-specific packages
   environment.systemPackages = with pkgs; [
     # Hyprland utilities
+    kanshi         # Monitor hotplug management
     hyprpaper      # Wallpaper
     hypridle       # Idle daemon
     hyprlock       # Screen locker
@@ -22,6 +23,7 @@ makeEnable config "myModules.hyprland" true {
     slurp          # Region selection
     swappy         # Screenshot annotation
     wlsunset       # Night light / blue light filter
+    nwg-displays   # GUI monitor arrangement
 
     # hy3 plugin from flake (properly built against matching Hyprland)
     inputs.hy3.packages.${pkgs.stdenv.hostPlatform.system}.hy3
