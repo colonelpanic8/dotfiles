@@ -74,7 +74,7 @@
 /* Menus: keep high-contrast and readable while iterating. */
 @define-color menu-background-color #ffffff;
 @define-color menu-font-color #000000;
-@define-color menu-highlight rgba(0, 0, 0, 0.08);
+@define-color menu-highlight rgba(0, 0, 0, 0.10);
 
 @define-color transparent rgba(0.0, 0.0, 0.0, 0.0);
 @define-color white #ffffff;

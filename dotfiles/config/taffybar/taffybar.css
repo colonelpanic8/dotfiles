@@ -322,144 +322,148 @@
 	background-color: rgba(255, 255, 255, 0.06);
 }
 
-/* Menu styling */
+/* ── Menu styling ───────────────────────────────────────────────────────
+   Force a clean white-background / black-text look on all popup menus
+   (GtkMenu, DBusMenu, popovers) regardless of the active GTK theme.
+   The CSS provider runs at priority 900 (above USER = 800). */
 
-/* The ".taffy-window" prefixed selectors are needed because if they aren't present,
-   the top level .Taffybar selector takes precedence */
-.taffy-window menuitem *,  menuitem * {
-	color: @menu-font-color;
+/* --- Popup menu containers ---
+   .outer-pad.sni-tray * (specificity 0,2,0) bleeds tray colors into
+   popup menus via GTK's menuAttachToWidget CSS parent chain.
+   We use compound class selectors (0,2,0+) to match or exceed that. */
+.dbusmenu-menu.dbusmenu-root,
+menu, menu.background,
+.dbusmenu-menu {
+	background-color: #ffffff;
+	background-image: none;
+	color: #000000;
+	font-family: "Noto Sans", sans-serif;
+	font-size: 10pt;
+	font-weight: 400;
 	text-shadow: none;
+	border: 1px solid rgba(0, 0, 0, 0.15);
+	border-radius: 6px;
+	padding: 4px 0;
 }
 
-/* Force an opaque background for menus, regardless of the system GTK theme. */
-.taffy-window menu, menu,
-.taffy-window menu.background, menu.background,
-.taffy-window .menu, .menu,
-.taffy-window .menu.background, .menu.background,
-GtkMenu, GtkMenu.background {
-	background-color: @menu-background-color;
+/* Override tray color bleed using the SAME parent that causes it
+   (.outer-pad.sni-tray) plus menu descendant types → specificity 0,2,2+. */
+.outer-pad.sni-tray menu,
+.outer-pad.sni-tray menu menuitem,
+.outer-pad.sni-tray menu menuitem *,
+.outer-pad menu,
+.outer-pad menu menuitem,
+.outer-pad menu menuitem *,
+.taffy-window menu menuitem,
+.taffy-window menu menuitem * {
+	color: #000000;
+	text-shadow: none;
+	font-family: "Noto Sans", sans-serif;
+	font-size: 10pt;
+	font-weight: 400;
+}
+
+/* Menu items: white bg. */
+.outer-pad.sni-tray menu menuitem,
+.outer-pad menu menuitem,
+menu menuitem {
+	background-color: #ffffff;
 	background-image: none;
-	border: 1px solid rgba(0, 0, 0, 0.20);
-	padding: 4px 0px;
+	padding: 4px 12px;
+	min-height: 20px;
 }
 
-/* GTK menus often have a dedicated background node under the menu. */
-menu > background,
-menu > .background,
-GtkMenu > background,
-GtkMenu > .background,
-.menu > background,
-.menu > .background {
-	background-color: @menu-background-color;
+/* Children transparent so hover bg shows through. */
+.outer-pad.sni-tray menu menuitem *,
+.outer-pad menu menuitem *,
+menu menuitem * {
+	background-color: transparent;
 	background-image: none;
 }
 
-.taffy-window menu, menu {
-	background-color: @menu-background-color;
-	background-image: none;
+/* --- Hover --- */
+.outer-pad.sni-tray menu menuitem:hover,
+.outer-pad menu menuitem:hover,
+menu menuitem:hover {
+	background-color: #4a90d9;
 }
 
-/* Some themes apply transparency to the menu's toplevel popup window. */
+.outer-pad.sni-tray menu menuitem:hover *,
+.outer-pad menu menuitem:hover *,
+menu menuitem:hover * {
+	background-color: transparent;
+	color: #ffffff;
+}
+
+/* --- Separators --- */
+.dbusmenu-menu .dbusmenu-separator,
+menuitem separator {
+	background-color: transparent;
+	min-height: 1px;
+	margin: 4px 8px;
+	border-top: 1px solid rgba(0, 0, 0, 0.12);
+}
+
+/* --- Arrows & toggle indicators --- */
+.dbusmenu-menu.dbusmenu-root menuitem arrow,
+menuitem arrow {
+	background-color: transparent;
+	color: rgba(0, 0, 0, 0.4);
+}
+
+.dbusmenu-menu.dbusmenu-root menuitem check,
+.dbusmenu-menu.dbusmenu-root menuitem radio,
+menuitem check, menuitem radio {
+	background-color: transparent;
+	color: #000000;
+}
+
+/* --- Submenus --- */
+.dbusmenu-submenu,
+.dbusmenu-menu menu {
+	background-color: #ffffff;
+	background-image: none;
+	border: 1px solid rgba(0, 0, 0, 0.15);
+	border-radius: 6px;
+	padding: 4px 0;
+}
+
+/* --- Background/decoration nodes in popup windows --- */
 window.popup, window.popup.background,
-window.menu, window.menu.background,
-.menu, .menu.background {
-	background-color: @menu-background-color;
-	background-image: none;
-}
-
-window.popup > background,
-window.popup > .background,
-window.menu > background,
-window.menu > .background {
-	background-color: @menu-background-color;
-	background-image: none;
-}
-
-window.popup *, window.menu * {
-	background-color: @menu-background-color;
+window.menu, window.menu.background {
+	background-color: #ffffff;
 	background-image: none;
 }
 
 window.popup decoration, window.menu decoration {
-	background-color: @menu-background-color;
+	background-color: #ffffff;
 	background-image: none;
 }
 
-.taffy-window menuitem, menuitem {
-	background-color: @menu-background-color;
-}
-
-/* Higher-specificity rules to beat theme defaults like `menu menuitem { background: transparent; }`. */
-menu menuitem, GtkMenu menuitem, .menu menuitem {
-	background-color: @menu-background-color;
-}
-
-.taffy-window menuitem:hover, menuitem:hover {
-	background-color: @menu-highlight;
-}
-
-menu menuitem:hover, GtkMenu menuitem:hover, .menu menuitem:hover {
-	background-color: @menu-highlight;
-}
-
-window.popup menuitem:hover *, window.menu menuitem:hover * {
-	background-color: @menu-highlight;
-}
-
-/* Last-resort: some menu implementations keep child nodes transparent, so paint
-   the whole subtree. This is scoped to menu/popover widgets to avoid affecting
-   the bar itself. */
-menu *, GtkMenu *, .menu * {
-	background-color: @menu-background-color;
-	background-image: none;
-}
-
-menu menuitem:hover *, GtkMenu menuitem:hover *, .menu menuitem:hover * {
-	background-color: @menu-highlight;
-}
-
-.taffy-window menuitem:hover > label, menuitem:hover > label {
-	color: @menu-font-color;
-}
-
-/* Some menus (notably a few StatusNotifierItem menus) are rendered as popovers
-   containing modelbuttons instead of menuitems. */
+/* --- Popovers (some SNI apps use these instead of GtkMenu) --- */
 popover, popover.background, popover > contents {
-	background-color: @menu-background-color;
+	background-color: #ffffff;
 	background-image: none;
-	border: 1px solid rgba(0, 0, 0, 0.20);
+	border: 1px solid rgba(0, 0, 0, 0.15);
+	border-radius: 6px;
 }
 
-popover > background,
-popover > .background,
-popover > box,
-popover > contents > box,
-popover > contents > * {
-	background-color: @menu-background-color;
-	background-image: none;
-}
-
-popover modelbutton, popover modelbutton * {
-	background-color: @menu-background-color;
-	color: @menu-font-color;
+popover *, popover modelbutton, popover modelbutton * {
+	background-color: transparent;
+	color: #000000;
+	font-family: "Noto Sans", sans-serif;
+	font-size: 10pt;
+	font-weight: 400;
 	text-shadow: none;
 }
 
+popover modelbutton {
+	background-color: #ffffff;
+	padding: 4px 12px;
+}
+
 popover modelbutton:hover {
-	background-color: @menu-highlight;
-}
-
-popover modelbutton:hover > label {
-	color: @menu-font-color;
-}
-
-popover * {
-	background-color: @menu-background-color;
-	background-image: none;
-}
-
-popover modelbutton:hover * {
-	background-color: @menu-highlight;
+	background-color: #e0e0e0;
 }
 
 .clock label,
