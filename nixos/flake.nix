@@ -127,13 +127,11 @@
     };
 
     notifications-tray-icon = {
-      url = "github:IvanMalison/notifications-tray-icon";
+      url = "github:colonelpanic8/notifications-tray-icon";
       inputs = {
         flake-utils.follows = "flake-utils";
         git-ignore-nix.follows = "git-ignore-nix";
         nixpkgs.follows = "nixpkgs";
-        haskell-language-server.inputs.nixpkgs.follows = "nixpkgs";
-        haskell-language-server.inputs.flake-utils.follows = "flake-utils";
       };
     };
 

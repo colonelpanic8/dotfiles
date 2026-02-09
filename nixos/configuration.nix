@@ -28,6 +28,7 @@
     ./laptop.nix
     ./nix.nix
     ./nixified.ai.nix
+    ./notifications-tray-icon.nix
     ./nvidia.nix
     ./options.nix
     ./plasma.nix
