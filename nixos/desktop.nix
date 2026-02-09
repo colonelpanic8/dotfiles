@@ -59,8 +59,8 @@ makeEnable config "myModules.desktop" true {
     wmctrl
     xclip
     xdotool
-    xorg.xev
-    xorg.xwininfo
+    xev
+    xwininfo
     xsettingsd
 
     # Desktop

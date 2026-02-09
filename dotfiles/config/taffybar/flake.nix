@@ -41,10 +41,10 @@ import Control.Applicative (liftA2)"
           final.fribidi.dev
           final.libthai.dev
           final.libdatrie.dev
-          final.xorg.libXdmcp.dev
+          final.libxdmcp.dev
           final.libxkbcommon.dev
           final.libepoxy.dev
-          final.xorg.libXtst.out
+          final.libxtst.out
         ];
     };
     defComp = { compiler = "ghc98"; };
