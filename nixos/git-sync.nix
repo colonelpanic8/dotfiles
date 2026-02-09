@@ -1,4 +1,9 @@
-{ pkgs, ... }: {
+{ pkgs, lib, ... }:
+let
+  gitSyncTrayEnv = {
+    Service.Environment = [ "GIT_SYNC_TRAY=1" ];
+  };
+in {
   home-manager.users.imalison = ({ config, ... }: {
     services.git-sync = {
       enable = true;
@@ -24,6 +29,10 @@
         };
       };
     };
+
+    systemd.user.services = lib.mapAttrs'
+      (name: _: lib.nameValuePair "git-sync-${name}" gitSyncTrayEnv)
+      config.services.git-sync.repositories;
   });
 
   home-manager.users.kat = ({ config, ... }: {
