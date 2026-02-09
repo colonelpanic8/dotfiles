@@ -15,11 +15,12 @@ import qualified GI.GdkPixbuf.Objects.Pixbuf as Gdk
 import qualified GI.Gtk as Gtk
 import           Network.HostName (getHostName)
 import           System.Environment.XDG.BaseDir (getUserConfigFile)
-import           System.Log.Logger (Priority (..), getLogger, rootLoggerName, saveGlobalLogger, setLevel, updateGlobalLogger)
+import           System.Log.Logger (Priority(WARNING), rootLoggerName, setLevel, updateGlobalLogger)
 import           System.Taffybar (startTaffybar)
 import           System.Taffybar.Context (Backend (BackendWayland, BackendX11), TaffyIO, detectBackend)
 import           System.Taffybar.DBus
 import           System.Taffybar.DBus.Toggle
+import           System.Taffybar.Hooks (withLogLevels)
 import           System.Taffybar.Information.EWMHDesktopInfo (WorkspaceId (..))
 import           System.Taffybar.Information.X11DesktopInfo
 import           System.Taffybar.SimpleConfig
@@ -27,6 +28,7 @@ import           System.Taffybar.Util (getPixbufFromFilePath, (<|||>), maybeTCom
 import           System.Taffybar.Widget
 import qualified System.Taffybar.Widget.HyprlandWorkspaces as Hyprland
 import qualified System.Taffybar.Widget.NetworkManager as NetworkManager
+import           System.Taffybar.Widget.SNIMenu (withNmAppletMenu)
 import qualified System.Taffybar.Widget.PulseAudio as PulseAudio
 import           System.Taffybar.Widget.SNITray
                  ( sniTrayNew
@@ -63,11 +65,6 @@ x11WorkspaceLabelSetter workspace =
     remapNSP n = n
 
 -- ** Logging
-
-enableLogger :: String -> Priority -> IO ()
-enableLogger loggerName level = do
-  logger <- getLogger loggerName
-  saveGlobalLogger $ setLevel level logger
 
 -- ** Hyprland Icon Finding
 
@@ -206,7 +203,8 @@ audioWidget =
 
 networkWidget :: TaffyIO Gtk.Widget
 networkWidget =
-  decorateWithClassAndBoxM "network" NetworkManager.networkManagerWifiIconLabelNew
+  decorateWithClassAndBoxM "network" $
+    withNmAppletMenu NetworkManager.networkManagerWifiIconLabelNew
 
 layoutWidget :: TaffyIO Gtk.Widget
 layoutWidget =
@@ -372,7 +370,6 @@ mkSimpleTaffyConfig hostName backend cssFiles =
 main :: IO ()
 main = do
   updateGlobalLogger rootLoggerName (setLevel WARNING)
-  enableLogger "Graphics.UI.GIGtkStrut" DEBUG
 
   hostName <- getHostName
   backend <- detectBackend
@@ -381,5 +378,6 @@ main = do
   let simpleTaffyConfig = mkSimpleTaffyConfig hostName backend cssFiles
   startTaffybar $
     withLogServer $
+    withLogLevels $
     withToggleServer $
     toTaffybarConfig simpleTaffyConfig

@@ -17,10 +17,8 @@ executable taffybar
   ghc-prof-options: -fprof-auto
   build-depends:       base
                      , X11
-                     , aeson
                      , bytestring
                      , containers
-                     , directory
                      , filepath
                      , gi-gtk3
                      , gi-gdkpixbuf
@@ -36,7 +34,6 @@ executable taffybar
                      , taffybar>=3.2.0
                      , transformers
                      , xdg-basedir
-                     , yaml
   default-language:    Haskell2010
 
 source-repository head
