@@ -1,0 +1,4 @@
+# Taffybar log levels
+# Format: LoggerName: LEVEL
+# Levels: DEBUG INFO NOTICE WARNING ERROR CRITICAL ALERT EMERGENCY
+System.Taffybar.DBus.Toggle: DEBUG
