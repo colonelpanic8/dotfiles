@@ -756,11 +756,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1770539512,
-        "narHash": "sha256-cBVG9qW6cx2H1CGRfxcFnH+GuLYCqqdkDXv08SGYFqE=",
+        "lastModified": 1770581933,
+        "narHash": "sha256-sLA+v5KpHWSrjXu3Gnt1A/+F3+4FojWGeTPN5JJxWDw=",
         "owner": "taffybar",
         "repo": "gtk-sni-tray",
-        "rev": "a58ece09b9fb2d7b610feb6a5aa06c03914f7bba",
+        "rev": "28eadf97977197bf5bd97855b9991034e9a71322",
         "type": "github"
       },
       "original": {
@@ -772,11 +772,11 @@
     "gtk-sni-tray_2": {
       "flake": false,
       "locked": {
-        "lastModified": 1770539512,
-        "narHash": "sha256-cBVG9qW6cx2H1CGRfxcFnH+GuLYCqqdkDXv08SGYFqE=",
+        "lastModified": 1770581933,
+        "narHash": "sha256-sLA+v5KpHWSrjXu3Gnt1A/+F3+4FojWGeTPN5JJxWDw=",
         "owner": "taffybar",
         "repo": "gtk-sni-tray",
-        "rev": "a58ece09b9fb2d7b610feb6a5aa06c03914f7bba",
+        "rev": "28eadf97977197bf5bd97855b9991034e9a71322",
         "type": "github"
       },
       "original": {
@@ -2414,8 +2414,8 @@
         "xmonad-contrib": "xmonad-contrib"
       },
       "locked": {
-        "lastModified": 1770539755,
-        "narHash": "sha256-RrPrzkok70wFI3uLPZYUFvhJWtHsbKgZEjr/ZbW4PVQ=",
+        "lastModified": 1770581947,
+        "narHash": "sha256-5Qpkw5oAd0nZAdOV9v/ztAUFoHOxgDbNjGNIYpAWESs=",
         "path": "/home/imalison/dotfiles/dotfiles/config/taffybar/taffybar",
         "type": "path"
       },
