@@ -37,13 +37,20 @@
       };
     };
 
+    git-sync-rs = {
+      url = "github:colonelpanic8/git-sync-rs";
+      inputs = {
+        flake-utils.follows = "flake-utils";
+        rust-overlay.inputs.nixpkgs.follows = "nixpkgs";
+      };
+    };
+
     org-agenda-api = {
       url = "github:colonelpanic8/org-agenda-api";
       inputs = {
         nixpkgs.follows = "nixpkgs";
         flake-utils.follows = "flake-utils";
-        git-sync-rs.inputs.flake-utils.follows = "flake-utils";
-        git-sync-rs.inputs.rust-overlay.inputs.nixpkgs.follows = "nixpkgs";
+        git-sync-rs.follows = "git-sync-rs";
         emacs-overlay.inputs.nixpkgs.follows = "nixpkgs";
       };
     };
@@ -219,10 +226,6 @@
   }: let
     # Nixpkgs PR patches - just specify PR number and hash
     nixpkgsPRPatches = [
-      {
-        pr = 434160; # git-sync-rs package
-        hash = "sha256-0j0IcyHd7rE+MXc0SHu8UixW7Jbtzu1NnzSjEVeZmTA=";
-      }
       {
         pr = 488591; # happy-coder: 0.11.2 -> 0.13.0
         hash = "sha256-mlmZcwxP7IV93mQEAR3PYw8MRmNPRWXKbk9ZEKHqZc8=";

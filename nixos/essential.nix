@@ -25,6 +25,7 @@
     git-fame
     git-lfs
     git-sync
+    git-sync-rs
     gitFull
     gnumake
     gparted
