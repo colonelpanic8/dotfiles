@@ -45,9 +45,10 @@ makeEnable config "myModules.xmonad" true  {
         imageDirectory = "/var/lib/syncthing/sync/Wallpaper";
       };
       # This service uses feh (X11), so don't run it in Wayland sessions.
-      systemd.user.services.random-background.Unit.ConditionEnvironment = "XDG_SESSION_TYPE=x11";
+      systemd.user.services.random-background.Unit.ConditionEnvironment = "IMALISON_SESSION_TYPE=x11";
 
       services.xsettingsd.enable = true;
+      systemd.user.services.xsettingsd.Unit.ConditionEnvironment = "IMALISON_SESSION_TYPE=x11";
 
       # services.parcellite = {
       #   enable = true;

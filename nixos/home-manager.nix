@@ -56,6 +56,9 @@
     enable = true;
     preferStatusNotifierItems = true;
     importedVariables = [ "GDK_PIXBUF_ICON_LOADER" ];
+    profileExtra = ''
+      systemctl --user set-environment IMALISON_SESSION_TYPE=x11
+    '';
   };
 
   home.keyboard = null;
