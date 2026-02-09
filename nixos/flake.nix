@@ -175,6 +175,10 @@
         pr = 434160; # git-sync-rs package
         hash = "sha256-0j0IcyHd7rE+MXc0SHu8UixW7Jbtzu1NnzSjEVeZmTA=";
       }
+      {
+        pr = 488591; # happy-coder: 0.11.2 -> 0.13.0
+        hash = "sha256-mlmZcwxP7IV93mQEAR3PYw8MRmNPRWXKbk9ZEKHqZc8=";
+      }
       # claude-code
       # {
       #   pr = 464698;
