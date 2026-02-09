@@ -15,7 +15,7 @@ import qualified GI.GdkPixbuf.Objects.Pixbuf as Gdk
 import qualified GI.Gtk as Gtk
 import           Network.HostName (getHostName)
 import           System.Environment.XDG.BaseDir (getUserConfigFile)
-import           System.Log.Logger (Priority (..), getLogger, logM, rootLoggerName, saveGlobalLogger, setLevel, updateGlobalLogger)
+import           System.Log.Logger (Priority (..), getLogger, rootLoggerName, saveGlobalLogger, setLevel, updateGlobalLogger)
 import           System.Taffybar (startTaffybar)
 import           System.Taffybar.Context (Backend (BackendWayland, BackendX11), TaffyIO, detectBackend)
 import           System.Taffybar.DBus
@@ -371,12 +371,11 @@ mkSimpleTaffyConfig hostName backend cssFiles =
 
 main :: IO ()
 main = do
-  updateGlobalLogger rootLoggerName (setLevel INFO)
+  updateGlobalLogger rootLoggerName (setLevel WARNING)
   enableLogger "Graphics.UI.GIGtkStrut" DEBUG
 
   hostName <- getHostName
   backend <- detectBackend
-  logM "Main" INFO $ "Selected backend: " ++ show backend
   cssFiles <- mapM (getUserConfigFile "taffybar") (cssFilesForHost hostName)
 
   let simpleTaffyConfig = mkSimpleTaffyConfig hostName backend cssFiles
