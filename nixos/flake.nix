@@ -23,13 +23,29 @@
 
     nixos-hardware = {url = "github:colonelpanic8/nixos-hardware/my-master";};
 
-    nixos-wsl = {url = "github:nix-community/NixOS-WSL";};
+    nixos-wsl = {
+      url = "github:nix-community/NixOS-WSL";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
 
-    agenix = {url = "github:ryantm/agenix";};
+    agenix = {
+      url = "github:ryantm/agenix";
+      inputs = {
+        nixpkgs.follows = "nixpkgs";
+        home-manager.follows = "home-manager";
+        systems.follows = "systems";
+      };
+    };
 
     org-agenda-api = {
       url = "github:colonelpanic8/org-agenda-api";
-      inputs.nixpkgs.follows = "nixpkgs";
+      inputs = {
+        nixpkgs.follows = "nixpkgs";
+        flake-utils.follows = "flake-utils";
+        git-sync-rs.inputs.flake-utils.follows = "flake-utils";
+        git-sync-rs.inputs.rust-overlay.inputs.nixpkgs.follows = "nixpkgs";
+        emacs-overlay.inputs.nixpkgs.follows = "nixpkgs";
+      };
     };
 
     # Hyprland and plugins from official flakes for proper plugin compatibility
@@ -49,6 +65,11 @@
 
     railbird-secrets = {
       url = "git+ssh://gitea@dev.railbird.ai:1123/railbird/secrets-flake.git";
+      inputs = {
+        nixpkgs.follows = "nixpkgs";
+        flake-utils.follows = "flake-utils";
+        agenix.follows = "agenix";
+      };
     };
     # railbird-secrets = {
     #   url = "git+ssh://gitea@dev.railbird.ai:1123/railbird/secrets-flake.git";
@@ -58,6 +79,7 @@
       url = "github:xmonad/xmonad";
       inputs = {
         nixpkgs.follows = "nixpkgs";
+        unstable.follows = "nixpkgs";
         flake-utils.follows = "flake-utils";
         git-ignore-nix.follows = "git-ignore-nix";
       };
@@ -77,6 +99,13 @@
       url = "path:/home/imalison/dotfiles/dotfiles/config/taffybar/taffybar";
       inputs = {
         nixpkgs.follows = "nixpkgs";
+        flake-utils.follows = "flake-utils";
+        gtk-sni-tray.follows = "gtk-sni-tray";
+        gtk-strut.follows = "gtk-strut";
+        status-notifier-item.follows = "status-notifier-item";
+        xmonad.follows = "xmonad";
+        xmonad-contrib.follows = "xmonad-contrib";
+        weeder-nix.inputs.pre-commit-hooks.inputs.nixpkgs.follows = "nixpkgs";
       };
     };
 
@@ -92,9 +121,13 @@
 
     notifications-tray-icon = {
       url = "github:IvanMalison/notifications-tray-icon";
-      inputs.flake-utils.follows = "flake-utils";
-      inputs.git-ignore-nix.follows = "git-ignore-nix";
-      inputs.nixpkgs.follows = "nixpkgs";
+      inputs = {
+        flake-utils.follows = "flake-utils";
+        git-ignore-nix.follows = "git-ignore-nix";
+        nixpkgs.follows = "nixpkgs";
+        haskell-language-server.inputs.nixpkgs.follows = "nixpkgs";
+        haskell-language-server.inputs.flake-utils.follows = "flake-utils";
+      };
     };
 
     gtk-sni-tray = {
@@ -125,21 +158,36 @@
       };
     };
 
-    vscode-server.url = "github:nix-community/nixos-vscode-server";
+    vscode-server = {
+      url = "github:nix-community/nixos-vscode-server";
+      inputs = {
+        nixpkgs.follows = "nixpkgs";
+        flake-utils.follows = "flake-utils";
+      };
+    };
 
-    nixified-ai = {url = "github:nixified-ai/flake";};
+    nixified-ai = {
+      url = "github:nixified-ai/flake";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
 
     nixtheplanet.url = "github:matthewcroughan/nixtheplanet";
 
     codex-cli-nix = {
       # Default branch is `main` on GitHub (not `master`).
       url = "github:sadjow/codex-cli-nix/main";
-      inputs.nixpkgs.follows = "nixpkgs";
+      inputs = {
+        nixpkgs.follows = "nixpkgs";
+        flake-utils.follows = "flake-utils";
+      };
     };
 
     claude-code-nix = {
       url = "github:sadjow/claude-code-nix";
-      inputs.nixpkgs.follows = "nixpkgs";
+      inputs = {
+        nixpkgs.follows = "nixpkgs";
+        flake-utils.follows = "flake-utils";
+      };
     };
 
     caelestia-shell = {
