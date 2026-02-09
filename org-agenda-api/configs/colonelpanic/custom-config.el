@@ -8,6 +8,14 @@
       (setq result (expand-file-name p result)))
     result))
 
+;; Disable use-package :ensure in container — all packages come from Nix.
+;; The tangled org-config uses elpaca-style :ensure recipes that standard
+;; use-package cannot parse. Override the normalizer to accept and ignore them.
+(require 'use-package-ensure)
+(defun use-package-normalize/:ensure (_name _keyword _args)
+  "No-op :ensure normalizer for container environment."
+  nil)
+
 ;; Load tangled config files in order
 (let ((config-dir (file-name-directory load-file-name)))
   ;; Load preface first (defines variables with default values)
