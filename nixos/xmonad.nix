@@ -37,6 +37,7 @@ makeEnable config "myModules.xmonad" true  {
       imports = [ ./dunst.nix ];
 
       services.autorandr.enable = true;
+      systemd.user.services.autorandr.Unit.ConditionEnvironment = "IMALISON_SESSION_TYPE=x11";
 
       services.random-background = {
         enable = true;
@@ -63,6 +64,7 @@ makeEnable config "myModules.xmonad" true  {
       systemd.user.services.picom = {
         Unit = {
           Description = "Picom X11 compositor";
+          ConditionEnvironment = "IMALISON_SESSION_TYPE=x11";
           After = [ "graphical-session.target" ];
           PartOf = [ "graphical-session.target" ];
         };
