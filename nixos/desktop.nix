@@ -42,7 +42,9 @@ makeEnable config "myModules.desktop" true {
 
   services.gnome.gnome-keyring.enable = true;
 
-  # Visual notification manager
+  home-manager.sharedModules = [
+    { imports = [ ./dunst.nix ]; }
+  ];
 
   environment.systemPackages = with pkgs; [
     # Appearance

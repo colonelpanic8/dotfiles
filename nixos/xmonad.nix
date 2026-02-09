@@ -34,8 +34,6 @@ makeEnable config "myModules.xmonad" true  {
 
   home-manager.sharedModules = [
     {
-      imports = [ ./dunst.nix ];
-
       services.autorandr.enable = true;
       systemd.user.services.autorandr.Unit.ConditionEnvironment = "IMALISON_SESSION_TYPE=x11";
 
