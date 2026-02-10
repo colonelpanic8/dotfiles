@@ -1,5 +1,69 @@
 {
   "nodes": {
+    "dbus-hslogger": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1770613712,
+        "narHash": "sha256-Az7USYfzylaIduPoOzxaz+6Evpn+TvVcThbPpWORt8k=",
+        "owner": "IvanMalison",
+        "repo": "dbus-hslogger",
+        "rev": "56195c6e46e04e2454fa0fa643e06eb7ef2a0952",
+        "type": "github"
+      },
+      "original": {
+        "owner": "IvanMalison",
+        "repo": "dbus-hslogger",
+        "type": "github"
+      }
+    },
+    "dbus-hslogger_2": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1770613712,
+        "narHash": "sha256-Az7USYfzylaIduPoOzxaz+6Evpn+TvVcThbPpWORt8k=",
+        "owner": "taffybar",
+        "repo": "dbus-hslogger",
+        "rev": "56195c6e46e04e2454fa0fa643e06eb7ef2a0952",
+        "type": "github"
+      },
+      "original": {
+        "owner": "taffybar",
+        "repo": "dbus-hslogger",
+        "type": "github"
+      }
+    },
+    "dbus-menu": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1770753441,
+        "narHash": "sha256-ycJexWPCSlLriDAouT3PvRnbwByeGF6bsQrvWcY1eGU=",
+        "owner": "taffybar",
+        "repo": "dbus-menu",
+        "rev": "83f914ab70485331f4e45945251557e5c7ea50fa",
+        "type": "github"
+      },
+      "original": {
+        "owner": "taffybar",
+        "repo": "dbus-menu",
+        "type": "github"
+      }
+    },
+    "dbus-menu_2": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1770753441,
+        "narHash": "sha256-ycJexWPCSlLriDAouT3PvRnbwByeGF6bsQrvWcY1eGU=",
+        "owner": "taffybar",
+        "repo": "dbus-menu",
+        "rev": "83f914ab70485331f4e45945251557e5c7ea50fa",
+        "type": "github"
+      },
+      "original": {
+        "owner": "taffybar",
+        "repo": "dbus-menu",
+        "type": "github"
+      }
+    },
     "flake-compat": {
       "flake": false,
       "locked": {
@@ -115,11 +179,11 @@
     "gtk-sni-tray": {
       "flake": false,
       "locked": {
-        "lastModified": 1770581933,
-        "narHash": "sha256-sLA+v5KpHWSrjXu3Gnt1A/+F3+4FojWGeTPN5JJxWDw=",
+        "lastModified": 1770754698,
+        "narHash": "sha256-W5xZaZMeK5nLwrXvgh35Ko143qteLCTpCq4WwW93zcM=",
         "owner": "taffybar",
         "repo": "gtk-sni-tray",
-        "rev": "28eadf97977197bf5bd97855b9991034e9a71322",
+        "rev": "f016f19fd64c1d2c4228d64c9897cd8f45272b8a",
         "type": "github"
       },
       "original": {
@@ -228,6 +292,8 @@
     },
     "root": {
       "inputs": {
+        "dbus-hslogger": "dbus-hslogger",
+        "dbus-menu": "dbus-menu",
         "flake-utils": "flake-utils",
         "nixpkgs": "nixpkgs",
         "taffybar": "taffybar",
@@ -297,6 +363,8 @@
     },
     "taffybar": {
       "inputs": {
+        "dbus-hslogger": "dbus-hslogger_2",
+        "dbus-menu": "dbus-menu_2",
         "flake-utils": "flake-utils_2",
         "gtk-sni-tray": "gtk-sni-tray",
         "gtk-strut": "gtk-strut",
@@ -311,8 +379,8 @@
         "xmonad-contrib": "xmonad-contrib"
       },
       "locked": {
-        "lastModified": 1770607443,
-        "narHash": "sha256-m4LK21y6KcOQIsGUWbZtK9SItLD7ljBR73CHSV6OSqs=",
+        "lastModified": 1770755513,
+        "narHash": "sha256-tlwUJhim0PEnNotIpCA45oz37wSAWY3f9gUnvaQtjzw=",
         "path": "/home/imalison/dotfiles/dotfiles/config/taffybar/taffybar",
         "type": "path"
       },

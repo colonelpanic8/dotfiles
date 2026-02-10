@@ -3,16 +3,36 @@
     flake-utils.url = "github:numtide/flake-utils";
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
     xmonad.url = "github:xmonad/xmonad/master";
+    # Needed by gtk-sni-tray, but not (currently) provided by nixpkgs' haskellPackages.
+    dbus-menu = {
+      url = "github:taffybar/dbus-menu";
+      flake = false;
+    };
+    # nixpkgs' dbus-hslogger is currently too old for taffybar.
+    dbus-hslogger = {
+      url = "github:IvanMalison/dbus-hslogger";
+      flake = false;
+    };
     taffybar = {
       url = "path:/home/imalison/dotfiles/dotfiles/config/taffybar/taffybar";
       inputs.nixpkgs.follows = "nixpkgs";
       inputs.xmonad.follows = "xmonad";
     };
   };
-  outputs = { self, flake-utils, taffybar, nixpkgs, xmonad }:
+  outputs = { self, flake-utils, taffybar, nixpkgs, xmonad, dbus-menu, dbus-hslogger }:
   let
     hoverlay = final: prev: hself: hsuper:
     {
+      dbus-menu =
+        hself.callCabal2nix "dbus-menu"
+        (final.lib.cleanSource dbus-menu)
+        { inherit (final) gtk3; };
+
+      dbus-hslogger =
+        hself.callCabal2nix "dbus-hslogger"
+        (final.lib.cleanSource dbus-hslogger)
+        { };
+
       taffybar = prev.haskell.lib.overrideCabal hsuper.taffybar (oa: {
         doHaddock = false;
         doCheck = false;

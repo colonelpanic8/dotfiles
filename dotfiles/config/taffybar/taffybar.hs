@@ -29,6 +29,7 @@ import           System.Taffybar.Widget
 import qualified System.Taffybar.Widget.HyprlandWorkspaces as Hyprland
 import qualified System.Taffybar.Widget.NetworkManager as NetworkManager
 import           System.Taffybar.Widget.SNIMenu (withNmAppletMenu)
+import qualified System.Taffybar.Widget.ASUS as ASUS
 import qualified System.Taffybar.Widget.PulseAudio as PulseAudio
 import qualified System.Taffybar.Widget.ScreenLock as ScreenLock
 import qualified System.Taffybar.Widget.Wlsunset as Wlsunset
@@ -324,6 +325,10 @@ diskUsageWidget :: TaffyIO Gtk.Widget
 diskUsageWidget =
   decorateWithClassAndBoxM "disk-usage" diskUsageNew
 
+asusWidget :: TaffyIO Gtk.Widget
+asusWidget =
+  decorateWithClassAndBoxM "asus-profile" ASUS.asusWidgetNew
+
 screenLockWidget :: TaffyIO Gtk.Widget
 screenLockWidget =
   decorateWithClassAndBoxM "screen-lock" ScreenLock.screenLockNew
@@ -353,6 +358,7 @@ endWidgetsForHost hostName backend =
       baseEndWidgets = [clockWidget, audioWidget, diskUsageWidget, networkWidget, screenLockWidget, wlsunsetWidget, mprisWidget]
       laptopEndWidgets =
           [ batteryWidget
+          , asusWidget
           , clockWidget
           , audioWidget
           , diskUsageWidget

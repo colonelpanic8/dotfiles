@@ -69,25 +69,6 @@
 	opacity: 1;
 }
 
-/* Make each widget's squircle background feel "solid": avoid child widgets
-   painting their own backgrounds on top of `.outer-pad`.
- *
- * We intentionally avoid broad descendant selectors (especially `*`) here
- * because SNI menus inherit style context via their attach-widget chain and
- * those selectors can leak into menu windows, making them transparent.
- */
-.outer-pad label,
-.outer-pad image,
-.outer-pad button,
-.inner-pad label,
-.inner-pad image,
-.inner-pad button,
-.contents label,
-.contents image,
-.contents button {
-	background-color: transparent;
-}
-
 /* Per-widget color overrides now live in end-widget-colors.css,
    which rotates through a 5-color palette via :nth-child(). */
 
@@ -288,3 +269,9 @@
 .mpris label {
 	color: @font-muted;
 }
+
+/* ASUS platform profile widget */
+.asus-profile { }
+.asus-profile.quiet { color: @end-color-4-fg; }
+.asus-profile.balanced { color: @end-color-1-fg; }
+.asus-profile.performance { color: @end-color-5-fg; }

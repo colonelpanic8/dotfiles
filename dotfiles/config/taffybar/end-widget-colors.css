@@ -46,55 +46,40 @@
 .outer-pad:nth-child(5n+1) {
 	background-color: @end-color-1-bg;
 	border-color: @end-color-1-border;
-	box-shadow: 0 1px 0 rgba(255, 255, 255, 0.06), 0 10px 24px rgba(0, 0, 0, 0.30);
-}
-.outer-pad:nth-child(5n+1) :not(menu):not(menuitem):not(popover):not(window),
-.outer-pad:nth-child(5n+1) :not(menu):not(menuitem):not(popover):not(window) * {
 	color: @end-color-1-fg;
+	box-shadow: 0 1px 0 rgba(255, 255, 255, 0.06), 0 10px 24px rgba(0, 0, 0, 0.30);
 }
 
 /* Slot 2: purple (child 2, 7, 12, ...) */
 .outer-pad:nth-child(5n+2) {
 	background-color: @end-color-2-bg;
 	border-color: @end-color-2-border;
-	box-shadow: 0 1px 0 rgba(255, 255, 255, 0.06), 0 10px 24px rgba(0, 0, 0, 0.30);
-}
-.outer-pad:nth-child(5n+2) :not(menu):not(menuitem):not(popover):not(window),
-.outer-pad:nth-child(5n+2) :not(menu):not(menuitem):not(popover):not(window) * {
 	color: @end-color-2-fg;
+	box-shadow: 0 1px 0 rgba(255, 255, 255, 0.06), 0 10px 24px rgba(0, 0, 0, 0.30);
 }
 
 /* Slot 3: emerald (child 3, 8, 13, ...) */
 .outer-pad:nth-child(5n+3) {
 	background-color: @end-color-3-bg;
 	border-color: @end-color-3-border;
-	box-shadow: 0 1px 0 rgba(255, 255, 255, 0.06), 0 10px 24px rgba(0, 0, 0, 0.30);
-}
-.outer-pad:nth-child(5n+3) :not(menu):not(menuitem):not(popover):not(window),
-.outer-pad:nth-child(5n+3) :not(menu):not(menuitem):not(popover):not(window) * {
 	color: @end-color-3-fg;
+	box-shadow: 0 1px 0 rgba(255, 255, 255, 0.06), 0 10px 24px rgba(0, 0, 0, 0.30);
 }
 
 /* Slot 4: teal (child 4, 9, 14, ...) */
 .outer-pad:nth-child(5n+4) {
 	background-color: @end-color-4-bg;
 	border-color: @end-color-4-border;
-	box-shadow: 0 1px 0 rgba(255, 255, 255, 0.06), 0 10px 24px rgba(0, 0, 0, 0.30);
-}
-.outer-pad:nth-child(5n+4) :not(menu):not(menuitem):not(popover):not(window),
-.outer-pad:nth-child(5n+4) :not(menu):not(menuitem):not(popover):not(window) * {
 	color: @end-color-4-fg;
+	box-shadow: 0 1px 0 rgba(255, 255, 255, 0.06), 0 10px 24px rgba(0, 0, 0, 0.30);
 }
 
 /* Slot 5: rose (child 5, 10, 15, ...) */
 .outer-pad:nth-child(5n+5) {
 	background-color: @end-color-5-bg;
 	border-color: @end-color-5-border;
-	box-shadow: 0 1px 0 rgba(255, 255, 255, 0.06), 0 10px 24px rgba(0, 0, 0, 0.30);
-}
-.outer-pad:nth-child(5n+5) :not(menu):not(menuitem):not(popover):not(window),
-.outer-pad:nth-child(5n+5) :not(menu):not(menuitem):not(popover):not(window) * {
 	color: @end-color-5-fg;
+	box-shadow: 0 1px 0 rgba(255, 255, 255, 0.06), 0 10px 24px rgba(0, 0, 0, 0.30);
 }
 
 /* --- SNI tray (center widget, not part of the rotation) --- */
