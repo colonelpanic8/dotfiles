@@ -6,16 +6,21 @@
  */
 @import url("theme.css");
 
-.taffy-window * {
+/* Base typography + foreground color for the bar itself.
+ *
+ * IMPORTANT: menus/popovers created by SNI items are separate GtkWindows but
+ * inherit style context from the "attach widget" chain. If we apply a blanket
+ * `color:` rule here, it will bleed into those menus and override the GTK
+ * theme, making submenu text unreadable.
+ */
+.taffy-window .taffy-box :not(menu):not(menuitem):not(popover):not(window),
+.taffy-window .taffy-box :not(menu):not(menuitem):not(popover):not(window) * {
 	/* Most text should come from Iosevka Aile; icon glyphs (Font Awesome / Nerd
 	   Font PUA) should come from a Nerd Font family to avoid tiny fallback glyphs. */
 	font-family: "Iosevka Aile", "Iosevka Nerd Font", "Iosevka NF", "Noto Sans", sans-serif;
 	font-size: 11pt;
 	font-weight: 600;
 	color: @font-color;
-	/* Bar background is painted on `.taffy-box`; most widget nodes stay
-	   transparent so pills (outer-pad) read as "solid". */
-	background-color: transparent;
 	text-shadow: none;
 }
 
@@ -67,13 +72,15 @@
 
 /* Make each widget's squircle background feel "solid": avoid GTK nodes and
    labels painting their own backgrounds on top of `.outer-pad`.
-   Exclude menu/menuitem/popover so popup menus attached via
-   menuAttachToWidget aren't forced transparent. */
-.outer-pad :not(menu):not(menuitem):not(popover),
+   Exclude menu/menuitem/popover so popup menus attached via menuAttachToWidget
+   aren't forced transparent. */
+.outer-pad :not(menu):not(menuitem):not(popover):not(window),
 .inner-pad,
-.inner-pad *,
+.inner-pad :not(menu):not(menuitem):not(popover):not(window),
+.inner-pad :not(menu):not(menuitem):not(popover):not(window) *,
 .contents,
-.contents * {
+.contents :not(menu):not(menuitem):not(popover):not(window),
+.contents :not(menu):not(menuitem):not(popover):not(window) * {
 	background-color: transparent;
 }
 
@@ -86,7 +93,8 @@
 	border-color: @widget-audio-border;
 	box-shadow: 0 1px 0 rgba(255, 255, 255, 0.06), 0 10px 24px rgba(0, 0, 0, 0.30);
 }
-.outer-pad.audio * {
+.outer-pad.audio :not(menu):not(menuitem):not(popover):not(window),
+.outer-pad.audio :not(menu):not(menuitem):not(popover):not(window) * {
 	color: @widget-audio-fg;
 }
 
@@ -95,7 +103,8 @@
 	border-color: @widget-network-border;
 	box-shadow: 0 1px 0 rgba(255, 255, 255, 0.06), 0 10px 24px rgba(0, 0, 0, 0.30);
 }
-.outer-pad.network * {
+.outer-pad.network :not(menu):not(menuitem):not(popover):not(window),
+.outer-pad.network :not(menu):not(menuitem):not(popover):not(window) * {
 	color: @widget-network-fg;
 }
 
@@ -104,7 +113,8 @@
 	border-color: @widget-mpris-border;
 	box-shadow: 0 1px 0 rgba(255, 255, 255, 0.06), 0 10px 24px rgba(0, 0, 0, 0.30);
 }
-.outer-pad.mpris * {
+.outer-pad.mpris :not(menu):not(menuitem):not(popover):not(window),
+.outer-pad.mpris :not(menu):not(menuitem):not(popover):not(window) * {
 	color: @widget-mpris-fg;
 }
 .outer-pad.mpris .icon {
@@ -116,7 +126,8 @@
 	border-color: @widget-clock-border;
 	box-shadow: 0 1px 0 rgba(255, 255, 255, 0.06), 0 10px 24px rgba(0, 0, 0, 0.30);
 }
-.outer-pad.clock * {
+.outer-pad.clock :not(menu):not(menuitem):not(popover):not(window),
+.outer-pad.clock :not(menu):not(menuitem):not(popover):not(window) * {
 	color: @widget-clock-fg;
 }
 
@@ -125,7 +136,8 @@
 	border-color: @widget-disk-border;
 	box-shadow: 0 1px 0 rgba(255, 255, 255, 0.06), 0 10px 24px rgba(0, 0, 0, 0.30);
 }
-.outer-pad.disk-usage * {
+.outer-pad.disk-usage :not(menu):not(menuitem):not(popover):not(window),
+.outer-pad.disk-usage :not(menu):not(menuitem):not(popover):not(window) * {
 	color: @widget-disk-fg;
 }
 
@@ -134,7 +146,8 @@
 	border-color: @widget-tray-border;
 	box-shadow: 0 1px 0 rgba(255, 255, 255, 0.06), 0 10px 24px rgba(0, 0, 0, 0.30);
 }
-.outer-pad.sni-tray * {
+.outer-pad.sni-tray :not(menu):not(menuitem):not(popover):not(window),
+.outer-pad.sni-tray :not(menu):not(menuitem):not(popover):not(window) * {
 	color: @widget-tray-fg;
 }
 
@@ -143,7 +156,8 @@
 	border-color: @widget-battery-border;
 	box-shadow: 0 1px 0 rgba(255, 255, 255, 0.06), 0 10px 24px rgba(0, 0, 0, 0.30);
 }
-.outer-pad.battery * {
+.outer-pad.battery :not(menu):not(menuitem):not(popover):not(window),
+.outer-pad.battery :not(menu):not(menuitem):not(popover):not(window) * {
 	color: @widget-battery-fg;
 }
 
@@ -152,7 +166,8 @@
 	border-color: @widget-backlight-border;
 	box-shadow: 0 1px 0 rgba(255, 255, 255, 0.06), 0 10px 24px rgba(0, 0, 0, 0.30);
 }
-.outer-pad.backlight * {
+.outer-pad.backlight :not(menu):not(menuitem):not(popover):not(window),
+.outer-pad.backlight :not(menu):not(menuitem):not(popover):not(window) * {
 	color: @widget-backlight-fg;
 }
 
