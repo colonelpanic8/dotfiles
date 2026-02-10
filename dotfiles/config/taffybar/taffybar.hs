@@ -30,6 +30,8 @@ import qualified System.Taffybar.Widget.HyprlandWorkspaces as Hyprland
 import qualified System.Taffybar.Widget.NetworkManager as NetworkManager
 import           System.Taffybar.Widget.SNIMenu (withNmAppletMenu)
 import qualified System.Taffybar.Widget.PulseAudio as PulseAudio
+import qualified System.Taffybar.Widget.ScreenLock as ScreenLock
+import qualified System.Taffybar.Widget.Wlsunset as Wlsunset
 import           Data.Ratio ((%))
 import           System.Taffybar.Widget.SNITray
                  ( sniTrayNewFromParams
@@ -322,6 +324,14 @@ diskUsageWidget :: TaffyIO Gtk.Widget
 diskUsageWidget =
   decorateWithClassAndBoxM "disk-usage" diskUsageNew
 
+screenLockWidget :: TaffyIO Gtk.Widget
+screenLockWidget =
+  decorateWithClassAndBoxM "screen-lock" ScreenLock.screenLockNew
+
+wlsunsetWidget :: TaffyIO Gtk.Widget
+wlsunsetWidget =
+  decorateWithClassAndBoxM "wlsunset" Wlsunset.wlsunsetNew
+
 sniTrayWidget :: TaffyIO Gtk.Widget
 sniTrayWidget =
   decorateWithClassAndBoxM
@@ -340,7 +350,7 @@ startWidgetsForBackend backend =
 endWidgetsForHost :: String -> Backend -> [TaffyIO Gtk.Widget]
 endWidgetsForHost hostName backend =
   let tray = sniTrayWidget
-      baseEndWidgets = [clockWidget, audioWidget, diskUsageWidget, networkWidget, mprisWidget]
+      baseEndWidgets = [clockWidget, audioWidget, diskUsageWidget, networkWidget, screenLockWidget, wlsunsetWidget, mprisWidget]
       laptopEndWidgets =
           [ batteryWidget
           , clockWidget
@@ -348,6 +358,8 @@ endWidgetsForHost hostName backend =
           , diskUsageWidget
           , backlightWidget
           , networkWidget
+          , screenLockWidget
+          , wlsunsetWidget
           , mprisWidget
           ]
   in if hostName `elem` laptopHosts
