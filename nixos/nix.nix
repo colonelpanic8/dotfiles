@@ -61,7 +61,16 @@
       (final: prev: {
         codex = inputs.codex-cli-nix.packages.${prev.stdenv.hostPlatform.system}.default;
         claude-code = inputs.claude-code-nix.packages.${prev.stdenv.hostPlatform.system}.default;
-        git-sync-rs = inputs.git-sync-rs.packages.${prev.stdenv.hostPlatform.system}.default;
+        git-sync-rs = let
+          base = inputs.git-sync-rs.packages.${prev.stdenv.hostPlatform.system}.default;
+        in prev.symlinkJoin {
+          name = "${base.name}-wrapped";
+          paths = [ base ];
+          postBuild = ''
+            ln -s $out/bin/git-sync-rs $out/bin/git-sync-on-inotify
+            ln -s $out/bin/git-sync-rs $out/bin/git-sync
+          '';
+        };
       })
     ] ++ (if config.imalison.nixOverlay.enable then [ inputs.nix.overlays.default ] else []);
 
