@@ -6,8 +6,7 @@
   ];
 
   myModules.railbird-k3s = {
-    enable = true;
-    serverAddr = "https://ryzen-shine.local:6443";
+    enable = false;
   };
   myModules.base.enable = true;
   myModules.desktop.enable = true;
@@ -70,6 +69,11 @@
         };
       };
     };
+  };
+
+  system.autoUpgrade = {
+    enable = true;
+    dates = "hourly";
   };
 
   security.acme = {
