@@ -9,10 +9,6 @@ in {
       enable = true;
       package = pkgs.git-sync-rs;
       repositories = {
-        config = {
-          path = config.home.homeDirectory + "/config";
-          uri = "git@github.com:IvanMalison/config.git";
-        };
         org = {
           path = config.home.homeDirectory + "/org";
           uri = "git@github.com:IvanMalison/org.git";
