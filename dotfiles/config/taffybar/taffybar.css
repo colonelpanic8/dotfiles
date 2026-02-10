@@ -5,6 +5,7 @@
  * by GTK's CSS parser.
  */
 @import url("theme.css");
+@import url("end-widget-colors.css");
 
 /* Base typography + foreground color for the bar itself.
  *
@@ -84,94 +85,31 @@
 	background-color: transparent;
 }
 
-/* Per-widget colored squircle overrides.
-   decorateWithClassAndBox "name" (in taffybar.hs) adds the widget class to
-   the same element that has .outer-pad, so `.outer-pad.audio` etc. target
-   each widget's pill.  Colors come from @widget-*-bg/fg/border in theme.css. */
-.outer-pad.audio {
-	background-color: @widget-audio-bg;
-	border-color: @widget-audio-border;
-	box-shadow: 0 1px 0 rgba(255, 255, 255, 0.06), 0 10px 24px rgba(0, 0, 0, 0.30);
-}
-.outer-pad.audio :not(menu):not(menuitem):not(popover):not(window),
-.outer-pad.audio :not(menu):not(menuitem):not(popover):not(window) * {
-	color: @widget-audio-fg;
-}
+/* Per-widget color overrides now live in end-widget-colors.css,
+   which rotates through a 5-color palette via :nth-child(). */
 
-.outer-pad.network {
-	background-color: @widget-network-bg;
-	border-color: @widget-network-border;
-	box-shadow: 0 1px 0 rgba(255, 255, 255, 0.06), 0 10px 24px rgba(0, 0, 0, 0.30);
-}
-.outer-pad.network :not(menu):not(menuitem):not(popover):not(window),
-.outer-pad.network :not(menu):not(menuitem):not(popover):not(window) * {
-	color: @widget-network-fg;
-}
-
-.outer-pad.mpris {
-	background-color: @widget-mpris-bg;
-	border-color: @widget-mpris-border;
-	box-shadow: 0 1px 0 rgba(255, 255, 255, 0.06), 0 10px 24px rgba(0, 0, 0, 0.30);
-}
-.outer-pad.mpris :not(menu):not(menuitem):not(popover):not(window),
-.outer-pad.mpris :not(menu):not(menuitem):not(popover):not(window) * {
-	color: @widget-mpris-fg;
-}
 .outer-pad.mpris .icon {
 	font-family: "Iosevka Nerd Font";
 }
 
-.outer-pad.clock {
-	background-color: @widget-clock-bg;
-	border-color: @widget-clock-border;
-	box-shadow: 0 1px 0 rgba(255, 255, 255, 0.06), 0 10px 24px rgba(0, 0, 0, 0.30);
-}
-.outer-pad.clock :not(menu):not(menuitem):not(popover):not(window),
-.outer-pad.clock :not(menu):not(menuitem):not(popover):not(window) * {
-	color: @widget-clock-fg;
-}
-
-.outer-pad.disk-usage {
-	background-color: @widget-disk-bg;
-	border-color: @widget-disk-border;
-	box-shadow: 0 1px 0 rgba(255, 255, 255, 0.06), 0 10px 24px rgba(0, 0, 0, 0.30);
-}
-.outer-pad.disk-usage :not(menu):not(menuitem):not(popover):not(window),
-.outer-pad.disk-usage :not(menu):not(menuitem):not(popover):not(window) * {
-	color: @widget-disk-fg;
-}
-
-.outer-pad.sni-tray {
-	background-color: @widget-tray-bg;
-	border-color: @widget-tray-border;
-	box-shadow: 0 1px 0 rgba(255, 255, 255, 0.06), 0 10px 24px rgba(0, 0, 0, 0.30);
-}
-.outer-pad.sni-tray :not(menu):not(menuitem):not(popover):not(window),
-.outer-pad.sni-tray :not(menu):not(menuitem):not(popover):not(window) * {
-	color: @widget-tray-fg;
-}
-
-.outer-pad.battery {
-	background-color: @widget-battery-bg;
-	border-color: @widget-battery-border;
-	box-shadow: 0 1px 0 rgba(255, 255, 255, 0.06), 0 10px 24px rgba(0, 0, 0, 0.30);
-}
-.outer-pad.battery :not(menu):not(menuitem):not(popover):not(window),
-.outer-pad.battery :not(menu):not(menuitem):not(popover):not(window) * {
-	color: @widget-battery-fg;
-}
-
-.outer-pad.backlight {
-	background-color: @widget-backlight-bg;
-	border-color: @widget-backlight-border;
-	box-shadow: 0 1px 0 rgba(255, 255, 255, 0.06), 0 10px 24px rgba(0, 0, 0, 0.30);
-}
-.outer-pad.backlight :not(menu):not(menuitem):not(popover):not(window),
-.outer-pad.backlight :not(menu):not(menuitem):not(popover):not(window) * {
-	color: @widget-backlight-fg;
-}
-
 /* Workspaces styling */
+
+/* Reset workspace .outer-pad pills to default styling so the nth-child color
+   rotation from end-widget-colors.css doesn't bleed into workspace pills.
+   This has specificity 0,2,0 (same as the nth-child rules) but comes later
+   in the cascade, so it wins. */
+.workspaces .outer-pad {
+	background-color: @pill-background;
+	box-shadow:
+		inset 0 1px 0 @pill-highlight,
+		inset 0 0 0 1px @pill-border,
+		0 10px 24px @pill-shadow;
+}
+.workspaces .outer-pad :not(menu):not(menuitem):not(popover):not(window),
+.workspaces .outer-pad :not(menu):not(menuitem):not(popover):not(window) * {
+	color: @font-color;
+}
+
 
 /* Asymmetric padding: 10px left leaves room for the overlaid workspace number
    label; 3px right keeps the pill tight against the trailing icon edge. */
