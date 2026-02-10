@@ -224,10 +224,6 @@
   }: let
     # Nixpkgs PR patches - just specify PR number and hash
     nixpkgsPRPatches = [
-      {
-        pr = 488591; # happy-coder: 0.11.2 -> 0.13.0
-        hash = "sha256-mlmZcwxP7IV93mQEAR3PYw8MRmNPRWXKbk9ZEKHqZc8=";
-      }
       # claude-code
       # {
       #   pr = 464698;
@@ -241,6 +237,11 @@
 
     # Custom patches that don't fit the PR template
     nixpkgsCustomPatches = [
+      {
+        # PR #488591: happy-coder: 0.11.2 -> 0.13.0
+        url = "https://github.com/NixOS/nixpkgs/commit/72ddcd82e5c09d47358a1f9add9f85032dcfb4a8.patch";
+        hash = "sha256-mlmZcwxP7IV93mQEAR3PYw8MRmNPRWXKbk9ZEKHqZc8=";
+      }
     ];
 
     # Home-manager PR patches - just specify PR number and hash
