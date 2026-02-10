@@ -16,16 +16,12 @@ executable taffybar
   ghc-options:         -threaded -rtsopts -with-rtsopts=-N
   ghc-prof-options: -fprof-auto
   build-depends:       base
-                     , dbus
-                     , dbus-menu
                      , X11
                      , bytestring
                      , containers
                      , filepath
-                     , gi-gdk3
                      , gi-gtk3
                      , gi-gdkpixbuf
-                     , gi-glib
                      , gtk-sni-tray
                      , gtk-strut
                      , haskell-gi-base

@@ -5,32 +5,19 @@
 module Main (main) where
 
 import           Control.Monad.IO.Class (MonadIO, liftIO)
-import           Control.Monad.Trans.Reader (ask)
-import           Control.Applicative ((<|>))
-import           Control.Concurrent.MVar (readMVar)
-import           Control.Monad (void)
 import           Data.Int (Int32)
-import           Data.IORef (newIORef, readIORef, writeIORef)
-import           Data.List (find, isInfixOf, nub)
+import           Data.List (nub)
 import qualified Data.Map as M
-import           Data.Maybe (catMaybes, fromMaybe, listToMaybe, mapMaybe)
+import           Data.Maybe (catMaybes, fromMaybe, mapMaybe)
 import           Data.Text (Text)
 import qualified Data.Text as T
-import           DBus
-import qualified DBus.Client as DBusClient
-import           Data.GI.Base (castTo)
-import qualified DBusMenu
-import qualified GI.Gdk as Gdk
-import qualified GI.Gdk.Enums as GdkE
-import qualified GI.GdkPixbuf.Objects.Pixbuf as GdkPixbuf
+import qualified GI.GdkPixbuf.Objects.Pixbuf as Gdk
 import qualified GI.Gtk as Gtk
-import qualified GI.GLib as GLib
 import           Network.HostName (getHostName)
-import           System.Environment (lookupEnv)
 import           System.Environment.XDG.BaseDir (getUserConfigFile)
-import           System.Log.Logger (Priority(WARNING), logM, rootLoggerName, setLevel, updateGlobalLogger)
+import           System.Log.Logger (Priority(WARNING), rootLoggerName, setLevel, updateGlobalLogger)
 import           System.Taffybar (startTaffybar)
-import           System.Taffybar.Context (Backend (BackendWayland, BackendX11), Context(..), TaffyIO, detectBackend)
+import           System.Taffybar.Context (Backend (BackendWayland, BackendX11), TaffyIO, detectBackend)
 import           System.Taffybar.DBus
 import           System.Taffybar.DBus.Toggle
 import           System.Taffybar.Hooks (withLogLevels)
@@ -52,151 +39,7 @@ import qualified StatusNotifier.Tray as SNITray (MenuBackend (HaskellDBusMenu), 
 import           System.Taffybar.Widget.Util (buildContentsBox, buildIconLabelBox, loadPixbufByName, widgetSetClassGI)
 import qualified System.Taffybar.Widget.Workspaces as X11Workspaces
 import           System.Taffybar.WindowIcon (pixBufFromColor)
-import           Data.Ratio ((%))
-import qualified StatusNotifier.Tray as SNITray (MenuBackend (HaskellDBusMenu), defaultTrayParams, trayMenuBackend, trayOverlayScale)
 
--- ** Debug: Programmatic SNI Menu Popup
-
--- | DBus Properties.Get helper.
-propsGet :: DBusClient.Client -> BusName -> ObjectPath -> String -> String -> IO (Maybe Variant)
-propsGet client dest obj iface prop = do
-  let mc =
-        (methodCall obj "org.freedesktop.DBus.Properties" "Get")
-          { methodCallDestination = Just dest
-          , methodCallBody = [toVariant iface, toVariant prop]
-          }
-  result <- DBusClient.call client mc
-  case result of
-    Left _ -> pure Nothing
-    Right reply ->
-      case methodReturnBody reply of
-        [v] -> pure (fromVariant v)
-        _ -> pure Nothing
-
--- | Return (bus name, object path, display string) for currently registered SNI
--- entries from the watcher.  Prefer this over RegisteredStatusNotifierItems,
--- which is only bus names and doesn't include object paths.
-getRegisteredSNIEntries :: DBusClient.Client -> IO [(BusName, ObjectPath, String)]
-getRegisteredSNIEntries client = do
-  mv <- propsGet client watcherName watcherPath "org.kde.StatusNotifierWatcher" "RegisteredSNIEntries"
-  let raw :: [(String, String)]
-      raw = fromMaybe [] $ mv >>= fromVariant
-  pure
-    [ (busName_ bus, objectPath_ path, bus <> path)
-    | (bus, path) <- raw
-    ]
-  where
-    watcherName = busName_ "org.kde.StatusNotifierWatcher"
-    watcherPath = objectPath_ "/StatusNotifierWatcher"
-
-getSNIItemMenuPath :: DBusClient.Client -> BusName -> ObjectPath -> IO (Maybe ObjectPath)
-getSNIItemMenuPath client itemBus itemPath = do
-  mv <- propsGet client itemBus itemPath "org.kde.StatusNotifierItem" "Menu"
-  pure $ mv >>= fromVariant
-
--- | Pop up the first submenu we can find under a menu.
-popupFirstSubmenu :: Gtk.Menu -> IO ()
-popupFirstSubmenu rootMenu = do
-  children <- Gtk.containerGetChildren rootMenu
-  let go [] = pure ()
-      go (w:ws) = do
-        mi <- castTo Gtk.MenuItem w
-        case mi of
-          Nothing -> go ws
-          Just menuItem -> do
-            smw <- Gtk.menuItemGetSubmenu menuItem
-            case smw of
-              Nothing -> go ws
-              Just sw -> do
-                sm <- castTo Gtk.Menu sw
-                case sm of
-                  Nothing -> go ws
-                  Just submenu -> do
-                    Gtk.widgetShowAll submenu
-                    Gtk.menuPopupAtWidget
-                      submenu
-                      menuItem
-                      GdkE.GravityNorthEast
-                      GdkE.GravityNorthWest
-                      Nothing
-  go children
-
--- | When enabled by env vars, pop up an SNI menu (and a submenu if present) so
--- we can screenshot it in automation loops.
---
--- Env vars:
--- - TAFFYBAR_DEBUG_POPUP_SNI_MENU=1 to enable
--- - TAFFYBAR_DEBUG_SNI_MATCH=<substring> to choose an item (matches the raw item id)
-debugPopupSNIMenuHook :: TaffyIO ()
-debugPopupSNIMenuHook = do
-  enabled <- liftIO $ lookupEnv "TAFFYBAR_DEBUG_POPUP_SNI_MENU"
-  case enabled of
-    Nothing -> pure ()
-    Just _ -> do
-      match <- liftIO $ fromMaybe "" <$> lookupEnv "TAFFYBAR_DEBUG_SNI_MATCH"
-      ctx <- ask
-      -- Poll until the tray watcher has registered items; on startup this can
-      -- take a few seconds.
-      liftIO $ do
-        triesRef <- newIORef (40 :: Int) -- ~10s at 250ms
-        void $ GLib.timeoutAdd GLib.PRIORITY_LOW 250 $ do
-          let client = sessionDBusClient ctx
-          entries <- getRegisteredSNIEntries client
-          remaining <- readIORef triesRef
-          if not (null entries)
-            then do
-              logM "TaffybarDebug" WARNING $
-                "SNI debug popup: registered entries=" <> show (length entries)
-              let chosen =
-                    case match of
-                      "" -> listToMaybe entries
-                      _ -> find (\(_, _, disp) -> isInfixOf match disp) entries <|> listToMaybe entries
-              case chosen of
-                Nothing -> do
-                  logM "TaffybarDebug" WARNING "SNI debug popup: no suitable item found."
-                  pure False
-                Just (itemBus, itemPath, disp) -> do
-                  mMenuPath <- getSNIItemMenuPath client itemBus itemPath
-                  case mMenuPath of
-                    Nothing ->
-                      do
-                        logM "TaffybarDebug" WARNING $
-                          "SNI debug popup: entry has no Menu property: " <> disp
-                        pure False
-                    Just menuPath -> do
-                      logM "TaffybarDebug" WARNING $
-                        "SNI debug popup: popping menu for " <> disp <> " menu=" <> show menuPath
-                      gtkMenu <- DBusMenu.buildMenu client itemBus menuPath
-                      -- Attach to the bar window if possible to keep CSS parent chain realistic.
-                      wins <- readMVar (existingWindows ctx)
-                      case wins of
-                        ((_, win):_) -> Gtk.menuAttachToWidget gtkMenu win Nothing
-                        _ -> pure ()
-                      _ <- Gtk.onWidgetHide gtkMenu $
-                        void $ GLib.idleAdd GLib.PRIORITY_LOW $ do
-                          Gtk.widgetDestroy gtkMenu
-                          pure False
-
-                      Gtk.widgetShowAll gtkMenu
-                      case wins of
-                        ((_, win):_) ->
-                          Gtk.menuPopupAtWidget
-                            gtkMenu
-                            win
-                            GdkE.GravitySouthWest
-                            GdkE.GravityNorthWest
-                            Nothing
-                        _ -> Gtk.menuPopupAtPointer gtkMenu Nothing
-
-                      popupFirstSubmenu gtkMenu
-                      pure False
-          else if remaining <= 0
-            then do
-              logM "TaffybarDebug" WARNING "SNI debug popup: timed out waiting for tray items."
-              pure False
-            else do
-              writeIORef triesRef (remaining - 1)
-              pure True
 -- | Wrap the widget in a "TaffyBox" (via 'buildContentsBox') and add a CSS class.
 decorateWithClassAndBox :: MonadIO m => Text -> Gtk.Widget -> m Gtk.Widget
 decorateWithClassAndBox klass widget = do
@@ -289,7 +132,7 @@ isPathCandidate name =
   T.isInfixOf "/" name ||
   any (`T.isSuffixOf` name) [".png", ".svg", ".xpm"]
 
-hyprlandIconFromCandidate :: Int32 -> Text -> TaffyIO (Maybe GdkPixbuf.Pixbuf)
+hyprlandIconFromCandidate :: Int32 -> Text -> TaffyIO (Maybe Gdk.Pixbuf)
 hyprlandIconFromCandidate size name
   | isPathCandidate name =
       liftIO $ getPixbufFromFilePath (T.unpack name)
@@ -304,7 +147,7 @@ hyprlandManualIconGetter =
     foldl maybeTCombine (return Nothing) $
       map (hyprlandIconFromCandidate size) (hyprlandIconCandidates windowData)
 
-fallbackIconPixbuf :: Int32 -> TaffyIO (Maybe GdkPixbuf.Pixbuf)
+fallbackIconPixbuf :: Int32 -> TaffyIO (Maybe Gdk.Pixbuf)
 fallbackIconPixbuf size = do
   let fallbackNames =
         [ "application-x-executable"
@@ -522,7 +365,6 @@ mkSimpleTaffyConfig hostName backend cssFiles =
     , barHeight = ScreenRatio $ 1 / 33
     , cssPaths = cssFiles
     , centerWidgets = [sniTrayWidget]
-    , startupHook = debugPopupSNIMenuHook
     }
 
 -- ** Entry Point
@@ -540,5 +382,4 @@ main = do
     withLogServer $
     withLogLevels $
     withToggleServer $
-    withDebugServer $
     toTaffybarConfig simpleTaffyConfig
