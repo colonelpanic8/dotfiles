@@ -1,5 +1,8 @@
 switch *args:
 	sudo nixos-rebuild switch --flake '.#' --impure {{args}}
 
+remote-switch host *args:
+	nixos-rebuild switch --flake '.#{{host}}' --target-host {{host}}.local --sudo --impure {{args}}
+
 fix-local-path-issue:
 	nix flake update imalison-taffybar
