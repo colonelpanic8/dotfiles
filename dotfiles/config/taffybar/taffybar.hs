@@ -30,10 +30,12 @@ import qualified System.Taffybar.Widget.HyprlandWorkspaces as Hyprland
 import qualified System.Taffybar.Widget.NetworkManager as NetworkManager
 import           System.Taffybar.Widget.SNIMenu (withNmAppletMenu)
 import qualified System.Taffybar.Widget.PulseAudio as PulseAudio
+import           Data.Ratio ((%))
 import           System.Taffybar.Widget.SNITray
-                 ( sniTrayNew
+                 ( sniTrayNewFromParams
                  , sniTrayThatStartsWatcherEvenThoughThisIsABadWayToDoIt
                  )
+import qualified StatusNotifier.Tray as SNITray (MenuBackend (HaskellDBusMenu), defaultTrayParams, trayMenuBackend, trayOverlayScale)
 import           System.Taffybar.Widget.Util (buildContentsBox, buildIconLabelBox, loadPixbufByName, widgetSetClassGI)
 import qualified System.Taffybar.Widget.Workspaces as X11Workspaces
 import           System.Taffybar.WindowIcon (pixBufFromColor)
@@ -324,7 +326,7 @@ sniTrayWidget :: TaffyIO Gtk.Widget
 sniTrayWidget =
   decorateWithClassAndBoxM
     "sni-tray"
-    sniTrayNew
+    (sniTrayNewFromParams (SNITray.defaultTrayParams { SNITray.trayMenuBackend = SNITray.HaskellDBusMenu, SNITray.trayOverlayScale = 1 % 3 }))
 
 -- ** Layout
 
