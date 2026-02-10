@@ -9,13 +9,11 @@
 
 /* Base typography + foreground color for the bar itself.
  *
- * IMPORTANT: menus/popovers created by SNI items are separate GtkWindows but
- * inherit style context from the "attach widget" chain. If we apply a blanket
- * `color:` rule here, it will bleed into those menus and override the GTK
- * theme, making submenu text unreadable.
+ * IMPORTANT: SNI menus are popup windows but inherit style context from the
+ * attach-widget chain. Avoid broad descendant selectors (especially `*`) here
+ * so we don't accidentally override menu theming.
  */
-.taffy-window .taffy-box :not(menu):not(menuitem):not(popover):not(window),
-.taffy-window .taffy-box :not(menu):not(menuitem):not(popover):not(window) * {
+.taffy-box {
 	/* Most text should come from Iosevka Aile; icon glyphs (Font Awesome / Nerd
 	   Font PUA) should come from a Nerd Font family to avoid tiny fallback glyphs. */
 	font-family: "Iosevka Aile", "Iosevka Nerd Font", "Iosevka NF", "Noto Sans", sans-serif;
@@ -71,17 +69,22 @@
 	opacity: 1;
 }
 
-/* Make each widget's squircle background feel "solid": avoid GTK nodes and
-   labels painting their own backgrounds on top of `.outer-pad`.
-   Exclude menu/menuitem/popover so popup menus attached via menuAttachToWidget
-   aren't forced transparent. */
-.outer-pad :not(menu):not(menuitem):not(popover):not(window),
-.inner-pad,
-.inner-pad :not(menu):not(menuitem):not(popover):not(window),
-.inner-pad :not(menu):not(menuitem):not(popover):not(window) *,
-.contents,
-.contents :not(menu):not(menuitem):not(popover):not(window),
-.contents :not(menu):not(menuitem):not(popover):not(window) * {
+/* Make each widget's squircle background feel "solid": avoid child widgets
+   painting their own backgrounds on top of `.outer-pad`.
+ *
+ * We intentionally avoid broad descendant selectors (especially `*`) here
+ * because SNI menus inherit style context via their attach-widget chain and
+ * those selectors can leak into menu windows, making them transparent.
+ */
+.outer-pad label,
+.outer-pad image,
+.outer-pad button,
+.inner-pad label,
+.inner-pad image,
+.inner-pad button,
+.contents label,
+.contents image,
+.contents button {
 	background-color: transparent;
 }
 
@@ -105,8 +108,7 @@
 		inset 0 0 0 1px @pill-border,
 		0 10px 24px @pill-shadow;
 }
-.workspaces .outer-pad :not(menu):not(menuitem):not(popover):not(window),
-.workspaces .outer-pad :not(menu):not(menuitem):not(popover):not(window) * {
+.workspaces .outer-pad {
 	color: @font-color;
 }
 

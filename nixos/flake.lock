@@ -116,11 +116,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1770491193,
-        "narHash": "sha256-zdnWeXmPZT8BpBo52s4oansT1Rq0SNzksXKpEcMc5lE=",
+        "lastModified": 1770687088,
+        "narHash": "sha256-WM353TQnhVCbgMGUqoPIsLEdF8HHtMo/dFryzBSEswI=",
         "owner": "sadjow",
         "repo": "claude-code-nix",
-        "rev": "f68a2683e812d1e4f9a022ff3e0206d46347d019",
+        "rev": "5fb242d2c746009f9fa3b63e9f346e8ea64328ea",
         "type": "github"
       },
       "original": {
@@ -579,11 +579,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1770613567,
-        "narHash": "sha256-t0wC7BrU7YwqvZcZpCB50dk37/bVcpIoE/qME/kw8PA=",
+        "lastModified": 1770693358,
+        "narHash": "sha256-rqUwaRsxMd9OOkDUxAlQlGfohlV8ZK4s2j5qZ9dJQVI=",
         "owner": "taffybar",
         "repo": "gtk-sni-tray",
-        "rev": "fe5a75bc20228544217f96a1e6895be12e6198c7",
+        "rev": "a7a72c72d719bb3a6e4c36974671f2f6581f55ff",
         "type": "github"
       },
       "original": {
@@ -1134,11 +1134,11 @@
         "nixpkgs-regression": "nixpkgs-regression"
       },
       "locked": {
-        "lastModified": 1770591402,
-        "narHash": "sha256-7qxOxkj11ExOhpxcsFK3O8Ktegkgw0SCq9nfoAOvjxM=",
+        "lastModified": 1770673695,
+        "narHash": "sha256-7lLVzlUSkAPo9LDe0/M9CdAh6HHDfzq8pfn98PXoKu0=",
         "owner": "NixOS",
         "repo": "nix",
-        "rev": "e4ce788f9d8de1bc5e58002d01088cd71c6703d0",
+        "rev": "845d951682008a009a9727437c9d913403053d06",
         "type": "github"
       },
       "original": {
@@ -1585,11 +1585,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1770410595,
+        "lastModified": 1770668379,
         "narHash": "sha256-sqDK58NI/+tfIBd5gzYKXMhMv3CNtFBtnR958KqQhlk=",
         "ref": "refs/heads/master",
-        "rev": "01dc1d61477037e19ebe7a58c71581020bf7eea0",
-        "revCount": 145,
+        "rev": "f65d0110607dba433ea746d445b1b66d5ead6f6c",
+        "revCount": 149,
         "type": "git",
         "url": "ssh://gitea@dev.railbird.ai:1123/railbird/secrets-flake.git"
       },
@@ -1735,8 +1735,8 @@
         ]
       },
       "locked": {
-        "lastModified": 1770661157,
-        "narHash": "sha256-Le3mnGVNLrD66/CV5jqMeSSQsMMMEaFrFbYzl3KCD3A=",
+        "lastModified": 1770685149,
+        "narHash": "sha256-3PY90Kt/8z4E0TNHBQuEzqaTfrRfUTK5HTfoIM3Z7W4=",
         "path": "/home/imalison/dotfiles/dotfiles/config/taffybar/taffybar",
         "type": "path"
       },

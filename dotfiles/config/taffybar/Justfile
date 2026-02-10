@@ -8,6 +8,31 @@ run:
 restart:
 	@scripts/taffybar-restart
 
+# Restart with no vendor CSS (taffybar's built-in stylesheet) loaded.
+restart-no-vendor-css:
+	@TAFFYBAR_DISABLE_VENDOR_CSS=1 scripts/taffybar-restart
+
+# Restart with no user CSS loaded (ignores ~/.config/taffybar/taffybar.css and cssPaths).
+restart-no-user-css:
+	@TAFFYBAR_DISABLE_USER_CSS=1 scripts/taffybar-restart
+
+# Restart with no taffybar CSS loaded at all (GTK theme only).
+restart-empty-css:
+	@TAFFYBAR_DISABLE_VENDOR_CSS=1 TAFFYBAR_DISABLE_USER_CSS=1 scripts/taffybar-restart
+
+# Restart with an explicit colon-separated list of CSS files.
+# Example: just restart-css-paths 'menu-debug.css:taffybar.css'
+restart-css-paths paths:
+	@TAFFYBAR_CSS_PATHS='{{paths}}' scripts/taffybar-restart
+
+# Restart using only the minimal debug stylesheet in menu-debug.css.
+restart-menu-debug:
+	@TAFFYBAR_CSS_PATHS='menu-debug.css' scripts/taffybar-restart
+
+# Restart using `scratch.css` (initially empty) for bisecting CSS leakage into menus.
+restart-scratch:
+	@TAFFYBAR_CSS_PATHS='scratch.css' scripts/taffybar-restart
+
 # Capture the reserved top area (taffybar) on the focused monitor.
 screenshot:
 	@scripts/taffybar-screenshot
@@ -15,6 +40,20 @@ screenshot:
 # Capture the reserved top area on all monitors (one file per monitor).
 screenshot-all:
 	@scripts/taffybar-screenshot-all
+
+# Screenshot the entire focused monitor (useful when debugging popup menus).
+screenshot-monitor:
+	@scripts/taffybar-screenshot-focused-monitor
+
+# Restart taffybar, pop up an SNI menu automatically (and a submenu if present),
+# then screenshot the focused monitor. Optional argument selects the SNI item
+# by substring match.
+capture-sni-menu match="":
+	@if [[ -n "{{match}}" ]]; then scripts/taffybar-capture-sni-menu "{{match}}"; else scripts/taffybar-capture-sni-menu; fi
+
+# Trigger an SNI menu popup via DBus (taffybar.debug).
+popup-sni-menu match="" submenu="1":
+	@scripts/taffybar-popup-sni-menu "{{match}}" "{{submenu}}"
 
 # Crop the top bar out of an existing screenshot (defaults to 56px high).
 crop in out="":
