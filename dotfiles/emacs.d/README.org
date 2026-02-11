@@ -1913,7 +1913,10 @@ bind-key and global-set-key forms.
     (and (vertico--remote-p string)
          (completion-basic-all-completions string table pred point)))
 
-   (setq completion-styles '(orderless basic)
+   (setq completion-ignore-case t
+         read-buffer-completion-ignore-case t
+         read-file-name-completion-ignore-case t
+         completion-styles '(orderless basic)
          completion-category-overrides '((file (styles basic partial-completion)))))
 #+end_src
 ** marginalia
