@@ -194,40 +194,21 @@
     "dbus-menu": {
       "inputs": {
         "flake-utils": [
-          "gtk-sni-tray",
           "flake-utils"
         ],
         "git-ignore-nix": [
-          "gtk-sni-tray",
           "git-ignore-nix"
         ],
         "nixpkgs": [
-          "gtk-sni-tray",
           "nixpkgs"
         ]
       },
       "locked": {
-        "lastModified": 1770613478,
-        "narHash": "sha256-WWg433uoU8qjiz3jdmX0gRQOCjVoxVX7Rn415QTtrv4=",
+        "lastModified": 1770753441,
+        "narHash": "sha256-ycJexWPCSlLriDAouT3PvRnbwByeGF6bsQrvWcY1eGU=",
         "owner": "taffybar",
         "repo": "dbus-menu",
-        "rev": "29656af7126d8753881b16b6cfef7e3e98c9ef65",
-        "type": "github"
-      },
-      "original": {
-        "owner": "taffybar",
-        "repo": "dbus-menu",
-        "type": "github"
-      }
-    },
-    "dbus-menu_2": {
-      "flake": false,
-      "locked": {
-        "lastModified": 1770613478,
-        "narHash": "sha256-WWg433uoU8qjiz3jdmX0gRQOCjVoxVX7Rn415QTtrv4=",
-        "owner": "taffybar",
-        "repo": "dbus-menu",
-        "rev": "29656af7126d8753881b16b6cfef7e3e98c9ef65",
+        "rev": "83f914ab70485331f4e45945251557e5c7ea50fa",
         "type": "github"
       },
       "original": {
@@ -503,11 +484,11 @@
         "rust-overlay": "rust-overlay"
       },
       "locked": {
-        "lastModified": 1770629526,
-        "narHash": "sha256-G2i5VheRDTuicGs6E45zWkjVbfa6mmo0xu9Ndhegsxo=",
+        "lastModified": 1770784385,
+        "narHash": "sha256-EOKx6nqDMY0jRA65NVgYarlzOxfYNWM3Mso4oNJ6RA0=",
         "owner": "colonelpanic8",
         "repo": "git-sync-rs",
-        "rev": "7bca0825e631f62fd5e669bfd27839bcbba98d17",
+        "rev": "670b127a9e29b463e27ac5bac002b7ac612df93b",
         "type": "github"
       },
       "original": {
@@ -563,14 +544,18 @@
     },
     "gtk-sni-tray": {
       "inputs": {
-        "dbus-menu": "dbus-menu",
+        "dbus-menu": [
+          "dbus-menu"
+        ],
         "flake-utils": [
           "flake-utils"
         ],
         "git-ignore-nix": [
           "git-ignore-nix"
         ],
-        "gtk-strut": "gtk-strut",
+        "gtk-strut": [
+          "gtk-strut"
+        ],
         "nixpkgs": [
           "nixpkgs"
         ],
@@ -579,11 +564,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1770693358,
-        "narHash": "sha256-rqUwaRsxMd9OOkDUxAlQlGfohlV8ZK4s2j5qZ9dJQVI=",
+        "lastModified": 1770754698,
+        "narHash": "sha256-W5xZaZMeK5nLwrXvgh35Ko143qteLCTpCq4WwW93zcM=",
         "owner": "taffybar",
         "repo": "gtk-sni-tray",
-        "rev": "a7a72c72d719bb3a6e4c36974671f2f6581f55ff",
+        "rev": "f016f19fd64c1d2c4228d64c9897cd8f45272b8a",
         "type": "github"
       },
       "original": {
@@ -593,35 +578,6 @@
       }
     },
     "gtk-strut": {
-      "inputs": {
-        "flake-utils": [
-          "gtk-sni-tray",
-          "flake-utils"
-        ],
-        "git-ignore-nix": [
-          "gtk-sni-tray",
-          "git-ignore-nix"
-        ],
-        "nixpkgs": [
-          "gtk-sni-tray",
-          "nixpkgs"
-        ]
-      },
-      "locked": {
-        "lastModified": 1760271730,
-        "narHash": "sha256-AiVtcbO+JR/XwHALm8z6kiN14f5lJ/iwkVI7khYy+oA=",
-        "owner": "taffybar",
-        "repo": "gtk-strut",
-        "rev": "62e8e83f861d562ff360f356b1d4b64f6576d329",
-        "type": "github"
-      },
-      "original": {
-        "owner": "taffybar",
-        "repo": "gtk-strut",
-        "type": "github"
-      }
-    },
-    "gtk-strut_2": {
       "inputs": {
         "flake-utils": [
           "flake-utils"
@@ -952,6 +908,26 @@
         "type": "github"
       }
     },
+    "hyprscratch": {
+      "inputs": {
+        "nixpkgs": [
+          "nixpkgs"
+        ]
+      },
+      "locked": {
+        "lastModified": 1767812182,
+        "narHash": "sha256-w91iSY7sor8DmBaUv2zYByf0lPWtWLqVn4LitmxZV9E=",
+        "owner": "sashetophizika",
+        "repo": "hyprscratch",
+        "rev": "28fd0f9774b4be6034301a5484b00800eb6f3747",
+        "type": "github"
+      },
+      "original": {
+        "owner": "sashetophizika",
+        "repo": "hyprscratch",
+        "type": "github"
+      }
+    },
     "hyprtoolkit": {
       "inputs": {
         "aquamarine": [
@@ -1085,11 +1061,26 @@
     },
     "imalison-taffybar": {
       "inputs": {
+        "dbus-hslogger": [
+          "dbus-hslogger"
+        ],
+        "dbus-menu": [
+          "dbus-menu"
+        ],
         "flake-utils": [
           "flake-utils"
         ],
+        "gtk-sni-tray": [
+          "gtk-sni-tray"
+        ],
+        "gtk-strut": [
+          "gtk-strut"
+        ],
         "nixpkgs": [
           "nixpkgs"
+        ],
+        "status-notifier-item": [
+          "status-notifier-item"
         ],
         "taffybar": [
           "taffybar"
@@ -1398,11 +1389,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1770660111,
-        "narHash": "sha256-ZqCHGlLjBzVdYFUxHp860lg5e8WwSOPCPOJuh9kKrtc=",
+        "lastModified": 1770783820,
+        "narHash": "sha256-vpZC7EjMpERmuFQBQibeyYj4qpE8zl4bQeS0eBhhGcs=",
         "owner": "colonelpanic8",
         "repo": "notifications-tray-icon",
-        "rev": "e30073da7c46976387712f51571b3e228b2208b8",
+        "rev": "e7f2654513dd29006e7851e3eef9874e422e389b",
         "type": "github"
       },
       "original": {
@@ -1604,15 +1595,18 @@
         "caelestia-shell": "caelestia-shell",
         "claude-code-nix": "claude-code-nix",
         "codex-cli-nix": "codex-cli-nix",
+        "dbus-hslogger": "dbus-hslogger",
+        "dbus-menu": "dbus-menu",
         "flake-utils": "flake-utils",
         "git-ignore-nix": "git-ignore-nix",
         "git-sync-rs": "git-sync-rs",
         "gtk-sni-tray": "gtk-sni-tray",
-        "gtk-strut": "gtk-strut_2",
+        "gtk-strut": "gtk-strut",
         "home-manager": "home-manager",
         "hy3": "hy3",
         "hyprland": "hyprland",
         "hyprland-plugins": "hyprland-plugins",
+        "hyprscratch": "hyprscratch",
         "imalison-taffybar": "imalison-taffybar",
         "nix": "nix",
         "nixified-ai": "nixified-ai",
@@ -1709,8 +1703,12 @@
     },
     "taffybar": {
       "inputs": {
-        "dbus-hslogger": "dbus-hslogger",
-        "dbus-menu": "dbus-menu_2",
+        "dbus-hslogger": [
+          "dbus-hslogger"
+        ],
+        "dbus-menu": [
+          "dbus-menu"
+        ],
         "flake-utils": [
           "flake-utils"
         ],
@@ -1735,8 +1733,8 @@
         ]
       },
       "locked": {
-        "lastModified": 1770685149,
-        "narHash": "sha256-3PY90Kt/8z4E0TNHBQuEzqaTfrRfUTK5HTfoIM3Z7W4=",
+        "lastModified": 1770755513,
+        "narHash": "sha256-tlwUJhim0PEnNotIpCA45oz37wSAWY3f9gUnvaQtjzw=",
         "path": "/home/imalison/dotfiles/dotfiles/config/taffybar/taffybar",
         "type": "path"
       },
