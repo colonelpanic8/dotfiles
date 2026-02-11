@@ -1,5 +1,7 @@
 { config, pkgs, makeEnable, inputs, ... }:
 makeEnable config "myModules.hyprland" true {
+  myModules.taffybar.enable = true;
+
   programs.hyprland = {
     enable = true;
     # Use Hyprland from the flake for proper plugin compatibility

@@ -1,5 +1,7 @@
 { config, inputs, pkgs, makeEnable, ... }:
 makeEnable config "myModules.taffybar" false {
+  myModules.sni.enable = true;
+
   nixpkgs.overlays = with inputs; (
     if builtins.isList taffybar.overlays
     then taffybar.overlays

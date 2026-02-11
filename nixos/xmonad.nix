@@ -1,5 +1,7 @@
 { config, pkgs, inputs, makeEnable, ... }:
 makeEnable config "myModules.xmonad" true  {
+  myModules.taffybar.enable = true;
+
   nixpkgs.overlays = with inputs; [
     xmonad.overlay
     xmonad-contrib.overlay

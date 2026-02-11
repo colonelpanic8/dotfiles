@@ -10,13 +10,10 @@ makeEnable config "myModules.desktop" true {
 
   assertions = [
     {
-      assertion = config.myModules.taffybar.enable != config.myModules.waybar.enable;
-      message = "Enable exactly one of myModules.taffybar or myModules.waybar.";
+      assertion = !(config.myModules.taffybar.enable && config.myModules.waybar.enable);
+      message = "myModules.taffybar and myModules.waybar cannot both be enabled.";
     }
   ];
-
-  myModules.taffybar.enable = lib.mkDefault config.myModules.xmonad.enable;
-  myModules.waybar.enable = lib.mkDefault (!config.myModules.xmonad.enable);
 
   services.xserver = {
     exportConfiguration = true;
