@@ -1,7 +1,15 @@
 { pkgs, lib, ... }:
 let
-  gitSyncTrayEnv = {
-    Service.Environment = [ "GIT_SYNC_TRAY=1" ];
+  mkGitSyncTrayOverrides = icon: {
+    Service = {
+      Environment = [ "GIT_SYNC_TRAY=1" "GIT_SYNC_TRAY_ICON=${icon}" ];
+      Restart = lib.mkForce "on-failure";
+      RestartSec = 5;
+    };
+  };
+  repoIcons = {
+    org = "text-org";
+    password-store = "password";
   };
 in {
   home-manager.users.imalison = ({ config, ... }: {
@@ -18,16 +26,12 @@ in {
           path = config.home.homeDirectory + "/.password-store";
           uri = "git@github.com:IvanMalison/.password-store.git";
         };
-        katnivan = {
-          path = config.home.homeDirectory + "/katnivan";
-          uri = "ssh://gitea@dev.railbird.ai:1123/colonelpanic/katnivan.git";
-          interval = 30;
-        };
       };
     };
 
     systemd.user.services = lib.mapAttrs'
-      (name: _: lib.nameValuePair "git-sync-${name}" gitSyncTrayEnv)
+      (name: _: lib.nameValuePair "git-sync-${name}"
+        (mkGitSyncTrayOverrides (repoIcons.${name} or "git")))
       config.services.git-sync.repositories;
   });
 
@@ -43,11 +47,6 @@ in {
           path = config.home.homeDirectory + "/org";
           uri = "ssh://gitea@1896Folsom.duckdns.org:1123/kkathuang/org.git";
           interval = 180;
-        };
-        katnivan = {
-          path = config.home.homeDirectory + "/katnivan";
-          uri = "ssh://gitea@1896Folsom.duckdns.org:1123/colonelpanic/katnivan.git";
-          interval = 30;
         };
       };
     };
