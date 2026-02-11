@@ -84,6 +84,8 @@ makeEnable config "myModules.base" true {
     enable = true;
     autoPrune = {
       enable = true;
+      dates = "daily";
+      flags = ["--all"];
     };
   };
 
