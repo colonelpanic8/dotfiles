@@ -64,6 +64,8 @@
   boot.loader.efi.canTouchEfiVariables = true;
 
   services.asusd.enable = true;
+  services.power-profiles-daemon.enable = false;
+  services.tlp.enable = false;
 
   fileSystems."/" = {
     device = "/dev/disk/by-uuid/fc06a54c-cc45-423a-914b-8dfcb5939106";

@@ -8,7 +8,7 @@ let
     };
   };
   repoIcons = {
-    org = "text-org";
+    org = "${pkgs.papirus-icon-theme}/share/icons/Papirus/64x64/mimetypes/text-org.svg";
     password-store = "password";
   };
 in {
