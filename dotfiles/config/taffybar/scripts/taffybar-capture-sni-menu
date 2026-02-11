@@ -1,0 +1,19 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+root="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+
+match="${1:-}"
+wait_secs="${TAFFYBAR_DEBUG_WAIT_SECS:-1}"
+
+"$root/scripts/taffybar-restart" >/dev/null
+
+if [[ -n "${match}" ]]; then
+  "$root/scripts/taffybar-popup-sni-menu" "$match" 1
+else
+  "$root/scripts/taffybar-popup-sni-menu" "" 1
+fi
+
+sleep "$wait_secs"
+
+"$root/scripts/taffybar-screenshot-focused-monitor"

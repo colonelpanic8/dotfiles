@@ -331,11 +331,17 @@ asusWidget =
 
 screenLockWidget :: TaffyIO Gtk.Widget
 screenLockWidget =
-  decorateWithClassAndBoxM "screen-lock" ScreenLock.screenLockNew
+  decorateWithClassAndBoxM "screen-lock" $
+    ScreenLock.screenLockNewWithConfig
+      ScreenLock.defaultScreenLockConfig
+        { ScreenLock.screenLockIcon = T.pack "\xF023" <> " Lock" }
 
 wlsunsetWidget :: TaffyIO Gtk.Widget
 wlsunsetWidget =
-  decorateWithClassAndBoxM "wlsunset" Wlsunset.wlsunsetNew
+  decorateWithClassAndBoxM "wlsunset" $
+    Wlsunset.wlsunsetNewWithConfig
+      Wlsunset.defaultWlsunsetWidgetConfig
+        { Wlsunset.wlsunsetWidgetIcon = T.pack "\xF0599" <> " Sun" }
 
 sniTrayWidget :: TaffyIO Gtk.Widget
 sniTrayWidget =
@@ -354,20 +360,19 @@ startWidgetsForBackend backend =
 
 endWidgetsForHost :: String -> Backend -> [TaffyIO Gtk.Widget]
 endWidgetsForHost hostName backend =
-  let tray = sniTrayWidget
-      baseEndWidgets = [clockWidget, audioWidget, diskUsageWidget, networkWidget, screenLockWidget, wlsunsetWidget, mprisWidget]
+  let baseEndWidgets = [audioWidget, diskUsageWidget, networkWidget, screenLockWidget, wlsunsetWidget, mprisWidget, sniTrayWidget]
       laptopEndWidgets =
-          [ batteryWidget
-          , asusWidget
-          , clockWidget
-          , audioWidget
-          , diskUsageWidget
-          , backlightWidget
-          , networkWidget
-          , screenLockWidget
-          , wlsunsetWidget
-          , mprisWidget
-          ]
+        [ batteryWidget
+        , asusWidget
+        , sniTrayWidget
+        , audioWidget
+        , diskUsageWidget
+        , backlightWidget
+        , networkWidget
+        , screenLockWidget
+        , wlsunsetWidget
+        , mprisWidget
+        ]
   in if hostName `elem` laptopHosts
     then laptopEndWidgets
     else baseEndWidgets
@@ -382,7 +387,7 @@ mkSimpleTaffyConfig hostName backend cssFiles =
     , barPadding = 4
     , barHeight = ScreenRatio $ 1 / 33
     , cssPaths = cssFiles
-    , centerWidgets = [sniTrayWidget]
+    , centerWidgets = [clockWidget]
     }
 
 -- ** Entry Point

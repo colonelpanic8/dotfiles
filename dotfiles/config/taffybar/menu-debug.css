@@ -1,0 +1,35 @@
+/* Minimal, high-contrast menu styling for debugging CSS application. */
+
+@define-color dbg_menu_bg #ffffcc;
+@define-color dbg_menu_fg #000000;
+@define-color dbg_menu_border #ff0000;
+
+menu,
+menuitem,
+window.popup,
+window.menu {
+  background-color: @dbg_menu_bg;
+  color: @dbg_menu_fg;
+  border: 2px solid @dbg_menu_border;
+}
+
+menu label,
+menuitem label,
+window.popup label,
+window.menu label {
+  color: @dbg_menu_fg;
+}
+
+.dbusmenu-menu,
+.dbusmenu-submenu,
+.dbusmenu-item {
+  background-color: @dbg_menu_bg;
+  color: @dbg_menu_fg;
+}
+
+.dbusmenu-menu label,
+.dbusmenu-submenu label,
+.dbusmenu-item label {
+  color: @dbg_menu_fg;
+}
+

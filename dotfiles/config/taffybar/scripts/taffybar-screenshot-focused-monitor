@@ -1,0 +1,32 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+hyprctl_cmd=(hyprctl)
+
+# Hyprland can restart and change the instance signature, leaving old shells with
+# a stale HYPRLAND_INSTANCE_SIGNATURE. Detect the live instance and use it.
+if ! hyprctl monitors -j >/dev/null 2>&1; then
+  if [[ -n "${WAYLAND_DISPLAY:-}" ]]; then
+    inst="$(hyprctl instances -j | jq -r --arg sock "$WAYLAND_DISPLAY" '.[] | select(.wl_socket == $sock) | .instance' | head -n1)"
+  else
+    inst="$(hyprctl instances -j | jq -r '.[0].instance // empty')"
+  fi
+
+  if [[ -n "${inst:-}" ]]; then
+    hyprctl_cmd=(hyprctl --instance "$inst")
+  fi
+fi
+
+monitors="$("${hyprctl_cmd[@]}" monitors -j)"
+name="$(jq -r '.[] | select(.focused) | .name' <<<"$monitors")"
+
+if [[ -z "${name:-}" || "${name}" == "null" ]]; then
+  echo "No focused monitor found." >&2
+  exit 1
+fi
+
+# Include nanoseconds so consecutive screenshots don't overwrite each other.
+out="/tmp/monitor-${name}-$(date +%Y%m%d-%H%M%S-%N).png"
+grim -o "$name" "$out"
+echo "$out"
+

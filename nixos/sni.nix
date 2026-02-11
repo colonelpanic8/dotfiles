@@ -1,42 +1,25 @@
-{ config, inputs, lib, pkgs, makeEnable, ... }:
+{ config, inputs, pkgs, makeEnable, ... }:
 makeEnable config "myModules.sni" true {
   home-manager.sharedModules = [
     {
-      systemd.user.services =
-        let
-          wantGraphicalPre = {
-            Install.WantedBy = lib.mkAfter [ "graphical-session-pre.target" ];
-          };
-        in
-        {
-          kanshi-sni = {
-            Unit = {
-              Description = "kanshi-sni tray app";
-              After = [ "graphical-session.target" "tray.target" ];
-              PartOf = [ "graphical-session.target" ];
-              Requires = [ "tray.target" ];
-            };
-            Service = {
-              ExecStart = "${inputs.kanshi-sni.packages.${pkgs.stdenv.hostPlatform.system}.default}/bin/kanshi-sni";
-              Restart = "always";
-              RestartSec = 3;
-            };
-            Install = {
-              WantedBy = [ "graphical-session.target" ];
-            };
-          };
-          blueman-applet = wantGraphicalPre;
-          kdeconnect = wantGraphicalPre;
-          kdeconnect-indicator = wantGraphicalPre;
-          network-manager-applet = wantGraphicalPre;
-          pasystray = wantGraphicalPre;
-          udiskie = wantGraphicalPre;
-          flameshot = wantGraphicalPre;
+      systemd.user.services.kanshi-sni = {
+        Unit = {
+          Description = "kanshi-sni tray app";
+          After = [ "graphical-session.target" "tray.target" ];
+          PartOf = [ "graphical-session.target" ];
+          Requires = [ "tray.target" ];
         };
-
-      services.blueman-applet = {
-        enable = true;
+        Service = {
+          ExecStart = "${inputs.kanshi-sni.packages.${pkgs.stdenv.hostPlatform.system}.default}/bin/kanshi-sni";
+          Restart = "always";
+          RestartSec = 3;
+        };
+        Install = {
+          WantedBy = [ "graphical-session.target" ];
+        };
       };
+
+      services.blueman-applet.enable = true;
 
       services.kdeconnect = {
         enable = true;
@@ -59,9 +42,7 @@ makeEnable config "myModules.sni" true {
 
       services.pasystray.enable = true;
 
-      services.flameshot = {
-        enable = true;
-      };
+      services.flameshot.enable = true;
     }
   ];
 }

@@ -1,0 +1,72 @@
+/* Scratch stylesheet for isolating menu/CSS leakage issues.
+ *
+ * Start empty, then add rules from `taffybar.css` incrementally and test SNI
+ * menus after each change.
+ */
+
+/* Step 1: only style the bar container and widget pills.
+ *
+ * Intentionally do NOT add any broad `background-color: transparent` or
+ * `color:` rules yet, since those are the common sources of menu bleed-through.
+ */
+@import url("theme.css");
+
+/* Typography: apply only to the bar container. We avoid `... * { ... }` rules
+ * because descendant selectors are what tend to leak into attached SNI menus.
+ * (Inheritance still happens for bar children, but we aren't targeting the
+ * entire widget subtree explicitly.)
+ */
+.taffy-box {
+	font-family: "Iosevka Aile", "Iosevka Nerd Font", "Iosevka NF", "Noto Sans", sans-serif;
+	font-size: 11pt;
+	font-weight: 600;
+	color: @font-color;
+	text-shadow: none;
+}
+
+.taffy-box {
+	border-width: 0px;
+	padding: 0px;
+	margin: 0px;
+	border-radius: 6px;
+	box-shadow: none;
+	background-color: @bar-background;
+	background-image: none;
+}
+
+.outer-pad {
+	background-color: @pill-background;
+	border: 0px;
+	border-radius: 6px;
+	margin: 4px 6px;
+	box-shadow:
+		inset 0 1px 0 @pill-highlight,
+		inset 0 0 0 1px @pill-border,
+		0 10px 24px @pill-shadow;
+}
+
+.inner-pad {
+	padding: 2px 10px;
+	border-radius: 4px;
+}
+
+.contents {
+	padding: 0px;
+	opacity: 1;
+}
+
+/* Safe "pill solid" reset:
+ * Only clear backgrounds on common bar widgets, without using broad descendant
+ * selectors that can bleed into SNI popup menus via the attach-widget chain.
+ */
+.outer-pad label,
+.outer-pad image,
+.outer-pad button,
+.inner-pad label,
+.inner-pad image,
+.inner-pad button,
+.contents label,
+.contents image,
+.contents button {
+	background-color: transparent;
+}

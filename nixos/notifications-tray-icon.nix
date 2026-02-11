@@ -17,8 +17,9 @@ makeEnable config "myModules.notifications-tray-icon" true {
     mkService = description: execStart: {
       Unit = {
         Description = description;
-        After = [ "graphical-session-pre.target" "tray.target" ];
+        After = [ "graphical-session.target" "tray.target" ];
         PartOf = [ "graphical-session.target" ];
+        Requires = [ "tray.target" ];
       };
       Service = {
         ExecStart = execStart;

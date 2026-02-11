@@ -1,0 +1,23 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+match="${1:-}"
+submenu="${2:-1}" # 1 = also pop up first submenu
+
+# Put cursor somewhere predictable in case the compositor/theme uses pointer hints.
+hyprctl dispatch movecursor 10 10 >/dev/null 2>&1 || true
+
+# Wait for the debug bus name to appear (taffybar startup can take a moment).
+for _ in $(seq 1 50); do
+  if busctl --user list 2>/dev/null | rg -Fq 'taffybar.debug'; then
+    break
+  fi
+  sleep 0.1
+done
+
+if ! busctl --user list 2>/dev/null | rg -Fq 'taffybar.debug'; then
+  echo "taffybar.debug DBus name not present (is taffybar running with withDebugServer?)." >&2
+  exit 1
+fi
+
+busctl --user call taffybar.debug /taffybar/debug taffybar.debug PopupSniMenu sb "$match" "$submenu" >/dev/null
