@@ -1,3 +1,5 @@
+#+PROPERTY: header-args:emacs-lisp :tangle org-config-config.el
+
 * include-file-as-forms
 We're going to use this to write separate parts of our config to different sections that will then be provided to our use package statment
 #+begin_src emacs-lisp :tangle org-config.el
@@ -775,7 +777,8 @@ SCHEDULED: %^t
    'org-babel-load-languages '((mermaid . t))))
 #+end_src
 ** frame-mode handling
-Note that this does not go into org-config-config.el. This is on purpose
+This block is part of the runtime config. It is tangled via the default
+`header-args:emacs-lisp` for this file (see the `#+PROPERTY` near the top).
 #+begin_src emacs-lisp
 (use-package org
   :ensure nil

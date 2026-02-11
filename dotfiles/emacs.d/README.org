@@ -2950,11 +2950,26 @@ My org-mode configuration now lives in its own file org-config.org.
 #+BEGIN_SRC emacs-lisp
 (let* ((org-config (expand-file-name "org-config.org" user-emacs-directory))
        (org-config-el (expand-file-name "org-config.el" user-emacs-directory)))
-  (when (file-newer-than-file-p org-config org-config-el)
-    ;; Tangle all outputs so org-config-bind.el/org-config-config.el are fresh.
-    (org-babel-tangle-file org-config)
-    (when (file-exists-p org-config-el)
-      (set-file-times org-config-el)))
+  (let* ((outputs (mapcar (lambda (f) (expand-file-name f user-emacs-directory))
+                          '("org-config.el"
+                            "org-config-preface.el"
+                            "org-config-custom.el"
+                            "org-config-bind.el"
+                            "org-config-config.el")))
+         (needs-tangle nil))
+    ;; Tangle if any output is missing or stale. This is more robust than only
+    ;; checking org-config.el, since tangling can update some outputs without
+    ;; touching org-config.el's contents.
+    (dolist (f outputs)
+      (when (or (not (file-exists-p f))
+                (file-newer-than-file-p org-config f))
+        (setq needs-tangle t)))
+    (when needs-tangle
+      (org-babel-tangle-file org-config)
+      ;; Prevent re-tangling on every startup when files are unchanged.
+      (dolist (f outputs)
+        (when (file-exists-p f)
+          (set-file-times f)))))
   (load-file org-config-el))
 #+END_SRC
 *** TeX
