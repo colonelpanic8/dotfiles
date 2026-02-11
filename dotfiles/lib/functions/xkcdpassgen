@@ -1,0 +1,42 @@
+#!/usr/bin/env bash
+
+function xkcdpassgen {
+    local use_upper=true use_number=true use_symbol=true
+    local OPTIND opt
+
+    while getopts "UNS" opt; do
+        case "$opt" in
+            U) use_upper=false ;;
+            N) use_number=false ;;
+            S) use_symbol=false ;;
+        esac
+    done
+    shift $((OPTIND - 1))
+
+    if [ -z "$1" ]; then
+        echo "Usage: xkcdpassgen [-U] [-N] [-S] <pass-entry-name>" >&2
+        echo "  -U  omit uppercase letter" >&2
+        echo "  -N  omit number" >&2
+        echo "  -S  omit symbol" >&2
+        return 1
+    fi
+
+    local base_pass suffix="" password
+    base_pass="$(xkcdpass -n 3 | tr -d ' ')"
+
+    if $use_upper; then
+        suffix+="$(echo {A..Z} | tr ' ' '\n' | shuf -n1)"
+    fi
+    if $use_number; then
+        suffix+="$(shuf -i 0-9 -n1)"
+    fi
+    if $use_symbol; then
+        suffix+="$(echo '!@#$%^&*' | fold -w1 | shuf -n1)"
+    fi
+
+    password="${base_pass}${suffix}"
+
+    echo "$password" | pass insert -e "$1"
+}
+
+xkcdpassgen "$@"
