@@ -22,7 +22,6 @@ makeEnable config "myModules.hyprland" true {
     grim           # Screenshot utility
     slurp          # Region selection
     swappy         # Screenshot annotation
-    wlsunset       # Night light / blue light filter
     nwg-displays   # GUI monitor arrangement
 
     # hy3 plugin from flake (properly built against matching Hyprland)
