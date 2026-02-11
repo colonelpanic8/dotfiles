@@ -64,6 +64,21 @@
           config.allowBroken = true;
         };
 
+        # Exclude local worktree/build artifacts from the source we feed to
+        # callCabal2nix. cleanSource alone still includes .worktrees/.
+        cleanedTaffybarSource = pkgs.lib.cleanSourceWith {
+          src = taffybar.outPath;
+          filter = path: type:
+            let
+              relPath = pkgs.lib.removePrefix "${toString taffybar.outPath}/" (toString path);
+              excludedTopLevel = [ ".worktrees" ".direnv" "dist" "dist-newstyle" "result" ];
+              isExcluded = pkgs.lib.lists.any
+                (prefix: relPath == prefix || pkgs.lib.hasPrefix "${prefix}/" relPath)
+                excludedTopLevel;
+            in
+              pkgs.lib.cleanSourceFilter path type && !isExcluded;
+        };
+
         hOverrides = hself: hsuper: {
           dbus-menu =
             pkgs.haskell.lib.overrideCabal
@@ -101,7 +116,8 @@
           # Build taffybar from our local flake input so it includes our extra
           # modules (e.g. System.Taffybar.Widget.ASUS) used by this config.
           taffybar = pkgs.haskell.lib.overrideCabal
-            (hself.callCabal2nix "taffybar" (pkgs.lib.cleanSource taffybar.outPath) { inherit (pkgs) gtk3; })
+            (pkgs.haskell.lib.disableStaticLibraries
+              (hself.callCabal2nix "taffybar" cleanedTaffybarSource { inherit (pkgs) gtk3; }))
             (oa: {
               doHaddock = false;
               doCheck = false;
