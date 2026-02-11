@@ -266,9 +266,6 @@
 	letter-spacing: 0.2px;
 }
 
-.mpris label {
-	color: @font-muted;
-}
 
 /* ASUS platform profile widget */
 .asus-profile { }
