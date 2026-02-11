@@ -363,8 +363,8 @@ endWidgetsForHost hostName backend =
   let baseEndWidgets = [audioWidget, diskUsageWidget, networkWidget, screenLockWidget, wlsunsetWidget, mprisWidget, sniTrayWidget]
       laptopEndWidgets =
         [ batteryWidget
-        , asusWidget
         , sniTrayWidget
+        , asusWidget
         , audioWidget
         , diskUsageWidget
         , backlightWidget
