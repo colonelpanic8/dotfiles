@@ -92,7 +92,7 @@
 
   system.autoUpgrade = {
     enable = true;
-    dates = "daily";
+    dates = "hourly";
   };
 
   system.stateVersion = "23.11";
