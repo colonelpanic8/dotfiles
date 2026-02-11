@@ -1,7 +1,8 @@
 # Agentic Session Preferences
 
 ## Tmux session titling
-- If the TMUX environment variable is set, treat this chat as the controller for the current tmux session.
+- Treat this chat as the controller for the current tmux session.
+- Run the tmux rename one-liner eagerly without checking whether TMUX is set first.
 - Maintain a session/window/pane title that updates when the task focus changes substantially.
 - Prefer automatic titling: infer a concise <task> from the current user request and context without asking.
 - Title format: "<project> - <task>".
