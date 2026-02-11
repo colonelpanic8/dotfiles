@@ -475,6 +475,27 @@
         "type": "github"
       }
     },
+    "git-ignore-nix_2": {
+      "inputs": {
+        "nixpkgs": [
+          "kanshi-sni",
+          "nixpkgs"
+        ]
+      },
+      "locked": {
+        "lastModified": 1762808025,
+        "narHash": "sha256-XmjITeZNMTQXGhhww6ed/Wacy2KzD6svioyCX7pkUu4=",
+        "owner": "hercules-ci",
+        "repo": "gitignore.nix",
+        "rev": "cb5e3fdca1de58ccbc3ef53de65bd372b48f567c",
+        "type": "github"
+      },
+      "original": {
+        "owner": "hercules-ci",
+        "repo": "gitignore.nix",
+        "type": "github"
+      }
+    },
     "git-sync-rs": {
       "inputs": {
         "flake-utils": [
@@ -484,11 +505,11 @@
         "rust-overlay": "rust-overlay"
       },
       "locked": {
-        "lastModified": 1770784385,
-        "narHash": "sha256-EOKx6nqDMY0jRA65NVgYarlzOxfYNWM3Mso4oNJ6RA0=",
+        "lastModified": 1770787421,
+        "narHash": "sha256-rkFoV37meFqOImTwH/0dNrBf1r4ZkoU8g85NKwLLAMY=",
         "owner": "colonelpanic8",
         "repo": "git-sync-rs",
-        "rev": "670b127a9e29b463e27ac5bac002b7ac612df93b",
+        "rev": "14032471eb80ae69b17c85066208a000062d0fe9",
         "type": "github"
       },
       "original": {
@@ -915,15 +936,16 @@
         ]
       },
       "locked": {
-        "lastModified": 1767812182,
-        "narHash": "sha256-w91iSY7sor8DmBaUv2zYByf0lPWtWLqVn4LitmxZV9E=",
-        "owner": "sashetophizika",
+        "lastModified": 1770789464,
+        "narHash": "sha256-ZP9yyJERehoCl18QwaSHq2eh2UgBr7ZjnnEXk5z2WaA=",
+        "owner": "colonelpanic8",
         "repo": "hyprscratch",
-        "rev": "28fd0f9774b4be6034301a5484b00800eb6f3747",
+        "rev": "8a20dd005e80935b5cdd21568605cf7023d58293",
         "type": "github"
       },
       "original": {
-        "owner": "sashetophizika",
+        "owner": "colonelpanic8",
+        "ref": "reapply-rules-on-toggle",
         "repo": "hyprscratch",
         "type": "github"
       }
@@ -1098,6 +1120,30 @@
         "type": "path"
       },
       "parent": []
+    },
+    "kanshi-sni": {
+      "inputs": {
+        "flake-utils": [
+          "flake-utils"
+        ],
+        "git-ignore-nix": "git-ignore-nix_2",
+        "nixpkgs": [
+          "nixpkgs"
+        ]
+      },
+      "locked": {
+        "lastModified": 1770750664,
+        "narHash": "sha256-rwDki2UKyZ90LefJLCGPBTZSMNgPGdhmVq0Swf7Pa+8=",
+        "owner": "taffybar",
+        "repo": "kanshi-sni",
+        "rev": "d2c49b844f6f4d1988996214fa5bdf5c3dd0748a",
+        "type": "github"
+      },
+      "original": {
+        "owner": "taffybar",
+        "repo": "kanshi-sni",
+        "type": "github"
+      }
     },
     "mova": {
       "flake": false,
@@ -1608,6 +1654,7 @@
         "hyprland-plugins": "hyprland-plugins",
         "hyprscratch": "hyprscratch",
         "imalison-taffybar": "imalison-taffybar",
+        "kanshi-sni": "kanshi-sni",
         "nix": "nix",
         "nixified-ai": "nixified-ai",
         "nixos-hardware": "nixos-hardware",

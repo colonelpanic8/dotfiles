@@ -55,6 +55,14 @@
       };
     };
 
+    kanshi-sni = {
+      url = "github:taffybar/kanshi-sni";
+      inputs = {
+        nixpkgs.follows = "nixpkgs";
+        flake-utils.follows = "flake-utils";
+      };
+    };
+
     # Hyprland and plugins from official flakes for proper plugin compatibility
     hyprland = {
       url = "git+https://github.com/hyprwm/Hyprland?submodules=1&ref=refs/tags/v0.53.0";
@@ -68,6 +76,11 @@
     hyprland-plugins = {
       url = "github:hyprwm/hyprland-plugins?ref=v0.53.0";
       inputs.hyprland.follows = "hyprland";
+    };
+
+    hyprscratch = {
+      url = "github:colonelpanic8/hyprscratch/reapply-rules-on-toggle";
+      inputs.nixpkgs.follows = "nixpkgs";
     };
 
     railbird-secrets = {
@@ -112,6 +125,8 @@
         status-notifier-item.follows = "status-notifier-item";
         xmonad.follows = "xmonad";
         xmonad-contrib.follows = "xmonad-contrib";
+        dbus-menu.follows = "dbus-menu";
+        dbus-hslogger.follows = "dbus-hslogger";
         weeder-nix.inputs.pre-commit-hooks.inputs.nixpkgs.follows = "nixpkgs";
       };
     };
@@ -123,6 +138,11 @@
         flake-utils.follows = "flake-utils";
         xmonad.follows = "xmonad";
         taffybar.follows = "taffybar";
+        dbus-menu.follows = "dbus-menu";
+        dbus-hslogger.follows = "dbus-hslogger";
+        gtk-sni-tray.follows = "gtk-sni-tray";
+        gtk-strut.follows = "gtk-strut";
+        status-notifier-item.follows = "status-notifier-item";
       };
     };
 
@@ -142,6 +162,8 @@
         flake-utils.follows = "flake-utils";
         git-ignore-nix.follows = "git-ignore-nix";
         status-notifier-item.follows = "status-notifier-item";
+        gtk-strut.follows = "gtk-strut";
+        dbus-menu.follows = "dbus-menu";
       };
     };
 
@@ -161,6 +183,20 @@
         flake-utils.follows = "flake-utils";
         git-ignore-nix.follows = "git-ignore-nix";
       };
+    };
+
+    dbus-menu = {
+      url = "github:taffybar/dbus-menu";
+      inputs = {
+        nixpkgs.follows = "nixpkgs";
+        flake-utils.follows = "flake-utils";
+        git-ignore-nix.follows = "git-ignore-nix";
+      };
+    };
+
+    dbus-hslogger = {
+      url = "github:IvanMalison/dbus-hslogger";
+      flake = false;
     };
 
     vscode-server = {
