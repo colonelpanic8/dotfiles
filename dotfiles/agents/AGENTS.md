@@ -38,3 +38,9 @@
 - If you are not sure what the package is called in nixpkgs, use:
 
   nix search nixpkgs <name-or-keyword>
+
+## Credentials
+- When a credential (password, API key, token, etc.) is needed to complete a task, use the `pass` utility to retrieve it.
+- The pass password store lives at `~/.password-store/`.
+- Use `pass show <entry>` to retrieve a secret, or `pass find <search-term>` to locate entries.
+- Never hardcode credentials or store them in plain text files.
