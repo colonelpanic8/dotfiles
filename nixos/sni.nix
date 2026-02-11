@@ -1,4 +1,4 @@
-{ config, lib, makeEnable, ... }:
+{ config, inputs, lib, pkgs, makeEnable, ... }:
 makeEnable config "myModules.sni" true {
   home-manager.sharedModules = [
     {
@@ -9,6 +9,22 @@ makeEnable config "myModules.sni" true {
           };
         in
         {
+          kanshi-sni = {
+            Unit = {
+              Description = "kanshi-sni tray app";
+              After = [ "graphical-session.target" "tray.target" ];
+              PartOf = [ "graphical-session.target" ];
+              Requires = [ "tray.target" ];
+            };
+            Service = {
+              ExecStart = "${inputs.kanshi-sni.packages.${pkgs.stdenv.hostPlatform.system}.default}/bin/kanshi-sni";
+              Restart = "always";
+              RestartSec = 3;
+            };
+            Install = {
+              WantedBy = [ "graphical-session.target" ];
+            };
+          };
           blueman-applet = wantGraphicalPre;
           kdeconnect = wantGraphicalPre;
           kdeconnect-indicator = wantGraphicalPre;
