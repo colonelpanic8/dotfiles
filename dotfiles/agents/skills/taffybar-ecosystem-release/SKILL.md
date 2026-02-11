@@ -52,6 +52,8 @@ Use the `hackage-release` skill for the full Hackage publish workflow. In the lo
 6. Publish to Hackage
 7. Publish docs
 
+**Manual doc upload required for GTK-dependent packages:** Hackage cannot build documentation for packages that depend on GTK/GI libraries (the build servers lack the system dependencies). This affects `taffybar`, `gtk-sni-tray`, `gtk-strut`, and `dbus-menu`. For these packages you must build haddocks locally and upload them yourself — see the `hackage-release` skill for the `cabal haddock --haddock-for-hackage` and `cabal upload --documentation` commands. Only `status-notifier-item` and `dbus-hslogger` (pure DBus/Haskell deps) can have their docs built by Hackage automatically.
+
 ### 2. Update Dependents' Version Bounds
 
 For each package higher in the graph that depends on what you just released, update the dependency bound in its `.cabal` file. For example, if you bumped `gtk-strut` to 0.1.5.0:
