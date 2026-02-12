@@ -191,18 +191,44 @@
         "type": "github"
       }
     },
+    "dbus-hslogger_2": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1770613712,
+        "narHash": "sha256-Az7USYfzylaIduPoOzxaz+6Evpn+TvVcThbPpWORt8k=",
+        "owner": "taffybar",
+        "repo": "dbus-hslogger",
+        "rev": "56195c6e46e04e2454fa0fa643e06eb7ef2a0952",
+        "type": "github"
+      },
+      "original": {
+        "owner": "taffybar",
+        "repo": "dbus-hslogger",
+        "type": "github"
+      }
+    },
     "dbus-menu": {
       "inputs": {
-        "flake-utils": [
-          "flake-utils"
-        ],
-        "git-ignore-nix": [
-          "git-ignore-nix"
-        ],
-        "nixpkgs": [
-          "nixpkgs"
-        ]
+        "flake-utils": "flake-utils_2",
+        "git-ignore-nix": "git-ignore-nix_2",
+        "nixpkgs": "nixpkgs_3"
       },
+      "locked": {
+        "lastModified": 1770773439,
+        "narHash": "sha256-juj+CqzH/jCDkFRKHxZfP32KC4+vnk1c1eH9gd5QIHQ=",
+        "owner": "taffybar",
+        "repo": "dbus-menu",
+        "rev": "d683d898ef4bc89aba8579a032b7b36522e3e834",
+        "type": "github"
+      },
+      "original": {
+        "owner": "taffybar",
+        "repo": "dbus-menu",
+        "type": "github"
+      }
+    },
+    "dbus-menu_2": {
+      "flake": false,
       "locked": {
         "lastModified": 1770773439,
         "narHash": "sha256-juj+CqzH/jCDkFRKHxZfP32KC4+vnk1c1eH9gd5QIHQ=",
@@ -446,6 +472,24 @@
         "type": "github"
       }
     },
+    "flake-utils_2": {
+      "inputs": {
+        "systems": "systems_2"
+      },
+      "locked": {
+        "lastModified": 1731533236,
+        "narHash": "sha256-l0KFg5HjrsfsO/JpG+r7fRrqm12kzFHyUHqHCVpMMbI=",
+        "owner": "numtide",
+        "repo": "flake-utils",
+        "rev": "11707dc2f618dd54ca8739b309ec4fc024de578b",
+        "type": "github"
+      },
+      "original": {
+        "owner": "numtide",
+        "repo": "flake-utils",
+        "type": "github"
+      }
+    },
     "git-hooks-nix": {
       "inputs": {
         "flake-compat": [
@@ -498,6 +542,91 @@
       }
     },
     "git-ignore-nix_2": {
+      "inputs": {
+        "nixpkgs": [
+          "imalison-taffybar",
+          "dbus-menu",
+          "nixpkgs"
+        ]
+      },
+      "locked": {
+        "lastModified": 1762808025,
+        "narHash": "sha256-XmjITeZNMTQXGhhww6ed/Wacy2KzD6svioyCX7pkUu4=",
+        "owner": "hercules-ci",
+        "repo": "gitignore.nix",
+        "rev": "cb5e3fdca1de58ccbc3ef53de65bd372b48f567c",
+        "type": "github"
+      },
+      "original": {
+        "owner": "hercules-ci",
+        "repo": "gitignore.nix",
+        "type": "github"
+      }
+    },
+    "git-ignore-nix_3": {
+      "inputs": {
+        "nixpkgs": [
+          "imalison-taffybar",
+          "gtk-sni-tray",
+          "nixpkgs"
+        ]
+      },
+      "locked": {
+        "lastModified": 1709087332,
+        "narHash": "sha256-HG2cCnktfHsKV0s4XW83gU3F57gaTljL9KNSuG6bnQs=",
+        "owner": "hercules-ci",
+        "repo": "gitignore.nix",
+        "rev": "637db329424fd7e46cf4185293b9cc8c88c95394",
+        "type": "github"
+      },
+      "original": {
+        "owner": "hercules-ci",
+        "repo": "gitignore.nix",
+        "type": "github"
+      }
+    },
+    "git-ignore-nix_4": {
+      "inputs": {
+        "nixpkgs": [
+          "imalison-taffybar",
+          "gtk-strut",
+          "nixpkgs"
+        ]
+      },
+      "locked": {
+        "lastModified": 1709087332,
+        "narHash": "sha256-HG2cCnktfHsKV0s4XW83gU3F57gaTljL9KNSuG6bnQs=",
+        "owner": "hercules-ci",
+        "repo": "gitignore.nix",
+        "rev": "637db329424fd7e46cf4185293b9cc8c88c95394",
+        "type": "github"
+      },
+      "original": {
+        "owner": "hercules-ci",
+        "repo": "gitignore.nix",
+        "type": "github"
+      }
+    },
+    "git-ignore-nix_5": {
+      "inputs": {
+        "nixpkgs": "nixpkgs_4"
+      },
+      "locked": {
+        "lastModified": 1762808025,
+        "narHash": "sha256-XmjITeZNMTQXGhhww6ed/Wacy2KzD6svioyCX7pkUu4=",
+        "owner": "hercules-ci",
+        "repo": "gitignore.nix",
+        "rev": "cb5e3fdca1de58ccbc3ef53de65bd372b48f567c",
+        "type": "github"
+      },
+      "original": {
+        "owner": "hercules-ci",
+        "ref": "master",
+        "repo": "gitignore.nix",
+        "type": "github"
+      }
+    },
+    "git-ignore-nix_6": {
       "inputs": {
         "nixpkgs": [
           "kanshi-sni",
@@ -588,21 +717,24 @@
     "gtk-sni-tray": {
       "inputs": {
         "dbus-menu": [
+          "imalison-taffybar",
           "dbus-menu"
         ],
         "flake-utils": [
+          "imalison-taffybar",
           "flake-utils"
         ],
-        "git-ignore-nix": [
-          "git-ignore-nix"
-        ],
+        "git-ignore-nix": "git-ignore-nix_3",
         "gtk-strut": [
+          "imalison-taffybar",
           "gtk-strut"
         ],
         "nixpkgs": [
+          "imalison-taffybar",
           "nixpkgs"
         ],
         "status-notifier-item": [
+          "imalison-taffybar",
           "status-notifier-item"
         ]
       },
@@ -620,15 +752,32 @@
         "type": "github"
       }
     },
+    "gtk-sni-tray_2": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1770888586,
+        "narHash": "sha256-FAaQuetRjb71PDbWIWeoUrpJkvLW9BwykSQnZ9V+Ko8=",
+        "owner": "taffybar",
+        "repo": "gtk-sni-tray",
+        "rev": "75a65ec38397529aafd322552e88f1d4917a1050",
+        "type": "github"
+      },
+      "original": {
+        "owner": "taffybar",
+        "ref": "master",
+        "repo": "gtk-sni-tray",
+        "type": "github"
+      }
+    },
     "gtk-strut": {
       "inputs": {
         "flake-utils": [
+          "imalison-taffybar",
           "flake-utils"
         ],
-        "git-ignore-nix": [
-          "git-ignore-nix"
-        ],
+        "git-ignore-nix": "git-ignore-nix_4",
         "nixpkgs": [
+          "imalison-taffybar",
           "nixpkgs"
         ]
       },
@@ -642,6 +791,23 @@
       },
       "original": {
         "owner": "taffybar",
+        "repo": "gtk-strut",
+        "type": "github"
+      }
+    },
+    "gtk-strut_2": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1760550944,
+        "narHash": "sha256-S0saDsCA3aosU23jO5+jSXkbyrv7/C48o8GjsZrqF0I=",
+        "owner": "taffybar",
+        "repo": "gtk-strut",
+        "rev": "5e0bf7f4b93b931a9c4b4a48b5d39de3ca8f02ae",
+        "type": "github"
+      },
+      "original": {
+        "owner": "taffybar",
+        "ref": "master",
         "repo": "gtk-strut",
         "type": "github"
       }
@@ -671,7 +837,7 @@
     "hercules-ci-effects_2": {
       "inputs": {
         "flake-parts": "flake-parts_5",
-        "nixpkgs": "nixpkgs_5"
+        "nixpkgs": "nixpkgs_7"
       },
       "locked": {
         "lastModified": 1701009247,
@@ -1105,27 +1271,17 @@
     },
     "imalison-taffybar": {
       "inputs": {
-        "dbus-hslogger": [
-          "dbus-hslogger"
-        ],
-        "dbus-menu": [
-          "dbus-menu"
-        ],
+        "dbus-hslogger": "dbus-hslogger",
+        "dbus-menu": "dbus-menu",
         "flake-utils": [
           "flake-utils"
         ],
-        "gtk-sni-tray": [
-          "gtk-sni-tray"
-        ],
-        "gtk-strut": [
-          "gtk-strut"
-        ],
+        "gtk-sni-tray": "gtk-sni-tray",
+        "gtk-strut": "gtk-strut",
         "nixpkgs": [
           "nixpkgs"
         ],
-        "status-notifier-item": [
-          "status-notifier-item"
-        ],
+        "status-notifier-item": "status-notifier-item",
         "taffybar": [
           "taffybar"
         ],
@@ -1148,7 +1304,7 @@
         "flake-utils": [
           "flake-utils"
         ],
-        "git-ignore-nix": "git-ignore-nix_2",
+        "git-ignore-nix": "git-ignore-nix_6",
         "nixpkgs": [
           "nixpkgs"
         ]
@@ -1209,7 +1365,7 @@
         "flake-compat": "flake-compat_2",
         "flake-parts": "flake-parts",
         "git-hooks-nix": "git-hooks-nix",
-        "nixpkgs": "nixpkgs_3",
+        "nixpkgs": "nixpkgs_5",
         "nixpkgs-23-11": "nixpkgs-23-11",
         "nixpkgs-regression": "nixpkgs-regression"
       },
@@ -1385,6 +1541,36 @@
     },
     "nixpkgs_3": {
       "locked": {
+        "lastModified": 1770562336,
+        "narHash": "sha256-ub1gpAONMFsT/GU2hV6ZWJjur8rJ6kKxdm9IlCT0j84=",
+        "owner": "NixOS",
+        "repo": "nixpkgs",
+        "rev": "d6c71932130818840fc8fe9509cf50be8c64634f",
+        "type": "github"
+      },
+      "original": {
+        "owner": "NixOS",
+        "ref": "nixos-unstable",
+        "repo": "nixpkgs",
+        "type": "github"
+      }
+    },
+    "nixpkgs_4": {
+      "locked": {
+        "lastModified": 1666603677,
+        "narHash": "sha256-apAEIj+z1iwMaMJ4tB21r/VTetfGDLDzuhXRHJknIAU=",
+        "owner": "NixOS",
+        "repo": "nixpkgs",
+        "rev": "074da18a72269cc5a6cf444dce42daea5649b2fe",
+        "type": "github"
+      },
+      "original": {
+        "id": "nixpkgs",
+        "type": "indirect"
+      }
+    },
+    "nixpkgs_5": {
+      "locked": {
         "lastModified": 1769089682,
         "narHash": "sha256-Xu+7iYcAuOvsI2wdkUcIEmkqEJbvvE6n7qR9QNjJyP4=",
         "rev": "078d69f03934859a181e81ba987c2bb033eebfc5",
@@ -1396,7 +1582,7 @@
         "url": "https://channels.nixos.org/nixos-25.11/nixexprs.tar.xz"
       }
     },
-    "nixpkgs_4": {
+    "nixpkgs_6": {
       "locked": {
         "lastModified": 1770562336,
         "narHash": "sha256-ub1gpAONMFsT/GU2hV6ZWJjur8rJ6kKxdm9IlCT0j84=",
@@ -1412,7 +1598,7 @@
         "type": "github"
       }
     },
-    "nixpkgs_5": {
+    "nixpkgs_7": {
       "locked": {
         "lastModified": 1697723726,
         "narHash": "sha256-SaTWPkI8a5xSHX/rrKzUe+/uVNy6zCGMXgoeMb7T9rg=",
@@ -1428,7 +1614,7 @@
         "type": "github"
       }
     },
-    "nixpkgs_6": {
+    "nixpkgs_8": {
       "locked": {
         "lastModified": 1703255338,
         "narHash": "sha256-Z6wfYJQKmDN9xciTwU3cOiOk+NElxdZwy/FiHctCzjU=",
@@ -1448,7 +1634,7 @@
       "inputs": {
         "flake-parts": "flake-parts_4",
         "hercules-ci-effects": "hercules-ci-effects_2",
-        "nixpkgs": "nixpkgs_6",
+        "nixpkgs": "nixpkgs_8",
         "osx-kvm": "osx-kvm"
       },
       "locked": {
@@ -1684,13 +1870,9 @@
         "caelestia-shell": "caelestia-shell",
         "claude-code-nix": "claude-code-nix",
         "codex-cli-nix": "codex-cli-nix",
-        "dbus-hslogger": "dbus-hslogger",
-        "dbus-menu": "dbus-menu",
         "flake-utils": "flake-utils",
         "git-ignore-nix": "git-ignore-nix",
         "git-sync-rs": "git-sync-rs",
-        "gtk-sni-tray": "gtk-sni-tray",
-        "gtk-strut": "gtk-strut",
         "home-manager": "home-manager",
         "hy3": "hy3",
         "hyprland": "hyprland",
@@ -1703,13 +1885,12 @@
         "nixified-ai": "nixified-ai",
         "nixos-hardware": "nixos-hardware",
         "nixos-wsl": "nixos-wsl",
-        "nixpkgs": "nixpkgs_4",
+        "nixpkgs": "nixpkgs_6",
         "nixtheplanet": "nixtheplanet",
         "notifications-tray-icon": "notifications-tray-icon",
         "org-agenda-api": "org-agenda-api",
         "railbird-secrets": "railbird-secrets",
-        "status-notifier-item": "status-notifier-item",
-        "systems": "systems_2",
+        "systems": "systems_3",
         "taffybar": "taffybar",
         "vscode-server": "vscode-server",
         "xmonad": "xmonad",
@@ -1756,12 +1937,12 @@
     "status-notifier-item": {
       "inputs": {
         "flake-utils": [
+          "imalison-taffybar",
           "flake-utils"
         ],
-        "git-ignore-nix": [
-          "git-ignore-nix"
-        ],
+        "git-ignore-nix": "git-ignore-nix_5",
         "nixpkgs": [
+          "imalison-taffybar",
           "nixpkgs"
         ]
       },
@@ -1775,6 +1956,23 @@
       },
       "original": {
         "owner": "taffybar",
+        "repo": "status-notifier-item",
+        "type": "github"
+      }
+    },
+    "status-notifier-item_2": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1770863106,
+        "narHash": "sha256-mEHxGAu5TN/BAxKOfwB42cqmSP92NKdBoJmwKWU2pfw=",
+        "owner": "taffybar",
+        "repo": "status-notifier-item",
+        "rev": "acc61e668750c009b79b98d7d1286aa71b5e625b",
+        "type": "github"
+      },
+      "original": {
+        "owner": "taffybar",
+        "ref": "fix/dbus-session-config-tests",
         "repo": "status-notifier-item",
         "type": "github"
       }
@@ -1809,29 +2007,34 @@
         "type": "github"
       }
     },
+    "systems_3": {
+      "locked": {
+        "lastModified": 1681028828,
+        "narHash": "sha256-Vy1rq5AaRuLzOxct8nz4T6wlgyUR7zLU309k9mBC768=",
+        "owner": "nix-systems",
+        "repo": "default",
+        "rev": "da67096a3b9bf56a91d16901293e51ba5b49a27e",
+        "type": "github"
+      },
+      "original": {
+        "owner": "nix-systems",
+        "repo": "default",
+        "type": "github"
+      }
+    },
     "taffybar": {
       "inputs": {
-        "dbus-hslogger": [
-          "dbus-hslogger"
-        ],
-        "dbus-menu": [
-          "dbus-menu"
-        ],
+        "dbus-hslogger": "dbus-hslogger_2",
+        "dbus-menu": "dbus-menu_2",
         "flake-utils": [
           "flake-utils"
         ],
-        "gtk-sni-tray": [
-          "gtk-sni-tray"
-        ],
-        "gtk-strut": [
-          "gtk-strut"
-        ],
+        "gtk-sni-tray": "gtk-sni-tray_2",
+        "gtk-strut": "gtk-strut_2",
         "nixpkgs": [
           "nixpkgs"
         ],
-        "status-notifier-item": [
-          "status-notifier-item"
-        ],
+        "status-notifier-item": "status-notifier-item_2",
         "weeder-nix": "weeder-nix",
         "xmonad": [
           "xmonad"
@@ -1841,8 +2044,8 @@
         ]
       },
       "locked": {
-        "lastModified": 1770852096,
-        "narHash": "sha256-eonGORWJoaN5dazwrPSck7XW13pIMmq5pyNw/52j/5c=",
+        "lastModified": 1770908792,
+        "narHash": "sha256-E7V1tC2BfyWKW4HRw/OmkZyvTFxG4JDVHXUCo0cntzo=",
         "path": "/home/imalison/dotfiles/dotfiles/config/taffybar/taffybar",
         "type": "path"
       },

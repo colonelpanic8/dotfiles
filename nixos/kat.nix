@@ -2,7 +2,7 @@
 makeEnable config "myModules.kat" false {
   environment.systemPackages = with pkgs; [
     obsidian
-    bitwarden
+    bitwarden-desktop
     code-cursor
     obsidian
     windsurf

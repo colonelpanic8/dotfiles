@@ -128,14 +128,8 @@
       inputs = {
         nixpkgs.follows = "nixpkgs";
         flake-utils.follows = "flake-utils";
-        gtk-sni-tray.follows = "gtk-sni-tray";
-        gtk-strut.follows = "gtk-strut";
-        status-notifier-item.follows = "status-notifier-item";
         xmonad.follows = "xmonad";
         xmonad-contrib.follows = "xmonad-contrib";
-        dbus-menu.follows = "dbus-menu";
-        dbus-hslogger.follows = "dbus-hslogger";
-        weeder-nix.inputs.pre-commit-hooks.inputs.nixpkgs.follows = "nixpkgs";
       };
     };
 
@@ -146,11 +140,6 @@
         flake-utils.follows = "flake-utils";
         xmonad.follows = "xmonad";
         taffybar.follows = "taffybar";
-        dbus-menu.follows = "dbus-menu";
-        dbus-hslogger.follows = "dbus-hslogger";
-        gtk-sni-tray.follows = "gtk-sni-tray";
-        gtk-strut.follows = "gtk-strut";
-        status-notifier-item.follows = "status-notifier-item";
       };
     };
 
@@ -161,50 +150,6 @@
         git-ignore-nix.follows = "git-ignore-nix";
         nixpkgs.follows = "nixpkgs";
       };
-    };
-
-    gtk-sni-tray = {
-      url = "github:taffybar/gtk-sni-tray";
-      inputs = {
-        nixpkgs.follows = "nixpkgs";
-        flake-utils.follows = "flake-utils";
-        git-ignore-nix.follows = "git-ignore-nix";
-        status-notifier-item.follows = "status-notifier-item";
-        gtk-strut.follows = "gtk-strut";
-        dbus-menu.follows = "dbus-menu";
-      };
-    };
-
-    status-notifier-item = {
-      url = "github:taffybar/status-notifier-item";
-      inputs = {
-        nixpkgs.follows = "nixpkgs";
-        flake-utils.follows = "flake-utils";
-        git-ignore-nix.follows = "git-ignore-nix";
-      };
-    };
-
-    gtk-strut = {
-      url = "github:taffybar/gtk-strut";
-      inputs = {
-        nixpkgs.follows = "nixpkgs";
-        flake-utils.follows = "flake-utils";
-        git-ignore-nix.follows = "git-ignore-nix";
-      };
-    };
-
-    dbus-menu = {
-      url = "github:taffybar/dbus-menu";
-      inputs = {
-        nixpkgs.follows = "nixpkgs";
-        flake-utils.follows = "flake-utils";
-        git-ignore-nix.follows = "git-ignore-nix";
-      };
-    };
-
-    dbus-hslogger = {
-      url = "github:IvanMalison/dbus-hslogger";
-      flake = false;
     };
 
     vscode-server = {
