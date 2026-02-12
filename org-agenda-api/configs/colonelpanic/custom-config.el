@@ -65,6 +65,13 @@
   (when (file-exists-p (expand-file-name "overrides.el" config-dir))
     (load (expand-file-name "overrides.el" config-dir))))
 
+;; Some org-config hooks call imalison:disable-yas. In the container, yasnippet
+;; may not be installed, so guard this helper to avoid startup crashes.
+(defun imalison:disable-yas ()
+  "Disable yas minor mode only when available."
+  (when (fboundp 'yas-minor-mode)
+    (yas-minor-mode -1)))
+
 ;; Define no-op stubs for unavailable packages (overwrite autoloads)
 (defun org-bullets-mode (&optional _arg)
   "No-op stub for org-bullets-mode (package not available in container)."
