@@ -607,11 +607,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1770773666,
-        "narHash": "sha256-/V9VmwCsTVhyjERB9rymNTBiSF2maKG7U7Zd+lMIVFM=",
+        "lastModified": 1770888586,
+        "narHash": "sha256-FAaQuetRjb71PDbWIWeoUrpJkvLW9BwykSQnZ9V+Ko8=",
         "owner": "taffybar",
         "repo": "gtk-sni-tray",
-        "rev": "0ca29b68293698450cb4e2e4e21e4f08a6a8656b",
+        "rev": "75a65ec38397529aafd322552e88f1d4917a1050",
         "type": "github"
       },
       "original": {
@@ -1766,11 +1766,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1770852064,
-        "narHash": "sha256-VtgQuGf7XVGfZlPhLT4AldAi+NW0t+r9Hy6tlSdkzYw=",
+        "lastModified": 1770888504,
+        "narHash": "sha256-GxOOov8SDkF5qph804KCPXvblKppQghKS8QmGRdWbXY=",
         "owner": "taffybar",
         "repo": "status-notifier-item",
-        "rev": "fbe6244855f73ff40a4683ed692109a94e81f199",
+        "rev": "9c2891026dd7f9a3694b0835644edbbac4ba1199",
         "type": "github"
       },
       "original": {
