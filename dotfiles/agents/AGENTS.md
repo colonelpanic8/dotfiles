@@ -21,6 +21,12 @@
 ## Pane usage
 - Do not create extra panes or windows unless the user asks.
 
+## Git worktrees
+- Default to creating git worktrees under a project-local `.worktrees/` directory at the repository root.
+- For a repository at `<repo_root>`, use worktree paths like `<repo_root>/.worktrees/<task-or-branch>`.
+- Create `.worktrees/` if needed before running `git worktree add`.
+- Only use a non-`.worktrees/` location when the user explicitly asks for a different path.
+
 ## NixOS workflow
 - This system is managed with a Nix flake at `~/dotfiles/nixos`.
 - Use `just switch` from that directory for rebuilds instead of plain `nixos-rebuild`.
