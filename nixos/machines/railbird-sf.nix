@@ -60,6 +60,7 @@
   myModules.gitea-runner.enable = true;
   # Disable the old multi-node railbird k3s setup
   myModules.railbird-k3s.enable = false;
+  myModules."keepbook-sync".enable = true;
 
   fileSystems."/" =
     { device = "/dev/disk/by-uuid/a317d456-6f84-41ee-a149-8e466e414aae";

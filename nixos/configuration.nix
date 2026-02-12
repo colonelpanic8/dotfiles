@@ -23,6 +23,7 @@
     ./k3s.nix
     ./k3s-single-node.nix
     ./kat.nix
+    ./keepbook-sync.nix
     ./keybase.nix
     ./kubelet.nix
     ./laptop.nix
@@ -69,6 +70,7 @@
       myModules.electron.enable = true;
       myModules.code.enable = true;
       myModules.games.enable = false;
+      myModules."keepbook-sync".enable = true;
       myModules.syncthing.enable = true;
       myModules.fonts.enable = true;
     })
