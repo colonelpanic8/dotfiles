@@ -1334,10 +1334,13 @@
         ]
       },
       "locked": {
-        "lastModified": 1770888240,
-        "narHash": "sha256-uDc/CQVg9dUigJtUpO21rE2JIdes7bRo6XYaWSa0asY=",
-        "path": "/home/imalison/Projects/keepbook",
-        "type": "path"
+        "lastModified": 1770934405,
+        "narHash": "sha256-So7/cClgSGy9T0/qRfdO+Wths8wAmFW2w51WooSyFs0=",
+        "ref": "refs/heads/master",
+        "rev": "0b035c3aea0a6b40d095ac0ffb784e8a1a4f5a93",
+        "revCount": 212,
+        "type": "git",
+        "url": "file:///home/imalison/Projects/keepbook"
       },
       "original": {
         "path": "/home/imalison/Projects/keepbook",
