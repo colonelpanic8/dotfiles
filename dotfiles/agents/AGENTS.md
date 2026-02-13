@@ -51,3 +51,26 @@
 - The pass password store lives at `~/.password-store/`.
 - Use `pass show <entry>` to retrieve a secret, or `pass find <search-term>` to locate entries.
 - Never hardcode credentials or store them in plain text files.
+
+## Project links (local symlink index)
+- Paths in this section are relative to this file's directory (`dotfiles/agents/`).
+- Keep a local symlink index under `./project-links/` for projects that are frequently referenced.
+- Treat these links as machine-local discovery state maintained by agents (do not commit machine-specific targets).
+- Reuse existing symlinks first. If a link is missing or stale, search for the repo, then update the link with:
+
+  ln -sfn "<absolute-path-to-repo>" "./project-links/<link-name>"
+
+- If a project cannot be found quickly, do a targeted search (starting from likely roots) and only then widen the search.
+
+## Project constellation guides
+- Keep per-constellation context in `./project-guides/` and keep this file minimal.
+- When a request involves one of these projects:
+  - Open the guide first.
+  - If a mentioned repo/package name matches a guide's related-project list, open that guide even if the user did not name the constellation explicitly.
+  - Ensure required links exist under `./project-links/`.
+  - If links are missing, run a targeted search from likely roots, then create/update the symlink.
+- Guide index:
+  - `./project-guides/mova-org-agenda-api.md`
+  - `./project-guides/taffybar.md`
+  - `./project-guides/railbird.md`
+  - `./project-guides/org-emacs-packages.md`
