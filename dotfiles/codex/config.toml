@@ -37,6 +37,9 @@ trust_level = "trusted"
 [projects."/home/imalison/Projects/notifications-tray-icon"]
 trust_level = "trusted"
 
+[projects."/home/imalison/Projects/hyprland"]
+trust_level = "trusted"
+
 [notice]
 hide_gpt5_1_migration_prompt = true
 "hide_gpt-5.1-codex-max_migration_prompt" = true
@@ -55,6 +58,9 @@ args = ["-y", "@google-cloud/observability-mcp"]
 [mcp_servers.gmail]
 command = "nix"
 args = ["run", "/home/imalison/Projects/gmail-mcp#gmail-mcp-server"]
+
+[mcp_servers.openaiDeveloperDocs]
+url = "https://developers.openai.com/mcp"
 
 [features]
 unified_exec = true
