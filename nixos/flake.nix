@@ -41,12 +41,13 @@
       url = "github:colonelpanic8/git-sync-rs";
       inputs = {
         flake-utils.follows = "flake-utils";
+        rust-overlay.url = "github:oxalica/rust-overlay";
         rust-overlay.inputs.nixpkgs.follows = "nixpkgs";
       };
     };
 
     keepbook = {
-      url = "path:/home/imalison/Projects/keepbook";
+      url = "github:colonelpanic8/keepbook";
       inputs = {
         nixpkgs.follows = "nixpkgs";
         flake-utils.follows = "flake-utils";
@@ -130,6 +131,8 @@
         flake-utils.follows = "flake-utils";
         xmonad.follows = "xmonad";
         xmonad-contrib.follows = "xmonad-contrib";
+        weeder-nix.url = "github:NorfairKing/weeder-nix";
+        weeder-nix.inputs.pre-commit-hooks.inputs.nixpkgs.follows = "nixpkgs";
       };
     };
 
@@ -225,13 +228,7 @@
     ];
 
     # Custom patches that don't fit the PR template
-    nixpkgsCustomPatches = [
-      {
-        # PR #488591: happy-coder: 0.11.2 -> 0.13.0
-        url = "https://github.com/NixOS/nixpkgs/commit/72ddcd82e5c09d47358a1f9add9f85032dcfb4a8.patch";
-        hash = "sha256-mlmZcwxP7IV93mQEAR3PYw8MRmNPRWXKbk9ZEKHqZc8=";
-      }
-    ];
+    nixpkgsCustomPatches = [ ];
 
     # Home-manager PR patches - just specify PR number and hash
     homeManagerPRPatches = [
