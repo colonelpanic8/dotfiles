@@ -4,8 +4,13 @@ let
   machineFilenames = builtins.attrNames (builtins.readDir ./machines);
   machineNameFromFilename = filename: builtins.head (builtins.split "\\." filename);
   machineNames = map machineNameFromFilename machineFilenames;
+  extraManagedSshHosts = [
+    "rbsf.tplinkdns.com"
+  ];
   managedSshHostPatterns =
-    machineNames ++ (map (machineName: "${machineName}.local") machineNames);
+    machineNames
+    ++ (map (machineName: "${machineName}.local") machineNames)
+    ++ extraManagedSshHosts;
   managedSshHostCasePattern = lib.concatStringsSep "|" managedSshHostPatterns;
 in
 with lib;
