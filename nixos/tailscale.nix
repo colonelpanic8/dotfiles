@@ -10,6 +10,14 @@ makeEnable config "myModules.tailscale" true {
   # Optional: unattended enrollment using a pre-auth key stored in agenix.
   #
   # Plaintext content "DISABLED" means "do nothing".
+  #
+  # This secret is encrypted to your "kanivan" SSH keys, so we include your
+  # user SSH key as an identity for decryption.
+  age.identityPaths = lib.mkDefault [
+    "/etc/ssh/ssh_host_ed25519_key"
+    "/home/imalison/.ssh/id_ed25519"
+  ];
+
   age.secrets.tailscale-authkey = {
     file = ./secrets/tailscale-authkey.age;
     owner = "root";
