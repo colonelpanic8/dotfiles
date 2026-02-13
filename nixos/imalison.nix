@@ -149,6 +149,25 @@
       };
     };
 
+    systemd.user.services.tailscale-systray = {
+      Unit = {
+        Description = "Tailscale systray";
+        After = [ "graphical-session.target" "tray.target" ];
+        PartOf = [ "graphical-session.target" ];
+        Requires = [ "tray.target" ];
+      };
+
+      Service = {
+        ExecStart = "${pkgs.tailscale}/bin/tailscale systray";
+        Restart = "on-failure";
+        RestartSec = 3;
+      };
+
+      Install = {
+        WantedBy = [ "graphical-session.target" ];
+      };
+    };
+
     xdg.desktopEntries.google-chrome-devtools = {
       name = "Google Chrome (DevTools)";
       genericName = "Web Browser";

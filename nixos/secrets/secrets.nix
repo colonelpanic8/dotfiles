@@ -25,4 +25,8 @@ in
   "org-api-ssh-key.age".publicKeys = keys.hostKeys ++ keys.kanivanKeys ++ keys.railbird-sf;
   "google-assistant-integration-service-key.age".publicKeys = keys.hostKeys ++ keys.kanivanKeys;
   "zwave-js.json.age".publicKeys = keys.hostKeys ++ keys.kanivanKeys;
+
+  # Optional Tailscale pre-auth key for unattended enrollment.
+  # This is safe to commit encrypted; default plaintext is "DISABLED".
+  "tailscale-authkey.age".publicKeys = keys.kanivanKeys;
 }
