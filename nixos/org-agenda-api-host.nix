@@ -151,7 +151,9 @@ in
     # Ensure container restarts on failure
     systemd.services.podman-org-agenda-api = {
       serviceConfig = {
-        Restart = "always";
+        # oci-containers also sets Restart; use mkForce to avoid an option merge
+        # conflict when both are present.
+        Restart = lib.mkForce "always";
         RestartSec = "10s";
       };
     };
