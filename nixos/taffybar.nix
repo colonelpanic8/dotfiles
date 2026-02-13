@@ -6,7 +6,23 @@ makeEnable config "myModules.taffybar" false {
     if builtins.isList taffybar.overlays
     then taffybar.overlays
     else builtins.attrValues taffybar.overlays
-  );
+  ) ++ [
+    # status-notifier-item's test suite spawns `dbus-daemon`; ensure it's on PATH.
+    (final: prev: {
+      haskellPackages = prev.haskellPackages.override (old: {
+        overrides =
+          final.lib.composeExtensions (old.overrides or (_: _: {}))
+          (hself: hsuper: {
+            status-notifier-item = hsuper.status-notifier-item.overrideAttrs (oldAttrs: {
+              checkInputs = (oldAttrs.checkInputs or []) ++ [ prev.dbus ];
+              # The test suite assumes a system-wide /etc/dbus-1/session.conf,
+              # which isn't present in Nix sandboxes.
+              doCheck = false;
+            });
+          });
+      });
+    })
+  ];
 
   environment.systemPackages = [
     inputs.imalison-taffybar.defaultPackage.${pkgs.stdenv.hostPlatform.system}
