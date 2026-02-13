@@ -3,6 +3,7 @@
 {
   imports = [
     ../configuration.nix
+    ../nixified.ai.nix
   ];
 
   features.full.enable = true;
