@@ -28,10 +28,13 @@
       '';
       registry.nixpkgs.flake = inputs.nixpkgs;
       settings = {
+        # Allow per-repo flake `nixConfig` (substituters, keys, etc).
+        accept-flake-config = true;
         keep-outputs = true;
         keep-derivations = true;
         substituters = [
           "https://cache.nixos.org"
+          "https://cache.railbird.ai?priority=45"
           "https://cuda-maintainers.cachix.org"
           "https://ai.cachix.org"
           "https://codex-cli.cachix.org"
