@@ -34,6 +34,7 @@ makeEnable config "myModules.base" true {
   networking.networkmanager = {
     enable = true;
     plugins = [ pkgs.networkmanager-l2tp pkgs.networkmanager-openvpn ];
+    settings.main.rc-manager = "symlink";
   };
   networking.resolvconf.enable = false;
   services.mullvad-vpn.enable = true;
