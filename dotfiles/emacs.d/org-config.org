@@ -799,7 +799,8 @@ This block is part of the runtime config. It is tangled via the default
   :config
   (progn
     (defun imalison:disable-yas ()
-      (yas-minor-mode -1))
+      (when (fboundp 'yas-minor-mode)
+        (yas-minor-mode -1)))
     (add-hook 'org-mode-hook 'imalison:disable-yas)))
 #+END_SRC
 ** Set Background Color of Source Blocks for Export
