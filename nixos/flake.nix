@@ -219,7 +219,7 @@
     nixpkgsPRPatches = [
       {
         pr = 490053;
-        hash = "sha256-74Q9hTQif+LeN9FSSSlphRwjERoWHt3vxvEsolvz9rY=";
+        hash = "sha256-na/bsUGWnw+vYybpuVv0DzZH6Er950xsnUSkqNcKcf4=";
       }
       # claude-code
       # {
