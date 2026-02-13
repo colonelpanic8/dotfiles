@@ -12,6 +12,36 @@
       };
     };
 
+    # Rootless podman stores images/layers under ~/.local/share/containers.
+    # NixOS' `virtualisation.podman.autoPrune` only affects the rootful store,
+    # so we prune the per-user store with a user timer.
+    systemd.user.services.podman-auto-prune = {
+      Unit = {
+        Description = "Podman auto prune (rootless)";
+      };
+
+      Service = {
+        Type = "oneshot";
+        ExecStart = "${pkgs.podman}/bin/podman system prune -a -f";
+      };
+    };
+
+    systemd.user.timers.podman-auto-prune = {
+      Unit = {
+        Description = "Podman auto prune (rootless)";
+      };
+
+      Timer = {
+        OnCalendar = "daily";
+        Persistent = true;
+        RandomizedDelaySec = "1h";
+      };
+
+      Install = {
+        WantedBy = [ "timers.target" ];
+      };
+    };
+
     systemd.user.services.hyprpaper = let
       wallpaperDir = "/var/lib/syncthing/sync/Wallpaper";
       waitForWayland = pkgs.writeShellScript "wait-for-wayland" ''

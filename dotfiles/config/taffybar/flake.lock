@@ -455,11 +455,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1770968502,
-        "narHash": "sha256-rDPLkd/bLnULwuB2djehP3DrzCwUUlS0oULp8ZtaXHM=",
+        "lastModified": 1770970375,
+        "narHash": "sha256-0G5dkc1bjAdbAJBBnipeEE2HbEkd4+bdkyRraumMRs4=",
         "owner": "taffybar",
         "repo": "status-notifier-item",
-        "rev": "4de1a1d218219e4d7484646f75d804adc2458f94",
+        "rev": "233aa43606036d06e58f19be156c48fa979506f2",
         "type": "github"
       },
       "original": {
@@ -554,8 +554,8 @@
         "xmonad-contrib": "xmonad-contrib"
       },
       "locked": {
-        "lastModified": 1770956858,
-        "narHash": "sha256-pkD5k50ZwsCdUY5PZUaEuaVuMF47iK/7fEapWTyG4eU=",
+        "lastModified": 1770970544,
+        "narHash": "sha256-rJV6yxYy77OJS994ICpNyecArjfhzGq6KKJrkbyYzvc=",
         "path": "/home/imalison/dotfiles/dotfiles/config/taffybar/taffybar",
         "type": "path"
       },
