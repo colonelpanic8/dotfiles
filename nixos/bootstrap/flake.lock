@@ -772,12 +772,13 @@
         ]
       },
       "locked": {
-        "lastModified": 1641783528,
-        "narHash": "sha256-wJymJfYPFj4/r1e4kT/wt9FEsyCXo5JkkcOoozpuhag=",
-        "owner": "taffybar",
-        "repo": "status-notifier-item",
-        "rev": "f4f9c66ab57fc42eeed0de8cfac9f5f9d30d9dc7",
-        "type": "github"
+        "lastModified": 1770953113,
+        "narHash": "sha256-E9HHKMMZStzKeXqKLPh32fA1q0aOrHg+v+gBw3dNwR4=",
+        "ref": "refs/heads/master",
+        "rev": "d62b44beb1b189bf4a97b7f632b2cb41d3addacb",
+        "revCount": 117,
+        "type": "git",
+        "url": "file:///home/imalison/Projects/status-notifier-item"
       },
       "original": {
         "owner": "taffybar",

@@ -1890,12 +1890,13 @@
         ]
       },
       "locked": {
-        "lastModified": 1770888504,
-        "narHash": "sha256-GxOOov8SDkF5qph804KCPXvblKppQghKS8QmGRdWbXY=",
-        "owner": "taffybar",
-        "repo": "status-notifier-item",
-        "rev": "9c2891026dd7f9a3694b0835644edbbac4ba1199",
-        "type": "github"
+        "lastModified": 1770953113,
+        "narHash": "sha256-E9HHKMMZStzKeXqKLPh32fA1q0aOrHg+v+gBw3dNwR4=",
+        "ref": "refs/heads/master",
+        "rev": "d62b44beb1b189bf4a97b7f632b2cb41d3addacb",
+        "revCount": 117,
+        "type": "git",
+        "url": "file:///home/imalison/Projects/status-notifier-item"
       },
       "original": {
         "owner": "taffybar",
@@ -1906,15 +1907,17 @@
     "status-notifier-item_2": {
       "flake": false,
       "locked": {
-        "lastModified": 1770852064,
-        "narHash": "sha256-VtgQuGf7XVGfZlPhLT4AldAi+NW0t+r9Hy6tlSdkzYw=",
-        "owner": "taffybar",
-        "repo": "status-notifier-item",
-        "rev": "fbe6244855f73ff40a4683ed692109a94e81f199",
-        "type": "github"
+        "lastModified": 1770953113,
+        "narHash": "sha256-E9HHKMMZStzKeXqKLPh32fA1q0aOrHg+v+gBw3dNwR4=",
+        "ref": "refs/heads/master",
+        "rev": "d62b44beb1b189bf4a97b7f632b2cb41d3addacb",
+        "revCount": 117,
+        "type": "git",
+        "url": "file:///home/imalison/Projects/status-notifier-item"
       },
       "original": {
         "owner": "taffybar",
+        "ref": "fix/dbus-session-config-tests",
         "repo": "status-notifier-item",
         "type": "github"
       }
@@ -1971,8 +1974,8 @@
         ]
       },
       "locked": {
-        "lastModified": 1770929453,
-        "narHash": "sha256-fMGNP6mU0KFQqTQNPbKYSQ/fioXIARCqwusTcx4NDsc=",
+        "lastModified": 1770953536,
+        "narHash": "sha256-ZEV2Z8QUg6rEi0vFsra2XZvxEvp65DwTBbl5dmBcMsE=",
         "path": "/home/imalison/dotfiles/dotfiles/config/taffybar/taffybar",
         "type": "path"
       },
