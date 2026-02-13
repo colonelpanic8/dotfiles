@@ -76,6 +76,24 @@
 	font-family: "Iosevka Nerd Font";
 }
 
+/* MPRIS2 widget toggles `no-visible-children`/`visible-children` on the outer
+   widget. When nothing is visible, collapse the whole pill so it doesn't leave
+   an empty squircle gap in the end widget row. */
+.outer-pad.mpris.no-visible-children {
+	margin: 0px;
+	background-color: @transparent;
+	box-shadow: none;
+	border-width: 0px;
+}
+
+.outer-pad.mpris.no-visible-children .inner-pad {
+	padding: 0px;
+}
+
+.outer-pad.mpris.no-visible-children .contents {
+	padding: 0px;
+}
+
 /* Workspaces styling */
 
 /* Reset workspace .outer-pad pills to default styling so the nth-child color
