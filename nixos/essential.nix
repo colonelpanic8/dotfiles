@@ -52,7 +52,6 @@
     pulseaudio
     python-with-my-packages
     rclone
-    rcm
     ripgrep
     runc
     silver-searcher

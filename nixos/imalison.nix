@@ -2,6 +2,7 @@
   home-manager.users.imalison = {
     imports = [
       ./emacs.nix
+      ./dotfiles-links.nix
     ];
 
     # Hyprland config starts this target on login (see `dotfiles/config/hypr/hyprland.conf`).
