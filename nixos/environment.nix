@@ -1,5 +1,12 @@
 { config, pkgs, options, lib, inputs, ... }:
-let libDir = "${config.dotfiles-directory}/dotfiles/lib";
+let
+  libDir = "${config.dotfiles-directory}/dotfiles/lib";
+  machineFilenames = builtins.attrNames (builtins.readDir ./machines);
+  machineNameFromFilename = filename: builtins.head (builtins.split "\\." filename);
+  machineNames = map machineNameFromFilename machineFilenames;
+  managedSshHostPatterns =
+    machineNames ++ (map (machineName: "${machineName}.local") machineNames);
+  managedSshHostCasePattern = lib.concatStringsSep "|" managedSshHostPatterns;
 in
 with lib;
 {
@@ -65,8 +72,11 @@ with lib;
     environment = {
       homeBinInPath = true;
       localBinInPath = true;
+      systemPackages = [
+        pkgs.ghostty.terminfo
+      ];
       shellAliases = {
-        df_ssh = "TERM='xterm-256color ssh -o StrictHostKeyChecking=no'";
+        df_ssh = "TERM=xterm-256color ssh -o StrictHostKeyChecking=no";
         fix_nix = "LD_LIBRARY_PATH='' nix";
         ta = "tmux attach";
       };
@@ -77,6 +87,29 @@ with lib;
         EDITOR = "emacsclient --alternate-editor emacs";
       };
       interactiveShellInit = ''
+        _df_is_managed_ssh_host() {
+          local host="$1"
+          case "$host" in
+            ${managedSshHostCasePattern}) return 0 ;;
+            *) return 1 ;;
+          esac
+        }
+
+        _df_ssh_target_host() {
+          command ssh -G "$@" 2>/dev/null | awk '/^hostname / { print $2; exit }'
+        }
+
+        # Keep advanced TERM on managed hosts, force compatibility elsewhere.
+        ssh() {
+          local host
+          host="$(_df_ssh_target_host "$@")"
+          if [ -n "$host" ] && _df_is_managed_ssh_host "$host"; then
+            command ssh "$@"
+          else
+            TERM=xterm-256color command ssh "$@"
+          fi
+        }
+
         vterm_printf(){
             if [ -n "$TMUX" ] && ([ "''${TERM%%-*}" = "tmux" ] || [ "''${TERM%%-*}" = "screen" ] ); then
                 # Tell tmux to pass the escape sequences through
