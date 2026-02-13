@@ -1,0 +1,5 @@
+interface:
+  display_name: "Playwright CLI"
+  short_description: "Automate browser interactions"
+  default_prompt: "Use playwright-cli to automate browser actions (open/goto/snapshot/click/type/screenshot) and save useful artifacts (screenshots, PDFs, auth state)."
+

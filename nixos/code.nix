@@ -18,6 +18,7 @@ makeEnable config "myModules.code" true {
     github-mcp-server
     gitea-mcp-server
     playwright-mcp
+    playwright-cli
 
     # C
     clang
