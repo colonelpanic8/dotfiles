@@ -143,6 +143,7 @@
         flake-utils.follows = "flake-utils";
         xmonad.follows = "xmonad";
         taffybar.follows = "taffybar";
+        status-notifier-item.follows = "taffybar/status-notifier-item";
       };
     };
 

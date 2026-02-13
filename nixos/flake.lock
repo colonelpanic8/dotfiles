@@ -565,25 +565,6 @@
     },
     "git-ignore-nix_4": {
       "inputs": {
-        "nixpkgs": "nixpkgs_3"
-      },
-      "locked": {
-        "lastModified": 1762808025,
-        "narHash": "sha256-XmjITeZNMTQXGhhww6ed/Wacy2KzD6svioyCX7pkUu4=",
-        "owner": "hercules-ci",
-        "repo": "gitignore.nix",
-        "rev": "cb5e3fdca1de58ccbc3ef53de65bd372b48f567c",
-        "type": "github"
-      },
-      "original": {
-        "owner": "hercules-ci",
-        "ref": "master",
-        "repo": "gitignore.nix",
-        "type": "github"
-      }
-    },
-    "git-ignore-nix_5": {
-      "inputs": {
         "nixpkgs": [
           "kanshi-sni",
           "nixpkgs"
@@ -793,7 +774,7 @@
     "hercules-ci-effects_2": {
       "inputs": {
         "flake-parts": "flake-parts_5",
-        "nixpkgs": "nixpkgs_6"
+        "nixpkgs": "nixpkgs_5"
       },
       "locked": {
         "lastModified": 1701009247,
@@ -1237,7 +1218,10 @@
         "nixpkgs": [
           "nixpkgs"
         ],
-        "status-notifier-item": "status-notifier-item",
+        "status-notifier-item": [
+          "taffybar",
+          "status-notifier-item"
+        ],
         "taffybar": [
           "taffybar"
         ],
@@ -1260,7 +1244,7 @@
         "flake-utils": [
           "flake-utils"
         ],
-        "git-ignore-nix": "git-ignore-nix_5",
+        "git-ignore-nix": "git-ignore-nix_4",
         "nixpkgs": [
           "nixpkgs"
         ]
@@ -1324,7 +1308,7 @@
         "flake-compat": "flake-compat_2",
         "flake-parts": "flake-parts",
         "git-hooks-nix": "git-hooks-nix",
-        "nixpkgs": "nixpkgs_4",
+        "nixpkgs": "nixpkgs_3",
         "nixpkgs-23-11": "nixpkgs-23-11",
         "nixpkgs-regression": "nixpkgs-regression"
       },
@@ -1500,20 +1484,6 @@
     },
     "nixpkgs_3": {
       "locked": {
-        "lastModified": 1666603677,
-        "narHash": "sha256-apAEIj+z1iwMaMJ4tB21r/VTetfGDLDzuhXRHJknIAU=",
-        "owner": "NixOS",
-        "repo": "nixpkgs",
-        "rev": "074da18a72269cc5a6cf444dce42daea5649b2fe",
-        "type": "github"
-      },
-      "original": {
-        "id": "nixpkgs",
-        "type": "indirect"
-      }
-    },
-    "nixpkgs_4": {
-      "locked": {
         "lastModified": 1769089682,
         "narHash": "sha256-Xu+7iYcAuOvsI2wdkUcIEmkqEJbvvE6n7qR9QNjJyP4=",
         "rev": "078d69f03934859a181e81ba987c2bb033eebfc5",
@@ -1525,7 +1495,7 @@
         "url": "https://channels.nixos.org/nixos-25.11/nixexprs.tar.xz"
       }
     },
-    "nixpkgs_5": {
+    "nixpkgs_4": {
       "locked": {
         "lastModified": 1770841267,
         "narHash": "sha256-9xejG0KoqsoKEGp2kVbXRlEYtFFcDTHjidiuX8hGO44=",
@@ -1541,7 +1511,7 @@
         "type": "github"
       }
     },
-    "nixpkgs_6": {
+    "nixpkgs_5": {
       "locked": {
         "lastModified": 1697723726,
         "narHash": "sha256-SaTWPkI8a5xSHX/rrKzUe+/uVNy6zCGMXgoeMb7T9rg=",
@@ -1557,7 +1527,7 @@
         "type": "github"
       }
     },
-    "nixpkgs_7": {
+    "nixpkgs_6": {
       "locked": {
         "lastModified": 1703255338,
         "narHash": "sha256-Z6wfYJQKmDN9xciTwU3cOiOk+NElxdZwy/FiHctCzjU=",
@@ -1577,7 +1547,7 @@
       "inputs": {
         "flake-parts": "flake-parts_4",
         "hercules-ci-effects": "hercules-ci-effects_2",
-        "nixpkgs": "nixpkgs_7",
+        "nixpkgs": "nixpkgs_6",
         "osx-kvm": "osx-kvm"
       },
       "locked": {
@@ -1828,7 +1798,7 @@
         "nixified-ai": "nixified-ai",
         "nixos-hardware": "nixos-hardware",
         "nixos-wsl": "nixos-wsl",
-        "nixpkgs": "nixpkgs_5",
+        "nixpkgs": "nixpkgs_4",
         "nixtheplanet": "nixtheplanet",
         "notifications-tray-icon": "notifications-tray-icon",
         "org-agenda-api": "org-agenda-api",
@@ -1878,46 +1848,18 @@
       }
     },
     "status-notifier-item": {
-      "inputs": {
-        "flake-utils": [
-          "imalison-taffybar",
-          "flake-utils"
-        ],
-        "git-ignore-nix": "git-ignore-nix_4",
-        "nixpkgs": [
-          "imalison-taffybar",
-          "nixpkgs"
-        ]
-      },
-      "locked": {
-        "lastModified": 1770953113,
-        "narHash": "sha256-E9HHKMMZStzKeXqKLPh32fA1q0aOrHg+v+gBw3dNwR4=",
-        "ref": "refs/heads/master",
-        "rev": "d62b44beb1b189bf4a97b7f632b2cb41d3addacb",
-        "revCount": 117,
-        "type": "git",
-        "url": "file:///home/imalison/Projects/status-notifier-item"
-      },
-      "original": {
-        "owner": "taffybar",
-        "repo": "status-notifier-item",
-        "type": "github"
-      }
-    },
-    "status-notifier-item_2": {
       "flake": false,
       "locked": {
-        "lastModified": 1770953113,
-        "narHash": "sha256-E9HHKMMZStzKeXqKLPh32fA1q0aOrHg+v+gBw3dNwR4=",
-        "ref": "refs/heads/master",
-        "rev": "d62b44beb1b189bf4a97b7f632b2cb41d3addacb",
-        "revCount": 117,
-        "type": "git",
-        "url": "file:///home/imalison/Projects/status-notifier-item"
+        "lastModified": 1770955859,
+        "narHash": "sha256-h95eUeTkNsdrVxAx0Nv0ViXHSkhhOfPF4L4DhtbfkNs=",
+        "owner": "taffybar",
+        "repo": "status-notifier-item",
+        "rev": "a0958505f4e5fc145f34d7ad2615688d6668e02a",
+        "type": "github"
       },
       "original": {
         "owner": "taffybar",
-        "ref": "fix/dbus-session-config-tests",
+        "ref": "fix/dbus-session-config-tests-rebased",
         "repo": "status-notifier-item",
         "type": "github"
       }
@@ -1964,7 +1906,7 @@
         "nixpkgs": [
           "nixpkgs"
         ],
-        "status-notifier-item": "status-notifier-item_2",
+        "status-notifier-item": "status-notifier-item",
         "weeder-nix": "weeder-nix",
         "xmonad": [
           "xmonad"
@@ -1974,8 +1916,8 @@
         ]
       },
       "locked": {
-        "lastModified": 1770953536,
-        "narHash": "sha256-ZEV2Z8QUg6rEi0vFsra2XZvxEvp65DwTBbl5dmBcMsE=",
+        "lastModified": 1770956010,
+        "narHash": "sha256-V8iQWpQUvu27pYCpCx3Caq9nASg0v5eFStHv0hxY/gM=",
         "path": "/home/imalison/dotfiles/dotfiles/config/taffybar/taffybar",
         "type": "path"
       },
