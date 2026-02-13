@@ -1100,6 +1100,7 @@ addKeys conf@XConfig { modMask = modm } =
     , ((hyper, xK_space), spawn "skippy-xd")
     , ((hyper, xK_i), spawn "rofi_select_input.hs")
     , ((hyper, xK_o), spawn "rofi_paswitch")
+    , ((hyper, xK_y), spawn "rofi_agentic_skill")
     , ((modm, xK_e), spawn "emacsclient --eval '(emacs-everywhere)'")
 
     -- Media keys

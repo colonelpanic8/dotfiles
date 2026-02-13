@@ -1,0 +1,93 @@
+#!/usr/bin/env zsh
+
+set -euo pipefail
+
+function rofi_agentic_skill {
+  local skills_dir_default skills_dir agent_system terminal
+  skills_dir_default="${CODEX_HOME:-$HOME/.codex}/skills"
+  skills_dir="${AGENTIC_SKILLS_DIR:-$skills_dir_default}"
+  agent_system="${AGENTIC_SYSTEM:-codex --dangerously-bypass-approvals-and-sandbox}"
+  terminal="${AGENTIC_TERMINAL:-${TERMINAL:-ghostty}}"
+
+  function notify_error {
+    local message="$1"
+    if command -v notify-send >/dev/null 2>&1; then
+      notify-send "Agentic skill launcher" "$message"
+    else
+      print -u2 -- "$message"
+    fi
+  }
+
+  if [[ ! -d "$skills_dir" ]]; then
+    notify_error "Skills directory not found: $skills_dir"
+    return 1
+  fi
+
+  local skill_path skill_name selected_skill extra_prompt initial_prompt
+  local skill_slug agent_name session_name
+  typeset -a skills agent_argv tmux_cmd terminal_argv
+
+  while IFS= read -r -d '' skill_path; do
+    skill_name="${skill_path:t}"
+    [[ "$skill_name" == .* ]] && continue
+    [[ -f "$skill_path/SKILL.md" ]] || continue
+    skills+=("$skill_name")
+  done < <(find -L "$skills_dir" -mindepth 1 -maxdepth 1 -type d -print0 2>/dev/null)
+
+  if (( ${#skills[@]} == 0 )); then
+    notify_error "No skills with SKILL.md found in $skills_dir"
+    return 1
+  fi
+
+  skills=("${(@ou)skills}")
+  selected_skill="$(
+    printf '%s\n' "${skills[@]}" |
+      rofi -dmenu -i -p "Agentic Skill" || true
+  )"
+
+  if [[ -z "$selected_skill" ]]; then
+    return 0
+  fi
+
+  extra_prompt="$(printf '' | rofi -dmenu -p "Task (optional)" || true)"
+  initial_prompt="Use the ${selected_skill} skill for this session."
+  if [[ -n "$extra_prompt" ]]; then
+    initial_prompt="${initial_prompt} ${extra_prompt}"
+  fi
+
+  agent_argv=(${(z)agent_system})
+  if (( ${#agent_argv[@]} == 0 )); then
+    notify_error "Preferred agent command is empty"
+    return 1
+  fi
+
+  skill_slug="${selected_skill:l}"
+  skill_slug="${skill_slug//[^[:alnum:]_-]/-}"
+  agent_name="${agent_argv[1]:t}"
+  session_name="${agent_name}-${skill_slug}"
+  session_name="${session_name[1,64]}"
+
+  tmux_cmd=(
+    tmux new-session
+    -A
+    -s "$session_name"
+    -c "$PWD"
+    "${agent_argv[@]}"
+    "$initial_prompt"
+  )
+
+  if [[ -n "${TMUX:-}" || -t 1 ]]; then
+    "${tmux_cmd[@]}"
+    return $?
+  fi
+
+  terminal_argv=(${(z)terminal})
+  if (( ${#terminal_argv[@]} == 0 )); then
+    notify_error "Preferred terminal command is empty"
+    return 1
+  fi
+
+  ("${terminal_argv[@]}" -e "${tmux_cmd[@]}" >/dev/null 2>&1 &!)
+}
+
+rofi_agentic_skill "$@"
