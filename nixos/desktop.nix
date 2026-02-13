@@ -92,7 +92,6 @@ makeEnable config "myModules.desktop" true {
     rofi-systemd
     simplescreenrecorder
     skippy-xd
-    synergy
     transmission_4-gtk
     vlc
     thunar
