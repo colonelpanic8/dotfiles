@@ -23,10 +23,16 @@ gotools
 /dotfiles/config/taffybar/result
 /dotfiles/emacs.d/*.sqlite
 /dotfiles/config/gtk-3.0/colors.css
+/dotfiles/config/gtk-3.0/settings.ini
 /dotfiles/emacs.d/.cache/
+/dotfiles/emacs.d/projectile.cache
+/dotfiles/emacs.d/projectile-bookmarks.eld
 /dotfiles/config/fontconfig/conf.d/10-hm-fonts.conf
 /dotfiles/config/fontconfig/conf.d/52-hm-default-fonts.conf
 /dotfiles/config/taffybar/_scratch/
 /dotfiles/config/taffybar/status-notifier-item/
+/dotfiles/config/taffybar/.direnv/
+/dotfiles/config/taffybar/dist-newstyle/
+/dotfiles/config/xmonad/dist-newstyle/
 /dotfiles/config/hypr/hyprscratch.conf
 /.worktrees/
