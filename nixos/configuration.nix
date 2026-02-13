@@ -40,6 +40,7 @@
     ./sni.nix
     ./syncthing.nix
     ./taffybar.nix
+    ./tailscale.nix
     ./tts.nix
     ./user-specific.nix
     ./users.nix
