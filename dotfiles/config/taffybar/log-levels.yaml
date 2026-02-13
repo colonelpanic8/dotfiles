@@ -1,10 +1,12 @@
 # Taffybar log levels
 # Format: LoggerName: LEVEL
 # Levels: DEBUG INFO NOTICE WARNING ERROR CRITICAL ALERT EMERGENCY
-System.Taffybar: DEBUG
-StatusNotifier: DEBUG
-System.Taffybar.Context: DEBUG
-System.Taffybar.Information.Hyprland: DEBUG
-System.Taffybar.Widget.Workspaces: DEBUG
-Graphics.UI.GIGtkStrut: DEBUG
-System.Taffybar.DBus.Toggle: DEBUG
+#
+# This file exists to selectively enable verbose logging when debugging.
+# Normal/default operation should keep the log quiet (root logger is set to
+# WARNING in `taffybar.hs`).
+#
+# Example (uncomment as-needed):
+# System.Taffybar.DBus.Toggle: DEBUG
+# Graphics.UI.GIGtkStrut: DEBUG
+{}
