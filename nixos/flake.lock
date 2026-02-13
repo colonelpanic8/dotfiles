@@ -1859,7 +1859,6 @@
       },
       "original": {
         "owner": "taffybar",
-        "ref": "fix/dbus-session-config-tests-rebased",
         "repo": "status-notifier-item",
         "type": "github"
       }
@@ -1916,8 +1915,8 @@
         ]
       },
       "locked": {
-        "lastModified": 1770956010,
-        "narHash": "sha256-V8iQWpQUvu27pYCpCx3Caq9nASg0v5eFStHv0hxY/gM=",
+        "lastModified": 1770956858,
+        "narHash": "sha256-pkD5k50ZwsCdUY5PZUaEuaVuMF47iK/7fEapWTyG4eU=",
         "path": "/home/imalison/dotfiles/dotfiles/config/taffybar/taffybar",
         "type": "path"
       },

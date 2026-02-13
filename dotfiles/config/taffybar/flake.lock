@@ -396,13 +396,12 @@
         ]
       },
       "locked": {
-        "lastModified": 1770953113,
-        "narHash": "sha256-E9HHKMMZStzKeXqKLPh32fA1q0aOrHg+v+gBw3dNwR4=",
-        "ref": "refs/heads/master",
-        "rev": "d62b44beb1b189bf4a97b7f632b2cb41d3addacb",
-        "revCount": 117,
-        "type": "git",
-        "url": "file:///home/imalison/Projects/status-notifier-item"
+        "lastModified": 1770955859,
+        "narHash": "sha256-h95eUeTkNsdrVxAx0Nv0ViXHSkhhOfPF4L4DhtbfkNs=",
+        "owner": "taffybar",
+        "repo": "status-notifier-item",
+        "rev": "a0958505f4e5fc145f34d7ad2615688d6668e02a",
+        "type": "github"
       },
       "original": {
         "owner": "taffybar",
@@ -481,8 +480,8 @@
         "xmonad-contrib": "xmonad-contrib"
       },
       "locked": {
-        "lastModified": 1770953536,
-        "narHash": "sha256-ZEV2Z8QUg6rEi0vFsra2XZvxEvp65DwTBbl5dmBcMsE=",
+        "lastModified": 1770956858,
+        "narHash": "sha256-pkD5k50ZwsCdUY5PZUaEuaVuMF47iK/7fEapWTyG4eU=",
         "path": "/home/imalison/dotfiles/dotfiles/config/taffybar/taffybar",
         "type": "path"
       },
