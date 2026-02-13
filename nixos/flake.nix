@@ -217,6 +217,10 @@
   }: let
     # Nixpkgs PR patches - just specify PR number and hash
     nixpkgsPRPatches = [
+      {
+        pr = 490053;
+        hash = "sha256-74Q9hTQif+LeN9FSSSlphRwjERoWHt3vxvEsolvz9rY=";
+      }
       # claude-code
       # {
       #   pr = 464698;
