@@ -1,4 +1,10 @@
 # Taffybar log levels
 # Format: LoggerName: LEVEL
 # Levels: DEBUG INFO NOTICE WARNING ERROR CRITICAL ALERT EMERGENCY
+System.Taffybar: DEBUG
+StatusNotifier: DEBUG
+System.Taffybar.Context: DEBUG
+System.Taffybar.Information.Hyprland: DEBUG
+System.Taffybar.Widget.Workspaces: DEBUG
+Graphics.UI.GIGtkStrut: DEBUG
 System.Taffybar.DBus.Toggle: DEBUG

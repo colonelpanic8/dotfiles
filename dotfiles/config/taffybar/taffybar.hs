@@ -4,52 +4,53 @@
 
 module Main (main) where
 
-import           Control.Monad.IO.Class (MonadIO, liftIO)
-import           Data.Int (Int32)
-import           Data.List (nub)
+import Control.Monad.IO.Class (MonadIO, liftIO)
+import Data.Int (Int32)
+import Data.List (nub)
 import qualified Data.Map as M
-import           Data.Maybe (catMaybes, fromMaybe, mapMaybe)
-import           Data.Text (Text)
+import Data.Maybe (catMaybes, fromMaybe, mapMaybe)
+import Data.Ratio ((%))
+import Data.Text (Text)
 import qualified Data.Text as T
 import qualified GI.GdkPixbuf.Objects.Pixbuf as Gdk
 import qualified GI.Gtk as Gtk
-import           Network.HostName (getHostName)
-import           System.Environment.XDG.BaseDir (getUserConfigFile)
-import           System.Log.Logger (Priority(WARNING), rootLoggerName, setLevel, updateGlobalLogger)
-import           System.Taffybar (startTaffybar)
-import           System.Taffybar.Context (Backend (BackendWayland, BackendX11), TaffyIO, detectBackend)
-import           System.Taffybar.DBus
-import           System.Taffybar.DBus.Toggle
-import           System.Taffybar.Hooks (withLogLevels)
-import           System.Taffybar.Information.EWMHDesktopInfo (WorkspaceId (..))
-import           System.Taffybar.Information.X11DesktopInfo
-import           System.Taffybar.SimpleConfig
-import           System.Taffybar.Util (getPixbufFromFilePath, (<|||>), maybeTCombine)
-import           System.Taffybar.Widget
-import qualified System.Taffybar.Widget.HyprlandWorkspaces as Hyprland
-import qualified System.Taffybar.Widget.NetworkManager as NetworkManager
-import           System.Taffybar.Widget.SNIMenu (withNmAppletMenu)
-import qualified System.Taffybar.Widget.ASUS as ASUS
-import qualified System.Taffybar.Widget.PulseAudio as PulseAudio
-import qualified System.Taffybar.Widget.ScreenLock as ScreenLock
-import qualified System.Taffybar.Widget.Wlsunset as Wlsunset
-import           Data.Ratio ((%))
-import           System.Taffybar.Widget.SNITray
-                 ( sniTrayNewFromParams
-                 , sniTrayThatStartsWatcherEvenThoughThisIsABadWayToDoIt
-                 )
+import Network.HostName (getHostName)
 import qualified StatusNotifier.Tray as SNITray (MenuBackend (HaskellDBusMenu), defaultTrayParams, trayMenuBackend, trayOverlayScale)
-import           System.Taffybar.Widget.Util (buildContentsBox, buildIconLabelBox, loadPixbufByName, widgetSetClassGI)
-import qualified System.Taffybar.Widget.Workspaces as X11Workspaces
-import           System.Taffybar.WindowIcon (pixBufFromColor)
+import System.Environment.XDG.BaseDir (getUserConfigFile)
+import System.Log.Logger (Priority (WARNING), rootLoggerName, setLevel, updateGlobalLogger)
+import System.Taffybar (startTaffybar)
+import System.Taffybar.Context (Backend (BackendWayland, BackendX11), TaffyIO, detectBackend)
+import System.Taffybar.DBus
+import System.Taffybar.DBus.Toggle
+import System.Taffybar.Hooks (withLogLevels)
+import System.Taffybar.Information.EWMHDesktopInfo (WorkspaceId (..))
+import System.Taffybar.Information.X11DesktopInfo
+import System.Taffybar.SimpleConfig
+import System.Taffybar.Util (getPixbufFromFilePath, maybeTCombine, (<|||>))
+import System.Taffybar.Widget
+import qualified System.Taffybar.Widget.ASUS as ASUS
+import qualified System.Taffybar.Widget.NetworkManager as NetworkManager
+import qualified System.Taffybar.Widget.PulseAudio as PulseAudio
+import System.Taffybar.Widget.SNIMenu (withNmAppletMenu)
+import System.Taffybar.Widget.SNITray
+  ( sniTrayNewFromParams,
+    sniTrayThatStartsWatcherEvenThoughThisIsABadWayToDoIt,
+  )
+import qualified System.Taffybar.Widget.ScreenLock as ScreenLock
+import System.Taffybar.Widget.Util (buildContentsBox, buildIconLabelBox, loadPixbufByName, widgetSetClassGI)
+import qualified System.Taffybar.Widget.Wlsunset as Wlsunset
+import qualified System.Taffybar.Widget.Workspaces.Config as WorkspaceWidgetConfig
+import qualified System.Taffybar.Widget.Workspaces.EWMH as X11Workspaces
+import qualified System.Taffybar.Widget.Workspaces.Hyprland as Hyprland
+import System.Taffybar.WindowIcon (pixBufFromColor)
 
 -- | Wrap the widget in a "TaffyBox" (via 'buildContentsBox') and add a CSS class.
-decorateWithClassAndBox :: MonadIO m => Text -> Gtk.Widget -> m Gtk.Widget
+decorateWithClassAndBox :: (MonadIO m) => Text -> Gtk.Widget -> m Gtk.Widget
 decorateWithClassAndBox klass widget = do
   boxed <- buildContentsBox widget
   widgetSetClassGI boxed klass
 
-decorateWithClassAndBoxM :: MonadIO m => Text -> m Gtk.Widget -> m Gtk.Widget
+decorateWithClassAndBoxM :: (MonadIO m) => Text -> m Gtk.Widget -> m Gtk.Widget
 decorateWithClassAndBoxM klass builder =
   builder >>= decorateWithClassAndBox klass
 
@@ -63,8 +64,8 @@ x11FullWorkspaceNames =
 
 x11WorkspaceLabelSetter :: X11Workspaces.Workspace -> X11Workspaces.WorkspacesIO String
 x11WorkspaceLabelSetter workspace =
-  remapNSP . fromMaybe "" . lookup (X11Workspaces.workspaceIdx workspace) <$>
-    liftX11Def [] x11FullWorkspaceNames
+  remapNSP . fromMaybe "" . lookup (X11Workspaces.workspaceIdx workspace)
+    <$> liftX11Def [] x11FullWorkspaceNames
   where
     remapNSP "NSP" = "S"
     remapNSP n = n
@@ -80,7 +81,7 @@ iconRemap =
 
 iconRemapMap :: M.Map Text [Text]
 iconRemapMap =
-  M.fromList [ (T.toLower k, v) | (k, v) <- iconRemap ]
+  M.fromList [(T.toLower k, v) | (k, v) <- iconRemap]
 
 lookupIconRemap :: Text -> [Text]
 lookupIconRemap name = fromMaybe [] $ M.lookup (T.toLower name) iconRemapMap
@@ -92,7 +93,7 @@ iconNameVariants raw =
       suffixes = ["-gtk", "-client", "-desktop"]
       stripSuffixes name =
         let variants = mapMaybe (`T.stripSuffix` name) suffixes
-        in nub $ variants ++ [name]
+         in nub $ variants ++ [name]
       baseNames = stripSuffixes stripped ++ [raw]
       toDash c
         | c == ' ' || c == '_' || c == '.' || c == '/' = '-'
@@ -109,31 +110,33 @@ iconNameVariants raw =
             dashedDotted = T.map toDash dotted
             underscored = T.map toUnderscore name
             underscoredDotted = T.map toUnderscore dotted
-        in [dotted, dashed, dashedDotted, underscored, underscoredDotted, name]
-  in nub $ concatMap variantsFor baseNames
+         in [dotted, dashed, dashedDotted, underscored, underscoredDotted, name]
+   in nub $ concatMap variantsFor baseNames
 
 -- Hyprland "special" workspaces (e.g. "special:slack") are scratchpad-like and
 -- usually not something we want visible in the workspace widget.
 isSpecialHyprWorkspace :: Hyprland.HyprlandWorkspace -> Bool
 isSpecialHyprWorkspace ws =
   let name = T.toLower $ T.pack $ Hyprland.workspaceName ws
-  in T.isPrefixOf "special" name || Hyprland.workspaceIdx ws < 0
+   in T.isPrefixOf "special" name || Hyprland.workspaceIdx ws < 0
 
 hyprlandIconCandidates :: Hyprland.HyprlandWindow -> [Text]
 hyprlandIconCandidates windowData =
-  let baseNames = map T.pack $ catMaybes
-        [ Hyprland.windowClass windowData
-        , Hyprland.windowInitialClass windowData
-        ]
+  let baseNames =
+        map T.pack $
+          catMaybes
+            [ Hyprland.windowClass windowData,
+              Hyprland.windowInitialClass windowData
+            ]
       remapped = concatMap lookupIconRemap baseNames
       remappedExpanded = concatMap iconNameVariants remapped
       baseExpanded = concatMap iconNameVariants baseNames
-  in nub (remappedExpanded ++ baseExpanded)
+   in nub (remappedExpanded ++ baseExpanded)
 
 isPathCandidate :: Text -> Bool
 isPathCandidate name =
-  T.isInfixOf "/" name ||
-  any (`T.isSuffixOf` name) [".png", ".svg", ".xpm"]
+  T.isInfixOf "/" name
+    || any (`T.isSuffixOf` name) [".png", ".svg", ".xpm"]
 
 hyprlandIconFromCandidate :: Int32 -> Text -> TaffyIO (Maybe Gdk.Pixbuf)
 hyprlandIconFromCandidate size name
@@ -153,14 +156,14 @@ hyprlandManualIconGetter =
 fallbackIconPixbuf :: Int32 -> TaffyIO (Maybe Gdk.Pixbuf)
 fallbackIconPixbuf size = do
   let fallbackNames =
-        [ "application-x-executable"
-        , "application"
-        , "image-missing"
-        , "gtk-missing-image"
-        , "dialog-question"
-        , "utilities-terminal"
-        , "system-run"
-        , "window"
+        [ "application-x-executable",
+          "application",
+          "image-missing",
+          "gtk-missing-image",
+          "dialog-question",
+          "utilities-terminal",
+          "system-run",
+          "window"
         ]
       tryNames =
         foldl
@@ -183,17 +186,17 @@ defaultCssFiles = ["palette.css", "taffybar.css"]
 
 cssFilesByHostname :: [(String, [FilePath])]
 cssFilesByHostname =
-  [ ("imalison-home", ["palette.css", "taffybar.css"])
-  , ("ryzen-shine", ["palette.css", "taffybar.css"])
-  , ("stevie-nixos", ["palette.css", "taffybar.css"])
+  [ ("imalison-home", ["palette.css", "taffybar.css"]),
+    ("ryzen-shine", ["palette.css", "taffybar.css"]),
+    ("stevie-nixos", ["palette.css", "taffybar.css"])
   ]
 
 laptopHosts :: [String]
 laptopHosts =
-  [ "adell"
-  , "stevie-nixos"
-  , "strixi-minaj"
-  , "jay-lenovo"
+  [ "adell",
+    "stevie-nixos",
+    "strixi-minaj",
+    "jay-lenovo"
   ]
 
 cssFilesForHost :: String -> [FilePath]
@@ -221,20 +224,25 @@ windowsWidget =
 
 x11WorkspacesWidget :: TaffyIO Gtk.Widget
 x11WorkspacesWidget =
-  flip widgetSetClassGI "workspaces" =<<
-    X11Workspaces.workspacesNew
-      X11Workspaces.defaultWorkspacesConfig
-        { X11Workspaces.minIcons = 1
-        , X11Workspaces.getWindowIconPixbuf =
+  flip widgetSetClassGI "workspaces"
+    =<< X11Workspaces.workspacesNew cfg
+  where
+    common =
+      (X11Workspaces.workspacesCommonConfig X11Workspaces.defaultWorkspacesConfig)
+        { WorkspaceWidgetConfig.minIcons = 1,
+          WorkspaceWidgetConfig.getWindowIconPixbuf =
             X11Workspaces.scaledWindowIconPixbufGetter $
-              X11Workspaces.getWindowIconPixbufFromChrome <|||>
-              X11Workspaces.unscaledDefaultGetWindowIconPixbuf <|||>
-              (\size _ -> fallbackIconPixbuf size)
-        , X11Workspaces.widgetGap = 0
-        , X11Workspaces.showWorkspaceFn = X11Workspaces.hideEmpty
-        , X11Workspaces.updateRateLimitMicroseconds = 100000
-        , X11Workspaces.labelSetter = x11WorkspaceLabelSetter
-        , X11Workspaces.widgetBuilder = X11Workspaces.buildLabelOverlayController
+              X11Workspaces.getWindowIconPixbufFromChrome
+                <|||> X11Workspaces.unscaledDefaultGetWindowIconPixbuf
+                <|||> (\size _ -> fallbackIconPixbuf size),
+          WorkspaceWidgetConfig.widgetGap = 0,
+          WorkspaceWidgetConfig.showWorkspaceFn = X11Workspaces.hideEmpty,
+          WorkspaceWidgetConfig.labelSetter = x11WorkspaceLabelSetter,
+          WorkspaceWidgetConfig.widgetBuilder = X11Workspaces.buildLabelOverlayController
+        }
+    cfg =
+      (X11Workspaces.applyCommonWorkspacesConfig common X11Workspaces.defaultWorkspacesConfig)
+        { X11Workspaces.updateRateLimitMicroseconds = 100000
         }
 
 -- | Like 'buildWorkspaceIconLabelOverlay' but lets you choose the corner.
@@ -257,27 +265,33 @@ buildAlignedOverlay halign valign iconsWidget labelWidget = liftIO $ do
 
 hyprlandWorkspacesWidget :: TaffyIO Gtk.Widget
 hyprlandWorkspacesWidget =
-  flip widgetSetClassGI "workspaces" =<<
-    Hyprland.hyprlandWorkspacesNew cfg
+  flip widgetSetClassGI "workspaces"
+    =<< Hyprland.hyprlandWorkspacesNew cfg
   where
-    cfg = Hyprland.defaultHyprlandWorkspacesConfig
-      { Hyprland.widgetGap = 0
-      , Hyprland.minIcons = 1
-      , Hyprland.widgetBuilder =
-          Hyprland.hyprlandBuildButtonController cfg
-            (Hyprland.hyprlandBuildCustomOverlayController
-              (buildAlignedOverlay Gtk.AlignStart Gtk.AlignEnd)
-              cfg)
-      -- Don't show Hyprland "special:*" workspaces.
-      , Hyprland.showWorkspaceFn =
-          \ws ->
-            Hyprland.workspaceState ws /= X11Workspaces.Empty &&
-            not (isSpecialHyprWorkspace ws)
-      , Hyprland.getWindowIconPixbuf =
-          hyprlandManualIconGetter <|||>
-          Hyprland.defaultHyprlandGetWindowIconPixbuf <|||>
-          hyprlandFallbackIcon
-      }
+    base = Hyprland.defaultHyprlandWorkspacesConfig
+    cfg =
+      Hyprland.applyCommonHyprlandWorkspacesConfig common base
+    common =
+      (Hyprland.hyprlandWorkspacesCommonConfig base)
+        { WorkspaceWidgetConfig.widgetGap = 0,
+          WorkspaceWidgetConfig.minIcons = 1,
+          WorkspaceWidgetConfig.widgetBuilder =
+            Hyprland.hyprlandBuildButtonController
+              cfg
+              ( Hyprland.hyprlandBuildCustomOverlayController
+                  (buildAlignedOverlay Gtk.AlignStart Gtk.AlignEnd)
+                  cfg
+              ),
+          -- Don't show Hyprland "special:*" workspaces.
+          WorkspaceWidgetConfig.showWorkspaceFn =
+            \ws ->
+              Hyprland.workspaceState ws /= X11Workspaces.Empty
+                && not (isSpecialHyprWorkspace ws),
+          WorkspaceWidgetConfig.getWindowIconPixbuf =
+            hyprlandManualIconGetter
+              <|||> Hyprland.defaultHyprlandGetWindowIconPixbuf
+              <|||> hyprlandFallbackIcon
+        }
 
 clockWidget :: TaffyIO Gtk.Widget
 clockWidget =
@@ -285,8 +299,8 @@ clockWidget =
     "clock"
     ( textClockNewWith
         defaultClockConfig
-          { clockUpdateStrategy = RoundedTargetInterval 60 0.0
-          , clockFormatString = "%a %b %_d, 🕑%I:%M %p"
+          { clockUpdateStrategy = RoundedTargetInterval 60 0.0,
+            clockFormatString = "%a %b %_d, 🕑%I:%M %p"
           }
     )
 
@@ -294,8 +308,8 @@ mprisWidget :: TaffyIO Gtk.Widget
 mprisWidget =
   mpris2NewWithConfig
     MPRIS2Config
-      { mprisWidgetWrapper = decorateWithClassAndBox "mpris"
-      , updatePlayerWidget =
+      { mprisWidgetWrapper = decorateWithClassAndBox "mpris",
+        updatePlayerWidget =
           simplePlayerWidget
             defaultPlayerConfig
               { setNowPlayingLabel = playingText 20 20
@@ -314,9 +328,9 @@ backlightWidget =
     "backlight"
     ( backlightLabelNewChanWith
         defaultBacklightWidgetConfig
-          { backlightFormat = "☀ $percent$%"
-          , backlightUnknownFormat = "☀ n/a"
-          , backlightTooltipFormat =
+          { backlightFormat = "☀ $percent$%",
+            backlightUnknownFormat = "☀ n/a",
+            backlightTooltipFormat =
               Just "Device: $device$\nBrightness: $brightness$/$max$ ($percent$%)"
           }
     )
@@ -334,20 +348,22 @@ screenLockWidget =
   decorateWithClassAndBoxM "screen-lock" $
     ScreenLock.screenLockNewWithConfig
       ScreenLock.defaultScreenLockConfig
-        { ScreenLock.screenLockIcon = T.pack "\xF023" <> " Lock" }
+        { ScreenLock.screenLockIcon = T.pack "\xF023" <> " Lock"
+        }
 
 wlsunsetWidget :: TaffyIO Gtk.Widget
 wlsunsetWidget =
   decorateWithClassAndBoxM "wlsunset" $
     Wlsunset.wlsunsetNewWithConfig
       Wlsunset.defaultWlsunsetWidgetConfig
-        { Wlsunset.wlsunsetWidgetIcon = T.pack "\xF0599" <> " Sun" }
+        { Wlsunset.wlsunsetWidgetIcon = T.pack "\xF0599" <> " Sun"
+        }
 
 sniTrayWidget :: TaffyIO Gtk.Widget
 sniTrayWidget =
   decorateWithClassAndBoxM
     "sni-tray"
-    (sniTrayNewFromParams (SNITray.defaultTrayParams { SNITray.trayMenuBackend = SNITray.HaskellDBusMenu, SNITray.trayOverlayScale = 1 % 3 }))
+    (sniTrayNewFromParams (SNITray.defaultTrayParams {SNITray.trayMenuBackend = SNITray.HaskellDBusMenu, SNITray.trayOverlayScale = 1 % 3}))
 
 -- ** Layout
 
@@ -362,32 +378,32 @@ endWidgetsForHost :: String -> Backend -> [TaffyIO Gtk.Widget]
 endWidgetsForHost hostName backend =
   let baseEndWidgets = [audioWidget, diskUsageWidget, networkWidget, screenLockWidget, wlsunsetWidget, mprisWidget, sniTrayWidget]
       laptopEndWidgets =
-        [ batteryWidget
-        , sniTrayWidget
-        , asusWidget
-        , audioWidget
-        , diskUsageWidget
-        , backlightWidget
-        , networkWidget
-        , screenLockWidget
-        , wlsunsetWidget
-        , mprisWidget
+        [ batteryWidget,
+          sniTrayWidget,
+          asusWidget,
+          audioWidget,
+          diskUsageWidget,
+          backlightWidget,
+          networkWidget,
+          screenLockWidget,
+          wlsunsetWidget,
+          mprisWidget
         ]
-  in if hostName `elem` laptopHosts
-    then laptopEndWidgets
-    else baseEndWidgets
+   in if hostName `elem` laptopHosts
+        then laptopEndWidgets
+        else baseEndWidgets
 
 mkSimpleTaffyConfig :: String -> Backend -> [FilePath] -> SimpleTaffyConfig
 mkSimpleTaffyConfig hostName backend cssFiles =
-  defaultSimpleTaffyConfig
-    { startWidgets = startWidgetsForBackend backend
-    , endWidgets = endWidgetsForHost hostName backend
-    , barPosition = Top
-    , widgetSpacing = 0
-    , barPadding = 4
-    , barHeight = ScreenRatio $ 1 / 33
-    , cssPaths = cssFiles
-    , centerWidgets = [clockWidget]
+ defaultSimpleTaffyConfig
+    { startWidgets = startWidgetsForBackend backend,
+      endWidgets = endWidgetsForHost hostName backend,
+      barPosition = Bottom,
+      widgetSpacing = 0,
+      barPadding = 4,
+      barHeight = ScreenRatio $ 1 / 33,
+      cssPaths = cssFiles,
+      centerWidgets = [clockWidget]
     }
 
 -- ** Entry Point
@@ -403,6 +419,6 @@ main = do
   let simpleTaffyConfig = mkSimpleTaffyConfig hostName backend cssFiles
   startTaffybar $
     withLogServer $
-    withLogLevels $
-    withToggleServer $
-    toTaffybarConfig simpleTaffyConfig
+      withLogLevels $
+        withToggleServer $
+          toTaffybarConfig simpleTaffyConfig

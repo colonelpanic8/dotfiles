@@ -85,7 +85,12 @@
               (hself.callCabal2nix "dbus-menu"
                 (pkgs.lib.cleanSource (dbus-menu.outPath or dbus-menu))
                 { inherit (pkgs) gtk3; })
-              (_: { doCheck = false; doHaddock = false; });
+              (_: {
+                doCheck = false;
+                doHaddock = false;
+                # Needed for GHC 9.12 (template-haskell bound too strict upstream).
+                jailbreak = true;
+              });
 
           status-notifier-item =
             pkgs.haskell.lib.overrideCabal
