@@ -1,6 +1,21 @@
 #!/usr/bin/env sh
 
 function tmcodex {
+    # Record launch directories so rofi_tmcodex can offer good defaults.
+    state_dir="${XDG_STATE_HOME:-$HOME/.local/state}/rofi-tmcodex"
+    history_file="$state_dir/dirs"
+    mkdir -p "$state_dir" 2>/dev/null || true
+    if [ -d "$PWD" ]; then
+        tmp="$(mktemp 2>/dev/null || true)"
+        if [ -n "$tmp" ]; then
+            { printf '%s\n' "$PWD"; cat "$history_file" 2>/dev/null || true; } \
+                | awk 'NF && !seen[$0]++' \
+                | head -n 200 >"$tmp" 2>/dev/null || true
+            mv -f "$tmp" "$history_file" 2>/dev/null || true
+        else
+            printf '%s\n' "$PWD" >>"$history_file" 2>/dev/null || true
+        fi
+    fi
     trw codex --dangerously-bypass-approvals-and-sandbox "$@"
 }
 
