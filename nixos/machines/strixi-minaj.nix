@@ -51,7 +51,9 @@
   virtualisation.spiceUSBRedirection.enable = true;
 
   services.xserver.dpi = 96;
-  boot.kernelPackages = pkgs.linuxPackages_latest;
+  # linuxPackages_latest (6.19) currently fails to build nvidia-open.
+  # Keep this host on the default kernel packages until the driver catches up.
+  boot.kernelPackages = pkgs.linuxPackages;
   # See https://github.com/NixOS/nixpkgs/issues/467814 for why this was needed
   hardware.nvidia.package = config.boot.kernelPackages.nvidiaPackages.beta;
   boot.initrd.availableKernelModules = [ "vmd" "xhci_pci" "thunderbolt" "nvme" "usbhid" "usb_storage" "sd_mod" ];
