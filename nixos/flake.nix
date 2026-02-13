@@ -125,10 +125,9 @@
     };
 
     taffybar = {
-      # Use git+file so Nix locks to the git revision and ignores local build
-      # artifacts (e.g. dist-newstyle, .direnv) that would otherwise make the
-      # narHash differ across machines.
-      url = "git+file:///home/imalison/dotfiles/dotfiles/config/taffybar/taffybar";
+      # Use a remote, lockfile-pinned input so rebuilds are reproducible across
+      # machines. For local development, use `nixos-rebuild --override-input taffybar path:...`.
+      url = "github:taffybar/taffybar";
       inputs = {
         nixpkgs.follows = "nixpkgs";
         flake-utils.follows = "flake-utils";
