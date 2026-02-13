@@ -1318,11 +1318,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1770977001,
-        "narHash": "sha256-NdB+njz9r1KeGF6CFy6L1RxG4Zxb83BKlNrGOBvYVnQ=",
+        "lastModified": 1770985199,
+        "narHash": "sha256-gXYd3+jCEjSPCFMWpp+jz+AXjDvSvrhHbfx33oiMiFE=",
         "owner": "colonelpanic8",
         "repo": "keepbook",
-        "rev": "f7b4a5a30e2bb4dcb491e0eea757dd5da69fcdd2",
+        "rev": "c245af6a30a80ed30bb07eab75469bcc5b4695d5",
         "type": "github"
       },
       "original": {
@@ -1990,8 +1990,8 @@
         ]
       },
       "locked": {
-        "lastModified": 1770970565,
-        "narHash": "sha256-Eu0nv7Wy7WFRhXmK7E+49kYWdEjyiJN6KsraWcB+FEc=",
+        "lastModified": 1770979550,
+        "narHash": "sha256-8wTzhmv8UArpk1tpSGVGDqsCsIGrJu/lXFlZjlVKsac=",
         "path": "/home/imalison/dotfiles/dotfiles/config/taffybar/taffybar",
         "type": "path"
       },
