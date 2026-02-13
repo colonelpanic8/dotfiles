@@ -72,9 +72,7 @@ with lib;
     environment = {
       homeBinInPath = true;
       localBinInPath = true;
-      systemPackages = [
-        pkgs.ghostty.terminfo
-      ];
+      enableAllTerminfo = true;
       shellAliases = {
         df_ssh = "TERM=xterm-256color ssh -o StrictHostKeyChecking=no";
         fix_nix = "LD_LIBRARY_PATH='' nix";
