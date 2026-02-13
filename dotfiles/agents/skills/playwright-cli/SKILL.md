@@ -5,7 +5,7 @@ description: Automate browser interactions from the shell using Playwright via t
 
 # Browser Automation With playwright-cli
 
-This system provides `playwright-cli` via Nix (see `nixos/overlay.nix` and `nixos/code.nix`), so it’s available on `PATH` without any `npm -g` installs.
+This system provides `playwright-cli` via Nix (see `nixos/flake.nix` for the nixpkgs PR patch and `nixos/code.nix` for installation), so it’s available on `PATH` without any `npm -g` installs.
 
 ## Quick Start
 

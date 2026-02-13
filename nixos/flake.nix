@@ -219,6 +219,11 @@
   }: let
     # Nixpkgs PR patches - just specify PR number and hash
     nixpkgsPRPatches = [
+      # playwright-cli
+      {
+        pr = 490230;
+        hash = "sha256-FGTQuqTDJV7GXsHDNOMyNBD2ZUBNJa//FBoCPEQHdLA=";
+      }
       # claude-code
       # {
       #   pr = 464698;
@@ -342,6 +347,7 @@
         patches = map bootstrapPkgs.fetchpatch allNixpkgsPatches;
         prePatch = ''
           mkdir -p pkgs/by-name/an/antigravity
+          mkdir -p pkgs/by-name/pl/playwright-cli
         '';
       };
       # Get eval-config from patched source

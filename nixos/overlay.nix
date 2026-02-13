@@ -264,34 +264,6 @@ in
   in
   final.python3.withPackages my-python-packages;
 
-  playwright-cli = final.buildNpmPackage rec {
-    pname = "playwright-cli";
-    version = "0.1.0";
-
-    src = final.fetchFromGitHub {
-      owner = "microsoft";
-      repo = "playwright-cli";
-      rev = "v${version}";
-      hash = "sha256-9LuLQ2klYz91rEkxNDwcx0lYgE6GPoTJkwgxI/4EHgg=";
-    };
-
-    # Hash of dependencies produced from package-lock.json (lockfileVersion = 3).
-    # To recompute:
-    #   nix build nixpkgs#prefetch-npm-deps -o /tmp/prefetch-npm-deps
-    #   /tmp/prefetch-npm-deps/bin/prefetch-npm-deps package-lock.json
-    npmDepsHash = "sha256-DvorQ40CCNQJNQdTPFyMBErFNicSWkNT/e6S8cfZlRA=";
-
-    # No build step; the published CLI is just a Node entrypoint + deps.
-    dontNpmBuild = true;
-
-    meta = with final.lib; {
-      description = "Playwright CLI (playwright-cli) for browser automation and Playwright MCP terminal commands";
-      homepage = "https://github.com/microsoft/playwright-cli";
-      license = licenses.asl20;
-      mainProgram = "playwright-cli";
-    };
-  };
-
   pythonPackagesExtensions = prev.pythonPackagesExtensions ++ [
     (
       python-final: python-prev: {
