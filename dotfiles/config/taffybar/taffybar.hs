@@ -398,7 +398,7 @@ mkSimpleTaffyConfig hostName backend cssFiles =
  defaultSimpleTaffyConfig
     { startWidgets = startWidgetsForBackend backend,
       endWidgets = endWidgetsForHost hostName backend,
-      barPosition = Bottom,
+      barPosition = Top,
       widgetSpacing = 0,
       barPadding = 4,
       barHeight = ScreenRatio $ 1 / 33,
