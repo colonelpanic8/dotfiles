@@ -14,7 +14,6 @@
     "--interval" cfg.interval
     "--jitter" cfg.jitter
     "--history-points" (toString cfg.historyPoints)
-    "--tray-icon" cfg.trayIcon
   ]
   ++ lib.optionals (!cfg.syncOnStart) [ "--no-sync-on-start" ]
   ++ lib.optionals (!cfg.syncPrices) [ "--no-sync-prices" ]
@@ -110,11 +109,6 @@ enabledModule // {
         description = "Recent portfolio history rows shown in tray menu.";
       };
 
-      trayIcon = lib.mkOption {
-        type = lib.types.str;
-        default = "wallet";
-        description = "Freedesktop icon name for idle keepbook tray state.";
-      };
     };
   };
 }
