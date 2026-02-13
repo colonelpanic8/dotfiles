@@ -125,7 +125,10 @@
     };
 
     taffybar = {
-      url = "path:/home/imalison/dotfiles/dotfiles/config/taffybar/taffybar";
+      # Use git+file so Nix locks to the git revision and ignores local build
+      # artifacts (e.g. dist-newstyle, .direnv) that would otherwise make the
+      # narHash differ across machines.
+      url = "git+file:///home/imalison/dotfiles/dotfiles/config/taffybar/taffybar";
       inputs = {
         nixpkgs.follows = "nixpkgs";
         flake-utils.follows = "flake-utils";

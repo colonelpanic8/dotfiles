@@ -1990,14 +1990,16 @@
         ]
       },
       "locked": {
-        "lastModified": 1770979550,
-        "narHash": "sha256-8wTzhmv8UArpk1tpSGVGDqsCsIGrJu/lXFlZjlVKsac=",
-        "path": "/home/imalison/dotfiles/dotfiles/config/taffybar/taffybar",
-        "type": "path"
+        "lastModified": 1770971159,
+        "narHash": "sha256-FOMr9QGs6dzQ0AHfvq0/s5H8I8IWVl347h2NCu+Upz8=",
+        "rev": "276ed1fd83bb56d22cb854acb10aeebf64b97c5c",
+        "revCount": 1790,
+        "type": "git",
+        "url": "file:///home/imalison/dotfiles/dotfiles/config/taffybar/taffybar"
       },
       "original": {
-        "path": "/home/imalison/dotfiles/dotfiles/config/taffybar/taffybar",
-        "type": "path"
+        "type": "git",
+        "url": "file:///home/imalison/dotfiles/dotfiles/config/taffybar/taffybar"
       }
     },
     "vscode-server": {
