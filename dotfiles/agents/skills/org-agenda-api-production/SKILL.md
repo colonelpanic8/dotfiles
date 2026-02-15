@@ -11,39 +11,32 @@ Access the production org-agenda-api instance at https://colonelpanic-org-agenda
 
 ## Credentials
 
-Get credentials from pass:
+Get the password from `pass`:
 ```bash
-pass show colonelpanic-org-agenda.fly.dev
+pass show org-agenda-api/imalison
 ```
 
-Format:
-- Line 1: password
-- `user:` field: username
+Username is currently `imalison`.
 
 ## Quick Access with just
 
-The project includes a justfile with pre-configured commands:
+This repo includes a `justfile` under `~/dotfiles/org-agenda-api` with pre-configured commands:
 
 ```bash
-# Authenticated curl to any endpoint
-just prod /health
-just prod /get-all-todos
-just prod "/agenda?span=week"
-
-# Common shortcuts
-just health      # Health check
-just version     # API version
-just todos       # All todos
-just today       # Today's agenda
-just agenda      # Day agenda (or: just agenda week)
-just templates   # Capture templates
-just metadata    # Full metadata
+cd ~/dotfiles/org-agenda-api
+just health
+just get-all-todos
+just get-todays-agenda
+just agenda
+just agenda-files
+just todo-states
+just create-todo "Test todo"
 ```
 
 ## Manual curl
 
 ```bash
-curl -s -u "$(pass show colonelpanic-org-agenda.fly.dev | grep '^user:' | cut -d' ' -f2):$(pass show colonelpanic-org-agenda.fly.dev | head -1)" \
+curl -s -u "imalison:$(pass show org-agenda-api/imalison | head -1)" \
   https://colonelpanic-org-agenda.fly.dev/health | jq
 ```
 
