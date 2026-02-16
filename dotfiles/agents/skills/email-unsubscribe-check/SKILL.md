@@ -21,7 +21,8 @@ digraph unsubscribe_check {
     "Present to user for confirmation" -> "User confirms?";
     "User confirms?" -> "Actually unsubscribe" [label="yes"];
     "User confirms?" -> "Skip" [label="no"];
-    "Actually unsubscribe" -> "Create Gmail filter";
+    "Actually unsubscribe" -> "Mark matching emails read + archive";
+    "Mark matching emails read + archive" -> "Create Gmail filter";
     "Create Gmail filter" -> "Retroactively clean old emails";
 }
 ```
@@ -62,12 +63,17 @@ Even after unsubscribing, create a filter to catch stragglers:
 create_filter criteria:{from:"domain.com"} action:{removeLabelIds:["INBOX"]}
 ```
 
-### 3. Retroactively clean old emails
+### 3. Mark old emails as read and archive them (minimum hygiene)
 
-Search for old emails from the sender and remove from inbox:
+After unsubscribing, clean up existing email from the sender.
+
+- At minimum: mark them as read.
+- Preferred/default: also archive them (remove `INBOX` label).
+
+Example:
 ```
 search_emails query:"from:domain.com" maxResults:50
-batch_modify_emails messageIds:[...] removeLabelIds:["INBOX"]
+batch_modify_emails messageIds:[...] removeLabelIds:["UNREAD","INBOX"]
 ```
 
 ## Signals That an Email is Unsubscribeable
