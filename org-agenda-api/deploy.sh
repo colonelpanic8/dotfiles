@@ -110,25 +110,36 @@ AUTH_PASSWORD=$(age -d -i "$IDENTITY" "$CONFIG_DIR/secrets/auth-password.age")
 
 echo "Setting Fly.io secrets..."
 
-SECRET_ARGS=(
-  "GIT_SSH_PRIVATE_KEY=$GIT_SSH_KEY"
-  "AUTH_USER=$AUTH_USER"
-  "AUTH_PASSWORD=$AUTH_PASSWORD"
-  "GIT_USER_EMAIL=$GIT_USER_EMAIL"
-  "GIT_USER_NAME=$GIT_USER_NAME"
-)
+# Keep multi-line secrets off stdin-based import.
+# Note: flyctl currently only supports multi-line values via NAME=VALUE CLI args.
+flyctl secrets set --stage -a "$FLY_APP" "GIT_SSH_PRIVATE_KEY=$GIT_SSH_KEY"
 
 # Use GIT_SYNC_REPOSITORIES (multi-repo) or GIT_SYNC_REPOSITORY (single repo)
+GIT_SYNC_SECRET=""
 if [[ -n "${GIT_SYNC_REPOSITORIES:-}" ]]; then
-  SECRET_ARGS+=("GIT_SYNC_REPOSITORIES=$GIT_SYNC_REPOSITORIES")
+  GIT_SYNC_SECRET="GIT_SYNC_REPOSITORIES=$GIT_SYNC_REPOSITORIES"
 elif [[ -n "${GIT_SYNC_REPOSITORY:-}" ]]; then
-  SECRET_ARGS+=("GIT_SYNC_REPOSITORY=$GIT_SYNC_REPOSITORY")
+  GIT_SYNC_SECRET="GIT_SYNC_REPOSITORY=$GIT_SYNC_REPOSITORY"
 else
   echo "Error: Neither GIT_SYNC_REPOSITORIES nor GIT_SYNC_REPOSITORY set in config.env"
   exit 1
 fi
 
-flyctl secrets set "${SECRET_ARGS[@]}" --stage -a "$FLY_APP"
+# flyctl secrets import reads NAME=VALUE pairs per-line; reject embedded newlines.
+for v in AUTH_USER AUTH_PASSWORD GIT_USER_EMAIL GIT_USER_NAME GIT_SYNC_SECRET; do
+  if [[ "${!v}" == *$'\n'* ]]; then
+    echo "Error: $v contains a newline; cannot safely use flyctl secrets import" >&2
+    exit 1
+  fi
+done
+
+flyctl secrets import --stage -a "$FLY_APP" <<EOF
+AUTH_USER=$AUTH_USER
+AUTH_PASSWORD=$AUTH_PASSWORD
+GIT_USER_EMAIL=$GIT_USER_EMAIL
+GIT_USER_NAME=$GIT_USER_NAME
+$GIT_SYNC_SECRET
+EOF
 
 echo "Deploying $IMAGE_NAME..."
 flyctl deploy --image "$IMAGE_NAME" -c "$CONFIG_DIR/fly.toml" "$@"
