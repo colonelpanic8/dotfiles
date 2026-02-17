@@ -312,7 +312,10 @@ mprisWidget =
         updatePlayerWidget =
           simplePlayerWidget
             defaultPlayerConfig
-              { setNowPlayingLabel = playingText 20 20
+              { setNowPlayingLabel =
+                  -- Upstream `playingText` uses "artist - title"; replace the
+                  -- separator with a newline for a more compact widget.
+                  \np -> T.replace " - " "\n" <$> playingText 20 20 np
               }
       }
 
@@ -395,7 +398,7 @@ endWidgetsForHost hostName backend =
 
 mkSimpleTaffyConfig :: String -> Backend -> [FilePath] -> SimpleTaffyConfig
 mkSimpleTaffyConfig hostName backend cssFiles =
- defaultSimpleTaffyConfig
+  defaultSimpleTaffyConfig
     { startWidgets = startWidgetsForBackend backend,
       endWidgets = endWidgetsForHost hostName backend,
       barPosition = Top,
