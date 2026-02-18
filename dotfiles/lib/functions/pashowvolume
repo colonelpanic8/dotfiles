@@ -1,15 +1,15 @@
 #!/usr/bin/env sh
 
 function pashowvolume {
+	timeout="${RUMNO_TIMEOUT:-2.5}"
 	if paismuted; then
-		rumno notify -m
+		rumno notify -t "$timeout" -m
 	else
 		actual=$(pavolume)
 		max=100
 		show=$(( actual < max ? actual : max ))
-		rumno notify -v "$show"
+		rumno notify -t "$timeout" -v "$show"
 	fi
 }
 
 pashowvolume
-
