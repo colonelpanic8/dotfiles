@@ -1,8 +1,4 @@
 {
-  "enabledPlugins": {
-    "superpowers@superpowers-marketplace": true,
-    "agent-browser@agent-browser": true
-  },
   "hooks": {
     "UserPromptSubmit": [
       {
@@ -14,5 +10,10 @@
         ]
       }
     ]
-  }
+  },
+  "enabledPlugins": {
+    "superpowers@superpowers-marketplace": true,
+    "agent-browser@agent-browser": true
+  },
+  "skipDangerousModePermissionPrompt": true
 }
