@@ -25,15 +25,13 @@ cachix use <your-cache-name>
 
 Option B: declarative via flake `nixConfig` (recommended for NixOS)
 
-1. Get the cache public key:
+1. Get the cache public key from the Cachix UI:
 
-```sh
-cachix show <your-cache-name>
-```
+- Open `https://app.cachix.org/cache/<your-cache-name>#pull`
+- Copy the `Public Key` value shown there.
 
 2. Add it to `nixos/flake.nix` under `nixConfig.extra-substituters` and
    `nixConfig.extra-trusted-public-keys`.
 
 Note: `nixos/nix.nix` sets `nix.settings.accept-flake-config = true`, so the
 flake `nixConfig` is honored during rebuilds.
-
