@@ -22,14 +22,7 @@ cachix-populate host="strixi-minaj":
   command -v cachix >/dev/null
   command -v nix >/dev/null
 
-  mapfile -t outs < <(
-  nix build \
-    --no-link \
-    --print-build-logs \
-    --print-out-paths \
-    ./{{nixos_dir}}#nixosConfigurations.{{host}}.config.system.build.toplevel \
-    --override-input railbird-secrets ./{{railbird_secrets_stub}}
-  )
+  mapfile -t outs < <(nix build --no-link --print-build-logs --print-out-paths ./{{nixos_dir}}#nixosConfigurations.{{host}}.config.system.build.toplevel --override-input railbird-secrets ./{{railbird_secrets_stub}})
 
   cachix push {{cachix_cache}} "${outs[@]}"
 
