@@ -7,6 +7,9 @@
 
   networking.hostName = "railbird-sf";
 
+  # Allow nginx to serve content synced into /var/lib/syncthing/* (owned by syncthing:syncthing, 2770 perms).
+  users.users.nginx.extraGroups = [ "syncthing" ];
+
   # org-agenda-api hosting with nginx + Let's Encrypt
   # Separate secrets for org-agenda-api: auth password (env format) and SSH key (raw file)
   age.secrets.org-api-auth-password = {
@@ -61,6 +64,33 @@
   # Disable the old multi-node railbird k3s setup
   myModules.railbird-k3s.enable = false;
   myModules."keepbook-sync".enable = true;
+
+  # Mirror the old biskcomp "Syncthing hosting" pattern: serve the synced railbird tree over HTTPS with autoindex.
+  services.nginx.virtualHosts."syncthing.railbird.ai" = {
+    enableACME = true;
+    forceSSL = true;
+    root = "/var/lib/syncthing/railbird";
+    locations."/" = {
+      extraConfig = ''
+        autoindex on;
+      '';
+    };
+  };
+
+  services.nginx.virtualHosts."docs.railbird.ai" = {
+    enableACME = true;
+    forceSSL = true;
+    root = "/var/lib/syncthing/railbird/docs";
+    locations."/" = {
+      extraConfig = ''
+        autoindex on;
+      '';
+    };
+  };
+
+  # Open the standard Syncthing sync/discovery ports on the host firewall.
+  # Note: you may still need router/NAT port-forwards for inbound access from the internet.
+  services.syncthing.openDefaultPorts = true;
 
   fileSystems."/" =
     { device = "/dev/disk/by-uuid/a317d456-6f84-41ee-a149-8e466e414aae";
