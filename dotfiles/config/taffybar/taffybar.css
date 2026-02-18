@@ -30,6 +30,14 @@
 	padding-right: 11px;
 }
 
+/* Compact two-line RAM/SWAP widget: reduce icon padding a bit. */
+.ram-swap .icon-label > .icon {
+	/* Different glyphs have different visual widths; fix the icon column width
+	   so the value text aligns between the RAM and SWAP rows. */
+	min-width: 22px;
+	padding-right: 8px;
+}
+
 /* The main bar container. border-radius matches the widget squircles (6px)
    so the bar itself has softly rounded corners. */
 .taffy-box {
@@ -40,6 +48,18 @@
 	box-shadow: none;
 	background-color: @bar-background;
 	background-image: none;
+}
+
+/* With barLevels enabled we render one row per level; keep the tray-only row
+   visually light so the tray feels detached from the main widget strip. */
+.level-2 {
+	background-color: transparent;
+	background-image: none;
+	box-shadow: none;
+}
+
+.level-2 .outer-pad.sni-tray {
+	margin-top: 0px;
 }
 
 /* Each widget is wrapped in outer-pad > inner-pad > contents by
@@ -282,7 +302,8 @@
 
 .clock label,
 .mpris label,
-.battery label {
+.battery label,
+.ram-swap label {
 	letter-spacing: 0.2px;
 }
 

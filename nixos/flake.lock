@@ -1910,11 +1910,11 @@
     "status-notifier-item": {
       "flake": false,
       "locked": {
-        "lastModified": 1770970375,
-        "narHash": "sha256-0G5dkc1bjAdbAJBBnipeEE2HbEkd4+bdkyRraumMRs4=",
+        "lastModified": 1770955859,
+        "narHash": "sha256-h95eUeTkNsdrVxAx0Nv0ViXHSkhhOfPF4L4DhtbfkNs=",
         "owner": "taffybar",
         "repo": "status-notifier-item",
-        "rev": "233aa43606036d06e58f19be156c48fa979506f2",
+        "rev": "a0958505f4e5fc145f34d7ad2615688d6668e02a",
         "type": "github"
       },
       "original": {
@@ -1990,11 +1990,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1770971159,
-        "narHash": "sha256-FOMr9QGs6dzQ0AHfvq0/s5H8I8IWVl347h2NCu+Upz8=",
+        "lastModified": 1770956839,
+        "narHash": "sha256-LeFbcQ1i7PBbSNhGFkf6A2yj71NnWjJj0ASahmxaxwg=",
         "owner": "taffybar",
         "repo": "taffybar",
-        "rev": "276ed1fd83bb56d22cb854acb10aeebf64b97c5c",
+        "rev": "6a1cf87c87e4bcab01b81d5f7d257c4dc6cfa1af",
         "type": "github"
       },
       "original": {

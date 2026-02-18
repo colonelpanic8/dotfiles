@@ -554,8 +554,8 @@
         "xmonad-contrib": "xmonad-contrib"
       },
       "locked": {
-        "lastModified": 1770970544,
-        "narHash": "sha256-rJV6yxYy77OJS994ICpNyecArjfhzGq6KKJrkbyYzvc=",
+        "lastModified": 1771379683,
+        "narHash": "sha256-849/9t0hXF1Xwv6ygMWoZFGKwZ3xNqUSk2bSm4jZi/E=",
         "path": "/home/imalison/dotfiles/dotfiles/config/taffybar/taffybar",
         "type": "path"
       },

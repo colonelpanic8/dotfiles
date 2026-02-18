@@ -4,7 +4,9 @@
 
 module Main (main) where
 
+import Control.Concurrent (threadDelay)
 import Control.Monad.IO.Class (MonadIO, liftIO)
+import Data.Char (toLower)
 import Data.Int (Int32)
 import Data.List (nub)
 import qualified Data.Map as M
@@ -15,7 +17,13 @@ import qualified Data.Text as T
 import qualified GI.GdkPixbuf.Objects.Pixbuf as Gdk
 import qualified GI.Gtk as Gtk
 import Network.HostName (getHostName)
-import qualified StatusNotifier.Tray as SNITray (MenuBackend (HaskellDBusMenu), defaultTrayParams, trayMenuBackend, trayOverlayScale)
+import System.Environment (lookupEnv)
+import qualified StatusNotifier.Tray as SNITray
+  ( MenuBackend (HaskellDBusMenu, LibDBusMenu),
+    defaultTrayParams,
+    trayMenuBackend,
+    trayOverlayScale,
+  )
 import System.Environment.XDG.BaseDir (getUserConfigFile)
 import System.Log.Logger (Priority (WARNING), rootLoggerName, setLevel, updateGlobalLogger)
 import System.Taffybar (startTaffybar)
@@ -23,10 +31,11 @@ import System.Taffybar.Context (Backend (BackendWayland, BackendX11), TaffyIO, d
 import System.Taffybar.DBus
 import System.Taffybar.DBus.Toggle
 import System.Taffybar.Hooks (withLogLevels)
+import System.Taffybar.Information.Memory (MemoryInfo (..), parseMeminfo)
 import System.Taffybar.Information.EWMHDesktopInfo (WorkspaceId (..))
 import System.Taffybar.Information.X11DesktopInfo
 import System.Taffybar.SimpleConfig
-import System.Taffybar.Util (getPixbufFromFilePath, maybeTCombine, (<|||>))
+import System.Taffybar.Util (getPixbufFromFilePath, maybeTCombine, postGUIASync, (<|||>))
 import System.Taffybar.Widget
 import qualified System.Taffybar.Widget.ASUS as ASUS
 import qualified System.Taffybar.Widget.NetworkManager as NetworkManager
@@ -37,12 +46,13 @@ import System.Taffybar.Widget.SNITray
     sniTrayThatStartsWatcherEvenThoughThisIsABadWayToDoIt,
   )
 import qualified System.Taffybar.Widget.ScreenLock as ScreenLock
-import System.Taffybar.Widget.Util (buildContentsBox, buildIconLabelBox, loadPixbufByName, widgetSetClassGI)
+import System.Taffybar.Widget.Util (backgroundLoop, buildContentsBox, buildIconLabelBox, loadPixbufByName, widgetSetClassGI)
 import qualified System.Taffybar.Widget.Wlsunset as Wlsunset
 import qualified System.Taffybar.Widget.Workspaces.Config as WorkspaceWidgetConfig
 import qualified System.Taffybar.Widget.Workspaces.EWMH as X11Workspaces
 import qualified System.Taffybar.Widget.Workspaces.Hyprland as Hyprland
 import System.Taffybar.WindowIcon (pixBufFromColor)
+import Text.Printf (printf)
 
 -- | Wrap the widget in a "TaffyBox" (via 'buildContentsBox') and add a CSS class.
 decorateWithClassAndBox :: (MonadIO m) => Text -> Gtk.Widget -> m Gtk.Widget
@@ -342,6 +352,78 @@ diskUsageWidget :: TaffyIO Gtk.Widget
 diskUsageWidget =
   decorateWithClassAndBoxM "disk-usage" diskUsageNew
 
+stackInPill :: Text -> [TaffyIO Gtk.Widget] -> TaffyIO Gtk.Widget
+stackInPill klass builders =
+  decorateWithClassAndBoxM klass $ do
+    widgets <- sequence builders
+    liftIO $ do
+      box <- Gtk.boxNew Gtk.OrientationVertical 0
+      mapM_ (\w -> Gtk.boxPackStart box w False False 0) widgets
+      Gtk.widgetShowAll box
+      Gtk.toWidget box
+
+meminfoPercentRowWidget ::
+  Text ->
+  Text ->
+  (MemoryInfo -> Maybe Double) ->
+  (MemoryInfo -> T.Text) ->
+  TaffyIO Gtk.Widget
+meminfoPercentRowWidget rowClass iconText getRatio tooltipText =
+  liftIO $ do
+    iconW <- Gtk.toWidget =<< Gtk.labelNew (Just iconText)
+    valueLabel <- Gtk.labelNew (Just "")
+    valueW <- Gtk.toWidget valueLabel
+    row <- buildIconLabelBox iconW valueW
+    _ <- widgetSetClassGI row rowClass
+
+    let fmtPercent :: Double -> T.Text
+        fmtPercent r = T.pack (printf "%.0f%%" (max 0 r * 100))
+        updateOnce :: IO ()
+        updateOnce = do
+          info <- parseMeminfo
+          let valueText = maybe "n/a" fmtPercent (getRatio info)
+          postGUIASync $ do
+            Gtk.labelSetText valueLabel valueText
+            Gtk.widgetSetTooltipText row (Just (tooltipText info))
+          threadDelay (2 * 1000000)
+
+    _ <- Gtk.onWidgetRealize row $ backgroundLoop updateOnce
+    pure row
+
+ramRowWidget :: TaffyIO Gtk.Widget
+ramRowWidget =
+  meminfoPercentRowWidget
+    "ram-row"
+    "\xF538" -- Font Awesome: memory
+    (Just . memoryUsedRatio)
+    (\info -> "RAM  " <> showMemoryInfo "$used$/$total$" 2 info)
+
+swapRowWidget :: TaffyIO Gtk.Widget
+swapRowWidget =
+  meminfoPercentRowWidget
+    "swap-row"
+    "\xF0EC" -- Font Awesome: exchange (swap-ish)
+    (\info -> if memorySwapTotal info <= 0 then Nothing else Just (memorySwapUsedRatio info))
+    (\info -> "SWAP " <> showMemoryInfo "$swapUsed$/$swapTotal$" 2 info)
+
+ramSwapWidget :: TaffyIO Gtk.Widget
+ramSwapWidget =
+  stackInPill "ram-swap" [ramRowWidget, swapRowWidget]
+
+audioBacklightWidget :: TaffyIO Gtk.Widget
+audioBacklightWidget =
+  stackInPill
+    "audio-backlight"
+    [ PulseAudio.pulseAudioNew,
+      backlightNewChanWith
+        defaultBacklightWidgetConfig
+          { backlightFormat = "$percent$%",
+            backlightUnknownFormat = "n/a",
+            backlightTooltipFormat =
+              Just "Device: $device$\nBrightness: $brightness$/$max$ ($percent$%)"
+          }
+    ]
+
 asusWidget :: TaffyIO Gtk.Widget
 asusWidget =
   decorateWithClassAndBoxM "asus-profile" ASUS.asusWidgetNew
@@ -363,10 +445,17 @@ wlsunsetWidget =
         }
 
 sniTrayWidget :: TaffyIO Gtk.Widget
-sniTrayWidget =
+sniTrayWidget = do
+  -- If the Haskell backend regresses, flip at runtime:
+  --   TAFFYBAR_SNI_MENU_BACKEND=lib
+  backendEnv <- liftIO (lookupEnv "TAFFYBAR_SNI_MENU_BACKEND")
+  let menuBackend =
+        case fmap (map toLower) backendEnv of
+          Just "lib" -> SNITray.LibDBusMenu
+          _ -> SNITray.HaskellDBusMenu
   decorateWithClassAndBoxM
     "sni-tray"
-    (sniTrayNewFromParams (SNITray.defaultTrayParams {SNITray.trayMenuBackend = SNITray.HaskellDBusMenu, SNITray.trayOverlayScale = 1 % 3}))
+    (sniTrayNewFromParams (SNITray.defaultTrayParams {SNITray.trayMenuBackend = menuBackend, SNITray.trayOverlayScale = 1 % 3}))
 
 -- ** Layout
 
@@ -377,16 +466,15 @@ startWidgetsForBackend backend =
     -- These Wayland widgets are Hyprland-specific.
     BackendWayland -> [hyprlandWorkspacesWidget]
 
-endWidgetsForHost :: String -> Backend -> [TaffyIO Gtk.Widget]
-endWidgetsForHost hostName backend =
-  let baseEndWidgets = [audioWidget, diskUsageWidget, networkWidget, screenLockWidget, wlsunsetWidget, mprisWidget, sniTrayWidget]
+endWidgetsForHost :: String -> [TaffyIO Gtk.Widget]
+endWidgetsForHost hostName =
+  let baseEndWidgets = [audioWidget, ramSwapWidget, diskUsageWidget, networkWidget, screenLockWidget, wlsunsetWidget, mprisWidget]
       laptopEndWidgets =
         [ batteryWidget,
-          sniTrayWidget,
           asusWidget,
-          audioWidget,
+          audioBacklightWidget,
+          ramSwapWidget,
           diskUsageWidget,
-          backlightWidget,
           networkWidget,
           screenLockWidget,
           wlsunsetWidget,
@@ -396,17 +484,32 @@ endWidgetsForHost hostName backend =
         then laptopEndWidgets
         else baseEndWidgets
 
+barLevelsForHost :: String -> Backend -> [BarLevelConfig]
+barLevelsForHost hostName backend =
+  [ BarLevelConfig
+      { levelStartWidgets = startWidgetsForBackend backend,
+        levelCenterWidgets = [clockWidget],
+        levelEndWidgets = endWidgetsForHost hostName
+      },
+    BarLevelConfig
+      { levelStartWidgets = [],
+        levelCenterWidgets = [],
+        levelEndWidgets = [sniTrayWidget]
+      }
+  ]
+
 mkSimpleTaffyConfig :: String -> Backend -> [FilePath] -> SimpleTaffyConfig
 mkSimpleTaffyConfig hostName backend cssFiles =
   defaultSimpleTaffyConfig
-    { startWidgets = startWidgetsForBackend backend,
-      endWidgets = endWidgetsForHost hostName backend,
+    { startWidgets = [],
+      centerWidgets = [],
+      endWidgets = [],
+      barLevels = Just $ barLevelsForHost hostName backend,
       barPosition = Top,
       widgetSpacing = 0,
       barPadding = 4,
       barHeight = ScreenRatio $ 1 / 33,
-      cssPaths = cssFiles,
-      centerWidgets = [clockWidget]
+      cssPaths = cssFiles
     }
 
 -- ** Entry Point
