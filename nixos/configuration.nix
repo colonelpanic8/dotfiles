@@ -42,7 +42,6 @@
     ./taffybar.nix
     ./tailscale.nix
     ./tts.nix
-    ./user-specific.nix
     ./users.nix
     ./vscode.nix
     ./waybar.nix

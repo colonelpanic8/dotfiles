@@ -1,15 +1,19 @@
-{ pkgs, config, makeEnable, ... }:
+{ pkgs, config, makeEnable, realUsers, ... }:
 makeEnable config "myModules.plasma" true {
   services.accounts-daemon.enable = true;
   services.displayManager.sddm = {
     enable = true;
     settings = {
       Users = {
-        # Show a maximum number of users
+        # Limit login candidates to regular interactive users.
         MaximumUid = 60000;
         MinimumUid = 1000;
-        # Enable user icons
         RememberLastUser = true;
+      };
+      Theme = {
+        # Breeze hides the user chooser when users exceed this threshold.
+        # Keep it aligned with declared normal users so the list stays visible.
+        DisableAvatarsThreshold = (builtins.length realUsers) + 10;
       };
     };
     extraPackages = with pkgs; [
