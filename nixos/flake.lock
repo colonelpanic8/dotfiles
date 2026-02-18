@@ -1910,11 +1910,11 @@
     "status-notifier-item": {
       "flake": false,
       "locked": {
-        "lastModified": 1770955859,
-        "narHash": "sha256-h95eUeTkNsdrVxAx0Nv0ViXHSkhhOfPF4L4DhtbfkNs=",
+        "lastModified": 1771366898,
+        "narHash": "sha256-P032QnjoXfrr20LW+EBq/5fWDhDnYe7mJRkjEMf4EGE=",
         "owner": "taffybar",
         "repo": "status-notifier-item",
-        "rev": "a0958505f4e5fc145f34d7ad2615688d6668e02a",
+        "rev": "e73da596911511034af94637d57cec8ccd1f68e2",
         "type": "github"
       },
       "original": {

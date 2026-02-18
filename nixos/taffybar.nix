@@ -30,7 +30,11 @@ makeEnable config "myModules.taffybar" false {
 
   home-manager.sharedModules = [
     {
-      services.status-notifier-watcher.enable = true;
+      services."status-notifier-watcher".enable = true;
+      # home-manager's module defaults to nixpkgs' status-notifier-item, which can lag.
+      # Point it at the pinned flake version instead.
+      services."status-notifier-watcher".package = pkgs.lib.mkForce
+        inputs.imalison-taffybar.packages.${pkgs.stdenv.hostPlatform.system}.status-notifier-item;
 
       # Disable kded6's statusnotifierwatcher module so it doesn't race with
       # the Haskell status-notifier-watcher for the org.kde.StatusNotifierWatcher bus name.

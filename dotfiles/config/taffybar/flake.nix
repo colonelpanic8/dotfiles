@@ -166,6 +166,12 @@
         });
       in
       {
+        # Expose commonly-needed ecosystem packages to callers (e.g. NixOS/home-manager
+        # modules) so they can run the pinned binaries directly.
+        packages = {
+          status-notifier-item = hpkgs.status-notifier-item;
+        };
+
         devShell = hpkgs.shellFor {
           packages = p: [ p.imalison-taffybar p.taffybar ];
           nativeBuildInputs = (with hpkgs; [
