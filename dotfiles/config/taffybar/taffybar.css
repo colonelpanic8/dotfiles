@@ -38,6 +38,12 @@
 	padding-right: 8px;
 }
 
+/* Stacked sun/lock pill: give each row a touch of horizontal breathing room. */
+.sun-lock .wlsunset,
+.sun-lock .screen-lock {
+	padding: 0px 4px;
+}
+
 /* The main bar container. border-radius matches the widget squircles (6px)
    so the bar itself has softly rounded corners. */
 .taffy-box {

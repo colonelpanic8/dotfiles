@@ -444,6 +444,26 @@ wlsunsetWidget =
         { Wlsunset.wlsunsetWidgetIcon = T.pack "\xF0599" <> " Sun"
         }
 
+simplifiedScreenLockWidget :: TaffyIO Gtk.Widget
+simplifiedScreenLockWidget =
+  -- Inner widget: no extra pill wrapping (the combiner provides that).
+  ScreenLock.screenLockNewWithConfig
+    ScreenLock.defaultScreenLockConfig
+      { ScreenLock.screenLockIcon = T.pack "\xF023"
+      }
+
+simplifiedWlsunsetWidget :: TaffyIO Gtk.Widget
+simplifiedWlsunsetWidget =
+  -- Inner widget: no extra pill wrapping (the combiner provides that).
+  Wlsunset.wlsunsetNewWithConfig
+    Wlsunset.defaultWlsunsetWidgetConfig
+      { Wlsunset.wlsunsetWidgetIcon = T.pack "\xF0599"
+      }
+
+sunLockWidget :: TaffyIO Gtk.Widget
+sunLockWidget =
+  stackInPill "sun-lock" [simplifiedWlsunsetWidget, simplifiedScreenLockWidget]
+
 sniTrayWidget :: TaffyIO Gtk.Widget
 sniTrayWidget = do
   -- If the Haskell backend regresses, flip at runtime:
@@ -468,7 +488,7 @@ startWidgetsForBackend backend =
 
 endWidgetsForHost :: String -> [TaffyIO Gtk.Widget]
 endWidgetsForHost hostName =
-  let baseEndWidgets = [audioWidget, ramSwapWidget, diskUsageWidget, networkWidget, screenLockWidget, wlsunsetWidget, mprisWidget]
+  let baseEndWidgets = [audioWidget, ramSwapWidget, diskUsageWidget, networkWidget, sunLockWidget, mprisWidget]
       laptopEndWidgets =
         [ batteryWidget,
           asusWidget,
@@ -476,8 +496,7 @@ endWidgetsForHost hostName =
           ramSwapWidget,
           diskUsageWidget,
           networkWidget,
-          screenLockWidget,
-          wlsunsetWidget,
+          sunLockWidget,
           mprisWidget
         ]
    in if hostName `elem` laptopHosts
