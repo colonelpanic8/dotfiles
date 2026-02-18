@@ -488,7 +488,19 @@ startWidgetsForBackend backend =
 
 endWidgetsForHost :: String -> [TaffyIO Gtk.Widget]
 endWidgetsForHost hostName =
-  let baseEndWidgets = [audioWidget, ramSwapWidget, diskUsageWidget, networkWidget, sunLockWidget, mprisWidget, sniTrayWidget]
+  -- NOTE: end widgets are packed with Gtk.boxPackEnd, so the list order is
+  -- right-to-left on screen. Make the tray appear at the far right by placing
+  -- it first in the list. (On laptops: battery is far right, tray immediately
+  -- left of it.)
+  let baseEndWidgets =
+        [ sniTrayWidget,
+          audioWidget,
+          ramSwapWidget,
+          diskUsageWidget,
+          networkWidget,
+          sunLockWidget,
+          mprisWidget
+        ]
       laptopEndWidgets =
         [ batteryWidget,
           sniTrayWidget,
