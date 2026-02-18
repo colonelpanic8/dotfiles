@@ -5,23 +5,23 @@ user := "imalison"
 
 # Get all todos
 get-all-todos:
-    @curl -s -u "{{user}}:$(pass show org-agenda-api/imalison | head -1)" "{{base_url}}/get-all-todos" | jq .
+    @curl -s -u "{{user}}:$(pass show org-agenda-api/imalison | head -1)" "{{base_url}}/get-all-todos" | jq . # gitleaks:allow
 
 # Get today's agenda
 get-todays-agenda:
-    @curl -s -u "{{user}}:$(pass show org-agenda-api/imalison | head -1)" "{{base_url}}/get-todays-agenda" | jq .
+    @curl -s -u "{{user}}:$(pass show org-agenda-api/imalison | head -1)" "{{base_url}}/get-todays-agenda" | jq . # gitleaks:allow
 
 # Get agenda (day view)
 agenda:
-    @curl -s -u "{{user}}:$(pass show org-agenda-api/imalison | head -1)" "{{base_url}}/agenda" | jq .
+    @curl -s -u "{{user}}:$(pass show org-agenda-api/imalison | head -1)" "{{base_url}}/agenda" | jq . # gitleaks:allow
 
 # Get agenda files
 agenda-files:
-    @curl -s -u "{{user}}:$(pass show org-agenda-api/imalison | head -1)" "{{base_url}}/agenda-files" | jq .
+    @curl -s -u "{{user}}:$(pass show org-agenda-api/imalison | head -1)" "{{base_url}}/agenda-files" | jq . # gitleaks:allow
 
 # Get todo states
 todo-states:
-    @curl -s -u "{{user}}:$(pass show org-agenda-api/imalison | head -1)" "{{base_url}}/todo-states" | jq .
+    @curl -s -u "{{user}}:$(pass show org-agenda-api/imalison | head -1)" "{{base_url}}/todo-states" | jq . # gitleaks:allow
 
 # Health check
 health:
@@ -29,6 +29,7 @@ health:
 
 # Create a todo
 create-todo title:
+    # gitleaks:allow
     @curl -s -X POST -u "{{user}}:$(pass show org-agenda-api/imalison | head -1)" \
         -H "Content-Type: application/json" \
         -d '{"title": "{{title}}"}' \

@@ -18,6 +18,10 @@ with lib; let
   tokenXorTokenFile = instance:
     (instance.token == null && instance.tokenFile != null)
     || (instance.token != null && instance.tokenFile == null);
+
+  # Render a tokenFile (path or string) into the shell snippet used by launchd.
+  tokenFilePath = instance:
+    if instance.tokenFile == null then null else toString instance.tokenFile;
 in {
   options.services.gitea-actions-runner = {
     package = mkOption {
@@ -154,6 +158,11 @@ in {
                   "${pkgs.writeShellScript "gitea-runner-setup-${name}" ''
                     mkdir -p /var/lib/gitea-runner/${name}
                     cd /var/lib/gitea-runner/${name}
+                    ${
+                      if instance.tokenFile != null then ''
+                        TOKEN="$(${pkgs.coreutils}/bin/cat ${escapeShellArg (tokenFilePath instance)})"
+                      '' else ""
+                    }
                     if [ ! -e "/var/lib/gitea-runner/${name}/.runner" ]; then
                         ${cfg.package}/bin/act_runner register --no-interactive \
                         --instance ${escapeShellArg instance.url} \

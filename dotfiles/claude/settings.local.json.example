@@ -1,0 +1,43 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(find:*)",
+      "Bash(cat:*)"
+    ],
+    "deny": []
+  },
+  "mcp": {
+    "servers": {
+      "gitea-mcp": {
+        "command": "docker",
+        "args": [
+          "run",
+          "-i",
+          "--rm",
+          "-e",
+          "GITEA_ACCESS_TOKEN",
+          "-e",
+          "GITEA_BASE_URL=https://dev.railbird.ai",
+          "docker.gitea.com/gitea-mcp-server"
+        ]
+      },
+      "chrome-devtools": {
+        "command": "npx",
+        "args": [
+          "chrome-devtools-mcp@latest",
+          "--auto-connect"
+        ]
+      },
+      "imap-email": {
+        "command": "npx",
+        "args": ["-y", "imap-email-mcp"],
+        "env": {}
+      }
+    }
+  },
+  "enabledMcpjsonServers": [
+    "chrome-devtools",
+    "imap-email"
+  ],
+  "enableAllProjectMcpServers": true
+}

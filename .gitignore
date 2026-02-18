@@ -36,3 +36,12 @@ gotools
 /dotfiles/config/xmonad/dist-newstyle/
 /dotfiles/config/hypr/hyprscratch.conf
 /.worktrees/
+
+# Secrets and machine-local state (managed via agenix/pass instead of git)
+/dotfiles/config/asciinema/config
+/dotfiles/config/remmina/remmina.pref
+/dotfiles/config/screencloud/ScreenCloud.conf
+
+# Local tool state
+/.playwright-cli/
+/dotfiles/config/taffybar/dbus-menu/

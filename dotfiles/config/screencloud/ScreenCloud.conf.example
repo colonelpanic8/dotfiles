@@ -4,9 +4,9 @@ first-run=false
 
 [account]
 email=IvanMalison@gmail.com
-logged-in=true
+logged-in=false
 token=
-token-secret=d3f4ef69df4242e9b10ca034b28f6831
+token-secret=
 
 [hotkeys]
 captureFullScreen=Shift+Alt+1
@@ -31,10 +31,10 @@ proxy-req-auth=false
 check-updates-automatically=true
 
 [uploaders]
-imgur\access-token=bcea050c708998597610f22a20c2121afa4cfad9
-imgur\anonymous=false
-imgur\copy-direct-link=false
-imgur\copy-link=true
-imgur\name-format=Screenshot at %H:%M:%S
-imgur\refresh-token=9890577aa0486ecb5ddc5a04cf9ceb0228e91b26
-imgur\username=
+imgur\\access-token=
+imgur\\anonymous=false
+imgur\\copy-direct-link=false
+imgur\\copy-link=true
+imgur\\name-format=Screenshot at %H:%M:%S
+imgur\\refresh-token=
+imgur\\username=

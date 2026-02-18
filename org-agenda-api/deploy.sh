@@ -71,7 +71,7 @@ echo "  dotfiles:       $DOTFILES_REV"
 echo "Building container from flake..."
 nix build "$NIXOS_DIR#${INSTANCE}-org-agenda-api" -o "result-${INSTANCE}-org-agenda-api" --refresh \
   --option extra-substituters "https://org-agenda-api.cachix.org" \
-  --option extra-trusted-public-keys "org-agenda-api.cachix.org-1:MzzlSeQpJ/erP9/qYU6EiS4LM4AHA/mpc8s4thtEvNI="
+  --option extra-trusted-public-keys "org-agenda-api.cachix.org-1:MzzlSeQpJ/erP9/qYU6EiS4LM4AHA/mpc8s4thtEvNI=" # gitleaks:allow
 
 # Load into Docker
 echo "Loading container into Docker..."

@@ -7,7 +7,6 @@
     ];
     age.secrets.gpg-keys.file = ./secrets/gpg-keys.age;
     age.secrets.gpg-passphrase.file = ./secrets/gpg-passphrase.age;
-
     systemd.user.services.import-gpg-key = {
       Unit = {
         Description = "Import GPG private key";

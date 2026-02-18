@@ -35,10 +35,7 @@ just create-todo "Test todo"
 
 ## Manual curl
 
-```bash
-curl -s -u "imalison:$(pass show org-agenda-api/imalison | head -1)" \
-  https://colonelpanic-org-agenda.fly.dev/health | jq
-```
+Prefer using the `just` recipes above so we don't bake auth syntax into docs.
 
 ## Key Endpoints
 

@@ -49,7 +49,9 @@
           enable = true;
           name = config.networking.hostName;
           url = "https://dev.railbird.ai";
-          token = "H0A7YXAWsKSp9QzvMymfJI12hbxwR7UerEHpCJUe";
+          # Keep the runner registration token out of git.
+          # Create this file on the machine before the runner is (re)registered.
+          tokenFile = "/var/lib/gitea-runner/nix/token";
           labels = [
             "nix-darwin-${pkgs.system}:host"
             "macos-aarch64-darwin"

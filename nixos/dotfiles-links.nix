@@ -62,4 +62,3 @@ in
       ".emacs.d".source = oos "${worktreeDotfiles}/emacs.d";
     };
 }
-
