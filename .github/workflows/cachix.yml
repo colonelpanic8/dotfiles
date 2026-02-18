@@ -1,0 +1,75 @@
+name: Build and Push Cachix (NixOS)
+
+on:
+  push:
+    branches: [master]
+    paths:
+      - "nixos/**"
+      - "org-agenda-api/**"
+      - ".github/workflows/cachix.yml"
+  pull_request:
+    branches: [master]
+    paths:
+      - "nixos/**"
+      - "org-agenda-api/**"
+      - ".github/workflows/cachix.yml"
+  workflow_dispatch: {}
+
+jobs:
+  nixos-strixi-minaj:
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: read
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Install Nix
+        uses: DeterminateSystems/nix-installer-action@v16
+
+      - name: Use GitHub Actions Cache for /nix/store
+        uses: DeterminateSystems/magic-nix-cache-action@v7
+
+      - name: Require Cachix config (push only)
+        if: github.event_name == 'push'
+        env:
+          CACHIX_CACHE_NAME: ${{ vars.CACHIX_CACHE_NAME }}
+          CACHIX_AUTH_TOKEN: ${{ secrets.CACHIX_AUTH_TOKEN }}
+        run: |
+          set -euo pipefail
+          if [ -z "${CACHIX_CACHE_NAME:-}" ]; then
+            echo "Missing repo variable CACHIX_CACHE_NAME (Settings -> Secrets and variables -> Actions -> Variables)." >&2
+            exit 1
+          fi
+          if [ -z "${CACHIX_AUTH_TOKEN:-}" ]; then
+            echo "Missing repo secret CACHIX_AUTH_TOKEN (Settings -> Secrets and variables -> Actions -> Secrets)." >&2
+            exit 1
+          fi
+
+      - name: Setup Cachix (push)
+        if: github.event_name == 'push'
+        uses: cachix/cachix-action@v15
+        with:
+          name: ${{ vars.CACHIX_CACHE_NAME }}
+          authToken: ${{ secrets.CACHIX_AUTH_TOKEN }}
+          skipPush: false
+
+      - name: Setup Cachix (PR, no push)
+        if: github.event_name == 'pull_request' && vars.CACHIX_CACHE_NAME != ''
+        uses: cachix/cachix-action@v15
+        with:
+          name: ${{ vars.CACHIX_CACHE_NAME }}
+          skipPush: true
+
+      - name: Build NixOS system (strixi-minaj)
+        run: |
+          set -euxo pipefail
+          nix build \
+            --no-link \
+            --print-build-logs \
+            ./nixos#nixosConfigurations.strixi-minaj.config.system.build.toplevel \
+            --override-input railbird-secrets ./nixos/ci/railbird-secrets-stub
