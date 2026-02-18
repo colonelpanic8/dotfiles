@@ -498,7 +498,7 @@ endWidgetsForHost hostName =
           diskUsageWidget,
           networkWidget,
           sunLockWidget,
-          mprisWidget,
+          mprisWidget
         ]
    in if hostName `elem` laptopHosts
         then laptopEndWidgets
