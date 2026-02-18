@@ -56,18 +56,6 @@
 	background-image: none;
 }
 
-/* With barLevels enabled we render one row per level; keep the tray-only row
-   visually light so the tray feels detached from the main widget strip. */
-.level-2 {
-	background-color: transparent;
-	background-image: none;
-	box-shadow: none;
-}
-
-.level-2 .outer-pad.sni-tray {
-	margin-top: 0px;
-}
-
 /* Each widget is wrapped in outer-pad > inner-pad > contents by
    buildContentsBox (Haskell).  The outer-pad draws the squircle
    background pill.  border-radius kept low (6px) for a more squared

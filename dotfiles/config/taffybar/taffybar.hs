@@ -449,7 +449,7 @@ simplifiedScreenLockWidget =
   -- Inner widget: no extra pill wrapping (the combiner provides that).
   ScreenLock.screenLockNewWithConfig
     ScreenLock.defaultScreenLockConfig
-      { ScreenLock.screenLockIcon = T.pack "\xF023"
+      { ScreenLock.screenLockIcon = T.pack "\xF023" <> " Lock"
       }
 
 simplifiedWlsunsetWidget :: TaffyIO Gtk.Widget
@@ -457,7 +457,7 @@ simplifiedWlsunsetWidget =
   -- Inner widget: no extra pill wrapping (the combiner provides that).
   Wlsunset.wlsunsetNewWithConfig
     Wlsunset.defaultWlsunsetWidgetConfig
-      { Wlsunset.wlsunsetWidgetIcon = T.pack "\xF0599"
+      { Wlsunset.wlsunsetWidgetIcon = T.pack "\xF0599" <> " Sun"
       }
 
 sunLockWidget :: TaffyIO Gtk.Widget
@@ -488,7 +488,7 @@ startWidgetsForBackend backend =
 
 endWidgetsForHost :: String -> [TaffyIO Gtk.Widget]
 endWidgetsForHost hostName =
-  let baseEndWidgets = [audioWidget, ramSwapWidget, diskUsageWidget, networkWidget, sunLockWidget, mprisWidget]
+  let baseEndWidgets = [audioWidget, ramSwapWidget, diskUsageWidget, networkWidget, sunLockWidget, mprisWidget, sniTrayWidget]
       laptopEndWidgets =
         [ batteryWidget,
           asusWidget,
@@ -497,33 +497,20 @@ endWidgetsForHost hostName =
           diskUsageWidget,
           networkWidget,
           sunLockWidget,
-          mprisWidget
+          mprisWidget,
+          sniTrayWidget
         ]
    in if hostName `elem` laptopHosts
         then laptopEndWidgets
         else baseEndWidgets
 
-barLevelsForHost :: String -> Backend -> [BarLevelConfig]
-barLevelsForHost hostName backend =
-  [ BarLevelConfig
-      { levelStartWidgets = startWidgetsForBackend backend,
-        levelCenterWidgets = [clockWidget],
-        levelEndWidgets = endWidgetsForHost hostName
-      },
-    BarLevelConfig
-      { levelStartWidgets = [],
-        levelCenterWidgets = [],
-        levelEndWidgets = [sniTrayWidget]
-      }
-  ]
-
 mkSimpleTaffyConfig :: String -> Backend -> [FilePath] -> SimpleTaffyConfig
 mkSimpleTaffyConfig hostName backend cssFiles =
   defaultSimpleTaffyConfig
-    { startWidgets = [],
-      centerWidgets = [],
-      endWidgets = [],
-      barLevels = Just $ barLevelsForHost hostName backend,
+    { startWidgets = startWidgetsForBackend backend,
+      centerWidgets = [clockWidget],
+      endWidgets = endWidgetsForHost hostName,
+      barLevels = Nothing,
       barPosition = Top,
       widgetSpacing = 0,
       barPadding = 4,
