@@ -6,7 +6,7 @@ switch *args:
 	  systemctl status nixos-rebuild-switch-to-configuration.service --no-pager >&2 || true; \
 	  while systemctl is-active --quiet nixos-rebuild-switch-to-configuration.service; do sleep 1; done; \
 	fi'
-	sudo nixos-rebuild switch --flake '.#' --impure --option warn-dirty false {{args}}
+	sudo nixos-rebuild switch --flake "git+https://github.com/colonelpanic8/dotfiles.git?ref=master&dir=nixos#" --impure --option warn-dirty false {{args}}
 
 switch-local-taffybar *args:
 	# Like `switch`, but use the local taffybar checkout (useful when hacking on it).
@@ -16,12 +16,12 @@ switch-local-taffybar *args:
 	  systemctl status nixos-rebuild-switch-to-configuration.service --no-pager >&2 || true; \
 	  while systemctl is-active --quiet nixos-rebuild-switch-to-configuration.service; do sleep 1; done; \
 	fi'
-	sudo nixos-rebuild switch --flake '.#' --impure --option warn-dirty false \
+	sudo nixos-rebuild switch --flake "git+https://github.com/colonelpanic8/dotfiles.git?ref=master&dir=nixos#" --impure --option warn-dirty false \
 	  --override-input taffybar path:../dotfiles/config/taffybar/taffybar \
 	  {{args}}
 
 remote-switch host *args:
-	nixos-rebuild switch --flake '.#{{host}}' --target-host {{host}}.local --sudo --impure --option warn-dirty false {{args}}
+	nixos-rebuild switch --flake "git+https://github.com/colonelpanic8/dotfiles.git?ref=master&dir=nixos#{{host}}" --target-host {{host}}.local --sudo --impure --option warn-dirty false {{args}}
 
 fix-local-path-issue:
 	# Kept for backwards-compat: update the lockfile inputs explicitly.
