@@ -222,7 +222,7 @@
       # playwright-cli
       {
         pr = 490230;
-        hash = "sha256-FGTQuqTDJV7GXsHDNOMyNBD2ZUBNJa//FBoCPEQHdLA=";
+        hash = "sha256-vQM2mmIgpxFo3ctjk2tXkfhocXnTuHSEy8iYkTexScc=";
       }
       # claude-code
       # {
