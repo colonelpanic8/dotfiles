@@ -490,15 +490,16 @@ endWidgetsForHost :: String -> [TaffyIO Gtk.Widget]
 endWidgetsForHost hostName =
   let baseEndWidgets = [audioWidget, ramSwapWidget, diskUsageWidget, networkWidget, sunLockWidget, mprisWidget, sniTrayWidget]
       laptopEndWidgets =
-        [ batteryWidget,
-          asusWidget,
+        [ asusWidget,
           audioBacklightWidget,
           ramSwapWidget,
           diskUsageWidget,
           networkWidget,
           sunLockWidget,
           mprisWidget,
-          sniTrayWidget
+          sniTrayWidget,
+          -- Battery should be the only widget beyond the tray (furthest right).
+          batteryWidget
         ]
    in if hostName `elem` laptopHosts
         then laptopEndWidgets
