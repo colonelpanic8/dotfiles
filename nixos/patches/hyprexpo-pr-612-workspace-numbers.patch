@@ -1,0 +1,228 @@
+From aaefc0ff0bc4348de04f311ad0101da44c62ae94 Mon Sep 17 00:00:00 2001
+From: Ivan Malison <IvanMalison@gmail.com>
+Date: Wed, 4 Feb 2026 00:54:52 -0800
+Subject: [PATCH 1/2] hyprexpo: optionally render workspace numbers
+
+---
+ hyprexpo/README.md    |   3 +-
+ hyprexpo/main.cpp     |   2 +
+ hyprexpo/overview.cpp | 109 ++++++++++++++++++++++++++++++++++++++++++
+ hyprexpo/overview.hpp |   4 ++
+ 4 files changed, 117 insertions(+), 1 deletion(-)
+
+diff --git a/README.md b/README.md
+index 97bd1d4..aac2e97 100644
+--- a/README.md
++++ b/README.md
+@@ -28,6 +28,8 @@ gap_size | number | gap between desktops | `5`
+ bg_col | color | color in gaps (between desktops) | `rgb(000000)`
+ workspace_method | [center/first] [workspace] | position of the desktops | `center current`
+ skip_empty | boolean | whether the grid displays workspaces sequentially by id using selector "r" (`false`) or skips empty workspaces using selector "m" (`true`) | `false`
++show_workspace_numbers | boolean | show numeric labels for workspaces | `false`
++workspace_number_color | color | color of workspace number labels | `rgb(ffffff)`
+ gesture_distance | number | how far is the max for the gesture | `300`
+ 
+ ### Keywords
+@@ -57,4 +59,3 @@ off | hides the overview
+ disable | same as `off`
+ on | displays the overview
+ enable | same as `on`
+-
+diff --git a/main.cpp b/main.cpp
+index 883fd82..ff9f380 100644
+--- a/main.cpp
++++ b/main.cpp
+@@ -239,6 +239,8 @@ APICALL EXPORT PLUGIN_DESCRIPTION_INFO PLUGIN_INIT(HANDLE handle) {
+     HyprlandAPI::addConfigValue(PHANDLE, "plugin:hyprexpo:bg_col", Hyprlang::INT{0xFF111111});
+     HyprlandAPI::addConfigValue(PHANDLE, "plugin:hyprexpo:workspace_method", Hyprlang::STRING{"center current"});
+     HyprlandAPI::addConfigValue(PHANDLE, "plugin:hyprexpo:skip_empty", Hyprlang::INT{0});
++    HyprlandAPI::addConfigValue(PHANDLE, "plugin:hyprexpo:show_workspace_numbers", Hyprlang::INT{0});
++    HyprlandAPI::addConfigValue(PHANDLE, "plugin:hyprexpo:workspace_number_color", Hyprlang::INT{0xFFFFFFFF});
+ 
+     HyprlandAPI::addConfigValue(PHANDLE, "plugin:hyprexpo:gesture_distance", Hyprlang::INT{200});
+ 
+diff --git a/overview.cpp b/overview.cpp
+index 5721948..926a9f8 100644
+--- a/overview.cpp
++++ b/overview.cpp
+@@ -1,5 +1,8 @@
+ #include "overview.hpp"
+ #include <any>
++#include <algorithm>
++#include <cmath>
++#include <pango/pangocairo.h>
+ #define private public
+ #include <hyprland/src/render/Renderer.hpp>
+ #include <hyprland/src/Compositor.hpp>
+@@ -15,6 +18,86 @@
+ #undef private
+ #include "OverviewPassElement.hpp"
+ 
++static Vector2D renderLabelTexture(SP<CTexture> out, const std::string& text, const CHyprColor& color, int fontSizePx) {
++    if (!out || text.empty() || fontSizePx <= 0)
++        return {};
++
++    auto measureSurface = cairo_image_surface_create(CAIRO_FORMAT_ARGB32, 1, 1);
++    auto measureCairo   = cairo_create(measureSurface);
++
++    PangoLayout*         measureLayout = pango_cairo_create_layout(measureCairo);
++    pango_layout_set_text(measureLayout, text.c_str(), -1);
++    auto* fontDesc = pango_font_description_from_string("Sans Bold");
++    pango_font_description_set_size(fontDesc, fontSizePx * PANGO_SCALE);
++    pango_layout_set_font_description(measureLayout, fontDesc);
++    pango_font_description_free(fontDesc);
++
++    PangoRectangle inkRect, logicalRect;
++    pango_layout_get_extents(measureLayout, &inkRect, &logicalRect);
++
++    const int textW = std::max(1, (int)std::ceil(logicalRect.width / (double)PANGO_SCALE));
++    const int textH = std::max(1, (int)std::ceil(logicalRect.height / (double)PANGO_SCALE));
++
++    g_object_unref(measureLayout);
++    cairo_destroy(measureCairo);
++    cairo_surface_destroy(measureSurface);
++
++    const int pad    = std::max(4, (int)std::round(fontSizePx * 0.35));
++    const int width  = textW + pad * 2;
++    const int height = textH + pad * 2;
++
++    auto surface = cairo_image_surface_create(CAIRO_FORMAT_ARGB32, width, height);
++    auto cairo   = cairo_create(surface);
++
++    // Clear the pixmap
++    cairo_save(cairo);
++    cairo_set_operator(cairo, CAIRO_OPERATOR_CLEAR);
++    cairo_paint(cairo);
++    cairo_restore(cairo);
++
++    // Background for legibility
++    cairo_set_source_rgba(cairo, 0.0, 0.0, 0.0, 0.55);
++    cairo_rectangle(cairo, 0, 0, width, height);
++    cairo_fill(cairo);
++
++    PangoLayout* layout = pango_cairo_create_layout(cairo);
++    pango_layout_set_text(layout, text.c_str(), -1);
++    fontDesc = pango_font_description_from_string("Sans Bold");
++    pango_font_description_set_size(fontDesc, fontSizePx * PANGO_SCALE);
++    pango_layout_set_font_description(layout, fontDesc);
++    pango_font_description_free(fontDesc);
++
++    pango_layout_get_extents(layout, &inkRect, &logicalRect);
++    const double xOffset = (width - logicalRect.width / (double)PANGO_SCALE) / 2.0;
++    const double yOffset = (height - logicalRect.height / (double)PANGO_SCALE) / 2.0;
++
++    cairo_set_source_rgba(cairo, color.r, color.g, color.b, color.a);
++    cairo_move_to(cairo, xOffset, yOffset);
++    pango_cairo_show_layout(cairo, layout);
++
++    g_object_unref(layout);
++
++    cairo_surface_flush(surface);
++
++    const auto DATA = cairo_image_surface_get_data(surface);
++    out->allocate();
++    glBindTexture(GL_TEXTURE_2D, out->m_texID);
++    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
++    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
++
++#ifndef GLES2
++    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_SWIZZLE_R, GL_BLUE);
++    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_SWIZZLE_B, GL_RED);
++#endif
++
++    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, DATA);
++
++    cairo_destroy(cairo);
++    cairo_surface_destroy(surface);
++
++    return {width, height};
++}
++
+ static void damageMonitor(WP<Hyprutils::Animation::CBaseAnimatedVariable> thisptr) {
+     g_pOverview->damage();
+ }
+@@ -34,11 +117,14 @@ COverview::COverview(PHLWORKSPACE startedOn_, bool swipe_) : startedOn(startedOn
+     static auto* const* PGAPS    = (Hyprlang::INT* const*)HyprlandAPI::getConfigValue(PHANDLE, "plugin:hyprexpo:gap_size")->getDataStaticPtr();
+     static auto* const* PCOL     = (Hyprlang::INT* const*)HyprlandAPI::getConfigValue(PHANDLE, "plugin:hyprexpo:bg_col")->getDataStaticPtr();
+     static auto* const* PSKIP    = (Hyprlang::INT* const*)HyprlandAPI::getConfigValue(PHANDLE, "plugin:hyprexpo:skip_empty")->getDataStaticPtr();
++    static auto* const* PSHOWNUM = (Hyprlang::INT* const*)HyprlandAPI::getConfigValue(PHANDLE, "plugin:hyprexpo:show_workspace_numbers")->getDataStaticPtr();
++    static auto* const* PNUMCOL  = (Hyprlang::INT* const*)HyprlandAPI::getConfigValue(PHANDLE, "plugin:hyprexpo:workspace_number_color")->getDataStaticPtr();
+     static auto const*  PMETHOD  = (Hyprlang::STRING const*)HyprlandAPI::getConfigValue(PHANDLE, "plugin:hyprexpo:workspace_method")->getDataStaticPtr();
+ 
+     SIDE_LENGTH = **PCOLUMNS;
+     GAP_WIDTH   = **PGAPS;
+     BG_COLOR    = **PCOL;
++    showWorkspaceNumbers = **PSHOWNUM;
+ 
+     // process the method
+     bool     methodCenter  = true;
+@@ -126,6 +212,17 @@ COverview::COverview(PHLWORKSPACE startedOn_, bool swipe_) : startedOn(startedOn
+     Vector2D tileRenderSize = (pMonitor->m_size - Vector2D{GAP_WIDTH * pMonitor->m_scale, GAP_WIDTH * pMonitor->m_scale} * (SIDE_LENGTH - 1)) / SIDE_LENGTH;
+     CBox     monbox{0, 0, tileSize.x * 2, tileSize.y * 2};
+ 
++    if (showWorkspaceNumbers) {
++        const CHyprColor numberColor = **PNUMCOL;
++        const int        fontSizePx  = std::max(12, (int)std::round(tileRenderSize.y * pMonitor->m_scale * 0.22));
++        for (auto& image : images) {
++            if (image.workspaceID == WORKSPACE_INVALID)
++                continue;
++            image.labelTex = makeShared<CTexture>();
++            image.labelSizePx = renderLabelTexture(image.labelTex, std::to_string(image.workspaceID), numberColor, fontSizePx);
++        }
++    }
++
+     if (!ENABLE_LOWRES)
+         monbox = {{0, 0}, pMonitor->m_pixelSize};
+ 
+@@ -452,6 +549,18 @@ void COverview::fullRender() {
+             texbox.round();
+             CRegion damage{0, 0, INT16_MAX, INT16_MAX};
+             g_pHyprOpenGL->renderTextureInternal(images[x + y * SIDE_LENGTH].fb.getTexture(), texbox, {.damage = &damage, .a = 1.0});
++
++            if (showWorkspaceNumbers) {
++                auto& image = images[x + y * SIDE_LENGTH];
++                if (image.workspaceID != WORKSPACE_INVALID && image.labelTex && image.labelTex->m_texID != 0 && image.labelSizePx.x > 0 && image.labelSizePx.y > 0) {
++                    const Vector2D labelSize = image.labelSizePx / pMonitor->m_scale;
++                    const float    margin    = std::max(4.0, tileRenderSize.y * 0.05);
++                    CBox           labelBox  = {x * tileRenderSize.x + x * GAPSIZE + margin, y * tileRenderSize.y + y * GAPSIZE + margin, labelSize.x, labelSize.y};
++                    labelBox.scale(pMonitor->m_scale).translate(pos->value());
++                    labelBox.round();
++                    g_pHyprOpenGL->renderTexture(image.labelTex, labelBox, {.a = 1.0});
++                }
++            }
+         }
+     }
+ }
+diff --git a/overview.hpp b/overview.hpp
+index 4b02400..1f6bf3c 100644
+--- a/overview.hpp
++++ b/overview.hpp
+@@ -8,6 +8,7 @@
+ #include <hyprland/src/helpers/AnimatedVariable.hpp>
+ #include <hyprland/src/managers/HookSystemManager.hpp>
+ #include <vector>
++class CTexture;
+ 
+ // saves on resources, but is a bit broken rn with blur.
+ // hyprland's fault, but cba to fix.
+@@ -58,6 +59,8 @@ class COverview {
+         int64_t      workspaceID = -1;
+         PHLWORKSPACE pWorkspace;
+         CBox         box;
++        SP<CTexture> labelTex;
++        Vector2D     labelSizePx;
+     };
+ 
+     Vector2D                     lastMousePosLocal = Vector2D{};
+@@ -81,6 +84,7 @@ class COverview {
+ 
+     bool                         swipe             = false;
+     bool                         swipeWasCommenced = false;
++    bool                         showWorkspaceNumbers = false;
+ 
+     friend class COverviewPassElement;
+ };
+-- 
+2.52.0
+
+

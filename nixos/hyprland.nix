@@ -1,4 +1,13 @@
 { config, pkgs, makeEnable, inputs, ... }:
+let
+  system = pkgs.stdenv.hostPlatform.system;
+  hyprexpoPatched = inputs.hyprland-plugins.packages.${system}.hyprexpo.overrideAttrs (old: {
+    patches = (old.patches or [ ]) ++ [
+      ./patches/hyprexpo-pr-612-workspace-numbers.patch
+      ./patches/hyprexpo-pr-616-bring-mode.patch
+    ];
+  });
+in
 makeEnable config "myModules.hyprland" true {
   myModules.taffybar.enable = true;
 
@@ -97,7 +106,7 @@ makeEnable config "myModules.hyprland" true {
     inputs.hy3.packages.${pkgs.stdenv.hostPlatform.system}.hy3
 
     # Hyprexpo plugin from hyprland-plugins (workspace overview)
-    inputs.hyprland-plugins.packages.${pkgs.stdenv.hostPlatform.system}.hyprexpo
+    hyprexpoPatched
 
     # For scripts
     jq
