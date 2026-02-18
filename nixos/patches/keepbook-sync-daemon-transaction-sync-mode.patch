@@ -1,0 +1,24 @@
+diff --git a/src/bin/keepbook-sync-daemon.rs b/src/bin/keepbook-sync-daemon.rs
+index 7410f35..880b44a 100644
+--- a/src/bin/keepbook-sync-daemon.rs
++++ b/src/bin/keepbook-sync-daemon.rs
+@@ -10,6 +10,7 @@ use chrono::{DateTime, Local};
+ use clap::Parser;
+ use keepbook::app;
+ use keepbook::config::{default_config_path, ResolvedConfig};
++use keepbook::sync::TransactionSyncMode;
+ use keepbook::format::format_base_currency_display;
+ use keepbook::storage::{JsonFileStorage, Storage};
+ use ksni::menu::*;
+@@ -573,7 +574,9 @@ impl KeepbookTrayState {
+                     merge_origin_master: self.config.git.merge_master_before_command,
+                 },
+             )?;
+ 
+-            let sync_json = app::sync_all_if_stale(self.storage.clone(), &self.config).await?;
++            let sync_json =
++                app::sync_all_if_stale(self.storage.clone(), &self.config, TransactionSyncMode::Auto)
++                    .await?;
+             let sync_counts = parse_sync_counts(&sync_json);
+ 
+             let (prices_fetched, prices_skipped, prices_failed) = if self.sync_prices {

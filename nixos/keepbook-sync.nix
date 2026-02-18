@@ -2,11 +2,16 @@
 	let
 	  cfg = config.myModules."keepbook-sync";
 	  keepbookTray =
-	    inputs.keepbook.packages.${pkgs.stdenv.hostPlatform.system}.keepbook-tray.overrideAttrs (_: {
+	    inputs.keepbook.packages.${pkgs.stdenv.hostPlatform.system}.keepbook-tray.overrideAttrs (old: {
 	      # Upstream currently includes a contract test that expects a built TS CLI
 	      # entrypoint under ts/dist/, but the Nix build does not build the TS
 	      # artifacts first. Skip checks to keep the package usable on NixOS.
 	      doCheck = false;
+
+	      # keepbook @ 385a4eb has a mismatch between an updated `sync_all_if_stale`
+	      # signature and the keepbook-sync-daemon call-site; patch it in Nix until
+	      # upstream fixes the build.
+	      patches = (old.patches or []) ++ [ ./patches/keepbook-sync-daemon-transaction-sync-mode.patch ];
 	    });
 
   daemonArgs = [
