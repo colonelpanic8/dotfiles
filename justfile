@@ -18,11 +18,25 @@ railbird_secrets_stub := "nixos/ci/railbird-secrets-stub"
 # - `just cachix-populate` (defaults to host=strixi-minaj)
 # - `just cachix-populate host=railbird-sf`
 cachix-populate host="strixi-minaj":
+  #!/usr/bin/env bash
   set -euo pipefail
   command -v cachix >/dev/null
   command -v nix >/dev/null
 
-  mapfile -t outs < <(nix build --no-link --print-build-logs --print-out-paths ./{{nixos_dir}}#nixosConfigurations.{{host}}.config.system.build.toplevel --override-input railbird-secrets ./{{railbird_secrets_stub}})
+  mapfile -t outs < <(
+    nix build \
+      --no-link \
+      --no-write-lock-file \
+      --print-build-logs \
+      --print-out-paths \
+      ./{{nixos_dir}}#nixosConfigurations.{{host}}.config.system.build.toplevel \
+      --override-input railbird-secrets ./{{railbird_secrets_stub}}
+  )
+
+  if [[ ${#outs[@]} -eq 0 ]]; then
+    echo "nix build produced no output paths; refusing to run cachix push" >&2
+    exit 1
+  fi
 
   cachix push {{cachix_cache}} "${outs[@]}"
 
@@ -32,6 +46,7 @@ cachix-populate host="strixi-minaj":
 # - Copy the token from Cachix UI
 # - Run `just cachix-auth-from-clipboard`
 cachix-auth-from-clipboard:
+  #!/usr/bin/env bash
   set -euo pipefail
   command -v cachix >/dev/null
 
