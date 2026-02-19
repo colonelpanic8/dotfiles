@@ -219,10 +219,14 @@ audioWidget :: TaffyIO Gtk.Widget
 audioWidget =
   decorateWithClassAndBoxM "audio" PulseAudio.pulseAudioNew
 
+networkInnerWidget :: TaffyIO Gtk.Widget
+networkInnerWidget =
+  withNmAppletMenu NetworkManager.networkManagerWifiIconLabelNew
+    >>= flip widgetSetClassGI "network"
+
 networkWidget :: TaffyIO Gtk.Widget
 networkWidget =
-  decorateWithClassAndBoxM "network" $
-    withNmAppletMenu NetworkManager.networkManagerWifiIconLabelNew
+  decorateWithClassAndBoxM "network" networkInnerWidget
 
 layoutWidget :: TaffyIO Gtk.Widget
 layoutWidget =
@@ -340,11 +344,15 @@ mprisWidget =
               }
       }
 
-batteryWidget :: TaffyIO Gtk.Widget
-batteryWidget = do
+batteryInnerWidget :: TaffyIO Gtk.Widget
+batteryInnerWidget = do
   iconWidget <- batteryTextIconNew
   labelWidget <- textBatteryNew "$percentage$%"
-  decorateWithClassAndBox "battery" =<< liftIO (buildIconLabelBox iconWidget labelWidget)
+  liftIO (buildIconLabelBox iconWidget labelWidget) >>= flip widgetSetClassGI "battery"
+
+batteryWidget :: TaffyIO Gtk.Widget
+batteryWidget =
+  decorateWithClassAndBoxM "battery" batteryInnerWidget
 
 backlightWidget :: TaffyIO Gtk.Widget
 backlightWidget =
@@ -359,9 +367,13 @@ backlightWidget =
           }
     )
 
+diskUsageInnerWidget :: TaffyIO Gtk.Widget
+diskUsageInnerWidget =
+  diskUsageNew >>= flip widgetSetClassGI "disk-usage"
+
 diskUsageWidget :: TaffyIO Gtk.Widget
 diskUsageWidget =
-  decorateWithClassAndBoxM "disk-usage" diskUsageNew
+  decorateWithClassAndBoxM "disk-usage" diskUsageInnerWidget
 
 stackInPill :: Text -> [TaffyIO Gtk.Widget] -> TaffyIO Gtk.Widget
 stackInPill klass builders =
@@ -435,9 +447,20 @@ audioBacklightWidget =
           }
     ]
 
+asusInnerWidget :: TaffyIO Gtk.Widget
+asusInnerWidget = ASUS.asusWidgetNew
+
 asusWidget :: TaffyIO Gtk.Widget
 asusWidget =
-  decorateWithClassAndBoxM "asus-profile" ASUS.asusWidgetNew
+  decorateWithClassAndBoxM "asus-profile" asusInnerWidget
+
+batteryNetworkWidget :: TaffyIO Gtk.Widget
+batteryNetworkWidget =
+  stackInPill "battery-network" [batteryInnerWidget, networkInnerWidget]
+
+asusDiskUsageWidget :: TaffyIO Gtk.Widget
+asusDiskUsageWidget =
+  stackInPill "asus-disk-usage" [diskUsageInnerWidget, asusInnerWidget]
 
 screenLockWidget :: TaffyIO Gtk.Widget
 screenLockWidget =
@@ -501,8 +524,8 @@ endWidgetsForHost :: String -> [TaffyIO Gtk.Widget]
 endWidgetsForHost hostName =
   -- NOTE: end widgets are packed with Gtk.boxPackEnd, so the list order is
   -- right-to-left on screen. Make the tray appear at the far right by placing
-  -- it first in the list. (On laptops: battery is far right, tray immediately
-  -- left of it.)
+  -- it first in the list. (On laptops: the battery/wifi stack is far right,
+  -- tray immediately left of it.)
   let baseEndWidgets =
         [ sniTrayWidget,
           audioWidget,
@@ -513,13 +536,11 @@ endWidgetsForHost hostName =
           mprisWidget
         ]
       laptopEndWidgets =
-        [ batteryWidget,
+        [ batteryNetworkWidget,
           sniTrayWidget,
-          asusWidget,
+          asusDiskUsageWidget,
           audioBacklightWidget,
           ramSwapWidget,
-          diskUsageWidget,
-          networkWidget,
           sunLockWidget,
           mprisWidget
         ]
