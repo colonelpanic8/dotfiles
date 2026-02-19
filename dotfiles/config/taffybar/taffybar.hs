@@ -314,6 +314,19 @@ clockWidget =
           }
     )
 
+singleLineMprisLabel :: Text -> Text
+singleLineMprisLabel =
+  T.replace "\n" " " . T.replace "\r" " "
+
+stackedMprisLabel :: Text -> Text
+stackedMprisLabel raw =
+  let normalized = singleLineMprisLabel raw
+      (top, rest) = T.breakOn " - " normalized
+   in
+    if T.null rest
+      then normalized
+      else top <> "\n" <> T.drop 3 rest
+
 mprisWidget :: TaffyIO Gtk.Widget
 mprisWidget =
   mpris2NewWithConfig
@@ -323,9 +336,7 @@ mprisWidget =
           simplePlayerWidget
             defaultPlayerConfig
               { setNowPlayingLabel =
-                  -- Upstream `playingText` uses "artist - title"; replace the
-                  -- separator with a newline for a more compact widget.
-                  \np -> T.replace " - " "\n" <$> playingText 20 20 np
+                  \np -> stackedMprisLabel <$> playingText 20 20 np
               }
       }
 
