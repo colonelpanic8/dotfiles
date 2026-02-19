@@ -1,0 +1,11 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(rg:*)",
+      "Bash(wmctrl:*)",
+      "Bash(grep:*)",
+      "Bash(hyprctl:*)"
+    ],
+    "deny": []
+  }
+}
