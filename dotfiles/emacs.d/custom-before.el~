@@ -1,0 +1,65 @@
+(setq imalison:dark-theme 'dracula)
+
+(provide 'custom-before)
+(custom-set-variables
+ ;; custom-set-variables was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ '(anzu-deactivate-region t)
+ '(anzu-mode-lighter "")
+ '(anzu-replace-threshold 50)
+ '(anzu-replace-to-string-separator " => ")
+ '(anzu-search-threshold 1000)
+ '(custom-safe-themes
+   '("fee7287586b17efbfda432f05539b58e86e059e78006ce9237b8732fde991b4c" "4c56af497ddf0e30f65a7232a8ee21b3d62a8c332c6b268c81e9ea99b11da0d3" "1ba61848d0d8c78e037867c26f118875705c20f5ad64949a8cee8c8059e5c50f" "80d5a22931c15756b00fb258b80c93b8bc5096bb698dadfb6155ef3550e1c8fb" "10551f0a24d0ac97a109f02178e9e34b448ee12a52357911cf3362a6b249cae6" "c495feb95537b0b2ab126b4b121c0a5cd71a811d97c2cc1f981bbf6786a2117c" "7922b14d8971cce37ddb5e487dbc18da5444c47f766178e5a4e72f90437c0711" "e1498b2416922aa561076edc5c9b0ad7b34d8ff849f335c13364c8f4276904f0" "461e9e0d69636be8b5347a030f14b16c996c60a89e48c33f48bde51c32da3248" "5e2588d92543f5b40de864cd7abf36c72ff7d27a931ab4733aeb1b2ecf7ea22e" "ea5822c1b2fb8bb6194a7ee61af3fe2cc7e2c7bab272cbb498a0234984e1b2d9" "36ca8f60565af20ef4f30783aa16a26d96c02df7b4e54e9900a5138fb33808da" "8721f7ee8cd0c2e56d23f757b44c39c249a58c60d33194fe546659dabc69eebd" "89885317e7136d4e86fb842605d47d8329320f0326b62efa236e63ed4be23c58" "c433c87bd4b64b8ba9890e8ed64597ea0f8eb0396f4c9a9e01bd20a04d15d358" "3b750103c60f1e57b2748df5a4637d63da1076919b552ccc5c967444c2402b34" default))
+ '(safe-local-variable-values
+   '((magit-revision-insert-related-refs)
+	 (magit-refresh-buffers)
+	 (lsp-ruby-lsp-use-bundler t)
+	 (imalison:use-lsp nil)
+	 (etags-regen-ignores "test/manual/etags/")
+	 (etags-regen-regexp-alist
+	  (("c" "objc")
+	   "/[ \11]*DEFVAR_[A-Z_ \11(]+\"\\([^\"]+\\)\"/\\1/" "/[ \11]*DEFVAR_[A-Z_ \11(]+\"[^\"]+\",[ \11]\\([A-Za-z0-9_]+\\)/\\1/"))
+	 (apheleia-inhibit)
+	 (pytest-cmd-flags . "-sx --enable-logger=okcupyd --enable-logger=requests")
+	 (pytest-global-name . "tox -e py27 --")
+	 (flycheck-disabled-checkers emacs-lisp-checkdoc)
+	 (imalison:use-lsp t)
+	 (flycheck-ghc-args "-Wno-missing-signatures")
+	 (eval and buffer-file-name
+		   (not
+			(eq major-mode 'package-recipe-mode))
+		   (or
+			(require 'package-recipe-mode nil t)
+			(let
+				((load-path
+				  (cons "../package-build" load-path)))
+			  (require 'package-recipe-mode nil t)))
+		   (package-recipe-mode))
+	 (elisp-lint-indent-specs
+	  (describe . 1)
+	  (it . 1)
+	  (thread-first . 0)
+	  (cl-flet . 1)
+	  (cl-flet* . 1)
+	  (org-element-map . defun)
+	  (org-roam-dolist-with-progress . 2)
+	  (org-roam-with-temp-buffer . 1)
+	  (org-with-point-at . 1)
+	  (magit-insert-section . defun)
+	  (magit-section-case . 0)
+	  (org-roam-with-file . 2))
+	 (elisp-lint-ignored-validators "byte-compile" "package-lint")
+	 (lsp-pylsp-server-command "poetry" "run" "pylsp")
+	 (lsp-haskell-server-wrapper-function . imalison:nix-develop-lsp-wrapper-function)
+	 (imalison:use-lsp-haskell . t)
+	 (checkdoc-package-keywords-flag)
+	 (lsp-pylsp-server-command "nix" "develop" "--impure" "-c" "poetry" "run" "pylsp"))))
+(custom-set-faces
+ ;; custom-set-faces was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ '(default ((t (:background nil)))))
