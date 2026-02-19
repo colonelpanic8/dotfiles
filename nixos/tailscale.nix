@@ -57,10 +57,10 @@ makeEnable config "myModules.tailscale" true {
       fi
 
       # First-time (or post-logout) login.
-      ${pkgs.tailscale}/bin/tailscale up \\
-        --auth-key "file:$key_file" \\
-        --accept-dns=true \\
-        --operator=imalison \\
+      ${pkgs.tailscale}/bin/tailscale up \
+        --auth-key "file:$key_file" \
+        --accept-dns=true \
+        --operator=imalison \
         --timeout=60s
     '';
   };

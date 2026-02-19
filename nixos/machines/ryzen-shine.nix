@@ -23,7 +23,7 @@
     # extraFlags = ["--node-taint preferNoSchedule=true:NoSchedule"];
   };
   myModules.nixified-ai.enable = true;
-  boot.kernelPackages = pkgs.linuxPackages_latest;
+  # boot.kernelPackages = pkgs.linuxPackages_latest;
 
   boot.loader.systemd-boot.configurationLimit = 5;
 
