@@ -9,6 +9,7 @@ import Control.Monad (when)
 import Control.Monad.IO.Class (MonadIO, liftIO)
 import Control.Monad.Trans.Reader (asks)
 import Data.Char (toLower)
+import Data.GI.Base (castTo)
 import Data.IORef (IORef, modifyIORef', newIORef, readIORef)
 import Data.Int (Int32)
 import Data.List (nub, sortOn, stripPrefix)
@@ -74,6 +75,21 @@ decorateWithClassAndBox klass widget = do
 decorateWithClassAndBoxM :: (MonadIO m) => Text -> m Gtk.Widget -> m Gtk.Widget
 decorateWithClassAndBoxM klass builder =
   builder >>= decorateWithClassAndBox klass
+
+setLabelAlignmentRecursively :: Float -> Gtk.Justification -> Gtk.Widget -> IO ()
+setLabelAlignmentRecursively xalign justify widget = do
+  maybeLabel <- castTo Gtk.Label widget
+  case maybeLabel of
+    Just label -> do
+      Gtk.labelSetXalign label xalign
+      Gtk.labelSetJustify label justify
+    Nothing -> pure ()
+
+  maybeContainer <- castTo Gtk.Container widget
+  case maybeContainer of
+    Just container ->
+      Gtk.containerGetChildren container >>= mapM_ (setLabelAlignmentRecursively xalign justify)
+    Nothing -> pure ()
 
 -- ** X11 Workspaces
 
@@ -265,15 +281,15 @@ workspacesWidget = Workspaces.workspacesNew cfg
         }
 
 clockWidget :: TaffyIO Gtk.Widget
-clockWidget =
-  decorateWithClassAndBoxM
-    "clock"
-    ( textClockNewWith
-        defaultClockConfig
-          { clockUpdateStrategy = RoundedTargetInterval 60 0.0,
-            clockFormatString = "%a %b %_d\n%I:%M %p"
-          }
-    )
+clockWidget = do
+  clock <-
+    textClockNewWith
+      defaultClockConfig
+        { clockUpdateStrategy = RoundedTargetInterval 60 0.0,
+          clockFormatString = "%a %b %_d\n%I:%M %p"
+        }
+  liftIO $ setLabelAlignmentRecursively 0.5 Gtk.JustificationCenter clock
+  decorateWithClassAndBox "clock" clock
 
 singleLineMprisLabel :: Text -> Text
 singleLineMprisLabel =

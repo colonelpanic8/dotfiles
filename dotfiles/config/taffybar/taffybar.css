@@ -30,6 +30,12 @@
 	padding-right: 11px;
 }
 
+/* Keep icon+label "combined" widgets left-aligned, including multiline labels. */
+.icon-label > .label {
+	-GtkLabel-xalign: 0;
+	-GtkLabel-justify: left;
+}
+
 /* Compact two-line RAM/SWAP widget: reduce icon padding a bit. */
 .ram-swap .icon-label > .icon {
 	/* Different glyphs have different visual widths; fix the icon column width
@@ -299,6 +305,12 @@
 .battery label,
 .ram-swap label {
 	letter-spacing: 0.2px;
+}
+
+/* Clock stays centered even though combined widgets are left-aligned. */
+.clock label {
+	-GtkLabel-xalign: 0.5;
+	-GtkLabel-justify: center;
 }
 
 .wakeup-debug label {
