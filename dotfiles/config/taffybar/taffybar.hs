@@ -7,12 +7,13 @@ module Main (main) where
 import Control.Concurrent (threadDelay)
 import Control.Monad (when)
 import Control.Monad.IO.Class (MonadIO, liftIO)
+import Control.Monad.Trans.Reader (asks)
 import Data.Char (toLower)
 import Data.IORef (IORef, modifyIORef', newIORef, readIORef)
 import Data.Int (Int32)
 import Data.List (nub, sortOn, stripPrefix)
 import qualified Data.Map as M
-import Data.Maybe (catMaybes, fromMaybe, listToMaybe, mapMaybe, maybeToList)
+import Data.Maybe (fromMaybe, listToMaybe, mapMaybe, maybeToList)
 import Data.Ratio ((%))
 import Data.Text (Text)
 import qualified Data.Text as T
@@ -28,11 +29,18 @@ import System.Environment.XDG.BaseDir (getUserConfigFile)
 import System.FilePath (takeDirectory)
 import System.Log.Logger (Priority (WARNING), rootLoggerName, setLevel, updateGlobalLogger)
 import System.Taffybar (startTaffybar)
-import System.Taffybar.Context (Backend (BackendWayland, BackendX11), TaffyIO, detectBackend)
+import System.Taffybar.Context
+  ( Backend (BackendWayland, BackendX11),
+    TaffyIO,
+    backend,
+    detectBackend,
+    runX11Def,
+  )
 import System.Taffybar.DBus
 import System.Taffybar.DBus.Toggle
 import System.Taffybar.Hooks (withLogLevels)
 import System.Taffybar.Information.EWMHDesktopInfo (WorkspaceId (..))
+import qualified System.Taffybar.Information.Workspaces.Model as WorkspaceModel
 import System.Taffybar.Information.Memory (MemoryInfo (..), parseMeminfo)
 import System.Taffybar.Information.X11DesktopInfo
 import System.Taffybar.SimpleConfig
@@ -51,9 +59,8 @@ import System.Taffybar.Widget.SNITray
 import qualified System.Taffybar.Widget.ScreenLock as ScreenLock
 import System.Taffybar.Widget.Util (backgroundLoop, buildContentsBox, buildIconLabelBox, loadPixbufByName, widgetSetClassGI)
 import qualified System.Taffybar.Widget.Wlsunset as Wlsunset
-import qualified System.Taffybar.Widget.Workspaces.Config as WorkspaceWidgetConfig
-import qualified System.Taffybar.Widget.Workspaces.EWMH as X11Workspaces
 import qualified System.Taffybar.Widget.Workspaces.Hyprland as Hyprland
+import qualified System.Taffybar.Widget.Workspaces as Workspaces
 import System.Taffybar.WindowIcon (pixBufFromColor)
 import Text.Printf (printf)
 import Text.Read (readMaybe)
@@ -76,13 +83,20 @@ x11FullWorkspaceNames =
   where
     go = zip [WorkspaceId i | i <- [0 ..]]
 
-x11WorkspaceLabelSetter :: X11Workspaces.Workspace -> X11Workspaces.WorkspacesIO String
-x11WorkspaceLabelSetter workspace =
-  remapNSP . fromMaybe "" . lookup (X11Workspaces.workspaceIdx workspace)
-    <$> X11Workspaces.liftX11Def [] x11FullWorkspaceNames
-  where
-    remapNSP "NSP" = "S"
-    remapNSP n = n
+remapNSP :: String -> String
+remapNSP "NSP" = "S"
+remapNSP n = n
+
+workspaceLabelSetter :: WorkspaceModel.WorkspaceInfo -> TaffyIO String
+workspaceLabelSetter workspace = do
+  backendType <- asks backend
+  let identity = WorkspaceModel.workspaceIdentity workspace
+      fallbackLabel = remapNSP $ T.unpack (WorkspaceModel.workspaceName identity)
+  case (backendType, WorkspaceModel.workspaceNumericId identity) of
+    (BackendX11, Just workspaceId) -> do
+      fullNames <- runX11Def [] x11FullWorkspaceNames
+      return $ remapNSP $ fromMaybe fallbackLabel (lookup (WorkspaceId workspaceId) fullNames)
+    _ -> return fallbackLabel
 
 -- ** Logging
 
@@ -127,21 +141,9 @@ iconNameVariants raw =
          in [dotted, dashed, dashedDotted, underscored, underscoredDotted, name]
    in nub $ concatMap variantsFor baseNames
 
--- Hyprland "special" workspaces (e.g. "special:slack") are scratchpad-like and
--- usually not something we want visible in the workspace widget.
-isSpecialHyprWorkspace :: Hyprland.HyprlandWorkspace -> Bool
-isSpecialHyprWorkspace ws =
-  let name = T.toLower $ T.pack $ Hyprland.workspaceName ws
-   in T.isPrefixOf "special" name || Hyprland.workspaceIdx ws < 0
-
-hyprlandIconCandidates :: Hyprland.HyprlandWindow -> [Text]
-hyprlandIconCandidates windowData =
-  let baseNames =
-        map T.pack $
-          catMaybes
-            [ Hyprland.windowClass windowData,
-              Hyprland.windowInitialClass windowData
-            ]
+workspaceIconCandidates :: WorkspaceModel.WindowInfo -> [Text]
+workspaceIconCandidates windowData =
+  let baseNames = WorkspaceModel.windowClassHints windowData
       remapped = concatMap lookupIconRemap baseNames
       remappedExpanded = concatMap iconNameVariants remapped
       baseExpanded = concatMap iconNameVariants baseNames
@@ -152,8 +154,8 @@ isPathCandidate name =
   T.isInfixOf "/" name
     || any (`T.isSuffixOf` name) [".png", ".svg", ".xpm"]
 
-hyprlandIconFromCandidate :: Int32 -> Text -> TaffyIO (Maybe Gdk.Pixbuf)
-hyprlandIconFromCandidate size name
+workspaceIconFromCandidate :: Int32 -> Text -> TaffyIO (Maybe Gdk.Pixbuf)
+workspaceIconFromCandidate size name
   | isPathCandidate name =
       liftIO $ getPixbufFromFilePath (T.unpack name)
   | otherwise =
@@ -161,11 +163,11 @@ hyprlandIconFromCandidate size name
         (Hyprland.getWindowIconFromDesktopEntryByAppId size (T.unpack name))
         (liftIO $ loadPixbufByName size name)
 
-hyprlandManualIconGetter :: Hyprland.HyprlandWindowIconPixbufGetter
-hyprlandManualIconGetter =
-  Hyprland.handleIconGetterException $ \size windowData ->
+workspaceManualIconGetter :: Workspaces.WindowIconPixbufGetter
+workspaceManualIconGetter =
+  Workspaces.handleIconGetterException $ \size windowData ->
     foldl maybeTCombine (return Nothing) $
-      map (hyprlandIconFromCandidate size) (hyprlandIconCandidates windowData)
+      map (workspaceIconFromCandidate size) (workspaceIconCandidates windowData)
 
 fallbackIconPixbuf :: Int32 -> TaffyIO (Maybe Gdk.Pixbuf)
 fallbackIconPixbuf size = do
@@ -189,9 +191,16 @@ fallbackIconPixbuf size = do
     Just _ -> return result
     Nothing -> Just <$> pixBufFromColor size 0x5f5f5fff
 
-hyprlandFallbackIcon :: Hyprland.HyprlandWindowIconPixbufGetter
-hyprlandFallbackIcon size _ =
+workspaceFallbackIcon :: Workspaces.WindowIconPixbufGetter
+workspaceFallbackIcon size _ =
   fallbackIconPixbuf size
+
+workspaceWindowIconGetter :: Workspaces.WindowIconPixbufGetter
+workspaceWindowIconGetter =
+  workspaceManualIconGetter
+    <|||> Workspaces.getWindowIconPixbufFromChrome
+    <|||> Workspaces.defaultGetWindowIconPixbuf
+    <|||> workspaceFallbackIcon
 
 -- ** Host Overrides
 
@@ -240,75 +249,19 @@ windowsWidget :: TaffyIO Gtk.Widget
 windowsWidget =
   decorateWithClassAndBoxM "windows" (windowsNew defaultWindowsConfig)
 
-x11WorkspacesWidget :: TaffyIO Gtk.Widget
-x11WorkspacesWidget =
-  flip widgetSetClassGI "workspaces"
-    =<< X11Workspaces.workspacesNew cfg
+workspacesWidget :: TaffyIO Gtk.Widget
+workspacesWidget = Workspaces.workspacesNew cfg
   where
-    common =
-      (X11Workspaces.workspacesCommonConfig X11Workspaces.defaultWorkspacesConfig)
-        { WorkspaceWidgetConfig.minIcons = 1,
-          WorkspaceWidgetConfig.getWindowIconPixbuf =
-            X11Workspaces.scaledWindowIconPixbufGetter $
-              X11Workspaces.getWindowIconPixbufFromChrome
-                <|||> X11Workspaces.unscaledDefaultGetWindowIconPixbuf
-                <|||> (\size _ -> fallbackIconPixbuf size),
-          WorkspaceWidgetConfig.widgetGap = 0,
-          WorkspaceWidgetConfig.showWorkspaceFn = X11Workspaces.hideEmpty,
-          WorkspaceWidgetConfig.labelSetter = x11WorkspaceLabelSetter,
-          WorkspaceWidgetConfig.widgetBuilder = X11Workspaces.buildLabelOverlayController
-        }
     cfg =
-      (X11Workspaces.applyCommonWorkspacesConfig common X11Workspaces.defaultWorkspacesConfig)
-        { X11Workspaces.updateRateLimitMicroseconds = 100000
-        }
-
--- | Like 'buildWorkspaceIconLabelOverlay' but lets you choose the corner.
-buildAlignedOverlay ::
-  Gtk.Align -> Gtk.Align -> Gtk.Widget -> Gtk.Widget -> TaffyIO Gtk.Widget
-buildAlignedOverlay halign valign iconsWidget labelWidget = liftIO $ do
-  base <- buildContentsBox iconsWidget
-  ebox <- Gtk.eventBoxNew
-  _ <- widgetSetClassGI ebox "overlay-box"
-  Gtk.widgetSetHalign ebox halign
-  Gtk.widgetSetValign ebox valign
-  Gtk.containerAdd ebox labelWidget
-  overlayLabel <- Gtk.toWidget ebox
-  overlay <- Gtk.overlayNew
-  baseW <- Gtk.toWidget base
-  Gtk.containerAdd overlay baseW
-  Gtk.overlayAddOverlay overlay overlayLabel
-  Gtk.overlaySetOverlayPassThrough overlay overlayLabel True
-  Gtk.toWidget overlay
-
-hyprlandWorkspacesWidget :: TaffyIO Gtk.Widget
-hyprlandWorkspacesWidget =
-  flip widgetSetClassGI "workspaces"
-    =<< Hyprland.hyprlandWorkspacesNew cfg
-  where
-    base = Hyprland.defaultHyprlandWorkspacesConfig
-    cfg =
-      Hyprland.applyCommonHyprlandWorkspacesConfig common base
-    common =
-      (Hyprland.hyprlandWorkspacesCommonConfig base)
-        { WorkspaceWidgetConfig.widgetGap = 0,
-          WorkspaceWidgetConfig.minIcons = 1,
-          WorkspaceWidgetConfig.widgetBuilder =
-            Hyprland.hyprlandBuildButtonController
-              cfg
-              ( Hyprland.hyprlandBuildCustomOverlayController
-                  (buildAlignedOverlay Gtk.AlignStart Gtk.AlignEnd)
-                  cfg
-              ),
-          -- Don't show Hyprland "special:*" workspaces.
-          WorkspaceWidgetConfig.showWorkspaceFn =
-            \ws ->
-              Hyprland.workspaceState ws /= X11Workspaces.Empty
-                && not (isSpecialHyprWorkspace ws),
-          WorkspaceWidgetConfig.getWindowIconPixbuf =
-            hyprlandManualIconGetter
-              <|||> Hyprland.defaultHyprlandGetWindowIconPixbuf
-              <|||> hyprlandFallbackIcon
+      Workspaces.defaultWorkspacesConfig
+        { Workspaces.widgetGap = 0,
+          Workspaces.minIcons = 1,
+          Workspaces.getWindowIconPixbuf = workspaceWindowIconGetter,
+          Workspaces.labelSetter = workspaceLabelSetter,
+          Workspaces.showWorkspaceFn =
+            \workspace ->
+              Workspaces.hideEmpty workspace
+                && not (WorkspaceModel.workspaceIsSpecial workspace)
         }
 
 clockWidget :: TaffyIO Gtk.Widget
@@ -668,9 +621,9 @@ sniTrayWidget = do
 startWidgetsForBackend :: Backend -> [TaffyIO Gtk.Widget]
 startWidgetsForBackend backend =
   case backend of
-    BackendX11 -> [x11WorkspacesWidget, layoutWidget, windowsWidget]
+    BackendX11 -> [workspacesWidget, layoutWidget, windowsWidget]
     -- These Wayland widgets are Hyprland-specific.
-    BackendWayland -> [hyprlandWorkspacesWidget]
+    BackendWayland -> [workspacesWidget, windowsWidget]
 
 endWidgetsForHost :: String -> [TaffyIO Gtk.Widget]
 endWidgetsForHost hostName =
