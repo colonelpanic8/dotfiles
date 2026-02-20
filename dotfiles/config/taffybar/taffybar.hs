@@ -318,7 +318,7 @@ clockWidget =
     ( textClockNewWith
         defaultClockConfig
           { clockUpdateStrategy = RoundedTargetInterval 60 0.0,
-            clockFormatString = "%a %b %_d, 🕑%I:%M %p"
+            clockFormatString = "%a %b %_d\n🕑%I:%M %p"
           }
     )
 
