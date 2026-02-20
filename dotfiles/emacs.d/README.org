@@ -1,6 +1,5 @@
 # -*- mode: org; -*-
-[[https://github.com/IvanMalison/dotfiles/actions/workflows/gh-pages.yml][
-file:https://github.com/IvanMalison/dotfiles/actions/workflows/gh-pages.yml/badge.svg?branch=master]]
+[[https://github.com/colonelpanic8/dotfiles/actions/workflows/gh-pages.yml][https://github.com/colonelpanic8/dotfiles/actions/workflows/gh-pages.yml/badge.svg?branch=master]]
 
 This document is best read at [[http://ivanmalison.github.io/dotfiles/]] or, of
 course, in emacs, as the internal links that follow are unlikely to work

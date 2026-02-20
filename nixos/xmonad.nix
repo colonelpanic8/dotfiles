@@ -42,7 +42,7 @@ makeEnable config "myModules.xmonad" true  {
         enable = true;
         display = "fill";
         interval = "1h";
-        imageDirectory = "/var/lib/syncthing/sync/Wallpaper";
+        imageDirectory = "/var/lib/syncthing/sync/Wallpaper/use";
       };
       # This service uses feh (X11), so don't run it in Wayland sessions.
       systemd.user.services.random-background.Unit.ConditionEnvironment = "IMALISON_SESSION_TYPE=x11";

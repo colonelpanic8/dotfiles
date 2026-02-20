@@ -2,7 +2,7 @@
 
 set -euo pipefail
 
-wallpaper_dir="${WALLPAPER_DIR:-/var/lib/syncthing/sync/Wallpaper}"
+wallpaper_dir="${WALLPAPER_DIR:-/var/lib/syncthing/sync/Wallpaper/use}"
 
 notify() {
   if command -v notify-send >/dev/null 2>&1; then

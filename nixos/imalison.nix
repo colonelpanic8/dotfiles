@@ -49,7 +49,7 @@
     };
 
     systemd.user.services.hyprpaper = let
-      wallpaperDir = "/var/lib/syncthing/sync/Wallpaper";
+      wallpaperDir = "/var/lib/syncthing/sync/Wallpaper/use";
       waitForWayland = pkgs.writeShellScript "wait-for-wayland" ''
         # Hyprpaper needs a Wayland socket. systemd "Condition*" checks are
         # brittle here (they skip the unit entirely, with no retry) and also
