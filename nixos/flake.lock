@@ -1912,11 +1912,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1771579850,
-        "narHash": "sha256-gE0FiJ4c7br4nbNJ31MyuYvT2cNq0GUacLosAkSYzFg=",
+        "lastModified": 1771591931,
+        "narHash": "sha256-M2GOSK3mZnb4vNv8zCq1iXwbEOdMh3J6XWnfdMsscho=",
         "owner": "taffybar",
         "repo": "taffybar",
-        "rev": "31fbc023b086c664dc563fd91a37a80fa9ffc1be",
+        "rev": "f67eb3b87c9aa83e3395e721878f011d409aad89",
         "type": "github"
       },
       "original": {
