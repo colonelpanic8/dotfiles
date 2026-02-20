@@ -1,0 +1,34 @@
+format_version: 2
+max_visible_icons: 0
+priorities:
+- key: item-id:nm-applet
+  priority: 3
+- key: icon-name:github
+  priority: 2
+- key: icon-name:gitea
+  priority: 1
+- key: icon-name:gmail
+  priority: 1
+- key: item-id:git-sync-rs
+  priority: 1
+- key: process:slack
+  priority: 1
+- key: item-id:flameshot
+  priority: 0
+- key: item-id:keepbook-sync-daemon
+  priority: 0
+- key: item-id:udiskie
+  priority: 0
+- key: item-id:blueman
+  priority: -1
+- key: item-id:chrome_status_icon_1
+  priority: -1
+- key: item-id:pasystray
+  priority: -1
+- key: item-id:systray_6518
+  priority: -1
+- key: item-id:spotify-client
+  priority: -2
+- key: item-id:systray_6428
+  priority: -2
+visibility_threshold: 0
