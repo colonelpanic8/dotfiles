@@ -28,7 +28,7 @@ makeEnable config "myModules.tailscale" true {
   systemd.services.tailscale-autoconnect = {
     description = "Auto-connect Tailscale (optional, via agenix auth key)";
     wantedBy = [ "multi-user.target" ];
-    after = [ "network-online.target" "tailscaled.service" "agenix.service" ];
+    after = [ "network-online.target" "tailscaled.service" ];
     wants = [ "network-online.target" "tailscaled.service" ];
 
     unitConfig = {
