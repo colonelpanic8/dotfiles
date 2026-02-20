@@ -19,6 +19,8 @@ priorities:
   priority: 0
 - key: item-id:udiskie
   priority: 0
+- key: icon-name:audio-volume-low
+  priority: -1
 - key: item-id:blueman
   priority: -1
 - key: item-id:chrome_status_icon_1
@@ -26,6 +28,8 @@ priorities:
 - key: item-id:pasystray
   priority: -1
 - key: item-id:systray_6518
+  priority: -1
+- key: process:tailscale
   priority: -1
 - key: item-id:spotify-client
   priority: -2

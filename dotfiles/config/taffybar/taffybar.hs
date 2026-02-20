@@ -61,7 +61,6 @@ import System.Taffybar.Widget.SNITray.PrioritizedCollapsible
 import qualified System.Taffybar.Widget.ScreenLock as ScreenLock
 import System.Taffybar.Widget.Util (backgroundLoop, buildContentsBox, buildIconLabelBox, loadPixbufByName, widgetSetClassGI)
 import qualified System.Taffybar.Widget.Wlsunset as Wlsunset
-import qualified System.Taffybar.Widget.Workspaces.Hyprland as Hyprland
 import qualified System.Taffybar.Widget.Workspaces as Workspaces
 import System.Taffybar.WindowIcon (pixBufFromColor)
 import Text.Printf (printf)
@@ -171,13 +170,25 @@ isPathCandidate name =
   T.isInfixOf "/" name
     || any (`T.isSuffixOf` name) [".png", ".svg", ".xpm"]
 
+workspaceCandidateInfo :: Text -> WorkspaceModel.WindowInfo
+workspaceCandidateInfo name =
+  WorkspaceModel.WindowInfo
+    { WorkspaceModel.windowIdentity = WorkspaceModel.HyprlandWindowIdentity "",
+      WorkspaceModel.windowTitle = "",
+      WorkspaceModel.windowClassHints = [name],
+      WorkspaceModel.windowPosition = Nothing,
+      WorkspaceModel.windowUrgent = False,
+      WorkspaceModel.windowActive = False,
+      WorkspaceModel.windowMinimized = False
+    }
+
 workspaceIconFromCandidate :: Int32 -> Text -> TaffyIO (Maybe Gdk.Pixbuf)
 workspaceIconFromCandidate size name
   | isPathCandidate name =
       liftIO $ getPixbufFromFilePath (T.unpack name)
   | otherwise =
       maybeTCombine
-        (Hyprland.getWindowIconFromDesktopEntryByAppId size (T.unpack name))
+        (Workspaces.getWindowIconPixbufFromDesktopEntry size (workspaceCandidateInfo name))
         (liftIO $ loadPixbufByName size name)
 
 workspaceManualIconGetter :: Workspaces.WindowIconPixbufGetter
@@ -559,7 +570,7 @@ mkSimpleTaffyConfig hostName backend cssFiles =
       centerWidgets = [clockWidget],
       endWidgets = endWidgetsForHost hostName,
       barLevels = Nothing,
-      barPosition = Top,
+      barPosition = Bottom,
       widgetSpacing = 0,
       barPadding = 4,
       barHeight = ScreenRatio $ 1 / 33,
