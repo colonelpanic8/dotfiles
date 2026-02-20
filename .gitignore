@@ -33,6 +33,8 @@ gotools
 /dotfiles/config/taffybar/status-notifier-item/
 /dotfiles/config/taffybar/.direnv/
 /dotfiles/config/taffybar/dist-newstyle/
+/dotfiles/config/taffybar/sni-priorities.yaml
+/dotfiles/config/taffybar/sni-priorities.dat
 /dotfiles/config/xmonad/dist-newstyle/
 /dotfiles/config/hypr/hyprscratch.conf
 /.worktrees/
