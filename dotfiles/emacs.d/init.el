@@ -11,6 +11,8 @@
   (concat (file-name-directory load-file-name) filename))
 
 (load-file (expand-file-name "elpaca-installer.el" user-emacs-directory))
+;; Default hosted git clones to SSH (e.g., git@github.com:owner/repo.git).
+(setq elpaca-order-defaults (plist-put elpaca-order-defaults :protocol 'ssh))
 (elpaca elpaca-use-package (elpaca-use-package-mode))
 (setq use-package-enable-imenu-support t)
 (setq use-package-always-ensure t)

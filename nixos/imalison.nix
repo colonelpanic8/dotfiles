@@ -5,6 +5,12 @@
       ./dotfiles-links.nix
     ];
 
+    programs.git.enable = true;
+    programs.gh = {
+      enable = true;
+      settings.git_protocol = "ssh";
+    };
+
     # Hyprland config starts this target on login (see `dotfiles/config/hypr/hyprland.conf`).
     systemd.user.targets.hyprland-session = {
       Unit = {
