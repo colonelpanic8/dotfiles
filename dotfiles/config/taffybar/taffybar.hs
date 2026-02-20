@@ -5,34 +5,35 @@
 module Main (main) where
 
 import Control.Concurrent (threadDelay)
+import Control.Monad (when)
 import Control.Monad.IO.Class (MonadIO, liftIO)
 import Data.Char (toLower)
+import Data.IORef (IORef, modifyIORef', newIORef, readIORef)
 import Data.Int (Int32)
-import Data.List (nub)
+import Data.List (nub, sortOn, stripPrefix)
 import qualified Data.Map as M
-import Data.Maybe (catMaybes, fromMaybe, mapMaybe)
+import Data.Maybe (catMaybes, fromMaybe, listToMaybe, mapMaybe, maybeToList)
 import Data.Ratio ((%))
 import Data.Text (Text)
 import qualified Data.Text as T
+import qualified GI.Gdk as Gdk
 import qualified GI.GdkPixbuf.Objects.Pixbuf as Gdk
 import qualified GI.Gtk as Gtk
 import Network.HostName (getHostName)
-import System.Environment (lookupEnv)
+import qualified StatusNotifier.Host.Service as SNIHost
 import qualified StatusNotifier.Tray as SNITray
-  ( MenuBackend (HaskellDBusMenu, LibDBusMenu),
-    defaultTrayParams,
-    trayMenuBackend,
-    trayOverlayScale,
-  )
+import System.Directory (createDirectoryIfMissing, doesFileExist)
+import System.Environment (lookupEnv)
 import System.Environment.XDG.BaseDir (getUserConfigFile)
+import System.FilePath (takeDirectory)
 import System.Log.Logger (Priority (WARNING), rootLoggerName, setLevel, updateGlobalLogger)
 import System.Taffybar (startTaffybar)
 import System.Taffybar.Context (Backend (BackendWayland, BackendX11), TaffyIO, detectBackend)
 import System.Taffybar.DBus
 import System.Taffybar.DBus.Toggle
 import System.Taffybar.Hooks (withLogLevels)
-import System.Taffybar.Information.Memory (MemoryInfo (..), parseMeminfo)
 import System.Taffybar.Information.EWMHDesktopInfo (WorkspaceId (..))
+import System.Taffybar.Information.Memory (MemoryInfo (..), parseMeminfo)
 import System.Taffybar.Information.X11DesktopInfo
 import System.Taffybar.SimpleConfig
 import System.Taffybar.Util (getPixbufFromFilePath, maybeTCombine, postGUIASync, (<|||>))
@@ -42,7 +43,9 @@ import qualified System.Taffybar.Widget.NetworkManager as NetworkManager
 import qualified System.Taffybar.Widget.PulseAudio as PulseAudio
 import System.Taffybar.Widget.SNIMenu (withNmAppletMenu)
 import System.Taffybar.Widget.SNITray
-  ( sniTrayNewFromParams,
+  ( SNITrayConfig (..),
+    defaultSNITrayConfig,
+    sniTrayNewFromConfig,
     sniTrayThatStartsWatcherEvenThoughThisIsABadWayToDoIt,
   )
 import qualified System.Taffybar.Widget.ScreenLock as ScreenLock
@@ -53,6 +56,7 @@ import qualified System.Taffybar.Widget.Workspaces.EWMH as X11Workspaces
 import qualified System.Taffybar.Widget.Workspaces.Hyprland as Hyprland
 import System.Taffybar.WindowIcon (pixBufFromColor)
 import Text.Printf (printf)
+import Text.Read (readMaybe)
 
 -- | Wrap the widget in a "TaffyBox" (via 'buildContentsBox') and add a CSS class.
 decorateWithClassAndBox :: (MonadIO m) => Text -> Gtk.Widget -> m Gtk.Widget
@@ -75,7 +79,7 @@ x11FullWorkspaceNames =
 x11WorkspaceLabelSetter :: X11Workspaces.Workspace -> X11Workspaces.WorkspacesIO String
 x11WorkspaceLabelSetter workspace =
   remapNSP . fromMaybe "" . lookup (X11Workspaces.workspaceIdx workspace)
-    <$> liftX11Def [] x11FullWorkspaceNames
+    <$> X11Workspaces.liftX11Def [] x11FullWorkspaceNames
   where
     remapNSP "NSP" = "S"
     remapNSP n = n
@@ -326,10 +330,9 @@ stackedMprisLabel :: Text -> Text
 stackedMprisLabel raw =
   let normalized = singleLineMprisLabel raw
       (top, rest) = T.breakOn " - " normalized
-   in
-    if T.null rest
-      then normalized
-      else top <> "\n" <> T.drop 3 rest
+   in if T.null rest
+        then normalized
+        else top <> "\n" <> T.drop 3 rest
 
 mprisWidget :: TaffyIO Gtk.Widget
 mprisWidget =
@@ -498,18 +501,163 @@ sunLockWidget :: TaffyIO Gtk.Widget
 sunLockWidget =
   stackInPill "sun-lock" [simplifiedWlsunsetWidget, simplifiedScreenLockWidget]
 
+type SNIPriorityMap = M.Map String Int
+
+sniPriorityStateRelativePath :: FilePath
+sniPriorityStateRelativePath = "sni-priorities.dat"
+
+sniPriorityMin, sniPriorityMax, sniCollapsedPriorityThreshold :: Int
+sniPriorityMin = -5
+sniPriorityMax = 5
+sniCollapsedPriorityThreshold = 0
+
+clampSNIPriority :: Int -> Int
+clampSNIPriority =
+  max sniPriorityMin . min sniPriorityMax
+
+sniPriorityStatePath :: IO FilePath
+sniPriorityStatePath = getUserConfigFile "taffybar" sniPriorityStateRelativePath
+
+loadSNIPriorityMap :: IO SNIPriorityMap
+loadSNIPriorityMap = do
+  path <- sniPriorityStatePath
+  exists <- doesFileExist path
+  if not exists
+    then return M.empty
+    else do
+      content <- readFile path
+      return $ fromMaybe M.empty $ M.fromList <$> readMaybe content
+
+persistSNIPriorityMap :: SNIPriorityMap -> IO ()
+persistSNIPriorityMap priorities = do
+  path <- sniPriorityStatePath
+  createDirectoryIfMissing True (takeDirectory path)
+  writeFile path (show (M.toList priorities))
+
+nonEmptyString :: String -> Maybe String
+nonEmptyString value
+  | null value = Nothing
+  | otherwise = Just value
+
+priorityKeyCandidates :: SNIHost.ItemInfo -> [String]
+priorityKeyCandidates info =
+  concat
+    [ map ("item-id:" ++) (maybeToList (SNIHost.itemId info >>= nonEmptyString)),
+      map ("icon-name:" ++) (maybeToList (nonEmptyString (SNIHost.iconName info))),
+      map ("icon-title:" ++) (maybeToList (nonEmptyString (SNIHost.iconTitle info)))
+    ]
+
+priorityKeyFromItem :: SNIHost.ItemInfo -> Maybe String
+priorityKeyFromItem = listToMaybe . priorityKeyCandidates
+
+itemMatchesPriorityKey :: String -> SNIHost.ItemInfo -> Bool
+itemMatchesPriorityKey key info =
+  case stripPrefix "item-id:" key of
+    Just itemIdKey -> SNIHost.itemId info == Just itemIdKey
+    Nothing ->
+      case stripPrefix "icon-name:" key of
+        Just iconNameKey -> SNIHost.iconName info == iconNameKey
+        Nothing ->
+          case stripPrefix "icon-title:" key of
+            Just iconTitleKey -> SNIHost.iconTitle info == iconTitleKey
+            Nothing -> False
+
+priorityMatchersFromMap :: SNIPriorityMap -> [SNITray.TrayItemMatcher]
+priorityMatchersFromMap priorities =
+  let sortedEntries = sortOn snd $ M.toList priorities
+      entryMatcher (key, priority) =
+        SNITray.mkTrayItemMatcher
+          (printf "priority:%d:%s" priority key)
+          (itemMatchesPriorityKey key)
+      fallbackMatcher =
+        SNITray.mkTrayItemMatcher "priority:fallback" (const True)
+   in
+    if null sortedEntries
+      then []
+      else map entryMatcher sortedEntries ++ [fallbackMatcher]
+
+collapsedPriorityCutoffFromMap :: SNIPriorityMap -> Int
+collapsedPriorityCutoffFromMap priorities =
+  let sortedEntries = sortOn snd $ M.toList priorities
+      visibleIndexes =
+        [ idx
+        | (idx, (_, priority)) <- zip [0 :: Int ..] sortedEntries,
+          priority <= sniCollapsedPriorityThreshold
+        ]
+   in fromMaybe (-1) (safeLast visibleIndexes)
+  where
+    safeLast [] = Nothing
+    safeLast xs = Just (last xs)
+
+hasPriorityGestureModifiers :: [Gdk.ModifierType] -> Bool
+hasPriorityGestureModifiers modifiers =
+  Gdk.ModifierTypeControlMask `elem` modifiers
+    && Gdk.ModifierTypeShiftMask `elem` modifiers
+
+modifyPriorityMap ::
+  IORef SNIPriorityMap ->
+  String ->
+  (Maybe Int -> Maybe Int) ->
+  IO ()
+modifyPriorityMap prioritiesRef key editPriority = do
+  modifyIORef' prioritiesRef (M.alter editPriority key)
+  readIORef prioritiesRef >>= persistSNIPriorityMap
+
+priorityClickHookFromRef :: IORef SNIPriorityMap -> SNITray.TrayClickHook
+priorityClickHookFromRef prioritiesRef clickContext = do
+  let modifiers = SNITray.trayClickModifiers clickContext
+      button = SNITray.trayClickButton clickContext
+      clickedInfo = SNITray.trayClickItemInfo clickContext
+      updatePriority delta =
+        Just . clampSNIPriority . maybe 0 (+ delta)
+  case (hasPriorityGestureModifiers modifiers, priorityKeyFromItem clickedInfo) of
+    (False, _) -> return SNITray.UseDefaultClickAction
+    (_, Nothing) -> return SNITray.UseDefaultClickAction
+    (True, Just key) -> do
+      case button of
+        1 ->
+          modifyPriorityMap prioritiesRef key (updatePriority (-1))
+        2 ->
+          modifyPriorityMap prioritiesRef key (const Nothing)
+        3 ->
+          modifyPriorityMap prioritiesRef key (updatePriority 1)
+        _ ->
+          return ()
+      return SNITray.ConsumeClick
+
 sniTrayWidget :: TaffyIO Gtk.Widget
 sniTrayWidget = do
   -- If the Haskell backend regresses, flip at runtime:
   --   TAFFYBAR_SNI_MENU_BACKEND=lib
   backendEnv <- liftIO (lookupEnv "TAFFYBAR_SNI_MENU_BACKEND")
+  priorityMap <- liftIO loadSNIPriorityMap
+  priorityMapRef <- liftIO (newIORef priorityMap)
   let menuBackend =
         case fmap (map toLower) backendEnv of
           Just "lib" -> SNITray.LibDBusMenu
           _ -> SNITray.HaskellDBusMenu
+      trayEventHooks =
+        SNITray.defaultTrayEventHooks
+          { SNITray.trayClickHook = Just (priorityClickHookFromRef priorityMapRef)
+          }
+      trayParams =
+        SNITray.defaultTrayParams
+          { SNITray.trayMenuBackend = menuBackend,
+            SNITray.trayOverlayScale = 1 % 3,
+            SNITray.trayEventHooks = trayEventHooks
+          }
+      trayPriorityConfig =
+        SNITray.defaultTrayPriorityConfig
+          { SNITray.trayPriorityMatchers = priorityMatchersFromMap priorityMap
+          }
+      sniTrayConfig =
+        defaultSNITrayConfig
+          { sniTrayTrayParams = trayParams,
+            sniTrayPriorityConfig = trayPriorityConfig
+          }
   decorateWithClassAndBoxM
     "sni-tray"
-    (sniTrayNewFromParams (SNITray.defaultTrayParams {SNITray.trayMenuBackend = menuBackend, SNITray.trayOverlayScale = 1 % 3}))
+    (sniTrayNewFromConfig sniTrayConfig)
 
 -- ** Layout
 
