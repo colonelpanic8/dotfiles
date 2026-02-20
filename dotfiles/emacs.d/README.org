@@ -29,7 +29,7 @@ To make it so that internal heading links have names that correspond to the
 heading text, and don't change when new headings are added to the document, I
 wrote a custom version of ~org-export-get-reference~.
 
-See how [[Use my own default naming scheme for org-headings][this link]] (which is just a normal internal link in the original
+See how [[http://ivanmalison.github.io/dotfiles/#usemyowndefaultnamingschemefororgheadings][this link]] (which is just a normal internal link in the original
 document) takes you to
 http://ivanmalison.github.io/dotfiles/#usemyowndefaultnamingschemefororgheadings.
 

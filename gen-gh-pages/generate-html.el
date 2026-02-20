@@ -21,6 +21,9 @@
 (org-babel-tangle-file readme-src)
 
 (require 'cl-lib)
+;; Keep legacy cl macros used in tangled config available in batch export.
+(unless (fboundp 'incf)
+  (defalias 'incf #'cl-incf))
 (load-file (concat emacs-dir "org-config-bootstrap.el"))
 (org-babel-tangle-file (concat emacs-dir "org-config.org"))
 (load-file (concat emacs-dir "org-config.el"))
@@ -33,6 +36,9 @@
 (setq org-html-postamble nil)
 (setq org-html-htmlize-output-type 'css)
 (setq org-confirm-babel-evaluate nil)
+;; README.org contains cross-file fuzzy links intended for in-Emacs navigation.
+;; Keep export resilient when those links cannot be resolved in standalone HTML.
+(setq org-export-with-broken-links t)
 
 (defun add-faces-css (exporter)
   "Insert custom inline css to automatically set the
