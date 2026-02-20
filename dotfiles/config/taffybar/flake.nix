@@ -71,6 +71,7 @@
     gtk-strut,
     gtk-sni-tray,
     dbus-hslogger,
+    ...
   }:
     flake-utils.lib.eachDefaultSystem (system:
       let

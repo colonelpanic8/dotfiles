@@ -689,7 +689,7 @@ endWidgetsForHost hostName =
         ]
       laptopEndWidgets =
         [ batteryNetworkWidget,
-          wakeupDebugWidget,
+          sniTrayWidget,
           asusDiskUsageWidget,
           audioBacklightWidget,
           ramSwapWidget,
