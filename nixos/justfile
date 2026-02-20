@@ -1,24 +1,16 @@
 switch *args:
-	# Avoid "Unit nixos-rebuild-switch-to-configuration.service was already loaded"
-	# when another switch is still running.
-	bash -lc 'if systemctl is-active --quiet nixos-rebuild-switch-to-configuration.service; then \
-	  echo "nixos-rebuild switch already running; waiting..." >&2; \
-	  systemctl status nixos-rebuild-switch-to-configuration.service --no-pager >&2 || true; \
-	  while systemctl is-active --quiet nixos-rebuild-switch-to-configuration.service; do sleep 1; done; \
-	fi'
+	sudo nixos-rebuild switch --flake ".#" --impure --option warn-dirty false {{args}}
+
+switch-remote *args:
+	# Switch using the remote master flake.
 	sudo nixos-rebuild switch --flake "git+https://github.com/colonelpanic8/dotfiles.git?ref=master&dir=nixos#" --impure --option warn-dirty false {{args}}
 
 switch-local *args:
-	# Switch using the local working tree (includes uncommitted edits).
-	bash -lc 'if systemctl is-active --quiet nixos-rebuild-switch-to-configuration.service; then \
-	  echo "nixos-rebuild switch already running; waiting..." >&2; \
-	  systemctl status nixos-rebuild-switch-to-configuration.service --no-pager >&2 || true; \
-	  while systemctl is-active --quiet nixos-rebuild-switch-to-configuration.service; do sleep 1; done; \
-	fi'
+	# Backwards-compat alias for local switch.
 	sudo nixos-rebuild switch --flake ".#" --impure --option warn-dirty false {{args}}
 
 switch-local-taffybar *args:
-	# Like `switch`, but use the local taffybar checkout (useful when hacking on it).
+	# Like `switch-remote`, but use the local taffybar checkout (useful when hacking on it).
 	# Note: requires the submodule/checkout to exist at ../dotfiles/config/taffybar/taffybar.
 	bash -lc 'if systemctl is-active --quiet nixos-rebuild-switch-to-configuration.service; then \
 	  echo "nixos-rebuild switch already running; waiting..." >&2; \
