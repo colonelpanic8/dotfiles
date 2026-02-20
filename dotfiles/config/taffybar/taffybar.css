@@ -301,6 +301,15 @@
 	letter-spacing: 0.2px;
 }
 
+.wakeup-debug label {
+	font-size: 10px;
+}
+
+.wakeup-debug-hit {
+	background-color: rgba(255, 255, 255, 0.22);
+	border-radius: 5px;
+}
+
 
 /* ASUS platform profile widget */
 .asus-profile { }

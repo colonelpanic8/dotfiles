@@ -12,10 +12,11 @@ cd "$root"
 # `hyprctl` calls inside the bar work.
 if command -v hyprctl >/dev/null 2>&1 && command -v jq >/dev/null 2>&1; then
   if ! hyprctl monitors -j >/dev/null 2>&1; then
+    instances_json="$(hyprctl instances -j 2>/dev/null || true)"
     if [[ -n "${WAYLAND_DISPLAY:-}" ]]; then
-      inst="$(hyprctl instances -j | jq -r --arg sock "$WAYLAND_DISPLAY" '.[] | select(.wl_socket == $sock) | .instance' | head -n1)"
+      inst="$(printf '%s\n' "$instances_json" | jq -r --arg sock "$WAYLAND_DISPLAY" '.[] | select(.wl_socket == $sock) | .instance' 2>/dev/null | head -n1 || true)"
     else
-      inst="$(hyprctl instances -j | jq -r '.[0].instance // empty')"
+      inst="$(printf '%s\n' "$instances_json" | jq -r '.[0].instance // empty' 2>/dev/null || true)"
     fi
 
     if [[ -n "${inst:-}" ]]; then

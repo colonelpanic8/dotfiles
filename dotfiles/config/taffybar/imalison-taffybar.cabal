@@ -19,7 +19,9 @@ executable taffybar
                      , X11
                      , bytestring
                      , containers
+                     , directory
                      , filepath
+                     , gi-gdk3
                      , gi-gtk3
                      , gi-gdkpixbuf
                      , gtk-sni-tray
@@ -29,6 +31,7 @@ executable taffybar
                      , hslogger
                      , process
                      , split
+                     , status-notifier-item
                      , text
                      , time
                      , taffybar>=3.2.0

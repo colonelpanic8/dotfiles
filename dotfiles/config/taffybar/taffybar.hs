@@ -501,6 +501,10 @@ sunLockWidget :: TaffyIO Gtk.Widget
 sunLockWidget =
   stackInPill "sun-lock" [simplifiedWlsunsetWidget, simplifiedScreenLockWidget]
 
+wakeupDebugWidget :: TaffyIO Gtk.Widget
+wakeupDebugWidget =
+  decorateWithClassAndBoxM "wakeup-debug" wakeupDebugWidgetNew
+
 type SNIPriorityMap = M.Map String Int
 
 sniPriorityStateRelativePath :: FilePath
@@ -676,6 +680,7 @@ endWidgetsForHost hostName =
   -- tray immediately left of it.)
   let baseEndWidgets =
         [ sniTrayWidget,
+          wakeupDebugWidget,
           audioWidget,
           ramSwapWidget,
           diskUsageWidget,
@@ -686,6 +691,7 @@ endWidgetsForHost hostName =
       laptopEndWidgets =
         [ batteryNetworkWidget,
           sniTrayWidget,
+          wakeupDebugWidget,
           asusDiskUsageWidget,
           audioBacklightWidget,
           ramSwapWidget,
