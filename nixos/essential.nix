@@ -1,4 +1,10 @@
-{ pkgs, ... }:
+{ pkgs, inputs, ... }:
+let
+  keepbook = inputs.keepbook.packages.${pkgs.stdenv.hostPlatform.system}.keepbook.overrideAttrs (_: {
+    # Upstream checks currently depend on TS artifacts that are not built in Nix.
+    doCheck = false;
+  });
+in
 {
   nixpkgs.config.allowBroken = true;
 
@@ -36,6 +42,7 @@
     ispell
     jq
     just
+    keepbook
     lshw
     lsof
     magic-wormhole-rs

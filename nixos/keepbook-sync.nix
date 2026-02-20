@@ -1,13 +1,13 @@
 { config, lib, pkgs, inputs, makeEnable, ... }:
-	let
-	  cfg = config.myModules."keepbook-sync";
-	  keepbookTray =
-	    inputs.keepbook.packages.${pkgs.stdenv.hostPlatform.system}.keepbook-tray.overrideAttrs (old: {
-	      # Upstream currently includes a contract test that expects a built TS CLI
-	      # entrypoint under ts/dist/, but the Nix build does not build the TS
-	      # artifacts first. Skip checks to keep the package usable on NixOS.
-	      doCheck = false;
-	    });
+let
+  cfg = config.myModules."keepbook-sync";
+  keepbookTray =
+    inputs.keepbook.packages.${pkgs.stdenv.hostPlatform.system}.keepbook-tray.overrideAttrs (_: {
+      # Upstream currently includes a contract test that expects a built TS CLI
+      # entrypoint under ts/dist/, but the Nix build does not build the TS
+      # artifacts first. Skip checks to keep the package usable on NixOS.
+      doCheck = false;
+    });
 
   daemonArgs = [
     "--config" cfg.configPath
@@ -24,6 +24,8 @@
   daemonExec = lib.escapeShellArgs ([ "${keepbookTray}/bin/keepbook-sync-daemon" ] ++ daemonArgs);
 
   enabledModule = makeEnable config "myModules.keepbook-sync" false {
+    environment.systemPackages = [ keepbookTray ];
+
     home-manager.users.${cfg.user} = {
       systemd.user.services.keepbook-sync-daemon = {
         Unit = {

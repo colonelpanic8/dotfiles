@@ -1318,11 +1318,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1771447274,
-        "narHash": "sha256-W5TTADv4NGn0tpap2nkOTZAxVUGiJI7m2UiKQvfW+WY=",
+        "lastModified": 1771570718,
+        "narHash": "sha256-vmFe1a9gIOLcT8UdE/b+Z9Cb0KQzGQonwtrxcZX9hx8=",
         "owner": "colonelpanic8",
         "repo": "keepbook",
-        "rev": "d0feb8deed6a439fb0f673ce1b9026afb2240b70",
+        "rev": "c0154c4e701dc3726cc709b15ec01cad1175d4f8",
         "type": "github"
       },
       "original": {
