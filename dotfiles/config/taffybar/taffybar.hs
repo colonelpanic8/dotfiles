@@ -318,7 +318,7 @@ clockWidget =
     ( textClockNewWith
         defaultClockConfig
           { clockUpdateStrategy = RoundedTargetInterval 60 0.0,
-            clockFormatString = "%a %b %_d\n🕑%I:%M %p"
+            clockFormatString = "%a %b %_d\n%I:%M %p"
           }
     )
 
@@ -680,7 +680,6 @@ endWidgetsForHost hostName =
   -- tray immediately left of it.)
   let baseEndWidgets =
         [ sniTrayWidget,
-          wakeupDebugWidget,
           audioWidget,
           ramSwapWidget,
           diskUsageWidget,
@@ -690,7 +689,6 @@ endWidgetsForHost hostName =
         ]
       laptopEndWidgets =
         [ batteryNetworkWidget,
-          sniTrayWidget,
           wakeupDebugWidget,
           asusDiskUsageWidget,
           audioBacklightWidget,
