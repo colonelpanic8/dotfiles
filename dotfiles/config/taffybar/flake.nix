@@ -2,26 +2,43 @@
   inputs = {
     flake-utils.url = "github:numtide/flake-utils";
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
+    git-ignore-nix = {
+      url = "github:hercules-ci/gitignore.nix";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
     # Kept for compatibility with parent flakes that set `inputs.xmonad.follows`,
     # and for taffybar's own flake inputs. We don't depend on xmonad.lib here.
-    xmonad.url = "github:xmonad/xmonad/master";
+    xmonad = {
+      url = "github:xmonad/xmonad/master";
+      inputs.nixpkgs.follows = "nixpkgs";
+      # xmonad's `unstable` input is another nixpkgs pin; keep it aligned too.
+      inputs.unstable.follows = "nixpkgs";
+      inputs.flake-utils.follows = "flake-utils";
+      inputs.git-ignore-nix.follows = "git-ignore-nix";
+    };
     dbus-menu = {
       url = "github:taffybar/dbus-menu";
+      inputs.nixpkgs.follows = "nixpkgs";
+      inputs.flake-utils.follows = "flake-utils";
+      inputs.git-ignore-nix.follows = "git-ignore-nix";
     };
     status-notifier-item = {
       url = "github:taffybar/status-notifier-item";
       inputs.nixpkgs.follows = "nixpkgs";
       inputs.flake-utils.follows = "flake-utils";
+      inputs.git-ignore-nix.follows = "git-ignore-nix";
     };
     gtk-strut = {
       url = "github:taffybar/gtk-strut";
       inputs.nixpkgs.follows = "nixpkgs";
       inputs.flake-utils.follows = "flake-utils";
+      inputs.git-ignore-nix.follows = "git-ignore-nix";
     };
     gtk-sni-tray = {
       url = "github:taffybar/gtk-sni-tray";
       inputs.nixpkgs.follows = "nixpkgs";
       inputs.flake-utils.follows = "flake-utils";
+      inputs.git-ignore-nix.follows = "git-ignore-nix";
       inputs.gtk-strut.follows = "gtk-strut";
       inputs.status-notifier-item.follows = "status-notifier-item";
       inputs.dbus-menu.follows = "dbus-menu";
@@ -34,11 +51,13 @@
     taffybar = {
       url = "path:/home/imalison/dotfiles/dotfiles/config/taffybar/taffybar";
       inputs.nixpkgs.follows = "nixpkgs";
+      inputs.flake-utils.follows = "flake-utils";
       inputs.gtk-sni-tray.follows = "gtk-sni-tray";
       inputs.gtk-strut.follows = "gtk-strut";
       inputs.status-notifier-item.follows = "status-notifier-item";
       inputs.dbus-menu.follows = "dbus-menu";
       inputs.xmonad.follows = "xmonad";
+      inputs.weeder-nix.inputs.pre-commit-hooks.inputs.nixpkgs.follows = "nixpkgs";
     };
   };
   outputs = {
