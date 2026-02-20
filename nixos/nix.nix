@@ -34,7 +34,6 @@
         keep-derivations = true;
         substituters = [
           "https://cache.nixos.org"
-          "https://cache.railbird.ai?priority=45"
           "https://cuda-maintainers.cachix.org"
           "https://ai.cachix.org"
           "https://colonelpanic8-dotfiles.cachix.org"
@@ -42,7 +41,6 @@
           "https://claude-code.cachix.org"
         ];
         trusted-public-keys = [
-          "cache.railbird.ai:KhnvcouxtIU2zxUcjJsm4bUK3o1S3p8xMf9qfZGF7/A="
           "cuda-maintainers.cachix.org-1:0dq3bujKpuEPMCX6U4WylrUDZ9JyUG0VpVZa7CNfq5E="
           "ai.cachix.org-1:N9dzRK+alWwoKXQlnn0H6aUx0lU/mspIoz8hMvGvbbc="
           "colonelpanic8-dotfiles.cachix.org-1:O6GF3nptpeMFapX29okzO92eSWXR36zqW6ZF2C8P0eQ="
