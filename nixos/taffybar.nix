@@ -1,4 +1,15 @@
 { config, inputs, pkgs, makeEnable, ... }:
+let
+  skipTaffybarInKde = pkgs.writeShellScript "skip-taffybar-in-kde" ''
+    current_desktop="''${XDG_CURRENT_DESKTOP:-}"
+    desktop_session="''${DESKTOP_SESSION:-}"
+
+    case "''${current_desktop}:''${desktop_session}" in
+      *KDE*|*kde*|*Plasma*|*plasma*) exit 1 ;;
+      *) exit 0 ;;
+    esac
+  '';
+in
 makeEnable config "myModules.taffybar" false {
   myModules.sni.enable = true;
 
@@ -47,6 +58,7 @@ makeEnable config "myModules.taffybar" false {
         enable = true;
         package = inputs.imalison-taffybar.defaultPackage.${pkgs.stdenv.hostPlatform.system};
       };
+      systemd.user.services.taffybar.Service.ExecCondition = "${skipTaffybarInKde}";
     }
   ];
 }
