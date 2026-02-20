@@ -27,6 +27,13 @@ digraph unsubscribe_check {
 }
 ```
 
+## Execution Default
+
+- Start the workflow immediately when this skill is invoked.
+- Do not ask a kickoff question like "should I start now?".
+- Default scan window is `newer_than:7d` unless the user already specified a different range.
+- Only ask a follow-up question before starting if required information is missing and execution would otherwise be blocked.
+
 ## How to Scan
 
 1. Search recent emails: `newer_than:7d` (or wider if user requests)
