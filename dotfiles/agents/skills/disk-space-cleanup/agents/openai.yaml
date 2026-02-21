@@ -1,0 +1,3 @@
+interface:
+  display_name: "Disk Space Cleanup"
+  short_description: "Find safe disk-space wins on NixOS hosts"
