@@ -224,6 +224,10 @@
         pr = 490230;
         hash = "sha256-vQM2mmIgpxFo3ctjk2tXkfhocXnTuHSEy8iYkTexScc=";
       }
+      {
+        pr = 492656;
+        hash = "sha256-0TGZ12iIfSYs6cs5kgWDAyiThJdlLMhqRGUscVQv5hU=";
+      }
       # claude-code
       # {
       #   pr = 464698;
