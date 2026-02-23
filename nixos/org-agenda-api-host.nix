@@ -95,6 +95,9 @@ in
     # Nginx reverse proxy with TLS
     services.nginx = {
       enable = true;
+      # Long FQDNs (e.g. org-agenda-api.org-agenda-api.colonelpanic8.duckdns.org)
+      # can exceed nginx's default hash bucket sizing.
+      serverNamesHashBucketSize = 128;
       recommendedProxySettings = true;
       recommendedTlsSettings = true;
       recommendedOptimisation = true;

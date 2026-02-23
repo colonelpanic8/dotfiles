@@ -22,7 +22,7 @@
 
   services.org-agenda-api-host = {
     enable = true;
-    domain = "org-agenda-api.colonelpanic8.duckdns.org";
+    domain = "colonelpanic8.duckdns.org";
     containerImage = orgAgendaApiImageName;
     containerImageFile = orgAgendaApiContainer;
     secretsFile = config.age.secrets.org-api-auth-password.path;
