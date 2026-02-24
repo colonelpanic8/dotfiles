@@ -421,6 +421,11 @@ that have a SCHEDULED date before today to the current date."
 #+end_src
 *** Agenda Files
 #+begin_src emacs-lisp :tangle org-config-config.el
+;; Prevent org from saving org-agenda-files to customize; managed programmatically.
+(advice-add 'org-store-new-agenda-file-list :override
+            (lambda (files) (setq org-agenda-files files)))
+
+(setq org-agenda-files nil)
 (imalison:add-to-org-agenda-files
  (nconc (list imalison:org-gtd-file imalison:org-calendar-file
               imalison:org-inbox-file imalison:shared-org-gtd-file
