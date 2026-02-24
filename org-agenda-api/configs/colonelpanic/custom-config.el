@@ -39,8 +39,9 @@
   (setq imalison:shared-calendar-file nil)
   (setq imalison:shared-shopping-file nil)
   (setq imalison:shared-repeating-file nil)
+  (setq imalison:org-recurring-file (imalison:join-paths imalison:org-dir "recurring.org"))
   (setq imalison:orgzly-files (list (imalison:join-paths imalison:org-dir "orgzly.org")))
-  (setq imalison:repeating-org-files (list imalison:org-habits-file))
+  (setq imalison:repeating-org-files (list imalison:org-habits-file imalison:org-recurring-file))
 
   ;; Enable habits in agenda - this adds habits.org to org-agenda-files
   (setq imalison:include-repeating-in-agenda t)
