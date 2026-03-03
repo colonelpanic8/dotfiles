@@ -44,6 +44,8 @@ import System.Taffybar.SimpleConfig
 import System.Taffybar.Util (getPixbufFromFilePath, maybeTCombine, postGUIASync, (<|||>))
 import System.Taffybar.Widget
 import qualified System.Taffybar.Widget.ASUS as ASUS
+import System.Taffybar.Widget.CPUMonitor (cpuMonitorNew)
+import System.Taffybar.Widget.Generic.Graph (GraphConfig (..), GraphDirection (..), GraphStyle (..), defaultGraphConfig)
 import qualified System.Taffybar.Widget.NetworkManager as NetworkManager
 import qualified System.Taffybar.Widget.PulseAudio as PulseAudio
 import System.Taffybar.Widget.SNIMenu (withNmAppletMenu)
@@ -482,6 +484,20 @@ sunLockWidget :: TaffyIO Gtk.Widget
 sunLockWidget =
   stackInPill "sun-lock" [simplifiedWlsunsetWidget, simplifiedScreenLockWidget]
 
+cpuWidget :: TaffyIO Gtk.Widget
+cpuWidget =
+  decorateWithClassAndBoxM "cpu" $
+    liftIO $
+      cpuMonitorNew
+        defaultGraphConfig
+          { graphDataColors = [(0, 1, 0.5, 0.8), (1, 0, 0, 0.5)],
+            graphLabel = Just "CPU",
+            graphWidth = 50,
+            graphDirection = LEFT_TO_RIGHT
+          }
+        1.0
+        "cpu"
+
 wakeupDebugWidget :: TaffyIO Gtk.Widget
 wakeupDebugWidget =
   decorateWithClassAndBoxM "wakeup-debug" wakeupDebugWidgetNew
@@ -544,6 +560,7 @@ endWidgetsForHost hostName =
   let baseEndWidgets =
         [ sniTrayWidget,
           audioWidget,
+          cpuWidget,
           ramSwapWidget,
           diskUsageWidget,
           networkWidget,
@@ -555,6 +572,7 @@ endWidgetsForHost hostName =
           sniTrayWidget,
           asusDiskUsageWidget,
           audioBacklightWidget,
+          cpuWidget,
           ramSwapWidget,
           sunLockWidget,
           mprisWidget
