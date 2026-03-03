@@ -11,6 +11,9 @@ in
 makeEnable config "myModules.hyprland" true {
   myModules.taffybar.enable = true;
 
+  # Needed for hyprlock authentication without PAM fallback warnings.
+  security.pam.services.hyprlock = {};
+
   programs.hyprland = {
     enable = true;
     # Use Hyprland from the flake for proper plugin compatibility
