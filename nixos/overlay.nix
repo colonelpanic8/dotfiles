@@ -132,10 +132,6 @@ in
     meta = prev.runc.meta // {};
   };
 
-  synergy = prev.synergy.overrideAttrs (old: {
-    patches = (old.patches or []) ++ [ ./synergy-cstdint.patch ];
-  });
-
   rofi-systemd = prev.rofi-systemd.overrideAttrs (_: {
     src = prev.fetchFromGitHub {
       repo = "rofi-systemd";
