@@ -55,6 +55,14 @@ Notes:
 - Add `--volumes` only when the user approves deleting unused volumes.
 - Re-check free space after each command to show impact.
 - Prefer `sudo -n` first so cleanup runs fail fast instead of hanging on password prompts.
+- If root is still tight after these, run app cache cleaners before proposing raw `rm -rf`:
+
+```bash
+uv cache clean
+pip cache purge
+yarn cache clean
+npm cache clean --force
+```
 
 ## Step 3: Rust Build Artifact Cleanup
 
@@ -108,6 +116,19 @@ If `ncdu` is missing, use:
 nix run nixpkgs#ncdu -- -x "$HOME"
 ```
 
+For quick, non-blocking triage on very large trees, prefer bounded probes:
+
+```bash
+timeout 30s du -xh --max-depth=1 "$HOME/.cache" 2>/dev/null | sort -h
+timeout 30s du -xh --max-depth=1 "$HOME/.local/share" 2>/dev/null | sort -h
+```
+
+Machine-specific heavy hitters seen in practice:
+
+- `~/.cache/uv` can exceed 20G and is reclaimable with `uv cache clean`.
+- `~/.cache/spotify` can exceed 10G; treat as optional app-cache cleanup.
+- `~/.local/share/Trash` can exceed several GB; empty only with user approval.
+
 ## Step 5: `/nix/store` Deep Dive
 
 When `/nix/store` is still large after GC, inspect root causes instead of deleting random paths.
@@ -138,11 +159,16 @@ nix why-depends <consumer-store-path> <dependency-store-path>
 Common retention pattern on this machine:
 
 - Many `.direnv/flake-profile-*` symlinks under `~/Projects` and worktrees keep `nix-shell-env`/`ghc-shell-*` roots alive.
+- `find_store_path_gc_roots` is especially useful for proving GHC retention: many large `ghc-9.10.3-with-packages` paths are unique per project, while the base `ghc-9.10.3` and docs paths are shared.
 - Quantify before acting:
 
 ```bash
 find ~/Projects -type l -path '*/.direnv/flake-profile-*' | wc -l
 find ~/Projects -type d -name .direnv | wc -l
+nix-store --gc --print-roots | rg '/\\.direnv/flake-profile-' | awk -F' -> ' '{print $1 \"|\" $2}' \
+  | while IFS='|' read -r root target; do \
+      nix-store -qR \"$target\" | rg '^/nix/store/.+-ghc-[0-9]'; \
+    done | sort | uniq -c | sort -nr | head
 ```
 
 - If counts are high and the projects are inactive, propose targeted `.direnv` cleanup for user confirmation.
