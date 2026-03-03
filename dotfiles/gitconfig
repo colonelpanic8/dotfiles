@@ -104,3 +104,10 @@
 	helper = !/run/current-system/sw/bin/gh auth git-credential
 [credential "https://gist.github.com"]
 	helper = !/run/current-system/sw/bin/gh auth git-credential
+[user]
+	email = org-agenda-api@localhost
+	name = org-agenda-api
+[safe]
+	directory = /tmp/tmp.zfvv44RquC/runtime/data/org
+	directory = /tmp/tmp.zFdvVnKk4B/runtime/data/org
+	directory = /tmp/tmp.PQTdI3UzS3/runtime/data/org
