@@ -48,7 +48,7 @@ in
     magic-wormhole-rs
     mesa-demos
     ncdu
-    neofetch
+    fastfetch
     neovim
     nix-index
     nix-search-cli

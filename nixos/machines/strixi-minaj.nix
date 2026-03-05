@@ -49,6 +49,10 @@
   programs.virt-manager.enable = true;
   virtualisation.libvirtd.enable = true;
   virtualisation.spiceUSBRedirection.enable = true;
+  systemd.services.virt-secret-init-encryption.serviceConfig.ExecStart = lib.mkForce [
+    ""
+    "${pkgs.runtimeShell} -c 'umask 0077 && (dd if=/dev/random status=none bs=32 count=1 | systemd-creds encrypt --name=secrets-encryption-key - /var/lib/libvirt/secrets/secrets-encryption-key)'"
+  ];
 
   services.xserver.dpi = 96;
   # linuxPackages_latest (6.19) currently fails to build nvidia-open.
