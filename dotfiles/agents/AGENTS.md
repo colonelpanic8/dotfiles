@@ -55,7 +55,7 @@
 - Address: 100 Broderick St APT 401, San Francisco, CA 94117, United States
 - Employer: Railbird Inc.
 - GitHub: colonelpanic8
-- Phone: 301-244-9534
+- Phone: 301-244-8534
 - Primary Credit Card: Chase-Reserve
 
 ## Repository Overview
