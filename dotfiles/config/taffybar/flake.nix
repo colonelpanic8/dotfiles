@@ -52,10 +52,6 @@
       url = "path:/home/imalison/dotfiles/dotfiles/config/taffybar/taffybar";
       inputs.nixpkgs.follows = "nixpkgs";
       inputs.flake-utils.follows = "flake-utils";
-      inputs.gtk-sni-tray.follows = "gtk-sni-tray";
-      inputs.gtk-strut.follows = "gtk-strut";
-      inputs.status-notifier-item.follows = "status-notifier-item";
-      inputs.dbus-menu.follows = "dbus-menu";
       inputs.xmonad.follows = "xmonad";
       inputs.weeder-nix.inputs.pre-commit-hooks.inputs.nixpkgs.follows = "nixpkgs";
     };

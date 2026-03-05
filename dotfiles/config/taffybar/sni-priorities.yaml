@@ -13,6 +13,8 @@ priorities:
   priority: 1
 - key: process:slack
   priority: 1
+- key: icon-name:blueman-tray
+  priority: 0
 - key: item-id:flameshot
   priority: 0
 - key: item-id:keepbook-sync-daemon
