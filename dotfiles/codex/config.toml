@@ -1,4 +1,4 @@
-model = "gpt-5.3-codex"
+model = "gpt-5.4"
 model_reasoning_effort = "high"
 personality = "pragmatic"
 [projects."/home/imalison/Projects/nixpkgs"]
@@ -38,6 +38,12 @@ trust_level = "trusted"
 trust_level = "trusted"
 
 [projects."/home/imalison/Projects/hyprland"]
+trust_level = "trusted"
+
+[projects."/home/imalison/Projects/git-sync-rs"]
+trust_level = "trusted"
+
+[projects."/home/imalison/Projects/keepbook"]
 trust_level = "trusted"
 
 [notice]
