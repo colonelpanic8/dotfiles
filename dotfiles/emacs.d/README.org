@@ -3603,7 +3603,8 @@ I had to disable this mode because something that it does messes with coding set
 (use-package editorconfig
   :config
   (progn
-    (add-to-list 'editorconfig-exclude-modes '(org-mode))
+    (when (boundp 'editorconfig-exclude-modes)
+      (add-to-list 'editorconfig-exclude-modes 'org-mode))
     (editorconfig-mode 1)))
 #+END_SRC
 ** direnv
@@ -3977,17 +3978,18 @@ Ensure all themes that I use are installed:
 (use-package doom-themes
   :defer t)
 
-(use-package badwolf-theme)
+(use-package badwolf-theme
+  :defer t)
 #+END_SRC
 ** all-the-icons
 #+BEGIN_SRC emacs-lisp
 (use-package all-the-icons
-  :demand t)
+  :defer t)
 #+END_SRC
 ** nerd-icons
 #+BEGIN_SRC emacs-lisp
 (use-package nerd-icons
-  :demand t)
+  :defer t)
 #+END_SRC
 ** doom-modeline
 #+begin_src emacs-lisp

@@ -79,7 +79,6 @@
   (org :type git :host github :repo "colonelpanic8/org-mode" :local-repo "org"
        :branch "my-main-2025"
        :depth full
-       :build (:not autoloads)
        :files (:defaults "lisp/*.el" ("etc/styles/" "etc/styles/*"))
        :wait t))
 

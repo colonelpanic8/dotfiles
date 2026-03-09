@@ -20,6 +20,7 @@ import qualified Data.Text as T
 import qualified GI.Gdk as Gdk
 import qualified GI.GdkPixbuf.Objects.Pixbuf as Gdk
 import qualified GI.Gtk as Gtk
+import qualified GI.Pango as Pango
 import Network.HostName (getHostName)
 import qualified StatusNotifier.Tray as SNITray
 import System.Environment (lookupEnv)
@@ -78,20 +79,30 @@ decorateWithClassAndBoxM :: (MonadIO m) => Text -> m Gtk.Widget -> m Gtk.Widget
 decorateWithClassAndBoxM klass builder =
   builder >>= decorateWithClassAndBox klass
 
-setLabelAlignmentRecursively :: Float -> Gtk.Justification -> Gtk.Widget -> IO ()
-setLabelAlignmentRecursively xalign justify widget = do
+forEachLabelRecursively :: Gtk.Widget -> (Gtk.Label -> IO ()) -> IO ()
+forEachLabelRecursively widget action = do
   maybeLabel <- castTo Gtk.Label widget
   case maybeLabel of
-    Just label -> do
-      Gtk.labelSetXalign label xalign
-      Gtk.labelSetJustify label justify
+    Just label -> action label
     Nothing -> pure ()
 
   maybeContainer <- castTo Gtk.Container widget
   case maybeContainer of
     Just container ->
-      Gtk.containerGetChildren container >>= mapM_ (setLabelAlignmentRecursively xalign justify)
+      Gtk.containerGetChildren container >>= mapM_ (`forEachLabelRecursively` action)
     Nothing -> pure ()
+
+setLabelAlignmentRecursively :: Float -> Gtk.Justification -> Gtk.Widget -> IO ()
+setLabelAlignmentRecursively xalign justify widget =
+  forEachLabelRecursively widget $ \label -> do
+    Gtk.labelSetXalign label xalign
+    Gtk.labelSetJustify label justify
+
+setFixedLabelWidth :: Int32 -> Gtk.Label -> IO ()
+setFixedLabelWidth width label = do
+  Gtk.labelSetWidthChars label width
+  Gtk.labelSetMaxWidthChars label width
+  Gtk.labelSetEllipsize label Pango.EllipsizeModeEnd
 
 -- ** X11 Workspaces
 
@@ -277,7 +288,14 @@ layoutWidget =
 
 windowsWidget :: TaffyIO Gtk.Widget
 windowsWidget =
-  decorateWithClassAndBoxM "windows" (windowsNew defaultWindowsConfig)
+  decorateWithClassAndBoxM
+    "windows"
+    ( windowsNew
+        defaultWindowsConfig
+          { getActiveLabel = truncatedGetActiveLabel 28,
+            configureActiveLabel = liftIO . setFixedLabelWidth 28
+          }
+    )
 
 workspacesWidget :: TaffyIO Gtk.Widget
 workspacesWidget = Workspaces.workspacesNew cfg
@@ -326,7 +344,8 @@ mprisWidget =
           simplePlayerWidget
             defaultPlayerConfig
               { setNowPlayingLabel =
-                  \np -> stackedMprisLabel <$> playingText 20 20 np
+                  \np -> stackedMprisLabel <$> playingText 20 20 np,
+                setupPlayerLabel = setFixedLabelWidth 20
               }
       }
 
