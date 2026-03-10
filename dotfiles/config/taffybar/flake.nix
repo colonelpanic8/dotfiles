@@ -82,11 +82,15 @@
 
         # Exclude local worktree/build artifacts from the source we feed to
         # callCabal2nix. cleanSource alone still includes .worktrees/.
+        # Use the live local checkout directly so Nix picks up dirty nested-repo
+        # changes while iterating on the vendored taffybar stack.
+        localTaffybarCheckout = /home/imalison/dotfiles/dotfiles/config/taffybar/taffybar;
+
         cleanedTaffybarSource = pkgs.lib.cleanSourceWith {
-          src = taffybar.outPath;
+          src = localTaffybarCheckout;
           filter = path: type:
             let
-              relPath = pkgs.lib.removePrefix "${toString taffybar.outPath}/" (toString path);
+              relPath = pkgs.lib.removePrefix "${toString localTaffybarCheckout}/" (toString path);
               excludedTopLevel = [ ".worktrees" ".direnv" "dist" "dist-newstyle" "result" ];
               isExcluded = pkgs.lib.lists.any
                 (prefix: relPath == prefix || pkgs.lib.hasPrefix "${prefix}/" relPath)
@@ -95,11 +99,13 @@
               pkgs.lib.cleanSourceFilter path type && !isExcluded;
         };
 
+        localTaffybarSubdir = subdir: cleanedTaffybarSource + "/${subdir}";
+
         hOverrides = hself: hsuper: {
           dbus-menu =
             pkgs.haskell.lib.overrideCabal
               (hself.callCabal2nix "dbus-menu"
-                (pkgs.lib.cleanSource (dbus-menu.outPath or dbus-menu))
+                (localTaffybarSubdir "packages/dbus-menu")
                 { inherit (pkgs) gtk3; })
               (_: {
                 doCheck = false;
@@ -111,27 +117,34 @@
           status-notifier-item =
             pkgs.haskell.lib.overrideCabal
               (hself.callCabal2nix "status-notifier-item"
-                (pkgs.lib.cleanSource status-notifier-item.outPath)
+                (localTaffybarSubdir "packages/status-notifier-item")
+                { })
+              (_: { doCheck = false; doHaddock = false; });
+
+          gtk-scaling-image =
+            pkgs.haskell.lib.overrideCabal
+              (hself.callCabal2nix "gtk-scaling-image"
+                (localTaffybarSubdir "packages/gtk-scaling-image")
                 { })
               (_: { doCheck = false; doHaddock = false; });
 
           gtk-strut =
             pkgs.haskell.lib.overrideCabal
               (hself.callCabal2nix "gtk-strut"
-                (pkgs.lib.cleanSource gtk-strut.outPath)
+                (localTaffybarSubdir "packages/gtk-strut")
                 { })
               (_: { doCheck = false; doHaddock = false; });
 
           gtk-sni-tray =
             pkgs.haskell.lib.overrideCabal
               (hself.callCabal2nix "gtk-sni-tray"
-                (pkgs.lib.cleanSource gtk-sni-tray.outPath)
+                (localTaffybarSubdir "packages/gtk-sni-tray")
                 { })
               (_: { doCheck = false; doHaddock = false; });
 
           dbus-hslogger =
             hself.callCabal2nix "dbus-hslogger"
-              (pkgs.lib.cleanSource (dbus-hslogger.outPath or dbus-hslogger))
+              (localTaffybarSubdir "packages/dbus-hslogger")
               { };
 
           # Build taffybar from our local flake input so it includes our extra

@@ -24,6 +24,7 @@ executable taffybar
                      , gi-gdk3
                      , gi-gtk3
                      , gi-gdkpixbuf
+                     , gi-pango
                      , gtk-sni-tray
                      , gtk-strut
                      , haskell-gi-base

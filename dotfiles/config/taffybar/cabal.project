@@ -1,3 +1,9 @@
 packages:
   .
   taffybar/
+  taffybar/packages/gtk-scaling-image
+  taffybar/packages/gtk-sni-tray
+  taffybar/packages/gtk-strut
+  taffybar/packages/status-notifier-item
+  taffybar/packages/dbus-menu
+  taffybar/packages/dbus-hslogger

@@ -506,16 +506,15 @@ sunLockWidget =
 cpuWidget :: TaffyIO Gtk.Widget
 cpuWidget =
   decorateWithClassAndBoxM "cpu" $
-    liftIO $
-      cpuMonitorNew
-        defaultGraphConfig
-          { graphDataColors = [(0, 1, 0.5, 0.8), (1, 0, 0, 0.5)],
-            graphLabel = Just "CPU",
-            graphWidth = 50,
-            graphDirection = LEFT_TO_RIGHT
-          }
-        1.0
-        "cpu"
+    cpuMonitorNew
+      defaultGraphConfig
+        { graphDataColors = [(0, 1, 0.5, 0.8), (1, 0, 0, 0.5)],
+          graphLabel = Just "CPU",
+          graphWidth = 50,
+          graphDirection = LEFT_TO_RIGHT
+        }
+      1.0
+      "cpu"
 
 wakeupDebugWidget :: TaffyIO Gtk.Widget
 wakeupDebugWidget =
