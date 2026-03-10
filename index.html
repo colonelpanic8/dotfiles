@@ -3,7 +3,7 @@
 "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
-<!-- 2026-03-06 Fri 01:55 -->
+<!-- 2026-03-10 Tue 21:08 -->
 <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>&lrm;</title>
@@ -9233,7 +9233,8 @@ I had to disable this mode because something that it does messes with coding set
 <pre class="src src-emacs-lisp">(<span class="org-keyword">use-package</span> <span class="org-constant">editorconfig</span>
   <span class="org-builtin">:config</span>
   (<span class="org-keyword">progn</span>
-    (add-to-list 'editorconfig-exclude-modes '(org-mode))
+    (<span class="org-keyword">when</span> (boundp 'editorconfig-exclude-modes)
+      (add-to-list 'editorconfig-exclude-modes 'org-mode))
     (editorconfig-mode 1)))
 </pre>
 </div>
@@ -9790,7 +9791,8 @@ Ensure all themes that I use are installed:
 (<span class="org-keyword">use-package</span> <span class="org-constant">doom-themes</span>
   <span class="org-builtin">:defer</span> t)
 
-(<span class="org-keyword">use-package</span> <span class="org-constant">badwolf-theme</span>)
+(<span class="org-keyword">use-package</span> <span class="org-constant">badwolf-theme</span>
+  <span class="org-builtin">:defer</span> t)
 </pre>
 </div>
 </div>
@@ -9800,7 +9802,7 @@ Ensure all themes that I use are installed:
 <div class="outline-text-3" id="text-20-3">
 <div class="org-src-container">
 <pre class="src src-emacs-lisp">(<span class="org-keyword">use-package</span> <span class="org-constant">all-the-icons</span>
-  <span class="org-builtin">:demand</span> t)
+  <span class="org-builtin">:defer</span> t)
 </pre>
 </div>
 </div>
@@ -9810,7 +9812,7 @@ Ensure all themes that I use are installed:
 <div class="outline-text-3" id="text-20-4">
 <div class="org-src-container">
 <pre class="src src-emacs-lisp">(<span class="org-keyword">use-package</span> <span class="org-constant">nerd-icons</span>
-  <span class="org-builtin">:demand</span> t)
+  <span class="org-builtin">:defer</span> t)
 </pre>
 </div>
 </div>
