@@ -228,11 +228,6 @@
         pr = 492656;
         hash = "sha256-0TGZ12iIfSYs6cs5kgWDAyiThJdlLMhqRGUscVQv5hU=";
       }
-      # gws
-      {
-        pr = 496806;
-        hash = "sha256-D5g3B2RigdHXeTybATeJqRssQsgCfGF/5zTg4zQb7+g=";
-      }
       # claude-code
       # {
       #   pr = 464698;
