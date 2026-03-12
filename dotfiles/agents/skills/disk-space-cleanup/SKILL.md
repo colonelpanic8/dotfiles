@@ -7,6 +7,12 @@ description: Investigate and safely reclaim disk space on this machine, especial
 
 Reclaim disk space with a safety-first workflow: investigate first, run obvious low-risk cleanup wins, then do targeted analysis for larger opportunities.
 
+Bundled helpers:
+
+- `scripts/rust_target_dirs.py`: inventory and guarded deletion for explicit Rust `target/` directories
+- `references/rust-target-roots.txt`: machine-specific roots for Rust artifact scans
+- `references/ignore-paths.md`: machine-specific excludes for `du`/`ncdu`
+
 ## Execution Default
 
 - Start with non-destructive investigation and quick sizing.
@@ -19,11 +25,11 @@ Reclaim disk space with a safety-first workflow: investigate first, run obvious 
 
 1. Establish current pressure and biggest filesystems
 2. Run easy cleanup wins
-3. Sweep Rust build artifacts in common project roots
+3. Inventory Rust build artifacts and clean the right kind of target
 4. Investigate remaining heavy directories with `ncdu`/`du`
 5. Investigate `/nix/store` roots when large toolchains still persist
 6. Summarize reclaimed space and next candidate actions
-7. Record new machine-specific ignore paths or cleanup patterns in this skill
+7. Record new machine-specific ignore paths, Rust roots, or cleanup patterns in this skill
 
 ## Step 1: Baseline
 
@@ -66,31 +72,46 @@ npm cache clean --force
 
 ## Step 3: Rust Build Artifact Cleanup
 
-Target common roots first: `~/Projects` and `~/code`.
+Do not start with a blind `find ~ -name target` or with hard-coded roots that may miss worktrees. Inventory explicit `target/` directories first using the bundled helper and the machine-specific root list in `references/rust-target-roots.txt`.
 
-Use `cargo-sweep` in dry-run mode before deleting:
+Inventory the biggest candidates:
 
 ```bash
-nix run nixpkgs#cargo-sweep -- sweep -d -r -t 30 ~/Projects ~/code
+python /home/imalison/dotfiles/dotfiles/agents/skills/disk-space-cleanup/scripts/rust_target_dirs.py list --min-size 500M --limit 30
 ```
 
-Then perform deletion:
+Focus on stale targets only:
 
 ```bash
-nix run nixpkgs#cargo-sweep -- sweep -r -t 30 ~/Projects ~/code
+python /home/imalison/dotfiles/dotfiles/agents/skills/disk-space-cleanup/scripts/rust_target_dirs.py list --min-size 1G --older-than 14 --output tsv
 ```
 
-Alternative for toolchain churn cleanup:
+Use `cargo-sweep` when the repo is still active and you want age/toolchain-aware cleanup inside a workspace:
 
 ```bash
-nix run nixpkgs#cargo-sweep -- sweep -r -i ~/Projects ~/code
+nix run nixpkgs#cargo-sweep -- sweep -d -r -t 30 <workspace-root>
+nix run nixpkgs#cargo-sweep -- sweep -r -t 30 <workspace-root>
+nix run nixpkgs#cargo-sweep -- sweep -d -r -i <workspace-root>
+nix run nixpkgs#cargo-sweep -- sweep -r -i <workspace-root>
+```
+
+Use direct `target/` deletion when inventory shows a discrete stale directory, especially for inactive repos or project-local worktrees. The helper only deletes explicit paths named `target` that are beneath configured roots and a Cargo project:
+
+```bash
+python /home/imalison/dotfiles/dotfiles/agents/skills/disk-space-cleanup/scripts/rust_target_dirs.py delete /abs/path/to/target
+python /home/imalison/dotfiles/dotfiles/agents/skills/disk-space-cleanup/scripts/rust_target_dirs.py delete /abs/path/to/target --yes
 ```
 
 Recommended sequence:
 
-1. Run `-t 30` first for age-based stale builds.
-2. Run a dry-run with `-i` next.
-3. Apply `-i` when dry-run shows significant reclaimable space.
+1. Run `rust_target_dirs.py list` to see the largest `target/` directories across `~/Projects`, `~/org`, `~/dotfiles`, and other configured roots.
+2. For active repos, prefer `cargo-sweep` from the workspace root.
+3. For inactive repos, abandoned branches, and `.worktrees/*/target`, prefer guarded direct deletion of the explicit `target/` directory.
+4. Re-run the list command after each deletion round to show reclaimed space.
+
+Machine-specific note:
+
+- Project-local `.worktrees/*/target` directories are common cleanup wins on this machine and are easy to miss with the old hard-coded workflow.
 
 ## Step 4: Investigation with `ncdu` and `du`
 
@@ -159,6 +180,7 @@ nix why-depends <consumer-store-path> <dependency-store-path>
 Common retention pattern on this machine:
 
 - Many `.direnv/flake-profile-*` symlinks under `~/Projects` and worktrees keep `nix-shell-env`/`ghc-shell-*` roots alive.
+- Old taffybar constellation repos under `~/Projects` can pin large Haskell closures through `.direnv` and `result` symlinks. Deleting `gtk-sni-tray`, `status-notifier-item`, `dbus-menu`, `dbus-hslogger`, and `gtk-strut` and then rerunning `nix-collect-garbage -d` reclaimed about 11G of store data in one validated run.
 - `find_store_path_gc_roots` is especially useful for proving GHC retention: many large `ghc-9.10.3-with-packages` paths are unique per project, while the base `ghc-9.10.3` and docs paths are shared.
 - Quantify before acting:
 
@@ -177,6 +199,7 @@ nix-store --gc --print-roots | rg '/\\.direnv/flake-profile-' | awk -F' -> ' '{p
 
 - Do not delete user files directly unless explicitly requested.
 - Prefer cleanup tools that understand ownership/metadata (`nix`, `docker`, `podman`, `cargo-sweep`) over `rm -rf`.
+- For Rust build artifacts, deleting an explicit directory literally named `target` is acceptable when it is discovered by the bundled helper; Cargo will rebuild it.
 - Present a concise “proposed actions” list before high-impact deletes.
 - If uncertain whether data is needed, stop at investigation and ask.
 
@@ -187,5 +210,6 @@ Treat this skill as a living playbook.
 After each disk cleanup task:
 
 1. Add newly discovered mountpoints or directories to ignore in `references/ignore-paths.md`.
-2. Add validated command patterns or caveats discovered during the run to this `SKILL.md`.
-3. Keep instructions practical and machine-specific; remove stale guidance.
+2. Add newly discovered Rust repo roots in `references/rust-target-roots.txt`.
+3. Add validated command patterns or caveats discovered during the run to this `SKILL.md`.
+4. Keep instructions practical and machine-specific; remove stale guidance.
