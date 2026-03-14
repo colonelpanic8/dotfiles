@@ -46,6 +46,21 @@ trust_level = "trusted"
 [projects."/home/imalison/Projects/keepbook"]
 trust_level = "trusted"
 
+[projects."/home/imalison/Projects/boxcars"]
+trust_level = "trusted"
+
+[projects."/home/imalison/Projects/rumno"]
+trust_level = "trusted"
+
+[projects."/home/imalison/Projects/git-blame-rank"]
+trust_level = "trusted"
+
+[projects."/home/imalison/Projects/hatchet"]
+trust_level = "trusted"
+
+[projects."/home/imalison/dotfiles/dotfiles/emacs.d/elpaca/sources/org-project-capture"]
+trust_level = "trusted"
+
 [notice]
 hide_gpt5_1_migration_prompt = true
 "hide_gpt-5.1-codex-max_migration_prompt" = true
