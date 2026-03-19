@@ -101,9 +101,11 @@
 	process = git-lfs filter-process
 	required = true
 [credential "https://github.com"]
-	helper = !/run/current-system/sw/bin/gh auth git-credential
+	helper = 
+	helper = !/etc/profiles/per-user/imalison/bin/gh auth git-credential
 [credential "https://gist.github.com"]
-	helper = !/run/current-system/sw/bin/gh auth git-credential
+	helper = 
+	helper = !/etc/profiles/per-user/imalison/bin/gh auth git-credential
 [includeIf "gitdir:~/Projects/org-agenda-api/"]
 	path = ~/.gitconfig.org-agenda-api
 [includeIf "gitdir:~/Projects/dotfiles/org-agenda-api/"]
