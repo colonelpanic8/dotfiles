@@ -1,5 +1,6 @@
 { pkgs, inputs, ... }:
 let
+  git-blame-rank = inputs.git-blame-rank.packages.${pkgs.stdenv.hostPlatform.system}.default;
   keepbook = inputs.keepbook.packages.${pkgs.stdenv.hostPlatform.system}.keepbook.overrideAttrs (_: {
     # Upstream checks currently depend on TS artifacts that are not built in Nix.
     doCheck = false;
@@ -29,6 +30,7 @@ in
     gdb
     gh
     git-fame
+    git-blame-rank
     git-lfs
     git-sync
     git-sync-rs

@@ -54,6 +54,14 @@
       };
     };
 
+    git-blame-rank = {
+      url = "github:colonelpanic8/git-blame-rank";
+      inputs = {
+        nixpkgs.follows = "nixpkgs";
+        flake-utils.follows = "flake-utils";
+      };
+    };
+
     org-agenda-api = {
       url = "github:colonelpanic8/org-agenda-api";
       inputs = {
