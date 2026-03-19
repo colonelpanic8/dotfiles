@@ -128,6 +128,13 @@
                 { })
               (_: { doCheck = false; doHaddock = false; });
 
+          xdg-desktop-entry =
+            pkgs.haskell.lib.overrideCabal
+              (hself.callCabal2nix "xdg-desktop-entry"
+                (localTaffybarSubdir "packages/xdg-desktop-entry")
+                { })
+              (_: { doCheck = false; doHaddock = false; });
+
           gtk-strut =
             pkgs.haskell.lib.overrideCabal
               (hself.callCabal2nix "gtk-strut"
