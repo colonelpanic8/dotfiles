@@ -70,6 +70,21 @@ trust_level = "trusted"
 [projects."/home/imalison/.password-store"]
 trust_level = "trusted"
 
+[projects."/home/imalison/Projects/subtr-actor-mechanics"]
+trust_level = "trusted"
+
+[projects."/home/imalison/Projects/lastfm-edit"]
+trust_level = "trusted"
+
+[projects."/home/imalison/Projects/mova"]
+trust_level = "trusted"
+
+[projects."/home/imalison/dotfiles/dotfiles/config/taffybar/taffybar"]
+trust_level = "trusted"
+
+[projects."/home/imalison/Projects"]
+trust_level = "trusted"
+
 [notice]
 hide_gpt5_1_migration_prompt = true
 "hide_gpt-5.1-codex-max_migration_prompt" = true
