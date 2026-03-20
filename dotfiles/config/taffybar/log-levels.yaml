@@ -9,4 +9,7 @@
 # Example (uncomment as-needed):
 # System.Taffybar.DBus.Toggle: DEBUG
 # Graphics.UI.GIGtkStrut: DEBUG
-{}
+StatusNotifier.Tray: INFO
+StatusNotifier.Host.Service: INFO
+System.Taffybar.LogLevels: INFO
+System.Taffybar.Context: DEBUG
