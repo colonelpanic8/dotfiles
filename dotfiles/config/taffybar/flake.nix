@@ -49,7 +49,10 @@
       flake = false;
     };
     taffybar = {
-      url = "path:/home/imalison/dotfiles/dotfiles/config/taffybar/taffybar";
+      # Use the local git checkout, not a raw path snapshot, so gitignored
+      # build artifacts like dist-newstyle/.worktrees/.direnv don't get copied
+      # into flake-input store sources.
+      url = "git+file:///home/imalison/dotfiles/dotfiles/config/taffybar/taffybar";
       inputs.nixpkgs.follows = "nixpkgs";
       inputs.flake-utils.follows = "flake-utils";
       inputs.xmonad.follows = "xmonad";

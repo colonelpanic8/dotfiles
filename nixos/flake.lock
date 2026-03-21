@@ -1977,14 +1977,17 @@
         "xmonad-contrib": "xmonad-contrib"
       },
       "locked": {
-        "lastModified": 1773949510,
-        "narHash": "sha256-c3fpnmJfK4KaN8DmdUYgFqeLjcMsxCyNd24864Jzw8w=",
-        "path": "/home/imalison/dotfiles/dotfiles/config/taffybar/taffybar",
-        "type": "path"
+        "lastModified": 1774119529,
+        "narHash": "sha256-Sx+Lpd5y9zp79/oHkNIsd8Z52g271PO/1fQXcqaDtNc=",
+        "ref": "refs/heads/master",
+        "rev": "7feaa6a9881376fecf4645cc84e93f3173f6fcb3",
+        "revCount": 2266,
+        "type": "git",
+        "url": "file:///home/imalison/dotfiles/dotfiles/config/taffybar/taffybar"
       },
       "original": {
-        "path": "/home/imalison/dotfiles/dotfiles/config/taffybar/taffybar",
-        "type": "path"
+        "type": "git",
+        "url": "file:///home/imalison/dotfiles/dotfiles/config/taffybar/taffybar"
       }
     },
     "taffybar_2": {
@@ -2004,12 +2007,13 @@
         ]
       },
       "locked": {
-        "lastModified": 1773598038,
-        "narHash": "sha256-raml4gCrMtW/hNt2T6E7U7Y+8fDwdRjnsLcNRU7ZmcA=",
-        "owner": "taffybar",
-        "repo": "taffybar",
-        "rev": "3a9cae8b9ff13afd7f2687f10d022620c3e26448",
-        "type": "github"
+        "lastModified": 1774119529,
+        "narHash": "sha256-Sx+Lpd5y9zp79/oHkNIsd8Z52g271PO/1fQXcqaDtNc=",
+        "ref": "refs/heads/master",
+        "rev": "7feaa6a9881376fecf4645cc84e93f3173f6fcb3",
+        "revCount": 2266,
+        "type": "git",
+        "url": "file:///home/imalison/dotfiles/dotfiles/config/taffybar/taffybar"
       },
       "original": {
         "owner": "taffybar",
