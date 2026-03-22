@@ -58,7 +58,13 @@ makeEnable config "myModules.taffybar" false {
         enable = true;
         package = inputs.imalison-taffybar.defaultPackage.${pkgs.stdenv.hostPlatform.system};
       };
-      systemd.user.services.taffybar.Service.ExecCondition = "${skipTaffybarInKde}";
+      systemd.user.services.taffybar.Service = {
+        ExecCondition = "${skipTaffybarInKde}";
+        # Temporary startup debugging: keep a plain-text log outside journald so
+        # the next login/startup leaves easy-to-inspect tray traces behind.
+        StandardOutput = "append:/tmp/taffybar-service.log";
+        StandardError = "append:/tmp/taffybar-service.log";
+      };
     }
   ];
 }

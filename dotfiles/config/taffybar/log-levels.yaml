@@ -9,7 +9,9 @@
 # Example (uncomment as-needed):
 # System.Taffybar.DBus.Toggle: DEBUG
 # Graphics.UI.GIGtkStrut: DEBUG
-StatusNotifier.Tray: INFO
-StatusNotifier.Host.Service: INFO
+# Temporary startup debugging for tray duplication.
+StatusNotifier.Tray: DEBUG
+StatusNotifier.Host.Service: DEBUG
+System.Taffybar.Widget.SNITray.PrioritizedCollapsible: DEBUG
 System.Taffybar.LogLevels: INFO
 System.Taffybar.Context: DEBUG
