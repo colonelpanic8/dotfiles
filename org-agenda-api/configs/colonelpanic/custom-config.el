@@ -18,6 +18,12 @@
 
 ;; Load tangled config files in order
 (let ((config-dir (file-name-directory load-file-name)))
+  ;; Containerized Emacs runs without a normal home directory. Some packages
+  ;; spawn async subprocesses using `user-emacs-directory` as cwd, so ensure
+  ;; that path exists before loading the full config.
+  (setq user-emacs-directory "/tmp/emacs/")
+  (make-directory user-emacs-directory t)
+
   ;; Load preface first (defines variables with default values)
   (when (file-exists-p (expand-file-name "org-config-preface.el" config-dir))
     (load (expand-file-name "org-config-preface.el" config-dir)))
@@ -175,12 +181,16 @@ Returns nil for non-entry templates or templates that can't be converted."
 
 (defun imalison:convert-all-capture-templates ()
   "Convert all org-capture-templates to org-agenda-api-capture-templates format."
-  (let ((converted '()))
-    (dolist (template org-capture-templates)
+  (let ((converted '())
+        (templates (and (boundp 'org-capture-templates) org-capture-templates)))
+    (dolist (template templates)
       (let ((api-template (imalison:convert-capture-template template)))
         (when api-template
           (push api-template converted))))
     (nreverse converted)))
+
+;; Ensure org-capture variables are defined before converting templates.
+(require 'org-capture nil t)
 
 ;; Default prompts for TODO templates when extraction fails
 (defvar imalison:default-todo-prompts
