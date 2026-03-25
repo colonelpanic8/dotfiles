@@ -2280,6 +2280,8 @@ bind-key and global-set-key forms.
   :mode (("\\.go\\'" . go-mode))
   :preface
   (progn
+    (defvar imalison:use-lsp-go t)
+
     (defun imalison:glide-novendor ()
       (projectile-with-default-dir (projectile-project-root)
         (shell-command-to-string "glide novendor")))
@@ -2328,16 +2330,36 @@ bind-key and global-set-key forms.
     (imalison:let-advise-around imalison:advise-normal-go-command
       (go-command "go"))
 
+    (defun imalison:go-lsp-server-wrapper-function (args)
+      (if (executable-find (car args))
+          args
+        (append (list "nix" "run" "nixpkgs#gopls" "--")
+                (cdr args))))
+
     (defun imalison:go-mode-hook ()
-      (go-eldoc-setup)
-      (set (make-local-variable 'company-backends) '(company-go))
+      (setq-local gofmt-command
+                  (if (executable-find "goimports") "goimports" "gofmt"))
+      (setq-local imenu-create-index-function
+                  #'imalison:go-mode-create-imenu-index)
       (make-local-variable 'projectile-globally-ignored-files)
       (add-hook 'after-save-hook 'imalison:install-current-go-project nil
                 'yes-do-local)
+      (add-hook 'before-save-hook 'gofmt-before-save nil 'yes-do-local)
       (add-to-list 'projectile-globally-ignored-files
-                   "vendor")))
+                   "vendor")
+      (when (and imalison:use-lsp-go
+                 (fboundp 'lsp-deferred)
+                 (or (executable-find "gopls")
+                     (executable-find "nix")))
+        (lsp-deferred))))
   :config
   (progn
+    (use-package lsp-mode
+      :config
+      (progn
+        (require 'lsp-go)
+        (setq lsp-go-server-wrapper-function
+              #'imalison:go-lsp-server-wrapper-function)))
     (use-package gotest
       :demand t
       :bind (:map go-mode-map
@@ -2357,15 +2379,9 @@ bind-key and global-set-key forms.
         (setq go-test-verbose t
               go-test-additional-arguments-function
               'imalison:add-expected-test-name-for-suite)))
-    (use-package company-go
-      :config (setq company-go-show-annotation t))
-
     (advice-add 'go-import-add :around 'imalison:advise-normal-go-command)
 
-    (setq gofmt-command "goimports")
-
-    (add-hook 'go-mode-hook 'imalison:go-mode-hook)
-    (add-hook 'before-save-hook 'gofmt-before-save t)))
+    (add-hook 'go-mode-hook 'imalison:go-mode-hook)))
 #+END_SRC
 **** Show diffs of testify output
 #+BEGIN_SRC emacs-lisp
