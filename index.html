@@ -3,7 +3,7 @@
 "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
-<!-- 2026-03-25 Wed 18:47 -->
+<!-- 2026-03-25 Wed 20:07 -->
 <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>&lrm;</title>
@@ -7386,6 +7386,8 @@ bind-key and global-set-key forms.
   <span class="org-builtin">:mode</span> ((<span class="org-string">"\\.go\\'"</span> . go-mode))
   <span class="org-builtin">:preface</span>
   (<span class="org-keyword">progn</span>
+    (<span class="org-keyword">defvar</span> <span class="org-variable-name">imalison:use-lsp-go</span> t)
+
     (<span class="org-keyword">defun</span> <span class="org-function-name">imalison:glide-novendor</span> ()
       (projectile-with-default-dir (projectile-project-root)
         (shell-command-to-string <span class="org-string">"glide novendor"</span>)))
@@ -7434,16 +7436,36 @@ bind-key and global-set-key forms.
     (imalison:let-advise-around imalison:advise-normal-go-command
       (go-command <span class="org-string">"go"</span>))
 
+    (<span class="org-keyword">defun</span> <span class="org-function-name">imalison:go-lsp-server-wrapper-function</span> (args)
+      (<span class="org-keyword">if</span> (executable-find (car args))
+          args
+        (append (list <span class="org-string">"nix"</span> <span class="org-string">"run"</span> <span class="org-string">"nixpkgs#gopls"</span> <span class="org-string">"--"</span>)
+                (cdr args))))
+
     (<span class="org-keyword">defun</span> <span class="org-function-name">imalison:go-mode-hook</span> ()
-      (go-eldoc-setup)
-      (set (make-local-variable 'company-backends) '(company-go))
+      (<span class="org-keyword">setq-local</span> gofmt-command
+                  (<span class="org-keyword">if</span> (executable-find <span class="org-string">"goimports"</span>) <span class="org-string">"goimports"</span> <span class="org-string">"gofmt"</span>))
+      (<span class="org-keyword">setq-local</span> imenu-create-index-function
+                  #'imalison:go-mode-create-imenu-index)
       (make-local-variable 'projectile-globally-ignored-files)
       (add-hook 'after-save-hook 'imalison:install-current-go-project nil
                 'yes-do-local)
+      (add-hook 'before-save-hook 'gofmt-before-save nil 'yes-do-local)
       (add-to-list 'projectile-globally-ignored-files
-                   <span class="org-string">"vendor"</span>)))
+                   <span class="org-string">"vendor"</span>)
+      (<span class="org-keyword">when</span> (<span class="org-keyword">and</span> imalison:use-lsp-go
+                 (fboundp 'lsp-deferred)
+                 (<span class="org-keyword">or</span> (executable-find <span class="org-string">"gopls"</span>)
+                     (executable-find <span class="org-string">"nix"</span>)))
+        (lsp-deferred))))
   <span class="org-builtin">:config</span>
   (<span class="org-keyword">progn</span>
+    (<span class="org-keyword">use-package</span> <span class="org-constant">lsp-mode</span>
+      <span class="org-builtin">:config</span>
+      (<span class="org-keyword">progn</span>
+        (<span class="org-keyword">require</span> '<span class="org-constant">lsp-go</span>)
+        (<span class="org-keyword">setq</span> lsp-go-server-wrapper-function
+              #'imalison:go-lsp-server-wrapper-function)))
     (<span class="org-keyword">use-package</span> <span class="org-constant">gotest</span>
       <span class="org-builtin">:demand</span> t
       <span class="org-builtin">:bind</span> (<span class="org-builtin">:map</span> go-mode-map
@@ -7463,15 +7485,9 @@ bind-key and global-set-key forms.
         (<span class="org-keyword">setq</span> go-test-verbose t
               go-test-additional-arguments-function
               'imalison:add-expected-test-name-for-suite)))
-    (<span class="org-keyword">use-package</span> <span class="org-constant">company-go</span>
-      <span class="org-builtin">:config</span> (<span class="org-keyword">setq</span> company-go-show-annotation t))
-
     (advice-add 'go-import-add <span class="org-builtin">:around</span> 'imalison:advise-normal-go-command)
 
-    (<span class="org-keyword">setq</span> gofmt-command <span class="org-string">"goimports"</span>)
-
-    (add-hook 'go-mode-hook 'imalison:go-mode-hook)
-    (add-hook 'before-save-hook 'gofmt-before-save t)))
+    (add-hook 'go-mode-hook 'imalison:go-mode-hook)))
 </pre>
 </div>
 </div>
