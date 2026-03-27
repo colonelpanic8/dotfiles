@@ -5,6 +5,9 @@ Use this file to track mountpoints or directories that should be excluded from `
 ## Known Ignores
 
 - `$HOME/keybase`
+- `$HOME/.cache/keybase`
+- `$HOME/.local/share/keybase`
+- `$HOME/.config/keybase`
 - `/keybase`
 - `/var/lib/railbird`
 - `/run/user/*/doc` (FUSE portal mount; machine-specific example observed: `/run/user/1004/doc`)

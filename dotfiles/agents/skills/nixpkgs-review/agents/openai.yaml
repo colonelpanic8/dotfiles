@@ -1,0 +1,4 @@
+interface:
+  display_name: "Nixpkgs Review"
+  short_description: "Review nixpkgs changes with historical guidance"
+  default_prompt: "Use $nixpkgs-review to review this nixpkgs package change before I open the PR."
