@@ -1,4 +1,4 @@
-{ pkgs, lib, nixos, ... }:
+{ config, pkgs, lib, nixos, ... }:
 {
   # Automatic garbage collection of old home-manager generations
   nix.gc = {
@@ -101,6 +101,13 @@
       package = pkgs.numix-icon-theme-circle;
       name = "Numix-Circle";
     };
+
+    theme = {
+      package = pkgs.arc-theme;
+      name = "Arc";
+    };
+
+    gtk4.theme = config.gtk.theme;
 
     font = {
       package = pkgs.noto-fonts-color-emoji;
