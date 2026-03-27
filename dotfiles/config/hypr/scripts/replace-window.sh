@@ -32,8 +32,8 @@ trap 'rm -f "$TMPFILE"' EXIT
 while IFS=$'\t' read -r address class title ws_id; do
     icon=$(icon_for_class "$class")
     addresses+=("$address")
-    printf '%-20s %-40s  WS:%s\0icon\x1f%s\n' \
-        "$class" "${title:0:40}" "$ws_id" "$icon"
+    printf '%-24s  %s  WS:%s\0icon\x1f%s\n' \
+        "$class" "$title" "$ws_id" "$icon"
 done <<< "$WINDOW_DATA" > "$TMPFILE"
 
 INDEX=$(rofi -dmenu -i -show-icons -p "Replace with" -format i < "$TMPFILE") || exit 0

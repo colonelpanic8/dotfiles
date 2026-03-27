@@ -507,8 +507,8 @@ myDecorateName ws w = do
   workspaceToName <- getWorkspaceNames'
   let iconName = fromMaybe (map toLower $ head classes) $
                  lookupIconFromClasses classes
-      entryString = printf "%-20s%-40s %+30s in %s \0icon\x1f%s"
-                    classTitle (take 40 name) " "
+      entryString = printf "%-24s %s in %s \0icon\x1f%s"
+                    classTitle name
                     (fromMaybe "" $ workspaceToName (W.tag ws)) iconName
   return entryString
 

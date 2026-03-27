@@ -11,7 +11,7 @@ configuration {
     font:							"Fira Code 10";
     show-icons:                     true;
     display-drun: 					"";
-    drun-display-format:            "{name}";
+    drun-display-format:            "{name}  {generic}";
     disable-history:                false;
 	sidebar-mode: 					false;
 }
@@ -25,7 +25,8 @@ window {
 	border:							0px;
 	border-color:					@ac;
     border-radius:                  12px;
-	width:							40%;
+	width:							88%;
+	height:                         78%;
     location:                       center;
     x-offset:                       0;
     y-offset:                       0;
@@ -64,8 +65,8 @@ inputbar {
 listview {
     background-color:               @al;
     padding:                        10px;
-    columns:                        2;
-    lines:                          7;
+    columns:                        1;
+    lines:                          18;
     spacing:                        1%;
     cycle:                          false;
     dynamic:                        true;
