@@ -214,7 +214,9 @@
         devShell = hpkgs.shellFor {
           packages = p: [ p.imalison-taffybar p.taffybar ];
           nativeBuildInputs = (with hpkgs; [
+            alex
             cabal-install
+            happy
             # ghcid ormolu implicit-hie haskell-language-server hlint
           ]) ++ [
             pkgs.gdk-pixbuf
