@@ -223,6 +223,9 @@
             pkgs.librsvg
           ];
           shellHook = ''
+            # GHCi loads package DLL dependencies via the runtime linker, so it
+            # needs zlib on LD_LIBRARY_PATH in addition to the build-time -L flags.
+            export LD_LIBRARY_PATH="${pkgs.lib.makeLibraryPath [ pkgs.zlib ]}:''${LD_LIBRARY_PATH:-}"
             if [ -z "''${GDK_PIXBUF_MODULE_FILE:-}" ]; then
               export GDK_PIXBUF_MODULE_FILE="${pkgs.gdk-pixbuf}/lib/gdk-pixbuf-2.0/${pkgs.gdk-pixbuf.version}/loaders.cache"
             fi
