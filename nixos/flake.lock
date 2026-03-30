@@ -259,15 +259,15 @@
     "flake-compat_2": {
       "flake": false,
       "locked": {
-        "lastModified": 1696426674,
-        "narHash": "sha256-kvjfFW7WAETZlt09AgDn1MrtKzP7t90Vf7vypd3OL1U=",
-        "owner": "edolstra",
+        "lastModified": 1767039857,
+        "narHash": "sha256-vNpUSpF5Nuw8xvDLj2KCwwksIbjua2LZCqhV1LNRDns=",
+        "owner": "NixOS",
         "repo": "flake-compat",
-        "rev": "0f9255e01c2351cc7d116c072cb317785dd33b33",
+        "rev": "5edf11c44bc78a0d334f6334cdaf7d60d732daab",
         "type": "github"
       },
       "original": {
-        "owner": "edolstra",
+        "owner": "NixOS",
         "repo": "flake-compat",
         "type": "github"
       }
@@ -277,34 +277,18 @@
       "locked": {
         "lastModified": 1767039857,
         "narHash": "sha256-vNpUSpF5Nuw8xvDLj2KCwwksIbjua2LZCqhV1LNRDns=",
-        "owner": "NixOS",
+        "owner": "edolstra",
         "repo": "flake-compat",
         "rev": "5edf11c44bc78a0d334f6334cdaf7d60d732daab",
         "type": "github"
       },
       "original": {
-        "owner": "NixOS",
+        "owner": "edolstra",
         "repo": "flake-compat",
         "type": "github"
       }
     },
     "flake-compat_4": {
-      "flake": false,
-      "locked": {
-        "lastModified": 1767039857,
-        "narHash": "sha256-vNpUSpF5Nuw8xvDLj2KCwwksIbjua2LZCqhV1LNRDns=",
-        "owner": "edolstra",
-        "repo": "flake-compat",
-        "rev": "5edf11c44bc78a0d334f6334cdaf7d60d732daab",
-        "type": "github"
-      },
-      "original": {
-        "owner": "edolstra",
-        "repo": "flake-compat",
-        "type": "github"
-      }
-    },
-    "flake-compat_5": {
       "flake": false,
       "locked": {
         "lastModified": 1696426674,
@@ -606,30 +590,6 @@
     "gitignore_2": {
       "inputs": {
         "nixpkgs": [
-          "imalison-taffybar",
-          "taffybar",
-          "weeder-nix",
-          "pre-commit-hooks",
-          "nixpkgs"
-        ]
-      },
-      "locked": {
-        "lastModified": 1709087332,
-        "narHash": "sha256-HG2cCnktfHsKV0s4XW83gU3F57gaTljL9KNSuG6bnQs=",
-        "owner": "hercules-ci",
-        "repo": "gitignore.nix",
-        "rev": "637db329424fd7e46cf4185293b9cc8c88c95394",
-        "type": "github"
-      },
-      "original": {
-        "owner": "hercules-ci",
-        "repo": "gitignore.nix",
-        "type": "github"
-      }
-    },
-    "gitignore_3": {
-      "inputs": {
-        "nixpkgs": [
           "taffybar",
           "weeder-nix",
           "pre-commit-hooks",
@@ -698,11 +658,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1774738535,
-        "narHash": "sha256-2jfBEZUC67IlnxO5KItFCAd7Oc+1TvyV/jQlR+2ykGQ=",
+        "lastModified": 1774875815,
+        "narHash": "sha256-PzqwM4njoB3aznqwPZUawD4uOcJeu7N6GBTJKg81EQ4=",
         "owner": "nix-community",
         "repo": "home-manager",
-        "rev": "769e07ef8f4cf7b1ec3b96ef015abec9bc6b1e2a",
+        "rev": "9340f51314713c83360bf72d75c8b404778ab5b1",
         "type": "github"
       },
       "original": {
@@ -1116,7 +1076,9 @@
         "nixpkgs": [
           "nixpkgs"
         ],
-        "taffybar": "taffybar",
+        "taffybar": [
+          "taffybar"
+        ],
         "xmonad": [
           "xmonad"
         ]
@@ -1197,7 +1159,7 @@
     },
     "nix": {
       "inputs": {
-        "flake-compat": "flake-compat_3",
+        "flake-compat": "flake-compat_2",
         "flake-parts": "flake-parts",
         "git-hooks-nix": "git-hooks-nix",
         "nixpkgs": "nixpkgs_3",
@@ -1205,11 +1167,11 @@
         "nixpkgs-regression": "nixpkgs-regression"
       },
       "locked": {
-        "lastModified": 1774828792,
-        "narHash": "sha256-qX0QiKeP4Mpx3LO0fQIiVe2G3E+qORVvaXC/d5OZM/4=",
+        "lastModified": 1774894396,
+        "narHash": "sha256-Uj4Fa12Ssdh1RTOybjainfPv1d0HTQo4YDxeRuW9/+E=",
         "owner": "NixOS",
         "repo": "nix",
-        "rev": "d01c5681afc78bc33d68b80b94b43821f31890ce",
+        "rev": "b5744d64c28fc4aa1bbfb973627eda53a3f0982a",
         "type": "github"
       },
       "original": {
@@ -1257,7 +1219,7 @@
     },
     "nixos-wsl": {
       "inputs": {
-        "flake-compat": "flake-compat_4",
+        "flake-compat": "flake-compat_3",
         "nixpkgs": [
           "nixpkgs"
         ]
@@ -1602,31 +1564,8 @@
     },
     "pre-commit-hooks_2": {
       "inputs": {
-        "flake-compat": "flake-compat_2",
+        "flake-compat": "flake-compat_4",
         "gitignore": "gitignore_2",
-        "nixpkgs": [
-          "imalison-taffybar",
-          "nixpkgs"
-        ]
-      },
-      "locked": {
-        "lastModified": 1747372754,
-        "narHash": "sha256-2Y53NGIX2vxfie1rOW0Qb86vjRZ7ngizoo+bnXU9D9k=",
-        "owner": "cachix",
-        "repo": "pre-commit-hooks.nix",
-        "rev": "80479b6ec16fefd9c1db3ea13aeb038c60530f46",
-        "type": "github"
-      },
-      "original": {
-        "owner": "cachix",
-        "repo": "pre-commit-hooks.nix",
-        "type": "github"
-      }
-    },
-    "pre-commit-hooks_3": {
-      "inputs": {
-        "flake-compat": "flake-compat_5",
-        "gitignore": "gitignore_3",
         "nixpkgs": [
           "nixpkgs"
         ]
@@ -1720,10 +1659,10 @@
         "org-agenda-api": "org-agenda-api",
         "railbird-secrets": "railbird-secrets",
         "systems": "systems_2",
-        "taffybar": "taffybar_2",
+        "taffybar": "taffybar",
         "vscode-server": "vscode-server",
         "xmonad": "xmonad",
-        "xmonad-contrib": "xmonad-contrib_2"
+        "xmonad-contrib": "xmonad-contrib"
       }
     },
     "rust-analyzer-src": {
@@ -1813,43 +1752,12 @@
     "taffybar": {
       "inputs": {
         "flake-utils": [
-          "imalison-taffybar",
           "flake-utils"
         ],
         "nixpkgs": [
-          "imalison-taffybar",
           "nixpkgs"
         ],
         "weeder-nix": "weeder-nix",
-        "xmonad": [
-          "imalison-taffybar",
-          "xmonad"
-        ],
-        "xmonad-contrib": "xmonad-contrib"
-      },
-      "locked": {
-        "lastModified": 1774329399,
-        "narHash": "sha256-oh+CrJ00DZUNo85jGmMEX1iSnUVOFlu1JgmehiiaaU8=",
-        "ref": "refs/heads/master",
-        "rev": "829857162b8913edd1c457b357c50c92077560de",
-        "revCount": 2269,
-        "type": "git",
-        "url": "file:///home/imalison/dotfiles/dotfiles/config/taffybar/taffybar"
-      },
-      "original": {
-        "type": "git",
-        "url": "file:///home/imalison/dotfiles/dotfiles/config/taffybar/taffybar"
-      }
-    },
-    "taffybar_2": {
-      "inputs": {
-        "flake-utils": [
-          "flake-utils"
-        ],
-        "nixpkgs": [
-          "nixpkgs"
-        ],
-        "weeder-nix": "weeder-nix_2",
         "xmonad": [
           "xmonad"
         ],
@@ -1858,11 +1766,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1774853805,
-        "narHash": "sha256-wIoSyhkMG9aZNj4XvQF8WMA0C97KZYPAapN66WGWKcQ=",
+        "lastModified": 1774896162,
+        "narHash": "sha256-6KtfizkXLZh+4yPxLfica5iWV4B3hs6TMrgmGcwSZi4=",
         "owner": "taffybar",
         "repo": "taffybar",
-        "rev": "f862ad9b5424f76b297bb67926c0eedadde1c793",
+        "rev": "49d69809672cc3387d6151f8ad8fe76c7bfea687",
         "type": "github"
       },
       "original": {
@@ -1897,33 +1805,10 @@
     "weeder-nix": {
       "inputs": {
         "nixpkgs": [
-          "imalison-taffybar",
           "taffybar",
           "nixpkgs"
         ],
         "pre-commit-hooks": "pre-commit-hooks_2"
-      },
-      "locked": {
-        "lastModified": 1764753633,
-        "narHash": "sha256-6552zbHzdNnkREnOluE6xePIib5cc/8Nc5OnPyHORUo=",
-        "owner": "NorfairKing",
-        "repo": "weeder-nix",
-        "rev": "2203c43ab9f1c4e52c2cff8e3d01bbb53159b922",
-        "type": "github"
-      },
-      "original": {
-        "owner": "NorfairKing",
-        "repo": "weeder-nix",
-        "type": "github"
-      }
-    },
-    "weeder-nix_2": {
-      "inputs": {
-        "nixpkgs": [
-          "taffybar",
-          "nixpkgs"
-        ],
-        "pre-commit-hooks": "pre-commit-hooks_3"
       },
       "locked": {
         "lastModified": 1764753633,
@@ -2010,23 +1895,6 @@
       }
     },
     "xmonad-contrib": {
-      "flake": false,
-      "locked": {
-        "lastModified": 1769258911,
-        "narHash": "sha256-YGEKXs4UmS5QOIELJTdCiMzTktuue+Bd3yFoIKSHuBU=",
-        "owner": "xmonad",
-        "repo": "xmonad-contrib",
-        "rev": "803bc3d12bdcc512ec06856c4f119d37de1ba338",
-        "type": "github"
-      },
-      "original": {
-        "owner": "xmonad",
-        "ref": "master",
-        "repo": "xmonad-contrib",
-        "type": "github"
-      }
-    },
-    "xmonad-contrib_2": {
       "inputs": {
         "flake-utils": [
           "flake-utils"

@@ -151,6 +151,7 @@
       inputs = {
         nixpkgs.follows = "nixpkgs";
         flake-utils.follows = "flake-utils";
+        taffybar.follows = "taffybar";
         xmonad.follows = "xmonad";
       };
     };
@@ -233,7 +234,7 @@
       # t3code base PR
       {
         pr = 497465;
-        hash = "sha256-DeOE9RHgzUv2mG5bRy4RcMnaYQmXn3WKrJAnyAMXerA=";
+        hash = "sha256-UKT+XVY2ZDJKTDE/IaMAsnLEfJTL5szO+Lr+iQW8yZw=";
       }
       {
         pr = 492656;
