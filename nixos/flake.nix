@@ -230,6 +230,11 @@
         pr = 490230;
         hash = "sha256-vQM2mmIgpxFo3ctjk2tXkfhocXnTuHSEy8iYkTexScc=";
       }
+      # t3code base PR
+      {
+        pr = 497465;
+        hash = "sha256-r7ufK4c/cC686keDhZjH866qQqJgGzJXM2F+YpMqAho=";
+      }
       {
         pr = 492656;
         hash = "sha256-0TGZ12iIfSYs6cs5kgWDAyiThJdlLMhqRGUscVQv5hU=";
@@ -358,6 +363,7 @@
         prePatch = ''
           mkdir -p pkgs/by-name/an/antigravity
           mkdir -p pkgs/by-name/pl/playwright-cli
+          mkdir -p pkgs/by-name/t3/t3code
         '';
       };
       # Get eval-config from patched source

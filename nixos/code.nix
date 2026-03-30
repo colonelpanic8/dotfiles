@@ -13,6 +13,7 @@ makeEnable config "myModules.code" true {
     gemini-cli
     happy-coder
     opencode
+    t3code
 
     # MCP
     github-mcp-server
