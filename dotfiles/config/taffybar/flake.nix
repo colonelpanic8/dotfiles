@@ -46,17 +46,20 @@
           config.allowBroken = true;
         };
 
-        # Exclude local worktree/build artifacts from the source we feed to
-        # callCabal2nix. cleanSource alone still includes .worktrees/.
-        # Use the live local checkout directly so Nix picks up dirty nested-repo
-        # changes while iterating on the vendored taffybar stack.
-        localTaffybarCheckout = /home/imalison/dotfiles/dotfiles/config/taffybar/taffybar;
+        # Default to the flake input so normal NixOS rebuilds stay pinned and
+        # reproducible. switch-local-taffybar opts into the live checkout via
+        # IMALISON_TAFFYBAR_LIVE_CHECKOUT when iterating on the vendored stack.
+        liveTaffybarCheckout = builtins.getEnv "IMALISON_TAFFYBAR_LIVE_CHECKOUT";
+        taffybarSourceRoot =
+          if liveTaffybarCheckout != ""
+          then /. + liveTaffybarCheckout
+          else taffybar.outPath;
 
         cleanedTaffybarSource = pkgs.lib.cleanSourceWith {
-          src = localTaffybarCheckout;
+          src = taffybarSourceRoot;
           filter = path: type:
             let
-              relPath = pkgs.lib.removePrefix "${toString localTaffybarCheckout}/" (toString path);
+              relPath = pkgs.lib.removePrefix "${toString taffybarSourceRoot}/" (toString path);
               excludedTopLevel = [ ".worktrees" ".direnv" "dist" "dist-newstyle" "result" ];
               isExcluded = pkgs.lib.lists.any
                 (prefix: relPath == prefix || pkgs.lib.hasPrefix "${prefix}/" relPath)
