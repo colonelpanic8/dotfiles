@@ -16,38 +16,6 @@
       inputs.flake-utils.follows = "flake-utils";
       inputs.git-ignore-nix.follows = "git-ignore-nix";
     };
-    dbus-menu = {
-      url = "github:taffybar/dbus-menu";
-      inputs.nixpkgs.follows = "nixpkgs";
-      inputs.flake-utils.follows = "flake-utils";
-      inputs.git-ignore-nix.follows = "git-ignore-nix";
-    };
-    status-notifier-item = {
-      url = "github:taffybar/status-notifier-item";
-      inputs.nixpkgs.follows = "nixpkgs";
-      inputs.flake-utils.follows = "flake-utils";
-      inputs.git-ignore-nix.follows = "git-ignore-nix";
-    };
-    gtk-strut = {
-      url = "github:taffybar/gtk-strut";
-      inputs.nixpkgs.follows = "nixpkgs";
-      inputs.flake-utils.follows = "flake-utils";
-      inputs.git-ignore-nix.follows = "git-ignore-nix";
-    };
-    gtk-sni-tray = {
-      url = "github:taffybar/gtk-sni-tray";
-      inputs.nixpkgs.follows = "nixpkgs";
-      inputs.flake-utils.follows = "flake-utils";
-      inputs.git-ignore-nix.follows = "git-ignore-nix";
-      inputs.gtk-strut.follows = "gtk-strut";
-      inputs.status-notifier-item.follows = "status-notifier-item";
-      inputs.dbus-menu.follows = "dbus-menu";
-    };
-    # nixpkgs' dbus-hslogger is currently too old for taffybar.
-    dbus-hslogger = {
-      url = "github:IvanMalison/dbus-hslogger";
-      flake = false;
-    };
     taffybar = {
       # Use the local git checkout, not a raw path snapshot, so gitignored
       # build artifacts like dist-newstyle/.worktrees/.direnv don't get copied
@@ -65,11 +33,6 @@
     taffybar,
     nixpkgs,
     xmonad,
-    dbus-menu,
-    status-notifier-item,
-    gtk-strut,
-    gtk-sni-tray,
-    dbus-hslogger,
     ...
   }:
     flake-utils.lib.eachDefaultSystem (system:
