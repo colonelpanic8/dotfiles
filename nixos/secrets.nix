@@ -20,12 +20,41 @@
       Service = {
         Type = "oneshot";
         RestartSec = 5;
-        Restart = "onfailure";
+        Restart = "on-failure";
         ExecStart =
-          let replace = builtins.replaceStrings [ "$XDG_RUNTIME_DIR" ] [ "\${XDG_RUNTIME_DIR}" ];
-              path = replace config.age.secrets.gpg-keys.path;
-              passphrasePath = replace config.age.secrets.gpg-passphrase.path;
-          in "${pkgs.gnupg}/bin/gpg --pinentry-mode loopback --passphrase-file ${passphrasePath} --import ${path}";
+          let
+            replace = builtins.replaceStrings [ "$XDG_RUNTIME_DIR" ] [ "\${XDG_RUNTIME_DIR}" ];
+            path = replace config.age.secrets.gpg-keys.path;
+            passphrasePath = replace config.age.secrets.gpg-passphrase.path;
+            importScript = pkgs.writeShellScript "import-gpg-key" ''
+              set -eu
+
+              normalized_key_file="$(mktemp)"
+              trap 'rm -f "$normalized_key_file"' EXIT
+
+              # Some historical exports omitted the required blank line after the
+              # armor header. GnuPG imports the keys but exits non-zero, which
+              # leaves the unit in a failed state.
+              awk '
+                pending_blank {
+                  if ($0 != "") {
+                    print ""
+                  }
+                  pending_blank = 0
+                }
+                { print }
+                /^-----BEGIN PGP PRIVATE KEY BLOCK-----$/ {
+                  pending_blank = 1
+                }
+              ' ${path} > "$normalized_key_file"
+
+              exec ${pkgs.gnupg}/bin/gpg \
+                --batch \
+                --pinentry-mode loopback \
+                --passphrase-file ${passphrasePath} \
+                --import "$normalized_key_file"
+            '';
+          in "${importScript}";
       };
     };
   });
