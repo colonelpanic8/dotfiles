@@ -41,7 +41,35 @@ makeEnable config "myModules.desktop" true {
   services.gnome.gnome-keyring.enable = true;
 
   home-manager.sharedModules = [
-    { imports = [ ./dunst.nix ]; }
+    {
+      imports = [ ./dunst.nix ];
+
+      xdg.desktopEntries."com.mitchellh.ghostty" = {
+        name = "Ghostty";
+        comment = "A terminal emulator";
+        icon = "com.mitchellh.ghostty";
+        terminal = false;
+        type = "Application";
+        categories = [ "System" "TerminalEmulator" ];
+        startupNotify = true;
+        exec = "${pkgs.ghostty}/bin/ghostty --gtk-single-instance=false";
+        settings = {
+          StartupWMClass = "com.mitchellh.ghostty";
+          X-GNOME-UsesNotifications = "true";
+          X-TerminalArgExec = "-e";
+          X-TerminalArgTitle = "--title=";
+          X-TerminalArgAppId = "--class=";
+          X-TerminalArgDir = "--working-directory=";
+          X-TerminalArgHold = "--wait-after-command";
+        };
+        actions = {
+          new-window = {
+            name = "New Window";
+            exec = "${pkgs.ghostty}/bin/ghostty --gtk-single-instance=false";
+          };
+        };
+      };
+    }
   ];
 
   environment.systemPackages = with pkgs; [
