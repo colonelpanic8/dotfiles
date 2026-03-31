@@ -1,5 +1,5 @@
 model = "gpt-5.4"
-model_reasoning_effort = "xhigh"
+model_reasoning_effort = "high"
 personality = "pragmatic"
 [projects."/home/imalison/Projects/nixpkgs"]
 trust_level = "trusted"
