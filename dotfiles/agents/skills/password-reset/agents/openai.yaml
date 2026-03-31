@@ -1,0 +1,4 @@
+interface:
+  display_name: "Password Reset"
+  short_description: "Reset passwords and update pass safely"
+  default_prompt: "Use $password-reset to reset this account password, complete the browser flow, and update pass safely."
