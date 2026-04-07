@@ -136,7 +136,7 @@ makeEnable config "myModules.desktop" true {
 
     # Visualization
     graphviz
-    nodePackages.mermaid-cli
+    mermaid-cli
   ] ++ (if pkgs.stdenv.hostPlatform.system == "x86_64-linux" then with pkgs; [
     google-chrome
     pommed_light

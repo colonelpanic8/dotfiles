@@ -38,14 +38,13 @@ makeEnable config "myModules.code" true {
     scala
 
     # Node
-    nodePackages.npm
     nodejs
     yarn
     prettier
 
     # Typescript
     typescript
-    nodePackages.typescript-language-server
+    typescript-language-server
 
     # golang
     go

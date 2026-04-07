@@ -234,7 +234,7 @@
       # t3code base PR
       {
         pr = 497465;
-        hash = "sha256-vl4DfugSSG7Y6OdKwDrCPUdOlHusNiP9FqRaPcQNua0=";
+        hash = "sha256-pFofbc6noAqAq6vF+uxvdAk8cV5lftAREWPJGXue/cg=";
       }
       {
         pr = 492656;
