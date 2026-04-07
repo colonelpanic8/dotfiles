@@ -148,6 +148,7 @@ Machine-specific heavy hitters seen in practice:
 
 - `~/.cache/uv` can exceed 20G and is reclaimable with `uv cache clean`.
 - `~/.cache/spotify` can exceed 10G; treat as optional app-cache cleanup.
+- `~/.local/share/picom/debug.log` can grow past 15G when verbose picom debugging is enabled or crashes leave a stale log behind; if `picom` is not running, deleting or truncating the log is a high-yield low-risk win.
 - `~/.local/share/Trash` can exceed several GB; empty only with user approval.
 
 ## Step 5: `/nix/store` Deep Dive
