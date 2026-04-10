@@ -14,6 +14,7 @@
 ;; Default hosted git clones to SSH (e.g., git@github.com:owner/repo.git).
 (setq elpaca-order-defaults (plist-put elpaca-order-defaults :protocol 'ssh))
 (elpaca elpaca-use-package (elpaca-use-package-mode))
+(elpaca-wait)
 (setq use-package-enable-imenu-support t)
 (setq use-package-always-ensure t)
 
@@ -76,7 +77,7 @@
 ;; Without this, org can behave very strangely
 (use-package org
   :ensure
-  (org :type git :host github :repo "colonelpanic8/org-mode" :local-repo "org"
+  (org :type git :host github :repo ("colonelpanic8/org-mode" . "org")
        :branch "my-main-2025"
        :depth full
        :files (:defaults "lisp/*.el" ("etc/styles/" "etc/styles/*"))
@@ -93,6 +94,22 @@
 (use-package transient
   :ensure (:host github :repo "magit/transient" :wait t)
   :demand t)
+(elpaca-wait)
+
+;; Magit's split packages are compiled separately; make them available before
+;; the larger config queue reaches magit itself.
+(use-package git-commit
+  :ensure (:host github :repo "magit/magit"
+                 :files ("lisp/git-commit.el" "lisp/git-commit-pkg.el")
+                 :wait t)
+  :defer t)
+
+(use-package magit-section
+  :ensure (:host github :repo "magit/magit"
+                 :files ("lisp/magit-section.el" "lisp/magit-section-pkg.el")
+                 :wait t)
+  :defer t)
+
 (elpaca-wait)
 
 (when (or (equal (s-trim (shell-command-to-string "whoami")) "kat")

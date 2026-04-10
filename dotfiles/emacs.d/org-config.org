@@ -1095,10 +1095,27 @@ alphanumeric characters only."
           (goto-char (marker-position marker))
           ,(macroexpand '(imalison:assigned-to-me))))))
    (org-wild-notifier-predicate-blacklist
-    '(org-wild-notifier-done-keywords-predicate))
+   '(org-wild-notifier-done-keywords-predicate))
    (org-wild-notifier-show-any-overdue-with-day-wide-alerts t)
    (org-wild-notifier-day-wide-alert-times '("10pm")))
   :config
+  (defun org-wild-notifier--retrieve-events ()
+    "Get events from agenda view without reinitializing package.el."
+    `(lambda ()
+       (setf org-agenda-use-time-grid nil)
+       (setf org-agenda-compact-blocks t)
+       ,(async-inject-variables (org-wild-notifier-environment-regex))
+       (require 'org)
+       (require 'org-wild-notifier)
+       (org-agenda-list 2 (org-read-date nil nil "today"))
+       (->> (org-split-string (buffer-string) "\n")
+            (--map (plist-get
+                    (org-fix-agenda-info (text-properties-at 0 it))
+                    'org-marker))
+            (-non-nil)
+            (org-wild-notifier--apply-whitelist)
+            (org-wild-notifier--apply-blacklist)
+            (-map 'org-wild-notifier--gather-info))))
   (org-wild-notifier-mode +1)
   (defun org-wild-notify-check-at-time ()
     (interactive)
