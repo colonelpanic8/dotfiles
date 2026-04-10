@@ -93,7 +93,7 @@
     {
       home.stateVersion = "21.05";
       gtk.font.size = lib.mkForce 11;
-      dconf.settings."org/gnome/desktop/interface".text-scaling-factor = 1.1;
+      dconf.settings."org/gnome/desktop/interface".text-scaling-factor = 1.05;
     }
   ];
 
