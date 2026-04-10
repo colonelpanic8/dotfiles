@@ -27,7 +27,21 @@ makeEnable config "myModules.hyprland" true {
     {
       services.kanshi = {
         enable = true;
-        systemdTarget = "hyprland-session.target";
+        systemdTarget = "graphical-session.target";
+        settings = [
+          {
+            profile.name = "ryzen-shine-primary";
+            profile.outputs = [
+              {
+                criteria = "DP-1";
+                status = "enable";
+                mode = "3440x1440@240Hz";
+                position = "0,0";
+                scale = 1.0;
+              }
+            ];
+          }
+        ];
       };
 
       programs.hyprscratch = {
