@@ -1,0 +1,60 @@
+/* Host-specific density tweaks for ryzen-shine. Keep the same visual style,
+ * but shrink the bar back down after the upstream sizing change.
+ */
+
+.taffy-box {
+	font-size: 10pt;
+}
+
+.outer-pad {
+	margin: 2px 3px;
+}
+
+.inner-pad {
+	padding: 1px 8px;
+}
+
+.icon-label > .icon {
+	padding-right: 8px;
+}
+
+.ram-swap .icon-label > .icon {
+	min-width: 18px;
+	padding-right: 6px;
+}
+
+.workspaces .outer-pad {
+	margin: 2px 2px;
+}
+
+.workspaces .inner-pad {
+	padding: 1px 2px 1px 8px;
+}
+
+.workspace-label {
+	font-size: 9pt;
+}
+
+.workspaces .overlay-box .workspace-label {
+	padding: 1px 4px 3px 10px;
+}
+
+.window-icon-container {
+	padding: 0px 3px;
+}
+
+.auto-size-image, .sni-tray {
+	padding: 0px 3px;
+}
+
+.sni-tray-expand-toggle,
+.sni-tray-edit-toggle,
+.sni-tray-settings-toggle {
+	padding: 0px 3px;
+	margin-left: 2px;
+}
+
+/* Debug probe: verify host CSS can target the visible CPU pill directly. */
+.outer-pad.cpu {
+	background-color: rgba(255, 0, 0, 1.0);
+}

@@ -251,7 +251,7 @@ defaultCssFiles = ["palette.css", "taffybar.css"]
 cssFilesByHostname :: [(String, [FilePath])]
 cssFilesByHostname =
   [ ("imalison-home", ["palette.css", "taffybar.css"]),
-    ("ryzen-shine", ["palette.css", "taffybar.css"]),
+    ("ryzen-shine", ["palette.css", "taffybar.css", "ryzen-shine.css"]),
     ("stevie-nixos", ["palette.css", "taffybar.css"])
   ]
 
@@ -608,8 +608,11 @@ mkSimpleTaffyConfig hostName backend cssFiles =
       barLevels = Nothing,
       barPosition = Top,
       widgetSpacing = 0,
-      barPadding = 4,
-      barHeight = ScreenRatio $ 1 / 33,
+      barPadding = if hostName == "ryzen-shine" then 2 else 4,
+      barHeight =
+        if hostName == "ryzen-shine"
+          then ScreenRatio $ 1 / 40
+          else ScreenRatio $ 1 / 33,
       cssPaths = cssFiles
     }
 
