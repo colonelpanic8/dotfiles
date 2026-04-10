@@ -32,6 +32,13 @@ in {
     };
   };
   config = mkIf cfg.enable {
+    users.users.railbird = {
+      isSystemUser = true;
+      group = "users";
+      home = "/var/lib/railbird";
+      createHome = true;
+    };
+
     age.secrets."1896Folsom-k3s-token.age".file = ./secrets/1896Folsom-k3s-token.age;
     age.secrets."k3s-registry.yaml.age".file = ./secrets/k3s-registry.yaml.age;
     age.secrets.api-service-key = {
