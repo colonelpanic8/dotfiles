@@ -58,6 +58,7 @@ makeEnable config "myModules.taffybar" false {
         enable = true;
         package = inputs.imalison-taffybar.defaultPackage.${pkgs.stdenv.hostPlatform.system};
       };
+      xdg.configFile."systemd/user/taffybar.service".force = true;
       systemd.user.services.taffybar.Service = {
         ExecCondition = "${skipTaffybarInKde}";
         # Temporary startup debugging: keep a plain-text log outside journald so

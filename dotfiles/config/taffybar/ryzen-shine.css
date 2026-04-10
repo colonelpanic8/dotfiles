@@ -53,8 +53,3 @@
 	padding: 0px 3px;
 	margin-left: 2px;
 }
-
-/* Debug probe: verify host CSS can target the visible CPU pill directly. */
-.outer-pad.cpu {
-	background-color: rgba(255, 0, 0, 1.0);
-}

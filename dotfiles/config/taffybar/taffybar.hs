@@ -246,13 +246,13 @@ workspaceWindowIconGetter =
 -- ** Host Overrides
 
 defaultCssFiles :: [FilePath]
-defaultCssFiles = ["palette.css", "taffybar.css"]
+defaultCssFiles = ["theme.css", "end-widget-colors.css", "taffybar.css"]
 
 cssFilesByHostname :: [(String, [FilePath])]
 cssFilesByHostname =
-  [ ("imalison-home", ["palette.css", "taffybar.css"]),
-    ("ryzen-shine", ["palette.css", "taffybar.css", "ryzen-shine.css"]),
-    ("stevie-nixos", ["palette.css", "taffybar.css"])
+  [ ("imalison-home", ["theme.css", "end-widget-colors.css", "taffybar.css"]),
+    ("ryzen-shine", ["theme.css", "end-widget-colors.css", "taffybar.css", "ryzen-shine.css"]),
+    ("stevie-nixos", ["theme.css", "end-widget-colors.css", "taffybar.css"])
   ]
 
 laptopHosts :: [String]
