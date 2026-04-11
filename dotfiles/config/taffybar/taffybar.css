@@ -1,8 +1,12 @@
+@import url("theme.css");
+@import url("end-widget-colors.css");
+@import url("end-widget-solid.css");
+
 /* Widget/layout styling for taffybar.
  *
- * Colors live in `theme.css`, and the end-widget palette lives in
- * `end-widget-colors.css`. Both are loaded explicitly from `cssPaths` so they
- * hot-reload reliably and do not depend on GTK's `@import` handling.
+ * This file is the single CSS entrypoint for the shared bar theme. Supporting
+ * stylesheets are pulled in via `@import` so GTK sees one user stylesheet per
+ * host rather than several separately loaded files with fragile precedence.
  */
 
 /* Base typography + foreground color for the bar itself.
@@ -15,7 +19,7 @@
 	/* Most text should come from Iosevka Aile; icon glyphs (Font Awesome / Nerd
 	   Font PUA) should come from a Nerd Font family to avoid tiny fallback glyphs. */
 	font-family: "Iosevka Aile", "Iosevka Nerd Font", "Iosevka NF", "Noto Sans", sans-serif;
-	font-size: 11pt;
+	font-size: 10.5pt;
 	font-weight: 600;
 	color: @font-color;
 	text-shadow: none;
@@ -48,13 +52,14 @@
 	padding: 0px 4px;
 }
 
-/* The main bar container. border-radius matches the widget squircles (6px)
-   so the bar itself has softly rounded corners. */
+/* The main bar container. Keep the bar and widget pills aligned so the whole
+   surface reads as one rounded system rather than a mix of sharp and round
+   shapes. */
 .taffy-box {
 	border-width: 0px;
 	padding: 0px;
 	margin: 0px;
-	border-radius: 6px;
+	border-radius: 10px;
 	box-shadow: none;
 	background-color: @bar-background;
 	background-image: none;
@@ -62,12 +67,12 @@
 
 /* Each widget is wrapped in outer-pad > inner-pad > contents by
    buildContentsBox (Haskell).  The outer-pad draws the squircle
-   background pill.  border-radius kept low (6px) for a more squared
-   "squircle" shape rather than a fully rounded pill. */
+   background pill. Use a clearly rounded radius so the pill silhouette stays
+   visible even on the denser desktop monitor. */
 .outer-pad {
 	background-color: @pill-background;
 	border: 0px;
-	border-radius: 6px;
+	border-radius: 10px;
 	margin: 4px 4px;
 	/* No white outline; define shape with subtle inner highlight + dark stroke. */
 	box-shadow:
@@ -78,7 +83,7 @@
 
 .inner-pad {
 	padding: 2px 10px;
-	border-radius: 4px;
+	border-radius: 8px;
 }
 
 .contents {
@@ -142,7 +147,7 @@
 
 .workspaces .contents {
 	box-shadow: none;
-	border-radius: 5px;
+	border-radius: 8px;
 	border-width: 0px;
 	border-style: solid;
 	border-color: @transparent;
@@ -153,7 +158,7 @@
 	/* Overlay label (workspace number) that sits inside the icon "squircle". */
 	padding: 1px 3px;
 	margin: 0px;
-	font-size: 10pt;
+	font-size: 9.5pt;
 	opacity: 0.92;
 	font-weight: 700;
 	transition: color .2s;
@@ -231,7 +236,7 @@
 .workspaces .window-icon-container.active {
 	background-color: rgba(255, 255, 255, 0.10);
 	border: 1px solid rgba(255, 255, 255, 0.5);
-	border-radius: 4px;
+	border-radius: 7px;
 	padding: 2px 4px;
 }
 
@@ -247,7 +252,7 @@
 .window-icon-container {
 	transition: opacity .2s, box-shadow .2s;
 	opacity: 1;
-	border-radius: 5px;
+	border-radius: 8px;
 	transition: background-color .2s;
 	background-color: rgba(255, 255, 255, 0.04);
 	padding: 1px 4px;
@@ -266,7 +271,7 @@
 .sni-tray-settings-toggle {
 	background-color: rgba(255, 255, 255, 0.08);
 	border: 1px solid rgba(255, 255, 255, 0.18);
-	border-radius: 6px;
+	border-radius: 8px;
 	padding: 0px 4px;
 	margin-left: 3px;
 }
@@ -343,7 +348,7 @@
 
 .wakeup-debug-hit {
 	background-color: rgba(255, 255, 255, 0.22);
-	border-radius: 5px;
+	border-radius: 8px;
 }
 
 

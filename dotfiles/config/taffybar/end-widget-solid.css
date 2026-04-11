@@ -1,0 +1,50 @@
+/* Final pass overrides for end-widget pill chrome.
+ *
+ * This is loaded after the main bar/theme CSS so the end-widget palette stays
+ * vivid even if earlier rules or theme rendering make the pills read too
+ * transparent on some hosts.
+ */
+
+.outer-pad.end-widget.end-slot-1 {
+	background-color: rgb(50, 60, 160);
+	background-image: none;
+	border-color: rgb(90, 100, 210);
+}
+
+.outer-pad.end-widget.end-slot-2 {
+	background-color: rgb(110, 45, 160);
+	background-image: none;
+	border-color: rgb(155, 85, 210);
+}
+
+.outer-pad.end-widget.end-slot-3 {
+	background-color: rgb(25, 130, 75);
+	background-image: none;
+	border-color: rgb(55, 190, 115);
+}
+
+.outer-pad.end-widget.end-slot-4 {
+	background-color: rgb(20, 120, 140);
+	background-image: none;
+	border-color: rgb(50, 175, 200);
+}
+
+.outer-pad.end-widget.end-slot-5 {
+	background-color: rgb(160, 40, 70);
+	background-image: none;
+	border-color: rgb(210, 80, 115);
+}
+
+.outer-pad.sni-tray {
+	background-color: rgb(65, 70, 100);
+	background-image: none;
+	border-color: rgb(110, 115, 160);
+}
+
+.outer-pad.end-widget,
+.outer-pad.sni-tray {
+	box-shadow:
+		inset 0 1px 0 rgba(255, 255, 255, 0.10),
+		inset 0 0 0 1px rgba(255, 255, 255, 0.10),
+		0 10px 24px rgba(0, 0, 0, 0.30);
+}

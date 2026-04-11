@@ -1,82 +1,83 @@
 /* End-widget color rotation.
  *
- * Defines a 5-color palette and cycles through it using :nth-child().
- * End widgets are children of their own container box in taffybar's layout,
- * so nth-child counts only among siblings in that box.
- *
- * NOTE: These rules also match workspace .outer-pad elements.
- * taffybar.css resets workspace pills via `.workspaces .outer-pad` which
- * has equal specificity but comes later in the cascade, so it wins.
+ * End widgets get semantic palette classes from Haskell (`.end-widget` plus
+ * `.end-slot-N`) when they are packed into the bar. That keeps the CSS simple
+ * and avoids relying on GTK's `:nth-child(...)` matching behavior.
  *
  * To change the palette, edit the @define-color values below.
- * To add more colors to the rotation, add end-color-6-* etc. and a
- * corresponding :nth-child(Nn+6) rule block (updating N in all selectors).
+ * To add more colors to the rotation, add end-color-6-* etc. and a matching
+ * `.end-slot-6` rule.
  */
 
 /* --- Rotation palette (5 colors) --- */
 
 /* 1 — indigo */
-@define-color end-color-1-bg      rgba(50, 60, 160, 0.92);
+@define-color end-color-1-bg      rgb(50, 60, 160);
 @define-color end-color-1-fg      #d5d8f8;
-@define-color end-color-1-border  rgba(90, 100, 210, 0.60);
+@define-color end-color-1-border  rgb(90, 100, 210);
 
 /* 2 — purple */
-@define-color end-color-2-bg      rgba(110, 45, 160, 0.92);
+@define-color end-color-2-bg      rgb(110, 45, 160);
 @define-color end-color-2-fg      #e8d5f8;
-@define-color end-color-2-border  rgba(155, 85, 210, 0.60);
+@define-color end-color-2-border  rgb(155, 85, 210);
 
 /* 3 — emerald */
-@define-color end-color-3-bg      rgba(25, 130, 75, 0.92);
+@define-color end-color-3-bg      rgb(25, 130, 75);
 @define-color end-color-3-fg      #c8f5e0;
-@define-color end-color-3-border  rgba(55, 190, 115, 0.60);
+@define-color end-color-3-border  rgb(55, 190, 115);
 
 /* 4 — teal */
-@define-color end-color-4-bg      rgba(20, 120, 140, 0.92);
+@define-color end-color-4-bg      rgb(20, 120, 140);
 @define-color end-color-4-fg      #d0f2f8;
-@define-color end-color-4-border  rgba(50, 175, 200, 0.60);
+@define-color end-color-4-border  rgb(50, 175, 200);
 
 /* 5 — rose */
-@define-color end-color-5-bg      rgba(160, 40, 70, 0.92);
+@define-color end-color-5-bg      rgb(160, 40, 70);
 @define-color end-color-5-fg      #f8d5e0;
-@define-color end-color-5-border  rgba(210, 80, 115, 0.60);
+@define-color end-color-5-border  rgb(210, 80, 115);
 
 /* --- Color rotation rules --- */
 
-/* Slot 1: indigo (child 1, 6, 11, ...) */
-.outer-pad:nth-child(5n+1) {
+/* Slot 1: indigo */
+.outer-pad.end-widget.end-slot-1 {
 	background-color: @end-color-1-bg;
+	background-image: none;
 	border-color: @end-color-1-border;
 	color: @end-color-1-fg;
 	box-shadow: 0 1px 0 rgba(255, 255, 255, 0.06), 0 10px 24px rgba(0, 0, 0, 0.30);
 }
 
-/* Slot 2: purple (child 2, 7, 12, ...) */
-.outer-pad:nth-child(5n+2) {
+/* Slot 2: purple */
+.outer-pad.end-widget.end-slot-2 {
 	background-color: @end-color-2-bg;
+	background-image: none;
 	border-color: @end-color-2-border;
 	color: @end-color-2-fg;
 	box-shadow: 0 1px 0 rgba(255, 255, 255, 0.06), 0 10px 24px rgba(0, 0, 0, 0.30);
 }
 
-/* Slot 3: emerald (child 3, 8, 13, ...) */
-.outer-pad:nth-child(5n+3) {
+/* Slot 3: emerald */
+.outer-pad.end-widget.end-slot-3 {
 	background-color: @end-color-3-bg;
+	background-image: none;
 	border-color: @end-color-3-border;
 	color: @end-color-3-fg;
 	box-shadow: 0 1px 0 rgba(255, 255, 255, 0.06), 0 10px 24px rgba(0, 0, 0, 0.30);
 }
 
-/* Slot 4: teal (child 4, 9, 14, ...) */
-.outer-pad:nth-child(5n+4) {
+/* Slot 4: teal */
+.outer-pad.end-widget.end-slot-4 {
 	background-color: @end-color-4-bg;
+	background-image: none;
 	border-color: @end-color-4-border;
 	color: @end-color-4-fg;
 	box-shadow: 0 1px 0 rgba(255, 255, 255, 0.06), 0 10px 24px rgba(0, 0, 0, 0.30);
 }
 
-/* Slot 5: rose (child 5, 10, 15, ...) */
-.outer-pad:nth-child(5n+5) {
+/* Slot 5: rose */
+.outer-pad.end-widget.end-slot-5 {
 	background-color: @end-color-5-bg;
+	background-image: none;
 	border-color: @end-color-5-border;
 	color: @end-color-5-fg;
 	box-shadow: 0 1px 0 rgba(255, 255, 255, 0.06), 0 10px 24px rgba(0, 0, 0, 0.30);
@@ -85,7 +86,8 @@
 /* --- SNI tray (center widget, not part of the rotation) --- */
 
 .outer-pad.sni-tray {
-	background-color: @widget-tray-bg;
-	border-color: @widget-tray-border;
+	background-color: rgb(65, 70, 100);
+	background-image: none;
+	border-color: rgb(110, 115, 160);
 	box-shadow: 0 1px 0 rgba(255, 255, 255, 0.06), 0 10px 24px rgba(0, 0, 0, 0.30);
 }

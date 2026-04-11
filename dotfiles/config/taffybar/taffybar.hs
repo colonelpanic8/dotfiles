@@ -246,13 +246,13 @@ workspaceWindowIconGetter =
 -- ** Host Overrides
 
 defaultCssFiles :: [FilePath]
-defaultCssFiles = ["theme.css", "end-widget-colors.css", "taffybar.css"]
+defaultCssFiles = ["taffybar.css"]
 
 cssFilesByHostname :: [(String, [FilePath])]
 cssFilesByHostname =
-  [ ("imalison-home", ["theme.css", "end-widget-colors.css", "taffybar.css"]),
-    ("ryzen-shine", ["theme.css", "end-widget-colors.css", "taffybar.css", "ryzen-shine.css"]),
-    ("stevie-nixos", ["theme.css", "end-widget-colors.css", "taffybar.css"])
+  [ ("imalison-home", ["taffybar.css"]),
+    ("ryzen-shine", ["ryzen-shine.css"]),
+    ("stevie-nixos", ["taffybar.css"])
   ]
 
 laptopHosts :: [String]
@@ -509,6 +509,8 @@ cpuWidget =
     cpuMonitorNew
       defaultGraphConfig
         { graphDataColors = [(0, 1, 0.5, 0.8), (1, 0, 0, 0.5)],
+          graphBackgroundColor = (0, 0, 0, 0),
+          graphBorderWidth = 0,
           graphLabel = Just "CPU",
           graphWidth = 50,
           graphDirection = LEFT_TO_RIGHT
