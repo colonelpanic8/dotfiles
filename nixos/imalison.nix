@@ -200,15 +200,15 @@
         "x-scheme-handler/https"
         "x-scheme-handler/google-chrome"
       ];
-      exec = "${pkgs.google-chrome}/bin/google-chrome-stable --remote-debugging-port=46649 --remote-allow-origins=http://127.0.0.1,http://localhost %U";
+      exec = "${pkgs.google-chrome}/bin/google-chrome-stable --user-data-dir=/home/imalison/.cache/google-chrome-devtools --remote-debugging-port=46649 --remote-allow-origins=http://127.0.0.1,http://localhost %U";
       actions = {
         new-window = {
           name = "New Window";
-          exec = "${pkgs.google-chrome}/bin/google-chrome-stable --remote-debugging-port=46649 --remote-allow-origins=http://127.0.0.1,http://localhost";
+          exec = "${pkgs.google-chrome}/bin/google-chrome-stable --user-data-dir=/home/imalison/.cache/google-chrome-devtools --remote-debugging-port=46649 --remote-allow-origins=http://127.0.0.1,http://localhost";
         };
         new-private-window = {
           name = "New Incognito Window";
-          exec = "${pkgs.google-chrome}/bin/google-chrome-stable --remote-debugging-port=46649 --remote-allow-origins=http://127.0.0.1,http://localhost --incognito";
+          exec = "${pkgs.google-chrome}/bin/google-chrome-stable --user-data-dir=/home/imalison/.cache/google-chrome-devtools --remote-debugging-port=46649 --remote-allow-origins=http://127.0.0.1,http://localhost --incognito";
         };
       };
     };

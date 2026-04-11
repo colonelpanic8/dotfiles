@@ -30,9 +30,41 @@ let
   #   hash = "sha256-OqvLiwB5TwZaxDvyN/+/+eueBdWNaYxd81cd5AZK/mA=";
   #   npmDepsHash = "sha256-vy7osk3UAOEgsJx9jdcGe2wICOk5Urzxh1WLAHyHM+U=";
   # };
+  # Chrome 136+ ignores remote debugging switches on the default profile.
+  # Keep the wrapper in place, but do not inject remote debugging flags into
+  # the normal Chrome launcher. The supported path for a real profile is the
+  # Chrome remote debugging permission flow used by chrome-devtools-mcp
+  # --auto-connect.
+  chromeRemoteDebuggingFlags = [];
   placeholder = null; # Dummy binding to keep let block valid
 in
 {
+  google-chrome = prev.symlinkJoin {
+    name = prev.google-chrome.name;
+    paths = [ prev.google-chrome ];
+    nativeBuildInputs = [ final.makeWrapper ];
+    postBuild = ''
+      rm "$out/bin/google-chrome" "$out/bin/google-chrome-stable"
+
+      makeWrapper ${prev.google-chrome}/bin/google-chrome "$out/bin/google-chrome" \
+        ${final.lib.concatMapStringsSep " " (flag: "--add-flags ${final.lib.escapeShellArg flag}") chromeRemoteDebuggingFlags}
+
+      makeWrapper ${prev.google-chrome}/bin/google-chrome-stable "$out/bin/google-chrome-stable" \
+        ${final.lib.concatMapStringsSep " " (flag: "--add-flags ${final.lib.escapeShellArg flag}") chromeRemoteDebuggingFlags}
+
+      for desktopName in google-chrome.desktop com.google.Chrome.desktop; do
+        desktopFile="$out/share/applications/$desktopName"
+        if [ -f "$desktopFile" ]; then
+          rm "$desktopFile"
+          cp "${prev.google-chrome}/share/applications/$desktopName" "$desktopFile"
+          substituteInPlace "$desktopFile" \
+            --replace-fail "${prev.google-chrome}/bin/google-chrome-stable" "$out/bin/google-chrome-stable"
+        fi
+      done
+    '';
+    meta = prev.google-chrome.meta;
+  };
+
   # Fix poetry pbs-installer version constraint issue
   poetry = prev.poetry.overrideAttrs (oldAttrs: {
     dontCheckRuntimeDeps = true;
