@@ -245,6 +245,9 @@ workspaceWindowIconGetter =
 
 -- ** Host Overrides
 
+-- NOTE: Keep `cssPaths` to a single entrypoint file per host. GTK's
+-- `cssProviderLoadFromPath` clears the provider before loading, so handing
+-- Taffybar multiple files here causes only the last file to take effect.
 defaultCssFiles :: [FilePath]
 defaultCssFiles = ["taffybar.css"]
 

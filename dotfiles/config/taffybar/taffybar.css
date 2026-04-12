@@ -4,9 +4,11 @@
 
 /* Widget/layout styling for taffybar.
  *
- * This file is the single CSS entrypoint for the shared bar theme. Supporting
- * stylesheets are pulled in via `@import` so GTK sees one user stylesheet per
- * host rather than several separately loaded files with fragile precedence.
+ * Keep this as the shared CSS entrypoint: GTK's `load_from_path` replaces the
+ * previous stylesheet contents, so `cssPaths` must resolve to a single file per
+ * host. Supporting stylesheets are pulled in via `@import` so GTK sees one
+ * user stylesheet per host rather than several separately loaded files with
+ * fragile precedence.
  */
 
 /* Base typography + foreground color for the bar itself.

@@ -3,6 +3,7 @@
 /* Host-specific density tweaks for ryzen-shine. Keep the same visual style,
  * but shrink the bar back down after the upstream sizing change.
  */
+@import url("taffybar.css");
 
 .taffy-box {
 	font-size: 10pt;
