@@ -39,6 +39,7 @@
     ./ssh.nix
     ./sni.nix
     ./syncthing.nix
+    ./syncthing-private-vault.nix
     ./taffybar.nix
     ./tailscale.nix
     ./tts.nix

@@ -30,8 +30,7 @@ in {
   xdg.mimeApps = lib.mkIf nixos.config.myModules.desktop.enable (
     let
       browser = "google-chrome.desktop";
-      imageViewer = "org.gnome.Loupe.desktop";
-      fallbackImageViewer = "okularApplication_kimgio.desktop";
+      imageViewer = "org.kde.gwenview.desktop";
       pdfViewer = "okularApplication_pdf.desktop";
       comicViewer = "okularApplication_comicbook.desktop";
       djvuViewer = "okularApplication_djvu.desktop";
@@ -51,6 +50,7 @@ in {
           "image/bmp"
           "image/gif"
           "image/heic"
+          "image/heif"
           "image/jpeg"
           "image/jxl"
           "image/png"
@@ -59,9 +59,6 @@ in {
           "image/tiff"
           "image/vnd.microsoft.icon"
           "image/webp"
-        ])
-        // (mimeMap fallbackImageViewer [
-          "image/heif"
         ])
         // (mimeMap pdfViewer [
           "application/pdf"
@@ -168,6 +165,28 @@ in {
       inherit defaultApplications;
     }
   );
+
+  home.activation.refreshChromeDesktopMimeCache = lib.hm.dag.entryAfter ["writeBoundary"] ''
+    applications_dir="$HOME/.local/share/applications"
+
+    if [ -d "$applications_dir" ]; then
+      for desktop_file in \
+        "$applications_dir/google-chrome.desktop" \
+        "$applications_dir/com.google.Chrome.desktop"
+      do
+        if [ -f "$desktop_file" ]; then
+          ${pkgs.gnused}/bin/sed -i \
+            -e 's,image/gif;,,g' \
+            -e 's,image/jpeg;,,g' \
+            -e 's,image/png;,,g' \
+            -e 's,image/webp;,,g' \
+            "$desktop_file"
+        fi
+      done
+
+      ${pkgs.desktop-file-utils}/bin/update-desktop-database "$applications_dir" >/dev/null 2>&1 || true
+    fi
+  '';
 
   xsession = {
     enable = true;

@@ -59,6 +59,11 @@ in
           cp "${prev.google-chrome}/share/applications/$desktopName" "$desktopFile"
           substituteInPlace "$desktopFile" \
             --replace-fail "${prev.google-chrome}/bin/google-chrome-stable" "$out/bin/google-chrome-stable"
+          substituteInPlace "$desktopFile" \
+            --replace-fail "image/gif;" "" \
+            --replace-fail "image/jpeg;" "" \
+            --replace-fail "image/png;" "" \
+            --replace-fail "image/webp;" ""
         fi
       done
     '';

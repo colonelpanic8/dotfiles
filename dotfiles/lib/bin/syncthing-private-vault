@@ -1,0 +1,118 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+PASS_ENTRY="syncthing/private-vault"
+CIPHER_DIR="/var/lib/syncthing/sync/Private.encrypted"
+MOUNT_POINT="${HOME}/Private"
+
+usage() {
+    cat <<'EOF'
+Usage: syncthing-private-vault <command>
+
+Commands:
+  init      Initialize the encrypted backing directory
+  mount     Mount the decrypted view at ~/Private
+  unmount   Unmount ~/Private
+  status    Show current configuration and mount status
+EOF
+}
+
+require_commands() {
+    local command_name
+    for command_name in gocryptfs pass mountpoint fusermount3 head mktemp mkdir; do
+        command -v "$command_name" >/dev/null 2>&1 || {
+            echo "Missing required command: $command_name" >&2
+            exit 1
+        }
+    done
+}
+
+write_password_file() {
+    PASSWORD_FILE="$(mktemp)"
+    chmod 600 "$PASSWORD_FILE"
+    trap 'rm -f "$PASSWORD_FILE"' EXIT
+    pass show "$PASS_ENTRY" | head -n1 > "$PASSWORD_FILE"
+}
+
+ensure_directories() {
+    mkdir -p "$CIPHER_DIR" "$MOUNT_POINT"
+}
+
+init_vault() {
+    if [ -e "$CIPHER_DIR/gocryptfs.conf" ]; then
+        echo "Vault already initialized at $CIPHER_DIR" >&2
+        return 1
+    fi
+
+    write_password_file
+    gocryptfs -q -init -passfile "$PASSWORD_FILE" "$CIPHER_DIR"
+}
+
+mount_vault() {
+    if mountpoint -q "$MOUNT_POINT"; then
+        echo "Vault already mounted at $MOUNT_POINT"
+        return 0
+    fi
+
+    if [ ! -e "$CIPHER_DIR/gocryptfs.conf" ]; then
+        echo "Vault has not been initialized yet: $CIPHER_DIR/gocryptfs.conf is missing" >&2
+        return 1
+    fi
+
+    write_password_file
+    exec gocryptfs -q -passfile "$PASSWORD_FILE" "$CIPHER_DIR" "$MOUNT_POINT"
+}
+
+unmount_vault() {
+    if ! mountpoint -q "$MOUNT_POINT"; then
+        echo "Vault is not mounted at $MOUNT_POINT"
+        return 0
+    fi
+
+    fusermount3 -u "$MOUNT_POINT"
+}
+
+status_vault() {
+    echo "pass entry: $PASS_ENTRY"
+    echo "cipher dir: $CIPHER_DIR"
+    echo "mount point: $MOUNT_POINT"
+
+    if [ -e "$CIPHER_DIR/gocryptfs.conf" ]; then
+        echo "initialized: yes"
+    else
+        echo "initialized: no"
+    fi
+
+    if mountpoint -q "$MOUNT_POINT"; then
+        echo "mounted: yes"
+    else
+        echo "mounted: no"
+    fi
+}
+
+main() {
+    require_commands
+    ensure_directories
+
+    case "${1:-}" in
+        init)
+            init_vault
+            ;;
+        mount)
+            mount_vault
+            ;;
+        unmount)
+            unmount_vault
+            ;;
+        status)
+            status_vault
+            ;;
+        *)
+            usage >&2
+            exit 1
+            ;;
+    esac
+}
+
+main "$@"
