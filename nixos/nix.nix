@@ -1,5 +1,12 @@
-{ inputs, specialArgs, config, lib, realUsers, ... }:
 {
+  inputs,
+  specialArgs,
+  config,
+  lib,
+  pkgs,
+  realUsers,
+  ...
+}: {
   imports = [
     inputs.home-manager.nixosModules.home-manager
   ];
@@ -19,8 +26,31 @@
     };
     home-manager.useGlobalPkgs = true;
     home-manager.useUserPackages = true;
+    home-manager.backupCommand = pkgs.writeShellScript "home-manager-backup-command" ''
+      set -eu
+
+      target_path="$1"
+      backup_ext="''${HOME_MANAGER_BACKUP_EXT:-hm-backup}"
+      backup_path="''${target_path}.''${backup_ext}"
+
+      if [[ ! -e "$backup_path" ]]; then
+        mv -- "$target_path" "$backup_path"
+        exit 0
+      fi
+
+      timestamp="$(date +%Y%m%d-%H%M%S)"
+      candidate="''${backup_path}.''${timestamp}"
+      counter=0
+
+      while [[ -e "$candidate" ]]; do
+        counter=$((counter + 1))
+        candidate="''${backup_path}.''${timestamp}-''${counter}"
+      done
+
+      mv -- "$target_path" "$candidate"
+    '';
     home-manager.backupFileExtension = "hm-backup";
-    home-manager.sharedModules = [ ./home-manager.nix ];
+    home-manager.sharedModules = [./home-manager.nix];
 
     nix = rec {
       extraOptions = ''
@@ -55,27 +85,34 @@
       ];
     };
 
-    nixpkgs.overlays = [
-      # (import ./nvidia-container-toolkit-overlay.nix)
-      (import ./runc-overlay.nix)
-      (import ./emacs-overlay.nix)
-      (import ./overlay.nix)
-      # Use codex and claude-code from dedicated flakes with cachix
-      (final: prev: {
-        codex = inputs.codex-cli-nix.packages.${prev.stdenv.hostPlatform.system}.default;
-        claude-code = inputs.claude-code-nix.packages.${prev.stdenv.hostPlatform.system}.default;
-        git-sync-rs = let
-          base = inputs.git-sync-rs.packages.${prev.stdenv.hostPlatform.system}.default;
-        in prev.symlinkJoin {
-          name = "${base.name}-wrapped";
-          paths = [ base ];
-          postBuild = ''
-            ln -s $out/bin/git-sync-rs $out/bin/git-sync-on-inotify
-            ln -s $out/bin/git-sync-rs $out/bin/git-sync
-          '';
-        };
-      })
-    ] ++ (if config.imalison.nixOverlay.enable then [ inputs.nix.overlays.default ] else []);
+    nixpkgs.overlays =
+      [
+        # (import ./nvidia-container-toolkit-overlay.nix)
+        (import ./runc-overlay.nix)
+        (import ./emacs-overlay.nix)
+        (import ./overlay.nix)
+        # Use codex and claude-code from dedicated flakes with cachix
+        (final: prev: {
+          codex = inputs.codex-cli-nix.packages.${prev.stdenv.hostPlatform.system}.default;
+          claude-code = inputs.claude-code-nix.packages.${prev.stdenv.hostPlatform.system}.default;
+          git-sync-rs = let
+            base = inputs.git-sync-rs.packages.${prev.stdenv.hostPlatform.system}.default;
+          in
+            prev.symlinkJoin {
+              name = "${base.name}-wrapped";
+              paths = [base];
+              postBuild = ''
+                ln -s $out/bin/git-sync-rs $out/bin/git-sync-on-inotify
+                ln -s $out/bin/git-sync-rs $out/bin/git-sync
+              '';
+            };
+        })
+      ]
+      ++ (
+        if config.imalison.nixOverlay.enable
+        then [inputs.nix.overlays.default]
+        else []
+      );
 
     # Allow all the things
     nixpkgs.config.allowUnfree = true;

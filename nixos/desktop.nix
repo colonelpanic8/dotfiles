@@ -1,4 +1,11 @@
-{ inputs, config, pkgs, lib, makeEnable, ... }:
+{
+  inputs,
+  config,
+  pkgs,
+  lib,
+  makeEnable,
+  ...
+}:
 makeEnable config "myModules.desktop" true {
   services.greenclip.enable = true;
   imports = [
@@ -42,7 +49,7 @@ makeEnable config "myModules.desktop" true {
 
   home-manager.sharedModules = [
     {
-      imports = [ ./dunst.nix ];
+      imports = [./dunst.nix];
 
       xdg.desktopEntries."com.mitchellh.ghostty" = {
         name = "Ghostty";
@@ -50,7 +57,7 @@ makeEnable config "myModules.desktop" true {
         icon = "com.mitchellh.ghostty";
         terminal = false;
         type = "Application";
-        categories = [ "System" "TerminalEmulator" ];
+        categories = ["System" "TerminalEmulator"];
         startupNotify = true;
         exec = "${pkgs.ghostty}/bin/ghostty --gtk-single-instance=false";
         settings = {
@@ -72,79 +79,88 @@ makeEnable config "myModules.desktop" true {
     }
   ];
 
-  environment.systemPackages = with pkgs; [
-    # Appearance
-    adwaita-icon-theme
-    hicolor-icon-theme
-    # libsForQt5.breeze-gtk
-    # materia-theme
-    numix-icon-theme-circle
-    papirus-icon-theme
+  environment.systemPackages = with pkgs;
+    [
+      # Appearance
+      adwaita-icon-theme
+      hicolor-icon-theme
+      # libsForQt5.breeze-gtk
+      # materia-theme
+      numix-icon-theme-circle
+      papirus-icon-theme
 
-    # XOrg
-    autorandr
-    keyd
-    wmctrl
-    xclip
-    xdotool
-    xev
-    xwininfo
-    xsettingsd
+      # XOrg
+      autorandr
+      keyd
+      wmctrl
+      xclip
+      xdotool
+      xev
+      xwininfo
+      xsettingsd
 
-    # Desktop
-    alacritty
-    ghostty
-    blueman
-    # clipit
-    d-spy
-    kdePackages.dolphin
+      # Desktop
+      alacritty
+      ghostty
+      blueman
+      # clipit
+      d-spy
+      kdePackages.dolphin
 
-    feh
-    gthumb
-    firefox
-    cheese
-    kdePackages.kleopatra
-    libnotify
-    libreoffice
-    lxappearance
-    lxqt.lxqt-powermanagement
-    networkmanagerapplet
-    kdePackages.okular
-    pinentry-gnome3
-    # mission-center
-    quassel
-    remmina
-    rofi
-    wofi
-    rofi-pass
-    rofi-systemd
-    simplescreenrecorder
-    skippy-xd
-    transmission_4-gtk
-    vlc
-    thunar
+      feh
+      file-roller
+      gthumb
+      firefox
+      cheese
+      kdePackages.kleopatra
+      libnotify
+      libreoffice
+      loupe
+      lxappearance
+      lxqt.lxqt-powermanagement
+      networkmanagerapplet
+      kdePackages.okular
+      pinentry-gnome3
+      # mission-center
+      quassel
+      remmina
+      rofi
+      wofi
+      rofi-pass
+      rofi-systemd
+      simplescreenrecorder
+      skippy-xd
+      transmission_4-gtk
+      vlc
+      thunar
 
-    # Audio
-    picard
-    pavucontrol
-    playerctl
-    pulsemixer
-    espeak
+      # Audio
+      picard
+      pavucontrol
+      playerctl
+      pulsemixer
+      espeak
 
-    #
-    brightnessctl
+      #
+      brightnessctl
 
-    # Visualization
-    graphviz
-    mermaid-cli
-  ] ++ (if pkgs.stdenv.hostPlatform.system == "x86_64-linux" then with pkgs; [
-    google-chrome
-    pommed_light
-    slack
-    spicetify-cli
-    spotify
-    tor-browser
-    vscode
-    zulip
-  ] else []);
+      # Visualization
+      graphviz
+      mermaid-cli
+    ]
+    ++ (
+      if pkgs.stdenv.hostPlatform.system == "x86_64-linux"
+      then
+        with pkgs; [
+          google-chrome
+          pommed_light
+          slack
+          spicetify-cli
+          spotify
+          tor-browser
+          vscode
+          zulip
+        ]
+      else []
+    );
 }
