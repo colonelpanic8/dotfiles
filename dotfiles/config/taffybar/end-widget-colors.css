@@ -38,56 +38,53 @@
 
 /* --- Color rotation rules --- */
 
+.outer-pad.end-widget,
+.outer-pad.sni-tray {
+	background-image: none;
+	box-shadow:
+		inset 0 1px 0 rgba(255, 255, 255, 0.10),
+		inset 0 0 0 1px rgba(255, 255, 255, 0.10),
+		0 10px 24px rgba(0, 0, 0, 0.30);
+}
+
 /* Slot 1: indigo */
 .outer-pad.end-widget.end-slot-1 {
 	background-color: @end-color-1-bg;
-	background-image: none;
 	border-color: @end-color-1-border;
 	color: @end-color-1-fg;
-	box-shadow: 0 1px 0 rgba(255, 255, 255, 0.06), 0 10px 24px rgba(0, 0, 0, 0.30);
 }
 
 /* Slot 2: purple */
 .outer-pad.end-widget.end-slot-2 {
 	background-color: @end-color-2-bg;
-	background-image: none;
 	border-color: @end-color-2-border;
 	color: @end-color-2-fg;
-	box-shadow: 0 1px 0 rgba(255, 255, 255, 0.06), 0 10px 24px rgba(0, 0, 0, 0.30);
 }
 
 /* Slot 3: emerald */
 .outer-pad.end-widget.end-slot-3 {
 	background-color: @end-color-3-bg;
-	background-image: none;
 	border-color: @end-color-3-border;
 	color: @end-color-3-fg;
-	box-shadow: 0 1px 0 rgba(255, 255, 255, 0.06), 0 10px 24px rgba(0, 0, 0, 0.30);
 }
 
 /* Slot 4: teal */
 .outer-pad.end-widget.end-slot-4 {
 	background-color: @end-color-4-bg;
-	background-image: none;
 	border-color: @end-color-4-border;
 	color: @end-color-4-fg;
-	box-shadow: 0 1px 0 rgba(255, 255, 255, 0.06), 0 10px 24px rgba(0, 0, 0, 0.30);
 }
 
 /* Slot 5: rose */
 .outer-pad.end-widget.end-slot-5 {
 	background-color: @end-color-5-bg;
-	background-image: none;
 	border-color: @end-color-5-border;
 	color: @end-color-5-fg;
-	box-shadow: 0 1px 0 rgba(255, 255, 255, 0.06), 0 10px 24px rgba(0, 0, 0, 0.30);
 }
 
 /* --- SNI tray (center widget, not part of the rotation) --- */
 
 .outer-pad.sni-tray {
 	background-color: rgb(65, 70, 100);
-	background-image: none;
 	border-color: rgb(110, 115, 160);
-	box-shadow: 0 1px 0 rgba(255, 255, 255, 0.06), 0 10px 24px rgba(0, 0, 0, 0.30);
 }

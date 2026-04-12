@@ -185,6 +185,9 @@ in {
   programs.ssh = {
     enable = true;
     enableDefaultConfig = false;
+    extraConfig = ''
+      Include /home/imalison/config/dotfiles/ssh/config
+    '';
     matchBlocks = {
       "*" = {
         forwardAgent = true;
@@ -200,6 +203,8 @@ in {
       };
     };
   };
+
+  home.file.".ssh/config".force = true;
 
   services.gpg-agent = {
     enable = true;

@@ -15,6 +15,6 @@
     "superpowers@superpowers-marketplace": true,
     "agent-browser@agent-browser": true
   },
-  "skipDangerousModePermissionPrompt": true,
-  "effortLevel": "high"
+  "effortLevel": "high",
+  "skipDangerousModePermissionPrompt": true
 }

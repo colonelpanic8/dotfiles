@@ -77,6 +77,30 @@
                                 (directory-file-name source)))
            (t
             (delete-directory build 'recursive))))))))
+
+(defun elpaca-installer--repair-source-dir-aliases ()
+  "Create compatibility symlinks for legacy repos ending in `.el'."
+  (when (file-directory-p elpaca-sources-directory)
+    (dolist (entry (directory-files elpaca-sources-directory t directory-files-no-dot-files-regexp))
+      (when-let* (((file-directory-p entry))
+                  (name (file-name-nondirectory (directory-file-name entry)))
+                  ((string-suffix-p ".el" name))
+                  (alias-name (substring name 0 (- (length name) 3)))
+                  (alias (expand-file-name alias-name elpaca-sources-directory))
+                  (target (ignore-errors
+                            (directory-file-name (file-truename entry)))))
+        (cond
+         ((and (file-symlink-p alias)
+               (equal (ignore-errors (directory-file-name (file-truename alias)))
+                      target))
+          nil)
+         ((file-symlink-p alias)
+          (delete-file alias)
+          (make-symbolic-link target alias))
+         ((file-exists-p alias)
+          nil)
+         (t
+          (make-symbolic-link target alias)))))))
 ;; Elpaca now expects package sources under `sources/`. Preserve older local
 ;; installs that still use `repos/` so startup can recover without recloning.
 (when (and (file-directory-p elpaca-legacy-repos-directory)
@@ -87,6 +111,7 @@
            (not (file-exists-p elpaca-legacy-repos-directory)))
   (make-symbolic-link (directory-file-name elpaca-sources-directory)
                       (directory-file-name elpaca-legacy-repos-directory)))
+(elpaca-installer--repair-source-dir-aliases)
 (elpaca-installer--repair-build-source-layout)
 (let* ((repo  (expand-file-name "elpaca/" elpaca-sources-directory))
        (build (expand-file-name "elpaca/" elpaca-builds-directory))

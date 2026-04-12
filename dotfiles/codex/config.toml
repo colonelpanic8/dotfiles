@@ -88,6 +88,12 @@ trust_level = "trusted"
 [projects."/home/imalison/Projects/rofi-systemd"]
 trust_level = "trusted"
 
+[projects."/home/imalison/Projects/map-quiz"]
+trust_level = "trusted"
+
+[projects."/run/media/imalison/NETDEBUGUSB"]
+trust_level = "trusted"
+
 [notice]
 hide_gpt5_1_migration_prompt = true
 "hide_gpt-5.1-codex-max_migration_prompt" = true

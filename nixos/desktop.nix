@@ -43,6 +43,12 @@ makeEnable config "myModules.desktop" true {
   # This is for the benefit of VSCODE running natively in wayland
   environment.sessionVariables.NIXOS_OZONE_WL = "1";
 
+  system.activationScripts.playwrightChromeCompat.text = lib.optionalString (pkgs.stdenv.hostPlatform.system == "x86_64-linux") ''
+    # Playwright's Chrome channel lookup expects the FHS path below.
+    mkdir -p /opt/google/chrome
+    ln -sfn ${pkgs.google-chrome}/bin/google-chrome-stable /opt/google/chrome/chrome
+  '';
+
   services.gnome.at-spi2-core.enable = true;
 
   services.gnome.gnome-keyring.enable = true;

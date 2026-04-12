@@ -250,10 +250,7 @@ defaultCssFiles = ["taffybar.css"]
 
 cssFilesByHostname :: [(String, [FilePath])]
 cssFilesByHostname =
-  [ ("imalison-home", ["taffybar.css"]),
-    ("ryzen-shine", ["ryzen-shine.css"]),
-    ("stevie-nixos", ["taffybar.css"])
-  ]
+  [("ryzen-shine", ["ryzen-shine.css"])]
 
 laptopHosts :: [String]
 laptopHosts =

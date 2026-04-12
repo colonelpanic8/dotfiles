@@ -10,8 +10,9 @@
 # System.Taffybar.DBus.Toggle: DEBUG
 # Graphics.UI.GIGtkStrut: DEBUG
 # Temporary startup debugging for tray duplication.
-StatusNotifier.Tray: DEBUG
-StatusNotifier.Host.Service: DEBUG
-System.Taffybar.Widget.SNITray.PrioritizedCollapsible: DEBUG
+# Enable these selectively when investigating tray churn:
+# StatusNotifier.Tray: DEBUG
+# StatusNotifier.Host.Service: DEBUG
+# System.Taffybar.Widget.SNITray.PrioritizedCollapsible: DEBUG
 System.Taffybar.LogLevels: INFO
-System.Taffybar.Context: DEBUG
+# System.Taffybar.Context: DEBUG

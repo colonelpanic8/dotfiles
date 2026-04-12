@@ -1,6 +1,5 @@
 @import url("theme.css");
 @import url("end-widget-colors.css");
-@import url("end-widget-solid.css");
 
 /* Widget/layout styling for taffybar.
  *
@@ -93,7 +92,7 @@
 }
 
 /* Per-widget color overrides now live in end-widget-colors.css,
-   which rotates through a 5-color palette via :nth-child(). */
+   which rotates through a 5-color palette via semantic end-slot classes. */
 
 .outer-pad.mpris .icon {
 	font-family: "Iosevka Nerd Font";
