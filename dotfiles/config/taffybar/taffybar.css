@@ -1,9 +1,11 @@
 /* Widget/layout styling for taffybar.
  *
- * Colors live in `theme.css`, and the end-widget palette lives in
- * `end-widget-colors.css`. Both are loaded explicitly from `cssPaths` so they
- * hot-reload reliably and do not depend on GTK's `@import` handling.
+ * Keep this as the shared CSS entrypoint: GTK's `load_from_path` replaces the
+ * previous stylesheet contents, so `cssPaths` must resolve to a single file per
+ * host. Shared colors/palette rules live in imported leaf files.
  */
+@import url("theme.css");
+@import url("end-widget-colors.css");
 
 /* Base typography + foreground color for the bar itself.
  *
