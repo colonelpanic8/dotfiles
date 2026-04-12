@@ -1,4 +1,4 @@
-{ config, inputs, pkgs, makeEnable, ... }:
+{ config, inputs, lib, pkgs, makeEnable, ... }:
 let
   skipTaffybarInKde = pkgs.writeShellScript "skip-taffybar-in-kde" ''
     current_desktop="''${XDG_CURRENT_DESKTOP:-}"
@@ -40,7 +40,7 @@ makeEnable config "myModules.taffybar" false {
   ];
 
   home-manager.sharedModules = [
-    {
+    ({ lib, ... }: {
       services."status-notifier-watcher".enable = true;
       # home-manager's module defaults to nixpkgs' status-notifier-item, which can lag.
       # Point it at the pinned flake version instead.
@@ -59,6 +59,11 @@ makeEnable config "myModules.taffybar" false {
         package = inputs.imalison-taffybar.defaultPackage.${pkgs.stdenv.hostPlatform.system};
       };
       xdg.configFile."systemd/user/taffybar.service".force = true;
+      home.activation.removeStaleTaffybarOverride =
+        lib.hm.dag.entryAfter [ "writeBoundary" ] ''
+          rm -f "$HOME/.config/systemd/user/taffybar.service.d/override.conf"
+          rmdir --ignore-fail-on-non-empty "$HOME/.config/systemd/user/taffybar.service.d" 2>/dev/null || true
+        '';
       systemd.user.services.taffybar.Service = {
         ExecCondition = "${skipTaffybarInKde}";
         # Temporary startup debugging: keep a plain-text log outside journald so
@@ -66,6 +71,6 @@ makeEnable config "myModules.taffybar" false {
         StandardOutput = "append:/tmp/taffybar-service.log";
         StandardError = "append:/tmp/taffybar-service.log";
       };
-    }
+    })
   ];
 }
