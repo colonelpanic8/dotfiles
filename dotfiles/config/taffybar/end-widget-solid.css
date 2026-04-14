@@ -1,48 +1,96 @@
 /* Final pass overrides for end-widget pill chrome.
  *
- * This is loaded after the main bar/theme CSS so the end-widget palette stays
- * vivid even if earlier rules or theme rendering make the pills read too
- * transparent on some hosts.
+ * Keep this in sync with end-widget-colors.css so the solid-background pass
+ * preserves both semantic end-slot styling and compatibility with older
+ * `right-N` binaries.
  */
 
-.outer-pad.end-widget.end-slot-1 {
+.outer-pad.end-widget.end-slot-1,
+.end-widget.end-slot-1 .outer-pad,
+.outer-pad.right-1,
+.outer-pad.right-6,
+.right-1 .outer-pad,
+.right-6 .outer-pad {
 	background-color: rgb(50, 60, 160);
 	background-image: none;
 	border-color: rgb(90, 100, 210);
 }
 
-.outer-pad.end-widget.end-slot-2 {
+.outer-pad.end-widget.end-slot-2,
+.end-widget.end-slot-2 .outer-pad,
+.outer-pad.right-2,
+.outer-pad.right-7,
+.right-2 .outer-pad,
+.right-7 .outer-pad {
 	background-color: rgb(110, 45, 160);
 	background-image: none;
 	border-color: rgb(155, 85, 210);
 }
 
-.outer-pad.end-widget.end-slot-3 {
+.outer-pad.end-widget.end-slot-3,
+.end-widget.end-slot-3 .outer-pad,
+.outer-pad.right-3,
+.outer-pad.right-8,
+.right-3 .outer-pad,
+.right-8 .outer-pad {
 	background-color: rgb(25, 130, 75);
 	background-image: none;
 	border-color: rgb(55, 190, 115);
 }
 
-.outer-pad.end-widget.end-slot-4 {
+.outer-pad.end-widget.end-slot-4,
+.end-widget.end-slot-4 .outer-pad,
+.outer-pad.right-4,
+.outer-pad.right-9,
+.right-4 .outer-pad,
+.right-9 .outer-pad {
 	background-color: rgb(20, 120, 140);
 	background-image: none;
 	border-color: rgb(50, 175, 200);
 }
 
-.outer-pad.end-widget.end-slot-5 {
+.outer-pad.end-widget.end-slot-5,
+.end-widget.end-slot-5 .outer-pad,
+.outer-pad.right-5,
+.outer-pad.right-10,
+.right-5 .outer-pad,
+.right-10 .outer-pad {
 	background-color: rgb(160, 40, 70);
 	background-image: none;
 	border-color: rgb(210, 80, 115);
 }
 
-.outer-pad.sni-tray {
+.outer-pad.sni-tray,
+.sni-tray .outer-pad {
 	background-color: rgb(65, 70, 100);
 	background-image: none;
 	border-color: rgb(110, 115, 160);
 }
 
 .outer-pad.end-widget,
-.outer-pad.sni-tray {
+.end-widget .outer-pad,
+.outer-pad.right-1,
+.outer-pad.right-2,
+.outer-pad.right-3,
+.outer-pad.right-4,
+.outer-pad.right-5,
+.outer-pad.right-6,
+.outer-pad.right-7,
+.outer-pad.right-8,
+.outer-pad.right-9,
+.outer-pad.right-10,
+.right-1 .outer-pad,
+.right-2 .outer-pad,
+.right-3 .outer-pad,
+.right-4 .outer-pad,
+.right-5 .outer-pad,
+.right-6 .outer-pad,
+.right-7 .outer-pad,
+.right-8 .outer-pad,
+.right-9 .outer-pad,
+.right-10 .outer-pad,
+.outer-pad.sni-tray,
+.sni-tray .outer-pad {
 	box-shadow:
 		inset 0 1px 0 rgba(255, 255, 255, 0.10),
 		inset 0 0 0 1px rgba(255, 255, 255, 0.10),
