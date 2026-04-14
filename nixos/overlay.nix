@@ -254,6 +254,10 @@ in
     };
   });
 
+  happy-coder = final.callPackage ./packages/happy-coder { };
+  playwright-cli = final.callPackage ./packages/playwright-cli { };
+  t3code = final.callPackage ./packages/t3code { };
+
   # Custom Waybar fork for workspace taskbar support + external SNI watcher option.
   waybar = prev.waybar.overrideAttrs (old: {
     src = prev.fetchFromGitHub {

@@ -225,31 +225,7 @@
     ...
   }: let
     # Nixpkgs PR patches - just specify PR number and hash
-    nixpkgsPRPatches = [
-      # playwright-cli
-      {
-        pr = 490230;
-        hash = "sha256-vQM2mmIgpxFo3ctjk2tXkfhocXnTuHSEy8iYkTexScc=";
-      }
-      # t3code base PR
-      {
-        pr = 497465;
-        hash = "sha256-pFofbc6noAqAq6vF+uxvdAk8cV5lftAREWPJGXue/cg=";
-      }
-      {
-        pr = 492656;
-        hash = "sha256-0TGZ12iIfSYs6cs5kgWDAyiThJdlLMhqRGUscVQv5hU=";
-      }
-      # claude-code
-      # {
-      #   pr = 464698;
-      #   hash = "sha256-Pe9G6b/rI0874mM7FIOSEKiaubk95NcFhTQ7paAeLTU=";
-      # }
-      # {
-      #   pr = 464816;
-      #   hash = "sha256-bKEoRy4dzP5TyRBjYskwEzr7tj8/ez/Y1XHiQgu5q5I=";
-      # }
-    ];
+    nixpkgsPRPatches = [ ];
 
     # Custom patches that don't fit the PR template
     nixpkgsCustomPatches = [ ];
@@ -361,10 +337,6 @@
         name = "nixpkgs-patched";
         src = nixpkgs;
         patches = map bootstrapPkgs.fetchpatch allNixpkgsPatches;
-        prePatch = ''
-          mkdir -p pkgs/by-name/an/antigravity
-          mkdir -p pkgs/by-name/pl/playwright-cli
-        '';
       };
       # Get eval-config from patched source
       evalConfig = import "${patchedSource}/nixos/lib/eval-config.nix";
