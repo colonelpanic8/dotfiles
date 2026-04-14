@@ -4,5 +4,7 @@ makeEnable config "myModules.tts" false {
     enable = true;
     useCuda = false;
     port = 11115;
+    model = "tts_models/en/vctk/vits";
+    extraArgs = [ "--speaker_idx" "p376" ];
   };
 }

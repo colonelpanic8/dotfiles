@@ -254,10 +254,48 @@ in
     };
   });
 
+  tts = prev.tts.overrideAttrs (old:
+    let
+      compatAccelerate = final.python3Packages.accelerate.override {
+        huggingface-hub = final.python3Packages.huggingface-hub_0;
+      };
+      compatKDiffusion = final.python3Packages.k-diffusion.override {
+        accelerate = compatAccelerate;
+      };
+      compatTokenizers = final.python3Packages.tokenizers.override {
+        huggingface-hub = final.python3Packages.huggingface-hub_0;
+      };
+      compatTransformers = final.python3Packages.transformers_4.override {
+        huggingface-hub = final.python3Packages.huggingface-hub_0;
+        tokenizers = compatTokenizers;
+      };
+      replacePythonDeps = pkg:
+        let
+          pkgName = pkg.pname or (prev.lib.getName pkg);
+        in
+        if pkgName == "transformers" then compatTransformers
+        else if pkgName == "k-diffusion" then compatKDiffusion
+        else pkg;
+    in
+    {
+      propagatedBuildInputs = map replacePythonDeps old.propagatedBuildInputs;
+      postPatch = (old.postPatch or "") + ''
+        substituteInPlace TTS/tts/layers/tortoise/autoregressive.py \
+          --replace-fail \
+          'if Version(transformers.__version__) >= Version("4.45"):' \
+          'if Version(transformers.__version__) >= Version("4.45") and hasattr(transformers.pytorch_utils, "isin_mps_friendly"):'
+
+        sed -i \
+          -e 's/^from transformers import ($/from transformers.generation.beam_search import BeamSearchScorer\
+from transformers import (/' \
+          -e '/^    BeamSearchScorer,$/d' \
+          TTS/tts/layers/xtts/stream_generator.py
+      '';
+    });
+
   happy-coder = final.callPackage ./packages/happy-coder { };
   playwright-cli = final.callPackage ./packages/playwright-cli { };
   t3code = final.callPackage ./packages/t3code { };
-
   # Custom Waybar fork for workspace taskbar support + external SNI watcher option.
   waybar = prev.waybar.overrideAttrs (old: {
     src = prev.fetchFromGitHub {

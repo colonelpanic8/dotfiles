@@ -19,7 +19,7 @@
   myModules.electron.enable = true;
   myModules.quickshell.enable = true;
   myModules.wyoming.enable = false;
-  myModules.tts.enable = false;
+  myModules.tts.enable = true;
   myModules."keepbook-sync".enable = true;
 
   hardware.enableRedistributableFirmware = true;
