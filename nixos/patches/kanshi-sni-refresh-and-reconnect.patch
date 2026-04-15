@@ -1,0 +1,96 @@
+--- a/src/Kanshi/SNI.hs
++++ b/src/Kanshi/SNI.hs
+@@ -28,6 +28,7 @@
+   , castPtrToStablePtr
+   )
+ import System.Directory (XdgDirectory(..), doesDirectoryExist, getXdgDirectory)
++import System.FilePath (takeFileName)
+ import System.FSNotify (Event(..), withManager, watchDir)
+ import System.IO.Unsafe (unsafePerformIO)
+ 
+@@ -46,6 +47,9 @@
+   , sniGLibContext :: GLib.MainContext
+   }
+ 
++refreshIntervalMicros :: Int
++refreshIntervalMicros = 5 * 1000000
++
+ startSNI :: IO ()
+ startSNI = do
+   let busName = "org.kanshi.SNI"
+@@ -96,12 +100,17 @@
+   dirExists <- doesDirectoryExist configDir
+   when dirExists $
+     void $ forkIO $ withManager $ \mgr -> do
+-      void $ watchDir mgr configDir (const True) $ \event ->
++      void $ watchDir mgr configDir (\event -> takeFileName (eventPath event) == "config") $ \event ->
+         case event of
+-          Modified {} -> refreshState sniState
+-          Added {} -> refreshState sniState
++          Modified {} -> safeRefreshState sniState
++          Added {} -> safeRefreshState sniState
++          Removed {} -> safeRefreshState sniState
+           _ -> pure ()
+       forever $ threadDelay maxBound
++
++  void $ forkIO $ forever $ do
++    threadDelay refreshIntervalMicros
++    safeRefreshState sniState
+ 
+   -- Block forever on main thread
+   forever $ threadDelay maxBound
+@@ -171,9 +180,29 @@
+   runOnGLibMain (sniGLibContext sniState) $
+     Dbusmenu.serverSetRoot (sniMenuServer sniState) newRoot
+ 
++safeRefreshState :: SNIState -> IO ()
++safeRefreshState sniState =
++  refreshState sniState `catch` \(_ :: SomeException) -> do
++    resetConnection sniState `catch` \(_ :: SomeException) -> pure ()
++    refreshState sniState `catch` \(_ :: SomeException) -> pure ()
++
++ensureUsableConnection :: Maybe KanshiConnection -> IO (Maybe KanshiConnection)
++ensureUsableConnection mConn =
++  case mConn of
++    Nothing -> tryConnect
++    Just conn -> do
++      statusResult <- kanshiStatus conn
++      case statusResult of
++        Right _ -> pure (Just conn)
++        Left _ -> do
++          disconnectKanshi conn
++          tryConnect
++
+ refreshState :: SNIState -> IO ()
+ refreshState sniState = do
+-  mConn <- readMVar (sniConnection sniState)
++  mConn <- modifyMVar (sniConnection sniState) $ \currentConn -> do
++    freshConn <- ensureUsableConnection currentConn
++    pure (freshConn, freshConn)
+   newState <- buildInitialState mConn
+   modifyMVar_ (sniAppState sniState) $ const (pure newState)
+   rebuildMenu sniState
+--- a/src/Kanshi/Varlink.hs
++++ b/src/Kanshi/Varlink.hs
+@@ -68,11 +68,16 @@
+ 
+ varlinkCall :: KanshiConnection -> Value -> IO (Either KanshiError Value)
+ varlinkCall (KanshiConnection sock) request = do
+-  sendAll sock $ LBS.toStrict (encode request) <> BS.singleton 0
+-  response <- recvUntilNull sock
+-  case eitherDecodeStrict response of
+-    Left err -> return $ Left $ ProtocolError $ "JSON decode error: " ++ err
+-    Right val -> return $ parseVarlinkResponse val
++  result <- try $ do
++    sendAll sock $ LBS.toStrict (encode request) <> BS.singleton 0
++    recvUntilNull sock
++  case (result :: Either IOException BS.ByteString) of
++    Left err ->
++      return $ Left $ ConnectionFailed $ "Socket I/O failed: " ++ show err
++    Right response ->
++      case eitherDecodeStrict response of
++        Left err -> return $ Left $ ProtocolError $ "JSON decode error: " ++ err
++        Right val -> return $ parseVarlinkResponse val
+ 
+ recvUntilNull :: Socket -> IO BS.ByteString
+ recvUntilNull sock = go BS.empty
