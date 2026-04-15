@@ -30,13 +30,21 @@ makeEnable config "myModules.hyprland" true {
         systemdTarget = "graphical-session.target";
         settings = [
           {
-            profile.name = "ryzen-shine-primary";
+            # USB-C connector names can move between DP-* ports across docks/reboots.
+            profile.name = "ultrawide-usbc-desk";
             profile.outputs = [
               {
-                criteria = "DP-1";
+                criteria = "eDP-1";
+                status = "enable";
+                mode = "2560x1600@240Hz";
+                position = "0,0";
+                scale = 1.0;
+              }
+              {
+                criteria = "Microstep MPG341CX OLED Unknown";
                 status = "enable";
                 mode = "3440x1440@240Hz";
-                position = "0,0";
+                position = "2560,0";
                 scale = 1.0;
               }
             ];

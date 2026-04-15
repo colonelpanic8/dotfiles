@@ -65,12 +65,17 @@
   boot.kernelModules = [ "kvm-intel" ];
   boot.extraModulePackages = [ ];
   hardware.nvidia.powerManagement.enable = true;
+  # This laptop has a hardware MUX, so prefer dGPU-only mode instead of
+  # PRIME sync hybrid mode to keep the compositor and displays on NVIDIA.
   hardware.nvidia.prime.offload.enable = lib.mkForce false;
-  hardware.nvidia.prime.sync.enable = lib.mkForce true;
+  hardware.nvidia.prime.sync.enable = lib.mkForce false;
   boot.loader.systemd-boot.enable = true;
   boot.loader.efi.canTouchEfiVariables = true;
 
   services.asusd.enable = true;
+  services.supergfxd.settings = {
+    mode = "AsusMuxDgpu";
+  };
   services.power-profiles-daemon.enable = false;
   services.tlp.enable = false;
 
