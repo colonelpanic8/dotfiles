@@ -126,6 +126,7 @@ makeEnable config "myModules.hyprland" true {
     slurp          # Region selection
     swappy         # Screenshot annotation
     nwg-displays   # GUI monitor arrangement
+    mpv            # Graphical screensaver payload
 
     # hy3 plugin from flake (properly built against matching Hyprland)
     inputs.hy3.packages.${pkgs.stdenv.hostPlatform.system}.hy3

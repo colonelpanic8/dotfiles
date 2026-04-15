@@ -1,0 +1,188 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+script_path="$(readlink -f "${BASH_SOURCE[0]}")"
+state_dir="${XDG_RUNTIME_DIR:-/tmp}/hypr-screensaver"
+mkdir -p "$state_dir"
+
+title_prefix="hypr-screensaver:"
+
+usage() {
+  cat <<'EOF'
+Usage: hypr-screensaver <start|stop|toggle|status|session>
+
+Commands:
+  start   Launch the screensaver on every Hyprland monitor.
+  stop    Stop any running screensaver windows.
+  toggle  Start if stopped, otherwise stop.
+  status  Exit 0 if any screensaver window is running, otherwise exit 1.
+  session Run the configured screensaver payload for one monitor.
+
+The default payload is an mpv-rendered lavfi animation. You can override the
+source with HYPR_SCREENSAVER_SOURCE, for example:
+  HYPR_SCREENSAVER_SOURCE='/path/to/video.mp4'
+  HYPR_SCREENSAVER_SOURCE='av://lavfi:mandelbrot=s=2560x1440:r=60'
+EOF
+}
+
+monitors_json() {
+  hyprctl -j monitors
+}
+
+monitor_names() {
+  monitors_json | jq -r '.[].name'
+}
+
+monitor_specs() {
+  monitors_json | jq -c '.[] | { name, width, height }'
+}
+
+focused_monitor() {
+  monitors_json | jq -r '.[] | select(.focused) | .name'
+}
+
+screensaver_window_pids() {
+  hyprctl -j clients 2>/dev/null | jq -r --arg prefix "$title_prefix" '
+    .[]
+    | select((.title // "") | startswith($prefix))
+    | .pid
+  ' | sort -u
+}
+
+is_running() {
+  local pid
+  for pid in $(screensaver_window_pids); do
+    if kill -0 "$pid" 2>/dev/null; then
+      return 0
+    fi
+  done
+
+  shopt -s nullglob
+  local pid_file
+  for pid_file in "$state_dir"/*.pid; do
+    pid="$(<"$pid_file")"
+    if kill -0 "$pid" 2>/dev/null; then
+      return 0
+    fi
+  done
+
+  return 1
+}
+
+default_source() {
+  local width="$1"
+  local height="$2"
+  printf 'av://lavfi:life=s=%sx%s:r=60:mold=10:ratio=0.065:death_color=#101414:life_color=#7dd3fc:mold_color=#1e3a5f,format=yuv420p' \
+    "$width" "$height"
+}
+
+start() {
+  local current_monitor spec monitor width height pid
+
+  if is_running; then
+    exit 0
+  fi
+
+  current_monitor="$(focused_monitor || true)"
+
+  while IFS= read -r spec; do
+    monitor="$(jq -r '.name' <<<"$spec")"
+    width="$(jq -r '.width' <<<"$spec")"
+    height="$(jq -r '.height' <<<"$spec")"
+    [ -n "$monitor" ] || continue
+    HYPR_SCREENSAVER_MONITOR="$monitor" \
+      HYPR_SCREENSAVER_WIDTH="$width" \
+      HYPR_SCREENSAVER_HEIGHT="$height" \
+      "$script_path" session >/dev/null 2>&1 &
+    pid=$!
+    printf '%s\n' "$pid" > "$state_dir/${monitor}.pid"
+    sleep 0.15
+  done < <(monitor_specs)
+
+  if [ -n "$current_monitor" ]; then
+    hyprctl dispatch focusmonitor "$current_monitor" >/dev/null 2>&1 || true
+  fi
+}
+
+stop() {
+  local pid pid_file
+
+  for pid in $(screensaver_window_pids); do
+    kill "$pid" >/dev/null 2>&1 || true
+  done
+
+  shopt -s nullglob
+  for pid_file in "$state_dir"/*.pid; do
+    pid="$(<"$pid_file")"
+    kill "$pid" >/dev/null 2>&1 || true
+    rm -f "$pid_file"
+  done
+}
+
+session() {
+  local monitor="${HYPR_SCREENSAVER_MONITOR:?missing HYPR_SCREENSAVER_MONITOR}"
+  local width="${HYPR_SCREENSAVER_WIDTH:-1920}"
+  local height="${HYPR_SCREENSAVER_HEIGHT:-1080}"
+  local source="${HYPR_SCREENSAVER_SOURCE:-$(default_source "$width" "$height")}"
+  local -a mpv_args=(
+    --no-config
+    --really-quiet
+    --fullscreen
+    --fs-screen-name="$monitor"
+    --screen-name="$monitor"
+    --force-window=immediate
+    --border=no
+    --title-bar=no
+    --ontop
+    --keep-open=yes
+    --loop-file=inf
+    --audio=no
+    --osc=no
+    --osd-level=0
+    --input-default-bindings=no
+    --wayland-app-id=hypr-screensaver
+    --title="${title_prefix}${monitor}"
+    --image-display-duration=inf
+    "$source"
+  )
+
+  if command -v mpv >/dev/null 2>&1; then
+    exec mpv "${mpv_args[@]}"
+  fi
+
+  exec nix shell nixpkgs#mpv --command mpv "${mpv_args[@]}"
+}
+
+status() {
+  is_running
+}
+
+case "${1:-}" in
+  start)
+    start
+    ;;
+  stop)
+    stop
+    ;;
+  toggle)
+    if is_running; then
+      stop
+    else
+      start
+    fi
+    ;;
+  status)
+    status
+    ;;
+  session)
+    session
+    ;;
+  ""|-h|--help|help)
+    usage
+    ;;
+  *)
+    usage >&2
+    exit 2
+    ;;
+esac

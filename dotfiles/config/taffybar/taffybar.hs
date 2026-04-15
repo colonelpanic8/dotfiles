@@ -5,7 +5,7 @@
 module Main (main) where
 
 import Control.Concurrent (threadDelay)
-import Control.Monad (when)
+import Control.Monad (void, when)
 import Control.Monad.IO.Class (MonadIO, liftIO)
 import Control.Monad.Trans.Reader (asks)
 import Data.Char (toLower)
@@ -26,6 +26,7 @@ import qualified StatusNotifier.Tray as SNITray
 import System.Environment (lookupEnv)
 import System.Environment.XDG.BaseDir (getUserConfigFile)
 import System.Log.Logger (Priority (WARNING), rootLoggerName, setLevel, updateGlobalLogger)
+import System.Process (spawnCommand)
 import System.Taffybar (startTaffybar)
 import System.Taffybar.Context
   ( Backend (BackendWayland, BackendX11),
@@ -491,6 +492,34 @@ simplifiedScreenLockWidget =
       { ScreenLock.screenLockIcon = T.pack "\xF023" <> " Lock"
       }
 
+simplifiedScreensaverWidget :: TaffyIO Gtk.Widget
+simplifiedScreensaverWidget =
+  liftIO $ do
+    label <- Gtk.labelNew (Just (T.pack "\xF108" <> " Saver"))
+    ebox <- Gtk.eventBoxNew
+    Gtk.containerAdd ebox label
+    _ <- widgetSetClassGI ebox "screensaver"
+    Gtk.widgetSetTooltipText ebox (Just "Left click: toggle screensaver\nRight click: stop screensaver")
+    void $ Gtk.onWidgetButtonPressEvent ebox $ \event -> do
+      eventType <- Gdk.getEventButtonType event
+      button <- Gdk.getEventButtonButton event
+      if eventType /= Gdk.EventTypeButtonPress
+        then return False
+        else case button of
+          1 -> do
+            void $ spawnCommand "hypr-screensaver toggle >/dev/null 2>&1"
+            return True
+          3 -> do
+            void $ spawnCommand "hypr-screensaver stop >/dev/null 2>&1"
+            return True
+          _ -> return False
+    Gtk.widgetShowAll ebox
+    Gtk.toWidget ebox
+
+screensaverWidget :: TaffyIO Gtk.Widget
+screensaverWidget =
+  decorateWithClassAndBoxM "screensaver" simplifiedScreensaverWidget
+
 simplifiedWlsunsetWidget :: TaffyIO Gtk.Widget
 simplifiedWlsunsetWidget =
   -- Inner widget: no extra pill wrapping (the combiner provides that).
@@ -584,6 +613,7 @@ endWidgetsForHost hostName =
           ramSwapWidget,
           diskUsageWidget,
           networkWidget,
+          screensaverWidget,
           sunLockWidget,
           mprisWidget
         ]
@@ -594,6 +624,7 @@ endWidgetsForHost hostName =
           audioBacklightWidget,
           cpuWidget,
           ramSwapWidget,
+          screensaverWidget,
           sunLockWidget,
           mprisWidget
         ]
