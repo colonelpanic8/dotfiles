@@ -30,6 +30,7 @@ gotools
 /dotfiles/config/fontconfig/conf.d/10-hm-fonts.conf
 /dotfiles/config/fontconfig/conf.d/52-hm-default-fonts.conf
 /dotfiles/config/taffybar/_scratch/
+/dotfiles/config/taffybar/taffybar-*/
 /dotfiles/config/taffybar/status-notifier-item/
 /dotfiles/config/taffybar/.direnv/
 /dotfiles/config/taffybar/dist-newstyle/
@@ -45,4 +46,5 @@ gotools
 
 # Local tool state
 /.playwright-cli/
+/nixos/action-cache-dir/
 /dotfiles/config/taffybar/dbus-menu/
