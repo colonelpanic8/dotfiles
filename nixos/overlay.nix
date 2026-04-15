@@ -318,6 +318,8 @@ from transformers import (/' \
     };
   });
 
+  pykefcontrol = final.python3Packages.pykefcontrol;
+
   python-with-my-packages = let
     my-python-packages = python-packages:
     with python-packages; [
@@ -329,6 +331,7 @@ from transformers import (/' \
       numpy
       openpyxl
       pip
+      pykefcontrol
       requests
     ];
   in
@@ -337,6 +340,38 @@ from transformers import (/' \
   pythonPackagesExtensions = prev.pythonPackagesExtensions ++ [
     (
       python-final: python-prev: {
+        pykefcontrol = python-prev.buildPythonPackage rec {
+          pname = "pykefcontrol";
+          version = "0.9";
+          pyproject = true;
+
+          src = final.fetchFromGitHub {
+            owner = "N0ciple";
+            repo = "pykefcontrol";
+            rev = "530a7d15cf692c35a7c181c8f5e28edc0f1e085a";
+            hash = "sha256-V/uYzzUv/PslfZ/zSSAK4j6kI9lLQOXBN1AG0rjRrpg=";
+          };
+
+          postPatch = ''
+            substituteInPlace pyproject.toml \
+              --replace-fail 'version = "0.8"' 'version = "0.9"'
+          '';
+
+          build-system = with python-final; [ hatchling ];
+          propagatedBuildInputs = with python-final; [
+            aiohttp
+            requests
+          ];
+
+          pythonImportsCheck = [ "pykefcontrol" ];
+
+          meta = with final.lib; {
+            description = "Python library for controlling KEF LS50 Wireless II, LSX II, and LS60 speakers";
+            homepage = "https://github.com/N0ciple/pykefcontrol";
+            license = licenses.mit;
+            platforms = platforms.linux ++ platforms.darwin;
+          };
+        };
         pysilero-vad = python-prev.pysilero-vad.overridePythonAttrs (_: {
           src = final.fetchFromGitHub {
             owner = "colonelpanic8";
