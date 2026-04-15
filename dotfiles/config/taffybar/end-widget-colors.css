@@ -1,64 +1,42 @@
-/* End-widget color rotation.
+/* End-widget palette definitions.
  *
- * Prefer semantic end-slot classes when the bar binary provides them, but keep
- * compatibility with older deployed binaries that still attach `right-N`
- * classes. We only need the first two 5-color cycles for the current end-widget
- * counts on this machine.
+ * End widget coloring is driven from the shared bar stylesheet so the runtime
+ * widget tree can determine which pill gets which slot without extra per-widget
+ * CSS providers. The actual nth-last-child selectors live in
+ * end-widget-solid.css, which is loaded after the main theme as a final pass.
  */
 
 /* --- Rotation palette (5 colors) --- */
 
-/* 1 - indigo */
+/* 1 — indigo */
 @define-color end-color-1-bg      rgb(50, 60, 160);
 @define-color end-color-1-fg      #d5d8f8;
 @define-color end-color-1-border  rgb(90, 100, 210);
 
-/* 2 - purple */
+/* 2 — purple */
 @define-color end-color-2-bg      rgb(110, 45, 160);
 @define-color end-color-2-fg      #e8d5f8;
 @define-color end-color-2-border  rgb(155, 85, 210);
 
-/* 3 - emerald */
+/* 3 — emerald */
 @define-color end-color-3-bg      rgb(25, 130, 75);
 @define-color end-color-3-fg      #c8f5e0;
 @define-color end-color-3-border  rgb(55, 190, 115);
 
-/* 4 - teal */
+/* 4 — teal */
 @define-color end-color-4-bg      rgb(20, 120, 140);
 @define-color end-color-4-fg      #d0f2f8;
 @define-color end-color-4-border  rgb(50, 175, 200);
 
-/* 5 - rose */
+/* 5 — rose */
 @define-color end-color-5-bg      rgb(160, 40, 70);
 @define-color end-color-5-fg      #f8d5e0;
 @define-color end-color-5-border  rgb(210, 80, 115);
 
-/* --- Color rotation rules --- */
+/* --- Shared end-widget chrome --- */
 
 .outer-pad.end-widget,
-.end-widget .outer-pad,
-.outer-pad.right-1,
-.outer-pad.right-2,
-.outer-pad.right-3,
-.outer-pad.right-4,
-.outer-pad.right-5,
-.outer-pad.right-6,
-.outer-pad.right-7,
-.outer-pad.right-8,
-.outer-pad.right-9,
-.outer-pad.right-10,
-.right-1 .outer-pad,
-.right-2 .outer-pad,
-.right-3 .outer-pad,
-.right-4 .outer-pad,
-.right-5 .outer-pad,
-.right-6 .outer-pad,
-.right-7 .outer-pad,
-.right-8 .outer-pad,
-.right-9 .outer-pad,
-.right-10 .outer-pad,
-.outer-pad.sni-tray,
-.sni-tray .outer-pad {
+.outer-pad.sni-tray {
 	background-image: none;
 	box-shadow:
 		inset 0 1px 0 rgba(255, 255, 255, 0.10),
@@ -66,65 +44,9 @@
 		0 10px 24px rgba(0, 0, 0, 0.30);
 }
 
-.outer-pad.end-widget.end-slot-1,
-.end-widget.end-slot-1 .outer-pad,
-.outer-pad.right-1,
-.outer-pad.right-6,
-.right-1 .outer-pad,
-.right-6 .outer-pad {
-	background-color: @end-color-1-bg;
-	border-color: @end-color-1-border;
-	color: @end-color-1-fg;
-}
-
-.outer-pad.end-widget.end-slot-2,
-.end-widget.end-slot-2 .outer-pad,
-.outer-pad.right-2,
-.outer-pad.right-7,
-.right-2 .outer-pad,
-.right-7 .outer-pad {
-	background-color: @end-color-2-bg;
-	border-color: @end-color-2-border;
-	color: @end-color-2-fg;
-}
-
-.outer-pad.end-widget.end-slot-3,
-.end-widget.end-slot-3 .outer-pad,
-.outer-pad.right-3,
-.outer-pad.right-8,
-.right-3 .outer-pad,
-.right-8 .outer-pad {
-	background-color: @end-color-3-bg;
-	border-color: @end-color-3-border;
-	color: @end-color-3-fg;
-}
-
-.outer-pad.end-widget.end-slot-4,
-.end-widget.end-slot-4 .outer-pad,
-.outer-pad.right-4,
-.outer-pad.right-9,
-.right-4 .outer-pad,
-.right-9 .outer-pad {
-	background-color: @end-color-4-bg;
-	border-color: @end-color-4-border;
-	color: @end-color-4-fg;
-}
-
-.outer-pad.end-widget.end-slot-5,
-.end-widget.end-slot-5 .outer-pad,
-.outer-pad.right-5,
-.outer-pad.right-10,
-.right-5 .outer-pad,
-.right-10 .outer-pad {
-	background-color: @end-color-5-bg;
-	border-color: @end-color-5-border;
-	color: @end-color-5-fg;
-}
-
 /* --- SNI tray (center widget, not part of the rotation) --- */
 
-.outer-pad.sni-tray,
-.sni-tray .outer-pad {
+.outer-pad.sni-tray {
 	background-color: rgb(65, 70, 100);
 	border-color: rgb(110, 115, 160);
 }

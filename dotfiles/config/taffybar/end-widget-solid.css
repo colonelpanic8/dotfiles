@@ -1,96 +1,53 @@
 /* Final pass overrides for end-widget pill chrome.
  *
- * Keep this in sync with end-widget-colors.css so the solid-background pass
- * preserves both semantic end-slot styling and compatibility with older
- * `right-N` binaries.
+ * End widgets are packed with Gtk.boxPackEnd, so the visible right-hand pills
+ * stay contiguous at the end of the GtkBox child list. Use nth-last-child to
+ * rotate colors from the right edge without depending on extra slot classes.
  */
 
-.outer-pad.end-widget.end-slot-1,
-.end-widget.end-slot-1 .outer-pad,
-.outer-pad.right-1,
-.outer-pad.right-6,
-.right-1 .outer-pad,
-.right-6 .outer-pad {
-	background-color: rgb(50, 60, 160);
+.taffy-box > .outer-pad.end-widget:nth-last-child(5n + 1) {
+	background-color: @end-color-1-bg;
 	background-image: none;
-	border-color: rgb(90, 100, 210);
+	border-color: @end-color-1-border;
+	color: @end-color-1-fg;
 }
 
-.outer-pad.end-widget.end-slot-2,
-.end-widget.end-slot-2 .outer-pad,
-.outer-pad.right-2,
-.outer-pad.right-7,
-.right-2 .outer-pad,
-.right-7 .outer-pad {
-	background-color: rgb(110, 45, 160);
+.taffy-box > .outer-pad.end-widget:nth-last-child(5n + 2) {
+	background-color: @end-color-2-bg;
 	background-image: none;
-	border-color: rgb(155, 85, 210);
+	border-color: @end-color-2-border;
+	color: @end-color-2-fg;
 }
 
-.outer-pad.end-widget.end-slot-3,
-.end-widget.end-slot-3 .outer-pad,
-.outer-pad.right-3,
-.outer-pad.right-8,
-.right-3 .outer-pad,
-.right-8 .outer-pad {
-	background-color: rgb(25, 130, 75);
+.taffy-box > .outer-pad.end-widget:nth-last-child(5n + 3) {
+	background-color: @end-color-3-bg;
 	background-image: none;
-	border-color: rgb(55, 190, 115);
+	border-color: @end-color-3-border;
+	color: @end-color-3-fg;
 }
 
-.outer-pad.end-widget.end-slot-4,
-.end-widget.end-slot-4 .outer-pad,
-.outer-pad.right-4,
-.outer-pad.right-9,
-.right-4 .outer-pad,
-.right-9 .outer-pad {
-	background-color: rgb(20, 120, 140);
+.taffy-box > .outer-pad.end-widget:nth-last-child(5n + 4) {
+	background-color: @end-color-4-bg;
 	background-image: none;
-	border-color: rgb(50, 175, 200);
+	border-color: @end-color-4-border;
+	color: @end-color-4-fg;
 }
 
-.outer-pad.end-widget.end-slot-5,
-.end-widget.end-slot-5 .outer-pad,
-.outer-pad.right-5,
-.outer-pad.right-10,
-.right-5 .outer-pad,
-.right-10 .outer-pad {
-	background-color: rgb(160, 40, 70);
+.taffy-box > .outer-pad.end-widget:nth-last-child(5n + 5) {
+	background-color: @end-color-5-bg;
 	background-image: none;
-	border-color: rgb(210, 80, 115);
+	border-color: @end-color-5-border;
+	color: @end-color-5-fg;
 }
 
-.outer-pad.sni-tray,
-.sni-tray .outer-pad {
+.outer-pad.sni-tray {
 	background-color: rgb(65, 70, 100);
 	background-image: none;
 	border-color: rgb(110, 115, 160);
 }
 
 .outer-pad.end-widget,
-.end-widget .outer-pad,
-.outer-pad.right-1,
-.outer-pad.right-2,
-.outer-pad.right-3,
-.outer-pad.right-4,
-.outer-pad.right-5,
-.outer-pad.right-6,
-.outer-pad.right-7,
-.outer-pad.right-8,
-.outer-pad.right-9,
-.outer-pad.right-10,
-.right-1 .outer-pad,
-.right-2 .outer-pad,
-.right-3 .outer-pad,
-.right-4 .outer-pad,
-.right-5 .outer-pad,
-.right-6 .outer-pad,
-.right-7 .outer-pad,
-.right-8 .outer-pad,
-.right-9 .outer-pad,
-.right-10 .outer-pad,
-.outer-pad.sni-tray,
-.sni-tray .outer-pad {
+.outer-pad.sni-tray {
 	box-shadow:
 		inset 0 1px 0 rgba(255, 255, 255, 0.10),
 		inset 0 0 0 1px rgba(255, 255, 255, 0.10),
