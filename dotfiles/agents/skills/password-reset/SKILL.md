@@ -1,18 +1,18 @@
 ---
 name: password-reset
-description: Use when the user wants to reset or rotate a website or service password end-to-end, including finding the right `pass` entry, generating a new password with `xkcdpassgen`, retrieving reset emails through Gmail MCP or a local Gmail CLI, completing the reset in the browser with Chrome DevTools MCP, and updating the password store safely without losing entry metadata.
+description: Use when the user wants to reset or rotate a website or service password end-to-end, including finding the right `pass` entry, generating a new password with `xkcdpassgen`, retrieving reset emails through `gws gmail` or a local mail CLI, completing the reset in the browser with Chrome DevTools MCP, and updating the password store safely without losing entry metadata.
 ---
 
 # Password Reset
 
 ## Overview
 
-Handle password resets end-to-end. Prefer Gmail MCP for reset-email retrieval, Chrome DevTools MCP for website interaction, and the local `xkcdpassgen` helper for password generation.
+Handle password resets end-to-end. Prefer `gws gmail` for reset-email retrieval, Chrome DevTools MCP for website interaction, and the local `xkcdpassgen` helper for password generation.
 
 ## Tool Priorities
 
-- Prefer Gmail MCP over opening Gmail in the browser.
-- If Gmail MCP is unavailable, use an installed Gmail CLI or IMAP-based mail tool if one exists locally. Inspect the environment first instead of guessing command names.
+- Prefer `gws gmail` over opening Gmail in the browser.
+- If `gws` is unavailable, use an installed Gmail CLI or IMAP-based mail tool if one exists locally. Inspect the environment first instead of guessing command names.
 - Prefer Chrome DevTools MCP for all browser interaction.
 - Use `pass find` and `pass show` before asking the user for credentials or account details.
 
@@ -77,7 +77,7 @@ If the site rejects the password because of policy constraints, keep the canonic
    - navigate to the login or account page
    - use the site's "forgot password" flow, or
    - sign in and navigate to security settings if the user asked for a rotation rather than a reset
-6. Use Gmail MCP to retrieve the reset email when needed:
+6. Use `gws gmail` to retrieve the reset email when needed:
    - search recent mail by sender domain, subject, or reset-related keywords
    - open the message and extract the reset link
    - navigate to that link in Chrome DevTools MCP
@@ -87,15 +87,15 @@ If the site rejects the password because of policy constraints, keep the canonic
    - successful login with the new password
 9. Promote the temp password into the canonical `pass` entry while preserving metadata, then remove the temp entry.
 
-## Gmail Guidance
+## Email Guidance
 
-Prefer Gmail MCP for reset-email handling. Typical pattern:
+Prefer `gws gmail` for reset-email handling. Typical pattern:
 
-- search for recent messages from the service domain
+- list recent messages with `gws gmail users messages list --params '{"userId":"me","q":"from:service.example newer_than:7d"}'`
 - bias toward reset keywords such as `reset`, `password`, `security`, `verify`, or `signin`
-- read the shortlisted messages rather than browsing Gmail manually
+- read shortlisted messages with `gws gmail users messages get --params '{"userId":"me","id":"MESSAGE_ID","format":"full"}'` rather than browsing Gmail manually
 
-If Gmail MCP is unavailable, use an installed Gmail CLI or local mail helper only as a fallback. Keep that discovery lightweight and local to the current environment.
+If `gws` is unavailable, use an installed Gmail CLI or local mail helper only as a fallback. Keep that discovery lightweight and local to the current environment.
 
 ## Browser Guidance
 

@@ -111,10 +111,6 @@ args = ["-y", "chrome-devtools-mcp@latest", "--auto-connect"]
 command = "npx"
 args = ["-y", "@google-cloud/observability-mcp"]
 
-[mcp_servers.gmail]
-command = "nix"
-args = ["run", "/home/imalison/Projects/gmail-mcp#gmail-mcp-server"]
-
 [mcp_servers.openaiDeveloperDocs]
 url = "https://developers.openai.com/mcp"
 
@@ -122,9 +118,6 @@ url = "https://developers.openai.com/mcp"
 unified_exec = true
 apps = true
 steer = true
-
-[plugins."gmail@openai-curated"]
-enabled = true
 
 [plugins."google-drive@openai-curated"]
 enabled = true

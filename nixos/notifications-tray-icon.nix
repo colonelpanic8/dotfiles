@@ -4,12 +4,18 @@ makeEnable config "myModules.notifications-tray-icon" true {
     inputs.notifications-tray-icon.overlays.default
   ];
 
-  home-manager.users.imalison = let
+  home-manager.users.imalison = { config, ... }: let
     notificationsTrayIcon = pkgs.haskellPackages.notifications-tray-icon;
     gmailExecStart = pkgs.writeShellScript "notifications-tray-icon-gmail" ''
-      creds=$(${pkgs.pass}/bin/pass show gmail-mcp/oauth-credentials)
-      client_id=$(echo "$creds" | ${pkgs.gnugrep}/bin/grep '^client_id:' | cut -d' ' -f2)
-      client_secret=$(echo "$creds" | ${pkgs.gnugrep}/bin/grep '^client_secret:' | cut -d' ' -f2)
+      creds_file="${config.xdg.configHome}/gws/client_secret.json"
+      client_id=$(${pkgs.jq}/bin/jq -r '.installed.client_id // .web.client_id // empty' "$creds_file")
+      client_secret=$(${pkgs.jq}/bin/jq -r '.installed.client_secret // .web.client_secret // empty' "$creds_file")
+
+      if [ -z "$client_id" ] || [ -z "$client_secret" ]; then
+        echo "Failed to read Gmail OAuth client credentials from $creds_file" >&2
+        exit 1
+      fi
+
       exec ${notificationsTrayIcon}/bin/notifications-tray-icon gmail \
         --client-id "$client_id" \
         --client-secret "$client_secret"

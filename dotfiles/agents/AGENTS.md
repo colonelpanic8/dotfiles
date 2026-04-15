@@ -62,7 +62,7 @@
 
 This is an org-mode repository containing personal task management, calendars, habits, and project tracking files. It serves as the central hub for Ivan's personal organization.
 
-## Available MCP Tools
+## Available Tools
 
 ### Chrome DevTools MCP
 A browser automation MCP is available for interacting with web pages. Use it to:
@@ -72,13 +72,12 @@ A browser automation MCP is available for interacting with web pages. Use it to:
 - Read page content and extract information
 - Automate multi-step web workflows (booking, purchasing, form submission, etc.)
 
-### Gmail MCP
-A Gmail MCP is available for email operations. Use it to:
-- Search, read, and send emails
-- Draft emails for review before sending
-- Manage labels and filters
-- Batch modify or clean up emails
-- Download attachments
+### Google Workspace CLI (`gws`)
+The local `gws` CLI is available for Google Workspace operations. Use it to:
+- Search, read, and send Gmail messages
+- Manage Gmail labels and filters
+- Download attachments and inspect message payloads
+- Access Drive, Calendar, Docs, Sheets, and other Google Workspace APIs
 
 ## Credentials via `pass`
 
@@ -101,7 +100,7 @@ Examples of what's stored:
 
 - When filling out forms or making purchases, pull personal info from this file and credentials from `pass` rather than asking the user to provide them.
 - For web tasks, prefer using the Chrome DevTools MCP to automate interactions directly.
-- For email tasks, prefer using the Gmail MCP over navigating to Gmail in the browser.
+- For email tasks, prefer using `gws gmail` over navigating to Gmail in the browser.
 - If a task requires a credential not found in `pass`, ask the user rather than guessing.
 - This repo's org files (gtd.org, calendar.org, habits.org, projects.org) contain task and scheduling data. The org-agenda-api skill/service can also be used to query agenda data programmatically.
 
@@ -127,4 +126,3 @@ Examples of what's stored:
   - `./project-guides/taffybar.md`
   - `./project-guides/railbird.md`
   - `./project-guides/org-emacs-packages.md`
-

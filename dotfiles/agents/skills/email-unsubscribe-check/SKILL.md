@@ -51,7 +51,7 @@ For each confirmed sender, do ALL of these:
 Two approaches depending on the sender:
 
 **For emails with unsubscribe links:**
-- Read the email via Gmail MCP to find the unsubscribe URL (usually at bottom of email body)
+- Read the email via `gws gmail` to find the unsubscribe URL (usually at bottom of email body)
 - Navigate to the URL with Chrome DevTools MCP
 - Take a snapshot, find the confirmation button/checkbox
 - Click through to complete the unsubscribe
@@ -67,7 +67,9 @@ Two approaches depending on the sender:
 
 Even after unsubscribing, create a filter to catch stragglers:
 ```
-create_filter criteria:{from:"domain.com"} action:{removeLabelIds:["INBOX"]}
+gws gmail users settings filters create \
+  --params '{"userId":"me"}' \
+  --json '{"criteria":{"from":"domain.com"},"action":{"removeLabelIds":["INBOX"]}}'
 ```
 
 ### 3. Mark old emails as read and archive them (minimum hygiene)
@@ -79,8 +81,10 @@ After unsubscribing, clean up existing email from the sender.
 
 Example:
 ```
-search_emails query:"from:domain.com" maxResults:50
-batch_modify_emails messageIds:[...] removeLabelIds:["UNREAD","INBOX"]
+gws gmail users messages list --params '{"userId":"me","q":"from:domain.com","maxResults":50}'
+gws gmail users messages batchModify \
+  --params '{"userId":"me"}' \
+  --json '{"ids":["..."],"removeLabelIds":["UNREAD","INBOX"]}'
 ```
 
 ## Signals That an Email is Unsubscribeable
