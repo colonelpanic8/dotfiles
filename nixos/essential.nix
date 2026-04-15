@@ -16,6 +16,7 @@ in
     bind
     binutils
     cachix
+    bubblewrap
     cmake
     dex
     direnv
