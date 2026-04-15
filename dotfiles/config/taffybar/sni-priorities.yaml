@@ -31,6 +31,8 @@ priorities:
   priority: -1
 - key: item-id:systray_6518
   priority: -1
+- key: item-id:tailscale
+  priority: -1
 - key: process:tailscale
   priority: -1
 - key: item-id:spotify-client
