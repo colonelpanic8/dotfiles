@@ -77,7 +77,7 @@
 ;; Without this, org can behave very strangely
 (use-package org
   :ensure
-  (org :type git :host github :repo ("colonelpanic8/org-mode" . "org")
+  (org :type git :host github :repo "colonelpanic8/org-mode"
        :branch "my-main-2025"
        :depth full
        :files (:defaults "lisp/*.el" ("etc/styles/" "etc/styles/*"))
