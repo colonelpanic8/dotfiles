@@ -98,7 +98,7 @@ import           XMonad.Util.WorkspaceCompare
 
 myConfig = def
   { modMask = mod4Mask
-  , terminal = "ghostty"
+  , terminal = "ghostty --gtk-single-instance=false"
   , manageHook
     = composeAll [ placeHook (fixed (0.5, 0.5))
                  , isDialog --> doFloat
