@@ -10,7 +10,7 @@ let
 in
 makeEnable config "myModules.sni" true {
   home-manager.sharedModules = [
-    {
+    ({ lib, ... }: {
       systemd.user.services.kanshi-sni = {
         Unit = {
           Description = "kanshi-sni tray app";
@@ -36,6 +36,15 @@ makeEnable config "myModules.sni" true {
         indicator = true;
       };
 
+      home.activation.disableKdeConnectBluetooth =
+        lib.hm.dag.entryAfter [ "writeBoundary" ] ''
+          ${pkgs.kdePackages.kconfig}/bin/kwriteconfig6 \
+            --file kdeconnect/config \
+            --group General \
+            --key disabled_providers \
+            'BluetoothLinkProvider,AsyncLinkProvider'
+        '';
+
       services.network-manager-applet.enable = true;
 
       # Disable the XDG autostart for nm-applet since we're managing it via systemd.
@@ -60,6 +69,6 @@ makeEnable config "myModules.sni" true {
           };
         };
       };
-    }
+    })
   ];
 }
