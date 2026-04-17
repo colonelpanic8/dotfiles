@@ -23,7 +23,7 @@
     # extraFlags = ["--node-taint preferNoSchedule=true:NoSchedule"];
   };
   services.mullvad-vpn.enable = lib.mkForce false;
-  myModules.nixified-ai.enable = true;
+  myModules.nixified-ai.enable = false;
   # boot.kernelPackages = pkgs.linuxPackages_latest;
 
   boot.loader.systemd-boot.configurationLimit = 5;
