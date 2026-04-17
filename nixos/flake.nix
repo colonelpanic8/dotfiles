@@ -85,6 +85,11 @@
       url = "git+https://github.com/hyprwm/Hyprland?submodules=1&ref=refs/tags/v0.53.0";
     };
 
+    hyprland-lua-config = {
+      # Experimental Lua config branch from PR 13817.
+      url = "git+https://github.com/hyprwm/Hyprland?submodules=1&ref=refs/pull/13817/head";
+    };
+
     hy3 = {
       url = "github:outfoxxed/hy3?ref=hl0.53.0";
       inputs.hyprland.follows = "hyprland";
