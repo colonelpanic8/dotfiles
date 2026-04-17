@@ -18,7 +18,7 @@
   myModules.gitea-runner.enable = true;
   myModules.postgres.enable = true;
   myModules.railbird-k3s = {
-    enable = true;
+    enable = false;
     serverAddr = "https://jimi-hendnix.local:6443";
     # extraFlags = ["--node-taint preferNoSchedule=true:NoSchedule"];
   };
