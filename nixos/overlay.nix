@@ -75,6 +75,15 @@ in
     dontCheckRuntimeDeps = true;
   });
 
+  magma = prev.magma.overrideAttrs (oldAttrs: {
+    # The CUDA codegen step in magma 2.9.0 can segfault when `make generate`
+    # fans out across all cores. Keep the rest of the build parallel.
+    preConfigure = builtins.replaceStrings
+      [ "make -j$NIX_BUILD_CORES generate" ]
+      [ "make -j1 generate" ]
+      oldAttrs.preConfigure;
+  });
+
   # XXX: codex and claude-code are now provided by flakes in nix.nix
   # See the overlay at the end of nixpkgs.overlays in nix.nix
 
