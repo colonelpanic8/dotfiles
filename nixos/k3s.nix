@@ -81,6 +81,13 @@ in {
     };
 
     systemd.services = {
+      # k3s can sit in sd_notify startup indefinitely while waiting for remote
+      # etcd peers. Treat it as a long-running service so nixos-rebuild switch
+      # does not block on cluster readiness.
+      k3s.serviceConfig = {
+        Type = mkForce "simple";
+      };
+
       nvidia-container-toolkit-cdi-generator = {
         # Even with `--library-search-path`, `nvidia-ctk` won't find the libs
         # unless I bodge their path into the environment.
