@@ -1,5 +1,11 @@
+hostname := "mac-demarco-mini"
+
 switch:
-	sudo -H /run/current-system/sw/bin/nix run nix-darwin -- switch --flake .#
+	sudo -H /run/current-system/sw/bin/nix run nix-darwin -- switch --flake .#{{hostname}}
+
+update:
+	/run/current-system/sw/bin/nix flake update
+	just switch
 
 update-nix-darwin:
 	nix flake lock --update-input nix-darwin

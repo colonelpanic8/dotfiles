@@ -1,15 +1,16 @@
-{ pkgs, inputs, ... }:
-let
+{
+  pkgs,
+  lib,
+  inputs,
+  ...
+}: let
   git-blame-rank = inputs.git-blame-rank.packages.${pkgs.stdenv.hostPlatform.system}.default;
   keepbook = inputs.keepbook.packages.${pkgs.stdenv.hostPlatform.system}.keepbook.overrideAttrs (_: {
     # Upstream checks currently depend on TS artifacts that are not built in Nix.
     doCheck = false;
   });
-in
-{
-  nixpkgs.config.allowBroken = true;
 
-  environment.systemPackages = with pkgs; [
+  commonPkgs = lib.filter (pkg: lib.meta.availableOn pkgs.stdenv.hostPlatform pkg) ((with pkgs; [
     automake
     bazel
     bento4
@@ -18,38 +19,27 @@ in
     cachix
     bubblewrap
     cmake
-    dex
     direnv
-    dpkg
-    efibootmgr
-    emacs-auto
     fd
     ffmpeg
     file
     gawk
     gcc
-    gdb
     gh
     git-fame
     git-blame-rank
     git-lfs
     git-sync
-    git-sync-rs
     gitFull
     gnumake
-    gparted
     home-manager
     htop
-    inotify-tools
-    iotop
     ispell
     jq
     just
     keepbook
-    lshw
     lsof
     magic-wormhole-rs
-    mesa-demos
     ncdu
     fastfetch
     neovim
@@ -57,24 +47,47 @@ in
     nix-search-cli
     pass
     patchelf
-    pciutils
     pstree
-    pulseaudio
-    python-with-my-packages
     rclone
     ripgrep
-    runc
     silver-searcher
     skim
-    sshfs
-    sysz
     tmux
-    tzupdate
-    udiskie
     unzip
-    usbutils
     wget
     xkcdpass
     yubikey-manager
+  ]) ++ lib.optionals (builtins.hasAttr "git-sync-rs" pkgs) [pkgs.git-sync-rs]);
+
+  linuxOnly = with pkgs; [
+    dex
+    dpkg
+    efibootmgr
+    emacs-auto
+    gparted
+    inotify-tools
+    iotop
+    lshw
+    mesa-demos
+    pciutils
+    pulseaudio
+    python-with-my-packages
+    runc
+    sshfs
+    sysz
+    gdb
+    udiskie
+    usbutils
+    tzupdate
   ];
+
+  darwinOnly = with pkgs; [
+  ];
+in {
+  nixpkgs.config.allowBroken = true;
+
+  environment.systemPackages =
+    commonPkgs
+    ++ lib.optionals pkgs.stdenv.isLinux linuxOnly
+    ++ lib.optionals pkgs.stdenv.isDarwin darwinOnly;
 }

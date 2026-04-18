@@ -152,6 +152,9 @@ in {
                   {}
                   // optionalAttrs (instance.token != null) {
                     TOKEN = instance.token;
+                  }
+                  // optionalAttrs (instance.tokenFile != null) {
+                    TOKEN_FILE = toString instance.tokenFile;
                   };
                 RunAtLoad = true;
                 ProgramArguments = [
@@ -164,6 +167,10 @@ in {
                       '' else ""
                     }
                     if [ ! -e "/var/lib/gitea-runner/${name}/.runner" ]; then
+                        if [ -z "''${TOKEN:-}" ]; then
+                            echo "Missing registration token for ${name}" >&2
+                            exit 1
+                        fi
                         ${cfg.package}/bin/act_runner register --no-interactive \
                         --instance ${escapeShellArg instance.url} \
                         --token "$TOKEN" \

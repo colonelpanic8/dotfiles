@@ -3,8 +3,13 @@
 
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixpkgs-unstable";
+    flake-utils.url = "github:numtide/flake-utils";
     nix-darwin.url = "github:LnL7/nix-darwin";
     nix-darwin.inputs.nixpkgs.follows = "nixpkgs";
+    agenix = {
+      url = "github:ryantm/agenix";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
     railbird-secrets = {
       url = "git+ssh://gitea@dev.railbird.ai:1123/railbird/secrets-flake.git";
     };
@@ -32,26 +37,55 @@
       url = "github:sadjow/claude-code-nix";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+
+    keepbook = {
+      url = "github:colonelpanic8/keepbook";
+      inputs.nixpkgs.follows = "nixpkgs";
+      inputs.flake-utils.follows = "flake-utils";
+    };
+
+    git-blame-rank = {
+      url = "github:colonelpanic8/git-blame-rank";
+      inputs.nixpkgs.follows = "nixpkgs";
+      inputs.flake-utils.follows = "flake-utils";
+    };
   };
 
-  outputs = inputs@{ self, nix-darwin, nixpkgs, home-manager, ... }:
-  let
+  outputs = inputs @ {
+    self,
+    agenix,
+    nix-darwin,
+    nixpkgs,
+    home-manager,
+    nix-homebrew,
+    ...
+  }: let
     libDir = ../dotfiles/lib;
-    configuration = { pkgs, lib, config, ... }:
-    let
-      essentialPkgs = (import ../nixos/essential.nix { inherit pkgs lib; }).environment.systemPackages;
+    configuration = {
+      pkgs,
+      lib,
+      config,
+      ...
+    }: let
+      essentialPkgs = (import ../nixos/essential.nix {inherit pkgs lib inputs;}).environment.systemPackages;
     in {
       networking.hostName = "mac-demarco-mini";
-      imports = [ (import ./gitea-actions-runner.nix) ];
+      imports = [(import ./gitea-actions-runner.nix)];
+      age = {
+        identityPaths = [
+          "${config.users.users.kat.home}/.ssh/id_ed25519"
+          "/etc/ssh/ssh_host_ed25519_key"
+          "/etc/ssh/ssh_host_rsa_key"
+        ];
+        secrets.gitea-runner-token.file = ../nixos/secrets/gitea-runner-token.mac-demarco-mini.age;
+      };
       services.gitea-actions-runner = {
         user = "gitea-runner";
         instances.nix = {
           enable = true;
           name = config.networking.hostName;
           url = "https://dev.railbird.ai";
-          # Keep the runner registration token out of git.
-          # Create this file on the machine before the runner is (re)registered.
-          tokenFile = "/var/lib/gitea-runner/nix/token";
+          tokenFile = config.age.secrets.gitea-runner-token.path;
           labels = [
             "nix-darwin-${pkgs.system}:host"
             "macos-aarch64-darwin"
@@ -92,6 +126,17 @@
       };
 
       system.primaryUser = "kat";
+
+      system.defaults.NSGlobalDomain."com.apple.swipescrolldirection" = false;
+      system.defaults.CustomUserPreferences."com.apple.screensaver".idleTime = 300;
+      system.defaults.screensaver.askForPassword = false;
+      system.defaults.screensaver.askForPasswordDelay = 0;
+
+      power.sleep = {
+        computer = "never";
+        display = "never";
+        harddisk = "never";
+      };
 
       # launchd.daemons.gitea-runner-restarter = {
       #   serviceConfig = {
@@ -136,24 +181,27 @@
           claude-code = inputs.claude-code-nix.packages.${prev.stdenv.hostPlatform.system}.default;
         })
       ];
-      environment.systemPackages =
-        essentialPkgs
-        ++ (with pkgs; [
-          alejandra
-          claude-code
-          cocoapods
-          codex
-          nodePackages.prettier
-          nodejs
-          slack
-          tea
-          typescript
-          vim
-          yarn
-        ]);
+      environment.systemPackages = essentialPkgs ++ [pkgs.spotify];
 
       nixpkgs.config.allowUnfree = true;
 
+      # Install GUI-visible fonts into /Library/Fonts/Nix Fonts.
+      fonts.packages = with pkgs; [
+        nerd-fonts.jetbrains-mono
+      ];
+
+      # Homebrew casks (managed by nix-darwin, installed by nix-homebrew)
+      homebrew = {
+        enable = true;
+        casks = [
+          "codex-app"
+          "ghostty"
+        ];
+        masApps = {
+          Xcode = 497799835;
+        };
+        onActivation.cleanup = "zap";
+      };
 
       # Auto upgrade nix package and the daemon service.
       launchd.user.envVariables.PATH = config.environment.systemPath;
@@ -174,7 +222,6 @@
         ];
       };
 
-
       # Set Git commit hash for darwin-version.
       system.configurationRevision = self.rev or self.dirtyRev or null;
 
@@ -192,8 +239,6 @@
         createHome = false;
       };
 
-      home-manager.useGlobalPkgs = true;      home-manager.useUserPackages = true;
-
       users.users.kat = {
         name = "kat";
         home = "/Users/kat";
@@ -201,37 +246,38 @@
 
       programs.zsh = {
         enable = true;
-        shellInit = ''
-          fpath+="${libDir}/functions"
-          for file in "${libDir}/functions/"*
-          do
-          autoload "''${file##*/}"
-          done
-        '';
-        interactiveShellInit = ''
-          # eval "$(register-python-argcomplete prb)"
-          # eval "$(register-python-argcomplete prod-prb)"
-          # eval "$(register-python-argcomplete railbird)"
-          # [ -n "$EAT_SHELL_INTEGRATION_DIR" ] && source "$EAT_SHELL_INTEGRATION_DIR/zsh"
-
-          autoload -Uz bracketed-paste-magic
-          zle -N bracketed-paste bracketed-paste-magic
-        '';
+        enableSyntaxHighlighting = true;
       };
-
-      home-manager.users.kat = {
-        programs.starship = {
-          enable = true;
+      home-manager = {
+        useGlobalPkgs = true;
+        useUserPackages = true;
+        backupFileExtension = "hm-backup";
+        extraSpecialArgs = {
+          inherit inputs libDir;
         };
-        programs.zsh.enable = true;
-        home.stateVersion = "24.05";
+        sharedModules = [./home/common.nix];
+        users.kat = {
+          imports = [./home/kat.nix];
+        };
       };
     };
-  in
-  {
+  in {
     darwinConfigurations."mac-demarco-mini" = nix-darwin.lib.darwinSystem {
       modules = [
+        agenix.darwinModules.default
         home-manager.darwinModules.home-manager
+        nix-homebrew.darwinModules.nix-homebrew
+        {
+          nix-homebrew = {
+            enable = true;
+            user = "kat";
+            autoMigrate = true;
+            taps = {
+              "homebrew/homebrew-core" = inputs.homebrew-core;
+              "homebrew/homebrew-cask" = inputs.homebrew-cask;
+            };
+          };
+        }
         configuration
       ];
     };
