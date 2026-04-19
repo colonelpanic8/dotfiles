@@ -1,0 +1,10 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(sudo darwin-rebuild switch:*)",
+      "Bash(darwin-rebuild switch:*)"
+    ],
+    "deny": [],
+    "ask": []
+  }
+}
