@@ -1,6 +1,8 @@
 model = "gpt-5.5"
 model_reasoning_effort = "high"
 personality = "pragmatic"
+notify = ["/Users/kat/.codex/plugins/cache/openai-bundled/computer-use/1.0.750/Codex Computer Use.app/Contents/SharedSupport/SkyComputerUseClient.app/Contents/MacOS/SkyComputerUseClient", "turn-ended"]
+
 [projects."/home/imalison/Projects/nixpkgs"]
 trust_level = "trusted"
 
@@ -105,6 +107,13 @@ trust_level = "trusted"
 
 [projects."/run/media/imalison/NIXOS_SD"]
 trust_level = "trusted"
+
+[projects."/Users/kat/dotfiles"]
+trust_level = "trusted"
+
+[projects."/Users/kat"]
+trust_level = "trusted"
+
 [notice]
 hide_gpt5_1_migration_prompt = true
 "hide_gpt-5.1-codex-max_migration_prompt" = true
@@ -120,6 +129,10 @@ args = ["-y", "chrome-devtools-mcp@latest", "--auto-connect"]
 command = "npx"
 args = ["-y", "@google-cloud/observability-mcp"]
 
+[mcp_servers.gmail]
+command = "nix"
+args = ["run", "/home/imalison/Projects/gmail-mcp#gmail-mcp-server"]
+
 [mcp_servers.openaiDeveloperDocs]
 url = "https://developers.openai.com/mcp"
 
@@ -128,7 +141,24 @@ unified_exec = true
 apps = true
 steer = true
 
+[marketplaces.openai-bundled]
+last_updated = "2026-04-19T01:07:40Z"
+source_type = "local"
+source = "/Users/kat/.codex/.tmp/bundled-marketplaces/openai-bundled"
+
+[plugins."google-calendar@openai-curated"]
+enabled = true
+
+[plugins."gmail@openai-curated"]
+enabled = true
+
 [plugins."google-drive@openai-curated"]
+enabled = true
+
+[plugins."computer-use@openai-bundled"]
+enabled = true
+
+[plugins."github@openai-curated"]
 enabled = true
 
 [tui.model_availability_nux]

@@ -22,7 +22,7 @@
     repositories = {
       org = {
         path = "/Users/kat/org";
-        uri = "ssh://gitea@1896Folsom.duckdns.org:1123/kkathuang/org.git";
+        uri = "git@github.com:colonelpanic8/org.git";
         interval = 180;
       };
       password-store = {

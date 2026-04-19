@@ -56,9 +56,18 @@ let
 in
 {
   home.file =
-    (builtins.listToAttrs (map mkManaged managedRelFiles))
-    // {
-      # Keep ~/.emacs.d as a directory symlink (matches current setup).
-      ".emacs.d".source = oos "${worktreeDotfiles}/emacs.d";
-    };
+    builtins.listToAttrs (map mkManaged managedRelFiles);
+
+  # Home Manager directory links for .emacs.d resolve through the store on this
+  # machine, which breaks Elpaca's writable state under ~/.emacs.d/elpaca.
+  # Manage placement here instead so ~/.emacs.d always points at the live
+  # worktree checkout.
+  home.activation.linkEmacsDotdir = lib.hm.dag.entryAfter ["writeBoundary"] ''
+    if [ -L "$HOME/.emacs.d" ] || [ ! -e "$HOME/.emacs.d" ]; then
+      rm -f "$HOME/.emacs.d"
+      ln -s "${worktreeDotfiles}/emacs.d" "$HOME/.emacs.d"
+    else
+      echo "Skipping ~/.emacs.d relink because it is not a symlink" >&2
+    fi
+  '';
 }

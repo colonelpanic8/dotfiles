@@ -3,13 +3,8 @@
 
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixpkgs-unstable";
-    flake-utils.url = "github:numtide/flake-utils";
     nix-darwin.url = "github:LnL7/nix-darwin";
     nix-darwin.inputs.nixpkgs.follows = "nixpkgs";
-    agenix = {
-      url = "github:ryantm/agenix";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
     railbird-secrets = {
       url = "git+ssh://gitea@dev.railbird.ai:1123/railbird/secrets-flake.git";
     };
@@ -26,68 +21,23 @@
     };
     home-manager.url = "github:nix-community/home-manager";
     home-manager.inputs.nixpkgs.follows = "nixpkgs";
-
-    codex-cli-nix = {
-      # Default branch is `main` on GitHub (not `master`).
-      url = "github:sadjow/codex-cli-nix/main";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
-
-    claude-code-nix = {
-      url = "github:sadjow/claude-code-nix";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
-
-    keepbook = {
-      url = "github:colonelpanic8/keepbook";
-      inputs.nixpkgs.follows = "nixpkgs";
-      inputs.flake-utils.follows = "flake-utils";
-    };
-
-    git-blame-rank = {
-      url = "github:colonelpanic8/git-blame-rank";
-      inputs.nixpkgs.follows = "nixpkgs";
-      inputs.flake-utils.follows = "flake-utils";
-    };
   };
 
-  outputs = inputs @ {
-    self,
-    agenix,
-    nix-darwin,
-    nixpkgs,
-    home-manager,
-    nix-homebrew,
-    ...
-  }: let
+  outputs = inputs@{ self, nix-darwin, nixpkgs, home-manager, ... }:
+  let
     libDir = ../dotfiles/lib;
-    configuration = {
-      pkgs,
-      lib,
-      config,
-      ...
-    }: let
-      essentialPkgs = (import ../nixos/essential.nix {inherit pkgs lib inputs;}).environment.systemPackages;
-    in {
+    configuration = { pkgs, config, ... }: {
       networking.hostName = "mac-demarco-mini";
-      imports = [(import ./gitea-actions-runner.nix)];
-      age = {
-        identityPaths = [
-          "${config.users.users.kat.home}/.ssh/id_ed25519"
-          "/etc/ssh/ssh_host_ed25519_key"
-          "/etc/ssh/ssh_host_rsa_key"
-        ];
-        secrets.gitea-runner-token.file = ../nixos/secrets/gitea-runner-token.mac-demarco-mini.age;
-      };
+      imports = [ (import ./gitea-actions-runner.nix) ];
       services.gitea-actions-runner = {
         user = "gitea-runner";
         instances.nix = {
           enable = true;
           name = config.networking.hostName;
           url = "https://dev.railbird.ai";
-          tokenFile = config.age.secrets.gitea-runner-token.path;
+          token = "H0A7YXAWsKSp9QzvMymfJI12hbxwR7UerEHpCJUe";
           labels = [
-            "nix-darwin-${pkgs.stdenv.hostPlatform.system}:host"
+            "nix-darwin-${pkgs.system}:host"
             "macos-aarch64-darwin"
             "nix:host"
           ];
@@ -111,7 +61,7 @@
             gitFull
             gnused
             ncdu
-            nixVersions.stable
+            nixFlakes
             nodejs
             openssh
             wget
@@ -126,17 +76,6 @@
       };
 
       system.primaryUser = "kat";
-
-      system.defaults.NSGlobalDomain."com.apple.swipescrolldirection" = false;
-      system.defaults.CustomUserPreferences."com.apple.screensaver".idleTime = 300;
-      system.defaults.screensaver.askForPassword = false;
-      system.defaults.screensaver.askForPasswordDelay = 0;
-
-      power.sleep = {
-        computer = "never";
-        display = "never";
-        harddisk = "never";
-      };
 
       # launchd.daemons.gitea-runner-restarter = {
       #   serviceConfig = {
@@ -173,35 +112,27 @@
         };
       };
 
-      nixpkgs.overlays = [
-        (import ../nixos/overlay.nix)
-        # Use codex and claude-code from dedicated flakes with cachix
-        (final: prev: {
-          codex = inputs.codex-cli-nix.packages.${prev.stdenv.hostPlatform.system}.default;
-          claude-code = inputs.claude-code-nix.packages.${prev.stdenv.hostPlatform.system}.default;
-        })
+      nixpkgs.overlays = [(import ../nixos/overlay.nix)];
+      environment.systemPackages = with pkgs; [
+        #python-with-my-packages
+        emacs
+        alejandra
+        cocoapods
+        gitFull
+        just
+        tmux
+        htop
+        nodePackages.prettier
+        nodejs
+        ripgrep
+        slack
+        typescript
+        vim
+        yarn
       ];
-      environment.systemPackages = essentialPkgs ++ [pkgs.spotify];
 
       nixpkgs.config.allowUnfree = true;
 
-      # Install GUI-visible fonts into /Library/Fonts/Nix Fonts.
-      fonts.packages = with pkgs; [
-        nerd-fonts.jetbrains-mono
-      ];
-
-      # Homebrew casks (managed by nix-darwin, installed by nix-homebrew)
-      homebrew = {
-        enable = true;
-        casks = [
-          "codex-app"
-          "ghostty"
-        ];
-        masApps = {
-          Xcode = 497799835;
-        };
-        onActivation.cleanup = "zap";
-      };
 
       # Auto upgrade nix package and the daemon service.
       launchd.user.envVariables.PATH = config.environment.systemPath;
@@ -209,18 +140,8 @@
       programs.direnv.enable = true;
 
       # Necessary for using flakes on this system.
-      nix.settings = {
-        experimental-features = "nix-command flakes";
-        substituters = [
-          "https://cache.nixos.org"
-          "https://codex-cli.cachix.org"
-          "https://claude-code.cachix.org"
-        ];
-        trusted-public-keys = [
-          "codex-cli.cachix.org-1:1Br3H1hHoRYG22n//cGKJOk3cQXgYobUel6O8DgSing="
-          "claude-code.cachix.org-1:YeXf2aNu7UTX8Vwrze0za1WEDS+4DuI2kVeWEE4fsRk="
-        ];
-      };
+      nix.settings.experimental-features = "nix-command flakes";
+
 
       # Set Git commit hash for darwin-version.
       system.configurationRevision = self.rev or self.dirtyRev or null;
@@ -229,7 +150,6 @@
       system.stateVersion = 4;
 
       # The platform the configuration will be used on.
-
       nixpkgs.hostPlatform = "aarch64-darwin";
       users.users.kat.openssh.authorizedKeys.keys = inputs.railbird-secrets.keys.kanivanKeys;
       users.users.gitea-runner = {
@@ -239,6 +159,8 @@
         createHome = false;
       };
 
+      home-manager.useGlobalPkgs = true;      home-manager.useUserPackages = true;
+
       users.users.kat = {
         name = "kat";
         home = "/Users/kat";
@@ -246,38 +168,37 @@
 
       programs.zsh = {
         enable = true;
-        enableSyntaxHighlighting = true;
+        shellInit = ''
+          fpath+="${libDir}/functions"
+          for file in "${libDir}/functions/"*
+          do
+          autoload "''${file##*/}"
+          done
+        '';
+        interactiveShellInit = ''
+          # eval "$(register-python-argcomplete prb)"
+          # eval "$(register-python-argcomplete prod-prb)"
+          # eval "$(register-python-argcomplete railbird)"
+          # [ -n "$EAT_SHELL_INTEGRATION_DIR" ] && source "$EAT_SHELL_INTEGRATION_DIR/zsh"
+
+          autoload -Uz bracketed-paste-magic
+          zle -N bracketed-paste bracketed-paste-magic
+        '';
       };
-      home-manager = {
-        useGlobalPkgs = true;
-        useUserPackages = true;
-        backupFileExtension = "hm-backup";
-        extraSpecialArgs = {
-          inherit inputs libDir;
+
+      home-manager.users.kat = {
+        programs.starship = {
+          enable = true;
         };
-        sharedModules = [./home/common.nix];
-        users.kat = {
-          imports = [./home/kat.nix];
-        };
+        programs.zsh.enable = true;
+        home.stateVersion = "24.05";
       };
     };
-  in {
+  in
+  {
     darwinConfigurations."mac-demarco-mini" = nix-darwin.lib.darwinSystem {
       modules = [
-        agenix.darwinModules.default
         home-manager.darwinModules.home-manager
-        nix-homebrew.darwinModules.nix-homebrew
-        {
-          nix-homebrew = {
-            enable = true;
-            user = "kat";
-            autoMigrate = true;
-            taps = {
-              "homebrew/homebrew-core" = inputs.homebrew-core;
-              "homebrew/homebrew-cask" = inputs.homebrew-cask;
-            };
-          };
-        }
         configuration
       ];
     };
