@@ -1347,6 +1347,7 @@ Paradox is a package.el extension. I have no use for it now that I use straight.
 ** load-dir
 #+BEGIN_SRC emacs-lisp
 (use-package load-dir
+  :ensure (:host github :repo "emacs-straight/load-dir")
   :demand t
   :config
   (progn
@@ -2670,7 +2671,7 @@ The following is taken from [[https://github.com/syl20bnr/spacemacs/blob/a650877
 **** clj-refactor
 #+BEGIN_SRC emacs-lisp
 ;;@WORKAROUND clj-refactor dependency inflections Version metadata
-(use-package inflections :ensure (:depth nil :version elpaca-latest-tag :version-regexp "[[:digit:]]\\.[[:digit:]]"))
+(use-package inflections)
 (use-package clj-refactor
   :commands clj-refactor-mode)
 #+END_SRC
@@ -4108,8 +4109,19 @@ load-theme hook (See the heading below).
 #+END_SRC
 ** Set Font
 #+BEGIN_SRC emacs-lisp
-(add-to-list 'default-frame-alist
-             '(font . "JetBrainsMono Nerd Font-10:weight=medium"))
+(defvar imalison:preferred-font-families
+  '("JetBrainsMono Nerd Font"
+    "JetBrains Mono"
+    "JetBrainsMono Nerd Font Mono"))
+
+(defun imalison:default-font-parameter ()
+  (catch 'font
+    (dolist (family imalison:preferred-font-families)
+      (when (find-font (font-spec :family family))
+        (throw 'font (format "%s-10" family))))))
+
+(when-let ((font (imalison:default-font-parameter)))
+  (add-to-list 'default-frame-alist `(font . ,font)))
 #+END_SRC
 ** imalison:appearance
 #+BEGIN_SRC emacs-lisp

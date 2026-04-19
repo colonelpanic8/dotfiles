@@ -1,6 +1,7 @@
 * evil
 #+begin_src emacs-lisp
 (use-package evil
+  :ensure nil
   :demand t
   :config
   (progn
@@ -22,6 +23,7 @@
 This makes evil-mode play nice with org-fc
 #+begin_src emacs-lisp
 (use-package org-fc
+  :ensure (:host github :repo "l3kn/org-fc")
   :demand t
   :config
   (progn
@@ -49,6 +51,7 @@ This makes evil-mode play nice with org-fc
 #+begin_src emacs-lisp
 (setq imalison:org-whoami "Kat Huang")
 (setq org-directory "~/org/")  ; This is the directory where you want to save your Org files. Change as necessary.
+(defvar org-capture-templates nil)
 (add-to-list 'org-capture-templates
              '("j" "Journal" entry (file+datetree "~/org/daily-journal.org")
                "* %?\nEntered on %U\n  %i\n  %a"))
@@ -61,7 +64,7 @@ This makes evil-mode play nice with org-fc
 ** Journal
 #+begin_src emacs-lisp
 (setq imalison:journal-template-filepath
-      (imalison:join-paths org-directory "templates" "daily-journal-template.org"))
+      (expand-file-name "templates/daily-journal-template.org" org-directory))
 #+end_src
 ** Insert a link to a task selected from agenda
 #+begin_src emacs-lisp
@@ -119,6 +122,7 @@ This makes evil-mode play nice with org-fc
 * Disable autoflake
 #+begin_src emacs-lisp
 (use-package apheleia
+  :ensure nil
   :demand t
   :config
   (progn
@@ -131,11 +135,6 @@ This makes evil-mode play nice with org-fc
 * Packages
 #+begin_src emacs-lisp
 (use-package org-drill)
-(require 'package)
-(add-to-list 'package-archives
-             '("melpa" . "https://melpa.org/packages/") t)
-(package-initialize)
-
 #+end_src
 
 * Disable wild notifactions
@@ -145,26 +144,17 @@ This makes evil-mode play nice with org-fc
 
 * Swift
 #+begin_src emacs-lisp
-(require 'package)
-(add-to-list 'package-archives
-             '("melpa" . "https://melpa.org/packages/") t)
-(package-initialize)
+(use-package swift-mode
+  :ensure nil
+  :demand t
+  :config
+  (add-to-list 'auto-mode-alist '("\\.swift\\'" . swift-mode)))
 
-(unless (package-installed-p 'swift-mode)
-  (package-refresh-contents)
-  (package-install 'swift-mode))
-
-(unless (package-installed-p 'lsp-mode)
-  (package-refresh-contents)
-  (package-install 'lsp-mode))
-
-;; Swift Mode
-(require 'swift-mode)
-(add-to-list 'auto-mode-alist '("\\.swift\\'" . swift-mode))
-
-;; LSP Mode
-(require 'lsp-mode)
-(add-hook 'swift-mode-hook #'lsp)
+(use-package lsp-mode
+  :ensure nil
+  :commands lsp
+  :config
+  (add-hook 'swift-mode-hook #'lsp))
 
 ;; Set the path to SourceKit-LSP if it's not in your PATH
 (setq lsp-sourcekit-executable "/path/to/sourcekit-lsp")
@@ -173,4 +163,3 @@ This makes evil-mode play nice with org-fc
 (setq lsp-sourcekit-executable-args '("-toolchain" "/path/to/swift-toolchain"))
 
 #+end_src
-

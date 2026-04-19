@@ -1011,6 +1011,7 @@ alphanumeric characters only."
 ** org-roam
 #+begin_src emacs-lisp
 (use-package org-roam
+  :if (file-directory-p (expand-file-name "~/org/roam/"))
   :after org
   :defer 1
   :preface
@@ -1060,7 +1061,7 @@ alphanumeric characters only."
        org-roam-buffer-visibility-fn 'imalison:org-roam-frame-based-buffer-visibility-fn)
       (emit-make-mode-dependent imalison:org-roam-set-frame-visibility-mode frame-mode)))
   :custom
-  (org-roam-directory (file-truename "~/org/roam/")))
+  (org-roam-directory (expand-file-name "~/org/roam/")))
 #+end_src
 ***** ui
 #+begin_src emacs-lisp

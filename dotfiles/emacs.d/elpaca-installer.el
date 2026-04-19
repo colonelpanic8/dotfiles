@@ -1,6 +1,23 @@
 ;; Elpaca Installer -*- lexical-binding: t; -*-
 (defvar elpaca-installer-version 0.12)
-(defvar elpaca-directory (expand-file-name "elpaca/" user-emacs-directory))
+
+(defun elpaca-installer--state-root ()
+  "Return a writable root for Elpaca state."
+  (let* ((preferred user-emacs-directory)
+         (fallback (expand-file-name
+                    "emacs/"
+                    (or (getenv "XDG_STATE_HOME")
+                        (expand-file-name "~/.local/state/")))))
+    (condition-case nil
+        (progn
+          (make-directory preferred t)
+          preferred)
+      (file-error
+       (make-directory fallback t)
+       fallback))))
+
+(defvar elpaca-directory
+  (expand-file-name "elpaca/" (elpaca-installer--state-root)))
 (defvar elpaca-builds-directory (expand-file-name "builds/" elpaca-directory))
 (defvar elpaca-sources-directory (expand-file-name "sources/" elpaca-directory))
 (defvar elpaca-legacy-repos-directory (expand-file-name "repos/" elpaca-directory))
@@ -8,6 +25,26 @@
                               :ref nil :depth 1 :inherit ignore
                               :files (:defaults "elpaca-test.el" (:exclude "extensions"))
                               :build (:not elpaca-activate)))
+
+(defun elpaca-installer--ensure-symlink (target alias)
+  "Create symlink from ALIAS to TARGET, ignoring pre-existing paths."
+  (condition-case nil
+      (make-symbolic-link target alias)
+    (file-already-exists nil)))
+
+(defun elpaca-installer--build-stale-p (build)
+  "Return non-nil when BUILD contains older compiled artifacts than its sources."
+  (when (file-directory-p build)
+    (catch 'stale
+      (dolist (entry (directory-files build t "\\.elc?\\'"))
+        (when (string-suffix-p ".elc" entry)
+          (let* ((source (substring entry 0 -1))
+                 (source-truename (and (file-exists-p source)
+                                       (ignore-errors (file-truename source)))))
+            (when (and source-truename
+                       (file-newer-than-file-p source-truename entry))
+              (throw 'stale t)))))
+      nil)))
 
 (defun elpaca-installer--repo-installer-version (repo)
   "Return the installer version expected by elpaca checkout at REPO."
@@ -34,9 +71,18 @@
       (dolist (entry (directory-files build t directory-files-no-dot-files-regexp))
         (when-let* ((target (file-symlink-p entry))
                     (truename (ignore-errors (file-truename entry)))
-                    (source-root (and truename
-                                      (directory-file-name
-                                       (file-name-directory truename)))))
+                    (source-root
+                     (catch 'source-root
+                       (dolist (root roots)
+                         (when (string-prefix-p root truename)
+                           (let* ((relative (file-relative-name truename root))
+                                  (repo-name (car (split-string relative "/" t)))
+                                  (repo-root (and repo-name
+                                                  (expand-file-name repo-name root))))
+                             (when (file-directory-p repo-root)
+                               (throw 'source-root
+                                      (directory-file-name repo-root))))))
+                       nil)))
           (dolist (root roots)
             (when (string-prefix-p root truename)
               (when (file-directory-p source-root)
@@ -68,39 +114,21 @@
            ((file-symlink-p source)
             (delete-file source)
             (if desired-source
-                (make-symbolic-link desired-source
-                                    (directory-file-name source))
+                (elpaca-installer--ensure-symlink
+                 desired-source
+                 (directory-file-name source))
               (delete-directory build 'recursive)))
            ((file-exists-p source) nil)
            (desired-source
-            (make-symbolic-link desired-source
-                                (directory-file-name source)))
+            (elpaca-installer--ensure-symlink
+             desired-source
+             (directory-file-name source)))
            (t
             (delete-directory build 'recursive))))))))
 
 (defun elpaca-installer--repair-source-dir-aliases ()
-  "Create compatibility symlinks for legacy repos ending in `.el'."
-  (when (file-directory-p elpaca-sources-directory)
-    (dolist (entry (directory-files elpaca-sources-directory t directory-files-no-dot-files-regexp))
-      (when-let* (((file-directory-p entry))
-                  (name (file-name-nondirectory (directory-file-name entry)))
-                  ((string-suffix-p ".el" name))
-                  (alias-name (substring name 0 (- (length name) 3)))
-                  (alias (expand-file-name alias-name elpaca-sources-directory))
-                  (target (ignore-errors
-                            (directory-file-name (file-truename entry)))))
-        (cond
-         ((and (file-symlink-p alias)
-               (equal (ignore-errors (directory-file-name (file-truename alias)))
-                      target))
-          nil)
-         ((file-symlink-p alias)
-          (delete-file alias)
-          (make-symbolic-link target alias))
-         ((file-exists-p alias)
-          nil)
-         (t
-          (make-symbolic-link target alias)))))))
+  "Compatibility hook retained for older configs."
+  nil)
 ;; Elpaca now expects package sources under `sources/`. Preserve older local
 ;; installs that still use `repos/` so startup can recover without recloning.
 (when (and (file-directory-p elpaca-legacy-repos-directory)
@@ -109,8 +137,9 @@
                (directory-file-name elpaca-sources-directory)))
 (when (and (file-directory-p elpaca-sources-directory)
            (not (file-exists-p elpaca-legacy-repos-directory)))
-  (make-symbolic-link (directory-file-name elpaca-sources-directory)
-                      (directory-file-name elpaca-legacy-repos-directory)))
+  (elpaca-installer--ensure-symlink
+   (directory-file-name elpaca-sources-directory)
+   (directory-file-name elpaca-legacy-repos-directory)))
 (elpaca-installer--repair-source-dir-aliases)
 (elpaca-installer--repair-build-source-layout)
 (let* ((repo  (expand-file-name "elpaca/" elpaca-sources-directory))
@@ -124,13 +153,14 @@
              ((not (equal repo-version (format "%s" elpaca-installer-version)))))
     (when (file-directory-p build)
       (delete-directory build 'recursive))
-    (when (file-directory-p elpaca-cache-directory)
+    (when (and (boundp 'elpaca-cache-directory)
+               (file-directory-p elpaca-cache-directory))
       (delete-directory elpaca-cache-directory 'recursive))
     (when (file-directory-p repo)
       (delete-directory repo 'recursive)))
+  (when (elpaca-installer--build-stale-p build)
+    (delete-directory build 'recursive))
   (add-to-list 'load-path repo)
-  (when (file-exists-p build)
-    (add-to-list 'load-path build))
   (unless (file-exists-p repo)
     (make-directory repo t)
     (when (<= emacs-major-version 28) (require 'subr-x))
@@ -154,5 +184,7 @@
     (require 'elpaca)
     (elpaca-generate-autoloads "elpaca" repo)
     (let ((load-source-file-function nil)) (load autoloads))))
+(require 'elpaca)
+(setq elpaca-log-functions '(elpaca-log-command-query))
 (add-hook 'after-init-hook #'elpaca-process-queues)
 (elpaca `(,@elpaca-order))
