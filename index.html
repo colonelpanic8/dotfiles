@@ -3,7 +3,7 @@
 "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
-<!-- 2026-04-17 Fri 20:29 -->
+<!-- 2026-04-19 Sun 02:05 -->
 <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>&lrm;</title>
@@ -6088,6 +6088,7 @@ Paradox is a package.el extension. I have no use for it now that I use straight.
 <div class="outline-text-3" id="text-6-28">
 <div class="org-src-container">
 <pre class="src src-emacs-lisp">(<span class="org-keyword">use-package</span> <span class="org-constant">load-dir</span>
+  <span class="org-builtin">:ensure</span> (<span class="org-builtin">:host</span> github <span class="org-builtin">:repo</span> <span class="org-string">"emacs-straight/load-dir"</span>)
   <span class="org-builtin">:demand</span> t
   <span class="org-builtin">:config</span>
   (<span class="org-keyword">progn</span>
@@ -7871,7 +7872,7 @@ The following is taken from <a href="https://github.com/syl20bnr/spacemacs/blob/
 <div class="outline-text-5" id="text-14-1-6-2">
 <div class="org-src-container">
 <pre class="src src-emacs-lisp"><span class="org-comment-delimiter">;;</span><span class="org-comment">@WORKAROUND clj-refactor dependency inflections Version metadata
-</span>(<span class="org-keyword">use-package</span> <span class="org-constant">inflections</span> <span class="org-builtin">:ensure</span> (<span class="org-builtin">:depth</span> nil <span class="org-builtin">:version</span> elpaca-latest-tag <span class="org-builtin">:version-regexp</span> <span class="org-string">"[[:digit:]]\\.[[:digit:]]"</span>))
+</span>(<span class="org-keyword">use-package</span> <span class="org-constant">inflections</span>)
 (<span class="org-keyword">use-package</span> <span class="org-constant">clj-refactor</span>
   <span class="org-builtin">:commands</span> clj-refactor-mode)
 </pre>
@@ -9986,8 +9987,19 @@ load-theme hook (See the heading below).
 <h3 id="setfont"><span class="section-number-3">20.13.</span> Set Font <a href="#setfont"><svg aria-hidden="true" class="octicon octicon-link" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a></h3>
 <div class="outline-text-3" id="text-20-13">
 <div class="org-src-container">
-<pre class="src src-emacs-lisp">(add-to-list 'default-frame-alist
-             '(font . <span class="org-string">"JetBrainsMono Nerd Font-10:weight=medium"</span>))
+<pre class="src src-emacs-lisp">(<span class="org-keyword">defvar</span> <span class="org-variable-name">imalison:preferred-font-families</span>
+  '(<span class="org-string">"JetBrainsMono Nerd Font"</span>
+    <span class="org-string">"JetBrains Mono"</span>
+    <span class="org-string">"JetBrainsMono Nerd Font Mono"</span>))
+
+(<span class="org-keyword">defun</span> <span class="org-function-name">imalison:default-font-parameter</span> ()
+  (<span class="org-keyword">catch</span> '<span class="org-constant">font</span>
+    (<span class="org-keyword">dolist</span> (family imalison:preferred-font-families)
+      (<span class="org-keyword">when</span> (find-font (font-spec <span class="org-builtin">:family</span> family))
+        (<span class="org-keyword">throw</span> '<span class="org-constant">font</span> (format <span class="org-string">"%s-10"</span> family))))))
+
+(<span class="org-keyword">when-let</span> ((font (imalison:default-font-parameter)))
+  (add-to-list 'default-frame-alist `(font . ,font)))
 </pre>
 </div>
 </div>
