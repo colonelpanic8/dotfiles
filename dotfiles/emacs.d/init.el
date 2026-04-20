@@ -151,7 +151,10 @@
 ;; Without this, org can behave very strangely
 (use-package org
   :ensure
-  (org :type git :host github :repo "colonelpanic8/org-mode"
+  ;; Keep Org on the historical local checkout name to match the existing
+  ;; source directory under ~/.emacs.d/straight/repos/org.
+  (org :type git :host github
+       :repo ("colonelpanic8/org-mode" . "org")
        :branch "my-main-2025"
        :depth full
        :files (:defaults "lisp/*.el" ("etc/styles/" "etc/styles/*"))
