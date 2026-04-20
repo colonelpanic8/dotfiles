@@ -72,6 +72,17 @@
       };
     };
 
+    coqui-tts-streamer = {
+      # Keep the default install reproducible across machines.
+      # For local development, use `just switch --override-input coqui-tts-streamer path:/home/imalison/Projects/coqui-tts-streamer`.
+      url = "github:colonelpanic8/coqui-tts-streamer";
+      inputs = {
+        nixpkgs.follows = "nixpkgs";
+        flake-utils.follows = "flake-utils";
+        rust-overlay.follows = "git-sync-rs/rust-overlay";
+      };
+    };
+
     kanshi-sni = {
       url = "github:taffybar/kanshi-sni";
       inputs = {

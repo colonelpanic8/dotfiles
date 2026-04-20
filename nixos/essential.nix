@@ -5,6 +5,7 @@
   ...
 }: let
   git-blame-rank = inputs.git-blame-rank.packages.${pkgs.stdenv.hostPlatform.system}.default;
+  coqui-tts-streamer = inputs.coqui-tts-streamer.packages.${pkgs.stdenv.hostPlatform.system}.default;
   keepbook = inputs.keepbook.packages.${pkgs.stdenv.hostPlatform.system}.keepbook.overrideAttrs (_: {
     # Upstream checks currently depend on TS artifacts that are not built in Nix.
     doCheck = false;
@@ -19,6 +20,8 @@
     cachix
     bubblewrap
     cmake
+    coqui-tts-streamer
+    dex
     direnv
     fd
     ffmpeg

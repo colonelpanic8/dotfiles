@@ -186,6 +186,33 @@
         "type": "github"
       }
     },
+    "coqui-tts-streamer": {
+      "inputs": {
+        "flake-utils": [
+          "flake-utils"
+        ],
+        "nixpkgs": [
+          "nixpkgs"
+        ],
+        "rust-overlay": [
+          "git-sync-rs",
+          "rust-overlay"
+        ]
+      },
+      "locked": {
+        "lastModified": 1776281033,
+        "narHash": "sha256-Loz5kJHCM8Q04suAZ8683LdW7AP1kn4EszZe1ZjXqGM=",
+        "owner": "colonelpanic8",
+        "repo": "coqui-tts-streamer",
+        "rev": "5b522e3c96db61e2232c917f2c6e3f2570f98a47",
+        "type": "github"
+      },
+      "original": {
+        "owner": "colonelpanic8",
+        "repo": "coqui-tts-streamer",
+        "type": "github"
+      }
+    },
     "darwin": {
       "inputs": {
         "nixpkgs": [
@@ -2069,6 +2096,7 @@
         "caelestia-shell": "caelestia-shell",
         "claude-code-nix": "claude-code-nix",
         "codex-cli-nix": "codex-cli-nix",
+        "coqui-tts-streamer": "coqui-tts-streamer",
         "flake-utils": "flake-utils",
         "git-blame-rank": "git-blame-rank",
         "git-ignore-nix": "git-ignore-nix",
