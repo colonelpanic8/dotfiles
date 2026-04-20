@@ -13,8 +13,8 @@ let
     "--config" cfg.configPath
     "--interval" cfg.interval
     "--jitter" cfg.jitter
-    "--history-points" (toString cfg.historyPoints)
   ]
+  ++ lib.optionals (cfg.historyPoints != null) [ "--history-points" (toString cfg.historyPoints) ]
   ++ lib.optionals (!cfg.syncOnStart) [ "--no-sync-on-start" ]
   ++ lib.optionals (!cfg.syncPrices) [ "--no-sync-prices" ]
   ++ lib.optionals (!cfg.syncSymlinks) [ "--no-sync-symlinks" ]
@@ -106,9 +106,9 @@ enabledModule // {
       };
 
       historyPoints = lib.mkOption {
-        type = lib.types.int;
-        default = 8;
-        description = "Recent portfolio history rows shown in tray menu.";
+        type = lib.types.nullOr lib.types.int;
+        default = null;
+        description = "Optional override for the maximum recent portfolio history rows shown in the tray menu.";
       };
 
     };
