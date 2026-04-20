@@ -102,6 +102,9 @@ trust_level = "trusted"
 
 [projects."/home/imalison/keysmith_generated"]
 trust_level = "trusted"
+
+[projects."/run/media/imalison/NIXOS_SD"]
+trust_level = "trusted"
 [notice]
 hide_gpt5_1_migration_prompt = true
 "hide_gpt-5.1-codex-max_migration_prompt" = true
