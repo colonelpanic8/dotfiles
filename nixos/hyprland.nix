@@ -36,6 +36,7 @@ let
           settings = [
             {
               # USB-C connector names can move between DP-* ports across docks/reboots.
+              # Match the ultrawide by make/model and allow the serial field to vary.
               profile.name = "ultrawide-usbc-desk";
               profile.outputs = [
                 {
@@ -46,10 +47,24 @@ let
                   scale = 1.0;
                 }
                 {
-                  criteria = "Microstep MPG341CX OLED Unknown";
+                  criteria = "Microstep MPG341CX OLED *";
                   status = "enable";
                   mode = "3440x1440@240Hz";
                   position = "2560,0";
+                  scale = 1.0;
+                }
+              ];
+            }
+            {
+              # When the laptop panel is unavailable (e.g. lid-closed docked use),
+              # still drive the ultrawide at its full refresh rate.
+              profile.name = "ultrawide-only";
+              profile.outputs = [
+                {
+                  criteria = "Microstep MPG341CX OLED *";
+                  status = "enable";
+                  mode = "3440x1440@240Hz";
+                  position = "0,0";
                   scale = 1.0;
                 }
               ];
