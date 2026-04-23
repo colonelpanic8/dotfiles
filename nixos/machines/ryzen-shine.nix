@@ -17,6 +17,7 @@
   };
   myModules.gitea-runner.enable = true;
   myModules.postgres.enable = true;
+  myModules.tts.enable = true;
   myModules.railbird-k3s = {
     enable = false;
     serverAddr = "https://jimi-hendnix.local:6443";
