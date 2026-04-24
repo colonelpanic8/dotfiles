@@ -71,9 +71,12 @@ makeEnable config "myModules.base" true {
   # The tzupdate.timer handles triggering with OnStartupSec=30s delay.
   # We disable the service's direct WantedBy since network-online.target
   # is reached before network is actually online (because we disable
-  # NetworkManager-wait-online.service to avoid boot hangs).
+  # NetworkManager-wait-online.service to avoid boot hangs). Also disable
+  # timer persistence so a missed hourly tick does not trigger an immediate
+  # catch-up run at boot before networking has settled.
   services.tzupdate.enable = true;
   systemd.services.tzupdate.wantedBy = pkgs.lib.mkForce [];
+  systemd.timers.tzupdate.timerConfig.Persistent = pkgs.lib.mkForce false;
 
   # TODO: Add a comment explaining what this does.
   services.locate.enable = true;
