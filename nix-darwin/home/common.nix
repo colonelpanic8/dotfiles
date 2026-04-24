@@ -110,6 +110,7 @@ in {
     shellAliases = {
       df_ssh = "TERM='xterm-256color' ssh -o StrictHostKeyChecking=no";
       ta = "tmux attach";
+      za = "zellij attach";
     };
     initContent = lib.mkMerge [
       (lib.mkOrder 550 ''

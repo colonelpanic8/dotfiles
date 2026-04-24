@@ -4,8 +4,8 @@
 - Prefer `just run` (foreground) and `just restart` (background) when running taffybar during iterative work.
 - If running manually, prefer `direnv exec . cabal run` (or `nix develop -c cabal run` if direnv is not active) so you get the right build inputs and environment.
 
-## Tmux session titling
-- If the TMUX environment variable is set, treat this chat as the controller for the current tmux session.
+## Multiplexer session titling
+- If the `TMUX` or `ZELLIJ` environment variable is set, treat this chat as the controller for the current tmux or zellij session.
 - Maintain a session/window/pane title that updates when the task focus changes substantially.
 - Prefer automatic titling: infer a concise <task> from the current user request and context without asking.
 - Title format: "<project> - <task>".
@@ -14,11 +14,13 @@
   - <task> is a short, user-friendly description of what we are doing.
 - Ask for a short descriptive <task> only when the task is ambiguous or you are not confident in an inferred title.
 - When the task changes substantially, update the <task> automatically if clear; otherwise ask for an updated <task>.
-- When a title is provided or updated, immediately run this one-liner:
+- When a title is provided or updated, immediately run the matching command for the active multiplexer:
 
   tmux rename-session '<project> - <task>' \; rename-window '<project> - <task>' \; select-pane -T '<project> - <task>'
 
-- Assume you are inside tmux, so do not use -t unless the user asks to target a specific session.
+  zellij action rename-session '<project> - <task>' && zellij action rename-tab '<project> - <task>' && zellij action rename-pane '<project> - <task>'
+
+- Assume you are inside the active multiplexer, so do not use tmux `-t` or zellij targeting flags unless the user asks to target a specific session/tab/pane.
 
 ## Pane usage
 - Do not create extra panes or windows unless the user asks.
@@ -30,4 +32,3 @@
 
 ## Skills
 A skill is a set of local instructions to follow that is stored in a `SKILL.md` file.
-

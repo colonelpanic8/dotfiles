@@ -56,6 +56,7 @@
     silver-searcher
     skim
     tmux
+    zellij
     unzip
     wget
     xkcdpass

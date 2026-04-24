@@ -1,8 +1,9 @@
 # Agentic Session Preferences
 
-## Tmux session titling
-- Treat this chat as the controller for the current tmux session.
-- Run the tmux rename one-liner eagerly without checking whether TMUX is set first.
+## Multiplexer session titling
+- Treat this chat as the controller for the current tmux or zellij session.
+- If the current session is in tmux, run the tmux rename one-liner eagerly without checking whether TMUX is set first.
+- If the current session is in zellij, run the zellij rename commands eagerly without checking whether ZELLIJ is set first.
 - Maintain a session/window/pane title that updates when the task focus changes substantially.
 - Prefer automatic titling: infer a concise <task> from the current user request and context without asking.
 - Title format: "<project> - <task>".
@@ -11,11 +12,13 @@
   - <task> is a short, user-friendly description of what we are doing.
 - Ask for a short descriptive <task> only when the task is ambiguous or you are not confident in an inferred title.
 - When the task changes substantially, update the <task> automatically if clear; otherwise ask for an updated <task>.
-- When a title is provided or updated, immediately run this one-liner:
+- When a title is provided or updated, immediately run the matching command for the active multiplexer:
 
   tmux rename-session '<project> - <task>' \; rename-window '<project> - <task>' \; select-pane -T '<project> - <task>'
 
-- Assume you are inside tmux, so do not use -t unless the user asks to target a specific session.
+  zellij action rename-session '<project> - <task>' && zellij action rename-tab '<project> - <task>' && zellij action rename-pane '<project> - <task>'
+
+- Assume you are inside the active multiplexer, so do not use tmux `-t` or zellij targeting flags unless the user asks to target a specific session/tab/pane.
 - For Claude Code sessions, a UserPromptSubmit hook will also update titles automatically based on the latest prompt.
 
 ## Pane usage
