@@ -1,6 +1,7 @@
 --- a/src/Kanshi/SNI.hs
 +++ b/src/Kanshi/SNI.hs
-@@ -42,6 +42,7 @@
+@@ -42,7 +42,8 @@
+ 
  data SNIState = SNIState
    { sniConnection :: MVar (Maybe KanshiConnection)
    , sniAppState :: MVar AppState
@@ -8,16 +9,19 @@
    , sniMenuServer :: Dbusmenu.Server
    , sniGLibContext :: GLib.MainContext
    }
-@@ -73,3 +74,5 @@
+@@ -77,8 +78,10 @@
    appState <- buildInitialState kanshiConn
    connVar <- newMVar kanshiConn
    stateVar <- newMVar appState
 +  initialRoot <- Dbusmenu.menuitemNew
 +  rootVar <- newMVar initialRoot
-@@ -76 +79 @@
+ 
 -  let sniState = SNIState connVar stateVar menuServer context
 +  let sniState = SNIState connVar stateVar rootVar menuServer context
-@@ -168,6 +171,7 @@
+ 
+   -- Build initial menu
+   rebuildMenu sniState
+@@ -177,6 +179,7 @@
            , onToggleMonitor = handleToggleMonitor sniState
            }
    newRoot <- buildMenu state actions
