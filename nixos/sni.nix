@@ -5,6 +5,7 @@ let
     inputs.kanshi-sni.packages.${system}.default.overrideAttrs (old: {
       patches = (old.patches or [ ]) ++ [
         ./patches/kanshi-sni-refresh-and-reconnect.patch
+        ./patches/kanshi-sni-keep-menu-root-alive.patch
       ];
     });
 in
