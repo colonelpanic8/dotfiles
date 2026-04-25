@@ -112,7 +112,7 @@
         };
       };
 
-      nixpkgs.overlays = [(import ../nixos/overlay.nix)];
+      nixpkgs.overlays = [(import ../nix-shared/overlays)];
       environment.systemPackages = with pkgs; [
         #python-with-my-packages
         emacs

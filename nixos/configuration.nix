@@ -10,7 +10,7 @@
     ./desktop.nix
     ./electron.nix
     ./environment.nix
-    ./essential.nix
+    ../nix-shared/system/essential.nix
     ./extra.nix
     ./games.nix
     ./git-sync.nix

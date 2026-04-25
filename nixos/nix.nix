@@ -90,7 +90,7 @@
         # (import ./nvidia-container-toolkit-overlay.nix)
         (import ./runc-overlay.nix)
         (import ./emacs-overlay.nix)
-        (import ./overlay.nix)
+        (import ../nix-shared/overlays)
         # Use codex and claude-code from dedicated flakes with cachix
         (final: prev: {
           codex = inputs.codex-cli-nix.packages.${prev.stdenv.hostPlatform.system}.default;

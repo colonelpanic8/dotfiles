@@ -1,7 +1,7 @@
 { pkgs, ... }:
 {
   imports = [
-    ./essential.nix
+    ../nix-shared/system/essential.nix
   ];
   environment.systemPackages = with pkgs; [
     emacs-auto

@@ -40,6 +40,7 @@ gotools
 /dotfiles/config/xmonad/dist-newstyle/
 /dotfiles/config/hypr/hyprscratch.conf
 /.worktrees/
+/result
 
 # Secrets and machine-local state (managed via agenix/pass instead of git)
 /dotfiles/config/asciinema/config
