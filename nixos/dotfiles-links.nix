@@ -1,4 +1,4 @@
-{ config, lib, ... }:
+{ config, lib, pkgs, ... }:
 let
   # Replicate the useful part of rcm/rcup:
   # - dotfiles live in ~/dotfiles/dotfiles (no leading dots in the repo)
@@ -69,5 +69,9 @@ in
     else
       echo "Skipping ~/.emacs.d relink because it is not a symlink" >&2
     fi
+  '';
+
+  home.activation.linkCodexSkills = lib.hm.dag.entryAfter ["writeBoundary"] ''
+    ${pkgs.bash}/bin/bash "${worktreeDotfiles}/lib/bin/setup_codex_skills" "${worktreeDotfiles}/agents/skills"
   '';
 }
