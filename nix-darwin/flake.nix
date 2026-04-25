@@ -27,6 +27,11 @@
     home-manager.url = "github:nix-community/home-manager";
     home-manager.inputs.nixpkgs.follows = "nixpkgs";
 
+    git-sync-rs = {
+      url = "github:colonelpanic8/git-sync-rs";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+
     codex-cli-nix = {
       # Default branch is `main` on GitHub (not `master`).
       url = "github:sadjow/codex-cli-nix/main";
@@ -54,6 +59,7 @@
   outputs = inputs @ {
     self,
     agenix,
+    git-sync-rs,
     nix-darwin,
     nixpkgs,
     home-manager,
@@ -179,9 +185,15 @@
         (final: prev: {
           codex = inputs.codex-cli-nix.packages.${prev.stdenv.hostPlatform.system}.default;
           claude-code = inputs.claude-code-nix.packages.${prev.stdenv.hostPlatform.system}.default;
+          git-sync-rs = git-sync-rs.packages.${prev.stdenv.hostPlatform.system}.default;
         })
       ];
-      environment.systemPackages = essentialPkgs ++ [pkgs.spotify];
+      environment.systemPackages =
+        essentialPkgs
+        ++ [
+          pkgs.gnupg
+          pkgs.spotify
+        ];
 
       nixpkgs.config.allowUnfree = true;
 
@@ -196,6 +208,7 @@
         casks = [
           "codex-app"
           "ghostty"
+          "raycast"
         ];
         masApps = {
           Xcode = 497799835;

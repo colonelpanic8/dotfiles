@@ -1,7 +1,9 @@
 model = "gpt-5.5"
 model_reasoning_effort = "high"
 personality = "pragmatic"
-notify = ["/Users/kat/.codex/plugins/cache/openai-bundled/computer-use/1.0.750/Codex Computer Use.app/Contents/SharedSupport/SkyComputerUseClient.app/Contents/MacOS/SkyComputerUseClient", "turn-ended"]
+
+
+notify = ["/Users/kat/dotfiles/dotfiles/codex/plugins/cache/openai-bundled/computer-use/1.0.755/Codex Computer Use.app/Contents/SharedSupport/SkyComputerUseClient.app/Contents/MacOS/SkyComputerUseClient", "turn-ended"]
 
 [projects."/home/imalison/Projects/nixpkgs"]
 trust_level = "trusted"
@@ -114,6 +116,12 @@ trust_level = "trusted"
 [projects."/Users/kat"]
 trust_level = "trusted"
 
+[projects."/Users/kat/org"]
+trust_level = "trusted"
+
+[projects."/Users/kat/Documents/Codex/2026-04-25/do-you-see-the-sandisk-external"]
+trust_level = "trusted"
+
 [notice]
 hide_gpt5_1_migration_prompt = true
 "hide_gpt-5.1-codex-max_migration_prompt" = true
@@ -138,7 +146,7 @@ apps = true
 steer = true
 
 [marketplaces.openai-bundled]
-last_updated = "2026-04-19T01:07:40Z"
+last_updated = "2026-04-21T17:43:57Z"
 source_type = "local"
 source = "/Users/kat/.codex/.tmp/bundled-marketplaces/openai-bundled"
 
@@ -151,10 +159,10 @@ enabled = true
 [plugins."google-drive@openai-curated"]
 enabled = true
 
-[plugins."computer-use@openai-bundled"]
+[plugins."github@openai-curated"]
 enabled = true
 
-[plugins."github@openai-curated"]
+[plugins."computer-use@openai-bundled"]
 enabled = true
 
 [tui.model_availability_nux]

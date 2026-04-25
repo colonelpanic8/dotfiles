@@ -1,0 +1,6 @@
+*
+!.gitignore
+!CLAUDE.md
+!settings.json
+!settings.local.json
+!settings.local.json.example
