@@ -122,6 +122,12 @@ trust_level = "trusted"
 [projects."/Users/kat/Documents/Codex/2026-04-25/do-you-see-the-sandisk-external"]
 trust_level = "trusted"
 
+[projects."/Volumes/Extreme SSD/Projects/keepbook"]
+trust_level = "trusted"
+
+[projects."/Users/kat/Documents/Codex/2026-04-25/it-seems-like-maybe-we-dont"]
+trust_level = "trusted"
+
 [notice]
 hide_gpt5_1_migration_prompt = true
 "hide_gpt-5.1-codex-max_migration_prompt" = true

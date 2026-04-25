@@ -135,6 +135,30 @@
 
       system.defaults.NSGlobalDomain."com.apple.swipescrolldirection" = false;
       system.defaults.CustomUserPreferences."com.apple.screensaver".idleTime = 300;
+      system.defaults.CustomUserPreferences."com.apple.symbolichotkeys".AppleSymbolicHotKeys = {
+        "60" = {
+          enabled = false;
+          value = {
+            parameters = [
+              32
+              49
+              262144
+            ];
+            type = "standard";
+          };
+        };
+        "61" = {
+          enabled = false;
+          value = {
+            parameters = [
+              32
+              49
+              786432
+            ];
+            type = "standard";
+          };
+        };
+      };
       system.defaults.screensaver.askForPassword = false;
       system.defaults.screensaver.askForPasswordDelay = 0;
 
