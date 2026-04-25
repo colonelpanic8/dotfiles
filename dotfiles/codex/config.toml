@@ -1,4 +1,4 @@
-model = "gpt-5.4"
+model = "gpt-5.5"
 model_reasoning_effort = "high"
 personality = "pragmatic"
 [projects."/home/imalison/Projects/nixpkgs"]
@@ -130,3 +130,6 @@ steer = true
 
 [plugins."google-drive@openai-curated"]
 enabled = true
+
+[tui.model_availability_nux]
+"gpt-5.5" = 4

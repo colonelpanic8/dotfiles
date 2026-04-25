@@ -33,6 +33,9 @@ digraph unsubscribe_check {
 - Do not ask a kickoff question like "should I start now?".
 - Default scan window is `newer_than:7d` unless the user already specified a different range.
 - Only ask a follow-up question before starting if required information is missing and execution would otherwise be blocked.
+- Default user preference: they generally do not want subscription-style email in their inbox.
+- For obvious marketing/newsletter/digest mail with a working unsubscribe path, unsubscribe by default without asking for confirmation first.
+- Still ask first for borderline cases such as creator subscriptions, professional communities, event platforms, or anything that appears transactional/security-sensitive.
 
 ## How to Scan
 
@@ -41,6 +44,8 @@ digraph unsubscribe_check {
 3. Present findings grouped by confidence:
    - **Clearly unsubscribeable**: marketing, promos, digests user never engages with
    - **Ask user**: newsletters, community content, event platforms (might be wanted)
+
+When the user's standing preference is to keep subscriptions out of the inbox, treat the **Clearly unsubscribeable** bucket as auto-actionable.
 
 ## Unsubscribe Execution
 
@@ -95,6 +100,7 @@ gws gmail users messages batchModify \
 - Community digests the user doesn't engage with
 - Financial marketing (not transactional alerts)
 - "Your weekly/daily/monthly" summaries
+- Messages with explicit unsubscribe/manage-preferences links whose primary purpose is promotional or newsletter delivery
 
 ## Signals to NOT Auto-Unsubscribe (Ask First)
 

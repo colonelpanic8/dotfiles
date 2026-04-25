@@ -6,6 +6,7 @@
 
 ## Multiplexer session titling
 - If the `TMUX` or `ZELLIJ` environment variable is set, treat this chat as the controller for the current tmux or zellij session.
+- Use `set_multiplexer_title '<project> - <task>'` to update the title. The command detects tmux vs. zellij internally, prefers tmux when both are present, and no-ops outside a multiplexer.
 - Maintain a session/window/pane title that updates when the task focus changes substantially.
 - Prefer automatic titling: infer a concise <task> from the current user request and context without asking.
 - Title format: "<project> - <task>".
@@ -14,13 +15,7 @@
   - <task> is a short, user-friendly description of what we are doing.
 - Ask for a short descriptive <task> only when the task is ambiguous or you are not confident in an inferred title.
 - When the task changes substantially, update the <task> automatically if clear; otherwise ask for an updated <task>.
-- When a title is provided or updated, immediately run the matching command for the active multiplexer:
-
-  tmux rename-session '<project> - <task>' \; rename-window '<project> - <task>' \; select-pane -T '<project> - <task>'
-
-  zellij action rename-session '<project> - <task>' && zellij action rename-tab '<project> - <task>' && zellij action rename-pane '<project> - <task>'
-
-- Assume you are inside the active multiplexer, so do not use tmux `-t` or zellij targeting flags unless the user asks to target a specific session/tab/pane.
+- When a title is provided or updated, immediately run `set_multiplexer_title '<project> - <task>'`; do not call raw tmux or zellij rename commands unless debugging the helper itself.
 
 ## Pane usage
 - Do not create extra panes or windows unless the user asks.

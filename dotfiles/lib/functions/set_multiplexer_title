@@ -1,0 +1,41 @@
+#!/usr/bin/env sh
+
+set_multiplexer_title() {
+    if [ "$#" -lt 1 ]; then
+        echo "usage: set_multiplexer_title <title>" >&2
+        return 2
+    fi
+
+    title="$*"
+
+    if [ -n "${TMUX:-}" ]; then
+        multiplexer="tmux"
+    elif [ -n "${ZELLIJ:-}" ]; then
+        multiplexer="zellij"
+    else
+        return 0
+    fi
+
+    state_dir="${HOME}/.agents/state"
+    state_file="$state_dir/${multiplexer}-title"
+    mkdir -p "$state_dir"
+
+    if [ -f "$state_file" ]; then
+        last_title=$(cat "$state_file" 2>/dev/null || true)
+        if [ "$last_title" = "$title" ]; then
+            return 0
+        fi
+    fi
+
+    if [ "$multiplexer" = "tmux" ]; then
+        tmux rename-session "$title" \; rename-window "$title" \; select-pane -T "$title"
+    else
+        zellij action rename-session "$title" &&
+            zellij action rename-tab "$title" &&
+            zellij action rename-pane "$title"
+    fi
+
+    printf '%s' "$title" > "$state_file"
+}
+
+set_multiplexer_title "$@"

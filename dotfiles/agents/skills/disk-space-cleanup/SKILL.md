@@ -137,6 +137,18 @@ If `ncdu` is missing, use:
 nix run nixpkgs#ncdu -- -x "$HOME"
 ```
 
+For reusable, mount-safe snapshots on this machine, prefer the local wrapper:
+
+```bash
+safe_ncdu /
+sudo -n env HOME=/home/imalison safe_ncdu /
+safe_ncdu /nix/store
+safe_ncdu top ~/.cache/ncdu/latest-root.json.zst 30 /home/imalison
+safe_ncdu open ~/.cache/ncdu/latest-root.json.zst
+```
+
+`safe_ncdu` writes compressed ncdu exports under `~/.cache/ncdu`, records the exclude list beside the export, excludes mounted descendants of the scan root, and supports follow-up `top` queries without rescanning.
+
 For quick, non-blocking triage on very large trees, prefer bounded probes:
 
 ```bash
@@ -147,9 +159,16 @@ timeout 30s du -xh --max-depth=1 "$HOME/.local/share" 2>/dev/null | sort -h
 Machine-specific heavy hitters seen in practice:
 
 - `~/.cache/uv` can exceed 20G and is reclaimable with `uv cache clean`.
+- `~/.cache/pypoetry` can exceed 7G across artifacts, repository cache, and virtualenvs; inspect first, then use Poetry cache commands or targeted virtualenv removal.
+- `~/.cache/google-chrome` can exceed 8G across multiple Chrome profiles; close Chrome before clearing profile cache directories.
 - `~/.cache/spotify` can exceed 10G; treat as optional app-cache cleanup.
+- `~/.gradle` can exceed 8G, mostly under `caches/`; prefer Gradle-aware cleanup and expect dependency redownloads.
 - `~/.local/share/picom/debug.log` can grow past 15G when verbose picom debugging is enabled or crashes leave a stale log behind; if `picom` is not running, deleting or truncating the log is a high-yield low-risk win.
 - `~/.local/share/Trash` can exceed several GB; empty only with user approval.
+- `/var/lib/private/gitea-runner` can exceed 50G and is not visible to an unprivileged `ncdu /` scan; use `sudo -n env HOME=/home/imalison safe_ncdu /` when `/var` looks undercounted.
+  - Validated cleanup pattern: stop `gitea-runner-nix.service`, remove cache/work directories under `/var/lib/private/gitea-runner` (`.cache`, `.gradle`, `action-cache-dir`, `workspace`, stale nested `gitea-runner`, and nested `nix/.cache`/`nix/.local`), recreate `action-cache-dir`, `workspace`, and `.cache` owned by `gitea-runner:gitea-runner`, then restart the service.
+  - Preserve registration/config-like files such as `/var/lib/private/gitea-runner/nix/.runner`, `/var/lib/private/gitea-runner/nix/.labels`, `/var/lib/private/gitea-runner/.docker/config.json`, and SSH/Kube material.
+- `~/Projects/*/target` directories can dominate home usage. Recent example candidates included stale `target/` directories under `scrobble-scrubber`, `http-client-vcr`, `http-client`, `subtr-actor`, `http-types`, `subtr-actor-py`, `sdk`, and `async-h1`.
 
 ## Step 5: `/nix/store` Deep Dive
 
@@ -183,6 +202,25 @@ Common retention pattern on this machine:
 - Many `.direnv/flake-profile-*` symlinks under `~/Projects` and worktrees keep `nix-shell-env`/`ghc-shell-*` roots alive.
 - Old taffybar constellation repos under `~/Projects` can pin large Haskell closures through `.direnv` and `result` symlinks. Deleting `gtk-sni-tray`, `status-notifier-item`, `dbus-menu`, `dbus-hslogger`, and `gtk-strut` and then rerunning `nix-collect-garbage -d` reclaimed about 11G of store data in one validated run.
 - `find_store_path_gc_roots` is especially useful for proving GHC retention: many large `ghc-9.10.3-with-packages` paths are unique per project, while the base `ghc-9.10.3` and docs paths are shared.
+- NixOS system generations and a repo-root `nixos/result` symlink can pin multiple Android Studio and Android SDK versions. Check `/nix/var/nix/profiles/system-*-link`, `/run/current-system`, `/run/booted-system`, and `~/dotfiles/nixos/result` before assuming Android paths are pinned by project shells.
+- `~/Projects/railbird-mobile/.direnv/flake-profile-*` can pin large Android SDK system images. Removing stale direnv profiles there is a more targeted first step than deleting Android store paths directly.
+- For a repeatable `/nix/store` `ncdu` snapshot without driving the TUI, export and inspect it:
+
+```bash
+ncdu -0 -x -c -o /tmp/nix-store.ncdu.json.zst /nix/store
+zstdcat /tmp/nix-store.ncdu.json.zst | jq 'def sumd: if type=="array" then ((.[0].dsize // 0) + ([.[1:][] | sumd] | add // 0)) elif type=="object" then (.dsize // 0) else 0 end; .[3] | sumd'
+```
+
+- `nix-store --gc --print-dead` plus the Nix SQLite database is a fast way to estimate immediate GC wins before deleting anything:
+
+```bash
+nix-store --gc --print-dead > /tmp/nix-dead-paths.txt
+printf '%s\n' '.mode list' '.separator |' 'create temp table dead(path text);' \
+  '.import /tmp/nix-dead-paths.txt dead' \
+  'select count(*), sum(narSize) from ValidPaths join dead using(path);' \
+  | nix shell nixpkgs#sqlite --command sqlite3 /nix/var/nix/db/db.sqlite
+```
+
 - Quantify before acting:
 
 ```bash

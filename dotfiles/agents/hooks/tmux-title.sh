@@ -1,14 +1,6 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-if [[ -n "${ZELLIJ:-}" ]]; then
-  multiplexer="zellij"
-elif [[ -n "${TMUX:-}" ]]; then
-  multiplexer="tmux"
-else
-  exit 0
-fi
-
 input=$(cat)
 
 mapfile -d '' -t parsed < <(PAYLOAD="$input" python3 - <<'PY'
@@ -61,24 +53,9 @@ fi
 
 title="$project - $task"
 
-state_dir="${HOME}/.agents/state"
-state_file="$state_dir/${multiplexer}-title"
-mkdir -p "$state_dir"
-
-if [[ -f "$state_file" ]]; then
-  last_title=$(cat "$state_file" 2>/dev/null || true)
-  if [[ "$last_title" == "$title" ]]; then
-    exit 0
-  fi
-fi
-
-printf '%s' "$title" > "$state_file"
-
-# Update session, window/tab, and pane titles.
-if [[ "$multiplexer" == "tmux" ]]; then
-  tmux rename-session "$title" \; rename-window "$title" \; select-pane -T "$title"
+if command -v set_multiplexer_title >/dev/null 2>&1; then
+  set_multiplexer_title "$title"
 else
-  zellij action rename-session "$title"
-  zellij action rename-tab "$title"
-  zellij action rename-pane "$title"
+  hook_dir=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)
+  "$hook_dir/../../lib/functions/set_multiplexer_title" "$title"
 fi
