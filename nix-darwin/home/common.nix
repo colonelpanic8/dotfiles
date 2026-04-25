@@ -11,6 +11,16 @@
   replaceRuntimeDir = builtins.replaceStrings ["$XDG_RUNTIME_DIR"] ["\${XDG_RUNTIME_DIR}"];
   gpgKeyPath = replaceRuntimeDir config.age.secrets.gpg-keys.path;
   gpgPassphrasePath = replaceRuntimeDir config.age.secrets.gpg-passphrase.path;
+  raycastPath = lib.concatStringsSep ":" [
+    "${config.home.homeDirectory}/.nix-profile/bin"
+    "/run/current-system/sw/bin"
+    "/opt/homebrew/bin"
+    "/usr/local/bin"
+    "/usr/bin"
+    "/bin"
+    "/usr/sbin"
+    "/sbin"
+  ];
   importGpgKeyScript = pkgs.writeShellScript "import-gpg-key" ''
     set -eu
 
@@ -57,13 +67,7 @@
   '';
 
   excludedTopLevelEntries = [
-    "agents"
-    "claude"
-    "codex"
     "config"
-    "emacs.d"
-    "zshenv"
-    "zshrc"
   ];
 
   excludedConfigEntries = [
@@ -86,31 +90,52 @@
     };
   }) (lib.subtractLists excludedConfigEntries (builtins.attrNames (builtins.readDir "${dotfilesDir}/config"))));
 in {
-  programs.home-manager.enable = true;
-
   imports = [
     inputs.agenix.homeManagerModules.default
     ../../home-manager/codex-generated-skills.nix
   ];
 
+  programs.home-manager.enable = true;
+
   age.identityPaths = ["${config.home.homeDirectory}/.ssh/id_ed25519"];
   age.secrets.gpg-keys.file = ../../nixos/secrets/gpg-keys.age;
   age.secrets.gpg-passphrase.file = ../../nixos/secrets/gpg-passphrase.age;
+
   home.file = dotfilesLinks;
 
   myModules.codexGeneratedSkills.enable = true;
 
-  home.activation.linkEmacsDotdir = lib.hm.dag.entryAfter ["writeBoundary"] ''
-    live_emacs_dir="$HOME/dotfiles/dotfiles/emacs.d"
-    target_emacs_dir="${dotfilesDir}/emacs.d"
-    if [ -d "$live_emacs_dir" ]; then
-      target_emacs_dir="$live_emacs_dir"
-    fi
-    if [ -L "$HOME/.emacs.d" ] || [ ! -e "$HOME/.emacs.d" ]; then
-      rm -f "$HOME/.emacs.d"
-      ln -s "$target_emacs_dir" "$HOME/.emacs.d"
-    else
-      echo "Skipping ~/.emacs.d relink because it is not a symlink" >&2
+  home.packages = [
+    pkgs.gnupg
+    (pkgs.pass.withExtensions (ext: [ext.pass-otp]))
+  ];
+
+  home.activation.repairGpgHomeAndImportKey = lib.hm.dag.entryAfter ["writeBoundary"] ''
+    gnupg_dir="$HOME/.gnupg"
+    password_store_gpg_id="$HOME/.password-store/.gpg-id"
+
+    /bin/mkdir -p "$gnupg_dir"
+    /bin/chmod 700 "$gnupg_dir"
+
+    if [ -r "$password_store_gpg_id" ]; then
+      needs_import=0
+
+      while IFS= read -r recipient; do
+        case "$recipient" in
+          ""|\#*)
+            continue
+            ;;
+        esac
+
+        if ! ${pkgs.gnupg}/bin/gpg --batch --list-secret-keys --with-colons "$recipient" 2>/dev/null | /usr/bin/grep -q '^sec:'; then
+          needs_import=1
+          break
+        fi
+      done < "$password_store_gpg_id"
+
+      if [ "$needs_import" -eq 1 ]; then
+        ${importGpgKeyScript}
+      fi
     fi
   '';
 
@@ -148,6 +173,7 @@ in {
     defaultCacheTtl = 8 * 60 * 60;
     maxCacheTtl = 8 * 60 * 60;
     enableSshSupport = true;
+    pinentry.package = lib.mkIf pkgs.stdenv.isDarwin pkgs.pinentry_mac;
     extraConfig = ''
       allow-emacs-pinentry
       allow-loopback-pinentry
@@ -166,6 +192,25 @@ in {
       RunAtLoad = true;
       StandardOutPath = "${config.home.homeDirectory}/Library/Logs/import-gpg-key.log";
       StandardErrorPath = "${config.home.homeDirectory}/Library/Logs/import-gpg-key.err.log";
+    };
+  };
+
+  launchd.agents.raycast = lib.mkIf pkgs.stdenv.isDarwin {
+    enable = true;
+    config = {
+      EnvironmentVariables = {
+        PATH = raycastPath;
+      };
+      ProgramArguments = [
+        "/usr/bin/open"
+        "-a"
+        "Raycast"
+      ];
+      KeepAlive = false;
+      ProcessType = "Interactive";
+      RunAtLoad = true;
+      StandardOutPath = "${config.home.homeDirectory}/Library/Logs/raycast-launchd.log";
+      StandardErrorPath = "${config.home.homeDirectory}/Library/Logs/raycast-launchd.err.log";
     };
   };
 
