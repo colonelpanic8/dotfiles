@@ -21,6 +21,8 @@
 gotools
 /dotfiles/config/xmonad/result
 /dotfiles/config/taffybar/result
+/nix-darwin/result
+/nixos/result
 /dotfiles/emacs.d/*.sqlite
 /dotfiles/config/gtk-3.0/colors.css
 /dotfiles/config/gtk-3.0/settings.ini
