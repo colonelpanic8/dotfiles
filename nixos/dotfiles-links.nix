@@ -55,8 +55,12 @@ let
     };
 in
 {
+  imports = [ ../home-manager/codex-generated-skills.nix ];
+
   home.file =
     builtins.listToAttrs (map mkManaged managedRelFiles);
+
+  myModules.codexGeneratedSkills.enable = true;
 
   # Home Manager directory links for .emacs.d resolve through the store on this
   # machine, which breaks Elpaca's writable state under ~/.emacs.d/elpaca.
