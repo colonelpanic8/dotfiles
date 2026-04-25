@@ -1,4 +1,4 @@
-{ config, lib, pkgs, ... }:
+{ config, lib, ... }:
 let
   # Replicate the useful part of rcm/rcup:
   # - dotfiles live in ~/dotfiles/dotfiles (no leading dots in the repo)
@@ -71,7 +71,4 @@ in
     fi
   '';
 
-  home.activation.linkCodexSkills = lib.hm.dag.entryAfter ["writeBoundary"] ''
-    ${pkgs.bash}/bin/bash "${worktreeDotfiles}/lib/bin/setup_codex_skills" "${worktreeDotfiles}/agents/skills"
-  '';
 }

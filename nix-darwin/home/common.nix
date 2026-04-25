@@ -109,10 +109,6 @@ in {
     fi
   '';
 
-  home.activation.linkCodexSkills = lib.hm.dag.entryAfter ["writeBoundary"] ''
-    ${pkgs.bash}/bin/bash "${libDir}/bin/setup_codex_skills" "${dotfilesDir}/agents/skills"
-  '';
-
   home.sessionPath = [
     "$HOME/.cargo/bin"
     "${libDir}/bin"
