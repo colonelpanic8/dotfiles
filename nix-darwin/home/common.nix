@@ -88,12 +88,17 @@
 in {
   programs.home-manager.enable = true;
 
-  imports = [inputs.agenix.homeManagerModules.default];
+  imports = [
+    inputs.agenix.homeManagerModules.default
+    ../../home-manager/codex-generated-skills.nix
+  ];
 
   age.identityPaths = ["${config.home.homeDirectory}/.ssh/id_ed25519"];
   age.secrets.gpg-keys.file = ../../nixos/secrets/gpg-keys.age;
   age.secrets.gpg-passphrase.file = ../../nixos/secrets/gpg-passphrase.age;
   home.file = dotfilesLinks;
+
+  myModules.codexGeneratedSkills.enable = true;
 
   home.activation.linkEmacsDotdir = lib.hm.dag.entryAfter ["writeBoundary"] ''
     live_emacs_dir="$HOME/dotfiles/dotfiles/emacs.d"
