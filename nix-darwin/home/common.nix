@@ -92,7 +92,7 @@
 in {
   imports = [
     inputs.agenix.homeManagerModules.default
-    ../../home-manager/codex-generated-skills.nix
+    ../../nix-shared/home-manager/codex-generated-skills.nix
   ];
 
   programs.home-manager.enable = true;

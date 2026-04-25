@@ -55,7 +55,7 @@ let
     };
 in
 {
-  imports = [ ../home-manager/codex-generated-skills.nix ];
+  imports = [ ../nix-shared/home-manager/codex-generated-skills.nix ];
 
   home.file =
     builtins.listToAttrs (map mkManaged managedRelFiles);

@@ -73,7 +73,7 @@
       config,
       ...
     }: let
-      essentialPkgs = (import ../nixos/essential.nix {inherit pkgs lib inputs;}).environment.systemPackages;
+      essentialPkgs = (import ../nix-shared/system/essential.nix {inherit pkgs lib inputs;}).environment.systemPackages;
     in {
       networking.hostName = "mac-demarco-mini";
       imports = [(import ./gitea-actions-runner.nix)];
@@ -180,7 +180,7 @@
       };
 
       nixpkgs.overlays = [
-        (import ../nixos/overlay.nix)
+        (import ../nix-shared/overlays)
         # Use codex and claude-code from dedicated flakes with cachix
         (final: prev: {
           codex = inputs.codex-cli-nix.packages.${prev.stdenv.hostPlatform.system}.default;
@@ -209,6 +209,7 @@
           "codex-app"
           "ghostty"
           "raycast"
+          "vlc"
         ];
         masApps = {
           Xcode = 497799835;
