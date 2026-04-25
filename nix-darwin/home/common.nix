@@ -66,6 +66,7 @@
       --passphrase-file "$passphrase_path" \
       --import "$normalized_key_file"
   '';
+  multiplexerAliases = import ../../shared/multiplexer-aliases.nix;
 
   excludedTopLevelEntries = [
     "config"
@@ -228,9 +229,7 @@ in {
     };
     shellAliases = {
       df_ssh = "TERM='xterm-256color' ssh -o StrictHostKeyChecking=no";
-      ta = "tmux attach";
-      za = "zellij attach";
-    };
+    } // multiplexerAliases;
     initContent = lib.mkMerge [
       (lib.mkOrder 550 ''
         fpath+="${libDir}/functions"

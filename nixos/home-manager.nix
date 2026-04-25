@@ -27,6 +27,10 @@ in {
       static_history = []
   '';
 
+  xdg.configFile."zellij/config.kdl".source =
+    config.lib.file.mkOutOfStoreSymlink
+    "${config.home.homeDirectory}/dotfiles/dotfiles/config/zellij/config.kdl";
+
   xdg.mimeApps = lib.mkIf nixos.config.myModules.desktop.enable (
     let
       browser = "google-chrome.desktop";

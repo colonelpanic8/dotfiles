@@ -1,0 +1,59 @@
+#!/usr/bin/env sh
+
+function _zrw_kdl_quote {
+    printf '"'
+    printf '%s' "$1" | sed 's/\\/\\\\/g; s/"/\\"/g'
+    printf '"'
+}
+
+function _zrw_layout_string {
+    command="$1"
+    shift
+
+    printf 'layout {\n'
+    printf '    pane command='
+    _zrw_kdl_quote "$command"
+    printf ' name='
+    _zrw_kdl_quote "${ZRW_NAME:-$(basename -- "$command")}"
+    printf ' cwd='
+    _zrw_kdl_quote "$PWD"
+    if [ "$#" -eq 0 ]; then
+        printf '\n'
+    else
+        printf ' {\n'
+        printf '        args'
+        for arg in "$@"; do
+            printf ' '
+            _zrw_kdl_quote "$arg"
+        done
+        printf '\n'
+        printf '    }\n'
+    fi
+    printf '}\n'
+}
+
+function _zrw_session_name {
+    command_name="$(basename -- "$1")"
+    base="$(basename -- "$PWD")"
+    ck="$(printf '%s' "$PWD" | cksum | awk '{print $1}')"
+    session="${ZRW_SESSION:-${command_name}-${base}-${ck}}"
+    printf '%s' "$session" | tr -cs 'A-Za-z0-9_-' '-' | sed 's/^-//;s/-$//'
+}
+
+function zrw {
+    if [ "$#" -eq 0 ]; then
+        echo "Usage: zrw COMMAND [ARG ...]" >&2
+        return 2
+    fi
+
+    tab_name="${ZRW_NAME:-$(basename -- "$1")}"
+    if [ -n "$ZELLIJ" ]; then
+        zellij action new-tab --cwd "$PWD" --name "$tab_name" -- "$@"
+    else
+        session="$(_zrw_session_name "$1")"
+        layout="$(_zrw_layout_string "$@")"
+        zellij --session "$session" --layout-string "$layout"
+    fi
+}
+
+zrw "$@"

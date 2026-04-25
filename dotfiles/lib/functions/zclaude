@@ -1,0 +1,7 @@
+#!/usr/bin/env sh
+
+function zclaude {
+    ZRW_NAME=claude zrw claude --dangerously-skip-permissions "$@"
+}
+
+zclaude "$@"

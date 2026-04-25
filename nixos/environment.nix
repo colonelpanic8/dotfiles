@@ -12,6 +12,7 @@ let
     ++ (map (machineName: "${machineName}.local") machineNames)
     ++ extraManagedSshHosts;
   managedSshHostCasePattern = lib.concatStringsSep "|" managedSshHostPatterns;
+  multiplexerAliases = import ../shared/multiplexer-aliases.nix;
 in
 with lib;
 {
@@ -81,9 +82,7 @@ with lib;
       shellAliases = {
         df_ssh = "TERM=xterm-256color ssh -o StrictHostKeyChecking=no";
         fix_nix = "LD_LIBRARY_PATH='' nix";
-        ta = "tmux attach";
-        za = "zellij attach";
-      };
+      } // multiplexerAliases;
       variables = {
         ROFI_SYSTEMD_TERM = "ghostty -e";
         NIXPKGS_GIT_REV = "${inputs.nixpkgs.rev}";

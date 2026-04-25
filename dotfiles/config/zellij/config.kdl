@@ -1,0 +1,24 @@
+keybinds {
+    // Keep Ctrl-p available for readline/history/up in shells and editors.
+    unbind "Ctrl p"
+
+    shared_except "locked" "pane" {
+        bind "Ctrl Space" { SwitchToMode "Pane"; }
+    }
+
+    pane {
+        bind "Ctrl Space" { SwitchToMode "Normal"; }
+    }
+
+    tmux {
+        // Ctrl-b C: start a Codex pane from the current zellij tab.
+        bind "C" {
+            Run "codex" "--dangerously-bypass-approvals-and-sandbox" {
+                name "codex"
+            }
+            SwitchToMode "Normal"
+        }
+    }
+}
+
+default_mode "locked"
