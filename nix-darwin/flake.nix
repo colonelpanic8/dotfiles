@@ -14,6 +14,10 @@
       url = "git+ssh://gitea@dev.railbird.ai:1123/railbird/secrets-flake.git";
     };
     nix-homebrew.url = "github:zhaofengli-wip/nix-homebrew";
+    brew-src = {
+      url = "github:Homebrew/brew/5.1.7";
+      flake = false;
+    };
 
     # Optional: Declarative tap management
     homebrew-core = {
@@ -229,6 +233,7 @@
       # Homebrew casks (managed by nix-darwin, installed by nix-homebrew)
       homebrew = {
         enable = true;
+        taps = builtins.attrNames config.nix-homebrew.taps;
         casks = [
           "codex-app"
           "ghostty"
@@ -310,6 +315,10 @@
             enable = true;
             user = "kat";
             autoMigrate = true;
+            package = inputs.brew-src // {
+              name = "brew-5.1.7";
+              version = "5.1.7";
+            };
             taps = {
               "homebrew/homebrew-core" = inputs.homebrew-core;
               "homebrew/homebrew-cask" = inputs.homebrew-cask;

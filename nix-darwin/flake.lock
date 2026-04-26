@@ -50,6 +50,23 @@
     "brew-src": {
       "flake": false,
       "locked": {
+        "lastModified": 1776478798,
+        "narHash": "sha256-ERStG27tf83VbCfYMxtDSs+sa8FUMJ/3jSu/QfX9rKE=",
+        "owner": "Homebrew",
+        "repo": "brew",
+        "rev": "3aae056b8d072624255bc8fd27febb7f327b2265",
+        "type": "github"
+      },
+      "original": {
+        "owner": "Homebrew",
+        "ref": "5.1.7",
+        "repo": "brew",
+        "type": "github"
+      }
+    },
+    "brew-src_2": {
+      "flake": false,
+      "locked": {
         "lastModified": 1774235677,
         "narHash": "sha256-0ryNYmzDAeRlrzPTAgmzGH/Cgc8iv/LBN6jWGUANvIk=",
         "owner": "Homebrew",
@@ -473,7 +490,7 @@
     },
     "nix-homebrew": {
       "inputs": {
-        "brew-src": "brew-src"
+        "brew-src": "brew-src_2"
       },
       "locked": {
         "lastModified": 1774720267,
@@ -560,6 +577,7 @@
     "root": {
       "inputs": {
         "agenix": "agenix",
+        "brew-src": "brew-src",
         "claude-code-nix": "claude-code-nix",
         "codex-cli-nix": "codex-cli-nix",
         "flake-utils": "flake-utils_3",
