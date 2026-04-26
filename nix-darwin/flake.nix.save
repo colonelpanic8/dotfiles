@@ -58,7 +58,7 @@
             just
             git-lfs
             isort
-            gitFull
+            git
             gnused
             ncdu
             nixFlakes
@@ -118,7 +118,7 @@
         emacs
         alejandra
         cocoapods
-        gitFull
+        git
         just
         tmux
         htop

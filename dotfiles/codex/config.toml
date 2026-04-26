@@ -128,6 +128,9 @@ trust_level = "trusted"
 [projects."/Users/kat/Documents/Codex/2026-04-25/it-seems-like-maybe-we-dont"]
 trust_level = "trusted"
 
+[projects."/Users/kat/Documents/Codex/2026-04-25/what-is-the-state-of-tiling"]
+trust_level = "trusted"
+
 [notice]
 hide_gpt5_1_migration_prompt = true
 "hide_gpt-5.1-codex-max_migration_prompt" = true
@@ -156,6 +159,11 @@ last_updated = "2026-04-21T17:43:57Z"
 source_type = "local"
 source = "/Users/kat/.codex/.tmp/bundled-marketplaces/openai-bundled"
 
+[marketplaces.openai-primary-runtime]
+last_updated = "2026-04-25T23:49:36Z"
+source_type = "local"
+source = "/Users/kat/.cache/codex-runtimes/codex-primary-runtime/plugins/openai-primary-runtime"
+
 [plugins."google-calendar@openai-curated"]
 enabled = true
 
@@ -169,6 +177,21 @@ enabled = true
 enabled = true
 
 [plugins."computer-use@openai-bundled"]
+enabled = true
+
+[plugins."documents@openai-primary-runtime"]
+enabled = true
+
+[plugins."spreadsheets@openai-primary-runtime"]
+enabled = true
+
+[plugins."presentations@openai-primary-runtime"]
+enabled = true
+
+[plugins."browser-use@openai-bundled"]
+enabled = true
+
+[plugins."vercel@openai-curated"]
 enabled = true
 
 [tui.model_availability_nux]

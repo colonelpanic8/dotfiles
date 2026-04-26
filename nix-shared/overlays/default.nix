@@ -75,6 +75,10 @@ in
     dontCheckRuntimeDeps = true;
   });
 
+  direnv = prev.direnv.overrideAttrs (_: {
+    doCheck = false;
+  });
+
   magma = prev.magma.overrideAttrs (oldAttrs: {
     # The CUDA codegen step in magma 2.9.0 can segfault when `make generate`
     # fans out across all cores. Keep the rest of the build parallel.

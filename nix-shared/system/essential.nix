@@ -4,9 +4,17 @@
   inputs,
   ...
 }: let
-  git-blame-rank = inputs.git-blame-rank.packages.${pkgs.stdenv.hostPlatform.system}.default;
-  coqui-tts-streamer = inputs.coqui-tts-streamer.packages.${pkgs.stdenv.hostPlatform.system}.default;
-  keepbook = inputs.keepbook.packages.${pkgs.stdenv.hostPlatform.system}.keepbook.overrideAttrs (_: {
+  system = pkgs.stdenv.hostPlatform.system;
+  inputPackageOrNull = inputName: packageName: let
+    input = inputs.${inputName} or null;
+    packages = if input == null then null else input.packages or null;
+    systemPackages = if packages == null then null else packages.${system} or null;
+  in
+    if systemPackages == null then null else systemPackages.${packageName} or null;
+
+  git-blame-rank = inputs.git-blame-rank.packages.${system}.default;
+  coquiTtsStreamer = inputPackageOrNull "coqui-tts-streamer" "default";
+  keepbook = inputs.keepbook.packages.${system}.keepbook.overrideAttrs (_: {
     # Upstream checks currently depend on TS artifacts that are not built in Nix.
     doCheck = false;
   });
@@ -20,7 +28,6 @@
     cachix
     bubblewrap
     cmake
-    coqui-tts-streamer
     dex
     direnv
     fd
@@ -33,7 +40,7 @@
     git-blame-rank
     git-lfs
     git-sync
-    gitFull
+    git
     gnumake
     home-manager
     htop
@@ -61,7 +68,9 @@
     wget
     xkcdpass
     yubikey-manager
-  ]) ++ lib.optionals (builtins.hasAttr "git-sync-rs" pkgs) [pkgs.git-sync-rs]);
+  ])
+  ++ lib.optionals (coquiTtsStreamer != null) [coquiTtsStreamer]
+  ++ lib.optionals (builtins.hasAttr "git-sync-rs" pkgs) [pkgs.git-sync-rs]);
 
   linuxOnly = with pkgs; [
     dex
@@ -80,6 +89,7 @@
     sshfs
     sysz
     gdb
+    gitFull
     udiskie
     usbutils
     tzupdate

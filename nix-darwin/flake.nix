@@ -114,7 +114,7 @@
             just
             git-lfs
             isort
-            gitFull
+            git
             gnused
             ncdu
             nixVersions.stable
