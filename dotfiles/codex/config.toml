@@ -191,8 +191,5 @@ enabled = true
 [plugins."browser-use@openai-bundled"]
 enabled = true
 
-[plugins."vercel@openai-curated"]
-enabled = true
-
 [tui.model_availability_nux]
 "gpt-5.5" = 4
