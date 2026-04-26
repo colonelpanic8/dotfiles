@@ -96,6 +96,7 @@
   ];
 
   darwinOnly = with pkgs; [
+    emacs
   ];
 in {
   nixpkgs.config.allowBroken = true;
