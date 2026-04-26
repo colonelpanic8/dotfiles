@@ -19,6 +19,12 @@ let
     # Needed for hyprlock authentication without PAM fallback warnings.
     security.pam.services.hyprlock = {};
 
+    # DDC/CI monitor control for keyboard-driven input switching.
+    hardware.i2c = {
+      enable = true;
+      group = "video";
+    };
+
     programs.hyprland = {
       enable = true;
       # Keep Hyprland and plugins on a matched flake input for ABI compatibility.
@@ -147,6 +153,7 @@ let
       swappy         # Screenshot annotation
       nwg-displays   # GUI monitor arrangement
       mpv            # Graphical screensaver payload
+      ddcutil        # Monitor input switching over DDC/CI
 
       # For scripts
       jq
