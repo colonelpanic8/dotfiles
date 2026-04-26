@@ -6,7 +6,8 @@
   pkgs,
   ...
 }: let
-  dotfilesDir = builtins.dirOf (toString libDir);
+  srcDotfilesDir = builtins.dirOf libDir;
+  worktreeDotfilesDir = "${config.home.homeDirectory}/dotfiles/dotfiles";
   outOfStore = config.lib.file.mkOutOfStoreSymlink;
   replaceRuntimeDir = builtins.replaceStrings ["$XDG_RUNTIME_DIR"] ["\${XDG_RUNTIME_DIR}"];
   gpgKeyPath = replaceRuntimeDir config.age.secrets.gpg-keys.path;
@@ -78,17 +79,17 @@
     name = ".${name}";
     value = {
       force = true;
-      source = outOfStore "${dotfilesDir}/${name}";
+      source = outOfStore "${worktreeDotfilesDir}/${name}";
     };
-  }) (lib.subtractLists excludedTopLevelEntries (builtins.attrNames (builtins.readDir dotfilesDir))));
+  }) (lib.subtractLists excludedTopLevelEntries (builtins.attrNames (builtins.readDir srcDotfilesDir))));
 
   xdgConfigLinks = lib.listToAttrs (map (name: {
     name = name;
     value = {
       force = true;
-      source = outOfStore "${dotfilesDir}/config/${name}";
+      source = outOfStore "${worktreeDotfilesDir}/config/${name}";
     };
-  }) (lib.subtractLists excludedConfigEntries (builtins.attrNames (builtins.readDir "${dotfilesDir}/config"))));
+  }) (lib.subtractLists excludedConfigEntries (builtins.attrNames (builtins.readDir "${srcDotfilesDir}/config"))));
 in {
   imports = [
     inputs.agenix.homeManagerModules.default
