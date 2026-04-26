@@ -1,18 +1,8 @@
-{pkgs, ...}: {
-  home.packages = with pkgs; [
-    alejandra
-    claude-code
-    cocoapods
-    codex
-    nodejs
-    prettier
-    slack
-    tea
-    typescript
-    vim
-    yarn
-  ];
-
+{
+  config,
+  pkgs,
+  ...
+}: {
   services.git-sync = {
     enable = true;
     package =
@@ -21,16 +11,14 @@
       else pkgs.git-sync;
     repositories = {
       org = {
-        path = "/Users/kat/org";
+        path = "${config.home.homeDirectory}/org";
         uri = "git@github.com:colonelpanic8/org.git";
         interval = 180;
       };
       password-store = {
-        path = "/Users/kat/.password-store";
+        path = "${config.home.homeDirectory}/.password-store";
         uri = "git@github.com:IvanMalison/.password-store.git";
       };
     };
   };
-
-  home.stateVersion = "24.05";
 }

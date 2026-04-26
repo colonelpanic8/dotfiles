@@ -107,10 +107,26 @@ in {
 
   myModules.codexGeneratedSkills.enable = true;
 
-  home.packages = [
-    pkgs.gnupg
-    (pkgs.pass.withExtensions (ext: [ext.pass-otp]))
-  ];
+  home.packages =
+    [
+      (pkgs.pass.withExtensions (ext: [ext.pass-otp]))
+    ]
+    ++ (with pkgs; [
+      alejandra
+      alt-tab-macos
+      claude-code
+      cocoapods
+      codex
+      gnupg
+      nodejs
+      playwright-cli
+      prettier
+      slack
+      tea
+      typescript
+      vim
+      yarn
+    ]);
 
   home.activation.repairGpgHomeAndImportKey = lib.hm.dag.entryAfter ["writeBoundary"] ''
     gnupg_dir="$HOME/.gnupg"
@@ -138,6 +154,27 @@ in {
       if [ "$needs_import" -eq 1 ]; then
         ${importGpgKeyScript}
       fi
+    fi
+  '';
+
+  home.activation.configureRaycastHotkey = lib.hm.dag.entryAfter ["writeBoundary"] ''
+    raycast_domain="com.raycast.macos"
+    desired_hotkey="Command-49"
+    current_hotkey="$(/usr/bin/defaults read "$raycast_domain" raycastGlobalHotkey 2>/dev/null || true)"
+
+    if [ -d /Applications/Raycast.app ]; then
+      /usr/bin/xattr -dr com.apple.quarantine /Applications/Raycast.app 2>/dev/null || true
+    fi
+
+    if [ "$current_hotkey" != "$desired_hotkey" ]; then
+      /usr/bin/defaults write "$raycast_domain" raycastGlobalHotkey -string "$desired_hotkey"
+      /usr/bin/defaults write "$raycast_domain" mainWindow_isMonitoringGlobalHotkeys -bool true
+
+      if /usr/bin/pgrep -x Raycast >/dev/null 2>&1; then
+        /usr/bin/killall Raycast || true
+        /bin/sleep 1
+      fi
+      /usr/bin/open /Applications/Raycast.app || true
     fi
   '';
 
@@ -205,14 +242,29 @@ in {
       };
       ProgramArguments = [
         "/usr/bin/open"
-        "-a"
-        "Raycast"
+        "/Applications/Raycast.app"
       ];
       KeepAlive = false;
       ProcessType = "Interactive";
       RunAtLoad = true;
       StandardOutPath = "${config.home.homeDirectory}/Library/Logs/raycast-launchd.log";
       StandardErrorPath = "${config.home.homeDirectory}/Library/Logs/raycast-launchd.err.log";
+    };
+  };
+
+  launchd.agents.alt-tab = lib.mkIf pkgs.stdenv.isDarwin {
+    enable = true;
+    config = {
+      ProgramArguments = [
+        "/usr/bin/open"
+        "-gj"
+        "${pkgs.alt-tab-macos}/Applications/AltTab.app"
+      ];
+      KeepAlive = false;
+      ProcessType = "Interactive";
+      RunAtLoad = true;
+      StandardOutPath = "${config.home.homeDirectory}/Library/Logs/alt-tab-launchd.log";
+      StandardErrorPath = "${config.home.homeDirectory}/Library/Logs/alt-tab-launchd.err.log";
     };
   };
 
@@ -247,4 +299,6 @@ in {
   };
 
   xdg.configFile = xdgConfigLinks;
+
+  home.stateVersion = "24.05";
 }

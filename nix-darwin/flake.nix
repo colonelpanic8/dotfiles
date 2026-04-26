@@ -71,6 +71,23 @@
     ...
   }: let
     libDir = ../dotfiles/lib;
+    # Keep this on the currently-existing macOS account until the target user
+    # exists locally and its home directory has been migrated.
+    activePrimaryUser = "kat";
+    targetPrimaryUser = "imalison";
+    primaryUser = activePrimaryUser;
+    personalUsers = [
+      activePrimaryUser
+      targetPrimaryUser
+    ];
+    # Home Manager activation should only target accounts that exist today.
+    # Add targetPrimaryUser here when the macOS account is ready.
+    enabledHomeUsers = [
+      activePrimaryUser
+    ];
+    sharedHomeModules = [./home/common.nix];
+    ivanHomeModules = [./home/ivan.nix];
+    homeForUser = user: "/Users/${user}";
     configuration = {
       pkgs,
       lib,
@@ -78,12 +95,21 @@
       ...
     }: let
       essentialPkgs = (import ../nix-shared/system/essential.nix {inherit pkgs lib inputs;}).environment.systemPackages;
+      disabledAppleSymbolicHotKey = parameters: {
+        enabled = false;
+        value = {
+          inherit parameters;
+          type = "standard";
+        };
+      };
     in {
       networking.hostName = "mac-demarco-mini";
-      imports = [(import ./gitea-actions-runner.nix)];
+      imports = [
+        (import ./gitea-actions-runner.nix)
+      ];
       age = {
         identityPaths = [
-          "${config.users.users.kat.home}/.ssh/id_ed25519"
+          "${config.users.users.${primaryUser}.home}/.ssh/id_ed25519"
           "/etc/ssh/ssh_host_ed25519_key"
           "/etc/ssh/ssh_host_rsa_key"
         ];
@@ -135,36 +161,30 @@
         XDG_RUNTIME_DIR = "/var/lib/gitea-runner/tmp";
       };
 
-      system.primaryUser = "kat";
+      system.primaryUser = primaryUser;
+
+      security.sudo.extraConfig = ''
+        ${primaryUser} ALL=(ALL) NOPASSWD: ALL
+      '';
 
       system.defaults.NSGlobalDomain."com.apple.swipescrolldirection" = false;
       system.defaults.CustomUserPreferences."com.apple.screensaver".idleTime = 300;
       system.defaults.CustomUserPreferences."com.apple.symbolichotkeys".AppleSymbolicHotKeys = {
-        "60" = {
-          enabled = false;
-          value = {
-            parameters = [
-              32
-              49
-              262144
-            ];
-            type = "standard";
-          };
-        };
-        "61" = {
-          enabled = false;
-          value = {
-            parameters = [
-              32
-              49
-              786432
-            ];
-            type = "standard";
-          };
-        };
+        # Disable input source shortcuts that conflict with launcher usage.
+        "60" = disabledAppleSymbolicHotKey [32 49 262144];
+        "61" = disabledAppleSymbolicHotKey [32 49 786432];
+        # Disable Spotlight's Command-Space and Finder search window shortcuts.
+        "64" = disabledAppleSymbolicHotKey [32 49 1048576];
+        "65" = disabledAppleSymbolicHotKey [32 49 1572864];
       };
       system.defaults.screensaver.askForPassword = false;
       system.defaults.screensaver.askForPasswordDelay = 0;
+
+      system.activationScripts.postActivation.text = ''
+        echo >&2 "current-host screensaver defaults..."
+        launchctl asuser "$(id -u -- ${primaryUser})" sudo --user=${primaryUser} -- defaults -currentHost write com.apple.screensaver askForPassword -bool false
+        launchctl asuser "$(id -u -- ${primaryUser})" sudo --user=${primaryUser} -- defaults -currentHost write com.apple.screensaver askForPasswordDelay -int 0
+      '';
 
       power.sleep = {
         computer = "never";
@@ -237,6 +257,7 @@
         casks = [
           "codex-app"
           "ghostty"
+          "hammerspoon"
           "raycast"
           "vlc"
         ];
@@ -248,6 +269,10 @@
 
       # Auto upgrade nix package and the daemon service.
       launchd.user.envVariables.PATH = config.environment.systemPath;
+      launchd.user.agents.hammerspoon.serviceConfig = {
+        ProgramArguments = ["/usr/bin/open" "-gja" "Hammerspoon"];
+        RunAtLoad = true;
+      };
 
       programs.direnv.enable = true;
 
@@ -274,18 +299,20 @@
       # The platform the configuration will be used on.
 
       nixpkgs.hostPlatform = "aarch64-darwin";
-      users.users.kat.openssh.authorizedKeys.keys = inputs.railbird-secrets.keys.kanivanKeys;
-      users.users.gitea-runner = {
-        name = "gitea-runner";
-        isHidden = false;
-        home = "/Users/gitea-runner";
-        createHome = false;
-      };
-
-      users.users.kat = {
-        name = "kat";
-        home = "/Users/kat";
-      };
+      users.users =
+        lib.genAttrs personalUsers (user: {
+          name = user;
+          home = homeForUser user;
+          openssh.authorizedKeys.keys = inputs.railbird-secrets.keys.kanivanKeys;
+        })
+        // {
+          gitea-runner = {
+            name = "gitea-runner";
+            isHidden = false;
+            home = "/Users/gitea-runner";
+            createHome = false;
+          };
+        };
 
       programs.zsh = {
         enable = true;
@@ -298,10 +325,10 @@
         extraSpecialArgs = {
           inherit inputs libDir;
         };
-        sharedModules = [./home/common.nix];
-        users.kat = {
-          imports = [./home/kat.nix];
-        };
+        sharedModules = sharedHomeModules;
+        users = lib.genAttrs enabledHomeUsers (_: {
+          imports = ivanHomeModules;
+        });
       };
     };
   in {
@@ -313,12 +340,14 @@
         {
           nix-homebrew = {
             enable = true;
-            user = "kat";
+            user = primaryUser;
             autoMigrate = true;
-            package = inputs.brew-src // {
-              name = "brew-5.1.7";
-              version = "5.1.7";
-            };
+            package =
+              inputs.brew-src
+              // {
+                name = "brew-5.1.7";
+                version = "5.1.7";
+              };
             taps = {
               "homebrew/homebrew-core" = inputs.homebrew-core;
               "homebrew/homebrew-cask" = inputs.homebrew-cask;
