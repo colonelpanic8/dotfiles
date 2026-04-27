@@ -59,7 +59,8 @@ Important behavior:
 - Hidden/special workspaces exist for scratchpad state.
 - Hidden/special workspaces exist for minimized state.
 - Hidden/special workspaces are excluded from ordinary workspace cycling.
-- Hidden/special workspaces are excluded from taffybar's normal workspace list.
+- Hidden/special workspaces are excluded from the status bar's normal workspace
+  list.
 
 ## Directional Navigation
 
@@ -73,11 +74,11 @@ Required behavior:
 - Moving the focused window to an empty workspace on the monitor in a direction
   remains required behavior, but it should not require an extra `Hyper`
   modifier beyond `Shift`.
+- Directional focus in tabbed/fullscreen mode should cycle predictably through
+  windows even though their screen geometry overlaps.
 
 Important behavior:
 
-- Directional focus in tabbed/fullscreen mode should cycle predictably through
-  windows even though their screen geometry overlaps.
 - Keyboard resize remains available, but it should not displace the directional
   move-to-monitor binding.
 
@@ -95,16 +96,15 @@ Required behavior:
 - Directional window navigation bindings continue to switch windows in
   tabbed/fullscreen mode.
 - The important layouts are columns and tabbed/fullscreen.
+- Dialogs float.
+- Dialogs are centered.
+- There is a command to jump directly to the columns layout and one to jump
+  directly to the tabbed/fullscreen layout.
+- Layout state is per workspace when the compositor supports it.
 
 Important behavior:
 
 - One-window workspaces should have no visible gaps or use smart gaps.
-- Gaps are small in normal multi-window layouts.
-- Dialogs float.
-- Dialogs are centered.
-- Layout state is per workspace when the compositor supports it.
-- There is a command to jump directly to the columns layout and one to jump
-  directly to the tabbed/fullscreen layout.
 
 Nice behavior:
 
@@ -131,7 +131,7 @@ Required behavior:
 
 Important behavior:
 
-- Overview supports both "go" and "bring" workflows when possible.
+- Overview supports both "go" and "bring" workflows.
 - Window switchers hide scratchpad windows unless the user is explicitly using a
   scratchpad picker.
 - Window switchers hide minimized windows unless the user is explicitly using a
@@ -191,19 +191,19 @@ Important behavior:
 - Window menus show workspace.
 - Window menus show icon.
 
-## Taffybar Contract
+## Status Bar Contract
 
 Required behavior:
 
-- Taffybar can list normal workspaces.
-- Taffybar can identify the active workspace per monitor.
-- Taffybar can list windows per workspace.
-- Taffybar can expose class hints for each listed window.
-- Taffybar can expose title for each listed window.
-- Taffybar can expose active state for each listed window.
-- Taffybar can expose minimized state when available.
-- Taffybar can expose urgency when available.
-- Taffybar can expose approximate window position when available.
+- The status bar can list normal workspaces.
+- The status bar can identify the active workspace per monitor.
+- The status bar can list windows per workspace.
+- The status bar can expose class hints for each listed window.
+- The status bar can expose title for each listed window.
+- The status bar can expose active state for each listed window.
+- The status bar can expose minimized state when available.
+- The status bar can expose urgency when available.
+- The status bar can expose approximate window position when available.
 - Scratchpad workspaces are marked as special or filtered out.
 - Minimized workspaces are marked as special or filtered out.
 - Internal workspaces are marked as special or filtered out.
@@ -228,7 +228,7 @@ Important behavior:
 - Run menu is `rofi -show run`.
 - Browser raise/spawn behavior exists.
 - Border width is effectively zero.
-- Taffybar can be toggled per monitor.
+- The status bar can be toggled per monitor.
 - Session startup integrates with the normal graphical-session target.
 - Session startup integrates with any required session-specific user target.
 
@@ -330,15 +330,15 @@ Required behavior:
 - `Hyper+v` opens clipboard history with a rofi-backed clipboard command
   such as `greenclip print` or `cliphist`.
 - `Hyper+p` opens the password picker with `rofi-pass`.
-- `Hyper+h` opens the screenshot tool with `rofi_shutter` or the
-  `grim`/`slurp`/`swappy` pipeline.
+- `Hyper+h` opens the screenshot tool with the compositor/session-appropriate
+  screenshot command.
 - `Hyper+c` opens a shell command prompt with `shell_command.sh`.
 - `Hyper+x` opens the command picker with `rofi_command.sh`.
 - `Hyper+k` opens the process killer with `rofi_kill_process.sh`.
 - `Hyper+Shift+k` opens the kill-all/process-tree killer with
   `rofi_kill_all.sh`.
 - `Hyper+r` opens the systemd/service menu with `rofi-systemd`.
-- `Hyper+slash` toggles taffybar with `toggle_taffybar`.
+- `Hyper+slash` toggles the status bar with the status-bar-appropriate command.
 - `Hyper+backslash` toggles the monitor input with `mpg341cx_input toggle`.
 - `Hyper+i` opens the audio input selector with `rofi_select_input.hs`.
 - `Hyper+o` opens the audio output selector with `rofi_paswitch`.
@@ -352,7 +352,6 @@ Important behavior:
   its exact key must avoid the required `Hyper+w/a/s/d` directional monitor
   bindings.
 - Expose-style overview remains available as a utility binding using the
-  compositor-appropriate implementation, such as `skippy-xd` on X11 or a native
-  compositor/plugin overview on Wayland.
+  compositor-appropriate implementation.
 - Session-destructive operations use shifted or otherwise harder-to-hit
   variants.
