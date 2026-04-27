@@ -88,6 +88,7 @@
     sharedHomeModules = [
       ./home/common.nix
       ./home/git-sync.nix
+      ./home/syncthing.nix
     ];
     homeForUser = user: "/Users/${user}";
     configuration = {
