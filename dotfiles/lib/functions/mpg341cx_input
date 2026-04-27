@@ -1,0 +1,271 @@
+#!/usr/bin/env -S zsh -f
+
+function mpg341cx_input_usage {
+  cat <<'EOF'
+Usage:
+  mpg341cx_input [toggle|dp|usb-c|hdmi1|hdmi2]
+
+Switches the current DDC/CI monitor input. On the MSI MPG341CX OLED:
+  dp     -> DisplayPort
+  usb-c  -> USB-C / Type-C
+  toggle -> DisplayPort <-> USB-C
+
+Environment:
+  MPG341CX_INPUT_DDC_DISPLAY  DDC display number, default: 1
+  MPG341CX_INPUT_BACKEND      auto, ddcutil, ddcctl, or m1ddc; default: auto
+  MPG341CX_INPUT_STATE_FILE   fallback toggle state file
+EOF
+}
+
+function mpg341cx_input_notify {
+  local message="$1"
+  if command -v notify-send >/dev/null 2>&1; then
+    notify-send "MPG341CX input" "$message"
+  elif command -v osascript >/dev/null 2>&1; then
+    osascript - "$message" <<'EOF' >/dev/null 2>&1
+on run argv
+  display notification (item 1 of argv) with title "MPG341CX input"
+end run
+EOF
+  fi
+}
+
+function mpg341cx_input_backend {
+  local requested="${MPG341CX_INPUT_BACKEND:-auto}"
+  local candidate
+  local -a candidates
+  MPG341CX_INPUT_SELECTED_BACKEND=""
+
+  if [[ "$requested" != auto ]]; then
+    if command -v "$requested" >/dev/null 2>&1; then
+      MPG341CX_INPUT_SELECTED_BACKEND="$requested"
+      return 0
+    fi
+
+    echo "mpg341cx_input: requested backend '$requested' is not available on PATH" >&2
+    return 1
+  fi
+
+  if [[ "$OSTYPE" == darwin* ]]; then
+    candidates=(m1ddc ddcctl ddcutil)
+  else
+    candidates=(ddcutil ddcctl)
+  fi
+
+  for candidate in "${candidates[@]}"; do
+    if command -v "$candidate" >/dev/null 2>&1; then
+      MPG341CX_INPUT_SELECTED_BACKEND="$candidate"
+      return 0
+    fi
+  done
+
+  echo "mpg341cx_input: no supported DDC command is available on PATH" >&2
+  return 1
+}
+
+function mpg341cx_input_current_ddcutil {
+  local display="$1"
+  local output_file
+
+  output_file="${TMPDIR:-/tmp}/mpg341cx-input-current-$$-$RANDOM"
+  ddcutil --display "$display" getvcp 60 --terse 2>/dev/null \
+    | grep -Eo 'x[0-9a-fA-F]+' \
+    | tail -1 > "$output_file"
+  read -r MPG341CX_INPUT_CURRENT < "$output_file"
+  rm -f "$output_file"
+}
+
+function mpg341cx_input_current_ddcctl {
+  local display="$1"
+  local current
+  local output_file
+
+  output_file="${TMPDIR:-/tmp}/mpg341cx-input-current-$$-$RANDOM"
+  ddcctl -d "$display" -i '?' 2>/dev/null \
+    | sed -nE 's/.*current: ([0-9]+).*/\1/p' \
+    | tail -1 > "$output_file"
+  read -r current < "$output_file"
+  rm -f "$output_file"
+
+  if [[ -n "$current" ]]; then
+    printf -v MPG341CX_INPUT_CURRENT 'x%02x' "$current"
+  fi
+}
+
+function mpg341cx_input_current_m1ddc {
+  local display="$1"
+  local current
+  local output_file parsed_file
+
+  output_file="${TMPDIR:-/tmp}/mpg341cx-input-current-$$-$RANDOM"
+  parsed_file="${TMPDIR:-/tmp}/mpg341cx-input-parsed-$$-$RANDOM"
+
+  m1ddc display "$display" get input > "$output_file" 2>/dev/null
+  sed -nE 's/.*[^0-9]([0-9]+)$/\1/p; /^[0-9]+$/p' "$output_file" | tail -1 > "$parsed_file"
+  read -r current < "$parsed_file"
+  rm -f "$output_file" "$parsed_file"
+
+  if [[ -n "$current" ]]; then
+    printf -v MPG341CX_INPUT_CURRENT 'x%02x' "$current"
+  fi
+}
+
+function mpg341cx_input_current {
+  local backend="$1"
+  local display="$2"
+  MPG341CX_INPUT_CURRENT=""
+
+  case "$backend" in
+    ddcutil)
+      mpg341cx_input_current_ddcutil "$display"
+      ;;
+    ddcctl)
+      mpg341cx_input_current_ddcctl "$display"
+      ;;
+    m1ddc)
+      mpg341cx_input_current_m1ddc "$display"
+      ;;
+  esac
+}
+
+function mpg341cx_input_current_target {
+  local backend="$1"
+  local current="${2:l}"
+  MPG341CX_INPUT_CURRENT_TARGET=""
+
+  case "$backend:$current" in
+    m1ddc:x0f|m1ddc:0x0f)
+      MPG341CX_INPUT_CURRENT_TARGET="dp"
+      ;;
+    m1ddc:x10|m1ddc:0x10)
+      MPG341CX_INPUT_CURRENT_TARGET="usb-c"
+      ;;
+    ddcutil:x0f|ddcutil:0x0f|ddcctl:x0f|ddcctl:0x0f)
+      MPG341CX_INPUT_CURRENT_TARGET="usb-c"
+      ;;
+    ddcutil:x10|ddcutil:0x10|ddcctl:x10|ddcctl:0x10)
+      MPG341CX_INPUT_CURRENT_TARGET="dp"
+      ;;
+  esac
+}
+
+function mpg341cx_input_state_file {
+  MPG341CX_INPUT_SELECTED_STATE_FILE="${MPG341CX_INPUT_STATE_FILE:-${XDG_STATE_HOME:-$HOME/.local/state}/mpg341cx_input/input}"
+}
+
+function mpg341cx_input_current_state {
+  local state_file
+
+  mpg341cx_input_state_file
+  state_file="$MPG341CX_INPUT_SELECTED_STATE_FILE"
+  if [[ -r "$state_file" ]]; then
+    read -r MPG341CX_INPUT_CURRENT_TARGET < "$state_file"
+  fi
+}
+
+function mpg341cx_input_write_state {
+  local current="$1"
+  local state_file state_dir
+
+  mpg341cx_input_state_file
+  state_file="$MPG341CX_INPUT_SELECTED_STATE_FILE"
+  state_dir="${state_file:h}"
+
+  mkdir -p "$state_dir" >/dev/null 2>&1 || return 0
+  print -r -- "$current" > "$state_file" 2>/dev/null || true
+}
+
+function mpg341cx_input {
+  local target="${1:-toggle}"
+  local display="${MPG341CX_INPUT_DDC_DISPLAY:-1}"
+  local backend value_hex value_dec value_m1ddc label current current_target
+
+  if [[ "$target" == "-h" || "$target" == "--help" ]]; then
+    mpg341cx_input_usage
+    return 0
+  fi
+
+  if ! mpg341cx_input_backend; then
+    mpg341cx_input_notify "No DDC command is available"
+    return 1
+  fi
+  backend="$MPG341CX_INPUT_SELECTED_BACKEND"
+
+  case "${target:l}" in
+    toggle)
+      mpg341cx_input_current "$backend" "$display"
+      current="$MPG341CX_INPUT_CURRENT"
+      mpg341cx_input_current_target "$backend" "$current"
+      current_target="$MPG341CX_INPUT_CURRENT_TARGET"
+      if [[ -z "$current_target" ]]; then
+        mpg341cx_input_current_state
+        current_target="$MPG341CX_INPUT_CURRENT_TARGET"
+      fi
+      case "${current_target:l}" in
+        dp)
+          target="usb-c"
+          ;;
+        usb-c)
+          target="dp"
+          ;;
+        *)
+          echo "mpg341cx_input: current input is '${current:-unknown}', defaulting to DisplayPort" >&2
+          target="dp"
+          ;;
+      esac
+      ;;
+  esac
+
+  case "${target:l}" in
+    dp|displayport|display-port)
+      value_hex="0x10"
+      value_dec="16"
+      value_m1ddc="15"
+      label="DisplayPort"
+      target="dp"
+      ;;
+    usb-c|usbc|type-c|typec)
+      value_hex="0x0f"
+      value_dec="15"
+      value_m1ddc="16"
+      label="USB-C"
+      target="usb-c"
+      ;;
+    hdmi1|hdmi-1)
+      value_hex="0x11"
+      value_dec="17"
+      value_m1ddc="17"
+      label="HDMI 1"
+      target="hdmi1"
+      ;;
+    hdmi2|hdmi-2)
+      value_hex="0x12"
+      value_dec="18"
+      value_m1ddc="18"
+      label="HDMI 2"
+      target="hdmi2"
+      ;;
+    *)
+      mpg341cx_input_usage >&2
+      return 2
+      ;;
+  esac
+
+  mpg341cx_input_notify "Switching to $label"
+
+  case "$backend" in
+    ddcutil)
+      ddcutil --display "$display" --noverify setvcp 60 "$value_hex" || return $?
+      ;;
+    ddcctl)
+      ddcctl -d "$display" -i "$value_dec" || return $?
+      ;;
+    m1ddc)
+      m1ddc display "$display" set input "$value_m1ddc" || return $?
+      ;;
+  esac
+
+  mpg341cx_input_write_state "$target"
+}
+
+mpg341cx_input "$@"

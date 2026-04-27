@@ -254,6 +254,10 @@
       homebrew = {
         enable = true;
         taps = builtins.attrNames config.nix-homebrew.taps;
+        brews = [
+          "ddcctl"
+          "m1ddc"
+        ];
         casks = [
           "codex-app"
           "ghostty"
