@@ -1,5 +1,37 @@
 { inputs, config, pkgs, specialArgs, ... }:
 let
+  system = pkgs.stdenv.hostPlatform.system;
+
+  nixifiedAiComfyuiModule =
+    import (inputs.nixified-ai + "/flake-modules/projects/comfyui/module.nix") {
+      overlays = patchedNixifiedAiOverlays;
+    };
+
+  patchedNixifiedAiOverlays = [
+    patchedNixifiedAiComfyuiOverlay
+    inputs.nixified-ai.overlays.models
+    inputs.nixified-ai.overlays.fetchers
+  ];
+
+  patchedNixifiedAiComfyuiOverlay = final: prev:
+    let
+      upstream = inputs.nixified-ai.overlays.comfyui final prev;
+    in
+    (builtins.removeAttrs upstream [ "python3Packages" ]) // {
+      python3Packages = prev.python3Packages.overrideScope (
+        python-final: python-prev:
+        let
+          extraPackages = final.lib.packagesFromDirectoryRecursive {
+            inherit (python-final) callPackage;
+            directory = inputs.nixified-ai + "/flake-modules/packages";
+          };
+          packagesAlreadyInPrev =
+            builtins.filter (name: python-prev ? ${name}) (builtins.attrNames extraPackages);
+        in
+        builtins.removeAttrs extraPackages packagesAlreadyInPrev
+      );
+    };
+
   qwenRapidAioNsfwV23 = pkgs.fetchurl {
     name = "Qwen-Rapid-AIO-NSFW-v23.safetensors";
     url = "https://huggingface.co/Phr00t/Qwen-Image-Edit-Rapid-AIO/resolve/main/v23/Qwen-Rapid-AIO-NSFW-v23.safetensors";
@@ -64,8 +96,16 @@ let
     ' "$src" > "$out"
   '';
 
-  nixifiedComfyuiPackages =
-    inputs.nixified-ai.packages.${pkgs.system}.comfyui-nvidia.passthru.pkgs;
+  nixifiedComfyuiPkgs = import pkgs.path {
+    inherit system;
+    config = {
+      allowUnfree = true;
+      cudaSupport = true;
+    };
+    overlays = patchedNixifiedAiOverlays;
+  };
+
+  nixifiedComfyuiPackages = nixifiedComfyuiPkgs.comfyuiPackages;
 
   patchedComfyuiPackages = nixifiedComfyuiPackages // {
     comfyui-unwrapped = nixifiedComfyuiPackages.comfyui-unwrapped.overrideAttrs (old: {
@@ -75,14 +115,16 @@ let
     });
   };
 
-  comfyuiPackage = inputs.nixified-ai.packages.${pkgs.system}.comfyui-nvidia.override {
+  comfyuiPackage = nixifiedComfyuiPackages.comfyui.override {
     comfyuiPackages = patchedComfyuiPackages;
   };
 in
 specialArgs.makeEnable config "myModules.nixified-ai" false {
   imports = [
-    inputs.nixified-ai.nixosModules.comfyui
+    nixifiedAiComfyuiModule
   ];
+
+  nixpkgs.overlays = patchedNixifiedAiOverlays;
 
   services.comfyui = {
     enable = true;
