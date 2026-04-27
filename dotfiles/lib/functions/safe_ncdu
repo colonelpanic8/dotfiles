@@ -1,0 +1,218 @@
+#!/usr/bin/env zsh
+
+function _safe_ncdu_usage {
+    cat <<'EOF'
+Usage:
+  safe_ncdu [scan] [ROOT] [-o OUTPUT]
+  safe_ncdu open SNAPSHOT
+  safe_ncdu top SNAPSHOT [LIMIT] [PATH]
+  safe_ncdu excludes [ROOT]
+
+Creates a compressed ncdu export while avoiding mounted descendants of ROOT.
+Default ROOT is /. Default OUTPUT is ~/.cache/ncdu/safe-ncdu-<root>-<timestamp>.json.zst.
+EOF
+}
+
+function _safe_ncdu_require {
+    local cmd
+    for cmd in "$@"; do
+        if ! command -v "$cmd" >/dev/null 2>&1; then
+            echo "safe_ncdu: missing required command: $cmd" >&2
+            return 1
+        fi
+    done
+}
+
+function _safe_ncdu_root_name {
+    local root="$1"
+    if [[ "$root" == "/" ]]; then
+        echo root
+    else
+        echo "${root#/}" | sed 's#[^A-Za-z0-9._-]#_#g'
+    fi
+}
+
+function _safe_ncdu_excludes {
+    local root="${1:-/}"
+    local root_real
+    root_real="$(realpath -m "$root")" || return 1
+
+    # Exclude every mounted descendant. This catches FUSE/remote mounts such as
+    # Keybase and also bind mounts such as /nix/store when scanning /.
+    findmnt -R -rn -o TARGET "$root_real" 2>/dev/null \
+        | awk -v root="$root_real" '
+            $0 != root && length($0) > length(root) { print }
+        '
+
+    # Static guardrails for known remote/special/noisy paths. ncdu treats
+    # --exclude values as patterns, so globs are intentional here.
+    cat <<EOF
+$HOME/keybase
+$HOME/.cache/keybase
+$HOME/.local/share/keybase
+$HOME/.config/keybase
+/home/*/keybase
+/keybase
+/var/lib/railbird
+/run/user/*/doc
+EOF
+}
+
+function _safe_ncdu_scan {
+    local root="/"
+    local output=""
+    local arg
+
+    while [[ $# -gt 0 ]]; do
+        arg="$1"
+        case "$arg" in
+            -h|--help)
+                _safe_ncdu_usage
+                return 0
+                ;;
+            -o|--output)
+                shift
+                output="$1"
+                ;;
+            --)
+                shift
+                break
+                ;;
+            -*)
+                echo "safe_ncdu: unknown option: $arg" >&2
+                _safe_ncdu_usage >&2
+                return 2
+                ;;
+            *)
+                root="$arg"
+                ;;
+        esac
+        shift
+    done
+
+    _safe_ncdu_require ncdu findmnt realpath awk sed date mkdir tee sort uniq || return 1
+
+    local root_real root_name out_dir latest excludes_file
+    root_real="$(realpath -m "$root")" || return 1
+    root_name="$(_safe_ncdu_root_name "$root_real")"
+    out_dir="$HOME/.cache/ncdu"
+    mkdir -p "$out_dir"
+
+    if [[ -z "$output" ]]; then
+        output="$out_dir/safe-ncdu-${root_name}-$(date +%Y%m%d-%H%M%S).json.zst"
+    fi
+
+    excludes_file="${output}.excludes"
+    _safe_ncdu_excludes "$root_real" | sort -u | tee "$excludes_file" >/dev/null
+
+    local -a exclude_args
+    local exclude
+    exclude_args=()
+    while IFS= read -r exclude; do
+        [[ -n "$exclude" ]] && exclude_args+=(--exclude "$exclude")
+    done < "$excludes_file"
+
+    echo "safe_ncdu: scanning $root_real"
+    echo "safe_ncdu: writing $output"
+    echo "safe_ncdu: excludes recorded in $excludes_file"
+    ncdu -0 -x -c "${exclude_args[@]}" -o "$output" "$root_real" || return $?
+
+    latest="$out_dir/latest-${root_name}.json.zst"
+    ln -sfn "$output" "$latest"
+    echo "safe_ncdu: latest symlink $latest"
+    ln -sfn "$excludes_file" "${latest}.excludes"
+}
+
+function _safe_ncdu_open {
+    local snapshot="$1"
+    if [[ -z "$snapshot" ]]; then
+        echo "safe_ncdu open: missing SNAPSHOT" >&2
+        return 2
+    fi
+    _safe_ncdu_require ncdu || return 1
+    ncdu -r -f "$snapshot"
+}
+
+function _safe_ncdu_top {
+    local snapshot="$1"
+    local limit="${2:-30}"
+    local query_path="${3:-}"
+    if [[ -z "$snapshot" ]]; then
+        echo "safe_ncdu top: missing SNAPSHOT" >&2
+        return 2
+    fi
+    _safe_ncdu_require zstdcat jq awk || return 1
+    zstdcat "$snapshot" | jq -r --argjson limit "$limit" --arg path "$query_path" '
+      def total:
+        if type == "array" then
+          ((.[0].dsize // 0) + ([.[1:][] | total] | add // 0))
+        elif type == "object" then
+          (.dsize // 0)
+        else
+          0
+        end;
+
+      def child_name:
+        if type == "array" then .[0].name else .name end;
+
+      def descend($parts):
+        if ($parts | length) == 0 then
+          .
+        else
+          .[1:][]
+          | select(type == "array" and .[0].name == $parts[0])
+          | descend($parts[1:])
+        end;
+
+      ($path
+        | sub("^/"; "")
+        | split("/")
+        | map(select(length > 0))) as $parts
+      | (.[3] | descend($parts))[1:]
+      | map({name: (if type == "array" then .[0].name else .name end), size: total})
+      | sort_by(.size)
+      | reverse
+      | .[:$limit][]
+      | [.name, .size]
+      | @tsv
+    ' | awk -F'\t' '
+      {
+        size = $2
+        unit = "B"
+        if (size >= 1073741824) { size = size / 1073741824; unit = "GiB" }
+        else if (size >= 1048576) { size = size / 1048576; unit = "MiB" }
+        else if (size >= 1024) { size = size / 1024; unit = "KiB" }
+        printf "%-90s %8.1f %s\n", $1, size, unit
+      }
+    '
+}
+
+function safe_ncdu {
+    local subcommand="${1:-scan}"
+    case "$subcommand" in
+        scan)
+            shift
+            _safe_ncdu_scan "$@"
+            ;;
+        open)
+            shift
+            _safe_ncdu_open "$@"
+            ;;
+        top)
+            shift
+            _safe_ncdu_top "$@"
+            ;;
+        excludes)
+            shift
+            _safe_ncdu_excludes "${1:-/}" | sort -u
+            ;;
+        -h|--help|help)
+            _safe_ncdu_usage
+            ;;
+        *)
+            _safe_ncdu_scan "$@"
+            ;;
+    esac
+}
+
+safe_ncdu "$@"
