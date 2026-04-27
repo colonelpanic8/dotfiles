@@ -8,6 +8,24 @@ This document describes the tiling window manager experience I am targeting.
 - Important: expected for parity, but a rough first version is acceptable.
 - Nice: useful polish or compatibility.
 
+## Modifier Terminology
+
+- `Super` names the physical modifier key often labeled Windows, Command, GUI,
+  or OS depending on the keyboard.
+- `Hyper` means a higher-order logical modifier layer used for monitor,
+  workspace, utility, and cross-context operations.
+- Prefer implementing `Hyper` as its own virtual modifier or equivalent logical
+  mask when the environment supports that.
+- If a dedicated virtual `Hyper` mask is not practical, `Ctrl+Alt+Super` is the
+  fallback chord.
+- The fallback `Hyper` chord intentionally does not include `Shift`; portable
+  `Hyper` bindings only use the plain `Hyper` layer and the `Hyper+Shift`
+  layer.
+- Do not require `Hyper+Ctrl`, `Hyper+Alt`, or `Hyper+Super` bindings. Those
+  modifiers may already be part of the fallback `Hyper` chord.
+- Binding descriptions should use `Super` and `Hyper` rather than
+  hardware-vendor names.
+
 ## Workspaces and Monitors
 
 Required behavior:
@@ -47,14 +65,14 @@ Important behavior:
 
 Required behavior:
 
-- `Super+w/a/s/d` focuses windows directionally.
-- `Super+Shift+w/a/s/d` swaps or moves the focused window directionally.
-- `Super+Ctrl+w/a/s/d` moves the focused window to the monitor in that
-  direction while preserving useful focus.
-- `Hyper+w/a/s/d` focuses monitors directionally.
-- `Hyper+Shift+w/a/s/d` swaps or moves windows between monitors directionally.
-- `Hyper+Ctrl+w/a/s/d` moves the focused window to an empty workspace on the
-  monitor in that direction.
+- Directional window focus is available.
+- Directional window swapping or movement is available.
+- Directional move-to-monitor is available while preserving useful focus.
+- Directional monitor focus is available.
+- Directional window movement between monitors is available.
+- Moving the focused window to an empty workspace on the monitor in a direction
+  remains required behavior, but it should not require an extra `Hyper`
+  modifier beyond `Shift`.
 
 Important behavior:
 
@@ -224,3 +242,117 @@ Nice behavior:
 - Monitor DDC/input switching remains consistent.
 - Rofi utility bindings remain consistent.
 - Media keys remain consistent.
+
+## Binding Appendix
+
+Required behavior:
+
+- `Hyper` bindings should remain available from a single physical key where
+  practical, even if that key emits the fallback chord internally.
+- Extra modifiers on `Hyper` are limited to `Shift` for portable bindings.
+
+Important behavior:
+
+- `Hyper` utility bindings must not displace required directional monitor
+  bindings on `Hyper+w/a/s/d`.
+
+### Core Bindings
+
+Required behavior:
+
+- `Super+p` opens the application launcher.
+- `Super+Shift+p` opens the run menu.
+- `Super+Shift+Return` opens a terminal.
+- `Super+Tab` opens the overview.
+- `Super+Shift+Tab` opens the overview in bring-window mode when supported.
+- `Super+g` opens the go-to-window picker.
+- `Super+b` opens the bring-window picker.
+- `Super+Shift+b` opens the replace-window picker.
+- `Super+\` toggles to the previous workspace on the current monitor.
+- `Super+Shift+e` moves the focused window to the next empty workspace and
+  follows it. This is the target replacement for the older `Super+Shift+h`
+  binding.
+- `Hyper+e` focuses the next empty workspace.
+- `Hyper+5` swaps the current workspace with a selected workspace.
+- `Hyper+g` gathers windows of the focused class onto the current workspace.
+
+### Directional Navigation Bindings
+
+Required behavior:
+
+- `Super+w/a/s/d` focuses windows directionally.
+- `Super+Shift+w/a/s/d` swaps or moves the focused window directionally.
+- `Super+Ctrl+w/a/s/d` moves the focused window to the monitor in that
+  direction while preserving useful focus.
+- `Hyper+w/a/s/d` focuses monitors directionally.
+- `Hyper+Shift+w/a/s/d` swaps or moves windows between monitors directionally.
+- Moving the focused window to an empty workspace on the monitor in a direction
+  remains required behavior, but it should not require a `Hyper+Ctrl` binding.
+- `Super+z` focuses the next monitor.
+- `Super+Shift+z` moves the focused window to the next monitor.
+
+### Numbered Workspace Bindings
+
+Required behavior:
+
+- `Super+1..9` focuses workspace `1..9` on the current monitor.
+- `Super+Shift+1..9` sends the focused window to workspace `1..9` without
+  following it.
+- `Super+Ctrl+1..9` sends the focused window to workspace `1..9` and follows
+  it.
+
+### Scratchpad Bindings
+
+Required behavior:
+
+- `Super+Alt+e` toggles the element scratchpad.
+- `Super+Alt+g` toggles the gmail scratchpad.
+- `Super+Alt+h` toggles the htop scratchpad.
+- `Super+Alt+m` toggles the messages scratchpad.
+- `Super+Alt+k` toggles the slack scratchpad.
+- `Super+Alt+s` toggles the spotify scratchpad.
+- `Super+Alt+t` toggles the transmission scratchpad.
+- `Super+Alt+v` toggles the volume scratchpad.
+
+Important behavior:
+
+- `Super+Alt+grave` toggles the dropdown terminal scratchpad.
+- `Super+Alt+c` raises or starts the browser.
+- `Super+Alt+Return` enters the minimized-window picker or restores minimized
+  windows, depending on environment support.
+- `Super+Alt` is reserved for app-specific raise/spawn, scratchpad, and
+  scratchpad-adjacent bindings.
+
+### Utility Bindings
+
+Required behavior:
+
+- `Hyper+v` opens clipboard history with a rofi-backed clipboard command
+  such as `greenclip print` or `cliphist`.
+- `Hyper+p` opens the password picker with `rofi-pass`.
+- `Hyper+h` opens the screenshot tool with `rofi_shutter` or the
+  `grim`/`slurp`/`swappy` pipeline.
+- `Hyper+c` opens a shell command prompt with `shell_command.sh`.
+- `Hyper+x` opens the command picker with `rofi_command.sh`.
+- `Hyper+k` opens the process killer with `rofi_kill_process.sh`.
+- `Hyper+Shift+k` opens the kill-all/process-tree killer with
+  `rofi_kill_all.sh`.
+- `Hyper+r` opens the systemd/service menu with `rofi-systemd`.
+- `Hyper+slash` toggles taffybar with `toggle_taffybar`.
+- `Hyper+backslash` toggles the monitor input with `mpg341cx_input toggle`.
+- `Hyper+i` opens the audio input selector with `rofi_select_input.hs`.
+- `Hyper+o` opens the audio output selector with `rofi_paswitch`.
+- `Hyper+y` opens the agentic skill picker with `rofi_agentic_skill`.
+- `Hyper+Shift+l` locks the session with the compositor/session-appropriate
+  locker.
+
+Important behavior:
+
+- Wallpaper selection is available under `Hyper` via `rofi_wallpaper.sh`, but
+  its exact key must avoid the required `Hyper+w/a/s/d` directional monitor
+  bindings.
+- Expose-style overview remains available as a utility binding using the
+  compositor-appropriate implementation, such as `skippy-xd` on X11 or a native
+  compositor/plugin overview on Wayland.
+- Session-destructive operations use shifted or otherwise harder-to-hit
+  variants.
