@@ -205,6 +205,14 @@
       };
     };
 
+    codex-desktop-linux = {
+      url = "github:ilysenko/codex-desktop-linux";
+      inputs = {
+        nixpkgs.follows = "nixpkgs";
+        flake-utils.follows = "flake-utils";
+      };
+    };
+
     claude-code-nix = {
       url = "github:sadjow/claude-code-nix";
       inputs = {
