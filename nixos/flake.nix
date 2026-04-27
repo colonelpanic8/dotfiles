@@ -151,7 +151,7 @@
     taffybar = {
       # Use a remote, lockfile-pinned input so rebuilds are reproducible across
       # machines. For local development, use `nixos-rebuild --override-input taffybar path:...`.
-      url = "github:taffybar/taffybar";
+      url = "github:taffybar/taffybar?ref=codex/fix-gdk-backend-strut-detection";
       inputs = {
         nixpkgs.follows = "nixpkgs";
         flake-utils.follows = "flake-utils";

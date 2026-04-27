@@ -2220,15 +2220,16 @@
         ]
       },
       "locked": {
-        "lastModified": 1777254467,
-        "narHash": "sha256-P/m2SoT5XNb6LFOIdga/JUXM3QF/R4dlBAnKWbkHGuc=",
+        "lastModified": 1777319252,
+        "narHash": "sha256-mPft6i8ReJAvW2LdylFI6FF6NFGa1HMa3RNbisfAsbc=",
         "owner": "taffybar",
         "repo": "taffybar",
-        "rev": "ff41f4c895e0b30809a8e554011fbc37c81c0cf2",
+        "rev": "c2cee23fc57384cd322d589944129e6c31d4f0fd",
         "type": "github"
       },
       "original": {
         "owner": "taffybar",
+        "ref": "codex/fix-gdk-backend-strut-detection",
         "repo": "taffybar",
         "type": "github"
       }

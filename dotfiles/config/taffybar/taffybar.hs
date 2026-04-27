@@ -49,6 +49,7 @@ import qualified System.Taffybar.Widget.ASUS as ASUS
 import System.Taffybar.Widget.CPUMonitor (cpuMonitorNew)
 import System.Taffybar.Widget.Generic.Graph (GraphConfig (..), GraphDirection (..), GraphStyle (..), defaultGraphConfig)
 import qualified System.Taffybar.Widget.NetworkManager as NetworkManager
+import System.Taffybar.Widget.OpenAIUsage (openAIUsageNew)
 import qualified System.Taffybar.Widget.PulseAudio as PulseAudio
 import System.Taffybar.Widget.SNIMenu (withNmAppletMenu)
 import System.Taffybar.Widget.SNITray
@@ -551,6 +552,10 @@ wakeupDebugWidget :: TaffyIO Gtk.Widget
 wakeupDebugWidget =
   decorateWithClassAndBoxM "wakeup-debug" wakeupDebugWidgetNew
 
+openAIUsageWidget :: TaffyIO Gtk.Widget
+openAIUsageWidget =
+  decorateWithClassAndBoxM "openai-usage" openAIUsageNew
+
 sniPriorityVisibilityThresholdDefault :: Int
 sniPriorityVisibilityThresholdDefault = 0
 
@@ -609,6 +614,7 @@ endWidgetsForHost hostName =
   let baseEndWidgets =
         [ sniTrayWidget,
           audioWidget,
+          openAIUsageWidget,
           cpuWidget,
           ramSwapWidget,
           diskUsageWidget,
@@ -622,6 +628,7 @@ endWidgetsForHost hostName =
           sniTrayWidget,
           asusDiskUsageWidget,
           audioBacklightWidget,
+          openAIUsageWidget,
           cpuWidget,
           ramSwapWidget,
           screensaverWidget,
