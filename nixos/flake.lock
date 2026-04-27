@@ -1548,14 +1548,17 @@
         ]
       },
       "locked": {
-        "lastModified": 1777148012,
-        "narHash": "sha256-ExYOcgFOu8yTU00ZvZC0QLLuigaest/zhc3ecJsXnfs=",
-        "path": "/home/imalison/Projects/keepbook",
-        "type": "path"
+        "lastModified": 1777261868,
+        "narHash": "sha256-30E1RBr0FGrf1IdXi2OKua+vQ4sUvjwUq6lfC1qcBug=",
+        "owner": "colonelpanic8",
+        "repo": "keepbook",
+        "rev": "2e178e7ba864af0a880456dca241615dd75afd24",
+        "type": "github"
       },
       "original": {
-        "path": "/home/imalison/Projects/keepbook",
-        "type": "path"
+        "owner": "colonelpanic8",
+        "repo": "keepbook",
+        "type": "github"
       }
     },
     "mova": {

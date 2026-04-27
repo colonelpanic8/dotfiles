@@ -47,7 +47,7 @@
     };
 
     keepbook = {
-      url = "path:/home/imalison/Projects/keepbook";
+      url = "github:colonelpanic8/keepbook";
       inputs = {
         nixpkgs.follows = "nixpkgs";
         flake-utils.follows = "flake-utils";
