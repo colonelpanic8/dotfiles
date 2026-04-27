@@ -1097,6 +1097,7 @@ addKeys conf@XConfig { modMask = modm } =
     , ((hyper, xK_r), spawn "rofi-systemd")
     , ((hyper, xK_9), spawn "start_synergy.sh")
     , ((hyper, xK_slash), spawn "toggle_taffybar")
+    , ((hyper, xK_backslash), spawn "$HOME/dotfiles/dotfiles/lib/functions/mpg341cx_input toggle")
     , ((hyper, xK_space), spawn "skippy-xd")
     , ((hyper, xK_i), spawn "rofi_select_input.hs")
     , ((hyper, xK_o), spawn "rofi_paswitch")

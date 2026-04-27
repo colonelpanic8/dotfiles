@@ -240,6 +240,17 @@ local function toggleAutoColumns()
   end
 end
 
+local function toggleMonitorInput()
+  hs.task.new("/bin/zsh", function(exitCode)
+    if exitCode ~= 0 then
+      notify("Monitor input toggle failed")
+    end
+  end, {
+    "-lc",
+    "export PATH=\"$HOME/.nix-profile/bin:/run/current-system/sw/bin:/opt/homebrew/bin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:$PATH\"; \"$HOME/dotfiles/dotfiles/lib/functions/mpg341cx_input\" toggle",
+  }):start()
+end
+
 wf:subscribe({
   hs.window.filter.windowCreated,
   hs.window.filter.windowDestroyed,
@@ -252,6 +263,7 @@ wf:subscribe({
 
 hs.hotkey.bind(hyper, "c", tileFocusedScreen)
 hs.hotkey.bind(hyper, "v", toggleAutoColumns)
+hs.hotkey.bind(hyper, "\\", toggleMonitorInput)
 
 hs.hotkey.bind(hyper, "a", function()
   focusWindow("left")
@@ -358,6 +370,7 @@ end)
 
 bindRgui("c", tileFocusedScreen)
 bindRgui("v", toggleAutoColumns)
+bindRgui("\\", toggleMonitorInput)
 
 bindRgui("m", function()
   placeFocused(1, 1, 1)
