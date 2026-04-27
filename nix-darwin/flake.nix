@@ -85,8 +85,10 @@
     enabledHomeUsers = [
       activePrimaryUser
     ];
-    sharedHomeModules = [./home/common.nix];
-    ivanHomeModules = [./home/ivan.nix];
+    sharedHomeModules = [
+      ./home/common.nix
+      ./home/git-sync.nix
+    ];
     homeForUser = user: "/Users/${user}";
     configuration = {
       pkgs,
@@ -374,9 +376,7 @@
           inherit inputs libDir;
         };
         sharedModules = sharedHomeModules;
-        users = lib.genAttrs enabledHomeUsers (_: {
-          imports = ivanHomeModules;
-        });
+        users = lib.genAttrs enabledHomeUsers (_: {});
       };
     };
   in {
