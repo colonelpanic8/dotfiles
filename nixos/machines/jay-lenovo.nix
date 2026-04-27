@@ -10,7 +10,7 @@
 
   environment.systemPackages = with pkgs; [
     android-studio
-    linuxPackages_latest.perf
+    perf
     zenmonitor
     code-cursor
   ];
@@ -31,10 +31,10 @@
   myModules.postgres.enable = true;
   myModules.kat.enable = true;
   networking.networkmanager.enable = true;
+  services.libinput.enable = true;
 
   services.xserver = {
       enable = true;
-      libinput.enable = true;
       videoDrivers = [ "amdgpu" ];
   };
 

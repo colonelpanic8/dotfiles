@@ -32,7 +32,7 @@
   networking.hostName = "ryzen-shine";
 
   environment.systemPackages = with pkgs; [
-    linuxPackages_latest.perf
+    perf
   ];
 
   boot.initrd.systemd.enable = true;

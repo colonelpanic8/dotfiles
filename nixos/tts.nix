@@ -7,4 +7,6 @@ makeEnable config "myModules.tts" false {
     model = "tts_models/en/vctk/vits";
     extraArgs = [ "--speaker_idx" "p376" ];
   };
+
+  systemd.services.tts-coqui.wants = [ "network-online.target" ];
 }
