@@ -1,30 +1,20 @@
 {
   inputs = {
-    flake-utils.url = "github:numtide/flake-utils";
-    nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
-    git-ignore-nix = {
-      url = "github:hercules-ci/gitignore.nix";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
-    # Kept for compatibility with parent flakes that set `inputs.xmonad.follows`,
-    # and for taffybar's own flake inputs. We don't depend on xmonad.lib here.
-    xmonad = {
-      url = "github:xmonad/xmonad/master";
-      inputs.nixpkgs.follows = "nixpkgs";
-      # xmonad's `unstable` input is another nixpkgs pin; keep it aligned too.
-      inputs.unstable.follows = "nixpkgs";
-      inputs.flake-utils.follows = "flake-utils";
-      inputs.git-ignore-nix.follows = "git-ignore-nix";
-    };
     taffybar = {
       # Use the local git checkout, not a raw path snapshot, so gitignored
       # build artifacts like dist-newstyle/.worktrees/.direnv don't get copied
       # into flake-input store sources.
       url = "git+file:///home/imalison/dotfiles/dotfiles/config/taffybar/taffybar";
-      inputs.nixpkgs.follows = "nixpkgs";
-      inputs.flake-utils.follows = "flake-utils";
-      inputs.xmonad.follows = "xmonad";
       inputs.weeder-nix.inputs.pre-commit-hooks.inputs.nixpkgs.follows = "nixpkgs";
+    };
+    # Follow the vendored taffybar flake's pins so the config shell and the
+    # library shell mostly share their nixpkgs/Haskell dependency graph.
+    flake-utils.follows = "taffybar/flake-utils";
+    nixpkgs.follows = "taffybar/nixpkgs";
+    # Kept for compatibility with parent flakes that set `inputs.xmonad.follows`.
+    # The config flake itself does not use xmonad.lib.
+    xmonad = {
+      follows = "taffybar/xmonad";
     };
   };
   outputs = {
