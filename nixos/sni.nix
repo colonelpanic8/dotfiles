@@ -1,4 +1,4 @@
-{ config, inputs, pkgs, makeEnable, ... }:
+{ config, inputs, lib, pkgs, makeEnable, ... }:
 let
   system = pkgs.stdenv.hostPlatform.system;
   kanshiSniPackage =
@@ -10,6 +10,11 @@ let
     });
 in
 makeEnable config "myModules.sni" true {
+  systemd.user.services.blueman-applet.serviceConfig.ExecStart = lib.mkForce [
+    ""
+    "${pkgs.blueman}/bin/blueman-applet"
+  ];
+
   home-manager.sharedModules = [
     ({ lib, ... }: {
       systemd.user.services.kanshi-sni = {
