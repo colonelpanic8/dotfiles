@@ -131,6 +131,9 @@ trust_level = "trusted"
 [projects."/Users/kat/Documents/Codex/2026-04-25/what-is-the-state-of-tiling"]
 trust_level = "trusted"
 
+[projects."/home/imalison/Pictures/ai/2026/celeb"]
+trust_level = "trusted"
+
 [notice]
 hide_gpt5_1_migration_prompt = true
 "hide_gpt-5.1-codex-max_migration_prompt" = true
