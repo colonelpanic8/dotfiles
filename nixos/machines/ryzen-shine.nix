@@ -24,7 +24,7 @@
     # extraFlags = ["--node-taint preferNoSchedule=true:NoSchedule"];
   };
   services.mullvad-vpn.enable = lib.mkForce false;
-  myModules.nixified-ai.enable = false;
+  myModules.nixified-ai.enable = true;
   # boot.kernelPackages = pkgs.linuxPackages_latest;
 
   boot.loader.systemd-boot.configurationLimit = 5;
@@ -76,6 +76,10 @@
     fsType = "ntfs";
     options = [ "nofail" "uid=0" "gid=users" "umask=002" ];
   };
+
+  swapDevices = [
+    { device = "/swapfile"; size = 49152; }
+  ];
 
   # nix.settings.maxJobs = lib.mkDefault 16;
   # High-DPI console
