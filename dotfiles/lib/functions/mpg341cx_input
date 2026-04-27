@@ -13,7 +13,8 @@ Switches the current DDC/CI monitor input. On the MSI MPG341CX OLED:
 Environment:
   MPG341CX_INPUT_DDC_DISPLAY  DDC display number, default: 1
   MPG341CX_INPUT_BACKEND      auto, ddcutil, ddcctl, or m1ddc; default: auto
-  MPG341CX_INPUT_STATE_FILE   fallback toggle state file
+  MPG341CX_INPUT_DARWIN_DISPLAY_NAME
+                              macOS display name used to infer USB-C state
 EOF
 }
 
@@ -128,6 +129,47 @@ function mpg341cx_input_current {
   esac
 }
 
+function mpg341cx_input_current_darwin_active {
+  local display_name="${MPG341CX_INPUT_DARWIN_DISPLAY_NAME:-MPG341CX OLED}"
+
+  MPG341CX_INPUT_CURRENT_TARGET=""
+
+  if [[ "$OSTYPE" != darwin* ]] || ! command -v system_profiler >/dev/null 2>&1; then
+    return 1
+  fi
+
+  if system_profiler SPDisplaysDataType 2>/dev/null | awk -v display_name="$display_name" '
+    {
+      line = $0
+      trimmed = line
+      gsub(/^[[:space:]]+|[[:space:]]+$/, "", trimmed)
+
+      if (trimmed == display_name ":") {
+        in_display = 1
+        next
+      }
+
+      if (in_display && line ~ /^        [^[:space:]].*:[[:space:]]*$/) {
+        exit
+      }
+
+      if (in_display && trimmed == "Online: Yes") {
+        found = 1
+        exit
+      }
+    }
+
+    END {
+      exit(found ? 0 : 1)
+    }
+  '; then
+    MPG341CX_INPUT_CURRENT_TARGET="usb-c"
+    return 0
+  fi
+
+  return 1
+}
+
 function mpg341cx_input_current_target {
   local backend="$1"
   local current="${2:l}"
@@ -147,32 +189,6 @@ function mpg341cx_input_current_target {
       MPG341CX_INPUT_CURRENT_TARGET="dp"
       ;;
   esac
-}
-
-function mpg341cx_input_state_file {
-  MPG341CX_INPUT_SELECTED_STATE_FILE="${MPG341CX_INPUT_STATE_FILE:-${XDG_STATE_HOME:-$HOME/.local/state}/mpg341cx_input/input}"
-}
-
-function mpg341cx_input_current_state {
-  local state_file
-
-  mpg341cx_input_state_file
-  state_file="$MPG341CX_INPUT_SELECTED_STATE_FILE"
-  if [[ -r "$state_file" ]]; then
-    read -r MPG341CX_INPUT_CURRENT_TARGET < "$state_file"
-  fi
-}
-
-function mpg341cx_input_write_state {
-  local current="$1"
-  local state_file state_dir
-
-  mpg341cx_input_state_file
-  state_file="$MPG341CX_INPUT_SELECTED_STATE_FILE"
-  state_dir="${state_file:h}"
-
-  mkdir -p "$state_dir" >/dev/null 2>&1 || return 0
-  print -r -- "$current" > "$state_file" 2>/dev/null || true
 }
 
 function mpg341cx_input {
@@ -198,7 +214,7 @@ function mpg341cx_input {
       mpg341cx_input_current_target "$backend" "$current"
       current_target="$MPG341CX_INPUT_CURRENT_TARGET"
       if [[ -z "$current_target" ]]; then
-        mpg341cx_input_current_state
+        mpg341cx_input_current_darwin_active
         current_target="$MPG341CX_INPUT_CURRENT_TARGET"
       fi
       case "${current_target:l}" in
@@ -264,8 +280,6 @@ function mpg341cx_input {
       m1ddc display "$display" set input "$value_m1ddc" || return $?
       ;;
   esac
-
-  mpg341cx_input_write_state "$target"
 }
 
 mpg341cx_input "$@"
