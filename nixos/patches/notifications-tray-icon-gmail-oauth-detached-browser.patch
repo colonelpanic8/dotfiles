@@ -1,0 +1,114 @@
+diff --git a/src/StatusNotifier/Item/Notifications/Gmail.hs b/src/StatusNotifier/Item/Notifications/Gmail.hs
+index 6b8206b..cd5834f 100644
+--- a/src/StatusNotifier/Item/Notifications/Gmail.hs
++++ b/src/StatusNotifier/Item/Notifications/Gmail.hs
+@@ -12,7 +12,7 @@ module StatusNotifier.Item.Notifications.Gmail
+   ) where
+ 
+ import           Control.Concurrent
+-import           Control.Concurrent.Async (race)
++import           Control.Concurrent.Async (race, wait, withAsync)
+ import           Control.Concurrent.MVar as MV
+ import           Control.Exception (SomeException, bracket, try)
+ import           Control.Monad
+@@ -76,11 +76,13 @@ import           Network.HTTP.Conduit (newManager, tlsManagerSettings)
+ import qualified Network.HTTP.Client as Client
+ import           Network.Socket
+ import           Network.Socket.ByteString (recv, sendAll)
++import           Network.HTTP.Types.URI (urlDecode, urlEncode)
+ import           StatusNotifier.Item.Notifications.Util
+ import           System.Directory (createDirectoryIfMissing, doesFileExist, getXdgDirectory, XdgDirectory(..))
+ import           System.FilePath ((</>))
+ import           System.IO (hFlush, stdout)
+ import           System.Log.Logger
++import qualified System.Process as P
+ import           Text.Printf
+ 
+ -- | Configuration for the Gmail notifier.
+@@ -130,14 +132,23 @@ loopbackAuthURL :: OAuthClient -> Int -> T.Text
+ loopbackAuthURL client port =
+   accountsURL
+   <> "?response_type=code"
+-  <> "&client_id=" <> toQueryParam (_clientId client)
+-  <> "&redirect_uri=" <> loopbackRedirectURI port
++  <> "&client_id=" <> urlEncodeText (toQueryParam (_clientId client))
++  <> "&redirect_uri=" <> urlEncodeText (loopbackRedirectURI port)
+   <> "&scope=" <> T.decodeUtf8 (queryEncodeScopes (scopeVals (Proxy :: Proxy '[Gmail'Modify])))
+   <> "&access_type=offline"
+ 
+ loopbackRedirectURI :: Int -> T.Text
+ loopbackRedirectURI port = "http://localhost:" <> T.pack (show port)
+ 
++urlEncodeText :: T.Text -> T.Text
++urlEncodeText = T.decodeUtf8 . urlEncode True . T.encodeUtf8
++
++urlDecodeText :: BS8.ByteString -> T.Text
++urlDecodeText = T.decodeUtf8 . urlDecode True
++
++formParam :: T.Text -> T.Text -> T.Text
++formParam key value = key <> "=" <> urlEncodeText value
++
+ -- | Exchange an authorization code for a token using the loopback redirect URI.
+ exchangeCodeLoopback
+   :: OAuthClient -> OAuthCode s -> Int
+@@ -146,14 +157,31 @@ exchangeCodeLoopback
+ exchangeCodeLoopback client code port =
+   refreshRequest $
+     tokenRequest
+-      { Client.requestBody = textBody $
+-          "grant_type=authorization_code"
+-          <> "&client_id=" <> toQueryParam (_clientId client)
+-          <> "&client_secret=" <> toQueryParam (_clientSecret client)
+-          <> "&code=" <> toQueryParam code
+-          <> "&redirect_uri=" <> loopbackRedirectURI port
++      { Client.requestBody = textBody $ T.intercalate "&"
++          [ formParam "grant_type" "authorization_code"
++          , formParam "client_id" (toQueryParam (_clientId client))
++          , formParam "client_secret" (toQueryParam (_clientSecret client))
++          , formParam "code" (toQueryParam code)
++          , formParam "redirect_uri" (loopbackRedirectURI port)
++          ]
+       }
+ 
++-- | Open the authorization URL without waiting for the browser process.
++--
++-- xdg-open can remain parented to the browser on some desktop sessions. If we
++-- wait for it, the OAuth redirect listener never starts and Google redirects to
++-- a closed localhost port.
++openBrowserDetached :: T.Text -> IO ()
++openBrowserDetached url = do
++  let process =
++        (P.proc "/usr/bin/env" ["xdg-open", T.unpack url])
++          { P.std_in = P.NoStream
++          , P.std_out = P.NoStream
++          , P.std_err = P.NoStream
++          , P.close_fds = True
++          }
++  void $ P.createProcess process
++
+ -- | Start a temporary HTTP server, wait for the OAuth redirect, extract the code.
+ waitForOAuthRedirect :: Int -> IO T.Text
+ waitForOAuthRedirect port = do
+@@ -200,7 +228,7 @@ extractCodeFromRequest req = do
+ -- | Parse query parameters from a query string like "code=xxx&scope=yyy"
+ parseQueryParams :: BS8.ByteString -> [(BS8.ByteString, T.Text)]
+ parseQueryParams qs =
+-  [ (key, T.decodeUtf8 val)
++  [ (key, urlDecodeText val)
+   | part <- BS8.split '&' qs
+   , let (key, rest) = BS8.break (== '=') part
+         val = BS8.drop 1 rest  -- drop the '='
+@@ -233,9 +261,11 @@ setupGmailEnv config@GmailConfig{..} = do
+           authUrl = loopbackAuthURL client port
+       gmailLog INFO "Starting OAuth2 loopback flow"
+       putStrLn "Opening browser for Gmail authorization..."
+-      void $ xdgOpen [T.unpack authUrl]
+       putStrLn $ "Waiting for authorization redirect on port " ++ show port ++ "..."
+-      code <- waitForOAuthRedirect port
++      code <- withAsync (waitForOAuthRedirect port) $ \redirectWaiter -> do
++        threadDelay 100000
++        openBrowserDetached authUrl
++        wait redirectWaiter
+       gmailLog INFO "Authorization code received"
+ 
+       -- Exchange the code ourselves (with matching loopback redirect_uri)

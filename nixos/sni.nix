@@ -30,8 +30,6 @@ makeEnable config "myModules.sni" true {
         };
       };
 
-      services.blueman-applet.enable = true;
-
       services.kdeconnect = {
         enable = true;
         indicator = true;

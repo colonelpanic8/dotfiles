@@ -2,6 +2,20 @@
 makeEnable config "myModules.notifications-tray-icon" true {
   nixpkgs.overlays = [
     inputs.notifications-tray-icon.overlays.default
+    (final: prev: {
+      haskellPackages = prev.haskellPackages.override (old: {
+        overrides = final.lib.composeExtensions (old.overrides or (_: _: {}))
+          (hself: hsuper: {
+            notifications-tray-icon = final.haskell.lib.overrideCabal
+              hsuper.notifications-tray-icon
+              (oldAttrs: {
+                patches = (oldAttrs.patches or []) ++ [
+                  ./patches/notifications-tray-icon-gmail-oauth-detached-browser.patch
+                ];
+              });
+          });
+      });
+    })
   ];
 
   home-manager.users.imalison = { config, ... }: let
