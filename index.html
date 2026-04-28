@@ -3,7 +3,7 @@
 "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
-<!-- 2026-04-27 Mon 21:38 -->
+<!-- 2026-04-28 Tue 17:18 -->
 <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>&lrm;</title>
@@ -6686,6 +6686,7 @@ bind-key and global-set-key forms.
   ((projectile-require-project-root nil)
    (projectile-enable-caching nil)
    (projectile-git-submodule-command nil)
+   (projectile-git-use-fd t)
    (project-vc-merge-submodules nil)
    (projectile-current-project-on-switch 'keep))
   <span class="org-builtin">:config</span>
@@ -6698,6 +6699,43 @@ bind-key and global-set-key forms.
     (<span class="org-keyword">defmacro</span> <span class="org-function-name">imalison:with-default-directory</span> (directory <span class="org-type">&amp;rest</span> forms)
       `(<span class="org-keyword">let</span> ((default-directory ,directory))
          ,@forms))
+
+    (<span class="org-keyword">defvar</span> <span class="org-variable-name">imalison:projectile-find-ignore-file</span> <span class="org-string">".projectile-find-ignore"</span>
+      <span class="org-doc">"Project-local fd ignore file used only for Projectile file finding."</span>)
+
+    (<span class="org-keyword">defun</span> <span class="org-function-name">imalison:projectile-fd-ignore-file-arg</span> ()
+      <span class="org-doc">"Return a shell fragment that adds `</span><span class="org-doc"><span class="org-constant">imalison:projectile-find-ignore-file</span></span><span class="org-doc">' when present."</span>
+      (<span class="org-keyword">let</span> ((ignore-file (shell-quote-argument imalison:projectile-find-ignore-file)))
+        (format <span class="org-string">"$(test -f %s &amp;&amp; printf -- '--ignore-file %s')"</span> ignore-file ignore-file)))
+
+    (<span class="org-keyword">defun</span> <span class="org-function-name">imalison:projectile-fd-command</span> (<span class="org-type">&amp;optional</span> pattern)
+      <span class="org-doc">"Build an fd command for Projectile file finding.
+The command includes ignored and hidden files by default, then applies
+`</span><span class="org-doc"><span class="org-constant">imalison:projectile-find-ignore-file</span></span><span class="org-doc">' when that file exists in the project
+root.  PATTERN is passed as fd's search pattern when non-nil."</span>
+      (mapconcat
+       #'identity
+       (delq nil
+             (list projectile-fd-executable
+                   pattern
+                   <span class="org-string">"-H"</span>
+                   <span class="org-string">"--no-ignore"</span>
+                   (imalison:projectile-fd-ignore-file-arg)
+                   <span class="org-string">"-0"</span>
+                   <span class="org-string">"-E .git"</span>
+                   <span class="org-string">"-tf"</span>
+                   <span class="org-string">"--strip-cwd-prefix"</span>
+                   <span class="org-string">"-c never"</span>))
+       <span class="org-string">" "</span>))
+
+    (<span class="org-keyword">when</span> projectile-fd-executable
+      (<span class="org-keyword">setq</span> projectile-git-fd-args
+            (replace-regexp-in-string
+             (concat <span class="org-string">"^"</span> (regexp-quote projectile-fd-executable) <span class="org-string">" "</span>)
+             <span class="org-string">""</span>
+             (imalison:projectile-fd-command)))
+      (<span class="org-keyword">setq</span> projectile-generic-command
+            (imalison:projectile-fd-command <span class="org-string">"."</span>)))
 
     (<span class="org-keyword">defun</span> <span class="org-function-name">imalison:do-rg-default-directory</span> (<span class="org-type">&amp;rest</span> args)
       (<span class="org-keyword">interactive</span>)
