@@ -1138,11 +1138,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1777412965,
+        "lastModified": 1777413654,
         "narHash": "sha256-lVGYGUWf9ynV5lR8QAygAfmYRkko1btIe26UcQ1bGXw=",
         "owner": "colonelpanic8",
         "repo": "hyprland-plugins",
-        "rev": "fd5a23b732d881233941402984cbc4903e6ed927",
+        "rev": "ff36c04b270c26fcd53e623fc688e4eb41672897",
         "type": "github"
       },
       "original": {
