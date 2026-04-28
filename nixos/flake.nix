@@ -119,6 +119,11 @@
       inputs.hyprland.follows = "hyprland";
     };
 
+    hyprland-plugins-lua = {
+      url = "github:colonelpanic8/hyprland-plugins?ref=hyprexpo-lua-hyprland";
+      inputs.hyprland.follows = "hyprland-lua-config";
+    };
+
     hyprscratch = {
       url = "github:colonelpanic8/hyprscratch/reapply-rules-on-toggle";
       inputs.nixpkgs.follows = "nixpkgs";
@@ -498,10 +503,12 @@
         kat-org-agenda-api = containerLib.containers.kat;
       } // lib.optionalAttrs pkgs.stdenv.isLinux {
         hyprNStack = inputs.hyprNStack.packages.${system}.hyprNStack;
+        hyprexpo-lua = inputs.hyprland-plugins-lua.packages.${system}.hyprexpo;
       };
 
       checks = lib.optionalAttrs pkgs.stdenv.isLinux {
         hyprNStack = inputs.hyprNStack.packages.${system}.hyprNStack;
+        hyprexpo-lua = inputs.hyprland-plugins-lua.packages.${system}.hyprexpo;
         hyprland-lua-config-syntax = pkgs.runCommand "hyprland-lua-config-syntax" {
           nativeBuildInputs = [ pkgs.lua5_4 ];
         } ''

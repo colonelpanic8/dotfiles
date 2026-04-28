@@ -1121,6 +1121,37 @@
         "type": "github"
       }
     },
+    "hyprland-plugins-lua": {
+      "inputs": {
+        "hyprland": [
+          "hyprland-lua-config"
+        ],
+        "nixpkgs": [
+          "hyprland-plugins-lua",
+          "hyprland",
+          "nixpkgs"
+        ],
+        "systems": [
+          "hyprland-plugins-lua",
+          "hyprland",
+          "systems"
+        ]
+      },
+      "locked": {
+        "lastModified": 1777412965,
+        "narHash": "sha256-lVGYGUWf9ynV5lR8QAygAfmYRkko1btIe26UcQ1bGXw=",
+        "owner": "colonelpanic8",
+        "repo": "hyprland-plugins",
+        "rev": "fd5a23b732d881233941402984cbc4903e6ed927",
+        "type": "github"
+      },
+      "original": {
+        "owner": "colonelpanic8",
+        "ref": "hyprexpo-lua-hyprland",
+        "repo": "hyprland-plugins",
+        "type": "github"
+      }
+    },
     "hyprland-protocols": {
       "inputs": {
         "nixpkgs": [
@@ -2132,6 +2163,7 @@
         "hyprland": "hyprland",
         "hyprland-lua-config": "hyprland-lua-config",
         "hyprland-plugins": "hyprland-plugins",
+        "hyprland-plugins-lua": "hyprland-plugins-lua",
         "hyprscratch": "hyprscratch",
         "imalison-taffybar": "imalison-taffybar",
         "kanshi-sni": "kanshi-sni",

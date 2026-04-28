@@ -83,6 +83,22 @@ local function exec(command)
   return hl.dsp.exec_cmd(command)
 end
 
+local function hyprexpo(action)
+  return function()
+    if hl.plugin and hl.plugin.hyprexpo and hl.plugin.hyprexpo.expo then
+      hl.plugin.hyprexpo.expo(action)
+    else
+      hl.notification.create({
+        text = "hyprexpo is not loaded",
+        duration = 1800,
+        icon = "warning",
+        color = "rgba(edb443ff)",
+        font_size = 13,
+      })
+    end
+  end
+end
+
 local function apply_nstack_config()
   if verify_config then
     return
@@ -103,6 +119,27 @@ local function apply_nstack_config()
           mfact = 0.0,
           single_mfact = 1.0,
         },
+      },
+    },
+  })
+end
+
+local function apply_hyprexpo_config()
+  if verify_config then
+    return
+  end
+
+  hl.config({
+    plugin = {
+      hyprexpo = {
+        columns = 3,
+        gap_size = 5,
+        bg_col = "rgba(111111ff)",
+        workspace_method = "center current",
+        skip_empty = false,
+        show_workspace_numbers = true,
+        workspace_number_color = "rgba(edb443ff)",
+        gesture_distance = 200,
       },
     },
   })
@@ -998,6 +1035,9 @@ local function toggle_scratchpad(name)
 end
 
 hl.plugin.load("/run/current-system/sw/lib/libhyprNStack.so")
+if not verify_config then
+  hl.plugin.load("/run/current-system/sw/lib/libhyprexpo.so")
+end
 
 hl.env("XCURSOR_SIZE", "24")
 hl.env("HYPRCURSOR_SIZE", "24")
@@ -1127,12 +1167,8 @@ bind(main_mod .. " + SHIFT + C", hl.dsp.window.close())
 bind(main_mod .. " + SHIFT + Q", hl.dsp.exit())
 bind(main_mod .. " + E", exec("emacsclient --eval '(emacs-everywhere)'"))
 bind(main_mod .. " + V", exec("wl-paste | xdotool type --file -"))
-bind(main_mod .. " + Tab", function()
-  enter_window_picker("go")
-end)
-bind(main_mod .. " + SHIFT + Tab", function()
-  enter_window_picker("bring")
-end)
+bind(main_mod .. " + Tab", hyprexpo("toggle"))
+bind(main_mod .. " + SHIFT + Tab", hyprexpo("bring"))
 bind(main_mod .. " + G", function()
   enter_window_picker("go")
 end)
@@ -1351,6 +1387,7 @@ bind(main_mod .. " + mouse:273", hl.dsp.window.resize())
 
 hl.on("hyprland.start", function()
   apply_nstack_config()
+  apply_hyprexpo_config()
   hl.exec_cmd("sh -lc 'export IMALISON_SESSION_TYPE=wayland; dbus-update-activation-environment --systemd WAYLAND_DISPLAY DISPLAY XAUTHORITY HYPRLAND_INSTANCE_SIGNATURE XDG_CURRENT_DESKTOP XDG_SESSION_TYPE IMALISON_SESSION_TYPE; systemctl --user start graphical-session.target hyprland-session.target'")
   hl.exec_cmd("hypridle")
   hl.exec_cmd("wl-paste --type text --watch cliphist store")
@@ -1361,6 +1398,7 @@ hl.on("hyprland.start", function()
 end)
 
 hl.on("config.reloaded", apply_nstack_config)
+hl.on("config.reloaded", apply_hyprexpo_config)
 
 hl.on("window.open", schedule_nstack_count_update)
 hl.on("window.destroy", schedule_nstack_count_update)

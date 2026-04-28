@@ -16,9 +16,10 @@ Guiding rule for shelling out:
 
 - [x] Update/confirm Hyprland Lua input at latest usable upstream target.
 - [x] Keep stable Hyprland path intact until Lua path is proven.
-- [x] Keep hy3/hyprexpo out of the Lua branch.
+- [x] Keep hy3 out of the Lua branch.
 - [x] Keep hyprNStack following the Lua Hyprland input.
 - [x] Rebuild hyprNStack against the Lua Hyprland branch.
+- [x] Add a forked hyprexpo input for the Lua Hyprland branch.
 - [x] Keep a cheap Lua check: parse config, execute against stub, reject
       `hyprctl` in the Lua config's window/workspace manipulation path.
 - [x] Add a real Hyprland Lua verifier check for the config parser path.
@@ -26,7 +27,8 @@ Guiding rule for shelling out:
 Current upstream note: latest Hyprland release observed during this migration is
 `v0.54.3`; the Lua config input tracks PR 13817 and was already at the current
 PR head `c35a8a5` dated 2026-04-26. The non-Lua fallback remains pinned to the older
-hy3/hyprexpo-compatible stack.
+hy3/hyprexpo-compatible stack; the Lua branch uses forked hyprexpo branch
+`colonelpanic8/hyprland-plugins:hyprexpo-lua-hyprland`.
 
 ## 1. Core Layout
 
@@ -98,9 +100,9 @@ verifier mode.
 
 ## 5. Overview And Window Discovery
 
-- [x] Replace hyprexpo with the first-pass Lua numbered window picker.
-- [x] Implement first-pass `Super+Tab` overview via Lua window picker.
-- [x] Implement first-pass `Super+Shift+Tab` bring overview via Lua window picker.
+- [x] Restore visual hyprexpo for `Super+Tab` overview.
+- [x] Restore visual hyprexpo `bring` mode for `Super+Shift+Tab`.
+- [x] Keep first-pass Lua numbered window picker on secondary bindings.
 - [x] Implement first-pass Lua-native go-to-window picker.
 - [x] Implement first-pass Lua-native bring-window picker.
 - [x] Implement first-pass Lua-native replace-window picker.
@@ -115,6 +117,10 @@ does not expose a synchronous way to run rofi and consume its selected output.
 The first pass therefore uses Lua-native numbered submaps and notifications.
 A final rofi/icon picker would need either a small IPC bridge or an upstream Lua
 process-output/callback primitive.
+
+Hyprexpo decision: hyprexpo is kept as the visual overview. The forked Lua
+branch exposes `hl.plugin.hyprexpo.expo(...)`, so the Lua config can invoke
+`toggle` and `bring` directly without shelling out to `hyprctl`.
 
 ## 6. Scratchpads
 
@@ -191,6 +197,7 @@ needs a live readback check.
 - [x] `hyprctl` rejection in Lua config for window/workspace manipulation.
 - [x] Real `Hyprland --verify-config` check.
 - [x] hyprNStack flake build check.
+- [x] hyprexpo Lua-branch flake build check.
 - [x] `ryzen-shine` system dry-run.
 - [x] Re-run checks after Hyprland/Lua input confirmation.
 - [ ] Try live compositor smoke test again after version bump.
