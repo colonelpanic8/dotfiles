@@ -115,6 +115,7 @@
           git-sync-rs = inputs.git-sync-rs.packages.${prev.stdenv.hostPlatform.system}.default;
           kef = final.callPackage ./packages/kef {};
           pykefcontrol = final.python3Packages.callPackage ./packages/pykefcontrol {};
+          roborock-control = final.callPackage ./packages/roborock-control {};
         })
       ]
       ++ (
