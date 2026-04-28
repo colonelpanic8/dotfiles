@@ -202,12 +202,17 @@ needs a live readback check.
 - [x] hyprNStack flake build check.
 - [x] hyprexpo Lua-branch flake build check.
 - [x] `ryzen-shine` system dry-run.
+- [x] `just switch` activates successfully and deploys branch-owned
+      `~/.config/hypr/hyprland.lua`.
 - [x] Re-run checks after Hyprland/Lua input confirmation.
 - [ ] Try live compositor smoke test again after version bump.
 - [x] Document `--verify-config` caveats for Lua rule/plugin-specific config.
-- [ ] Eventually run `just switch` only when the branch is coherent enough for a
+- [x] Eventually run `just switch` only when the branch is coherent enough for a
       live test.
 
 Live-smoke note: this Hyprland binary exposes `--verify-config` but no
-`--headless` CLI flag. A true compositor smoke test still needs either a nested
-Wayland session that avoids startup side effects or an intentional `just switch`.
+`--headless` CLI flag. `just switch` now installs the Lua branch binary and
+deploys `hyprland.lua`, but the currently running compositor remains the old
+0.53 process until the Hyprland session is restarted. A true compositor smoke
+test still needs a session restart or a nested Wayland session that avoids
+startup side effects.

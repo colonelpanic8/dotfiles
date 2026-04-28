@@ -39,7 +39,15 @@ let
 
     home-manager.sharedModules = [
       inputs.hyprscratch.homeModules.default
-      {
+      ({ config, ... }: {
+        xdg.configFile."hypr" = {
+          force = true;
+          source =
+            if cfg.useLuaConfigBranch
+            then ../dotfiles/config/hypr
+            else config.lib.file.mkOutOfStoreSymlink "${config.home.homeDirectory}/dotfiles/dotfiles/config/hypr";
+        };
+
         services.kanshi = {
           enable = true;
           systemdTarget = "graphical-session.target";
@@ -139,7 +147,7 @@ let
             };
           };
         };
-      }
+      })
     ];
 
     # Hyprland-specific packages
