@@ -1,6 +1,5 @@
 {-# LANGUAGE DataKinds #-}
 {-# LANGUAGE OverloadedStrings #-}
-{-# LANGUAGE TypeApplications #-}
 
 module Main (main) where
 
@@ -9,6 +8,7 @@ import Control.Monad (void, when)
 import Control.Monad.IO.Class (MonadIO, liftIO)
 import Control.Monad.Trans.Reader (asks)
 import Data.Char (toLower)
+import Data.Foldable (for_)
 import Data.GI.Base (castTo)
 import Data.Int (Int32)
 import Data.List (nub)
@@ -85,9 +85,7 @@ decorateWithClassAndBoxM klass builder =
 forEachLabelRecursively :: Gtk.Widget -> (Gtk.Label -> IO ()) -> IO ()
 forEachLabelRecursively widget action = do
   maybeLabel <- castTo Gtk.Label widget
-  case maybeLabel of
-    Just label -> action label
-    Nothing -> pure ()
+  for_ maybeLabel action
 
   maybeContainer <- castTo Gtk.Container widget
   case maybeContainer of
@@ -347,7 +345,7 @@ mprisWidget =
           simplePlayerWidget
             defaultPlayerConfig
               { setNowPlayingLabel =
-                  \np -> stackedMprisLabel <$> playingText 20 20 np,
+                  fmap stackedMprisLabel . playingText 20 20,
                 setupPlayerLabel = setFixedLabelWidth 20
               }
       }
