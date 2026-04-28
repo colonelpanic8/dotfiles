@@ -186,29 +186,6 @@
         "type": "github"
       }
     },
-    "codex-desktop-linux": {
-      "inputs": {
-        "flake-utils": [
-          "flake-utils"
-        ],
-        "nixpkgs": [
-          "nixpkgs"
-        ]
-      },
-      "locked": {
-        "lastModified": 1777351752,
-        "narHash": "sha256-kwdZPCidd9kPYASk6fUPcDfg2uDQ9NzwtYqLlwwzFVk=",
-        "owner": "ilysenko",
-        "repo": "codex-desktop-linux",
-        "rev": "40fd7a8bd6f229e23194881b972fddb2dc42c4c8",
-        "type": "github"
-      },
-      "original": {
-        "owner": "ilysenko",
-        "repo": "codex-desktop-linux",
-        "type": "github"
-      }
-    },
     "coqui-tts-streamer": {
       "inputs": {
         "flake-utils": [
@@ -2151,7 +2128,6 @@
         "caelestia-shell": "caelestia-shell",
         "claude-code-nix": "claude-code-nix",
         "codex-cli-nix": "codex-cli-nix",
-        "codex-desktop-linux": "codex-desktop-linux",
         "coqui-tts-streamer": "coqui-tts-streamer",
         "flake-utils": "flake-utils",
         "git-blame-rank": "git-blame-rank",
