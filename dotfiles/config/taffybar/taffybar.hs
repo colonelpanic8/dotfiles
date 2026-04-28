@@ -39,13 +39,14 @@ import System.Taffybar.DBus
 import System.Taffybar.DBus.Toggle
 import System.Taffybar.Hooks (withLogLevels)
 import System.Taffybar.Information.EWMHDesktopInfo (WorkspaceId (..))
-import qualified System.Taffybar.Information.Workspaces.Model as WorkspaceModel
 import System.Taffybar.Information.Memory (MemoryInfo (..), parseMeminfo)
+import qualified System.Taffybar.Information.Workspaces.Model as WorkspaceModel
 import System.Taffybar.Information.X11DesktopInfo
 import System.Taffybar.SimpleConfig
 import System.Taffybar.Util (getPixbufFromFilePath, maybeTCombine, postGUIASync, (<|||>))
 import System.Taffybar.Widget
 import qualified System.Taffybar.Widget.ASUS as ASUS
+import System.Taffybar.Widget.AnthropicUsage (anthropicUsageStackNew)
 import System.Taffybar.Widget.CPUMonitor (cpuMonitorNew)
 import System.Taffybar.Widget.Generic.Graph (GraphConfig (..), GraphDirection (..), GraphStyle (..), defaultGraphConfig)
 import qualified System.Taffybar.Widget.NetworkManager as NetworkManager
@@ -556,6 +557,10 @@ openAIUsageWidget :: TaffyIO Gtk.Widget
 openAIUsageWidget =
   decorateWithClassAndBoxM "openai-usage" openAIUsageStackNew
 
+anthropicUsageWidget :: TaffyIO Gtk.Widget
+anthropicUsageWidget =
+  decorateWithClassAndBoxM "anthropic-usage" anthropicUsageStackNew
+
 sniPriorityVisibilityThresholdDefault :: Int
 sniPriorityVisibilityThresholdDefault = 0
 
@@ -614,6 +619,7 @@ endWidgetsForHost hostName =
   let baseEndWidgets =
         [ sniTrayWidget,
           audioWidget,
+          anthropicUsageWidget,
           openAIUsageWidget,
           cpuWidget,
           ramSwapWidget,
@@ -628,6 +634,7 @@ endWidgetsForHost hostName =
           sniTrayWidget,
           asusDiskUsageWidget,
           audioBacklightWidget,
+          anthropicUsageWidget,
           openAIUsageWidget,
           cpuWidget,
           ramSwapWidget,
