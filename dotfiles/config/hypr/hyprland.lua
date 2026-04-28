@@ -751,9 +751,9 @@ local function adopt_matching_scratchpad_window(window)
   for name, def in pairs(scratchpads) do
     if scratchpad_window_matches(window, def) then
       if scratchpad_pending[name] then
-        local target_monitor = scratchpad_pending[name]
+        local pending = scratchpad_pending[name]
         scratchpad_pending[name] = nil
-        show_scratchpad_window(name, window, nil, target_monitor)
+        show_scratchpad_window(name, window, pending.workspace or active_workspace(), pending.monitor or hl.get_active_monitor())
       elseif scratchpad_is_visible(window) then
         schedule_scratchpad_geometry(name, window, hl.get_active_monitor())
       end
@@ -1074,7 +1074,10 @@ local function toggle_scratchpad(name)
 
   local windows = matching_scratchpad_windows(name)
   if #windows == 0 then
-    scratchpad_pending[name] = hl.get_active_monitor()
+    scratchpad_pending[name] = {
+      monitor = hl.get_active_monitor(),
+      workspace = active_workspace(),
+    }
     hl.exec_cmd(def.command)
     return
   end
