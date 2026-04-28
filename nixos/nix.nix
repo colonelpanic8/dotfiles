@@ -113,6 +113,8 @@
           codex = inputs.codex-cli-nix.packages.${prev.stdenv.hostPlatform.system}.default;
           claude-code = inputs.claude-code-nix.packages.${prev.stdenv.hostPlatform.system}.default;
           git-sync-rs = inputs.git-sync-rs.packages.${prev.stdenv.hostPlatform.system}.default;
+          kef = final.callPackage ./packages/kef {};
+          pykefcontrol = final.python3Packages.callPackage ./packages/pykefcontrol {};
         })
       ]
       ++ (

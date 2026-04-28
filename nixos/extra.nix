@@ -10,6 +10,7 @@ makeEnable config "myModules.extra" false {
     signal-desktop
     gource
     gimp
+    kef
     texlive.combined.scheme-full
     tor
     yt-dlp
