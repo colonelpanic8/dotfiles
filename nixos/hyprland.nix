@@ -7,6 +7,9 @@ let
     if cfg.useLuaConfigBranch
     then inputs.hyprland-lua-config
     else inputs.hyprland;
+  luaPluginPackages = lib.optionals cfg.useLuaConfigBranch [
+    inputs.hyprNStack.packages.${system}.hyprNStack
+  ];
   hyprexpoPatched = inputs.hyprland-plugins.packages.${system}.hyprexpo.overrideAttrs (old: {
     patches = (old.patches or [ ]) ++ [
       ./patches/hyprexpo-pr-612-workspace-numbers.patch
@@ -78,8 +81,8 @@ let
           ];
         };
 
-        programs.hyprscratch = {
-          enable = true;
+	        programs.hyprscratch = {
+	          enable = !cfg.useLuaConfigBranch;
           settings = {
             daemon_options = "clean";
             global_options = "";
@@ -157,7 +160,7 @@ let
 
       # For scripts
       jq
-    ] ++ lib.optionals enableExternalPluginPackages [
+    ] ++ luaPluginPackages ++ lib.optionals enableExternalPluginPackages [
       # External plugin packages are pinned to the stable 0.53 stack.
       # PR 13817's Hyprland branch builds, but hy3 / hyprexpo do not yet build
       # against it, so keep them out of the experimental Lua branch for now.
@@ -173,11 +176,10 @@ enabledModule // {
       default = false;
       description = ''
         Use the experimental Hyprland PR 13817 Lua-config branch for the
-        Hyprland package itself. Third-party plugins are left on the stable
-        stack and are excluded from the experimental package set because current
-        `hy3` and `hyprexpo` sources do not build against PR 13817 yet. The
-        existing `hyprland.conf` remains active until a sibling `hyprland.lua`
-        file is added.
+        Hyprland package itself. The experimental package set excludes hy3 and
+        hyprexpo, and includes the Lua-branch build of hyprNStack instead. When
+        a sibling `hyprland.lua` is present, the Lua config manager picks it
+        before `hyprland.conf`.
       '';
     };
   };

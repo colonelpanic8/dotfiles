@@ -101,6 +101,14 @@
       url = "git+https://github.com/hyprwm/Hyprland?submodules=1&ref=refs/pull/13817/head";
     };
 
+    hyprNStack = {
+      url = "github:colonelpanic8/hyprNStack";
+      inputs = {
+        hyprland.follows = "hyprland-lua-config";
+        nixpkgs.follows = "nixpkgs";
+      };
+    };
+
     hy3 = {
       url = "github:outfoxxed/hy3?ref=hl0.53.0";
       inputs.hyprland.follows = "hyprland";
@@ -151,7 +159,7 @@
     taffybar = {
       # Use a remote, lockfile-pinned input so rebuilds are reproducible across
       # machines. For local development, use `nixos-rebuild --override-input taffybar path:...`.
-      url = "github:taffybar/taffybar?ref=codex/fix-gdk-backend-strut-detection";
+      url = "github:taffybar/taffybar";
       inputs = {
         nixpkgs.follows = "nixpkgs";
         flake-utils.follows = "flake-utils";
@@ -467,6 +475,7 @@
   } // flake-utils.lib.eachDefaultSystem (system:
     let
       pkgs = import nixpkgs { inherit system; };
+      lib = pkgs.lib;
 
       # Get short revs for tagging
       orgApiRev = builtins.substring 0 7 (org-agenda-api.rev or "unknown");
@@ -487,6 +496,147 @@
       packages = {
         colonelpanic-org-agenda-api = containerLib.containers.colonelpanic;
         kat-org-agenda-api = containerLib.containers.kat;
+      } // lib.optionalAttrs pkgs.stdenv.isLinux {
+        hyprNStack = inputs.hyprNStack.packages.${system}.hyprNStack;
+      };
+
+      checks = lib.optionalAttrs pkgs.stdenv.isLinux {
+        hyprNStack = inputs.hyprNStack.packages.${system}.hyprNStack;
+        hyprland-lua-config-syntax = pkgs.runCommand "hyprland-lua-config-syntax" {
+          nativeBuildInputs = [ pkgs.lua5_4 ];
+        } ''
+          luac -p ${../dotfiles/config/hypr/hyprland.lua}
+          if grep -n 'hyprctl' ${../dotfiles/config/hypr/hyprland.lua} | grep -v 'hyprctl reload'; then
+            echo "hyprland.lua should not shell out to hyprctl for window/workspace manipulation" >&2
+            exit 1
+          fi
+          lua <<'LUA'
+          local callbacks = {}
+
+          local function noop() end
+
+          local function dispatcher_proxy()
+            local proxy = {}
+            return setmetatable(proxy, {
+              __index = function()
+                return dispatcher_proxy()
+              end,
+              __call = function()
+                return noop
+              end,
+            })
+          end
+
+          local notification = {
+            is_alive = function()
+              return true
+            end,
+            set_text = noop,
+            set_timeout = noop,
+            pause = noop,
+            resume = noop,
+            set_paused = noop,
+            dismiss = noop,
+          }
+
+          local monitor = {
+            id = 1,
+            name = "stub-monitor",
+            focused = true,
+          }
+
+          local workspace = {
+            id = 1,
+            name = "1",
+            windows = 0,
+            special = false,
+            monitor = monitor,
+          }
+
+          monitor.active_workspace = workspace
+
+          hl = {
+            animation = noop,
+            bind = noop,
+            config = noop,
+            curve = noop,
+            env = noop,
+            exec_cmd = noop,
+            define_submap = function(_, reset_or_callback, callback)
+              local cb = type(reset_or_callback) == "function" and reset_or_callback or callback
+              if cb then
+                cb()
+              end
+            end,
+            monitor = noop,
+            workspace_rule = noop,
+            window_rule = noop,
+            dsp = dispatcher_proxy(),
+            notification = {
+              create = function()
+                return notification
+              end,
+            },
+            plugin = {
+              load = noop,
+            },
+            get_active_workspace = function()
+              return workspace
+            end,
+            get_active_monitor = function()
+              return monitor
+            end,
+            get_active_window = function()
+              return nil
+            end,
+            get_monitor = function()
+              return monitor
+            end,
+            get_workspace = function(id)
+              if tostring(id) == "1" then
+                return workspace
+              end
+              return nil
+            end,
+            get_windows = function()
+              return {}
+            end,
+            get_workspace_windows = function()
+              return {}
+            end,
+            on = function(_, callback)
+              callbacks[#callbacks + 1] = callback
+            end,
+            timer = function(callback)
+              callback()
+              return {
+                set_enabled = noop,
+              }
+            end,
+          }
+
+          dofile("${../dotfiles/config/hypr/hyprland.lua}")
+
+          for _, callback in ipairs(callbacks) do
+            callback()
+          end
+          LUA
+          touch "$out"
+        '';
+        hyprland-lua-verify-config = let
+          hyprlandPackage = inputs.hyprland-lua-config.packages.${system}.hyprland;
+          hyprNStackPackage = inputs.hyprNStack.packages.${system}.hyprNStack;
+        in pkgs.runCommand "hyprland-lua-verify-config" {} ''
+          cp ${../dotfiles/config/hypr/hyprland.lua} hyprland.lua
+          substituteInPlace hyprland.lua \
+            --replace-fail /run/current-system/sw/lib/libhyprNStack.so \
+            ${hyprNStackPackage}/lib/libhyprNStack.so
+          export XDG_RUNTIME_DIR="$TMPDIR/runtime"
+          mkdir -p "$XDG_RUNTIME_DIR"
+          HYPRLAND_NO_CRASHREPORTER=1 ${pkgs.coreutils}/bin/timeout 20s \
+            ${hyprlandPackage}/bin/Hyprland --verify-config --config "$PWD/hyprland.lua"
+          touch "$out"
+        '';
       };
 
       # Dev shell for org-agenda-api deployment
