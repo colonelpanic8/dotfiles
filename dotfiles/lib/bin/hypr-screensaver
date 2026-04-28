@@ -7,6 +7,8 @@ state_dir="${XDG_RUNTIME_DIR:-/tmp}/hypr-screensaver"
 mkdir -p "$state_dir"
 
 title_prefix="hypr-screensaver:"
+screensaver_dir="${HYPR_SCREENSAVER_DIR:-/var/lib/syncthing/sync/Screensaver}"
+screensaver_use_dir="${HYPR_SCREENSAVER_USE_DIR:-$screensaver_dir/use}"
 
 usage() {
   cat <<'EOF'
@@ -19,10 +21,24 @@ Commands:
   status  Exit 0 if any screensaver window is running, otherwise exit 1.
   session Run the configured screensaver payload for one monitor.
 
-The default payload is an mpv-rendered lavfi animation. You can override the
-source with HYPR_SCREENSAVER_SOURCE, for example:
+By default, start chooses a random media file from:
+  /var/lib/syncthing/sync/Screensaver/use
+
+Populate that directory with symlinks to generated screensaver loops you want
+in rotation. You can override the source with HYPR_SCREENSAVER_SOURCE, for
+example:
   HYPR_SCREENSAVER_SOURCE='/path/to/video.mp4'
   HYPR_SCREENSAVER_SOURCE='av://lavfi:mandelbrot=s=2560x1440:r=60'
+
+You can also override the rotation directory:
+  HYPR_SCREENSAVER_USE_DIR='/path/to/use'
+
+HDR handling defaults to matching Hyprland's monitor color-management preset.
+Only monitors with preset "hdr" or "hdredid" get HDR colorspace hints. Override
+with:
+  HYPR_SCREENSAVER_HDR_MODE=auto
+  HYPR_SCREENSAVER_HDR_MODE=sdr
+  HYPR_SCREENSAVER_HDR_MODE=hdr
 EOF
 }
 
@@ -40,6 +56,15 @@ monitor_specs() {
 
 focused_monitor() {
   monitors_json | jq -r '.[] | select(.focused) | .name'
+}
+
+monitor_color_management_preset() {
+  local monitor="$1"
+  monitors_json | jq -r --arg monitor "$monitor" '
+    .[]
+    | select(.name == $monitor)
+    | .colorManagementPreset // "srgb"
+  '
 }
 
 screensaver_window_pids() {
@@ -77,14 +102,93 @@ default_source() {
     "$width" "$height"
 }
 
+random_source() {
+  [ -d "$screensaver_use_dir" ] || return 1
+
+  local -a candidates=()
+  local candidate
+  while IFS= read -r -d '' candidate; do
+    candidates+=("$candidate")
+  done < <(
+    find -L "$screensaver_use_dir" -maxdepth 1 -type f \
+      \( \
+        -iname '*.mp4' -o \
+        -iname '*.mkv' -o \
+        -iname '*.mov' -o \
+        -iname '*.webm' -o \
+        -iname '*.gif' -o \
+        -iname '*.png' -o \
+        -iname '*.jpg' -o \
+        -iname '*.jpeg' \
+      \) \
+      -print0
+  )
+
+  [ "${#candidates[@]}" -gt 0 ] || return 1
+  printf '%s\n' "${candidates[$((RANDOM % ${#candidates[@]}))]}"
+}
+
+monitor_uses_hdr() {
+  local monitor="$1"
+  local mode="${HYPR_SCREENSAVER_HDR_MODE:-auto}"
+  local preset
+
+  case "$mode" in
+    hdr)
+      return 0
+      ;;
+    sdr)
+      return 1
+      ;;
+    auto)
+      preset="$(monitor_color_management_preset "$monitor" 2>/dev/null || true)"
+      case "$preset" in
+        hdr|hdredid)
+          return 0
+          ;;
+        *)
+          return 1
+          ;;
+      esac
+      ;;
+    *)
+      printf 'Invalid HYPR_SCREENSAVER_HDR_MODE=%s; expected auto, sdr, or hdr\n' "$mode" >&2
+      return 1
+      ;;
+  esac
+}
+
+mpv_color_args() {
+  local monitor="$1"
+
+  if monitor_uses_hdr "$monitor"; then
+    printf '%s\0' \
+      --target-colorspace-hint=yes \
+      --target-colorspace-hint-mode=source
+    return
+  fi
+
+  printf '%s\0' \
+    --target-colorspace-hint=no \
+    --target-prim=bt.709 \
+    --target-trc=srgb \
+    --target-gamut=bt.709 \
+    --target-peak=80 \
+    --inverse-tone-mapping=no
+}
+
 start() {
-  local current_monitor spec monitor width height pid
+  local current_monitor spec monitor width height pid source
 
   if is_running; then
     exit 0
   fi
 
   current_monitor="$(focused_monitor || true)"
+  source="${HYPR_SCREENSAVER_SOURCE:-}"
+  if [ -z "$source" ]; then
+    source="$(random_source || true)"
+  fi
 
   while IFS= read -r spec; do
     monitor="$(jq -r '.name' <<<"$spec")"
@@ -94,6 +198,7 @@ start() {
     HYPR_SCREENSAVER_MONITOR="$monitor" \
       HYPR_SCREENSAVER_WIDTH="$width" \
       HYPR_SCREENSAVER_HEIGHT="$height" \
+      HYPR_SCREENSAVER_SOURCE="$source" \
       "$script_path" session >/dev/null 2>&1 &
     pid=$!
     printf '%s\n' "$pid" > "$state_dir/${monitor}.pid"
@@ -124,7 +229,18 @@ session() {
   local monitor="${HYPR_SCREENSAVER_MONITOR:?missing HYPR_SCREENSAVER_MONITOR}"
   local width="${HYPR_SCREENSAVER_WIDTH:-1920}"
   local height="${HYPR_SCREENSAVER_HEIGHT:-1080}"
-  local source="${HYPR_SCREENSAVER_SOURCE:-$(default_source "$width" "$height")}"
+  local source="${HYPR_SCREENSAVER_SOURCE:-}"
+  local -a color_args=()
+  if [ -z "$source" ]; then
+    source="$(random_source || true)"
+  fi
+  if [ -z "$source" ]; then
+    source="$(default_source "$width" "$height")"
+  fi
+  while IFS= read -r -d '' arg; do
+    color_args+=("$arg")
+  done < <(mpv_color_args "$monitor")
+
   local -a mpv_args=(
     --no-config
     --really-quiet
@@ -144,6 +260,7 @@ session() {
     --wayland-app-id=hypr-screensaver
     --title="${title_prefix}${monitor}"
     --image-display-duration=inf
+    "${color_args[@]}"
     "$source"
   )
 
