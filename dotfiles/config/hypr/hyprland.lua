@@ -389,6 +389,19 @@ local function monocle_prev()
   end
 end
 
+local function focus_direction(direction)
+  if current_layout == monocle_layout then
+    if direction == "up" or direction == "left" then
+      monocle_prev()
+    else
+      monocle_next()
+    end
+    return
+  end
+
+  hl.dsp.focus({ direction = direction })()
+end
+
 local function focus_workspace(workspace_id)
   hl.dsp.focus({ workspace = tostring(workspace_id), on_current_monitor = true })()
 end
@@ -1179,10 +1192,18 @@ bind(main_mod .. " + SHIFT + B", function()
   enter_window_picker("replace")
 end)
 
-bind(main_mod .. " + W", hl.dsp.focus({ direction = "up" }))
-bind(main_mod .. " + S", hl.dsp.focus({ direction = "down" }))
-bind(main_mod .. " + A", hl.dsp.focus({ direction = "left" }))
-bind(main_mod .. " + D", hl.dsp.focus({ direction = "right" }))
+bind(main_mod .. " + W", function()
+  focus_direction("up")
+end)
+bind(main_mod .. " + S", function()
+  focus_direction("down")
+end)
+bind(main_mod .. " + A", function()
+  focus_direction("left")
+end)
+bind(main_mod .. " + D", function()
+  focus_direction("right")
+end)
 
 bind(main_mod .. " + SHIFT + W", hl.dsp.window.swap({ direction = "up" }))
 bind(main_mod .. " + SHIFT + S", hl.dsp.window.swap({ direction = "down" }))

@@ -78,7 +78,8 @@ verifier mode.
       useful focus.
 - [x] Add "move to empty workspace on monitor in direction" without requiring
       `Hyper+Ctrl`.
-- [ ] Verify directional focus in monocle behaves predictably.
+- [x] Route directional focus in monocle through deterministic Lua cycling.
+- [ ] Live-verify directional focus in monocle behaves predictably.
 
 ## 4. Script Elimination Priority
 
