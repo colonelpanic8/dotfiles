@@ -40,6 +40,16 @@
 	-GtkLabel-justify: left;
 }
 
+/* Compact logo column for stacked AI usage sections. */
+.usage-section.icon-label > .icon {
+	min-width: 22px;
+	padding-right: 8px;
+}
+
+.usage-section.icon-label > .label {
+	padding-right: 0px;
+}
+
 /* Compact two-line RAM/SWAP widget: reduce icon padding a bit. */
 .ram-swap .icon-label > .icon {
 	/* Different glyphs have different visual widths; fix the icon column width

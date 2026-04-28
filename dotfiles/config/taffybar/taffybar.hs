@@ -65,7 +65,7 @@ import System.Taffybar.Widget.SNITray.PrioritizedCollapsible
     sniTrayPrioritizedCollapsibleNewFromParams,
   )
 import qualified System.Taffybar.Widget.ScreenLock as ScreenLock
-import System.Taffybar.Widget.Util (backgroundLoop, buildContentsBox, buildIconLabelBox, loadPixbufByName, widgetSetClassGI)
+import System.Taffybar.Widget.Util (backgroundLoop, buildContentsBox, buildIconLabelBox, loadPixbufByName, pixbufNewFromFileAtScaleByHeight, widgetSetClassGI)
 import qualified System.Taffybar.Widget.Wlsunset as Wlsunset
 import qualified System.Taffybar.Widget.Workspaces as Workspaces
 import System.Taffybar.WindowIcon (pixBufFromColor)
@@ -551,13 +551,33 @@ wakeupDebugWidget :: TaffyIO Gtk.Widget
 wakeupDebugWidget =
   decorateWithClassAndBoxM "wakeup-debug" wakeupDebugWidgetNew
 
+usageLogoWidget :: FilePath -> Text -> IO Gtk.Widget
+usageLogoWidget iconFile tooltip = do
+  iconPath <- getUserConfigFile "taffybar" ("icons/" <> iconFile)
+  iconWidget <-
+    pixbufNewFromFileAtScaleByHeight 18 iconPath >>= \loaded ->
+      case loaded of
+        Right pixbuf -> Gtk.toWidget =<< Gtk.imageNewFromPixbuf (Just pixbuf)
+        Left _ -> Gtk.toWidget =<< Gtk.labelNew (Just "?")
+  Gtk.widgetSetTooltipText iconWidget (Just tooltip)
+  widgetSetClassGI iconWidget "usage-logo"
+
+usageSectionWidget :: Text -> FilePath -> Text -> TaffyIO Gtk.Widget -> TaffyIO Gtk.Widget
+usageSectionWidget klass iconFile tooltip stackBuilder =
+  decorateWithClassAndBoxM klass $ do
+    stack <- stackBuilder
+    liftIO $ do
+      iconWidget <- usageLogoWidget iconFile tooltip
+      section <- buildIconLabelBox iconWidget stack
+      widgetSetClassGI section "usage-section"
+
 openAIUsageWidget :: TaffyIO Gtk.Widget
 openAIUsageWidget =
-  decorateWithClassAndBoxM "openai-usage" openAIUsageStackNew
+  usageSectionWidget "openai-usage" "openai-symbol.svg" "OpenAI usage" openAIUsageStackNew
 
 anthropicUsageWidget :: TaffyIO Gtk.Widget
 anthropicUsageWidget =
-  decorateWithClassAndBoxM "anthropic-usage" anthropicUsageStackNew
+  usageSectionWidget "anthropic-usage" "claude-symbol.svg" "Anthropic usage" anthropicUsageStackNew
 
 sniPriorityVisibilityThresholdDefault :: Int
 sniPriorityVisibilityThresholdDefault = 0
