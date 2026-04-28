@@ -10,6 +10,7 @@ local max_workspace = 9
 local scratchpad_top_margin = 60
 local columns_layout = "nStack"
 local monocle_layout = "monocle"
+local minimized_workspace = "special:minimized"
 local current_layout = columns_layout
 local workspace_layouts = {}
 local minimized_windows = {}
@@ -218,6 +219,19 @@ local function is_scratchpad_window(window)
   return false
 end
 
+local function is_minimized_workspace(workspace)
+  if not workspace then
+    return false
+  end
+
+  local name = tostring(workspace.name or "")
+  return name == minimized_workspace or name == "minimized" or (workspace.special and name:find("minimized", 1, true) ~= nil)
+end
+
+local function is_minimized_window(window)
+  return window and is_minimized_workspace(window.workspace)
+end
+
 local function is_normal_window(window)
   return window
     and window.mapped ~= false
@@ -225,6 +239,7 @@ local function is_normal_window(window)
     and window.workspace
     and is_normal_workspace(window.workspace)
     and not is_scratchpad_window(window)
+    and not is_minimized_window(window)
 end
 
 local function tiled_windows(workspace)
@@ -612,6 +627,36 @@ local function remove_minimized_window(target)
   minimized_windows = remaining
 end
 
+local function add_minimized_window(window)
+  if not window or not window.address then
+    return
+  end
+
+  remove_minimized_window(window)
+  minimized_windows[#minimized_windows + 1] = window
+end
+
+local function hydrate_minimized_windows()
+  local by_address = {}
+  local hydrated = {}
+
+  for _, window in ipairs(minimized_windows) do
+    if window and window.address and not by_address[window.address] then
+      by_address[window.address] = true
+      hydrated[#hydrated + 1] = window
+    end
+  end
+
+  for _, window in ipairs(hl.get_windows()) do
+    if window and window.address and is_minimized_window(window) and not by_address[window.address] then
+      by_address[window.address] = true
+      hydrated[#hydrated + 1] = window
+    end
+  end
+
+  minimized_windows = hydrated
+end
+
 local function window_workspace_name(window)
   return window and window.workspace and window.workspace.name or ""
 end
@@ -717,9 +762,11 @@ local function adopt_matching_scratchpad_window(window)
 end
 
 local function current_minimized_windows()
+  hydrate_minimized_windows()
+
   local windows = {}
   for _, window in ipairs(minimized_windows) do
-    if window and window.address then
+    if window and window.address and is_minimized_window(window) then
       windows[#windows + 1] = window
     end
   end
@@ -945,8 +992,8 @@ local function minimize_active_window()
     return
   end
 
-  minimized_windows[#minimized_windows + 1] = window
-  move_window_to_workspace("special:minimized", false, window)
+  add_minimized_window(window)
+  move_window_to_workspace(minimized_workspace, false, window)
 end
 
 local function restore_last_minimized()
@@ -955,9 +1002,11 @@ local function restore_last_minimized()
     return
   end
 
+  hydrate_minimized_windows()
+
   while #minimized_windows > 0 do
     local window = table.remove(minimized_windows)
-    if window and window.address then
+    if window and window.address and is_minimized_window(window) then
       restore_minimized_window(window, workspace)
       hl.dsp.focus({ window = window })()
       return
@@ -970,6 +1019,8 @@ local function restore_all_minimized()
   if not workspace then
     return
   end
+
+  hydrate_minimized_windows()
 
   while #minimized_windows > 0 do
     restore_minimized_window(table.remove(minimized_windows), workspace)
@@ -985,8 +1036,8 @@ local function minimize_other_classes()
 
   for _, window in ipairs(tiled_windows(workspace)) do
     if window ~= focused and window.class ~= focused.class then
-      minimized_windows[#minimized_windows + 1] = window
-      move_window_to_workspace("special:minimized", false, window)
+      add_minimized_window(window)
+      move_window_to_workspace(minimized_workspace, false, window)
     end
   end
 end
@@ -998,9 +1049,11 @@ local function restore_focused_class()
     return
   end
 
+  hydrate_minimized_windows()
+
   local remaining = {}
   for _, window in ipairs(minimized_windows) do
-    if window and window.class == focused.class then
+    if window and window.class == focused.class and is_minimized_window(window) then
       restore_minimized_window(window, workspace)
     else
       remaining[#remaining + 1] = window

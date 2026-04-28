@@ -150,6 +150,8 @@ branch exposes `hl.plugin.hyprexpo.expo(...)`, so the Lua config can invoke
 - [x] Implement minimize other windows of current workspace class.
 - [x] Implement restore windows of focused class.
 - [x] Decide hidden workspace naming/state model for minimized windows.
+- [x] Hydrate minimized-window state from the hidden workspace on restore/picker
+      paths.
 
 ## 8. Class-Aware Workflows
 
