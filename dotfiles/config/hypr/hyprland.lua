@@ -397,8 +397,16 @@ local function toggle_columns_monocle()
   end
 end
 
+local function active_group_size()
+  local window = hl.get_active_window()
+  return window and window.group and window.group.size or 0
+end
+
 local function monocle_next()
-  if current_layout == monocle_layout then
+  local window = hl.get_active_window()
+  if window and window.group and window.group.size and window.group.size > 1 then
+    hl.dsp.group.next({ window = window_selector(window) })()
+  elseif current_layout == monocle_layout then
     hl.dsp.layout("cyclenext")()
     update_monocle_notice()
   else
@@ -407,7 +415,10 @@ local function monocle_next()
 end
 
 local function monocle_prev()
-  if current_layout == monocle_layout then
+  local window = hl.get_active_window()
+  if window and window.group and window.group.size and window.group.size > 1 then
+    hl.dsp.group.prev({ window = window_selector(window) })()
+  elseif current_layout == monocle_layout then
     hl.dsp.layout("cycleprev")()
     update_monocle_notice()
   else
@@ -416,7 +427,7 @@ local function monocle_prev()
 end
 
 local function focus_direction(direction)
-  if current_layout == monocle_layout then
+  if active_group_size() > 1 or current_layout == monocle_layout then
     if direction == "up" or direction == "left" then
       monocle_prev()
     else
@@ -426,6 +437,15 @@ local function focus_direction(direction)
   end
 
   hl.dsp.focus({ direction = direction })()
+end
+
+local function swap_direction(direction)
+  if enable_nstack and current_layout == columns_layout and active_group_size() <= 1 then
+    hl.dsp.layout("swapdirection " .. direction)()
+    return
+  end
+
+  hl.dsp.window.swap({ direction = direction })()
 end
 
 local function focus_workspace(workspace_id)
@@ -1273,10 +1293,18 @@ bind(main_mod .. " + D", function()
   focus_direction("right")
 end)
 
-bind(main_mod .. " + SHIFT + W", hl.dsp.window.swap({ direction = "up" }))
-bind(main_mod .. " + SHIFT + S", hl.dsp.window.swap({ direction = "down" }))
-bind(main_mod .. " + SHIFT + A", hl.dsp.window.swap({ direction = "left" }))
-bind(main_mod .. " + SHIFT + D", hl.dsp.window.swap({ direction = "right" }))
+bind(main_mod .. " + SHIFT + W", function()
+  swap_direction("up")
+end)
+bind(main_mod .. " + SHIFT + S", function()
+  swap_direction("down")
+end)
+bind(main_mod .. " + SHIFT + A", function()
+  swap_direction("left")
+end)
+bind(main_mod .. " + SHIFT + D", function()
+  swap_direction("right")
+end)
 
 bind(main_mod .. " + CTRL + W", function()
   move_window_to_monitor("u", false)
