@@ -56,40 +56,28 @@ let
 
     exec ${taffybarPackage}/bin/taffybar "$@"
   '';
-  skipTaffybarInKde = pkgs.writeShellScript "skip-taffybar-in-kde" ''
+  skipTaffybarInOtherShells = pkgs.writeShellScript "skip-taffybar-in-other-shells" ''
     current_desktop="''${XDG_CURRENT_DESKTOP:-}"
     desktop_session="''${DESKTOP_SESSION:-}"
 
     case "''${current_desktop}:''${desktop_session}" in
       *KDE*|*kde*|*Plasma*|*plasma*) exit 1 ;;
-      *) exit 0 ;;
     esac
+
+    exit 0
+  '';
+  taffybarExecCondition = pkgs.writeShellScript "taffybar-exec-condition" ''
+    ${skipTaffybarInOtherShells} || exit 1
+
+    if [ -x /run/current-system/sw/bin/desktop_shell_ui ]; then
+      exec /run/current-system/sw/bin/desktop_shell_ui exec-condition taffybar
+    fi
+
+    exit 0
   '';
 in
 makeEnable config "myModules.taffybar" false {
   myModules.sni.enable = true;
-
-  nixpkgs.overlays = with inputs; (
-    if builtins.isList taffybar.overlays
-    then taffybar.overlays
-    else builtins.attrValues taffybar.overlays
-  ) ++ [
-    # status-notifier-item's test suite spawns `dbus-daemon`; ensure it's on PATH.
-    (final: prev: {
-      haskellPackages = prev.haskellPackages.override (old: {
-        overrides =
-          final.lib.composeExtensions (old.overrides or (_: _: {}))
-          (hself: hsuper: {
-            status-notifier-item = hsuper.status-notifier-item.overrideAttrs (oldAttrs: {
-              checkInputs = (oldAttrs.checkInputs or []) ++ [ prev.dbus ];
-              # The test suite assumes a system-wide /etc/dbus-1/session.conf,
-              # which isn't present in Nix sandboxes.
-              doCheck = false;
-            });
-          });
-      });
-    })
-  ];
 
   environment.systemPackages = [
     taffybarPackage
@@ -121,7 +109,7 @@ makeEnable config "myModules.taffybar" false {
           rmdir --ignore-fail-on-non-empty "$HOME/.config/systemd/user/taffybar.service.d" 2>/dev/null || true
         '';
       systemd.user.services.taffybar.Service = {
-        ExecCondition = "${skipTaffybarInKde}";
+        ExecCondition = "${taffybarExecCondition}";
         ExecStart = lib.mkForce "${taffybarStart}";
         # Temporary startup debugging: keep a plain-text log outside journald so
         # the next login/startup leaves easy-to-inspect tray traces behind.
