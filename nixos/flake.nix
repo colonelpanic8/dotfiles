@@ -231,6 +231,11 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
+    noctalia = {
+      url = "github:noctalia-dev/noctalia-shell";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+
   };
 
   outputs = inputs @ {
@@ -443,6 +448,7 @@
         "https://colonelpanic8-dotfiles.cachix.org"
         "https://codex-cli.cachix.org"
         "https://claude-code.cachix.org"
+        "https://noctalia.cachix.org"
       ];
       extra-trusted-substituters = [
         "https://ai.cachix.org"
@@ -464,6 +470,7 @@
         "colonelpanic8-dotfiles.cachix.org-1:O6GF3nptpeMFapX29okzO92eSWXR36zqW6ZF2C8P0eQ="
         "codex-cli.cachix.org-1:1Br3H1hHoRYG22n//cGKJOk3cQXgYobUel6O8DgSing="
         "claude-code.cachix.org-1:YeXf2aNu7UTX8Vwrze0za1WEDS+4DuI2kVeWEE4fsRk="
+        "noctalia.cachix.org-1:pCOR47nnMEo5thcxNDtzWpOxNFQsBRglJzxWPp3dkU4="
       ];
     };
     nixosConfigurations =

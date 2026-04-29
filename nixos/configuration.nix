@@ -29,6 +29,7 @@
     ./laptop.nix
     ./nix.nix
     ./notifications-tray-icon.nix
+    ./noctalia.nix
     ./nvidia.nix
     ./options.nix
     ./plasma.nix
