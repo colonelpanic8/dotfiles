@@ -18,6 +18,17 @@ let
     inputs.hyprNStack.packages.${system}.hyprNStack
     inputs.hyprland-plugins-lua.packages.${system}.hyprexpo
   ];
+  hyprRofiWindow = pkgs.writeShellApplication {
+    name = "hypr_rofi_window";
+    runtimeInputs = [
+      pkgs.python3
+      pkgs.rofi
+      hyprlandInput.packages.${system}.hyprland
+    ];
+    text = ''
+      exec python3 ${../dotfiles/lib/bin/hypr_rofi_window} "$@"
+    '';
+  };
   hyprscratchSettings = {
     daemon_options = "clean";
     global_options = "";
@@ -194,6 +205,7 @@ let
         ddcutil # Monitor input switching over DDC/CI
 
         # For scripts
+        hyprRofiWindow
         jq
       ]
       ++ luaPluginPackages
