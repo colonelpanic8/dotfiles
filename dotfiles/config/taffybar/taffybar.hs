@@ -1,4 +1,5 @@
 {-# LANGUAGE DataKinds #-}
+{-# LANGUAGE LambdaCase #-}
 {-# LANGUAGE OverloadedStrings #-}
 
 module Main (main) where
@@ -46,11 +47,21 @@ import System.Taffybar.SimpleConfig
 import System.Taffybar.Util (getPixbufFromFilePath, maybeTCombine, postGUIASync, (<|||>))
 import System.Taffybar.Widget
 import qualified System.Taffybar.Widget.ASUS as ASUS
-import System.Taffybar.Widget.AnthropicUsage (anthropicUsageStackNew)
+import System.Taffybar.Widget.AnthropicUsage
+  ( AnthropicUsageDisplayMode (AnthropicUsageDisplayRemaining),
+    AnthropicUsageStackConfig (..),
+    anthropicUsageStackNewWith,
+    defaultAnthropicUsageStackConfig,
+  )
 import System.Taffybar.Widget.CPUMonitor (cpuMonitorNew)
 import System.Taffybar.Widget.Generic.Graph (GraphConfig (..), GraphDirection (..), GraphStyle (..), defaultGraphConfig)
 import qualified System.Taffybar.Widget.NetworkManager as NetworkManager
-import System.Taffybar.Widget.OpenAIUsage (openAIUsageStackNew)
+import System.Taffybar.Widget.OpenAIUsage
+  ( OpenAIUsageDisplayMode (OpenAIUsageDisplayRemaining),
+    OpenAIUsageStackConfig (..),
+    defaultOpenAIUsageStackConfig,
+    openAIUsageStackNewWith,
+  )
 import qualified System.Taffybar.Widget.PulseAudio as PulseAudio
 import System.Taffybar.Widget.SNIMenu (withNmAppletMenu)
 import System.Taffybar.Widget.SNITray
@@ -555,10 +566,9 @@ usageLogoWidget :: FilePath -> Text -> IO Gtk.Widget
 usageLogoWidget iconFile tooltip = do
   iconPath <- getUserConfigFile "taffybar" ("icons/" <> iconFile)
   iconWidget <-
-    pixbufNewFromFileAtScaleByHeight 18 iconPath >>= \loaded ->
-      case loaded of
-        Right pixbuf -> Gtk.toWidget =<< Gtk.imageNewFromPixbuf (Just pixbuf)
-        Left _ -> Gtk.toWidget =<< Gtk.labelNew (Just "?")
+    pixbufNewFromFileAtScaleByHeight 18 iconPath >>= \case
+      Right pixbuf -> Gtk.toWidget =<< Gtk.imageNewFromPixbuf (Just pixbuf)
+      Left _ -> Gtk.toWidget =<< Gtk.labelNew (Just "?")
   Gtk.widgetSetTooltipText iconWidget (Just tooltip)
   widgetSetClassGI iconWidget "usage-logo"
 
@@ -573,11 +583,19 @@ usageSectionWidget klass iconFile tooltip stackBuilder =
 
 openAIUsageWidget :: TaffyIO Gtk.Widget
 openAIUsageWidget =
-  usageSectionWidget "openai-usage" "openai-symbol.svg" "OpenAI usage" openAIUsageStackNew
+  usageSectionWidget "openai-usage" "openai-symbol.svg" "OpenAI usage" $
+    openAIUsageStackNewWith
+      defaultOpenAIUsageStackConfig
+        { openAIUsageStackDefaultDisplayMode = OpenAIUsageDisplayRemaining
+        }
 
 anthropicUsageWidget :: TaffyIO Gtk.Widget
 anthropicUsageWidget =
-  usageSectionWidget "anthropic-usage" "claude-symbol.svg" "Anthropic usage" anthropicUsageStackNew
+  usageSectionWidget "anthropic-usage" "claude-symbol.svg" "Anthropic usage" $
+    anthropicUsageStackNewWith
+      defaultAnthropicUsageStackConfig
+        { anthropicUsageStackDefaultDisplayMode = AnthropicUsageDisplayRemaining
+        }
 
 sniPriorityVisibilityThresholdDefault :: Int
 sniPriorityVisibilityThresholdDefault = 0
