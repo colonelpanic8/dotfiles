@@ -799,15 +799,16 @@
         ]
       },
       "locked": {
-        "lastModified": 1777471960,
-        "narHash": "sha256-X+xWT3VwjCRAxlBLZvBi5Lam4BpZk4k8ep7Fv13QNLw=",
+        "lastModified": 1777475074,
+        "narHash": "sha256-shgepEMtMB532/df5QfociNzTiqimuoBbJssw0WPVH4=",
         "owner": "colonelpanic8",
         "repo": "hyprNStack",
-        "rev": "d1b4307c0804ad22a17882bd5c5c2f5a7df2b3ea",
+        "rev": "d43c8a506b32dc5057fdce0569c38f401c01eb60",
         "type": "github"
       },
       "original": {
         "owner": "colonelpanic8",
+        "ref": "hyprland-lua-integration",
         "repo": "hyprNStack",
         "type": "github"
       }
@@ -1134,16 +1135,16 @@
         ]
       },
       "locked": {
-        "lastModified": 1777471960,
-        "narHash": "sha256-Fr09SZhviCOxyuZiWku1X/rNXNvKrIqpsSdX1rQH+4o=",
+        "lastModified": 1777492340,
+        "narHash": "sha256-9uRI/opXD+zOK2BLlzQ2NluRJL1SRSdUO2tlvbUJ7Ys=",
         "owner": "colonelpanic8",
         "repo": "hyprland-plugins",
-        "rev": "457830c379b8e6763ba147b8c7f83986378b8576",
+        "rev": "ca1992973b5fb8ab95e88e8ffba16792c41568ae",
         "type": "github"
       },
       "original": {
         "owner": "colonelpanic8",
-        "ref": "hyprexpo-lua-hyprland",
+        "ref": "codex/fix-main-ci",
         "repo": "hyprland-plugins",
         "type": "github"
       }

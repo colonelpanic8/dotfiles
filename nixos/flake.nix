@@ -102,7 +102,7 @@
     };
 
     hyprNStack = {
-      url = "github:colonelpanic8/hyprNStack";
+      url = "github:colonelpanic8/hyprNStack?ref=hyprland-lua-integration";
       inputs = {
         hyprland.follows = "hyprland-lua-config";
         nixpkgs.follows = "nixpkgs";
@@ -115,12 +115,12 @@
     };
 
     hyprland-plugins = {
-      url = "github:hyprwm/hyprland-plugins?ref=v0.53.0";
+      url = "github:colonelpanic8/hyprland-plugins?ref=hyprexpo-v0.53.0-custom";
       inputs.hyprland.follows = "hyprland";
     };
 
     hyprland-plugins-lua = {
-      url = "github:colonelpanic8/hyprland-plugins?ref=hyprexpo-lua-hyprland";
+      url = "github:colonelpanic8/hyprland-plugins?ref=codex/fix-main-ci";
       inputs.hyprland.follows = "hyprland-lua-config";
     };
 
