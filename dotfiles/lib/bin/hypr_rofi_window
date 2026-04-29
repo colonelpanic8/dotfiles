@@ -1,0 +1,254 @@
+#!/usr/bin/env python3
+import argparse
+import json
+import os
+import subprocess
+import sys
+from pathlib import Path
+
+
+PROMPTS = {
+    "go": "Go to window",
+    "bring": "Bring window",
+    "replace": "Replace with",
+}
+
+
+def ensure_hyprland_instance():
+    if os.environ.get("HYPRLAND_INSTANCE_SIGNATURE"):
+        return
+
+    runtime = Path(os.environ.get("XDG_RUNTIME_DIR", f"/run/user/{os.getuid()}"))
+    hypr_dir = runtime / "hypr"
+    if not hypr_dir.is_dir():
+        return
+
+    sockets = []
+    for socket in hypr_dir.glob("*/.socket.sock"):
+        try:
+            sockets.append((socket.stat().st_mtime, socket.parent.name))
+        except OSError:
+            pass
+
+    if sockets:
+        os.environ["HYPRLAND_INSTANCE_SIGNATURE"] = max(sockets)[1]
+
+
+def run_json(*args):
+    result = subprocess.run(args, check=False, text=True, capture_output=True)
+    if result.returncode != 0 or not result.stdout.strip():
+        return None
+    return json.loads(result.stdout)
+
+
+def dispatch_lua(expression):
+    return subprocess.run(["hyprctl", "dispatch", expression], check=False).returncode == 0
+
+
+def dispatch_legacy(*args):
+    return subprocess.run(["hyprctl", "dispatch", *args], check=False).returncode == 0
+
+
+def normal_workspace(window):
+    workspace = window.get("workspace") or {}
+    workspace_id = workspace.get("id")
+    return isinstance(workspace_id, int) and workspace_id >= 0
+
+
+def window_address(window):
+    address = window.get("address") or ""
+    return address if isinstance(address, str) and address else None
+
+
+def clean_text(value):
+    return str(value or "").replace("\t", " ").replace("\n", " ").strip()
+
+
+def app_dirs():
+    seen = set()
+    for base in os.environ.get("XDG_DATA_DIRS", "/run/current-system/sw/share:/usr/share:/usr/local/share").split(":"):
+        path = Path(base) / "applications"
+        if path.is_dir() and path not in seen:
+            seen.add(path)
+            yield path
+
+    local = Path.home() / ".local/share/applications"
+    if local.is_dir() and local not in seen:
+        yield local
+
+
+def parse_desktop_file(path):
+    icon = None
+    wm_class = None
+    try:
+        with path.open(errors="ignore") as handle:
+            for raw_line in handle:
+                line = raw_line.strip()
+                if not icon and line.startswith("Icon="):
+                    icon = line.removeprefix("Icon=").strip()
+                elif not wm_class and line.startswith("StartupWMClass="):
+                    wm_class = line.removeprefix("StartupWMClass=").strip()
+                if icon and wm_class:
+                    break
+    except OSError:
+        return None, None
+    return icon, wm_class
+
+
+def icon_map():
+    mapping = {}
+    for directory in app_dirs():
+        for desktop_file in directory.glob("*.desktop"):
+            icon, wm_class = parse_desktop_file(desktop_file)
+            if not icon:
+                continue
+            mapping.setdefault(desktop_file.stem.lower(), icon)
+            if wm_class:
+                mapping.setdefault(wm_class.lower(), icon)
+    return mapping
+
+
+def icon_for(mapping, class_name):
+    class_key = clean_text(class_name).lower()
+    return mapping.get(class_key, class_key or "application-x-executable")
+
+
+def rofi_index(entries, prompt):
+    menu = b"".join(entry.encode("utf-8", errors="replace") for entry in entries)
+    result = subprocess.run(
+        ["rofi", "-dmenu", "-i", "-show-icons", "-p", prompt, "-format", "i"],
+        input=menu,
+        check=False,
+        capture_output=True,
+    )
+    if result.returncode != 0:
+        return None
+
+    try:
+        return int(result.stdout.decode("utf-8").strip())
+    except ValueError:
+        return None
+
+
+def candidates(mode, clients, active_workspace, active_window):
+    current_ws = (active_workspace or {}).get("id")
+    focused = window_address(active_window or {}) if active_window else None
+    filtered = []
+
+    for window in clients:
+        if not normal_workspace(window):
+            continue
+
+        address = window_address(window)
+        if not address:
+            continue
+
+        workspace_id = (window.get("workspace") or {}).get("id")
+        if mode == "bring" and workspace_id == current_ws:
+            continue
+        if mode == "replace" and address == focused:
+            continue
+
+        filtered.append(window)
+
+    filtered.sort(
+        key=lambda window: (
+            (window.get("workspace") or {}).get("id", 9999),
+            window.get("focusHistoryID", 999999),
+            clean_text(window.get("class")).lower(),
+            clean_text(window.get("title")).lower(),
+        )
+    )
+    return filtered
+
+
+def menu_entry(window, icons):
+    class_name = clean_text(window.get("class"))
+    title = clean_text(window.get("title"))
+    workspace_id = (window.get("workspace") or {}).get("id", "?")
+    label = f"{class_name[:24]:<24}  {title}  WS:{workspace_id}"
+    icon = icon_for(icons, class_name)
+    return f"{label}\0icon\x1f{icon}\n"
+
+
+def focus_window(address):
+    if dispatch_lua(f'hl.dsp.focus({{ window = "address:{address}" }})'):
+        return
+    dispatch_legacy("focuswindow", f"address:{address}")
+
+
+def move_to_workspace(address, workspace_id):
+    workspace = str(workspace_id)
+    if dispatch_lua(f'hl.dsp.window.move({{ workspace = "{workspace}", window = "address:{address}" }})'):
+        return
+    dispatch_legacy("movetoworkspace", f"{workspace},address:{address}")
+
+
+def swap_with_focused(target_address, focused_address):
+    if dispatch_lua(
+        f'hl.dsp.window.swap({{ target = "address:{target_address}", window = "address:{focused_address}" }})'
+    ):
+        return
+    dispatch_legacy("hy3:movewindow", f"address:{target_address}")
+
+
+def activate(mode, window, active_workspace, active_window):
+    address = window_address(window)
+    if not address:
+        return
+
+    if mode == "go":
+        focus_window(address)
+        return
+
+    if mode == "bring":
+        current_ws = (active_workspace or {}).get("id")
+        if current_ws is not None:
+            move_to_workspace(address, current_ws)
+        focus_window(address)
+        return
+
+    if mode == "replace":
+        focused = window_address(active_window or {})
+        if focused and focused != address:
+            swap_with_focused(address, focused)
+            focus_window(address)
+
+
+def main():
+    parser = argparse.ArgumentParser(description="Rofi window go/bring/replace for Hyprland.")
+    parser.add_argument("mode", choices=sorted(PROMPTS))
+    parser.add_argument("--print-candidates", action="store_true")
+    parser.add_argument("--select-index", type=int)
+    args = parser.parse_args()
+
+    ensure_hyprland_instance()
+
+    clients = run_json("hyprctl", "clients", "-j") or []
+    active_workspace = run_json("hyprctl", "activeworkspace", "-j") or {}
+    active_window = run_json("hyprctl", "activewindow", "-j") or {}
+    windows = candidates(args.mode, clients, active_workspace, active_window)
+
+    if args.print_candidates:
+        print(json.dumps(windows, indent=2, sort_keys=True))
+        return 0
+
+    if not windows:
+        return 0
+
+    if args.select_index is None:
+        icons = icon_map()
+        entries = [menu_entry(window, icons) for window in windows]
+        index = rofi_index(entries, PROMPTS[args.mode])
+    else:
+        index = args.select_index
+
+    if index is None or index < 0 or index >= len(windows):
+        return 0
+
+    activate(args.mode, windows[index], active_workspace, active_window)
+    return 0
+
+
+if __name__ == "__main__":
+    sys.exit(main())
