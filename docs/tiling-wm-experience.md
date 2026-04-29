@@ -74,6 +74,14 @@ Required behavior:
 - Moving the focused window to an empty workspace on the monitor in a direction
   remains required behavior, but it should not require an extra `Hyper`
   modifier beyond `Shift`.
+- `Super+w/a/s/d` focuses windows directionally.
+- `Super+Shift+w/a/s/d` swaps or moves the focused window directionally.
+- `Super+Ctrl+w/a/s/d` moves the focused window to the monitor in that
+  direction while preserving useful focus.
+- `Super+Ctrl+Shift+w/a/s/d` moves the focused window to an empty workspace on
+  the monitor in that direction.
+- `Hyper+w/a/s/d` focuses monitors directionally.
+- `Hyper+Shift+w/a/s/d` swaps or moves windows between monitors directionally.
 - Directional focus in tabbed/fullscreen mode should cycle predictably through
   windows even though their screen geometry overlaps.
 
@@ -88,6 +96,7 @@ Required behavior:
 
 - Tiling is dynamic.
 - Primary layout is equal-width vertical columns.
+- Scrolling layouts are not acceptable.
 - All ordinary splits are vertical.
 - Adding windows dynamically redistributes all tiled windows evenly.
 - Removing windows dynamically redistributes all tiled windows evenly.
@@ -235,6 +244,8 @@ Important behavior:
 Nice behavior:
 
 - Wallpaper behavior remains consistent.
+- Wallpaper selection uses `Hyper+comma`; `Hyper+w/a/s/d` are reserved for
+  directional monitor focus.
 - Idle behavior remains consistent.
 - Lock behavior remains consistent.
 - Clipboard history behavior remains consistent.
