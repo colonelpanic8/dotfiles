@@ -29,6 +29,16 @@ let
       exec python3 ${../dotfiles/lib/bin/hypr_rofi_window} "$@"
     '';
   };
+  hyprShellUi = pkgs.writeShellApplication {
+    name = "hypr_shell_ui";
+    runtimeInputs = [
+      pkgs.rofi
+      hyprRofiWindow
+    ];
+    text = ''
+      exec ${../dotfiles/lib/bin/hypr_shell_ui} "$@"
+    '';
+  };
   hyprscratchSettings = {
     daemon_options = "clean";
     global_options = "";
@@ -206,6 +216,7 @@ let
 
         # For scripts
         hyprRofiWindow
+        hyprShellUi
         jq
       ]
       ++ luaPluginPackages

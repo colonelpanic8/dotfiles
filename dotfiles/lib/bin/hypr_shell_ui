@@ -1,0 +1,78 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+if command -v desktop_shell_ui >/dev/null 2>&1; then
+  shell_ui="$(desktop_shell_ui current 2>/dev/null || true)"
+else
+  shell_ui=""
+fi
+
+shell_ui="${shell_ui:-${IM_HYPRLAND_SHELL_UI:-taffybar}}"
+
+run_noctalia() {
+  noctalia-shell ipc --any-display call "$@"
+}
+
+run_launcher() {
+  case "$shell_ui" in
+    noctalia)
+      run_noctalia launcher toggle
+      ;;
+    taffybar|rofi)
+      exec rofi -show drun -show-icons
+      ;;
+    *)
+      echo "unknown IM_HYPRLAND_SHELL_UI: $shell_ui" >&2
+      exit 2
+      ;;
+  esac
+}
+
+run_window_picker() {
+  local mode="${1:-}"
+
+  case "$mode" in
+    go|bring|replace) ;;
+    *)
+      echo "usage: hypr_shell_ui window {go|bring|replace}" >&2
+      exit 2
+      ;;
+  esac
+
+  if [[ "$shell_ui" == "noctalia" && "${IM_HYPRLAND_NOCTALIA_WINDOW_PICKER:-0}" == "1" ]]; then
+    # Future Noctalia launcher-provider hook. Until that plugin exists or if it
+    # fails to load, keep the existing rofi picker as the working path.
+    run_noctalia "plugin:hypr-window-picker" "$mode" 2>/dev/null && exit 0
+  fi
+
+  exec hypr_rofi_window "$mode"
+}
+
+case "${1:-}" in
+  launcher)
+    run_launcher
+    ;;
+  run)
+    exec rofi -show run
+    ;;
+  control-center)
+    if [[ "$shell_ui" == "noctalia" ]]; then
+      run_noctalia controlCenter toggle || true
+    fi
+    exit 0
+    ;;
+  settings)
+    if [[ "$shell_ui" == "noctalia" ]]; then
+      run_noctalia settings toggle || true
+    fi
+    exit 0
+    ;;
+  window)
+    shift
+    run_window_picker "$@"
+    ;;
+  *)
+    echo "usage: hypr_shell_ui {launcher|run|control-center|settings|window}" >&2
+    exit 2
+    ;;
+esac

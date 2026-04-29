@@ -3,8 +3,9 @@ local mod_alt = "SUPER + ALT"
 local hyper = "SUPER + CTRL + ALT"
 
 local terminal = "ghostty --gtk-single-instance=false"
-local menu = "rofi -show drun -show-icons"
-local run_menu = "rofi -show run"
+local shell_ui_command = "hypr_shell_ui"
+local launcher_command = shell_ui_command .. " launcher"
+local run_menu = shell_ui_command .. " run"
 
 local max_workspace = 9
 local scratchpad_top_margin = 60
@@ -1486,8 +1487,10 @@ local function apply_rules()
   })
 end
 
-bind(main_mod .. " + P", exec(menu))
+bind(main_mod .. " + P", exec(launcher_command))
 bind(main_mod .. " + SHIFT + P", exec(run_menu))
+bind(hyper .. " + SHIFT + N", exec(shell_ui_command .. " control-center"))
+bind(hyper .. " + CTRL + N", exec(shell_ui_command .. " settings"))
 bind(main_mod .. " + SHIFT + Return", exec(terminal))
 bind(main_mod .. " + Q", exec("hyprctl reload"))
 bind(main_mod .. " + SHIFT + C", hl.dsp.window.close())
@@ -1496,9 +1499,9 @@ bind(main_mod .. " + E", exec("emacsclient --eval '(emacs-everywhere)'"))
 bind(main_mod .. " + V", exec("wl-paste | xdotool type --file -"))
 bind(main_mod .. " + Tab", hyprexpo("toggle"))
 bind(main_mod .. " + SHIFT + Tab", hyprexpo("bring"))
-bind(main_mod .. " + G", exec("hypr_rofi_window go"))
-bind(main_mod .. " + B", exec("hypr_rofi_window bring"))
-bind(main_mod .. " + SHIFT + B", exec("hypr_rofi_window replace"))
+bind(main_mod .. " + G", exec(shell_ui_command .. " window go"))
+bind(main_mod .. " + B", exec(shell_ui_command .. " window bring"))
+bind(main_mod .. " + SHIFT + B", exec(shell_ui_command .. " window replace"))
 
 bind(main_mod .. " + W", function()
   focus_direction("up")
