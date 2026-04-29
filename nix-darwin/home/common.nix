@@ -69,6 +69,7 @@
   multiplexerAliases = import ../../shared/multiplexer-aliases.nix;
 
   excludedTopLevelEntries = [
+    "codex"
     "config"
   ];
 

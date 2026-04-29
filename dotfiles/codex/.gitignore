@@ -3,3 +3,5 @@
 !AGENTS.md
 !config.toml
 !skills
+
+# Generated/local Codex state, including config.local.toml, stays ignored.

@@ -2,147 +2,8 @@ model = "gpt-5.5"
 model_reasoning_effort = "high"
 personality = "pragmatic"
 
-
-notify = ["/Users/kat/dotfiles/dotfiles/codex/plugins/cache/openai-bundled/computer-use/1.0.755/Codex Computer Use.app/Contents/SharedSupport/SkyComputerUseClient.app/Contents/MacOS/SkyComputerUseClient", "turn-ended"]
-
-[projects."/home/imalison/Projects/nixpkgs"]
-trust_level = "trusted"
-
-[projects."/home/imalison/dotfiles"]
-trust_level = "trusted"
-
-[projects."/home/imalison/Projects/railbird"]
-trust_level = "trusted"
-
-[projects."/home/imalison/Projects/subtr-actor"]
-trust_level = "trusted"
-
-[projects."/home/imalison/Projects/google-messages-api"]
-trust_level = "trusted"
-
-[projects."/home/imalison"]
-trust_level = "trusted"
-
-[projects."/home/imalison/Projects/scrobble-scrubber"]
-trust_level = "trusted"
-
-[projects."/home/imalison/temp"]
-trust_level = "trusted"
-
-[projects."/home/imalison/Projects/org-agenda-api"]
-trust_level = "untrusted"
-
-[projects."/home/imalison/org"]
-trust_level = "trusted"
-
-[projects."/home/imalison/dotfiles/.git/modules/dotfiles/config/taffybar"]
-trust_level = "trusted"
-
-[projects."/home/imalison/Projects/notifications-tray-icon"]
-trust_level = "trusted"
-
-[projects."/home/imalison/Projects/hyprland"]
-trust_level = "trusted"
-
-[projects."/home/imalison/Projects/git-sync-rs"]
-trust_level = "trusted"
-
-[projects."/home/imalison/Projects/keepbook"]
-trust_level = "trusted"
-
-[projects."/home/imalison/Projects/boxcars"]
-trust_level = "trusted"
-
-[projects."/home/imalison/Projects/rumno"]
-trust_level = "trusted"
-
-[projects."/home/imalison/Projects/git-blame-rank"]
-trust_level = "trusted"
-
-[projects."/home/imalison/Projects/hatchet"]
-trust_level = "trusted"
-
-[projects."/home/imalison/dotfiles/dotfiles/emacs.d/elpaca/sources/org-project-capture"]
-trust_level = "trusted"
-
-[projects."/home/imalison/dotfiles/dotfiles/config/taffybar/taffybar/packages"]
-trust_level = "trusted"
-
-[projects."/home/imalison/Projects/scrobble-tools"]
-trust_level = "trusted"
-
-[projects."/home/imalison/.password-store"]
-trust_level = "trusted"
-
-[projects."/home/imalison/Projects/subtr-actor-mechanics"]
-trust_level = "trusted"
-
-[projects."/home/imalison/Projects/lastfm-edit"]
-trust_level = "trusted"
-
-[projects."/home/imalison/Projects/mova"]
-trust_level = "trusted"
-
-[projects."/home/imalison/dotfiles/dotfiles/config/taffybar/taffybar"]
-trust_level = "trusted"
-
-[projects."/home/imalison/Projects"]
-trust_level = "trusted"
-
-[projects."/home/imalison/Projects/rofi-systemd"]
-trust_level = "trusted"
-
-[projects."/home/imalison/Projects/map-quiz"]
-trust_level = "trusted"
-
-[projects."/run/media/imalison/NETDEBUGUSB"]
-trust_level = "trusted"
-
-[projects."/home/imalison/Projects/coqui-tts-streamer"]
-trust_level = "trusted"
-
-[projects."/home/imalison/Downloads"]
-trust_level = "trusted"
-
-[projects."/home/imalison/keysmith_generated"]
-trust_level = "trusted"
-
-[projects."/run/media/imalison/NIXOS_SD"]
-trust_level = "trusted"
-
-[projects."/Users/kat/dotfiles"]
-trust_level = "trusted"
-
-[projects."/Users/kat"]
-trust_level = "trusted"
-
-[projects."/Users/kat/org"]
-trust_level = "trusted"
-
-[projects."/Users/kat/Documents/Codex/2026-04-25/do-you-see-the-sandisk-external"]
-trust_level = "trusted"
-
-[projects."/Volumes/Extreme SSD/Projects/keepbook"]
-trust_level = "trusted"
-
-[projects."/Users/kat/Documents/Codex/2026-04-25/it-seems-like-maybe-we-dont"]
-trust_level = "trusted"
-
-[projects."/Users/kat/Documents/Codex/2026-04-25/what-is-the-state-of-tiling"]
-trust_level = "trusted"
-
-[projects."/home/imalison/Pictures/ai/2026/celeb"]
-trust_level = "trusted"
-
-[projects."/home/imalison/.local/share/keepbook"]
-trust_level = "trusted"
-
-[notice]
-hide_gpt5_1_migration_prompt = true
-"hide_gpt-5.1-codex-max_migration_prompt" = true
-
-[notice.model_migrations]
-"gpt-5.2" = "gpt-5.2-codex"
+# Portable Codex defaults. Machine-local additions are appended from
+# dotfiles/codex/config.local.toml by Home Manager.
 
 [mcp_servers.chrome-devtools]
 command = "npx"
@@ -159,16 +20,6 @@ url = "https://developers.openai.com/mcp"
 unified_exec = true
 apps = true
 steer = true
-
-[marketplaces.openai-bundled]
-last_updated = "2026-04-21T17:43:57Z"
-source_type = "local"
-source = "/Users/kat/.codex/.tmp/bundled-marketplaces/openai-bundled"
-
-[marketplaces.openai-primary-runtime]
-last_updated = "2026-04-25T23:49:36Z"
-source_type = "local"
-source = "/Users/kat/.cache/codex-runtimes/codex-primary-runtime/plugins/openai-primary-runtime"
 
 [plugins."google-calendar@openai-curated"]
 enabled = true
@@ -196,6 +47,3 @@ enabled = true
 
 [plugins."browser-use@openai-bundled"]
 enabled = true
-
-[tui.model_availability_nux]
-"gpt-5.5" = 4

@@ -1,5 +1,8 @@
-{ config, lib, ... }:
-let
+{
+  config,
+  lib,
+  ...
+}: let
   # Replicate the useful part of rcm/rcup:
   # - dotfiles live in ~/dotfiles/dotfiles (no leading dots in the repo)
   # - links in $HOME add a leading '.' to the first path component
@@ -16,6 +19,9 @@ let
   srcDotfiles = ../dotfiles;
 
   excludedTop = [
+    # Managed by nix-shared/home-manager/codex-generated-skills.nix so
+    # config.toml can be generated from shared and machine-local fragments.
+    "codex"
     # Managed by Nix directly (PATH/fpath), not meant to appear as ~/.lib.
     "lib"
     # Avoid colliding with HM-generated xdg.configFile entries for now.
@@ -24,27 +30,25 @@ let
     "emacs.d"
   ];
 
-  firstComponent = rel:
-    let parts = lib.splitString "/" rel;
-    in lib.elemAt parts 0;
+  firstComponent = rel: let
+    parts = lib.splitString "/" rel;
+  in
+    lib.elemAt parts 0;
 
   isExcluded = rel: lib.elem (firstComponent rel) excludedTop;
 
-  listFilesRec = dir:
-    let
-      entries = builtins.readDir dir;
-      names = builtins.attrNames entries;
-      go = name:
-        let
-          ty = entries.${name};
-          path = dir + "/${name}";
-        in
-          if ty == "directory" then
-            map (p: "${name}/${p}") (listFilesRec path)
-          else
-            [ name ];
+  listFilesRec = dir: let
+    entries = builtins.readDir dir;
+    names = builtins.attrNames entries;
+    go = name: let
+      ty = entries.${name};
+      path = dir + "/${name}";
     in
-      lib.concatLists (map go names);
+      if ty == "directory"
+      then map (p: "${name}/${p}") (listFilesRec path)
+      else [name];
+  in
+    lib.concatLists (map go names);
 
   managedRelFiles =
     lib.filter (rel: !(isExcluded rel)) (listFilesRec srcDotfiles);
@@ -53,9 +57,10 @@ let
     lib.nameValuePair ".${rel}" {
       source = oos "${worktreeDotfiles}/${rel}";
     };
-in
-{
-  imports = [ ../nix-shared/home-manager/codex-generated-skills.nix ];
+in {
+  imports = [
+    ../nix-shared/home-manager/codex-generated-skills.nix
+  ];
 
   home.file =
     builtins.listToAttrs (map mkManaged managedRelFiles);
@@ -74,5 +79,4 @@ in
       echo "Skipping ~/.emacs.d relink because it is not a symlink" >&2
     fi
   '';
-
 }

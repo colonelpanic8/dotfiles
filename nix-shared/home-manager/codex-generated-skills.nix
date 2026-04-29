@@ -5,14 +5,21 @@
   ...
 }: let
   cfg = config.myModules.codexGeneratedSkills;
+  oos = config.lib.file.mkOutOfStoreSymlink;
 in {
   options.myModules.codexGeneratedSkills = {
-    enable = lib.mkEnableOption "generated Codex skill setup";
+    enable = lib.mkEnableOption "Codex home setup";
 
     codexHome = lib.mkOption {
       type = lib.types.str;
       default = "${config.home.homeDirectory}/.codex";
       description = "Codex home directory.";
+    };
+
+    worktreeCodexDir = lib.mkOption {
+      type = lib.types.str;
+      default = "${config.home.homeDirectory}/dotfiles/dotfiles/codex";
+      description = "Codex dotfiles directory in the live worktree.";
     };
 
     skillsDir = lib.mkOption {
@@ -29,6 +36,67 @@ in {
   };
 
   config = lib.mkIf cfg.enable {
+    home.file = {
+      ".codex/.gitignore" = {
+        force = true;
+        source = oos "${cfg.worktreeCodexDir}/.gitignore";
+      };
+
+      ".codex/AGENTS.md" = {
+        force = true;
+        source = oos "${cfg.worktreeCodexDir}/AGENTS.md";
+      };
+
+      ".codex/skills" = {
+        force = true;
+        source = oos "${cfg.worktreeCodexDir}/skills";
+      };
+    };
+
+    home.activation.prepareCodexDirectory = lib.hm.dag.entryBefore ["checkLinkTargets"] ''
+      codex_home=${lib.escapeShellArg cfg.codexHome}
+      worktree_codex=${lib.escapeShellArg cfg.worktreeCodexDir}
+
+      if [ -L "$codex_home" ] && [ "$(readlink "$codex_home")" = "$worktree_codex" ]; then
+        rm -f "$codex_home"
+        mkdir -p "$codex_home"
+      elif [ ! -e "$codex_home" ]; then
+        mkdir -p "$codex_home"
+      elif [ ! -d "$codex_home" ]; then
+        echo "Skipping Codex setup because $codex_home is not a directory" >&2
+        exit 1
+      fi
+    '';
+
+    home.activation.generateCodexConfig = lib.hm.dag.entryAfter ["writeBoundary"] ''
+      codex_home=${lib.escapeShellArg cfg.codexHome}
+      base=${lib.escapeShellArg "${cfg.worktreeCodexDir}/config.toml"}
+      local_config=${lib.escapeShellArg "${cfg.worktreeCodexDir}/config.local.toml"}
+      target="$codex_home/config.toml"
+
+      if [ ! -r "$base" ]; then
+        echo "Missing shared Codex config at $base" >&2
+        exit 1
+      fi
+
+      mkdir -p "$codex_home"
+      tmp="$(mktemp "$codex_home/config.toml.XXXXXX")"
+      trap 'rm -f "$tmp"' EXIT
+      chmod 600 "$tmp"
+
+      cat "$base" > "$tmp"
+      if [ -r "$local_config" ]; then
+        printf '\n' >> "$tmp"
+        cat "$local_config" >> "$tmp"
+      fi
+
+      if [ -e "$target" ] && cmp -s "$tmp" "$target"; then
+        rm -f "$tmp"
+      else
+        mv -f "$tmp" "$target"
+      fi
+    '';
+
     home.activation.setupCodexGeneratedSkills = lib.hm.dag.entryAfter ["writeBoundary"] ''
       codex_home=${lib.escapeShellArg cfg.codexHome}
       skills_dir=${lib.escapeShellArg cfg.skillsDir}
