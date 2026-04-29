@@ -87,6 +87,13 @@ local function exec(command)
   return hl.dsp.exec_cmd(command)
 end
 
+local function window_selector(window)
+  if not window or not window.address then
+    return nil
+  end
+  return "address:" .. tostring(window.address)
+end
+
 local function hyprexpo(action)
   return function()
     if hl.plugin and hl.plugin.hyprexpo and hl.plugin.hyprexpo.expo then
@@ -458,9 +465,14 @@ local function focus_previous_workspace_for_monitor()
 end
 
 local function move_window_to_workspace(workspace_id, follow, window)
-  hl.dsp.window.move({ workspace = tostring(workspace_id), follow = follow, window = window })()
+  local target_window = window or hl.get_active_window()
+  local target_selector = window_selector(target_window)
+  hl.dsp.window.move({ workspace = tostring(workspace_id), follow = false, window = target_selector })()
   if follow then
     focus_workspace(workspace_id)
+    if target_selector then
+      hl.dsp.focus({ window = target_selector })()
+    end
   end
 end
 
@@ -543,7 +555,7 @@ local function move_window_to_monitor(direction, follow)
   end
 
   local original_monitor = hl.get_active_monitor()
-  hl.dsp.window.move({ monitor = direction, follow = follow, window = window })()
+  hl.dsp.window.move({ monitor = direction, follow = follow, window = window_selector(window) })()
 
   if not follow and original_monitor then
     hl.dsp.focus({ monitor = original_monitor })()
@@ -707,15 +719,16 @@ local function apply_scratchpad_geometry(name, window, target_monitor)
     x = monitor.x + math.floor((monitor.width - width) / 2)
     y = monitor.y + scratchpad_top_margin
   end
+  local selector = window_selector(window)
 
-  hl.dsp.window.float({ action = "enable", window = window })()
-  hl.dsp.window.tag({ tag = "+scratchpad", window = window })()
-  hl.dsp.window.tag({ tag = "+scratchpad-" .. name, window = window })()
-  hl.dsp.window.resize({ x = width, y = height, relative = false, window = window })()
-  hl.dsp.window.move({ x = x, y = y, relative = false, window = window })()
+  hl.dsp.window.float({ action = "enable", window = selector })()
+  hl.dsp.window.tag({ tag = "+scratchpad", window = selector })()
+  hl.dsp.window.tag({ tag = "+scratchpad-" .. name, window = selector })()
+  hl.dsp.window.resize({ x = width, y = height, relative = false, window = selector })()
+  hl.dsp.window.move({ x = x, y = y, relative = false, window = selector })()
   if def.dropdown then
-    hl.dsp.window.set_prop({ prop = "border_size", value = "0", window = window })()
-    hl.dsp.window.set_prop({ prop = "no_shadow", value = "1", window = window })()
+    hl.dsp.window.set_prop({ prop = "border_size", value = "0", window = selector })()
+    hl.dsp.window.set_prop({ prop = "no_shadow", value = "1", window = selector })()
   end
 end
 
@@ -738,7 +751,7 @@ local function show_scratchpad_window(name, window, workspace, target_monitor)
 
   remove_minimized_window(window)
   move_window_to_workspace(workspace.id, false, window)
-  hl.dsp.focus({ window = window })()
+  hl.dsp.focus({ window = window_selector(window) })()
   schedule_scratchpad_geometry(name, window, target_monitor or hl.get_active_monitor())
 end
 
@@ -824,29 +837,29 @@ local function activate_window_picker_candidate(index)
   end
 
   if mode == "go" then
-    hl.dsp.focus({ window = window })()
+    hl.dsp.focus({ window = window_selector(window) })()
     return
   end
 
   local workspace = active_workspace()
   if mode == "bring" and workspace then
     move_window_to_workspace(workspace.id, false, window)
-    hl.dsp.focus({ window = window })()
+    hl.dsp.focus({ window = window_selector(window) })()
     return
   end
 
   if mode == "minimized" and workspace then
     remove_minimized_window(window)
     restore_minimized_window(window, workspace)
-    hl.dsp.focus({ window = window })()
+    hl.dsp.focus({ window = window_selector(window) })()
     return
   end
 
   if mode == "replace" then
     local focused = hl.get_active_window()
     if focused and focused ~= window then
-      hl.dsp.window.swap({ target = window, window = focused })()
-      hl.dsp.focus({ window = window })()
+      hl.dsp.window.swap({ target = window_selector(window), window = window_selector(focused) })()
+      hl.dsp.focus({ window = window_selector(window) })()
     end
   end
 end
@@ -943,7 +956,7 @@ local function focus_next_class()
   local next_class = classes[(current_index % #classes) + 1]
   local target = first_by_class[next_class]
   if target then
-    hl.dsp.focus({ window = target })()
+    hl.dsp.focus({ window = window_selector(target) })()
   end
 end
 
@@ -982,7 +995,7 @@ local function raise_or_spawn(class_fragment, command)
   local fragment = string.lower(class_fragment)
   for _, window in ipairs(hl.get_windows()) do
     if is_normal_window(window) and window.class and string.find(string.lower(window.class), fragment, 1, true) then
-      hl.dsp.focus({ window = window })()
+      hl.dsp.focus({ window = window_selector(window) })()
       return
     end
   end
@@ -1012,7 +1025,7 @@ local function restore_last_minimized()
     local window = table.remove(minimized_windows)
     if window and window.address and is_minimized_window(window) then
       restore_minimized_window(window, workspace)
-      hl.dsp.focus({ window = window })()
+      hl.dsp.focus({ window = window_selector(window) })()
       return
     end
   end
