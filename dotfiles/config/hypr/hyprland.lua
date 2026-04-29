@@ -1236,7 +1236,7 @@ end
 bind(main_mod .. " + P", exec(menu))
 bind(main_mod .. " + SHIFT + P", exec(run_menu))
 bind(main_mod .. " + SHIFT + Return", exec(terminal))
-bind(main_mod .. " + Q", hl.dsp.window.close())
+bind(main_mod .. " + Q", exec("hyprctl reload"))
 bind(main_mod .. " + SHIFT + C", hl.dsp.window.close())
 bind(main_mod .. " + SHIFT + Q", hl.dsp.exit())
 bind(main_mod .. " + E", exec("emacsclient --eval '(emacs-everywhere)'"))

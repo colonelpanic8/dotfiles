@@ -274,6 +274,9 @@ Required behavior:
 - `Super+p` opens the application launcher.
 - `Super+Shift+p` opens the run menu.
 - `Super+Shift+Return` opens a terminal.
+- `Super+q` reloads the window manager config.
+- `Super+Shift+c` closes the focused window.
+- `Super+Shift+q` exits the window manager session.
 - `Super+Tab` opens the overview.
 - `Super+Shift+Tab` opens the overview in bring-window mode when supported.
 - `Super+g` opens the go-to-window picker.
