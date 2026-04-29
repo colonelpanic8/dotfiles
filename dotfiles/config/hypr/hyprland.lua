@@ -11,12 +11,14 @@ local scratchpad_top_margin = 60
 local columns_layout = "nStack"
 local monocle_layout = "monocle"
 local minimized_workspace = "special:minimized"
+local tabbed_group_staging_workspace = "special:tabbed-monocle-staging"
 local current_layout = columns_layout
 local enable_nstack = true
 local enable_hyprexpo = true
 local configure_nstack_plugin_from_lua = false
 local workspace_layouts = {}
 local minimized_windows = {}
+local tabbed_workspace_groups = {}
 local window_picker_mode = nil
 local window_picker_candidates = {}
 local stack_update_timer = nil
@@ -271,6 +273,26 @@ local function tiled_window_count(workspace)
   return #tiled_windows(workspace)
 end
 
+local function sort_windows_by_focus_history(windows)
+  table.sort(windows, function(left, right)
+    return (left.focus_history_id or 0) < (right.focus_history_id or 0)
+  end)
+end
+
+local function window_address_set(windows)
+  local addresses = {}
+  for _, window in ipairs(windows) do
+    if window and window.address then
+      addresses[window.address] = true
+    end
+  end
+  return addresses
+end
+
+local function window_address_in_set(window, addresses)
+  return window and window.address and addresses[window.address] or false
+end
+
 local function workspace_window_count(workspace_id)
   local workspace = hl.get_workspace(tostring(workspace_id))
   if not workspace then
@@ -493,6 +515,157 @@ local function move_window_to_workspace(workspace_id, follow, window)
     if target_selector then
       hl.dsp.focus({ window = target_selector })()
     end
+  end
+end
+
+local function notify_tabbed_group(text)
+  hl.notification.create({
+    text = text,
+    duration = 1800,
+    icon = "info",
+    color = "rgba(edb443ff)",
+    font_size = 13,
+  })
+end
+
+local function workspace_visible_normal_windows(workspace)
+  local windows = {}
+  if not workspace then
+    return windows
+  end
+
+  for _, window in ipairs(hl.get_workspace_windows(workspace)) do
+    if is_normal_window(window) and not window.hidden then
+      windows[#windows + 1] = window
+    end
+  end
+
+  return windows
+end
+
+local function active_workspace_tiled_group_candidates(workspace)
+  local candidates = tiled_windows(workspace)
+  sort_windows_by_focus_history(candidates)
+  return candidates
+end
+
+local function find_tabbed_group_anchor(state)
+  local active = hl.get_active_window()
+  if active and active.group and active.group.size and active.group.size > 1 then
+    return active
+  end
+
+  if not state then
+    return nil
+  end
+
+  for _, window in ipairs(hl.get_windows()) do
+    if window and window.address == state.anchor and window.group and window.group.size and window.group.size > 1 then
+      return window
+    end
+  end
+
+  return nil
+end
+
+local function restore_workspace_tabbed_group()
+  local key = workspace_key()
+  local anchor = find_tabbed_group_anchor(tabbed_workspace_groups[key])
+  local anchor_selector = window_selector(anchor)
+
+  if not anchor_selector then
+    tabbed_workspace_groups[key] = nil
+    set_layout(columns_layout)
+    notify_tabbed_group("No tabbed group to restore")
+    return
+  end
+
+  hl.dsp.focus({ window = anchor_selector })()
+  hl.dsp.group.toggle({ window = anchor_selector })()
+  tabbed_workspace_groups[key] = nil
+  set_layout(columns_layout)
+  schedule_nstack_count_update()
+end
+
+local function gather_workspace_into_tabbed_group()
+  local workspace = active_workspace()
+  if not is_normal_workspace(workspace) then
+    return
+  end
+
+  local key = workspace_key(workspace)
+  if tabbed_workspace_groups[key] or active_group_size() > 1 then
+    restore_workspace_tabbed_group()
+    return
+  end
+
+  local candidates = active_workspace_tiled_group_candidates(workspace)
+  if #candidates <= 1 then
+    set_layout(columns_layout)
+    return
+  end
+
+  local candidate_addresses = window_address_set(candidates)
+  local focused = hl.get_active_window()
+  local anchor = nil
+  if focused and not focused.floating and not focused.group and window_address_in_set(focused, candidate_addresses) then
+    anchor = focused
+  end
+
+  if not anchor then
+    for _, window in ipairs(candidates) do
+      if not window.group then
+        anchor = window
+        break
+      end
+    end
+  end
+
+  local anchor_selector = window_selector(anchor)
+  if not anchor_selector then
+    notify_tabbed_group("Current tiled windows are already grouped")
+    return
+  end
+
+  set_layout(columns_layout)
+
+  local staged_windows = {}
+  for _, window in ipairs(workspace_visible_normal_windows(workspace)) do
+    if window ~= anchor then
+      staged_windows[#staged_windows + 1] = window
+      move_window_to_workspace(tabbed_group_staging_workspace, false, window)
+    end
+  end
+
+  hl.dsp.focus({ window = anchor_selector })()
+  hl.dsp.group.toggle({ window = anchor_selector })()
+
+  hl.config({ group = { group_on_movetoworkspace = true } })
+  for _, window in ipairs(candidates) do
+    if window ~= anchor then
+      move_window_to_workspace(workspace.id, false, window)
+    end
+  end
+  hl.config({ group = { group_on_movetoworkspace = false } })
+
+  for _, window in ipairs(staged_windows) do
+    if not window_address_in_set(window, candidate_addresses) then
+      move_window_to_workspace(workspace.id, false, window)
+    end
+  end
+
+  tabbed_workspace_groups[key] = {
+    anchor = anchor.address,
+    windows = candidate_addresses,
+  }
+  hl.dsp.focus({ window = anchor_selector })()
+end
+
+local function force_columns_layout()
+  if active_group_size() > 1 or tabbed_workspace_groups[workspace_key()] then
+    restore_workspace_tabbed_group()
+  else
+    set_layout(columns_layout)
   end
 end
 
@@ -1197,6 +1370,7 @@ hl.config({
     workspace_back_and_forth = true,
   },
   group = {
+    group_on_movetoworkspace = false,
     col = {
       border_active = "rgba(edb443ff)",
       border_inactive = "rgba(091f2eff)",
@@ -1378,13 +1552,9 @@ bind(hyper .. " + SHIFT + D", function()
   move_window_to_monitor("r", true)
 end)
 
-bind(main_mod .. " + Space", toggle_columns_monocle)
-bind(main_mod .. " + SHIFT + Space", function()
-  set_layout(columns_layout)
-end)
-bind(main_mod .. " + CTRL + Space", function()
-  set_layout(monocle_layout)
-end)
+bind(main_mod .. " + Space", gather_workspace_into_tabbed_group)
+bind(main_mod .. " + SHIFT + Space", force_columns_layout)
+bind(main_mod .. " + CTRL + Space", gather_workspace_into_tabbed_group)
 bind(main_mod .. " + bracketright", monocle_next)
 bind(main_mod .. " + bracketleft", monocle_prev)
 bind(main_mod .. " + F", hl.dsp.window.fullscreen({ mode = "fullscreen" }))
