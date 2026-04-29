@@ -12,6 +12,9 @@ local columns_layout = "nStack"
 local monocle_layout = "monocle"
 local minimized_workspace = "special:minimized"
 local current_layout = columns_layout
+local enable_nstack = true
+local enable_hyprexpo = true
+local configure_nstack_plugin_from_lua = false
 local workspace_layouts = {}
 local minimized_windows = {}
 local window_picker_mode = nil
@@ -101,7 +104,7 @@ local function hyprexpo(action)
 end
 
 local function apply_nstack_config()
-  if verify_config then
+  if verify_config or not enable_nstack or not configure_nstack_plugin_from_lua then
     return
   end
 
@@ -126,7 +129,7 @@ local function apply_nstack_config()
 end
 
 local function apply_hyprexpo_config()
-  if verify_config then
+  if verify_config or not enable_hyprexpo then
     return
   end
 
@@ -294,7 +297,7 @@ local function find_empty_workspace(target_monitor, exclude_id)
 end
 
 local function update_nstack_count()
-  if current_layout ~= columns_layout then
+  if not enable_nstack or current_layout ~= columns_layout then
     return
   end
 
@@ -303,6 +306,7 @@ local function update_nstack_count()
   if count == 0 then
     return
   end
+  count = math.max(count, 2)
   hl.dsp.layout("setstackcount " .. tostring(count))()
 end
 
@@ -1103,8 +1107,10 @@ local function toggle_scratchpad(name)
   end
 end
 
-hl.plugin.load("/run/current-system/sw/lib/libhyprNStack.so")
-if not verify_config then
+if enable_nstack then
+  hl.plugin.load("/run/current-system/sw/lib/libhyprNStack.so")
+end
+if enable_hyprexpo and not verify_config then
   hl.plugin.load("/run/current-system/sw/lib/libhyprexpo.so")
 end
 
@@ -1185,6 +1191,7 @@ hl.curve("smoothOut", { type = "bezier", points = { { 0.36, 1 }, { 0.3, 1 } } })
 hl.curve("smoothInOut", { type = "bezier", points = { { 0.42, 0 }, { 0.58, 1 } } })
 hl.curve("linear", { type = "bezier", points = { { 0, 0 }, { 1, 1 } } })
 
+hl.animation({ leaf = "global", enabled = true, speed = 8, bezier = "default" })
 hl.animation({ leaf = "windows", enabled = true, speed = 6, bezier = "overshoot", style = "gnomed" })
 hl.animation({ leaf = "windowsIn", enabled = true, speed = 6, bezier = "overshoot", style = "gnomed" })
 hl.animation({ leaf = "windowsOut", enabled = true, speed = 5, bezier = "smoothInOut", style = "gnomed" })
@@ -1225,8 +1232,6 @@ local function apply_rules()
     no_shadow = true,
   })
 end
-
-apply_rules()
 
 bind(main_mod .. " + P", exec(menu))
 bind(main_mod .. " + SHIFT + P", exec(run_menu))
@@ -1465,6 +1470,7 @@ bind(main_mod .. " + mouse:273", hl.dsp.window.resize())
 hl.on("hyprland.start", function()
   apply_nstack_config()
   apply_hyprexpo_config()
+  apply_rules()
   hl.exec_cmd("sh -lc 'export IMALISON_SESSION_TYPE=wayland; dbus-update-activation-environment --systemd WAYLAND_DISPLAY DISPLAY XAUTHORITY HYPRLAND_INSTANCE_SIGNATURE XDG_CURRENT_DESKTOP XDG_SESSION_TYPE IMALISON_SESSION_TYPE; systemctl --user start graphical-session.target hyprland-session.target'")
   hl.exec_cmd("hypridle")
   hl.exec_cmd("wl-paste --type text --watch cliphist store")
@@ -1476,6 +1482,7 @@ end)
 
 hl.on("config.reloaded", apply_nstack_config)
 hl.on("config.reloaded", apply_hyprexpo_config)
+hl.on("config.reloaded", apply_rules)
 
 hl.on("window.open", schedule_nstack_count_update)
 hl.on("window.destroy", schedule_nstack_count_update)
