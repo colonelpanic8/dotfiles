@@ -136,11 +136,11 @@
         "xmonad-contrib": "xmonad-contrib"
       },
       "locked": {
-        "lastModified": 1777319252,
-        "narHash": "sha256-mPft6i8ReJAvW2LdylFI6FF6NFGa1HMa3RNbisfAsbc=",
-        "ref": "refs/heads/codex/fix-gdk-backend-strut-detection",
-        "rev": "c2cee23fc57384cd322d589944129e6c31d4f0fd",
-        "revCount": 2288,
+        "lastModified": 1777452249,
+        "narHash": "sha256-Emhn9sIFRVyIlUULDuYjeFcYJld6EAD31TGasYwQsWg=",
+        "ref": "refs/heads/master",
+        "rev": "9a6463e68c7bc0a712e49d9ba6c6d1b764260cd7",
+        "revCount": 2295,
         "type": "git",
         "url": "file:///home/imalison/dotfiles/dotfiles/config/taffybar/taffybar"
       },

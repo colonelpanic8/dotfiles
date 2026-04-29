@@ -121,13 +121,6 @@
             (oa: {
               doHaddock = false;
               doCheck = false;
-              # Legacy fix for older GHC (harmless on newer)
-              postPatch = (oa.postPatch or "") + ''
-                substituteInPlace src/System/Taffybar/DBus/Client/Util.hs \
-                  --replace-fail "import Control.Monad (forM)" \
-                                 "import Control.Monad (forM)
-              import Control.Applicative (liftA2)"
-              '';
               # Needed for gi-gtk-layer-shell (introspection data).
               librarySystemDepends = (oa.librarySystemDepends or []) ++ [ pkgs.gtk-layer-shell ];
             });
