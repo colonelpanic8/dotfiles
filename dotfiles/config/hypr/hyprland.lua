@@ -1406,16 +1406,50 @@ hl.curve("smoothOut", { type = "bezier", points = { { 0.36, 1 }, { 0.3, 1 } } })
 hl.curve("smoothInOut", { type = "bezier", points = { { 0.42, 0 }, { 0.58, 1 } } })
 hl.curve("linear", { type = "bezier", points = { { 0, 0 }, { 1, 1 } } })
 
-hl.animation({ leaf = "global", enabled = true, speed = 8, bezier = "default" })
-hl.animation({ leaf = "windows", enabled = true, speed = 6, bezier = "overshoot", style = "gnomed" })
-hl.animation({ leaf = "windowsIn", enabled = true, speed = 6, bezier = "overshoot", style = "gnomed" })
-hl.animation({ leaf = "windowsOut", enabled = true, speed = 5, bezier = "smoothInOut", style = "gnomed" })
-hl.animation({ leaf = "windowsMove", enabled = true, speed = 6, bezier = "smoothOut" })
-hl.animation({ leaf = "border", enabled = false })
-hl.animation({ leaf = "borderangle", enabled = false })
-hl.animation({ leaf = "fade", enabled = true, speed = 5, bezier = "smoothOut" })
-hl.animation({ leaf = "workspaces", enabled = true, speed = 6, bezier = "smoothOut", style = "slidefade 15%" })
-hl.animation({ leaf = "specialWorkspace", enabled = true, speed = 6, bezier = "smoothOut", style = "slidevert" })
+local animations = {
+  { leaf = "global", enabled = true, speed = 8, bezier = "default" },
+
+  { leaf = "windows", enabled = true, speed = 6, bezier = "overshoot", style = "gnomed" },
+  { leaf = "windowsIn", enabled = true, speed = 6, bezier = "overshoot", style = "gnomed" },
+  { leaf = "windowsOut", enabled = true, speed = 5, bezier = "smoothInOut", style = "gnomed" },
+  { leaf = "windowsMove", enabled = true, speed = 6, bezier = "smoothOut" },
+
+  { leaf = "border", enabled = false },
+  { leaf = "borderangle", enabled = false },
+
+  { leaf = "fade", enabled = true, speed = 5, bezier = "smoothOut" },
+  { leaf = "fadeIn", enabled = true, speed = 5, bezier = "smoothOut" },
+  { leaf = "fadeOut", enabled = true, speed = 5, bezier = "smoothOut" },
+  { leaf = "fadeSwitch", enabled = true, speed = 5, bezier = "smoothOut" },
+  { leaf = "fadeShadow", enabled = true, speed = 5, bezier = "smoothOut" },
+  { leaf = "fadeGlow", enabled = true, speed = 5, bezier = "smoothOut" },
+  { leaf = "fadeDim", enabled = true, speed = 5, bezier = "smoothOut" },
+  { leaf = "fadeLayers", enabled = true, speed = 5, bezier = "smoothOut" },
+  { leaf = "fadeLayersIn", enabled = true, speed = 5, bezier = "smoothOut" },
+  { leaf = "fadeLayersOut", enabled = true, speed = 5, bezier = "smoothOut" },
+  { leaf = "fadePopups", enabled = true, speed = 5, bezier = "smoothOut" },
+  { leaf = "fadePopupsIn", enabled = true, speed = 5, bezier = "smoothOut" },
+  { leaf = "fadePopupsOut", enabled = true, speed = 5, bezier = "smoothOut" },
+  { leaf = "fadeDpms", enabled = true, speed = 5, bezier = "smoothOut" },
+
+  { leaf = "layers", enabled = true, speed = 5, bezier = "smoothOut", style = "fade" },
+  { leaf = "layersIn", enabled = true, speed = 5, bezier = "smoothOut", style = "fade" },
+  { leaf = "layersOut", enabled = true, speed = 5, bezier = "smoothOut", style = "fade" },
+
+  { leaf = "workspaces", enabled = true, speed = 6, bezier = "smoothOut", style = "slidefade 15%" },
+  { leaf = "workspacesIn", enabled = true, speed = 6, bezier = "smoothOut", style = "slidefade 15%" },
+  { leaf = "workspacesOut", enabled = true, speed = 6, bezier = "smoothOut", style = "slidefade 15%" },
+  { leaf = "specialWorkspace", enabled = true, speed = 6, bezier = "smoothOut", style = "slidevert" },
+  { leaf = "specialWorkspaceIn", enabled = true, speed = 6, bezier = "smoothOut", style = "slidevert" },
+  { leaf = "specialWorkspaceOut", enabled = true, speed = 6, bezier = "smoothOut", style = "slidevert" },
+
+  { leaf = "zoomFactor", enabled = true, speed = 7, bezier = "smoothOut" },
+  { leaf = "monitorAdded", enabled = true, speed = 5, bezier = "smoothOut" },
+}
+
+for _, animation in ipairs(animations) do
+  hl.animation(animation)
+end
 
 local function apply_rules()
   if verify_config then
