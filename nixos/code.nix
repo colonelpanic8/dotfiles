@@ -10,7 +10,6 @@ makeEnable config "myModules.code" true {
     antigravity
     claude-code
     codex
-    codex-desktop
     gemini-cli
     happy-coder
     opencode

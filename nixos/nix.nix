@@ -111,28 +111,6 @@
         # Use codex and claude-code from dedicated flakes with cachix
         (final: prev: {
           codex = inputs.codex-cli-nix.packages.${prev.stdenv.hostPlatform.system}.default;
-          codex-desktop-installer = inputs.codex-desktop-linux.packages.${prev.stdenv.hostPlatform.system}.default;
-          codex-desktop = final.writeShellApplication {
-            name = "codex-desktop";
-            runtimeInputs = [
-              final.codex
-              final.codex-desktop-installer
-              final.coreutils
-              final.python3
-            ];
-            text = ''
-              install_root="''${CODEX_DESKTOP_HOME:-''${XDG_DATA_HOME:-$HOME/.local/share}/codex-desktop-linux}"
-              install_dir="''${CODEX_INSTALL_DIR:-$install_root/codex-app}"
-
-              if [ ! -x "$install_dir/start.sh" ]; then
-                mkdir -p "$install_root"
-                CODEX_INSTALL_DIR="$install_dir" codex-desktop-installer
-              fi
-
-              export CODEX_CLI_PATH="''${CODEX_CLI_PATH:-$(command -v codex)}"
-              exec "$install_dir/start.sh" "$@"
-            '';
-          };
           claude-code = inputs.claude-code-nix.packages.${prev.stdenv.hostPlatform.system}.default;
           git-sync-rs = inputs.git-sync-rs.packages.${prev.stdenv.hostPlatform.system}.default;
         })
