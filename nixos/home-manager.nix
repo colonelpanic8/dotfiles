@@ -6,6 +6,152 @@
   ...
 }: let
   mimeMap = desktopId: mimeTypes: lib.genAttrs mimeTypes (_: [desktopId]);
+  browser = "google-chrome.desktop";
+  imageViewer = "org.kde.gwenview.desktop";
+  pdfViewer = "okularApplication_pdf.desktop";
+  comicViewer = "okularApplication_comicbook.desktop";
+  djvuViewer = "okularApplication_djvu.desktop";
+  ebookViewer = "okularApplication_epub.desktop";
+  mobiViewer = "okularApplication_mobi.desktop";
+  xpsViewer = "okularApplication_xps.desktop";
+  mediaPlayer = "vlc.desktop";
+  archiveManager = "org.gnome.FileRoller.desktop";
+  fileManager = "thunar.desktop";
+  wordProcessor = "writer.desktop";
+  spreadsheet = "calc.desktop";
+  presentation = "impress.desktop";
+  defaultApplications =
+    (mimeMap imageViewer [
+      "image/avif"
+      "image/bmp"
+      "image/gif"
+      "image/heic"
+      "image/heif"
+      "image/jpeg"
+      "image/jxl"
+      "image/png"
+      "image/svg+xml"
+      "image/svg+xml-compressed"
+      "image/tiff"
+      "image/vnd.microsoft.icon"
+      "image/webp"
+    ])
+    // (mimeMap pdfViewer [
+      "application/pdf"
+      "application/x-bzpdf"
+      "application/x-gzpdf"
+    ])
+    // (mimeMap comicViewer [
+      "application/x-cb7"
+      "application/x-cbr"
+      "application/x-cbt"
+      "application/x-cbz"
+    ])
+    // (mimeMap djvuViewer [
+      "image/vnd.djvu"
+    ])
+    // (mimeMap ebookViewer [
+      "application/epub+zip"
+    ])
+    // (mimeMap mobiViewer [
+      "application/x-mobipocket-ebook"
+    ])
+    // (mimeMap xpsViewer [
+      "application/oxps"
+      "application/vnd.ms-xpsdocument"
+    ])
+    // (mimeMap mediaPlayer [
+      "application/ogg"
+      "audio/flac"
+      "audio/mp4"
+      "audio/mpeg"
+      "audio/ogg"
+      "audio/opus"
+      "audio/webm"
+      "audio/wav"
+      "audio/x-flac"
+      "audio/x-wav"
+      "video/mp4"
+      "video/ogg"
+      "video/quicktime"
+      "video/webm"
+      "video/x-matroska"
+      "video/x-msvideo"
+    ])
+    // (mimeMap archiveManager [
+      "application/bzip2"
+      "application/gzip"
+      "application/vnd.rar"
+      "application/x-7z-compressed"
+      "application/x-bzip"
+      "application/x-compressed-tar"
+      "application/x-gzip"
+      "application/x-rar"
+      "application/x-rar-compressed"
+      "application/x-tar"
+      "application/x-xz"
+      "application/x-zip-compressed"
+      "application/zip"
+      "application/zstd"
+    ])
+    // (mimeMap wordProcessor [
+      "application/msword"
+      "application/rtf"
+      "application/vnd.ms-word"
+      "application/vnd.oasis.opendocument.text"
+      "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+    ])
+    // (mimeMap spreadsheet [
+      "application/vnd.ms-excel"
+      "application/vnd.oasis.opendocument.spreadsheet"
+      "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+      "text/csv"
+      "text/tab-separated-values"
+    ])
+    // (mimeMap presentation [
+      "application/mspowerpoint"
+      "application/vnd.ms-powerpoint"
+      "application/vnd.oasis.opendocument.presentation"
+      "application/vnd.openxmlformats-officedocument.presentationml.presentation"
+      "application/vnd.openxmlformats-officedocument.presentationml.slideshow"
+    ])
+    // (mimeMap fileManager [
+      "inode/directory"
+    ])
+    // (mimeMap browser [
+      "application/rdf+xml"
+      "application/rss+xml"
+      "application/xhtml+xml"
+      "application/xhtml_xml"
+      "application/xml"
+      "text/html"
+      "text/xml"
+      "x-scheme-handler/about"
+      "x-scheme-handler/http"
+      "x-scheme-handler/https"
+      "x-scheme-handler/unknown"
+    ])
+    // {
+      "x-scheme-handler/element" = ["element-desktop.desktop"];
+      "x-scheme-handler/magnet" = ["transmission-gtk.desktop"];
+    };
+  mimeAppsListText = let
+    formatApplications = applications:
+      lib.concatStringsSep "\n" (
+        lib.mapAttrsToList (
+          mimeType: desktopIds: "${mimeType}=${lib.concatStringsSep ";" desktopIds};"
+        )
+        applications
+      );
+  in ''
+    [Added Associations]
+    ${formatApplications defaultApplications}
+
+    [Default Applications]
+    ${formatApplications defaultApplications}
+
+    [Removed Associations]
+  '';
 in {
   # Automatic garbage collection of old home-manager generations
   nix.gc = {
@@ -27,148 +173,44 @@ in {
       static_history = []
   '';
 
+
   xdg.configFile."zellij/config.kdl".source =
     config.lib.file.mkOutOfStoreSymlink
     "${config.home.homeDirectory}/dotfiles/dotfiles/config/zellij/config.kdl";
 
-  xdg.mimeApps = lib.mkIf nixos.config.myModules.desktop.enable (
-    let
-      browser = "google-chrome.desktop";
-      imageViewer = "org.kde.gwenview.desktop";
-      pdfViewer = "okularApplication_pdf.desktop";
-      comicViewer = "okularApplication_comicbook.desktop";
-      djvuViewer = "okularApplication_djvu.desktop";
-      ebookViewer = "okularApplication_epub.desktop";
-      mobiViewer = "okularApplication_mobi.desktop";
-      xpsViewer = "okularApplication_xps.desktop";
-      mediaPlayer = "vlc.desktop";
-      archiveManager = "org.gnome.FileRoller.desktop";
-      fileManager = "thunar.desktop";
-      wordProcessor = "writer.desktop";
-      spreadsheet = "calc.desktop";
-      presentation = "impress.desktop";
+  xdg.configFile."menus/applications.menu" = lib.mkIf nixos.config.myModules.desktop.enable {
+    source = "${pkgs.kdePackages.plasma-workspace}/etc/xdg/menus/plasma-applications.menu";
+  };
 
-      defaultApplications =
-        (mimeMap imageViewer [
-          "image/avif"
-          "image/bmp"
-          "image/gif"
-          "image/heic"
-          "image/heif"
-          "image/jpeg"
-          "image/jxl"
-          "image/png"
-          "image/svg+xml"
-          "image/svg+xml-compressed"
-          "image/tiff"
-          "image/vnd.microsoft.icon"
-          "image/webp"
-        ])
-        // (mimeMap pdfViewer [
-          "application/pdf"
-          "application/x-bzpdf"
-          "application/x-gzpdf"
-        ])
-        // (mimeMap comicViewer [
-          "application/x-cb7"
-          "application/x-cbr"
-          "application/x-cbt"
-          "application/x-cbz"
-        ])
-        // (mimeMap djvuViewer [
-          "image/vnd.djvu"
-        ])
-        // (mimeMap ebookViewer [
-          "application/epub+zip"
-        ])
-        // (mimeMap mobiViewer [
-          "application/x-mobipocket-ebook"
-        ])
-        // (mimeMap xpsViewer [
-          "application/oxps"
-          "application/vnd.ms-xpsdocument"
-        ])
-        // (mimeMap mediaPlayer [
-          "application/ogg"
-          "audio/flac"
-          "audio/mp4"
-          "audio/mpeg"
-          "audio/ogg"
-          "audio/opus"
-          "audio/webm"
-          "audio/wav"
-          "audio/x-flac"
-          "audio/x-wav"
-          "video/mp4"
-          "video/ogg"
-          "video/quicktime"
-          "video/webm"
-          "video/x-matroska"
-          "video/x-msvideo"
-        ])
-        // (mimeMap archiveManager [
-          "application/bzip2"
-          "application/gzip"
-          "application/vnd.rar"
-          "application/x-7z-compressed"
-          "application/x-bzip"
-          "application/x-compressed-tar"
-          "application/x-gzip"
-          "application/x-rar"
-          "application/x-rar-compressed"
-          "application/x-tar"
-          "application/x-xz"
-          "application/x-zip-compressed"
-          "application/zip"
-          "application/zstd"
-        ])
-        // (mimeMap wordProcessor [
-          "application/msword"
-          "application/rtf"
-          "application/vnd.ms-word"
-          "application/vnd.oasis.opendocument.text"
-          "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
-        ])
-        // (mimeMap spreadsheet [
-          "application/vnd.ms-excel"
-          "application/vnd.oasis.opendocument.spreadsheet"
-          "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
-          "text/csv"
-          "text/tab-separated-values"
-        ])
-        // (mimeMap presentation [
-          "application/mspowerpoint"
-          "application/vnd.ms-powerpoint"
-          "application/vnd.oasis.opendocument.presentation"
-          "application/vnd.openxmlformats-officedocument.presentationml.presentation"
-          "application/vnd.openxmlformats-officedocument.presentationml.slideshow"
-        ])
-        // (mimeMap fileManager [
-          "inode/directory"
-        ])
-        // (mimeMap browser [
-          "application/rdf+xml"
-          "application/rss+xml"
-          "application/xhtml+xml"
-          "application/xhtml_xml"
-          "application/xml"
-          "text/html"
-          "text/xml"
-          "x-scheme-handler/about"
-          "x-scheme-handler/http"
-          "x-scheme-handler/https"
-          "x-scheme-handler/unknown"
-        ])
-        // {
-          "x-scheme-handler/element" = ["element-desktop.desktop"];
-          "x-scheme-handler/magnet" = ["transmission-gtk.desktop"];
-        };
-    in {
-      enable = true;
-      associations.added = defaultApplications;
-      inherit defaultApplications;
-    }
-  );
+  xdg.configFile."kde-mimeapps.list" = lib.mkIf nixos.config.myModules.desktop.enable {
+    text = mimeAppsListText;
+  };
+
+  xdg.configFile."none+xmonad-mimeapps.list" = lib.mkIf nixos.config.myModules.desktop.enable {
+    text = mimeAppsListText;
+  };
+
+  xdg.configFile."xmonad-mimeapps.list" = lib.mkIf nixos.config.myModules.desktop.enable {
+    text = mimeAppsListText;
+  };
+
+  xdg.configFile."hyprland-mimeapps.list" = lib.mkIf nixos.config.myModules.desktop.enable {
+    text = mimeAppsListText;
+  };
+
+  xdg.dataFile."mimeapps.list" = lib.mkIf nixos.config.myModules.desktop.enable {
+    text = mimeAppsListText;
+  };
+
+  xdg.dataFile."applications/kde-mimeapps.list" = lib.mkIf nixos.config.myModules.desktop.enable {
+    text = mimeAppsListText;
+  };
+
+  xdg.mimeApps = lib.mkIf nixos.config.myModules.desktop.enable {
+    enable = true;
+    associations.added = defaultApplications;
+    inherit defaultApplications;
+  };
 
   home.activation.refreshChromeDesktopMimeCache = lib.hm.dag.entryAfter ["writeBoundary"] ''
     applications_dir="$HOME/.local/share/applications"
@@ -180,6 +222,7 @@ in {
       do
         if [ -f "$desktop_file" ]; then
           ${pkgs.gnused}/bin/sed -i \
+            -e 's,application/pdf;,,g' \
             -e 's,image/gif;,,g' \
             -e 's,image/jpeg;,,g' \
             -e 's,image/png;,,g' \
@@ -188,8 +231,32 @@ in {
         fi
       done
 
+      for desktop_file in "$applications_dir"/okular*.desktop "$applications_dir"/vlc*.desktop; do
+        if [ -f "$desktop_file" ]; then
+          ${pkgs.gnused}/bin/sed -i \
+            -e 's,image/avif;,,g' \
+            -e 's,image/bmp;,,g' \
+            -e 's,image/gif;,,g' \
+            -e 's,image/heic;,,g' \
+            -e 's,image/heif;,,g' \
+            -e 's,image/jpeg;,,g' \
+            -e 's,image/jxl;,,g' \
+            -e 's,image/png;,,g' \
+            -e 's,image/svg+xml;,,g' \
+            -e 's,image/svg+xml-compressed;,,g' \
+            -e 's,image/tiff;,,g' \
+            -e 's,image/vnd.microsoft.icon;,,g' \
+            -e 's,image/webp;,,g' \
+            "$desktop_file"
+        fi
+      done
+
       ${pkgs.desktop-file-utils}/bin/update-desktop-database "$applications_dir" >/dev/null 2>&1 || true
     fi
+  '';
+
+  home.activation.refreshKdeServiceCache = lib.hm.dag.entryAfter ["refreshChromeDesktopMimeCache"] ''
+    ${pkgs.kdePackages.kservice}/bin/kbuildsycoca6 --noincremental >/dev/null 2>&1 || true
   '';
 
   xsession = {
