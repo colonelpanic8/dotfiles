@@ -1465,6 +1465,10 @@ local function apply_rules()
   hl.window_rule({ match = { title = "^(Save File)$" }, float = true })
   hl.window_rule({ match = { title = "^(Confirm)$" }, float = true })
   hl.window_rule({
+    match = { class = "^(com\\.mitchellh\\.ghostty\\.dropdown)$" },
+    animation = "slide top",
+  })
+  hl.window_rule({
     match = { class = "^(.*[Rr]umno.*)$" },
     float = true,
     pin = true,
