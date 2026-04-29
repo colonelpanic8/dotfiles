@@ -2,8 +2,9 @@
 
 set -euo pipefail
 
-script_path="$(readlink -f "${BASH_SOURCE[0]}")"
 state_dir="${XDG_RUNTIME_DIR:-/tmp}/hypr-screensaver"
+pid_file="$state_dir/mpvpaper.pid"
+event_log="$state_dir/events.log"
 mkdir -p "$state_dir"
 
 title_prefix="hypr-screensaver:"
@@ -15,11 +16,11 @@ usage() {
 Usage: hypr-screensaver <start|stop|toggle|status|session>
 
 Commands:
-  start   Launch the screensaver on every Hyprland monitor.
-  stop    Stop any running screensaver windows.
+  start   Launch the screensaver as a Wayland layer-shell overlay.
+  stop    Stop any running screensaver overlay.
   toggle  Start if stopped, otherwise stop.
-  status  Exit 0 if any screensaver window is running, otherwise exit 1.
-  session Run the configured screensaver payload for one monitor.
+  status  Exit 0 if the screensaver overlay is running, otherwise exit 1.
+  session Compatibility alias for start.
 
 By default, start chooses a random media file from:
   /var/lib/syncthing/sync/Screensaver/use
@@ -32,6 +33,10 @@ example:
 
 You can also override the rotation directory:
   HYPR_SCREENSAVER_USE_DIR='/path/to/use'
+
+Layer-shell/output overrides:
+  HYPR_SCREENSAVER_OUTPUT='ALL'
+  HYPR_SCREENSAVER_LAYER='overlay'
 
 HDR handling defaults to matching Hyprland's monitor color-management preset.
 Only monitors with preset "hdr" or "hdredid" get HDR colorspace hints. Override
@@ -46,28 +51,11 @@ monitors_json() {
   hyprctl -j monitors
 }
 
-monitor_names() {
-  monitors_json | jq -r '.[].name'
+log_event() {
+  printf '%s %s\n' "$(date --iso-8601=seconds)" "$*" >>"$event_log"
 }
 
-monitor_specs() {
-  monitors_json | jq -c '.[] | { name, width, height }'
-}
-
-focused_monitor() {
-  monitors_json | jq -r '.[] | select(.focused) | .name'
-}
-
-monitor_color_management_preset() {
-  local monitor="$1"
-  monitors_json | jq -r --arg monitor "$monitor" '
-    .[]
-    | select(.name == $monitor)
-    | .colorManagementPreset // "srgb"
-  '
-}
-
-screensaver_window_pids() {
+legacy_screensaver_window_pids() {
   hyprctl -j clients 2>/dev/null | jq -r --arg prefix "$title_prefix" '
     .[]
     | select((.title // "") | startswith($prefix))
@@ -77,27 +65,28 @@ screensaver_window_pids() {
 
 is_running() {
   local pid
-  for pid in $(screensaver_window_pids); do
-    if kill -0 "$pid" 2>/dev/null; then
-      return 0
-    fi
-  done
-
-  shopt -s nullglob
-  local pid_file
-  for pid_file in "$state_dir"/*.pid; do
+  if [ -f "$pid_file" ]; then
     pid="$(<"$pid_file")"
     if kill -0 "$pid" 2>/dev/null; then
       return 0
     fi
-  done
+    rm -f "$pid_file"
+  fi
 
   return 1
 }
 
 default_source() {
-  local width="$1"
-  local height="$2"
+  local size width height
+  size="$(
+    monitors_json 2>/dev/null \
+      | jq -r 'max_by((.width // 0) * (.height // 0)) | "\(.width // 1920)x\(.height // 1080)"' 2>/dev/null \
+      || true
+  )"
+  size="${size:-1920x1080}"
+  width="${size%x*}"
+  height="${size#*x}"
+
   printf 'av://lavfi:life=s=%sx%s:r=60:mold=10:ratio=0.065:death_color=#101414:life_color=#7dd3fc:mold_color=#1e3a5f,format=yuv420p' \
     "$width" "$height"
 }
@@ -128,10 +117,8 @@ random_source() {
   printf '%s\n' "${candidates[$((RANDOM % ${#candidates[@]}))]}"
 }
 
-monitor_uses_hdr() {
-  local monitor="$1"
+screensaver_uses_hdr() {
   local mode="${HYPR_SCREENSAVER_HDR_MODE:-auto}"
-  local preset
 
   case "$mode" in
     hdr)
@@ -141,15 +128,8 @@ monitor_uses_hdr() {
       return 1
       ;;
     auto)
-      preset="$(monitor_color_management_preset "$monitor" 2>/dev/null || true)"
-      case "$preset" in
-        hdr|hdredid)
-          return 0
-          ;;
-        *)
-          return 1
-          ;;
-      esac
+      monitors_json 2>/dev/null \
+        | jq -e 'any(.[]; (.colorManagementPreset // "srgb") == "hdr" or (.colorManagementPreset // "srgb") == "hdredid")' >/dev/null 2>&1
       ;;
     *)
       printf 'Invalid HYPR_SCREENSAVER_HDR_MODE=%s; expected auto, sdr, or hdr\n' "$mode" >&2
@@ -158,117 +138,97 @@ monitor_uses_hdr() {
   esac
 }
 
-mpv_color_args() {
-  local monitor="$1"
-
-  if monitor_uses_hdr "$monitor"; then
-    printf '%s\0' \
-      --target-colorspace-hint=yes \
-      --target-colorspace-hint-mode=source
+mpv_color_options() {
+  if screensaver_uses_hdr; then
+    printf '%s ' \
+      target-colorspace-hint=yes \
+      target-colorspace-hint-mode=source
     return
   fi
 
-  printf '%s\0' \
-    --target-colorspace-hint=no \
-    --target-prim=bt.709 \
-    --target-trc=srgb \
-    --target-gamut=bt.709 \
-    --target-peak=80 \
-    --inverse-tone-mapping=no
+  printf '%s ' \
+    target-colorspace-hint=no \
+    target-prim=bt.709 \
+    target-trc=srgb \
+    target-gamut=bt.709 \
+    target-peak=80 \
+    inverse-tone-mapping=no
+}
+
+mpv_options() {
+  if [ -n "${HYPR_SCREENSAVER_MPV_OPTIONS:-}" ]; then
+    printf '%s\n' "$HYPR_SCREENSAVER_MPV_OPTIONS"
+    return
+  fi
+
+  printf '%s %s\n' \
+    "no-audio loop-file=inf osc=no osd-level=0 input-default-bindings=no terminal=no image-display-duration=inf keep-open=yes" \
+    "$(mpv_color_options)"
+}
+
+run_mpvpaper() {
+  if command -v mpvpaper >/dev/null 2>&1; then
+    exec mpvpaper "$@"
+  fi
+
+  exec nix shell nixpkgs#mpvpaper --command mpvpaper "$@"
 }
 
 start() {
-  local current_monitor spec monitor width height pid source
+  local source output layer options pid
 
   if is_running; then
+    log_event "start ignored: already running pid=$(<"$pid_file")"
     exit 0
   fi
 
-  current_monitor="$(focused_monitor || true)"
+  stop
+
   source="${HYPR_SCREENSAVER_SOURCE:-}"
   if [ -z "$source" ]; then
     source="$(random_source || true)"
   fi
-
-  while IFS= read -r spec; do
-    monitor="$(jq -r '.name' <<<"$spec")"
-    width="$(jq -r '.width' <<<"$spec")"
-    height="$(jq -r '.height' <<<"$spec")"
-    [ -n "$monitor" ] || continue
-    HYPR_SCREENSAVER_MONITOR="$monitor" \
-      HYPR_SCREENSAVER_WIDTH="$width" \
-      HYPR_SCREENSAVER_HEIGHT="$height" \
-      HYPR_SCREENSAVER_SOURCE="$source" \
-      "$script_path" session >/dev/null 2>&1 &
-    pid=$!
-    printf '%s\n' "$pid" > "$state_dir/${monitor}.pid"
-    sleep 0.15
-  done < <(monitor_specs)
-
-  if [ -n "$current_monitor" ]; then
-    hyprctl dispatch focusmonitor "$current_monitor" >/dev/null 2>&1 || true
+  if [ -z "$source" ]; then
+    source="$(default_source)"
   fi
+
+  output="${HYPR_SCREENSAVER_OUTPUT:-ALL}"
+  layer="${HYPR_SCREENSAVER_LAYER:-overlay}"
+  options="$(mpv_options)"
+  log_event "start output=$output layer=$layer source=$source"
+
+  (
+    exec </dev/null
+    run_mpvpaper --layer "$layer" --mpv-options "$options" "$output" "$source"
+  ) >>"$state_dir/mpvpaper.log" 2>&1 &
+  pid=$!
+  printf '%s\n' "$pid" > "$pid_file"
+  sleep 0.2
+  if ! kill -0 "$pid" 2>/dev/null; then
+    rm -f "$pid_file"
+    log_event "start failed: process exited early pid=$pid"
+    return 1
+  fi
+  log_event "start ok pid=$pid"
 }
 
 stop() {
-  local pid pid_file
+  local pid legacy_pid
 
-  for pid in $(screensaver_window_pids); do
-    kill "$pid" >/dev/null 2>&1 || true
-  done
-
-  shopt -s nullglob
-  for pid_file in "$state_dir"/*.pid; do
+  if [ -f "$pid_file" ]; then
     pid="$(<"$pid_file")"
+    log_event "stop pid=$pid"
     kill "$pid" >/dev/null 2>&1 || true
+    pkill -TERM -P "$pid" >/dev/null 2>&1 || true
     rm -f "$pid_file"
+  else
+    log_event "stop with no pid file"
+  fi
+
+  for legacy_pid in $(legacy_screensaver_window_pids); do
+    log_event "stop legacy pid=$legacy_pid"
+    kill "$legacy_pid" >/dev/null 2>&1 || true
   done
-}
-
-session() {
-  local monitor="${HYPR_SCREENSAVER_MONITOR:?missing HYPR_SCREENSAVER_MONITOR}"
-  local width="${HYPR_SCREENSAVER_WIDTH:-1920}"
-  local height="${HYPR_SCREENSAVER_HEIGHT:-1080}"
-  local source="${HYPR_SCREENSAVER_SOURCE:-}"
-  local -a color_args=()
-  if [ -z "$source" ]; then
-    source="$(random_source || true)"
-  fi
-  if [ -z "$source" ]; then
-    source="$(default_source "$width" "$height")"
-  fi
-  while IFS= read -r -d '' arg; do
-    color_args+=("$arg")
-  done < <(mpv_color_args "$monitor")
-
-  local -a mpv_args=(
-    --no-config
-    --really-quiet
-    --fullscreen
-    --fs-screen-name="$monitor"
-    --screen-name="$monitor"
-    --force-window=immediate
-    --border=no
-    --title-bar=no
-    --ontop
-    --keep-open=yes
-    --loop-file=inf
-    --audio=no
-    --osc=no
-    --osd-level=0
-    --input-default-bindings=no
-    --wayland-app-id=hypr-screensaver
-    --title="${title_prefix}${monitor}"
-    --image-display-duration=inf
-    "${color_args[@]}"
-    "$source"
-  )
-
-  if command -v mpv >/dev/null 2>&1; then
-    exec mpv "${mpv_args[@]}"
-  fi
-
-  exec nix shell nixpkgs#mpv --command mpv "${mpv_args[@]}"
 }
 
 status() {
@@ -293,7 +253,7 @@ case "${1:-}" in
     status
     ;;
   session)
-    session
+    start
     ;;
   ""|-h|--help|help)
     usage

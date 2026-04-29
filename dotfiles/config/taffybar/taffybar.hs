@@ -518,10 +518,10 @@ simplifiedScreensaverWidget =
         then return False
         else case button of
           1 -> do
-            void $ spawnCommand "hypr-screensaver toggle >/dev/null 2>&1"
+            void $ spawnCommand "/home/imalison/dotfiles/dotfiles/lib/bin/hypr-screensaver toggle >/dev/null 2>&1"
             return True
           3 -> do
-            void $ spawnCommand "hypr-screensaver stop >/dev/null 2>&1"
+            void $ spawnCommand "/home/imalison/dotfiles/dotfiles/lib/bin/hypr-screensaver stop >/dev/null 2>&1"
             return True
           _ -> return False
     Gtk.widgetShowAll ebox
