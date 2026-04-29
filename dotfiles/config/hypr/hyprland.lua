@@ -57,16 +57,6 @@ local scratchpads = {
     class = "com.mitchellh.ghostty.dropdown",
     dropdown = true,
   },
-  gmail = {
-    command = "google-chrome-stable --new-window https://mail.google.com/mail/u/0/#inbox",
-    class = "google-chrome",
-    title = "Gmail",
-  },
-  messages = {
-    command = "google-chrome-stable --new-window https://messages.google.com/web/conversations",
-    class = "google-chrome",
-    title = "Messages",
-  },
 }
 
 local function command_line_contains(needle)
@@ -1630,14 +1620,8 @@ bind(main_mod .. " + SHIFT + X", hl.dsp.workspace.toggle_special("NSP"))
 bind(mod_alt .. " + E", function()
   toggle_scratchpad("element")
 end)
-bind(mod_alt .. " + G", function()
-  toggle_scratchpad("gmail")
-end)
 bind(mod_alt .. " + H", function()
   toggle_scratchpad("htop")
-end)
-bind(mod_alt .. " + M", function()
-  toggle_scratchpad("messages")
 end)
 bind(mod_alt .. " + K", function()
   toggle_scratchpad("slack")

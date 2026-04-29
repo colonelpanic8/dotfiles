@@ -232,27 +232,19 @@ getWorkspaceDmenu = myDmenu (workspaces myConfig)
 
 -- Selectors
 
-isGmailTitle t = isInfixOf "@gmail.com" t && isInfixOf "Gmail" t
-isMessagesTitle = isPrefixOf "Messages"
 isChromeClass = isInfixOf "chrome"
-noSpecialChromeTitles = helper <$> title
-  where helper t = not $ any ($ t) [isGmailTitle, isMessagesTitle]
 chromeSelectorBase = isChromeClass <$> className
 
-chromeSelector = chromeSelectorBase <&&> noSpecialChromeTitles
+chromeSelector = chromeSelectorBase
 elementSelector = className =? "Element"
 emacsSelector = className =? "Emacs"
-gmailSelector = chromeSelectorBase <&&> fmap isGmailTitle title
-messagesSelector = chromeSelectorBase <&&> isMessagesTitle <$> title
 slackSelector = className =? "Slack"
 spotifySelector = className =? "Spotify"
 transmissionSelector = fmap (isPrefixOf "Transmission") title
 volumeSelector = className =? "Pavucontrol"
 
 virtualClasses =
-  [ (gmailSelector, "Gmail")
-  , (messagesSelector, "Messages")
-  , (chromeSelector, "Chrome")
+  [ (chromeSelector, "Chrome")
   , (transmissionSelector, "Transmission")
   ]
 
@@ -261,11 +253,7 @@ virtualClasses =
 chromeCommand = "google-chrome-stable"
 elementCommand = "element-desktop"
 emacsCommand = "emacsclient -c"
-gmailCommand =
-  "google-chrome-stable --new-window https://mail.google.com/mail/u/0/#inbox"
 htopCommand = "ghostty --title=htop -e htop"
-messagesCommand =
-  "google-chrome-stable --new-window https://messages.google.com/web/conversations"
 slackCommand = "slack"
 spotifyCommand = "spotify"
 transmissionCommand = "transmission-gtk"
@@ -813,9 +801,7 @@ nearFullFloat = customFloating $ W.RationalRect l t w h
 
 scratchpads =
   [ NS "element" elementCommand elementSelector nearFullFloat
-  , NS "gmail" gmailCommand gmailSelector nearFullFloat
   , NS "htop" htopCommand (title =? "htop") nearFullFloat
-  , NS "messages" messagesCommand messagesSelector nearFullFloat
   , NS "slack" slackCommand slackSelector nearFullFloat
   , NS "spotify" spotifyCommand spotifySelector nearFullFloat
   , NS "transmission" transmissionCommand transmissionSelector nearFullFloat
@@ -1025,9 +1011,7 @@ addKeys conf@XConfig { modMask = modm } =
 
     -- ScratchPads
     [ ((modalt, xK_e), doScratchpad "element")
-    , ((modalt, xK_g), doScratchpad "gmail")
     , ((modalt, xK_h), doScratchpad "htop")
-    , ((modalt, xK_m), doScratchpad "messages")
     , ((modalt, xK_k), doScratchpad "slack")
     , ((modalt, xK_s), doScratchpad "spotify")
     , ((modalt, xK_t), doScratchpad "transmission")

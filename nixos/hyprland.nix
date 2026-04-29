@@ -82,17 +82,6 @@ let
       rules = "float;size monitor_w monitor_h*0.5;move 0 60;noborder;noshadow;animation slide";
     };
 
-    gmail = {
-      command = "google-chrome-stable --new-window https://mail.google.com/mail/u/0/#inbox";
-      class = "google-chrome";
-      title = "Gmail";
-    };
-
-    messages = {
-      command = "google-chrome-stable --new-window https://messages.google.com/web/conversations";
-      class = "google-chrome";
-      title = "Messages";
-    };
   };
   enabledModule = makeEnable config "myModules.hyprland" true {
     # Install both shell service units so `desktop_shell_ui set ...` can switch

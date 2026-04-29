@@ -153,9 +153,7 @@ Important behavior:
 Required behavior:
 
 - A named scratchpad exists for element.
-- A named scratchpad exists for gmail.
 - A named scratchpad exists for htop.
-- A named scratchpad exists for messages.
 - A named scratchpad exists for slack.
 - A named scratchpad exists for spotify.
 - A named scratchpad exists for transmission.
@@ -320,9 +318,7 @@ Required behavior:
 Required behavior:
 
 - `Super+Alt+e` toggles the element scratchpad.
-- `Super+Alt+g` toggles the gmail scratchpad.
 - `Super+Alt+h` toggles the htop scratchpad.
-- `Super+Alt+m` toggles the messages scratchpad.
 - `Super+Alt+k` toggles the slack scratchpad.
 - `Super+Alt+s` toggles the spotify scratchpad.
 - `Super+Alt+t` toggles the transmission scratchpad.

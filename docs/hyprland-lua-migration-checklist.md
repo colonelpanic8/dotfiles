@@ -125,7 +125,7 @@ branch exposes `hl.plugin.hyprexpo.expo(...)`, so the Lua config can invoke
 
 ## 6. Scratchpads
 
-- [x] Preserve named scratchpads: element, gmail, htop, messages, slack,
+- [x] Preserve named scratchpads: element, htop, slack,
       spotify, transmission, volume.
 - [x] Preserve dropdown terminal scratchpad.
 - [x] Scratchpads near-fullscreen and centered.
