@@ -1,0 +1,93 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+state_file="${IM_DESKTOP_SHELL_UI_STATE:-${XDG_STATE_HOME:-$HOME/.local/state}/imalison/desktop-shell-ui}"
+default_shell_ui="${IM_HYPRLAND_SHELL_UI:-taffybar}"
+
+normalize_shell_ui() {
+  case "${1:-}" in
+    noctalia)
+      printf '%s\n' "noctalia"
+      ;;
+    taffybar|rofi)
+      printf '%s\n' "taffybar"
+      ;;
+    *)
+      return 1
+      ;;
+  esac
+}
+
+current_shell_ui() {
+  local configured=""
+
+  if [[ -r "$state_file" ]]; then
+    IFS= read -r configured < "$state_file" || true
+  fi
+
+  normalize_shell_ui "$configured" 2>/dev/null \
+    || normalize_shell_ui "$default_shell_ui" 2>/dev/null \
+    || printf '%s\n' "taffybar"
+}
+
+write_shell_ui() {
+  local shell_ui="$1"
+  mkdir -p "$(dirname "$state_file")"
+  printf '%s\n' "$shell_ui" > "$state_file"
+}
+
+apply_shell_ui() {
+  local shell_ui="$1"
+
+  export IM_HYPRLAND_SHELL_UI="$shell_ui"
+  systemctl --user import-environment IM_HYPRLAND_SHELL_UI 2>/dev/null || true
+
+  case "$shell_ui" in
+    noctalia)
+      systemctl --user stop taffybar.service 2>/dev/null || true
+      systemctl --user reset-failed taffybar.service 2>/dev/null || true
+      systemctl --user start noctalia-shell.service
+      ;;
+    taffybar)
+      systemctl --user stop noctalia-shell.service 2>/dev/null || true
+      systemctl --user reset-failed noctalia-shell.service 2>/dev/null || true
+      systemctl --user start taffybar.service
+      ;;
+  esac
+}
+
+set_shell_ui() {
+  local shell_ui
+  shell_ui="$(normalize_shell_ui "${1:-}")" || {
+    echo "usage: desktop_shell_ui set {taffybar|noctalia}" >&2
+    exit 2
+  }
+
+  write_shell_ui "$shell_ui"
+  apply_shell_ui "$shell_ui"
+}
+
+case "${1:-current}" in
+  current)
+    current_shell_ui
+    ;;
+  set)
+    set_shell_ui "${2:-}"
+    ;;
+  toggle)
+    case "$(current_shell_ui)" in
+      noctalia) set_shell_ui taffybar ;;
+      *) set_shell_ui noctalia ;;
+    esac
+    ;;
+  apply)
+    apply_shell_ui "$(current_shell_ui)"
+    ;;
+  exec-condition)
+    [[ "$(current_shell_ui)" == "$(normalize_shell_ui "${2:-}")" ]]
+    ;;
+  *)
+    echo "usage: desktop_shell_ui {current|set|toggle|apply|exec-condition}" >&2
+    exit 2
+    ;;
+esac

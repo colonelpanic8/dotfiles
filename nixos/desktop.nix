@@ -6,7 +6,19 @@
   makeEnable,
   ...
 }:
-makeEnable config "myModules.desktop" true {
+let
+  cfg = config.myModules.desktop;
+  desktopShellUi = pkgs.writeShellApplication {
+    name = "desktop_shell_ui";
+    runtimeInputs = [
+      pkgs.coreutils
+      pkgs.systemd
+    ];
+    text = ''
+      exec ${../dotfiles/lib/bin/desktop_shell_ui} "$@"
+    '';
+  };
+  enabledModule = makeEnable config "myModules.desktop" true {
   services.greenclip.enable = true;
   imports = [
     ./fonts.nix
@@ -40,8 +52,11 @@ makeEnable config "myModules.desktop" true {
     enable = true;
   };
 
-  # This is for the benefit of VSCODE running natively in wayland
-  environment.sessionVariables.NIXOS_OZONE_WL = "1";
+  environment.sessionVariables = {
+    # This is for the benefit of VSCODE running natively in wayland
+    NIXOS_OZONE_WL = "1";
+    IM_HYPRLAND_SHELL_UI = cfg.shellUi;
+  };
 
   system.activationScripts.playwrightChromeCompat.text = lib.optionalString (pkgs.stdenv.hostPlatform.system == "x86_64-linux") ''
     # Playwright's Chrome channel lookup expects the FHS path below.
@@ -87,6 +102,8 @@ makeEnable config "myModules.desktop" true {
 
   environment.systemPackages = with pkgs;
     [
+      desktopShellUi
+
       # Appearance
       adwaita-icon-theme
       hicolor-icon-theme
@@ -169,4 +186,18 @@ makeEnable config "myModules.desktop" true {
         ]
       else []
     );
+  };
+in
+enabledModule
+// {
+  options = lib.recursiveUpdate enabledModule.options {
+    myModules.desktop.shellUi = lib.mkOption {
+      type = lib.types.enum [ "noctalia" "taffybar" ];
+      default = "taffybar";
+      description = ''
+        Desktop shell UI used by Hyprland-oriented bindings. This controls
+        the active shell service and Hyprland launcher/window picker dispatch.
+      '';
+    };
+  };
 }
