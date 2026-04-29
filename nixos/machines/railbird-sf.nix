@@ -63,6 +63,7 @@
   # Disable the old multi-node railbird k3s setup
   myModules.railbird-k3s.enable = false;
   myModules."keepbook-sync".enable = true;
+  myModules.remote-hyprland.enable = true;
 
   # Mirror the old biskcomp "Syncthing hosting" pattern: serve the synced railbird tree over HTTPS with autoindex.
   services.nginx.virtualHosts."syncthing.railbird.ai" = {

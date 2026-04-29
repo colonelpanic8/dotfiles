@@ -35,6 +35,7 @@
     ./postgres.nix
     ./rabbitmq.nix
     ./quickshell.nix
+    ./remote-hyprland.nix
     ./secrets.nix
     ./ssh.nix
     ./sni.nix
