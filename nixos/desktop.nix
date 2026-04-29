@@ -11,6 +11,7 @@ let
   desktopShellUi = pkgs.writeShellApplication {
     name = "desktop_shell_ui";
     runtimeInputs = [
+      pkgs.bash
       pkgs.coreutils
       pkgs.systemd
     ];
