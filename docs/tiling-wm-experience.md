@@ -109,6 +109,9 @@ Required behavior:
 - Dialogs are centered.
 - There is a command to jump directly to the columns layout and one to jump
   directly to the tabbed/fullscreen layout.
+- `Super+Ctrl+Space` jumps directly to the tabbed/fullscreen layout.
+- Direct fullscreen or floating-fullscreen behavior should not have a
+  keybinding.
 - Layout state is per workspace when the compositor supports it.
 
 Important behavior:
@@ -118,7 +121,6 @@ Important behavior:
 Nice behavior:
 
 - Gaps can be toggled.
-- Fullscreen can be toggled.
 - Smart borders can be toggled.
 - Layout-related modifiers remain available for experiments.
 - Inactive windows are slightly dimmed when supported.
