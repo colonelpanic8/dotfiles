@@ -1012,11 +1012,11 @@ addKeys conf@XConfig { modMask = modm } =
      (modm .|. shiftMask) (`windowSwap` True) ++
     buildDirectionalBindings
      (modm .|. controlMask)  (followingWindow . (`windowToScreen` True)) ++
+    buildDirectionalBindings
+     (modm .|. controlMask .|. shiftMask) shiftToEmptyOnScreen ++
     buildDirectionalBindings hyper (`screenGo` True) ++
     buildDirectionalBindings
      (hyper .|. shiftMask) (followingWindow . (`screenSwap` True)) ++
-    buildDirectionalBindings
-     (hyper .|. controlMask) shiftToEmptyOnScreen ++
 
     -- Specific program spawning
     bindBringAndRaiseMany
@@ -1101,7 +1101,7 @@ addKeys conf@XConfig { modMask = modm } =
     , ((hyper, xK_space), spawn "skippy-xd")
     , ((hyper, xK_i), spawn "rofi_select_input.hs")
     , ((hyper, xK_o), spawn "rofi_paswitch")
-    , ((hyper, xK_w), spawn "rofi_wallpaper.sh")
+    , ((hyper, xK_comma), spawn "rofi_wallpaper.sh")
     , ((hyper, xK_y), spawn "rofi_agentic_skill")
     , ((modm, xK_e), spawn "emacsclient --eval '(emacs-everywhere)'")
 
