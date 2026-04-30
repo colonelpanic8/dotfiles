@@ -14,7 +14,7 @@ local monocle_layout = "monocle"
 local minimized_workspace = "special:minimized"
 local current_layout = columns_layout
 local enable_nstack = true
-local enable_hyprexpo = false
+local enable_hyprexpo = true
 local enable_hyprwinview = true
 local enable_workspace_history = true
 local configure_nstack_plugin_from_lua = false
@@ -1665,13 +1665,8 @@ bind(main_mod .. " + E", exec("emacsclient --eval '(emacs-everywhere)'"))
 bind(main_mod .. " + V", exec("wl-paste | xdotool type --file -"))
 bind(main_mod .. " + Tab", hyprwinview("toggle"))
 bind(main_mod .. " + SHIFT + Tab", hyprwinview("toggle other-workspaces"))
-if enable_hyprexpo then
-  bind("ALT + Tab", hyprexpo("toggle"))
-  bind("ALT + SHIFT + Tab", hyprexpo("bring"))
-else
-  bind("ALT + Tab", hyprwinview("toggle"))
-  bind("ALT + SHIFT + Tab", hyprwinview("toggle other-workspaces"))
-end
+bind("ALT + Tab", hyprexpo("toggle"))
+bind("ALT + SHIFT + Tab", hyprexpo("bring"))
 bind(main_mod .. " + G", exec(shell_ui_command .. " window go"))
 bind(main_mod .. " + B", exec(shell_ui_command .. " window bring"))
 bind(main_mod .. " + SHIFT + B", exec(shell_ui_command .. " window replace"))
