@@ -25,6 +25,9 @@ switch-local-taffybar *args:
 remote-switch host *args:
 	nixos-rebuild switch --flake "git+https://github.com/colonelpanic8/dotfiles.git?ref=master&dir=nixos#{{host}}" --target-host {{host}}.local --sudo --impure --option warn-dirty false {{args}}
 
+populate-cachix cache="colonelpanic8-dotfiles" host=`hostname` *args:
+	store_path="$(nix build --no-link --print-out-paths ".#nixosConfigurations.{{host}}.config.system.build.toplevel" --impure --option warn-dirty false {{args}})" && cachix push {{cache}} "$store_path"
+
 fix-local-path-issue:
 	# Kept for backwards-compat: update the lockfile inputs explicitly.
 	nix flake update imalison-taffybar
