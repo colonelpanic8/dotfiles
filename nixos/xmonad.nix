@@ -1,4 +1,7 @@
 { config, pkgs, inputs, lib, makeEnable, ... }:
+let
+  session = import ./session-variables.nix;
+in
 makeEnable config "myModules.xmonad" true  {
   myModules.taffybar.enable = lib.mkDefault (config.myModules.desktop.shellUi == "taffybar");
 
@@ -36,7 +39,7 @@ makeEnable config "myModules.xmonad" true  {
   home-manager.sharedModules = [
     {
       services.autorandr.enable = true;
-      systemd.user.services.autorandr.Unit.ConditionEnvironment = "IMALISON_SESSION_TYPE=x11";
+      systemd.user.services.autorandr.Unit.ConditionEnvironment = session.x11;
 
       services.random-background = {
         enable = true;
@@ -45,10 +48,10 @@ makeEnable config "myModules.xmonad" true  {
         imageDirectory = "/var/lib/syncthing/sync/Wallpaper/use";
       };
       # This service uses feh (X11), so don't run it in Wayland sessions.
-      systemd.user.services.random-background.Unit.ConditionEnvironment = "IMALISON_SESSION_TYPE=x11";
+      systemd.user.services.random-background.Unit.ConditionEnvironment = session.x11;
 
       services.xsettingsd.enable = true;
-      systemd.user.services.xsettingsd.Unit.ConditionEnvironment = "IMALISON_SESSION_TYPE=x11";
+      systemd.user.services.xsettingsd.Unit.ConditionEnvironment = session.x11;
 
       # services.parcellite = {
       #   enable = true;
@@ -63,7 +66,7 @@ makeEnable config "myModules.xmonad" true  {
       systemd.user.services.picom = {
         Unit = {
           Description = "Picom X11 compositor";
-          ConditionEnvironment = "IMALISON_SESSION_TYPE=x11";
+          ConditionEnvironment = session.x11;
           After = [ "graphical-session.target" ];
           PartOf = [ "graphical-session.target" ];
         };

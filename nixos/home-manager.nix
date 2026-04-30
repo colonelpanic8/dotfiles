@@ -5,6 +5,7 @@
   nixos,
   ...
 }: let
+  session = import ./session-variables.nix;
   mimeMap = desktopId: mimeTypes: lib.genAttrs mimeTypes (_: [desktopId]);
   browser = "google-chrome.desktop";
   imageViewer = "org.kde.gwenview.desktop";
@@ -293,7 +294,7 @@ in {
     preferStatusNotifierItems = true;
     importedVariables = ["GDK_PIXBUF_ICON_LOADER"];
     profileExtra = ''
-      systemctl --user set-environment IMALISON_SESSION_TYPE=x11
+      systemctl --user set-environment ${session.sessionType}=x11 ${session.windowManager}=xmonad
     '';
   };
 
