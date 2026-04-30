@@ -1907,15 +1907,15 @@
       "locked": {
         "lastModified": 1777525523,
         "narHash": "sha256-/LGaCcX6BgXRYpWnRp9CNgAgy7lmbQsubi4RwHJgnTI=",
-        "ref": "refs/heads/master",
+        "owner": "taffybar",
+        "repo": "taffybar",
         "rev": "23dbc827adca706b28df7404624ae3f5e800b04f",
-        "revCount": 2296,
-        "type": "git",
-        "url": "file:///home/imalison/dotfiles/dotfiles/config/taffybar/taffybar"
+        "type": "github"
       },
       "original": {
-        "type": "git",
-        "url": "file:///home/imalison/dotfiles/dotfiles/config/taffybar/taffybar"
+        "owner": "taffybar",
+        "repo": "taffybar",
+        "type": "github"
       }
     },
     "treefmt-nix": {

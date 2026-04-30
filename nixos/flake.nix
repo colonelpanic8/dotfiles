@@ -114,6 +114,12 @@
       inputs.hyprland.follows = "hyprland";
     };
 
+    hypr-workspace-history = {
+      url = "github:colonelpanic8/hypr-workspace-history";
+      inputs.hyprland.follows = "hyprland";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+
     hyprscratch = {
       url = "github:colonelpanic8/hyprscratch/reapply-rules-on-toggle";
       inputs.nixpkgs.follows = "nixpkgs";
@@ -476,26 +482,6 @@
       containerLib = import ../org-agenda-api/container.nix {
         inherit pkgs system tangledConfig org-agenda-api orgApiRev dotfilesRev;
       };
-      hyprlandPkgs = import nixpkgs {
-        inherit system;
-        overlays = [ hyprland.overlays.hyprland-packages ];
-      };
-      hyprWorkspaceHistory = hyprlandPkgs.hyprlandPlugins.mkHyprlandPlugin {
-        pluginName = "hypr-workspace-history";
-        version = "0.1.0";
-        src = builtins.path {
-          path = ../dotfiles/config/hypr/workspace-history-plugin;
-          name = "hypr-workspace-history-source";
-        };
-
-        inherit (hyprland.packages.${system}.hyprland) nativeBuildInputs;
-
-        meta = {
-          description = "Workspace history cycling plugin for Hyprland";
-          license = lib.licenses.bsd3;
-          platforms = lib.platforms.linux;
-        };
-      };
     in {
       packages = {
         colonelpanic-org-agenda-api = containerLib.containers.colonelpanic;
@@ -504,14 +490,14 @@
         hyprNStack = inputs.hyprNStack.packages.${system}.hyprNStack;
         hyprexpo-lua = inputs.hyprland-plugins-lua.packages.${system}.hyprexpo;
         hyprwinview = inputs.hyprwinview.packages.${system}.hyprwinview;
-        hypr-workspace-history = hyprWorkspaceHistory;
+        hypr-workspace-history = inputs.hypr-workspace-history.packages.${system}.hypr-workspace-history;
       };
 
       checks = lib.optionalAttrs pkgs.stdenv.isLinux {
         hyprNStack = inputs.hyprNStack.packages.${system}.hyprNStack;
         hyprexpo-lua = inputs.hyprland-plugins-lua.packages.${system}.hyprexpo;
         hyprwinview = inputs.hyprwinview.packages.${system}.hyprwinview;
-        hypr-workspace-history = hyprWorkspaceHistory;
+        hypr-workspace-history = inputs.hypr-workspace-history.packages.${system}.hypr-workspace-history;
         hyprland-config-syntax = pkgs.runCommand "hyprland-config-syntax" {
           nativeBuildInputs = [ pkgs.lua5_4 ];
         } ''

@@ -13,7 +13,7 @@ let
     inputs.hyprNStack.packages.${system}.hyprNStack
     inputs.hyprland-plugins-lua.packages.${system}.hyprexpo
     inputs.hyprwinview.packages.${system}.hyprwinview
-    inputs.self.packages.${system}.hypr-workspace-history
+    inputs.hypr-workspace-history.packages.${system}.hypr-workspace-history
   ];
   hyprRofiWindow = pkgs.writeShellApplication {
     name = "hypr_rofi_window";
