@@ -43,7 +43,8 @@ local scratchpads = {
   },
   element = {
     command = "element-desktop",
-    class = "Element",
+    classes = { "Element", "electron" },
+    title = "Element",
   },
   slack = {
     command = "slack",
@@ -261,9 +262,22 @@ local function lower_contains(value, needle)
   return value:find(needle, 1, true) ~= nil
 end
 
+local function lower_contains_any(value, needles)
+  if type(needles) ~= "table" then
+    return lower_contains(value, needles)
+  end
+
+  for _, needle in ipairs(needles) do
+    if lower_contains(value, needle) then
+      return true
+    end
+  end
+  return false
+end
+
 local function scratchpad_window_matches(window, def)
   return window
-    and lower_contains(window.class, def.class)
+    and lower_contains_any(window.class, def.classes or def.class)
     and lower_contains(window.title, def.title)
 end
 
