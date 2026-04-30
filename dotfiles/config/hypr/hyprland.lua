@@ -218,6 +218,7 @@ local function apply_hyprwinview_config()
         animation_scale = 0.94,
         animation_stagger_ms = 16,
         animation_stagger_max_ms = 120,
+        animation_workspace_zoom_stage_ratio = 0.70,
       },
     },
   })
