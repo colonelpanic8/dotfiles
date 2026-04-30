@@ -43,13 +43,13 @@ Required behavior:
 - Moving the focused window to the next empty workspace and following it is a
   first-class operation.
 - Normal workspaces are bounded to `1..9`.
-- Workspace history is tracked per monitor.
-- Last-workspace toggle uses the current monitor's workspace history.
-- Workspace cycling works on the current monitor within the bounded workspace
-  set.
 
 Important behavior:
 
+- Workspace history is tracked per monitor.
+- Last-workspace toggle uses the current monitor's workspace history.
+- Workspace history cycling works on the current monitor within the bounded
+  workspace set.
 - Swapping the current workspace contents with another workspace is available.
 - Moving a window to an empty workspace on another monitor is available.
 - Moving the focused window to another monitor without following keeps keyboard
@@ -61,6 +61,30 @@ Important behavior:
 - Hidden/special workspaces are excluded from ordinary workspace cycling.
 - Hidden/special workspaces are excluded from the status bar's normal workspace
   list.
+
+### Workspace History Cycling
+
+Important behavior:
+
+- The model is most-recently-used workspace switching, scoped to the monitor
+  where the action starts.
+- Each monitor has its own ordered workspace history. The focused monitor's
+  history is not shared with other monitors.
+- Only ordinary bounded workspaces are candidates. Special, scratchpad,
+  minimized, hidden, and out-of-range workspaces are excluded.
+- Starting a cycle freezes the candidate list for that cycle. Previewing
+  workspaces while the cycle is active must not rewrite the history order.
+- Starting a cycle previews the previous workspace for the current monitor.
+- Repeating the forward cycle action continues farther back through that
+  monitor's frozen history.
+- A reverse cycle action moves through the same frozen history in the opposite
+  direction.
+- Releasing the initiating modifier key commits the currently previewed
+  workspace and updates history exactly once.
+- A cancel path may return to the workspace where the cycle started.
+
+This behavior is important for workflow continuity, but it is not a hard
+requirement for a minimal daily-driver window manager.
 
 ## Directional Navigation
 
@@ -282,13 +306,19 @@ Required behavior:
 - `Super+g` opens the go-to-window picker.
 - `Super+b` opens the bring-window picker.
 - `Super+Shift+b` opens the replace-window picker.
-- `Super+\` toggles to the previous workspace on the current monitor.
 - `Super+Shift+e` moves the focused window to the next empty workspace and
   follows it. This is the target replacement for the older `Super+Shift+h`
   binding.
 - `Hyper+e` focuses the next empty workspace.
 - `Hyper+5` swaps the current workspace with a selected workspace.
 - `Hyper+g` gathers windows of the focused class onto the current workspace.
+
+Important behavior:
+
+- `Super+\` starts or advances current-monitor workspace history cycling.
+- `Super+/` reverses current-monitor workspace history cycling while the
+  initiating `Super` key is held.
+- Releasing the initiating `Super` key commits the workspace history cycle.
 
 ### Directional Navigation Bindings
 

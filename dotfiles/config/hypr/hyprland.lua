@@ -26,6 +26,7 @@ local stack_update_timer = nil
 local monocle_notice = nil
 local scratchpad_pending = {}
 local monitor_workspace_history = {}
+local workspace_history_cycle = nil
 
 local scratchpads = {
   htop = {
@@ -570,29 +571,120 @@ local function monitor_key(monitor)
   return tostring(monitor.name or monitor.id or "unknown")
 end
 
+local function workspace_history_workspace_id(workspace)
+  if not workspace or not workspace.id or workspace.id < 1 or workspace.id > max_workspace then
+    return nil
+  end
+  return workspace.id
+end
+
+local function workspace_history_monitor_key(workspace)
+  return monitor_key(workspace and workspace.monitor or hl.get_active_monitor())
+end
+
+local function remove_workspace_history_id(history, workspace_id)
+  for index = #history, 1, -1 do
+    if history[index] == workspace_id then
+      table.remove(history, index)
+    end
+  end
+end
+
 local function remember_workspace_for_monitor(workspace)
   workspace = workspace or active_workspace()
-  if not workspace or not workspace.id or workspace.id < 1 then
+  if workspace_history_cycle then
     return
   end
 
-  local key = monitor_key(workspace.monitor or hl.get_active_monitor())
+  local workspace_id = workspace_history_workspace_id(workspace)
+  if not workspace_id then
+    return
+  end
+
+  local key = workspace_history_monitor_key(workspace)
   local history = monitor_workspace_history[key] or {}
-  if history.current ~= workspace.id then
-    history.previous = history.current
-    history.current = workspace.id
+  if history[1] ~= workspace_id then
+    remove_workspace_history_id(history, workspace_id)
+    table.insert(history, 1, workspace_id)
   end
   monitor_workspace_history[key] = history
 end
 
-local function focus_previous_workspace_for_monitor()
-  local key = monitor_key(hl.get_active_monitor())
-  local history = monitor_workspace_history[key]
-  if history and history.previous then
-    focus_workspace(history.previous)
-  else
-    hl.dsp.focus({ workspace = "previous_per_monitor" })()
+local function clone_workspace_history(history)
+  local clone = {}
+  for index, workspace_id in ipairs(history or {}) do
+    clone[index] = workspace_id
   end
+  return clone
+end
+
+local function workspace_history_cycle_start()
+  if workspace_history_cycle then
+    return workspace_history_cycle
+  end
+
+  remember_workspace_for_monitor()
+
+  local workspace = active_workspace()
+  local workspace_id = workspace_history_workspace_id(workspace)
+  if not workspace_id then
+    return nil
+  end
+
+  local key = workspace_history_monitor_key(workspace)
+  local history = clone_workspace_history(monitor_workspace_history[key])
+  if history[1] ~= workspace_id then
+    remove_workspace_history_id(history, workspace_id)
+    table.insert(history, 1, workspace_id)
+  end
+
+  if #history < 2 then
+    return nil
+  end
+
+  workspace_history_cycle = {
+    monitor_key = key,
+    original_workspace = workspace_id,
+    history = history,
+    index = 2,
+  }
+
+  return workspace_history_cycle
+end
+
+local function cycle_workspace_history(direction)
+  local cycle = workspace_history_cycle_start()
+  if not cycle then
+    hl.dsp.focus({ workspace = "previous_per_monitor" })()
+    return
+  end
+
+  local workspace_id = cycle.history[cycle.index]
+  if not workspace_id then
+    return
+  end
+
+  focus_workspace(workspace_id)
+  cycle.index = ((cycle.index - 1 + direction) % #cycle.history) + 1
+end
+
+local function commit_workspace_history_cycle()
+  if not workspace_history_cycle then
+    return
+  end
+
+  workspace_history_cycle = nil
+  remember_workspace_for_monitor()
+end
+
+local function cancel_workspace_history_cycle()
+  local cycle = workspace_history_cycle
+  if not cycle then
+    return
+  end
+
+  workspace_history_cycle = nil
+  focus_workspace(cycle.original_workspace)
 end
 
 local function move_window_to_workspace(workspace_id, follow, window)
@@ -1765,7 +1857,14 @@ for i = 1, 9 do
   end)
 end
 
-bind(main_mod .. " + backslash", focus_previous_workspace_for_monitor)
+bind(main_mod .. " + backslash", function()
+  cycle_workspace_history(1)
+end)
+bind(main_mod .. " + slash", function()
+  cycle_workspace_history(-1)
+end)
+bind(main_mod .. " + Super_L", commit_workspace_history_cycle, { release = true })
+bind(main_mod .. " + Escape", cancel_workspace_history_cycle)
 bind(main_mod .. " + Z", hl.dsp.focus({ monitor = "+1" }))
 bind(main_mod .. " + SHIFT + Z", hl.dsp.window.move({ monitor = "+1" }))
 bind(main_mod .. " + mouse_down", function()
