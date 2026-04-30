@@ -193,7 +193,7 @@ local function apply_hyprwinview_config()
       hyprwinview = {
         gap_size = 24,
         margin = 48,
-        background = "rgba(10101499)",
+        background = "rgba(10101400)",
         background_blur = 0,
         border_col = "rgba(ffffff33)",
         hover_border_col = "rgba(66ccffee)",

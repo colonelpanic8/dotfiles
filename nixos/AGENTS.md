@@ -20,6 +20,5 @@ Avoid dropping scripts in `~/bin` or `~/.local/bin` unless the user explicitly a
 
 - Existing rofi scripts live in `../dotfiles/lib/bin/` (e.g. `rofi_command.sh`).
 - Keybind locations:
-  - Hyprland: `../dotfiles/config/hypr/hyprland.conf`
+  - Hyprland: `../dotfiles/config/hypr/hyprland.lua`
   - XMonad: `../dotfiles/config/xmonad/xmonad.hs`
-

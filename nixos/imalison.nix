@@ -1,4 +1,4 @@
-{ pkgs, ... }: {
+{pkgs, ...}: {
   home-manager.users.imalison = {
     imports = [
       ./emacs.nix
@@ -12,7 +12,7 @@
       settings.git_protocol = "ssh";
     };
 
-    # Hyprland config starts this target on login (see `dotfiles/config/hypr/hyprland.conf`).
+    # Hyprland config starts this target on login.
     systemd.user.targets.hyprland-session = {
       Unit = {
         Description = "Hyprland session (custom)";
@@ -45,7 +45,7 @@
       };
 
       Install = {
-        WantedBy = [ "timers.target" ];
+        WantedBy = ["timers.target"];
       };
     };
 
@@ -139,8 +139,8 @@
     in {
       Unit = {
         Description = "Hyprpaper (managed by home-manager)";
-        PartOf = [ "hyprland-session.target" ];
-        After = [ "hyprland-session.target" ];
+        PartOf = ["hyprland-session.target"];
+        After = ["hyprland-session.target"];
       };
 
       Service = {
@@ -152,16 +152,16 @@
       };
 
       Install = {
-        WantedBy = [ "hyprland-session.target" ];
+        WantedBy = ["hyprland-session.target"];
       };
     };
 
     systemd.user.services.tailscale-systray = {
       Unit = {
         Description = "Tailscale systray";
-        After = [ "graphical-session.target" "tray.target" ];
-        PartOf = [ "graphical-session.target" ];
-        Requires = [ "tray.target" ];
+        After = ["graphical-session.target" "tray.target"];
+        PartOf = ["graphical-session.target"];
+        Requires = ["tray.target"];
       };
 
       Service = {
@@ -171,7 +171,7 @@
       };
 
       Install = {
-        WantedBy = [ "graphical-session.target" ];
+        WantedBy = ["graphical-session.target"];
       };
     };
 
@@ -182,7 +182,7 @@
       icon = "google-chrome";
       terminal = false;
       type = "Application";
-      categories = [ "Network" "WebBrowser" ];
+      categories = ["Network" "WebBrowser"];
       mimeType = [
         "application/rdf+xml"
         "application/rss+xml"
