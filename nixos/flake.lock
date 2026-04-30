@@ -697,6 +697,34 @@
         "type": "github"
       }
     },
+    "hypr-workspace-history": {
+      "inputs": {
+        "hyprland": [
+          "hyprland"
+        ],
+        "nixpkgs": [
+          "nixpkgs"
+        ],
+        "systems": [
+          "hypr-workspace-history",
+          "hyprland",
+          "systems"
+        ]
+      },
+      "locked": {
+        "lastModified": 1777540320,
+        "narHash": "sha256-d4VIWXpJM86Ub/vBcWSeNG4nyYH/KPEizrMmvt6BlyE=",
+        "owner": "colonelpanic8",
+        "repo": "hypr-workspace-history",
+        "rev": "595ee9f43e77de1c956dea4ead60ffb41d9f76a4",
+        "type": "github"
+      },
+      "original": {
+        "owner": "colonelpanic8",
+        "repo": "hypr-workspace-history",
+        "type": "github"
+      }
+    },
     "hyprNStack": {
       "inputs": {
         "hyprland": [
@@ -1758,6 +1786,7 @@
         "git-ignore-nix": "git-ignore-nix",
         "git-sync-rs": "git-sync-rs",
         "home-manager": "home-manager",
+        "hypr-workspace-history": "hypr-workspace-history",
         "hyprNStack": "hyprNStack",
         "hyprland": "hyprland",
         "hyprland-plugins-lua": "hyprland-plugins-lua",
