@@ -19,7 +19,7 @@ switch-local-taffybar *args:
 	fi'
 	sudo env IMALISON_TAFFYBAR_LIVE_CHECKOUT=/home/imalison/dotfiles/dotfiles/config/taffybar/taffybar \
 	  nixos-rebuild switch --flake "git+https://github.com/colonelpanic8/dotfiles.git?ref=master&dir=nixos#" --impure --option warn-dirty false \
-	  --override-input taffybar git+file:///home/imalison/dotfiles/dotfiles/config/taffybar/taffybar \
+	  --override-input imalison-taffybar path:/home/imalison/dotfiles/dotfiles/config/taffybar \
 	  {{args}}
 
 remote-switch host *args:
@@ -27,4 +27,4 @@ remote-switch host *args:
 
 fix-local-path-issue:
 	# Kept for backwards-compat: update the lockfile inputs explicitly.
-	nix flake update taffybar imalison-taffybar
+	nix flake update imalison-taffybar

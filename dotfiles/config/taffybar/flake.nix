@@ -1,10 +1,9 @@
 {
   inputs = {
     taffybar = {
-      # Use the local git checkout, not a raw path snapshot, so gitignored
-      # build artifacts like dist-newstyle/.worktrees/.direnv don't get copied
-      # into flake-input store sources.
-      url = "git+file:///home/imalison/dotfiles/dotfiles/config/taffybar/taffybar";
+      # Keep the default source usable in CI. Local iteration uses
+      # IMALISON_TAFFYBAR_LIVE_CHECKOUT below via `just switch-local-taffybar`.
+      url = "github:taffybar/taffybar";
       inputs.weeder-nix.inputs.pre-commit-hooks.inputs.nixpkgs.follows = "nixpkgs";
     };
     # Follow the vendored taffybar flake's pins so the config shell and the
