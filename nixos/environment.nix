@@ -88,6 +88,7 @@ with lib;
         NIXPKGS_GIT_REV = "${inputs.nixpkgs.rev}";
         NIXPKGS_SOURCE = "${inputs.nixpkgs.outPath}";
         EDITOR = "emacsclient --alternate-editor emacs";
+        QT_QPA_PLATFORMTHEME = "qt6ct";
       };
       interactiveShellInit = ''
         _df_is_managed_ssh_host() {

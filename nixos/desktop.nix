@@ -98,6 +98,13 @@ let
           };
         };
       };
+
+      xdg.configFile."ghostty/config" = {
+        force = true;
+        text = ''
+          confirm-close-surface = false
+        '';
+      };
     }
   ];
 
@@ -110,6 +117,8 @@ let
       hicolor-icon-theme
       # libsForQt5.breeze-gtk
       # materia-theme
+      kdePackages.qt6ct
+      libsForQt5.qt5ct
       numix-icon-theme-circle
       papirus-icon-theme
 
