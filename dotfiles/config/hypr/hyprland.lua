@@ -12,7 +12,6 @@ local scratchpad_top_margin = 60
 local columns_layout = "nStack"
 local monocle_layout = "monocle"
 local minimized_workspace = "special:minimized"
-local tabbed_group_staging_workspace = "special:tabbed-monocle-staging"
 local current_layout = columns_layout
 local enable_nstack = true
 local enable_hyprexpo = true
@@ -284,6 +283,51 @@ local function window_address_in_set(window, addresses)
   return window and window.address and addresses[window.address] or false
 end
 
+local function numeric_component(value, key, index)
+  if type(value) ~= "table" then
+    return 0
+  end
+
+  return tonumber(value[key] or value[index]) or 0
+end
+
+local function window_center(window)
+  local at = window and window.at or {}
+  local size = window and window.size or {}
+  return numeric_component(at, "x", 1) + numeric_component(size, "x", 1) / 2,
+    numeric_component(at, "y", 2) + numeric_component(size, "y", 2) / 2
+end
+
+local function window_distance_squared(window, x, y)
+  local wx, wy = window_center(window)
+  local dx = wx - x
+  local dy = wy - y
+  return dx * dx + dy * dy
+end
+
+local function grouping_direction(window, anchor)
+  local wx, wy = window_center(window)
+  local ax, ay = window_center(anchor)
+  local dx = wx - ax
+  local dy = wy - ay
+
+  if math.abs(dx) >= math.abs(dy) then
+    return dx >= 0 and "left" or "right"
+  end
+  return dy >= 0 and "up" or "down"
+end
+
+local function grouping_directions(window, anchor)
+  local primary = grouping_direction(window, anchor)
+  local directions = { primary }
+  for _, direction in ipairs({ "left", "right", "up", "down" }) do
+    if direction ~= primary then
+      directions[#directions + 1] = direction
+    end
+  end
+  return directions
+end
+
 local function workspace_window_count(workspace_id)
   local workspace = hl.get_workspace(tostring(workspace_id))
   if not workspace then
@@ -519,25 +563,29 @@ local function notify_tabbed_group(text)
   })
 end
 
-local function workspace_visible_normal_windows(workspace)
-  local windows = {}
-  if not workspace then
-    return windows
-  end
-
-  for _, window in ipairs(hl.get_workspace_windows(workspace)) do
-    if is_normal_window(window) and not window.hidden then
-      windows[#windows + 1] = window
-    end
-  end
-
-  return windows
-end
-
 local function active_workspace_tiled_group_candidates(workspace)
   local candidates = tiled_windows(workspace)
   sort_windows_by_focus_history(candidates)
   return candidates
+end
+
+local function move_window_into_group(window, anchor)
+  local selector = window_selector(window)
+  if not selector then
+    return false
+  end
+
+  for _, direction in ipairs(grouping_directions(window, anchor)) do
+    hl.dsp.focus({ window = selector })()
+    hl.dsp.window.move({ into_group = direction, window = selector })()
+
+    local active = hl.get_active_window()
+    if active and active.group and active.group.size and active.group.size > 1 then
+      return true
+    end
+  end
+
+  return false
 end
 
 local function find_tabbed_group_anchor(state)
@@ -620,29 +668,35 @@ local function gather_workspace_into_tabbed_group()
 
   set_layout(columns_layout)
 
-  local staged_windows = {}
-  for _, window in ipairs(workspace_visible_normal_windows(workspace)) do
-    if window ~= anchor then
-      staged_windows[#staged_windows + 1] = window
-      move_window_to_workspace(tabbed_group_staging_workspace, false, window)
-    end
-  end
-
   hl.dsp.focus({ window = anchor_selector })()
   hl.dsp.group.toggle({ window = anchor_selector })()
 
-  hl.config({ group = { group_on_movetoworkspace = true } })
+  local group_windows = {}
   for _, window in ipairs(candidates) do
-    if window ~= anchor then
-      move_window_to_workspace(workspace.id, false, window)
+    if window ~= anchor and not window.group then
+      group_windows[#group_windows + 1] = window
     end
   end
-  hl.config({ group = { group_on_movetoworkspace = false } })
 
-  for _, window in ipairs(staged_windows) do
-    if not window_address_in_set(window, candidate_addresses) then
-      move_window_to_workspace(workspace.id, false, window)
+  local anchor_x, anchor_y = window_center(anchor)
+  table.sort(group_windows, function(left, right)
+    return window_distance_squared(left, anchor_x, anchor_y) < window_distance_squared(right, anchor_x, anchor_y)
+  end)
+
+  local grouped_count = 1
+  for _, window in ipairs(group_windows) do
+    if move_window_into_group(window, anchor) then
+      grouped_count = grouped_count + 1
     end
+  end
+
+  if grouped_count <= 1 then
+    hl.dsp.focus({ window = anchor_selector })()
+    hl.dsp.group.toggle({ window = anchor_selector })()
+    notify_tabbed_group("Unable to group tiled windows")
+    return
+  elseif grouped_count < #candidates then
+    notify_tabbed_group("Grouped " .. tostring(grouped_count) .. " of " .. tostring(#candidates) .. " tiled windows")
   end
 
   tabbed_workspace_groups[key] = {
