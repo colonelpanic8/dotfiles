@@ -15,6 +15,7 @@ local minimized_workspace = "special:minimized"
 local current_layout = columns_layout
 local enable_nstack = true
 local enable_hyprexpo = true
+local enable_hyprwinview = true
 local configure_nstack_plugin_from_lua = false
 local workspace_layouts = {}
 local minimized_windows = {}
@@ -102,6 +103,22 @@ local function hyprexpo(action)
   end
 end
 
+local function hyprwinview(action)
+  return function()
+    if hl.plugin and hl.plugin.hyprwinview and hl.plugin.hyprwinview.overview then
+      hl.plugin.hyprwinview.overview(action)
+    else
+      hl.notification.create({
+        text = "hyprwinview is not loaded",
+        duration = 1800,
+        icon = "warning",
+        color = "rgba(edb443ff)",
+        font_size = 13,
+      })
+    end
+  end
+end
+
 local function apply_nstack_config()
   if verify_config or not enable_nstack or not configure_nstack_plugin_from_lua then
     return
@@ -143,6 +160,43 @@ local function apply_hyprexpo_config()
         show_workspace_numbers = true,
         workspace_number_color = "rgba(edb443ff)",
         gesture_distance = 200,
+      },
+    },
+  })
+end
+
+local function apply_hyprwinview_config()
+  if verify_config or not enable_hyprwinview then
+    return
+  end
+
+  hl.config({
+    plugin = {
+      hyprwinview = {
+        gap_size = 24,
+        margin = 48,
+        bg_col = "rgba(101014ee)",
+        border_col = "rgba(ffffff33)",
+        hover_border_col = "rgba(66ccffee)",
+        border_size = 3,
+        keys_left = "a,h,left",
+        keys_right = "d,l,right",
+        keys_up = "w,k,up",
+        keys_down = "s,j,down",
+        keys_go = "return,enter,space,g",
+        keys_bring = "b,shift+return,shift+space",
+        keys_close = "escape,q",
+        show_app_icon = 1,
+        app_icon_size = 48,
+        app_icon_position = "bottom right",
+        app_icon_margin_x = 12,
+        app_icon_margin_y = 12,
+        app_icon_margin_relative_x = 0.0,
+        app_icon_margin_relative_y = 0.0,
+        app_icon_offset_x = 0,
+        app_icon_offset_y = 0,
+        app_icon_backplate_col = "rgba(00000066)",
+        app_icon_backplate_padding = 6,
       },
     },
   })
@@ -1364,6 +1418,9 @@ end
 if enable_hyprexpo and not verify_config then
   hl.plugin.load("/run/current-system/sw/lib/libhyprexpo.so")
 end
+if enable_hyprwinview and not verify_config then
+  hl.plugin.load("/run/current-system/sw/lib/libhyprwinview.so")
+end
 
 hl.env("XCURSOR_SIZE", "24")
 hl.env("HYPRCURSOR_SIZE", "24")
@@ -1541,8 +1598,9 @@ bind(main_mod .. " + SHIFT + C", hl.dsp.window.close())
 bind(main_mod .. " + SHIFT + Q", hl.dsp.exit())
 bind(main_mod .. " + E", exec("emacsclient --eval '(emacs-everywhere)'"))
 bind(main_mod .. " + V", exec("wl-paste | xdotool type --file -"))
-bind(main_mod .. " + Tab", hyprexpo("toggle"))
-bind(main_mod .. " + SHIFT + Tab", hyprexpo("bring"))
+bind(main_mod .. " + Tab", hyprwinview("toggle"))
+bind("ALT + Tab", hyprexpo("toggle"))
+bind("ALT + SHIFT + Tab", hyprexpo("bring"))
 bind(main_mod .. " + G", exec(shell_ui_command .. " window go"))
 bind(main_mod .. " + B", exec(shell_ui_command .. " window bring"))
 bind(main_mod .. " + SHIFT + B", exec(shell_ui_command .. " window replace"))
@@ -1760,6 +1818,7 @@ bind(main_mod .. " + mouse:273", hl.dsp.window.resize())
 hl.on("hyprland.start", function()
   apply_nstack_config()
   apply_hyprexpo_config()
+  apply_hyprwinview_config()
   apply_rules()
   hl.exec_cmd("sh -lc 'export IMALISON_SESSION_TYPE=wayland; dbus-update-activation-environment --systemd XDG_RUNTIME_DIR WAYLAND_DISPLAY DISPLAY XAUTHORITY HYPRLAND_INSTANCE_SIGNATURE XDG_CURRENT_DESKTOP XDG_SESSION_TYPE IMALISON_SESSION_TYPE; systemctl --user start graphical-session.target hyprland-session.target'")
   hl.exec_cmd("hypridle")
@@ -1772,6 +1831,7 @@ end)
 
 hl.on("config.reloaded", apply_nstack_config)
 hl.on("config.reloaded", apply_hyprexpo_config)
+hl.on("config.reloaded", apply_hyprwinview_config)
 hl.on("config.reloaded", apply_rules)
 
 hl.on("window.open", schedule_nstack_count_update)
