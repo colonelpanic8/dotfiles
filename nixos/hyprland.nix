@@ -7,16 +7,13 @@
   ...
 }:
 let
-  cfg = config.myModules.hyprland;
   system = pkgs.stdenv.hostPlatform.system;
-  enableExternalPluginPackages = !cfg.useLuaConfigBranch;
-  hyprlandInput =
-    if cfg.useLuaConfigBranch
-    then inputs.hyprland-lua-config
-    else inputs.hyprland;
-  luaPluginPackages = lib.optionals cfg.useLuaConfigBranch [
+  hyprlandInput = inputs.hyprland;
+  hyprlandPluginPackages = [
     inputs.hyprNStack.packages.${system}.hyprNStack
     inputs.hyprland-plugins-lua.packages.${system}.hyprexpo
+    inputs.hyprwinview.packages.${system}.hyprwinview
+    inputs.self.packages.${system}.hypr-workspace-history
   ];
   hyprRofiWindow = pkgs.writeShellApplication {
     name = "hypr_rofi_window";
@@ -159,22 +156,17 @@ let
           };
 
           programs.hyprscratch = {
-            enable = !cfg.useLuaConfigBranch;
+            enable = false;
             settings = { };
           };
 
-          xdg.configFile."hyprscratch/config.conf" = lib.mkIf (!cfg.useLuaConfigBranch) {
+          xdg.configFile."hyprscratch/config.conf" = lib.mkIf false {
             text = lib.hm.generators.toHyprconf {
               attrs = hyprscratchSettings;
             };
           };
 
-          xdg.configFile."hypr/hyprland.conf" = {
-            force = true;
-            source = hyprConfig "hyprland.conf";
-          };
-
-          xdg.configFile."hypr/hyprland.lua" = lib.mkIf cfg.useLuaConfigBranch {
+          xdg.configFile."hypr/hyprland.lua" = {
             force = true;
             source = hyprConfig "hyprland.lua";
           };
@@ -212,29 +204,7 @@ let
         hyprShellUi
         jq
       ]
-      ++ luaPluginPackages
-      ++ lib.optionals enableExternalPluginPackages [
-        # External plugin packages are pinned to the stable 0.53 stack.
-        # Keep hy3 on the stable stack; the Lua branch uses hyprNStack and the
-        # forked Lua-compatible hyprexpo input instead.
-        inputs.hy3.packages.${system}.hy3
-        inputs.hyprland-plugins.packages.${system}.hyprexpo
-      ];
+      ++ hyprlandPluginPackages;
   };
 in
 enabledModule
-// {
-  options = lib.recursiveUpdate enabledModule.options {
-    myModules.hyprland.useLuaConfigBranch = lib.mkOption {
-      type = lib.types.bool;
-      default = false;
-      description = ''
-        Use the experimental Hyprland PR 13817 Lua-config branch for the
-        Hyprland package itself. The experimental package set excludes hy3, and
-        includes the Lua-branch builds of hyprNStack and hyprexpo instead. When
-        a sibling `hyprland.lua` is present, the Lua config manager picks it
-        before `hyprland.conf`.
-      '';
-    };
-  };
-}

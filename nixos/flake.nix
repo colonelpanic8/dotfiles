@@ -93,35 +93,25 @@
 
     # Hyprland and plugins from official flakes for proper plugin compatibility
     hyprland = {
-      url = "git+https://github.com/hyprwm/Hyprland?submodules=1&ref=refs/tags/v0.53.0";
-    };
-
-    hyprland-lua-config = {
-      # Experimental Lua config branch from PR 13817.
-      url = "git+https://github.com/hyprwm/Hyprland?submodules=1&ref=refs/pull/13817/head";
+      url = "git+https://github.com/hyprwm/Hyprland?submodules=1";
     };
 
     hyprNStack = {
       url = "github:colonelpanic8/hyprNStack?ref=hyprland-lua-integration";
       inputs = {
-        hyprland.follows = "hyprland-lua-config";
+        hyprland.follows = "hyprland";
         nixpkgs.follows = "nixpkgs";
       };
     };
 
-    hy3 = {
-      url = "github:outfoxxed/hy3?ref=hl0.53.0";
-      inputs.hyprland.follows = "hyprland";
-    };
-
-    hyprland-plugins = {
-      url = "github:colonelpanic8/hyprland-plugins?ref=hyprexpo-v0.53.0-custom";
-      inputs.hyprland.follows = "hyprland";
-    };
-
     hyprland-plugins-lua = {
       url = "github:colonelpanic8/hyprland-plugins?ref=codex/fix-main-ci";
-      inputs.hyprland.follows = "hyprland-lua-config";
+      inputs.hyprland.follows = "hyprland";
+    };
+
+    hyprwinview = {
+      url = "github:colonelpanic8/hyprwinview";
+      inputs.hyprland.follows = "hyprland";
     };
 
     hyprscratch = {
@@ -161,26 +151,11 @@
       };
     };
 
-    taffybar = {
-      # Use a remote, lockfile-pinned input so rebuilds are reproducible across
-      # machines. For local development, use `nixos-rebuild --override-input taffybar path:...`.
-      url = "github:taffybar/taffybar";
-      inputs = {
-        nixpkgs.follows = "nixpkgs";
-        flake-utils.follows = "flake-utils";
-        xmonad.follows = "xmonad";
-        xmonad-contrib.follows = "xmonad-contrib";
-        weeder-nix.url = "github:NorfairKing/weeder-nix";
-        weeder-nix.inputs.pre-commit-hooks.inputs.nixpkgs.follows = "nixpkgs";
-      };
-    };
-
     imalison-taffybar = {
       url = "path:../dotfiles/config/taffybar";
       inputs = {
         nixpkgs.follows = "nixpkgs";
         flake-utils.follows = "flake-utils";
-        taffybar.follows = "taffybar";
         xmonad.follows = "xmonad";
       };
     };
@@ -243,7 +218,6 @@
     nixpkgs,
     nixos-hardware,
     home-manager,
-    taffybar,
     xmonad,
     nixtheplanet,
     xmonad-contrib,
@@ -252,8 +226,6 @@
     agenix,
     imalison-taffybar,
     hyprland,
-    hy3,
-    hyprland-plugins,
     org-agenda-api,
     flake-utils,
     ...
@@ -504,6 +476,26 @@
       containerLib = import ../org-agenda-api/container.nix {
         inherit pkgs system tangledConfig org-agenda-api orgApiRev dotfilesRev;
       };
+      hyprlandPkgs = import nixpkgs {
+        inherit system;
+        overlays = [ hyprland.overlays.hyprland-packages ];
+      };
+      hyprWorkspaceHistory = hyprlandPkgs.hyprlandPlugins.mkHyprlandPlugin {
+        pluginName = "hypr-workspace-history";
+        version = "0.1.0";
+        src = builtins.path {
+          path = ../dotfiles/config/hypr/workspace-history-plugin;
+          name = "hypr-workspace-history-source";
+        };
+
+        inherit (hyprland.packages.${system}.hyprland) nativeBuildInputs;
+
+        meta = {
+          description = "Workspace history cycling plugin for Hyprland";
+          license = lib.licenses.bsd3;
+          platforms = lib.platforms.linux;
+        };
+      };
     in {
       packages = {
         colonelpanic-org-agenda-api = containerLib.containers.colonelpanic;
@@ -511,16 +503,21 @@
       } // lib.optionalAttrs pkgs.stdenv.isLinux {
         hyprNStack = inputs.hyprNStack.packages.${system}.hyprNStack;
         hyprexpo-lua = inputs.hyprland-plugins-lua.packages.${system}.hyprexpo;
+        hyprwinview = inputs.hyprwinview.packages.${system}.hyprwinview;
+        hypr-workspace-history = hyprWorkspaceHistory;
       };
 
       checks = lib.optionalAttrs pkgs.stdenv.isLinux {
         hyprNStack = inputs.hyprNStack.packages.${system}.hyprNStack;
         hyprexpo-lua = inputs.hyprland-plugins-lua.packages.${system}.hyprexpo;
-        hyprland-lua-config-syntax = pkgs.runCommand "hyprland-lua-config-syntax" {
+        hyprwinview = inputs.hyprwinview.packages.${system}.hyprwinview;
+        hypr-workspace-history = hyprWorkspaceHistory;
+        hyprland-config-syntax = pkgs.runCommand "hyprland-config-syntax" {
           nativeBuildInputs = [ pkgs.lua5_4 ];
         } ''
-          luac -p ${../dotfiles/config/hypr/hyprland.lua}
-          if grep -n 'hyprctl' ${../dotfiles/config/hypr/hyprland.lua} | grep -v 'hyprctl reload'; then
+          cp ${../dotfiles/config/hypr/hyprland.lua} hyprland.lua
+          luac -p hyprland.lua
+          if grep -n 'hyprctl' hyprland.lua | grep -v 'hyprctl reload' | grep -v 'hyprctl dispatch hyprwinview:overview'; then
             echo "hyprland.lua should not shell out to hyprctl for window/workspace manipulation" >&2
             exit 1
           fi
@@ -629,7 +626,7 @@
             end,
           }
 
-          dofile("${../dotfiles/config/hypr/hyprland.lua}")
+          dofile("./hyprland.lua")
 
           for _, callback in ipairs(callbacks) do
             callback()
@@ -637,8 +634,8 @@
           LUA
           touch "$out"
         '';
-        hyprland-lua-verify-config = let
-          hyprlandPackage = inputs.hyprland-lua-config.packages.${system}.hyprland;
+        hyprland-verify-config = let
+          hyprlandPackage = inputs.hyprland.packages.${system}.hyprland;
           hyprNStackPackage = inputs.hyprNStack.packages.${system}.hyprNStack;
         in pkgs.runCommand "hyprland-lua-verify-config" {} ''
           cp ${../dotfiles/config/hypr/hyprland.lua} hyprland.lua

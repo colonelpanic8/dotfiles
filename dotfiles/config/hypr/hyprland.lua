@@ -16,6 +16,7 @@ local current_layout = columns_layout
 local enable_nstack = true
 local enable_hyprexpo = true
 local enable_hyprwinview = true
+local enable_workspace_history = true
 local configure_nstack_plugin_from_lua = false
 local workspace_layouts = {}
 local minimized_windows = {}
@@ -25,8 +26,6 @@ local window_picker_candidates = {}
 local stack_update_timer = nil
 local monocle_notice = nil
 local scratchpad_pending = {}
-local monitor_workspace_history = {}
-local workspace_history_cycle = nil
 
 local scratchpads = {
   htop = {
@@ -121,6 +120,22 @@ local function hyprwinview(action)
   end
 end
 
+local function workspacehistory(action, arg)
+  return function()
+    if hl.plugin and hl.plugin.workspacehistory and hl.plugin.workspacehistory[action] then
+      hl.plugin.workspacehistory[action](arg)
+    else
+      hl.notification.create({
+        text = "workspacehistory is not loaded",
+        duration = 1800,
+        icon = "warning",
+        color = "rgba(edb443ff)",
+        font_size = 13,
+      })
+    end
+  end
+end
+
 local function apply_nstack_config()
   if verify_config or not enable_nstack or not configure_nstack_plugin_from_lua then
     return
@@ -159,6 +174,7 @@ local function apply_hyprexpo_config()
         bg_col = "rgba(111111ff)",
         workspace_method = "center current",
         skip_empty = false,
+        max_workspace = max_workspace,
         show_workspace_numbers = true,
         workspace_number_color = "rgba(edb443ff)",
         gesture_distance = 200,
@@ -177,19 +193,15 @@ local function apply_hyprwinview_config()
       hyprwinview = {
         gap_size = 24,
         margin = 48,
-        bg_col = "rgba(101014ee)",
+        background = "rgba(10101499)",
+        background_blur = 0,
         border_col = "rgba(ffffff33)",
         hover_border_col = "rgba(66ccffee)",
         border_size = 3,
-        keys_left = "a,h,left",
-        keys_right = "d,l,right",
-        keys_up = "w,k,up",
-        keys_down = "s,j,down",
-        keys_go = "return,enter,space,g",
-        keys_bring = "b,shift+return,shift+space",
-        keys_close = "escape,q",
+        window_order = "application",
         show_app_icon = 1,
         app_icon_size = 48,
+        app_icon_theme_source = "auto",
         app_icon_position = "bottom right",
         app_icon_margin_x = 12,
         app_icon_margin_y = 12,
@@ -199,9 +211,30 @@ local function apply_hyprwinview_config()
         app_icon_offset_y = 0,
         app_icon_backplate_col = "rgba(00000066)",
         app_icon_backplate_padding = 6,
+        animation = "workspace_zoom",
+        animation_in_ms = 180,
+        animation_out_ms = 140,
+        animation_scale = 0.94,
+        animation_stagger_ms = 16,
+        animation_stagger_max_ms = 120,
       },
     },
   })
+
+  if hl.plugin and hl.plugin.hyprwinview and hl.plugin.hyprwinview.configure then
+    hl.plugin.hyprwinview.configure({
+      keys = {
+        left = { "a", "h", "left" },
+        right = { "d", "l", "right" },
+        up = { "w", "k", "up" },
+        down = { "s", "j", "down" },
+        go = { "return", "enter", "space", "g", "f" },
+        bring = { "b", "shift+return", "shift+space" },
+        bring_replace = { "shift + b" },
+        close = { "escape", "q" },
+      },
+    })
+  end
 end
 
 local function active_workspace()
@@ -288,6 +321,27 @@ local function is_scratchpad_window(window)
     end
   end
   return false
+end
+
+local function matching_scratchpad_name(window)
+  for name, def in pairs(scratchpads) do
+    if scratchpad_window_matches(window, def) then
+      return name
+    end
+  end
+  return nil
+end
+
+local function same_workspace(left, right)
+  if not left or not right then
+    return false
+  end
+
+  if left.name and right.name and tostring(left.name) == tostring(right.name) then
+    return true
+  end
+
+  return left.id and right.id and left.id == right.id
 end
 
 local function is_minimized_workspace(workspace)
@@ -576,129 +630,6 @@ end
 
 local function focus_workspace(workspace_id)
   hl.dsp.focus({ workspace = tostring(workspace_id), on_current_monitor = true })()
-end
-
-local function monitor_key(monitor)
-  if not monitor then
-    return "unknown"
-  end
-  return tostring(monitor.name or monitor.id or "unknown")
-end
-
-local function workspace_history_workspace_id(workspace)
-  if not workspace or not workspace.id or workspace.id < 1 or workspace.id > max_workspace then
-    return nil
-  end
-  return workspace.id
-end
-
-local function workspace_history_monitor_key(workspace)
-  return monitor_key(workspace and workspace.monitor or hl.get_active_monitor())
-end
-
-local function remove_workspace_history_id(history, workspace_id)
-  for index = #history, 1, -1 do
-    if history[index] == workspace_id then
-      table.remove(history, index)
-    end
-  end
-end
-
-local function remember_workspace_for_monitor(workspace)
-  workspace = workspace or active_workspace()
-  if workspace_history_cycle then
-    return
-  end
-
-  local workspace_id = workspace_history_workspace_id(workspace)
-  if not workspace_id then
-    return
-  end
-
-  local key = workspace_history_monitor_key(workspace)
-  local history = monitor_workspace_history[key] or {}
-  if history[1] ~= workspace_id then
-    remove_workspace_history_id(history, workspace_id)
-    table.insert(history, 1, workspace_id)
-  end
-  monitor_workspace_history[key] = history
-end
-
-local function clone_workspace_history(history)
-  local clone = {}
-  for index, workspace_id in ipairs(history or {}) do
-    clone[index] = workspace_id
-  end
-  return clone
-end
-
-local function workspace_history_cycle_start()
-  if workspace_history_cycle then
-    return workspace_history_cycle
-  end
-
-  remember_workspace_for_monitor()
-
-  local workspace = active_workspace()
-  local workspace_id = workspace_history_workspace_id(workspace)
-  if not workspace_id then
-    return nil
-  end
-
-  local key = workspace_history_monitor_key(workspace)
-  local history = clone_workspace_history(monitor_workspace_history[key])
-  if history[1] ~= workspace_id then
-    remove_workspace_history_id(history, workspace_id)
-    table.insert(history, 1, workspace_id)
-  end
-
-  if #history < 2 then
-    return nil
-  end
-
-  workspace_history_cycle = {
-    monitor_key = key,
-    original_workspace = workspace_id,
-    history = history,
-    index = 2,
-  }
-
-  return workspace_history_cycle
-end
-
-local function cycle_workspace_history(direction)
-  local cycle = workspace_history_cycle_start()
-  if not cycle then
-    hl.dsp.focus({ workspace = "previous_per_monitor" })()
-    return
-  end
-
-  local workspace_id = cycle.history[cycle.index]
-  if not workspace_id then
-    return
-  end
-
-  focus_workspace(workspace_id)
-  cycle.index = ((cycle.index - 1 + direction) % #cycle.history) + 1
-end
-
-local function commit_workspace_history_cycle()
-  if not workspace_history_cycle then
-    return
-  end
-
-  workspace_history_cycle = nil
-  remember_workspace_for_monitor()
-end
-
-local function cancel_workspace_history_cycle()
-  local cycle = workspace_history_cycle
-  if not cycle then
-    return
-  end
-
-  workspace_history_cycle = nil
-  focus_workspace(cycle.original_workspace)
 end
 
 local function move_window_to_workspace(workspace_id, follow, window)
@@ -1155,7 +1086,29 @@ end
 
 local function scratchpad_is_visible(window)
   local workspace = active_workspace()
-  return workspace and window and window.workspace == workspace
+  return workspace and window and same_workspace(window.workspace, workspace)
+end
+
+-- Active scratchpads are scratchpad windows visible on the active workspace.
+-- Invoking a different scratchpad replaces that active set.
+local function active_scratchpad_windows(except_name)
+  local windows = {}
+  for _, window in ipairs(hl.get_windows()) do
+    local name = matching_scratchpad_name(window)
+    if name and name ~= except_name and scratchpad_is_visible(window) then
+      windows[#windows + 1] = {
+        name = name,
+        window = window,
+      }
+    end
+  end
+  return windows
+end
+
+local function hide_active_scratchpads(except_name)
+  for _, active in ipairs(active_scratchpad_windows(except_name)) do
+    hide_scratchpad_window(active.name, active.window)
+  end
 end
 
 local function adopt_matching_scratchpad_window(window)
@@ -1489,6 +1442,7 @@ local function toggle_scratchpad(name)
 
   local windows = matching_scratchpad_windows(name)
   if #windows == 0 then
+    hide_active_scratchpads(name)
     scratchpad_pending[name] = {
       monitor = hl.get_active_monitor(),
       workspace = active_workspace(),
@@ -1510,6 +1464,7 @@ local function toggle_scratchpad(name)
       hide_scratchpad_window(name, window)
     end
   else
+    hide_active_scratchpads(name)
     local workspace = active_workspace()
     local target_monitor = hl.get_active_monitor()
     for _, window in ipairs(windows) do
@@ -1526,6 +1481,9 @@ if enable_hyprexpo and not verify_config then
 end
 if enable_hyprwinview and not verify_config then
   hl.plugin.load("/run/current-system/sw/lib/libhyprwinview.so")
+end
+if enable_workspace_history and not verify_config then
+  hl.plugin.load("/run/current-system/sw/lib/libhypr-workspace-history.so")
 end
 
 hl.env("XCURSOR_SIZE", "24")
@@ -1705,6 +1663,7 @@ bind(main_mod .. " + SHIFT + Q", hl.dsp.exit())
 bind(main_mod .. " + E", exec("emacsclient --eval '(emacs-everywhere)'"))
 bind(main_mod .. " + V", exec("wl-paste | xdotool type --file -"))
 bind(main_mod .. " + Tab", hyprwinview("toggle"))
+bind(main_mod .. " + SHIFT + Tab", hyprwinview("toggle other-workspaces"))
 bind("ALT + Tab", hyprexpo("toggle"))
 bind("ALT + SHIFT + Tab", hyprexpo("bring"))
 bind(main_mod .. " + G", exec(shell_ui_command .. " window go"))
@@ -1871,14 +1830,9 @@ for i = 1, 9 do
   end)
 end
 
-bind(main_mod .. " + backslash", function()
-  cycle_workspace_history(1)
-end)
-bind(main_mod .. " + slash", function()
-  cycle_workspace_history(-1)
-end)
-bind(main_mod .. " + Super_L", commit_workspace_history_cycle, { release = true })
-bind(main_mod .. " + Escape", cancel_workspace_history_cycle)
+bind(main_mod .. " + backslash", workspacehistory("cycle", 1))
+bind(main_mod .. " + slash", workspacehistory("cycle", -1))
+bind(main_mod .. " + Escape", workspacehistory("cancel"))
 bind(main_mod .. " + Z", hl.dsp.focus({ monitor = "+1" }))
 bind(main_mod .. " + SHIFT + Z", hl.dsp.window.move({ monitor = "+1" }))
 bind(main_mod .. " + mouse_down", function()
@@ -1920,6 +1874,7 @@ bind(hyper .. " + R", exec("rofi-systemd"))
 bind(hyper .. " + slash", exec("toggle_taffybar"))
 bind(hyper .. " + I", exec("rofi_select_input.hs"))
 bind(hyper .. " + backslash", exec("/home/imalison/dotfiles/dotfiles/lib/functions/mpg341cx_input toggle"))
+bind(hyper .. " + SHIFT + backslash", workspacehistory("debug"))
 bind(hyper .. " + O", exec("rofi_paswitch"))
 bind(hyper .. " + comma", exec("rofi_wallpaper.sh"))
 bind(hyper .. " + Y", exec("rofi_agentic_skill"))
@@ -1937,7 +1892,6 @@ hl.on("hyprland.start", function()
   hl.exec_cmd("hypridle")
   hl.exec_cmd("wl-paste --type text --watch cliphist store")
   hl.exec_cmd("wl-paste --type image --watch cliphist store")
-  remember_workspace_for_monitor()
   write_layout_state()
   schedule_nstack_count_update()
 end)
@@ -1953,7 +1907,6 @@ hl.on("window.kill", schedule_nstack_count_update)
 hl.on("window.move_to_workspace", schedule_nstack_count_update)
 hl.on("workspace.active", sync_layout_for_active_workspace)
 hl.on("monitor.focused", sync_layout_for_active_workspace)
-hl.on("workspace.active", remember_workspace_for_monitor)
 
 hl.on("window.open", update_monocle_notice)
 hl.on("window.destroy", update_monocle_notice)
