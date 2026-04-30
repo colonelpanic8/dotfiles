@@ -65,14 +65,7 @@ makeEnable config "myModules.sni" true {
 
       services.pasystray.enable = true;
 
-      services.flameshot = {
-        enable = true;
-        settings = {
-          General = {
-            useGrimAdapter = true;
-          };
-        };
-      };
+      services.flameshot.enable = true;
     })
   ];
 }
