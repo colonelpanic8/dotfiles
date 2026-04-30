@@ -214,7 +214,7 @@ local function apply_hyprwinview_config()
         animation = "workspace_zoom",
         animation_in_ms = 340,
         animation_out_ms = 260,
-        animation_speed = 0.5,
+        animation_speed = 0.25,
         animation_scale = 0.94,
         animation_stagger_ms = 16,
         animation_stagger_max_ms = 120,
