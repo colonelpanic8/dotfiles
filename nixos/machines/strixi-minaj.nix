@@ -9,6 +9,7 @@
   myModules.base.enable = true;
   myModules.desktop.enable = true;
   myModules.xmonad.enable = true;
+  myModules.riverXmonad.enable = true;
   myModules.extra.enable = false;
   myModules.code.enable = true;
   myModules.games.enable = false;

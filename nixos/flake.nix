@@ -147,6 +147,16 @@
       };
     };
 
+    xmonad-river = {
+      url = "path:/home/imalison/Projects/xmonad-river";
+      inputs = {
+        nixpkgs.follows = "nixpkgs";
+        unstable.follows = "nixpkgs";
+        flake-utils.follows = "flake-utils";
+        git-ignore-nix.follows = "git-ignore-nix";
+      };
+    };
+
     xmonad-contrib = {
       url = "github:IvanMalison/xmonad-contrib/withMyChanges";
       inputs = {

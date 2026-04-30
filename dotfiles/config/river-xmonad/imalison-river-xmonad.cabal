@@ -1,0 +1,18 @@
+cabal-version:      2.4
+name:               imalison-river-xmonad
+version:            0.1.0.0
+license:            BSD-3-Clause
+author:             Ivan Malison
+maintainer:         IvanMalison@gmail.com
+build-type:         Simple
+
+executable imalison-river-xmonad
+  main-is:          Main.hs
+  build-depends:    base >= 4.12 && < 5
+                  , containers
+                  , process
+                  , X11
+                  , xmonad
+                  , xmonad-contrib
+  ghc-options:      -Wall -Wno-unused-do-bind -Wno-deprecations -Wno-missing-signatures -Wno-name-shadowing
+  default-language: Haskell2010

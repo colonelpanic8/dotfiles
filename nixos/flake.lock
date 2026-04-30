@@ -1808,7 +1808,8 @@
         "systems": "systems_4",
         "vscode-server": "vscode-server",
         "xmonad": "xmonad_2",
-        "xmonad-contrib": "xmonad-contrib_2"
+        "xmonad-contrib": "xmonad-contrib_2",
+        "xmonad-river": "xmonad-river"
       }
     },
     "rust-analyzer-src": {
@@ -2118,6 +2119,32 @@
         "ref": "withMyChanges",
         "repo": "xmonad-contrib",
         "type": "github"
+      }
+    },
+    "xmonad-river": {
+      "inputs": {
+        "flake-utils": [
+          "flake-utils"
+        ],
+        "git-ignore-nix": [
+          "git-ignore-nix"
+        ],
+        "nixpkgs": [
+          "nixpkgs"
+        ],
+        "unstable": [
+          "nixpkgs"
+        ]
+      },
+      "locked": {
+        "lastModified": 1777476488,
+        "narHash": "sha256-2Adfi0BDJEM/ITFbXJkS21wVQ96oNXLLUh4HsHonCl4=",
+        "path": "/home/imalison/Projects/xmonad-river",
+        "type": "path"
+      },
+      "original": {
+        "path": "/home/imalison/Projects/xmonad-river",
+        "type": "path"
       }
     },
     "xmonad_2": {

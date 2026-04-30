@@ -37,6 +37,7 @@
     ./rabbitmq.nix
     ./quickshell.nix
     ./remote-hyprland.nix
+    ./river-xmonad.nix
     ./secrets.nix
     ./ssh.nix
     ./sni.nix
