@@ -1,0 +1,93 @@
+#compdef just
+
+local -a just_options
+just_options=(
+  '--alias-style=[Set list command alias display style]:style:(left right separate)'
+  '--allow-missing[Ignore missing recipe and module errors]'
+  '--ceiling=[Do not ascend above directory when searching for a justfile]:directory:_files -/'
+  '--check[Run --fmt in check mode]'
+  '--chooser=[Override binary invoked by --choose]:command:_command_names -e'
+  '--clear-shell-args[Clear shell arguments]'
+  '--color=[Print colorful output]:when:(always auto never)'
+  '--command-color=[Echo recipe lines in color]:color:(black blue cyan green purple red yellow)'
+  '--complete-aliases[Auto-complete recipe aliases]'
+  '--cygpath=[Path to cygpath binary]:command:_command_names -e'
+  '--dotenv-filename=[Search for environment file by name]:filename:_files'
+  '--dotenv-path=[Load dotenv file at path]:file:_files'
+  '--dry-run[Print what just would do]'
+  '--dump-format=[Dump justfile format]:format:(just json)'
+  '--evaluate-format=[Print evaluated variables in format]:format:(just shell)'
+  '--explain[Print recipe doc comment before running it]'
+  '--global-justfile[Use global justfile]'
+  '--group=[Only list recipes in group]:group:'
+  '--highlight[Highlight echoed recipe lines in bold]'
+  '--indentation=[Indent recipe bodies with indentation]:indentation:'
+  '--justfile=[Use justfile]:justfile:_files'
+  '--justfile-name=[Search for justfile named name]:name:'
+  '--list-heading=[Print text before list]:text:'
+  '--list-prefix=[Print text before each list item]:text:'
+  '--list-submodules[List recipes in submodules]'
+  '--no-aliases[Do not show aliases in list]'
+  '--no-deps[Do not run recipe dependencies]'
+  '--no-dotenv[Do not load .env file]'
+  '--no-highlight[Do not highlight echoed recipe lines in bold]'
+  '--one[Forbid multiple recipes on the command line]'
+  '--quiet[Suppress output]'
+  '--set=[Override variable with value]:variable/value:'
+  '--shell=[Invoke shell to run recipes]:shell:_command_names -e'
+  '--shell-arg=[Invoke shell with argument]:argument:'
+  '--shell-command[Invoke command with just shell]'
+  '--tempdir=[Save temporary files to directory]:directory:_files -/'
+  '--time[Print recipe execution time]'
+  '--timestamp[Print recipe command timestamps]'
+  '--timestamp-format=[Timestamp format string]:format:'
+  '--unsorted[Return list and summary entries in source order]'
+  '--unstable[Enable unstable features]'
+  '--verbose[Use verbose output]'
+  '--working-directory=[Use working directory]:directory:_files -/'
+  '--yes[Automatically confirm all recipes]'
+  '(- *)--help[Print help]'
+  '(- *)--version[Print version]'
+  '--changelog[Print changelog]'
+  '--choose[Select one or more recipes to run with chooser]'
+  '--command[Run an arbitrary command]'
+  '--completions=[Print shell completion script]:shell:(bash elvish fish nushell powershell zsh)'
+  '--dump[Print justfile]'
+  '--edit[Edit justfile]'
+  '--evaluate[Evaluate and print variables]'
+  '--fmt[Format and overwrite justfile]'
+  '--groups[List recipe groups]'
+  '--init[Initialize new justfile]'
+  '--json[Print justfile as JSON]'
+  '--list[List available recipes]'
+  '--man[Print man page]'
+  '--show[Show recipe at path]'
+  '--summary[List names of available recipes]'
+  '--usage[Print recipe usage information]'
+  '--variables[List names of variables]'
+  '-f+[Use justfile]:justfile:_files'
+  '-d+[Use working directory]:directory:_files -/'
+  '-c+[Run command]:command:'
+  '-l[List available recipes]'
+  '-s[Show information]'
+  '-q[Suppress output]'
+  '-u[Return recipes in source order]'
+  '-v[Use verbose output]'
+  '-n[Print what just would do]'
+)
+
+_just_recipes() {
+  local -a recipes
+  recipes=(${(z)"$(just --summary --unsorted 2>/dev/null)"})
+
+  if (( $#recipes )); then
+    _describe -t recipes 'just recipe' recipes
+  else
+    _files
+  fi
+}
+
+_arguments -s -S \
+  $just_options \
+  '1:recipe:_just_recipes' \
+  '*::recipe argument:_normal'

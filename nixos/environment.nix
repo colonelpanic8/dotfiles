@@ -35,6 +35,7 @@ with lib;
         plugins = [ "git" "sudo" "pip" ];
       };
       shellInit = ''
+        fpath=("$HOME/.lib/completions" "${libDir}/completions" $fpath)
         fpath+="${libDir}/functions"
         for file in "${libDir}/functions/"*
         do
