@@ -883,16 +883,16 @@
         ]
       },
       "locked": {
-        "lastModified": 1777528408,
-        "narHash": "sha256-X350VUh+dkogkRP9vwbOrYEsEVHVD0rwjWsuOImcTI8=",
+        "lastModified": 1777692803,
+        "narHash": "sha256-wSJmIka4KUeicbRsUHuf2Bvxn7pZaSlKja3UBwyPevk=",
         "owner": "colonelpanic8",
         "repo": "hyprland-plugins",
-        "rev": "c50ed7b75e9c99b5a01de3ac17aa91d767af6dda",
+        "rev": "e796b1220379420907cb5a20bbe434eca533aa55",
         "type": "github"
       },
       "original": {
         "owner": "colonelpanic8",
-        "ref": "codex/fix-main-ci",
+        "ref": "codex/fix-main-ci-workspace-numbers",
         "repo": "hyprland-plugins",
         "type": "github"
       }

@@ -105,7 +105,7 @@
     };
 
     hyprland-plugins-lua = {
-      url = "github:colonelpanic8/hyprland-plugins?ref=codex/fix-main-ci";
+      url = "github:colonelpanic8/hyprland-plugins?ref=codex/fix-main-ci-workspace-numbers";
       inputs.hyprland.follows = "hyprland";
     };
 
