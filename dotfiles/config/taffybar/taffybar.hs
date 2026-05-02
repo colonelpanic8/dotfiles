@@ -572,6 +572,50 @@ wakeupDebugWidget :: TaffyIO Gtk.Widget
 wakeupDebugWidget =
   decorateWithClassAndBoxM "wakeup-debug" wakeupDebugWidgetNew
 
+omniMenuItem :: Text -> Text -> Text -> OmniMenuItem
+omniMenuItem label iconName command =
+  OmniMenuItem
+    { omniMenuItemLabel = label,
+      omniMenuItemCommand = command,
+      omniMenuItemIcon = Just iconName,
+      omniMenuItemTooltip = Just command
+    }
+
+omniMenuWidget :: TaffyIO Gtk.Widget
+omniMenuWidget =
+  decorateWithClassAndBoxM "omni-menu" $ do
+    icon <-
+      liftIO $
+        Gtk.imageNewFromIconName
+          (Just "system-run")
+          (fromIntegral $ fromEnum Gtk.IconSizeMenu)
+          >>= Gtk.toWidget
+    omniMenuNewWithConfig
+      (defaultOmniMenuConfig icon)
+        { omniMenuSections =
+            [ OmniMenuSection
+                "Launch"
+                [ omniMenuItem "App launcher" "view-app-grid-symbolic" "hypr_shell_ui launcher",
+                  omniMenuItem "Run command" "system-run" "hypr_shell_ui run",
+                  omniMenuItem "Terminal" "utilities-terminal" "ghostty --gtk-single-instance=false",
+                  omniMenuItem "Browser" "web-browser" "google-chrome-stable",
+                  omniMenuItem "Emacs" "emacs" "sh -lc 'emacsclient -c -n || emacs'",
+                  omniMenuItem "Window picker" "preferences-system-windows" "hypr_shell_ui window go"
+                ],
+              OmniMenuSection
+                "System"
+                [ omniMenuItem "Lock" "system-lock-screen" "loginctl lock-session",
+                  omniMenuItem "Toggle screensaver" "video-display" "/home/imalison/dotfiles/dotfiles/lib/bin/hypr-screensaver toggle",
+                  omniMenuItem "Reload WM" "view-refresh" "sh -lc 'hyprctl reload || xmonad --restart || river-xmonad-restart'",
+                  omniMenuItem "Restart taffybar" "view-refresh-symbolic" "/home/imalison/dotfiles/dotfiles/config/taffybar/scripts/taffybar-restart",
+                  omniMenuItem "Logout" "system-log-out" "sh -lc 'hyprctl dispatch exit || riverctl exit'",
+                  omniMenuItem "Suspend" "media-playback-pause" "systemctl suspend",
+                  omniMenuItem "Reboot" "system-reboot" "systemctl reboot",
+                  omniMenuItem "Power off" "system-shutdown" "systemctl poweroff"
+                ]
+            ]
+        }
+
 usageLogoWidget :: FilePath -> Text -> IO Gtk.Widget
 usageLogoWidget iconFile tooltip = do
   iconPath <- getUserConfigFile "taffybar" ("icons/" <> iconFile)
@@ -656,9 +700,9 @@ sniTrayWidget = do
 startWidgetsForBackend :: Backend -> [TaffyIO Gtk.Widget]
 startWidgetsForBackend backend =
   case backend of
-    BackendX11 -> [workspacesWidget, layoutWidget, windowsWidget]
+    BackendX11 -> [omniMenuWidget, workspacesWidget, layoutWidget, windowsWidget]
     -- These Wayland widgets are Hyprland-specific.
-    BackendWayland -> [workspacesWidget, windowsWidget]
+    BackendWayland -> [omniMenuWidget, workspacesWidget, windowsWidget]
 
 endWidgetsForHost :: String -> [TaffyIO Gtk.Widget]
 endWidgetsForHost hostName =
@@ -708,15 +752,17 @@ mkSimpleTaffyConfig hostName backend cssFiles =
       barPadding =
         if hostName `elem` smallBarHosts
           then 1
-          else if hostName `elem` compactBarHosts
-            then 2
-            else 4,
+          else
+            if hostName `elem` compactBarHosts
+              then 2
+              else 4,
       barHeight =
         if hostName `elem` smallBarHosts
           then ScreenRatio $ 1 / 48
-          else if hostName `elem` compactBarHosts
-          then ScreenRatio $ 1 / 40
-          else ScreenRatio $ 1 / 33,
+          else
+            if hostName `elem` compactBarHosts
+              then ScreenRatio $ 1 / 40
+              else ScreenRatio $ 1 / 33,
       cssPaths = cssFiles
     }
 
