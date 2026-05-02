@@ -136,11 +136,11 @@
         "xmonad-contrib": "xmonad-contrib"
       },
       "locked": {
-        "lastModified": 1777525523,
-        "narHash": "sha256-/LGaCcX6BgXRYpWnRp9CNgAgy7lmbQsubi4RwHJgnTI=",
+        "lastModified": 1777686352,
+        "narHash": "sha256-r9Mt/BruZoc9bYEN9/J+VfztfXPjdiyDGoJTP7Co1yc=",
         "owner": "taffybar",
         "repo": "taffybar",
-        "rev": "23dbc827adca706b28df7404624ae3f5e800b04f",
+        "rev": "8c0297965b40e84d4f8c4b7644a5364976c3ce86",
         "type": "github"
       },
       "original": {
