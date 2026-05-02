@@ -185,7 +185,15 @@
     home-manager.sharedModules = [
       inputs.hyprscratch.homeModules.default
       (
-        {lib, ...}: {
+        {
+          config,
+          lib,
+          ...
+        }: let
+          hyprConfigDir =
+            config.lib.file.mkOutOfStoreSymlink
+            "${config.home.homeDirectory}/dotfiles/dotfiles/config/hypr";
+        in {
           services.kanshi = {
             enable = true;
             systemdTarget = "graphical-session.target";
@@ -239,7 +247,7 @@
             };
           };
 
-          xdg.configFile."hypr/scripts".enable = false;
+          xdg.configFile."hypr".source = hyprConfigDir;
 
           xdg.configFile."systemd/user/wayland-wm@hyprland.desktop.service.d/10-cleanup-stale-session.conf".text = ''
             [Service]
