@@ -585,11 +585,15 @@ omniMenuWidget :: TaffyIO Gtk.Widget
 omniMenuWidget =
   decorateWithClassAndBoxM "omni-menu" $ do
     icon <-
-      liftIO $
-        Gtk.imageNewFromIconName
-          (Just "system-run")
-          (fromIntegral $ fromEnum Gtk.IconSizeMenu)
-          >>= Gtk.toWidget
+      liftIO $ do
+        iconPath <- getUserConfigFile "taffybar" "icons/nix-snowflake.svg"
+        pixbufNewFromFileAtScaleByHeight 18 iconPath >>= \case
+          Right pixbuf -> Gtk.toWidget =<< Gtk.imageNewFromPixbuf (Just pixbuf)
+          Left _ ->
+            Gtk.imageNewFromIconName
+              (Just "system-run")
+              (fromIntegral $ fromEnum Gtk.IconSizeMenu)
+              >>= Gtk.toWidget
     omniMenuNewWithConfig
       (defaultOmniMenuConfig icon)
         { omniMenuIncludeApplications = True,
