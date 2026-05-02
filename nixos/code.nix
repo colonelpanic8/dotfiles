@@ -1,91 +1,122 @@
-{ pkgs, config, inputs, makeEnable, ... }:
+{
+  pkgs,
+  config,
+  inputs,
+  lib,
+  makeEnable,
+  ...
+}:
 makeEnable config "myModules.code" true {
   programs.direnv = {
     enable = true;
     nix-direnv.enable = true;
   };
 
-  environment.systemPackages = with pkgs; [
-    # LLM Tools
-    antigravity
-    claude-code
-    codex
-    inputs.codex-desktop-linux.packages.${pkgs.stdenv.hostPlatform.system}.default
-    gemini-cli
-    happy-coder
-    opencode
-    t3code
+  hardware.uinput.enable = lib.mkIf config.myModules.desktop.enable true;
 
-    # MCP
-    github-mcp-server
-    gitea-mcp-server
-    gws
-    playwright-mcp
-    playwright-cli
+  programs.ydotool = lib.mkIf config.myModules.desktop.enable {
+    enable = true;
+    group = "input";
+  };
 
-    # C
-    clang
+  home-manager.sharedModules = lib.mkIf config.myModules.desktop.enable [
+    {
+      xdg.configFile."codex-desktop/settings.json".text =
+        (builtins.toJSON {
+          "codex-linux-computer-use-ui-enabled" = true;
+        })
+        + "\n";
+    }
+  ];
 
-    # Haskell
-    cabal-install
-    cabal2nix
-    ghc
-    haskellPackages.hpack
-    haskellPackages.hasktags
-    haskellPackages.hoogle
+  environment.systemPackages = with pkgs;
+    [
+      # LLM Tools
+      antigravity
+      claude-code
+      codex
+      inputs.codex-desktop-linux.packages.${pkgs.stdenv.hostPlatform.system}.default
+      gemini-cli
+      happy-coder
+      opencode
+      t3code
 
-    # Scala
-    sbt
-    scala
+      # MCP
+      github-mcp-server
+      gitea-mcp-server
+      gws
+      playwright-mcp
+      playwright-cli
 
-    # Node
-    nodejs
-    yarn
-    prettier
+      # C
+      clang
 
-    # Typescript
-    typescript
-    typescript-language-server
+      # Haskell
+      cabal-install
+      cabal2nix
+      ghc
+      haskellPackages.hpack
+      haskellPackages.hasktags
+      haskellPackages.hoogle
 
-    # golang
-    go
+      # Scala
+      sbt
+      scala
 
-    # Rust
-    rustup
-    cargo-sweep
+      # Node
+      nodejs
+      yarn
+      prettier
 
-    # Clojure
-    boot
-    leiningen
+      # Typescript
+      typescript
+      typescript-language-server
 
-    # Ruby
-    ruby
+      # golang
+      go
 
-    # python
-    black
-    poetry
-    uv
+      # Rust
+      rustup
+      cargo-sweep
 
-    # kotlin
-    kotlin
-    kotlin-language-server
+      # Clojure
+      boot
+      leiningen
 
-    # dhall
-    haskellPackages.dhall
-    haskellPackages.dhall-json
+      # Ruby
+      ruby
 
-    # misc
-    perf-tools
-    protobuf
+      # python
+      black
+      poetry
+      uv
 
-    # nix
-    nixd
-    nil
-    alejandra
-  ] ++ (if pkgs.stdenv.hostPlatform.system == "x86_64-linux" then with pkgs; [
-    # purescript
-    purescript
-    # Broken
-    # spago
-  ] else []);
+      # kotlin
+      kotlin
+      kotlin-language-server
+
+      # dhall
+      haskellPackages.dhall
+      haskellPackages.dhall-json
+
+      # misc
+      perf-tools
+      protobuf
+
+      # nix
+      nixd
+      nil
+      alejandra
+    ]
+    ++ (
+      if pkgs.stdenv.hostPlatform.system == "x86_64-linux"
+      then
+        with pkgs; [
+          # purescript
+          purescript
+          # Broken
+          # spago
+        ]
+      else []
+    );
 }
