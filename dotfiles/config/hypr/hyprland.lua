@@ -10,7 +10,16 @@ local run_menu = shell_ui_command .. " run"
 local max_workspace = 9
 local scratchpad_top_margin = 60
 local columns_layout = "nStack"
+local large_main_layout = "master"
+local grid_layout = "grid"
 local monocle_layout = "monocle"
+local layout_cycle = { columns_layout, large_main_layout, grid_layout }
+local layout_names = {
+  [columns_layout] = "Columns",
+  [large_main_layout] = "Large main",
+  [grid_layout] = "Grid",
+  [monocle_layout] = "Monocle",
+}
 local minimized_workspace = "special:minimized"
 local current_layout = columns_layout
 local enable_nstack = true
@@ -218,7 +227,7 @@ local function apply_hyprwinview_config()
         animation_scale = 0.94,
         animation_stagger_ms = 16,
         animation_stagger_max_ms = 120,
-        animation_workspace_zoom_stage_ratio = 0.70,
+        animation_workspace_zoom_stage_ratio = 0.50,
       },
     },
   })
@@ -485,8 +494,19 @@ local function find_empty_workspace(target_monitor, exclude_id)
   return unused_candidate or elsewhere_empty_candidate
 end
 
+local function is_nstack_layout(layout)
+  return layout == columns_layout or layout == grid_layout
+end
+
+local function hyprland_layout(layout)
+  if layout == grid_layout then
+    return columns_layout
+  end
+  return layout
+end
+
 local function update_nstack_count()
-  if not enable_nstack or current_layout ~= columns_layout then
+  if not enable_nstack or not is_nstack_layout(current_layout) then
     return
   end
 
@@ -495,8 +515,14 @@ local function update_nstack_count()
   if count == 0 then
     return
   end
-  count = math.max(count, 2)
-  hl.dsp.layout("setstackcount " .. tostring(count))()
+
+  local stack_count = count
+  if current_layout == grid_layout then
+    stack_count = math.ceil(math.sqrt(count))
+  end
+
+  stack_count = math.max(stack_count, 2)
+  hl.dsp.layout("setstackcount " .. tostring(stack_count))()
 end
 
 local function schedule_nstack_count_update()
@@ -544,13 +570,27 @@ local function update_monocle_notice()
   end
 end
 
+local function layout_name(layout)
+  return layout_names[layout] or tostring(layout)
+end
+
+local function notify_layout(layout)
+  hl.notification.create({
+    text = "Layout: " .. layout_name(layout),
+    duration = 1200,
+    icon = "info",
+    color = "rgba(edb443ff)",
+    font_size = 13,
+  })
+end
+
 local function set_layout(layout)
   workspace_layouts[workspace_key()] = layout
   current_layout = layout
-  hl.config({ general = { layout = layout } })
+  hl.config({ general = { layout = hyprland_layout(layout) } })
   write_layout_state()
 
-  if layout == columns_layout then
+  if is_nstack_layout(layout) then
     dismiss_monocle_notice()
     schedule_nstack_count_update()
   else
@@ -560,15 +600,30 @@ end
 
 local function sync_layout_for_active_workspace()
   current_layout = current_workspace_layout()
-  hl.config({ general = { layout = current_layout } })
+  hl.config({ general = { layout = hyprland_layout(current_layout) } })
   write_layout_state()
 
-  if current_layout == columns_layout then
+  if is_nstack_layout(current_layout) then
     dismiss_monocle_notice()
     schedule_nstack_count_update()
   else
     update_monocle_notice()
   end
+end
+
+local function cycle_layout(delta)
+  local current_index = 1
+  for index, layout in ipairs(layout_cycle) do
+    if layout == current_layout then
+      current_index = index
+      break
+    end
+  end
+
+  local next_index = ((current_index - 1 + delta) % #layout_cycle) + 1
+  local next_layout = layout_cycle[next_index]
+  set_layout(next_layout)
+  notify_layout(next_layout)
 end
 
 local function toggle_columns_monocle()
@@ -622,7 +677,7 @@ local function focus_direction(direction)
 end
 
 local function swap_direction(direction)
-  if enable_nstack and current_layout == columns_layout and active_group_size() <= 1 then
+  if enable_nstack and is_nstack_layout(current_layout) and active_group_size() <= 1 then
     hl.dsp.layout("swapdirection " .. direction)()
     return
   end
@@ -805,6 +860,15 @@ local function force_columns_layout()
   else
     set_layout(columns_layout)
   end
+end
+
+local function cycle_layout_or_restore_tabbed_group()
+  if active_group_size() > 1 or tabbed_workspace_groups[workspace_key()] then
+    restore_workspace_tabbed_group()
+    return
+  end
+
+  cycle_layout(1)
 end
 
 local function copy_windows(workspace)
@@ -1770,7 +1834,7 @@ bind(hyper .. " + SHIFT + D", function()
   move_window_to_monitor("r", true)
 end)
 
-bind(main_mod .. " + Space", gather_workspace_into_tabbed_group)
+bind(main_mod .. " + Space", cycle_layout_or_restore_tabbed_group)
 bind(main_mod .. " + SHIFT + Space", force_columns_layout)
 bind(main_mod .. " + CTRL + Space", gather_workspace_into_tabbed_group)
 bind(main_mod .. " + bracketright", monocle_next)
