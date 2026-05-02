@@ -129,6 +129,15 @@
 	padding: 0px;
 }
 
+/* This must outrank the end-widget nth-last-child color rotation.  Otherwise
+   the collapsed MPRIS end widget can still render as a thin blue strip. */
+.taffy-box > .outer-pad.end-widget.mpris.no-visible-children {
+	background-color: @transparent;
+	background-image: none;
+	box-shadow: none;
+	border-width: 0px;
+}
+
 /* Workspaces styling */
 
 /* Reset workspace .outer-pad pills to default styling so the nth-child color

@@ -4,20 +4,24 @@ set -euo pipefail
 root="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 cd "$root"
 
-# Hyprland can restart and change the instance signature, leaving old shells with
-# a stale HYPRLAND_INSTANCE_SIGNATURE. Fix it before launching taffybar so any
-# `hyprctl` calls inside the bar work.
+# Hyprland can restart and change the instance signature, and controller shells
+# can retain stale X11 session variables. Prefer the live Hyprland instance when
+# one is available so taffybar starts on the Wayland backend.
 if command -v hyprctl >/dev/null 2>&1 && command -v jq >/dev/null 2>&1; then
-  if ! hyprctl monitors -j >/dev/null 2>&1; then
-    instances_json="$(hyprctl instances -j 2>/dev/null || true)"
+  instances_json="$(hyprctl instances -j 2>/dev/null || true)"
+  if [[ -n "${instances_json:-}" ]]; then
     if [[ -n "${WAYLAND_DISPLAY:-}" ]]; then
-      inst="$(printf '%s\n' "$instances_json" | jq -r --arg sock "$WAYLAND_DISPLAY" '.[] | select(.wl_socket == $sock) | .instance' 2>/dev/null | head -n1 || true)"
+      inst_row="$(printf '%s\n' "$instances_json" | jq -r --arg sock "$WAYLAND_DISPLAY" '.[] | select(.instance and .wl_socket and .wl_socket == $sock) | [.instance, .wl_socket] | @tsv' 2>/dev/null | head -n1 || true)"
     else
-      inst="$(printf '%s\n' "$instances_json" | jq -r '.[0].instance // empty' 2>/dev/null || true)"
+      inst_row="$(printf '%s\n' "$instances_json" | jq -r '.[] | select(.instance and .wl_socket) | [.instance, .wl_socket] | @tsv' 2>/dev/null | head -n1 || true)"
     fi
 
-    if [[ -n "${inst:-}" ]]; then
+    if [[ -n "${inst_row:-}" ]]; then
+      read -r inst wl_socket <<<"$inst_row"
       export HYPRLAND_INSTANCE_SIGNATURE="$inst"
+      export WAYLAND_DISPLAY="$wl_socket"
+      export XDG_SESSION_TYPE=wayland
+      export GDK_BACKEND=wayland
     fi
   fi
 fi
