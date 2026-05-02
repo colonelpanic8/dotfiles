@@ -1,6 +1,7 @@
 model = "gpt-5.5"
 model_reasoning_effort = "high"
 personality = "pragmatic"
+suppress_unstable_features_warning = true
 
 # Portable Codex defaults. Machine-local additions are appended from
 # dotfiles/codex/config.local.toml by Home Manager.
