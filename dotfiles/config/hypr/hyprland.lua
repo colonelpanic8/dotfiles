@@ -460,6 +460,21 @@ local function window_distance_squared(window, x, y)
   return dx * dx + dy * dy
 end
 
+local function sort_windows_by_visual_position(windows)
+  table.sort(windows, function(left, right)
+    local left_x, left_y = window_center(left)
+    local right_x, right_y = window_center(right)
+
+    if math.abs(left_x - right_x) > 10 then
+      return left_x < right_x
+    end
+    if math.abs(left_y - right_y) > 10 then
+      return left_y < right_y
+    end
+    return tostring(left.address or "") < tostring(right.address or "")
+  end)
+end
+
 local function grouping_direction(window, anchor)
   local wx, wy = window_center(window)
   local ax, ay = window_center(anchor)
@@ -855,7 +870,9 @@ local function gather_workspace_into_tabbed_group()
     return
   end
 
-  local original_order = window_address_list(tiled_windows(workspace))
+  local original_windows = tiled_windows(workspace)
+  sort_windows_by_visual_position(original_windows)
+  local original_order = window_address_list(original_windows)
   local candidates = active_workspace_tiled_group_candidates(workspace)
   if #candidates <= 1 then
     set_layout(columns_layout)
