@@ -163,16 +163,16 @@
         ]
       },
       "locked": {
-        "lastModified": 1777706382,
-        "narHash": "sha256-D+UnmYnQsBRTqWVYkGiD+LI+El668U1iaItdLYCLbx4=",
+        "lastModified": 1777706222,
+        "narHash": "sha256-dItwdH4cM30AgClNKUtIa4AM0Mh8VZL6NGrVkrgBYdQ=",
         "owner": "colonelpanic8",
         "repo": "codex-desktop-linux",
-        "rev": "5332a4eadda144df3c4e943eb8b3eff718103e84",
+        "rev": "3f264e789c54b1be971e625393c8493d5075b41f",
         "type": "github"
       },
       "original": {
         "owner": "colonelpanic8",
-        "ref": "codex/update-dmg-hash",
+        "ref": "codex/fix-runtime-libs",
         "repo": "codex-desktop-linux",
         "type": "github"
       }

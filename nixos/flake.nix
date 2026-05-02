@@ -221,7 +221,7 @@
     };
 
     codex-desktop-linux = {
-      url = "github:colonelpanic8/codex-desktop-linux?ref=codex/update-dmg-hash";
+      url = "github:colonelpanic8/codex-desktop-linux?ref=codex/fix-runtime-libs";
       inputs = {
         nixpkgs.follows = "nixpkgs";
         flake-utils.follows = "flake-utils";
