@@ -3,7 +3,7 @@
 "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
-<!-- 2026-05-02 Sat 05:43 -->
+<!-- 2026-05-02 Sat 05:48 -->
 <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>&lrm;</title>
@@ -6036,6 +6036,7 @@ Paradox is a package.el extension. I have no use for it now that I use straight.
 <div class="outline-text-3" id="text-6-24">
 <div class="org-src-container">
 <pre class="src src-emacs-lisp">(<span class="org-keyword">use-package</span> <span class="org-constant">gcmh</span>
+  <span class="org-builtin">:defer</span> 5
   <span class="org-builtin">:config</span> (gcmh-mode 1))
 </pre>
 </div>
@@ -6148,7 +6149,8 @@ The file server file for this emacs instance no longer exists."</span>)
 <h3 id="bughunter"><span class="section-number-3">6.31.</span> bug-hunter <a href="#bughunter"><svg aria-hidden="true" class="octicon octicon-link" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a></h3>
 <div class="outline-text-3" id="text-6-31">
 <div class="org-src-container">
-<pre class="src src-emacs-lisp">(<span class="org-keyword">use-package</span> <span class="org-constant">bug-hunter</span>)
+<pre class="src src-emacs-lisp">(<span class="org-keyword">use-package</span> <span class="org-constant">bug-hunter</span>
+  <span class="org-builtin">:defer</span> t)
 </pre>
 </div>
 </div>
@@ -7149,8 +7151,7 @@ root.  PATTERN is passed as fd's search pattern when non-nil."</span>
 <div class="outline-text-3" id="text-11-4">
 <div class="org-src-container">
 <pre class="src src-emacs-lisp">(<span class="org-keyword">use-package</span> <span class="org-constant">multi-line</span>
-  <span class="org-comment-delimiter">;; </span><span class="org-comment">Demand multi-line to avoid failure to load mode specific strategies
-</span>  <span class="org-builtin">:demand</span> t
+  <span class="org-builtin">:commands</span> multi-line
   <span class="org-builtin">:bind</span> (<span class="org-string">"C-c d"</span> . multi-line)
   <span class="org-builtin">:config</span>
   (<span class="org-keyword">progn</span>
@@ -7255,11 +7256,10 @@ root.  PATTERN is passed as fd's search pattern when non-nil."</span>
 <div class="outline-text-3" id="text-11-12">
 <div class="org-src-container">
 <pre class="src src-emacs-lisp">(<span class="org-keyword">use-package</span> <span class="org-constant">yasnippet</span>
-  <span class="org-builtin">:defer</span> 5
-  <span class="org-builtin">:commands</span> (yas-global-mode)
+  <span class="org-builtin">:commands</span> (yas-expand yas-global-mode yas-insert-snippet yas-minor-mode)
+  <span class="org-builtin">:hook</span> ((prog-mode text-mode conf-mode) . yas-minor-mode)
   <span class="org-builtin">:config</span>
   (<span class="org-keyword">progn</span>
-    (yas-global-mode)
     (diminish 'yas-minor-mode)
     (add-hook 'term-mode-hook (<span class="org-keyword">lambda</span>() (yas-minor-mode -1)))
     (<span class="org-keyword">setq</span> yas-prompt-functions
@@ -7267,8 +7267,7 @@ root.  PATTERN is passed as fd's search pattern when non-nil."</span>
                 (cl-delete 'yas-ido-prompt yas-prompt-functions)))))
 
 (<span class="org-keyword">use-package</span> <span class="org-constant">yasnippet-snippets</span>
-  <span class="org-builtin">:after</span> yasnippet
-  <span class="org-builtin">:demand</span> t)
+  <span class="org-builtin">:after</span> yasnippet)
 </pre>
 </div>
 </div>
@@ -8149,7 +8148,8 @@ The following is taken from <a href="https://github.com/syl20bnr/spacemacs/blob/
 <h4 id="swift"><span class="section-number-4">14.1.14.</span> swift <a href="#swift"><svg aria-hidden="true" class="octicon octicon-link" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a></h4>
 <div class="outline-text-4" id="text-14-1-14">
 <div class="org-src-container">
-<pre class="src src-emacs-lisp">(<span class="org-keyword">use-package</span> <span class="org-constant">swift-mode</span>)
+<pre class="src src-emacs-lisp">(<span class="org-keyword">use-package</span> <span class="org-constant">swift-mode</span>
+  <span class="org-builtin">:mode</span> <span class="org-string">"\\.swift\\'"</span>)
 </pre>
 </div>
 </div>
@@ -8158,7 +8158,9 @@ The following is taken from <a href="https://github.com/syl20bnr/spacemacs/blob/
 <h4 id="groovy"><span class="section-number-4">14.1.15.</span> groovy <a href="#groovy"><svg aria-hidden="true" class="octicon octicon-link" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a></h4>
 <div class="outline-text-4" id="text-14-1-15">
 <div class="org-src-container">
-<pre class="src src-emacs-lisp">(<span class="org-keyword">use-package</span> <span class="org-constant">groovy-mode</span>)
+<pre class="src src-emacs-lisp">(<span class="org-keyword">use-package</span> <span class="org-constant">groovy-mode</span>
+  <span class="org-builtin">:mode</span> ((<span class="org-string">"\\.groovy\\'"</span> . groovy-mode)
+         (<span class="org-string">"\\.gradle\\'"</span> . groovy-mode)))
 </pre>
 </div>
 </div>
@@ -8262,7 +8264,8 @@ The following is taken from <a href="https://github.com/syl20bnr/spacemacs/blob/
 <h4 id="graphql"><span class="section-number-4">14.2.3.</span> graphql <a href="#graphql"><svg aria-hidden="true" class="octicon octicon-link" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a></h4>
 <div class="outline-text-4" id="text-14-2-3">
 <div class="org-src-container">
-<pre class="src src-emacs-lisp">(<span class="org-keyword">use-package</span> <span class="org-constant">graphql-mode</span>)
+<pre class="src src-emacs-lisp">(<span class="org-keyword">use-package</span> <span class="org-constant">graphql-mode</span>
+  <span class="org-builtin">:mode</span> <span class="org-string">"\\.graphql\\'"</span>)
 </pre>
 </div>
 </div>
@@ -9361,7 +9364,9 @@ I had to disable this mode because something that it does messes with coding set
   <span class="org-builtin">:demand</span> t
   <span class="org-builtin">:config</span>
   (<span class="org-keyword">progn</span>
-    (<span class="org-keyword">setq</span> recentf-max-saved-items 1000
+    (<span class="org-keyword">setq</span> recentf-initialize-file-name-history nil
+          recentf-auto-cleanup 'never
+          recentf-max-saved-items 1000
           recentf-max-menu-items 1000)
     (advice-add 'recentf-cleanup <span class="org-builtin">:around</span> 'imalison:shut-up-around)
     (recentf-mode +1)))
