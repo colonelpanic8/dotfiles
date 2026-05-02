@@ -20,6 +20,7 @@ url = "https://developers.openai.com/mcp"
 unified_exec = true
 apps = true
 steer = true
+goals = true
 
 [plugins."google-calendar@openai-curated"]
 enabled = true
