@@ -22,6 +22,7 @@ local layout_names = {
   [monocle_layout] = "Monocle",
 }
 local minimized_workspace = "special:minimized"
+local tabbed_group_restore_workspace_prefix = "special:tabbed-monocle-restore-"
 local current_layout = columns_layout
 local enable_nstack = true
 local enable_hyprexpo = true
@@ -413,8 +414,28 @@ local function window_address_set(windows)
   return addresses
 end
 
+local function window_address_list(windows)
+  local addresses = {}
+  for _, window in ipairs(windows) do
+    if window and window.address then
+      addresses[#addresses + 1] = window.address
+    end
+  end
+  return addresses
+end
+
 local function window_address_in_set(window, addresses)
   return window and window.address and addresses[window.address] or false
+end
+
+local function windows_by_address()
+  local windows = {}
+  for _, window in ipairs(hl.get_windows()) do
+    if window and window.address then
+      windows[window.address] = window
+    end
+  end
+  return windows
 end
 
 local function numeric_component(value, key, index)
@@ -755,10 +776,56 @@ local function find_tabbed_group_anchor(state)
   return nil
 end
 
+local function ordered_windows_for_tabbed_group_restore(state, workspace_id)
+  local ordered = {}
+  local seen = {}
+  local live_windows = windows_by_address()
+  local workspace = workspace_id and hl.get_workspace(tostring(workspace_id)) or active_workspace()
+
+  if state and state.order then
+    for _, address in ipairs(state.order) do
+      local window = live_windows[address]
+      if window and not window.floating and not window.hidden and (not workspace or same_workspace(window.workspace, workspace)) then
+        ordered[#ordered + 1] = window
+        seen[address] = true
+      end
+    end
+  end
+
+  if workspace then
+    for _, window in ipairs(tiled_windows(workspace)) do
+      if window and window.address and not seen[window.address] then
+        ordered[#ordered + 1] = window
+        seen[window.address] = true
+      end
+    end
+  end
+
+  return ordered
+end
+
+local function restore_tabbed_group_window_order(state, workspace_id)
+  local ordered = ordered_windows_for_tabbed_group_restore(state, workspace_id)
+  if #ordered <= 1 or not workspace_id then
+    return
+  end
+
+  local restore_workspace = tabbed_group_restore_workspace_prefix .. tostring(workspace_id)
+  for _, window in ipairs(ordered) do
+    move_window_to_workspace(restore_workspace, false, window)
+  end
+
+  for _, window in ipairs(ordered) do
+    move_window_to_workspace(workspace_id, false, window)
+  end
+end
+
 local function restore_workspace_tabbed_group()
   local key = workspace_key()
-  local anchor = find_tabbed_group_anchor(tabbed_workspace_groups[key])
+  local state = tabbed_workspace_groups[key]
+  local anchor = find_tabbed_group_anchor(state)
   local anchor_selector = window_selector(anchor)
+  local target_workspace_id = anchor and anchor.workspace and anchor.workspace.id
 
   if not anchor_selector then
     tabbed_workspace_groups[key] = nil
@@ -771,6 +838,8 @@ local function restore_workspace_tabbed_group()
   hl.dsp.group.toggle({ window = anchor_selector })()
   tabbed_workspace_groups[key] = nil
   set_layout(columns_layout)
+  restore_tabbed_group_window_order(state, target_workspace_id)
+  hl.dsp.focus({ window = anchor_selector })()
   schedule_nstack_count_update()
 end
 
@@ -786,6 +855,7 @@ local function gather_workspace_into_tabbed_group()
     return
   end
 
+  local original_order = window_address_list(tiled_windows(workspace))
   local candidates = active_workspace_tiled_group_candidates(workspace)
   if #candidates <= 1 then
     set_layout(columns_layout)
@@ -849,6 +919,7 @@ local function gather_workspace_into_tabbed_group()
 
   tabbed_workspace_groups[key] = {
     anchor = anchor.address,
+    order = original_order,
     windows = candidate_addresses,
   }
   hl.dsp.focus({ window = anchor_selector })()

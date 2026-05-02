@@ -17,6 +17,7 @@
 
   # Use the flake source for enumeration (pure), but point links at the worktree.
   srcDotfiles = ../dotfiles;
+  srcConfig = srcDotfiles + "/config";
 
   excludedTop = [
     # Managed by nix-shared/home-manager/codex-generated-skills.nix so
@@ -57,6 +58,22 @@
     lib.nameValuePair ".${rel}" {
       source = oos "${worktreeDotfiles}/${rel}";
     };
+
+  configEntries = builtins.readDir srcConfig;
+  configDirExclusions = [
+    # Home Manager writes generated fontconfig fragments under this tree.
+    "fontconfig"
+    # Home Manager's gtk module writes settings.ini and gtk.css here.
+    "gtk-3.0"
+  ];
+  configDirNames =
+    lib.filter
+    (name: configEntries.${name} == "directory" && !(lib.elem name configDirExclusions))
+    (builtins.attrNames configEntries);
+  mkConfigDir = name:
+    lib.nameValuePair name {
+      source = oos "${worktreeDotfiles}/config/${name}";
+    };
 in {
   imports = [
     ../nix-shared/home-manager/codex-generated-skills.nix
@@ -64,6 +81,9 @@ in {
 
   home.file =
     builtins.listToAttrs (map mkManaged managedRelFiles);
+
+  xdg.configFile =
+    builtins.listToAttrs (map mkConfigDir configDirNames);
 
   myModules.codexGeneratedSkills.enable = true;
 

@@ -204,10 +204,6 @@ in {
   xdg.configFile."qt5ct/qt5ct.conf".text = qtctConfig;
   xdg.configFile."qt6ct/qt6ct.conf".text = qtctConfig;
 
-  xdg.configFile."zellij/config.kdl".source =
-    config.lib.file.mkOutOfStoreSymlink
-    "${config.home.homeDirectory}/dotfiles/dotfiles/config/zellij/config.kdl";
-
   xdg.configFile."menus/applications.menu" = lib.mkIf nixos.config.myModules.desktop.enable {
     source = "${pkgs.kdePackages.plasma-workspace}/etc/xdg/menus/plasma-applications.menu";
   };
