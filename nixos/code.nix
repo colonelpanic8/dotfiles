@@ -21,6 +21,9 @@ makeEnable config "myModules.code" true {
 
   home-manager.sharedModules = lib.mkIf config.myModules.desktop.enable [
     {
+      home.sessionVariables.YDOTOOL_SOCKET = "/run/ydotoold/socket";
+      systemd.user.sessionVariables.YDOTOOL_SOCKET = "/run/ydotoold/socket";
+
       xdg.configFile."codex-desktop/settings.json".text =
         (builtins.toJSON {
           "codex-linux-computer-use-ui-enabled" = true;
