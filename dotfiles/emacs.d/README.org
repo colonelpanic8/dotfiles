@@ -1315,6 +1315,7 @@ Paradox is a package.el extension. I have no use for it now that I use straight.
 ** gcmh
 #+begin_src emacs-lisp
 (use-package gcmh
+  :defer 5
   :config (gcmh-mode 1))
 #+end_src
 ** diminish
@@ -1392,7 +1393,8 @@ The file server file for this emacs instance no longer exists.")
 #+END_SRC
 ** bug-hunter
 #+BEGIN_SRC emacs-lisp
-(use-package bug-hunter)
+(use-package bug-hunter
+  :defer t)
 #+END_SRC
 ** shackle
 #+BEGIN_SRC emacs-lisp
@@ -2122,8 +2124,7 @@ root.  PATTERN is passed as fd's search pattern when non-nil."
 ** multi-line
 #+BEGIN_SRC emacs-lisp
 (use-package multi-line
-  ;; Demand multi-line to avoid failure to load mode specific strategies
-  :demand t
+  :commands multi-line
   :bind ("C-c d" . multi-line)
   :config
   (progn
@@ -2188,11 +2189,10 @@ root.  PATTERN is passed as fd's search pattern when non-nil."
 ** yasnippet
 #+BEGIN_SRC emacs-lisp
 (use-package yasnippet
-  :defer 5
-  :commands (yas-global-mode)
+  :commands (yas-expand yas-global-mode yas-insert-snippet yas-minor-mode)
+  :hook ((prog-mode text-mode conf-mode) . yas-minor-mode)
   :config
   (progn
-    (yas-global-mode)
     (diminish 'yas-minor-mode)
     (add-hook 'term-mode-hook (lambda() (yas-minor-mode -1)))
     (setq yas-prompt-functions
@@ -2200,8 +2200,7 @@ root.  PATTERN is passed as fd's search pattern when non-nil."
                 (cl-delete 'yas-ido-prompt yas-prompt-functions)))))
 
 (use-package yasnippet-snippets
-  :after yasnippet
-  :demand t)
+  :after yasnippet)
 #+END_SRC
 ** align
 #+BEGIN_SRC emacs-lisp
@@ -2897,11 +2896,14 @@ The following is taken from [[https://github.com/syl20bnr/spacemacs/blob/a650877
 #+END_SRC
 *** swift
 #+begin_src emacs-lisp
-(use-package swift-mode)
+(use-package swift-mode
+  :mode "\\.swift\\'")
 #+end_src
 *** groovy
 #+begin_src emacs-lisp
-(use-package groovy-mode)
+(use-package groovy-mode
+  :mode (("\\.groovy\\'" . groovy-mode)
+         ("\\.gradle\\'" . groovy-mode)))
 #+end_src
 *** vala
 #+BEGIN_SRC emacs-lisp
@@ -2951,7 +2953,8 @@ The following is taken from [[https://github.com/syl20bnr/spacemacs/blob/a650877
 #+END_SRC
 *** graphql
 #+begin_src emacs-lisp
-(use-package graphql-mode)
+(use-package graphql-mode
+  :mode "\\.graphql\\'")
 #+end_src
 *** json-mode
 #+BEGIN_SRC emacs-lisp
@@ -3706,7 +3709,9 @@ I had to disable this mode because something that it does messes with coding set
   :demand t
   :config
   (progn
-    (setq recentf-max-saved-items 1000
+    (setq recentf-initialize-file-name-history nil
+          recentf-auto-cleanup 'never
+          recentf-max-saved-items 1000
           recentf-max-menu-items 1000)
     (advice-add 'recentf-cleanup :around 'imalison:shut-up-around)
     (recentf-mode +1)))
