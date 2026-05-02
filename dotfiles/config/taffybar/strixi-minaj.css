@@ -2,5 +2,40 @@
 
 /* Host-specific density tweaks for strixi-minaj. */
 .taffy-box {
-	font-size: 10pt;
+	font-size: 9.5pt;
+	border-radius: 8px;
+}
+
+.outer-pad,
+.workspaces .outer-pad {
+	border-radius: 8px;
+	margin: 2px 3px;
+}
+
+.inner-pad,
+.workspaces .inner-pad {
+	border-radius: 7px;
+	padding-top: 1px;
+	padding-bottom: 1px;
+}
+
+.workspaces .contents {
+	border-radius: 7px;
+	padding: 0px 3px;
+}
+
+.workspaces .overlay-box .workspace-label {
+	padding: 1px 4px 4px 10px;
+}
+
+.visible .contents,
+.workspaces .window-icon-container.active {
+	padding-top: 1px;
+	padding-bottom: 1px;
+}
+
+.auto-size-image,
+.sni-tray {
+	padding-top: 0px;
+	padding-bottom: 0px;
 }

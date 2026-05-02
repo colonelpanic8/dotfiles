@@ -163,11 +163,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1777698481,
-        "narHash": "sha256-BRAtEB984qJPvV2jVfIuFyt04TP4GAE1liyhzQPnwbc=",
+        "lastModified": 1777706382,
+        "narHash": "sha256-D+UnmYnQsBRTqWVYkGiD+LI+El668U1iaItdLYCLbx4=",
         "owner": "colonelpanic8",
         "repo": "codex-desktop-linux",
-        "rev": "d5a2964047294f747bda2bd008768b26f26cb94e",
+        "rev": "5332a4eadda144df3c4e943eb8b3eff718103e84",
         "type": "github"
       },
       "original": {
@@ -1934,8 +1934,8 @@
         ]
       },
       "locked": {
-        "lastModified": 1777690539,
-        "narHash": "sha256-t9UmAhdHyhFV+k42zZ3mhEdtNMVx5ErhmNo1HSvutaw=",
+        "lastModified": 1777701980,
+        "narHash": "sha256-MgFDeLMLqF0hz+zFy8jBV0+ZLH42ZVn6YufsZba6Gm0=",
         "path": "/home/imalison/dotfiles/dotfiles/config/taffybar/taffybar",
         "type": "path"
       },
