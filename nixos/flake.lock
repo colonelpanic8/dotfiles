@@ -71,11 +71,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1772764582,
-        "narHash": "sha256-hSwjmpXHFqzSXrndVekA0IheKrbC7wi0IbfZTYwlmXw=",
+        "lastModified": 1777470967,
+        "narHash": "sha256-u8QP1TYolV6BR0qsK2NHY1qZ/PdNAgrVxUcSDZdl35Q=",
         "owner": "caelestia-dots",
         "repo": "cli",
-        "rev": "4bcd42f482d038b98145b0b03388244b68b7d35d",
+        "rev": "5c9ce66c031788df50bbfbea195bf773ddbf92bc",
         "type": "github"
       },
       "original": {
@@ -93,11 +93,11 @@
         "quickshell": "quickshell"
       },
       "locked": {
-        "lastModified": 1777553262,
-        "narHash": "sha256-M6D7hjjyC2iDqpRp1Wm++uLe3h9HyrNvIYLVVTTjdB8=",
+        "lastModified": 1777688289,
+        "narHash": "sha256-2EaEVkT1oUpjLLp7uEY/hDYDOa2k5R1YgcJpHei+lUM=",
         "owner": "caelestia-dots",
         "repo": "shell",
-        "rev": "efc08759ceaeddc2c571d868c623995270ac365d",
+        "rev": "4e9e1f4b723f7e3a87cb280d67a25ee92c87fbff",
         "type": "github"
       },
       "original": {
@@ -688,11 +688,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1777659959,
-        "narHash": "sha256-ax3229dUvNuwTQwo2o68kOQ24dvOlJ/BrVYY4miD1bI=",
+        "lastModified": 1777679572,
+        "narHash": "sha256-egYNbRrkn+6SwTHinhdb6WUfzzdC3nXfCRqS321VylY=",
         "owner": "nix-community",
         "repo": "home-manager",
-        "rev": "5c1b74905c7261e8280dcda3623dbe677a1bc158",
+        "rev": "9cb587ade2aa1b4a7257f0238d41072690b0ca4f",
         "type": "github"
       },
       "original": {
@@ -829,11 +829,11 @@
         "xdph": "xdph"
       },
       "locked": {
-        "lastModified": 1777497195,
-        "narHash": "sha256-I9z3somAUJ5jGwv4ZBjADco8CmdglEUqYs0AgJ5LSDs=",
+        "lastModified": 1777677995,
+        "narHash": "sha256-Tlecgq4ctn0mA2I3r4rnV88Pi8GsIHgg9s4Ii9kFphU=",
         "ref": "refs/heads/main",
-        "rev": "56d7a43102b53f79a2311662783d5dd94cb2f1a5",
-        "revCount": 7215,
+        "rev": "c065e951d631a3aa3736b45f17b3556597f63c1a",
+        "revCount": 7233,
         "submodules": true,
         "type": "git",
         "url": "https://github.com/hyprwm/Hyprland"
@@ -1256,11 +1256,11 @@
         "nixpkgs-regression": "nixpkgs-regression"
       },
       "locked": {
-        "lastModified": 1777621156,
-        "narHash": "sha256-sC7S/fOGbWNGVu6QgkcHCXSW9FptbPF76NSdqlLNtUY=",
+        "lastModified": 1777670731,
+        "narHash": "sha256-d3XkEeFReCzdyQEdpCV2icSpe8YQqHJUJSZ1TVfK03g=",
         "owner": "NixOS",
         "repo": "nix",
-        "rev": "fa6417b8aa5c013aea45e62c34859aa754ee3f3e",
+        "rev": "cfa3e804cbd6606a189fd446546b3d435317effe",
         "type": "github"
       },
       "original": {
@@ -1277,11 +1277,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1777609855,
-        "narHash": "sha256-v2o7REW4D/gt5QxOtcCnVD1Nz+Q/ZTpzndupIQGrJYQ=",
+        "lastModified": 1777692697,
+        "narHash": "sha256-54mvoxw8d0cxLMXttEaviI7s+n3IZuhzkEbP3egqIds=",
         "owner": "nixified-ai",
         "repo": "flake",
-        "rev": "4cf7c10e6081559d18527bd96f3155f1bf6e46a8",
+        "rev": "fe03b9f6dd68fb54ada8a04733d2fd94c048d1c3",
         "type": "github"
       },
       "original": {
@@ -1739,11 +1739,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1772925576,
-        "narHash": "sha256-mMoiXABDtkSJxCYDrkhJ/TrrJf5M46oUfIlJvv2gkZ0=",
+        "lastModified": 1777341401,
+        "narHash": "sha256-QEAVYeXxvTamsYJVBq8+qSJV9ml2MxqRaZvkobfuPWA=",
         "ref": "refs/heads/master",
-        "rev": "15a84097653593dd15fad59a56befc2b7bdc270d",
-        "revCount": 750,
+        "rev": "0baa81aa03559ca315668e5a306364cddf1a6f49",
+        "revCount": 812,
         "type": "git",
         "url": "https://git.outfoxxed.me/outfoxxed/quickshell"
       },
@@ -2127,8 +2127,8 @@
         ]
       },
       "locked": {
-        "lastModified": 1777476488,
-        "narHash": "sha256-2Adfi0BDJEM/ITFbXJkS21wVQ96oNXLLUh4HsHonCl4=",
+        "lastModified": 1777692941,
+        "narHash": "sha256-Dk2kvdMGlfrF3kiJsioFEbGZGHjgRP9qY1ggOS4yKGo=",
         "path": "/home/imalison/Projects/xmonad-river",
         "type": "path"
       },
