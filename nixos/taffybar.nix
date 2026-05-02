@@ -69,6 +69,21 @@ let
   taffybarExecCondition = pkgs.writeShellScript "taffybar-exec-condition" ''
     ${skipTaffybarInOtherShells} || exit 1
 
+    runtime_dir="''${XDG_RUNTIME_DIR:-/run/user/$(${pkgs.coreutils}/bin/id -u)}"
+    if [ "''${XDG_SESSION_TYPE:-}" = "wayland" ] || [ -n "''${WAYLAND_DISPLAY:-}" ]; then
+      if [ -z "''${WAYLAND_DISPLAY:-}" ] || [ ! -S "$runtime_dir/$WAYLAND_DISPLAY" ]; then
+        exit 1
+      fi
+    elif [ -n "''${DISPLAY:-}" ]; then
+      display_number="''${DISPLAY#:}"
+      display_number="''${display_number%%.*}"
+      if [ -z "$display_number" ] || [ ! -S "/tmp/.X11-unix/X$display_number" ]; then
+        exit 1
+      fi
+    else
+      exit 1
+    fi
+
     if [ -x /run/current-system/sw/bin/desktop_shell_ui ]; then
       exec /run/current-system/sw/bin/desktop_shell_ui exec-condition taffybar
     fi
@@ -90,6 +105,11 @@ makeEnable config "myModules.taffybar" false {
       # Point it at the pinned flake version instead.
       services."status-notifier-watcher".package = pkgs.lib.mkForce
         inputs.imalison-taffybar.packages.${system}.status-notifier-item;
+
+      systemd.user.targets.tray.Unit = {
+        PartOf = [ "graphical-session.target" ];
+        StopWhenUnneeded = true;
+      };
 
       # Disable kded6's statusnotifierwatcher module so it doesn't race with
       # the Haskell status-notifier-watcher for the org.kde.StatusNotifierWatcher bus name.

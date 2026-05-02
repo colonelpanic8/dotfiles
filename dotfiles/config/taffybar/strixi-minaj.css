@@ -1,0 +1,6 @@
+@import url("taffybar.css");
+
+/* Host-specific density tweaks for strixi-minaj. */
+.taffy-box {
+	font-size: 10pt;
+}

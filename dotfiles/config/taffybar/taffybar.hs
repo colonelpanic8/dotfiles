@@ -265,7 +265,15 @@ defaultCssFiles = ["taffybar.css"]
 
 cssFilesByHostname :: [(String, [FilePath])]
 cssFilesByHostname =
-  [("ryzen-shine", ["ryzen-shine.css"])]
+  [ ("ryzen-shine", ["ryzen-shine.css"]),
+    ("strixi-minaj", ["strixi-minaj.css"])
+  ]
+
+compactBarHosts :: [String]
+compactBarHosts =
+  [ "ryzen-shine",
+    "strixi-minaj"
+  ]
 
 laptopHosts :: [String]
 laptopHosts =
@@ -695,9 +703,9 @@ mkSimpleTaffyConfig hostName backend cssFiles =
       barLevels = Nothing,
       barPosition = Top,
       widgetSpacing = 0,
-      barPadding = if hostName == "ryzen-shine" then 2 else 4,
+      barPadding = if hostName `elem` compactBarHosts then 2 else 4,
       barHeight =
-        if hostName == "ryzen-shine"
+        if hostName `elem` compactBarHosts
           then ScreenRatio $ 1 / 40
           else ScreenRatio $ 1 / 33,
       cssPaths = cssFiles
