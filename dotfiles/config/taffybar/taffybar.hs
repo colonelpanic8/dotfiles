@@ -592,14 +592,13 @@ omniMenuWidget =
           >>= Gtk.toWidget
     omniMenuNewWithConfig
       (defaultOmniMenuConfig icon)
-        { omniMenuSections =
+        { omniMenuIncludeApplications = True,
+          omniMenuSections =
             [ OmniMenuSection
                 "Launch"
                 [ omniMenuItem "App launcher" "view-app-grid-symbolic" "hypr_shell_ui launcher",
                   omniMenuItem "Run command" "system-run" "hypr_shell_ui run",
                   omniMenuItem "Terminal" "utilities-terminal" "ghostty --gtk-single-instance=false",
-                  omniMenuItem "Browser" "web-browser" "google-chrome-stable",
-                  omniMenuItem "Emacs" "emacs" "sh -lc 'emacsclient -c -n || emacs'",
                   omniMenuItem "Window picker" "preferences-system-windows" "hypr_shell_ui window go"
                 ],
               OmniMenuSection
