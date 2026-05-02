@@ -114,6 +114,16 @@ Important behavior:
 - Keyboard resize remains available, but it should not displace the directional
   move-to-monitor binding.
 
+## Pointer Focus
+
+Required behavior:
+
+- Focus-follows-mouse, or an equivalent pointer-driven focus model, is enabled.
+- Moving the pointer over a managed window focuses that window without requiring
+  a click.
+- Mouse-follows-focus is also enabled: keyboard or programmatic focus changes
+  move the pointer into the newly focused window.
+
 ## Layouts
 
 Required behavior:
