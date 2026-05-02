@@ -5,10 +5,90 @@
   makeEnable,
   inputs,
   ...
-}:
-let
+}: let
   system = pkgs.stdenv.hostPlatform.system;
   hyprlandInput = inputs.hyprland;
+  baseHyprlandPackage = hyprlandInput.packages.${system}.hyprland;
+  cleanupStaleGraphicalSession = pkgs.writeShellScript "cleanup-stale-graphical-session" ''
+    set -u
+
+    # Only clean targets that are plainly stale. If a compositor is still
+    # running, let the active session own its own shutdown path.
+    if ${pkgs.procps}/bin/pgrep -u "$(${pkgs.coreutils}/bin/id -u)" -f '(^|/)(Hyprland|\.Hyprland-wrapped|river|kwin_wayland)( |$)' >/dev/null 2>&1; then
+      exit 0
+    fi
+
+    ${pkgs.systemd}/bin/systemctl --user stop \
+      hyprland-session.target \
+      river-xmonad-session.target \
+      graphical-session.target \
+      graphical-session-pre.target \
+      tray.target \
+      2>/dev/null || true
+
+    ${pkgs.systemd}/bin/systemctl --user unset-environment \
+      WAYLAND_DISPLAY \
+      DISPLAY \
+      XAUTHORITY \
+      HYPRLAND_INSTANCE_SIGNATURE \
+      XDG_CURRENT_DESKTOP \
+      XDG_SESSION_DESKTOP \
+      XDG_SESSION_TYPE \
+      IMALISON_SESSION_TYPE \
+      IMALISON_WINDOW_MANAGER \
+      2>/dev/null || true
+
+    ${pkgs.systemd}/bin/systemctl --user reset-failed 2>/dev/null || true
+  '';
+  makeHyprlandLuaPackage = package:
+    (pkgs.symlinkJoin {
+      name = "${package.name}-lua-config";
+      inherit (package) version;
+      paths = [package];
+      passthru =
+        (package.passthru or {})
+        // {
+          providedSessions = package.passthru.providedSessions or ["hyprland"];
+        };
+      postBuild = ''
+        mkdir -p "$out/bin" "$out/share/wayland-sessions"
+        printf '%s\n' \
+          '#!${pkgs.runtimeShell}' \
+          'config_path="''${XDG_CONFIG_HOME:-$HOME/.config}/hypr/hyprland.lua"' \
+          'exec "${package}/bin/Hyprland" --config "$config_path" "$@"' \
+          > "$out/bin/start-hyprland-lua"
+        chmod +x "$out/bin/start-hyprland-lua"
+
+        printf '%s\n' \
+          '#!${pkgs.runtimeShell}' \
+          '${cleanupStaleGraphicalSession}' \
+          'exec ${pkgs.uwsm}/bin/uwsm start -e -D Hyprland hyprland.desktop' \
+          > "$out/bin/start-hyprland-uwsm-clean"
+        chmod +x "$out/bin/start-hyprland-uwsm-clean"
+
+        rm -f "$out/share/wayland-sessions/hyprland.desktop"
+        substitute \
+          "${package}/share/wayland-sessions/hyprland.desktop" \
+          "$out/share/wayland-sessions/hyprland.desktop" \
+          --replace-fail \
+          "Exec=${package}/bin/start-hyprland" \
+          "Exec=$out/bin/start-hyprland-lua"
+
+        rm -f "$out/share/wayland-sessions/hyprland-uwsm.desktop"
+        substitute \
+          "${package}/share/wayland-sessions/hyprland-uwsm.desktop" \
+          "$out/share/wayland-sessions/hyprland-uwsm.desktop" \
+          --replace-fail \
+          "Exec=uwsm start -e -D Hyprland hyprland.desktop" \
+          "Exec=$out/bin/start-hyprland-uwsm-clean"
+      '';
+    })
+    // {
+      override = {enableXWayland ? true, ...} @ args:
+        makeHyprlandLuaPackage (package.override args);
+      overrideAttrs = f: makeHyprlandLuaPackage (package.overrideAttrs f);
+    };
+  hyprlandPackage = makeHyprlandLuaPackage baseHyprlandPackage;
   hyprlandPluginPackages = [
     inputs.hyprNStack.packages.${system}.hyprNStack
     inputs.hyprland-plugins-lua.packages.${system}.hyprexpo
@@ -20,7 +100,7 @@ let
     runtimeInputs = [
       pkgs.python3
       pkgs.rofi
-      hyprlandInput.packages.${system}.hyprland
+      hyprlandPackage
     ];
     text = ''
       exec python3 ${../dotfiles/lib/bin/hypr_rofi_window} "$@"
@@ -78,7 +158,6 @@ let
       options = "persist";
       rules = "float;size monitor_w monitor_h*0.5;move 0 60;noborder;noshadow;animation slide";
     };
-
   };
   enabledModule = makeEnable config "myModules.hyprland" true {
     # Install both shell service units so `desktop_shell_ui set ...` can switch
@@ -87,7 +166,7 @@ let
     myModules.taffybar.enable = lib.mkDefault true;
 
     # Needed for hyprlock authentication without PAM fallback warnings.
-    security.pam.services.hyprlock = { };
+    security.pam.services.hyprlock = {};
 
     # DDC/CI monitor control for keyboard-driven input switching.
     hardware.i2c = {
@@ -98,7 +177,7 @@ let
     programs.hyprland = {
       enable = true;
       # Keep Hyprland and plugins on a matched flake input for ABI compatibility.
-      package = hyprlandInput.packages.${system}.hyprland;
+      package = hyprlandPackage;
       # Let UWSM manage the Hyprland session targets
       withUWSM = true;
     };
@@ -106,13 +185,7 @@ let
     home-manager.sharedModules = [
       inputs.hyprscratch.homeModules.default
       (
-        { config, lib, ... }:
-        let
-          hyprConfig =
-            name:
-            config.lib.file.mkOutOfStoreSymlink "${config.home.homeDirectory}/dotfiles/dotfiles/config/hypr/${name}";
-        in
-        {
+        {lib, ...}: {
           services.kanshi = {
             enable = true;
             systemdTarget = "graphical-session.target";
@@ -157,7 +230,7 @@ let
 
           programs.hyprscratch = {
             enable = false;
-            settings = { };
+            settings = {};
           };
 
           xdg.configFile."hyprscratch/config.conf" = lib.mkIf false {
@@ -166,23 +239,18 @@ let
             };
           };
 
-          xdg.configFile."hypr/hyprland.lua" = {
-            force = true;
-            source = hyprConfig "hyprland.lua";
-          };
-
-          xdg.configFile."hypr/hypridle.conf".source = hyprConfig "hypridle.conf";
-
-          xdg.configFile."hypr/hyprlock.conf".source = hyprConfig "hyprlock.conf";
-
           xdg.configFile."hypr/scripts".enable = false;
+
+          xdg.configFile."systemd/user/wayland-wm@hyprland.desktop.service.d/10-cleanup-stale-session.conf".text = ''
+            [Service]
+            ExecStopPost=${cleanupStaleGraphicalSession}
+          '';
         }
       )
     ];
 
     # Hyprland-specific packages
-    environment.systemPackages =
-      with pkgs;
+    environment.systemPackages = with pkgs;
       [
         # Hyprland utilities
         hyprpaper # Wallpaper
@@ -207,4 +275,4 @@ let
       ++ hyprlandPluginPackages;
   };
 in
-enabledModule
+  enabledModule

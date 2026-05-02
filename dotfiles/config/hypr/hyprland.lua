@@ -8,7 +8,8 @@ local launcher_command = shell_ui_command .. " launcher"
 local run_menu = shell_ui_command .. " run"
 
 local max_workspace = 9
-local scratchpad_top_margin = 60
+local scratchpad_size_ratio = 0.95
+local dropdown_height_ratio = 0.5
 local columns_layout = "nStack"
 local large_main_layout = "master"
 local grid_layout = "grid"
@@ -221,13 +222,12 @@ local function apply_hyprwinview_config()
         app_icon_backplate_col = "rgba(00000066)",
         app_icon_backplate_padding = 6,
         animation = "workspace_zoom",
-        animation_in_ms = 340,
-        animation_out_ms = 170,
-        animation_speed = 0.5,
+        animation_in_ms = 280,
+        animation_out_ms = 220,
+        animation_speed = 1.0,
         animation_scale = 0.94,
         animation_stagger_ms = 16,
         animation_stagger_max_ms = 120,
-        animation_workspace_zoom_stage_ratio = 0.50,
       },
     },
   })
@@ -1076,6 +1076,53 @@ local function scratchpad_workspace(name)
   return "special:scratch-" .. name
 end
 
+local function as_number(value, default)
+  local number = tonumber(value)
+  if number == nil then
+    return default
+  end
+  return number
+end
+
+local function logical_monitor_dimension(value, scale)
+  value = as_number(value, 0)
+  scale = as_number(scale, 1)
+  if scale <= 0 then
+    scale = 1
+  end
+  return math.floor((value / scale) + 0.5)
+end
+
+local function monitor_workarea(monitor)
+  local width = logical_monitor_dimension(monitor.width, monitor.scale)
+  local height = logical_monitor_dimension(monitor.height, monitor.scale)
+  local reserved = monitor.reserved or {}
+  local left = math.floor(as_number(reserved[1], 0))
+  local top = math.floor(as_number(reserved[2], 0))
+  local right = math.floor(as_number(reserved[3], 0))
+  local bottom = math.floor(as_number(reserved[4], 0))
+  local work_width = width - left - right
+  local work_height = height - top - bottom
+
+  if work_width <= 0 then
+    left = 0
+    right = 0
+    work_width = width
+  end
+  if work_height <= 0 then
+    top = 0
+    bottom = 0
+    work_height = height
+  end
+
+  return {
+    x = math.floor(as_number(monitor.x, 0)) + left,
+    y = math.floor(as_number(monitor.y, 0)) + top,
+    width = work_width,
+    height = work_height,
+  }
+end
+
 local function matching_scratchpad_windows(name)
   local def = scratchpads[name]
   local windows = {}
@@ -1099,20 +1146,21 @@ local function apply_scratchpad_geometry(name, window, target_monitor)
     return
   end
 
+  local workarea = monitor_workarea(monitor)
   local width
   local height
   local x
   local y
   if def.dropdown then
-    width = monitor.width
-    height = math.floor(monitor.height * 0.5)
-    x = monitor.x
-    y = monitor.y + scratchpad_top_margin
+    width = workarea.width
+    height = math.floor(workarea.height * dropdown_height_ratio)
+    x = workarea.x
+    y = workarea.y
   else
-    width = math.floor(monitor.width * 0.95)
-    height = math.min(math.floor(monitor.height * 0.95), monitor.height - scratchpad_top_margin)
-    x = monitor.x + math.floor((monitor.width - width) / 2)
-    y = monitor.y + scratchpad_top_margin
+    width = math.floor(workarea.width * scratchpad_size_ratio)
+    height = math.floor(workarea.height * scratchpad_size_ratio)
+    x = workarea.x + math.floor((workarea.width - width) / 2)
+    y = workarea.y + math.floor((workarea.height - height) / 2)
   end
   local selector = window_selector(window)
 
@@ -1954,7 +2002,7 @@ hl.on("hyprland.start", function()
   apply_hyprexpo_config()
   apply_hyprwinview_config()
   apply_rules()
-  hl.exec_cmd("sh -lc 'export IMALISON_SESSION_TYPE=wayland; dbus-update-activation-environment --systemd XDG_RUNTIME_DIR WAYLAND_DISPLAY DISPLAY XAUTHORITY HYPRLAND_INSTANCE_SIGNATURE XDG_CURRENT_DESKTOP XDG_SESSION_TYPE IMALISON_SESSION_TYPE; systemctl --user start graphical-session.target hyprland-session.target'")
+  hl.exec_cmd("sh -lc '/run/current-system/sw/bin/uwsm finalize HYPRLAND_INSTANCE_SIGNATURE XDG_CURRENT_DESKTOP XDG_SESSION_DESKTOP XDG_SESSION_TYPE XAUTHORITY IMALISON_SESSION_TYPE=wayland IMALISON_WINDOW_MANAGER=hyprland || dbus-update-activation-environment --systemd XDG_RUNTIME_DIR WAYLAND_DISPLAY DISPLAY XAUTHORITY HYPRLAND_INSTANCE_SIGNATURE XDG_CURRENT_DESKTOP XDG_SESSION_DESKTOP XDG_SESSION_TYPE IMALISON_SESSION_TYPE IMALISON_WINDOW_MANAGER; systemctl --user start hyprland-session.target'")
   hl.exec_cmd("hypridle")
   hl.exec_cmd("wl-paste --type text --watch cliphist store")
   hl.exec_cmd("wl-paste --type image --watch cliphist store")
