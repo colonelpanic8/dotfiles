@@ -7,6 +7,7 @@
   ];
 
   features.full.enable = true;
+  myModules.games.enable = lib.mkForce true;
   myModules.kubelet.enable = false;
   myModules.nvidia.enable = true;
   # Needed for now because monitors have different refresh rates
