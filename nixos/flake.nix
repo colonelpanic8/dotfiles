@@ -172,7 +172,18 @@
       inputs = {
         nixpkgs.follows = "nixpkgs";
         flake-utils.follows = "flake-utils";
+        taffybar.follows = "taffybar";
         xmonad.follows = "xmonad";
+      };
+    };
+
+    taffybar = {
+      url = "path:/home/imalison/dotfiles/dotfiles/config/taffybar/taffybar";
+      inputs = {
+        nixpkgs.follows = "nixpkgs";
+        flake-utils.follows = "flake-utils";
+        xmonad.follows = "xmonad";
+        xmonad-contrib.follows = "xmonad-contrib";
       };
     };
 

@@ -50,7 +50,7 @@ import qualified System.Taffybar.Widget.ASUS as ASUS
 import System.Taffybar.Widget.AnthropicUsage
   ( AnthropicUsageDisplayMode (AnthropicUsageDisplayRemaining),
     AnthropicUsageStackConfig (..),
-    anthropicUsageStackNewWith,
+    anthropicUsageSectionNewWith,
     defaultAnthropicUsageStackConfig,
   )
 import System.Taffybar.Widget.CPUMonitor (cpuMonitorNew)
@@ -60,7 +60,7 @@ import System.Taffybar.Widget.OpenAIUsage
   ( OpenAIUsageDisplayMode (OpenAIUsageDisplayRemaining),
     OpenAIUsageStackConfig (..),
     defaultOpenAIUsageStackConfig,
-    openAIUsageStackNewWith,
+    openAIUsageSectionNewWith,
   )
 import qualified System.Taffybar.Widget.PulseAudio as PulseAudio
 import System.Taffybar.Widget.SNIMenu (withNmAppletMenu)
@@ -582,17 +582,21 @@ usageSectionWidget klass iconFile tooltip stackBuilder =
       widgetSetClassGI section "usage-section"
 
 openAIUsageWidget :: TaffyIO Gtk.Widget
-openAIUsageWidget =
-  usageSectionWidget "openai-usage" "openai-symbol.svg" "OpenAI usage" $
-    openAIUsageStackNewWith
+openAIUsageWidget = do
+  iconWidget <- liftIO $ usageLogoWidget "openai-symbol.svg" "OpenAI usage"
+  decorateWithClassAndBoxM "openai-usage" $
+    openAIUsageSectionNewWith
+      iconWidget
       defaultOpenAIUsageStackConfig
         { openAIUsageStackDefaultDisplayMode = OpenAIUsageDisplayRemaining
         }
 
 anthropicUsageWidget :: TaffyIO Gtk.Widget
-anthropicUsageWidget =
-  usageSectionWidget "anthropic-usage" "claude-symbol.svg" "Anthropic usage" $
-    anthropicUsageStackNewWith
+anthropicUsageWidget = do
+  iconWidget <- liftIO $ usageLogoWidget "claude-symbol.svg" "Anthropic usage"
+  decorateWithClassAndBoxM "anthropic-usage" $
+    anthropicUsageSectionNewWith
+      iconWidget
       defaultAnthropicUsageStackConfig
         { anthropicUsageStackDefaultDisplayMode = AnthropicUsageDisplayRemaining
         }
