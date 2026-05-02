@@ -1,4 +1,4 @@
-{ pkgs, config, makeEnable, ... }:
+{ pkgs, config, inputs, makeEnable, ... }:
 makeEnable config "myModules.code" true {
   programs.direnv = {
     enable = true;
@@ -10,6 +10,7 @@ makeEnable config "myModules.code" true {
     antigravity
     claude-code
     codex
+    inputs.codex-desktop-linux.packages.${pkgs.stdenv.hostPlatform.system}.default
     gemini-cli
     happy-coder
     opencode

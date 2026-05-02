@@ -220,6 +220,14 @@
       };
     };
 
+    codex-desktop-linux = {
+      url = "github:colonelpanic8/codex-desktop-linux?ref=codex/update-dmg-hash";
+      inputs = {
+        nixpkgs.follows = "nixpkgs";
+        flake-utils.follows = "flake-utils";
+      };
+    };
+
     claude-code-nix = {
       url = "github:sadjow/claude-code-nix";
       inputs = {

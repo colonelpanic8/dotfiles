@@ -93,11 +93,11 @@
         "quickshell": "quickshell"
       },
       "locked": {
-        "lastModified": 1776670101,
-        "narHash": "sha256-VmPWtG6H+k2tgGnpYwNO5YueHOBdOXXTiBTrjXqcHag=",
+        "lastModified": 1777553262,
+        "narHash": "sha256-M6D7hjjyC2iDqpRp1Wm++uLe3h9HyrNvIYLVVTTjdB8=",
         "owner": "caelestia-dots",
         "repo": "shell",
-        "rev": "b94ee8d41bad1ea59395d6184425036fa7121bc5",
+        "rev": "efc08759ceaeddc2c571d868c623995270ac365d",
         "type": "github"
       },
       "original": {
@@ -116,11 +116,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1777126457,
-        "narHash": "sha256-jE5KMGZc9p2H86gCi38o2H3loV/OwICJVa8YbDmpDyg=",
+        "lastModified": 1777604373,
+        "narHash": "sha256-cQ+Z/fx5o43bD3PFZaz9yeEOVbAH1jqzdOiEP0ytW4M=",
         "owner": "sadjow",
         "repo": "claude-code-nix",
-        "rev": "002de6e1b2d10f4646c68af360d9dc92b89a6be9",
+        "rev": "8bd0a84bcfbd7e76eaa1c3421fc59861eb8a8f24",
         "type": "github"
       },
       "original": {
@@ -139,17 +139,41 @@
         ]
       },
       "locked": {
-        "lastModified": 1777054843,
-        "narHash": "sha256-aiuiKK6xJu5inj/RTmSl9S3jDC6RzNsKfNJ700MRPNY=",
+        "lastModified": 1777661972,
+        "narHash": "sha256-VmcoQGZ3BNFlsI2jKUQH33MvEgkU6pvdxq4tofVLgmo=",
         "owner": "sadjow",
         "repo": "codex-cli-nix",
-        "rev": "fc382bef14dcb9873769bdcb4d3b943ef2606489",
+        "rev": "828b885b1be90991a2bd1087f2afd722476bfaed",
         "type": "github"
       },
       "original": {
         "owner": "sadjow",
         "ref": "main",
         "repo": "codex-cli-nix",
+        "type": "github"
+      }
+    },
+    "codex-desktop-linux": {
+      "inputs": {
+        "flake-utils": [
+          "flake-utils"
+        ],
+        "nixpkgs": [
+          "nixpkgs"
+        ]
+      },
+      "locked": {
+        "lastModified": 1777698481,
+        "narHash": "sha256-BRAtEB984qJPvV2jVfIuFyt04TP4GAE1liyhzQPnwbc=",
+        "owner": "colonelpanic8",
+        "repo": "codex-desktop-linux",
+        "rev": "d5a2964047294f747bda2bd008768b26f26cb94e",
+        "type": "github"
+      },
+      "original": {
+        "owner": "colonelpanic8",
+        "ref": "codex/update-dmg-hash",
+        "repo": "codex-desktop-linux",
         "type": "github"
       }
     },
@@ -664,11 +688,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1777308348,
-        "narHash": "sha256-DJx9wnerjsOqKOo8I7/u5ENRhRWFF2mbYcACF+mn5LU=",
+        "lastModified": 1777659959,
+        "narHash": "sha256-ax3229dUvNuwTQwo2o68kOQ24dvOlJ/BrVYY4miD1bI=",
         "owner": "nix-community",
         "repo": "home-manager",
-        "rev": "a28e848a01044f47679453aae75f6253bef7903e",
+        "rev": "5c1b74905c7261e8280dcda3623dbe677a1bc158",
         "type": "github"
       },
       "original": {
@@ -1091,11 +1115,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1777566923,
-        "narHash": "sha256-M4cX2lU36cVq7TjOEnGYsFFZT/I5ODkCxDGOcMQGJw4=",
+        "lastModified": 1777569359,
+        "narHash": "sha256-tmdD+ZKpqpUoeFApl20f5LjKUqlbymfQy8UA+crGNJ0=",
         "owner": "colonelpanic8",
         "repo": "hyprwinview",
-        "rev": "f10c230f9bb0229a2baf0118d315c99f13a85076",
+        "rev": "92c500eb54643e1ce3c052fd003cddd879142185",
         "type": "github"
       },
       "original": {
@@ -1232,11 +1256,11 @@
         "nixpkgs-regression": "nixpkgs-regression"
       },
       "locked": {
-        "lastModified": 1777302729,
-        "narHash": "sha256-q8ZPyO3x03e1ugBTYr1ZHN8b8JdWQZPBvc/+ZH2bPMY=",
+        "lastModified": 1777621156,
+        "narHash": "sha256-sC7S/fOGbWNGVu6QgkcHCXSW9FptbPF76NSdqlLNtUY=",
         "owner": "NixOS",
         "repo": "nix",
-        "rev": "266c2e1aea052d54a4f662e0c767075a6c59dc73",
+        "rev": "fa6417b8aa5c013aea45e62c34859aa754ee3f3e",
         "type": "github"
       },
       "original": {
@@ -1253,11 +1277,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1777136668,
-        "narHash": "sha256-0ePYbVYxKB4HhvGgk92mq98K174AqZ3UVy9P4t40iE4=",
+        "lastModified": 1777609855,
+        "narHash": "sha256-v2o7REW4D/gt5QxOtcCnVD1Nz+Q/ZTpzndupIQGrJYQ=",
         "owner": "nixified-ai",
         "repo": "flake",
-        "rev": "6428e486aa1f3fce8dff9b3d4ea0053feab4fd3d",
+        "rev": "4cf7c10e6081559d18527bd96f3155f1bf6e46a8",
         "type": "github"
       },
       "original": {
@@ -1290,11 +1314,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1776910211,
-        "narHash": "sha256-0ku3gW8bZ9TTpEU2fQw86oU6ZLT2vF6pacF+cLaf7VY=",
+        "lastModified": 1777394230,
+        "narHash": "sha256-So0O9VEARU3xTRIFkBtvfzpRDxx4W2WPZPgucxdKBm8=",
         "owner": "nix-community",
         "repo": "NixOS-WSL",
-        "rev": "4e6cad241baa0115a7aae8c55b04c166da4997c9",
+        "rev": "d2e09229638f08f6d5c99060573f6fa4b1dde852",
         "type": "github"
       },
       "original": {
@@ -1416,11 +1440,11 @@
     },
     "nixpkgs_4": {
       "locked": {
-        "lastModified": 1776877367,
-        "narHash": "sha256-EHq1/OX139R1RvBzOJ0aMRT3xnWyqtHBRUBuO1gFzjI=",
+        "lastModified": 1777268161,
+        "narHash": "sha256-bxrdOn8SCOv8tN4JbTF/TXq7kjo9ag4M+C8yzzIRYbE=",
         "owner": "NixOS",
         "repo": "nixpkgs",
-        "rev": "0726a0ecb6d4e08f6adced58726b95db924cef57",
+        "rev": "1c3fe55ad329cbcb28471bb30f05c9827f724c76",
         "type": "github"
       },
       "original": {
@@ -1760,6 +1784,7 @@
         "caelestia-shell": "caelestia-shell",
         "claude-code-nix": "claude-code-nix",
         "codex-cli-nix": "codex-cli-nix",
+        "codex-desktop-linux": "codex-desktop-linux",
         "coqui-tts-streamer": "coqui-tts-streamer",
         "flake-utils": "flake-utils",
         "git-blame-rank": "git-blame-rank",
@@ -1909,8 +1934,8 @@
         ]
       },
       "locked": {
-        "lastModified": 1777691335,
-        "narHash": "sha256-ckOZbjHCBs8CoKxSAEMEqNyIjT48mLWkL+tE9/bBkN0=",
+        "lastModified": 1777690539,
+        "narHash": "sha256-t9UmAhdHyhFV+k42zZ3mhEdtNMVx5ErhmNo1HSvutaw=",
         "path": "/home/imalison/dotfiles/dotfiles/config/taffybar/taffybar",
         "type": "path"
       },
