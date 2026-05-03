@@ -83,6 +83,7 @@ with lib;
       shellAliases = {
         df_ssh = "TERM=xterm-256color ssh -o StrictHostKeyChecking=no";
         fix_nix = "LD_LIBRARY_PATH='' nix";
+        xo = "xdg-open";
       } // multiplexerAliases;
       variables = {
         ROFI_SYSTEMD_TERM = "ghostty -e";
