@@ -8,6 +8,7 @@ from pathlib import Path
 
 
 CONFIG_PATH = Path.home() / ".config" / "roborock-control" / "config.json"
+DEFAULT_FAN_POWER = 108
 PYTHON_ENV_EXPR = (
     "with import <nixpkgs> {}; "
     "python313.withPackages (ps: [ ps.python-roborock ps.pyyaml ps.pyshark ])"
@@ -95,6 +96,15 @@ def handle_config(args):
     if args.email is not None:
         config["email"] = args.email
         changed = True
+    for alias in args.segment_alias or []:
+        if "=" not in alias:
+            raise SystemExit("--segment-alias must use NAME=ID")
+        name, segment_id = alias.split("=", 1)
+        name = name.strip().lower()
+        if not name:
+            raise SystemExit("--segment-alias name cannot be empty")
+        config.setdefault("segment_aliases", {})[name] = int(segment_id)
+        changed = True
     if changed:
         save_config(config)
     print(json.dumps(config, indent=2, sort_keys=True))
@@ -128,6 +138,17 @@ def command_with_device(args, upstream_command):
     return [upstream_command, "--device_id", get_device_id(args, config)]
 
 
+def send_device_command(device_id, command_name, params=None):
+    cli_args = ["command", "--device_id", device_id, "--cmd", command_name]
+    if params is not None:
+        cli_args.extend(["--params", json.dumps(params)])
+    run_roborock(*cli_args)
+
+
+def set_fan_power(device_id, fan_power):
+    send_device_command(device_id, "set_custom_mode", [fan_power])
+
+
 def handle_home(args):
     cli_args = command_with_device(args, "home")
     if args.refresh:
@@ -158,6 +179,36 @@ def handle_map_image(args):
     )
 
 
+def handle_segment_clean(args):
+    config = load_config()
+    device_id = get_device_id(args, config)
+    segments = resolve_segments(args.segments, config)
+    if not args.skip_max_fan:
+        set_fan_power(device_id, args.fan_power)
+    send_device_command(
+        device_id,
+        "app_segment_clean",
+        [{"segments": segments, "repeat": args.repeat}],
+    )
+
+
+def resolve_segments(segments, config):
+    aliases = {k.lower(): v for k, v in config.get("segment_aliases", {}).items()}
+    resolved = []
+    for segment in segments:
+        try:
+            resolved.append(int(segment))
+            continue
+        except ValueError:
+            pass
+        key = segment.lower()
+        if key not in aliases:
+            known = ", ".join(sorted(aliases)) or "none"
+            raise SystemExit(f"Unknown segment alias '{segment}'. Known aliases: {known}")
+        resolved.append(int(aliases[key]))
+    return resolved
+
+
 def handle_command(args):
     config = load_config()
     params = args.params
@@ -176,10 +227,13 @@ def handle_command(args):
 def handle_common_command(args):
     command_name, params = COMMON_COMMANDS[args.action]
     config = load_config()
+    device_id = get_device_id(args, config)
+    if args.action == "start":
+        set_fan_power(device_id, DEFAULT_FAN_POWER)
     cli_args = [
         "command",
         "--device_id",
-        get_device_id(args, config),
+        device_id,
         "--cmd",
         command_name,
     ]
@@ -210,6 +264,11 @@ def build_parser():
     config_parser = subparsers.add_parser("config", help="Show or update saved defaults")
     config_parser.add_argument("--device-id")
     config_parser.add_argument("--email")
+    config_parser.add_argument(
+        "--segment-alias",
+        action="append",
+        help="Map a human-readable name to a Roborock segment, e.g. kitchen=2.",
+    )
     config_parser.add_argument("--clear", action="store_true")
     config_parser.set_defaults(func=handle_config)
 
@@ -242,6 +301,13 @@ def build_parser():
     map_image_parser = subparsers.add_parser("map-image", help="Save the map image")
     map_image_parser.add_argument("output_file")
     map_image_parser.set_defaults(func=handle_map_image)
+
+    segment_parser = subparsers.add_parser("segment", help="Clean one or more room segments")
+    segment_parser.add_argument("segments", nargs="+")
+    segment_parser.add_argument("--repeat", type=int, default=1)
+    segment_parser.add_argument("--fan-power", type=int, default=DEFAULT_FAN_POWER)
+    segment_parser.add_argument("--skip-max-fan", action="store_true")
+    segment_parser.set_defaults(func=handle_segment_clean)
 
     raw_parser = subparsers.add_parser("raw", help="Send a raw python-roborock command")
     raw_parser.add_argument("command_name")
