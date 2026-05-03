@@ -19,6 +19,15 @@
   myModules.gitea-runner.enable = true;
   myModules.postgres.enable = true;
   myModules.tts.enable = true;
+  myModules.cua = {
+    enable = true;
+    android = {
+      enable = true;
+      # Android is QEMU/KVM-only. Keep this manually startable until SVM/AMD-V
+      # is exposed to Linux and /dev/kvm exists on this host.
+      autoStart = false;
+    };
+  };
   myModules.railbird-k3s = {
     enable = false;
     serverAddr = "https://jimi-hendnix.local:6443";

@@ -7,6 +7,7 @@
     ./cache-server.nix
     ./cache.nix
     ./code.nix
+    ./cua.nix
     ./desktop.nix
     ./electron.nix
     ./environment.nix
