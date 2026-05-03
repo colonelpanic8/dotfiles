@@ -249,16 +249,15 @@
 	/* Don't give each window icon its own background/border; the workspace
 	   squircle is the background. */
 	background-color: transparent;
-	border: 0px;
+	border: 1px solid transparent;
 	box-shadow: none;
-	padding: 0px 2px;
+	padding: 2px 4px;
 }
 
 .workspaces .window-icon-container.active {
 	background-color: rgba(255, 255, 255, 0.10);
-	border: 1px solid rgba(255, 255, 255, 0.5);
+	border-color: rgba(255, 255, 255, 0.5);
 	border-radius: 7px;
-	padding: 2px 4px;
 }
 
 .workspaces .active .contents,

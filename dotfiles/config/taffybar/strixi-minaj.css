@@ -29,6 +29,7 @@
 }
 
 .visible .contents,
+.workspaces .window-icon-container,
 .workspaces .window-icon-container.active {
 	padding-top: 1px;
 	padding-bottom: 1px;
