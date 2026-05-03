@@ -57,7 +57,7 @@ in {
       codex_home=${lib.escapeShellArg cfg.codexHome}
       worktree_codex=${lib.escapeShellArg cfg.worktreeCodexDir}
 
-      if [ -L "$codex_home" ] && [ "$(readlink "$codex_home")" = "$worktree_codex" ]; then
+      if [ -L "$codex_home" ]; then
         rm -f "$codex_home"
         mkdir -p "$codex_home"
       elif [ ! -e "$codex_home" ]; then
