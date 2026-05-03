@@ -55,7 +55,7 @@
         printf '%s\n' \
           '#!${pkgs.runtimeShell}' \
           'config_path="''${XDG_CONFIG_HOME:-$HOME/.config}/hypr/hyprland.lua"' \
-          'exec "${package}/bin/Hyprland" --config "$config_path" "$@"' \
+          'exec "${package}/bin/start-hyprland" --path "${package}/bin/Hyprland" -- --config "$config_path" "$@"' \
           > "$out/bin/start-hyprland-lua"
         chmod +x "$out/bin/start-hyprland-lua"
 

@@ -117,7 +117,7 @@ let
         After = [ "default.target" ];
       };
       Service = {
-        ExecStart = "${hyprlandPackage}/bin/Hyprland --socket ${cfg.socket} --config ${remoteHyprlandConfig}";
+        ExecStart = "${hyprlandPackage}/bin/start-hyprland --path ${hyprlandPackage}/bin/Hyprland -- --socket ${cfg.socket} --config ${remoteHyprlandConfig}";
         Restart = "on-failure";
         RestartSec = 5;
         Environment = [
