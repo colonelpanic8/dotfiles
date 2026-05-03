@@ -10,6 +10,17 @@ end)
 local config = {
   gap = 8,
   autoColumns = false,
+  widgets = {
+    disk = {
+      enabled = true,
+      interval = 60,
+      volume = "/",
+    },
+    memory = {
+      enabled = true,
+      interval = 10,
+    },
+  },
 }
 
 local retileTimer = nil
@@ -219,6 +230,96 @@ local function moveFocusedToScreen(direction)
   tileWindows(columnWindows(target))
 end
 
+local function userSpacesForScreen(screen)
+  local spaces, err = hs.spaces.spacesForScreen(screen)
+  if not spaces then
+    return nil, err
+  end
+
+  local userSpaces = {}
+  for _, space in ipairs(spaces) do
+    if hs.spaces.spaceType(space) == "user" then
+      table.insert(userSpaces, space)
+    end
+  end
+
+  return userSpaces
+end
+
+local function currentSpaceForScreen(screen)
+  local activeSpaces = hs.spaces.activeSpaces()
+  if activeSpaces and screen.getUUID then
+    local uuid = screen:getUUID()
+    if uuid and activeSpaces[uuid] then
+      return activeSpaces[uuid]
+    end
+  end
+
+  return hs.spaces.focusedSpace()
+end
+
+local function nextUserSpaceForScreen(screen, currentSpace)
+  local spaces, err = userSpacesForScreen(screen)
+  if not spaces then
+    return nil, err
+  end
+
+  if #spaces < 2 then
+    return nil, "no other Desktop on this screen"
+  end
+
+  for index, space in ipairs(spaces) do
+    if space == currentSpace then
+      return spaces[(index % #spaces) + 1]
+    end
+  end
+
+  return spaces[1]
+end
+
+local function containsValue(values, target)
+  if not values then
+    return false
+  end
+
+  for _, value in ipairs(values) do
+    if value == target then
+      return true
+    end
+  end
+
+  return false
+end
+
+local function moveFocusedToNextDesktop()
+  local focused = hs.window.focusedWindow()
+  if not focused then
+    notify("No focused window")
+    return
+  end
+
+  local screen = focused:screen()
+  local targetSpace, err = nextUserSpaceForScreen(screen, currentSpaceForScreen(screen))
+  if not targetSpace then
+    notify("Desktop move failed: " .. tostring(err))
+    return
+  end
+
+  local ok, moveErr = hs.spaces.moveWindowToSpace(focused, targetSpace, true)
+  if not ok then
+    notify("Desktop move failed: " .. tostring(moveErr))
+    return
+  end
+
+  hs.timer.doAfter(0.2, function()
+    if containsValue(hs.spaces.windowSpaces(focused), targetSpace) then
+      return
+    end
+
+    notify("Desktop move blocked by macOS")
+  end)
+end
+
 local function scheduleRetile()
   if arranging or not config.autoColumns then
     return
@@ -264,6 +365,7 @@ wf:subscribe({
 hs.hotkey.bind(hyper, "c", tileFocusedScreen)
 hs.hotkey.bind(hyper, "v", toggleAutoColumns)
 hs.hotkey.bind(hyper, "\\", toggleMonitorInput)
+hs.hotkey.bind(hyper, "h", moveFocusedToNextDesktop)
 
 hs.hotkey.bind(hyper, "a", function()
   focusWindow("left")
@@ -371,6 +473,7 @@ end)
 bindRgui("c", tileFocusedScreen)
 bindRgui("v", toggleAutoColumns)
 bindRgui("\\", toggleMonitorInput)
+bindRgui("h", moveFocusedToNextDesktop)
 
 bindRgui("m", function()
   placeFocused(1, 1, 1)
@@ -424,7 +527,7 @@ local rguiTap = hs.eventtap.new({
     elseif not rightCommandUsed then
       hs.eventtap.keyStroke({}, "escape", 0)
     end
-    return false
+    return true
   end
 
   if eventType ~= hs.eventtap.event.types.keyDown or not rightCommandDown then
@@ -433,7 +536,8 @@ local rguiTap = hs.eventtap.new({
 
   local binding = rguiBindings[keyCode]
   if not binding then
-    return false
+    rightCommandUsed = true
+    return true
   end
 
   rightCommandUsed = true
@@ -447,5 +551,122 @@ local rguiTap = hs.eventtap.new({
 end)
 
 rguiTap:start()
+
+local menuWidgets = {}
+local widgetTimers = {}
+
+local function round(number)
+  return math.floor(number + 0.5)
+end
+
+local function formatBytes(bytes)
+  local units = { "B", "K", "M", "G", "T" }
+  local value = bytes
+  local unitIndex = 1
+
+  while value >= 1024 and unitIndex < #units do
+    value = value / 1024
+    unitIndex = unitIndex + 1
+  end
+
+  if unitIndex <= 2 then
+    return string.format("%d%s", round(value), units[unitIndex])
+  end
+
+  return string.format("%.1f%s", value, units[unitIndex])
+end
+
+local function formatGb(bytes)
+  return string.format("%.1fGB", bytes / 1024 / 1024 / 1024)
+end
+
+local function formatCompactGb(bytes, decimals)
+  return string.format("%." .. decimals .. "f", bytes / 1024 / 1024 / 1024)
+end
+
+local function updateDiskWidget()
+  local widget = menuWidgets.disk
+  local widgetConfig = config.widgets.disk
+  if not widget then
+    return
+  end
+
+  local output, success = hs.execute(string.format(
+    "/bin/df -k %q | /usr/bin/awk 'NR==2 {print $2, $3, $4, $5}'",
+    widgetConfig.volume
+  ))
+  local totalKb, usedKb, availableKb, capacity = output:match("(%d+)%s+(%d+)%s+(%d+)%s+(%d+%%)")
+
+  if not success or not totalKb then
+    widget:setTitle("Disk ?")
+    widget:setTooltip("Disk usage unavailable")
+    return
+  end
+
+  widget:setTitle(string.format(
+    "D %s/%sGB",
+    formatCompactGb(tonumber(availableKb) * 1024, 0),
+    formatCompactGb(tonumber(totalKb) * 1024, 0)
+  ))
+  widget:setTooltip(string.format(
+    "%s used, %s available on %s (%s full)",
+    formatBytes(tonumber(usedKb) * 1024),
+    formatBytes(tonumber(availableKb) * 1024),
+    widgetConfig.volume,
+    capacity
+  ))
+end
+
+local function updateMemoryWidget()
+  local widget = menuWidgets.memory
+  if not widget then
+    return
+  end
+
+  local stats = hs.host.vmStat()
+  local pageSize = stats.pageSize
+  local usedBytes = (
+    stats.anonymousPages
+    + stats.pagesWiredDown
+    + stats.pagesUsedByVMCompressor
+  ) * pageSize
+  local totalBytes = stats.memSize
+  local availableBytes = totalBytes - usedBytes
+  local cacheBytes = stats.fileBackedPages * pageSize
+  local freeBytes = (stats.pagesFree + stats.pagesSpeculative) * pageSize
+
+  widget:setTitle(string.format(
+    "R %s/%sGB",
+    formatCompactGb(availableBytes, 1),
+    formatCompactGb(totalBytes, 1)
+  ))
+  widget:setTooltip(string.format(
+    "%s used, %s available of %s\n%s cached, %s free",
+    formatBytes(usedBytes),
+    formatBytes(availableBytes),
+    formatBytes(totalBytes),
+    formatBytes(cacheBytes),
+    formatBytes(freeBytes)
+  ))
+end
+
+local function createMenuWidget(name, update, interval)
+  menuWidgets[name] = hs.menubar.new()
+  menuWidgets[name]:setClickCallback(update)
+  update()
+  widgetTimers[name] = hs.timer.doEvery(interval, update)
+end
+
+local function startMenuWidgets()
+  if config.widgets.disk.enabled then
+    createMenuWidget("disk", updateDiskWidget, config.widgets.disk.interval)
+  end
+
+  if config.widgets.memory.enabled then
+    createMenuWidget("memory", updateMemoryWidget, config.widgets.memory.interval)
+  end
+end
+
+startMenuWidgets()
 
 notify("Hammerspoon loaded")
