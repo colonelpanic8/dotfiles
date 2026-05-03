@@ -1,7 +1,20 @@
 hostname := "mac-demarco-mini"
+target-hostname := "mac-demarco-mini-imalison"
+
+build:
+	sudo -H /run/current-system/sw/bin/nix run nix-darwin -- build --flake .#{{hostname}}
+
+build-imalison:
+	sudo -H /run/current-system/sw/bin/nix run nix-darwin -- build --flake .#{{target-hostname}}
+
+check-imalison:
+	./scripts/check-imalison-ready.sh
 
 switch:
 	sudo -H /run/current-system/sw/bin/nix run nix-darwin -- switch --flake .#{{hostname}}
+
+switch-imalison: check-imalison
+	sudo -H /run/current-system/sw/bin/nix run nix-darwin -- switch --flake .#{{target-hostname}}
 
 update:
 	/run/current-system/sw/bin/nix flake update

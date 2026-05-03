@@ -153,7 +153,11 @@ in {
       done < "$password_store_gpg_id"
 
       if [ "$needs_import" -eq 1 ]; then
-        ${importGpgKeyScript}
+        if [ -n "''${XDG_RUNTIME_DIR:-}" ] && [ -r "${gpgKeyPath}" ] && [ -r "${gpgPassphrasePath}" ]; then
+          ${importGpgKeyScript}
+        else
+          echo "Skipping GPG key import; agenix runtime secrets are not available yet" >&2
+        fi
       fi
     fi
   '';

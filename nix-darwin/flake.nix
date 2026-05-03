@@ -15,7 +15,7 @@
     };
     nix-homebrew.url = "github:zhaofengli-wip/nix-homebrew";
     brew-src = {
-      url = "github:Homebrew/brew/5.1.7";
+      url = "github:Homebrew/brew/5.1.8";
       flake = false;
     };
 
@@ -71,19 +71,11 @@
     ...
   }: let
     libDir = ../dotfiles/lib;
-    # Keep this on the currently-existing macOS account until the target user
-    # exists locally and its home directory has been migrated.
     activePrimaryUser = "kat";
     targetPrimaryUser = "imalison";
-    primaryUser = activePrimaryUser;
     personalUsers = [
       activePrimaryUser
       targetPrimaryUser
-    ];
-    # Home Manager activation should only target accounts that exist today.
-    # Add targetPrimaryUser here when the macOS account is ready.
-    enabledHomeUsers = [
-      activePrimaryUser
     ];
     sharedHomeModules = [
       ./home/common.nix
@@ -91,7 +83,14 @@
       ./home/syncthing.nix
     ];
     homeForUser = user: "/Users/${user}";
-    configuration = {
+    mkUserDescription = user:
+      if user == targetPrimaryUser
+      then "Ivan Malison"
+      else null;
+    mkConfiguration = {
+      primaryUser,
+      enabledHomeUsers ? [primaryUser],
+    }: {
       pkgs,
       lib,
       config,
@@ -229,8 +228,13 @@
 
       system.activationScripts.postActivation.text = ''
         echo >&2 "current-host screensaver defaults..."
-        launchctl asuser "$(id -u -- ${primaryUser})" sudo --user=${primaryUser} -- defaults -currentHost write com.apple.screensaver askForPassword -bool false
-        launchctl asuser "$(id -u -- ${primaryUser})" sudo --user=${primaryUser} -- defaults -currentHost write com.apple.screensaver askForPasswordDelay -int 0
+        primary_uid="$(id -u -- ${primaryUser})"
+        if launchctl print "gui/$primary_uid" >/dev/null 2>&1; then
+          launchctl asuser "$primary_uid" sudo --user=${primaryUser} -- defaults -currentHost write com.apple.screensaver askForPassword -bool false
+          launchctl asuser "$primary_uid" sudo --user=${primaryUser} -- defaults -currentHost write com.apple.screensaver askForPasswordDelay -int 0
+        else
+          echo >&2 "skipping current-host screensaver defaults; ${primaryUser} has no GUI launchd session"
+        fi
       '';
 
       power.sleep = {
@@ -287,7 +291,6 @@
         essentialPkgs
         ++ [
           pkgs.gnupg
-          pkgs.spotify
         ];
 
       nixpkgs.config.allowUnfree = true;
@@ -310,19 +313,25 @@
           "ghostty"
           "hammerspoon"
           "raycast"
+          "spotify"
           "vlc"
         ];
         masApps = {
           Xcode = 497799835;
         };
-        onActivation.cleanup = "zap";
+        greedyCasks = true;
+        onActivation = {
+          cleanup = "zap";
+        };
       };
 
       # Auto upgrade nix package and the daemon service.
-      launchd.user.envVariables.PATH = config.environment.systemPath;
-      launchd.user.agents.hammerspoon.serviceConfig = {
-        ProgramArguments = ["/usr/bin/open" "-gja" "Hammerspoon"];
-        RunAtLoad = true;
+      launchd.user = lib.mkIf (primaryUser == activePrimaryUser) {
+        envVariables.PATH = config.environment.systemPath;
+        agents.hammerspoon.serviceConfig = {
+          ProgramArguments = ["/usr/bin/open" "-gja" "Hammerspoon"];
+          RunAtLoad = true;
+        };
       };
 
       programs.direnv.enable = true;
@@ -354,6 +363,7 @@
         lib.genAttrs personalUsers (user: {
           name = user;
           home = homeForUser user;
+          description = mkUserDescription user;
           openssh.authorizedKeys.keys = inputs.railbird-secrets.keys.kanivanKeys;
         })
         // {
@@ -380,31 +390,47 @@
         users = lib.genAttrs enabledHomeUsers (_: {});
       };
     };
-  in {
-    darwinConfigurations."mac-demarco-mini" = nix-darwin.lib.darwinSystem {
-      modules = [
-        agenix.darwinModules.default
-        home-manager.darwinModules.home-manager
-        nix-homebrew.darwinModules.nix-homebrew
-        {
-          nix-homebrew = {
-            enable = true;
-            user = primaryUser;
-            autoMigrate = true;
-            package =
-              inputs.brew-src
-              // {
-                name = "brew-5.1.7";
-                version = "5.1.7";
+    mkDarwinSystem = {
+      primaryUser,
+      enabledHomeUsers ? [primaryUser],
+    }:
+      nix-darwin.lib.darwinSystem {
+        modules = [
+          agenix.darwinModules.default
+          home-manager.darwinModules.home-manager
+          nix-homebrew.darwinModules.nix-homebrew
+          {
+            nix-homebrew = {
+              enable = true;
+              user = primaryUser;
+              autoMigrate = true;
+              package =
+                inputs.brew-src
+                // {
+                  name = "brew-5.1.8";
+                  version = "5.1.8";
+                };
+              taps = {
+                "homebrew/homebrew-core" = inputs.homebrew-core;
+                "homebrew/homebrew-cask" = inputs.homebrew-cask;
               };
-            taps = {
-              "homebrew/homebrew-core" = inputs.homebrew-core;
-              "homebrew/homebrew-cask" = inputs.homebrew-cask;
             };
-          };
-        }
-        configuration
-      ];
+          }
+          (mkConfiguration {inherit primaryUser enabledHomeUsers;})
+        ];
+      };
+  in {
+    # The default remains on the currently existing macOS account. Switch to
+    # mac-demarco-mini-imalison after the target login account and home are in
+    # place.
+    darwinConfigurations."mac-demarco-mini" = mkDarwinSystem {
+      primaryUser = activePrimaryUser;
+      enabledHomeUsers = [activePrimaryUser];
+    };
+
+    darwinConfigurations."mac-demarco-mini-imalison" = mkDarwinSystem {
+      primaryUser = targetPrimaryUser;
+      enabledHomeUsers = [targetPrimaryUser];
     };
 
     # Expose the package set, including overlays, for convenience.
