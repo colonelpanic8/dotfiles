@@ -5,35 +5,65 @@ let
   taffybarStart = pkgs.writeShellScript "taffybar-start" ''
     runtime_dir="''${XDG_RUNTIME_DIR:-/run/user/$(${pkgs.coreutils}/bin/id -u)}"
 
-    if [ -n "''${DISPLAY:-}" ] && [ "''${XDG_SESSION_TYPE:-}" != "wayland" ]; then
+    find_wayland_socket() {
+      if [ -n "''${WAYLAND_DISPLAY:-}" ] && [ -S "$runtime_dir/$WAYLAND_DISPLAY" ]; then
+        printf '%s\n' "$WAYLAND_DISPLAY"
+        return 0
+      fi
+
+      for socket in "$runtime_dir"/wayland-*; do
+        case "$socket" in
+          *.lock) continue ;;
+        esac
+
+        if [ -S "$socket" ]; then
+          printf '%s\n' "''${socket##*/}"
+          return 0
+        fi
+      done
+
+      return 1
+    }
+
+    x11_socket_ready() {
+      display_number="''${DISPLAY#:}"
+      display_number="''${display_number%%.*}"
+      [ -n "$display_number" ] && [ -S "/tmp/.X11-unix/X$display_number" ]
+    }
+
+    current_desktop="''${XDG_CURRENT_DESKTOP:-}"
+    desktop_session="''${DESKTOP_SESSION:-}"
+    window_manager="''${IMALISON_WINDOW_MANAGER:-}"
+    is_hyprland=0
+    case "''${current_desktop}:''${desktop_session}:''${window_manager}" in
+      *Hyprland*|*hyprland*) is_hyprland=1 ;;
+    esac
+
+    if [ "$is_hyprland" = 1 ] && [ -z "''${XDG_SESSION_TYPE:-}" ]; then
+      export XDG_SESSION_TYPE=wayland
+    fi
+
+    if [ "''${XDG_SESSION_TYPE:-}" = "wayland" ] || [ -n "''${WAYLAND_DISPLAY:-}" ] || [ "$is_hyprland" = 1 ]; then
+      if [ -z "''${WAYLAND_DISPLAY:-}" ] || [ ! -S "$runtime_dir/$WAYLAND_DISPLAY" ]; then
+        if socket_name="$(find_wayland_socket)"; then
+          echo "taffybar-start: correcting WAYLAND_DISPLAY=''${WAYLAND_DISPLAY:-<unset>} to $socket_name" >&2
+          export WAYLAND_DISPLAY="$socket_name"
+        fi
+      fi
+    fi
+
+    if [ -n "''${DISPLAY:-}" ] && [ "''${XDG_SESSION_TYPE:-}" != "wayland" ] && x11_socket_ready; then
       unset WAYLAND_DISPLAY
       unset HYPRLAND_INSTANCE_SIGNATURE
       exec ${taffybarPackage}/bin/taffybar "$@"
     fi
 
-    if [ "''${XDG_SESSION_TYPE:-}" = "wayland" ] || [ -n "''${WAYLAND_DISPLAY:-}" ]; then
-      if [ -z "''${WAYLAND_DISPLAY:-}" ] || [ ! -S "$runtime_dir/$WAYLAND_DISPLAY" ]; then
-        for socket in "$runtime_dir"/wayland-*; do
-          case "$socket" in
-            *.lock) continue ;;
-          esac
-
-          if [ -S "$socket" ]; then
-            socket_name="''${socket##*/}"
-            echo "taffybar-start: correcting WAYLAND_DISPLAY=''${WAYLAND_DISPLAY:-<unset>} to $socket_name" >&2
-            export WAYLAND_DISPLAY="$socket_name"
-            break
-          fi
-        done
+    if [ -z "''${WAYLAND_DISPLAY:-}" ] || [ ! -S "$runtime_dir/$WAYLAND_DISPLAY" ]; then
+      if socket_name="$(find_wayland_socket)"; then
+        echo "taffybar-start: correcting WAYLAND_DISPLAY=''${WAYLAND_DISPLAY:-<unset>} to $socket_name" >&2
+        export WAYLAND_DISPLAY="$socket_name"
       fi
     fi
-
-    current_desktop="''${XDG_CURRENT_DESKTOP:-}"
-    desktop_session="''${DESKTOP_SESSION:-}"
-    is_hyprland=0
-    case "''${current_desktop}:''${desktop_session}" in
-      *Hyprland*|*hyprland*) is_hyprland=1 ;;
-    esac
 
     if [ -n "''${HYPRLAND_INSTANCE_SIGNATURE:-}" ] && [ ! -S "$runtime_dir/hypr/$HYPRLAND_INSTANCE_SIGNATURE/.socket.sock" ]; then
       echo "taffybar-start: unsetting stale HYPRLAND_INSTANCE_SIGNATURE=$HYPRLAND_INSTANCE_SIGNATURE" >&2
@@ -56,6 +86,57 @@ let
 
     exec ${taffybarPackage}/bin/taffybar "$@"
   '';
+  waitForGraphicalSocket = pkgs.writeShellScript "wait-for-taffybar-display" ''
+    runtime_dir="''${XDG_RUNTIME_DIR:-/run/user/$(${pkgs.coreutils}/bin/id -u)}"
+
+    find_wayland_socket() {
+      if [ -n "''${WAYLAND_DISPLAY:-}" ] && [ -S "$runtime_dir/$WAYLAND_DISPLAY" ]; then
+        return 0
+      fi
+
+      for socket in "$runtime_dir"/wayland-*; do
+        case "$socket" in
+          *.lock) continue ;;
+        esac
+
+        if [ -S "$socket" ]; then
+          return 0
+        fi
+      done
+
+      return 1
+    }
+
+    x11_socket_ready() {
+      display_number="''${DISPLAY#:}"
+      display_number="''${display_number%%.*}"
+      [ -n "$display_number" ] && [ -S "/tmp/.X11-unix/X$display_number" ]
+    }
+
+    for _ in $(${pkgs.coreutils}/bin/seq 1 50); do
+      current_desktop="''${XDG_CURRENT_DESKTOP:-}"
+      desktop_session="''${DESKTOP_SESSION:-}"
+      window_manager="''${IMALISON_WINDOW_MANAGER:-}"
+
+      case "''${current_desktop}:''${desktop_session}:''${window_manager}" in
+        *Hyprland*|*hyprland*) find_wayland_socket && exit 0 ;;
+      esac
+
+      if [ "''${XDG_SESSION_TYPE:-}" = "wayland" ] || [ -n "''${WAYLAND_DISPLAY:-}" ]; then
+        find_wayland_socket && exit 0
+      elif [ -n "''${DISPLAY:-}" ]; then
+        x11_socket_ready && exit 0
+        find_wayland_socket && exit 0
+      else
+        find_wayland_socket && exit 0
+      fi
+
+      ${pkgs.coreutils}/bin/sleep 0.1
+    done
+
+    echo "taffybar: display socket not ready: XDG_SESSION_TYPE=''${XDG_SESSION_TYPE:-<unset>} WAYLAND_DISPLAY=''${WAYLAND_DISPLAY:-<unset>} DISPLAY=''${DISPLAY:-<unset>} XDG_RUNTIME_DIR=$runtime_dir" >&2
+    exit 1
+  '';
   skipTaffybarInOtherShells = pkgs.writeShellScript "skip-taffybar-in-other-shells" ''
     current_desktop="''${XDG_CURRENT_DESKTOP:-}"
     desktop_session="''${DESKTOP_SESSION:-}"
@@ -68,21 +149,6 @@ let
   '';
   taffybarExecCondition = pkgs.writeShellScript "taffybar-exec-condition" ''
     ${skipTaffybarInOtherShells} || exit 1
-
-    runtime_dir="''${XDG_RUNTIME_DIR:-/run/user/$(${pkgs.coreutils}/bin/id -u)}"
-    if [ "''${XDG_SESSION_TYPE:-}" = "wayland" ] || [ -n "''${WAYLAND_DISPLAY:-}" ]; then
-      if [ -z "''${WAYLAND_DISPLAY:-}" ] || [ ! -S "$runtime_dir/$WAYLAND_DISPLAY" ]; then
-        exit 1
-      fi
-    elif [ -n "''${DISPLAY:-}" ]; then
-      display_number="''${DISPLAY#:}"
-      display_number="''${display_number%%.*}"
-      if [ -z "$display_number" ] || [ ! -S "/tmp/.X11-unix/X$display_number" ]; then
-        exit 1
-      fi
-    else
-      exit 1
-    fi
 
     if [ -x /run/current-system/sw/bin/desktop_shell_ui ]; then
       exec /run/current-system/sw/bin/desktop_shell_ui exec-condition taffybar
@@ -130,6 +196,7 @@ makeEnable config "myModules.taffybar" false {
         '';
       systemd.user.services.taffybar.Service = {
         ExecCondition = "${taffybarExecCondition}";
+        ExecStartPre = "${waitForGraphicalSocket}";
         ExecStart = lib.mkForce "${taffybarStart}";
         # Temporary startup debugging: keep a plain-text log outside journald so
         # the next login/startup leaves easy-to-inspect tray traces behind.
