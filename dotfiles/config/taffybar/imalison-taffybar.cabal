@@ -37,6 +37,7 @@ executable taffybar
                      , time
                      , taffybar>=3.2.0
                      , transformers
+                     , unix
                      , xdg-basedir
   default-language:    Haskell2010
 

@@ -8,6 +8,28 @@ run:
 restart:
 	@scripts/taffybar-restart
 
+# Restart with one of the bisect widget profiles:
+# minimal, workspaces, workspaces-windows, or full.
+restart-widget-profile profile:
+	@TAFFYBAR_WIDGET_PROFILE='{{profile}}' scripts/taffybar-restart
+
+# Restart a widget profile with draw and workspace update logging enabled.
+# Inspect /tmp/taffybar.log after switching workspaces.
+restart-redraw-debug profile="full":
+	@TAFFYBAR_WIDGET_PROFILE='{{profile}}' TAFFYBAR_DRAW_DEBUG=1 TAFFYBAR_WORKSPACE_DEBUG=1 scripts/taffybar-restart
+
+# Minimal widget profile with all taffybar CSS disabled.
+restart-redraw-minimal:
+	@TAFFYBAR_WIDGET_PROFILE='minimal' TAFFYBAR_DRAW_DEBUG=1 TAFFYBAR_WORKSPACE_DEBUG=1 TAFFYBAR_DISABLE_VENDOR_CSS=1 TAFFYBAR_DISABLE_USER_CSS=1 scripts/taffybar-restart
+
+# Workspace-only profile with all taffybar CSS disabled.
+restart-redraw-workspaces-empty-css:
+	@TAFFYBAR_WIDGET_PROFILE='workspaces' TAFFYBAR_DRAW_DEBUG=1 TAFFYBAR_WORKSPACE_DEBUG=1 TAFFYBAR_DISABLE_VENDOR_CSS=1 TAFFYBAR_DISABLE_USER_CSS=1 scripts/taffybar-restart
+
+# Workspace-only profile with the normal configured CSS.
+restart-redraw-workspaces-user-css:
+	@TAFFYBAR_WIDGET_PROFILE='workspaces' TAFFYBAR_DRAW_DEBUG=1 TAFFYBAR_WORKSPACE_DEBUG=1 scripts/taffybar-restart
+
 # Restart with no vendor CSS (taffybar's built-in stylesheet) loaded.
 restart-no-vendor-css:
 	@TAFFYBAR_DISABLE_VENDOR_CSS=1 scripts/taffybar-restart
