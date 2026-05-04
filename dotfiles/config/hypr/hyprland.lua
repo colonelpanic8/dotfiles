@@ -38,6 +38,20 @@ local stack_update_timer = nil
 local monocle_notice = nil
 local scratchpad_pending = {}
 
+hl.monitor({
+  output = "eDP-1",
+  mode = "2560x1600@240",
+  position = "0x0",
+  scale = "1.333333",
+})
+
+hl.monitor({
+  output = "",
+  mode = "preferred",
+  position = "auto",
+  scale = "auto",
+})
+
 local scratchpads = {
   htop = {
     command = "alacritty --class htop-scratch --title htop -e htop",

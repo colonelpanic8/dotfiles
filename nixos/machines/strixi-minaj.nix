@@ -111,7 +111,7 @@
               status = "enable";
               mode = "2560x1600@240Hz";
               position = "0,0";
-              scale = 1.0;
+              scale = 1.333333;
             }
             {
               criteria = "Microstep MPG341CX OLED Unknown";
