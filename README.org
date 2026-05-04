@@ -1,1 +1,228 @@
-dotfiles/emacs.d/README.org
+# -*- mode: org; -*-
+#+TITLE: colonelpanic8's Dotfiles
+
+This repository is the source of truth for my machines, user environment, and a
+large set of day-to-day workflow scripts. It started as an Emacs configuration,
+and that is still here, but the repo is now mostly a Nix-managed personal
+systems repo: NixOS hosts, a nix-darwin host, Home Manager link management,
+desktop/window-manager configuration, shell tooling, agent configuration, and
+org-agenda-api deployment glue.
+
+The old literate Emacs README lives at [[file:dotfiles/emacs.d/README.org][dotfiles/emacs.d/README.org]]. The
+published GitHub Pages site is still generated from that document.
+
+* What This Manages
+
+- NixOS systems under [[file:nixos/][nixos/]], with one flake configuration per file in
+  [[file:nixos/machines/][nixos/machines/]].
+- A nix-darwin configuration under [[file:nix-darwin/][nix-darwin/]] for the macOS machine.
+- Shared Nix modules and overlays under [[file:nix-shared/][nix-shared/]].
+- Home Manager placement of files from [[file:dotfiles/][dotfiles/]] into =$HOME= and
+  =$XDG_CONFIG_HOME=.
+- Shell functions and executable helpers in [[file:dotfiles/lib/][dotfiles/lib/]], added to
+  =PATH= and =fpath= by the NixOS environment module.
+- Desktop environment and tiling-window-manager configuration for Hyprland,
+  XMonad, River/XMonad experiments, Taffybar, Waybar, Rofi, Alacritty,
+  autorandr, and related utilities.
+- Emacs and org-mode configuration, including the tangled org configuration used
+  by the org-agenda-api container.
+- Agent and tool configuration for Codex, Claude, project guides, and local
+  task-specific skills.
+- Container and deployment configuration for personal org-agenda-api instances.
+
+This is not intended to be a generic starter dotfiles repo. Many modules assume
+my users, hostnames, hardware, SSH keys, secrets layout, and local checkout path
+=(~/dotfiles=). It is still useful as a reference for how the pieces fit
+together.
+
+* Layout
+
+| Path | Purpose |
+|------+---------|
+| [[file:nixos/][nixos/]] | Main NixOS flake. Imports feature modules, host files, agenix secrets, Home Manager, overlays, and package checks. |
+| [[file:nixos/machines/][nixos/machines/]] | Per-host NixOS entrypoints such as =strixi-minaj=, =ryzen-shine=, =railbird-sf=, WSL hosts, and Raspberry Pi hosts. |
+| [[file:nix-darwin/][nix-darwin/]] | macOS system flake using nix-darwin, nix-homebrew, Home Manager, agenix, and shared packages. |
+| [[file:nix-shared/][nix-shared/]] | Shared package lists, overlays, Home Manager modules, and Syncthing fragments used by Linux and macOS. |
+| [[file:dotfiles/][dotfiles/]] | Files that are linked into the home directory. Top-level entries become dotfiles; =dotfiles/config/*= becomes XDG config. |
+| [[file:dotfiles/lib/bin/][dotfiles/lib/bin/]] | User commands and desktop helpers, including Rofi scripts, Hyprland helpers, audio controls, and Syncthing utilities. |
+| [[file:dotfiles/lib/functions/][dotfiles/lib/functions/]] | Zsh autoload functions and shell helpers. |
+| [[file:dotfiles/config/hypr/][dotfiles/config/hypr/]] | Hyprland Lua config, lock/idle config, workspace files, scripts, and plugin state. |
+| [[file:dotfiles/config/xmonad/][dotfiles/config/xmonad/]] | XMonad configuration, local Cabal package, flake, and upstream submodules. |
+| [[file:dotfiles/config/taffybar/][dotfiles/config/taffybar/]] | Personal Taffybar package/configuration, CSS themes, scripts, and local upstream checkout. |
+| [[file:dotfiles/emacs.d/][dotfiles/emacs.d/]] | Emacs configuration, literate org config, org-mode setup, snippets, and generated/tangled Elisp. |
+| [[file:dotfiles/agents/][dotfiles/agents/]] | Agent instructions, project constellation guides, and local Codex skills. |
+| [[file:org-agenda-api/][org-agenda-api/]] | Instance-specific config and container/deploy glue for org-agenda-api. |
+| [[file:docs/][docs/]] | Design notes for Cachix, tiling WM behavior, River evaluation, and org-agenda-api consolidation. |
+| [[file:gen-gh-pages/][gen-gh-pages/]] | Legacy/publication pipeline that exports the Emacs README to GitHub Pages. |
+
+* NixOS
+
+The NixOS flake is [[file:nixos/flake.nix][nixos/flake.nix]]. It discovers host configurations from
+[[file:nixos/machines/][nixos/machines/]] and exposes them as =nixosConfigurations.<hostname>=.
+The broad feature set is assembled by [[file:nixos/configuration.nix][nixos/configuration.nix]], where
+=features.full.enable= expands into the normal desktop/profile modules.
+
+Common workflow:
+
+#+begin_src sh
+cd ~/dotfiles/nixos
+just switch
+#+end_src
+
+The local =just switch= recipe wraps =nixos-rebuild switch --flake ".#"=, waits
+for an already-running switch to finish, and overrides the Taffybar inputs to
+the live checkout under this repo. Use it instead of running =nixos-rebuild=
+directly.
+
+Useful variants:
+
+#+begin_src sh
+cd ~/dotfiles/nixos
+just switch-remote
+just switch-local-taffybar
+just remote-switch <host>
+#+end_src
+
+Build/check examples:
+
+#+begin_src sh
+nix flake check ~/dotfiles/nixos
+nix build ~/dotfiles/nixos#nixosConfigurations.strixi-minaj.config.system.build.toplevel
+#+end_src
+
+The flake also exposes package/check outputs for Hyprland plugins and a
+Hyprland Lua config syntax/verification check.
+
+* nix-darwin
+
+The macOS configuration lives in [[file:nix-darwin/flake.nix][nix-darwin/flake.nix]]. It uses
+nix-darwin, nix-homebrew, Home Manager, agenix, and the shared package list in
+[[file:nix-shared/system/essential.nix][nix-shared/system/essential.nix]].
+
+Common workflow:
+
+#+begin_src sh
+cd ~/dotfiles/nix-darwin
+just switch
+#+end_src
+
+The active host configuration is =mac-demarco-mini=. There is also a
+=mac-demarco-mini-imalison= target used while migrating the primary macOS user.
+
+* Home File Linking
+
+The NixOS Home Manager module [[file:nixos/dotfiles-links.nix][nixos/dotfiles-links.nix]] reproduces the useful
+part of =rcm/rcup=:
+
+- files under [[file:dotfiles/][dotfiles/]] are linked into =$HOME= with a leading dot;
+- directories under [[file:dotfiles/config/][dotfiles/config/]] are linked into =$XDG_CONFIG_HOME=;
+- links are out-of-store symlinks, so editing the checkout updates runtime
+  config immediately;
+- generated or special directories such as =codex=, =lib=, =config=, and
+  =emacs.d= are handled separately.
+
+On NixOS, shell scripts belong in [[file:dotfiles/lib/bin/][dotfiles/lib/bin/]] and autoloaded shell
+functions belong in [[file:dotfiles/lib/functions/][dotfiles/lib/functions/]]. [[file:nixos/environment.nix][nixos/environment.nix]] adds
+those paths to the shell environment.
+
+The nix-darwin Home Manager module in [[file:nix-darwin/home/common.nix][nix-darwin/home/common.nix]] uses the
+same basic idea for macOS, with extra launchd, GPG, Raycast, Homebrew, and agent
+setup.
+
+* Desktop Stack
+
+The desktop setup is modular. [[file:nixos/desktop.nix][nixos/desktop.nix]] enables the common desktop
+surface, while individual modules layer in window managers, panels, launchers,
+notifications, SNI/tray support, fonts, and app defaults.
+
+The currently important pieces are:
+
+- Hyprland configuration in [[file:dotfiles/config/hypr/hyprland.lua][dotfiles/config/hypr/hyprland.lua]], backed by custom
+  plugin inputs in the NixOS flake.
+- XMonad configuration in [[file:dotfiles/config/xmonad/xmonad.hs][dotfiles/config/xmonad/xmonad.hs]], with upstream
+  =xmonad= and =xmonad-contrib= available as submodules/checkouts.
+- Taffybar configuration in [[file:dotfiles/config/taffybar/taffybar.hs][dotfiles/config/taffybar/taffybar.hs]], plus a local
+  flake and scripts for restart, screenshots, and SNI debugging.
+- Waybar, Rofi, autorandr, Alacritty, Zellij, and miscellaneous app configs
+  under [[file:dotfiles/config/][dotfiles/config/]].
+
+The intended tiling-WM behavior is documented in
+[[file:docs/tiling-wm-experience.md][docs/tiling-wm-experience.md]], and the River/XMonad exploration is documented in
+[[file:docs/riverwm-evaluation.md][docs/riverwm-evaluation.md]].
+
+* Emacs And Org
+
+Emacs is still a major part of the repo, just no longer the only thing here.
+The main files are:
+
+- [[file:dotfiles/emacs.d/README.org][dotfiles/emacs.d/README.org]]: the original literate Emacs README.
+- [[file:dotfiles/emacs.d/init.el][dotfiles/emacs.d/init.el]] and [[file:dotfiles/emacs.d/early-init.el][early-init.el]]: runtime entrypoints.
+- [[file:dotfiles/emacs.d/org-config.org][dotfiles/emacs.d/org-config.org]]: the org-mode configuration that is tangled
+  for normal Emacs and for org-agenda-api.
+- [[file:gen-gh-pages/][gen-gh-pages/]] and [[file:.github/workflows/gh-pages.yml][.github/workflows/gh-pages.yml]]: export the Emacs README
+  to the public GitHub Pages site.
+
+* org-agenda-api
+
+The repo carries the personal integration layer for
+[[https://github.com/colonelpanic8/org-agenda-api][org-agenda-api]].
+[[file:nixos/org-agenda-api.nix][nixos/org-agenda-api.nix]] tangles the org-mode configuration from
+[[file:dotfiles/emacs.d/org-config.org][dotfiles/emacs.d/org-config.org]]. [[file:org-agenda-api/container.nix][org-agenda-api/container.nix]] combines that
+tangled config with per-instance loaders under [[file:org-agenda-api/configs/][org-agenda-api/configs/]] and
+builds OCI containers exposed by the NixOS flake.
+
+The host-side NixOS module [[file:nixos/org-agenda-api-host.nix][nixos/org-agenda-api-host.nix]] runs the container
+behind nginx with ACME certificates and Podman.
+
+To enter the deployment shell:
+
+#+begin_src sh
+nix develop ~/dotfiles/nixos#org-agenda-api
+#+end_src
+
+* Secrets
+
+Secrets are intentionally not stored as plaintext in the repo. Nix-managed
+secrets use agenix files under [[file:nixos/secrets/][nixos/secrets/]]. Runtime credentials and
+personal service passwords live in =pass=. Modules and scripts should consume
+secrets from those sources at runtime rather than checking derived values into
+git.
+
+* Submodules And Local Checkouts
+
+Some third-party or upstream projects are tracked as submodules:
+
+- =dotfiles/config/taffybar/taffybar=
+- =dotfiles/config/xmonad/xmonad=
+- =dotfiles/config/xmonad/xmonad-contrib=
+- =dotfiles/config/alacritty/themes=
+- =nixos/railbird.ai=
+
+Clone with submodules when bootstrapping a new checkout:
+
+#+begin_src sh
+git clone --recurse-submodules git@github.com:IvanMalison/dotfiles.git ~/dotfiles
+#+end_src
+
+This repo also contains project-local git worktrees under =.worktrees/= during
+active development. Those are machine-local working state and are ignored.
+
+* CI And Caches
+
+[[file:.github/workflows/cachix.yml][.github/workflows/cachix.yml]] can build the =strixi-minaj= NixOS closure and
+push paths to Cachix. [[file:docs/cachix.md][docs/cachix.md]] documents the cache setup.
+
+The top-level [[file:justfile][justfile]] contains helper commands for populating the
+=colonelpanic8-dotfiles= Cachix cache from a local machine.
+
+* Working In This Repo
+
+- Prefer Nix modules for system-level behavior and Home Manager modules for
+  user-level placement and services.
+- Put user commands in [[file:dotfiles/lib/bin/][dotfiles/lib/bin/]] and shell functions in
+  [[file:dotfiles/lib/functions/][dotfiles/lib/functions/]].
+- Run NixOS switches from [[file:nixos/][nixos/]] with =just switch=.
+- Run macOS switches from [[file:nix-darwin/][nix-darwin/]] with =just switch=.
+- Keep host-specific behavior in [[file:nixos/machines/][nixos/machines/]] where possible.
+- Do not commit secrets or generated local state; use agenix, =pass=, or ignored
+  machine-local files.
