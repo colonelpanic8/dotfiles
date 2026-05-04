@@ -163,7 +163,8 @@ Nice behavior:
 
 Required behavior:
 
-- There is an expose-style way to inspect open windows or workspaces before
+- There is a visual window overview for inspecting open windows before jumping.
+- There is a visual workspace expose for inspecting normal workspaces before
   jumping.
 - There is a rofi-style window picker.
 - Window picker entries show icons.
@@ -177,6 +178,15 @@ Required behavior:
 Important behavior:
 
 - Overview supports both "go" and "bring" workflows.
+- Window overview and workspace expose are distinct surfaces, because window
+  selection and workspace selection are different navigation tasks.
+- Window overview supports directional keyboard selection with the same
+  `w/a/s/d` spatial model as ordinary window focus.
+- Window overview supports direct go, bring, and replace-window actions from the
+  selection UI.
+- Workspace expose shows bounded normal workspaces, including empty workspaces,
+  with visible workspace numbers.
+- Workspace expose can be opened in a bring-window-oriented mode when supported.
 - Window switchers hide scratchpad windows unless the user is explicitly using a
   scratchpad picker.
 - Window switchers hide minimized windows unless the user is explicitly using a
@@ -311,8 +321,7 @@ Required behavior:
 - `Super+q` reloads the window manager config.
 - `Super+Shift+c` closes the focused window.
 - `Super+Shift+q` exits the window manager session.
-- `Super+Tab` opens the overview.
-- `Super+Shift+Tab` opens the overview in bring-window mode when supported.
+- `Super+x` opens the command picker with `rofi_command.sh`.
 - `Super+g` opens the go-to-window picker.
 - `Super+b` opens the bring-window picker.
 - `Super+Shift+b` opens the replace-window picker.
@@ -325,6 +334,21 @@ Required behavior:
 
 Important behavior:
 
+- `Super+Tab` opens the visual window overview.
+- `Super+Shift+Tab` opens the visual window overview scoped to non-visible
+  windows or bring-window mode when supported.
+- `Alt+Tab` opens the visual workspace expose.
+- `Alt+Shift+Tab` opens the visual workspace expose in bring-window mode when
+  supported.
+- Within visual window overview, `w/a/s/d`, `h/j/k/l`, and arrow keys move the
+  selection directionally.
+- Within visual window overview, `Return`, `Space`, `g`, or `f` activates the
+  selected window.
+- Within visual window overview, `b`, `Shift+Return`, or `Shift+Space` brings
+  the selected window to the current workspace.
+- Within visual window overview, `Shift+b` replaces the focused window with the
+  selected window when supported.
+- Within visual window overview, `Escape` or `q` closes the overview.
 - `Super+\` starts or advances current-monitor workspace history cycling.
 - `Super+/` reverses current-monitor workspace history cycling while the
   initiating `Super` key is held.
@@ -385,7 +409,6 @@ Required behavior:
 - `Hyper+h` opens the screenshot tool with the compositor/session-appropriate
   screenshot command.
 - `Hyper+c` opens a shell command prompt with `shell_command.sh`.
-- `Hyper+x` opens the command picker with `rofi_command.sh`.
 - `Hyper+k` opens the process killer with `rofi_kill_process.sh`.
 - `Hyper+Shift+k` opens the kill-all/process-tree killer with
   `rofi_kill_all.sh`.
