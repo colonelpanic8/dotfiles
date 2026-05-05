@@ -3,7 +3,7 @@
 "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
-<!-- 2026-05-05 Tue 05:02 -->
+<!-- 2026-05-05 Tue 05:35 -->
 <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>&lrm;</title>
@@ -4003,39 +4003,40 @@ a:hover {
 <li><a href="#anzu">19.1. anzu</a></li>
 <li><a href="#iedit">19.2. iedit</a></li>
 <li><a href="#tramp">19.3. tramp</a></li>
-<li><a href="#narrowindirect">19.4. narrow-indirect</a></li>
-<li><a href="#editorconfig">19.5. editorconfig</a></li>
-<li><a href="#direnv">19.6. direnv</a></li>
-<li><a href="#dtrtindent">19.7. dtrt-indent</a></li>
-<li><a href="#rainbowdelimiters">19.8. rainbow-delimiters</a></li>
-<li><a href="#vundo">19.9. vundo</a></li>
-<li><a href="#recentf">19.10. recentf</a></li>
-<li><a href="#keychord">19.11. key-chord</a></li>
-<li><a href="#nodejsrepl">19.12. nodejs-repl</a></li>
-<li><a href="#calcmode">19.13. calc-mode</a></li>
-<li><a href="#jabber">19.14. jabber</a></li>
-<li><a href="#htmlize">19.15. htmlize</a></li>
-<li><a href="#calfw">19.16. calfw</a></li>
-<li><a href="#clocker">19.17. clocker</a></li>
-<li><a href="#deft">19.18. deft</a></li>
-<li><a href="#epg">19.19. epg</a></li>
-<li><a href="#pinentry">19.20. pinentry</a></li>
-<li><a href="#gmailmessagemode">19.21. gmail-message-mode</a></li>
-<li><a href="#hammode">19.22. ham-mode</a></li>
-<li><a href="#alert">19.23. alert</a></li>
-<li><a href="#sauron">19.24. sauron</a></li>
-<li><a href="#screenshot">19.25. screenshot</a></li>
-<li><a href="#libmpdee">19.26. libmpdee</a></li>
-<li><a href="#flyspell">19.27. flyspell</a></li>
-<li><a href="#webmode">19.28. web-mode</a></li>
-<li><a href="#androidmode">19.29. android-mode</a></li>
-<li><a href="#gradlemode">19.30. gradle-mode</a></li>
-<li><a href="#groovymode">19.31. groovy-mode</a></li>
-<li><a href="#jsxmode">19.32. jsx-mode</a></li>
-<li><a href="#css">19.33. css</a></li>
-<li><a href="#sgmlmode">19.34. sgml-mode</a></li>
-<li><a href="#evil">19.35. evil</a></li>
-<li><a href="#hackernews">19.36. hackernews</a></li>
+<li><a href="#dbus">19.4. dbus</a></li>
+<li><a href="#narrowindirect">19.5. narrow-indirect</a></li>
+<li><a href="#editorconfig">19.6. editorconfig</a></li>
+<li><a href="#direnv">19.7. direnv</a></li>
+<li><a href="#dtrtindent">19.8. dtrt-indent</a></li>
+<li><a href="#rainbowdelimiters">19.9. rainbow-delimiters</a></li>
+<li><a href="#vundo">19.10. vundo</a></li>
+<li><a href="#recentf">19.11. recentf</a></li>
+<li><a href="#keychord">19.12. key-chord</a></li>
+<li><a href="#nodejsrepl">19.13. nodejs-repl</a></li>
+<li><a href="#calcmode">19.14. calc-mode</a></li>
+<li><a href="#jabber">19.15. jabber</a></li>
+<li><a href="#htmlize">19.16. htmlize</a></li>
+<li><a href="#calfw">19.17. calfw</a></li>
+<li><a href="#clocker">19.18. clocker</a></li>
+<li><a href="#deft">19.19. deft</a></li>
+<li><a href="#epg">19.20. epg</a></li>
+<li><a href="#pinentry">19.21. pinentry</a></li>
+<li><a href="#gmailmessagemode">19.22. gmail-message-mode</a></li>
+<li><a href="#hammode">19.23. ham-mode</a></li>
+<li><a href="#alert">19.24. alert</a></li>
+<li><a href="#sauron">19.25. sauron</a></li>
+<li><a href="#screenshot">19.26. screenshot</a></li>
+<li><a href="#libmpdee">19.27. libmpdee</a></li>
+<li><a href="#flyspell">19.28. flyspell</a></li>
+<li><a href="#webmode">19.29. web-mode</a></li>
+<li><a href="#androidmode">19.30. android-mode</a></li>
+<li><a href="#gradlemode">19.31. gradle-mode</a></li>
+<li><a href="#groovymode">19.32. groovy-mode</a></li>
+<li><a href="#jsxmode">19.33. jsx-mode</a></li>
+<li><a href="#css">19.34. css</a></li>
+<li><a href="#sgmlmode">19.35. sgml-mode</a></li>
+<li><a href="#evil">19.36. evil</a></li>
+<li><a href="#hackernews">19.37. hackernews</a></li>
 </ul>
 </li>
 <li><a href="#appearance">20. Appearance</a>
@@ -5495,7 +5496,12 @@ I keep it around just in case I need it.
   (shell-command (format <span class="org-string">"grownotify -t %s -m %s"</span> title message)))
 
 (<span class="org-keyword">defun</span> <span class="org-function-name">notify-send</span> (title message)
-  (shell-command (format <span class="org-string">"notify-send -u critical %s %s"</span> title message)))
+  (<span class="org-keyword">when-let</span> ((program (executable-find <span class="org-string">"notify-send"</span>)))
+    (<span class="org-keyword">let</span> ((process-connection-type nil))
+      (start-process <span class="org-string">"notify-send"</span> nil program
+                     <span class="org-string">"-u"</span> <span class="org-string">"critical"</span>
+                     (<span class="org-keyword">or</span> title <span class="org-string">"No title"</span>)
+                     (<span class="org-keyword">or</span> message <span class="org-string">"No message"</span>)))))
 
 (<span class="org-keyword">defvar</span> <span class="org-variable-name">notify-function</span>
   (<span class="org-keyword">cond</span> ((eq system-type 'darwin) 'notification-center)
@@ -9259,15 +9265,44 @@ I don't use iedit directly, but it is used by <a href="#emr">emr</a> and I need 
 <pre class="src src-emacs-lisp">(<span class="org-keyword">use-package</span> <span class="org-constant">tramp</span>
   <span class="org-builtin">:ensure</span> nil
   <span class="org-builtin">:commands</span> tramp
+  <span class="org-builtin">:init</span>
+  <span class="org-comment-delimiter">;; </span><span class="org-comment">Avoid TRAMP's GVFS backend on sessions where org.gtk.vfs.Daemon is not
+</span>  <span class="org-comment-delimiter">;; </span><span class="org-comment">activatable.  Buffer/recent-file completion can otherwise trigger noisy
+</span>  <span class="org-comment-delimiter">;; </span><span class="org-comment">DBus ServiceUnknown errors while inspecting TRAMP candidates.
+</span>  (<span class="org-keyword">setq</span> tramp-gvfs-methods nil)
   <span class="org-builtin">:config</span>
-  (<span class="org-keyword">setq</span> tramp-default-method <span class="org-string">"scp"</span>))
+  (<span class="org-keyword">setq</span> tramp-default-method <span class="org-string">"scp"</span>)
+  (<span class="org-keyword">setq</span> tramp-methods
+        (seq-remove
+         (<span class="org-keyword">lambda</span> (method)
+           (member (car method)
+                   '(<span class="org-string">"afp"</span> <span class="org-string">"dav"</span> <span class="org-string">"davs"</span> <span class="org-string">"gdrive"</span> <span class="org-string">"mtp"</span> <span class="org-string">"nextcloud"</span> <span class="org-string">"sftp"</span>)))
+         tramp-methods))
+  (<span class="org-keyword">when</span> (boundp 'tramp-foreign-file-name-handler-alist)
+    (<span class="org-keyword">setq</span> tramp-foreign-file-name-handler-alist
+          (assq-delete-all 'tramp-gvfs-file-name-p
+                           tramp-foreign-file-name-handler-alist))))
+</pre>
+</div>
+</div>
+</div>
+<div id="outline-container-dbus" class="outline-3">
+<h3 id="dbus"><span class="section-number-3">19.4.</span> dbus <a href="#dbus"><svg aria-hidden="true" class="octicon octicon-link" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a></h3>
+<div class="outline-text-3" id="text-19-4">
+<div class="org-src-container">
+<pre class="src src-emacs-lisp">(<span class="org-keyword">with-eval-after-load</span> 'dbus
+  <span class="org-comment-delimiter">;; </span><span class="org-comment">This hook reports even handled DBus errors in the echo area.  That is
+</span>  <span class="org-comment-delimiter">;; </span><span class="org-comment">usually noise in this config, especially during completion paths which may
+</span>  <span class="org-comment-delimiter">;; </span><span class="org-comment">probe optional desktop services.
+</span>  (remove-hook 'dbus-event-error-functions
+               #'dbus-notice-synchronous-call-errors))
 </pre>
 </div>
 </div>
 </div>
 <div id="outline-container-narrowindirect" class="outline-3">
-<h3 id="narrowindirect"><span class="section-number-3">19.4.</span> narrow-indirect <a href="#narrowindirect"><svg aria-hidden="true" class="octicon octicon-link" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a></h3>
-<div class="outline-text-3" id="text-19-4">
+<h3 id="narrowindirect"><span class="section-number-3">19.5.</span> narrow-indirect <a href="#narrowindirect"><svg aria-hidden="true" class="octicon octicon-link" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a></h3>
+<div class="outline-text-3" id="text-19-5">
 <div class="org-src-container">
 <pre class="src src-emacs-lisp">(<span class="org-keyword">use-package</span> <span class="org-constant">narrow-indirect</span>
   <span class="org-builtin">:disabled</span> t <span class="org-comment-delimiter">;;</span><span class="org-comment">@FIX where is it hosted? locally? add :ensure nil + use-package :load-path keyword
@@ -9282,8 +9317,8 @@ I don't use iedit directly, but it is used by <a href="#emr">emr</a> and I need 
 </div>
 </div>
 <div id="outline-container-editorconfig" class="outline-3">
-<h3 id="editorconfig"><span class="section-number-3">19.5.</span> editorconfig <a href="#editorconfig"><svg aria-hidden="true" class="octicon octicon-link" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a></h3>
-<div class="outline-text-3" id="text-19-5">
+<h3 id="editorconfig"><span class="section-number-3">19.6.</span> editorconfig <a href="#editorconfig"><svg aria-hidden="true" class="octicon octicon-link" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a></h3>
+<div class="outline-text-3" id="text-19-6">
 <p>
 I had to disable this mode because something that it does messes with coding settings and makes it so that I have to select the appropriate encoding every time I save gpg encrypted files.
 </p>
@@ -9299,8 +9334,8 @@ I had to disable this mode because something that it does messes with coding set
 </div>
 </div>
 <div id="outline-container-direnv" class="outline-3">
-<h3 id="direnv"><span class="section-number-3">19.6.</span> direnv <a href="#direnv"><svg aria-hidden="true" class="octicon octicon-link" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a></h3>
-<div class="outline-text-3" id="text-19-6">
+<h3 id="direnv"><span class="section-number-3">19.7.</span> direnv <a href="#direnv"><svg aria-hidden="true" class="octicon octicon-link" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a></h3>
+<div class="outline-text-3" id="text-19-7">
 <div class="org-src-container">
 <pre class="src src-emacs-lisp">(<span class="org-keyword">use-package</span> <span class="org-constant">direnv</span>
   <span class="org-builtin">:demand</span> t
@@ -9313,8 +9348,8 @@ I had to disable this mode because something that it does messes with coding set
 </div>
 </div>
 <div id="outline-container-dtrtindent" class="outline-3">
-<h3 id="dtrtindent"><span class="section-number-3">19.7.</span> dtrt-indent <a href="#dtrtindent"><svg aria-hidden="true" class="octicon octicon-link" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a></h3>
-<div class="outline-text-3" id="text-19-7">
+<h3 id="dtrtindent"><span class="section-number-3">19.8.</span> dtrt-indent <a href="#dtrtindent"><svg aria-hidden="true" class="octicon octicon-link" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a></h3>
+<div class="outline-text-3" id="text-19-8">
 <div class="org-src-container">
 <pre class="src src-emacs-lisp">(<span class="org-keyword">use-package</span> <span class="org-constant">dtrt-indent</span>
   <span class="org-builtin">:diminish</span> 'dtrt-indent-mode
@@ -9334,8 +9369,8 @@ I had to disable this mode because something that it does messes with coding set
 </div>
 </div>
 <div id="outline-container-rainbowdelimiters" class="outline-3">
-<h3 id="rainbowdelimiters"><span class="section-number-3">19.8.</span> rainbow-delimiters <a href="#rainbowdelimiters"><svg aria-hidden="true" class="octicon octicon-link" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a></h3>
-<div class="outline-text-3" id="text-19-8">
+<h3 id="rainbowdelimiters"><span class="section-number-3">19.9.</span> rainbow-delimiters <a href="#rainbowdelimiters"><svg aria-hidden="true" class="octicon octicon-link" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a></h3>
+<div class="outline-text-3" id="text-19-9">
 <div class="org-src-container">
 <pre class="src src-emacs-lisp">(<span class="org-keyword">use-package</span> <span class="org-constant">rainbow-delimiters</span>
   <span class="org-builtin">:commands</span> rainbow-delimiters-mode
@@ -9347,8 +9382,8 @@ I had to disable this mode because something that it does messes with coding set
 </div>
 </div>
 <div id="outline-container-vundo" class="outline-3">
-<h3 id="vundo"><span class="section-number-3">19.9.</span> vundo <a href="#vundo"><svg aria-hidden="true" class="octicon octicon-link" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a></h3>
-<div class="outline-text-3" id="text-19-9">
+<h3 id="vundo"><span class="section-number-3">19.10.</span> vundo <a href="#vundo"><svg aria-hidden="true" class="octicon octicon-link" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a></h3>
+<div class="outline-text-3" id="text-19-10">
 <div class="org-src-container">
 <pre class="src src-emacs-lisp">(<span class="org-keyword">use-package</span> <span class="org-constant">vundo</span>)
 </pre>
@@ -9356,8 +9391,8 @@ I had to disable this mode because something that it does messes with coding set
 </div>
 </div>
 <div id="outline-container-recentf" class="outline-3">
-<h3 id="recentf"><span class="section-number-3">19.10.</span> recentf <a href="#recentf"><svg aria-hidden="true" class="octicon octicon-link" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a></h3>
-<div class="outline-text-3" id="text-19-10">
+<h3 id="recentf"><span class="section-number-3">19.11.</span> recentf <a href="#recentf"><svg aria-hidden="true" class="octicon octicon-link" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a></h3>
+<div class="outline-text-3" id="text-19-11">
 <div class="org-src-container">
 <pre class="src src-emacs-lisp">(<span class="org-keyword">use-package</span> <span class="org-constant">recentf</span>
   <span class="org-builtin">:ensure</span> nil
@@ -9375,8 +9410,8 @@ I had to disable this mode because something that it does messes with coding set
 </div>
 </div>
 <div id="outline-container-keychord" class="outline-3">
-<h3 id="keychord"><span class="section-number-3">19.11.</span> key-chord <a href="#keychord"><svg aria-hidden="true" class="octicon octicon-link" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a></h3>
-<div class="outline-text-3" id="text-19-11">
+<h3 id="keychord"><span class="section-number-3">19.12.</span> key-chord <a href="#keychord"><svg aria-hidden="true" class="octicon octicon-link" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a></h3>
+<div class="outline-text-3" id="text-19-12">
 <p>
 I have currently disabled key-chord because it may cause typing lag.
 </p>
@@ -9404,8 +9439,8 @@ I have currently disabled key-chord because it may cause typing lag.
 </div>
 </div>
 <div id="outline-container-nodejsrepl" class="outline-3">
-<h3 id="nodejsrepl"><span class="section-number-3">19.12.</span> nodejs-repl <a href="#nodejsrepl"><svg aria-hidden="true" class="octicon octicon-link" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a></h3>
-<div class="outline-text-3" id="text-19-12">
+<h3 id="nodejsrepl"><span class="section-number-3">19.13.</span> nodejs-repl <a href="#nodejsrepl"><svg aria-hidden="true" class="octicon octicon-link" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a></h3>
+<div class="outline-text-3" id="text-19-13">
 <div class="org-src-container">
 <pre class="src src-emacs-lisp">(<span class="org-keyword">use-package</span> <span class="org-constant">nodejs-repl</span>
   <span class="org-builtin">:commands</span> nodejs-repl)
@@ -9414,8 +9449,8 @@ I have currently disabled key-chord because it may cause typing lag.
 </div>
 </div>
 <div id="outline-container-calcmode" class="outline-3">
-<h3 id="calcmode"><span class="section-number-3">19.13.</span> calc-mode <a href="#calcmode"><svg aria-hidden="true" class="octicon octicon-link" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a></h3>
-<div class="outline-text-3" id="text-19-13">
+<h3 id="calcmode"><span class="section-number-3">19.14.</span> calc-mode <a href="#calcmode"><svg aria-hidden="true" class="octicon octicon-link" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a></h3>
+<div class="outline-text-3" id="text-19-14">
 <div class="org-src-container">
 <pre class="src src-emacs-lisp">(<span class="org-keyword">use-package</span> <span class="org-constant">calc-mode</span>
   <span class="org-builtin">:ensure</span> nil
@@ -9428,8 +9463,8 @@ I have currently disabled key-chord because it may cause typing lag.
 </div>
 </div>
 <div id="outline-container-jabber" class="outline-3">
-<h3 id="jabber"><span class="section-number-3">19.14.</span> jabber <a href="#jabber"><svg aria-hidden="true" class="octicon octicon-link" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a></h3>
-<div class="outline-text-3" id="text-19-14">
+<h3 id="jabber"><span class="section-number-3">19.15.</span> jabber <a href="#jabber"><svg aria-hidden="true" class="octicon octicon-link" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a></h3>
+<div class="outline-text-3" id="text-19-15">
 <p>
 Disabled because it has its own version of hexrgb which might cause conflicts
 </p>
@@ -9452,8 +9487,8 @@ Disabled because it has its own version of hexrgb which might cause conflicts
 </div>
 </div>
 <div id="outline-container-htmlize" class="outline-3">
-<h3 id="htmlize"><span class="section-number-3">19.15.</span> htmlize <a href="#htmlize"><svg aria-hidden="true" class="octicon octicon-link" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a></h3>
-<div class="outline-text-3" id="text-19-15">
+<h3 id="htmlize"><span class="section-number-3">19.16.</span> htmlize <a href="#htmlize"><svg aria-hidden="true" class="octicon octicon-link" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a></h3>
+<div class="outline-text-3" id="text-19-16">
 <p>
 This package is needed to export org to html.
 </p>
@@ -9464,8 +9499,8 @@ This package is needed to export org to html.
 </div>
 </div>
 <div id="outline-container-calfw" class="outline-3">
-<h3 id="calfw"><span class="section-number-3">19.16.</span> calfw <a href="#calfw"><svg aria-hidden="true" class="octicon octicon-link" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a></h3>
-<div class="outline-text-3" id="text-19-16">
+<h3 id="calfw"><span class="section-number-3">19.17.</span> calfw <a href="#calfw"><svg aria-hidden="true" class="octicon octicon-link" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a></h3>
+<div class="outline-text-3" id="text-19-17">
 <div class="org-src-container">
 <pre class="src src-emacs-lisp">(<span class="org-keyword">use-package</span> <span class="org-constant">calfw-org</span>
   <span class="org-builtin">:disabled</span> t
@@ -9475,8 +9510,8 @@ This package is needed to export org to html.
 </div>
 </div>
 <div id="outline-container-clocker" class="outline-3">
-<h3 id="clocker"><span class="section-number-3">19.17.</span> clocker <a href="#clocker"><svg aria-hidden="true" class="octicon octicon-link" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a></h3>
-<div class="outline-text-3" id="text-19-17">
+<h3 id="clocker"><span class="section-number-3">19.18.</span> clocker <a href="#clocker"><svg aria-hidden="true" class="octicon octicon-link" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a></h3>
+<div class="outline-text-3" id="text-19-18">
 <p>
 Not really sure what this is
 </p>
@@ -9488,8 +9523,8 @@ Not really sure what this is
 </div>
 </div>
 <div id="outline-container-deft" class="outline-3">
-<h3 id="deft"><span class="section-number-3">19.18.</span> deft <a href="#deft"><svg aria-hidden="true" class="octicon octicon-link" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a></h3>
-<div class="outline-text-3" id="text-19-18">
+<h3 id="deft"><span class="section-number-3">19.19.</span> deft <a href="#deft"><svg aria-hidden="true" class="octicon octicon-link" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a></h3>
+<div class="outline-text-3" id="text-19-19">
 <div class="org-src-container">
 <pre class="src src-emacs-lisp">(<span class="org-keyword">use-package</span> <span class="org-constant">deft</span>
   <span class="org-builtin">:commands</span> deft
@@ -9507,8 +9542,8 @@ Not really sure what this is
 </div>
 </div>
 <div id="outline-container-epg" class="outline-3">
-<h3 id="epg"><span class="section-number-3">19.19.</span> epg <a href="#epg"><svg aria-hidden="true" class="octicon octicon-link" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a></h3>
-<div class="outline-text-3" id="text-19-19">
+<h3 id="epg"><span class="section-number-3">19.20.</span> epg <a href="#epg"><svg aria-hidden="true" class="octicon octicon-link" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a></h3>
+<div class="outline-text-3" id="text-19-20">
 <div class="org-src-container">
 <pre class="src src-emacs-lisp">(<span class="org-keyword">use-package</span> <span class="org-constant">epg</span>
   <span class="org-builtin">:ensure</span> nil
@@ -9521,8 +9556,8 @@ Not really sure what this is
 </div>
 </div>
 <div id="outline-container-pinentry" class="outline-3">
-<h3 id="pinentry"><span class="section-number-3">19.20.</span> pinentry <a href="#pinentry"><svg aria-hidden="true" class="octicon octicon-link" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a></h3>
-<div class="outline-text-3" id="text-19-20">
+<h3 id="pinentry"><span class="section-number-3">19.21.</span> pinentry <a href="#pinentry"><svg aria-hidden="true" class="octicon octicon-link" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a></h3>
+<div class="outline-text-3" id="text-19-21">
 <div class="org-src-container">
 <pre class="src src-emacs-lisp">(<span class="org-keyword">use-package</span> <span class="org-constant">pinentry</span>
   <span class="org-builtin">:defer</span> 5
@@ -9533,8 +9568,8 @@ Not really sure what this is
 </div>
 </div>
 <div id="outline-container-gmailmessagemode" class="outline-3">
-<h3 id="gmailmessagemode"><span class="section-number-3">19.21.</span> gmail-message-mode <a href="#gmailmessagemode"><svg aria-hidden="true" class="octicon octicon-link" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a></h3>
-<div class="outline-text-3" id="text-19-21">
+<h3 id="gmailmessagemode"><span class="section-number-3">19.22.</span> gmail-message-mode <a href="#gmailmessagemode"><svg aria-hidden="true" class="octicon octicon-link" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a></h3>
+<div class="outline-text-3" id="text-19-22">
 <p>
 This is useful with server mode when editing gmail messages. I think that it is not currently working, or it may need to be manually enabled.
 </p>
@@ -9546,8 +9581,8 @@ This is useful with server mode when editing gmail messages. I think that it is 
 </div>
 </div>
 <div id="outline-container-hammode" class="outline-3">
-<h3 id="hammode"><span class="section-number-3">19.22.</span> ham-mode <a href="#hammode"><svg aria-hidden="true" class="octicon octicon-link" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a></h3>
-<div class="outline-text-3" id="text-19-22">
+<h3 id="hammode"><span class="section-number-3">19.23.</span> ham-mode <a href="#hammode"><svg aria-hidden="true" class="octicon octicon-link" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a></h3>
+<div class="outline-text-3" id="text-19-23">
 <div class="org-src-container">
 <pre class="src src-emacs-lisp">(<span class="org-keyword">use-package</span> <span class="org-constant">ham-mode</span>
   <span class="org-builtin">:commands</span> ham-mode
@@ -9560,19 +9595,42 @@ This is useful with server mode when editing gmail messages. I think that it is 
 </div>
 </div>
 <div id="outline-container-alert" class="outline-3">
-<h3 id="alert"><span class="section-number-3">19.23.</span> alert <a href="#alert"><svg aria-hidden="true" class="octicon octicon-link" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a></h3>
-<div class="outline-text-3" id="text-19-23">
+<h3 id="alert"><span class="section-number-3">19.24.</span> alert <a href="#alert"><svg aria-hidden="true" class="octicon octicon-link" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a></h3>
+<div class="outline-text-3" id="text-19-24">
 <div class="org-src-container">
 <pre class="src src-emacs-lisp">(<span class="org-keyword">use-package</span> <span class="org-constant">alert</span>
   <span class="org-builtin">:defer</span> t
   <span class="org-builtin">:preface</span>
+  (<span class="org-keyword">defun</span> <span class="org-function-name">imalison:linux-notifications-available-p</span> ()
+    (<span class="org-keyword">and</span> (eq system-type 'gnu/linux)
+         (executable-find <span class="org-string">"notify-send"</span>)))
+  (<span class="org-keyword">defun</span> <span class="org-function-name">imalison:notify-send-urgency</span> (severity)
+    (<span class="org-keyword">pcase</span> severity
+      ((<span class="org-keyword">or</span> 'urgent 'high) <span class="org-string">"critical"</span>)
+      ('low <span class="org-string">"low"</span>)
+      (_ <span class="org-string">"normal"</span>)))
+  (<span class="org-keyword">defun</span> <span class="org-function-name">imalison:alert-notify-send</span> (info)
+    (<span class="org-keyword">when-let</span> ((program (executable-find <span class="org-string">"notify-send"</span>)))
+      (<span class="org-keyword">let</span> ((process-connection-type nil))
+        (start-process <span class="org-string">"alert-notify-send"</span> nil program
+                       <span class="org-string">"-u"</span> (imalison:notify-send-urgency
+                             (plist-get info <span class="org-builtin">:severity</span>))
+                       (<span class="org-keyword">or</span> (plist-get info <span class="org-builtin">:title</span>) <span class="org-string">"Emacs"</span>)
+                       (<span class="org-keyword">or</span> (plist-get info <span class="org-builtin">:message</span>) <span class="org-string">""</span>)))))
   (<span class="org-keyword">defun</span> <span class="org-function-name">imalison:windows-toast-notify</span> (info)
     (<span class="org-keyword">let</span> ((message (plist-get info <span class="org-builtin">:message</span>))
           (title (plist-get info <span class="org-builtin">:title</span>)))
       (shell-command (format <span class="org-string">"windows_toast '</span><span class="org-string"><span class="org-constant">%s</span></span><span class="org-string">' '</span><span class="org-string"><span class="org-constant">%s</span></span><span class="org-string">'"</span> (<span class="org-keyword">or</span> title <span class="org-string">"No title"</span>) (<span class="org-keyword">or</span> message <span class="org-string">"No message"</span>)))))
   <span class="org-builtin">:config</span>
   (<span class="org-keyword">progn</span>
-    (<span class="org-keyword">setq</span> alert-default-style 'libnotify)
+    (alert-define-style
+     'notify-send
+     <span class="org-builtin">:title</span> <span class="org-string">"notify-send"</span>
+     <span class="org-builtin">:notifier</span> 'imalison:alert-notify-send)
+    (<span class="org-keyword">setq</span> alert-default-style
+          (<span class="org-keyword">if</span> (imalison:linux-notifications-available-p)
+              'notify-send
+            'message))
     (<span class="org-keyword">when</span> (not (string-empty-p (shell-command-to-string <span class="org-string">"grep -i microsoft /proc/version"</span>)))
       (alert-define-style
        'windows-toast
@@ -9584,8 +9642,8 @@ This is useful with server mode when editing gmail messages. I think that it is 
 </div>
 </div>
 <div id="outline-container-sauron" class="outline-3">
-<h3 id="sauron"><span class="section-number-3">19.24.</span> sauron <a href="#sauron"><svg aria-hidden="true" class="octicon octicon-link" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a></h3>
-<div class="outline-text-3" id="text-19-24">
+<h3 id="sauron"><span class="section-number-3">19.25.</span> sauron <a href="#sauron"><svg aria-hidden="true" class="octicon octicon-link" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a></h3>
+<div class="outline-text-3" id="text-19-25">
 <div class="org-src-container">
 <pre class="src src-emacs-lisp">(<span class="org-keyword">use-package</span> <span class="org-constant">sauron</span>
   <span class="org-builtin">:disabled</span> t
@@ -9631,8 +9689,8 @@ This is useful with server mode when editing gmail messages. I think that it is 
 </div>
 </div>
 <div id="outline-container-screenshot" class="outline-3">
-<h3 id="screenshot"><span class="section-number-3">19.25.</span> screenshot <a href="#screenshot"><svg aria-hidden="true" class="octicon octicon-link" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a></h3>
-<div class="outline-text-3" id="text-19-25">
+<h3 id="screenshot"><span class="section-number-3">19.26.</span> screenshot <a href="#screenshot"><svg aria-hidden="true" class="octicon octicon-link" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a></h3>
+<div class="outline-text-3" id="text-19-26">
 <div class="org-src-container">
 <pre class="src src-emacs-lisp">(<span class="org-keyword">use-package</span> <span class="org-constant">screenshot</span>
   <span class="org-builtin">:disabled</span> t <span class="org-comment-delimiter">;;</span><span class="org-comment">@FIX :ensure (:host github :repo "tecosaur/screenshot")?
@@ -9642,8 +9700,8 @@ This is useful with server mode when editing gmail messages. I think that it is 
 </div>
 </div>
 <div id="outline-container-libmpdee" class="outline-3">
-<h3 id="libmpdee"><span class="section-number-3">19.26.</span> libmpdee <a href="#libmpdee"><svg aria-hidden="true" class="octicon octicon-link" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a></h3>
-<div class="outline-text-3" id="text-19-26">
+<h3 id="libmpdee"><span class="section-number-3">19.27.</span> libmpdee <a href="#libmpdee"><svg aria-hidden="true" class="octicon octicon-link" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a></h3>
+<div class="outline-text-3" id="text-19-27">
 <div class="org-src-container">
 <pre class="src src-emacs-lisp">(<span class="org-keyword">use-package</span> <span class="org-constant">libmpdee</span>
   <span class="org-builtin">:defer</span> t)
@@ -9652,8 +9710,8 @@ This is useful with server mode when editing gmail messages. I think that it is 
 </div>
 </div>
 <div id="outline-container-flyspell" class="outline-3">
-<h3 id="flyspell"><span class="section-number-3">19.27.</span> flyspell <a href="#flyspell"><svg aria-hidden="true" class="octicon octicon-link" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a></h3>
-<div class="outline-text-3" id="text-19-27">
+<h3 id="flyspell"><span class="section-number-3">19.28.</span> flyspell <a href="#flyspell"><svg aria-hidden="true" class="octicon octicon-link" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a></h3>
+<div class="outline-text-3" id="text-19-28">
 <div class="org-src-container">
 <pre class="src src-emacs-lisp">(<span class="org-keyword">use-package</span> <span class="org-constant">flyspell</span>
   <span class="org-builtin">:ensure</span> nil
@@ -9699,8 +9757,8 @@ This is useful with server mode when editing gmail messages. I think that it is 
 </div>
 </div>
 <div id="outline-container-webmode" class="outline-3">
-<h3 id="webmode"><span class="section-number-3">19.28.</span> web-mode <a href="#webmode"><svg aria-hidden="true" class="octicon octicon-link" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a></h3>
-<div class="outline-text-3" id="text-19-28">
+<h3 id="webmode"><span class="section-number-3">19.29.</span> web-mode <a href="#webmode"><svg aria-hidden="true" class="octicon octicon-link" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a></h3>
+<div class="outline-text-3" id="text-19-29">
 <div class="org-src-container">
 <pre class="src src-emacs-lisp">(<span class="org-keyword">use-package</span> <span class="org-constant">web-mode</span>
   <span class="org-builtin">:mode</span> ((<span class="org-string">"\\.tmpl\\'"</span> . web-mode)
@@ -9716,8 +9774,8 @@ This is useful with server mode when editing gmail messages. I think that it is 
 </div>
 </div>
 <div id="outline-container-androidmode" class="outline-3">
-<h3 id="androidmode"><span class="section-number-3">19.29.</span> android-mode <a href="#androidmode"><svg aria-hidden="true" class="octicon octicon-link" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a></h3>
-<div class="outline-text-3" id="text-19-29">
+<h3 id="androidmode"><span class="section-number-3">19.30.</span> android-mode <a href="#androidmode"><svg aria-hidden="true" class="octicon octicon-link" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a></h3>
+<div class="outline-text-3" id="text-19-30">
 <div class="org-src-container">
 <pre class="src src-emacs-lisp">(<span class="org-keyword">use-package</span> <span class="org-constant">android-mode</span>
   <span class="org-builtin">:defer</span> t
@@ -9731,8 +9789,8 @@ This is useful with server mode when editing gmail messages. I think that it is 
 </div>
 </div>
 <div id="outline-container-gradlemode" class="outline-3">
-<h3 id="gradlemode"><span class="section-number-3">19.30.</span> gradle-mode <a href="#gradlemode"><svg aria-hidden="true" class="octicon octicon-link" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a></h3>
-<div class="outline-text-3" id="text-19-30">
+<h3 id="gradlemode"><span class="section-number-3">19.31.</span> gradle-mode <a href="#gradlemode"><svg aria-hidden="true" class="octicon octicon-link" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a></h3>
+<div class="outline-text-3" id="text-19-31">
 <div class="org-src-container">
 <pre class="src src-emacs-lisp">(<span class="org-keyword">use-package</span> <span class="org-constant">gradle-mode</span>)
 </pre>
@@ -9740,8 +9798,8 @@ This is useful with server mode when editing gmail messages. I think that it is 
 </div>
 </div>
 <div id="outline-container-groovymode" class="outline-3">
-<h3 id="groovymode"><span class="section-number-3">19.31.</span> groovy-mode <a href="#groovymode"><svg aria-hidden="true" class="octicon octicon-link" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a></h3>
-<div class="outline-text-3" id="text-19-31">
+<h3 id="groovymode"><span class="section-number-3">19.32.</span> groovy-mode <a href="#groovymode"><svg aria-hidden="true" class="octicon octicon-link" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a></h3>
+<div class="outline-text-3" id="text-19-32">
 <p>
 This also adds syntax highlighting for gradle
 </p>
@@ -9753,8 +9811,8 @@ This also adds syntax highlighting for gradle
 </div>
 </div>
 <div id="outline-container-jsxmode" class="outline-3">
-<h3 id="jsxmode"><span class="section-number-3">19.32.</span> jsx-mode <a href="#jsxmode"><svg aria-hidden="true" class="octicon octicon-link" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a></h3>
-<div class="outline-text-3" id="text-19-32">
+<h3 id="jsxmode"><span class="section-number-3">19.33.</span> jsx-mode <a href="#jsxmode"><svg aria-hidden="true" class="octicon octicon-link" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a></h3>
+<div class="outline-text-3" id="text-19-33">
 <div class="org-src-container">
 <pre class="src src-emacs-lisp">(<span class="org-keyword">use-package</span> <span class="org-constant">jsx-mode</span>
   <span class="org-builtin">:disabled</span> t <span class="org-comment-delimiter">;;</span><span class="org-comment">@FIX Add :ensure with package recipe. Could not find "jsx-mode" hosted anywhere
@@ -9764,8 +9822,8 @@ This also adds syntax highlighting for gradle
 </div>
 </div>
 <div id="outline-container-css" class="outline-3">
-<h3 id="css"><span class="section-number-3">19.33.</span> css <a href="#css"><svg aria-hidden="true" class="octicon octicon-link" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a></h3>
-<div class="outline-text-3" id="text-19-33">
+<h3 id="css"><span class="section-number-3">19.34.</span> css <a href="#css"><svg aria-hidden="true" class="octicon octicon-link" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a></h3>
+<div class="outline-text-3" id="text-19-34">
 <div class="org-src-container">
 <pre class="src src-emacs-lisp">(<span class="org-keyword">use-package</span> <span class="org-constant">css-mode</span>
   <span class="org-builtin">:ensure</span> nil
@@ -9776,8 +9834,8 @@ This also adds syntax highlighting for gradle
 </div>
 </div>
 <div id="outline-container-sgmlmode" class="outline-3">
-<h3 id="sgmlmode"><span class="section-number-3">19.34.</span> sgml-mode <a href="#sgmlmode"><svg aria-hidden="true" class="octicon octicon-link" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a></h3>
-<div class="outline-text-3" id="text-19-34">
+<h3 id="sgmlmode"><span class="section-number-3">19.35.</span> sgml-mode <a href="#sgmlmode"><svg aria-hidden="true" class="octicon octicon-link" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a></h3>
+<div class="outline-text-3" id="text-19-35">
 <div class="org-src-container">
 <pre class="src src-emacs-lisp">(<span class="org-keyword">use-package</span> <span class="org-constant">sgml-mode</span>
   <span class="org-builtin">:ensure</span> nil
@@ -9788,8 +9846,8 @@ This also adds syntax highlighting for gradle
 </div>
 </div>
 <div id="outline-container-evil" class="outline-3">
-<h3 id="evil"><span class="section-number-3">19.35.</span> evil <a href="#evil"><svg aria-hidden="true" class="octicon octicon-link" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a></h3>
-<div class="outline-text-3" id="text-19-35">
+<h3 id="evil"><span class="section-number-3">19.36.</span> evil <a href="#evil"><svg aria-hidden="true" class="octicon octicon-link" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a></h3>
+<div class="outline-text-3" id="text-19-36">
 <div class="org-src-container">
 <pre class="src src-emacs-lisp">(<span class="org-keyword">use-package</span> <span class="org-constant">evil</span>
   <span class="org-builtin">:commands</span> (evil-mode)
@@ -9802,8 +9860,8 @@ This also adds syntax highlighting for gradle
 </div>
 </div>
 <div id="outline-container-hackernews" class="outline-3">
-<h3 id="hackernews"><span class="section-number-3">19.36.</span> hackernews <a href="#hackernews"><svg aria-hidden="true" class="octicon octicon-link" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a></h3>
-<div class="outline-text-3" id="text-19-36">
+<h3 id="hackernews"><span class="section-number-3">19.37.</span> hackernews <a href="#hackernews"><svg aria-hidden="true" class="octicon octicon-link" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a></h3>
+<div class="outline-text-3" id="text-19-37">
 <div class="org-src-container">
 <pre class="src src-emacs-lisp">(<span class="org-keyword">use-package</span> <span class="org-constant">hackernews</span> <span class="org-builtin">:commands</span> hackernews)
 </pre>
