@@ -1,20 +1,44 @@
-#!/usr/bin/env bash
+#!/usr/bin/env zsh
 set -euo pipefail
 
-# Pick a directory via rofi, then start Codex in a tmux session rooted there.
-# Remembers previously used directories in:
+# Pick a directory via rofi, then start tmcodex there.
+# Candidate dirs come from previous tmcodex launches and Codex session metadata.
+# tmcodex launch history is stored in:
 #   ${XDG_STATE_HOME:-~/.local/state}/rofi-tmcodex/dirs
 
 state_dir="${XDG_STATE_HOME:-$HOME/.local/state}/rofi-tmcodex"
 history_file="$state_dir/dirs"
+codex_home="${CODEX_HOME:-$HOME/.codex}"
+terminal="${TMCODEX_TERMINAL:-${TERMINAL:-ghostty}}"
+debug_log="$state_dir/debug.log"
 mkdir -p "$state_dir"
 touch "$history_file"
 
-emit_candidates() {
-  # 1) Previously-used dirs (most recent first).
-  cat "$history_file" 2>/dev/null || true
+debug() {
+  [[ -n "${TMCODEX_ROFI_DEBUG:-}" ]] || return 0
+  printf '%s %s\n' "$(date -Is)" "$*" >>"$debug_log" 2>/dev/null || true
+}
 
-  # 2) A few common roots.
+emit_candidates() {
+  local root gitdir
+
+  # 1) Explicit tmcodex history, most recent first.
+  cat -- "$history_file" 2>/dev/null || true
+
+  # 2) Codex session directories, newest sessions first.
+  if command -v jq >/dev/null 2>&1; then
+    for root in "$codex_home/sessions" "$codex_home/archived_sessions"; do
+      [[ -d "$root" ]] || continue
+      find "$root" -type f -name '*.jsonl' -printf '%T@ %p\n' 2>/dev/null \
+        | sort -rn \
+        | awk 'NR <= 1000 { sub(/^[^ ]+ /, ""); print }' \
+        | while IFS= read -r session_file; do
+            jq -r 'first(select(.type == "session_meta") | .payload.cwd? // empty)' "$session_file" 2>/dev/null
+          done
+    done
+  fi
+
+  # 3) A few common roots.
   for d in \
     "$HOME/dotfiles" \
     "$HOME/dotfiles/nixos" \
@@ -25,9 +49,8 @@ emit_candidates() {
     [[ -d "$d" ]] && printf '%s\n' "$d"
   done
 
-  # 3) Shallow git repo discovery under a few likely roots.
+  # 4) Shallow git repo discovery under a few likely roots.
   if command -v fd >/dev/null 2>&1; then
-    local root gitdir
     for root in "$HOME/Projects" "$HOME/dotfiles" "$HOME/config" "$HOME/org"; do
       [[ -d "$root" ]] || continue
       # Find ".git" directories; print their parent (repo root).
@@ -43,9 +66,23 @@ dedup() {
   awk 'NF && !seen[$0]++'
 }
 
+existing_dirs() {
+  local dir
+  while IFS= read -r dir; do
+    [[ -d "$dir" ]] && printf '%s\n' "$dir"
+  done
+}
+
+if [[ "${1:-}" == "--print-candidates" ]]; then
+  emit_candidates | dedup | existing_dirs
+  exit 0
+fi
+
+debug "script=$0 codex_home=$codex_home history_file=$history_file terminal=$terminal"
 selected_dir="$(
-  emit_candidates | dedup | rofi -dmenu -i -p 'tmcodex dir'
+  emit_candidates | dedup | existing_dirs | rofi -dmenu -i -p 'tmcodex dir' || true
 )"
+debug "selected_dir=$selected_dir"
 
 [[ -n "${selected_dir}" ]] || exit 0
 
@@ -61,7 +98,9 @@ if command -v realpath >/dev/null 2>&1; then
 fi
 
 if [[ ! -d "$selected_dir" ]]; then
-  # Fail quietly; rofi launchers generally shouldn't spam terminals.
+  if command -v notify-send >/dev/null 2>&1; then
+    notify-send "tmcodex launcher" "Directory not found: $selected_dir"
+  fi
   exit 1
 fi
 
@@ -70,19 +109,15 @@ tmp="$(mktemp)"
 {
   printf '%s\n' "$selected_dir"
   cat "$history_file"
-} | dedup | head -n 200 >"$tmp"
+} | awk 'NF && !seen[$0]++ && count++ < 200' >"$tmp"
 mv -f "$tmp" "$history_file"
 
-# rofi launches typically have no controlling terminal. Start the agent detached
-# inside tmux (tmux allocates a pty for the window). You can attach later.
-base="$(basename -- "$selected_dir")"
-ck="$(printf '%s' "$selected_dir" | cksum | awk '{print $1}')"
-session="codex-${base}-${ck}"
-# tmux is picky; keep session name simple.
-session="$(printf '%s' "$session" | tr -cs 'A-Za-z0-9_-' '-' | sed 's/^-//;s/-$//')"
-
-if tmux has-session -t "$session" 2>/dev/null; then
-  exec tmux new-window -t "$session" -c "$selected_dir" codex --dangerously-bypass-approvals-and-sandbox
-else
-  exec tmux new-session -d -s "$session" -c "$selected_dir" codex --dangerously-bypass-approvals-and-sandbox
+terminal_argv=(${(z)terminal})
+if (( ${#terminal_argv[@]} == 0 )); then
+  if command -v notify-send >/dev/null 2>&1; then
+    notify-send "tmcodex launcher" "Terminal command is empty"
+  fi
+  exit 1
 fi
+
+("${terminal_argv[@]}" -e zsh -lc 'cd -- "$1" && exec tmcodex' zsh "$selected_dir" >/dev/null 2>&1 &!)
