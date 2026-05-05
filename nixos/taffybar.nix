@@ -1,5 +1,11 @@
-{ config, inputs, lib, pkgs, makeEnable, ... }:
-let
+{
+  config,
+  inputs,
+  lib,
+  pkgs,
+  makeEnable,
+  ...
+}: let
   system = pkgs.stdenv.hostPlatform.system;
   taffybarPackage = inputs.imalison-taffybar.defaultPackage.${system};
   taffybarStart = pkgs.writeShellScript "taffybar-start" ''
@@ -156,41 +162,80 @@ let
 
     exit 0
   '';
+  statusNotifierWatcherPreStart = pkgs.writeShellScript "status-notifier-watcher-pre-start" ''
+    owner_pid="$(
+      ${pkgs.systemd}/bin/busctl --user status org.kde.StatusNotifierWatcher 2>/dev/null |
+        while IFS='=' read -r key value; do
+          if [ "$key" = PID ]; then
+            printf '%s' "$value"
+            break
+          fi
+        done
+    )"
+
+    if [ -z "$owner_pid" ]; then
+      exit 0
+    fi
+
+    if ${pkgs.systemd}/bin/busctl --user introspect org.kde.StatusNotifierWatcher /StatusNotifierWatcher >/dev/null 2>&1; then
+      exit 0
+    fi
+
+    cmdline="$(${pkgs.coreutils}/bin/tr '\0' ' ' < "/proc/$owner_pid/cmdline" 2>/dev/null || true)"
+    case "$cmdline" in
+      *kded6*)
+        echo "status-notifier-watcher-pre-start: killing stale kded6 StatusNotifierWatcher owner pid=$owner_pid" >&2
+        kill "$owner_pid" 2>/dev/null || true
+        attempts=0
+        while ${pkgs.systemd}/bin/busctl --user status org.kde.StatusNotifierWatcher >/dev/null 2>&1; do
+          attempts=$((attempts + 1))
+          if [ "$attempts" -ge 20 ]; then
+            break
+          fi
+          ${pkgs.coreutils}/bin/sleep 0.1
+        done
+        ;;
+    esac
+  '';
 in
-makeEnable config "myModules.taffybar" false {
-  myModules.sni.enable = true;
+  makeEnable config "myModules.taffybar" false {
+    myModules.sni.enable = true;
 
-  environment.systemPackages = [
-    taffybarPackage
-  ];
+    environment.systemPackages = [
+      taffybarPackage
+    ];
 
-  home-manager.sharedModules = [
-    ({ lib, ... }: {
-      services."status-notifier-watcher".enable = true;
-      # home-manager's module defaults to nixpkgs' status-notifier-item, which can lag.
-      # Point it at the pinned flake version instead.
-      services."status-notifier-watcher".package = pkgs.lib.mkForce
-        inputs.imalison-taffybar.packages.${system}.status-notifier-item;
+    home-manager.sharedModules = [
+      ({lib, ...}: {
+        services."status-notifier-watcher".enable = true;
+        # home-manager's module defaults to nixpkgs' status-notifier-item, which can lag.
+        # Point it at the pinned flake version instead.
+        services."status-notifier-watcher".package =
+          pkgs.lib.mkForce
+          inputs.imalison-taffybar.packages.${system}.status-notifier-item;
 
-      systemd.user.targets.tray.Unit = {
-        PartOf = [ "graphical-session.target" ];
-        StopWhenUnneeded = true;
-      };
+        systemd.user.targets.tray.Unit = {
+          PartOf = ["graphical-session.target"];
+          StopWhenUnneeded = true;
+        };
+        systemd.user.services."status-notifier-watcher" = {
+          Unit.Before = ["taffybar.service" "plasma-kded6.service"];
+          Service.ExecStartPre = "${statusNotifierWatcherPreStart}";
+        };
 
-      # Disable kded6's statusnotifierwatcher module so it doesn't race with
-      # the Haskell status-notifier-watcher for the org.kde.StatusNotifierWatcher bus name.
-      xdg.configFile."kded6rc".text = ''
-        [Module-statusnotifierwatcher]
-        autoload=false
-      '';
+        # Disable kded6's statusnotifierwatcher module so it doesn't race with
+        # the Haskell status-notifier-watcher for the org.kde.StatusNotifierWatcher bus name.
+        xdg.configFile."kded6rc".text = ''
+          [Module-statusnotifierwatcher]
+          autoload=false
+        '';
 
-      services.taffybar = {
-        enable = true;
-        package = taffybarPackage;
-      };
-      xdg.configFile."systemd/user/taffybar.service".force = true;
-      home.activation.removeStaleTaffybarOverride =
-        lib.hm.dag.entryAfter [ "writeBoundary" ] ''
+        services.taffybar = {
+          enable = true;
+          package = taffybarPackage;
+        };
+        xdg.configFile."systemd/user/taffybar.service".force = true;
+        home.activation.removeStaleTaffybarOverride = lib.hm.dag.entryAfter ["writeBoundary"] ''
           rm -f "$HOME/.config/systemd/user/taffybar.service.d/override.conf"
           rmdir --ignore-fail-on-non-empty "$HOME/.config/systemd/user/taffybar.service.d" 2>/dev/null || true
         '';
