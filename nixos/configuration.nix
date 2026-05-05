@@ -4,6 +4,8 @@
     ./android.nix
     ./base.nix
     ./ben.nix
+    ./bootloaders/grub-windows.nix
+    ./bootloaders/systemd-boot.nix
     ./cache-server.nix
     ./cache.nix
     ./code.nix

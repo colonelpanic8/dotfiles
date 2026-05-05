@@ -38,6 +38,11 @@
   # boot.kernelPackages = pkgs.linuxPackages_latest;
 
   boot.loader.systemd-boot.configurationLimit = 5;
+  myModules.bootloaders.systemdBoot.enable = false;
+  myModules.bootloaders.grubWindows = {
+    enable = true;
+    windowsEfiUuid = "B270-C7E6";
+  };
 
   networking.hostName = "ryzen-shine";
 
@@ -58,9 +63,6 @@
 
   networking.interfaces.enp5s0.useDHCP = true;
   networking.interfaces.wlp4s0.useDHCP = true;
-
-  boot.loader.systemd-boot.enable = true;
-  boot.loader.efi.canTouchEfiVariables = true;
 
   boot.initrd.availableKernelModules = [ "nvme" "xhci_pci" "ahci" "usb_storage" "usbhid" "sd_mod" ];
 

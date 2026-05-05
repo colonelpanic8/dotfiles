@@ -10,6 +10,8 @@ makeEnable config "myModules.raspberry-pi" false {
   hardware.deviceTree.filter = "bcm2711-rpi-4*.dtb";
   hardware.raspberry-pi."4".fkms-3d.enable = true;
   # hardware.raspberry-pi."4".audio.enable = true;
+  myModules.bootloaders.systemdBoot.enable = false;
+  myModules.bootloaders.grubWindows.enable = false;
 
   boot = {
     initrd.systemd.tpm2.enable = false;
