@@ -3646,8 +3646,32 @@ I don't use iedit directly, but it is used by [[*emr][emr]] and I need to disabl
 (use-package tramp
   :ensure nil
   :commands tramp
+  :init
+  ;; Avoid TRAMP's GVFS backend on sessions where org.gtk.vfs.Daemon is not
+  ;; activatable.  Buffer/recent-file completion can otherwise trigger noisy
+  ;; DBus ServiceUnknown errors while inspecting TRAMP candidates.
+  (setq tramp-gvfs-methods nil)
   :config
-  (setq tramp-default-method "scp"))
+  (setq tramp-default-method "scp")
+  (setq tramp-methods
+        (seq-remove
+         (lambda (method)
+           (member (car method)
+                   '("afp" "dav" "davs" "gdrive" "mtp" "nextcloud" "sftp")))
+         tramp-methods))
+  (when (boundp 'tramp-foreign-file-name-handler-alist)
+    (setq tramp-foreign-file-name-handler-alist
+          (assq-delete-all 'tramp-gvfs-file-name-p
+                           tramp-foreign-file-name-handler-alist))))
+#+END_SRC
+** dbus
+#+BEGIN_SRC emacs-lisp
+(with-eval-after-load 'dbus
+  ;; This hook reports even handled DBus errors in the echo area.  That is
+  ;; usually noise in this config, especially during completion paths which may
+  ;; probe optional desktop services.
+  (remove-hook 'dbus-event-error-functions
+               #'dbus-notice-synchronous-call-errors))
 #+END_SRC
 ** narrow-indirect
 #+BEGIN_SRC emacs-lisp
