@@ -1,5 +1,6 @@
 model = "gpt-5.5"
 model_reasoning_effort = "high"
+service_tier = "fast"
 personality = "pragmatic"
 suppress_unstable_features_warning = true
 
@@ -22,6 +23,7 @@ unified_exec = true
 apps = true
 steer = true
 goals = true
+fast_mode = true
 
 [plugins."google-calendar@openai-curated"]
 enabled = true
