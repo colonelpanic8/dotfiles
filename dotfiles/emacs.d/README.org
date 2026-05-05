@@ -986,7 +986,12 @@ I keep it around just in case I need it.
   (shell-command (format "grownotify -t %s -m %s" title message)))
 
 (defun notify-send (title message)
-  (shell-command (format "notify-send -u critical %s %s" title message)))
+  (when-let ((program (executable-find "notify-send")))
+    (let ((process-connection-type nil))
+      (start-process "notify-send" nil program
+                     "-u" "critical"
+                     (or title "No title")
+                     (or message "No message")))))
 
 (defvar notify-function
   (cond ((eq system-type 'darwin) 'notification-center)
@@ -3836,13 +3841,36 @@ This is useful with server mode when editing gmail messages. I think that it is 
 (use-package alert
   :defer t
   :preface
+  (defun imalison:linux-notifications-available-p ()
+    (and (eq system-type 'gnu/linux)
+         (executable-find "notify-send")))
+  (defun imalison:notify-send-urgency (severity)
+    (pcase severity
+      ((or 'urgent 'high) "critical")
+      ('low "low")
+      (_ "normal")))
+  (defun imalison:alert-notify-send (info)
+    (when-let ((program (executable-find "notify-send")))
+      (let ((process-connection-type nil))
+        (start-process "alert-notify-send" nil program
+                       "-u" (imalison:notify-send-urgency
+                             (plist-get info :severity))
+                       (or (plist-get info :title) "Emacs")
+                       (or (plist-get info :message) "")))))
   (defun imalison:windows-toast-notify (info)
     (let ((message (plist-get info :message))
           (title (plist-get info :title)))
       (shell-command (format "windows_toast '%s' '%s'" (or title "No title") (or message "No message")))))
   :config
   (progn
-    (setq alert-default-style 'libnotify)
+    (alert-define-style
+     'notify-send
+     :title "notify-send"
+     :notifier 'imalison:alert-notify-send)
+    (setq alert-default-style
+          (if (imalison:linux-notifications-available-p)
+              'notify-send
+            'message))
     (when (not (string-empty-p (shell-command-to-string "grep -i microsoft /proc/version")))
       (alert-define-style
        'windows-toast

@@ -1117,7 +1117,11 @@ alphanumeric characters only."
             (org-wild-notifier--apply-whitelist)
             (org-wild-notifier--apply-blacklist)
             (-map 'org-wild-notifier--gather-info))))
-  (org-wild-notifier-mode +1)
+  (condition-case err
+      (org-wild-notifier-mode +1)
+    (error
+     (message "org-wild-notifier disabled during startup: %s"
+              (error-message-string err))))
   (defun org-wild-notify-check-at-time ()
     (interactive)
     (imalison:org-at-time
