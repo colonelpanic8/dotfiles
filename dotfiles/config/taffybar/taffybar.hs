@@ -11,7 +11,6 @@ import Control.Monad.Trans.Reader (asks)
 import Data.Char (toLower)
 import Data.Foldable (for_)
 import Data.GI.Base (castTo)
-import Data.IORef (newIORef, readIORef, writeIORef)
 import Data.Int (Int32)
 import Data.List (nub)
 import qualified Data.Map as M
@@ -26,9 +25,7 @@ import Network.HostName (getHostName)
 import qualified StatusNotifier.Tray as SNITray
 import System.Environment (lookupEnv)
 import System.Environment.XDG.BaseDir (getUserConfigFile)
-import System.IO (hFlush, stdout)
 import System.Log.Logger (Priority (WARNING), rootLoggerName, setLevel, updateGlobalLogger)
-import System.Posix.Process (getProcessID)
 import System.Taffybar (startTaffybar)
 import System.Taffybar.Context
   ( Backend (BackendWayland, BackendX11),
@@ -83,40 +80,6 @@ import qualified System.Taffybar.Widget.Workspaces as Workspaces
 import System.Taffybar.WindowIcon (pixBufFromColor)
 import Text.Printf (printf)
 import Text.Read (readMaybe)
-
-envFlag :: String -> IO Bool
-envFlag name = do
-  value <- lookupEnv name
-  pure $
-    case fmap (map toLower) value of
-      Just "1" -> True
-      Just "true" -> True
-      Just "yes" -> True
-      Just "on" -> True
-      _ -> False
-
-envTextDefault :: String -> Text -> IO Text
-envTextDefault name fallback =
-  maybe fallback T.pack <$> lookupEnv name
-
-attachDrawProbe :: Text -> Gtk.Widget -> TaffyIO Gtk.Widget
-attachDrawProbe name widget = do
-  enabled <- liftIO $ envFlag "TAFFYBAR_DRAW_DEBUG"
-  when enabled $ liftIO $ do
-    counter <- newIORef (0 :: Int)
-    pid <- getProcessID
-    _ <- Gtk.onWidgetDraw widget $ \_ -> do
-      count <- (+ 1) <$> readIORef counter
-      writeIORef counter count
-      printf "taffybar-draw pid=%s widget=%s count=%d\n" (show pid) (T.unpack name) count
-      hFlush stdout
-      pure False
-    pure ()
-  pure widget
-
-withDrawProbe :: Text -> TaffyIO Gtk.Widget -> TaffyIO Gtk.Widget
-withDrawProbe name builder =
-  builder >>= attachDrawProbe name
 
 -- | Wrap the widget in a "TaffyBox" (via 'buildContentsBox') and add a CSS class.
 decorateWithClassAndBox :: (MonadIO m) => Text -> Gtk.Widget -> m Gtk.Widget
@@ -355,19 +318,14 @@ windowsWidget =
     )
 
 workspacesWidget :: TaffyIO Gtk.Widget
-workspacesWidget = do
-  iconProfile <- liftIO $ envTextDefault "TAFFYBAR_WORKSPACE_ICON_PROFILE" "custom"
-  Workspaces.workspacesNew (cfg iconProfile)
+workspacesWidget =
+  Workspaces.workspacesNew cfg
   where
-    iconGetter "default" = Workspaces.defaultGetWindowIconPixbuf
-    iconGetter "fallback" = workspaceFallbackIcon
-    iconGetter "none" = \_ _ -> return Nothing
-    iconGetter _ = workspaceWindowIconGetter
-    cfg iconProfile =
+    cfg =
       Workspaces.defaultWorkspacesConfig
         { Workspaces.widgetGap = 0,
           Workspaces.minIcons = 1,
-          Workspaces.getWindowIconPixbuf = iconGetter iconProfile,
+          Workspaces.getWindowIconPixbuf = workspaceWindowIconGetter,
           Workspaces.labelSetter = workspaceLabelSetter,
           Workspaces.showWorkspaceFn =
             \workspace ->
@@ -713,99 +671,66 @@ sniTrayWidget = do
 
 -- ** Layout
 
-probeWidgets :: [(Text, TaffyIO Gtk.Widget)] -> [TaffyIO Gtk.Widget]
-probeWidgets =
-  map (uncurry withDrawProbe)
-
-startWidgetsForBackend :: Text -> Backend -> [TaffyIO Gtk.Widget]
-startWidgetsForBackend "minimal" _ =
-  []
-startWidgetsForBackend "workspaces" _ =
-  probeWidgets [("workspaces", workspacesWidget)]
-startWidgetsForBackend "workspaces-windows" _ =
-  probeWidgets [("workspaces", workspacesWidget), ("windows", windowsWidget)]
-startWidgetsForBackend _ backend =
+startWidgetsForBackend :: Backend -> [TaffyIO Gtk.Widget]
+startWidgetsForBackend backend =
   case backend of
-    BackendX11 ->
-      probeWidgets
-        [ ("omni-menu", omniMenuWidget),
-          ("workspaces", workspacesWidget),
-          ("layout", layoutWidget),
-          ("windows", windowsWidget)
-        ]
+    BackendX11 -> [omniMenuWidget, workspacesWidget, layoutWidget, windowsWidget]
     -- These Wayland widgets are Hyprland-specific.
-    BackendWayland ->
-      probeWidgets
-        [ ("omni-menu", omniMenuWidget),
-          ("workspaces", workspacesWidget),
-          ("windows", windowsWidget)
-        ]
+    BackendWayland -> [omniMenuWidget, workspacesWidget, windowsWidget]
 
-centerWidgetsForProfile :: Text -> [TaffyIO Gtk.Widget]
-centerWidgetsForProfile "workspaces" = []
-centerWidgetsForProfile _ = probeWidgets [("clock", clockWidget)]
-
-endWidgetsForHost :: Text -> String -> [TaffyIO Gtk.Widget]
-endWidgetsForHost "minimal" _ =
-  []
-endWidgetsForHost "workspaces" _ =
-  []
-endWidgetsForHost "workspaces-windows" _ =
-  []
-endWidgetsForHost _ hostName =
+endWidgetsForHost :: String -> [TaffyIO Gtk.Widget]
+endWidgetsForHost hostName =
   -- NOTE: end widgets are packed with Gtk.boxPackEnd, so the list order is
   -- right-to-left on screen. Make the tray appear at the far right by placing
   -- it first in the list. (On laptops: the battery/wifi stack is far right,
   -- tray immediately left of it.)
   let baseEndWidgets =
-        probeWidgets
-          [ ("sni-tray", sniTrayWidget),
-            ("audio", audioWidget),
-            ("anthropic-usage", anthropicUsageWidget),
-            ("openai-usage", openAIUsageWidget),
-            ("cpu", cpuWidget),
-            ("ram-swap", ramSwapWidget),
-            ("disk-usage", diskUsageWidget),
-            ("network", networkWidget),
-            ("sun-lock", sunLockWidget),
-            ("mpris", mprisWidget)
-          ]
+        [ sniTrayWidget,
+          audioWidget,
+          anthropicUsageWidget,
+          openAIUsageWidget,
+          cpuWidget,
+          ramSwapWidget,
+          diskUsageWidget,
+          networkWidget,
+          sunLockWidget,
+          mprisWidget
+        ]
       laptopEndWidgets =
-        probeWidgets
-          [ ("battery-network", batteryNetworkWidget),
-            ("sni-tray", sniTrayWidget),
-            ("asus-disk-usage", asusDiskUsageWidget),
-            ("audio-backlight", audioBacklightWidget),
-            ("anthropic-usage", anthropicUsageWidget),
-            ("openai-usage", openAIUsageWidget),
-            ("cpu", cpuWidget),
-            ("ram-swap", ramSwapWidget),
-            ("sun-lock", sunLockWidget),
-            ("mpris", mprisWidget)
-          ]
+        [ batteryNetworkWidget,
+          sniTrayWidget,
+          asusDiskUsageWidget,
+          audioBacklightWidget,
+          anthropicUsageWidget,
+          openAIUsageWidget,
+          cpuWidget,
+          ramSwapWidget,
+          sunLockWidget,
+          mprisWidget
+        ]
    in if hostName `elem` laptopHosts
         then laptopEndWidgets
         else baseEndWidgets
 
-mkSimpleTaffyConfig :: String -> Text -> Backend -> [FilePath] -> SimpleTaffyConfig
-mkSimpleTaffyConfig hostName widgetProfile backend cssFiles =
+mkSimpleTaffyConfig :: String -> Backend -> [FilePath] -> SimpleTaffyConfig
+mkSimpleTaffyConfig hostName backend cssFiles =
   defaultSimpleTaffyConfig
-    { startWidgets = startWidgetsForBackend widgetProfile backend,
-      centerWidgets = centerWidgetsForProfile widgetProfile,
-      endWidgets = endWidgetsForHost widgetProfile hostName,
+    { startWidgets = startWidgetsForBackend backend,
+      centerWidgets = [clockWidget],
+      endWidgets = endWidgetsForHost hostName,
       barLevels = Nothing,
       barPosition = Top,
       widgetSpacing = 0,
       barPadding =
         if hostName `elem` smallBarHosts
-          then 0
+          then 1
           else
             if hostName `elem` compactBarHosts
               then 2
               else 4,
       barHeight =
         if hostName `elem` smallBarHosts
-          then ScreenRatio $ 1 / 64
+          then ScreenRatio $ 1 / 48
           else
             if hostName `elem` compactBarHosts
               then ScreenRatio $ 1 / 40
@@ -821,10 +746,9 @@ main = do
 
   hostName <- getHostName
   backend <- detectBackend
-  widgetProfile <- envTextDefault "TAFFYBAR_WIDGET_PROFILE" "full"
   cssFiles <- mapM (getUserConfigFile "taffybar") (cssFilesForHost hostName)
 
-  let simpleTaffyConfig = mkSimpleTaffyConfig hostName widgetProfile backend cssFiles
+  let simpleTaffyConfig = mkSimpleTaffyConfig hostName backend cssFiles
   startTaffybar $
     withLogServer $
       withLogLevels $
