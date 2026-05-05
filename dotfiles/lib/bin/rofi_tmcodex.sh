@@ -25,20 +25,8 @@ emit_candidates() {
   # 1) Explicit tmcodex history, most recent first.
   cat -- "$history_file" 2>/dev/null || true
 
-  # 2) Codex session directories, newest sessions first.
-  if command -v jq >/dev/null 2>&1; then
-    for root in "$codex_home/sessions" "$codex_home/archived_sessions"; do
-      [[ -d "$root" ]] || continue
-      find "$root" -type f -name '*.jsonl' -printf '%T@ %p\n' 2>/dev/null \
-        | sort -rn \
-        | awk 'NR <= 1000 { sub(/^[^ ]+ /, ""); print }' \
-        | while IFS= read -r session_file; do
-            jq -r 'first(select(.type == "session_meta") | .payload.cwd? // empty)' "$session_file" 2>/dev/null
-          done
-    done
-  fi
-
-  # 3) A few common roots.
+  # 2) A few common roots. Keep these before slow/best-effort discovery so
+  # rofi still has useful entries if a metadata scan breaks.
   for d in \
     "$HOME/dotfiles" \
     "$HOME/dotfiles/nixos" \
@@ -48,6 +36,9 @@ emit_candidates() {
   do
     [[ -d "$d" ]] && printf '%s\n' "$d"
   done
+
+  # 3) Codex session directories, newest sessions first.
+  emit_codex_session_dirs
 
   # 4) Shallow git repo discovery under a few likely roots.
   if command -v fd >/dev/null 2>&1; then
@@ -60,6 +51,28 @@ emit_candidates() {
       done < <(fd -H -a -t d -d 4 '^\\.git$' "$root" 2>/dev/null || true)
     done
   fi
+}
+
+emit_codex_session_dirs() {
+  local root session_file_list
+  local -a session_files
+
+  command -v jq >/dev/null 2>&1 || return 0
+
+  session_file_list="$(
+    for root in "$codex_home/sessions" "$codex_home/archived_sessions"; do
+      [[ -d "$root" ]] || continue
+      find "$root" -type f -name '*.jsonl' -printf '%T@ %p\n' 2>/dev/null
+    done | sort -rn | awk 'NR <= 1000 { sub(/^[^ ]+ /, ""); print }'
+  )"
+  session_files=("${(@f)session_file_list}")
+
+  (( ${#session_files[@]} > 0 )) || return 0
+  [[ -n "${session_files[1]:-}" ]] || return 0
+
+  awk 'FNR == 1 { print; nextfile }' "${session_files[@]}" 2>/dev/null \
+    | jq -r 'select(.type == "session_meta") | .payload.cwd? // empty' 2>/dev/null \
+    || true
 }
 
 dedup() {
