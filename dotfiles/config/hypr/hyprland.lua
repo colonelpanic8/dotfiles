@@ -6,6 +6,20 @@ local terminal = "ghostty --gtk-single-instance=false"
 local shell_ui_command = "hypr_shell_ui"
 local launcher_command = shell_ui_command .. " launcher"
 local run_menu = shell_ui_command .. " run"
+-- Hyprland shadows ordinary keybinds after one fires; without transparent,
+-- the first overview chord after a focus-moving bind can be skipped.
+local overview_bind_opts = { dont_inhibit = true, transparent = true }
+local overview_trace_enabled_path = "/tmp/hypr-overview-bind.enable"
+local overview_trace_path = "/tmp/hypr-overview-bind.log"
+local notification_icons = {
+  warning = 0,
+  info = 1,
+  hint = 2,
+  error = 3,
+  confused = 4,
+  ok = 5,
+  none = 6,
+}
 
 local max_workspace = 9
 local scratchpad_size_ratio = 0.95
@@ -116,6 +130,24 @@ local function exec(command)
   return hl.dsp.exec_cmd(command)
 end
 
+local function shell_quote(value)
+  return "'" .. tostring(value):gsub("'", "'\\''") .. "'"
+end
+
+local function overview_trace(label)
+  local enabled = io.open(overview_trace_enabled_path, "r")
+  if not enabled then
+    return
+  end
+  enabled:close()
+
+  local trace = io.open(overview_trace_path, "a")
+  if trace then
+    trace:write(os.date("%Y-%m-%d %H:%M:%S "), label, "\n")
+    trace:close()
+  end
+end
+
 local function window_selector(window)
   if not window or not window.address then
     return nil
@@ -124,14 +156,16 @@ local function window_selector(window)
 end
 
 local function hyprexpo(action)
+  action = action or "toggle"
   return function()
+    overview_trace("hyprexpo " .. tostring(action))
     if hl.plugin and hl.plugin.hyprexpo and hl.plugin.hyprexpo.expo then
       hl.plugin.hyprexpo.expo(action)
     else
       hl.notification.create({
         text = "hyprexpo is not loaded",
         duration = 1800,
-        icon = "warning",
+        icon = notification_icons.warning,
         color = "rgba(edb443ff)",
         font_size = 13,
       })
@@ -141,17 +175,29 @@ end
 
 local function hyprwinview(action)
   return function()
-    if hl.plugin and hl.plugin.hyprwinview and hl.plugin.hyprwinview.overview then
-      hl.plugin.hyprwinview.overview(action)
-    else
-      hl.notification.create({
-        text = "hyprwinview is not loaded",
-        duration = 1800,
-        icon = "warning",
-        color = "rgba(edb443ff)",
-        font_size = 13,
-      })
+    local label = "hyprwinview"
+    if type(action) == "table" and action.action then
+      label = label .. " " .. tostring(action.action)
+    elseif type(action) ~= "table" and action ~= nil then
+      label = label .. " " .. tostring(action)
     end
+
+    local function invoke()
+      overview_trace(label)
+      if hl.plugin and hl.plugin.hyprwinview and hl.plugin.hyprwinview.overview then
+        hl.plugin.hyprwinview.overview(action)
+      else
+        hl.notification.create({
+          text = "hyprwinview is not loaded",
+          duration = 1800,
+          icon = notification_icons.warning,
+          color = "rgba(edb443ff)",
+          font_size = 13,
+        })
+      end
+    end
+
+    invoke()
   end
 end
 
@@ -163,7 +209,7 @@ local function workspacehistory(action, arg)
       hl.notification.create({
         text = "workspacehistory is not loaded",
         duration = 1800,
-        icon = "warning",
+        icon = notification_icons.warning,
         color = "rgba(edb443ff)",
         font_size = 13,
       })
@@ -631,7 +677,7 @@ local function update_monocle_notice()
     monocle_notice = hl.notification.create({
       text = text,
       duration = 60000,
-      icon = "info",
+      icon = notification_icons.info,
       color = "rgba(edb443ff)",
       font_size = 13,
     })
@@ -647,7 +693,7 @@ local function notify_layout(layout)
   hl.notification.create({
     text = "Layout: " .. layout_name(layout),
     duration = 1200,
-    icon = "info",
+    icon = notification_icons.info,
     color = "rgba(edb443ff)",
     font_size = 13,
   })
@@ -733,6 +779,7 @@ local function monocle_prev()
 end
 
 local function focus_direction(direction)
+  overview_trace("focus_direction " .. direction)
   if active_group_size() > 1 or current_layout == monocle_layout then
     if direction == "up" or direction == "left" then
       monocle_prev()
@@ -774,7 +821,7 @@ local function notify_tabbed_group(text)
   hl.notification.create({
     text = text,
     duration = 1800,
-    icon = "info",
+    icon = notification_icons.info,
     color = "rgba(edb443ff)",
     font_size = 13,
   })
@@ -1032,7 +1079,7 @@ local function enter_workspace_swap_mode()
   hl.notification.create({
     text = "Swap with workspace 1-9",
     duration = 2200,
-    icon = "info",
+    icon = notification_icons.info,
     color = "rgba(edb443ff)",
     font_size = 13,
   })
@@ -1212,10 +1259,6 @@ local function logical_monitor_dimension(value, scale)
     scale = 1
   end
   return math.floor((value / scale) + 0.5)
-end
-
-local function shell_quote(value)
-  return "'" .. tostring(value):gsub("'", "'\\''") .. "'"
 end
 
 local function split_tsv(line)
@@ -1539,7 +1582,7 @@ local function enter_window_picker(mode)
     hl.notification.create({
       text = empty_text,
       duration = 1800,
-      icon = "info",
+      icon = notification_icons.info,
       color = "rgba(edb443ff)",
       font_size = 13,
     })
@@ -1555,7 +1598,7 @@ local function enter_window_picker(mode)
   hl.notification.create({
     text = table.concat(lines, "\n"),
     duration = 5000,
-    icon = "info",
+    icon = notification_icons.info,
     color = "rgba(edb443ff)",
     font_size = 11,
   })
@@ -1580,7 +1623,7 @@ local function gather_focused_class()
   hl.notification.create({
     text = "Gathered " .. tostring(count) .. " " .. focused.class .. " windows",
     duration = 1600,
-    icon = "info",
+    icon = notification_icons.info,
     color = "rgba(edb443ff)",
     font_size = 13,
   })
@@ -1628,7 +1671,7 @@ local function show_active_window_info()
     hl.notification.create({
       text = "No active window",
       duration = 1800,
-      icon = "info",
+      icon = notification_icons.info,
       color = "rgba(edb443ff)",
       font_size = 13,
     })
@@ -1647,7 +1690,7 @@ local function show_active_window_info()
   hl.notification.create({
     text = table.concat(lines, "\n"),
     duration = 5000,
-    icon = "info",
+    icon = notification_icons.info,
     color = "rgba(edb443ff)",
     font_size = 11,
   })
@@ -1973,11 +2016,18 @@ bind(main_mod .. " + SHIFT + C", hl.dsp.window.close())
 bind(main_mod .. " + SHIFT + Q", hl.dsp.exit())
 bind(main_mod .. " + E", exec("emacsclient --eval '(emacs-everywhere)'"))
 bind(main_mod .. " + V", exec("wl-paste | xdotool type --file -"))
-bind(main_mod .. " + Tab", hyprwinview("toggle filter"))
-bind(main_mod .. " + SHIFT + Tab", hyprwinview("toggle other-workspaces filter"))
-bind(main_mod .. " + SHIFT + slash", hyprwinview("toggle filter"))
-bind("ALT + Tab", hyprexpo("toggle"))
-bind("ALT + SHIFT + Tab", hyprexpo("bring"))
+bind(main_mod .. " + Tab", hyprwinview({
+  action = "show",
+  start_in_filter_mode = true,
+}), overview_bind_opts)
+bind(main_mod .. " + SHIFT + Tab", hyprwinview({
+  action = "show",
+  include_current_workspace = false,
+  start_in_filter_mode = true,
+}), overview_bind_opts)
+bind(main_mod .. " + SHIFT + slash", hyprwinview({ action = "toggle-filter" }), overview_bind_opts)
+bind("ALT + Tab", hyprexpo("open"), overview_bind_opts)
+bind("ALT + SHIFT + Tab", hyprexpo("bring"), overview_bind_opts)
 bind(main_mod .. " + G", exec(shell_ui_command .. " window go"))
 bind(main_mod .. " + B", exec(shell_ui_command .. " window bring"))
 bind(main_mod .. " + SHIFT + B", exec(shell_ui_command .. " window replace"))
