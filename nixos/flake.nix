@@ -532,7 +532,7 @@
         } ''
           cp ${../dotfiles/config/hypr/hyprland.lua} hyprland.lua
           luac -p hyprland.lua
-          if grep -n 'hyprctl' hyprland.lua | grep -v 'hyprctl reload' | grep -v 'hyprctl dispatch hyprwinview:overview' | grep -v 'hyprctl -j monitors'; then
+          if grep -n 'hyprctl' hyprland.lua | grep -v 'hyprctl reload' | grep -v 'hyprctl eval' | grep -v 'hyprctl_eval' | grep -v 'hyprctl -j monitors'; then
             echo "hyprland.lua should not shell out to hyprctl for window/workspace manipulation" >&2
             exit 1
           fi
