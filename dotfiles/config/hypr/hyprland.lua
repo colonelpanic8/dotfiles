@@ -74,6 +74,10 @@ local scratchpads = {
     command = "slack",
     class = "Slack",
   },
+  messages = {
+    command = "google-chrome-stable --profile-directory=Default --app=https://messages.google.com/web/conversations",
+    class = "chrome-messages.google.com__web_conversations-default",
+  },
   transmission = {
     command = "transmission-gtk",
     class = "transmission-gtk",
@@ -2016,6 +2020,9 @@ bind(mod_alt .. " + H", function()
 end)
 bind(mod_alt .. " + K", function()
   toggle_scratchpad("slack")
+end)
+bind(mod_alt .. " + M", function()
+  toggle_scratchpad("messages")
 end)
 bind(mod_alt .. " + S", function()
   toggle_scratchpad("spotify")
