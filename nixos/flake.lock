@@ -1934,8 +1934,8 @@
         ]
       },
       "locked": {
-        "lastModified": 1777931618,
-        "narHash": "sha256-g0mvCQ1erIjaNnNerr8AAjdwY9PTcas6c0iOJukilOY=",
+        "lastModified": 1777956479,
+        "narHash": "sha256-KJV5ZJje4/N8Q3umMz7LY+MNg+P4ZRc/vepw7gNcvxo=",
         "path": "/home/imalison/dotfiles/dotfiles/config/taffybar/taffybar",
         "type": "path"
       },
