@@ -128,7 +128,12 @@
           imalison-taffybar = pkgs.haskell.lib.overrideCabal
             (pkgs.haskell.lib.addPkgconfigDepends (
               hself.callCabal2nix "imalison-taffybar"
-                (pkgs.lib.sourceByRegex ./. [ "taffybar.hs" "imalison-taffybar.cabal" ])
+                (pkgs.lib.sourceByRegex ./. [
+                  "taffybar.hs"
+                  "imalison-taffybar.cabal"
+                  "TaffybarConfig"
+                  "TaffybarConfig/.*"
+                ])
                 { }
             ) [
               pkgs.util-linux.dev
