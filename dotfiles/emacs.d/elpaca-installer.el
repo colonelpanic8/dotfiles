@@ -186,5 +186,9 @@
     (let ((load-source-file-function nil)) (load autoloads))))
 (require 'elpaca)
 (setq elpaca-log-functions '(elpaca-log-command-query))
-(add-hook 'after-init-hook #'elpaca-process-queues)
+(if (daemonp)
+    (add-hook 'after-init-hook
+              (lambda ()
+                (run-with-idle-timer 1 nil #'elpaca-process-queues)))
+  (add-hook 'after-init-hook #'elpaca-process-queues))
 (elpaca `(,@elpaca-order))
