@@ -1269,6 +1269,41 @@ local function split_tsv(line)
   return fields
 end
 
+local function monitor_from_reserved_fields(monitor, fields)
+  if not monitor or not monitor.name or fields[1] ~= monitor.name or #fields < 10 then
+    return nil
+  end
+
+  return {
+    name = monitor.name,
+    x = tonumber(fields[2]),
+    y = tonumber(fields[3]),
+    width = tonumber(fields[4]),
+    height = tonumber(fields[5]),
+    scale = tonumber(fields[6]),
+    reserved = {
+      tonumber(fields[7]),
+      tonumber(fields[8]),
+      tonumber(fields[9]),
+      tonumber(fields[10]),
+    },
+  }
+end
+
+local function monitor_from_reserved_lines(monitor, lines)
+  if not monitor or not monitor.name then
+    return nil
+  end
+
+  for line in lines do
+    local cached = monitor_from_reserved_fields(monitor, split_tsv(line))
+    if cached then
+      return cached
+    end
+  end
+  return nil
+end
+
 local function monitor_from_reserved_cache(monitor)
   if verify_config or not monitor or not monitor.name then
     return nil
@@ -1279,27 +1314,7 @@ local function monitor_from_reserved_cache(monitor)
     return nil
   end
 
-  local cached = nil
-  for line in file:lines() do
-    local fields = split_tsv(line)
-    if fields[1] == monitor.name and #fields >= 10 then
-      cached = {
-        name = monitor.name,
-        x = tonumber(fields[2]),
-        y = tonumber(fields[3]),
-        width = tonumber(fields[4]),
-        height = tonumber(fields[5]),
-        scale = tonumber(fields[6]),
-        reserved = {
-          tonumber(fields[7]),
-          tonumber(fields[8]),
-          tonumber(fields[9]),
-          tonumber(fields[10]),
-        },
-      }
-      break
-    end
-  end
+  local cached = monitor_from_reserved_lines(monitor, file:lines())
   file:close()
   return cached
 end
@@ -2272,6 +2287,11 @@ hl.on("config.reloaded", apply_hyprexpo_config)
 hl.on("config.reloaded", apply_hyprwinview_config)
 hl.on("config.reloaded", apply_rules)
 hl.on("config.reloaded", refresh_shell_workarea_and_scratchpads)
+hl.on("layer.opened", refresh_shell_workarea_and_scratchpads)
+hl.on("layer.closed", refresh_shell_workarea_and_scratchpads)
+hl.on("monitor.added", refresh_shell_workarea_and_scratchpads)
+hl.on("monitor.removed", refresh_shell_workarea_and_scratchpads)
+hl.on("monitor.layout_changed", refresh_shell_workarea_and_scratchpads)
 
 hl.on("window.open", schedule_nstack_count_update)
 hl.on("window.destroy", schedule_nstack_count_update)
