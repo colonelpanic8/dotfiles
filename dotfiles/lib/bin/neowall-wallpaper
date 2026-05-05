@@ -1,0 +1,107 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+config_dir="${XDG_CONFIG_HOME:-$HOME/.config}/neowall"
+config="${NEOWALL_WALLPAPER_CONFIG:-$config_dir/config.vibe}"
+
+usage() {
+  cat <<'EOF'
+Usage: neowall-wallpaper <start|stop|toggle|status|next|list|current|static>
+
+Commands:
+  start    Stop hyprpaper and start NeoWall with ~/.config/neowall/config.vibe.
+  stop     Stop NeoWall and restart hyprpaper.
+  toggle   Switch between NeoWall and hyprpaper.
+  status   Exit 0 if NeoWall is running, otherwise exit 1.
+  next     Ask NeoWall to advance to the next configured wallpaper.
+  list     List NeoWall's current cycle.
+  current  Show NeoWall's current wallpaper.
+  static   Alias for stop.
+
+Override the config with:
+  NEOWALL_WALLPAPER_CONFIG=/path/to/config.vibe neowall-wallpaper start
+EOF
+}
+
+notify() {
+  if command -v notify-send >/dev/null 2>&1; then
+    notify-send "NeoWall" "$1"
+  else
+    printf '%s\n' "$1" >&2
+  fi
+}
+
+run_neowall() {
+  if command -v neowall >/dev/null 2>&1; then
+    neowall "$@"
+    return
+  fi
+
+  nix shell nixpkgs#neowall --command neowall "$@"
+}
+
+is_running() {
+  pgrep -x neowall >/dev/null 2>&1
+}
+
+stop_hyprpaper() {
+  systemctl --user stop hyprpaper.service >/dev/null 2>&1 || true
+}
+
+start_hyprpaper() {
+  systemctl --user start hyprpaper.service >/dev/null 2>&1 || true
+}
+
+stop_neowall() {
+  if is_running; then
+    run_neowall kill >/dev/null 2>&1 || pkill -TERM -x neowall >/dev/null 2>&1 || true
+  fi
+}
+
+start() {
+  if [ ! -r "$config" ]; then
+    notify "Config not found: $config"
+    exit 1
+  fi
+
+  stop_hyprpaper
+  stop_neowall
+  run_neowall -c "$config"
+  notify "Live wallpaper started"
+}
+
+stop() {
+  stop_neowall
+  start_hyprpaper
+  notify "Static wallpaper restored"
+}
+
+case "${1:-}" in
+  start)
+    start
+    ;;
+  stop|static)
+    stop
+    ;;
+  toggle)
+    if is_running; then
+      stop
+    else
+      start
+    fi
+    ;;
+  status)
+    is_running
+    ;;
+  next|list|current)
+    run_neowall "$1"
+    ;;
+  ""|-h|--help|help)
+    usage
+    ;;
+  *)
+    usage >&2
+    exit 2
+    ;;
+esac

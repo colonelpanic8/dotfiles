@@ -1,0 +1,7 @@
+default {
+  shader /run/current-system/sw/share/neowall/shaders/matrix_rain.glsl
+  shader_speed 0.85
+  shader_fps 30
+  mode fill
+  duration 0
+}

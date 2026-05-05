@@ -256,6 +256,7 @@
       [
         # Hyprland utilities
         hyprpaper # Wallpaper
+        neowall # Shader wallpaper
         hypridle # Idle daemon
         hyprlock # Screen locker
         hyprcursor # Cursor themes

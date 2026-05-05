@@ -4,12 +4,15 @@ set -euo pipefail
 
 state_dir="${XDG_RUNTIME_DIR:-/tmp}/hypr-screensaver"
 pid_file="$state_dir/mpvpaper.pid"
+neowall_pid_file="$state_dir/neowall.pid"
 event_log="$state_dir/events.log"
 mkdir -p "$state_dir"
 
 title_prefix="hypr-screensaver:"
+backend="${HYPR_SCREENSAVER_BACKEND:-mpvpaper}"
 screensaver_dir="${HYPR_SCREENSAVER_DIR:-/var/lib/syncthing/sync/Screensaver}"
 screensaver_use_dir="${HYPR_SCREENSAVER_USE_DIR:-$screensaver_dir/use}"
+neowall_config="${HYPR_SCREENSAVER_NEOWALL_CONFIG:-${XDG_CONFIG_HOME:-$HOME/.config}/neowall/screensaver.vibe}"
 
 usage() {
   cat <<'EOF'
@@ -44,6 +47,13 @@ with:
   HYPR_SCREENSAVER_HDR_MODE=auto
   HYPR_SCREENSAVER_HDR_MODE=sdr
   HYPR_SCREENSAVER_HDR_MODE=hdr
+
+Backend selection:
+  HYPR_SCREENSAVER_BACKEND=mpvpaper
+  HYPR_SCREENSAVER_BACKEND=neowall
+
+The neowall backend is a wallpaper-layer experiment. It does not cover existing
+windows like mpvpaper's overlay layer.
 EOF
 }
 
@@ -64,6 +74,11 @@ legacy_screensaver_window_pids() {
 }
 
 is_running() {
+  if [ "$backend" = "neowall" ]; then
+    neowall_is_running
+    return
+  fi
+
   local pid
   if [ -f "$pid_file" ]; then
     pid="$(<"$pid_file")"
@@ -71,6 +86,19 @@ is_running() {
       return 0
     fi
     rm -f "$pid_file"
+  fi
+
+  return 1
+}
+
+neowall_is_running() {
+  if [ -f "$neowall_pid_file" ]; then
+    local pid
+    pid="$(<"$neowall_pid_file")"
+    if kill -0 "$pid" 2>/dev/null; then
+      return 0
+    fi
+    rm -f "$neowall_pid_file"
   fi
 
   return 1
@@ -174,7 +202,44 @@ run_mpvpaper() {
   exec nix shell nixpkgs#mpvpaper --command mpvpaper "$@"
 }
 
-start() {
+run_neowall() {
+  if command -v neowall >/dev/null 2>&1; then
+    neowall "$@"
+    return
+  fi
+
+  nix shell nixpkgs#neowall --command neowall "$@"
+}
+
+start_neowall() {
+  local pid
+
+  if neowall_is_running; then
+    log_event "neowall start ignored: already running pid=$(<"$neowall_pid_file")"
+    exit 0
+  fi
+
+  if [ ! -r "$neowall_config" ]; then
+    printf 'NeoWall screensaver config not found: %s\n' "$neowall_config" >&2
+    return 1
+  fi
+
+  stop
+  systemctl --user stop hyprpaper.service >/dev/null 2>&1 || true
+  run_neowall -c "$neowall_config" >>"$state_dir/neowall.log" 2>&1
+
+  sleep 0.2
+  pid="$(pgrep -n -x neowall || true)"
+  if [ -z "$pid" ]; then
+    log_event "neowall start failed: no neowall process found"
+    return 1
+  fi
+
+  printf '%s\n' "$pid" > "$neowall_pid_file"
+  log_event "neowall start ok pid=$pid config=$neowall_config"
+}
+
+start_mpvpaper() {
   local source output layer options pid
 
   if is_running; then
@@ -212,7 +277,22 @@ start() {
   log_event "start ok pid=$pid"
 }
 
-stop() {
+start() {
+  case "$backend" in
+    mpvpaper)
+      start_mpvpaper
+      ;;
+    neowall)
+      start_neowall
+      ;;
+    *)
+      printf 'Invalid HYPR_SCREENSAVER_BACKEND=%s; expected mpvpaper or neowall\n' "$backend" >&2
+      exit 2
+      ;;
+  esac
+}
+
+stop_mpvpaper() {
   local pid legacy_pid
 
   if [ -f "$pid_file" ]; then
@@ -229,6 +309,20 @@ stop() {
     log_event "stop legacy pid=$legacy_pid"
     kill "$legacy_pid" >/dev/null 2>&1 || true
   done
+}
+
+stop_neowall() {
+  if [ -f "$neowall_pid_file" ]; then
+    log_event "neowall stop pid=$(<"$neowall_pid_file")"
+    run_neowall kill >/dev/null 2>&1 || pkill -TERM -x neowall >/dev/null 2>&1 || true
+    rm -f "$neowall_pid_file"
+    systemctl --user start hyprpaper.service >/dev/null 2>&1 || true
+  fi
+}
+
+stop() {
+  stop_mpvpaper
+  stop_neowall
 }
 
 status() {

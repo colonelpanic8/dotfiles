@@ -2092,6 +2092,7 @@ bind(hyper .. " + backslash", exec("/home/imalison/dotfiles/dotfiles/lib/functio
 bind(hyper .. " + SHIFT + backslash", workspacehistory("debug"))
 bind(hyper .. " + O", exec("rofi_paswitch"))
 bind(hyper .. " + comma", exec("rofi_wallpaper.sh"))
+bind(hyper .. " + SHIFT + comma", exec("/home/imalison/dotfiles/dotfiles/lib/bin/neowall-wallpaper toggle"))
 bind(hyper .. " + Y", exec("rofi_agentic_skill"))
 bind(main_mod .. " + R", exec("hyprctl reload"))
 
