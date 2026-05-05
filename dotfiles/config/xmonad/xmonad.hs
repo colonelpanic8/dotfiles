@@ -236,6 +236,7 @@ isChromeClass = isInfixOf "chrome"
 chromeSelectorBase = isChromeClass <$> className
 
 chromeSelector = chromeSelectorBase
+codexSelector = className =? "codex-desktop"
 elementSelector = className =? "Element"
 emacsSelector = className =? "Emacs"
 slackSelector = className =? "Slack"
@@ -250,6 +251,7 @@ virtualClasses =
 
 -- Commands
 
+codexCommand = "codex-desktop"
 elementCommand = "element-desktop"
 emacsCommand = "emacsclient -c"
 htopCommand = "ghostty --title=htop -e htop"
@@ -799,7 +801,8 @@ nearFullFloat = customFloating $ W.RationalRect l t w h
 
 
 scratchpads =
-  [ NS "element" elementCommand elementSelector nearFullFloat
+  [ NS "codex" codexCommand codexSelector nearFullFloat
+  , NS "element" elementCommand elementSelector nearFullFloat
   , NS "htop" htopCommand (title =? "htop") nearFullFloat
   , NS "slack" slackCommand slackSelector nearFullFloat
   , NS "spotify" spotifyCommand spotifySelector nearFullFloat
@@ -1004,7 +1007,8 @@ addKeys conf@XConfig { modMask = modm } =
      (hyper .|. shiftMask) (followingWindow . (`screenSwap` True)) ++
 
     -- ScratchPads
-    [ ((modalt, xK_e), doScratchpad "element")
+    [ ((modalt, xK_c), doScratchpad "codex")
+    , ((modalt, xK_e), doScratchpad "element")
     , ((modalt, xK_h), doScratchpad "htop")
     , ((modalt, xK_k), doScratchpad "slack")
     , ((modalt, xK_s), doScratchpad "spotify")

@@ -55,6 +55,10 @@ hl.monitor({
 })
 
 local scratchpads = {
+  codex = {
+    command = "codex-desktop",
+    class = "codex-desktop",
+  },
   htop = {
     command = "alacritty --class htop-scratch --title htop -e htop",
     class = "htop-scratch",
@@ -2100,6 +2104,9 @@ bind(mod_alt .. " + W", show_active_window_info)
 
 bind(main_mod .. " + X", exec("rofi_command.sh"))
 bind(main_mod .. " + SHIFT + X", hl.dsp.workspace.toggle_special("NSP"))
+bind(mod_alt .. " + C", function()
+  toggle_scratchpad("codex")
+end)
 bind(mod_alt .. " + E", function()
   toggle_scratchpad("element")
 end)

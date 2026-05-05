@@ -198,6 +198,7 @@ Important behavior:
 
 Required behavior:
 
+- A named scratchpad exists for codex.
 - A named scratchpad exists for element.
 - A named scratchpad exists for htop.
 - A named scratchpad exists for slack.
@@ -383,6 +384,7 @@ Required behavior:
 
 Required behavior:
 
+- `Super+Alt+c` toggles the codex scratchpad.
 - `Super+Alt+e` toggles the element scratchpad.
 - `Super+Alt+h` toggles the htop scratchpad.
 - `Super+Alt+k` toggles the slack scratchpad.
@@ -393,7 +395,6 @@ Required behavior:
 Important behavior:
 
 - `Super+Alt+grave` toggles the dropdown terminal scratchpad.
-- `Super+Alt+c` raises or starts the browser.
 - `Super+Alt+Return` enters the minimized-window picker or restores minimized
   windows, depending on environment support.
 - `Super+Alt` is reserved for app-specific raise/spawn, scratchpad, and
