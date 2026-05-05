@@ -152,13 +152,13 @@ spawnBindings =
   , key (super .|. ctrl) xK_e (shiftFocusedToNextEmptyWorkspace False)
   , key (super .|. shift) xK_e (shiftFocusedToNextEmptyWorkspace True)
   , key super xK_v (spawnAction "wl-paste | wtype -")
+  , key super xK_x (spawnAction "rofi_command.sh")
   , key hyper xK_e viewNextEmptyWorkspace
   , key hyper xK_v (spawnAction "rofi -modi 'clipboard:greenclip print' -show clipboard")
   , key hyper xK_p (spawnAction "rofi-pass")
   , key hyper xK_h (spawnAction "rofi_shutter")
   , key hyper xK_c (spawnAction "shell_command.sh")
   , key hyper xK_g gatherFocusedAppId
-  , key hyper xK_x (spawnAction "rofi_command.sh")
   , key (hyper .|. shift) xK_l (spawnAction "loginctl lock-session")
   , key hyper xK_k (spawnAction "rofi_kill_process.sh")
   , key (hyper .|. shift) xK_k (spawnAction "rofi_kill_all.sh")

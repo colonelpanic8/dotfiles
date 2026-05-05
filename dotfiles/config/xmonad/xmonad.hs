@@ -1031,7 +1031,7 @@ addKeys conf@XConfig { modMask = modm } =
     , ((modm, xK_m), withFocused minimizeWindow)
     , ((modm .|. shiftMask, xK_m),
        deactivateFullOr $ withLastMinimized maximizeWindowAndFocus)
-    , ((modm, xK_x), addHiddenWorkspace "NSP" >> windows (W.shift "NSP"))
+    , ((modm, xK_x), spawn "rofi_command.sh")
     , ((modalt, xK_space), deactivateFullOr restoreOrMinimizeOtherClasses)
     , ((modalt, xK_Return), deactivateFullAnd restoreAllMinimized)
     , ((hyper, xK_g), gatherThisClass)
@@ -1073,7 +1073,6 @@ addKeys conf@XConfig { modMask = modm } =
     , ((hyper, xK_p), spawn "rofi-pass")
     , ((hyper, xK_h), spawn "rofi_shutter")
     , ((hyper, xK_c), spawn "shell_command.sh")
-    , ((hyper, xK_x), spawn "rofi_command.sh")
     , ((hyper .|. shiftMask, xK_l), spawn "dm-tool lock")
     , ((hyper, xK_l), selectLayout)
     , ((hyper, xK_k), spawn "rofi_kill_process.sh")
