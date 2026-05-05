@@ -125,25 +125,33 @@
             });
 
           # gi-gtk-hs patching is now handled by taffybar's fixVersionNamePackages overlay
-          imalison-taffybar = pkgs.haskell.lib.addPkgconfigDepends (
-            hself.callCabal2nix "imalison-taffybar"
-              (pkgs.lib.sourceByRegex ./. [ "taffybar.hs" "imalison-taffybar.cabal" ])
-              { }
-          ) [
-            pkgs.util-linux.dev
-            pkgs.pcre2
-            pkgs.pcre
-            pkgs.libselinux.dev
-            pkgs.libsepol.dev
-            pkgs.fribidi.out
-            pkgs.fribidi.dev
-            pkgs.libthai.dev
-            pkgs.libdatrie.dev
-            pkgs.libxdmcp.dev
-            pkgs.libxkbcommon.dev
-            pkgs.libepoxy.dev
-            pkgs.libxtst.out
-          ];
+          imalison-taffybar = pkgs.haskell.lib.overrideCabal
+            (pkgs.haskell.lib.addPkgconfigDepends (
+              hself.callCabal2nix "imalison-taffybar"
+                (pkgs.lib.sourceByRegex ./. [ "taffybar.hs" "imalison-taffybar.cabal" ])
+                { }
+            ) [
+              pkgs.util-linux.dev
+              pkgs.pcre2
+              pkgs.pcre
+              pkgs.libselinux.dev
+              pkgs.libsepol.dev
+              pkgs.fribidi.out
+              pkgs.fribidi.dev
+              pkgs.libthai.dev
+              pkgs.libdatrie.dev
+              pkgs.libxdmcp.dev
+              pkgs.libxkbcommon.dev
+              pkgs.libepoxy.dev
+              pkgs.libxtst.out
+            ])
+            (oa: {
+              configureFlags = (oa.configureFlags or []) ++ [
+                "--ghc-option=-optl-fuse-ld=bfd"
+                "--ld-option=-fuse-ld=bfd"
+                "--with-ld=ld.bfd"
+              ];
+            });
         };
 
         # Avoid depending on xmonad.lib's helper functions, since parent flakes
