@@ -250,7 +250,6 @@ virtualClasses =
 
 -- Commands
 
-chromeCommand = "google-chrome-stable"
 elementCommand = "element-desktop"
 emacsCommand = "emacsclient -c"
 htopCommand = "ghostty --title=htop -e htop"
@@ -1004,11 +1003,6 @@ addKeys conf@XConfig { modMask = modm } =
     buildDirectionalBindings
      (hyper .|. shiftMask) (followingWindow . (`screenSwap` True)) ++
 
-    -- Specific program spawning
-    bindBringAndRaiseMany
-    [ (modalt, xK_c, spawn chromeCommand, chromeSelector)
-    ] ++
-
     -- ScratchPads
     [ ((modalt, xK_e), doScratchpad "element")
     , ((modalt, xK_h), doScratchpad "htop")
@@ -1072,7 +1066,7 @@ addKeys conf@XConfig { modMask = modm } =
     , ((hyper, xK_v), spawn "rofi -modi 'clipboard:greenclip print' -show clipboard")
     , ((hyper, xK_p), spawn "rofi-pass")
     , ((hyper, xK_h), spawn "rofi_shutter")
-    , ((hyper, xK_c), spawn "shell_command.sh")
+    , ((hyper, xK_c), spawn "rofi_tmcodex.sh")
     , ((hyper .|. shiftMask, xK_l), spawn "dm-tool lock")
     , ((hyper, xK_l), selectLayout)
     , ((hyper, xK_k), spawn "rofi_kill_process.sh")

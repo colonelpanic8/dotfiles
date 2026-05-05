@@ -37,6 +37,8 @@ local window_picker_candidates = {}
 local stack_update_timer = nil
 local monocle_notice = nil
 local scratchpad_pending = {}
+local monitor_reserved_cache_path = (os.getenv("XDG_RUNTIME_DIR") or "/tmp") .. "/hyprland-monitor-reserved.tsv"
+local scratchpad_fallback_reserved_top = 60
 
 hl.monitor({
   output = "eDP-1",
@@ -228,6 +230,7 @@ local function apply_hyprwinview_config()
         hover_border_col = "rgba(66ccffee)",
         border_size = 3,
         window_order = "application",
+        keys_filter_toggle = "/",
         show_app_icon = 1,
         app_icon_size = 48,
         app_icon_theme_source = "auto",
@@ -240,6 +243,13 @@ local function apply_hyprwinview_config()
         app_icon_offset_y = 0,
         app_icon_backplate_col = "rgba(00000066)",
         app_icon_backplate_padding = 6,
+        show_window_text = 1,
+        window_text_font = "Sans",
+        window_text_size = 14,
+        window_text_color = "rgba(ffffffff)",
+        window_text_backplate_col = "rgba(00000099)",
+        window_text_padding = 6,
+        filter_animation_ms = 140,
         animation = "workspace_zoom",
         animation_in_ms = 280,
         animation_out_ms = 220,
@@ -262,6 +272,7 @@ local function apply_hyprwinview_config()
         bring = { "b", "shift+return", "shift+space" },
         bring_replace = { "shift + b" },
         close = { "escape", "q" },
+        filter_toggle = { "/" },
       },
     })
   end
@@ -1199,10 +1210,70 @@ local function logical_monitor_dimension(value, scale)
   return math.floor((value / scale) + 0.5)
 end
 
+local function shell_quote(value)
+  return "'" .. tostring(value):gsub("'", "'\\''") .. "'"
+end
+
+local function split_tsv(line)
+  local fields = {}
+  for field in (line .. "\t"):gmatch("([^\t]*)\t") do
+    fields[#fields + 1] = field
+  end
+  return fields
+end
+
+local function monitor_from_reserved_cache(monitor)
+  if verify_config or not monitor or not monitor.name then
+    return nil
+  end
+
+  local file = io.open(monitor_reserved_cache_path, "r")
+  if not file then
+    return nil
+  end
+
+  local cached = nil
+  for line in file:lines() do
+    local fields = split_tsv(line)
+    if fields[1] == monitor.name and #fields >= 10 then
+      cached = {
+        name = monitor.name,
+        x = tonumber(fields[2]),
+        y = tonumber(fields[3]),
+        width = tonumber(fields[4]),
+        height = tonumber(fields[5]),
+        scale = tonumber(fields[6]),
+        reserved = {
+          tonumber(fields[7]),
+          tonumber(fields[8]),
+          tonumber(fields[9]),
+          tonumber(fields[10]),
+        },
+      }
+      break
+    end
+  end
+  file:close()
+  return cached
+end
+
+local function refresh_monitor_reserved_cache(delay)
+  if verify_config then
+    return
+  end
+
+  local command = string.format(
+    [=[sleep %.2f; cache="${XDG_RUNTIME_DIR:-/tmp}/hyprland-monitor-reserved.tsv"; tmp="$cache.tmp"; /run/current-system/sw/bin/hyprctl -j monitors 2>/dev/null | /run/current-system/sw/bin/jq -r '.[] | [.name, .x, .y, .width, .height, .scale, .reserved[0], .reserved[1], .reserved[2], .reserved[3]] | @tsv' > "$tmp" && mv "$tmp" "$cache"]=],
+    as_number(delay, 0)
+  )
+  hl.exec_cmd("sh -lc " .. shell_quote(command))
+end
+
 local function monitor_workarea(monitor)
+  monitor = monitor_from_reserved_cache(monitor) or monitor
   local width = logical_monitor_dimension(monitor.width, monitor.scale)
   local height = logical_monitor_dimension(monitor.height, monitor.scale)
-  local reserved = monitor.reserved or {}
+  local reserved = monitor.reserved or { 0, scratchpad_fallback_reserved_top, 0, 0 }
   local left = math.floor(as_number(reserved[1], 0))
   local top = math.floor(as_number(reserved[2], 0))
   local right = math.floor(as_number(reserved[3], 0))
@@ -1329,6 +1400,22 @@ local function hide_active_scratchpads(except_name)
   for _, active in ipairs(active_scratchpad_windows(except_name)) do
     hide_scratchpad_window(active.name, active.window)
   end
+end
+
+local function refresh_active_scratchpad_geometries()
+  local monitor = hl.get_active_monitor()
+  for _, active in ipairs(active_scratchpad_windows()) do
+    schedule_scratchpad_geometry(active.name, active.window, monitor)
+  end
+end
+
+local function refresh_active_scratchpad_geometries_later(timeout)
+  hl.timer(refresh_active_scratchpad_geometries, { timeout = timeout or 300, type = "oneshot" })
+end
+
+local function refresh_shell_workarea_and_scratchpads()
+  refresh_monitor_reserved_cache(0.15)
+  refresh_active_scratchpad_geometries_later(400)
 end
 
 local function adopt_matching_scratchpad_window(window)
@@ -1884,6 +1971,7 @@ bind(main_mod .. " + E", exec("emacsclient --eval '(emacs-everywhere)'"))
 bind(main_mod .. " + V", exec("wl-paste | xdotool type --file -"))
 bind(main_mod .. " + Tab", hyprwinview("toggle"))
 bind(main_mod .. " + SHIFT + Tab", hyprwinview("toggle other-workspaces"))
+bind(main_mod .. " + SHIFT + slash", hyprwinview("toggle filter"))
 bind("ALT + Tab", hyprexpo("toggle"))
 bind("ALT + SHIFT + Tab", hyprexpo("bring"))
 bind(main_mod .. " + G", exec(shell_ui_command .. " window go"))
@@ -2036,9 +2124,6 @@ end)
 bind(mod_alt .. " + grave", function()
   toggle_scratchpad("dropdown")
 end)
-bind(mod_alt .. " + C", function()
-  raise_or_spawn("google-chrome", "google-chrome-stable")
-end)
 bind(mod_alt .. " + Space", minimize_other_classes)
 bind(mod_alt .. " + SHIFT + Space", restore_focused_class)
 bind(mod_alt .. " + Return", restore_all_minimized)
@@ -2088,12 +2173,16 @@ bind("XF86MonBrightnessDown", exec("brightness.sh down"), { repeating = true })
 bind(hyper .. " + V", exec([[cliphist list | rofi -dmenu -p "Clipboard" | cliphist decode | wl-copy]]))
 bind(hyper .. " + P", exec("rofi-pass"))
 bind(hyper .. " + H", exec([[grim -g "$(slurp)" - | swappy -f -]]))
-bind(hyper .. " + C", exec("shell_command.sh"))
+bind(hyper .. " + C", exec("rofi_tmcodex.sh"))
 bind(hyper .. " + SHIFT + L", exec("hyprlock"))
 bind(hyper .. " + K", exec("rofi_kill_process.sh"))
 bind(hyper .. " + SHIFT + K", exec("rofi_kill_all.sh"))
 bind(hyper .. " + R", exec("rofi-systemd"))
-bind(hyper .. " + slash", exec("toggle_taffybar"))
+bind(hyper .. " + slash", function()
+  hl.exec_cmd("toggle_taffybar")
+  refresh_monitor_reserved_cache(0.25)
+  refresh_active_scratchpad_geometries_later(600)
+end)
 bind(hyper .. " + I", exec("rofi_select_input.hs"))
 bind(hyper .. " + backslash", exec("/home/imalison/dotfiles/dotfiles/lib/functions/mpg341cx_input toggle"))
 bind(hyper .. " + SHIFT + backslash", workspacehistory("debug"))
@@ -2117,12 +2206,15 @@ hl.on("hyprland.start", function()
   hl.exec_cmd("wl-paste --type image --watch cliphist store")
   write_layout_state()
   schedule_nstack_count_update()
+  refresh_monitor_reserved_cache(0.25)
+  refresh_monitor_reserved_cache(1.25)
 end)
 
 hl.on("config.reloaded", apply_nstack_config)
 hl.on("config.reloaded", apply_hyprexpo_config)
 hl.on("config.reloaded", apply_hyprwinview_config)
 hl.on("config.reloaded", apply_rules)
+hl.on("config.reloaded", refresh_shell_workarea_and_scratchpads)
 
 hl.on("window.open", schedule_nstack_count_update)
 hl.on("window.destroy", schedule_nstack_count_update)
