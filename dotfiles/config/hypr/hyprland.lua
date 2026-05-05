@@ -78,7 +78,7 @@ local scratchpads = {
   },
   messages = {
     command = "google-chrome-stable --profile-directory=Default --app=https://messages.google.com/web/conversations",
-    class = "chrome-messages.google.com__web_conversations-default",
+    class = "chrome-messages.google.com",
   },
   transmission = {
     command = "transmission-gtk",
