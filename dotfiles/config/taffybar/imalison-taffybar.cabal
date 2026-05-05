@@ -13,6 +13,11 @@ cabal-version:       >=1.10
 executable taffybar
   hs-source-dirs:      .
   main-is:             taffybar.hs
+  other-modules:       TaffybarConfig.Config
+                     , TaffybarConfig.Host
+                     , TaffybarConfig.Widgets
+                     , TaffybarConfig.WidgetUtil
+                     , TaffybarConfig.Workspaces
   ghc-options:         -threaded -rtsopts -with-rtsopts=-N
   ghc-prof-options: -fprof-auto
   build-depends:       base
