@@ -87,6 +87,14 @@
 (setq custom-file "~/.emacs.d/custom-before.el")
 (setq load-prefer-newer t)
 
+;; Magit 4.5 and Vertico 2.8 use `set-local', which is native in Emacs 31
+;; and provided by recent compat releases.  Keep Emacs 30 usable even if
+;; package bytecode is stale or compat has not been activated yet.
+(unless (fboundp 'set-local)
+  (defun set-local (variable value)
+    "Make VARIABLE buffer-local and set it to VALUE."
+    (set (make-local-variable variable) value)))
+
 ;; If this isn't here and there's a problem with init, graphical emacs
 ;; is super annoying.
 (when (equal system-type 'darwin)
@@ -105,10 +113,22 @@
   :config
   (progn (dash-enable-font-lock)))
 
+;; Emacs 30 ships an older `compat' as a core library.  Load Elpaca's newer
+;; package explicitly so packages compiled against Compat 31 do not silently
+;; see the built-in library.
+(elpaca `(compat :host github :repo "emacs-compat/compat" :wait t))
+(elpaca-wait)
+(let ((compat-build-dir (expand-file-name "compat" elpaca-builds-directory)))
+  (when (file-directory-p compat-build-dir)
+    (add-to-list 'load-path compat-build-dir)
+    (load (expand-file-name "compat" compat-build-dir) nil 'nomessage)))
+
 ;; Some split packages fall through the active menus in this config. Give
 ;; Elpaca an explicit source so startup doesn't get stuck on recipe lookup or
 ;; stale branch-mapped clones.
 (elpaca `(queue :host github :repo "emacs-straight/queue"))
+(elpaca `(with-editor :host github :repo "magit/with-editor"
+                      :branch "main"))
 (elpaca `(git-commit :host github :repo "magit/magit"
                      :files ("lisp/git-commit.el" "lisp/git-commit-pkg.el")))
 (elpaca `(magit-section :host github :repo "magit/magit"
@@ -185,7 +205,7 @@
 (unless (boundp 'overriding-text-conversion-style)
   (defvar overriding-text-conversion-style nil))
 (use-package transient
-  :ensure (:host github :repo "magit/transient" :wait t)
+  :ensure (:host github :repo "magit/transient" :branch "main" :wait t)
   :demand t)
 (elpaca-wait)
 
