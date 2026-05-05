@@ -1,8 +1,15 @@
-{ pkgs, lib, ... }:
-let
+{
+  pkgs,
+  lib,
+  ...
+}: let
+  gitSyncServicePath = lib.makeBinPath [pkgs.coreutils pkgs.git pkgs.openssh];
   mkGitSyncTrayOverrides = icon: {
     Service = {
-      Environment = [ "GIT_SYNC_TRAY=1" "GIT_SYNC_TRAY_ICON=${icon}" ];
+      Environment = lib.mkMerge [
+        ["GIT_SYNC_TRAY=1" "GIT_SYNC_TRAY_ICON=${icon}"]
+        (lib.mkAfter ["PATH=${gitSyncServicePath}"])
+      ];
       Restart = lib.mkForce "on-failure";
       RestartSec = 5;
     };
@@ -12,7 +19,7 @@ let
     password-store = "password";
   };
 in {
-  home-manager.users.imalison = ({ config, ... }: {
+  home-manager.users.imalison = {config, ...}: {
     services.git-sync = {
       enable = true;
       package = pkgs.git-sync-rs;
@@ -29,13 +36,15 @@ in {
       };
     };
 
-    systemd.user.services = lib.mapAttrs'
-      (name: _: lib.nameValuePair "git-sync-${name}"
+    systemd.user.services =
+      lib.mapAttrs'
+      (name: _:
+        lib.nameValuePair "git-sync-${name}"
         (mkGitSyncTrayOverrides (repoIcons.${name} or "git")))
       config.services.git-sync.repositories;
-  });
+  };
 
-  home-manager.users.kat = ({ config, ... }: {
+  home-manager.users.kat = {config, ...}: {
     services.git-sync = {
       enable = true;
       repositories = {
@@ -50,5 +59,5 @@ in {
         };
       };
     };
-  });
+  };
 }
