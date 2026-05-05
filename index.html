@@ -3,7 +3,7 @@
 "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
-<!-- 2026-05-05 Tue 10:05 -->
+<!-- 2026-05-05 Tue 10:09 -->
 <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>&lrm;</title>
@@ -6136,8 +6136,10 @@ The file server file for this emacs instance no longer exists."</span>)
     (<span class="org-keyword">defun</span> <span class="org-function-name">imalison:get-this-server-filepath</span> ()
       (<span class="org-keyword">let</span> ((server-dir (<span class="org-keyword">if</span> server-use-tcp server-auth-dir server-socket-dir)))
         (expand-file-name server-name server-dir)))
-    (<span class="org-keyword">when</span> (equal nil (server-running-p)) (server-start)
-          (imalison:make-main-emacs-server))))
+    (<span class="org-keyword">unless</span> (daemonp)
+      (<span class="org-keyword">when</span> (equal nil (server-running-p))
+        (server-start)
+        (imalison:make-main-emacs-server)))))
 </pre>
 </div>
 </div>
@@ -9944,6 +9946,9 @@ Ensure all themes that I use are installed:
   <span class="org-builtin">:commands</span> doom-modeline-mode
   <span class="org-builtin">:custom</span>
   (doom-modeline-height 40))
+
+(<span class="org-keyword">defvar</span> <span class="org-variable-name">imalison:enable-doom-modeline-on-startup</span> nil
+  <span class="org-doc">"Non-nil means enable `</span><span class="org-doc"><span class="org-constant">doom-modeline-mode</span></span><span class="org-doc">' during startup."</span>)
 </pre>
 </div>
 </div>
@@ -10153,11 +10158,24 @@ load-theme hook (See the heading below).
       (load-theme imalison:dark-theme t))
     (apply 'imalison:appearance args)
     (message <span class="org-string">"running appearance"</span>)
-    (doom-modeline-mode +1)
+    (<span class="org-keyword">when</span> (<span class="org-keyword">and</span> imalison:enable-doom-modeline-on-startup
+               (fboundp 'doom-modeline-mode))
+      (doom-modeline-mode +1))
     (<span class="org-keyword">setq</span> imalison:default-font-size-pt (face-attribute 'default <span class="org-builtin">:height</span>))
     (<span class="org-keyword">setq</span> imalison:appearance-setup-done t)))
 
-(add-hook 'elpaca-after-init-hook 'imalison:appearance-setup-hook)
+(<span class="org-keyword">defun</span> <span class="org-function-name">imalison:daemon-startup-p</span> ()
+  (<span class="org-keyword">or</span> (daemonp)
+      (seq-some (<span class="org-keyword">lambda</span> (arg)
+                  (<span class="org-keyword">or</span> (string= arg <span class="org-string">"--daemon"</span>)
+                      (string= arg <span class="org-string">"--bg-daemon"</span>)
+                      (string-prefix-p <span class="org-string">"--daemon="</span> arg)
+                      (string-prefix-p <span class="org-string">"--bg-daemon="</span> arg)))
+                command-line-args)))
+
+(<span class="org-keyword">if</span> (imalison:daemon-startup-p)
+    (add-hook 'server-after-make-frame-hook 'imalison:appearance-setup-hook)
+  (add-hook 'elpaca-after-init-hook 'imalison:appearance-setup-hook))
 </pre>
 </div>
 </div>
