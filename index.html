@@ -3,7 +3,7 @@
 "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
-<!-- 2026-05-06 Wed 20:52 -->
+<!-- 2026-05-06 Wed 22:09 -->
 <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>&lrm;</title>
@@ -3808,7 +3808,7 @@ a:hover {
 <li><a href="#navigation">9. Navigation</a>
 <ul>
 <li><a href="#zoptochar">9.1. zop-to-char</a></li>
-<li><a href="#projectile">9.2. projectile</a></li>
+<li><a href="#project">9.2. project</a></li>
 <li><a href="#ido">9.3. ido</a></li>
 <li><a href="#icomplete">9.4. icomplete</a></li>
 <li><a href="#avy">9.5. avy</a></li>
@@ -5173,10 +5173,15 @@ aren't visiting a file but are associated with a directory."</span>
 (imalison:copy-buffer-file-path-builder imalison:copy-buffer-file-path-full)
 (imalison:copy-buffer-file-path-builder imalison:copy-buffer-file-name
                                         file-name-nondirectory)
-(imalison:copy-buffer-file-path-builder imalison:copy-buffer-file-path
-                                        car
-                                        projectile-make-relative-to-root
-                                        list)
+(<span class="org-keyword">defun</span> <span class="org-function-name">imalison:buffer-file-project-relative-name</span> ()
+  <span class="org-doc">"Return the current buffer file or directory relative to its project root."</span>
+  (<span class="org-keyword">let</span> ((filename (imalison:buffer-file-name-or-directory)))
+    (file-relative-name filename
+                        (imalison:project-root
+                         (file-name-directory filename)))))
+
+(imalison:compose-copy-builder imalison:copy-buffer-file-path
+                               imalison:buffer-file-project-relative-name)
 </pre>
 </div>
 </div>
@@ -6499,7 +6504,7 @@ out how to detect that a buffer is a man mode buffer.
 <pre class="src src-emacs-lisp">(defhydra imalison:hydra-yank
   nil
   <span class="org-string">"Yank text"</span>
-  (<span class="org-string">"p"</span> imalison:copy-buffer-file-path <span class="org-string">"Projectile path"</span>)
+  (<span class="org-string">"p"</span> imalison:copy-buffer-file-path <span class="org-string">"Project path"</span>)
   (<span class="org-string">"b"</span> imalison:copy-current-buffer-name <span class="org-string">"Buffer Name"</span>)
   (<span class="org-string">"f"</span> imalison:copy-buffer-file-path-full <span class="org-string">"Full path"</span>)
   (<span class="org-string">"n"</span> imalison:copy-buffer-file-name <span class="org-string">"File name"</span>)
@@ -6515,7 +6520,7 @@ out how to detect that a buffer is a man mode buffer.
 <div class="org-src-container">
 <pre class="src src-emacs-lisp">(<span class="org-keyword">defun</span> <span class="org-function-name">imalison:make-test</span> ()
   (<span class="org-keyword">interactive</span>)
-  (<span class="org-keyword">let</span> ((default-directory (projectile-project-root)))
+  (<span class="org-keyword">let</span> ((default-directory (imalison:project-root)))
     (imalison:named-compile <span class="org-string">"make test"</span>)))
 
 (<span class="org-keyword">defun</span> <span class="org-function-name">imalison:glide-up</span> ()
@@ -6680,72 +6685,42 @@ bind-key and global-set-key forms.
 </div>
 </div>
 </div>
-<div id="outline-container-projectile" class="outline-3">
-<h3 id="projectile"><span class="section-number-3">9.2.</span> projectile <a href="#projectile"><svg aria-hidden="true" class="octicon octicon-link" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a></h3>
+<div id="outline-container-project" class="outline-3">
+<h3 id="project"><span class="section-number-3">9.2.</span> project <a href="#project"><svg aria-hidden="true" class="octicon octicon-link" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a></h3>
 <div class="outline-text-3" id="text-9-2">
 <div class="org-src-container">
 <pre class="src src-emacs-lisp">
-(<span class="org-keyword">use-package</span> <span class="org-constant">projectile</span>
+(<span class="org-keyword">use-package</span> <span class="org-constant">project</span>
+  <span class="org-builtin">:ensure</span> nil
   <span class="org-builtin">:demand</span> t
-  <span class="org-builtin">:bind</span> (<span class="org-builtin">:map</span> projectile-mode-map
-              (<span class="org-string">"C-c p f"</span> . imalison:projectile-find-file)
-              (<span class="org-string">"C-c p"</span> . projectile-command-map)
-              (<span class="org-string">"C-c p s"</span> . imalison:do-rg)
-              (<span class="org-string">"C-c p f"</span> . imalison:projectile-find-file))
+  <span class="org-builtin">:bind</span> ((<span class="org-string">"C-c 7"</span> . project-shell))
+  <span class="org-builtin">:bind-keymap</span>
+  (<span class="org-string">"C-c p"</span> . project-prefix-map)
   <span class="org-builtin">:custom</span>
-  ((projectile-require-project-root nil)
-   (projectile-enable-caching nil)
-   (projectile-git-submodule-command nil)
-   (projectile-git-use-fd t)
-   (project-vc-merge-submodules nil)
-   (projectile-current-project-on-switch 'keep))
+  ((project-vc-merge-submodules nil)
+   (project-vc-extra-root-markers '(<span class="org-string">".project"</span> <span class="org-string">".projectile"</span>)))
   <span class="org-builtin">:config</span>
   (<span class="org-keyword">progn</span>
-    (<span class="org-keyword">defmacro</span> <span class="org-function-name">imalison:projectile-do-in-project</span> (project-dir <span class="org-type">&amp;rest</span> forms)
+    (<span class="org-keyword">defun</span> <span class="org-function-name">imalison:project-root</span> (<span class="org-type">&amp;optional</span> directory)
+      <span class="org-doc">"Return DIRECTORY's project root, falling back to DIRECTORY itself."</span>
+      (<span class="org-keyword">let*</span> ((default-directory (file-name-as-directory
+                                 (expand-file-name
+                                  (<span class="org-keyword">or</span> directory default-directory))))
+             (project (project-current nil default-directory)))
+        (file-name-as-directory
+         (expand-file-name
+          (<span class="org-keyword">if</span> project
+              (project-root project)
+            default-directory)))))
+
+    (<span class="org-keyword">defmacro</span> <span class="org-function-name">imalison:project-do-in-project</span> (project-dir <span class="org-type">&amp;rest</span> forms)
       `(imalison:with-default-directory ,project-dir
-                                        (noflet ((projectile-project-root (<span class="org-type">&amp;rest</span> args) ,project-dir))
-                                          ,@forms)))
+         (<span class="org-keyword">let</span> ((project-current-directory-override ,project-dir))
+           ,@forms)))
 
     (<span class="org-keyword">defmacro</span> <span class="org-function-name">imalison:with-default-directory</span> (directory <span class="org-type">&amp;rest</span> forms)
       `(<span class="org-keyword">let</span> ((default-directory ,directory))
          ,@forms))
-
-    (<span class="org-keyword">defvar</span> <span class="org-variable-name">imalison:projectile-find-ignore-file</span> <span class="org-string">".projectile-find-ignore"</span>
-      <span class="org-doc">"Project-local fd ignore file used only for Projectile file finding."</span>)
-
-    (<span class="org-keyword">defun</span> <span class="org-function-name">imalison:projectile-fd-ignore-file-arg</span> ()
-      <span class="org-doc">"Return a shell fragment that adds `</span><span class="org-doc"><span class="org-constant">imalison:projectile-find-ignore-file</span></span><span class="org-doc">' when present."</span>
-      (<span class="org-keyword">let</span> ((ignore-file (shell-quote-argument imalison:projectile-find-ignore-file)))
-        (format <span class="org-string">"$(test -f %s &amp;&amp; printf -- '--ignore-file %s')"</span> ignore-file ignore-file)))
-
-    (<span class="org-keyword">defun</span> <span class="org-function-name">imalison:projectile-fd-command</span> (<span class="org-type">&amp;optional</span> pattern)
-      <span class="org-doc">"Build an fd command for Projectile file finding.
-The command includes ignored and hidden files by default, then applies
-`</span><span class="org-doc"><span class="org-constant">imalison:projectile-find-ignore-file</span></span><span class="org-doc">' when that file exists in the project
-root.  PATTERN is passed as fd's search pattern when non-nil."</span>
-      (mapconcat
-       #'identity
-       (delq nil
-             (list projectile-fd-executable
-                   pattern
-                   <span class="org-string">"-H"</span>
-                   <span class="org-string">"--no-ignore"</span>
-                   (imalison:projectile-fd-ignore-file-arg)
-                   <span class="org-string">"-0"</span>
-                   <span class="org-string">"-E .git"</span>
-                   <span class="org-string">"-tf"</span>
-                   <span class="org-string">"--strip-cwd-prefix"</span>
-                   <span class="org-string">"-c never"</span>))
-       <span class="org-string">" "</span>))
-
-    (<span class="org-keyword">when</span> projectile-fd-executable
-      (<span class="org-keyword">setq</span> projectile-git-fd-args
-            (replace-regexp-in-string
-             (concat <span class="org-string">"^"</span> (regexp-quote projectile-fd-executable) <span class="org-string">" "</span>)
-             <span class="org-string">""</span>
-             (imalison:projectile-fd-command)))
-      (<span class="org-keyword">setq</span> projectile-generic-command
-            (imalison:projectile-fd-command <span class="org-string">"."</span>)))
 
     (<span class="org-keyword">defun</span> <span class="org-function-name">imalison:do-rg-default-directory</span> (<span class="org-type">&amp;rest</span> args)
       (<span class="org-keyword">interactive</span>)
@@ -6756,24 +6731,32 @@ root.  PATTERN is passed as fd's search pattern when non-nil."</span>
       consult-ripgrep
       imalison:do-rg-default-directory)
 
-    (emit-prefix-selector imalison:projectile-find-file
-      projectile-find-file
-      projectile-find-file-other-window)
+    (<span class="org-keyword">defun</span> <span class="org-function-name">imalison:project-find-file</span> ()
+      <span class="org-doc">"Find a file in the current `</span><span class="org-doc"><span class="org-constant">project.el</span></span><span class="org-doc">' project."</span>
+      (<span class="org-keyword">interactive</span>)
+      (<span class="org-keyword">let*</span> ((project-root (imalison:project-root))
+             (default-directory project-root)
+             (project-current-directory-override project-root))
+        (call-interactively #'project-find-file)))
+
+    (<span class="org-keyword">defun</span> <span class="org-function-name">imalison:project-switch-project</span> ()
+      <span class="org-doc">"Switch projects using `</span><span class="org-doc"><span class="org-constant">project.el</span></span><span class="org-doc">'."</span>
+      (<span class="org-keyword">interactive</span>)
+      (call-interactively #'project-switch-project))
+
+    (define-key project-prefix-map (kbd <span class="org-string">"f"</span>) #'imalison:project-find-file)
+    (define-key project-prefix-map (kbd <span class="org-string">"s"</span>) #'imalison:do-rg)
 
     (imalison:let-around imalison:set-options-do-rg
       imalison:do-rg)
 
-    (<span class="org-keyword">defun</span> <span class="org-function-name">imalison:projectile-make-all-subdirs-projects</span> (directory)
+    (<span class="org-keyword">defun</span> <span class="org-function-name">imalison:project-make-all-subdirs-projects</span> (directory)
       (<span class="org-keyword">cl-loop</span> for file-info in (directory-files-and-attributes directory)
                do (<span class="org-keyword">when</span> (nth 1 file-info)
                     (write-region <span class="org-string">""</span> nil
                                   (expand-file-name
                                    (concat directory <span class="org-string">"/"</span>
-                                           (nth 0 file-info) <span class="org-string">"/.projectile"</span>)))))))
-  <span class="org-builtin">:config</span>
-  (<span class="org-keyword">progn</span>
-    (projectile-global-mode)
-    (diminish 'projectile-mode)))
+                                           (nth 0 file-info) <span class="org-string">"/.project"</span>))))))))
 </pre>
 </div>
 </div>
@@ -6982,37 +6965,38 @@ root.  PATTERN is passed as fd's search pattern when non-nil."</span>
   <span class="org-builtin">:config</span>
   (<span class="org-keyword">progn</span>
     (<span class="org-keyword">setq</span> embark-mixed-indicator-delay 1.0)
-    (<span class="org-keyword">defmacro</span> <span class="org-function-name">imalison:embark-projectile-act-for-file</span> (file <span class="org-type">&amp;rest</span> forms)
-      `(<span class="org-keyword">let</span> ((default-directory (projectile-project-root ,file)))
-        (imalison:projectile-do-in-project default-directory ,@forms)))
+    (<span class="org-keyword">defmacro</span> <span class="org-function-name">imalison:embark-project-act-for-file</span> (file <span class="org-type">&amp;rest</span> forms)
+      `(<span class="org-keyword">let</span> ((default-directory
+              (imalison:project-root (file-name-directory ,file))))
+         (imalison:project-do-in-project default-directory ,@forms)))
 
-    (<span class="org-keyword">defmacro</span> <span class="org-function-name">imalison:build-embark-projectile-for-file</span> (command)
-      `(<span class="org-keyword">defun</span> ,(intern (concat <span class="org-string">"imalison:embark-projectile-file-"</span> (symbol-name command))) (filepath)
-         (imalison:embark-projectile-act-for-file filepath (,command))))
+    (<span class="org-keyword">defmacro</span> <span class="org-function-name">imalison:build-embark-project-for-file</span> (command)
+      `(<span class="org-keyword">defun</span> ,(intern (concat <span class="org-string">"imalison:embark-project-file-"</span> (symbol-name command))) (filepath)
+         (imalison:embark-project-act-for-file filepath (,command))))
 
-    (imalison:build-embark-projectile-for-file term-projectile-switch)
-    (imalison:build-embark-projectile-for-file magit-status)
-    (imalison:build-embark-projectile-for-file consult-ripgrep)
+    (imalison:build-embark-project-for-file project-shell)
+    (imalison:build-embark-project-for-file magit-status)
+    (imalison:build-embark-project-for-file consult-ripgrep)
 
     (<span class="org-keyword">setq</span> embark-prompter #'embark-keymap-prompter)
 
     (define-key embark-general-map (kbd <span class="org-string">"t"</span>)
-                #'imalison:embark-projectile-file-term-projectile-switch)
+                #'imalison:embark-project-file-project-shell)
 
     (define-key embark-general-map (kbd <span class="org-string">"m"</span>)
-                #'imalison:embark-projectile-file-magit-status)
+                #'imalison:embark-project-file-magit-status)
 
     (define-key embark-general-map (kbd <span class="org-string">"g"</span>)
-                #'imalison:embark-projectile-file-magit-status)
+                #'imalison:embark-project-file-magit-status)
 
     (define-key embark-general-map (kbd <span class="org-string">"s"</span>)
-      #'imalison:embark-projectile-file-consult-ripgrep)
+      #'imalison:embark-project-file-consult-ripgrep)
 
-    (<span class="org-keyword">defvar-keymap</span> imalison:projectile-embark-map
-      <span class="org-builtin">:doc</span> <span class="org-doc">"Keymap for actions on projectile projects"</span>
-      <span class="org-string">"m"</span> #'imalison:embark-projectile-file-magit-status
-      <span class="org-string">"t"</span> #'imalison:embark-projectile-file-term-projectile-switch
-      <span class="org-string">"s"</span> #'imalison:embark-projectile-file-consult-ripgrep)))
+    (<span class="org-keyword">defvar-keymap</span> imalison:project-embark-map
+      <span class="org-builtin">:doc</span> <span class="org-doc">"Keymap for actions on projects"</span>
+      <span class="org-string">"m"</span> #'imalison:embark-project-file-magit-status
+      <span class="org-string">"t"</span> #'imalison:embark-project-file-project-shell
+      <span class="org-string">"s"</span> #'imalison:embark-project-file-consult-ripgrep)))
 
 (<span class="org-keyword">use-package</span> <span class="org-constant">embark-consult</span>
   <span class="org-builtin">:hook</span>
@@ -7032,7 +7016,7 @@ root.  PATTERN is passed as fd's search pattern when non-nil."</span>
          (<span class="org-string">"C-x C-i"</span> . consult-imenu))
   <span class="org-builtin">:config</span>
   (<span class="org-keyword">progn</span>
-    (<span class="org-keyword">setq</span> consult-project-function 'projectile-project-root)))
+    (<span class="org-keyword">setq</span> consult-project-function #'imalison:project-root)))
 </pre>
 </div>
 </div>
@@ -7435,7 +7419,7 @@ root.  PATTERN is passed as fd's search pattern when non-nil."</span>
     (<span class="org-keyword">defvar</span> <span class="org-variable-name">imalison:use-lsp-go</span> t)
 
     (<span class="org-keyword">defun</span> <span class="org-function-name">imalison:glide-novendor</span> ()
-      (projectile-with-default-dir (projectile-project-root)
+      (<span class="org-keyword">let</span> ((default-directory (imalison:project-root)))
         (shell-command-to-string <span class="org-string">"glide novendor"</span>)))
 
     (<span class="org-keyword">defun</span> <span class="org-function-name">imalison:go-mode-create-imenu-index</span> ()
@@ -7460,7 +7444,7 @@ root.  PATTERN is passed as fd's search pattern when non-nil."</span>
         (nconc type-index (list (cons <span class="org-string">"func"</span> func-index)))))
 
     (<span class="org-keyword">defun</span> <span class="org-function-name">imalison:go-workspace-path</span> ()
-      (file-relative-name (projectile-project-root)
+      (file-relative-name (imalison:project-root)
                           (concat (file-name-as-directory
                                    (imalison:get-go-path)) <span class="org-string"><span class="org-warning">"src"</span></span><span class="org-warning">)))</span>
 
@@ -7493,12 +7477,10 @@ root.  PATTERN is passed as fd's search pattern when non-nil."</span>
                   (<span class="org-keyword">if</span> (executable-find <span class="org-string">"goimports"</span>) <span class="org-string">"goimports"</span> <span class="org-string">"gofmt"</span>))
       (<span class="org-keyword">setq-local</span> imenu-create-index-function
                   #'imalison:go-mode-create-imenu-index)
-      (make-local-variable 'projectile-globally-ignored-files)
       (add-hook 'after-save-hook 'imalison:install-current-go-project nil
                 'yes-do-local)
       (add-hook 'before-save-hook 'gofmt-before-save nil 'yes-do-local)
-      (add-to-list 'projectile-globally-ignored-files
-                   <span class="org-string">"vendor"</span>)
+      (<span class="org-keyword">setq-local</span> project-vc-ignores (cons <span class="org-string">"vendor/"</span> project-vc-ignores))
       (<span class="org-keyword">when</span> (<span class="org-keyword">and</span> imalison:use-lsp-go
                  (fboundp 'lsp-deferred)
                  (<span class="org-keyword">or</span> (executable-find <span class="org-string">"gopls"</span>)
@@ -9045,6 +9027,7 @@ in term-mode. This makes term-mode 1000% more useful
 <div class="outline-text-3" id="text-17-5">
 <div class="org-src-container">
 <pre class="src src-emacs-lisp">(<span class="org-keyword">use-package</span> <span class="org-constant">term-projectile</span>
+  <span class="org-builtin">:disabled</span> t
   <span class="org-builtin">:bind</span> (<span class="org-string">"C-c 7"</span> . imalison:term-hydra-global/body)
   <span class="org-builtin">:commands</span>
   (term-projectile-backward
@@ -9268,9 +9251,8 @@ I don't use iedit directly, but it is used by <a href="#emr">emr</a> and I need 
   <span class="org-builtin">:ensure</span> nil
   <span class="org-builtin">:commands</span> tramp
   <span class="org-builtin">:init</span>
-  <span class="org-comment-delimiter">;; </span><span class="org-comment">Avoid TRAMP's GVFS backend on sessions where org.gtk.vfs.Daemon is not
-</span>  <span class="org-comment-delimiter">;; </span><span class="org-comment">activatable.  Buffer/recent-file completion can otherwise trigger noisy
-</span>  <span class="org-comment-delimiter">;; </span><span class="org-comment">DBus ServiceUnknown errors while inspecting TRAMP candidates.
+  <span class="org-comment-delimiter">;; </span><span class="org-comment">Avoid TRAMP's GVFS backend entirely.  It depends on D-Bus/GVFS desktop
+</span>  <span class="org-comment-delimiter">;; </span><span class="org-comment">services, while this config uses ordinary TRAMP methods.
 </span>  (<span class="org-keyword">setq</span> tramp-gvfs-methods nil)
   <span class="org-builtin">:config</span>
   (<span class="org-keyword">setq</span> tramp-default-method <span class="org-string">"scp"</span>)
@@ -9292,12 +9274,9 @@ I don't use iedit directly, but it is used by <a href="#emr">emr</a> and I need 
 <h3 id="dbus"><span class="section-number-3">19.4.</span> dbus <a href="#dbus"><svg aria-hidden="true" class="octicon octicon-link" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a></h3>
 <div class="outline-text-3" id="text-19-4">
 <div class="org-src-container">
-<pre class="src src-emacs-lisp">(<span class="org-keyword">with-eval-after-load</span> 'dbus
-  <span class="org-comment-delimiter">;; </span><span class="org-comment">This hook reports even handled DBus errors in the echo area.  That is
-</span>  <span class="org-comment-delimiter">;; </span><span class="org-comment">usually noise in this config, especially during completion paths which may
-</span>  <span class="org-comment-delimiter">;; </span><span class="org-comment">probe optional desktop services.
-</span>  (remove-hook 'dbus-event-error-functions
-               #'dbus-notice-synchronous-call-errors))
+<pre class="src src-emacs-lisp"><span class="org-comment-delimiter">;; </span><span class="org-comment">D-Bus is disabled by lisp/dbus.el, which shadows Emacs' built-in dbus.el.
+</span><span class="org-comment-delimiter">;; </span><span class="org-comment">Keep the event hook empty in case another environment loads the real library.
+</span>(<span class="org-keyword">setq</span> dbus-event-error-functions nil)
 </pre>
 </div>
 </div>
@@ -9432,8 +9411,8 @@ I have currently disabled key-chord because it may cause typing lag.
     (key-chord-mode 1)
     (advice-add 'imalison:avy <span class="org-builtin">:around</span> 'imalison:disable-keychord-around)
     (key-chord-define-global <span class="org-string">"tg"</span> 'imalison:term-hydra/body)
-    (key-chord-define-global <span class="org-string">"pj"</span> 'imalison:projectile-find-file)
-    (key-chord-define-global <span class="org-string">"p["</span> 'projectile-switch-project)
+    (key-chord-define-global <span class="org-string">"pj"</span> 'imalison:project-find-file)
+    (key-chord-define-global <span class="org-string">"p["</span> 'imalison:project-switch-project)
     (key-chord-define-global <span class="org-string">"fj"</span> 'imalison:do-ag)
     (key-chord-define-global <span class="org-string">"jh"</span> 'imalison:avy)))
 </pre>
