@@ -512,6 +512,8 @@
         inherit pkgs system tangledConfig org-agenda-api orgApiRev dotfilesRev;
       };
     in {
+      formatter = pkgs.alejandra;
+
       packages = {
         colonelpanic-org-agenda-api = containerLib.containers.colonelpanic;
         kat-org-agenda-api = containerLib.containers.kat;
