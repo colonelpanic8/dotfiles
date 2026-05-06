@@ -737,10 +737,15 @@ aren't visiting a file but are associated with a directory."
 (imalison:copy-buffer-file-path-builder imalison:copy-buffer-file-path-full)
 (imalison:copy-buffer-file-path-builder imalison:copy-buffer-file-name
                                         file-name-nondirectory)
-(imalison:copy-buffer-file-path-builder imalison:copy-buffer-file-path
-                                        car
-                                        projectile-make-relative-to-root
-                                        list)
+(defun imalison:buffer-file-project-relative-name ()
+  "Return the current buffer file or directory relative to its project root."
+  (let ((filename (imalison:buffer-file-name-or-directory)))
+    (file-relative-name filename
+                        (imalison:project-root
+                         (file-name-directory filename)))))
+
+(imalison:compose-copy-builder imalison:copy-buffer-file-path
+                               imalison:buffer-file-project-relative-name)
 #+END_SRC
 *** Copy the current branch using magit
 #+BEGIN_SRC emacs-lisp
@@ -1639,7 +1644,7 @@ out how to detect that a buffer is a man mode buffer.
 (defhydra imalison:hydra-yank
   nil
   "Yank text"
-  ("p" imalison:copy-buffer-file-path "Projectile path")
+  ("p" imalison:copy-buffer-file-path "Project path")
   ("b" imalison:copy-current-buffer-name "Buffer Name")
   ("f" imalison:copy-buffer-file-path-full "Full path")
   ("n" imalison:copy-buffer-file-name "File name")
@@ -1650,7 +1655,7 @@ out how to detect that a buffer is a man mode buffer.
 #+BEGIN_SRC emacs-lisp
 (defun imalison:make-test ()
   (interactive)
-  (let ((default-directory (projectile-project-root)))
+  (let ((default-directory (imalison:project-root)))
     (imalison:named-compile "make test")))
 
 (defun imalison:glide-up ()
@@ -1747,70 +1752,40 @@ bind-key and global-set-key forms.
     (setq zop-to-char-kill-keys '(?\C-k ?\C-w))
     (setq zop-to-char-quit-at-point-keys '(?\r))))
 #+END_SRC
-** projectile
+** project
 #+BEGIN_SRC emacs-lisp
 
-(use-package projectile
+(use-package project
+  :ensure nil
   :demand t
-  :bind (:map projectile-mode-map
-              ("C-c p f" . imalison:projectile-find-file)
-              ("C-c p" . projectile-command-map)
-              ("C-c p s" . imalison:do-rg)
-              ("C-c p f" . imalison:projectile-find-file))
+  :bind (("C-c 7" . project-shell))
+  :bind-keymap
+  ("C-c p" . project-prefix-map)
   :custom
-  ((projectile-require-project-root nil)
-   (projectile-enable-caching nil)
-   (projectile-git-submodule-command nil)
-   (projectile-git-use-fd t)
-   (project-vc-merge-submodules nil)
-   (projectile-current-project-on-switch 'keep))
+  ((project-vc-merge-submodules nil)
+   (project-vc-extra-root-markers '(".project" ".projectile")))
   :config
   (progn
-    (defmacro imalison:projectile-do-in-project (project-dir &rest forms)
+    (defun imalison:project-root (&optional directory)
+      "Return DIRECTORY's project root, falling back to DIRECTORY itself."
+      (let* ((default-directory (file-name-as-directory
+                                 (expand-file-name
+                                  (or directory default-directory))))
+             (project (project-current nil default-directory)))
+        (file-name-as-directory
+         (expand-file-name
+          (if project
+              (project-root project)
+            default-directory)))))
+
+    (defmacro imalison:project-do-in-project (project-dir &rest forms)
       `(imalison:with-default-directory ,project-dir
-                                        (noflet ((projectile-project-root (&rest args) ,project-dir))
-                                          ,@forms)))
+         (let ((project-current-directory-override ,project-dir))
+           ,@forms)))
 
     (defmacro imalison:with-default-directory (directory &rest forms)
       `(let ((default-directory ,directory))
          ,@forms))
-
-    (defvar imalison:projectile-find-ignore-file ".projectile-find-ignore"
-      "Project-local fd ignore file used only for Projectile file finding.")
-
-    (defun imalison:projectile-fd-ignore-file-arg ()
-      "Return a shell fragment that adds `imalison:projectile-find-ignore-file' when present."
-      (let ((ignore-file (shell-quote-argument imalison:projectile-find-ignore-file)))
-        (format "$(test -f %s && printf -- '--ignore-file %s')" ignore-file ignore-file)))
-
-    (defun imalison:projectile-fd-command (&optional pattern)
-      "Build an fd command for Projectile file finding.
-The command includes ignored and hidden files by default, then applies
-`imalison:projectile-find-ignore-file' when that file exists in the project
-root.  PATTERN is passed as fd's search pattern when non-nil."
-      (mapconcat
-       #'identity
-       (delq nil
-             (list projectile-fd-executable
-                   pattern
-                   "-H"
-                   "--no-ignore"
-                   (imalison:projectile-fd-ignore-file-arg)
-                   "-0"
-                   "-E .git"
-                   "-tf"
-                   "--strip-cwd-prefix"
-                   "-c never"))
-       " "))
-
-    (when projectile-fd-executable
-      (setq projectile-git-fd-args
-            (replace-regexp-in-string
-             (concat "^" (regexp-quote projectile-fd-executable) " ")
-             ""
-             (imalison:projectile-fd-command)))
-      (setq projectile-generic-command
-            (imalison:projectile-fd-command ".")))
 
     (defun imalison:do-rg-default-directory (&rest args)
       (interactive)
@@ -1821,24 +1796,32 @@ root.  PATTERN is passed as fd's search pattern when non-nil."
       consult-ripgrep
       imalison:do-rg-default-directory)
 
-    (emit-prefix-selector imalison:projectile-find-file
-      projectile-find-file
-      projectile-find-file-other-window)
+    (defun imalison:project-find-file ()
+      "Find a file in the current `project.el' project."
+      (interactive)
+      (let* ((project-root (imalison:project-root))
+             (default-directory project-root)
+             (project-current-directory-override project-root))
+        (call-interactively #'project-find-file)))
+
+    (defun imalison:project-switch-project ()
+      "Switch projects using `project.el'."
+      (interactive)
+      (call-interactively #'project-switch-project))
+
+    (define-key project-prefix-map (kbd "f") #'imalison:project-find-file)
+    (define-key project-prefix-map (kbd "s") #'imalison:do-rg)
 
     (imalison:let-around imalison:set-options-do-rg
       imalison:do-rg)
 
-    (defun imalison:projectile-make-all-subdirs-projects (directory)
+    (defun imalison:project-make-all-subdirs-projects (directory)
       (cl-loop for file-info in (directory-files-and-attributes directory)
                do (when (nth 1 file-info)
                     (write-region "" nil
                                   (expand-file-name
                                    (concat directory "/"
-                                           (nth 0 file-info) "/.projectile")))))))
-  :config
-  (progn
-    (projectile-global-mode)
-    (diminish 'projectile-mode)))
+                                           (nth 0 file-info) "/.project"))))))))
 #+END_SRC
 ** ido
 #+BEGIN_SRC emacs-lisp
@@ -1993,37 +1976,38 @@ root.  PATTERN is passed as fd's search pattern when non-nil."
   :config
   (progn
     (setq embark-mixed-indicator-delay 1.0)
-    (defmacro imalison:embark-projectile-act-for-file (file &rest forms)
-      `(let ((default-directory (projectile-project-root ,file)))
-        (imalison:projectile-do-in-project default-directory ,@forms)))
+    (defmacro imalison:embark-project-act-for-file (file &rest forms)
+      `(let ((default-directory
+              (imalison:project-root (file-name-directory ,file))))
+         (imalison:project-do-in-project default-directory ,@forms)))
 
-    (defmacro imalison:build-embark-projectile-for-file (command)
-      `(defun ,(intern (concat "imalison:embark-projectile-file-" (symbol-name command))) (filepath)
-         (imalison:embark-projectile-act-for-file filepath (,command))))
+    (defmacro imalison:build-embark-project-for-file (command)
+      `(defun ,(intern (concat "imalison:embark-project-file-" (symbol-name command))) (filepath)
+         (imalison:embark-project-act-for-file filepath (,command))))
 
-    (imalison:build-embark-projectile-for-file term-projectile-switch)
-    (imalison:build-embark-projectile-for-file magit-status)
-    (imalison:build-embark-projectile-for-file consult-ripgrep)
+    (imalison:build-embark-project-for-file project-shell)
+    (imalison:build-embark-project-for-file magit-status)
+    (imalison:build-embark-project-for-file consult-ripgrep)
 
     (setq embark-prompter #'embark-keymap-prompter)
 
     (define-key embark-general-map (kbd "t")
-                #'imalison:embark-projectile-file-term-projectile-switch)
+                #'imalison:embark-project-file-project-shell)
 
     (define-key embark-general-map (kbd "m")
-                #'imalison:embark-projectile-file-magit-status)
+                #'imalison:embark-project-file-magit-status)
 
     (define-key embark-general-map (kbd "g")
-                #'imalison:embark-projectile-file-magit-status)
+                #'imalison:embark-project-file-magit-status)
 
     (define-key embark-general-map (kbd "s")
-      #'imalison:embark-projectile-file-consult-ripgrep)
+      #'imalison:embark-project-file-consult-ripgrep)
 
-    (defvar-keymap imalison:projectile-embark-map
-      :doc "Keymap for actions on projectile projects"
-      "m" #'imalison:embark-projectile-file-magit-status
-      "t" #'imalison:embark-projectile-file-term-projectile-switch
-      "s" #'imalison:embark-projectile-file-consult-ripgrep)))
+    (defvar-keymap imalison:project-embark-map
+      :doc "Keymap for actions on projects"
+      "m" #'imalison:embark-project-file-magit-status
+      "t" #'imalison:embark-project-file-project-shell
+      "s" #'imalison:embark-project-file-consult-ripgrep)))
 
 (use-package embark-consult
   :hook
@@ -2038,7 +2022,7 @@ root.  PATTERN is passed as fd's search pattern when non-nil."
          ("C-x C-i" . consult-imenu))
   :config
   (progn
-    (setq consult-project-function 'projectile-project-root)))
+    (setq consult-project-function #'imalison:project-root)))
 #+end_src
 ** company
 #+BEGIN_SRC emacs-lisp
@@ -2328,7 +2312,7 @@ root.  PATTERN is passed as fd's search pattern when non-nil."
     (defvar imalison:use-lsp-go t)
 
     (defun imalison:glide-novendor ()
-      (projectile-with-default-dir (projectile-project-root)
+      (let ((default-directory (imalison:project-root)))
         (shell-command-to-string "glide novendor")))
 
     (defun imalison:go-mode-create-imenu-index ()
@@ -2353,7 +2337,7 @@ root.  PATTERN is passed as fd's search pattern when non-nil."
         (nconc type-index (list (cons "func" func-index)))))
 
     (defun imalison:go-workspace-path ()
-      (file-relative-name (projectile-project-root)
+      (file-relative-name (imalison:project-root)
                           (concat (file-name-as-directory
                                    (imalison:get-go-path)) "src")))
 
@@ -2386,12 +2370,10 @@ root.  PATTERN is passed as fd's search pattern when non-nil."
                   (if (executable-find "goimports") "goimports" "gofmt"))
       (setq-local imenu-create-index-function
                   #'imalison:go-mode-create-imenu-index)
-      (make-local-variable 'projectile-globally-ignored-files)
       (add-hook 'after-save-hook 'imalison:install-current-go-project nil
                 'yes-do-local)
       (add-hook 'before-save-hook 'gofmt-before-save nil 'yes-do-local)
-      (add-to-list 'projectile-globally-ignored-files
-                   "vendor")
+      (setq-local project-vc-ignores (cons "vendor/" project-vc-ignores))
       (when (and imalison:use-lsp-go
                  (fboundp 'lsp-deferred)
                  (or (executable-find "gopls")
@@ -3488,6 +3470,7 @@ in term-mode. This makes term-mode 1000% more useful
 ** term-projectile
 #+BEGIN_SRC emacs-lisp
 (use-package term-projectile
+  :disabled t
   :bind ("C-c 7" . imalison:term-hydra-global/body)
   :commands
   (term-projectile-backward
@@ -3760,8 +3743,8 @@ I have currently disabled key-chord because it may cause typing lag.
     (key-chord-mode 1)
     (advice-add 'imalison:avy :around 'imalison:disable-keychord-around)
     (key-chord-define-global "tg" 'imalison:term-hydra/body)
-    (key-chord-define-global "pj" 'imalison:projectile-find-file)
-    (key-chord-define-global "p[" 'projectile-switch-project)
+    (key-chord-define-global "pj" 'imalison:project-find-file)
+    (key-chord-define-global "p[" 'imalison:project-switch-project)
     (key-chord-define-global "fj" 'imalison:do-ag)
     (key-chord-define-global "jh" 'imalison:avy)))
 #+END_SRC

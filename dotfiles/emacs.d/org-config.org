@@ -980,10 +980,7 @@ alphanumeric characters only."
   :config
   (progn
     (use-package org-projectile
-      :demand t
-      :config
-      (setq org-project-capture-default-backend
-            (make-instance 'org-project-capture-projectile-backend)))
+      :disabled t)
     (setq org-project-capture-strategy
           (make-instance 'org-project-capture-combine-strategies
                          :strategies (list (make-instance 'org-project-capture-single-file-strategy)
