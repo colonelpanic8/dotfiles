@@ -2127,14 +2127,18 @@
         ]
       },
       "locked": {
-        "lastModified": 1777692941,
-        "narHash": "sha256-Dk2kvdMGlfrF3kiJsioFEbGZGHjgRP9qY1ggOS4yKGo=",
-        "path": "/home/imalison/Projects/xmonad-river",
-        "type": "path"
+        "lastModified": 1778045826,
+        "narHash": "sha256-GN7gUDgagY0Iyahl/xnSAKI8zCVUY1pwHPHeo1UhYHY=",
+        "owner": "colonelpanic8",
+        "repo": "xmonad",
+        "rev": "fc225f2718299cdcc0cfdded178a67c747e93d74",
+        "type": "github"
       },
       "original": {
-        "path": "/home/imalison/Projects/xmonad-river",
-        "type": "path"
+        "owner": "colonelpanic8",
+        "ref": "xmonad-river",
+        "repo": "xmonad",
+        "type": "github"
       }
     }
   },

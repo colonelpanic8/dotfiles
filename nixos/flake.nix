@@ -148,7 +148,7 @@
     };
 
     xmonad-river = {
-      url = "path:/home/imalison/Projects/xmonad-river";
+      url = "github:colonelpanic8/xmonad/xmonad-river";
       inputs = {
         nixpkgs.follows = "nixpkgs";
         unstable.follows = "nixpkgs";
