@@ -58,8 +58,8 @@ think its pretty awesome!
   ([[https://github.com/IvanMalison/emit#compose][README]])
 + [[Add a blacklist to a major mode]]
 ** Configuration of My Own Packages
-- [[term-projectile][term-projectile]] and [[term-manager][term-manager]]
-- [[org-projectile][org-projectile]]
+- [[term-project][term-project]] and [[term-manager][term-manager]]
+- [[org-project-capture][org-project-capture]]
 - [[multi-line][multi-line]]
 - [[github-search][github-search]]
 - [[flimenu][flimenu]]
@@ -1758,7 +1758,6 @@ bind-key and global-set-key forms.
 (use-package project
   :ensure nil
   :demand t
-  :bind (("C-c 7" . project-shell))
   :bind-keymap
   ("C-c p" . project-prefix-map)
   :custom
@@ -1985,14 +1984,14 @@ bind-key and global-set-key forms.
       `(defun ,(intern (concat "imalison:embark-project-file-" (symbol-name command))) (filepath)
          (imalison:embark-project-act-for-file filepath (,command))))
 
-    (imalison:build-embark-project-for-file project-shell)
+    (imalison:build-embark-project-for-file term-project-forward)
     (imalison:build-embark-project-for-file magit-status)
     (imalison:build-embark-project-for-file consult-ripgrep)
 
     (setq embark-prompter #'embark-keymap-prompter)
 
     (define-key embark-general-map (kbd "t")
-                #'imalison:embark-project-file-project-shell)
+                #'imalison:embark-project-file-term-project-forward)
 
     (define-key embark-general-map (kbd "m")
                 #'imalison:embark-project-file-magit-status)
@@ -2006,7 +2005,7 @@ bind-key and global-set-key forms.
     (defvar-keymap imalison:project-embark-map
       :doc "Keymap for actions on projects"
       "m" #'imalison:embark-project-file-magit-status
-      "t" #'imalison:embark-project-file-project-shell
+      "t" #'imalison:embark-project-file-term-project-forward
       "s" #'imalison:embark-project-file-consult-ripgrep)))
 
 (use-package embark-consult
@@ -3467,19 +3466,20 @@ in term-mode. This makes term-mode 1000% more useful
     (advice-add
      'term-manager-default-build-term :after 'imalison:set-escape-char)))
 #+END_SRC
-** term-projectile
+** term-project
 #+BEGIN_SRC emacs-lisp
-(use-package term-projectile
-  :disabled t
+(use-package term-project
+  :ensure (term-project :files ("term-project.el")
+                        :host github :repo "colonelpanic8/term-manager")
   :bind ("C-c 7" . imalison:term-hydra-global/body)
   :commands
-  (term-projectile-backward
-   term-projectile-create-new
-   term-projectile-create-new-default-directory
-   term-projectile-default-directory-backward
-   term-projectile-default-directory-forward
-   term-projectile-forward
-   term-projectile-switch)
+  (term-project-backward
+   term-project-create-new
+   term-project-default-directory-backward
+   term-project-default-directory-create-new
+   term-project-default-directory-forward
+   term-project-forward
+   term-project-switch)
   :config
   (progn
     (use-package term-manager-eat
@@ -3487,37 +3487,51 @@ in term-mode. This makes term-mode 1000% more useful
       :ensure
       (term-manager-eat  :files ("term-manager-eat.el")
                         :host github :repo "colonelpanic8/term-manager"))
-    (setq term-projectile-term-manager (term-projectile :build-term 'term-manager-eat-build-term))
+    (require 'term-manager-eat)
+    (defun term-project-get-symbol-for-buffer (buffer)
+      "Get the project root symbol for BUFFER, falling back to its directory."
+      (term-project-maybe-intern
+       (with-current-buffer buffer
+         (if (or (derived-mode-p 'term-mode)
+                 (derived-mode-p 'eat-mode))
+             default-directory
+           (imalison:project-root)))))
+
+    (setq term-project-term-manager
+          (term-project :build-term 'term-manager-eat-build-term))
+    (term-manager-enable-eat-buffer-renaming-and-reindexing
+     term-project-term-manager)
+
     (emit-prefix-selector imalison:term
-      term-projectile-forward
-      term-projectile-create-new)
+      term-project-forward
+      term-project-create-new)
 
     (defvar imalison:term-hydra-original-default-directory)
 
     (defhydra imalison:term-hydra-default-directory
       (:body-pre
-       (term-projectile-default-directory-forward-restored))
+       (term-project-default-directory-forward-restored))
       "term - default-directory"
-      ("s" term-projectile-switch-to "Switch to existing")
-      ("f" term-projectile-default-directory-forward-restored "Forward for current directory terminals")
-      ("b" term-projectile-default-directory-backward-restored "Backward for current directory terminals")
-      ("c" term-projectile-default-directory-create-new-restored "Create new current directory terminal")
-      ("d" term-projectile-default-directory-forward-restored "Switch/Create default directory terminal")
+      ("s" term-project-switch-to "Switch to existing")
+      ("f" term-project-default-directory-forward-restored "Forward for current directory terminals")
+      ("b" term-project-default-directory-backward-restored "Backward for current directory terminals")
+      ("c" term-project-default-directory-create-new-restored "Create new current directory terminal")
+      ("d" term-project-default-directory-forward-restored "Switch/Create default directory terminal")
       ("g" imalison:term-hydra-global/body-restored "Switch/Create global terminal" :exit t)
-      ("p" imalison:term-hydra-projectile/body-restored  "Switch/Create project terminal" :exit t))
+      ("p" imalison:term-hydra-project/body-restored  "Switch/Create project terminal" :exit t))
 
-    (defhydra imalison:term-hydra-projectile
+    (defhydra imalison:term-hydra-project
       (:body-pre
        (progn
-         (term-projectile-forward-restored)))
-      "term - projectile"
-      ("s" term-projectile-switch-to "Switch to existing")
-      ("f" term-projectile-forward-restored "Forward for project terminals")
-      ("b" term-projectile-backward-restored "Backward for project terminals")
-      ("c" term-projectile-create-new-restored "Create new project terminal")
+         (term-project-forward-restored)))
+      "term - project"
+      ("s" term-project-switch-to "Switch to existing")
+      ("f" term-project-forward-restored "Forward for project terminals")
+      ("b" term-project-backward-restored "Backward for project terminals")
+      ("c" term-project-create-new-restored "Create new project terminal")
       ("d" imalison:term-hydra-default-directory/body-restored "Switch/Create default directory terminal" :exit t)
       ("g" imalison:term-hydra-global/body-restored "Switch/Create global terminal" :exit t)
-      ("p" term-projectile-forward-restored "Switch/Create project terminal"))
+      ("p" term-project-forward-restored "Switch/Create project terminal"))
 
 
     (defhydra imalison:term-hydra-global
@@ -3525,31 +3539,31 @@ in term-mode. This makes term-mode 1000% more useful
        (progn (setq imalison:term-hydra-original-default-directory
                     default-directory)))
       "term - global"
-      ("s" term-projectile-switch-to "Switch to existing")
-      ("f" term-projectile-global-forward-restored "Forward for project terminals")
-      ("b" term-projectile-global-backward-restored "Backward for project terminals")
-      ("c" term-projectile-global-create-new-restored "Create new project terminal")
+      ("s" term-project-switch-to "Switch to existing")
+      ("f" term-project-global-forward-restored "Forward for project terminals")
+      ("b" term-project-global-backward-restored "Backward for project terminals")
+      ("c" term-project-global-create-new-restored "Create new project terminal")
       ("d" imalison:term-hydra-default-directory/body-restored "Switch/Create default directory terminal" :exit t)
-      ("g" term-projectile-global-forward-restored "Switch/Create global terminal")
-      ("p" imalison:term-hydra-projectile/body-restored "Switch/Create project terminal" :exit t))
+      ("g" term-project-global-forward-restored "Switch/Create global terminal")
+      ("p" imalison:term-hydra-project/body-restored "Switch/Create project terminal" :exit t))
 
-    (mapcar (lambda (term-projectile-function)
-              (defalias (imalison:concat-symbols term-projectile-function '-restored)
+    (mapcar (lambda (term-project-function)
+              (defalias (imalison:concat-symbols term-project-function '-restored)
                 (lambda (&rest args)
                   (interactive)
                   (let ((default-directory imalison:term-hydra-original-default-directory))
-                    (apply term-projectile-function args)))))
-            '(term-projectile-default-directory-forward
-              term-projectile-default-directory-backward
-              term-projectile-default-directory-create-new
-              term-projectile-forward
-              term-projectile-backward
-              term-projectile-create-new
-              term-projectile-global-forward
-              term-projectile-global-backward
-              term-projectile-global-create-new
+                    (apply term-project-function args)))))
+            '(term-project-default-directory-forward
+              term-project-default-directory-backward
+              term-project-default-directory-create-new
+              term-project-forward
+              term-project-backward
+              term-project-create-new
+              term-project-global-forward
+              term-project-global-backward
+              term-project-global-create-new
               imalison:term-hydra-global/body
-              imalison:term-hydra-projectile/body
+              imalison:term-hydra-project/body
               imalison:term-hydra-default-directory/body))))
 #+END_SRC
 ** crux
