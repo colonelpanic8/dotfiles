@@ -245,7 +245,6 @@
       url = "github:noctalia-dev/noctalia-shell";
       inputs.nixpkgs.follows = "nixpkgs";
     };
-
   };
 
   outputs = inputs @ {
@@ -266,10 +265,10 @@
     ...
   }: let
     # Nixpkgs PR patches - just specify PR number and hash
-    nixpkgsPRPatches = [ ];
+    nixpkgsPRPatches = [];
 
     # Custom patches that don't fit the PR template
-    nixpkgsCustomPatches = [ ];
+    nixpkgsCustomPatches = [];
 
     # Home-manager PR patches - just specify PR number and hash
     homeManagerPRPatches = [
@@ -328,7 +327,7 @@
       builtins.listToAttrs (map mkConfigurationParams machineFilenames);
     # Build org-agenda-api container for a given system
     mkOrgAgendaApiContainerInfo = system: let
-      pkgs = import nixpkgs { inherit system; };
+      pkgs = import nixpkgs {inherit system;};
       orgApiRev = builtins.substring 0 7 (org-agenda-api.rev or "unknown");
       dotfilesRev = builtins.substring 0 7 (self.rev or self.dirtyRev or "dirty");
       dotfilesOrgApi = import ./org-agenda-api.nix {
@@ -402,15 +401,21 @@
         then home-manager.nixosModules.home-manager
         else import "${patchedHomeManagerSource}/nixos";
       # Create a modified inputs with patched home-manager
-      patchedInputs = inputs // {
-        home-manager = inputs.home-manager // {
-          nixosModules = inputs.home-manager.nixosModules // {
-            home-manager = patchedHomeManagerModule;
-          };
-          # Also provide the patched source path for any direct imports
-          outPath = patchedHomeManagerSource.outPath or "${patchedHomeManagerSource}";
+      patchedInputs =
+        inputs
+        // {
+          home-manager =
+            inputs.home-manager
+            // {
+              nixosModules =
+                inputs.home-manager.nixosModules
+                // {
+                  home-manager = patchedHomeManagerModule;
+                };
+              # Also provide the patched source path for any direct imports
+              outPath = patchedHomeManagerSource.outPath or "${patchedHomeManagerSource}";
+            };
         };
-      };
     in
       evalConfig {
         inherit system;
@@ -435,262 +440,268 @@
           }
           // specialArgs;
       };
-  in {
-    nixConfig = {
-      substituters = [
-        "https://cache.nixos.org/"
-      ];
-      trusted-public-keys = [
-        "cache.nixos.org-1:6NCHdD59X431o0gWypbMrAURkbJ16ZPMQFGspcDShjY="
-      ];
-      extra-substituters = [
-        "http://192.168.1.26:5050"
-        "https://ai.cachix.org"
-        "https://cache.nixos-cuda.org"
-        "https://nix-community.cachix.org"
-        "https://cuda-maintainers.cachix.org"
-        "https://numtide.cachix.org"
-        "https://cache.flox.dev"
-        "https://org-agenda-api.cachix.org"
-        "https://colonelpanic8-dotfiles.cachix.org"
-        "https://codex-cli.cachix.org"
-        "https://claude-code.cachix.org"
-        "https://noctalia.cachix.org"
-      ];
-      extra-trusted-substituters = [
-        "https://ai.cachix.org"
-        "https://cache.nixos.org/"
-        "https://nix-community.cachix.org"
-        "https://cache.nixos-cuda.org"
-        "https://cuda-maintainers.cachix.org"
-        "https://numtide.cachix.org"
-      ];
-      extra-trusted-public-keys = [
-        "1896Folsom.duckdns.org:U2FTjvP95qwAJo0oGpvmUChJCgi5zQoG1YisoI08Qoo="
-        "ai.cachix.org-1:N9dzRK+alWwoKXQlnn0H6aUx0lU/mspIoz8hMvGvbbc="
-        "cache.nixos-cuda.org:74DUi4Ye579gUqzH4ziL9IyiJBlDpMRn9MBN8oNan9M="
-        "nix-community.cachix.org-1:mB9FSh9qf2dCimDSUo8Zy7bkq5CX+/rkCWyvRCYg3Fs="
-        "cuda-maintainers.cachix.org-1:0dq3bujKpuEPMCX6U4WylrUDZ9JyUG0VpVZa7CNfq5E="
-        "numtide.cachix.org-1:2ps1kLBUWjxIneOy1Ik6cQjb41X0iXVXeHigGmycPPE="
-        "flox-cache-public-1:7F4OyH7ZCnFhcze3fJdfyXYLQw/aV7GEed86nQ7IsOs="
-        "org-agenda-api.cachix.org-1:liKFemKkOLV/rJt2txDNcpDjRsqLuBneBjkSw/UVXKA="
-        "colonelpanic8-dotfiles.cachix.org-1:O6GF3nptpeMFapX29okzO92eSWXR36zqW6ZF2C8P0eQ="
-        "codex-cli.cachix.org-1:1Br3H1hHoRYG22n//cGKJOk3cQXgYobUel6O8DgSing="
-        "claude-code.cachix.org-1:YeXf2aNu7UTX8Vwrze0za1WEDS+4DuI2kVeWEE4fsRk="
-        "noctalia.cachix.org-1:pCOR47nnMEo5thcxNDtzWpOxNFQsBRglJzxWPp3dkU4="
-      ];
-    };
-    nixosConfigurations =
-      builtins.mapAttrs (
-        machineName: params: let
-          machineParams =
-            if builtins.hasAttr machineName customParams
-            then (builtins.getAttr machineName customParams)
-            else {};
-        in
-          mkConfig (params // machineParams)
-      )
-      defaultConfigurationParams;
-  } // flake-utils.lib.eachDefaultSystem (system:
-    let
-      pkgs = import nixpkgs { inherit system; };
-      lib = pkgs.lib;
-
-      # Get short revs for tagging
-      orgApiRev = builtins.substring 0 7 (org-agenda-api.rev or "unknown");
-      dotfilesRev = builtins.substring 0 7 (self.rev or self.dirtyRev or "dirty");
-
-      # Get tangled config files from org-agenda-api.nix
-      dotfilesOrgApi = import ./org-agenda-api.nix {
-        inherit pkgs system;
-        inherit inputs;
-      };
-      tangledConfig = dotfilesOrgApi.org-agenda-custom-config;
-
-      # Import container build logic
-      containerLib = import ../org-agenda-api/container.nix {
-        inherit pkgs system tangledConfig org-agenda-api orgApiRev dotfilesRev;
-      };
-    in {
-      formatter = pkgs.alejandra;
-
-      packages = {
-        colonelpanic-org-agenda-api = containerLib.containers.colonelpanic;
-        kat-org-agenda-api = containerLib.containers.kat;
-      } // lib.optionalAttrs pkgs.stdenv.isLinux {
-        hyprNStack = inputs.hyprNStack.packages.${system}.hyprNStack;
-        hyprexpo-lua = inputs.hyprland-plugins-lua.packages.${system}.hyprexpo;
-        hyprwinview = inputs.hyprwinview.packages.${system}.hyprwinview;
-        hypr-workspace-history = inputs.hypr-workspace-history.packages.${system}.hypr-workspace-history;
-      };
-
-      checks = lib.optionalAttrs pkgs.stdenv.isLinux {
-        hyprNStack = inputs.hyprNStack.packages.${system}.hyprNStack;
-        hyprexpo-lua = inputs.hyprland-plugins-lua.packages.${system}.hyprexpo;
-        hyprwinview = inputs.hyprwinview.packages.${system}.hyprwinview;
-        hypr-workspace-history = inputs.hypr-workspace-history.packages.${system}.hypr-workspace-history;
-        hyprland-config-syntax = pkgs.runCommand "hyprland-config-syntax" {
-          nativeBuildInputs = [ pkgs.lua5_4 ];
-        } ''
-          cp ${../dotfiles/config/hypr/hyprland.lua} hyprland.lua
-          luac -p hyprland.lua
-          if grep -n 'hyprctl' hyprland.lua | grep -v 'hyprctl reload' | grep -v 'hyprctl eval' | grep -v 'hyprctl_eval' | grep -v 'hyprctl -j monitors'; then
-            echo "hyprland.lua should not shell out to hyprctl for window/workspace manipulation" >&2
-            exit 1
-          fi
-          lua <<'LUA'
-          local callbacks = {}
-
-          local function noop() end
-
-          local function dispatcher_proxy()
-            local proxy = {}
-            return setmetatable(proxy, {
-              __index = function()
-                return dispatcher_proxy()
-              end,
-              __call = function()
-                return noop
-              end,
-            })
-          end
-
-          local notification = {
-            is_alive = function()
-              return true
-            end,
-            set_text = noop,
-            set_timeout = noop,
-            pause = noop,
-            resume = noop,
-            set_paused = noop,
-            dismiss = noop,
-          }
-
-          local monitor = {
-            id = 1,
-            name = "stub-monitor",
-            focused = true,
-          }
-
-          local workspace = {
-            id = 1,
-            name = "1",
-            windows = 0,
-            special = false,
-            monitor = monitor,
-          }
-
-          monitor.active_workspace = workspace
-
-          hl = {
-            animation = noop,
-            bind = noop,
-            config = noop,
-            curve = noop,
-            env = noop,
-            exec_cmd = noop,
-            define_submap = function(_, reset_or_callback, callback)
-              local cb = type(reset_or_callback) == "function" and reset_or_callback or callback
-              if cb then
-                cb()
-              end
-            end,
-            monitor = noop,
-            workspace_rule = noop,
-            window_rule = noop,
-            dsp = dispatcher_proxy(),
-            notification = {
-              create = function()
-                return notification
-              end,
-            },
-            plugin = {
-              load = noop,
-            },
-            get_active_workspace = function()
-              return workspace
-            end,
-            get_active_monitor = function()
-              return monitor
-            end,
-            get_active_window = function()
-              return nil
-            end,
-            get_monitor = function()
-              return monitor
-            end,
-            get_workspace = function(id)
-              if tostring(id) == "1" then
-                return workspace
-              end
-              return nil
-            end,
-            get_windows = function()
-              return {}
-            end,
-            get_workspace_windows = function()
-              return {}
-            end,
-            on = function(_, callback)
-              callbacks[#callbacks + 1] = callback
-            end,
-            timer = function(callback)
-              callback()
-              return {
-                set_enabled = noop,
-              }
-            end,
-          }
-
-          dofile("./hyprland.lua")
-
-          for _, callback in ipairs(callbacks) do
-            callback()
-          end
-          LUA
-          touch "$out"
-        '';
-        hyprland-verify-config = let
-          hyprlandPackage = inputs.hyprland.packages.${system}.hyprland;
-          hyprNStackPackage = inputs.hyprNStack.packages.${system}.hyprNStack;
-        in pkgs.runCommand "hyprland-lua-verify-config" {} ''
-          cp ${../dotfiles/config/hypr/hyprland.lua} hyprland.lua
-          substituteInPlace hyprland.lua \
-            --replace-fail /run/current-system/sw/lib/libhyprNStack.so \
-            ${hyprNStackPackage}/lib/libhyprNStack.so
-          export XDG_RUNTIME_DIR="$TMPDIR/runtime"
-          mkdir -p "$XDG_RUNTIME_DIR"
-          HYPRLAND_NO_CRASHREPORTER=1 ${pkgs.coreutils}/bin/timeout 20s \
-            ${hyprlandPackage}/bin/Hyprland --verify-config --config "$PWD/hyprland.lua"
-          touch "$out"
-        '';
-      };
-
-      # Dev shell for org-agenda-api deployment
-      devShells.org-agenda-api = pkgs.mkShell {
-        buildInputs = [
-          pkgs.flyctl
-          agenix.packages.${system}.default
-          pkgs.age
-          pkgs.ssh-to-age
-          pkgs.git
-          pkgs.jq
-          pkgs.just
-          pkgs.curl
+  in
+    {
+      nixConfig = {
+        substituters = [
+          "https://cache.nixos.org/"
         ];
-        shellHook = ''
-          echo ""
-          echo "org-agenda-api deployment shell"
-          echo ""
-          echo "Commands:"
-          echo "  just --list             - Show available API commands"
-          echo "  ./deploy.sh <instance>  - Deploy to Fly.io (colonelpanic or kat)"
-          echo "  flyctl                  - Fly.io CLI"
-          echo "  agenix -e <file>        - Edit encrypted secrets"
-          echo ""
-        '';
+        trusted-public-keys = [
+          "cache.nixos.org-1:6NCHdD59X431o0gWypbMrAURkbJ16ZPMQFGspcDShjY="
+        ];
+        extra-substituters = [
+          "http://192.168.1.26:5050"
+          "https://ai.cachix.org"
+          "https://cache.nixos-cuda.org"
+          "https://nix-community.cachix.org"
+          "https://cuda-maintainers.cachix.org"
+          "https://numtide.cachix.org"
+          "https://cache.flox.dev"
+          "https://org-agenda-api.cachix.org"
+          "https://colonelpanic8-dotfiles.cachix.org"
+          "https://codex-cli.cachix.org"
+          "https://claude-code.cachix.org"
+          "https://noctalia.cachix.org"
+        ];
+        extra-trusted-substituters = [
+          "https://ai.cachix.org"
+          "https://cache.nixos.org/"
+          "https://nix-community.cachix.org"
+          "https://cache.nixos-cuda.org"
+          "https://cuda-maintainers.cachix.org"
+          "https://numtide.cachix.org"
+        ];
+        extra-trusted-public-keys = [
+          "1896Folsom.duckdns.org:U2FTjvP95qwAJo0oGpvmUChJCgi5zQoG1YisoI08Qoo="
+          "ai.cachix.org-1:N9dzRK+alWwoKXQlnn0H6aUx0lU/mspIoz8hMvGvbbc="
+          "cache.nixos-cuda.org:74DUi4Ye579gUqzH4ziL9IyiJBlDpMRn9MBN8oNan9M="
+          "nix-community.cachix.org-1:mB9FSh9qf2dCimDSUo8Zy7bkq5CX+/rkCWyvRCYg3Fs="
+          "cuda-maintainers.cachix.org-1:0dq3bujKpuEPMCX6U4WylrUDZ9JyUG0VpVZa7CNfq5E="
+          "numtide.cachix.org-1:2ps1kLBUWjxIneOy1Ik6cQjb41X0iXVXeHigGmycPPE="
+          "flox-cache-public-1:7F4OyH7ZCnFhcze3fJdfyXYLQw/aV7GEed86nQ7IsOs="
+          "org-agenda-api.cachix.org-1:liKFemKkOLV/rJt2txDNcpDjRsqLuBneBjkSw/UVXKA="
+          "colonelpanic8-dotfiles.cachix.org-1:O6GF3nptpeMFapX29okzO92eSWXR36zqW6ZF2C8P0eQ="
+          "codex-cli.cachix.org-1:1Br3H1hHoRYG22n//cGKJOk3cQXgYobUel6O8DgSing="
+          "claude-code.cachix.org-1:YeXf2aNu7UTX8Vwrze0za1WEDS+4DuI2kVeWEE4fsRk="
+          "noctalia.cachix.org-1:pCOR47nnMEo5thcxNDtzWpOxNFQsBRglJzxWPp3dkU4="
+        ];
       };
+      nixosConfigurations =
+        builtins.mapAttrs (
+          machineName: params: let
+            machineParams =
+              if builtins.hasAttr machineName customParams
+              then (builtins.getAttr machineName customParams)
+              else {};
+          in
+            mkConfig (params // machineParams)
+        )
+        defaultConfigurationParams;
     }
-  );
+    // flake-utils.lib.eachDefaultSystem (
+      system: let
+        pkgs = import nixpkgs {inherit system;};
+        lib = pkgs.lib;
+
+        # Get short revs for tagging
+        orgApiRev = builtins.substring 0 7 (org-agenda-api.rev or "unknown");
+        dotfilesRev = builtins.substring 0 7 (self.rev or self.dirtyRev or "dirty");
+
+        # Get tangled config files from org-agenda-api.nix
+        dotfilesOrgApi = import ./org-agenda-api.nix {
+          inherit pkgs system;
+          inherit inputs;
+        };
+        tangledConfig = dotfilesOrgApi.org-agenda-custom-config;
+
+        # Import container build logic
+        containerLib = import ../org-agenda-api/container.nix {
+          inherit pkgs system tangledConfig org-agenda-api orgApiRev dotfilesRev;
+        };
+      in {
+        formatter = pkgs.alejandra;
+
+        packages =
+          {
+            colonelpanic-org-agenda-api = containerLib.containers.colonelpanic;
+            kat-org-agenda-api = containerLib.containers.kat;
+          }
+          // lib.optionalAttrs pkgs.stdenv.isLinux {
+            hyprNStack = inputs.hyprNStack.packages.${system}.hyprNStack;
+            hyprexpo-lua = inputs.hyprland-plugins-lua.packages.${system}.hyprexpo;
+            hyprwinview = inputs.hyprwinview.packages.${system}.hyprwinview;
+            hypr-workspace-history = inputs.hypr-workspace-history.packages.${system}.hypr-workspace-history;
+          };
+
+        checks = lib.optionalAttrs pkgs.stdenv.isLinux {
+          hyprNStack = inputs.hyprNStack.packages.${system}.hyprNStack;
+          hyprexpo-lua = inputs.hyprland-plugins-lua.packages.${system}.hyprexpo;
+          hyprwinview = inputs.hyprwinview.packages.${system}.hyprwinview;
+          hypr-workspace-history = inputs.hypr-workspace-history.packages.${system}.hypr-workspace-history;
+          hyprland-config-syntax =
+            pkgs.runCommand "hyprland-config-syntax" {
+              nativeBuildInputs = [pkgs.lua5_4];
+            } ''
+              cp ${../dotfiles/config/hypr/hyprland.lua} hyprland.lua
+              luac -p hyprland.lua
+              if grep -n 'hyprctl' hyprland.lua | grep -v 'hyprctl reload' | grep -v 'hyprctl eval' | grep -v 'hyprctl_eval' | grep -v 'hyprctl -j monitors'; then
+                echo "hyprland.lua should not shell out to hyprctl for window/workspace manipulation" >&2
+                exit 1
+              fi
+              lua <<'LUA'
+              local callbacks = {}
+
+              local function noop() end
+
+              local function dispatcher_proxy()
+                local proxy = {}
+                return setmetatable(proxy, {
+                  __index = function()
+                    return dispatcher_proxy()
+                  end,
+                  __call = function()
+                    return noop
+                  end,
+                })
+              end
+
+              local notification = {
+                is_alive = function()
+                  return true
+                end,
+                set_text = noop,
+                set_timeout = noop,
+                pause = noop,
+                resume = noop,
+                set_paused = noop,
+                dismiss = noop,
+              }
+
+              local monitor = {
+                id = 1,
+                name = "stub-monitor",
+                focused = true,
+              }
+
+              local workspace = {
+                id = 1,
+                name = "1",
+                windows = 0,
+                special = false,
+                monitor = monitor,
+              }
+
+              monitor.active_workspace = workspace
+
+              hl = {
+                animation = noop,
+                bind = noop,
+                config = noop,
+                curve = noop,
+                env = noop,
+                exec_cmd = noop,
+                define_submap = function(_, reset_or_callback, callback)
+                  local cb = type(reset_or_callback) == "function" and reset_or_callback or callback
+                  if cb then
+                    cb()
+                  end
+                end,
+                monitor = noop,
+                workspace_rule = noop,
+                window_rule = noop,
+                dsp = dispatcher_proxy(),
+                notification = {
+                  create = function()
+                    return notification
+                  end,
+                },
+                plugin = {
+                  load = noop,
+                },
+                get_active_workspace = function()
+                  return workspace
+                end,
+                get_active_monitor = function()
+                  return monitor
+                end,
+                get_active_window = function()
+                  return nil
+                end,
+                get_monitor = function()
+                  return monitor
+                end,
+                get_workspace = function(id)
+                  if tostring(id) == "1" then
+                    return workspace
+                  end
+                  return nil
+                end,
+                get_windows = function()
+                  return {}
+                end,
+                get_workspace_windows = function()
+                  return {}
+                end,
+                on = function(_, callback)
+                  callbacks[#callbacks + 1] = callback
+                end,
+                timer = function(callback)
+                  callback()
+                  return {
+                    set_enabled = noop,
+                  }
+                end,
+              }
+
+              dofile("./hyprland.lua")
+
+              for _, callback in ipairs(callbacks) do
+                callback()
+              end
+              LUA
+              touch "$out"
+            '';
+          hyprland-verify-config = let
+            hyprlandPackage = inputs.hyprland.packages.${system}.hyprland;
+            hyprNStackPackage = inputs.hyprNStack.packages.${system}.hyprNStack;
+          in
+            pkgs.runCommand "hyprland-lua-verify-config" {} ''
+              cp ${../dotfiles/config/hypr/hyprland.lua} hyprland.lua
+              substituteInPlace hyprland.lua \
+                --replace-fail /run/current-system/sw/lib/libhyprNStack.so \
+                ${hyprNStackPackage}/lib/libhyprNStack.so
+              export XDG_RUNTIME_DIR="$TMPDIR/runtime"
+              mkdir -p "$XDG_RUNTIME_DIR"
+              HYPRLAND_NO_CRASHREPORTER=1 ${pkgs.coreutils}/bin/timeout 20s \
+                ${hyprlandPackage}/bin/Hyprland --verify-config --config "$PWD/hyprland.lua"
+              touch "$out"
+            '';
+        };
+
+        # Dev shell for org-agenda-api deployment
+        devShells.org-agenda-api = pkgs.mkShell {
+          buildInputs = [
+            pkgs.flyctl
+            agenix.packages.${system}.default
+            pkgs.age
+            pkgs.ssh-to-age
+            pkgs.git
+            pkgs.jq
+            pkgs.just
+            pkgs.curl
+          ];
+          shellHook = ''
+            echo ""
+            echo "org-agenda-api deployment shell"
+            echo ""
+            echo "Commands:"
+            echo "  just --list             - Show available API commands"
+            echo "  ./deploy.sh <instance>  - Deploy to Fly.io (colonelpanic or kat)"
+            echo "  flyctl                  - Fly.io CLI"
+            echo "  agenix -e <file>        - Edit encrypted secrets"
+            echo ""
+          '';
+        };
+      }
+    );
 }
