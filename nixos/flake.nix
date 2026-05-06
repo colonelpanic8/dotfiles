@@ -97,7 +97,7 @@
     };
 
     hyprNStack = {
-      url = "github:colonelpanic8/hyprNStack?ref=hyprland-lua-integration";
+      url = "github:colonelpanic8/hyprNStack?ref=codex/new-near-focused-window";
       inputs = {
         hyprland.follows = "hyprland";
         nixpkgs.follows = "nixpkgs";

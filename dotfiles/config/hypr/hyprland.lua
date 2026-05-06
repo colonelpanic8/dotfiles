@@ -228,6 +228,7 @@ local function apply_nstack_config()
         layout = {
           orientation = "left",
           new_on_top = false,
+          new_near_focused = true,
           new_is_master = false,
           no_gaps_when_only = true,
           special_scale_factor = 0.8,

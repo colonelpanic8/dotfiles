@@ -740,16 +740,16 @@
         ]
       },
       "locked": {
-        "lastModified": 1777498784,
-        "narHash": "sha256-u/FCBctT/CqPYc9uZyI+bhDKQSBCV8L/z8u6IEC2iiU=",
+        "lastModified": 1778094893,
+        "narHash": "sha256-8kN2xim0z20GV7BT2xt/WCWER08fLTEaRvQGLn/uH2E=",
         "owner": "colonelpanic8",
         "repo": "hyprNStack",
-        "rev": "e2b07d6a7b472a0dd5bef00a1c0c186ccd2f46c6",
+        "rev": "7d723e850b2a60e08f10d49e11c4e9f9697317a8",
         "type": "github"
       },
       "original": {
         "owner": "colonelpanic8",
-        "ref": "hyprland-lua-integration",
+        "ref": "codex/new-near-focused-window",
         "repo": "hyprNStack",
         "type": "github"
       }

@@ -133,6 +133,8 @@ Required behavior:
 - Scrolling layouts are not acceptable.
 - All ordinary splits are vertical.
 - Adding windows dynamically redistributes all tiled windows evenly.
+- Newly tiled windows are inserted near the currently focused tile, not
+  appended to the far end of the workspace.
 - Removing windows dynamically redistributes all tiled windows evenly.
 - Ordinary use should not require manually managing a split tree.
 - Tabbed/fullscreen-style monocle layout is available.
