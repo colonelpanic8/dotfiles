@@ -3,16 +3,18 @@
 ## Multiplexer session titling
 - If the `TMUX` or `ZELLIJ` environment variable is set, treat this chat as the controller for the current tmux or zellij session.
 - Use `set_multiplexer_title '<project> - <task>'` to update the title. The command detects tmux vs. zellij internally, prefers tmux when both are present, and no-ops outside a multiplexer.
-- Maintain a session/window/pane title that updates when the task focus changes substantially.
-- Prefer automatic titling: infer a concise <task> from the current user request and context without asking.
+- Maintain a session/window/pane title that describes the durable purpose of the overall exchange.
+- Prefer automatic titling: infer a concise <task> from the current user request and the existing chat context without asking.
+- Choose holistic titles over granular turn summaries. The title should answer "what has this chat been for?" rather than describe the latest command, substep, clarification, or follow-up message.
+- Preserve the existing <task> when the new user turn is a continuation, status check, refinement, or implementation detail within the same broader objective.
 - Title format: "<project> - <task>".
   - <project> is the basename of the current project directory.
     - Prefer git repo root basename if available; otherwise use basename of the current working directory.
   - <task> is a short, user-friendly description of what we are doing.
 - Ask for a short descriptive <task> only when the task is ambiguous or you are not confident in an inferred title.
-- When the task changes substantially, update the <task> automatically if clear; otherwise ask for an updated <task>.
+- When the broader objective changes substantially, update the <task> automatically if clear; otherwise ask for an updated <task>.
 - When a title is provided or updated, immediately run `set_multiplexer_title '<project> - <task>'`; do not call raw tmux or zellij rename commands unless debugging the helper itself.
-- For Claude Code sessions, a UserPromptSubmit hook will also update titles automatically based on the latest prompt.
+- For Claude Code sessions, a UserPromptSubmit hook may initialize titles automatically from the first substantive prompt, but it should not keep overwriting an established same-project title with the latest prompt.
 
 ## Pane usage
 - Do not create extra panes or windows unless the user asks.

@@ -1,5 +1,7 @@
 #!/usr/bin/env sh
 
+# Low-level setter only. Callers should pass a holistic, conversation-level
+# title; this helper intentionally does not infer titles from prompts.
 set_multiplexer_title() {
     if [ "$#" -lt 1 ]; then
         echo "usage: set_multiplexer_title <title>" >&2
