@@ -10,6 +10,15 @@
 (defun emacs-directory-filepath (filename)
   (expand-file-name filename user-emacs-directory))
 
+(add-to-list 'load-path (emacs-directory-filepath "lisp"))
+
+;; Treat this Emacs as if it was built without D-Bus.  The local
+;; lisp/dbus.el shim prevents `require' from loading the built-in dbus.el,
+;; whose top-level form eagerly opens system and session bus connections.
+(setq features (delq 'dbusbind features))
+(setq dbus-compiled-version nil
+      dbus-runtime-version nil)
+
 (load-file (expand-file-name "elpaca-installer.el" user-emacs-directory))
 
 ;; Elpaca's initial queue logger can fire during self-bootstrap before its

@@ -3649,9 +3649,8 @@ I don't use iedit directly, but it is used by [[*emr][emr]] and I need to disabl
   :ensure nil
   :commands tramp
   :init
-  ;; Avoid TRAMP's GVFS backend on sessions where org.gtk.vfs.Daemon is not
-  ;; activatable.  Buffer/recent-file completion can otherwise trigger noisy
-  ;; DBus ServiceUnknown errors while inspecting TRAMP candidates.
+  ;; Avoid TRAMP's GVFS backend entirely.  It depends on D-Bus/GVFS desktop
+  ;; services, while this config uses ordinary TRAMP methods.
   (setq tramp-gvfs-methods nil)
   :config
   (setq tramp-default-method "scp")
@@ -3668,12 +3667,9 @@ I don't use iedit directly, but it is used by [[*emr][emr]] and I need to disabl
 #+END_SRC
 ** dbus
 #+BEGIN_SRC emacs-lisp
-(with-eval-after-load 'dbus
-  ;; This hook reports even handled DBus errors in the echo area.  That is
-  ;; usually noise in this config, especially during completion paths which may
-  ;; probe optional desktop services.
-  (remove-hook 'dbus-event-error-functions
-               #'dbus-notice-synchronous-call-errors))
+;; D-Bus is disabled by lisp/dbus.el, which shadows Emacs' built-in dbus.el.
+;; Keep the event hook empty in case another environment loads the real library.
+(setq dbus-event-error-functions nil)
 #+END_SRC
 ** narrow-indirect
 #+BEGIN_SRC emacs-lisp
