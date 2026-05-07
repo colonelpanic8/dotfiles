@@ -14,56 +14,74 @@ with lib; let
     ];
   };
 
-  # Generic CDI Plugin DaemonSet for GPU resource allocation
-  generic-cdi-plugin-manifest = pkgs.writeText "generic-cdi-plugin.yaml" ''
+  nvidia-device-plugin-version = "v0.19.1";
+
+  nvidia-device-plugin-manifest = pkgs.writeText "nvidia-device-plugin.yaml" ''
+    apiVersion: node.k8s.io/v1
+    handler: nvidia
+    kind: RuntimeClass
+    metadata:
+      name: nvidia
+      labels:
+        app.kubernetes.io/component: gpu-operator
+    ---
     apiVersion: apps/v1
     kind: DaemonSet
     metadata:
-      name: generic-cdi-plugin
+      name: nvidia-device-plugin-daemonset
       namespace: kube-system
       labels:
-        app: generic-cdi-plugin
+        app.kubernetes.io/name: nvidia-device-plugin
     spec:
       selector:
         matchLabels:
-          app: generic-cdi-plugin
+          app.kubernetes.io/name: nvidia-device-plugin
+      updateStrategy:
+        type: RollingUpdate
       template:
         metadata:
           labels:
-            app: generic-cdi-plugin
+            app.kubernetes.io/name: nvidia-device-plugin
         spec:
+          runtimeClassName: nvidia
+          priorityClassName: system-node-critical
           nodeSelector:
-            nixos-nvidia-cdi: "enabled"
+            nvidia.com/gpu.present: "true"
           tolerations:
             - key: nvidia.com/gpu
               operator: Exists
               effect: NoSchedule
           containers:
-            - name: generic-cdi-plugin
-              image: ghcr.io/olfillasodikno/generic-cdi-plugin:main
-              imagePullPolicy: Always
-              args:
-                - "/var/run/cdi/nvidia-container-toolkit.json"
+            - name: nvidia-device-plugin-ctr
+              image: nvcr.io/nvidia/k8s-device-plugin:${nvidia-device-plugin-version}
+              imagePullPolicy: IfNotPresent
+              command: ["nvidia-device-plugin"]
+              env:
+                - name: DEVICE_ID_STRATEGY
+                  value: uuid
+                - name: NVIDIA_VISIBLE_DEVICES
+                  value: all
+                - name: NVIDIA_DRIVER_CAPABILITIES
+                  value: compute,utility
               securityContext:
-                privileged: true
+                allowPrivilegeEscalation: false
+                capabilities:
+                  drop: ["ALL"]
               volumeMounts:
-                - name: device-plugin
+                - name: kubelet-device-plugins-dir
                   mountPath: /var/lib/kubelet/device-plugins
-                - name: pod-resources
-                  mountPath: /var/lib/kubelet/pod-resources
                 - name: cdi-specs
                   mountPath: /var/run/cdi
                   readOnly: true
           volumes:
-            - name: device-plugin
+            - name: kubelet-device-plugins-dir
               hostPath:
                 path: /var/lib/kubelet/device-plugins
-            - name: pod-resources
-              hostPath:
-                path: /var/lib/kubelet/pod-resources
+                type: Directory
             - name: cdi-specs
               hostPath:
                 path: /var/run/cdi
+                type: DirectoryOrCreate
   '';
 
   # Test pod to verify GPU access
@@ -75,13 +93,14 @@ with lib; let
       namespace: default
     spec:
       restartPolicy: Never
+      runtimeClassName: nvidia
       containers:
         - name: cuda-test
           image: nvidia/cuda:12.6.3-base-ubuntu24.04
           command: ["nvidia-smi"]
           resources:
             limits:
-              nvidia.com/gpu-all: 1
+              nvidia.com/gpu: 1
   '';
 in {
   options = {
@@ -97,7 +116,11 @@ in {
 
   config = mkIf cfg.enable {
     # NVIDIA container toolkit for CDI spec generation
-    hardware.nvidia-container-toolkit.enable = true;
+    hardware.nvidia-container-toolkit = {
+      enable = true;
+      device-name-strategy = "uuid";
+      mount-nvidia-executables = true;
+    };
 
     # Ensure CDI generator has access to nvidia libs
     systemd.services.nvidia-container-toolkit-cdi-generator = {
@@ -124,12 +147,15 @@ in {
         '';
       };
 
-      extraFlags = [
-        "--node-label=nixos-nvidia-cdi=enabled"
-        "--tls-san=${config.networking.hostName}"
-        "--tls-san=${config.networking.hostName}.local"
-        "--tls-san=localhost"
-      ] ++ cfg.extraFlags;
+      extraFlags =
+        [
+          "--node-label=nixos-nvidia-cdi=enabled"
+          "--node-label=nvidia.com/gpu.present=true"
+          "--tls-san=${config.networking.hostName}"
+          "--tls-san=${config.networking.hostName}.local"
+          "--tls-san=localhost"
+        ]
+        ++ cfg.extraFlags;
 
       # Containerd config with CDI support
       # k3s 1.31+ with containerd 2.0 has CDI enabled by default
@@ -138,10 +164,13 @@ in {
         {{ template "base" . }}
 
         [plugins."io.containerd.grpc.v1.cri".containerd.runtimes.nvidia]
+        privileged_without_host_devices = false
+        runtime_engine = ""
+        runtime_root = ""
         runtime_type = "io.containerd.runc.v2"
 
         [plugins."io.containerd.grpc.v1.cri".containerd.runtimes.nvidia.options]
-        BinaryName = "/run/current-system/sw/bin/nvidia-container-runtime.cdi"
+        BinaryName = "${lib.getOutput "tools" config.hardware.nvidia-container-toolkit.package}/bin/nvidia-container-runtime.cdi"
       '';
 
       gracefulNodeShutdown.enable = true;
@@ -160,13 +189,13 @@ in {
       export KUBECONFIG=/etc/rancher/k3s/k3s.yaml
     '';
 
-    # Create systemd service to deploy the generic-cdi-plugin after k3s is ready
+    # Create systemd service to deploy the NVIDIA device plugin after k3s is ready
     systemd.services.k3s-gpu-plugin-deploy = {
-      description = "Deploy generic-cdi-plugin to k3s";
-      after = [ "k3s.service" ];
-      wants = [ "k3s.service" ];
-      wantedBy = [ "multi-user.target" ];
-      path = [ pkgs.kubectl pkgs.coreutils ];
+      description = "Deploy NVIDIA device plugin to k3s";
+      after = ["k3s.service"];
+      wants = ["k3s.service"];
+      wantedBy = ["multi-user.target"];
+      path = [pkgs.kubectl pkgs.coreutils];
       serviceConfig = {
         Type = "oneshot";
         RemainAfterExit = true;
@@ -183,23 +212,22 @@ in {
             sleep 5
           done
 
-          # Check if plugin already exists
           if kubectl get daemonset -n kube-system generic-cdi-plugin &>/dev/null; then
-            echo "generic-cdi-plugin already deployed, updating..."
-            kubectl apply -f ${generic-cdi-plugin-manifest}
-          else
-            echo "Deploying generic-cdi-plugin..."
-            kubectl apply -f ${generic-cdi-plugin-manifest}
+            echo "Removing old generic-cdi-plugin deployment..."
+            kubectl delete daemonset -n kube-system generic-cdi-plugin --ignore-not-found=true
           fi
 
-          echo "Waiting for generic-cdi-plugin to be ready..."
-          kubectl rollout status daemonset/generic-cdi-plugin -n kube-system --timeout=120s || true
+          echo "Deploying NVIDIA device plugin..."
+          kubectl apply -f ${nvidia-device-plugin-manifest}
+
+          echo "Waiting for NVIDIA device plugin to be ready..."
+          kubectl rollout status daemonset/nvidia-device-plugin-daemonset -n kube-system --timeout=120s || true
         '';
       };
     };
 
     # Store test manifests in /etc for easy access
     environment.etc."k3s/gpu-test-pod.yaml".source = gpu-test-pod;
-    environment.etc."k3s/generic-cdi-plugin.yaml".source = generic-cdi-plugin-manifest;
+    environment.etc."k3s/nvidia-device-plugin.yaml".source = nvidia-device-plugin-manifest;
   };
 }
