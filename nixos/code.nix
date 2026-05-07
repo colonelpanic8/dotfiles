@@ -38,7 +38,9 @@ makeEnable config "myModules.code" true {
       antigravity
       claude-code
       codex
-      inputs.codex-desktop-linux.packages.${pkgs.stdenv.hostPlatform.system}.default
+      # Disabled until the upstream Codex.dmg fixed-output hashes in
+      # codex-desktop-linux are refreshed.
+      # inputs.codex-desktop-linux.packages.${pkgs.stdenv.hostPlatform.system}.default
       gemini-cli
       happy-coder
       opencode
