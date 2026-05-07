@@ -119,13 +119,17 @@ in {
       cocoapods
       codex
       gnupg
+      imagemagick
+      inkscape
       nodejs
+      potrace
       playwright-cli
       prettier
       slack
       tea
       typescript
       vim
+      vtracer
       yarn
     ]);
 
