@@ -4,14 +4,14 @@ module TaffybarConfig.Config
 where
 
 import TaffybarConfig.Host (compactBarHosts, smallBarHosts)
-import TaffybarConfig.Widgets (clockWidget, endWidgetsForHost, startWidgetsForBackend)
+import TaffybarConfig.Widgets (clockWidget, endWidgetsForHost, startWidgetsForHostAndBackend)
 import System.Taffybar.Context (Backend)
 import System.Taffybar.SimpleConfig
 
 mkSimpleTaffyConfig :: String -> Backend -> [FilePath] -> SimpleTaffyConfig
 mkSimpleTaffyConfig hostName backend cssFiles =
   defaultSimpleTaffyConfig
-    { startWidgets = startWidgetsForBackend backend,
+    { startWidgets = startWidgetsForHostAndBackend hostName backend,
       centerWidgets = [clockWidget],
       endWidgets = endWidgetsForHost hostName,
       barLevels = Nothing,
