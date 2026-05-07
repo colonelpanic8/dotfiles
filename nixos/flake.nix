@@ -221,7 +221,7 @@
     };
 
     codex-desktop-linux = {
-      url = "github:colonelpanic8/codex-desktop-linux?ref=codex/fix-runtime-libs";
+      url = "github:colonelpanic8/codex-desktop-linux?ref=codex/refresh-nix-package";
       inputs = {
         nixpkgs.follows = "nixpkgs";
         flake-utils.follows = "flake-utils";

@@ -139,11 +139,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1777661972,
-        "narHash": "sha256-VmcoQGZ3BNFlsI2jKUQH33MvEgkU6pvdxq4tofVLgmo=",
+        "lastModified": 1778175487,
+        "narHash": "sha256-eBoHv4Ha4Phyqc1BibguvgebYHNIdB1lYNDc5tdmw0M=",
         "owner": "sadjow",
         "repo": "codex-cli-nix",
-        "rev": "828b885b1be90991a2bd1087f2afd722476bfaed",
+        "rev": "84ef41fa58a1731da7e2d9856f8358cdbec8f6e3",
         "type": "github"
       },
       "original": {
@@ -163,16 +163,16 @@
         ]
       },
       "locked": {
-        "lastModified": 1777753296,
-        "narHash": "sha256-2iHuI6VPjfFDG3uX1sZykwGMsKa+kVResyqWmEIwtwo=",
+        "lastModified": 1778192811,
+        "narHash": "sha256-DJ/Bop/dB8Grcxsuf6/lRodF4kKN/9p31mk8tPcPvmo=",
         "owner": "colonelpanic8",
         "repo": "codex-desktop-linux",
-        "rev": "47b8ab71bd7ed60d99b77a90ec6be5ec52ab69a8",
+        "rev": "0fbe9cc494ed2c480edf4cd3540b584e5ddff043",
         "type": "github"
       },
       "original": {
         "owner": "colonelpanic8",
-        "ref": "codex/fix-runtime-libs",
+        "ref": "codex/refresh-nix-package",
         "repo": "codex-desktop-linux",
         "type": "github"
       }

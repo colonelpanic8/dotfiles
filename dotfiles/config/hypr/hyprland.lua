@@ -1424,6 +1424,16 @@ local function apply_scratchpad_geometry(name, window, target_monitor)
   end
 end
 
+local function float_and_drag_active_window()
+  hl.dsp.window.float({ action = "enable" })()
+  hl.dsp.window.drag()()
+end
+
+local function float_and_resize_active_window()
+  hl.dsp.window.float({ action = "enable" })()
+  hl.dsp.window.resize()()
+end
+
 local function schedule_scratchpad_geometry(name, window, target_monitor)
   hl.timer(function()
     apply_scratchpad_geometry(name, window, target_monitor)
@@ -2160,7 +2170,7 @@ bind(main_mod .. " + SHIFT + Space", force_columns_layout)
 bind(main_mod .. " + CTRL + Space", gather_workspace_into_tabbed_group)
 bind(main_mod .. " + bracketright", monocle_next)
 bind(main_mod .. " + bracketleft", monocle_prev)
-bind(main_mod .. " + T", hl.dsp.window.float())
+bind(main_mod .. " + T", hl.dsp.window.float({ action = "disable" }))
 bind(main_mod .. " + M", minimize_active_window)
 bind(main_mod .. " + SHIFT + M", restore_last_minimized)
 bind(main_mod .. " + CTRL + SHIFT + M", function()
@@ -2274,8 +2284,8 @@ bind(hyper .. " + SHIFT + comma", exec("/home/imalison/dotfiles/dotfiles/lib/bin
 bind(hyper .. " + Y", exec("rofi_agentic_skill"))
 bind(main_mod .. " + R", exec("hyprctl reload"))
 
-bind(main_mod .. " + mouse:272", hl.dsp.window.drag())
-bind(main_mod .. " + mouse:273", hl.dsp.window.resize())
+bind(main_mod .. " + mouse:272", float_and_drag_active_window)
+bind(main_mod .. " + mouse:273", float_and_resize_active_window)
 
 hl.on("hyprland.start", function()
   apply_nstack_config()
