@@ -351,11 +351,9 @@
         system = "aarch64-linux";
       };
       railbird-sf = {
-        specialArgs = let
-          containerInfo = mkOrgAgendaApiContainerInfo "x86_64-linux";
-        in {
-          orgAgendaApiContainer = containerInfo.imageFile;
-          orgAgendaApiImageName = containerInfo.imageName;
+        specialArgs = {
+          orgAgendaApiContainer = null;
+          orgAgendaApiImageName = "localhost/org-agenda-api:colonelpanic-dbb1cb8-030a673";
         };
       };
     };

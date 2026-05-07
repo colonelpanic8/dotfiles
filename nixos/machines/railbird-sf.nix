@@ -1,4 +1,12 @@
-{ config, lib, pkgs, inputs, orgAgendaApiContainer ? null, orgAgendaApiImageName ? "org-agenda-api", ... }:
+{
+  config,
+  lib,
+  pkgs,
+  inputs,
+  orgAgendaApiContainer ? null,
+  orgAgendaApiImageName ? "localhost/org-agenda-api:colonelpanic-dbb1cb8-030a673",
+  ...
+}:
 {
   imports = [
     ../configuration.nix
