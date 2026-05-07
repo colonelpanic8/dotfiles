@@ -1611,11 +1611,11 @@
         "org-window-habit": "org-window-habit"
       },
       "locked": {
-        "lastModified": 1777157145,
-        "narHash": "sha256-JeJmKF3CisM15DKQ9w/k3r27NI7ZtwbfvEyi0/LibJI=",
+        "lastModified": 1778144516,
+        "narHash": "sha256-KpGZdN4ZziwMLCqJFWm+DunvBKpcecE1jnFSHW8Ly2g=",
         "owner": "colonelpanic8",
         "repo": "org-agenda-api",
-        "rev": "dbb1cb853d7de6eec7202f04ed9748978749eb29",
+        "rev": "6ee547417b08ceeaec2a25aa03c2cbe45f01d4ec",
         "type": "github"
       },
       "original": {
