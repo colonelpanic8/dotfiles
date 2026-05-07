@@ -3,7 +3,7 @@
 "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
-<!-- 2026-05-06 Wed 22:09 -->
+<!-- 2026-05-07 Thu 05:52 -->
 <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>&lrm;</title>
@@ -3984,7 +3984,7 @@ a:hover {
 <li><a href="#term">17.2. term</a></li>
 <li><a href="#vterm">17.3. vterm</a></li>
 <li><a href="#termmanager">17.4. term-manager</a></li>
-<li><a href="#termprojectile">17.5. term-projectile</a></li>
+<li><a href="#termproject">17.5. term-project</a></li>
 <li><a href="#crux">17.6. crux</a></li>
 <li><a href="#kdeconnect">17.7. kde-connect</a></li>
 <li><a href="#aurel">17.8. aurel</a></li>
@@ -4202,7 +4202,7 @@ think its pretty awesome!
 <h3 id="configurationofmyownpackages"><span class="section-number-3">2.4.</span> Configuration of My Own Packages <a href="#configurationofmyownpackages"><svg aria-hidden="true" class="octicon octicon-link" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a></h3>
 <div class="outline-text-3" id="text-2-4">
 <ul class="org-ul">
-<li><a href="#termprojectile">term-projectile</a> and <a href="#termmanager">term-manager</a></li>
+<li><a href="#termproject">term-project</a> and <a href="#termmanager">term-manager</a></li>
 <li></li>
 <li><a href="#multiline">multi-line</a></li>
 <li><a href="#githubsearch">github-search</a></li>
@@ -6693,7 +6693,6 @@ bind-key and global-set-key forms.
 (<span class="org-keyword">use-package</span> <span class="org-constant">project</span>
   <span class="org-builtin">:ensure</span> nil
   <span class="org-builtin">:demand</span> t
-  <span class="org-builtin">:bind</span> ((<span class="org-string">"C-c 7"</span> . project-shell))
   <span class="org-builtin">:bind-keymap</span>
   (<span class="org-string">"C-c p"</span> . project-prefix-map)
   <span class="org-builtin">:custom</span>
@@ -6974,14 +6973,14 @@ bind-key and global-set-key forms.
       `(<span class="org-keyword">defun</span> ,(intern (concat <span class="org-string">"imalison:embark-project-file-"</span> (symbol-name command))) (filepath)
          (imalison:embark-project-act-for-file filepath (,command))))
 
-    (imalison:build-embark-project-for-file project-shell)
+    (imalison:build-embark-project-for-file term-project-forward)
     (imalison:build-embark-project-for-file magit-status)
     (imalison:build-embark-project-for-file consult-ripgrep)
 
     (<span class="org-keyword">setq</span> embark-prompter #'embark-keymap-prompter)
 
     (define-key embark-general-map (kbd <span class="org-string">"t"</span>)
-                #'imalison:embark-project-file-project-shell)
+                #'imalison:embark-project-file-term-project-forward)
 
     (define-key embark-general-map (kbd <span class="org-string">"m"</span>)
                 #'imalison:embark-project-file-magit-status)
@@ -6995,7 +6994,7 @@ bind-key and global-set-key forms.
     (<span class="org-keyword">defvar-keymap</span> imalison:project-embark-map
       <span class="org-builtin">:doc</span> <span class="org-doc">"Keymap for actions on projects"</span>
       <span class="org-string">"m"</span> #'imalison:embark-project-file-magit-status
-      <span class="org-string">"t"</span> #'imalison:embark-project-file-project-shell
+      <span class="org-string">"t"</span> #'imalison:embark-project-file-term-project-forward
       <span class="org-string">"s"</span> #'imalison:embark-project-file-consult-ripgrep)))
 
 (<span class="org-keyword">use-package</span> <span class="org-constant">embark-consult</span>
@@ -9022,21 +9021,22 @@ in term-mode. This makes term-mode 1000% more useful
 </div>
 </div>
 </div>
-<div id="outline-container-termprojectile" class="outline-3">
-<h3 id="termprojectile"><span class="section-number-3">17.5.</span> term-projectile <a href="#termprojectile"><svg aria-hidden="true" class="octicon octicon-link" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a></h3>
+<div id="outline-container-termproject" class="outline-3">
+<h3 id="termproject"><span class="section-number-3">17.5.</span> term-project <a href="#termproject"><svg aria-hidden="true" class="octicon octicon-link" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a></h3>
 <div class="outline-text-3" id="text-17-5">
 <div class="org-src-container">
-<pre class="src src-emacs-lisp">(<span class="org-keyword">use-package</span> <span class="org-constant">term-projectile</span>
-  <span class="org-builtin">:disabled</span> t
+<pre class="src src-emacs-lisp">(<span class="org-keyword">use-package</span> <span class="org-constant">term-project</span>
+  <span class="org-builtin">:ensure</span> (term-project <span class="org-builtin">:files</span> (<span class="org-string">"term-project.el"</span>)
+                        <span class="org-builtin">:host</span> github <span class="org-builtin">:repo</span> <span class="org-string">"colonelpanic8/term-manager"</span>)
   <span class="org-builtin">:bind</span> (<span class="org-string">"C-c 7"</span> . imalison:term-hydra-global/body)
   <span class="org-builtin">:commands</span>
-  (term-projectile-backward
-   term-projectile-create-new
-   term-projectile-create-new-default-directory
-   term-projectile-default-directory-backward
-   term-projectile-default-directory-forward
-   term-projectile-forward
-   term-projectile-switch)
+  (term-project-backward
+   term-project-create-new
+   term-project-default-directory-backward
+   term-project-default-directory-create-new
+   term-project-default-directory-forward
+   term-project-forward
+   term-project-switch)
   <span class="org-builtin">:config</span>
   (<span class="org-keyword">progn</span>
     (<span class="org-keyword">use-package</span> <span class="org-constant">term-manager-eat</span>
@@ -9044,37 +9044,51 @@ in term-mode. This makes term-mode 1000% more useful
       <span class="org-builtin">:ensure</span>
       (term-manager-eat  <span class="org-builtin">:files</span> (<span class="org-string">"term-manager-eat.el"</span>)
                         <span class="org-builtin">:host</span> github <span class="org-builtin">:repo</span> <span class="org-string">"colonelpanic8/term-manager"</span>))
-    (<span class="org-keyword">setq</span> term-projectile-term-manager (term-projectile <span class="org-builtin">:build-term</span> 'term-manager-eat-build-term))
+    (<span class="org-keyword">require</span> '<span class="org-constant">term-manager-eat</span>)
+    (<span class="org-keyword">defun</span> <span class="org-function-name">term-project-get-symbol-for-buffer</span> (buffer)
+      <span class="org-doc">"Get the project root symbol for BUFFER, falling back to its directory."</span>
+      (term-project-maybe-intern
+       (<span class="org-keyword">with-current-buffer</span> buffer
+         (<span class="org-keyword">if</span> (<span class="org-keyword">or</span> (derived-mode-p 'term-mode)
+                 (derived-mode-p 'eat-mode))
+             default-directory
+           (imalison:project-root)))))
+
+    (<span class="org-keyword">setq</span> term-project-term-manager
+          (term-project <span class="org-builtin">:build-term</span> 'term-manager-eat-build-term))
+    (term-manager-enable-eat-buffer-renaming-and-reindexing
+     term-project-term-manager)
+
     (emit-prefix-selector imalison:term
-      term-projectile-forward
-      term-projectile-create-new)
+      term-project-forward
+      term-project-create-new)
 
     (<span class="org-keyword">defvar</span> <span class="org-variable-name">imalison:term-hydra-original-default-directory</span>)
 
     (defhydra imalison:term-hydra-default-directory
       (<span class="org-builtin">:body-pre</span>
-       (term-projectile-default-directory-forward-restored))
+       (term-project-default-directory-forward-restored))
       <span class="org-string">"term - default-directory"</span>
-      (<span class="org-string">"s"</span> term-projectile-switch-to <span class="org-string">"Switch to existing"</span>)
-      (<span class="org-string">"f"</span> term-projectile-default-directory-forward-restored <span class="org-string">"Forward for current directory terminals"</span>)
-      (<span class="org-string">"b"</span> term-projectile-default-directory-backward-restored <span class="org-string">"Backward for current directory terminals"</span>)
-      (<span class="org-string">"c"</span> term-projectile-default-directory-create-new-restored <span class="org-string">"Create new current directory terminal"</span>)
-      (<span class="org-string">"d"</span> term-projectile-default-directory-forward-restored <span class="org-string">"Switch/Create default directory terminal"</span>)
+      (<span class="org-string">"s"</span> term-project-switch-to <span class="org-string">"Switch to existing"</span>)
+      (<span class="org-string">"f"</span> term-project-default-directory-forward-restored <span class="org-string">"Forward for current directory terminals"</span>)
+      (<span class="org-string">"b"</span> term-project-default-directory-backward-restored <span class="org-string">"Backward for current directory terminals"</span>)
+      (<span class="org-string">"c"</span> term-project-default-directory-create-new-restored <span class="org-string">"Create new current directory terminal"</span>)
+      (<span class="org-string">"d"</span> term-project-default-directory-forward-restored <span class="org-string">"Switch/Create default directory terminal"</span>)
       (<span class="org-string">"g"</span> imalison:term-hydra-global/body-restored <span class="org-string">"Switch/Create global terminal"</span> <span class="org-builtin">:exit</span> t)
-      (<span class="org-string">"p"</span> imalison:term-hydra-projectile/body-restored  <span class="org-string">"Switch/Create project terminal"</span> <span class="org-builtin">:exit</span> t))
+      (<span class="org-string">"p"</span> imalison:term-hydra-project/body-restored  <span class="org-string">"Switch/Create project terminal"</span> <span class="org-builtin">:exit</span> t))
 
-    (defhydra imalison:term-hydra-projectile
+    (defhydra imalison:term-hydra-project
       (<span class="org-builtin">:body-pre</span>
        (<span class="org-keyword">progn</span>
-         (term-projectile-forward-restored)))
-      <span class="org-string">"term - projectile"</span>
-      (<span class="org-string">"s"</span> term-projectile-switch-to <span class="org-string">"Switch to existing"</span>)
-      (<span class="org-string">"f"</span> term-projectile-forward-restored <span class="org-string">"Forward for project terminals"</span>)
-      (<span class="org-string">"b"</span> term-projectile-backward-restored <span class="org-string">"Backward for project terminals"</span>)
-      (<span class="org-string">"c"</span> term-projectile-create-new-restored <span class="org-string">"Create new project terminal"</span>)
+         (term-project-forward-restored)))
+      <span class="org-string">"term - project"</span>
+      (<span class="org-string">"s"</span> term-project-switch-to <span class="org-string">"Switch to existing"</span>)
+      (<span class="org-string">"f"</span> term-project-forward-restored <span class="org-string">"Forward for project terminals"</span>)
+      (<span class="org-string">"b"</span> term-project-backward-restored <span class="org-string">"Backward for project terminals"</span>)
+      (<span class="org-string">"c"</span> term-project-create-new-restored <span class="org-string">"Create new project terminal"</span>)
       (<span class="org-string">"d"</span> imalison:term-hydra-default-directory/body-restored <span class="org-string">"Switch/Create default directory terminal"</span> <span class="org-builtin">:exit</span> t)
       (<span class="org-string">"g"</span> imalison:term-hydra-global/body-restored <span class="org-string">"Switch/Create global terminal"</span> <span class="org-builtin">:exit</span> t)
-      (<span class="org-string">"p"</span> term-projectile-forward-restored <span class="org-string">"Switch/Create project terminal"</span>))
+      (<span class="org-string">"p"</span> term-project-forward-restored <span class="org-string">"Switch/Create project terminal"</span>))
 
 
     (defhydra imalison:term-hydra-global
@@ -9082,31 +9096,31 @@ in term-mode. This makes term-mode 1000% more useful
        (<span class="org-keyword">progn</span> (<span class="org-keyword">setq</span> imalison:term-hydra-original-default-directory
                     default-directory)))
       <span class="org-string">"term - global"</span>
-      (<span class="org-string">"s"</span> term-projectile-switch-to <span class="org-string">"Switch to existing"</span>)
-      (<span class="org-string">"f"</span> term-projectile-global-forward-restored <span class="org-string">"Forward for project terminals"</span>)
-      (<span class="org-string">"b"</span> term-projectile-global-backward-restored <span class="org-string">"Backward for project terminals"</span>)
-      (<span class="org-string">"c"</span> term-projectile-global-create-new-restored <span class="org-string">"Create new project terminal"</span>)
+      (<span class="org-string">"s"</span> term-project-switch-to <span class="org-string">"Switch to existing"</span>)
+      (<span class="org-string">"f"</span> term-project-global-forward-restored <span class="org-string">"Forward for project terminals"</span>)
+      (<span class="org-string">"b"</span> term-project-global-backward-restored <span class="org-string">"Backward for project terminals"</span>)
+      (<span class="org-string">"c"</span> term-project-global-create-new-restored <span class="org-string">"Create new project terminal"</span>)
       (<span class="org-string">"d"</span> imalison:term-hydra-default-directory/body-restored <span class="org-string">"Switch/Create default directory terminal"</span> <span class="org-builtin">:exit</span> t)
-      (<span class="org-string">"g"</span> term-projectile-global-forward-restored <span class="org-string">"Switch/Create global terminal"</span>)
-      (<span class="org-string">"p"</span> imalison:term-hydra-projectile/body-restored <span class="org-string">"Switch/Create project terminal"</span> <span class="org-builtin">:exit</span> t))
+      (<span class="org-string">"g"</span> term-project-global-forward-restored <span class="org-string">"Switch/Create global terminal"</span>)
+      (<span class="org-string">"p"</span> imalison:term-hydra-project/body-restored <span class="org-string">"Switch/Create project terminal"</span> <span class="org-builtin">:exit</span> t))
 
-    (mapcar (<span class="org-keyword">lambda</span> (term-projectile-function)
-              (<span class="org-keyword">defalias</span> (imalison:concat-symbols term-projectile-function '-restored)
+    (mapcar (<span class="org-keyword">lambda</span> (term-project-function)
+              (<span class="org-keyword">defalias</span> (imalison:concat-symbols term-project-function '-restored)
                 (<span class="org-keyword">lambda</span> (<span class="org-type">&amp;rest</span> args)
                   (<span class="org-keyword">interactive</span>)
                   (<span class="org-keyword">let</span> ((default-directory imalison:term-hydra-original-default-directory))
-                    (apply term-projectile-function args)))))
-            '(term-projectile-default-directory-forward
-              term-projectile-default-directory-backward
-              term-projectile-default-directory-create-new
-              term-projectile-forward
-              term-projectile-backward
-              term-projectile-create-new
-              term-projectile-global-forward
-              term-projectile-global-backward
-              term-projectile-global-create-new
+                    (apply term-project-function args)))))
+            '(term-project-default-directory-forward
+              term-project-default-directory-backward
+              term-project-default-directory-create-new
+              term-project-forward
+              term-project-backward
+              term-project-create-new
+              term-project-global-forward
+              term-project-global-backward
+              term-project-global-create-new
               imalison:term-hydra-global/body
-              imalison:term-hydra-projectile/body
+              imalison:term-hydra-project/body
               imalison:term-hydra-default-directory/body))))
 </pre>
 </div>
