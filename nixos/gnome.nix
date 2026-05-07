@@ -1,4 +1,8 @@
-{ config, makeEnable, ... }:
+{
+  config,
+  makeEnable,
+  ...
+}:
 makeEnable config "myModules.gnome" false {
   services.xserver = {
     desktopManager.gnome.enable = true;

@@ -1,4 +1,10 @@
-{ config, inputs, pkgs, makeEnable, ... }:
+{
+  config,
+  inputs,
+  pkgs,
+  makeEnable,
+  ...
+}:
 makeEnable config "myModules.wsl" false {
   imports = [
     inputs.nixos-wsl.nixosModules.wsl

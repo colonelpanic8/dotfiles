@@ -1,4 +1,10 @@
-{ pkgs, inputs, config, makeEnable, ... }:
+{
+  pkgs,
+  inputs,
+  config,
+  makeEnable,
+  ...
+}:
 makeEnable config "myModules.ben" true {
   home-manager.users.ben = {
     programs.zsh = {

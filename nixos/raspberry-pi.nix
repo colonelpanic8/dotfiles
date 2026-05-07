@@ -1,12 +1,17 @@
-{ config, pkgs, inputs, makeEnable, ... }:
-
+{
+  config,
+  pkgs,
+  inputs,
+  makeEnable,
+  ...
+}:
 makeEnable config "myModules.raspberry-pi" false {
   imports = [
     inputs.nixos-hardware.nixosModules.raspberry-pi-4
   ];
   # These are needed to allow hardware acceleration again
   # https://github.com/NixOS/nixos-hardware/issues/631
-  boot.kernelParams = [ "kunit.enable=0" ];
+  boot.kernelParams = ["kunit.enable=0"];
   hardware.deviceTree.filter = "bcm2711-rpi-4*.dtb";
   hardware.raspberry-pi."4".fkms-3d.enable = true;
   # hardware.raspberry-pi."4".audio.enable = true;
@@ -29,7 +34,7 @@ makeEnable config "myModules.raspberry-pi" false {
     };
   };
 
-  boot.extraModulePackages = [ ];
+  boot.extraModulePackages = [];
 
   hardware.enableRedistributableFirmware = true;
 

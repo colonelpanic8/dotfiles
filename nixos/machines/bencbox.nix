@@ -1,5 +1,10 @@
-{ lib, pkgs, config, inputs, ... }:
 {
+  lib,
+  pkgs,
+  config,
+  inputs,
+  ...
+}: {
   imports = [
     ../configuration.nix
   ];
@@ -25,17 +30,19 @@
   ];
 
   users.users.ben = {
-    extraGroups = [
-      "audio"
-      "adbusers"
-      "disk"
-      "docker"
-      "networkmanager"
-      "openrazer"
-      "plugdev"
-      "syncthing"
-      "systemd-journal"
-      "video"
-    ] ++ ["wheel"];
+    extraGroups =
+      [
+        "audio"
+        "adbusers"
+        "disk"
+        "docker"
+        "networkmanager"
+        "openrazer"
+        "plugdev"
+        "syncthing"
+        "systemd-journal"
+        "video"
+      ]
+      ++ ["wheel"];
   };
 }

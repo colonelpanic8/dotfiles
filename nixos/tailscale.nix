@@ -1,11 +1,17 @@
-{ config, lib, pkgs, makeEnable, ... }:
+{
+  config,
+  lib,
+  pkgs,
+  makeEnable,
+  ...
+}:
 makeEnable config "myModules.tailscale" true {
   # Provide stable SSH connectivity between your machines without needing port
   # forwarding (works behind NAT/CGNAT).
   services.tailscale.enable = true;
 
   # Handy even if you only enable the service and run `tailscale up` manually.
-  environment.systemPackages = [ pkgs.tailscale ];
+  environment.systemPackages = [pkgs.tailscale];
 
   # Optional: unattended enrollment using a pre-auth key stored in agenix.
   #
@@ -27,9 +33,9 @@ makeEnable config "myModules.tailscale" true {
 
   systemd.services.tailscale-autoconnect = {
     description = "Auto-connect Tailscale (optional, via agenix auth key)";
-    wantedBy = [ "multi-user.target" ];
-    after = [ "network-online.target" "tailscaled.service" ];
-    wants = [ "network-online.target" "tailscaled.service" ];
+    wantedBy = ["multi-user.target"];
+    after = ["network-online.target" "tailscaled.service"];
+    wants = ["network-online.target" "tailscaled.service"];
 
     unitConfig = {
       ConditionPathExists = config.age.secrets.tailscale-authkey.path;

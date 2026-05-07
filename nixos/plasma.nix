@@ -1,4 +1,10 @@
-{ pkgs, config, makeEnable, realUsers, ... }:
+{
+  pkgs,
+  config,
+  makeEnable,
+  realUsers,
+  ...
+}:
 makeEnable config "myModules.plasma" true {
   services.accounts-daemon.enable = true;
   services.displayManager.sddm = {

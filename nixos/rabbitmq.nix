@@ -1,4 +1,10 @@
-{ pkgs, config, makeEnable, realUsers, ... }:
+{
+  pkgs,
+  config,
+  makeEnable,
+  realUsers,
+  ...
+}:
 makeEnable config "myModules.rabbitmq" false {
   services.rabbitmq = {
     enable = true;

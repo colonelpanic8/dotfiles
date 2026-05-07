@@ -1,4 +1,9 @@
-{ pkgs, config, makeEnable, ... }:
+{
+  pkgs,
+  config,
+  makeEnable,
+  ...
+}:
 makeEnable config "myModules.wyoming" false {
   environment.systemPackages = with pkgs; [
     alsa-utils

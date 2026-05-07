@@ -6,13 +6,13 @@ final: prev: {
     # This is key: multiple outputs, so you can reference them later as:
     #   $out   -> for main
     #   $tools -> for the 'tools' output in your new derivation
-    outputs = [ "out" "tools" ];
+    outputs = ["out" "tools"];
 
     # No source required for a pure wrap
     src = null;
     dontUnpack = true;
     dontPatchShell = true;
-    nativeBuildInputs = [ final.installShellFiles ] ++ final.lib.optionals final.stdenv.hostPlatform.isLinux [ final.makeWrapper ];
+    nativeBuildInputs = [final.installShellFiles] ++ final.lib.optionals final.stdenv.hostPlatform.isLinux [final.makeWrapper];
 
     buildInputs = [
       prev.nvidia-container-toolkit

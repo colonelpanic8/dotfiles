@@ -1,5 +1,10 @@
-{ config, pkgs, makeEnable, lib, ... }:
-
+{
+  config,
+  pkgs,
+  makeEnable,
+  lib,
+  ...
+}:
 makeEnable config "myModules.nvidia" false {
   environment.systemPackages = with pkgs; [
     nvidia-container-toolkit
@@ -16,10 +21,10 @@ makeEnable config "myModules.nvidia" false {
   };
   hardware.nvidia.open = true;
   hardware.graphics.enable32Bit = true;
-  hardware.graphics.extraPackages = [ config.hardware.nvidia.package.out ];
-  hardware.graphics.extraPackages32 = [ config.hardware.nvidia.package.lib32 ];
+  hardware.graphics.extraPackages = [config.hardware.nvidia.package.out];
+  hardware.graphics.extraPackages32 = [config.hardware.nvidia.package.lib32];
   services.xserver = {
-    videoDrivers = [ "nvidia" ];
+    videoDrivers = ["nvidia"];
   };
   # nixpkgs.config.cudaSupport = true;
 }

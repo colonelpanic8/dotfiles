@@ -1,8 +1,6 @@
-{ pkgs, ... }:
-let
+{pkgs, ...}: let
   session = import ./session-variables.nix;
-in
-{
+in {
   home-manager.users.imalison = {
     imports = [
       ./emacs.nix
@@ -145,8 +143,8 @@ in
       Unit = {
         Description = "Hyprpaper (managed by home-manager)";
         ConditionEnvironment = session.hyprland;
-        PartOf = [ "hyprland-session.target" ];
-        After = [ "hyprland-session.target" ];
+        PartOf = ["hyprland-session.target"];
+        After = ["hyprland-session.target"];
       };
 
       Service = {

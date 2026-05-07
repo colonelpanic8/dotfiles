@@ -1,5 +1,10 @@
-{ config, lib, pkgs, inputs, ... }:
 {
+  config,
+  lib,
+  pkgs,
+  inputs,
+  ...
+}: {
   imports = [
     ../configuration.nix
   ];
@@ -29,10 +34,10 @@
   networking.hostName = "nixquick";
 
   hardware.enableRedistributableFirmware = true;
-  boot.initrd.availableKernelModules = [ "xhci_pci" "ahci" "nvme" "usbhid" "usb_storage" "sd_mod" ];
-  boot.initrd.kernelModules = [ ];
-  boot.kernelModules = [ "kvm-intel" ];
-  boot.extraModulePackages = [ ];
+  boot.initrd.availableKernelModules = ["xhci_pci" "ahci" "nvme" "usbhid" "usb_storage" "sd_mod"];
+  boot.initrd.kernelModules = [];
+  boot.kernelModules = ["kvm-intel"];
+  boot.extraModulePackages = [];
   boot.loader.systemd-boot.enable = true;
 
   hardware.nvidia.modesetting.enable = true;
@@ -40,20 +45,19 @@
   # This also enables v4l2loopback
   programs.droidcam.enable = true;
 
-  fileSystems."/" =
-    { device = "/dev/disk/by-uuid/64a7c1f5-727a-413c-81a2-cb108728cff6";
-      fsType = "ext4";
-    };
+  fileSystems."/" = {
+    device = "/dev/disk/by-uuid/64a7c1f5-727a-413c-81a2-cb108728cff6";
+    fsType = "ext4";
+  };
 
-  fileSystems."/boot" =
-    { device = "/dev/disk/by-uuid/EE25-DC15";
-      fsType = "vfat";
-    };
+  fileSystems."/boot" = {
+    device = "/dev/disk/by-uuid/EE25-DC15";
+    fsType = "vfat";
+  };
 
-  swapDevices =
-    [ { device = "/dev/disk/by-uuid/c0dcff59-8072-48fb-b242-a7a1797e4b48"; }
-    ];
-
+  swapDevices = [
+    {device = "/dev/disk/by-uuid/c0dcff59-8072-48fb-b242-a7a1797e4b48";}
+  ];
 
   networking.useDHCP = lib.mkDefault true;
   nixpkgs.hostPlatform = lib.mkDefault "x86_64-linux";

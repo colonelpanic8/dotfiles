@@ -1,4 +1,10 @@
-{ config, pkgs, makeEnable, realUsers, ... }:
+{
+  config,
+  pkgs,
+  makeEnable,
+  realUsers,
+  ...
+}:
 makeEnable config "myModules.base" true {
   nixpkgs.config.permittedInsecurePackages = [
     "electron-12.2.3"
@@ -30,10 +36,10 @@ makeEnable config "myModules.base" true {
   '';
 
   networking.firewall.enable = false;
-  networking.nameservers = [ "8.8.8.8" "8.8.4.4" ];
+  networking.nameservers = ["8.8.8.8" "8.8.4.4"];
   networking.networkmanager = {
     enable = true;
-    plugins = [ pkgs.networkmanager-l2tp pkgs.networkmanager-openvpn ];
+    plugins = [pkgs.networkmanager-l2tp pkgs.networkmanager-openvpn];
     settings.main.rc-manager = "symlink";
   };
   networking.resolvconf.enable = false;
@@ -51,7 +57,6 @@ makeEnable config "myModules.base" true {
     jack.enable = true;
     pulse.enable = true;
   };
-
 
   # Bluetooth
   hardware.bluetooth.enable = true;
@@ -96,7 +101,7 @@ makeEnable config "myModules.base" true {
   hardware.keyboard.zsa.enable = true;
 
   # For supporting gnome stuff
-  services.dbus.packages = [ pkgs.gcr ];
+  services.dbus.packages = [pkgs.gcr];
 
   programs.dconf.enable = true;
 

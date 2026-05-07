@@ -1,4 +1,9 @@
-{ pkgs, makeEnable, config, ... }:
+{
+  pkgs,
+  makeEnable,
+  config,
+  ...
+}:
 makeEnable config "myModules.fonts" true {
   # Enable the gtk icon cache
   gtk.iconCache.enable = true;
@@ -32,9 +37,9 @@ makeEnable config "myModules.fonts" true {
       allowBitmaps = true;
       useEmbeddedBitmaps = true;
       defaultFonts = {
-        monospace = [ "JetBrains Mono" ];
-        sansSerif = [ "Roboto" ];
-        serif     = [ "Source Serif Pro" ];
+        monospace = ["JetBrains Mono"];
+        sansSerif = ["Roboto"];
+        serif = ["Source Serif Pro"];
       };
     };
   };

@@ -3,28 +3,26 @@
   python3,
   python3Packages,
   writeShellApplication,
-}:
-
-let
+}: let
   pykefcontrol = python3Packages.callPackage ../pykefcontrol {};
   python = python3.withPackages (ps: [
     pykefcontrol
     ps.zeroconf
   ]);
 in
-writeShellApplication {
-  name = "kef";
+  writeShellApplication {
+    name = "kef";
 
-  runtimeInputs = [ python ];
+    runtimeInputs = [python];
 
-  text = ''
-    exec python ${./kef.py} "$@"
-  '';
+    text = ''
+      exec python ${./kef.py} "$@"
+    '';
 
-  meta = {
-    description = "Command-line controller for KEF W2 speakers";
-    license = lib.licenses.mit;
-    maintainers = with lib.maintainers; [ imalison ];
-    mainProgram = "kef";
-  };
-}
+    meta = {
+      description = "Command-line controller for KEF W2 speakers";
+      license = lib.licenses.mit;
+      maintainers = with lib.maintainers; [imalison];
+      mainProgram = "kef";
+    };
+  }

@@ -1,5 +1,9 @@
-{ pkgs, config, specialArgs, ... }:
 {
+  pkgs,
+  config,
+  specialArgs,
+  ...
+}: {
   services.emacs = {
     enable = false;
     defaultEditor = true;

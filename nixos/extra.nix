@@ -1,4 +1,9 @@
-{ config, pkgs, makeEnable, ... }:
+{
+  config,
+  pkgs,
+  makeEnable,
+  ...
+}:
 makeEnable config "myModules.extra" false {
   environment.systemPackages = with pkgs; [
     android-studio

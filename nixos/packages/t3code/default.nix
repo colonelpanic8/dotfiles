@@ -9,10 +9,8 @@
   electron_40,
   nodejs,
 }:
-
 stdenv.mkDerivation (
-  finalAttrs:
-  let
+  finalAttrs: let
     electron = electron_40;
     nodeModules = stdenvNoCC.mkDerivation {
       pname = "${finalAttrs.pname}-node_modules";
@@ -81,8 +79,7 @@ stdenv.mkDerivation (
       outputHash = "sha256-yrzdhw+NPYZku10piHoxMy+TUJ8MYySZorMOMOztJY4=";
       outputHashMode = "recursive";
     };
-  in
-  {
+  in {
     pname = "t3code";
     version = "0.0.15";
     strictDeps = true;
@@ -129,21 +126,23 @@ stdenv.mkDerivation (
         --replace-fail 'host: "localhost"' 'host: "127.0.0.1"'
     '';
 
-    nativeBuildInputs = [
-      buildPackages.bun
-      buildPackages.copyDesktopItems
-      buildPackages.installShellFiles
-      buildPackages.makeBinaryWrapper
-      buildPackages.node-gyp
-      buildPackages.nodejs
-      buildPackages.python3
-      buildPackages.writableTmpDirAsHomeHook
-    ] ++ lib.optionals stdenv.buildPlatform.isDarwin [
-      buildPackages.cctools.libtool
-      buildPackages.xcbuild
-    ];
+    nativeBuildInputs =
+      [
+        buildPackages.bun
+        buildPackages.copyDesktopItems
+        buildPackages.installShellFiles
+        buildPackages.makeBinaryWrapper
+        buildPackages.node-gyp
+        buildPackages.nodejs
+        buildPackages.python3
+        buildPackages.writableTmpDirAsHomeHook
+      ]
+      ++ lib.optionals stdenv.buildPlatform.isDarwin [
+        buildPackages.cctools.libtool
+        buildPackages.xcbuild
+      ];
 
-    nativeInstallCheckInputs = [ buildPackages.versionCheckHook ];
+    nativeInstallCheckInputs = [buildPackages.versionCheckHook];
     doInstallCheck = stdenv.buildPlatform.canExecute stdenv.hostPlatform;
 
     configurePhase = ''
@@ -221,7 +220,7 @@ stdenv.mkDerivation (
         terminal = false;
         icon = "t3code";
         startupWMClass = "T3 Code";
-        categories = [ "Development" ];
+        categories = ["Development"];
       })
     ];
 

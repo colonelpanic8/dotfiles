@@ -7,29 +7,25 @@
   nodejs,
   makeWrapper,
 }:
-
 stdenv.mkDerivation (
-  finalAttrs:
-  let
+  finalAttrs: let
     toolArchiveSuffix =
-      if stdenv.hostPlatform.isLinux then
-        if stdenv.hostPlatform.isAarch64 then
-          "arm64-linux"
-        else if stdenv.hostPlatform.isx86_64 then
-          "x64-linux"
-        else
-          throw "Unsupported Linux architecture for happy-coder: ${stdenv.hostPlatform.system}"
-      else if stdenv.hostPlatform.isDarwin then
-        if stdenv.hostPlatform.isAarch64 then
-          "arm64-darwin"
-        else if stdenv.hostPlatform.isx86_64 then
-          "x64-darwin"
-        else
-          throw "Unsupported Darwin architecture for happy-coder: ${stdenv.hostPlatform.system}"
-      else
-        throw "Unsupported platform for happy-coder: ${stdenv.hostPlatform.system}";
-  in
-  {
+      if stdenv.hostPlatform.isLinux
+      then
+        if stdenv.hostPlatform.isAarch64
+        then "arm64-linux"
+        else if stdenv.hostPlatform.isx86_64
+        then "x64-linux"
+        else throw "Unsupported Linux architecture for happy-coder: ${stdenv.hostPlatform.system}"
+      else if stdenv.hostPlatform.isDarwin
+      then
+        if stdenv.hostPlatform.isAarch64
+        then "arm64-darwin"
+        else if stdenv.hostPlatform.isx86_64
+        then "x64-darwin"
+        else throw "Unsupported Darwin architecture for happy-coder: ${stdenv.hostPlatform.system}"
+      else throw "Unsupported platform for happy-coder: ${stdenv.hostPlatform.system}";
+  in {
     pname = "happy-coder";
     version = "0.11.2-unstable-2026-03-26";
 
@@ -112,7 +108,7 @@ stdenv.mkDerivation (
       description = "Mobile and web client wrapper for Claude Code and Codex with end-to-end encryption";
       homepage = "https://github.com/slopus/happy";
       license = lib.licenses.mit;
-      maintainers = with lib.maintainers; [ onsails ];
+      maintainers = with lib.maintainers; [onsails];
       mainProgram = "happy";
     };
   }

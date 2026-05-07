@@ -1,4 +1,9 @@
-{ config, pkgs, makeEnable, ... }:
+{
+  config,
+  pkgs,
+  makeEnable,
+  ...
+}:
 makeEnable config "myModules.kubelet" false {
   age.secrets."api_service_account_key.json.age".file = ./secrets/api_service_account_key.json.age;
   services.kubernetes.kubelet = {
@@ -11,7 +16,7 @@ makeEnable config "myModules.kubelet" false {
     };
     registerNode = true;
     cni = {
-      packages = [ pkgs.cni-plugins pkgs.calico-cni-plugin ];
+      packages = [pkgs.cni-plugins pkgs.calico-cni-plugin];
     };
     extraOpts = ''
       --fail-swap-on=false

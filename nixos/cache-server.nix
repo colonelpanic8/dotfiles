@@ -1,8 +1,11 @@
-{ config, lib, ... }:
-with lib;
-let cfg = config.myModules.cache-server;
-in
 {
+  config,
+  lib,
+  ...
+}:
+with lib; let
+  cfg = config.myModules.cache-server;
+in {
   options = {
     myModules.cache-server = {
       enable = mkEnableOption "nix cache server";
@@ -31,4 +34,3 @@ in
     };
   };
 }
-

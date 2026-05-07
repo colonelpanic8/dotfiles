@@ -1,6 +1,9 @@
-{ config, lib, pkgs, ... }:
-
 {
+  config,
+  lib,
+  pkgs,
+  ...
+}: {
   imports = [
     ../configuration.nix
   ];
@@ -36,15 +39,15 @@
   };
 
   systemd.services.otbr-agent = {
-    wants = [ "network-online.target" ];
-    after = [ "network-online.target" ];
+    wants = ["network-online.target"];
+    after = ["network-online.target"];
   };
 
   services.openthread-border-router = {
     enable = true;
     backboneInterface = "wpan0";
     logLevel = "debug";
-    radio =  {
+    radio = {
       device = "/dev/serial/by-id/usb-Nabu_Casa_Home_Assistant_Connect_ZBT-1_0cd053abfa38ef119c66e1d154516304-if00-port0";
       baudRate = 460800;
       flowControl = true;
@@ -60,13 +63,14 @@
   services.matter-server = {
     enable = true;
     logLevel = "debug";
-    extraArgs = let cert-dir = pkgs.fetchFromGitHub {
-      repo = "connectedhomeip";
-      owner = "project-chip";
-      rev = "6e8676be6142bb541fa68048c77f2fc56a21c7b1";
-      hash = "sha256-QwPKn2R4mflTKMyr1k4xF04t0PJIlzNCOdXEiQwX5wk=";
-    }; in
-    [
+    extraArgs = let
+      cert-dir = pkgs.fetchFromGitHub {
+        repo = "connectedhomeip";
+        owner = "project-chip";
+        rev = "6e8676be6142bb541fa68048c77f2fc56a21c7b1";
+        hash = "sha256-QwPKn2R4mflTKMyr1k4xF04t0PJIlzNCOdXEiQwX5wk=";
+      };
+    in [
       "--bluetooth-adapter=0"
       "--paa-root-cert-dir=${cert-dir}/credentials/production/paa-root-certs"
       "--enable-test-net-dcl"
@@ -109,11 +113,12 @@
       "wyoming"
       "yale"
     ];
-    extraPackages = python3Packages: with python3Packages; [
-      numpy
-      python-matter-server
-      universal-silabs-flasher
-    ];
+    extraPackages = python3Packages:
+      with python3Packages; [
+        numpy
+        python-matter-server
+        universal-silabs-flasher
+      ];
     config = {
       http = {
         use_x_forwarded_for = true;
@@ -170,27 +175,27 @@
 
   boot.kernelPackages = pkgs.linuxPackages_latest;
 
-  boot.initrd.availableKernelModules = [ "xhci_pci" "ahci" "usbhid" "usb_storage" "sd_mod" ];
-  boot.initrd.kernelModules = [ ];
-  boot.kernelModules = [ "kvm-intel" ];
-  boot.extraModulePackages = [ ];
+  boot.initrd.availableKernelModules = ["xhci_pci" "ahci" "usbhid" "usb_storage" "sd_mod"];
+  boot.initrd.kernelModules = [];
+  boot.kernelModules = ["kvm-intel"];
+  boot.extraModulePackages = [];
   boot.loader.systemd-boot.enable = true;
 
   # Add Intel Wi-Fi firmware
   hardware.enableRedistributableFirmware = true;
   hardware.enableAllFirmware = true;
 
-  fileSystems."/" =
-    { device = "/dev/disk/by-uuid/453d28a1-26f2-4b25-ac72-c6d301fd0bb8";
-      fsType = "ext4";
-    };
+  fileSystems."/" = {
+    device = "/dev/disk/by-uuid/453d28a1-26f2-4b25-ac72-c6d301fd0bb8";
+    fsType = "ext4";
+  };
 
-  fileSystems."/boot" =
-    { device = "/dev/disk/by-uuid/184E-E5E8";
-      fsType = "vfat";
-    };
+  fileSystems."/boot" = {
+    device = "/dev/disk/by-uuid/184E-E5E8";
+    fsType = "vfat";
+  };
 
-  swapDevices = [ ];
+  swapDevices = [];
 
   networking.hostName = "justin-bieber-creek";
 

@@ -6,8 +6,7 @@
   orgAgendaApiContainer ? null,
   orgAgendaApiImageName ? "localhost/org-agenda-api:colonelpanic-dbb1cb8-030a673",
   ...
-}:
-{
+}: {
   imports = [
     ../configuration.nix
     inputs.agenix.nixosModules.default
@@ -16,7 +15,7 @@
   networking.hostName = "railbird-sf";
 
   # Allow nginx to serve content synced into /var/lib/syncthing/* (owned by syncthing:syncthing, 2770 perms).
-  users.users.nginx.extraGroups = [ "syncthing" ];
+  users.users.nginx.extraGroups = ["syncthing"];
 
   # org-agenda-api hosting with nginx + Let's Encrypt
   # Separate secrets for org-agenda-api: auth password (env format) and SSH key (raw file)
@@ -25,7 +24,7 @@
   };
   age.secrets.org-api-ssh-key = {
     file = ../secrets/org-api-ssh-key.age;
-    mode = "0400";  # Restrictive permissions for SSH key
+    mode = "0400"; # Restrictive permissions for SSH key
   };
 
   services.org-agenda-api-host = {
@@ -38,10 +37,10 @@
   };
 
   hardware.enableRedistributableFirmware = true;
-  boot.initrd.availableKernelModules = [ "nvme" "xhci_pci" "ahci" "usbhid" "usb_storage" "sd_mod" ];
-  boot.initrd.kernelModules = [ ];
-  boot.kernelModules = [ "kvm-amd" ];
-  boot.extraModulePackages = [ ];
+  boot.initrd.availableKernelModules = ["nvme" "xhci_pci" "ahci" "usbhid" "usb_storage" "sd_mod"];
+  boot.initrd.kernelModules = [];
+  boot.kernelModules = ["kvm-amd"];
+  boot.extraModulePackages = [];
   boot.loader.systemd-boot.enable = true;
   myModules.postgres.enable = true;
   features.full.enable = true;
@@ -100,19 +99,19 @@
   # Note: you may still need router/NAT port-forwards for inbound access from the internet.
   services.syncthing.openDefaultPorts = true;
 
-  fileSystems."/" =
-    { device = "/dev/disk/by-uuid/a317d456-6f84-41ee-a149-8e466e414aae";
+  fileSystems."/" = {
+    device = "/dev/disk/by-uuid/a317d456-6f84-41ee-a149-8e466e414aae";
     fsType = "ext4";
-    };
+  };
 
-  fileSystems."/boot" =
-    { device = "/dev/disk/by-uuid/B875-39D4";
-      fsType = "vfat";
-      };
+  fileSystems."/boot" = {
+    device = "/dev/disk/by-uuid/B875-39D4";
+    fsType = "vfat";
+  };
 
-  swapDevices =
-    [ { device = "/dev/disk/by-uuid/129345f3-e1e1-4d45-9db9-643160c6d564"; }
-    ];
+  swapDevices = [
+    {device = "/dev/disk/by-uuid/129345f3-e1e1-4d45-9db9-643160c6d564";}
+  ];
 
   environment.systemPackages = with pkgs; [
     android-studio

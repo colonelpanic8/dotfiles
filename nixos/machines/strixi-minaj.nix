@@ -1,6 +1,10 @@
-{ config, lib, pkgs, inputs, ... }:
-
 {
+  config,
+  lib,
+  pkgs,
+  inputs,
+  ...
+}: {
   imports = [
     ../configuration.nix
     inputs.nixos-hardware.nixosModules.asus-rog-strix-g834jzr
@@ -61,10 +65,10 @@
   boot.kernelPackages = pkgs.linuxPackages;
   # See https://github.com/NixOS/nixpkgs/issues/467814 for why this was needed
   hardware.nvidia.package = config.boot.kernelPackages.nvidiaPackages.beta;
-  boot.initrd.availableKernelModules = [ "vmd" "xhci_pci" "thunderbolt" "nvme" "usbhid" "usb_storage" "sd_mod" ];
-  boot.initrd.kernelModules = [ "nvidia" "nvidia_drm" "nvidia_uvm" "nvidia_modeset" ];
-  boot.kernelModules = [ "kvm-intel" ];
-  boot.extraModulePackages = [ ];
+  boot.initrd.availableKernelModules = ["vmd" "xhci_pci" "thunderbolt" "nvme" "usbhid" "usb_storage" "sd_mod"];
+  boot.initrd.kernelModules = ["nvidia" "nvidia_drm" "nvidia_uvm" "nvidia_modeset"];
+  boot.kernelModules = ["kvm-intel"];
+  boot.extraModulePackages = [];
   hardware.nvidia.powerManagement.enable = true;
   # This laptop has a hardware MUX, so prefer dGPU-only mode instead of
   # PRIME sync hybrid mode to keep the compositor and displays on NVIDIA.
@@ -91,8 +95,11 @@
   };
 
   swapDevices = [
-    { device = "/dev/disk/by-uuid/27f277a0-b552-43a0-904d-625e48922bb9"; }
-    { device = "/swapfile"; size = 16384; } # size is in MiB (adds 16 GiB)
+    {device = "/dev/disk/by-uuid/27f277a0-b552-43a0-904d-625e48922bb9";}
+    {
+      device = "/swapfile";
+      size = 16384;
+    } # size is in MiB (adds 16 GiB)
   ];
 
   networking.hostName = "strixi-minaj";

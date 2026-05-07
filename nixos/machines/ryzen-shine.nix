@@ -1,6 +1,8 @@
-{ lib, pkgs, ... }:
-
 {
+  lib,
+  pkgs,
+  ...
+}: {
   imports = [
     ../configuration.nix
     ../nixified.ai.nix
@@ -64,14 +66,14 @@
   networking.interfaces.enp5s0.useDHCP = true;
   networking.interfaces.wlp4s0.useDHCP = true;
 
-  boot.initrd.availableKernelModules = [ "nvme" "xhci_pci" "ahci" "usb_storage" "usbhid" "sd_mod" ];
+  boot.initrd.availableKernelModules = ["nvme" "xhci_pci" "ahci" "usb_storage" "usbhid" "sd_mod"];
 
   hardware.nvidia.modesetting.enable = true;
 
   hardware.graphics.enable32Bit = true;
 
-  boot.kernelModules = [ "kvm-amd" ];
-  boot.extraModulePackages = [ ];
+  boot.kernelModules = ["kvm-amd"];
+  boot.extraModulePackages = [];
 
   fileSystems."/" = {
     device = "/dev/disk/by-uuid/9bd06145-8151-4f7b-bcfe-f1809e0db1ea";
@@ -86,11 +88,14 @@
   fileSystems."/shared" = {
     device = "/dev/disk/by-uuid/D4009CE8009CD33A";
     fsType = "ntfs";
-    options = [ "nofail" "uid=0" "gid=users" "umask=002" ];
+    options = ["nofail" "uid=0" "gid=users" "umask=002"];
   };
 
   swapDevices = [
-    { device = "/swapfile"; size = 49152; }
+    {
+      device = "/swapfile";
+      size = 49152;
+    }
   ];
 
   # nix.settings.maxJobs = lib.mkDefault 16;

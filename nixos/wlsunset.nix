@@ -1,4 +1,10 @@
-{ config, pkgs, lib, makeEnable, ... }:
+{
+  config,
+  pkgs,
+  lib,
+  makeEnable,
+  ...
+}:
 makeEnable config "myModules.wlsunset" true {
   home-manager.sharedModules = [
     {

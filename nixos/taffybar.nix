@@ -239,15 +239,15 @@ in
           rm -f "$HOME/.config/systemd/user/taffybar.service.d/override.conf"
           rmdir --ignore-fail-on-non-empty "$HOME/.config/systemd/user/taffybar.service.d" 2>/dev/null || true
         '';
-      systemd.user.services.taffybar.Service = {
-        ExecCondition = "${taffybarExecCondition}";
-        ExecStartPre = "${waitForGraphicalSocket}";
-        ExecStart = lib.mkForce "${taffybarStart}";
-        # Temporary startup debugging: keep a plain-text log outside journald so
-        # the next login/startup leaves easy-to-inspect tray traces behind.
-        StandardOutput = "append:/tmp/taffybar-service.log";
-        StandardError = "append:/tmp/taffybar-service.log";
-      };
-    })
-  ];
-}
+        systemd.user.services.taffybar.Service = {
+          ExecCondition = "${taffybarExecCondition}";
+          ExecStartPre = "${waitForGraphicalSocket}";
+          ExecStart = lib.mkForce "${taffybarStart}";
+          # Temporary startup debugging: keep a plain-text log outside journald so
+          # the next login/startup leaves easy-to-inspect tray traces behind.
+          StandardOutput = "append:/tmp/taffybar-service.log";
+          StandardError = "append:/tmp/taffybar-service.log";
+        };
+      })
+    ];
+  }

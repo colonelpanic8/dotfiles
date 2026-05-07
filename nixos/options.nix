@@ -1,4 +1,4 @@
-{ lib, ... }: {
+{lib, ...}: {
   options = {
     myModules.xmonad.picom.vSync.enable = lib.mkOption {
       default = true;

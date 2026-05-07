@@ -1,6 +1,9 @@
-{ config, makeEnable, ... }:
+{
+  config,
+  makeEnable,
+  ...
+}:
 makeEnable config "myModules.gitea" false {
-
   services.gitea = {
     enable = true;
     lfs.enable = true;

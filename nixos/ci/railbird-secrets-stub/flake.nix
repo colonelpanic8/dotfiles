@@ -10,11 +10,16 @@
     agenix.url = "github:ryantm/agenix";
   };
 
-  outputs = { self, nixpkgs, flake-utils, agenix }: {
+  outputs = {
+    self,
+    nixpkgs,
+    flake-utils,
+    agenix,
+  }: {
     # Keep this minimal: NixOS flake currently doesn't use railbird-secrets, but
     # Nix will still try to fetch/resolve all inputs during evaluation.
     keys = {
-      kanivanKeys = [ ];
+      kanivanKeys = [];
     };
   };
 }

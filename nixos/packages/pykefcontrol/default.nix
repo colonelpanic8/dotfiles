@@ -6,7 +6,6 @@
   aiohttp,
   requests,
 }:
-
 buildPythonPackage rec {
   pname = "pykefcontrol";
   version = "0.9.2";
@@ -26,12 +25,12 @@ buildPythonPackage rec {
     requests
   ];
 
-  pythonImportsCheck = [ "pykefcontrol" ];
+  pythonImportsCheck = ["pykefcontrol"];
 
   meta = {
     description = "Python library for controlling KEF LS50WII, LSX II, and LS60 speakers";
     homepage = "https://github.com/N0ciple/pykefcontrol";
     license = lib.licenses.mit;
-    maintainers = with lib.maintainers; [ imalison ];
+    maintainers = with lib.maintainers; [imalison];
   };
 }

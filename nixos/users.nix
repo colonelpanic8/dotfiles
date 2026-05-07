@@ -1,5 +1,9 @@
-{ pkgs, keys, inputs, ... }:
-let
+{
+  pkgs,
+  keys,
+  inputs,
+  ...
+}: let
   extraGroups = [
     "adbusers"
     "audio"
@@ -24,40 +28,51 @@ let
     createHome = true;
     shell = pkgs.zsh;
   };
-in
-{
+in {
   security.sudo.wheelNeedsPassword = false;
   users.users = with keys; {
-    imalison = userDefaults // {
-      extraGroups = extraGroupsWithWheel;
-      name = "imalison";
-      openssh.authorizedKeys.keys = kanivanKeys;
-    };
-    kat = userDefaults // {
-      extraGroups = extraGroupsWithWheel;
-      name = "kat";
-      openssh.authorizedKeys.keys = kanivanKeys;
-    };
-    dean = userDefaults // {
-      extraGroups = extraGroupsWithWheel;
-      name = "dean";
-      openssh.authorizedKeys.keys = kanivanKeys ++ deanKeys;
-    };
-    alex = userDefaults // {
-      extraGroups = extraGroupsWithWheel;
-      name = "alex";
-      openssh.authorizedKeys.keys = kanivanKeys ++ alexKeys;
-    };
-    loewy = userDefaults // {
-      inherit extraGroups;
-      name = "loewy";
-      openssh.authorizedKeys.keys = kanivanKeys ++ loewyKeys;
-    };
-    ben = userDefaults // {
-      inherit extraGroups;
-      name = "ben";
-      openssh.authorizedKeys.keys = benKeys ++ kanivanKeys;
-    };
+    imalison =
+      userDefaults
+      // {
+        extraGroups = extraGroupsWithWheel;
+        name = "imalison";
+        openssh.authorizedKeys.keys = kanivanKeys;
+      };
+    kat =
+      userDefaults
+      // {
+        extraGroups = extraGroupsWithWheel;
+        name = "kat";
+        openssh.authorizedKeys.keys = kanivanKeys;
+      };
+    dean =
+      userDefaults
+      // {
+        extraGroups = extraGroupsWithWheel;
+        name = "dean";
+        openssh.authorizedKeys.keys = kanivanKeys ++ deanKeys;
+      };
+    alex =
+      userDefaults
+      // {
+        extraGroups = extraGroupsWithWheel;
+        name = "alex";
+        openssh.authorizedKeys.keys = kanivanKeys ++ alexKeys;
+      };
+    loewy =
+      userDefaults
+      // {
+        inherit extraGroups;
+        name = "loewy";
+        openssh.authorizedKeys.keys = kanivanKeys ++ loewyKeys;
+      };
+    ben =
+      userDefaults
+      // {
+        inherit extraGroups;
+        name = "ben";
+        openssh.authorizedKeys.keys = benKeys ++ kanivanKeys;
+      };
   };
 
   nix.sshServe = {

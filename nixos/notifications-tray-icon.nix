@@ -1,24 +1,35 @@
-{ config, pkgs, inputs, lib, makeEnable, ... }:
+{
+  config,
+  pkgs,
+  inputs,
+  lib,
+  makeEnable,
+  ...
+}:
 makeEnable config "myModules.notifications-tray-icon" true {
   nixpkgs.overlays = [
     inputs.notifications-tray-icon.overlays.default
     (final: prev: {
       haskellPackages = prev.haskellPackages.override (old: {
-        overrides = final.lib.composeExtensions (old.overrides or (_: _: {}))
+        overrides =
+          final.lib.composeExtensions (old.overrides or (_: _: {}))
           (hself: hsuper: {
-            notifications-tray-icon = final.haskell.lib.overrideCabal
+            notifications-tray-icon =
+              final.haskell.lib.overrideCabal
               hsuper.notifications-tray-icon
               (oldAttrs: {
-                patches = (oldAttrs.patches or []) ++ [
-                  ./patches/notifications-tray-icon-gmail-oauth-detached-browser.patch
-                ];
+                patches =
+                  (oldAttrs.patches or [])
+                  ++ [
+                    ./patches/notifications-tray-icon-gmail-oauth-detached-browser.patch
+                  ];
               });
           });
       });
     })
   ];
 
-  home-manager.users.imalison = { config, ... }: let
+  home-manager.users.imalison = {config, ...}: let
     notificationsTrayIcon = pkgs.haskellPackages.notifications-tray-icon;
     gmailExecStart = pkgs.writeShellScript "notifications-tray-icon-gmail" ''
       creds_file="${config.xdg.configHome}/gws/client_secret.json"
@@ -37,9 +48,9 @@ makeEnable config "myModules.notifications-tray-icon" true {
     mkService = description: execStart: {
       Unit = {
         Description = description;
-        After = [ "graphical-session.target" "tray.target" ];
-        PartOf = [ "graphical-session.target" ];
-        Requires = [ "tray.target" ];
+        After = ["graphical-session.target" "tray.target"];
+        PartOf = ["graphical-session.target"];
+        Requires = ["tray.target"];
       };
       Service = {
         ExecStart = execStart;
@@ -47,20 +58,23 @@ makeEnable config "myModules.notifications-tray-icon" true {
         RestartSec = 3;
       };
       Install = {
-        WantedBy = [ "graphical-session.target" ];
+        WantedBy = ["graphical-session.target"];
       };
     };
   in {
     systemd.user.services = {
-      notifications-tray-icon-github = mkService
+      notifications-tray-icon-github =
+        mkService
         "GitHub notifications tray icon"
         "${notificationsTrayIcon}/bin/notifications-tray-icon github --token-pass github-token";
 
-      notifications-tray-icon-gitea = mkService
+      notifications-tray-icon-gitea =
+        mkService
         "Gitea notifications tray icon"
         "${notificationsTrayIcon}/bin/notifications-tray-icon gitea --url https://dev.railbird.ai --token-pass gitea-omni-token";
 
-      notifications-tray-icon-gmail = mkService
+      notifications-tray-icon-gmail =
+        mkService
         "Gmail notifications tray icon"
         "${gmailExecStart}";
     };

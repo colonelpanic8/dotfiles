@@ -1,6 +1,8 @@
-{ config, lib, ... }:
-
-let
+{
+  config,
+  lib,
+  ...
+}: let
   cfg = config.myModules.cua;
   flavorDefaults = {
     xfce = {
@@ -24,8 +26,7 @@ let
   };
   selectedFlavor = flavorDefaults.${cfg.flavor};
   usingQemu = cfg.flavor == "qemu-linux";
-in
-{
+in {
   options.myModules.cua = {
     enable = lib.mkEnableOption "Cua Linux computer-use sandbox";
 
@@ -76,13 +77,13 @@ in
 
       extraOptions = lib.mkOption {
         type = lib.types.listOf lib.types.str;
-        default = [ ];
+        default = [];
         description = "Extra options passed to the Cua Android container runtime.";
       };
     };
 
     flavor = lib.mkOption {
-      type = lib.types.enum [ "xfce" "kasm" "qemu-linux" ];
+      type = lib.types.enum ["xfce" "kasm" "qemu-linux"];
       default = "xfce";
       description = "Cua Linux sandbox flavor to run.";
     };
@@ -170,7 +171,7 @@ in
 
     extraOptions = lib.mkOption {
       type = lib.types.listOf lib.types.str;
-      default = [ ];
+      default = [];
       description = "Extra options passed to the container runtime.";
     };
   };
@@ -186,13 +187,14 @@ in
       cua-sandbox = {
         image = cfg.image;
         autoStart = cfg.autoStart;
-        ports = [
-          "${cfg.bindAddress}:${toString cfg.noVncPort}:${toString selectedFlavor.noVncContainerPort}"
-          "${cfg.bindAddress}:${toString cfg.apiPort}:${toString selectedFlavor.apiContainerPort}"
-        ]
-        ++ lib.optionals (cfg.flavor == "xfce" && cfg.vncPort != null) [
-          "${cfg.bindAddress}:${toString cfg.vncPort}:5901"
-        ];
+        ports =
+          [
+            "${cfg.bindAddress}:${toString cfg.noVncPort}:${toString selectedFlavor.noVncContainerPort}"
+            "${cfg.bindAddress}:${toString cfg.apiPort}:${toString selectedFlavor.apiContainerPort}"
+          ]
+          ++ lib.optionals (cfg.flavor == "xfce" && cfg.vncPort != null) [
+            "${cfg.bindAddress}:${toString cfg.vncPort}:5901"
+          ];
         volumes = [
           "${toString cfg.storageDir}:${selectedFlavor.storageMountPath}"
         ];
@@ -215,7 +217,7 @@ in
             VNCOPTIONS = "-disableBasicAuth";
           };
         extraOptions =
-          lib.optionals (!usingQemu) [ "--shm-size=${cfg.shmSize}" ]
+          lib.optionals (!usingQemu) ["--shm-size=${cfg.shmSize}"]
           ++ cfg.extraOptions;
       };
       cua-android = lib.mkIf cfg.android.enable {
@@ -238,9 +240,9 @@ in
 
     networking.firewall.allowedTCPPorts =
       lib.optionals cfg.openFirewall (
-        [ cfg.apiPort cfg.noVncPort ]
+        [cfg.apiPort cfg.noVncPort]
         ++ lib.optional (cfg.flavor == "xfce" && cfg.vncPort != null) cfg.vncPort
       )
-      ++ lib.optionals cfg.android.openFirewall [ cfg.android.apiPort cfg.android.webVncPort ];
+      ++ lib.optionals cfg.android.openFirewall [cfg.android.apiPort cfg.android.webVncPort];
   };
 }

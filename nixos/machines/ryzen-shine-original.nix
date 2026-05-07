@@ -1,6 +1,8 @@
-{ lib, pkgs, ... }:
-
 {
+  lib,
+  pkgs,
+  ...
+}: {
   imports = [
     ../configuration.nix
   ];
@@ -46,23 +48,23 @@
   boot.loader.systemd-boot.enable = true;
   boot.loader.efi.canTouchEfiVariables = true;
 
-  boot.initrd.availableKernelModules = [ "nvme" "xhci_pci" "ahci" "usb_storage" "usbhid" "sd_mod" ];
+  boot.initrd.availableKernelModules = ["nvme" "xhci_pci" "ahci" "usb_storage" "usbhid" "sd_mod"];
   boot.initrd.luks.devices."cryptroot".device = "/dev/nvme0n1p5";
-  boot.initrd.kernelModules = [ "dm-snapshot" ];
+  boot.initrd.kernelModules = ["dm-snapshot"];
 
   # install nvidia drivers in addition to intel one
-  hardware.graphics.extraPackages = [ pkgs.linuxPackages.nvidia_x11.out ];
-  hardware.graphics.extraPackages32 = [ pkgs.linuxPackages.nvidia_x11.lib32 ];
+  hardware.graphics.extraPackages = [pkgs.linuxPackages.nvidia_x11.out];
+  hardware.graphics.extraPackages32 = [pkgs.linuxPackages.nvidia_x11.lib32];
   services.xserver = {
-    videoDrivers = [ "nvidia" ];
+    videoDrivers = ["nvidia"];
   };
 
   hardware.nvidia.modesetting.enable = true;
 
   hardware.graphics.enable32Bit = true;
 
-  boot.kernelModules = [ "kvm-amd" ];
-  boot.extraModulePackages = [ ];
+  boot.kernelModules = ["kvm-amd"];
+  boot.extraModulePackages = [];
 
   fileSystems."/" = {
     device = "/dev/disk/by-uuid/356173ab-d076-43e0-aeb6-6a6829c4402b";
@@ -77,11 +79,11 @@
   fileSystems."/shared" = {
     device = "/dev/disk/by-uuid/D4009CE8009CD33A";
     fsType = "ntfs";
-    options = [ "nofail" "uid=0" "gid=users" "umask=002" ];
+    options = ["nofail" "uid=0" "gid=users" "umask=002"];
   };
 
   swapDevices = [
-    { device = "/dev/disk/by-uuid/f719b44e-295a-4909-9a60-84f87acb7f77"; }
+    {device = "/dev/disk/by-uuid/f719b44e-295a-4909-9a60-84f87acb7f77";}
   ];
 
   # nix.settings.maxJobs = lib.mkDefault 16;

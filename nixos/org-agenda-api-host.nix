@@ -1,14 +1,15 @@
 # org-agenda-api-host.nix - Host org-agenda-api container with nginx + Let's Encrypt
-{ config, lib, pkgs, ... }:
-
-with lib;
-
-let
+{
+  config,
+  lib,
+  pkgs,
+  ...
+}:
+with lib; let
   cfg = config.services.org-agenda-api-host;
   # Random high port to avoid conflicts
   containerPort = 51847;
-in
-{
+in {
   options.services.org-agenda-api-host = {
     enable = mkEnableOption "org-agenda-api container hosting";
 
@@ -22,7 +23,7 @@ in
       type = types.listOf types.str;
       default = [];
       description = "Additional full domain names to serve (each gets its own ACME cert)";
-      example = [ "org-agenda-api.example.com" ];
+      example = ["org-agenda-api.example.com"];
     };
 
     acmeEmail = mkOption {
@@ -119,12 +120,13 @@ in
             };
           };
         };
-        allDomains = [ "org-agenda-api.${cfg.domain}" ] ++ cfg.extraDomains;
-      in builtins.listToAttrs (map mkVirtualHost allDomains);
+        allDomains = ["org-agenda-api.${cfg.domain}"] ++ cfg.extraDomains;
+      in
+        builtins.listToAttrs (map mkVirtualHost allDomains);
     };
 
     # Open firewall for HTTP/HTTPS
-    networking.firewall.allowedTCPPorts = [ 80 443 ];
+    networking.firewall.allowedTCPPorts = [80 443];
 
     # Container service using podman
     virtualisation.oci-containers = {
@@ -133,7 +135,7 @@ in
         image = cfg.containerImage;
         imageFile = cfg.containerImageFile;
         autoStart = true;
-        ports = [ "127.0.0.1:${toString containerPort}:80" ];
+        ports = ["127.0.0.1:${toString containerPort}:80"];
         environment = {
           TZ = cfg.timezone;
           GIT_SYNC_REPOSITORY = cfg.gitSyncRepository;
@@ -141,12 +143,12 @@ in
           GIT_USER_NAME = cfg.gitUserName;
           AUTH_USER = cfg.authUser;
         };
-        environmentFiles = [ cfg.secretsFile ];
+        environmentFiles = [cfg.secretsFile];
         volumes = lib.optionals (cfg.sshKeyFile != null) [
           "${cfg.sshKeyFile}:/secrets/ssh_key:ro"
         ];
         extraOptions = [
-          "--pull=never"  # Image is from nix store, don't try to pull
+          "--pull=never" # Image is from nix store, don't try to pull
         ];
       };
     };

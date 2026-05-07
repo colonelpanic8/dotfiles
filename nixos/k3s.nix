@@ -60,11 +60,11 @@ in {
       settings = {
         plugins."io.containerd.cri.v1.runtime" = {
           enable_cdi = true;
-          cdi_spec_dirs = [ "/var/run/cdi" ];
+          cdi_spec_dirs = ["/var/run/cdi"];
         };
         plugins."io.containerd.grpc.v1.cri" = {
           enable_cdi = true;
-          cdi_spec_dirs = [ "/var/run/cdi" ];
+          cdi_spec_dirs = ["/var/run/cdi"];
           cni.bin_dir = "${plugins-path}/bin";
         };
       };
@@ -97,13 +97,13 @@ in {
 
     systemd.services.mount-railbird-bucket = {
       after = ["agenix.service"];
-      wantedBy = [ "multi-user.target" ];
+      wantedBy = ["multi-user.target"];
       description = "Mount railbird bucket";
       serviceConfig = {
         Type = "simple";
         RemainAfterExit = true;
-        Restart = "on-failure";  # Restart the service on failure
-        RestartSec = 5;  # Wait 5 seconds before restarti
+        Restart = "on-failure"; # Restart the service on failure
+        RestartSec = 5; # Wait 5 seconds before restarti
         TimeoutStopSec = 2;
         ExecStartPre = [
           "-${pkgs.util-linux}/bin/umount -f ${mount-path}"
@@ -114,7 +114,7 @@ in {
         ExecStart = let
           key-file = config.age.secrets.api-service-key.path;
         in
-        pkgs.writeShellScript "mount-railbird-bucket" ''
+          pkgs.writeShellScript "mount-railbird-bucket" ''
             while true; do
             if ${pkgs.util-linux}/bin/mount | grep -q "${mount-path}" && [ -d "${mount-path}/dev" ]; then
             echo "Mount path ${mount-path} is mounted and valid (contains directory 'dev')."

@@ -1,4 +1,11 @@
-{ pkgs, config, lib, makeEnable, realUsers, ... }:
+{
+  pkgs,
+  config,
+  lib,
+  makeEnable,
+  realUsers,
+  ...
+}:
 makeEnable config "myModules.home-assistant" false {
   boot.kernel.sysctl = {
     # For all interfaces (e.g. if you want to accept RA on all):
@@ -97,11 +104,12 @@ makeEnable config "myModules.home-assistant" false {
       "yale"
       "zwave_js"
     ];
-    extraPackages = python3Packages: with python3Packages; [
-      numpy
-      python-matter-server
-      universal-silabs-flasher
-    ];
+    extraPackages = python3Packages:
+      with python3Packages; [
+        numpy
+        python-matter-server
+        universal-silabs-flasher
+      ];
     config = {
       http = {
         use_x_forwarded_for = true;

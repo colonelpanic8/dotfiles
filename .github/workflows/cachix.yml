@@ -85,6 +85,15 @@ jobs:
           name: ${{ vars.CACHIX_CACHE_NAME }}
           skipPush: true
 
+      - name: Check Nix formatting
+        run: |
+          set -euxo pipefail
+          nix build \
+            --no-link \
+            --print-build-logs \
+            ./nixos#checks.x86_64-linux.formatting \
+            --override-input railbird-secrets ./nixos/ci/railbird-secrets-stub
+
       - name: Build NixOS system (strixi-minaj)
         run: |
           set -euxo pipefail

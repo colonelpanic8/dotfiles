@@ -5,8 +5,7 @@
   makeEnable,
   pkgs,
   ...
-}:
-let
+}: let
   system = pkgs.stdenv.hostPlatform.system;
   noctaliaPackage = inputs.noctalia.packages.${system}.default;
   waitForWayland = pkgs.writeShellScript "noctalia-wait-for-wayland" ''
@@ -23,26 +22,25 @@ let
     exit 1
   '';
 in
-makeEnable config "myModules.noctalia" false {
-  environment.systemPackages = [
-    noctaliaPackage
-  ];
+  makeEnable config "myModules.noctalia" false {
+    environment.systemPackages = [
+      noctaliaPackage
+    ];
 
-  # Noctalia's battery widget talks to UPower. Hosts that deliberately do not
-  # have batteries can still override this back to false.
-  services.upower.enable = lib.mkDefault true;
+    # Noctalia's battery widget talks to UPower. Hosts that deliberately do not
+    # have batteries can still override this back to false.
+    services.upower.enable = lib.mkDefault true;
 
-  home-manager.sharedModules = [
-    inputs.noctalia.homeModules.default
-    ({ lib, ... }: {
-      programs.noctalia-shell = {
-        enable = true;
-        # This module provides the Hyprland-scoped service below.
-        systemd.enable = false;
-      };
+    home-manager.sharedModules = [
+      inputs.noctalia.homeModules.default
+      ({lib, ...}: {
+        programs.noctalia-shell = {
+          enable = true;
+          # This module provides the Hyprland-scoped service below.
+          systemd.enable = false;
+        };
 
-      home.activation.noctaliaLauncherOverviewLayer =
-        lib.hm.dag.entryAfter [ "writeBoundary" ] ''
+        home.activation.noctaliaLauncherOverviewLayer = lib.hm.dag.entryAfter ["writeBoundary"] ''
           settings_file="$HOME/.config/noctalia/settings.json"
           settings_tmp="$(${pkgs.coreutils}/bin/mktemp)"
 
@@ -64,24 +62,24 @@ makeEnable config "myModules.noctalia" false {
           fi
         '';
 
-      systemd.user.services.noctalia-shell = {
-        Unit = {
-          Description = "Noctalia Shell";
-          Documentation = "https://docs.noctalia.dev";
-          PartOf = [ "hyprland-session.target" ];
-          After = [ "hyprland-session.target" ];
-        };
+        systemd.user.services.noctalia-shell = {
+          Unit = {
+            Description = "Noctalia Shell";
+            Documentation = "https://docs.noctalia.dev";
+            PartOf = ["hyprland-session.target"];
+            After = ["hyprland-session.target"];
+          };
 
-        Service = {
-          ExecCondition = "/run/current-system/sw/bin/desktop_shell_ui exec-condition noctalia";
-          ExecStartPre = "${waitForWayland}";
-          ExecStart = "${lib.getExe noctaliaPackage} --no-duplicate";
-          Restart = "on-failure";
-          RestartSec = 1;
-        };
+          Service = {
+            ExecCondition = "/run/current-system/sw/bin/desktop_shell_ui exec-condition noctalia";
+            ExecStartPre = "${waitForWayland}";
+            ExecStart = "${lib.getExe noctaliaPackage} --no-duplicate";
+            Restart = "on-failure";
+            RestartSec = 1;
+          };
 
-        Install.WantedBy = [ "hyprland-session.target" ];
-      };
-    })
-  ];
-}
+          Install.WantedBy = ["hyprland-session.target"];
+        };
+      })
+    ];
+  }

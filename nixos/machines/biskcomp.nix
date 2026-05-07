@@ -1,7 +1,11 @@
-{ pkgs, lib, config, ... }:
-let biskcomp-nginx-hostnames = "192.168.1.44 railbird.ai 1896Folsom.duckdns.org biskcomp.local 0.0.0.0 67.162.131.71";
-in
 {
+  pkgs,
+  lib,
+  config,
+  ...
+}: let
+  biskcomp-nginx-hostnames = "192.168.1.44 railbird.ai 1896Folsom.duckdns.org biskcomp.local 0.0.0.0 67.162.131.71";
+in {
   imports = [
     ../configuration.nix
     ../raspberry-pi.nix
@@ -151,7 +155,10 @@ in
   };
 
   swapDevices = [
-    { device = "/swapfile"; size = 8192; } # size is in MiB
+    {
+      device = "/swapfile";
+      size = 8192;
+    } # size is in MiB
   ];
 
   networking.hostName = "biskcomp";

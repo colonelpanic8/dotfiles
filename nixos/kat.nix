@@ -1,4 +1,9 @@
-{ pkgs, config, makeEnable, ... }:
+{
+  pkgs,
+  config,
+  makeEnable,
+  ...
+}:
 makeEnable config "myModules.kat" false {
   environment.systemPackages = with pkgs; [
     obsidian
