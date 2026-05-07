@@ -412,7 +412,8 @@ sniTrayWidget = do
       prioritizedParams =
         defaultPrioritizedCollapsibleSNITrayParams
           { prioritizedCollapsibleSNITrayParams = collapsibleParams,
-            prioritizedCollapsibleSNITrayVisibilityThreshold = Just visibilityThreshold
+            prioritizedCollapsibleSNITrayVisibilityThreshold = Just visibilityThreshold,
+            prioritizedCollapsibleSNITrayHoverExpand = True
           }
   decorateWithClassAndBoxM
     "sni-tray"
