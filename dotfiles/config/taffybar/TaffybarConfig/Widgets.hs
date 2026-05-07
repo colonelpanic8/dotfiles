@@ -38,12 +38,6 @@ import qualified System.Taffybar.Information.Workspaces.Model as WorkspaceModel
 import System.Taffybar.Util (postGUIASync)
 import System.Taffybar.Widget
 import qualified System.Taffybar.Widget.ASUS as ASUS
-import System.Taffybar.Widget.AnthropicUsage
-  ( AnthropicUsageDisplayMode (AnthropicUsageDisplayRemaining),
-    AnthropicUsageStackConfig (..),
-    anthropicUsageSectionNewWith,
-    defaultAnthropicUsageStackConfig,
-  )
 import System.Taffybar.Widget.CPUMonitor (cpuMonitorNew)
 import System.Taffybar.Widget.Generic.Graph (GraphConfig (..), GraphDirection (..), GraphStyle (..), defaultGraphConfig)
 import qualified System.Taffybar.Widget.NetworkManager as NetworkManager
@@ -388,16 +382,6 @@ openAIUsageWidget = do
         { openAIUsageStackDefaultDisplayMode = OpenAIUsageDisplayRemaining
         }
 
-anthropicUsageWidget :: TaffyIO Gtk.Widget
-anthropicUsageWidget = do
-  iconWidget <- liftIO $ usageLogoWidget "claude-symbol.svg" "Anthropic usage"
-  decorateWithClassAndBoxM "anthropic-usage" $
-    anthropicUsageSectionNewWith
-      iconWidget
-      defaultAnthropicUsageStackConfig
-        { anthropicUsageStackDefaultDisplayMode = AnthropicUsageDisplayRemaining
-        }
-
 sniPriorityVisibilityThresholdDefault :: Int
 sniPriorityVisibilityThresholdDefault = 0
 
@@ -454,7 +438,6 @@ endWidgetsForHost hostName =
   let baseEndWidgets =
         [ sniTrayWidget,
           audioWidget,
-          anthropicUsageWidget,
           openAIUsageWidget,
           cpuWidget,
           ramSwapWidget,
@@ -468,7 +451,6 @@ endWidgetsForHost hostName =
           sniTrayWidget,
           asusDiskUsageWidget,
           audioBacklightWidget,
-          anthropicUsageWidget,
           openAIUsageWidget,
           cpuWidget,
           ramSwapWidget,
