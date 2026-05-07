@@ -1199,8 +1199,9 @@ end
 
 local function remove_minimized_window(target)
   local remaining = {}
+  local target_address = target and target.address
   for _, window in ipairs(minimized_windows) do
-    if window and window ~= target then
+    if window and window.address ~= target_address then
       remaining[#remaining + 1] = window
     end
   end
@@ -1218,16 +1219,24 @@ end
 
 local function hydrate_minimized_windows()
   local by_address = {}
+  local current_by_address = {}
   local hydrated = {}
 
-  for _, window in ipairs(minimized_windows) do
-    if window and window.address and not by_address[window.address] then
-      by_address[window.address] = true
-      hydrated[#hydrated + 1] = window
+  for _, window in ipairs(hl.get_windows()) do
+    if window and window.address then
+      current_by_address[window.address] = window
     end
   end
 
-  for _, window in ipairs(hl.get_windows()) do
+  for _, window in ipairs(minimized_windows) do
+    local current = window and window.address and current_by_address[window.address]
+    if current and is_minimized_window(current) and not by_address[current.address] then
+      by_address[current.address] = true
+      hydrated[#hydrated + 1] = current
+    end
+  end
+
+  for _, window in pairs(current_by_address) do
     if window and window.address and is_minimized_window(window) and not by_address[window.address] then
       by_address[window.address] = true
       hydrated[#hydrated + 1] = window

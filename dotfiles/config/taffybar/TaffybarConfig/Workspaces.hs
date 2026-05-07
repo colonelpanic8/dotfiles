@@ -2,6 +2,7 @@
 
 module TaffybarConfig.Workspaces
   ( workspaceLabelSetter,
+    workspaceShowPredicate,
     workspaceWindowIconGetter,
   )
 where
@@ -39,16 +40,31 @@ remapNSP :: String -> String
 remapNSP "NSP" = "S"
 remapNSP n = n
 
+workspaceIsMinimizedBucket :: WorkspaceModel.WorkspaceInfo -> Bool
+workspaceIsMinimizedBucket workspace =
+  let name =
+        T.toLower $
+          WorkspaceModel.workspaceName $
+            WorkspaceModel.workspaceIdentity workspace
+   in name == "minimized" || name == "special:minimized"
+
+workspaceShowPredicate :: WorkspaceModel.WorkspaceInfo -> Bool
+workspaceShowPredicate workspace =
+  Workspaces.hideEmpty workspace
+    && (not (WorkspaceModel.workspaceIsSpecial workspace) || workspaceIsMinimizedBucket workspace)
+
 workspaceLabelSetter :: WorkspaceModel.WorkspaceInfo -> TaffyIO String
 workspaceLabelSetter workspace = do
   backendType <- asks backend
   let identity = WorkspaceModel.workspaceIdentity workspace
       fallbackLabel = remapNSP $ T.unpack (WorkspaceModel.workspaceName identity)
-  case (backendType, WorkspaceModel.workspaceNumericId identity) of
-    (BackendX11, Just workspaceId) -> do
-      fullNames <- runX11Def [] x11FullWorkspaceNames
-      return $ remapNSP $ fromMaybe fallbackLabel (lookup (WorkspaceId workspaceId) fullNames)
-    _ -> return fallbackLabel
+  if workspaceIsMinimizedBucket workspace
+    then return "M"
+    else case (backendType, WorkspaceModel.workspaceNumericId identity) of
+      (BackendX11, Just workspaceId) -> do
+        fullNames <- runX11Def [] x11FullWorkspaceNames
+        return $ remapNSP $ fromMaybe fallbackLabel (lookup (WorkspaceId workspaceId) fullNames)
+      _ -> return fallbackLabel
 
 iconRemap :: [(Text, [Text])]
 iconRemap =

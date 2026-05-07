@@ -26,7 +26,7 @@ import TaffybarConfig.WidgetUtil
     stackInPill,
     usageLogoWidget,
   )
-import TaffybarConfig.Workspaces (workspaceLabelSetter, workspaceWindowIconGetter)
+import TaffybarConfig.Workspaces (workspaceLabelSetter, workspaceShowPredicate, workspaceWindowIconGetter)
 import System.Environment (lookupEnv)
 import System.Environment.XDG.BaseDir (getUserConfigFile)
 import System.Taffybar.Context
@@ -34,7 +34,6 @@ import System.Taffybar.Context
     TaffyIO,
   )
 import System.Taffybar.Information.Memory (MemoryInfo (..), parseMeminfo)
-import qualified System.Taffybar.Information.Workspaces.Model as WorkspaceModel
 import System.Taffybar.Util (postGUIASync)
 import System.Taffybar.Widget
 import qualified System.Taffybar.Widget.ASUS as ASUS
@@ -110,10 +109,7 @@ workspacesWidget =
           Workspaces.minIcons = 1,
           Workspaces.getWindowIconPixbuf = workspaceWindowIconGetter,
           Workspaces.labelSetter = workspaceLabelSetter,
-          Workspaces.showWorkspaceFn =
-            \workspace ->
-              Workspaces.hideEmpty workspace
-                && not (WorkspaceModel.workspaceIsSpecial workspace)
+          Workspaces.showWorkspaceFn = workspaceShowPredicate
         }
 
 clockWidget :: TaffyIO Gtk.Widget
