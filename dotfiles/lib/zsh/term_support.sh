@@ -26,6 +26,11 @@ function omz_termsupport_precmd {
 function omz_termsupport_preexec {
   emulate -L zsh
   setopt extended_glob
+  case "$1" in
+    (tmux[[:space:]]##(a|attach|attach-session)(|[[:space:]]*))
+      return
+      ;;
+  esac
   local CMD=${1[(wr)^(*=*|sudo|ssh|rake|-*)]} #cmd name only, or if this is sudo or ssh, the next cmd
   title "$CMD" "%100>...>${2:gs/%/%%}%<<"
 }
