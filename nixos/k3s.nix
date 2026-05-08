@@ -152,6 +152,8 @@ in {
           "--tls-san biskcomp.local"
           "--tls-san jimi-hendnix.local"
           "--tls-san dev.railbird.ai"
+          "--disable=traefik"
+          "--disable=servicelb"
           "--node-label nixos-nvidia-cdi=enabled"
           "--etcd-arg=quota-backend-bytes=8589934592"
         ]
