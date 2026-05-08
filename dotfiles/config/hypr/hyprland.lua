@@ -281,6 +281,7 @@ local function apply_hyprwinview_config()
         hover_border_col = "rgba(66ccffee)",
         border_size = 3,
         window_order = "application",
+        keys_default_action = "return,enter,space,g,f",
         keys_filter_toggle = "/",
         show_app_icon = 1,
         app_icon_size = 48,
@@ -319,7 +320,7 @@ local function apply_hyprwinview_config()
         right = { "d", "l", "right" },
         up = { "w", "k", "up" },
         down = { "s", "j", "down" },
-        go = { "return", "enter", "space", "g", "f" },
+        default_action = { "return", "enter", "space", "g", "f" },
         bring = { "b", "shift+return", "shift+space" },
         bring_replace = { "shift + b" },
         close = { "escape", "q" },
@@ -2054,18 +2055,32 @@ bind(main_mod .. " + V", exec("wl-paste | xdotool type --file -"))
 bind(main_mod .. " + Tab", hyprwinview({
   action = "show",
   start_in_filter_mode = true,
+  default_action = "bring",
 }), overview_bind_opts)
 bind(main_mod .. " + SHIFT + Tab", hyprwinview({
   action = "show",
   include_current_workspace = false,
   start_in_filter_mode = true,
+  default_action = "bring",
 }), overview_bind_opts)
 bind(main_mod .. " + SHIFT + slash", hyprwinview({ action = "toggle-filter" }), overview_bind_opts)
 bind("ALT + Tab", hyprexpo("open"), overview_bind_opts)
 bind("ALT + SHIFT + Tab", hyprexpo("bring"), overview_bind_opts)
-bind(main_mod .. " + G", exec(shell_ui_command .. " window go"))
-bind(main_mod .. " + B", exec(shell_ui_command .. " window bring"))
-bind(main_mod .. " + SHIFT + B", exec(shell_ui_command .. " window replace"))
+bind(main_mod .. " + G", hyprwinview({
+  action = "show",
+  start_in_filter_mode = true,
+  default_action = "select",
+}), overview_bind_opts)
+bind(main_mod .. " + B", hyprwinview({
+  action = "show",
+  start_in_filter_mode = true,
+  default_action = "bring",
+}), overview_bind_opts)
+bind(main_mod .. " + SHIFT + B", hyprwinview({
+  action = "show",
+  start_in_filter_mode = true,
+  default_action = "bring-replace",
+}), overview_bind_opts)
 
 bind(main_mod .. " + W", function()
   focus_direction("up")
