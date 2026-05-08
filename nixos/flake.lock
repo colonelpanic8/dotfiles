@@ -740,16 +740,16 @@
         ]
       },
       "locked": {
-        "lastModified": 1778094893,
-        "narHash": "sha256-8kN2xim0z20GV7BT2xt/WCWER08fLTEaRvQGLn/uH2E=",
+        "lastModified": 1778202106,
+        "narHash": "sha256-CPSYfruAF8CFWXO95AU0+mjqYl3FhP3b6rHPr2G51iA=",
         "owner": "colonelpanic8",
         "repo": "hyprNStack",
-        "rev": "7d723e850b2a60e08f10d49e11c4e9f9697317a8",
+        "rev": "be239f6daa3d8bfa27da7473c96c24c3bec5d6fc",
         "type": "github"
       },
       "original": {
         "owner": "colonelpanic8",
-        "ref": "codex/new-near-focused-window",
+        "ref": "codex/hyprnstack-combined",
         "repo": "hyprNStack",
         "type": "github"
       }
