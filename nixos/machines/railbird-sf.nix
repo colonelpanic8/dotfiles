@@ -45,8 +45,8 @@
   myModules.postgres.enable = true;
   features.full.enable = true;
 
-  # Single-node k3s with GPU/CDI support
-  myModules.k3s-single-node.enable = true;
+  # Fresh single-node k3s using the existing Railbird k3s module.
+  myModules.k3s-single-node.enable = false;
 
   hardware.nvidia = {
     powerManagement.enable = false;
@@ -67,8 +67,10 @@
   myModules.plasma.enable = true;
   myModules.nvidia.enable = true;
   myModules.gitea-runner.enable = true;
-  # Disable the old multi-node railbird k3s setup
-  myModules.railbird-k3s.enable = false;
+  myModules.railbird-k3s = {
+    enable = true;
+    serverAddr = "";
+  };
   myModules."keepbook-sync".enable = true;
   myModules.remote-hyprland.enable = true;
 
