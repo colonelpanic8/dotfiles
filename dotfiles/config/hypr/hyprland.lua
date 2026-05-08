@@ -54,20 +54,6 @@ local scratchpad_pending = {}
 local monitor_reserved_cache_path = (os.getenv("XDG_RUNTIME_DIR") or "/tmp") .. "/hyprland-monitor-reserved.tsv"
 local scratchpad_fallback_reserved_top = 60
 
-hl.monitor({
-  output = "eDP-1",
-  mode = "2560x1600@240",
-  position = "0x0",
-  scale = "1.333333",
-})
-
-hl.monitor({
-  output = "",
-  mode = "preferred",
-  position = "auto",
-  scale = "auto",
-})
-
 local scratchpads = {
   codex = {
     command = "codex-desktop",
@@ -1999,7 +1985,10 @@ local animations = {
   { leaf = "specialWorkspaceOut", enabled = true, speed = 6, bezier = "smoothOut", style = "slidevert" },
 
   { leaf = "zoomFactor", enabled = true, speed = 7, bezier = "smoothOut" },
-  { leaf = "monitorAdded", enabled = true, speed = 5, bezier = "smoothOut" },
+  -- Disabled for now: Hyprland 0.54.0 can crash while damaging a monitor
+  -- from this startup animation's update callback during output discovery.
+  -- { leaf = "monitorAdded", enabled = true, speed = 5, bezier = "smoothOut" },
+  { leaf = "monitorAdded", enabled = false, speed = 5, bezier = "smoothOut" },
 }
 
 for _, animation in ipairs(animations) do
