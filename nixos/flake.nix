@@ -235,7 +235,6 @@
         flake-utils.follows = "flake-utils";
       };
     };
-
   };
 
   outputs = inputs @ {
@@ -299,6 +298,10 @@
 
     # Combine all home-manager patches
     allHomeManagerPatches = (homeManagerPrPatchesToPatches homeManagerPRPatches) ++ homeManagerCustomPatches;
+
+    perSystem = import ./flake/per-system.nix {
+      inherit self inputs nixpkgs org-agenda-api agenix;
+    };
 
     machinesFilepath = ./machines;
     machineFilenames = builtins.attrNames (builtins.readDir machinesFilepath);
@@ -431,48 +434,7 @@
       };
   in
     {
-      nixConfig = {
-        substituters = [
-          "https://cache.nixos.org/"
-        ];
-        trusted-public-keys = [
-          "cache.nixos.org-1:6NCHdD59X431o0gWypbMrAURkbJ16ZPMQFGspcDShjY="
-        ];
-        extra-substituters = [
-          "http://192.168.1.26:5050"
-          "https://ai.cachix.org"
-          "https://cache.nixos-cuda.org"
-          "https://nix-community.cachix.org"
-          "https://cuda-maintainers.cachix.org"
-          "https://numtide.cachix.org"
-          "https://cache.flox.dev"
-          "https://org-agenda-api.cachix.org"
-          "https://colonelpanic8-dotfiles.cachix.org"
-          "https://codex-cli.cachix.org"
-          "https://claude-code.cachix.org"
-        ];
-        extra-trusted-substituters = [
-          "https://ai.cachix.org"
-          "https://cache.nixos.org/"
-          "https://nix-community.cachix.org"
-          "https://cache.nixos-cuda.org"
-          "https://cuda-maintainers.cachix.org"
-          "https://numtide.cachix.org"
-        ];
-        extra-trusted-public-keys = [
-          "1896Folsom.duckdns.org:U2FTjvP95qwAJo0oGpvmUChJCgi5zQoG1YisoI08Qoo="
-          "ai.cachix.org-1:N9dzRK+alWwoKXQlnn0H6aUx0lU/mspIoz8hMvGvbbc="
-          "cache.nixos-cuda.org:74DUi4Ye579gUqzH4ziL9IyiJBlDpMRn9MBN8oNan9M="
-          "nix-community.cachix.org-1:mB9FSh9qf2dCimDSUo8Zy7bkq5CX+/rkCWyvRCYg3Fs="
-          "cuda-maintainers.cachix.org-1:0dq3bujKpuEPMCX6U4WylrUDZ9JyUG0VpVZa7CNfq5E="
-          "numtide.cachix.org-1:2ps1kLBUWjxIneOy1Ik6cQjb41X0iXVXeHigGmycPPE="
-          "flox-cache-public-1:7F4OyH7ZCnFhcze3fJdfyXYLQw/aV7GEed86nQ7IsOs="
-          "org-agenda-api.cachix.org-1:liKFemKkOLV/rJt2txDNcpDjRsqLuBneBjkSw/UVXKA="
-          "colonelpanic8-dotfiles.cachix.org-1:O6GF3nptpeMFapX29okzO92eSWXR36zqW6ZF2C8P0eQ="
-          "codex-cli.cachix.org-1:1Br3H1hHoRYG22n//cGKJOk3cQXgYobUel6O8DgSing="
-          "claude-code.cachix.org-1:YeXf2aNu7UTX8Vwrze0za1WEDS+4DuI2kVeWEE4fsRk="
-        ];
-      };
+      nixConfig = import ./flake/nix-config.nix;
       nixosConfigurations =
         builtins.mapAttrs (
           machineName: params: let
@@ -485,101 +447,5 @@
         )
         defaultConfigurationParams;
     }
-    // flake-utils.lib.eachDefaultSystem (
-      system: let
-        pkgs = import nixpkgs {inherit system;};
-        lib = pkgs.lib;
-
-        # Get short revs for tagging
-        orgApiRev = builtins.substring 0 7 (org-agenda-api.rev or "unknown");
-        dotfilesRev = builtins.substring 0 7 (self.rev or self.dirtyRev or "dirty");
-
-        # Get tangled config files from org-agenda-api.nix
-        dotfilesOrgApi = import ./org-agenda-api.nix {
-          inherit pkgs system;
-          inherit inputs;
-        };
-        tangledConfig = dotfilesOrgApi.org-agenda-custom-config;
-
-        # Import container build logic
-        containerLib = import ../org-agenda-api/container.nix {
-          inherit pkgs system tangledConfig org-agenda-api orgApiRev dotfilesRev;
-        };
-      in {
-        formatter = pkgs.alejandra;
-
-        packages =
-          {
-            colonelpanic-org-agenda-api = containerLib.containers.colonelpanic;
-            kat-org-agenda-api = containerLib.containers.kat;
-          }
-          // lib.optionalAttrs pkgs.stdenv.isLinux {
-            hyprNStack = inputs.hyprNStack.packages.${system}.hyprNStack;
-            hyprexpo-lua = inputs.hyprland-plugins-lua.packages.${system}.hyprexpo;
-            hyprwinview = inputs.hyprwinview.packages.${system}.hyprwinview;
-            hypr-workspace-history = inputs.hypr-workspace-history.packages.${system}.hypr-workspace-history;
-          };
-
-        checks =
-          {
-            formatting =
-              pkgs.runCommand "alejandra-formatting-check" {
-                nativeBuildInputs = [pkgs.alejandra];
-              } ''
-                alejandra --check ${./.}
-                touch "$out"
-              '';
-          }
-          // lib.optionalAttrs pkgs.stdenv.isLinux {
-            hyprNStack = inputs.hyprNStack.packages.${system}.hyprNStack;
-            hyprexpo-lua = inputs.hyprland-plugins-lua.packages.${system}.hyprexpo;
-            hyprwinview = inputs.hyprwinview.packages.${system}.hyprwinview;
-            hypr-workspace-history = inputs.hypr-workspace-history.packages.${system}.hypr-workspace-history;
-            hyprland-config-syntax = import ./checks/hyprland-config-syntax {
-              inherit pkgs;
-              hyprlandConfig = ../dotfiles/config/hypr/hyprland.lua;
-            };
-            hyprland-verify-config = let
-              hyprlandPackage = inputs.hyprland.packages.${system}.hyprland;
-              hyprNStackPackage = inputs.hyprNStack.packages.${system}.hyprNStack;
-            in
-              pkgs.runCommand "hyprland-lua-verify-config" {} ''
-                cp ${../dotfiles/config/hypr/hyprland.lua} hyprland.lua
-                substituteInPlace hyprland.lua \
-                  --replace-fail /run/current-system/sw/lib/libhyprNStack.so \
-                  ${hyprNStackPackage}/lib/libhyprNStack.so
-                export XDG_RUNTIME_DIR="$TMPDIR/runtime"
-                mkdir -p "$XDG_RUNTIME_DIR"
-                HYPRLAND_NO_CRASHREPORTER=1 ${pkgs.coreutils}/bin/timeout 20s \
-                  ${hyprlandPackage}/bin/Hyprland --verify-config --config "$PWD/hyprland.lua"
-                touch "$out"
-              '';
-          };
-
-        # Dev shell for org-agenda-api deployment
-        devShells.org-agenda-api = pkgs.mkShell {
-          buildInputs = [
-            pkgs.flyctl
-            agenix.packages.${system}.default
-            pkgs.age
-            pkgs.ssh-to-age
-            pkgs.git
-            pkgs.jq
-            pkgs.just
-            pkgs.curl
-          ];
-          shellHook = ''
-            echo ""
-            echo "org-agenda-api deployment shell"
-            echo ""
-            echo "Commands:"
-            echo "  just --list             - Show available API commands"
-            echo "  ./deploy.sh <instance>  - Deploy to Fly.io (colonelpanic or kat)"
-            echo "  flyctl                  - Fly.io CLI"
-            echo "  agenix -e <file>        - Edit encrypted secrets"
-            echo ""
-          '';
-        };
-      }
-    );
+    // flake-utils.lib.eachDefaultSystem perSystem;
 }
