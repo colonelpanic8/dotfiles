@@ -1115,11 +1115,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1778231323,
-        "narHash": "sha256-Vl1PEi0p4vTwEusffSPiFLvMgbly+gbZd2QRuYQRL3Q=",
+        "lastModified": 1778232426,
+        "narHash": "sha256-++SqOzXEkgmiOh7OHHeIvh+OZy1qk02WIdKesHjRW60=",
         "owner": "colonelpanic8",
         "repo": "hyprwinview",
-        "rev": "4185b378f55122a8d3c32a04a6078352e75187c3",
+        "rev": "d12710de81cbec367408fd8e3280c2895353f37d",
         "type": "github"
       },
       "original": {
