@@ -520,6 +520,33 @@ local function window_center(window)
     numeric_component(at, "y", 2) + numeric_component(size, "y", 2) / 2
 end
 
+local function tiled_window_geometry(window)
+  if not window or window.floating then
+    return nil
+  end
+
+  local selector = window_selector(window)
+  if not selector then
+    return nil
+  end
+
+  local at = window.at or {}
+  local size = window.size or {}
+  local width = math.floor(numeric_component(size, "x", 1))
+  local height = math.floor(numeric_component(size, "y", 2))
+  if width <= 0 or height <= 0 then
+    return nil
+  end
+
+  return {
+    selector = selector,
+    x = math.floor(numeric_component(at, "x", 1)),
+    y = math.floor(numeric_component(at, "y", 2)),
+    width = width,
+    height = height,
+  }
+end
+
 local function window_distance_squared(window, x, y)
   local wx, wy = window_center(window)
   local dx = wx - x
@@ -1411,13 +1438,23 @@ local function apply_scratchpad_geometry(name, window, target_monitor)
   end
 end
 
+local function float_active_window_preserving_tiled_geometry()
+  local geometry = tiled_window_geometry(hl.get_active_window())
+  hl.dsp.window.float({ action = "enable", window = geometry and geometry.selector or nil })()
+  if geometry then
+    hl.dsp.window.resize({ x = geometry.width, y = geometry.height, relative = false, window = geometry.selector })()
+    hl.dsp.window.move({ x = geometry.x, y = geometry.y, relative = false, window = geometry.selector })()
+  end
+  return geometry
+end
+
 local function float_and_drag_active_window()
-  hl.dsp.window.float({ action = "enable" })()
+  float_active_window_preserving_tiled_geometry()
   hl.dsp.window.drag()()
 end
 
 local function float_and_resize_active_window()
-  hl.dsp.window.float({ action = "enable" })()
+  float_active_window_preserving_tiled_geometry()
   hl.dsp.window.resize()()
 end
 
