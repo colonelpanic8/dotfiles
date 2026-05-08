@@ -5,6 +5,7 @@ module TaffybarConfig.Widgets
   ( clockWidget,
     endWidgetsForHost,
     startWidgetsForBackend,
+    startWidgetsForHostAndBackend,
   )
 where
 
@@ -412,7 +413,8 @@ sniTrayWidget = do
       prioritizedParams =
         defaultPrioritizedCollapsibleSNITrayParams
           { prioritizedCollapsibleSNITrayParams = collapsibleParams,
-            prioritizedCollapsibleSNITrayVisibilityThreshold = Just visibilityThreshold
+            prioritizedCollapsibleSNITrayVisibilityThreshold = Just visibilityThreshold,
+            prioritizedCollapsibleSNITrayHoverExpand = True
           }
   decorateWithClassAndBoxM
     "sni-tray"
@@ -421,9 +423,12 @@ sniTrayWidget = do
 startWidgetsForBackend :: Backend -> [TaffyIO Gtk.Widget]
 startWidgetsForBackend backend =
   case backend of
-    BackendX11 -> [omniMenuWidget, workspacesWidget, layoutWidget, windowsWidget]
+    BackendX11 -> [omniMenuWidget, workspacesWidget, layoutWidget]
     -- These Wayland widgets are Hyprland-specific.
-    BackendWayland -> [omniMenuWidget, workspacesWidget, windowsWidget]
+    BackendWayland -> [omniMenuWidget, workspacesWidget]
+
+startWidgetsForHostAndBackend :: String -> Backend -> [TaffyIO Gtk.Widget]
+startWidgetsForHostAndBackend _hostName = startWidgetsForBackend
 
 endWidgetsForHost :: String -> [TaffyIO Gtk.Widget]
 endWidgetsForHost hostName =

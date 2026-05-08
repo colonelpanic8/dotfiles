@@ -17,6 +17,91 @@ with lib; let
       pkgs.cni-plugin-flannel
     ];
   };
+  nvidia-device-plugin-version = "v0.19.1";
+  nvidia-device-plugin-manifest = pkgs.writeText "nvidia-device-plugin.yaml" ''
+    apiVersion: node.k8s.io/v1
+    handler: nvidia
+    kind: RuntimeClass
+    metadata:
+      name: nvidia
+      labels:
+        app.kubernetes.io/component: gpu-operator
+    ---
+    apiVersion: apps/v1
+    kind: DaemonSet
+    metadata:
+      name: nvidia-device-plugin-daemonset
+      namespace: kube-system
+      labels:
+        app.kubernetes.io/name: nvidia-device-plugin
+    spec:
+      selector:
+        matchLabels:
+          app.kubernetes.io/name: nvidia-device-plugin
+      updateStrategy:
+        type: RollingUpdate
+      template:
+        metadata:
+          labels:
+            app.kubernetes.io/name: nvidia-device-plugin
+        spec:
+          runtimeClassName: nvidia
+          priorityClassName: system-node-critical
+          nodeSelector:
+            nvidia.com/gpu.present: "true"
+          tolerations:
+            - key: nvidia.com/gpu
+              operator: Exists
+              effect: NoSchedule
+          containers:
+            - name: nvidia-device-plugin-ctr
+              image: nvcr.io/nvidia/k8s-device-plugin:${nvidia-device-plugin-version}
+              imagePullPolicy: IfNotPresent
+              command: ["nvidia-device-plugin"]
+              env:
+                - name: DEVICE_ID_STRATEGY
+                  value: uuid
+                - name: NVIDIA_VISIBLE_DEVICES
+                  value: all
+                - name: NVIDIA_DRIVER_CAPABILITIES
+                  value: compute,utility
+              securityContext:
+                allowPrivilegeEscalation: false
+                capabilities:
+                  drop: ["ALL"]
+              volumeMounts:
+                - name: kubelet-device-plugins-dir
+                  mountPath: /var/lib/kubelet/device-plugins
+                - name: cdi-specs
+                  mountPath: /var/run/cdi
+                  readOnly: true
+          volumes:
+            - name: kubelet-device-plugins-dir
+              hostPath:
+                path: /var/lib/kubelet/device-plugins
+                type: Directory
+            - name: cdi-specs
+              hostPath:
+                path: /var/run/cdi
+                type: DirectoryOrCreate
+  '';
+  gpu-test-pod = pkgs.writeText "gpu-test-pod.yaml" ''
+    apiVersion: v1
+    kind: Pod
+    metadata:
+      name: gpu-test
+      namespace: default
+    spec:
+      restartPolicy: Never
+      runtimeClassName: nvidia
+      containers:
+        - name: cuda-test
+          image: nvcr.io/nvidia/cuda:12.6.3-base-ubuntu24.04
+          command: ["nvidia-smi"]
+          resources:
+            limits:
+              nvidia.com/gpu: 1
+  '';
 in {
   options = {
     myModules.railbird-k3s = {
@@ -70,7 +155,11 @@ in {
       };
     };
 
-    hardware.nvidia-container-toolkit.enable = true;
+    hardware.nvidia-container-toolkit = {
+      enable = true;
+      device-name-strategy = "uuid";
+      mount-nvidia-executables = true;
+    };
     virtualisation.containers = {
       containersConf.cniPlugins = [
         pkgs.cni-plugins
@@ -152,7 +241,10 @@ in {
           "--tls-san biskcomp.local"
           "--tls-san jimi-hendnix.local"
           "--tls-san dev.railbird.ai"
+          "--disable=traefik"
+          "--disable=servicelb"
           "--node-label nixos-nvidia-cdi=enabled"
+          "--node-label nvidia.com/gpu.present=true"
           "--etcd-arg=quota-backend-bytes=8589934592"
         ]
         ++ cfg.extraFlags;
@@ -163,16 +255,57 @@ in {
         plugins."io.containerd.grpc.v1.cri".enable_cdi = true
 
         [plugins."io.containerd.grpc.v1.cri".containerd.runtimes.nvidia]
+        privileged_without_host_devices = false
+        runtime_engine = ""
+        runtime_root = ""
         runtime_type = "io.containerd.runc.v2"
 
         [plugins."io.containerd.grpc.v1.cri".containerd.runtimes.nvidia.options]
-        BinaryName = "/run/current-system/sw/bin/nvidia-container-runtime.cdi"
+        BinaryName = "${lib.getOutput "tools" config.hardware.nvidia-container-toolkit.package}/bin/nvidia-container-runtime.cdi"
 
         [debug]
         level = "trace"
       '';
       gracefulNodeShutdown = {
         enable = true;
+      };
+    };
+
+    environment.systemPackages = with pkgs; [
+      kubectl
+      kubernetes-helm
+      nvidia-container-toolkit
+      nvidia-container-toolkit.tools
+    ];
+
+    environment.etc."k3s/gpu-test-pod.yaml".source = gpu-test-pod;
+    environment.etc."k3s/nvidia-device-plugin.yaml".source = nvidia-device-plugin-manifest;
+
+    systemd.services.k3s-gpu-plugin-deploy = {
+      description = "Deploy NVIDIA device plugin to k3s";
+      after = ["k3s.service"];
+      wants = ["k3s.service"];
+      wantedBy = ["multi-user.target"];
+      path = [pkgs.kubectl pkgs.coreutils];
+      serviceConfig = {
+        Type = "oneshot";
+        RemainAfterExit = true;
+        ExecStart = pkgs.writeShellScript "deploy-nvidia-device-plugin" ''
+          export KUBECONFIG=/etc/rancher/k3s/k3s.yaml
+
+          echo "Waiting for k3s API server..."
+          for i in $(seq 1 60); do
+            if kubectl get nodes &>/dev/null; then
+              echo "k3s API server is ready"
+              break
+            fi
+            sleep 5
+          done
+
+          kubectl delete daemonset -n kube-system generic-cdi-plugin --ignore-not-found=true
+          kubectl apply -f ${nvidia-device-plugin-manifest}
+          kubectl rollout status daemonset/nvidia-device-plugin-daemonset -n kube-system --timeout=120s || true
+        '';
       };
     };
   };

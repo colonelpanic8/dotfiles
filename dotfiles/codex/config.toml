@@ -5,7 +5,9 @@ personality = "pragmatic"
 suppress_unstable_features_warning = true
 
 # Portable Codex defaults. Machine-local additions are appended from
-# dotfiles/codex/config.local.toml by Home Manager.
+# dotfiles/codex/config.local.toml by Home Manager. Codex-owned local
+# state, including project trust settings, is harvested there before
+# this file is regenerated.
 
 [mcp_servers.chrome-devtools]
 command = "npx"

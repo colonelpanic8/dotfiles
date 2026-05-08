@@ -3,18 +3,20 @@ max_visible_icons: 0
 priorities:
 - key: item-id:nm-applet
   priority: 3
+- key: icon-name:gitea
+  priority: 2
 - key: icon-name:github
   priority: 2
-- key: icon-name:gitea
-  priority: 1
 - key: icon-name:gmail
+  priority: 2
+- key: icon-name:password
+  priority: 1
+- key: icon-name:text-org
   priority: 1
 - key: item-id:git-sync-rs
   priority: 1
 - key: process:slack
   priority: 1
-- key: icon-name:blueman-tray
-  priority: 0
 - key: icon-name:kdeconnectindicatordark
   priority: 0
 - key: item-id:flameshot
@@ -23,7 +25,11 @@ priorities:
   priority: 0
 - key: item-id:udiskie
   priority: 0
+- key: icon-name::1.89
+  priority: -1
 - key: icon-name:audio-volume-low
+  priority: -1
+- key: icon-name:blueman-tray
   priority: -1
 - key: item-id:blueman
   priority: -1
