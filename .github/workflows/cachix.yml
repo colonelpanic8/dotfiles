@@ -1,22 +1,20 @@
-name: Build and Push Cachix (NixOS)
+name: Build and Push Cachix (imalison-taffybar)
 
 on:
   push:
     branches: [master]
     paths:
-      - "nixos/**"
-      - "org-agenda-api/**"
+      - "dotfiles/config/taffybar/**"
       - ".github/workflows/cachix.yml"
   pull_request:
     branches: [master]
     paths:
-      - "nixos/**"
-      - "org-agenda-api/**"
+      - "dotfiles/config/taffybar/**"
       - ".github/workflows/cachix.yml"
   workflow_dispatch: {}
 
 jobs:
-  nixos-strixi-minaj:
+  imalison-taffybar:
     runs-on: ubuntu-latest
 
     permissions:
@@ -51,9 +49,6 @@ jobs:
       - name: Install Nix
         uses: DeterminateSystems/nix-installer-action@v16
 
-      - name: Use GitHub Actions Cache for /nix/store
-        uses: DeterminateSystems/magic-nix-cache-action@v7
-
       - name: Require Cachix config (push only)
         if: github.event_name == 'push'
         env:
@@ -85,20 +80,10 @@ jobs:
           name: ${{ vars.CACHIX_CACHE_NAME }}
           skipPush: true
 
-      - name: Check Nix formatting
+      - name: Build imalison-taffybar
         run: |
           set -euxo pipefail
           nix build \
             --no-link \
             --print-build-logs \
-            ./nixos#checks.x86_64-linux.formatting \
-            --override-input railbird-secrets ./nixos/ci/railbird-secrets-stub
-
-      - name: Build NixOS system (strixi-minaj)
-        run: |
-          set -euxo pipefail
-          nix build \
-            --no-link \
-            --print-build-logs \
-            ./nixos#nixosConfigurations.strixi-minaj.config.system.build.toplevel \
-            --override-input railbird-secrets ./nixos/ci/railbird-secrets-stub
+            ./dotfiles/config/taffybar#defaultPackage.x86_64-linux
