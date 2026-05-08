@@ -35,13 +35,11 @@
     ./laptop.nix
     ./nix.nix
     ./notifications-tray-icon.nix
-    ./noctalia.nix
     ./nvidia.nix
     ./options.nix
     ./plasma.nix
     ./postgres.nix
     ./rabbitmq.nix
-    ./quickshell.nix
     ./remote-hyprland.nix
     ./river-xmonad.nix
     ./secrets.nix

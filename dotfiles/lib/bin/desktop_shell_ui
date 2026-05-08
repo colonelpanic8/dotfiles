@@ -6,9 +6,6 @@ default_shell_ui="${IM_HYPRLAND_SHELL_UI:-taffybar}"
 
 normalize_shell_ui() {
   case "${1:-}" in
-    noctalia)
-      printf '%s\n' "noctalia"
-      ;;
     taffybar|rofi)
       printf '%s\n' "taffybar"
       ;;
@@ -43,14 +40,7 @@ apply_shell_ui() {
   systemctl --user import-environment IM_HYPRLAND_SHELL_UI 2>/dev/null || true
 
   case "$shell_ui" in
-    noctalia)
-      systemctl --user stop taffybar.service 2>/dev/null || true
-      systemctl --user reset-failed taffybar.service 2>/dev/null || true
-      systemctl --user start noctalia-shell.service
-      ;;
     taffybar)
-      systemctl --user stop noctalia-shell.service 2>/dev/null || true
-      systemctl --user reset-failed noctalia-shell.service 2>/dev/null || true
       systemctl --user start taffybar.service
       ;;
   esac
@@ -59,7 +49,7 @@ apply_shell_ui() {
 set_shell_ui() {
   local shell_ui
   shell_ui="$(normalize_shell_ui "${1:-}")" || {
-    echo "usage: desktop_shell_ui set {taffybar|noctalia}" >&2
+    echo "usage: desktop_shell_ui set taffybar" >&2
     exit 2
   }
 
@@ -75,10 +65,7 @@ case "${1:-current}" in
     set_shell_ui "${2:-}"
     ;;
   toggle)
-    case "$(current_shell_ui)" in
-      noctalia) set_shell_ui taffybar ;;
-      *) set_shell_ui noctalia ;;
-    esac
+    set_shell_ui taffybar
     ;;
   apply)
     apply_shell_ui "$(current_shell_ui)"

@@ -194,7 +194,7 @@ in
   // {
     options = lib.recursiveUpdate enabledModule.options {
       myModules.desktop.shellUi = lib.mkOption {
-        type = lib.types.enum ["noctalia" "taffybar"];
+        type = lib.types.enum ["taffybar"];
         default = "taffybar";
         description = ''
           Desktop shell UI used by Hyprland-oriented bindings. This controls

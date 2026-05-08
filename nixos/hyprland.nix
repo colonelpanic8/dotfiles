@@ -111,7 +111,6 @@
     runtimeInputs = [
       pkgs.rofi
       hyprRofiWindow
-      inputs.noctalia.packages.${system}.default
     ];
     text = ''
       exec ${../dotfiles/lib/bin/hypr_shell_ui} "$@"
@@ -160,9 +159,6 @@
     };
   };
   enabledModule = makeEnable config "myModules.hyprland" true {
-    # Install both shell service units so `desktop_shell_ui set ...` can switch
-    # between them at runtime without a NixOS rebuild.
-    myModules.noctalia.enable = lib.mkDefault true;
     myModules.taffybar.enable = lib.mkDefault true;
 
     # Needed for hyprlock authentication without PAM fallback warnings.

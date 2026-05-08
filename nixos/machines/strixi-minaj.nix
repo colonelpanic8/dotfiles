@@ -22,7 +22,6 @@
   myModules.gitea-runner.enable = false;
   myModules.nvidia.enable = true;
   myModules.electron.enable = true;
-  myModules.quickshell.enable = true;
   myModules.wyoming.enable = false;
   myModules.tts.enable = true;
   myModules."keepbook-sync".enable = true;
