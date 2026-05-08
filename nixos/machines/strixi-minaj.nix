@@ -113,7 +113,7 @@
 
   home-manager.sharedModules = [
     {
-      services.kanshi.settings = lib.mkBefore [
+      services.kanshi.settings = lib.mkAfter [
         {
           profile.name = "internal-only";
           profile.outputs = [
@@ -127,6 +127,18 @@
             {
               criteria = "Microstep MPG341CX OLED Unknown";
               status = "disable";
+            }
+          ];
+        }
+        {
+          profile.name = "internal-panel-only";
+          profile.outputs = [
+            {
+              criteria = "eDP-1";
+              status = "enable";
+              mode = "2560x1600@240Hz";
+              position = "0,0";
+              scale = 1.333333;
             }
           ];
         }
