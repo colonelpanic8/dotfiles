@@ -198,6 +198,10 @@
   swapDevices = [];
 
   networking.hostName = "justin-bieber-creek";
+  myModules.hostIdentity = {
+    emoticon = "🎤";
+    tmux.background = "#c026d3";
+  };
 
   networking.useDHCP = false;
   nixpkgs.hostPlatform = lib.mkDefault "x86_64-linux";

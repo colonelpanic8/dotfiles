@@ -13,6 +13,10 @@
   myModules.wsl.enable = true;
 
   networking.hostName = "jay-lenovo-wsl";
+  myModules.hostIdentity = {
+    emoticon = "💼";
+    tmux.background = "#15803d";
+  };
 
   wsl.defaultUser = "kat";
   system.stateVersion = "22.05";

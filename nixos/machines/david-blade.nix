@@ -55,6 +55,10 @@
   ];
 
   networking.hostName = "david-blade";
+  myModules.hostIdentity = {
+    emoticon = "🗡️";
+    tmux.background = "#be123c";
+  };
 
   home-manager.sharedModules = [
     {

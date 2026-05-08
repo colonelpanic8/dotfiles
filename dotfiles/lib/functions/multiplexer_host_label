@@ -1,0 +1,30 @@
+#!/usr/bin/env sh
+
+multiplexer_host_label() {
+    tmux_format=0
+    if [ "$1" = "--tmux" ]; then
+        tmux_format=1
+        shift
+    fi
+
+    host=$(hostname -s 2>/dev/null || hostname 2>/dev/null || printf unknown)
+    host=${host%%.*}
+
+    identity_file=${MULTIPLEXER_HOST_IDENTITY_FILE:-/etc/multiplexer-host-identity}
+    if [ -r "$identity_file" ]; then
+        # shellcheck disable=SC1090
+        . "$identity_file"
+    fi
+
+    icon=${MULTIPLEXER_HOST_ICON:-🖥️}
+    tmux_bg=${MULTIPLEXER_HOST_TMUX_BG:-#222222}
+    tmux_fg=${MULTIPLEXER_HOST_TMUX_FG:-#ffffff}
+
+    if [ "$tmux_format" -eq 1 ]; then
+        printf '#[fg=%s,bg=%s,bold]%s %s#[default]' "$tmux_fg" "$tmux_bg" "$icon" "$host"
+    else
+        printf '%s %s' "$icon" "$host"
+    fi
+}
+
+multiplexer_host_label "$@"

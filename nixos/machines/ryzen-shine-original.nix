@@ -26,6 +26,10 @@
   boot.loader.systemd-boot.configurationLimit = 5;
 
   networking.hostName = "ryzen-shine";
+  myModules.hostIdentity = {
+    emoticon = "☀️";
+    tmux.background = "#ea580c";
+  };
 
   environment.systemPackages = with pkgs; [
     perf

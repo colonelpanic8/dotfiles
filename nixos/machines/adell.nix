@@ -71,6 +71,10 @@
   swapDevices = [];
 
   networking.hostName = "adell";
+  myModules.hostIdentity = {
+    emoticon = "💻";
+    tmux.background = "#7c3aed";
+  };
 
   powerManagement.cpuFreqGovernor = lib.mkDefault "performance";
 

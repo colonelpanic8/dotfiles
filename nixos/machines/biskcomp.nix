@@ -162,6 +162,10 @@ in {
   ];
 
   networking.hostName = "biskcomp";
+  myModules.hostIdentity = {
+    emoticon = "🧮";
+    tmux.background = "#0f766e";
+  };
   system.stateVersion = "23.11";
 
   home-manager.sharedModules = [

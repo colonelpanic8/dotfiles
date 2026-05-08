@@ -58,6 +58,10 @@
   };
 
   networking.hostName = "jay-lenovo";
+  myModules.hostIdentity = {
+    emoticon = "💼";
+    tmux.background = "#16a34a";
+  };
 
   services.power-profiles-daemon.enable = false;
   services.tlp.enable = true;

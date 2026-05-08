@@ -12,6 +12,10 @@
   myModules.wsl.enable = true;
 
   networking.hostName = "strixi-minaj-wsl";
+  myModules.hostIdentity = {
+    emoticon = "👩🏿";
+    tmux.background = "#4338ca";
+  };
 
   wsl.defaultUser = "imalison";
   system.stateVersion = "23.11"; # Did you read the comment?

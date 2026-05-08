@@ -19,6 +19,10 @@
   myModules.wsl.enable = true;
 
   networking.hostName = "ryzen-shine-wsl";
+  myModules.hostIdentity = {
+    emoticon = "☀️";
+    tmux.background = "#f97316";
+  };
 
   wsl.defaultUser = "imalison";
   system.stateVersion = "22.05";

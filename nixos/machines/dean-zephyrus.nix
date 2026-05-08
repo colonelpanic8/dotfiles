@@ -16,6 +16,10 @@
   myModules.wsl.enable = true;
 
   networking.hostName = "dean-zephyrus";
+  myModules.hostIdentity = {
+    emoticon = "🌬️";
+    tmux.background = "#0284c7";
+  };
 
   wsl.defaultUser = "dean";
   system.stateVersion = "22.05";

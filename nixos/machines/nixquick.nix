@@ -32,6 +32,10 @@
   services.k3s.enable = lib.mkForce false;
 
   networking.hostName = "nixquick";
+  myModules.hostIdentity = {
+    emoticon = "🐩";
+    tmux.background = "#db2777";
+  };
 
   hardware.enableRedistributableFirmware = true;
   boot.initrd.availableKernelModules = ["xhci_pci" "ahci" "nvme" "usbhid" "usb_storage" "sd_mod"];

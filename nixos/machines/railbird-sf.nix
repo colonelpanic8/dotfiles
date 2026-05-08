@@ -13,6 +13,10 @@
   ];
 
   networking.hostName = "railbird-sf";
+  myModules.hostIdentity = {
+    emoticon = "🐦";
+    tmux.background = "#0891b2";
+  };
 
   # Allow nginx to serve content synced into /var/lib/syncthing/* (owned by syncthing:syncthing, 2770 perms).
   users.users.nginx.extraGroups = ["syncthing"];

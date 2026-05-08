@@ -120,6 +120,11 @@
   ];
 
   networking.hostName = "jimi-hendnix";
+  myModules.hostIdentity = {
+    emoticon = "🎸";
+    tmux.background = "#ca8a04";
+    tmux.foreground = "#111111";
+  };
 
   system.stateVersion = "23.05";
 }
