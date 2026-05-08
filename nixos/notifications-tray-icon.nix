@@ -22,6 +22,8 @@ makeEnable config "myModules.notifications-tray-icon" true {
                   (oldAttrs.patches or [])
                   ++ [
                     ./patches/notifications-tray-icon-gmail-oauth-detached-browser.patch
+                    ./patches/notifications-tray-icon-github-menu-item-id.patch
+                    ./patches/notifications-tray-icon-open-url-systemd-run.patch
                   ];
               });
           });
@@ -54,6 +56,9 @@ makeEnable config "myModules.notifications-tray-icon" true {
       };
       Service = {
         ExecStart = execStart;
+        # URL handlers can outlive the tray process. Keep restarts from killing
+        # unrelated GUI apps if a handler ever leaks into this service cgroup.
+        KillMode = "process";
         Restart = "always";
         RestartSec = 3;
       };

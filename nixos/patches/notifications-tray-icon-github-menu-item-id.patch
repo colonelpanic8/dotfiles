@@ -1,0 +1,12 @@
+diff --git a/src/StatusNotifier/Item/Notifications/GitHub.hs b/src/StatusNotifier/Item/Notifications/GitHub.hs
+index 5d7e118..56a243b 100644
+--- a/src/StatusNotifier/Item/Notifications/GitHub.hs
++++ b/src/StatusNotifier/Item/Notifications/GitHub.hs
+@@ -148,7 +148,7 @@
+       markAsRead = executeRequest auth $ markNotificationAsReadR thisNotificationId
+ 
+-  menuItem <- menuitemNewWithId $ fromIntegral $ untagId thisNotificationId
++  menuItem <- menuitemNew
+   textVariant <- liftIO $ toGVariant notificationText
+   menuitemPropertySetVariant menuItem "label" textVariant
+ 

@@ -1,0 +1,43 @@
+diff --git a/src/StatusNotifier/Item/Notifications/Util.hs b/src/StatusNotifier/Item/Notifications/Util.hs
+index 87f73aa..bb5513e 100644
+--- a/src/StatusNotifier/Item/Notifications/Util.hs
++++ b/src/StatusNotifier/Item/Notifications/Util.hs
+@@ -45,9 +45,37 @@
+ passGetMain name = do
+   Right (value, _) <- passGet name
+   return value
+ 
++runDetached :: [String] -> IO (Either String String)
++runDetached args = do
++  logM "System.Taffybar.Util" INFO $
++       printf "Starting detached command with args %s" (show args)
++  (_, _, _, _) <-
++    P.createProcess
++      (P.proc "/usr/bin/env" args)
++        { P.std_in = P.NoStream
++        , P.std_out = P.NoStream
++        , P.std_err = P.NoStream
++        , P.close_fds = True
++        }
++  return $ Right ""
++
+ xdgOpen :: MonadIO m => [String] -> m (Either String String)
+-xdgOpen args = runCommandFromPath ("xdg-open":args)
++xdgOpen args = liftIO $ do
++  -- Route URL handlers through systemd so browsers are not parented to the
++  -- long-running tray icon service. Otherwise xdg-open can pull Chrome/Electron
++  -- into this service's cgroup and make restarts kill unrelated GUI apps.
++  result <- runCommandFromPath
++    ( [ "systemd-run"
++      , "--user"
++      , "--collect"
++      , "--quiet"
++      , "/usr/bin/env"
++      , "xdg-open"
++      ]
++      ++ args
++    )
++  either (const $ runDetached ("xdg-open":args)) (const $ return result) result
+ 
+ openURL :: MonadIO m => String -> m (Either String String)
+ openURL = xdgOpen . return
