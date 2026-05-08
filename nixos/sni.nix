@@ -7,14 +7,7 @@
   ...
 }: let
   system = pkgs.stdenv.hostPlatform.system;
-  kanshiSniPackage = inputs.kanshi-sni.packages.${system}.default.overrideAttrs (old: {
-    patches =
-      (old.patches or [])
-      ++ [
-        ./patches/kanshi-sni-refresh-and-reconnect.patch
-        ./patches/kanshi-sni-keep-menu-root-alive.patch
-      ];
-  });
+  kanshiSniPackage = inputs.kanshi-sni.packages.${system}.default;
 in
   makeEnable config "myModules.sni" true {
     systemd.user.services.blueman-applet.serviceConfig.ExecStart = lib.mkForce [

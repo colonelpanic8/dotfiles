@@ -1193,11 +1193,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1770983026,
-        "narHash": "sha256-l5nxTqh8YeYSWjFZu6067gwpRajSaRiIK7nQ9zwXWFU=",
+        "lastModified": 1778232476,
+        "narHash": "sha256-J2fwFSt7Ae39Sp5rlZ/WegIX8uuPuz5PZGcumvXXNmY=",
         "owner": "taffybar",
         "repo": "kanshi-sni",
-        "rev": "a31a95b773c6a9c282a07c9a556f7d7a0ba23ba3",
+        "rev": "6a4d4b18666fb6ff45f37ae919fdd23d669c0787",
         "type": "github"
       },
       "original": {
