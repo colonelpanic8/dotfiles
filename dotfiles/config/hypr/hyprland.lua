@@ -728,6 +728,22 @@ local function set_layout(layout)
   end
 end
 
+_G.im_hyprland_set_layout = function(layout)
+  if not layout_names[layout] then
+    hl.notification.create({
+      text = "Unknown layout: " .. tostring(layout),
+      duration = 1800,
+      icon = notification_icons.warning,
+      color = "rgba(edb443ff)",
+      font_size = 13,
+    })
+    return
+  end
+
+  set_layout(layout)
+  notify_layout(layout)
+end
+
 local function sync_layout_for_active_workspace()
   current_layout = current_workspace_layout()
   hl.config({ general = { layout = hyprland_layout(current_layout) } })
@@ -2308,6 +2324,7 @@ bind(hyper .. " + P", exec("rofi-pass"))
 bind(hyper .. " + H", exec([[grim -g "$(slurp)" - | swappy -f -]]))
 bind(hyper .. " + C", exec("rofi_tmcodex.sh"))
 bind(hyper .. " + SHIFT + L", exec("hyprlock"))
+bind(hyper .. " + L", exec("hypr_rofi_layout"))
 bind(hyper .. " + K", exec("rofi_kill_process.sh"))
 bind(hyper .. " + SHIFT + K", exec("rofi_kill_all.sh"))
 bind(hyper .. " + R", exec("rofi-systemd"))

@@ -116,6 +116,19 @@
       exec ${../dotfiles/lib/bin/hypr_shell_ui} "$@"
     '';
   };
+  hyprRofiLayout = pkgs.writeShellApplication {
+    name = "hypr_rofi_layout";
+    runtimeInputs = [
+      pkgs.coreutils
+      pkgs.findutils
+      pkgs.gawk
+      pkgs.rofi
+      hyprlandPackage
+    ];
+    text = ''
+      exec ${../dotfiles/lib/bin/hypr_rofi_layout} "$@"
+    '';
+  };
   hyprscratchSettings = {
     daemon_options = "clean";
     global_options = "";
@@ -267,6 +280,7 @@
         ddcutil # Monitor input switching over DDC/CI
 
         # For scripts
+        hyprRofiLayout
         hyprRofiWindow
         hyprShellUi
         jq
