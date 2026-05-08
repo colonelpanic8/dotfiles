@@ -41,15 +41,7 @@
         sessionCommands = ''
           systemctl --user import-environment GDK_PIXBUF_MODULE_FILE DBUS_SESSION_BUS_ADDRESS PATH
         '';
-        setupCommands = ''
-          autorandr -c
-          systemctl restart autorandr.service
-        '';
       };
-    };
-
-    services.autorandr = {
-      enable = true;
     };
 
     environment.sessionVariables = {

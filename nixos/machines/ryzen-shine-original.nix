@@ -36,10 +36,6 @@
     enable = false;
   };
 
-  services.autorandr = {
-    enable = true;
-  };
-
   hardware.enableRedistributableFirmware = true;
 
   networking.interfaces.enp5s0.useDHCP = true;
