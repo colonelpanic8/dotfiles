@@ -2,7 +2,7 @@ local M = {}
 
 function M.setup(ctx)
   local _ENV = ctx
-  if enable_nstack then
+  if enable_nstack and not verify_config then
     hl.plugin.load("/run/current-system/sw/lib/libhyprNStack.so")
   end
   if enable_hyprexpo and not verify_config then

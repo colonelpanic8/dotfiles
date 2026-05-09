@@ -57,22 +57,9 @@ in {
         inherit pkgs;
         hyprlandConfigDir = ../../dotfiles/config/hypr;
       };
-      hyprland-verify-config = let
-        hyprlandPackage = inputs.hyprland.packages.${system}.hyprland;
-        hyprNStackPackage = inputs.hyprNStack.packages.${system}.hyprNStack;
-      in
-        pkgs.runCommand "hyprland-lua-verify-config" {} ''
-          cp -r ${../../dotfiles/config/hypr}/. .
-          chmod -R +w .
-          substituteInPlace hyprland/settings.lua \
-            --replace-fail /run/current-system/sw/lib/libhyprNStack.so \
-            ${hyprNStackPackage}/lib/libhyprNStack.so
-          export XDG_RUNTIME_DIR="$TMPDIR/runtime"
-          mkdir -p "$XDG_RUNTIME_DIR"
-          HYPRLAND_NO_CRASHREPORTER=1 ${pkgs.coreutils}/bin/timeout 20s \
-            ${hyprlandPackage}/bin/Hyprland --verify-config --config "$PWD/hyprland.lua"
-          touch "$out"
-        '';
+      # Hyprland 0.54 currently segfaults in --verify-config before it can
+      # validate even an empty config in this environment. Keep coverage in
+      # hyprland-config-syntax until the upstream verifier is usable again.
     };
 
   # Dev shell for org-agenda-api deployment
