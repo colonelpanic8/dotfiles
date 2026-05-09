@@ -21,7 +21,7 @@ multiplexer_host_label() {
     tmux_fg=${MULTIPLEXER_HOST_TMUX_FG:-#ffffff}
 
     if [ "$tmux_format" -eq 1 ]; then
-        printf '#[fg=%s,bg=%s,bold]%s %s#[default]' "$tmux_fg" "$tmux_bg" "$icon" "$host"
+        printf '%s #[fg=%s,bg=%s,bold] %s #[default]' "$icon" "$tmux_fg" "$tmux_bg" "$host"
     else
         printf '%s %s' "$icon" "$host"
     fi
