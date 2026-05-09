@@ -13,6 +13,11 @@ pkgs.runCommand "hyprland-config-syntax" {
     exit 1
   fi
 
+  if grep -nE 'hl[.]dsp.*[)][(][)]' hyprland.lua; then
+    echo "hyprland.lua should use hl.dispatch(...) instead of calling dispatcher objects directly" >&2
+    exit 1
+  fi
+
   lua ${./smoke-test.lua} ./hyprland.lua
   touch "$out"
 ''
