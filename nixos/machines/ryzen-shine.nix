@@ -20,7 +20,7 @@
     enable = true;
     port = 3090;
   };
-  myModules.gitea-runner.enable = true;
+  myModules.gitea-runner.enable = false;
   myModules.postgres.enable = true;
   myModules.tts.enable = true;
   myModules.cua = {
