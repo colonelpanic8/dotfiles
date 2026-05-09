@@ -137,8 +137,9 @@ notifications, SNI/tray support, fonts, and app defaults.
 
 The currently important pieces are:
 
-- Hyprland configuration in [[file:dotfiles/config/hypr/hyprland.lua][dotfiles/config/hypr/hyprland.lua]], backed by custom
-  plugin inputs in the NixOS flake.
+- Hyprland configuration in [[file:dotfiles/config/hypr/hyprland.lua][dotfiles/config/hypr/hyprland.lua]], with imported Lua
+  modules under [[file:dotfiles/config/hypr/hyprland/][dotfiles/config/hypr/hyprland/]], backed by custom plugin inputs in
+  the NixOS flake.
 - XMonad configuration in [[file:dotfiles/config/xmonad/xmonad.hs][dotfiles/config/xmonad/xmonad.hs]], with upstream
   =xmonad= and =xmonad-contrib= available as submodules/checkouts.
 - Taffybar configuration in [[file:dotfiles/config/taffybar/taffybar.hs][dotfiles/config/taffybar/taffybar.hs]], plus a local

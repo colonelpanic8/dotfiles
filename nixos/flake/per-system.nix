@@ -55,15 +55,16 @@ in {
       hypr-workspace-history = inputs.hypr-workspace-history.packages.${system}.hypr-workspace-history;
       hyprland-config-syntax = import ../checks/hyprland-config-syntax {
         inherit pkgs;
-        hyprlandConfig = ../../dotfiles/config/hypr/hyprland.lua;
+        hyprlandConfigDir = ../../dotfiles/config/hypr;
       };
       hyprland-verify-config = let
         hyprlandPackage = inputs.hyprland.packages.${system}.hyprland;
         hyprNStackPackage = inputs.hyprNStack.packages.${system}.hyprNStack;
       in
         pkgs.runCommand "hyprland-lua-verify-config" {} ''
-          cp ${../../dotfiles/config/hypr/hyprland.lua} hyprland.lua
-          substituteInPlace hyprland.lua \
+          cp -r ${../../dotfiles/config/hypr}/. .
+          chmod -R +w .
+          substituteInPlace hyprland/settings.lua \
             --replace-fail /run/current-system/sw/lib/libhyprNStack.so \
             ${hyprNStackPackage}/lib/libhyprNStack.so
           export XDG_RUNTIME_DIR="$TMPDIR/runtime"
