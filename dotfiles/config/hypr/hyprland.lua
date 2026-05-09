@@ -1478,6 +1478,25 @@ local function float_and_resize_active_window()
   dispatch(hl.dsp.window.resize())
 end
 
+local function toggle_pinned_active_window()
+  local window = hl.get_active_window()
+  local selector = window_selector(window)
+  if not window or not selector then
+    return
+  end
+
+  if window.pinned then
+    dispatch(hl.dsp.window.pin({ action = "disable", window = selector }))
+    dispatch(hl.dsp.window.float({ action = "disable", window = selector }))
+    return
+  end
+
+  if not window.floating then
+    float_active_window_preserving_tiled_geometry()
+  end
+  dispatch(hl.dsp.window.pin({ action = "enable", window = selector }))
+end
+
 local function schedule_scratchpad_geometry(name, window, target_monitor)
   hl.timer(function()
     apply_scratchpad_geometry(name, window, target_monitor)
@@ -1762,6 +1781,7 @@ local function show_active_window_info()
     "Class: " .. tostring(window.class or ""),
     "Title: " .. tostring(window.title or ""),
     "Workspace: " .. tostring(workspace),
+    "Pinned: " .. tostring(window.pinned or false),
     "Address: " .. tostring(window.address or ""),
     "PID: " .. tostring(window.pid or ""),
   }
@@ -1943,10 +1963,10 @@ hl.config({
   general = {
     gaps_in = 5,
     gaps_out = 10,
-    border_size = 0,
+    border_size = 2,
     col = {
-      active_border = { colors = { "rgba(edb443ee)", "rgba(33ccffee)" }, angle = 45 },
-      inactive_border = "rgba(595959aa)",
+      active_border = { colors = { "rgba(3b82f6ee)", "rgba(33ccffee)" }, angle = 45 },
+      inactive_border = "rgba(00000000)",
     },
     layout = columns_layout,
     allow_tearing = false,
@@ -2085,6 +2105,12 @@ local function apply_rules()
     center = true,
     decorate = false,
     no_shadow = true,
+  })
+  hl.window_rule({
+    name = "subtle-pinned-window-border",
+    match = { pin = true },
+    border_size = 2,
+    border_color = "rgba(edb443ff) rgba(ff4d5dcc)",
   })
 end
 
@@ -2232,6 +2258,7 @@ bind(main_mod .. " + CTRL + Space", gather_workspace_into_tabbed_group)
 bind(main_mod .. " + bracketright", monocle_next)
 bind(main_mod .. " + bracketleft", monocle_prev)
 bind(main_mod .. " + T", hl.dsp.window.float({ action = "disable" }))
+bind(main_mod .. " + O", toggle_pinned_active_window)
 bind(main_mod .. " + M", minimize_active_window)
 bind(main_mod .. " + SHIFT + M", restore_last_minimized)
 bind(main_mod .. " + CTRL + SHIFT + M", function()

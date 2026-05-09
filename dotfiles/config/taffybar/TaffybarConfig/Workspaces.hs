@@ -127,7 +127,8 @@ workspaceCandidateInfo name =
       WorkspaceModel.windowPosition = Nothing,
       WorkspaceModel.windowUrgent = False,
       WorkspaceModel.windowActive = False,
-      WorkspaceModel.windowMinimized = False
+      WorkspaceModel.windowMinimized = False,
+      WorkspaceModel.windowPinned = False
     }
 
 workspaceIconFromCandidate :: Int32 -> Text -> TaffyIO (Maybe Gdk.Pixbuf)

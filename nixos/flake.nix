@@ -452,6 +452,7 @@
           "https://cache.flox.dev"
           "https://org-agenda-api.cachix.org"
           "https://colonelpanic8-dotfiles.cachix.org"
+          "https://taffybar.cachix.org"
           "https://codex-cli.cachix.org"
           "https://claude-code.cachix.org"
         ];
@@ -473,6 +474,7 @@
           "flox-cache-public-1:7F4OyH7ZCnFhcze3fJdfyXYLQw/aV7GEed86nQ7IsOs="
           "org-agenda-api.cachix.org-1:liKFemKkOLV/rJt2txDNcpDjRsqLuBneBjkSw/UVXKA="
           "colonelpanic8-dotfiles.cachix.org-1:O6GF3nptpeMFapX29okzO92eSWXR36zqW6ZF2C8P0eQ="
+          "taffybar.cachix.org-1:beZotJ1nVEsAnJxa3lWn0zwzZM7oeXmGh4ADRpHeeIo="
           "codex-cli.cachix.org-1:1Br3H1hHoRYG22n//cGKJOk3cQXgYobUel6O8DgSing="
           "claude-code.cachix.org-1:YeXf2aNu7UTX8Vwrze0za1WEDS+4DuI2kVeWEE4fsRk="
         ];
