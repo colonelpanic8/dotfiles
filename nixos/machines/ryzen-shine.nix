@@ -49,7 +49,7 @@
   networking.hostName = "ryzen-shine";
   myModules.hostIdentity = {
     emoticon = "☀️";
-    tmux.background = "#ea580c";
+    tmux.background = "#2563eb";
   };
 
   environment.systemPackages = with pkgs; [

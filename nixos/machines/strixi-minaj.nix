@@ -104,7 +104,7 @@
   networking.hostName = "strixi-minaj";
   myModules.hostIdentity = {
     emoticon = "👩🏿";
-    tmux.background = "#4f46e5";
+    tmux.background = "#ea580c";
   };
 
   powerManagement.cpuFreqGovernor = lib.mkDefault "performance";
