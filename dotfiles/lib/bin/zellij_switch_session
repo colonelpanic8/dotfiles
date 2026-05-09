@@ -1,0 +1,17 @@
+#!/usr/bin/env sh
+set -eu
+
+if ! command -v sk >/dev/null 2>&1; then
+    echo "zellij_switch_session: sk is required" >&2
+    exit 1
+fi
+
+selected=$(
+    zellij list-sessions --short --no-formatting |
+        sed '/^[[:space:]]*$/d' |
+        sk --prompt 'zellij session> ' --height 100% --reverse
+)
+
+if [ -n "$selected" ]; then
+    zellij action switch-session "$selected"
+fi

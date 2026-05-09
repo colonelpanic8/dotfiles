@@ -3,11 +3,11 @@
   lib,
   ...
 }: let
-  cfg = config.myModules.bootloaders.grubWindows;
+  cfg = config.myModules.bootloaders.grub;
   systemdBootCfg = config.myModules.bootloaders.systemdBoot;
 in {
-  options.myModules.bootloaders.grubWindows = {
-    enable = lib.mkEnableOption "GRUB with Windows chainloading support";
+  options.myModules.bootloaders.grub = {
+    enable = lib.mkEnableOption "GRUB bootloader support";
 
     configurationLimit = lib.mkOption {
       default = 5;
@@ -24,6 +24,18 @@ in {
         entries discovered by os-prober.
       '';
     };
+
+    theme = lib.mkOption {
+      default = null;
+      type = lib.types.nullOr lib.types.path;
+      description = "GRUB theme directory.";
+    };
+
+    gfxmode = lib.mkOption {
+      default = "auto";
+      type = lib.types.str;
+      description = "GRUB graphical mode used for EFI and BIOS.";
+    };
   };
 
   config = lib.mkIf cfg.enable {
@@ -31,14 +43,14 @@ in {
       {
         assertion = !systemdBootCfg.enable;
         message = ''
-          myModules.bootloaders.grubWindows.enable conflicts with
+          myModules.bootloaders.grub.enable conflicts with
           myModules.bootloaders.systemdBoot.enable. Disable systemdBoot before
-          enabling the GRUB Windows boot strategy.
+          enabling the GRUB boot strategy.
         '';
       }
       {
         assertion = builtins.hasAttr "/boot" config.fileSystems;
-        message = "The GRUB Windows boot strategy expects an EFI filesystem mounted at /boot.";
+        message = "The GRUB boot strategy expects an EFI filesystem mounted at /boot.";
       }
     ];
 
@@ -55,6 +67,9 @@ in {
         useOSProber = true;
         configurationLimit = cfg.configurationLimit;
         timeoutStyle = "menu";
+        theme = lib.mkIf (cfg.theme != null) (lib.mkDefault cfg.theme);
+        gfxmodeEfi = lib.mkDefault cfg.gfxmode;
+        gfxmodeBios = lib.mkDefault cfg.gfxmode;
         extraEntries = lib.optionalString (cfg.windowsEfiUuid != null) ''
           menuentry "Windows Boot Manager" {
             insmod part_gpt

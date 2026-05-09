@@ -11,6 +11,7 @@ history_file="$state_dir/dirs"
 codex_home="${CODEX_HOME:-$HOME/.codex}"
 terminal="${TMCODEX_TERMINAL:-${TERMINAL:-ghostty}}"
 debug_log="$state_dir/debug.log"
+tmcodex_args=("$@")
 mkdir -p "$state_dir"
 touch "$history_file"
 
@@ -91,7 +92,7 @@ if [[ "${1:-}" == "--print-candidates" ]]; then
   exit 0
 fi
 
-debug "script=$0 codex_home=$codex_home history_file=$history_file terminal=$terminal"
+debug "script=$0 codex_home=$codex_home history_file=$history_file terminal=$terminal args=${tmcodex_args[*]}"
 selected_dir="$(
   emit_candidates | dedup | existing_dirs | rofi -dmenu -i -p 'tmcodex dir' || true
 )"
@@ -133,4 +134,4 @@ if (( ${#terminal_argv[@]} == 0 )); then
   exit 1
 fi
 
-("${terminal_argv[@]}" -e zsh -lc 'cd -- "$1" && exec tmcodex' zsh "$selected_dir" >/dev/null 2>&1 &!)
+("${terminal_argv[@]}" -e zsh -lc 'cd -- "$1" && shift && exec tmcodex "$@"' zsh "$selected_dir" "${tmcodex_args[@]}" >/dev/null 2>&1 &!)

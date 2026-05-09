@@ -7,6 +7,7 @@
 }: {
   imports = [
     ../configuration.nix
+    inputs.grub2-themes.nixosModules.default
     inputs.nixos-hardware.nixosModules.asus-rog-strix-g834jzr
   ];
 
@@ -30,7 +31,19 @@
 
   # nixpkgs.config.cudaSupport = true;
 
-  boot.loader.systemd-boot.configurationLimit = 5;
+  myModules.bootloaders.systemdBoot.enable = false;
+  myModules.bootloaders.grub = {
+    enable = true;
+    configurationLimit = 5;
+    gfxmode = "2560x1600,auto";
+  };
+  boot.loader.grub2-theme = {
+    enable = true;
+    theme = "whitesur";
+    icon = "whitesur";
+    screen = "2k";
+    customResolution = "2560x1600";
+  };
 
   environment.systemPackages = with pkgs; [
     android-studio
@@ -73,9 +86,6 @@
   # PRIME sync hybrid mode to keep the compositor and displays on NVIDIA.
   hardware.nvidia.prime.offload.enable = lib.mkForce false;
   hardware.nvidia.prime.sync.enable = lib.mkForce false;
-  boot.loader.systemd-boot.enable = true;
-  boot.loader.efi.canTouchEfiVariables = true;
-
   services.asusd.enable = true;
   services.supergfxd.settings = {
     mode = "AsusMuxDgpu";
@@ -104,7 +114,7 @@
   networking.hostName = "strixi-minaj";
   myModules.hostIdentity = {
     emoticon = "👩🏿";
-    tmux.background = "#4f46e5";
+    tmux.background = "#ea580c";
   };
 
   powerManagement.cpuFreqGovernor = lib.mkDefault "performance";

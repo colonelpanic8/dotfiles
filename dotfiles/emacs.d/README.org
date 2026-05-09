@@ -4106,7 +4106,7 @@ Ensure all themes that I use are installed:
   :custom
   (doom-modeline-height 40))
 
-(defvar imalison:enable-doom-modeline-on-startup nil
+(defvar imalison:enable-doom-modeline-on-startup t
   "Non-nil means enable `doom-modeline-mode' during startup.")
 #+end_src
 ** page-break-lines

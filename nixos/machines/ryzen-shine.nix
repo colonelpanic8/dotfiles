@@ -1,9 +1,11 @@
 {
+  inputs,
   lib,
   pkgs,
   ...
 }: {
   imports = [
+    inputs.grub2-themes.nixosModules.default
     ../configuration.nix
     ../nixified.ai.nix
   ];
@@ -18,7 +20,7 @@
     enable = true;
     port = 3090;
   };
-  myModules.gitea-runner.enable = true;
+  myModules.gitea-runner.enable = false;
   myModules.postgres.enable = true;
   myModules.tts.enable = true;
   myModules.cua = {
@@ -41,15 +43,22 @@
 
   boot.loader.systemd-boot.configurationLimit = 5;
   myModules.bootloaders.systemdBoot.enable = false;
-  myModules.bootloaders.grubWindows = {
+  myModules.bootloaders.grub = {
     enable = true;
     windowsEfiUuid = "B270-C7E6";
+    gfxmode = "3440x1440,auto";
+  };
+  boot.loader.grub2-theme = {
+    enable = true;
+    theme = "whitesur";
+    icon = "whitesur";
+    screen = "ultrawide2k";
   };
 
   networking.hostName = "ryzen-shine";
   myModules.hostIdentity = {
     emoticon = "☀️";
-    tmux.background = "#ea580c";
+    tmux.background = "#2563eb";
   };
 
   environment.systemPackages = with pkgs; [

@@ -16,7 +16,7 @@ makeEnable config "myModules.raspberry-pi" false {
   hardware.raspberry-pi."4".fkms-3d.enable = true;
   # hardware.raspberry-pi."4".audio.enable = true;
   myModules.bootloaders.systemdBoot.enable = false;
-  myModules.bootloaders.grubWindows.enable = false;
+  myModules.bootloaders.grub.enable = false;
 
   boot = {
     initrd.systemd.tpm2.enable = false;

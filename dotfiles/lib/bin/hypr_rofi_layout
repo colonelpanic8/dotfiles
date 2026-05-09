@@ -1,0 +1,70 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+ensure_hyprland_instance() {
+  if [[ -n "${HYPRLAND_INSTANCE_SIGNATURE:-}" ]]; then
+    return
+  fi
+
+  local runtime="${XDG_RUNTIME_DIR:-/run/user/$(id -u)}"
+  local hypr_dir="$runtime/hypr"
+  if [[ ! -d "$hypr_dir" ]]; then
+    return
+  fi
+
+  local socket_dir
+  socket_dir="$(
+    find "$hypr_dir" -mindepth 2 -maxdepth 2 -name .socket.sock -printf '%T@ %h\n' 2>/dev/null |
+      sort -nr |
+      awk 'NR == 1 { print $2 }'
+  )"
+
+  if [[ -n "$socket_dir" ]]; then
+    export HYPRLAND_INSTANCE_SIGNATURE="${socket_dir##*/}"
+  fi
+}
+
+current_layout() {
+  local state_file="${XDG_RUNTIME_DIR:-}/hyprland-layout-state"
+  if [[ -r "$state_file" ]]; then
+    awk -F= '$1 == "layout" { print $2; exit }' "$state_file"
+  fi
+}
+
+ensure_hyprland_instance
+
+layouts=(
+  "nStack	Columns"
+  "master	Large main"
+  "grid	Grid"
+  "monocle	Monocle"
+)
+
+current="$(current_layout || true)"
+selected_row=0
+labels=()
+
+for index in "${!layouts[@]}"; do
+  layout="${layouts[$index]%%$'\t'*}"
+  label="${layouts[$index]#*$'\t'}"
+  labels+=("$label")
+
+  if [[ "$layout" == "$current" ]]; then
+    selected_row="$index"
+  fi
+done
+
+selection="$(
+  printf '%s\n' "${labels[@]}" |
+    rofi -dmenu -i -p "Layout" -selected-row "$selected_row"
+)" || exit 0
+
+for entry in "${layouts[@]}"; do
+  layout="${entry%%$'\t'*}"
+  label="${entry#*$'\t'}"
+
+  if [[ "$label" == "$selection" ]]; then
+    hyprctl dispatch "_G.im_hyprland_set_layout(\"$layout\")" >/dev/null
+    exit 0
+  fi
+done

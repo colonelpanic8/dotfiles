@@ -116,6 +116,10 @@ local function exec(command)
   return hl.dsp.exec_cmd(command)
 end
 
+local function dispatch(dispatcher)
+  return hl.dispatch(dispatcher)
+end
+
 local function shell_quote(value)
   return "'" .. tostring(value):gsub("'", "'\\''") .. "'"
 end
@@ -520,6 +524,33 @@ local function window_center(window)
     numeric_component(at, "y", 2) + numeric_component(size, "y", 2) / 2
 end
 
+local function tiled_window_geometry(window)
+  if not window or window.floating then
+    return nil
+  end
+
+  local selector = window_selector(window)
+  if not selector then
+    return nil
+  end
+
+  local at = window.at or {}
+  local size = window.size or {}
+  local width = math.floor(numeric_component(size, "x", 1))
+  local height = math.floor(numeric_component(size, "y", 2))
+  if width <= 0 or height <= 0 then
+    return nil
+  end
+
+  return {
+    selector = selector,
+    x = math.floor(numeric_component(at, "x", 1)),
+    y = math.floor(numeric_component(at, "y", 2)),
+    width = width,
+    height = height,
+  }
+end
+
 local function window_distance_squared(window, x, y)
   local wx, wy = window_center(window)
   local dx = wx - x
@@ -625,7 +656,7 @@ local function update_nstack_count()
   end
 
   stack_count = math.max(stack_count, 2)
-  hl.dsp.layout("setstackcount " .. tostring(stack_count))()
+  dispatch(hl.dsp.layout("setstackcount " .. tostring(stack_count)))
 end
 
 local function schedule_nstack_count_update()
@@ -701,6 +732,22 @@ local function set_layout(layout)
   end
 end
 
+_G.im_hyprland_set_layout = function(layout)
+  if not layout_names[layout] then
+    hl.notification.create({
+      text = "Unknown layout: " .. tostring(layout),
+      duration = 1800,
+      icon = notification_icons.warning,
+      color = "rgba(edb443ff)",
+      font_size = 13,
+    })
+    return
+  end
+
+  set_layout(layout)
+  notify_layout(layout)
+end
+
 local function sync_layout_for_active_workspace()
   current_layout = current_workspace_layout()
   hl.config({ general = { layout = hyprland_layout(current_layout) } })
@@ -745,24 +792,24 @@ end
 local function monocle_next()
   local window = hl.get_active_window()
   if window and window.group and window.group.size and window.group.size > 1 then
-    hl.dsp.group.next({ window = window_selector(window) })()
+    dispatch(hl.dsp.group.next({ window = window_selector(window) }))
   elseif current_layout == monocle_layout then
-    hl.dsp.layout("cyclenext")()
+    dispatch(hl.dsp.layout("cyclenext"))
     update_monocle_notice()
   else
-    hl.dsp.window.cycle_next({ next = true, tiled = true, floating = false })()
+    dispatch(hl.dsp.window.cycle_next({ next = true, tiled = true, floating = false }))
   end
 end
 
 local function monocle_prev()
   local window = hl.get_active_window()
   if window and window.group and window.group.size and window.group.size > 1 then
-    hl.dsp.group.prev({ window = window_selector(window) })()
+    dispatch(hl.dsp.group.prev({ window = window_selector(window) }))
   elseif current_layout == monocle_layout then
-    hl.dsp.layout("cycleprev")()
+    dispatch(hl.dsp.layout("cycleprev"))
     update_monocle_notice()
   else
-    hl.dsp.window.cycle_next({ next = false, tiled = true, floating = false })()
+    dispatch(hl.dsp.window.cycle_next({ next = false, tiled = true, floating = false }))
   end
 end
 
@@ -777,30 +824,30 @@ local function focus_direction(direction)
     return
   end
 
-  hl.dsp.focus({ direction = direction })()
+  dispatch(hl.dsp.focus({ direction = direction }))
 end
 
 local function swap_direction(direction)
   if enable_nstack and is_nstack_layout(current_layout) and active_group_size() <= 1 then
-    hl.dsp.layout("swapdirection " .. direction)()
+    dispatch(hl.dsp.layout("swapdirection " .. direction))
     return
   end
 
-  hl.dsp.window.swap({ direction = direction })()
+  dispatch(hl.dsp.window.swap({ direction = direction }))
 end
 
 local function focus_workspace(workspace_id)
-  hl.dsp.focus({ workspace = tostring(workspace_id), on_current_monitor = true })()
+  dispatch(hl.dsp.focus({ workspace = tostring(workspace_id), on_current_monitor = true }))
 end
 
 local function move_window_to_workspace(workspace_id, follow, window)
   local target_window = window or hl.get_active_window()
   local target_selector = window_selector(target_window)
-  hl.dsp.window.move({ workspace = tostring(workspace_id), follow = false, window = target_selector })()
+  dispatch(hl.dsp.window.move({ workspace = tostring(workspace_id), follow = false, window = target_selector }))
   if follow then
     focus_workspace(workspace_id)
     if target_selector then
-      hl.dsp.focus({ window = target_selector })()
+      dispatch(hl.dsp.focus({ window = target_selector }))
     end
   end
 end
@@ -828,8 +875,8 @@ local function move_window_into_group(window, anchor)
   end
 
   for _, direction in ipairs(grouping_directions(window, anchor)) do
-    hl.dsp.focus({ window = selector })()
-    hl.dsp.window.move({ into_group = direction, window = selector })()
+    dispatch(hl.dsp.focus({ window = selector }))
+    dispatch(hl.dsp.window.move({ into_group = direction, window = selector }))
 
     local active = hl.get_active_window()
     if active and active.group and active.group.size and active.group.size > 1 then
@@ -917,12 +964,12 @@ local function restore_workspace_tabbed_group()
     return
   end
 
-  hl.dsp.focus({ window = anchor_selector })()
-  hl.dsp.group.toggle({ window = anchor_selector })()
+  dispatch(hl.dsp.focus({ window = anchor_selector }))
+  dispatch(hl.dsp.group.toggle({ window = anchor_selector }))
   tabbed_workspace_groups[key] = nil
   set_layout(columns_layout)
   restore_tabbed_group_window_order(state, target_workspace_id)
-  hl.dsp.focus({ window = anchor_selector })()
+  dispatch(hl.dsp.focus({ window = anchor_selector }))
   schedule_nstack_count_update()
 end
 
@@ -971,8 +1018,8 @@ local function gather_workspace_into_tabbed_group()
 
   set_layout(columns_layout)
 
-  hl.dsp.focus({ window = anchor_selector })()
-  hl.dsp.group.toggle({ window = anchor_selector })()
+  dispatch(hl.dsp.focus({ window = anchor_selector }))
+  dispatch(hl.dsp.group.toggle({ window = anchor_selector }))
 
   local group_windows = {}
   for _, window in ipairs(candidates) do
@@ -994,8 +1041,8 @@ local function gather_workspace_into_tabbed_group()
   end
 
   if grouped_count <= 1 then
-    hl.dsp.focus({ window = anchor_selector })()
-    hl.dsp.group.toggle({ window = anchor_selector })()
+    dispatch(hl.dsp.focus({ window = anchor_selector }))
+    dispatch(hl.dsp.group.toggle({ window = anchor_selector }))
     notify_tabbed_group("Unable to group tiled windows")
     return
   elseif grouped_count < #candidates then
@@ -1007,7 +1054,7 @@ local function gather_workspace_into_tabbed_group()
     order = original_order,
     windows = candidate_addresses,
   }
-  hl.dsp.focus({ window = anchor_selector })()
+  dispatch(hl.dsp.focus({ window = anchor_selector }))
 end
 
 local function force_columns_layout()
@@ -1071,7 +1118,7 @@ local function enter_workspace_swap_mode()
     color = "rgba(edb443ff)",
     font_size = 13,
   })
-  hl.dsp.submap("swap-workspace")()
+  dispatch(hl.dsp.submap("swap-workspace"))
 end
 
 local function focus_next_empty_workspace()
@@ -1106,10 +1153,10 @@ local function move_window_to_monitor(direction, follow)
   end
 
   local original_monitor = hl.get_active_monitor()
-  hl.dsp.window.move({ monitor = direction, follow = follow, window = window_selector(window) })()
+  dispatch(hl.dsp.window.move({ monitor = direction, follow = follow, window = window_selector(window) }))
 
   if not follow and original_monitor then
-    hl.dsp.focus({ monitor = original_monitor })()
+    dispatch(hl.dsp.focus({ monitor = original_monitor }))
   end
 end
 
@@ -1127,9 +1174,9 @@ local function move_window_to_empty_workspace_on_monitor(direction)
     return
   end
 
-  hl.dsp.focus({ monitor = target_monitor })()
+  dispatch(hl.dsp.focus({ monitor = target_monitor }))
   focus_workspace(workspace_id)
-  hl.dsp.focus({ monitor = original_monitor })()
+  dispatch(hl.dsp.focus({ monitor = original_monitor }))
   move_window_to_workspace(workspace_id, false, window)
 end
 
@@ -1400,25 +1447,54 @@ local function apply_scratchpad_geometry(name, window, target_monitor)
   end
   local selector = window_selector(window)
 
-  hl.dsp.window.float({ action = "enable", window = selector })()
-  hl.dsp.window.tag({ tag = "+scratchpad", window = selector })()
-  hl.dsp.window.tag({ tag = "+scratchpad-" .. name, window = selector })()
-  hl.dsp.window.resize({ x = width, y = height, relative = false, window = selector })()
-  hl.dsp.window.move({ x = x, y = y, relative = false, window = selector })()
+  dispatch(hl.dsp.window.float({ action = "enable", window = selector }))
+  dispatch(hl.dsp.window.tag({ tag = "+scratchpad", window = selector }))
+  dispatch(hl.dsp.window.tag({ tag = "+scratchpad-" .. name, window = selector }))
+  dispatch(hl.dsp.window.resize({ x = width, y = height, relative = false, window = selector }))
+  dispatch(hl.dsp.window.move({ x = x, y = y, relative = false, window = selector }))
   if def.dropdown then
-    hl.dsp.window.set_prop({ prop = "border_size", value = "0", window = selector })()
-    hl.dsp.window.set_prop({ prop = "no_shadow", value = "1", window = selector })()
+    dispatch(hl.dsp.window.set_prop({ prop = "border_size", value = "0", window = selector }))
+    dispatch(hl.dsp.window.set_prop({ prop = "no_shadow", value = "1", window = selector }))
   end
 end
 
+local function float_active_window_preserving_tiled_geometry()
+  local geometry = tiled_window_geometry(hl.get_active_window())
+  dispatch(hl.dsp.window.float({ action = "enable", window = geometry and geometry.selector or nil }))
+  if geometry then
+    dispatch(hl.dsp.window.resize({ x = geometry.width, y = geometry.height, relative = false, window = geometry.selector }))
+    dispatch(hl.dsp.window.move({ x = geometry.x, y = geometry.y, relative = false, window = geometry.selector }))
+  end
+  return geometry
+end
+
 local function float_and_drag_active_window()
-  hl.dsp.window.float({ action = "enable" })()
-  hl.dsp.window.drag()()
+  float_active_window_preserving_tiled_geometry()
+  dispatch(hl.dsp.window.drag())
 end
 
 local function float_and_resize_active_window()
-  hl.dsp.window.float({ action = "enable" })()
-  hl.dsp.window.resize()()
+  float_active_window_preserving_tiled_geometry()
+  dispatch(hl.dsp.window.resize())
+end
+
+local function toggle_pinned_active_window()
+  local window = hl.get_active_window()
+  local selector = window_selector(window)
+  if not window or not selector then
+    return
+  end
+
+  if window.pinned then
+    dispatch(hl.dsp.window.pin({ action = "disable", window = selector }))
+    dispatch(hl.dsp.window.float({ action = "disable", window = selector }))
+    return
+  end
+
+  if not window.floating then
+    float_active_window_preserving_tiled_geometry()
+  end
+  dispatch(hl.dsp.window.pin({ action = "enable", window = selector }))
 end
 
 local function schedule_scratchpad_geometry(name, window, target_monitor)
@@ -1440,7 +1516,7 @@ local function show_scratchpad_window(name, window, workspace, target_monitor)
 
   remove_minimized_window(window)
   move_window_to_workspace(workspace.id, false, window)
-  hl.dsp.focus({ window = window_selector(window) })()
+  dispatch(hl.dsp.focus({ window = window_selector(window) }))
   schedule_scratchpad_geometry(name, window, target_monitor or hl.get_active_monitor())
 end
 
@@ -1557,36 +1633,36 @@ local function activate_window_picker_candidate(index)
   local mode = window_picker_mode
   window_picker_mode = nil
   window_picker_candidates = {}
-  hl.dsp.submap("reset")()
+  dispatch(hl.dsp.submap("reset"))
 
   if not window then
     return
   end
 
   if mode == "go" then
-    hl.dsp.focus({ window = window_selector(window) })()
+    dispatch(hl.dsp.focus({ window = window_selector(window) }))
     return
   end
 
   local workspace = active_workspace()
   if mode == "bring" and workspace then
     move_window_to_workspace(workspace.id, false, window)
-    hl.dsp.focus({ window = window_selector(window) })()
+    dispatch(hl.dsp.focus({ window = window_selector(window) }))
     return
   end
 
   if mode == "minimized" and workspace then
     remove_minimized_window(window)
     restore_minimized_window(window, workspace)
-    hl.dsp.focus({ window = window_selector(window) })()
+    dispatch(hl.dsp.focus({ window = window_selector(window) }))
     return
   end
 
   if mode == "replace" then
     local focused = hl.get_active_window()
     if focused and focused ~= window then
-      hl.dsp.window.swap({ target = window_selector(window), window = window_selector(focused) })()
-      hl.dsp.focus({ window = window_selector(window) })()
+      dispatch(hl.dsp.window.swap({ target = window_selector(window), window = window_selector(focused) }))
+      dispatch(hl.dsp.focus({ window = window_selector(window) }))
     end
   end
 end
@@ -1624,7 +1700,7 @@ local function enter_window_picker(mode)
     color = "rgba(edb443ff)",
     font_size = 11,
   })
-  hl.dsp.submap("window-picker")()
+  dispatch(hl.dsp.submap("window-picker"))
 end
 
 local function gather_focused_class()
@@ -1654,7 +1730,7 @@ end
 local function focus_next_class()
   local focused = hl.get_active_window()
   if not focused or not focused.class or focused.class == "" then
-    hl.dsp.window.cycle_next({ next = true, tiled = true, floating = false })()
+    dispatch(hl.dsp.window.cycle_next({ next = true, tiled = true, floating = false }))
     return
   end
 
@@ -1683,7 +1759,7 @@ local function focus_next_class()
   local next_class = classes[(current_index % #classes) + 1]
   local target = first_by_class[next_class]
   if target then
-    hl.dsp.focus({ window = window_selector(target) })()
+    dispatch(hl.dsp.focus({ window = window_selector(target) }))
   end
 end
 
@@ -1705,6 +1781,7 @@ local function show_active_window_info()
     "Class: " .. tostring(window.class or ""),
     "Title: " .. tostring(window.title or ""),
     "Workspace: " .. tostring(workspace),
+    "Pinned: " .. tostring(window.pinned or false),
     "Address: " .. tostring(window.address or ""),
     "PID: " .. tostring(window.pid or ""),
   }
@@ -1722,7 +1799,7 @@ local function raise_or_spawn(class_fragment, command)
   local fragment = string.lower(class_fragment)
   for _, window in ipairs(hl.get_windows()) do
     if is_normal_window(window) and window.class and string.find(string.lower(window.class), fragment, 1, true) then
-      hl.dsp.focus({ window = window_selector(window) })()
+      dispatch(hl.dsp.focus({ window = window_selector(window) }))
       return
     end
   end
@@ -1752,7 +1829,7 @@ local function restore_last_minimized()
     local window = table.remove(minimized_windows)
     if window and window.address and is_minimized_window(window) then
       restore_minimized_window(window, workspace)
-      hl.dsp.focus({ window = window_selector(window) })()
+      dispatch(hl.dsp.focus({ window = window_selector(window) }))
       return
     end
   end
@@ -1886,10 +1963,10 @@ hl.config({
   general = {
     gaps_in = 5,
     gaps_out = 10,
-    border_size = 0,
+    border_size = 2,
     col = {
-      active_border = { colors = { "rgba(edb443ee)", "rgba(33ccffee)" }, angle = 45 },
-      inactive_border = "rgba(595959aa)",
+      active_border = { colors = { "rgba(3b82f6ee)", "rgba(33ccffee)" }, angle = 45 },
+      inactive_border = "rgba(00000000)",
     },
     layout = columns_layout,
     allow_tearing = false,
@@ -2029,6 +2106,12 @@ local function apply_rules()
     decorate = false,
     no_shadow = true,
   })
+  hl.window_rule({
+    name = "subtle-pinned-window-border",
+    match = { pin = true },
+    border_size = 2,
+    border_color = "rgba(edb443ff) rgba(ff4d5dcc)",
+  })
 end
 
 bind(main_mod .. " + P", exec(launcher_command))
@@ -2127,7 +2210,7 @@ hl.define_submap("swap-workspace", function()
     local workspace_id = i
     bind(tostring(i), function()
       swap_current_workspace_with(workspace_id)
-      hl.dsp.submap("reset")()
+      dispatch(hl.dsp.submap("reset"))
     end)
   end
 
@@ -2175,6 +2258,7 @@ bind(main_mod .. " + CTRL + Space", gather_workspace_into_tabbed_group)
 bind(main_mod .. " + bracketright", monocle_next)
 bind(main_mod .. " + bracketleft", monocle_prev)
 bind(main_mod .. " + T", hl.dsp.window.float({ action = "disable" }))
+bind(main_mod .. " + O", toggle_pinned_active_window)
 bind(main_mod .. " + M", minimize_active_window)
 bind(main_mod .. " + SHIFT + M", restore_last_minimized)
 bind(main_mod .. " + CTRL + SHIFT + M", function()
@@ -2229,8 +2313,8 @@ for i = 1, 9 do
   bind(main_mod .. " + " .. workspace, hl.dsp.focus({ workspace = workspace, on_current_monitor = true }))
   bind(main_mod .. " + SHIFT + " .. workspace, hl.dsp.window.move({ workspace = workspace, follow = false }))
   bind(main_mod .. " + CTRL + " .. workspace, function()
-    hl.dsp.window.move({ workspace = workspace, follow = false })()
-    hl.dsp.focus({ workspace = workspace, on_current_monitor = true })()
+    dispatch(hl.dsp.window.move({ workspace = workspace, follow = false }))
+    dispatch(hl.dsp.focus({ workspace = workspace, on_current_monitor = true }))
   end)
 end
 
@@ -2270,7 +2354,9 @@ bind(hyper .. " + V", exec([[cliphist list | rofi -dmenu -p "Clipboard" | cliphi
 bind(hyper .. " + P", exec("rofi-pass"))
 bind(hyper .. " + H", exec([[grim -g "$(slurp)" - | swappy -f -]]))
 bind(hyper .. " + C", exec("rofi_tmcodex.sh"))
+bind(hyper .. " + SHIFT + C", exec("rofi_tmcodex.sh resume"))
 bind(hyper .. " + SHIFT + L", exec("hyprlock"))
+bind(hyper .. " + L", exec("hypr_rofi_layout"))
 bind(hyper .. " + K", exec("rofi_kill_process.sh"))
 bind(hyper .. " + SHIFT + K", exec("rofi_kill_all.sh"))
 bind(hyper .. " + R", exec("rofi-systemd"))

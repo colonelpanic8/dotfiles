@@ -3,14 +3,18 @@ local callbacks = {}
 
 local function noop() end
 
-local function dispatcher_proxy()
-  local proxy = {}
-  return setmetatable(proxy, {
+local dispatcher = setmetatable({}, {
+  __call = function()
+    error("dispatcher objects cannot be called directly; use hl.dispatch(dispatcher)", 2)
+  end,
+})
+
+local function dispatcher_namespace()
+  return setmetatable({}, {
     __index = function()
-      return dispatcher_proxy()
-    end,
-    __call = function()
-      return noop
+      return function()
+        return dispatcher
+      end
     end,
   })
 end
@@ -48,6 +52,7 @@ hl = {
   bind = noop,
   config = noop,
   curve = noop,
+  dispatch = noop,
   env = noop,
   exec_cmd = noop,
   define_submap = function(_, reset_or_callback, callback)
@@ -59,7 +64,17 @@ hl = {
   monitor = noop,
   workspace_rule = noop,
   window_rule = noop,
-  dsp = dispatcher_proxy(),
+  dsp = setmetatable({
+    group = dispatcher_namespace(),
+    window = dispatcher_namespace(),
+    workspace = dispatcher_namespace(),
+  }, {
+    __index = function()
+      return function()
+        return dispatcher
+      end
+    end,
+  }),
   notification = {
     create = function()
       return notification

@@ -70,6 +70,7 @@
           "https://nix-community.cachix.org"
           "https://numtide.cachix.org"
           "https://colonelpanic8-dotfiles.cachix.org"
+          "https://taffybar.cachix.org"
           "https://codex-cli.cachix.org"
           "https://claude-code.cachix.org"
         ];
@@ -81,6 +82,7 @@
           "https://nix-community.cachix.org"
           "https://numtide.cachix.org"
           "https://colonelpanic8-dotfiles.cachix.org"
+          "https://taffybar.cachix.org"
           "https://codex-cli.cachix.org"
           "https://claude-code.cachix.org"
         ];
@@ -91,6 +93,7 @@
           "nix-community.cachix.org-1:mB9FSh9qf2dCimDSUo8Zy7bkq5CX+/rkCWyvRCYg3Fs="
           "numtide.cachix.org-1:2ps1kLBUWjxIneOy1Ik6cQjb41X0iXVXeHigGmycPPE="
           "colonelpanic8-dotfiles.cachix.org-1:O6GF3nptpeMFapX29okzO92eSWXR36zqW6ZF2C8P0eQ="
+          "taffybar.cachix.org-1:beZotJ1nVEsAnJxa3lWn0zwzZM7oeXmGh4ADRpHeeIo="
           "codex-cli.cachix.org-1:1Br3H1hHoRYG22n//cGKJOk3cQXgYobUel6O8DgSing="
           "claude-code.cachix.org-1:YeXf2aNu7UTX8Vwrze0za1WEDS+4DuI2kVeWEE4fsRk="
         ];
@@ -113,6 +116,7 @@
           codex = inputs.codex-cli-nix.packages.${prev.stdenv.hostPlatform.system}.default;
           claude-code = inputs.claude-code-nix.packages.${prev.stdenv.hostPlatform.system}.default;
           git-sync-rs = inputs.git-sync-rs.packages.${prev.stdenv.hostPlatform.system}.default;
+          elegant-grub2-theme = final.callPackage ./packages/elegant-grub2-theme {};
           kef = final.callPackage ./packages/kef {};
           pykefcontrol = final.python3Packages.callPackage ./packages/pykefcontrol {};
           roborock-control = final.callPackage ./packages/roborock-control {};
