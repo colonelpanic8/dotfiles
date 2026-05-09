@@ -2327,6 +2327,7 @@ bind(hyper .. " + V", exec([[cliphist list | rofi -dmenu -p "Clipboard" | cliphi
 bind(hyper .. " + P", exec("rofi-pass"))
 bind(hyper .. " + H", exec([[grim -g "$(slurp)" - | swappy -f -]]))
 bind(hyper .. " + C", exec("rofi_tmcodex.sh"))
+bind(hyper .. " + SHIFT + C", exec("rofi_tmcodex.sh resume"))
 bind(hyper .. " + SHIFT + L", exec("hyprlock"))
 bind(hyper .. " + L", exec("hypr_rofi_layout"))
 bind(hyper .. " + K", exec("rofi_kill_process.sh"))

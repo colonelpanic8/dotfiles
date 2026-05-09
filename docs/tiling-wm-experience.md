@@ -411,7 +411,8 @@ Required behavior:
 - `Hyper+p` opens the password picker with `rofi-pass`.
 - `Hyper+h` opens the screenshot tool with the compositor/session-appropriate
   screenshot command.
-- `Hyper+c` opens a shell command prompt with `shell_command.sh`.
+- `Hyper+c` opens the Codex launcher with `rofi_tmcodex.sh`.
+- `Hyper+Shift+c` opens the Codex launcher with `tmcodex resume`.
 - `Hyper+k` opens the process killer with `rofi_kill_process.sh`.
 - `Hyper+Shift+k` opens the kill-all/process-tree killer with
   `rofi_kill_all.sh`.
