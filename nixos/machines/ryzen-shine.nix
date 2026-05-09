@@ -1,9 +1,11 @@
 {
+  inputs,
   lib,
   pkgs,
   ...
 }: {
   imports = [
+    inputs.grub2-themes.nixosModules.default
     ../configuration.nix
     ../nixified.ai.nix
   ];
@@ -41,9 +43,16 @@
 
   boot.loader.systemd-boot.configurationLimit = 5;
   myModules.bootloaders.systemdBoot.enable = false;
-  myModules.bootloaders.grubWindows = {
+  myModules.bootloaders.grub = {
     enable = true;
     windowsEfiUuid = "B270-C7E6";
+    gfxmode = "3440x1440,auto";
+  };
+  boot.loader.grub2-theme = {
+    enable = true;
+    theme = "whitesur";
+    icon = "whitesur";
+    screen = "ultrawide2k";
   };
 
   networking.hostName = "ryzen-shine";

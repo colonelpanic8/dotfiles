@@ -13,7 +13,7 @@ makeEnable config "myModules.wsl" false {
   myModules.base.enable = false;
   myModules.desktop.enable = false;
   myModules.bootloaders.systemdBoot.enable = false;
-  myModules.bootloaders.grubWindows.enable = false;
+  myModules.bootloaders.grub.enable = false;
   myModules.xmonad.enable = false;
   myModules.plasma.enable = false;
   # Tailscale-in-WSL is usually better handled by the Windows host Tailscale
