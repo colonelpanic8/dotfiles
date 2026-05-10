@@ -8,6 +8,7 @@ switch *args:
 	env PATH=/run/wrappers/bin:$PATH sudo nixos-rebuild switch --flake ".#" --impure --option warn-dirty false \
 	  --override-input imalison-taffybar path:/home/imalison/dotfiles/dotfiles/config/taffybar \
 	  --override-input taffybar path:/home/imalison/dotfiles/dotfiles/config/taffybar/taffybar \
+	  --override-input hyprNStack path:/home/imalison/Projects/hyprNStack \
 	  {{args}}
 
 switch-remote *args:
@@ -25,6 +26,7 @@ switch-local *args:
 	env PATH=/run/wrappers/bin:$PATH sudo nixos-rebuild switch --flake ".#" --impure --option warn-dirty false \
 	  --override-input imalison-taffybar path:/home/imalison/dotfiles/dotfiles/config/taffybar \
 	  --override-input taffybar path:/home/imalison/dotfiles/dotfiles/config/taffybar/taffybar \
+	  --override-input hyprNStack path:/home/imalison/Projects/hyprNStack \
 	  {{args}}
 
 switch-local-taffybar *args:
@@ -40,6 +42,7 @@ switch-local-taffybar *args:
 	  nixos-rebuild switch --flake "git+https://github.com/colonelpanic8/dotfiles.git?ref=master&dir=nixos#" --impure --option warn-dirty false \
 	  --override-input imalison-taffybar path:/home/imalison/dotfiles/dotfiles/config/taffybar \
 	  --override-input taffybar path:/home/imalison/dotfiles/dotfiles/config/taffybar/taffybar \
+	  --override-input hyprNStack path:/home/imalison/Projects/hyprNStack \
 	  {{args}}
 
 remote-switch host *args:

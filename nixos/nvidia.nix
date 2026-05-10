@@ -23,6 +23,13 @@ makeEnable config "myModules.nvidia" false {
   hardware.graphics.enable32Bit = true;
   hardware.graphics.extraPackages = [config.hardware.nvidia.package.out];
   hardware.graphics.extraPackages32 = [config.hardware.nvidia.package.lib32];
+  systemd.services.nvidia-container-toolkit-cdi-generator.serviceConfig = {
+    # During `nixos-rebuild switch`, the NVIDIA userspace package can be newer
+    # than the already-loaded kernel module. In that transient state NVML exits
+    # with a driver/library mismatch, but the generator succeeds again after the
+    # reboot that loads the matching module.
+    SuccessExitStatus = ["1"];
+  };
   services.xserver = {
     videoDrivers = ["nvidia"];
   };
