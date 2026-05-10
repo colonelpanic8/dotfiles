@@ -42,9 +42,9 @@ in {
     '';
 
     environment.etc."tmux-host-style.conf".text = ''
-      set -g status-style "fg=#ffffff,bg=blue"
-      set -g status-left-style "fg=#ffffff,bg=blue"
-      set -g status-right-style "fg=#ffffff,bg=blue"
+      set -g status-style "fg=${hostIdentity.tmux.foreground},bg=${hostIdentity.tmux.background}"
+      set -g status-left-style "fg=${hostIdentity.tmux.foreground},bg=${hostIdentity.tmux.background}"
+      set -g status-right-style "fg=${hostIdentity.tmux.foreground},bg=${hostIdentity.tmux.background}"
     '';
   };
 }
