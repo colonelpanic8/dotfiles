@@ -18,16 +18,6 @@ import Data.Text (Text)
 import qualified Data.Text as T
 import qualified GI.Gtk as Gtk
 import qualified StatusNotifier.Tray as SNITray
-import TaffybarConfig.Host (laptopHosts)
-import TaffybarConfig.WidgetUtil
-  ( decorateWithClassAndBox,
-    decorateWithClassAndBoxM,
-    setFixedLabelWidth,
-    setLabelAlignmentRecursively,
-    stackInPill,
-    usageLogoWidget,
-  )
-import TaffybarConfig.Workspaces (workspaceLabelSetter, workspaceShowPredicate, workspaceWindowIconGetter)
 import System.Environment (lookupEnv)
 import System.Environment.XDG.BaseDir (getUserConfigFile)
 import System.Taffybar.Context
@@ -35,6 +25,7 @@ import System.Taffybar.Context
     TaffyIO,
   )
 import System.Taffybar.Information.Memory (MemoryInfo (..), parseMeminfo)
+import qualified System.Taffybar.Information.Workspaces.Hyprland as HyprlandWorkspaces
 import System.Taffybar.Util (postGUIASync)
 import System.Taffybar.Widget
 import qualified System.Taffybar.Widget.ASUS as ASUS
@@ -69,6 +60,16 @@ import System.Taffybar.Widget.Util
   )
 import qualified System.Taffybar.Widget.Wlsunset as Wlsunset
 import qualified System.Taffybar.Widget.Workspaces as Workspaces
+import TaffybarConfig.Host (laptopHosts)
+import TaffybarConfig.WidgetUtil
+  ( decorateWithClassAndBox,
+    decorateWithClassAndBoxM,
+    setFixedLabelWidth,
+    setLabelAlignmentRecursively,
+    stackInPill,
+    usageLogoWidget,
+  )
+import TaffybarConfig.Workspaces (workspaceLabelSetter, workspaceShowPredicate, workspaceWindowIconGetter)
 import Text.Printf (printf)
 import Text.Read (readMaybe)
 
@@ -109,6 +110,11 @@ workspacesWidget =
         { Workspaces.widgetGap = 0,
           Workspaces.minIcons = 1,
           Workspaces.getWindowIconPixbuf = workspaceWindowIconGetter,
+          Workspaces.hyprlandWorkspaceProviderConfig =
+            HyprlandWorkspaces.defaultHyprlandWorkspaceProviderConfig
+              { HyprlandWorkspaces.specialWorkspaceWindowTarget =
+                  HyprlandWorkspaces.specialWorkspaceWindowsToMinimized
+              },
           Workspaces.labelSetter = workspaceLabelSetter,
           Workspaces.showWorkspaceFn = workspaceShowPredicate
         }

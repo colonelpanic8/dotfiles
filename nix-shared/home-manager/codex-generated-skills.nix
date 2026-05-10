@@ -22,6 +22,18 @@ in {
       description = "Codex dotfiles directory in the live worktree.";
     };
 
+    localConfig = lib.mkOption {
+      type = lib.types.str;
+      default = "${cfg.codexHome}/config.local.toml";
+      description = "Host-local Codex config fragment appended after the shared config.";
+    };
+
+    generatedStateConfig = lib.mkOption {
+      type = lib.types.str;
+      default = "${cfg.codexHome}/config.local-state.toml";
+      description = "Codex-generated host-local state harvested from config.toml.";
+    };
+
     skillsDir = lib.mkOption {
       type = lib.types.str;
       default = "${cfg.codexHome}/skills";
@@ -46,16 +58,11 @@ in {
         force = true;
         source = oos "${cfg.worktreeCodexDir}/AGENTS.md";
       };
-
-      ".codex/skills" = {
-        force = true;
-        source = oos "${cfg.worktreeCodexDir}/skills";
-      };
     };
 
     home.activation.prepareCodexDirectory = lib.hm.dag.entryBefore ["checkLinkTargets"] ''
       codex_home=${lib.escapeShellArg cfg.codexHome}
-      worktree_codex=${lib.escapeShellArg cfg.worktreeCodexDir}
+      skills_dir=${lib.escapeShellArg cfg.skillsDir}
 
       if [ -L "$codex_home" ]; then
         rm -f "$codex_home"
@@ -66,15 +73,46 @@ in {
         echo "Skipping Codex setup because $codex_home is not a directory" >&2
         exit 1
       fi
+
+      if [ -L "$skills_dir" ]; then
+        tmp_skills="$(mktemp -d "''${TMPDIR:-/tmp}/codex-skills.XXXXXX")"
+        trap 'rm -rf "$tmp_skills"' EXIT
+
+        for generated_dir in .system codex-primary-runtime; do
+          if [ -d "$skills_dir/$generated_dir" ]; then
+            cp -R "$skills_dir/$generated_dir" "$tmp_skills/$generated_dir"
+          fi
+        done
+
+        rm -f "$skills_dir"
+        mkdir -p "$skills_dir"
+
+        for generated_dir in "$tmp_skills"/*; do
+          if [ -e "$generated_dir" ]; then
+            mv "$generated_dir" "$skills_dir/"
+          fi
+        done
+      elif [ ! -e "$skills_dir" ]; then
+        mkdir -p "$skills_dir"
+      elif [ ! -d "$skills_dir" ]; then
+        echo "Skipping Codex skills setup because $skills_dir is not a directory" >&2
+        exit 1
+      fi
     '';
 
     home.activation.generateCodexConfig = lib.hm.dag.entryAfter ["writeBoundary"] ''
       codex_home=${lib.escapeShellArg cfg.codexHome}
       base=${lib.escapeShellArg "${cfg.worktreeCodexDir}/config.toml"}
-      local_config=${lib.escapeShellArg "${cfg.worktreeCodexDir}/config.local.toml"}
+      local_config=${lib.escapeShellArg cfg.localConfig}
+      local_state_config=${lib.escapeShellArg cfg.generatedStateConfig}
       target="$codex_home/config.toml"
       begin_marker="# BEGIN AUTO-GENERATED CODEX MACHINE STATE"
       end_marker="# END AUTO-GENERATED CODEX MACHINE STATE"
+      rejected_project_prefixes=${lib.escapeShellArg (
+        if pkgs.stdenv.isDarwin
+        then "/home/ /run/"
+        else "/Users/ /Volumes/"
+      )}
 
       if [ ! -r "$base" ]; then
         echo "Missing shared Codex config at $base" >&2
@@ -84,14 +122,13 @@ in {
       mkdir -p "$codex_home"
 
       if [ -r "$target" ]; then
-        mkdir -p "$(dirname "$local_config")"
         local_state="$(mktemp "$codex_home/config.local-state.XXXXXX")"
-        local_tmp="$(mktemp "$codex_home/config.local.toml.XXXXXX")"
-        trap 'rm -f "$tmp" "$local_state" "$local_tmp"' EXIT
+        trap 'rm -f "$tmp" "$local_state"' EXIT
 
         ${lib.getExe pkgs.gawk} \
           -v begin_marker="$begin_marker" \
-          -v end_marker="$end_marker" '
+          -v end_marker="$end_marker" \
+          -v rejected_prefixes="$rejected_project_prefixes" '
           FNR == NR {
             if ($0 ~ /^\[[^]]+\]$/) {
               base_sections[$0] = 1
@@ -99,8 +136,27 @@ in {
             next
           }
 
+          function rejected_project(section, path, count, parts, i) {
+            if (section !~ /^\[projects\."/) {
+              return 0
+            }
+
+            path = section
+            sub(/^\[projects\."/ , "", path)
+            sub(/"\]$/, "", path)
+            count = split(rejected_prefixes, parts, /[[:space:]]+/)
+
+            for (i = 1; i <= count; i++) {
+              if (parts[i] != "" && index(path, parts[i]) == 1) {
+                return 1
+              }
+            }
+
+            return 0
+          }
+
           function flush_block() {
-            if (keep && section != "" && !(section in base_sections)) {
+            if (keep && section != "" && !(section in base_sections) && !rejected_project(section)) {
               if (printed) {
                 print ""
               }
@@ -130,46 +186,12 @@ in {
           }
         ' "$base" "$target" > "$local_state"
 
-        if [ -s "$local_state" ] || { [ -r "$local_config" ] && grep -Fqx "$begin_marker" "$local_config"; }; then
-          if [ -r "$local_config" ]; then
-            ${lib.getExe pkgs.gawk} \
-              -v begin_marker="$begin_marker" \
-              -v end_marker="$end_marker" '
-              $0 == begin_marker {
-                skip = 1
-                next
-              }
-
-              $0 == end_marker {
-                skip = 0
-                next
-              }
-
-              !skip {
-                print
-              }
-            ' "$local_config" > "$local_tmp"
-          else
-            : > "$local_tmp"
-          fi
-
-          if [ -s "$local_tmp" ] && [ -s "$local_state" ]; then
-            printf '\n' >> "$local_tmp"
-          fi
-
-          if [ -s "$local_state" ]; then
-            printf '%s\n' "$begin_marker" >> "$local_tmp"
-            cat "$local_state" >> "$local_tmp"
-            printf '%s\n' "$end_marker" >> "$local_tmp"
-          fi
-
-          chmod 600 "$local_tmp"
-          mv -f "$local_tmp" "$local_config"
+        if [ -s "$local_state" ]; then
+          chmod 600 "$local_state"
+          mv -f "$local_state" "$local_state_config"
         else
-          rm -f "$local_tmp"
+          rm -f "$local_state" "$local_state_config"
         fi
-
-        rm -f "$local_state"
       fi
 
       tmp="$(mktemp "$codex_home/config.toml.XXXXXX")"
@@ -182,6 +204,12 @@ in {
         cat "$local_config" >> "$tmp"
       fi
 
+      if [ -r "$local_state_config" ]; then
+        printf '\n%s\n' "$begin_marker" >> "$tmp"
+        cat "$local_state_config" >> "$tmp"
+        printf '%s\n' "$end_marker" >> "$tmp"
+      fi
+
       if [ -e "$target" ] && cmp -s "$tmp" "$target"; then
         rm -f "$tmp"
       else
@@ -189,7 +217,36 @@ in {
       fi
     '';
 
-    home.activation.setupCodexGeneratedSkills = lib.hm.dag.entryAfter ["writeBoundary"] ''
+    home.activation.linkCodexDotfileSkills = lib.hm.dag.entryAfter ["writeBoundary"] ''
+      skills_dir=${lib.escapeShellArg cfg.skillsDir}
+      worktree_skills=${lib.escapeShellArg "${cfg.worktreeCodexDir}/skills"}
+
+      if [ ! -d "$worktree_skills" ]; then
+        echo "Skipping Codex dotfile skills setup because $worktree_skills is not a directory" >&2
+        exit 1
+      fi
+
+      mkdir -p "$skills_dir"
+
+      for skill in "$worktree_skills"/*; do
+        [ -d "$skill" ] || continue
+        [ -r "$skill/SKILL.md" ] || continue
+
+        name="$(basename "$skill")"
+        case "$name" in
+          .system|codex-primary-runtime) continue ;;
+        esac
+
+        target="$skills_dir/$name"
+        if [ -L "$target" ] || [ ! -e "$target" ]; then
+          ln -sfn "$skill" "$target"
+        elif [ ! -d "$target" ]; then
+          echo "Skipping Codex skill $name because $target exists and is not a directory" >&2
+        fi
+      done
+    '';
+
+    home.activation.setupCodexGeneratedSkills = lib.hm.dag.entryAfter ["linkCodexDotfileSkills"] ''
       codex_home=${lib.escapeShellArg cfg.codexHome}
       skills_dir=${lib.escapeShellArg cfg.skillsDir}
       runtime_skills_root=${lib.escapeShellArg "${cfg.primaryRuntimeDir}/skills/skills"}

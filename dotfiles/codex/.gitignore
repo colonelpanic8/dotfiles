@@ -4,4 +4,5 @@
 !config.toml
 !skills
 
-# Generated/local Codex state, including config.local.toml, stays ignored.
+# Legacy generated/local Codex state under this repo stays ignored. Active
+# host-local Codex fragments now live under ~/.codex.

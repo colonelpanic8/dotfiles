@@ -4,10 +4,9 @@ service_tier = "fast"
 personality = "pragmatic"
 suppress_unstable_features_warning = true
 
-# Portable Codex defaults. Machine-local additions are appended from
-# dotfiles/codex/config.local.toml by Home Manager. Codex-owned local
-# state, including project trust settings, is harvested there before
-# this file is regenerated.
+# Portable Codex defaults. Home Manager appends host-local fragments from
+# ~/.codex/config.local.toml and ~/.codex/config.local-state.toml when it
+# regenerates ~/.codex/config.toml.
 
 [mcp_servers.chrome-devtools]
 command = "npx"

@@ -133,9 +133,9 @@ function M.setup(ctx)
     { leaf = "layersIn", enabled = true, speed = 5, bezier = "smoothOut", style = "fade" },
     { leaf = "layersOut", enabled = true, speed = 5, bezier = "smoothOut", style = "fade" },
 
-    { leaf = "workspaces", enabled = true, speed = 8, spring = "workspaceSpring", style = "slidefade 32%" },
-    { leaf = "workspacesIn", enabled = true, speed = 8, spring = "workspaceSpring", style = "slidefade 32%" },
-    { leaf = "workspacesOut", enabled = true, speed = 8, spring = "workspaceSpring", style = "slidefade 32%" },
+    { leaf = "workspaces", enabled = true, speed = 10, spring = "workspaceSpring", style = "slide" },
+    { leaf = "workspacesIn", enabled = true, speed = 10, spring = "workspaceSpring", style = "slide" },
+    { leaf = "workspacesOut", enabled = true, speed = 10, spring = "workspaceSpring", style = "slide" },
     { leaf = "specialWorkspace", enabled = true, speed = 8, spring = "workspaceSpring", style = "slidevert" },
     { leaf = "specialWorkspaceIn", enabled = true, speed = 8, spring = "workspaceSpring", style = "slidevert" },
     { leaf = "specialWorkspaceOut", enabled = true, speed = 8, spring = "workspaceSpring", style = "slidevert" },
