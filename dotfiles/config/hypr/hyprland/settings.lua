@@ -100,14 +100,16 @@ function M.setup(ctx)
   hl.curve("smoothOut", { type = "bezier", points = { { 0.36, 1 }, { 0.3, 1 } } })
   hl.curve("smoothInOut", { type = "bezier", points = { { 0.42, 0 }, { 0.58, 1 } } })
   hl.curve("linear", { type = "bezier", points = { { 0, 0 }, { 1, 1 } } })
+  hl.curve("workspaceSpring", { type = "spring", mass = 2.4, stiffness = 38, dampening = 8 })
+  hl.curve("windowSpring", { type = "spring", mass = 2.5, stiffness = 40, dampening = 10 })
 
   local animations = {
     { leaf = "global", enabled = true, speed = 8, bezier = "default" },
 
-    { leaf = "windows", enabled = true, speed = 6, bezier = "overshoot", style = "gnomed" },
-    { leaf = "windowsIn", enabled = true, speed = 6, bezier = "overshoot", style = "gnomed" },
-    { leaf = "windowsOut", enabled = true, speed = 5, bezier = "smoothInOut", style = "gnomed" },
-    { leaf = "windowsMove", enabled = true, speed = 6, bezier = "smoothOut" },
+    { leaf = "windows", enabled = true, speed = 8, spring = "windowSpring", style = "gnomed" },
+    { leaf = "windowsIn", enabled = true, speed = 8, spring = "windowSpring", style = "gnomed" },
+    { leaf = "windowsOut", enabled = true, speed = 8, spring = "windowSpring", style = "gnomed" },
+    { leaf = "windowsMove", enabled = true, speed = 8, spring = "windowSpring" },
 
     { leaf = "border", enabled = false },
     { leaf = "borderangle", enabled = false },
@@ -131,12 +133,12 @@ function M.setup(ctx)
     { leaf = "layersIn", enabled = true, speed = 5, bezier = "smoothOut", style = "fade" },
     { leaf = "layersOut", enabled = true, speed = 5, bezier = "smoothOut", style = "fade" },
 
-    { leaf = "workspaces", enabled = true, speed = 6, bezier = "smoothOut", style = "slidefade 15%" },
-    { leaf = "workspacesIn", enabled = true, speed = 6, bezier = "smoothOut", style = "slidefade 15%" },
-    { leaf = "workspacesOut", enabled = true, speed = 6, bezier = "smoothOut", style = "slidefade 15%" },
-    { leaf = "specialWorkspace", enabled = true, speed = 6, bezier = "smoothOut", style = "slidevert" },
-    { leaf = "specialWorkspaceIn", enabled = true, speed = 6, bezier = "smoothOut", style = "slidevert" },
-    { leaf = "specialWorkspaceOut", enabled = true, speed = 6, bezier = "smoothOut", style = "slidevert" },
+    { leaf = "workspaces", enabled = true, speed = 8, spring = "workspaceSpring", style = "slidefade 32%" },
+    { leaf = "workspacesIn", enabled = true, speed = 8, spring = "workspaceSpring", style = "slidefade 32%" },
+    { leaf = "workspacesOut", enabled = true, speed = 8, spring = "workspaceSpring", style = "slidefade 32%" },
+    { leaf = "specialWorkspace", enabled = true, speed = 8, spring = "workspaceSpring", style = "slidevert" },
+    { leaf = "specialWorkspaceIn", enabled = true, speed = 8, spring = "workspaceSpring", style = "slidevert" },
+    { leaf = "specialWorkspaceOut", enabled = true, speed = 8, spring = "workspaceSpring", style = "slidevert" },
 
     { leaf = "zoomFactor", enabled = true, speed = 7, bezier = "smoothOut" },
     -- Disabled for now: Hyprland 0.54.0 can crash while damaging a monitor
