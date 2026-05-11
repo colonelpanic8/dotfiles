@@ -47,15 +47,15 @@ makeEnable config "myModules.base" true {
 
   # Audio
 
-  services.pulseaudio.enable = true;
-  services.pulseaudio.extraConfig = "load-module module-dbus-protocol";
+  security.rtkit.enable = true;
+  services.pulseaudio.enable = false;
   services.pipewire = {
-    enable = false;
-    systemWide = true;
+    enable = true;
     alsa.enable = true;
     alsa.support32Bit = true;
     jack.enable = true;
     pulse.enable = true;
+    wireplumber.enable = true;
   };
 
   # Bluetooth
