@@ -4,21 +4,32 @@
 
 function list_sinks()
 {
-  pacmd list-sinks | grep -E 'index:|name:'
+  local default_sink
+  default_sink="$(pactl get-default-sink 2>/dev/null || true)"
+
+  pactl list short sinks |
+    while IFS=$'\t' read -r id name _; do
+      if [ "$name" = "$default_sink" ]; then
+        printf '  * index: %s\n' "$id"
+      else
+        printf '    index: %s\n' "$id"
+      fi
+      printf '\tname: <%s>\n' "$name"
+    done
 }
 
 function switch_sink_default()
 {
   echo switching default
-  pacmd set-default-sink $1 || echo failed
+  pactl set-default-sink "$1" || echo failed
 }
 
 function switch_sink_applications()
 {
   echo switching applications
-  pacmd list-sink-inputs |
-    awk '/index:/{print $2}' |
-    xargs -r -I{} pacmd move-sink-input {} $1 ||
+  pactl list short sink-inputs |
+    awk '{print $1}' |
+    xargs -r -I{} pactl move-sink-input {} "$1" ||
       echo failed
 }
 
@@ -29,11 +40,7 @@ function switch_sink_kmix_master()
   typeset name mixer
   # get the device name in pulseaudio
   name="$(
-    pacmd list-sinks | awk -v search=$1 '
-      /index:/{found=$2}
-      /* index:/{found=$3}
-      /name:/&&found==search{print $2}
-    '
+    pactl list short sinks | awk -v search="$1" '$1 == search {print $2}'
   )"
   # format device name to a name in kmix
   name="${name#<}"
@@ -61,9 +68,10 @@ function switch_sink()
 function switch_gui()
 {
 # get current output id, all output ids and the sink names
-   current_id=$(pacmd list-sinks | egrep '\* index:' | egrep -o '[0-9]+$')
-   ids=( $(pacmd list-sinks | egrep 'index:' | egrep -o '[0-9]+$' | tr '\n' ' ') )
-   names=( $(pacmd list-sinks | egrep 'name:' | egrep -o '\..*>$' | tr -d '>' | tr '\n' ' ') )
+   current_name="$(pactl get-default-sink)"
+   current_id="$(pactl list short sinks | awk -v name="$current_name" '$2 == name {print $1}')"
+   ids=( $(pactl list short sinks | awk '{print $1}' | tr '\n' ' ') )
+   names=( $(pactl list short sinks | awk '{print $2}' | tr '\n' ' ') )
 
    zen_pars="--list --radiolist --column '' --column 'ID' --column 'Sink_name'"
 

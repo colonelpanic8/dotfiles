@@ -1,7 +1,7 @@
 #!/usr/bin/env sh
 
 function pasink {
-    pacmd stat | awk -F": " '/^Default sink name: /{print $2}'
+    pactl get-default-sink
 }
 
 pasink "$@"

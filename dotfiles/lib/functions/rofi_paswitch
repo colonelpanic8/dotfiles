@@ -1,7 +1,23 @@
-#!/usr/bin/env sh
+#!/usr/bin/env bash
 
 function rofi_paswitch {
-	pahelper | tr -d '\n' | tr '>' '|' | rofi -i -dmenu -sep '|' | grep -Eo ' [0-9]*' | xargs pahelper
+	local default_sink entries choice sink_id script_dir
+
+	script_dir="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"
+	default_sink="$(pactl get-default-sink 2>/dev/null || true)"
+	entries="$(
+		pactl list short sinks | while IFS=$'\t' read -r id name _; do
+			if [ "$name" = "$default_sink" ]; then
+				printf '* %s %s\n' "$id" "$name"
+			else
+				printf '%s %s %s\n' '-' "$id" "$name"
+			fi
+		done
+	)"
+
+	choice="$(printf '%s\n' "$entries" | rofi -i -dmenu -p "Audio output")" || return
+	sink_id="$(awk '{print $2}' <<<"$choice")"
+	[ -n "$sink_id" ] && "$script_dir/pahelper" "$sink_id"
 }
 
 rofi_paswitch

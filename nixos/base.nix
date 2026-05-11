@@ -47,6 +47,7 @@ makeEnable config "myModules.base" true {
 
   # Audio
 
+  hardware.alsa.enablePersistence = true;
   security.rtkit.enable = true;
   services.pulseaudio.enable = false;
   services.pipewire = {
