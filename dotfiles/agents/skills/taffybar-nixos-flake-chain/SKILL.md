@@ -9,25 +9,28 @@ How the taffybar ecosystem packages are consumed by the NixOS configuration thro
 
 See also: `taffybar-ecosystem-release` for the package dependency graph, release workflow, and Hackage publishing.
 
-## The Three-Layer Flake Chain
+## The Flake Chain
 
-The NixOS system build pulls in taffybar through three nested flake.nix files:
+The NixOS system build pulls in taffybar through the personal
+`imalison-taffybar` config flake. The top-level NixOS flake should not declare
+or override a direct `taffybar` input; the config flake owns its taffybar
+version.
 
 ```
-nixos/flake.nix                              (top — `just switch` reads this)
-│ ├── taffybar         path:.../taffybar/taffybar
-│ ├── imalison-taffybar  path:../dotfiles/config/taffybar
-│ └── gtk-sni-tray, gtk-strut, etc.          (GitHub inputs)
+nixos/flake.nix                              (top - `just switch` reads this)
+│ └── imalison-taffybar  path:../dotfiles/config/taffybar
 │
-dotfiles/config/taffybar/flake.nix           (middle — imalison-taffybar config)
+dotfiles/config/taffybar/flake.nix           (middle - imalison-taffybar config)
 │ ├── taffybar         path:.../taffybar/taffybar
 │ └── gtk-sni-tray, gtk-strut, etc.          (GitHub inputs)
 │
-dotfiles/config/taffybar/taffybar/flake.nix  (bottom — taffybar library)
+dotfiles/config/taffybar/taffybar/flake.nix  (bottom - taffybar library)
 │ └── gtk-sni-tray, gtk-strut, etc.          (flake = false GitHub inputs)
 ```
 
-All three flakes declare their own top-level inputs for the ecosystem packages and use `follows` to keep versions consistent within each layer.
+The NixOS layer may make `imalison-taffybar` follow shared inputs such as
+`nixpkgs`, `flake-utils`, and `xmonad`, but it should not set
+`imalison-taffybar.inputs.taffybar.follows`.
 
 ## Why Bottom-Up Updates Matter
 
@@ -43,14 +46,14 @@ cd ~/.config/taffybar/taffybar && nix flake update <pkg>
 cd ~/.config/taffybar && nix flake update <pkg> taffybar
 
 # Top:
-cd ~/dotfiles/nixos && nix flake update <pkg> imalison-taffybar taffybar
+cd ~/dotfiles/nixos && nix flake update imalison-taffybar
 ```
 
 Not every change requires touching all three layers. Think about which flake.lock files actually contain stale references:
 
-- Changed **taffybar itself** — it's the bottom layer, so start at the middle (`nix flake update taffybar`) then the top.
+- Changed **taffybar itself** — it's owned by the config flake, so start at the middle (`nix flake update taffybar`) then update `imalison-taffybar` at the top.
 - Changed a **leaf ecosystem package** (e.g. gtk-strut) — start at the bottom since taffybar's flake.lock references it, then cascade up.
-- The nixos flake also has **direct GitHub inputs** for ecosystem packages with `follows` overrides. Updating those at the top level may be sufficient if nothing changed in the middle/bottom flake.lock files themselves.
+- The nixos flake can still have unrelated direct inputs such as `kanshi-sni`. Do not add a top-level `taffybar` input just to control the config flake's taffybar source.
 
 ## Rebuilding
 
