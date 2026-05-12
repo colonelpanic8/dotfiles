@@ -18,6 +18,25 @@
       exec ${../dotfiles/lib/bin/desktop_shell_ui} "$@"
     '';
   };
+  googleChrome = pkgs.symlinkJoin {
+    name = "google-chrome-wayland-fractional-scale-workaround";
+    paths = [pkgs.google-chrome];
+    nativeBuildInputs = [pkgs.makeWrapper];
+    postBuild = ''
+      wrapProgram "$out/bin/google-chrome-stable" \
+        --add-flags "--disable-features=WaylandFractionalScaleV1"
+
+      desktop_file="$out/share/applications/google-chrome.desktop"
+      rm "$desktop_file"
+      cp "${pkgs.google-chrome}/share/applications/google-chrome.desktop" "$desktop_file"
+      chmod u+w "$desktop_file"
+
+      substituteInPlace "$desktop_file" \
+        --replace-fail \
+          "Exec=${pkgs.google-chrome}/bin/google-chrome-stable" \
+          "Exec=$out/bin/google-chrome-stable"
+    '';
+  };
   enabledModule = makeEnable config "myModules.desktop" true {
     services.greenclip.enable = true;
     imports = [
@@ -53,7 +72,7 @@
     system.activationScripts.playwrightChromeCompat.text = lib.optionalString (pkgs.stdenv.hostPlatform.system == "x86_64-linux") ''
       # Playwright's Chrome channel lookup expects the FHS path below.
       mkdir -p /opt/google/chrome
-      ln -sfn ${pkgs.google-chrome}/bin/google-chrome-stable /opt/google/chrome/chrome
+      ln -sfn ${googleChrome}/bin/google-chrome-stable /opt/google/chrome/chrome
     '';
 
     services.gnome.at-spi2-core.enable = true;
@@ -190,7 +209,7 @@
         if pkgs.stdenv.hostPlatform.system == "x86_64-linux"
         then
           with pkgs; [
-            google-chrome
+            googleChrome
             pommed_light
             slack
             spicetify-cli
