@@ -1762,7 +1762,8 @@ bind-key and global-set-key forms.
   ("C-c p" . project-prefix-map)
   :custom
   ((project-vc-merge-submodules nil)
-   (project-vc-extra-root-markers '(".project" ".projectile")))
+   (project-vc-extra-root-markers '(".project" ".projectile"))
+   (project-switch-commands 'imalison:project-find-file))
   :config
   (progn
     (defun imalison:project-root (&optional directory)
