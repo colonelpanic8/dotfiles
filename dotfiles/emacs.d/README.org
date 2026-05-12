@@ -1799,7 +1799,10 @@ bind-key and global-set-key forms.
     (defun imalison:project-find-file ()
       "Find a file in the current `project.el' project."
       (interactive)
-      (let* ((project-root (imalison:project-root))
+      (let* ((project-root (file-name-as-directory
+                            (expand-file-name
+                             (or project-current-directory-override
+                                 (imalison:project-root)))))
              (default-directory project-root)
              (project-current-directory-override project-root))
         (call-interactively #'project-find-file)))
