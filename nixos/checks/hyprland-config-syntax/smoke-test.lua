@@ -64,6 +64,7 @@ hl = {
   monitor = noop,
   workspace_rule = noop,
   window_rule = noop,
+  layer_rule = noop,
   dsp = setmetatable({
     group = dispatcher_namespace(),
     window = dispatcher_namespace(),

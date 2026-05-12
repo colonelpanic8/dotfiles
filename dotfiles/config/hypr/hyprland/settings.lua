@@ -164,6 +164,25 @@ function M.setup(ctx)
     hl.window_rule({ match = { title = "^(Open File)$" }, float = true })
     hl.window_rule({ match = { title = "^(Save File)$" }, float = true })
     hl.window_rule({ match = { title = "^(Confirm)$" }, float = true })
+
+    for index, match in ipairs({
+      { class = "^(flameshot)$" },
+      { title = "^(flameshot)$" },
+    }) do
+      hl.window_rule({
+        name = "flameshot-overlay-" .. tostring(index),
+        match = match,
+        float = true,
+        no_anim = true,
+        suppress_event = "fullscreen",
+      })
+    end
+    hl.layer_rule({
+      name = "flameshot-layer-overlay",
+      match = { namespace = "^(flameshot)$" },
+      no_anim = true,
+    })
+
     hl.window_rule({
       match = { class = "^(com\\.mitchellh\\.ghostty\\.dropdown)$" },
       animation = "slide top",
