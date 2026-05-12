@@ -210,7 +210,7 @@
     };
 
     codex-desktop-linux = {
-      url = "github:colonelpanic8/codex-desktop-linux?ref=codex/refresh-nix-package";
+      url = "github:colonelpanic8/codex-desktop-linux?ref=codex/nixos-browser-cache-fixes";
       inputs = {
         nixpkgs.follows = "nixpkgs";
         flake-utils.follows = "flake-utils";

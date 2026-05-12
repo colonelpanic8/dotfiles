@@ -117,16 +117,16 @@
         ]
       },
       "locked": {
-        "lastModified": 1778250367,
-        "narHash": "sha256-FHejGhXWvd+VSNyyMuNYYXDk03bP3k3FcCd5u+cKZAg=",
+        "lastModified": 1778550283,
+        "narHash": "sha256-a8EdMUSgbFf+svcL7ILLNKimRaK6n4niPl+ZKOKYfE0=",
         "owner": "colonelpanic8",
         "repo": "codex-desktop-linux",
-        "rev": "3c2119456ee659867ab29a76eed0345eaf2b0cb1",
+        "rev": "f2127f8aa211287f8dafb145f88d5767900b96d3",
         "type": "github"
       },
       "original": {
         "owner": "colonelpanic8",
-        "ref": "codex/refresh-nix-package",
+        "ref": "codex/nixos-browser-cache-fixes",
         "repo": "codex-desktop-linux",
         "type": "github"
       }
