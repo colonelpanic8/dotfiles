@@ -185,7 +185,7 @@ function M.setup(ctx)
 
     hl.window_rule({
       match = { class = "^(com\\.mitchellh\\.ghostty\\.dropdown)$" },
-      animation = "slide top",
+      no_anim = true,
     })
     hl.window_rule({
       match = { class = "^(.*[Rr]umno.*)$" },

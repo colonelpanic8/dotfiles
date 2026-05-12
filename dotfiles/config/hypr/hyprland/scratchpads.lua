@@ -5,6 +5,8 @@ function M.setup(ctx)
 
   scratchpad_size_ratio = 0.95
   dropdown_height_ratio = 0.5
+  dropdown_animation_frames = 10
+  dropdown_animation_frame_ms = 12
   scratchpad_pending = {}
   monitor_reserved_cache_path = (os.getenv("XDG_RUNTIME_DIR") or "/tmp") .. "/hyprland-monitor-reserved.tsv"
   scratchpad_fallback_reserved_top = 60
@@ -254,6 +256,8 @@ function M.setup(ctx)
       y = workarea.y
       if position == "above" then
         y = workarea.y - height
+      elseif type(position) == "number" then
+        y = position
       end
     else
       width = math.floor(workarea.width * scratchpad_size_ratio)
@@ -299,6 +303,29 @@ function M.setup(ctx)
     end, { timeout = timeout or 50, type = "oneshot" })
   end
 
+  local function dropdown_spring_progress(progress)
+    if progress >= 1 then
+      return 1
+    end
+    return 1 - (math.exp(-5.0 * progress) * math.cos(7.0 * progress))
+  end
+
+  local function animate_dropdown_scratchpad_down(name, window, target_monitor)
+    local from = scratchpad_geometry(name, target_monitor, "above")
+    local to = scratchpad_geometry(name, target_monitor)
+    if not from or not to then
+      schedule_scratchpad_geometry(name, window, target_monitor, nil, 35)
+      return
+    end
+
+    for frame = 1, dropdown_animation_frames do
+      local progress = frame / dropdown_animation_frames
+      local eased = dropdown_spring_progress(progress)
+      local y = math.floor(from.y + ((to.y - from.y) * eased) + 0.5)
+      schedule_scratchpad_geometry(name, window, target_monitor, y, frame * dropdown_animation_frame_ms)
+    end
+  end
+
   local function hide_scratchpad_window(name, window)
     remove_minimized_window(window)
     move_window_to_workspace(scratchpad_workspace(name), false, window)
@@ -317,7 +344,7 @@ function M.setup(ctx)
     move_window_to_workspace(workspace.id, false, window)
     dispatch(hl.dsp.focus({ window = window_selector(window) }))
     if scratchpads[name] and scratchpads[name].dropdown then
-      schedule_scratchpad_geometry(name, window, target_monitor or hl.get_active_monitor(), nil, 35)
+      animate_dropdown_scratchpad_down(name, window, target_monitor or hl.get_active_monitor())
     else
       schedule_scratchpad_geometry(name, window, target_monitor or hl.get_active_monitor())
     end
@@ -445,6 +472,8 @@ function M.setup(ctx)
   ctx.matching_scratchpad_windows = matching_scratchpad_windows
   ctx.apply_scratchpad_geometry = apply_scratchpad_geometry
   ctx.schedule_scratchpad_geometry = schedule_scratchpad_geometry
+  ctx.dropdown_spring_progress = dropdown_spring_progress
+  ctx.animate_dropdown_scratchpad_down = animate_dropdown_scratchpad_down
   ctx.hide_scratchpad_window = hide_scratchpad_window
   ctx.show_scratchpad_window = show_scratchpad_window
   ctx.scratchpad_is_visible = scratchpad_is_visible
