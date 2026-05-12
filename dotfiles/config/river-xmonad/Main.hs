@@ -156,7 +156,8 @@ spawnBindings =
   , key hyper xK_e viewNextEmptyWorkspace
   , key hyper xK_v (spawnAction "rofi -modi 'clipboard:greenclip print' -show clipboard")
   , key hyper xK_p (spawnAction "rofi-pass")
-  , key hyper xK_h (spawnAction "rofi_shutter")
+  , key noMods xK_Print (spawnAction "flameshot gui")
+  , key hyper xK_h (spawnAction "flameshot gui")
   , key hyper xK_c (spawnAction "shell_command.sh")
   , key hyper xK_g gatherFocusedAppId
   , key (hyper .|. shift) xK_l (spawnAction "loginctl lock-session")
