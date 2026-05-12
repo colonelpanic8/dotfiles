@@ -3,7 +3,7 @@
 "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
-<!-- 2026-05-12 Tue 05:51 -->
+<!-- 2026-05-12 Tue 06:43 -->
 <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>&lrm;</title>
@@ -6734,7 +6734,10 @@ bind-key and global-set-key forms.
     (<span class="org-keyword">defun</span> <span class="org-function-name">imalison:project-find-file</span> ()
       <span class="org-doc">"Find a file in the current `</span><span class="org-doc"><span class="org-constant">project.el</span></span><span class="org-doc">' project."</span>
       (<span class="org-keyword">interactive</span>)
-      (<span class="org-keyword">let*</span> ((project-root (imalison:project-root))
+      (<span class="org-keyword">let*</span> ((project-root (file-name-as-directory
+                            (expand-file-name
+                             (<span class="org-keyword">or</span> project-current-directory-override
+                                 (imalison:project-root)))))
              (default-directory project-root)
              (project-current-directory-override project-root))
         (call-interactively #'project-find-file)))
