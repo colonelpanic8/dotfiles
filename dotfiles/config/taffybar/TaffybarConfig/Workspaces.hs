@@ -29,6 +29,20 @@ import System.Taffybar.Util (getPixbufFromFilePath, maybeTCombine, (<|||>))
 import System.Taffybar.Widget.Util (loadPixbufByName)
 import qualified System.Taffybar.Widget.Workspaces as Workspaces
 import System.Taffybar.WindowIcon (pixBufFromColor)
+import TaffybarConfig.ChromeFavicons
+  ( ChromeFaviconConfig (..),
+    ChromeFaviconOverlayMode (..),
+    chromeFaviconIconGetter,
+    defaultChromeFaviconConfig,
+  )
+
+chromeFaviconConfig :: ChromeFaviconConfig
+chromeFaviconConfig =
+  defaultChromeFaviconConfig
+    { chromeFaviconOverlayMode = FaviconWithChromeOverlay,
+      chromeFaviconOverlayRatio = 0.45,
+      chromeFaviconEnabled = True
+    }
 
 x11FullWorkspaceNames :: X11Property [(WorkspaceId, String)]
 x11FullWorkspaceNames =
@@ -174,7 +188,8 @@ workspaceFallbackIcon size _ =
 
 workspaceWindowIconGetter :: Workspaces.WindowIconPixbufGetter
 workspaceWindowIconGetter =
-  workspaceManualIconGetter
+  chromeFaviconIconGetter chromeFaviconConfig
+    <|||> workspaceManualIconGetter
     <|||> Workspaces.getWindowIconPixbufFromChrome
     <|||> Workspaces.defaultGetWindowIconPixbuf
     <|||> workspaceFallbackIcon

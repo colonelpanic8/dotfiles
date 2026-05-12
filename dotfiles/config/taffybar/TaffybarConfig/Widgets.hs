@@ -26,6 +26,7 @@ import System.Taffybar.Context
   )
 import System.Taffybar.Information.Memory (MemoryInfo (..), parseMeminfo)
 import qualified System.Taffybar.Information.Workspaces.Hyprland as HyprlandWorkspaces
+import System.Taffybar.Information.ChromeWindowInfo (getChromeWindowInfoRefreshChan)
 import System.Taffybar.Util (postGUIASync)
 import System.Taffybar.Widget
 import qualified System.Taffybar.Widget.ASUS as ASUS
@@ -110,6 +111,7 @@ workspacesWidget =
         { Workspaces.widgetGap = 0,
           Workspaces.minIcons = 1,
           Workspaces.getWindowIconPixbuf = workspaceWindowIconGetter,
+          Workspaces.externalIconRefreshSources = [getChromeWindowInfoRefreshChan],
           Workspaces.hyprlandWorkspaceProviderConfig =
             HyprlandWorkspaces.defaultHyprlandWorkspaceProviderConfig
               { HyprlandWorkspaces.specialWorkspaceWindowTarget =
