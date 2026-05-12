@@ -21,6 +21,7 @@ package.path = table.concat({
 
 local modules = {
   "hyprland.state",
+  "hyprland.scratchpads",
   "hyprland.core",
   "hyprland.layouts",
   "hyprland.windows",

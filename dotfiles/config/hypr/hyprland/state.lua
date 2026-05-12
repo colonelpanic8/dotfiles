@@ -30,8 +30,6 @@ return {
   },
 
   max_workspace = 9,
-  scratchpad_size_ratio = 0.95,
-  dropdown_height_ratio = 0.5,
   columns_layout = columns_layout,
   large_main_layout = large_main_layout,
   grid_layout = grid_layout,
@@ -58,48 +56,4 @@ return {
   window_picker_candidates = {},
   stack_update_timer = nil,
   monocle_notice = nil,
-  scratchpad_pending = {},
-  monitor_reserved_cache_path = (os.getenv("XDG_RUNTIME_DIR") or "/tmp") .. "/hyprland-monitor-reserved.tsv",
-  scratchpad_fallback_reserved_top = 60,
-
-  scratchpads = {
-    codex = {
-      command = "codex-desktop",
-      class = "codex-desktop",
-    },
-    htop = {
-      command = "alacritty --class htop-scratch --title htop -e htop",
-      class = "htop-scratch",
-    },
-    volume = {
-      command = "pavucontrol",
-      class = "org.pulseaudio.pavucontrol",
-    },
-    spotify = {
-      command = "spotify",
-      class = "spotify",
-    },
-    element = {
-      command = "element-desktop",
-      classes = { "Element", "electron" },
-      title = "Element",
-    },
-    slack = {
-      command = "slack",
-      class = "Slack",
-    },
-    messages = {
-      command = "google-chrome-stable --profile-directory=Default --app=https://messages.google.com/web/conversations",
-      class = "chrome-messages.google.com",
-    },
-    transmission = {
-      command = "transmission-gtk",
-      class = "transmission-gtk",
-    },
-    dropdown = {
-      command = "ghostty --config-file=/home/imalison/.config/ghostty/dropdown",
-      class = "com.mitchellh.ghostty.dropdown",
-      dropdown = true,
-    },
-  },
 }

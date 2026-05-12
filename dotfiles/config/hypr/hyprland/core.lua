@@ -275,53 +275,6 @@ function M.setup(ctx)
     return workspace and not workspace.special and workspace.id and workspace.id >= 1
   end
 
-  local function lower_contains(value, needle)
-    if not needle or needle == "" then
-      return true
-    end
-
-    value = string.lower(tostring(value or ""))
-    needle = string.lower(tostring(needle))
-    return value:find(needle, 1, true) ~= nil
-  end
-
-  local function lower_contains_any(value, needles)
-    if type(needles) ~= "table" then
-      return lower_contains(value, needles)
-    end
-
-    for _, needle in ipairs(needles) do
-      if lower_contains(value, needle) then
-        return true
-      end
-    end
-    return false
-  end
-
-  local function scratchpad_window_matches(window, def)
-    return window
-      and lower_contains_any(window.class, def.classes or def.class)
-      and lower_contains(window.title, def.title)
-  end
-
-  local function is_scratchpad_window(window)
-    for _, def in pairs(scratchpads) do
-      if scratchpad_window_matches(window, def) then
-        return true
-      end
-    end
-    return false
-  end
-
-  local function matching_scratchpad_name(window)
-    for name, def in pairs(scratchpads) do
-      if scratchpad_window_matches(window, def) then
-        return name
-      end
-    end
-    return nil
-  end
-
   local function same_workspace(left, right)
     if not left or not right then
       return false
@@ -554,11 +507,6 @@ function M.setup(ctx)
   ctx.current_workspace_layout = current_workspace_layout
   ctx.write_layout_state = write_layout_state
   ctx.is_normal_workspace = is_normal_workspace
-  ctx.lower_contains = lower_contains
-  ctx.lower_contains_any = lower_contains_any
-  ctx.scratchpad_window_matches = scratchpad_window_matches
-  ctx.is_scratchpad_window = is_scratchpad_window
-  ctx.matching_scratchpad_name = matching_scratchpad_name
   ctx.same_workspace = same_workspace
   ctx.is_minimized_workspace = is_minimized_workspace
   ctx.is_minimized_window = is_minimized_window
