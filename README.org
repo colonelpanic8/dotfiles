@@ -148,8 +148,7 @@ The currently important pieces are:
   under [[file:dotfiles/config/][dotfiles/config/]].
 
 The intended tiling-WM behavior is documented in
-[[file:docs/tiling-wm-experience.md][docs/tiling-wm-experience.md]], and the River/XMonad exploration is documented in
-[[file:docs/riverwm-evaluation.md][docs/riverwm-evaluation.md]].
+[[file:docs/tiling-wm-experience.md][docs/tiling-wm-experience.md]].
 
 * Emacs And Org
 
@@ -211,7 +210,7 @@ active development. Those are machine-local working state and are ignored.
 * CI And Caches
 
 [[file:.github/workflows/cachix.yml][.github/workflows/cachix.yml]] can build the =strixi-minaj= NixOS closure and
-push paths to Cachix. [[file:docs/cachix.md][docs/cachix.md]] documents the cache setup.
+push paths to Cachix.
 
 The top-level [[file:justfile][justfile]] contains helper commands for populating the
 =colonelpanic8-dotfiles= Cachix cache from a local machine.
