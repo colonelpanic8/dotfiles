@@ -97,6 +97,19 @@
             shell-integration-features = cursor,no-sudo,no-title,no-ssh-env,no-ssh-terminfo,path
           '';
         };
+
+        xdg.configFile."ghostty/dropdown" = {
+          force = true;
+          text = ''
+            config-file = /home/imalison/.config/ghostty/config
+            class = com.mitchellh.ghostty.dropdown
+            title = dropdown
+            gtk-single-instance = false
+            window-decoration = none
+            window-padding-x = 0
+            window-padding-y = 0
+          '';
+        };
       }
     ];
 
