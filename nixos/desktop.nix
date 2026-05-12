@@ -127,6 +127,9 @@
             window-decoration = none
             window-padding-x = 0
             window-padding-y = 0
+            background-opacity = 0.82
+            background-opacity-cells = true
+            background-blur = true
           '';
         };
       }

@@ -235,10 +235,10 @@ function M.setup(ctx)
     return windows
   end
 
-  local function apply_scratchpad_geometry(name, window, target_monitor)
+  local function scratchpad_geometry(name, target_monitor, position)
     local def = scratchpads[name]
     local monitor = target_monitor or hl.get_active_monitor()
-    if not def or not window or not monitor then
+    if not def or not monitor then
       return
     end
 
@@ -252,29 +252,51 @@ function M.setup(ctx)
       height = math.floor(workarea.height * dropdown_height_ratio)
       x = workarea.x
       y = workarea.y
+      if position == "above" then
+        y = workarea.y - height
+      end
     else
       width = math.floor(workarea.width * scratchpad_size_ratio)
       height = math.floor(workarea.height * scratchpad_size_ratio)
       x = workarea.x + math.floor((workarea.width - width) / 2)
       y = workarea.y + math.floor((workarea.height - height) / 2)
     end
+
+    return {
+      width = width,
+      height = height,
+      x = x,
+      y = y,
+    }
+  end
+
+  local function apply_scratchpad_geometry(name, window, target_monitor, position)
+    local def = scratchpads[name]
+    if not def or not window then
+      return
+    end
+
+    local geometry = scratchpad_geometry(name, target_monitor, position)
+    if not geometry then
+      return
+    end
     local selector = window_selector(window)
 
     dispatch(hl.dsp.window.float({ action = "enable", window = selector }))
     dispatch(hl.dsp.window.tag({ tag = "+scratchpad", window = selector }))
     dispatch(hl.dsp.window.tag({ tag = "+scratchpad-" .. name, window = selector }))
-    dispatch(hl.dsp.window.resize({ x = width, y = height, relative = false, window = selector }))
-    dispatch(hl.dsp.window.move({ x = x, y = y, relative = false, window = selector }))
+    dispatch(hl.dsp.window.resize({ x = geometry.width, y = geometry.height, relative = false, window = selector }))
+    dispatch(hl.dsp.window.move({ x = geometry.x, y = geometry.y, relative = false, window = selector }))
     if def.dropdown then
       dispatch(hl.dsp.window.set_prop({ prop = "border_size", value = "0", window = selector }))
       dispatch(hl.dsp.window.set_prop({ prop = "no_shadow", value = "1", window = selector }))
     end
   end
 
-  local function schedule_scratchpad_geometry(name, window, target_monitor)
+  local function schedule_scratchpad_geometry(name, window, target_monitor, position, timeout)
     hl.timer(function()
-      apply_scratchpad_geometry(name, window, target_monitor)
-    end, { timeout = 50, type = "oneshot" })
+      apply_scratchpad_geometry(name, window, target_monitor, position)
+    end, { timeout = timeout or 50, type = "oneshot" })
   end
 
   local function hide_scratchpad_window(name, window)
@@ -289,9 +311,16 @@ function M.setup(ctx)
     end
 
     remove_minimized_window(window)
+    if scratchpads[name] and scratchpads[name].dropdown then
+      apply_scratchpad_geometry(name, window, target_monitor or hl.get_active_monitor(), "above")
+    end
     move_window_to_workspace(workspace.id, false, window)
     dispatch(hl.dsp.focus({ window = window_selector(window) }))
-    schedule_scratchpad_geometry(name, window, target_monitor or hl.get_active_monitor())
+    if scratchpads[name] and scratchpads[name].dropdown then
+      schedule_scratchpad_geometry(name, window, target_monitor or hl.get_active_monitor(), nil, 35)
+    else
+      schedule_scratchpad_geometry(name, window, target_monitor or hl.get_active_monitor())
+    end
   end
 
   local function scratchpad_is_visible(window)
@@ -412,6 +441,7 @@ function M.setup(ctx)
   ctx.monitor_from_reserved_cache = monitor_from_reserved_cache
   ctx.refresh_monitor_reserved_cache = refresh_monitor_reserved_cache
   ctx.monitor_workarea = monitor_workarea
+  ctx.scratchpad_geometry = scratchpad_geometry
   ctx.matching_scratchpad_windows = matching_scratchpad_windows
   ctx.apply_scratchpad_geometry = apply_scratchpad_geometry
   ctx.schedule_scratchpad_geometry = schedule_scratchpad_geometry
