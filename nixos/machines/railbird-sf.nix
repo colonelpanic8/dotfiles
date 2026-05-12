@@ -49,9 +49,6 @@
   myModules.postgres.enable = true;
   features.full.enable = true;
 
-  # Fresh single-node k3s using the existing Railbird k3s module.
-  myModules.k3s-single-node.enable = false;
-
   hardware.nvidia = {
     powerManagement.enable = false;
     # Fine-grained power management. Turns off GPU when not in use.

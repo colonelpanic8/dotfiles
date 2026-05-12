@@ -109,6 +109,10 @@ in {
       serverAddr = mkOption {
         type = lib.types.str;
         default = "";
+        description = ''
+          Existing k3s server URL to join. Leave empty for the first or only
+          server; that enables cluster initialization with no peers.
+        '';
       };
       extraFlags = mkOption {
         type = lib.types.listOf lib.types.str;

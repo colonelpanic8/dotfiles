@@ -27,7 +27,6 @@
     ./imalison.nix
     ./internet-computer.nix
     ./k3s.nix
-    ./k3s-single-node.nix
     ./kat.nix
     ./keepbook-sync.nix
     ./keybase.nix

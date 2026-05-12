@@ -24,7 +24,6 @@
   myModules.vscode.enable = true;
   myModules.kat.enable = true;
   myModules.nvidia.enable = true;
-  myModules.k3s-single-node.enable = false;
   myModules.railbird-k3s = {
     enable = false;
     serverAddr = "https://dev.railbird.ai:6443";
