@@ -129,7 +129,7 @@
             window-padding-y = 0
             background-opacity = 0.82
             background-opacity-cells = true
-            background-blur = true
+            background-blur = false
           '';
         };
       }
@@ -163,7 +163,6 @@
         alacritty
         ghostty
         blueman
-        # clipit
         d-spy
         kdePackages.dolphin
 
