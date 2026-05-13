@@ -136,6 +136,7 @@ workspaceCandidateInfo :: Text -> WorkspaceModel.WindowInfo
 workspaceCandidateInfo name =
   WorkspaceModel.WindowInfo
     { WorkspaceModel.windowIdentity = WorkspaceModel.HyprlandWindowIdentity "",
+      WorkspaceModel.windowUpdateRevision = 0,
       WorkspaceModel.windowTitle = "",
       WorkspaceModel.windowClassHints = [name],
       WorkspaceModel.windowPosition = Nothing,
