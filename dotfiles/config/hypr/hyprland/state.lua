@@ -46,11 +46,10 @@ return {
   current_layout = columns_layout,
   enable_nstack = true,
   enable_hyprexpo = true,
-  -- Keep disabled until the PR231-patched Hyprspace build is switched into /run/current-system.
   enable_hyprspace = false,
   enable_hyprwinview = true,
   enable_workspace_history = true,
-  enable_hyprglass = true,
+  enable_hyprglass = false,
   configure_nstack_plugin_from_lua = false,
   workspace_layouts = {},
   minimized_windows = {},

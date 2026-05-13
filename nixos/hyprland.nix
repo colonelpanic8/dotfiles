@@ -98,7 +98,7 @@
         ./packages/hyprspace-lua-api.patch
       ];
   });
-  enableHyprglass = true;
+  enableHyprglass = false;
   hyprglass = pkgs.callPackage ./packages/hyprglass {
     src = inputs.hyprglass;
     hyprland = baseHyprlandPackage;
