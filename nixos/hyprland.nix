@@ -89,9 +89,25 @@
       overrideAttrs = f: makeHyprlandLuaPackage (package.overrideAttrs f);
     };
   hyprlandPackage = makeHyprlandLuaPackage baseHyprlandPackage;
+  hyprspace = inputs.Hyprspace.packages.${system}.Hyprspace.overrideAttrs (old: {
+    version = "${old.version}-pr230";
+    __intentionallyOverridingVersion = true;
+    patches =
+      (old.patches or [])
+      ++ [
+        # Hyprspace main has not caught up with Hyprland 0.55 yet.
+        # https://github.com/KZDKM/Hyprspace/pull/230
+        (pkgs.fetchpatch {
+          url = "https://github.com/KZDKM/Hyprspace/pull/230.patch";
+          hash = "sha256-jwSuIyhUi8KMIpgBxqyDZvcRHxHjiji8GMipDX4Dot8=";
+        })
+        ./packages/hyprspace-lua-api.patch
+      ];
+  });
   hyprlandPluginPackages = [
     inputs.hyprNStack.packages.${system}.hyprNStack
     inputs.hyprland-plugins-lua.packages.${system}.hyprexpo
+    hyprspace
     inputs.hyprwinview.packages.${system}.hyprwinview
     inputs.hypr-workspace-history.packages.${system}.hypr-workspace-history
   ];

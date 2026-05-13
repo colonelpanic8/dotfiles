@@ -24,8 +24,8 @@ function M.setup(ctx)
     default_action = "bring",
   }), overview_bind_opts)
   bind(main_mod .. " + SHIFT + slash", hyprwinview({ action = "toggle-filter" }), overview_bind_opts)
-  bind("ALT + Tab", hyprexpo("open"), overview_bind_opts)
-  bind("ALT + SHIFT + Tab", hyprexpo("bring"), overview_bind_opts)
+  bind("ALT + Tab", hyprspace("toggle"), overview_bind_opts)
+  bind("ALT + SHIFT + Tab", hyprexpo("open"), overview_bind_opts)
   bind(main_mod .. " + G", hyprwinview({
     action = "show",
     start_in_filter_mode = true,

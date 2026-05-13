@@ -1,5 +1,28 @@
 {
   "nodes": {
+    "Hyprspace": {
+      "inputs": {
+        "hyprland": [
+          "hyprland"
+        ],
+        "systems": [
+          "systems"
+        ]
+      },
+      "locked": {
+        "lastModified": 1775071961,
+        "narHash": "sha256-LXkeeH9Blr6ohS1LAsVZbkJ/EAkkMDATh5qu45hC7Zo=",
+        "owner": "KZDKM",
+        "repo": "Hyprspace",
+        "rev": "12ddde04f8584bf7de3151e6169918e0dda9f822",
+        "type": "github"
+      },
+      "original": {
+        "owner": "KZDKM",
+        "repo": "Hyprspace",
+        "type": "github"
+      }
+    },
     "agenix": {
       "inputs": {
         "darwin": "darwin",
@@ -1705,6 +1728,7 @@
     },
     "root": {
       "inputs": {
+        "Hyprspace": "Hyprspace",
         "agenix": "agenix",
         "claude-code-nix": "claude-code-nix",
         "codex-cli-nix": "codex-cli-nix",

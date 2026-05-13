@@ -8,6 +8,9 @@ function M.setup(ctx)
   if enable_hyprexpo and not verify_config then
     hl.plugin.load("/run/current-system/sw/lib/libhyprexpo.so")
   end
+  if enable_hyprspace and not verify_config then
+    hl.plugin.load("/run/current-system/sw/lib/libHyprspace.so")
+  end
   if enable_hyprwinview and not verify_config then
     hl.plugin.load("/run/current-system/sw/lib/libhyprwinview.so")
   end

@@ -46,6 +46,7 @@ return {
   current_layout = columns_layout,
   enable_nstack = true,
   enable_hyprexpo = true,
+  enable_hyprspace = true,
   enable_hyprwinview = true,
   enable_workspace_history = true,
   configure_nstack_plugin_from_lua = false,

@@ -109,6 +109,12 @@
       inputs.hyprland.follows = "hyprland";
     };
 
+    Hyprspace = {
+      url = "github:KZDKM/Hyprspace";
+      inputs.hyprland.follows = "hyprland";
+      inputs.systems.follows = "systems";
+    };
+
     hyprwinview = {
       url = "github:colonelpanic8/hyprwinview";
       inputs.hyprland.follows = "hyprland";

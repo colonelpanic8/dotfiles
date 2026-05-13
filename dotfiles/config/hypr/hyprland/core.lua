@@ -70,6 +70,24 @@ function M.setup(ctx)
     end
   end
 
+  local function hyprspace(action)
+    action = action or "toggle"
+    return function()
+      overview_trace("hyprspace " .. tostring(action))
+      if hl.plugin and hl.plugin.hyprspace and hl.plugin.hyprspace.overview then
+        hl.plugin.hyprspace.overview(action)
+      else
+        hl.notification.create({
+          text = "Hyprspace is not loaded",
+          duration = 1800,
+          icon = notification_icons.warning,
+          color = "rgba(edb443ff)",
+          font_size = 13,
+        })
+      end
+    end
+  end
+
   local function hyprwinview(action)
     return function()
       local label = "hyprwinview"
@@ -496,6 +514,7 @@ function M.setup(ctx)
   ctx.overview_trace = overview_trace
   ctx.window_selector = window_selector
   ctx.hyprexpo = hyprexpo
+  ctx.hyprspace = hyprspace
   ctx.hyprwinview = hyprwinview
   ctx.workspacehistory = workspacehistory
   ctx.apply_nstack_config = apply_nstack_config
