@@ -207,6 +207,7 @@
         # Visualization
         graphviz
         mermaid-cli
+        pandoc
       ]
       ++ (
         if pkgs.stdenv.hostPlatform.system == "x86_64-linux"

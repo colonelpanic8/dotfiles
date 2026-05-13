@@ -1344,7 +1344,33 @@ Paradox is a package.el extension. I have no use for it now that I use straight.
 ** emacs-everywhere
 #+begin_src emacs-lisp
 (use-package emacs-everywhere
-  :commands emacs-everywhere)
+  :commands emacs-everywhere
+  :config
+  (progn
+    (defun imalison:emacs-everywhere-app-info-hyprland ()
+      (require 'json)
+      (let* ((window (json-parse-string
+                      (shell-command-to-string "hyprctl -j activewindow")
+                      :object-type 'alist
+                      :array-type 'list))
+             (address (alist-get 'address window))
+             (class (or (alist-get 'initialClass window)
+                        (alist-get 'class window)
+                        ""))
+             (title (or (alist-get 'title window) "")))
+        (unless address
+          (user-error "Unable to determine active Hyprland window"))
+        (make-emacs-everywhere-app
+         :id address
+         :class class
+         :title title)))
+
+    (add-to-list 'emacs-everywhere-system-configs
+                 '((wayland . Hyprland)
+                   :focus-command ("hyprctl" "dispatch" "focuswindow" "address:%w")
+                   :info-function imalison:emacs-everywhere-app-info-hyprland)
+                 t)
+    (setq emacs-everywhere--system-configured nil)))
 #+end_src
 ** atomic-chrome
 #+BEGIN_SRC emacs-lisp

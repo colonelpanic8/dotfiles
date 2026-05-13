@@ -21,7 +21,7 @@ function M.setup(ctx)
     bind(main_mod .. " + Q", exec("hyprctl reload"), desc("Reload Hyprland"))
     bind(main_mod .. " + R", exec("hyprctl reload"), desc("Reload Hyprland"))
     bind(main_mod .. " + E", exec("emacsclient --eval '(emacs-everywhere)'"), desc("Open Emacs Everywhere"))
-    bind(main_mod .. " + V", exec("wl-paste | xdotool type --file -"), desc("Type clipboard contents"))
+    bind(main_mod .. " + V", exec("wl-paste --no-newline | ydotool type --file -"), desc("Type clipboard contents"))
     bind(main_mod .. " + X", exec("rofi_command.sh"), desc("Open command menu"))
 
     bind(main_mod .. " + I", exec("set_volume --unmute --change-volume +5"), desc("Raise volume", { repeating = true }))
