@@ -2,6 +2,40 @@ local M = {}
 
 function M.setup(ctx)
   local _ENV = ctx
+  local fullscreen_states = {}
+
+  local function unset_fullscreen_state(window, state)
+    dispatch(hl.dsp.window.fullscreen_state({
+      internal = state.internal,
+      client = state.client,
+      action = "unset",
+      window = window_selector(window),
+    }))
+  end
+
+  local function reconcile_fullscreen_state(window)
+    if not window or not window.address then
+      return
+    end
+
+    local address = tostring(window.address)
+    local previous = fullscreen_states[address]
+    local current = {
+      internal = tonumber(window.fullscreen) or 0,
+      client = tonumber(window.fullscreen_client) or 0,
+    }
+    fullscreen_states[address] = current
+
+    if window.floating or current_layout == monocle_layout then
+      return
+    end
+
+    if current.internal == 1 or (previous and previous.internal >= 2 and current.internal > 0 and current.client == 0) then
+      unset_fullscreen_state(window, current)
+      fullscreen_states[address] = { internal = 0, client = 0 }
+    end
+  end
+
   hl.on("hyprland.start", function()
     apply_nstack_config()
     apply_hyprexpo_config()
@@ -39,6 +73,8 @@ function M.setup(ctx)
   hl.on("window.destroy", update_monocle_notice)
   hl.on("window.kill", update_monocle_notice)
   hl.on("window.move_to_workspace", update_monocle_notice)
+  hl.on("window.fullscreen", reconcile_fullscreen_state)
+  hl.on("window.update_rules", reconcile_fullscreen_state)
 
   hl.on("window.open", adopt_matching_scratchpad_window)
   hl.on("window.class", adopt_matching_scratchpad_window)
