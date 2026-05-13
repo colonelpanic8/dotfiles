@@ -11,7 +11,8 @@ from pykefcontrol.kef_connector import KefConnector
 from zeroconf import IPVersion, ServiceBrowser, ServiceListener, Zeroconf
 
 
-SOURCES = ("wifi", "bluetooth", "tv", "optic", "coaxial", "analog", "standby")
+SOURCE_ALIASES = {"optic": "optical"}
+SOURCES = ("wifi", "bluetooth", "tv", "optical", "coaxial", "analog", "standby")
 DISCOVERY_SERVICE_TYPES = (
     "_kef-info._tcp.local.",
     "_sues800device._tcp.local.",
@@ -163,6 +164,12 @@ def bounded_volume(value):
     return max(0, min(100, value))
 
 
+def normalize_source(source):
+    if source is None:
+        return None
+    return SOURCE_ALIASES.get(source, source)
+
+
 def main():
     parser = argparse.ArgumentParser(prog="kef", description="Control KEF W2 speakers.")
     parser.add_argument(
@@ -198,7 +205,7 @@ def main():
     down.add_argument("step", nargs="?", default=3, type=int)
 
     source = subparsers.add_parser("source", help="Get or set source.")
-    source.add_argument("name", nargs="?", choices=SOURCES)
+    source.add_argument("name", nargs="?", choices=SOURCES + tuple(SOURCE_ALIASES))
 
     subparsers.add_parser("play-pause", help="Toggle play/pause.")
     subparsers.add_parser("next", help="Next track.")
@@ -233,7 +240,7 @@ def main():
             if args.name is None:
                 print(speaker.source)
             else:
-                speaker.source = args.name
+                speaker.source = normalize_source(args.name)
         elif args.command == "play-pause":
             speaker.toggle_play_pause()
         elif args.command == "next":

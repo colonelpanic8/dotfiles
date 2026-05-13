@@ -1,0 +1,33 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+model="${KEF_MODEL:-${KEF_SPEAKER_MODEL:-LS50WII}}"
+discovery_timeout="${KEF_DISCOVERY_TIMEOUT:-5}"
+wake_delay="${KEF_WAKE_DELAY:-3}"
+host="${KEF_HOST:-${KEF_IP:-${KEF_SPEAKER_IP:-}}}"
+
+kef_args=(--model "$model" --discovery-timeout "$discovery_timeout")
+if [[ -n "$host" ]]; then
+  kef_args=(--host "$host" "${kef_args[@]}")
+fi
+
+notify() {
+  if command -v notify-send >/dev/null 2>&1; then
+    notify-send "KEF speakers" "$1"
+  fi
+}
+
+kef "${kef_args[@]}" on
+sleep "$wake_delay"
+
+for _ in {1..10}; do
+  if kef "${kef_args[@]}" source optical >/dev/null; then
+    notify "Powered on and switched to optical"
+    exit 0
+  fi
+  sleep 1
+done
+
+notify "Powered on, but optical input switch failed"
+echo "kef-optical: powered on, but failed to switch to optical input" >&2
+exit 1

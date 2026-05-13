@@ -360,20 +360,15 @@ from transformers import (/' \
       python-final: python-prev: {
         pykefcontrol = python-prev.buildPythonPackage rec {
           pname = "pykefcontrol";
-          version = "0.9";
+          version = "0.9.3-pr17";
           pyproject = true;
 
           src = final.fetchFromGitHub {
-            owner = "N0ciple";
+            owner = "colonelpanic8";
             repo = "pykefcontrol";
-            rev = "530a7d15cf692c35a7c181c8f5e28edc0f1e085a";
-            hash = "sha256-V/uYzzUv/PslfZ/zSSAK4j6kI9lLQOXBN1AG0rjRrpg=";
+            rev = "1eb4418ce39d9d368d4f195702215a7854790633";
+            hash = "sha256-aqa0LP0cjT2F/vtoxKvCFPeBAWwReaF47QLT4KsOhjA=";
           };
-
-          postPatch = ''
-            substituteInPlace pyproject.toml \
-              --replace-fail 'version = "0.8"' 'version = "0.9"'
-          '';
 
           build-system = with python-final; [ hatchling ];
           propagatedBuildInputs = with python-final; [

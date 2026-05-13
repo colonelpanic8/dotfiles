@@ -1,19 +1,21 @@
 {
   lib,
   buildPythonPackage,
-  fetchPypi,
+  fetchFromGitHub,
   hatchling,
   aiohttp,
   requests,
 }:
 buildPythonPackage rec {
   pname = "pykefcontrol";
-  version = "0.9.2";
+  version = "0.9.3-pr17";
   pyproject = true;
 
-  src = fetchPypi {
-    inherit pname version;
-    hash = "sha256-3kGhN+E7driiE6ePyF0EZOEnUhTm07sxHCKdzrn/MxM=";
+  src = fetchFromGitHub {
+    owner = "colonelpanic8";
+    repo = "pykefcontrol";
+    rev = "1eb4418ce39d9d368d4f195702215a7854790633";
+    hash = "sha256-aqa0LP0cjT2F/vtoxKvCFPeBAWwReaF47QLT4KsOhjA=";
   };
 
   build-system = [

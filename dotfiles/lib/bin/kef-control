@@ -15,7 +15,7 @@ MODEL_ALIASES = {
 }
 SOURCE_ALIASES = {
     "aux": "analog",
-    "optical": "optic",
+    "optic": "optical",
 }
 
 
