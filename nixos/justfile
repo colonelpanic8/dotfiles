@@ -1,44 +1,5 @@
 switch *args:
 	sudo nixos-rebuild switch --flake ".#" --impure {{args}}
 
-switch-remote *args:
-	# Switch using the remote master flake.
-	env PATH=/run/wrappers/bin:$PATH sudo nixos-rebuild switch --flake "git+https://github.com/colonelpanic8/dotfiles.git?ref=master&dir=nixos#" --impure --option warn-dirty false {{args}}
-
-switch-local *args:
-	# Backwards-compat alias for local switch.
-	bash -lc 'if systemctl is-active --quiet nixos-rebuild-switch-to-configuration.service; then \
-	  echo "nixos-rebuild switch already running; waiting..." >&2; \
-	  systemctl status nixos-rebuild-switch-to-configuration.service --no-pager >&2 || true; \
-	  while systemctl is-active --quiet nixos-rebuild-switch-to-configuration.service; do sleep 1; done; \
-	fi; \
-	env PATH=/run/wrappers/bin:$PATH sudo systemctl reset-failed nixos-rebuild-switch-to-configuration.service >/dev/null 2>&1 || true'
-	env PATH=/run/wrappers/bin:$PATH sudo nixos-rebuild switch --flake ".#" --impure --option warn-dirty false \
-	  --override-input imalison-taffybar path:/home/imalison/dotfiles/dotfiles/config/taffybar \
-	  --override-input taffybar path:/home/imalison/dotfiles/dotfiles/config/taffybar/taffybar \
-	  {{args}}
-
-switch-local-taffybar *args:
-	# Like `switch-remote`, but use the local taffybar checkout (useful when hacking on it).
-	# Note: requires the submodule/checkout to exist at ../dotfiles/config/taffybar/taffybar.
-	bash -lc 'if systemctl is-active --quiet nixos-rebuild-switch-to-configuration.service; then \
-	  echo "nixos-rebuild switch already running; waiting..." >&2; \
-	  systemctl status nixos-rebuild-switch-to-configuration.service --no-pager >&2 || true; \
-	  while systemctl is-active --quiet nixos-rebuild-switch-to-configuration.service; do sleep 1; done; \
-	fi; \
-	env PATH=/run/wrappers/bin:$PATH sudo systemctl reset-failed nixos-rebuild-switch-to-configuration.service >/dev/null 2>&1 || true'
-	env PATH=/run/wrappers/bin:$PATH sudo env IMALISON_TAFFYBAR_LIVE_CHECKOUT=/home/imalison/dotfiles/dotfiles/config/taffybar/taffybar \
-	  nixos-rebuild switch --flake "git+https://github.com/colonelpanic8/dotfiles.git?ref=master&dir=nixos#" --impure --option warn-dirty false \
-	  --override-input imalison-taffybar path:/home/imalison/dotfiles/dotfiles/config/taffybar \
-	  --override-input taffybar path:/home/imalison/dotfiles/dotfiles/config/taffybar/taffybar \
-	  {{args}}
-
-remote-switch host *args:
-	nixos-rebuild switch --flake "git+https://github.com/colonelpanic8/dotfiles.git?ref=master&dir=nixos#{{host}}" --target-host {{host}}.local --sudo --impure --option warn-dirty false {{args}}
-
 populate-cachix cache="colonelpanic8-dotfiles" host=`hostname` *args:
-	store_path="$(nix build --no-link --print-out-paths ".#nixosConfigurations.{{host}}.config.system.build.toplevel" --impure --option warn-dirty false {{args}})" && cachix push {{cache}} "$store_path"
-
-fix-local-path-issue:
-	# Kept for backwards-compat: update the lockfile inputs explicitly.
-	nix flake update imalison-taffybar
+	store_path="$(nix build --no-link --print-out-paths ".#nixosConfigurations.{{host}}.config.system.build.toplevel" --impure --option warn-dirty false {{args}})" && cachix push {{cache}} "$store_path
