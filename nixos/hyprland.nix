@@ -151,6 +151,18 @@
       exec ${../dotfiles/lib/bin/hypr_rofi_layout} "$@"
     '';
   };
+  hyprRofiAction = pkgs.writeShellApplication {
+    name = "hypr_rofi_action";
+    runtimeInputs = [
+      pkgs.libnotify
+      pkgs.python3
+      pkgs.rofi
+      hyprlandPackage
+    ];
+    text = ''
+      exec python3 ${../dotfiles/lib/bin/hypr_rofi_action} "$@"
+    '';
+  };
   hyprscratchSettings = {
     daemon_options = "clean";
     global_options = "";
@@ -303,6 +315,7 @@
 
         # For scripts
         hyprRofiLayout
+        hyprRofiAction
         hyprRofiWindow
         hyprShellUi
         jq

@@ -15,16 +15,69 @@ function M.setup(ctx)
 
   verify_config = command_line_contains("--verify-config")
 
-  local function bind(keys, dispatcher, opts)
-    hl.bind(keys, dispatcher, opts)
-  end
-
   local function exec(command)
     return hl.dsp.exec_cmd(command)
   end
 
   local function dispatch(dispatcher)
     return hl.dispatch(dispatcher)
+  end
+
+  local action_registry = {}
+
+  local function action_text(value)
+    return tostring(value or ""):gsub("[\t\r\n]", " "):gsub(" +", " "):match("^%s*(.-)%s*$")
+  end
+
+  local function action_registry_path()
+    local runtime_dir = os.getenv("XDG_RUNTIME_DIR") or "/tmp"
+    return runtime_dir .. "/hyprland-actions.tsv"
+  end
+
+  local function register_action(keys, dispatcher, opts)
+    local description = opts and opts.description
+    if not description or description == "" then
+      return
+    end
+
+    local id = tostring(#action_registry + 1)
+    action_registry[#action_registry + 1] = {
+      id = id,
+      keys = action_text(keys),
+      description = action_text(description),
+      dispatcher = dispatcher,
+    }
+  end
+
+  local function bind(keys, dispatcher, opts)
+    hl.bind(keys, dispatcher, opts)
+    register_action(keys, dispatcher, opts)
+  end
+
+  _G.im_hyprland_write_actions = function()
+    local actions_file = io.open(action_registry_path(), "w")
+    if not actions_file then
+      return
+    end
+
+    for _, action in ipairs(action_registry) do
+      actions_file:write(action.id, "\t", action.description, "\t", action.keys, "\n")
+    end
+
+    actions_file:close()
+  end
+
+  _G.im_hyprland_run_action = function(id)
+    local action = action_registry[tonumber(id)]
+    if not action then
+      return
+    end
+
+    if type(action.dispatcher) == "function" then
+      action.dispatcher()
+    else
+      dispatch(action.dispatcher)
+    end
   end
 
   local function shell_quote(value)

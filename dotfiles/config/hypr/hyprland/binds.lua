@@ -72,6 +72,7 @@ function M.setup(ctx)
     bind(hyper .. " + K", exec("rofi_kill_process.sh"), desc("Open process kill menu"))
     bind(hyper .. " + SHIFT + K", exec("rofi_kill_all.sh"), desc("Open kill-all menu"))
     bind(hyper .. " + R", exec("rofi-systemd"), desc("Open systemd unit menu"))
+    bind(hyper .. " + X", exec("hypr_rofi_action"), desc("Open Hyprland action menu"))
     bind(hyper .. " + I", exec("rofi_select_input.hs"), desc("Open input selection menu"))
     bind(hyper .. " + Y", exec("rofi_agentic_skill"), desc("Open agentic skill menu"))
   end

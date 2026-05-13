@@ -1,0 +1,118 @@
+#!/usr/bin/env python3
+import os
+import shutil
+import subprocess
+import sys
+from pathlib import Path
+
+
+PROMPT = "Hyprland action"
+
+
+def ensure_hyprland_instance():
+    if os.environ.get("HYPRLAND_INSTANCE_SIGNATURE"):
+        return
+
+    runtime = Path(os.environ.get("XDG_RUNTIME_DIR", f"/run/user/{os.getuid()}"))
+    hypr_dir = runtime / "hypr"
+    if not hypr_dir.is_dir():
+        return
+
+    sockets = []
+    for socket in hypr_dir.glob("*/.socket.sock"):
+        try:
+            sockets.append((socket.stat().st_mtime, socket.parent.name))
+        except OSError:
+            pass
+
+    if sockets:
+        os.environ["HYPRLAND_INSTANCE_SIGNATURE"] = max(sockets)[1]
+
+
+def actions_path():
+    return Path(os.environ.get("XDG_RUNTIME_DIR", f"/run/user/{os.getuid()}")) / "hyprland-actions.tsv"
+
+
+def rofi_index(entries):
+    menu = "".join(f"{entry}\n" for entry in entries)
+    result = subprocess.run(
+        ["rofi", "-dmenu", "-i", "-p", PROMPT, "-format", "i"],
+        input=menu,
+        check=False,
+        text=True,
+        capture_output=True,
+    )
+    if result.returncode != 0:
+        return None
+
+    try:
+        return int(result.stdout.strip())
+    except ValueError:
+        return None
+
+
+def notify(message):
+    if shutil.which("notify-send"):
+        subprocess.run(["notify-send", "Hyprland action", message], check=False)
+    else:
+        sys.stderr.write(message + "\n")
+
+
+def hyprland_eval(expression):
+    return subprocess.run(["hyprctl", "-q", "eval", expression], check=False)
+
+
+def request_actions_file():
+    ensure_hyprland_instance()
+    result = hyprland_eval("_G.im_hyprland_write_actions()")
+    return result.returncode == 0
+
+
+def read_actions():
+    if not request_actions_file():
+        return []
+
+    actions_file = actions_path()
+    if not actions_file.is_file():
+        return []
+
+    actions = []
+    try:
+        with actions_file.open() as handle:
+            for line in handle:
+                action_id, description, keys = (line.rstrip("\n").split("\t", 2) + ["", ""])[:3]
+                if action_id and description:
+                    actions.append({"id": action_id, "description": description, "keys": keys})
+    except OSError:
+        return []
+
+    actions.sort(key=lambda action: (action["description"].lower(), action["keys"].lower()))
+    return actions
+
+
+def dispatch(action):
+    result = hyprland_eval(f'_G.im_hyprland_run_action("{action["id"]}")')
+    if result.returncode != 0:
+        notify(f"Failed to run action: {action['description']}")
+    return result.returncode
+
+
+def main():
+    actions = read_actions()
+    if not actions:
+        notify("No registered Hyprland actions found.")
+        return 1
+
+    width = min(max(len(action["description"]) for action in actions), 48)
+    labels = [f"{action['description']:<{width}}  {action['keys']}" for action in actions]
+    index = rofi_index(labels)
+    if index is None:
+        return 0
+    if index < 0 or index >= len(actions):
+        return 1
+
+    return dispatch(actions[index])
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())
