@@ -1928,11 +1928,11 @@
         "xmonad-contrib": "xmonad-contrib"
       },
       "locked": {
-        "lastModified": 1778665520,
-        "narHash": "sha256-X9bnGRXZTR1nnMGDy+v/BNk+3kNlAsHwkdjmaoKre0I=",
+        "lastModified": 1778673962,
+        "narHash": "sha256-GmHRMdrUIQpMf6k5gRjP9Mvx2WO0FvIEF1SPlxEpnas=",
         "owner": "taffybar",
         "repo": "taffybar",
-        "rev": "b4b98bf8a20c5f5dfcd510b19768fd127542b69e",
+        "rev": "08125b267c03232c560fce6259264cc9283d582e",
         "type": "github"
       },
       "original": {
