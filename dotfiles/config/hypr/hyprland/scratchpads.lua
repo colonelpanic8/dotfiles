@@ -5,8 +5,8 @@ function M.setup(ctx)
 
   scratchpad_size_ratio = 0.95
   dropdown_height_ratio = 0.5
-  dropdown_animation_frames = 10
-  dropdown_animation_frame_ms = 12
+  dropdown_animation_frames = 18
+  dropdown_animation_frame_ms = 16
   scratchpad_pending = {}
   monitor_reserved_cache_path = (os.getenv("XDG_RUNTIME_DIR") or "/tmp") .. "/hyprland-monitor-reserved.tsv"
   scratchpad_fallback_reserved_top = 60
