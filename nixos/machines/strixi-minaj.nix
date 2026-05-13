@@ -4,7 +4,22 @@
   pkgs,
   inputs,
   ...
-}: {
+}: let
+  builtInAudioCard = "alsa_card.pci-0000_00_1f.3";
+  builtInAudioDuplexProfile = "output:analog-stereo+input:analog-stereo";
+  setBuiltInAudioDuplexProfile = pkgs.writeShellScript "set-built-in-audio-duplex-profile" ''
+    attempts=0
+    while [ "$attempts" -lt 20 ]; do
+      if ${pkgs.pulseaudio}/bin/pactl set-card-profile ${builtInAudioCard} ${builtInAudioDuplexProfile}; then
+        exit 0
+      fi
+      attempts=$((attempts + 1))
+      sleep 0.25
+    done
+
+    ${pkgs.pulseaudio}/bin/pactl set-card-profile ${builtInAudioCard} ${builtInAudioDuplexProfile}
+  '';
+in {
   imports = [
     ../configuration.nix
     inputs.grub2-themes.nixosModules.default
@@ -28,6 +43,32 @@
   myModules."keepbook-sync".enable = true;
 
   hardware.enableRedistributableFirmware = true;
+
+  services.pipewire.wireplumber.extraConfig."51-strixi-built-in-audio-duplex" = {
+    "monitor.alsa.rules" = [
+      {
+        matches = [
+          {
+            "device.name" = builtInAudioCard;
+          }
+        ];
+        actions.update-props = {
+          "device.profile" = builtInAudioDuplexProfile;
+        };
+      }
+    ];
+  };
+
+  systemd.user.services.set-built-in-audio-duplex-profile = {
+    description = "Enable the built-in audio input profile";
+    wantedBy = ["default.target"];
+    wants = ["pipewire-pulse.service" "wireplumber.service"];
+    after = ["pipewire-pulse.service" "wireplumber.service"];
+    serviceConfig = {
+      Type = "oneshot";
+      ExecStart = setBuiltInAudioDuplexProfile;
+    };
+  };
 
   # nixpkgs.config.cudaSupport = true;
 
