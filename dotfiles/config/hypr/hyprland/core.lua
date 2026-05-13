@@ -227,6 +227,7 @@ function M.setup(ctx)
           show_workspace_numbers = true,
           workspace_number_color = "rgba(edb443ff)",
           gesture_distance = 200,
+          cancel_key = "escape",
         },
       },
     })
