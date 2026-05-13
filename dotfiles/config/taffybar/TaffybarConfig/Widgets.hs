@@ -30,6 +30,7 @@ import System.Taffybar.Information.ChromeWindowInfo (getChromeWindowInfoRefreshC
 import System.Taffybar.Util (postGUIASync)
 import System.Taffybar.Widget
 import qualified System.Taffybar.Widget.ASUS as ASUS
+import qualified System.Taffybar.Widget.Audio as Audio
 import System.Taffybar.Widget.CPUMonitor (cpuMonitorNew)
 import System.Taffybar.Widget.Generic.Graph (GraphConfig (..), GraphDirection (..), GraphStyle (..), defaultGraphConfig)
 import qualified System.Taffybar.Widget.NetworkManager as NetworkManager
@@ -39,7 +40,6 @@ import System.Taffybar.Widget.OpenAIUsage
     defaultOpenAIUsageStackConfig,
     openAIUsageSectionNewWith,
   )
-import qualified System.Taffybar.Widget.PulseAudio as PulseAudio
 import System.Taffybar.Widget.SNIMenu (withNmAppletMenu)
 import System.Taffybar.Widget.SNITray
   ( CollapsibleSNITrayParams (..),
@@ -76,7 +76,7 @@ import Text.Read (readMaybe)
 
 audioWidget :: TaffyIO Gtk.Widget
 audioWidget =
-  decorateWithClassAndBoxM "audio" PulseAudio.pulseAudioNew
+  decorateWithClassAndBoxM "audio" Audio.audioNew
 
 networkInnerWidget :: TaffyIO Gtk.Widget
 networkInnerWidget =
@@ -241,7 +241,7 @@ audioBacklightWidget :: TaffyIO Gtk.Widget
 audioBacklightWidget =
   stackInPill
     "audio-backlight"
-    [ PulseAudio.pulseAudioNew,
+    [ Audio.audioNew,
       backlightNewChanWith
         defaultBacklightWidgetConfig
           { backlightFormat = "$percent$%",

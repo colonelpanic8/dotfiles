@@ -84,6 +84,26 @@
         "type": "github"
       }
     },
+    "chrome-favicon-dbus": {
+      "inputs": {
+        "nixpkgs": [
+          "nixpkgs"
+        ]
+      },
+      "locked": {
+        "lastModified": 1778633515,
+        "narHash": "sha256-QC/nUlGoqUx63cGwQCkHEN0Qs85PSdF7RYrHYmD4L+A=",
+        "owner": "taffybar",
+        "repo": "chrome-favicon-dbus",
+        "rev": "b791fe9d57b1e09c06f56174d73d9c43b8493fe5",
+        "type": "github"
+      },
+      "original": {
+        "owner": "taffybar",
+        "repo": "chrome-favicon-dbus",
+        "type": "github"
+      }
+    },
     "claude-code-nix": {
       "inputs": {
         "flake-utils": [
@@ -1747,6 +1767,7 @@
           "hyprland",
           "aquamarine"
         ],
+        "chrome-favicon-dbus": "chrome-favicon-dbus",
         "claude-code-nix": "claude-code-nix",
         "codex-cli-nix": "codex-cli-nix",
         "codex-desktop-linux": "codex-desktop-linux",
@@ -1907,11 +1928,11 @@
         "xmonad-contrib": "xmonad-contrib"
       },
       "locked": {
-        "lastModified": 1778446663,
-        "narHash": "sha256-xHKRrar08yPsOVbPG7DlouKU83r8P0WAwoxUuje3kq0=",
+        "lastModified": 1778662099,
+        "narHash": "sha256-vHiVLdTRBvEyEL0ebGENA/Hv1vTwpWQ96Gj3JNPqeD0=",
         "owner": "taffybar",
         "repo": "taffybar",
-        "rev": "2c95fd5a8aa125d0ba89873a7d4dfd49bb57b00c",
+        "rev": "1741477fea5e9fd18b23f717d6d5c91b2aec09fa",
         "type": "github"
       },
       "original": {

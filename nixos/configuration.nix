@@ -11,6 +11,7 @@
     ./bootloaders/systemd-boot.nix
     ./cache-server.nix
     ./cache.nix
+    ./chrome-favicon-dbus.nix
     ./code.nix
     ./cua.nix
     ./desktop.nix

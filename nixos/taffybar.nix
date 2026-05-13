@@ -200,6 +200,7 @@
 in
   makeEnable config "myModules.taffybar" false {
     myModules.sni.enable = true;
+    myModules.chrome-favicon-dbus.enable = true;
 
     environment.systemPackages = [
       taffybarPackage

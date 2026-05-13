@@ -7,3 +7,4 @@ packages:
   taffybar/packages/status-notifier-item
   taffybar/packages/dbus-menu
   taffybar/packages/dbus-hslogger
+  taffybar/packages/gi-wireplumber

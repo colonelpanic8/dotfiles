@@ -91,6 +91,11 @@
       };
     };
 
+    chrome-favicon-dbus = {
+      url = "github:taffybar/chrome-favicon-dbus";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+
     # Hyprland and plugins from official flakes for proper plugin compatibility
     hyprland = {
       url = "git+https://github.com/hyprwm/Hyprland?submodules=1";

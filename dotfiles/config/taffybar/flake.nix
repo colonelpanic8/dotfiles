@@ -107,6 +107,13 @@
                 { })
               (_: { doCheck = false; doHaddock = false; });
 
+          gi-wireplumber =
+            pkgs.haskell.lib.overrideCabal
+              (hself.callCabal2nix "gi-wireplumber"
+                (localTaffybarSubdir "packages/gi-wireplumber")
+                { })
+              (_: { doCheck = false; doHaddock = false; });
+
           dbus-hslogger =
             hself.callCabal2nix "dbus-hslogger"
               (localTaffybarSubdir "packages/dbus-hslogger")
@@ -116,12 +123,24 @@
           # modules (e.g. System.Taffybar.Widget.ASUS) used by this config.
           taffybar = pkgs.haskell.lib.overrideCabal
             (pkgs.haskell.lib.disableStaticLibraries
-              (hself.callCabal2nix "taffybar" cleanedTaffybarSource { inherit (pkgs) gtk3; }))
+              (hself.callCabal2nix "taffybar" cleanedTaffybarSource {
+                inherit (pkgs) gtk3;
+              }))
             (oa: {
               doHaddock = false;
               doCheck = false;
-              # Needed for gi-gtk-layer-shell (introspection data).
-              librarySystemDepends = (oa.librarySystemDepends or []) ++ [ pkgs.gtk-layer-shell ];
+              # Needed for gi-gtk-layer-shell and gi-wireplumber introspection data.
+              librarySystemDepends = (oa.librarySystemDepends or []) ++ [
+                pkgs.gtk-layer-shell
+                pkgs.wireplumber
+              ];
+              shellHook = ''
+                ${oa.shellHook or ""}
+                export PKG_CONFIG_PATH="${pkgs.wireplumber.dev}/lib/pkgconfig:${pkgs.pipewire.dev}/lib/pkgconfig:''${PKG_CONFIG_PATH:-}"
+                export GI_GIR_PATH="${pkgs.wireplumber.dev}/share/gir-1.0:''${GI_GIR_PATH:-}"
+                export GI_TYPELIB_PATH="${pkgs.wireplumber}/lib/girepository-1.0:${pkgs.glib.out}/lib/girepository-1.0:''${GI_TYPELIB_PATH:-}"
+                export XDG_DATA_DIRS="${pkgs.wireplumber.dev}/share:''${XDG_DATA_DIRS:-}"
+              '';
             });
 
           # gi-gtk-hs patching is now handled by taffybar's fixVersionNamePackages overlay
@@ -184,6 +203,7 @@
             pkgs.librsvg
           ];
           shellHook = ''
+            ${hpkgs.taffybar.env.shellHook or ""}
             # GHCi loads package DLL dependencies via the runtime linker, so it
             # needs zlib on LD_LIBRARY_PATH in addition to the build-time -L flags.
             export LD_LIBRARY_PATH="${pkgs.lib.makeLibraryPath [ pkgs.zlib ]}:''${LD_LIBRARY_PATH:-}"
