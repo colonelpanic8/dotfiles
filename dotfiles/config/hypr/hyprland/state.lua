@@ -50,6 +50,7 @@ return {
   enable_hyprspace = false,
   enable_hyprwinview = true,
   enable_workspace_history = true,
+  enable_hyprglass = true,
   configure_nstack_plugin_from_lua = false,
   workspace_layouts = {},
   minimized_windows = {},

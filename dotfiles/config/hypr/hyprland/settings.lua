@@ -17,6 +17,9 @@ function M.setup(ctx)
   if enable_workspace_history and not verify_config then
     hl.plugin.load("/run/current-system/sw/lib/libhypr-workspace-history.so")
   end
+  if enable_hyprglass and not verify_config then
+    hl.plugin.load("/run/current-system/sw/lib/hyprglass.so")
+  end
 
   hl.env("XCURSOR_SIZE", "24")
   hl.env("HYPRCURSOR_SIZE", "24")
@@ -154,6 +157,22 @@ function M.setup(ctx)
     hl.animation(animation)
   end
 
+  local function apply_hyprglass_config()
+    if verify_config or not enable_hyprglass then
+      return
+    end
+
+    hl.config({
+      plugin = {
+        hyprglass = {
+          enabled = 0,
+          default_theme = "dark",
+          default_preset = "default",
+        },
+      },
+    })
+  end
+
   local function apply_rules()
     if verify_config then
       return
@@ -191,6 +210,14 @@ function M.setup(ctx)
       no_anim = true,
     })
     hl.window_rule({
+      match = { class = "^(com\\.mitchellh\\.ghostty\\.dropdown)$" },
+      tag = "+hyprglass_enabled",
+    })
+    hl.window_rule({
+      match = { class = "^(com\\.mitchellh\\.ghostty\\.dropdown)$" },
+      tag = "+hyprglass_theme_light",
+    })
+    hl.window_rule({
       match = { class = "^(.*[Rr]umno.*)$" },
       float = true,
       pin = true,
@@ -215,6 +242,7 @@ function M.setup(ctx)
   end
 
   ctx.apply_rules = apply_rules
+  ctx.apply_hyprglass_config = apply_hyprglass_config
 end
 
 return M
