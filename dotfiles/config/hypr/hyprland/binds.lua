@@ -12,18 +12,28 @@ function M.setup(ctx)
     return bind_opts
   end
 
-  local function setup_external_command_bindings()
+  local function setup_launcher_and_app_bindings()
     bind(main_mod .. " + P", exec(launcher_command), desc("Open application launcher"))
     bind(main_mod .. " + SHIFT + P", exec(run_menu), desc("Open command runner"))
-    bind(hyper .. " + SHIFT + N", exec(shell_ui_command .. " control-center"), desc("Open control center"))
-    bind(hyper .. " + CTRL + N", exec(shell_ui_command .. " settings"), desc("Open system settings"))
     bind(main_mod .. " + SHIFT + Return", exec(terminal), desc("Open terminal"))
-    bind(main_mod .. " + Q", exec("hyprctl reload"), desc("Reload Hyprland"))
-    bind(main_mod .. " + R", exec("hyprctl reload"), desc("Reload Hyprland"))
     bind(main_mod .. " + E", exec("emacsclient --eval '(emacs-everywhere)'"), desc("Open Emacs Everywhere"))
     bind(main_mod .. " + V", exec("wl-paste --no-newline | ydotool type --file -"), desc("Type clipboard contents"))
-    bind(main_mod .. " + X", exec("rofi_command.sh"), desc("Open command menu"))
+  end
 
+  local function setup_shell_and_session_bindings()
+    bind(hyper .. " + SHIFT + N", exec(shell_ui_command .. " control-center"), desc("Open control center"))
+    bind(hyper .. " + CTRL + N", exec(shell_ui_command .. " settings"), desc("Open system settings"))
+    bind(main_mod .. " + Q", exec("hyprctl reload"), desc("Reload Hyprland"))
+    bind(main_mod .. " + R", exec("hyprctl reload"), desc("Reload Hyprland"))
+    bind(hyper .. " + SHIFT + L", exec("hyprlock"), desc("Lock screen"))
+    bind(hyper .. " + slash", function()
+      hl.exec_cmd("toggle_taffybar")
+      refresh_monitor_reserved_cache(0.25)
+      refresh_active_scratchpad_geometries_later(600)
+    end, desc("Toggle taffybar"))
+  end
+
+  local function setup_audio_media_bindings()
     bind(main_mod .. " + I", exec("set_volume --unmute --change-volume +5"), desc("Raise volume", { repeating = true }))
     bind(main_mod .. " + K", exec("set_volume --unmute --change-volume -5"), desc("Lower volume", { repeating = true }))
     bind(main_mod .. " + U", exec("set_volume --toggle-mute"), desc("Toggle mute"))
@@ -38,35 +48,43 @@ function M.setup(ctx)
     bind("XF86AudioRaiseVolume", exec("set_volume --unmute --change-volume +5"), desc("Raise volume", { repeating = true }))
     bind("XF86AudioLowerVolume", exec("set_volume --unmute --change-volume -5"), desc("Lower volume", { repeating = true }))
     bind("XF86AudioMute", exec("set_volume --toggle-mute"), desc("Toggle mute"))
+    bind(hyper .. " + O", exec("/home/imalison/dotfiles/dotfiles/lib/functions/rofi_paswitch"), desc("Open PulseAudio output switcher"))
+    bind(hyper .. " + SHIFT + O", exec("/home/imalison/dotfiles/dotfiles/lib/bin/kef-optical"), desc("Switch KEF speakers to optical input"))
+  end
+
+  local function setup_display_wallpaper_and_capture_bindings()
     bind("XF86MonBrightnessUp", exec("brightness.sh up"), desc("Raise display brightness", { repeating = true }))
     bind("XF86MonBrightnessDown", exec("brightness.sh down"), desc("Lower display brightness", { repeating = true }))
-
-    bind(hyper .. " + V", exec([[cliphist list | rofi -dmenu -p "Clipboard" | cliphist decode | wl-copy]]), desc("Open clipboard history"))
-    bind(hyper .. " + P", exec("rofi-pass"), desc("Open password menu"))
     bind("Print", exec("flameshot gui"), desc("Take screenshot"))
     bind(hyper .. " + H", exec("flameshot gui"), desc("Take screenshot"))
+    bind(hyper .. " + backslash", exec("/home/imalison/dotfiles/dotfiles/lib/functions/mpg341cx_input toggle"), desc("Toggle monitor input"))
+    bind(hyper .. " + comma", exec("rofi_wallpaper.sh"), desc("Open wallpaper menu"))
+    bind(hyper .. " + SHIFT + comma", exec("/home/imalison/dotfiles/dotfiles/lib/bin/neowall-wallpaper toggle"), desc("Toggle neowall wallpaper"))
+  end
+
+  local function setup_rofi_and_tool_bindings()
+    bind(main_mod .. " + X", exec("rofi_command.sh"), desc("Open command menu"))
+    bind(hyper .. " + V", exec([[cliphist list | rofi -dmenu -p "Clipboard" | cliphist decode | wl-copy]]), desc("Open clipboard history"))
+    bind(hyper .. " + P", exec("rofi-pass"), desc("Open password menu"))
     bind(hyper .. " + C", exec("rofi_tmcodex.sh"), desc("Open Codex session menu"))
     bind(hyper .. " + SHIFT + C", exec("rofi_tmcodex.sh resume"), desc("Resume Codex session"))
-    bind(hyper .. " + SHIFT + L", exec("hyprlock"), desc("Lock screen"))
     bind(hyper .. " + L", exec("hypr_rofi_layout"), desc("Open Hyprland layout menu"))
     bind(hyper .. " + K", exec("rofi_kill_process.sh"), desc("Open process kill menu"))
     bind(hyper .. " + SHIFT + K", exec("rofi_kill_all.sh"), desc("Open kill-all menu"))
     bind(hyper .. " + R", exec("rofi-systemd"), desc("Open systemd unit menu"))
-    bind(hyper .. " + slash", function()
-      hl.exec_cmd("toggle_taffybar")
-      refresh_monitor_reserved_cache(0.25)
-      refresh_active_scratchpad_geometries_later(600)
-    end, desc("Toggle taffybar"))
     bind(hyper .. " + I", exec("rofi_select_input.hs"), desc("Open input selection menu"))
-    bind(hyper .. " + backslash", exec("/home/imalison/dotfiles/dotfiles/lib/functions/mpg341cx_input toggle"), desc("Toggle monitor input"))
-    bind(hyper .. " + O", exec("/home/imalison/dotfiles/dotfiles/lib/functions/rofi_paswitch"), desc("Open PulseAudio output switcher"))
-    bind(hyper .. " + SHIFT + O", exec("/home/imalison/dotfiles/dotfiles/lib/bin/kef-optical"), desc("Switch KEF speakers to optical input"))
-    bind(hyper .. " + comma", exec("rofi_wallpaper.sh"), desc("Open wallpaper menu"))
-    bind(hyper .. " + SHIFT + comma", exec("/home/imalison/dotfiles/dotfiles/lib/bin/neowall-wallpaper toggle"), desc("Toggle neowall wallpaper"))
     bind(hyper .. " + Y", exec("rofi_agentic_skill"), desc("Open agentic skill menu"))
   end
 
-  local function setup_internal_window_manager_bindings()
+  local function setup_external_command_bindings()
+    setup_launcher_and_app_bindings()
+    setup_shell_and_session_bindings()
+    setup_audio_media_bindings()
+    setup_display_wallpaper_and_capture_bindings()
+    setup_rofi_and_tool_bindings()
+  end
+
+  local function setup_window_overview_bindings()
     bind(main_mod .. " + SHIFT + C", hl.dsp.window.close(), desc("Close active window"))
     bind(main_mod .. " + SHIFT + Q", hl.dsp.exit(), desc("Exit Hyprland"))
     bind(main_mod .. " + Tab", hyprwinview({
@@ -102,7 +120,9 @@ function M.setup(ctx)
       start_in_filter_mode = true,
       default_action = "bring-replace",
     }), desc("Replace active window from overview", overview_bind_opts))
+  end
 
+  local function setup_window_focus_and_move_bindings()
     bind(main_mod .. " + W", function()
       focus_direction("up")
     end, desc("Focus window above"))
@@ -153,7 +173,9 @@ function M.setup(ctx)
     bind(main_mod .. " + CTRL + SHIFT + D", function()
       move_window_to_empty_workspace_on_monitor("r")
     end, desc("Move window to empty workspace on right monitor"))
+  end
 
+  local function setup_submap_bindings()
     hl.define_submap("swap-workspace", function()
       for i = 1, 9 do
         local workspace_id = i
@@ -178,7 +200,9 @@ function M.setup(ctx)
       bind("Escape", hl.dsp.submap("reset"), desc("Exit window picker"))
       bind("catchall", hl.dsp.submap("reset"), desc("Exit window picker"))
     end)
+  end
 
+  local function setup_window_resize_and_monitor_bindings()
     bind(mod_alt .. " + SHIFT + W", hl.dsp.window.resize({ x = 0, y = -50, relative = true }), desc("Shrink window height upward", { repeating = true }))
     bind(mod_alt .. " + SHIFT + S", hl.dsp.window.resize({ x = 0, y = 50, relative = true }), desc("Grow window height downward", { repeating = true }))
     bind(mod_alt .. " + SHIFT + A", hl.dsp.window.resize({ x = -50, y = 0, relative = true }), desc("Shrink window width leftward", { repeating = true }))
@@ -200,7 +224,9 @@ function M.setup(ctx)
     bind(hyper .. " + SHIFT + D", function()
       move_window_to_monitor("r", true)
     end, desc("Move window to right monitor and follow"))
+  end
 
+  local function setup_layout_and_window_state_bindings()
     bind(main_mod .. " + Space", cycle_layout_or_restore_tabbed_group, desc("Cycle workspace layout"))
     bind(main_mod .. " + SHIFT + Space", force_columns_layout, desc("Force columns layout"))
     bind(main_mod .. " + CTRL + Space", gather_workspace_into_tabbed_group, desc("Gather workspace into tabbed group"))
@@ -223,7 +249,9 @@ function M.setup(ctx)
     end, desc("Move window to next empty workspace"))
     bind(main_mod .. " + apostrophe", focus_next_class, desc("Focus next window class"))
     bind(mod_alt .. " + W", show_active_window_info, desc("Show active window info"))
+  end
 
+  local function setup_scratchpad_bindings()
     bind(main_mod .. " + SHIFT + X", hl.dsp.workspace.toggle_special("NSP"), desc("Toggle NSP special workspace"))
     bind(mod_alt .. " + C", function()
       toggle_scratchpad("codex")
@@ -255,7 +283,9 @@ function M.setup(ctx)
     bind(mod_alt .. " + Space", minimize_other_classes, desc("Minimize other window classes"))
     bind(mod_alt .. " + SHIFT + Space", restore_focused_class, desc("Restore focused window class"))
     bind(mod_alt .. " + Return", restore_all_minimized, desc("Restore all minimized windows"))
+  end
 
+  local function setup_workspace_bindings()
     for i = 1, 9 do
       local workspace = tostring(i)
       bind(main_mod .. " + " .. workspace, hl.dsp.focus({ workspace = workspace, on_current_monitor = true }), desc("Focus workspace " .. workspace))
@@ -281,9 +311,22 @@ function M.setup(ctx)
     bind(hyper .. " + 5", enter_workspace_swap_mode, desc("Enter workspace swap mode"))
     bind(hyper .. " + G", gather_focused_class, desc("Gather focused window class"))
     bind(hyper .. " + SHIFT + backslash", workspacehistory("debug"), desc("Show workspace history debug info"))
+  end
 
+  local function setup_mouse_bindings()
     bind(main_mod .. " + mouse:272", float_and_drag_active_window, desc("Float and drag active window"))
     bind(main_mod .. " + mouse:273", float_and_resize_active_window, desc("Float and resize active window"))
+  end
+
+  local function setup_internal_window_manager_bindings()
+    setup_window_overview_bindings()
+    setup_window_focus_and_move_bindings()
+    setup_submap_bindings()
+    setup_window_resize_and_monitor_bindings()
+    setup_layout_and_window_state_bindings()
+    setup_scratchpad_bindings()
+    setup_workspace_bindings()
+    setup_mouse_bindings()
   end
 
   setup_external_command_bindings()
