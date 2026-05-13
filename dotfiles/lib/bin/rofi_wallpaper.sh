@@ -23,7 +23,7 @@ if [ ! -d "$wallpaper_dir" ]; then
 fi
 
 mapfile -d '' wallpapers < <(
-  find "$wallpaper_dir" -type f \
+  find -L "$wallpaper_dir" -type f \
     \( -iname '*.png' -o -iname '*.jpg' -o -iname '*.jpeg' -o -iname '*.webp' \) \
     -print0 | sort -z
 )
