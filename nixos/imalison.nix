@@ -1,5 +1,16 @@
 {pkgs, ...}: let
   session = import ./session-variables.nix;
+  cargoSweepRustTargets = pkgs.writeShellApplication {
+    name = "cargo-sweep-rust-targets";
+    runtimeInputs = [pkgs.cargo-sweep];
+    text = ''
+      for root in /home/imalison/Projects /home/imalison/org /home/imalison/dotfiles; do
+        if [[ -d "$root" ]]; then
+          cargo-sweep sweep -r --hidden --maxsize 15GB "$root"
+        fi
+      done
+    '';
+  };
 in {
   home-manager.users.imalison = {
     imports = [
@@ -45,6 +56,33 @@ in {
         OnCalendar = "daily";
         Persistent = true;
         RandomizedDelaySec = "1h";
+      };
+
+      Install = {
+        WantedBy = ["timers.target"];
+      };
+    };
+
+    systemd.user.services.cargo-sweep-rust-targets = {
+      Unit = {
+        Description = "Sweep Rust target directories";
+      };
+
+      Service = {
+        Type = "oneshot";
+        ExecStart = "${cargoSweepRustTargets}/bin/cargo-sweep-rust-targets";
+      };
+    };
+
+    systemd.user.timers.cargo-sweep-rust-targets = {
+      Unit = {
+        Description = "Sweep Rust target directories daily";
+      };
+
+      Timer = {
+        OnCalendar = "daily";
+        Persistent = true;
+        RandomizedDelaySec = "2h";
       };
 
       Install = {

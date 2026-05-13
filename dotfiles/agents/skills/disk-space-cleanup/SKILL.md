@@ -112,6 +112,8 @@ Recommended sequence:
 Machine-specific note:
 
 - Project-local `.worktrees/*/target` directories are common cleanup wins on this machine and are easy to miss with the old hard-coded workflow.
+- `cargo-sweep` is installed through the NixOS `code.nix` package set, but stale manually-installed binaries under `~/.cargo/bin` can shadow `/run/current-system/sw/bin/cargo-sweep`. If `cargo sweep` fails with a missing loader or `No such file or directory`, run `type -a cargo-sweep` and remove the stale `~/.cargo/bin/cargo-sweep` entry.
+- `nixos/imalison.nix` defines a daily user timer, `cargo-sweep-rust-targets.timer`, that runs `cargo-sweep sweep -r --hidden --maxsize 15GB` across `/home/imalison/Projects`, `/home/imalison/org`, and `/home/imalison/dotfiles`.
 
 ## Step 4: Investigation with `ncdu` and `du`
 
