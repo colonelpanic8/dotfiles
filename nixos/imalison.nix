@@ -53,92 +53,18 @@ in {
     };
 
     systemd.user.services.hyprpaper = let
-      wallpaperDir = "/var/lib/syncthing/sync/Wallpaper/use";
-      waitForWayland = pkgs.writeShellScript "wait-for-wayland" ''
-        # Hyprpaper needs a Wayland socket. systemd "Condition*" checks are
-        # brittle here (they skip the unit entirely, with no retry) and also
-        # don't support expanding $WAYLAND_DISPLAY in paths.
-        for _ in {1..50}; do
-          if [ -n "$WAYLAND_DISPLAY" ] && [ -n "$XDG_RUNTIME_DIR" ] && [ -S "$XDG_RUNTIME_DIR/$WAYLAND_DISPLAY" ]; then
-            exit 0
-          fi
-          ${pkgs.coreutils}/bin/sleep 0.1
-        done
-
-        echo "Wayland socket not ready: WAYLAND_DISPLAY=$WAYLAND_DISPLAY XDG_RUNTIME_DIR=$XDG_RUNTIME_DIR" >&2
-        exit 1
-      '';
-      setWallpaper = pkgs.writeShellScript "set-hyprpaper-wallpaper" ''
-        # hyprpaper 0.8.x doesn't seem to apply `wallpaper = ...` entries from
-        # its config on startup reliably. Explicitly set the wallpaper via IPC
-        # once the hyprpaper socket is ready.
-        #
-        # NOTE: hyprctl hyprpaper currently ignores `--instance` and uses
-        # $HYPRLAND_INSTANCE_SIGNATURE to find hyprpaper's socket, so we rely on
-        # the environment imported by Hyprland on login.
-        set -u
-
-        runtimeDir="''${XDG_RUNTIME_DIR:-}"
-        sig="''${HYPRLAND_INSTANCE_SIGNATURE:-}"
-        sockPath=""
-        if [ -n "$runtimeDir" ] && [ -n "$sig" ]; then
-          sockPath="$runtimeDir/hypr/$sig/.hyprpaper.sock"
-        fi
-
-        # Don't fail the service if env isn't available yet.
-        if [ -z "$sockPath" ]; then
-          echo "set-hyprpaper-wallpaper: missing XDG_RUNTIME_DIR/HYPRLAND_INSTANCE_SIGNATURE" >&2
-          exit 0
-        fi
-
-        for _ in {1..50}; do
-          if [ -S "$sockPath" ]; then
-            break
-          fi
-          ${pkgs.coreutils}/bin/sleep 0.1
-        done
-
-        if [ ! -S "$sockPath" ]; then
-          echo "set-hyprpaper-wallpaper: hyprpaper socket not ready at $sockPath" >&2
-          exit 0
-        fi
-
-        if [ ! -d "${wallpaperDir}" ]; then
-          echo "set-hyprpaper-wallpaper: wallpaper directory missing: ${wallpaperDir}" >&2
-          exit 0
-        fi
-
-        wallpaper="$(${pkgs.findutils}/bin/find "${wallpaperDir}" -type f -regextype posix-extended -iregex '.*\.(png|jpe?g|webp)$' -print0 | ${pkgs.coreutils}/bin/shuf -z -n 1 | ${pkgs.coreutils}/bin/tr -d '\0')"
-
-        if [ -z "$wallpaper" ]; then
-          echo "set-hyprpaper-wallpaper: no wallpapers found in ${wallpaperDir}" >&2
-          exit 0
-        fi
-
-        # Apply to all current monitors.
-        mons=$(/run/current-system/sw/bin/hyprctl -j monitors 2>/dev/null | ${pkgs.jq}/bin/jq -r '.[].name' 2>/dev/null || true)
-        if [ -z "$mons" ]; then
-          # Fallback to parsing non-JSON output.
-          mons=$(/run/current-system/sw/bin/hyprctl monitors 2>/dev/null | ${pkgs.gnugrep}/bin/grep -oE '^Monitor [^ ]+' | ${pkgs.coreutils}/bin/cut -d' ' -f2 || true)
-        fi
-
-        for mon in $mons; do
-          # The socket file can exist before hyprpaper is actually ready to
-          # accept connections, so retry briefly.
-          for _ in {1..50}; do
-            if /run/current-system/sw/bin/hyprctl hyprpaper wallpaper "$mon,$wallpaper" >/dev/null 2>&1; then
-              break
-            fi
-            ${pkgs.coreutils}/bin/sleep 0.1
-          done
-        done
-
-        exit 0
-      '';
       hyprpaperConf = pkgs.writeText "hyprpaper.conf" ''
         ipc = true
         splash = false
       '';
+      hyprpaperPath = pkgs.lib.makeBinPath [
+        pkgs.coreutils
+        pkgs.findutils
+        pkgs.gnugrep
+        pkgs.gnused
+        pkgs.hyprpaper
+        pkgs.jq
+      ];
     in {
       Unit = {
         Description = "Hyprpaper (managed by home-manager)";
@@ -148,10 +74,16 @@ in {
       };
 
       Service = {
-        ExecStartPre = waitForWayland;
-        ExecStart = "${pkgs.hyprpaper}/bin/hyprpaper -c ${hyprpaperConf}";
-        ExecStartPost = setWallpaper;
+        Environment = [
+          "HYPRPAPER_CONFIG=${hyprpaperConf}"
+          "HYPRCTL=/run/current-system/sw/bin/hyprctl"
+          "PATH=${hyprpaperPath}:/run/current-system/sw/bin"
+          "WALLPAPER_DIR=/var/lib/syncthing/sync/Wallpaper/use"
+        ];
+        ExecStart = "${pkgs.bash}/bin/bash ${../dotfiles/lib/bin/start-hyprpaper}";
+        ExecStartPost = "${pkgs.bash}/bin/bash ${../dotfiles/lib/bin/set-hyprpaper-wallpaper}";
         Restart = "on-failure";
+        RestartPreventExitStatus = 75;
         RestartSec = 1;
       };
 

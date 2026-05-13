@@ -1,0 +1,60 @@
+#!/usr/bin/env bash
+
+set -u
+
+wallpaper_dir="${WALLPAPER_DIR:-/var/lib/syncthing/sync/Wallpaper/use}"
+hyprctl_bin="${HYPRCTL:-hyprctl}"
+runtime_dir="${XDG_RUNTIME_DIR:-}"
+sig="${HYPRLAND_INSTANCE_SIGNATURE:-}"
+sock_path=""
+
+if [ -n "$runtime_dir" ] && [ -n "$sig" ]; then
+  sock_path="$runtime_dir/hypr/$sig/.hyprpaper.sock"
+fi
+
+# Don't fail the service if Hyprland has not exported its instance yet.
+if [ -z "$sock_path" ]; then
+  echo "set-hyprpaper-wallpaper: missing XDG_RUNTIME_DIR/HYPRLAND_INSTANCE_SIGNATURE" >&2
+  exit 0
+fi
+
+for _ in {1..50}; do
+  if [ -S "$sock_path" ]; then
+    break
+  fi
+  sleep 0.1
+done
+
+if [ ! -S "$sock_path" ]; then
+  echo "set-hyprpaper-wallpaper: hyprpaper socket not ready at $sock_path" >&2
+  exit 0
+fi
+
+if [ ! -d "$wallpaper_dir" ]; then
+  echo "set-hyprpaper-wallpaper: wallpaper directory missing: $wallpaper_dir" >&2
+  exit 0
+fi
+
+wallpaper="$(find -L "$wallpaper_dir" -type f -regextype posix-extended -iregex '.*\.(png|jpe?g|webp)$' -print0 | shuf -z -n 1 | tr -d '\0')"
+
+if [ -z "$wallpaper" ]; then
+  echo "set-hyprpaper-wallpaper: no wallpapers found in $wallpaper_dir" >&2
+  exit 0
+fi
+
+mons="$("$hyprctl_bin" -j monitors 2>/dev/null | jq -r '.[].name' 2>/dev/null || true)"
+if [ -z "$mons" ]; then
+  mons="$("$hyprctl_bin" monitors 2>/dev/null | grep -oE '^Monitor [^ ]+' | cut -d' ' -f2 || true)"
+fi
+
+for mon in $mons; do
+  # The socket file can exist before hyprpaper is actually ready to accept IPC.
+  for _ in {1..50}; do
+    if "$hyprctl_bin" hyprpaper wallpaper "$mon,$wallpaper" >/dev/null 2>&1; then
+      break
+    fi
+    sleep 0.1
+  done
+done
+
+exit 0

@@ -1,0 +1,40 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+config="${HYPRPAPER_CONFIG:-${XDG_CONFIG_HOME:-$HOME/.config}/hypr/hyprpaper.conf}"
+
+for _ in {1..50}; do
+  if [ -n "${WAYLAND_DISPLAY:-}" ] && [ -n "${XDG_RUNTIME_DIR:-}" ] && [ -S "$XDG_RUNTIME_DIR/$WAYLAND_DISPLAY" ]; then
+    break
+  fi
+  sleep 0.1
+done
+
+if [ -z "${WAYLAND_DISPLAY:-}" ] || [ -z "${XDG_RUNTIME_DIR:-}" ] || [ ! -S "$XDG_RUNTIME_DIR/$WAYLAND_DISPLAY" ]; then
+  echo "start-hyprpaper: Wayland socket not ready: WAYLAND_DISPLAY=${WAYLAND_DISPLAY:-} XDG_RUNTIME_DIR=${XDG_RUNTIME_DIR:-}" >&2
+  exit 1
+fi
+
+nvidia_version="$(sed -n 's/^NVRM version:.* \([0-9][0-9.]*\)  .*/\1/p' /proc/driver/nvidia/version 2>/dev/null | head -n 1 || true)"
+current_vendor="/run/opengl-driver/share/glvnd/egl_vendor.d/10_nvidia.json"
+
+if [ -n "$nvidia_version" ] && [ -r "$current_vendor" ] && ! grep -q "$nvidia_version" "$current_vendor"; then
+  matching_vendor=""
+  for candidate in /nix/store/*-nvidia-x11-"$nvidia_version"*/share/glvnd/egl_vendor.d/10_nvidia.json; do
+    if [ -r "$candidate" ]; then
+      matching_vendor="$candidate"
+      break
+    fi
+  done
+
+  if [ -n "$matching_vendor" ]; then
+    echo "start-hyprpaper: using NVIDIA EGL vendor file for loaded driver $nvidia_version: $matching_vendor" >&2
+    export __EGL_VENDOR_LIBRARY_FILENAMES="$matching_vendor"
+  else
+    echo "start-hyprpaper: NVIDIA driver mismatch, but no EGL vendor file for loaded driver $nvidia_version was found" >&2
+    exit 75
+  fi
+fi
+
+exec hyprpaper -c "$config"
