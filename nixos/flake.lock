@@ -10,15 +10,16 @@
         ]
       },
       "locked": {
-        "lastModified": 1775071961,
-        "narHash": "sha256-LXkeeH9Blr6ohS1LAsVZbkJ/EAkkMDATh5qu45hC7Zo=",
-        "owner": "KZDKM",
+        "lastModified": 1778647860,
+        "narHash": "sha256-WIHQcCdzY/2MYYtVZyGkctjsISTsjHLVuunJXt5g92c=",
+        "owner": "colonelpanic8",
         "repo": "Hyprspace",
-        "rev": "12ddde04f8584bf7de3151e6169918e0dda9f822",
+        "rev": "a9d7685ef610d5a45c7c4f9f974bdf78443c9829",
         "type": "github"
       },
       "original": {
-        "owner": "KZDKM",
+        "owner": "colonelpanic8",
+        "ref": "codex/defer-hyprspace-initial-reload",
         "repo": "Hyprspace",
         "type": "github"
       }
@@ -795,6 +796,49 @@
         "type": "github"
       }
     },
+    "hyprexpo": {
+      "inputs": {
+        "hyprland": [
+          "hyprland"
+        ],
+        "nixpkgs": [
+          "nixpkgs"
+        ],
+        "systems": [
+          "systems"
+        ]
+      },
+      "locked": {
+        "lastModified": 1778630563,
+        "narHash": "sha256-eMr0oqnBF0SayY5LsmcIEhSui3z8qrl97TQVVyqXCAU=",
+        "owner": "colonelpanic8",
+        "repo": "hyprexpo",
+        "rev": "3e70e82910801f8202e61a4c885d750df2720d58",
+        "type": "github"
+      },
+      "original": {
+        "owner": "colonelpanic8",
+        "repo": "hyprexpo",
+        "type": "github"
+      }
+    },
+    "hyprglass": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1778646157,
+        "narHash": "sha256-SxEK4ftc6X28FZXtzwT7IH79rZ3UBNIUhTYoMoPLqpw=",
+        "owner": "colonelpanic8",
+        "repo": "hyprglass",
+        "rev": "244542b607f36d8b40822df94bb720bf4ebec5ca",
+        "type": "github"
+      },
+      "original": {
+        "owner": "colonelpanic8",
+        "ref": "codex/hyprland-0.55-compat",
+        "repo": "hyprglass",
+        "type": "github"
+      }
+    },
     "hyprgraphics": {
       "inputs": {
         "hyprutils": [
@@ -899,37 +943,6 @@
       "original": {
         "owner": "hyprwm",
         "repo": "hyprland-guiutils",
-        "type": "github"
-      }
-    },
-    "hyprland-plugins-lua": {
-      "inputs": {
-        "hyprland": [
-          "hyprland"
-        ],
-        "nixpkgs": [
-          "hyprland-plugins-lua",
-          "hyprland",
-          "nixpkgs"
-        ],
-        "systems": [
-          "hyprland-plugins-lua",
-          "hyprland",
-          "systems"
-        ]
-      },
-      "locked": {
-        "lastModified": 1777692803,
-        "narHash": "sha256-wSJmIka4KUeicbRsUHuf2Bvxn7pZaSlKja3UBwyPevk=",
-        "owner": "colonelpanic8",
-        "repo": "hyprland-plugins",
-        "rev": "e796b1220379420907cb5a20bbe434eca533aa55",
-        "type": "github"
-      },
-      "original": {
-        "owner": "colonelpanic8",
-        "ref": "codex/fix-main-ci-workspace-numbers",
-        "repo": "hyprland-plugins",
         "type": "github"
       }
     },
@@ -1127,11 +1140,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1778234303,
-        "narHash": "sha256-4kgvtJbWtgKm7vduxqAph/RTgBtSpmnbxAFkkxvRjBU=",
+        "lastModified": 1778544371,
+        "narHash": "sha256-p/hRLy5B7iDM+MXEyj8dMw9QqVVYRL3ynhiEHZgB0NY=",
         "owner": "colonelpanic8",
         "repo": "hyprwinview",
-        "rev": "7c0719ab9e28b149fb6c134301c3006d61bb1e3e",
+        "rev": "a88da94878220fda744c5fd7506d595b3e35d3ca",
         "type": "github"
       },
       "original": {
@@ -1730,6 +1743,10 @@
       "inputs": {
         "Hyprspace": "Hyprspace",
         "agenix": "agenix",
+        "aquamarine": [
+          "hyprland",
+          "aquamarine"
+        ],
         "claude-code-nix": "claude-code-nix",
         "codex-cli-nix": "codex-cli-nix",
         "codex-desktop-linux": "codex-desktop-linux",
@@ -1742,9 +1759,26 @@
         "home-manager": "home-manager",
         "hypr-workspace-history": "hypr-workspace-history",
         "hyprNStack": "hyprNStack",
+        "hyprcursor": [
+          "hyprland",
+          "hyprcursor"
+        ],
+        "hyprexpo": "hyprexpo",
+        "hyprglass": "hyprglass",
+        "hyprgraphics": [
+          "hyprland",
+          "hyprgraphics"
+        ],
         "hyprland": "hyprland",
-        "hyprland-plugins-lua": "hyprland-plugins-lua",
+        "hyprlang": [
+          "hyprland",
+          "hyprlang"
+        ],
         "hyprscratch": "hyprscratch",
+        "hyprutils": [
+          "hyprland",
+          "hyprutils"
+        ],
         "hyprwinview": "hyprwinview",
         "imalison-taffybar": "imalison-taffybar",
         "kanshi-sni": "kanshi-sni",

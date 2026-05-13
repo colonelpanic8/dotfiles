@@ -17,6 +17,15 @@
     inherit pkgs system;
     inherit inputs;
   };
+  hyprglass = pkgs.callPackage ../packages/hyprglass {
+    src = inputs.hyprglass;
+    hyprland = inputs.hyprland.packages.${system}.hyprland;
+    aquamarine = inputs.aquamarine.packages.${system}.aquamarine;
+    hyprcursor = inputs.hyprcursor.packages.${system}.hyprcursor;
+    hyprgraphics = inputs.hyprgraphics.packages.${system}.hyprgraphics;
+    hyprlang = inputs.hyprlang.packages.${system}.hyprlang;
+    hyprutils = inputs.hyprutils.packages.${system}.hyprutils;
+  };
   tangledConfig = dotfilesOrgApi.org-agenda-custom-config;
 
   # Import container build logic
@@ -33,9 +42,10 @@ in {
     }
     // lib.optionalAttrs pkgs.stdenv.isLinux {
       hyprNStack = inputs.hyprNStack.packages.${system}.hyprNStack;
-      hyprexpo-lua = inputs.hyprland-plugins-lua.packages.${system}.hyprexpo;
+      hyprexpo-lua = inputs.hyprexpo.packages.${system}.hyprexpo;
       hyprwinview = inputs.hyprwinview.packages.${system}.hyprwinview;
       hypr-workspace-history = inputs.hypr-workspace-history.packages.${system}.hypr-workspace-history;
+      inherit hyprglass;
     };
 
   checks =
@@ -50,9 +60,10 @@ in {
     }
     // lib.optionalAttrs pkgs.stdenv.isLinux {
       hyprNStack = inputs.hyprNStack.packages.${system}.hyprNStack;
-      hyprexpo-lua = inputs.hyprland-plugins-lua.packages.${system}.hyprexpo;
+      hyprexpo-lua = inputs.hyprexpo.packages.${system}.hyprexpo;
       hyprwinview = inputs.hyprwinview.packages.${system}.hyprwinview;
       hypr-workspace-history = inputs.hypr-workspace-history.packages.${system}.hypr-workspace-history;
+      inherit hyprglass;
       hyprland-config-syntax = import ../checks/hyprland-config-syntax {
         inherit pkgs;
         hyprlandConfigDir = ../../dotfiles/config/hypr;

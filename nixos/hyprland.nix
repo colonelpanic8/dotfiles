@@ -90,27 +90,33 @@
     };
   hyprlandPackage = makeHyprlandLuaPackage baseHyprlandPackage;
   hyprspace = inputs.Hyprspace.packages.${system}.Hyprspace.overrideAttrs (old: {
-    version = "${old.version}-pr230";
+    version = "${old.version}-pr231";
     __intentionallyOverridingVersion = true;
     patches =
       (old.patches or [])
       ++ [
-        # Hyprspace main has not caught up with Hyprland 0.55 yet.
-        # https://github.com/KZDKM/Hyprspace/pull/230
-        (pkgs.fetchpatch {
-          url = "https://github.com/KZDKM/Hyprspace/pull/230.patch";
-          hash = "sha256-jwSuIyhUi8KMIpgBxqyDZvcRHxHjiji8GMipDX4Dot8=";
-        })
         ./packages/hyprspace-lua-api.patch
       ];
   });
-  hyprlandPluginPackages = [
-    inputs.hyprNStack.packages.${system}.hyprNStack
-    inputs.hyprland-plugins-lua.packages.${system}.hyprexpo
-    hyprspace
-    inputs.hyprwinview.packages.${system}.hyprwinview
-    inputs.hypr-workspace-history.packages.${system}.hypr-workspace-history
-  ];
+  enableHyprglass = true;
+  hyprglass = pkgs.callPackage ./packages/hyprglass {
+    src = inputs.hyprglass;
+    hyprland = baseHyprlandPackage;
+    aquamarine = inputs.aquamarine.packages.${system}.aquamarine;
+    hyprcursor = inputs.hyprcursor.packages.${system}.hyprcursor;
+    hyprgraphics = inputs.hyprgraphics.packages.${system}.hyprgraphics;
+    hyprlang = inputs.hyprlang.packages.${system}.hyprlang;
+    hyprutils = inputs.hyprutils.packages.${system}.hyprutils;
+  };
+  hyprlandPluginPackages =
+    [
+      inputs.hyprNStack.packages.${system}.hyprNStack
+      inputs.hyprexpo.packages.${system}.hyprexpo
+      hyprspace
+      inputs.hyprwinview.packages.${system}.hyprwinview
+      inputs.hypr-workspace-history.packages.${system}.hypr-workspace-history
+    ]
+    ++ lib.optionals enableHyprglass [hyprglass];
   hyprRofiWindow = pkgs.writeShellApplication {
     name = "hypr_rofi_window";
     runtimeInputs = [

@@ -96,6 +96,12 @@
       url = "git+https://github.com/hyprwm/Hyprland?submodules=1";
     };
 
+    aquamarine.follows = "hyprland/aquamarine";
+    hyprcursor.follows = "hyprland/hyprcursor";
+    hyprgraphics.follows = "hyprland/hyprgraphics";
+    hyprlang.follows = "hyprland/hyprlang";
+    hyprutils.follows = "hyprland/hyprutils";
+
     hyprNStack = {
       url = "github:colonelpanic8/hyprNStack?ref=codex/hyprnstack-combined";
       inputs = {
@@ -104,15 +110,21 @@
       };
     };
 
-    hyprland-plugins-lua = {
-      url = "github:colonelpanic8/hyprland-plugins?ref=codex/fix-main-ci-workspace-numbers";
-      inputs.hyprland.follows = "hyprland";
+    hyprexpo = {
+      url = "github:colonelpanic8/hyprexpo";
+      inputs = {
+        hyprland.follows = "hyprland";
+        nixpkgs.follows = "nixpkgs";
+        systems.follows = "systems";
+      };
     };
 
     Hyprspace = {
-      url = "github:KZDKM/Hyprspace";
-      inputs.hyprland.follows = "hyprland";
-      inputs.systems.follows = "systems";
+      url = "github:colonelpanic8/Hyprspace/codex/defer-hyprspace-initial-reload";
+      inputs = {
+        hyprland.follows = "hyprland";
+        systems.follows = "systems";
+      };
     };
 
     hyprwinview = {
@@ -124,6 +136,11 @@
       url = "github:colonelpanic8/hypr-workspace-history";
       inputs.hyprland.follows = "hyprland";
       inputs.nixpkgs.follows = "nixpkgs";
+    };
+
+    hyprglass = {
+      url = "github:colonelpanic8/hyprglass?ref=codex/hyprland-0.55-compat";
+      flake = false;
     };
 
     hyprscratch = {
