@@ -119,9 +119,9 @@ function M.setup(ctx)
   local animations = {
     { leaf = "global", enabled = true, speed = 8, bezier = "default" },
 
-    { leaf = "windows", enabled = true, speed = 8, spring = "windowSpring", style = "slide" },
-    { leaf = "windowsIn", enabled = true, speed = 8, spring = "windowSpring", style = "slide" },
-    { leaf = "windowsOut", enabled = true, speed = 8, spring = "windowSpring", style = "slide" },
+    { leaf = "windows", enabled = true, speed = 8, spring = "windowSpring", style = "slide bottom" },
+    { leaf = "windowsIn", enabled = true, speed = 8, spring = "windowSpring", style = "slide bottom" },
+    { leaf = "windowsOut", enabled = true, speed = 8, spring = "windowSpring", style = "slide bottom" },
     { leaf = "windowsMove", enabled = true, speed = 8, spring = "windowSpring" },
 
     { leaf = "border", enabled = false },
