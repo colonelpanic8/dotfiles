@@ -17,6 +17,7 @@ makeEnable config "myModules.extra" false {
     gimp
     kef
     roborock-control
+    rofi-roborock
     texlive.combined.scheme-full
     tor
     yt-dlp
