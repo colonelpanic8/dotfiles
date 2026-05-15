@@ -161,16 +161,16 @@
         ]
       },
       "locked": {
-        "lastModified": 1778828520,
-        "narHash": "sha256-bnSqtBa6TaUVQbQl7DlGIUfq4eiHp/IeNZaQYMeFUkk=",
+        "lastModified": 1778835238,
+        "narHash": "sha256-aesAPhJagqrhxXnbHNJQ4wVwmaTEWwPcLTLrS/z8Fhw=",
         "owner": "colonelpanic8",
         "repo": "codex-desktop-linux",
-        "rev": "9b50b81fe86714ab5530f21be9982d35297cf9d5",
+        "rev": "88f62ec4803d0d9d000f8252878d790254634a55",
         "type": "github"
       },
       "original": {
         "owner": "colonelpanic8",
-        "ref": "reenable-computer-use-in-nix",
+        "ref": "main",
         "repo": "codex-desktop-linux",
         "type": "github"
       }

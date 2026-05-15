@@ -32,6 +32,28 @@ makeEnable config "myModules.code" true {
     }
   ];
 
+  home-manager.users.imalison = lib.mkIf config.myModules.desktop.enable {
+    programs.codex = {
+      enable = true;
+      package = pkgs.codex;
+      remoteControl = {
+        enable = true;
+        package = pkgs.codex;
+        extraPackages = with pkgs; [
+          bash
+          coreutils
+          findutils
+          git
+          gnugrep
+          gnused
+          nix
+          openssh
+        ];
+        listen = "unix://";
+      };
+    };
+  };
+
   environment.systemPackages = with pkgs;
     [
       # LLM Tools
