@@ -115,7 +115,7 @@
         ./packages/hyprwobbly-safe-geometry-and-idle-timer.patch
       ];
   });
-  hyprexpo = pkgs.callPackage ./packages/hyprexpo-plus {
+  hyprexpo = pkgs.callPackage ./packages/hyprexpo {
     src = inputs.hyprexpo;
     hyprland = baseHyprlandPackage;
     aquamarine = inputs.aquamarine.packages.${system}.aquamarine;

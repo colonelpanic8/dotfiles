@@ -26,7 +26,7 @@
   src,
 }:
 stdenv.mkDerivation {
-  pname = "hyprexpo-plus";
+  pname = "hyprexpo";
   version = "unstable-${src.shortRev or "unknown"}";
   inherit src;
 
@@ -67,8 +67,8 @@ stdenv.mkDerivation {
   '';
 
   meta = {
-    description = "Enhanced Hyprland workspace overview plugin";
-    homepage = "https://github.com/sandwichfarm/hyprexpo-plus";
+    description = "Hyprland workspace overview plugin";
+    homepage = "https://github.com/colonelpanic8/hyprexpo";
     license = lib.licenses.bsd3;
     platforms = lib.platforms.linux;
   };

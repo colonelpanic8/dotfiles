@@ -227,13 +227,12 @@ function M.setup(ctx)
       plugin = {
         hyprexpo = {
           columns = 3,
-          gaps_in = 5,
-          gaps_out = 0,
+          gap_size = 5,
+          gap_size_outer = 0,
           bg_col = 0xff111111,
           workspace_method = "center current",
           skip_empty = false,
           gesture_distance = 200,
-          keynav_enable = 1,
           keynav_wrap_h = 1,
           keynav_wrap_v = 1,
           keynav_reading_order = 0,
@@ -257,7 +256,6 @@ function M.setup(ctx)
           label_color_current = 0xff66ccff,
           label_bg_enable = 1,
           label_bg_color = 0xcc000000,
-          label_bg_shape = "rounded",
           label_bg_rounding = 10,
           label_padding = 12,
           label_font_bold = 1,

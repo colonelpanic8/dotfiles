@@ -214,7 +214,7 @@ function M.setup(ctx)
       for i = 1, max_workspace do
         local workspace_id = i
         local key = tostring(i % 10)
-        bind(key, hyprexpo_dispatch("kb_selectn", workspace_id), desc("Select workspace " .. workspace_id))
+        bind(key, hyprexpo_dispatch("kb_selecti", workspace_id), desc("Select workspace " .. workspace_id))
       end
 
       bind("Escape", hyprexpo("off"), desc("Close workspace expo"))

@@ -116,7 +116,7 @@
     };
 
     hyprexpo = {
-      url = "github:colonelpanic8/hyprexpo-plus/codex/lua-config-api";
+      url = "github:colonelpanic8/hyprexpo";
       flake = false;
     };
 

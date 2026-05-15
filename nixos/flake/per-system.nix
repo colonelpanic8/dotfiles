@@ -26,7 +26,7 @@
     hyprlang = inputs.hyprlang.packages.${system}.hyprlang;
     hyprutils = inputs.hyprutils.packages.${system}.hyprutils;
   };
-  hyprexpo = pkgs.callPackage ../packages/hyprexpo-plus {
+  hyprexpo = pkgs.callPackage ../packages/hyprexpo {
     src = inputs.hyprexpo;
     hyprland = inputs.hyprland.packages.${system}.hyprland;
     aquamarine = inputs.aquamarine.packages.${system}.aquamarine;
