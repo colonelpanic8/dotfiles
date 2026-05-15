@@ -7,11 +7,8 @@
   ...
 }:
 let
-  codexDesktop = inputs.codex-desktop-linux.packages.${pkgs.stdenv.hostPlatform.system}.default.overrideAttrs (oldAttrs: {
-    src = oldAttrs.src.overrideAttrs (_: {
-      outputHash = "sha256-FlPgkhlWpyjigv+r46srQlO7+zq8G3Ow6IMVpAUjCWQ=";
-    });
-  });
+  codexDesktop =
+    inputs.codex-desktop-linux.packages.${pkgs.stdenv.hostPlatform.system}."codex-desktop-computer-use-ui-remote-mobile-control";
 in
 makeEnable config "myModules.code" true {
   programs.direnv = {
