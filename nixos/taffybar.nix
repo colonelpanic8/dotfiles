@@ -295,10 +295,8 @@ in
           ExecCondition = "${taffybarExecCondition}";
           ExecStartPre = "${waitForGraphicalSocket}";
           ExecStart = lib.mkForce "${taffybarStart}";
-          # Temporary startup debugging: keep a plain-text log outside journald so
-          # the next login/startup leaves easy-to-inspect tray traces behind.
-          StandardOutput = "append:/tmp/taffybar-service.log";
-          StandardError = "append:/tmp/taffybar-service.log";
+          StandardOutput = "journal";
+          StandardError = "journal";
         };
       })
     ];
