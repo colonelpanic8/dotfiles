@@ -117,7 +117,7 @@
 
     hyprexpo = {
       url = "github:colonelpanic8/hyprexpo";
-      flake = false;
+      inputs.hyprland.follows = "hyprland";
     };
 
     Hyprspace = {

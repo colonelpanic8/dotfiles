@@ -26,15 +26,7 @@
     hyprlang = inputs.hyprlang.packages.${system}.hyprlang;
     hyprutils = inputs.hyprutils.packages.${system}.hyprutils;
   };
-  hyprexpo = pkgs.callPackage ../packages/hyprexpo {
-    src = inputs.hyprexpo;
-    hyprland = inputs.hyprland.packages.${system}.hyprland;
-    aquamarine = inputs.aquamarine.packages.${system}.aquamarine;
-    hyprcursor = inputs.hyprcursor.packages.${system}.hyprcursor;
-    hyprgraphics = inputs.hyprgraphics.packages.${system}.hyprgraphics;
-    hyprlang = inputs.hyprlang.packages.${system}.hyprlang;
-    hyprutils = inputs.hyprutils.packages.${system}.hyprutils;
-  };
+  hyprexpo = inputs.hyprexpo.packages.${system}.hyprexpo;
   tangledConfig = dotfilesOrgApi.org-agenda-custom-config;
 
   # Import container build logic

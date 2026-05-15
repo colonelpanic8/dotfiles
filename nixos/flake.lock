@@ -753,13 +753,27 @@
       }
     },
     "hyprexpo": {
-      "flake": false,
+      "inputs": {
+        "hyprland": [
+          "hyprland"
+        ],
+        "nixpkgs": [
+          "hyprexpo",
+          "hyprland",
+          "nixpkgs"
+        ],
+        "systems": [
+          "hyprexpo",
+          "hyprland",
+          "systems"
+        ]
+      },
       "locked": {
-        "lastModified": 1778829240,
-        "narHash": "sha256-r+gsmmJM8cXuq1TDuaBUjl5g1HYMA357Rl+NH6svV8E=",
+        "lastModified": 1778831952,
+        "narHash": "sha256-Hp1ip+DnnXIJ1Ezvvyn4t6CVmvlSaExwgnJXFdohMYw=",
         "owner": "colonelpanic8",
         "repo": "hyprexpo",
-        "rev": "67adc97d818cf13fef7fa4a6ad7e94ab7d0c002a",
+        "rev": "b5f1e72e1db92a4326f9b376f39f1d6a85b9a758",
         "type": "github"
       },
       "original": {
