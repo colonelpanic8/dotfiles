@@ -6,6 +6,13 @@
   makeEnable,
   ...
 }:
+let
+  codexDesktop = inputs.codex-desktop-linux.packages.${pkgs.stdenv.hostPlatform.system}.default.overrideAttrs (oldAttrs: {
+    src = oldAttrs.src.overrideAttrs (_: {
+      outputHash = "sha256-FlPgkhlWpyjigv+r46srQlO7+zq8G3Ow6IMVpAUjCWQ=";
+    });
+  });
+in
 makeEnable config "myModules.code" true {
   programs.direnv = {
     enable = true;
@@ -60,7 +67,7 @@ makeEnable config "myModules.code" true {
       antigravity
       claude-code
       codex
-      inputs.codex-desktop-linux.packages.${pkgs.stdenv.hostPlatform.system}.default
+      codexDesktop
       gemini-cli
       happy-coder
       opencode

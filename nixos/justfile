@@ -1,4 +1,5 @@
 switch *args:
+	if systemctl is-active --quiet nixos-upgrade.service; then sudo systemctl stop nixos-upgrade.service; fi
 	sudo nixos-rebuild switch --flake ".#" --impure {{args}}
 
 populate-cachix cache="colonelpanic8-dotfiles" host=`hostname` *args:
