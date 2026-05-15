@@ -267,16 +267,9 @@
   outputs = inputs @ {
     self,
     nixpkgs,
-    nixos-hardware,
     home-manager,
-    xmonad,
     nixtheplanet,
-    xmonad-contrib,
-    notifications-tray-icon,
-    nix,
     agenix,
-    imalison-taffybar,
-    hyprland,
     org-agenda-api,
     flake-utils,
     ...
@@ -346,24 +339,6 @@
     };
     defaultConfigurationParams =
       builtins.listToAttrs (map mkConfigurationParams machineFilenames);
-    # Build org-agenda-api container for a given system
-    mkOrgAgendaApiContainerInfo = system: let
-      pkgs = import nixpkgs {inherit system;};
-      orgApiRev = builtins.substring 0 7 (org-agenda-api.rev or "unknown");
-      dotfilesRev = builtins.substring 0 7 (self.rev or self.dirtyRev or "dirty");
-      dotfilesOrgApi = import ./org-agenda-api.nix {
-        inherit pkgs system inputs;
-      };
-      tangledConfig = dotfilesOrgApi.org-agenda-custom-config;
-      containerLib = import ../org-agenda-api/container.nix {
-        inherit pkgs system tangledConfig org-agenda-api orgApiRev dotfilesRev;
-      };
-      tag = "colonelpanic-${orgApiRev}-${dotfilesRev}";
-    in {
-      imageFile = containerLib.containers.colonelpanic;
-      imageName = "org-agenda-api:${tag}";
-    };
-
     customParams = {
       biskcomp = {
         system = "aarch64-linux";
@@ -409,11 +384,6 @@
             src = home-manager;
             patches = map bootstrapPkgs.fetchpatch allHomeManagerPatches;
           };
-      # Import the patched home-manager flake
-      patchedHomeManager =
-        if allHomeManagerPatches == []
-        then home-manager
-        else import "${patchedHomeManagerSource}/flake.nix";
       # Get the NixOS module from the patched source
       patchedHomeManagerModule =
         if allHomeManagerPatches == []
