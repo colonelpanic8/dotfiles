@@ -89,7 +89,7 @@ function M.setup(ctx)
   local function setup_window_overview_bindings()
     bind(main_mod .. " + SHIFT + C", hl.dsp.window.close(), desc("Close active window"))
     bind(main_mod .. " + SHIFT + Q", hl.dsp.exit(), desc("Exit Hyprland"))
-    bind(main_mod .. " + Tab", hyprexpo("toggle"), desc("Toggle workspace expo", overview_bind_opts))
+    bind(main_mod .. " + Tab", hyprspace("toggle"), desc("Toggle Hyprspace workspace overview", overview_bind_opts))
     bind(main_mod .. " + SHIFT + Tab", hyprwinview({
       action = "show",
       include_current_workspace = false,
@@ -97,12 +97,8 @@ function M.setup(ctx)
       default_action = "bring",
     }), desc("Show all-workspace window overview", overview_bind_opts))
     bind(main_mod .. " + SHIFT + slash", hyprwinview({ action = "toggle-filter" }), desc("Toggle window overview filter", overview_bind_opts))
-    bind("ALT + Tab", enable_hyprspace and hyprspace("toggle") or hyprwinview({
-      action = "show",
-      start_in_filter_mode = true,
-      default_action = "select",
-    }), desc("Toggle alternate window overview", overview_bind_opts))
-    bind("ALT + SHIFT + Tab", hyprexpo("on"), desc("Open workspace expo", overview_bind_opts))
+    bind("ALT + Tab", hyprexpo("toggle"), desc("Toggle hyprexpo workspace overview", overview_bind_opts))
+    bind("ALT + SHIFT + Tab", hyprexpo("on"), desc("Open hyprexpo workspace overview", overview_bind_opts))
     bind(main_mod .. " + G", hyprwinview({
       action = "show",
       start_in_filter_mode = true,

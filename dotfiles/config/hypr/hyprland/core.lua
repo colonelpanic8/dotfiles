@@ -177,9 +177,19 @@ function M.setup(ctx)
 
   local function hyprspace(action)
     return function()
-      overview_trace("hyprspace " .. tostring(action or "toggle"))
+      local request = action
+      if type(request) == "table" then
+        request.action = request.action or "toggle"
+        if request.all == nil then
+          request.all = true
+        end
+      else
+        request = { action = action or "toggle", all = true }
+      end
+
+      overview_trace("hyprspace " .. tostring(request.action))
       if hl.plugin and hl.plugin.hyprspace and hl.plugin.hyprspace.overview then
-        hl.plugin.hyprspace.overview({ action = action or "toggle" })
+        hl.plugin.hyprspace.overview(request)
       else
         hl.notification.create({
           text = "hyprspace is not loaded",

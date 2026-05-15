@@ -10,11 +10,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1778761768,
-        "narHash": "sha256-1i9S0IRjUuz98ab9/V2+5ax5YxIDhvl7NuMlBVXJ328=",
+        "lastModified": 1778832075,
+        "narHash": "sha256-q+5ETwj+oiZBT9j6/huwB8nwV4nbZdZmCrchL2E7tDQ=",
         "owner": "colonelpanic8",
         "repo": "Hyprspace",
-        "rev": "2ca4f1a47cf2dc569e6e7034e53c4cd9b25e36a8",
+        "rev": "bf2ef21007e8963fcb0016ae26b6b21704946f80",
         "type": "github"
       },
       "original": {

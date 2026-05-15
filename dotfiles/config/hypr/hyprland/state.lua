@@ -63,7 +63,7 @@ return {
   current_layout = columns_layout,
   enable_nstack = true,
   enable_hyprexpo = true,
-  enable_hyprspace = env_bool("HYPRLAND_ENABLE_HYPRSPACE", false),
+  enable_hyprspace = env_bool("HYPRLAND_ENABLE_HYPRSPACE", true),
   enable_hyprwinview = true,
   enable_workspace_history = true,
   enable_hyprwobbly = true,
