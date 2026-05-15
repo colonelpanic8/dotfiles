@@ -4,9 +4,9 @@ service_tier = "fast"
 personality = "pragmatic"
 suppress_unstable_features_warning = true
 
-# Portable Codex defaults. Home Manager appends host-local fragments from
-# ~/.codex/config.local.toml and ~/.codex/config.local-state.toml when it
-# regenerates ~/.codex/config.toml.
+# Portable Codex defaults. Home Manager regenerates ~/.codex/config.toml from
+# this file, ~/.codex/config.local.toml, and Codex-owned sections preserved in
+# ~/.codex/config.local-state.toml.
 
 [mcp_servers.chrome-devtools]
 command = "npx"

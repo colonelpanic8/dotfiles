@@ -31,7 +31,7 @@ in {
     generatedStateConfig = lib.mkOption {
       type = lib.types.str;
       default = "${cfg.codexHome}/config.local-state.toml";
-      description = "Codex-generated host-local state harvested from config.toml.";
+      description = "Codex-owned host-local config sections harvested from config.toml.";
     };
 
     skillsDir = lib.mkOption {
@@ -156,7 +156,7 @@ in {
           }
 
           function flush_block() {
-            if (keep && section != "" && !(section in base_sections) && !rejected_project(section)) {
+            if (section != "" && !(section in base_sections) && !rejected_project(section)) {
               if (printed) {
                 print ""
               }
@@ -172,7 +172,6 @@ in {
           /^\[[^]]+\]$/ {
             flush_block()
             section = $0
-            keep = ($0 ~ /^\[projects\./ || $0 ~ /^\[tui\./)
             block = $0 "\n"
             next
           }
@@ -184,7 +183,9 @@ in {
           END {
             flush_block()
           }
-        ' "$base" "$target" > "$local_state"
+        ' "$base" "$target" \
+          | ${lib.getExe pkgs.perl} -0pe 's/\n{3,}/\n\n/g' \
+          > "$local_state"
 
         if [ -s "$local_state" ]; then
           chmod 600 "$local_state"
