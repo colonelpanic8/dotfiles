@@ -25,6 +25,7 @@ apps = true
 steer = true
 goals = true
 fast_mode = true
+remote_control = true
 
 [plugins."google-calendar@openai-curated"]
 enabled = true
