@@ -196,10 +196,6 @@ function M.setup(ctx)
     end)
 
     hl.define_submap("hyprexpo", function()
-      bind("W", hyprexpo_dispatch("kb_focus", "up"), desc("Focus workspace tile above"))
-      bind("A", hyprexpo_dispatch("kb_focus", "left"), desc("Focus workspace tile to the left"))
-      bind("S", hyprexpo_dispatch("kb_focus", "down"), desc("Focus workspace tile below"))
-      bind("D", hyprexpo_dispatch("kb_focus", "right"), desc("Focus workspace tile to the right"))
       bind("Up", hyprexpo_dispatch("kb_focus", "up"), desc("Focus workspace tile above"))
       bind("Left", hyprexpo_dispatch("kb_focus", "left"), desc("Focus workspace tile to the left"))
       bind("Down", hyprexpo_dispatch("kb_focus", "down"), desc("Focus workspace tile below"))
@@ -207,10 +203,8 @@ function M.setup(ctx)
       bind("Return", hyprexpo_dispatch("kb_confirm"), desc("Select focused workspace tile"))
       bind("Space", hyprexpo_dispatch("kb_confirm"), desc("Select focused workspace tile"))
 
-      for i = 1, max_workspace do
-        local workspace_id = i
-        local key = tostring(i % 10)
-        bind(key, hyprexpo_dispatch("kb_selecti", workspace_id), desc("Select workspace " .. workspace_id))
+      for _, token in ipairs({ "a", "s", "d", "f", "g", "q", "w", "e", "r", "t", "z", "x", "c", "v", "b" }) do
+        bind(string.upper(token), hyprexpo_dispatch("kb_select", token), desc("Select workspace tile " .. token))
       end
 
       bind("Escape", hyprexpo("off"), desc("Close workspace expo"))
