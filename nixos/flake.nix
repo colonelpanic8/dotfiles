@@ -116,12 +116,8 @@
     };
 
     hyprexpo = {
-      url = "github:colonelpanic8/hyprexpo";
-      inputs = {
-        hyprland.follows = "hyprland";
-        nixpkgs.follows = "nixpkgs";
-        systems.follows = "systems";
-      };
+      url = "github:colonelpanic8/hyprexpo-plus/codex/lua-config-api";
+      flake = false;
     };
 
     Hyprspace = {
@@ -141,6 +137,15 @@
       url = "github:colonelpanic8/hypr-workspace-history";
       inputs.hyprland.follows = "hyprland";
       inputs.nixpkgs.follows = "nixpkgs";
+    };
+
+    hyprwobbly = {
+      url = "github:colonelpanic8/hyprwobbly";
+      inputs = {
+        hyprland.follows = "hyprland";
+        nixpkgs.follows = "nixpkgs";
+        systems.follows = "systems";
+      };
     };
 
     hyprglass = {
@@ -238,7 +243,7 @@
     };
 
     codex-desktop-linux = {
-      url = "github:colonelpanic8/codex-desktop-linux?ref=codex/nixos-browser-cache-fixes";
+      url = "github:colonelpanic8/codex-desktop-linux?ref=reenable-computer-use-in-nix";
       inputs = {
         nixpkgs.follows = "nixpkgs";
         flake-utils.follows = "flake-utils";

@@ -14,6 +14,7 @@ function M.setup(ctx)
   end
 
   verify_config = command_line_contains("--verify-config")
+  dev_session = os.getenv("IMALISON_HYPRLAND_DEV_SESSION") == "1"
 
   local function exec(command)
     return hl.dsp.exec_cmd(command)
@@ -105,12 +106,11 @@ function M.setup(ctx)
     return "address:" .. tostring(window.address)
   end
 
-  local function hyprexpo(action)
-    action = action or "toggle"
+  local function hyprexpo_call(method, arg)
     return function()
-      overview_trace("hyprexpo " .. tostring(action))
-      if hl.plugin and hl.plugin.hyprexpo and hl.plugin.hyprexpo.expo then
-        hl.plugin.hyprexpo.expo(action)
+      overview_trace("hyprexpo:" .. method .. (arg and (" " .. tostring(arg)) or ""))
+      if hl.plugin and hl.plugin.hyprexpo and hl.plugin.hyprexpo[method] then
+        hl.plugin.hyprexpo[method](arg)
       else
         hl.notification.create({
           text = "hyprexpo is not loaded",
@@ -121,6 +121,14 @@ function M.setup(ctx)
         })
       end
     end
+  end
+
+  local function hyprexpo(action)
+    return hyprexpo_call("expo", action or "toggle")
+  end
+
+  local function hyprexpo_dispatch(dispatcher, arg)
+    return hyprexpo_call(dispatcher, arg)
   end
 
   local function hyprwinview(action)
@@ -219,15 +227,41 @@ function M.setup(ctx)
       plugin = {
         hyprexpo = {
           columns = 3,
-          gap_size = 5,
-          bg_col = "rgba(111111ff)",
+          gaps_in = 5,
+          gaps_out = 0,
+          bg_col = 0xff111111,
           workspace_method = "center current",
           skip_empty = false,
-          max_workspace = max_workspace,
-          show_workspace_numbers = true,
-          workspace_number_color = "rgba(edb443ff)",
           gesture_distance = 200,
-          cancel_key = "escape",
+          keynav_enable = 1,
+          keynav_wrap_h = 1,
+          keynav_wrap_v = 1,
+          keynav_reading_order = 0,
+          border_width = 2,
+          border_color_current = "rgb(66ccff)",
+          border_color_focus = "rgb(edb443)",
+          border_color_hover = "rgb(aabbcc)",
+          tile_rounding = 5,
+          tile_rounding_power = 2.0,
+          label_enable = 1,
+          label_font_size = 28,
+          label_text_mode = "token",
+          label_token_map = "1,2,3,4,5,6,7,8,9",
+          label_position = "center",
+          label_offset_x = 6,
+          label_offset_y = 6,
+          label_show = "always",
+          label_color_default = 0xffffffff,
+          label_color_hover = 0xffeeeeee,
+          label_color_focus = 0xffedb443,
+          label_color_current = 0xff66ccff,
+          label_bg_enable = 1,
+          label_bg_color = 0xcc000000,
+          label_bg_shape = "rounded",
+          label_bg_rounding = 10,
+          label_padding = 12,
+          label_font_bold = 1,
+          label_pixel_snap = 1,
         },
       },
     })
@@ -567,6 +601,7 @@ function M.setup(ctx)
   ctx.overview_trace = overview_trace
   ctx.window_selector = window_selector
   ctx.hyprexpo = hyprexpo
+  ctx.hyprexpo_dispatch = hyprexpo_dispatch
   ctx.hyprwinview = hyprwinview
   ctx.workspacehistory = workspacehistory
   ctx.hyprspace = hyprspace

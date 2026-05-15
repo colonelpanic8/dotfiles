@@ -7,9 +7,44 @@
   ...
 }: let
   system = pkgs.stdenv.hostPlatform.system;
+  hyprlandPackage = config.programs.hyprland.package;
   taffybarPackage = inputs.imalison-taffybar.defaultPackage.${system};
   taffybarStart = pkgs.writeShellScript "taffybar-start" ''
     runtime_dir="''${XDG_RUNTIME_DIR:-/run/user/$(${pkgs.coreutils}/bin/id -u)}"
+
+    find_hyprland_instance() {
+      instances_json="$(${hyprlandPackage}/bin/hyprctl instances -j 2>/dev/null || true)"
+      [ -n "$instances_json" ] || return 1
+
+      if [ -n "''${WAYLAND_DISPLAY:-}" ]; then
+        inst_row="$(
+          printf '%s\n' "$instances_json" |
+            ${pkgs.jq}/bin/jq -r --arg sock "$WAYLAND_DISPLAY" \
+              '.[] | select(.instance and .wl_socket and .wl_socket == $sock) | [.time, .instance, .wl_socket] | @tsv' 2>/dev/null |
+            ${pkgs.coreutils}/bin/sort -n |
+            ${pkgs.coreutils}/bin/tail -n 1
+        )"
+      else
+        inst_row=""
+      fi
+
+      if [ -z "''${inst_row:-}" ]; then
+        inst_row="$(
+          printf '%s\n' "$instances_json" |
+            ${pkgs.jq}/bin/jq -r \
+              '.[] | select(.instance and .wl_socket) | [.time, .instance, .wl_socket] | @tsv' 2>/dev/null |
+            ${pkgs.coreutils}/bin/sort -n |
+            ${pkgs.coreutils}/bin/tail -n 1
+        )"
+      fi
+
+      [ -n "''${inst_row:-}" ] || return 1
+      set -- $inst_row
+      signature="$2"
+      socket_name="$3"
+      [ -n "$signature" ] && [ -n "$socket_name" ] || return 1
+      printf '%s\t%s\n' "$signature" "$socket_name"
+    }
 
     find_wayland_socket() {
       if [ -n "''${WAYLAND_DISPLAY:-}" ] && [ -S "$runtime_dir/$WAYLAND_DISPLAY" ]; then
@@ -47,6 +82,22 @@
 
     if [ "$is_hyprland" = 1 ] && [ -z "''${XDG_SESSION_TYPE:-}" ]; then
       export XDG_SESSION_TYPE=wayland
+    fi
+
+    if [ "$is_hyprland" = 1 ]; then
+      if inst_row="$(find_hyprland_instance)"; then
+        set -- $inst_row
+        signature="$1"
+        socket_name="$2"
+        if [ "''${HYPRLAND_INSTANCE_SIGNATURE:-}" != "$signature" ]; then
+          echo "taffybar-start: correcting HYPRLAND_INSTANCE_SIGNATURE=''${HYPRLAND_INSTANCE_SIGNATURE:-<unset>} to $signature" >&2
+          export HYPRLAND_INSTANCE_SIGNATURE="$signature"
+        fi
+        if [ "''${WAYLAND_DISPLAY:-}" != "$socket_name" ]; then
+          echo "taffybar-start: correcting WAYLAND_DISPLAY=''${WAYLAND_DISPLAY:-<unset>} to $socket_name" >&2
+          export WAYLAND_DISPLAY="$socket_name"
+        fi
+      fi
     fi
 
     if [ "''${XDG_SESSION_TYPE:-}" = "wayland" ] || [ -n "''${WAYLAND_DISPLAY:-}" ] || [ "$is_hyprland" = 1 ]; then

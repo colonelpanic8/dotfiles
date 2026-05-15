@@ -1,3 +1,20 @@
+local function env_bool(name, default)
+  local value = os.getenv(name)
+  if value == nil or value == "" then
+    return default
+  end
+
+  value = value:lower()
+  if value == "1" or value == "true" or value == "yes" or value == "on" then
+    return true
+  end
+  if value == "0" or value == "false" or value == "no" or value == "off" then
+    return false
+  end
+
+  return default
+end
+
 local shell_ui_command = "hypr_shell_ui"
 local columns_layout = "nStack"
 local large_main_layout = "master"
@@ -46,10 +63,12 @@ return {
   current_layout = columns_layout,
   enable_nstack = true,
   enable_hyprexpo = true,
-  enable_hyprspace = false,
+  enable_hyprspace = env_bool("HYPRLAND_ENABLE_HYPRSPACE", false),
   enable_hyprwinview = true,
   enable_workspace_history = true,
+  enable_hyprwobbly = true,
   enable_hyprglass = false,
+  hypr_visual_performance_mode = false,
   configure_nstack_plugin_from_lua = false,
   workspace_layouts = {},
   minimized_windows = {},

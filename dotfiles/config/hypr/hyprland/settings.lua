@@ -2,6 +2,10 @@ local M = {}
 
 function M.setup(ctx)
   local _ENV = ctx
+  local function plugin_path(env_name, default)
+    return os.getenv(env_name) or default
+  end
+
   if enable_nstack and not verify_config then
     hl.plugin.load("/run/current-system/sw/lib/libhyprNStack.so")
   end
@@ -9,13 +13,16 @@ function M.setup(ctx)
     hl.plugin.load("/run/current-system/sw/lib/libhyprexpo.so")
   end
   if enable_hyprspace and not verify_config then
-    hl.plugin.load("/run/current-system/sw/lib/libHyprspace.so")
+    hl.plugin.load(plugin_path("HYPRLAND_HYPRSPACE_PLUGIN", "/run/current-system/sw/lib/libHyprspace.so"))
   end
   if enable_hyprwinview and not verify_config then
     hl.plugin.load("/run/current-system/sw/lib/libhyprwinview.so")
   end
   if enable_workspace_history and not verify_config then
     hl.plugin.load("/run/current-system/sw/lib/libhypr-workspace-history.so")
+  end
+  if enable_hyprwobbly and not verify_config then
+    hl.plugin.load("/run/current-system/sw/lib/libhyprwobbly.so")
   end
   if enable_hyprglass and not verify_config then
     hl.plugin.load("/run/current-system/sw/lib/hyprglass.so")
@@ -173,6 +180,71 @@ function M.setup(ctx)
     })
   end
 
+  local function apply_hyprwobbly_config()
+    if verify_config or not enable_hyprwobbly then
+      return
+    end
+
+    hl.config({
+      plugin = {
+        hyprwobbly = {
+          enabled = hypr_visual_performance_mode and 0 or 1,
+          mode = "always",
+          grid_width = 4,
+          grid_height = 4,
+          tiles_x = 12,
+          tiles_y = 12,
+          spring_k = 18.0,
+          friction = 8.0,
+          mass = 12.0,
+          move_factor = 0.65,
+          resize_factor = 0.45,
+          max_warp = 140.0,
+        },
+      },
+    })
+  end
+
+  local function apply_visual_performance_mode()
+    if verify_config then
+      return
+    end
+
+    local visual_effects_enabled = not hypr_visual_performance_mode
+    hl.config({
+      decoration = {
+        blur = {
+          enabled = visual_effects_enabled,
+        },
+      },
+      animations = {
+        enabled = visual_effects_enabled,
+      },
+    })
+
+    if enable_hyprwobbly then
+      hl.config({
+        plugin = {
+          hyprwobbly = {
+            enabled = visual_effects_enabled and 1 or 0,
+          },
+        },
+      })
+    end
+  end
+
+  local function toggle_visual_performance_mode()
+    hypr_visual_performance_mode = not hypr_visual_performance_mode
+    apply_visual_performance_mode()
+    hl.notification.create({
+      text = "Hyprland performance mode: " .. (hypr_visual_performance_mode and "on" or "off"),
+      duration = 1800,
+      icon = hypr_visual_performance_mode and notification_icons.warning or notification_icons.ok,
+      color = hypr_visual_performance_mode and "rgba(edb443ff)" or "rgba(33ccffee)",
+      font_size = 13,
+    })
+  end
+
   local function apply_rules()
     if verify_config then
       return
@@ -243,6 +315,9 @@ function M.setup(ctx)
 
   ctx.apply_rules = apply_rules
   ctx.apply_hyprglass_config = apply_hyprglass_config
+  ctx.apply_hyprwobbly_config = apply_hyprwobbly_config
+  ctx.apply_visual_performance_mode = apply_visual_performance_mode
+  ctx.toggle_visual_performance_mode = toggle_visual_performance_mode
 end
 
 return M

@@ -1,0 +1,87 @@
+#!/usr/bin/env bash
+set -u
+
+runtime_dir="${XDG_RUNTIME_DIR:-/run/user/$(id -u)}"
+timestamp="$(date +%Y%m%d-%H%M%S)"
+out="${1:-$runtime_dir/hypr-perf-snapshot-$timestamp.log}"
+
+mkdir -p "$(dirname "$out")"
+
+latest_hypr_instance() {
+  local hypr_dir="$runtime_dir/hypr"
+  [[ -d "$hypr_dir" ]] || return 1
+  find "$hypr_dir" -mindepth 2 -maxdepth 2 -name .socket.sock -printf '%T@ %h\n' 2>/dev/null |
+    sort -nr |
+    awk 'NR == 1 { n = split($2, parts, "/"); print parts[n] }'
+}
+
+if [[ -z "${HYPRLAND_INSTANCE_SIGNATURE:-}" ]]; then
+  signature="$(latest_hypr_instance || true)"
+  if [[ -n "$signature" ]]; then
+    export HYPRLAND_INSTANCE_SIGNATURE="$signature"
+  fi
+fi
+
+section() {
+  printf '\n## %s\n' "$1"
+}
+
+run_optional() {
+  local label="$1"
+  shift
+  section "$label"
+  "$@" 2>&1 || true
+}
+
+{
+  section "Snapshot"
+  date --iso-8601=seconds
+  printf 'host=%s\n' "$(hostname)"
+  printf 'runtime_dir=%s\n' "$runtime_dir"
+  printf 'hyprland_instance=%s\n' "${HYPRLAND_INSTANCE_SIGNATURE:-}"
+  uptime
+  printf 'loadavg='
+  cat /proc/loadavg 2>/dev/null || true
+
+  if command -v hyprctl >/dev/null 2>&1; then
+    run_optional "Hyprland Version" hyprctl version
+    run_optional "Hyprland Monitors" hyprctl monitors
+    plugins="$(hyprctl plugin list 2>&1 || true)"
+    section "Hyprland Plugins"
+    printf '%s\n' "$plugins"
+    section "Hyprland Runtime Options"
+    for option in \
+      animations:enabled \
+      decoration:blur:enabled \
+      render:direct_scanout; do
+      printf '\n### %s\n' "$option"
+      hyprctl getoption "$option" 2>&1 || true
+    done
+    if printf '%s\n' "$plugins" | grep -q 'Plugin hyprwobbly'; then
+      printf '\n### plugin:hyprwobbly:enabled\n'
+      hyprctl getoption plugin:hyprwobbly:enabled 2>&1 || true
+    fi
+  else
+    section "Hyprland"
+    printf 'hyprctl not found\n'
+  fi
+
+  run_optional "Top Processes By CPU" ps -eo pid,ppid,comm,pcpu,pmem,args --sort=-pcpu
+  run_optional "Top Threads By CPU" ps -eLo pid,tid,comm,pcpu,pmem --sort=-pcpu
+
+  if command -v nvidia-smi >/dev/null 2>&1; then
+    run_optional "NVIDIA GPU" nvidia-smi
+  fi
+
+  section "DRM GPU Busy"
+  for busy in /sys/class/drm/card*/device/gpu_busy_percent; do
+    [[ -e "$busy" ]] || continue
+    printf '%s=' "$busy"
+    cat "$busy" 2>/dev/null || true
+  done
+
+  section "Recent User Unit Failures"
+  systemctl --user --no-pager --failed 2>&1 || true
+} >"$out"
+
+printf '%s\n' "$out"

@@ -1,0 +1,416 @@
+#!/usr/bin/env bash
+set -Eeuo pipefail
+
+usage() {
+  cat <<'EOF'
+Usage: hypr_plugin_dev_session [options]
+
+Launch a disposable nested Hyprland compositor for plugin development, then
+build/load a plugin only into that nested instance.
+
+Options:
+  --repo DIR             Plugin repo to build. Defaults to $PWD if it has a flake,
+                         otherwise /home/imalison/Projects/hyprwobbly when present.
+  --attr ATTR            Nix build attr. Default: .#hyprwobbly
+  --plugin PATH          Load an already-built plugin .so instead of building.
+  --hyprland-bin PATH    Hyprland binary to run. Defaults to the plugin repo's
+                         Hyprland flake input when building, otherwise PATH.
+  --system-hyprland      Force /run/current-system/PATH Hyprland instead of the
+                         plugin repo's Hyprland flake input.
+  --config PATH          Run Hyprland with this config instead of a generated
+                         minimal config.
+  --user-config          Run the normal user Lua config.
+  --enable-hyprspace     Set HYPRLAND_ENABLE_HYPRSPACE=1 for the nested config.
+  --no-load              Start the nested compositor but do not load a plugin.
+  --detach               Leave the nested compositor running and exit after setup.
+  --keep-tmp             Do not delete the generated config/log directory.
+  --size WxH             Nested monitor size. Default: 1280x720
+  --terminal COMMAND     Command to open in the nested compositor.
+  --exit-after-ready     Exit the nested compositor after startup checks.
+  -h, --help             Show this help.
+
+Examples:
+  hypr_plugin_dev_session
+  hypr_plugin_dev_session --repo ~/Projects/hyprwobbly --attr .#hyprwobbly
+  hypr_plugin_dev_session --plugin "$PWD/result/lib/libhyprwobbly.so"
+  hypr_plugin_dev_session --user-config --enable-hyprspace --no-load
+EOF
+}
+
+die() {
+  printf 'hypr_plugin_dev_session: %s\n' "$*" >&2
+  exit 1
+}
+
+runtime_dir="${XDG_RUNTIME_DIR:-/run/user/$(id -u)}"
+repo=""
+attr=".#hyprwobbly"
+plugin_path=""
+plugin_path_from_arg=0
+hyprland_bin=""
+force_system_hyprland=0
+load_plugin=1
+config_arg=""
+enable_hyprspace=0
+detach=0
+keep_tmp=0
+size="1280x720"
+terminal_cmd=""
+exit_after_ready=0
+
+while [[ $# -gt 0 ]]; do
+  case "$1" in
+    --repo)
+      repo="${2:-}"
+      [[ -n "$repo" ]] || die "--repo requires a directory"
+      shift 2
+      ;;
+    --attr)
+      attr="${2:-}"
+      [[ -n "$attr" ]] || die "--attr requires a Nix attr"
+      shift 2
+      ;;
+    --plugin)
+      plugin_path="${2:-}"
+      [[ -n "$plugin_path" ]] || die "--plugin requires a path"
+      plugin_path_from_arg=1
+      shift 2
+      ;;
+    --hyprland-bin)
+      hyprland_bin="${2:-}"
+      [[ -n "$hyprland_bin" ]] || die "--hyprland-bin requires a path"
+      shift 2
+      ;;
+    --system-hyprland)
+      force_system_hyprland=1
+      shift
+      ;;
+    --config)
+      config_arg="${2:-}"
+      [[ -n "$config_arg" ]] || die "--config requires a path"
+      shift 2
+      ;;
+    --user-config)
+      config_arg="${XDG_CONFIG_HOME:-$HOME/.config}/hypr/hyprland.lua"
+      shift
+      ;;
+    --enable-hyprspace)
+      enable_hyprspace=1
+      shift
+      ;;
+    --no-load)
+      load_plugin=0
+      shift
+      ;;
+    --detach)
+      detach=1
+      shift
+      ;;
+    --keep-tmp)
+      keep_tmp=1
+      shift
+      ;;
+    --size)
+      size="${2:-}"
+      [[ "$size" =~ ^[0-9]+x[0-9]+$ ]] || die "--size must look like 1280x720"
+      shift 2
+      ;;
+    --terminal)
+      terminal_cmd="${2:-}"
+      [[ -n "$terminal_cmd" ]] || die "--terminal requires a command"
+      shift 2
+      ;;
+    --exit-after-ready)
+      exit_after_ready=1
+      shift
+      ;;
+    -h | --help)
+      usage
+      exit 0
+      ;;
+    *)
+      die "unknown argument: $1"
+      ;;
+  esac
+done
+
+command -v hyprctl >/dev/null 2>&1 || die "hyprctl is not on PATH"
+command -v jq >/dev/null 2>&1 || die "jq is not on PATH"
+
+parent_wayland_display() {
+  if [[ -n "${WAYLAND_DISPLAY:-}" && -S "$runtime_dir/$WAYLAND_DISPLAY" ]]; then
+    printf '%s\n' "$WAYLAND_DISPLAY"
+    return 0
+  fi
+
+  local from_instances
+  from_instances="$(hyprctl instances -j 2>/dev/null | jq -r 'max_by(.time) | .wl_socket // empty' 2>/dev/null || true)"
+  if [[ -n "$from_instances" && -S "$runtime_dir/$from_instances" ]]; then
+    printf '%s\n' "$from_instances"
+    return 0
+  fi
+
+  local lock
+  lock="$(find "$runtime_dir/hypr" -mindepth 2 -maxdepth 2 -name hyprland.lock -printf '%T@ %p\n' 2>/dev/null | sort -nr | awk 'NR == 1 { print $2 }')"
+  if [[ -n "$lock" ]]; then
+    local from_lock
+    from_lock="$(sed -n '2p' "$lock" 2>/dev/null || true)"
+    if [[ -n "$from_lock" && -S "$runtime_dir/$from_lock" ]]; then
+      printf '%s\n' "$from_lock"
+      return 0
+    fi
+  fi
+
+  return 1
+}
+
+if [[ -z "$repo" ]]; then
+  if [[ -f "$PWD/flake.nix" ]]; then
+    repo="$PWD"
+  elif [[ -d /home/imalison/Projects/hyprwobbly ]]; then
+    repo="/home/imalison/Projects/hyprwobbly"
+  else
+    repo="$PWD"
+  fi
+fi
+repo="$(realpath "$repo")"
+
+if [[ -n "$plugin_path" ]]; then
+  plugin_path="$(realpath "$plugin_path")"
+  [[ -f "$plugin_path" ]] || die "plugin does not exist: $plugin_path"
+fi
+
+choose_terminal() {
+  if [[ -n "$terminal_cmd" ]]; then
+    printf '%s\n' "$terminal_cmd"
+    return
+  fi
+
+  for candidate in ghostty foot kitty alacritty wezterm xterm; do
+    if command -v "$candidate" >/dev/null 2>&1; then
+      printf '%s\n' "$candidate"
+      return
+    fi
+  done
+
+  printf '%s\n' 'sh -lc "sleep infinity"'
+}
+
+find_built_plugin() {
+  local result_dir="$repo/result"
+  [[ -e "$result_dir" ]] || die "build result missing: $result_dir"
+
+  local preferred="$result_dir/lib/libhyprwobbly.so"
+  if [[ -f "$preferred" ]]; then
+    printf '%s\n' "$(realpath "$preferred")"
+    return
+  fi
+
+  local count
+  count="$(find -L "$result_dir" -type f -name '*.so' | wc -l)"
+  [[ "$count" -gt 0 ]] || die "no .so files found under $result_dir"
+  [[ "$count" -eq 1 ]] || die "multiple .so files found under $result_dir; pass --plugin explicitly"
+  find -L "$result_dir" -type f -name '*.so' -print -quit
+}
+
+repo_hyprland_bin() {
+  local flake_ref expr out
+  flake_ref="$(jq -Rn --arg s "path:$repo" '$s')"
+  expr="let flake = builtins.getFlake ${flake_ref}; system = builtins.currentSystem; in flake.inputs.hyprland.packages.\${system}.hyprland"
+
+  printf 'Building matching nested Hyprland from %s input\n' "$repo" >&2
+  mapfile -t hyprland_outputs < <(nix build --impure --no-link --print-out-paths --expr "$expr")
+  for out in "${hyprland_outputs[@]}"; do
+    if [[ -x "$out/bin/Hyprland" ]]; then
+      printf '%s\n' "$out/bin/Hyprland"
+      return 0
+    fi
+  done
+
+  return 1
+}
+
+pid=""
+tail_pid=""
+tmpdir="$(mktemp -d "$runtime_dir/hypr-plugin-dev.XXXXXX")"
+config="$tmpdir/hyprland.conf"
+stdout_log="$tmpdir/hyprland.stdout.log"
+
+if [[ -n "$config_arg" ]]; then
+  config="$(realpath "$config_arg")"
+  [[ -f "$config" ]] || die "config does not exist: $config"
+fi
+
+cleanup() {
+  local status=$?
+
+  if [[ -n "$tail_pid" ]] && kill -0 "$tail_pid" >/dev/null 2>&1; then
+    kill "$tail_pid" >/dev/null 2>&1 || true
+  fi
+
+  if [[ "$detach" -eq 0 && -n "$pid" ]] && kill -0 "$pid" >/dev/null 2>&1; then
+    if [[ -n "${nested_sig:-}" ]]; then
+      HYPRLAND_INSTANCE_SIGNATURE="$nested_sig" hyprctl dispatch exit >/dev/null 2>&1 || true
+      sleep 0.5
+    fi
+    kill -- "-$pid" >/dev/null 2>&1 || true
+    kill "$pid" >/dev/null 2>&1 || true
+  fi
+
+  if [[ "$keep_tmp" -eq 0 && "$detach" -eq 0 ]]; then
+    rm -rf "$tmpdir"
+  fi
+
+  exit "$status"
+}
+trap cleanup EXIT INT TERM
+
+if [[ -z "$config_arg" ]]; then
+  term_for_config="$(choose_terminal)"
+  cat >"$config" <<EOF
+autogenerated = 1
+
+debug {
+  disable_logs = false
+}
+
+monitor = , ${size}@60, 0x0, 1
+
+general {
+  layout = dwindle
+  gaps_in = 4
+  gaps_out = 8
+  border_size = 2
+  col.active_border = rgba(33ccffee)
+  col.inactive_border = rgba(595959aa)
+}
+
+decoration {
+  rounding = 4
+  shadow {
+    enabled = false
+  }
+  blur {
+    enabled = false
+  }
+}
+
+animations {
+  enabled = false
+}
+
+input {
+  kb_layout = us
+  follow_mouse = 1
+}
+
+misc {
+  disable_hyprland_logo = true
+  disable_splash_rendering = true
+  force_default_wallpaper = 0
+}
+
+bind = SUPER, Return, exec, ${term_for_config}
+bind = SUPER, Q, killactive
+bind = SUPER SHIFT, Q, exit
+bind = SUPER, F, fullscreen
+bind = SUPER, V, togglefloating
+
+exec-once = ${term_for_config}
+EOF
+fi
+
+if [[ "$load_plugin" -eq 1 && -z "$plugin_path" ]]; then
+  [[ -d "$repo" ]] || die "repo does not exist: $repo"
+  [[ -f "$repo/flake.nix" ]] || die "repo has no flake.nix: $repo"
+  printf 'Building %s in %s\n' "$attr" "$repo"
+  (cd "$repo" && nix build "$attr" --print-build-logs)
+  plugin_path="$(find_built_plugin)"
+fi
+
+if [[ -n "$hyprland_bin" ]]; then
+  hyprland_bin="$(realpath "$hyprland_bin")"
+elif [[ "$force_system_hyprland" -eq 0 && "$load_plugin" -eq 1 && -n "$repo" && "$plugin_path_from_arg" -eq 0 ]]; then
+  hyprland_bin="$(repo_hyprland_bin)" || die "could not build matching Hyprland from $repo input"
+else
+  hyprland_bin="$(command -v Hyprland || true)"
+fi
+[[ -n "$hyprland_bin" && -x "$hyprland_bin" ]] || die "Hyprland binary not found or not executable"
+
+printf 'Starting nested Hyprland with config %s\n' "$config"
+parent_wayland="$(parent_wayland_display || true)"
+[[ -n "$parent_wayland" ]] || die "could not find a parent Wayland socket; set WAYLAND_DISPLAY and try again"
+printf 'Parent Wayland display: %s\n' "$parent_wayland"
+printf 'Nested Hyprland binary: %s\n' "$hyprland_bin"
+setsid env \
+  -u HYPRLAND_INSTANCE_SIGNATURE \
+  WAYLAND_DISPLAY="$parent_wayland" \
+  XDG_SESSION_TYPE=wayland \
+  IMALISON_HYPRLAND_DEV_SESSION=1 \
+  HYPRLAND_ENABLE_HYPRSPACE="$enable_hyprspace" \
+  bash -c 'trap "" HUP; exec "$1" --config "$2"' hyprland-launch "$hyprland_bin" "$config" >"$stdout_log" 2>&1 &
+pid=$!
+
+nested_sig=""
+for _ in $(seq 1 100); do
+  if ! kill -0 "$pid" >/dev/null 2>&1; then
+    printf 'Nested Hyprland exited before becoming ready. Log follows:\n' >&2
+    sed -n '1,220p' "$stdout_log" >&2 || true
+    exit 1
+  fi
+
+  nested_sig="$(hyprctl instances -j 2>/dev/null | jq -r --argjson pid "$pid" '.[] | select(.pid == $pid) | .instance' | head -n1)"
+  if [[ -n "$nested_sig" && "$nested_sig" != "null" ]]; then
+    break
+  fi
+  sleep 0.1
+done
+
+[[ -n "$nested_sig" && "$nested_sig" != "null" ]] || die "timed out waiting for nested Hyprland instance for pid $pid"
+
+printf 'Nested Hyprland pid: %s\n' "$pid"
+printf 'Nested Hyprland signature: %s\n' "$nested_sig"
+printf 'Nested Hyprland log: %s\n' "$stdout_log"
+printf 'Target it with:\n  HYPRLAND_INSTANCE_SIGNATURE=%q hyprctl ...\n' "$nested_sig"
+
+HYPRLAND_INSTANCE_SIGNATURE="$nested_sig" hyprctl monitors >/dev/null
+HYPRLAND_INSTANCE_SIGNATURE="$nested_sig" hyprctl configerrors || true
+
+if [[ "$load_plugin" -eq 1 ]]; then
+  printf 'Loading plugin into nested Hyprland: %s\n' "$plugin_path"
+  load_output="$(HYPRLAND_INSTANCE_SIGNATURE="$nested_sig" hyprctl plugin load "$plugin_path" 2>&1)"
+  load_status=$?
+  printf '%s\n' "$load_output"
+  sleep 0.5
+
+  if ! kill -0 "$pid" >/dev/null 2>&1; then
+    printf 'Nested Hyprland crashed while loading plugin. Log follows:\n' >&2
+    sed -n '1,260p' "$stdout_log" >&2 || true
+    exit 1
+  fi
+
+  plugin_list="$(HYPRLAND_INSTANCE_SIGNATURE="$nested_sig" hyprctl plugin list 2>&1)"
+  printf '%s\n' "$plugin_list"
+  if [[ "$load_status" -ne 0 || "$load_output" == *"could not be loaded"* || "$plugin_list" == *"no plugins loaded"* ]]; then
+    die "plugin did not load into nested Hyprland"
+  fi
+fi
+
+if [[ "$exit_after_ready" -eq 1 ]]; then
+  printf 'Startup check complete; exiting nested Hyprland.\n'
+  exit 0
+fi
+
+if [[ "$detach" -eq 1 ]]; then
+  trap - EXIT INT TERM
+  disown "$pid" >/dev/null 2>&1 || true
+  printf 'Leaving nested Hyprland running. Stop it with:\n  HYPRLAND_INSTANCE_SIGNATURE=%q hyprctl dispatch exit\n' "$nested_sig"
+  printf 'If the Nix wrapper process remains, clean up its process group with:\n  kill -- -%q\n' "$pid"
+  printf 'Generated files remain in %s\n' "$tmpdir"
+  exit 0
+fi
+
+printf 'Nested session is running. Press Ctrl-C here to stop it.\n'
+tail -n +1 -F "$stdout_log" &
+tail_pid=$!
+wait "$pid"

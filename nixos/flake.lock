@@ -10,11 +10,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1778647860,
-        "narHash": "sha256-WIHQcCdzY/2MYYtVZyGkctjsISTsjHLVuunJXt5g92c=",
+        "lastModified": 1778761768,
+        "narHash": "sha256-1i9S0IRjUuz98ab9/V2+5ax5YxIDhvl7NuMlBVXJ328=",
         "owner": "colonelpanic8",
         "repo": "Hyprspace",
-        "rev": "a9d7685ef610d5a45c7c4f9f974bdf78443c9829",
+        "rev": "2ca4f1a47cf2dc569e6e7034e53c4cd9b25e36a8",
         "type": "github"
       },
       "original": {
@@ -161,16 +161,16 @@
         ]
       },
       "locked": {
-        "lastModified": 1778574539,
-        "narHash": "sha256-4wOF2LWLxWCzE2B7Nud9GZuXGEAWJwvp8XrWx+3p5aY=",
+        "lastModified": 1778822718,
+        "narHash": "sha256-2CTjJUnLhYJIu8hW/Gmdhbhvp7RbBYY1mBFNYvzBpxE=",
         "owner": "colonelpanic8",
         "repo": "codex-desktop-linux",
-        "rev": "39671f3a944cdc68d216bd3fcf1f53a5de5c39a9",
+        "rev": "31c94dd2edfd9a86df263baaec33779123a120f3",
         "type": "github"
       },
       "original": {
         "owner": "colonelpanic8",
-        "ref": "codex/nixos-browser-cache-fixes",
+        "ref": "reenable-computer-use-in-nix",
         "repo": "codex-desktop-linux",
         "type": "github"
       }
@@ -817,28 +817,19 @@
       }
     },
     "hyprexpo": {
-      "inputs": {
-        "hyprland": [
-          "hyprland"
-        ],
-        "nixpkgs": [
-          "nixpkgs"
-        ],
-        "systems": [
-          "systems"
-        ]
-      },
+      "flake": false,
       "locked": {
-        "lastModified": 1778658902,
-        "narHash": "sha256-k2RpS0zA76KZBMR6Uy+WSRJBR6uDsa5m0FxfVKH01PE=",
+        "lastModified": 1778816761,
+        "narHash": "sha256-+riuSr1jdxdhfYNtt6S5a6uUUDhYb67gDRKHpk7l1pg=",
         "owner": "colonelpanic8",
-        "repo": "hyprexpo",
-        "rev": "d2786e7c21f412e0f60cc27d6763e9939ef284b0",
+        "repo": "hyprexpo-plus",
+        "rev": "4d753224148c45153dbea95b3d6b1897bd71dfbb",
         "type": "github"
       },
       "original": {
         "owner": "colonelpanic8",
-        "repo": "hyprexpo",
+        "ref": "codex/lua-config-api",
+        "repo": "hyprexpo-plus",
         "type": "github"
       }
     },
@@ -1199,6 +1190,32 @@
       "original": {
         "owner": "hyprwm",
         "repo": "hyprwire",
+        "type": "github"
+      }
+    },
+    "hyprwobbly": {
+      "inputs": {
+        "hyprland": [
+          "hyprland"
+        ],
+        "nixpkgs": [
+          "nixpkgs"
+        ],
+        "systems": [
+          "systems"
+        ]
+      },
+      "locked": {
+        "lastModified": 1778742689,
+        "narHash": "sha256-j0/j9/9Pd5nC3jXsLrq9GKshcSg1Ci55E1gg7Qj84Y8=",
+        "owner": "colonelpanic8",
+        "repo": "hyprwobbly",
+        "rev": "d531d3f0b68d6d450bf3038571043c3f39c1fd6e",
+        "type": "github"
+      },
+      "original": {
+        "owner": "colonelpanic8",
+        "repo": "hyprwobbly",
         "type": "github"
       }
     },
@@ -1801,6 +1818,7 @@
           "hyprutils"
         ],
         "hyprwinview": "hyprwinview",
+        "hyprwobbly": "hyprwobbly",
         "imalison-taffybar": "imalison-taffybar",
         "kanshi-sni": "kanshi-sni",
         "keepbook": "keepbook",

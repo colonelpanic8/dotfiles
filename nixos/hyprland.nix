@@ -108,13 +108,30 @@
     hyprlang = inputs.hyprlang.packages.${system}.hyprlang;
     hyprutils = inputs.hyprutils.packages.${system}.hyprutils;
   };
+  hyprwobbly = inputs.hyprwobbly.packages.${system}.hyprwobbly.overrideAttrs (old: {
+    patches =
+      (old.patches or [])
+      ++ [
+        ./packages/hyprwobbly-safe-geometry-and-idle-timer.patch
+      ];
+  });
+  hyprexpo = pkgs.callPackage ./packages/hyprexpo-plus {
+    src = inputs.hyprexpo;
+    hyprland = baseHyprlandPackage;
+    aquamarine = inputs.aquamarine.packages.${system}.aquamarine;
+    hyprcursor = inputs.hyprcursor.packages.${system}.hyprcursor;
+    hyprgraphics = inputs.hyprgraphics.packages.${system}.hyprgraphics;
+    hyprlang = inputs.hyprlang.packages.${system}.hyprlang;
+    hyprutils = inputs.hyprutils.packages.${system}.hyprutils;
+  };
   hyprlandPluginPackages =
     [
       inputs.hyprNStack.packages.${system}.hyprNStack
-      inputs.hyprexpo.packages.${system}.hyprexpo
+      hyprexpo
       hyprspace
       inputs.hyprwinview.packages.${system}.hyprwinview
       inputs.hypr-workspace-history.packages.${system}.hypr-workspace-history
+      hyprwobbly
     ]
     ++ lib.optionals enableHyprglass [hyprglass];
   hyprRofiWindow = pkgs.writeShellApplication {

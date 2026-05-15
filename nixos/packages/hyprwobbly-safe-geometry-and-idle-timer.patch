@@ -1,0 +1,270 @@
+diff --git a/Wobbly.cpp b/Wobbly.cpp
+index d21594e..d8e1534 100644
+--- a/Wobbly.cpp
++++ b/Wobbly.cpp
+@@ -35,6 +35,18 @@ namespace {
+     Vector2D lerp(const Vector2D& a, const Vector2D& b, float t) {
+         return a + (b - a) * t;
+     }
++
++    bool finite(double value) {
++        return std::isfinite(value) && std::abs(value) < 1000000.0;
++    }
++
++    bool finite(const Vector2D& vec) {
++        return finite(vec.x) && finite(vec.y);
++    }
++
++    bool usableBox(const CBox& box) {
++        return finite(box.x) && finite(box.y) && finite(box.w) && finite(box.h) && box.w > 0.0 && box.h > 0.0;
++    }
+ }
+
+ CWobblyTransformer::CWobblyTransformer(PHLWINDOW pWindow) : m_window(pWindow) {
+@@ -50,6 +62,10 @@ bool CWobblyTransformer::belongsTo(PHLWINDOW pWindow) const {
+     return m_window.lock() == pWindow;
+ }
+
++bool CWobblyTransformer::active() const {
++    return m_active;
++}
++
+ int CWobblyTransformer::gridWidth() const {
+     return std::clamp(cfgInt(g_pGridWidth, 4), 2, 16);
+ }
+@@ -126,7 +142,10 @@ size_t CWobblyTransformer::index(int x, int y) const {
+ }
+
+ void CWobblyTransformer::resetModel(const Vector2D& size) {
+-    m_sizePx = {std::max(1.0, size.x), std::max(1.0, size.y)};
++    if (!finite(size))
++        return;
++
++    m_sizePx = {std::clamp(size.x, 1.0, 100000.0), std::clamp(size.y, 1.0, 100000.0)};
+     m_points.clear();
+     m_points.resize(sc<size_t>(gridWidth() * gridHeight()));
+
+@@ -159,6 +178,9 @@ Vector2D CWobblyTransformer::currentPointerLocalPx(const CBox& boxLayout) const
+ }
+
+ void CWobblyTransformer::applyMoveImpulse(const Vector2D& delta, const Vector2D& anchor) {
++    if (!finite(delta) || !finite(anchor))
++        return;
++
+     const auto DIAG = std::max(1.F, sc<float>(length(m_sizePx)));
+
+     for (auto& point : m_points) {
+@@ -171,6 +193,9 @@ void CWobblyTransformer::applyMoveImpulse(const Vector2D& delta, const Vector2D&
+ }
+
+ void CWobblyTransformer::applyResizeImpulse(const Vector2D& deltaSize) {
++    if (!finite(deltaSize))
++        return;
++
+     const auto oldSize = m_sizePx;
+     const auto oldPts  = m_points;
+
+@@ -216,12 +241,15 @@ void CWobblyTransformer::preWindowRender(CSurfacePassElement::SRenderData* pRend
+         pRenderData->h + topLeftExtents.y + bottomRightExtents.y,
+     };
+
+-    if (fullBox.empty())
++    if (!usableBox(fullBox) || fullBox.empty())
+         fullBox = {pRenderData->pos.x, pRenderData->pos.y, pRenderData->w, pRenderData->h};
+
++    if (!usableBox(fullBox))
++        return;
++
+     CBox fullBoxPx = fullBox.copy().translate(-PMONITOR->m_position).scale(PMONITOR->m_scale).round();
+
+-    if (fullBoxPx.w <= 1 || fullBoxPx.h <= 1)
++    if (!usableBox(fullBoxPx) || fullBoxPx.w <= 1 || fullBoxPx.h <= 1)
+         return;
+
+     const Vector2D newSize = fullBoxPx.size();
+@@ -251,10 +279,10 @@ void CWobblyTransformer::preWindowRender(CSurfacePassElement::SRenderData* pRend
+
+     damage();
+
+-    if (std::abs(deltaSize.x) > 0.5 || std::abs(deltaSize.y) > 0.5)
++    if (finite(deltaSize) && (std::abs(deltaSize.x) > 0.5 || std::abs(deltaSize.y) > 0.5))
+         applyResizeImpulse(deltaSize);
+
+-    if (std::abs(deltaPos.x) > 0.5 || std::abs(deltaPos.y) > 0.5) {
++    if (finite(deltaPos) && (std::abs(deltaPos.x) > 0.5 || std::abs(deltaPos.y) > 0.5)) {
+         Vector2D anchor = m_sizePx / 2.0;
+         if (m_wasDragging)
+             anchor = currentPointerLocalPx(fullBox);
+@@ -296,6 +324,11 @@ void CWobblyTransformer::stepSimulation(float dt) {
+             point.force += (point.rest - point.pos) * (K * 0.18F);
+             point.velocity += (point.force / MASS) * STEP;
+             point.pos += point.velocity * STEP;
++
++            if (!finite(point.pos) || !finite(point.velocity)) {
++                point.pos      = point.rest;
++                point.velocity = {};
++            }
+         }
+     }
+
+@@ -313,6 +346,12 @@ void CWobblyTransformer::stepSimulation(float dt) {
+ void CWobblyTransformer::constrainWarp() {
+     const auto LIMIT = maxWarp();
+     for (auto& point : m_points) {
++        if (!finite(point.pos)) {
++            point.pos      = point.rest;
++            point.velocity = {};
++            continue;
++        }
++
+         auto diff = point.pos - point.rest;
+         auto len  = length(diff);
+         if (len > LIMIT)
+@@ -356,6 +395,9 @@ CBox CWobblyTransformer::deformedBoundsLayout() const {
+     Vector2D max = m_points.front().pos;
+
+     for (const auto& point : m_points) {
++        if (!finite(point.pos))
++            return {};
++
+         min.x = std::min(min.x, point.pos.x);
+         min.y = std::min(min.y, point.pos.y);
+         max.x = std::max(max.x, point.pos.x);
+@@ -363,7 +405,8 @@ CBox CWobblyTransformer::deformedBoundsLayout() const {
+     }
+
+     const double SCALE = std::max(0.01, m_sourceBoxPx.w / std::max(1.0, m_sourceBoxLayout.w));
+-    return {m_sourceBoxLayout.x + min.x / SCALE, m_sourceBoxLayout.y + min.y / SCALE, (max.x - min.x) / SCALE, (max.y - min.y) / SCALE};
++    const CBox   BOX   = {m_sourceBoxLayout.x + min.x / SCALE, m_sourceBoxLayout.y + min.y / SCALE, (max.x - min.x) / SCALE, (max.y - min.y) / SCALE};
++    return usableBox(BOX) ? BOX : CBox{};
+ }
+
+ void CWobblyTransformer::damage() {
+@@ -372,13 +415,13 @@ void CWobblyTransformer::damage() {
+         return;
+
+     const auto NOW = deformedBoundsLayout().expand(8);
+-    if (!NOW.empty())
++    if (usableBox(NOW) && !NOW.empty())
+         g_pHyprRenderer->damageBox(NOW);
+
+-    if (!m_lastDamage.empty())
++    if (usableBox(m_lastDamage) && !m_lastDamage.empty())
+         g_pHyprRenderer->damageBox(m_lastDamage);
+
+-    m_lastDamage = NOW;
++    m_lastDamage = usableBox(NOW) ? NOW : CBox{};
+ }
+
+ void CWobblyTransformer::tick(float dt) {
+@@ -402,6 +445,8 @@ SP<Render::IFramebuffer> CWobblyTransformer::transform(SP<Render::IFramebuffer>
+         return in;
+
+     const Vector2D MONSIZE = PMONITOR->m_transformedSize;
++    if (!finite(MONSIZE) || MONSIZE.x <= 1.0 || MONSIZE.y <= 1.0 || !usableBox(m_sourceBoxPx))
++        return in;
+
+     if (!m_outputFB)
+         m_outputFB = g_pHyprRenderer->createFB("hyprwobbly");
+diff --git a/Wobbly.hpp b/Wobbly.hpp
+index b627304..8ebb12f 100644
+--- a/Wobbly.hpp
++++ b/Wobbly.hpp
+@@ -19,6 +19,7 @@ class CWobblyTransformer : public IWindowTransformer {
+     void                     tick(float dt);
+     void                     damage();
+     bool                     belongsTo(PHLWINDOW pWindow) const;
++    bool                     active() const;
+
+   private:
+     struct SPoint {
+diff --git a/globals.hpp b/globals.hpp
+index 38ffff4..2196124 100644
+--- a/globals.hpp
++++ b/globals.hpp
+@@ -13,8 +13,7 @@ class CWobblyTransformer;
+
+ inline HANDLE                           PHANDLE = nullptr;
+ inline CHyprSignalListener              g_openWindowListener;
+-inline CFunctionHook*                   g_pStyleValidHook = nullptr;
+-inline wl_event_source*                 g_pTick           = nullptr;
++inline wl_event_source*                 g_pTick = nullptr;
+ inline SP<CShader>                      g_pWobblyShader;
+ inline bool                             g_shaderReady = false;
+ inline std::vector<CWobblyTransformer*> g_transformers;
+diff --git a/main.cpp b/main.cpp
+index f86901e..1ea5249 100644
+--- a/main.cpp
++++ b/main.cpp
+@@ -19,17 +19,10 @@
+
+ using Render::GL::g_pHyprOpenGL;
+
+-typedef std::string (*origStyleValid)(CHyprAnimationManager*, const std::string&, const std::string&);
+-
+ APICALL EXPORT std::string PLUGIN_API_VERSION() {
+     return HYPRLAND_API_VERSION;
+ }
+
+-static bool isWobblyStyle(const std::string& config, std::string style) {
+-    std::ranges::transform(style, style.begin(), [](unsigned char c) { return std::tolower(c); });
+-    return config == "windowsMove" && (style == "wobbly" || style.starts_with("wobbly "));
+-}
+-
+ template <typename T>
+ static void addConfigValue(SP<T>& storage, SP<T> value) {
+     storage = std::move(value);
+@@ -51,13 +44,6 @@ static void registerConfigValues() {
+     addConfigValue(g_pMaxWarp, makeShared<Config::Values::CFloatValue>("plugin:hyprwobbly:max_warp", "maximum warp", 140.F));
+ }
+
+-static std::string hkStyleValidInConfigVar(CHyprAnimationManager* thisptr, const std::string& config, const std::string& style) {
+-    if (isWobblyStyle(config, style))
+-        return "";
+-
+-    return (*(origStyleValid)g_pStyleValidHook->m_original)(thisptr, config, style);
+-}
+-
+ static bool hasWobbly(PHLWINDOW pWindow) {
+     return std::ranges::any_of(g_transformers, [pWindow](const auto* wobbly) { return wobbly && wobbly->belongsTo(pWindow); });
+ }
+@@ -79,13 +65,16 @@ static int onTick(void*) {
+     const float DT   = std::clamp(std::chrono::duration<float>(NOW - LAST).count(), 0.001F, 0.05F);
+     LAST             = NOW;
+
++    bool       anyActive    = false;
+     const auto TRANSFORMERS = g_transformers;
+     for (auto* const transformer : TRANSFORMERS) {
+-        if (transformer)
++        if (transformer) {
+             transformer->tick(DT);
++            anyActive = anyActive || transformer->active();
++        }
+     }
+
+-    const int TIMEOUT = g_pHyprRenderer->m_mostHzMonitor ? 1000.0 / g_pHyprRenderer->m_mostHzMonitor->m_refreshRate : 16;
++    const int TIMEOUT = anyActive && g_pHyprRenderer->m_mostHzMonitor ? std::max(8, static_cast<int>(1000.0 / g_pHyprRenderer->m_mostHzMonitor->m_refreshRate)) : 100;
+     wl_event_source_timer_update(g_pTick, TIMEOUT);
+     return 0;
+ }
+@@ -104,20 +93,6 @@ APICALL EXPORT PLUGIN_DESCRIPTION_INFO PLUGIN_INIT(HANDLE handle) {
+
+     registerConfigValues();
+
+-    auto FNS = HyprlandAPI::findFunctionsByName(PHANDLE, "styleValidInConfigVar");
+-    for (auto& fn : FNS) {
+-        if (!fn.demangled.contains("CHyprAnimationManager"))
+-            continue;
+-
+-        g_pStyleValidHook = HyprlandAPI::createFunctionHook(PHANDLE, fn.address, (void*)::hkStyleValidInConfigVar);
+-        break;
+-    }
+-
+-    if (!g_pStyleValidHook || !g_pStyleValidHook->hook()) {
+-        HyprlandAPI::addNotification(PHANDLE, "[hyprwobbly] Failure in initialization: failed to hook animation style validator", CHyprColor{1.0, 0.2, 0.2, 1.0}, 5000);
+-        throw std::runtime_error("[hyprwobbly] failed to hook animation style validator");
+-    }
+-
+     g_pHyprOpenGL->makeEGLCurrent();
+     g_pWobblyShader = makeShared<CShader>();
+     g_shaderReady   = g_pWobblyShader->createProgram(WOBBLY_VERTEX_SHADER, WOBBLY_FRAGMENT_SHADER);

@@ -1,16 +1,16 @@
 diff --git a/src/main.cpp b/src/main.cpp
-index 9b75f8a..b69b459 100644
+index 9dd0286..51fd8d7 100644
 --- a/src/main.cpp
 +++ b/src/main.cpp
-@@ -5,6 +5,7 @@
+@@ -6,6 +6,7 @@
  #include <hyprland/src/debug/log/Logger.hpp>
  #include <hyprland/src/managers/SeatManager.hpp>
  #include <hyprland/src/desktop/view/Window.hpp>
 +#include <lua.hpp>
  #include <hyprutils/memory/SharedPtr.hpp>
+ #include <any>
  #include "Overview.hpp"
- #include "Globals.hpp"
-@@ -377,6 +378,65 @@ static SDispatchResult dispatchCloseOverview(std::string arg) {
+@@ -380,6 +381,65 @@ static SDispatchResult dispatchCloseOverview(std::string arg) {
      return SDispatchResult{};
  }
  
@@ -76,7 +76,7 @@ index 9b75f8a..b69b459 100644
  void* findFunctionBySymbol(HANDLE inHandle, const std::string func, const std::string sym) {
      // should return all functions
      auto funcSearch = HyprlandAPI::findFunctionsByName(inHandle, func);
-@@ -516,6 +566,8 @@ APICALL EXPORT PLUGIN_DESCRIPTION_INFO PLUGIN_INIT(HANDLE inHandle) {
+@@ -545,6 +605,8 @@ APICALL EXPORT PLUGIN_DESCRIPTION_INFO PLUGIN_INIT(HANDLE inHandle) {
      HyprlandAPI::addDispatcherV2(pHandle, "overview:open", ::dispatchOpenOverview);
      HyprlandAPI::addDispatcherV2(pHandle, "overview:close", ::dispatchCloseOverview);
  

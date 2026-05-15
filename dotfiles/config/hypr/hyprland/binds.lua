@@ -26,6 +26,7 @@ function M.setup(ctx)
     bind(main_mod .. " + Q", exec("hyprctl reload"), desc("Reload Hyprland"))
     bind(main_mod .. " + R", exec("hyprctl reload"), desc("Reload Hyprland"))
     bind(hyper .. " + SHIFT + L", exec("hyprlock"), desc("Lock screen"))
+    bind(hyper .. " + SHIFT + V", toggle_visual_performance_mode, desc("Toggle Hyprland performance mode"))
     bind(hyper .. " + slash", function()
       hl.exec_cmd("toggle_taffybar")
       refresh_monitor_reserved_cache(0.25)
@@ -88,11 +89,7 @@ function M.setup(ctx)
   local function setup_window_overview_bindings()
     bind(main_mod .. " + SHIFT + C", hl.dsp.window.close(), desc("Close active window"))
     bind(main_mod .. " + SHIFT + Q", hl.dsp.exit(), desc("Exit Hyprland"))
-    bind(main_mod .. " + Tab", hyprwinview({
-      action = "show",
-      start_in_filter_mode = true,
-      default_action = "select",
-    }), desc("Show window overview", overview_bind_opts))
+    bind(main_mod .. " + Tab", hyprexpo("toggle"), desc("Toggle workspace expo", overview_bind_opts))
     bind(main_mod .. " + SHIFT + Tab", hyprwinview({
       action = "show",
       include_current_workspace = false,
@@ -105,7 +102,7 @@ function M.setup(ctx)
       start_in_filter_mode = true,
       default_action = "select",
     }), desc("Toggle alternate window overview", overview_bind_opts))
-    bind("ALT + SHIFT + Tab", hyprexpo("open"), desc("Open workspace expo", overview_bind_opts))
+    bind("ALT + SHIFT + Tab", hyprexpo("on"), desc("Open workspace expo", overview_bind_opts))
     bind(main_mod .. " + G", hyprwinview({
       action = "show",
       start_in_filter_mode = true,
@@ -200,6 +197,28 @@ function M.setup(ctx)
 
       bind("Escape", hl.dsp.submap("reset"), desc("Exit window picker"))
       bind("catchall", hl.dsp.submap("reset"), desc("Exit window picker"))
+    end)
+
+    hl.define_submap("hyprexpo", function()
+      bind("W", hyprexpo_dispatch("kb_focus", "up"), desc("Focus workspace tile above"))
+      bind("A", hyprexpo_dispatch("kb_focus", "left"), desc("Focus workspace tile to the left"))
+      bind("S", hyprexpo_dispatch("kb_focus", "down"), desc("Focus workspace tile below"))
+      bind("D", hyprexpo_dispatch("kb_focus", "right"), desc("Focus workspace tile to the right"))
+      bind("Up", hyprexpo_dispatch("kb_focus", "up"), desc("Focus workspace tile above"))
+      bind("Left", hyprexpo_dispatch("kb_focus", "left"), desc("Focus workspace tile to the left"))
+      bind("Down", hyprexpo_dispatch("kb_focus", "down"), desc("Focus workspace tile below"))
+      bind("Right", hyprexpo_dispatch("kb_focus", "right"), desc("Focus workspace tile to the right"))
+      bind("Return", hyprexpo_dispatch("kb_confirm"), desc("Select focused workspace tile"))
+      bind("Space", hyprexpo_dispatch("kb_confirm"), desc("Select focused workspace tile"))
+
+      for i = 1, max_workspace do
+        local workspace_id = i
+        local key = tostring(i % 10)
+        bind(key, hyprexpo_dispatch("kb_selectn", workspace_id), desc("Select workspace " .. workspace_id))
+      end
+
+      bind("Escape", hyprexpo("off"), desc("Close workspace expo"))
+      bind("catchall", hyprexpo("off"), desc("Close workspace expo"))
     end)
   end
 
