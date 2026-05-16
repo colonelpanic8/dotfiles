@@ -39,7 +39,7 @@
   };
   services.mullvad-vpn.enable = lib.mkForce false;
   myModules.nixified-ai.enable = true;
-  # boot.kernelPackages = pkgs.linuxPackages_latest;
+  boot.kernelPackages = pkgs.linuxPackages_latest;
 
   boot.loader.systemd-boot.configurationLimit = 5;
   myModules.bootloaders.systemdBoot.enable = false;
