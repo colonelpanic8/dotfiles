@@ -127,10 +127,6 @@ function M.setup(ctx)
     return hyprexpo_call("expo", action or "toggle")
   end
 
-  local function hyprexpo_dispatch(dispatcher, arg)
-    return hyprexpo_call(dispatcher, arg)
-  end
-
   local function hyprwinview(action)
     return function()
       local label = "hyprwinview"
@@ -166,33 +162,6 @@ function M.setup(ctx)
       else
         hl.notification.create({
           text = "workspacehistory is not loaded",
-          duration = 1800,
-          icon = notification_icons.warning,
-          color = "rgba(edb443ff)",
-          font_size = 13,
-        })
-      end
-    end
-  end
-
-  local function hyprspace(action)
-    return function()
-      local request = action
-      if type(request) == "table" then
-        request.action = request.action or "toggle"
-        if request.all == nil then
-          request.all = true
-        end
-      else
-        request = { action = action or "toggle", all = true }
-      end
-
-      overview_trace("hyprspace " .. tostring(request.action))
-      if hl.plugin and hl.plugin.hyprspace and hl.plugin.hyprspace.overview then
-        hl.plugin.hyprspace.overview(request)
-      else
-        hl.notification.create({
-          text = "hyprspace is not loaded",
           duration = 1800,
           icon = notification_icons.warning,
           color = "rgba(edb443ff)",
@@ -240,8 +209,9 @@ function M.setup(ctx)
           gap_size = 5,
           gap_size_outer = 0,
           bg_col = 0xff111111,
-          workspace_method = "center current",
+          workspace_method = "first 1",
           skip_empty = false,
+          max_workspace = max_workspace,
           gesture_distance = 200,
           keynav_wrap_h = 1,
           keynav_wrap_v = 1,
@@ -258,12 +228,7 @@ function M.setup(ctx)
           label_position = "center",
           label_offset_x = 6,
           label_offset_y = 6,
-          selection_label_enable = 1,
-          selection_label_token_map = "a,s,d,f,g,q,w,e,r,t,z,x,c,v,b",
-          selection_label_position = "top-right",
-          selection_label_offset_x = 6,
-          selection_label_offset_y = 6,
-          selection_label_color = 0xffedb443,
+          selection_label_enable = 0,
           label_show = "always",
           label_color_default = 0xffffffff,
           label_color_hover = 0xffeeeeee,
@@ -614,10 +579,8 @@ function M.setup(ctx)
   ctx.overview_trace = overview_trace
   ctx.window_selector = window_selector
   ctx.hyprexpo = hyprexpo
-  ctx.hyprexpo_dispatch = hyprexpo_dispatch
   ctx.hyprwinview = hyprwinview
   ctx.workspacehistory = workspacehistory
-  ctx.hyprspace = hyprspace
   ctx.apply_nstack_config = apply_nstack_config
   ctx.apply_hyprexpo_config = apply_hyprexpo_config
   ctx.apply_hyprwinview_config = apply_hyprwinview_config

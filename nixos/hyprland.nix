@@ -89,15 +89,6 @@
       overrideAttrs = f: makeHyprlandLuaPackage (package.overrideAttrs f);
     };
   hyprlandPackage = makeHyprlandLuaPackage baseHyprlandPackage;
-  hyprspace = inputs.Hyprspace.packages.${system}.Hyprspace.overrideAttrs (old: {
-    version = "${old.version}-pr231";
-    __intentionallyOverridingVersion = true;
-    patches =
-      (old.patches or [])
-      ++ [
-        ./packages/hyprspace-lua-api.patch
-      ];
-  });
   enableHyprglass = false;
   hyprglass = pkgs.callPackage ./packages/hyprglass {
     src = inputs.hyprglass;
@@ -115,12 +106,17 @@
         ./packages/hyprwobbly-safe-geometry-and-idle-timer.patch
       ];
   });
-  hyprexpo = inputs.hyprexpo.packages.${system}.hyprexpo;
+  hyprexpo = inputs.hyprexpo.packages.${system}.hyprexpo.overrideAttrs (old: {
+    patches =
+      (old.patches or [])
+      ++ [
+        ./packages/hyprexpo-drag-windows.patch
+      ];
+  });
   hyprlandPluginPackages =
     [
       inputs.hyprNStack.packages.${system}.hyprNStack
       hyprexpo
-      hyprspace
       inputs.hyprwinview.packages.${system}.hyprwinview
       inputs.hypr-workspace-history.packages.${system}.hypr-workspace-history
       hyprwobbly

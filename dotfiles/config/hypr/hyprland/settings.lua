@@ -4,10 +4,6 @@ function M.setup(ctx)
   local _ENV = ctx
   local file_chooser_title_rule = "^(Open File|Open Files|Save File|Save Files|Save As|Select File|Select Files|Choose File|Choose Files|File Upload|Upload File|Upload Files|Select Folder|Choose Folder|Open Folder|Save Folder)$"
 
-  local function plugin_path(env_name, default)
-    return os.getenv(env_name) or default
-  end
-
   local function lower_string(value)
     return string.lower(tostring(value or ""))
   end
@@ -78,9 +74,6 @@ function M.setup(ctx)
   end
   if enable_hyprexpo and not verify_config then
     hl.plugin.load("/run/current-system/sw/lib/libhyprexpo.so")
-  end
-  if enable_hyprspace and not verify_config then
-    hl.plugin.load(plugin_path("HYPRLAND_HYPRSPACE_PLUGIN", "/run/current-system/sw/lib/libHyprspace.so"))
   end
   if enable_hyprwinview and not verify_config then
     hl.plugin.load("/run/current-system/sw/lib/libhyprwinview.so")

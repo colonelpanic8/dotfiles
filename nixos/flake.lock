@@ -1,29 +1,5 @@
 {
   "nodes": {
-    "Hyprspace": {
-      "inputs": {
-        "hyprland": [
-          "hyprland"
-        ],
-        "systems": [
-          "systems"
-        ]
-      },
-      "locked": {
-        "lastModified": 1778832075,
-        "narHash": "sha256-q+5ETwj+oiZBT9j6/huwB8nwV4nbZdZmCrchL2E7tDQ=",
-        "owner": "colonelpanic8",
-        "repo": "Hyprspace",
-        "rev": "bf2ef21007e8963fcb0016ae26b6b21704946f80",
-        "type": "github"
-      },
-      "original": {
-        "owner": "colonelpanic8",
-        "ref": "codex/defer-hyprspace-initial-reload",
-        "repo": "Hyprspace",
-        "type": "github"
-      }
-    },
     "agenix": {
       "inputs": {
         "darwin": "darwin",
@@ -1661,7 +1637,6 @@
     },
     "root": {
       "inputs": {
-        "Hyprspace": "Hyprspace",
         "agenix": "agenix",
         "aquamarine": [
           "hyprland",

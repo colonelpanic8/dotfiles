@@ -20,7 +20,6 @@ Options:
   --config PATH          Run Hyprland with this config instead of a generated
                          minimal config.
   --user-config          Run the normal user Lua config.
-  --enable-hyprspace     Set HYPRLAND_ENABLE_HYPRSPACE=1 for the nested config.
   --no-load              Start the nested compositor but do not load a plugin.
   --detach               Leave the nested compositor running and exit after setup.
   --keep-tmp             Do not delete the generated config/log directory.
@@ -33,7 +32,7 @@ Examples:
   hypr_plugin_dev_session
   hypr_plugin_dev_session --repo ~/Projects/hyprwobbly --attr .#hyprwobbly
   hypr_plugin_dev_session --plugin "$PWD/result/lib/libhyprwobbly.so"
-  hypr_plugin_dev_session --user-config --enable-hyprspace --no-load
+  hypr_plugin_dev_session --user-config --no-load
 EOF
 }
 
@@ -51,7 +50,6 @@ hyprland_bin=""
 force_system_hyprland=0
 load_plugin=1
 config_arg=""
-enable_hyprspace=0
 detach=0
 keep_tmp=0
 size="1280x720"
@@ -92,10 +90,6 @@ while [[ $# -gt 0 ]]; do
       ;;
     --user-config)
       config_arg="${XDG_CONFIG_HOME:-$HOME/.config}/hypr/hyprland.lua"
-      shift
-      ;;
-    --enable-hyprspace)
-      enable_hyprspace=1
       shift
       ;;
     --no-load)
@@ -347,7 +341,6 @@ setsid env \
   WAYLAND_DISPLAY="$parent_wayland" \
   XDG_SESSION_TYPE=wayland \
   IMALISON_HYPRLAND_DEV_SESSION=1 \
-  HYPRLAND_ENABLE_HYPRSPACE="$enable_hyprspace" \
   bash -c 'trap "" HUP; exec "$1" --config "$2"' hyprland-launch "$hyprland_bin" "$config" >"$stdout_log" 2>&1 &
 pid=$!
 

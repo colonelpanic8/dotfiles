@@ -89,7 +89,7 @@ function M.setup(ctx)
   local function setup_window_overview_bindings()
     bind(main_mod .. " + SHIFT + C", hl.dsp.window.close(), desc("Close active window"))
     bind(main_mod .. " + SHIFT + Q", hl.dsp.exit(), desc("Exit Hyprland"))
-    bind(main_mod .. " + Tab", hyprspace("toggle"), desc("Toggle Hyprspace workspace overview", overview_bind_opts))
+    bind(main_mod .. " + Tab", hyprexpo("toggle"), desc("Toggle hyprexpo workspace overview", overview_bind_opts))
     bind(main_mod .. " + SHIFT + Tab", hyprwinview({
       action = "show",
       include_current_workspace = false,
@@ -195,21 +195,6 @@ function M.setup(ctx)
       bind("catchall", hl.dsp.submap("reset"), desc("Exit window picker"))
     end)
 
-    hl.define_submap("hyprexpo", function()
-      bind("Up", hyprexpo_dispatch("kb_focus", "up"), desc("Focus workspace tile above"))
-      bind("Left", hyprexpo_dispatch("kb_focus", "left"), desc("Focus workspace tile to the left"))
-      bind("Down", hyprexpo_dispatch("kb_focus", "down"), desc("Focus workspace tile below"))
-      bind("Right", hyprexpo_dispatch("kb_focus", "right"), desc("Focus workspace tile to the right"))
-      bind("Return", hyprexpo_dispatch("kb_confirm"), desc("Select focused workspace tile"))
-      bind("Space", hyprexpo_dispatch("kb_confirm"), desc("Select focused workspace tile"))
-
-      for _, token in ipairs({ "a", "s", "d", "f", "g", "q", "w", "e", "r", "t", "z", "x", "c", "v", "b" }) do
-        bind(string.upper(token), hyprexpo_dispatch("kb_select", token), desc("Select workspace tile " .. token))
-      end
-
-      bind("Escape", hyprexpo("off"), desc("Close workspace expo"))
-      bind("catchall", hyprexpo("off"), desc("Close workspace expo"))
-    end)
   end
 
   local function setup_window_resize_and_monitor_bindings()

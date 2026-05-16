@@ -125,14 +125,6 @@
       inputs.hyprland.follows = "hyprland";
     };
 
-    Hyprspace = {
-      url = "github:colonelpanic8/Hyprspace/codex/defer-hyprspace-initial-reload";
-      inputs = {
-        hyprland.follows = "hyprland";
-        systems.follows = "systems";
-      };
-    };
-
     hyprwinview = {
       url = "github:colonelpanic8/hyprwinview";
       inputs.hyprland.follows = "hyprland";
