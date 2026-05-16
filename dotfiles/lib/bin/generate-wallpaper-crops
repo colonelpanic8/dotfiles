@@ -1,0 +1,72 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+usage() {
+  cat >&2 <<'EOF'
+Usage: generate-wallpaper-crops [WIDTHxHEIGHT] [WALLPAPER_DIR]
+
+Generate centered crop-to-fill PNG wallpapers from WALLPAPER_DIR/originals.
+
+Defaults:
+  WIDTHxHEIGHT   2560x1600
+  WALLPAPER_DIR  /var/lib/syncthing/sync/Wallpaper
+EOF
+}
+
+resolution="${1:-2560x1600}"
+wallpaper_dir="${2:-/var/lib/syncthing/sync/Wallpaper}"
+
+if [[ "$resolution" == "-h" || "$resolution" == "--help" ]]; then
+  usage
+  exit 0
+fi
+
+if [[ ! "$resolution" =~ ^([0-9]+)x([0-9]+)$ ]]; then
+  usage
+  exit 2
+fi
+
+width="${BASH_REMATCH[1]}"
+height="${BASH_REMATCH[2]}"
+originals_dir="$wallpaper_dir/originals"
+output_dir="$wallpaper_dir/$resolution"
+
+if ! command -v ffmpeg >/dev/null 2>&1; then
+  echo "generate-wallpaper-crops: ffmpeg is required" >&2
+  exit 1
+fi
+
+if [[ ! -d "$originals_dir" ]]; then
+  echo "generate-wallpaper-crops: missing originals directory: $originals_dir" >&2
+  exit 1
+fi
+
+mkdir -p "$output_dir"
+
+shopt -s nullglob
+inputs=(
+  "$originals_dir"/*.jpg
+  "$originals_dir"/*.jpeg
+  "$originals_dir"/*.png
+  "$originals_dir"/*.webp
+)
+
+if [[ "${#inputs[@]}" -eq 0 ]]; then
+  echo "generate-wallpaper-crops: no source images found in $originals_dir" >&2
+  exit 1
+fi
+
+for input in "${inputs[@]}"; do
+  name="$(basename "$input")"
+  stem="${name%.*}"
+  output="$output_dir/$stem.png"
+
+  ffmpeg -hide_banner -loglevel error -y \
+    -i "$input" \
+    -vf "scale=${width}:${height}:force_original_aspect_ratio=increase:flags=lanczos,crop=${width}:${height}" \
+    -frames:v 1 \
+    -compression_level 9 \
+    "$output"
+
+  echo "$output"
+done
