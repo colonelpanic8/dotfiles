@@ -99,13 +99,18 @@
     # Hyprland and plugins from official flakes for proper plugin compatibility
     hyprland = {
       url = "git+https://github.com/hyprwm/Hyprland?submodules=1";
+      inputs.hyprutils.follows = "hyprutils";
     };
 
     aquamarine.follows = "hyprland/aquamarine";
     hyprcursor.follows = "hyprland/hyprcursor";
     hyprgraphics.follows = "hyprland/hyprgraphics";
     hyprlang.follows = "hyprland/hyprlang";
-    hyprutils.follows = "hyprland/hyprutils";
+    hyprutils = {
+      url = "github:colonelpanic8/hyprutils/codex/spring-elapsed-time";
+      inputs.nixpkgs.follows = "nixpkgs";
+      inputs.systems.follows = "systems";
+    };
 
     hyprNStack = {
       url = "github:colonelpanic8/hyprNStack?ref=codex/hyprnstack-combined";

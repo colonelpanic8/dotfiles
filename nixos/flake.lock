@@ -836,7 +836,9 @@
         "hyprland-guiutils": "hyprland-guiutils",
         "hyprland-protocols": "hyprland-protocols",
         "hyprlang": "hyprlang",
-        "hyprutils": "hyprutils",
+        "hyprutils": [
+          "hyprutils"
+        ],
         "hyprwayland-scanner": "hyprwayland-scanner",
         "hyprwire": "hyprwire",
         "nixpkgs": "nixpkgs_2",
@@ -1036,24 +1038,23 @@
     "hyprutils": {
       "inputs": {
         "nixpkgs": [
-          "hyprland",
           "nixpkgs"
         ],
         "systems": [
-          "hyprland",
           "systems"
         ]
       },
       "locked": {
-        "lastModified": 1778234770,
-        "narHash": "sha256-jAcsogZwWMfXT9MfXxZzkwliAqIuZUV0p71h6Ba9ReE=",
-        "owner": "hyprwm",
+        "lastModified": 1778880019,
+        "narHash": "sha256-F+WD0eVQoUFV6WtsFjPn9vsYzGwrCwjkrJAzEBPciM0=",
+        "owner": "colonelpanic8",
         "repo": "hyprutils",
-        "rev": "a2dbd8a4cc51f7cbe4224732668392bb1aa79df2",
+        "rev": "8597dd96de4791e7c52d33b608c7191c7e8def03",
         "type": "github"
       },
       "original": {
-        "owner": "hyprwm",
+        "owner": "colonelpanic8",
+        "ref": "codex/spring-elapsed-time",
         "repo": "hyprutils",
         "type": "github"
       }
@@ -1695,10 +1696,7 @@
           "hyprlang"
         ],
         "hyprscratch": "hyprscratch",
-        "hyprutils": [
-          "hyprland",
-          "hyprutils"
-        ],
+        "hyprutils": "hyprutils",
         "hyprwinview": "hyprwinview",
         "hyprwobbly": "hyprwobbly",
         "imalison-taffybar": "imalison-taffybar",
