@@ -2,8 +2,75 @@ local M = {}
 
 function M.setup(ctx)
   local _ENV = ctx
+  local file_chooser_title_rule = "^(Open File|Open Files|Save File|Save Files|Save As|Select File|Select Files|Choose File|Choose Files|File Upload|Upload File|Upload Files|Select Folder|Choose Folder|Open Folder|Save Folder)$"
+
   local function plugin_path(env_name, default)
     return os.getenv(env_name) or default
+  end
+
+  local function lower_string(value)
+    return string.lower(tostring(value or ""))
+  end
+
+  local function title_indicates_file_chooser(title)
+    title = lower_string(title)
+    if title == "" then
+      return false
+    end
+
+    for _, exact in ipairs({
+      "open file",
+      "open files",
+      "save file",
+      "save files",
+      "save as",
+      "select file",
+      "select files",
+      "choose file",
+      "choose files",
+      "file upload",
+      "upload file",
+      "upload files",
+      "select folder",
+      "choose folder",
+      "open folder",
+      "save folder",
+    }) do
+      if title == exact then
+        return true
+      end
+    end
+
+    return title:find("file chooser", 1, true) ~= nil
+      or title:find("file picker", 1, true) ~= nil
+  end
+
+  local function is_file_chooser_window(window)
+    return window
+      and (title_indicates_file_chooser(window.title) or title_indicates_file_chooser(window.initial_title))
+  end
+
+  local function raise_file_chooser_window(window)
+    if verify_config or not is_file_chooser_window(window) then
+      return
+    end
+
+    local selector = window_selector(window)
+    if not selector then
+      return
+    end
+
+    dispatch(hl.dsp.window.float({ action = "enable", window = selector }))
+    dispatch(hl.dsp.window.center({ window = selector }))
+    dispatch(hl.dsp.focus({ window = selector }))
+    dispatch(hl.dsp.window.bring_to_top({ window = selector }))
+  end
+
+  local function raise_file_chooser_window_later(window, timeout)
+    hl.timer(function()
+      local refreshed = window and window.address and hl.get_window(window_selector(window)) or window
+      raise_file_chooser_window(refreshed)
+    end, { timeout = timeout or 50, type = "oneshot" })
   end
 
   if enable_nstack and not verify_config then
@@ -255,8 +322,14 @@ function M.setup(ctx)
 
     hl.window_rule({ match = { class = "^()$", title = "^()$" }, float = true })
     hl.window_rule({ match = { title = "^(Picture-in-Picture)$" }, float = true })
-    hl.window_rule({ match = { title = "^(Open File)$" }, float = true })
-    hl.window_rule({ match = { title = "^(Save File)$" }, float = true })
+    hl.window_rule({
+      name = "file-chooser-dialogs",
+      match = { title = file_chooser_title_rule },
+      float = true,
+      center = true,
+      focus_on_activate = true,
+      stay_focused = true,
+    })
     hl.window_rule({ match = { title = "^(Confirm)$" }, float = true })
 
     for index, match in ipairs({
@@ -317,6 +390,9 @@ function M.setup(ctx)
   ctx.apply_hyprglass_config = apply_hyprglass_config
   ctx.apply_hyprwobbly_config = apply_hyprwobbly_config
   ctx.apply_visual_performance_mode = apply_visual_performance_mode
+  ctx.is_file_chooser_window = is_file_chooser_window
+  ctx.raise_file_chooser_window = raise_file_chooser_window
+  ctx.raise_file_chooser_window_later = raise_file_chooser_window_later
   ctx.toggle_visual_performance_mode = toggle_visual_performance_mode
 end
 

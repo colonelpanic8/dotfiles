@@ -87,6 +87,10 @@ function M.setup(ctx)
   hl.on("window.open", adopt_matching_scratchpad_window)
   hl.on("window.class", adopt_matching_scratchpad_window)
   hl.on("window.title", adopt_matching_scratchpad_window)
+
+  hl.on("window.open", raise_file_chooser_window_later)
+  hl.on("window.class", raise_file_chooser_window_later)
+  hl.on("window.title", raise_file_chooser_window_later)
 end
 
 return M

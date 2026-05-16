@@ -77,6 +77,7 @@ function M.setup(ctx)
 
   local function scratchpad_window_matches(window, def)
     return window
+      and not (type(is_file_chooser_window) == "function" and is_file_chooser_window(window))
       and lower_contains_any(window.class, def.classes or def.class)
       and lower_contains(window.title, def.title)
   end
