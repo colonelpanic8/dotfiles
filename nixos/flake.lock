@@ -1021,11 +1021,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1779002277,
-        "narHash": "sha256-oQDNfzO84RBHUbKDqz02pTNFr/B24JQz6GeK7/bdIUQ=",
+        "lastModified": 1779007997,
+        "narHash": "sha256-gA5d8SJizZCjq2QhaAc7Swuhgj9o71zp+SNE9uxyoXE=",
         "owner": "colonelpanic8",
         "repo": "hyprutils",
-        "rev": "bb894701ee7b75033a30643d26bf5b9f288fad63",
+        "rev": "4911471b2c3cf75bc62c904776a90915eaa02bf7",
         "type": "github"
       },
       "original": {
