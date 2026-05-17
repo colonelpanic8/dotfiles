@@ -332,14 +332,14 @@ function M.setup(ctx)
       center = true,
       decorate = false,
       no_shadow = true,
-      xray = true,
+      xray = false,
     })
     hl.layer_rule({
       name = "rofi-glass-layer",
       match = { namespace = "^(rofi)$" },
       blur = true,
       ignore_alpha = 0.05,
-      xray = true,
+      xray = false,
     })
     hl.window_rule({
       name = "file-chooser-dialogs",
