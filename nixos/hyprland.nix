@@ -62,7 +62,7 @@
         printf '%s\n' \
           '#!${pkgs.runtimeShell}' \
           '${cleanupStaleGraphicalSession}' \
-          'exec ${pkgs.uwsm}/bin/uwsm start -e -D Hyprland hyprland.desktop' \
+          'exec ${pkgs.uwsm}/bin/uwsm start -g -1 -e -D Hyprland hyprland.desktop' \
           > "$out/bin/start-hyprland-uwsm-clean"
         chmod +x "$out/bin/start-hyprland-uwsm-clean"
 

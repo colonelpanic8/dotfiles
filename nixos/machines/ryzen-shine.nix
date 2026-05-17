@@ -72,9 +72,6 @@
 
   hardware.enableRedistributableFirmware = true;
 
-  networking.interfaces.enp5s0.useDHCP = true;
-  networking.interfaces.wlp4s0.useDHCP = true;
-
   boot.initrd.availableKernelModules = ["nvme" "xhci_pci" "ahci" "usb_storage" "usbhid" "sd_mod"];
 
   hardware.nvidia.modesetting.enable = true;
