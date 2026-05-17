@@ -1,6 +1,6 @@
 configuration {
 	bw: 0;
-	padding: 50;
+	padding: 0;
 	show-icons: true;
 	terminal: "alacritty";
 	sidebar-mode: false;
@@ -9,4 +9,4 @@ configuration {
 	dpi: 0;
 }
 
-@theme "colorful/style_7.rasi"
+@theme "apple-frost.rasi"

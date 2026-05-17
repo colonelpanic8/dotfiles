@@ -124,8 +124,8 @@ function M.setup(ctx)
       rounding = 5,
       blur = {
         enabled = true,
-        size = 3,
-        passes = 1,
+        size = 8,
+        passes = 3,
       },
       active_opacity = 1.0,
       inactive_opacity = 0.9,
@@ -325,6 +325,22 @@ function M.setup(ctx)
 
     hl.window_rule({ match = { class = "^()$", title = "^()$" }, float = true })
     hl.window_rule({ match = { title = "^(Picture-in-Picture)$" }, float = true })
+    hl.window_rule({
+      name = "rofi-glass-window",
+      match = { class = "^(rofi)$" },
+      float = true,
+      center = true,
+      decorate = false,
+      no_shadow = true,
+      xray = true,
+    })
+    hl.layer_rule({
+      name = "rofi-glass-layer",
+      match = { namespace = "^(rofi)$" },
+      blur = true,
+      ignore_alpha = 0.05,
+      xray = true,
+    })
     hl.window_rule({
       name = "file-chooser-dialogs",
       match = { title = file_chooser_title_rule },

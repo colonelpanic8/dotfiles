@@ -1,0 +1,133 @@
+configuration {
+    font: "Roboto 12";
+    show-icons: true;
+    icon-theme: "Papirus";
+    display-drun: "Search";
+    display-run: "Run";
+    display-window: "Windows";
+    drun-display-format: "{name}";
+    disable-history: false;
+    sidebar-mode: false;
+}
+
+* {
+    bg:              #00000000;
+    backdrop:        #0b102026;
+    panel:           #00000000;
+    control:         #ffffffe0;
+    candidate:       #18203372;
+    candidate-active:#2430489c;
+    text:            #111827ff;
+    text-muted:      #667085ff;
+    text-on-dark:    #f8fafcff;
+    text-dark-muted: #d0d6e0ff;
+    accent:          #007affff;
+    accent-soft:     #d8eaffcc;
+    border:          #ffffff96;
+    hairline:        #cfd6df70;
+}
+
+window {
+    transparency: "real";
+    location: center;
+    anchor: center;
+    width: 100%;
+    height: 100%;
+    background-color: @backdrop;
+    text-color: @text;
+    border: 0px;
+    border-radius: 0px;
+}
+
+mainbox {
+    background-color: @panel;
+    children: [ inputbar, listview ];
+    spacing: 10px;
+    padding: 0px;
+    margin: 8% 30% 8% 30%;
+    border: 0px;
+    border-radius: 0px;
+}
+
+inputbar {
+    background-color: @control;
+    text-color: @text;
+    children: [ prompt, entry ];
+    border: 1px;
+    border-color: @hairline;
+    border-radius: 18px;
+    padding: 13px 15px;
+    spacing: 8px;
+}
+
+prompt {
+    enabled: true;
+    background-color: @bg;
+    text-color: @accent;
+    font: "Roboto 12";
+}
+
+entry {
+    background-color: @bg;
+    text-color: @text;
+    placeholder-color: @text-muted;
+    placeholder: "";
+    cursor: text;
+    expand: true;
+}
+
+listview {
+    background-color: @bg;
+    columns: 1;
+    lines: 10;
+    spacing: 5px;
+    cycle: false;
+    dynamic: true;
+    layout: vertical;
+    scrollbar: false;
+}
+
+element {
+    background-color: @candidate;
+    text-color: @text-on-dark;
+    orientation: horizontal;
+    border-radius: 14px;
+    padding: 9px 11px;
+    spacing: 10px;
+}
+
+element-icon {
+    background-color: @bg;
+    text-color: inherit;
+    size: 24px;
+    vertical-align: 0.5;
+}
+
+element-text {
+    background-color: @bg;
+    text-color: inherit;
+    vertical-align: 0.5;
+    horizontal-align: 0;
+}
+
+element selected {
+    background-color: @candidate-active;
+    text-color: @text-on-dark;
+    border: 1px;
+    border-color: @border;
+}
+
+element selected element-text {
+    text-color: @text-on-dark;
+}
+
+message {
+    background-color: @candidate;
+    border-radius: 14px;
+    padding: 10px;
+}
+
+textbox {
+    background-color: @bg;
+    text-color: @text-dark-muted;
+}
