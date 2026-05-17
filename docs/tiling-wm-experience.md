@@ -332,6 +332,7 @@ Required behavior:
   follows it. This is the target replacement for the older `Super+Shift+h`
   binding.
 - `Hyper+e` focuses the next empty workspace.
+- `Hyper+1` toggles inactive-window opacity reduction for the focused window.
 - `Hyper+5` swaps the current workspace with a selected workspace.
 - `Hyper+g` gathers windows of the focused class onto the current workspace.
 

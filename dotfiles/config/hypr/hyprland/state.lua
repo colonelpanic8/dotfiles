@@ -42,6 +42,7 @@ return {
     [monocle_layout] = "Monocle",
   },
   minimized_workspace = "special:minimized",
+  inactive_opacity_override_tag = "no-inactive-opacity",
   tabbed_group_restore_workspace_prefix = "special:tabbed-monocle-restore-",
   current_layout = columns_layout,
   enable_nstack = true,

@@ -403,6 +403,10 @@ function M.setup(ctx)
       border_size = 2,
       border_color = "rgba(edb443ff) rgba(ff4d5dcc)",
     })
+    hl.window_rule({
+      match = { tag = inactive_opacity_override_tag },
+      opacity = "1.0 override 1.0 override 1.0 override",
+    })
   end
 
   ctx.apply_rules = apply_rules

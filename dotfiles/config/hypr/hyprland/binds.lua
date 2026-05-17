@@ -243,6 +243,7 @@ function M.setup(ctx)
       move_to_next_empty_workspace(false)
     end, desc("Move window to next empty workspace"))
     bind(main_mod .. " + apostrophe", focus_next_class, desc("Focus next window class"))
+    bind(hyper .. " + 1", toggle_inactive_opacity_for_active_window, desc("Toggle inactive opacity reduction for active window"))
     bind(mod_alt .. " + W", show_active_window_info, desc("Show active window info"))
   end
 

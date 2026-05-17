@@ -355,6 +355,34 @@ function M.setup(ctx)
     })
   end
 
+  local function window_has_tag(window, tag)
+    for _, value in ipairs((window and window.tags) or {}) do
+      if tostring(value):gsub("%*$", "") == tag then
+        return true
+      end
+    end
+
+    return false
+  end
+
+  local function toggle_inactive_opacity_for_active_window()
+    local window = hl.get_active_window()
+    local selector = window_selector(window)
+    if not selector then
+      return
+    end
+
+    local disabling_reduction = not window_has_tag(window, inactive_opacity_override_tag)
+    dispatch(hl.dsp.window.tag({ tag = inactive_opacity_override_tag, window = selector }))
+    hl.notification.create({
+      text = "Inactive opacity reduction: " .. (disabling_reduction and "off for window" or "on for window"),
+      duration = 1600,
+      icon = notification_icons.info,
+      color = "rgba(edb443ff)",
+      font_size = 13,
+    })
+  end
+
   local function raise_or_spawn(class_fragment, command)
     local fragment = string.lower(class_fragment)
     for _, window in ipairs(hl.get_windows()) do
@@ -462,6 +490,7 @@ function M.setup(ctx)
   ctx.gather_focused_class = gather_focused_class
   ctx.focus_next_class = focus_next_class
   ctx.show_active_window_info = show_active_window_info
+  ctx.toggle_inactive_opacity_for_active_window = toggle_inactive_opacity_for_active_window
   ctx.raise_or_spawn = raise_or_spawn
   ctx.minimize_active_window = minimize_active_window
   ctx.restore_last_minimized = restore_last_minimized
