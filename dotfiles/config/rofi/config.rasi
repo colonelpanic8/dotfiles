@@ -4,7 +4,7 @@ configuration {
 	show-icons: true;
 	terminal: "alacritty";
 	sidebar-mode: false;
-	fullscreen: true;
+	fullscreen: false;
 	/* Let rofi auto-detect DPI under Wayland/Xwayland to avoid blurry scaling. */
 	dpi: 0;
 }

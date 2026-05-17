@@ -163,7 +163,7 @@ spawnBindings =
   , key (hyper .|. shift) xK_l (spawnAction "loginctl lock-session")
   , key hyper xK_k (spawnAction "rofi_kill_process.sh")
   , key (hyper .|. shift) xK_k (spawnAction "rofi_kill_all.sh")
-  , key hyper xK_r (spawnAction "rofi-systemd")
+  , key hyper xK_r (spawnAction "rofi_systemd_mono")
   , key hyper xK_9 (spawnAction "start_synergy.sh")
   , key hyper xK_backslash (spawnAction "$HOME/dotfiles/dotfiles/lib/functions/mpg341cx_input toggle")
   , key hyper xK_i (spawnAction "rofi_select_input.hs")

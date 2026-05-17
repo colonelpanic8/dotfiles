@@ -31,20 +31,21 @@ window {
     transparency: "real";
     location: center;
     anchor: center;
-    width: 100%;
-    height: 100%;
+    width: 72%;
+    height: 78%;
     background-color: @backdrop;
     text-color: @text;
-    border: 0px;
-    border-radius: 0px;
+    border: 1px;
+    border-color: @border;
+    border-radius: 18px;
 }
 
 mainbox {
     background-color: @panel;
     children: [ inputbar, listview ];
     spacing: 10px;
-    padding: 0px;
-    margin: 8% 30% 8% 30%;
+    padding: 88px 136px;
+    margin: 0px;
     border: 0px;
     border-radius: 0px;
 }
@@ -80,7 +81,10 @@ listview {
     background-color: @bg;
     columns: 1;
     lines: 10;
-    spacing: 5px;
+    spacing: 0px;
+    border: 1px;
+    border-color: @border;
+    border-radius: 14px;
     cycle: false;
     dynamic: true;
     layout: vertical;
@@ -88,11 +92,13 @@ listview {
 }
 
 element {
-    background-color: @candidate;
+    background-color: @bg;
     text-color: @text-on-dark;
     orientation: horizontal;
-    border-radius: 14px;
-    padding: 9px 11px;
+    border: 0px 0px 1px 0px;
+    border-color: @hairline;
+    border-radius: 0px;
+    padding: 11px 11px;
     spacing: 10px;
 }
 
@@ -111,9 +117,8 @@ element-text {
 }
 
 element selected {
-    background-color: @candidate-active;
+    background-color: @candidate;
     text-color: @text-on-dark;
-    border: 1px;
     border-color: @border;
 }
 

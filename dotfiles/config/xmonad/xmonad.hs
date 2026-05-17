@@ -1077,7 +1077,7 @@ addKeys conf@XConfig { modMask = modm } =
     , ((hyper, xK_l), selectLayout)
     , ((hyper, xK_k), spawn "rofi_kill_process.sh")
     , ((hyper .|. shiftMask, xK_k), spawn "rofi_kill_all.sh")
-    , ((hyper, xK_r), spawn "rofi-systemd")
+    , ((hyper, xK_r), spawn "rofi_systemd_mono")
     , ((hyper, xK_9), spawn "start_synergy.sh")
     , ((hyper, xK_slash), spawn "toggle_taffybar")
     , ((hyper, xK_backslash), spawn "$HOME/dotfiles/dotfiles/lib/functions/mpg341cx_input toggle")

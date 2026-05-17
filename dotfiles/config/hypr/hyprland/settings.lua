@@ -124,7 +124,7 @@ function M.setup(ctx)
       rounding = 5,
       blur = {
         enabled = true,
-        size = 8,
+        size = 7,
         passes = 3,
       },
       active_opacity = 1.0,
