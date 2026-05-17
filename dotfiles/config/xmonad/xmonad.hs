@@ -108,7 +108,7 @@ myConfig = def
   , borderWidth = 0
   , logHook
   = updatePointer (0.5, 0.5) (0, 0)
-  <> toggleFadeInactiveLogHook 0.9
+  <> toggleFadeInactiveLogHook 0.65
   <> workspaceHistoryHook
   <> setWorkspaceNames
   <> logHook def
