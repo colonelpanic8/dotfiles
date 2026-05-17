@@ -173,8 +173,18 @@ function M.setup(ctx)
   hl.curve("smoothOut", { type = "bezier", points = { { 0.36, 1 }, { 0.3, 1 } } })
   hl.curve("smoothInOut", { type = "bezier", points = { { 0.42, 0 }, { 0.58, 1 } } })
   hl.curve("linear", { type = "bezier", points = { { 0, 0 }, { 1, 1 } } })
-  hl.curve("workspaceSpring", { type = "spring", mass = 2.4, stiffness = 38, dampening = 8 })
-  hl.curve("windowSpring", { type = "spring", mass = 2.5, stiffness = 40, dampening = 10 })
+  local spring_time_scale = 5
+  local function spring_curve(mass, stiffness, dampening)
+    return {
+      type = "spring",
+      mass = mass,
+      stiffness = stiffness * spring_time_scale * spring_time_scale,
+      dampening = dampening * spring_time_scale,
+    }
+  end
+
+  hl.curve("workspaceSpring", spring_curve(2.4, 38, 8))
+  hl.curve("windowSpring", spring_curve(2.5, 40, 10))
 
   local animations = {
     { leaf = "global", enabled = true, speed = 8, bezier = "default" },

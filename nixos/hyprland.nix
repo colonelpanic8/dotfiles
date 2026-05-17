@@ -324,6 +324,7 @@
         hyprRofiWindow
         hyprShellUi
         jq
+        lua5_4 # lua/luac for validating Hyprland Lua config
       ]
       ++ hyprlandPluginPackages;
   };
