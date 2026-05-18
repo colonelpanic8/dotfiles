@@ -1,0 +1,59 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+app_id=codex-desktop
+state_dir="${XDG_STATE_HOME:-$HOME/.local/state}/$app_id"
+runtime_dir="${XDG_RUNTIME_DIR:-$state_dir}/$app_id"
+pid_file="$state_dir/app.pid"
+socket_path="$runtime_dir/launch-action.sock"
+
+pid_is_alive() {
+    local pid="${1:-}"
+
+    case "$pid" in
+        ""|*[!0-9]*) return 1 ;;
+    esac
+
+    [ -e "/proc/$pid/exe" ]
+}
+
+running_app_is_alive() {
+    local pid
+
+    [ -r "$pid_file" ] || return 1
+    pid="$(cat "$pid_file" 2>/dev/null || true)"
+    pid_is_alive "$pid"
+}
+
+send_launch_action() {
+    [ -S "$socket_path" ] || return 1
+    running_app_is_alive || return 1
+
+    python3 - "$socket_path" "$@" <<'PY'
+import json
+import socket
+import sys
+
+socket_path = sys.argv[1]
+argv = sys.argv[2:]
+payload = json.dumps({"argv": argv}, separators=(",", ":")).encode("utf-8") + b"\n"
+
+client = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
+client.settimeout(1.0)
+try:
+    client.connect(socket_path)
+    client.sendall(payload)
+    response = client.recv(16)
+finally:
+    client.close()
+
+if not response.startswith(b"ok"):
+    raise SystemExit(1)
+PY
+}
+
+if send_launch_action "$@"; then
+    exit 0
+fi
+
+exec codex-desktop "$@"

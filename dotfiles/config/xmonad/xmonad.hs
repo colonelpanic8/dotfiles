@@ -251,7 +251,7 @@ virtualClasses =
 
 -- Commands
 
-codexCommand = "codex-desktop"
+codexCommand = "codex_desktop_scratchpad"
 elementCommand = "element-desktop"
 emacsCommand = "emacsclient -c"
 htopCommand = "ghostty --title=htop -e htop"

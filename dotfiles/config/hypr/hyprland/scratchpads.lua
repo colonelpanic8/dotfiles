@@ -13,7 +13,7 @@ function M.setup(ctx)
 
   scratchpads = {
     codex = {
-      command = "codex-desktop",
+      command = "codex_desktop_scratchpad",
       class = "codex-desktop",
     },
     htop = {
