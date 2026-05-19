@@ -15,6 +15,8 @@ configuration {
     backdrop:        #0b102026;
     panel:           #00000000;
     control:         #ffffffe0;
+    candidate-soft:  #0b102018;
+    candidate-frost: #ffffff12;
     candidate:       #18203372;
     candidate-active:#2430489c;
     text:            #111827ff;
@@ -53,6 +55,7 @@ mainbox {
 inputbar {
     background-color: @control;
     text-color: @text;
+    height: 50px;
     children: [ prompt, entry ];
     border: 1px;
     border-color: @hairline;
@@ -80,11 +83,10 @@ entry {
 listview {
     background-color: @bg;
     columns: 1;
-    lines: 10;
+    lines: 17;
     spacing: 0px;
-    border: 1px;
-    border-color: @border;
-    border-radius: 14px;
+    border: 0px;
+    border-radius: 0px 0px 14px 14px;
     cycle: false;
     dynamic: true;
     layout: vertical;
@@ -95,11 +97,22 @@ element {
     background-color: @bg;
     text-color: @text-on-dark;
     orientation: horizontal;
-    border: 0px 0px 1px 0px;
-    border-color: @hairline;
+    border: 0px;
     border-radius: 0px;
-    padding: 11px 11px;
+    /*
+     * Rofi percentages are monitor-relative. Derive padding from:
+     * 78% - 176px mainbox padding - 50px inputbar - 10px spacing - 2px border.
+     */
+    padding: calc( ( 78% - 238px ) / 34 - 12px ) 11px calc( ( 78% - 238px ) / 34 - 13px ) 11px;
     spacing: 10px;
+}
+
+element normal {
+    background-color: @candidate-soft;
+}
+
+element alternate {
+    background-color: @candidate-frost;
 }
 
 element-icon {
@@ -119,7 +132,7 @@ element-text {
 element selected {
     background-color: @candidate;
     text-color: @text-on-dark;
-    border-color: @border;
+    border: 0px;
 }
 
 element selected element-text {
