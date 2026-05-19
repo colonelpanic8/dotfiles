@@ -72,6 +72,12 @@ in
           recursive = true;
         };
 
+        home.file."chrome-favicon-dbus-extension" = {
+          source = extensionSource;
+          recursive = true;
+          force = true;
+        };
+
         xdg.configFile."google-chrome/External Extensions/${extensionId}.json".text = builtins.toJSON {
           external_crx = "${extensionPackage}/chrome-favicon-dbus.crx";
           external_version = extensionVersion;

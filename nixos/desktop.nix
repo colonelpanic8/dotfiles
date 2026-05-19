@@ -18,13 +18,20 @@
       exec ${../dotfiles/lib/bin/desktop_shell_ui} "$@"
     '';
   };
+  chromeCommandLineFlags =
+    [
+      "--disable-features=WaylandFractionalScaleV1"
+    ]
+    ++ lib.optionals config.myModules.chrome-favicon-dbus.enable [
+      "--load-extension=${inputs.chrome-favicon-dbus}/extension"
+    ];
   googleChrome = pkgs.symlinkJoin {
     name = "google-chrome-wayland-fractional-scale-workaround";
     paths = [pkgs.google-chrome];
     nativeBuildInputs = [pkgs.makeWrapper];
     postBuild = ''
       wrapProgram "$out/bin/google-chrome-stable" \
-        --add-flags "--disable-features=WaylandFractionalScaleV1"
+        ${lib.concatMapStringsSep " \\\n        " (flag: "--add-flags ${lib.escapeShellArg flag}") chromeCommandLineFlags}
 
       desktop_file="$out/share/applications/google-chrome.desktop"
       rm "$desktop_file"
