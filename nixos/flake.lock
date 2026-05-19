@@ -745,11 +745,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1779210010,
-        "narHash": "sha256-7ITE0GtAUbk3zTj38iioBvgyNAIAbeQ7Ji47v+YQ7QM=",
+        "lastModified": 1779225912,
+        "narHash": "sha256-GcapnSjC3NvJ2jkl4aFlPIxL4mWwvK12sfIQvXHqE0g=",
         "owner": "colonelpanic8",
         "repo": "hyprexpo",
-        "rev": "57143f3025d8631ff6327e55b084fbdf4a22f5f1",
+        "rev": "76348a0412e51aceb44f51471fee6a6fee92dee9",
         "type": "github"
       },
       "original": {
