@@ -26,13 +26,7 @@
     hyprlang = inputs.hyprlang.packages.${system}.hyprlang;
     hyprutils = inputs.hyprutils.packages.${system}.hyprutils;
   };
-  hyprexpo = inputs.hyprexpo.packages.${system}.hyprexpo.overrideAttrs (old: {
-    patches =
-      (old.patches or [])
-      ++ [
-        ../packages/hyprexpo-drag-windows.patch
-      ];
-  });
+  hyprexpo = inputs.hyprexpo.packages.${system}.hyprexpo;
   tangledConfig = dotfilesOrgApi.org-agenda-custom-config;
 
   # Import container build logic

@@ -745,15 +745,16 @@
         ]
       },
       "locked": {
-        "lastModified": 1778877751,
-        "narHash": "sha256-EWGEw2wvflMzTcKxo5cLYL5Cw4KqYGpRl1nQGp2VpiM=",
+        "lastModified": 1779186703,
+        "narHash": "sha256-LQ3zJ2AZdCszTztOJOHueAU+LHQbbFTM5ci0Dc6GpIc=",
         "owner": "colonelpanic8",
         "repo": "hyprexpo",
-        "rev": "bb53c1d9ed635ad88eaf5db287692d9babef9963",
+        "rev": "3460ba85c3507a191c5623c0a67b96b4c8f689cb",
         "type": "github"
       },
       "original": {
         "owner": "colonelpanic8",
+        "ref": "codex/window-drag-workspaces",
         "repo": "hyprexpo",
         "type": "github"
       }

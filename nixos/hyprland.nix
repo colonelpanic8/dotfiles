@@ -106,13 +106,7 @@
         ./packages/hyprwobbly-safe-geometry-and-idle-timer.patch
       ];
   });
-  hyprexpo = inputs.hyprexpo.packages.${system}.hyprexpo.overrideAttrs (old: {
-    patches =
-      (old.patches or [])
-      ++ [
-        ./packages/hyprexpo-drag-windows.patch
-      ];
-  });
+  hyprexpo = inputs.hyprexpo.packages.${system}.hyprexpo;
   hyprlandPluginPackages =
     [
       inputs.hyprNStack.packages.${system}.hyprNStack
