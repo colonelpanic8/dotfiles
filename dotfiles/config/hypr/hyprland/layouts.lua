@@ -138,7 +138,6 @@ function M.setup(ctx)
   end
 
   local function set_layout(layout)
-    local workspace = active_workspace()
     workspace_layouts[workspace_key()] = layout
     current_layout = layout
     hl.config({ general = { layout = hyprland_layout(layout) } })
