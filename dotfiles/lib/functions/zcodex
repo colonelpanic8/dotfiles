@@ -17,7 +17,7 @@ function zcodex {
         fi
     fi
 
-    ZRW_NAME=codex zrw codex --dangerously-bypass-approvals-and-sandbox "$@"
+    ZRW_NAME=codex zrw codex --dangerously-bypass-approvals-and-sandbox --cd "$PWD" "$@"
 }
 
 zcodex "$@"

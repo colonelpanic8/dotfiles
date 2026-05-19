@@ -13,7 +13,7 @@ keybinds {
     tmux {
         // Ctrl-b C: start a Codex pane from the current zellij tab.
         bind "C" {
-            Run "codex" "--dangerously-bypass-approvals-and-sandbox" {
+            Run "codex" "--dangerously-bypass-approvals-and-sandbox" "--cd" "." {
                 name "codex"
             }
             SwitchToMode "Normal"

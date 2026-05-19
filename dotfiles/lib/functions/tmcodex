@@ -16,7 +16,7 @@ function tmcodex {
             printf '%s\n' "$PWD" >>"$history_file" 2>/dev/null || true
         fi
     fi
-    trw codex --dangerously-bypass-approvals-and-sandbox "$@"
+    trw codex --dangerously-bypass-approvals-and-sandbox --cd "$PWD" "$@"
 }
 
 tmcodex "$@"
