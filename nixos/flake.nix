@@ -121,7 +121,7 @@
     };
 
     hyprexpo = {
-      url = "github:colonelpanic8/hyprexpo?ref=codex/window-drag-workspaces";
+      url = "github:colonelpanic8/hyprexpo";
       inputs.hyprland.follows = "hyprland";
     };
 
