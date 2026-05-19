@@ -9,7 +9,14 @@
   system = pkgs.stdenv.hostPlatform.system;
   hyprlandPackage = config.programs.hyprland.package;
   taffybarPackage = inputs.imalison-taffybar.defaultPackage.${system};
+  taffybarRuntimePath = lib.makeBinPath [
+    pkgs.coreutils
+    pkgs.curl
+    pkgs.jq
+    pkgs.systemd
+  ];
   taffybarStart = pkgs.writeShellScript "taffybar-start" ''
+    export PATH="${taffybarRuntimePath}:/run/current-system/sw/bin:''${PATH:-}"
     runtime_dir="''${XDG_RUNTIME_DIR:-/run/user/$(${pkgs.coreutils}/bin/id -u)}"
 
     find_hyprland_instance() {
