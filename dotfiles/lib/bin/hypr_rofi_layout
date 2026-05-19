@@ -36,6 +36,7 @@ ensure_hyprland_instance
 layouts=(
   "nStack	Columns"
   "master	Large main"
+  "quadrants	Quadrants"
   "grid	Grid"
   "monocle	Monocle"
 )
@@ -64,7 +65,7 @@ for entry in "${layouts[@]}"; do
   label="${entry#*$'\t'}"
 
   if [[ "$label" == "$selection" ]]; then
-    hyprctl dispatch "_G.im_hyprland_set_layout(\"$layout\")" >/dev/null
+    hyprctl -q eval "_G.im_hyprland_set_layout(\"$layout\")"
     exit 0
   fi
 done

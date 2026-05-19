@@ -2,6 +2,7 @@ local shell_ui_command = "hypr_shell_ui"
 local columns_layout = "nStack"
 local large_main_layout = "master"
 local grid_layout = "grid"
+local quadrants_layout = "quadrants"
 local monocle_layout = "monocle"
 
 return {
@@ -33,11 +34,13 @@ return {
   columns_layout = columns_layout,
   large_main_layout = large_main_layout,
   grid_layout = grid_layout,
+  quadrants_layout = quadrants_layout,
   monocle_layout = monocle_layout,
-  layout_cycle = { columns_layout, large_main_layout, grid_layout },
+  layout_cycle = { columns_layout, large_main_layout, quadrants_layout, grid_layout },
   layout_names = {
     [columns_layout] = "Columns",
     [large_main_layout] = "Large main",
+    [quadrants_layout] = "Quadrants",
     [grid_layout] = "Grid",
     [monocle_layout] = "Monocle",
   },
@@ -56,6 +59,7 @@ return {
   workspace_layouts = {},
   minimized_windows = {},
   tabbed_workspace_groups = {},
+  quadrants_arranging = false,
   window_picker_mode = nil,
   window_picker_candidates = {},
   stack_update_timer = nil,

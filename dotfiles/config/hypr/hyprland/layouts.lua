@@ -2,18 +2,63 @@ local M = {}
 
 function M.setup(ctx)
   local _ENV = ctx
+  local configure_quadrants_master
+  local focus_workspace
+  local move_window_to_workspace
+
   local function is_nstack_layout(layout)
     return layout == columns_layout or layout == grid_layout
   end
 
   local function hyprland_layout(layout)
-    if layout == grid_layout then
+    if layout == quadrants_layout then
+      return large_main_layout
+    elseif layout == grid_layout then
       return columns_layout
     end
     return layout
   end
 
+  configure_quadrants_master = function()
+    if quadrants_arranging or current_layout ~= quadrants_layout then
+      return
+    end
+
+    local workspace = active_workspace()
+    if not is_normal_workspace(workspace) then
+      return
+    end
+
+    local windows = tiled_windows(workspace)
+    if #windows == 0 then
+      return
+    end
+
+    sort_windows_by_visual_position(windows)
+
+    quadrants_arranging = true
+    dispatch(hl.dsp.focus({ window = window_selector(windows[1]) }))
+    dispatch(hl.dsp.layout("orientationleft"))
+    dispatch(hl.dsp.layout("mfact exact 0.5"))
+
+    for _ = 1, #windows do
+      dispatch(hl.dsp.layout("removemaster"))
+    end
+
+    if #windows >= 3 then
+      dispatch(hl.dsp.layout("addmaster"))
+    end
+
+    quadrants_arranging = false
+    focus_workspace(workspace.id)
+  end
+
   local function update_nstack_count()
+    if current_layout == quadrants_layout then
+      configure_quadrants_master()
+      return
+    end
+
     if not enable_nstack or not is_nstack_layout(current_layout) then
       return
     end
@@ -93,12 +138,16 @@ function M.setup(ctx)
   end
 
   local function set_layout(layout)
+    local workspace = active_workspace()
     workspace_layouts[workspace_key()] = layout
     current_layout = layout
     hl.config({ general = { layout = hyprland_layout(layout) } })
     write_layout_state()
 
-    if is_nstack_layout(layout) then
+    if layout == quadrants_layout then
+      dismiss_monocle_notice()
+      schedule_nstack_count_update()
+    elseif is_nstack_layout(layout) then
       dismiss_monocle_notice()
       schedule_nstack_count_update()
     else
@@ -127,7 +176,10 @@ function M.setup(ctx)
     hl.config({ general = { layout = hyprland_layout(current_layout) } })
     write_layout_state()
 
-    if is_nstack_layout(current_layout) then
+    if current_layout == quadrants_layout then
+      dismiss_monocle_notice()
+      schedule_nstack_count_update()
+    elseif is_nstack_layout(current_layout) then
       dismiss_monocle_notice()
       schedule_nstack_count_update()
     else
@@ -210,11 +262,11 @@ function M.setup(ctx)
     dispatch(hl.dsp.window.swap({ direction = direction }))
   end
 
-  local function focus_workspace(workspace_id)
+  focus_workspace = function(workspace_id)
     dispatch(hl.dsp.focus({ workspace = tostring(workspace_id), on_current_monitor = true }))
   end
 
-  local function move_window_to_workspace(workspace_id, follow, window)
+  move_window_to_workspace = function(workspace_id, follow, window)
     local target_window = window or hl.get_active_window()
     local target_selector = window_selector(target_window)
     dispatch(hl.dsp.window.move({ workspace = tostring(workspace_id), follow = false, window = target_selector }))
@@ -556,6 +608,7 @@ function M.setup(ctx)
 
   ctx.is_nstack_layout = is_nstack_layout
   ctx.hyprland_layout = hyprland_layout
+  ctx.configure_quadrants_master = configure_quadrants_master
   ctx.update_nstack_count = update_nstack_count
   ctx.schedule_nstack_count_update = schedule_nstack_count_update
   ctx.dismiss_monocle_notice = dismiss_monocle_notice
