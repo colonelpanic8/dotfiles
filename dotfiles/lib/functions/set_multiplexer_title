@@ -10,16 +10,50 @@ set_multiplexer_title() {
 
     title="$*"
 
+    tmux_socket=""
+    tmux_session_target=""
+    tmux_window_target=""
+    tmux_pane_target=""
+
     if [ -n "${TMUX:-}" ]; then
         multiplexer="tmux"
+        tmux_socket=${TMUX%%,*}
     elif [ -n "${ZELLIJ:-}" ]; then
         multiplexer="zellij"
     else
-        return 0
+        tmux_socket="/tmp/tmux-$(id -u)/default"
+        if command -v tmux >/dev/null 2>&1 && [ -S "$tmux_socket" ]; then
+            # Newer Codex tool calls may be serviced by an app-server process
+            # that is not a child of the visible tmux pane, so TMUX is absent.
+            # Recover the likely pane by matching attached Codex panes in the
+            # current working directory and taking the newest matching client.
+            tmux_client=$(
+                tmux -S "$tmux_socket" list-clients -F '#{session_id}|#{window_id}|#{pane_id}|#{pane_pid}|#{pane_current_path}|#{pane_current_command}' 2>/dev/null |
+                    awk -F '|' -v cwd="$PWD" '$5 == cwd && ($6 == "codex" || $6 == "codex-raw") { line = $0 } END { print line }'
+            )
+            if [ -n "$tmux_client" ]; then
+                multiplexer="tmux"
+                tmux_session_target=${tmux_client%%|*}
+                rest=${tmux_client#*|}
+                tmux_window_target=${rest%%|*}
+                rest=${rest#*|}
+                tmux_pane_target=${rest%%|*}
+            else
+                return 0
+            fi
+        else
+            return 0
+        fi
     fi
 
     state_dir="${HOME}/.agents/state"
-    state_file="$state_dir/${multiplexer}-title"
+    state_key="$multiplexer"
+    if [ -n "$tmux_pane_target" ]; then
+        state_key="${state_key}-${tmux_pane_target#%}"
+    elif [ -n "$tmux_socket" ]; then
+        state_key="${state_key}-$(printf '%s' "$tmux_socket" | tr '/.,:' '____')"
+    fi
+    state_file="$state_dir/${state_key}-title"
     mkdir -p "$state_dir"
 
     if [ -f "$state_file" ]; then
@@ -30,7 +64,14 @@ set_multiplexer_title() {
     fi
 
     if [ "$multiplexer" = "tmux" ]; then
-        tmux rename-session "$title" \; rename-window "$title" \; select-pane -T "$title"
+        if [ -n "$tmux_pane_target" ]; then
+            tmux -S "$tmux_socket" \
+                rename-session -t "$tmux_session_target" "$title" \; \
+                rename-window -t "$tmux_window_target" "$title" \; \
+                select-pane -t "$tmux_pane_target" -T "$title"
+        else
+            tmux rename-session "$title" \; rename-window "$title" \; select-pane -T "$title"
+        fi
     else
         zellij action rename-session "$title" &&
             zellij action rename-tab "$title" &&
