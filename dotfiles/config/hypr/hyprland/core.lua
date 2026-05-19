@@ -216,6 +216,7 @@ function M.setup(ctx)
           keynav_wrap_h = 1,
           keynav_wrap_v = 1,
           keynav_reading_order = 0,
+          live_preview_follow_focus = 1,
           border_width = 2,
           border_color_current = "rgb(66ccff)",
           border_color_focus = "rgb(edb443)",
