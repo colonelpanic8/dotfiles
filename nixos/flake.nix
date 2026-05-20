@@ -237,7 +237,7 @@
     };
 
     codex-desktop-linux = {
-      url = "github:ilysenko/codex-desktop-linux/main";
+      url = "git+ssh://git@github.com/colonelpanic8/codex-desktop-linux.git?ref=codex/fix-bundled-backend-plugin-links";
       inputs = {
         nixpkgs.follows = "nixpkgs";
         flake-utils.follows = "flake-utils";
