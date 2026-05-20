@@ -51,6 +51,7 @@ makeEnable config "myModules.code" true {
           gnugrep
           gnused
           nix
+          nodejs
           openssh
         ];
         listen = "unix://";
