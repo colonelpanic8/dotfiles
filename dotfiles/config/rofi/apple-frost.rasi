@@ -19,6 +19,7 @@ configuration {
     candidate-frost: #ffffff12;
     candidate:       #18203372;
     candidate-active:#0a84ffd9;
+    candidate-line:  #ffffff16;
     text:            #111827ff;
     text-muted:      #667085ff;
     text-on-dark:    #f8fafcff;
@@ -97,8 +98,8 @@ element {
     background-color: @bg;
     text-color: @text-on-dark;
     orientation: horizontal;
-    border: 0px 0px 0px 4px;
-    border-color: #00000000;
+    border: 0px 0px 1px 0px;
+    border-color: @candidate-line;
     border-radius: 0px;
     /*
      * Rofi percentages are monitor-relative. Derive padding from:
@@ -113,7 +114,7 @@ element normal {
 }
 
 element alternate {
-    background-color: @candidate-frost;
+    background-color: @candidate-soft;
 }
 
 element-icon {
@@ -133,6 +134,7 @@ element-text {
 element selected {
     background-color: @candidate-active;
     text-color: @text-on-dark;
+    border: 0px 0px 1px 4px;
     border-color: @accent-soft;
 }
 
