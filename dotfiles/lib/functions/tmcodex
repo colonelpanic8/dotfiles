@@ -1,22 +1,76 @@
 #!/usr/bin/env sh
 
+function _tmcodex_expand_dir {
+    case "$1" in
+        "~")
+            printf '%s\n' "$HOME"
+            ;;
+        "~/"*)
+            printf '%s\n' "$HOME/${1#"~/"}"
+            ;;
+        *)
+            printf '%s\n' "$1"
+            ;;
+    esac
+}
+
+function _tmcodex_resolve_dir {
+    dir="$(_tmcodex_expand_dir "$1")"
+    if [ ! -d "$dir" ]; then
+        echo "tmcodex: directory not found: $1" >&2
+        return 1
+    fi
+
+    cd -- "$dir" && pwd -P
+}
+
 function tmcodex {
+    launch_dir="$PWD"
+
+    case "${1:-}" in
+        -C|--cd)
+            if [ -z "${2:-}" ]; then
+                echo "tmcodex: $1 requires a directory" >&2
+                return 2
+            fi
+            launch_dir="$2"
+            shift 2
+            ;;
+        --cd=*)
+            launch_dir="${1#--cd=}"
+            shift
+            ;;
+        *)
+            expanded_first_arg="$(_tmcodex_expand_dir "${1:-}")"
+            if [ -n "${1:-}" ] && [ -d "$expanded_first_arg" ]; then
+                launch_dir="$1"
+                shift
+            fi
+            ;;
+    esac
+
+    launch_dir="$(_tmcodex_resolve_dir "$launch_dir")" || return
+
     # Record launch directories so rofi_tmcodex can offer good defaults.
     state_dir="${XDG_STATE_HOME:-$HOME/.local/state}/rofi-tmcodex"
     history_file="$state_dir/dirs"
     mkdir -p "$state_dir" 2>/dev/null || true
-    if [ -d "$PWD" ]; then
+    if [ -d "$launch_dir" ]; then
         tmp="$(mktemp 2>/dev/null || true)"
         if [ -n "$tmp" ]; then
-            { printf '%s\n' "$PWD"; cat "$history_file" 2>/dev/null || true; } \
+            { printf '%s\n' "$launch_dir"; cat "$history_file" 2>/dev/null || true; } \
                 | awk 'NF && !seen[$0]++' \
                 | head -n 200 >"$tmp" 2>/dev/null || true
             mv -f "$tmp" "$history_file" 2>/dev/null || true
         else
-            printf '%s\n' "$PWD" >>"$history_file" 2>/dev/null || true
+            printf '%s\n' "$launch_dir" >>"$history_file" 2>/dev/null || true
         fi
     fi
-    trw codex --dangerously-bypass-approvals-and-sandbox --cd "$PWD" "$@"
+
+    (
+        cd -- "$launch_dir" || exit
+        trw codex --dangerously-bypass-approvals-and-sandbox --cd "$launch_dir" "$@"
+    )
 }
 
 tmcodex "$@"
