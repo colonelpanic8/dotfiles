@@ -24,6 +24,19 @@ function _tmcodex_resolve_dir {
     cd -- "$dir" && pwd -P
 }
 
+function _tmcodex_has_remote_arg {
+    while [ "$#" -gt 0 ]; do
+        case "$1" in
+            --remote|--remote=*)
+                return 0
+                ;;
+        esac
+        shift
+    done
+
+    return 1
+}
+
 function tmcodex {
     launch_dir="$PWD"
 
@@ -69,7 +82,11 @@ function tmcodex {
 
     (
         cd -- "$launch_dir" || exit
-        trw codex --dangerously-bypass-approvals-and-sandbox --cd "$launch_dir" "$@"
+        if _tmcodex_has_remote_arg "$@"; then
+            trw codex --dangerously-bypass-approvals-and-sandbox --cd "$launch_dir" "$@"
+        else
+            trw codex --remote "${TMCODEX_REMOTE:-unix://}" --dangerously-bypass-approvals-and-sandbox --cd "$launch_dir" "$@"
+        fi
     )
 }
 
