@@ -54,6 +54,11 @@
         mkdir -p "$out/bin" "$out/share/wayland-sessions"
         printf '%s\n' \
           '#!${pkgs.runtimeShell}' \
+          'nvidia_drm_device="/dev/dri/by-path/pci-0000:01:00.0-card"' \
+          'intel_drm_device="/dev/dri/by-path/pci-0000:00:02.0-card"' \
+          'if [ -e "$nvidia_drm_device" ] && [ -e "$intel_drm_device" ]; then' \
+          '  export AQ_DRM_DEVICES="$nvidia_drm_device:$intel_drm_device"' \
+          'fi' \
           'config_path="''${XDG_CONFIG_HOME:-$HOME/.config}/hypr/hyprland.lua"' \
           'exec "${package}/bin/start-hyprland" --path "${package}/bin/Hyprland" -- --config "$config_path" "$@"' \
           > "$out/bin/start-hyprland-lua"
