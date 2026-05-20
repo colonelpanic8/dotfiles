@@ -8,6 +8,65 @@ This document describes the tiling window manager experience I am targeting.
 - Important: expected for parity, but a rough first version is acceptable.
 - Nice: useful polish or compatibility.
 
+Priority describes the target experience, not implementation order. A first
+usable implementation may ship a smaller daily-driver subset as long as it does
+not choose designs that block required behavior later.
+
+## Implementation Phases
+
+Phase 1 should establish the core daily-driver loop:
+
+- Global numbered workspaces across monitors.
+- Dynamic equal-width columns and tabbed/fullscreen-style layout.
+- Directional window focus, directional movement, and directional monitor
+  focus.
+- Direct numbered workspace move/follow bindings.
+- Focus-follows-mouse and mouse-follows-focus.
+- Basic rofi launcher, terminal, close, reload, and session-exit bindings.
+- Basic status-bar workspace and focused-window state.
+
+Phase 2 should restore high-frequency workflow parity:
+
+- Per-monitor workspace history and history cycling.
+- Scratchpads.
+- Minimization.
+- Go-to-window, bring-window, and replace-window pickers.
+- Browser raise-or-spawn and class-aware gather workflows.
+- Status-bar window lists, class/title/icon metadata, and special-workspace
+  filtering.
+
+Phase 3 should add visual discovery and polish:
+
+- Visual window overview.
+- Visual workspace expose.
+- Overview go/bring/replace actions.
+- Smart gaps, smart borders, dimming, wallpaper, lock, screenshot, clipboard,
+  DDC/input switching, and other session utilities.
+
+## Terms and Semantics
+
+- First-class operation means the action has a direct command or binding. It
+  does not require opening a picker, manually moving focus, or chaining multiple
+  unrelated commands.
+- Preserving useful focus means the operation leaves keyboard focus in a
+  predictable place. Non-following moves keep focus on the source monitor or
+  source workspace. Following moves focus the moved window on its destination.
+- Directional focus uses visible window geometry when windows have distinct
+  rectangles. In tabbed or fullscreen-style layouts where geometry overlaps,
+  directional focus may use a stable logical order instead, but repeated
+  directional actions must cycle predictably through the windows.
+- Near-fullscreen scratchpads are centered floating windows large enough to
+  dominate the current monitor without taking compositor fullscreen state.
+- Robust scratchpad behavior means toggling a named scratchpad finds or
+  launches the intended app even when the app starts slowly, changes class or
+  title after launch, is minimized, or is currently on another workspace.
+- Approximate window position means enough geometry or ordering information for
+  status-bar window strips and expose-like previews. Pixel-perfect compositor
+  geometry is useful but not required.
+- Normal workspaces are the bounded user-facing workspaces. Special,
+  scratchpad, minimized, hidden, internal, and out-of-range workspaces are not
+  normal workspaces.
+
 ## Modifier Terminology
 
 - `Super` names the physical modifier key often labeled Windows, Command, GUI,
@@ -96,18 +155,10 @@ Required behavior:
 - Directional monitor focus is available.
 - Directional window movement between monitors is available.
 - Moving the focused window to an empty workspace on the monitor in a direction
-  remains required behavior, but it should not require an extra `Hyper`
-  modifier beyond `Shift`.
-- `Super+w/a/s/d` focuses windows directionally.
-- `Super+Shift+w/a/s/d` swaps or moves the focused window directionally.
-- `Super+Ctrl+w/a/s/d` moves the focused window to the monitor in that
-  direction while preserving useful focus.
-- `Super+Ctrl+Shift+w/a/s/d` moves the focused window to an empty workspace on
-  the monitor in that direction.
-- `Hyper+w/a/s/d` focuses monitors directionally.
-- `Hyper+Shift+w/a/s/d` swaps or moves windows between monitors directionally.
-- Directional focus in tabbed/fullscreen mode should cycle predictably through
-  windows even though their screen geometry overlaps.
+  is available.
+- Directional bindings are defined in the Binding Appendix. Required
+  directional actions must not depend on `Hyper+Ctrl`, because `Ctrl` may
+  already be part of the fallback `Hyper` chord.
 
 Important behavior:
 
@@ -329,8 +380,7 @@ Required behavior:
 - `Super+b` opens the bring-window picker.
 - `Super+Shift+b` opens the replace-window picker.
 - `Super+Shift+e` moves the focused window to the next empty workspace and
-  follows it. This is the target replacement for the older `Super+Shift+h`
-  binding.
+  follows it.
 - `Hyper+e` focuses the next empty workspace.
 - `Hyper+1` toggles inactive-window opacity reduction for the focused window.
 - `Hyper+5` swaps the current workspace with a selected workspace.
@@ -366,10 +416,10 @@ Required behavior:
 - `Super+Shift+w/a/s/d` swaps or moves the focused window directionally.
 - `Super+Ctrl+w/a/s/d` moves the focused window to the monitor in that
   direction while preserving useful focus.
+- `Super+Ctrl+Shift+w/a/s/d` moves the focused window to an empty workspace on
+  the monitor in that direction.
 - `Hyper+w/a/s/d` focuses monitors directionally.
 - `Hyper+Shift+w/a/s/d` swaps or moves windows between monitors directionally.
-- Moving the focused window to an empty workspace on the monitor in a direction
-  remains required behavior, but it should not require a `Hyper+Ctrl` binding.
 - `Super+z` focuses the next monitor.
 - `Super+Shift+z` moves the focused window to the next monitor.
 
@@ -435,3 +485,8 @@ Important behavior:
   compositor-appropriate implementation.
 - Session-destructive operations use shifted or otherwise harder-to-hit
   variants.
+
+## Migration Notes
+
+- `Super+Shift+e` is the target replacement for the older `Super+Shift+h`
+  move-to-next-empty-workspace-and-follow binding.
