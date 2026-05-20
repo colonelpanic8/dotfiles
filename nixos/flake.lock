@@ -137,16 +137,16 @@
         ]
       },
       "locked": {
-        "lastModified": 1779264129,
-        "narHash": "sha256-EaIYDtBeBz6CZBx0PG9VN/duaayuhh1tedAtcZofHgg=",
-        "ref": "codex/fix-bundled-backend-plugin-links",
-        "rev": "7ab590bc96cde82f98ee631d7e4cc0ecdddd035e",
-        "revCount": 591,
+        "lastModified": 1779310149,
+        "narHash": "sha256-5c8tAIOXwzhWWbceyMnA5xt/7kW+6vIs+uXtrxxv6ZI=",
+        "ref": "codex/pr260-nixos-service-module",
+        "rev": "fbb5222089f58539da8c3c94f0c42fbc820d18af",
+        "revCount": 606,
         "type": "git",
         "url": "ssh://git@github.com/colonelpanic8/codex-desktop-linux.git"
       },
       "original": {
-        "ref": "codex/fix-bundled-backend-plugin-links",
+        "ref": "codex/pr260-nixos-service-module",
         "type": "git",
         "url": "ssh://git@github.com/colonelpanic8/codex-desktop-linux.git"
       }

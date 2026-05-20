@@ -237,7 +237,7 @@
     };
 
     codex-desktop-linux = {
-      url = "git+ssh://git@github.com/colonelpanic8/codex-desktop-linux.git?ref=codex/fix-bundled-backend-plugin-links";
+      url = "git+ssh://git@github.com/colonelpanic8/codex-desktop-linux.git?ref=codex/pr260-nixos-service-module";
       inputs = {
         nixpkgs.follows = "nixpkgs";
         flake-utils.follows = "flake-utils";
@@ -288,22 +288,6 @@
       {
         url = "https://github.com/colonelpanic8/home-manager/commit/92f4b7aa5254f8bcddc9ef86e04ea5314410d10b.patch";
         hash = "sha256-RQl5daVpCqQi05l9QfTEz2PpQxmsv/HYnXrgXbqbwWk=";
-      }
-      {
-        url = "https://github.com/colonelpanic8/home-manager/commit/1e7a11991ae0149c0e3ba24c692200b2e7f94cbd.patch";
-        hash = "sha256-3Oni+4z11DbCvVZiJaKUv1UcnXRowCljvgU0QobWKkQ=";
-      }
-      {
-        url = "https://github.com/colonelpanic8/home-manager/commit/504ccee0f03033e2c762f6ee8f5a84b002e01ec7.patch";
-        hash = "sha256-3z7lWp8K54eiRnXPgGDeFwQ7/w6M38B3iKhL9UCrj9w=";
-      }
-      {
-        url = "https://github.com/colonelpanic8/home-manager/commit/a82a664a30f2f07cd300d8a2191d8046b7b5dfdd.patch";
-        hash = "sha256-qFdJB5AbQXJCl9xaapxgAOaPcU9V1rmnJXrI7Pjw1jE=";
-      }
-      {
-        url = "https://github.com/colonelpanic8/home-manager/commit/13cdadc023e4dfd7b42ef2362cfd0ba9f129fd21.patch";
-        hash = "sha256-HnSvZtQjI3eAhyENmQvBvKwlWPmDPcvHs2MyYg3u08s=";
       }
     ];
 

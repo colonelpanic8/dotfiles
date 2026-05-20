@@ -6,10 +6,6 @@
   makeEnable,
   ...
 }:
-let
-  codexDesktop =
-    inputs.codex-desktop-linux.packages.${pkgs.stdenv.hostPlatform.system}."codex-desktop-computer-use-ui-remote-mobile-control";
-in
 makeEnable config "myModules.code" true {
   programs.direnv = {
     enable = true;
@@ -24,6 +20,7 @@ makeEnable config "myModules.code" true {
   };
 
   home-manager.sharedModules = lib.mkIf config.myModules.desktop.enable [
+    inputs.codex-desktop-linux.homeManagerModules.default
     {
       home.sessionVariables.YDOTOOL_SOCKET = "/run/ydotoold/socket";
       systemd.user.sessionVariables.YDOTOOL_SOCKET = "/run/ydotoold/socket";
@@ -40,6 +37,12 @@ makeEnable config "myModules.code" true {
     programs.codex = {
       enable = true;
       package = pkgs.codex;
+    };
+
+    programs.codexDesktopLinux = {
+      enable = true;
+      computerUseUi.enable = true;
+      remoteMobileControl.enable = true;
       remoteControl = {
         enable = true;
         package = pkgs.codex;
@@ -65,7 +68,6 @@ makeEnable config "myModules.code" true {
       antigravity
       claude-code
       codex
-      codexDesktop
       gemini-cli
       happy-coder
       opencode
