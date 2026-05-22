@@ -107,7 +107,7 @@
     hyprgraphics.follows = "hyprland/hyprgraphics";
     hyprlang.follows = "hyprland/hyprlang";
     hyprutils = {
-      url = "github:colonelpanic8/hyprutils/codex/spring-elapsed-time";
+      url = "github:hyprwm/hyprutils";
       inputs.nixpkgs.follows = "nixpkgs";
       inputs.systems.follows = "systems";
     };

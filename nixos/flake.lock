@@ -1021,16 +1021,15 @@
         ]
       },
       "locked": {
-        "lastModified": 1779308261,
+        "lastModified": 1779475241,
         "narHash": "sha256-Nw4DN0A5krWNcPBvuWe5Gz2yuxsUUPiDgtu6SVPJQeU=",
-        "owner": "colonelpanic8",
+        "owner": "hyprwm",
         "repo": "hyprutils",
-        "rev": "a746e27373b81a0bd3f5c90853f45aad0369862a",
+        "rev": "3cd3972b2ee658a14d2610d8494e09259e530124",
         "type": "github"
       },
       "original": {
-        "owner": "colonelpanic8",
-        "ref": "codex/spring-elapsed-time",
+        "owner": "hyprwm",
         "repo": "hyprutils",
         "type": "github"
       }
