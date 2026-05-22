@@ -10,8 +10,8 @@ module TaffybarConfig.ChromeFavicons
   )
 where
 
-import Control.Exception (IOException, try)
-import Control.Monad (unless, when)
+import Control.Exception (IOException, SomeException, try)
+import Control.Monad (unless, void)
 import Control.Monad.IO.Class (liftIO)
 import Data.Char (isAlphaNum)
 import Data.Int (Int32)
@@ -24,6 +24,7 @@ import System.Directory
   ( createDirectoryIfMissing,
     doesFileExist,
     getFileSize,
+    removeFile,
     renameFile,
   )
 import System.Environment.XDG.BaseDir (getUserCacheDir)
@@ -204,10 +205,11 @@ loadCachedFavicon size url = do
   path <- ensureCachedFavicon url
   case path of
     Just faviconPath ->
-      try @IOException (Gdk.pixbufNewFromFileAtScale faviconPath size size True) >>= \case
-        Right (Just pixbuf) -> pure (Just pixbuf)
-        Right Nothing -> pure Nothing
-        Left _ -> pure Nothing
+      loadPixbuf faviconPath size >>= \case
+        Just pixbuf -> pure (Just pixbuf)
+        Nothing -> do
+          removeCachedFavicon faviconPath
+          pure Nothing
     Nothing -> pure Nothing
 
 ensureCachedFavicon :: Text -> IO (Maybe FilePath)
@@ -254,21 +256,28 @@ faviconExtension url =
 downloadFavicon :: Text -> FilePath -> IO ()
 downloadFavicon url path = do
   let tmp = path <> ".tmp"
-  (code, _, _) <-
-    readProcessWithExitCode
-      "curl"
-      [ "-fsSL",
-        "--max-time",
-        "10",
-        "--retry",
-        "1",
-        "-o",
-        tmp,
-        T.unpack url
-      ]
-      ""
-  when (code == ExitSuccess) $
-    renameFile tmp path
+  removeCachedFavicon tmp
+  result <-
+    try @IOException $
+      readProcessWithExitCode
+        "curl"
+        [ "-fsSL",
+          "--max-time",
+          "10",
+          "--retry",
+          "1",
+          "-o",
+          tmp,
+          T.unpack url
+        ]
+        ""
+  case result of
+    Right (ExitSuccess, _, _) -> do
+      mPixbuf <- loadPixbuf tmp 1
+      case mPixbuf of
+        Just _ -> renameFile tmp path
+        Nothing -> removeCachedFavicon tmp
+    _ -> removeCachedFavicon tmp
 
 nonEmptyFileExists :: FilePath -> IO Bool
 nonEmptyFileExists path = do
@@ -318,3 +327,13 @@ composeChromeFavicon cfg size favicon chromeIcon = do
 scalePixbuf :: Int32 -> Gdk.Pixbuf -> IO Gdk.Pixbuf
 scalePixbuf size pixbuf =
   fromMaybe pixbuf <$> Gdk.pixbufScaleSimple pixbuf size size GdkPixbuf.InterpTypeBilinear
+
+loadPixbuf :: FilePath -> Int32 -> IO (Maybe Gdk.Pixbuf)
+loadPixbuf path size =
+  try @SomeException (Gdk.pixbufNewFromFileAtScale path size size True) >>= \case
+    Right pixbuf -> pure pixbuf
+    Left _ -> pure Nothing
+
+removeCachedFavicon :: FilePath -> IO ()
+removeCachedFavicon path =
+  void $ try @IOException (removeFile path)
