@@ -18,7 +18,7 @@
     ++ (map (machineName: "${machineName}.local") machineNames)
     ++ extraManagedSshHosts;
   managedSshHostCasePattern = lib.concatStringsSep "|" managedSshHostPatterns;
-  multiplexerAliases = import ../shared/multiplexer-aliases.nix;
+  multiplexerAliases = import ../nix-shared/multiplexer-aliases.nix;
 in
   with lib; {
     options = {
