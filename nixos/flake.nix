@@ -242,7 +242,7 @@
     };
 
     codex-desktop-linux = {
-      url = "git+ssh://git@github.com/colonelpanic8/codex-desktop-linux.git?ref=main";
+      url = "github:ilysenko/codex-desktop-linux/main";
       inputs = {
         nixpkgs.follows = "nixpkgs";
         flake-utils.follows = "flake-utils";

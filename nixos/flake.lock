@@ -137,18 +137,18 @@
         ]
       },
       "locked": {
-        "lastModified": 1779449036,
-        "narHash": "sha256-bnALXI9ORnHoEQKW2wismk6myop7qQw96Gugv+tGcYg=",
-        "ref": "main",
-        "rev": "e6335d837bbf7e051620e36f8e7458d8c8d6d06c",
-        "revCount": 657,
-        "type": "git",
-        "url": "ssh://git@github.com/colonelpanic8/codex-desktop-linux.git"
+        "lastModified": 1779476458,
+        "narHash": "sha256-EXQ5PP0JXfGXAJSgFP0uEa5a6IoL8UaLPBXc5Bh56tA=",
+        "owner": "ilysenko",
+        "repo": "codex-desktop-linux",
+        "rev": "bd7a871e8cb06935f09834ecd619074e5ede62a4",
+        "type": "github"
       },
       "original": {
+        "owner": "ilysenko",
         "ref": "main",
-        "type": "git",
-        "url": "ssh://git@github.com/colonelpanic8/codex-desktop-linux.git"
+        "repo": "codex-desktop-linux",
+        "type": "github"
       }
     },
     "coqui-tts-streamer": {
