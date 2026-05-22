@@ -8,7 +8,20 @@
 }: let
   system = pkgs.stdenv.hostPlatform.system;
   hyprlandInput = inputs.hyprland;
-  baseHyprlandPackage = hyprlandInput.packages.${system}.hyprland;
+  avoidHyprlandGccIce = package:
+    package.override {
+      stdenv = pkgs.clangStdenv;
+    };
+  hyprlandGccIceOverlay = final: prev: {
+    hyprland = prev.hyprland.override {
+      stdenv = final.clangStdenv;
+    };
+    hyprland-unwrapped = final.hyprland.override {wrapRuntimeDeps = false;};
+    hyprland-with-tests = final.hyprland.override {withTests = true;};
+  };
+  # GCC 15.2 ICEs while compiling Hyprland 0.55 on this pin. Keep the
+  # Hyprland/plugin pin set intact and build Hyprland itself with Clang.
+  baseHyprlandPackage = avoidHyprlandGccIce hyprlandInput.packages.${system}.hyprland;
   cleanupStaleGraphicalSession = pkgs.writeShellScript "cleanup-stale-graphical-session" ''
     set -u
 
@@ -104,20 +117,74 @@
     hyprlang = inputs.hyprlang.packages.${system}.hyprlang;
     hyprutils = inputs.hyprutils.packages.${system}.hyprutils;
   };
-  hyprwobbly = inputs.hyprwobbly.packages.${system}.hyprwobbly.overrideAttrs (old: {
+  hyprwobbly = (pkgs.callPackage "${inputs.hyprwobbly}/default.nix" {}).overrideAttrs (old: {
     patches =
       (old.patches or [])
       ++ [
         ./packages/hyprwobbly-safe-geometry-and-idle-timer.patch
       ];
   });
-  hyprexpo = inputs.hyprexpo.packages.${system}.hyprexpo;
+  hyprexpo = pkgs.callPackage "${inputs.hyprexpo}/default.nix" {};
+  hyprwinview = pkgs.hyprlandPlugins.mkHyprlandPlugin {
+    pluginName = "hyprwinview";
+    version = "0.1.0";
+    src = inputs.hyprwinview;
+    inherit (baseHyprlandPackage) nativeBuildInputs;
+    buildInputs = [pkgs.librsvg];
+    meta = {
+      description = "A window overview plugin for Hyprland";
+      homepage = "https://github.com/colonelpanic8/hyprwinview";
+      license = lib.licenses.bsd3;
+      platforms = lib.platforms.linux;
+    };
+  };
+  hyprWorkspaceHistory = pkgs.hyprlandPlugins.mkHyprlandPlugin {
+    pluginName = "hypr-workspace-history";
+    version = "0.1.0";
+    src = inputs.hypr-workspace-history;
+    inherit (baseHyprlandPackage) nativeBuildInputs;
+    meta = {
+      description = "Workspace history cycling plugin for Hyprland";
+      homepage = "https://github.com/colonelpanic8/hypr-workspace-history";
+      license = lib.licenses.bsd3;
+      platforms = lib.platforms.linux;
+    };
+  };
+  hyprNStack = pkgs.stdenv.mkDerivation {
+    pname = "hyprNStack";
+    version = "0-unstable-${inputs.hyprNStack.shortRev or "dirty"}";
+
+    src = inputs.hyprNStack;
+
+    strictDeps = true;
+    nativeBuildInputs = [
+      pkgs.pkg-config
+    ];
+    buildInputs = [
+      baseHyprlandPackage
+    ] ++ baseHyprlandPackage.buildInputs;
+
+    dontStrip = true;
+
+    installPhase = ''
+      runHook preInstall
+      install -Dm755 nstackLayoutPlugin.so "$out/lib/libhyprNStack.so"
+      runHook postInstall
+    '';
+
+    meta = {
+      description = "N-stack layout plugin for Hyprland";
+      homepage = "https://github.com/zakk4223/hyprNStack";
+      license = lib.licenses.bsd3;
+      platforms = baseHyprlandPackage.meta.platforms;
+    };
+  };
   hyprlandPluginPackages =
     [
-      inputs.hyprNStack.packages.${system}.hyprNStack
+      hyprNStack
       hyprexpo
-      inputs.hyprwinview.packages.${system}.hyprwinview
-      inputs.hypr-workspace-history.packages.${system}.hypr-workspace-history
+      hyprwinview
+      hyprWorkspaceHistory
       hyprwobbly
     ]
     ++ lib.optionals enableHyprglass [hyprglass];
@@ -211,6 +278,11 @@
   };
   enabledModule = makeEnable config "myModules.hyprland" true {
     myModules.taffybar.enable = lib.mkDefault true;
+
+    nixpkgs.overlays = [
+      hyprlandInput.overlays.hyprland-packages
+      hyprlandGccIceOverlay
+    ];
 
     # Needed for hyprlock authentication without PAM fallback warnings.
     security.pam.services.hyprlock = {};
