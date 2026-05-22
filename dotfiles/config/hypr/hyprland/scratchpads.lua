@@ -15,6 +15,7 @@ function M.setup(ctx)
     codex = {
       command = "codex_desktop_scratchpad",
       class = "codex-desktop",
+      allow_tiling = true,
     },
     htop = {
       command = "alacritty --class htop-scratch --title htop -e htop",
@@ -82,9 +83,13 @@ function M.setup(ctx)
       and lower_contains(window.title, def.title)
   end
 
+  local function tiled_scratchpad_is_normal_window(window, def)
+    return def.allow_tiling and window and window.floating == false
+  end
+
   local function is_scratchpad_window(window)
     for _, def in pairs(scratchpads) do
-      if scratchpad_window_matches(window, def) then
+      if scratchpad_window_matches(window, def) and not tiled_scratchpad_is_normal_window(window, def) then
         return true
       end
     end
@@ -275,6 +280,23 @@ function M.setup(ctx)
     }
   end
 
+  local function should_apply_scratchpad_geometry(name, window, opts)
+    local def = scratchpads[name]
+    if not def then
+      return false
+    end
+
+    return (opts and opts.force_geometry) or def.dropdown or not tiled_scratchpad_is_normal_window(window, def)
+  end
+
+  local function refreshed_window(window)
+    if not window or not window.address or type(hl.get_window) ~= "function" then
+      return window
+    end
+
+    return hl.get_window(window_selector(window)) or window
+  end
+
   local function apply_scratchpad_geometry(name, window, target_monitor, position)
     local def = scratchpads[name]
     if not def or not window then
@@ -298,9 +320,12 @@ function M.setup(ctx)
     end
   end
 
-  local function schedule_scratchpad_geometry(name, window, target_monitor, position, timeout)
+  local function schedule_scratchpad_geometry(name, window, target_monitor, position, timeout, opts)
     hl.timer(function()
-      apply_scratchpad_geometry(name, window, target_monitor, position)
+      local current_window = refreshed_window(window)
+      if should_apply_scratchpad_geometry(name, current_window, opts) then
+        apply_scratchpad_geometry(name, current_window, target_monitor, position)
+      end
     end, { timeout = timeout or 50, type = "oneshot" })
   end
 
@@ -332,7 +357,7 @@ function M.setup(ctx)
     move_window_to_workspace(scratchpad_workspace(name), false, window)
   end
 
-  local function show_scratchpad_window(name, window, workspace, target_monitor)
+  local function show_scratchpad_window(name, window, workspace, target_monitor, opts)
     workspace = workspace or active_workspace()
     if not workspace then
       return
@@ -346,8 +371,8 @@ function M.setup(ctx)
     dispatch(hl.dsp.focus({ window = window_selector(window) }))
     if scratchpads[name] and scratchpads[name].dropdown then
       animate_dropdown_scratchpad_down(name, window, target_monitor or hl.get_active_monitor())
-    else
-      schedule_scratchpad_geometry(name, window, target_monitor or hl.get_active_monitor())
+    elseif should_apply_scratchpad_geometry(name, window, opts) then
+      schedule_scratchpad_geometry(name, window, target_monitor or hl.get_active_monitor(), nil, nil, opts)
     end
   end
 
@@ -362,7 +387,12 @@ function M.setup(ctx)
     local windows = {}
     for _, window in ipairs(hl.get_windows()) do
       local name = matching_scratchpad_name(window)
-      if name and name ~= except_name and scratchpad_is_visible(window) then
+      if
+        name
+        and name ~= except_name
+        and scratchpad_is_visible(window)
+        and not tiled_scratchpad_is_normal_window(window, scratchpads[name])
+      then
         windows[#windows + 1] = {
           name = name,
           window = window,
@@ -404,7 +434,9 @@ function M.setup(ctx)
         if scratchpad_pending[name] then
           local pending = scratchpad_pending[name]
           scratchpad_pending[name] = nil
-          show_scratchpad_window(name, window, pending.workspace or active_workspace(), pending.monitor or hl.get_active_monitor())
+          show_scratchpad_window(name, window, pending.workspace or active_workspace(), pending.monitor or hl.get_active_monitor(), {
+            force_geometry = true,
+          })
         elseif scratchpad_is_visible(window) then
           schedule_scratchpad_geometry(name, window, hl.get_active_monitor())
         end
@@ -458,6 +490,7 @@ function M.setup(ctx)
   ctx.lower_contains = lower_contains
   ctx.lower_contains_any = lower_contains_any
   ctx.scratchpad_window_matches = scratchpad_window_matches
+  ctx.tiled_scratchpad_is_normal_window = tiled_scratchpad_is_normal_window
   ctx.is_scratchpad_window = is_scratchpad_window
   ctx.matching_scratchpad_name = matching_scratchpad_name
   ctx.scratchpad_workspace = scratchpad_workspace
@@ -470,6 +503,8 @@ function M.setup(ctx)
   ctx.refresh_monitor_reserved_cache = refresh_monitor_reserved_cache
   ctx.monitor_workarea = monitor_workarea
   ctx.scratchpad_geometry = scratchpad_geometry
+  ctx.should_apply_scratchpad_geometry = should_apply_scratchpad_geometry
+  ctx.refreshed_window = refreshed_window
   ctx.matching_scratchpad_windows = matching_scratchpad_windows
   ctx.apply_scratchpad_geometry = apply_scratchpad_geometry
   ctx.schedule_scratchpad_geometry = schedule_scratchpad_geometry

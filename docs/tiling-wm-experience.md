@@ -259,8 +259,10 @@ Required behavior:
 - A named scratchpad exists for transmission.
 - A named scratchpad exists for volume.
 - Scratchpads appear near-fullscreen and centered by default.
+- The codex scratchpad can be tiled into the normal workspace when desired,
+  while retaining its summon/dismiss toggle.
 - Toggling a scratchpad deactivates fullscreen/tabbed state first.
-- Scratchpads are hidden from normal workspace and window listings.
+- Floating scratchpads are hidden from normal workspace and window listings.
 
 Important behavior:
 
