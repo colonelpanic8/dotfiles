@@ -22,6 +22,9 @@
   # GCC 15.2 ICEs while compiling Hyprland 0.55 on this pin. Keep the
   # Hyprland/plugin pin set intact and build Hyprland itself with Clang.
   baseHyprlandPackage = avoidHyprlandGccIce hyprlandInput.packages.${system}.hyprland;
+  hyprlandPluginsForBase = pkgs.callPackage "${pkgs.path}/pkgs/applications/window-managers/hyprwm/hyprland-plugins" {
+    hyprland = baseHyprlandPackage;
+  };
   cleanupStaleGraphicalSession = pkgs.writeShellScript "cleanup-stale-graphical-session" ''
     set -u
 
@@ -124,8 +127,11 @@
         ./packages/hyprwobbly-safe-geometry-and-idle-timer.patch
       ];
   });
-  hyprexpo = pkgs.callPackage "${inputs.hyprexpo}/default.nix" {};
-  hyprwinview = pkgs.hyprlandPlugins.mkHyprlandPlugin {
+  hyprexpo = pkgs.callPackage "${inputs.hyprexpo}/default.nix" {
+    hyprland = baseHyprlandPackage;
+    hyprlandPlugins = hyprlandPluginsForBase;
+  };
+  hyprwinview = hyprlandPluginsForBase.mkHyprlandPlugin {
     pluginName = "hyprwinview";
     version = "0.1.0";
     src = inputs.hyprwinview;
@@ -138,7 +144,7 @@
       platforms = lib.platforms.linux;
     };
   };
-  hyprWorkspaceHistory = pkgs.hyprlandPlugins.mkHyprlandPlugin {
+  hyprWorkspaceHistory = hyprlandPluginsForBase.mkHyprlandPlugin {
     pluginName = "hypr-workspace-history";
     version = "0.1.0";
     src = inputs.hypr-workspace-history;
