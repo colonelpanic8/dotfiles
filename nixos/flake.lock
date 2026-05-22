@@ -1635,6 +1635,27 @@
         "url": "ssh://gitea@dev.railbird.ai:1123/railbird/secrets-flake.git"
       }
     },
+    "rockpload": {
+      "inputs": {
+        "nixpkgs": [
+          "nixpkgs"
+        ]
+      },
+      "locked": {
+        "lastModified": 1779438779,
+        "narHash": "sha256-GiSwsFc3k7IwH+ohzLPiEKn1Nzr5q/Llhjy4teX58rs=",
+        "owner": "colonelpanic8",
+        "repo": "rockpload",
+        "rev": "f5d068610d8a850794d7ab12956e5eae0931ea88",
+        "type": "github"
+      },
+      "original": {
+        "owner": "colonelpanic8",
+        "ref": "colonelpanic/add-nix-flake",
+        "repo": "rockpload",
+        "type": "github"
+      }
+    },
     "root": {
       "inputs": {
         "agenix": "agenix",
@@ -1685,6 +1706,7 @@
         "notifications-tray-icon": "notifications-tray-icon",
         "org-agenda-api": "org-agenda-api",
         "railbird-secrets": "railbird-secrets",
+        "rockpload": "rockpload",
         "systems": "systems_3",
         "vscode-server": "vscode-server",
         "xmonad": "xmonad_2",

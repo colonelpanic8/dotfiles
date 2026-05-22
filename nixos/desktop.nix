@@ -86,6 +86,14 @@
 
     services.gnome.gnome-keyring.enable = true;
 
+    home-manager.users.imalison = {
+      imports = [
+        inputs.rockpload.homeManagerModules.default
+      ];
+
+      services.rockpload.enable = true;
+    };
+
     home-manager.sharedModules = [
       {
         imports = [./dunst.nix];
