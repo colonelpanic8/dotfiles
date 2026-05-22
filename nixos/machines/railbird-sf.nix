@@ -98,6 +98,21 @@
     };
   };
 
+  services.nginx.virtualHosts."rocket-sense.duckdns.org" = {
+    enableACME = true;
+    forceSSL = true;
+    serverAliases = ["rbsf.tplinkdns.com"];
+    locations."/" = {
+      proxyPass = "http://127.0.0.1:30080";
+      proxyWebsockets = true;
+      extraConfig = ''
+        client_max_body_size 200m;
+        proxy_read_timeout 300s;
+        proxy_connect_timeout 75s;
+      '';
+    };
+  };
+
   # Open the standard Syncthing sync/discovery ports on the host firewall.
   # Note: you may still need router/NAT port-forwards for inbound access from the internet.
   services.syncthing.openDefaultPorts = true;
