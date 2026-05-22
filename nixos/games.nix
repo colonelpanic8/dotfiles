@@ -50,6 +50,10 @@ in
       repairXwaylandSocket
       steamWithXwaylandSocketRepair
       heroic
+      legendary-gl
+      protontricks
+      steam-run
+      winetricks
     ];
     hardware.xone.enable = true;
   }

@@ -1,0 +1,241 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+app_name="${HEROIC_ROCKET_LEAGUE_APP_NAME:-Sugar}"
+heroic_config_dir="${HEROIC_CONFIG_DIR:-$HOME/.config/heroic}"
+game_config="${HEROIC_ROCKET_LEAGUE_CONFIG:-$heroic_config_dir/GamesConfig/$app_name.json}"
+installed_json="${HEROIC_LEGENDARY_INSTALLED_JSON:-$heroic_config_dir/legendaryConfig/legendary/installed.json}"
+download_url="${BAKKESMOD_SETUP_URL:-https://github.com/bakkesmodorg/BakkesModInjectorCpp/releases/latest/download/BakkesModSetup.zip}"
+cache_dir="${XDG_CACHE_HOME:-$HOME/.cache}/rocket-league-bakkesmod"
+
+die() {
+  printf 'rocket-league-bakkesmod: %s\n' "$*" >&2
+  exit 1
+}
+
+need_command() {
+  command -v "$1" >/dev/null 2>&1 || die "missing required command: $1"
+}
+
+jq_value() {
+  local filter="$1"
+  local file="$2"
+  jq -er "$filter // empty" "$file" 2>/dev/null || true
+}
+
+heroic_value() {
+  local filter="$1"
+  jq_value ".$app_name.$filter" "$game_config"
+}
+
+installed_value() {
+  jq_value ".$app_name.$1" "$installed_json"
+}
+
+require_heroic_metadata() {
+  [ -f "$game_config" ] || die "missing Heroic game config: $game_config"
+  [ -f "$installed_json" ] || die "missing Legendary installed metadata: $installed_json"
+}
+
+rocket_league_dir() {
+  local value
+  value="${ROCKET_LEAGUE_DIR:-}"
+  if [ -z "$value" ]; then
+    value="$(installed_value install_path)"
+  fi
+  if [ -z "$value" ]; then
+    value="$HOME/Games/Heroic/rocketleague"
+  fi
+  printf '%s\n' "$value"
+}
+
+rocket_league_prefix() {
+  local value
+  value="${ROCKET_LEAGUE_PREFIX:-}"
+  if [ -z "$value" ]; then
+    value="$(heroic_value winePrefix)"
+  fi
+  [ -n "$value" ] || die "could not determine Heroic wine prefix from $game_config"
+  printf '%s\n' "$value"
+}
+
+rocket_league_proton() {
+  local value
+  value="${ROCKET_LEAGUE_PROTON:-}"
+  if [ -z "$value" ]; then
+    value="$(heroic_value 'wineVersion.bin')"
+  fi
+  [ -n "$value" ] || die "could not determine Heroic Proton binary from $game_config"
+  printf '%s\n' "$value"
+}
+
+ensure_paths() {
+  need_command jq
+  require_heroic_metadata
+
+  rl_dir="$(rocket_league_dir)"
+  rl_prefix="$(rocket_league_prefix)"
+  proton_bin="$(rocket_league_proton)"
+
+  [ -d "$rl_dir" ] || die "Rocket League install directory does not exist: $rl_dir"
+  [ -d "$rl_prefix" ] || die "Rocket League prefix does not exist: $rl_prefix"
+  [ -x "$proton_bin" ] || die "Proton binary is not executable: $proton_bin"
+}
+
+proton_run() {
+  export STEAM_COMPAT_DATA_PATH="$rl_prefix"
+  export STEAM_COMPAT_CLIENT_INSTALL_PATH="${STEAM_COMPAT_CLIENT_INSTALL_PATH:-$HOME/.steam/root}"
+  export WINEESYNC="${WINEESYNC:-1}"
+  export WINEFSYNC="${WINEFSYNC:-1}"
+
+  if command -v steam-run >/dev/null 2>&1; then
+    steam-run "$proton_bin" run "$@"
+  else
+    NIXPKGS_ALLOW_UNFREE=1 nix run --impure nixpkgs#steam-run -- "$proton_bin" run "$@"
+  fi
+}
+
+bakkesmod_exe() {
+  local candidates=(
+    "$rl_prefix/pfx/drive_c/Program Files/BakkesMod/BakkesMod.exe"
+    "$rl_prefix/drive_c/Program Files/BakkesMod/BakkesMod.exe"
+    "$rl_prefix/pfx/drive_c/users/$USER/AppData/Roaming/bakkesmod/bakkesmod/BakkesMod.exe"
+    "$rl_prefix/drive_c/users/$USER/AppData/Roaming/bakkesmod/bakkesmod/BakkesMod.exe"
+  )
+
+  local candidate
+  for candidate in "${candidates[@]}"; do
+    if [ -f "$candidate" ]; then
+      printf '%s\n' "$candidate"
+      return 0
+    fi
+  done
+
+  find "$rl_prefix" -iname BakkesMod.exe -print -quit 2>/dev/null
+}
+
+write_bat_launcher() {
+  local bat_path="$rl_dir/run_with_bakkesmod.bat"
+  local bakkes_dir="C:\\Program Files\\BakkesMod"
+
+  cat >"$bat_path" <<EOF
+@echo off
+set RL_PATH=%cd%\\Binaries\\Win64
+
+echo Launching BakkesMod...
+C:
+cd "$bakkes_dir"
+start BakkesMod.exe
+
+echo Launching Rocket League without Easy Anti-Cheat: %RL_PATH%
+Z:
+cd %RL_PATH%
+Launcher.exe -noeac %*
+EOF
+
+  printf '%s\n' "$bat_path"
+}
+
+download_setup() {
+  need_command wget
+  need_command unzip
+
+  local zip setup
+  mkdir -p "$cache_dir"
+  rm -rf "$cache_dir/setup"
+  zip="$cache_dir/BakkesModSetup.zip"
+  wget -q --no-server-response -O "$zip" "$download_url"
+  unzip -oq "$zip" -d "$cache_dir/setup"
+  setup="$(find "$cache_dir/setup" -iname 'BakkesModSetup.exe' -o -iname 'BakkesMod.exe' | head -1)"
+  [ -n "$setup" ] || die "download did not contain BakkesModSetup.exe or BakkesMod.exe"
+  printf '%s\n' "$setup"
+}
+
+status() {
+  ensure_paths
+
+  printf 'Rocket League dir: %s\n' "$rl_dir"
+  printf 'Heroic prefix:      %s\n' "$rl_prefix"
+  printf 'Proton:             %s\n' "$proton_bin"
+  printf 'No-EAC launcher:    %s\n' "$rl_dir/run_with_bakkesmod.bat"
+
+  local bakkes
+  bakkes="$(bakkesmod_exe)"
+  if [ -n "$bakkes" ]; then
+    printf 'BakkesMod exe:      %s\n' "$bakkes"
+  else
+    printf 'BakkesMod exe:      not installed in this prefix\n'
+  fi
+}
+
+setup() {
+  ensure_paths
+  write_bat_launcher >/dev/null
+  status
+}
+
+install() {
+  ensure_paths
+  write_bat_launcher >/dev/null
+
+  local silent=false
+  if [ "${1:-}" = "--silent" ]; then
+    silent=true
+    shift
+  fi
+
+  local setup_exe
+  setup_exe="$(download_setup)"
+  printf 'Running BakkesMod installer in Rocket League prefix...\n'
+  if $silent; then
+    if ! proton_run "$setup_exe" /VERYSILENT /SUPPRESSMSGBOXES /NORESTART "$@"; then
+      die "installer failed; use Heroic > Rocket League > Settings > Wine > Run EXE in Prefix and select: $setup_exe"
+    fi
+  else
+    if ! proton_run "$setup_exe" "$@"; then
+      die "installer failed; use Heroic > Rocket League > Settings > Wine > Run EXE in Prefix and select: $setup_exe"
+    fi
+  fi
+}
+
+run() {
+  ensure_paths
+  local bat_path
+  bat_path="$(write_bat_launcher)"
+
+  local bakkes
+  bakkes="$(bakkesmod_exe)"
+  [ -n "$bakkes" ] || die "BakkesMod is not installed in the Rocket League prefix; run: rocket-league-bakkesmod install"
+
+  (
+    cd "$rl_dir"
+    proton_run "$bat_path" "$@"
+  )
+}
+
+usage() {
+  cat <<'EOF'
+Usage: rocket-league-bakkesmod <command> [rocket-league-args...]
+
+Commands:
+  status   Show detected Heroic Rocket League, Proton, and BakkesMod paths.
+  setup    Write the Heroic-compatible no-EAC BakkesMod .bat launcher.
+  install  Download and run the BakkesMod installer inside the Rocket League prefix.
+           Use install --silent for unattended Inno Setup installation.
+  run      Start BakkesMod, then launch Rocket League with -noeac for offline/local play.
+EOF
+}
+
+command_name="${1:-status}"
+if [ "$#" -gt 0 ]; then
+  shift
+fi
+
+case "$command_name" in
+  status) status "$@" ;;
+  setup) setup "$@" ;;
+  install) install "$@" ;;
+  run) run "$@" ;;
+  help|--help|-h) usage ;;
+  *) usage >&2; exit 2 ;;
+esac
