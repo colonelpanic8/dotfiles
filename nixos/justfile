@@ -1,6 +1,6 @@
 switch *args:
-	case "$(systemctl show -P ActiveState nixos-upgrade.service 2>/dev/null)" in active|activating|reloading) sudo systemctl stop nixos-upgrade.service;; esac
-	sudo nixos-rebuild switch --flake ".#" --impure {{args}}
+	case "$(systemctl show -P ActiveState nixos-upgrade.service 2>/dev/null)" in active|activating|reloading) /run/wrappers/bin/sudo systemctl stop nixos-upgrade.service;; esac
+	/run/wrappers/bin/sudo nixos-rebuild switch --flake ".#" --impure {{args}}
 
 populate-cachix cache="colonelpanic8-dotfiles" host=`hostname` *args:
 	store_path="$(nix build --no-link --print-out-paths ".#nixosConfigurations.{{host}}.config.system.build.toplevel" --impure --option warn-dirty false {{args}})" && cachix push {{cache}} "$store_path
