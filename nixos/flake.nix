@@ -213,7 +213,7 @@
     };
 
     rlru = {
-      url = "git+ssh://git@github.com/rlrml/rlru.git";
+      url = "github:rlrml/rlru";
       inputs = {
         nixpkgs.follows = "nixpkgs";
         flake-utils.follows = "flake-utils";

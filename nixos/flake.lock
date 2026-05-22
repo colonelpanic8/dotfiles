@@ -1667,17 +1667,17 @@
         ]
       },
       "locked": {
-        "lastModified": 1779488035,
-        "narHash": "sha256-YeElVALcahge0nxlHnSyYM8MLHglOiOZAjIoDhsV1WY=",
-        "ref": "refs/heads/main",
-        "rev": "f34581a08def90fefcb6b4a1aeb0f2027d44e500",
-        "revCount": 10,
-        "type": "git",
-        "url": "ssh://git@github.com/rlrml/rlru.git"
+        "lastModified": 1779493574,
+        "narHash": "sha256-iyDrbldCBC3gdfUp9Viz984a93fZlcFsnerVvq5/1CA=",
+        "owner": "rlrml",
+        "repo": "rlru",
+        "rev": "941c2f476fd9e0a3842d0b430428ea202a6e9614",
+        "type": "github"
       },
       "original": {
-        "type": "git",
-        "url": "ssh://git@github.com/rlrml/rlru.git"
+        "owner": "rlrml",
+        "repo": "rlru",
+        "type": "github"
       }
     },
     "root": {
