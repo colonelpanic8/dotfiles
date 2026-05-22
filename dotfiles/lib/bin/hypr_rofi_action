@@ -7,6 +7,8 @@ from pathlib import Path
 
 
 PROMPT = "Hyprland action"
+HYPER_MODIFIERS = {"SUPER", "CTRL", "ALT"}
+MODIFIER_ORDER = ["SHIFT", "SUPER", "CTRL", "ALT"]
 
 
 def ensure_hyprland_instance():
@@ -49,6 +51,32 @@ def rofi_index(entries):
         return int(result.stdout.strip())
     except ValueError:
         return None
+
+
+def display_keys(keys):
+    parts = [part.strip() for part in keys.split("+")]
+    parts = [part for part in parts if part]
+    modifier_counts = {}
+    non_modifiers = []
+
+    for part in parts:
+        canonical = part.upper()
+        if canonical in MODIFIER_ORDER:
+            modifier_counts[canonical] = modifier_counts.get(canonical, 0) + 1
+        else:
+            non_modifiers.append(part)
+
+    modifiers = set(modifier_counts)
+    if not HYPER_MODIFIERS.issubset(modifiers):
+        return keys
+
+    remaining_modifiers = [
+        modifier
+        for modifier in MODIFIER_ORDER
+        if modifier not in HYPER_MODIFIERS and modifier in modifiers
+    ]
+    display_parts = ["Hyper", *remaining_modifiers, *non_modifiers]
+    return " + ".join(display_parts)
 
 
 def notify(message):
@@ -104,7 +132,7 @@ def main():
         return 1
 
     width = min(max(len(action["description"]) for action in actions), 48)
-    labels = [f"{action['description']:<{width}}  {action['keys']}" for action in actions]
+    labels = [f"{action['description']:<{width}}  {display_keys(action['keys'])}" for action in actions]
     index = rofi_index(labels)
     if index is None:
         return 0
