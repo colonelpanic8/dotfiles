@@ -2,6 +2,7 @@ local M = {}
 
 function M.setup(ctx)
   local _ENV = ctx
+  local file_chooser_class_rule = "^(xdg-desktop-portal-gtk|org\\.freedesktop\\.impl\\.portal\\.desktop\\.gtk)$"
   local file_chooser_title_rule = "^(Open File|Open Files|Save File|Save Files|Save As|Select File|Select Files|Choose File|Choose Files|File Upload|Upload File|Upload Files|Select Folder|Choose Folder|Open Folder|Save Folder)$"
 
   local function lower_string(value)
@@ -41,9 +42,20 @@ function M.setup(ctx)
       or title:find("file picker", 1, true) ~= nil
   end
 
+  local function class_indicates_file_chooser(class)
+    class = lower_string(class)
+    return class == "xdg-desktop-portal-gtk"
+      or class == "org.freedesktop.impl.portal.desktop.gtk"
+  end
+
   local function is_file_chooser_window(window)
     return window
-      and (title_indicates_file_chooser(window.title) or title_indicates_file_chooser(window.initial_title))
+      and (
+        title_indicates_file_chooser(window.title)
+        or title_indicates_file_chooser(window.initial_title)
+        or class_indicates_file_chooser(window.class)
+        or class_indicates_file_chooser(window.initial_class)
+      )
   end
 
   local function raise_file_chooser_window(window)
@@ -344,6 +356,14 @@ function M.setup(ctx)
     hl.window_rule({
       name = "file-chooser-dialogs",
       match = { title = file_chooser_title_rule },
+      float = true,
+      center = true,
+      focus_on_activate = true,
+      stay_focused = true,
+    })
+    hl.window_rule({
+      name = "portal-gtk-dialogs",
+      match = { class = file_chooser_class_rule },
       float = true,
       center = true,
       focus_on_activate = true,
