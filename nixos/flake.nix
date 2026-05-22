@@ -212,9 +212,12 @@
       };
     };
 
-    rockpload = {
-      url = "github:colonelpanic8/rockpload/colonelpanic/add-nix-flake";
-      inputs.nixpkgs.follows = "nixpkgs";
+    rlru = {
+      url = "git+ssh://git@github.com/rlrml/rlru.git";
+      inputs = {
+        nixpkgs.follows = "nixpkgs";
+        flake-utils.follows = "flake-utils";
+      };
     };
 
     vscode-server = {

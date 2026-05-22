@@ -88,10 +88,10 @@
 
     home-manager.users.imalison = {
       imports = [
-        inputs.rockpload.homeManagerModules.default
+        inputs.rlru.homeManagerModules.default
       ];
 
-      services.rockpload.enable = true;
+      services.rlru.enable = true;
     };
 
     home-manager.sharedModules = [
