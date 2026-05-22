@@ -284,7 +284,16 @@
         (final: prev: {
           codex = inputs.codex-cli-nix.packages.${prev.stdenv.hostPlatform.system}.default;
           claude-code = inputs.claude-code-nix.packages.${prev.stdenv.hostPlatform.system}.default;
-          git-sync-rs = git-sync-rs.packages.${prev.stdenv.hostPlatform.system}.default;
+          git-sync-rs = git-sync-rs.packages.${prev.stdenv.hostPlatform.system}.default.overrideAttrs (old: {
+            checkFlags =
+              (old.checkFlags or [])
+              ++ [
+                # Git can auto-detect the Darwin Nix build user's identity, so this
+                # test does not exercise git-sync-rs's missing-identity fallback here.
+                "--skip"
+                "sync::transport::tests::commit_retries_with_fallback_identity_when_git_identity_missing"
+              ];
+          });
         })
       ];
       environment.systemPackages =
