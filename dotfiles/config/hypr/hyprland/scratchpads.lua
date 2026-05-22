@@ -21,6 +21,10 @@ function M.setup(ctx)
       command = "alacritty --class htop-scratch --title htop -e htop",
       class = "htop-scratch",
     },
+    discord = {
+      command = "discord",
+      class = "discord",
+    },
     volume = {
       command = "pavucontrol",
       class = "org.pulseaudio.pavucontrol",

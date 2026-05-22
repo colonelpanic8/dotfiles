@@ -237,6 +237,7 @@ chromeSelectorBase = isChromeClass <$> className
 
 chromeSelector = chromeSelectorBase
 codexSelector = className =? "codex-desktop"
+discordSelector = className =? "Discord" <||> className =? "discord"
 elementSelector = className =? "Element"
 emacsSelector = className =? "Emacs"
 slackSelector = className =? "Slack"
@@ -252,6 +253,7 @@ virtualClasses =
 -- Commands
 
 codexCommand = "codex_desktop_scratchpad"
+discordCommand = "discord"
 elementCommand = "element-desktop"
 emacsCommand = "emacsclient -c"
 htopCommand = "ghostty --title=htop -e htop"
@@ -802,6 +804,7 @@ nearFullFloat = customFloating $ W.RationalRect l t w h
 
 scratchpads =
   [ NS "codex" codexCommand codexSelector nearFullFloat
+  , NS "discord" discordCommand discordSelector nearFullFloat
   , NS "element" elementCommand elementSelector nearFullFloat
   , NS "htop" htopCommand (title =? "htop") nearFullFloat
   , NS "slack" slackCommand slackSelector nearFullFloat
@@ -1008,6 +1011,7 @@ addKeys conf@XConfig { modMask = modm } =
 
     -- ScratchPads
     [ ((modalt, xK_c), doScratchpad "codex")
+    , ((modalt, xK_d), doScratchpad "discord")
     , ((modalt, xK_e), doScratchpad "element")
     , ((modalt, xK_h), doScratchpad "htop")
     , ((modalt, xK_k), doScratchpad "slack")
