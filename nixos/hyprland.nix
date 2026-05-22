@@ -127,10 +127,7 @@
         ./packages/hyprwobbly-safe-geometry-and-idle-timer.patch
       ];
   });
-  hyprexpo = pkgs.callPackage "${inputs.hyprexpo}/default.nix" {
-    hyprland = baseHyprlandPackage;
-    hyprlandPlugins = hyprlandPluginsForBase;
-  };
+  hyprexpo = inputs.hyprexpo.packages.${system}.hyprexpo;
   hyprwinview = hyprlandPluginsForBase.mkHyprlandPlugin {
     pluginName = "hyprwinview";
     version = "0.1.0";
@@ -166,9 +163,11 @@
     nativeBuildInputs = [
       pkgs.pkg-config
     ];
-    buildInputs = [
-      baseHyprlandPackage
-    ] ++ baseHyprlandPackage.buildInputs;
+    buildInputs =
+      [
+        baseHyprlandPackage
+      ]
+      ++ baseHyprlandPackage.buildInputs;
 
     dontStrip = true;
 
