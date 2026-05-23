@@ -135,7 +135,7 @@ sendNotification brightness = do
                    rawSystem "sh" ["-c", "command -v rumno >/dev/null 2>&1"]
     if rumnoExists
         then do
-            _ <- readProcess "rumno" ["notify", "-t", timeoutSeconds, "-b", show brightness] ""
+            _ <- readProcess "rumno" ["-t", timeoutSeconds, "-b", show brightness] ""
             return ()
         else putStrLn (show brightness)
 

@@ -317,6 +317,8 @@
       withUWSM = true;
     };
 
+    services.rumno.enable = true;
+
     home-manager.sharedModules = [
       inputs.hyprscratch.homeModules.default
       (

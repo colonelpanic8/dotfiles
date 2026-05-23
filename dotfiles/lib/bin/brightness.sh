@@ -87,7 +87,7 @@ RUMNO_TIMEOUT="${RUMNO_TIMEOUT:-2.5}"
 
 # Show notification if rumno is available
 if command -v rumno &> /dev/null; then
-    rumno notify -t "$RUMNO_TIMEOUT" -b "$BRIGHTNESS"
+    rumno -t "$RUMNO_TIMEOUT" -b "$BRIGHTNESS"
 else
     echo "$BRIGHTNESS"
 fi

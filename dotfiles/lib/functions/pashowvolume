@@ -3,12 +3,12 @@
 function pashowvolume {
 	timeout="${RUMNO_TIMEOUT:-2.5}"
 	if paismuted; then
-		rumno notify -t "$timeout" -m
+		rumno -t "$timeout" -m true
 	else
 		actual=$(pavolume)
 		max=100
 		show=$(( actual < max ? actual : max ))
-		rumno notify -t "$timeout" -v "$show"
+		rumno -t "$timeout" -v "$show"
 	fi
 }
 
