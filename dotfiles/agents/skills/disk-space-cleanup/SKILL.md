@@ -113,6 +113,8 @@ Machine-specific note:
 
 - Project-local `.worktrees/*/target` directories are common cleanup wins on this machine and are easy to miss with the old hard-coded workflow.
 - `cargo-sweep` is installed through the NixOS `code.nix` package set, but stale manually-installed binaries under `~/.cargo/bin` can shadow `/run/current-system/sw/bin/cargo-sweep`. If `cargo sweep` fails with a missing loader or `No such file or directory`, run `type -a cargo-sweep` and remove the stale `~/.cargo/bin/cargo-sweep` entry.
+- `cargo-sweep sweep -i/--installed` can fail when `rustup toolchain list` contains stale toolchains whose `rustc` no longer exists. On this machine, `1.68.2-x86_64-unknown-linux-gnu` caused `failed to determine fingerprint ... 'rustc': No such file or directory`.
+- `/home/imalison/Projects/codex/codex-rs/target` can be dominated by current-looking `target/debug/incremental` data that `cargo-sweep sweep -a` and `--maxsize` report as not removable. If it is stale and space pressure is high, use the guarded `rust_target_dirs.py delete ... --yes` workflow for that explicit target directory.
 - `nixos/imalison.nix` defines a daily user timer, `cargo-sweep-rust-targets.timer`, that runs `cargo-sweep sweep -r --hidden --maxsize 15GB` across `/home/imalison/Projects`, `/home/imalison/org`, and `/home/imalison/dotfiles`.
 
 ## Step 4: Investigation with `ncdu` and `du`
