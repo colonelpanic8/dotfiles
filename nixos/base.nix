@@ -39,10 +39,12 @@ makeEnable config "myModules.base" true {
   networking.nameservers = ["8.8.8.8" "8.8.4.4"];
   networking.networkmanager = {
     enable = true;
+    dns = "systemd-resolved";
     plugins = [pkgs.networkmanager-l2tp pkgs.networkmanager-openvpn];
     settings.main.rc-manager = "symlink";
   };
   networking.resolvconf.enable = false;
+  services.resolved.enable = true;
   services.mullvad-vpn.enable = true;
 
   # Audio
