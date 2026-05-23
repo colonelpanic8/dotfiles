@@ -161,16 +161,16 @@
         ]
       },
       "locked": {
-        "lastModified": 1779476458,
-        "narHash": "sha256-EXQ5PP0JXfGXAJSgFP0uEa5a6IoL8UaLPBXc5Bh56tA=",
-        "owner": "ilysenko",
+        "lastModified": 1779526224,
+        "narHash": "sha256-5bnYJRiJnyUnaogKFOZleFxziobPirRrKl+OnqkMesE=",
+        "owner": "colonelpanic8",
         "repo": "codex-desktop-linux",
-        "rev": "bd7a871e8cb06935f09834ecd619074e5ede62a4",
+        "rev": "83ec6749ad76066087f935e3c43d262097182fa3",
         "type": "github"
       },
       "original": {
-        "owner": "ilysenko",
-        "ref": "main",
+        "owner": "colonelpanic8",
+        "ref": "colonelpanic/fix-ci-rust-smoke",
         "repo": "codex-desktop-linux",
         "type": "github"
       }
