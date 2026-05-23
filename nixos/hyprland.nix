@@ -197,6 +197,13 @@
       hyprwobbly
     ]
     ++ lib.optionals enableHyprglass [hyprglass];
+  llvmNmCompat = pkgs.writeShellApplication {
+    name = "llvm-nm";
+    runtimeInputs = [pkgs.binutils];
+    text = ''
+      exec nm "$@"
+    '';
+  };
   hyprRofiWindow = pkgs.writeShellApplication {
     name = "hypr_rofi_window";
     runtimeInputs = [
@@ -397,6 +404,7 @@
         nwg-displays # GUI monitor arrangement
         mpvpaper # Layer-shell video screensaver payload
         ddcutil # Monitor input switching over DDC/CI
+        llvmNmCompat # Hyprland's Clang-built plugin API shells out to llvm-nm
 
         # For scripts
         hyprRofiLayout
