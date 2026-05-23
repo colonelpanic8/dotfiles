@@ -84,7 +84,9 @@ in
       environment = {
         homeBinInPath = true;
         localBinInPath = true;
-        enableAllTerminfo = true;
+        # Installing every terminfo output pulls in obsolete terminal packages
+        # like termite, which can fail to build on current nixpkgs.
+        enableAllTerminfo = false;
         shellAliases =
           {
             df_ssh = "TERM=xterm-256color ssh -o StrictHostKeyChecking=no";

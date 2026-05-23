@@ -88,6 +88,18 @@ in
       oldAttrs.preConfigure;
   });
 
+  vte = prev.vte.overrideAttrs (oldAttrs: {
+    # The termite compatibility patch in nixpkgs still uses a helper that VTE
+    # removed. VTE 0.84 builds as C++23 and already uses std::to_underlying.
+    postPatch = (oldAttrs.postPatch or "") + ''
+      if grep -q "vte::to_integral(vte::platform::ClipboardType::PRIMARY)" src/vtegtk.cc; then
+        substituteInPlace src/vtegtk.cc \
+          --replace-fail "vte::to_integral(vte::platform::ClipboardType::PRIMARY)" \
+                         "std::to_underlying(vte::platform::ClipboardType::PRIMARY)"
+      fi
+    '';
+  });
+
   # XXX: codex and claude-code are now provided by flakes in nix.nix
   # See the overlay at the end of nixpkgs.overlays in nix.nix
 
