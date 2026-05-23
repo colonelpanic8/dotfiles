@@ -32,6 +32,16 @@ in
       # Shell configuration
       programs.zsh = {
         enable = true;
+        histSize = 10000000;
+        setOptions = [
+          "EXTENDED_HISTORY"
+          "HIST_EXPIRE_DUPS_FIRST"
+          "HIST_FCNTL_LOCK"
+          "HIST_IGNORE_DUPS"
+          "HIST_IGNORE_SPACE"
+          "HIST_VERIFY"
+          "SHARE_HISTORY"
+        ];
         syntaxHighlighting = {
           enable = true;
         };
