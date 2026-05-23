@@ -21,7 +21,11 @@
   };
   # GCC 15.2 ICEs while compiling Hyprland 0.55 on this pin. Keep the
   # Hyprland/plugin pin set intact and build Hyprland itself with Clang.
-  baseHyprlandPackage = avoidHyprlandGccIce hyprlandInput.packages.${system}.hyprland;
+  baseHyprlandPackage = (avoidHyprlandGccIce hyprlandInput.packages.${system}.hyprland).overrideAttrs (_: {
+    # Clang 21 can segfault in LLVM's Live DEBUG_VALUE analysis while compiling
+    # ConfigValues.cpp when this build runs in parallel.
+    enableParallelBuilding = false;
+  });
   hyprlandPluginsForBase = pkgs.callPackage "${pkgs.path}/pkgs/applications/window-managers/hyprwm/hyprland-plugins" {
     hyprland = baseHyprlandPackage;
   };
