@@ -41,6 +41,8 @@ priorities:
   priority: -1
 - key: item-id:tailscale
   priority: -1
+- key: process:git-sync-rs
+  priority: -1
 - key: process:tailscale
   priority: -1
 - key: item-id:spotify-client
