@@ -277,7 +277,12 @@
     ...
   }: let
     # Nixpkgs PR patches - just specify PR number and hash
-    nixpkgsPRPatches = [];
+    nixpkgsPRPatches = [
+      {
+        pr = 523297;
+        hash = "sha256-SsfeBuL8vIuj1R4aCRZWY5rYSlw441LK+IwLOo0cx/w=";
+      }
+    ];
 
     # Custom patches that don't fit the PR template
     nixpkgsCustomPatches = [];
