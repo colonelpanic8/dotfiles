@@ -245,7 +245,7 @@
     };
 
     codex-desktop-linux = {
-      url = "github:colonelpanic8/codex-desktop-linux/colonelpanic/fix-ci-rust-smoke";
+      url = "github:ilysenko/codex-desktop-linux/main";
       inputs = {
         nixpkgs.follows = "nixpkgs";
         flake-utils.follows = "flake-utils";
@@ -281,6 +281,14 @@
       {
         pr = 523297;
         hash = "sha256-SsfeBuL8vIuj1R4aCRZWY5rYSlw441LK+IwLOo0cx/w=";
+      }
+      {
+        pr = 523536;
+        hash = "sha256-wzHOQAGEhnMuhjdUeTVvA78DO/cE118ehB7zfhsppqI=";
+      }
+      {
+        pr = 523537;
+        hash = "sha256-wTOj47AOXP0oryLDoT+ZJGqgcseRbk0saf77pB8/e7M=";
       }
     ];
 

@@ -161,16 +161,16 @@
         ]
       },
       "locked": {
-        "lastModified": 1779526224,
-        "narHash": "sha256-5bnYJRiJnyUnaogKFOZleFxziobPirRrKl+OnqkMesE=",
-        "owner": "colonelpanic8",
+        "lastModified": 1779552492,
+        "narHash": "sha256-OqhlsHkumu0rcWD3Y+KAawXynOaF4L64L1q55dB9750=",
+        "owner": "ilysenko",
         "repo": "codex-desktop-linux",
-        "rev": "83ec6749ad76066087f935e3c43d262097182fa3",
+        "rev": "c4c51883800dbf5fe8010c4a755daf1ca37ce316",
         "type": "github"
       },
       "original": {
-        "owner": "colonelpanic8",
-        "ref": "colonelpanic/fix-ci-rust-smoke",
+        "owner": "ilysenko",
+        "ref": "main",
         "repo": "codex-desktop-linux",
         "type": "github"
       }
@@ -1822,11 +1822,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1779577377,
-        "narHash": "sha256-+09S+ojFxaIpeEsKy4Ksm3wMYuFrClKRdGBTV8t7JiU=",
+        "lastModified": 1779596395,
+        "narHash": "sha256-p9+qdENZzlTXE7GqXF/Re7mbtk7JtuJKkT7625UAS+E=",
         "owner": "rlrml",
         "repo": "rlru",
-        "rev": "d55da20f5eaca74c2c6cc1c27bd3cc14c31c72cf",
+        "rev": "15ccf51a52ab0267ba0f82fa05c12bb6467e0452",
         "type": "github"
       },
       "original": {
