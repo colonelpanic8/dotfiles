@@ -11,7 +11,7 @@ tray_services=(
   flameshot.service
   kanshi-sni.service
   kdeconnect-indicator.service
-  keepbook-sync-daemon.service
+  keepbook-dioxus.service
   network-manager-applet.service
   notifications-tray-icon-gitea.service
   notifications-tray-icon-github.service

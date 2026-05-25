@@ -8,48 +8,24 @@
 }: let
   cfg = config.myModules."keepbook-sync";
   keepbookPackages = inputs.keepbook.packages.${pkgs.stdenv.hostPlatform.system};
-  keepbookTray = keepbookPackages.keepbook-tray.overrideAttrs (_: {
-    # Upstream currently includes a contract test that expects a built TS CLI
-    # entrypoint under ts/dist/, but the Nix build does not build the TS
-    # artifacts first. Skip checks to keep the package usable on NixOS.
-    doCheck = false;
-  });
-  keepbookDioxusDesktopPackages =
-    lib.optional (keepbookPackages ? keepbook-dioxus-desktop)
-    keepbookPackages.keepbook-dioxus-desktop;
-
-  daemonArgs =
-    [
-      "--config"
-      cfg.configPath
-      "--interval"
-      cfg.interval
-      "--jitter"
-      cfg.jitter
-    ]
-    ++ lib.optionals (cfg.historyPoints != null) ["--history-points" (toString cfg.historyPoints)]
-    ++ lib.optionals (!cfg.syncOnStart) ["--no-sync-on-start"]
-    ++ lib.optionals (!cfg.syncPrices) ["--no-sync-prices"]
-    ++ lib.optionals (!cfg.syncSymlinks) ["--no-sync-symlinks"]
-    ++ lib.optionals (cfg.balanceStaleness != null) ["--balance-staleness" cfg.balanceStaleness]
-    ++ lib.optionals (cfg.priceStaleness != null) ["--price-staleness" cfg.priceStaleness];
-
-  daemonExec = lib.escapeShellArgs (["${keepbookTray}/bin/keepbook-sync-daemon"] ++ daemonArgs);
+  keepbookDioxusDesktop = keepbookPackages.keepbook-dioxus-desktop;
+  keepbookDioxusExec = "${keepbookDioxusDesktop}/bin/keepbook-dioxus";
 
   enabledModule = makeEnable config "myModules.keepbook-sync" false {
-    environment.systemPackages = [keepbookTray] ++ keepbookDioxusDesktopPackages;
+    environment.systemPackages = [keepbookDioxusDesktop];
 
     home-manager.users.${cfg.user} = {
-      systemd.user.services.keepbook-sync-daemon = {
+      systemd.user.services.keepbook-dioxus = {
         Unit = {
-          Description = "keepbook sync daemon";
+          Description = "Keepbook Dioxus desktop app";
           After = ["graphical-session.target" "tray.target"];
           PartOf = ["graphical-session.target"];
           Requires = ["tray.target"];
         };
         Service = {
-          ExecStart = daemonExec;
-          Restart = "always";
+          ExecStart = keepbookDioxusExec;
+          WorkingDirectory = builtins.dirOf cfg.configPath;
+          Restart = "on-failure";
           RestartSec = 5;
           Environment = ["RUST_LOG=info"];
         };
@@ -68,61 +44,13 @@ in
         user = lib.mkOption {
           type = lib.types.str;
           default = "imalison";
-          description = "User account to run the keepbook sync daemon.";
+          description = "User account to run the keepbook Dioxus desktop app.";
         };
 
         configPath = lib.mkOption {
           type = lib.types.str;
           default = "/home/imalison/.local/share/keepbook/keepbook.toml";
-          description = "Path to keepbook.toml used by the daemon.";
-        };
-
-        interval = lib.mkOption {
-          type = lib.types.str;
-          default = "30m";
-          description = "Base sync interval for keepbook-sync-daemon (e.g. 30m, 1h).";
-        };
-
-        jitter = lib.mkOption {
-          type = lib.types.str;
-          default = "5m";
-          description = "Random jitter applied around each scheduled interval.";
-        };
-
-        balanceStaleness = lib.mkOption {
-          type = lib.types.nullOr lib.types.str;
-          default = null;
-          description = "Optional override for balance staleness threshold.";
-        };
-
-        priceStaleness = lib.mkOption {
-          type = lib.types.nullOr lib.types.str;
-          default = null;
-          description = "Optional override for price staleness threshold.";
-        };
-
-        syncOnStart = lib.mkOption {
-          type = lib.types.bool;
-          default = true;
-          description = "Run a sync cycle immediately when the daemon starts.";
-        };
-
-        syncPrices = lib.mkOption {
-          type = lib.types.bool;
-          default = true;
-          description = "Enable periodic price refresh during sync cycles.";
-        };
-
-        syncSymlinks = lib.mkOption {
-          type = lib.types.bool;
-          default = true;
-          description = "Enable periodic symlink rebuild during sync cycles.";
-        };
-
-        historyPoints = lib.mkOption {
-          type = lib.types.nullOr lib.types.int;
-          default = null;
-          description = "Optional override for the maximum recent portfolio history rows shown in the tray menu.";
+          description = "Path to keepbook.toml. The Dioxus app is launched from this file's directory so keepbook's default config discovery finds it.";
         };
       };
     };
