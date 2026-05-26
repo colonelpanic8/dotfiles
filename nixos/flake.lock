@@ -1822,11 +1822,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1779596395,
-        "narHash": "sha256-p9+qdENZzlTXE7GqXF/Re7mbtk7JtuJKkT7625UAS+E=",
+        "lastModified": 1779757806,
+        "narHash": "sha256-KazBEPoY3TmC7AcW7mIDSNOudkC3qonvOHAB48GQGmw=",
         "owner": "rlrml",
         "repo": "rlru",
-        "rev": "15ccf51a52ab0267ba0f82fa05c12bb6467e0452",
+        "rev": "cdf358c050d9d8e6a60e7be5e8372c4594751d4e",
         "type": "github"
       },
       "original": {
