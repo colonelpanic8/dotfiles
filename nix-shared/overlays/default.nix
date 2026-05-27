@@ -323,7 +323,6 @@ from transformers import (/' \
       '';
     });
 
-  happy-coder = final.callPackage ../../nixos/packages/happy-coder { };
   playwright-cli = final.callPackage ../../nixos/packages/playwright-cli { };
   t3code = final.callPackage ../../nixos/packages/t3code { };
   # Custom Waybar fork for workspace taskbar support + external SNI watcher option.

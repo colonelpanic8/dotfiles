@@ -69,7 +69,6 @@ makeEnable config "myModules.code" true {
       claude-code
       codex
       gemini-cli
-      happy-coder
       opencode
       t3code
 
