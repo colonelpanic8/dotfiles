@@ -51,6 +51,7 @@ return {
   enable_nstack = true,
   enable_hyprexpo = true,
   enable_hyprwinview = true,
+  enable_hyprtasking = false,
   enable_workspace_history = true,
   enable_hyprwobbly = true,
   enable_hyprglass = false,
