@@ -351,8 +351,27 @@
   hyprlandConfigSyntax = import ../checks/hyprland-config-syntax {
     inherit pkgs hyprlandConfigDir;
   };
+  hyprlandUtilityPackages = with pkgs; [
+    hyprpaper
+    neowall
+    hypridle
+    hyprlock
+    hyprcursor
+    wl-clipboard
+    wtype
+    cliphist
+    grim
+    slurp
+    swappy
+    nwg-displays
+    mpvpaper
+    ddcutil
+    jq
+    lua5_4
+  ];
   hyprlandStuffPaths =
-    [
+    hyprlandUtilityPackages
+    ++ [
       hyprlandPackage
       llvmNmCompat
       hyprRofiLayout
@@ -374,6 +393,7 @@
         baseHyprlandPackage
         hyprlandPackage
         hyprlandPluginPackages
+        hyprlandUtilityPackages
         hyprlandConfigSyntax
         ;
     };
@@ -399,6 +419,7 @@ in {
     hyprlandPackage
     hyprlandPluginPackages
     hyprlandStuff
+    hyprlandUtilityPackages
     hyprtasking
     hyprwinview
     hyprwobbly
