@@ -210,7 +210,7 @@
         pinentry-gnome3
         # mission-center
         quassel
-        remmina
+        # remmina
         rofi
         wofi
         rofi-pass
@@ -246,7 +246,7 @@
             spicetify-cli
             spotify
             tor-browser
-            vscode
+            # vscode
             zulip
           ]
         else []

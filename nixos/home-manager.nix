@@ -341,8 +341,8 @@ in {
     };
 
     theme = {
-      package = pkgs.arc-theme;
-      name = "Arc";
+      package = pkgs.gnome-themes-extra;
+      name = "Adwaita";
     };
 
     gtk4.theme = config.gtk.theme;
@@ -367,7 +367,7 @@ in {
       gtk-menu-images = 1;
       gtk-modules = "colorreload-gtk-module";
       gtk-primary-button-warps-slider = false;
-      gtk-theme-name = "Arc";
+      gtk-theme-name = "Adwaita";
       gtk-toolbar-icon-size = "GTK_ICON_SIZE_LARGE_TOOLBAR";
       gtk-toolbar-style = "GTK_TOOLBAR_BOTH_HORIZ";
       gtk-xft-antialias = 1;

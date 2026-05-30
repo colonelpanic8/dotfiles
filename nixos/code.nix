@@ -65,7 +65,7 @@ makeEnable config "myModules.code" true {
   environment.systemPackages = with pkgs;
     [
       # LLM Tools
-      antigravity
+      # antigravity
       claude-code
       codex
       gemini-cli
