@@ -30,8 +30,22 @@
           };
           packagesAlreadyInPrev =
             builtins.filter (name: python-prev ? ${name}) (builtins.attrNames extraPackages);
+          nixifiedExtraPackages = builtins.removeAttrs extraPackages packagesAlreadyInPrev;
         in
-          builtins.removeAttrs extraPackages packagesAlreadyInPrev
+          nixifiedExtraPackages
+          // {
+            tokenizers = python-prev.tokenizers.overrideAttrs (old: {
+              nativeBuildInputs = (old.nativeBuildInputs or []) ++ [final.clang];
+              env =
+                (old.env or {})
+                // {
+                  CC = "${final.clang}/bin/clang";
+                  HOST_CC = "${final.clang}/bin/clang";
+                  CC_x86_64_unknown_linux_gnu = "${final.clang}/bin/clang";
+                  CFLAGS = "-O2";
+                };
+            });
+          }
       );
     };
 

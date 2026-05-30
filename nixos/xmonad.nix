@@ -14,6 +14,21 @@ in
     nixpkgs.overlays = with inputs; [
       xmonad.overlay
       xmonad-contrib.overlay
+      (final: prev: {
+        haskellPackages = prev.haskellPackages.override (old: {
+          overrides =
+            final.lib.composeExtensions (old.overrides or (_: _: {}))
+            (_hself: hsuper: {
+              ghc-exactprint = final.haskell.lib.disableOptimization hsuper.ghc-exactprint;
+              language-c = final.haskell.lib.disableOptimization hsuper.language-c;
+              optics-core = final.haskell.lib.disableOptimization hsuper.optics-core;
+              X11 = final.haskell.lib.disableOptimization hsuper.X11;
+              X11-xft =
+                final.haskell.lib.dontHaddock
+                (final.haskell.lib.disableOptimization hsuper.X11-xft);
+            });
+        });
+      })
       (import ../dotfiles/config/xmonad/overlay.nix)
     ];
 
