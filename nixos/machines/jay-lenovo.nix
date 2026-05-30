@@ -8,7 +8,7 @@
     ../configuration.nix
   ];
 
-  myModules.wyoming.enable = true;
+  myModules.wyoming.enable = false;
   features.full.enable = true;
 
   environment.systemPackages = with pkgs; [

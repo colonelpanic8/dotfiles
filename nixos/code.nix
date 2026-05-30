@@ -6,6 +6,29 @@
   makeEnable,
   ...
 }:
+let
+  codexDesktopLinuxSource = pkgs.applyPatches {
+    name = "codex-desktop-linux-patched";
+    src = inputs.codex-desktop-linux;
+    patches = [ ./patches/codex-desktop-linux-dmg-hash.patch ];
+  };
+  codexDesktopLinux =
+    let
+      flake = import "${codexDesktopLinuxSource}/flake.nix";
+      self' =
+        (flake.outputs {
+          self = self';
+          nixpkgs = inputs.nixpkgs;
+          flake-utils = inputs.flake-utils;
+        })
+        // {
+          outPath = "${codexDesktopLinuxSource}";
+          rev = inputs.codex-desktop-linux.rev or "";
+          lastModified = inputs.codex-desktop-linux.lastModified or 1;
+        };
+    in
+      self';
+in
 makeEnable config "myModules.code" true {
   programs.direnv = {
     enable = true;
@@ -20,7 +43,7 @@ makeEnable config "myModules.code" true {
   };
 
   home-manager.sharedModules = lib.mkIf config.myModules.desktop.enable [
-    inputs.codex-desktop-linux.homeManagerModules.default
+    codexDesktopLinux.homeManagerModules.default
     {
       home.sessionVariables.YDOTOOL_SOCKET = "/run/ydotoold/socket";
       systemd.user.sessionVariables.YDOTOOL_SOCKET = "/run/ydotoold/socket";

@@ -1,0 +1,13 @@
+diff --git a/flake.nix b/flake.nix
+index 3a350b7..e54821b 100644
+--- a/flake.nix
++++ b/flake.nix
+@@ -81,7 +81,7 @@
+ 
+         codexDmg = pkgs.fetchurl {
+           url = "https://persistent.oaistatic.com/codex-app-prod/Codex.dmg";
+-          hash = "sha256-L5fZniPJ9N1mwOAr2tpebGa/Z3cs2J+IaoG1udfrSHw=";
++          hash = "sha256-smhl7TqwSYqLigb9lBfS2wOKLA8oUI+QHjnOzNTCZSk=";
+         };
+ 
+         codexVersion = "26.527.30818";
