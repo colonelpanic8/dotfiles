@@ -262,7 +262,7 @@
     };
 
     codex-desktop-linux = {
-      url = "github:ilysenko/codex-desktop-linux/main";
+      url = "github:colonelpanic8/codex-desktop-linux/codex/computer-use-availability-shape";
       inputs = {
         nixpkgs.follows = "nixpkgs";
         flake-utils.follows = "flake-utils";
