@@ -15,7 +15,6 @@
     android-studio
     perf
     zenmonitor
-    code-cursor
   ];
 
   hardware.enableRedistributableFirmware = true;
