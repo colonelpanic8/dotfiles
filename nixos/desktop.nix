@@ -44,6 +44,16 @@
           "Exec=$out/bin/google-chrome-stable"
     '';
   };
+  rlruPackages = inputs.rlru.packages.${pkgs.stdenv.hostPlatform.system};
+  rlruDioxusDesktopBase = rlruPackages.rlru-dioxus-desktop;
+  rlruDioxusDesktop = pkgs.symlinkJoin {
+    name = "${rlruDioxusDesktopBase.name}-single-desktop-entry";
+    paths = [rlruDioxusDesktopBase];
+    postBuild = ''
+      rm -f "$out/share/applications/rlru-dioxus.desktop"
+    '';
+    meta = rlruDioxusDesktopBase.meta;
+  };
   enabledModule = makeEnable config "myModules.desktop" true {
     services.greenclip.enable = true;
     imports = [
@@ -91,7 +101,10 @@
         inputs.rlru.homeManagerModules.default
       ];
 
-      services.rlru.enable = true;
+      services.rlru = {
+        enable = true;
+        package = rlruDioxusDesktop;
+      };
     };
 
     home-manager.sharedModules = [

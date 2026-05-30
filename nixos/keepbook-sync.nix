@@ -8,7 +8,15 @@
 }: let
   cfg = config.myModules."keepbook-sync";
   keepbookPackages = inputs.keepbook.packages.${pkgs.stdenv.hostPlatform.system};
-  keepbookDioxusDesktop = keepbookPackages.keepbook-dioxus-desktop;
+  keepbookDioxusDesktopBase = keepbookPackages.keepbook-dioxus-desktop;
+  keepbookDioxusDesktop = pkgs.symlinkJoin {
+    name = "${keepbookDioxusDesktopBase.name}-single-desktop-entry";
+    paths = [keepbookDioxusDesktopBase];
+    postBuild = ''
+      rm -f "$out/share/applications/keepbook-dioxus.desktop"
+    '';
+    meta = keepbookDioxusDesktopBase.meta;
+  };
   keepbookDioxusExec = "${keepbookDioxusDesktop}/bin/keepbook-dioxus";
 
   enabledModule = makeEnable config "myModules.keepbook-sync" false {
