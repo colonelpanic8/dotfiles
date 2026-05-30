@@ -17,6 +17,65 @@ pid_is_alive() {
     [ -e "/proc/$pid/exe" ]
 }
 
+pid_is_current_user() {
+    local pid="${1:-}"
+    local uid
+
+    uid="$(stat -c %u "/proc/$pid" 2>/dev/null || true)"
+    [ -n "$uid" ] && [ "$uid" = "$(id -u)" ]
+}
+
+pid_cmdline() {
+    local pid="$1"
+
+    tr '\0' ' ' < "/proc/$pid/cmdline" 2>/dev/null || true
+}
+
+pid_is_main_codex_desktop() {
+    local pid="$1"
+    local exe
+    local cmdline
+
+    pid_is_alive "$pid" || return 1
+    pid_is_current_user "$pid" || return 1
+    exe="$(readlink -f "/proc/$pid/exe" 2>/dev/null || true)"
+    [ -n "$exe" ] || return 1
+    [ "$(basename "$exe")" = "electron" ] || return 1
+    [ -x "$(dirname "$exe")/start.sh" ] || return 1
+
+    cmdline="$(pid_cmdline "$pid")"
+    case " $cmdline " in
+        *" --class=$app_id "*) ;;
+        *) return 1 ;;
+    esac
+    case " $cmdline " in
+        *" --app-id=$app_id "*) ;;
+        *) return 1 ;;
+    esac
+    case " $cmdline " in
+        *" --type="*) return 1 ;;
+    esac
+}
+
+find_running_app() {
+    local proc_exe
+    local pid
+    local exe
+
+    for proc_exe in /proc/[0-9]*/exe; do
+        [ -e "$proc_exe" ] || continue
+        pid="${proc_exe#/proc/}"
+        pid="${pid%/exe}"
+        if pid_is_main_codex_desktop "$pid"; then
+            exe="$(readlink -f "$proc_exe" 2>/dev/null || true)"
+            printf '%s\t%s\n' "$pid" "$(dirname "$exe")"
+            return 0
+        fi
+    done
+
+    return 1
+}
+
 running_app_is_alive() {
     local pid
 
@@ -54,6 +113,14 @@ PY
 
 if send_launch_action "$@"; then
     exit 0
+fi
+
+if running_app="$(find_running_app)"; then
+    running_pid="${running_app%%	*}"
+    running_app_dir="${running_app#*	}"
+    mkdir -p "$state_dir"
+    printf '%s\n' "$running_pid" > "$pid_file"
+    exec "$running_app_dir/start.sh" "$@"
 fi
 
 exec codex-desktop "$@"
