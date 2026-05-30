@@ -1,10 +1,11 @@
 {
   config,
   lib,
+  nixos,
   ...
 }: let
   # Replicate the useful part of rcm/rcup:
-  # - dotfiles live in ~/dotfiles/dotfiles (no leading dots in the repo)
+  # - dotfiles live in <dotfiles-worktree>/dotfiles (no leading dots in the repo)
   # - links in $HOME add a leading '.' to the first path component
   # - link files individually so unmanaged state can coexist (e.g. ~/.cabal/store)
   #
@@ -13,7 +14,10 @@
   oos = config.lib.file.mkOutOfStoreSymlink;
 
   # Where the checked-out repo lives at runtime (activation time).
-  worktreeDotfiles = "${config.home.homeDirectory}/dotfiles/dotfiles";
+  # Keep this outside individual home directories so links work for every
+  # managed user on a shared machine.
+  worktreeRoot = nixos.config.dotfiles-worktree or "${config.home.homeDirectory}/dotfiles";
+  worktreeDotfiles = "${worktreeRoot}/dotfiles";
 
   # Use the flake source for enumeration (pure), but point links at the worktree.
   srcDotfiles = ../dotfiles;

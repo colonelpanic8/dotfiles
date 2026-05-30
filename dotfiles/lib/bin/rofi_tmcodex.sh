@@ -10,6 +10,7 @@ state_dir="${XDG_STATE_HOME:-$HOME/.local/state}/rofi-tmcodex"
 history_file="$state_dir/dirs"
 codex_home="${CODEX_HOME:-$HOME/.codex}"
 terminal="${TMCODEX_TERMINAL:-${TERMINAL:-ghostty}}"
+dotfiles_root="${DOTFILES_WORKTREE:-/srv/dotfiles}"
 debug_log="$state_dir/debug.log"
 tmcodex_args=("$@")
 mkdir -p "$state_dir"
@@ -29,8 +30,8 @@ emit_candidates() {
   # 2) A few common roots. Keep these before slow/best-effort discovery so
   # rofi still has useful entries if a metadata scan breaks.
   for d in \
-    "$HOME/dotfiles" \
-    "$HOME/dotfiles/nixos" \
+    "$dotfiles_root" \
+    "$dotfiles_root/nixos" \
     "$HOME/Projects" \
     "$HOME/config" \
     "$HOME/org"
@@ -43,7 +44,7 @@ emit_candidates() {
 
   # 4) Shallow git repo discovery under a few likely roots.
   if command -v fd >/dev/null 2>&1; then
-    for root in "$HOME/Projects" "$HOME/dotfiles" "$HOME/config" "$HOME/org"; do
+    for root in "$HOME/Projects" "$dotfiles_root" "$HOME/config" "$HOME/org"; do
       [[ -d "$root" ]] || continue
       # Find ".git" directories; print their parent (repo root).
       # Keep it shallow for speed.

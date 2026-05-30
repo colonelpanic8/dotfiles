@@ -1,10 +1,15 @@
-{pkgs, ...}: let
+{
+  config,
+  pkgs,
+  ...
+}: let
   session = import ./session-variables.nix;
+  dotfilesRoot = config.dotfiles-worktree;
   cargoSweepRustTargets = pkgs.writeShellApplication {
     name = "cargo-sweep-rust-targets";
     runtimeInputs = [pkgs.cargo-sweep];
     text = ''
-      for root in /home/imalison/Projects /home/imalison/org /home/imalison/dotfiles; do
+      for root in /home/imalison/Projects /home/imalison/org ${dotfilesRoot}; do
         if [[ -d "$root" ]]; then
           cargo-sweep sweep -r --hidden --maxsize 15GB "$root"
         fi

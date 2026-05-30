@@ -7,7 +7,7 @@ description: Use when user asks to bump, update, or upgrade claude-code or codex
 
 ## Overview
 
-Updates claude-code and/or codex to latest versions in `~/dotfiles/nixos/overlay.nix`. Nix requires correct hashes which must be discovered through failed builds.
+Updates claude-code and/or codex to latest versions in `/etc/nixos/overlay.nix`. Nix requires correct hashes which must be discovered through failed builds.
 
 ## Quick Reference
 
@@ -30,7 +30,7 @@ curl -s "https://api.github.com/repos/openai/codex/releases/latest" | jq -r '.ta
 
 ### 2. Update Version and Clear Hashes
 
-In `~/dotfiles/nixos/overlay.nix`:
+In `/etc/nixos/overlay.nix`:
 
 **For claude-code:**
 ```nix
@@ -77,4 +77,4 @@ enableClaudeCodeOverride = true;  # Set false to use nixpkgs claude-code
 
 ## File Location
 
-`~/dotfiles/nixos/overlay.nix`
+`/etc/nixos/overlay.nix`

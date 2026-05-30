@@ -53,3 +53,12 @@ cachix-auth-from-clipboard:
   if command -v wl-paste >/dev/null; then wl-paste --no-newline | cachix authtoken --stdin; printf '' | wl-copy; \
   elif command -v xclip >/dev/null; then xclip -o -selection clipboard | tr -d '\n' | cachix authtoken --stdin; printf '' | xclip -selection clipboard; \
   else echo "No clipboard tool found (expected wl-paste or xclip)." >&2; exit 1; fi
+
+# Install or re-permission the repo as a shared machine-local checkout.
+#
+# Usage:
+# - `just setup-shared-dotfiles`
+# - `just setup-shared-dotfiles --target /srv/dotfiles --group wheel`
+# - `just setup-shared-dotfiles --force-etc-nixos`
+setup-shared-dotfiles *args:
+  ./dotfiles/lib/bin/setup-shared-dotfiles {{args}}

@@ -26,7 +26,7 @@
 - Only use a non-`.worktrees/` location when the user explicitly asks for a different path.
 
 ## NixOS workflow
-- This system is managed with a Nix flake at `~/dotfiles/nixos`.
+- This system is managed with a Nix flake at `/etc/nixos` (`/srv/dotfiles/nixos`).
 - Use `just switch` from that directory for rebuilds instead of plain `nixos-rebuild`.
 - Host configs live under `machines/`; choose the appropriate host when needed.
 

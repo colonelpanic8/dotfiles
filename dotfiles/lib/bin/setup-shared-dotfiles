@@ -1,0 +1,123 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+usage() {
+  cat <<'EOF'
+Usage: setup-shared-dotfiles [--target /srv/dotfiles] [--group wheel] [--no-etc-nixos] [--force-etc-nixos]
+
+Copies this dotfiles checkout to an absent or empty shared machine-local
+worktree, then configures permissions so everyone can read it and sudoers can
+edit it without sudo. When the target already contains a git checkout, this
+repairs permissions/config only and does not overwrite local changes.
+
+Defaults:
+  target: /srv/dotfiles
+  group:  wheel
+
+The script also creates /etc/nixos -> <target>/nixos when /etc/nixos is absent
+or already a symlink. Use --force-etc-nixos to replace an existing /etc/nixos
+path with the symlink.
+EOF
+}
+
+target=/srv/dotfiles
+group=wheel
+manage_etc_nixos=1
+force_etc_nixos=0
+
+while [[ $# -gt 0 ]]; do
+  case "$1" in
+    --target)
+      target="$2"
+      shift 2
+      ;;
+    --group)
+      group="$2"
+      shift 2
+      ;;
+    --no-etc-nixos)
+      manage_etc_nixos=0
+      shift
+      ;;
+    --force-etc-nixos)
+      force_etc_nixos=1
+      shift
+      ;;
+    -h|--help)
+      usage
+      exit 0
+      ;;
+    *)
+      echo "Unknown argument: $1" >&2
+      usage >&2
+      exit 2
+      ;;
+  esac
+done
+
+script_dir="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"
+source_root="$(git -C "$script_dir" rev-parse --show-toplevel)"
+target="$(realpath -m "$target")"
+
+if ! getent group "$group" >/dev/null; then
+  echo "Group '$group' does not exist" >&2
+  exit 1
+fi
+
+sudo install -d -m 2775 -o root -g "$group" "$(dirname "$target")"
+
+if [[ "$source_root" != "$target" ]]; then
+  target_has_content=0
+  if [[ -d "$target" ]] && find "$target" -mindepth 1 -maxdepth 1 -print -quit | grep -q .; then
+    target_has_content=1
+  fi
+
+  if [[ "$target_has_content" == 1 && ! -d "$target/.git" ]]; then
+    echo "Refusing to copy into non-empty non-git target: $target" >&2
+    exit 1
+  fi
+
+  if [[ "$target_has_content" == 0 ]]; then
+    sudo install -d -m 2775 -o root -g "$group" "$target"
+    sudo rsync -a --chown="root:$group" "$source_root/" "$target/"
+  else
+    echo "Existing git checkout found at $target; repairing permissions only."
+  fi
+fi
+
+sudo chown -R "root:$group" "$target"
+sudo find "$target" -type d -exec chmod 2775 {} +
+sudo find "$target" -type f -exec chmod u+rw,g+rw,o+r {} +
+
+if command -v setfacl >/dev/null; then
+  sudo setfacl -R -m "g::rwX,o::rX,m::rwX" "$target"
+  sudo setfacl -R -d -m "g::rwX,o::rX,m::rwX" "$target"
+fi
+
+sudo git -C "$target" config core.sharedRepository group
+if ! sudo git config --system --get-all safe.directory 2>/dev/null | grep -Fx -- "$target" >/dev/null; then
+  sudo git config --system --add safe.directory "$target" 2>/dev/null || true
+fi
+
+if [[ "$manage_etc_nixos" == 1 ]]; then
+  nixos_target="$target/nixos"
+  if [[ ! -d "$nixos_target" ]]; then
+    echo "Expected NixOS flake directory is missing: $nixos_target" >&2
+    exit 1
+  fi
+
+  if [[ -L /etc/nixos || ! -e /etc/nixos ]]; then
+    sudo rm -rf /etc/nixos
+    sudo ln -s "$nixos_target" /etc/nixos
+  elif [[ "$force_etc_nixos" == 1 ]]; then
+    backup="/etc/nixos.backup.$(date +%Y%m%d-%H%M%S)"
+    sudo mv /etc/nixos "$backup"
+    sudo ln -s "$nixos_target" /etc/nixos
+    echo "Moved previous /etc/nixos to $backup"
+  else
+    echo "Leaving existing /etc/nixos in place; pass --force-etc-nixos to replace it." >&2
+  fi
+fi
+
+echo "Shared dotfiles worktree ready: $target"
+echo "Nix/Home Manager should use dotfiles-worktree = \"$target\"."

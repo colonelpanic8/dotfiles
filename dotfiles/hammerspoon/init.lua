@@ -348,7 +348,7 @@ local function toggleMonitorInput()
     end
   end, {
     "-lc",
-    "export PATH=\"$HOME/.nix-profile/bin:/run/current-system/sw/bin:/opt/homebrew/bin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:$PATH\"; \"$HOME/dotfiles/dotfiles/lib/functions/mpg341cx_input\" toggle",
+    "export PATH=\"$HOME/.nix-profile/bin:/run/current-system/sw/bin:/opt/homebrew/bin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:$PATH\"; \"${DOTFILES_WORKTREE:-$HOME/dotfiles}/dotfiles/lib/functions/mpg341cx_input\" toggle",
   }):start()
 end
 

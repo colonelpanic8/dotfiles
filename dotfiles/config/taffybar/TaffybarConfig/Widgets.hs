@@ -355,9 +355,9 @@ omniMenuWidget =
               OmniMenuSection
                 "System"
                 [ omniMenuItem "Lock" "system-lock-screen" "loginctl lock-session",
-                  omniMenuItem "Toggle screensaver" "video-display" "/home/imalison/dotfiles/dotfiles/lib/bin/hypr-screensaver toggle",
+                  omniMenuItem "Toggle screensaver" "video-display" "hypr-screensaver toggle",
                   omniMenuItem "Reload WM" "view-refresh" "sh -lc 'hyprctl reload || xmonad --restart || river-xmonad-restart'",
-                  omniMenuItem "Restart taffybar" "view-refresh-symbolic" "/home/imalison/dotfiles/dotfiles/config/taffybar/scripts/taffybar-restart",
+                  omniMenuItem "Restart taffybar" "view-refresh-symbolic" "/srv/dotfiles/dotfiles/config/taffybar/scripts/taffybar-restart",
                   omniMenuItem "Logout" "system-log-out" "sh -lc 'hyprctl dispatch exit || riverctl exit'",
                   omniMenuItem "Suspend" "media-playback-pause" "systemctl suspend",
                   omniMenuItem "Reboot" "system-reboot" "systemctl reboot",

@@ -6,7 +6,7 @@
   inputs,
   ...
 }: let
-  libDir = "${config.dotfiles-directory}/dotfiles/lib";
+  libDir = "${config.dotfiles-worktree}/dotfiles/lib";
   machineFilenames = builtins.attrNames (builtins.readDir ./machines);
   machineNameFromFilename = filename: builtins.head (builtins.split "\\." filename);
   machineNames = map machineNameFromFilename machineFilenames;
@@ -25,6 +25,15 @@ in
       dotfiles-directory = mkOption {
         type = types.path;
         default = ../.;
+      };
+      dotfiles-worktree = mkOption {
+        type = types.str;
+        default = "/srv/dotfiles";
+        description = ''
+          Runtime path to the shared, editable dotfiles checkout. Home Manager
+          uses this for out-of-store symlink targets so links are stable across
+          users instead of depending on each user's home directory.
+        '';
       };
     };
 
@@ -105,6 +114,7 @@ in
           }
           // multiplexerAliases;
         variables = {
+          DOTFILES_WORKTREE = config.dotfiles-worktree;
           ROFI_SYSTEMD_TERM = "ghostty -e";
           NIXPKGS_GIT_REV = "${inputs.nixpkgs.rev}";
           NIXPKGS_SOURCE = "${inputs.nixpkgs.outPath}";

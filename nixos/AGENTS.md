@@ -1,6 +1,6 @@
 # Agent Notes (dotfiles/nixos)
 
-This repository is a single git repo rooted at `~/dotfiles`. This `nixos/` directory is the NixOS flake, but most "user command" scripts and shell functions live outside of it.
+This repository is a single git repo rooted at `/srv/dotfiles` on NixOS machines. This `nixos/` directory is the NixOS flake, but most "user command" scripts and shell functions live outside of it.
 
 ## Where To Put Things
 
@@ -13,7 +13,7 @@ Avoid dropping scripts in `~/bin` or `~/.local/bin` unless the user explicitly a
 
 ## NixOS Rebuild Workflow
 
-- Run `just switch` from `~/dotfiles/nixos` (not `nixos-rebuild` directly).
+- Run `just switch` from `/etc/nixos` or `/srv/dotfiles/nixos` (not `nixos-rebuild` directly).
 - Host configs live under `machines/`.
 
 ## Rofi/Tmux Integration Pointers

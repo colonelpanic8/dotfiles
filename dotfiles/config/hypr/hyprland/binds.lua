@@ -49,8 +49,8 @@ function M.setup(ctx)
     bind("XF86AudioRaiseVolume", exec("set_volume --unmute --change-volume +5"), desc("Raise volume", { repeating = true }))
     bind("XF86AudioLowerVolume", exec("set_volume --unmute --change-volume -5"), desc("Lower volume", { repeating = true }))
     bind("XF86AudioMute", exec("set_volume --toggle-mute"), desc("Toggle mute"))
-    bind(hyper .. " + O", exec("/home/imalison/dotfiles/dotfiles/lib/functions/rofi_paswitch"), desc("Open PulseAudio output switcher"))
-    bind(hyper .. " + SHIFT + O", exec("/home/imalison/dotfiles/dotfiles/lib/bin/kef-optical"), desc("Switch KEF speakers to optical input"))
+    bind(hyper .. " + O", exec("rofi_paswitch"), desc("Open PulseAudio output switcher"))
+    bind(hyper .. " + SHIFT + O", exec("kef-optical"), desc("Switch KEF speakers to optical input"))
   end
 
   local function setup_display_wallpaper_and_capture_bindings()
@@ -58,9 +58,9 @@ function M.setup(ctx)
     bind("XF86MonBrightnessDown", exec("brightness.sh down"), desc("Lower display brightness", { repeating = true }))
     bind("Print", exec("flameshot gui"), desc("Take screenshot"))
     bind(hyper .. " + H", exec("flameshot gui"), desc("Take screenshot"))
-    bind(hyper .. " + backslash", exec("/home/imalison/dotfiles/dotfiles/lib/functions/mpg341cx_input toggle"), desc("Toggle monitor input"))
+    bind(hyper .. " + backslash", exec("mpg341cx_input toggle"), desc("Toggle monitor input"))
     bind(hyper .. " + comma", exec("rofi_wallpaper.sh"), desc("Open wallpaper menu"))
-    bind(hyper .. " + SHIFT + comma", exec("/home/imalison/dotfiles/dotfiles/lib/bin/neowall-wallpaper toggle"), desc("Toggle neowall wallpaper"))
+    bind(hyper .. " + SHIFT + comma", exec("neowall-wallpaper toggle"), desc("Toggle neowall wallpaper"))
   end
 
   local function setup_rofi_and_tool_bindings()
