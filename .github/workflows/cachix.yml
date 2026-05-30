@@ -1,15 +1,23 @@
-name: Build and Push Cachix (imalison-taffybar)
+name: Build and Push Cachix
 
 on:
   push:
     branches: [master]
     paths:
       - "dotfiles/config/taffybar/**"
+      - "dotfiles/config/hypr/**"
+      - "dotfiles/lib/bin/hypr_*"
+      - "dotfiles/lib/bin/hypr*"
+      - "nixos/**"
       - ".github/workflows/cachix.yml"
   pull_request:
     branches: [master]
     paths:
       - "dotfiles/config/taffybar/**"
+      - "dotfiles/config/hypr/**"
+      - "dotfiles/lib/bin/hypr_*"
+      - "dotfiles/lib/bin/hypr*"
+      - "nixos/**"
       - ".github/workflows/cachix.yml"
   workflow_dispatch: {}
 
@@ -87,3 +95,12 @@ jobs:
             --no-link \
             --print-build-logs \
             ./dotfiles/config/taffybar#defaultPackage.x86_64-linux
+
+      - name: Build Hyprland stuff
+        run: |
+          set -euxo pipefail
+          nix build \
+            --no-link \
+            --print-build-logs \
+            ./nixos#hyprland-stuff \
+            --override-input railbird-secrets path:./nixos/ci/railbird-secrets-stub

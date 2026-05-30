@@ -17,16 +17,9 @@
     inherit pkgs system;
     inherit inputs;
   };
-  hyprglass = pkgs.callPackage ../packages/hyprglass {
-    src = inputs.hyprglass;
-    hyprland = inputs.hyprland.packages.${system}.hyprland;
-    aquamarine = inputs.aquamarine.packages.${system}.aquamarine;
-    hyprcursor = inputs.hyprcursor.packages.${system}.hyprcursor;
-    hyprgraphics = inputs.hyprgraphics.packages.${system}.hyprgraphics;
-    hyprlang = inputs.hyprlang.packages.${system}.hyprlang;
-    hyprutils = inputs.hyprutils.packages.${system}.hyprutils;
+  hyprlandStuffPackages = import ./hyprland-stuff.nix {
+    inherit pkgs inputs lib;
   };
-  hyprexpo = inputs.hyprexpo.packages.${system}.hyprexpo;
   tangledConfig = dotfilesOrgApi.org-agenda-custom-config;
 
   # Import container build logic
@@ -42,11 +35,13 @@ in {
       kat-org-agenda-api = containerLib.containers.kat;
     }
     // lib.optionalAttrs pkgs.stdenv.isLinux {
-      hyprNStack = inputs.hyprNStack.packages.${system}.hyprNStack;
-      hyprexpo-lua = hyprexpo;
-      hyprwinview = inputs.hyprwinview.packages.${system}.hyprwinview;
-      hypr-workspace-history = inputs.hypr-workspace-history.packages.${system}.hypr-workspace-history;
-      inherit hyprglass;
+      hyprland-stuff = hyprlandStuffPackages.hyprlandStuff;
+      hyprland-lua = hyprlandStuffPackages.hyprlandPackage;
+      hyprNStack = hyprlandStuffPackages.hyprNStack;
+      hyprexpo-lua = hyprlandStuffPackages.hyprexpo;
+      hyprwinview = hyprlandStuffPackages.hyprwinview;
+      hypr-workspace-history = hyprlandStuffPackages.hyprWorkspaceHistory;
+      hyprglass = hyprlandStuffPackages.hyprglass;
     };
 
   checks =
@@ -60,15 +55,13 @@ in {
         '';
     }
     // lib.optionalAttrs pkgs.stdenv.isLinux {
-      hyprNStack = inputs.hyprNStack.packages.${system}.hyprNStack;
-      hyprexpo-lua = hyprexpo;
-      hyprwinview = inputs.hyprwinview.packages.${system}.hyprwinview;
-      hypr-workspace-history = inputs.hypr-workspace-history.packages.${system}.hypr-workspace-history;
-      inherit hyprglass;
-      hyprland-config-syntax = import ../checks/hyprland-config-syntax {
-        inherit pkgs;
-        hyprlandConfigDir = ../../dotfiles/config/hypr;
-      };
+      hyprNStack = hyprlandStuffPackages.hyprNStack;
+      hyprexpo-lua = hyprlandStuffPackages.hyprexpo;
+      hyprwinview = hyprlandStuffPackages.hyprwinview;
+      hypr-workspace-history = hyprlandStuffPackages.hyprWorkspaceHistory;
+      hyprglass = hyprlandStuffPackages.hyprglass;
+      hyprland-config-syntax = hyprlandStuffPackages.hyprlandConfigSyntax;
+      hyprland-stuff = hyprlandStuffPackages.hyprlandStuff;
       # Hyprland 0.54 currently segfaults in --verify-config before it can
       # validate even an empty config in this environment. Keep coverage in
       # hyprland-config-syntax until the upstream verifier is usable again.
