@@ -84,17 +84,23 @@ function M.setup(ctx)
   if enable_nstack and not verify_config then
     hl.plugin.load("/run/current-system/sw/lib/libhyprNStack.so")
   end
-  if enable_hyprexpo and not verify_config then
-    hl.plugin.load("/run/current-system/sw/lib/libhyprexpo.so")
-  end
   if enable_hyprwinview and not verify_config then
     hl.plugin.load("/run/current-system/sw/lib/libhyprwinview.so")
+  end
+  if enable_hyprtasking and not verify_config then
+    hl.plugin.load("/run/current-system/sw/lib/libhyprtasking.so")
+  end
+  if enable_hyprexpo and not enable_hyprtasking and not verify_config then
+    hl.plugin.load("/run/current-system/sw/lib/libhyprexpo.so")
   end
   if enable_workspace_history and not verify_config then
     hl.plugin.load("/run/current-system/sw/lib/libhypr-workspace-history.so")
   end
   if enable_hyprwobbly and not verify_config then
     hl.plugin.load("/run/current-system/sw/lib/libhyprwobbly.so")
+  end
+  if enable_dynamic_cursors and not verify_config then
+    hl.plugin.load("/run/current-system/sw/lib/libhypr-dynamic-cursors.so")
   end
   if enable_hyprglass and not verify_config then
     hl.plugin.load("/run/current-system/sw/lib/hyprglass.so")
@@ -287,6 +293,45 @@ function M.setup(ctx)
     })
   end
 
+  local function apply_dynamic_cursors_config()
+    if verify_config or not enable_dynamic_cursors then
+      return
+    end
+
+    hl.config({
+      plugin = {
+        dynamic_cursors = {
+          enabled = true,
+          mode = "tilt",
+          threshold = 2,
+          tilt = {
+            limit = 5000,
+            activation = "negative_quadratic",
+            window = 100,
+            full = 60,
+          },
+          shake = {
+            enabled = true,
+            threshold = 6.0,
+            base = 4.0,
+            speed = 4.0,
+            influence = 0.0,
+            limit = 0.0,
+            timeout = 2000,
+            effects = true,
+            ipc = false,
+          },
+          hyprcursor = {
+            nearest = 1,
+            enabled = true,
+            resolution = -1,
+            fallback = "clientside",
+          },
+        },
+      },
+    })
+  end
+
   local function apply_visual_performance_mode()
     if verify_config then
       return
@@ -334,6 +379,18 @@ function M.setup(ctx)
 
     hl.workspace_rule({ workspace = "w[tv1]s[false]", gaps_out = 0, gaps_in = 0 })
     hl.workspace_rule({ workspace = "f[1]s[false]", gaps_out = 0, gaps_in = 0 })
+
+    hl.window_rule({
+      name = "tagged-gaming-window",
+      match = { tag = gaming_window_tag },
+      idle_inhibit = "fullscreen",
+      opaque = true,
+      no_blur = true,
+      no_shadow = true,
+      no_anim = true,
+      rounding = 0,
+      border_size = 0,
+    })
 
     hl.window_rule({ match = { class = "^()$", title = "^()$" }, float = true })
     hl.window_rule({ match = { title = "^(Picture-in-Picture)$" }, float = true })
@@ -432,6 +489,7 @@ function M.setup(ctx)
   ctx.apply_rules = apply_rules
   ctx.apply_hyprglass_config = apply_hyprglass_config
   ctx.apply_hyprwobbly_config = apply_hyprwobbly_config
+  ctx.apply_dynamic_cursors_config = apply_dynamic_cursors_config
   ctx.apply_visual_performance_mode = apply_visual_performance_mode
   ctx.is_file_chooser_window = is_file_chooser_window
   ctx.raise_file_chooser_window = raise_file_chooser_window

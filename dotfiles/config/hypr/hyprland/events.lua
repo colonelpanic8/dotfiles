@@ -26,7 +26,7 @@ function M.setup(ctx)
     }
     fullscreen_states[address] = current
 
-    if window.floating or current_layout == monocle_layout then
+    if window.floating or current_layout == monocle_layout or is_game_like_window(window) then
       return
     end
 
@@ -41,6 +41,7 @@ function M.setup(ctx)
     apply_hyprexpo_config()
     apply_hyprwinview_config()
     apply_hyprwobbly_config()
+    apply_dynamic_cursors_config()
     apply_hyprglass_config()
     apply_visual_performance_mode()
     apply_rules()
@@ -60,6 +61,7 @@ function M.setup(ctx)
   hl.on("config.reloaded", apply_hyprexpo_config)
   hl.on("config.reloaded", apply_hyprwinview_config)
   hl.on("config.reloaded", apply_hyprwobbly_config)
+  hl.on("config.reloaded", apply_dynamic_cursors_config)
   hl.on("config.reloaded", apply_hyprglass_config)
   hl.on("config.reloaded", apply_visual_performance_mode)
   hl.on("config.reloaded", apply_rules)
@@ -83,7 +85,6 @@ function M.setup(ctx)
   hl.on("window.move_to_workspace", update_monocle_notice)
   hl.on("window.fullscreen", reconcile_fullscreen_state)
   hl.on("window.update_rules", reconcile_fullscreen_state)
-
   hl.on("window.open", adopt_matching_scratchpad_window)
   hl.on("window.class", adopt_matching_scratchpad_window)
   hl.on("window.title", adopt_matching_scratchpad_window)

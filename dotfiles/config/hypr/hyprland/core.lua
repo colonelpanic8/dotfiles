@@ -198,7 +198,7 @@ function M.setup(ctx)
   end
 
   local function apply_hyprexpo_config()
-    if verify_config or not enable_hyprexpo then
+    if verify_config or not enable_hyprexpo or enable_hyprtasking then
       return
     end
 

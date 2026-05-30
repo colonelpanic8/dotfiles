@@ -365,6 +365,108 @@ function M.setup(ctx)
     return false
   end
 
+  local function value_matches_any_pattern(value, patterns)
+    value = tostring(value or "")
+    if value == "" then
+      return false
+    end
+
+    for _, pattern in ipairs(patterns or {}) do
+      if value:find(pattern) then
+        return true
+      end
+    end
+    return false
+  end
+
+  local function is_game_like_window(window)
+    if not window then
+      return false
+    end
+
+    if window_has_tag(window, gaming_window_disabled_tag) then
+      return false
+    end
+    if
+      value_matches_any_pattern(window.class, gaming_window_excluded_class_patterns)
+      or value_matches_any_pattern(window.initial_class, gaming_window_excluded_class_patterns)
+      or value_matches_any_pattern(window.title, gaming_window_excluded_title_patterns)
+      or value_matches_any_pattern(window.initial_title, gaming_window_excluded_title_patterns)
+    then
+      return false
+    end
+
+    return tostring(window.content_type or window.content or "") == "game"
+      or window_has_tag(window, gaming_window_tag)
+      or value_matches_any_pattern(window.class, gaming_window_class_patterns)
+      or value_matches_any_pattern(window.initial_class, gaming_window_class_patterns)
+      or value_matches_any_pattern(window.title, gaming_window_title_patterns)
+      or value_matches_any_pattern(window.initial_title, gaming_window_title_patterns)
+  end
+
+  local function set_window_gaming_mode(window, enabled, opts)
+    local selector = window_selector(window)
+    if not selector then
+      return
+    end
+
+    if enabled then
+      dispatch(hl.dsp.window.tag({ tag = "-" .. gaming_window_disabled_tag, window = selector }))
+      dispatch(hl.dsp.window.tag({ tag = "+" .. gaming_window_tag, window = selector }))
+      dispatch(hl.dsp.window.fullscreen_state({
+        internal = 2,
+        client = 2,
+        action = "set",
+        window = selector,
+      }))
+    else
+      dispatch(hl.dsp.window.tag({ tag = "-" .. gaming_window_tag, window = selector }))
+      dispatch(hl.dsp.window.tag({ tag = "+" .. gaming_window_disabled_tag, window = selector }))
+      dispatch(hl.dsp.window.fullscreen_state({
+        internal = 0,
+        client = 0,
+        action = "set",
+        window = selector,
+      }))
+    end
+
+    if not (opts and opts.quiet) then
+      hl.notification.create({
+        text = "Gaming fullscreen: " .. (enabled and "on" or "off"),
+        duration = 1600,
+        icon = enabled and notification_icons.ok or notification_icons.info,
+        color = enabled and "rgba(33ccffee)" or "rgba(edb443ff)",
+        font_size = 13,
+      })
+    end
+  end
+
+  local function toggle_active_window_gaming_mode()
+    local window = hl.get_active_window()
+    if not window then
+      return
+    end
+
+    set_window_gaming_mode(window, not window_has_tag(window, gaming_window_tag))
+  end
+
+  local function toggle_active_window_real_fullscreen()
+    local window = hl.get_active_window()
+    if not window then
+      return
+    end
+
+    local fullscreen = tonumber(window.fullscreen) or 0
+    local fullscreen_client = tonumber(window.fullscreen_client) or 0
+    local enabling = fullscreen ~= 2 or fullscreen_client ~= 2
+    dispatch(hl.dsp.window.fullscreen_state({
+      internal = enabling and 2 or 0,
+      client = enabling and 2 or 0,
+      action = "set",
+      window = window_selector(window),
+    }))
+  end
+
   local function toggle_inactive_opacity_for_active_window()
     local window = hl.get_active_window()
     local selector = window_selector(window)
@@ -490,6 +592,12 @@ function M.setup(ctx)
   ctx.gather_focused_class = gather_focused_class
   ctx.focus_next_class = focus_next_class
   ctx.show_active_window_info = show_active_window_info
+  ctx.window_has_tag = window_has_tag
+  ctx.value_matches_any_pattern = value_matches_any_pattern
+  ctx.is_game_like_window = is_game_like_window
+  ctx.set_window_gaming_mode = set_window_gaming_mode
+  ctx.toggle_active_window_gaming_mode = toggle_active_window_gaming_mode
+  ctx.toggle_active_window_real_fullscreen = toggle_active_window_real_fullscreen
   ctx.toggle_inactive_opacity_for_active_window = toggle_inactive_opacity_for_active_window
   ctx.raise_or_spawn = raise_or_spawn
   ctx.minimize_active_window = minimize_active_window

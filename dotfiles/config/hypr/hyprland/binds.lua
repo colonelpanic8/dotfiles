@@ -97,7 +97,19 @@ function M.setup(ctx)
       default_action = "bring",
     }), desc("Show all-workspace window overview", overview_bind_opts))
     bind(main_mod .. " + SHIFT + slash", hyprwinview({ action = "toggle-filter" }), desc("Toggle window overview filter", overview_bind_opts))
-    bind("ALT + Tab", hyprexpo("toggle"), desc("Toggle hyprexpo workspace overview", overview_bind_opts))
+    bind("ALT + Tab", function()
+      if hl.plugin and hl.plugin.hyprtasking and hl.plugin.hyprtasking.toggle then
+        hl.plugin.hyprtasking.toggle("cursor")
+      else
+        hl.notification.create({
+          text = "hyprtasking is not loaded",
+          duration = 1800,
+          icon = notification_icons.warning,
+          color = "rgba(edb443ff)",
+          font_size = 13,
+        })
+      end
+    end, desc("Toggle hyprtasking workspace overview", overview_bind_opts))
     bind("ALT + SHIFT + Tab", hyprexpo("on"), desc("Open hyprexpo workspace overview", overview_bind_opts))
     bind(main_mod .. " + G", hyprwinview({
       action = "show",
@@ -227,6 +239,8 @@ function M.setup(ctx)
     bind(main_mod .. " + CTRL + Space", gather_workspace_into_tabbed_group, desc("Gather workspace into tabbed group"))
     bind(main_mod .. " + bracketright", monocle_next, desc("Focus next monocle window"))
     bind(main_mod .. " + bracketleft", monocle_prev, desc("Focus previous monocle window"))
+    bind(main_mod .. " + F", toggle_active_window_real_fullscreen, desc("Toggle active window real fullscreen"))
+    bind(main_mod .. " + SHIFT + F", toggle_active_window_gaming_mode, desc("Toggle active window gaming fullscreen"))
     bind(main_mod .. " + T", hl.dsp.window.float({ action = "disable" }), desc("Tile active window"))
     bind(main_mod .. " + O", toggle_pinned_active_window, desc("Toggle pinned active window"))
     bind(main_mod .. " + M", minimize_active_window, desc("Minimize active window"))

@@ -8,20 +8,52 @@
 }: let
   system = pkgs.stdenv.hostPlatform.system;
   hyprlandInput = inputs.hyprland;
-  avoidHyprlandGccIce = package:
-    package.override {
+  hyprlandInputPkgs = import hyprlandInput.inputs.nixpkgs {inherit system;};
+  makeHyprlandGlaze = glaze:
+    (glaze.override {
+      enableSIMD = false;
+    }).overrideAttrs (old: {
+      cmakeFlags =
+        (old.cmakeFlags or [])
+        ++ [
+          "-Dglaze_DEVELOPER_MODE=OFF"
+          "-Dglaze_ENABLE_FUZZING=OFF"
+          "-DBUILD_TESTING=OFF"
+        ];
+    });
+  avoidHyprlandGccIce = glaze: package:
+    (package.override {
       stdenv = pkgs.clangStdenv;
-    };
-  hyprlandGccIceOverlay = final: prev: {
-    hyprland = prev.hyprland.override {
+    }).overrideAttrs (old: {
+      buildInputs =
+        map
+        (input:
+          if (input.pname or null) == "glaze"
+          then makeHyprlandGlaze glaze
+          else input)
+        (old.buildInputs or []);
+    });
+  avoidOverlayHyprlandGccIce = final: package:
+    (package.override {
       stdenv = final.clangStdenv;
-    };
+    }).overrideAttrs (old: {
+      buildInputs =
+        map
+        (input:
+          if (input.pname or null) == "glaze"
+          then makeHyprlandGlaze final.glaze
+          else input)
+        (old.buildInputs or []);
+    });
+  hyprlandGccIceOverlay = final: prev: {
+    glaze = makeHyprlandGlaze prev.glaze;
+    hyprland = avoidOverlayHyprlandGccIce final prev.hyprland;
     hyprland-unwrapped = final.hyprland.override {wrapRuntimeDeps = false;};
     hyprland-with-tests = final.hyprland.override {withTests = true;};
   };
   # GCC 15.2 ICEs while compiling Hyprland 0.55 on this pin. Keep the
   # Hyprland/plugin pin set intact and build Hyprland itself with Clang.
-  baseHyprlandPackage = (avoidHyprlandGccIce hyprlandInput.packages.${system}.hyprland).overrideAttrs (_: {
+  baseHyprlandPackage = (avoidHyprlandGccIce hyprlandInputPkgs.glaze hyprlandInput.packages.${system}.hyprland).overrideAttrs (_: {
     # Clang 21 can segfault in LLVM's Live DEBUG_VALUE analysis while compiling
     # ConfigValues.cpp when this build runs in parallel.
     enableParallelBuilding = false;
@@ -65,6 +97,9 @@
       name = "${package.name}-lua-config";
       inherit (package) version;
       paths = [package];
+      meta = builtins.removeAttrs (package.meta or {}) ["outputsToInstall"] // {
+        mainProgram = package.meta.mainProgram or "Hyprland";
+      };
       passthru =
         (package.passthru or {})
         // {
@@ -157,6 +192,65 @@
       platforms = lib.platforms.linux;
     };
   };
+  hyprtasking = pkgs.gcc14Stdenv.mkDerivation {
+    pname = "hyprtasking";
+    version = "0.1.0-unstable-${inputs.hyprtasking.shortRev or "dirty"}";
+    src = inputs.hyprtasking;
+
+    strictDeps = true;
+    nativeBuildInputs = [
+      pkgs.pkg-config
+      pkgs.meson
+      pkgs.ninja
+    ] ++ baseHyprlandPackage.nativeBuildInputs;
+    buildInputs = [baseHyprlandPackage] ++ baseHyprlandPackage.buildInputs;
+
+    meta = {
+      description = "Powerful workspace management plugin for Hyprland";
+      homepage = "https://github.com/raybbian/hyprtasking";
+      license = lib.licenses.bsd3;
+      platforms = lib.platforms.linux;
+    };
+  };
+  hyprDynamicCursors = pkgs.gcc14Stdenv.mkDerivation {
+    pname = "hypr-dynamic-cursors";
+    version = "0-unstable-${inputs.hypr-dynamic-cursors.shortRev or "dirty"}";
+    src = inputs.hypr-dynamic-cursors;
+
+    strictDeps = true;
+    nativeBuildInputs =
+      baseHyprlandPackage.nativeBuildInputs
+      ++ [
+        baseHyprlandPackage
+        pkgs.pkg-config
+      ];
+    buildInputs = [ (lib.getDev baseHyprlandPackage) ] ++ baseHyprlandPackage.buildInputs;
+
+    dontConfigure = true;
+    dontUseCmakeConfigure = true;
+    dontUseMesonConfigure = true;
+    dontUseNinjaBuild = true;
+    dontUseNinjaInstall = true;
+
+    buildPhase = ''
+      runHook preBuild
+      make
+      runHook postBuild
+    '';
+
+    installPhase = ''
+      runHook preInstall
+      install -Dm755 out/dynamic-cursors.so "$out/lib/libhypr-dynamic-cursors.so"
+      runHook postInstall
+    '';
+
+    meta = {
+      description = "A plugin to make Hyprland cursor movement more realistic";
+      homepage = "https://github.com/VirtCode/hypr-dynamic-cursors";
+      license = lib.licenses.bsd3;
+      platforms = lib.platforms.linux;
+    };
+  };
   hyprNStack = pkgs.stdenv.mkDerivation {
     pname = "hyprNStack";
     version = "0-unstable-${inputs.hyprNStack.shortRev or "dirty"}";
@@ -194,6 +288,8 @@
       hyprexpo
       hyprwinview
       hyprWorkspaceHistory
+      hyprtasking
+      hyprDynamicCursors
       hyprwobbly
     ]
     ++ lib.optionals enableHyprglass [hyprglass];

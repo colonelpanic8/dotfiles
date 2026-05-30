@@ -130,6 +130,16 @@
       inputs.hyprland.follows = "hyprland";
     };
 
+    hyprtasking = {
+      # PR #114 tracks Hyprland 0.55 and adds Lua plugin functions.
+      url = "github:yerlotic/hyprtasking/chase_v55";
+      inputs = {
+        hyprland.follows = "hyprland";
+        nixpkgs.follows = "nixpkgs";
+        systems.follows = "systems";
+      };
+    };
+
     hypr-workspace-history = {
       url = "github:colonelpanic8/hypr-workspace-history";
       inputs.hyprland.follows = "hyprland";
@@ -142,6 +152,14 @@
         hyprland.follows = "hyprland";
         nixpkgs.follows = "nixpkgs";
         systems.follows = "systems";
+      };
+    };
+
+    hypr-dynamic-cursors = {
+      url = "github:VirtCode/hypr-dynamic-cursors";
+      inputs = {
+        hyprland.follows = "hyprland";
+        nixpkgs.follows = "nixpkgs";
       };
     };
 
@@ -197,7 +215,6 @@
     imalison-taffybar = {
       url = "path:../dotfiles/config/taffybar";
       inputs = {
-        nixpkgs.follows = "nixpkgs";
         flake-utils.follows = "flake-utils";
         xmonad.follows = "xmonad";
       };
