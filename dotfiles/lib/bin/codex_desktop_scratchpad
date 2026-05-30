@@ -76,6 +76,31 @@ find_running_app() {
     return 1
 }
 
+activate_status_notifier_item() {
+    local pid="$1"
+    local qdbus_cmd
+    local service
+    local path
+
+    qdbus_cmd="$(command -v qdbus || command -v qdbus6 || true)"
+    [ -n "$qdbus_cmd" ] || return 1
+
+    while IFS= read -r service; do
+        [ -n "$service" ] || continue
+        while IFS= read -r path; do
+            case "$path" in
+                */StatusNotifierItem)
+                    if "$qdbus_cmd" "$service" "$path" org.kde.StatusNotifierItem.Activate 0 0 >/dev/null 2>&1; then
+                        return 0
+                    fi
+                    ;;
+            esac
+        done < <("$qdbus_cmd" "$service" 2>/dev/null || true)
+    done < <("$qdbus_cmd" 2>/dev/null | grep -E "^org\\.kde\\.StatusNotifierItem-${pid}-" || true)
+
+    return 1
+}
+
 running_app_is_alive() {
     local pid
 
@@ -117,10 +142,12 @@ fi
 
 if running_app="$(find_running_app)"; then
     running_pid="${running_app%%	*}"
-    running_app_dir="${running_app#*	}"
     mkdir -p "$state_dir"
     printf '%s\n' "$running_pid" > "$pid_file"
-    exec "$running_app_dir/start.sh" "$@"
+    send_launch_action "$@" && exit 0
+    activate_status_notifier_item "$running_pid" && exit 0
+    notify-send "Codex is already running" "No warm-start socket or tray activation path was available." >/dev/null 2>&1 || true
+    exit 0
 fi
 
 exec codex-desktop "$@"
