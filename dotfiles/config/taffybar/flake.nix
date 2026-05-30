@@ -4,7 +4,10 @@
       # Keep the default source usable in CI. Local iteration uses
       # IMALISON_TAFFYBAR_LIVE_CHECKOUT below via `just switch-local-taffybar`.
       url = "github:taffybar/taffybar";
-      inputs.weeder-nix.inputs.pre-commit-hooks.inputs.nixpkgs.follows = "nixpkgs";
+      inputs.weeder-nix = {
+        url = "github:NorfairKing/weeder-nix";
+        inputs.pre-commit-hooks.inputs.nixpkgs.follows = "nixpkgs";
+      };
     };
     # Follow the vendored taffybar flake's pins so the config shell and the
     # library shell mostly share their nixpkgs/Haskell dependency graph.
