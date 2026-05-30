@@ -7,11 +7,7 @@
   ...
 }:
 let
-  codexDesktopLinuxSource = pkgs.applyPatches {
-    name = "codex-desktop-linux-patched";
-    src = inputs.codex-desktop-linux;
-    patches = [ ./patches/codex-desktop-linux-dmg-hash.patch ];
-  };
+  codexDesktopLinuxSource = inputs.codex-desktop-linux;
   codexDesktopLinux =
     let
       flake = import "${codexDesktopLinuxSource}/flake.nix";
