@@ -22,6 +22,12 @@ in {
       description = "Codex dotfiles directory in the live worktree.";
     };
 
+    sourceCodexDir = lib.mkOption {
+      type = lib.types.str;
+      default = "${cfg.worktreeCodexDir}";
+      description = "Readable fallback Codex dotfiles directory from the flake source.";
+    };
+
     localConfig = lib.mkOption {
       type = lib.types.str;
       default = "${cfg.codexHome}/config.local.toml";
@@ -103,6 +109,7 @@ in {
     home.activation.generateCodexConfig = lib.hm.dag.entryAfter ["writeBoundary"] ''
       codex_home=${lib.escapeShellArg cfg.codexHome}
       base=${lib.escapeShellArg "${cfg.worktreeCodexDir}/config.toml"}
+      source_base=${lib.escapeShellArg "${cfg.sourceCodexDir}/config.toml"}
       local_config=${lib.escapeShellArg cfg.localConfig}
       local_state_config=${lib.escapeShellArg cfg.generatedStateConfig}
       target="$codex_home/config.toml"
@@ -115,8 +122,12 @@ in {
       )}
 
       if [ ! -r "$base" ]; then
-        echo "Missing shared Codex config at $base" >&2
-        exit 1
+        if [ -r "$source_base" ]; then
+          base="$source_base"
+        else
+          echo "Missing shared Codex config at $base and $source_base" >&2
+          exit 1
+        fi
       fi
 
       mkdir -p "$codex_home"
@@ -221,30 +232,37 @@ in {
     home.activation.linkCodexDotfileSkills = lib.hm.dag.entryAfter ["writeBoundary"] ''
       skills_dir=${lib.escapeShellArg cfg.skillsDir}
       worktree_skills=${lib.escapeShellArg "${cfg.worktreeCodexDir}/skills"}
+      source_skills=${lib.escapeShellArg "${cfg.sourceCodexDir}/skills"}
 
       if [ ! -d "$worktree_skills" ]; then
-        echo "Skipping Codex dotfile skills setup because $worktree_skills is not a directory" >&2
-        exit 1
+        if [ -d "$source_skills" ]; then
+          worktree_skills="$source_skills"
+        else
+          echo "Skipping Codex dotfile skills setup because neither $worktree_skills nor $source_skills is a directory" >&2
+          worktree_skills=
+        fi
       fi
 
       mkdir -p "$skills_dir"
 
-      for skill in "$worktree_skills"/*; do
-        [ -d "$skill" ] || continue
-        [ -r "$skill/SKILL.md" ] || continue
+      if [ -n "$worktree_skills" ]; then
+        for skill in "$worktree_skills"/*; do
+          [ -d "$skill" ] || continue
+          [ -r "$skill/SKILL.md" ] || continue
 
-        name="$(basename "$skill")"
-        case "$name" in
-          .system|codex-primary-runtime) continue ;;
-        esac
+          name="$(basename "$skill")"
+          case "$name" in
+            .system|codex-primary-runtime) continue ;;
+          esac
 
-        target="$skills_dir/$name"
-        if [ -L "$target" ] || [ ! -e "$target" ]; then
-          ln -sfn "$skill" "$target"
-        elif [ ! -d "$target" ]; then
-          echo "Skipping Codex skill $name because $target exists and is not a directory" >&2
-        fi
-      done
+          target="$skills_dir/$name"
+          if [ -L "$target" ] || [ ! -e "$target" ]; then
+            ln -sfn "$skill" "$target"
+          elif [ ! -d "$target" ]; then
+            echo "Skipping Codex skill $name because $target exists and is not a directory" >&2
+          fi
+        done
+      fi
     '';
 
     home.activation.setupCodexGeneratedSkills = lib.hm.dag.entryAfter ["linkCodexDotfileSkills"] ''

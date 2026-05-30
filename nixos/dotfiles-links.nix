@@ -18,6 +18,7 @@
   # Use the flake source for enumeration (pure), but point links at the worktree.
   srcDotfiles = ../dotfiles;
   srcConfig = srcDotfiles + "/config";
+  srcCodex = srcDotfiles + "/codex";
 
   excludedTop = [
     # Managed by nix-shared/home-manager/codex-generated-skills.nix so
@@ -86,6 +87,7 @@ in {
     builtins.listToAttrs (map mkConfigDir configDirNames);
 
   myModules.codexGeneratedSkills.enable = true;
+  myModules.codexGeneratedSkills.sourceCodexDir = "${srcCodex}";
 
   # Home Manager directory links for .emacs.d resolve through the store on this
   # machine, which breaks Elpaca's writable state under ~/.emacs.d/elpaca.

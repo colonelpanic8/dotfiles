@@ -63,11 +63,14 @@ makeEnable config "myModules.tailscale" true {
       fi
 
       # First-time (or post-logout) login.
-      ${pkgs.tailscale}/bin/tailscale up \
+      if ! ${pkgs.tailscale}/bin/tailscale up \
         --auth-key "file:$key_file" \
         --accept-dns=true \
         --operator=imalison \
-        --timeout=60s
+        --timeout=60s; then
+        echo "tailscale-autoconnect: tailscale up failed; leaving manual login required" >&2
+        exit 0
+      fi
     '';
   };
 }
