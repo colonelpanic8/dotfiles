@@ -6,7 +6,16 @@
   inputs,
   ...
 }: let
+  envDotfilesWorktree = builtins.getEnv "DOTFILES_WORKTREE";
+  defaultDotfilesWorktree =
+    if envDotfilesWorktree != ""
+    then envDotfilesWorktree
+    else "/srv/dotfiles";
   libDir = "${config.dotfiles-worktree}/dotfiles/lib";
+  zshLibDir = builtins.path {
+    path = ../dotfiles/lib;
+    name = "dotfiles-zsh-lib";
+  };
   machineFilenames = builtins.attrNames (builtins.readDir ./machines);
   machineNameFromFilename = filename: builtins.head (builtins.split "\\." filename);
   machineNames = map machineNameFromFilename machineFilenames;
@@ -28,7 +37,10 @@ in
       };
       dotfiles-worktree = mkOption {
         type = types.str;
-        default = "/srv/dotfiles";
+        default = defaultDotfilesWorktree;
+        defaultText = literalExpression ''
+          builtins.getEnv "DOTFILES_WORKTREE" or "/srv/dotfiles"
+        '';
         description = ''
           Runtime path to the shared, editable dotfiles checkout. Home Manager
           uses this for out-of-store symlink targets so links are stable across
@@ -59,9 +71,9 @@ in
           plugins = ["git" "sudo" "pip"];
         };
         shellInit = ''
-          fpath=("$HOME/.lib/completions" "${libDir}/completions" $fpath)
-          fpath+="${libDir}/functions"
-          for file in "${libDir}/functions/"*
+          fpath=("${zshLibDir}/completions" $fpath)
+          fpath+="${zshLibDir}/functions"
+          for file in "${zshLibDir}/functions/"*(N)
           do
               autoload "''${file##*/}"
           done
