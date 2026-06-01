@@ -101,7 +101,6 @@
   services.nginx.virtualHosts."rocket-sense.duckdns.org" = {
     enableACME = true;
     forceSSL = true;
-    serverAliases = ["rbsf.tplinkdns.com"];
     locations."/" = {
       proxyPass = "http://127.0.0.1:30080";
       proxyWebsockets = true;
@@ -112,6 +111,14 @@
       '';
     };
   };
+
+  services.nginx.virtualHosts."rbsf.tplinkdns.com" = {
+    useACMEHost = "rocket-sense.duckdns.org";
+    forceSSL = true;
+    globalRedirect = "rocket-sense.duckdns.org";
+  };
+
+  security.acme.certs."rocket-sense.duckdns.org".extraDomainNames = ["rbsf.tplinkdns.com"];
 
   # Open the standard Syncthing sync/discovery ports on the host firewall.
   # Note: you may still need router/NAT port-forwards for inbound access from the internet.
