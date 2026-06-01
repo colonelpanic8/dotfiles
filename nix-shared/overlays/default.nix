@@ -59,6 +59,9 @@ in
           cp "${prev.google-chrome}/share/applications/$desktopName" "$desktopFile"
           substituteInPlace "$desktopFile" \
             --replace-fail "${prev.google-chrome}/bin/google-chrome-stable" "$out/bin/google-chrome-stable"
+          ${final.gnused}/bin/sed -i \
+            '/^\[Desktop Action new-window\]/,/^\[Desktop Action / s#^Exec=\(.*google-chrome-stable\)$#Exec=\1 --new-window#' \
+            "$desktopFile"
           substituteInPlace "$desktopFile" \
             --replace-fail "image/gif;" "" \
             --replace-fail "image/jpeg;" "" \

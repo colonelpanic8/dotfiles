@@ -238,7 +238,7 @@ in {
     inherit defaultApplications;
   };
 
-  home.activation.refreshChromeDesktopMimeCache = lib.hm.dag.entryAfter ["writeBoundary"] ''
+  home.activation.refreshChromeDesktopLaunchers = lib.hm.dag.entryAfter ["writeBoundary"] ''
     applications_dir="$HOME/.local/share/applications"
 
     if [ -d "$applications_dir" ]; then
@@ -253,6 +253,10 @@ in {
             -e 's,image/jpeg;,,g' \
             -e 's,image/png;,,g' \
             -e 's,image/webp;,,g' \
+            "$desktop_file"
+
+          ${pkgs.gnused}/bin/sed -i \
+            '/^\[Desktop Action new-window\]/,/^\[Desktop Action / s#^Exec=\(.*google-chrome-stable\)$#Exec=\1 --new-window#' \
             "$desktop_file"
         fi
       done

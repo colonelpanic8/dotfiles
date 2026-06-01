@@ -42,6 +42,9 @@
         --replace-fail \
           "Exec=${pkgs.google-chrome}/bin/google-chrome-stable" \
           "Exec=$out/bin/google-chrome-stable"
+      ${pkgs.gnused}/bin/sed -i \
+        '/^\[Desktop Action new-window\]/,/^\[Desktop Action / s#^Exec=\(.*google-chrome-stable\)$#Exec=\1 --new-window#' \
+        "$desktop_file"
     '';
   };
   rlruPackages = inputs.rlru.packages.${pkgs.stdenv.hostPlatform.system};
