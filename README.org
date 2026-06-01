@@ -102,7 +102,7 @@ nix-darwin, nix-homebrew, Home Manager, agenix, and the shared package list in
 Common workflow:
 
 #+begin_src sh
-cd ~/dotfiles/nix-darwin
+cd /srv/dotfiles/nix-darwin
 just switch
 #+end_src
 

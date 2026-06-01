@@ -77,13 +77,13 @@ Do not start with a blind `find ~ -name target` or with hard-coded roots that ma
 Inventory the biggest candidates:
 
 ```bash
-python /home/imalison/dotfiles/dotfiles/agents/skills/disk-space-cleanup/scripts/rust_target_dirs.py list --min-size 500M --limit 30
+python /srv/dotfiles/dotfiles/agents/skills/disk-space-cleanup/scripts/rust_target_dirs.py list --min-size 500M --limit 30
 ```
 
 Focus on stale targets only:
 
 ```bash
-python /home/imalison/dotfiles/dotfiles/agents/skills/disk-space-cleanup/scripts/rust_target_dirs.py list --min-size 1G --older-than 14 --output tsv
+python /srv/dotfiles/dotfiles/agents/skills/disk-space-cleanup/scripts/rust_target_dirs.py list --min-size 1G --older-than 14 --output tsv
 ```
 
 Use `cargo-sweep` when the repo is still active and you want age/toolchain-aware cleanup inside a workspace:
@@ -98,13 +98,13 @@ nix run nixpkgs#cargo-sweep -- sweep -r -i <workspace-root>
 Use direct `target/` deletion when inventory shows a discrete stale directory, especially for inactive repos or project-local worktrees. The helper only deletes explicit paths named `target` that are beneath configured roots and a Cargo project:
 
 ```bash
-python /home/imalison/dotfiles/dotfiles/agents/skills/disk-space-cleanup/scripts/rust_target_dirs.py delete /abs/path/to/target
-python /home/imalison/dotfiles/dotfiles/agents/skills/disk-space-cleanup/scripts/rust_target_dirs.py delete /abs/path/to/target --yes
+python /srv/dotfiles/dotfiles/agents/skills/disk-space-cleanup/scripts/rust_target_dirs.py delete /abs/path/to/target
+python /srv/dotfiles/dotfiles/agents/skills/disk-space-cleanup/scripts/rust_target_dirs.py delete /abs/path/to/target --yes
 ```
 
 Recommended sequence:
 
-1. Run `rust_target_dirs.py list` to see the largest `target/` directories across `~/Projects`, `~/org`, `~/dotfiles`, and other configured roots.
+1. Run `rust_target_dirs.py list` to see the largest `target/` directories across `~/Projects`, `~/org`, `/srv/dotfiles`, and other configured roots.
 2. For active repos, prefer `cargo-sweep` from the workspace root.
 3. For inactive repos, abandoned branches, and `.worktrees/*/target`, prefer guarded direct deletion of the explicit `target/` directory.
 4. Re-run the list command after each deletion round to show reclaimed space.
@@ -116,7 +116,7 @@ Machine-specific note:
 - `cargo-sweep sweep -i/--installed` can fail when `rustup toolchain list` contains stale toolchains whose `rustc` no longer exists. On this machine, `1.68.2-x86_64-unknown-linux-gnu` caused `failed to determine fingerprint ... 'rustc': No such file or directory`.
 - `/home/imalison/Projects/codex/codex-rs/target` can be dominated by current-looking `target/debug/incremental` data that `cargo-sweep sweep -a` and `--maxsize` report as not removable. If it is stale and space pressure is high, use the guarded `rust_target_dirs.py delete ... --yes` workflow for that explicit target directory.
 - `/home/imalison/Projects/hypr-workspace-history/target` is a small non-Cargo false positive; the guarded delete workflow correctly rejects it because there is no Cargo project above the directory.
-- `nixos/imalison.nix` defines a daily user timer, `cargo-sweep-rust-targets.timer`, that runs `cargo-sweep sweep -r --hidden --maxsize 15GB` across `/home/imalison/Projects`, `/home/imalison/org`, and `/home/imalison/dotfiles`.
+- `nixos/imalison.nix` defines a daily user timer, `cargo-sweep-rust-targets.timer`, that runs `cargo-sweep sweep -r --hidden --maxsize 15GB` across `/home/imalison/Projects`, `/home/imalison/org`, and `/srv/dotfiles`.
 
 ## Step 4: Investigation with `ncdu` and `du`
 
@@ -202,7 +202,7 @@ nix-store --gc --print-roots | rg '(ghc|rust)'
 Resolve why a path is retained:
 
 ```bash
-/home/imalison/dotfiles/dotfiles/lib/functions/find_store_path_gc_roots /nix/store/<store-path>
+/srv/dotfiles/dotfiles/lib/functions/find_store_path_gc_roots /nix/store/<store-path>
 nix why-depends <consumer-store-path> <dependency-store-path>
 ```
 
@@ -211,7 +211,7 @@ Common retention pattern on this machine:
 - Many `.direnv/flake-profile-*` symlinks under `~/Projects` and worktrees keep `nix-shell-env`/`ghc-shell-*` roots alive.
 - Old taffybar constellation repos under `~/Projects` can pin large Haskell closures through `.direnv` and `result` symlinks. Deleting `gtk-sni-tray`, `status-notifier-item`, `dbus-menu`, `dbus-hslogger`, and `gtk-strut` and then rerunning `nix-collect-garbage -d` reclaimed about 11G of store data in one validated run.
 - `find_store_path_gc_roots` is especially useful for proving GHC retention: many large `ghc-9.10.3-with-packages` paths are unique per project, while the base `ghc-9.10.3` and docs paths are shared.
-- NixOS system generations and a repo-root `nixos/result` symlink can pin multiple Android Studio and Android SDK versions. Check `/nix/var/nix/profiles/system-*-link`, `/run/current-system`, `/run/booted-system`, and `~/dotfiles/nixos/result` before assuming Android paths are pinned by project shells.
+- NixOS system generations and a repo-root `nixos/result` symlink can pin multiple Android Studio and Android SDK versions. Check `/nix/var/nix/profiles/system-*-link`, `/run/current-system`, `/run/booted-system`, and `/srv/dotfiles/nixos/result` before assuming Android paths are pinned by project shells.
 - `~/Projects/railbird-mobile/.direnv/flake-profile-*` can pin large Android SDK system images. Removing stale direnv profiles there is a more targeted first step than deleting Android store paths directly.
 - 2026-05-27 Railbird GHC audit: the Railbird backend flake did not explicitly reference Haskell, but its dev shell had derivation-time GHC edges through `inputs.secrets.devShells.${system}.default -> agenix -> shellcheck -> ShellCheck -> ghc` and through `shell-packages.nix`'s `rdma-core -> pandoc-cli -> ghc`. Railbird Mobile had similar non-app-code GHC edges through `inputs.secrets`/`agenix` and `nixGLIntel -> shellcheck`. The `railbird/gql` and `railbird-mobile/src/gql` shells did not show GHC edges in their derivation graphs, only Rust/Cargo build tooling from packages such as `just`.
 - For a repeatable `/nix/store` `ncdu` snapshot without driving the TUI, export and inspect it:

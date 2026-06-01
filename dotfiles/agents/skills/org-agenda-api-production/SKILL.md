@@ -20,10 +20,10 @@ Username is currently `imalison`.
 
 ## Quick Access with just
 
-This repo includes a `justfile` under `~/dotfiles/org-agenda-api` with pre-configured commands:
+This repo includes a `justfile` under `/srv/dotfiles/org-agenda-api` with pre-configured commands:
 
 ```bash
-cd ~/dotfiles/org-agenda-api
+cd /srv/dotfiles/org-agenda-api
 just health
 just get-all-todos
 just get-todays-agenda

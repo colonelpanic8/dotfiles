@@ -306,7 +306,7 @@ in {
     enable = true;
     enableDefaultConfig = false;
     extraConfig = ''
-      Include /home/imalison/config/dotfiles/ssh/config
+      Include /srv/dotfiles/ssh/config
     '';
     settings = {
       "*" = {

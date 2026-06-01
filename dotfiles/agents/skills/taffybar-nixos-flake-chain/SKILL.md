@@ -46,7 +46,7 @@ cd ~/.config/taffybar/taffybar && nix flake update <pkg>
 cd ~/.config/taffybar && nix flake update <pkg> taffybar
 
 # Top:
-cd ~/dotfiles/nixos && nix flake update imalison-taffybar
+cd /srv/dotfiles/nixos && nix flake update imalison-taffybar
 ```
 
 Not every change requires touching all three layers. Think about which flake.lock files actually contain stale references:
@@ -58,7 +58,7 @@ Not every change requires touching all three layers. Think about which flake.loc
 ## Rebuilding
 
 ```bash
-cd ~/dotfiles/nixos && just switch
+cd /srv/dotfiles/nixos && just switch
 ```
 
 If taffybar seems stale after a rebuild, check whether the flake.lock at each layer actually points at the expected revision — a missed cascade step is the usual cause.

@@ -3,4 +3,4 @@
 
 /home/imalison/Projects
 /home/imalison/org
-/home/imalison/dotfiles
+/srv/dotfiles
