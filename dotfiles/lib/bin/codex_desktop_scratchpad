@@ -101,6 +101,45 @@ activate_status_notifier_item() {
     return 1
 }
 
+focus_hyprland_window() {
+    local pid="$1"
+    local address
+    local output
+
+    command -v hyprctl >/dev/null 2>&1 || return 1
+    address="$(
+        HYPR_FOCUS_PID="$pid" python3 - <<'PY'
+import json
+import os
+import subprocess
+import sys
+
+target_pid = int(os.environ["HYPR_FOCUS_PID"])
+try:
+    clients = json.loads(subprocess.check_output(["hyprctl", "clients", "-j"], text=True, stderr=subprocess.DEVNULL))
+except Exception:
+    raise SystemExit(1)
+
+for client in clients:
+    if client.get("pid") == target_pid and client.get("address") and client.get("mapped", True) and not client.get("hidden", False):
+        print(client["address"])
+        break
+else:
+    raise SystemExit(1)
+PY
+    )" || return 1
+    [ -n "$address" ] || return 1
+
+    output="$(hyprctl dispatch "hl.dsp.focus({ window = \"address:$address\" })" 2>&1)" || return 1
+    [ "$output" = "ok" ] || return 1
+}
+
+start_second_instance_handoff() {
+    (
+        exec codex-desktop "$@"
+    ) >/dev/null 2>&1 &
+}
+
 running_app_is_alive() {
     local pid
 
@@ -146,7 +185,9 @@ if running_app="$(find_running_app)"; then
     printf '%s\n' "$running_pid" > "$pid_file"
     send_launch_action "$@" && exit 0
     activate_status_notifier_item "$running_pid" && exit 0
-    notify-send "Codex is already running" "No warm-start socket or tray activation path was available." >/dev/null 2>&1 || true
+    focus_hyprland_window "$running_pid" && exit 0
+    start_second_instance_handoff "$@" && exit 0
+    notify-send "Codex is already running" "No warm-start socket, tray activation, or second-instance restore path was available." >/dev/null 2>&1 || true
     exit 0
 fi
 

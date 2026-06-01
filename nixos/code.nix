@@ -7,7 +7,11 @@
   ...
 }:
 let
-  codexDesktopLinuxSource = inputs.codex-desktop-linux;
+  codexDesktopLinuxSource = pkgs.applyPatches {
+    name = "codex-desktop-linux-patched";
+    src = inputs.codex-desktop-linux;
+    patches = [ ./patches/codex-desktop-linux-gsettings-schemas.patch ];
+  };
   codexDesktopLinux =
     let
       flake = import "${codexDesktopLinuxSource}/flake.nix";
@@ -75,6 +79,8 @@ makeEnable config "myModules.code" true {
           nix
           nodejs
           openssh
+          ripgrep
+          zsh
         ];
         listen = "unix://";
       };

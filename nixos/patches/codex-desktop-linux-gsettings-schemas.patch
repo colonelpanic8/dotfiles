@@ -1,0 +1,25 @@
+diff --git a/flake.nix b/flake.nix
+index 6c225c2..fce1fac 100644
+--- a/flake.nix
++++ b/flake.nix
+@@ -275,6 +275,12 @@
+           stdenv.cc.cc.lib
+           zlib
+         ]);
++        gsettingsSchemaDataDirs = pkgs.lib.concatMapStringsSep ":" (pkg:
++          pkgs.lib.removeSuffix "/glib-2.0/schemas" (pkgs.glib.getSchemaPath pkg)
++        ) (with pkgs; [
++          gsettings-desktop-schemas
++          gtk3
++        ]);
+         launcherPath = pkgs.lib.makeBinPath (with pkgs; [
+           bash
+           coreutils
+@@ -547,6 +553,7 @@
+             makeWrapper "$out/opt/codex-desktop/start.sh" "$out/bin/codex-desktop" \
+               --prefix PATH : "${launcherPath}" \
+               --prefix LD_LIBRARY_PATH : "${electronLibPath}" \
+               --prefix LD_LIBRARY_PATH : "${runtimeLibPath}" \
++              --prefix XDG_DATA_DIRS : "${gsettingsSchemaDataDirs}" \
+               --prefix PATH : "/run/current-system/sw/bin" \
+               --prefix PATH : "/etc/profiles/per-user/$(whoami)/bin"
