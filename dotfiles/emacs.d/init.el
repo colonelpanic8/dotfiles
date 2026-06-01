@@ -135,13 +135,18 @@
 ;; Some split packages fall through the active menus in this config. Give
 ;; Elpaca an explicit source so startup doesn't get stuck on recipe lookup or
 ;; stale branch-mapped clones.
-(elpaca `(queue :host github :repo "emacs-straight/queue"))
+(elpaca `(queue :host github :repo "emacs-straight/queue"
+                :branch "master"
+                :protocol https))
 (elpaca `(with-editor :host github :repo "magit/with-editor"
-                      :branch "main"))
+                      :branch "main"
+                      :protocol https))
 (elpaca `(git-commit :host github :repo "magit/magit"
-                     :files ("lisp/git-commit.el" "lisp/git-commit-pkg.el")))
+                     :files ("lisp/git-commit.el" "lisp/git-commit-pkg.el")
+                     :protocol https))
 (elpaca `(magit-section :host github :repo "magit/magit"
-                        :files ("lisp/magit-section.el" "lisp/magit-section-pkg.el")))
+                        :files ("lisp/magit-section.el" "lisp/magit-section-pkg.el")
+                        :protocol https))
 
 (use-package gh
   :defer t

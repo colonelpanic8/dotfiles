@@ -1383,8 +1383,12 @@ Paradox is a package.el extension. I have no use for it now that I use straight.
 #+END_SRC
 ** load-dir
 #+BEGIN_SRC emacs-lisp
+(elpaca `(load-dir :host github :repo "emacs-straight/load-dir"
+                   :branch "master"
+                   :protocol https
+                   :wait t))
 (use-package load-dir
-  :ensure (:host github :repo "emacs-straight/load-dir")
+  :ensure nil
   :demand t
   :config
   (progn
@@ -1462,7 +1466,8 @@ The file server file for this emacs instance no longer exists.")
 #+END_SRC
 ** discover-my-major
 #+BEGIN_SRC emacs-lisp
-(use-package discover-my-major)
+(use-package discover-my-major
+  :disabled t)
 #+END_SRC
 ** refine
 #+BEGIN_SRC emacs-lisp
@@ -4037,6 +4042,7 @@ This is useful with server mode when editing gmail messages. I think that it is 
 ** android-mode
 #+BEGIN_SRC emacs-lisp
 (use-package android-mode
+  :ensure (:protocol https)
   :defer t
   :config
   (progn
@@ -4110,7 +4116,8 @@ Ensure all themes that I use are installed:
                   forest-blue-theme flatland-theme afternoon-theme
                   cyberpunk-theme dracula-theme))
 
-(mapcar #'elpaca-try packages-appearance)
+(dolist (package packages-appearance)
+  (eval `(use-package ,package :defer t) t))
 
 (use-package doom-themes
   :defer t)
@@ -4282,8 +4289,22 @@ load-theme hook (See the heading below).
 #+BEGIN_SRC emacs-lisp
 (defvar imalison:appearance-setup-done nil)
 
+(defun imalison:ensure-theme-load-path (theme)
+  (when (boundp 'elpaca-builds-directory)
+    (when-let ((theme-dir
+                (seq-find
+                 (lambda (dir)
+                   (file-exists-p
+                    (expand-file-name (format "%s-theme.el" theme) dir)))
+                 (directory-files
+                  elpaca-builds-directory
+                  t
+                  directory-files-no-dot-files-regexp))))
+      (add-to-list 'custom-theme-load-path theme-dir))))
+
 (defun imalison:appearance-setup-hook (&rest args)
   (unless imalison:appearance-setup-done
+    (imalison:ensure-theme-load-path imalison:dark-theme)
     (unless (member imalison:dark-theme custom-enabled-themes)
       (load-theme imalison:dark-theme t))
     (apply 'imalison:appearance args)
