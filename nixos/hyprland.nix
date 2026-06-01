@@ -149,6 +149,7 @@
       overrideAttrs = f: makeHyprlandLuaPackage (package.overrideAttrs f);
     };
   hyprlandPackage = makeHyprlandLuaPackage baseHyprlandPackage;
+  hyprlandPortalPackage = config.programs.hyprland.portalPackage;
   hyprlandGapsEnabledString =
     if config.myModules.hyprland.gaps.enable
     then "1"
@@ -504,6 +505,36 @@
           xdg.configFile."systemd/user/wayland-wm@hyprland.desktop.service.d/10-cleanup-stale-session.conf".text = ''
             [Service]
             ExecStopPost=${cleanupStaleGraphicalSession}
+          '';
+
+          # File chooser requests from early-started Electron apps go through
+          # xdg-desktop-portal-gtk. The upstream portal backend units wait for
+          # graphical-session.target, which UWSM can reach well after Wayland
+          # and D-Bus are already usable. That makes D-Bus activation time out
+          # and can abort the requesting app.
+          xdg.configFile."systemd/user/xdg-desktop-portal-gtk.service".text = ''
+            [Unit]
+            Description=Portal service (GTK/GNOME implementation)
+            PartOf=graphical-session.target
+
+            [Service]
+            Type=dbus
+            BusName=org.freedesktop.impl.portal.desktop.gtk
+            ExecStart=${pkgs.xdg-desktop-portal-gtk}/libexec/xdg-desktop-portal-gtk
+          '';
+
+          xdg.configFile."systemd/user/xdg-desktop-portal-hyprland.service".text = ''
+            [Unit]
+            Description=Portal service (Hyprland implementation)
+            PartOf=graphical-session.target
+            ConditionEnvironment=WAYLAND_DISPLAY
+
+            [Service]
+            Type=dbus
+            BusName=org.freedesktop.impl.portal.desktop.hyprland
+            ExecStart=${hyprlandPortalPackage}/libexec/xdg-desktop-portal-hyprland
+            Restart=on-failure
+            Slice=session.slice
           '';
         }
       )
