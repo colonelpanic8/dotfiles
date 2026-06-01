@@ -68,6 +68,8 @@ return {
   enable_hyprwobbly = true,
   enable_dynamic_cursors = true,
   enable_hyprglass = false,
+  hyprland_gaps_enabled = os.getenv("IMALISON_HYPRLAND_GAPS") ~= "0",
+  hyprland_cursor_size = tonumber(os.getenv("IMALISON_HYPRLAND_CURSOR_SIZE")) or 24,
   hypr_visual_performance_mode = false,
   configure_nstack_plugin_from_lua = false,
   workspace_layouts = {},

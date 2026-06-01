@@ -106,8 +106,8 @@ function M.setup(ctx)
     hl.plugin.load("/run/current-system/sw/lib/hyprglass.so")
   end
 
-  hl.env("XCURSOR_SIZE", "24")
-  hl.env("HYPRCURSOR_SIZE", "24")
+  hl.env("XCURSOR_SIZE", tostring(hyprland_cursor_size))
+  hl.env("HYPRCURSOR_SIZE", tostring(hyprland_cursor_size))
   hl.env("QT_QPA_PLATFORMTHEME", "qt5ct")
   hl.env("HYPR_MAX_WORKSPACE", "9")
 
@@ -128,8 +128,8 @@ function M.setup(ctx)
       persistent_warps = true,
     },
     general = {
-      gaps_in = 5,
-      gaps_out = 10,
+      gaps_in = hyprland_gaps_enabled and 5 or 0,
+      gaps_out = hyprland_gaps_enabled and 10 or 0,
       border_size = 2,
       col = {
         active_border = { colors = { "rgba(3b82f6ee)", "rgba(33ccffee)" }, angle = 45 },

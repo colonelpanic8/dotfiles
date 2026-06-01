@@ -149,6 +149,11 @@
       overrideAttrs = f: makeHyprlandLuaPackage (package.overrideAttrs f);
     };
   hyprlandPackage = makeHyprlandLuaPackage baseHyprlandPackage;
+  hyprlandGapsEnabledString =
+    if config.myModules.hyprland.gaps.enable
+    then "1"
+    else "0";
+  hyprlandCursorSizeString = toString config.myModules.hyprland.cursorSize;
   enableHyprglass = false;
   hyprglass = pkgs.callPackage ./packages/hyprglass {
     src = inputs.hyprglass;
@@ -415,6 +420,13 @@
 
     services.rumno.enable = true;
 
+    environment.sessionVariables = {
+      IMALISON_HYPRLAND_GAPS = hyprlandGapsEnabledString;
+      IMALISON_HYPRLAND_CURSOR_SIZE = hyprlandCursorSizeString;
+      XCURSOR_SIZE = hyprlandCursorSizeString;
+      HYPRCURSOR_SIZE = hyprlandCursorSizeString;
+    };
+
     home-manager.sharedModules = [
       inputs.hyprscratch.homeModules.default
       (
@@ -468,6 +480,19 @@
           programs.hyprscratch = {
             enable = false;
             settings = {};
+          };
+
+          home.sessionVariables = {
+            IMALISON_HYPRLAND_GAPS = hyprlandGapsEnabledString;
+            IMALISON_HYPRLAND_CURSOR_SIZE = hyprlandCursorSizeString;
+            XCURSOR_SIZE = hyprlandCursorSizeString;
+            HYPRCURSOR_SIZE = hyprlandCursorSizeString;
+          };
+          systemd.user.sessionVariables = {
+            IMALISON_HYPRLAND_GAPS = hyprlandGapsEnabledString;
+            IMALISON_HYPRLAND_CURSOR_SIZE = hyprlandCursorSizeString;
+            XCURSOR_SIZE = hyprlandCursorSizeString;
+            HYPRCURSOR_SIZE = hyprlandCursorSizeString;
           };
 
           xdg.configFile."hyprscratch/config.conf" = lib.mkIf false {

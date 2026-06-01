@@ -32,6 +32,18 @@ in {
       default = true;
       type = lib.types.bool;
     };
+
+    myModules.hyprland.gaps.enable = lib.mkOption {
+      default = true;
+      type = lib.types.bool;
+      description = "Whether Hyprland should use nonzero window gaps.";
+    };
+
+    myModules.hyprland.cursorSize = lib.mkOption {
+      default = 24;
+      type = lib.types.ints.positive;
+      description = "Cursor size exported to Hyprland and cursor-aware toolkits.";
+    };
   };
 
   config = {

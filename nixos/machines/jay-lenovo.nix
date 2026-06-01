@@ -39,6 +39,8 @@
 
   myModules.postgres.enable = true;
   myModules.kat.enable = true;
+  myModules.hyprland.gaps.enable = false;
+  myModules.hyprland.cursorSize = 20;
   networking.networkmanager.enable = true;
   services.libinput.enable = true;
 
@@ -71,6 +73,13 @@
   home-manager.sharedModules = [
     {
       home.stateVersion = "23.05";
+      gtk.font.size = lib.mkForce 9;
+      gtk.gtk3.extraConfig.gtk-cursor-theme-size = lib.mkForce 20;
+      dconf.settings."org/gnome/desktop/interface".text-scaling-factor = 0.9;
+      dconf.settings."org/gnome/desktop/interface".cursor-size = 20;
+      xdg.configFile."ghostty/config".text = lib.mkAfter ''
+        font-size = 11
+      '';
     }
   ];
 }
