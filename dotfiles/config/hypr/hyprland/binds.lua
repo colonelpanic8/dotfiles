@@ -329,6 +329,7 @@ function M.setup(ctx)
   local function setup_mouse_bindings()
     bind(main_mod .. " + mouse:272", float_and_drag_active_window, desc("Float and drag active window"))
     bind(main_mod .. " + mouse:273", float_and_resize_active_window, desc("Float and resize active window"))
+    bind(hyper .. " + mouse:272", float_and_resize_active_window, desc("Float and resize active window"))
   end
 
   local function setup_internal_window_manager_bindings()
