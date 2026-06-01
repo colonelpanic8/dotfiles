@@ -3,6 +3,7 @@ module TaffybarConfig.Host
     cssFilesForHost,
     laptopHosts,
     smallBarHosts,
+    tinyBarHosts,
   )
 where
 
@@ -16,7 +17,8 @@ defaultCssFiles = ["taffybar.css"]
 
 cssFilesByHostname :: [(String, [FilePath])]
 cssFilesByHostname =
-  [ ("ryzen-shine", ["ryzen-shine.css"]),
+  [ ("jay-lenovo", ["jay-lenovo.css"]),
+    ("ryzen-shine", ["ryzen-shine.css"]),
     ("strixi-minaj", ["strixi-minaj.css"])
   ]
 
@@ -27,6 +29,10 @@ compactBarHosts =
 smallBarHosts :: [String]
 smallBarHosts =
   ["strixi-minaj"]
+
+tinyBarHosts :: [String]
+tinyBarHosts =
+  ["jay-lenovo"]
 
 laptopHosts :: [String]
 laptopHosts =

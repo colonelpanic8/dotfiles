@@ -1,0 +1,68 @@
+@import url("taffybar.css");
+
+/* Host-specific density tweak for jay-lenovo. */
+.taffy-box {
+	font-size: 8.5pt;
+	border-radius: 7px;
+}
+
+.outer-pad,
+.workspaces .outer-pad {
+	border-radius: 7px;
+	margin: 2px 3px;
+}
+
+.inner-pad,
+.workspaces .inner-pad {
+	border-radius: 6px;
+	padding-top: 0px;
+	padding-bottom: 0px;
+}
+
+.inner-pad {
+	padding-left: 8px;
+	padding-right: 8px;
+}
+
+.workspaces .inner-pad {
+	padding-left: 8px;
+	padding-right: 2px;
+}
+
+.workspaces .contents {
+	border-radius: 6px;
+	padding: 0px 2px;
+}
+
+.workspace-label {
+	font-size: 8pt;
+}
+
+.workspaces .overlay-box .workspace-label {
+	padding: 0px 3px 3px 9px;
+}
+
+.visible .contents,
+.workspaces .window-icon-container,
+.workspaces .window-icon-container.active {
+	padding-top: 0px;
+	padding-bottom: 0px;
+}
+
+.auto-size-image,
+.sni-tray {
+	padding-top: 0px;
+	padding-bottom: 0px;
+}
+
+.icon-label > .icon,
+.usage-section.icon-label > .icon,
+.ram-swap .icon-label > .icon {
+	padding-right: 6px;
+	min-width: 18px;
+}
+
+.sun-lock .wlsunset,
+.sun-lock .screen-lock {
+	padding: 0px 3px;
+}

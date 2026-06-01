@@ -3,7 +3,7 @@ module TaffybarConfig.Config
   )
 where
 
-import TaffybarConfig.Host (compactBarHosts, smallBarHosts)
+import TaffybarConfig.Host (compactBarHosts, smallBarHosts, tinyBarHosts)
 import TaffybarConfig.Widgets (clockWidget, endWidgetsForHost, startWidgetsForHostAndBackend)
 import System.Taffybar.Context (Backend)
 import System.Taffybar.SimpleConfig
@@ -18,18 +18,24 @@ mkSimpleTaffyConfig hostName backend cssFiles =
       barPosition = Top,
       widgetSpacing = 0,
       barPadding =
-        if hostName `elem` smallBarHosts
-          then 1
+        if hostName `elem` tinyBarHosts
+          then 0
           else
-            if hostName `elem` compactBarHosts
-              then 2
-              else 4,
+            if hostName `elem` smallBarHosts
+              then 1
+              else
+                if hostName `elem` compactBarHosts
+                  then 2
+                  else 4,
       barHeight =
-        if hostName `elem` smallBarHosts
-          then ScreenRatio $ 1 / 48
+        if hostName `elem` tinyBarHosts
+          then ScreenRatio $ 1 / 90
           else
-            if hostName `elem` compactBarHosts
-              then ScreenRatio $ 1 / 40
-              else ScreenRatio $ 1 / 33,
+            if hostName `elem` smallBarHosts
+              then ScreenRatio $ 1 / 72
+              else
+                if hostName `elem` compactBarHosts
+                  then ScreenRatio $ 1 / 60
+                  else ScreenRatio $ 2 / 99,
       cssPaths = cssFiles
     }
