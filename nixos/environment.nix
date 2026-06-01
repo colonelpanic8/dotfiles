@@ -53,6 +53,7 @@ in
       # Shell configuration
       programs.zsh = {
         enable = true;
+        enableCompletion = false;
         histSize = 10000000;
         setOptions = [
           "EXTENDED_HISTORY"
@@ -71,23 +72,30 @@ in
           plugins = ["git" "sudo" "pip"];
         };
         shellInit = ''
-          fpath=("${zshLibDir}/completions" $fpath)
-          fpath+="${zshLibDir}/functions"
-          for file in "${zshLibDir}/functions/"*(N)
+          # The shared editable dotfiles worktree is group-writable, which makes
+          # zsh's compaudit reject our local fpath entries. Completion loading is
+          # handled once by oh-my-zsh below, with this check intentionally skipped.
+          ZSH_DISABLE_COMPFIX=true
+
+          fpath=("$HOME/.lib/completions" "${libDir}/completions" $fpath)
+          fpath+="${libDir}/functions"
+          for file in "${libDir}/functions/"*
           do
               autoload "''${file##*/}"
           done
           fpath+="${pkgs.python-with-my-packages}/lib/python3.11/site-packages/argcomplete/bash_completion.d"
         '';
         interactiveShellInit = ''
-          eval "$(register-python-argcomplete prb)"
-          eval "$(register-python-argcomplete prod-prb)"
-          eval "$(register-python-argcomplete railbird)"
           [ -n "$EAT_SHELL_INTEGRATION_DIR" ] && source "$EAT_SHELL_INTEGRATION_DIR/zsh"
 
           # Enable bracketed paste
           autoload -Uz bracketed-paste-magic
           zle -N bracketed-paste bracketed-paste-magic
+        '';
+        promptInit = lib.mkBefore ''
+          eval "$(register-python-argcomplete prb)"
+          eval "$(register-python-argcomplete prod-prb)"
+          eval "$(register-python-argcomplete railbird)"
         '';
       };
 
