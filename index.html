@@ -6125,8 +6125,12 @@ Paradox is a package.el extension. I have no use for it now that I use straight.
 <h3 id="loaddir"><span class="section-number-3">6.28.</span> load-dir <a href="#loaddir"><svg aria-hidden="true" class="octicon octicon-link" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a></h3>
 <div class="outline-text-3" id="text-6-28">
 <div class="org-src-container">
-<pre class="src src-emacs-lisp">(<span class="org-keyword">use-package</span> <span class="org-constant">load-dir</span>
-  <span class="org-builtin">:ensure</span> (<span class="org-builtin">:host</span> github <span class="org-builtin">:repo</span> <span class="org-string">"emacs-straight/load-dir"</span>)
+<pre class="src src-emacs-lisp">(elpaca `(load-dir <span class="org-builtin">:host</span> github <span class="org-builtin">:repo</span> <span class="org-string">"emacs-straight/load-dir"</span>
+                   <span class="org-builtin">:branch</span> <span class="org-string">"master"</span>
+                   <span class="org-builtin">:protocol</span> https
+                   <span class="org-builtin">:wait</span> t))
+(<span class="org-keyword">use-package</span> <span class="org-constant">load-dir</span>
+  <span class="org-builtin">:ensure</span> nil
   <span class="org-builtin">:demand</span> t
   <span class="org-builtin">:config</span>
   (<span class="org-keyword">progn</span>
@@ -6239,7 +6243,8 @@ The file server file for this emacs instance no longer exists."</span>)
 <h3 id="discovermymajor"><span class="section-number-3">6.35.</span> discover-my-major <a href="#discovermymajor"><svg aria-hidden="true" class="octicon octicon-link" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a></h3>
 <div class="outline-text-3" id="text-6-35">
 <div class="org-src-container">
-<pre class="src src-emacs-lisp">(<span class="org-keyword">use-package</span> <span class="org-constant">discover-my-major</span>)
+<pre class="src src-emacs-lisp">(<span class="org-keyword">use-package</span> <span class="org-constant">discover-my-major</span>
+  <span class="org-builtin">:disabled</span> t)
 </pre>
 </div>
 </div>
@@ -9803,6 +9808,7 @@ This is useful with server mode when editing gmail messages. I think that it is 
 <div class="outline-text-3" id="text-19-30">
 <div class="org-src-container">
 <pre class="src src-emacs-lisp">(<span class="org-keyword">use-package</span> <span class="org-constant">android-mode</span>
+  <span class="org-builtin">:ensure</span> (<span class="org-builtin">:protocol</span> https)
   <span class="org-builtin">:defer</span> t
   <span class="org-builtin">:config</span>
   (<span class="org-keyword">progn</span>
@@ -9929,7 +9935,8 @@ Ensure all themes that I use are installed:
                   forest-blue-theme flatland-theme afternoon-theme
                   cyberpunk-theme dracula-theme))
 
-(mapcar #'elpaca-try packages-appearance)
+(<span class="org-keyword">dolist</span> (package packages-appearance)
+  (eval `(<span class="org-keyword">use-package</span> ,package <span class="org-builtin">:defer</span> t) t))
 
 (<span class="org-keyword">use-package</span> <span class="org-constant">doom-themes</span>
   <span class="org-builtin">:defer</span> t)
@@ -10175,8 +10182,22 @@ load-theme hook (See the heading below).
 <div class="org-src-container">
 <pre class="src src-emacs-lisp">(<span class="org-keyword">defvar</span> <span class="org-variable-name">imalison:appearance-setup-done</span> nil)
 
+(<span class="org-keyword">defun</span> <span class="org-function-name">imalison:ensure-theme-load-path</span> (theme)
+  (<span class="org-keyword">when</span> (boundp 'elpaca-builds-directory)
+    (<span class="org-keyword">when-let</span> ((theme-dir
+                (seq-find
+                 (<span class="org-keyword">lambda</span> (dir)
+                   (file-exists-p
+                    (expand-file-name (format <span class="org-string">"%s-theme.el"</span> theme) dir)))
+                 (directory-files
+                  elpaca-builds-directory
+                  t
+                  directory-files-no-dot-files-regexp))))
+      (add-to-list 'custom-theme-load-path theme-dir))))
+
 (<span class="org-keyword">defun</span> <span class="org-function-name">imalison:appearance-setup-hook</span> (<span class="org-type">&amp;rest</span> args)
   (<span class="org-keyword">unless</span> imalison:appearance-setup-done
+    (imalison:ensure-theme-load-path imalison:dark-theme)
     (<span class="org-keyword">unless</span> (member imalison:dark-theme custom-enabled-themes)
       (load-theme imalison:dark-theme t))
     (apply 'imalison:appearance args)
