@@ -256,7 +256,9 @@ in {
             "$desktop_file"
 
           ${pkgs.gnused}/bin/sed -i \
-            '/^\[Desktop Action new-window\]/,/^\[Desktop Action / s#^Exec=\(.*google-chrome-stable\)$#Exec=\1 --new-window#' \
+            -e 's#^Exec=.*google-chrome-stable *%U$#Exec=google-chrome-profile-window %U#' \
+            -e '/^\[Desktop Action new-window\]/,/^\[Desktop Action / s#^Exec=.*google-chrome-stable.*$#Exec=google-chrome-profile-window#' \
+            -e '/^\[Desktop Action new-private-window\]/,/^\[Desktop Action / s#^Exec=.*google-chrome-stable.*$#Exec=google-chrome-stable --incognito#' \
             "$desktop_file"
         fi
       done
@@ -285,7 +287,7 @@ in {
     fi
   '';
 
-  home.activation.refreshKdeServiceCache = lib.hm.dag.entryAfter ["refreshChromeDesktopMimeCache"] ''
+  home.activation.refreshKdeServiceCache = lib.hm.dag.entryAfter ["refreshChromeDesktopLaunchers"] ''
     ${pkgs.kdePackages.kservice}/bin/kbuildsycoca6 --noincremental >/dev/null 2>&1 || true
   '';
 

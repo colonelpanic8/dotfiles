@@ -25,28 +25,96 @@
     ++ lib.optionals config.myModules.chrome-favicon-dbus.enable [
       "--load-extension=${inputs.chrome-favicon-dbus}/extension"
     ];
-  googleChrome = pkgs.symlinkJoin {
-    name = "google-chrome-wayland-fractional-scale-workaround";
-    paths = [pkgs.google-chrome];
-    nativeBuildInputs = [pkgs.makeWrapper];
-    postBuild = ''
-      wrapProgram "$out/bin/google-chrome-stable" \
-        ${lib.concatMapStringsSep " \\\n        " (flag: "--add-flags ${lib.escapeShellArg flag}") chromeCommandLineFlags}
+  googleChromeWrapperArgs = lib.concatMapStringsSep " " (flag: "--add-flags ${lib.escapeShellArg flag}") chromeCommandLineFlags;
+  googleChromeCommandWrappers = pkgs.runCommand "google-chrome-command-wrappers" {nativeBuildInputs = [pkgs.makeWrapper];} ''
+    mkdir -p "$out/bin"
+    makeWrapper ${pkgs.google-chrome}/bin/google-chrome "$out/bin/google-chrome" \
+      ${googleChromeWrapperArgs}
+    makeWrapper ${pkgs.google-chrome}/bin/google-chrome-stable "$out/bin/google-chrome-stable" \
+      ${googleChromeWrapperArgs}
+  '';
+  googleChromeProfileWindow = pkgs.writeShellApplication {
+    name = "google-chrome-profile-window";
+    runtimeInputs = [
+      googleChromeCommandWrappers
+      pkgs.gawk
+      pkgs.jq
+      pkgs.rofi
+    ];
+    text = ''
+      if [ "$#" -gt 0 ]; then
+        exec google-chrome-stable "$@"
+      fi
 
-      desktop_file="$out/share/applications/google-chrome.desktop"
-      rm "$desktop_file"
-      cp "${pkgs.google-chrome}/share/applications/google-chrome.desktop" "$desktop_file"
-      chmod u+w "$desktop_file"
+      local_state="''${CHROME_USER_DATA_DIR:-$HOME/.config/google-chrome}/Local State"
 
-      substituteInPlace "$desktop_file" \
-        --replace-fail \
-          "Exec=${pkgs.google-chrome}/bin/google-chrome-stable" \
-          "Exec=$out/bin/google-chrome-stable"
-      ${pkgs.gnused}/bin/sed -i \
-        '/^\[Desktop Action new-window\]/,/^\[Desktop Action / s#^Exec=\(.*google-chrome-stable\)$#Exec=\1 --new-window#' \
-        "$desktop_file"
+      if [ ! -r "$local_state" ]; then
+        exec google-chrome-stable --new-window
+      fi
+
+      profiles="$(
+        jq -r '
+          (.profile.info_cache // {})
+          | to_entries
+          | sort_by(.value.active_time // 0)
+          | reverse[]
+          | [.value.name, .value.user_name, .key]
+          | @tsv
+        ' "$local_state" \
+          | awk -F '\t' '{
+              label = $1
+              if ($2 != "") {
+                label = label "  <" $2 ">"
+              }
+              print label "\t" $3
+            }'
+      )"
+
+      if [ -z "$profiles" ]; then
+        exec google-chrome-stable --new-window
+      fi
+
+      selection="$(printf '%s\n' "$profiles" | rofi -dmenu -i -p 'Chrome profile' || true)"
+      if [ -z "$selection" ]; then
+        exit 0
+      fi
+
+      profile_dir="$(printf '%s\n' "$selection" | awk -F '\t' '{print $NF}')"
+      if [ -z "$profile_dir" ]; then
+        exit 0
+      fi
+
+      exec google-chrome-stable --profile-directory="$profile_dir" --new-window
     '';
   };
+  googleChromeDesktopEntries = pkgs.runCommand "google-chrome-desktop-entries" {nativeBuildInputs = [pkgs.gnused];} ''
+    mkdir -p "$out/share/applications"
+
+    for desktop_name in google-chrome.desktop com.google.Chrome.desktop; do
+      source_file="${pkgs.google-chrome}/share/applications/$desktop_name"
+      if [ -f "$source_file" ]; then
+        desktop_file="$out/share/applications/$desktop_name"
+        cp "$source_file" "$desktop_file"
+        chmod u+w "$desktop_file"
+
+        substituteInPlace "$desktop_file" \
+          --replace-fail "${pkgs.google-chrome}/bin/google-chrome-stable" "google-chrome-stable"
+
+        ${pkgs.gnused}/bin/sed -i \
+          -e 's,application/pdf;,,g' \
+          -e 's,image/gif;,,g' \
+          -e 's,image/jpeg;,,g' \
+          -e 's,image/png;,,g' \
+          -e 's,image/webp;,,g' \
+          "$desktop_file"
+
+        ${pkgs.gnused}/bin/sed -i \
+          -e 's#^Exec=.*google-chrome-stable *%U$#Exec=google-chrome-profile-window %U#' \
+          -e '/^\[Desktop Action new-window\]/,/^\[Desktop Action / s#^Exec=.*google-chrome-stable.*$#Exec=google-chrome-profile-window#' \
+          "$desktop_file"
+      fi
+    done
+    '';
   rlruPackages = inputs.rlru.packages.${pkgs.stdenv.hostPlatform.system};
   rlruDioxusDesktopBase = rlruPackages.rlru-dioxus-desktop;
   rlruDioxusDesktop = pkgs.symlinkJoin {
@@ -92,7 +160,7 @@
     system.activationScripts.playwrightChromeCompat.text = lib.optionalString (pkgs.stdenv.hostPlatform.system == "x86_64-linux") ''
       # Playwright's Chrome channel lookup expects the FHS path below.
       mkdir -p /opt/google/chrome
-      ln -sfn ${googleChrome}/bin/google-chrome-stable /opt/google/chrome/chrome
+      ln -sfn ${googleChromeCommandWrappers}/bin/google-chrome-stable /opt/google/chrome/chrome
     '';
 
     services.gnome.at-spi2-core.enable = true;
@@ -243,7 +311,9 @@
         if pkgs.stdenv.hostPlatform.system == "x86_64-linux"
         then
           with pkgs; [
-            googleChrome
+            googleChromeCommandWrappers
+            googleChromeDesktopEntries
+            googleChromeProfileWindow
             pommed_light
             slack
             spicetify-cli
