@@ -249,6 +249,7 @@ in {
           "--disable=servicelb"
           "--node-label nixos-nvidia-cdi=enabled"
           "--node-label nvidia.com/gpu.present=true"
+          "--resolv-conf=/run/systemd/resolve/resolv.conf"
           "--etcd-arg=quota-backend-bytes=8589934592"
         ]
         ++ cfg.extraFlags;
