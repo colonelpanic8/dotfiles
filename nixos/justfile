@@ -3,7 +3,7 @@ switch-trusted-public-keys := "cache.nixos.org-1:6NCHdD59X431o0gWypbMrAURkbJ16ZP
 
 switch *args:
 	case "$(/run/current-system/sw/bin/systemctl show -P ActiveState nixos-upgrade.service 2>/dev/null)" in active|activating|reloading) /run/wrappers/bin/sudo /run/current-system/sw/bin/systemctl stop nixos-upgrade.service;; esac
-	dotfiles_worktree="$(/run/current-system/sw/bin/readlink -f "$PWD/..")"; /run/wrappers/bin/sudo env DOTFILES_WORKTREE="$dotfiles_worktree" PATH=/run/current-system/sw/bin:/nix/var/nix/profiles/system/sw/bin:/etc/profiles/per-user/root/bin:/usr/bin:/bin /run/current-system/sw/bin/nixos-rebuild switch --flake ".#" --impure --option substituters '{{switch-substituters}}' --option trusted-public-keys '{{switch-trusted-public-keys}}' {{args}}
+	dotfiles_worktree="$(/run/current-system/sw/bin/readlink -f "$PWD/..")"; /run/wrappers/bin/sudo env DOTFILES_WORKTREE="$dotfiles_worktree" IMALISON_TAFFYBAR_LIVE_CHECKOUT="${IMALISON_TAFFYBAR_LIVE_CHECKOUT:-}" PATH=/run/current-system/sw/bin:/nix/var/nix/profiles/system/sw/bin:/etc/profiles/per-user/root/bin:/usr/bin:/bin /run/current-system/sw/bin/nixos-rebuild switch --flake ".#" --impure --option substituters '{{switch-substituters}}' --option trusted-public-keys '{{switch-trusted-public-keys}}' {{args}}
 
 populate-cachix cache="colonelpanic8-dotfiles" host=`hostname` *args:
 	store_path="$(nix build --no-link --print-out-paths ".#nixosConfigurations.{{host}}.config.system.build.toplevel" --impure --option warn-dirty false {{args}})" && cachix push {{cache}} "$store_path"
