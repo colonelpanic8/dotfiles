@@ -247,6 +247,24 @@ function M.setup(ctx)
     return windows
   end
 
+  local function default_scratchpad_geometry(target_monitor)
+    local monitor = target_monitor or hl.get_active_monitor()
+    if not monitor then
+      return
+    end
+
+    local workarea = monitor_workarea(monitor)
+    local width = math.floor(workarea.width * scratchpad_size_ratio)
+    local height = math.floor(workarea.height * scratchpad_size_ratio)
+
+    return {
+      width = width,
+      height = height,
+      x = workarea.x + math.floor((workarea.width - width) / 2),
+      y = workarea.y + math.floor((workarea.height - height) / 2),
+    }
+  end
+
   local function scratchpad_geometry(name, target_monitor, position)
     local def = scratchpads[name]
     local monitor = target_monitor or hl.get_active_monitor()
@@ -270,10 +288,7 @@ function M.setup(ctx)
         y = position
       end
     else
-      width = math.floor(workarea.width * scratchpad_size_ratio)
-      height = math.floor(workarea.height * scratchpad_size_ratio)
-      x = workarea.x + math.floor((workarea.width - width) / 2)
-      y = workarea.y + math.floor((workarea.height - height) / 2)
+      return default_scratchpad_geometry(monitor)
     end
 
     return {
@@ -510,6 +525,7 @@ function M.setup(ctx)
   ctx.should_apply_scratchpad_geometry = should_apply_scratchpad_geometry
   ctx.refreshed_window = refreshed_window
   ctx.matching_scratchpad_windows = matching_scratchpad_windows
+  ctx.default_scratchpad_geometry = default_scratchpad_geometry
   ctx.apply_scratchpad_geometry = apply_scratchpad_geometry
   ctx.schedule_scratchpad_geometry = schedule_scratchpad_geometry
   ctx.dropdown_spring_progress = dropdown_spring_progress

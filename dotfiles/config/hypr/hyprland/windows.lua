@@ -122,6 +122,29 @@ function M.setup(ctx)
     dispatch(hl.dsp.window.resize())
   end
 
+  local function float_active_window_to_default_scratchpad_geometry()
+    local window = hl.get_active_window()
+    local selector = window_selector(window)
+    if not selector then
+      return
+    end
+
+    local geometry = default_scratchpad_geometry(hl.get_active_monitor())
+    if not geometry then
+      return
+    end
+
+    dispatch(hl.dsp.window.fullscreen_state({
+      internal = 0,
+      client = 0,
+      action = "set",
+      window = selector,
+    }))
+    dispatch(hl.dsp.window.float({ action = "enable", window = selector }))
+    dispatch(hl.dsp.window.resize({ x = geometry.width, y = geometry.height, relative = false, window = selector }))
+    dispatch(hl.dsp.window.move({ x = geometry.x, y = geometry.y, relative = false, window = selector }))
+  end
+
   local function toggle_pinned_active_window()
     local window = hl.get_active_window()
     local selector = window_selector(window)
@@ -583,6 +606,7 @@ function M.setup(ctx)
   ctx.float_active_window_preserving_tiled_geometry = float_active_window_preserving_tiled_geometry
   ctx.float_and_drag_active_window = float_and_drag_active_window
   ctx.float_and_resize_active_window = float_and_resize_active_window
+  ctx.float_active_window_to_default_scratchpad_geometry = float_active_window_to_default_scratchpad_geometry
   ctx.toggle_pinned_active_window = toggle_pinned_active_window
   ctx.current_minimized_windows = current_minimized_windows
   ctx.restore_minimized_window = restore_minimized_window
