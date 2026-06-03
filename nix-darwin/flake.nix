@@ -325,9 +325,6 @@
           "spotify"
           "vlc"
         ];
-        masApps = {
-          Xcode = 497799835;
-        };
         greedyCasks = true;
         onActivation = {
           cleanup = "zap";

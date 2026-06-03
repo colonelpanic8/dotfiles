@@ -66,7 +66,7 @@
       --passphrase-file "$passphrase_path" \
       --import "$normalized_key_file"
   '';
-  multiplexerAliases = import ../../shared/multiplexer-aliases.nix;
+  multiplexerAliases = import ../../nix-shared/multiplexer-aliases.nix;
 
   excludedTopLevelEntries = [
     "codex"
@@ -283,6 +283,7 @@ in {
 
   programs.zsh = {
     enable = true;
+    dotDir = "${config.home.homeDirectory}/.zsh";
     autosuggestion.enable = true;
     oh-my-zsh = {
       enable = true;
