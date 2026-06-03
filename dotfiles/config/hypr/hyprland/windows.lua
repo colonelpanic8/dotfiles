@@ -145,6 +145,21 @@ function M.setup(ctx)
     dispatch(hl.dsp.window.move({ x = geometry.x, y = geometry.y, relative = false, window = selector }))
   end
 
+  local function tile_or_float_active_window()
+    local window = hl.get_active_window()
+    local selector = window_selector(window)
+    if not selector then
+      return
+    end
+
+    if window.floating then
+      dispatch(hl.dsp.window.float({ action = "disable", window = selector }))
+      return
+    end
+
+    float_active_window_to_default_scratchpad_geometry()
+  end
+
   local function toggle_pinned_active_window()
     local window = hl.get_active_window()
     local selector = window_selector(window)
@@ -607,6 +622,7 @@ function M.setup(ctx)
   ctx.float_and_drag_active_window = float_and_drag_active_window
   ctx.float_and_resize_active_window = float_and_resize_active_window
   ctx.float_active_window_to_default_scratchpad_geometry = float_active_window_to_default_scratchpad_geometry
+  ctx.tile_or_float_active_window = tile_or_float_active_window
   ctx.toggle_pinned_active_window = toggle_pinned_active_window
   ctx.current_minimized_windows = current_minimized_windows
   ctx.restore_minimized_window = restore_minimized_window
