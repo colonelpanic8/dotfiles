@@ -76,6 +76,95 @@ find_running_app() {
     return 1
 }
 
+find_recorded_running_app() {
+    local pid
+    local exe
+
+    [ -r "$pid_file" ] || return 1
+    pid="$(cat "$pid_file" 2>/dev/null || true)"
+    pid_is_main_codex_desktop "$pid" || return 1
+    exe="$(readlink -f "/proc/$pid/exe" 2>/dev/null || true)"
+    [ -n "$exe" ] || return 1
+    printf '%s\t%s\n' "$pid" "$(dirname "$exe")"
+}
+
+dbus_names_for_pid() {
+    local pid="$1"
+
+    command -v busctl >/dev/null 2>&1 || return 0
+    busctl --user list --no-legend 2>/dev/null \
+        | awk -v pid="$pid" '$2 == pid && ($1 ~ /^:/ || $1 ~ /^org[.]kde[.]StatusNotifierItem-/) { print $1 }'
+}
+
+dbus_property_object_path() {
+    local service="$1"
+    local path="$2"
+    local interface="$3"
+    local property="$4"
+
+    timeout 3 busctl --user call "$service" "$path" org.freedesktop.DBus.Properties Get ss "$interface" "$property" 2>/dev/null \
+        | awk '$1 == "v" && $2 == "o" { gsub(/"/, "", $3); print $3; exit }'
+}
+
+dbus_name_has_status_notifier_item() {
+    local service="$1"
+
+    timeout 1 busctl --user tree "$service" 2>/dev/null | grep -q '/StatusNotifierItem'
+}
+
+open_codex_menu_item_id() {
+    local layout
+
+    layout="$(cat)"
+    CODEX_DBUSMENU_LAYOUT="$layout" python3 - <<'PY'
+import os
+import re
+
+layout = os.environ.get("CODEX_DBUSMENU_LAYOUT", "")
+for record in layout.split("(ia{sv}av)")[1:]:
+    item_id = re.match(r"\s+([0-9]+)\s+", record)
+    if item_id and re.search(r'"label"\s+s\s+"Open Codex"(?:\s|$)', record):
+        print(item_id.group(1))
+        break
+PY
+}
+
+activate_codex_dbus_menu_item_for_service() {
+    local service="$1"
+    local menu_path
+    local layout
+    local item_id
+
+    command -v busctl >/dev/null 2>&1 || return 1
+    command -v timeout >/dev/null 2>&1 || return 1
+
+    menu_path="$(dbus_property_object_path "$service" /StatusNotifierItem org.kde.StatusNotifierItem Menu || true)"
+    [ -n "$menu_path" ] || menu_path=/com/canonical/dbusmenu
+
+    layout="$(timeout 3 busctl --user call "$service" "$menu_path" com.canonical.dbusmenu GetLayout iias 0 -- -1 0 2>/dev/null || true)"
+    [ -n "$layout" ] || return 1
+
+    item_id="$(printf '%s\n' "$layout" | open_codex_menu_item_id)"
+    [ -n "$item_id" ] || return 1
+
+    timeout 3 busctl --user call "$service" "$menu_path" com.canonical.dbusmenu Event isvu "$item_id" clicked v i 0 0 >/dev/null 2>&1
+}
+
+activate_codex_tray_menu_item() {
+    local pid="$1"
+    local service
+
+    while IFS= read -r service; do
+        [ -n "$service" ] || continue
+        dbus_name_has_status_notifier_item "$service" || continue
+        if activate_codex_dbus_menu_item_for_service "$service"; then
+            return 0
+        fi
+    done < <(dbus_names_for_pid "$pid" | awk '!seen[$0]++')
+
+    return 1
+}
+
 activate_status_notifier_item() {
     local pid="$1"
     local qdbus_cmd
@@ -179,11 +268,12 @@ if send_launch_action "$@"; then
     exit 0
 fi
 
-if running_app="$(find_running_app)"; then
+if running_app="$(find_recorded_running_app || find_running_app)"; then
     running_pid="${running_app%%	*}"
     mkdir -p "$state_dir"
     printf '%s\n' "$running_pid" > "$pid_file"
     send_launch_action "$@" && exit 0
+    activate_codex_tray_menu_item "$running_pid" && exit 0
     activate_status_notifier_item "$running_pid" && exit 0
     focus_hyprland_window "$running_pid" && exit 0
     start_second_instance_handoff "$@" && exit 0

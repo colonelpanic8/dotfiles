@@ -56,8 +56,7 @@
         jq -r '
           (.profile.info_cache // {})
           | to_entries
-          | sort_by(.value.active_time // 0)
-          | reverse[]
+          | sort_by(if .key == "Default" then 0 else 1 end, -(.value.active_time // 0))[]
           | [.value.name, .value.user_name, .key]
           | @tsv
         ' "$local_state" \

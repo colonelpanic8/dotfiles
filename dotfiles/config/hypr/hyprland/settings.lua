@@ -184,6 +184,7 @@ function M.setup(ctx)
       force_default_wallpaper = 0,
       disable_hyprland_logo = true,
       exit_window_retains_fullscreen = true,
+      focus_on_activate = true,
     },
   })
 
