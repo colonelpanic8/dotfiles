@@ -59,6 +59,13 @@
     fsType = "vfat";
   };
 
+  swapDevices = [
+    {
+      device = "/swapfile";
+      size = 16384;
+    }
+  ];
+
   networking.hostName = "jay-lenovo";
   myModules.hostIdentity = {
     emoticon = "💼";
