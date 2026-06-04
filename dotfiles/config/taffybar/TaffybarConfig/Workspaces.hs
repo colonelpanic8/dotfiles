@@ -191,6 +191,5 @@ workspaceWindowIconGetter :: Workspaces.WindowIconPixbufGetter
 workspaceWindowIconGetter =
   chromeFaviconIconGetter chromeFaviconConfig
     <|||> workspaceManualIconGetter
-    <|||> Workspaces.getWindowIconPixbufFromChrome
     <|||> Workspaces.defaultGetWindowIconPixbuf
     <|||> workspaceFallbackIcon

@@ -1075,6 +1075,7 @@ addKeys conf@XConfig { modMask = modm } =
     , ((hyper, xK_p), spawn "rofi-pass")
     , ((0, xK_Print), spawn "flameshot gui")
     , ((hyper, xK_h), spawn "flameshot gui")
+    , ((hyper, xK_n), spawn "rofi_codex_desktop_project.sh")
     , ((hyper, xK_c), spawn "rofi_tmcodex.sh")
     , ((hyper .|. shiftMask, xK_c), spawn "rofi_tmcodex.sh resume")
     , ((hyper .|. shiftMask, xK_l), spawn "dm-tool lock")
