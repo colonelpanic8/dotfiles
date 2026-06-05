@@ -113,7 +113,33 @@
           "$desktop_file"
       fi
     done
-    '';
+  '';
+  spotifyWaylandFlags = [
+    "--enable-features=UseOzonePlatform,WaylandWindowDecorations"
+    "--ozone-platform=wayland"
+    "--enable-wayland-ime=true"
+  ];
+  spotifyWaylandWrapperArgs = lib.concatMapStringsSep " " (flag: "--add-flags ${lib.escapeShellArg flag}") spotifyWaylandFlags;
+  spotifyWaylandPatch = lib.hiPrio (pkgs.runCommand "${pkgs.spotify.name}-wayland-patch" {
+      nativeBuildInputs = [
+        pkgs.gnused
+        pkgs.makeWrapper
+      ];
+    } ''
+      mkdir -p "$out/bin" "$out/share/applications"
+
+      makeWrapper ${pkgs.spotify}/bin/spotify "$out/bin/spotify" \
+        --unset NIXOS_OZONE_WL \
+        ${spotifyWaylandWrapperArgs}
+
+      cp ${pkgs.spotify}/share/applications/spotify.desktop "$out/share/applications/spotify.desktop"
+      chmod u+w "$out/share/applications/spotify.desktop"
+
+      ${pkgs.gnused}/bin/sed -i \
+        -e "s#^TryExec=.*spotify\$#TryExec=$out/bin/spotify#" \
+        -e "s#^Exec=.*spotify\\( .*\\)\\?\$#Exec=$out/bin/spotify\\1#" \
+        "$out/share/applications/spotify.desktop"
+    '');
   rlruPackages = inputs.rlru.packages.${pkgs.stdenv.hostPlatform.system};
   rlruDioxusDesktopBase = rlruPackages.rlru-dioxus-desktop;
   rlruDioxusDesktop = pkgs.symlinkJoin {
@@ -317,6 +343,7 @@
             slack
             spicetify-cli
             spotify
+            spotifyWaylandPatch
             tor-browser
             # vscode
             zulip
