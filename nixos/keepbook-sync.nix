@@ -26,7 +26,7 @@
       systemd.user.services.keepbook-dioxus = {
         Unit = {
           Description = "Keepbook Dioxus desktop app";
-          After = ["graphical-session.target" "tray.target"];
+          After = ["graphical-session.target" "tray.target" "xsettingsd.service"];
           PartOf = ["graphical-session.target"];
           Requires = ["tray.target"];
         };
