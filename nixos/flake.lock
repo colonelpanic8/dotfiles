@@ -161,15 +161,16 @@
         ]
       },
       "locked": {
-        "lastModified": 1780552140,
-        "narHash": "sha256-8IRa+p8+RDYfbKufmK5h0MQ9Ul23wFLY5BCT/A8p/+Y=",
-        "owner": "ilysenko",
+        "lastModified": 1780671519,
+        "narHash": "sha256-gyrDnsWCa5DOalxW2Ew/aoEwfT87ILiQ55zJTqoH7HU=",
+        "owner": "colonelpanic8",
         "repo": "codex-desktop-linux",
-        "rev": "946adef45e88c16f146d79391e5b6c47bd32ad26",
+        "rev": "3304930ebd1649c0363de3a091f43ed8b31f8ce9",
         "type": "github"
       },
       "original": {
-        "owner": "ilysenko",
+        "owner": "colonelpanic8",
+        "ref": "codex/fix-linux-chrome-plugin",
         "repo": "codex-desktop-linux",
         "type": "github"
       }
