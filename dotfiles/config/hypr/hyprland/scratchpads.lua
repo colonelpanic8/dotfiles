@@ -376,8 +376,17 @@ function M.setup(ctx)
     move_window_to_workspace(scratchpad_workspace(name), false, window)
   end
 
-  local function show_scratchpad_window(name, window, workspace, target_monitor, opts)
+  local function scratchpad_show_workspace(workspace)
     workspace = workspace or active_workspace()
+    if is_normal_workspace(workspace) then
+      return workspace
+    end
+
+    return hl.get_workspace(tostring(active_workspace_id()))
+  end
+
+  local function show_scratchpad_window(name, window, workspace, target_monitor, opts)
+    workspace = scratchpad_show_workspace(workspace)
     if not workspace then
       return
     end
@@ -475,10 +484,12 @@ function M.setup(ctx)
 
     local windows = matching_scratchpad_windows(name)
     if #windows == 0 then
+      local workspace = scratchpad_show_workspace()
+      local target_monitor = hl.get_active_monitor()
       hide_active_scratchpads(name)
       scratchpad_pending[name] = {
-        monitor = hl.get_active_monitor(),
-        workspace = active_workspace(),
+        monitor = target_monitor,
+        workspace = workspace,
       }
       hl.exec_cmd(def.command)
       return
@@ -497,9 +508,9 @@ function M.setup(ctx)
         hide_scratchpad_window(name, window)
       end
     else
-      hide_active_scratchpads(name)
-      local workspace = active_workspace()
+      local workspace = scratchpad_show_workspace()
       local target_monitor = hl.get_active_monitor()
+      hide_active_scratchpads(name)
       for _, window in ipairs(windows) do
         show_scratchpad_window(name, window, workspace, target_monitor)
       end
@@ -531,6 +542,7 @@ function M.setup(ctx)
   ctx.dropdown_spring_progress = dropdown_spring_progress
   ctx.animate_dropdown_scratchpad_down = animate_dropdown_scratchpad_down
   ctx.hide_scratchpad_window = hide_scratchpad_window
+  ctx.scratchpad_show_workspace = scratchpad_show_workspace
   ctx.show_scratchpad_window = show_scratchpad_window
   ctx.scratchpad_is_visible = scratchpad_is_visible
   ctx.active_scratchpad_windows = active_scratchpad_windows
