@@ -110,7 +110,7 @@ function M.setup(ctx)
   end
 
   local function scratchpad_workspace(name)
-    return "special:scratch-" .. name
+    return "name:scratch-hidden-" .. name
   end
 
   local function as_number(value, default)
