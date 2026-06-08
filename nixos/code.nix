@@ -92,6 +92,7 @@ makeEnable config "myModules.code" true {
       # LLM Tools
       # antigravity
       claude-code
+      inputs.claude-desktop.packages.${pkgs.stdenv.hostPlatform.system}.default
       codex
       gemini-cli
       opencode

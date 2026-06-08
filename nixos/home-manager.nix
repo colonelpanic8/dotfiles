@@ -339,6 +339,17 @@ in {
     '';
   };
 
+  # Work around a home-manager systemd ordering cycle. The generated
+  # set-SSH_AUTH_SOCK.service is ordered Before=gpg-agent-ssh.socket, but that
+  # socket is pulled into sockets.target which basic.target requires, while the
+  # service implicitly orders After=basic.target. That forms an ordering cycle
+  # (sockets.target -> gpg-agent-ssh.socket -> set-SSH_AUTH_SOCK.service ->
+  # basic.target -> sockets.target) which systemd breaks by dropping units,
+  # failing the user session ("Transaction order is cyclic"). Dropping the
+  # explicit Before= edge breaks the cycle; the service is still pulled in via
+  # WantedBy=gpg-agent-ssh.socket (a non-ordering Wants dependency).
+  systemd.user.services.set-SSH_AUTH_SOCK.Unit.Before = lib.mkForce [ ];
+
   gtk = {
     enable = true;
     iconTheme = {
