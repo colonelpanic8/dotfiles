@@ -67,6 +67,10 @@
     {
       system.autoUpgrade.flake = "github:colonelpanic8/dotfiles?dir=nixos#${config.networking.hostName}";
     }
+    (lib.mkIf config.services.rumno.enable {
+      # Do not let rumno's forking/PIDFile startup gate the whole graphical session.
+      systemd.user.services.rumno.unitConfig.After = lib.mkForce ["graphical-session.target"];
+    })
     (lib.mkIf config.features.full.enable {
       myModules.base.enable = true;
       myModules.desktop.enable = true;
