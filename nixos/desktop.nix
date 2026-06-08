@@ -179,6 +179,11 @@
     environment.sessionVariables = {
       # This is for the benefit of VSCODE running natively in wayland
       NIXOS_OZONE_WL = "1";
+      # Claude Desktop's launcher (claude-desktop-debian flake) ignores
+      # NIXOS_OZONE_WL/ELECTRON_OZONE_PLATFORM_HINT and hardcodes
+      # --ozone-platform=x11 by default. This is the only knob it honors;
+      # it switches the launcher to native Wayland (loses global hotkeys).
+      CLAUDE_USE_WAYLAND = "1";
       IM_HYPRLAND_SHELL_UI = cfg.shellUi;
     };
 
