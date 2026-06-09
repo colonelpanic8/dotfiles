@@ -4,7 +4,10 @@
       "Bash(rg:*)",
       "Bash(wmctrl:*)",
       "Bash(grep:*)",
-      "Bash(hyprctl:*)"
+      "Bash(hyprctl:*)",
+      "Bash(set_multiplexer_title 'dotfiles - Claude desktop icon fix')",
+      "Bash(nix eval *)",
+      "Read(//nix/store/xmgdj0242sc04hybgd3x6w0a7cw7kkwl-system-path/share/applications/**)"
     ],
     "deny": []
   }

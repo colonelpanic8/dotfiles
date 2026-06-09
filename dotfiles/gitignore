@@ -80,3 +80,5 @@ cabal.project.local
 /untracked
 
 railbird-infra-*.json
+
+**/.claude/settings.local.json
