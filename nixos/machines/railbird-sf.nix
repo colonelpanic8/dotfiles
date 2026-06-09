@@ -33,7 +33,7 @@
 
   services.org-agenda-api-host = {
     enable = true;
-    domain = "colonelpanic8.duckdns.org";
+    domain = "rocket-sense.duckdns.org";
     containerImage = orgAgendaApiImageName;
     containerImageFile = orgAgendaApiContainer;
     secretsFile = config.age.secrets.org-api-auth-password.path;

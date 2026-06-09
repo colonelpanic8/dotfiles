@@ -1,6 +1,6 @@
 # org-agenda-api commands
 
-base_url := "https://colonelpanic-org-agenda.fly.dev"
+base_url := "https://org-agenda-api.rocket-sense.duckdns.org"
 user := "imalison"
 
 # Get all todos

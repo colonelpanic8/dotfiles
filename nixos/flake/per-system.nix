@@ -85,8 +85,9 @@ in {
       echo ""
       echo "Commands:"
       echo "  just --list             - Show available API commands"
-      echo "  ./deploy.sh <instance>  - Deploy to Fly.io (colonelpanic or kat)"
-      echo "  flyctl                  - Fly.io CLI"
+      echo "  railbird-sf hosts production at https://org-agenda-api.rocket-sense.duckdns.org"
+      echo "  ./deploy.sh <instance>  - Legacy Fly.io deploy; requires explicit opt-in"
+      echo "  flyctl                  - Fly.io CLI for auditing suspended legacy apps"
       echo "  agenix -e <file>        - Edit encrypted secrets"
       echo ""
     '';

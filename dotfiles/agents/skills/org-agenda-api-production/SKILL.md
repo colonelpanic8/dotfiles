@@ -7,7 +7,7 @@ description: Use when investigating production org-agenda-api state, testing end
 
 ## Overview
 
-Access the production org-agenda-api instance at https://colonelpanic-org-agenda.fly.dev/ for debugging, testing, or verification.
+Access the production org-agenda-api instance at https://org-agenda-api.rocket-sense.duckdns.org/ for debugging, testing, or verification.
 
 ## Credentials
 

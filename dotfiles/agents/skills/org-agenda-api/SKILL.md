@@ -11,16 +11,16 @@ HTTP API for org-mode agenda data. Use this skill when you need to query or modi
 
 Get credentials from pass:
 ```bash
-pass show colonelpanic-org-agenda.fly.dev
+pass show org-agenda-api-imalison
 ```
 
-Returns: password on first line, then `user:` and `url:` fields.
+Returns: password on first line. The username is currently `imalison`.
 
 **Note:** The `url` field in pass may be outdated. Use the base URL below.
 
 ## Base URL
 
-`https://colonelpanic-org-agenda.fly.dev`
+`https://org-agenda-api.rocket-sense.duckdns.org`
 
 All requests use Basic Auth with the credentials from pass.
 

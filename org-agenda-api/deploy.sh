@@ -1,10 +1,20 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-# Deploy customized org-agenda-api container to Fly.io
+# Legacy Fly.io deployment for customized org-agenda-api containers.
 # Usage: ./deploy.sh <instance> [flyctl deploy args...]
 # Example: ./deploy.sh colonelpanic
 #          ./deploy.sh kat
+#
+# Production is hosted on railbird-sf via nixos/org-agenda-api-host.nix. Keep
+# this script available for historical recovery, but require an explicit opt-in
+# so normal maintenance cannot accidentally recreate Fly machines.
+if [[ "${ORG_AGENDA_API_ENABLE_LEGACY_FLY_DEPLOY:-}" != "1" ]]; then
+  echo "Fly.io org-agenda-api deployment is decommissioned." >&2
+  echo "Production is https://org-agenda-api.rocket-sense.duckdns.org on railbird-sf." >&2
+  echo "Set ORG_AGENDA_API_ENABLE_LEGACY_FLY_DEPLOY=1 to run this legacy script." >&2
+  exit 1
+fi
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 NIXOS_DIR="$SCRIPT_DIR/../nixos"
