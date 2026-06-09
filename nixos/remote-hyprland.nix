@@ -160,6 +160,14 @@
       group = "video";
     };
 
+    # seatd's upstream unit is Type=notify wrapped in sdnotify-wrapper, but the
+    # readiness notification never reaches systemd on this host, so it hits the
+    # 90s start timeout and restart-loops forever (counter climbed past 50),
+    # tearing down /run/seatd.sock on every cycle and breaking any libseat
+    # client (e.g. a headless Hyprland). seatd creates its socket immediately on
+    # startup, so Type=simple is sufficient and stays active.
+    systemd.services.seatd.serviceConfig.Type = lib.mkForce "simple";
+
     users.manageLingering = true;
     users.users.${cfg.user}.linger = true;
 
