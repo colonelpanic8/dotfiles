@@ -63,6 +63,7 @@
   myModules.base.enable = true;
   myModules.desktop.enable = true;
   myModules.code.enable = true;
+  myModules.claudeRemoteControl.enable = true;
   myModules.syncthing.enable = true;
   myModules.fonts.enable = true;
   myModules.plasma.enable = true;
