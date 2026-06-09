@@ -328,6 +328,24 @@ in {
 
   home.file.".ssh/config".force = true;
 
+  # OpenSSH only reads ~/.ssh/config when it is owned by root or the invoking
+  # user. On this host /nix/store is owned by nobody:nogroup, so the
+  # home-manager-generated symlink resolves to a nobody-owned store file and
+  # OpenSSH bails with "Bad owner or permissions on ~/.ssh/config", breaking
+  # ssh and git-over-ssh. After writeBoundary the symlink has been linked into
+  # place; replace it with a real 0600 copy owned by the user so the ownership
+  # check passes. home.file."...".force re-links the symlink on each switch,
+  # then this re-materializes it.
+  home.activation.materializeSshConfig = lib.hm.dag.entryAfter ["writeBoundary"] ''
+    ssh_config="$HOME/.ssh/config"
+    if [ -L "$ssh_config" ]; then
+      resolved="$(readlink -f "$ssh_config")"
+      tmp="$ssh_config.hm-real"
+      install -m600 "$resolved" "$tmp"
+      mv -f "$tmp" "$ssh_config"
+    fi
+  '';
+
   services.gpg-agent = {
     enable = true;
     defaultCacheTtl = 8 * 60 * 60;
