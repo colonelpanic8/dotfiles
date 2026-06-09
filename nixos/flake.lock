@@ -182,16 +182,16 @@
         ]
       },
       "locked": {
-        "lastModified": 1780671519,
-        "narHash": "sha256-gyrDnsWCa5DOalxW2Ew/aoEwfT87ILiQ55zJTqoH7HU=",
+        "lastModified": 1781005942,
+        "narHash": "sha256-rAc/DbJww2q8kSXf8nQDtBRws0/dUUNtYEKG+UVmOKA=",
         "owner": "colonelpanic8",
         "repo": "codex-desktop-linux",
-        "rev": "3304930ebd1649c0363de3a091f43ed8b31f8ce9",
+        "rev": "6cd66b29bbc38884ef9a9a59d1add0c789009d74",
         "type": "github"
       },
       "original": {
         "owner": "colonelpanic8",
-        "ref": "codex/fix-linux-chrome-plugin",
+        "ref": "colonelpanic/linux-build-info-no-shadow",
         "repo": "codex-desktop-linux",
         "type": "github"
       }

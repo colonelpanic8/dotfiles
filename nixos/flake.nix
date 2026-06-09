@@ -262,7 +262,7 @@
     };
 
     codex-desktop-linux = {
-      url = "github:colonelpanic8/codex-desktop-linux?ref=codex/fix-linux-chrome-plugin";
+      url = "github:colonelpanic8/codex-desktop-linux?ref=colonelpanic/linux-build-info-no-shadow";
       inputs = {
         nixpkgs.follows = "nixpkgs";
         flake-utils.follows = "flake-utils";
