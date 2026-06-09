@@ -102,10 +102,10 @@
 	required = true
 [credential "https://github.com"]
 	helper = 
-	helper = !/nix/store/y3m73nv1ry783kqfjqq17p3kxxaxx5d1-gh-2.92.0/bin/.gh-wrapped auth git-credential
+	helper = !/nix/store/fxvyz1dx5wp87qgbd6dfkmqqb4fypm3b-gh-2.93.0/bin/.gh-wrapped auth git-credential
 [credential "https://gist.github.com"]
 	helper = 
-	helper = !/nix/store/y3m73nv1ry783kqfjqq17p3kxxaxx5d1-gh-2.92.0/bin/.gh-wrapped auth git-credential
+	helper = !/nix/store/fxvyz1dx5wp87qgbd6dfkmqqb4fypm3b-gh-2.93.0/bin/.gh-wrapped auth git-credential
 [includeIf "gitdir:~/Projects/org-agenda-api/"]
 	path = ~/.gitconfig.org-agenda-api
 [includeIf "gitdir:~/Projects/dotfiles/org-agenda-api/"]
@@ -117,3 +117,5 @@
 	directory = /tmp/tmp.zFdvVnKk4B/runtime/data/org
 	directory = /tmp/tmp.PQTdI3UzS3/runtime/data/org
 	directory = /srv/dotfiles/dotfiles/config/taffybar/taffybar
+	directory = /srv/dotfiles
+	directory = /srv/dotfiles/.worktrees/taffybar-week-old
