@@ -17,6 +17,11 @@ function M.setup(ctx)
       class = "codex-desktop",
       allow_tiling = true,
     },
+    claude = {
+      command = "claude-desktop",
+      class = "claude-desktop",
+      allow_tiling = true,
+    },
     htop = {
       command = "alacritty --class htop-scratch --title htop -e htop",
       class = "htop-scratch",
@@ -517,6 +522,49 @@ function M.setup(ctx)
     end
   end
 
+  -- Which AI scratchpad SUPER+ALT+C targets. Selected at runtime (no reload)
+  -- by rofi_ai_scratchpad.sh, which writes the chosen name to this file.
+  local ai_scratchpad_default = "codex"
+
+  local function ai_scratchpad_state_path()
+    local base = os.getenv("XDG_STATE_HOME") or ((os.getenv("HOME") or "") .. "/.local/state")
+    return base .. "/hypr/ai-scratchpad"
+  end
+
+  local function active_ai_scratchpad()
+    local file = io.open(ai_scratchpad_state_path(), "r")
+    if not file then
+      return ai_scratchpad_default
+    end
+
+    local value = file:read("*l")
+    file:close()
+    value = value and value:gsub("%s+", "")
+    if scratchpads[value] then
+      return value
+    end
+    return ai_scratchpad_default
+  end
+
+  local function toggle_active_ai_scratchpad()
+    toggle_scratchpad(active_ai_scratchpad())
+  end
+
+  -- Used by rofi_ai_scratchpad.sh after a selection: bring the chosen
+  -- scratchpad into view if it isn't already, without hiding it when it is.
+  local function show_active_ai_scratchpad()
+    local name = active_ai_scratchpad()
+    for _, window in ipairs(matching_scratchpad_windows(name)) do
+      if scratchpad_is_visible(window) then
+        return
+      end
+    end
+    toggle_scratchpad(name)
+  end
+
+  _G.im_hyprland_toggle_ai_scratchpad = toggle_active_ai_scratchpad
+  _G.im_hyprland_show_ai_scratchpad = show_active_ai_scratchpad
+
   ctx.lower_contains = lower_contains
   ctx.lower_contains_any = lower_contains_any
   ctx.scratchpad_window_matches = scratchpad_window_matches
@@ -552,6 +600,9 @@ function M.setup(ctx)
   ctx.refresh_shell_workarea_and_scratchpads = refresh_shell_workarea_and_scratchpads
   ctx.adopt_matching_scratchpad_window = adopt_matching_scratchpad_window
   ctx.toggle_scratchpad = toggle_scratchpad
+  ctx.active_ai_scratchpad = active_ai_scratchpad
+  ctx.toggle_active_ai_scratchpad = toggle_active_ai_scratchpad
+  ctx.show_active_ai_scratchpad = show_active_ai_scratchpad
 end
 
 return M
