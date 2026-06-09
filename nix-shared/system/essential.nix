@@ -60,7 +60,6 @@
     pstree
     rclone
     ripgrep
-    silver-searcher
     skim
     tmux
     zellij
