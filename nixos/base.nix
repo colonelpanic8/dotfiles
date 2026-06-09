@@ -10,6 +10,7 @@ makeEnable config "myModules.base" true {
     "electron-12.2.3"
     "electron-19.1.9"
     "electron-32.3.3"
+    "electron-39.8.10"
     "etcher"
     "nix-2.16.2"
     "openssl-1.0.2u"
