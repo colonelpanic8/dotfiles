@@ -278,7 +278,7 @@
     };
 
     claude-desktop = {
-      url = "github:aaddrick/claude-desktop-debian";
+      url = "github:colonelpanic8/claude-desktop-debian/my-main";
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
