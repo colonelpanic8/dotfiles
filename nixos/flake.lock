@@ -114,11 +114,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1780791760,
-        "narHash": "sha256-Cg2mx6ILPC/cAoomJrwx1TvMaFvvNi9DNbd3Hy+7L18=",
+        "lastModified": 1781026565,
+        "narHash": "sha256-sL9ZxUqeNFK2TXg0o0swSeJz0KlgkpLiyPSOq+Durug=",
         "owner": "sadjow",
         "repo": "claude-code-nix",
-        "rev": "2370568ed1eac96474fa3bb2e73081cc971f9c03",
+        "rev": "4b0229ec9e37c594156b492653eada8413446f09",
         "type": "github"
       },
       "original": {
@@ -135,16 +135,16 @@
         ]
       },
       "locked": {
-        "lastModified": 1781033503,
-        "narHash": "sha256-zjujw/yqKQaK8MBjqe4axVXyaTfIJT+S99tq2tNynCs=",
-        "owner": "colonelpanic8",
+        "lastModified": 1781052888,
+        "narHash": "sha256-E/tJpBUOxYg+Jdli2Dc1bmIh7L9CWkyyTo8T0APerBE=",
+        "owner": "aaddrick",
         "repo": "claude-desktop-debian",
-        "rev": "fdaf9ccf7d89ed3b23995c05a94d4c9ddd1d57db",
+        "rev": "e85450c90ba38159f89f02bdd0f6c6d7e6bce065",
         "type": "github"
       },
       "original": {
-        "owner": "colonelpanic8",
-        "ref": "my-main",
+        "owner": "aaddrick",
+        "ref": "main",
         "repo": "claude-desktop-debian",
         "type": "github"
       }
@@ -1928,11 +1928,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1780573272,
-        "narHash": "sha256-0Rpx9+OsGTTiPJNr43ci5qsh9GE+Nhci3ZMfq+POAQE=",
+        "lastModified": 1781124175,
+        "narHash": "sha256-8sQEtEWAvwVPcxIB1OSs1jrWKgpK4isvg5xID5pcOLs=",
         "owner": "rlrml",
         "repo": "rlru",
-        "rev": "0cd34612dc584d944d4216ae1a9fc361e63dace1",
+        "rev": "b7b3d157e158f8341a7fc825d110be9e8c3dfb86",
         "type": "github"
       },
       "original": {
