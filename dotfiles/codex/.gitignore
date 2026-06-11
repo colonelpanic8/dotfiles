@@ -1,8 +1,0 @@
-*
-!.gitignore
-!AGENTS.md
-!config.toml
-!skills
-
-# Legacy generated/local Codex state under this repo stays ignored. Active
-# host-local Codex fragments now live under ~/.codex.

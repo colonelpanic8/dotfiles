@@ -61,3 +61,11 @@ gotools
 !/dotfiles/claude/settings.json
 !/dotfiles/claude/settings.local.json
 !/dotfiles/claude/settings.local.json.example
+
+# Same story for Codex: ~/.codex resolves into dotfiles/codex on nix-darwin,
+# so the codex-history repo and live Codex state nest inside this worktree.
+# Allowlist only the HM-managed config.
+/dotfiles/codex/*
+!/dotfiles/codex/AGENTS.md
+!/dotfiles/codex/config.toml
+!/dotfiles/codex/skills

@@ -5,11 +5,11 @@
   ...
 }: let
   gitSyncServicePath = lib.makeBinPath [pkgs.coreutils pkgs.git pkgs.openssh];
-  # ~/.claude history sync is being rolled out machine-by-machine; each new
-  # machine needs its existing history merged into the repo first (see
-  # github.com/colonelpanic8/claude-history).
-  claudeHistoryHosts = ["ryzen-shine" "railbird-sf" "jay-lenovo" "strixi-minaj"];
-  syncClaudeHistory = builtins.elem config.networking.hostName claudeHistoryHosts;
+  # AI chat-history sync (Claude Code + Codex) is rolled out machine-by-machine;
+  # each new machine needs its existing history merged into the repo first (see
+  # github.com/colonelpanic8/claude-history and .../codex-history).
+  aiHistoryHosts = ["ryzen-shine" "railbird-sf" "jay-lenovo" "strixi-minaj"];
+  syncAiHistory = builtins.elem config.networking.hostName aiHistoryHosts;
   mkGitSyncTrayOverrides = icon: {
     Service = {
       Environment = lib.mkMerge [
@@ -40,10 +40,15 @@ in {
           uri = "git@github.com:IvanMalison/.password-store.git";
         };
       }
-      // lib.optionalAttrs syncClaudeHistory {
+      // lib.optionalAttrs syncAiHistory {
         claude-history = {
           path = config.home.homeDirectory + "/.claude";
           uri = "git@github.com:colonelpanic8/claude-history.git";
+          interval = 600;
+        };
+        codex-history = {
+          path = config.home.homeDirectory + "/.codex";
+          uri = "git@github.com:colonelpanic8/codex-history.git";
           interval = 600;
         };
       };
@@ -55,11 +60,14 @@ in {
           lib.nameValuePair "git-sync-${name}"
           (mkGitSyncTrayOverrides (repoIcons.${name} or "git")))
         config.services.git-sync.repositories)
-      (lib.optionalAttrs syncClaudeHistory {
+      (lib.optionalAttrs syncAiHistory {
         # Live sessions append to their transcript on every message; sync
         # untracked session files and throttle event-driven syncs so an
         # active session doesn't push once per append.
         git-sync-claude-history.Service.ExecStart =
+          lib.mkForce
+          "${pkgs.git-sync-rs}/bin/git-sync-rs watch --new-files true --min-interval 300";
+        git-sync-codex-history.Service.ExecStart =
           lib.mkForce
           "${pkgs.git-sync-rs}/bin/git-sync-rs watch --new-files true --min-interval 300";
       })

@@ -11,6 +11,7 @@
   orgPath = "${config.home.homeDirectory}/org";
   passwordStorePath = "${config.home.homeDirectory}/.password-store";
   claudePath = "${config.home.homeDirectory}/.claude";
+  codexPath = "${config.home.homeDirectory}/.codex";
 in {
   services.git-sync = {
     enable = true;
@@ -30,6 +31,11 @@ in {
         uri = "git@github.com:colonelpanic8/claude-history.git";
         interval = 600;
       };
+      codex-history = {
+        path = codexPath;
+        uri = "git@github.com:colonelpanic8/codex-history.git";
+        interval = 600;
+      };
     };
   };
 
@@ -43,5 +49,7 @@ in {
     # untracked session files and throttle event-driven syncs.
     git-sync-claude-history.config.ProgramArguments =
       lib.mkForce ["${gitSyncPackage}/bin/git-sync-rs" "-d" claudePath "watch" "--new-files" "true" "--min-interval" "300"];
+    git-sync-codex-history.config.ProgramArguments =
+      lib.mkForce ["${gitSyncPackage}/bin/git-sync-rs" "-d" codexPath "watch" "--new-files" "true" "--min-interval" "300"];
   };
 }
