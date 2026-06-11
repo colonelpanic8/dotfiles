@@ -8,7 +8,7 @@
   # ~/.claude history sync is being rolled out machine-by-machine; each new
   # machine needs its existing history merged into the repo first (see
   # github.com/colonelpanic8/claude-history).
-  claudeHistoryHosts = ["ryzen-shine" "railbird-sf"];
+  claudeHistoryHosts = ["ryzen-shine" "railbird-sf" "jay-lenovo" "strixi-minaj"];
   syncClaudeHistory = builtins.elem config.networking.hostName claudeHistoryHosts;
   mkGitSyncTrayOverrides = icon: {
     Service = {
