@@ -11,7 +11,6 @@
   orgPath = "${config.home.homeDirectory}/org";
   passwordStorePath = "${config.home.homeDirectory}/.password-store";
   claudePath = "${config.home.homeDirectory}/.claude";
-  codexPath = "${config.home.homeDirectory}/.codex";
 in {
   services.git-sync = {
     enable = true;
@@ -31,11 +30,11 @@ in {
         uri = "git@github.com:colonelpanic8/claude-history.git";
         interval = 600;
       };
-      codex-history = {
-        path = codexPath;
-        uri = "git@github.com:colonelpanic8/codex-history.git";
-        interval = 600;
-      };
+      # NB: codex-history is intentionally NOT synced on mac-demarco-mini.
+      # The codex archive is ~1GB and this machine runs chronically near full
+      # (APFS container ~94% used); cloning it would break every darwin
+      # rebuild. mac's own Codex sessions are already merged into the repo —
+      # it just doesn't receive. Re-enable once the disk has headroom.
     };
   };
 
@@ -49,7 +48,5 @@ in {
     # untracked session files and throttle event-driven syncs.
     git-sync-claude-history.config.ProgramArguments =
       lib.mkForce ["${gitSyncPackage}/bin/git-sync-rs" "-d" claudePath "watch" "--new-files" "true" "--min-interval" "300"];
-    git-sync-codex-history.config.ProgramArguments =
-      lib.mkForce ["${gitSyncPackage}/bin/git-sync-rs" "-d" codexPath "watch" "--new-files" "true" "--min-interval" "300"];
   };
 }
