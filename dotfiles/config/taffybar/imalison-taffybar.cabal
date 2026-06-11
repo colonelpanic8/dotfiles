@@ -13,7 +13,8 @@ cabal-version:       >=1.10
 executable taffybar
   hs-source-dirs:      .
   main-is:             taffybar.hs
-  other-modules:       TaffybarConfig.Config
+  other-modules:       TaffybarConfig.AIUsage
+                     , TaffybarConfig.Config
                      , TaffybarConfig.ChromeFavicons
                      , TaffybarConfig.Host
                      , TaffybarConfig.Widgets
@@ -27,6 +28,7 @@ executable taffybar
                      , containers
                      , directory
                      , filepath
+                     , fsnotify
                      , gi-gdk3
                      , gi-gtk3
                      , gi-gdkpixbuf

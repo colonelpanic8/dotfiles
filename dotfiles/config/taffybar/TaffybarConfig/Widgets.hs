@@ -33,12 +33,6 @@ import qualified System.Taffybar.Widget.Audio as Audio
 import System.Taffybar.Widget.CPUMonitor (cpuMonitorNew)
 import System.Taffybar.Widget.Generic.Graph (GraphConfig (..), GraphDirection (..), GraphStyle (..), defaultGraphConfig)
 import qualified System.Taffybar.Widget.NetworkManager as NetworkManager
-import System.Taffybar.Widget.OpenAIUsage
-  ( OpenAIUsageDisplayMode (OpenAIUsageDisplayRemaining),
-    OpenAIUsageStackConfig (..),
-    defaultOpenAIUsageStackConfig,
-    openAIUsageSectionNewWith,
-  )
 import System.Taffybar.Widget.SNIMenu (withNmAppletMenu)
 import System.Taffybar.Widget.SNITray
   ( CollapsibleSNITrayParams (..),
@@ -60,6 +54,7 @@ import System.Taffybar.Widget.Util
   )
 import qualified System.Taffybar.Widget.Wlsunset as Wlsunset
 import qualified System.Taffybar.Widget.Workspaces as Workspaces
+import TaffybarConfig.AIUsage (aiUsageWidget)
 import TaffybarConfig.Host (laptopHosts)
 import TaffybarConfig.WidgetUtil
   ( decorateWithClassAndBox,
@@ -375,16 +370,6 @@ usageSectionWidget klass iconFile tooltip stackBuilder =
       section <- buildIconLabelBox iconWidget stack
       widgetSetClassGI section "usage-section"
 
-openAIUsageWidget :: TaffyIO Gtk.Widget
-openAIUsageWidget = do
-  iconWidget <- liftIO $ usageLogoWidget "openai-symbol.svg" "OpenAI usage"
-  decorateWithClassAndBoxM "openai-usage" $
-    openAIUsageSectionNewWith
-      iconWidget
-      defaultOpenAIUsageStackConfig
-        { openAIUsageStackDefaultDisplayMode = OpenAIUsageDisplayRemaining
-        }
-
 sniPriorityVisibilityThresholdDefault :: Int
 sniPriorityVisibilityThresholdDefault = 0
 
@@ -445,7 +430,7 @@ endWidgetsForHost hostName =
   let baseEndWidgets =
         [ sniTrayWidget,
           audioWidget,
-          openAIUsageWidget,
+          aiUsageWidget,
           cpuWidget,
           ramSwapWidget,
           diskUsageWidget,
@@ -458,7 +443,7 @@ endWidgetsForHost hostName =
           sniTrayWidget,
           asusDiskUsageWidget,
           audioBacklightWidget,
-          openAIUsageWidget,
+          aiUsageWidget,
           cpuWidget,
           ramSwapWidget,
           sunLockWidget,
