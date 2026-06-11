@@ -97,8 +97,12 @@
     };
 
     # Hyprland and plugins from official flakes for proper plugin compatibility
+    # Pin to a release tag rather than tracking main: an untagged main snapshot
+    # (68e3e40, 2026-06-10) shipped a Monitor.hpp that #includes a not-yet-added
+    # MonitorZoomController.hpp, breaking every plugin build (e.g. hyprexpo).
+    # v0.55.2 is the release the hyprexpo fork is built against.
     hyprland = {
-      url = "git+https://github.com/hyprwm/Hyprland?submodules=1";
+      url = "git+https://github.com/hyprwm/Hyprland?submodules=1&ref=refs/tags/v0.55.2";
       inputs.hyprutils.follows = "hyprutils";
     };
 
