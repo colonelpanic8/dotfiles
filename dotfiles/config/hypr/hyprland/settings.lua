@@ -429,6 +429,20 @@ function M.setup(ctx)
     })
     hl.window_rule({ match = { title = "^(Confirm)$" }, float = true })
 
+    -- The AI desktop apps fire xdg-activation requests while streaming
+    -- responses; with misc:focus_on_activate=true that steals focus from
+    -- whatever window the user is actually working in. focus_on_activate is
+    -- a dynamic rule (applies to already-mapped windows on reload);
+    -- suppress_event only applies at map time.
+    for index, class in ipairs({ "^(claude-desktop)$", "^(codex-desktop)$" }) do
+      hl.window_rule({
+        name = "ai-app-no-activate-focus-" .. tostring(index),
+        match = { class = class },
+        focus_on_activate = false,
+        suppress_event = "activatefocus",
+      })
+    end
+
     for index, match in ipairs({
       { class = "^(flameshot)$" },
       { title = "^(flameshot)$" },

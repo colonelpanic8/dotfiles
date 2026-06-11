@@ -312,6 +312,50 @@ function M.setup(ctx)
     return false
   end
 
+  local function window_contains_point(window, x, y)
+    local at = window and window.at
+    local size = window and window.size
+    if not at or not size then
+      return false
+    end
+
+    local left = tonumber(at.x or at[1])
+    local top = tonumber(at.y or at[2])
+    local width = tonumber(size.x or size[1])
+    local height = tonumber(size.y or size[2])
+    if not left or not top or not width or not height then
+      return false
+    end
+
+    return x >= left and x < left + width and y >= top and y < top + height
+  end
+
+  -- With follow_mouse=1, a bare focus dispatch does not survive the next
+  -- pointer motion unless the cursor already sits inside the target window,
+  -- so warp the cursor into the window when needed.
+  local function focus_window_with_cursor(window)
+    local selector = window_selector(window)
+    if not selector then
+      return false
+    end
+
+    local live = type(hl.get_window) == "function" and hl.get_window(selector) or window
+    if not live then
+      return false
+    end
+
+    dispatch(hl.dsp.focus({ window = selector }))
+
+    local cursor = hl.get_cursor_pos and hl.get_cursor_pos()
+    if cursor and window_contains_point(live, cursor.x, cursor.y) then
+      return true
+    end
+
+    local center_x, center_y = window_center(live)
+    dispatch(hl.dsp.cursor.move({ x = math.floor(center_x), y = math.floor(center_y) }))
+    return true
+  end
+
   local function find_tabbed_group_anchor(state)
     local active = hl.get_active_window()
     if active and active.group and active.group.size and active.group.size > 1 then
@@ -322,8 +366,16 @@ function M.setup(ctx)
       return nil
     end
 
+    local workspace = active_workspace()
     for _, window in ipairs(hl.get_windows()) do
-      if window and window.address == state.anchor and window.group and window.group.size and window.group.size > 1 then
+      if
+        window
+        and window.address == state.anchor
+        and same_workspace(window.workspace, workspace)
+        and window.group
+        and window.group.size
+        and window.group.size > 1
+      then
         return window
       end
     end
@@ -378,6 +430,7 @@ function M.setup(ctx)
   local function restore_workspace_tabbed_group()
     local key = workspace_key()
     local state = tabbed_workspace_groups[key]
+    local entry_focused = hl.get_active_window()
     local anchor = find_tabbed_group_anchor(state)
     local anchor_selector = window_selector(anchor)
     local target_workspace_id = anchor and anchor.workspace and anchor.workspace.id
@@ -394,7 +447,9 @@ function M.setup(ctx)
     tabbed_workspace_groups[key] = nil
     set_layout(columns_layout)
     restore_tabbed_group_window_order(state, target_workspace_id)
-    dispatch(hl.dsp.focus({ window = anchor_selector }))
+    if not focus_window_with_cursor(entry_focused) then
+      focus_window_with_cursor(anchor)
+    end
     schedule_nstack_count_update()
   end
 
@@ -469,6 +524,9 @@ function M.setup(ctx)
       dispatch(hl.dsp.focus({ window = anchor_selector }))
       dispatch(hl.dsp.group.toggle({ window = anchor_selector }))
       notify_tabbed_group("Unable to group tiled windows")
+      if not focus_window_with_cursor(focused) then
+        focus_window_with_cursor(anchor)
+      end
       return
     elseif grouped_count < #candidates then
       notify_tabbed_group("Grouped " .. tostring(grouped_count) .. " of " .. tostring(#candidates) .. " tiled windows")
@@ -479,7 +537,9 @@ function M.setup(ctx)
       order = original_order,
       windows = candidate_addresses,
     }
-    dispatch(hl.dsp.focus({ window = anchor_selector }))
+    if not focus_window_with_cursor(focused) then
+      focus_window_with_cursor(anchor)
+    end
   end
 
   local function force_columns_layout()
