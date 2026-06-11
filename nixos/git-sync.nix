@@ -23,6 +23,10 @@
   repoIcons = {
     org = "${pkgs.papirus-icon-theme}/share/icons/Papirus/64x64/mimetypes/text-org.svg";
     password-store = "password";
+    # Brand logos from the desktop apps' hicolor theme icons (resolved by
+    # freedesktop name, like "password" above).
+    claude-history = "claude-desktop";
+    codex-history = "codex-desktop";
   };
 in {
   home-manager.users.imalison = {config, ...}: {
