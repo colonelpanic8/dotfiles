@@ -51,3 +51,13 @@ gotools
 /.playwright-cli/
 /nixos/action-cache-dir/
 /dotfiles/config/taffybar/dbus-menu/
+
+# On nix-darwin, ~/.claude resolves into dotfiles/claude (HM out-of-store
+# symlink), so the claude-history repo and live Claude Code state are nested
+# inside this worktree there. Keep everything but the managed config out of
+# the dotfiles repo so chat history can never be committed here.
+/dotfiles/claude/*
+!/dotfiles/claude/CLAUDE.md
+!/dotfiles/claude/settings.json
+!/dotfiles/claude/settings.local.json
+!/dotfiles/claude/settings.local.json.example
