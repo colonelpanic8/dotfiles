@@ -55,10 +55,11 @@ in {
 
   config = lib.mkIf cfg.enable {
     home.file = {
-      ".codex/.gitignore" = {
-        force = true;
-        source = oos "${cfg.worktreeCodexDir}/.gitignore";
-      };
+      # NB: ~/.codex/.gitignore is intentionally NOT managed here. ~/.codex is
+      # a git-sync-rs checkout of the codex-history repo, which ships its own
+      # real .gitignore — git refuses to read a symlinked ignore file, so an
+      # HM-managed symlink here would silently disable ignore rules and risk
+      # committing auth.json/sqlite state. Leave it to the repo.
 
       ".codex/AGENTS.md" = {
         force = true;
