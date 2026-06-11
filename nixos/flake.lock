@@ -2159,16 +2159,15 @@
         "xmonad-contrib": "xmonad-contrib"
       },
       "locked": {
-        "lastModified": 1781156858,
+        "lastModified": 1781159184,
         "narHash": "sha256-w5drkb9QGCQMphSyyh1SplfH74hMib+eZ74rra/8yQk=",
         "owner": "taffybar",
         "repo": "taffybar",
-        "rev": "6e2a12758a7c700d029ba7de777bbd3920dfca90",
+        "rev": "f160fcd1dff1c5fcf8331d3b5b86aec0a36346eb",
         "type": "github"
       },
       "original": {
         "owner": "taffybar",
-        "ref": "anthropic-oauth-utilization",
         "repo": "taffybar",
         "type": "github"
       }
