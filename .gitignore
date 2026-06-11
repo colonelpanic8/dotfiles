@@ -49,6 +49,7 @@ gotools
 
 # Local tool state
 /.playwright-cli/
+/nixos/.playwright-cli/
 /nixos/action-cache-dir/
 /dotfiles/config/taffybar/dbus-menu/
 
