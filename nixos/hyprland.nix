@@ -294,7 +294,7 @@
       hyprexpo
       hyprwinview
       hyprWorkspaceHistory
-      hyprtasking
+      # hyprtasking  # disabled: build failure against current Hyprland API
       hyprDynamicCursors
       hyprwobbly
     ]
