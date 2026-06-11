@@ -3,7 +3,7 @@
     taffybar = {
       # Keep the default source usable in CI. Local iteration uses
       # IMALISON_TAFFYBAR_LIVE_CHECKOUT below via `just switch-local-taffybar`.
-      url = "github:taffybar/taffybar";
+      url = "github:taffybar/taffybar/anthropic-oauth-utilization";
       inputs.weeder-nix = {
         url = "github:NorfairKing/weeder-nix";
         inputs.pre-commit-hooks.inputs.nixpkgs.follows = "nixpkgs";
