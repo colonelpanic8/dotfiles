@@ -3,7 +3,9 @@
     taffybar = {
       # Keep the default source usable in CI. Local iteration uses
       # IMALISON_TAFFYBAR_LIVE_CHECKOUT below via `just switch-local-taffybar`.
-      url = "github:taffybar/taffybar";
+      # Pinned to the rate-limit-backoff PR branch (taffybar/taffybar#681);
+      # revert to master after it merges.
+      url = "github:taffybar/taffybar/anthropic-usage-rate-limit-backoff";
       inputs.weeder-nix = {
         url = "github:NorfairKing/weeder-nix";
         inputs.pre-commit-hooks.inputs.nixpkgs.follows = "nixpkgs";
