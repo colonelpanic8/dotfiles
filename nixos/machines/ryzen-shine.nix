@@ -1,4 +1,5 @@
 {
+  config,
   inputs,
   lib,
   pkgs,
@@ -75,6 +76,23 @@
   boot.initrd.availableKernelModules = ["nvme" "xhci_pci" "ahci" "usb_storage" "usbhid" "sd_mod"];
 
   hardware.nvidia.modesetting.enable = true;
+
+  # Pin the NVIDIA driver to 595.71.05 on this host only. nixpkgs' production
+  # driver moved 595.71.05 -> 595.80 (nixpkgs 9b366138, 2026-06-02), and 595.80
+  # introduced a GSP-firmware regression on this RTX 3070 Ti (GA104): random hard
+  # freezes with "GSP RM heartbeat timed out" / Xid 119 GSP RPC timeouts (see
+  # boots from 2026-06-08 onward). 595.71.05 ran cleanly for 4.5d before the bump,
+  # and the open module can't disable GSP, so we pin the last-good build directly.
+  # Hashes lifted from the parent of the nixpkgs bump commit. Revisit once a newer
+  # driver branch (e.g. the 610.x new_feature branch) is confirmed stable here.
+  hardware.nvidia.package = config.boot.kernelPackages.nvidiaPackages.mkDriver {
+    version = "595.71.05";
+    sha256_64bit = "sha256-NiA7iWC35JyKQva6H1hjzeNKBek9KyS3mK8G3YRva4I=";
+    sha256_aarch64 = "sha256-XzKloS00dFKTd4ATWkTIhm9eG/OzR/Sim6MboNZWPu8=";
+    openSha256 = "sha256-Lfz71QWKM6x/jD2B22SWpUi7/og30HRlXg1kL3EWzEw=";
+    settingsSha256 = "sha256-mXnf3jyvznfB3OfKd657rxv0rYHQb/dX/Riw/+N9EKU=";
+    persistencedSha256 = "sha256-Z/6IvEEa/XfZ5F5qoSIPvXJLGtscYVqjFxHZaN/M2Ts=";
+  };
 
   hardware.graphics.enable32Bit = true;
 
