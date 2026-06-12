@@ -64,6 +64,10 @@ makeEnable config "myModules.code" true {
 
     programs.codexDesktopLinux = {
       enable = true;
+      # Bake CODEX_CLI_PATH into the launcher so Codex Desktop always finds this
+      # CLI, regardless of how it is started (GUI autostart, app launcher,
+      # terminal, or warm-start handoff) and without needing a re-login.
+      cliPackage = pkgs.codex;
       computerUseUi.enable = true;
       remoteMobileControl.enable = true;
       remoteControl = {
