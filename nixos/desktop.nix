@@ -141,7 +141,11 @@
         "$out/share/applications/spotify.desktop"
     '');
   rlruPackages = inputs.rlru.packages.${pkgs.stdenv.hostPlatform.system};
-  rlruDioxusDesktopBase = rlruPackages.rlru-dioxus-desktop;
+  rlruDioxusDesktopBase = rlruPackages.rlru-dioxus-desktop.overrideAttrs (_: {
+    # Rust 1.95 can otherwise ICE/SEGV while compiling rlru's desktop dependency
+    # graph in release mode.
+    RUST_MIN_STACK = "2147483648";
+  });
   rlruDioxusDesktop = pkgs.symlinkJoin {
     name = "${rlruDioxusDesktopBase.name}-single-desktop-entry";
     paths = [rlruDioxusDesktopBase];
