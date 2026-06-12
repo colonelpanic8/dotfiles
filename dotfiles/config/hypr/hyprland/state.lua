@@ -61,7 +61,9 @@ return {
   tabbed_group_restore_workspace_prefix = "special:tabbed-monocle-restore-",
   current_layout = columns_layout,
   enable_nstack = true,
-  enable_hyprexpo = true,
+  -- Disabled 2026-06-11: live-preview backend SEGVs Hyprland (shouldRenderWindow
+  -- hook fires on every popup commit). Re-enable once fixed upstream.
+  enable_hyprexpo = false,
   enable_hyprwinview = true,
   enable_hyprtasking = false,
   enable_workspace_history = true,

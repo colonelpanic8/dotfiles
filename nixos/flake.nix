@@ -125,7 +125,11 @@
     };
 
     hyprexpo = {
-      url = "github:colonelpanic8/hyprexpo";
+      # Pinned: the live-preview backend (c19cc94+) installs a shouldRenderWindow
+      # hook that fires on every window/popup commit and SEGVs during normal use
+      # (CPopup::visible -> shouldRenderWindow). 8bafe0d is the last commit before
+      # that feature; still built against Hyprland 0.55.2.
+      url = "github:colonelpanic8/hyprexpo/8bafe0dbc7c26a3269f7e0fa01e3fa3cf54a3161";
       inputs.hyprland.follows = "hyprland";
     };
 
