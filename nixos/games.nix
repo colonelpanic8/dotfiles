@@ -7,11 +7,15 @@
   ...
 }: let
   heroicAccountSwitchingVersion = "${pkgs.heroic.version}-epic-account-switching-${inputs.heroic-games-launcher.shortRev or "dirty"}";
-  heroicWithEpicAccountSwitching = pkgs.heroic.overrideAttrs (oldAttrs: {
-    name = "${oldAttrs.pname or "heroic"}-${heroicAccountSwitchingVersion}";
+  heroicUnwrappedWithEpicAccountSwitching = pkgs.heroic-unwrapped.overrideAttrs (oldAttrs: {
+    name = "${oldAttrs.pname or "heroic-unwrapped"}-${heroicAccountSwitchingVersion}";
     version = heroicAccountSwitchingVersion;
     src = inputs.heroic-games-launcher;
+    pnpmDeps = oldAttrs.pnpmDeps;
   });
+  heroicWithEpicAccountSwitching = pkgs.heroic.override {
+    heroic-unwrapped = heroicUnwrappedWithEpicAccountSwitching;
+  };
   repairXwaylandSocket = pkgs.writeShellApplication {
     name = "repair-xwayland-socket";
     text = ''
