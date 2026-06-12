@@ -1949,11 +1949,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1781224125,
-        "narHash": "sha256-m6V3BgY38G4cpAYeBx+/eFntqvxwxn3iHCm2erCuUDw=",
+        "lastModified": 1781301182,
+        "narHash": "sha256-BqE2eNIC8v59l5PUMr9wlRTxay+HDUMZvhL0sDx12PI=",
         "owner": "rlrml",
         "repo": "rlru",
-        "rev": "67164c27d9e39d2d1ac57e6a712f7b288559d976",
+        "rev": "34404952b49203584abcc9e7ad3a43461618cb87",
         "type": "github"
       },
       "original": {
