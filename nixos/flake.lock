@@ -761,6 +761,23 @@
         "type": "github"
       }
     },
+    "heroic-games-launcher": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1781264135,
+        "narHash": "sha256-Ee0Y7CZG05J1ZK66rxfx7s7Q/1vgzVdJGagAPrRB2RM=",
+        "owner": "colonelpanic8",
+        "repo": "HeroicGamesLauncher",
+        "rev": "df53df1eea5eef59c7c7fc1c5d18dff8a5814838",
+        "type": "github"
+      },
+      "original": {
+        "owner": "colonelpanic8",
+        "ref": "colonelpanic/epic-multi-account-switching",
+        "repo": "HeroicGamesLauncher",
+        "type": "github"
+      }
+    },
     "home-manager": {
       "inputs": {
         "nixpkgs": [
@@ -1963,6 +1980,7 @@
         "git-ignore-nix": "git-ignore-nix",
         "git-sync-rs": "git-sync-rs",
         "grub2-themes": "grub2-themes",
+        "heroic-games-launcher": "heroic-games-launcher",
         "home-manager": "home-manager",
         "hypr-dynamic-cursors": "hypr-dynamic-cursors",
         "hypr-workspace-history": "hypr-workspace-history",

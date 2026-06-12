@@ -1,10 +1,17 @@
 {
   config,
+  inputs,
   lib,
   pkgs,
   makeEnable,
   ...
 }: let
+  heroicAccountSwitchingVersion = "${pkgs.heroic.version}-epic-account-switching-${inputs.heroic-games-launcher.shortRev or "dirty"}";
+  heroicWithEpicAccountSwitching = pkgs.heroic.overrideAttrs (oldAttrs: {
+    name = "${oldAttrs.pname or "heroic"}-${heroicAccountSwitchingVersion}";
+    version = heroicAccountSwitchingVersion;
+    src = inputs.heroic-games-launcher;
+  });
   repairXwaylandSocket = pkgs.writeShellApplication {
     name = "repair-xwayland-socket";
     text = ''
@@ -49,7 +56,7 @@ in
     environment.systemPackages = with pkgs; [
       repairXwaylandSocket
       steamWithXwaylandSocketRepair
-      heroic
+      heroicWithEpicAccountSwitching
       legendary-gl
       protontricks
       steam-run

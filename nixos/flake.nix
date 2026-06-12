@@ -291,6 +291,11 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
+    heroic-games-launcher = {
+      url = "github:colonelpanic8/HeroicGamesLauncher?ref=colonelpanic/epic-multi-account-switching";
+      flake = false;
+    };
+
     grub2-themes = {
       url = "github:vinceliuice/grub2-themes";
       inputs.nixpkgs.follows = "nixpkgs";
