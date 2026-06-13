@@ -13,7 +13,15 @@
     name = "${keepbookDioxusDesktopBase.name}-single-desktop-entry";
     paths = [keepbookDioxusDesktopBase];
     postBuild = ''
-      rm -f "$out/share/applications/keepbook-dioxus.desktop"
+      desktopFile="$out/share/applications/keepbook-dioxus.desktop"
+      if [ -f "$desktopFile" ] && ! grep -q '^NoDisplay=' "$desktopFile"; then
+        tmpDesktopFile="$(mktemp)"
+        cp "$desktopFile" "$tmpDesktopFile"
+        rm -f "$desktopFile"
+        install -m644 "$tmpDesktopFile" "$desktopFile"
+        rm -f "$tmpDesktopFile"
+        echo 'NoDisplay=true' >> "$desktopFile"
+      fi
     '';
     meta = keepbookDioxusDesktopBase.meta;
   };

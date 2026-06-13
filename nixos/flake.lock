@@ -1409,12 +1409,10 @@
         ]
       },
       "locked": {
-        "lastModified": 1781314964,
-        "narHash": "sha256-3JkpgmpEiNrAfWBEE4BHT288RjsTZ8rXdAt24XALpKo=",
-        "owner": "colonelpanic8",
-        "repo": "keepbook",
-        "rev": "61ccc67dd0a18fb08a6256b9dd7d217e39265540",
-        "type": "github"
+        "lastModified": 1781333555,
+        "narHash": "sha256-KdPjjnTacEnZHuhijT7vwv/Lu3lnCgkOODPH+6Gx6T8=",
+        "path": "/home/imalison/Projects/keepbook",
+        "type": "path"
       },
       "original": {
         "owner": "colonelpanic8",
