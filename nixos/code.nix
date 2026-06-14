@@ -12,6 +12,18 @@ let
     src = inputs.codex-desktop-linux;
     patches = [ ./patches/codex-desktop-linux-gsettings-schemas.patch ];
   };
+  claudeDesktopSource = pkgs.applyPatches {
+    name = "claude-desktop-linux-patched";
+    src = inputs.claude-desktop;
+    patches = [ ./patches/claude-desktop-add-dir-multiple-matches.patch ];
+  };
+  claudeDesktopNodePty = pkgs.callPackage "${claudeDesktopSource}/nix/node-pty.nix" {};
+  claudeDesktop = pkgs.callPackage "${claudeDesktopSource}/nix/claude-desktop.nix" {
+    node-pty = claudeDesktopNodePty;
+  };
+  claudeDesktopFhs = pkgs.callPackage "${claudeDesktopSource}/nix/fhs.nix" {
+    claude-desktop = claudeDesktop;
+  };
   codexDesktopLinux =
     let
       flake = import "${codexDesktopLinuxSource}/flake.nix";
@@ -96,7 +108,7 @@ makeEnable config "myModules.code" true {
       # LLM Tools
       # antigravity
       claude-code
-      inputs.claude-desktop.packages.${pkgs.stdenv.hostPlatform.system}.default
+      claudeDesktopFhs
       codex
       gemini-cli
       opencode
