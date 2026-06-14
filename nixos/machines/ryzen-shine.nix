@@ -62,8 +62,9 @@
     tmux.background = "#2563eb";
   };
 
-  environment.systemPackages = with pkgs; [
-    perf
+  environment.systemPackages = [
+    inputs.nixpkgs-stable.legacyPackages.${pkgs.stdenv.hostPlatform.system}.inkscape
+    pkgs.perf
   ];
 
   boot.initrd.systemd.enable = true;
