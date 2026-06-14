@@ -550,6 +550,17 @@ function M.setup(ctx)
     toggle_scratchpad(active_ai_scratchpad())
   end
 
+  local function backup_ai_scratchpad()
+    if active_ai_scratchpad() == "codex" then
+      return "claude"
+    end
+    return "codex"
+  end
+
+  local function toggle_backup_ai_scratchpad()
+    toggle_scratchpad(backup_ai_scratchpad())
+  end
+
   -- Used by rofi_ai_scratchpad.sh after a selection: bring the chosen
   -- scratchpad into view if it isn't already, without hiding it when it is.
   local function show_active_ai_scratchpad()
@@ -601,7 +612,9 @@ function M.setup(ctx)
   ctx.adopt_matching_scratchpad_window = adopt_matching_scratchpad_window
   ctx.toggle_scratchpad = toggle_scratchpad
   ctx.active_ai_scratchpad = active_ai_scratchpad
+  ctx.backup_ai_scratchpad = backup_ai_scratchpad
   ctx.toggle_active_ai_scratchpad = toggle_active_ai_scratchpad
+  ctx.toggle_backup_ai_scratchpad = toggle_backup_ai_scratchpad
   ctx.show_active_ai_scratchpad = show_active_ai_scratchpad
 end
 

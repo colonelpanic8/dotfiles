@@ -439,7 +439,8 @@ Required behavior:
 
 Required behavior:
 
-- `Super+Alt+c` toggles the codex scratchpad.
+- `Super+Alt+c` toggles the primary AI scratchpad.
+- `Super+Alt+Shift+c` toggles the backup AI scratchpad.
 - `Super+Alt+e` toggles the element scratchpad.
 - `Super+Alt+h` toggles the htop scratchpad.
 - `Super+Alt+k` toggles the slack scratchpad.
