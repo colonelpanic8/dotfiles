@@ -1,23 +1,9 @@
 # Agentic Session Preferences
 
-## Multiplexer session titling
-- If the `TMUX` or `ZELLIJ` environment variable is set, treat this chat as the controller for the current tmux or zellij session.
-- Use `set_multiplexer_title '<project> - <task>'` to update the title. The command detects tmux vs. zellij internally, prefers tmux when both are present, and no-ops outside a multiplexer.
-- Maintain a session/window/pane title that describes the durable purpose of the overall exchange.
-- Prefer automatic titling: infer a concise <task> from the current user request and the existing chat context without asking.
-- Choose holistic titles over granular turn summaries. The title should answer "what has this chat been for?" rather than describe the latest command, substep, clarification, or follow-up message.
-- Preserve the existing <task> when the new user turn is a continuation, status check, refinement, or implementation detail within the same broader objective.
-- Title format: "<project> - <task>".
-  - <project> is the basename of the current project directory.
-    - Prefer git repo root basename if available; otherwise use basename of the current working directory.
-  - <task> is a short, user-friendly description of what we are doing.
-- Ask for a short descriptive <task> only when the task is ambiguous or you are not confident in an inferred title.
-- When the broader objective changes substantially, update the <task> automatically if clear; otherwise ask for an updated <task>.
-- When a title is provided or updated, immediately run `set_multiplexer_title '<project> - <task>'`; do not call raw tmux or zellij rename commands unless debugging the helper itself.
-- For Claude Code sessions, a UserPromptSubmit hook may initialize titles automatically from the first substantive prompt, but it should not keep overwriting an established same-project title with the latest prompt.
-
-## Pane usage
-- Do not create extra panes or windows unless the user asks.
+## Sharing dev-server / preview links
+- When sharing a local server or preview URL, always prefer this machine's Tailscale address over `127.0.0.1`/`localhost`/LAN IPs, so the link opens from any device on the tailnet.
+- Get the address with `tailscale ip -4` (the `100.x.y.z` IP) or the MagicDNS hostname from `tailscale status`. Prefer the `100.x` IP when a server's `allowedHosts` might reject a hostname.
+- Start the server bound to all interfaces (e.g. vite's `--host 0.0.0.0` / a `dev:lan` script), not just localhost, or the Tailscale link won't connect. Verify reachability (`curl` the `100.x` URL) before handing it over.
 
 ## Git worktrees
 - Default to creating git worktrees under a project-local `.worktrees/` directory at the repository root.
@@ -26,7 +12,7 @@
 - Only use a non-`.worktrees/` location when the user explicitly asks for a different path.
 
 ## NixOS workflow
-- This system is managed with a Nix flake at `/etc/nixos` (`/srv/dotfiles/nixos`).
+- This system is managed with a Nix flake at `/srv/dotfiles/nixos`.
 - Use `just switch` from that directory for rebuilds instead of plain `nixos-rebuild`.
 - Host configs live under `machines/`; choose the appropriate host when needed.
 
@@ -60,23 +46,6 @@
 
 This is an org-mode repository containing personal task management, calendars, habits, and project tracking files. It serves as the central hub for Ivan's personal organization.
 
-## Available Tools
-
-### Chrome DevTools MCP
-A browser automation MCP is available for interacting with web pages. Use it to:
-- Navigate to websites and fill out forms
-- Take screenshots and snapshots of pages
-- Click elements, type text, and interact with web UIs
-- Read page content and extract information
-- Automate multi-step web workflows (booking, purchasing, form submission, etc.)
-
-### Google Workspace CLI (`gws`)
-The local `gws` CLI is available for Google Workspace operations. Use it to:
-- Search, read, and send Gmail messages
-- Manage Gmail labels and filters
-- Download attachments and inspect message payloads
-- Access Drive, Calendar, Docs, Sheets, and other Google Workspace APIs
-
 ## Credentials via `pass`
 
 Many credentials and personal details are stored in `pass` (the standard unix password manager). There are hundreds of entries covering a wide range of things, so always search before asking the user for information. Use `pass find <keyword>` to search and `pass show <entry>` to retrieve values.
@@ -97,8 +66,6 @@ Examples of what's stored:
 ## Guidelines
 
 - When filling out forms or making purchases, pull personal info from this file and credentials from `pass` rather than asking the user to provide them.
-- For web tasks, prefer using the Chrome DevTools MCP to automate interactions directly.
-- For email tasks, prefer using `gws gmail` over navigating to Gmail in the browser.
 - If a task requires a credential not found in `pass`, ask the user rather than guessing.
 - This repo's org files (gtd.org, calendar.org, habits.org, projects.org) contain task and scheduling data. The org-agenda-api skill/service can also be used to query agenda data programmatically.
 
@@ -124,3 +91,4 @@ Examples of what's stored:
   - `./project-guides/taffybar.md`
   - `./project-guides/railbird.md`
   - `./project-guides/org-emacs-packages.md`
+  - `./project-guides/subtr-actor-rocket-sense-rlru.md`
