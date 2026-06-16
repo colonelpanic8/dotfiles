@@ -62,6 +62,11 @@ gotools
 !/dotfiles/claude/settings.json
 !/dotfiles/claude/settings.local.json
 !/dotfiles/claude/settings.local.json.example
+# Expose the shared agent skills library to Claude Code, which only reads
+# ~/.claude/skills. This is a symlink to ../agents/skills (the canonical
+# store, also surfaced at ~/.agents/skills); without the allowlist the
+# /dotfiles/claude/* rule above keeps it out of the flake source.
+!/dotfiles/claude/skills
 
 # Same story for Codex: ~/.codex resolves into dotfiles/codex on nix-darwin,
 # so the codex-history repo and live Codex state nest inside this worktree.

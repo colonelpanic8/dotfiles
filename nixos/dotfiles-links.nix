@@ -16,7 +16,7 @@
   # Where the checked-out repo lives at runtime (activation time).
   # Keep this outside individual home directories so links work for every
   # managed user on a shared machine.
-  worktreeRoot = nixos.config.dotfiles-worktree or "${config.home.homeDirectory}/dotfiles";
+  worktreeRoot = nixos.config.dotfiles-worktree or "/srv/dotfiles";
   worktreeDotfiles = "${worktreeRoot}/dotfiles";
 
   # Use the flake source for enumeration (pure), but point links at the worktree.
@@ -92,6 +92,10 @@ in {
 
   myModules.codexGeneratedSkills.enable = true;
   myModules.codexGeneratedSkills.sourceCodexDir = "${srcCodex}";
+  # Point the Codex module at the live worktree (e.g. /srv/dotfiles) like the
+  # links above, not its ~/dotfiles default. Without this, ~/.codex/AGENTS.md
+  # and ~/.codex/skills/* dangle when the checkout lives outside ~/dotfiles.
+  myModules.codexGeneratedSkills.worktreeCodexDir = "${worktreeDotfiles}/codex";
 
   # Home Manager directory links for .emacs.d resolve through the store on this
   # machine, which breaks Elpaca's writable state under ~/.emacs.d/elpaca.
