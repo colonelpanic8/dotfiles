@@ -11,7 +11,6 @@
     if envDotfilesWorktree != ""
     then envDotfilesWorktree
     else "/srv/dotfiles";
-  libDir = "${config.dotfiles-worktree}/dotfiles/lib";
   zshLibDir = builtins.path {
     path = ../dotfiles/lib;
     name = "dotfiles-zsh-lib";
@@ -77,9 +76,9 @@ in
           # handled once by oh-my-zsh below, with this check intentionally skipped.
           ZSH_DISABLE_COMPFIX=true
 
-          fpath=("$HOME/.lib/completions" "${libDir}/completions" $fpath)
-          fpath+="${libDir}/functions"
-          for file in "${libDir}/functions/"*
+          fpath=("$HOME/.lib/completions" "${zshLibDir}/completions" $fpath)
+          fpath+="${zshLibDir}/functions"
+          for file in "${zshLibDir}/functions/"*
           do
               autoload "''${file##*/}"
           done
@@ -184,7 +183,7 @@ in
           export STARSHIP_INSIDE_EMACS="yes"
         '';
         extraInit = ''
-          export PATH="$HOME/.cargo/bin:${libDir}/bin:${libDir}/functions:$PATH";
+          export PATH="$HOME/.cargo/bin:${zshLibDir}/bin:${zshLibDir}/functions:$PATH";
         '';
       };
     };
