@@ -6,6 +6,10 @@
 }: let
   cfg = config.myModules.codexGeneratedSkills;
   oos = config.lib.file.mkOutOfStoreSymlink;
+  managedConfig = pkgs.writeText "codex-managed-config.toml" ''
+    [mcp_servers.nixos]
+    command = "${lib.getExe pkgs.mcp-nixos}"
+  '';
 in {
   options.myModules.codexGeneratedSkills = {
     enable = lib.mkEnableOption "Codex home setup";
@@ -111,6 +115,7 @@ in {
       codex_home=${lib.escapeShellArg cfg.codexHome}
       base=${lib.escapeShellArg "${cfg.worktreeCodexDir}/config.toml"}
       source_base=${lib.escapeShellArg "${cfg.sourceCodexDir}/config.toml"}
+      managed_config=${lib.escapeShellArg managedConfig}
       local_config=${lib.escapeShellArg cfg.localConfig}
       local_state_config=${lib.escapeShellArg cfg.generatedStateConfig}
       target="$codex_home/config.toml"
@@ -141,7 +146,7 @@ in {
           -v begin_marker="$begin_marker" \
           -v end_marker="$end_marker" \
           -v rejected_prefixes="$rejected_project_prefixes" '
-          FNR == NR {
+          ARGIND < ARGC - 1 {
             if ($0 ~ /^\[[^]]+\]$/) {
               base_sections[$0] = 1
             }
@@ -195,7 +200,7 @@ in {
           END {
             flush_block()
           }
-        ' "$base" "$target" \
+        ' "$base" "$managed_config" "$target" \
           | ${lib.getExe pkgs.perl} -0pe 's/\n{3,}/\n\n/g' \
           > "$local_state"
 
@@ -212,6 +217,8 @@ in {
       chmod 600 "$tmp"
 
       cat "$base" > "$tmp"
+      printf '\n' >> "$tmp"
+      cat "$managed_config" >> "$tmp"
       if [ -r "$local_config" ]; then
         printf '\n' >> "$tmp"
         cat "$local_config" >> "$tmp"
