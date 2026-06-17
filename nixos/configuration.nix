@@ -12,6 +12,7 @@
     ./cache-server.nix
     ./cache.nix
     ./chrome-favicon-dbus.nix
+    ./claude-mcp.nix
     ./claude-remote-control.nix
     ./code.nix
     ./cua.nix
