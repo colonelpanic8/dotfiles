@@ -18,6 +18,7 @@ in {
   "1896Folsom-k3s-token.age".publicKeys = keys.agenixKeys ++ keys.railbird-sf;
   "api_service_account_key.json.age".publicKeys = keys.agenixKeys;
   "k3s-registry.yaml.age".publicKeys = keys.agenixKeys ++ keys.railbird-sf;
+  "duckdns-token.railbird-sf.age".publicKeys = keys.agenixKeys ++ keys.railbird-sf;
   "discourse-admin-password.age".publicKeys = keys.hostKeys;
   "discourse-secret-key-base.age".publicKeys = keys.hostKeys;
   "vaultwarden-environment-file.age".publicKeys = keys.hostKeys;

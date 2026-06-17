@@ -30,6 +30,11 @@
     file = ../secrets/org-api-ssh-key.age;
     mode = "0400"; # Restrictive permissions for SSH key
   };
+  # DuckDNS token for the rocket-sense.duckdns.org dynamic-DNS updater below.
+  age.secrets.duckdns-token = {
+    file = ../secrets/duckdns-token.railbird-sf.age;
+    mode = "0400";
+  };
 
   services.org-agenda-api-host = {
     enable = true;
@@ -120,6 +125,40 @@
   };
 
   security.acme.certs."rocket-sense.duckdns.org".extraDomainNames = ["rbsf.tplinkdns.com"];
+
+  # Dynamic-DNS updater: keep rocket-sense.duckdns.org pointed at this node's
+  # current public IP. The residential WAN IP changes (e.g. after an ISP
+  # outage/failover), and without this the public hostname goes stale and the
+  # site becomes unreachable until manually re-pointed. Leaving ip= blank tells
+  # DuckDNS to detect the source IP of this request, so it always reflects
+  # whatever connection the node is currently egressing through.
+  systemd.services.duckdns = {
+    description = "DuckDNS updater for rocket-sense.duckdns.org";
+    after = ["network-online.target"];
+    wants = ["network-online.target"];
+    serviceConfig = {
+      Type = "oneshot";
+      DynamicUser = true;
+      LoadCredential = ["token:${config.age.secrets.duckdns-token.path}"];
+    };
+    script = ''
+      token="$(cat "$CREDENTIALS_DIRECTORY/token")"
+      resp="$(${pkgs.curl}/bin/curl -fsS --retry 3 --max-time 30 \
+        "https://www.duckdns.org/update?domains=rocket-sense&token=$token&ip=")"
+      echo "DuckDNS response: $resp"
+      [ "$resp" = "OK" ] || { echo "DuckDNS update failed"; exit 1; }
+    '';
+  };
+
+  systemd.timers.duckdns = {
+    description = "Periodic DuckDNS update for rocket-sense.duckdns.org";
+    wantedBy = ["timers.target"];
+    timerConfig = {
+      OnBootSec = "1min";
+      OnUnitActiveSec = "5min";
+      Persistent = true;
+    };
+  };
 
   # Open the standard Syncthing sync/discovery ports on the host firewall.
   # Note: you may still need router/NAT port-forwards for inbound access from the internet.
