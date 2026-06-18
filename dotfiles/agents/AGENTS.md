@@ -13,6 +13,7 @@
 
 ## GitHub pull requests
 - Default to creating pull requests as ready for review, not drafts.
+- Do not add a `[codex]` prefix or any other agent/tool prefix to pull request titles.
 - Create a draft pull request only when the user explicitly asks for a draft or when the remote platform requires draft status.
 - If using a helper, skill, or CLI wrapper that defaults to draft PRs, override that default before creating the PR.
 
