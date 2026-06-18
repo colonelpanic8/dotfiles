@@ -11,6 +11,11 @@
 - Create `.worktrees/` if needed before running `git worktree add`.
 - Only use a non-`.worktrees/` location when the user explicitly asks for a different path.
 
+## GitHub pull requests
+- Default to creating pull requests as ready for review, not drafts.
+- Create a draft pull request only when the user explicitly asks for a draft or when the remote platform requires draft status.
+- If using a helper, skill, or CLI wrapper that defaults to draft PRs, override that default before creating the PR.
+
 ## NixOS workflow
 - This system is managed with a Nix flake at `/srv/dotfiles/nixos`.
 - Use `just switch` from that directory for rebuilds instead of plain `nixos-rebuild`.
