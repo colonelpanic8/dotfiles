@@ -19,6 +19,7 @@ Bundled helpers:
 - Prioritize easy wins first (`nix-collect-garbage`, container prune, Cargo artifacts).
 - Propose destructive actions with expected impact before running them.
 - Run destructive actions only after confirmation, unless the user explicitly requests immediate execution of obvious wins.
+- For Rust build artifacts, do not repeatedly ask for confirmation before deleting explicit directories literally named `target` after `rust_target_dirs.py delete` validates them. Cargo targets are rebuildable artifacts; when the user asks to clean Rust target directories, validate with the helper, delete with `--yes`, and report the reclaimed space.
 - Capture new reusable findings by updating this skill before finishing.
 
 ## Workflow
@@ -178,6 +179,7 @@ Machine-specific heavy hitters seen in practice:
 - 2026-05-26 cleanup: when `cargo test` is actively running in `~/Projects/subtr-actor`, leave `subtr-actor/target` alone and delete only inactive Cargo-backed targets. Deleting `keepbook`, `rlru`, `rocket-sense`, `rumno`, and stale `subtr-actor/.worktrees/*/target` reclaimed about 24.5G by helper sizing.
 - 2026-05-26 cleanup: `~/Projects/nixpkgs/.worktrees/*/result` symlinks pinned several GiB of Nix closures, and clean registered nixpkgs worktrees were about 460M each. Removing stale `result` symlinks, running GC, and removing clean worktrees while preserving dirty ones moved `/` from 100% used to about 90% used.
 - 2026-05-27 cleanup: under `~/Projects`, `hypr-workspace-history/target` can be a Rust-style build cache even though the guarded helper rejects it because no `Cargo.toml` is present; inspect and remove that explicit cache manually if present. Preserve `~/Projects/Hyprland/src/layout/target`, which is source code, not a build artifact.
+- 2026-06-18 cleanup: deleting helper-validated Rust targets under `.worktrees/*/target` and `.claude/worktrees/*/target`, plus stale `~/Projects/lastfm-edit/target`, removed 24 target directories totaling 67.1G by helper sizing and moved `/` from 99% used to 90% used. Remaining large targets were top-level project caches under `keepbook`, `rlru`, `subtr-actor`, `rocket-sense`, `rocket-sense-pr-73-ci`, `rocket-sense-subtr-viewer`, `rocket-sense-controlled-plays`, and `boxcars`.
 
 ## Step 5: `/nix/store` Deep Dive
 
@@ -248,7 +250,7 @@ nix-store --gc --print-roots | rg '/\\.direnv/flake-profile-' | awk -F' -> ' '{p
 
 - Do not delete user files directly unless explicitly requested.
 - Prefer cleanup tools that understand ownership/metadata (`nix`, `docker`, `podman`, `cargo-sweep`) over `rm -rf`.
-- For Rust build artifacts, deleting an explicit directory literally named `target` is acceptable when it is discovered by the bundled helper; Cargo will rebuild it.
+- For Rust build artifacts, deleting an explicit directory literally named `target` is acceptable when it is discovered and validated by the bundled helper; Cargo will rebuild it. Do not double-check with the user after helper validation when the active request is Rust target cleanup.
 - Present a concise “proposed actions” list before high-impact deletes.
 - If uncertain whether data is needed, stop at investigation and ask.
 
