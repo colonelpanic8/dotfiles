@@ -275,7 +275,7 @@
     };
 
     codex-desktop-linux = {
-      url = "github:colonelpanic8/codex-desktop-linux?ref=colonelpanic/linux-build-info-no-shadow";
+      url = "github:ilysenko/codex-desktop-linux";
       inputs = {
         nixpkgs.follows = "nixpkgs";
         flake-utils.follows = "flake-utils";
