@@ -89,6 +89,7 @@ function M.setup(ctx)
   end
   if enable_hyprtasking and not verify_config then
     hl.plugin.load("/run/current-system/sw/lib/libhyprtasking.so")
+    os.execute("hyprctl eval 'hl.config({plugin={hyprtasking={full_render=true}}})' >/dev/null 2>&1 || true")
   end
   if enable_hyprexpo and not enable_hyprtasking and not verify_config then
     hl.plugin.load("/run/current-system/sw/lib/libhyprexpo.so")

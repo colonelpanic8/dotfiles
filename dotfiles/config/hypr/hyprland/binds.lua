@@ -88,17 +88,7 @@ function M.setup(ctx)
   end
 
   local function setup_window_overview_bindings()
-    bind(main_mod .. " + SHIFT + C", hl.dsp.window.close(), desc("Close active window"))
-    bind(main_mod .. " + SHIFT + Q", hl.dsp.exit(), desc("Exit Hyprland"))
-    bind(main_mod .. " + Tab", hyprexpo("toggle"), desc("Toggle hyprexpo workspace overview", overview_bind_opts))
-    bind(main_mod .. " + SHIFT + Tab", hyprwinview({
-      action = "show",
-      include_current_workspace = false,
-      start_in_filter_mode = true,
-      default_action = "bring",
-    }), desc("Show all-workspace window overview", overview_bind_opts))
-    bind(main_mod .. " + SHIFT + slash", hyprwinview({ action = "toggle-filter" }), desc("Toggle window overview filter", overview_bind_opts))
-    bind("ALT + Tab", function()
+    local function toggle_hyprtasking()
       if hl.plugin and hl.plugin.hyprtasking and hl.plugin.hyprtasking.toggle then
         hl.plugin.hyprtasking.toggle("cursor")
       else
@@ -110,8 +100,19 @@ function M.setup(ctx)
           font_size = 13,
         })
       end
-    end, desc("Toggle hyprtasking workspace overview", overview_bind_opts))
-    bind("ALT + SHIFT + Tab", hyprexpo("on"), desc("Open hyprexpo workspace overview", overview_bind_opts))
+    end
+
+    bind(main_mod .. " + SHIFT + C", hl.dsp.window.close(), desc("Close active window"))
+    bind(main_mod .. " + SHIFT + Q", hl.dsp.exit(), desc("Exit Hyprland"))
+    bind(main_mod .. " + Tab", toggle_hyprtasking, desc("Toggle hyprtasking workspace overview", overview_bind_opts))
+    bind(main_mod .. " + SHIFT + Tab", hyprwinview({
+      action = "show",
+      include_current_workspace = false,
+      start_in_filter_mode = true,
+      default_action = "bring",
+    }), desc("Show all-workspace window overview", overview_bind_opts))
+    bind(main_mod .. " + SHIFT + slash", hyprwinview({ action = "toggle-filter" }), desc("Toggle window overview filter", overview_bind_opts))
+    bind("ALT + Tab", toggle_hyprtasking, desc("Toggle hyprtasking workspace overview", overview_bind_opts))
     bind(main_mod .. " + G", hyprwinview({
       action = "show",
       start_in_filter_mode = true,

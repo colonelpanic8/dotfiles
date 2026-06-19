@@ -198,6 +198,10 @@
     src = inputs.hyprtasking;
 
     strictDeps = true;
+    postPatch = ''
+      substituteInPlace src/layout/layout_base.cpp \
+        --replace-fail 'e.element->passName()' 'e->element->passName()'
+    '';
     nativeBuildInputs =
       [
         pkgs.pkg-config
@@ -287,10 +291,9 @@
   hyprlandPluginPackages =
     [
       hyprNStack
-      hyprexpo
       hyprwinview
       hyprWorkspaceHistory
-      # hyprtasking  # disabled: build failure against current Hyprland API
+      hyprtasking
       hyprDynamicCursors
       hyprwobbly
     ]

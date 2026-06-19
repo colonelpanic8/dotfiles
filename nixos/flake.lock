@@ -1149,11 +1149,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1781106993,
-        "narHash": "sha256-BddvyVeSgLZU34hzI4yaXYILmfQN9n7oQJk4RbSaZM4=",
+        "lastModified": 1781534922,
+        "narHash": "sha256-jmzKIyRmpZLpxnR7DsWZ42bMzt+WeYDk+/x3FKSkovM=",
         "owner": "yerlotic",
         "repo": "hyprtasking",
-        "rev": "3b3cb9d0b2fd4f6f4227b5b9539e849a37a17ddd",
+        "rev": "1a82ca1ac79602e3bfd5ecb0a52c40c2bf818586",
         "type": "github"
       },
       "original": {
