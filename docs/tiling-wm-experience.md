@@ -258,9 +258,10 @@ Required behavior:
 - A named scratchpad exists for spotify.
 - A named scratchpad exists for transmission.
 - A named scratchpad exists for volume.
+- A named scratchpad exists for x.com.
 - Scratchpads appear near-fullscreen and centered by default.
-- The codex scratchpad can be tiled into the normal workspace when desired,
-  while retaining its summon/dismiss toggle.
+- The codex, claude, and x.com scratchpads can be tiled into the normal
+  workspace when desired, while retaining their summon/dismiss toggles.
 - Toggling a scratchpad deactivates fullscreen/tabbed state first.
 - Floating scratchpads are hidden from normal workspace and window listings.
 
@@ -447,6 +448,7 @@ Required behavior:
 - `Super+Alt+s` toggles the spotify scratchpad.
 - `Super+Alt+t` toggles the transmission scratchpad.
 - `Super+Alt+v` toggles the volume scratchpad.
+- `Super+Alt+x` toggles the x.com scratchpad.
 
 Important behavior:
 

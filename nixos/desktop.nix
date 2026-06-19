@@ -86,6 +86,34 @@
       exec google-chrome-stable --profile-directory="$profile_dir" --new-window
     '';
   };
+  xComPwa = pkgs.writeShellApplication {
+    name = "x-com-pwa";
+    runtimeInputs = [
+      googleChromeCommandWrappers
+      pkgs.jq
+    ];
+    text = ''
+      profile_args=()
+      local_state="''${CHROME_USER_DATA_DIR:-$HOME/.config/google-chrome}/Local State"
+
+      if [ -r "$local_state" ]; then
+        profile_dir="$(
+          jq -r '
+            (.profile.info_cache // {})
+            | to_entries
+            | sort_by(if .key == "Default" then 0 else 1 end, -(.value.active_time // 0))
+            | .[0].key // empty
+          ' "$local_state" 2>/dev/null || true
+        )"
+
+        if [ -n "$profile_dir" ]; then
+          profile_args+=(--profile-directory="$profile_dir")
+        fi
+      fi
+
+      exec google-chrome-stable "''${profile_args[@]}" --class=x-com-pwa --app=https://x.com/
+    '';
+  };
   googleChromeDesktopEntries = pkgs.runCommand "google-chrome-desktop-entries" {nativeBuildInputs = [pkgs.gnused];} ''
     mkdir -p "$out/share/applications"
 
@@ -242,6 +270,21 @@
           };
         };
 
+        xdg.desktopEntries.x-com-pwa = {
+          name = "X";
+          genericName = "Social Network";
+          comment = "Open x.com in a dedicated Chrome app window";
+          icon = "google-chrome";
+          terminal = false;
+          type = "Application";
+          categories = ["Network"];
+          startupNotify = true;
+          exec = "${xComPwa}/bin/x-com-pwa";
+          settings = {
+            StartupWMClass = "x-com-pwa";
+          };
+        };
+
         xdg.configFile."ghostty/config" = {
           force = true;
           text = ''
@@ -354,6 +397,7 @@
             spotify
             spotifyWaylandPatch
             tor-browser
+            xComPwa
             # vscode
             zulip
           ]

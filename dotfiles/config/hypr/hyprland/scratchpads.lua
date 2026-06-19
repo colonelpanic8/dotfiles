@@ -51,6 +51,12 @@ function M.setup(ctx)
       command = "google-chrome-stable --profile-directory=Default --app=https://messages.google.com/web/conversations",
       class = "chrome-messages.google.com",
     },
+    x_com = {
+      command = "x-com-pwa",
+      classes = { "x-com-pwa", "chrome-x.com" },
+      title = "X",
+      allow_tiling = true,
+    },
     transmission = {
       command = "transmission-gtk",
       class = "transmission-gtk",

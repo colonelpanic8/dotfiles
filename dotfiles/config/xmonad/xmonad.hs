@@ -244,6 +244,11 @@ slackSelector = className =? "Slack"
 spotifySelector = className =? "Spotify"
 transmissionSelector = fmap (isPrefixOf "Transmission") title
 volumeSelector = className =? "Pavucontrol"
+xComSelector =
+  className =? "x-com-pwa"
+    <||> fmap ("chrome-x.com" `isInfixOf`) className
+    <||> (chromeSelectorBase <&&> title =? "X")
+    <||> fmap ("x.com" `isInfixOf`) title
 
 virtualClasses =
   [ (chromeSelector, "Chrome")
@@ -261,6 +266,7 @@ slackCommand = "slack"
 spotifyCommand = "spotify"
 transmissionCommand = "transmission-gtk"
 volumeCommand = "pavucontrol"
+xComCommand = "x-com-pwa"
 
 -- Startup hook
 
@@ -811,6 +817,7 @@ scratchpads =
   , NS "spotify" spotifyCommand spotifySelector nearFullFloat
   , NS "transmission" transmissionCommand transmissionSelector nearFullFloat
   , NS "volume" volumeCommand volumeSelector nearFullFloat
+  , NS "x-com" xComCommand xComSelector nearFullFloat
   ]
 
 
@@ -1018,6 +1025,7 @@ addKeys conf@XConfig { modMask = modm } =
     , ((modalt, xK_s), doScratchpad "spotify")
     , ((modalt, xK_t), doScratchpad "transmission")
     , ((modalt, xK_v), doScratchpad "volume")
+    , ((modalt, xK_x), doScratchpad "x-com")
 
     -- Specific program spawning
 

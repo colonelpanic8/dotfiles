@@ -147,6 +147,7 @@ spawnBindings =
   , key (super .|. alt) xK_s (toggleScratchpad "spotify")
   , key (super .|. alt) xK_t (toggleScratchpad "transmission")
   , key (super .|. alt) xK_v (toggleScratchpad "volume")
+  , key (super .|. alt) xK_x (toggleScratchpad "x-com")
   , key (super .|. alt) xK_c (spawnAction "google-chrome-stable")
   , key super xK_e (spawnAction "emacsclient --eval '(emacs-everywhere)'")
   , key (super .|. ctrl) xK_e (shiftFocusedToNextEmptyWorkspace False)
@@ -297,6 +298,8 @@ scratchpadDefinitions =
       anyMatcher [titleContains "Transmission", appIdContains "transmission"]
   , ScratchpadDefinition "volume" "pavucontrol" $
       anyMatcher [appIdMatches "Pavucontrol", appIdContains "pavucontrol"]
+  , ScratchpadDefinition "x-com" "x-com-pwa" $
+      anyMatcher [appIdMatches "x-com-pwa", appIdContains "chrome-x.com"]
   ]
 
 anyMatcher :: [RiverWMWindowState -> Bool] -> RiverWMWindowState -> Bool
