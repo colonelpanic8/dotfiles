@@ -135,16 +135,16 @@
         ]
       },
       "locked": {
-        "lastModified": 1781834454,
-        "narHash": "sha256-LrddwKe91gLJuHEOXUD+3H3z9v4roqffi9u9UNGUNh0=",
-        "owner": "aaddrick",
+        "lastModified": 1781935440,
+        "narHash": "sha256-AxnfvY2tr3IUg/hcVACO1QY9vCPA5l5kIgjMYGLiIms=",
+        "owner": "colonelpanic8",
         "repo": "claude-desktop-debian",
-        "rev": "d7e0611091762c0dcd6189755bc2d9c57ac35053",
+        "rev": "7dbe93b317f568d1eb97f9eb0c6d6d81437425d7",
         "type": "github"
       },
       "original": {
-        "owner": "aaddrick",
-        "ref": "main",
+        "owner": "colonelpanic8",
+        "ref": "colonelpanic/fix-linux-registry-policy-startup",
         "repo": "claude-desktop-debian",
         "type": "github"
       }
