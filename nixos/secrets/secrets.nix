@@ -11,6 +11,7 @@ in {
   "gitea-runner-token.jimi-hendnix.age".publicKeys = keys.agenixKeys;
   "gitea-runner-token.adele.age".publicKeys = keys.agenixKeys;
   "gitea-runner-token.railbird-sf.age".publicKeys = keys.agenixKeys ++ keys.railbird-sf;
+  "github-rocket-sense-runner-token.age".publicKeys = keys.agenixKeys ++ keys.railbird-sf;
   "gitea-runner-token.mac-demarco-mini.age".publicKeys = keys.agenixKeys ++ keys.railbird-sf;
   "gitea-runner-token.age".publicKeys = keys.agenixKeys ++ keys.railbird-sf;
   "nextcloud-admin.age".publicKeys = keys.agenixKeys;

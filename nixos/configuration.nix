@@ -23,6 +23,7 @@
     ./extra.nix
     ./games.nix
     ./git-sync.nix
+    ./github-agent-runner.nix
     ./gitea-runner.nix
     ./gitea.nix
     ./gnome.nix

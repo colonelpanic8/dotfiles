@@ -74,6 +74,7 @@
   myModules.fonts.enable = true;
   myModules.plasma.enable = true;
   myModules.nvidia.enable = true;
+  myModules.githubAgentRunner.enable = true;
   myModules.gitea-runner.enable = true;
   myModules.railbird-k3s = {
     enable = true;
