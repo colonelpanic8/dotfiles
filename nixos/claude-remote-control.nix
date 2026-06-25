@@ -13,18 +13,18 @@
   # `-L` socket) and Remote Control session name derived from the directory's
   # base name. Attach locally with the generated `claude-rc-attach-<name>`
   # alias, e.g. `claude-rc-attach-dotfiles`.
-  candidateDirectories = [
+  # The same list is used on every host that enables this module. A host that
+  # doesn't have a given directory simply skips that one session at runtime via
+  # `ConditionPathIsDirectory` (see below) — so we must NOT filter the list at
+  # eval time. In particular `builtins.pathExists` is useless here: the
+  # auto-upgrade builds this flake in *pure* evaluation mode, where pathExists
+  # returns false for every absolute path and would silently drop every session.
+  directories = [
     "/srv/dotfiles"
     "/home/imalison/Projects/subtr-actor"
     "/home/imalison/Projects/rocket-sense"
     "/home/imalison/code/mova"
   ];
-
-  # Only run a session for directories that actually exist on this host, so the
-  # same module can be enabled across machines where some projects live at
-  # different paths (or not at all). Relies on impure evaluation, which the
-  # `just switch` workflow already uses (`nixos-rebuild ... --impure`).
-  directories = builtins.filter builtins.pathExists candidateDirectories;
 
   # claude shells out to these for its tools; give the service a clean PATH.
   servicePath = lib.makeBinPath (with pkgs; [
@@ -59,6 +59,10 @@
       Unit = {
         Description = "Claude Code remote-control session (${dir})";
         After = ["network.target"];
+        # Skip this session cleanly (not "failed", no restart loop) on hosts
+        # where the directory doesn't exist. Evaluated at runtime, so it stays
+        # correct regardless of pure vs impure Nix evaluation.
+        ConditionPathIsDirectory = dir;
       };
       Service = {
         # tmux new-session -d daemonizes the server and returns.
