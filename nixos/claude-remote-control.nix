@@ -79,6 +79,9 @@
           "${pkgs.claude-code}/bin/claude remote-control"
           "--remote-control-session-name-prefix ${namePrefix}"
           "--permission-mode bypassPermissions"
+          # Set spawn mode explicitly so a fresh start doesn't block on the
+          # interactive "[1] same-dir / [2] worktree" first-run prompt.
+          "--spawn same-dir"
         ];
         ExecStop = "${pkgs.tmux}/bin/tmux -L ${socket} kill-server";
         Restart = "on-failure";
