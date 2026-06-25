@@ -51,13 +51,14 @@
     # server, independent of the interactive one and of every other session.
     socket = "claude-rc-${name}";
     sessionName = "claude-rc-${name}";
-    # Name the session registers under for native Remote Control (phone/web).
-    remoteName = "${config.networking.hostName}-${name}";
+    # Prefix for the names that spawned sessions register under in
+    # claude.ai/code / the mobile app, so each directory is distinguishable.
+    namePrefix = "${config.networking.hostName}-${name}";
   in {
     name = "claude-remote-control-${name}";
     value = {
       Unit = {
-        Description = "Claude Code remote-control session (${dir})";
+        Description = "Claude Code remote-control server (${dir})";
         After = ["network.target"];
         # Skip this session cleanly (not "failed", no restart loop) on hosts
         # where the directory doesn't exist. Evaluated at runtime, so it stays
@@ -68,10 +69,16 @@
         # tmux new-session -d daemonizes the server and returns.
         Type = "forking";
         Environment = ["PATH=${servicePath}"];
+        # `claude remote-control` (a.k.a. `claude rc`) is the persistent server
+        # that pre-creates one session AND lets you spawn *new* sessions in this
+        # directory from claude.ai/code / mobile. (The `--remote-control <name>`
+        # *flag* only exposes a single existing session and can't spawn new ones.)
         ExecStart = lib.concatStringsSep " " [
           "${pkgs.tmux}/bin/tmux -L ${socket} new-session -d"
           "-s ${sessionName} -c ${dir}"
-          "${pkgs.claude-code}/bin/claude --remote-control ${remoteName} --dangerously-skip-permissions"
+          "${pkgs.claude-code}/bin/claude remote-control"
+          "--remote-control-session-name-prefix ${namePrefix}"
+          "--permission-mode bypassPermissions"
         ];
         ExecStop = "${pkgs.tmux}/bin/tmux -L ${socket} kill-server";
         Restart = "on-failure";
