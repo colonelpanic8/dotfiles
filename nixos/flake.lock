@@ -114,11 +114,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1782162468,
-        "narHash": "sha256-6VBM4CkIC5Ywi3Wx5YESW2q/DxWSMkMxUMeUBp4Hnr0=",
+        "lastModified": 1782426453,
+        "narHash": "sha256-0RpgM3oth8Pow65Z1BzQEJ38PUDhYi8AFFzbED0rROc=",
         "owner": "sadjow",
         "repo": "claude-code-nix",
-        "rev": "075350441d0b6bdeff8d8e7f146a07018ce10026",
+        "rev": "1660a1eb5fc97dd71de9c01b1049788a2a68d46c",
         "type": "github"
       },
       "original": {
@@ -135,16 +135,16 @@
         ]
       },
       "locked": {
-        "lastModified": 1781935440,
-        "narHash": "sha256-AxnfvY2tr3IUg/hcVACO1QY9vCPA5l5kIgjMYGLiIms=",
-        "owner": "colonelpanic8",
+        "lastModified": 1782331657,
+        "narHash": "sha256-purGlI+GDVDW638AoZzAyYCIoFsKFw1BZzkcQ9oVZv8=",
+        "owner": "aaddrick",
         "repo": "claude-desktop-debian",
-        "rev": "7dbe93b317f568d1eb97f9eb0c6d6d81437425d7",
+        "rev": "81e6e176d1def1283aa248904f486782bb42b0a6",
         "type": "github"
       },
       "original": {
-        "owner": "colonelpanic8",
-        "ref": "colonelpanic/fix-linux-registry-policy-startup",
+        "owner": "aaddrick",
+        "ref": "pull/737/head",
         "repo": "claude-desktop-debian",
         "type": "github"
       }
@@ -159,11 +159,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1782167912,
-        "narHash": "sha256-2K3QoP1Y1ZFcWeHX+zVII5W1khgPN55AcfcbB7PnkQI=",
+        "lastModified": 1782378836,
+        "narHash": "sha256-TaT6D1jJUUyu17MI/wix4jb5MDXiomAE8V3OdK+tAL8=",
         "owner": "sadjow",
         "repo": "codex-cli-nix",
-        "rev": "780625c2f90c991def2132e0b734d8ebb7138ecc",
+        "rev": "4751eb49f905fc1760b9f6ee7120bf5c32f4eb56",
         "type": "github"
       },
       "original": {
@@ -183,11 +183,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1781871480,
-        "narHash": "sha256-IT1lYU5pW+725YMzZwQGGw+E7HI3CxtXbe5DE0qcsbY=",
+        "lastModified": 1782486694,
+        "narHash": "sha256-61kfLfeBUMq3ifgcsxJ9hU1S7oVxEA6CfFVNsAqfC0w=",
         "owner": "ilysenko",
         "repo": "codex-desktop-linux",
-        "rev": "f46cc63ad1494cca6618a5a3fe853be98968a2cd",
+        "rev": "8c999cc5b52b6f4b35fba9b37a13e41aa6a55f00",
         "type": "github"
       },
       "original": {

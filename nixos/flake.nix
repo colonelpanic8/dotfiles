@@ -291,7 +291,7 @@
     };
 
     claude-desktop = {
-      url = "github:colonelpanic8/claude-desktop-debian?ref=colonelpanic/fix-linux-registry-policy-startup";
+      url = "github:aaddrick/claude-desktop-debian?ref=pull/737/head";
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
