@@ -134,6 +134,16 @@
             (oa: {
               doHaddock = false;
               doCheck = false;
+              # Debug build: keep symbols (.symtab) and emit DWARF so SIGSEGV
+              # coredumps symbolize to real function + source lines instead of
+              # stripped hex. This library is statically linked into the
+              # imalison-taffybar executable, so its symbols flow through to the
+              # final binary. Revert (drop dontStrip + -g3) once the recurring
+              # GC/heap-corruption crash is root-caused.
+              dontStrip = true;
+              configureFlags = (oa.configureFlags or []) ++ [
+                "--ghc-option=-g3"
+              ];
               # Needed for gi-gtk-layer-shell and gi-wireplumber introspection data.
               librarySystemDepends = (oa.librarySystemDepends or []) ++ [
                 pkgs.gtk-layer-shell
@@ -175,10 +185,16 @@
               pkgs.libxtst.out
             ])
             (oa: {
+              # Debug build: keep the executable's .symtab (so statically
+              # linked RTS + taffybar symbols resolve in coredumps) and emit
+              # DWARF line info. See the taffybar override above; revert both
+              # once the recurring GC/heap-corruption SIGSEGV is root-caused.
+              dontStrip = true;
               configureFlags = (oa.configureFlags or []) ++ [
                 "--ghc-option=-optl-fuse-ld=bfd"
                 "--ld-option=-fuse-ld=bfd"
                 "--with-ld=ld.bfd"
+                "--ghc-option=-g3"
               ];
             });
         };
