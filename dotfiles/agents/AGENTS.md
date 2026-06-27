@@ -4,6 +4,7 @@
 - When sharing a local server or preview URL, always prefer this machine's Tailscale address over `127.0.0.1`/`localhost`/LAN IPs, so the link opens from any device on the tailnet.
 - Get the address with `tailscale ip -4` (the `100.x.y.z` IP) or the MagicDNS hostname from `tailscale status`. Prefer the `100.x` IP when a server's `allowedHosts` might reject a hostname.
 - Start the server bound to all interfaces (e.g. vite's `--host 0.0.0.0` / a `dev:lan` script), not just localhost, or the Tailscale link won't connect. Verify reachability (`curl` the `100.x` URL) before handing it over.
+- Always start each dev/preview server on a new random high port (and pin it with `--strictPort` so it fails loudly instead of drifting). Never reuse a fixed port and never kill, restart, or otherwise shut down an already-running server — assume other sessions/users depend on it. Leave existing servers alone and just stand up your own.
 
 ## Git worktrees
 - Default to creating git worktrees under a project-local `.worktrees/` directory at the repository root.
