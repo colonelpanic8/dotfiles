@@ -15,12 +15,10 @@ function M.setup(ctx)
     codex = {
       command = "codex_desktop_scratchpad",
       class = "codex-desktop",
-      allow_tiling = true,
     },
     claude = {
       command = "claude-desktop",
       class = "claude-desktop",
-      allow_tiling = true,
     },
     htop = {
       command = "alacritty --class htop-scratch --title htop -e htop",
@@ -55,7 +53,6 @@ function M.setup(ctx)
       command = "x-com-pwa",
       classes = { "x-com-pwa", "chrome-x.com" },
       title = "X",
-      allow_tiling = true,
     },
     transmission = {
       command = "transmission-gtk",
@@ -65,6 +62,7 @@ function M.setup(ctx)
       command = "ghostty --config-file=/home/imalison/.config/ghostty/dropdown",
       class = "com.mitchellh.ghostty.dropdown",
       dropdown = true,
+      allow_tiling = false,
     },
   }
 
@@ -99,7 +97,7 @@ function M.setup(ctx)
   end
 
   local function tiled_scratchpad_is_normal_window(window, def)
-    return def.allow_tiling and window and window.floating == false
+    return def.allow_tiling ~= false and window and window.floating == false
   end
 
   local function is_scratchpad_window(window)

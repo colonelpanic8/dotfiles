@@ -260,8 +260,8 @@ Required behavior:
 - A named scratchpad exists for volume.
 - A named scratchpad exists for x.com.
 - Scratchpads appear near-fullscreen and centered by default.
-- The codex, claude, and x.com scratchpads can be tiled into the normal
-  workspace when desired, while retaining their summon/dismiss toggles.
+- Regular scratchpads can be tiled into the normal workspace when desired,
+  while retaining their summon/dismiss toggles.
 - Toggling a scratchpad deactivates fullscreen/tabbed state first.
 - Floating scratchpads are hidden from normal workspace and window listings.
 

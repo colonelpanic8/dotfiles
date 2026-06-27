@@ -828,21 +828,9 @@ myScratchPadEventHook
   =  dynamicPropertyChange "WM_CLASS" myScratchPadManageHook
   <> dynamicPropertyChange "WM_NAME" myScratchPadManageHook
 
-runScratchPadManageHookOnCurrent =
-  join (withFocusedD (Endo id) $ runQuery myScratchPadManageHook) >>= windows . appEndo
-
-scratchPadIsDisplayed name = join $ withFocusedD False query
-  where
-    query = maybe (const $ return False) (runQuery . NS.query) scratchpadInfo
-    scratchpadInfo = find ((name ==) . NS.name) scratchpads
-
-manageIfScratchPadIsDisplayed name =
-  scratchPadIsDisplayed name >>= (`when` runScratchPadManageHookOnCurrent)
-
 -- TODO: This doesnt work well with minimized windows
 doScratchpad name = do
   maybeUnminimizeAfter $ deactivateFullAnd $ namedScratchpadAction scratchpads name
-  manageIfScratchPadIsDisplayed name
 
 -- Raise or spawn
 
