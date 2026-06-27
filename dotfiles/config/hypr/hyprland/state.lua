@@ -65,7 +65,7 @@ return {
   -- hook fires on every popup commit). Re-enable once fixed upstream.
   enable_hyprexpo = false,
   enable_hyprwinview = true,
-  enable_hyprtasking = true,
+  enable_hyprtasking = false,
   enable_workspace_history = true,
   enable_hyprwobbly = true,
   enable_dynamic_cursors = true,

@@ -297,7 +297,9 @@
       hyprNStack
       hyprwinview
       hyprWorkspaceHistory
-      hyprtasking
+      # Disabled 2026-06-19: enabling the plugin correlates with frozen Hyprland
+      # sessions even though startup reaches the uwsm session target.
+      # hyprtasking
       hyprDynamicCursors
       hyprwobbly
     ]
