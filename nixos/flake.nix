@@ -143,8 +143,8 @@
     };
 
     hyprtasking = {
-      # PR #114 tracks Hyprland 0.55 and adds Lua plugin functions.
-      url = "github:yerlotic/hyprtasking/chase_v55";
+      # Upstream default branch; the Hyprland 0.55 support PR has been merged.
+      url = "github:raybbian/hyprtasking";
       inputs = {
         hyprland.follows = "hyprland";
         nixpkgs.follows = "nixpkgs";

@@ -41,6 +41,7 @@ in {
       hyprexpo-lua = hyprlandStuffPackages.hyprexpo;
       hyprwinview = hyprlandStuffPackages.hyprwinview;
       hypr-workspace-history = hyprlandStuffPackages.hyprWorkspaceHistory;
+      hyprtasking = hyprlandStuffPackages.hyprtasking;
       hyprglass = hyprlandStuffPackages.hyprglass;
     };
 
@@ -59,6 +60,7 @@ in {
       hyprexpo-lua = hyprlandStuffPackages.hyprexpo;
       hyprwinview = hyprlandStuffPackages.hyprwinview;
       hypr-workspace-history = hyprlandStuffPackages.hyprWorkspaceHistory;
+      hyprtasking = hyprlandStuffPackages.hyprtasking;
       hyprglass = hyprlandStuffPackages.hyprglass;
       hyprland-config-syntax = hyprlandStuffPackages.hyprlandConfigSyntax;
       hyprland-stuff = hyprlandStuffPackages.hyprlandStuff;

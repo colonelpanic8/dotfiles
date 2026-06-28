@@ -97,9 +97,11 @@
       name = "${package.name}-lua-config";
       inherit (package) version;
       paths = [package];
-      meta = builtins.removeAttrs (package.meta or {}) ["outputsToInstall"] // {
-        mainProgram = package.meta.mainProgram or "Hyprland";
-      };
+      meta =
+        builtins.removeAttrs (package.meta or {}) ["outputsToInstall"]
+        // {
+          mainProgram = package.meta.mainProgram or "Hyprland";
+        };
       passthru =
         (package.passthru or {})
         // {
@@ -107,6 +109,14 @@
         };
       postBuild = ''
         mkdir -p "$out/bin" "$out/share/wayland-sessions"
+
+        rm -f "$out/bin/Hyprland"
+        printf '%s\n' \
+          '#!${pkgs.runtimeShell}' \
+          'exec ${pkgs.runtimeShell} "${package}/bin/Hyprland" "$@"' \
+          > "$out/bin/Hyprland"
+        chmod +x "$out/bin/Hyprland"
+
         printf '%s\n' \
           '#!${pkgs.runtimeShell}' \
           'nvidia_drm_device="/dev/dri/by-path/pci-0000:01:00.0-card"' \
@@ -115,8 +125,9 @@
           '  export AQ_DRM_DEVICES="$nvidia_drm_device:$intel_drm_device"' \
           'fi' \
           'config_path="''${XDG_CONFIG_HOME:-$HOME/.config}/hypr/hyprland.lua"' \
-          'exec "${package}/bin/start-hyprland" --path "${package}/bin/Hyprland" -- --config "$config_path" "$@"' \
+          'exec "${package}/bin/start-hyprland" --path "@out@/bin/Hyprland" -- --config "$config_path" "$@"' \
           > "$out/bin/start-hyprland-lua"
+        substituteInPlace "$out/bin/start-hyprland-lua" --replace-fail "@out@" "$out"
         chmod +x "$out/bin/start-hyprland-lua"
 
         printf '%s\n' \
@@ -208,11 +219,13 @@
       substituteInPlace src/layout/layout_base.cpp \
         --replace-fail 'e.element->passName()' 'e->element->passName()'
     '';
-    nativeBuildInputs = [
-      pkgs.pkg-config
-      pkgs.meson
-      pkgs.ninja
-    ] ++ baseHyprlandPackage.nativeBuildInputs;
+    nativeBuildInputs =
+      [
+        pkgs.pkg-config
+        pkgs.meson
+        pkgs.ninja
+      ]
+      ++ baseHyprlandPackage.nativeBuildInputs;
     buildInputs = [baseHyprlandPackage] ++ baseHyprlandPackage.buildInputs;
 
     meta = {
@@ -234,7 +247,7 @@
         baseHyprlandPackage
         pkgs.pkg-config
       ];
-    buildInputs = [ (lib.getDev baseHyprlandPackage) ] ++ baseHyprlandPackage.buildInputs;
+    buildInputs = [(lib.getDev baseHyprlandPackage)] ++ baseHyprlandPackage.buildInputs;
 
     dontConfigure = true;
     dontUseCmakeConfigure = true;
@@ -297,8 +310,8 @@
       hyprNStack
       hyprwinview
       hyprWorkspaceHistory
-      # Disabled 2026-06-19: enabling the plugin correlates with frozen Hyprland
-      # sessions even though startup reaches the uwsm session target.
+      # Disabled 2026-06-28: enabling the plugin freezes Hyprland shortly after
+      # startup on ryzen-shine.
       # hyprtasking
       hyprDynamicCursors
       hyprwobbly
