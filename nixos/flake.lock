@@ -182,15 +182,16 @@
         ]
       },
       "locked": {
-        "lastModified": 1782651716,
-        "narHash": "sha256-hcAQkSnp25Of/tJ2oOPWoFkKDITGoAblLCkTE6jvYCI=",
-        "owner": "ilysenko",
+        "lastModified": 1782675448,
+        "narHash": "sha256-FDK23+G7MKkLIYqlbXFerJU1sKWio+daS/0c41+bKCM=",
+        "owner": "colonelpanic8",
         "repo": "codex-desktop-linux",
-        "rev": "7ee2b618b647f6a0136ab645636d649e1ae723cb",
+        "rev": "b7897298db98dc25d4b9e865408f06afdabac33d",
         "type": "github"
       },
       "original": {
-        "owner": "ilysenko",
+        "owner": "colonelpanic8",
+        "ref": "colonelpanic/restore-linux-desktop-build-info",
         "repo": "codex-desktop-linux",
         "type": "github"
       }

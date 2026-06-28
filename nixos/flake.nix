@@ -275,7 +275,7 @@
     };
 
     codex-desktop-linux = {
-      url = "github:ilysenko/codex-desktop-linux";
+      url = "github:colonelpanic8/codex-desktop-linux?ref=colonelpanic/restore-linux-desktop-build-info";
       inputs = {
         nixpkgs.follows = "nixpkgs";
         flake-utils.follows = "flake-utils";
