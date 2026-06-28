@@ -11,6 +11,7 @@ where
 
 import Control.Concurrent (threadDelay)
 import Control.Monad.IO.Class (liftIO)
+import Control.Monad.Trans.Reader (ask, runReaderT)
 import Data.Char (toLower)
 import Data.Maybe (fromMaybe)
 import Data.Ratio ((%))
@@ -54,6 +55,7 @@ import System.Taffybar.Widget.Util
   )
 import qualified System.Taffybar.Widget.Wlsunset as Wlsunset
 import qualified System.Taffybar.Widget.Workspaces as Workspaces
+import System.Timeout (timeout)
 import TaffybarConfig.AIUsage (aiUsageWidget)
 import TaffybarConfig.Host (laptopHosts)
 import TaffybarConfig.WidgetUtil
@@ -407,9 +409,19 @@ sniTrayWidget = do
             prioritizedCollapsibleSNITrayVisibilityThreshold = Just visibilityThreshold,
             prioritizedCollapsibleSNITrayHoverExpand = True
           }
-  decorateWithClassAndBoxM
-    "sni-tray"
-    (sniTrayPrioritizedCollapsibleNewFromParams prioritizedParams)
+      buildSNITray =
+        decorateWithClassAndBoxM
+          "sni-tray"
+          (sniTrayPrioritizedCollapsibleNewFromParams prioritizedParams)
+  context <- ask
+  liftIO $ do
+    maybeTray <- timeout (3 * 1000000) (runReaderT buildSNITray context)
+    case maybeTray of
+      Just tray -> return tray
+      Nothing -> do
+        fallback <- Gtk.boxNew Gtk.OrientationHorizontal 0
+        _ <- widgetSetClassGI fallback "sni-tray-unavailable"
+        Gtk.toWidget fallback
 
 startWidgetsForBackend :: Backend -> [TaffyIO Gtk.Widget]
 startWidgetsForBackend backend =
