@@ -20,8 +20,41 @@
     runtime_dir="''${XDG_RUNTIME_DIR:-/run/user/$(${pkgs.coreutils}/bin/id -u)}"
 
     find_hyprland_instance() {
-      instances_json="$(${hyprlandPackage}/bin/hyprctl instances -j 2>/dev/null || true)"
-      [ -n "$instances_json" ] || return 1
+      instances_json="$(${pkgs.coreutils}/bin/timeout 1s ${hyprlandPackage}/bin/hyprctl instances -j 2>/dev/null || true)"
+      if [ -z "$instances_json" ]; then
+        newest_signature=""
+        newest_time=0
+        for socket in "$runtime_dir"/hypr/*/.socket.sock; do
+          [ -S "$socket" ] || continue
+          socket_time="$(${pkgs.coreutils}/bin/stat -c %Y "$socket" 2>/dev/null || printf 0)"
+          if [ "$socket_time" -gt "$newest_time" ]; then
+            socket_dir="''${socket%/.socket.sock}"
+            newest_signature="''${socket_dir##*/}"
+            newest_time="$socket_time"
+          fi
+        done
+
+        [ -n "$newest_signature" ] || return 1
+        if [ -n "''${WAYLAND_DISPLAY:-}" ] && [ -S "$runtime_dir/$WAYLAND_DISPLAY" ]; then
+          socket_name="$WAYLAND_DISPLAY"
+        else
+          socket_name=""
+          for wayland_socket in "$runtime_dir"/wayland-*; do
+            case "$wayland_socket" in
+              *.lock) continue ;;
+            esac
+
+            if [ -S "$wayland_socket" ]; then
+              socket_name="''${wayland_socket##*/}"
+              break
+            fi
+          done
+        fi
+
+        [ -n "$socket_name" ] || return 1
+        printf '%s\t%s\n' "$newest_signature" "$socket_name"
+        return 0
+      fi
 
       if [ -n "''${WAYLAND_DISPLAY:-}" ]; then
         inst_row="$(
@@ -82,18 +115,25 @@
     current_desktop="''${XDG_CURRENT_DESKTOP:-}"
     desktop_session="''${DESKTOP_SESSION:-}"
     window_manager="''${IMALISON_WINDOW_MANAGER:-}"
+    detected_hyprland_instance=""
     is_hyprland=0
     case "''${current_desktop}:''${desktop_session}:''${window_manager}" in
       *Hyprland*|*hyprland*) is_hyprland=1 ;;
     esac
+
+    if detected_hyprland_instance="$(find_hyprland_instance)"; then
+      is_hyprland=1
+      export XDG_CURRENT_DESKTOP="''${XDG_CURRENT_DESKTOP:-Hyprland}"
+      export IMALISON_WINDOW_MANAGER="''${IMALISON_WINDOW_MANAGER:-hyprland}"
+    fi
 
     if [ "$is_hyprland" = 1 ] && [ -z "''${XDG_SESSION_TYPE:-}" ]; then
       export XDG_SESSION_TYPE=wayland
     fi
 
     if [ "$is_hyprland" = 1 ]; then
-      if inst_row="$(find_hyprland_instance)"; then
-        set -- $inst_row
+      if [ -n "''${detected_hyprland_instance:-}" ]; then
+        set -- $detected_hyprland_instance
         signature="$1"
         socket_name="$2"
         if [ "''${HYPRLAND_INSTANCE_SIGNATURE:-}" != "$signature" ]; then
