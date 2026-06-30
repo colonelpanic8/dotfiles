@@ -114,11 +114,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1782512584,
-        "narHash": "sha256-6pAOPEzTR5vGudD9K+zbD4u3mPetOg+HgMydzF0m8SM=",
+        "lastModified": 1782779017,
+        "narHash": "sha256-lbAYB7r2H5B7n/verak4R6YbnuUaqCzpRfascDcL9SA=",
         "owner": "sadjow",
         "repo": "claude-code-nix",
-        "rev": "e0c8acbcb3690471a2d2d485b03d09e303780932",
+        "rev": "e64c198efb1ad4b91d349369a161d95d8e8f54b5",
         "type": "github"
       },
       "original": {
@@ -135,11 +135,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1782524613,
-        "narHash": "sha256-rlwBD1r576DFQURtyy6Dil9zZTB1l6ziJf/h/q9rF7E=",
+        "lastModified": 1782703391,
+        "narHash": "sha256-8hbeVJvXTQPYPUrA71vlIVsa6M2jBxA/DfHgfrN5y5Q=",
         "owner": "aaddrick",
         "repo": "claude-desktop-debian",
-        "rev": "605723cc62fa837663ef64407809656c156be668",
+        "rev": "201b3cff7cf6f6b67b8c995c200186684e87502d",
         "type": "github"
       },
       "original": {
@@ -158,11 +158,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1782513074,
-        "narHash": "sha256-j5uoPwDZsm6+ByJ9s9z3ZqkuEQjd/pbbEBU7adLATJ0=",
+        "lastModified": 1782719735,
+        "narHash": "sha256-QMnCklOQkWZoxQnmPv7gEpJ7OPYsZ0/p+GKEKqG9YMw=",
         "owner": "sadjow",
         "repo": "codex-cli-nix",
-        "rev": "c25e97164653047e58532880f0b531227055f3d3",
+        "rev": "244fa5a7e007a5dbe7307c89792a7a03a4082c12",
         "type": "github"
       },
       "original": {
@@ -182,16 +182,16 @@
         ]
       },
       "locked": {
-        "lastModified": 1782685368,
-        "narHash": "sha256-6p5NF/FMOxVKy1SyQK/CDE9i8iGv91OeYj19mRNTUlY=",
-        "owner": "colonelpanic8",
+        "lastModified": 1782760680,
+        "narHash": "sha256-9gpvDA+6D4PGEI3uU8c2wi6tDJ3hLOEW9f5C2G9Tyds=",
+        "owner": "ilysenko",
         "repo": "codex-desktop-linux",
-        "rev": "9d1c4d28dd23ed56415eb1f4cd950fcc4fedb0b4",
+        "rev": "d6282e7a80b2fc8ee8308a99d8650b05c1a481fe",
         "type": "github"
       },
       "original": {
-        "owner": "colonelpanic8",
-        "ref": "colonelpanic/restore-linux-desktop-build-info",
+        "owner": "ilysenko",
+        "ref": "main",
         "repo": "codex-desktop-linux",
         "type": "github"
       }
