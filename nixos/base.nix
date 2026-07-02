@@ -15,6 +15,7 @@ makeEnable config "myModules.base" true {
     "nix-2.16.2"
     "openssl-1.0.2u"
     "openssl-1.1.1w"
+    "pnpm-10.29.2"
   ];
 
   # Disabling these waits disables the stuck on boot up issue
