@@ -89,7 +89,6 @@ function M.setup(ctx)
   end
   if enable_hyprtasking and not verify_config then
     hl.plugin.load("/run/current-system/sw/lib/libhyprtasking.so")
-    os.execute("hyprctl eval 'hl.config({plugin={hyprtasking={full_render=true}}})' >/dev/null 2>&1 || true")
   end
   if enable_hyprexpo and not enable_hyprtasking and not verify_config then
     hl.plugin.load("/run/current-system/sw/lib/libhyprexpo.so")
@@ -334,6 +333,34 @@ function M.setup(ctx)
     })
   end
 
+  local function apply_hyprtasking_config()
+    if verify_config or not enable_hyprtasking then
+      return
+    end
+
+    hl.config({
+      plugin = {
+        hyprtasking = {
+          layout = "grid",
+          -- hyprtasking reads bg_color as 0xAARRGGBB and forces it opaque, so
+          -- the stock default (0x000000FF) renders as solid blue. Pin true black.
+          bg_color = 0xff000000,
+          gap_size = 10,
+          -- Active workspace tile is bordered with general:col.active_border,
+          -- inactive tiles with col.inactive_border; this is the selection
+          -- highlight and it follows hyprtasking:move. Keep it clearly visible.
+          border_size = 3,
+          exit_on_hovered = false,
+          close_overview_on_reload = false,
+          grid = {
+            rows = 3,
+            cols = 3,
+          },
+        },
+      },
+    })
+  end
+
   local function apply_visual_performance_mode()
     if verify_config then
       return
@@ -506,6 +533,7 @@ function M.setup(ctx)
   ctx.apply_hyprglass_config = apply_hyprglass_config
   ctx.apply_hyprwobbly_config = apply_hyprwobbly_config
   ctx.apply_dynamic_cursors_config = apply_dynamic_cursors_config
+  ctx.apply_hyprtasking_config = apply_hyprtasking_config
   ctx.apply_visual_performance_mode = apply_visual_performance_mode
   ctx.is_file_chooser_window = is_file_chooser_window
   ctx.raise_file_chooser_window = raise_file_chooser_window
