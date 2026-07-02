@@ -310,9 +310,7 @@
       hyprNStack
       hyprwinview
       hyprWorkspaceHistory
-      # Disabled 2026-06-28: enabling the plugin freezes Hyprland shortly after
-      # startup on ryzen-shine.
-      # hyprtasking
+      hyprtasking
       hyprDynamicCursors
       hyprwobbly
     ]
