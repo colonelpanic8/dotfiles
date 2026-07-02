@@ -1,11 +1,9 @@
 {
   inputs = {
     taffybar = {
-      # Keep the default source usable in CI. Local iteration uses
-      # IMALISON_TAFFYBAR_LIVE_CHECKOUT below via `just switch-local-taffybar`.
-      # Pinned to the rate-limit-backoff PR branch (taffybar/taffybar#681);
-      # revert to master after it merges.
-      url = "github:taffybar/taffybar/anthropic-usage-rate-limit-backoff";
+      # Use the vendored checkout so normal NixOS rebuilds consume the same
+      # taffybar tree used for local development.
+      url = "path:/srv/dotfiles/dotfiles/config/taffybar/taffybar";
       inputs.weeder-nix = {
         url = "github:NorfairKing/weeder-nix";
         inputs.pre-commit-hooks.inputs.nixpkgs.follows = "nixpkgs";
@@ -40,14 +38,7 @@
           config.allowBroken = true;
         };
 
-        # Default to the flake input so normal NixOS rebuilds stay pinned and
-        # reproducible. switch-local-taffybar opts into the live checkout via
-        # IMALISON_TAFFYBAR_LIVE_CHECKOUT when iterating on the vendored stack.
-        liveTaffybarCheckout = builtins.getEnv "IMALISON_TAFFYBAR_LIVE_CHECKOUT";
-        taffybarSourceRoot =
-          if liveTaffybarCheckout != ""
-          then /. + liveTaffybarCheckout
-          else taffybar.outPath;
+        taffybarSourceRoot = taffybar.outPath;
 
         cleanedTaffybarSource = pkgs.lib.cleanSourceWith {
           src = taffybarSourceRoot;

@@ -136,18 +136,14 @@
         "xmonad-contrib": "xmonad-contrib"
       },
       "locked": {
-        "lastModified": 1781172310,
-        "narHash": "sha256-mBd3obUUS+ICqL+U2bOanGwaGl2rfbMZdGzAFiqRSaE=",
-        "owner": "taffybar",
-        "repo": "taffybar",
-        "rev": "7beecc89928df669281977e41ceed213c5ede88f",
-        "type": "github"
+        "lastModified": 1783024760,
+        "narHash": "sha256-sNu7UVJ0ExuLPYdJakrDvD1AEqyfbmibMdOGKIwbuiA=",
+        "path": "/srv/dotfiles/dotfiles/config/taffybar/taffybar",
+        "type": "path"
       },
       "original": {
-        "owner": "taffybar",
-        "ref": "anthropic-usage-rate-limit-backoff",
-        "repo": "taffybar",
-        "type": "github"
+        "path": "/srv/dotfiles/dotfiles/config/taffybar/taffybar",
+        "type": "path"
       }
     },
     "weeder-nix": {
