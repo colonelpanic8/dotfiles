@@ -68,7 +68,11 @@ return {
   enable_hyprtasking = false,
   enable_workspace_history = true,
   enable_hyprwobbly = true,
-  enable_dynamic_cursors = true,
+  -- Disabled 2026-06-28: causes the cursor to intermittently disappear
+  -- (confirmed by unloading the plugin live — cursor stopped vanishing).
+  -- It replaces cursor rendering via lockSoftwareAll for its tilt/shake
+  -- effects. Re-enable only after verifying upstream fixed this.
+  enable_dynamic_cursors = false,
   enable_hyprglass = false,
   hyprland_gaps_enabled = os.getenv("IMALISON_HYPRLAND_GAPS") ~= "0",
   hyprland_cursor_size = tonumber(os.getenv("IMALISON_HYPRLAND_CURSOR_SIZE")) or 24,
