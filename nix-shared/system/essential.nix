@@ -12,7 +12,11 @@
   in
     if systemPackages == null then null else systemPackages.${packageName} or null;
 
-  git-blame-rank = inputs.git-blame-rank.packages.${system}.default;
+  git-blame-rank = inputs.git-blame-rank.packages.${system}.default.overrideAttrs (old: {
+    env = (old.env or {}) // {
+      CARGO_BUILD_JOBS = "1";
+    };
+  });
   coquiTtsStreamer = inputPackageOrNull "coqui-tts-streamer" "default";
   keepbook = inputs.keepbook.packages.${system}.keepbook.overrideAttrs (_: {
     # Upstream checks currently depend on TS artifacts that are not built in Nix.
