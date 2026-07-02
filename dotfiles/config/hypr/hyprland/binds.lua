@@ -88,8 +88,25 @@ function M.setup(ctx)
   end
 
   local function setup_window_overview_bindings()
+    local function hyprtasking_loaded()
+      return hl.plugin and hl.plugin.hyprtasking and hl.plugin.hyprtasking.toggle
+    end
+
+    local function hyprtasking_active()
+      return hyprtasking_loaded()
+        and hl.plugin.hyprtasking.is_active
+        and hl.plugin.hyprtasking.is_active()
+    end
+
+    -- Workspace the overview was opened from, so Escape can cancel back to it
+    -- (hyprtasking:move switches the active workspace live as you navigate).
+    local hyprtasking_origin_workspace = nil
+
     local function toggle_hyprtasking()
-      if hl.plugin and hl.plugin.hyprtasking and hl.plugin.hyprtasking.toggle then
+      if hyprtasking_loaded() then
+        if not hyprtasking_active() then
+          hyprtasking_origin_workspace = hl.get_active_workspace()
+        end
         hl.plugin.hyprtasking.toggle("cursor")
       else
         hl.notification.create({
@@ -100,6 +117,38 @@ function M.setup(ctx)
           font_size = 13,
         })
       end
+    end
+
+    -- Directional keyboard navigation; only acts while the overview is open so
+    -- the arrow keys keep their normal meaning otherwise. The active-border
+    -- highlight follows the selection.
+    local function hyprtasking_move(direction)
+      return function()
+        if hyprtasking_active() and hl.plugin.hyprtasking.move then
+          hl.plugin.hyprtasking.move(direction)
+        end
+      end
+    end
+
+    -- Confirm: close the overview, staying on the highlighted workspace.
+    local function hyprtasking_confirm()
+      if hyprtasking_active() then
+        hl.plugin.hyprtasking.toggle("cursor")
+      end
+    end
+
+    -- Cancel: restore the origin workspace, then close.
+    local function hyprtasking_cancel()
+      if not hyprtasking_active() then
+        return
+      end
+      if hyprtasking_origin_workspace and hyprtasking_origin_workspace.id then
+        dispatch(hl.dsp.focus({
+          workspace = tostring(hyprtasking_origin_workspace.id),
+          on_current_monitor = true,
+        }))
+      end
+      hl.plugin.hyprtasking.toggle("cursor")
     end
 
     bind(main_mod .. " + SHIFT + C", hl.dsp.window.close(), desc("Close active window"))
@@ -113,6 +162,12 @@ function M.setup(ctx)
     }), desc("Show all-workspace window overview", overview_bind_opts))
     bind(main_mod .. " + SHIFT + slash", hyprwinview({ action = "toggle-filter" }), desc("Toggle window overview filter", overview_bind_opts))
     bind("ALT + Tab", toggle_hyprtasking, desc("Toggle hyprtasking workspace overview", overview_bind_opts))
+    bind(main_mod .. " + Left", hyprtasking_move("left"), desc("Overview: select workspace left", overview_bind_opts))
+    bind(main_mod .. " + Down", hyprtasking_move("down"), desc("Overview: select workspace down", overview_bind_opts))
+    bind(main_mod .. " + Up", hyprtasking_move("up"), desc("Overview: select workspace up", overview_bind_opts))
+    bind(main_mod .. " + Right", hyprtasking_move("right"), desc("Overview: select workspace right", overview_bind_opts))
+    bind(main_mod .. " + Return", hyprtasking_confirm, desc("Overview: confirm selected workspace", overview_bind_opts))
+    bind("Escape", hyprtasking_cancel, desc("Overview: cancel back to origin workspace", { non_consuming = true }))
     bind(main_mod .. " + G", hyprwinview({
       action = "show",
       start_in_filter_mode = true,
@@ -131,18 +186,23 @@ function M.setup(ctx)
   end
 
   local function setup_window_focus_and_move_bindings()
-    bind(main_mod .. " + W", function()
-      focus_direction("up")
-    end, desc("Focus window above"))
-    bind(main_mod .. " + S", function()
-      focus_direction("down")
-    end, desc("Focus window below"))
-    bind(main_mod .. " + A", function()
-      focus_direction("left")
-    end, desc("Focus window to the left"))
-    bind(main_mod .. " + D", function()
-      focus_direction("right")
-    end, desc("Focus window to the right"))
+    -- While the hyprtasking overview is open, WASD navigates the workspace grid;
+    -- otherwise it keeps its normal directional window-focus behavior.
+    local function focus_or_overview_move(direction)
+      return function()
+        if hl.plugin and hl.plugin.hyprtasking and hl.plugin.hyprtasking.is_active
+          and hl.plugin.hyprtasking.is_active() and hl.plugin.hyprtasking.move then
+          hl.plugin.hyprtasking.move(direction)
+        else
+          focus_direction(direction)
+        end
+      end
+    end
+
+    bind(main_mod .. " + W", focus_or_overview_move("up"), desc("Focus window above / overview up"))
+    bind(main_mod .. " + S", focus_or_overview_move("down"), desc("Focus window below / overview down"))
+    bind(main_mod .. " + A", focus_or_overview_move("left"), desc("Focus window left / overview left"))
+    bind(main_mod .. " + D", focus_or_overview_move("right"), desc("Focus window right / overview right"))
 
     bind(main_mod .. " + SHIFT + W", function()
       swap_direction("up")
