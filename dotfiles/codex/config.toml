@@ -8,10 +8,6 @@ suppress_unstable_features_warning = true
 # this file, ~/.codex/config.local.toml, and Codex-owned sections preserved in
 # ~/.codex/config.local-state.toml.
 
-[mcp_servers.chrome-devtools]
-command = "/usr/bin/env"
-args = ["PATH=/etc/profiles/per-user/imalison/bin:/run/current-system/sw/bin:/usr/local/bin:/opt/homebrew/bin:/usr/bin:/bin", "npx", "-y", "chrome-devtools-mcp@latest", "--auto-connect"]
-
 [mcp_servers.observability]
 command = "/usr/bin/env"
 args = ["PATH=/etc/profiles/per-user/imalison/bin:/run/current-system/sw/bin:/usr/local/bin:/opt/homebrew/bin:/usr/bin:/bin", "npx", "-y", "@google-cloud/observability-mcp"]

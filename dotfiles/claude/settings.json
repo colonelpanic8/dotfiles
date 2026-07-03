@@ -13,8 +13,7 @@
   },
   "enabledPlugins": {
     "superpowers@superpowers-marketplace": true,
-    "agent-browser@agent-browser": true,
-    "chrome-devtools-mcp@claude-plugins-official": true
+    "agent-browser@agent-browser": true
   },
   "effortLevel": "high",
   "skipDangerousModePermissionPrompt": true,

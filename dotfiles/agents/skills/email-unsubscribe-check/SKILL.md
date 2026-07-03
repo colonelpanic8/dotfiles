@@ -57,7 +57,7 @@ Two approaches depending on the sender:
 
 **For emails with unsubscribe links:**
 - Read the email via `gws gmail` to find the unsubscribe URL (usually at bottom of email body)
-- Navigate to the URL with Chrome DevTools MCP
+- Navigate to the URL in the browser via the Chrome extension
 - Take a snapshot, find the confirmation button/checkbox
 - Click through to complete the unsubscribe
 - Verify the confirmation page

@@ -1,19 +1,19 @@
 ---
 name: password-reset
-description: Use when the user wants to reset or rotate a website or service password end-to-end, including finding the right `pass` entry, generating a new password with `xkcdpassgen`, retrieving reset emails through `gws gmail` or a local mail CLI, completing the reset in the browser with Chrome DevTools MCP, and updating the password store safely without losing entry metadata.
+description: Use when the user wants to reset or rotate a website or service password end-to-end, including finding the right `pass` entry, generating a new password with `xkcdpassgen`, retrieving reset emails through `gws gmail` or a local mail CLI, completing the reset in the browser via the Chrome extension, and updating the password store safely without losing entry metadata.
 ---
 
 # Password Reset
 
 ## Overview
 
-Handle password resets end-to-end. Prefer `gws gmail` for reset-email retrieval, Chrome DevTools MCP for website interaction, and the local `xkcdpassgen` helper for password generation.
+Handle password resets end-to-end. Prefer `gws gmail` for reset-email retrieval, the Chrome browser extension for website interaction, and the local `xkcdpassgen` helper for password generation.
 
 ## Tool Priorities
 
 - Prefer `gws gmail` over opening Gmail in the browser.
 - If `gws` is unavailable, use an installed Gmail CLI or IMAP-based mail tool if one exists locally. Inspect the environment first instead of guessing command names.
-- Prefer Chrome DevTools MCP for all browser interaction.
+- Prefer the Chrome browser extension for all browser interaction.
 - Use `pass find` and `pass show` before asking the user for credentials or account details.
 
 ## Password Generation
@@ -73,14 +73,14 @@ If the site rejects the password because of policy constraints, keep the canonic
 2. Run `pass find <service>` and inspect likely matches with `pass show`.
 3. Capture existing metadata before generating a new password.
 4. Generate the candidate password into a temporary `pass` entry with `xkcdpassgen`.
-5. Start the reset flow in Chrome DevTools MCP:
+5. Start the reset flow in the browser via the Chrome extension:
    - navigate to the login or account page
    - use the site's "forgot password" flow, or
    - sign in and navigate to security settings if the user asked for a rotation rather than a reset
 6. Use `gws gmail` to retrieve the reset email when needed:
    - search recent mail by sender domain, subject, or reset-related keywords
    - open the message and extract the reset link
-   - navigate to that link in Chrome DevTools MCP
+   - navigate to that link in the browser via the Chrome extension
 7. Fill the new password from the temporary `pass` entry and complete the form.
 8. Verify success:
    - confirmation page, or
@@ -99,14 +99,14 @@ If `gws` is unavailable, use an installed Gmail CLI or local mail helper only as
 
 ## Browser Guidance
 
-Use Chrome DevTools MCP to complete the reset flow directly:
+Use the Chrome browser extension to complete the reset flow directly:
 
 - navigate to the reset or security page
 - take snapshots to identify the relevant inputs and buttons
 - click, fill, and submit through the site UI
 - verify the success state before updating the canonical `pass` entry
 
-Prefer MCP interaction over describing steps for the user to perform manually.
+Prefer driving the browser directly over describing steps for the user to perform manually.
 
 ## Credentials And Account Data
 

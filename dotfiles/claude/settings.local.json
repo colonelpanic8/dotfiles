@@ -15,13 +15,6 @@
           "set -euo pipefail; export GITEA_BASE_URL='https://dev.railbird.ai'; export GITEA_ACCESS_TOKEN=\"$(pass show claude-mcp/gitea-access-token | head -1)\"; exec docker run -i --rm -e GITEA_ACCESS_TOKEN -e GITEA_BASE_URL docker.gitea.com/gitea-mcp-server"
         ]
       },
-      "chrome-devtools": {
-        "command": "npx",
-        "args": [
-          "chrome-devtools-mcp@latest",
-          "--auto-connect"
-        ]
-      },
       "imap-email": {
         "command": "bash",
         "args": [
@@ -32,7 +25,6 @@
     }
   },
   "enabledMcpjsonServers": [
-    "chrome-devtools",
     "imap-email"
   ],
   "enableAllProjectMcpServers": true

@@ -21,13 +21,6 @@
           "docker.gitea.com/gitea-mcp-server"
         ]
       },
-      "chrome-devtools": {
-        "command": "npx",
-        "args": [
-          "chrome-devtools-mcp@latest",
-          "--auto-connect"
-        ]
-      },
       "imap-email": {
         "command": "npx",
         "args": ["-y", "imap-email-mcp"],
@@ -36,7 +29,6 @@
     }
   },
   "enabledMcpjsonServers": [
-    "chrome-devtools",
     "imap-email"
   ],
   "enableAllProjectMcpServers": true
