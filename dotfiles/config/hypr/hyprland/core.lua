@@ -171,27 +171,39 @@ function M.setup(ctx)
     end
   end
 
+  -- True when the running hyprNStack build knows the auto_stacks option
+  -- (old builds crash-parse "setstackcount auto", so callers must gate on this).
+  local function nstack_supports_auto_stacks()
+    return hl.get_config("plugin.nstack.layout.auto_stacks") ~= nil
+  end
+
   local function apply_nstack_config()
     if verify_config or not enable_nstack or not configure_nstack_plugin_from_lua then
       return
     end
 
+    local layout = {
+      orientation = "left",
+      new_on_top = false,
+      new_near_focused = true,
+      new_is_master = false,
+      no_gaps_when_only = true,
+      special_scale_factor = 0.8,
+      inherit_fullscreen = true,
+      stacks = 1,
+      center_single_master = false,
+      mfact = 0.0,
+      single_mfact = 1.0,
+    }
+
+    if nstack_supports_auto_stacks() then
+      layout.auto_stacks = true
+    end
+
     hl.config({
       plugin = {
         nstack = {
-          layout = {
-            orientation = "left",
-            new_on_top = false,
-            new_near_focused = true,
-            new_is_master = false,
-            no_gaps_when_only = true,
-            special_scale_factor = 0.8,
-            inherit_fullscreen = true,
-            stacks = 1,
-            center_single_master = false,
-            mfact = 0.0,
-            single_mfact = 1.0,
-          },
+          layout = layout,
         },
       },
     })
@@ -589,6 +601,7 @@ function M.setup(ctx)
   ctx.hyprexpo = hyprexpo
   ctx.hyprwinview = hyprwinview
   ctx.workspacehistory = workspacehistory
+  ctx.nstack_supports_auto_stacks = nstack_supports_auto_stacks
   ctx.apply_nstack_config = apply_nstack_config
   ctx.apply_hyprexpo_config = apply_hyprexpo_config
   ctx.apply_hyprwinview_config = apply_hyprwinview_config

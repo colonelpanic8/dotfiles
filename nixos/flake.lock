@@ -860,11 +860,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1778996094,
-        "narHash": "sha256-62Xp8TFDrHER1GD5g9c/gvWmD0QsBNxh0OsnHzQIU3M=",
+        "lastModified": 1783055075,
+        "narHash": "sha256-FH4KUwZpOQqhd/LGjPgrq0CiWlro/t9h/jBGQnD8fdc=",
         "owner": "colonelpanic8",
         "repo": "hyprNStack",
-        "rev": "1abcbbe76bda28915ab6f76572bef2f6b3364b01",
+        "rev": "2ba62ce3dcddfe022276163d716bb654c9d7f16d",
         "type": "github"
       },
       "original": {

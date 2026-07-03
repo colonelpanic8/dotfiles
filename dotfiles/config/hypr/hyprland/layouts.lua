@@ -69,6 +69,13 @@ function M.setup(ctx)
       return
     end
 
+    if current_layout == columns_layout and nstack_supports_auto_stacks() then
+      -- The plugin sizes stacks to the window count on every recalculation,
+      -- which also covers paths that fire no window events (e.g. float -> tile).
+      dispatch(hl.dsp.layout("setstackcount auto"))
+      return
+    end
+
     local stack_count = count
     if current_layout == grid_layout then
       stack_count = math.ceil(math.sqrt(count))
