@@ -1,5 +1,10 @@
 # Agentic Session Preferences
 
+## Delegating coding work to subagents
+- Delegate all coding tasks to subagents (via the Agent tool) rather than editing code directly in the main session. The main session orchestrates: it plans, delegates, reviews, and integrates.
+- Use judgement to select the model tier per task. Opus/medium is sufficient for simple, well-specified tasks. For harder tasks where architecture and design taste matter, prefer a stronger tier (e.g. fable).
+- This applies to writing, editing, and refactoring code. Non-coding work (reading, searching, planning, running commands, answering questions) does not need to be delegated.
+
 ## Sharing dev-server / preview links
 - When sharing a local server or preview URL, always prefer this machine's Tailscale address over `127.0.0.1`/`localhost`/LAN IPs, so the link opens from any device on the tailnet.
 - Get the address with `tailscale ip -4` (the `100.x.y.z` IP) or the MagicDNS hostname from `tailscale status`. Prefer the `100.x` IP when a server's `allowedHosts` might reject a hostname.
