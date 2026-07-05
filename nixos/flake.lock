@@ -2194,8 +2194,8 @@
         "xmonad-contrib": "xmonad-contrib"
       },
       "locked": {
-        "lastModified": 1783024760,
-        "narHash": "sha256-sNu7UVJ0ExuLPYdJakrDvD1AEqyfbmibMdOGKIwbuiA=",
+        "lastModified": 1783282407,
+        "narHash": "sha256-lZyk0oe0Pr5ifzdq1G0N6DVKh1IO6EJlgKRvAx+bwxo=",
         "path": "/srv/dotfiles/dotfiles/config/taffybar/taffybar",
         "type": "path"
       },
