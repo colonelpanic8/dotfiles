@@ -13,10 +13,7 @@ let
     patches = [ ./patches/codex-desktop-linux-gsettings-schemas.patch ];
   };
   claudeDesktopSource = inputs.claude-desktop;
-  claudeDesktopNodePty = pkgs.callPackage "${claudeDesktopSource}/nix/node-pty.nix" {};
-  claudeDesktop = pkgs.callPackage "${claudeDesktopSource}/nix/claude-desktop.nix" {
-    node-pty = claudeDesktopNodePty;
-  };
+  claudeDesktop = pkgs.callPackage "${claudeDesktopSource}/nix/claude-desktop.nix" {};
   claudeDesktopFhs = pkgs.callPackage "${claudeDesktopSource}/nix/fhs.nix" {
     claude-desktop = claudeDesktop;
   };
