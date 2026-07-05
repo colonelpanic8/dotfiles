@@ -3,6 +3,7 @@
 ## Delegating coding work to subagents
 - Delegate all coding tasks to subagents (via the Agent tool) rather than editing code directly in the main session. The main session orchestrates: it plans, delegates, reviews, and integrates.
 - Use judgement to select the model tier per task. Opus/medium is sufficient for simple, well-specified tasks. For harder tasks where architecture and design taste matter, prefer a stronger tier (e.g. fable).
+- Whenever you pick a model tier for an agent, record a one-line justification for that choice (in your reasoning/CoT or a brief note in the delegating message) so the decision is auditable. Tie the justification to what the agent must actually decide at execution time, not just the topic's importance — a task specified tightly enough that the taste is already discharged doesn't need the stronger tier. If you can't articulate why the cheaper tier is insufficient, default to it.
 - This applies to writing, editing, and refactoring code. Non-coding work (reading, searching, planning, running commands, answering questions) does not need to be delegated.
 
 ## Sharing dev-server / preview links
