@@ -108,7 +108,6 @@
     nixpkgs.overlays =
       [
         # (import ./nvidia-container-toolkit-overlay.nix)
-        (import ./runc-overlay.nix)
         (import ./emacs-overlay.nix)
         (import ../nix-shared/overlays)
         # Use codex and claude-code from dedicated flakes with cachix

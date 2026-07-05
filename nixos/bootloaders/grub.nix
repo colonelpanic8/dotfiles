@@ -20,8 +20,8 @@ in {
       type = lib.types.nullOr lib.types.str;
       description = ''
         Filesystem UUID of the Windows EFI system partition. When set, GRUB
-        gets an explicit Windows Boot Manager chainload entry in addition to
-        entries discovered by os-prober.
+        gets an explicit Windows Boot Manager chainload entry and skips
+        os-prober autodetection.
       '';
     };
 
@@ -64,7 +64,7 @@ in {
         enable = true;
         efiSupport = true;
         device = "nodev";
-        useOSProber = true;
+        useOSProber = cfg.windowsEfiUuid == null;
         configurationLimit = cfg.configurationLimit;
         timeoutStyle = "menu";
         theme = lib.mkIf (cfg.theme != null) (lib.mkDefault cfg.theme);

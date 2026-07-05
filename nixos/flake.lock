@@ -182,11 +182,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1783226248,
-        "narHash": "sha256-Fl9NbFtLQ+u+o54Oxc2jfdMwy2c7j1qVYE/jMTzCUew=",
+        "lastModified": 1783264933,
+        "narHash": "sha256-KMa1I47xLI805zgiVHAOgtqZvHb9BATAbBf8pN1dovg=",
         "owner": "ilysenko",
         "repo": "codex-desktop-linux",
-        "rev": "cdd159cc65cfbbdaae4f226dfd17fc99f7dbf4ad",
+        "rev": "177ce2d64b6426d7dc1b2dd42226528523454f6e",
         "type": "github"
       },
       "original": {
@@ -2194,14 +2194,17 @@
         "xmonad-contrib": "xmonad-contrib"
       },
       "locked": {
-        "lastModified": 1783282407,
-        "narHash": "sha256-lZyk0oe0Pr5ifzdq1G0N6DVKh1IO6EJlgKRvAx+bwxo=",
-        "path": "/srv/dotfiles/dotfiles/config/taffybar/taffybar",
-        "type": "path"
+        "lastModified": 1783024750,
+        "narHash": "sha256-8RtBxjot68u3P1VXwwPnlUWKBAy/pJzDmKHxoack34g=",
+        "ref": "refs/heads/master",
+        "rev": "f0302a788290651c710a5bba138bd5dd0f89baa9",
+        "revCount": 2364,
+        "type": "git",
+        "url": "file:///srv/dotfiles/dotfiles/config/taffybar/taffybar"
       },
       "original": {
-        "path": "/srv/dotfiles/dotfiles/config/taffybar/taffybar",
-        "type": "path"
+        "type": "git",
+        "url": "file:///srv/dotfiles/dotfiles/config/taffybar/taffybar"
       }
     },
     "utils": {
