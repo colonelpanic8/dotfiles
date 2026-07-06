@@ -2,20 +2,32 @@
   pkgs,
   lib,
   inputs,
+  config ? {},
   ...
 }: let
   system = pkgs.stdenv.hostPlatform.system;
+  isJayLenovo = (config.networking.hostName or null) == "jay-lenovo";
   inputPackageOrNull = inputName: packageName: let
     input = inputs.${inputName} or null;
-    packages = if input == null then null else input.packages or null;
-    systemPackages = if packages == null then null else packages.${system} or null;
+    packages =
+      if input == null
+      then null
+      else input.packages or null;
+    systemPackages =
+      if packages == null
+      then null
+      else packages.${system} or null;
   in
-    if systemPackages == null then null else systemPackages.${packageName} or null;
+    if systemPackages == null
+    then null
+    else systemPackages.${packageName} or null;
 
   git-blame-rank = inputs.git-blame-rank.packages.${system}.default.overrideAttrs (old: {
-    env = (old.env or {}) // {
-      CARGO_BUILD_JOBS = "1";
-    };
+    env =
+      (old.env or {})
+      // {
+        CARGO_BUILD_JOBS = "1";
+      };
   });
   coquiTtsStreamer = inputPackageOrNull "coqui-tts-streamer" "default";
   keepbook = inputs.keepbook.packages.${system}.keepbook.overrideAttrs (_: {
@@ -24,56 +36,56 @@
   });
 
   commonPkgs = lib.filter (pkg: lib.meta.availableOn pkgs.stdenv.hostPlatform pkg) ((with pkgs; [
-    automake
-    bazel
-    bento4
-    bind
-    binutils
-    cachix
-    bubblewrap
-    cmake
-    dex
-    direnv
-    fd
-    ffmpeg
-    file
-    gawk
-    gcc
-    gh
-    git-fame
-    git-blame-rank
-    git-lfs
-    git-sync
-    git
-    gnumake
-    home-manager
-    htop
-    ispell
-    jq
-    just
-    keepbook
-    lsof
-    magic-wormhole-rs
-    ncdu
-    fastfetch
-    neovim
-    nix-index
-    nix-search-cli
-    pass
-    patchelf
-    pstree
-    rclone
-    ripgrep
-    skim
-    tmux
-    zellij
-    unzip
-    wget
-    xkcdpass
-    yubikey-manager
-  ])
-  ++ lib.optionals (coquiTtsStreamer != null) [coquiTtsStreamer]
-  ++ lib.optionals (builtins.hasAttr "git-sync-rs" pkgs) [pkgs.git-sync-rs]);
+      automake
+      bento4
+      bind
+      binutils
+      cachix
+      bubblewrap
+      cmake
+      dex
+      direnv
+      fd
+      ffmpeg
+      file
+      gawk
+      gcc
+      gh
+      git-fame
+      git-blame-rank
+      git-lfs
+      git-sync
+      git
+      gnumake
+      home-manager
+      htop
+      ispell
+      jq
+      just
+      keepbook
+      lsof
+      magic-wormhole-rs
+      ncdu
+      fastfetch
+      neovim
+      nix-index
+      nix-search-cli
+      pass
+      patchelf
+      pstree
+      rclone
+      ripgrep
+      skim
+      tmux
+      zellij
+      unzip
+      wget
+      xkcdpass
+      yubikey-manager
+    ])
+    ++ lib.optionals (!isJayLenovo) [pkgs.bazel]
+    ++ lib.optionals (coquiTtsStreamer != null) [coquiTtsStreamer]
+    ++ lib.optionals (builtins.hasAttr "git-sync-rs" pkgs) [pkgs.git-sync-rs]);
 
   linuxOnly = with pkgs; [
     dex

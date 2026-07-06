@@ -7,13 +7,13 @@
   ...
 }: let
   session = import ./session-variables.nix;
-in
-  makeEnable config "myModules.xmonad" true {
-    myModules.taffybar.enable = lib.mkDefault (config.myModules.desktop.shellUi == "taffybar");
-
-    nixpkgs.overlays = with inputs; [
-      xmonad.overlay
-      xmonad-contrib.overlay
+  system = pkgs.stdenv.hostPlatform.system;
+  xmonadPkgs = import pkgs.path {
+    inherit system;
+    config = pkgs.config or {};
+    overlays = [
+      inputs.xmonad.overlay
+      inputs.xmonad-contrib.overlay
       (final: prev: {
         haskellPackages = prev.haskellPackages.override (old: {
           overrides =
@@ -31,6 +31,10 @@ in
       })
       (import ../dotfiles/config/xmonad/overlay.nix)
     ];
+  };
+in
+  makeEnable config "myModules.xmonad" true {
+    myModules.taffybar.enable = lib.mkDefault (config.myModules.desktop.shellUi == "taffybar");
 
     services.rumno.enable = true;
 
@@ -48,13 +52,13 @@ in
       };
     };
 
-    environment.systemPackages = with pkgs; [
+    environment.systemPackages = [
       # Haskell Desktop
-      haskellPackages.xmonad
-      haskellPackages.imalison-xmonad
-      # haskellPackages.notifications-tray-icon
-      # haskellPackages.gtk-sni-tray
-      haskellPackages.dbus-hslogger
+      xmonadPkgs.haskellPackages.xmonad
+      xmonadPkgs.haskellPackages.imalison-xmonad
+      # xmonadPkgs.haskellPackages.notifications-tray-icon
+      # xmonadPkgs.haskellPackages.gtk-sni-tray
+      xmonadPkgs.haskellPackages.dbus-hslogger
     ];
 
     home-manager.sharedModules = [

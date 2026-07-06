@@ -1,5 +1,6 @@
 {
   config,
+  inputs,
   lib,
   pkgs,
   ...
@@ -10,6 +11,15 @@
 
   myModules.wyoming.enable = false;
   features.full.enable = true;
+
+  nixpkgs.overlays = [
+    (_final: prev: let
+      stablePkgs = inputs.nixpkgs-stable.legacyPackages.${prev.stdenv.hostPlatform.system};
+    in {
+      shellcheck = stablePkgs.shellcheck;
+      shellcheck-minimal = stablePkgs.shellcheck-minimal or stablePkgs.shellcheck;
+    })
+  ];
 
   environment.systemPackages = with pkgs; [
     android-studio
