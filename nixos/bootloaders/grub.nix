@@ -62,6 +62,7 @@ in {
 
       grub = {
         enable = true;
+        memtest86.enable = true;
         efiSupport = true;
         device = "nodev";
         useOSProber = cfg.windowsEfiUuid == null;
