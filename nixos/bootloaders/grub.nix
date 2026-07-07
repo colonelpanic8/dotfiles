@@ -15,13 +15,19 @@ in {
       description = "Maximum number of NixOS configurations shown in GRUB.";
     };
 
+    useOSProber = lib.mkOption {
+      default = true;
+      type = lib.types.bool;
+      description = "Whether to enable os-prober for detecting other bootable operating systems.";
+    };
+
     windowsEfiUuid = lib.mkOption {
       default = null;
       type = lib.types.nullOr lib.types.str;
       description = ''
         Filesystem UUID of the Windows EFI system partition. When set, GRUB
-        gets an explicit Windows Boot Manager chainload entry and skips
-        os-prober autodetection.
+        gets an explicit Windows Boot Manager chainload entry in addition to
+        any os-prober autodetection.
       '';
     };
 
@@ -65,7 +71,7 @@ in {
         memtest86.enable = true;
         efiSupport = true;
         device = "nodev";
-        useOSProber = cfg.windowsEfiUuid == null;
+        useOSProber = cfg.useOSProber;
         configurationLimit = cfg.configurationLimit;
         timeoutStyle = "menu";
         theme = lib.mkIf (cfg.theme != null) (lib.mkDefault cfg.theme);
