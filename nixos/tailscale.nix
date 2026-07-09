@@ -66,6 +66,7 @@ makeEnable config "myModules.tailscale" true {
       if ! ${pkgs.tailscale}/bin/tailscale up \
         --auth-key "file:$key_file" \
         --accept-dns=true \
+        --hostname=${lib.escapeShellArg config.networking.hostName} \
         --operator=imalison \
         --timeout=60s; then
         echo "tailscale-autoconnect: tailscale up failed; leaving manual login required" >&2
