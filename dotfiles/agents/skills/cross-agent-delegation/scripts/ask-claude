@@ -46,10 +46,26 @@ fi
 export CROSS_AGENT_DEPTH=1
 
 timeout_value=${CROSS_AGENT_TIMEOUT:-10m}
-model=${CROSS_AGENT_CLAUDE_MODEL:-haiku}
-effort=${CROSS_AGENT_CLAUDE_EFFORT:-low}
+model=${CROSS_AGENT_CLAUDE_MODEL:-opus}
+effort=${CROSS_AGENT_CLAUDE_EFFORT:-medium}
 max_turns=${CROSS_AGENT_CLAUDE_MAX_TURNS:-4}
 max_budget_usd=${CROSS_AGENT_CLAUDE_MAX_BUDGET_USD:-0.25}
+
+case "$model" in
+  opus|claude-opus-*) ;;
+  *)
+    echo "ask-claude: cross-model delegation is restricted to Opus, not Fable or lower-tier models" >&2
+    exit 2
+    ;;
+esac
+
+case "$effort" in
+  medium|high|xhigh|max) ;;
+  *)
+    echo "ask-claude: effort must be medium or higher" >&2
+    exit 2
+    ;;
+esac
 
 umask 077
 tmp_dir=$(mktemp -d "${TMPDIR:-/tmp}/ask-claude.XXXXXX")

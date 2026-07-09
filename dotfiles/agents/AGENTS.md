@@ -4,15 +4,37 @@
 - When the primary model is Fable, strongly prefer delegating coding tasks to subagents (via the Agent tool). Fable should usually act as the orchestrator: planning, delegating, reviewing, and integrating. It may still work directly when delegation would add disproportionate overhead or the task cannot be usefully separated.
 - For other primary models, subagent delegation is optional rather than required. Use judgment: delegate when work is meaningfully parallelizable, independently scoped, or benefits from a separate implementation/review pass; work directly when that is simpler and more efficient.
 - The primary agent remains responsible for reviewing and integrating delegated work.
-- Use judgement to select the model tier per task. Opus/medium is sufficient for simple, well-specified tasks. For harder tasks where architecture and design taste matter, prefer a stronger tier (e.g. fable).
 - Whenever you pick a model tier for an agent, record a one-line justification for that choice (in your reasoning/CoT or a brief note in the delegating message) so the decision is auditable. Tie the justification to what the agent must actually decide at execution time, not just the topic's importance — a task specified tightly enough that the taste is already discharged doesn't need the stronger tier. If you can't articulate why the cheaper tier is insufficient, default to it.
 - These guidelines apply to writing, editing, and refactoring code. Non-coding work (reading, searching, planning, running commands, answering questions) does not need to be delegated.
 
+## Model and effort selection
+
+Treat model selection and effort level as separate decisions. The following scores are subjective routing scores from 1 to 10; for cost, 10 means most expensive.
+
+| Model | Intelligence / judgment | Design sense | Cost | Primary role |
+| --- | ---: | ---: | ---: | --- |
+| Fable | 10 | 10 | 10 | Design planning, ambiguity, architecture, intuition, and the hardest work |
+| GPT-5.6 Sol | 9.5 | 8.5 | 4 | Default engineering model and best intelligence-to-cost choice |
+| Opus | 8.8 | 9.5 | 7 | Specialized design critique, UX writing, aesthetic review, and alternative perspectives |
+
+- Do not select models below GPT-5.6 Sol at medium effort. Terra, Sonnet, Luna, GPT Mini, and Haiku should not be used, including for subagents.
+- Default to Sol at high effort for most implementation, debugging, investigation, review, research, and agentic work.
+- Use Sol at extra-high effort for unusually difficult but reasonably well-specified engineering, including complex debugging, algorithms, migrations, concurrency, multi-system changes, and high-stakes correctness review.
+- Sol at medium effort is the minimum permitted configuration. Use it for bounded mechanical work, exploration, summaries, verification, and simple coordination.
+- Prefer Fable for most design planning, product architecture, UI/UX direction, API design, and work where ambiguity, intuition, or taste materially affects the result.
+- Use Fable at medium effort for ordinary design planning and at high effort for truly meaty, ambiguous, high-stakes, or long-horizon work.
+- Use Opus selectively as a specialist rather than the default design planner. Good uses include independent design critique, visual refinement, UX writing, naming, prose, and alternative aesthetic perspectives.
+- Do not automatically use low or max effort. Medium is the floor, high is the general default, and extra high is reserved for tasks where deeper reasoning is likely to affect correctness.
+- Difficulty alone does not require Fable. Prefer Sol at extra-high effort when execution is difficult but the desired outcome is clear; prefer Fable when determining the right outcome requires judgment or taste.
+
 ## Cross-model delegation
 - Use cross-model delegation only when the user requests it or model diversity or an independent check would be useful; it is never mandatory.
-- Codex should prefer the `claude_delegator` agent, and Claude should prefer the `codex-delegator` agent. Use `$cross-agent-delegation` or its `ask-claude` and `ask-codex` wrappers when direct invocation is simpler.
+- Codex should use the `claude_delegator` agent only for the specialized Opus cases below. Claude should prefer the `codex-delegator` agent when delegating to Sol. Use `$cross-agent-delegation` or its `ask-claude` and `ask-codex` wrappers when direct invocation is simpler.
 - Permit at most one cross-model handoff and never recursively delegate. Keep the child read-only and advisory by default, with only one writer per worktree.
 - The parent agent owns review, verification, and integration of the child's output.
+- A Sol agent must never spawn, invoke, or delegate to Fable, including through cross-model wrappers or indirect subagent chains. If a task warrants Fable, select Fable as the primary model before beginning rather than allowing Sol to escalate itself.
+- Sol may delegate to other Sol agents at medium effort or higher. It may use Opus only for specialized design critique, UX writing, aesthetic review, or an independent design perspective.
+- Fable may delegate bounded execution, exploration, and verification work downward to Sol.
 
 ## Sharing dev-server / preview links
 - When sharing a local server or preview URL, always prefer this machine's Tailscale address over `127.0.0.1`/`localhost`/LAN IPs, so the link opens from any device on the tailnet.

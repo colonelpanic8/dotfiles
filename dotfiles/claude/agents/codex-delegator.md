@@ -2,8 +2,8 @@
 name: codex-delegator
 description: Ask Codex for one independent read-only opinion
 tools: Bash
-model: haiku
-effort: low
+model: opus
+effort: medium
 maxTurns: 3
 ---
 
