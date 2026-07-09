@@ -552,6 +552,18 @@
             Restart=on-failure
             Slice=session.slice
           '';
+
+          # The GTK file-chooser's right-click context menu (Show Hidden Files,
+          # etc.) is unreliable under Hyprland/wlroots (upstream popup-focus bug,
+          # hyprwm/Hyprland#6426). Route only the FileChooser interface to the
+          # KDE (Qt) portal backend, whose dialogs don't have that bug. Screencast/
+          # screenshot stay on hyprland; everything else falls back to gtk. The KDE
+          # backend (xdg-desktop-portal-kde) is already present via plasma6.
+          xdg.configFile."xdg-desktop-portal/hyprland-portals.conf".text = ''
+            [preferred]
+            default=hyprland;gtk
+            org.freedesktop.impl.portal.FileChooser=kde
+          '';
         }
       )
     ];

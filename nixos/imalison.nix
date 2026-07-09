@@ -23,6 +23,15 @@ in {
       ./dotfiles-links.nix
     ];
 
+    # The GTK file-chooser right-click context menu (Show Hidden Files, etc.)
+    # is unreliable under Hyprland/wlroots (upstream popup-focus bug,
+    # hyprwm/Hyprland#6426), so set these toggles as defaults instead of
+    # relying on the broken menu. Ctrl+H still toggles hidden files live.
+    dconf.settings."org/gtk/settings/file-chooser" = {
+      show-hidden = true;
+      sort-directories-first = true;
+    };
+
     programs.git.enable = true;
     programs.git.signing.format = "openpgp";
     programs.gh = {
