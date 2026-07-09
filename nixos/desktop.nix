@@ -169,6 +169,7 @@
         "$out/share/applications/spotify.desktop"
     '');
   rlruPackages = inputs.rlru.packages.${pkgs.stdenv.hostPlatform.system};
+  scrobbleScrubber = inputs.lastfm-edit.packages.${pkgs.stdenv.hostPlatform.system}.scrobble-scrubber;
   rlruDioxusDesktopBase = rlruPackages.rlru-dioxus-desktop.overrideAttrs (_: {
     # Rust 1.95 can otherwise ICE/SEGV while compiling rlru's desktop dependency
     # graph in release mode.
@@ -363,6 +364,7 @@
         wofi
         rofi-pass
         rofi-systemd
+        scrobbleScrubber
         simplescreenrecorder
         skippy-xd
         transmission_4-gtk

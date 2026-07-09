@@ -76,6 +76,15 @@
       };
     };
 
+    lastfm-edit = {
+      url = "path:/home/imalison/Projects/lastfm-edit";
+      inputs = {
+        nixpkgs.follows = "nixpkgs";
+        flake-utils.follows = "flake-utils";
+        rust-overlay.follows = "git-sync-rs/rust-overlay";
+      };
+    };
+
     coqui-tts-streamer = {
       # Keep the default install reproducible across machines.
       # For local development, use `just switch --override-input coqui-tts-streamer path:/home/imalison/Projects/coqui-tts-streamer`.
