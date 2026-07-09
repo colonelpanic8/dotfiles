@@ -158,16 +158,16 @@
         ]
       },
       "locked": {
-        "lastModified": 1783616128,
-        "narHash": "sha256-GPBw1CWo9ZNDNDXgjw0Ar7gPFuZlloDzuOjEk6q7ADc=",
-        "owner": "sadjow",
+        "lastModified": 1783622783,
+        "narHash": "sha256-MVNYVjkYcoJfRruUNegFilJjFn15K+7sOo3noM2IC8A=",
+        "owner": "aroman",
         "repo": "codex-cli-nix",
-        "rev": "be567a404cddca0c018b391b11e179ae968e7a27",
+        "rev": "1e7d9d1751717416730dadceb97b222f4a5bf047",
         "type": "github"
       },
       "original": {
-        "owner": "sadjow",
-        "ref": "main",
+        "owner": "aroman",
+        "ref": "native-code-mode-host",
         "repo": "codex-cli-nix",
         "type": "github"
       }
