@@ -55,6 +55,23 @@
   myModules.postgres.enable = true;
   features.full.enable = true;
 
+  # CI on this box grows /nix unboundedly (per-commit `nix develop
+  # '.?submodules=1'` source copies + railbird-full CUDA image builds); the
+  # store had 20k dead paths / 40G+ reclaimable when this was added. Daily GC
+  # keeps the baseline down; min-free makes nix GC mid-build when free space
+  # drops below 50G instead of running into ENOSPC. (The CI postgres DiskFull
+  # failures were a separate issue — the runner's private 3.2G tmpfs /tmp;
+  # see gitea-runner.nix TMPDIR.)
+  nix.gc = {
+    automatic = true;
+    dates = "daily";
+    options = "--delete-older-than 7d";
+  };
+  nix.settings = {
+    min-free = 50 * 1024 * 1024 * 1024; # trigger GC below 50G free
+    max-free = 150 * 1024 * 1024 * 1024; # GC until 150G free
+  };
+
   hardware.nvidia = {
     powerManagement.enable = false;
     # Fine-grained power management. Turns off GPU when not in use.

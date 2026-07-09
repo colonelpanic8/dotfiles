@@ -58,9 +58,21 @@ makeEnable config "myModules.gitea-runner" false {
     in {
       XDG_CONFIG_HOME = gitea-runner-directory;
       XDG_CACHE_HOME = "${gitea-runner-directory}/.cache";
+      # Despite PrivateTmp=false below, the upstream module's DynamicUser=true
+      # still gives the service a private /tmp: a tmpfs capped at 10% of RAM
+      # (~3.2G here) with 400k inodes. CI jobs inherit it — `nix develop`
+      # shell dirs (leaked on cancelled jobs) and pytest's ephemeral postgres
+      # (tempfile.mkdtemp) slowly fill it until tests die with
+      # DiskFull/ENOSPC while `df /` shows hundreds of GB free. Point job
+      # temp at the disk-backed state dir instead; tmpfiles rule below prunes
+      # leaked entries.
+      TMPDIR = "${gitea-runner-directory}/tmp";
     };
     serviceConfig.PrivateTmp = false;
   };
+  systemd.tmpfiles.rules = [
+    "d /var/lib/private/gitea-runner/tmp 0750 gitea-runner gitea-runner 2d"
+  ];
   users.groups.gitea-runner = {};
   users.users.gitea-runner = {
     isSystemUser = true;
