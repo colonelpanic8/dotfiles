@@ -1,0 +1,4 @@
+interface:
+  display_name: "Cross-agent delegation"
+  short_description: "Safely consult the other coding agent"
+  default_prompt: "Use $cross-agent-delegation to get an independent cross-model second opinion."

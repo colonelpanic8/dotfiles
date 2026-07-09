@@ -1,0 +1,11 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+target=${AGENTS_HOME:-$HOME/.agents}/skills/cross-agent-delegation/scripts/ask-claude
+
+if [ ! -x "$target" ]; then
+  echo "ask-claude: canonical script is not executable: $target" >&2
+  exit 127
+fi
+
+exec "$target" "$@"

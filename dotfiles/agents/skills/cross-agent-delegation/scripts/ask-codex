@@ -1,0 +1,123 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+input_mode=stdin
+base64_payload=
+case "$#" in
+  0) ;;
+  2)
+    if [ "$1" != "--base64" ]; then
+      echo "ask-codex: expected a prompt on stdin or --base64 <payload>" >&2
+      exit 2
+    fi
+    input_mode=base64
+    base64_payload=$2
+    ;;
+  *)
+    echo "ask-codex: expected a prompt on stdin or --base64 <payload>" >&2
+    exit 2
+    ;;
+esac
+
+if [ "$input_mode" = base64 ]; then
+  if [ -z "$base64_payload" ] || [[ ! "$base64_payload" =~ ^([A-Za-z0-9+/]{4})*([A-Za-z0-9+/]{2}==|[A-Za-z0-9+/]{3}=)?$ ]]; then
+    echo "ask-codex: invalid RFC4648 base64 payload or padding" >&2
+    exit 2
+  fi
+fi
+
+if [ "${CROSS_AGENT_DEPTH:-0}" != "0" ]; then
+  echo "ask-codex: recursive cross-agent delegation is not allowed" >&2
+  exit 2
+fi
+
+for required_command in codex timeout mktemp cat chmod rm; do
+  if ! command -v "$required_command" >/dev/null 2>&1; then
+    echo "ask-codex: required command not found: $required_command" >&2
+    exit 127
+  fi
+done
+
+if [ "$input_mode" = base64 ] && ! command -v base64 >/dev/null 2>&1; then
+  echo "ask-codex: required command not found: base64" >&2
+  exit 127
+fi
+
+export CROSS_AGENT_DEPTH=1
+
+timeout_value=${CROSS_AGENT_TIMEOUT:-10m}
+model=${CROSS_AGENT_CODEX_MODEL:-gpt-5.4-mini}
+reasoning_effort=${CROSS_AGENT_CODEX_REASONING_EFFORT:-low}
+
+umask 077
+tmp_dir=$(mktemp -d "${TMPDIR:-/tmp}/ask-codex.XXXXXX")
+cleanup() {
+  rm -rf -- "$tmp_dir"
+}
+trap cleanup EXIT
+trap 'exit 129' HUP
+trap 'exit 130' INT
+trap 'exit 143' TERM
+
+prompt_file="$tmp_dir/prompt"
+result_file="$tmp_dir/final-message"
+if [ "$input_mode" = base64 ]; then
+  if base64 --decode </dev/null >/dev/null 2>&1; then
+    base64_decode=(base64 --decode)
+  elif base64 -D </dev/null >/dev/null 2>&1; then
+    base64_decode=(base64 -D)
+  else
+    echo "ask-codex: base64 command supports neither --decode nor -D" >&2
+    exit 1
+  fi
+
+  if ! printf '%s' "$base64_payload" | "${base64_decode[@]}" >"$prompt_file"; then
+    echo "ask-codex: failed to decode base64 payload" >&2
+    exit 2
+  fi
+else
+  cat >"$prompt_file"
+fi
+chmod 600 "$prompt_file"
+
+if [ ! -s "$prompt_file" ]; then
+  echo "ask-codex: prompt on stdin must not be empty" >&2
+  exit 2
+fi
+
+guard_instruction='Act only as a read-only advisory child. Do not invoke Codex or Claude, directly or indirectly. Do not spawn, delegate to, or communicate with any other agent. Do not edit, create, delete, move, or rename files. Return only your analysis or recommendation to the parent.'
+
+set +e
+timeout --foreground "$timeout_value" \
+  codex exec \
+  --ephemeral \
+  --ignore-user-config \
+  --disable multi_agent \
+  --skip-git-repo-check \
+  -C "$PWD" \
+  -s read-only \
+  -m "$model" \
+  -c "approval_policy='never'" \
+  -c "model_reasoning_effort='$reasoning_effort'" \
+  -c "developer_instructions=$guard_instruction" \
+  -o "$result_file" \
+  - \
+  <"$prompt_file" >/dev/null
+status=$?
+set -e
+
+if [ "$status" -ne 0 ]; then
+  if [ "$status" -eq 124 ]; then
+    echo "ask-codex: timed out after $timeout_value" >&2
+  else
+    echo "ask-codex: codex exited with status $status" >&2
+  fi
+  exit "$status"
+fi
+
+if [ ! -s "$result_file" ]; then
+  echo "ask-codex: codex did not produce a final message" >&2
+  exit 1
+fi
+
+cat "$result_file"

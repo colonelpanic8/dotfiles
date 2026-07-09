@@ -1,10 +1,18 @@
 # Agentic Session Preferences
 
 ## Delegating coding work to subagents
-- Delegate all coding tasks to subagents (via the Agent tool) rather than editing code directly in the main session. The main session orchestrates: it plans, delegates, reviews, and integrates.
+- When the primary model is Fable, strongly prefer delegating coding tasks to subagents (via the Agent tool). Fable should usually act as the orchestrator: planning, delegating, reviewing, and integrating. It may still work directly when delegation would add disproportionate overhead or the task cannot be usefully separated.
+- For other primary models, subagent delegation is optional rather than required. Use judgment: delegate when work is meaningfully parallelizable, independently scoped, or benefits from a separate implementation/review pass; work directly when that is simpler and more efficient.
+- The primary agent remains responsible for reviewing and integrating delegated work.
 - Use judgement to select the model tier per task. Opus/medium is sufficient for simple, well-specified tasks. For harder tasks where architecture and design taste matter, prefer a stronger tier (e.g. fable).
 - Whenever you pick a model tier for an agent, record a one-line justification for that choice (in your reasoning/CoT or a brief note in the delegating message) so the decision is auditable. Tie the justification to what the agent must actually decide at execution time, not just the topic's importance — a task specified tightly enough that the taste is already discharged doesn't need the stronger tier. If you can't articulate why the cheaper tier is insufficient, default to it.
-- This applies to writing, editing, and refactoring code. Non-coding work (reading, searching, planning, running commands, answering questions) does not need to be delegated.
+- These guidelines apply to writing, editing, and refactoring code. Non-coding work (reading, searching, planning, running commands, answering questions) does not need to be delegated.
+
+## Cross-model delegation
+- Use cross-model delegation only when the user requests it or model diversity or an independent check would be useful; it is never mandatory.
+- Codex should prefer the `claude_delegator` agent, and Claude should prefer the `codex-delegator` agent. Use `$cross-agent-delegation` or its `ask-claude` and `ask-codex` wrappers when direct invocation is simpler.
+- Permit at most one cross-model handoff and never recursively delegate. Keep the child read-only and advisory by default, with only one writer per worktree.
+- The parent agent owns review, verification, and integration of the child's output.
 
 ## Sharing dev-server / preview links
 - When sharing a local server or preview URL, always prefer this machine's Tailscale address over `127.0.0.1`/`localhost`/LAN IPs, so the link opens from any device on the tailnet.

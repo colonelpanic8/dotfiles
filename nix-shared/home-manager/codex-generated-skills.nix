@@ -69,6 +69,11 @@ in {
         force = true;
         source = oos "${cfg.worktreeCodexDir}/AGENTS.md";
       };
+
+      ".codex/agents/claude-delegator.toml" = {
+        force = true;
+        source = oos "${cfg.worktreeCodexDir}/agents/claude-delegator.toml";
+      };
     };
 
     home.activation.prepareCodexDirectory = lib.hm.dag.entryBefore ["checkLinkTargets"] ''
