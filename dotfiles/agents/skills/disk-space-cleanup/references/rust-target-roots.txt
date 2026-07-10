@@ -3,4 +3,5 @@
 
 /home/imalison/Projects
 /home/imalison/org
+/home/imalison/.codex/worktrees
 /srv/dotfiles
