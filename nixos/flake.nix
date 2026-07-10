@@ -285,10 +285,6 @@
 
     codex-desktop-linux = {
       url = "github:ilysenko/codex-desktop-linux/main";
-      inputs = {
-        nixpkgs.follows = "nixpkgs";
-        flake-utils.follows = "flake-utils";
-      };
     };
 
     claude-code-nix = {
