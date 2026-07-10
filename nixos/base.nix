@@ -107,6 +107,14 @@ makeEnable config "myModules.base" true {
 
   # For supporting gnome stuff
   services.dbus.packages = [pkgs.gcr];
+  # User dbus-broker reloads can time out while the broker stays healthy and
+  # notices service-file changes itself, which makes `nixos-rebuild switch`
+  # report a failed user activation.
+  systemd.user.services.dbus-broker = {
+    reloadIfChanged = pkgs.lib.mkForce false;
+    restartIfChanged = pkgs.lib.mkForce false;
+    stopIfChanged = pkgs.lib.mkForce false;
+  };
 
   programs.dconf.enable = true;
 
