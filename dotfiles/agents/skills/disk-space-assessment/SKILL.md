@@ -7,18 +7,18 @@ description: Measure and explain disk usage without deleting data, producing reu
 
 Build a reproducible picture of disk usage. Stop at findings and proposed actions; use `disk-space-cleanup` when the user authorizes remediation.
 
-Read `references/ignore-paths.md` before scanning. Read `references/observed-heavy-hitters.md` when triaging this machine or interpreting familiar paths.
+Read `references/ignore-paths.md` before scanning. Read `references/direnv-gc-roots.md` for Nix development-root attribution. Read `references/observed-heavy-hitters.md` when triaging this machine or interpreting familiar paths.
 
 ## Required Artifact Contract
 
 Always create a reusable, timestamped `ncdu` export for every filesystem or major root assessed. Never make an interactive `ncdu` session, transient `/tmp` export, or `du` output the only record of an assessment.
 
-Use the local wrapper:
+Always scan `/` with privilege. An unprivileged root scan is incomplete by design because it cannot measure private service state. Also scan each separately mounted pressured filesystem because `safe_ncdu -x` does not cross mount boundaries:
 
 ```bash
+/run/wrappers/bin/sudo -n env HOME=/home/imalison safe_ncdu /
 safe_ncdu /home
 safe_ncdu /nix/store
-sudo -n env HOME=/home/imalison safe_ncdu /
 ```
 
 `safe_ncdu` writes these durable artifacts under `~/.cache/ncdu/`:
@@ -33,7 +33,7 @@ Keep timestamped files intact for iterative analysis. Report their absolute path
 ## Workflow
 
 1. Record filesystem pressure and topology.
-2. Choose scan roots that cover the pressured filesystem without crossing mounts.
+2. Run a privileged `/` scan and choose additional roots for separately mounted filesystems.
 3. Create reusable `safe_ncdu` snapshots before any cleanup.
 4. Analyze snapshots repeatedly with `top` and `open`; do not rescan for every question.
 5. Attribute special stores such as Nix separately.
@@ -52,12 +52,12 @@ Record used/free space and whether `/home`, `/nix`, or other large paths are sep
 
 ## 2. Select Scan Roots
 
-Prefer one-filesystem coverage:
+Require one-filesystem coverage:
 
-- Scan `/` for root accounting.
+- Always scan `/` with `/run/wrappers/bin/sudo -n env HOME=/home/imalison`; never substitute an unprivileged root scan. On NixOS, use the setuid wrapper explicitly because a non-setuid `sudo` store binary may appear earlier on `PATH`.
 - Scan separately mounted `/home` and `/nix/store` independently.
 - Add a focused root such as `~/Projects` when the first snapshot identifies it as dominant.
-- Use privileged root scans when unprivileged results undercount private service state.
+- Treat a failed privileged root scan as an explicit coverage gap; do not silently fall back to an unprivileged scan.
 
 Inspect exclusions before a long scan:
 
@@ -72,14 +72,14 @@ Update `references/ignore-paths.md` and the implementation of `safe_ncdu` togeth
 Run scans early enough that cleanup does not destroy the evidence:
 
 ```bash
+/run/wrappers/bin/sudo -n env HOME=/home/imalison safe_ncdu /
 safe_ncdu /home
 safe_ncdu /nix/store
-sudo -n env HOME=/home/imalison safe_ncdu /
 ```
 
 If `safe_ncdu` is unavailable, source or run `/srv/dotfiles/dotfiles/lib/functions/safe_ncdu`. If `ncdu` itself is missing, use Nix temporarily rather than substituting a non-reusable interactive scan.
 
-Do not store the privileged scan in root's home. Set `HOME=/home/imalison` so all artifacts remain together and are available to later sessions.
+Do not store the privileged scan in root's home. Set `HOME=/home/imalison` so all artifacts remain together and are available to later sessions. Restore ownership to `imalison:users` if `sudo` creates root-owned snapshot artifacts.
 
 ## 4. Analyze Iteratively
 
@@ -112,6 +112,14 @@ nix-store --gc --print-roots
 ```
 
 Use `/srv/dotfiles/dotfiles/lib/functions/find_store_path_gc_roots` and `nix why-depends` to explain why a large path is retained. Inspect `.direnv/flake-profile-*`, `result*` symlinks, system generations, and current/booted system closures. Prefer `nix_store_audit` over an initial `du -sh /nix/store`, which is slow and does not explain retention.
+
+Always create a reusable `.direnv` GC-root audit artifact when direnv roots exist:
+
+```bash
+python /srv/dotfiles/dotfiles/agents/skills/disk-space-assessment/scripts/direnv_gc_roots_audit.py --top 30
+```
+
+This separates collectively direnv-only paths from paths retained by non-direnv roots and estimates each project's marginal uniquely retained footprint. Read `references/direnv-gc-roots.md` before interpreting or acting on the result.
 
 ## Assessment Handoff
 
