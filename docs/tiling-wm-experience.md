@@ -246,6 +246,8 @@ Important behavior:
   minimized picker.
 - Window switchers hide internal windows.
 - Go/bring actions unminimize selected windows when needed.
+- Selecting a minimized window or hidden scratchpad from the visual window
+  overview recovers it onto the current workspace before focusing it.
 
 ## Scratchpads
 
