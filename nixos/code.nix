@@ -184,7 +184,12 @@ in
         alejandra
       ]
       ++ lib.optionals (config.networking.hostName != "jay-lenovo") [
-        claudeDesktopFhs
+        # Non-FHS variant: runs in the host namespace (no bwrap userns), so the
+        # integrated Claude Code terminal can use sudo / nixos-rebuild. The FHS
+        # variant (claudeDesktopFhs) sandboxes everything in an unprivileged user
+        # namespace, which makes host root impossible. Trade-off: MCP/Cowork
+        # features that assume an FHS layout may need nix-ld/envfs instead.
+        claudeDesktop
         cabal2nix
       ]
       ++ (
