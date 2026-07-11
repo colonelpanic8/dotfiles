@@ -260,8 +260,15 @@ Required behavior:
 - A named scratchpad exists for volume.
 - A named scratchpad exists for x.com.
 - Scratchpads appear near-fullscreen and centered by default.
-- Regular scratchpads can be tiled into the normal workspace when desired,
-  while retaining their summon/dismiss toggles.
+- Floating scratchpad behavior is a state of a window, not a property of its
+  application class. Floating any window at scratchpad geometry enters that
+  state; tiling it leaves that state.
+- Invoking a scratchpad replaces only another window currently in floating
+  scratchpad mode. Other floating windows are left alone.
+- Regular scratchpad targets can be tiled into the normal workspace when
+  desired, while retaining their shortcut association.
+- Summoning a scratchpad target with its shortcut always restores floating
+  scratchpad mode, even if the window was previously tiled.
 - Toggling a scratchpad deactivates fullscreen/tabbed state first.
 - Floating scratchpads are hidden from normal workspace and window listings.
 

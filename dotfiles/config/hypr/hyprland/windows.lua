@@ -140,7 +140,7 @@ function M.setup(ctx)
       action = "set",
       window = selector,
     }))
-    dispatch(hl.dsp.window.float({ action = "enable", window = selector }))
+    mark_window_as_floating_scratchpad(window, matching_scratchpad_name(window))
     dispatch(hl.dsp.window.resize({ x = geometry.width, y = geometry.height, relative = false, window = selector }))
     dispatch(hl.dsp.window.move({ x = geometry.x, y = geometry.y, relative = false, window = selector }))
   end
@@ -153,6 +153,7 @@ function M.setup(ctx)
     end
 
     if window.floating then
+      clear_floating_scratchpad_state(window)
       dispatch(hl.dsp.window.float({ action = "disable", window = selector }))
       return
     end

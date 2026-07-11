@@ -8,6 +8,7 @@ function M.setup(ctx)
   dropdown_animation_frames = 18
   dropdown_animation_frame_ms = 16
   scratchpad_pending = {}
+  scratchpad_mode_tag = "scratchpad"
   monitor_reserved_cache_path = (os.getenv("XDG_RUNTIME_DIR") or "/tmp") .. "/hyprland-monitor-reserved.tsv"
   scratchpad_fallback_reserved_top = 60
 
@@ -100,13 +101,21 @@ function M.setup(ctx)
     return def.allow_tiling ~= false and window and window.floating == false
   end
 
-  local function is_scratchpad_window(window)
-    for _, def in pairs(scratchpads) do
-      if scratchpad_window_matches(window, def) and not tiled_scratchpad_is_normal_window(window, def) then
+  local function window_has_scratchpad_tag(window)
+    for _, tag in ipairs((window and window.tags) or {}) do
+      if tag == scratchpad_mode_tag then
         return true
       end
     end
     return false
+  end
+
+  local function window_is_floating_scratchpad(window)
+    return window and window.floating == true and window_has_scratchpad_tag(window)
+  end
+
+  local function is_scratchpad_window(window)
+    return window_is_floating_scratchpad(window)
   end
 
   local function matching_scratchpad_name(window)
@@ -120,6 +129,31 @@ function M.setup(ctx)
 
   local function scratchpad_workspace(name)
     return "name:scratch-hidden-" .. name
+  end
+
+  local function mark_window_as_floating_scratchpad(window, name)
+    local selector = window_selector(window)
+    if not selector then
+      return
+    end
+
+    dispatch(hl.dsp.window.float({ action = "enable", window = selector }))
+    dispatch(hl.dsp.window.tag({ tag = "+" .. scratchpad_mode_tag, window = selector }))
+    if name then
+      dispatch(hl.dsp.window.tag({ tag = "+scratchpad-" .. name, window = selector }))
+    end
+  end
+
+  local function clear_floating_scratchpad_state(window)
+    local selector = window_selector(window)
+    if not selector then
+      return
+    end
+
+    dispatch(hl.dsp.window.tag({ tag = "-" .. scratchpad_mode_tag, window = selector }))
+    for name in pairs(scratchpads) do
+      dispatch(hl.dsp.window.tag({ tag = "-scratchpad-" .. name, window = selector }))
+    end
   end
 
   local function as_number(value, default)
@@ -337,9 +371,7 @@ function M.setup(ctx)
     end
     local selector = window_selector(window)
 
-    dispatch(hl.dsp.window.float({ action = "enable", window = selector }))
-    dispatch(hl.dsp.window.tag({ tag = "+scratchpad", window = selector }))
-    dispatch(hl.dsp.window.tag({ tag = "+scratchpad-" .. name, window = selector }))
+    mark_window_as_floating_scratchpad(window, name)
     dispatch(hl.dsp.window.resize({ x = geometry.width, y = geometry.height, relative = false, window = selector }))
     dispatch(hl.dsp.window.move({ x = geometry.x, y = geometry.y, relative = false, window = selector }))
     if def.dropdown then
@@ -382,7 +414,8 @@ function M.setup(ctx)
 
   local function hide_scratchpad_window(name, window)
     remove_minimized_window(window)
-    move_window_to_workspace(scratchpad_workspace(name), false, window)
+    name = name or matching_scratchpad_name(window)
+    move_window_to_workspace(name and scratchpad_workspace(name) or "special:NSP", false, window)
   end
 
   local function scratchpad_show_workspace(workspace)
@@ -401,6 +434,7 @@ function M.setup(ctx)
     end
 
     remove_minimized_window(window)
+    mark_window_as_floating_scratchpad(window, name)
     if scratchpads[name] and scratchpads[name].dropdown then
       apply_scratchpad_geometry(name, window, target_monitor or hl.get_active_monitor(), "above")
     end
@@ -408,8 +442,10 @@ function M.setup(ctx)
     dispatch(hl.dsp.focus({ window = window_selector(window) }))
     if scratchpads[name] and scratchpads[name].dropdown then
       animate_dropdown_scratchpad_down(name, window, target_monitor or hl.get_active_monitor())
-    elseif should_apply_scratchpad_geometry(name, window, opts) then
-      schedule_scratchpad_geometry(name, window, target_monitor or hl.get_active_monitor(), nil, nil, opts)
+    else
+      schedule_scratchpad_geometry(name, window, target_monitor or hl.get_active_monitor(), nil, nil, {
+        force_geometry = true,
+      })
     end
   end
 
@@ -418,17 +454,17 @@ function M.setup(ctx)
     return workspace and window and same_workspace(window.workspace, workspace)
   end
 
-  -- Active scratchpads are scratchpad windows visible on the active workspace.
-  -- Invoking a different scratchpad replaces that active set.
+  -- Scratchpad exclusivity belongs to a window's current presentation state,
+  -- not its class. Invoking a named shortcut replaces any other window that is
+  -- visibly in floating scratchpad mode, including an otherwise ordinary app.
   local function active_scratchpad_windows(except_name)
     local windows = {}
     for _, window in ipairs(hl.get_windows()) do
       local name = matching_scratchpad_name(window)
       if
-        name
-        and name ~= except_name
+        (except_name == nil or name ~= except_name)
         and scratchpad_is_visible(window)
-        and not tiled_scratchpad_is_normal_window(window, scratchpads[name])
+        and window_is_floating_scratchpad(window)
       then
         windows[#windows + 1] = {
           name = name,
@@ -474,7 +510,7 @@ function M.setup(ctx)
           show_scratchpad_window(name, window, pending.workspace or active_workspace(), pending.monitor or hl.get_active_monitor(), {
             force_geometry = true,
           })
-        elseif scratchpad_is_visible(window) then
+        elseif scratchpad_is_visible(window) and window_is_floating_scratchpad(window) then
           schedule_scratchpad_geometry(name, window, hl.get_active_monitor())
         end
       end
@@ -584,9 +620,13 @@ function M.setup(ctx)
   ctx.lower_contains_any = lower_contains_any
   ctx.scratchpad_window_matches = scratchpad_window_matches
   ctx.tiled_scratchpad_is_normal_window = tiled_scratchpad_is_normal_window
+  ctx.window_has_scratchpad_tag = window_has_scratchpad_tag
+  ctx.window_is_floating_scratchpad = window_is_floating_scratchpad
   ctx.is_scratchpad_window = is_scratchpad_window
   ctx.matching_scratchpad_name = matching_scratchpad_name
   ctx.scratchpad_workspace = scratchpad_workspace
+  ctx.mark_window_as_floating_scratchpad = mark_window_as_floating_scratchpad
+  ctx.clear_floating_scratchpad_state = clear_floating_scratchpad_state
   ctx.as_number = as_number
   ctx.logical_monitor_dimension = logical_monitor_dimension
   ctx.split_tsv = split_tsv
