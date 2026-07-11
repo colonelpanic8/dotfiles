@@ -30,6 +30,7 @@
       };
   });
   coquiTtsStreamer = inputPackageOrNull "coqui-tts-streamer" "default";
+  gmcli = inputPackageOrNull "gmcli" "default";
   keepbook = inputs.keepbook.packages.${system}.keepbook.overrideAttrs (_: {
     # Upstream checks currently depend on TS artifacts that are not built in Nix.
     doCheck = false;
@@ -85,6 +86,7 @@
     ])
     ++ lib.optionals (!isJayLenovo) [pkgs.bazel]
     ++ lib.optionals (coquiTtsStreamer != null) [coquiTtsStreamer]
+    ++ lib.optionals (gmcli != null) [gmcli]
     ++ lib.optionals (builtins.hasAttr "git-sync-rs" pkgs) [pkgs.git-sync-rs]);
 
   linuxOnly = with pkgs; [

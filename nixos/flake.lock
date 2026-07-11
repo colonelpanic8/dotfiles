@@ -713,6 +713,27 @@
         "type": "github"
       }
     },
+    "gmcli": {
+      "inputs": {
+        "nixpkgs": [
+          "nixpkgs"
+        ]
+      },
+      "locked": {
+        "lastModified": 1783809746,
+        "narHash": "sha256-vzNMRRQqRvi3tjbZ5jKyb4BfeCi/lLtWDTMOHcfMRH0=",
+        "owner": "colonelpanic8",
+        "repo": "gmcli",
+        "rev": "54c9f47ea9e241e440f30f936804dafcd89c85ab",
+        "type": "github"
+      },
+      "original": {
+        "owner": "colonelpanic8",
+        "ref": "agent/json-archive-export",
+        "repo": "gmcli",
+        "type": "github"
+      }
+    },
     "grub2-themes": {
       "inputs": {
         "nixpkgs": [
@@ -2050,6 +2071,7 @@
         "git-blame-rank": "git-blame-rank",
         "git-ignore-nix": "git-ignore-nix",
         "git-sync-rs": "git-sync-rs",
+        "gmcli": "gmcli",
         "grub2-themes": "grub2-themes",
         "heroic-games-launcher": "heroic-games-launcher",
         "home-manager": "home-manager",
