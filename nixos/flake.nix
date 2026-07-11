@@ -77,7 +77,7 @@
     };
 
     lastfm-edit = {
-      url = "path:/home/imalison/Projects/lastfm-edit";
+      url = "github:colonelpanic8/lastfm-edit";
       inputs = {
         nixpkgs.follows = "nixpkgs";
         flake-utils.follows = "flake-utils";

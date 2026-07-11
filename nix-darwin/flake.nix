@@ -53,6 +53,12 @@
       inputs.flake-utils.follows = "flake-utils";
     };
 
+    lastfm-edit = {
+      url = "github:colonelpanic8/lastfm-edit";
+      inputs.nixpkgs.follows = "nixpkgs";
+      inputs.flake-utils.follows = "flake-utils";
+    };
+
     git-blame-rank = {
       url = "github:colonelpanic8/git-blame-rank";
       inputs.nixpkgs.follows = "nixpkgs";
@@ -300,6 +306,7 @@
         essentialPkgs
         ++ [
           pkgs.gnupg
+          inputs.lastfm-edit.packages.${pkgs.stdenv.hostPlatform.system}.scrobble-scrubber-app
         ];
 
       nixpkgs.config.allowUnfree = true;
