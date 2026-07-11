@@ -1,0 +1,4 @@
+interface:
+  display_name: "Disk Space Assessment"
+  short_description: "Build reusable evidence about disk usage"
+  default_prompt: "Use $disk-space-assessment to measure disk usage and create reusable ncdu snapshots."

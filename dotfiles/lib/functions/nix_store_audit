@@ -1,0 +1,192 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+top=20
+
+usage() {
+  cat <<'EOF'
+Usage: nix_store_audit [--top N]
+
+Read-only audit of /nix/store size and retention. Reports:
+  - filesystem pressure, valid/dead paths, and system closure sizes
+  - largest individual store paths
+  - broad ecosystem totals (not additive)
+  - direnv closure footprint outside the current system
+  - largest direnv profile and result-link closures
+
+Sizes from the Nix database are logical NAR sizes, not filesystem block usage.
+EOF
+}
+
+while (($#)); do
+  case "$1" in
+    --top)
+      top="${2:?--top requires a positive integer}"
+      shift 2
+      ;;
+    -h|--help)
+      usage
+      exit 0
+      ;;
+    *)
+      printf 'Unknown argument: %s\n' "$1" >&2
+      usage >&2
+      exit 2
+      ;;
+  esac
+done
+
+if [[ ! "$top" =~ ^[1-9][0-9]*$ ]]; then
+  printf '%s\n' '--top must be a positive integer' >&2
+  exit 2
+fi
+
+for command_name in awk comm cut date df find mktemp nix nix-store sort wc xargs; do
+  if ! command -v "$command_name" >/dev/null 2>&1; then
+    printf 'Required command is missing: %s\n' "$command_name" >&2
+    exit 1
+  fi
+done
+
+db=/nix/var/nix/db/db.sqlite
+if [[ ! -r "$db" ]]; then
+  printf 'Cannot read the Nix database: %s\n' "$db" >&2
+  exit 1
+fi
+
+if command -v sqlite3 >/dev/null 2>&1; then
+  sqlite_bin=$(command -v sqlite3)
+else
+  sqlite_bin=$(find /nix/store -mindepth 3 -maxdepth 3 -type f -path '*/bin/sqlite3' -print -quit 2>/dev/null || true)
+fi
+
+if [[ -n "${sqlite_bin:-}" ]]; then
+  sql() {
+    "$sqlite_bin" -readonly "$db" "$@"
+  }
+else
+  printf 'sqlite3 is not installed or already present in /nix/store; using a temporary nix shell.\n' >&2
+  sql() {
+    nix shell nixpkgs#sqlite --command sqlite3 -readonly "$db" "$@"
+  }
+fi
+
+tmpdir=$(mktemp -d "${TMPDIR:-/tmp}/nix-store-audit.XXXXXX")
+trap 'rm -rf "$tmpdir"' EXIT
+
+roots="$tmpdir/roots.txt"
+current="$tmpdir/current.txt"
+booted="$tmpdir/booted.txt"
+dead="$tmpdir/dead.txt"
+direnv_targets="$tmpdir/direnv-targets.txt"
+direnv_closure="$tmpdir/direnv-closure.txt"
+direnv_outside="$tmpdir/direnv-outside-current.txt"
+booted_outside="$tmpdir/booted-outside-current.txt"
+ranked_roots="$tmpdir/ranked-roots.txt"
+ranked_root_pairs="$tmpdir/ranked-root-pairs.txt"
+ranked_targets="$tmpdir/ranked-targets.txt"
+ranked_target_sizes="$tmpdir/ranked-target-sizes.txt"
+
+nix-store --gc --print-roots 2>/dev/null > "$roots"
+nix-store --gc --print-dead 2>/dev/null | sort -u > "$dead"
+nix-store -qR /run/current-system 2>/dev/null | sort -u > "$current"
+nix-store -qR /run/booted-system 2>/dev/null | sort -u > "$booted"
+comm -23 "$booted" "$current" > "$booted_outside"
+
+awk -F' -> ' '
+  {
+    gsub(/^"|"$/, "", $1)
+    gsub(/^"|"$/, "", $2)
+    if ($1 ~ /\.direnv\//) print $2
+  }
+' "$roots" | sort -u > "$direnv_targets"
+
+if [[ -s "$direnv_targets" ]]; then
+  xargs -r nix-store -qR < "$direnv_targets" 2>/dev/null | sort -u > "$direnv_closure"
+else
+  : > "$direnv_closure"
+fi
+comm -23 "$direnv_closure" "$current" > "$direnv_outside"
+
+printf '# Nix store audit\n\n'
+printf 'Generated: %s\n\n' "$(date --iso-8601=seconds)"
+
+printf '## Pressure and roots\n\n'
+df -h / | awk 'NR == 1 || NR == 2'
+printf '\n'
+sql ".mode list" ".separator |" \
+  "create temp table dead(path text);" \
+  ".import $dead dead" \
+  "select count(*) || ' valid paths | ' || printf('%.1f GiB logical NAR size', sum(narSize)/1073741824.0) from ValidPaths;" \
+  "select count(*) || ' dead paths | ' || printf('%.2f GiB immediately GC-eligible', coalesce(sum(narSize), 0)/1073741824.0) from ValidPaths join dead using(path);"
+
+current_size=$(nix path-info -Sh /run/current-system 2>/dev/null | awk '{print $(NF-1) " " $NF}')
+booted_size=$(nix path-info -Sh /run/booted-system 2>/dev/null | awk '{print $(NF-1) " " $NF}')
+printf '%s current-system closure\n' "$current_size"
+printf '%s booted-system closure\n' "$booted_size"
+
+sql ".mode list" ".separator |" \
+  "create temp table x(path text);" \
+  ".import $booted_outside x" \
+  "select printf('%.2f GiB booted-only versus current', coalesce(sum(narSize), 0)/1073741824.0) from ValidPaths join x using(path);"
+
+awk -F' -> ' '
+  {
+    gsub(/^"|"$/, "", $1)
+    if ($1 ~ /^\/proc\//) kind="runtime /proc roots"
+    else if ($1 ~ /\.direnv\/flake-profile-/) kind="direnv profile roots"
+    else if ($1 ~ /\.direnv\//) kind="other direnv roots"
+    else if ($1 ~ /\/result[^/]*$/) kind="result links"
+    else if ($1 ~ /home-manager/) kind="home-manager roots"
+    else if ($1 ~ /^\/nix\/var\/nix\/profiles|^\/run\//) kind="system/profile roots"
+    else kind="other roots"
+    count[kind]++
+  }
+  END { for (kind in count) printf "%7d  %s\n", count[kind], kind }
+' "$roots" | sort -nr
+
+printf '\n## Largest individual store paths\n\n'
+sql "select printf('%7.2f GiB', narSize/1073741824.0) || '  ' || path from ValidPaths order by narSize desc limit $top;"
+
+printf '\n## Broad named-path totals\n\n'
+printf 'These categories are filename-based lower bounds and overlap; do not add them.\n\n'
+sql "select 'model weights', printf('%.1f GiB',sum(narSize)/1073741824.0), count(*) from ValidPaths where path like '%.safetensors' union all select 'Android', printf('%.1f GiB',sum(narSize)/1073741824.0), count(*) from ValidPaths where lower(path) like '%android%' union all select 'CUDA/cuDNN/cuBLAS', printf('%.1f GiB',sum(narSize)/1073741824.0), count(*) from ValidPaths where lower(path) like '%cuda%' or lower(path) like '%cudnn%' or lower(path) like '%cublas%' union all select 'GHC', printf('%.1f GiB',sum(narSize)/1073741824.0), count(*) from ValidPaths where lower(path) like '%-ghc-%' or lower(path) like '%-ghc-with%' union all select 'Rust toolchains', printf('%.1f GiB',sum(narSize)/1073741824.0), count(*) from ValidPaths where lower(path) like '%-rustc-%' or lower(path) like '%-rust-std-%' or lower(path) like '%-rust-stable-%' or lower(path) like '%-cargo-%' union all select 'source snapshots', printf('%.1f GiB',sum(narSize)/1073741824.0), count(*) from ValidPaths where path like '%-source';"
+
+printf '\n## Current system versus direnv-only footprint\n\n'
+printf '%s unique direnv root targets\n' "$(wc -l < "$direnv_targets")"
+sql ".mode list" ".separator |" \
+  "create temp table c(path text); create temp table d(path text);" \
+  ".import $current c" \
+  ".import $direnv_closure d" \
+  "select printf('%.2f GiB current-system closure by DB NAR size', coalesce(sum(narSize), 0)/1073741824.0) from ValidPaths join c using(path);" \
+  "select printf('%.2f GiB union of direnv-rooted closures', coalesce(sum(narSize), 0)/1073741824.0) from ValidPaths join d using(path);" \
+  "delete from d;" \
+  ".import $direnv_outside d" \
+  "select printf('%.2f GiB direnv closure outside current system (upper bound, other roots may retain paths)', coalesce(sum(narSize), 0)/1073741824.0) from ValidPaths join d using(path);" \
+  "select 'direnv-only Android', printf('%.1f GiB',sum(narSize)/1073741824.0) from ValidPaths join d using(path) where lower(path) like '%android%' union all select 'direnv-only CUDA family', printf('%.1f GiB',sum(narSize)/1073741824.0) from ValidPaths join d using(path) where lower(path) like '%cuda%' or lower(path) like '%cudnn%' or lower(path) like '%cublas%' union all select 'direnv-only GHC', printf('%.1f GiB',sum(narSize)/1073741824.0) from ValidPaths join d using(path) where lower(path) like '%-ghc-%' or lower(path) like '%-ghc-with%' union all select 'direnv-only Rust', printf('%.1f GiB',sum(narSize)/1073741824.0) from ValidPaths join d using(path) where lower(path) like '%-rustc-%' or lower(path) like '%-rust-std-%' or lower(path) like '%-rust-stable-%' or lower(path) like '%-cargo-%' union all select 'direnv-only sources', printf('%.1f GiB',sum(narSize)/1073741824.0) from ValidPaths join d using(path) where path like '%-source';"
+
+awk -F' -> ' '
+  {
+    gsub(/^"|"$/, "", $1)
+    gsub(/^"|"$/, "", $2)
+    if ($1 ~ /\.direnv\/flake-profile-/ || $1 ~ /\/result[^/]*$/) print $1 "|" $2
+  }
+' "$roots" | sort -u > "$ranked_root_pairs"
+
+cut -d'|' -f2 "$ranked_root_pairs" | sort -u > "$ranked_targets"
+if [[ -s "$ranked_targets" ]]; then
+  xargs -r nix path-info -Sh < "$ranked_targets" 2>/dev/null \
+    | awk '{print $1 "|" $(NF-1) $NF}' > "$ranked_target_sizes"
+else
+  : > "$ranked_target_sizes"
+fi
+
+awk -F'|' '
+  NR == FNR { size[$1]=$2; next }
+  $2 in size { print size[$2] "\t" $1 }
+' "$ranked_target_sizes" "$ranked_root_pairs" > "$ranked_roots"
+
+printf '\n## Largest direnv profile and result-link closures\n\n'
+printf 'These closure sizes heavily overlap; do not add them.\n\n'
+sort -hr "$ranked_roots" | head -n "$top" || true

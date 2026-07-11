@@ -1,3 +1,4 @@
 interface:
   display_name: "Disk Space Cleanup"
-  short_description: "Find safe disk-space wins on NixOS hosts"
+  short_description: "Automate safe, measured disk-space cleanup"
+  default_prompt: "Use $disk-space-cleanup to act on assessed disk-space candidates and verify reclaimed space."

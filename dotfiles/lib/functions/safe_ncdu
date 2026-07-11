@@ -10,6 +10,7 @@ Usage:
 
 Creates a compressed ncdu export while avoiding mounted descendants of ROOT.
 Default ROOT is /. Default OUTPUT is ~/.cache/ncdu/safe-ncdu-<root>-<timestamp>.json.zst.
+Records matching .excludes and .meta sidecars for reproducible analysis.
 EOF
 }
 
@@ -90,9 +91,10 @@ function _safe_ncdu_scan {
         shift
     done
 
-    _safe_ncdu_require ncdu findmnt realpath awk sed date mkdir tee sort uniq || return 1
+    _safe_ncdu_require ncdu findmnt realpath awk sed date mkdir dirname tee sort uniq hostname || return 1
 
-    local root_real root_name out_dir latest excludes_file
+    local root_real root_name out_dir latest excludes_file meta_file
+    local started_at finished_at host ncdu_version scan_status exit_code
     root_real="$(realpath -m "$root")" || return 1
     root_name="$(_safe_ncdu_root_name "$root_real")"
     out_dir="$HOME/.cache/ncdu"
@@ -101,9 +103,28 @@ function _safe_ncdu_scan {
     if [[ -z "$output" ]]; then
         output="$out_dir/safe-ncdu-${root_name}-$(date +%Y%m%d-%H%M%S).json.zst"
     fi
+    output="$(realpath -m "$output")" || return 1
+    mkdir -p "$(dirname "$output")"
 
     excludes_file="${output}.excludes"
+    meta_file="${output}.meta"
     _safe_ncdu_excludes "$root_real" | sort -u | tee "$excludes_file" >/dev/null
+
+    started_at="$(date --iso-8601=seconds)"
+    host="$(hostname)"
+    ncdu_version="$(ncdu --version 2>&1 | head -n 1)"
+    {
+        echo "format_version=1"
+        echo "status=in_progress"
+        echo "root=$root_real"
+        echo "started_at=$started_at"
+        echo "finished_at="
+        echo "hostname=$host"
+        echo "ncdu_version=$ncdu_version"
+        echo "snapshot=$output"
+        echo "excludes=$excludes_file"
+        echo "exit_code="
+    } >| "$meta_file"
 
     local -a exclude_args
     local exclude
@@ -115,12 +136,34 @@ function _safe_ncdu_scan {
     echo "safe_ncdu: scanning $root_real"
     echo "safe_ncdu: writing $output"
     echo "safe_ncdu: excludes recorded in $excludes_file"
-    ncdu -0 -x -c "${exclude_args[@]}" -o "$output" "$root_real" || return $?
+    echo "safe_ncdu: metadata recorded in $meta_file"
+    ncdu -0 -x -c "${exclude_args[@]}" -o "$output" "$root_real"
+    exit_code=$?
+    finished_at="$(date --iso-8601=seconds)"
+    if [[ $exit_code -eq 0 ]]; then
+        scan_status="complete"
+    else
+        scan_status="failed"
+    fi
+    {
+        echo "format_version=1"
+        echo "status=$scan_status"
+        echo "root=$root_real"
+        echo "started_at=$started_at"
+        echo "finished_at=$finished_at"
+        echo "hostname=$host"
+        echo "ncdu_version=$ncdu_version"
+        echo "snapshot=$output"
+        echo "excludes=$excludes_file"
+        echo "exit_code=$exit_code"
+    } >| "$meta_file"
+    [[ $exit_code -eq 0 ]] || return $exit_code
 
     latest="$out_dir/latest-${root_name}.json.zst"
     ln -sfn "$output" "$latest"
     echo "safe_ncdu: latest symlink $latest"
     ln -sfn "$excludes_file" "${latest}.excludes"
+    ln -sfn "$meta_file" "${latest}.meta"
 }
 
 function _safe_ncdu_open {
