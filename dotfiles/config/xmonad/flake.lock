@@ -126,12 +126,11 @@
     },
     "nixpkgs_2": {
       "locked": {
-        "lastModified": 1769740369,
-        "narHash": "sha256-xKPyJoMoXfXpDM5DFDZDsi9PHArf2k5BJjvReYXoFpM=",
-        "owner": "NixOS",
-        "repo": "nixpkgs",
-        "rev": "6308c3b21396534d8aaeac46179c14c439a89b8a",
-        "type": "github"
+        "lastModified": 1783754472,
+        "narHash": "sha256-UxGo/Aie7iPC23LgEmGl2FN0XZhZMzy6APCXVzvbcoI=",
+        "rev": "770b9bbb84018993c8f009d437fff6c2e3077037",
+        "type": "tarball",
+        "url": "https://releases.nixos.org/nixpkgs/nixpkgs-26.11pre1032759.770b9bbb8401/nixexprs.tar.xz"
       },
       "original": {
         "id": "nixpkgs",
@@ -222,11 +221,11 @@
     },
     "unstable": {
       "locked": {
-        "lastModified": 1769461804,
-        "narHash": "sha256-msG8SU5WsBUfVVa/9RPLaymvi5bI8edTavbIq3vRlhI=",
+        "lastModified": 1783522502,
+        "narHash": "sha256-iffAls3iaNTyJC2faYcUXSI+Gp02cDjYl+MygxKl2GI=",
         "owner": "NixOS",
         "repo": "nixpkgs",
-        "rev": "bfc1b8a4574108ceef22f02bafcf6611380c100d",
+        "rev": "0bb7ec54c8483066ec9d7720e780a5caa71f8612",
         "type": "github"
       },
       "original": {
@@ -246,11 +245,11 @@
         "unstable": "unstable"
       },
       "locked": {
-        "lastModified": 1767819257,
-        "narHash": "sha256-U7MIHr0B10wDSNgUvq4QTK22HZ4pl2oIYkdOKEMnxC4=",
+        "lastModified": 1782608065,
+        "narHash": "sha256-z6xC2YfE+bnxSeEhYBrEtogGjSuPVQKXxY8UpG1nN2Y=",
         "owner": "xmonad",
         "repo": "xmonad",
-        "rev": "bb33042d408c15d8727011b1ed4aa22b2716d73d",
+        "rev": "a9a8b5c1b91b63b0836f5810634c9b28ec0af788",
         "type": "github"
       },
       "original": {
@@ -271,11 +270,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1755152326,
-        "narHash": "sha256-47gGXt1TxzfQx/6X895t/T8Ozj+7fmQdU1i4cwyxcSg=",
+        "lastModified": 1771531632,
+        "narHash": "sha256-ZM8V9Dp4HSxaQKuB7kckU7PaAgMwsYbfHnKnPqr0Rbw=",
         "owner": "IvanMalison",
         "repo": "xmonad-contrib",
-        "rev": "1a8da46855ca83e11cfb31cbbaed980ed7a8dfcc",
+        "rev": "b71f9e4c9dfdbb71c1b55f30edb0da524b0ed251",
         "type": "github"
       },
       "original": {
