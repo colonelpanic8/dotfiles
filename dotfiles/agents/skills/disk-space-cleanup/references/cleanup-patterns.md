@@ -35,6 +35,12 @@ Preserve `.runner`, `.labels`, `.docker/config.json`, SSH material, Kubernetes m
 - Empty Trash only with explicit approval.
 - Close Chrome, Spotify, Gradle daemons, and similar applications before targeted cache cleanup.
 
+## nix-homebrew Tap Recovery
+
+- On macOS, `darwin-rebuild switch` can report that an existing Homebrew tap directory is in the way when legacy `homebrew-cask` or `homebrew-core` checkouts predate nix-homebrew management.
+- For a root-owned cask tap, restore user ownership and run `brew untap --force homebrew/cask`.
+- Homebrew refuses to untap core. Move the legacy core checkout out of the expected tap path, then rerun the switch so nix-homebrew recreates both managed tap links. Verify the subsequent Homebrew bundle and Darwin activation complete.
+
 ## Severe Pressure
 
 When only megabytes remain, run the smallest safe cleanup first. Build tools and SQLite may fail opaquely before reporting `ENOSPC`. Avoid commands that need substantial temporary disk space until a safe margin has been restored.
