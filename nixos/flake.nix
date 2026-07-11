@@ -275,8 +275,7 @@
     nixtheplanet.url = "github:matthewcroughan/nixtheplanet";
 
     codex-cli-nix = {
-      # TODO: revert to sadjow/codex-cli-nix main once PR #122 (code-mode-host) merges
-      url = "github:aroman/codex-cli-nix/native-code-mode-host";
+      url = "github:sadjow/codex-cli-nix/main";
       inputs = {
         nixpkgs.follows = "nixpkgs";
         flake-utils.follows = "flake-utils";
