@@ -190,6 +190,7 @@
       ./fonts.nix
       ./hyprland.nix
       ./keyd.nix
+      ./mova-capture.nix
       ./wlsunset.nix
     ];
 

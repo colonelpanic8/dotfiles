@@ -1,0 +1,89 @@
+#!/usr/bin/env bash
+#
+# Drain the mova quick-capture queue into org-agenda-api.
+#
+# Reads job files written by mova_capture.sh and POSTs each to /capture.
+#   - success        -> job deleted, success notification
+#   - network / 5xx  -> job kept, retried on the next drain (persistent)
+#   - 4xx (rejected) -> job moved to failed/ so it cannot loop forever
+#
+# Designed to be run by a systemd user service triggered on enqueue (.path),
+# on a retry timer (.timer), and directly by the front-end for immediacy.
+# Credentials come from `pass` at runtime; if gpg-agent is locked the drain
+# exits quietly and leaves the queue for a later run.
+
+set -uo pipefail
+
+state_dir="${XDG_STATE_HOME:-$HOME/.local/state}/mova-capture"
+queue_dir="$state_dir/queue"
+failed_dir="$state_dir/failed"
+
+url="${MOVA_API_URL:-https://org-agenda-api.rocket-sense.duckdns.org}"
+api_user="${MOVA_API_USER:-imalison}"
+pass_entry="${MOVA_API_PASS_ENTRY:-org-agenda-api-imalison}"
+
+mkdir -p "$queue_dir"
+
+notify() {
+  command -v notify-send >/dev/null 2>&1 && notify-send -a "mova capture" "$@" || true
+}
+
+shopt -s nullglob
+jobs=("$queue_dir"/*.json)
+((${#jobs[@]})) || exit 0
+
+# Serialize drains so a manual kick and the timer/path trigger can't double-POST
+# the same job. Non-blocking: if another drain holds the lock, let it finish.
+lockfile="$state_dir/drain.lock"
+exec 9>"$lockfile"
+flock -n 9 || exit 0
+
+# Re-check after acquiring the lock; a concurrent drain may have emptied it.
+jobs=("$queue_dir"/*.json)
+((${#jobs[@]})) || exit 0
+
+password="$(pass show "$pass_entry" 2>/dev/null | head -1)"
+if [[ -z "$password" ]]; then
+  # gpg-agent likely locked or pass unavailable; keep the queue for later.
+  exit 0
+fi
+
+for job in "${jobs[@]}"; do
+  payload="$(jq -c '{template: .template, values: .values}' "$job" 2>/dev/null)"
+  if [[ -z "$payload" || "$payload" == "null" ]]; then
+    mkdir -p "$failed_dir"
+    mv "$job" "$failed_dir/"
+    notify "Capture unreadable — moved to failed/" "$(basename "$job")"
+    continue
+  fi
+  title="$(jq -r '.values.Title // ""' "$job" 2>/dev/null)"
+  label="$(jq -r '.label // .template' "$job" 2>/dev/null)"
+
+  response="$(curl -sS -m 30 -u "$api_user:$password" \
+    -X POST "$url/capture" \
+    -H 'Content-Type: application/json' \
+    -d "$payload" \
+    -w $'\n%{http_code}' 2>/dev/null)"
+  if [[ $? -ne 0 || -z "$response" ]]; then
+    # Network error / DNS / timeout: keep the job and retry next drain.
+    continue
+  fi
+
+  http_code="${response##*$'\n'}"
+  body="${response%$'\n'*}"
+  status="$(printf '%s' "$body" | jq -r '.status // ""' 2>/dev/null)"
+
+  if [[ "$http_code" == 2* && "$status" == "created" ]]; then
+    rm -f "$job"
+    notify "Captured → $label" "$title"
+  elif [[ "$http_code" == 4* ]]; then
+    # Client error (bad template, auth): it won't fix itself on retry.
+    mkdir -p "$failed_dir"
+    mv "$job" "$failed_dir/"
+    message="$(printf '%s' "$body" | jq -r '.message // empty' 2>/dev/null)"
+    notify "Capture rejected ($http_code) → $label" "${title}${message:+ — $message}"
+  else
+    # 5xx or unexpected body: keep and retry.
+    continue
+  fi
+done
