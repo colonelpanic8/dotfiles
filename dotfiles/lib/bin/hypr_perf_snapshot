@@ -57,10 +57,6 @@ run_optional() {
       printf '\n### %s\n' "$option"
       hyprctl getoption "$option" 2>&1 || true
     done
-    if printf '%s\n' "$plugins" | grep -q 'Plugin hyprwobbly'; then
-      printf '\n### plugin:hyprwobbly:enabled\n'
-      hyprctl getoption plugin:hyprwobbly:enabled 2>&1 || true
-    fi
   else
     section "Hyprland"
     printf 'hyprctl not found\n'

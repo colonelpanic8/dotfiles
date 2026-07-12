@@ -9,9 +9,8 @@ Launch a disposable nested Hyprland compositor for plugin development, then
 build/load a plugin only into that nested instance.
 
 Options:
-  --repo DIR             Plugin repo to build. Defaults to $PWD if it has a flake,
-                         otherwise /home/imalison/Projects/hyprwobbly when present.
-  --attr ATTR            Nix build attr. Default: .#hyprwobbly
+  --repo DIR             Plugin repo to build. Defaults to $PWD when it has a flake.
+  --attr ATTR            Nix build attr. Default: .#default
   --plugin PATH          Load an already-built plugin .so instead of building.
   --hyprland-bin PATH    Hyprland binary to run. Defaults to the plugin repo's
                          Hyprland flake input when building, otherwise PATH.
@@ -30,8 +29,8 @@ Options:
 
 Examples:
   hypr_plugin_dev_session
-  hypr_plugin_dev_session --repo ~/Projects/hyprwobbly --attr .#hyprwobbly
-  hypr_plugin_dev_session --plugin "$PWD/result/lib/libhyprwobbly.so"
+  hypr_plugin_dev_session --repo ~/Projects/my-plugin --attr .#default
+  hypr_plugin_dev_session --plugin "$PWD/result/lib/my-plugin.so"
   hypr_plugin_dev_session --user-config --no-load
 EOF
 }
@@ -43,7 +42,7 @@ die() {
 
 runtime_dir="${XDG_RUNTIME_DIR:-/run/user/$(id -u)}"
 repo=""
-attr=".#hyprwobbly"
+attr=".#default"
 plugin_path=""
 plugin_path_from_arg=0
 hyprland_bin=""
@@ -161,10 +160,8 @@ parent_wayland_display() {
 if [[ -z "$repo" ]]; then
   if [[ -f "$PWD/flake.nix" ]]; then
     repo="$PWD"
-  elif [[ -d /home/imalison/Projects/hyprwobbly ]]; then
-    repo="/home/imalison/Projects/hyprwobbly"
   else
-    repo="$PWD"
+    die "--repo is required when the current directory has no flake.nix"
   fi
 fi
 repo="$(realpath "$repo")"
@@ -193,12 +190,6 @@ choose_terminal() {
 find_built_plugin() {
   local result_dir="$repo/result"
   [[ -e "$result_dir" ]] || die "build result missing: $result_dir"
-
-  local preferred="$result_dir/lib/libhyprwobbly.so"
-  if [[ -f "$preferred" ]]; then
-    printf '%s\n' "$(realpath "$preferred")"
-    return
-  fi
 
   local count
   count="$(find -L "$result_dir" -type f -name '*.so' | wc -l)"

@@ -67,7 +67,6 @@ return {
   enable_hyprwinview = true,
   enable_hyprtasking = true,
   enable_workspace_history = true,
-  enable_hyprwobbly = true,
   -- Disabled 2026-06-28: causes the cursor to intermittently disappear
   -- (confirmed by unloading the plugin live — cursor stopped vanishing).
   -- It replaces cursor rendering via lockSoftwareAll for its tilt/shake

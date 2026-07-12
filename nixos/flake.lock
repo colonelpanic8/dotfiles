@@ -1335,32 +1335,6 @@
         "type": "github"
       }
     },
-    "hyprwobbly": {
-      "inputs": {
-        "hyprland": [
-          "hyprland"
-        ],
-        "nixpkgs": [
-          "nixpkgs"
-        ],
-        "systems": [
-          "systems"
-        ]
-      },
-      "locked": {
-        "lastModified": 1778742689,
-        "narHash": "sha256-j0/j9/9Pd5nC3jXsLrq9GKshcSg1Ci55E1gg7Qj84Y8=",
-        "owner": "colonelpanic8",
-        "repo": "hyprwobbly",
-        "rev": "d531d3f0b68d6d450bf3038571043c3f39c1fd6e",
-        "type": "github"
-      },
-      "original": {
-        "owner": "colonelpanic8",
-        "repo": "hyprwobbly",
-        "type": "github"
-      }
-    },
     "imalison-taffybar": {
       "inputs": {
         "flake-utils": [
@@ -2075,7 +2049,6 @@
         "hyprtasking": "hyprtasking",
         "hyprutils": "hyprutils",
         "hyprwinview": "hyprwinview",
-        "hyprwobbly": "hyprwobbly",
         "imalison-taffybar": "imalison-taffybar",
         "kanshi-sni": "kanshi-sni",
         "keepbook": "keepbook",

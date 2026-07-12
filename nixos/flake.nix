@@ -167,15 +167,6 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
-    hyprwobbly = {
-      url = "github:colonelpanic8/hyprwobbly";
-      inputs = {
-        hyprland.follows = "hyprland";
-        nixpkgs.follows = "nixpkgs";
-        systems.follows = "systems";
-      };
-    };
-
     hypr-dynamic-cursors = {
       # Pinned: 98abbb6 requires Hyprland > 0.55.2 (MonitorState.hpp)
       url = "github:VirtCode/hypr-dynamic-cursors/da447486c84e0be81f2cdd208af1ef92469f0a88";

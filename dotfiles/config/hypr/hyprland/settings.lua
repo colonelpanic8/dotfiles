@@ -96,9 +96,6 @@ function M.setup(ctx)
   if enable_workspace_history and not verify_config then
     hl.plugin.load("/run/current-system/sw/lib/libhypr-workspace-history.so")
   end
-  if enable_hyprwobbly and not verify_config then
-    hl.plugin.load("/run/current-system/sw/lib/libhyprwobbly.so")
-  end
   if enable_dynamic_cursors and not verify_config then
     hl.plugin.load("/run/current-system/sw/lib/libhypr-dynamic-cursors.so")
   end
@@ -269,31 +266,6 @@ function M.setup(ctx)
     })
   end
 
-  local function apply_hyprwobbly_config()
-    if verify_config or not enable_hyprwobbly then
-      return
-    end
-
-    hl.config({
-      plugin = {
-        hyprwobbly = {
-          enabled = hypr_visual_performance_mode and 0 or 1,
-          mode = "always",
-          grid_width = 4,
-          grid_height = 4,
-          tiles_x = 12,
-          tiles_y = 12,
-          spring_k = 18.0,
-          friction = 8.0,
-          mass = 12.0,
-          move_factor = 0.65,
-          resize_factor = 0.45,
-          max_warp = 140.0,
-        },
-      },
-    })
-  end
-
   local function apply_dynamic_cursors_config()
     if verify_config or not enable_dynamic_cursors then
       return
@@ -378,15 +350,6 @@ function M.setup(ctx)
       },
     })
 
-    if enable_hyprwobbly then
-      hl.config({
-        plugin = {
-          hyprwobbly = {
-            enabled = visual_effects_enabled and 1 or 0,
-          },
-        },
-      })
-    end
   end
 
   local function toggle_visual_performance_mode()
@@ -531,7 +494,6 @@ function M.setup(ctx)
 
   ctx.apply_rules = apply_rules
   ctx.apply_hyprglass_config = apply_hyprglass_config
-  ctx.apply_hyprwobbly_config = apply_hyprwobbly_config
   ctx.apply_dynamic_cursors_config = apply_dynamic_cursors_config
   ctx.apply_hyprtasking_config = apply_hyprtasking_config
   ctx.apply_visual_performance_mode = apply_visual_performance_mode

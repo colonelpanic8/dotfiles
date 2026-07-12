@@ -168,13 +168,6 @@
     hyprlang = inputs.hyprlang.packages.${system}.hyprlang;
     hyprutils = inputs.hyprutils.packages.${system}.hyprutils;
   };
-  hyprwobbly = (pkgs.callPackage "${inputs.hyprwobbly}/default.nix" {}).overrideAttrs (old: {
-    patches =
-      (old.patches or [])
-      ++ [
-        ../packages/hyprwobbly-safe-geometry-and-idle-timer.patch
-      ];
-  });
   hyprexpo = inputs.hyprexpo.packages.${system}.hyprexpo;
   hyprwinview = hyprlandPluginsForBase.mkHyprlandPlugin {
     pluginName = "hyprwinview";
@@ -304,7 +297,6 @@
       hyprWorkspaceHistory
       hyprtasking
       hyprDynamicCursors
-      hyprwobbly
     ]
     ++ lib.optionals enableHyprglass [hyprglass];
   llvmNmCompat = pkgs.writeShellApplication {
@@ -434,7 +426,6 @@ in {
     hyprlandUtilityPackages
     hyprtasking
     hyprwinview
-    hyprwobbly
     hyprexpo
     llvmNmCompat
     ;
