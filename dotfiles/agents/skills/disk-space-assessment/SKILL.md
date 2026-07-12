@@ -121,6 +121,8 @@ python /srv/dotfiles/dotfiles/agents/skills/disk-space-assessment/scripts/direnv
 
 This separates collectively direnv-only paths from paths retained by non-direnv roots and estimates each project's marginal uniquely retained footprint. Read `references/direnv-gc-roots.md` before interpreting or acting on the result.
 
+For very large `/nix/store` exports, use `safe_ncdu open` for read-only navigation and the Nix audit tools for noninteractive attribution. `safe_ncdu top` refuses snapshots over 128 MiB compressed by default because its jq parser may exhaust memory. Do not estimate physical store usage by summing raw ncdu JSON `dsize` fields; use `du -sx --block-size=1 /nix/store` when a hardlink-aware physical total is necessary.
+
 ## Assessment Handoff
 
 Return:

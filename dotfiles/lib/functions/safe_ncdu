@@ -184,7 +184,14 @@ function _safe_ncdu_top {
         echo "safe_ncdu top: missing SNAPSHOT" >&2
         return 2
     fi
-    _safe_ncdu_require zstdcat jq awk || return 1
+    _safe_ncdu_require zstdcat jq awk stat || return 1
+    local compressed_size
+    compressed_size="$(stat -Lc '%s' "$snapshot")" || return 1
+    if [[ "$compressed_size" -gt 134217728 && "${SAFE_NCDU_ALLOW_LARGE_TOP:-0}" != 1 ]]; then
+        echo "safe_ncdu top: snapshot is larger than 128 MiB compressed; jq analysis may exhaust memory" >&2
+        echo "safe_ncdu top: use 'safe_ncdu open $snapshot' or a domain-specific audit instead" >&2
+        return 2
+    fi
     zstdcat "$snapshot" | jq -r --argjson limit "$limit" --arg path "$query_path" '
       def total:
         if type == "array" then
