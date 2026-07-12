@@ -166,14 +166,6 @@ in
       ];
       models = [
         qwenRapidAioNsfwV23
-        (pkgs.fetchurl {
-          name = "lustifySDXLNSFW_v20-inpainting.safetensors";
-          url = "https://huggingface.co/andro-flock/LUSTIFY-SDXL-NSFW-checkpoint-v2-0-INPAINTING/resolve/main/lustifySDXLNSFW_v20-inpainting.safetensors";
-          hash = "sha256-YV8hBx9c6PkWQNIlJTGQTOuL+HNmGVIavuSdlKX434Q=";
-          passthru = {
-            comfyui.installPaths = ["checkpoints"];
-          };
-        })
       ];
     };
 
