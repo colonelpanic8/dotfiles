@@ -144,6 +144,17 @@ in {
       enableGarbageCollect = true;
     };
 
+    # The upstream NixOS unit runs registry GC without --delete-untagged, so
+    # every manifest ever pushed to the mutable `dev` tag remains reachable.
+    # Stop writes during GC, discard historical untagged manifests, and always
+    # bring the registry back even if collection fails.
+    systemd.services.docker-registry-garbage-collect.script = mkForce ''
+      ${pkgs.systemd}/bin/systemctl stop docker-registry.service
+      trap '${pkgs.systemd}/bin/systemctl start docker-registry.service' EXIT
+      ${config.services.dockerRegistry.package}/bin/registry garbage-collect \
+        --delete-untagged ${config.services.dockerRegistry.configFile}
+    '';
+
     virtualisation.containerd = {
       enable = true;
       settings = {
@@ -232,9 +243,9 @@ in {
         name = "k3s-config.yaml";
         text = ''
           kubelet-arg:
-          - "eviction-hard=nodefs.available<2Gi"
-          - "eviction-soft=nodefs.available<5Gi"
-          - "eviction-soft-grace-period=nodefs.available=5m"
+          - "eviction-hard=nodefs.available<2Gi,imagefs.available<2Gi"
+          - "eviction-soft=nodefs.available<5Gi,imagefs.available<5Gi"
+          - "eviction-soft-grace-period=nodefs.available=5m,imagefs.available=5m"
         '';
       };
       tokenFile = config.age.secrets."1896Folsom-k3s-token.age".path;
