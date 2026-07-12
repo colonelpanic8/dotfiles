@@ -428,7 +428,7 @@ function M.setup(ctx)
     -- whatever window the user is actually working in. focus_on_activate is
     -- a dynamic rule (applies to already-mapped windows on reload);
     -- suppress_event only applies at map time.
-    for index, class in ipairs({ "^(claude-desktop)$", "^(codex-desktop)$" }) do
+    for index, class in ipairs({ "^(com\\.anthropic\\.Claude|claude-desktop)$", "^(codex-desktop)$" }) do
       hl.window_rule({
         name = "ai-app-no-activate-focus-" .. tostring(index),
         match = { class = class },

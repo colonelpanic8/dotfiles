@@ -50,6 +50,16 @@ in
       nix-direnv.enable = true;
     };
 
+    # Claude Desktop downloads its own generic-linux Claude Code build to
+    # ~/.config/Claude/claude-code/<version>/claude and execs it for every
+    # session. That binary is dynamically linked against /lib64/ld-linux-x86-64.so.2,
+    # which on stock NixOS is stub-ld, so it dies with exit 127. The FHS variant
+    # used to supply a loader inside its bwrap sandbox; running claude-desktop
+    # non-FHS (so the integrated terminal can sudo) takes that away. nix-ld puts a
+    # real loader back at the FHS path, for that binary and any other prebuilt
+    # native tooling (MCP servers, Cowork) these apps fetch at runtime.
+    programs.nix-ld.enable = true;
+
     hardware.uinput.enable = lib.mkIf config.myModules.desktop.enable true;
 
     programs.ydotool = lib.mkIf config.myModules.desktop.enable {
@@ -189,8 +199,8 @@ in
         # Non-FHS variant: runs in the host namespace (no bwrap userns), so the
         # integrated Claude Code terminal can use sudo / nixos-rebuild. The FHS
         # variant (claudeDesktopFhs) sandboxes everything in an unprivileged user
-        # namespace, which makes host root impossible. Trade-off: MCP/Cowork
-        # features that assume an FHS layout may need nix-ld/envfs instead.
+        # namespace, which makes host root impossible. The FHS layout the app's
+        # downloaded native binaries expect is supplied by nix-ld above instead.
         claudeDesktop
         cabal2nix
       ]

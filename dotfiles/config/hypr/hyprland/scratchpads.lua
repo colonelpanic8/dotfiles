@@ -19,7 +19,7 @@ function M.setup(ctx)
     },
     claude = {
       command = "claude-desktop",
-      class = "claude-desktop",
+      classes = { "com.anthropic.Claude", "claude-desktop" },
     },
     htop = {
       command = "alacritty --class htop-scratch --title htop -e htop",
