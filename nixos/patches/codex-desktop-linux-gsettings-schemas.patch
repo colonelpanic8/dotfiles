@@ -15,11 +15,13 @@ index 6c225c2..fce1fac 100644
          launcherPath = pkgs.lib.makeBinPath (with pkgs; [
            bash
            coreutils
-@@ -547,6 +553,7 @@
+@@ -656,8 +662,9 @@
+               --replace-fail "/usr/share/applications/codex-desktop.desktop" "$out/share/applications/codex-desktop.desktop"
+
              makeWrapper "$out/opt/codex-desktop/start.sh" "$out/bin/codex-desktop" \
-               --prefix PATH : "${launcherPath}" \
-               --prefix LD_LIBRARY_PATH : "${electronLibPath}" \
-               --prefix LD_LIBRARY_PATH : "${runtimeLibPath}" \
+               --prefix PATH : "${payloadLauncherPath}" \
 +              --prefix XDG_DATA_DIRS : "${gsettingsSchemaDataDirs}" \
                --prefix PATH : "/run/current-system/sw/bin" \
                --prefix PATH : "/etc/profiles/per-user/$(whoami)/bin"
+
+             runHook postInstall
