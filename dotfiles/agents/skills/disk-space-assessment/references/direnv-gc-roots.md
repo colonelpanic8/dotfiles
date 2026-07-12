@@ -20,8 +20,9 @@ The script writes a timestamped JSON artifact under `~/.cache/ncdu/` and updates
 - **Collectively direnv-only**: direnv closure paths absent from the union of every observed non-direnv root closure. Removing all direnv roots could make these collectible.
 - **Outside non-direnv roots**: one project's closure after subtracting non-direnv-retained paths. This remains an upper bound because other direnv projects may share it.
 - **Marginal unique**: paths retained by exactly one direnv project and no non-direnv root. This is the best logical NAR-size estimate of what removing only that project's `.direnv` could make collectible.
+- **Shared direnv-only**: paths absent from non-direnv roots but retained by two or more direnv projects. Inspect the recorded retaining-project set to identify cleanup campaigns that must move together.
 
-Rank projects by marginal unique size, then inspect age, worktree state, active shells/builds, and project importance. Large closure size with near-zero marginal unique size indicates heavy sharing and little immediate benefit from removing that project alone.
+Rank projects by marginal unique size, then inspect age, worktree state, active shells/builds, and project importance. Large closure size with near-zero marginal unique size indicates heavy sharing and little immediate benefit from removing that project alone. Use `top_shared_direnv_only_paths` in the JSON artifact to explain the gap between collectively direnv-only size and the sum of marginal project sizes.
 
 ## Validate Candidates
 

@@ -141,11 +141,26 @@ def main() -> int:
                 "closure_nar_bytes": total(project_paths),
                 "outside_non_direnv_nar_bytes": total(outside_non_direnv),
                 "marginal_unique_nar_bytes": total(marginal),
+                "shared_with_other_direnv_nar_bytes": total(outside_non_direnv - marginal),
                 "roots": [{"source": source, "target": target} for source, target in entries],
                 "top_marginal_paths": top_paths(marginal, path_sizes, args.top),
             }
         )
     projects.sort(key=lambda item: (item["marginal_unique_nar_bytes"], item["closure_nar_bytes"]), reverse=True)
+
+    shared_direnv_only = {path for path in direnv_only if membership[path] > 1}
+    shared_ranked = sorted(shared_direnv_only, key=lambda path: path_sizes.get(path, 0), reverse=True)[: args.top]
+    top_shared = [
+        {
+            "path": path,
+            "nar_size_bytes": path_sizes.get(path, 0),
+            "retained_by_projects": sorted(
+                project for project, project_paths in project_closures.items() if path in project_paths
+            ),
+        }
+        for path in shared_ranked
+    ]
+    marginal_total = sum(item["marginal_unique_nar_bytes"] for item in projects)
 
     artifact = {
         "format_version": 1,
@@ -159,7 +174,10 @@ def main() -> int:
         "all_direnv_closure_nar_bytes": total(all_direnv_closure),
         "collectively_direnv_only_nar_bytes": total(direnv_only),
         "collectively_direnv_only_path_count": len(direnv_only),
+        "marginal_unique_total_nar_bytes": marginal_total,
+        "shared_direnv_only_nar_bytes": total(shared_direnv_only),
         "top_collectively_direnv_only_paths": top_paths(direnv_only, path_sizes, args.top),
+        "top_shared_direnv_only_paths": top_shared,
         "projects": projects,
     }
 
@@ -181,6 +199,8 @@ def main() -> int:
     print(f"Projects: {artifact['direnv_project_count']}")
     print(f"All direnv closures: {human_size(artifact['all_direnv_closure_nar_bytes'])}")
     print(f"Collectively direnv-only: {human_size(artifact['collectively_direnv_only_nar_bytes'])}")
+    print(f"Sum of project marginal unique: {human_size(artifact['marginal_unique_total_nar_bytes'])}")
+    print(f"Shared by multiple direnv projects only: {human_size(artifact['shared_direnv_only_nar_bytes'])}")
     print()
     print(f"{'MARGINAL':>11}  {'CLOSURE':>11}  {'AGE(d)':>8}  PROJECT")
     for item in projects[: args.top]:
