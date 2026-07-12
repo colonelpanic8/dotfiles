@@ -14,6 +14,9 @@ makeEnable config "myModules.gitea-runner" false {
     gitea-runner-directory = "/var/lib/gitea-runner";
   in {
     settings = {
+      runner = {
+        capacity = 4;
+      };
       cache = {
         enabled = true;
       };
