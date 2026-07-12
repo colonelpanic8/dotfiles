@@ -1444,11 +1444,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1783872813,
-        "narHash": "sha256-iZj8e+a5p/ML9cbATZTaj/H9SEc6vjCcvNpGVeLTSEQ=",
+        "lastModified": 1783890323,
+        "narHash": "sha256-ygsdNac43J0IdZ84iaFs3bkeznbEySFa7TtBf53emoo=",
         "owner": "colonelpanic8",
         "repo": "lastfm-edit",
-        "rev": "cb00aadb357efdf17c5b0bf81db7d0647835d359",
+        "rev": "2c8dfb0314540e8f0cd760dd4388ef31ea0db013",
         "type": "github"
       },
       "original": {
