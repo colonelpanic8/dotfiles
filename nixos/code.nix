@@ -127,7 +127,6 @@ in
         inputs.gmcli.packages.${pkgs.stdenv.hostPlatform.system}.default
         inputs.lastfm-edit.packages.${pkgs.stdenv.hostPlatform.system}.scrobble-scrubber-app
         opencode
-        t3code
 
         # MCP
         github-mcp-server

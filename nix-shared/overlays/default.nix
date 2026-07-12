@@ -32,7 +32,7 @@ final: prev: {
   # Fix poetry pbs-installer version constraint issue
   poetry = prev.poetry.overrideAttrs (oldAttrs: {
     dontCheckRuntimeDeps = true;
-  });
+    });
 
   direnv = prev.direnv.overrideAttrs (_: {
     doCheck = false;
@@ -280,10 +280,9 @@ from transformers import (/' \
           -e '/^    BeamSearchScorer,$/d' \
           TTS/tts/layers/xtts/stream_generator.py
       '';
-    });
+  });
 
   playwright-cli = final.callPackage ../../nixos/packages/playwright-cli { };
-  t3code = final.callPackage ../../nixos/packages/t3code { };
   # Custom Waybar fork for workspace taskbar support + external SNI watcher option.
   waybar = prev.waybar.overrideAttrs (old: {
     src = prev.fetchFromGitHub {
