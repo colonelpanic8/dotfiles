@@ -720,11 +720,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1783888080,
-        "narHash": "sha256-1vLrhj0rLtzAdl4ZhZQvPbkfDTecpiajIi+aELuJy7k=",
+        "lastModified": 1783892979,
+        "narHash": "sha256-6uwkCVzjTxBweTCZ4CNfwYWNZlL7ri7fe8igy0Fd/ec=",
         "owner": "colonelpanic8",
         "repo": "gmcli",
-        "rev": "b85f1671eb5eeaedafdbd88c418451ed1ecbd0b3",
+        "rev": "f4f3424091377bddf2359b3f5510a65fcc150e29",
         "type": "github"
       },
       "original": {
@@ -1417,11 +1417,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1783748403,
-        "narHash": "sha256-q+GrnWK5GO4vaTsOrCMQR2Cze7nrgUnGyF8V6x3hGr0=",
+        "lastModified": 1783886947,
+        "narHash": "sha256-qItwicCUOoUJy/mrGvIgsMe31H3qlkL0n8I1F3s8qR4=",
         "owner": "colonelpanic8",
         "repo": "keepbook",
-        "rev": "d2d666e967048b2478476aeb9e3f6f8b0c034a36",
+        "rev": "093a3bd76a524b8f3096c5fcdcd6c7ee41c53acb",
         "type": "github"
       },
       "original": {

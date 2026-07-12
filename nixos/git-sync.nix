@@ -14,11 +14,20 @@
   gmcliPackage = inputs.gmcli.packages.${pkgs.stdenv.hostPlatform.system}.default;
   gmcliArchiveRoot = "/home/imalison/Backups/gmcli/git-sync";
   gmcliArchiveOutput = "${gmcliArchiveRoot}/archive";
+  gmcliTelephonyOutput = "${gmcliArchiveRoot}/telephony";
   gmcliBackupLock = "/home/imalison/.local/state/gmcli/backup.lock";
   exportGmcliArchive = pkgs.writeShellScript "export-gmcli-archive" ''
     set -euo pipefail
     ${gmcliPackage}/bin/gmcli export jsonl --out ${lib.escapeShellArg gmcliArchiveOutput} --force
     ${gmcliPackage}/bin/gmcli export verify --dir ${lib.escapeShellArg gmcliArchiveOutput}
+  '';
+  exportGmcliTelephonyArchive = pkgs.writeShellScript "export-gmcli-telephony-archive" ''
+    set -euo pipefail
+    ${gmcliPackage}/bin/gmcli android export-telephony \
+      --adb ${pkgs.android-tools}/bin/adb \
+      --out ${lib.escapeShellArg gmcliTelephonyOutput} \
+      --force --include-part-data=false
+    ${gmcliPackage}/bin/gmcli android verify-telephony --dir ${lib.escapeShellArg gmcliTelephonyOutput}
   '';
   refreshGmcliArchiveUnlocked = pkgs.writeShellScript "refresh-gmcli-archive-unlocked" ''
     set -uo pipefail
@@ -65,15 +74,17 @@
       status=1
     fi
     ${exportGmcliArchive} || status=1
+    ${exportGmcliTelephonyArchive} || status=1
+    ${gmcliPackage}/bin/gmcli coverage verify || status=1
     exit "$status"
   '';
   withGmcliBackupLock = name: command:
     pkgs.writeShellScript name ''
       set -euo pipefail
       exec 9>${lib.escapeShellArg gmcliBackupLock}
-      if ! ${pkgs.util-linux}/bin/flock --nonblock 9; then
-        echo "Another gmcli backup job is already running; skipping."
-        exit 0
+      if ! ${pkgs.util-linux}/bin/flock --wait 1200 9; then
+        echo "Timed out waiting 20 minutes for another gmcli backup job" >&2
+        exit 1
       fi
       exec ${command}
     '';
@@ -185,9 +196,9 @@ in {
     };
 
     systemd.user.timers.gmcli-archive-backfill = {
-      Unit.Description = "Weekly deep Google Messages history backfill";
+      Unit.Description = "Daily deep Google Messages history backfill";
       Timer = {
-        OnCalendar = "Sun *-*-* 04:00:00";
+        OnCalendar = "*-*-* 04:00:00";
         Persistent = true;
         RandomizedDelaySec = "2h";
       };
