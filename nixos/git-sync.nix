@@ -15,6 +15,7 @@
   gmcliArchiveRoot = "/home/imalison/Backups/gmcli/git-sync";
   gmcliArchiveOutput = "${gmcliArchiveRoot}/archive";
   gmcliTelephonyOutput = "${gmcliArchiveRoot}/telephony";
+  gmcliTelephonyFullOutput = "/home/imalison/Backups/gmcli/android-telephony-full";
   gmcliBackupLock = "/home/imalison/.local/state/gmcli/backup.lock";
   exportGmcliArchive = pkgs.writeShellScript "export-gmcli-archive" ''
     set -euo pipefail
@@ -28,6 +29,14 @@
       --out ${lib.escapeShellArg gmcliTelephonyOutput} \
       --force --include-part-data=false
     ${gmcliPackage}/bin/gmcli android verify-telephony --dir ${lib.escapeShellArg gmcliTelephonyOutput}
+  '';
+  exportGmcliTelephonyFullArchive = pkgs.writeShellScript "export-gmcli-telephony-full-archive" ''
+    set -euo pipefail
+    ${gmcliPackage}/bin/gmcli android export-telephony \
+      --adb ${pkgs.android-tools}/bin/adb \
+      --out ${lib.escapeShellArg gmcliTelephonyFullOutput} \
+      --force --include-part-data=true
+    ${gmcliPackage}/bin/gmcli android verify-telephony --dir ${lib.escapeShellArg gmcliTelephonyFullOutput}
   '';
   refreshGmcliArchiveUnlocked = pkgs.writeShellScript "refresh-gmcli-archive-unlocked" ''
     set -uo pipefail
@@ -90,6 +99,7 @@
     '';
   refreshGmcliArchive = withGmcliBackupLock "refresh-gmcli-archive" refreshGmcliArchiveUnlocked;
   backfillGmcliArchive = withGmcliBackupLock "backfill-gmcli-archive" backfillGmcliArchiveUnlocked;
+  backupGmcliTelephonyFull = withGmcliBackupLock "backup-gmcli-telephony-full" exportGmcliTelephonyFullArchive;
   mkGitSyncTrayOverrides = icon: {
     Service = {
       Environment = lib.mkMerge [
@@ -182,6 +192,14 @@ in {
             TimeoutStartSec = "3h";
           };
         };
+        gmcli-telephony-full-backup = {
+          Unit.Description = "Back up complete Android SMS/MMS history and media";
+          Service = {
+            Type = "oneshot";
+            ExecStart = backupGmcliTelephonyFull;
+            TimeoutStartSec = "3h";
+          };
+        };
       }
     ];
 
@@ -199,6 +217,16 @@ in {
       Unit.Description = "Daily deep Google Messages history backfill";
       Timer = {
         OnCalendar = "*-*-* 04:00:00";
+        Persistent = true;
+        RandomizedDelaySec = "2h";
+      };
+      Install.WantedBy = ["timers.target"];
+    };
+
+    systemd.user.timers.gmcli-telephony-full-backup = {
+      Unit.Description = "Weekly full Android SMS/MMS and media backup";
+      Timer = {
+        OnCalendar = "Sun *-*-* 08:00:00";
         Persistent = true;
         RandomizedDelaySec = "2h";
       };
