@@ -35,19 +35,27 @@
     pass=1
     while ((pass <= 20)); do
       echo "Starting gmcli deep-history pass $pass/20"
-      if result="$(${gmcliPackage}/bin/gmcli --json history backfill-all --requests 20 --count 100)"; then
-        added="$(${pkgs.jq}/bin/jq -er '.messages_added' <<<"$result")" || {
-          echo "Unable to read messages_added from backfill result" >&2
-          status=1
-          break
-        }
-        echo "Deep-history pass $pass added $added message(s)"
-        if ((added == 0)); then
-          exhausted=1
-          break
-        fi
-      else
+      result="$(${gmcliPackage}/bin/gmcli --json history backfill-all --requests 20 --count 100)"
+      backfill_status=$?
+      metrics="$(${pkgs.jq}/bin/jq -er '[.messages_added, .failed, .needs_more] | @tsv' <<<"$result")" || {
+        echo "Unable to read coverage metrics from backfill result" >&2
         status=1
+        break
+      }
+      IFS=$'\t' read -r added failed needs_more <<<"$metrics"
+      echo "Deep-history pass $pass added $added message(s); $needs_more conversation(s) need more"
+      if ((failed > 0)); then
+        echo "Deep-history pass failed for $failed conversation(s)" >&2
+        status=1
+        break
+      fi
+      if ((backfill_status != 0 && needs_more == 0)); then
+        echo "Deep-history command failed without resumable work" >&2
+        status=1
+        break
+      fi
+      if ((needs_more == 0)); then
+        exhausted=1
         break
       fi
       ((pass++))
