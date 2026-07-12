@@ -125,6 +125,8 @@ Read `references/cleanup-patterns.md` before touching private service state, run
 
 Prefer service-aware sequences: stop the service, clean only validated cache/work paths, recreate required directories with correct ownership, restart, and verify health.
 
+- 2026-07-10 `railbird-sf` incident: K3s reported `DiskPressure` even with tens of GiB free because its container `imagefs` shares `/`, kubelet image GC used the default 85% high-water mark, and the K3s config overrode only `nodefs` eviction thresholds. `crictl imagefsinfo` showed only ~677M of images, so image GC could not reclaim its requested ~149G and repeatedly evicted application pods. Set matching `imagefs.available` values alongside `nodefs.available` in `eviction-hard`, `eviction-soft`, and `eviction-soft-grace-period`; verify via K3s eviction-manager logs rather than trusting `df` alone.
+
 ## Safety Rules
 
 - Do not delete user documents, source code, credentials, volumes, or unknown data without explicit approval.
