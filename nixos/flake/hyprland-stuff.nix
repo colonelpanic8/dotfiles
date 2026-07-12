@@ -200,10 +200,6 @@
     src = inputs.hyprtasking;
 
     strictDeps = true;
-    postPatch = ''
-      substituteInPlace src/layout/layout_base.cpp \
-        --replace-fail 'e.element->passName()' 'e->element->passName()'
-    '';
     nativeBuildInputs =
       [
         pkgs.pkg-config

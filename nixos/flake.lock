@@ -114,11 +114,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1783733469,
-        "narHash": "sha256-GPPbut5HTEfSwCFf6f7RagCHz2BMHvRQSFkESHOwjB0=",
+        "lastModified": 1783864910,
+        "narHash": "sha256-+4Lomkyt8BbFXbS6ZBRvYLowaNNvZAcwFk03uXXs4yY=",
         "owner": "sadjow",
         "repo": "claude-code-nix",
-        "rev": "b8106a2893d7b1c5b116bebbcf17df80ead302b1",
+        "rev": "a2e4509a5afffc697f4e3074e29a34436c01bbf3",
         "type": "github"
       },
       "original": {
@@ -135,11 +135,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1783798242,
-        "narHash": "sha256-CsWHcV6UHlQkZWMlv6dWa41E900XrOB6fHYfkHPVz30=",
+        "lastModified": 1783856671,
+        "narHash": "sha256-8txLTCk/dqJsxMYJTLmacIUrHnDBeXMME72t+jtYG6g=",
         "owner": "aaddrick",
         "repo": "claude-desktop-debian",
-        "rev": "8a0c3b31fab2d2fb342501cd2062991c859d3b04",
+        "rev": "78c8e983e169c09fb9d21e25771cacd4cb10c0cc",
         "type": "github"
       },
       "original": {
@@ -178,11 +178,11 @@
         "nixpkgs": "nixpkgs"
       },
       "locked": {
-        "lastModified": 1783881409,
-        "narHash": "sha256-7lPTQdUxtN1PCbNzOA05asQz6spwkatT8JlSAHWkvvU=",
+        "lastModified": 1783884256,
+        "narHash": "sha256-h1PvrMre89NQBrxocyAQiJAzvlH2mjOVnP7czM6/kdA=",
         "owner": "ilysenko",
         "repo": "codex-desktop-linux",
-        "rev": "d8365b009cbed745ca4e69a3caad704424e7a5e1",
+        "rev": "c9c5ee35368ddd6f4bc90d6669b0542c6dce6337",
         "type": "github"
       },
       "original": {
@@ -713,6 +713,27 @@
         "type": "github"
       }
     },
+    "gmcli": {
+      "inputs": {
+        "nixpkgs": [
+          "nixpkgs"
+        ]
+      },
+      "locked": {
+        "lastModified": 1783885426,
+        "narHash": "sha256-Wr34V4owfA67LR33IfgzOfGXZi/uEbg5Uj5XoHHiW+M=",
+        "owner": "colonelpanic8",
+        "repo": "gmcli",
+        "rev": "37ff52aab15d1a7b0164bd363b8dc0efdc6f644e",
+        "type": "github"
+      },
+      "original": {
+        "owner": "colonelpanic8",
+        "ref": "colonelpanic/gaia-account-pairing",
+        "repo": "gmcli",
+        "type": "github"
+      }
+    },
     "grub2-themes": {
       "inputs": {
         "nixpkgs": [
@@ -1163,15 +1184,16 @@
         ]
       },
       "locked": {
-        "lastModified": 1782607986,
-        "narHash": "sha256-7CvSvTEk6rAX/K56QoPbWe7tr+9KGBAugXYJGc6eOEg=",
-        "owner": "raybbian",
+        "lastModified": 1783637291,
+        "narHash": "sha256-MtRmQ8WGiIBViZHdfqdFyGTWSRXGMnunXw4jRUdTpfc=",
+        "owner": "colonelpanic8",
         "repo": "hyprtasking",
-        "rev": "765575445ce34989575a99f304d0b279e6a980b6",
+        "rev": "e53b9bd0440a0f85d64d86762fd84111d4de2e3d",
         "type": "github"
       },
       "original": {
-        "owner": "raybbian",
+        "owner": "colonelpanic8",
+        "ref": "colonelpanic/workspace-jump-labels",
         "repo": "hyprtasking",
         "type": "github"
       }
@@ -2024,6 +2046,7 @@
         "git-blame-rank": "git-blame-rank",
         "git-ignore-nix": "git-ignore-nix",
         "git-sync-rs": "git-sync-rs",
+        "gmcli": "gmcli",
         "grub2-themes": "grub2-themes",
         "heroic-games-launcher": "heroic-games-launcher",
         "home-manager": "home-manager",

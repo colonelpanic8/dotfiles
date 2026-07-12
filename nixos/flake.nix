@@ -85,6 +85,11 @@
       };
     };
 
+    gmcli = {
+      url = "github:colonelpanic8/gmcli/colonelpanic/gaia-account-pairing";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+
     coqui-tts-streamer = {
       # Keep the default install reproducible across machines.
       # For local development, use `just switch --override-input coqui-tts-streamer path:/home/imalison/Projects/coqui-tts-streamer`.
@@ -152,8 +157,8 @@
     };
 
     hyprtasking = {
-      # Upstream default branch; the Hyprland 0.55 support PR has been merged.
-      url = "github:raybbian/hyprtasking";
+      # Pending upstream PR #119: keyboard workspace jump labels.
+      url = "github:colonelpanic8/hyprtasking?ref=colonelpanic/workspace-jump-labels";
       inputs = {
         hyprland.follows = "hyprland";
         nixpkgs.follows = "nixpkgs";

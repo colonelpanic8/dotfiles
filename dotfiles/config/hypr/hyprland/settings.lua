@@ -324,6 +324,9 @@ function M.setup(ctx)
           border_size = 3,
           exit_on_hovered = false,
           close_overview_on_reload = false,
+          jump = {
+            enabled = true,
+          },
           grid = {
             rows = 3,
             cols = 3,
