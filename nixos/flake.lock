@@ -2269,11 +2269,11 @@
         "rev": "edb35b03f9c3f6370a2749d1a2203dcaccf00a2b",
         "revCount": 2371,
         "type": "git",
-        "url": "file:///srv/dotfiles/dotfiles/config/taffybar/taffybar"
+        "url": "file:./dotfiles/config/taffybar/taffybar"
       },
       "original": {
         "type": "git",
-        "url": "file:///srv/dotfiles/dotfiles/config/taffybar/taffybar"
+        "url": "file:./dotfiles/config/taffybar/taffybar"
       }
     },
     "utils": {
