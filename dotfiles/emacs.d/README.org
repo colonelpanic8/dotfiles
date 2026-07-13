@@ -3409,6 +3409,16 @@ emr (emacs refactor) provides support for refactoring in many programming langua
         (setq lsp-ui-doc-position 'bottom)))))
 #+END_SRC
 * Utility
+** dired-sort-menu
+Add a menu and dialogue for changing Dired's sort order.
+#+begin_src emacs-lisp
+(use-package dired-sort-menu
+  :ensure (dired-sort-menu
+           :host github
+           :repo "emacsmirror/dired-sort-menu")
+  :after dired
+  :demand t)
+#+end_src
 ** eat
 #+begin_src emacs-lisp
 (use-package eat
