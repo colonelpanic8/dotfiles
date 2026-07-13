@@ -16,6 +16,7 @@
   gmcliArchiveRoot = "/home/imalison/Backups/gmcli/git-sync";
   gmcliArchiveOutput = "${gmcliArchiveRoot}/archive";
   gmcliTelephonyOutput = "${gmcliArchiveRoot}/telephony";
+  gmcliUnifiedOutput = "${gmcliArchiveRoot}/unified";
   gmcliTelephonyFullOutput = "/home/imalison/Backups/gmcli/android-telephony-full";
   gmcliBackupLock = "/home/imalison/.local/state/gmcli/backup.lock";
   gmcliChromeCookieDB = "/home/imalison/.config/google-chrome/Default/Cookies";
@@ -47,6 +48,14 @@
       --force --include-part-data=false
     ${gmcliPackage}/bin/gmcli android verify-telephony --dir ${lib.escapeShellArg gmcliTelephonyOutput}
   '';
+  exportGmcliUnifiedArchive = pkgs.writeShellScript "export-gmcli-unified-archive" ''
+    set -euo pipefail
+    ${gmcliPackage}/bin/gmcli export unified-jsonl \
+      --relay-dir ${lib.escapeShellArg gmcliArchiveOutput} \
+      --telephony-dir ${lib.escapeShellArg gmcliTelephonyOutput} \
+      --out ${lib.escapeShellArg gmcliUnifiedOutput} --force
+    ${gmcliPackage}/bin/gmcli export verify-unified --dir ${lib.escapeShellArg gmcliUnifiedOutput}
+  '';
   exportGmcliTelephonyFullArchive = pkgs.writeShellScript "export-gmcli-telephony-full-archive" ''
     set -euo pipefail
     ${gmcliPackage}/bin/gmcli android export-telephony \
@@ -61,6 +70,7 @@
     ${refreshGmcliCookies} || status=1
     ${gmcliPackage}/bin/gmcli sync --include-spam=false --include-archive=false || status=1
     ${exportGmcliArchive} || status=1
+    ${exportGmcliUnifiedArchive} || status=1
     exit "$status"
   '';
   backfillGmcliArchiveUnlocked = pkgs.writeShellScript "backfill-gmcli-archive-unlocked" ''
@@ -103,6 +113,7 @@
     fi
     ${exportGmcliArchive} || status=1
     ${exportGmcliTelephonyArchive} || status=1
+    ${exportGmcliUnifiedArchive} || status=1
     ${gmcliPackage}/bin/gmcli coverage verify || status=1
     exit "$status"
   '';
