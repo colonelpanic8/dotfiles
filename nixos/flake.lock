@@ -720,11 +720,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1783904927,
-        "narHash": "sha256-5yaK8nY5PJ2pdIvmG8yM3KH4jse0PzS3wUUsfARXxTM=",
+        "lastModified": 1783901732,
+        "narHash": "sha256-SZFe+CZtLQe3Z/q0yoyyf56pnN7hKRDvXBtBsRg+DZs=",
         "owner": "colonelpanic8",
         "repo": "gmcli",
-        "rev": "5863722646043d0fc7fcbce37e795a977d569ce9",
+        "rev": "d53ac70055098a303553371d98c59d5adc7016d0",
         "type": "github"
       },
       "original": {
@@ -1417,11 +1417,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1783900123,
-        "narHash": "sha256-39QSBXPMAxJSfr8cMx1U+nj+RYPxoEdqnuRqJZSujp4=",
+        "lastModified": 1783904811,
+        "narHash": "sha256-71ibcLH94cp2ijliTwfCc2PzeDqCFFRcGum/887t5vE=",
         "owner": "colonelpanic8",
         "repo": "keepbook",
-        "rev": "f783e4c16f3c30daa998b8f1118824aa016a2be9",
+        "rev": "86c5d757f7206cd814d1d57a900a184d5825ec1c",
         "type": "github"
       },
       "original": {
@@ -1444,11 +1444,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1783890323,
-        "narHash": "sha256-ygsdNac43J0IdZ84iaFs3bkeznbEySFa7TtBf53emoo=",
+        "lastModified": 1783902084,
+        "narHash": "sha256-JOtn+Hn8RhTmLUOLfAZVfU1rPN0RCTgaCQ61hdomd7k=",
         "owner": "colonelpanic8",
         "repo": "lastfm-edit",
-        "rev": "2c8dfb0314540e8f0cd760dd4388ef31ea0db013",
+        "rev": "ee123e4ea07cfa73d20cf19b775cd4983c4e9674",
         "type": "github"
       },
       "original": {
