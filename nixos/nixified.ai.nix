@@ -75,13 +75,24 @@
     } ''
       jq '
         (.nodes[] | select(.type == "CheckpointLoaderSimple") | .widgets_values[0]) = "Qwen-Rapid-AIO-NSFW-v23.safetensors"
+        | (.nodes[] | select(.id == 6)) |= (
+            .type = "SaveImage"
+            | .title = "Save Output Image (always)"
+            | .size = [320, 346]
+            | .outputs = [
+                {"name": "images", "type": "IMAGE", "links": null}
+              ]
+            | .widgets_values = ["qwen-rapid-aio-nsfw/qwen_edit"]
+            | .properties = {"Node name for S&R": "SaveImage"}
+          )
         | (.nodes[] | select(.id == 7) | .title) = "Input Image 1"
         | (.nodes[] | select(.id == 8) | .title) = "Optional Input Image 2"
         | (.nodes[] | select(.id == 7) | .outputs[0].links) |= ((. // []) + [19])
         | (.nodes[] | select(.id == 9) | .inputs) = [
-            {"name": "width", "type": "INT", "link": 20},
-            {"name": "height", "type": "INT", "link": 21}
+            {"name": "width", "type": "INT", "link": 23},
+            {"name": "height", "type": "INT", "link": 27}
           ]
+        | (.nodes[] | select(.id == 9) | .pos) = [110, 1040]
         | (.nodes[] | select(.id == 9) | .widgets_values) = [768, 768, 1]
         | .nodes += [
             {
@@ -96,21 +107,222 @@
                 {"name": "image", "type": "IMAGE", "link": 19}
               ],
               "outputs": [
-                {"name": "width", "type": "INT", "links": [20]},
-                {"name": "height", "type": "INT", "links": [21]},
+                {"name": "width", "type": "INT", "links": [21]},
+                {"name": "height", "type": "INT", "links": [25]},
                 {"name": "batch_size", "type": "INT", "links": null}
               ],
               "properties": {
                 "Node name for S&R": "GetImageSize"
               },
               "widgets_values": []
+            },
+            {
+              "id": 11,
+              "type": "PrimitiveBoolean",
+              "pos": [-565, 850],
+              "size": [270, 110],
+              "flags": {},
+              "order": 9,
+              "mode": 0,
+              "inputs": [
+                {
+                  "localized_name": "value",
+                  "name": "value",
+                  "type": "BOOLEAN",
+                  "widget": {"name": "value"},
+                  "link": null
+                }
+              ],
+              "outputs": [
+                {
+                  "localized_name": "BOOLEAN",
+                  "name": "BOOLEAN",
+                  "type": "BOOLEAN",
+                  "links": [22]
+                }
+              ],
+              "title": "Use Original Image Width?",
+              "properties": {
+                "Node name for S&R": "PrimitiveBoolean",
+                "cnr_id": "comfy-core",
+                "ver": "0.26.1"
+              },
+              "widgets_values": [true]
+            },
+            {
+              "id": 12,
+              "type": "PrimitiveInt",
+              "pos": [-565, 990],
+              "size": [270, 110],
+              "flags": {},
+              "order": 10,
+              "mode": 0,
+              "inputs": [
+                {
+                  "localized_name": "value",
+                  "name": "value",
+                  "type": "INT",
+                  "widget": {"name": "value"},
+                  "link": null
+                }
+              ],
+              "outputs": [
+                {
+                  "localized_name": "INT",
+                  "name": "INT",
+                  "type": "INT",
+                  "links": [20]
+                }
+              ],
+              "title": "Custom Width (multiple of 16)",
+              "properties": {
+                "Node name for S&R": "PrimitiveInt",
+                "cnr_id": "comfy-core",
+                "ver": "0.26.1"
+              },
+              "widgets_values": [768, "fixed"]
+            },
+            {
+              "id": 13,
+              "type": "PrimitiveInt",
+              "pos": [-565, 1270],
+              "size": [270, 110],
+              "flags": {},
+              "order": 11,
+              "mode": 0,
+              "inputs": [
+                {
+                  "localized_name": "value",
+                  "name": "value",
+                  "type": "INT",
+                  "widget": {"name": "value"},
+                  "link": null
+                }
+              ],
+              "outputs": [
+                {
+                  "localized_name": "INT",
+                  "name": "INT",
+                  "type": "INT",
+                  "links": [24]
+                }
+              ],
+              "title": "Custom Height (multiple of 16)",
+              "properties": {
+                "Node name for S&R": "PrimitiveInt",
+                "cnr_id": "comfy-core",
+                "ver": "0.26.1"
+              },
+              "widgets_values": [768, "fixed"]
+            },
+            {
+              "id": 14,
+              "type": "ComfySwitchNode",
+              "pos": [-240, 930],
+              "size": [270, 130],
+              "flags": {},
+              "order": 12,
+              "mode": 0,
+              "inputs": [
+                {"localized_name": "on_false", "name": "on_false", "type": "*", "link": 20},
+                {"localized_name": "on_true", "name": "on_true", "type": "*", "link": 21},
+                {
+                  "localized_name": "switch",
+                  "name": "switch",
+                  "type": "BOOLEAN",
+                  "widget": {"name": "switch"},
+                  "link": 22
+                }
+              ],
+              "outputs": [
+                {"localized_name": "output", "name": "output", "type": "*", "links": [23]}
+              ],
+              "title": "Width: Custom / Original",
+              "properties": {
+                "Node name for S&R": "ComfySwitchNode",
+                "cnr_id": "comfy-core",
+                "ver": "0.26.1"
+              },
+              "widgets_values": [false]
+            },
+            {
+              "id": 15,
+              "type": "ComfySwitchNode",
+              "pos": [-240, 1210],
+              "size": [270, 130],
+              "flags": {},
+              "order": 14,
+              "mode": 0,
+              "inputs": [
+                {"localized_name": "on_false", "name": "on_false", "type": "*", "link": 24},
+                {"localized_name": "on_true", "name": "on_true", "type": "*", "link": 25},
+                {
+                  "localized_name": "switch",
+                  "name": "switch",
+                  "type": "BOOLEAN",
+                  "widget": {"name": "switch"},
+                  "link": 26
+                }
+              ],
+              "outputs": [
+                {"localized_name": "output", "name": "output", "type": "*", "links": [27]}
+              ],
+              "title": "Height: Custom / Original",
+              "properties": {
+                "Node name for S&R": "ComfySwitchNode",
+                "cnr_id": "comfy-core",
+                "ver": "0.26.1"
+              },
+              "widgets_values": [false]
+            },
+            {
+              "id": 16,
+              "type": "PrimitiveBoolean",
+              "pos": [-565, 1130],
+              "size": [270, 110],
+              "flags": {},
+              "order": 13,
+              "mode": 0,
+              "inputs": [
+                {
+                  "localized_name": "value",
+                  "name": "value",
+                  "type": "BOOLEAN",
+                  "widget": {"name": "value"},
+                  "link": null
+                }
+              ],
+              "outputs": [
+                {
+                  "localized_name": "BOOLEAN",
+                  "name": "BOOLEAN",
+                  "type": "BOOLEAN",
+                  "links": [26]
+                }
+              ],
+              "title": "Use Original Image Height?",
+              "properties": {
+                "Node name for S&R": "PrimitiveBoolean",
+                "cnr_id": "comfy-core",
+                "ver": "0.26.1"
+              },
+              "widgets_values": [true]
             }
           ]
         | .links += [
             [19, 7, 0, 10, 0, "IMAGE"],
-            [20, 10, 0, 9, 0, "INT"],
-            [21, 10, 1, 9, 1, "INT"]
+            [20, 12, 0, 14, 0, "INT"],
+            [21, 10, 0, 14, 1, "INT"],
+            [22, 11, 0, 14, 2, "BOOLEAN"],
+            [23, 14, 0, 9, 0, "INT"],
+            [24, 13, 0, 15, 0, "INT"],
+            [25, 10, 1, 15, 1, "INT"],
+            [26, 16, 0, 15, 2, "BOOLEAN"],
+            [27, 15, 0, 9, 1, "INT"]
           ]
+        | .last_node_id = 16
+        | .last_link_id = 27
+        | .extra.ds = {"scale": 0.82, "offset": [780, 50]}
       ' "$src" > "$out"
     '';
 
@@ -173,8 +385,9 @@ in
       "+${pkgs.writeShellScript "install-qwen-rapid-aio-workflow" ''
         rm -f /var/lib/comfyui/workflows/Qwen-Rapid-AIO-v23-SFW.json
         rm -f /var/lib/comfyui/.local/share/comfyui/user/default/workflows/Qwen-Rapid-AIO-v23-SFW.json
-        install -D -m 0644 ${qwenRapidAioWorkflow} /var/lib/comfyui/workflows/Qwen-Rapid-AIO-v23-NSFW.json
-        install -D -m 0644 ${qwenRapidAioWorkflow} /var/lib/comfyui/.local/share/comfyui/user/default/workflows/Qwen-Rapid-AIO-v23-NSFW.json
+        install -D -o comfyui -g comfyui -m 0644 ${qwenRapidAioWorkflow} /var/lib/comfyui/workflows/Qwen-Rapid-AIO-v23-NSFW.json
+        install -D -o comfyui -g comfyui -m 0644 ${qwenRapidAioWorkflow} /var/lib/comfyui/.local/share/comfyui/user/default/workflows/Qwen-Rapid-AIO-v23-NSFW.json
+        chown -R comfyui:comfyui /var/lib/comfyui/.local/share/comfyui/user/default/workflows
       ''}"
     ];
   }
