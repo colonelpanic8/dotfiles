@@ -12,11 +12,28 @@
   aiHistoryHosts = ["ryzen-shine" "railbird-sf" "jay-lenovo" "strixi-minaj"];
   syncAiHistory = builtins.elem config.networking.hostName aiHistoryHosts;
   gmcliPackage = inputs.gmcli.packages.${pkgs.stdenv.hostPlatform.system}.default;
+  gmcliCookiePython = pkgs.python3.withPackages (ps: [ps.browser-cookie3]);
   gmcliArchiveRoot = "/home/imalison/Backups/gmcli/git-sync";
   gmcliArchiveOutput = "${gmcliArchiveRoot}/archive";
   gmcliTelephonyOutput = "${gmcliArchiveRoot}/telephony";
   gmcliTelephonyFullOutput = "/home/imalison/Backups/gmcli/android-telephony-full";
   gmcliBackupLock = "/home/imalison/.local/state/gmcli/backup.lock";
+  gmcliChromeCookieDB = "/home/imalison/.config/google-chrome/Default/Cookies";
+  refreshGmcliCookies = pkgs.writeShellScript "refresh-gmcli-cookies" ''
+        set -euo pipefail
+        umask 077
+        ${gmcliCookiePython}/bin/python -c '
+    import browser_cookie3
+    import json
+    import sys
+
+    cookies = browser_cookie3.chrome(
+        cookie_file=${builtins.toJSON gmcliChromeCookieDB},
+        domain_name=".google.com",
+    )
+    json.dump({cookie.name: cookie.value for cookie in cookies}, sys.stdout)
+    ' | ${gmcliPackage}/bin/gmcli auth refresh-cookies --cookies-file -
+  '';
   exportGmcliArchive = pkgs.writeShellScript "export-gmcli-archive" ''
     set -euo pipefail
     ${gmcliPackage}/bin/gmcli export jsonl --out ${lib.escapeShellArg gmcliArchiveOutput} --force
@@ -41,6 +58,7 @@
   refreshGmcliArchiveUnlocked = pkgs.writeShellScript "refresh-gmcli-archive-unlocked" ''
     set -uo pipefail
     status=0
+    ${refreshGmcliCookies} || status=1
     ${gmcliPackage}/bin/gmcli sync --include-spam=false --include-archive=false || status=1
     ${exportGmcliArchive} || status=1
     exit "$status"
@@ -48,6 +66,7 @@
   backfillGmcliArchiveUnlocked = pkgs.writeShellScript "backfill-gmcli-archive-unlocked" ''
     set -uo pipefail
     status=0
+    ${refreshGmcliCookies} || status=1
     ${gmcliPackage}/bin/gmcli sync || status=1
     exhausted=0
     pass=1
