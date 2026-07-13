@@ -167,10 +167,10 @@ in {
         # active session doesn't push once per append.
         git-sync-claude-history.Service.ExecStart =
           lib.mkForce
-          "${pkgs.git-sync-rs}/bin/git-sync-rs watch --new-files true --min-interval 300";
+          "${pkgs.git-sync-rs}/bin/git-sync-rs watch --new-files true --min-interval 300 --watch-path projects --watch-path history.jsonl --watch-path plans --watch-path tasks";
         git-sync-codex-history.Service.ExecStart =
           lib.mkForce
-          "${pkgs.git-sync-rs}/bin/git-sync-rs watch --new-files true --min-interval 300";
+          "${pkgs.git-sync-rs}/bin/git-sync-rs watch --new-files true --min-interval 300 --watch-path sessions --watch-path archived_sessions --watch-path history.jsonl";
       })
       {
         git-sync-gmcli-archive.Service.ExecStart =
