@@ -122,7 +122,8 @@
           'nvidia_drm_device="/dev/dri/by-path/pci-0000:01:00.0-card"' \
           'intel_drm_device="/dev/dri/by-path/pci-0000:00:02.0-card"' \
           'if [ -e "$nvidia_drm_device" ] && [ -e "$intel_drm_device" ]; then' \
-          '  export AQ_DRM_DEVICES="$nvidia_drm_device:$intel_drm_device"' \
+          '  # AQ_DRM_DEVICES is colon-delimited, so PCI by-path names cannot be used directly.' \
+          '  export AQ_DRM_DEVICES="$(${pkgs.coreutils}/bin/readlink -f "$nvidia_drm_device"):$(${pkgs.coreutils}/bin/readlink -f "$intel_drm_device")"' \
           'fi' \
           'config_path="''${XDG_CONFIG_HOME:-$HOME/.config}/hypr/hyprland.lua"' \
           'exec "${package}/bin/start-hyprland" --path "@out@/bin/Hyprland" -- --config "$config_path" "$@"' \
