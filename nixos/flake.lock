@@ -2087,6 +2087,7 @@
         "railbird-secrets": "railbird-secrets",
         "rlru": "rlru",
         "systems": "systems_6",
+        "t3code-nix": "t3code-nix",
         "vscode-server": "vscode-server",
         "xmonad": "xmonad_2",
         "xmonad-contrib": "xmonad-contrib_2",
@@ -2251,6 +2252,26 @@
       "original": {
         "owner": "nix-systems",
         "repo": "default",
+        "type": "github"
+      }
+    },
+    "t3code-nix": {
+      "inputs": {
+        "nixpkgs": [
+          "nixpkgs"
+        ]
+      },
+      "locked": {
+        "lastModified": 1783865433,
+        "narHash": "sha256-R/2UilYyaOqwCZ+C15VPSzrl73yXBmguT/ac/nXGIUw=",
+        "owner": "omarcresp",
+        "repo": "t3code-flake",
+        "rev": "99b3a112b35345593b0bff31617e13f1c7389338",
+        "type": "github"
+      },
+      "original": {
+        "owner": "omarcresp",
+        "repo": "t3code-flake",
         "type": "github"
       }
     },
