@@ -9,6 +9,10 @@ bump-claude-codex *args:
 	PATH=/run/current-system/sw/bin:/nix/var/nix/profiles/system/sw/bin:/etc/profiles/per-user/root/bin:/usr/bin:/bin nix flake update codex-cli-nix codex-desktop-linux claude-code-nix claude-desktop
 	just switch {{args}}
 
+bump-t3code *args:
+	PATH=/run/current-system/sw/bin:/nix/var/nix/profiles/system/sw/bin:/etc/profiles/per-user/root/bin:/usr/bin:/bin nix flake update t3code-nix
+	just switch {{args}}
+
 populate-cachix cache="colonelpanic8-dotfiles" host=`hostname` *args:
 	store_path="$(nix build --no-link --print-out-paths ".#nixosConfigurations.{{host}}.config.system.build.toplevel" --impure --option warn-dirty false {{args}})" && cachix push {{cache}} "$store_path"
 

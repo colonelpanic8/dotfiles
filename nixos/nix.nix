@@ -110,10 +110,11 @@
         # (import ./nvidia-container-toolkit-overlay.nix)
         (import ./emacs-overlay.nix)
         (import ../nix-shared/overlays)
-        # Use codex and claude-code from dedicated flakes with cachix
+        # Use fast-moving agent tools from dedicated flakes.
         (final: prev: {
           codex = inputs.codex-cli-nix.packages.${prev.stdenv.hostPlatform.system}.default;
           claude-code = inputs.claude-code-nix.packages.${prev.stdenv.hostPlatform.system}.default;
+          t3code = inputs.t3code-nix.packages.${prev.stdenv.hostPlatform.system}.default;
           git-sync-rs = inputs.git-sync-rs.packages.${prev.stdenv.hostPlatform.system}.default;
           elegant-grub2-theme = final.callPackage ./packages/elegant-grub2-theme {};
           kef = final.callPackage ./packages/kef {};
