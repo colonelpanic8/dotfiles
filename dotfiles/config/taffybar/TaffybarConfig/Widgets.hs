@@ -56,6 +56,7 @@ import qualified System.Taffybar.Widget.Wlsunset as Wlsunset
 import qualified System.Taffybar.Widget.Workspaces as Workspaces
 import TaffybarConfig.AIUsage (aiUsageWidget)
 import TaffybarConfig.Host (laptopHosts)
+import TaffybarConfig.Temperature (cpuGpuTemperatureWidget)
 import TaffybarConfig.WidgetUtil
   ( decorateWithClassAndBox,
     decorateWithClassAndBoxM,
@@ -432,6 +433,7 @@ endWidgetsForHost hostName =
           audioWidget,
           aiUsageWidget,
           cpuWidget,
+          cpuGpuTemperatureWidget,
           ramSwapWidget,
           diskUsageWidget,
           networkWidget,
@@ -445,6 +447,7 @@ endWidgetsForHost hostName =
           audioBacklightWidget,
           aiUsageWidget,
           cpuWidget,
+          cpuGpuTemperatureWidget,
           ramSwapWidget,
           sunLockWidget,
           mprisWidget

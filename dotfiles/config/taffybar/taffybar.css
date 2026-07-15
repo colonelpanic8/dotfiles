@@ -58,6 +58,13 @@
 	padding-right: 8px;
 }
 
+/* Stacked CPU/GPU temperatures use the same compact, fixed-width icon column
+   as RAM/SWAP so both readings line up cleanly in one pill. */
+.cpu-gpu-temperature .icon-label > .icon {
+	min-width: 22px;
+	padding-right: 8px;
+}
+
 /* Stacked sun/lock pill: give each row a touch of horizontal breathing room. */
 .sun-lock .wlsunset,
 .sun-lock .screen-lock {

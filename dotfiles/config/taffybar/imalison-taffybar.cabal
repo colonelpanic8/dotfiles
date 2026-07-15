@@ -17,6 +17,7 @@ executable taffybar
                      , TaffybarConfig.Config
                      , TaffybarConfig.ChromeFavicons
                      , TaffybarConfig.Host
+                     , TaffybarConfig.Temperature
                      , TaffybarConfig.Widgets
                      , TaffybarConfig.WidgetUtil
                      , TaffybarConfig.Workspaces
