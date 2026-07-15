@@ -26,7 +26,9 @@ cpuTemperatureConfig =
   Temperature.defaultTemperatureConfig
     { Temperature.tempFormat = "CPU $temp$\176C",
       Temperature.tempSensorFilter =
-        sensorNameContainsAny ["package", "x86_pkg_temp", "tctl", "tdie"]
+        sensorNameContainsAny ["package", "x86_pkg_temp", "tctl", "tdie"],
+      Temperature.tempTooltipSensorFilter =
+        sensorNameContainsAny ["core", "ccd"]
     }
 
 gpuTemperatureConfig :: Temperature.TemperatureConfig
@@ -50,17 +52,17 @@ gpuTemperatureRow = do
   nvidiaSmi <- liftIO $ findExecutable "nvidia-smi"
   temperatureRow $ case nvidiaSmi of
     Just command ->
-      NvidiaTemperature.nvidiaTemperatureLabelNewWith $
+      NvidiaTemperature.nvidiaTemperatureLabelNewChanWith $
         NvidiaTemperature.defaultNvidiaTemperatureConfig
           { NvidiaTemperature.nvidiaTemperatureCommand = command,
             NvidiaTemperature.nvidiaTemperatureGpuIndex = Just 0
           }
-    Nothing -> Temperature.temperatureLabelNewWith gpuTemperatureConfig
+    Nothing -> Temperature.temperatureLabelNewChanWith gpuTemperatureConfig
 
 cpuGpuTemperatureWidget :: TaffyIO Gtk.Widget
 cpuGpuTemperatureWidget =
   stackInPill
     "cpu-gpu-temperature"
-    [ temperatureRow (Temperature.temperatureLabelNewWith cpuTemperatureConfig),
+    [ temperatureRow (Temperature.temperatureLabelNewChanWith cpuTemperatureConfig),
       gpuTemperatureRow
     ]
