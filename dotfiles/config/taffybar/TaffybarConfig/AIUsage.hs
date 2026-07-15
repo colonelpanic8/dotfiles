@@ -18,9 +18,9 @@ import Control.Monad.IO.Class (liftIO)
 import Data.Text (Text)
 import qualified Data.Text as T
 import qualified GI.Gtk as Gtk
-import qualified System.FSNotify as FSNotify
 import System.Directory (createDirectoryIfMissing, getHomeDirectory)
 import System.Environment (lookupEnv)
+import qualified System.FSNotify as FSNotify
 import System.FilePath (takeFileName, (</>))
 import System.Taffybar.Context (TaffyIO)
 import System.Taffybar.Util (postGUIASync)
@@ -90,6 +90,10 @@ aiUsageWidget = do
   anthropicWidget <- anthropicUsageSection
   stackWidget <- liftIO $ do
     stack <- Gtk.stackNew
+    -- Size the provider switcher for its visible child.  The default
+    -- homogeneous sizing makes Codex reserve the width of Claude's extra
+    -- per-model (Fable) usage row even while that page is hidden.
+    Gtk.stackSetHomogeneous stack False
     Gtk.stackAddNamed stack openAIWidget codexChild
     Gtk.stackAddNamed stack anthropicWidget claudeChild
     readActiveAIScratchpad >>= Gtk.stackSetVisibleChildName stack
