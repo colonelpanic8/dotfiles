@@ -627,9 +627,6 @@ function M.setup(ctx)
   _G.im_hyprland_toggle_localsend_scratchpad = function()
     toggle_scratchpad("localsend")
   end
-  _G.im_hyprland_toggle_localsend_scratchpad = function()
-    toggle_scratchpad("localsend")
-  end
 
   ctx.lower_contains = lower_contains
   ctx.lower_contains_any = lower_contains_any

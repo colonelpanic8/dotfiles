@@ -9,7 +9,8 @@ module TaffybarConfig.Widgets
   )
 where
 
-import Control.Concurrent (threadDelay)
+import Control.Concurrent (forkIO, threadDelay)
+import Control.Monad (void)
 import Control.Monad.IO.Class (liftIO)
 import Data.Char (toLower)
 import Data.Maybe (fromMaybe)
@@ -20,6 +21,7 @@ import qualified GI.Gtk as Gtk
 import qualified StatusNotifier.Tray as SNITray
 import System.Environment (lookupEnv)
 import System.Environment.XDG.BaseDir (getUserConfigFile)
+import System.Process (callProcess)
 import System.Taffybar.Context
   ( Backend (BackendWayland, BackendX11),
     TaffyIO,
@@ -374,6 +376,18 @@ usageSectionWidget klass iconFile tooltip stackBuilder =
 sniPriorityVisibilityThresholdDefault :: Int
 sniPriorityVisibilityThresholdDefault = 0
 
+localSendTrayMatcher :: SNITray.TrayItemMatcher
+localSendTrayMatcher = SNITray.trayMatchIconTitleEquals "localsend_app"
+
+localSendTrayClickHook :: SNITray.TrayClickHook
+localSendTrayClickHook clickContext
+  | SNITray.trayClickButton clickContext == 1,
+    SNITray.trayItemMatcherPredicate localSendTrayMatcher
+      (SNITray.trayClickItemInfo clickContext) = do
+      void $ forkIO $ callProcess "hyprctl" ["eval", "_G.im_hyprland_toggle_localsend_scratchpad()"]
+      pure SNITray.ConsumeClick
+  | otherwise = pure SNITray.UseDefaultClickAction
+
 sniTrayWidget :: TaffyIO Gtk.Widget
 sniTrayWidget = do
   -- If the Haskell backend regresses, flip at runtime:
@@ -392,7 +406,10 @@ sniTrayWidget = do
         SNITray.defaultTrayParams
           { SNITray.trayMenuBackend = menuBackend,
             SNITray.trayOverlayScale = 1 % 3,
-            SNITray.trayEventHooks = SNITray.defaultTrayEventHooks
+            SNITray.trayEventHooks =
+              SNITray.defaultTrayEventHooks
+                { SNITray.trayClickHook = Just localSendTrayClickHook
+                }
           }
       sniTrayConfig =
         defaultSNITrayConfig
