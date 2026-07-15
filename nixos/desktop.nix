@@ -362,7 +362,7 @@
         pinentry-gnome3
         # mission-center
         quassel
-        # remmina
+        remmina
         rofi
         wofi
         rofi-pass

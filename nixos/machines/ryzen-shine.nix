@@ -66,7 +66,23 @@
   environment.systemPackages = [
     inputs.nixpkgs-stable.legacyPackages.${pkgs.stdenv.hostPlatform.system}.inkscape
     pkgs.perf
+    pkgs.wayvnc
   ];
+
+  # Share the active Hyprland session over an SSH-only VNC endpoint. The
+  # compositor imports WAYLAND_DISPLAY into the user manager during login, so
+  # wayvnc can attach to the existing desktop without starting another session.
+  systemd.user.services.wayvnc-share = {
+    description = "Share the active Hyprland session over VNC";
+    wantedBy = ["graphical-session.target"];
+    partOf = ["graphical-session.target"];
+    after = ["graphical-session.target"];
+    serviceConfig = {
+      ExecStart = "${pkgs.wayvnc}/bin/wayvnc --log-level=info 127.0.0.1 5900";
+      Restart = "on-failure";
+      RestartSec = 5;
+    };
+  };
 
   boot.initrd.systemd.enable = true;
   boot.plymouth = {

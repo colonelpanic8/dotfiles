@@ -98,7 +98,10 @@
     serverAddr = "";
   };
   myModules."keepbook-sync".enable = true;
-  myModules.remote-hyprland.enable = true;
+  myModules.remote-hyprland = {
+    enable = true;
+    autoStart = true;
+  };
 
   # Mirror the old biskcomp "Syncthing hosting" pattern: serve the synced railbird tree over HTTPS with autoindex.
   services.nginx.virtualHosts."syncthing.railbird.ai" = {
