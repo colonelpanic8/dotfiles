@@ -48,6 +48,11 @@ Treat model selection and effort level as separate decisions. The following scor
 - Create `.worktrees/` if needed before running `git worktree add`.
 - Only use a non-`.worktrees/` location when the user explicitly asks for a different path.
 
+## Git branches
+- Work directly on the repository's default branch in the primary checkout unless the user explicitly asks for a feature branch or worktree.
+- Do not create or switch branches as routine task setup, and do not leave requested work only on a side branch.
+- Before any explicitly requested branch switch, inspect the worktree and preserve all existing changes without disrupting branches attached to other worktrees.
+
 ## GitHub pull requests
 - Default to creating pull requests as ready for review, not drafts.
 - Do not add a `[codex]` prefix or any other agent/tool prefix to pull request titles.
