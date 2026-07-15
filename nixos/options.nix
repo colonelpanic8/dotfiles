@@ -44,6 +44,8 @@ in {
       type = lib.types.ints.positive;
       description = "Cursor size exported to Hyprland and cursor-aware toolkits.";
     };
+
+    myModules.voxtype.enable = lib.mkEnableOption "local push-to-talk voice dictation";
   };
 
   config = {
