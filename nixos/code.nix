@@ -6,18 +6,13 @@
   makeEnable,
   ...
 }: let
-  codexDesktopLinuxSource = pkgs.applyPatches {
-    name = "codex-desktop-linux-patched";
-    src = inputs.codex-desktop-linux;
-    patches = [./patches/codex-desktop-linux-gsettings-schemas.patch];
-  };
   claudeDesktopSource = inputs.claude-desktop;
   claudeDesktop = pkgs.callPackage "${claudeDesktopSource}/nix/claude-desktop.nix" {};
   claudeDesktopFhs = pkgs.callPackage "${claudeDesktopSource}/nix/fhs.nix" {
     claude-desktop = claudeDesktop;
   };
   codexDesktopLinux = let
-    flake = import "${codexDesktopLinuxSource}/flake.nix";
+    flake = import "${inputs.codex-desktop-linux}/flake.nix";
     self' =
       (flake.outputs {
         self = self';
@@ -25,7 +20,7 @@
         flake-utils = inputs.flake-utils;
       })
       // {
-        outPath = "${codexDesktopLinuxSource}";
+        outPath = "${inputs.codex-desktop-linux}";
         rev = inputs.codex-desktop-linux.rev or "";
         lastModified = inputs.codex-desktop-linux.lastModified or 1;
       };
@@ -34,6 +29,11 @@
   codexDesktopLinuxPackage = let
     package =
       codexDesktopLinux.packages.${pkgs.stdenv.hostPlatform.system}.codex-desktop-computer-use-ui-remote-mobile-control;
+    gsettingsSchemaDataDirs = lib.concatMapStringsSep ":" (pkg:
+      lib.removeSuffix "/glib-2.0/schemas" (pkgs.glib.getSchemaPath pkg)) (with pkgs; [
+      gsettings-desktop-schemas
+      gtk3
+    ]);
   in
     package.overrideAttrs (oldAttrs: {
       src = oldAttrs.src.overrideAttrs (payloadOldAttrs: {
@@ -42,6 +42,15 @@
           ${payloadOldAttrs.installPhase}
         '';
       });
+      # Keep this outside the upstream source so input updates cannot cause
+      # source-patch conflicts. This can go away once the package wrapper adds
+      # the GSettings schema roots itself upstream.
+      postFixup =
+        (oldAttrs.postFixup or "")
+        + ''
+          wrapProgram "$out/bin/codex-desktop" \
+            --prefix XDG_DATA_DIRS : "${gsettingsSchemaDataDirs}"
+        '';
     });
 in
   makeEnable config "myModules.code" true {
