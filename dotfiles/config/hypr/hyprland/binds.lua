@@ -54,8 +54,14 @@ function M.setup(ctx)
   end
 
   local function setup_display_wallpaper_and_capture_bindings()
-    bind("XF86MonBrightnessUp", exec("brightness.sh up"), desc("Raise display brightness", { repeating = true }))
-    bind("XF86MonBrightnessDown", exec("brightness.sh down"), desc("Lower display brightness", { repeating = true }))
+    local dotfiles_worktree = os.getenv("DOTFILES_WORKTREE")
+    local brightness_script = "brightness.sh"
+    if dotfiles_worktree and dotfiles_worktree ~= "" then
+      brightness_script = shell_quote(dotfiles_worktree .. "/dotfiles/lib/bin/brightness.sh")
+    end
+
+    bind("XF86MonBrightnessUp", exec(brightness_script .. " up"), desc("Raise display brightness", { repeating = true }))
+    bind("XF86MonBrightnessDown", exec(brightness_script .. " down"), desc("Lower display brightness", { repeating = true }))
     bind("Print", exec("flameshot gui"), desc("Take screenshot"))
     bind(hyper .. " + H", exec("flameshot gui"), desc("Take screenshot"))
     bind(hyper .. " + backslash", exec("mpg341cx_input toggle"), desc("Toggle monitor input"))
