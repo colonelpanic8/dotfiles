@@ -52,18 +52,18 @@ activate_localsend_tray_item() {
                 *) continue ;;
             esac
 
-            menu_path="$(timeout 3 busctl --user get-property "$service" "$item_path" org.kde.StatusNotifierItem Menu 2>/dev/null \
+            menu_path="$(busctl --user --timeout=3s get-property "$service" "$item_path" org.kde.StatusNotifierItem Menu 2>/dev/null \
                 | awk '$1 == "o" { gsub(/"/, "", $2); print $2; exit }')"
             [ -n "$menu_path" ] || continue
-            layout="$(timeout 3 busctl --user call "$service" "$menu_path" com.canonical.dbusmenu GetLayout iias 0 -- -1 0 2>/dev/null || true)"
+            layout="$(busctl --user --timeout=3s call "$service" "$menu_path" com.canonical.dbusmenu GetLayout iias 0 -- -1 0 2>/dev/null || true)"
             [ -n "$layout" ] || continue
             item_id="$(printf '%s\n' "$layout" | open_menu_item_id)"
             [ -n "$item_id" ] || continue
 
-            timeout 3 busctl --user call "$service" "$menu_path" com.canonical.dbusmenu Event isvu \
+            busctl --user --timeout=3s call "$service" "$menu_path" com.canonical.dbusmenu Event isvu \
                 "$item_id" clicked v i 0 0 >/dev/null 2>&1
             return 0
-        done < <(timeout 3 busctl --user tree "$service" --list 2>/dev/null || true)
+        done < <(busctl --user --timeout=3s tree "$service" --list 2>/dev/null || true)
     done < <(
         busctl --user list --no-legend 2>/dev/null \
             | awk -v pid="$pid" '$2 == pid && $1 ~ /^:/ { print $1 }'
@@ -82,8 +82,13 @@ if [ -z "$pid" ]; then
     done
 fi
 
-if [ -n "$pid" ] && activate_localsend_tray_item "$pid"; then
-    exit 0
+if [ -n "$pid" ]; then
+    # Never invoke a second LocalSend process when the tray instance is already
+    # alive. LocalSend forwards that invocation by creating another window in
+    # the existing process, which races Hyprland's scratchpad adoption and can
+    # leave multiple windows behind.
+    activate_localsend_tray_item "$pid"
+    exit $?
 fi
 
 exec localsend_app

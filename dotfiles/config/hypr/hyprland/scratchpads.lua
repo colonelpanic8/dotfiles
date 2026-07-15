@@ -53,6 +53,8 @@ function M.setup(ctx)
     localsend = {
       command = "localsend_scratchpad",
       class = "localsend_app",
+      allow_tiling = false,
+      autostart_hidden = true,
     },
     x_com = {
       command = "x-com-pwa",
@@ -514,6 +516,9 @@ function M.setup(ctx)
           show_scratchpad_window(name, window, pending.workspace or active_workspace(), pending.monitor or hl.get_active_monitor(), {
             force_geometry = true,
           })
+        elseif def.autostart_hidden and not window_has_scratchpad_tag(window) then
+          mark_window_as_floating_scratchpad(window, name)
+          hide_scratchpad_window(name, window)
         elseif scratchpad_is_visible(window) and window_is_floating_scratchpad(window) then
           schedule_scratchpad_geometry(name, window, hl.get_active_monitor())
         end
@@ -619,6 +624,12 @@ function M.setup(ctx)
 
   _G.im_hyprland_toggle_ai_scratchpad = toggle_active_ai_scratchpad
   _G.im_hyprland_show_ai_scratchpad = show_active_ai_scratchpad
+  _G.im_hyprland_toggle_localsend_scratchpad = function()
+    toggle_scratchpad("localsend")
+  end
+  _G.im_hyprland_toggle_localsend_scratchpad = function()
+    toggle_scratchpad("localsend")
+  end
 
   ctx.lower_contains = lower_contains
   ctx.lower_contains_any = lower_contains_any

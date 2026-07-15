@@ -43,7 +43,7 @@ in
             Requires = ["tray.target"];
           };
           Service = {
-            ExecStart = "${pkgs.localsend}/bin/localsend_app --hidden";
+            ExecStart = "${pkgs.localsend}/bin/localsend_app";
             Restart = "on-failure";
             RestartSec = 3;
           };
