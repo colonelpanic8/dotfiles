@@ -12,6 +12,7 @@
   aiHistoryHosts = ["ryzen-shine" "railbird-sf" "jay-lenovo" "strixi-minaj"];
   syncAiHistory = builtins.elem config.networking.hostName aiHistoryHosts;
   gmcliPackage = inputs.gmcli.packages.${pkgs.stdenv.hostPlatform.system}.default;
+  gmcliViewerBase = inputs.gmcli.packages.${pkgs.stdenv.hostPlatform.system}.gmcli-viewer;
   gmcliCookiePython = pkgs.python3.withPackages (ps: [ps.browser-cookie3]);
   gmcliArchiveRoot = "/home/imalison/Backups/gmcli/git-sync";
   gmcliArchiveOutput = "${gmcliArchiveRoot}/archive";
@@ -31,7 +32,18 @@
         cookie_file=${builtins.toJSON gmcliChromeCookieDB},
         domain_name=".google.com",
     )
-    json.dump({cookie.name: cookie.value for cookie in cookies}, sys.stdout)
+    # libgm stores cookies as a name/value map, so including cookies from
+    # accounts.google.com, mail.google.com, etc. can overwrite the cookie for
+    # messages.google.com and make Google redirect to CookieMismatch.
+    messages_domains = {".google.com", "messages.google.com"}
+    json.dump(
+        {
+            cookie.name: cookie.value
+            for cookie in cookies
+            if cookie.domain in messages_domains
+        },
+        sys.stdout,
+    )
     ' | ${gmcliPackage}/bin/gmcli auth refresh-cookies --cookies-file -
   '';
   exportGmcliArchive = pkgs.writeShellScript "export-gmcli-archive" ''
@@ -117,6 +129,15 @@
       exec ${command}
     '';
   refreshGmcliArchive = withGmcliBackupLock "refresh-gmcli-archive" refreshGmcliArchiveUnlocked;
+  gmcliViewer = pkgs.symlinkJoin {
+    name = "gmcli-viewer-with-managed-sync";
+    paths = [gmcliViewerBase];
+    nativeBuildInputs = [pkgs.makeWrapper];
+    postBuild = ''
+      wrapProgram "$out/bin/gmcli-viewer" \
+        --set GMCLI_ARCHIVE_SYNC_COMMAND ${lib.escapeShellArg refreshGmcliArchive}
+    '';
+  };
   backfillGmcliArchive = withGmcliBackupLock "backfill-gmcli-archive" backfillGmcliArchiveUnlocked;
   backupGmcliTelephonyFull = withGmcliBackupLock "backup-gmcli-telephony-full" exportGmcliTelephonyFullArchive;
   mkGitSyncTrayOverrides = icon: {
@@ -139,6 +160,8 @@
     gmcli-archive = "mail-message-new";
   };
 in {
+  environment.systemPackages = [gmcliViewer];
+
   home-manager.users.imalison = {config, ...}: {
     services.git-sync = {
       enable = true;

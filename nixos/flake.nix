@@ -86,7 +86,7 @@
     };
 
     gmcli = {
-      url = "github:colonelpanic8/gmcli/colonelpanic/gaia-account-pairing";
+      url = "github:colonelpanic8/gmcli";
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
