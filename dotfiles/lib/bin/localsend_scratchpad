@@ -1,0 +1,89 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+find_localsend_pid() {
+    local proc_exe
+    local pid
+    local exe
+
+    for proc_exe in /proc/[0-9]*/exe; do
+        [ -e "$proc_exe" ] || continue
+        pid="${proc_exe#/proc/}"
+        pid="${pid%/exe}"
+        [ "$(stat -c %u "/proc/$pid" 2>/dev/null || true)" = "$(id -u)" ] || continue
+        exe="$(readlink -f "$proc_exe" 2>/dev/null || true)"
+        if [ "$(basename "$exe")" = "localsend_app" ]; then
+            printf '%s\n' "$pid"
+            return 0
+        fi
+    done
+
+    return 1
+}
+
+open_menu_item_id() {
+    LOCALSEND_DBUSMENU_LAYOUT="$(cat)" python3 - <<'PY'
+import os
+import re
+
+layout = os.environ.get("LOCALSEND_DBUSMENU_LAYOUT", "")
+for record in layout.split("(ia{sv}av)")[1:]:
+    item_id = re.match(r"\s+([0-9]+)\s+", record)
+    if item_id and re.search(r'"label"\s+s\s+"Open"(?:\s|$)', record):
+        print(item_id.group(1))
+        break
+PY
+}
+
+activate_localsend_tray_item() {
+    local pid="$1"
+    local service
+    local item_path
+    local menu_path
+    local layout
+    local item_id
+
+    while IFS= read -r service; do
+        [ -n "$service" ] || continue
+        while IFS= read -r item_path; do
+            case "$item_path" in
+                */NotificationItem/*/Menu) continue ;;
+                */NotificationItem/*) ;;
+                *) continue ;;
+            esac
+
+            menu_path="$(timeout 3 busctl --user get-property "$service" "$item_path" org.kde.StatusNotifierItem Menu 2>/dev/null \
+                | awk '$1 == "o" { gsub(/"/, "", $2); print $2; exit }')"
+            [ -n "$menu_path" ] || continue
+            layout="$(timeout 3 busctl --user call "$service" "$menu_path" com.canonical.dbusmenu GetLayout iias 0 -- -1 0 2>/dev/null || true)"
+            [ -n "$layout" ] || continue
+            item_id="$(printf '%s\n' "$layout" | open_menu_item_id)"
+            [ -n "$item_id" ] || continue
+
+            timeout 3 busctl --user call "$service" "$menu_path" com.canonical.dbusmenu Event isvu \
+                "$item_id" clicked v i 0 0 >/dev/null 2>&1
+            return 0
+        done < <(timeout 3 busctl --user tree "$service" --list 2>/dev/null || true)
+    done < <(
+        busctl --user list --no-legend 2>/dev/null \
+            | awk -v pid="$pid" '$2 == pid && $1 ~ /^:/ { print $1 }'
+    )
+
+    return 1
+}
+
+pid="$(find_localsend_pid || true)"
+if [ -z "$pid" ]; then
+    systemctl --user start localsend.service >/dev/null 2>&1 || true
+    for _ in $(seq 1 30); do
+        pid="$(find_localsend_pid || true)"
+        [ -n "$pid" ] && break
+        sleep 0.1
+    done
+fi
+
+if [ -n "$pid" ] && activate_localsend_tray_item "$pid"; then
+    exit 0
+fi
+
+exec localsend_app

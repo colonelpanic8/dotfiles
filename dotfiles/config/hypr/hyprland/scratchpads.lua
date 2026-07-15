@@ -50,6 +50,10 @@ function M.setup(ctx)
       command = "google-chrome-stable --profile-directory=Default --app=https://messages.google.com/web/conversations",
       class = "chrome-messages.google.com",
     },
+    localsend = {
+      command = "localsend_scratchpad",
+      class = "localsend_app",
+    },
     x_com = {
       command = "x-com-pwa",
       classes = { "x-com-pwa", "chrome-x.com" },

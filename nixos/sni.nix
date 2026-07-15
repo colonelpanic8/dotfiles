@@ -35,6 +35,23 @@ in
           };
         };
 
+        systemd.user.services.localsend = {
+          Unit = {
+            Description = "LocalSend tray app";
+            After = ["graphical-session.target" "tray.target"];
+            PartOf = ["graphical-session.target"];
+            Requires = ["tray.target"];
+          };
+          Service = {
+            ExecStart = "${pkgs.localsend}/bin/localsend_app --hidden";
+            Restart = "on-failure";
+            RestartSec = 3;
+          };
+          Install = {
+            WantedBy = ["graphical-session.target"];
+          };
+        };
+
         services.kdeconnect = {
           enable = true;
           indicator = true;

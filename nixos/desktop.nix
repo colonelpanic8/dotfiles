@@ -353,6 +353,7 @@
         kdePackages.kleopatra
         libnotify
         libreoffice
+        localsend
         loupe
         lxappearance
         lxqt.lxqt-powermanagement
