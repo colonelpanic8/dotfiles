@@ -25,3 +25,154 @@ index 6c225c2..fce1fac 100644
                --prefix PATH : "/etc/profiles/per-user/$(whoami)/bin"
 
              runHook postInstall
+diff --git a/computer-use-linux/src/chrome_runtime.rs b/computer-use-linux/src/chrome_runtime.rs
+index e8e7c29..e16097f 100644
+--- a/computer-use-linux/src/chrome_runtime.rs
++++ b/computer-use-linux/src/chrome_runtime.rs
+@@ -1326,16 +1326,20 @@ fn validate_trusted_parent_chain(path: &Path) -> RuntimeResult<()> {
+         if metadata.uid() != euid && metadata.uid() != 0 {
+             return Err(required_path_error("parent"));
+         }
+-        if has_unsafe_write_permissions(&metadata) && !is_root_owned_sticky_directory(&metadata) {
++        if has_unsafe_write_permissions(&metadata)
++            && !is_root_owned_sticky_directory(metadata.uid(), metadata.permissions().mode())
++        {
+             return Err(required_path_error("parent"));
+         }
+     }
+     Ok(())
+ }
+ 
+-fn is_root_owned_sticky_directory(metadata: &fs::Metadata) -> bool {
+-    let mode = metadata.permissions().mode();
+-    metadata.uid() == 0 && mode & libc::S_ISVTX != 0 && mode & 0o002 != 0
++fn is_root_owned_sticky_directory(uid: u32, mode: u32) -> bool {
++    // Sticky-directory semantics protect existing entries regardless of whether
++    // write access is granted through the group bit (for example, a 1775 Nix
++    // store) or the world bit (the usual 1777 /tmp case).
++    uid == 0 && mode & libc::S_ISVTX != 0
+ }
+ 
+ fn current_executable_identity() -> RuntimeResult<FileIdentity> {
+@@ -2969,6 +2973,14 @@ mod tests {
+         fs::remove_dir_all(root).unwrap();
+     }
+ 
++    #[test]
++    fn root_owned_sticky_directory_accepts_nix_store_permissions() {
++        assert!(is_root_owned_sticky_directory(0, 0o1775));
++        assert!(is_root_owned_sticky_directory(0, 0o1777));
++        assert!(!is_root_owned_sticky_directory(0, 0o0775));
++        assert!(!is_root_owned_sticky_directory(1, 0o1775));
++    }
++
+     #[test]
+     fn socket_readiness_requires_an_owned_unix_socket() {
+         let root = test_root("socket-ready");
+diff --git a/launcher/cli-launch-path.py b/launcher/cli-launch-path.py
+index 6bbd46e..e8c7f3d 100644
+--- a/launcher/cli-launch-path.py
++++ b/launcher/cli-launch-path.py
+@@ -67,11 +67,7 @@ def validate_parent_chain(path: Path, subject: str) -> None:
+                 f"{subject} ancestor {parent} is owned by untrusted uid {metadata.st_uid}"
+             )
+         writable = metadata.st_mode & 0o022
+-        root_owned_sticky = (
+-            metadata.st_uid == 0
+-            and metadata.st_mode & stat.S_ISVTX
+-            and metadata.st_mode & 0o002
+-        )
++        root_owned_sticky = metadata.st_uid == 0 and metadata.st_mode & stat.S_ISVTX
+         if writable and not root_owned_sticky:
+             raise TrustError(
+                 f"{subject} ancestor {parent} is group/world-writable and therefore untrusted"
+diff --git a/tests/scripts_smoke.sh b/tests/scripts_smoke.sh
+index 9995924..d69efa5 100755
+--- a/tests/scripts_smoke.sh
++++ b/tests/scripts_smoke.sh
+@@ -6808,7 +6808,10 @@ SCRIPT
+ import importlib.util
+ import os
+ import pathlib
++import stat
+ import sys
++from types import SimpleNamespace
++from unittest import mock
+ 
+ path = pathlib.Path(sys.argv[1])
+ spec = importlib.util.spec_from_file_location("cli_launch_path", path)
+@@ -6821,6 +6824,31 @@ untrusted_uid = 2 if euid == 1 else 1
+ assert module.trusted_owner(euid)
+ assert module.trusted_owner(0)
+ assert not module.trusted_owner(untrusted_uid)
++
++trusted_ancestors = {
++    pathlib.Path("/"): SimpleNamespace(st_mode=stat.S_IFDIR | 0o755, st_uid=0),
++    pathlib.Path("/nix"): SimpleNamespace(st_mode=stat.S_IFDIR | 0o755, st_uid=0),
++    pathlib.Path("/nix/store"): SimpleNamespace(st_mode=stat.S_IFDIR | stat.S_ISVTX | 0o775, st_uid=0),
++    pathlib.Path("/nix/store/example"): SimpleNamespace(st_mode=stat.S_IFDIR | 0o555, st_uid=0),
++    pathlib.Path("/nix/store/example/bin"): SimpleNamespace(st_mode=stat.S_IFDIR | 0o555, st_uid=0),
++}
++with mock.patch.object(pathlib.Path, "lstat", autospec=True, side_effect=trusted_ancestors.__getitem__):
++    module.validate_parent_chain(
++        pathlib.Path("/nix/store/example/bin/codex"),
++        "Selected Codex CLI target",
++    )
++
++trusted_ancestors[pathlib.Path("/nix/store")].st_mode = stat.S_IFDIR | 0o775
++with mock.patch.object(pathlib.Path, "lstat", autospec=True, side_effect=trusted_ancestors.__getitem__):
++    try:
++        module.validate_parent_chain(
++            pathlib.Path("/nix/store/example/bin/codex"),
++            "Selected Codex CLI target",
++        )
++    except module.TrustError:
++        pass
++    else:
++        raise AssertionError("root-owned group-writable ancestors without sticky must remain untrusted")
+ PY
+ 
+     rm "$visible_cli"
+diff --git a/updater/src/codex_cli.rs b/updater/src/codex_cli.rs
+index 01586e4..26c3895 100644
+--- a/updater/src/codex_cli.rs
++++ b/updater/src/codex_cli.rs
+@@ -1575,6 +1575,13 @@ fn trusted_owner(uid: u32, euid: u32) -> bool {
+     uid == euid || uid == 0
+ }
+ 
++fn root_owned_sticky_directory(uid: u32, mode: u32) -> bool {
++    // Sticky-directory semantics protect existing entries regardless of whether
++    // write access is granted through the group bit (for example, a 1775 Nix
++    // store) or the world bit (the usual 1777 /tmp case).
++    uid == 0 && mode & libc::S_ISVTX != 0
++}
++
+ fn cli_trust_error(cli_path: &Path, trust_error: anyhow::Error) -> anyhow::Error {
+     trust_error.context(format!(
+         "Refusing to execute the untrusted Codex CLI at {}; for a rejected managed standalone install, stop active Codex installers, remove its standalone tree, then run the official Codex installer through codex-update-manager recover-standalone-cli",
+@@ -1835,8 +1842,7 @@ fn validate_trusted_parent_chain(path: &Path, subject: &str) -> Result<()> {
+         );
+ 
+         let mode = metadata.permissions().mode();
+-        let root_owned_sticky_directory =
+-            metadata.uid() == 0 && mode & libc::S_ISVTX != 0 && mode & 0o002 != 0;
++        let root_owned_sticky_directory = root_owned_sticky_directory(metadata.uid(), mode);
+         anyhow::ensure!(
+             mode & 0o022 == 0 || root_owned_sticky_directory,
+             "{subject} ancestor {} is group/world-writable and therefore untrusted",
+@@ -2727,6 +2733,14 @@ mod tests {
+     use std::{fs, os::unix::fs::PermissionsExt, path::Path};
+     use tempfile::tempdir;
+ 
++    #[test]
++    fn root_owned_sticky_directory_accepts_nix_store_permissions() {
++        assert!(super::root_owned_sticky_directory(0, 0o1775));
++        assert!(super::root_owned_sticky_directory(0, 0o1777));
++        assert!(!super::root_owned_sticky_directory(0, 0o0775));
++        assert!(!super::root_owned_sticky_directory(1, 0o1775));
++    }
++
+     fn write_executable_script(path: &Path, contents: &str) -> Result<()> {
+         let temp_root = std::env::temp_dir();
+         for directory in path.parent().into_iter().flat_map(Path::ancestors) {
