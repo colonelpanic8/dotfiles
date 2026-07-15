@@ -738,11 +738,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1783914427,
-        "narHash": "sha256-qrzwgZN4rjLbC5G2FkdhzJAlup0US8eTO9FUH1NjJjo=",
+        "lastModified": 1784154905,
+        "narHash": "sha256-vZ34XGkj3n6dtILamgsQb1OMWcK0AxU3bDcdY5sLxS4=",
         "owner": "colonelpanic8",
         "repo": "gmcli",
-        "rev": "7d198b8362de0e1126b9647fffa252c3ffe2ac7b",
+        "rev": "20faaf8b254dd7f77f204a92ae28d29bc2b4a0b0",
         "type": "github"
       },
       "original": {
