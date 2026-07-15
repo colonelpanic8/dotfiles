@@ -197,6 +197,7 @@ in {
   boot.kernelModules = ["kvm-intel"];
   boot.extraModulePackages = [];
   hardware.nvidia.powerManagement.enable = true;
+  hardware.nvidia.dynamicBoost.enable = true;
   # In Hybrid mode Hyprland renders on Intel while NVIDIA stays available for
   # compute and explicit render offload. The hardware MUX can still select a
   # fully NVIDIA-driven display path after a reboot.
