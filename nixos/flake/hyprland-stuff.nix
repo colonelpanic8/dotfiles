@@ -121,7 +121,16 @@
           'intel_drm_device="/dev/dri/by-path/pci-0000:00:02.0-card"' \
           'if [ -e "$nvidia_drm_device" ] && [ -e "$intel_drm_device" ]; then' \
           '  # AQ_DRM_DEVICES is colon-delimited, so PCI by-path names cannot be used directly.' \
-          '  export AQ_DRM_DEVICES="$(${pkgs.coreutils}/bin/readlink -f "$nvidia_drm_device"):$(${pkgs.coreutils}/bin/readlink -f "$intel_drm_device")"' \
+          '  nvidia_drm_device="$(${pkgs.coreutils}/bin/readlink -f "$nvidia_drm_device")"' \
+          '  intel_drm_device="$(${pkgs.coreutils}/bin/readlink -f "$intel_drm_device")"' \
+          '  mux_mode="$(${pkgs.coreutils}/bin/cat /sys/devices/platform/asus-nb-wmi/gpu_mux_mode 2>/dev/null || true)"' \
+          '  if [ "$mux_mode" = 1 ]; then' \
+          '    # Optimus/Hybrid: render on Intel and retain NVIDIA for compute/offload.' \
+          '    export AQ_DRM_DEVICES="$intel_drm_device:$nvidia_drm_device"' \
+          '  else' \
+          '    # Hardware dGPU MUX, or an unknown platform: preserve NVIDIA-first behavior.' \
+          '    export AQ_DRM_DEVICES="$nvidia_drm_device:$intel_drm_device"' \
+          '  fi' \
           'fi' \
           'config_path="''${XDG_CONFIG_HOME:-$HOME/.config}/hypr/hyprland.lua"' \
           'exec "${package}/bin/start-hyprland" --path "@out@/bin/Hyprland" -- --config "$config_path" "$@"' \

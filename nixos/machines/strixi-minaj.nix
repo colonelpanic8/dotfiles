@@ -19,6 +19,79 @@
 
     ${pkgs.pulseaudio}/bin/pactl set-card-profile ${builtInAudioCard} ${builtInAudioDuplexProfile}
   '';
+  gpuMode = pkgs.writeShellApplication {
+    name = "gpu-mode";
+    runtimeInputs = [pkgs.coreutils pkgs.supergfxctl pkgs.systemd];
+    text = ''
+      usage() {
+        cat <<'EOF'
+      Usage:
+        gpu-mode status
+        gpu-mode hybrid [--reboot]
+        gpu-mode nvidia [--reboot]
+
+      Hybrid renders displays on Intel while keeping NVIDIA available for
+      compute and explicit render offload. NVIDIA selects the hardware MUX.
+      EOF
+      }
+
+      show_status() {
+        mux_state="unknown"
+        if [[ -r /sys/devices/platform/asus-nb-wmi/gpu_mux_mode ]]; then
+          case "$(< /sys/devices/platform/asus-nb-wmi/gpu_mux_mode)" in
+            0) mux_state="nvidia" ;;
+            1) mux_state="hybrid" ;;
+          esac
+        fi
+
+        printf 'Configured mode: '
+        supergfxctl --get
+        printf 'Hardware MUX: %s\n' "$mux_state"
+      }
+
+      requested="''${1:-status}"
+      reboot_after=0
+      if [[ "''${2:-}" == "--reboot" ]]; then
+        reboot_after=1
+      elif [[ -n "''${2:-}" ]]; then
+        usage >&2
+        exit 2
+      fi
+
+      case "$requested" in
+        status)
+          [[ $# -eq 0 || $# -eq 1 ]] || {
+            usage >&2
+            exit 2
+          }
+          show_status
+          exit 0
+          ;;
+        hybrid)
+          mode=Hybrid
+          ;;
+        nvidia|dgpu|dedicated)
+          mode=AsusMuxDgpu
+          ;;
+        -h|--help|help)
+          usage
+          exit 0
+          ;;
+        *)
+          usage >&2
+          exit 2
+          ;;
+      esac
+
+      supergfxctl --mode "$mode"
+
+      if [[ "$reboot_after" -eq 1 ]]; then
+        systemctl reboot
+      else
+        echo "GPU mode set to $mode; reboot to apply the hardware MUX change."
+      fi
+    '';
+  };
 in {
   imports = [
     ../configuration.nix
@@ -88,6 +161,7 @@ in {
 
   environment.systemPackages = with pkgs; [
     android-studio
+    gpuMode
     gimp
     inkscape
   ];
@@ -123,14 +197,16 @@ in {
   boot.kernelModules = ["kvm-intel"];
   boot.extraModulePackages = [];
   hardware.nvidia.powerManagement.enable = true;
-  # This laptop has a hardware MUX, so prefer dGPU-only mode instead of
-  # PRIME sync hybrid mode to keep the compositor and displays on NVIDIA.
-  hardware.nvidia.prime.offload.enable = lib.mkForce false;
+  # In Hybrid mode Hyprland renders on Intel while NVIDIA stays available for
+  # compute and explicit render offload. The hardware MUX can still select a
+  # fully NVIDIA-driven display path after a reboot.
+  hardware.nvidia.prime.offload.enable = lib.mkForce true;
+  hardware.nvidia.prime.offload.enableOffloadCmd = true;
   hardware.nvidia.prime.sync.enable = lib.mkForce false;
   services.asusd.enable = true;
-  services.supergfxd.settings = {
-    mode = "AsusMuxDgpu";
-  };
+  # Leave settings unmanaged so supergfxd can persist gpu-mode selections in
+  # its mutable /etc/supergfxd.conf instead of fighting a Nix store symlink.
+  services.supergfxd.enable = true;
   services.power-profiles-daemon.enable = false;
   services.tlp.enable = false;
 
