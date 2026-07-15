@@ -35,6 +35,12 @@ function M.setup(ctx)
   end
 
   local function setup_audio_media_bindings()
+    bind("F5", exec("voxtype record start"), desc("Start hold-to-talk dictation"))
+    bind("F5", exec("voxtype record stop"), desc("Stop and transcribe hold-to-talk dictation", { release = true }))
+    bind(hyper .. " + B", exec("voxtype record start"), desc("Start hold-to-talk dictation"))
+    bind(hyper .. " + B", exec("voxtype record stop"), desc("Stop and transcribe hold-to-talk dictation", { release = true }))
+    bind(hyper .. " + Escape", exec("voxtype record cancel"), desc("Cancel voice dictation"))
+
     bind(main_mod .. " + I", exec("set_volume --unmute --change-volume +5"), desc("Raise volume", { repeating = true }))
     bind(main_mod .. " + K", exec("set_volume --unmute --change-volume -5"), desc("Lower volume", { repeating = true }))
     bind(main_mod .. " + U", exec("set_volume --toggle-mute"), desc("Toggle mute"))

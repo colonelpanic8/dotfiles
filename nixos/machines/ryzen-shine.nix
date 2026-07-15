@@ -25,6 +25,7 @@
   myModules.gitea-runner.enable = false;
   myModules.postgres.enable = true;
   myModules.tts.enable = true;
+  myModules.voxtype.enable = true;
   myModules.cua = {
     enable = true;
     android = {

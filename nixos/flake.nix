@@ -101,6 +101,11 @@
       };
     };
 
+    voxtype = {
+      url = "github:peteonrails/voxtype";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+
     kanshi-sni = {
       url = "github:taffybar/kanshi-sni";
       inputs = {
