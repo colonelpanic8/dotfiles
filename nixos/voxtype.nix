@@ -1,0 +1,84 @@
+{
+  config,
+  inputs,
+  lib,
+  pkgs,
+  ...
+}: let
+  cfg = config.myModules.voxtype;
+  system = pkgs.stdenv.hostPlatform.system;
+  voxtypePackages = inputs.voxtype.packages.${system};
+in {
+  options.myModules.voxtype = {
+    enable = lib.mkEnableOption "local push-to-talk voice dictation";
+
+    onDemandLoading = lib.mkOption {
+      type = lib.types.bool;
+      default = false;
+      description = "Load the Whisper model only when it is needed.";
+    };
+
+    gpuIsolation = lib.mkOption {
+      type = lib.types.bool;
+      default = false;
+      description = "Run transcription in a subprocess so GPU memory is released after each use.";
+    };
+
+    gpuDevice = lib.mkOption {
+      type = lib.types.nullOr (lib.types.ints.between 0 7);
+      default = null;
+      description = ''
+        Vulkan GPU device index for Whisper. Set this on multi-GPU hosts so
+        Voxtype does not accidentally select an integrated GPU.
+      '';
+    };
+  };
+
+  config = lib.mkIf cfg.enable {
+    home-manager.users.imalison = {
+      imports = [inputs.voxtype.homeManagerModules.default];
+
+      home.packages = [voxtypePackages.osd-gtk4];
+
+      programs.voxtype = {
+        enable = true;
+        package = voxtypePackages.vulkan;
+        engine = "whisper";
+        model.name = "large-v3-turbo";
+        service.enable = true;
+
+        settings = {
+          hotkey.enabled = false;
+
+          audio = {
+            device = "default";
+            max_duration_secs = 120;
+          };
+
+          whisper =
+            {
+              language = "en";
+              translate = false;
+              on_demand_loading = cfg.onDemandLoading;
+              gpu_isolation = cfg.gpuIsolation;
+              initial_prompt = "Ivan Malison, Railbird, NixOS, Hyprland, Taffybar, Emacs, Codex.";
+            }
+            // lib.optionalAttrs (cfg.gpuDevice != null) {
+              gpu_device = cfg.gpuDevice;
+            };
+
+          output = {
+            mode = "type";
+            fallback_to_clipboard = true;
+            pre_type_delay_ms = 100;
+            notification = {
+              on_recording_start = true;
+              on_recording_stop = true;
+              on_transcription = false;
+            };
+          };
+        };
+      };
+    };
+  };
+}

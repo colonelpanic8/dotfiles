@@ -56,6 +56,7 @@
     ./tts.nix
     ./users.nix
     ./vscode.nix
+    ./voxtype.nix
     ./waybar.nix
     ./wsl.nix
     ./wyoming.nix

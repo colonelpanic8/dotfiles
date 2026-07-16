@@ -113,6 +113,12 @@ in {
   myModules.electron.enable = true;
   myModules.wyoming.enable = false;
   myModules.tts.enable = true;
+  myModules.voxtype = {
+    enable = true;
+    onDemandLoading = true;
+    gpuIsolation = true;
+    gpuDevice = 1;
+  };
   myModules."keepbook-sync".enable = true;
 
   hardware.enableRedistributableFirmware = true;

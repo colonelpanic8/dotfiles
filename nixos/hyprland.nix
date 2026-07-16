@@ -176,7 +176,6 @@
     then "1"
     else "0";
   hyprlandCursorSizeString = toString config.myModules.hyprland.cursorSize;
-  voxtypePackage = inputs.voxtype.packages.${system}.vulkan;
   enableHyprglass = false;
   hyprglass = pkgs.callPackage ./packages/hyprglass {
     src = inputs.hyprglass;
@@ -441,47 +440,6 @@
       IMALISON_HYPRLAND_CURSOR_SIZE = hyprlandCursorSizeString;
       XCURSOR_SIZE = hyprlandCursorSizeString;
       HYPRCURSOR_SIZE = hyprlandCursorSizeString;
-    };
-
-    home-manager.users.imalison = lib.mkIf config.myModules.voxtype.enable {
-      imports = [inputs.voxtype.homeManagerModules.default];
-
-      home.packages = [inputs.voxtype.packages.${system}.osd-gtk4];
-
-      programs.voxtype = {
-        enable = true;
-        package = voxtypePackage;
-        engine = "whisper";
-        model.name = "large-v3-turbo";
-        service.enable = true;
-
-        settings = {
-          hotkey.enabled = false;
-
-          audio = {
-            device = "default";
-            max_duration_secs = 120;
-          };
-
-          whisper = {
-            language = "en";
-            translate = false;
-            on_demand_loading = false;
-            initial_prompt = "Ivan Malison, Railbird, NixOS, Hyprland, Taffybar, Emacs, Codex.";
-          };
-
-          output = {
-            mode = "type";
-            fallback_to_clipboard = true;
-            pre_type_delay_ms = 100;
-            notification = {
-              on_recording_start = true;
-              on_recording_stop = true;
-              on_transcription = false;
-            };
-          };
-        };
-      };
     };
 
     home-manager.sharedModules = [
