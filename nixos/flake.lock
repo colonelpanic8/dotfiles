@@ -738,16 +738,15 @@
         ]
       },
       "locked": {
-        "lastModified": 1783914427,
-        "narHash": "sha256-qrzwgZN4rjLbC5G2FkdhzJAlup0US8eTO9FUH1NjJjo=",
+        "lastModified": 1784156658,
+        "narHash": "sha256-J3gZ8qp+czIV/226v30VZVS+j9PptV5Bx92K2q6Y7t0=",
         "owner": "colonelpanic8",
         "repo": "gmcli",
-        "rev": "7d198b8362de0e1126b9647fffa252c3ffe2ac7b",
+        "rev": "a72041ae1493aa907fd94593ceb08d56af24cd50",
         "type": "github"
       },
       "original": {
         "owner": "colonelpanic8",
-        "ref": "colonelpanic/gaia-account-pairing",
         "repo": "gmcli",
         "type": "github"
       }
