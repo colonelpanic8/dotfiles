@@ -6,7 +6,7 @@ switch *args:
 	dotfiles_worktree="$(/run/current-system/sw/bin/readlink -f "$PWD/..")"; /run/wrappers/bin/sudo env DOTFILES_WORKTREE="$dotfiles_worktree" PATH=/run/current-system/sw/bin:/nix/var/nix/profiles/system/sw/bin:/etc/profiles/per-user/root/bin:/usr/bin:/bin /run/current-system/sw/bin/nixos-rebuild switch --flake ".#" --impure --option substituters '{{switch-substituters}}' --option trusted-public-keys '{{switch-trusted-public-keys}}' {{args}}
 
 bump-claude-codex *args:
-	PATH=/run/current-system/sw/bin:/nix/var/nix/profiles/system/sw/bin:/etc/profiles/per-user/root/bin:/usr/bin:/bin nix flake update codex-cli-nix codex-desktop-linux claude-code-nix claude-desktop
+	PATH=/run/current-system/sw/bin:/nix/var/nix/profiles/system/sw/bin:/etc/profiles/per-user/root/bin:/usr/bin:/bin nix flake update codex-cli-nix codex-desktop-linux claude-code-nix claude-desktop t3code-nix
 	just switch {{args}}
 
 bump-t3code *args:
