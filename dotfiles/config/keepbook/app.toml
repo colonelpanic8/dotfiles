@@ -1,0 +1,17 @@
+active_repository = "personal"
+
+[[repositories]]
+id = "personal"
+name = "Personal"
+path = "/home/imalison/.local/share/keepbook"
+config_path = "/home/imalison/.local/share/keepbook/keepbook.toml"
+remote = "git@github.com:colonelpanic8/keepbook-data.git"
+branch = "master"
+
+[[repositories]]
+id = "parents"
+name = "Parents"
+path = "/home/imalison/.local/share/keepbook-parents"
+config_path = "/home/imalison/.local/share/keepbook-parents/keepbook.toml"
+remote = "git@github.com:colonelpanic8/keepbook-parents.git"
+branch = "master"
