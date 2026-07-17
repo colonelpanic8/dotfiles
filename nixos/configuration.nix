@@ -4,6 +4,7 @@
   ...
 }: {
   imports = [
+    ./agent-workspace.nix
     ./android.nix
     ./base.nix
     ./ben.nix
