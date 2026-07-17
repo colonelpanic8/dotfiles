@@ -156,8 +156,10 @@
     } ''
       mkdir -p "$out/bin" "$out/share/applications"
 
+      # The packaged launcher removes DISPLAY when this is set. Spotify's
+      # renderer otherwise falls back to X11 even with the Ozone flags below.
       makeWrapper ${pkgs.spotify}/bin/spotify "$out/bin/spotify" \
-        --unset NIXOS_OZONE_WL \
+        --set NIXOS_OZONE_WL 1 \
         ${spotifyWaylandWrapperArgs}
 
       cp ${pkgs.spotify}/share/applications/spotify.desktop "$out/share/applications/spotify.desktop"
