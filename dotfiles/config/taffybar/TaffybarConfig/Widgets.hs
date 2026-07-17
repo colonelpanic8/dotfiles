@@ -157,7 +157,7 @@ mprisWidget =
 batteryInnerWidget :: TaffyIO Gtk.Widget
 batteryInnerWidget = do
   iconWidget <- batteryTextIconNew
-  labelWidget <- textBatteryNew "$percentage$%"
+  labelWidget <- textBatteryNew "$percentage$% $signedWatts$W"
   liftIO (buildIconLabelBox iconWidget labelWidget) >>= flip widgetSetClassGI "battery"
 
 batteryWidget :: TaffyIO Gtk.Widget
