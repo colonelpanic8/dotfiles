@@ -5,6 +5,9 @@
       global = {
         monitor = 0;
         follow = "mouse";
+        # Keep notifications below overlay-layer surfaces (the screensaver);
+        # dunst's Wayland default is the overlay layer itself.
+        layer = "top";
         indicate_hidden = "yes";
         stack_duplicates = true;
         hide_duplicate_count = false;

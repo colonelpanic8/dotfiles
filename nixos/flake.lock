@@ -1140,6 +1140,22 @@
         "type": "github"
       }
     },
+    "hyprsaver": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1781229255,
+        "narHash": "sha256-mW1CUItfXvmw+An63pra6puEEo99eB4Z3K2JyBAXdEI=",
+        "owner": "maravexa",
+        "repo": "hyprsaver",
+        "rev": "01aa0b61efc81cf5d199e100e81875572318d52b",
+        "type": "github"
+      },
+      "original": {
+        "owner": "maravexa",
+        "repo": "hyprsaver",
+        "type": "github"
+      }
+    },
     "hyprscratch": {
       "inputs": {
         "nixpkgs": [
@@ -2057,6 +2073,7 @@
           "hyprland",
           "hyprlang"
         ],
+        "hyprsaver": "hyprsaver",
         "hyprscratch": "hyprscratch",
         "hyprtasking": "hyprtasking",
         "hyprutils": "hyprutils",

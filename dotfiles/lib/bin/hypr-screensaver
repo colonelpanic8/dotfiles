@@ -5,11 +5,12 @@ set -euo pipefail
 state_dir="${XDG_RUNTIME_DIR:-/tmp}/hypr-screensaver"
 pid_file="$state_dir/mpvpaper.pid"
 neowall_pid_file="$state_dir/neowall.pid"
+hyprsaver_pid_file="$state_dir/hyprsaver.pid"
 event_log="$state_dir/events.log"
 mkdir -p "$state_dir"
 
 title_prefix="hypr-screensaver:"
-backend="${HYPR_SCREENSAVER_BACKEND:-mpvpaper}"
+backend="${HYPR_SCREENSAVER_BACKEND:-hyprsaver}"
 screensaver_dir="${HYPR_SCREENSAVER_DIR:-/var/lib/syncthing/sync/Screensaver}"
 screensaver_use_dir="${HYPR_SCREENSAVER_USE_DIR:-$screensaver_dir/use}"
 neowall_config="${HYPR_SCREENSAVER_NEOWALL_CONFIG:-${XDG_CONFIG_HOME:-$HOME/.config}/neowall/screensaver.vibe}"
@@ -49,11 +50,19 @@ with:
   HYPR_SCREENSAVER_HDR_MODE=hdr
 
 Backend selection:
+  HYPR_SCREENSAVER_BACKEND=hyprsaver
   HYPR_SCREENSAVER_BACKEND=mpvpaper
   HYPR_SCREENSAVER_BACKEND=neowall
 
+The default hyprsaver backend renders GLSL shaders on an overlay layer surface.
+Pass extra flags with HYPR_SCREENSAVER_HYPRSAVER_ARGS, for example:
+  HYPR_SCREENSAVER_HYPRSAVER_ARGS='--shader cycle --palette cycle'
+
 The neowall backend is a wallpaper-layer experiment. It does not cover existing
 windows like mpvpaper's overlay layer.
+
+While the screensaver is active, dunst notifications are paused
+(dunstctl set-paused true) and resume on stop.
 EOF
 }
 
@@ -74,10 +83,16 @@ legacy_screensaver_window_pids() {
 }
 
 is_running() {
-  if [ "$backend" = "neowall" ]; then
-    neowall_is_running
-    return
-  fi
+  case "$backend" in
+    neowall)
+      neowall_is_running
+      return
+      ;;
+    hyprsaver)
+      hyprsaver_is_running
+      return
+      ;;
+  esac
 
   local pid
   if [ -f "$pid_file" ]; then
@@ -86,6 +101,19 @@ is_running() {
       return 0
     fi
     rm -f "$pid_file"
+  fi
+
+  return 1
+}
+
+hyprsaver_is_running() {
+  if [ -f "$hyprsaver_pid_file" ]; then
+    local pid
+    pid="$(<"$hyprsaver_pid_file")"
+    if kill -0 "$pid" 2>/dev/null; then
+      return 0
+    fi
+    rm -f "$hyprsaver_pid_file"
   fi
 
   return 1
@@ -202,6 +230,15 @@ run_mpvpaper() {
   exec nix shell nixpkgs#mpvpaper --command mpvpaper "$@"
 }
 
+run_hyprsaver() {
+  if command -v hyprsaver >/dev/null 2>&1; then
+    hyprsaver "$@"
+    return
+  fi
+
+  nix run github:maravexa/hyprsaver -- "$@"
+}
+
 run_neowall() {
   if command -v neowall >/dev/null 2>&1; then
     neowall "$@"
@@ -224,7 +261,7 @@ start_neowall() {
     return 1
   fi
 
-  stop
+  stop_backends
   systemctl --user stop hyprpaper.service >/dev/null 2>&1 || true
   run_neowall -c "$neowall_config" >>"$state_dir/neowall.log" 2>&1
 
@@ -239,6 +276,40 @@ start_neowall() {
   log_event "neowall start ok pid=$pid config=$neowall_config"
 }
 
+start_hyprsaver() {
+  local pid
+  local -a extra_args=()
+
+  if hyprsaver_is_running; then
+    log_event "hyprsaver start ignored: already running pid=$(<"$hyprsaver_pid_file")"
+    exit 0
+  fi
+
+  stop_backends
+
+  if [ -n "${HYPR_SCREENSAVER_HYPRSAVER_ARGS:-}" ]; then
+    # shellcheck disable=SC2206
+    extra_args=(${HYPR_SCREENSAVER_HYPRSAVER_ARGS})
+  else
+    extra_args=(--shader cycle --palette cycle)
+  fi
+
+  log_event "hyprsaver start args=${extra_args[*]}"
+  (
+    exec </dev/null
+    run_hyprsaver "${extra_args[@]}"
+  ) >>"$state_dir/hyprsaver.log" 2>&1 &
+  pid=$!
+  printf '%s\n' "$pid" > "$hyprsaver_pid_file"
+  sleep 0.2
+  if ! kill -0 "$pid" 2>/dev/null; then
+    rm -f "$hyprsaver_pid_file"
+    log_event "hyprsaver start failed: process exited early pid=$pid"
+    return 1
+  fi
+  log_event "hyprsaver start ok pid=$pid"
+}
+
 start_mpvpaper() {
   local source output layer options pid
 
@@ -247,7 +318,7 @@ start_mpvpaper() {
     exit 0
   fi
 
-  stop
+  stop_backends
 
   source="${HYPR_SCREENSAVER_SOURCE:-}"
   if [ -z "$source" ]; then
@@ -277,8 +348,23 @@ start_mpvpaper() {
   log_event "start ok pid=$pid"
 }
 
+pause_notifications() {
+  if command -v dunstctl >/dev/null 2>&1; then
+    dunstctl set-paused true >/dev/null 2>&1 || true
+  fi
+}
+
+resume_notifications() {
+  if command -v dunstctl >/dev/null 2>&1; then
+    dunstctl set-paused false >/dev/null 2>&1 || true
+  fi
+}
+
 start() {
   case "$backend" in
+    hyprsaver)
+      start_hyprsaver
+      ;;
     mpvpaper)
       start_mpvpaper
       ;;
@@ -286,10 +372,12 @@ start() {
       start_neowall
       ;;
     *)
-      printf 'Invalid HYPR_SCREENSAVER_BACKEND=%s; expected mpvpaper or neowall\n' "$backend" >&2
+      printf 'Invalid HYPR_SCREENSAVER_BACKEND=%s; expected hyprsaver, mpvpaper, or neowall\n' "$backend" >&2
       exit 2
       ;;
   esac
+
+  pause_notifications
 }
 
 stop_mpvpaper() {
@@ -320,9 +408,29 @@ stop_neowall() {
   fi
 }
 
-stop() {
+stop_hyprsaver() {
+  if [ -f "$hyprsaver_pid_file" ]; then
+    local pid
+    pid="$(<"$hyprsaver_pid_file")"
+    log_event "hyprsaver stop pid=$pid"
+    if command -v hyprsaver >/dev/null 2>&1; then
+      hyprsaver --quit >/dev/null 2>&1 || true
+    fi
+    kill "$pid" >/dev/null 2>&1 || true
+    pkill -TERM -P "$pid" >/dev/null 2>&1 || true
+    rm -f "$hyprsaver_pid_file"
+  fi
+}
+
+stop_backends() {
   stop_mpvpaper
   stop_neowall
+  stop_hyprsaver
+}
+
+stop() {
+  stop_backends
+  resume_notifications
 }
 
 status() {

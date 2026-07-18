@@ -374,6 +374,9 @@
       exec python3 ${../../dotfiles/lib/bin/hypr_rofi_action} "$@"
     '';
   };
+  hyprsaver = pkgs.callPackage ../packages/hyprsaver {
+    src = inputs.hyprsaver;
+  };
   hyprlandConfigSyntax = import ../checks/hyprland-config-syntax {
     inherit pkgs hyprlandConfigDir;
   };
@@ -391,6 +394,7 @@
     swappy
     nwg-displays
     mpvpaper
+    hyprsaver
     ddcutil
     jq
     lua5_4
@@ -446,6 +450,7 @@ in {
     hyprlandPluginPackages
     hyprlandStuff
     hyprlandUtilityPackages
+    hyprsaver
     hyprtasking
     hyprwinview
     hyprexpo

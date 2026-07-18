@@ -181,6 +181,13 @@
       flake = false;
     };
 
+    hyprsaver = {
+      # Packaged locally (packages/hyprsaver); upstream's committed flake.lock
+      # contains stub hashes and cannot be evaluated as a flake input.
+      url = "github:maravexa/hyprsaver";
+      flake = false;
+    };
+
     hyprscratch = {
       url = "github:colonelpanic8/hyprscratch/reapply-rules-on-toggle";
       inputs.nixpkgs.follows = "nixpkgs";
