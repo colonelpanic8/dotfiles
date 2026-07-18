@@ -36,9 +36,11 @@ function M.setup(ctx)
 
   local function setup_audio_media_bindings()
     local voice_task_command = "agent_voice_task"
+    local kokoro_speak_command = "kokoro_speak"
     local dotfiles_worktree = os.getenv("DOTFILES_WORKTREE")
     if dotfiles_worktree and dotfiles_worktree ~= "" then
       voice_task_command = shell_quote(dotfiles_worktree .. "/dotfiles/lib/bin/agent_voice_task")
+      kokoro_speak_command = shell_quote(dotfiles_worktree .. "/dotfiles/lib/bin/kokoro_speak")
     end
 
     bind("F5", exec(voice_task_command .. " dictate-start"), desc("Start incremental hold-to-talk dictation"))
@@ -50,6 +52,8 @@ function M.setup(ctx)
     bind(hyper .. " + B", exec(voice_task_command .. " dictate-start"), desc("Start incremental hold-to-talk dictation"))
     bind(hyper .. " + B", exec(voice_task_command .. " stop"), desc("Stop and type hold-to-talk dictation", { release = true }))
     bind(hyper .. " + Escape", exec(voice_task_command .. " cancel"), desc("Cancel active dictation or voice task"))
+
+    bind(hyper .. " + SHIFT + R", exec(kokoro_speak_command .. " selection"), desc("Read selection aloud with Kokoro (toggle)"))
 
     bind(main_mod .. " + I", exec("set_volume --unmute --change-volume +5"), desc("Raise volume", { repeating = true }))
     bind(main_mod .. " + K", exec("set_volume --unmute --change-volume -5"), desc("Lower volume", { repeating = true }))

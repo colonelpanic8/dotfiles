@@ -116,7 +116,6 @@ in {
   myModules.nvidia.enable = true;
   myModules.electron.enable = true;
   myModules.wyoming.enable = false;
-  myModules.kokoro.enable = true;
   myModules.voxtype = {
     enable = true;
     onDemandLoading = true;
