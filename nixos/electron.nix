@@ -33,17 +33,41 @@
       fi
     '';
   };
-  discordWayland = pkgs.discord.override {
+  discordXlibThreadInitSource = pkgs.writeText "discord-xlib-thread-init.c" ''
+    #include <X11/Xlib.h>
+
+    __attribute__((constructor)) static void initialize_xlib_threads(void) {
+      XInitThreads();
+    }
+  '';
+  discordXlibThreadInit = pkgs.stdenv.mkDerivation {
+    pname = "discord-xlib-thread-init";
+    version = "1";
+    dontUnpack = true;
+    nativeBuildInputs = [pkgs.pkg-config];
+    buildInputs = [pkgs.libx11];
+    buildPhase = ''
+      $CC -shared -fPIC ${discordXlibThreadInitSource} \
+        -o libdiscord-xlib-thread-init.so \
+        $(${pkgs.pkg-config}/bin/pkg-config --cflags --libs x11)
+    '';
+    installPhase = ''
+      install -Dm755 libdiscord-xlib-thread-init.so \
+        "$out/lib/libdiscord-xlib-thread-init.so"
+    '';
+  };
+  discordPackage = pkgs.discord.override {
     commandLineArgs = "--enable-features=WaylandWindowDecorations,WebRTCPipeWireCapturer --enable-wayland-ime=true";
   };
   discordWithXwaylandSocketRepair = pkgs.symlinkJoin {
     name = "discord-with-xwayland-socket-repair";
-    paths = [discordWayland];
+    paths = [discordPackage];
     nativeBuildInputs = [pkgs.makeWrapper];
     postBuild = ''
       rm -f "$out/bin/discord"
-      makeWrapper ${discordWayland}/bin/discord "$out/bin/discord" \
-        --run ${repairXwaylandSocket}/bin/repair-xwayland-socket-for-discord
+      makeWrapper ${discordPackage}/bin/discord "$out/bin/discord" \
+        --run ${repairXwaylandSocket}/bin/repair-xwayland-socket-for-discord \
+        --prefix LD_PRELOAD : ${discordXlibThreadInit}/lib/libdiscord-xlib-thread-init.so
     '';
   };
 in
