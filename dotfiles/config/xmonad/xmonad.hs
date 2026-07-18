@@ -236,7 +236,10 @@ isChromeClass = isInfixOf "chrome"
 chromeSelectorBase = isChromeClass <$> className
 
 chromeSelector = chromeSelectorBase
-codexSelector = className =? "codex-desktop"
+-- Codex's main window and pet share a class; only the main ChatGPT surface is
+-- a scratchpad. This also prevents the named scratchpad manage hook from
+-- moving or resizing the pet when running XMonad.
+codexSelector = className =? "codex-desktop" <&&> title =? "ChatGPT"
 discordSelector = className =? "Discord" <||> className =? "discord"
 elementSelector = className =? "Element"
 emacsSelector = className =? "Emacs"

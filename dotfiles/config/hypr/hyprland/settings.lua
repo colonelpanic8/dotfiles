@@ -489,6 +489,25 @@ function M.setup(ctx)
       border_size = 2,
       border_color = "rgba(edb443ff) rgba(ff4d5dcc)",
     })
+    -- Codex's pet is a separate floating surface from the main ChatGPT
+    -- window. Keep it available across workspaces, but preserve the surface's
+    -- own alpha channel without compositor blur, dimming, or decorations.
+    -- This rule follows the general pinned-window rule so its border override
+    -- wins after pinning the pet.
+    hl.window_rule({
+      name = "codex-pet",
+      match = {
+        class = "^(codex-desktop)$",
+        title = "^(Codex)$",
+      },
+      float = true,
+      pin = true,
+      decorate = false,
+      no_blur = true,
+      no_shadow = true,
+      border_size = 0,
+      opacity = "1.0 override 1.0 override 1.0 override",
+    })
     hl.window_rule({
       match = { tag = inactive_opacity_override_tag },
       opacity = "1.0 override 1.0 override 1.0 override",

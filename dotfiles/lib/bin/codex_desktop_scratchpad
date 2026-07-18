@@ -210,7 +210,14 @@ except Exception:
     raise SystemExit(1)
 
 for client in clients:
-    if client.get("pid") == target_pid and client.get("address") and client.get("mapped", True) and not client.get("hidden", False):
+    if (
+        client.get("pid") == target_pid
+        and client.get("class") == "codex-desktop"
+        and client.get("initialTitle") == "ChatGPT"
+        and client.get("address")
+        and client.get("mapped", True)
+        and not client.get("hidden", False)
+    ):
         print(client["address"])
         break
 else:

@@ -16,6 +16,10 @@ function M.setup(ctx)
     codex = {
       command = "codex_desktop_scratchpad",
       class = "codex-desktop",
+      -- The main window and pet share a process and app ID. The initial title
+      -- is stable across later UI title changes and keeps the pet out of all
+      -- scratchpad adoption, geometry, and hide/show paths.
+      initial_title = "ChatGPT",
     },
     claude = {
       command = "claude-desktop",
@@ -101,6 +105,7 @@ function M.setup(ctx)
       and not (type(is_file_chooser_window) == "function" and is_file_chooser_window(window))
       and lower_contains_any(window.class, def.classes or def.class)
       and lower_contains(window.title, def.title)
+      and lower_contains(window.initial_title, def.initial_title)
   end
 
   local function tiled_scratchpad_is_normal_window(window, def)
