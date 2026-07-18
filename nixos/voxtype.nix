@@ -8,6 +8,10 @@
   cfg = config.myModules.voxtype;
   system = pkgs.stdenv.hostPlatform.system;
   voxtypePackages = inputs.voxtype.packages.${system};
+  agentVoicePreviewModel = pkgs.fetchurl {
+    url = "https://huggingface.co/ggerganov/whisper.cpp/resolve/main/ggml-base.en.bin";
+    hash = "sha256-oDd5yG3zMjB19eeWyyzlAp8A7Ihp7uP9+4l6/jbG0AI=";
+  };
 in {
   options.myModules.voxtype = {
     enable = lib.mkEnableOption "local push-to-talk voice dictation";
@@ -44,6 +48,9 @@ in {
         # previews while keeping Codex authentication on the ChatGPT plan.
         pkgs.whisper-cpp-vulkan
       ];
+
+      # Stable discovery path used by agent_voice_task for fast CPU previews.
+      home.file.".local/share/agent-voice-task/whisper-preview-model.bin".source = agentVoicePreviewModel;
 
       programs.voxtype = {
         enable = true;

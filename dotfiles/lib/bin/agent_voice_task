@@ -253,6 +253,8 @@ class CaptureSession:
         self.partial = ""
         self.notifier = Notifier()
         self.raw_path = job_path.with_suffix(".raw")
+        self.voxtype_final_path = job_path.with_suffix(".final.txt")
+        self.voxtype_recording = False
         self.recorder: subprocess.Popen[bytes] | None = None
 
     def signal_stop(self, _signum: int, _frame: Any) -> None:
@@ -289,6 +291,16 @@ class CaptureSession:
             "-",
         ]
         self.recorder = subprocess.Popen(command, stdout=subprocess.PIPE, stderr=subprocess.DEVNULL)
+        voxtype_start = subprocess.run(
+            ["voxtype", "record", "start", f"--file={self.voxtype_final_path}"],
+            text=True,
+            capture_output=True,
+            timeout=5,
+            check=False,
+        )
+        self.voxtype_recording = voxtype_start.returncode == 0
+        if not self.voxtype_recording:
+            self.incremental_error = voxtype_start.stderr.strip() or "Voxtype final transcription was unavailable"
 
         def read_audio() -> None:
             assert self.recorder is not None and self.recorder.stdout is not None
@@ -305,7 +317,7 @@ class CaptureSession:
 
         threading.Thread(target=read_audio, name="voice-audio-capture", daemon=True).start()
 
-    def stop_recorder(self) -> None:
+    def stop_recorder(self, *, cancel: bool = False) -> None:
         if self.recorder and self.recorder.poll() is None:
             self.recorder.terminate()
             try:
@@ -313,6 +325,35 @@ class CaptureSession:
             except subprocess.TimeoutExpired:
                 self.recorder.kill()
         self.audio_finished.set()
+        if self.voxtype_recording:
+            subprocess.run(
+                ["voxtype", "record", "cancel" if cancel else "stop"],
+                stdout=subprocess.DEVNULL,
+                stderr=subprocess.DEVNULL,
+                timeout=5,
+                check=False,
+            )
+
+    def wait_for_voxtype_final(self, timeout: float = 15) -> str:
+        if not self.voxtype_recording:
+            return ""
+        deadline = time.monotonic() + timeout
+        previous = ""
+        stable_count = 0
+        while time.monotonic() < deadline:
+            try:
+                current = self.voxtype_final_path.read_text().strip()
+            except OSError:
+                current = ""
+            if current and current == previous:
+                stable_count += 1
+                if stable_count >= 2:
+                    return current
+            else:
+                stable_count = 0
+                previous = current
+            time.sleep(0.15)
+        return previous
 
     def audio_snapshot(self) -> bytes:
         with self.audio_lock:
@@ -320,6 +361,7 @@ class CaptureSession:
 
     def whisper_settings(self) -> tuple[Path, str, str]:
         model_override = os.environ.get("AGENT_VOICE_WHISPER_MODEL")
+        preview_model = DATA_ROOT / "whisper-preview-model.bin"
         language = "en"
         prompt = DEFAULT_WHISPER_PROMPT
         config_path = Path(os.environ.get("VOXTYPE_CONFIG", Path.home() / ".config/voxtype/config.toml"))
@@ -334,7 +376,7 @@ class CaptureSession:
         whisper = config.get("whisper", {})
         if not isinstance(whisper, dict):
             whisper = {}
-        model_value = model_override or whisper.get("model")
+        model_value = model_override or (preview_model if preview_model.is_file() else None) or whisper.get("model")
         language = str(whisper.get("language", language))
         prompt = str(whisper.get("initial_prompt", prompt))
         if not model_value:
@@ -369,6 +411,8 @@ class CaptureSession:
             "--no-timestamps",
             "--suppress-nst",
         ]
+        if os.environ.get("AGENT_VOICE_WHISPER_GPU", "0") != "1":
+            command.append("--no-gpu")
         server = subprocess.Popen(command, stdin=subprocess.DEVNULL, stdout=log, stderr=log, text=True)
         deadline = time.monotonic() + 20
         while time.monotonic() < deadline:
@@ -504,8 +548,9 @@ class CaptureSession:
                         whisper_url = None
             self.stop_requested.wait(partial_interval)
 
-        self.stop_recorder()
-        if whisper_url:
+        cancelled = self.cancel_requested.is_set() or CANCEL_FILE.exists()
+        self.stop_recorder(cancel=cancelled)
+        if whisper_url and not cancelled:
             try:
                 final_text = self.transcribe_snapshot(whisper_url, self.audio_snapshot())
                 if final_text:
@@ -515,12 +560,17 @@ class CaptureSession:
         self.stop_whisper_server(whisper_server)
         SESSION_FILE.unlink(missing_ok=True)
 
-        if self.cancel_requested.is_set() or CANCEL_FILE.exists():
+        if cancelled:
             CANCEL_FILE.unlink(missing_ok=True)
             STOP_FILE.unlink(missing_ok=True)
             self.save_job(status="cancelled", finished_at=time.time())
             self.notifier.update("Voice task cancelled", "Nothing was sent", force=True)
             return 0
+
+        self.notifier.update("Voice task", "Finishing accurate transcription…", force=True)
+        voxtype_final = self.wait_for_voxtype_final()
+        if voxtype_final:
+            self.partial = voxtype_final
 
         transcript = self.transcript()
         if not transcript:
