@@ -118,6 +118,15 @@ def provider_label(provider: str) -> str:
     return "Claude" if provider == "claude" else "Codex"
 
 
+def parse_voxtype_transcript(output: str) -> str:
+    """Remove voxtype's audio-loading preamble from file transcription output."""
+    lines = output.splitlines()
+    for index, line in enumerate(lines):
+        if line.startswith("Processing "):
+            return "\n".join(lines[index + 1 :]).strip()
+    return output.strip()
+
+
 class Notifier:
     def __init__(self) -> None:
         self.notification_id: str | None = None
@@ -265,9 +274,6 @@ class CaptureSession:
         self.incremental_error: str | None = None
         self.transcript_parts: list[str] = []
         self.partial = ""
-        self.previous_partial = ""
-        self.typed_prefix = ""
-        self.live_typing_enabled = mode == "dictation"
         self.notifier = Notifier()
         self.raw_path = job_path.with_suffix(".raw")
         self.voxtype_final_path = job_path.with_suffix(".final.txt")
@@ -435,14 +441,11 @@ class CaptureSession:
         while time.monotonic() < deadline:
             if server.poll() is not None:
                 raise RuntimeError(f"local Whisper server exited with status {server.returncode}")
-            result = subprocess.run(
-                ["curl", "--fail", "--silent", "--max-time", "1", url + "/"],
-                stdout=subprocess.DEVNULL,
-                stderr=subprocess.DEVNULL,
-                check=False,
-            )
-            if result.returncode == 0:
-                return server, url
+            try:
+                with socket.create_connection(("127.0.0.1", port), timeout=0.25):
+                    return server, url
+            except OSError:
+                pass
             if self.stop_requested.wait(0.1):
                 break
         if server.poll() is None:
@@ -513,7 +516,7 @@ class CaptureSession:
         if conversion.returncode != 0:
             raise RuntimeError(conversion.stderr.strip() or "failed to prepare fallback audio")
         result = subprocess.run(
-            ["voxtype", "transcribe", str(wav_16k)],
+            ["voxtype", "--quiet", "transcribe", str(wav_16k)],
             text=True,
             capture_output=True,
             timeout=180,
@@ -521,7 +524,7 @@ class CaptureSession:
         )
         if result.returncode != 0:
             raise RuntimeError(result.stderr.strip() or "local fallback transcription failed")
-        return result.stdout.strip()
+        return parse_voxtype_transcript(result.stdout)
 
     def save_job(self, **updates: Any) -> dict[str, Any]:
         job = read_json(self.job_path)
@@ -536,15 +539,13 @@ class CaptureSession:
             return "🎙 Dictation"
         return f"🎙 {provider_label(self.provider)} task"
 
-    def type_text(self, text: str, *, settle_focus: bool = False) -> bool:
-        if not text:
-            return True
-        if settle_focus:
-            # The key-release binding returns focus to the original text field.
-            time.sleep(0.15)
+    def type_dictation(self, transcript: str) -> bool:
+        # Wait for the release binding to return focus to the original field,
+        # then type only the accurate final transcript.
+        time.sleep(0.15)
         result = subprocess.run(
             ["wtype", "-"],
-            input=text,
+            input=transcript,
             text=True,
             capture_output=True,
             timeout=30,
@@ -552,61 +553,10 @@ class CaptureSession:
         )
         if result.returncode == 0:
             return True
+        if shutil.which("wl-copy"):
+            subprocess.run(["wl-copy"], input=transcript, text=True, timeout=5, check=False)
         self.incremental_error = result.stderr.strip() or "wtype could not type the transcript"
         return False
-
-    def stable_dictation_prefix(self, current: str) -> str:
-        """Return words confirmed by two snapshots, excluding an unfinished edge word."""
-        previous_words = self.previous_partial.split()
-        current_words = current.split()
-        common = 0
-        for previous, candidate in zip(previous_words, current_words):
-            if previous != candidate:
-                break
-            common += 1
-        # If both hypotheses end at the same word, keep that edge word buffered;
-        # a later snapshot may still attach punctuation or revise it.
-        if common and common == len(current_words):
-            common -= 1
-        if not common:
-            return ""
-        return " ".join(current_words[:common]) + " "
-
-    def stream_dictation(self, current: str) -> None:
-        if not self.live_typing_enabled:
-            self.previous_partial = current
-            return
-        stable = self.stable_dictation_prefix(current)
-        self.previous_partial = current
-        if not stable or not stable.startswith(self.typed_prefix):
-            return
-        addition = stable[len(self.typed_prefix) :]
-        if addition and self.type_text(addition):
-            self.typed_prefix = stable
-        elif addition:
-            self.live_typing_enabled = False
-
-    def erase_typed_prefix(self) -> bool:
-        if not self.typed_prefix:
-            return True
-        command = ["wtype"]
-        for _character in self.typed_prefix:
-            command.extend(["-k", "BackSpace"])
-        result = subprocess.run(command, capture_output=True, timeout=30, check=False)
-        if result.returncode == 0:
-            self.typed_prefix = ""
-            return True
-        self.incremental_error = result.stderr.decode(errors="replace").strip() or "wtype could not revise the transcript"
-        return False
-
-    def finish_dictation(self, transcript: str) -> bool:
-        # Usually only the uncommitted tail remains. If the accurate final model
-        # revised an earlier word, replace exactly the prefix we streamed.
-        if transcript.startswith(self.typed_prefix):
-            return self.type_text(transcript[len(self.typed_prefix) :], settle_focus=True)
-        if not self.erase_typed_prefix():
-            return False
-        return self.type_text(transcript, settle_focus=True)
 
     def run(self) -> int:
         signal.signal(signal.SIGUSR1, self.signal_stop)
@@ -635,8 +585,6 @@ class CaptureSession:
                         last_audio_size = len(snapshot)
                         if text:
                             self.partial = text
-                            if self.mode == "dictation":
-                                self.stream_dictation(text)
                             self.notifier.update(self.notification_title(), text, force=True)
                     except Exception as error:
                         self.incremental_error = str(error)
@@ -660,8 +608,6 @@ class CaptureSession:
         if cancelled:
             CANCEL_FILE.unlink(missing_ok=True)
             STOP_FILE.unlink(missing_ok=True)
-            if self.mode == "dictation":
-                self.erase_typed_prefix()
             self.save_job(status="cancelled", finished_at=time.time())
             noun = "Dictation" if self.mode == "dictation" else "Voice task"
             self.notifier.update(f"{noun} cancelled", "Nothing was typed" if self.mode == "dictation" else "Nothing was sent", force=True)
@@ -697,7 +643,7 @@ class CaptureSession:
                 finished_recording_at=time.time(),
             )
             self.notifier.update("Typing dictation…", transcript, force=True)
-            if self.finish_dictation(transcript):
+            if self.type_dictation(transcript):
                 self.save_job(status="completed", completed_at=time.time())
                 self.notifier.update("Dictation complete", transcript, force=True)
                 return 0

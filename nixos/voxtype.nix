@@ -89,6 +89,10 @@ in {
               on_transcription = false;
             };
           };
+
+          # Visual scaling only; keep the waveform useful without making
+          # normal speech appear clipped at the OSD bounds.
+          osd.waveform_gain = 2.0;
         };
       };
     };
