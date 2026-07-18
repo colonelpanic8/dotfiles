@@ -242,6 +242,7 @@
       services.rlru = {
         enable = true;
         package = rlruDioxusDesktop;
+        startInTray = true;
       };
     };
 
