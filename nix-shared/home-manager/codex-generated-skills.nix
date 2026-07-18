@@ -6,11 +6,10 @@
 }: let
   cfg = config.myModules.codexGeneratedSkills;
   oos = config.lib.file.mkOutOfStoreSymlink;
-  managedConfig = pkgs.writeText "codex-managed-config.toml" (''
-      [mcp_servers.nixos]
-      command = "${lib.getExe pkgs.mcp-nixos}"
-    ''
-    + cfg.extraManagedConfig);
+  managedConfig = pkgs.writeText "codex-managed-config.toml" ''
+    [mcp_servers.nixos]
+    command = "${lib.getExe pkgs.mcp-nixos}"
+  '';
 in {
   options.myModules.codexGeneratedSkills = {
     enable = lib.mkEnableOption "Codex home setup";
@@ -31,12 +30,6 @@ in {
       type = lib.types.str;
       default = "${cfg.worktreeCodexDir}";
       description = "Readable fallback Codex dotfiles directory from the flake source.";
-    };
-
-    extraManagedConfig = lib.mkOption {
-      type = lib.types.lines;
-      default = "";
-      description = "Extra Nix-managed TOML sections appended to the managed config.toml fragment.";
     };
 
     localConfig = lib.mkOption {
