@@ -1,0 +1,120 @@
+#!/usr/bin/env bash
+# Read text aloud with a local Kokoro TTS server (see nixos/kokoro.nix).
+#
+# Usage:
+#   kokoro_speak                 Toggle: read the current selection, or stop if
+#                                already speaking.
+#   kokoro_speak selection       Same as above (explicit).
+#   kokoro_speak stop            Stop any active playback.
+#   kokoro_speak say TEXT...      Speak the given text.
+#   echo TEXT | kokoro_speak -   Speak text from stdin.
+#
+# The server exposes an OpenAI-compatible POST /v1/audio/speech endpoint backed
+# by Kokoro-82M and is bound to 127.0.0.1:11116 by default.
+
+set -euo pipefail
+
+KOKORO_HOST="${KOKORO_HOST:-127.0.0.1}"
+KOKORO_PORT="${KOKORO_PORT:-11116}"
+KOKORO_MODEL="${KOKORO_MODEL:-kokoro}"
+KOKORO_VOICE="${KOKORO_VOICE:-af_heart}"
+KOKORO_SPEED="${KOKORO_SPEED:-1.0}"
+KOKORO_FORMAT="${KOKORO_FORMAT:-mp3}"
+
+runtime_dir="${XDG_RUNTIME_DIR:-/tmp}"
+pidfile="$runtime_dir/kokoro_speak.pgid"
+
+notify() {
+  if command -v notify-send >/dev/null 2>&1; then
+    notify-send -a kokoro "$@" || true
+  fi
+}
+
+is_playing() {
+  [[ -f "$pidfile" ]] || return 1
+  local pgid
+  pgid="$(cat "$pidfile" 2>/dev/null || true)"
+  [[ -n "$pgid" ]] && kill -0 -- "-$pgid" 2>/dev/null
+}
+
+stop_playback() {
+  if [[ -f "$pidfile" ]]; then
+    local pgid
+    pgid="$(cat "$pidfile" 2>/dev/null || true)"
+    if [[ -n "$pgid" ]]; then
+      kill -TERM -- "-$pgid" 2>/dev/null || true
+    fi
+    rm -f "$pidfile"
+  fi
+}
+
+get_selection() {
+  # Prefer the primary selection (highlighted text); fall back to the clipboard.
+  local text
+  text="$(wl-paste --primary --no-newline 2>/dev/null || true)"
+  if [[ -z "$text" ]]; then
+    text="$(wl-paste --no-newline 2>/dev/null || true)"
+  fi
+  printf '%s' "$text"
+}
+
+play_text() {
+  local text="$1"
+  if [[ -z "${text//[[:space:]]/}" ]]; then
+    notify "Nothing to read" "The selection was empty."
+    exit 0
+  fi
+
+  # Stop anything already playing so keypresses don't stack up.
+  stop_playback
+
+  local payload
+  payload="$(
+    jq -nc \
+      --arg model "$KOKORO_MODEL" \
+      --arg input "$text" \
+      --arg voice "$KOKORO_VOICE" \
+      --arg format "$KOKORO_FORMAT" \
+      --argjson speed "$KOKORO_SPEED" \
+      '{model: $model, input: $input, voice: $voice, response_format: $format, speed: $speed}'
+  )"
+
+  local url="http://${KOKORO_HOST}:${KOKORO_PORT}/v1/audio/speech"
+
+  # setsid puts the pipeline in its own session/process group so we can kill the
+  # whole thing (curl + ffplay) by group id later. curl streams the audio so
+  # playback starts before the full clip is synthesized.
+  setsid bash -c '
+    curl -sS -N -X POST "$1" \
+      -H "Content-Type: application/json" \
+      --data-raw "$2" \
+    | ffplay -nodisp -autoexit -loglevel quiet -i pipe:0
+  ' _ "$url" "$payload" >/dev/null 2>&1 &
+
+  echo "$!" > "$pidfile"
+}
+
+cmd="${1:-selection}"
+case "$cmd" in
+  stop)
+    stop_playback
+    ;;
+  selection)
+    if is_playing; then
+      stop_playback
+    else
+      play_text "$(get_selection)"
+    fi
+    ;;
+  say)
+    shift
+    play_text "$*"
+    ;;
+  -)
+    play_text "$(cat)"
+    ;;
+  *)
+    # Treat any other arguments as literal text to speak.
+    play_text "$*"
+    ;;
+esac
