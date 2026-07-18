@@ -30,6 +30,17 @@ CHUNK_BYTES = SAMPLE_RATE * CHANNELS * SAMPLE_WIDTH * CHUNK_MILLISECONDS // 1000
 DEFAULT_WHISPER_PROMPT = "Ivan Malison, Railbird, NixOS, Hyprland, Taffybar, Emacs, Codex."
 
 
+# The capture child must never be terminated by a stop/cancel signal that lands
+# before run() installs the real handlers. Python's default SIGUSR1/SIGUSR2
+# disposition is to terminate, so a quick release during interpreter startup
+# would kill the recorder outright (dictation ends, nothing gets typed). Ignore
+# them here at import time; run() replaces these with the real handlers, and the
+# STOP_FILE/CANCEL_FILE latch carries the intent across the gap.
+if len(sys.argv) > 1 and sys.argv[1] == "_capture":
+    signal.signal(signal.SIGUSR1, signal.SIG_IGN)
+    signal.signal(signal.SIGUSR2, signal.SIG_IGN)
+
+
 def xdg_path(variable: str, fallback: str) -> Path:
     return Path(os.environ.get(variable, str(Path.home() / fallback))).expanduser()
 
@@ -577,6 +588,13 @@ class CaptureSession:
         partial_interval = float(os.environ.get("AGENT_VOICE_PARTIAL_INTERVAL", "1.25"))
         last_audio_size = 0
         while not self.stop_requested.is_set():
+            if STOP_FILE.exists() or CANCEL_FILE.exists():
+                # The durable latch set by signal_capture. The stop/cancel signal
+                # may have been missed (ignored during startup, or sent before the
+                # handler was installed), so honor the file. Setting stop_requested
+                # also unblocks the audio reader thread.
+                self.stop_requested.set()
+                break
             if whisper_url:
                 snapshot = self.audio_snapshot()
                 if len(snapshot) > last_audio_size:
@@ -911,13 +929,19 @@ def start_capture(provider: str, mode: str = "task") -> int:
 
 
 def signal_capture(cancel: bool) -> int:
+    # Latch the intent durably first. A quick release can land before the
+    # capture child has written SESSION_FILE; the fire-and-forget signal would
+    # then be dropped silently, leaving the recorder running forever. Writing the
+    # marker before the session check means the child sees the request no matter
+    # when it arrives. start_capture() clears both markers before each new
+    # recording, so a stale latch cannot leak into the next session.
+    marker = CANCEL_FILE if cancel else STOP_FILE
+    marker.parent.mkdir(parents=True, exist_ok=True)
+    marker.touch()
     session = active_session()
     if not session:
         return 0
     pid = int(session["pid"])
-    marker = CANCEL_FILE if cancel else STOP_FILE
-    marker.parent.mkdir(parents=True, exist_ok=True)
-    marker.touch()
     try:
         os.kill(pid, signal.SIGUSR2 if cancel else signal.SIGUSR1)
     except ProcessLookupError:
