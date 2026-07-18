@@ -42,6 +42,7 @@ STOP_FILE = RUNTIME_ROOT / "stop"
 CANCEL_FILE = RUNTIME_ROOT / "cancel"
 PROVIDER_STATE = xdg_path("XDG_STATE_HOME", ".local/state") / "hypr" / "ai-scratchpad"
 WORKSPACE = DATA_ROOT / "workspace"
+PROJECTLESS_ROOT = Path.home() / "Documents" / "Codex"
 HISTORY = STATE_ROOT / "history"
 LAST_JOB = STATE_ROOT / "last-job.json"
 
@@ -69,13 +70,13 @@ def personal_agents_file() -> Path:
     return Path(__file__).resolve().parents[2] / "agents" / "AGENTS.md"
 
 
-def ensure_workspace() -> Path:
-    WORKSPACE.mkdir(parents=True, exist_ok=True)
+def ensure_workspace(workspace: Path = WORKSPACE) -> Path:
+    workspace.mkdir(parents=True, exist_ok=True)
     agents = personal_agents_file()
     if not agents.is_file():
         raise RuntimeError(f"personal AGENTS.md is not readable: {agents}")
     for name in ("AGENTS.md", "CLAUDE.md"):
-        link = WORKSPACE / name
+        link = workspace / name
         if link.is_symlink() and link.resolve() == agents:
             continue
         if link.exists() or link.is_symlink():
@@ -83,7 +84,14 @@ def ensure_workspace() -> Path:
                 raise RuntimeError(f"refusing to replace directory: {link}")
             link.unlink()
         link.symlink_to(agents)
-    return WORKSPACE
+    return workspace
+
+
+def projectless_workspace(job_id: str) -> Path:
+    workspace = PROJECTLESS_ROOT / time.strftime("%Y-%m-%d") / f"voice-task-{time.strftime('%H%M%S')}-{job_id[:8]}"
+    (workspace / "outputs").mkdir(parents=True, exist_ok=True)
+    (workspace / "work").mkdir(parents=True, exist_ok=True)
+    return ensure_workspace(workspace)
 
 
 def selected_provider(alternate: bool = False, explicit: str | None = None) -> str:
@@ -102,6 +110,8 @@ def selected_provider(alternate: bool = False, explicit: str | None = None) -> s
 
 
 def provider_label(provider: str) -> str:
+    if provider == "dictation":
+        return "Dictation"
     return "Claude" if provider == "claude" else "Codex"
 
 
@@ -240,9 +250,10 @@ class JsonRpcClient:
 
 
 class CaptureSession:
-    def __init__(self, provider: str, job_path: Path) -> None:
+    def __init__(self, provider: str, job_path: Path, mode: str = "task") -> None:
         self.provider = provider
         self.job_path = job_path
+        self.mode = mode
         self.stop_requested = threading.Event()
         self.cancel_requested = threading.Event()
         self.audio_finished = threading.Event()
@@ -251,6 +262,9 @@ class CaptureSession:
         self.incremental_error: str | None = None
         self.transcript_parts: list[str] = []
         self.partial = ""
+        self.previous_partial = ""
+        self.typed_prefix = ""
+        self.live_typing_enabled = mode == "dictation"
         self.notifier = Notifier()
         self.raw_path = job_path.with_suffix(".raw")
         self.voxtype_final_path = job_path.with_suffix(".final.txt")
@@ -510,16 +524,94 @@ class CaptureSession:
         job = read_json(self.job_path)
         job.update(updates)
         atomic_json(self.job_path, job)
-        atomic_json(LAST_JOB, job)
+        if self.mode == "task":
+            atomic_json(LAST_JOB, job)
         return job
+
+    def notification_title(self) -> str:
+        if self.mode == "dictation":
+            return "🎙 Dictation"
+        return f"🎙 {provider_label(self.provider)} task"
+
+    def type_text(self, text: str, *, settle_focus: bool = False) -> bool:
+        if not text:
+            return True
+        if settle_focus:
+            # The key-release binding returns focus to the original text field.
+            time.sleep(0.15)
+        result = subprocess.run(
+            ["wtype", "-"],
+            input=text,
+            text=True,
+            capture_output=True,
+            timeout=30,
+            check=False,
+        )
+        if result.returncode == 0:
+            return True
+        self.incremental_error = result.stderr.strip() or "wtype could not type the transcript"
+        return False
+
+    def stable_dictation_prefix(self, current: str) -> str:
+        """Return words confirmed by two snapshots, excluding an unfinished edge word."""
+        previous_words = self.previous_partial.split()
+        current_words = current.split()
+        common = 0
+        for previous, candidate in zip(previous_words, current_words):
+            if previous != candidate:
+                break
+            common += 1
+        # If both hypotheses end at the same word, keep that edge word buffered;
+        # a later snapshot may still attach punctuation or revise it.
+        if common and common == len(current_words):
+            common -= 1
+        if not common:
+            return ""
+        return " ".join(current_words[:common]) + " "
+
+    def stream_dictation(self, current: str) -> None:
+        if not self.live_typing_enabled:
+            self.previous_partial = current
+            return
+        stable = self.stable_dictation_prefix(current)
+        self.previous_partial = current
+        if not stable or not stable.startswith(self.typed_prefix):
+            return
+        addition = stable[len(self.typed_prefix) :]
+        if addition and self.type_text(addition):
+            self.typed_prefix = stable
+        elif addition:
+            self.live_typing_enabled = False
+
+    def erase_typed_prefix(self) -> bool:
+        if not self.typed_prefix:
+            return True
+        command = ["wtype"]
+        for _character in self.typed_prefix:
+            command.extend(["-k", "BackSpace"])
+        result = subprocess.run(command, capture_output=True, timeout=30, check=False)
+        if result.returncode == 0:
+            self.typed_prefix = ""
+            return True
+        self.incremental_error = result.stderr.decode(errors="replace").strip() or "wtype could not revise the transcript"
+        return False
+
+    def finish_dictation(self, transcript: str) -> bool:
+        # Usually only the uncommitted tail remains. If the accurate final model
+        # revised an earlier word, replace exactly the prefix we streamed.
+        if transcript.startswith(self.typed_prefix):
+            return self.type_text(transcript[len(self.typed_prefix) :], settle_focus=True)
+        if not self.erase_typed_prefix():
+            return False
+        return self.type_text(transcript, settle_focus=True)
 
     def run(self) -> int:
         signal.signal(signal.SIGUSR1, self.signal_stop)
         signal.signal(signal.SIGUSR2, self.signal_cancel)
         self.start_recorder()
         self.notifier.update(
-            f"🎙 {provider_label(self.provider)} task",
-            "Listening… release the key to send",
+            self.notification_title(),
+            "Listening… release the key to type" if self.mode == "dictation" else "Listening… release the key to send",
             force=True,
         )
         whisper_server: subprocess.Popen[str] | None = None
@@ -540,7 +632,9 @@ class CaptureSession:
                         last_audio_size = len(snapshot)
                         if text:
                             self.partial = text
-                            self.notifier.update(f"🎙 {provider_label(self.provider)} task", text, force=True)
+                            if self.mode == "dictation":
+                                self.stream_dictation(text)
+                            self.notifier.update(self.notification_title(), text, force=True)
                     except Exception as error:
                         self.incremental_error = str(error)
                         self.stop_whisper_server(whisper_server)
@@ -563,30 +657,55 @@ class CaptureSession:
         if cancelled:
             CANCEL_FILE.unlink(missing_ok=True)
             STOP_FILE.unlink(missing_ok=True)
+            if self.mode == "dictation":
+                self.erase_typed_prefix()
             self.save_job(status="cancelled", finished_at=time.time())
-            self.notifier.update("Voice task cancelled", "Nothing was sent", force=True)
+            noun = "Dictation" if self.mode == "dictation" else "Voice task"
+            self.notifier.update(f"{noun} cancelled", "Nothing was typed" if self.mode == "dictation" else "Nothing was sent", force=True)
             return 0
 
-        self.notifier.update("Voice task", "Finishing accurate transcription…", force=True)
+        self.notifier.update(self.notification_title(), "Finishing accurate transcription…", force=True)
         voxtype_final = self.wait_for_voxtype_final()
         if voxtype_final:
             self.partial = voxtype_final
 
         transcript = self.transcript()
         if not transcript:
-            self.notifier.update("Voice task", "Finishing local transcription…", force=True)
+            self.notifier.update(self.notification_title(), "Finishing local transcription…", force=True)
             try:
                 transcript = self.fallback_transcription()
             except Exception as error:
                 self.save_job(status="failed", error=str(error), incremental_error=self.incremental_error, finished_at=time.time())
-                self.notifier.update("Voice task failed", str(error), urgency="critical", force=True)
+                self.notifier.update(f"{provider_label(self.provider)} failed", str(error), urgency="critical", force=True)
                 return 1
 
         transcript = transcript.strip()
         if not transcript:
             self.save_job(status="empty", incremental_error=self.incremental_error, finished_at=time.time())
-            self.notifier.update("Voice task", "No speech detected; nothing was sent", force=True)
+            action = "typed" if self.mode == "dictation" else "sent"
+            self.notifier.update(self.notification_title(), f"No speech detected; nothing was {action}", force=True)
             return 0
+
+        if self.mode == "dictation":
+            self.save_job(
+                status="typing",
+                transcript=transcript,
+                incremental_error=self.incremental_error,
+                finished_recording_at=time.time(),
+            )
+            self.notifier.update("Typing dictation…", transcript, force=True)
+            if self.finish_dictation(transcript):
+                self.save_job(status="completed", completed_at=time.time())
+                self.notifier.update("Dictation complete", transcript, force=True)
+                return 0
+            self.save_job(status="copied", error=self.incremental_error, completed_at=time.time())
+            self.notifier.update(
+                "Dictation copied",
+                "Typing failed, so the transcript was copied to the clipboard",
+                urgency="critical",
+                force=True,
+            )
+            return 1
 
         self.save_job(
             status="dispatching",
@@ -672,6 +791,7 @@ def codex_worker(job_path: Path) -> int:
             done.set()
 
     log_path = job_path.with_suffix(".codex-worker.log")
+    workspace = ensure_workspace(Path(str(job.get("workspace", WORKSPACE))).expanduser())
     with log_path.open("a") as log:
         rpc = JsonRpcClient(["codex", "app-server", "--stdio"], on_notification, log)
         try:
@@ -679,10 +799,11 @@ def codex_worker(job_path: Path) -> int:
             response = rpc.request(
                 "thread/start",
                 {
-                    "cwd": str(ensure_workspace()),
+                    "cwd": str(workspace),
                     "ephemeral": False,
                     "approvalPolicy": "never",
                     "sandbox": "danger-full-access",
+                    "threadSource": "user",
                 },
                 timeout=30,
             )
@@ -723,7 +844,9 @@ def claude_worker(job_path: Path) -> int:
     session_id = str(uuid.uuid4())
     command = [
         "claude",
-        "--background",
+        "--print",
+        "--output-format",
+        "json",
         "--dangerously-skip-permissions",
         "--session-id",
         session_id,
@@ -731,20 +854,63 @@ def claude_worker(job_path: Path) -> int:
         title_for(transcript),
         transcript,
     ]
-    result = subprocess.run(command, cwd=ensure_workspace(), text=True, capture_output=True, check=False)
+    workspace = ensure_workspace(Path(str(job.get("workspace", WORKSPACE))).expanduser())
+    update_job(job_path, status="running", claude_session_id=session_id, started_at=time.time())
+    result = subprocess.run(command, cwd=workspace, text=True, capture_output=True, check=False)
     if result.returncode != 0:
-        error = result.stderr.strip() or result.stdout.strip() or "Claude rejected the background task"
+        error = result.stderr.strip() or result.stdout.strip() or "Claude task failed"
         update_job(job_path, status="failed", error=error, completed_at=time.time())
         Notifier().update("Claude task failed", error, urgency="critical", force=True)
         return result.returncode
+    task_url = f"claude://resume?session={session_id}"
     update_job(
         job_path,
-        status="running",
+        status="completed",
         claude_session_id=session_id,
         claude_output=result.stdout.strip(),
-        started_at=time.time(),
+        task_url=task_url,
+        completed_at=time.time(),
     )
-    Notifier().update("Sent to Claude", title_for(transcript), force=True)
+    Notifier().update("Claude task completed", title_for(transcript), force=True)
+    active_window: dict[str, Any] = {}
+    if shutil.which("hyprctl"):
+        try:
+            active = subprocess.run(
+                ["hyprctl", "activewindow", "-j"],
+                text=True,
+                capture_output=True,
+                timeout=2,
+                check=False,
+            )
+            parsed = json.loads(active.stdout)
+            if isinstance(parsed, dict):
+                active_window = parsed
+        except (OSError, subprocess.TimeoutExpired, json.JSONDecodeError):
+            pass
+    try:
+        subprocess.Popen(
+            ["xdg-open", task_url],
+            stdin=subprocess.DEVNULL,
+            stdout=subprocess.DEVNULL,
+            stderr=subprocess.DEVNULL,
+            start_new_session=True,
+        )
+    except OSError:
+        pass
+    previous_address = active_window.get("address")
+    previous_class = str(active_window.get("class", "")).lower()
+    if previous_address and "claude" not in previous_class and shutil.which("hyprctl"):
+        # Importing through Claude's supported deep link focuses its window.
+        # Restore the user's prior window after the session is registered so
+        # F6 remains fire-and-forget.
+        time.sleep(1.5)
+        subprocess.run(
+            ["hyprctl", "dispatch", "focuswindow", f"address:{previous_address}"],
+            stdout=subprocess.DEVNULL,
+            stderr=subprocess.DEVNULL,
+            timeout=2,
+            check=False,
+        )
     return 0
 
 
@@ -761,35 +927,37 @@ def active_session() -> dict[str, Any]:
     return session
 
 
-def start_capture(provider: str) -> int:
+def start_capture(provider: str, mode: str = "task") -> int:
     RUNTIME_ROOT.mkdir(parents=True, exist_ok=True)
     STATE_ROOT.mkdir(parents=True, exist_ok=True)
     HISTORY.mkdir(parents=True, exist_ok=True)
-    ensure_workspace()
     current = active_session()
     if current:
-        Notifier().update("Voice task already recording", "Release the current hotkey first", force=True)
+        Notifier().update("Already recording", "Release the current hotkey first", force=True)
         return 0
     STOP_FILE.unlink(missing_ok=True)
     CANCEL_FILE.unlink(missing_ok=True)
     job_id = str(uuid.uuid4())
+    workspace = projectless_workspace(job_id) if mode == "task" else WORKSPACE
     job_path = HISTORY / f"{time.strftime('%Y%m%d-%H%M%S')}-{job_id}.json"
     atomic_json(
         job_path,
         {
             "id": job_id,
             "provider": provider,
+            "mode": mode,
             "status": "recording",
             "created_at": time.time(),
-            "workspace": str(WORKSPACE),
+            "workspace": str(workspace),
             "agents_file": str(personal_agents_file()),
         },
     )
-    command = [sys.executable, str(Path(__file__).resolve()), "_capture", provider, str(job_path)]
+    command = [sys.executable, str(Path(__file__).resolve()), "_capture", provider, mode, str(job_path)]
     log = job_path.with_suffix(".capture.log").open("a")
     process = subprocess.Popen(command, stdin=subprocess.DEVNULL, stdout=log, stderr=log, start_new_session=True)
-    atomic_json(SESSION_FILE, {"pid": process.pid, "provider": provider, "job_path": str(job_path)})
-    atomic_json(LAST_JOB, read_json(job_path))
+    atomic_json(SESSION_FILE, {"pid": process.pid, "provider": provider, "mode": mode, "job_path": str(job_path)})
+    if mode == "task":
+        atomic_json(LAST_JOB, read_json(job_path))
     return 0
 
 
@@ -826,7 +994,7 @@ def status_command(as_json: bool) -> int:
 def doctor(probe_codex: bool) -> int:
     failures: list[str] = []
     print(f"selected provider: {selected_provider()}")
-    for command in ("codex", "claude", "pw-record", "whisper-server", "curl", "ffmpeg", "voxtype", "notify-send"):
+    for command in ("codex", "claude", "pw-record", "whisper-server", "curl", "ffmpeg", "voxtype", "notify-send", "wtype"):
         resolved = shutil.which(command)
         print(f"{command}: {resolved or 'MISSING'}")
         if not resolved:
@@ -861,7 +1029,7 @@ def doctor(probe_codex: bool) -> int:
 def open_last() -> int:
     job = read_json(LAST_JOB)
     url = job.get("task_url")
-    if isinstance(url, str) and url.startswith("codex://"):
+    if isinstance(url, str) and (url.startswith("codex://") or url.startswith("claude://")):
         return subprocess.run(["xdg-open", url], check=False).returncode
     session_id = job.get("claude_session_id")
     if session_id:
@@ -878,6 +1046,7 @@ def main() -> int:
     start = subparsers.add_parser("start", help="begin recording")
     start.add_argument("--provider", choices=("codex", "claude"))
     start.add_argument("--alternate", action="store_true", help="use the provider not currently selected")
+    subparsers.add_parser("dictate-start", help="begin incremental dictation into the active text field")
     subparsers.add_parser("stop", help="stop recording and dispatch")
     subparsers.add_parser("cancel", help="cancel without dispatching")
     status = subparsers.add_parser("status", help="show current and most recent task")
@@ -886,7 +1055,8 @@ def main() -> int:
     doctor_parser.add_argument("--probe-codex", action="store_true", help="create an ephemeral thread without a turn")
     subparsers.add_parser("open-last", help="open the latest Codex task or print the Claude session id")
     capture = subparsers.add_parser("_capture")
-    capture.add_argument("provider", choices=("codex", "claude"))
+    capture.add_argument("provider", choices=("codex", "claude", "dictation"))
+    capture.add_argument("mode", choices=("task", "dictation"))
     capture.add_argument("job_path", type=Path)
     codex = subparsers.add_parser("_codex-worker")
     codex.add_argument("job_path", type=Path)
@@ -896,6 +1066,8 @@ def main() -> int:
 
     if args.command == "start":
         return start_capture(selected_provider(args.alternate, args.provider))
+    if args.command == "dictate-start":
+        return start_capture("dictation", "dictation")
     if args.command == "stop":
         return signal_capture(False)
     if args.command == "cancel":
@@ -907,7 +1079,7 @@ def main() -> int:
     if args.command == "open-last":
         return open_last()
     if args.command == "_capture":
-        return CaptureSession(args.provider, args.job_path).run()
+        return CaptureSession(args.provider, args.job_path, args.mode).run()
     if args.command == "_codex-worker":
         return codex_worker(args.job_path)
     if args.command == "_claude-worker":

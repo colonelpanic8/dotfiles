@@ -35,16 +35,21 @@ function M.setup(ctx)
   end
 
   local function setup_audio_media_bindings()
-    bind("F5", exec("voxtype record start"), desc("Start hold-to-talk dictation"))
-    bind("F5", exec("voxtype record stop"), desc("Stop and transcribe hold-to-talk dictation", { release = true }))
-    bind("SHIFT + F5", exec("agent_voice_task start"), desc("Start voice task for selected AI provider"))
-    bind("SHIFT + F5", exec("agent_voice_task stop"), desc("Send voice task to selected AI provider", { release = true }))
-    bind("CTRL + SHIFT + F5", exec("agent_voice_task start --alternate"), desc("Start voice task for alternate AI provider"))
-    bind("CTRL + SHIFT + F5", exec("agent_voice_task stop"), desc("Send voice task to alternate AI provider", { release = true }))
-    bind(hyper .. " + B", exec("voxtype record start"), desc("Start hold-to-talk dictation"))
-    bind(hyper .. " + B", exec("voxtype record stop"), desc("Stop and transcribe hold-to-talk dictation", { release = true }))
-    bind(hyper .. " + Escape", exec("voxtype record cancel"), desc("Cancel voice dictation"))
-    bind("CTRL + SHIFT + Escape", exec("agent_voice_task cancel"), desc("Cancel active voice task"))
+    local voice_task_command = "agent_voice_task"
+    local dotfiles_worktree = os.getenv("DOTFILES_WORKTREE")
+    if dotfiles_worktree and dotfiles_worktree ~= "" then
+      voice_task_command = shell_quote(dotfiles_worktree .. "/dotfiles/lib/bin/agent_voice_task")
+    end
+
+    bind("F5", exec(voice_task_command .. " dictate-start"), desc("Start incremental hold-to-talk dictation"))
+    bind("F5", exec(voice_task_command .. " stop"), desc("Stop and type hold-to-talk dictation", { release = true }))
+    bind("F6", exec(voice_task_command .. " start"), desc("Start voice task for selected AI provider"))
+    bind("F6", exec(voice_task_command .. " stop"), desc("Send voice task to selected AI provider", { release = true }))
+    bind("SHIFT + F6", exec(voice_task_command .. " start --alternate"), desc("Start voice task for alternate AI provider"))
+    bind("SHIFT + F6", exec(voice_task_command .. " stop"), desc("Send voice task to alternate AI provider", { release = true }))
+    bind(hyper .. " + B", exec(voice_task_command .. " dictate-start"), desc("Start incremental hold-to-talk dictation"))
+    bind(hyper .. " + B", exec(voice_task_command .. " stop"), desc("Stop and type hold-to-talk dictation", { release = true }))
+    bind(hyper .. " + Escape", exec(voice_task_command .. " cancel"), desc("Cancel active dictation or voice task"))
 
     bind(main_mod .. " + I", exec("set_volume --unmute --change-volume +5"), desc("Raise volume", { repeating = true }))
     bind(main_mod .. " + K", exec("set_volume --unmute --change-volume -5"), desc("Lower volume", { repeating = true }))
