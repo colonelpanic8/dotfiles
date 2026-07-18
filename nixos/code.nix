@@ -6,6 +6,7 @@
   makeEnable,
   ...
 }: let
+  codexSharedAppServerUrl = "ws://127.0.0.1:46231";
   claudeDesktopSource = inputs.claude-desktop;
   claudeDesktop = pkgs.callPackage "${claudeDesktopSource}/nix/claude-desktop.nix" {};
   claudeDesktopFhs = pkgs.callPackage "${claudeDesktopSource}/nix/fhs.nix" {
@@ -36,6 +37,7 @@
     ]);
   in
     package.overrideAttrs (oldAttrs: {
+      nativeBuildInputs = (oldAttrs.nativeBuildInputs or []) ++ [pkgs.asar];
       src = oldAttrs.src.overrideAttrs (payloadOldAttrs: {
         installPhase = ''
           export CODEX_ENFORCE_CRITICAL_PATCHES=0
@@ -48,7 +50,26 @@
       postFixup =
         (oldAttrs.postFixup or "")
         + ''
+          # The upstream Desktop bundle normally constructs its local host
+          # without a websocket URL and therefore owns a private app-server
+          # child process. Supplying websocket_url selects its existing client
+          # transport instead, so Desktop and the CLI can share the durable
+          # systemd-managed app-server below.
+          app_asar="$out/opt/codex-desktop/resources/app.asar"
+          app_asar_dir="$(mktemp -d)"
+          ${lib.getExe pkgs.asar} extract "$app_asar" "$app_asar_dir"
+          main_bundle="$(find "$app_asar_dir/.vite/build" -name 'main-*.js' -print -quit)"
+          perl -0pi -e '
+            BEGIN { $count = 0 }
+            $count += s/\{id:([A-Za-z_\$][A-Za-z0-9_\$]*),display_name:`Local`,kind:`local`\}/\{id:$1,display_name:`Local`,kind:`local`,websocket_url:process.env.CODEX_APP_SERVER_WS_URL??null\}/g;
+            END { die "expected exactly one local Codex host object, found $count\n" unless $count == 1 }
+          ' "$main_bundle"
+          ${lib.getExe pkgs.asar} pack "$app_asar_dir" "$app_asar.new"
+          mv "$app_asar.new" "$app_asar"
+          rm -r "$app_asar_dir"
+
           wrapProgram "$out/bin/codex-desktop" \
+            --set CODEX_APP_SERVER_WS_URL "${codexSharedAppServerUrl}" \
             --prefix XDG_DATA_DIRS : "${gsettingsSchemaDataDirs}"
         '';
     });
@@ -121,7 +142,10 @@ in
             ripgrep
             zsh
           ];
-          listen = "unix://";
+          # Loopback WebSocket is understood by both the Desktop client path
+          # above and `codex --remote`; unlike the Desktop-owned stdio child,
+          # this process survives when the UI exits.
+          listen = codexSharedAppServerUrl;
         };
       };
     };

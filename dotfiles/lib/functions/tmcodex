@@ -85,7 +85,8 @@ function tmcodex {
         if _tmcodex_has_remote_arg "$@"; then
             trw codex --dangerously-bypass-approvals-and-sandbox --cd "$launch_dir" "$@"
         else
-            trw codex --remote "${TMCODEX_REMOTE:-unix://}" --dangerously-bypass-approvals-and-sandbox --cd "$launch_dir" "$@"
+            # Share the persistent systemd app-server with Codex Desktop.
+            trw codex --remote "${TMCODEX_REMOTE:-ws://127.0.0.1:46231}" --dangerously-bypass-approvals-and-sandbox --cd "$launch_dir" "$@"
         fi
     )
 }
