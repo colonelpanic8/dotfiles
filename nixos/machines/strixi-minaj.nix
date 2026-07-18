@@ -100,6 +100,10 @@ in {
   ];
 
   myModules.base.enable = true;
+  myModules.cache-server = {
+    enable = true;
+    port = 3090;
+  };
   myModules.desktop.enable = true;
   myModules.xmonad.enable = true;
   myModules.riverXmonad.enable = true;
