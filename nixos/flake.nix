@@ -123,9 +123,10 @@
     # Pin to a release tag rather than tracking main: an untagged main snapshot
     # (68e3e40, 2026-06-10) shipped a Monitor.hpp that #includes a not-yet-added
     # MonitorZoomController.hpp, breaking every plugin build (e.g. hyprexpo).
-    # v0.55.2 is the release the hyprexpo fork is built against.
+    # v0.55.4 is the latest release; plugins follow this input so they build
+    # against the exact same Hyprland ABI.
     hyprland = {
-      url = "git+https://github.com/hyprwm/Hyprland?submodules=1&ref=refs/tags/v0.55.2";
+      url = "git+https://github.com/hyprwm/Hyprland?submodules=1&ref=refs/tags/v0.55.4";
       inputs.hyprutils.follows = "hyprutils";
     };
 
@@ -151,7 +152,7 @@
       # Pinned: the live-preview backend (c19cc94+) installs a shouldRenderWindow
       # hook that fires on every window/popup commit and SEGVs during normal use
       # (CPopup::visible -> shouldRenderWindow). 8bafe0d is the last commit before
-      # that feature; still built against Hyprland 0.55.2.
+      # that feature.
       url = "github:colonelpanic8/hyprexpo/8bafe0dbc7c26a3269f7e0fa01e3fa3cf54a3161";
       inputs.hyprland.follows = "hyprland";
     };
