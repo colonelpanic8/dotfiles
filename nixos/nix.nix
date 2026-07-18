@@ -114,7 +114,54 @@
         (final: prev: {
           codex = inputs.codex-cli-nix.packages.${prev.stdenv.hostPlatform.system}.default;
           claude-code = inputs.claude-code-nix.packages.${prev.stdenv.hostPlatform.system}.default;
-          t3code = inputs.t3code-nix.packages.${prev.stdenv.hostPlatform.system}.default;
+          t3code = (prev.t3code.override { pnpm_10 = final.pnpm_11; }).overrideAttrs (
+            finalAttrs: previousAttrs: {
+              version = "0.0.28-sidebar-v2-2026-07-16";
+              src = inputs.t3code-sidebar-v2;
+              # Vite+ bootstraps the exact version in packageManager. Match it
+              # to nixpkgs' pnpm so the task runner uses the dependency closure
+              # installed offline by pnpmConfigHook.
+              postPatch = previousAttrs.postPatch + ''
+                substituteInPlace package.json \
+                  --replace-fail '"packageManager": "pnpm@11.10.0"' \
+                                 '"packageManager": "pnpm@${final.pnpm_11.version}"'
+              '';
+              # The branch's Vite+ task runner checks every declared workspace
+              # and tries to install the four intentionally-unfetched mobile
+              # and infrastructure workspaces. Run the same desktop dependency
+              # chain directly: web -> server -> Electron shell.
+              buildPhase = ''
+                runHook preBuild
+
+                pushd apps/web
+                ../../node_modules/.bin/vp build
+                popd
+
+                node apps/server/scripts/cli.ts build --verbose
+                node apps/desktop/scripts/build-preview-annotation-css.mjs
+
+                pushd apps/desktop
+                ../../node_modules/.bin/vp pack
+                popd
+
+                runHook postBuild
+              '';
+              # `pnpm vp cache clean` also invokes pnpm's workspace bootstrap;
+              # the build above does not enable Vite+ task caching.
+              postBuild = "";
+              pnpmDeps = final.fetchPnpmDeps {
+                pnpm = final.pnpm_11;
+                inherit (finalAttrs)
+                  pname
+                  version
+                  src
+                  pnpmWorkspaces
+                  ;
+                fetcherVersion = 4;
+                hash = "sha256-JmOs6j0Tx8EgZFgvYhhnIPLmEcXirk0AlLvY+onNZhQ=";
+              };
+            }
+          );
           git-sync-rs = inputs.git-sync-rs.packages.${prev.stdenv.hostPlatform.system}.default;
           agent-workspace-linux = final.callPackage ./packages/agent-workspace-linux {};
           elegant-grub2-theme = final.callPackage ./packages/elegant-grub2-theme {};
