@@ -289,11 +289,10 @@ start_hyprsaver() {
 
   stop_backends
 
+  # With no explicit args, hyprsaver follows ~/.config/hypr/hyprsaver.toml.
   if [ -n "${HYPR_SCREENSAVER_HYPRSAVER_ARGS:-}" ]; then
     # shellcheck disable=SC2206
     extra_args=(${HYPR_SCREENSAVER_HYPRSAVER_ARGS})
-  else
-    extra_args=(--shader cycle --palette cycle)
   fi
 
   log_event "hyprsaver start args=${extra_args[*]}"

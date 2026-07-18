@@ -1,0 +1,6 @@
+# hyprsaver configuration -- see the shipped example at
+# share/hyprsaver/examples/hyprsaver.toml for all available keys.
+
+[general]
+shader = "bezier"
+palette = "cycle"
