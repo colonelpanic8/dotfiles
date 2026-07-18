@@ -66,6 +66,9 @@ def personal_agents_file() -> Path:
     override = os.environ.get("AGENT_VOICE_AGENTS_FILE")
     if override:
         return Path(override).expanduser().resolve()
+    worktree = os.environ.get("DOTFILES_WORKTREE")
+    if worktree:
+        return (Path(worktree).expanduser() / "dotfiles" / "agents" / "AGENTS.md").resolve()
     # This script lives at dotfiles/lib/bin/agent_voice_task.
     return Path(__file__).resolve().parents[2] / "agents" / "AGENTS.md"
 
