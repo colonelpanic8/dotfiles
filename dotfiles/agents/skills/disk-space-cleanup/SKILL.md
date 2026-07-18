@@ -116,7 +116,7 @@ Machine-specific note:
 - `cargo-sweep sweep -i/--installed` can fail when `rustup toolchain list` contains stale toolchains whose `rustc` no longer exists. On this machine, `1.68.2-x86_64-unknown-linux-gnu` caused `failed to determine fingerprint ... 'rustc': No such file or directory`.
 - `/home/imalison/Projects/codex/codex-rs/target` can be dominated by current-looking `target/debug/incremental` data that `cargo-sweep sweep -a` and `--maxsize` report as not removable. If it is stale and space pressure is high, use the guarded `rust_target_dirs.py delete ... --yes` workflow for that explicit target directory.
 - `/home/imalison/Projects/hypr-workspace-history/target` is a small non-Cargo false positive; the guarded delete workflow correctly rejects it because there is no Cargo project above the directory.
-- `nixos/imalison.nix` defines a daily user timer, `cargo-sweep-rust-targets.timer`, that runs `cargo-sweep sweep -r --hidden --maxsize 15GB` across `/home/imalison/Projects`, `/home/imalison/org`, and `/srv/dotfiles`.
+- `nixos/cargo-sweep.nix` defines a user timer for every user, `cargo-sweep-rust-targets.timer`, that every 6 hours runs `cargo-sweep sweep -r --hidden --time 2` across `$HOME/Projects`, `$HOME/org`, `/srv/dotfiles`, and `$HOME/.cargo/build`, then deletes centralized cargo build dirs (`~/.cargo/build/<xx>/<hash>`) untouched for 2 days. `CARGO_BUILD_BUILD_DIR` (set system-wide in `nix-shared/system/essential.nix`) redirects cargo intermediate artifacts to `~/.cargo/build/`, so per-project `target/` dirs only hold final artifacts.
 
 ## Step 4: Investigation with `ncdu` and `du`
 

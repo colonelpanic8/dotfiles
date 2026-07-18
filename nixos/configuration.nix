@@ -12,6 +12,7 @@
     ./bootloaders/systemd-boot.nix
     ./cache-server.nix
     ./cache.nix
+    ./cargo-sweep.nix
     ./chrome-favicon-dbus.nix
     ./claude-mcp.nix
     ./claude-remote-control.nix

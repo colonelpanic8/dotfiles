@@ -117,6 +117,13 @@
 in {
   nixpkgs.config.allowBroken = true;
 
+  # Centralize cargo's intermediate build artifacts (deps, incremental caches,
+  # fingerprints — the bulk of target-dir bloat) under
+  # ~/.cargo/build/<workspace-path-hash>, so deleting a worktree doesn't strand
+  # gigabytes and cleanup has one place to prune. Final artifacts still land in
+  # each project's target/.
+  environment.variables.CARGO_BUILD_BUILD_DIR = "{cargo-cache-home}/build/{workspace-path-hash}";
+
   environment.systemPackages =
     commonPkgs
     ++ lib.optionals pkgs.stdenv.isLinux linuxOnly
