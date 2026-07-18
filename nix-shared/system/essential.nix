@@ -110,6 +110,7 @@
     udiskie
     usbutils
     tzupdate
+    wl-clipboard
   ];
 
   darwinOnly = with pkgs; [
