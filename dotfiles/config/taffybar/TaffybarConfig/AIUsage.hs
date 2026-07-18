@@ -36,6 +36,10 @@ import System.Taffybar.Widget.OpenAIUsage
     defaultOpenAIUsageStackConfig,
     openAIUsageSectionNewWith,
   )
+import System.Taffybar.Widget.Util
+  ( UsageWindowLabelParts (..),
+    UsageWindowPosition (..),
+  )
 import TaffybarConfig.WidgetUtil (decorateWithClassAndBox, usageLogoWidget)
 
 codexChild, claudeChild :: Text
@@ -52,6 +56,23 @@ aiScratchpadStateDir = do
 
 aiScratchpadStateFile :: FilePath
 aiScratchpadStateFile = "ai-scratchpad"
+
+-- | Keep the weekly position compact and leading while leaving all usage and
+-- reset-window calculations in the library. Rows without a position retain
+-- the conventional @name value@ layout.
+compactUsageWindowLabel :: UsageWindowLabelParts -> Text
+compactUsageWindowLabel parts =
+  case usageWindowLabelPosition parts of
+    Just position ->
+      T.pack (show $ usageWindowPositionCurrent position)
+        <> "⁄"
+        <> T.pack (show $ usageWindowPositionTotal position)
+        <> " "
+        <> usageWindowLabelValue parts
+    Nothing
+      | T.null (usageWindowLabelName parts) -> usageWindowLabelValue parts
+      | T.null (usageWindowLabelValue parts) -> usageWindowLabelName parts
+      | otherwise -> usageWindowLabelName parts <> " " <> usageWindowLabelValue parts
 
 -- | Read the currently selected AI scratchpad, defaulting to codex like the
 -- Hyprland side does.
@@ -70,7 +91,8 @@ openAIUsageSection = do
   openAIUsageSectionNewWith
     iconWidget
     defaultOpenAIUsageStackConfig
-      { openAIUsageStackDefaultDisplayMode = OpenAIUsageDisplayRemaining
+      { openAIUsageStackDefaultDisplayMode = OpenAIUsageDisplayRemaining,
+        openAIUsageStackLabelRenderer = const compactUsageWindowLabel
       }
 
 anthropicUsageSection :: TaffyIO Gtk.Widget
@@ -79,7 +101,8 @@ anthropicUsageSection = do
   anthropicUsageSectionNewWith
     iconWidget
     defaultAnthropicUsageStackConfig
-      { anthropicUsageStackDefaultDisplayMode = AnthropicUsageDisplayRemaining
+      { anthropicUsageStackDefaultDisplayMode = AnthropicUsageDisplayRemaining,
+        anthropicUsageStackLabelRenderer = const compactUsageWindowLabel
       }
 
 -- | Show usage for whichever AI app the Hyprland AI scratchpad currently
