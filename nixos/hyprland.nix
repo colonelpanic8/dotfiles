@@ -202,6 +202,9 @@
     hyprlang = inputs.hyprlang.packages.${system}.hyprlang;
     hyprutils = inputs.hyprutils.packages.${system}.hyprutils;
   };
+  hyprsaver = pkgs.callPackage ./packages/hyprsaver {
+    src = inputs.hyprsaver;
+  };
   hyprexpo = inputs.hyprexpo.packages.${system}.hyprexpo;
   hyprwinview = hyprlandPluginsForBase.mkHyprlandPlugin {
     pluginName = "hyprwinview";
@@ -599,6 +602,7 @@
         swappy # Screenshot annotation
         nwg-displays # GUI monitor arrangement
         mpvpaper # Layer-shell video screensaver payload
+        hyprsaver # Shader-based layer-shell screensaver
         ddcutil # Monitor input switching over DDC/CI
         llvmNmCompat # Hyprland's Clang-built plugin API shells out to llvm-nm
 
