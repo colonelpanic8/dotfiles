@@ -14,6 +14,9 @@ Avoid dropping scripts in `~/bin` or `~/.local/bin` unless the user explicitly a
 ## NixOS Rebuild Workflow
 
 - Run `just switch` from `/etc/nixos` or `/srv/dotfiles/nixos` (not `nixos-rebuild` directly).
+- Never create or use a dotfiles worktree, and never activate from one. The
+  switch helper intentionally refuses any checkout other than `/srv/dotfiles`
+  because Home Manager out-of-store links retain the activation path.
 - Host configs live under `machines/`.
 
 ## Rofi/Tmux Integration Pointers

@@ -47,6 +47,10 @@ Treat model selection and effort level as separate decisions. The following scor
 - For a repository at `<repo_root>`, use worktree paths like `<repo_root>/.worktrees/<task-or-branch>`.
 - Create `.worktrees/` if needed before running `git worktree add`.
 - Only use a non-`.worktrees/` location when the user explicitly asks for a different path.
+- Exception: never create, enter, or use a worktree for the dotfiles repository
+  at `/srv/dotfiles`, and never place nested-repository worktrees beneath it.
+  Work only in the primary `/srv/dotfiles` checkout. This restriction also
+  applies to Codex/Claude helpers that create worktrees automatically.
 
 ## Git branches
 - Work directly on the repository's default branch in the primary checkout unless the user explicitly asks for a feature branch or worktree.
@@ -62,6 +66,9 @@ Treat model selection and effort level as separate decisions. The following scor
 ## NixOS workflow
 - This system is managed with a Nix flake at `/srv/dotfiles/nixos`.
 - Use `just switch` from that directory for rebuilds instead of plain `nixos-rebuild`.
+- Never run the switch from a dotfiles worktree or override `DOTFILES_WORKTREE`
+  to a temporary checkout. Home Manager's out-of-store links would remain tied
+  to that path after the checkout is removed.
 - Host configs live under `machines/`; choose the appropriate host when needed.
 
 ## Ad-hoc utilities via Nix
