@@ -349,6 +349,27 @@
         "type": "github"
       }
     },
+    "gmcli": {
+      "inputs": {
+        "nixpkgs": [
+          "nixpkgs"
+        ]
+      },
+      "locked": {
+        "lastModified": 1783809746,
+        "narHash": "sha256-vzNMRRQqRvi3tjbZ5jKyb4BfeCi/lLtWDTMOHcfMRH0=",
+        "owner": "colonelpanic8",
+        "repo": "gmcli",
+        "rev": "54c9f47ea9e241e440f30f936804dafcd89c85ab",
+        "type": "github"
+      },
+      "original": {
+        "owner": "colonelpanic8",
+        "ref": "agent/json-archive-export",
+        "repo": "gmcli",
+        "type": "github"
+      }
+    },
     "home-manager": {
       "inputs": {
         "nixpkgs": [
@@ -623,6 +644,7 @@
         "flake-utils": "flake-utils_3",
         "git-blame-rank": "git-blame-rank",
         "git-sync-rs": "git-sync-rs",
+        "gmcli": "gmcli",
         "home-manager": "home-manager_2",
         "homebrew-cask": "homebrew-cask",
         "homebrew-core": "homebrew-core",

@@ -36,6 +36,11 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
+    gmcli = {
+      url = "github:colonelpanic8/gmcli?ref=agent/json-archive-export";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+
     codex-cli-nix = {
       # Default branch is `main` on GitHub (not `master`).
       url = "github:sadjow/codex-cli-nix/main";
@@ -86,7 +91,6 @@
     sharedHomeModules = [
       ./home/common.nix
       ./home/git-sync.nix
-      ./home/syncthing.nix
     ];
     homeForUser = user: "/Users/${user}";
     mkUserDescription = user:
