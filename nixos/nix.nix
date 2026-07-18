@@ -111,21 +111,21 @@
         (import ./emacs-overlay.nix)
         (import ../nix-shared/overlays)
         # Use fast-moving agent tools from dedicated flakes.
-        (final: prev: {
-          codex = inputs.codex-cli-nix.packages.${prev.stdenv.hostPlatform.system}.default;
-          claude-code = inputs.claude-code-nix.packages.${prev.stdenv.hostPlatform.system}.default;
-          t3code = (prev.t3code.override { pnpm_10 = final.pnpm_11; }).overrideAttrs (
+        (final: prev: let
+          t3codeUnwrapped = (prev.t3code.unwrapped.override {pnpm_10 = final.pnpm_11;}).overrideAttrs (
             finalAttrs: previousAttrs: {
               version = "0.0.28-sidebar-v2-2026-07-16";
               src = inputs.t3code-sidebar-v2;
               # Vite+ bootstraps the exact version in packageManager. Match it
               # to nixpkgs' pnpm so the task runner uses the dependency closure
               # installed offline by pnpmConfigHook.
-              postPatch = previousAttrs.postPatch + ''
-                substituteInPlace package.json \
-                  --replace-fail '"packageManager": "pnpm@11.10.0"' \
-                                 '"packageManager": "pnpm@${final.pnpm_11.version}"'
-              '';
+              postPatch =
+                previousAttrs.postPatch
+                + ''
+                  substituteInPlace package.json \
+                    --replace-fail '"packageManager": "pnpm@11.10.0"' \
+                                   '"packageManager": "pnpm@${final.pnpm_11.version}"'
+                '';
               # The branch's Vite+ task runner checks every declared workspace
               # and tries to install the four intentionally-unfetched mobile
               # and infrastructure workspaces. Run the same desktop dependency
@@ -151,7 +151,8 @@
               postBuild = "";
               pnpmDeps = final.fetchPnpmDeps {
                 pnpm = final.pnpm_11;
-                inherit (finalAttrs)
+                inherit
+                  (finalAttrs)
                   pname
                   version
                   src
@@ -162,6 +163,10 @@
               };
             }
           );
+        in {
+          codex = inputs.codex-cli-nix.packages.${prev.stdenv.hostPlatform.system}.default;
+          claude-code = inputs.claude-code-nix.packages.${prev.stdenv.hostPlatform.system}.default;
+          t3code = prev.t3code.override {t3code-unwrapped = t3codeUnwrapped;};
           git-sync-rs = inputs.git-sync-rs.packages.${prev.stdenv.hostPlatform.system}.default;
           agent-workspace-linux = final.callPackage ./packages/agent-workspace-linux {};
           elegant-grub2-theme = final.callPackage ./packages/elegant-grub2-theme {};

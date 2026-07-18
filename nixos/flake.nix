@@ -259,10 +259,6 @@
 
     vscode-server = {
       url = "github:nix-community/nixos-vscode-server";
-      inputs = {
-        nixpkgs.follows = "nixpkgs";
-        flake-utils.follows = "flake-utils";
-      };
     };
 
     nixified-ai = {
