@@ -31,6 +31,13 @@ rustPlatform.buildRustPackage {
     mesa
   ];
 
+  # The binary dlopens libwayland-client/libxkbcommon/libEGL at runtime
+  # rather than linking them, so give it an rpath to find them.
+  postFixup = ''
+    patchelf --add-rpath ${lib.makeLibraryPath [wayland libxkbcommon libGL]} \
+      $out/bin/hyprsaver
+  '';
+
   postInstall = ''
     install -dm755 $out/share/hyprsaver/examples
     cp -r ${src}/examples/palettes $out/share/hyprsaver/examples/
