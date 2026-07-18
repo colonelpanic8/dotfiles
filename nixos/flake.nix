@@ -124,7 +124,7 @@
     hyprgraphics.follows = "hyprland/hyprgraphics";
     hyprlang.follows = "hyprland/hyprlang";
     hyprutils = {
-      url = "github:hyprwm/hyprutils";
+      url = "github:hyprwm/hyprutils/40ede2e7bdec80ba5d4c443160d905e9f841ae5f";
       inputs.nixpkgs.follows = "nixpkgs";
       inputs.systems.follows = "systems";
     };

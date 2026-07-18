@@ -37,7 +37,12 @@
     ]);
   in
     package.overrideAttrs (oldAttrs: {
-      nativeBuildInputs = (oldAttrs.nativeBuildInputs or []) ++ [pkgs.asar];
+      nativeBuildInputs =
+        (oldAttrs.nativeBuildInputs or [])
+        ++ [
+          pkgs.asar
+          pkgs.perl
+        ];
       src = oldAttrs.src.overrideAttrs (payloadOldAttrs: {
         installPhase = ''
           export CODEX_ENFORCE_CRITICAL_PATCHES=0
