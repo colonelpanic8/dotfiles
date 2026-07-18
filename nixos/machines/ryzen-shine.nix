@@ -24,7 +24,7 @@
   };
   myModules.gitea-runner.enable = false;
   myModules.postgres.enable = true;
-  myModules.tts.enable = true;
+  myModules.kokoro.enable = true;
   myModules.voxtype.enable = true;
   myModules.cua = {
     enable = true;

@@ -54,7 +54,7 @@
     ./syncthing-private-vault.nix
     ./taffybar.nix
     ./tailscale.nix
-    ./tts.nix
+    ./kokoro.nix
     ./users.nix
     ./vscode.nix
     ./voxtype.nix

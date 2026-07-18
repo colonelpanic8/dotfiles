@@ -9,12 +9,6 @@
     inputs.nixos-hardware.nixosModules.dell-xps-17-9700-nvidia
   ];
 
-  # services.tts.servers.coqui = {
-  #   enable = false;
-  #   useCuda = false;
-  #   port = 11400;
-  # };
-
   myModules.wyoming.enable = false;
   myModules.base.enable = true;
   myModules.desktop.enable = true;

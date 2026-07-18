@@ -1,0 +1,311 @@
+#!/usr/bin/env bash
+
+function kokoro-read {
+    local script_file stdin_file
+    script_file="$(mktemp)"
+    stdin_file=""
+
+    if [[ "$#" -eq 0 && ! -t 0 ]]; then
+        stdin_file="$(mktemp)"
+        cat > "$stdin_file"
+        set -- --stdin-file "$stdin_file"
+    fi
+
+cat > "$script_file" <<'PY'
+import argparse
+import json
+import queue
+import re
+import subprocess
+import sys
+import tempfile
+import threading
+import urllib.request
+from urllib.error import HTTPError, URLError
+from pathlib import Path
+
+
+DEFAULT_HOST = "http://127.0.0.1:11116"
+MAX_FILE_PATH_CHARS = 255
+PREFETCH_CHUNKS = 2
+
+
+def split_sentences(text: str) -> list[str]:
+    parts = re.split(r"(?<=[.!?])\s+", text.strip())
+    return [part.strip() for part in parts if part.strip()]
+
+
+def split_text(text: str, mode: str, max_chars: int) -> list[str]:
+    normalized = re.sub(r"\r\n?", "\n", text).strip()
+    if not normalized:
+        return []
+
+    if mode == "sentences":
+        units = split_sentences(normalized)
+    else:
+        units = [chunk.strip() for chunk in re.split(r"\n\s*\n+", normalized) if chunk.strip()]
+
+    chunks: list[str] = []
+    for unit in units:
+        if len(unit) <= max_chars:
+            chunks.append(unit)
+            continue
+
+        sentences = split_sentences(unit)
+        if len(sentences) <= 1:
+            chunks.append(unit)
+            continue
+
+        current = ""
+        for sentence in sentences:
+            candidate = sentence if not current else f"{current} {sentence}"
+            if len(candidate) <= max_chars:
+                current = candidate
+            else:
+                if current:
+                    chunks.append(current)
+                current = sentence
+        if current:
+            chunks.append(current)
+
+    return chunks
+
+
+def format_http_error(error: HTTPError, base_url: str) -> SystemExit:
+    detail = error.read().decode("utf-8", errors="replace")
+    if detail.strip() and detail.strip().startswith("{"):
+        try:
+            detail = json.dumps(json.loads(detail), indent=2)
+        except Exception:
+            pass
+    return SystemExit(f"TTS request failed (HTTP {error.code}): {detail or error.reason}")
+
+
+def open_speech_request(base_url: str, text: str, voice: str, speed: float, response_format: str, stream: bool):
+    body = json.dumps(
+        {
+            "model": "kokoro",
+            "input": text,
+            "voice": voice,
+            "speed": speed,
+            "response_format": response_format,
+            "stream": stream,
+        },
+        separators=(",", ":"),
+    ).encode("utf-8")
+    request = urllib.request.Request(
+        f"{base_url.rstrip('/')}/v1/audio/speech",
+        data=body,
+        method="POST",
+        headers={"Content-Type": "application/json"},
+    )
+    try:
+        return urllib.request.urlopen(request, timeout=300)
+    except HTTPError as error:
+        raise format_http_error(error, base_url)
+    except URLError as error:
+        raise SystemExit(f"Could not connect to Kokoro service at {base_url}: {error}")
+
+
+def player_command(player: str, path: str) -> list[str]:
+    if player == "ffplay":
+        return [player, "-nodisp", "-autoexit", "-loglevel", "warning", path]
+    if player == "mpv":
+        return [player, "--no-video", "--really-quiet", path]
+    return [player, path]
+
+
+def stream_document(args, text: str) -> int:
+    """Single streaming request; playback starts as soon as audio arrives."""
+    response = open_speech_request(args.host, text, args.voice, args.speed, "mp3", stream=True)
+
+    keep_file = None
+    if args.keep or args.player == "none":
+        keep_file = tempfile.NamedTemporaryFile(prefix="kokoro-read-", suffix=".mp3", delete=False)
+
+    player_proc = None
+    if args.player != "none":
+        player_proc = subprocess.Popen(
+            player_command(args.player, "-"),
+            stdin=subprocess.PIPE,
+        )
+
+    try:
+        while True:
+            chunk = response.read(64 * 1024)
+            if not chunk:
+                break
+            if keep_file is not None:
+                keep_file.write(chunk)
+            if player_proc is not None:
+                try:
+                    player_proc.stdin.write(chunk)
+                except BrokenPipeError:
+                    # Player was closed (e.g. user quit); stop streaming.
+                    break
+    except KeyboardInterrupt:
+        if player_proc is not None:
+            player_proc.terminate()
+        raise
+    finally:
+        response.close()
+        if keep_file is not None:
+            keep_file.close()
+            print(keep_file.name)
+        if player_proc is not None and player_proc.stdin is not None:
+            try:
+                player_proc.stdin.close()
+            except BrokenPipeError:
+                pass
+
+    if player_proc is not None:
+        return player_proc.wait()
+    return 0
+
+
+def synthesize_chunk(args, text: str, chunk_index: int) -> Path:
+    response = open_speech_request(args.host, text, args.voice, args.speed, "wav", stream=False)
+    with response:
+        wav_data = response.read()
+    temp_file = tempfile.NamedTemporaryFile(prefix=f"kokoro-read-{chunk_index}-", suffix=".wav", delete=False)
+    temp_file.write(wav_data)
+    temp_file.close()
+    return Path(temp_file.name)
+
+
+def read_chunked(args, text: str) -> int:
+    """Chunked fallback: synthesize ahead of playback with a bounded prefetch queue."""
+    chunks = split_text(text, args.chunk_mode, args.max_chars)
+    if not chunks:
+        print("No text to synthesize.", file=sys.stderr)
+        return 1
+
+    results: "queue.Queue[tuple[int, Path | BaseException]]" = queue.Queue(maxsize=PREFETCH_CHUNKS)
+    stop = threading.Event()
+
+    def producer() -> None:
+        for index, chunk in enumerate(chunks, start=1):
+            if stop.is_set():
+                return
+            print(f"[{index}/{len(chunks)}] Synthesizing {len(chunk)} chars...", file=sys.stderr)
+            try:
+                wav_path = synthesize_chunk(args, chunk, index)
+            except BaseException as error:  # surfaced on the consumer side
+                results.put((index, error))
+                return
+            results.put((index, wav_path))
+
+    thread = threading.Thread(target=producer, daemon=True)
+    thread.start()
+
+    created_files: list[Path] = []
+    try:
+        for _ in range(len(chunks)):
+            index, result = results.get()
+            if isinstance(result, BaseException):
+                raise result
+            created_files.append(result)
+            print(result)
+            if args.player != "none":
+                subprocess.run(player_command(args.player, str(result)), check=True)
+    finally:
+        stop.set()
+        if not args.keep:
+            # Drain anything the producer finished after we stopped consuming.
+            thread.join(timeout=5)
+            while True:
+                try:
+                    _, result = results.get_nowait()
+                except queue.Empty:
+                    break
+                if isinstance(result, Path):
+                    created_files.append(result)
+            for wav_path in created_files:
+                wav_path.unlink(missing_ok=True)
+
+    return 0
+
+
+def read_input(path: str | None) -> str:
+    if path:
+        if len(path) > MAX_FILE_PATH_CHARS:
+            raise SystemExit("Path too long. Pass text via stdin instead of an argument.")
+        if "\n" in path or "\r" in path:
+            raise SystemExit("Path contains newline characters. Pass text via stdin instead of an argument.")
+        if not Path(path).is_file():
+            raise SystemExit(f"No such file: {path!r}")
+        return Path(path).read_text(encoding="utf-8", errors="replace")
+    return sys.stdin.read()
+
+
+def main() -> int:
+    parser = argparse.ArgumentParser(
+        description="Read text through the local Kokoro TTS service. "
+        "Streams by default so playback of long documents starts immediately."
+    )
+    parser.add_argument("--stdin-file", default=None, help=argparse.SUPPRESS)
+    parser.add_argument("--file", dest="file_path", default=None, help="Read text from a file path.")
+    parser.add_argument("path", nargs="?", help="Optional file path. Text from stdin is used when omitted.")
+    parser.add_argument("--host", default=DEFAULT_HOST, help=f"Kokoro server base URL. Default: {DEFAULT_HOST}")
+    parser.add_argument("--voice", default="af_heart", help="Kokoro voice id. Default: af_heart")
+    parser.add_argument("--speed", type=float, default=1.0, help="Speech speed multiplier.")
+    parser.add_argument(
+        "--chunked",
+        action="store_true",
+        help="Use per-chunk synthesis with prefetch instead of one streaming request.",
+    )
+    parser.add_argument(
+        "--chunk-mode",
+        choices=["paragraphs", "sentences"],
+        default="paragraphs",
+        help="Chunking strategy (chunked mode only).",
+    )
+    parser.add_argument("--max-chars", type=int, default=700, help="Maximum characters per chunk (chunked mode only).")
+    parser.add_argument(
+        "--player",
+        default="ffplay",
+        help="Playback command (ffplay, mpv, or custom). Use 'none' to only synthesize and print file paths.",
+    )
+    parser.add_argument(
+        "--keep",
+        action="store_true",
+        help="Keep generated audio on disk instead of deleting it after playback.",
+    )
+    args = parser.parse_args()
+
+    if args.file_path and args.path:
+        parser.error("Pass either --file or a positional path, not both.")
+
+    if args.player == "none" and not args.keep:
+        print("--player none implies --keep; preserving synthesized audio files.", file=sys.stderr)
+        args.keep = True
+
+    if args.stdin_file:
+        text = Path(args.stdin_file).read_text(encoding="utf-8", errors="replace")
+    else:
+        text = read_input(args.file_path or args.path)
+
+    normalized = re.sub(r"\r\n?", "\n", text).strip()
+    if not normalized:
+        print("No text to synthesize.", file=sys.stderr)
+        return 1
+
+    if args.chunked:
+        return read_chunked(args, normalized)
+    return stream_document(args, normalized)
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())
+PY
+
+    python3 "$script_file" "$@"
+    local exit_code=$?
+    rm -f "$script_file"
+    if [[ -n "$stdin_file" ]]; then
+        rm -f "$stdin_file"
+    fi
+    return "$exit_code"
+}
+
+kokoro-read "$@"
