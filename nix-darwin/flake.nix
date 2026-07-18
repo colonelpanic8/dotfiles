@@ -3,6 +3,8 @@
 
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixpkgs-unstable";
+    # Bazel 7.6.0 from current nixpkgs crashes in the Darwin bootstrap linker.
+    nixpkgs-bazel.url = "github:NixOS/nixpkgs/f205b5574fd0cb7da5b702a2da51507b7f4fdd1b";
     flake-utils.url = "github:numtide/flake-utils";
     nix-darwin.url = "github:LnL7/nix-darwin";
     nix-darwin.inputs.nixpkgs.follows = "nixpkgs";
@@ -15,7 +17,7 @@
     };
     nix-homebrew.url = "github:zhaofengli-wip/nix-homebrew";
     brew-src = {
-      url = "github:Homebrew/brew/5.1.8";
+      url = "github:Homebrew/brew/6.0.11";
       flake = false;
     };
 
@@ -69,6 +71,7 @@
       inputs.nixpkgs.follows = "nixpkgs";
       inputs.flake-utils.follows = "flake-utils";
     };
+
   };
 
   outputs = inputs @ {
@@ -218,6 +221,9 @@
       };
 
       system.primaryUser = primaryUser;
+      # The uninstaller evaluates a nested nix-darwin system whose manual build
+      # still passes removed nixos-render-docs flags with current nixpkgs.
+      system.tools.darwin-uninstaller.enable = false;
 
       security.sudo.extraConfig = ''
         ${primaryUser} ALL=(ALL) NOPASSWD: ALL
@@ -292,8 +298,35 @@
         (import ../nix-shared/overlays)
         # Use codex and claude-code from dedicated flakes with cachix
         (final: prev: {
+          bazel = inputs.nixpkgs-bazel.legacyPackages.${prev.stdenv.hostPlatform.system}.bazel;
+          starship = inputs.nixpkgs-bazel.legacyPackages.${prev.stdenv.hostPlatform.system}.starship;
           codex = inputs.codex-cli-nix.packages.${prev.stdenv.hostPlatform.system}.default;
           claude-code = inputs.claude-code-nix.packages.${prev.stdenv.hostPlatform.system}.default;
+          nixos-render-docs = prev.writeShellApplication {
+            name = "nixos-render-docs";
+            text = ''
+              args=()
+              while [ "$#" -gt 0 ]; do
+                case "$1" in
+                  --toc-depth|--chunk-toc-depth|--section-toc-depth)
+                    args+=("--sidebar-depth")
+                    shift
+                    if [ "$#" -gt 0 ]; then
+                      args+=("$1")
+                    fi
+                    ;;
+                  --toc-depth=*|--chunk-toc-depth=*|--section-toc-depth=*)
+                    args+=("--sidebar-depth=''${1#*=}")
+                    ;;
+                  *)
+                    args+=("$1")
+                    ;;
+                esac
+                shift || true
+              done
+              exec ${prev.nixos-render-docs}/bin/nixos-render-docs "''${args[@]}"
+            '';
+          };
           git-sync-rs = git-sync-rs.packages.${prev.stdenv.hostPlatform.system}.default.overrideAttrs (old: {
             checkFlags =
               (old.checkFlags or [])
@@ -320,7 +353,7 @@
         nerd-fonts.jetbrains-mono
       ];
 
-      # Homebrew casks (managed by nix-darwin, installed by nix-homebrew)
+      # Desktop apps are managed separately from the Codex and Claude Code CLIs.
       homebrew = {
         enable = true;
         taps = builtins.attrNames config.nix-homebrew.taps;
@@ -329,7 +362,8 @@
           "m1ddc"
         ];
         casks = [
-          "codex-app"
+          "claude"
+          "chatgpt"
           "ghostty"
           "hammerspoon"
           "raycast"
@@ -339,6 +373,9 @@
         greedyCasks = true;
         onActivation = {
           cleanup = "zap";
+          # Homebrew requires an explicit confirmation flag when
+          # `brew bundle install` runs with `--cleanup`.
+          extraFlags = ["--force"];
         };
       };
 
@@ -424,8 +461,8 @@
               package =
                 inputs.brew-src
                 // {
-                  name = "brew-5.1.8";
-                  version = "5.1.8";
+                  name = "brew-6.0.11";
+                  version = "6.0.11";
                 };
               taps = {
                 "homebrew/homebrew-core" = inputs.homebrew-core;

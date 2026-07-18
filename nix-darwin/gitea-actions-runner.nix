@@ -76,7 +76,7 @@ in {
           };
 
           settings = mkOption {
-            description = "Configuration for `act_runner daemon`.";
+            description = "Configuration for `gitea-runner daemon`.";
             type = types.submodule {
               freeformType = settingsFormat.type;
             };
@@ -127,7 +127,7 @@ in {
                   "-c"
                   ''
                     cd /var/lib/gitea-runner/${name}
-                    exec ${cfg.package}/bin/act_runner daemon --config ${settingsFormat.generate "config.yaml" instance.settings}
+                    exec ${cfg.package}/bin/gitea-runner daemon --config ${settingsFormat.generate "config.yaml" instance.settings}
                   ''
                 ];
                 KeepAlive = true;
@@ -159,7 +159,7 @@ in {
                 RunAtLoad = true;
                 ProgramArguments = [
                   "${pkgs.writeShellScript "gitea-runner-setup-${name}" ''
-                    mkdir -p /var/lib/gitea-runner/${name}
+                    mkdir -p /var/lib/gitea-runner/${name} /var/log/gitea-runner
                     cd /var/lib/gitea-runner/${name}
                     ${
                       if instance.tokenFile != null then ''
@@ -171,7 +171,7 @@ in {
                             echo "Missing registration token for ${name}" >&2
                             exit 1
                         fi
-                        ${cfg.package}/bin/act_runner register --no-interactive \
+                        ${cfg.package}/bin/gitea-runner register --no-interactive \
                         --instance ${escapeShellArg instance.url} \
                         --token "$TOKEN" \
                         --name ${escapeShellArg instance.name} \

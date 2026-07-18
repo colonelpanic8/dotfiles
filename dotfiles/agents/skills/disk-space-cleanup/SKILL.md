@@ -1,75 +1,67 @@
 ---
 name: disk-space-cleanup
-description: Safely reclaim disk space through reviewed, automated cleanup actions on this machine, especially for Nix, Rust build artifacts, containers, caches, and service state. Use when an assessment has identified cleanup candidates, the user asks to free space or automate remediation, or low-space recovery requires measured deletion of rebuildable data.
+description: Investigate and safely reclaim disk space on this machine, especially on NixOS systems with heavy Nix, Rust/Haskell, Docker, and Podman usage. Use when disk is low, builds fail with no-space errors, /nix/store appears unexpectedly large, or the user asks for easy cleanup wins without deleting important data.
 ---
 
 # Disk Space Cleanup
 
-Act on evidence from `disk-space-assessment`. Automate guarded remediation, measure each action, and preserve user data and active work.
+Reclaim disk space with a safety-first workflow: investigate first, run obvious low-risk cleanup wins, then do targeted analysis for larger opportunities.
 
-Bundled resources:
+Bundled helpers:
 
-- `scripts/rust_target_dirs.py`: inventory and guarded deletion of explicit Cargo `target/` directories
-- `references/rust-target-roots.txt`: machine-specific Rust scan roots
-- `references/cleanup-patterns.md`: validated machine-specific remediation patterns
+- `scripts/rust_target_dirs.py`: inventory and guarded deletion for explicit Rust `target/` directories
+- `references/rust-target-roots.txt`: machine-specific roots for Rust artifact scans
+- `references/ignore-paths.md`: machine-specific excludes for `du`/`ncdu`
 
-## Required Input and Handoff
+## Execution Default
 
-Prefer a recent assessment containing baseline `df` output, reusable `ncdu` artifact paths, ranked candidates, and active-process caveats. If no reusable snapshot exists, use `disk-space-assessment` first. Even in an emergency, create a timestamped `safe_ncdu` snapshot of the affected filesystem or focused heavy root before deleting data whenever the scan can complete safely.
-
-Record before/after free space for every cleanup round. After material cleanup, create a new reusable snapshot through `disk-space-assessment` so the result can be compared without losing the pre-cleanup evidence.
-
-## Execution Policy
-
-- Present proposed actions with expected impact and risk before high-impact deletion.
-- Run destructive actions only after confirmation unless the user explicitly requests immediate cleanup of obvious rebuildable artifacts.
-- Prefer ownership-aware cleanup commands over raw recursive deletion.
-- Check for active builds, services, mounts, and open files before deleting their state.
-- Execute one category at a time and remeasure; stop when the user's space target is met.
-- Never treat overlapping Nix closure sizes as additive reclaim estimates.
-
-For Rust artifacts, helper-validated explicit directories literally named `target` are rebuildable. When the user asks to clean Rust targets, inventory them, validate with the helper, delete with `--yes`, and report reclaimed space without repeatedly asking for confirmation.
+- Start with non-destructive investigation and quick sizing.
+- Prioritize easy wins first (`nix-collect-garbage`, container prune, Cargo artifacts).
+- Propose destructive actions with expected impact before running them.
+- Run destructive actions only after confirmation, unless the user explicitly requests immediate execution of obvious wins.
+- Capture new reusable findings by updating this skill before finishing.
 
 ## Workflow
 
-1. Read the assessment and record current free space.
-2. Rank candidates by reclaim, reversibility, user impact, and confidence.
-3. Check active use and run dry-run modes where available.
-4. Execute the smallest sufficient cleanup round.
-5. Remeasure free space and verify affected services or builds.
-6. Produce a post-cleanup reusable snapshot after material changes.
-7. Report actions, actual reclaim, residual candidates, and artifact paths.
+1. Establish current pressure and biggest filesystems
+2. Run easy cleanup wins
+3. Inventory Rust build artifacts and clean the right kind of target
+4. Investigate remaining heavy directories with `ncdu`/`du`
+5. Investigate `/nix/store` roots when large toolchains still persist
+6. Summarize reclaimed space and next candidate actions
+7. Record new machine-specific ignore paths, Rust roots, or cleanup patterns in this skill
 
-## Baseline and Activity Checks
+## Step 1: Baseline
+
+Run a quick baseline before deleting anything:
 
 ```bash
 df -h /
 df -h /home
 df -h /nix
-ps aux | rg '(cargo|rustc|nix|docker|podman|gitea-runner)' || true
 ```
 
-Use `lsof`, service status, repository state, and worktree age when a candidate could be active. A directory that looks stale by mtime may still belong to a running build or concurrent agent.
-
-## Low-Risk Automated Wins
-
-Use dry-run or non-interactive privilege checks first:
+Optionally add a quick home-level size snapshot:
 
 ```bash
-nix-collect-garbage -d
+du -xh --max-depth=1 "$HOME" 2>/dev/null | sort -h
+```
+
+## Step 2: Easy Wins
+
+Use these first when the user wants fast, low-effort reclaiming:
+
+```bash
 sudo -n nix-collect-garbage -d
 sudo -n docker system prune -a
 sudo -n podman system prune -a
 ```
 
 Notes:
-
-- Plain `nix-collect-garbage -d` may work through the daemon when `sudo` is unavailable.
-- Add container `--volumes` only with explicit approval to delete unused volumes.
-- Recheck `df` after each command.
-- Fail fast on unavailable privilege; do not hang on a password prompt.
-
-Use application-aware cache cleaners when the assessment identifies those caches:
+- Add `--volumes` only when the user approves deleting unused volumes.
+- Re-check free space after each command to show impact.
+- Prefer `sudo -n` first so cleanup runs fail fast instead of hanging on password prompts.
+- If root is still tight after these, run app cache cleaners before proposing raw `rm -rf`:
 
 ```bash
 uv cache clean
@@ -78,68 +70,207 @@ yarn cache clean
 npm cache clean --force
 ```
 
-Expect dependency redownloads. Close applications before clearing their profile caches.
+## Step 3: Rust Build Artifact Cleanup
 
-## Rust Build Artifacts
+Do not start with a blind `find ~ -name target` or with hard-coded roots that may miss worktrees. Inventory explicit `target/` directories first using the bundled helper and the machine-specific root list in `references/rust-target-roots.txt`.
 
-Inventory across configured project and worktree roots:
+Inventory the biggest candidates:
 
 ```bash
 python /srv/dotfiles/dotfiles/agents/skills/disk-space-cleanup/scripts/rust_target_dirs.py list --min-size 500M --limit 30
+```
+
+Focus on stale targets only:
+
+```bash
 python /srv/dotfiles/dotfiles/agents/skills/disk-space-cleanup/scripts/rust_target_dirs.py list --min-size 1G --older-than 14 --output tsv
 ```
 
-For active workspaces, prefer age/toolchain-aware cleanup:
+Use `cargo-sweep` when the repo is still active and you want age/toolchain-aware cleanup inside a workspace:
 
 ```bash
 nix run nixpkgs#cargo-sweep -- sweep -d -r -t 30 <workspace-root>
 nix run nixpkgs#cargo-sweep -- sweep -r -t 30 <workspace-root>
+nix run nixpkgs#cargo-sweep -- sweep -d -r -i <workspace-root>
+nix run nixpkgs#cargo-sweep -- sweep -r -i <workspace-root>
 ```
 
-For inactive repos and stale worktrees, use guarded direct deletion:
+Use direct `target/` deletion when inventory shows a discrete stale directory, especially for inactive repos or project-local worktrees. The helper only deletes explicit paths named `target` that are beneath configured roots and a Cargo project:
 
 ```bash
 python /srv/dotfiles/dotfiles/agents/skills/disk-space-cleanup/scripts/rust_target_dirs.py delete /abs/path/to/target
 python /srv/dotfiles/dotfiles/agents/skills/disk-space-cleanup/scripts/rust_target_dirs.py delete /abs/path/to/target --yes
 ```
 
-The helper rejects symlinks, paths outside configured roots, non-`target` names, and directories without a Cargo project above them. Re-run inventory after each round. Preserve any target involved in an active Cargo/Rust process.
+Recommended sequence:
 
-If `python` is unavailable, run the helper with `nix run nixpkgs#python3 -- ...`. If a stale `~/.cargo/bin/cargo-sweep` shadows the NixOS binary, inspect `type -a cargo-sweep` before use.
+1. Run `rust_target_dirs.py list` to see the largest `target/` directories across `~/Projects`, `~/org`, `/srv/dotfiles`, and other configured roots.
+2. For active repos, prefer `cargo-sweep` from the workspace root.
+3. For inactive repos, abandoned branches, and `.worktrees/*/target`, prefer guarded direct deletion of the explicit `target/` directory.
+4. Re-run the list command after each deletion round to show reclaimed space.
 
-## Nix Remediation
+Machine-specific note:
 
-Do not delete `/nix/store` paths directly. Act on retaining roots identified by the assessment:
+- Project-local `.worktrees/*/target` directories are common cleanup wins on this machine and are easy to miss with the old hard-coded workflow.
+- `cargo-sweep` is installed through the NixOS `code.nix` package set, but stale manually-installed binaries under `~/.cargo/bin` can shadow `/run/current-system/sw/bin/cargo-sweep`. If `cargo sweep` fails with a missing loader or `No such file or directory`, run `type -a cargo-sweep` and remove the stale `~/.cargo/bin/cargo-sweep` entry.
+- `cargo-sweep sweep -i/--installed` can fail when `rustup toolchain list` contains stale toolchains whose `rustc` no longer exists. On this machine, `1.68.2-x86_64-unknown-linux-gnu` caused `failed to determine fingerprint ... 'rustc': No such file or directory`.
+- `/home/imalison/Projects/codex/codex-rs/target` can be dominated by current-looking `target/debug/incremental` data that `cargo-sweep sweep -a` and `--maxsize` report as not removable. If it is stale and space pressure is high, use the guarded `rust_target_dirs.py delete ... --yes` workflow for that explicit target directory.
+- `/home/imalison/Projects/hypr-workspace-history/target` is a small non-Cargo false positive; the guarded delete workflow correctly rejects it because there is no Cargo project above the directory.
+- `nixos/imalison.nix` defines a daily user timer, `cargo-sweep-rust-targets.timer`, that runs `cargo-sweep sweep -r --hidden --maxsize 15GB` across `/home/imalison/Projects`, `/home/imalison/org`, and `/srv/dotfiles`.
 
-- Remove stale project `.direnv` directories or `flake-profile-*` roots only after verifying the project/worktree is inactive.
-- Remove stale `result*` symlinks when the referenced build output no longer needs to remain rooted.
-- Remove obsolete system generations through Nix tooling.
-- Run garbage collection after roots are removed and measure actual free-space change.
-- Run `nix-store --optimise` when duplicate physical files are a demonstrated opportunity; it can be I/O intensive.
+## Step 4: Investigation with `ncdu` and `du`
 
-Use `nix_store_audit --top 30` before and after a root-removal campaign. Treat its uniquely collectible estimates as planning evidence, not a promise of exact filesystem reclaim.
+Avoid mounted or remote filesystems when profiling space. Load ignore patterns from `references/ignore-paths.md`.
 
-## Service and Cache Remediation
+Use one-filesystem scans to avoid crossing mounts:
 
-Read `references/cleanup-patterns.md` before touching private service state, runner caches, logs, or ambiguous project artifacts. Preserve configuration, registration, credentials, SSH material, and active workspaces.
+```bash
+ncdu -x "$HOME"
+sudo ncdu -x /
+```
 
-Prefer service-aware sequences: stop the service, clean only validated cache/work paths, recreate required directories with correct ownership, restart, and verify health.
+When excluding known noisy mountpoints:
+
+```bash
+ncdu -x --exclude "$HOME/keybase" "$HOME"
+sudo ncdu -x --exclude /keybase --exclude /var/lib/railbird /
+```
+
+If `ncdu` is missing, use:
+
+```bash
+nix run nixpkgs#ncdu -- -x "$HOME"
+```
+
+For reusable, mount-safe snapshots on this machine, prefer the local wrapper:
+
+```bash
+safe_ncdu /
+sudo -n env HOME=/home/imalison safe_ncdu /
+safe_ncdu /nix/store
+safe_ncdu top ~/.cache/ncdu/latest-root.json.zst 30 /home/imalison
+safe_ncdu open ~/.cache/ncdu/latest-root.json.zst
+```
+
+`safe_ncdu` writes compressed ncdu exports under `~/.cache/ncdu`, records the exclude list beside the export, excludes mounted descendants of the scan root, and supports follow-up `top` queries without rescanning.
+
+For quick, non-blocking triage on very large trees, prefer bounded probes:
+
+```bash
+timeout 30s du -xh --max-depth=1 "$HOME/.cache" 2>/dev/null | sort -h
+timeout 30s du -xh --max-depth=1 "$HOME/.local/share" 2>/dev/null | sort -h
+```
+
+Machine-specific heavy hitters seen in practice:
 
 - 2026-07-10 `railbird-sf` incident: K3s reported `DiskPressure` even with tens of GiB free because its container `imagefs` shares `/`, kubelet image GC used the default 85% high-water mark, and the K3s config overrode only `nodefs` eviction thresholds. `crictl imagefsinfo` showed only ~677M of images, so image GC could not reclaim its requested ~149G and repeatedly evicted application pods. Set matching `imagefs.available` values alongside `nodefs.available` in `eviction-hard`, `eviction-soft`, and `eviction-soft-grace-period`; verify via K3s eviction-manager logs rather than trusting `df` alone.
+- `~/.cache/uv` can exceed 20G and is reclaimable with `uv cache clean`.
+- `~/.cache/pypoetry` can exceed 7G across artifacts, repository cache, and virtualenvs; inspect first, then use Poetry cache commands or targeted virtualenv removal.
+- `~/.cache/google-chrome` can exceed 8G across multiple Chrome profiles; close Chrome before clearing profile cache directories.
+- `~/.cache/spotify` can exceed 10G; treat as optional app-cache cleanup.
+- `~/.gradle` can exceed 8G, mostly under `caches/`; prefer Gradle-aware cleanup and expect dependency redownloads.
+- `~/.local/share/picom/debug.log` can grow past 15G when verbose picom debugging is enabled or crashes leave a stale log behind; if `picom` is not running, deleting or truncating the log is a high-yield low-risk win.
+- `~/.local/share/Trash` can exceed several GB; empty only with user approval.
+- On the macOS Codex host, `~/.cache/keepbook-cargo-target` can grow to several GiB as a Rust target cache and is safe to remove when not actively building keepbook.
+- On the macOS Codex host, large low-risk cache wins have included `~/Library/Caches/Homebrew` via `brew cleanup --prune=all -s`, Yarn/npm/CocoaPods caches, `~/Library/Caches/com.spotify.client`, `~/Library/Caches/ms-playwright`, and stale app updater caches such as `~/Library/Caches/com.anthropic.claudefordesktop.ShipIt`.
+- On the macOS Codex host, allowing `direnv` in a fresh `railbird-mobile/.worktrees/*` worktree can materialize the full Android SDK dev shell even for workflow-only edits. When free space is already low, use the existing root worktree's tools or direct formatters first; a failed shell realization followed by `sudo -n nix-collect-garbage -d` reclaimed about 6.3 GiB on 2026-07-12.
+- 2026-07-13 macOS Railbird worktree cleanup: a fresh Android dev-shell realization repeatedly filled the disk while unpacking NDK r23b. After the failed build exited, 463 paths were dead; `sudo -n nix-collect-garbage -d` reclaimed 12.0 GiB. Avoid retrying that worktree shell and reuse the main worktree's dependencies/toolchain when the task only needs formatting, linting, or TypeScript checks.
+- 2026-07-09 macOS runner cleanup: `sudo -n nix-collect-garbage -d` removed 11,455 unreferenced store paths and reclaimed 24.4 GiB, increasing shared APFS container free space from about 3 GiB to 30 GiB. The preflight estimate from the Nix DB reported only 15.6 GiB of dead-path `narSize`, so actual reclaimed filesystem space can be materially larger.
+- 2026-07-09 Xcode runner update: `mas outdated` correctly detected Xcode 16.3 -> 26.6, but `mas upgrade 497799835` stalled when no active App Store purchase account was present (`needsAuthentication because appleID is nil` in unified logs). Verify App Store sign-in before relying on unattended `mas` upgrades.
+- On the macOS Codex host, `/private/var/folders/*/*/X/*.code_sign_clone` can accumulate stale app framework copies, especially Chrome and Codex clones. Remove only stale clone directories after checking age; avoid blind deletion of the whole `/private/var/folders` tree.
+- On the macOS Codex host, `~/Library/Developer/CoreSimulator/Caches/dyld` can exceed several GiB. Clean it only after confirming simulator shutdown is acceptable, because CoreSimulator services may be running.
+- On the macOS Codex host, `xcrun simctl runtime delete <UUID>` can remove an installed simulator runtime while its source MobileAsset remains under `/System/Library/AssetsV2/com_apple_MobileAsset_iOSSimulatorRuntime`. In a 2026-07-13 iOS 18.4 cleanup, the runtime and its mounted Cryptex image disappeared but the 8.3 GiB source asset remained; do not raw-delete system-managed `AssetsV2` content, and measure actual APFS free-space change rather than assuming the runtime's displayed size is fully reclaimed.
+- `/var/lib/private/gitea-runner` can exceed 50G and is not visible to an unprivileged `ncdu /` scan; use `sudo -n env HOME=/home/imalison safe_ncdu /` when `/var` looks undercounted.
+  - Validated cleanup pattern: stop `gitea-runner-nix.service`, remove cache/work directories under `/var/lib/private/gitea-runner` (`.cache`, `.gradle`, `action-cache-dir`, `workspace`, stale nested `gitea-runner`, and nested `nix/.cache`/`nix/.local`), recreate `action-cache-dir`, `workspace`, and `.cache` owned by `gitea-runner:gitea-runner`, then restart the service.
+  - Preserve registration/config-like files such as `/var/lib/private/gitea-runner/nix/.runner`, `/var/lib/private/gitea-runner/nix/.labels`, `/var/lib/private/gitea-runner/.docker/config.json`, and SSH/Kube material.
+- `~/Projects/*/target` directories can dominate home usage. Recent example candidates included stale `target/` directories under `scrobble-scrubber`, `http-client-vcr`, `http-client`, `subtr-actor`, `http-types`, `subtr-actor-py`, `sdk`, and `async-h1`.
+- 2026-05-26 cleanup: deleting explicit Cargo-backed targets under `~/Projects/{keepbook,subtr-actor,rlru,rocket-sense,boxcars,rumno}` plus stale `subtr-actor/.worktrees/*/target` reclaimed about 65G by helper sizing and moved `/` from 100% used to 89% used. A final all-depth scan left no `~/Projects` Rust `target/` directories over 500M.
+- 2026-05-26 cleanup: when `cargo test` is actively running in `~/Projects/subtr-actor`, leave `subtr-actor/target` alone and delete only inactive Cargo-backed targets. Deleting `keepbook`, `rlru`, `rocket-sense`, `rumno`, and stale `subtr-actor/.worktrees/*/target` reclaimed about 24.5G by helper sizing.
+- 2026-05-26 cleanup: `~/Projects/nixpkgs/.worktrees/*/result` symlinks pinned several GiB of Nix closures, and clean registered nixpkgs worktrees were about 460M each. Removing stale `result` symlinks, running GC, and removing clean worktrees while preserving dirty ones moved `/` from 100% used to about 90% used.
+- 2026-05-27 cleanup: under `~/Projects`, `hypr-workspace-history/target` can be a Rust-style build cache even though the guarded helper rejects it because no `Cargo.toml` is present; inspect and remove that explicit cache manually if present. Preserve `~/Projects/Hyprland/src/layout/target`, which is source code, not a build artifact.
+
+## Step 5: `/nix/store` Deep Dive
+
+When `/nix/store` is still large after GC, inspect root causes instead of deleting random paths.
+
+Useful commands:
+
+```bash
+nix path-info -Sh /nix/store/* 2>/dev/null | sort -h | tail -n 50
+nix-store --gc --print-roots
+```
+
+Avoid `du -sh /nix/store` as a first diagnostic; it can be very slow on large stores.
+
+For repeated GHC/Rust toolchain copies:
+
+```bash
+nix path-info -Sh /nix/store/* 2>/dev/null | rg '(ghc|rustc|rust-std|cargo)'
+nix-store --gc --print-roots | rg '(ghc|rust)'
+```
+
+Resolve why a path is retained:
+
+```bash
+/srv/dotfiles/dotfiles/lib/functions/find_store_path_gc_roots /nix/store/<store-path>
+nix why-depends <consumer-store-path> <dependency-store-path>
+```
+
+Common retention pattern on this machine:
+
+- Many `.direnv/flake-profile-*` symlinks under `~/Projects` and worktrees keep `nix-shell-env`/`ghc-shell-*` roots alive.
+- On the macOS host, `.direnv` symlinks on mounted external volumes still register roots for the internal `/nix/store`. A 2026-07-13 audit found seven direnv profiles across the active home and `/Volumes/Extreme SSD` retaining 17.3 GiB of store paths unique to direnv roots; clearing the external direnvs reclaims internal Nix space, not meaningful space on the external volume.
+- 2026-07-13 macOS direnv cleanup: preserving only the main `~/railbird-mobile/.direnv` while removing six other profiles plus `scrobble-scrubber` result roots made 6,262 paths dead; `nix-collect-garbage -d` reported 8.3 GiB actually freed versus a 12.9 GiB preflight `narSize` estimate.
+- Old taffybar constellation repos under `~/Projects` can pin large Haskell closures through `.direnv` and `result` symlinks. Deleting `gtk-sni-tray`, `status-notifier-item`, `dbus-menu`, `dbus-hslogger`, and `gtk-strut` and then rerunning `nix-collect-garbage -d` reclaimed about 11G of store data in one validated run.
+- `find_store_path_gc_roots` is especially useful for proving GHC retention: many large `ghc-9.10.3-with-packages` paths are unique per project, while the base `ghc-9.10.3` and docs paths are shared.
+- NixOS system generations and a repo-root `nixos/result` symlink can pin multiple Android Studio and Android SDK versions. Check `/nix/var/nix/profiles/system-*-link`, `/run/current-system`, `/run/booted-system`, and `/srv/dotfiles/nixos/result` before assuming Android paths are pinned by project shells.
+- `~/Projects/railbird-mobile/.direnv/flake-profile-*` can pin large Android SDK system images. Removing stale direnv profiles there is a more targeted first step than deleting Android store paths directly.
+- 2026-05-27 Railbird GHC audit: the Railbird backend flake did not explicitly reference Haskell, but its dev shell had derivation-time GHC edges through `inputs.secrets.devShells.${system}.default -> agenix -> shellcheck -> ShellCheck -> ghc` and through `shell-packages.nix`'s `rdma-core -> pandoc-cli -> ghc`. Railbird Mobile had similar non-app-code GHC edges through `inputs.secrets`/`agenix` and `nixGLIntel -> shellcheck`. The `railbird/gql` and `railbird-mobile/src/gql` shells did not show GHC edges in their derivation graphs, only Rust/Cargo build tooling from packages such as `just`.
+- For a repeatable `/nix/store` `ncdu` snapshot without driving the TUI, export and inspect it:
+
+```bash
+ncdu -0 -x -c -o /tmp/nix-store.ncdu.json.zst /nix/store
+zstdcat /tmp/nix-store.ncdu.json.zst | jq 'def sumd: if type=="array" then ((.[0].dsize // 0) + ([.[1:][] | sumd] | add // 0)) elif type=="object" then (.dsize // 0) else 0 end; .[3] | sumd'
+```
+
+- `nix-store --gc --print-dead` plus the Nix SQLite database is a fast way to estimate immediate GC wins before deleting anything:
+
+```bash
+nix-store --gc --print-dead > /tmp/nix-dead-paths.txt
+printf '%s\n' '.mode list' '.separator |' 'create temp table dead(path text);' \
+  '.import /tmp/nix-dead-paths.txt dead' \
+  'select count(*), sum(narSize) from ValidPaths join dead using(path);' \
+  | nix shell nixpkgs#sqlite --command sqlite3 /nix/var/nix/db/db.sqlite
+```
+
+- Quantify before acting:
+
+```bash
+find ~/Projects -type l -path '*/.direnv/flake-profile-*' | wc -l
+find ~/Projects -type d -name .direnv | wc -l
+nix-store --gc --print-roots | rg '/\\.direnv/flake-profile-' | awk -F' -> ' '{print $1 \"|\" $2}' \
+  | while IFS='|' read -r root target; do \
+      nix-store -qR \"$target\" | rg '^/nix/store/.+-ghc-[0-9]'; \
+    done | sort | uniq -c | sort -nr | head
+```
+
+- If counts are high and the projects are inactive, propose targeted `.direnv` cleanup for user confirmation.
 
 ## Safety Rules
 
-- Do not delete user documents, source code, credentials, volumes, or unknown data without explicit approval.
-- Never delete a path solely because its name resembles a cache or build directory.
-- Do not clean targets used by running builds or concurrent agents.
-- Preserve dirty worktrees and registration/configuration files.
-- Stop when evidence is insufficient and return to `disk-space-assessment`.
+- Do not delete user files directly unless explicitly requested.
+- Prefer cleanup tools that understand ownership/metadata (`nix`, `docker`, `podman`, `cargo-sweep`) over `rm -rf`.
+- For Rust build artifacts, deleting an explicit directory literally named `target` is acceptable when it is discovered by the bundled helper; Cargo will rebuild it.
+- Present a concise “proposed actions” list before high-impact deletes.
+- If uncertain whether data is needed, stop at investigation and ask.
 
-## Learning Loop
+## Learning Loop (Required)
 
-After each cleanup:
+Treat this skill as a living playbook.
 
-1. Add stable, validated remediation knowledge to `references/cleanup-patterns.md`.
-2. Add new Rust repository roots to `references/rust-target-roots.txt`.
-3. Update assessment-side diagnostic patterns separately; do not turn this skill into a usage-history log.
-4. Remove stale guidance and keep automation guarded and reproducible.
+After each disk cleanup task:
+
+1. Add newly discovered mountpoints or directories to ignore in `references/ignore-paths.md`.
+2. Add newly discovered Rust repo roots in `references/rust-target-roots.txt`.
+3. Add validated command patterns or caveats discovered during the run to this `SKILL.md`.
+4. Keep instructions practical and machine-specific; remove stale guidance.

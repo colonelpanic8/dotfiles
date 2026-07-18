@@ -80,12 +80,12 @@ def load_roots(roots_file: Path, cli_roots: list[str]) -> list[Path]:
 
 def du_size_bytes(path: Path) -> int:
     result = subprocess.run(
-        ["du", "-sb", str(path)],
+        ["du", "-sk", str(path)],
         check=True,
         capture_output=True,
         text=True,
     )
-    return int(result.stdout.split()[0])
+    return int(result.stdout.split()[0]) * 1024
 
 
 def nearest_cargo_root(path: Path, stop_roots: list[Path]) -> str:

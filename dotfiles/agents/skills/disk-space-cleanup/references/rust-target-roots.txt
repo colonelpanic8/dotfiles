@@ -5,3 +5,4 @@
 /home/imalison/org
 /home/imalison/.codex/worktrees
 /srv/dotfiles
+/Users/kat
