@@ -236,7 +236,9 @@ run_hyprsaver() {
     return
   fi
 
-  nix run github:maravexa/hyprsaver -- "$@"
+  # Upstream's committed flake.lock is broken (stub hashes), so fall back to
+  # the locally packaged copy in the dotfiles flake.
+  nix run /srv/dotfiles/nixos#hyprsaver -- "$@"
 }
 
 run_neowall() {
