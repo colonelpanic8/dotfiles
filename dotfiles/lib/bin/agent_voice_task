@@ -1,0 +1,869 @@
+#!/usr/bin/env python3
+"""Global push-to-talk launcher for persistent Codex or Claude tasks."""
+
+from __future__ import annotations
+
+import argparse
+import json
+import os
+import queue
+import shutil
+import signal
+import socket
+import subprocess
+import sys
+import threading
+import time
+import tomllib
+import uuid
+import wave
+from pathlib import Path
+from typing import Any, Callable
+
+
+APP_NAME = "Voice task"
+SAMPLE_RATE = 24_000
+CHANNELS = 1
+SAMPLE_WIDTH = 2
+CHUNK_MILLISECONDS = 100
+CHUNK_BYTES = SAMPLE_RATE * CHANNELS * SAMPLE_WIDTH * CHUNK_MILLISECONDS // 1000
+DEFAULT_WHISPER_PROMPT = "Ivan Malison, Railbird, NixOS, Hyprland, Taffybar, Emacs, Codex."
+
+
+def xdg_path(variable: str, fallback: str) -> Path:
+    return Path(os.environ.get(variable, str(Path.home() / fallback))).expanduser()
+
+
+STATE_ROOT = xdg_path("XDG_STATE_HOME", ".local/state") / "agent-voice-task"
+DATA_ROOT = xdg_path("XDG_DATA_HOME", ".local/share") / "agent-voice-task"
+RUNTIME_ROOT = Path(os.environ.get("XDG_RUNTIME_DIR", f"/run/user/{os.getuid()}")) / "agent-voice-task"
+SESSION_FILE = RUNTIME_ROOT / "session.json"
+STOP_FILE = RUNTIME_ROOT / "stop"
+CANCEL_FILE = RUNTIME_ROOT / "cancel"
+PROVIDER_STATE = xdg_path("XDG_STATE_HOME", ".local/state") / "hypr" / "ai-scratchpad"
+WORKSPACE = DATA_ROOT / "workspace"
+HISTORY = STATE_ROOT / "history"
+LAST_JOB = STATE_ROOT / "last-job.json"
+
+
+def atomic_json(path: Path, value: dict[str, Any]) -> None:
+    path.parent.mkdir(parents=True, exist_ok=True)
+    temporary = path.with_name(f".{path.name}.{os.getpid()}.tmp")
+    temporary.write_text(json.dumps(value, indent=2, sort_keys=True) + "\n")
+    temporary.replace(path)
+
+
+def read_json(path: Path) -> dict[str, Any]:
+    try:
+        value = json.loads(path.read_text())
+        return value if isinstance(value, dict) else {}
+    except (OSError, json.JSONDecodeError):
+        return {}
+
+
+def personal_agents_file() -> Path:
+    override = os.environ.get("AGENT_VOICE_AGENTS_FILE")
+    if override:
+        return Path(override).expanduser().resolve()
+    # This script lives at dotfiles/lib/bin/agent_voice_task.
+    return Path(__file__).resolve().parents[2] / "agents" / "AGENTS.md"
+
+
+def ensure_workspace() -> Path:
+    WORKSPACE.mkdir(parents=True, exist_ok=True)
+    agents = personal_agents_file()
+    if not agents.is_file():
+        raise RuntimeError(f"personal AGENTS.md is not readable: {agents}")
+    for name in ("AGENTS.md", "CLAUDE.md"):
+        link = WORKSPACE / name
+        if link.is_symlink() and link.resolve() == agents:
+            continue
+        if link.exists() or link.is_symlink():
+            if link.is_dir() and not link.is_symlink():
+                raise RuntimeError(f"refusing to replace directory: {link}")
+            link.unlink()
+        link.symlink_to(agents)
+    return WORKSPACE
+
+
+def selected_provider(alternate: bool = False, explicit: str | None = None) -> str:
+    if explicit:
+        provider = explicit
+    else:
+        try:
+            provider = PROVIDER_STATE.read_text().strip().lower()
+        except OSError:
+            provider = "codex"
+        if provider not in {"codex", "claude"}:
+            provider = "codex"
+    if alternate:
+        provider = "claude" if provider == "codex" else "codex"
+    return provider
+
+
+def provider_label(provider: str) -> str:
+    return "Claude" if provider == "claude" else "Codex"
+
+
+class Notifier:
+    def __init__(self) -> None:
+        self.notification_id: str | None = None
+        self.last_body = ""
+        self.last_update = 0.0
+
+    def update(self, summary: str, body: str, *, urgency: str = "low", force: bool = False) -> None:
+        if not shutil.which("notify-send"):
+            return
+        now = time.monotonic()
+        if not force and (body == self.last_body or now - self.last_update < 0.12):
+            return
+        body = body[-700:]
+        command = [
+            "notify-send",
+            "--app-name",
+            APP_NAME,
+            "--urgency",
+            urgency,
+            "--expire-time",
+            "12000",
+            "--print-id",
+        ]
+        if self.notification_id:
+            command.extend(["--replace-id", self.notification_id])
+        command.extend([summary, body])
+        try:
+            result = subprocess.run(command, text=True, capture_output=True, timeout=2, check=False)
+            candidate = result.stdout.strip()
+            if candidate.isdigit():
+                self.notification_id = candidate
+            self.last_body = body
+            self.last_update = now
+        except (OSError, subprocess.TimeoutExpired):
+            pass
+
+
+class JsonRpcClient:
+    def __init__(
+        self,
+        command: list[str],
+        notification_handler: Callable[[str, dict[str, Any]], None] | None = None,
+        log_file: Any | None = None,
+    ) -> None:
+        self.process = subprocess.Popen(
+            command,
+            stdin=subprocess.PIPE,
+            stdout=subprocess.PIPE,
+            stderr=log_file or subprocess.DEVNULL,
+            text=True,
+            bufsize=1,
+        )
+        self.notification_handler = notification_handler
+        self.pending: dict[int, queue.Queue[dict[str, Any]]] = {}
+        self.pending_lock = threading.Lock()
+        self.write_lock = threading.Lock()
+        self.next_id = 1
+        self.reader = threading.Thread(target=self._read_loop, name="codex-json-rpc", daemon=True)
+        self.reader.start()
+
+    def _read_loop(self) -> None:
+        assert self.process.stdout is not None
+        for line in self.process.stdout:
+            try:
+                message = json.loads(line)
+            except json.JSONDecodeError:
+                continue
+            request_id = message.get("id")
+            if request_id is not None and ("result" in message or "error" in message):
+                with self.pending_lock:
+                    waiter = self.pending.get(request_id)
+                if waiter:
+                    waiter.put(message)
+                continue
+            method = message.get("method")
+            params = message.get("params", {})
+            if method and self.notification_handler and isinstance(params, dict):
+                self.notification_handler(method, params)
+
+    def _write(self, message: dict[str, Any]) -> None:
+        if self.process.poll() is not None:
+            raise RuntimeError(f"Codex app-server exited with status {self.process.returncode}")
+        assert self.process.stdin is not None
+        encoded = json.dumps(message, separators=(",", ":"))
+        with self.write_lock:
+            self.process.stdin.write(encoded + "\n")
+            self.process.stdin.flush()
+
+    def request(self, method: str, params: dict[str, Any], timeout: float = 20) -> Any:
+        with self.pending_lock:
+            request_id = self.next_id
+            self.next_id += 1
+            waiter: queue.Queue[dict[str, Any]] = queue.Queue(maxsize=1)
+            self.pending[request_id] = waiter
+        try:
+            self._write({"id": request_id, "method": method, "params": params})
+            try:
+                response = waiter.get(timeout=timeout)
+            except queue.Empty as error:
+                raise TimeoutError(f"timed out waiting for {method}") from error
+            if "error" in response:
+                raise RuntimeError(f"{method}: {response['error']}")
+            return response.get("result")
+        finally:
+            with self.pending_lock:
+                self.pending.pop(request_id, None)
+
+    def notify(self, method: str, params: dict[str, Any]) -> None:
+        self._write({"method": method, "params": params})
+
+    def initialize(self, *, experimental: bool) -> Any:
+        result = self.request(
+            "initialize",
+            {
+                "clientInfo": {
+                    "name": "agent_voice_task",
+                    "title": "Agent Voice Task",
+                    "version": "0.1.0",
+                },
+                "capabilities": {"experimentalApi": experimental},
+            },
+        )
+        self.notify("initialized", {})
+        return result
+
+    def close(self) -> None:
+        if self.process.poll() is None:
+            self.process.terminate()
+            try:
+                self.process.wait(timeout=2)
+            except subprocess.TimeoutExpired:
+                self.process.kill()
+
+
+class CaptureSession:
+    def __init__(self, provider: str, job_path: Path) -> None:
+        self.provider = provider
+        self.job_path = job_path
+        self.stop_requested = threading.Event()
+        self.cancel_requested = threading.Event()
+        self.audio_finished = threading.Event()
+        self.audio_lock = threading.Lock()
+        self.audio_data = bytearray()
+        self.incremental_error: str | None = None
+        self.transcript_parts: list[str] = []
+        self.partial = ""
+        self.notifier = Notifier()
+        self.raw_path = job_path.with_suffix(".raw")
+        self.recorder: subprocess.Popen[bytes] | None = None
+
+    def signal_stop(self, _signum: int, _frame: Any) -> None:
+        self.stop_requested.set()
+
+    def signal_cancel(self, _signum: int, _frame: Any) -> None:
+        self.cancel_requested.set()
+        self.stop_requested.set()
+
+    def transcript(self) -> str:
+        pieces = [part.strip() for part in self.transcript_parts if part.strip()]
+        if self.partial.strip():
+            pieces.append(self.partial.strip())
+        output: list[str] = []
+        for piece in pieces:
+            if not output or piece != output[-1]:
+                output.append(piece)
+        return " ".join(output).strip()
+
+    def start_recorder(self) -> None:
+        command = [
+            "pw-record",
+            "--raw",
+            "--format",
+            "s16",
+            "--rate",
+            str(SAMPLE_RATE),
+            "--channels",
+            str(CHANNELS),
+            "--media-category",
+            "Capture",
+            "--media-role",
+            "Communication",
+            "-",
+        ]
+        self.recorder = subprocess.Popen(command, stdout=subprocess.PIPE, stderr=subprocess.DEVNULL)
+
+        def read_audio() -> None:
+            assert self.recorder is not None and self.recorder.stdout is not None
+            with self.raw_path.open("wb") as raw:
+                while not self.stop_requested.is_set():
+                    chunk = self.recorder.stdout.read(CHUNK_BYTES)
+                    if not chunk:
+                        break
+                    raw.write(chunk)
+                    raw.flush()
+                    with self.audio_lock:
+                        self.audio_data.extend(chunk)
+            self.audio_finished.set()
+
+        threading.Thread(target=read_audio, name="voice-audio-capture", daemon=True).start()
+
+    def stop_recorder(self) -> None:
+        if self.recorder and self.recorder.poll() is None:
+            self.recorder.terminate()
+            try:
+                self.recorder.wait(timeout=2)
+            except subprocess.TimeoutExpired:
+                self.recorder.kill()
+        self.audio_finished.set()
+
+    def audio_snapshot(self) -> bytes:
+        with self.audio_lock:
+            return bytes(self.audio_data)
+
+    def whisper_settings(self) -> tuple[Path, str, str]:
+        model_override = os.environ.get("AGENT_VOICE_WHISPER_MODEL")
+        language = "en"
+        prompt = DEFAULT_WHISPER_PROMPT
+        config_path = Path(os.environ.get("VOXTYPE_CONFIG", Path.home() / ".config/voxtype/config.toml"))
+        config: dict[str, Any] = {}
+        try:
+            with config_path.open("rb") as source:
+                loaded = tomllib.load(source)
+                if isinstance(loaded, dict):
+                    config = loaded
+        except (OSError, tomllib.TOMLDecodeError):
+            pass
+        whisper = config.get("whisper", {})
+        if not isinstance(whisper, dict):
+            whisper = {}
+        model_value = model_override or whisper.get("model")
+        language = str(whisper.get("language", language))
+        prompt = str(whisper.get("initial_prompt", prompt))
+        if not model_value:
+            raise RuntimeError("no Whisper model is configured")
+        model = Path(str(model_value)).expanduser()
+        if not model.is_file():
+            raise RuntimeError(f"Whisper model is not readable: {model}")
+        return model, language, prompt
+
+    def free_local_port(self) -> int:
+        with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as listener:
+            listener.bind(("127.0.0.1", 0))
+            return int(listener.getsockname()[1])
+
+    def start_whisper_server(self) -> tuple[subprocess.Popen[str], str]:
+        model, language, prompt = self.whisper_settings()
+        port = self.free_local_port()
+        url = f"http://127.0.0.1:{port}"
+        log = self.job_path.with_suffix(".whisper-server.log").open("a")
+        command = [
+            "whisper-server",
+            "--host",
+            "127.0.0.1",
+            "--port",
+            str(port),
+            "--model",
+            str(model),
+            "--language",
+            language,
+            "--prompt",
+            prompt,
+            "--no-timestamps",
+            "--suppress-nst",
+        ]
+        server = subprocess.Popen(command, stdin=subprocess.DEVNULL, stdout=log, stderr=log, text=True)
+        deadline = time.monotonic() + 20
+        while time.monotonic() < deadline:
+            if server.poll() is not None:
+                raise RuntimeError(f"local Whisper server exited with status {server.returncode}")
+            result = subprocess.run(
+                ["curl", "--fail", "--silent", "--max-time", "1", url + "/"],
+                stdout=subprocess.DEVNULL,
+                stderr=subprocess.DEVNULL,
+                check=False,
+            )
+            if result.returncode == 0:
+                return server, url
+            if self.stop_requested.wait(0.1):
+                break
+        if server.poll() is None:
+            server.terminate()
+        raise RuntimeError("local Whisper server did not become ready")
+
+    def transcribe_snapshot(self, url: str, audio: bytes) -> str:
+        if len(audio) < SAMPLE_RATE * SAMPLE_WIDTH // 2:
+            return ""
+        wav_path = self.job_path.with_suffix(".partial.wav")
+        with wave.open(str(wav_path), "wb") as output:
+            output.setnchannels(CHANNELS)
+            output.setsampwidth(SAMPLE_WIDTH)
+            output.setframerate(SAMPLE_RATE)
+            output.writeframes(audio)
+        result = subprocess.run(
+            [
+                "curl",
+                "--fail",
+                "--silent",
+                "--show-error",
+                "--max-time",
+                "90",
+                "--form",
+                f"file=@{wav_path}",
+                "--form",
+                "response_format=json",
+                url + "/inference",
+            ],
+            text=True,
+            capture_output=True,
+            timeout=95,
+            check=False,
+        )
+        if result.returncode != 0:
+            raise RuntimeError(result.stderr.strip() or "local incremental transcription failed")
+        try:
+            response = json.loads(result.stdout)
+            return str(response.get("text", "")).strip()
+        except json.JSONDecodeError as error:
+            raise RuntimeError("local Whisper server returned invalid JSON") from error
+
+    def stop_whisper_server(self, server: subprocess.Popen[str] | None) -> None:
+        if server and server.poll() is None:
+            server.terminate()
+            try:
+                server.wait(timeout=3)
+            except subprocess.TimeoutExpired:
+                server.kill()
+
+    def fallback_transcription(self) -> str:
+        if not self.raw_path.exists() or self.raw_path.stat().st_size < SAMPLE_WIDTH * SAMPLE_RATE // 4:
+            return ""
+        wav_24k = self.job_path.with_suffix(".wav")
+        wav_16k = self.job_path.with_suffix(".16k.wav")
+        with wave.open(str(wav_24k), "wb") as output:
+            output.setnchannels(CHANNELS)
+            output.setsampwidth(SAMPLE_WIDTH)
+            output.setframerate(SAMPLE_RATE)
+            output.writeframes(self.raw_path.read_bytes())
+        conversion = subprocess.run(
+            ["ffmpeg", "-loglevel", "error", "-y", "-i", str(wav_24k), "-ar", "16000", "-ac", "1", str(wav_16k)],
+            text=True,
+            capture_output=True,
+            timeout=30,
+            check=False,
+        )
+        if conversion.returncode != 0:
+            raise RuntimeError(conversion.stderr.strip() or "failed to prepare fallback audio")
+        result = subprocess.run(
+            ["voxtype", "transcribe", str(wav_16k)],
+            text=True,
+            capture_output=True,
+            timeout=180,
+            check=False,
+        )
+        if result.returncode != 0:
+            raise RuntimeError(result.stderr.strip() or "local fallback transcription failed")
+        return result.stdout.strip()
+
+    def save_job(self, **updates: Any) -> dict[str, Any]:
+        job = read_json(self.job_path)
+        job.update(updates)
+        atomic_json(self.job_path, job)
+        atomic_json(LAST_JOB, job)
+        return job
+
+    def run(self) -> int:
+        signal.signal(signal.SIGUSR1, self.signal_stop)
+        signal.signal(signal.SIGUSR2, self.signal_cancel)
+        self.start_recorder()
+        self.notifier.update(
+            f"🎙 {provider_label(self.provider)} task",
+            "Listening… release the key to send",
+            force=True,
+        )
+        whisper_server: subprocess.Popen[str] | None = None
+        whisper_url: str | None = None
+        try:
+            whisper_server, whisper_url = self.start_whisper_server()
+        except Exception as error:  # preserve the recording and use Voxtype on release
+            self.incremental_error = str(error)
+
+        partial_interval = float(os.environ.get("AGENT_VOICE_PARTIAL_INTERVAL", "1.25"))
+        last_audio_size = 0
+        while not self.stop_requested.is_set():
+            if whisper_url:
+                snapshot = self.audio_snapshot()
+                if len(snapshot) > last_audio_size:
+                    try:
+                        text = self.transcribe_snapshot(whisper_url, snapshot)
+                        last_audio_size = len(snapshot)
+                        if text:
+                            self.partial = text
+                            self.notifier.update(f"🎙 {provider_label(self.provider)} task", text, force=True)
+                    except Exception as error:
+                        self.incremental_error = str(error)
+                        self.stop_whisper_server(whisper_server)
+                        whisper_server = None
+                        whisper_url = None
+            self.stop_requested.wait(partial_interval)
+
+        self.stop_recorder()
+        if whisper_url:
+            try:
+                final_text = self.transcribe_snapshot(whisper_url, self.audio_snapshot())
+                if final_text:
+                    self.partial = final_text
+            except Exception as error:
+                self.incremental_error = self.incremental_error or str(error)
+        self.stop_whisper_server(whisper_server)
+        SESSION_FILE.unlink(missing_ok=True)
+
+        if self.cancel_requested.is_set() or CANCEL_FILE.exists():
+            CANCEL_FILE.unlink(missing_ok=True)
+            STOP_FILE.unlink(missing_ok=True)
+            self.save_job(status="cancelled", finished_at=time.time())
+            self.notifier.update("Voice task cancelled", "Nothing was sent", force=True)
+            return 0
+
+        transcript = self.transcript()
+        if not transcript:
+            self.notifier.update("Voice task", "Finishing local transcription…", force=True)
+            try:
+                transcript = self.fallback_transcription()
+            except Exception as error:
+                self.save_job(status="failed", error=str(error), incremental_error=self.incremental_error, finished_at=time.time())
+                self.notifier.update("Voice task failed", str(error), urgency="critical", force=True)
+                return 1
+
+        transcript = transcript.strip()
+        if not transcript:
+            self.save_job(status="empty", incremental_error=self.incremental_error, finished_at=time.time())
+            self.notifier.update("Voice task", "No speech detected; nothing was sent", force=True)
+            return 0
+
+        self.save_job(
+            status="dispatching",
+            transcript=transcript,
+            incremental_error=self.incremental_error,
+            finished_recording_at=time.time(),
+        )
+        self.notifier.update(f"Sending to {provider_label(self.provider)}…", transcript, force=True)
+        dispatch_job(self.job_path)
+        return 0
+
+
+def title_for(transcript: str) -> str:
+    one_line = " ".join(transcript.split())
+    return ("🎙 " + one_line)[:80]
+
+
+def update_job(path: Path, **updates: Any) -> dict[str, Any]:
+    job = read_json(path)
+    job.update(updates)
+    atomic_json(path, job)
+    atomic_json(LAST_JOB, job)
+    return job
+
+
+def launch_detached(command: list[str], unit_name: str, log_path: Path) -> None:
+    systemd_run = shutil.which("systemd-run")
+    if systemd_run:
+        result = subprocess.run(
+            [
+                systemd_run,
+                "--user",
+                "--collect",
+                "--quiet",
+                f"--unit={unit_name}",
+                "--property=Type=exec",
+                "--",
+                *command,
+            ],
+            text=True,
+            capture_output=True,
+            check=False,
+        )
+        if result.returncode == 0:
+            return
+    log_path.parent.mkdir(parents=True, exist_ok=True)
+    log = log_path.open("a")
+    subprocess.Popen(command, stdin=subprocess.DEVNULL, stdout=log, stderr=log, start_new_session=True)
+
+
+def dispatch_job(job_path: Path) -> None:
+    job = read_json(job_path)
+    provider = str(job.get("provider", "codex"))
+    job_id = str(job.get("id", uuid.uuid4()))
+    script = str(Path(__file__).resolve())
+    if provider == "codex":
+        launch_detached(
+            [sys.executable, script, "_codex-worker", str(job_path)],
+            f"agent-voice-codex-{job_id}",
+            job_path.with_suffix(".worker.log"),
+        )
+    else:
+        launch_detached(
+            [sys.executable, script, "_claude-worker", str(job_path)],
+            f"agent-voice-claude-{job_id}",
+            job_path.with_suffix(".worker.log"),
+        )
+
+
+def codex_worker(job_path: Path) -> int:
+    job = read_json(job_path)
+    transcript = str(job.get("transcript", "")).strip()
+    if not transcript:
+        return 2
+    done = threading.Event()
+    completed_status = "unknown"
+
+    def on_notification(method: str, params: dict[str, Any]) -> None:
+        nonlocal completed_status
+        if method == "turn/completed":
+            turn = params.get("turn", {})
+            completed_status = str(turn.get("status", "completed"))
+            done.set()
+
+    log_path = job_path.with_suffix(".codex-worker.log")
+    with log_path.open("a") as log:
+        rpc = JsonRpcClient(["codex", "app-server", "--stdio"], on_notification, log)
+        try:
+            rpc.initialize(experimental=False)
+            response = rpc.request(
+                "thread/start",
+                {
+                    "cwd": str(ensure_workspace()),
+                    "ephemeral": False,
+                    "approvalPolicy": "never",
+                    "sandbox": "danger-full-access",
+                },
+                timeout=30,
+            )
+            thread_id = response["thread"]["id"]
+            instruction_sources = response.get("instructionSources", [])
+            rpc.request("thread/name/set", {"threadId": thread_id, "name": title_for(transcript)})
+            update_job(
+                job_path,
+                status="running",
+                thread_id=thread_id,
+                task_url=f"codex://threads/{thread_id}",
+                instruction_sources=instruction_sources,
+                started_at=time.time(),
+            )
+            Notifier().update("Sent to Codex", title_for(transcript), force=True)
+            rpc.request(
+                "turn/start",
+                {"threadId": thread_id, "input": [{"type": "text", "text": transcript}]},
+                timeout=30,
+            )
+            if not done.wait(timeout=24 * 60 * 60):
+                raise TimeoutError("Codex task exceeded the 24-hour worker limit")
+            update_job(job_path, status=completed_status, completed_at=time.time())
+        except Exception as error:
+            update_job(job_path, status="failed", error=str(error), completed_at=time.time())
+            Notifier().update("Codex task failed", str(error), urgency="critical", force=True)
+            return 1
+        finally:
+            rpc.close()
+    return 0
+
+
+def claude_worker(job_path: Path) -> int:
+    job = read_json(job_path)
+    transcript = str(job.get("transcript", "")).strip()
+    if not transcript:
+        return 2
+    session_id = str(uuid.uuid4())
+    command = [
+        "claude",
+        "--background",
+        "--dangerously-skip-permissions",
+        "--session-id",
+        session_id,
+        "--name",
+        title_for(transcript),
+        transcript,
+    ]
+    result = subprocess.run(command, cwd=ensure_workspace(), text=True, capture_output=True, check=False)
+    if result.returncode != 0:
+        error = result.stderr.strip() or result.stdout.strip() or "Claude rejected the background task"
+        update_job(job_path, status="failed", error=error, completed_at=time.time())
+        Notifier().update("Claude task failed", error, urgency="critical", force=True)
+        return result.returncode
+    update_job(
+        job_path,
+        status="running",
+        claude_session_id=session_id,
+        claude_output=result.stdout.strip(),
+        started_at=time.time(),
+    )
+    Notifier().update("Sent to Claude", title_for(transcript), force=True)
+    return 0
+
+
+def active_session() -> dict[str, Any]:
+    session = read_json(SESSION_FILE)
+    pid = session.get("pid")
+    if not isinstance(pid, int):
+        return {}
+    try:
+        os.kill(pid, 0)
+    except OSError:
+        SESSION_FILE.unlink(missing_ok=True)
+        return {}
+    return session
+
+
+def start_capture(provider: str) -> int:
+    RUNTIME_ROOT.mkdir(parents=True, exist_ok=True)
+    STATE_ROOT.mkdir(parents=True, exist_ok=True)
+    HISTORY.mkdir(parents=True, exist_ok=True)
+    ensure_workspace()
+    current = active_session()
+    if current:
+        Notifier().update("Voice task already recording", "Release the current hotkey first", force=True)
+        return 0
+    STOP_FILE.unlink(missing_ok=True)
+    CANCEL_FILE.unlink(missing_ok=True)
+    job_id = str(uuid.uuid4())
+    job_path = HISTORY / f"{time.strftime('%Y%m%d-%H%M%S')}-{job_id}.json"
+    atomic_json(
+        job_path,
+        {
+            "id": job_id,
+            "provider": provider,
+            "status": "recording",
+            "created_at": time.time(),
+            "workspace": str(WORKSPACE),
+            "agents_file": str(personal_agents_file()),
+        },
+    )
+    command = [sys.executable, str(Path(__file__).resolve()), "_capture", provider, str(job_path)]
+    log = job_path.with_suffix(".capture.log").open("a")
+    process = subprocess.Popen(command, stdin=subprocess.DEVNULL, stdout=log, stderr=log, start_new_session=True)
+    atomic_json(SESSION_FILE, {"pid": process.pid, "provider": provider, "job_path": str(job_path)})
+    atomic_json(LAST_JOB, read_json(job_path))
+    return 0
+
+
+def signal_capture(cancel: bool) -> int:
+    session = active_session()
+    if not session:
+        return 0
+    pid = int(session["pid"])
+    marker = CANCEL_FILE if cancel else STOP_FILE
+    marker.parent.mkdir(parents=True, exist_ok=True)
+    marker.touch()
+    try:
+        os.kill(pid, signal.SIGUSR2 if cancel else signal.SIGUSR1)
+    except ProcessLookupError:
+        SESSION_FILE.unlink(missing_ok=True)
+    return 0
+
+
+def status_command(as_json: bool) -> int:
+    session = active_session()
+    last = read_json(LAST_JOB)
+    output = {"active": bool(session), "session": session or None, "last_job": last or None}
+    if as_json:
+        print(json.dumps(output, indent=2, sort_keys=True))
+    elif session:
+        print(f"recording for {provider_label(str(session.get('provider', 'codex')))}")
+    elif last:
+        print(f"idle; last task: {last.get('status', 'unknown')} via {provider_label(str(last.get('provider', 'codex')))}")
+    else:
+        print("idle; no tasks yet")
+    return 0
+
+
+def doctor(probe_codex: bool) -> int:
+    failures: list[str] = []
+    print(f"selected provider: {selected_provider()}")
+    for command in ("codex", "claude", "pw-record", "whisper-server", "curl", "ffmpeg", "voxtype", "notify-send"):
+        resolved = shutil.which(command)
+        print(f"{command}: {resolved or 'MISSING'}")
+        if not resolved:
+            failures.append(command)
+    try:
+        workspace = ensure_workspace()
+        print(f"workspace: {workspace}")
+        print(f"AGENTS.md: {(workspace / 'AGENTS.md').resolve()}")
+        print(f"CLAUDE.md: {(workspace / 'CLAUDE.md').resolve()}")
+    except Exception as error:
+        failures.append(str(error))
+    if probe_codex and "codex" not in failures:
+        rpc = JsonRpcClient(["codex", "app-server", "--stdio"])
+        try:
+            rpc.initialize(experimental=False)
+            response = rpc.request(
+                "thread/start",
+                {"cwd": str(ensure_workspace()), "ephemeral": True, "approvalPolicy": "never", "sandbox": "read-only"},
+            )
+            print(f"Codex app-server: ok ({response['thread']['id']})")
+            print("Codex instruction sources: " + ", ".join(response.get("instructionSources", [])))
+        except Exception as error:
+            failures.append(f"Codex app-server: {error}")
+        finally:
+            rpc.close()
+    if failures:
+        print("doctor failures: " + ", ".join(failures), file=sys.stderr)
+        return 1
+    return 0
+
+
+def open_last() -> int:
+    job = read_json(LAST_JOB)
+    url = job.get("task_url")
+    if isinstance(url, str) and url.startswith("codex://"):
+        return subprocess.run(["xdg-open", url], check=False).returncode
+    session_id = job.get("claude_session_id")
+    if session_id:
+        print(f"Claude background session: {session_id}")
+        print(f"Resume with: claude --resume {session_id}")
+        return 0
+    print("No dispatched task is available yet", file=sys.stderr)
+    return 1
+
+
+def main() -> int:
+    parser = argparse.ArgumentParser(description=__doc__)
+    subparsers = parser.add_subparsers(dest="command", required=True)
+    start = subparsers.add_parser("start", help="begin recording")
+    start.add_argument("--provider", choices=("codex", "claude"))
+    start.add_argument("--alternate", action="store_true", help="use the provider not currently selected")
+    subparsers.add_parser("stop", help="stop recording and dispatch")
+    subparsers.add_parser("cancel", help="cancel without dispatching")
+    status = subparsers.add_parser("status", help="show current and most recent task")
+    status.add_argument("--json", action="store_true")
+    doctor_parser = subparsers.add_parser("doctor", help="validate dependencies and context")
+    doctor_parser.add_argument("--probe-codex", action="store_true", help="create an ephemeral thread without a turn")
+    subparsers.add_parser("open-last", help="open the latest Codex task or print the Claude session id")
+    capture = subparsers.add_parser("_capture")
+    capture.add_argument("provider", choices=("codex", "claude"))
+    capture.add_argument("job_path", type=Path)
+    codex = subparsers.add_parser("_codex-worker")
+    codex.add_argument("job_path", type=Path)
+    claude = subparsers.add_parser("_claude-worker")
+    claude.add_argument("job_path", type=Path)
+    args = parser.parse_args()
+
+    if args.command == "start":
+        return start_capture(selected_provider(args.alternate, args.provider))
+    if args.command == "stop":
+        return signal_capture(False)
+    if args.command == "cancel":
+        return signal_capture(True)
+    if args.command == "status":
+        return status_command(args.json)
+    if args.command == "doctor":
+        return doctor(args.probe_codex)
+    if args.command == "open-last":
+        return open_last()
+    if args.command == "_capture":
+        return CaptureSession(args.provider, args.job_path).run()
+    if args.command == "_codex-worker":
+        return codex_worker(args.job_path)
+    if args.command == "_claude-worker":
+        return claude_worker(args.job_path)
+    return 2
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())

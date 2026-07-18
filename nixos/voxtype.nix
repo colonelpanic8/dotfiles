@@ -38,7 +38,12 @@ in {
     home-manager.users.imalison = {
       imports = [inputs.voxtype.homeManagerModules.default];
 
-      home.packages = [voxtypePackages.osd-gtk4];
+      home.packages = [
+        voxtypePackages.osd-gtk4
+        # The voice-task launcher uses whisper-server for local, incremental
+        # previews while keeping Codex authentication on the ChatGPT plan.
+        pkgs.whisper-cpp-vulkan
+      ];
 
       programs.voxtype = {
         enable = true;

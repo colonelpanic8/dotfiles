@@ -1,9 +1,9 @@
 #!/usr/bin/env zsh
 set -euo pipefail
 
-# Choose which AI app SUPER+ALT+C toggles as a scratchpad: Codex or Claude
-# Desktop. The choice is written to a state file that the Hyprland Lua config
-# reads at keypress time, so switching is dynamic and needs no reload.
+# Choose the active AI provider for the SUPER+ALT+C scratchpad and Shift+F5
+# voice tasks. The choice is written to shared state, so switching is dynamic
+# and needs no reload.
 
 state_file="${XDG_STATE_HOME:-$HOME/.local/state}/hypr/ai-scratchpad"
 mkdir -p "${state_file:h}"
@@ -35,5 +35,5 @@ if command -v hyprctl >/dev/null 2>&1; then
 fi
 
 if command -v notify-send >/dev/null 2>&1; then
-  notify-send "AI scratchpad" "Super+Alt+C now toggles ${labels[$((index + 1))]}" || true
+  notify-send "AI provider" "Super+Alt+C and Shift+F5 now use ${labels[$((index + 1))]}" || true
 fi
