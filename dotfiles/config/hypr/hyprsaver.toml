@@ -1,6 +1,5 @@
-# hyprsaver configuration -- see the shipped example at
-# share/hyprsaver/examples/hyprsaver.toml for all available keys.
-
 [general]
+palette = "midnight"
+preview_height = 1384
+preview_width = 3436
 shader = "bezier"
-palette = "cycle"
