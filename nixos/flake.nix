@@ -50,6 +50,11 @@
       };
     };
 
+    gmcli = {
+      url = "github:colonelpanic8/gmcli?ref=agent/json-archive-export";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+
     keepbook = {
       url = "github:colonelpanic8/keepbook";
       inputs = {
