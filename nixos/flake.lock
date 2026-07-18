@@ -1201,11 +1201,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1783637291,
-        "narHash": "sha256-MtRmQ8WGiIBViZHdfqdFyGTWSRXGMnunXw4jRUdTpfc=",
+        "lastModified": 1784392789,
+        "narHash": "sha256-W+WX/oTKSzqdX6zoaIxRyHQv5Jdd/z/6JXR7Da1nfKY=",
         "owner": "colonelpanic8",
         "repo": "hyprtasking",
-        "rev": "e53b9bd0440a0f85d64d86762fd84111d4de2e3d",
+        "rev": "b3e1ae4e48d57fc69a03db73d8dc2496628e6633",
         "type": "github"
       },
       "original": {

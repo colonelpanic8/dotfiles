@@ -217,13 +217,6 @@
     version = "0.1.0-unstable-${inputs.hyprtasking.shortRev or "dirty"}";
     src = inputs.hyprtasking;
 
-    # Hyprland 0.55.4 stores render-pass records by value rather than behind a
-    # unique_ptr. Remove once the plugin carries the matching member access.
-    postPatch = ''
-      substituteInPlace src/layout/layout_base.cpp \
-        --replace-fail 'e->element->passName()' 'e.element->passName()'
-    '';
-
     strictDeps = true;
     nativeBuildInputs =
       [
