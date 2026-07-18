@@ -1,0 +1,242 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+projects_dir="${PROJECTS_DIR:-$HOME/Projects}"
+launcher_mode=false
+notification_id=""
+last_progress=""
+
+usage() {
+  cat <<'EOF'
+Usage: clone-project [REPOSITORY [DIRECTORY]]
+
+Clone a git repository into ~/Projects. With no arguments, prompt for the
+repository in rofi. DIRECTORY, when provided, must be a single directory name.
+
+Set PROJECTS_DIR to use a different project root.
+EOF
+}
+
+notify_started() {
+  command -v notify-send >/dev/null 2>&1 || return 0
+
+  notification_id="$(
+    notify-send \
+      --app-name="Clone project" \
+      --icon=folder-download \
+      --expire-time=0 \
+      --hint=int:value:0 \
+      --print-id \
+      "Cloning $project_name" \
+      "Starting…"$'\n'"$destination" \
+      2>/dev/null || true
+  )"
+}
+
+notify_progress() {
+  local progress="$1"
+  local -a progress_hint=()
+
+  [[ -n "$progress" && "$progress" != "$last_progress" ]] || return 0
+  [[ "$notification_id" =~ ^[0-9]+$ ]] || return 0
+  last_progress="$progress"
+
+  if [[ "$progress" =~ ([0-9]{1,3})% ]]; then
+    progress_hint=(--hint="int:value:${BASH_REMATCH[1]}")
+  fi
+
+  notify-send \
+    --app-name="Clone project" \
+    --icon=folder-download \
+    --expire-time=0 \
+    --replace-id="$notification_id" \
+    "${progress_hint[@]}" \
+    "Cloning $project_name" \
+    "$progress"$'\n'"$destination" \
+    2>/dev/null || true
+}
+
+notify_finished() {
+  local summary="$1"
+  local body="$2"
+  local urgency="${3:-normal}"
+  local -a replace_args=()
+
+  command -v notify-send >/dev/null 2>&1 || {
+    printf '%s: %s\n' "$summary" "$body" >&2
+    return 0
+  }
+
+  if [[ "$notification_id" =~ ^[0-9]+$ ]]; then
+    replace_args=(--replace-id="$notification_id")
+  fi
+
+  notify-send \
+    --app-name="Clone project" \
+    --icon=folder-download \
+    --urgency="$urgency" \
+    --expire-time=8000 \
+    "${replace_args[@]}" \
+    "$summary" \
+    "$body" \
+  2>/dev/null || true
+}
+
+latest_clone_progress() {
+  tr '\r' '\n' <"$clone_log" | awk '
+    /Enumerating objects:/ ||
+    /Counting objects:/ ||
+    /Compressing objects:/ ||
+    /Receiving objects:/ ||
+    /Resolving deltas:/ ||
+    /Updating files:/ ||
+    /Filtering content:/ ||
+    /Checking out files:/ {
+      progress = $0
+    }
+    END {
+      sub(/^remote: /, "", progress)
+      sub(/[[:space:]]+$/, "", progress)
+      print progress
+    }
+  '
+}
+
+infer_project_name() {
+  local repository="$1"
+  local name
+
+  repository="${repository%/}"
+  repository="${repository%%\?*}"
+  repository="${repository%%\#*}"
+  name="${repository##*/}"
+  name="${name##*:}"
+  name="${name%.git}"
+
+  if [[ -z "$name" || "$name" == "." || "$name" == ".." || "$name" == */* ]]; then
+    return 1
+  fi
+
+  printf '%s\n' "$name"
+}
+
+case "${1:-}" in
+  -h|--help)
+    usage
+    exit 0
+    ;;
+esac
+
+if (( $# == 0 )); then
+  launcher_mode=true
+
+  if ! command -v rofi >/dev/null 2>&1; then
+    printf 'clone-project: rofi is not installed\n' >&2
+    exit 1
+  fi
+
+  repository="$(
+    printf '' | rofi -dmenu -lines 0 -p "Clone into ${projects_dir/#$HOME/~}" || true
+  )"
+
+  # Treat dismissing the prompt or submitting an empty value as cancellation.
+  [[ -n "$repository" ]] || exit 0
+elif (( $# <= 2 )); then
+  repository="$1"
+else
+  usage >&2
+  exit 2
+fi
+
+if (( $# == 2 )); then
+  project_name="$2"
+  if [[ -z "$project_name" || "$project_name" == "." || "$project_name" == ".." || "$project_name" == */* ]]; then
+    printf 'clone-project: DIRECTORY must be a single directory name\n' >&2
+    exit 2
+  fi
+elif ! project_name="$(infer_project_name "$repository")"; then
+  message="Could not infer a directory name; pass one as the second argument"
+  if $launcher_mode; then
+    notify_finished "Clone not started" "$message" critical
+  else
+    printf 'clone-project: %s\n' "$message" >&2
+  fi
+  exit 2
+fi
+
+case "$projects_dir" in
+  "~") projects_dir="$HOME" ;;
+  \~/*) projects_dir="$HOME/${projects_dir#\~/}" ;;
+esac
+
+destination="$projects_dir/$project_name"
+
+if [[ -e "$destination" ]]; then
+  message="Destination already exists: $destination"
+  if $launcher_mode; then
+    notify_finished "Clone not started" "$message" critical
+  else
+    printf 'clone-project: %s\n' "$message" >&2
+  fi
+  exit 1
+fi
+
+if ! mkdir -p -- "$projects_dir"; then
+  message="Could not create project directory: $projects_dir"
+  if $launcher_mode; then
+    notify_finished "Clone not started" "$message" critical
+  else
+    printf 'clone-project: %s\n' "$message" >&2
+  fi
+  exit 1
+fi
+
+if $launcher_mode; then
+  clone_log="$(mktemp "${TMPDIR:-/tmp}/clone-project.XXXXXX")"
+  clone_pid=""
+
+  # Invoked indirectly by the EXIT trap below.
+  # shellcheck disable=SC2329
+  cleanup() {
+    if [[ -n "$clone_pid" ]] && kill -0 "$clone_pid" 2>/dev/null; then
+      kill "$clone_pid" 2>/dev/null || true
+      wait "$clone_pid" 2>/dev/null || true
+    fi
+    rm -f -- "$clone_log"
+  }
+
+  trap cleanup EXIT
+  notify_started
+
+  (
+    cd -- "$projects_dir"
+    git clone --recurse-submodules --progress -- "$repository" "$project_name"
+  ) >"$clone_log" 2>&1 &
+  clone_pid=$!
+
+  while kill -0 "$clone_pid" 2>/dev/null; do
+    notify_progress "$(latest_clone_progress)"
+    sleep 0.4
+  done
+  notify_progress "$(latest_clone_progress)"
+
+  if wait "$clone_pid"; then
+    clone_pid=""
+    notify_finished "Clone complete" "$destination"
+    exit 0
+  else
+    status=$?
+    clone_pid=""
+  fi
+
+  notify_finished \
+    "Clone failed" \
+    "$project_name was not cloned. Run clone-project in a terminal for detailed output." \
+    critical
+  exit "$status"
+fi
+
+cd -- "$projects_dir"
+git clone --recurse-submodules --progress -- "$repository" "$project_name"
+printf 'Cloned to %s\n' "$destination"
