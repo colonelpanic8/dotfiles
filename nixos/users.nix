@@ -34,7 +34,7 @@ in {
     imalison =
       userDefaults
       // {
-        extraGroups = extraGroupsWithWheel;
+        extraGroups = extraGroupsWithWheel ++ ["dialout"];
         name = "imalison";
         openssh.authorizedKeys.keys = kanivanKeys;
       };
