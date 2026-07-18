@@ -31,7 +31,7 @@
     ./gitea.nix
     ./gnome.nix
     ./home-assistant.nix
-    ./imalison.nix
+    ./home-defaults.nix
     ./internet-computer.nix
     ./k3s.nix
     ./kat.nix
