@@ -33,5 +33,8 @@ makeEnable config "myModules.nvidia" false {
   services.xserver = {
     videoDrivers = ["nvidia"];
   };
+  # NVIDIA machines are the capable desktops, so run the local Kokoro TTS
+  # server (kokoro_speak / "read selection aloud") on them by default.
+  myModules.kokoro.enable = lib.mkDefault true;
   # nixpkgs.config.cudaSupport = true;
 }
