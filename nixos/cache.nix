@@ -4,11 +4,9 @@
   ...
 }: let
   # Peers that enable myModules.cache-server (keep in sync with machines/*.nix).
+  # nixquick also runs one but has been off the tailnet for months; re-add it
+  # here and in the justfile when it comes back.
   cacheHosts = [
-    {
-      name = "nixquick";
-      port = 3090;
-    }
     {
       name = "ryzen-shine";
       port = 3090;
@@ -25,7 +23,10 @@ in {
     extra-substituters = map (h: "http://${h.name}:${toString h.port}") peers;
     extra-trusted-public-keys = [(lib.fileContents ./secrets/cache-pub-key.pem)];
     # Skip unreachable peer caches after a few seconds instead of hanging.
+    # Nix retries failed downloads with backoff, so a dead peer costs
+    # download-attempts * connect-timeout once per invocation.
     connect-timeout = 3;
+    download-attempts = 2;
     # If substitution fails (peer offline mid-download), build locally.
     fallback = true;
   };
