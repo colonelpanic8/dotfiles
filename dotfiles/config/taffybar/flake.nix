@@ -3,7 +3,7 @@
     taffybar = {
       # Use the vendored checkout so normal NixOS rebuilds consume the same
       # taffybar tree used for local development.
-      url = "git+file:./taffybar";
+      url = "git+file:///srv/dotfiles/dotfiles/config/taffybar/taffybar";
       inputs.weeder-nix = {
         url = "github:NorfairKing/weeder-nix";
         inputs.pre-commit-hooks.inputs.nixpkgs.follows = "nixpkgs";

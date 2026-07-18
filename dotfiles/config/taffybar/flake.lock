@@ -142,11 +142,11 @@
         "rev": "0c1b45a6a970096fea42358da8738deebbbe1f47",
         "revCount": 2393,
         "type": "git",
-        "url": "file:./taffybar"
+        "url": "file:///srv/dotfiles/dotfiles/config/taffybar/taffybar"
       },
       "original": {
         "type": "git",
-        "url": "file:./taffybar"
+        "url": "file:///srv/dotfiles/dotfiles/config/taffybar/taffybar"
       }
     },
     "weeder-nix": {
