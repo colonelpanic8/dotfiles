@@ -393,7 +393,6 @@
     slurp
     swappy
     nwg-displays
-    mpvpaper
     hyprsaver
     ddcutil
     jq

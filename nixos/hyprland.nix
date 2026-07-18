@@ -601,7 +601,6 @@
         slurp # Region selection
         swappy # Screenshot annotation
         nwg-displays # GUI monitor arrangement
-        mpvpaper # Layer-shell video screensaver payload
         hyprsaver # Shader-based layer-shell screensaver
         ddcutil # Monitor input switching over DDC/CI
         llvmNmCompat # Hyprland's Clang-built plugin API shells out to llvm-nm
