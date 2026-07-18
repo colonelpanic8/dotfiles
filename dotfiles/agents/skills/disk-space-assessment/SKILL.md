@@ -77,7 +77,7 @@ safe_ncdu /home
 safe_ncdu /nix/store
 ```
 
-If `safe_ncdu` is unavailable, source or run `/srv/dotfiles/dotfiles/lib/functions/safe_ncdu`. If `ncdu` itself is missing, use Nix temporarily rather than substituting a non-reusable interactive scan.
+If `safe_ncdu` is unavailable, run `/srv/dotfiles/dotfiles/lib/functions/safe_ncdu <subcommand> <args>` as a script (e.g. `zsh /srv/dotfiles/dotfiles/lib/functions/safe_ncdu top ~/.cache/ncdu/latest-root.json.zst 30`) — do NOT plain-`source` it. The file ends with a bare `safe_ncdu "$@"` tail-call meant for zsh's autoload mechanism; sourcing it directly in a non-interactive shell re-invokes that tail-call with the sourcing command's own (usually empty) positional params, silently kicking off a full unprivileged `/` scan and clobbering the `latest-root` symlink with inferior data. If that happens, re-point `latest-*` symlinks at the correct privileged snapshot's `.json.zst`/`.excludes`/`.meta` files. If `ncdu` itself is missing, use Nix temporarily rather than substituting a non-reusable interactive scan.
 
 Do not store the privileged scan in root's home. Set `HOME=/home/imalison` so all artifacts remain together and are available to later sessions. Restore ownership to `imalison:users` if `sudo` creates root-owned snapshot artifacts.
 
