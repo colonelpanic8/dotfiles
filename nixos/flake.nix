@@ -301,6 +301,12 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
+    # Theo's client-only Sidebar v2 branch (pingdotgg/t3code#4026).
+    t3code-sidebar-v2 = {
+      url = "github:pingdotgg/t3code/fc5065c2f16204d92325c1839431b9469743138c";
+      flake = false;
+    };
+
     claude-desktop = {
       url = "github:aaddrick/claude-desktop-debian";
       inputs.nixpkgs.follows = "nixpkgs";

@@ -2105,6 +2105,7 @@
         "rlru": "rlru",
         "systems": "systems_6",
         "t3code-nix": "t3code-nix",
+        "t3code-sidebar-v2": "t3code-sidebar-v2",
         "voxtype": "voxtype",
         "vscode-server": "vscode-server",
         "xmonad": "xmonad_2",
@@ -2305,6 +2306,23 @@
       "original": {
         "owner": "omarcresp",
         "repo": "t3code-flake",
+        "type": "github"
+      }
+    },
+    "t3code-sidebar-v2": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1784188017,
+        "narHash": "sha256-SKqJiRkCy7nycXyF+MKQ3KuYgxec2+sicRJ42lJb2sc=",
+        "owner": "pingdotgg",
+        "repo": "t3code",
+        "rev": "fc5065c2f16204d92325c1839431b9469743138c",
+        "type": "github"
+      },
+      "original": {
+        "owner": "pingdotgg",
+        "repo": "t3code",
+        "rev": "fc5065c2f16204d92325c1839431b9469743138c",
         "type": "github"
       }
     },
