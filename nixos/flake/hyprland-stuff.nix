@@ -62,10 +62,26 @@
   cleanupStaleGraphicalSession = pkgs.writeShellScript "cleanup-stale-graphical-session" ''
     set -u
 
-    # Only clean targets that are plainly stale. If a compositor is still
-    # running, let the active session own its own shutdown path.
+    # Do not tear down another live graphical login. A compositor can outlive
+    # its SDDM session when the display manager is restarted, though; in that
+    # case it is stale and must not keep UWSM from starting the new session.
     if ${pkgs.procps}/bin/pgrep -u "$(${pkgs.coreutils}/bin/id -u)" -f '(^|/)(Hyprland|\.Hyprland-wrapped|river|kwin_wayland)( |$)' >/dev/null 2>&1; then
-      exit 0
+      current_session="''${XDG_SESSION_ID:-}"
+      user_id="$(${pkgs.coreutils}/bin/id -u)"
+
+      while read -r session_id session_uid _; do
+        if [[ "$session_uid" != "$user_id" || "$session_id" == "$current_session" ]]; then
+          continue
+        fi
+
+        session_type="$(${pkgs.systemd}/bin/loginctl show-session "$session_id" --property=Type --value 2>/dev/null || true)"
+        session_state="$(${pkgs.systemd}/bin/loginctl show-session "$session_id" --property=State --value 2>/dev/null || true)"
+        case "$session_type:$session_state" in
+          wayland:active|wayland:online|x11:active|x11:online)
+            exit 0
+            ;;
+        esac
+      done < <(${pkgs.systemd}/bin/loginctl list-sessions --no-legend 2>/dev/null)
     fi
 
     ${pkgs.systemd}/bin/systemctl --user stop \
