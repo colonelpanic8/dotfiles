@@ -92,9 +92,14 @@ jobs:
       - name: Build imalison-taffybar
         run: |
           set -euxo pipefail
+          # The taffybar config flake pins its `taffybar` input to the
+          # maintainer's primary checkout (/srv/dotfiles/...), which does not
+          # exist on the runner. Point it at the vendored submodule in this
+          # checkout instead.
           nix build \
             --no-link \
             --print-build-logs \
+            --override-input taffybar "git+file://${GITHUB_WORKSPACE}/dotfiles/config/taffybar/taffybar" \
             ./dotfiles/config/taffybar#defaultPackage.x86_64-linux
 
       - name: Build Hyprland stuff
@@ -104,4 +109,5 @@ jobs:
             --no-link \
             --print-build-logs \
             ./nixos#hyprland-stuff \
-            --override-input railbird-secrets path:./nixos/ci/railbird-secrets-stub
+            --override-input railbird-secrets path:./nixos/ci/railbird-secrets-stub \
+            --override-input imalison-taffybar/taffybar "git+file://${GITHUB_WORKSPACE}/dotfiles/config/taffybar/taffybar"
