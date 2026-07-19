@@ -12,7 +12,17 @@
     version = heroicAccountSwitchingVersion;
     src = inputs.heroic-games-launcher;
     patches = [./patches/heroic-fix-non-steam-shortcuts.patch];
-    pnpmDeps = oldAttrs.pnpmDeps;
+    # The fork's lockfile diverges from the nixpkgs release, so fetch its own
+    # dependency store instead of reusing oldAttrs.pnpmDeps.
+    pnpmDeps = pkgs.fetchPnpmDeps {
+      pname = oldAttrs.pname or "heroic-unwrapped";
+      version = heroicAccountSwitchingVersion;
+      src = inputs.heroic-games-launcher;
+      patches = [./patches/heroic-fix-non-steam-shortcuts.patch];
+      pnpm = pkgs.pnpm_10;
+      fetcherVersion = 3;
+      hash = "sha256-t0uj9fYKcwqovQu7O5PHla8KoQN8iymp1oC9FkuAG3g=";
+    };
   });
   heroicWithEpicAccountSwitching = pkgs.heroic.override {
     heroic-unwrapped = heroicUnwrappedWithEpicAccountSwitching;
