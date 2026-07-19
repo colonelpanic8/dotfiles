@@ -11,6 +11,7 @@
     name = "${oldAttrs.pname or "heroic-unwrapped"}-${heroicAccountSwitchingVersion}";
     version = heroicAccountSwitchingVersion;
     src = inputs.heroic-games-launcher;
+    patches = [./patches/heroic-fix-non-steam-shortcuts.patch];
     pnpmDeps = oldAttrs.pnpmDeps;
   });
   heroicWithEpicAccountSwitching = pkgs.heroic.override {
