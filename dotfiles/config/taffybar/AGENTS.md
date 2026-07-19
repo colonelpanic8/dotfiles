@@ -22,6 +22,21 @@
 ## Pane usage
 - Do not create extra panes or windows unless the user asks.
 
+## Vendored taffybar submodule (keep in sync with flake.lock)
+- The `taffybar/` subdirectory is a git submodule and is also the `taffybar`
+  flake input (pinned in this dir's `flake.lock` and in `nixos/flake.lock`).
+- Whenever you bump the taffybar library, advance BOTH together to the same
+  rev: the git submodule pointer AND the `taffybar` input in both flake.locks.
+  Do not commit one without the other.
+  - `git -C taffybar checkout <rev> && git add taffybar` (bumps the pointer)
+  - update the flake.lock rev (e.g. `nix flake lock --update-input taffybar`).
+- Why it matters: local rebuilds resolve the flake.lock rev directly, so a
+  stale submodule pointer goes unnoticed. But CI checks out the submodule at
+  its pinned commit and overrides the input to that checkout, so a drifted
+  pointer builds the wrong tree and fails (usually as missing exports). This
+  has bitten CI several times — always verify `git submodule status` matches
+  the locked rev before pushing.
+
 ## NixOS workflow
 - This system is managed with a Nix flake at `/etc/nixos` (`/srv/dotfiles/nixos`).
 - Use `just switch` from that directory for rebuilds instead of plain `nixos-rebuild`.
