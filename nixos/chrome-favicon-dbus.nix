@@ -86,8 +86,13 @@ in
         systemd.user.services.chrome-favicon-dbus = {
           Unit = {
             Description = "Chrome favicon metadata over D-Bus";
-            After = ["graphical-session.target"];
+            # This supersedes the manually installed bridge used before this
+            # module existed.  Stop it before claiming the same D-Bus name.
+            Conflicts = ["chrome-window-info-bridge.service"];
+            After = ["graphical-session.target" "chrome-window-info-bridge.service"];
             PartOf = ["graphical-session.target"];
+            StartLimitIntervalSec = 60;
+            StartLimitBurst = 3;
           };
 
           Service = {
