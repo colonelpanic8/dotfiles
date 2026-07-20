@@ -37,7 +37,7 @@ import System.Taffybar.Util (postGUIASync)
 import System.Taffybar.Widget
 import qualified System.Taffybar.Widget.Audio as Audio
 import qualified System.Taffybar.Widget.CPUFrequency as CPUFrequency
-import System.Taffybar.Widget.CPUMonitor (cpuMonitorNewWithHover)
+import System.Taffybar.Widget.CPUMonitor (cpuMonitorNewWithHover, cpuMonitorNewWithHoverAndPower)
 import System.Taffybar.Widget.Generic.ChannelWidget (channelWidgetNew)
 import System.Taffybar.Widget.Generic.Graph (GraphConfig (..), GraphDirection (..), GraphStyle (..), defaultGraphConfig)
 import qualified System.Taffybar.Widget.NetworkManager as NetworkManager
@@ -84,6 +84,9 @@ cpuGraphPollInterval = 5
 
 cpuGraphHoverPollInterval :: Double
 cpuGraphHoverPollInterval = 0.5
+
+cpuPowerPollInterval :: Double
+cpuPowerPollInterval = 1
 
 audioWidget :: TaffyIO Gtk.Widget
 audioWidget =
@@ -317,10 +320,28 @@ sunLockWidget :: TaffyIO Gtk.Widget
 sunLockWidget =
   stackInPill "sun-lock" [simplifiedWlsunsetWidget, simplifiedScreenLockWidget]
 
-cpuWidget :: TaffyIO Gtk.Widget
-cpuWidget =
+cpuPowerOverlayHosts :: [String]
+cpuPowerOverlayHosts = ["strixi-minaj"]
+
+cpuWidget :: Bool -> TaffyIO Gtk.Widget
+cpuWidget showPackagePower =
   decorateWithClassAndBoxM "cpu" $
-    cpuMonitorNewWithHover
+    if showPackagePower
+      then
+        cpuMonitorNewWithHoverAndPower
+          graphConfig
+          cpuGraphPollInterval
+          cpuGraphHoverPollInterval
+          cpuPowerPollInterval
+          "cpu"
+      else
+        cpuMonitorNewWithHover
+          graphConfig
+          cpuGraphPollInterval
+          cpuGraphHoverPollInterval
+          "cpu"
+  where
+    graphConfig =
       defaultGraphConfig
         { graphDataColors = [(0, 1, 0.5, 0.8), (1, 0, 0, 0.5)],
           graphBackgroundColor = (0, 0, 0, 0),
@@ -329,9 +350,6 @@ cpuWidget =
           graphWidth = 50,
           graphDirection = LEFT_TO_RIGHT
         }
-      cpuGraphPollInterval
-      cpuGraphHoverPollInterval
-      "cpu"
 
 wakeupDebugWidget :: TaffyIO Gtk.Widget
 wakeupDebugWidget =
@@ -466,11 +484,12 @@ endWidgetsForHost hostName =
   -- right-to-left on screen. Make the tray appear at the far right by placing
   -- it first in the list. (On laptops: the battery/wifi stack is far right,
   -- tray immediately left of it.)
-  let baseEndWidgets =
+  let hostCPUWidget = cpuWidget $ hostName `elem` cpuPowerOverlayHosts
+      baseEndWidgets =
         [ sniTrayWidget,
           audioWidget,
           aiUsageWidget,
-          cpuWidget,
+          hostCPUWidget,
           cpuGpuTemperatureWidget,
           ramSwapWidget,
           diskUsageWidget,
@@ -484,7 +503,7 @@ endWidgetsForHost hostName =
           diskCPUFrequencyWidget,
           audioBacklightWidget,
           aiUsageWidget,
-          cpuWidget,
+          hostCPUWidget,
           cpuGpuTemperatureWidget,
           ramSwapWidget,
           sunLockWidget,

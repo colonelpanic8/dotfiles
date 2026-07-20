@@ -19,6 +19,18 @@
 
     ${pkgs.pulseaudio}/bin/pactl set-card-profile ${builtInAudioCard} ${builtInAudioDuplexProfile}
   '';
+  makeRaplPackageEnergyReadable = pkgs.writeShellScript "make-rapl-package-energy-readable" ''
+    for domain in /sys/devices/virtual/powercap/intel-rapl/intel-rapl:*; do
+      if [ -f "$domain/name" ] && [ -f "$domain/energy_uj" ]; then
+        case "$(< "$domain/name")" in
+          package-*)
+            ${pkgs.coreutils}/bin/chgrp users "$domain/energy_uj"
+            ${pkgs.coreutils}/bin/chmod 0440 "$domain/energy_uj"
+            ;;
+        esac
+      fi
+    done
+  '';
   gpuMode = pkgs.writeShellApplication {
     name = "gpu-mode";
     runtimeInputs = [pkgs.coreutils pkgs.supergfxctl pkgs.systemd];
@@ -149,6 +161,17 @@ in {
     serviceConfig = {
       Type = "oneshot";
       ExecStart = setBuiltInAudioDuplexProfile;
+    };
+  };
+
+  systemd.services.rapl-package-energy-readable = {
+    description = "Allow local users to read the CPU package RAPL energy counter";
+    wantedBy = ["multi-user.target"];
+    after = ["systemd-modules-load.service"];
+    serviceConfig = {
+      Type = "oneshot";
+      ExecStart = makeRaplPackageEnergyReadable;
+      RemainAfterExit = true;
     };
   };
 
