@@ -67,6 +67,29 @@
       postFixup =
         (oldAttrs.postFixup or "")
         + ''
+          # Current Desktop releases split settings visibility into a separate
+          # webview chunk. Keep the Linux page visible until the upstream
+          # patcher input includes the equivalent source-level fix.
+          settings_visibility_assets=()
+          for candidate in "$out"/opt/codex-desktop/content/webview/assets/*.js; do
+            if grep -Fq 'case`general-settings`:case`agent`:case`personalization`:return!0;' "$candidate" \
+              && grep -Fq 'case`keyboard-shortcuts`:return!0' "$candidate"; then
+              settings_visibility_assets+=("$candidate")
+            fi
+          done
+          if [[ "''${#settings_visibility_assets[@]}" -ne 1 ]]; then
+            echo "expected exactly one Codex settings visibility asset, found ''${#settings_visibility_assets[@]}" >&2
+            exit 1
+          fi
+          settings_visibility_asset="''${settings_visibility_assets[0]}"
+          if ! grep -Fq 'case`linux-desktop`:return!0;' "$settings_visibility_asset"; then
+            perl -0pi -e '
+              BEGIN { $count = 0 }
+              $count += s/case`general-settings`:case`agent`:case`personalization`:return!0;/case`linux-desktop`:return!0;case`general-settings`:case`agent`:case`personalization`:return!0;/g;
+              END { die "expected exactly one Codex settings visibility filter, found $count\n" unless $count == 1 }
+            ' "$settings_visibility_asset"
+          fi
+
           # The upstream Desktop bundle normally constructs its local host
           # without a websocket URL and therefore owns a private app-server
           # child process. Supplying websocket_url selects its existing client
