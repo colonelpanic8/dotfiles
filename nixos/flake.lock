@@ -2161,7 +2161,6 @@
         "railbird-secrets": "railbird-secrets",
         "rlru": "rlru",
         "systems": "systems_6",
-        "t3code-nix": "t3code-nix",
         "t3code-sidebar-nightly": "t3code-sidebar-nightly",
         "voxtype": "voxtype",
         "vscode-server": "vscode-server",
@@ -2347,26 +2346,6 @@
       "original": {
         "owner": "nix-systems",
         "repo": "default",
-        "type": "github"
-      }
-    },
-    "t3code-nix": {
-      "inputs": {
-        "nixpkgs": [
-          "nixpkgs"
-        ]
-      },
-      "locked": {
-        "lastModified": 1784567146,
-        "narHash": "sha256-Mkhj8IEj4LU6vgjPREK4iRb7AMmf8gjQ5oXlotWY1WI=",
-        "owner": "omarcresp",
-        "repo": "t3code-flake",
-        "rev": "739e860deea31194f6d8b468effa8f4295ea34c7",
-        "type": "github"
-      },
-      "original": {
-        "owner": "omarcresp",
-        "repo": "t3code-flake",
         "type": "github"
       }
     },

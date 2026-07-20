@@ -316,11 +316,6 @@
       };
     };
 
-    t3code-nix = {
-      url = "github:omarcresp/t3code-flake";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
-
     # Theo's client-only Sidebar v2, merged with nightly 20260720.853.
     t3code-sidebar-nightly = {
       url = "github:colonelpanic8/t3code/sidebar-v2-nightly-20260720";
