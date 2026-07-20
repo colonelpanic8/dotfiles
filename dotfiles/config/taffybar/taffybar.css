@@ -399,10 +399,3 @@
 	background-color: rgba(255, 255, 255, 0.22);
 	border-radius: 8px;
 }
-
-
-/* ASUS platform profile widget */
-.asus-profile { }
-.asus-profile.quiet { color: @end-color-4-fg; }
-.asus-profile.balanced { color: @end-color-1-fg; }
-.asus-profile.performance { color: @end-color-5-fg; }

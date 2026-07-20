@@ -9,10 +9,11 @@ module TaffybarConfig.Widgets
   )
 where
 
-import Control.Concurrent (forkIO, threadDelay)
-import Control.Monad (void)
+import Control.Concurrent (forkIO)
+import Control.Monad (void, when)
 import Control.Monad.IO.Class (liftIO)
 import Data.Char (toLower)
+import Data.IORef (newIORef, readIORef, writeIORef)
 import Data.Maybe (fromMaybe)
 import Data.Ratio ((%))
 import Data.Text (Text)
@@ -26,13 +27,18 @@ import System.Taffybar.Context
   ( Backend (BackendWayland, BackendX11),
     TaffyIO,
   )
-import System.Taffybar.Information.Memory (MemoryInfo (..), parseMeminfo)
+import System.Taffybar.Information.Memory
+  ( MemoryInfo (..),
+    getMemoryInfoChan,
+    getMemoryInfoState,
+  )
 import qualified System.Taffybar.Information.Workspaces.Hyprland as HyprlandWorkspaces
 import System.Taffybar.Util (postGUIASync)
 import System.Taffybar.Widget
-import qualified System.Taffybar.Widget.ASUS as ASUS
 import qualified System.Taffybar.Widget.Audio as Audio
-import System.Taffybar.Widget.CPUMonitor (cpuMonitorNew)
+import qualified System.Taffybar.Widget.CPUFrequency as CPUFrequency
+import System.Taffybar.Widget.CPUMonitor (cpuMonitorNewWithHover)
+import System.Taffybar.Widget.Generic.ChannelWidget (channelWidgetNew)
 import System.Taffybar.Widget.Generic.Graph (GraphConfig (..), GraphDirection (..), GraphStyle (..), defaultGraphConfig)
 import qualified System.Taffybar.Widget.NetworkManager as NetworkManager
 import System.Taffybar.Widget.SNIMenu (withNmAppletMenu)
@@ -49,8 +55,7 @@ import System.Taffybar.Widget.SNITray.PrioritizedCollapsible
   )
 import qualified System.Taffybar.Widget.ScreenLock as ScreenLock
 import System.Taffybar.Widget.Util
-  ( backgroundLoop,
-    buildIconLabelBox,
+  ( buildIconLabelBox,
     pixbufNewFromFileAtScaleByHeight,
     widgetSetClassGI,
   )
@@ -70,6 +75,15 @@ import TaffybarConfig.WidgetUtil
 import TaffybarConfig.Workspaces (workspaceLabelSetter, workspaceShowPredicate, workspaceWindowIconGetter)
 import Text.Printf (printf)
 import Text.Read (readMaybe)
+
+systemTelemetryPollInterval :: Double
+systemTelemetryPollInterval = 10
+
+cpuGraphPollInterval :: Double
+cpuGraphPollInterval = 5
+
+cpuGraphHoverPollInterval :: Double
+cpuGraphHoverPollInterval = 0.5
 
 audioWidget :: TaffyIO Gtk.Widget
 audioWidget =
@@ -191,27 +205,32 @@ meminfoPercentRowWidget ::
   (MemoryInfo -> Maybe Double) ->
   (MemoryInfo -> T.Text) ->
   TaffyIO Gtk.Widget
-meminfoPercentRowWidget rowClass iconText getRatio tooltipText =
+meminfoPercentRowWidget rowClass iconText getRatio tooltipText = do
+  chan <- getMemoryInfoChan systemTelemetryPollInterval
+  initialInfo <- getMemoryInfoState systemTelemetryPollInterval
   liftIO $ do
     iconW <- Gtk.toWidget =<< Gtk.labelNew (Just iconText)
     valueLabel <- Gtk.labelNew (Just "")
     valueW <- Gtk.toWidget valueLabel
     row <- buildIconLabelBox iconW valueW
     _ <- widgetSetClassGI row rowClass
+    renderedRef <- newIORef Nothing
 
     let fmtPercent :: Double -> T.Text
         fmtPercent r = T.pack (printf "%.0f%%" (max 0 r * 100))
-        updateOnce :: IO ()
-        updateOnce = do
-          info <- parseMeminfo
+        updateWidget :: MemoryInfo -> IO ()
+        updateWidget info = do
           let valueText = maybe "n/a" fmtPercent (getRatio info)
-          postGUIASync $ do
-            Gtk.labelSetText valueLabel valueText
-            Gtk.widgetSetTooltipText row (Just (tooltipText info))
-          threadDelay (2 * 1000000)
+              rendered = (valueText, tooltipText info)
+          previous <- readIORef renderedRef
+          when (previous /= Just rendered) $ do
+            writeIORef renderedRef (Just rendered)
+            postGUIASync $ do
+              Gtk.labelSetText valueLabel valueText
+              Gtk.widgetSetTooltipText row (Just (snd rendered))
 
-    _ <- Gtk.onWidgetRealize row $ backgroundLoop updateOnce
-    pure row
+    _ <- Gtk.onWidgetRealize row $ updateWidget initialInfo
+    Gtk.toWidget =<< channelWidgetNew row chan updateWidget
 
 ramRowWidget :: TaffyIO Gtk.Widget
 ramRowWidget =
@@ -247,20 +266,20 @@ audioBacklightWidget =
           }
     ]
 
-asusInnerWidget :: TaffyIO Gtk.Widget
-asusInnerWidget = ASUS.asusWidgetNew
-
-asusWidget :: TaffyIO Gtk.Widget
-asusWidget =
-  decorateWithClassAndBoxM "asus-profile" asusInnerWidget
+cpuFrequencyInnerWidget :: TaffyIO Gtk.Widget
+cpuFrequencyInnerWidget =
+  CPUFrequency.cpuFrequencyNewWithConfig
+    CPUFrequency.defaultCPUFrequencyWidgetConfig
+      { CPUFrequency.cpuFrequencyPollInterval = systemTelemetryPollInterval
+      }
 
 batteryNetworkWidget :: TaffyIO Gtk.Widget
 batteryNetworkWidget =
   stackInPill "battery-network" [batteryInnerWidget, networkInnerWidget]
 
-asusDiskUsageWidget :: TaffyIO Gtk.Widget
-asusDiskUsageWidget =
-  stackInPill "asus-disk-usage" [diskUsageInnerWidget, asusInnerWidget]
+diskCPUFrequencyWidget :: TaffyIO Gtk.Widget
+diskCPUFrequencyWidget =
+  stackInPill "disk-cpu-frequency" [diskUsageInnerWidget, cpuFrequencyInnerWidget]
 
 screenLockWidget :: TaffyIO Gtk.Widget
 screenLockWidget =
@@ -301,7 +320,7 @@ sunLockWidget =
 cpuWidget :: TaffyIO Gtk.Widget
 cpuWidget =
   decorateWithClassAndBoxM "cpu" $
-    cpuMonitorNew
+    cpuMonitorNewWithHover
       defaultGraphConfig
         { graphDataColors = [(0, 1, 0.5, 0.8), (1, 0, 0, 0.5)],
           graphBackgroundColor = (0, 0, 0, 0),
@@ -310,7 +329,8 @@ cpuWidget =
           graphWidth = 50,
           graphDirection = LEFT_TO_RIGHT
         }
-      1.0
+      cpuGraphPollInterval
+      cpuGraphHoverPollInterval
       "cpu"
 
 wakeupDebugWidget :: TaffyIO Gtk.Widget
@@ -382,7 +402,8 @@ localSendTrayMatcher = SNITray.trayMatchIconTitleEquals "localsend_app"
 localSendTrayClickHook :: SNITray.TrayClickHook
 localSendTrayClickHook clickContext
   | SNITray.trayClickButton clickContext == 1,
-    SNITray.trayItemMatcherPredicate localSendTrayMatcher
+    SNITray.trayItemMatcherPredicate
+      localSendTrayMatcher
       (SNITray.trayClickItemInfo clickContext) = do
       void $ forkIO $ callProcess "hyprctl" ["eval", "_G.im_hyprland_toggle_localsend_scratchpad()"]
       pure SNITray.ConsumeClick
@@ -460,7 +481,7 @@ endWidgetsForHost hostName =
       laptopEndWidgets =
         [ batteryNetworkWidget,
           sniTrayWidget,
-          asusDiskUsageWidget,
+          diskCPUFrequencyWidget,
           audioBacklightWidget,
           aiUsageWidget,
           cpuWidget,
