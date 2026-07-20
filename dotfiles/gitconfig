@@ -119,3 +119,7 @@
 	directory = /srv/dotfiles/dotfiles/config/taffybar/taffybar
 	directory = /srv/dotfiles
 	directory = /srv/dotfiles/.worktrees/taffybar-week-old
+	# Emacs elpaca package repos live under the root-owned /srv/dotfiles
+	# checkout, so git otherwise refuses to fetch/merge them ("dubious
+	# ownership") and `elpaca-update-all` fails on every package.
+	directory = /srv/dotfiles/dotfiles/emacs.d/straight/repos/*

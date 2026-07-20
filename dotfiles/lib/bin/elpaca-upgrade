@@ -1,0 +1,92 @@
+#!/usr/bin/env bash
+# elpaca-upgrade — non-interactive "update all elpaca packages" for headless use.
+#
+# Loads the full Emacs config in a throwaway daemon so every package is
+# registered, then fetches+merges+rebuilds them all and prints a summary.
+#
+# Why a daemon + polling instead of `emacs --batch ... elpaca-wait`:
+#   * In --batch, a single package whose merge fails (e.g. a locally-diverged
+#     repo) throws in elpaca's process sentinel and wedges `elpaca-wait`
+#     forever. The daemon's normal event loop handles those failures fine.
+#   * Every emacsclient call is wrapped in `timeout` so that if the daemon
+#     goes momentarily unresponsive (200 concurrent ssh fetches can do that)
+#     we keep polling instead of hanging, and cleanup always runs.
+#
+# Usage: elpaca-upgrade [pull|fetch|merge]     (default: pull)
+#   pull  = fetch + merge + rebuild (a full upgrade)
+#   fetch = download updates only (review before merging)
+#   merge = merge already-fetched updates + rebuild
+set -uo pipefail
+
+op="${1:-pull}"
+emacs_bin="${EMACS:-emacs}"
+server="elpaca-upgrade-$$"
+emacs_dir="$(readlink -f "${EMACS_DIR:-$HOME/.emacs.d}")"
+repos_glob="$emacs_dir/straight/repos/*"
+max_seconds="${ELPACA_UPGRADE_TIMEOUT:-1800}"   # overall wall-clock budget
+wrapper=""
+
+case "$op" in
+  fetch) trigger='(elpaca-fetch-all t)' ;;
+  merge) trigger='(elpaca-merge-all nil t)' ;;
+  pull)  trigger='(elpaca-pull-all t)' ;;
+  *) echo "usage: elpaca-upgrade [pull|fetch|merge]" >&2; exit 2 ;;
+esac
+
+ec() { timeout 20 emacsclient -s "$server" --eval "$1" 2>/dev/null; }  # one eval, bounded
+
+cleanup() {
+  timeout 10 emacsclient -s "$server" --eval '(kill-emacs)' >/dev/null 2>&1 || true
+  # If the daemon wedged, kill-emacs won't return; force it.
+  pkill -9 -f "daemon=$server" 2>/dev/null || true
+  [ -n "$wrapper" ] && rm -f "$wrapper"
+}
+trap cleanup EXIT
+
+# The elpaca repos live inside the root-owned /srv/dotfiles checkout, so git
+# refuses to touch them ("dubious ownership") unless safe.directory trusts
+# them. Normally deployed via ~/.gitconfig; self-heal if not in effect yet.
+env_prefix=()
+if ! git config --get-all safe.directory 2>/dev/null | grep -qxF "$repos_glob"; then
+  wrapper="$(mktemp)"
+  { printf '[include]\n\tpath = %s/.gitconfig\n' "$HOME"
+    printf '[safe]\n\tdirectory = %s\n' "$repos_glob"; } > "$wrapper"
+  env_prefix=(env "GIT_CONFIG_GLOBAL=$wrapper")
+fi
+
+echo ">>> starting daemon ($server), loading config..."
+"${env_prefix[@]}" "$emacs_bin" --daemon="$server" >/dev/null 2>&1 || {
+  echo "!!! daemon failed to start" >&2; exit 1; }
+
+echo ">>> elpaca $op-all"
+ec "$trigger" >/dev/null
+ec '(elpaca-process-queues)' >/dev/null   # interactive cmds only kick via a timer
+
+count='(let ((inc 0)(fin 0)(fail 0))
+         (dolist (q elpaca--queues)
+           (dolist (cell (elpaca-q<-elpacas q))
+             (pcase (elpaca--status (cdr cell))
+               (`finished (setq fin (1+ fin)))
+               (`failed (setq fail (1+ fail)))
+               (_ (setq inc (1+ inc))))))
+         (format "%d %d %d" inc fin fail))'
+
+start=$SECONDS; prev=""; stall=0
+while :; do
+  sleep 5
+  line="$(ec "$count" | tr -d '"')"
+  read -r inc fin fail <<<"${line:-}"
+  printf '\r    working:%-4s finished:%-4s failed:%-4s' "${inc:-?}" "${fin:-?}" "${fail:-?}"
+  [ "${inc:-1}" = "0" ] && { echo; break; }
+  if [ $((SECONDS - start)) -ge "$max_seconds" ]; then
+    echo; echo ">>> hit ${max_seconds}s budget, stopping"; break; fi
+  # stall guard: numbers unchanged (or unresponsive) for ~90s
+  if [ "${inc:-x} ${fin:-x} ${fail:-x}" = "$prev" ]; then
+    stall=$((stall+1)); [ "$stall" -ge 18 ] && { echo; echo ">>> no progress for 90s, stopping"; break; }
+  else stall=0; fi
+  prev="${inc:-x} ${fin:-x} ${fail:-x}"
+done
+
+echo ">>> summary:"
+ec '(let (fails stuck) (dolist (q elpaca--queues) (dolist (cell (elpaca-q<-elpacas q)) (let ((s (elpaca--status (cdr cell))) (id (elpaca<-id (cdr cell))) (msg (nth 2 (car (elpaca<-log (cdr cell)))))) (cond ((eq s (quote failed)) (push (format "  FAILED  %-22s %s" id msg) fails)) ((not (eq s (quote finished))) (push (format "  STUCK   %-22s %s (%s)" id s msg) stuck)))))) (let ((all (append (nreverse fails) (nreverse stuck)))) (if all (mapconcat (function identity) all "\n") "  all packages up to date")))' \
+  | sed 's/^"//; s/"$//; s/\\n/\n/g'
