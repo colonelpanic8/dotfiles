@@ -102,10 +102,10 @@
 	required = true
 [credential "https://github.com"]
 	helper = 
-	helper = !/nix/store/5m3slxi84h97r5hzmy4dhfksl9cc166a-gh-2.96.0/bin/.gh-wrapped auth git-credential
+	helper = !/nix/store/fz2h6h3cgw645ighi31zdjwbkdzmaav7-gh-2.96.0/bin/.gh-wrapped auth git-credential
 [credential "https://gist.github.com"]
 	helper = 
-	helper = !/nix/store/5m3slxi84h97r5hzmy4dhfksl9cc166a-gh-2.96.0/bin/.gh-wrapped auth git-credential
+	helper = !/nix/store/fz2h6h3cgw645ighi31zdjwbkdzmaav7-gh-2.96.0/bin/.gh-wrapped auth git-credential
 [includeIf "gitdir:~/Projects/org-agenda-api/"]
 	path = ~/.gitconfig.org-agenda-api
 [includeIf "gitdir:~/Projects/dotfiles/org-agenda-api/"]
