@@ -174,8 +174,7 @@
     };
 
     hyprwinview = {
-      # Hyprland 0.56 compatibility: https://github.com/colonelpanic8/hyprwinview/pull/2
-      url = "github:colonelpanic8/hyprwinview/72103b26fd643ee973ce342bf564bfd99c8fa5d38";
+      url = "github:colonelpanic8/hyprwinview";
       inputs.hyprland.follows = "hyprland";
     };
 
@@ -191,8 +190,7 @@
     };
 
     hypr-workspace-history = {
-      # Hyprland 0.56 compatibility: https://github.com/colonelpanic8/hypr-workspace-history/pull/1
-      url = "github:colonelpanic8/hypr-workspace-history/2785846931a68836d4e3fe686bb82d7a620f7481";
+      url = "github:colonelpanic8/hypr-workspace-history";
       inputs.hyprland.follows = "hyprland";
       inputs.nixpkgs.follows = "nixpkgs";
     };

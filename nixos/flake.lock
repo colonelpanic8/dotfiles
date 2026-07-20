@@ -853,17 +853,16 @@
         ]
       },
       "locked": {
-        "lastModified": 1784564578,
-        "narHash": "sha256-43CvaKs7uaiFyGYwXqUVE1mocvDd5jJwL8tBW5THvKY=",
+        "lastModified": 1784568710,
+        "narHash": "sha256-I+XoBgTtaxM1QRf2zvaYs9efWSoepUcr3cctC77mC4E=",
         "owner": "colonelpanic8",
         "repo": "hypr-workspace-history",
-        "rev": "2785846931a68836d4e3fe686bb82d7a620f7481",
+        "rev": "d1178fddea5299d166daef40235a93cb21cca2bd",
         "type": "github"
       },
       "original": {
         "owner": "colonelpanic8",
         "repo": "hypr-workspace-history",
-        "rev": "2785846931a68836d4e3fe686bb82d7a620f7481",
         "type": "github"
       }
     },
@@ -1378,16 +1377,15 @@
         ]
       },
       "locked": {
-        "lastModified": 1784564578,
-        "narHash": "sha256-WFveARJV+XYwHaskt6T2dGDc2o9eCRrr+yRN0n3683w=",
+        "lastModified": 1784568991,
+        "narHash": "sha256-tIXER5Wz/QTkoevv+Y2GCKPVt9Rq70wk4Rlqm0fmjVI=",
         "owner": "colonelpanic8",
         "repo": "hyprwinview",
-        "rev": "72103b26fd643ee973ce342bf564bfd99c8fa5d3",
+        "rev": "5e7f5e55224ea5f5637df7aa5770e1c4185eea82",
         "type": "github"
       },
       "original": {
         "owner": "colonelpanic8",
-        "ref": "72103b26fd643ee973ce342bf564bfd99c8fa5d38",
         "repo": "hyprwinview",
         "type": "github"
       }
