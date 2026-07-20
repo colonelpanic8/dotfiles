@@ -8,56 +8,18 @@
 }: let
   system = pkgs.stdenv.hostPlatform.system;
   hyprlandInput = inputs.hyprland;
-  hyprlandInputPkgs = import hyprlandInput.inputs.nixpkgs {inherit system;};
-  makeHyprlandGlaze = glaze:
-    (glaze.override {
-      enableSIMD = false;
-    }).overrideAttrs (old: {
-      cmakeFlags =
-        (old.cmakeFlags or [])
-        ++ [
-          "-Dglaze_DEVELOPER_MODE=OFF"
-          "-Dglaze_ENABLE_FUZZING=OFF"
-          "-DBUILD_TESTING=OFF"
-        ];
-    });
-  avoidHyprlandGccIce = glaze: package:
-    (package.override {
-      stdenv = pkgs.clangStdenv;
-    }).overrideAttrs (old: {
-      buildInputs =
-        map
-        (input:
-          if (input.pname or null) == "glaze"
-          then makeHyprlandGlaze glaze
-          else input)
-        (old.buildInputs or []);
-    });
-  avoidOverlayHyprlandGccIce = final: package:
-    (package.override {
-      stdenv = final.clangStdenv;
-    }).overrideAttrs (old: {
-      buildInputs =
-        map
-        (input:
-          if (input.pname or null) == "glaze"
-          then makeHyprlandGlaze final.glaze
-          else input)
-        (old.buildInputs or []);
-    });
-  hyprlandGccIceOverlay = final: prev: {
-    glaze = makeHyprlandGlaze prev.glaze;
-    hyprland = avoidOverlayHyprlandGccIce final prev.hyprland;
+  # GCC 15 ICEs while compiling Hyprland 0.55's ConfigManager. GCC 16 builds
+  # the unmodified source, avoiding the old Clang-only source compatibility patch.
+  baseHyprlandPackage = hyprlandInput.packages.${system}.hyprland.override {
+    stdenv = pkgs.gcc16Stdenv;
+  };
+  hyprlandGcc16Overlay = final: prev: {
+    hyprland = prev.hyprland.override {
+      stdenv = final.gcc16Stdenv;
+    };
     hyprland-unwrapped = final.hyprland.override {wrapRuntimeDeps = false;};
     hyprland-with-tests = final.hyprland.override {withTests = true;};
   };
-  # GCC 15.2 ICEs while compiling Hyprland 0.55 on this pin. Keep the
-  # Hyprland/plugin pin set intact and build Hyprland itself with Clang.
-  baseHyprlandPackage = (avoidHyprlandGccIce hyprlandInputPkgs.glaze hyprlandInput.packages.${system}.hyprland).overrideAttrs (_: {
-    # Clang 21 can segfault in LLVM's Live DEBUG_VALUE analysis while compiling
-    # ConfigValues.cpp when this build runs in parallel.
-    enableParallelBuilding = false;
-  });
   hyprlandPluginsForBase = pkgs.callPackage "${pkgs.path}/pkgs/applications/window-managers/hyprwm/hyprland-plugins" {
     hyprland = baseHyprlandPackage;
   };
@@ -135,22 +97,68 @@
 
         printf '%s\n' \
           '#!${pkgs.runtimeShell}' \
-          'nvidia_drm_device="/dev/dri/by-path/pci-0000:01:00.0-card"' \
-          'intel_drm_device="/dev/dri/by-path/pci-0000:00:02.0-card"' \
-          'if [ -e "$nvidia_drm_device" ] && [ -e "$intel_drm_device" ]; then' \
-          '  # AQ_DRM_DEVICES is colon-delimited, so PCI by-path names cannot be used directly.' \
-          '  nvidia_drm_device="$(${pkgs.coreutils}/bin/readlink -f "$nvidia_drm_device")"' \
-          '  intel_drm_device="$(${pkgs.coreutils}/bin/readlink -f "$intel_drm_device")"' \
+          'debug_log="''${XDG_RUNTIME_DIR:-/tmp}/hyprland-start.log"' \
+          'log_start_context() {' \
+          '  {' \
+          '    printf "=== %s start-hyprland-lua ===\n" "$(${pkgs.coreutils}/bin/date --iso-8601=seconds 2>/dev/null || ${pkgs.coreutils}/bin/date)"' \
+          '    printf "argv=%s\n" "$*"' \
+          '    printf "wrapper=%s\n" "$0"' \
+          '    printf "uid=%s runtime=%s session=%s vt=%s\n" "$(${pkgs.coreutils}/bin/id -u 2>/dev/null || true)" "''${XDG_RUNTIME_DIR:-}" "''${XDG_SESSION_ID:-}" "''${XDG_VTNR:-}"' \
+          '    printf "desktop=%s session_desktop=%s session_type=%s\n" "''${XDG_CURRENT_DESKTOP:-}" "''${XDG_SESSION_DESKTOP:-}" "''${XDG_SESSION_TYPE:-}"' \
+          '    printf "display=%s wayland=%s hypr_sig=%s\n" "''${DISPLAY:-}" "''${WAYLAND_DISPLAY:-}" "''${HYPRLAND_INSTANCE_SIGNATURE:-}"' \
+          '  } >> "$debug_log" 2>&1 || true' \
+          '}' \
+          'log_start_context "$@"' \
+          'if [ -z "''${AQ_DRM_DEVICES:-}" ]; then' \
+          '  append_drm_device() {' \
+          '    if [ -z "''${AQ_DRM_DEVICES:-}" ]; then' \
+          '      AQ_DRM_DEVICES="$1"' \
+          '    else' \
+          '      AQ_DRM_DEVICES="$AQ_DRM_DEVICES:$1"' \
+          '    fi' \
+          '  }' \
+          '  nvidia_drm_device=""' \
+          '  intel_drm_device=""' \
+          '  all_drm_devices=""' \
+          '  for drm_path in /dev/dri/by-path/*-card; do' \
+          '    [ -e "$drm_path" ] || continue' \
+          '    case "$drm_path" in *platform-simple-framebuffer*) continue ;; esac' \
+          '    resolved_drm_device="$(${pkgs.coreutils}/bin/readlink -f "$drm_path")"' \
+          '    card_name="$(${pkgs.coreutils}/bin/basename "$resolved_drm_device")"' \
+          '    vendor="$(${pkgs.coreutils}/bin/cat "/sys/class/drm/$card_name/device/vendor" 2>/dev/null || true)"' \
+          '    if [ -z "$all_drm_devices" ]; then' \
+          '      all_drm_devices="$resolved_drm_device"' \
+          '    else' \
+          '      all_drm_devices="$all_drm_devices:$resolved_drm_device"' \
+          '    fi' \
+          '    case "$vendor" in' \
+          '      0x10de) nvidia_drm_device="$resolved_drm_device" ;;' \
+          '      0x8086) intel_drm_device="$resolved_drm_device" ;;' \
+          '    esac' \
+          '  done' \
+          '  if [ -n "$nvidia_drm_device" ] && [ -n "$intel_drm_device" ]; then' \
           '  mux_mode="$(${pkgs.coreutils}/bin/cat /sys/devices/platform/asus-nb-wmi/gpu_mux_mode 2>/dev/null || true)"' \
-          '  if [ "$mux_mode" = 1 ]; then' \
-          '    # Optimus/Hybrid: render on Intel and retain NVIDIA for compute/offload.' \
-          '    export AQ_DRM_DEVICES="$intel_drm_device:$nvidia_drm_device"' \
-          '  else' \
-          '    # Hardware dGPU MUX, or an unknown platform: preserve NVIDIA-first behavior.' \
-          '    export AQ_DRM_DEVICES="$nvidia_drm_device:$intel_drm_device"' \
+          '    if [ "$mux_mode" = 1 ]; then' \
+          '      # Optimus/Hybrid: render on Intel and retain NVIDIA for compute/offload.' \
+          '      append_drm_device "$intel_drm_device"' \
+          '      append_drm_device "$nvidia_drm_device"' \
+          '    else' \
+          '      # Hardware dGPU MUX, or an unknown platform: preserve NVIDIA-first behavior.' \
+          '      append_drm_device "$nvidia_drm_device"' \
+          '      append_drm_device "$intel_drm_device"' \
+          '    fi' \
+          '  elif [ -n "$nvidia_drm_device" ]; then' \
+          '    append_drm_device "$nvidia_drm_device"' \
+          '  elif [ -n "$intel_drm_device" ]; then' \
+          '    append_drm_device "$intel_drm_device"' \
+          '  elif [ -n "$all_drm_devices" ]; then' \
+          '    AQ_DRM_DEVICES="$all_drm_devices"' \
           '  fi' \
+          '  export AQ_DRM_DEVICES' \
           'fi' \
+          'printf "AQ_DRM_DEVICES=%s\n" "''${AQ_DRM_DEVICES:-}" >> "$debug_log" 2>&1 || true' \
           'config_path="''${XDG_CONFIG_HOME:-$HOME/.config}/hypr/hyprland.lua"' \
+          'printf "config_path=%s\nexec=%s --path %s -- --config %s %s\n" "$config_path" "${package}/bin/start-hyprland" "@out@/bin/Hyprland" "$config_path" "$*" >> "$debug_log" 2>&1 || true' \
           'exec "${package}/bin/start-hyprland" --path "@out@/bin/Hyprland" -- --config "$config_path" "$@"' \
           > "$out/bin/start-hyprland-lua"
         substituteInPlace "$out/bin/start-hyprland-lua" --replace-fail "@out@" "$out"
@@ -158,7 +166,14 @@
 
         printf '%s\n' \
           '#!${pkgs.runtimeShell}' \
+          'debug_log="''${XDG_RUNTIME_DIR:-/tmp}/hyprland-start.log"' \
+          '{' \
+          '  printf "=== %s start-hyprland-uwsm-clean ===\n" "$(${pkgs.coreutils}/bin/date --iso-8601=seconds 2>/dev/null || ${pkgs.coreutils}/bin/date)"' \
+          '  printf "argv=%s wrapper=%s uid=%s runtime=%s session=%s vt=%s\n" "$*" "$0" "$(${pkgs.coreutils}/bin/id -u 2>/dev/null || true)" "''${XDG_RUNTIME_DIR:-}" "''${XDG_SESSION_ID:-}" "''${XDG_VTNR:-}"' \
+          '  printf "desktop=%s session_desktop=%s session_type=%s display=%s wayland=%s\n" "''${XDG_CURRENT_DESKTOP:-}" "''${XDG_SESSION_DESKTOP:-}" "''${XDG_SESSION_TYPE:-}" "''${DISPLAY:-}" "''${WAYLAND_DISPLAY:-}"' \
+          '} >> "$debug_log" 2>&1 || true' \
           '${cleanupStaleGraphicalSession}' \
+          'printf "exec=%s start -g -1 -e -D Hyprland hyprland.desktop\n" "${pkgs.uwsm}/bin/uwsm" >> "$debug_log" 2>&1 || true' \
           'exec ${pkgs.uwsm}/bin/uwsm start -g -1 -e -D Hyprland hyprland.desktop' \
           > "$out/bin/start-hyprland-uwsm-clean"
         chmod +x "$out/bin/start-hyprland-uwsm-clean"
@@ -432,7 +447,7 @@
 
     nixpkgs.overlays = [
       hyprlandInput.overlays.hyprland-packages
-      hyprlandGccIceOverlay
+      hyprlandGcc16Overlay
     ];
 
     # Needed for hyprlock authentication without PAM fallback warnings.

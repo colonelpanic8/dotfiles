@@ -108,18 +108,26 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
-    # Hyprland and plugins from official flakes for proper plugin compatibility
-    # Pin to a release tag rather than tracking main: an untagged main snapshot
-    # (68e3e40, 2026-06-10) shipped a Monitor.hpp that #includes a not-yet-added
-    # MonitorZoomController.hpp, breaking every plugin build (e.g. hyprexpo).
-    # v0.55.4 is the latest release; plugins follow this input so they build
-    # against the exact same Hyprland ABI.
+    # Keep the 0.55 plugin API while testing Aquamarine 0.13.0, whose DRM
+    # page-flip/cursor/EGL fixes target the 0.55.4/Aquamarine 0.12.1 startup
+    # hang seen on ryzen-shine with NVIDIA 595.71.05. Plugins follow this input
+    # so they build against the exact same Hyprland ABI.
     hyprland = {
-      url = "git+https://github.com/hyprwm/Hyprland?submodules=1&ref=refs/tags/v0.55.4";
-      inputs.hyprutils.follows = "hyprutils";
+      url = "git+https://github.com/hyprwm/Hyprland?submodules=1&rev=a0136d8c04687bb36eb8a28eb9d1ff92aea99704";
+      inputs = {
+        aquamarine.follows = "aquamarine";
+        hyprutils.follows = "hyprutils";
+      };
     };
 
-    aquamarine.follows = "hyprland/aquamarine";
+    aquamarine = {
+      url = "github:hyprwm/aquamarine/9b5f14d9483445e766294eb8fbe0b8f370269ed0";
+      inputs = {
+        hyprutils.follows = "hyprutils";
+        nixpkgs.follows = "nixpkgs";
+        systems.follows = "systems";
+      };
+    };
     hyprcursor.follows = "hyprland/hyprcursor";
     hyprgraphics.follows = "hyprland/hyprgraphics";
     hyprlang.follows = "hyprland/hyprlang";
@@ -168,7 +176,6 @@
     };
 
     hypr-dynamic-cursors = {
-      # Pinned: 98abbb6 requires Hyprland > 0.55.2 (MonitorState.hpp)
       url = "github:VirtCode/hypr-dynamic-cursors/da447486c84e0be81f2cdd208af1ef92469f0a88";
       inputs = {
         hyprland.follows = "hyprland";
