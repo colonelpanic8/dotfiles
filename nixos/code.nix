@@ -8,7 +8,19 @@
 }: let
   codexSharedAppServerUrl = "ws://127.0.0.1:46231";
   claudeDesktopSource = inputs.claude-desktop;
-  claudeDesktop = pkgs.callPackage "${claudeDesktopSource}/nix/claude-desktop.nix" {};
+  claudeDesktopBase = pkgs.callPackage "${claudeDesktopSource}/nix/claude-desktop.nix" {};
+  claudeDesktop = claudeDesktopBase.overrideAttrs (oldAttrs: {
+    postFixup =
+      (oldAttrs.postFixup or "")
+      + ''
+        # Chromium does not associate Hyprland with a native password store and
+        # otherwise falls back to unencrypted basic_text storage. The session's
+        # PAM-unlocked GNOME Keyring implements Secret Service, so select its
+        # libsecret backend explicitly for Electron safeStorage.
+        wrapProgram "$out/bin/claude-desktop" \
+          --add-flags "--password-store=gnome-libsecret"
+      '';
+  });
   claudeDesktopFhs = pkgs.callPackage "${claudeDesktopSource}/nix/fhs.nix" {
     claude-desktop = claudeDesktop;
   };
