@@ -117,6 +117,8 @@ Machine-specific note:
 - `/home/imalison/Projects/codex/codex-rs/target` can be dominated by current-looking `target/debug/incremental` data that `cargo-sweep sweep -a` and `--maxsize` report as not removable. If it is stale and space pressure is high, use the guarded `rust_target_dirs.py delete ... --yes` workflow for that explicit target directory.
 - `/home/imalison/Projects/hypr-workspace-history/target` is a small non-Cargo false positive; the guarded delete workflow correctly rejects it because there is no Cargo project above the directory.
 - `nixos/cargo-sweep.nix` defines a user timer for every user, `cargo-sweep-rust-targets.timer`, that every 6 hours runs `cargo-sweep sweep -r --hidden --time 2` across `$HOME/Projects`, `$HOME/org`, `/srv/dotfiles`, and `$HOME/.cargo/build`, then deletes centralized cargo build dirs (`~/.cargo/build/<xx>/<hash>`) untouched for 2 days. `CARGO_BUILD_BUILD_DIR` (set system-wide in `nix-shared/system/essential.nix`) redirects cargo intermediate artifacts to `~/.cargo/build/`, so per-project `target/` dirs only hold final artifacts.
+- `cargo-sweep` does not discover centralized `$HOME/.cargo/build/<xx>/<hash>` directories as Cargo workspaces; the timer's wrapper handles those separately. During acute pressure, a one-time 12-hour cutoff over those hash directories, skipping any directory with open files, reclaimed 19.57 GiB on 2026-07-20. Keep the persistent timer at its two-day safety window unless the user explicitly requests a configuration change.
+- Later on 2026-07-20, repeating that acute-pressure workflow after verifying no active Cargo/Rust processes or open files reclaimed another 65.94 GiB from 32 centralized build shards and moved `/` from 98% used (18 GiB free) to 91% used (84 GiB free). Check freshness recursively within each hash directory, recheck immediately before deletion, and leave the persistent two-day timer unchanged.
 
 ## Step 4: Investigation with `ncdu` and `du`
 
@@ -165,6 +167,7 @@ Machine-specific heavy hitters seen in practice:
 
 - 2026-07-10 `railbird-sf` incident: K3s reported `DiskPressure` even with tens of GiB free because its container `imagefs` shares `/`, kubelet image GC used the default 85% high-water mark, and the K3s config overrode only `nodefs` eviction thresholds. `crictl imagefsinfo` showed only ~677M of images, so image GC could not reclaim its requested ~149G and repeatedly evicted application pods. Set matching `imagefs.available` values alongside `nodefs.available` in `eviction-hard`, `eviction-soft`, and `eviction-soft-grace-period`; verify via K3s eviction-manager logs rather than trusting `df` alone.
 - `~/.cache/uv` can exceed 20G and is reclaimable with `uv cache clean`.
+- If `uv cache clean` reports that the cache is currently in use, do not add `--force`; leave it for a later idle cleanup so an active environment or install is not disrupted.
 - `~/.cache/pypoetry` can exceed 7G across artifacts, repository cache, and virtualenvs; inspect first, then use Poetry cache commands or targeted virtualenv removal.
 - `~/.cache/google-chrome` can exceed 8G across multiple Chrome profiles; close Chrome before clearing profile cache directories.
 - `~/.cache/spotify` can exceed 10G; treat as optional app-cache cleanup.
