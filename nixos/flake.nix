@@ -504,16 +504,29 @@
     {
       nixConfig = import ./flake/nix-config.nix;
       nixosConfigurations =
-        builtins.mapAttrs (
-          machineName: params: let
-            machineParams =
-              if builtins.hasAttr machineName customParams
-              then (builtins.getAttr machineName customParams)
-              else {};
-          in
-            mkConfig (params // machineParams)
-        )
-        defaultConfigurationParams;
+        (builtins.mapAttrs (
+            machineName: params: let
+              machineParams =
+                if builtins.hasAttr machineName customParams
+                then (builtins.getAttr machineName customParams)
+                else {};
+            in
+              mkConfig (params // machineParams)
+          )
+          defaultConfigurationParams)
+        // {
+          rescue = mkConfig {
+            baseModules = [./machines/rescue.nix];
+            specialArgs.rescueMode = "iso";
+          };
+          rescue-usb = mkConfig {
+            baseModules = [
+              ./machines/rescue.nix
+              ./rescue-usb.nix
+            ];
+            specialArgs.rescueMode = "usb";
+          };
+        };
     }
     // flake-utils.lib.eachDefaultSystem perSystem;
 }
