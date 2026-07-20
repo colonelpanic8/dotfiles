@@ -377,6 +377,7 @@
         transmission_4-gtk
         vlc
         thunar
+        tumbler
 
         # Audio
         picard
