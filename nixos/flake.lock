@@ -130,11 +130,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1784433528,
-        "narHash": "sha256-fRp907wIj8ZlXS/NDZUxRFRJn0RC21V6qBv+kE2HKYY=",
+        "lastModified": 1784526412,
+        "narHash": "sha256-EDCbTKxtYIvgCxKKoyLAD4D9mmGMBLK5npJ+cjCIvEs=",
         "owner": "aaddrick",
         "repo": "claude-desktop-debian",
-        "rev": "da1e4f81b2bcd5b70183ec47b676a0f53ef3e8d9",
+        "rev": "bdee6cb885c0a2964a066d90f49c0c752dee7a20",
         "type": "github"
       },
       "original": {
@@ -173,11 +173,11 @@
         "nixpkgs": "nixpkgs"
       },
       "locked": {
-        "lastModified": 1784487855,
-        "narHash": "sha256-PerXICTV9uAfrOKDsJ5dn++ndCYqPAKBdo9JCgWA6gI=",
+        "lastModified": 1784573661,
+        "narHash": "sha256-eeCCsCAUnM34EzFUwZ1EZBNoyKfvl1q80z0zjSOM8FQ=",
         "owner": "ilysenko",
         "repo": "codex-desktop-linux",
-        "rev": "19d3c1fbb38ac0e9be2d1da3594affd101e25353",
+        "rev": "0e51086c0ab06c31276dc9cc31a6990a5d87ae1f",
         "type": "github"
       },
       "original": {
@@ -2357,11 +2357,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1784500290,
-        "narHash": "sha256-95dpjkGcXXpIKIQop1a58lhQMRShbPUwmhki9eN2FoA=",
+        "lastModified": 1784567146,
+        "narHash": "sha256-Mkhj8IEj4LU6vgjPREK4iRb7AMmf8gjQ5oXlotWY1WI=",
         "owner": "omarcresp",
         "repo": "t3code-flake",
-        "rev": "64e60d68cd92db559df7d2dfd16310b52e3b5a6d",
+        "rev": "739e860deea31194f6d8b468effa8f4295ea34c7",
         "type": "github"
       },
       "original": {
