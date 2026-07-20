@@ -123,6 +123,9 @@ function M.setup(ctx)
     },
     cursor = {
       persistent_warps = true,
+      -- Added 2026-07-18: the default auto (2) left a stale "ghost" cursor
+      -- image on the hardware cursor plane (Intel iGPU + Nvidia dGPU hybrid).
+      no_hardware_cursors = true,
     },
     general = {
       gaps_in = hyprland_gaps_enabled and 5 or 0,

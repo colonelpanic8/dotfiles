@@ -199,12 +199,20 @@ in {
   # linuxPackages_latest (6.19) currently fails to build nvidia-open.
   # Keep this host on the default kernel packages until the driver catches up.
   boot.kernelPackages = pkgs.linuxPackages;
-  # See https://github.com/NixOS/nixpkgs/issues/467814 for why this was needed
-  hardware.nvidia.package = config.boot.kernelPackages.nvidiaPackages.beta;
+  # Prefer the current production driver over the older beta pin. The 595.45
+  # beta has a runtime-resume GSP failure on this hybrid Ada laptop; 595.84 also
+  # includes subsequent dynamic-power fixes.
+  hardware.nvidia.package = config.boot.kernelPackages.nvidiaPackages.production;
   boot.initrd.availableKernelModules = ["vmd" "xhci_pci" "thunderbolt" "nvme" "usbhid" "usb_storage" "sd_mod"];
   boot.initrd.kernelModules = ["nvidia" "nvidia_drm" "nvidia_uvm" "nvidia_modeset"];
   boot.kernelModules = ["kvm-intel"];
   boot.extraModulePackages = [];
+  # Work around NVIDIA open-kernel-modules #1064: runtime D3/GC6 resume can
+  # leave GSP heartbeat state at zero and flood the kernel log. This keeps the
+  # dGPU in D0, trading idle/battery power for reliable GPU availability.
+  boot.extraModprobeConfig = lib.mkAfter ''
+    options nvidia NVreg_DynamicPowerManagement=0x00
+  '';
   hardware.nvidia.powerManagement.enable = true;
   hardware.nvidia.dynamicBoost.enable = true;
   # In Hybrid mode Hyprland renders on Intel while NVIDIA stays available for

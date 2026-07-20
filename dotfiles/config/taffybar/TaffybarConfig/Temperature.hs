@@ -49,7 +49,10 @@ temperatureRow valueBuilder = do
 
 gpuTemperatureRow :: TaffyIO Gtk.Widget
 gpuTemperatureRow = do
-  nvidiaSmi <- liftIO $ findExecutable "nvidia-smi"
+  nvidiaSmiNoWake <- liftIO $ findExecutable "nvidia-smi-no-wake"
+  nvidiaSmi <- case nvidiaSmiNoWake of
+    Just command -> pure $ Just command
+    Nothing -> liftIO $ findExecutable "nvidia-smi"
   temperatureRow $ case nvidiaSmi of
     Just command ->
       NvidiaTemperature.nvidiaTemperatureLabelNewChanWith $
