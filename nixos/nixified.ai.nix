@@ -6,6 +6,7 @@
   ...
 }: let
   system = pkgs.stdenv.hostPlatform.system;
+  comfyuiOutputDirectory = "/srv/comfyui-output";
 
   nixifiedAiComfyuiModule = import (inputs.nixified-ai + "/flake-modules/projects/comfyui/module.nix") {
     overlays = patchedNixifiedAiOverlays;
@@ -369,6 +370,8 @@ in
         PYTORCH_CUDA_ALLOC_CONF = "expandable_segments:True";
       };
       extraFlags = [
+        "--output-directory"
+        comfyuiOutputDirectory
         "--lowvram"
         "--fp8_e4m3fn-text-enc"
         "--cache-none"
@@ -381,13 +384,22 @@ in
       ];
     };
 
-    systemd.services.comfyui.serviceConfig.ExecStartPre = [
-      "+${pkgs.writeShellScript "install-qwen-rapid-aio-workflow" ''
-        rm -f /var/lib/comfyui/workflows/Qwen-Rapid-AIO-v23-SFW.json
-        rm -f /var/lib/comfyui/.local/share/comfyui/user/default/workflows/Qwen-Rapid-AIO-v23-SFW.json
-        install -D -o comfyui -g comfyui -m 0644 ${qwenRapidAioWorkflow} /var/lib/comfyui/workflows/Qwen-Rapid-AIO-v23-NSFW.json
-        install -D -o comfyui -g comfyui -m 0644 ${qwenRapidAioWorkflow} /var/lib/comfyui/.local/share/comfyui/user/default/workflows/Qwen-Rapid-AIO-v23-NSFW.json
-        chown -R comfyui:comfyui /var/lib/comfyui/.local/share/comfyui/user/default/workflows
-      ''}"
+    systemd.tmpfiles.rules = [
+      "d ${comfyuiOutputDirectory} 2775 root users -"
     ];
+
+    systemd.services.comfyui.serviceConfig = {
+      ExecStartPre = [
+        "+${pkgs.writeShellScript "install-qwen-rapid-aio-workflow" ''
+          rm -f /var/lib/comfyui/workflows/Qwen-Rapid-AIO-v23-SFW.json
+          rm -f /var/lib/comfyui/.local/share/comfyui/user/default/workflows/Qwen-Rapid-AIO-v23-SFW.json
+          install -D -o comfyui -g comfyui -m 0644 ${qwenRapidAioWorkflow} /var/lib/comfyui/workflows/Qwen-Rapid-AIO-v23-NSFW.json
+          install -D -o comfyui -g comfyui -m 0644 ${qwenRapidAioWorkflow} /var/lib/comfyui/.local/share/comfyui/user/default/workflows/Qwen-Rapid-AIO-v23-NSFW.json
+          chown -R comfyui:comfyui /var/lib/comfyui/.local/share/comfyui/user/default/workflows
+        ''}"
+      ];
+      ReadWritePaths = pkgs.lib.mkAfter [comfyuiOutputDirectory];
+      SupplementaryGroups = pkgs.lib.mkAfter ["users"];
+      UMask = pkgs.lib.mkForce "0002";
+    };
   }
