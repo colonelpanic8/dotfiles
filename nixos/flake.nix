@@ -181,7 +181,7 @@
     hyprtasking = {
       # Combines keyboard workspace jump labels (upstream PR #119) with the
       # Hyprland 0.56 compatibility work from upstream PR #121.
-      url = "github:colonelpanic8/hyprtasking/85d48bb292a63a8915f13a4196dd1afffff5997a";
+      url = "github:colonelpanic8/hyprtasking/34b34801448b353101c36382eb2658b89e66314f";
       inputs = {
         hyprland.follows = "hyprland";
         nixpkgs.follows = "nixpkgs";

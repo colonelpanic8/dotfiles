@@ -8,8 +8,9 @@
   hyprlandInput = inputs.hyprland;
   # GCC 15 ICEs while compiling Hyprland's ConfigManager. GCC 16 builds
   # the unmodified source, avoiding the old Clang-only source compatibility patch.
+  hyprlandStdenv = pkgs.gcc16Stdenv;
   baseHyprlandPackage = hyprlandInput.packages.${system}.hyprland.override {
-    stdenv = pkgs.gcc16Stdenv;
+    stdenv = hyprlandStdenv;
   };
   hyprlockPackage = inputs.hyprlock.packages.${system}.hyprlock;
   hyprlandPluginsForBase = pkgs.callPackage "${pkgs.path}/pkgs/applications/window-managers/hyprwm/hyprland-plugins" {
@@ -229,7 +230,7 @@
       platforms = lib.platforms.linux;
     };
   };
-  hyprtasking = pkgs.gcc14Stdenv.mkDerivation {
+  hyprtasking = hyprlandStdenv.mkDerivation {
     pname = "hyprtasking";
     version = "0.1.0-unstable-${inputs.hyprtasking.shortRev or "dirty"}";
     src = inputs.hyprtasking;
