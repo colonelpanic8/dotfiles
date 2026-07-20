@@ -24,7 +24,7 @@ main = do
   let simpleTaffyConfig = mkSimpleTaffyConfig hostName backend cssFiles
   startTaffybar $
     withLogServer $
-      withLogLevels $
-        withToggleServer $
-          appendHook registerChromeWindowInfoRefreshRequests $
+      withToggleServer $
+        appendHook registerChromeWindowInfoRefreshRequests $
+          withLogLevels $
             toTaffybarConfig simpleTaffyConfig
