@@ -2146,8 +2146,8 @@
         "railbird-secrets": "railbird-secrets",
         "rlru": "rlru",
         "systems": "systems_6",
-        "t3code-main": "t3code-main",
         "t3code-nix": "t3code-nix",
+        "t3code-sidebar-nightly": "t3code-sidebar-nightly",
         "voxtype": "voxtype",
         "vscode-server": "vscode-server",
         "xmonad": "xmonad_2",
@@ -2331,23 +2331,6 @@
         "type": "github"
       }
     },
-    "t3code-main": {
-      "flake": false,
-      "locked": {
-        "lastModified": 1784503981,
-        "narHash": "sha256-kvSR1ob+95wuwbGONMGkmfd/7u9WIFmdXqeevXbBTXY=",
-        "owner": "pingdotgg",
-        "repo": "t3code",
-        "rev": "2640e6dcfcb6a5ba2f01f20295ce8bacd2fdb05e",
-        "type": "github"
-      },
-      "original": {
-        "owner": "pingdotgg",
-        "ref": "main",
-        "repo": "t3code",
-        "type": "github"
-      }
-    },
     "t3code-nix": {
       "inputs": {
         "nixpkgs": [
@@ -2365,6 +2348,23 @@
       "original": {
         "owner": "omarcresp",
         "repo": "t3code-flake",
+        "type": "github"
+      }
+    },
+    "t3code-sidebar-nightly": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1784518049,
+        "narHash": "sha256-J3jsBCbC5FpIpdY6cPblh/4m1223tVm1Jk8MpUG2tr4=",
+        "owner": "colonelpanic8",
+        "repo": "t3code",
+        "rev": "70ca6b18b7549565db1fbfc5b0b8aaefcb79aa1c",
+        "type": "github"
+      },
+      "original": {
+        "owner": "colonelpanic8",
+        "ref": "sidebar-v2-nightly-20260720",
+        "repo": "t3code",
         "type": "github"
       }
     },

@@ -300,9 +300,9 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
-    # Track upstream main so `just bump-t3code` can follow the newest build.
-    t3code-main = {
-      url = "github:pingdotgg/t3code/main";
+    # Theo's client-only Sidebar v2, merged with nightly 20260720.853.
+    t3code-sidebar-nightly = {
+      url = "github:colonelpanic8/t3code/sidebar-v2-nightly-20260720";
       flake = false;
     };
 
