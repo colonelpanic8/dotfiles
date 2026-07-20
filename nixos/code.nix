@@ -58,6 +58,7 @@
       src = oldAttrs.src.overrideAttrs (payloadOldAttrs: {
         installPhase = ''
           export CODEX_ENFORCE_CRITICAL_PATCHES=0
+          export CODEX_LINUX_ICON_SOURCE=${inputs.codex-desktop-linux}/assets/codex-linux.png
           ${payloadOldAttrs.installPhase}
         '';
       });
