@@ -30,6 +30,7 @@
   (setq imalison:org-habits-file (imalison:join-paths imalison:org-dir "habits.org"))
   (setq imalison:org-calendar-file (imalison:join-paths imalison:org-dir "calendar.org"))
   (setq imalison:org-inbox-file (imalison:join-paths imalison:org-dir "inbox.org"))
+  (setq imalison:org-links-file (imalison:join-paths imalison:org-dir "links.org"))
 
   ;; Shared paths derived from shared-org-dir
   (setq imalison:shared-org-gtd-file (imalison:join-paths imalison:shared-org-dir "gtd.org"))
