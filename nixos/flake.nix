@@ -305,7 +305,7 @@
     };
 
     codex-desktop-linux = {
-      url = "github:ilysenko/codex-desktop-linux/main";
+      url = "github:colonelpanic8/codex-desktop-linux/codex/fix-linux-settings-icon-map";
     };
 
     claude-code-nix = {

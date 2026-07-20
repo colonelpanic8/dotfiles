@@ -173,16 +173,16 @@
         "nixpkgs": "nixpkgs"
       },
       "locked": {
-        "lastModified": 1784573661,
-        "narHash": "sha256-eeCCsCAUnM34EzFUwZ1EZBNoyKfvl1q80z0zjSOM8FQ=",
-        "owner": "ilysenko",
+        "lastModified": 1784611612,
+        "narHash": "sha256-CbkooUU2ndf6G7rIua/8iD4w2ztvG9qWAipKK75aO8Y=",
+        "owner": "colonelpanic8",
         "repo": "codex-desktop-linux",
-        "rev": "0e51086c0ab06c31276dc9cc31a6990a5d87ae1f",
+        "rev": "f3d99e2c05840ae1f7b7f76481ad82d8e47b55fd",
         "type": "github"
       },
       "original": {
-        "owner": "ilysenko",
-        "ref": "main",
+        "owner": "colonelpanic8",
+        "ref": "codex/fix-linux-settings-icon-map",
         "repo": "codex-desktop-linux",
         "type": "github"
       }
