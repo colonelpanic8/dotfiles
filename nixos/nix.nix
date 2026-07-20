@@ -114,8 +114,8 @@
         (final: prev: let
           t3codeUnwrapped = (prev.t3code.unwrapped.override {pnpm_10 = final.pnpm_11;}).overrideAttrs (
             finalAttrs: previousAttrs: {
-              version = "0.0.28-sidebar-v2-2026-07-16";
-              src = inputs.t3code-sidebar-v2;
+              version = "0.0.29-unstable-2026-07-19";
+              src = inputs.t3code-main;
               # Vite+ bootstraps the exact version in packageManager. Match it
               # to nixpkgs' pnpm so the task runner uses the dependency closure
               # installed offline by pnpmConfigHook.
@@ -159,7 +159,7 @@
                   pnpmWorkspaces
                   ;
                 fetcherVersion = 4;
-                hash = "sha256-JmOs6j0Tx8EgZFgvYhhnIPLmEcXirk0AlLvY+onNZhQ=";
+                hash = "sha256-bfZDQjVdT0neQYxmNB8t+XU8mbjVsAtaTi2Vms5pzxw=";
               };
             }
           );

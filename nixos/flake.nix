@@ -293,9 +293,9 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
-    # Theo's client-only Sidebar v2 branch (pingdotgg/t3code#4026).
-    t3code-sidebar-v2 = {
-      url = "github:pingdotgg/t3code/fc5065c2f16204d92325c1839431b9469743138c";
+    # Track upstream main so `just bump-t3code` can follow the newest build.
+    t3code-main = {
+      url = "github:pingdotgg/t3code/main";
       flake = false;
     };
 

@@ -2128,12 +2128,12 @@
         "rlru": "rlru",
         "systems": "systems_6",
         "t3code-nix": "t3code-nix",
-        "t3code-sidebar-v2": "t3code-sidebar-v2",
         "voxtype": "voxtype",
         "vscode-server": "vscode-server",
         "xmonad": "xmonad_2",
         "xmonad-contrib": "xmonad-contrib_2",
-        "xmonad-river": "xmonad-river"
+        "xmonad-river": "xmonad-river",
+        "t3code-main": "t3code-main"
       }
     },
     "rust-analyzer-src": {
@@ -2319,33 +2319,16 @@
         ]
       },
       "locked": {
-        "lastModified": 1784392324,
-        "narHash": "sha256-Q90eauqV6XypIiZNw+LtvIdl9W2UMNoOEcysCqBpQcs=",
+        "lastModified": 1784500290,
+        "narHash": "sha256-95dpjkGcXXpIKIQop1a58lhQMRShbPUwmhki9eN2FoA=",
         "owner": "omarcresp",
         "repo": "t3code-flake",
-        "rev": "b176e9b397606503ea503e05031f97e8e45db710",
+        "rev": "64e60d68cd92db559df7d2dfd16310b52e3b5a6d",
         "type": "github"
       },
       "original": {
         "owner": "omarcresp",
         "repo": "t3code-flake",
-        "type": "github"
-      }
-    },
-    "t3code-sidebar-v2": {
-      "flake": false,
-      "locked": {
-        "lastModified": 1784188017,
-        "narHash": "sha256-SKqJiRkCy7nycXyF+MKQ3KuYgxec2+sicRJ42lJb2sc=",
-        "owner": "pingdotgg",
-        "repo": "t3code",
-        "rev": "fc5065c2f16204d92325c1839431b9469743138c",
-        "type": "github"
-      },
-      "original": {
-        "owner": "pingdotgg",
-        "repo": "t3code",
-        "rev": "fc5065c2f16204d92325c1839431b9469743138c",
         "type": "github"
       }
     },
@@ -2612,6 +2595,23 @@
       "original": {
         "owner": "xmonad",
         "repo": "xmonad",
+        "type": "github"
+      }
+    },
+    "t3code-main": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1784503981,
+        "narHash": "sha256-kvSR1ob+95wuwbGONMGkmfd/7u9WIFmdXqeevXbBTXY=",
+        "owner": "pingdotgg",
+        "repo": "t3code",
+        "rev": "2640e6dcfcb6a5ba2f01f20295ce8bacd2fdb05e",
+        "type": "github"
+      },
+      "original": {
+        "owner": "pingdotgg",
+        "ref": "main",
+        "repo": "t3code",
         "type": "github"
       }
     }

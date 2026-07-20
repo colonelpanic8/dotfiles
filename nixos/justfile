@@ -9,7 +9,7 @@ bump-claude-codex *args:
 	just switch {{args}}
 
 bump-t3code *args:
-	PATH=/run/current-system/sw/bin:/nix/var/nix/profiles/system/sw/bin:/etc/profiles/per-user/root/bin:/usr/bin:/bin nix flake update t3code-nix
+	PATH=/run/current-system/sw/bin:/nix/var/nix/profiles/system/sw/bin:/etc/profiles/per-user/root/bin:/usr/bin:/bin nix flake update t3code-nix t3code-main
 	just switch {{args}}
 
 populate-cachix cache="colonelpanic8-dotfiles" host=`hostname` *args:
