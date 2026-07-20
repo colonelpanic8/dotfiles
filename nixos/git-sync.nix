@@ -19,6 +19,8 @@
   gmcliTelephonyOutput = "${gmcliArchiveRoot}/telephony";
   gmcliTelephonyFullOutput = "/home/imalison/Backups/gmcli/android-telephony-full";
   gmcliBackupLock = "/home/imalison/.local/state/gmcli/backup.lock";
+  gmcliBackupLockDirectory = builtins.dirOf gmcliBackupLock;
+  gmcliSession = "/home/imalison/.local/state/gmcli/session.json";
   gmcliChromeCookieDB = "/home/imalison/.config/google-chrome/Default/Cookies";
   refreshGmcliCookies = pkgs.writeShellScript "refresh-gmcli-cookies" ''
         set -euo pipefail
@@ -71,7 +73,12 @@
     set -uo pipefail
     status=0
     ${refreshGmcliCookies} || status=1
-    ${gmcliPackage}/bin/gmcli sync --include-spam=false --include-archive=false || status=1
+    # Never replace a healthy archive with an empty export after authentication
+    # or transport failure. A successful sync is the prerequisite for export.
+    if ! ${gmcliPackage}/bin/gmcli sync --include-spam=false --include-archive=false; then
+      echo "gmcli sync failed; preserving the existing archive" >&2
+      exit 1
+    fi
     ${exportGmcliArchive} || status=1
     exit "$status"
   '';
@@ -79,7 +86,10 @@
     set -uo pipefail
     status=0
     ${refreshGmcliCookies} || status=1
-    ${gmcliPackage}/bin/gmcli sync || status=1
+    if ! ${gmcliPackage}/bin/gmcli sync; then
+      echo "gmcli sync failed; preserving the existing archive" >&2
+      exit 1
+    fi
     exhausted=0
     pass=1
     while ((pass <= 20)); do
@@ -121,6 +131,7 @@
   withGmcliBackupLock = name: command:
     pkgs.writeShellScript name ''
       set -euo pipefail
+      ${pkgs.coreutils}/bin/mkdir -p ${lib.escapeShellArg gmcliBackupLockDirectory}
       exec 9>${lib.escapeShellArg gmcliBackupLock}
       if ! ${pkgs.util-linux}/bin/flock --wait 1200 9; then
         echo "Timed out waiting 20 minutes for another gmcli backup job" >&2
@@ -140,7 +151,19 @@
   };
   backfillGmcliArchive = withGmcliBackupLock "backfill-gmcli-archive" backfillGmcliArchiveUnlocked;
   backupGmcliTelephonyFull = withGmcliBackupLock "backup-gmcli-telephony-full" exportGmcliTelephonyFullArchive;
+  gitSyncRepositoryCondition = pkgs.writeShellScript "git-sync-repository-ready" ''
+    set -euo pipefail
+    directory="''${GIT_SYNC_DIRECTORY:?GIT_SYNC_DIRECTORY is not set}"
+    if ! ${pkgs.git}/bin/git -C "$directory" rev-parse --show-toplevel >/dev/null 2>&1; then
+      echo "Git sync paused: $directory is not a Git repository; initialize its history repository before starting this service" >&2
+      exit 1
+    fi
+  '';
   mkGitSyncTrayOverrides = icon: {
+    Unit = {
+      StartLimitIntervalSec = 300;
+      StartLimitBurst = 3;
+    };
     Service = {
       Environment = lib.mkMerge [
         ["GIT_SYNC_TRAY=1" "GIT_SYNC_TRAY_ICON=${icon}"]
@@ -204,22 +227,29 @@ in {
           (mkGitSyncTrayOverrides (repoIcons.${name} or "git")))
         config.services.git-sync.repositories)
       (lib.optionalAttrs syncAiHistory {
+        git-sync-claude-history.Service.ExecCondition = gitSyncRepositoryCondition;
         # Live sessions append to their transcript on every message; sync
         # untracked session files and throttle event-driven syncs so an
-        # active session doesn't push once per append.
+        # active session doesn't push once per append. Avoid making a
+        # retryable initial-sync error terminate watch mode; subsequent file
+        # and periodic sync attempts remain active and use git-sync's backoff.
         git-sync-claude-history.Service.ExecStart =
           lib.mkForce
-          "${pkgs.git-sync-rs}/bin/git-sync-rs watch --new-files true --min-interval 300 --watch-path projects --watch-path history.jsonl --watch-path plans --watch-path tasks";
+          "${pkgs.git-sync-rs}/bin/git-sync-rs watch --no-initial-sync --new-files true --min-interval 300 --watch-path projects --watch-path history.jsonl --watch-path plans --watch-path tasks";
+        git-sync-codex-history.Service.ExecCondition = gitSyncRepositoryCondition;
         git-sync-codex-history.Service.ExecStart =
           lib.mkForce
-          "${pkgs.git-sync-rs}/bin/git-sync-rs watch --new-files true --min-interval 300 --watch-path sessions --watch-path archived_sessions --watch-path history.jsonl";
+          "${pkgs.git-sync-rs}/bin/git-sync-rs watch --no-initial-sync --new-files true --min-interval 300 --watch-path sessions --watch-path archived_sessions --watch-path history.jsonl";
       })
       {
         git-sync-gmcli-archive.Service.ExecStart =
           lib.mkForce
           "${pkgs.git-sync-rs}/bin/git-sync-rs -d ${lib.escapeShellArg gmcliArchiveRoot} watch --new-files true --min-interval 30 --interval 300";
         gmcli-archive-refresh = {
-          Unit.Description = "Sync Google Messages and refresh the JSONL archive";
+          Unit = {
+            Description = "Sync Google Messages and refresh the JSONL archive";
+            ConditionPathExists = gmcliSession;
+          };
           Service = {
             Type = "oneshot";
             ExecStart = refreshGmcliArchive;
@@ -227,7 +257,10 @@ in {
           };
         };
         gmcli-archive-backfill = {
-          Unit.Description = "Deep-backfill Google Messages and refresh the JSONL archive";
+          Unit = {
+            Description = "Deep-backfill Google Messages and refresh the JSONL archive";
+            ConditionPathExists = gmcliSession;
+          };
           Service = {
             Type = "oneshot";
             ExecStart = backfillGmcliArchive;
