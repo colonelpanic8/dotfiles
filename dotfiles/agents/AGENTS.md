@@ -30,7 +30,7 @@ Treat model selection and effort level as separate decisions. The following scor
 ## Cross-model delegation
 - Use cross-model delegation only when the user requests it or model diversity or an independent check would be useful; it is never mandatory.
 - Codex should use the `claude_delegator` agent only for the specialized Opus cases below. Claude should prefer the `codex-delegator` agent when delegating to Sol. Use `$cross-agent-delegation` or its `ask-claude` and `ask-codex` wrappers when direct invocation is simpler.
-- Permit at most one cross-model handoff and never recursively delegate. Keep the child read-only and advisory by default, with only one writer per worktree.
+- Permit at most one cross-model handoff and never recursively delegate. Cross-model children may write, under the same territorial discipline as any other worker: exclusive ownership of their directories/files, only one writer per worktree.
 - The parent agent owns review, verification, and integration of the child's output.
 - A Sol agent must never spawn, invoke, or delegate to Fable, including through cross-model wrappers or indirect subagent chains. If a task warrants Fable, select Fable as the primary model before beginning rather than allowing Sol to escalate itself.
 - Sol may delegate to other Sol agents at medium effort or higher. It may use Opus only for specialized design critique, UX writing, aesthetic review, or an independent design perspective.
