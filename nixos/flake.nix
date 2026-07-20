@@ -108,12 +108,11 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
-    # Keep the 0.55 plugin API while testing Aquamarine 0.13.0, whose DRM
-    # page-flip/cursor/EGL fixes target the 0.55.4/Aquamarine 0.12.1 startup
-    # hang seen on ryzen-shine with NVIDIA 595.71.05. Plugins follow this input
-    # so they build against the exact same Hyprland ABI.
+    # Pin the latest release and keep plugins on its exact ABI. Aquamarine and
+    # hyprutils are exposed as shared inputs below so every plugin builds
+    # against the same dependency revisions as Hyprland.
     hyprland = {
-      url = "git+https://github.com/hyprwm/Hyprland?submodules=1&rev=a0136d8c04687bb36eb8a28eb9d1ff92aea99704";
+      url = "git+https://github.com/hyprwm/Hyprland?submodules=1&ref=refs/tags/v0.56.0";
       inputs = {
         aquamarine.follows = "aquamarine";
         hyprutils.follows = "hyprutils";
@@ -132,13 +131,33 @@
     hyprgraphics.follows = "hyprland/hyprgraphics";
     hyprlang.follows = "hyprland/hyprlang";
     hyprutils = {
-      url = "github:hyprwm/hyprutils/40ede2e7bdec80ba5d4c443160d905e9f841ae5f";
+      url = "github:hyprwm/hyprutils/5f03477ab3a005ff27c527486f551883535aea2f";
       inputs.nixpkgs.follows = "nixpkgs";
       inputs.systems.follows = "systems";
     };
 
+    # v0.9.6 includes the explicit shared-pointer conversion required by the
+    # hyprutils revision shipped with Hyprland 0.56.
+    hyprlock = {
+      url = "github:hyprwm/hyprlock/v0.9.6";
+      inputs = {
+        hyprgraphics.follows = "hyprgraphics";
+        hyprlang.follows = "hyprlang";
+        hyprutils.follows = "hyprutils";
+        hyprwayland-scanner.follows = "hyprland/hyprwayland-scanner";
+        nixpkgs.follows = "nixpkgs";
+        systems.follows = "systems";
+      };
+    };
+
+    # Use the portal revision selected by Hyprland 0.56; it includes the
+    # explicit-pointer conversions required by the shared hyprutils input.
+    xdph.follows = "hyprland/xdph";
+
     hyprNStack = {
-      url = "github:colonelpanic8/hyprNStack?ref=codex/hyprnstack-combined";
+      # Combines swapWithWindow with the Hyprland 0.56 compatibility work from
+      # upstream PR #55: https://github.com/zakk4223/hyprNStack/pull/55
+      url = "github:colonelpanic8/hyprNStack/1708d1da0d2ce06e357dd47ad4e82bcfcbad18c5";
       inputs = {
         hyprland.follows = "hyprland";
         nixpkgs.follows = "nixpkgs";
@@ -160,8 +179,9 @@
     };
 
     hyprtasking = {
-      # Pending upstream PR #119: keyboard workspace jump labels.
-      url = "github:colonelpanic8/hyprtasking?ref=colonelpanic/workspace-jump-labels";
+      # Combines keyboard workspace jump labels (upstream PR #119) with the
+      # Hyprland 0.56 compatibility work from upstream PR #121.
+      url = "github:colonelpanic8/hyprtasking/85d48bb292a63a8915f13a4196dd1afffff5997a";
       inputs = {
         hyprland.follows = "hyprland";
         nixpkgs.follows = "nixpkgs";
@@ -176,7 +196,8 @@
     };
 
     hypr-dynamic-cursors = {
-      url = "github:VirtCode/hypr-dynamic-cursors/da447486c84e0be81f2cdd208af1ef92469f0a88";
+      # Current main follows Hyprland's post-0.56 cursor namespace move.
+      url = "github:VirtCode/hypr-dynamic-cursors/5ef778ea151deb3573383d13d6e1cf7eed7336e1";
       inputs = {
         hyprland.follows = "hyprland";
         nixpkgs.follows = "nixpkgs";
