@@ -3,6 +3,29 @@
 set -euo pipefail
 
 wallpaper_dir="${WALLPAPER_DIR:-/var/lib/syncthing/sync/Wallpaper/use}"
+wallpaper_variant_root="${WALLPAPER_VARIANT_ROOT:-}"
+
+resolve_wallpaper_variant() {
+  local selected="$1"
+  local target_width="$2"
+  local target_height="$3"
+  local root="$wallpaper_variant_root"
+  local selected_name selected_stem candidate
+
+  if [ -z "$root" ]; then
+    root="$(cd "$wallpaper_dir/.." && pwd -P)"
+  fi
+
+  selected_name="$(basename "$selected")"
+  selected_stem="${selected_name%.*}"
+  candidate="$root/${target_width}x${target_height}/$selected_stem.png"
+
+  if [ -f "$candidate" ]; then
+    printf '%s\n' "$candidate"
+  else
+    printf '%s\n' "$selected"
+  fi
+}
 
 notify() {
   if command -v notify-send >/dev/null 2>&1; then
@@ -50,22 +73,25 @@ if [ ! -f "$selected_wallpaper" ]; then
 fi
 
 apply_hyprpaper() {
-  local monitor
+  local monitors monitor width height monitor_wallpaper
 
   if ! command -v hyprctl >/dev/null 2>&1; then
     return 1
   fi
 
-  hyprctl hyprpaper preload "$selected_wallpaper" >/dev/null 2>&1 || true
-
-  if ! hyprctl monitors >/dev/null 2>&1; then
+  monitors="$(hyprctl -j monitors 2>/dev/null | jq -r \
+    '.[] | [.name, .width, .height] | @tsv' 2>/dev/null || true)"
+  if [ -z "$monitors" ]; then
     return 1
   fi
 
-  while read -r monitor; do
+  while IFS=$'\t' read -r monitor width height; do
     [ -z "$monitor" ] && continue
-    hyprctl hyprpaper wallpaper "$monitor,$selected_wallpaper" >/dev/null 2>&1 || true
-  done < <(hyprctl monitors | awk '/^Monitor / { print $2 }')
+    monitor_wallpaper="$(resolve_wallpaper_variant \
+      "$selected_wallpaper" "$width" "$height")"
+    hyprctl hyprpaper preload "$monitor_wallpaper" >/dev/null 2>&1 || true
+    hyprctl hyprpaper wallpaper "$monitor,$monitor_wallpaper" >/dev/null 2>&1 || true
+  done <<< "$monitors"
 
   return 0
 }

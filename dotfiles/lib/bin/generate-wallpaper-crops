@@ -5,7 +5,10 @@ usage() {
   cat >&2 <<'EOF'
 Usage: generate-wallpaper-crops [WIDTHxHEIGHT] [WALLPAPER_DIR]
 
-Generate centered crop-to-fill PNG wallpapers from WALLPAPER_DIR/originals.
+Generate centered crop-to-fill PNG wallpapers from WALLPAPER_DIR/use.
+
+The use/ directory is the curated source of truth. Resolution-named
+directories are generated derivatives and can be recreated with this command.
 
 Defaults:
   WIDTHxHEIGHT   2560x1600
@@ -28,7 +31,7 @@ fi
 
 width="${BASH_REMATCH[1]}"
 height="${BASH_REMATCH[2]}"
-originals_dir="$wallpaper_dir/originals"
+source_dir="$wallpaper_dir/use"
 output_dir="$wallpaper_dir/$resolution"
 
 if ! command -v ffmpeg >/dev/null 2>&1; then
@@ -36,8 +39,8 @@ if ! command -v ffmpeg >/dev/null 2>&1; then
   exit 1
 fi
 
-if [[ ! -d "$originals_dir" ]]; then
-  echo "generate-wallpaper-crops: missing originals directory: $originals_dir" >&2
+if [[ ! -d "$source_dir" ]]; then
+  echo "generate-wallpaper-crops: missing source directory: $source_dir" >&2
   exit 1
 fi
 
@@ -45,21 +48,24 @@ mkdir -p "$output_dir"
 
 shopt -s nullglob
 inputs=(
-  "$originals_dir"/*.jpg
-  "$originals_dir"/*.jpeg
-  "$originals_dir"/*.png
-  "$originals_dir"/*.webp
+  "$source_dir"/*.jpg
+  "$source_dir"/*.jpeg
+  "$source_dir"/*.png
+  "$source_dir"/*.webp
 )
 
 if [[ "${#inputs[@]}" -eq 0 ]]; then
-  echo "generate-wallpaper-crops: no source images found in $originals_dir" >&2
+  echo "generate-wallpaper-crops: no source images found in $source_dir" >&2
   exit 1
 fi
+
+declare -A expected_outputs=()
 
 for input in "${inputs[@]}"; do
   name="$(basename "$input")"
   stem="${name%.*}"
   output="$output_dir/$stem.png"
+  expected_outputs["$output"]=1
 
   ffmpeg -hide_banner -loglevel error -y \
     -i "$input" \
@@ -69,4 +75,11 @@ for input in "${inputs[@]}"; do
     "$output"
 
   echo "$output"
+done
+
+for output in "$output_dir"/*.png; do
+  if [[ ! -v 'expected_outputs[$output]' ]]; then
+    rm -- "$output"
+    echo "removed stale derivative: $output"
+  fi
 done

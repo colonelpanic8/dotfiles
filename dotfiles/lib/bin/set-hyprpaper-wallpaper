@@ -3,10 +3,33 @@
 set -u
 
 wallpaper_dir="${WALLPAPER_DIR:-/var/lib/syncthing/sync/Wallpaper/use}"
+wallpaper_variant_root="${WALLPAPER_VARIANT_ROOT:-}"
 hyprctl_bin="${HYPRCTL:-hyprctl}"
 runtime_dir="${XDG_RUNTIME_DIR:-}"
 sig="${HYPRLAND_INSTANCE_SIGNATURE:-}"
 sock_path=""
+
+resolve_wallpaper_variant() {
+  local selected="$1"
+  local target_width="$2"
+  local target_height="$3"
+  local root="$wallpaper_variant_root"
+  local selected_name selected_stem candidate
+
+  if [ -z "$root" ]; then
+    root="$(cd "$wallpaper_dir/.." && pwd -P)"
+  fi
+
+  selected_name="$(basename "$selected")"
+  selected_stem="${selected_name%.*}"
+  candidate="$root/${target_width}x${target_height}/$selected_stem.png"
+
+  if [ -f "$candidate" ]; then
+    printf '%s\n' "$candidate"
+  else
+    printf '%s\n' "$selected"
+  fi
+}
 
 if [ -n "$runtime_dir" ] && [ -n "$sig" ]; then
   sock_path="$runtime_dir/hypr/$sig/.hyprpaper.sock"
@@ -42,19 +65,32 @@ if [ -z "$wallpaper" ]; then
   exit 0
 fi
 
-mons="$("$hyprctl_bin" -j monitors 2>/dev/null | jq -r '.[].name' 2>/dev/null || true)"
-if [ -z "$mons" ]; then
-  mons="$("$hyprctl_bin" monitors 2>/dev/null | grep -oE '^Monitor [^ ]+' | cut -d' ' -f2 || true)"
+monitors="$("$hyprctl_bin" -j monitors 2>/dev/null | jq -r \
+  '.[] | [.name, .width, .height] | @tsv' 2>/dev/null || true)"
+if [ -z "$monitors" ]; then
+  monitors="$("$hyprctl_bin" monitors 2>/dev/null \
+    | grep -oE '^Monitor [^ ]+' \
+    | cut -d' ' -f2 \
+    | awk '{ print $1 "\t0\t0" }' || true)"
 fi
 
-for mon in $mons; do
+while IFS=$'\t' read -r mon width height; do
+  [ -z "$mon" ] && continue
+
+  monitor_wallpaper="$wallpaper"
+  if [ "${width:-0}" -gt 0 ] && [ "${height:-0}" -gt 0 ]; then
+    monitor_wallpaper="$(resolve_wallpaper_variant "$wallpaper" "$width" "$height")"
+  fi
+
+  echo "set-hyprpaper-wallpaper: $mon ${width}x${height} -> $monitor_wallpaper"
+
   # The socket file can exist before hyprpaper is actually ready to accept IPC.
   for _ in {1..50}; do
-    if "$hyprctl_bin" hyprpaper wallpaper "$mon,$wallpaper" >/dev/null 2>&1; then
+    if "$hyprctl_bin" hyprpaper wallpaper "$mon,$monitor_wallpaper" >/dev/null 2>&1; then
       break
     fi
     sleep 0.1
   done
-done
+done <<< "$monitors"
 
 exit 0
