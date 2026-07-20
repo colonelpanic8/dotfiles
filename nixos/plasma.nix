@@ -1,30 +1,14 @@
 {
-  pkgs,
   config,
+  lib,
   makeEnable,
-  realUsers,
   ...
 }:
 makeEnable config "myModules.plasma" true {
-  services.accounts-daemon.enable = true;
-  services.displayManager.sddm = {
-    enable = true;
-    settings = {
-      Users = {
-        # Limit login candidates to regular interactive users.
-        MaximumUid = 60000;
-        MinimumUid = 1000;
-        RememberLastUser = true;
-      };
-      Theme = {
-        # Breeze hides the user chooser when users exceed this threshold.
-        # Keep it aligned with declared normal users so the list stays visible.
-        DisableAvatarsThreshold = (builtins.length realUsers) + 10;
-      };
-    };
-    extraPackages = with pkgs; [
-      # sddm-astronaut
-    ];
-  };
+  imports = [./display-manager.nix];
+
+  # Plasma normally uses SDDM, but the display manager is independently
+  # reusable by lightweight Hyprland-only systems such as rescue media.
+  myModules.displayManager.enable = lib.mkDefault true;
   services.desktopManager.plasma6.enable = true;
 }

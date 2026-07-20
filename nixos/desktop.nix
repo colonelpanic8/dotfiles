@@ -7,6 +7,7 @@
   ...
 }: let
   cfg = config.myModules.desktop;
+  isFull = cfg.profile == "full";
   desktopShellUi = pkgs.writeShellApplication {
     name = "desktop_shell_ui";
     runtimeInputs = [
@@ -234,7 +235,7 @@
 
     services.gnome.gnome-keyring.enable = true;
 
-    home-manager.users.imalison = {
+    home-manager.users.imalison = lib.mkIf isFull {
       imports = [
         inputs.rlru.homeManagerModules.default
       ];
@@ -276,7 +277,7 @@
           };
         };
 
-        xdg.desktopEntries.x-com-pwa = {
+        xdg.desktopEntries.x-com-pwa = lib.mkIf isFull {
           name = "X";
           genericName = "Social Network";
           comment = "Open x.com in a dedicated Chrome app window";
@@ -314,62 +315,75 @@
             background-blur = false
           '';
         };
+
+        systemd.user.services.hyprpolkitagent = {
+          Unit = {
+            Description = "Graphical PolicyKit authentication agent";
+            After = ["graphical-session.target"];
+            PartOf = ["graphical-session.target"];
+          };
+          Service = {
+            ExecStart = lib.getExe pkgs.hyprpolkitagent;
+            Restart = "on-failure";
+            RestartSec = 2;
+          };
+          Install.WantedBy = ["graphical-session.target"];
+        };
       }
     ];
 
-    environment.systemPackages = with pkgs;
-      [
+    environment.systemPackages =
+      (with pkgs; [
         desktopShellUi
 
-        # Appearance
+        # Lightweight personal desktop baseline.
         adwaita-icon-theme
         hicolor-icon-theme
-        # libsForQt5.breeze-gtk
-        # materia-theme
         kdePackages.qt6ct
-        libsForQt5.qt5ct
         numix-icon-theme-circle
         papirus-icon-theme
-
-        # XOrg
-        autorandr
         keyd
+        ghostty
+        file-roller
+        libnotify
+        localsend
+        lxappearance
+        networkmanagerapplet
+        pinentry-gnome3
+        rofi
+        wofi
+        rofi-systemd
+        thunar
+        pavucontrol
+        playerctl
+        pulsemixer
+        brightnessctl
+      ])
+      ++ lib.optionals isFull (with pkgs; [
+        libsForQt5.qt5ct
+        autorandr
         wmctrl
         xclip
         xdotool
         xev
         xwininfo
         xsettingsd
-
-        # Desktop
         alacritty
-        ghostty
         blueman
         d-spy
         kdePackages.dolphin
-
         feh
-        file-roller
         gthumb
         firefox
         cheese
         kdePackages.kleopatra
-        libnotify
         libreoffice
-        localsend
         loupe
-        lxappearance
         lxqt.lxqt-powermanagement
-        networkmanagerapplet
         kdePackages.okular
-        pinentry-gnome3
-        # mission-center
         quassel
         remmina
-        rofi
-        wofi
         rofi-pass
-        rofi-systemd
         scrobbleScrubberApp
         scrobbleScrubber
         simplescreenrecorder
@@ -381,38 +395,26 @@
 
         # Audio
         picard
-        pavucontrol
-        playerctl
-        pulsemixer
         espeak
-
-        #
-        brightnessctl
-
-        # Visualization
         graphviz
         mermaid-cli
         pandoc
+      ])
+      ++ lib.optionals (pkgs.stdenv.hostPlatform.system == "x86_64-linux") [
+        googleChromeCommandWrappers
+        googleChromeDesktopEntries
+        googleChromeProfileWindow
       ]
-      ++ (
-        if pkgs.stdenv.hostPlatform.system == "x86_64-linux"
-        then
-          with pkgs; [
-            googleChromeCommandWrappers
-            googleChromeDesktopEntries
-            googleChromeProfileWindow
-            pommed_light
-            slack
-            spicetify-cli
-            spotify
-            spotifyWaylandPatch
-            tor-browser
-            xComPwa
-            # vscode
-            zulip
-          ]
-        else []
-      );
+      ++ lib.optionals (isFull && pkgs.stdenv.hostPlatform.system == "x86_64-linux") (with pkgs; [
+        pommed_light
+        slack
+        spicetify-cli
+        spotify
+        spotifyWaylandPatch
+        tor-browser
+        xComPwa
+        zulip
+      ]);
   };
 in
   enabledModule
@@ -424,6 +426,14 @@ in
         description = ''
           Desktop shell UI used by Hyprland-oriented bindings. This controls
           the active shell service and Hyprland launcher/window picker dispatch.
+        '';
+      };
+      myModules.desktop.profile = lib.mkOption {
+        type = lib.types.enum ["minimal" "full"];
+        default = "full";
+        description = ''
+          Select the lightweight personal session baseline or the complete
+          workstation application set.
         '';
       };
     };

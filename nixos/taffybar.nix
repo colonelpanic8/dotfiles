@@ -6,9 +6,38 @@
   makeEnable,
   ...
 }: let
+  cfg = config.myModules.taffybar;
+  isMinimal = cfg.profile == "minimal";
   system = pkgs.stdenv.hostPlatform.system;
   hyprlandPackage = config.programs.hyprland.package;
-  taffybarPackage = inputs.imalison-taffybar.defaultPackage.${system};
+  taffybarBuildPackage = inputs.imalison-taffybar.defaultPackage.${system};
+  taffybarLibraryPackage = builtins.head (
+    builtins.filter
+    (package: (package.pname or "") == "taffybar")
+    taffybarBuildPackage.buildInputs
+  );
+  taffybarRuntimePackage =
+    pkgs.runCommand "imalison-taffybar-runtime" {
+      nativeBuildInputs = [pkgs.removeReferencesTo];
+    } ''
+      install -Dm755 ${taffybarBuildPackage}/bin/taffybar "$out/bin/taffybar"
+      chmod u+w "$out/bin/taffybar"
+      remove-references-to -t ${taffybarLibraryPackage} "$out/bin/taffybar"
+    '';
+  statusNotifierBuildPackage = inputs.imalison-taffybar.packages.${system}.status-notifier-item;
+  statusNotifierRuntimePackage = pkgs.runCommand "status-notifier-watcher-runtime" {} ''
+    install -Dm755 \
+      ${statusNotifierBuildPackage}/bin/status-notifier-watcher \
+      "$out/bin/status-notifier-watcher"
+  '';
+  taffybarPackage =
+    if isMinimal
+    then taffybarRuntimePackage
+    else taffybarBuildPackage;
+  statusNotifierPackage =
+    if isMinimal
+    then statusNotifierRuntimePackage
+    else statusNotifierBuildPackage;
   taffybarRuntimePath = lib.makeBinPath [
     pkgs.coreutils
     pkgs.curl
@@ -295,10 +324,10 @@
         ;;
     esac
   '';
-in
-  makeEnable config "myModules.taffybar" false {
+  enabledModule = makeEnable config "myModules.taffybar" false {
     myModules.sni.enable = true;
-    myModules.chrome-favicon-dbus.enable = true;
+    myModules.sni.profile = lib.mkDefault cfg.profile;
+    myModules.chrome-favicon-dbus.enable = lib.mkDefault (!isMinimal);
 
     environment.systemPackages = [
       taffybarPackage
@@ -311,7 +340,7 @@ in
         # Point it at the pinned flake version instead.
         services."status-notifier-watcher".package =
           pkgs.lib.mkForce
-          inputs.imalison-taffybar.packages.${system}.status-notifier-item;
+          statusNotifierPackage;
 
         systemd.user.targets.tray.Unit = {
           PartOf = ["graphical-session.target"];
@@ -347,4 +376,18 @@ in
         };
       })
     ];
+  };
+in
+  enabledModule
+  // {
+    options = lib.recursiveUpdate enabledModule.options {
+      myModules.taffybar.profile = lib.mkOption {
+        type = lib.types.enum ["minimal" "full"];
+        default = "full";
+        description = ''
+          Use the complete development closure or executable-only runtime
+          packages suitable for portable rescue media.
+        '';
+      };
+    };
   }

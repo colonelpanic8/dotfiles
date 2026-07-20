@@ -6,18 +6,19 @@
   makeEnable,
   ...
 }: let
+  cfg = config.myModules.sni;
+  isFull = cfg.profile == "full";
   system = pkgs.stdenv.hostPlatform.system;
   kanshiSniPackage = inputs.kanshi-sni.packages.${system}.default;
-in
-  makeEnable config "myModules.sni" true {
-    systemd.user.services.blueman-applet.serviceConfig.ExecStart = lib.mkForce [
+  enabledModule = makeEnable config "myModules.sni" true {
+    systemd.user.services.blueman-applet.serviceConfig.ExecStart = lib.mkIf isFull (lib.mkForce [
       ""
       "${pkgs.blueman}/bin/blueman-applet"
-    ];
+    ]);
 
     home-manager.sharedModules = [
       ({lib, ...}: {
-        systemd.user.services.kanshi-sni = {
+        systemd.user.services.kanshi-sni = lib.mkIf isFull {
           Unit = {
             Description = "kanshi-sni tray app";
             After = ["graphical-session.target" "tray.target" "kanshi.service"];
@@ -52,18 +53,20 @@ in
           };
         };
 
-        services.kdeconnect = {
+        services.kdeconnect = lib.mkIf isFull {
           enable = true;
           indicator = true;
         };
 
-        home.activation.disableKdeConnectBluetooth = lib.hm.dag.entryAfter ["writeBoundary"] ''
-          ${pkgs.kdePackages.kconfig}/bin/kwriteconfig6 \
-            --file kdeconnect/config \
-            --group General \
-            --key disabled_providers \
-            'BluetoothLinkProvider,AsyncLinkProvider'
-        '';
+        home.activation.disableKdeConnectBluetooth = lib.hm.dag.entryAfter ["writeBoundary"] (
+          lib.optionalString isFull ''
+            ${pkgs.kdePackages.kconfig}/bin/kwriteconfig6 \
+              --file kdeconnect/config \
+              --group General \
+              --key disabled_providers \
+              'BluetoothLinkProvider,AsyncLinkProvider'
+          ''
+        );
 
         services.network-manager-applet.enable = true;
 
@@ -79,9 +82,23 @@ in
           tray = "always";
         };
 
-        services.pasystray.enable = true;
+        services.pasystray.enable = isFull;
 
-        services.flameshot.enable = true;
+        services.flameshot.enable = isFull;
       })
     ];
+  };
+in
+  enabledModule
+  // {
+    options = lib.recursiveUpdate enabledModule.options {
+      myModules.sni.profile = lib.mkOption {
+        type = lib.types.enum ["minimal" "full"];
+        default = "full";
+        description = ''
+          Select core tray services (NetworkManager, udiskie, LocalSend) or
+          the complete workstation tray set.
+        '';
+      };
+    };
   }

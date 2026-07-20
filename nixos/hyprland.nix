@@ -6,6 +6,8 @@
   inputs,
   ...
 }: let
+  cfg = config.myModules.hyprland;
+  session = import ./session-variables.nix;
   system = pkgs.stdenv.hostPlatform.system;
   hyprlandInput = inputs.hyprland;
   # GCC 15 ICEs while compiling Hyprland 0.55's ConfigManager. GCC 16 builds
@@ -467,7 +469,7 @@
       withUWSM = true;
     };
 
-    services.rumno.enable = true;
+    services.rumno.enable = !cfg.portable;
 
     environment.sessionVariables = {
       IMALISON_HYPRLAND_GAPS = hyprlandGapsEnabledString;
@@ -484,7 +486,14 @@
           lib,
           ...
         }: {
-          services.kanshi = {
+          systemd.user.targets.hyprland-session = {
+            Unit = {
+              Description = "Hyprland session (custom)";
+              ConditionEnvironment = session.hyprland;
+            };
+          };
+
+          services.kanshi = lib.mkIf (!cfg.portable) {
             enable = true;
             systemdTarget = "graphical-session.target";
             settings = [
@@ -594,7 +603,7 @@
           xdg.configFile."xdg-desktop-portal/hyprland-portals.conf".text = ''
             [preferred]
             default=hyprland;gtk
-            org.freedesktop.impl.portal.FileChooser=kde
+            ${lib.optionalString (!cfg.portable) "org.freedesktop.impl.portal.FileChooser=kde"}
           '';
         }
       )
@@ -632,3 +641,15 @@
   };
 in
   enabledModule
+  // {
+    options = lib.recursiveUpdate enabledModule.options {
+      myModules.hyprland.portable = lib.mkOption {
+        type = lib.types.bool;
+        default = false;
+        description = ''
+          Avoid host-specific monitor policy and nonessential session daemons
+          while retaining the normal Hyprland package, config, and utilities.
+        '';
+      };
+    };
+  }

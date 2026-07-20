@@ -6,6 +6,7 @@
   inputs,
   ...
 }: let
+  environmentConfig = config.dotfilesEnvironment;
   envDotfilesWorktree = builtins.getEnv "DOTFILES_WORKTREE";
   defaultDotfilesWorktree =
     if envDotfilesWorktree != ""
@@ -30,6 +31,15 @@
 in
   with lib; {
     options = {
+      dotfilesEnvironment.enableHostPythonCompletions = mkOption {
+        type = types.bool;
+        default = true;
+        description = ''
+          Enable completions supplied by the full host-specific Python
+          environment. Rescue systems disable this to avoid pulling that large
+          environment into otherwise lightweight installation media.
+        '';
+      };
       dotfiles-directory = mkOption {
         type = types.path;
         default = ../.;
@@ -70,20 +80,23 @@ in
           enable = true;
           plugins = ["git" "sudo" "pip"];
         };
-        shellInit = ''
-          # The shared editable dotfiles worktree is group-writable, which makes
-          # zsh's compaudit reject our local fpath entries. Completion loading is
-          # handled once by oh-my-zsh below, with this check intentionally skipped.
-          ZSH_DISABLE_COMPFIX=true
+        shellInit =
+          ''
+            # The shared editable dotfiles worktree is group-writable, which makes
+            # zsh's compaudit reject our local fpath entries. Completion loading is
+            # handled once by oh-my-zsh below, with this check intentionally skipped.
+            ZSH_DISABLE_COMPFIX=true
 
-          fpath=("$HOME/.lib/completions" "${zshLibDir}/completions" $fpath)
-          fpath+="${zshLibDir}/functions"
-          for file in "${zshLibDir}/functions/"*
-          do
-              autoload "''${file##*/}"
-          done
-          fpath+="${pkgs.python-with-my-packages}/lib/python3.11/site-packages/argcomplete/bash_completion.d"
-        '';
+            fpath=("$HOME/.lib/completions" "${zshLibDir}/completions" $fpath)
+            fpath+="${zshLibDir}/functions"
+            for file in "${zshLibDir}/functions/"*
+            do
+                autoload "''${file##*/}"
+            done
+          ''
+          + optionalString environmentConfig.enableHostPythonCompletions ''
+            fpath+="${pkgs.python-with-my-packages}/lib/python3.11/site-packages/argcomplete/bash_completion.d"
+          '';
         interactiveShellInit = ''
           [ -n "$EAT_SHELL_INTEGRATION_DIR" ] && source "$EAT_SHELL_INTEGRATION_DIR/zsh"
 
@@ -91,20 +104,23 @@ in
           autoload -Uz bracketed-paste-magic
           zle -N bracketed-paste bracketed-paste-magic
         '';
-        promptInit = lib.mkBefore ''
+        promptInit = lib.mkBefore (optionalString environmentConfig.enableHostPythonCompletions ''
           eval "$(register-python-argcomplete prb)"
           eval "$(register-python-argcomplete prod-prb)"
           eval "$(register-python-argcomplete railbird)"
-        '';
+        '');
       };
 
       programs.bash = {
-        interactiveShellInit = ''
-          eval "$(register-python-argcomplete prb)"
-          eval "$(register-python-argcomplete prod-prb)"
-          eval "$(register-python-argcomplete railbird)"
-          [ -n "$EAT_SHELL_INTEGRATION_DIR" ] && source "$EAT_SHELL_INTEGRATION_DIR/bash"
-        '';
+        interactiveShellInit =
+          optionalString environmentConfig.enableHostPythonCompletions ''
+            eval "$(register-python-argcomplete prb)"
+            eval "$(register-python-argcomplete prod-prb)"
+            eval "$(register-python-argcomplete railbird)"
+          ''
+          + ''
+            [ -n "$EAT_SHELL_INTEGRATION_DIR" ] && source "$EAT_SHELL_INTEGRATION_DIR/bash"
+          '';
       };
 
       programs.starship = {

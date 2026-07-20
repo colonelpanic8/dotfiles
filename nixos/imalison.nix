@@ -1,4 +1,4 @@
-  {
+{
   config,
   pkgs,
   ...
@@ -25,14 +25,6 @@ in {
     programs.gh = {
       enable = true;
       settings.git_protocol = "ssh";
-    };
-
-    # Hyprland config starts this target on login.
-    systemd.user.targets.hyprland-session = {
-      Unit = {
-        Description = "Hyprland session (custom)";
-        ConditionEnvironment = session.hyprland;
-      };
     };
 
     # Rootless podman stores images/layers under ~/.local/share/containers.
