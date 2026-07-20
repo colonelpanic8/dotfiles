@@ -12,6 +12,7 @@
   # using nvidia-smi directly.
   nvidiaSmiNoWake = pkgs.writeShellApplication {
     name = "nvidia-smi-no-wake";
+    runtimeInputs = [config.hardware.nvidia.package.bin];
     text = ''
       found_device=false
       for status_file in /sys/bus/pci/drivers/nvidia/[0-9]*:[0-9]*:[0-9]*.[0-9]/power/runtime_status; do
@@ -21,12 +22,12 @@
         found_device=true
         case "$(<"$status_file")" in
           suspended | suspending) ;;
-          *) exec ${config.hardware.nvidia.package}/bin/nvidia-smi "$@" ;;
+          *) exec nvidia-smi "$@" ;;
         esac
       done
 
       if [[ "$found_device" == false ]]; then
-        exec ${config.hardware.nvidia.package}/bin/nvidia-smi "$@"
+        exec nvidia-smi "$@"
       fi
 
       exit 1
