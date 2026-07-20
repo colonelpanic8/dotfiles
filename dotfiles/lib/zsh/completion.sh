@@ -1,7 +1,6 @@
 # fixme - the load process here seems a bit bizarre
 
 CASE_SENSITIVE="true"
-fpath=(~/.lib/completions $fpath)
 autoload -U compinit
 compinit
 

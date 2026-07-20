@@ -38,7 +38,7 @@
 	power-clean = clean -ffd
 	reb = "!r() { git rebase -i HEAD~$1; }; r" # Interactive rebase with the given number of latest commits
 	remotes = remote -v
-	reset-author ="!source ~/.lib/shellrc/functions.sh && git_reset_author"
+	reset-author = commit --amend --reset-author --no-edit
 	reset-origin = "!r() { git reset --hard origin/\"$(git which-branch)\" && git suir; }; r"
 	rh = reset --hard
 	root = rev-parse --show-toplevel

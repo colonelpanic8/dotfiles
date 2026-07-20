@@ -87,7 +87,7 @@ in
             # handled once by oh-my-zsh below, with this check intentionally skipped.
             ZSH_DISABLE_COMPFIX=true
 
-            fpath=("$HOME/.lib/completions" "${zshLibDir}/completions" $fpath)
+            fpath=("${zshLibDir}/completions" $fpath)
             fpath+="${zshLibDir}/functions"
             for file in "${zshLibDir}/functions/"*
             do

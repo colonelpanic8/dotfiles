@@ -1,7 +1,9 @@
 #!/usr/bin/env sh
 
 function pavolume {
-	pactl get-sink-volume $(pactl get-default-sink) | FS="/" get_cols 2 | grep -oE '[0-9]*'
+	pactl get-sink-volume "$(pactl get-default-sink)" |
+		FS="/" get_cols 2 |
+		grep -oE '[0-9]*'
 }
 
 pavolume
