@@ -258,7 +258,7 @@ Required behavior:
 - A named scratchpad exists for htop.
 - A named scratchpad exists for slack.
 - A named scratchpad exists for spotify.
-- A named scratchpad exists for transmission.
+- A named scratchpad exists for T3 Code.
 - A named scratchpad exists for volume.
 - A named scratchpad exists for x.com.
 - Scratchpads appear near-fullscreen and centered by default.
@@ -455,7 +455,7 @@ Required behavior:
 - `Super+Alt+h` toggles the htop scratchpad.
 - `Super+Alt+k` toggles the slack scratchpad.
 - `Super+Alt+s` toggles the spotify scratchpad.
-- `Super+Alt+t` toggles the transmission scratchpad.
+- `Super+Alt+t` toggles the T3 Code scratchpad.
 - `Super+Alt+v` toggles the volume scratchpad.
 - `Super+Alt+x` toggles the x.com scratchpad.
 

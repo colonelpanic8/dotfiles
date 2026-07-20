@@ -145,7 +145,7 @@ spawnBindings =
   , key (super .|. alt) xK_h (toggleScratchpad "htop")
   , key (super .|. alt) xK_k (toggleScratchpad "slack")
   , key (super .|. alt) xK_s (toggleScratchpad "spotify")
-  , key (super .|. alt) xK_t (toggleScratchpad "transmission")
+  , key (super .|. alt) xK_t (toggleScratchpad "t3code")
   , key (super .|. alt) xK_v (toggleScratchpad "volume")
   , key (super .|. alt) xK_x (toggleScratchpad "x-com")
   , key (super .|. alt) xK_c (spawnAction "google-chrome-stable")
@@ -294,8 +294,8 @@ scratchpadDefinitions =
       anyMatcher [appIdMatches "Slack", appIdMatches "slack"]
   , ScratchpadDefinition "spotify" "spotify" $
       anyMatcher [appIdMatches "Spotify", appIdMatches "spotify"]
-  , ScratchpadDefinition "transmission" "transmission-gtk" $
-      anyMatcher [titleContains "Transmission", appIdContains "transmission"]
+  , ScratchpadDefinition "t3code" "t3code-desktop" $
+      anyMatcher [titleContains "T3 Code", appIdContains "t3code"]
   , ScratchpadDefinition "volume" "pavucontrol" $
       anyMatcher [appIdMatches "Pavucontrol", appIdContains "pavucontrol"]
   , ScratchpadDefinition "x-com" "x-com-pwa" $

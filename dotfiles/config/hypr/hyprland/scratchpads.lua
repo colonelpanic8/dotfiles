@@ -65,9 +65,9 @@ function M.setup(ctx)
       classes = { "x-com-pwa", "chrome-x.com" },
       title = "X",
     },
-    transmission = {
-      command = "transmission-gtk",
-      class = "transmission-gtk",
+    t3code = {
+      command = "t3code-desktop",
+      class = "t3code",
     },
     dropdown = {
       command = "ghostty --config-file=/home/imalison/.config/ghostty/dropdown",
