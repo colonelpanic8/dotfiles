@@ -12,10 +12,12 @@ import System.Taffybar.Information.ChromeWindowInfo (registerChromeWindowInfoRef
 import System.Taffybar.SimpleConfig (toTaffybarConfig)
 import TaffybarConfig.Config (mkSimpleTaffyConfig)
 import TaffybarConfig.Host (cssFilesForHost)
+import TaffybarConfig.RuntimeStats (startRuntimeStatsLogging)
 
 main :: IO ()
 main = do
   updateGlobalLogger rootLoggerName (setLevel WARNING)
+  startRuntimeStatsLogging
 
   hostName <- getHostName
   backend <- detectBackend

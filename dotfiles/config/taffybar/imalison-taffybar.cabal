@@ -17,11 +17,12 @@ executable taffybar
                      , TaffybarConfig.Config
                      , TaffybarConfig.ChromeFavicons
                      , TaffybarConfig.Host
+                     , TaffybarConfig.RuntimeStats
                      , TaffybarConfig.Temperature
                      , TaffybarConfig.Widgets
                      , TaffybarConfig.WidgetUtil
                      , TaffybarConfig.Workspaces
-  ghc-options:         -threaded -rtsopts -with-rtsopts=-N
+  ghc-options:         -threaded -rtsopts "-with-rtsopts=-N2 -T"
   ghc-prof-options: -fprof-auto
   build-depends:       base
                      , X11
