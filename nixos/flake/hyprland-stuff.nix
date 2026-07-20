@@ -6,11 +6,12 @@
 }: let
   system = pkgs.stdenv.hostPlatform.system;
   hyprlandInput = inputs.hyprland;
-  # GCC 15 ICEs while compiling Hyprland 0.55's ConfigManager. GCC 16 builds
+  # GCC 15 ICEs while compiling Hyprland's ConfigManager. GCC 16 builds
   # the unmodified source, avoiding the old Clang-only source compatibility patch.
   baseHyprlandPackage = hyprlandInput.packages.${system}.hyprland.override {
     stdenv = pkgs.gcc16Stdenv;
   };
+  hyprlockPackage = inputs.hyprlock.packages.${system}.hyprlock;
   hyprlandPluginsForBase = pkgs.callPackage "${pkgs.path}/pkgs/applications/window-managers/hyprwm/hyprland-plugins" {
     hyprland = baseHyprlandPackage;
   };
@@ -392,7 +393,7 @@
     hyprpaper
     neowall
     hypridle
-    hyprlock
+    hyprlockPackage
     hyprcursor
     wl-clipboard
     wtype
