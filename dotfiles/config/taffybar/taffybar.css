@@ -93,11 +93,10 @@
 	border: 0px;
 	border-radius: 10px;
 	margin: 4px 4px;
-	/* No white outline; define shape with subtle inner highlight + dark stroke. */
+	/* Keep only cheap inset strokes; large blurred shadows dominate GTK paints. */
 	box-shadow:
 		inset 0 1px 0 @pill-highlight,
-		inset 0 0 0 1px @pill-border,
-		0 10px 24px @pill-shadow;
+		inset 0 0 0 1px @pill-border;
 }
 
 .inner-pad {
@@ -157,8 +156,7 @@
 	margin: 4px 3px;
 	box-shadow:
 		inset 0 1px 0 @pill-highlight,
-		inset 0 0 0 1px @pill-border,
-		0 10px 24px @pill-shadow;
+		inset 0 0 0 1px @pill-border;
 }
 .workspaces .outer-pad {
 	color: @font-color;
@@ -224,8 +222,7 @@
 	background-color: rgba(241, 178, 178, 0.25);
 	box-shadow:
 		inset 0 0 0 1px rgba(241, 178, 178, 0.5),
-		inset 0 1px 0 @pill-highlight,
-		0 10px 24px @pill-shadow;
+		inset 0 1px 0 @pill-highlight;
 }
 
 .workspaces .active .overlay-box {
