@@ -171,6 +171,21 @@
         -e "s#^Exec=.*spotify\\( .*\\)\\?\$#Exec=$out/bin/spotify\\1#" \
         "$out/share/applications/spotify.desktop"
     '');
+  vlc4Unwrapped = pkgs.callPackage ./packages/vlc4 { };
+  vlc4 = pkgs.symlinkJoin {
+    name = "${vlc4Unwrapped.name}-wayland";
+    paths = [vlc4Unwrapped];
+    nativeBuildInputs = [pkgs.makeWrapper];
+    postBuild = ''
+      wrapProgram "$out/bin/vlc" --set QT_QPA_PLATFORM wayland
+
+      rm "$out/share/applications/vlc.desktop"
+      cp ${vlc4Unwrapped}/share/applications/vlc.desktop "$out/share/applications/vlc.desktop"
+      chmod u+w "$out/share/applications/vlc.desktop"
+      substituteInPlace "$out/share/applications/vlc.desktop" \
+        --replace-fail "${vlc4Unwrapped}/bin/vlc" "$out/bin/vlc"
+    '';
+  };
   rlruPackages = inputs.rlru.packages.${pkgs.stdenv.hostPlatform.system};
   scrobbleScrubber = inputs.lastfm-edit.packages.${pkgs.stdenv.hostPlatform.system}.scrobble-scrubber;
   scrobbleScrubberApp = inputs.lastfm-edit.packages.${pkgs.stdenv.hostPlatform.system}.scrobble-scrubber-app;
@@ -389,7 +404,7 @@
         simplescreenrecorder
         skippy-xd
         transmission_4-gtk
-        vlc
+        vlc4
         thunar
         tumbler
 
