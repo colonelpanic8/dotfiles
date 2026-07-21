@@ -2370,11 +2370,11 @@
     "t3code-sidebar-nightly": {
       "flake": false,
       "locked": {
-        "lastModified": 1784518049,
-        "narHash": "sha256-J3jsBCbC5FpIpdY6cPblh/4m1223tVm1Jk8MpUG2tr4=",
+        "lastModified": 1784593200,
+        "narHash": "sha256-geKd1tOaMjUf1oQanto4qqMCXRfMkQva3MnY+l6gEy0=",
         "owner": "colonelpanic8",
         "repo": "t3code",
-        "rev": "70ca6b18b7549565db1fbfc5b0b8aaefcb79aa1c",
+        "rev": "d0cdd60b7df8e723b47b6252bdff8707dbbdd9d4",
         "type": "github"
       },
       "original": {

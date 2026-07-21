@@ -321,7 +321,8 @@
       flake = false;
     };
 
-    # Theo's client-only Sidebar v2, merged with nightly 20260720.853.
+    # Sidebar v2 plus incremental project completion (t3code#4214),
+    # merged with nightly 20260720.859.
     t3code-sidebar-nightly = {
       url = "github:colonelpanic8/t3code/sidebar-v2-nightly-20260720";
       flake = false;
