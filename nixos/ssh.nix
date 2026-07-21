@@ -29,6 +29,11 @@
   };
 
   programs.ssh = {
+    # OpenSSH rejects the systemd proxy snippet when the Nix store is mounted
+    # with remapped ownership (as on the shared dotfiles hosts), preventing all
+    # ordinary SSH commands before host matching even begins. We do not use
+    # systemd-ssh-proxy; direct DNS/Tailscale hostnames cover the fleet.
+    systemd-ssh-proxy.enable = false;
     forwardX11 = false;
     setXAuthLocation = true;
     knownHosts = {
