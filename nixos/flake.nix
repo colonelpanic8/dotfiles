@@ -316,6 +316,11 @@
       };
     };
 
+    ccusage-fleet = {
+      url = "github:Open330/ccusage-fleet/v0.3.0";
+      flake = false;
+    };
+
     # Theo's client-only Sidebar v2, merged with nightly 20260720.853.
     t3code-sidebar-nightly = {
       url = "github:colonelpanic8/t3code/sidebar-v2-nightly-20260720";

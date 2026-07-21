@@ -54,6 +54,11 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
+    ccusage-fleet = {
+      url = "github:Open330/ccusage-fleet/v0.3.0";
+      flake = false;
+    };
+
     keepbook = {
       url = "github:colonelpanic8/keepbook";
       inputs.nixpkgs.follows = "nixpkgs";

@@ -308,7 +308,13 @@ in {
     ];
   };
 
-  xdg.configFile = xdgConfigLinks;
+  xdg.configFile =
+    xdgConfigLinks
+    // {
+      "ccusage-fleet/config.json".text = import ../../nix-shared/ccusage-fleet-config.nix {
+        localHost = "mac-demarco-mini";
+      };
+    };
 
   home.stateVersion = "24.05";
 }

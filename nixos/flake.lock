@@ -79,6 +79,23 @@
         "type": "github"
       }
     },
+    "ccusage-fleet": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1784112850,
+        "narHash": "sha256-wdS2ojdHbyL4IVc8NYoMeckZ5B/xq08XKS/ViKAebxU=",
+        "owner": "Open330",
+        "repo": "ccusage-fleet",
+        "rev": "09bdeebc8316dcdadc8daaabe92d19649200d6da",
+        "type": "github"
+      },
+      "original": {
+        "owner": "Open330",
+        "ref": "v0.3.0",
+        "repo": "ccusage-fleet",
+        "type": "github"
+      }
+    },
     "chrome-favicon-dbus": {
       "inputs": {
         "nixpkgs": [
@@ -2109,6 +2126,7 @@
       "inputs": {
         "agenix": "agenix",
         "aquamarine": "aquamarine",
+        "ccusage-fleet": "ccusage-fleet",
         "chrome-favicon-dbus": "chrome-favicon-dbus",
         "claude-code-nix": "claude-code-nix",
         "claude-desktop": "claude-desktop",

@@ -1,0 +1,11 @@
+diff --git a/src/runner.js b/src/runner.js
+index 3d67f32..e27cab2 100644
+--- a/src/runner.js
++++ b/src/runner.js
+@@ -31,6 +31,7 @@ export function buildHostCommand(host, settings) {
+   const remoteCommand = [
+     `if command -v npx >/dev/null 2>&1; then exec ${ccusageCommand};`,
++    `elif command -v nix >/dev/null 2>&1; then exec nix shell nixpkgs#nodejs --command ${ccusageCommand};`,
+     `else exec "\${SHELL:-/bin/sh}" -lic ${shellQuote(ccusageCommand)}; fi`,
+   ].join(' ');
+   const args = [

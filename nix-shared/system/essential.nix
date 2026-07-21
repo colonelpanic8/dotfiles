@@ -29,6 +29,9 @@
         CARGO_BUILD_JOBS = "1";
       };
   });
+  ccusage-fleet = pkgs.callPackage ../packages/ccusage-fleet.nix {
+    src = inputs.ccusage-fleet;
+  };
   gmcli = inputPackageOrNull "gmcli" "default";
   keepbook = inputs.keepbook.packages.${system}.keepbook.overrideAttrs (_: {
     # Upstream checks currently depend on TS artifacts that are not built in Nix.
@@ -43,6 +46,7 @@
       cachix
       bubblewrap
       cmake
+      ccusage-fleet
       dex
       direnv
       fd
@@ -66,6 +70,7 @@
       lsof
       magic-wormhole-rs
       ncdu
+      nodejs
       fastfetch
       neovim
       nix-index
