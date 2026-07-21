@@ -190,16 +190,16 @@
         "nixpkgs": "nixpkgs"
       },
       "locked": {
-        "lastModified": 1784611612,
-        "narHash": "sha256-CbkooUU2ndf6G7rIua/8iD4w2ztvG9qWAipKK75aO8Y=",
+        "lastModified": 1784617543,
+        "narHash": "sha256-x5z/L4sVHnbwdDcegsEnE0Vdno8573/K28F7rbBoqRg=",
         "owner": "colonelpanic8",
         "repo": "codex-desktop-linux",
-        "rev": "f3d99e2c05840ae1f7b7f76481ad82d8e47b55fd",
+        "rev": "c6b60474f3123fc9c013d3252ad41abdb447b1b9",
         "type": "github"
       },
       "original": {
         "owner": "colonelpanic8",
-        "ref": "codex/fix-linux-settings-icon-map",
+        "ref": "codex/limit-linux-recursive-watches",
         "repo": "codex-desktop-linux",
         "type": "github"
       }

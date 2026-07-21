@@ -40,8 +40,17 @@
   in
     self';
   codexDesktopLinuxPackage = let
+    shallowRepositoryWatchesFeature = "shallow-repository-watches";
+    supportsShallowRepositoryWatches = builtins.pathExists (
+      "${inputs.codex-desktop-linux}/linux-features/${shallowRepositoryWatchesFeature}/feature.json"
+    );
     package =
-      codexDesktopLinux.packages.${pkgs.stdenv.hostPlatform.system}.codex-desktop-computer-use-ui-remote-mobile-control;
+      codexDesktopLinux.packages.${pkgs.stdenv.hostPlatform.system}.codex-desktop.override {
+        enableComputerUseUi = true;
+        linuxFeatureIds =
+          ["remote-mobile-control"]
+          ++ lib.optional supportsShallowRepositoryWatches shallowRepositoryWatchesFeature;
+      };
     gsettingsSchemaDataDirs = lib.concatMapStringsSep ":" (pkg:
       lib.removeSuffix "/glib-2.0/schemas" (pkgs.glib.getSchemaPath pkg)) (with pkgs; [
       gsettings-desktop-schemas

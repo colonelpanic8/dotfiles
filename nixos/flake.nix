@@ -305,7 +305,7 @@
     };
 
     codex-desktop-linux = {
-      url = "github:colonelpanic8/codex-desktop-linux/codex/fix-linux-settings-icon-map";
+      url = "github:colonelpanic8/codex-desktop-linux/codex/limit-linux-recursive-watches";
     };
 
     claude-code-nix = {
