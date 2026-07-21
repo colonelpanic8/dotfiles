@@ -55,6 +55,7 @@
     ./syncthing.nix
     ./syncthing-private-vault.nix
     ./taffybar.nix
+    ./t3code-server.nix
     ./tailscale.nix
     ./kokoro.nix
     ./users.nix
