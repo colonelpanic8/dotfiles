@@ -121,6 +121,7 @@
         git
         just
         tmux
+        btop
         htop
         nodePackages.prettier
         nodejs

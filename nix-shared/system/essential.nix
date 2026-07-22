@@ -43,6 +43,7 @@
       bento4
       bind
       binutils
+      btop
       cachix
       bubblewrap
       cmake

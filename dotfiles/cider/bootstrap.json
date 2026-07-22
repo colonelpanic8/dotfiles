@@ -59,6 +59,7 @@
     "binutils",
     "brew-cask",
     "boot-clj",
+    "btop",
     "cabal-install",
     "cmake",
     "coreutils",

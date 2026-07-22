@@ -249,6 +249,7 @@ in
       lsof
       strace
       tmux
+      btop
       htop
       tree
       unzip
