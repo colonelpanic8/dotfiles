@@ -1,9 +1,50 @@
 ---
 name: refresh-t3code-pr-stack
-description: "Refresh Ivan's maintained T3 Code pull requests and personal Nix patch stack: discover and automatically incorporate newly created Ivan-authored PRs, inspect and address review feedback, rebase writable branches onto upstream main, push safely, update the t3code-upstream lock, recompute hashes, regenerate compatibility patches, build, activate, and commit the result. Use when asked to update, rebase, repair, synchronize, or maintain all T3 Code PRs or the patched T3 Code installation."
+description: "Refresh Ivan's maintained T3 Code pull requests and personal Nix patch stack: discover and automatically incorporate newly created Ivan-authored PRs, inspect and address review feedback, rebase writable branches onto the latest live upstream main, minimize carried patches, push safely, update the t3code-upstream lock, recompute hashes, regenerate compatibility patches only when necessary, build, activate, and commit the result. Use when asked to update, rebase, repair, synchronize, or maintain all T3 Code PRs or the patched T3 Code installation."
 ---
 
 # Refresh the T3 Code PR Stack
+
+## Read the contribution rules first
+
+Before inventory, API queries, branch work, or any other task action, read the
+T3 Code repository-root `AGENTS.md` and `CONTRIBUTING.md` completely. Apply the
+contribution guide to every maintained PR: keep proposals focused, avoid
+unrelated fixes, and require current before/after images for UI changes or a
+short video for motion, timing, transition, and interaction changes.
+
+## Parallelize independent work
+
+Parallel agent work is the default for this workflow. At the beginning of the
+refresh, split the work into independent tracks and keep the available agent
+slots occupied whenever useful work can proceed concurrently. Do not make one
+agent serially inspect, repair, and capture every PR when those tasks can be
+separated safely.
+
+Use distinct subagents for as many of these tracks as the inventory supports:
+
+- owned-PR and carried-patch discovery;
+- complete review-thread, discussion-comment, and CI/check inventory;
+- repair and validation of different writable PR branches in disjoint T3 Code
+  worktrees;
+- compatibility-patch reconstruction or independent semantic verification;
+- UI evidence planning and capture for different PRs or interaction groups.
+
+Every subagent must read the repository-root `AGENTS.md` and `CONTRIBUTING.md`
+before acting. Give each agent a bounded assignment with exclusive branch,
+worktree, file, and artifact ownership; remind it that other agents are working
+concurrently and it must not revert their changes. Have inventory agents return
+structured evidence, and have media agents save clearly named screenshots or
+videos in disjoint temporary artifact directories. Use an agent-owned isolated
+desktop/browser for application capture unless the task specifically requires
+the user's logged-in browser state.
+
+The primary agent remains responsible for reviewing and integrating all
+results. Serialize operations that share state: force-pushes to the same
+branch, edits to the same manifest or compatibility file, final Nix builds and
+activation, dotfiles commits, and pushes. Re-query remote heads and comments
+after parallel work completes because another agent or review bot may have
+advanced them during the refresh.
 
 Synchronize two related inventories without conflating them:
 
@@ -23,9 +64,43 @@ A PR being closed does not mean its feature should be removed. A PR being merged
 - Preserve dirty T3 Code worktrees and unrelated dotfiles index entries. Do not stash, reset, clean, or rewrite them.
 - Detect concurrent edits by rechecking status and relevant file OIDs before each mutation phase.
 
+## Keep main current and minimize carried patches
+
+Treat the live `origin/main` head as an invariant, not a one-time starting
+point. Fetch it before inventory and record its OID. Before each branch rewrite,
+stack generation, build, activation, and final commit, compare against the live
+remote main head and fetch again if it moved. Every writable PR must be rebased
+onto that exact current main OID. If main advances during the refresh, invalidate
+affected branch bases, integration results, hashes, tests, and media; rebase and
+regenerate them before calling the refresh complete.
+
+To the extent possible, avoid carrying additional patches and eliminate
+existing ones when the exact pinned upstream source makes them unnecessary.
+Treat every PR diff, exclusion, audit binding, and local compatibility patch as
+temporary debt:
+
+- Advance upstream first, then rebase writable PRs so upstream-absorbed hunks
+  disappear from their cumulative diffs.
+- Remove a carried patch when the exact pin contains its complete intended
+  behavior. When it contains only part, recompute the remaining unique delta
+  and use the smallest exclusion and compatibility machinery that preserves all
+  unabsorbed desired behavior.
+- Prefer an unmodified raw PR diff. Add an exclusion or local compatibility
+  patch only when the ordered raw diffs cannot compose semantically, and use
+  the smallest sound file/hunk coverage.
+- Delete obsolete exclusions, audit bindings, compatibility files, and manifest
+  plumbing as soon as the stack no longer needs them. Do not retain machinery
+  merely for historical continuity.
+
+Do not simplify the stack by silently dropping desired behavior. Keep a closed
+unmerged or external patch until the exact pin contains its intent or the user
+explicitly says to drop it.
+
 ## 1. Build an inventory before changing anything
 
-Read the applicable `AGENTS.md` files, verify `gh auth status`, fetch `origin main` and `fork`, and inspect all T3 Code worktrees.
+Read the applicable `AGENTS.md` files, verify `gh auth status`, fetch the live
+`origin/main` and `fork`, record the fetched main OID, and inspect all T3 Code
+worktrees.
 
 Build a table with one row per relevant PR containing:
 
@@ -67,7 +142,7 @@ For each branch:
 
 1. Record the remote head OID for an exact force-with-lease guard.
 2. Locate its attached worktree. Use it only if clean. If no worktree owns the branch, create a project-local isolated worktree. If its existing worktree is dirty, do not touch it; report that branch as blocked while continuing safe work elsewhere.
-3. Rebase onto current `origin/main`.
+3. Fetch and verify the live remote main head, then rebase onto that exact OID.
 4. Resolve conflicts according to the standalone PR's intent, without importing unrelated personal patches.
 5. Re-read all unresolved review threads against the rebased code.
 6. Implement every actionable correctness, reliability, test, and maintainability fix. Evaluate bot comments critically; do not blindly apply contradictory or invalid advice.
@@ -78,6 +153,22 @@ For each branch:
 11. Re-query the PR head and checks. Reply to or resolve review threads only after the fix is published and verified.
 
 Do not force-push when the remote head changed unexpectedly. Fetch, inspect the new commits, and reconcile them first.
+
+### Close the CI loop for every writable PR
+
+CI is implementation work, not merely inventory. After every push, query all
+required and advisory checks and wait for the current head's checks to reach a
+terminal state. For each failure, inspect the failed job annotations and logs
+with `gh pr checks`, `gh run view`, and `gh run view --log-failed` as
+appropriate. Reproduce branch-caused failures locally, fix the underlying code,
+tests, generated files, formatting, or configuration, rerun the repository
+checks, push, and repeat until the PR has no actionable failing checks.
+
+Do not treat a retry as a fix without evidence that the failure is flaky or
+external. If a check is blocked by upstream infrastructure, permissions, or an
+unrelated base-branch failure, preserve the evidence, report the exact check and
+run URL, and continue independent work. Do not call a maintained PR clean while
+its current head has an unexplained failure or a still-running required check.
 
 ## 3. Incorporate every newly discovered owned PR
 
@@ -104,6 +195,13 @@ nix flake update t3code-upstream
 ```
 
 Compare the new locked revision with each merged carried PR. Remove a merged patch only when its changes are present in that exact locked source. Retain closed-unmerged and external desired patches.
+
+Also compare every carried patch with the exact new locked source for full or
+partial absorption, regardless of the PR's GitHub state. Rebase writable PRs
+again if needed and remove fully redundant patches. Recompute the smallest
+compatibility and exclusion coverage that preserves only the unabsorbed
+behavior. Prefer no local compatibility patch whenever the current raw diffs
+now compose cleanly.
 
 Update the patched source name/version date when appropriate. Do not update unrelated flake inputs.
 
@@ -149,7 +247,38 @@ Build the final patched source and package. If `pnpmDeps` changes, let Nix repor
 
 Never bulk-replace hashes without matching each error to its derivation.
 
-## 8. Validate and activate the complete stack
+## 8. Capture and attach current contribution evidence
+
+After writable heads and compatibility merges are stable, assign media agents
+to every PR with visible UI or interaction changes. A combined personal-stack
+build may be used only when it contains the exact recorded PR heads and the
+capture isolates the target PR's behavior without attributing another patch's
+entry point or UI to it.
+
+For each applicable PR:
+
+1. Record the PR head, upstream base, and combined integration/package OID in a
+   small artifact manifest.
+2. Use disposable seed projects and non-sensitive data in an agent-owned
+   isolated desktop/browser.
+3. Capture clear before/after stills for static UI changes and a short video for
+   motion, keyboard interaction, focus, timing, or navigation behavior.
+4. Dismiss unrelated notifications and inspect the final artifact for clarity,
+   correct attribution, and accidental personal information.
+5. Save files in a disjoint temporary directory named for the PR, then attach
+   the selected artifacts to its GitHub description or conversation and update
+   the UI/verification text.
+6. Re-query the PR and upstream heads immediately before and after capture. If
+   either relevant head moved, invalidate the stale artifact, reconcile the new
+   code, and recapture before publishing.
+
+Use the logged-in browser only for the attachment step when required; keep
+application setup and capture isolated. Do not claim that capture was attempted
+when a usable artifact exists locally, and do not call a UI PR contribution-
+ready while its required current media is missing without reporting the exact
+blocker.
+
+## 9. Validate and activate the complete stack
 
 From `/srv/dotfiles/nixos`:
 
@@ -160,10 +289,15 @@ From `/srv/dotfiles/nixos`:
 5. Run `just switch` from the primary checkout only.
 6. Verify the installed `t3` store path and, where enabled, the active `t3code-headless.service` `ExecStart` path.
 7. Re-query PR heads, unresolved threads, and required CI checks to catch races during the refresh.
+8. Re-query the live remote main head, fetch every current writable PR head, and
+   prove that the recorded live main OID is both its merge base and an ancestor;
+   do not rely only on GitHub's `baseRefOid`. If live main moved or a head does
+   not descend from that exact OID, invalidate affected validation and return to
+   branch rebasing before committing.
 
 If a branch remains blocked by dirty state, external ownership, a genuine design decision, or failing upstream infrastructure, preserve all successful independent work and report the exact blocker. Do not mark the overall refresh clean while a maintained PR or patch is silently stale.
 
-## 9. Commit and report
+## 10. Commit and report
 
 Review the entire dotfiles worktree and define one atomic patch-stack refresh commit unless independent changes clearly require more. Use explicit paths so pre-existing staged changes do not leak into the commit. Push the current default branch after validation.
 
