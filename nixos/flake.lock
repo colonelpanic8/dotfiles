@@ -2443,11 +2443,11 @@
     "t3code-upstream": {
       "flake": false,
       "locked": {
-        "lastModified": 1784716594,
-        "narHash": "sha256-MRcUURTvXwGpB/5xiLDBX3Iz47WT2mJPWCJhrnpOYLk=",
+        "lastModified": 1784736667,
+        "narHash": "sha256-UKWjYTlYxbanBUzhILsyXZEEfZFJHQt2XX305BFHG/I=",
         "owner": "pingdotgg",
         "repo": "t3code",
-        "rev": "32c6012dabdbd0eb178b25ea4225d889ec8f6475",
+        "rev": "9a0a07167f0623c3a7db0ffeff2e3939760309df",
         "type": "github"
       },
       "original": {

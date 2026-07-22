@@ -6,20 +6,35 @@
     "apps/web/src/components/CommandPalette.tsx"
   ];
 
-  # PR #4257 only changes the three shared command-palette files, so its
+  # PR #4257 (head 83ce1aa790b2) only changes the three shared command-palette files, so its
   # complete diff is represented by the compatibility patch below. Keep its
   # live source and hash here so a bump still audits the PR itself.
   t3codePr4257 = final.fetchurl {
     url = "https://patch-diff.githubusercontent.com/raw/pingdotgg/t3code/pull/4257.diff";
-    hash = "sha256-gdSraYeSsVMdLfQoDo0jVTv+zA/d6yaBbww4h+Dh/W8=";
+    hash = "sha256-vro5lw/A5mka5pOKHKz1mNUNkifBUHBwdVUtXC6mrLA=";
   };
 
-  # PR #4277's Sidebar V2 hunks overlap the carried command-palette PRs.
+  # PR #4258 (head ac10e74ae628) has command-palette hunks represented by
+  # the compatibility patch below; audit its complete cumulative diff too.
+  t3codePr4258 = final.fetchurl {
+    url = "https://patch-diff.githubusercontent.com/raw/pingdotgg/t3code/pull/4258.diff";
+    hash = "sha256-nQd8EUkV9dFR1HVjWrT1WErohYcsitBHmrvAawSoiRw=";
+  };
+
+  # PR #4263 (head 9fb451def031) likewise has command-palette hunks in the
+  # compatibility patch while its remaining files use fetchpatch below.
+  t3codePr4263 = final.fetchurl {
+    url = "https://patch-diff.githubusercontent.com/raw/pingdotgg/t3code/pull/4263.diff";
+    hash = "sha256-gEDJ4qFt+C4oLRdun9sS4NbjNkIKBUV3q/RQTJI/+XY=";
+  };
+
+  # PR #4277 (head a8f8d9fdb24d) overlaps Sidebar V2 and the combined
+  # keybinding tests after #4263/#4270/#4271.
   # Keep the live cumulative diff auditable while applying that file through
   # the compatibility patch below.
   t3codePr4277 = final.fetchurl {
     url = "https://patch-diff.githubusercontent.com/raw/pingdotgg/t3code/pull/4277.diff";
-    hash = "sha256-IScOrJEV40lDaYnoVTWLkyhBe+OwVUU1KdrFyBduuxA=";
+    hash = "sha256-V9+HfWPEYI7Uwlf4yDn+WatBtIG8yl648GQw21WPIQ0=";
   };
 
   # Upstream is pinned after Theo's Threads view (#4026) merged. Keep
@@ -30,18 +45,18 @@
       url = "https://patch-diff.githubusercontent.com/raw/pingdotgg/t3code/pull/3984.diff";
       hash = "sha256-b3XsDbyKcZ3ANVT2apkOQ5lVRWeiXHLvZ3q9Yb2dFU8=";
     })
-    # Searchable new-thread project picker: t3code#4259 (head af5decc0526a).
+    # Searchable new-thread project picker: t3code#4259 (head 064fa4bb9fc2).
     (final.fetchurl {
       url = "https://patch-diff.githubusercontent.com/raw/pingdotgg/t3code/pull/4259.diff";
-      hash = "sha256-2IY/3RSNRkOdNb33CWQ0miC1CS5ccili0OyHnJ+7mVI=";
+      hash = "sha256-8Vd/EPWMocMXANk0Rysw0zYqQgOxmMhJ3e26rs0x3cU=";
     })
-    # Reuse the command-palette new-thread picker for Ctrl+N: t3code#4263 (head efc01388c159).
+    # Reuse the command-palette new-thread picker for Ctrl+N: t3code#4263 (head 9fb451def031).
     (final.fetchpatch {
       url = "https://patch-diff.githubusercontent.com/raw/pingdotgg/t3code/pull/4263.diff";
       excludes = commandPaletteOverlapFiles;
-      hash = "sha256-Sox1oNf6IxwzHaVvtlBqEyyZCq+r2qz8OBL4P6SMX5I=";
+      hash = "sha256-Zs0GA+MfDqUibcKrd4ZyNoOGsa63akka1fqn3b6KZqU=";
     })
-    # Configurable add-project shortcut: t3code#4258 (head 51e185e196be).
+    # Configurable add-project shortcut: t3code#4258 (head ac10e74ae628).
     (final.fetchpatch {
       url = "https://patch-diff.githubusercontent.com/raw/pingdotgg/t3code/pull/4258.diff";
       excludes = commandPaletteOverlapFiles;
@@ -54,31 +69,39 @@
       url = "https://patch-diff.githubusercontent.com/raw/pingdotgg/t3code/pull/4260.diff";
       hash = "sha256-fiUuD7OG2mgPa7jIIADMIaV4vkKXPZY9kOUD/p9Xxhg=";
     })
-    # Emacs/readline editing mode: t3code#4270 (head 195ff526dd72).
+    # Emacs/readline editing mode: t3code#4270 (head 4189d3ca44e6).
     (final.fetchurl {
       url = "https://patch-diff.githubusercontent.com/raw/pingdotgg/t3code/pull/4270.diff";
-      hash = "sha256-0zrOswuZt7DP/1gWChy+TVmRysvxkm+uWoazwFFrLJ0=";
+      hash = "sha256-nDHECUPDxrV84fM5WqXBYYFAqTQWcyMGB6GYZ93XPhU=";
     })
     # Keyboard-select composer controls + hold-modifier hints: t3code#4271
-    # (head 51135b2cc). Raw diff applies with fuzz after #4258/#4260.
+    # (head d0c50d2c7390). Raw diff applies with fuzz after #4258/#4260.
     (final.fetchurl {
       url = "https://patch-diff.githubusercontent.com/raw/pingdotgg/t3code/pull/4271.diff";
-      hash = "sha256-LlfGy4Z5TjDYvGDS6CJjXy9+/qqYywnKftdCN04brxM=";
+      hash = "sha256-xkv4DNBZs7EcG9OCnfk1PHBGKIB7ncDV68h0ymstXzY=";
     })
-    # Settle the open thread with Mod+Shift+Enter: t3code#4277 (head 4ac33edaf00f).
+    # Settle the open thread with Mod+Shift+Enter: t3code#4277 (head a8f8d9fdb24d).
     (final.fetchpatch {
       url = "https://patch-diff.githubusercontent.com/raw/pingdotgg/t3code/pull/4277.diff";
-      excludes = ["apps/web/src/components/SidebarV2.tsx"];
-      hash = "sha256-emcNdpyE4hGdM1H5cqrCy7S2ShzK9X8EJFe5jYjDEL0=";
+      excludes = [
+        "apps/web/src/components/SidebarV2.tsx"
+        "apps/web/src/keybindings.test.ts"
+      ];
+      hash = "sha256-5ZxxCBh5KQWxYS7EPkPvnZ4SNadm5jXcv0W9IZpTq7E=";
     })
-    # Sidebar V2 combination for #4277 with #4257/#4258/#4263.
+    # Sidebar V2 and keybinding-test combination for #4277 with
+    # #4263/#4270/#4271.
     ./patches/t3code-settle-thread-keybinding.patch
   ];
 
   t3codePatchedSource = final.applyPatches {
     name = "t3code-patched-main-20260722";
     src = inputs.t3code-upstream;
-    patches = builtins.seq t3codePr4257 (builtins.seq t3codePr4277 t3codePatches);
+    patches =
+      builtins.seq t3codePr4257
+        (builtins.seq t3codePr4258
+          (builtins.seq t3codePr4263
+            (builtins.seq t3codePr4277 t3codePatches)));
   };
 
   t3codeUnwrapped = (prev.t3code.unwrapped.override {pnpm_10 = final.pnpm_11;}).overrideAttrs (
