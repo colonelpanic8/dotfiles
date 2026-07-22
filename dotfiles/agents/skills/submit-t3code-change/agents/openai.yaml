@@ -1,0 +1,4 @@
+interface:
+  display_name: "T3 Code Change Submission"
+  short_description: "Submit T3 Code changes and patch the Nix build"
+  default_prompt: "Use $submit-t3code-change to implement this T3 Code change, open an upstream PR, and add it to my patched Nix build."
