@@ -6,6 +6,7 @@
   ...
 }: let
   gitSyncServicePath = lib.makeBinPath [pkgs.coreutils pkgs.git pkgs.openssh];
+  gitSyncToml = pkgs.formats.toml {};
   # AI chat-history sync (Claude Code + Codex) is rolled out machine-by-machine;
   # each new machine needs its existing history merged into the repo first (see
   # github.com/colonelpanic8/claude-history and .../codex-history).
@@ -151,132 +152,112 @@
   };
   backfillGmcliArchive = withGmcliBackupLock "backfill-gmcli-archive" backfillGmcliArchiveUnlocked;
   backupGmcliTelephonyFull = withGmcliBackupLock "backup-gmcli-telephony-full" exportGmcliTelephonyFullArchive;
-  gitSyncRepositoryCondition = pkgs.writeShellScript "git-sync-repository-ready" ''
-    set -euo pipefail
-    directory="''${GIT_SYNC_DIRECTORY:?GIT_SYNC_DIRECTORY is not set}"
-    if ! ${pkgs.git}/bin/git -C "$directory" rev-parse --show-toplevel >/dev/null 2>&1; then
-      echo "Git sync paused: $directory is not a Git repository; initialize its history repository before starting this service" >&2
-      exit 1
-    fi
-  '';
-  mkGitSyncTrayOverrides = icon: {
-    Unit = {
-      StartLimitIntervalSec = 300;
-      StartLimitBurst = 3;
-    };
-    Service = {
-      Environment = lib.mkMerge [
-        ["GIT_SYNC_TRAY=1" "GIT_SYNC_TRAY_ICON=${icon}"]
-        (lib.mkAfter ["PATH=${gitSyncServicePath}"])
-      ];
-      Restart = lib.mkForce "on-failure";
-      RestartSec = 5;
-    };
-  };
-  repoIcons = {
-    org = "${pkgs.papirus-icon-theme}/share/icons/Papirus/64x64/mimetypes/text-org.svg";
-    password-store = "password";
-    # Brand logos from the desktop apps' hicolor theme icons (resolved by
-    # freedesktop name, like "password" above).
-    claude-history = "claude-desktop";
-    codex-history = "codex-desktop";
-    gmcli-archive = "mail-message-new";
-  };
 in {
   environment.systemPackages = [gmcliViewer];
 
-  home-manager.users.imalison = {config, ...}: {
-    services.git-sync = {
-      enable = true;
-      package = pkgs.git-sync-rs;
+  home-manager.users.imalison = {config, ...}: let
+    gitSyncConfig = gitSyncToml.generate "git-sync-rs-config.toml" {
+      defaults = {
+        sync_interval = 500;
+        sync_new_files = true;
+        debounce = 0.5;
+        min_interval = 1.0;
+        initial_sync = true;
+      };
       repositories =
-        {
-          org = {
+        [
+          {
+            name = "org";
             path = config.home.homeDirectory + "/org";
             uri = "git@github.com:IvanMalison/org.git";
+            watch = true;
             interval = 30;
-          };
-          password-store = {
+          }
+          {
+            name = "password-store";
             path = config.home.homeDirectory + "/.password-store";
             uri = "git@github.com:IvanMalison/.password-store.git";
-          };
-          gmcli-archive = {
+            watch = true;
+          }
+          {
+            name = "gmcli-archive";
             path = gmcliArchiveRoot;
             uri = "git@github.com:colonelpanic8/gmcli-archive.git";
+            watch = true;
             interval = 300;
-          };
-        }
-        // lib.optionalAttrs syncAiHistory {
-          claude-history = {
+            min_interval = 30.0;
+          }
+        ]
+        ++ lib.optionals syncAiHistory [
+          {
+            name = "claude-history";
             path = config.home.homeDirectory + "/.claude";
             uri = "git@github.com:colonelpanic8/claude-history.git";
+            watch = true;
             interval = 600;
-          };
-          codex-history = {
+            min_interval = 300.0;
+            initial_sync = false;
+            watch_paths = ["projects" "history.jsonl" "plans" "tasks"];
+          }
+          {
+            name = "codex-history";
             path = config.home.homeDirectory + "/.codex";
             uri = "git@github.com:colonelpanic8/codex-history.git";
+            watch = false;
             interval = 600;
-          };
-        };
+            min_interval = 300.0;
+            initial_sync = false;
+            watch_paths = ["sessions" "archived_sessions" "history.jsonl"];
+          }
+        ];
     };
-
-    systemd.user.services = lib.mkMerge [
-      (lib.mapAttrs'
-        (name: _:
-          lib.nameValuePair "git-sync-${name}"
-          (mkGitSyncTrayOverrides (repoIcons.${name} or "git")))
-        config.services.git-sync.repositories)
-      (lib.optionalAttrs syncAiHistory {
-        git-sync-claude-history.Service.ExecCondition = gitSyncRepositoryCondition;
-        # Live sessions append to their transcript on every message; sync
-        # untracked session files and throttle event-driven syncs so an
-        # active session doesn't push once per append. Avoid making a
-        # retryable initial-sync error terminate watch mode; subsequent file
-        # and periodic sync attempts remain active and use git-sync's backoff.
-        git-sync-claude-history.Service.ExecStart =
-          lib.mkForce
-          "${pkgs.git-sync-rs}/bin/git-sync-rs watch --no-initial-sync --new-files true --min-interval 300 --watch-path projects --watch-path history.jsonl --watch-path plans --watch-path tasks";
-        git-sync-codex-history.Service.ExecCondition = gitSyncRepositoryCondition;
-        git-sync-codex-history.Service.ExecStart =
-          lib.mkForce
-          "${pkgs.git-sync-rs}/bin/git-sync-rs watch --no-initial-sync --new-files true --min-interval 300 --watch-path sessions --watch-path archived_sessions --watch-path history.jsonl";
-      })
-      {
-        git-sync-gmcli-archive.Service.ExecStart =
-          lib.mkForce
-          "${pkgs.git-sync-rs}/bin/git-sync-rs -d ${lib.escapeShellArg gmcliArchiveRoot} watch --new-files true --min-interval 30 --interval 300";
-        gmcli-archive-refresh = {
-          Unit = {
-            Description = "Sync Google Messages and refresh the JSONL archive";
-            ConditionPathExists = gmcliSession;
-          };
-          Service = {
-            Type = "oneshot";
-            ExecStart = refreshGmcliArchive;
-            TimeoutStartSec = "20min";
-          };
+  in {
+    systemd.user.services = {
+      git-sync-rs = {
+        Unit = {
+          Description = "Synchronize configured Git repositories";
+          StartLimitIntervalSec = 300;
+          StartLimitBurst = 3;
         };
-        gmcli-archive-backfill = {
-          Unit = {
-            Description = "Deep-backfill Google Messages and refresh the JSONL archive";
-            ConditionPathExists = gmcliSession;
-          };
-          Service = {
-            Type = "oneshot";
-            ExecStart = backfillGmcliArchive;
-            TimeoutStartSec = "3h";
-          };
+        Install.WantedBy = ["default.target"];
+        Service = {
+          Environment = ["GIT_SYNC_TRAY=1" "PATH=${gitSyncServicePath}"];
+          ExecStart = "${pkgs.git-sync-rs}/bin/git-sync-rs --config ${gitSyncConfig} watch";
+          Restart = "on-failure";
+          RestartSec = 5;
         };
-        gmcli-telephony-full-backup = {
-          Unit.Description = "Back up complete Android SMS/MMS history and media";
-          Service = {
-            Type = "oneshot";
-            ExecStart = backupGmcliTelephonyFull;
-            TimeoutStartSec = "3h";
-          };
+      };
+      gmcli-archive-refresh = {
+        Unit = {
+          Description = "Sync Google Messages and refresh the JSONL archive";
+          ConditionPathExists = gmcliSession;
         };
-      }
-    ];
+        Service = {
+          Type = "oneshot";
+          ExecStart = refreshGmcliArchive;
+          TimeoutStartSec = "20min";
+        };
+      };
+      gmcli-archive-backfill = {
+        Unit = {
+          Description = "Deep-backfill Google Messages and refresh the JSONL archive";
+          ConditionPathExists = gmcliSession;
+        };
+        Service = {
+          Type = "oneshot";
+          ExecStart = backfillGmcliArchive;
+          TimeoutStartSec = "3h";
+        };
+      };
+      gmcli-telephony-full-backup = {
+        Unit.Description = "Back up complete Android SMS/MMS history and media";
+        Service = {
+          Type = "oneshot";
+          ExecStart = backupGmcliTelephonyFull;
+          TimeoutStartSec = "3h";
+        };
+      };
+    };
 
     systemd.user.timers.gmcli-archive-refresh = {
       Unit.Description = "Hourly Google Messages JSONL backup";
@@ -309,19 +290,34 @@ in {
     };
   };
 
-  home-manager.users.kat = {config, ...}: {
-    services.git-sync = {
-      enable = true;
-      repositories = {
-        obsidian = {
+  home-manager.users.kat = {config, ...}: let
+    gitSyncConfig = gitSyncToml.generate "kat-git-sync-rs-config.toml" {
+      defaults.sync_interval = 500;
+      repositories = [
+        {
+          name = "obsidian";
           path = config.home.homeDirectory + "/obsidian";
           uri = "git@github.com:katandtonic/obsidian.git";
-        };
-        org = {
+          watch = true;
+        }
+        {
+          name = "org";
           path = config.home.homeDirectory + "/org";
           uri = "ssh://gitea@1896Folsom.duckdns.org:1123/kkathuang/org.git";
+          watch = true;
           interval = 180;
-        };
+        }
+      ];
+    };
+  in {
+    systemd.user.services.git-sync-rs = {
+      Unit.Description = "Synchronize configured Git repositories";
+      Install.WantedBy = ["default.target"];
+      Service = {
+        Environment = ["PATH=${gitSyncServicePath}"];
+        ExecStart = "${pkgs.git-sync-rs}/bin/git-sync-rs --config ${gitSyncConfig} watch";
+        Restart = "on-failure";
+        RestartSec = 5;
       };
     };
   };
