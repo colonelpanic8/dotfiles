@@ -1,0 +1,281 @@
+#!/usr/bin/env zsh
+
+function github_clone {
+  emulate -L zsh
+  setopt errexit nounset pipefail
+
+  local mode="repositories"
+  local initial_query=""
+  local min_query_length="${GITHUB_CLONE_MIN_QUERY_LENGTH:-3}"
+  local debounce="${GITHUB_CLONE_DEBOUNCE:-0.4}"
+  local search_limit="${GITHUB_CLONE_SEARCH_LIMIT:-50}"
+  local owner_repo_limit="${GITHUB_CLONE_OWNER_REPO_LIMIT:-1000}"
+
+  function usage {
+    cat <<'EOF'
+Usage: github_clone [QUERY]
+       github_clone --user [OWNER-QUERY]
+
+Interactively search GitHub and clone the selected repository into ~/Projects
+by default. With --user, first choose a user or organization and then choose
+one of its repositories.
+
+Searches use the account from `gh auth login`; clones honor
+`gh config get git_protocol`.
+
+Environment:
+  GITHUB_CLONE_MIN_QUERY_LENGTH  Minimum live-search length (default: 3)
+  GITHUB_CLONE_DEBOUNCE          Seconds to wait after typing (default: 0.4)
+  GITHUB_CLONE_SEARCH_LIMIT      Live-search result count (default: 50)
+  GITHUB_CLONE_OWNER_REPO_LIMIT  Repositories loaded for an owner (default: 1000)
+  GITHUB_CLONE_TERMINAL          Graphical terminal command (default: $TERMINAL or ghostty)
+  PROJECTS_DIR                   Clone destination root (default: ~/Projects)
+EOF
+  }
+
+  function valid_positive_integer {
+    [[ "$1" == <-> && "$1" -gt 0 ]]
+  }
+
+  function require_configuration {
+    local command_name
+    for command_name in gh fzf clone-project; do
+      if ! command -v "$command_name" >/dev/null 2>&1; then
+        print -u2 -- "github_clone: required command not found: $command_name"
+        return 127
+      fi
+    done
+
+    if ! valid_positive_integer "$min_query_length"; then
+      print -u2 -- "github_clone: GITHUB_CLONE_MIN_QUERY_LENGTH must be a positive integer"
+      return 2
+    fi
+    if ! valid_positive_integer "$search_limit"; then
+      print -u2 -- "github_clone: GITHUB_CLONE_SEARCH_LIMIT must be a positive integer"
+      return 2
+    fi
+    if ! valid_positive_integer "$owner_repo_limit"; then
+      print -u2 -- "github_clone: GITHUB_CLONE_OWNER_REPO_LIMIT must be a positive integer"
+      return 2
+    fi
+    if [[ "$debounce" != <-> && "$debounce" != <->.<-> ]]; then
+      print -u2 -- "github_clone: GITHUB_CLONE_DEBOUNCE must be a non-negative number"
+      return 2
+    fi
+
+    if ! gh auth status >/dev/null 2>&1; then
+      print -u2 -- "github_clone: GitHub CLI is not authenticated; run: gh auth login"
+      return 1
+    fi
+  }
+
+  function search_repositories {
+    local query="${1:-}"
+    (( ${#query} >= min_query_length )) || return 0
+
+    gh search repos \
+      --limit "$search_limit" \
+      --json fullName,description,stargazersCount,language,isPrivate \
+      --jq '.[] | [
+        .fullName,
+        (if .isPrivate then "private" else "public" end),
+        ("★" + (.stargazersCount | tostring)),
+        (.language // ""),
+        (.description // "")
+      ] | @tsv' \
+      -- "$query" 2>/dev/null || true
+  }
+
+  function search_owners {
+    local query="${1:-}"
+    (( ${#query} >= min_query_length )) || return 0
+
+    gh api --method GET search/users \
+      -f "q=$query" \
+      -f "per_page=$search_limit" \
+      --jq '.items[] | [.login, .type] | @tsv' \
+      2>/dev/null || true
+  }
+
+  function list_owner_repositories {
+    local owner="$1"
+
+    gh repo list "$owner" \
+      --limit "$owner_repo_limit" \
+      --json nameWithOwner,description,stargazerCount,primaryLanguage,isPrivate \
+      --jq '.[] | [
+        .nameWithOwner,
+        (if .isPrivate then "private" else "public" end),
+        ("★" + (.stargazerCount | tostring)),
+        (.primaryLanguage.name // ""),
+        (.description // "")
+      ] | @tsv'
+  }
+
+  function command_path {
+    local path
+    path="$(whence -p github_clone 2>/dev/null || true)"
+    if [[ -z "$path" ]]; then
+      path="${functions_source[github_clone]:-}"
+    fi
+    [[ -n "$path" ]] || {
+      print -u2 -- "github_clone: could not locate its executable for fzf reloads"
+      return 1
+    }
+    print -r -- "$path"
+  }
+
+  function launch_in_terminal {
+    local self terminal
+    typeset -a terminal_argv
+
+    self="$(command_path)" || return
+    terminal="${GITHUB_CLONE_TERMINAL:-${TERMINAL:-ghostty}}"
+    terminal_argv=(${(z)terminal})
+    if (( ${#terminal_argv[@]} == 0 )) || ! command -v "${terminal_argv[1]}" >/dev/null 2>&1; then
+      print -u2 -- "github_clone: graphical terminal not found: ${terminal_argv[1]:-$terminal}"
+      return 127
+    fi
+
+    # Give Ghostty launches their own identity so the window manager can treat
+    # this as a compact picker instead of another ordinary terminal.
+    if [[ "${terminal_argv[1]:t}" == "ghostty" ]]; then
+      terminal_argv+=(
+        --gtk-single-instance=false
+        --class=com.mitchellh.ghostty.githubclone
+        '--title=GitHub Clone'
+        --window-width=120
+        --window-height=32
+      )
+    fi
+
+    (
+      GITHUB_CLONE_LAUNCHED=1 \
+        "${terminal_argv[@]}" -e "$self" "$@" >/dev/null 2>&1 &!
+    )
+  }
+
+  function live_search {
+    local search_kind="$1"
+    local prompt="$2"
+    local query="${3:-}"
+    local self reload selection
+
+    self="$(command_path)" || return
+    reload="sleep ${(q)debounce}; ${(q)self} --internal-$search_kind {q}"
+    selection="$(
+      fzf \
+        --disabled \
+        --no-sort \
+        --delimiter=$'\t' \
+        --with-nth=1,2,3,4,5 \
+        --prompt="$prompt" \
+        --header="Type at least $min_query_length characters; GitHub search is debounced" \
+        --query="$query" \
+        --bind="start:reload($reload),change:reload($reload)" \
+        || true
+    )"
+    print -r -- "${selection%%$'\t'*}"
+  }
+
+  function choose_owner_repository {
+    local owner="$1"
+    local selection
+
+    selection="$(
+      list_owner_repositories "$owner" |
+        fzf \
+          --delimiter=$'\t' \
+          --with-nth=1,2,3,4,5 \
+          --prompt="$owner repository> " \
+          --header="Filtering repositories locally" \
+          || true
+    )"
+    print -r -- "${selection%%$'\t'*}"
+  }
+
+  case "${1:-}" in
+    -h|--help)
+      usage
+      return 0
+      ;;
+    --user)
+      mode="owners"
+      shift
+      if [[ "${1:-}" == "-h" || "${1:-}" == "--help" ]]; then
+        usage
+        return 0
+      fi
+      ;;
+    --internal-repositories)
+      shift
+      search_repositories "${1:-}"
+      return
+      ;;
+    --internal-owners)
+      shift
+      search_owners "${1:-}"
+      return
+      ;;
+    --internal-owner-repositories)
+      shift
+      [[ $# -eq 1 ]] || return 2
+      list_owner_repositories "$1"
+      return
+      ;;
+  esac
+
+  if (( $# > 1 )); then
+    usage >&2
+    return 2
+  fi
+  initial_query="${1:-}"
+
+  # Window-manager keybindings have a graphical display but no controlling
+  # terminal. Open the same workflow in a fresh terminal; interactive and SSH
+  # invocations continue in the current terminal.
+  if [[ -z "${GITHUB_CLONE_LAUNCHED:-}" \
+    && ( -n "${WAYLAND_DISPLAY:-}" || -n "${DISPLAY:-}" ) \
+    && ( ! -t 0 || ! -t 1 ) ]]; then
+    if [[ "$mode" == "owners" ]]; then
+      launch_in_terminal --user "$initial_query"
+    else
+      launch_in_terminal "$initial_query"
+    fi
+    return
+  fi
+
+  require_configuration || return
+
+  local repository owner
+  if [[ "$mode" == "owners" ]]; then
+    owner="$(live_search owners 'GitHub owner> ' "$initial_query")"
+    [[ -n "$owner" ]] || return 0
+    repository="$(choose_owner_repository "$owner")"
+  else
+    repository="$(live_search repositories 'GitHub repository> ' "$initial_query")"
+  fi
+
+  [[ -n "$repository" ]] || return 0
+
+  local clone_status=0
+  if clone-project --github "$repository"; then
+    clone_status=0
+  else
+    clone_status=$?
+  fi
+
+  if [[ -n "${GITHUB_CLONE_LAUNCHED:-}" ]] && command -v notify-send >/dev/null 2>&1; then
+    local destination="${PROJECTS_DIR:-$HOME/Projects}/${repository:t}"
+    if (( clone_status == 0 )); then
+      notify-send --app-name="GitHub clone" "Clone complete" "$destination" || true
+    else
+      notify-send --app-name="GitHub clone" --urgency=critical \
+        "Clone failed" "$repository was not cloned" || true
+    fi
+  fi
+
+  return "$clone_status"
+}
+
+github_clone "$@"

@@ -4,15 +4,20 @@ set -euo pipefail
 
 projects_dir="${PROJECTS_DIR:-$HOME/Projects}"
 launcher_mode=false
+github_mode=false
 notification_id=""
 last_progress=""
 
 usage() {
   cat <<'EOF'
-Usage: clone-project [REPOSITORY [DIRECTORY]]
+Usage: clone-project [--github] [REPOSITORY [DIRECTORY]]
 
 Clone a git repository into ~/Projects. With no arguments, prompt for the
 repository in rofi. DIRECTORY, when provided, must be a single directory name.
+
+With --github, REPOSITORY is an OWNER/REPO name and cloning is delegated to
+`gh repo clone`, honoring the authenticated GitHub CLI account and configured
+git protocol.
 
 Set PROJECTS_DIR to use a different project root.
 EOF
@@ -126,9 +131,18 @@ case "${1:-}" in
     usage
     exit 0
     ;;
+  --github)
+    github_mode=true
+    shift
+    ;;
 esac
 
 if (( $# == 0 )); then
+  if $github_mode; then
+    usage >&2
+    exit 2
+  fi
+
   launcher_mode=true
 
   if ! command -v rofi >/dev/null 2>&1; then
@@ -192,6 +206,18 @@ if ! mkdir -p -- "$projects_dir"; then
   exit 1
 fi
 
+clone_repository() {
+  if $github_mode; then
+    if ! command -v gh >/dev/null 2>&1; then
+      printf 'clone-project: gh is required with --github\n' >&2
+      return 127
+    fi
+    gh repo clone "$repository" "$project_name" -- --recurse-submodules --progress
+  else
+    git clone --recurse-submodules --progress -- "$repository" "$project_name"
+  fi
+}
+
 if $launcher_mode; then
   clone_log="$(mktemp "${TMPDIR:-/tmp}/clone-project.XXXXXX")"
   clone_pid=""
@@ -211,7 +237,7 @@ if $launcher_mode; then
 
   (
     cd -- "$projects_dir"
-    git clone --recurse-submodules --progress -- "$repository" "$project_name"
+    clone_repository
   ) >"$clone_log" 2>&1 &
   clone_pid=$!
 
@@ -238,5 +264,5 @@ if $launcher_mode; then
 fi
 
 cd -- "$projects_dir"
-git clone --recurse-submodules --progress -- "$repository" "$project_name"
+clone_repository
 printf 'Cloned to %s\n' "$destination"

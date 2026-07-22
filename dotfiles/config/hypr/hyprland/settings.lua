@@ -390,6 +390,14 @@ function M.setup(ctx)
     hl.window_rule({ match = { class = "^()$", title = "^()$" }, float = true })
     hl.window_rule({ match = { title = "^(Picture-in-Picture)$" }, float = true })
     hl.window_rule({
+      name = "github-clone-picker",
+      match = { class = "^(com\\.mitchellh\\.ghostty\\.githubclone)$" },
+      float = true,
+      center = true,
+      focus_on_activate = true,
+      stay_focused = true,
+    })
+    hl.window_rule({
       name = "rofi-glass-window",
       match = { class = "^(rofi)$" },
       float = true,

@@ -16,6 +16,14 @@
     path = ../dotfiles/lib;
     name = "dotfiles-zsh-lib";
   };
+  githubClone = pkgs.writeShellScriptBin "github_clone" ''
+    export PATH="${zshLibDir}/bin:$PATH"
+    exec ${pkgs.zsh}/bin/zsh ${zshLibDir}/functions/github_clone "$@"
+  '';
+  githubUserClone = pkgs.writeShellScriptBin "github_user_clone" ''
+    export PATH="${githubClone}/bin:${zshLibDir}/bin:$PATH"
+    exec ${pkgs.zsh}/bin/zsh ${zshLibDir}/functions/github_user_clone "$@"
+  '';
   machineFilenames = builtins.attrNames (builtins.readDir ./machines);
   machineNameFromFilename = filename: builtins.head (builtins.split "\\." filename);
   machineNames = map machineNameFromFilename machineFilenames;
@@ -59,6 +67,12 @@ in
     };
 
     config = {
+      environment.systemPackages = [
+        pkgs.fzf
+        githubClone
+        githubUserClone
+      ];
+
       # Shell configuration
       programs.zsh = {
         enable = true;

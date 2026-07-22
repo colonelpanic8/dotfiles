@@ -1,0 +1,7 @@
+#!/usr/bin/env zsh
+
+function github_user_clone {
+  github_clone --user "$@"
+}
+
+github_user_clone "$@"

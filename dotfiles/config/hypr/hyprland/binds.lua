@@ -105,6 +105,8 @@ function M.setup(ctx)
     bind(hyper .. " + X", exec("hypr_rofi_action"), desc("Open Hyprland action menu"))
     bind(hyper .. " + I", exec("rofi_select_input.hs"), desc("Open input selection menu"))
     bind(hyper .. " + Y", exec("rofi_agentic_skill"), desc("Open agentic skill menu"))
+    bind(hyper .. " + F", exec("github_clone"), desc("Find a GitHub repository to clone"))
+    bind(hyper .. " + SHIFT + F", exec("github_user_clone"), desc("Find a GitHub owner and repository to clone"))
   end
 
   local function setup_external_command_bindings()

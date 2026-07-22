@@ -14,3 +14,10 @@
 - This repository uses Home Manager out-of-store links. Activating from a
   disposable checkout makes live dotfiles point into that checkout and breaks
   them when it is removed.
+
+## Avoid `nixos/imalison.nix`
+
+- Do not add or modify anything in `nixos/imalison.nix` unless the user
+  explicitly asks for the change to be made there.
+- Put packages and configuration intended for every user in the appropriate
+  shared NixOS or Home Manager module instead.
