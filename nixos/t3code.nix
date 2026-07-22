@@ -1,12 +1,8 @@
 # T3 Code source, patch stack, and package overlay.
 {inputs}: final: prev: let
-  # Keep this ordered: later patches may build on earlier UI work.
+  # Upstream is pinned after Theo's Threads view (#4026) merged. Keep
+  # the remaining patches ordered: later patches may build on earlier UI work.
   t3codePatches = [
-    # Theo's Threads view: t3code#4026 (head cb5791516658).
-    (final.fetchurl {
-      url = "https://patch-diff.githubusercontent.com/raw/pingdotgg/t3code/pull/4026.diff";
-      hash = "sha256-adF9VNSkD0At9cCj9qRfYlYXYpM4cXfyGxwzRYKr5dU=";
-    })
     # Render generated images inline: t3code#3984 (head 47cff5ac5538).
     (final.fetchurl {
       url = "https://patch-diff.githubusercontent.com/raw/pingdotgg/t3code/pull/3984.diff";
