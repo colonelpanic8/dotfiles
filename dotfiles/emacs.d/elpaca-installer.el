@@ -160,7 +160,10 @@
       (delete-directory repo 'recursive)))
   (when (elpaca-installer--build-stale-p build)
     (delete-directory build 'recursive))
-  (add-to-list 'load-path repo)
+  ;; Prefer Elpaca's transactional build.  The source checkout contains the
+  ;; bootstrap bytecode generated on first install; after an update that
+  ;; bytecode may describe an older Elpaca API than the current sources.
+  (add-to-list 'load-path (if (file-exists-p build) build repo))
   (unless (file-exists-p repo)
     (make-directory repo t)
     (when (<= emacs-major-version 28) (require 'subr-x))
