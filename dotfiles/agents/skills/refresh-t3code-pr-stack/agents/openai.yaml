@@ -1,4 +1,4 @@
 interface:
   display_name: "T3 Code PR Stack Refresh"
-  short_description: "Rebase PRs and refresh the patched T3 Code stack"
-  default_prompt: "Use $refresh-t3code-pr-stack to update my T3 Code PRs and rebuild the patched Nix stack."
+  short_description: "Discover PRs and refresh patched T3 Code"
+  default_prompt: "Use $refresh-t3code-pr-stack to discover and incorporate my new T3 Code PRs, update existing PRs, and rebuild the patched Nix stack."
