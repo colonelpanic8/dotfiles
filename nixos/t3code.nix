@@ -14,6 +14,14 @@
     hash = "sha256-gdSraYeSsVMdLfQoDo0jVTv+zA/d6yaBbww4h+Dh/W8=";
   };
 
+  # PR #4271's ChatComposer.tsx hunks overlap #4260/#4270 context, so that
+  # file is applied through the compatibility patch below. Keep the live
+  # cumulative diff auditable so a head bump still changes this hash.
+  t3codePr4271 = final.fetchurl {
+    url = "https://patch-diff.githubusercontent.com/raw/pingdotgg/t3code/pull/4271.diff";
+    hash = "sha256-qnrj7gyj9ca0GfYUaCTtQzfhstmoZFcxV4ecKu81Quk=";
+  };
+
   # PR #4277's Sidebar V2 hunks overlap the carried command-palette PRs.
   # Keep the live cumulative diff auditable while applying that file through
   # the compatibility patch below.
@@ -60,11 +68,15 @@
       hash = "sha256-0zrOswuZt7DP/1gWChy+TVmRysvxkm+uWoazwFFrLJ0=";
     })
     # Keyboard-select composer controls + hold-modifier hints: t3code#4271
-    # (head 51135b2cc). Raw diff applies with fuzz after #4258/#4260.
-    (final.fetchurl {
+    # (head 5c9615f651bc). ChatComposer.tsx overlaps #4260/#4270 and is
+    # carried by the compatibility patch below.
+    (final.fetchpatch {
       url = "https://patch-diff.githubusercontent.com/raw/pingdotgg/t3code/pull/4271.diff";
-      hash = "sha256-LlfGy4Z5TjDYvGDS6CJjXy9+/qqYywnKftdCN04brxM=";
+      excludes = ["apps/web/src/components/chat/ChatComposer.tsx"];
+      hash = "sha256-3vQESN1/yZkqUYJq5M52rkBaXOhDOt/nnaSEjr0YEqw=";
     })
+    # ChatComposer.tsx hunks of #4271 regenerated against #4260/#4270.
+    ./patches/t3code-composer-shortcut-hints.patch
     # Settle the open thread with Mod+Shift+Enter: t3code#4277 (head 4ac33edaf00f).
     (final.fetchpatch {
       url = "https://patch-diff.githubusercontent.com/raw/pingdotgg/t3code/pull/4277.diff";
@@ -78,7 +90,8 @@
   t3codePatchedSource = final.applyPatches {
     name = "t3code-patched-main-20260722";
     src = inputs.t3code-upstream;
-    patches = builtins.seq t3codePr4257 (builtins.seq t3codePr4277 t3codePatches);
+    patches =
+      builtins.seq t3codePr4257 (builtins.seq t3codePr4271 (builtins.seq t3codePr4277 t3codePatches));
   };
 
   t3codeUnwrapped = (prev.t3code.unwrapped.override {pnpm_10 = final.pnpm_11;}).overrideAttrs (
