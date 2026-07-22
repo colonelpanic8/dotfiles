@@ -1,0 +1,323 @@
+diff --git a/apps/server/src/assets/AssetAccess.test.ts b/apps/server/src/assets/AssetAccess.test.ts
+index 06a22754e55ab7f8d61fb156d2955a98cca0426d..ef443c91ceb4ac7f96cb38062361242ff9c5a8b6 100644
+--- a/apps/server/src/assets/AssetAccess.test.ts
++++ b/apps/server/src/assets/AssetAccess.test.ts
+@@ -2 +2 @@ import * as NodeServices from "@effect/platform-node/NodeServices";
+-import { ThreadId } from "@t3tools/contracts";
++import { MessageId, ThreadId, TurnId } from "@t3tools/contracts";
+@@ -15 +15,6 @@ import * as WorkspacePaths from "../workspace/WorkspacePaths.ts";
+-import { ASSET_ROUTE_PREFIX, issueAssetUrl, resolveAsset } from "./AssetAccess.ts";
++import {
++  ASSET_ROUTE_PREFIX,
++  issueAssetUrl,
++  issueThreadArtifactUrl,
++  resolveAsset,
++} from "./AssetAccess.ts";
+@@ -180,0 +186,93 @@ describe("AssetAccess", () => {
++  it.effect("enforces thread artifact scope without granting arbitrary-root access", () =>
++    Effect.gen(function* () {
++      const fileSystem = yield* FileSystem.FileSystem;
++      const path = yield* Path.Path;
++      const workspaceRoot = yield* fileSystem.makeTempDirectoryScoped({
++        prefix: "t3-thread-artifact-workspace-",
++      });
++      const outsideRoot = yield* fileSystem.makeTempDirectoryScoped({
++        prefix: "t3-thread-artifact-outside-",
++      });
++      const workspaceImageDirectory = path.join(workspaceRoot, "images");
++      const workspaceImagePath = path.join(workspaceImageDirectory, "workspace.png");
++      const outsideImagePath = path.join(outsideRoot, "outside.png");
++      yield* fileSystem.makeDirectory(workspaceImageDirectory, { recursive: true });
++      yield* fileSystem.writeFile(workspaceImagePath, new Uint8Array([137, 80, 78, 71]));
++      yield* fileSystem.writeFile(outsideImagePath, new Uint8Array([137, 80, 78, 71]));
++
++      const resource = {
++        _tag: "thread-artifact" as const,
++        threadId: ThreadId.make("thread-1"),
++        turnId: TurnId.make("turn-1"),
++        messageId: MessageId.make("message-1"),
++        path: "images/workspace.png",
++      };
++      const workspaceResult = yield* issueThreadArtifactUrl({
++        resource,
++        artifact: {
++          path: "images/workspace.png",
++          scope: "workspace",
++          source: "raw-output",
++        },
++        workspaceRoot,
++      });
++      const workspaceSuffix = workspaceResult.relativeUrl.slice(`${ASSET_ROUTE_PREFIX}/`.length);
++      const workspaceSeparatorIndex = workspaceSuffix.indexOf("/");
++      expect(
++        yield* resolveAsset(
++          workspaceSuffix.slice(0, workspaceSeparatorIndex),
++          workspaceSuffix.slice(workspaceSeparatorIndex + 1),
++        ),
++      ).toEqual({ kind: "file", path: yield* fileSystem.realPath(workspaceImagePath) });
++
++      const outsideWorkspaceError = yield* issueThreadArtifactUrl({
++        resource: { ...resource, path: "outside.png" },
++        artifact: {
++          path: outsideImagePath,
++          scope: "workspace",
++          source: "image-view",
++        },
++        workspaceRoot,
++      }).pipe(Effect.flip);
++      expect(outsideWorkspaceError._tag).toBe("AssetWorkspacePathValidationError");
++
++      const outsideRawOutputError = yield* issueThreadArtifactUrl({
++        resource: { ...resource, path: "outside.png" },
++        artifact: {
++          path: outsideImagePath,
++          scope: "workspace",
++          source: "raw-output",
++        },
++        workspaceRoot,
++      }).pipe(Effect.flip);
++      expect(outsideRawOutputError._tag).toBe("AssetWorkspacePathValidationError");
++
++      const generatedResult = yield* issueThreadArtifactUrl({
++        resource: { ...resource, path: "outside.png" },
++        artifact: {
++          path: outsideImagePath,
++          scope: "provider-generated",
++          source: "image-generation",
++        },
++      });
++      const generatedSuffix = generatedResult.relativeUrl.slice(`${ASSET_ROUTE_PREFIX}/`.length);
++      const generatedSeparatorIndex = generatedSuffix.indexOf("/");
++      expect(
++        yield* resolveAsset(
++          generatedSuffix.slice(0, generatedSeparatorIndex),
++          generatedSuffix.slice(generatedSeparatorIndex + 1),
++        ),
++      ).toEqual({ kind: "file", path: yield* fileSystem.realPath(outsideImagePath) });
++
++      const relativeGeneratedError = yield* issueThreadArtifactUrl({
++        resource,
++        artifact: {
++          path: "images/workspace.png",
++          scope: "provider-generated",
++          source: "image-generation",
++        },
++      }).pipe(Effect.flip);
++      expect(relativeGeneratedError._tag).toBe("AssetWorkspaceAssetNotFoundError");
++    }).pipe(Effect.provide(testLayer)),
++  );
++
+diff --git a/apps/server/src/assets/AssetAccess.ts b/apps/server/src/assets/AssetAccess.ts
+index 34c46b2e00b7e74a8c51e279e582bfb04446c467..1bdaf9c4fa4b3b5dde07434cbaab73ac5ef9d912 100644
+--- a/apps/server/src/assets/AssetAccess.ts
++++ b/apps/server/src/assets/AssetAccess.ts
+@@ -41,0 +42 @@ import * as WorkspacePaths from "../workspace/WorkspacePaths.ts";
++import type { ResolvedThreadArtifactPath } from "./ThreadArtifactResolver.ts";
+@@ -349,0 +351,35 @@ export const issueAssetUrl = Effect.fn("AssetAccess.issueAssetUrl")(function* (i
++export const issueThreadArtifactUrl = Effect.fn("AssetAccess.issueThreadArtifactUrl")(
++  function* (input: {
++    readonly resource: Extract<AssetResource, { readonly _tag: "thread-artifact" }>;
++    readonly artifact: ResolvedThreadArtifactPath;
++    readonly workspaceRoot?: string;
++  }) {
++    const path = yield* Path.Path;
++    let workspaceRoot: string;
++
++    if (input.artifact.scope === "workspace") {
++      if (!input.workspaceRoot) {
++        return yield* new AssetWorkspaceContextNotFoundError({ resource: input.resource });
++      }
++      workspaceRoot = input.workspaceRoot;
++    } else {
++      // Only the typed image-generation path may authorize provider-managed
++      // storage. It must be absolute so a relative provider value cannot make
++      // the server process cwd an implicit asset root.
++      if (!path.isAbsolute(input.artifact.path)) {
++        return yield* new AssetWorkspaceAssetNotFoundError({ resource: input.resource });
++      }
++      workspaceRoot = path.dirname(input.artifact.path);
++    }
++
++    return yield* issueAssetUrl({
++      resource: {
++        _tag: "workspace-file",
++        threadId: input.resource.threadId,
++        path: input.artifact.path,
++      },
++      workspaceRoot,
++    });
++  },
++);
++
+diff --git a/apps/server/src/assets/ThreadArtifactResolver.test.ts b/apps/server/src/assets/ThreadArtifactResolver.test.ts
+index 6177b83856f893ad8d2350e156d63dbbda9ba1d0..659df9133d6746f1523bde936b2262b5bdc45d3b 100644
+--- a/apps/server/src/assets/ThreadArtifactResolver.test.ts
++++ b/apps/server/src/assets/ThreadArtifactResolver.test.ts
+@@ -56,2 +56,2 @@ describe("thread artifact resolution", () => {
+-    ).toBe(path);
+-    expect(findThreadArtifactPath(thread([activity(path)]), TURN_ID, MESSAGE_ID, "1.jpg")).toBe(
++    ).toEqual({ path, scope: "workspace", source: "raw-output" });
++    expect(findThreadArtifactPath(thread([activity(path)]), TURN_ID, MESSAGE_ID, "1.jpg")).toEqual({
+@@ -59 +59,3 @@ describe("thread artifact resolution", () => {
+-    );
++      scope: "workspace",
++      source: "raw-output",
++    });
+@@ -62 +64 @@ describe("thread artifact resolution", () => {
+-  it("reads Codex image generation and image view paths", () => {
++  it("keeps Codex image generation privileged separately from workspace-scoped image views", () => {
+@@ -74,6 +76,10 @@ describe("thread artifact resolution", () => {
+-    expect(findThreadArtifactPath(source, TURN_ID, MESSAGE_ID, "images/generated.png")).toBe(
+-      generatedPath,
+-    );
+-    expect(findThreadArtifactPath(source, TURN_ID, MESSAGE_ID, "images/viewed.png")).toBe(
+-      viewedPath,
+-    );
++    expect(findThreadArtifactPath(source, TURN_ID, MESSAGE_ID, "images/generated.png")).toEqual({
++      path: generatedPath,
++      scope: "provider-generated",
++      source: "image-generation",
++    });
++    expect(findThreadArtifactPath(source, TURN_ID, MESSAGE_ID, "images/viewed.png")).toEqual({
++      path: viewedPath,
++      scope: "workspace",
++      source: "image-view",
++    });
+@@ -91 +97,13 @@ describe("thread artifact resolution", () => {
+-    ).toBe(path);
++    ).toEqual({ path, scope: "workspace", source: "raw-output" });
++  });
++
++  it("fails closed when duplicate evidence would elevate a workspace path", () => {
++    const path = "/sessions/thread/images/1.jpg";
++    const source = thread([
++      activity(path),
++      activity(path, {
++        payload: { data: { item: { type: "imageGeneration", savedPath: path } } },
++      }),
++    ]);
++
++    expect(findThreadArtifactPath(source, TURN_ID, MESSAGE_ID, "images/1.jpg")).toBeNull();
+@@ -129,3 +147,5 @@ describe("thread artifact resolution", () => {
+-    expect(findThreadArtifactPath(source, TURN_ID, targetMessageId, "images/1.jpg")).toBe(
+-      "/sessions/target/images/1.jpg",
+-    );
++    expect(findThreadArtifactPath(source, TURN_ID, targetMessageId, "images/1.jpg")).toEqual({
++      path: "/sessions/target/images/1.jpg",
++      scope: "workspace",
++      source: "raw-output",
++    });
+diff --git a/apps/server/src/assets/ThreadArtifactResolver.ts b/apps/server/src/assets/ThreadArtifactResolver.ts
+index 4e8e3a707857bbf82a720a79368055db29946691..6b8c958dd9cb7c25f0313b670e94ee137dc96514 100644
+--- a/apps/server/src/assets/ThreadArtifactResolver.ts
++++ b/apps/server/src/assets/ThreadArtifactResolver.ts
+@@ -18,0 +19,12 @@ interface ThreadArtifactSource {
++export type ResolvedThreadArtifactPath =
++  | {
++      readonly path: string;
++      readonly scope: "workspace";
++      readonly source: "raw-output" | "image-view";
++    }
++  | {
++      readonly path: string;
++      readonly scope: "provider-generated";
++      readonly source: "image-generation";
++    };
++
+@@ -42 +54 @@ export function normalizeThreadArtifactReference(value: string): string | null {
+-function activityArtifactPaths(payloadValue: unknown): ReadonlyArray<string> {
++function activityArtifactPaths(payloadValue: unknown): ReadonlyArray<ResolvedThreadArtifactPath> {
+@@ -47 +59,5 @@ function activityArtifactPaths(payloadValue: unknown): ReadonlyArray<string> {
+-  const paths = [rawOutput?.path];
++  const paths: ResolvedThreadArtifactPath[] = [];
++
++  if (typeof rawOutput?.path === "string") {
++    paths.push({ path: rawOutput.path, scope: "workspace", source: "raw-output" });
++  }
+@@ -49,4 +65,8 @@ function activityArtifactPaths(payloadValue: unknown): ReadonlyArray<string> {
+-  if (item?.type === "imageGeneration") {
+-    paths.push(item.savedPath);
+-  } else if (item?.type === "imageView") {
+-    paths.push(item.path);
++  if (item?.type === "imageGeneration" && typeof item.savedPath === "string") {
++    paths.push({
++      path: item.savedPath,
++      scope: "provider-generated",
++      source: "image-generation",
++    });
++  } else if (item?.type === "imageView" && typeof item.path === "string") {
++    paths.push({ path: item.path, scope: "workspace", source: "image-view" });
+@@ -55 +75 @@ function activityArtifactPaths(payloadValue: unknown): ReadonlyArray<string> {
+-  return paths.filter((value): value is string => typeof value === "string");
++  return paths;
+@@ -81 +101 @@ export function findThreadArtifactPath(
+-): string | null {
++): ResolvedThreadArtifactPath | null {
+@@ -87 +107 @@ export function findThreadArtifactPath(
+-  const matches = new Map<string, string>();
++  const matches = new Map<string, ResolvedThreadArtifactPath>();
+@@ -93,2 +113,2 @@ export function findThreadArtifactPath(
+-    for (const artifactPath of activityArtifactPaths(activity.payload)) {
+-      const candidate = artifactPath.trim();
++    for (const artifact of activityArtifactPaths(activity.payload)) {
++      const candidate = artifact.path.trim();
+@@ -100 +120,7 @@ export function findThreadArtifactPath(
+-        matches.set(normalizedCandidate, candidate);
++        // Scope is part of candidate identity. Seeing the same path as both a
++        // workspace artifact and a provider-generated artifact is ambiguous,
++        // rather than an opportunity to upgrade it to the broader scope.
++        matches.set(`${artifact.scope}\0${normalizedCandidate}`, {
++          ...artifact,
++          path: candidate,
++        });
+diff --git a/apps/server/src/ws.ts b/apps/server/src/ws.ts
+index ab03e085466d09d10e0036de4d87494cda86e5d7..1a1b6e67d9b5b66c20ba5440379d1d6999cfc86f 100644
+--- a/apps/server/src/ws.ts
++++ b/apps/server/src/ws.ts
+@@ -8 +7,0 @@ import * as Option from "effect/Option";
+-import * as Path from "effect/Path";
+@@ -90 +89 @@ import * as PreviewManager from "./preview/Manager.ts";
+-import { issueAssetUrl } from "./assets/AssetAccess.ts";
++import { issueAssetUrl, issueThreadArtifactUrl } from "./assets/AssetAccess.ts";
+@@ -411 +409,0 @@ const makeWsRpcLayer = (
+-      const path = yield* Path.Path;
+@@ -1719 +1717 @@ const makeWsRpcLayer = (
+-                const artifactPath = findThreadArtifactPath(
++                const artifact = findThreadArtifactPath(
+@@ -1725 +1723 @@ const makeWsRpcLayer = (
+-                if (!artifactPath) {
++                if (!artifact) {
+@@ -1730,7 +1728,26 @@ const makeWsRpcLayer = (
+-                return yield* issueAssetUrl({
+-                  resource: {
+-                    _tag: "workspace-file",
+-                    threadId: input.resource.threadId,
+-                    path: path.basename(artifactPath),
+-                  },
+-                  workspaceRoot: path.dirname(artifactPath),
++
++                let workspaceRoot: string | undefined;
++                if (artifact.scope === "workspace") {
++                  const project = yield* projectionSnapshotQuery
++                    .getProjectShellById(thread.value.projectId)
++                    .pipe(
++                      Effect.mapError(
++                        (cause) =>
++                          new AssetWorkspaceContextResolutionError({
++                            resource: input.resource,
++                            cause,
++                          }),
++                      ),
++                    );
++                  if (Option.isNone(project)) {
++                    return yield* new AssetWorkspaceContextNotFoundError({
++                      resource: input.resource,
++                    });
++                  }
++                  workspaceRoot = thread.value.worktreePath ?? project.value.workspaceRoot;
++                }
++
++                return yield* issueThreadArtifactUrl({
++                  resource: input.resource,
++                  artifact,
++                  ...(workspaceRoot === undefined ? {} : { workspaceRoot }),

@@ -45,6 +45,9 @@
       url = "https://patch-diff.githubusercontent.com/raw/pingdotgg/t3code/pull/3984.diff";
       hash = "sha256-b3XsDbyKcZ3ANVT2apkOQ5lVRWeiXHLvZ3q9Yb2dFU8=";
     })
+    # Constrain #3984's generic artifact paths to the real thread workspace;
+    # only typed image-generation paths may use provider-managed storage.
+    ./patches/t3code-pr-3984-artifact-safety.patch
     # Searchable new-thread project picker: t3code#4259 (head 064fa4bb9fc2).
     (final.fetchurl {
       url = "https://patch-diff.githubusercontent.com/raw/pingdotgg/t3code/pull/4259.diff";
@@ -64,18 +67,13 @@
     })
     # Combined shared-file changes from #4257, #4258, and #4263.
     ./patches/t3code-command-palette-prs.patch
-    # OpenAI goals against main: t3code#4260 (head 4d417d5e03bc).
-    (final.fetchurl {
-      url = "https://patch-diff.githubusercontent.com/raw/pingdotgg/t3code/pull/4260.diff";
-      hash = "sha256-fiUuD7OG2mgPa7jIIADMIaV4vkKXPZY9kOUD/p9Xxhg=";
-    })
     # Emacs/readline editing mode: t3code#4270 (head 4189d3ca44e6).
     (final.fetchurl {
       url = "https://patch-diff.githubusercontent.com/raw/pingdotgg/t3code/pull/4270.diff";
       hash = "sha256-nDHECUPDxrV84fM5WqXBYYFAqTQWcyMGB6GYZ93XPhU=";
     })
     # Keyboard-select composer controls + hold-modifier hints: t3code#4271
-    # (head d0c50d2c7390). Raw diff applies with fuzz after #4258/#4260.
+    # (head d0c50d2c7390). Raw diff applies with fuzz after #4258.
     (final.fetchurl {
       url = "https://patch-diff.githubusercontent.com/raw/pingdotgg/t3code/pull/4271.diff";
       hash = "sha256-xkv4DNBZs7EcG9OCnfk1PHBGKIB7ncDV68h0ymstXzY=";
