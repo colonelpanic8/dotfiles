@@ -14,6 +14,14 @@
     hash = "sha256-gdSraYeSsVMdLfQoDo0jVTv+zA/d6yaBbww4h+Dh/W8=";
   };
 
+  # PR #4277's Sidebar V2 hunks overlap the carried command-palette PRs.
+  # Keep the live cumulative diff auditable while applying that file through
+  # the compatibility patch below.
+  t3codePr4277 = final.fetchurl {
+    url = "https://patch-diff.githubusercontent.com/raw/pingdotgg/t3code/pull/4277.diff";
+    hash = "sha256-IScOrJEV40lDaYnoVTWLkyhBe+OwVUU1KdrFyBduuxA=";
+  };
+
   # Upstream is pinned after Theo's Threads view (#4026) merged. Keep
   # the remaining patches ordered: later patches may build on earlier UI work.
   t3codePatches = [
@@ -57,12 +65,20 @@
       url = "https://patch-diff.githubusercontent.com/raw/pingdotgg/t3code/pull/4271.diff";
       hash = "sha256-6b7N2+KaUkoMURbwZmIskWUUUnAkDcbr4sK4ZZ6EKH8=";
     })
+    # Settle the open thread with Mod+Shift+Enter: t3code#4277 (head 4ac33edaf00f).
+    (final.fetchpatch {
+      url = "https://patch-diff.githubusercontent.com/raw/pingdotgg/t3code/pull/4277.diff";
+      excludes = ["apps/web/src/components/SidebarV2.tsx"];
+      hash = "sha256-emcNdpyE4hGdM1H5cqrCy7S2ShzK9X8EJFe5jYjDEL0=";
+    })
+    # Sidebar V2 combination for #4277 with #4257/#4258/#4263.
+    ./patches/t3code-settle-thread-keybinding.patch
   ];
 
   t3codePatchedSource = final.applyPatches {
     name = "t3code-patched-main-20260722";
     src = inputs.t3code-upstream;
-    patches = builtins.seq t3codePr4257 t3codePatches;
+    patches = builtins.seq t3codePr4257 (builtins.seq t3codePr4277 t3codePatches);
   };
 
   t3codeUnwrapped = (prev.t3code.unwrapped.override {pnpm_10 = final.pnpm_11;}).overrideAttrs (

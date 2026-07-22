@@ -1,0 +1,118 @@
+diff --git a/apps/web/src/components/SidebarV2.tsx b/apps/web/src/components/SidebarV2.tsx
+index 192a76e0397703989cd411672ac4799f60984e47..bfc237ffc25145067ff617a1a91af371c0e1190f 100644
+--- a/apps/web/src/components/SidebarV2.tsx
++++ b/apps/web/src/components/SidebarV2.tsx
+@@ -57,6 +57,7 @@ import { useThreadSelectionStore } from "../threadSelectionStore";
+ import { useThreadActions } from "../hooks/useThreadActions";
+ import { useHandleNewThread } from "../hooks/useHandleNewThread";
+ import {
++  isCommandPaletteOpen,
+   useOpenAddProjectCommandPalette,
+   useOpenNewThreadCommandPalette,
+   useSetNewThreadPreferredProjectRef,
+@@ -89,6 +90,16 @@ import { primaryServerProvidersAtom } from "../state/server";
+ import { stackedThreadToast, toastManager } from "./ui/toast";
+ import { CommandDialogTrigger } from "./ui/command";
+ import { Kbd } from "./ui/kbd";
++import {
++  AlertDialog,
++  AlertDialogClose,
++  AlertDialogDescription,
++  AlertDialogFooter,
++  AlertDialogHeader,
++  AlertDialogPopup,
++  AlertDialogTitle,
++} from "./ui/alert-dialog";
++import { Button } from "./ui/button";
+ import {
+   SidebarContent,
+   SidebarGroup,
+@@ -1250,9 +1261,14 @@ export default function SidebarV2() {
+       ? selectThreadTerminalUiState(state.terminalUiStateByThreadKey, routeThreadRef).terminalOpen
+       : false,
+   );
++  const [settleConfirmationThreadKey, setSettleConfirmationThreadKey] = useState<string | null>(
++    null,
++  );
++  const settleConfirmationButtonRef = useRef<HTMLButtonElement>(null);
+   useEffect(() => {
+     const onWindowKeyDown = (event: KeyboardEvent) => {
+       if (event.defaultPrevented || event.repeat) return;
++      if (isCommandPaletteOpen() || isModelPickerOpen()) return;
+       const command = resolveShortcutCommand(event, keybindings, {
+         platform: navigator.platform,
+         context: {
+@@ -1270,6 +1286,19 @@ export default function SidebarV2() {
+         navigateToThread(scopeThreadRef(targetThread.environmentId, targetThread.id));
+         return true;
+       };
++      if (command === "thread.settle") {
++        event.preventDefault();
++        event.stopPropagation();
++        if (!routeThreadKey) return;
++        const thread = threadByKey.get(routeThreadKey);
++        const supportsSettlement =
++          thread &&
++          serverConfigs.get(thread.environmentId)?.environment.capabilities.threadSettlement ===
++            true;
++        if (!thread || !supportsSettlement || settledThreadKeys.has(routeThreadKey)) return;
++        setSettleConfirmationThreadKey(routeThreadKey);
++        return;
++      }
+       const traversalDirection = threadTraversalDirectionFromCommand(command);
+       if (traversalDirection !== null) {
+         navigateToThreadKey(
+@@ -1293,9 +1322,22 @@ export default function SidebarV2() {
+     orderedThreadKeys,
+     routeTerminalOpen,
+     routeThreadKey,
++    serverConfigs,
++    settledThreadKeys,
+     threadByKey,
+   ]);
+ 
++  const settleConfirmationThread = settleConfirmationThreadKey
++    ? (threadByKey.get(settleConfirmationThreadKey) ?? null)
++    : null;
++  const confirmShortcutSettle = useCallback(() => {
++    if (!settleConfirmationThread) return;
++    setSettleConfirmationThreadKey(null);
++    attemptSettle(
++      scopeThreadRef(settleConfirmationThread.environmentId, settleConfirmationThread.id),
++    );
++  }, [attemptSettle, settleConfirmationThread]);
++
+   // Same predicate as v1: hints show only while the held modifiers exactly
+   // match a thread-jump binding. Adding Shift (screenshots) or Alt no
+   // longer matches ⌘1..9, so the overlay hides for chords like ⌘⇧4.
+@@ -1561,6 +1603,30 @@ export default function SidebarV2() {
+       </SidebarContent>
+       <SidebarSeparator />
+       <SidebarChromeFooter />
++      <AlertDialog
++        open={settleConfirmationThread !== null}
++        onOpenChange={(open) => {
++          if (!open) setSettleConfirmationThreadKey(null);
++        }}
++      >
++        <AlertDialogPopup initialFocus={settleConfirmationButtonRef}>
++          <AlertDialogHeader>
++            <AlertDialogTitle>Settle this thread?</AlertDialogTitle>
++            <AlertDialogDescription>
++              {settleConfirmationThread
++                ? `“${settleConfirmationThread.title}” will move out of active work. You can un-settle it later.`
++                : "This thread will move out of active work. You can un-settle it later."}
++            </AlertDialogDescription>
++          </AlertDialogHeader>
++          <AlertDialogFooter>
++            <AlertDialogClose render={<Button variant="outline" />}>Cancel</AlertDialogClose>
++            <Button ref={settleConfirmationButtonRef} onClick={confirmShortcutSettle}>
++              Settle thread
++              <Kbd className="ml-1 h-5 px-1.5">Enter</Kbd>
++            </Button>
++          </AlertDialogFooter>
++        </AlertDialogPopup>
++      </AlertDialog>
+     </>
+   );
+ }
