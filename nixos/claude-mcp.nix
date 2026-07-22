@@ -18,14 +18,27 @@
   #   - /etc/claude-code/managed-mcp.json would take *exclusive* control and
   #     disable every other server (per-project playwright, future `mcp add`).
   # So we merge into the user config rather than owning a whole file.
-  serverJson = builtins.toJSON {
-    type = "stdio";
-    command = mcpNixosBin;
-  };
+  managedServers =
+    {
+      nixos = {
+        type = "stdio";
+        command = mcpNixosBin;
+      };
+    }
+    // lib.optionalAttrs config.myModules.desktop.enable {
+      "computer-use-linux" = {
+        type = "stdio";
+        command = "${lib.getExe pkgs.computer-use-linux}";
+        args = ["mcp"];
+      };
+    };
+  managedServersJson = builtins.toJSON managedServers;
 in
   makeEnable config "myModules.claudeMcpNixos" true {
     # Also expose the pinned binary on PATH for manual `claude mcp` use / Codex.
-    environment.systemPackages = [pkgs.mcp-nixos];
+    environment.systemPackages =
+      [pkgs.mcp-nixos]
+      ++ lib.optional config.myModules.desktop.enable pkgs.computer-use-linux;
 
     # Use a module function so `lib` here is home-manager's lib (which carries
     # `lib.hm.dag`), not the plain NixOS lib.
@@ -35,13 +48,13 @@ in
       # on every switch with jq, preserving all other (per-project, user-added)
       # servers and state. This module is the declarative source of truth:
       # `claude mcp remove nixos` is re-applied on the next switch.
-      home.activation.registerMcpNixos = lib.hm.dag.entryAfter ["writeBoundary"] ''
+      home.activation.registerManagedMcpServers = lib.hm.dag.entryAfter ["writeBoundary"] ''
         config="$HOME/.claude.json"
-        server=${lib.escapeShellArg serverJson}
+        servers=${lib.escapeShellArg managedServersJson}
         if [ -f "$config" ]; then
           tmp="$(mktemp)"
-          if ${pkgs.jq}/bin/jq --argjson srv "$server" \
-            '.mcpServers = ((.mcpServers // {}) + {nixos: $srv})' \
+          if ${pkgs.jq}/bin/jq --argjson servers "$servers" \
+            '.mcpServers = ((.mcpServers // {}) + $servers)' \
             "$config" > "$tmp"; then
             mv -f "$tmp" "$config"
           else
@@ -49,8 +62,8 @@ in
             echo "claude-mcp: failed to update $config; left unchanged" >&2
           fi
         else
-          ${pkgs.jq}/bin/jq -n --argjson srv "$server" \
-            '{mcpServers: {nixos: $srv}}' > "$config"
+          ${pkgs.jq}/bin/jq -n --argjson servers "$servers" \
+            '{mcpServers: $servers}' > "$config"
           chmod 600 "$config"
         fi
       '';

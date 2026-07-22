@@ -9,6 +9,12 @@
   managedConfig = pkgs.writeText "codex-managed-config.toml" ''
     [mcp_servers.nixos]
     command = "${lib.getExe pkgs.mcp-nixos}"
+
+    ${lib.optionalString (cfg.computerUseLinuxPackage != null) ''
+      [mcp_servers.computer-use-linux]
+      command = "${lib.getExe cfg.computerUseLinuxPackage}"
+      args = ["mcp"]
+    ''}
   '';
 in {
   options.myModules.codexGeneratedSkills = {
@@ -54,6 +60,12 @@ in {
       type = lib.types.str;
       default = "${config.home.homeDirectory}/.cache/codex-runtimes/codex-primary-runtime";
       description = "Codex primary runtime cache directory.";
+    };
+
+    computerUseLinuxPackage = lib.mkOption {
+      type = lib.types.nullOr lib.types.package;
+      default = null;
+      description = "computer-use-linux package to register as a managed Codex MCP server.";
     };
   };
 

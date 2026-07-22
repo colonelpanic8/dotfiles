@@ -2,6 +2,7 @@
   config,
   lib,
   nixos,
+  pkgs,
   ...
 }: let
   # Replicate the useful part of rcm/rcup:
@@ -96,6 +97,10 @@ in {
   # links above, not its ~/dotfiles default. Without this, ~/.codex/AGENTS.md
   # and ~/.codex/skills/* dangle when the checkout lives outside ~/dotfiles.
   myModules.codexGeneratedSkills.worktreeCodexDir = "${worktreeDotfiles}/codex";
+  myModules.codexGeneratedSkills.computerUseLinuxPackage =
+    if nixos.config.myModules.desktop.enable
+    then pkgs.computer-use-linux
+    else null;
 
   # Home Manager directory links for .emacs.d resolve through the store on this
   # machine, which breaks Elpaca's writable state under ~/.emacs.d/elpaca.
