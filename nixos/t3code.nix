@@ -28,13 +28,13 @@
     hash = "sha256-gEDJ4qFt+C4oLRdun9sS4NbjNkIKBUV3q/RQTJI/+XY=";
   };
 
-  # PR #4277 (head a8f8d9fdb24d) overlaps Sidebar V2 and the combined
+  # PR #4277 (head 2d4990a04b59) overlaps Sidebar V2 and the combined
   # keybinding tests after #4263/#4270/#4271.
   # Keep the live cumulative diff auditable while applying that file through
   # the compatibility patch below.
   t3codePr4277 = final.fetchurl {
     url = "https://patch-diff.githubusercontent.com/raw/pingdotgg/t3code/pull/4277.diff";
-    hash = "sha256-V9+HfWPEYI7Uwlf4yDn+WatBtIG8yl648GQw21WPIQ0=";
+    hash = "sha256-sz2yVuFYNv4kzhzA2v7Dw58IGsEQ2szbLsdLtcbfm1c=";
   };
 
   # Upstream is pinned after Theo's Threads view (#4026) merged. Keep
@@ -78,14 +78,14 @@
       url = "https://patch-diff.githubusercontent.com/raw/pingdotgg/t3code/pull/4271.diff";
       hash = "sha256-xkv4DNBZs7EcG9OCnfk1PHBGKIB7ncDV68h0ymstXzY=";
     })
-    # Settle the open thread with Mod+Shift+Enter: t3code#4277 (head a8f8d9fdb24d).
+    # Settle the open thread with Mod+Shift+X: t3code#4277 (head 2d4990a04b59).
     (final.fetchpatch {
       url = "https://patch-diff.githubusercontent.com/raw/pingdotgg/t3code/pull/4277.diff";
       excludes = [
         "apps/web/src/components/SidebarV2.tsx"
         "apps/web/src/keybindings.test.ts"
       ];
-      hash = "sha256-5ZxxCBh5KQWxYS7EPkPvnZ4SNadm5jXcv0W9IZpTq7E=";
+      hash = "sha256-79ji2zIKd3jikd7UTZ+ixpSG0cRhFrTFglrrlgAHlNk=";
     })
     # Sidebar V2 and keybinding-test combination for #4277 with
     # #4263/#4270/#4271.

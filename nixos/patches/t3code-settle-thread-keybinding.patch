@@ -1,5 +1,5 @@
 diff --git a/apps/web/src/components/SidebarV2.tsx b/apps/web/src/components/SidebarV2.tsx
-index 928f14a..90b2e77 100644
+index 928f14a25feb77c05999d0a5c870472facf6af39..90b2e77186b3ea5b9b7de4c7ddd83642aaf44f15 100644
 --- a/apps/web/src/components/SidebarV2.tsx
 +++ b/apps/web/src/components/SidebarV2.tsx
 @@ -1,6 +1,6 @@
@@ -339,7 +339,7 @@ index 928f14a..90b2e77 100644
    );
  }
 diff --git a/apps/web/src/keybindings.test.ts b/apps/web/src/keybindings.test.ts
-index de0f72c..703f3f0 100644
+index de0f72c4bc684886d1d4a4150965d9896cd64296..077f5bf3bda773eb3b37d24cfa0b179e2dcd12ac 100644
 --- a/apps/web/src/keybindings.test.ts
 +++ b/apps/web/src/keybindings.test.ts
 @@ -1,4 +1,4 @@
@@ -361,7 +361,7 @@ index de0f72c..703f3f0 100644
    },
    { shortcut: modShortcut("o"), command: "editor.openFavorite" },
 +  {
-+    shortcut: modShortcut("enter", { shiftKey: true }),
++    shortcut: modShortcut("x", { shiftKey: true }),
 +    command: "thread.settle",
 +    whenAst: whenNot(whenIdentifier("terminalFocus")),
 +  },
@@ -373,10 +373,10 @@ index de0f72c..703f3f0 100644
  ]);
 
 +describe("thread settle shortcut", () => {
-+  it("resolves Mod+Shift+Enter outside the terminal", () => {
++  it("resolves Mod+Shift+X outside the terminal", () => {
 +    assert.strictEqual(
 +      resolveShortcutCommand(
-+        event({ key: "Enter", metaKey: true, shiftKey: true }),
++        event({ key: "x", metaKey: true, shiftKey: true }),
 +        DEFAULT_BINDINGS,
 +        { platform: "MacIntel" },
 +      ),
@@ -387,7 +387,7 @@ index de0f72c..703f3f0 100644
 +  it("does not resolve while the terminal owns focus", () => {
 +    assert.isNull(
 +      resolveShortcutCommand(
-+        event({ key: "Enter", ctrlKey: true, shiftKey: true }),
++        event({ key: "x", ctrlKey: true, shiftKey: true }),
 +        DEFAULT_BINDINGS,
 +        { platform: "Linux", context: { terminalFocus: true } },
 +      ),
