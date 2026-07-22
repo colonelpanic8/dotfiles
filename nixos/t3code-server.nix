@@ -5,6 +5,7 @@
   pkgs,
   ...
 }: let
+  cfg = config.myModules.t3codeServer;
   # T3 hydrates PATH from the login shell, but the service still needs a
   # deterministic bootstrap PATH for Tailscale and common provider tools.
   servicePath = lib.makeBinPath (with pkgs; [
@@ -25,13 +26,12 @@
     tailscale
     zsh
   ]);
-in
-  makeEnable config "myModules.t3codeServer" false {
+  enabledModule = makeEnable config "myModules.t3codeServer" false {
     home-manager.users.imalison.systemd.user.services.t3code-headless = {
       Unit = {
         Description = "T3 Code headless server over Tailscale";
         Documentation = "https://github.com/pingdotgg/t3code/blob/main/REMOTE.md";
-        After = ["graphical-session.target"];
+        After = [cfg.startTarget];
         ConditionPathIsDirectory = "/srv/dotfiles";
         StartLimitIntervalSec = 300;
         StartLimitBurst = 5;
@@ -48,17 +48,36 @@ in
         ];
         # The desktop app currently uses 3773. Keep the persistent backend on a
         # stable loopback-only port and let Tailscale Serve expose it over HTTPS.
-        ExecStart = "${pkgs.t3code}/bin/t3 serve --host 127.0.0.1 --port 3774 --tailscale-serve /srv/dotfiles";
+        ExecStart = "${pkgs.t3code}/bin/t3 serve --host 127.0.0.1 --port 3774 --tailscale-serve --tailscale-serve-port ${toString cfg.tailscaleServePort} /srv/dotfiles";
         Restart = "always";
         RestartSec = 5;
         TimeoutStopSec = 15;
         UMask = "0077";
       };
 
-      # Start only after the graphical environment has been imported into the
-      # user manager, so provider/plugin children receive Wayland, X11, and D-Bus
-      # access. Deliberately omit PartOf so the backend is not stopped along with
-      # graphical-session.target.
-      Install.WantedBy = ["graphical-session.target"];
+      # Desktop hosts start after their graphical environment is imported so
+      # provider/plugin children receive Wayland, X11, and D-Bus access. Servers
+      # can select default.target instead. Deliberately omit PartOf so the backend
+      # is not stopped when a graphical session ends.
+      Install.WantedBy = [cfg.startTarget];
+    };
+  };
+in
+  enabledModule
+  // {
+    options = lib.recursiveUpdate enabledModule.options {
+      myModules.t3codeServer = {
+        tailscaleServePort = lib.mkOption {
+          type = lib.types.port;
+          default = 443;
+          description = "Tailnet-only HTTPS port exposed by Tailscale Serve.";
+        };
+
+        startTarget = lib.mkOption {
+          type = lib.types.str;
+          default = "graphical-session.target";
+          description = "User systemd target that starts the headless T3 Code service.";
+        };
+      };
     };
   }

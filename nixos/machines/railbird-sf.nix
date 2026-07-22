@@ -87,6 +87,12 @@
   myModules.desktop.enable = true;
   myModules.code.enable = true;
   myModules.claudeRemoteControl.enable = true;
+  myModules.t3codeServer = {
+    enable = true;
+    tailscaleServePort = 8443;
+    # This host's lingering user manager runs without a local graphical login.
+    startTarget = "default.target";
+  };
   myModules.syncthing.enable = true;
   myModules.fonts.enable = true;
   myModules.plasma.enable = true;
