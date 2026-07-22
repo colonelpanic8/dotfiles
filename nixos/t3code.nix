@@ -1,5 +1,19 @@
 # T3 Code source, patch stack, and package overlay.
 {inputs}: final: prev: let
+  commandPaletteOverlapFiles = [
+    "apps/web/src/components/CommandPalette.logic.test.ts"
+    "apps/web/src/components/CommandPalette.logic.ts"
+    "apps/web/src/components/CommandPalette.tsx"
+  ];
+
+  # PR #4257 only changes the three shared command-palette files, so its
+  # complete diff is represented by the compatibility patch below. Keep its
+  # live source and hash here so a bump still audits the PR itself.
+  t3codePr4257 = final.fetchurl {
+    url = "https://patch-diff.githubusercontent.com/raw/pingdotgg/t3code/pull/4257.diff";
+    hash = "sha256-gdSraYeSsVMdLfQoDo0jVTv+zA/d6yaBbww4h+Dh/W8=";
+  };
+
   # Upstream is pinned after Theo's Threads view (#4026) merged. Keep
   # the remaining patches ordered: later patches may build on earlier UI work.
   t3codePatches = [
@@ -8,37 +22,41 @@
       url = "https://patch-diff.githubusercontent.com/raw/pingdotgg/t3code/pull/3984.diff";
       hash = "sha256-b3XsDbyKcZ3ANVT2apkOQ5lVRWeiXHLvZ3q9Yb2dFU8=";
     })
-    # Searchable new-thread project picker: t3code#4259 (head 32a2bd787eef).
+    # Searchable new-thread project picker: t3code#4259 (head af5decc0526a).
     (final.fetchurl {
       url = "https://patch-diff.githubusercontent.com/raw/pingdotgg/t3code/pull/4259.diff";
-      hash = "sha256-ZZHDLIsw5aO1L9b56+pvKLxi4JJlCdQQGeJK5j6oPTU=";
+      hash = "sha256-2IY/3RSNRkOdNb33CWQ0miC1CS5ccili0OyHnJ+7mVI=";
     })
-    # Reuse the command-palette new-thread picker for Ctrl+N: t3code#4263 (head dfd4583fd).
-    (final.fetchurl {
+    # Reuse the command-palette new-thread picker for Ctrl+N: t3code#4263 (head efc01388c159).
+    (final.fetchpatch {
       url = "https://patch-diff.githubusercontent.com/raw/pingdotgg/t3code/pull/4263.diff";
-      hash = "sha256-Fb+MEkNEYzBJcOFlqc7jzmlzPyNWxlbN3Yb58MBumrw=";
+      excludes = commandPaletteOverlapFiles;
+      hash = "sha256-Sox1oNf6IxwzHaVvtlBqEyyZCq+r2qz8OBL4P6SMX5I=";
     })
-    # Tab completion in the directory path browser: t3code#4257 (head 324b985518d1).
-    (final.fetchurl {
-      url = "https://patch-diff.githubusercontent.com/raw/pingdotgg/t3code/pull/4257.diff";
-      hash = "sha256-E7TaRgCyNXGmxwFAaLQx9wBeCz7Q1in+JCr4CwPoyoM=";
-    })
-    # Configurable add-project shortcut: t3code#4258 (head e7cb807d7008).
-    (final.fetchurl {
+    # Configurable add-project shortcut: t3code#4258 (head 51e185e196be).
+    (final.fetchpatch {
       url = "https://patch-diff.githubusercontent.com/raw/pingdotgg/t3code/pull/4258.diff";
-      hash = "sha256-LGDG/AKB2DEK22qH7YHnINbsQZhFrSJ25QjQxnwD3xc=";
+      excludes = commandPaletteOverlapFiles;
+      hash = "sha256-WZ9uZphEYW/qTscW7GrxomI93nyO/4jYVDAXWoIYhus=";
     })
+    # Combined shared-file changes from #4257, #4258, and #4263.
+    ./patches/t3code-command-palette-prs.patch
     # OpenAI goals against main: t3code#4260 (head 4d417d5e03bc).
     (final.fetchurl {
       url = "https://patch-diff.githubusercontent.com/raw/pingdotgg/t3code/pull/4260.diff";
       hash = "sha256-fiUuD7OG2mgPa7jIIADMIaV4vkKXPZY9kOUD/p9Xxhg=";
+    })
+    # Emacs/readline editing mode: t3code#4270 (head 195ff526dd72).
+    (final.fetchurl {
+      url = "https://patch-diff.githubusercontent.com/raw/pingdotgg/t3code/pull/4270.diff";
+      hash = "sha256-0zrOswuZt7DP/1gWChy+TVmRysvxkm+uWoazwFFrLJ0=";
     })
   ];
 
   t3codePatchedSource = final.applyPatches {
     name = "t3code-patched-main-20260722";
     src = inputs.t3code-upstream;
-    patches = t3codePatches;
+    patches = builtins.seq t3codePr4257 t3codePatches;
   };
 
   t3codeUnwrapped = (prev.t3code.unwrapped.override {pnpm_10 = final.pnpm_11;}).overrideAttrs (
