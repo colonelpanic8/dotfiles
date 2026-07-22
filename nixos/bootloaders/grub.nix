@@ -81,8 +81,8 @@ in {
           menuentry "Windows Boot Manager" {
             insmod part_gpt
             insmod fat
-            search --no-floppy --fs-uuid --set=windows_esp ${cfg.windowsEfiUuid}
-            chainloader ($windows_esp)/EFI/Microsoft/Boot/bootmgfw.efi
+            search --no-floppy --fs-uuid --set=root ${cfg.windowsEfiUuid}
+            chainloader /EFI/Microsoft/Boot/bootmgfw.efi
           }
         '';
       };

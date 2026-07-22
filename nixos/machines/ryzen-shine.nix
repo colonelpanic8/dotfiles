@@ -48,7 +48,9 @@
   myModules.bootloaders.systemdBoot.enable = false;
   myModules.bootloaders.grub = {
     enable = true;
-    windowsEfiUuid = "B270-C7E6";
+    # Let os-prober generate the Windows chainloader entry. The explicit entry
+    # duplicated it in the menu and was the one that failed to boot Windows.
+    useOSProber = true;
     gfxmode = "3440x1440,auto";
   };
   boot.loader.grub2-theme = {
