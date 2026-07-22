@@ -316,6 +316,17 @@
       };
     };
 
+    # WezTerm main includes native tmux control-mode tabs and splits. Keep this
+    # separate from the regular terminal package so it is explicitly
+    # experimental and easy to update independently.
+    wezterm-nightly = {
+      url = "github:wezterm/wezterm?dir=nix";
+      inputs = {
+        nixpkgs.follows = "nixpkgs";
+        flake-utils.follows = "flake-utils";
+      };
+    };
+
     ccusage-fleet = {
       url = "github:Open330/ccusage-fleet/v0.3.0";
       flake = false;

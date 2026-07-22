@@ -8,6 +8,7 @@
 }: let
   cfg = config.myModules.desktop;
   isFull = cfg.profile == "full";
+  weztermNightly = inputs.wezterm-nightly.packages.${pkgs.stdenv.hostPlatform.system}.default;
   desktopShellUi = pkgs.writeShellApplication {
     name = "desktop_shell_ui";
     runtimeInputs = [
@@ -384,6 +385,7 @@
         xwininfo
         xsettingsd
         alacritty
+        weztermNightly
         blueman
         d-spy
         kdePackages.dolphin
