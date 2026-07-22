@@ -321,10 +321,9 @@
       flake = false;
     };
 
-    # Sidebar v2 plus incremental project completion (t3code#4214),
-    # merged with nightly 20260720.859.
-    t3code-sidebar-nightly = {
-      url = "github:colonelpanic8/t3code/sidebar-v2-nightly-20260720";
+    # Patch selections for this source are maintained in t3code.nix.
+    t3code-upstream = {
+      url = "github:pingdotgg/t3code";
       flake = false;
     };
 

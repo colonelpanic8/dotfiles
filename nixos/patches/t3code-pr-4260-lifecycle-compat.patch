@@ -1,0 +1,1928 @@
+diff --git a/apps/server/src/orchestration/Layers/CheckpointReactor.test.ts b/apps/server/src/orchestration/Layers/CheckpointReactor.test.ts
+index 707c87c4..eb8598e3 100644
+--- a/apps/server/src/orchestration/Layers/CheckpointReactor.test.ts
++++ b/apps/server/src/orchestration/Layers/CheckpointReactor.test.ts
+@@ -109,6 +109,8 @@ function createProviderServiceHarness(
+     respondToRequest: () => unsupported(),
+     respondToUserInput: () => unsupported(),
+     stopSession: () => unsupported(),
++    setThreadGoal: () => unsupported(),
++    clearThreadGoal: () => unsupported(),
+     listSessions,
+     getCapabilities: () => Effect.succeed({ sessionModelSwitch: "in-session" }),
+     getInstanceInfo: (instanceId) =>
+diff --git a/apps/server/src/orchestration/Layers/ProviderCommandReactor.test.ts b/apps/server/src/orchestration/Layers/ProviderCommandReactor.test.ts
+index ce464565..43f00d62 100644
+--- a/apps/server/src/orchestration/Layers/ProviderCommandReactor.test.ts
++++ b/apps/server/src/orchestration/Layers/ProviderCommandReactor.test.ts
+@@ -301,6 +301,8 @@ describe("ProviderCommandReactor", () => {
+       respondToRequest: respondToRequest as ProviderServiceShape["respondToRequest"],
+       respondToUserInput: respondToUserInput as ProviderServiceShape["respondToUserInput"],
+       stopSession: stopSession as ProviderServiceShape["stopSession"],
++      setThreadGoal: () => unsupported(),
++      clearThreadGoal: () => unsupported(),
+       listSessions: () => Effect.succeed(runtimeSessions),
+       getCapabilities: (_provider) =>
+         Effect.succeed({
+diff --git a/apps/server/src/orchestration/Layers/ProviderCommandReactor.ts b/apps/server/src/orchestration/Layers/ProviderCommandReactor.ts
+index 9c7a7c94..de7e3f43 100644
+--- a/apps/server/src/orchestration/Layers/ProviderCommandReactor.ts
++++ b/apps/server/src/orchestration/Layers/ProviderCommandReactor.ts
+@@ -49,6 +49,8 @@ type ProviderIntentEvent = Extract<
+   {
+     type:
+       | "thread.runtime-mode-set"
++      | "thread.goal-set-requested"
++      | "thread.goal-clear-requested"
+       | "thread.turn-start-requested"
+       | "thread.turn-interrupt-requested"
+       | "thread.approval-response-requested"
+@@ -221,6 +223,8 @@ const make = Effect.gen(function* () {
+       | "provider.turn.interrupt.failed"
+       | "provider.approval.respond.failed"
+       | "provider.user-input.respond.failed"
++      | "provider.goal.set.failed"
++      | "provider.goal.clear.failed"
+       | "provider.session.stop.failed";
+     readonly summary: string;
+     readonly detail: string;
+@@ -744,6 +748,55 @@ const make = Effect.gen(function* () {
+     },
+   );
+
++  const processGoalSetRequested = Effect.fn("processGoalSetRequested")(function* (
++    event: Extract<ProviderIntentEvent, { type: "thread.goal-set-requested" }>,
++  ) {
++    const run = Effect.gen(function* () {
++      yield* ensureSessionForThread(event.payload.threadId, event.payload.createdAt);
++      yield* providerService.setThreadGoal({
++        threadId: event.payload.threadId,
++        ...(event.payload.objective !== undefined ? { objective: event.payload.objective } : {}),
++        ...(event.payload.status !== undefined ? { status: event.payload.status } : {}),
++        ...(event.payload.tokenBudget !== undefined
++          ? { tokenBudget: event.payload.tokenBudget }
++          : {}),
++      });
++    });
++    yield* run.pipe(
++      Effect.catchCause((cause) =>
++        appendProviderFailureActivity({
++          threadId: event.payload.threadId,
++          kind: "provider.goal.set.failed",
++          summary: "Goal update failed",
++          detail: formatFailureDetail(cause),
++          turnId: null,
++          createdAt: event.payload.createdAt,
++        }).pipe(Effect.asVoid),
++      ),
++    );
++  });
++
++  const processGoalClearRequested = Effect.fn("processGoalClearRequested")(function* (
++    event: Extract<ProviderIntentEvent, { type: "thread.goal-clear-requested" }>,
++  ) {
++    const run = Effect.gen(function* () {
++      yield* ensureSessionForThread(event.payload.threadId, event.payload.createdAt);
++      yield* providerService.clearThreadGoal({ threadId: event.payload.threadId });
++    });
++    yield* run.pipe(
++      Effect.catchCause((cause) =>
++        appendProviderFailureActivity({
++          threadId: event.payload.threadId,
++          kind: "provider.goal.clear.failed",
++          summary: "Goal clear failed",
++          detail: formatFailureDetail(cause),
++          turnId: null,
++          createdAt: event.payload.createdAt,
++        }).pipe(Effect.asVoid),
++      ),
++    );
++  });
++
+   const processTurnStartRequested = Effect.fn("processTurnStartRequested")(function* (
+     event: Extract<ProviderIntentEvent, { type: "thread.turn-start-requested" }>,
+   ) {
+@@ -1027,6 +1080,12 @@ const make = Effect.gen(function* () {
+         );
+         return;
+       }
++      case "thread.goal-set-requested":
++        yield* processGoalSetRequested(event);
++        return;
++      case "thread.goal-clear-requested":
++        yield* processGoalClearRequested(event);
++        return;
+       case "thread.turn-start-requested":
+         yield* processTurnStartRequested(event);
+         return;
+@@ -1064,6 +1123,8 @@ const make = Effect.gen(function* () {
+     const processEvent = Effect.fn("processEvent")(function* (event: OrchestrationEvent) {
+       if (
+         event.type === "thread.runtime-mode-set" ||
++        event.type === "thread.goal-set-requested" ||
++        event.type === "thread.goal-clear-requested" ||
+         event.type === "thread.turn-start-requested" ||
+         event.type === "thread.turn-interrupt-requested" ||
+         event.type === "thread.approval-response-requested" ||
+diff --git a/apps/server/src/orchestration/Layers/ProviderRuntimeIngestion.test.ts b/apps/server/src/orchestration/Layers/ProviderRuntimeIngestion.test.ts
+index 20611e1e..d3102a9e 100644
+--- a/apps/server/src/orchestration/Layers/ProviderRuntimeIngestion.test.ts
++++ b/apps/server/src/orchestration/Layers/ProviderRuntimeIngestion.test.ts
+@@ -104,6 +104,8 @@ function createProviderServiceHarness() {
+     respondToRequest: () => unsupported(),
+     respondToUserInput: () => unsupported(),
+     stopSession: () => unsupported(),
++    setThreadGoal: () => unsupported(),
++    clearThreadGoal: () => unsupported(),
+     listSessions: () => Effect.succeed([...runtimeSessions]),
+     getCapabilities: () => Effect.succeed({ sessionModelSwitch: "in-session" }),
+     getInstanceInfo: (instanceId) => {
+diff --git a/apps/server/src/orchestration/Layers/ProviderRuntimeIngestion.ts b/apps/server/src/orchestration/Layers/ProviderRuntimeIngestion.ts
+index 09566feb..9b6dd0e2 100644
+--- a/apps/server/src/orchestration/Layers/ProviderRuntimeIngestion.ts
++++ b/apps/server/src/orchestration/Layers/ProviderRuntimeIngestion.ts
+@@ -317,6 +317,34 @@ export function runtimeEventToActivities(
+       : {};
+   })();
+   switch (event.type) {
++    case "thread.goal.updated":
++      return [
++        {
++          id: event.eventId,
++          createdAt: event.createdAt,
++          tone: "info",
++          kind: "goal.updated",
++          summary: `Goal ${event.payload.goal.status}`,
++          payload: { goal: event.payload.goal },
++          turnId: toTurnId(event.turnId) ?? null,
++          ...maybeSequence,
++        },
++      ];
++
++    case "thread.goal.cleared":
++      return [
++        {
++          id: event.eventId,
++          createdAt: event.createdAt,
++          tone: "info",
++          kind: "goal.cleared",
++          summary: "Goal cleared",
++          payload: {},
++          turnId: toTurnId(event.turnId) ?? null,
++          ...maybeSequence,
++        },
++      ];
++
+     case "request.opened": {
+       if (event.payload.requestType === "tool_user_input") {
+         return [];
+diff --git a/apps/server/src/orchestration/Schemas.ts b/apps/server/src/orchestration/Schemas.ts
+index 0d0d7bdd..598e6c81 100644
+--- a/apps/server/src/orchestration/Schemas.ts
++++ b/apps/server/src/orchestration/Schemas.ts
+@@ -8,6 +8,8 @@ import {
+   ThreadMetaUpdatedPayload as ContractsThreadMetaUpdatedPayloadSchema,
+   ThreadRuntimeModeSetPayload as ContractsThreadRuntimeModeSetPayloadSchema,
+   ThreadInteractionModeSetPayload as ContractsThreadInteractionModeSetPayloadSchema,
++  ThreadGoalSetRequestedPayload as ContractsThreadGoalSetRequestedPayloadSchema,
++  ThreadGoalClearRequestedPayload as ContractsThreadGoalClearRequestedPayloadSchema,
+   ThreadDeletedPayload as ContractsThreadDeletedPayloadSchema,
+   ThreadUnarchivedPayload as ContractsThreadUnarchivedPayloadSchema,
+   ThreadUnsettledPayload as ContractsThreadUnsettledPayloadSchema,
+@@ -35,6 +37,8 @@ export const ThreadSettledPayload = ContractsThreadSettledPayloadSchema;
+ export const ThreadMetaUpdatedPayload = ContractsThreadMetaUpdatedPayloadSchema;
+ export const ThreadRuntimeModeSetPayload = ContractsThreadRuntimeModeSetPayloadSchema;
+ export const ThreadInteractionModeSetPayload = ContractsThreadInteractionModeSetPayloadSchema;
++export const ThreadGoalSetRequestedPayload = ContractsThreadGoalSetRequestedPayloadSchema;
++export const ThreadGoalClearRequestedPayload = ContractsThreadGoalClearRequestedPayloadSchema;
+ export const ThreadDeletedPayload = ContractsThreadDeletedPayloadSchema;
+ export const ThreadUnarchivedPayload = ContractsThreadUnarchivedPayloadSchema;
+ export const ThreadUnsettledPayload = ContractsThreadUnsettledPayloadSchema;
+diff --git a/apps/server/src/orchestration/decider.goal.test.ts b/apps/server/src/orchestration/decider.goal.test.ts
+new file mode 100644
+index 00000000..c84bc8ab
+--- /dev/null
++++ b/apps/server/src/orchestration/decider.goal.test.ts
+@@ -0,0 +1,78 @@
++import {
++  CommandId,
++  MessageId,
++  ProjectId,
++  ProviderInstanceId,
++  ThreadId,
++  type OrchestrationThread,
++} from "@t3tools/contracts";
++import * as NodeServices from "@effect/platform-node/NodeServices";
++import { expect, it } from "@effect/vitest";
++import * as Effect from "effect/Effect";
++
++import { decideOrchestrationCommand } from "./decider.ts";
++import { createEmptyReadModel } from "./projector.ts";
++
++const now = "2026-07-22T00:00:00.000Z";
++const threadId = ThreadId.make("thread-goal");
++const thread: OrchestrationThread = {
++  id: threadId,
++  projectId: ProjectId.make("project-goal"),
++  title: "New thread",
++  modelSelection: { instanceId: ProviderInstanceId.make("codex"), model: "gpt-5.4" },
++  runtimeMode: "full-access",
++  interactionMode: "default",
++  branch: null,
++  worktreePath: null,
++  latestTurn: null,
++  createdAt: now,
++  updatedAt: now,
++  archivedAt: null,
++  deletedAt: null,
++  messages: [],
++  proposedPlans: [],
++  activities: [],
++  checkpoints: [],
++  session: null,
++};
++
++it.layer(NodeServices.layer)("goal decider", (it) => {
++  it.effect("sets the goal before starting its first turn", () =>
++    Effect.gen(function* () {
++      const result = yield* decideOrchestrationCommand({
++        command: {
++          type: "thread.turn.start",
++          commandId: CommandId.make("command-goal-start"),
++          threadId,
++          message: {
++            messageId: MessageId.make("message-goal-start"),
++            role: "user",
++            text: "Ship goal support",
++            attachments: [],
++          },
++          goal: { objective: "Ship goal support", tokenBudget: 50_000 },
++          runtimeMode: "full-access",
++          interactionMode: "default",
++          createdAt: now,
++        },
++        readModel: { ...createEmptyReadModel(now), threads: [thread] },
++      });
++
++      expect(Array.isArray(result)).toBe(true);
++      if (!Array.isArray(result)) return;
++      expect(result.map((event) => event.type)).toEqual([
++        "thread.goal-set-requested",
++        "thread.message-sent",
++        "thread.turn-start-requested",
++      ]);
++      const goalEvent = result[0];
++      if (goalEvent?.type !== "thread.goal-set-requested") return;
++      expect(goalEvent.payload).toMatchObject({
++        threadId,
++        objective: "Ship goal support",
++        status: "active",
++        tokenBudget: 50_000,
++      });
++    }),
++  );
++});
+diff --git a/apps/server/src/orchestration/decider.ts b/apps/server/src/orchestration/decider.ts
+index cba967af..8ed574e3 100644
+--- a/apps/server/src/orchestration/decider.ts
++++ b/apps/server/src/orchestration/decider.ts
+@@ -588,6 +588,50 @@ export const decideOrchestrationCommand = Effect.fn("decideOrchestrationCommand"
+       };
+     }
+
++    case "thread.goal.set": {
++      yield* requireThread({ readModel, command, threadId: command.threadId });
++      if (
++        command.objective === undefined &&
++        command.status === undefined &&
++        command.tokenBudget === undefined
++      ) {
++        return yield* new OrchestrationCommandInvariantError({
++          commandType: command.type,
++          detail: "A goal update must include an objective, status, or token budget.",
++        });
++      }
++      return {
++        ...(yield* withEventBase({
++          aggregateKind: "thread",
++          aggregateId: command.threadId,
++          occurredAt: command.createdAt,
++          commandId: command.commandId,
++        })),
++        type: "thread.goal-set-requested",
++        payload: {
++          threadId: command.threadId,
++          ...(command.objective !== undefined ? { objective: command.objective } : {}),
++          ...(command.status !== undefined ? { status: command.status } : {}),
++          ...(command.tokenBudget !== undefined ? { tokenBudget: command.tokenBudget } : {}),
++          createdAt: command.createdAt,
++        },
++      };
++    }
++
++    case "thread.goal.clear": {
++      yield* requireThread({ readModel, command, threadId: command.threadId });
++      return {
++        ...(yield* withEventBase({
++          aggregateKind: "thread",
++          aggregateId: command.threadId,
++          occurredAt: command.createdAt,
++          commandId: command.commandId,
++        })),
++        type: "thread.goal-clear-requested",
++        payload: { threadId: command.threadId, createdAt: command.createdAt },
++      };
++    }
++
+     case "thread.turn.start": {
+       const targetThread = yield* requireThread({
+         readModel,
+@@ -663,24 +707,44 @@ export const decideOrchestrationCommand = Effect.fn("decideOrchestrationCommand"
+       // Real activity resets ANY override: it wakes an explicitly settled
+       // thread, and it clears a keep-active pin back to neutral so the
+       // thread can auto-settle again after this burst of work goes stale.
+-      if (targetThread.settledOverride === null) {
+-        return [userMessageEvent, turnStartRequestedEvent];
++      const activityEvents: Array<Omit<OrchestrationEvent, "sequence">> = [];
++      if (targetThread.settledOverride !== null) {
++        activityEvents.push({
++          ...(yield* withEventBase({
++            aggregateKind: "thread",
++            aggregateId: command.threadId,
++            occurredAt: command.createdAt,
++            commandId: command.commandId,
++          })),
++          type: "thread.unsettled",
++          payload: {
++            threadId: command.threadId,
++            reason: "activity",
++            updatedAt: command.createdAt,
++          },
++        });
+       }
+-      const unsettledEvent: Omit<OrchestrationEvent, "sequence"> = {
+-        ...(yield* withEventBase({
+-          aggregateKind: "thread",
+-          aggregateId: command.threadId,
+-          occurredAt: command.createdAt,
+-          commandId: command.commandId,
+-        })),
+-        type: "thread.unsettled",
+-        payload: {
+-          threadId: command.threadId,
+-          reason: "activity",
+-          updatedAt: command.createdAt,
+-        },
+-      };
+-      return [unsettledEvent, userMessageEvent, turnStartRequestedEvent];
++      if (command.goal !== undefined) {
++        activityEvents.push({
++          ...(yield* withEventBase({
++            aggregateKind: "thread",
++            aggregateId: command.threadId,
++            occurredAt: command.createdAt,
++            commandId: command.commandId,
++          })),
++          type: "thread.goal-set-requested",
++          payload: {
++            threadId: command.threadId,
++            objective: command.goal.objective,
++            status: "active",
++            ...(command.goal.tokenBudget !== undefined
++              ? { tokenBudget: command.goal.tokenBudget }
++              : {}),
++            createdAt: command.createdAt,
++          },
++        });
++      }
++      return [...activityEvents, userMessageEvent, turnStartRequestedEvent];
+     }
+
+     case "thread.turn.interrupt": {
+diff --git a/apps/server/src/orchestration/projector.ts b/apps/server/src/orchestration/projector.ts
+index c8f47dce..f3476b31 100644
+--- a/apps/server/src/orchestration/projector.ts
++++ b/apps/server/src/orchestration/projector.ts
+@@ -19,6 +19,8 @@ import {
+   ThreadCreatedPayload,
+   ThreadDeletedPayload,
+   ThreadInteractionModeSetPayload,
++  ThreadGoalSetRequestedPayload,
++  ThreadGoalClearRequestedPayload,
+   ThreadMetaUpdatedPayload,
+   ThreadProposedPlanUpsertedPayload,
+   ThreadRuntimeModeSetPayload,
+@@ -408,6 +410,36 @@ export function projectEvent(
+         })),
+       );
+
++    case "thread.goal-set-requested":
++      return decodeForEvent(
++        ThreadGoalSetRequestedPayload,
++        event.payload,
++        event.type,
++        "payload",
++      ).pipe(
++        Effect.map((payload) => ({
++          ...nextBase,
++          threads: updateThread(nextBase.threads, payload.threadId, {
++            updatedAt: payload.createdAt,
++          }),
++        })),
++      );
++
++    case "thread.goal-clear-requested":
++      return decodeForEvent(
++        ThreadGoalClearRequestedPayload,
++        event.payload,
++        event.type,
++        "payload",
++      ).pipe(
++        Effect.map((payload) => ({
++          ...nextBase,
++          threads: updateThread(nextBase.threads, payload.threadId, {
++            updatedAt: payload.createdAt,
++          }),
++        })),
++      );
++
+     case "thread.message-sent":
+       return Effect.gen(function* () {
+         const payload = yield* decodeForEvent(
+diff --git a/apps/server/src/provider/Layers/CodexAdapter.test.ts b/apps/server/src/provider/Layers/CodexAdapter.test.ts
+index 4ae654a5..ad7d4155 100644
+--- a/apps/server/src/provider/Layers/CodexAdapter.test.ts
++++ b/apps/server/src/provider/Layers/CodexAdapter.test.ts
+@@ -141,6 +141,12 @@ class FakeCodexRuntime implements CodexSessionRuntimeShape {
+     return Effect.promise(() => this.rollbackThreadImpl(numTurns));
+   }
+
++  setThreadGoal() {
++    return Effect.void;
++  }
++
++  clearThreadGoal = Effect.void;
++
+   respondToRequest(requestId: ApprovalRequestId, decision: ProviderApprovalDecision) {
+     return Effect.promise(() => this.respondToRequestImpl(requestId, decision));
+   }
+@@ -1150,6 +1156,50 @@ lifecycleLayer("CodexAdapterLive lifecycle", (it) => {
+       });
+     }),
+   );
++
++  it.effect("maps Codex goal updates into canonical runtime events", () =>
++    Effect.gen(function* () {
++      const { adapter, runtime } = yield* startLifecycleRuntime();
++      const firstEventFiber = yield* Stream.runHead(adapter.streamEvents).pipe(Effect.forkChild);
++
++      yield* runtime.emit({
++        id: asEventId("evt-codex-goal-updated"),
++        kind: "notification",
++        provider: ProviderDriverKind.make("codex"),
++        threadId: asThreadId("thread-1"),
++        createdAt: "2026-01-01T00:00:00.000Z",
++        method: "thread/goal/updated",
++        payload: {
++          threadId: "provider-thread-1",
++          goal: {
++            threadId: "provider-thread-1",
++            objective: "Finish goal support",
++            status: "active",
++            tokenBudget: 50_000,
++            tokensUsed: 1_234,
++            timeUsedSeconds: 75,
++            createdAt: 1_767_225_600,
++            updatedAt: 1_767_225_675,
++          },
++        },
++      } satisfies ProviderEvent);
++
++      const firstEvent = yield* Fiber.join(firstEventFiber);
++      NodeAssert.equal(firstEvent._tag, "Some");
++      if (firstEvent._tag !== "Some" || firstEvent.value.type !== "thread.goal.updated") {
++        return;
++      }
++      NodeAssert.deepEqual(firstEvent.value.payload.goal, {
++        objective: "Finish goal support",
++        status: "active",
++        tokenBudget: 50_000,
++        tokensUsed: 1_234,
++        timeUsedSeconds: 75,
++        createdAt: "2026-01-01T00:00:00.000Z",
++        updatedAt: "2026-01-01T00:01:15.000Z",
++      });
++    }),
++  );
+ });
+
+ const scopedLifecycleRuntimeFactory = makeScopedRuntimeFactory();
+diff --git a/apps/server/src/provider/Layers/CodexAdapter.ts b/apps/server/src/provider/Layers/CodexAdapter.ts
+index 38a5887c..81e14674 100644
+--- a/apps/server/src/provider/Layers/CodexAdapter.ts
++++ b/apps/server/src/provider/Layers/CodexAdapter.ts
+@@ -17,6 +17,7 @@ import {
+   type ProviderRuntimeEvent,
+   type ProviderRequestKind,
+   type ThreadTokenUsageSnapshot,
++  type ThreadGoal,
+   type ProviderUserInputAnswers,
+   RuntimeItemId,
+   RuntimeRequestId,
+@@ -26,6 +27,7 @@ import {
+ } from "@t3tools/contracts";
+ import * as Effect from "effect/Effect";
+ import * as Crypto from "effect/Crypto";
++import * as DateTime from "effect/DateTime";
+ import * as Exit from "effect/Exit";
+ import * as Fiber from "effect/Fiber";
+ import * as FileSystem from "effect/FileSystem";
+@@ -190,6 +192,20 @@ function normalizeCodexTokenUsage(
+   };
+ }
+
++function normalizeCodexGoal(
++  goal: EffectCodexSchema.V2ThreadGoalUpdatedNotification["goal"],
++): ThreadGoal {
++  return {
++    objective: goal.objective,
++    status: goal.status,
++    tokenBudget: goal.tokenBudget == null ? null : Math.max(0, goal.tokenBudget),
++    tokensUsed: Math.max(0, goal.tokensUsed),
++    timeUsedSeconds: Math.max(0, goal.timeUsedSeconds),
++    createdAt: DateTime.formatIso(DateTime.makeUnsafe(goal.createdAt * 1_000)),
++    updatedAt: DateTime.formatIso(DateTime.makeUnsafe(goal.updatedAt * 1_000)),
++  };
++}
++
+ function toTurnStatus(
+   value: EffectCodexSchema.V2TurnCompletedNotification["turn"]["status"] | "cancelled",
+ ): "completed" | "failed" | "cancelled" | "interrupted" {
+@@ -752,6 +768,33 @@ function mapToRuntimeEvents(
+     ];
+   }
+
++  if (event.method === "thread/goal/updated") {
++    const payload = readPayload(EffectCodexSchema.V2ThreadGoalUpdatedNotification, event.payload);
++    if (!payload) {
++      return [];
++    }
++    return [
++      {
++        type: "thread.goal.updated",
++        ...runtimeEventBase(event, canonicalThreadId),
++        payload: { goal: normalizeCodexGoal(payload.goal) },
++      },
++    ];
++  }
++
++  if (event.method === "thread/goal/cleared") {
++    if (!readPayload(EffectCodexSchema.V2ThreadGoalClearedNotification, event.payload)) {
++      return [];
++    }
++    return [
++      {
++        type: "thread.goal.cleared",
++        ...runtimeEventBase(event, canonicalThreadId),
++        payload: {},
++      },
++    ];
++  }
++
+   if (event.method === "turn/started") {
+     const turnId = event.turnId;
+     if (!turnId) {
+@@ -1703,6 +1746,7 @@ export const makeCodexAdapter = Effect.fn("makeCodexAdapter")(function* (
+     provider: PROVIDER,
+     capabilities: {
+       sessionModelSwitch: "in-session",
++      threadGoals: "native",
+     },
+     startSession,
+     sendTurn,
+@@ -1711,6 +1755,30 @@ export const makeCodexAdapter = Effect.fn("makeCodexAdapter")(function* (
+     rollbackThread,
+     respondToRequest,
+     respondToUserInput,
++    setThreadGoal: (input) =>
++      requireSession(input.threadId).pipe(
++        Effect.flatMap((session) =>
++          session.runtime.setThreadGoal({
++            ...(input.objective !== undefined ? { objective: input.objective } : {}),
++            ...(input.status !== undefined ? { status: input.status } : {}),
++            ...(input.tokenBudget !== undefined ? { tokenBudget: input.tokenBudget } : {}),
++          }),
++        ),
++        Effect.mapError((cause) =>
++          cause._tag === "ProviderAdapterSessionNotFoundError"
++            ? cause
++            : mapCodexRuntimeError(input.threadId, "thread/goal/set", cause),
++        ),
++      ),
++    clearThreadGoal: (threadId) =>
++      requireSession(threadId).pipe(
++        Effect.flatMap((session) => session.runtime.clearThreadGoal),
++        Effect.mapError((cause) =>
++          cause._tag === "ProviderAdapterSessionNotFoundError"
++            ? cause
++            : mapCodexRuntimeError(threadId, "thread/goal/clear", cause),
++        ),
++      ),
+     stopSession,
+     listSessions,
+     hasSession,
+diff --git a/apps/server/src/provider/Layers/CodexSessionRuntime.ts b/apps/server/src/provider/Layers/CodexSessionRuntime.ts
+index 5a81e915..a89b9b31 100644
+--- a/apps/server/src/provider/Layers/CodexSessionRuntime.ts
++++ b/apps/server/src/provider/Layers/CodexSessionRuntime.ts
+@@ -10,6 +10,7 @@ import {
+   type ProviderInteractionMode,
+   type ProviderRequestKind,
+   type ProviderSession,
++  type ProviderSetThreadGoalInput,
+   type ProviderTurnStartResult,
+   type ProviderUserInputAnswers,
+   RuntimeMode,
+@@ -141,6 +142,10 @@ export interface CodexSessionRuntimeShape {
+   readonly rollbackThread: (
+     numTurns: number,
+   ) => Effect.Effect<CodexThreadSnapshot, CodexSessionRuntimeError>;
++  readonly setThreadGoal: (
++    input: Omit<ProviderSetThreadGoalInput, "threadId">,
++  ) => Effect.Effect<void, CodexSessionRuntimeError>;
++  readonly clearThreadGoal: Effect.Effect<void, CodexSessionRuntimeError>;
+   readonly respondToRequest: (
+     requestId: ApprovalRequestId,
+     decision: ProviderApprovalDecision,
+@@ -489,6 +494,8 @@ function readNotificationThreadId(notification: CodexServerNotification): string
+     case "thread/closed":
+     case "thread/name/updated":
+     case "thread/tokenUsage/updated":
++    case "thread/goal/updated":
++    case "thread/goal/cleared":
+     case "turn/started":
+     case "hook/started":
+     case "turn/completed":
+@@ -619,6 +626,8 @@ function shouldSuppressChildConversationNotification(
+     method === "thread/compacted" ||
+     method === "thread/name/updated" ||
+     method === "thread/tokenUsage/updated" ||
++    method === "thread/goal/updated" ||
++    method === "thread/goal/cleared" ||
+     method === "turn/started" ||
+     method === "turn/completed" ||
+     method === "turn/plan/updated" ||
+@@ -1203,6 +1212,7 @@ export const makeCodexSessionRuntime = (
+       yield* client.notify("initialized", undefined);
+
+       const requestedModel = normalizeCodexModelSlug(options.model);
++      const resumeThreadId = readResumeCursorThreadId(options.resumeCursor);
+
+       const opened = yield* openCodexThread({
+         client,
+@@ -1211,7 +1221,7 @@ export const makeCodexSessionRuntime = (
+         cwd: options.cwd,
+         requestedModel,
+         serviceTier: options.serviceTier,
+-        resumeThreadId: readResumeCursorThreadId(options.resumeCursor),
++        resumeThreadId,
+       });
+
+       const providerThreadId = opened.thread.id;
+@@ -1224,6 +1234,31 @@ export const makeCodexSessionRuntime = (
+         updatedAt: yield* nowIso,
+       } satisfies ProviderSession;
+       yield* Ref.set(sessionRef, session);
++      yield* client.request("thread/goal/get", { threadId: providerThreadId }).pipe(
++        Effect.flatMap((response) =>
++          response.goal
++            ? emitEvent({
++                kind: "notification",
++                threadId: options.threadId,
++                method: "thread/goal/updated",
++                payload: {
++                  threadId: providerThreadId,
++                  goal: response.goal,
++                },
++              })
++            : resumeThreadId
++              ? emitEvent({
++                  kind: "notification",
++                  threadId: options.threadId,
++                  method: "thread/goal/cleared",
++                  payload: { threadId: providerThreadId },
++                })
++              : Effect.void,
++        ),
++        Effect.catch((cause) =>
++          Effect.logDebug("Codex thread goal state is unavailable for this session.", { cause }),
++        ),
++      );
+       yield* emitSessionEvent("session/ready", "Codex App Server session ready.");
+       return session;
+     });
+@@ -1346,6 +1381,20 @@ export const makeCodexSessionRuntime = (
+           });
+           return parseThreadSnapshot(response);
+         }),
++      setThreadGoal: (input) =>
++        Effect.gen(function* () {
++          const providerThreadId = yield* readProviderThreadId;
++          yield* client.request("thread/goal/set", {
++            threadId: providerThreadId,
++            ...(input.objective !== undefined ? { objective: input.objective } : {}),
++            ...(input.status !== undefined ? { status: input.status } : {}),
++            ...(input.tokenBudget !== undefined ? { tokenBudget: input.tokenBudget } : {}),
++          });
++        }),
++      clearThreadGoal: Effect.gen(function* () {
++        const providerThreadId = yield* readProviderThreadId;
++        yield* client.request("thread/goal/clear", { threadId: providerThreadId });
++      }),
+       respondToRequest: (requestId, decision) =>
+         Effect.gen(function* () {
+           const pending = (yield* Ref.get(pendingApprovalsRef)).get(requestId);
+diff --git a/apps/server/src/provider/Layers/ProviderService.ts b/apps/server/src/provider/Layers/ProviderService.ts
+index 2eaaeb8c..3861ab5c 100644
+--- a/apps/server/src/provider/Layers/ProviderService.ts
++++ b/apps/server/src/provider/Layers/ProviderService.ts
+@@ -17,6 +17,8 @@ import {
+   ProviderRespondToRequestInput,
+   ProviderRespondToUserInputInput,
+   ProviderSendTurnInput,
++  ProviderSetThreadGoalInput,
++  ProviderClearThreadGoalInput,
+   ProviderSessionStartInput,
+   ProviderStopSessionInput,
+   type ProviderInstanceId,
+@@ -874,6 +876,60 @@ const makeProviderService = Effect.fn("makeProviderService")(function* (
+     },
+   );
+
++  const setThreadGoal: ProviderServiceMethod<"setThreadGoal"> = Effect.fn("setThreadGoal")(
++    function* (rawInput) {
++      const input = yield* decodeInputOrValidationError({
++        operation: "ProviderService.setThreadGoal",
++        schema: ProviderSetThreadGoalInput,
++        payload: rawInput,
++      });
++      if (
++        input.objective === undefined &&
++        input.status === undefined &&
++        input.tokenBudget === undefined
++      ) {
++        return yield* toValidationError(
++          "ProviderService.setThreadGoal",
++          "At least one goal field must be provided.",
++        );
++      }
++      const routed = yield* resolveRoutableSession({
++        threadId: input.threadId,
++        operation: "ProviderService.setThreadGoal",
++        allowRecovery: true,
++      });
++      if (!routed.adapter.setThreadGoal) {
++        return yield* toValidationError(
++          "ProviderService.setThreadGoal",
++          `Provider '${routed.adapter.provider}' does not support persisted thread goals.`,
++        );
++      }
++      yield* routed.adapter.setThreadGoal(input);
++    },
++  );
++
++  const clearThreadGoal: ProviderServiceMethod<"clearThreadGoal"> = Effect.fn("clearThreadGoal")(
++    function* (rawInput) {
++      const input = yield* decodeInputOrValidationError({
++        operation: "ProviderService.clearThreadGoal",
++        schema: ProviderClearThreadGoalInput,
++        payload: rawInput,
++      });
++      const routed = yield* resolveRoutableSession({
++        threadId: input.threadId,
++        operation: "ProviderService.clearThreadGoal",
++        allowRecovery: true,
++      });
++      if (!routed.adapter.clearThreadGoal) {
++        return yield* toValidationError(
++          "ProviderService.clearThreadGoal",
++          `Provider '${routed.adapter.provider}' does not support persisted thread goals.`,
++        );
++      }
++      yield* routed.adapter.clearThreadGoal(input.threadId);
++    },
++  );
++
+   const listSessions: ProviderServiceMethod<"listSessions"> = Effect.fn("listSessions")(
+     function* () {
+       const currentAdapters = yield* getAdapterEntries;
+@@ -1074,6 +1130,8 @@ const makeProviderService = Effect.fn("makeProviderService")(function* (
+     interruptTurn,
+     respondToRequest,
+     respondToUserInput,
++    setThreadGoal,
++    clearThreadGoal,
+     stopSession,
+     listSessions,
+     getCapabilities,
+diff --git a/apps/server/src/provider/Layers/ProviderSessionReaper.test.ts b/apps/server/src/provider/Layers/ProviderSessionReaper.test.ts
+index 3843c8ac..ccd6d555 100644
+--- a/apps/server/src/provider/Layers/ProviderSessionReaper.test.ts
++++ b/apps/server/src/provider/Layers/ProviderSessionReaper.test.ts
+@@ -158,6 +158,8 @@ describe("ProviderSessionReaper", () => {
+       respondToRequest: () => unsupported(),
+       respondToUserInput: () => unsupported(),
+       stopSession,
++      setThreadGoal: () => unsupported(),
++      clearThreadGoal: () => unsupported(),
+       listSessions: () => Effect.succeed([]),
+       getCapabilities: () => Effect.succeed({ sessionModelSwitch: "in-session" }),
+       getInstanceInfo: (instanceId) => {
+diff --git a/apps/server/src/provider/Services/ProviderAdapter.ts b/apps/server/src/provider/Services/ProviderAdapter.ts
+index 01eeae7b..dabd56e4 100644
+--- a/apps/server/src/provider/Services/ProviderAdapter.ts
++++ b/apps/server/src/provider/Services/ProviderAdapter.ts
+@@ -14,6 +14,7 @@ import type {
+   ProviderUserInputAnswers,
+   ProviderRuntimeEvent,
+   ProviderSendTurnInput,
++  ProviderSetThreadGoalInput,
+   ProviderSession,
+   ProviderSessionStartInput,
+   ThreadId,
+@@ -30,6 +31,8 @@ export interface ProviderAdapterCapabilities {
+    * Declares whether changing the model on an existing session is supported.
+    */
+   readonly sessionModelSwitch: ProviderSessionModelSwitchMode;
++  /** Native persisted goal control is currently exposed by Codex app-server. */
++  readonly threadGoals?: "native";
+ }
+
+ export interface ProviderThreadTurnSnapshot {
+@@ -91,6 +94,10 @@ export interface ProviderAdapterShape<TError> {
+    */
+   readonly stopSession: (threadId: ThreadId) => Effect.Effect<void, TError>;
+
++  readonly setThreadGoal?: (input: ProviderSetThreadGoalInput) => Effect.Effect<void, TError>;
++
++  readonly clearThreadGoal?: (threadId: ThreadId) => Effect.Effect<void, TError>;
++
+   /**
+    * List currently active provider sessions for this adapter.
+    */
+diff --git a/apps/server/src/provider/Services/ProviderService.ts b/apps/server/src/provider/Services/ProviderService.ts
+index 4d4cb4fa..901f5298 100644
+--- a/apps/server/src/provider/Services/ProviderService.ts
++++ b/apps/server/src/provider/Services/ProviderService.ts
+@@ -18,6 +18,8 @@ import type {
+   ProviderRespondToUserInputInput,
+   ProviderRuntimeEvent,
+   ProviderSendTurnInput,
++  ProviderSetThreadGoalInput,
++  ProviderClearThreadGoalInput,
+   ProviderSession,
+   ProviderSessionStartInput,
+   ProviderStopSessionInput,
+@@ -79,6 +81,14 @@ export interface ProviderServiceShape {
+     input: ProviderStopSessionInput,
+   ) => Effect.Effect<void, ProviderServiceError>;
+
++  readonly setThreadGoal: (
++    input: ProviderSetThreadGoalInput,
++  ) => Effect.Effect<void, ProviderServiceError>;
++
++  readonly clearThreadGoal: (
++    input: ProviderClearThreadGoalInput,
++  ) => Effect.Effect<void, ProviderServiceError>;
++
+   /**
+    * List active provider sessions.
+    *
+diff --git a/apps/server/src/relay/AgentAwarenessRelay.ts b/apps/server/src/relay/AgentAwarenessRelay.ts
+index 58de98f1..0f71cc65 100644
+--- a/apps/server/src/relay/AgentAwarenessRelay.ts
++++ b/apps/server/src/relay/AgentAwarenessRelay.ts
+@@ -77,6 +77,8 @@ export function shouldPublishAgentAwarenessEvent(event: OrchestrationEvent): boo
+     case "thread.proposed-plan-upserted":
+     case "thread.runtime-mode-set":
+     case "thread.interaction-mode-set":
++    case "thread.goal-set-requested":
++    case "thread.goal-clear-requested":
+       return false;
+     case "thread.activity-appended":
+       return (
+diff --git a/apps/web/src/components/ChatView.tsx b/apps/web/src/components/ChatView.tsx
+index f3145df4..5465a23f 100644
+--- a/apps/web/src/components/ChatView.tsx
++++ b/apps/web/src/components/ChatView.tsx
+@@ -16,6 +16,8 @@ import {
+   type TurnId,
+   type KeybindingCommand,
+   OrchestrationThreadActivity,
++  THREAD_GOAL_MAX_OBJECTIVE_CHARS,
++  type ThreadGoal,
+   ProviderInteractionMode,
+   ProviderDriverKind,
+   RuntimeMode,
+@@ -63,6 +65,7 @@ import {
+   squashAtomCommandFailure,
+   type AtomCommandResult,
+ } from "@t3tools/client-runtime/state/runtime";
++import { deriveThreadGoal } from "@t3tools/client-runtime/state/threads";
+ import * as Cause from "effect/Cause";
+ import { AsyncResult } from "effect/unstable/reactivity";
+ import { isElectron } from "../env";
+@@ -70,6 +73,7 @@ import { readLocalApi } from "../localApi";
+ import { useDiffPanelStore } from "../diffPanelStore";
+ import {
+   collapseExpandedComposerCursor,
++  parseGoalComposerSlashCommand,
+   parseStandaloneComposerSlashCommand,
+ } from "../composer-logic";
+ import {
+@@ -215,6 +219,7 @@ import { resolveEffectiveEnvMode } from "./BranchToolbar.logic";
+ import { ProviderStatusBanner } from "./chat/ProviderStatusBanner";
+ import { ThreadErrorBanner } from "./chat/ThreadErrorBanner";
+ import { ComposerBannerStack, type ComposerBannerStackItem } from "./chat/ComposerBannerStack";
++import { GoalProgressRow } from "./chat/GoalProgressRow";
+ import {
+   DRAFT_HERO_TRANSITION_ANIMATION_ID,
+   DRAFT_HERO_TRANSITION_DURATION_MS,
+@@ -1109,6 +1114,8 @@ function ChatViewContent(props: ChatViewProps) {
+   const setThreadInteractionMode = useAtomCommand(threadEnvironment.setInteractionMode, {
+     reportFailure: false,
+   });
++  const setThreadGoal = useAtomCommand(threadEnvironment.setGoal, { reportFailure: false });
++  const clearThreadGoal = useAtomCommand(threadEnvironment.clearGoal, { reportFailure: false });
+   const startThreadTurn = useAtomCommand(threadEnvironment.startTurn, { reportFailure: false });
+   const interruptThreadTurn = useAtomCommand(threadEnvironment.interruptTurn, {
+     reportFailure: false,
+@@ -1374,6 +1381,11 @@ function ChatViewContent(props: ChatViewProps) {
+   // depend on which route is mounted.
+   const isServerThread = serverThread !== null;
+   const activeThread = isServerThread ? serverThread : localDraftThread;
++  const activeGoal = useMemo<ThreadGoal | null>(
++    () => (activeThread ? deriveThreadGoal(activeThread.activities) : null),
++    [activeThread],
++  );
++  const [isGoalMutationPending, setIsGoalMutationPending] = useState(false);
+   const threadError = isServerThread
+     ? (localServerError ?? serverThread?.session?.lastError ?? null)
+     : localDraftError;
+@@ -4023,6 +4035,63 @@ function ChatViewContent(props: ChatViewProps) {
+     ],
+   );
+
++  const updateGoalStatus = useCallback(
++    async (status: "active" | "paused") => {
++      if (!activeThread || !isServerThread || isGoalMutationPending) return;
++      setIsGoalMutationPending(true);
++      const result = await setThreadGoal({
++        environmentId,
++        input: { threadId: activeThread.id, status },
++      });
++      if (result._tag === "Failure" && !isAtomCommandInterrupted(result)) {
++        const error = squashAtomCommandFailure(result);
++        setThreadError(
++          activeThread.id,
++          error instanceof Error ? error.message : "Failed to update the goal.",
++        );
++      }
++      setIsGoalMutationPending(false);
++    },
++    [
++      activeThread,
++      environmentId,
++      isGoalMutationPending,
++      isServerThread,
++      setThreadError,
++      setThreadGoal,
++    ],
++  );
++
++  const handleClearGoal = useCallback(async () => {
++    if (!activeThread || !isServerThread || isGoalMutationPending) return;
++    setIsGoalMutationPending(true);
++    const result = await clearThreadGoal({
++      environmentId,
++      input: { threadId: activeThread.id },
++    });
++    if (result._tag === "Failure" && !isAtomCommandInterrupted(result)) {
++      const error = squashAtomCommandFailure(result);
++      setThreadError(
++        activeThread.id,
++        error instanceof Error ? error.message : "Failed to clear the goal.",
++      );
++    }
++    setIsGoalMutationPending(false);
++  }, [
++    activeThread,
++    clearThreadGoal,
++    environmentId,
++    isGoalMutationPending,
++    isServerThread,
++    setThreadError,
++  ]);
++
++  const handleEditGoal = useCallback(() => {
++    if (!activeGoal) return;
++    const nextPrompt = `/goal ${activeGoal.objective}`;
++    composerRef.current?.replacePrompt(nextPrompt);
++  }, [activeGoal, composerRef]);
++
+   const onSend = async (e?: { preventDefault: () => void }) => {
+     e?.preventDefault();
+     if (
+@@ -4080,14 +4149,15 @@ function ChatViewContent(props: ChatViewProps) {
+       });
+       return;
+     }
+-    const standaloneSlashCommand =
++    const isStandaloneTextCommand =
+       composerImages.length === 0 &&
+       sendableComposerTerminalContexts.length === 0 &&
+       composerElementContexts.length === 0 &&
+       composerPreviewAnnotations.length === 0 &&
+-      composerReviewComments.length === 0
+-        ? parseStandaloneComposerSlashCommand(trimmed)
+-        : null;
++      composerReviewComments.length === 0;
++    const standaloneSlashCommand = isStandaloneTextCommand
++      ? parseStandaloneComposerSlashCommand(trimmed)
++      : null;
+     if (standaloneSlashCommand) {
+       handleInteractionModeChange(standaloneSlashCommand);
+       promptRef.current = "";
+@@ -4095,6 +4165,52 @@ function ChatViewContent(props: ChatViewProps) {
+       composerRef.current?.resetCursorState();
+       return;
+     }
++    const goalCommand =
++      isStandaloneTextCommand && ctxSelectedProvider === ProviderDriverKind.make("codex")
++        ? parseGoalComposerSlashCommand(trimmed)
++        : null;
++    if (goalCommand && goalCommand.type !== "set") {
++      promptRef.current = "";
++      clearComposerDraftContent(composerDraftTarget);
++      composerRef.current?.resetCursorState();
++      if (!activeGoal) {
++        toastManager.add(
++          stackedThreadToast({
++            type: "info",
++            title: "No active goal",
++            description: "Use /goal followed by an objective to start one.",
++          }),
++        );
++        return;
++      }
++      if (goalCommand.type === "view") {
++        toastManager.add(
++          stackedThreadToast({
++            type: "info",
++            title: `Goal ${activeGoal.status}`,
++            description: activeGoal.objective,
++          }),
++        );
++        return;
++      }
++      if (goalCommand.type === "clear") {
++        await handleClearGoal();
++        return;
++      }
++      await updateGoalStatus(goalCommand.type === "pause" ? "paused" : "active");
++      return;
++    }
++    const goalObjective = goalCommand?.type === "set" ? goalCommand.objective : null;
++    if (goalObjective && goalObjective.length > THREAD_GOAL_MAX_OBJECTIVE_CHARS) {
++      toastManager.add(
++        stackedThreadToast({
++          type: "warning",
++          title: "Goal is too long",
++          description: `Keep the objective under ${THREAD_GOAL_MAX_OBJECTIVE_CHARS.toLocaleString()} characters.`,
++        }),
++      );
++      return;
++    }
+     if (!hasSendableContent) {
+       if (expiredTerminalContextCount > 0) {
+         const toastCopy = buildExpiredTerminalContextToastCopy(
+@@ -4160,8 +4276,9 @@ function ChatViewContent(props: ChatViewProps) {
+     const composerElementContextsSnapshot = [...composerElementContexts];
+     const composerPreviewAnnotationsSnapshot = [...composerPreviewAnnotations];
+     const composerReviewCommentsSnapshot: ReviewCommentContext[] = [...composerReviewComments];
++    const promptTextForSend = goalObjective ?? promptForSend;
+     const messageTextWithContexts = appendElementContextsToPrompt(
+-      appendTerminalContextsToPrompt(promptForSend, composerTerminalContextsSnapshot),
++      appendTerminalContextsToPrompt(promptTextForSend, composerTerminalContextsSnapshot),
+       composerElementContextsSnapshot,
+     );
+     const messageTextWithPreviewAnnotations = composerPreviewAnnotationsSnapshot.reduce(
+@@ -4250,7 +4367,7 @@ function ChatViewContent(props: ChatViewProps) {
+         firstComposerImageName = firstComposerImage.name;
+       }
+     }
+-    let titleSeed = trimmed;
++    let titleSeed = goalObjective ?? trimmed;
+     if (!titleSeed) {
+       if (firstComposerImageName) {
+         titleSeed = `Image: ${firstComposerImageName}`;
+@@ -4349,6 +4466,7 @@ function ChatViewContent(props: ChatViewProps) {
+           titleSeed: title,
+           runtimeMode,
+           interactionMode,
++          ...(goalObjective ? { goal: { objective: goalObjective } } : {}),
+           ...(bootstrap ? { bootstrap } : {}),
+           createdAt: messageCreatedAt,
+         },
+@@ -5331,6 +5449,16 @@ function ChatViewContent(props: ChatViewProps) {
+                 className="chat-composer-horizontal-inset w-full"
+               >
+                 <div className="pointer-events-auto relative z-10 isolate">
++                  {!isDraftHeroState && activeGoal ? (
++                    <GoalProgressRow
++                      goal={activeGoal}
++                      pending={isGoalMutationPending}
++                      onPause={() => void updateGoalStatus("paused")}
++                      onResume={() => void updateGoalStatus("active")}
++                      onEdit={handleEditGoal}
++                      onClear={() => void handleClearGoal()}
++                    />
++                  ) : null}
+                   {isDraftHeroState ? (
+                     <div className="absolute inset-x-0 bottom-full z-0">
+                       <div
+diff --git a/apps/web/src/components/chat/ChatComposer.tsx b/apps/web/src/components/chat/ChatComposer.tsx
+index 94e4af3b..cb10af9d 100644
+--- a/apps/web/src/components/chat/ChatComposer.tsx
++++ b/apps/web/src/components/chat/ChatComposer.tsx
+@@ -404,6 +404,7 @@ const ComposerFooterPrimaryActions = memo(function ComposerFooterPrimaryActions(
+ export interface ChatComposerHandle {
+   focusAtEnd: () => void;
+   focusAt: (cursor: number) => void;
++  replacePrompt: (text: string) => boolean;
+   insertTextAtEnd: (text: string, options?: { ensureLeadingBoundary?: boolean }) => boolean;
+   openModelPicker: () => void;
+   toggleModelPicker: () => void;
+@@ -977,6 +978,17 @@ export const ChatComposer = memo(function ChatComposer(props: ChatComposerProps)
+           label: "/model",
+           description: "Switch response model for this thread",
+         },
++        ...(selectedProvider === ProviderDriverKind.make("codex")
++          ? [
++              {
++                id: "slash:goal",
++                type: "slash-command" as const,
++                command: "goal" as const,
++                label: "/goal",
++                description: "Set or manage an autonomous goal",
++              },
++            ]
++          : []),
+         {
+           id: "slash:plan",
+           type: "slash-command",
+@@ -1609,6 +1621,24 @@ export const ChatComposer = memo(function ChatComposer(props: ChatComposerProps)
+           }
+           return;
+         }
++        if (item.command === "goal") {
++          const replacement = "/goal ";
++          const replacementRangeEnd = extendReplacementRangeForTrailingSpace(
++            snapshot.value,
++            trigger.rangeEnd,
++            replacement,
++          );
++          const applied = applyPromptReplacement(
++            trigger.rangeStart,
++            replacementRangeEnd,
++            replacement,
++            { expectedText: snapshot.value.slice(trigger.rangeStart, replacementRangeEnd) },
++          );
++          if (applied) {
++            setComposerHighlightedItemId(null);
++          }
++          return;
++        }
+         void handleInteractionModeChange(item.command === "plan" ? "plan" : "default");
+         const applied = applyPromptReplacement(trigger.rangeStart, trigger.rangeEnd, "", {
+           expectedText: snapshot.value.slice(trigger.rangeStart, trigger.rangeEnd),
+@@ -2009,6 +2039,10 @@ export const ChatComposer = memo(function ChatComposer(props: ChatComposerProps)
+       focusAt: (cursor: number) => {
+         composerEditorRef.current?.focusAt(cursor);
+       },
++      replacePrompt: (text: string) =>
++        applyPromptReplacement(0, promptRef.current.length, text, {
++          expectedText: promptRef.current,
++        }),
+       insertTextAtEnd: insertComposerTextAtEnd,
+       openModelPicker: () => {
+         setIsComposerModelPickerOpen(true);
+diff --git a/apps/web/src/components/chat/GoalProgressRow.tsx b/apps/web/src/components/chat/GoalProgressRow.tsx
+new file mode 100644
+index 00000000..436ce3ca
+--- /dev/null
++++ b/apps/web/src/components/chat/GoalProgressRow.tsx
+@@ -0,0 +1,114 @@
++import type { ThreadGoal } from "@t3tools/contracts";
++import { PauseIcon, PencilIcon, PlayIcon, TargetIcon, XIcon } from "lucide-react";
++
++import { cn } from "~/lib/utils";
++import { Button } from "../ui/button";
++
++const compactNumber = new Intl.NumberFormat(undefined, {
++  notation: "compact",
++  maximumFractionDigits: 1,
++});
++
++const statusLabels: Record<ThreadGoal["status"], string> = {
++  active: "Active",
++  paused: "Paused",
++  blocked: "Blocked",
++  usageLimited: "Usage limit",
++  budgetLimited: "Budget limit",
++  complete: "Complete",
++};
++
++function formatDuration(seconds: number): string {
++  if (seconds < 60) return `${seconds}s`;
++  if (seconds < 3_600) return `${Math.floor(seconds / 60)}m`;
++  return `${Math.floor(seconds / 3_600)}h ${Math.floor((seconds % 3_600) / 60)}m`;
++}
++
++export function GoalProgressRow(props: {
++  goal: ThreadGoal;
++  pending: boolean;
++  onPause: () => void;
++  onResume: () => void;
++  onEdit: () => void;
++  onClear: () => void;
++  className?: string;
++}) {
++  const { goal } = props;
++  const usage = [
++    goal.tokenBudget === null
++      ? goal.tokensUsed > 0
++        ? `${compactNumber.format(goal.tokensUsed)} tokens`
++        : null
++      : `${compactNumber.format(goal.tokensUsed)} / ${compactNumber.format(goal.tokenBudget)} tokens`,
++    goal.timeUsedSeconds > 0 ? formatDuration(goal.timeUsedSeconds) : null,
++  ].filter((value): value is string => value !== null);
++
++  return (
++    <div className={cn("relative z-0 mx-auto w-full max-w-3xl pb-2", props.className)}>
++      <div
++        className="flex min-h-10 items-center gap-2 rounded-xl border border-border/70 bg-background/92 px-2.5 py-1.5 shadow-xs backdrop-blur-sm"
++        aria-live="polite"
++      >
++        <TargetIcon className="size-4 shrink-0 text-primary" aria-hidden="true" />
++        <div className="min-w-0 flex-1">
++          <div className="flex min-w-0 items-baseline gap-2">
++            <span className="shrink-0 text-[11px] font-semibold text-foreground">
++              {statusLabels[goal.status]}
++            </span>
++            <span className="truncate text-xs text-muted-foreground" title={goal.objective}>
++              {goal.objective}
++            </span>
++          </div>
++          {usage.length > 0 ? (
++            <div className="truncate text-[10px] text-muted-foreground/70">{usage.join(" · ")}</div>
++          ) : null}
++        </div>
++        <div className="flex shrink-0 items-center gap-0.5">
++          {goal.status === "active" ? (
++            <Button
++              variant="ghost"
++              size="icon-xs"
++              disabled={props.pending}
++              aria-label="Pause goal"
++              title="Pause goal"
++              onClick={props.onPause}
++            >
++              <PauseIcon />
++            </Button>
++          ) : goal.status === "paused" ? (
++            <Button
++              variant="ghost"
++              size="icon-xs"
++              disabled={props.pending}
++              aria-label="Resume goal"
++              title="Resume goal"
++              onClick={props.onResume}
++            >
++              <PlayIcon />
++            </Button>
++          ) : null}
++          <Button
++            variant="ghost"
++            size="icon-xs"
++            disabled={props.pending}
++            aria-label="Edit goal"
++            title="Edit goal"
++            onClick={props.onEdit}
++          >
++            <PencilIcon />
++          </Button>
++          <Button
++            variant="ghost"
++            size="icon-xs"
++            disabled={props.pending}
++            aria-label="Clear goal"
++            title="Clear goal"
++            onClick={props.onClear}
++          >
++            <XIcon />
++          </Button>
++        </div>
++      </div>
++    </div>
++  );
++}
+diff --git a/apps/web/src/composer-logic.test.ts b/apps/web/src/composer-logic.test.ts
+index 99ac6bba..caa8aa37 100644
+--- a/apps/web/src/composer-logic.test.ts
++++ b/apps/web/src/composer-logic.test.ts
+@@ -6,6 +6,7 @@ import {
+   detectComposerTrigger,
+   expandCollapsedComposerCursor,
+   isCollapsedCursorAdjacentToInlineToken,
++  parseGoalComposerSlashCommand,
+   parseStandaloneComposerSlashCommand,
+   replaceTextRange,
+   shouldSubmitComposerOnEnter,
+@@ -363,3 +364,23 @@ describe("parseStandaloneComposerSlashCommand", () => {
+     expect(parseStandaloneComposerSlashCommand("/plan explain this")).toBeNull();
+   });
+ });
++
++describe("parseGoalComposerSlashCommand", () => {
++  it("parses a goal objective", () => {
++    expect(parseGoalComposerSlashCommand("/goal ship reliable reconnects")).toEqual({
++      type: "set",
++      objective: "ship reliable reconnects",
++    });
++  });
++
++  it("parses goal lifecycle controls", () => {
++    expect(parseGoalComposerSlashCommand("/goal")).toEqual({ type: "view" });
++    expect(parseGoalComposerSlashCommand("/goal pause")).toEqual({ type: "pause" });
++    expect(parseGoalComposerSlashCommand("/goal resume")).toEqual({ type: "resume" });
++    expect(parseGoalComposerSlashCommand("/goal clear")).toEqual({ type: "clear" });
++  });
++
++  it("does not capture unrelated slash commands", () => {
++    expect(parseGoalComposerSlashCommand("/goals are useful")).toBeNull();
++  });
++});
+diff --git a/apps/web/src/composer-logic.ts b/apps/web/src/composer-logic.ts
+index 2d1d3aed..73b8004a 100644
+--- a/apps/web/src/composer-logic.ts
++++ b/apps/web/src/composer-logic.ts
+@@ -2,7 +2,13 @@ import { splitPromptIntoComposerSegments } from "./composer-editor-mentions";
+ import { INLINE_TERMINAL_CONTEXT_PLACEHOLDER } from "./lib/terminalContext";
+
+ export type ComposerTriggerKind = "path" | "slash-command" | "skill";
+-export type ComposerSlashCommand = "model" | "plan" | "default";
++export type ComposerSlashCommand = "model" | "plan" | "default" | "goal";
++export type GoalComposerCommand =
++  | { readonly type: "view" }
++  | { readonly type: "pause" }
++  | { readonly type: "resume" }
++  | { readonly type: "clear" }
++  | { readonly type: "set"; readonly objective: string };
+
+ export interface ComposerTrigger {
+   kind: ComposerTriggerKind;
+@@ -262,9 +268,7 @@ export function detectComposerTrigger(text: string, cursorInput: number): Compos
+   };
+ }
+
+-export function parseStandaloneComposerSlashCommand(
+-  text: string,
+-): Exclude<ComposerSlashCommand, "model"> | null {
++export function parseStandaloneComposerSlashCommand(text: string): "plan" | "default" | null {
+   const match = /^\/(plan|default)\s*$/i.exec(text.trim());
+   if (!match) {
+     return null;
+@@ -274,6 +278,25 @@ export function parseStandaloneComposerSlashCommand(
+   return "default";
+ }
+
++export function parseGoalComposerSlashCommand(text: string): GoalComposerCommand | null {
++  const trimmed = text.trim();
++  if (!/^\/goal(?:\s|$)/i.test(trimmed)) {
++    return null;
++  }
++  const argument = trimmed.slice("/goal".length).trim();
++  if (argument.length === 0) return { type: "view" };
++  switch (argument.toLowerCase()) {
++    case "pause":
++      return { type: "pause" };
++    case "resume":
++      return { type: "resume" };
++    case "clear":
++      return { type: "clear" };
++    default:
++      return { type: "set", objective: argument };
++  }
++}
++
+ export function replaceTextRange(
+   text: string,
+   rangeStart: number,
+diff --git a/packages/client-runtime/src/operations/commands.ts b/packages/client-runtime/src/operations/commands.ts
+index ef767854..fb0254d9 100644
+--- a/packages/client-runtime/src/operations/commands.ts
++++ b/packages/client-runtime/src/operations/commands.ts
+@@ -40,6 +40,8 @@ export type UnsettleThreadInput = CommandInput<"thread.unsettle">;
+ export type UpdateThreadMetadataInput = CommandInput<"thread.meta.update">;
+ export type SetThreadRuntimeModeInput = CommandInput<"thread.runtime-mode.set">;
+ export type SetThreadInteractionModeInput = CommandInput<"thread.interaction-mode.set">;
++export type SetThreadGoalInput = CommandInput<"thread.goal.set">;
++export type ClearThreadGoalInput = CommandInput<"thread.goal.clear">;
+ export type StartThreadTurnInput = CommandInput<"thread.turn.start">;
+ export type InterruptThreadTurnInput = CommandInput<"thread.turn.interrupt">;
+ export type RespondToThreadApprovalInput = CommandInput<"thread.approval.respond">;
+@@ -208,6 +210,30 @@ export const setThreadInteractionMode: (input: SetThreadInteractionModeInput) =>
+     });
+   });
+
++export const setThreadGoal: (input: SetThreadGoalInput) => CommandEffect = Effect.fn(
++  "EnvironmentCommands.setThreadGoal",
++)(function* (input) {
++  const metadata = yield* timestampedCommandMetadata(input);
++  return yield* dispatch({
++    ...input,
++    type: "thread.goal.set",
++    commandId: metadata.commandId,
++    createdAt: metadata.createdAt,
++  });
++});
++
++export const clearThreadGoal: (input: ClearThreadGoalInput) => CommandEffect = Effect.fn(
++  "EnvironmentCommands.clearThreadGoal",
++)(function* (input) {
++  const metadata = yield* timestampedCommandMetadata(input);
++  return yield* dispatch({
++    ...input,
++    type: "thread.goal.clear",
++    commandId: metadata.commandId,
++    createdAt: metadata.createdAt,
++  });
++});
++
+ export const startThreadTurn: (input: StartThreadTurnInput) => CommandEffect = Effect.fn(
+   "EnvironmentCommands.startThreadTurn",
+ )(function* (input) {
+diff --git a/packages/client-runtime/src/state/threadCommands.ts b/packages/client-runtime/src/state/threadCommands.ts
+index ea87298e..f1df6d44 100644
+--- a/packages/client-runtime/src/state/threadCommands.ts
++++ b/packages/client-runtime/src/state/threadCommands.ts
+@@ -6,11 +6,13 @@ import {
+   type ArchiveThreadInput,
+   type CreateThreadInput,
+   type DeleteThreadInput,
++  type ClearThreadGoalInput,
+   type InterruptThreadTurnInput,
+   type RespondToThreadApprovalInput,
+   type RespondToThreadUserInputInput,
+   type RevertThreadCheckpointInput,
+   type SetThreadInteractionModeInput,
++  type SetThreadGoalInput,
+   type SetThreadRuntimeModeInput,
+   type SettleThreadInput,
+   type StartThreadTurnInput,
+@@ -21,11 +23,13 @@ import {
+   archiveThread,
+   createThread,
+   deleteThread,
++  clearThreadGoal,
+   interruptThreadTurn,
+   respondToThreadApproval,
+   respondToThreadUserInput,
+   revertThreadCheckpoint,
+   setThreadInteractionMode,
++  setThreadGoal,
+   setThreadRuntimeMode,
+   settleThread,
+   startThreadTurn,
+@@ -40,11 +44,13 @@ export type {
+   ArchiveThreadInput,
+   CreateThreadInput,
+   DeleteThreadInput,
++  ClearThreadGoalInput,
+   InterruptThreadTurnInput,
+   RespondToThreadApprovalInput,
+   RespondToThreadUserInputInput,
+   RevertThreadCheckpointInput,
+   SetThreadInteractionModeInput,
++  SetThreadGoalInput,
+   SetThreadRuntimeModeInput,
+   SettleThreadInput,
+   StartThreadTurnInput,
+@@ -118,6 +124,18 @@ export function createThreadEnvironmentAtoms<R, E>(
+       scheduler,
+       concurrency,
+     }),
++    setGoal: createEnvironmentCommand(runtime, {
++      label: "environment-data:commands:thread:set-goal",
++      execute: (input: SetThreadGoalInput) => setThreadGoal(input),
++      scheduler,
++      concurrency,
++    }),
++    clearGoal: createEnvironmentCommand(runtime, {
++      label: "environment-data:commands:thread:clear-goal",
++      execute: (input: ClearThreadGoalInput) => clearThreadGoal(input),
++      scheduler,
++      concurrency,
++    }),
+     startTurn: createEnvironmentCommand(runtime, {
+       label: "environment-data:commands:thread:start-turn",
+       execute: (input: StartThreadTurnInput) => startThreadTurn(input),
+diff --git a/packages/client-runtime/src/state/threadGoal.test.ts b/packages/client-runtime/src/state/threadGoal.test.ts
+new file mode 100644
+index 00000000..2514a2d6
+--- /dev/null
++++ b/packages/client-runtime/src/state/threadGoal.test.ts
+@@ -0,0 +1,43 @@
++import { EventId, type OrchestrationThreadActivity, type ThreadGoal } from "@t3tools/contracts";
++import { describe, expect, it } from "vite-plus/test";
++
++import { deriveThreadGoal } from "./threadGoal.ts";
++
++const goal: ThreadGoal = {
++  objective: "Finish the reconnect work",
++  status: "active",
++  tokenBudget: 20_000,
++  tokensUsed: 1_250,
++  timeUsedSeconds: 90,
++  createdAt: "2026-07-22T00:00:00.000Z",
++  updatedAt: "2026-07-22T00:01:00.000Z",
++};
++
++function activity(
++  kind: "goal.updated" | "goal.cleared",
++  payload: unknown,
++  sequence: number,
++): OrchestrationThreadActivity {
++  return {
++    id: EventId.make(`goal-${sequence}`),
++    tone: "info",
++    kind,
++    summary: kind,
++    payload,
++    turnId: null,
++    sequence,
++    createdAt: "2026-07-22T00:01:00.000Z",
++  };
++}
++
++describe("deriveThreadGoal", () => {
++  it("returns the latest provider-confirmed goal", () => {
++    expect(deriveThreadGoal([activity("goal.updated", { goal }, 1)])).toEqual(goal);
++  });
++
++  it("returns no goal after a clear event", () => {
++    expect(
++      deriveThreadGoal([activity("goal.updated", { goal }, 1), activity("goal.cleared", {}, 2)]),
++    ).toBeNull();
++  });
++});
+diff --git a/packages/client-runtime/src/state/threadGoal.ts b/packages/client-runtime/src/state/threadGoal.ts
+new file mode 100644
+index 00000000..52df0be0
+--- /dev/null
++++ b/packages/client-runtime/src/state/threadGoal.ts
+@@ -0,0 +1,30 @@
++import {
++  ThreadGoal,
++  type OrchestrationThreadActivity,
++  type ThreadGoal as ThreadGoalValue,
++} from "@t3tools/contracts";
++import * as Schema from "effect/Schema";
++
++const isThreadGoal = Schema.is(ThreadGoal);
++
++/** Derive the latest provider-confirmed goal from durable thread activities. */
++export function deriveThreadGoal(
++  activities: ReadonlyArray<OrchestrationThreadActivity>,
++): ThreadGoalValue | null {
++  for (let index = activities.length - 1; index >= 0; index -= 1) {
++    const activity = activities[index];
++    if (activity?.kind === "goal.cleared") {
++      return null;
++    }
++    if (activity?.kind === "goal.updated") {
++      const goal =
++        typeof activity.payload === "object" &&
++        activity.payload !== null &&
++        "goal" in activity.payload
++          ? activity.payload.goal
++          : undefined;
++      return isThreadGoal(goal) ? goal : null;
++    }
++  }
++  return null;
++}
+diff --git a/packages/client-runtime/src/state/threadReducer.ts b/packages/client-runtime/src/state/threadReducer.ts
+index 7fdee37c..898a83c6 100644
+--- a/packages/client-runtime/src/state/threadReducer.ts
++++ b/packages/client-runtime/src/state/threadReducer.ts
+@@ -163,6 +163,16 @@ export function applyThreadDetailEvent(
+       };
+
+     // ── Turn lifecycle ──────────────────────────────────────────────
++    case "thread.goal-set-requested":
++    case "thread.goal-clear-requested":
++      return {
++        kind: "updated",
++        thread: {
++          ...thread,
++          updatedAt: event.payload.createdAt,
++        },
++      };
++
+     case "thread.turn-start-requested":
+       return {
+         kind: "updated",
+diff --git a/packages/client-runtime/src/state/threads.ts b/packages/client-runtime/src/state/threads.ts
+index 196229cc..d44cc958 100644
+--- a/packages/client-runtime/src/state/threads.ts
++++ b/packages/client-runtime/src/state/threads.ts
+@@ -351,5 +351,6 @@ export * from "./composerPathSearch.ts";
+ export * from "./threadCommands.ts";
+ export * from "./threadDetail.ts";
+ export * from "./threadReducer.ts";
++export * from "./threadGoal.ts";
+ export * from "./threadShell.ts";
+ export * from "./threadState.ts";
+diff --git a/packages/contracts/src/orchestration.ts b/packages/contracts/src/orchestration.ts
+index b01df310..1e8978de 100644
+--- a/packages/contracts/src/orchestration.ts
++++ b/packages/contracts/src/orchestration.ts
+@@ -124,6 +124,26 @@ export const DEFAULT_RUNTIME_MODE: RuntimeMode = "full-access";
+ export const ProviderInteractionMode = Schema.Literals(["default", "plan"]);
+ export type ProviderInteractionMode = typeof ProviderInteractionMode.Type;
+ export const DEFAULT_PROVIDER_INTERACTION_MODE: ProviderInteractionMode = "default";
++export const ThreadGoalStatus = Schema.Literals([
++  "active",
++  "paused",
++  "blocked",
++  "usageLimited",
++  "budgetLimited",
++  "complete",
++]);
++export type ThreadGoalStatus = typeof ThreadGoalStatus.Type;
++export const THREAD_GOAL_MAX_OBJECTIVE_CHARS = 4_000;
++export const ThreadGoal = Schema.Struct({
++  objective: TrimmedNonEmptyString.check(Schema.isMaxLength(THREAD_GOAL_MAX_OBJECTIVE_CHARS)),
++  status: ThreadGoalStatus,
++  tokenBudget: Schema.NullOr(NonNegativeInt),
++  tokensUsed: NonNegativeInt,
++  timeUsedSeconds: NonNegativeInt,
++  createdAt: IsoDateTime,
++  updatedAt: IsoDateTime,
++});
++export type ThreadGoal = typeof ThreadGoal.Type;
+ export const ProviderRequestKind = Schema.Literals(["command", "file-read", "file-change"]);
+ export type ProviderRequestKind = typeof ProviderRequestKind.Type;
+ export const AssistantDeliveryMode = Schema.Literals(["buffered", "streaming"]);
+@@ -609,6 +629,30 @@ const ThreadInteractionModeSetCommand = Schema.Struct({
+   createdAt: IsoDateTime,
+ });
+
++const ThreadGoalSetCommand = Schema.Struct({
++  type: Schema.Literal("thread.goal.set"),
++  commandId: CommandId,
++  threadId: ThreadId,
++  objective: Schema.optional(
++    TrimmedNonEmptyString.check(Schema.isMaxLength(THREAD_GOAL_MAX_OBJECTIVE_CHARS)),
++  ),
++  status: Schema.optional(ThreadGoalStatus),
++  tokenBudget: Schema.optional(Schema.NullOr(NonNegativeInt)),
++  createdAt: IsoDateTime,
++});
++
++const ThreadGoalClearCommand = Schema.Struct({
++  type: Schema.Literal("thread.goal.clear"),
++  commandId: CommandId,
++  threadId: ThreadId,
++  createdAt: IsoDateTime,
++});
++
++const ThreadTurnStartGoal = Schema.Struct({
++  objective: TrimmedNonEmptyString.check(Schema.isMaxLength(THREAD_GOAL_MAX_OBJECTIVE_CHARS)),
++  tokenBudget: Schema.optional(Schema.NullOr(NonNegativeInt)),
++});
++
+ const ThreadTurnStartBootstrapCreateThread = Schema.Struct({
+   projectId: ProjectId,
+   title: TrimmedNonEmptyString,
+@@ -653,6 +697,7 @@ export const ThreadTurnStartCommand = Schema.Struct({
+   ),
+   bootstrap: Schema.optional(ThreadTurnStartBootstrap),
+   sourceProposedPlan: Schema.optional(SourceProposedPlanReference),
++  goal: Schema.optional(ThreadTurnStartGoal),
+   createdAt: IsoDateTime,
+ });
+
+@@ -672,6 +717,7 @@ const ClientThreadTurnStartCommand = Schema.Struct({
+   interactionMode: ProviderInteractionMode,
+   bootstrap: Schema.optional(ThreadTurnStartBootstrap),
+   sourceProposedPlan: Schema.optional(SourceProposedPlanReference),
++  goal: Schema.optional(ThreadTurnStartGoal),
+   createdAt: IsoDateTime,
+ });
+
+@@ -729,6 +775,8 @@ const DispatchableClientOrchestrationCommand = Schema.Union([
+   ThreadMetaUpdateCommand,
+   ThreadRuntimeModeSetCommand,
+   ThreadInteractionModeSetCommand,
++  ThreadGoalSetCommand,
++  ThreadGoalClearCommand,
+   ThreadTurnStartCommand,
+   ThreadTurnInterruptCommand,
+   ThreadApprovalRespondCommand,
+@@ -752,6 +800,8 @@ export const ClientOrchestrationCommand = Schema.Union([
+   ThreadMetaUpdateCommand,
+   ThreadRuntimeModeSetCommand,
+   ThreadInteractionModeSetCommand,
++  ThreadGoalSetCommand,
++  ThreadGoalClearCommand,
+   ClientThreadTurnStartCommand,
+   ThreadTurnInterruptCommand,
+   ThreadApprovalRespondCommand,
+@@ -856,6 +906,8 @@ export const OrchestrationEventType = Schema.Literals([
+   "thread.meta-updated",
+   "thread.runtime-mode-set",
+   "thread.interaction-mode-set",
++  "thread.goal-set-requested",
++  "thread.goal-clear-requested",
+   "thread.message-sent",
+   "thread.turn-start-requested",
+   "thread.turn-interrupt-requested",
+@@ -967,6 +1019,21 @@ export const ThreadInteractionModeSetPayload = Schema.Struct({
+   updatedAt: IsoDateTime,
+ });
+
++export const ThreadGoalSetRequestedPayload = Schema.Struct({
++  threadId: ThreadId,
++  objective: Schema.optional(
++    TrimmedNonEmptyString.check(Schema.isMaxLength(THREAD_GOAL_MAX_OBJECTIVE_CHARS)),
++  ),
++  status: Schema.optional(ThreadGoalStatus),
++  tokenBudget: Schema.optional(Schema.NullOr(NonNegativeInt)),
++  createdAt: IsoDateTime,
++});
++
++export const ThreadGoalClearRequestedPayload = Schema.Struct({
++  threadId: ThreadId,
++  createdAt: IsoDateTime,
++});
++
+ export const ThreadMessageSentPayload = Schema.Struct({
+   threadId: ThreadId,
+   messageId: MessageId,
+@@ -1136,6 +1203,16 @@ export const OrchestrationEvent = Schema.Union([
+     type: Schema.Literal("thread.interaction-mode-set"),
+     payload: ThreadInteractionModeSetPayload,
+   }),
++  Schema.Struct({
++    ...EventBaseFields,
++    type: Schema.Literal("thread.goal-set-requested"),
++    payload: ThreadGoalSetRequestedPayload,
++  }),
++  Schema.Struct({
++    ...EventBaseFields,
++    type: Schema.Literal("thread.goal-clear-requested"),
++    payload: ThreadGoalClearRequestedPayload,
++  }),
+   Schema.Struct({
+     ...EventBaseFields,
+     type: Schema.Literal("thread.message-sent"),
+diff --git a/packages/contracts/src/provider.ts b/packages/contracts/src/provider.ts
+index 94fb007a..3812c749 100644
+--- a/packages/contracts/src/provider.ts
++++ b/packages/contracts/src/provider.ts
+@@ -4,6 +4,7 @@ import {
+   ApprovalRequestId,
+   EventId,
+   IsoDateTime,
++  NonNegativeInt,
+   ProviderItemId,
+   ThreadId,
+   TurnId,
+@@ -16,6 +17,8 @@ import {
+   ProviderApprovalDecision,
+   ProviderApprovalPolicy,
+   ProviderInteractionMode,
++  THREAD_GOAL_MAX_OBJECTIVE_CHARS,
++  ThreadGoalStatus,
+   ProviderRequestKind,
+   ProviderSandboxMode,
+   ProviderUserInputAnswers,
+@@ -95,6 +98,21 @@ export const ProviderStopSessionInput = Schema.Struct({
+ });
+ export type ProviderStopSessionInput = typeof ProviderStopSessionInput.Type;
+
++export const ProviderSetThreadGoalInput = Schema.Struct({
++  threadId: ThreadId,
++  objective: Schema.optional(
++    TrimmedNonEmptyString.check(Schema.isMaxLength(THREAD_GOAL_MAX_OBJECTIVE_CHARS)),
++  ),
++  status: Schema.optional(ThreadGoalStatus),
++  tokenBudget: Schema.optional(Schema.NullOr(NonNegativeInt)),
++});
++export type ProviderSetThreadGoalInput = typeof ProviderSetThreadGoalInput.Type;
++
++export const ProviderClearThreadGoalInput = Schema.Struct({
++  threadId: ThreadId,
++});
++export type ProviderClearThreadGoalInput = typeof ProviderClearThreadGoalInput.Type;
++
+ export const ProviderRespondToRequestInput = Schema.Struct({
+   threadId: ThreadId,
+   requestId: ApprovalRequestId,
+diff --git a/packages/contracts/src/providerRuntime.ts b/packages/contracts/src/providerRuntime.ts
+index eb2563ef..06d6f238 100644
+--- a/packages/contracts/src/providerRuntime.ts
++++ b/packages/contracts/src/providerRuntime.ts
+@@ -14,6 +14,7 @@ import {
+   TurnId,
+ } from "./baseSchemas.ts";
+ import { ProviderInstanceId, ProviderDriverKind } from "./providerInstance.ts";
++import { ThreadGoal } from "./orchestration.ts";
+
+ const TrimmedNonEmptyStringSchema = TrimmedNonEmptyString;
+ const UnknownRecordSchema = Schema.Record(Schema.String, Schema.Unknown);
+@@ -154,6 +155,8 @@ const ProviderRuntimeEventType = Schema.Literals([
+   "thread.state.changed",
+   "thread.metadata.updated",
+   "thread.token-usage.updated",
++  "thread.goal.updated",
++  "thread.goal.cleared",
+   "thread.realtime.started",
+   "thread.realtime.item-added",
+   "thread.realtime.audio.delta",
+@@ -204,6 +207,8 @@ const ThreadStartedType = Schema.Literal("thread.started");
+ const ThreadStateChangedType = Schema.Literal("thread.state.changed");
+ const ThreadMetadataUpdatedType = Schema.Literal("thread.metadata.updated");
+ const ThreadTokenUsageUpdatedType = Schema.Literal("thread.token-usage.updated");
++const ThreadGoalUpdatedType = Schema.Literal("thread.goal.updated");
++const ThreadGoalClearedType = Schema.Literal("thread.goal.cleared");
+ const ThreadRealtimeStartedType = Schema.Literal("thread.realtime.started");
+ const ThreadRealtimeItemAddedType = Schema.Literal("thread.realtime.item-added");
+ const ThreadRealtimeAudioDeltaType = Schema.Literal("thread.realtime.audio.delta");
+@@ -672,6 +677,22 @@ const ProviderRuntimeThreadTokenUsageUpdatedEvent = Schema.Struct({
+ export type ProviderRuntimeThreadTokenUsageUpdatedEvent =
+   typeof ProviderRuntimeThreadTokenUsageUpdatedEvent.Type;
+
++const ProviderRuntimeThreadGoalUpdatedEvent = Schema.Struct({
++  ...ProviderRuntimeEventBase.fields,
++  type: ThreadGoalUpdatedType,
++  payload: Schema.Struct({ goal: ThreadGoal }),
++});
++export type ProviderRuntimeThreadGoalUpdatedEvent =
++  typeof ProviderRuntimeThreadGoalUpdatedEvent.Type;
++
++const ProviderRuntimeThreadGoalClearedEvent = Schema.Struct({
++  ...ProviderRuntimeEventBase.fields,
++  type: ThreadGoalClearedType,
++  payload: Schema.Struct({}),
++});
++export type ProviderRuntimeThreadGoalClearedEvent =
++  typeof ProviderRuntimeThreadGoalClearedEvent.Type;
++
+ const ProviderRuntimeThreadRealtimeStartedEvent = Schema.Struct({
+   ...ProviderRuntimeEventBase.fields,
+   type: ThreadRealtimeStartedType,
+@@ -973,6 +994,8 @@ export const ProviderRuntimeEventV2 = Schema.Union([
+   ProviderRuntimeThreadStateChangedEvent,
+   ProviderRuntimeThreadMetadataUpdatedEvent,
+   ProviderRuntimeThreadTokenUsageUpdatedEvent,
++  ProviderRuntimeThreadGoalUpdatedEvent,
++  ProviderRuntimeThreadGoalClearedEvent,
+   ProviderRuntimeThreadRealtimeStartedEvent,
+   ProviderRuntimeThreadRealtimeItemAddedEvent,
+   ProviderRuntimeThreadRealtimeAudioDeltaEvent,
+diff --git a/packages/shared/src/composerTrigger.ts b/packages/shared/src/composerTrigger.ts
+index dcbdc784..f08a1112 100644
+--- a/packages/shared/src/composerTrigger.ts
++++ b/packages/shared/src/composerTrigger.ts
+@@ -1,5 +1,5 @@
+ export type ComposerTriggerKind = "path" | "slash-command" | "slash-model" | "skill";
+-export type ComposerSlashCommand = "model" | "plan" | "default";
++export type ComposerSlashCommand = "model" | "plan" | "default" | "goal";
+
+ export interface ComposerTrigger {
+   kind: ComposerTriggerKind;
+@@ -124,9 +124,7 @@ export function detectComposerTrigger(
+   };
+ }
+
+-export function parseStandaloneComposerSlashCommand(
+-  text: string,
+-): Exclude<ComposerSlashCommand, "model"> | null {
++export function parseStandaloneComposerSlashCommand(text: string): "plan" | "default" | null {
+   const match = /^\/(plan|default)\s*$/i.exec(text.trim());
+   if (!match) {
+     return null;

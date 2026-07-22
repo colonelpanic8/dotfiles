@@ -110,63 +110,11 @@
         # (import ./nvidia-container-toolkit-overlay.nix)
         (import ./emacs-overlay.nix)
         (import ../nix-shared/overlays)
+        (import ./t3code.nix {inherit inputs;})
         # Use fast-moving agent tools from dedicated flakes.
-        (final: prev: let
-          t3codeUnwrapped = (prev.t3code.unwrapped.override {pnpm_10 = final.pnpm_11;}).overrideAttrs (
-            finalAttrs: previousAttrs: {
-              version = "0.0.29-sidebar-v2-project-completion-nightly-20260720.859";
-              src = inputs.t3code-sidebar-nightly;
-              # Vite+ bootstraps the exact version in packageManager. Match it
-              # to nixpkgs' pnpm so the task runner uses the dependency closure
-              # installed offline by pnpmConfigHook.
-              postPatch =
-                previousAttrs.postPatch
-                + ''
-                  substituteInPlace package.json \
-                    --replace-fail '"packageManager": "pnpm@11.10.0"' \
-                                   '"packageManager": "pnpm@${final.pnpm_11.version}"'
-                '';
-              # The branch's Vite+ task runner checks every declared workspace
-              # and tries to install the four intentionally-unfetched mobile
-              # and infrastructure workspaces. Run the same desktop dependency
-              # chain directly: web -> server -> Electron shell.
-              buildPhase = ''
-                runHook preBuild
-
-                pushd apps/web
-                ../../node_modules/.bin/vp build
-                popd
-
-                node apps/server/scripts/cli.ts build --verbose
-                node apps/desktop/scripts/build-preview-annotation-css.mjs
-
-                pushd apps/desktop
-                ../../node_modules/.bin/vp pack
-                popd
-
-                runHook postBuild
-              '';
-              # `pnpm vp cache clean` also invokes pnpm's workspace bootstrap;
-              # the build above does not enable Vite+ task caching.
-              postBuild = "";
-              pnpmDeps = final.fetchPnpmDeps {
-                pnpm = final.pnpm_11;
-                inherit
-                  (finalAttrs)
-                  pname
-                  version
-                  src
-                  pnpmWorkspaces
-                  ;
-                fetcherVersion = 4;
-                hash = "sha256-bfZDQjVdT0neQYxmNB8t+XU8mbjVsAtaTi2Vms5pzxw=";
-              };
-            }
-          );
-        in {
+        (final: prev: {
           codex = inputs.codex-cli-nix.packages.${prev.stdenv.hostPlatform.system}.default;
           claude-code = inputs.claude-code-nix.packages.${prev.stdenv.hostPlatform.system}.default;
-          t3code = prev.t3code.override {t3code-unwrapped = t3codeUnwrapped;};
           git-sync-rs = inputs.git-sync-rs.packages.${prev.stdenv.hostPlatform.system}.default;
           agent-workspace-linux = final.callPackage ./packages/agent-workspace-linux {};
           elegant-grub2-theme = final.callPackage ./packages/elegant-grub2-theme {};
