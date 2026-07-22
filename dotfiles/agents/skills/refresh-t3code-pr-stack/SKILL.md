@@ -154,6 +154,14 @@ For each branch:
 
 Do not force-push when the remote head changed unexpectedly. Fetch, inspect the new commits, and reconcile them first.
 
+Treat review feedback as a proposal to evaluate, not an instruction to obey. Do
+not be afraid to push back when a suggestion is unreasonable, conflicts with
+the PR's focused intent, weakens correctness or maintainability, or rests on an
+incorrect premise. Respond politely and humbly: acknowledge the reviewer's
+concern, explain the relevant evidence and tradeoff without sounding dismissive,
+and invite correction if important context was missed. Prefer a small concrete
+example, test result, or code reference over argumentative language.
+
 ### Close the CI loop for every writable PR
 
 CI is implementation work, not merely inventory. After every push, query all
