@@ -1,21 +1,32 @@
 diff --git a/apps/web/src/components/CommandPalette.logic.test.ts b/apps/web/src/components/CommandPalette.logic.test.ts
-index 6609017f91cba7599a566c985df47ecdad153720..e40ba866751c1de68b21aa0fc1893aaba6634a53 100644
+index 6609017f91cba7599a566c985df47ecdad153720..20374544af6c48600570284cc3b2c9e856dd599c 100644
 --- a/apps/web/src/components/CommandPalette.logic.test.ts
 +++ b/apps/web/src/components/CommandPalette.logic.test.ts
 @@ -1,0 +2 @@ import { describe, expect, it, vi } from "vite-plus/test";
 +import { scopeProjectRef } from "@t3tools/client-runtime/environment";
 @@ -4,0 +6 @@ import {
 +  buildNewThreadPickerGroups,
-@@ -6,0 +9,6 @@ import {
+@@ -6,0 +9,7 @@ import {
 +  NEW_THREAD_PROJECT_VIEW_GROUP,
 +  prioritizeScopedProject,
 +  resolveBrowseTabCompletion,
 +  resolveNewThreadIntentViewStack,
 +  resetAddProjectFlowState,
++  shouldIgnoreAddProjectShortcut,
 +  shouldResetPaletteFlowOnPop,
 @@ -7,0 +16 @@ import {
 +  type CommandPaletteView,
-@@ -12,0 +22,244 @@ const PROJECT_ID = ProjectId.make("project-1");
+@@ -12,0 +22,254 @@ const PROJECT_ID = ProjectId.make("project-1");
++describe("shouldIgnoreAddProjectShortcut", () => {
++  it("allows Alt+A from the editable search input while the new-task palette is open", () => {
++    expect(shouldIgnoreAddProjectShortcut({ paletteOpen: true, editableTarget: true })).toBe(false);
++  });
++
++  it("continues to ignore Alt+A from editors outside the palette", () => {
++    expect(shouldIgnoreAddProjectShortcut({ paletteOpen: false, editableTarget: true })).toBe(true);
++  });
++});
++
 +describe("resolveBrowseTabCompletion", () => {
 +  const entries = [
 +    { name: "alpha", fullPath: "/workspace/alpha" },
@@ -261,7 +272,7 @@ index 6609017f91cba7599a566c985df47ecdad153720..e40ba866751c1de68b21aa0fc1893aab
 +  });
 +});
 diff --git a/apps/web/src/components/CommandPalette.logic.ts b/apps/web/src/components/CommandPalette.logic.ts
-index ab53adbefb1633ea9a6b176195b81230114e702b..7f54005dabbcf5702fb949fc60dbee407d371eca 100644
+index ab53adbefb1633ea9a6b176195b81230114e702b..e9b6cf62b8f2cf5723745099d714dfeff918e9c2 100644
 --- a/apps/web/src/components/CommandPalette.logic.ts
 +++ b/apps/web/src/components/CommandPalette.logic.ts
 @@ -1 +1,5 @@
@@ -273,12 +284,19 @@ index ab53adbefb1633ea9a6b176195b81230114e702b..7f54005dabbcf5702fb949fc60dbee40
 +} from "@t3tools/contracts";
 @@ -12,0 +17 @@ export const ADDON_ICON_CLASS = "size-4";
 +export const NEW_THREAD_PROJECT_VIEW_GROUP = "new-thread-projects";
-@@ -54,0 +60,31 @@ export interface CommandPaletteView {
+@@ -54,0 +60,38 @@ export interface CommandPaletteView {
 +export function shouldResetPaletteFlowOnPop(
 +  flowBaseDepth: number | null,
 +  currentDepth: number,
 +): boolean {
 +  return flowBaseDepth !== null && Math.max(0, currentDepth - 1) <= flowBaseDepth;
++}
++
++export function shouldIgnoreAddProjectShortcut(input: {
++  paletteOpen: boolean;
++  editableTarget: boolean;
++}): boolean {
++  return input.editableTarget && !input.paletteOpen;
 +}
 +
 +export function resetAddProjectFlowState(input: {
@@ -387,7 +405,7 @@ index ab53adbefb1633ea9a6b176195b81230114e702b..7f54005dabbcf5702fb949fc60dbee40
 +}
 +
 diff --git a/apps/web/src/components/CommandPalette.tsx b/apps/web/src/components/CommandPalette.tsx
-index 8c7e6d287caf6d4ce8c88d35a2ec3860665879ca..00509905e178e32537442e6658144f425f088551 100644
+index 8c7e6d287caf6d4ce8c88d35a2ec3860665879ca..042d1cb34468e9aff21ae9cb32c1e39a538697f4 100644
 --- a/apps/web/src/components/CommandPalette.tsx
 +++ b/apps/web/src/components/CommandPalette.tsx
 @@ -13,0 +14 @@ import {
@@ -408,10 +426,11 @@ index 8c7e6d287caf6d4ce8c88d35a2ec3860665879ca..00509905e178e32537442e6658144f42
 @@ -105,0 +114,2 @@ import {
 +  NEW_THREAD_PROJECT_VIEW_GROUP,
 +  prioritizeScopedProject,
-@@ -106,0 +117,4 @@ import {
+@@ -106,0 +117,5 @@ import {
 +  resolveBrowseTabCompletion,
 +  resolveNewThreadIntentViewStack,
 +  resetAddProjectFlowState,
++  shouldIgnoreAddProjectShortcut,
 +  shouldResetPaletteFlowOnPop,
 @@ -132 +145,0 @@ const EMPTY_BROWSE_ENTRIES: FilesystemBrowseResult["entries"] = [];
 -
@@ -467,12 +486,18 @@ index 8c7e6d287caf6d4ce8c88d35a2ec3860665879ca..00509905e178e32537442e6658144f42
 @@ -399 +444 @@ export function CommandPalette({ children }: { children: ReactNode }) {
 -      if (event.defaultPrevented) return;
 +      if (event.defaultPrevented || event.repeat) return;
-@@ -406 +451,4 @@ export function CommandPalette({ children }: { children: ReactNode }) {
+@@ -406 +451,10 @@ export function CommandPalette({ children }: { children: ReactNode }) {
 -      if (command !== "commandPalette.toggle") {
 +      if (command !== "commandPalette.toggle" && command !== "project.add") {
 +        return;
 +      }
-+      if (command === "project.add" && isEditableKeyboardTarget(event.target)) {
++      if (
++        command === "project.add" &&
++        shouldIgnoreAddProjectShortcut({
++          paletteOpen: state.open,
++          editableTarget: isEditableKeyboardTarget(event.target),
++        })
++      ) {
 @@ -411 +459,5 @@ export function CommandPalette({ children }: { children: ReactNode }) {
 -      toggleOpen();
 +      if (command === "project.add") {
@@ -480,9 +505,9 @@ index 8c7e6d287caf6d4ce8c88d35a2ec3860665879ca..00509905e178e32537442e6658144f42
 +      } else {
 +        toggleOpen();
 +      }
-@@ -415 +467 @@ export function CommandPalette({ children }: { children: ReactNode }) {
+@@ -415 +473 @@ export function CommandPalette({ children }: { children: ReactNode }) {
 -  }, [keybindings, terminalOpen, toggleOpen]);
-+  }, [keybindings, openAddProject, terminalOpen, toggleOpen]);
++  }, [keybindings, openAddProject, state.open, terminalOpen, toggleOpen]);
 @@ -421 +473 @@ export function CommandPalette({ children }: { children: ReactNode }) {
 -          openNewThreadIn();
 +          openNewThreadIn(detail.preferredProjectRef);

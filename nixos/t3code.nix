@@ -14,11 +14,11 @@
     hash = "sha256-vro5lw/A5mka5pOKHKz1mNUNkifBUHBwdVUtXC6mrLA=";
   };
 
-  # PR #4258 (head ac10e74ae628) has command-palette hunks represented by
+  # PR #4258 (head ed1caf38bb71) has command-palette hunks represented by
   # the compatibility patch below; audit its complete cumulative diff too.
   t3codePr4258 = final.fetchurl {
     url = "https://patch-diff.githubusercontent.com/raw/pingdotgg/t3code/pull/4258.diff";
-    hash = "sha256-nQd8EUkV9dFR1HVjWrT1WErohYcsitBHmrvAawSoiRw=";
+    hash = "sha256-JfjqPfBoeWVMvvkI7FNV20wxeqtWE7RZ1YKSVQPHrEk=";
   };
 
   # PR #4263 (head 9fb451def031) likewise has command-palette hunks in the
@@ -67,7 +67,7 @@
       excludes = commandPaletteOverlapFiles;
       hash = "sha256-Zs0GA+MfDqUibcKrd4ZyNoOGsa63akka1fqn3b6KZqU=";
     })
-    # Configurable add-project shortcut: t3code#4258 (head ac10e74ae628).
+    # Configurable add-project shortcut: t3code#4258 (head ed1caf38bb71).
     (final.fetchpatch {
       url = "https://patch-diff.githubusercontent.com/raw/pingdotgg/t3code/pull/4258.diff";
       excludes = commandPaletteOverlapFiles;
