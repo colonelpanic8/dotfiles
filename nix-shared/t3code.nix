@@ -134,6 +134,12 @@
     # Use a properly sized flat foreground for Android adaptive icons:
     # t3code#4332 (head 0b746f1807f0).
     t3codePr4332
+    # Refresh a project favicon when its icon is clicked: t3code#4337
+    # (head 539a53c3beb6).
+    (final.fetchurl {
+      url = "https://patch-diff.githubusercontent.com/raw/pingdotgg/t3code/pull/4337.diff";
+      hash = "sha256-GSGJFgWTXIpUlis8wrY9YjNDSwqIT7MBX+29miUdEtM=";
+    })
   ];
 
   t3codePatchedSource = final.applyPatches {
