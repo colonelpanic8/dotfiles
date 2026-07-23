@@ -97,6 +97,12 @@
       url = "https://patch-diff.githubusercontent.com/raw/pingdotgg/t3code/pull/4318.diff";
       hash = "sha256-RGJYyQ61f+RbT3lD/VX6WYb5OFiuLOlHVwNxdlusmOU=";
     })
+    # Coalesce high-frequency assistant streaming deltas: t3code#4323
+    # (head 88ab240f5f6e).
+    (final.fetchurl {
+      url = "https://patch-diff.githubusercontent.com/raw/pingdotgg/t3code/pull/4323.diff";
+      hash = "sha256-VhZphoO0Qi6yN1YTrzZYLpStjBAMZTpL3KNLZc1Ss6s=";
+    })
   ];
 
   t3codePatchedSource = final.applyPatches {
