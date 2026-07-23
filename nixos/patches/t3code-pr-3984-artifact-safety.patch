@@ -150,23 +150,25 @@ index 34c46b2e00b7e74a8c51e279e582bfb04446c467..1bdaf9c4fa4b3b5dde07434cbaab73ac
 +);
 +
 diff --git a/apps/server/src/assets/ThreadArtifactResolver.test.ts b/apps/server/src/assets/ThreadArtifactResolver.test.ts
-index 6177b83856f893ad8d2350e156d63dbbda9ba1d0..659df9133d6746f1523bde936b2262b5bdc45d3b 100644
+index 6177b83856f893ad8d2350e156d63dbbda9ba1d0..72dc287fe56c5fef039ba834ec9347e4ac5bf9d8 100644
 --- a/apps/server/src/assets/ThreadArtifactResolver.test.ts
 +++ b/apps/server/src/assets/ThreadArtifactResolver.test.ts
-@@ -56,2 +56,2 @@ describe("thread artifact resolution", () => {
+@@ -5,0 +6 @@ import {
++  isThreadArtifactLookupRetryable,
+@@ -56,2 +57,2 @@ describe("thread artifact resolution", () => {
 -    ).toBe(path);
 -    expect(findThreadArtifactPath(thread([activity(path)]), TURN_ID, MESSAGE_ID, "1.jpg")).toBe(
 +    ).toEqual({ path, scope: "workspace", source: "raw-output" });
 +    expect(findThreadArtifactPath(thread([activity(path)]), TURN_ID, MESSAGE_ID, "1.jpg")).toEqual({
-@@ -59 +59,3 @@ describe("thread artifact resolution", () => {
+@@ -59 +60,3 @@ describe("thread artifact resolution", () => {
 -    );
 +      scope: "workspace",
 +      source: "raw-output",
 +    });
-@@ -62 +64 @@ describe("thread artifact resolution", () => {
+@@ -62 +65 @@ describe("thread artifact resolution", () => {
 -  it("reads Codex image generation and image view paths", () => {
 +  it("keeps Codex image generation privileged separately from workspace-scoped image views", () => {
-@@ -74,6 +76,10 @@ describe("thread artifact resolution", () => {
+@@ -74,6 +77,10 @@ describe("thread artifact resolution", () => {
 -    expect(findThreadArtifactPath(source, TURN_ID, MESSAGE_ID, "images/generated.png")).toBe(
 -      generatedPath,
 -    );
@@ -183,7 +185,7 @@ index 6177b83856f893ad8d2350e156d63dbbda9ba1d0..659df9133d6746f1523bde936b2262b5
 +      scope: "workspace",
 +      source: "image-view",
 +    });
-@@ -91 +97,13 @@ describe("thread artifact resolution", () => {
+@@ -91 +98,13 @@ describe("thread artifact resolution", () => {
 -    ).toBe(path);
 +    ).toEqual({ path, scope: "workspace", source: "raw-output" });
 +  });
@@ -198,20 +200,64 @@ index 6177b83856f893ad8d2350e156d63dbbda9ba1d0..659df9133d6746f1523bde936b2262b5
 +    ]);
 +
 +    expect(findThreadArtifactPath(source, TURN_ID, MESSAGE_ID, "images/1.jpg")).toBeNull();
-@@ -129,3 +147,5 @@ describe("thread artifact resolution", () => {
+@@ -129,2 +148,45 @@ describe("thread artifact resolution", () => {
 -    expect(findThreadArtifactPath(source, TURN_ID, targetMessageId, "images/1.jpg")).toBe(
 -      "/sessions/target/images/1.jpg",
--    );
 +    expect(findThreadArtifactPath(source, TURN_ID, targetMessageId, "images/1.jpg")).toEqual({
 +      path: "/sessions/target/images/1.jpg",
 +      scope: "workspace",
 +      source: "raw-output",
 +    });
++  });
++
++  it("includes artifacts emitted later in a streaming assistant message", () => {
++    const path = "/sessions/thread/images/streamed.png";
++    const source = {
++      messages: [message(MESSAGE_ID, "2026-01-01T00:00:03.000Z", "2026-01-01T00:00:08.000Z")],
++      activities: [activity(path, { createdAt: "2026-01-01T00:00:07.000Z" })],
++    };
++
++    expect(findThreadArtifactPath(source, TURN_ID, MESSAGE_ID, "images/streamed.png")).toEqual({
++      path,
++      scope: "workspace",
++      source: "raw-output",
++    });
++  });
++
++  it("allows an artifact on the same millisecond as the previous message boundary", () => {
++    const previousMessageId = MessageId.make("message-previous");
++    const path = "/sessions/thread/images/boundary.png";
++    const source = {
++      messages: [
++        message(previousMessageId, "2026-01-01T00:00:01.000Z", "2026-01-01T00:00:03.000Z"),
++        message(MESSAGE_ID, "2026-01-01T00:00:03.000Z", "2026-01-01T00:00:05.000Z"),
++      ],
++      activities: [activity(path, { createdAt: "2026-01-01T00:00:03.000Z" })],
++    };
++
++    expect(findThreadArtifactPath(source, TURN_ID, MESSAGE_ID, "images/boundary.png")).toEqual({
++      path,
++      scope: "workspace",
++      source: "raw-output",
++    });
++  });
++
++  it("retries only transient artifact misses while projection and files settle", () => {
++    expect(isThreadArtifactLookupRetryable({ _tag: "AssetWorkspaceAssetNotFoundError" })).toBe(
++      true,
++    );
++    expect(isThreadArtifactLookupRetryable({ _tag: "AssetWorkspacePathValidationError" })).toBe(
++      false,
+@@ -131,0 +194 @@ describe("thread artifact resolution", () => {
++    expect(isThreadArtifactLookupRetryable(new Error("failed"))).toBe(false);
 diff --git a/apps/server/src/assets/ThreadArtifactResolver.ts b/apps/server/src/assets/ThreadArtifactResolver.ts
-index 4e8e3a707857bbf82a720a79368055db29946691..6b8c958dd9cb7c25f0313b670e94ee137dc96514 100644
+index 4e8e3a707857bbf82a720a79368055db29946691..315684c220109bd79bda2b44a6c0c8bd33db31cc 100644
 --- a/apps/server/src/assets/ThreadArtifactResolver.ts
 +++ b/apps/server/src/assets/ThreadArtifactResolver.ts
-@@ -18,0 +19,12 @@ interface ThreadArtifactSource {
+@@ -2,0 +3,2 @@ import { isWorkspaceImagePreviewPath } from "@t3tools/shared/filePreview";
++import * as Effect from "effect/Effect";
++import * as Schedule from "effect/Schedule";
+@@ -18,0 +21,15 @@ interface ThreadArtifactSource {
 +export type ResolvedThreadArtifactPath =
 +  | {
 +      readonly path: string;
@@ -224,17 +270,37 @@ index 4e8e3a707857bbf82a720a79368055db29946691..6b8c958dd9cb7c25f0313b670e94ee13
 +      readonly source: "image-generation";
 +    };
 +
-@@ -42 +54 @@ export function normalizeThreadArtifactReference(value: string): string | null {
++const THREAD_ARTIFACT_LOOKUP_RETRY_COUNT = 4;
++const THREAD_ARTIFACT_LOOKUP_RETRY_INTERVAL = "100 millis";
++
+@@ -24,0 +42,16 @@ function asUnknownRecord(value: unknown): Record<string, unknown> | null {
++export function retryThreadArtifactLookup<A, E, R>(
++  lookup: Effect.Effect<A, E, R>,
++): Effect.Effect<A, E, R> {
++  return lookup.pipe(
++    Effect.retry({
++      times: THREAD_ARTIFACT_LOOKUP_RETRY_COUNT,
++      schedule: Schedule.spaced(THREAD_ARTIFACT_LOOKUP_RETRY_INTERVAL),
++      while: isThreadArtifactLookupRetryable,
++    }),
++  );
++}
++
++export function isThreadArtifactLookupRetryable(error: unknown): boolean {
++  return asUnknownRecord(error)?._tag === "AssetWorkspaceAssetNotFoundError";
++}
++
+@@ -42 +75 @@ export function normalizeThreadArtifactReference(value: string): string | null {
 -function activityArtifactPaths(payloadValue: unknown): ReadonlyArray<string> {
 +function activityArtifactPaths(payloadValue: unknown): ReadonlyArray<ResolvedThreadArtifactPath> {
-@@ -47 +59,5 @@ function activityArtifactPaths(payloadValue: unknown): ReadonlyArray<string> {
+@@ -47 +80,5 @@ function activityArtifactPaths(payloadValue: unknown): ReadonlyArray<string> {
 -  const paths = [rawOutput?.path];
 +  const paths: ResolvedThreadArtifactPath[] = [];
 +
 +  if (typeof rawOutput?.path === "string") {
 +    paths.push({ path: rawOutput.path, scope: "workspace", source: "raw-output" });
 +  }
-@@ -49,4 +65,8 @@ function activityArtifactPaths(payloadValue: unknown): ReadonlyArray<string> {
+@@ -49,4 +86,8 @@ function activityArtifactPaths(payloadValue: unknown): ReadonlyArray<string> {
 -  if (item?.type === "imageGeneration") {
 -    paths.push(item.savedPath);
 -  } else if (item?.type === "imageView") {
@@ -247,21 +313,27 @@ index 4e8e3a707857bbf82a720a79368055db29946691..6b8c958dd9cb7c25f0313b670e94ee13
 +    });
 +  } else if (item?.type === "imageView" && typeof item.path === "string") {
 +    paths.push({ path: item.path, scope: "workspace", source: "image-view" });
-@@ -55 +75 @@ function activityArtifactPaths(payloadValue: unknown): ReadonlyArray<string> {
+@@ -55 +96 @@ function activityArtifactPaths(payloadValue: unknown): ReadonlyArray<string> {
 -  return paths.filter((value): value is string => typeof value === "string");
 +  return paths;
-@@ -81 +101 @@ export function findThreadArtifactPath(
+@@ -70 +111 @@ function artifactMessageWindow(
+-  const before = Date.parse(message.createdAt);
++  const before = Date.parse(message.updatedAt);
+@@ -81 +122 @@ export function findThreadArtifactPath(
 -): string | null {
 +): ResolvedThreadArtifactPath | null {
-@@ -87 +107 @@ export function findThreadArtifactPath(
+@@ -87 +128 @@ export function findThreadArtifactPath(
 -  const matches = new Map<string, string>();
 +  const matches = new Map<string, ResolvedThreadArtifactPath>();
-@@ -93,2 +113,2 @@ export function findThreadArtifactPath(
+@@ -91 +132 @@ export function findThreadArtifactPath(
+-    if (Number.isNaN(createdAt) || createdAt <= window.after || createdAt > window.before) continue;
++    if (Number.isNaN(createdAt) || createdAt < window.after || createdAt > window.before) continue;
+@@ -93,2 +134,2 @@ export function findThreadArtifactPath(
 -    for (const artifactPath of activityArtifactPaths(activity.payload)) {
 -      const candidate = artifactPath.trim();
 +    for (const artifact of activityArtifactPaths(activity.payload)) {
 +      const candidate = artifact.path.trim();
-@@ -100 +120,7 @@ export function findThreadArtifactPath(
+@@ -100 +141,7 @@ export function findThreadArtifactPath(
 -        matches.set(normalizedCandidate, candidate);
 +        // Scope is part of candidate identity. Seeing the same path as both a
 +        // workspace artifact and a provider-generated artifact is ambiguous,
@@ -271,23 +343,108 @@ index 4e8e3a707857bbf82a720a79368055db29946691..6b8c958dd9cb7c25f0313b670e94ee13
 +          path: candidate,
 +        });
 diff --git a/apps/server/src/ws.ts b/apps/server/src/ws.ts
-index ab03e085466d09d10e0036de4d87494cda86e5d7..1a1b6e67d9b5b66c20ba5440379d1d6999cfc86f 100644
+index 363544c1217fa8f3663390cbaed7907e6f1f40f0..580ecb1a0c32ae6d00db54efa64f6465da2bf71c 100644
 --- a/apps/server/src/ws.ts
 +++ b/apps/server/src/ws.ts
 @@ -8 +7,0 @@ import * as Option from "effect/Option";
 -import * as Path from "effect/Path";
-@@ -90 +89 @@ import * as PreviewManager from "./preview/Manager.ts";
+@@ -91,2 +90,5 @@ import * as PreviewManager from "./preview/Manager.ts";
 -import { issueAssetUrl } from "./assets/AssetAccess.ts";
+-import { findThreadArtifactPath } from "./assets/ThreadArtifactResolver.ts";
 +import { issueAssetUrl, issueThreadArtifactUrl } from "./assets/AssetAccess.ts";
-@@ -411 +409,0 @@ const makeWsRpcLayer = (
++import {
++  findThreadArtifactPath,
++  retryThreadArtifactLookup,
++} from "./assets/ThreadArtifactResolver.ts";
+@@ -413 +414,0 @@ const makeWsRpcLayer = (
 -      const path = yield* Path.Path;
-@@ -1719 +1717 @@ const makeWsRpcLayer = (
+@@ -1710,21 +1711,59 @@ const makeWsRpcLayer = (
+-                const thread = yield* projectionSnapshotQuery
+-                  .getThreadDetailById(input.resource.threadId)
+-                  .pipe(
+-                    Effect.mapError(
+-                      (cause) =>
+-                        new AssetWorkspaceAssetInspectionError({
+-                          resource: input.resource,
+-                          cause,
+-                        }),
+-                    ),
+-                  );
+-                if (Option.isNone(thread)) {
+-                  return yield* new AssetWorkspaceAssetNotFoundError({
+-                    resource: input.resource,
+-                  });
+-                }
 -                const artifactPath = findThreadArtifactPath(
-+                const artifact = findThreadArtifactPath(
-@@ -1725 +1723 @@ const makeWsRpcLayer = (
+-                  thread.value,
+-                  input.resource.turnId,
+-                  input.resource.messageId,
+-                  input.resource.path,
++                const resource = input.resource;
++                return yield* retryThreadArtifactLookup(
++                  Effect.gen(function* () {
++                    const snapshot = yield* projectionSnapshotQuery
++                      .getThreadDetailSnapshot(resource.threadId)
++                      .pipe(
++                        Effect.mapError(
++                          (cause) =>
++                            new AssetWorkspaceAssetInspectionError({
++                              resource,
++                              cause,
++                            }),
++                        ),
++                      );
++                    if (Option.isNone(snapshot)) {
++                      return yield* new AssetWorkspaceAssetNotFoundError({
++                        resource,
++                      });
++                    }
++                    const thread = snapshot.value.thread;
++                    const artifact = findThreadArtifactPath(
++                      thread,
++                      resource.turnId,
++                      resource.messageId,
++                      resource.path,
++                    );
++                    if (!artifact) {
++                      return yield* new AssetWorkspaceAssetNotFoundError({
++                        resource,
++                      });
++                    }
++
++                    let workspaceRoot: string | undefined;
++                    if (artifact.scope === "workspace") {
++                      const project = yield* projectionSnapshotQuery
++                        .getProjectShellById(thread.projectId)
++                        .pipe(
++                          Effect.mapError(
++                            (cause) =>
++                              new AssetWorkspaceContextResolutionError({
++                                resource,
++                                cause,
++                              }),
++                          ),
++                        );
++                      if (Option.isNone(project)) {
++                        return yield* new AssetWorkspaceContextNotFoundError({
++                          resource,
++                        });
++                      }
++                      workspaceRoot = thread.worktreePath ?? project.value.workspaceRoot;
++                    }
++
++                    return yield* issueThreadArtifactUrl({
++                      resource,
++                      artifact,
++                      ...(workspaceRoot === undefined ? {} : { workspaceRoot }),
++                    });
++                  }),
+@@ -1732,13 +1770,0 @@ const makeWsRpcLayer = (
 -                if (!artifactPath) {
-+                if (!artifact) {
-@@ -1730,7 +1728,26 @@ const makeWsRpcLayer = (
+-                  return yield* new AssetWorkspaceAssetNotFoundError({
+-                    resource: input.resource,
+-                  });
+-                }
 -                return yield* issueAssetUrl({
 -                  resource: {
 -                    _tag: "workspace-file",
@@ -295,29 +452,4 @@ index ab03e085466d09d10e0036de4d87494cda86e5d7..1a1b6e67d9b5b66c20ba5440379d1d69
 -                    path: path.basename(artifactPath),
 -                  },
 -                  workspaceRoot: path.dirname(artifactPath),
-+
-+                let workspaceRoot: string | undefined;
-+                if (artifact.scope === "workspace") {
-+                  const project = yield* projectionSnapshotQuery
-+                    .getProjectShellById(thread.value.projectId)
-+                    .pipe(
-+                      Effect.mapError(
-+                        (cause) =>
-+                          new AssetWorkspaceContextResolutionError({
-+                            resource: input.resource,
-+                            cause,
-+                          }),
-+                      ),
-+                    );
-+                  if (Option.isNone(project)) {
-+                    return yield* new AssetWorkspaceContextNotFoundError({
-+                      resource: input.resource,
-+                    });
-+                  }
-+                  workspaceRoot = thread.value.worktreePath ?? project.value.workspaceRoot;
-+                }
-+
-+                return yield* issueThreadArtifactUrl({
-+                  resource: input.resource,
-+                  artifact,
-+                  ...(workspaceRoot === undefined ? {} : { workspaceRoot }),
+-                });

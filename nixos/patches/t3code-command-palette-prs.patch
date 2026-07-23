@@ -1,12 +1,14 @@
 diff --git a/apps/web/src/components/CommandPalette.logic.test.ts b/apps/web/src/components/CommandPalette.logic.test.ts
-index 6609017f91cba7599a566c985df47ecdad153720..20374544af6c48600570284cc3b2c9e856dd599c 100644
+index 902b7e87773b5d7d80b4b297ff270b0105111de7..440430df9a39f3c6628332e205d22dce609f5ad0 100644
 --- a/apps/web/src/components/CommandPalette.logic.test.ts
 +++ b/apps/web/src/components/CommandPalette.logic.test.ts
 @@ -1,0 +2 @@ import { describe, expect, it, vi } from "vite-plus/test";
 +import { scopeProjectRef } from "@t3tools/client-runtime/environment";
-@@ -4,0 +6 @@ import {
+@@ -4,0 +6,2 @@ import {
++  buildNewThreadProjectView,
 +  buildNewThreadPickerGroups,
-@@ -6,0 +9,7 @@ import {
+@@ -7,0 +11,8 @@ import {
++  isNewThreadProjectView,
 +  NEW_THREAD_PROJECT_VIEW_GROUP,
 +  prioritizeScopedProject,
 +  resolveBrowseTabCompletion,
@@ -14,19 +16,9 @@ index 6609017f91cba7599a566c985df47ecdad153720..20374544af6c48600570284cc3b2c9e8
 +  resetAddProjectFlowState,
 +  shouldIgnoreAddProjectShortcut,
 +  shouldResetPaletteFlowOnPop,
-@@ -7,0 +16 @@ import {
+@@ -8,0 +20 @@ import {
 +  type CommandPaletteView,
-@@ -12,0 +22,254 @@ const PROJECT_ID = ProjectId.make("project-1");
-+describe("shouldIgnoreAddProjectShortcut", () => {
-+  it("allows Alt+A from the editable search input while the new-task palette is open", () => {
-+    expect(shouldIgnoreAddProjectShortcut({ paletteOpen: true, editableTarget: true })).toBe(false);
-+  });
-+
-+  it("continues to ignore Alt+A from editors outside the palette", () => {
-+    expect(shouldIgnoreAddProjectShortcut({ paletteOpen: false, editableTarget: true })).toBe(true);
-+  });
-+});
-+
+@@ -40,0 +53,259 @@ const PROJECT_ID = ProjectId.make("project-1");
 +describe("resolveBrowseTabCompletion", () => {
 +  const entries = [
 +    { name: "alpha", fullPath: "/workspace/alpha" },
@@ -119,6 +111,16 @@ index 6609017f91cba7599a566c985df47ecdad153720..20374544af6c48600570284cc3b2c9e8
 +  });
 +});
 +
++describe("shouldIgnoreAddProjectShortcut", () => {
++  it("allows Alt+A from the editable search input while the new-task palette is open", () => {
++    expect(shouldIgnoreAddProjectShortcut({ paletteOpen: true, editableTarget: true })).toBe(false);
++  });
++
++  it("continues to ignore Alt+A from editors outside the palette", () => {
++    expect(shouldIgnoreAddProjectShortcut({ paletteOpen: false, editableTarget: true })).toBe(true);
++  });
++});
++
 +describe("shouldResetPaletteFlowOnPop", () => {
 +  it("resets a flow opened from a nested parent when its first view is popped", () => {
 +    expect(shouldResetPaletteFlowOnPop(1, 2)).toBe(true);
@@ -129,11 +131,33 @@ index 6609017f91cba7599a566c985df47ecdad153720..20374544af6c48600570284cc3b2c9e8
 +  });
 +});
 +
++describe("resetAddProjectFlowState", () => {
++  it("clears every piece of add-project state before opening another palette flow", () => {
++    const flowBaseDepthRef = { current: 2 as number | null };
++    const clearEnvironment = vi.fn();
++    const clearCloneFlow = vi.fn();
++
++    resetAddProjectFlowState({
++      flowBaseDepthRef,
++      clearEnvironment,
++      clearCloneFlow,
++    });
++
++    expect(clearEnvironment).toHaveBeenCalledOnce();
++    expect(clearCloneFlow).toHaveBeenCalledOnce();
++    expect(flowBaseDepthRef.current).toBeNull();
++  });
++});
++
 +describe("resolveNewThreadIntentViewStack", () => {
-+  const newThreadView: CommandPaletteView = {
-+    addonIcon: null,
-+    groups: [{ value: NEW_THREAD_PROJECT_VIEW_GROUP, label: "Projects", items: [] }],
-+  };
++  const newThreadView = buildNewThreadProjectView(null);
++
++  it("marks the shared view as the dynamic new-thread project picker", () => {
++    expect(newThreadView.groups).toEqual([
++      { value: NEW_THREAD_PROJECT_VIEW_GROUP, label: "Projects", items: [] },
++    ]);
++    expect(isNewThreadProjectView(newThreadView)).toBe(true);
++  });
 +
 +  it("replaces another submenu instead of stacking on it", () => {
 +    const rootView: CommandPaletteView = {
@@ -254,37 +278,18 @@ index 6609017f91cba7599a566c985df47ecdad153720..20374544af6c48600570284cc3b2c9e8
 +  });
 +});
 +
-+describe("resetAddProjectFlowState", () => {
-+  it("clears every piece of add-project state before opening another palette flow", () => {
-+    const flowBaseDepthRef = { current: 2 as number | null };
-+    const clearEnvironment = vi.fn();
-+    const clearCloneFlow = vi.fn();
-+
-+    resetAddProjectFlowState({
-+      flowBaseDepthRef,
-+      clearEnvironment,
-+      clearCloneFlow,
-+    });
-+
-+    expect(clearEnvironment).toHaveBeenCalledOnce();
-+    expect(clearCloneFlow).toHaveBeenCalledOnce();
-+    expect(flowBaseDepthRef.current).toBeNull();
-+  });
-+});
 diff --git a/apps/web/src/components/CommandPalette.logic.ts b/apps/web/src/components/CommandPalette.logic.ts
-index ab53adbefb1633ea9a6b176195b81230114e702b..e9b6cf62b8f2cf5723745099d714dfeff918e9c2 100644
+index a217d53b5b7825ff9d408b0fb109072c8541ccdd..9ce05632ef216b402757acb8d4c49674f1656195 100644
 --- a/apps/web/src/components/CommandPalette.logic.ts
 +++ b/apps/web/src/components/CommandPalette.logic.ts
-@@ -1 +1,5 @@
--import { type KeybindingCommand, type FilesystemBrowseEntry } from "@t3tools/contracts";
-+import {
-+  type FilesystemBrowseEntry,
+@@ -2 +1,0 @@ import {
+-  type KeybindingCommand,
+@@ -3,0 +3,2 @@ import {
 +  type KeybindingCommand,
 +  type ScopedProjectRef,
-+} from "@t3tools/contracts";
-@@ -12,0 +17 @@ export const ADDON_ICON_CLASS = "size-4";
+@@ -16,0 +18 @@ export const ADDON_ICON_CLASS = "size-4";
 +export const NEW_THREAD_PROJECT_VIEW_GROUP = "new-thread-projects";
-@@ -54,0 +60,38 @@ export interface CommandPaletteView {
+@@ -70,0 +73,45 @@ export function enumerateCommandPaletteItems(
 +export function shouldResetPaletteFlowOnPop(
 +  flowBaseDepth: number | null,
 +  currentDepth: number,
@@ -313,6 +318,13 @@ index ab53adbefb1633ea9a6b176195b81230114e702b..e9b6cf62b8f2cf5723745099d714dfef
 +  return view?.groups[0]?.value === NEW_THREAD_PROJECT_VIEW_GROUP;
 +}
 +
++export function buildNewThreadProjectView(addonIcon: ReactNode): CommandPaletteView {
++  return {
++    addonIcon,
++    groups: [{ value: NEW_THREAD_PROJECT_VIEW_GROUP, label: "Projects", items: [] }],
++  };
++}
++
 +export function resolveNewThreadIntentViewStack(
 +  currentStack: ReadonlyArray<CommandPaletteView>,
 +  newThreadView: CommandPaletteView,
@@ -323,7 +335,7 @@ index ab53adbefb1633ea9a6b176195b81230114e702b..e9b6cf62b8f2cf5723745099d714dfef
 +  ];
 +}
 +
-@@ -88,0 +125,31 @@ export function filterBrowseEntries(input: {
+@@ -104,0 +152,31 @@ export function filterBrowseEntries(input: {
 +export type BrowseTabCompletion =
 +  | { readonly kind: "up" }
 +  | { readonly kind: "entry"; readonly entry: FilesystemBrowseEntry };
@@ -355,7 +367,7 @@ index ab53adbefb1633ea9a6b176195b81230114e702b..e9b6cf62b8f2cf5723745099d714dfef
 +  return firstEntry ? { kind: "entry", entry: firstEntry } : null;
 +}
 +
-@@ -113,0 +181,28 @@ export function buildProjectActionItems(input: {
+@@ -129,0 +208,28 @@ export function buildProjectActionItems(input: {
 +export function prioritizeScopedProject<T extends Pick<Project, "environmentId" | "id">>(
 +  projects: ReadonlyArray<T>,
 +  preferredProjectRef: ScopedProjectRef | null,
@@ -384,7 +396,7 @@ index ab53adbefb1633ea9a6b176195b81230114e702b..e9b6cf62b8f2cf5723745099d714dfef
 +  ];
 +}
 +
-@@ -351,0 +447,19 @@ export function buildRootGroups(input: {
+@@ -367,0 +474,19 @@ export function buildRootGroups(input: {
 +export function buildNewThreadPickerGroups(input: {
 +  projectItems: ReadonlyArray<CommandPaletteActionItem>;
 +  addProjectItem: CommandPaletteActionItem;
@@ -405,7 +417,7 @@ index ab53adbefb1633ea9a6b176195b81230114e702b..e9b6cf62b8f2cf5723745099d714dfef
 +}
 +
 diff --git a/apps/web/src/components/CommandPalette.tsx b/apps/web/src/components/CommandPalette.tsx
-index 8c7e6d287caf6d4ce8c88d35a2ec3860665879ca..eafd8e5a75d57e7a336a360279c14d6d2e00ff1b 100644
+index bb83dfa56915f52ceba559da0afb90369ce685f3..232c6ef2fed8e1d0b684cb8b06653d6d4ab9e39c 100644
 --- a/apps/web/src/components/CommandPalette.tsx
 +++ b/apps/web/src/components/CommandPalette.tsx
 @@ -13,0 +14 @@ import {
@@ -419,25 +431,29 @@ index 8c7e6d287caf6d4ce8c88d35a2ec3860665879ca..eafd8e5a75d57e7a336a360279c14d6d
 +} from "../state/entities";
 +import {
 +  resolveThreadActionProjectRef,
-@@ -80 +86 @@ import {
+@@ -80 +86,5 @@ import {
 -import { onOpenCommandPalette } from "../commandPaletteBus";
-+import { isCommandPaletteOpen, onOpenCommandPalette } from "../commandPaletteBus";
-@@ -94,0 +101 @@ import {
++import {
++  isCommandPaletteOpen,
++  onCloseCommandPalette,
++  onOpenCommandPalette,
++} from "../commandPaletteBus";
+@@ -94,0 +105,2 @@ import {
++  buildNewThreadProjectView,
 +  buildNewThreadPickerGroups,
-@@ -104,0 +112 @@ import {
+@@ -105,0 +118 @@ import {
 +  isNewThreadProjectView,
-@@ -105,0 +114,2 @@ import {
-+  NEW_THREAD_PROJECT_VIEW_GROUP,
+@@ -106,0 +120 @@ import {
 +  prioritizeScopedProject,
-@@ -106,0 +117,5 @@ import {
+@@ -107,0 +122,5 @@ import {
 +  resolveBrowseTabCompletion,
 +  resolveNewThreadIntentViewStack,
 +  resetAddProjectFlowState,
 +  shouldIgnoreAddProjectShortcut,
 +  shouldResetPaletteFlowOnPop,
-@@ -132 +145,0 @@ const EMPTY_BROWSE_ENTRIES: FilesystemBrowseResult["entries"] = [];
+@@ -133 +151,0 @@ const EMPTY_BROWSE_ENTRIES: FilesystemBrowseResult["entries"] = [];
 -
-@@ -337,3 +350,6 @@ function errorMessage(error: unknown): string {
+@@ -338,3 +356,6 @@ function errorMessage(error: unknown): string {
 -interface CommandPaletteOpenIntent {
 -  readonly kind: "add-project" | "new-thread-in";
 -}
@@ -447,13 +463,13 @@ index 8c7e6d287caf6d4ce8c88d35a2ec3860665879ca..eafd8e5a75d57e7a336a360279c14d6d
 +      readonly kind: "new-thread-in";
 +      readonly preferredProjectRef: ScopedProjectRef | null;
 +    };
-@@ -350 +366,4 @@ type CommandPaletteUiAction =
+@@ -351 +372,4 @@ type CommandPaletteUiAction =
 -  | { readonly _tag: "OpenNewThreadIn" }
 +  | {
 +      readonly _tag: "OpenNewThreadIn";
 +      readonly preferredProjectRef: ScopedProjectRef | null;
 +    }
-@@ -368 +387,7 @@ function reduceCommandPaletteUiState(
+@@ -369 +393,7 @@ function reduceCommandPaletteUiState(
 -      return { open: true, openIntent: { kind: "new-thread-in" } };
 +      return {
 +        open: true,
@@ -462,7 +478,7 @@ index 8c7e6d287caf6d4ce8c88d35a2ec3860665879ca..eafd8e5a75d57e7a336a360279c14d6d
 +          preferredProjectRef: action.preferredProjectRef,
 +        },
 +      };
-@@ -373,0 +399,13 @@ function reduceCommandPaletteUiState(
+@@ -374,0 +405,13 @@ function reduceCommandPaletteUiState(
 +function isEditableKeyboardTarget(target: EventTarget | null): boolean {
 +  if (!(target instanceof HTMLElement)) {
 +    return false;
@@ -476,7 +492,7 @@ index 8c7e6d287caf6d4ce8c88d35a2ec3860665879ca..eafd8e5a75d57e7a336a360279c14d6d
 +  );
 +}
 +
-@@ -382 +420,8 @@ export function CommandPalette({ children }: { children: ReactNode }) {
+@@ -383 +426,8 @@ export function CommandPalette({ children }: { children: ReactNode }) {
 -  const openNewThreadIn = useCallback(() => dispatch({ _tag: "OpenNewThreadIn" }), []);
 +  const openNewThreadIn = useCallback(
 +    (preferredProjectRef?: ScopedProjectRef | null) =>
@@ -486,10 +502,10 @@ index 8c7e6d287caf6d4ce8c88d35a2ec3860665879ca..eafd8e5a75d57e7a336a360279c14d6d
 +      }),
 +    [],
 +  );
-@@ -399 +444 @@ export function CommandPalette({ children }: { children: ReactNode }) {
+@@ -400 +450 @@ export function CommandPalette({ children }: { children: ReactNode }) {
 -      if (event.defaultPrevented) return;
 +      if (event.defaultPrevented || event.repeat) return;
-@@ -406 +451,10 @@ export function CommandPalette({ children }: { children: ReactNode }) {
+@@ -407 +457,10 @@ export function CommandPalette({ children }: { children: ReactNode }) {
 -      if (command !== "commandPalette.toggle") {
 +      if (command !== "commandPalette.toggle" && command !== "project.add") {
 +        return;
@@ -501,34 +517,37 @@ index 8c7e6d287caf6d4ce8c88d35a2ec3860665879ca..eafd8e5a75d57e7a336a360279c14d6d
 +          editableTarget: isEditableKeyboardTarget(event.target),
 +        })
 +      ) {
-@@ -411 +459,5 @@ export function CommandPalette({ children }: { children: ReactNode }) {
+@@ -412 +471,5 @@ export function CommandPalette({ children }: { children: ReactNode }) {
 -      toggleOpen();
 +      if (command === "project.add") {
 +        openAddProject();
 +      } else {
 +        toggleOpen();
 +      }
-@@ -415 +473 @@ export function CommandPalette({ children }: { children: ReactNode }) {
+@@ -416 +479 @@ export function CommandPalette({ children }: { children: ReactNode }) {
 -  }, [keybindings, terminalOpen, toggleOpen]);
 +  }, [keybindings, openAddProject, terminalOpen, toggleOpen]);
-@@ -421 +473 @@ export function CommandPalette({ children }: { children: ReactNode }) {
+@@ -422 +485 @@ export function CommandPalette({ children }: { children: ReactNode }) {
 -          openNewThreadIn();
 +          openNewThreadIn(detail.preferredProjectRef);
-@@ -492,0 +545 @@ function OpenCommandPaletteDialog(props: {
+@@ -431,0 +495,2 @@ export function CommandPalette({ children }: { children: ReactNode }) {
++  useEffect(() => onCloseCommandPalette(() => setOpen(false)), [setOpen]);
++
+@@ -493,0 +559 @@ function OpenCommandPaletteDialog(props: {
 +  const allEnvironmentShellsBootstrapped = useAllEnvironmentShellsBootstrapped();
-@@ -496,0 +550,3 @@ function OpenCommandPaletteDialog(props: {
+@@ -497,0 +564,3 @@ function OpenCommandPaletteDialog(props: {
 +  const viewStackDepthRef = useRef(0);
 +  viewStackDepthRef.current = viewStack.length;
 +  const addProjectFlowBaseDepthRef = useRef<number | null>(null);
-@@ -497,0 +554,4 @@ function OpenCommandPaletteDialog(props: {
+@@ -498,0 +568,4 @@ function OpenCommandPaletteDialog(props: {
 +  const isNewThreadProjectPickerView = isNewThreadProjectView(currentView);
 +  const [newThreadPreferredProjectRef, setNewThreadPreferredProjectRef] =
 +    useState<ScopedProjectRef | null>(null);
 +  const [newThreadPickerGeneration, setNewThreadPickerGeneration] = useState(0);
-@@ -687 +747 @@ function OpenCommandPaletteDialog(props: {
+@@ -688 +761,37 @@ function OpenCommandPaletteDialog(props: {
 -  const projectThreadItems = useMemo(
 +  const contextualNewThreadProjectRef = useMemo(
-@@ -688,0 +749,10 @@ function OpenCommandPaletteDialog(props: {
++    () =>
 +      resolveThreadActionProjectRef({
 +        activeDraftThread,
 +        activeThread: activeThread ?? undefined,
@@ -539,34 +558,68 @@ index 8c7e6d287caf6d4ce8c88d35a2ec3860665879ca..eafd8e5a75d57e7a336a360279c14d6d
 +  );
 +  const buildProjectThreadItems = useCallback(
 +    (candidateProjects: typeof projects) =>
-@@ -690 +760 @@ function OpenCommandPaletteDialog(props: {
--        projects,
++      buildProjectActionItems({
 +        projects: candidateProjects,
-@@ -692 +761,0 @@ function OpenCommandPaletteDialog(props: {
--        shortcutCommand: "chat.new",
-@@ -712 +781,20 @@ function OpenCommandPaletteDialog(props: {
--    [activeDraftThread, activeThread, defaultProjectRef, handleNewThread, projects],
++        valuePrefix: "new-thread-in",
++        icon: (project) => (
++          <ProjectFavicon
++            environmentId={project.environmentId}
++            cwd={project.workspaceRoot}
++            className={ITEM_ICON_CLASS}
++          />
++        ),
++        runProject: async (project) => {
++          await startNewThreadInProjectFromContext(
++            {
++              activeDraftThread,
++              activeThread: activeThread ?? undefined,
++              defaultProjectRef,
++              handleNewThread,
++            },
++            scopeProjectRef(project.environmentId, project.id),
++          );
++        },
++      }),
 +    [activeDraftThread, activeThread, defaultProjectRef, handleNewThread],
 +  );
-+  const projectThreadItems = useMemo(
-+    () => buildProjectThreadItems(prioritizeScopedProject(projects, contextualNewThreadProjectRef)),
-+    [buildProjectThreadItems, contextualNewThreadProjectRef, projects],
-+  );
 +  const newThreadPickerItems = useMemo(
-+    () =>
-+      buildProjectThreadItems(
-+        prioritizeScopedProject(
-+          projects,
-+          newThreadPreferredProjectRef ?? contextualNewThreadProjectRef,
+@@ -691,9 +800,4 @@ function OpenCommandPaletteDialog(props: {
+-        buildProjectActionItems({
+-          projects,
+-          valuePrefix: "new-thread-in",
+-          icon: (project) => (
+-            <ProjectFavicon
+-              environmentId={project.environmentId}
+-              cwd={project.workspaceRoot}
+-              className={ITEM_ICON_CLASS}
+-            />
++        buildProjectThreadItems(
++          prioritizeScopedProject(
++            projects,
++            newThreadPreferredProjectRef ?? contextualNewThreadProjectRef,
+@@ -701,12 +805 @@ function OpenCommandPaletteDialog(props: {
+-          runProject: async (project) => {
+-            await startNewThreadInProjectFromContext(
+-              {
+-                activeDraftThread,
+-                activeThread: activeThread ?? undefined,
+-                defaultProjectRef,
+-                handleNewThread,
+-              },
+-              scopeProjectRef(project.environmentId, project.id),
+-            );
+-          },
+-        }),
 +        ),
-+      ),
+@@ -714 +807,6 @@ function OpenCommandPaletteDialog(props: {
+-    [activeDraftThread, activeThread, defaultProjectRef, handleNewThread, projects],
 +    [
 +      buildProjectThreadItems,
 +      contextualNewThreadProjectRef,
 +      newThreadPreferredProjectRef,
 +      projects,
 +    ],
-@@ -735,0 +824,12 @@ function OpenCommandPaletteDialog(props: {
+@@ -737,0 +836,12 @@ function OpenCommandPaletteDialog(props: {
 +  const resetAddProjectFlow = useCallback((): void => {
 +    resetAddProjectFlowState({
 +      flowBaseDepthRef: addProjectFlowBaseDepthRef,
@@ -579,7 +632,7 @@ index 8c7e6d287caf6d4ce8c88d35a2ec3860665879ca..eafd8e5a75d57e7a336a360279c14d6d
 +    });
 +  }, []);
 +
-@@ -758,3 +858,7 @@ function OpenCommandPaletteDialog(props: {
+@@ -760,3 +870,7 @@ function OpenCommandPaletteDialog(props: {
 -    setAddProjectCloneFlow(null);
 -    if (viewStack.length <= 1) {
 -      setAddProjectEnvironmentId(null);
@@ -590,24 +643,24 @@ index 8c7e6d287caf6d4ce8c88d35a2ec3860665879ca..eafd8e5a75d57e7a336a360279c14d6d
 +      resetAddProjectFlow();
 +    } else {
 +      setAddProjectCloneFlow(null);
-@@ -774,0 +879,4 @@ function OpenCommandPaletteDialog(props: {
+@@ -776,0 +891,4 @@ function OpenCommandPaletteDialog(props: {
 +  const markAddProjectFlowOpen = useCallback((): void => {
 +    addProjectFlowBaseDepthRef.current ??= viewStackDepthRef.current;
 +  }, []);
 +
-@@ -776,0 +885 @@ function OpenCommandPaletteDialog(props: {
+@@ -778,0 +897 @@ function OpenCommandPaletteDialog(props: {
 +      markAddProjectFlowOpen();
-@@ -785 +894 @@ function OpenCommandPaletteDialog(props: {
+@@ -787 +906 @@ function OpenCommandPaletteDialog(props: {
 -    [getAddProjectInitialQueryForEnvironment],
 +    [getAddProjectInitialQueryForEnvironment, markAddProjectFlowOpen],
-@@ -789,0 +899 @@ function OpenCommandPaletteDialog(props: {
+@@ -791,0 +911 @@ function OpenCommandPaletteDialog(props: {
 +      markAddProjectFlowOpen();
-@@ -798 +908 @@ function OpenCommandPaletteDialog(props: {
+@@ -800 +920 @@ function OpenCommandPaletteDialog(props: {
 -    [],
 +    [markAddProjectFlowOpen],
-@@ -901,0 +1012 @@ function OpenCommandPaletteDialog(props: {
+@@ -903,0 +1024 @@ function OpenCommandPaletteDialog(props: {
 +      markAddProjectFlowOpen();
-@@ -914 +1025,6 @@ function OpenCommandPaletteDialog(props: {
+@@ -916 +1037,6 @@ function OpenCommandPaletteDialog(props: {
 -    [browseEnvironmentId, buildAddProjectSourceGroups, sourceControlDiscovery.data],
 +    [
 +      browseEnvironmentId,
@@ -615,17 +668,17 @@ index 8c7e6d287caf6d4ce8c88d35a2ec3860665879ca..eafd8e5a75d57e7a336a360279c14d6d
 +      markAddProjectFlowOpen,
 +      sourceControlDiscovery.data,
 +    ],
-@@ -943,0 +1060,3 @@ function OpenCommandPaletteDialog(props: {
+@@ -945,0 +1072,3 @@ function OpenCommandPaletteDialog(props: {
 +    if (addProjectFlowBaseDepthRef.current !== null) {
 +      return;
 +    }
-@@ -944,0 +1064 @@ function OpenCommandPaletteDialog(props: {
+@@ -946,0 +1076 @@ function OpenCommandPaletteDialog(props: {
 +      markAddProjectFlowOpen();
-@@ -963,0 +1084 @@ function OpenCommandPaletteDialog(props: {
+@@ -965,0 +1096 @@ function OpenCommandPaletteDialog(props: {
 +    markAddProjectFlowOpen();
-@@ -968,0 +1090 @@ function OpenCommandPaletteDialog(props: {
+@@ -970,0 +1102 @@ function OpenCommandPaletteDialog(props: {
 +    markAddProjectFlowOpen,
-@@ -971,0 +1094,33 @@ function OpenCommandPaletteDialog(props: {
+@@ -973,0 +1106,33 @@ function OpenCommandPaletteDialog(props: {
 +  const addProjectAction = useMemo<CommandPaletteActionItem>(
 +    () => ({
 +      kind: "action",
@@ -659,15 +712,23 @@ index 8c7e6d287caf6d4ce8c88d35a2ec3860665879ca..eafd8e5a75d57e7a336a360279c14d6d
 +    [openAddProjectFlow],
 +  );
 +
-@@ -981 +1136 @@ function OpenCommandPaletteDialog(props: {
+@@ -983 +1148 @@ function OpenCommandPaletteDialog(props: {
 -    if (openIntent?.kind !== "new-thread-in" || projectThreadItems.length === 0) {
 +    if (openIntent?.kind !== "new-thread-in") {
-@@ -983,0 +1139 @@ function OpenCommandPaletteDialog(props: {
+@@ -985,0 +1151 @@ function OpenCommandPaletteDialog(props: {
 +    setNewThreadPreferredProjectRef(openIntent.preferredProjectRef);
-@@ -985,14 +1141,4 @@ function OpenCommandPaletteDialog(props: {
+@@ -987,2 +1153,8 @@ function OpenCommandPaletteDialog(props: {
 -    setAddProjectCloneFlow(null);
 -    setViewStack([]);
--    setQuery("");
++    // The new-thread intent takes ownership of an already-open palette, so
++    // clear all add-project state before displaying the dedicated project picker.
++    resetAddProjectFlow();
++    setIsRemoteProjectLookingUp(false);
++    setIsRemoteProjectCloning(false);
++    const newThreadView = buildNewThreadProjectView(<SquarePenIcon className={ADDON_ICON_CLASS} />);
++    setViewStack((currentStack) => resolveNewThreadIntentViewStack(currentStack, newThreadView));
++    setHighlightedItemValue(null);
+@@ -990,27 +1162,4 @@ function OpenCommandPaletteDialog(props: {
 -    const currentPrefix =
 -      currentProjectEnvironmentId && currentProjectId
 -        ? `new-thread-in:${currentProjectEnvironmentId}:${currentProjectId}`
@@ -679,12 +740,14 @@ index 8c7e6d287caf6d4ce8c88d35a2ec3860665879ca..eafd8e5a75d57e7a336a360279c14d6d
 -        ]
 -      : projectThreadItems;
 -    pushPaletteView({
-+    resetAddProjectFlow();
-+    setIsRemoteProjectLookingUp(false);
-+    setIsRemoteProjectCloning(false);
-+    const newThreadView = {
-@@ -1000,9 +1146,9 @@ function OpenCommandPaletteDialog(props: {
--      groups: [{ value: "projects", label: "Projects", items: prioritized }],
+-      addonIcon: <SquarePenIcon className={ADDON_ICON_CLASS} />,
+-      groups: [
+-        {
+-          value: "projects",
+-          label: "Projects",
+-          items: enumerateCommandPaletteItems(prioritized),
+-        },
+-      ],
 -    });
 -  }, [
 -    clearOpenIntent,
@@ -693,24 +756,16 @@ index 8c7e6d287caf6d4ce8c88d35a2ec3860665879ca..eafd8e5a75d57e7a336a360279c14d6d
 -    openIntent,
 -    projectThreadItems,
 -  ]);
-+      groups: [{ value: NEW_THREAD_PROJECT_VIEW_GROUP, label: "Projects", items: [] }],
-+    } satisfies CommandPaletteView;
-+    setViewStack((currentStack) => resolveNewThreadIntentViewStack(currentStack, newThreadView));
-+    setHighlightedItemValue(null);
-+    setQuery("");
 +    if (isNewThreadProjectPickerView) {
 +      setNewThreadPickerGeneration((generation) => generation + 1);
 +    }
 +  }, [clearOpenIntent, isNewThreadProjectPickerView, openIntent, resetAddProjectFlow]);
-@@ -1028 +1173,0 @@ function OpenCommandPaletteDialog(props: {
+@@ -1036 +1184,0 @@ function OpenCommandPaletteDialog(props: {
 -        shortcutCommand: "chat.new",
-@@ -1047 +1192,4 @@ function OpenCommandPaletteDialog(props: {
+@@ -1055 +1203 @@ function OpenCommandPaletteDialog(props: {
 -      groups: [{ value: "projects", label: "Projects", items: projectThreadItems }],
-+      groups: [
-+        { value: "projects", label: "Projects", items: projectThreadItems },
-+        { value: "actions", label: "Actions", items: [addProjectAction] },
-+      ],
-@@ -1051,28 +1199 @@ function OpenCommandPaletteDialog(props: {
++      groups: buildNewThreadProjectView(<SquarePenIcon className={ADDON_ICON_CLASS} />).groups,
+@@ -1059,28 +1207 @@ function OpenCommandPaletteDialog(props: {
 -  actionItems.push({
 -    kind: "action",
 -    value: "action:add-project",
@@ -740,7 +795,7 @@ index 8c7e6d287caf6d4ce8c88d35a2ec3860665879ca..eafd8e5a75d57e7a336a360279c14d6d
 -    },
 -  });
 +  actionItems.push(addProjectAction);
-@@ -1109,4 +1230,9 @@ function OpenCommandPaletteDialog(props: {
+@@ -1117,4 +1238,9 @@ function OpenCommandPaletteDialog(props: {
 -  const activeGroups =
 -    addProjectEnvironmentId !== null &&
 -    currentView !== null &&
@@ -754,7 +809,7 @@ index 8c7e6d287caf6d4ce8c88d35a2ec3860665879ca..eafd8e5a75d57e7a336a360279c14d6d
 +    : addProjectEnvironmentId !== null &&
 +        currentView !== null &&
 +        currentView.groups[0]?.value === sourceSelectionViewValue
-@@ -1547,0 +1674,23 @@ function OpenCommandPaletteDialog(props: {
+@@ -1571,0 +1698,23 @@ function OpenCommandPaletteDialog(props: {
 +    const isPlainTab =
 +      event.key === "Tab" && !event.shiftKey && !event.altKey && !event.ctrlKey && !event.metaKey;
 +
@@ -778,10 +833,10 @@ index 8c7e6d287caf6d4ce8c88d35a2ec3860665879ca..eafd8e5a75d57e7a336a360279c14d6d
 +      return;
 +    }
 +
-@@ -1726 +1875 @@ function OpenCommandPaletteDialog(props: {
+@@ -1750 +1899 @@ function OpenCommandPaletteDialog(props: {
 -        key={`${viewStack.length}-${browseGeneration}-${isBrowsing}-${addProjectCloneFlow?.step ?? "none"}`}
 +        key={`${viewStack.length}-${browseGeneration}-${newThreadPickerGeneration}-${isBrowsing}-${addProjectCloneFlow?.step ?? "none"}`}
-@@ -1871 +2020,6 @@ function OpenCommandPaletteDialog(props: {
+@@ -1895 +2044,6 @@ function OpenCommandPaletteDialog(props: {
 -            {...(addProjectCloneFlow?.step === "repository"
 +            {...(isNewThreadProjectPickerView &&
 +            allEnvironmentShellsBootstrapped &&
@@ -789,7 +844,7 @@ index 8c7e6d287caf6d4ce8c88d35a2ec3860665879ca..eafd8e5a75d57e7a336a360279c14d6d
 +              ? { leadingMessage: "No projects yet. Add a project to start a thread." }
 +              : {})}
 +            {...(isNewThreadProjectPickerView && projects.length === 0
-@@ -1873,4 +2027,3 @@ function OpenCommandPaletteDialog(props: {
+@@ -1897,4 +2051,3 @@ function OpenCommandPaletteDialog(props: {
 -                  emptyStateMessage:
 -                    addProjectCloneFlow.source === "url"
 -                      ? "Enter a Git clone URL and press Enter to continue."
@@ -797,7 +852,7 @@ index 8c7e6d287caf6d4ce8c88d35a2ec3860665879ca..eafd8e5a75d57e7a336a360279c14d6d
 +                  emptyStateMessage: allEnvironmentShellsBootstrapped
 +                    ? "No projects yet. Add a project to start a thread."
 +                    : "Loading projects…",
-@@ -1878,10 +2031,17 @@ function OpenCommandPaletteDialog(props: {
+@@ -1902,10 +2055,17 @@ function OpenCommandPaletteDialog(props: {
 -              : addProjectCloneFlow?.step === "confirm"
 -                ? { emptyStateMessage: "Choose a destination path and press Enter to clone." }
 -                : relativePathNeedsActiveProject
