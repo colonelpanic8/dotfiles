@@ -405,7 +405,7 @@ index ab53adbefb1633ea9a6b176195b81230114e702b..e9b6cf62b8f2cf5723745099d714dfef
 +}
 +
 diff --git a/apps/web/src/components/CommandPalette.tsx b/apps/web/src/components/CommandPalette.tsx
-index 8c7e6d287caf6d4ce8c88d35a2ec3860665879ca..042d1cb34468e9aff21ae9cb32c1e39a538697f4 100644
+index 8c7e6d287caf6d4ce8c88d35a2ec3860665879ca..eafd8e5a75d57e7a336a360279c14d6d2e00ff1b 100644
 --- a/apps/web/src/components/CommandPalette.tsx
 +++ b/apps/web/src/components/CommandPalette.tsx
 @@ -13,0 +14 @@ import {
@@ -419,6 +419,9 @@ index 8c7e6d287caf6d4ce8c88d35a2ec3860665879ca..042d1cb34468e9aff21ae9cb32c1e39a
 +} from "../state/entities";
 +import {
 +  resolveThreadActionProjectRef,
+@@ -80 +86 @@ import {
+-import { onOpenCommandPalette } from "../commandPaletteBus";
++import { isCommandPaletteOpen, onOpenCommandPalette } from "../commandPaletteBus";
 @@ -94,0 +101 @@ import {
 +  buildNewThreadPickerGroups,
 @@ -104,0 +112 @@ import {
@@ -494,7 +497,7 @@ index 8c7e6d287caf6d4ce8c88d35a2ec3860665879ca..042d1cb34468e9aff21ae9cb32c1e39a
 +      if (
 +        command === "project.add" &&
 +        shouldIgnoreAddProjectShortcut({
-+          paletteOpen: state.open,
++          paletteOpen: isCommandPaletteOpen(),
 +          editableTarget: isEditableKeyboardTarget(event.target),
 +        })
 +      ) {
@@ -507,7 +510,7 @@ index 8c7e6d287caf6d4ce8c88d35a2ec3860665879ca..042d1cb34468e9aff21ae9cb32c1e39a
 +      }
 @@ -415 +473 @@ export function CommandPalette({ children }: { children: ReactNode }) {
 -  }, [keybindings, terminalOpen, toggleOpen]);
-+  }, [keybindings, openAddProject, state.open, terminalOpen, toggleOpen]);
++  }, [keybindings, openAddProject, terminalOpen, toggleOpen]);
 @@ -421 +473 @@ export function CommandPalette({ children }: { children: ReactNode }) {
 -          openNewThreadIn();
 +          openNewThreadIn(detail.preferredProjectRef);
