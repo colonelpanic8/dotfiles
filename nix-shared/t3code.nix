@@ -148,6 +148,12 @@
       url = "https://patch-diff.githubusercontent.com/raw/pingdotgg/t3code/pull/4337.diff";
       hash = "sha256-94pNY6WprLSuhVbsDMPbHIKoFQgfg8TLKFggHX/0K5k=";
     })
+    # Recover stranded provider turns after lost completion events or backend
+    # restarts: t3code#4386 (head 8e5b28a4dcf9).
+    (final.fetchurl {
+      url = "https://patch-diff.githubusercontent.com/raw/pingdotgg/t3code/pull/4386.diff";
+      hash = "sha256-DJwvlbVaBxWHsP+DiBMDF6vjFccwfYi6a55kzkNNeQ0=";
+    })
   ];
 
   t3codePatchedSource = final.applyPatches {
