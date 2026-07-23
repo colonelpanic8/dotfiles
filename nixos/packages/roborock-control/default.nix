@@ -3,11 +3,9 @@
   python3,
   writeShellApplication,
 }: let
-  python = python3.withPackages (ps: [
-    ps.python-roborock
-    ps.pyshark
-    ps.pyyaml
-  ]);
+  python = python3.withPackages (ps:
+    [ps.python-roborock]
+    ++ ps.python-roborock.optional-dependencies.cli);
 in
   writeShellApplication {
     name = "roborock-control";

@@ -95,8 +95,8 @@ suction_choice=$(
 case "$suction_choice" in
   "Quiet") fan_power=101 ;;
   "Balanced") fan_power=102 ;;
-  "Turbo") fan_power=104 ;;
-  "Max") fan_power=108 ;;
+  "Turbo") fan_power=103 ;;
+  "Max") fan_power=104 ;;
   "") exit 0 ;;
   *)
     notify "Unknown suction level: $suction_choice"
@@ -110,16 +110,14 @@ case "$cleaning_type" in
     run_roborock segment --fan-power "$fan_power" "$room"
     ;;
   vacuum_mop)
-    run_roborock raw set_custom_mode "[$fan_power]"
-    run_roborock raw set_water_box_custom_mode "[203]"
+    run_roborock raw set_clean_motor_mode \
+      "[{\"fan_power\":$fan_power,\"water_box_mode\":203}]"
     run_roborock segment --skip-max-fan "$room"
-    run_roborock raw set_water_box_custom_mode "[203]"
     ;;
   mop)
-    run_roborock raw set_custom_mode "[$fan_power]"
-    run_roborock raw set_water_box_custom_mode "[203]"
+    run_roborock raw set_clean_motor_mode \
+      "[{\"fan_power\":$fan_power,\"water_box_mode\":203}]"
     run_roborock segment --skip-max-fan "$room"
-    run_roborock raw set_water_box_custom_mode "[203]"
     ;;
 esac
 

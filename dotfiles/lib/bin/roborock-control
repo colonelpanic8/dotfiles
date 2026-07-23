@@ -11,7 +11,8 @@ CONFIG_PATH = Path.home() / ".config" / "roborock-control" / "config.json"
 DEFAULT_FAN_POWER = 108
 PYTHON_ENV_EXPR = (
     "with import <nixpkgs> {}; "
-    "python313.withPackages (ps: [ ps.python-roborock ps.pyyaml ps.pyshark ])"
+    "python313.withPackages (ps: [ ps.python-roborock ] "
+    "++ ps.python-roborock.optional-dependencies.cli)"
 )
 COMMON_COMMANDS = {
     "start": ("app_start", None),
