@@ -305,7 +305,7 @@
     };
 
     codex-desktop-linux = {
-      url = "github:colonelpanic8/codex-desktop-linux/codex/limit-linux-recursive-watches";
+      url = "github:colonelpanic8/codex-desktop-linux/codex/update-26.721.30844";
     };
 
     claude-code-nix = {

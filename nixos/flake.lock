@@ -190,16 +190,16 @@
         "nixpkgs": "nixpkgs"
       },
       "locked": {
-        "lastModified": 1784649080,
-        "narHash": "sha256-zSobV5nk2ntqAc5R1M6hOwCTu1bPD+cov946neEyGpQ=",
+        "lastModified": 1784839909,
+        "narHash": "sha256-Fhz9/5D/1w9js4zvF5ULrRnJld2cq9sd25qIKWxiA74=",
         "owner": "colonelpanic8",
         "repo": "codex-desktop-linux",
-        "rev": "6857bf530b012581e0681cc13115d8005c358873",
+        "rev": "a33f6cdeb72a4514a7f4163f4efe429d1a8e536b",
         "type": "github"
       },
       "original": {
         "owner": "colonelpanic8",
-        "ref": "codex/limit-linux-recursive-watches",
+        "ref": "codex/update-26.721.30844",
         "repo": "codex-desktop-linux",
         "type": "github"
       }
