@@ -37,6 +37,17 @@
     hash = "sha256-VliqUb4h22oUJOtQ34w1QBzErZ5YVnuwk3bLqQNonrg=";
   };
 
+  # GitHub's cumulative diff records binary files without their payload. Keep
+  # the live PR diff auditable, then restore its exact commit-pinned PNG below.
+  t3codePr4332 = final.fetchurl {
+    url = "https://patch-diff.githubusercontent.com/raw/pingdotgg/t3code/pull/4332.diff";
+    hash = "sha256-AUgclGxHWoXWz6J5BLoP++JmuLdiTzIkwQrMaofQXcQ=";
+  };
+  t3codePr4332Foreground = final.fetchurl {
+    url = "https://raw.githubusercontent.com/colonelpanic8/t3code/0b746f1807f007b5d97d74a9c6cbbf8eb40559de/apps/mobile/assets/android-icon-foreground.png";
+    hash = "sha256-hTFq9kDZhZPJ9odddKRuEJ3mqRzL5AnjgDIAL2WqzVc=";
+  };
+
   # Upstream is pinned through branch-drift hardening (#2284). Keep the
   # remaining patches ordered: later patches may build on earlier UI work.
   t3codePatches = [
@@ -120,6 +131,9 @@
       url = "https://patch-diff.githubusercontent.com/raw/pingdotgg/t3code/pull/4325.diff";
       hash = "sha256-kbaFj1fZMbwVFpRvFF7eecUmIA4i/ZFXJewcwgY7u4A=";
     })
+    # Use a properly sized flat foreground for Android adaptive icons:
+    # t3code#4332 (head 0b746f1807f0).
+    t3codePr4332
   ];
 
   t3codePatchedSource = final.applyPatches {
@@ -129,7 +143,12 @@
       builtins.seq t3codePr4257
         (builtins.seq t3codePr4258
           (builtins.seq t3codePr4263
-            (builtins.seq t3codePr4277 t3codePatches)));
+            (builtins.seq t3codePr4277
+              (builtins.seq t3codePr4332 t3codePatches))));
+    postPatch = ''
+      install -m 0644 ${t3codePr4332Foreground} \
+        apps/mobile/assets/android-icon-foreground.png
+    '';
   };
 
   t3codeUnwrapped = (prev.t3code.unwrapped.override {pnpm_10 = final.pnpm_11;}).overrideAttrs (
