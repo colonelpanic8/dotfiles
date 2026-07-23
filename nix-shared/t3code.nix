@@ -114,10 +114,10 @@
       url = "https://patch-diff.githubusercontent.com/raw/pingdotgg/t3code/pull/4323.diff";
       hash = "sha256-4OnuT1Qz1+PdFNrLaO5jzPQVBI/uK0mSSvmh+Der/WE=";
     })
-    # Optional larger sidebar v2 project icons: t3code#4324 (head e859246a4ce0).
+    # Optional larger sidebar v2 project icons: t3code#4324 (head 0c346ca03f37).
     (final.fetchurl {
       url = "https://patch-diff.githubusercontent.com/raw/pingdotgg/t3code/pull/4324.diff";
-      hash = "sha256-kODBBCjyhGyB98Dvtm5LHQ2msv1t/4PnYc1hlQCt0fM=";
+      hash = "sha256-/SjgE7zD3JkdjCP+1L6HKA+PKgQrpQnzDybcCsuQgYQ=";
     })
     # Trigger the slash-command menu mid-prompt, not just at line start:
     # t3code#4181 (head d95abc106cdd).
