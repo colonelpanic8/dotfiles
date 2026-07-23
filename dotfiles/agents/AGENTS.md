@@ -7,6 +7,12 @@
 - Whenever you pick a model tier for an agent, record a one-line justification for that choice (in your reasoning/CoT or a brief note in the delegating message) so the decision is auditable. Tie the justification to what the agent must actually decide at execution time, not just the topic's importance — a task specified tightly enough that the taste is already discharged doesn't need the stronger tier. If you can't articulate why the cheaper tier is insufficient, default to it.
 - These guidelines apply to writing, editing, and refactoring code. Non-coding work (reading, searching, planning, running commands, answering questions) does not need to be delegated.
 
+## Code verification
+- Run the relevant formatting, lint, and type checks for changed code whenever the project provides them. Prefer the narrowest affected package or file scope, but do not routinely omit these static checks merely because a change is small or mechanical.
+- Choose local tests in proportion to the change and their cost. Behavioral changes, bug fixes, risky refactors, and new edge cases should get focused tests that exercise the changed behavior.
+- For small mechanical changes, it is acceptable to defer test execution to CI when the applicable tests are slow and a focused local test would add little signal. Run tests locally when they are reasonably fast, and report any intentional deferral clearly.
+- Do not run a full repository test suite by default when focused tests or CI provide sufficient coverage, unless project-specific instructions or the user require it.
+
 ## Model and effort selection
 
 Treat model selection and effort level as separate decisions. The following scores are subjective routing scores from 1 to 10; for cost, 10 means most expensive.

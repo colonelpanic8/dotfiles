@@ -31,13 +31,21 @@ Use distinct subagents for as many of these tracks as the inventory supports:
 - UI evidence planning and capture for different PRs or interaction groups.
 
 Every subagent must read the repository-root `AGENTS.md` and `CONTRIBUTING.md`
-before acting. Give each agent a bounded assignment with exclusive branch,
-worktree, file, and artifact ownership; remind it that other agents are working
-concurrently and it must not revert their changes. Have inventory agents return
-structured evidence, and have media agents save clearly named screenshots or
-videos in disjoint temporary artifact directories. Use an agent-owned isolated
-desktop/browser for application capture unless the task specifically requires
-the user's logged-in browser state.
+before acting. Assign every subagent an explicit project-local T3 Code worktree
+under `<repo>/.worktrees/<task>` and include that exact path in its delegation
+prompt. This applies to read-only inventory, review, validation, and media work
+as well as branch-writing tasks: subagents must not work from the primary T3
+Code checkout. The primary agent must create or verify each assigned worktree,
+confirm it is clean, and give the agent exclusive ownership of that worktree,
+branch, files, and artifacts. A read-only subagent may inspect the primary
+`/srv/dotfiles` checkout when its assignment requires manifest or history
+evidence, but it must not edit it; never create a dotfiles worktree. Remind every
+agent that other agents are working concurrently and it must not revert their
+changes. Have inventory agents return structured evidence, and have media agents
+save clearly named screenshots or videos in disjoint temporary artifact
+directories. Use an agent-owned isolated desktop/browser for application
+capture unless the task specifically requires the user's logged-in browser
+state.
 
 The primary agent remains responsible for reviewing and integrating all
 results. Serialize operations that share state: force-pushes to the same
@@ -147,7 +155,14 @@ For each branch:
 5. Re-read all unresolved review threads against the rebased code.
 6. Implement every actionable correctness, reliability, test, and maintainability fix. Evaluate bot comments critically; do not blindly apply contradictory or invalid advice.
 7. Add regression tests. For obsolete or invalid feedback, prepare a concise evidence-based reply instead of changing correct code.
-8. Run focused tests, then the repository-required `vp check` and `vp run typecheck`; also run `vp run lint:mobile` for native mobile changes.
+8. Always run the relevant formatting, lint, and type checks for the affected
+   scope. Run focused tests for behavioral changes, bug fixes, risky rebases,
+   and new edge cases. For small mechanical-only rebases, local tests may be
+   deferred to CI when they are slow and would add little signal; run them when
+   reasonably fast and record any intentional deferral. Do not run repo-wide
+   `vp check`, `vp run typecheck`, or test suites unless the repository
+   instructions or user explicitly require them. Run `vp run lint:mobile` for
+   native mobile changes.
 9. Update before/after images or video when rebasing or feedback changes UI behavior.
 10. Commit coherent review fixes and push with an explicit `--force-with-lease=refs/heads/BRANCH:RECORDED_OID`.
 11. Re-query the PR head and checks. Reply to or resolve review threads only after the fix is published and verified.
