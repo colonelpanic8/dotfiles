@@ -1,0 +1,14 @@
+diff --git a/apps/server/src/persistence/Migrations.ts b/apps/server/src/persistence/Migrations.ts
+index 6843f59e..47155b2b 100644
+--- a/apps/server/src/persistence/Migrations.ts
++++ b/apps/server/src/persistence/Migrations.ts
+@@ -95 +95 @@ const migrationEntries = [
+-  [34, "ProjectionThreadForkLineage", Migration0034],
++  [35, "ProjectionThreadForkLineage", Migration0034],
+diff --git a/apps/server/src/persistence/Migrations/034_ProjectionThreadForkLineage.test.ts b/apps/server/src/persistence/Migrations/034_ProjectionThreadForkLineage.test.ts
+index 14118598..34822047 100644
+--- a/apps/server/src/persistence/Migrations/034_ProjectionThreadForkLineage.test.ts
++++ b/apps/server/src/persistence/Migrations/034_ProjectionThreadForkLineage.test.ts
+@@ -20 +20 @@ layer("034_ProjectionThreadForkLineage", (it) => {
+-      yield* runMigrations({ toMigrationInclusive: 34 });
++      yield* runMigrations({ toMigrationInclusive: 35 });

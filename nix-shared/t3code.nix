@@ -160,6 +160,10 @@
       url = "https://patch-diff.githubusercontent.com/raw/pingdotgg/t3code/pull/4390.diff";
       hash = "sha256-bRZKwfj0DV1MRKgQ6gIMPeR6ZLvLkr40DAZviGq7FPI=";
     })
+    # This database previously carried ProjectionThreadGoals as migration 34.
+    # Keep the upstream PR unchanged while assigning its lineage migration the
+    # next durable local ID in the Frankenstein stack.
+    ./patches/t3code-pr-4390-stack-compat.patch
   ];
 
   t3codePatchedSource = final.applyPatches {
