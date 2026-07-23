@@ -167,6 +167,11 @@ timeout 30s du -xh --max-depth=1 "$HOME/.local/share" 2>/dev/null | sort -h
 
 Machine-specific heavy hitters seen in practice:
 
+- 2026-07-22 zero-free-space failure mode: with `/` reporting zero bytes
+  available, `apply_patch` truncated an untracked shell function to zero bytes
+  before reporting its write failure. Stop all source-file writes as soon as
+  the filesystem reaches 100%, reclaim headroom first, and re-check the exact
+  byte size of any file involved in the failed write before continuing.
 - 2026-07-10 `railbird-sf` incident: K3s reported `DiskPressure` even with tens of GiB free because its container `imagefs` shares `/`, kubelet image GC used the default 85% high-water mark, and the K3s config overrode only `nodefs` eviction thresholds. `crictl imagefsinfo` showed only ~677M of images, so image GC could not reclaim its requested ~149G and repeatedly evicted application pods. Set matching `imagefs.available` values alongside `nodefs.available` in `eviction-hard`, `eviction-soft`, and `eviction-soft-grace-period`; verify via K3s eviction-manager logs rather than trusting `df` alone.
 - `~/.cache/uv` can exceed 20G and is reclaimable with `uv cache clean`.
 - If `uv cache clean` reports that the cache is currently in use, do not add `--force`; leave it for a later idle cleanup so an active environment or install is not disrupted.
