@@ -1,0 +1,686 @@
+diff --git a/apps/server/src/assets/AssetAccess.ts b/apps/server/src/assets/AssetAccess.ts
+index b469e0e31..34c46b2e0 100644
+--- a/apps/server/src/assets/AssetAccess.ts
++++ b/apps/server/src/assets/AssetAccess.ts
+@@ -163,7 +163,7 @@ const resolveCanonicalWorkspaceFileForRequest = (input: {
+   );
+ 
+ export const issueAssetUrl = Effect.fn("AssetAccess.issueAssetUrl")(function* (input: {
+-  readonly resource: AssetResource;
++  readonly resource: Exclude<AssetResource, { readonly _tag: "thread-artifact" }>;
+   readonly workspaceRoot?: string;
+ }) {
+   const fileSystem = yield* FileSystem.FileSystem;
+diff --git a/apps/server/src/assets/ThreadArtifactResolver.test.ts b/apps/server/src/assets/ThreadArtifactResolver.test.ts
+new file mode 100644
+index 000000000..6177b8385
+--- /dev/null
++++ b/apps/server/src/assets/ThreadArtifactResolver.test.ts
+@@ -0,0 +1,153 @@
++import { MessageId, TurnId } from "@t3tools/contracts";
++import { describe, expect, it } from "vite-plus/test";
++
++import {
++  findThreadArtifactPath,
++  normalizeThreadArtifactReference,
++} from "./ThreadArtifactResolver.ts";
++
++const TURN_ID = TurnId.make("turn-1");
++const MESSAGE_ID = MessageId.make("message-1");
++
++function message(
++  id: MessageId = MESSAGE_ID,
++  createdAt = "2026-01-01T00:00:03.000Z",
++  updatedAt = createdAt,
++) {
++  return { id, role: "assistant", turnId: TURN_ID, createdAt, updatedAt };
++}
++
++function activity(
++  path: string,
++  options: {
++    turnId?: TurnId | null;
++    createdAt?: string;
++    payload?: unknown;
++  } = {},
++) {
++  return {
++    turnId: options.turnId === undefined ? TURN_ID : options.turnId,
++    createdAt: options.createdAt ?? "2026-01-01T00:00:02.000Z",
++    payload: options.payload ?? { data: { rawOutput: { path } } },
++  };
++}
++
++function thread(activities: ReadonlyArray<ReturnType<typeof activity>>) {
++  return { messages: [message()], activities };
++}
++
++describe("thread artifact resolution", () => {
++  it("normalizes relative Windows paths and accepts single-segment image references", () => {
++    expect(normalizeThreadArtifactReference("images\\1.jpg")).toBe("images/1.jpg");
++    expect(normalizeThreadArtifactReference("1.jpg")).toBe("1.jpg");
++  });
++
++  it("rejects absolute, traversal, and non-image references", () => {
++    expect(normalizeThreadArtifactReference("/tmp/1.jpg")).toBeNull();
++    expect(normalizeThreadArtifactReference("C:\\tmp\\1.jpg")).toBeNull();
++    expect(normalizeThreadArtifactReference("images/../1.jpg")).toBeNull();
++    expect(normalizeThreadArtifactReference("images/1.txt")).toBeNull();
++  });
++
++  it("matches unique paths including single-segment references", () => {
++    const path = "/sessions/thread/images/1.jpg";
++    expect(
++      findThreadArtifactPath(thread([activity(path)]), TURN_ID, MESSAGE_ID, "images/1.jpg"),
++    ).toBe(path);
++    expect(findThreadArtifactPath(thread([activity(path)]), TURN_ID, MESSAGE_ID, "1.jpg")).toBe(
++      path,
++    );
++  });
++
++  it("reads Codex image generation and image view paths", () => {
++    const generatedPath = "/sessions/thread/images/generated.png";
++    const viewedPath = "/sessions/thread/images/viewed.png";
++    const source = thread([
++      activity(generatedPath, {
++        payload: { data: { item: { type: "imageGeneration", savedPath: generatedPath } } },
++      }),
++      activity(viewedPath, {
++        payload: { data: { item: { type: "imageView", path: viewedPath } } },
++      }),
++    ]);
++
++    expect(findThreadArtifactPath(source, TURN_ID, MESSAGE_ID, "images/generated.png")).toBe(
++      generatedPath,
++    );
++    expect(findThreadArtifactPath(source, TURN_ID, MESSAGE_ID, "images/viewed.png")).toBe(
++      viewedPath,
++    );
++  });
++
++  it("deduplicates repeated activities for the same artifact", () => {
++    const path = "/sessions/thread/images/1.jpg";
++    expect(
++      findThreadArtifactPath(
++        thread([activity(path), activity(path)]),
++        TURN_ID,
++        MESSAGE_ID,
++        "1.jpg",
++      ),
++    ).toBe(path);
++  });
++
++  it("fails closed when distinct artifacts in the message window share a suffix", () => {
++    expect(
++      findThreadArtifactPath(
++        thread([
++          activity("/sessions/first/images/1.jpg"),
++          activity("/sessions/second/images/1.jpg"),
++        ]),
++        TURN_ID,
++        MESSAGE_ID,
++        "images/1.jpg",
++      ),
++    ).toBeNull();
++  });
++
++  it("uses assistant message boundaries to exclude earlier and later artifacts", () => {
++    const previousMessageId = MessageId.make("message-previous");
++    const targetMessageId = MessageId.make("message-target");
++    const source = {
++      messages: [
++        message(previousMessageId, "2026-01-01T00:00:02.000Z", "2026-01-01T00:00:03.000Z"),
++        message(targetMessageId, "2026-01-01T00:00:06.000Z"),
++      ],
++      activities: [
++        activity("/sessions/earlier/images/1.jpg", {
++          createdAt: "2026-01-01T00:00:01.000Z",
++        }),
++        activity("/sessions/target/images/1.jpg", {
++          createdAt: "2026-01-01T00:00:05.000Z",
++        }),
++        activity("/sessions/later/images/1.jpg", {
++          createdAt: "2026-01-01T00:00:07.000Z",
++        }),
++      ],
++    };
++
++    expect(findThreadArtifactPath(source, TURN_ID, targetMessageId, "images/1.jpg")).toBe(
++      "/sessions/target/images/1.jpg",
++    );
++  });
++
++  it("ignores matching artifacts from other turns and unknown messages", () => {
++    const path = "/sessions/thread/images/1.jpg";
++    expect(
++      findThreadArtifactPath(
++        thread([activity(path, { turnId: TurnId.make("turn-2") })]),
++        TURN_ID,
++        MESSAGE_ID,
++        "images/1.jpg",
++      ),
++    ).toBeNull();
++    expect(
++      findThreadArtifactPath(
++        thread([activity(path)]),
++        TURN_ID,
++        MessageId.make("missing-message"),
++        "images/1.jpg",
++      ),
++    ).toBeNull();
++  });
++});
+diff --git a/apps/server/src/assets/ThreadArtifactResolver.ts b/apps/server/src/assets/ThreadArtifactResolver.ts
+new file mode 100644
+index 000000000..4e8e3a707
+--- /dev/null
++++ b/apps/server/src/assets/ThreadArtifactResolver.ts
+@@ -0,0 +1,106 @@
++import type { MessageId, TurnId } from "@t3tools/contracts";
++import { isWorkspaceImagePreviewPath } from "@t3tools/shared/filePreview";
++
++interface ThreadArtifactSource {
++  readonly messages: ReadonlyArray<{
++    readonly id: MessageId;
++    readonly role: string;
++    readonly turnId: TurnId | null;
++    readonly createdAt: string;
++    readonly updatedAt: string;
++  }>;
++  readonly activities: ReadonlyArray<{
++    readonly turnId: TurnId | null;
++    readonly payload: unknown;
++    readonly createdAt: string;
++  }>;
++}
++
++function asUnknownRecord(value: unknown): Record<string, unknown> | null {
++  return value !== null && typeof value === "object" && !Array.isArray(value)
++    ? (value as Record<string, unknown>)
++    : null;
++}
++
++const WINDOWS_ABSOLUTE_PATH = /^[A-Za-z]:[\\/]/;
++
++export function normalizeThreadArtifactReference(value: string): string | null {
++  const normalized = value.trim().replaceAll("\\", "/");
++  const segments = normalized.split("/");
++  if (
++    normalized.startsWith("/") ||
++    WINDOWS_ABSOLUTE_PATH.test(normalized) ||
++    normalized.includes(":") ||
++    segments.some((segment) => !segment || segment === "." || segment === "..") ||
++    !isWorkspaceImagePreviewPath(normalized)
++  ) {
++    return null;
++  }
++  return normalized;
++}
++
++function activityArtifactPaths(payloadValue: unknown): ReadonlyArray<string> {
++  const payload = asUnknownRecord(payloadValue);
++  const data = asUnknownRecord(payload?.data);
++  const rawOutput = asUnknownRecord(data?.rawOutput);
++  const item = asUnknownRecord(data?.item);
++  const paths = [rawOutput?.path];
++
++  if (item?.type === "imageGeneration") {
++    paths.push(item.savedPath);
++  } else if (item?.type === "imageView") {
++    paths.push(item.path);
++  }
++
++  return paths.filter((value): value is string => typeof value === "string");
++}
++
++function artifactMessageWindow(
++  thread: ThreadArtifactSource,
++  turnId: TurnId,
++  messageId: MessageId,
++): { readonly after: number; readonly before: number } | null {
++  const messages = thread.messages
++    .filter((message) => message.role === "assistant" && message.turnId === turnId)
++    .toSorted((left, right) => left.createdAt.localeCompare(right.createdAt));
++  const messageIndex = messages.findIndex((message) => message.id === messageId);
++  const message = messages[messageIndex];
++  if (!message) return null;
++
++  const before = Date.parse(message.createdAt);
++  const previousMessage = messages[messageIndex - 1];
++  const after = previousMessage ? Date.parse(previousMessage.updatedAt) : Number.NEGATIVE_INFINITY;
++  return Number.isNaN(before) || Number.isNaN(after) ? null : { after, before };
++}
++
++export function findThreadArtifactPath(
++  thread: ThreadArtifactSource,
++  turnId: TurnId,
++  messageId: MessageId,
++  reference: string,
++): string | null {
++  const normalizedReference = normalizeThreadArtifactReference(reference);
++  if (!normalizedReference) return null;
++  const window = artifactMessageWindow(thread, turnId, messageId);
++  if (!window) return null;
++
++  const matches = new Map<string, string>();
++  for (const activity of thread.activities) {
++    if (activity.turnId !== turnId) continue;
++    const createdAt = Date.parse(activity.createdAt);
++    if (Number.isNaN(createdAt) || createdAt <= window.after || createdAt > window.before) continue;
++
++    for (const artifactPath of activityArtifactPaths(activity.payload)) {
++      const candidate = artifactPath.trim();
++      const normalizedCandidate = candidate.replaceAll("\\", "/");
++      if (
++        normalizedCandidate === normalizedReference ||
++        normalizedCandidate.endsWith(`/${normalizedReference}`)
++      ) {
++        matches.set(normalizedCandidate, candidate);
++      }
++    }
++  }
++
++  return matches.size === 1 ? (matches.values().next().value ?? null) : null;
++}
+diff --git a/apps/server/src/ws.ts b/apps/server/src/ws.ts
+index f6f46d1e7..363544c12 100644
+--- a/apps/server/src/ws.ts
++++ b/apps/server/src/ws.ts
+@@ -5,6 +5,7 @@ import * as Duration from "effect/Duration";
+ import * as Effect from "effect/Effect";
+ import * as Layer from "effect/Layer";
+ import * as Option from "effect/Option";
++import * as Path from "effect/Path";
+ import * as Queue from "effect/Queue";
+ import * as Ref from "effect/Ref";
+ import * as Schema from "effect/Schema";
+@@ -49,6 +50,8 @@ import {
+   OrchestrationReplayEventsError,
+   type FilesystemBrowseFailure,
+   FilesystemBrowseError,
++  AssetWorkspaceAssetInspectionError,
++  AssetWorkspaceAssetNotFoundError,
+   AssetWorkspaceContextNotFoundError,
+   AssetWorkspaceContextResolutionError,
+   EnvironmentAuthorizationError,
+@@ -86,6 +89,7 @@ import * as TerminalManager from "./terminal/Manager.ts";
+ import * as PreviewAutomationBroker from "./mcp/PreviewAutomationBroker.ts";
+ import * as PreviewManager from "./preview/Manager.ts";
+ import { issueAssetUrl } from "./assets/AssetAccess.ts";
++import { findThreadArtifactPath } from "./assets/ThreadArtifactResolver.ts";
+ import * as PortScanner from "./preview/PortScanner.ts";
+ import * as WorkspaceEntries from "./workspace/WorkspaceEntries.ts";
+ import * as WorkspaceFileSystem from "./workspace/WorkspaceFileSystem.ts";
+@@ -406,6 +410,7 @@ const makeWsRpcLayer = (
+     Effect.gen(function* () {
+       const currentSessionId = currentSession.sessionId;
+       const crypto = yield* Crypto.Crypto;
++      const path = yield* Path.Path;
+       const projectionSnapshotQuery = yield* ProjectionSnapshotQuery.ProjectionSnapshotQuery;
+       const orchestrationEngine = yield* OrchestrationEngine.OrchestrationEngineService;
+       const checkpointDiffQuery = yield* CheckpointDiffQuery.CheckpointDiffQuery;
+@@ -1701,6 +1706,43 @@ const makeWsRpcLayer = (
+           observeRpcEffect(
+             WS_METHODS.assetsCreateUrl,
+             Effect.gen(function* () {
++              if (input.resource._tag === "thread-artifact") {
++                const thread = yield* projectionSnapshotQuery
++                  .getThreadDetailById(input.resource.threadId)
++                  .pipe(
++                    Effect.mapError(
++                      (cause) =>
++                        new AssetWorkspaceAssetInspectionError({
++                          resource: input.resource,
++                          cause,
++                        }),
++                    ),
++                  );
++                if (Option.isNone(thread)) {
++                  return yield* new AssetWorkspaceAssetNotFoundError({
++                    resource: input.resource,
++                  });
++                }
++                const artifactPath = findThreadArtifactPath(
++                  thread.value,
++                  input.resource.turnId,
++                  input.resource.messageId,
++                  input.resource.path,
++                );
++                if (!artifactPath) {
++                  return yield* new AssetWorkspaceAssetNotFoundError({
++                    resource: input.resource,
++                  });
++                }
++                return yield* issueAssetUrl({
++                  resource: {
++                    _tag: "workspace-file",
++                    threadId: input.resource.threadId,
++                    path: path.basename(artifactPath),
++                  },
++                  workspaceRoot: path.dirname(artifactPath),
++                });
++              }
+               if (input.resource._tag !== "workspace-file") {
+                 return yield* issueAssetUrl({ resource: input.resource });
+               }
+diff --git a/apps/web/src/components/ChatMarkdown.logic.test.ts b/apps/web/src/components/ChatMarkdown.logic.test.ts
+new file mode 100644
+index 000000000..cece699f7
+--- /dev/null
++++ b/apps/web/src/components/ChatMarkdown.logic.test.ts
+@@ -0,0 +1,20 @@
++import { describe, expect, it } from "vite-plus/test";
++
++import { normalizeGeneratedImageReference } from "./ChatMarkdown.logic";
++
++describe("generated image references", () => {
++  it("normalizes Windows separators", () => {
++    expect(normalizeGeneratedImageReference("images\\1.jpg")).toBe("images/1.jpg");
++  });
++
++  it("accepts single-segment image references", () => {
++    expect(normalizeGeneratedImageReference("1.jpg")).toBe("1.jpg");
++  });
++
++  it("rejects absolute, traversal, and non-image references", () => {
++    expect(normalizeGeneratedImageReference("/tmp/1.jpg")).toBeNull();
++    expect(normalizeGeneratedImageReference("C:\\tmp\\1.jpg")).toBeNull();
++    expect(normalizeGeneratedImageReference("images/../1.jpg")).toBeNull();
++    expect(normalizeGeneratedImageReference("images/1.txt")).toBeNull();
++  });
++});
+diff --git a/apps/web/src/components/ChatMarkdown.logic.ts b/apps/web/src/components/ChatMarkdown.logic.ts
+new file mode 100644
+index 000000000..42556ab87
+--- /dev/null
++++ b/apps/web/src/components/ChatMarkdown.logic.ts
+@@ -0,0 +1,12 @@
++import { isWorkspaceImagePreviewPath } from "@t3tools/shared/filePreview";
++
++export function normalizeGeneratedImageReference(value: string): string | null {
++  const reference = value.trim().replaceAll("\\", "/");
++  const segments = reference.split("/");
++  return !reference.startsWith("/") &&
++    !reference.includes(":") &&
++    segments.every((segment) => segment !== "" && segment !== "." && segment !== "..") &&
++    isWorkspaceImagePreviewPath(reference)
++    ? reference
++    : null;
++}
+diff --git a/apps/web/src/components/ChatMarkdown.tsx b/apps/web/src/components/ChatMarkdown.tsx
+index fac3bf7d2..027af0bd1 100644
+--- a/apps/web/src/components/ChatMarkdown.tsx
++++ b/apps/web/src/components/ChatMarkdown.tsx
+@@ -9,7 +9,7 @@ import {
+   Minimize2Icon,
+   WrapTextIcon,
+ } from "lucide-react";
+-import type { ScopedThreadRef, ServerProviderSkill } from "@t3tools/contracts";
++import type { MessageId, ScopedThreadRef, ServerProviderSkill, TurnId } from "@t3tools/contracts";
+ import {
+   isAtomCommandInterrupted,
+   squashAtomCommandFailure,
+@@ -40,6 +40,7 @@ import rehypeSanitize, { defaultSchema } from "rehype-sanitize";
+ import remarkBreaks from "remark-breaks";
+ import remarkGfm from "remark-gfm";
+ import { renderSkillInlineMarkdownChildren } from "./chat/SkillInlineText";
++import type { ExpandedImagePreview } from "./chat/ExpandedImagePreview";
+ import { CHAT_FILE_TAG_CHIP_CLASS_NAME, FileTagChipContent } from "./chat/FileTagChip";
+ import { PierreEntryIcon } from "./chat/PierreEntryIcon";
+ import {
+@@ -88,6 +89,8 @@ import {
+   openUrlInPreview,
+   BrowserPreviewUnavailableError,
+ } from "../browser/openFileInPreview";
++import { useAssetUrl } from "../assets/assetUrls";
++import { normalizeGeneratedImageReference } from "./ChatMarkdown.logic";
+ 
+ class CodeHighlightErrorBoundary extends React.Component<
+   { fallback: ReactNode; children: ReactNode },
+@@ -114,6 +117,9 @@ interface ChatMarkdownProps {
+   text: string;
+   cwd: string | undefined;
+   threadRef?: ScopedThreadRef | undefined;
++  artifactTurnId?: TurnId | undefined;
++  artifactMessageId?: MessageId | undefined;
++  onImageExpand?: ((preview: ExpandedImagePreview) => void) | undefined;
+   onTaskListChange?: ((input: { markerOffset: number; checked: boolean }) => void) | undefined;
+   isStreaming?: boolean;
+   skills?: ReadonlyArray<Pick<ServerProviderSkill, "name" | "displayName">>;
+@@ -276,8 +282,12 @@ function extractCodeBlock(
+ 
+   const onlyChild = childNodes[0];
+   if (
+-    !isValidElement<{ className?: string; children?: ReactNode }>(onlyChild) ||
+-    onlyChild.type !== "code"
++    !isValidElement<{
++      className?: string;
++      children?: ReactNode;
++      node?: { tagName?: unknown };
++    }>(onlyChild) ||
++    (onlyChild.type !== "code" && onlyChild.props.node?.tagName !== "code")
+   ) {
+     return null;
+   }
+@@ -752,6 +762,14 @@ interface MarkdownFileLinkProps {
+   className?: string | undefined;
+ }
+ 
++interface MarkdownThreadArtifactImageProps extends React.ComponentProps<"code"> {
++  threadRef: ScopedThreadRef;
++  turnId: TurnId;
++  messageId: MessageId;
++  reference: string;
++  onImageExpand: (preview: ExpandedImagePreview) => void;
++}
++
+ const MARKDOWN_LINK_HREF_PATTERN = /\[[^\]]*]\(([^)\s]+)(?:\s+["'][^"']*["'])?\)/g;
+ const MARKDOWN_FILE_LINK_CLASS_NAME =
+   "chat-markdown-file-link cursor-pointer transition-colors hover:bg-accent/70";
+@@ -1220,6 +1238,54 @@ const MarkdownFileLink = memo(function MarkdownFileLink({
+   );
+ }, areMarkdownFileLinkPropsEqual);
+ 
++const MarkdownThreadArtifactImage = memo(function MarkdownThreadArtifactImage({
++  threadRef,
++  turnId,
++  messageId,
++  reference,
++  onImageExpand,
++  children,
++  ...codeProps
++}: MarkdownThreadArtifactImageProps) {
++  const imageUrl = useAssetUrl(threadRef.environmentId, {
++    _tag: "thread-artifact",
++    threadId: threadRef.threadId,
++    turnId,
++    messageId,
++    path: reference,
++  });
++
++  if (!imageUrl) {
++    return <code {...codeProps}>{children}</code>;
++  }
++
++  return (
++    <span
++      className="my-2.5 flex w-1/4 max-w-full flex-col items-start gap-1.5"
++      data-markdown-copy={`\`${reference}\``}
++    >
++      <button
++        type="button"
++        className="block w-full max-w-full cursor-zoom-in overflow-hidden rounded-xl border border-border bg-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
++        aria-label={`Preview ${reference}`}
++        onClick={(event) => {
++          event.preventDefault();
++          event.stopPropagation();
++          onImageExpand({ images: [{ src: imageUrl, name: reference }], index: 0 });
++        }}
++      >
++        <img
++          src={imageUrl}
++          alt={reference}
++          loading="lazy"
++          className="block max-h-[32rem] w-full max-w-full object-contain"
++        />
++      </button>
++      <code {...codeProps}>{children}</code>
++    </span>
++  );
++});
++
+ function areMarkdownFileLinkPropsEqual(
+   previous: Readonly<MarkdownFileLinkProps>,
+   next: Readonly<MarkdownFileLinkProps>,
+@@ -1245,6 +1311,9 @@ function ChatMarkdown({
+   text,
+   cwd,
+   threadRef,
++  artifactTurnId,
++  artifactMessageId,
++  onImageExpand,
+   onTaskListChange,
+   isStreaming = false,
+   skills = EMPTY_MARKDOWN_SKILLS,
+@@ -1490,6 +1559,37 @@ function ChatMarkdown({
+           />
+         );
+       },
++      code({ node, className: codeClassName, children, ...props }) {
++        const artifactReference = codeClassName
++          ? null
++          : normalizeGeneratedImageReference(plainHastText(node) ?? "");
++        if (
++          !artifactReference ||
++          !threadRef ||
++          !artifactTurnId ||
++          !artifactMessageId ||
++          !onImageExpand
++        ) {
++          return (
++            <code {...props} className={codeClassName}>
++              {children}
++            </code>
++          );
++        }
++        return (
++          <MarkdownThreadArtifactImage
++            {...props}
++            className={codeClassName}
++            threadRef={threadRef}
++            turnId={artifactTurnId}
++            messageId={artifactMessageId}
++            reference={artifactReference}
++            onImageExpand={onImageExpand}
++          >
++            {children}
++          </MarkdownThreadArtifactImage>
++        );
++      },
+       table({ node: _node, ...props }) {
+         return <MarkdownTable {...props} />;
+       },
+@@ -1527,10 +1627,13 @@ function ChatMarkdown({
+     }),
+     [
+       diffThemeName,
++      artifactTurnId,
++      artifactMessageId,
+       fileLinkParentSuffixByPath,
+       isStreaming,
+       markdownFileLinkMetaByHref,
+       onTaskListChange,
++      onImageExpand,
+       openInPreferredEditor,
+       openExternalLinkInPreview,
+       openMarkdownFileInPreview,
+diff --git a/apps/web/src/components/chat/MessagesTimeline.test.tsx b/apps/web/src/components/chat/MessagesTimeline.test.tsx
+index c0b41527f..1b47b2a2e 100644
+--- a/apps/web/src/components/chat/MessagesTimeline.test.tsx
++++ b/apps/web/src/components/chat/MessagesTimeline.test.tsx
+@@ -222,6 +222,23 @@ function buildUserTimelineEntry(text: string) {
+   };
+ }
+ 
++function buildAssistantTimelineEntry(text: string) {
++  return {
++    id: "entry-assistant",
++    kind: "message" as const,
++    createdAt: MESSAGE_CREATED_AT,
++    message: {
++      id: MessageId.make("message-assistant"),
++      role: "assistant" as const,
++      text,
++      turnId: null,
++      createdAt: MESSAGE_CREATED_AT,
++      updatedAt: MESSAGE_CREATED_AT,
++      streaming: false,
++    },
++  };
++}
++
+ describe("MessagesTimeline", () => {
+   it("uses the larger leading inset only when the top fade is enabled", () => {
+     const timelineEntries = [buildUserTimelineEntry("Hello")];
+@@ -290,6 +307,22 @@ describe("MessagesTimeline", () => {
+     expect(markup).toContain("1 changed file");
+   });
+ 
++  it("preserves enhanced fenced code block rendering", async () => {
++    const { MessagesTimeline } = await import("./MessagesTimeline");
++    const markup = renderToStaticMarkup(
++      <MessagesTimeline
++        {...buildProps()}
++        timelineEntries={[
++          buildAssistantTimelineEntry("```typescript\nconst answer: number = 42;\n```"),
++        ]}
++      />,
++    );
++
++    expect(markup).toContain('class="chat-markdown-codeblock leading-snug"');
++    expect(markup).toContain('data-language="typescript"');
++    expect(markup).toContain('aria-label="Copy code"');
++  });
++
+   it("uses LegendList isNearEnd when deciding whether the live edge is visible", async () => {
+     const {
+       resolveTimelineIsAtEnd,
+diff --git a/apps/web/src/components/chat/MessagesTimeline.tsx b/apps/web/src/components/chat/MessagesTimeline.tsx
+index 225d2a531..0c996e7af 100644
+--- a/apps/web/src/components/chat/MessagesTimeline.tsx
++++ b/apps/web/src/components/chat/MessagesTimeline.tsx
+@@ -1028,6 +1028,9 @@ function AssistantTimelineRow({ row }: { row: Extract<TimelineRow, { kind: "mess
+           text={messageText}
+           cwd={ctx.markdownCwd}
+           threadRef={ctx.threadRef ?? undefined}
++          artifactTurnId={row.message.turnId ?? undefined}
++          artifactMessageId={row.message.id}
++          onImageExpand={ctx.onImageExpand}
+           isStreaming={Boolean(row.message.streaming)}
+           skills={ctx.skills}
+         />
+diff --git a/packages/contracts/src/assets.ts b/packages/contracts/src/assets.ts
+index 0dbe7d9fa..51f416779 100644
+--- a/packages/contracts/src/assets.ts
++++ b/packages/contracts/src/assets.ts
+@@ -1,6 +1,6 @@
+ import * as Schema from "effect/Schema";
+ 
+-import { ThreadId, TrimmedNonEmptyString } from "./baseSchemas.ts";
++import { MessageId, ThreadId, TrimmedNonEmptyString, TurnId } from "./baseSchemas.ts";
+ 
+ const ASSET_PATH_MAX_LENGTH = 1024;
+ 
+@@ -9,6 +9,12 @@ export const AssetResource = Schema.Union([
+     threadId: ThreadId,
+     path: TrimmedNonEmptyString.check(Schema.isMaxLength(ASSET_PATH_MAX_LENGTH)),
+   }),
++  Schema.TaggedStruct("thread-artifact", {
++    threadId: ThreadId,
++    turnId: TurnId,
++    messageId: MessageId,
++    path: TrimmedNonEmptyString.check(Schema.isMaxLength(ASSET_PATH_MAX_LENGTH)),
++  }),
+   Schema.TaggedStruct("attachment", {
+     attachmentId: TrimmedNonEmptyString.check(Schema.isMaxLength(256)),
+   }),

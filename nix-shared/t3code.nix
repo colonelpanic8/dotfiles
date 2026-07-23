@@ -6,35 +6,49 @@
     "apps/web/src/components/CommandPalette.tsx"
   ];
 
-  # PR #4257 (head dc90a36e8bf7) only changes the three shared command-palette files, so its
+  # PR #3984 predates the pinned base. Its complete cumulative diff remains
+  # auditable here while the rebased form below applies it to current main.
+  t3codePr3984 = final.fetchurl {
+    url = "https://patch-diff.githubusercontent.com/raw/pingdotgg/t3code/pull/3984.diff";
+    hash = "sha256-b3XsDbyKcZ3ANVT2apkOQ5lVRWeiXHLvZ3q9Yb2dFU8=";
+  };
+
+  # PR #4257 (head c441a441f754) only changes the three shared command-palette files, so its
   # complete diff is represented by the compatibility patch below. Keep its
   # live source and hash here so a bump still audits the PR itself.
   t3codePr4257 = final.fetchurl {
     url = "https://patch-diff.githubusercontent.com/raw/pingdotgg/t3code/pull/4257.diff";
-    hash = "sha256-JJBH3EXaGPqpNFBNO1/uKmao+X0JyL++bfl+YS1e4Vo=";
+    hash = "sha256-gHGeGzi4ss+9fUudPWc/a3lsWb3/k8fp78obdA2J31E=";
   };
 
-  # PR #4258 (head 9f48ad00b97d) has command-palette hunks represented by
+  # PR #4258 (head b6dbf5d218e0) has command-palette hunks represented by
   # the compatibility patch below; audit its complete cumulative diff too.
   t3codePr4258 = final.fetchurl {
     url = "https://patch-diff.githubusercontent.com/raw/pingdotgg/t3code/pull/4258.diff";
-    hash = "sha256-niqPYL/9RYJ1WL9ahyPpq4YcMmihfxha8FNNNdH9Yqc=";
+    hash = "sha256-FkyVXUTh+ewQHD41TnrvtzS4aUAqLnVeSDMr3cGFhwo=";
   };
 
-  # PR #4263 (head 6e0d514c884e) likewise has command-palette hunks in the
+  # PR #4263 (head 7851c8b7e9af) likewise has command-palette hunks in the
   # compatibility patch while its remaining files use fetchpatch below.
   t3codePr4263 = final.fetchurl {
     url = "https://patch-diff.githubusercontent.com/raw/pingdotgg/t3code/pull/4263.diff";
-    hash = "sha256-X0QU015jYx8hkOCwLVWzGof9MIgyaopcIZOU8CoZwLQ=";
+    hash = "sha256-PRgyQVJ+yr8EsXBd07ueoaBavmmghnJVem/T8ASfbBo=";
   };
 
-  # PR #4277 (head 60ff41deecff) overlaps Sidebar V2 and the combined
+  # PR #4277 (head f6670ff4a82b) overlaps Sidebar V2 and the combined
   # keybinding tests after #4263/#4270/#4271.
   # Keep the live cumulative diff auditable while applying that file through
   # the compatibility patch below.
   t3codePr4277 = final.fetchurl {
     url = "https://patch-diff.githubusercontent.com/raw/pingdotgg/t3code/pull/4277.diff";
-    hash = "sha256-VliqUb4h22oUJOtQ34w1QBzErZ5YVnuwk3bLqQNonrg=";
+    hash = "sha256-tRVtfhuhHl6tyTsYMXJz6Iev/hsEjarZ054ibytwg4o=";
+  };
+
+  # PR #4324 overlaps the assembled sidebar settings surface. Keep the live
+  # cumulative diff auditable while applying its stack-compatible form below.
+  t3codePr4324 = final.fetchurl {
+    url = "https://patch-diff.githubusercontent.com/raw/pingdotgg/t3code/pull/4324.diff";
+    hash = "sha256-9cfjtpFMK7mKVKCVui0MX0mUblr0B/a70AMS+Ny9kUI=";
   };
 
   # GitHub's cumulative diff records binary files without their payload. Keep
@@ -44,7 +58,7 @@
     hash = "sha256-AUgclGxHWoXWz6J5BLoP++JmuLdiTzIkwQrMaofQXcQ=";
   };
   t3codePr4332Foreground = final.fetchurl {
-    url = "https://raw.githubusercontent.com/colonelpanic8/t3code/0b746f1807f007b5d97d74a9c6cbbf8eb40559de/apps/mobile/assets/android-icon-foreground.png";
+    url = "https://raw.githubusercontent.com/colonelpanic8/t3code/a5b504bc3c1394f4bb653574f06a53a57e7068fc/apps/mobile/assets/android-icon-foreground.png";
     hash = "sha256-hTFq9kDZhZPJ9odddKRuEJ3mqRzL5AnjgDIAL2WqzVc=";
   };
 
@@ -52,27 +66,24 @@
   # remaining patches ordered: later patches may build on earlier UI work.
   t3codePatches = [
     # Render generated images inline: t3code#3984 (head 47cff5ac5538).
-    (final.fetchurl {
-      url = "https://patch-diff.githubusercontent.com/raw/pingdotgg/t3code/pull/3984.diff";
-      hash = "sha256-b3XsDbyKcZ3ANVT2apkOQ5lVRWeiXHLvZ3q9Yb2dFU8=";
-    })
+    ./patches/t3code-pr-3984-main-compat.patch
     # Constrain #3984's generic artifact paths to the real thread workspace;
     # only typed image-generation paths may use provider-managed storage.
     # Also use transactional thread snapshots, correct streaming boundaries,
     # and a bounded retry for projection/file visibility races.
     ./patches/t3code-pr-3984-artifact-safety.patch
-    # Searchable new-thread project picker: t3code#4259 (head b87259665220).
+    # Searchable new-thread project picker: t3code#4259 (head 8923c66788c3).
     (final.fetchurl {
       url = "https://patch-diff.githubusercontent.com/raw/pingdotgg/t3code/pull/4259.diff";
-      hash = "sha256-8Vd/EPWMocMXANk0Rysw0zYqQgOxmMhJ3e26rs0x3cU=";
+      hash = "sha256-KHzjvEZkZXP4qcQ62sNWMQsBOAiKLK3pZTMV92y7G2E=";
     })
-    # Reuse the command-palette new-thread picker for Ctrl+N: t3code#4263 (head 6e0d514c884e).
+    # Reuse the command-palette new-thread picker for Ctrl+N: t3code#4263 (head 7851c8b7e9af).
     (final.fetchpatch {
       url = "https://patch-diff.githubusercontent.com/raw/pingdotgg/t3code/pull/4263.diff";
       excludes = commandPaletteOverlapFiles;
-      hash = "sha256-RgzysvcQwmelB/3TN7AED8wPvwE43jlW1X0iT8YWGbw=";
+      hash = "sha256-XPBuI0iNXIJv6kKKJ3a10p5RBiolVWiQ8abx0Q/PF1g=";
     })
-    # Configurable add-project shortcut: t3code#4258 (head 9f48ad00b97d).
+    # Configurable add-project shortcut: t3code#4258 (head b6dbf5d218e0).
     (final.fetchpatch {
       url = "https://patch-diff.githubusercontent.com/raw/pingdotgg/t3code/pull/4258.diff";
       excludes = commandPaletteOverlapFiles;
@@ -80,45 +91,42 @@
     })
     # Combined shared-file changes from #4257, #4258, and #4263.
     ./patches/t3code-command-palette-prs.patch
-    # Emacs/readline editing mode: t3code#4270 (head 85d1678228e6).
+    # Emacs/readline editing mode: t3code#4270 (head 25dd0ec9d0b2).
     (final.fetchurl {
       url = "https://patch-diff.githubusercontent.com/raw/pingdotgg/t3code/pull/4270.diff";
-      hash = "sha256-LFPXt5E6RwhofXsAmdj+evKXPZMG9qMB4UDVWs3jbl0=";
+      hash = "sha256-ptDcxdLfoLyY2tPCBesfdXm7E/OEs9ndgGGzAar3pjo=";
     })
     # Keyboard-select composer controls + hold-modifier hints: t3code#4271
-    # (head d5ca73b82391). Raw diff applies with fuzz after #4258.
+    # (head 646bd2fcc654). Raw diff applies with fuzz after #4258.
     (final.fetchurl {
       url = "https://patch-diff.githubusercontent.com/raw/pingdotgg/t3code/pull/4271.diff";
-      hash = "sha256-M5nxqZRXZdbLnXEKK+JdJaOydbnhhNg20cllI1W8f4E=";
+      hash = "sha256-KUMeja020nAvAovNfzSTv/5vRqa++3zN0YSNrtX3fIE=";
     })
-    # Settle the open thread with Mod+Shift+X: t3code#4277 (head 60ff41deecff).
+    # Settle the open thread with Mod+Shift+X: t3code#4277 (head f6670ff4a82b).
     (final.fetchpatch {
       url = "https://patch-diff.githubusercontent.com/raw/pingdotgg/t3code/pull/4277.diff";
       excludes = [
         "apps/web/src/components/SidebarV2.tsx"
         "apps/web/src/keybindings.test.ts"
       ];
-      hash = "sha256-/N2/kvKqVFh23KmOKJn0fTCLT0Wqj8TJMgg9Yk6i1pI=";
+      hash = "sha256-CQWvbzxIXQhhztWQ24Q4ws5jcHDUsV3haJfJ31MMw5M=";
     })
     # Sidebar V2 and keybinding-test combination for #4277 with
     # #4263/#4270/#4271.
     ./patches/t3code-settle-thread-keybinding.patch
-    # Recover stalled draft-thread promotion: t3code#4318 (head 9d8c831cbd32).
+    # Recover stalled draft-thread promotion: t3code#4318 (head a86ea2d0bd1a).
     (final.fetchurl {
       url = "https://patch-diff.githubusercontent.com/raw/pingdotgg/t3code/pull/4318.diff";
-      hash = "sha256-RGJYyQ61f+RbT3lD/VX6WYb5OFiuLOlHVwNxdlusmOU=";
+      hash = "sha256-SHuHX+h3CGfSNE2RuibY+pi947x49nCGCFMov92OYmw=";
     })
     # Coalesce high-frequency assistant streaming deltas: t3code#4323
-    # (head dbcb664e5284).
+    # (head d3d98b429a50).
     (final.fetchurl {
       url = "https://patch-diff.githubusercontent.com/raw/pingdotgg/t3code/pull/4323.diff";
-      hash = "sha256-4OnuT1Qz1+PdFNrLaO5jzPQVBI/uK0mSSvmh+Der/WE=";
+      hash = "sha256-0Y35bfZv8c4pNTkA5Gq2uKSCCDaIx9DdvmN2PHgPYdc=";
     })
-    # Optional larger sidebar v2 project icons: t3code#4324 (head 0c346ca03f37).
-    (final.fetchurl {
-      url = "https://patch-diff.githubusercontent.com/raw/pingdotgg/t3code/pull/4324.diff";
-      hash = "sha256-/SjgE7zD3JkdjCP+1L6HKA+PKgQrpQnzDybcCsuQgYQ=";
-    })
+    # Optional larger sidebar v2 project icons: t3code#4324 (head 88d76de90f52).
+    ./patches/t3code-pr-4324-stack-compat.patch
     # Trigger the slash-command menu mid-prompt, not just at line start:
     # t3code#4181 (head d95abc106cdd).
     (final.fetchurl {
@@ -126,31 +134,33 @@
       hash = "sha256-Lwjeh0D0bUKg9WX/asNArbwx8OTCx07DL75b01SzWZ0=";
     })
     # Claude provider skill discovery for the $ picker: t3code#4325
-    # (head 6706b42c8a88).
+    # (head 80571c5e9f8a).
     (final.fetchurl {
       url = "https://patch-diff.githubusercontent.com/raw/pingdotgg/t3code/pull/4325.diff";
-      hash = "sha256-kbaFj1fZMbwVFpRvFF7eecUmIA4i/ZFXJewcwgY7u4A=";
+      hash = "sha256-1wiCnkJrB2YECXmaRFvcPtqaUifTtuvIWRSkMfEhfok=";
     })
     # Use a properly sized flat foreground for Android adaptive icons:
-    # t3code#4332 (head 0b746f1807f0).
+    # t3code#4332 (head a5b504bc3c13).
     t3codePr4332
     # Refresh a project favicon when its icon is clicked: t3code#4337
-    # (head 539a53c3beb6).
+    # (head d3c12f0bc4e7).
     (final.fetchurl {
       url = "https://patch-diff.githubusercontent.com/raw/pingdotgg/t3code/pull/4337.diff";
-      hash = "sha256-GSGJFgWTXIpUlis8wrY9YjNDSwqIT7MBX+29miUdEtM=";
+      hash = "sha256-94pNY6WprLSuhVbsDMPbHIKoFQgfg8TLKFggHX/0K5k=";
     })
   ];
 
   t3codePatchedSource = final.applyPatches {
-    name = "t3code-patched-main-20260722";
+    name = "t3code-patched-main-20260723";
     src = inputs.t3code-upstream;
     patches =
-      builtins.seq t3codePr4257
+      builtins.seq t3codePr3984
+      (builtins.seq t3codePr4257
         (builtins.seq t3codePr4258
           (builtins.seq t3codePr4263
             (builtins.seq t3codePr4277
-              (builtins.seq t3codePr4332 t3codePatches))));
+              (builtins.seq t3codePr4324
+                (builtins.seq t3codePr4332 t3codePatches))))));
     postPatch = ''
       install -m 0644 ${t3codePr4332Foreground} \
         apps/mobile/assets/android-icon-foreground.png
@@ -159,7 +169,7 @@
 
   t3codeUnwrapped = (prev.t3code.unwrapped.override {pnpm_10 = final.pnpm_11;}).overrideAttrs (
     finalAttrs: previousAttrs: {
-      version = "0.0.29-patched-main-20260722";
+      version = "0.0.29-patched-main-20260723";
       src = t3codePatchedSource;
       # Vite+ bootstraps the exact version in packageManager. Match it
       # to nixpkgs' pnpm so the task runner uses the dependency closure

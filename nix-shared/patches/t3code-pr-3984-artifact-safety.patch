@@ -1,11 +1,18 @@
 diff --git a/apps/server/src/assets/AssetAccess.test.ts b/apps/server/src/assets/AssetAccess.test.ts
-index 06a22754e55ab7f8d61fb156d2955a98cca0426d..ef443c91ceb4ac7f96cb38062361242ff9c5a8b6 100644
+index 42fd3f900..5b99debf4 100644
 --- a/apps/server/src/assets/AssetAccess.test.ts
 +++ b/apps/server/src/assets/AssetAccess.test.ts
-@@ -2 +2 @@ import * as NodeServices from "@effect/platform-node/NodeServices";
+@@ -1,5 +1,5 @@
+ import * as NodeServices from "@effect/platform-node/NodeServices";
 -import { ThreadId } from "@t3tools/contracts";
 +import { MessageId, ThreadId, TurnId } from "@t3tools/contracts";
-@@ -15 +15,6 @@ import * as WorkspacePaths from "../workspace/WorkspacePaths.ts";
+ import { PROJECT_FAVICON_FALLBACK_MARKER } from "@t3tools/shared/projectFavicon";
+ import { describe, expect, it } from "@effect/vitest";
+ import * as Effect from "effect/Effect";
+@@ -13,7 +13,12 @@ import * as ServerConfig from "../config.ts";
+ import * as ProjectFaviconResolver from "../project/ProjectFaviconResolver.ts";
+ import * as T3ProjectFileLoader from "../project/T3ProjectFileLoader.ts";
+ import * as WorkspacePaths from "../workspace/WorkspacePaths.ts";
 -import { ASSET_ROUTE_PREFIX, issueAssetUrl, resolveAsset } from "./AssetAccess.ts";
 +import {
 +  ASSET_ROUTE_PREFIX,
@@ -13,7 +20,13 @@ index 06a22754e55ab7f8d61fb156d2955a98cca0426d..ef443c91ceb4ac7f96cb38062361242f
 +  issueThreadArtifactUrl,
 +  resolveAsset,
 +} from "./AssetAccess.ts";
-@@ -180,0 +186,93 @@ describe("AssetAccess", () => {
+ 
+ const configLayer = ServerConfig.ServerConfig.layerTest(process.cwd(), {
+   prefix: "t3-asset-access-test-",
+@@ -182,6 +187,99 @@ describe("AssetAccess", () => {
+     }).pipe(Effect.provide(testLayer)),
+   );
+ 
 +  it.effect("enforces thread artifact scope without granting arbitrary-root access", () =>
 +    Effect.gen(function* () {
 +      const fileSystem = yield* FileSystem.FileSystem;
@@ -107,13 +120,25 @@ index 06a22754e55ab7f8d61fb156d2955a98cca0426d..ef443c91ceb4ac7f96cb38062361242f
 +    }).pipe(Effect.provide(testLayer)),
 +  );
 +
+   it.effect("issues exact attachment capabilities by attachment id", () =>
+     Effect.gen(function* () {
+       const config = yield* ServerConfig.ServerConfig;
 diff --git a/apps/server/src/assets/AssetAccess.ts b/apps/server/src/assets/AssetAccess.ts
-index 34c46b2e00b7e74a8c51e279e582bfb04446c467..1bdaf9c4fa4b3b5dde07434cbaab73ac5ef9d912 100644
+index 34c46b2e0..1bdaf9c4f 100644
 --- a/apps/server/src/assets/AssetAccess.ts
 +++ b/apps/server/src/assets/AssetAccess.ts
-@@ -41,0 +42 @@ import * as WorkspacePaths from "../workspace/WorkspacePaths.ts";
+@@ -39,6 +39,7 @@ import { resolveAttachmentPathById } from "../attachmentStore.ts";
+ import * as ServerConfig from "../config.ts";
+ import * as ProjectFaviconResolver from "../project/ProjectFaviconResolver.ts";
+ import * as WorkspacePaths from "../workspace/WorkspacePaths.ts";
 +import type { ResolvedThreadArtifactPath } from "./ThreadArtifactResolver.ts";
-@@ -349,0 +351,35 @@ export const issueAssetUrl = Effect.fn("AssetAccess.issueAssetUrl")(function* (i
+ 
+ export const ASSET_ROUTE_PREFIX = "/api/assets";
+ 
+@@ -347,6 +348,41 @@ export const issueAssetUrl = Effect.fn("AssetAccess.issueAssetUrl")(function* (i
+   };
+ });
+ 
 +export const issueThreadArtifactUrl = Effect.fn("AssetAccess.issueThreadArtifactUrl")(
 +  function* (input: {
 +    readonly resource: Extract<AssetResource, { readonly _tag: "thread-artifact" }>;
@@ -149,26 +174,45 @@ index 34c46b2e00b7e74a8c51e279e582bfb04446c467..1bdaf9c4fa4b3b5dde07434cbaab73ac
 +  },
 +);
 +
+ export const resolveAsset = Effect.fn("AssetAccess.resolveAsset")(function* (
+   token: string,
+   relativePath: string,
 diff --git a/apps/server/src/assets/ThreadArtifactResolver.test.ts b/apps/server/src/assets/ThreadArtifactResolver.test.ts
-index 6177b83856f893ad8d2350e156d63dbbda9ba1d0..72dc287fe56c5fef039ba834ec9347e4ac5bf9d8 100644
+index 6177b8385..72dc287fe 100644
 --- a/apps/server/src/assets/ThreadArtifactResolver.test.ts
 +++ b/apps/server/src/assets/ThreadArtifactResolver.test.ts
-@@ -5,0 +6 @@ import {
+@@ -3,6 +3,7 @@ import { describe, expect, it } from "vite-plus/test";
+ 
+ import {
+   findThreadArtifactPath,
 +  isThreadArtifactLookupRetryable,
-@@ -56,2 +57,2 @@ describe("thread artifact resolution", () => {
+   normalizeThreadArtifactReference,
+ } from "./ThreadArtifactResolver.ts";
+ 
+@@ -53,13 +54,15 @@ describe("thread artifact resolution", () => {
+     const path = "/sessions/thread/images/1.jpg";
+     expect(
+       findThreadArtifactPath(thread([activity(path)]), TURN_ID, MESSAGE_ID, "images/1.jpg"),
 -    ).toBe(path);
 -    expect(findThreadArtifactPath(thread([activity(path)]), TURN_ID, MESSAGE_ID, "1.jpg")).toBe(
 +    ).toEqual({ path, scope: "workspace", source: "raw-output" });
 +    expect(findThreadArtifactPath(thread([activity(path)]), TURN_ID, MESSAGE_ID, "1.jpg")).toEqual({
-@@ -59 +60,3 @@ describe("thread artifact resolution", () => {
+       path,
 -    );
 +      scope: "workspace",
 +      source: "raw-output",
 +    });
-@@ -62 +65 @@ describe("thread artifact resolution", () => {
+   });
+ 
 -  it("reads Codex image generation and image view paths", () => {
 +  it("keeps Codex image generation privileged separately from workspace-scoped image views", () => {
-@@ -74,6 +77,10 @@ describe("thread artifact resolution", () => {
+     const generatedPath = "/sessions/thread/images/generated.png";
+     const viewedPath = "/sessions/thread/images/viewed.png";
+     const source = thread([
+@@ -71,12 +74,16 @@ describe("thread artifact resolution", () => {
+       }),
+     ]);
+ 
 -    expect(findThreadArtifactPath(source, TURN_ID, MESSAGE_ID, "images/generated.png")).toBe(
 -      generatedPath,
 -    );
@@ -185,7 +229,13 @@ index 6177b83856f893ad8d2350e156d63dbbda9ba1d0..72dc287fe56c5fef039ba834ec9347e4
 +      scope: "workspace",
 +      source: "image-view",
 +    });
-@@ -91 +98,13 @@ describe("thread artifact resolution", () => {
+   });
+ 
+   it("deduplicates repeated activities for the same artifact", () => {
+@@ -88,7 +95,19 @@ describe("thread artifact resolution", () => {
+         MESSAGE_ID,
+         "1.jpg",
+       ),
 -    ).toBe(path);
 +    ).toEqual({ path, scope: "workspace", source: "raw-output" });
 +  });
@@ -200,7 +250,13 @@ index 6177b83856f893ad8d2350e156d63dbbda9ba1d0..72dc287fe56c5fef039ba834ec9347e4
 +    ]);
 +
 +    expect(findThreadArtifactPath(source, TURN_ID, MESSAGE_ID, "images/1.jpg")).toBeNull();
-@@ -129,2 +148,45 @@ describe("thread artifact resolution", () => {
+   });
+ 
+   it("fails closed when distinct artifacts in the message window share a suffix", () => {
+@@ -126,9 +145,53 @@ describe("thread artifact resolution", () => {
+       ],
+     };
+ 
 -    expect(findThreadArtifactPath(source, TURN_ID, targetMessageId, "images/1.jpg")).toBe(
 -      "/sessions/target/images/1.jpg",
 +    expect(findThreadArtifactPath(source, TURN_ID, targetMessageId, "images/1.jpg")).toEqual({
@@ -248,16 +304,27 @@ index 6177b83856f893ad8d2350e156d63dbbda9ba1d0..72dc287fe56c5fef039ba834ec9347e4
 +    );
 +    expect(isThreadArtifactLookupRetryable({ _tag: "AssetWorkspacePathValidationError" })).toBe(
 +      false,
-@@ -131,0 +194 @@ describe("thread artifact resolution", () => {
+     );
 +    expect(isThreadArtifactLookupRetryable(new Error("failed"))).toBe(false);
+   });
+ 
+   it("ignores matching artifacts from other turns and unknown messages", () => {
 diff --git a/apps/server/src/assets/ThreadArtifactResolver.ts b/apps/server/src/assets/ThreadArtifactResolver.ts
-index 4e8e3a707857bbf82a720a79368055db29946691..315684c220109bd79bda2b44a6c0c8bd33db31cc 100644
+index 4e8e3a707..315684c22 100644
 --- a/apps/server/src/assets/ThreadArtifactResolver.ts
 +++ b/apps/server/src/assets/ThreadArtifactResolver.ts
-@@ -2,0 +3,2 @@ import { isWorkspaceImagePreviewPath } from "@t3tools/shared/filePreview";
+@@ -1,5 +1,7 @@
+ import type { MessageId, TurnId } from "@t3tools/contracts";
+ import { isWorkspaceImagePreviewPath } from "@t3tools/shared/filePreview";
 +import * as Effect from "effect/Effect";
 +import * as Schedule from "effect/Schedule";
-@@ -18,0 +21,15 @@ interface ThreadArtifactSource {
+ 
+ interface ThreadArtifactSource {
+   readonly messages: ReadonlyArray<{
+@@ -16,12 +18,43 @@ interface ThreadArtifactSource {
+   }>;
+ }
+ 
 +export type ResolvedThreadArtifactPath =
 +  | {
 +      readonly path: string;
@@ -273,7 +340,12 @@ index 4e8e3a707857bbf82a720a79368055db29946691..315684c220109bd79bda2b44a6c0c8bd
 +const THREAD_ARTIFACT_LOOKUP_RETRY_COUNT = 4;
 +const THREAD_ARTIFACT_LOOKUP_RETRY_INTERVAL = "100 millis";
 +
-@@ -24,0 +42,16 @@ function asUnknownRecord(value: unknown): Record<string, unknown> | null {
+ function asUnknownRecord(value: unknown): Record<string, unknown> | null {
+   return value !== null && typeof value === "object" && !Array.isArray(value)
+     ? (value as Record<string, unknown>)
+     : null;
+ }
+ 
 +export function retryThreadArtifactLookup<A, E, R>(
 +  lookup: Effect.Effect<A, E, R>,
 +): Effect.Effect<A, E, R> {
@@ -290,17 +362,26 @@ index 4e8e3a707857bbf82a720a79368055db29946691..315684c220109bd79bda2b44a6c0c8bd
 +  return asUnknownRecord(error)?._tag === "AssetWorkspaceAssetNotFoundError";
 +}
 +
-@@ -42 +75 @@ export function normalizeThreadArtifactReference(value: string): string | null {
+ const WINDOWS_ABSOLUTE_PATH = /^[A-Za-z]:[\\/]/;
+ 
+ export function normalizeThreadArtifactReference(value: string): string | null {
+@@ -39,20 +72,28 @@ export function normalizeThreadArtifactReference(value: string): string | null {
+   return normalized;
+ }
+ 
 -function activityArtifactPaths(payloadValue: unknown): ReadonlyArray<string> {
 +function activityArtifactPaths(payloadValue: unknown): ReadonlyArray<ResolvedThreadArtifactPath> {
-@@ -47 +80,5 @@ function activityArtifactPaths(payloadValue: unknown): ReadonlyArray<string> {
+   const payload = asUnknownRecord(payloadValue);
+   const data = asUnknownRecord(payload?.data);
+   const rawOutput = asUnknownRecord(data?.rawOutput);
+   const item = asUnknownRecord(data?.item);
 -  const paths = [rawOutput?.path];
 +  const paths: ResolvedThreadArtifactPath[] = [];
 +
 +  if (typeof rawOutput?.path === "string") {
 +    paths.push({ path: rawOutput.path, scope: "workspace", source: "raw-output" });
 +  }
-@@ -49,4 +86,8 @@ function activityArtifactPaths(payloadValue: unknown): ReadonlyArray<string> {
+ 
 -  if (item?.type === "imageGeneration") {
 -    paths.push(item.savedPath);
 -  } else if (item?.type === "imageView") {
@@ -313,27 +394,50 @@ index 4e8e3a707857bbf82a720a79368055db29946691..315684c220109bd79bda2b44a6c0c8bd
 +    });
 +  } else if (item?.type === "imageView" && typeof item.path === "string") {
 +    paths.push({ path: item.path, scope: "workspace", source: "image-view" });
-@@ -55 +96 @@ function activityArtifactPaths(payloadValue: unknown): ReadonlyArray<string> {
+   }
+ 
 -  return paths.filter((value): value is string => typeof value === "string");
 +  return paths;
-@@ -70 +111 @@ function artifactMessageWindow(
+ }
+ 
+ function artifactMessageWindow(
+@@ -67,7 +108,7 @@ function artifactMessageWindow(
+   const message = messages[messageIndex];
+   if (!message) return null;
+ 
 -  const before = Date.parse(message.createdAt);
 +  const before = Date.parse(message.updatedAt);
-@@ -81 +122 @@ export function findThreadArtifactPath(
+   const previousMessage = messages[messageIndex - 1];
+   const after = previousMessage ? Date.parse(previousMessage.updatedAt) : Number.NEGATIVE_INFINITY;
+   return Number.isNaN(before) || Number.isNaN(after) ? null : { after, before };
+@@ -78,26 +119,32 @@ export function findThreadArtifactPath(
+   turnId: TurnId,
+   messageId: MessageId,
+   reference: string,
 -): string | null {
 +): ResolvedThreadArtifactPath | null {
-@@ -87 +128 @@ export function findThreadArtifactPath(
+   const normalizedReference = normalizeThreadArtifactReference(reference);
+   if (!normalizedReference) return null;
+   const window = artifactMessageWindow(thread, turnId, messageId);
+   if (!window) return null;
+ 
 -  const matches = new Map<string, string>();
 +  const matches = new Map<string, ResolvedThreadArtifactPath>();
-@@ -91 +132 @@ export function findThreadArtifactPath(
+   for (const activity of thread.activities) {
+     if (activity.turnId !== turnId) continue;
+     const createdAt = Date.parse(activity.createdAt);
 -    if (Number.isNaN(createdAt) || createdAt <= window.after || createdAt > window.before) continue;
 +    if (Number.isNaN(createdAt) || createdAt < window.after || createdAt > window.before) continue;
-@@ -93,2 +134,2 @@ export function findThreadArtifactPath(
+ 
 -    for (const artifactPath of activityArtifactPaths(activity.payload)) {
 -      const candidate = artifactPath.trim();
 +    for (const artifact of activityArtifactPaths(activity.payload)) {
 +      const candidate = artifact.path.trim();
-@@ -100 +141,7 @@ export function findThreadArtifactPath(
+       const normalizedCandidate = candidate.replaceAll("\\", "/");
+       if (
+         normalizedCandidate === normalizedReference ||
+         normalizedCandidate.endsWith(`/${normalizedReference}`)
+       ) {
 -        matches.set(normalizedCandidate, candidate);
 +        // Scope is part of candidate identity. Seeing the same path as both a
 +        // workspace artifact and a provider-generated artifact is ambiguous,
@@ -342,13 +446,25 @@ index 4e8e3a707857bbf82a720a79368055db29946691..315684c220109bd79bda2b44a6c0c8bd
 +          ...artifact,
 +          path: candidate,
 +        });
+       }
+     }
+   }
 diff --git a/apps/server/src/ws.ts b/apps/server/src/ws.ts
-index 363544c1217fa8f3663390cbaed7907e6f1f40f0..580ecb1a0c32ae6d00db54efa64f6465da2bf71c 100644
+index 363544c12..580ecb1a0 100644
 --- a/apps/server/src/ws.ts
 +++ b/apps/server/src/ws.ts
-@@ -8 +7,0 @@ import * as Option from "effect/Option";
+@@ -5,7 +5,6 @@ import * as Duration from "effect/Duration";
+ import * as Effect from "effect/Effect";
+ import * as Layer from "effect/Layer";
+ import * as Option from "effect/Option";
 -import * as Path from "effect/Path";
-@@ -91,2 +90,5 @@ import * as PreviewManager from "./preview/Manager.ts";
+ import * as Queue from "effect/Queue";
+ import * as Ref from "effect/Ref";
+ import * as Schema from "effect/Schema";
+@@ -88,8 +87,11 @@ import * as ServerSettings from "./serverSettings.ts";
+ import * as TerminalManager from "./terminal/Manager.ts";
+ import * as PreviewAutomationBroker from "./mcp/PreviewAutomationBroker.ts";
+ import * as PreviewManager from "./preview/Manager.ts";
 -import { issueAssetUrl } from "./assets/AssetAccess.ts";
 -import { findThreadArtifactPath } from "./assets/ThreadArtifactResolver.ts";
 +import { issueAssetUrl, issueThreadArtifactUrl } from "./assets/AssetAccess.ts";
@@ -356,9 +472,21 @@ index 363544c1217fa8f3663390cbaed7907e6f1f40f0..580ecb1a0c32ae6d00db54efa64f6465
 +  findThreadArtifactPath,
 +  retryThreadArtifactLookup,
 +} from "./assets/ThreadArtifactResolver.ts";
-@@ -413 +414,0 @@ const makeWsRpcLayer = (
+ import * as PortScanner from "./preview/PortScanner.ts";
+ import * as WorkspaceEntries from "./workspace/WorkspaceEntries.ts";
+ import * as WorkspaceFileSystem from "./workspace/WorkspaceFileSystem.ts";
+@@ -410,7 +412,6 @@ const makeWsRpcLayer = (
+     Effect.gen(function* () {
+       const currentSessionId = currentSession.sessionId;
+       const crypto = yield* Crypto.Crypto;
 -      const path = yield* Path.Path;
-@@ -1710,21 +1711,59 @@ const makeWsRpcLayer = (
+       const projectionSnapshotQuery = yield* ProjectionSnapshotQuery.ProjectionSnapshotQuery;
+       const orchestrationEngine = yield* OrchestrationEngine.OrchestrationEngineService;
+       const checkpointDiffQuery = yield* CheckpointDiffQuery.CheckpointDiffQuery;
+@@ -1707,41 +1708,66 @@ const makeWsRpcLayer = (
+             WS_METHODS.assetsCreateUrl,
+             Effect.gen(function* () {
+               if (input.resource._tag === "thread-artifact") {
 -                const thread = yield* projectionSnapshotQuery
 -                  .getThreadDetailById(input.resource.threadId)
 -                  .pipe(
@@ -439,7 +567,7 @@ index 363544c1217fa8f3663390cbaed7907e6f1f40f0..580ecb1a0c32ae6d00db54efa64f6465
 +                      ...(workspaceRoot === undefined ? {} : { workspaceRoot }),
 +                    });
 +                  }),
-@@ -1732,13 +1770,0 @@ const makeWsRpcLayer = (
+                 );
 -                if (!artifactPath) {
 -                  return yield* new AssetWorkspaceAssetNotFoundError({
 -                    resource: input.resource,
@@ -453,3 +581,6 @@ index 363544c1217fa8f3663390cbaed7907e6f1f40f0..580ecb1a0c32ae6d00db54efa64f6465
 -                  },
 -                  workspaceRoot: path.dirname(artifactPath),
 -                });
+               }
+               if (input.resource._tag !== "workspace-file") {
+                 return yield* issueAssetUrl({ resource: input.resource });
