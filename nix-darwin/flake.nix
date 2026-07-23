@@ -126,6 +126,7 @@
       networking.hostName = "mac-demarco-mini";
       imports = [
         (import ./gitea-actions-runner.nix)
+        (import ./gitea-runner-external-storage.nix)
       ];
       age = {
         identityPaths = [
@@ -348,7 +349,6 @@
         essentialPkgs
         ++ [
           pkgs.gnupg
-          inputs.lastfm-edit.packages.${pkgs.stdenv.hostPlatform.system}.scrobble-scrubber-app
         ];
 
       nixpkgs.config.allowUnfree = true;
@@ -398,6 +398,10 @@
       # Necessary for using flakes on this system.
       nix.settings = {
         experimental-features = "nix-command flakes";
+        # Trigger store GC before Nix consumes the machine's build headroom.
+        min-free = 10 * 1024 * 1024 * 1024;
+        max-free = 20 * 1024 * 1024 * 1024;
+        gc-reserved-space = 256 * 1024 * 1024;
         substituters = [
           "https://cache.nixos.org"
           "https://codex-cli.cachix.org"
@@ -408,6 +412,15 @@
           "claude-code.cachix.org-1:YeXf2aNu7UTX8Vwrze0za1WEDS+4DuI2kVeWEE4fsRk="
         ];
       };
+      nix.gc = {
+        automatic = true;
+        interval = {
+          Hour = 4;
+          Minute = 15;
+        };
+        options = "--delete-older-than 30d";
+      };
+      nix.optimise.automatic = true;
 
       # Set Git commit hash for darwin-version.
       system.configurationRevision = self.rev or self.dirtyRev or null;
