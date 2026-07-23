@@ -243,7 +243,7 @@
       '';
 
       system.defaults.NSGlobalDomain."com.apple.swipescrolldirection" = false;
-      system.defaults.CustomUserPreferences."com.apple.screensaver".idleTime = 300;
+      system.defaults.CustomUserPreferences."com.apple.screensaver".idleTime = 0;
       system.defaults.CustomUserPreferences."com.apple.symbolichotkeys".AppleSymbolicHotKeys = {
         # Disable input source shortcuts that conflict with launcher usage.
         "60" = disabledAppleSymbolicHotKey [32 49 262144];
@@ -261,6 +261,7 @@
         if launchctl print "gui/$primary_uid" >/dev/null 2>&1; then
           launchctl asuser "$primary_uid" sudo --user=${primaryUser} -- defaults -currentHost write com.apple.screensaver askForPassword -bool false
           launchctl asuser "$primary_uid" sudo --user=${primaryUser} -- defaults -currentHost write com.apple.screensaver askForPasswordDelay -int 0
+          launchctl asuser "$primary_uid" sudo --user=${primaryUser} -- defaults -currentHost write com.apple.screensaver idleTime -int 0
         else
           echo >&2 "skipping current-host screensaver defaults; ${primaryUser} has no GUI launchd session"
         fi
