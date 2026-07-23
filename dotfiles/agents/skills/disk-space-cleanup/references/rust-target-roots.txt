@@ -6,3 +6,4 @@
 /home/imalison/.codex/worktrees
 /srv/dotfiles
 /Users/kat
+/Volumes/Extreme SSD/Projects
