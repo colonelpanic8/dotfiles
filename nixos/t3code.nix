@@ -75,10 +75,10 @@
       hash = "sha256-nDHECUPDxrV84fM5WqXBYYFAqTQWcyMGB6GYZ93XPhU=";
     })
     # Keyboard-select composer controls + hold-modifier hints: t3code#4271
-    # (head 3a0366085a16). Raw diff applies with fuzz after #4258.
+    # (head d5ca73b82391). Raw diff applies with fuzz after #4258.
     (final.fetchurl {
       url = "https://patch-diff.githubusercontent.com/raw/pingdotgg/t3code/pull/4271.diff";
-      hash = "sha256-L+CbsHUKtSMzahB0IibXTtKRcsxELD8p11VzmAPdGtc=";
+      hash = "sha256-M5nxqZRXZdbLnXEKK+JdJaOydbnhhNg20cllI1W8f4E=";
     })
     # Settle the open thread with Mod+Shift+X: t3code#4277 (head a6d2a79f2611).
     (final.fetchpatch {
