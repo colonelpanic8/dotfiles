@@ -52,6 +52,7 @@ gotools
 /nixos/.playwright-cli/
 /nixos/action-cache-dir/
 /dotfiles/config/taffybar/dbus-menu/
+/dotfiles/agents/state/
 
 # On nix-darwin, ~/.claude resolves into dotfiles/claude (HM out-of-store
 # symlink), so the claude-history repo and live Claude Code state are nested
