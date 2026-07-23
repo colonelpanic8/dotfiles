@@ -149,10 +149,10 @@
       hash = "sha256-94pNY6WprLSuhVbsDMPbHIKoFQgfg8TLKFggHX/0K5k=";
     })
     # Recover stranded provider turns after lost completion events or backend
-    # restarts: t3code#4386 (head 8e5b28a4dcf9).
+    # restarts: t3code#4386 (head bafd4e833).
     (final.fetchurl {
       url = "https://patch-diff.githubusercontent.com/raw/pingdotgg/t3code/pull/4386.diff";
-      hash = "sha256-DJwvlbVaBxWHsP+DiBMDF6vjFccwfYi6a55kzkNNeQ0=";
+      hash = "sha256-UpjaJG1mNq+jOvNMi6huQD9I6VcNf7k7/etqvnWNci4=";
     })
     # Keep the Android new-task composer above the keyboard while it expands:
     # t3code#4388 (head f4c8e04c2822).
