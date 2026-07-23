@@ -86,6 +86,19 @@
     hash = "sha256-TEhokBmc58cdgcWtRSvMlUdn8ZsmSGbaAjPqpu9r1hk=";
   };
 
+  t3codePrAudits = [
+    t3codePr3984
+    t3codePr4257
+    t3codePr4258
+    t3codePr4263
+    t3codePr4277
+    t3codePr4271
+    t3codePr4318
+    t3codePr4324
+    t3codePr4332
+    t3codePr4401
+  ];
+
   # Upstream is pinned through branch-drift hardening (#2284). Keep the
   # remaining patches ordered: later patches may build on earlier UI work.
   t3codePatches = [
@@ -221,17 +234,7 @@
   t3codePatchedSource = final.applyPatches {
     name = "t3code-patched-main-20260723";
     src = inputs.t3code-upstream;
-    patches =
-      builtins.seq t3codePr3984
-      (builtins.seq t3codePr4257
-        (builtins.seq t3codePr4258
-          (builtins.seq t3codePr4263
-            (builtins.seq t3codePr4277
-              (builtins.seq t3codePr4271
-                (builtins.seq t3codePr4318
-                  (builtins.seq t3codePr4324
-                    (builtins.seq t3codePr4332
-                      (builtins.seq t3codePr4401 t3codePatches)))))))));
+    patches = prev.lib.foldr builtins.seq t3codePatches t3codePrAudits;
     postPatch = ''
       install -m 0644 ${t3codePr4332Foreground} \
         apps/mobile/assets/android-icon-foreground.png
