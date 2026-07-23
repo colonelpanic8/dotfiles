@@ -105,6 +105,7 @@
     sharedHomeModules = [
       ./home/common.nix
       ./home/git-sync.nix
+      ../nix-shared/home-manager/t3code-server.nix
     ];
     homeForUser = user: "/Users/${user}";
     mkUserDescription = user:

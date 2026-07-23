@@ -107,6 +107,7 @@ in {
   home.file = dotfilesLinks;
 
   myModules.codexGeneratedSkills.enable = true;
+  myModules.t3codeServer.enable = true;
 
   home.packages =
     [
