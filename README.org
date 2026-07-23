@@ -129,6 +129,25 @@ The nix-darwin Home Manager module in [[file:nix-darwin/home/common.nix][nix-dar
 same basic idea for macOS, with extra launchd, GPG, Raycast, Homebrew, and agent
 setup.
 
+** Shared Node Modules
+
+The =shared-node-modules= command in
+[[file:dotfiles/lib/bin/shared-node-modules][dotfiles/lib/bin/shared-node-modules]] lets compatible Git worktrees share
+one physical dependency tree:
+
+#+begin_src sh
+shared-node-modules install
+shared-node-modules status
+shared-node-modules list
+#+end_src
+
+Repositories can provide =bin/shared-node-modules= when they need custom
+fingerprinting or tool integration; the global command delegates to it. The
+generic fallback supports non-workspace Yarn Classic projects without local
+=file:= or =link:= dependencies. Dependency trees are keyed by the lockfile,
+manifest dependency fields, patches, Yarn version, platform, architecture, and
+Node ABI.
+
 * Desktop Stack
 
 The desktop setup is modular. [[file:nixos/desktop.nix][nixos/desktop.nix]] enables the common desktop

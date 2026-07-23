@@ -1,0 +1,371 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+usage() {
+  cat <<'EOF'
+Usage: shared-node-modules <command> [--discard-local]
+
+Share one physical node_modules tree among compatible Git worktrees.
+
+Commands:
+  link      Link this worktree to the compatible shared node_modules tree.
+            An existing local node_modules becomes the initial shared tree.
+  install   Link the tree, then run yarn install --frozen-lockfile under a lock.
+  check     Fail if this worktree points at a stale shared tree.
+  status    Show the expected tree and this worktree's current state.
+  list      List all dependency trees stored for this Git checkout.
+
+Options:
+  --discard-local
+            With link/install, remove an existing local node_modules when a
+            compatible shared tree already exists.
+
+Repositories can provide bin/shared-node-modules to override the generic
+implementation. The generic implementation supports non-workspace Yarn
+Classic projects without file: or link: dependencies.
+
+Set SHARED_NODE_MODULES_ROOT to override the default pool location, which is a
+hidden sibling of the primary checkout. Set SHARED_NODE_MODULES_EXTRA_INPUTS
+to a newline-separated list of extra files that should affect the dependency
+fingerprint.
+EOF
+}
+
+die() {
+  printf 'shared-node-modules: %s\n' "$*" >&2
+  exit 1
+}
+
+note() {
+  printf 'shared-node-modules: %s\n' "$*"
+}
+
+absolute_directory() {
+  (
+    cd "$1"
+    pwd -P
+  )
+}
+
+case "${1:-}" in
+  -h | --help | help)
+    usage
+    exit 0
+    ;;
+esac
+
+command -v git >/dev/null 2>&1 || die "git is required"
+repository_root="$(git rev-parse --show-toplevel 2>/dev/null)" ||
+  die "run this command from a Git worktree"
+cd "$repository_root"
+
+script_path="${BASH_SOURCE[0]}"
+case "$script_path" in
+  /*) ;;
+  *) script_path="$(pwd)/$script_path" ;;
+esac
+script_directory="$(absolute_directory "$(dirname "$script_path")")"
+script_path="$script_directory/$(basename "$script_path")"
+
+repository_helper="$repository_root/bin/shared-node-modules"
+if [ -x "$repository_helper" ]; then
+  if [ ! "$repository_helper" -ef "$script_path" ]; then
+    exec "$repository_helper" "$@"
+  fi
+fi
+
+[ -f package.json ] && [ -f yarn.lock ] ||
+  die "the generic helper requires package.json and yarn.lock"
+command -v node >/dev/null 2>&1 || die "node is required"
+command -v yarn >/dev/null 2>&1 || die "yarn is required"
+
+yarn_version="$(yarn --version)"
+case "$yarn_version" in
+  1.*) ;;
+  *) die "the generic helper supports Yarn Classic only (found $yarn_version)" ;;
+esac
+
+node <<'NODE'
+const fs = require("fs");
+const pkg = JSON.parse(fs.readFileSync("package.json", "utf8"));
+
+if (pkg.workspaces) {
+  console.error(
+    "shared-node-modules: Yarn workspaces are not supported because their shared tree can contain worktree-specific symlinks",
+  );
+  process.exit(1);
+}
+
+for (const field of [
+  "dependencies",
+  "devDependencies",
+  "optionalDependencies",
+]) {
+  for (const [name, specifier] of Object.entries(pkg[field] || {})) {
+    if (/^(file|link):/.test(specifier)) {
+      console.error(
+        `shared-node-modules: ${field}.${name} uses ${specifier}; local dependencies require a repository-specific helper`,
+      );
+      process.exit(1);
+    }
+  }
+}
+NODE
+
+common_git_dir="$(git rev-parse --git-common-dir)"
+case "$common_git_dir" in
+  /*) ;;
+  *) common_git_dir="$repository_root/$common_git_dir" ;;
+esac
+common_git_dir="$(absolute_directory "$common_git_dir")"
+
+primary_checkout_root="$(dirname "$common_git_dir")"
+default_pool_root="$(dirname "$primary_checkout_root")/.$(basename "$primary_checkout_root")-shared-node-modules"
+pool_root="${SHARED_NODE_MODULES_ROOT:-$default_pool_root}"
+
+dependency_key="$(
+  {
+    printf '%s\n' "shared-node-modules-v1"
+    printf 'node-platform=%s\n' "$(node -p '`${process.platform}-${process.arch}-${process.versions.modules}`')"
+    printf 'yarn-version=%s\n' "$yarn_version"
+    printf '%s\n' "package-dependency-fields:"
+    node <<'NODE'
+const fs = require("fs");
+const pkg = JSON.parse(fs.readFileSync("package.json", "utf8"));
+const relevant = {
+  dependencies: pkg.dependencies,
+  devDependencies: pkg.devDependencies,
+  optionalDependencies: pkg.optionalDependencies,
+  peerDependencies: pkg.peerDependencies,
+  resolutions: pkg.resolutions,
+  postinstall: pkg.scripts && pkg.scripts.postinstall,
+};
+process.stdout.write(`${JSON.stringify(relevant)}\n`);
+NODE
+    printf '%s\n' "yarn.lock:"
+    git hash-object yarn.lock
+
+    for config_file in .npmrc .yarnrc .yarnrc.yml; do
+      if [ -f "$config_file" ]; then
+        printf '%s:' "$config_file"
+        git hash-object "$config_file"
+      fi
+    done
+
+    if [ -d patches ]; then
+      find patches -type f -print | LC_ALL=C sort | while IFS= read -r patch_file; do
+        printf '%s:' "$patch_file"
+        git hash-object "$patch_file"
+      done
+    fi
+
+    if [ -n "${SHARED_NODE_MODULES_EXTRA_INPUTS:-}" ]; then
+      while IFS= read -r extra_input; do
+        [ -n "$extra_input" ] || continue
+        [ -f "$extra_input" ] ||
+          die "extra fingerprint input does not exist or is not a file: $extra_input"
+        printf '%s:' "$extra_input"
+        git hash-object "$extra_input"
+      done <<<"$SHARED_NODE_MODULES_EXTRA_INPUTS"
+    fi
+  } | git hash-object --stdin
+)"
+
+tree_root="$pool_root/$dependency_key"
+shared_modules="$tree_root/node_modules"
+marker="$tree_root/.shared-node-modules"
+
+write_marker() {
+  mkdir -p "$tree_root"
+  printf '%s\n' "$dependency_key" >"$marker"
+}
+
+resolved_link_target() {
+  local link_value
+  link_value="$(readlink node_modules)"
+  node -e \
+    'process.stdout.write(require("path").resolve(process.argv[1], process.argv[2]))' \
+    "$repository_root" \
+    "$link_value"
+}
+
+is_managed_link() {
+  local link_target="$1"
+  [ -f "$(dirname "$link_target")/.shared-node-modules" ]
+}
+
+check_link() {
+  local current_target
+
+  if [ ! -L node_modules ]; then
+    return 0
+  fi
+
+  current_target="$(resolved_link_target)"
+  if ! is_managed_link "$current_target"; then
+    return 0
+  fi
+
+  if [ "$current_target" != "$shared_modules" ]; then
+    die "this worktree's shared node_modules is stale; run 'shared-node-modules install'"
+  fi
+}
+
+link_tree() {
+  local discard_local="$1"
+  local current_target
+
+  mkdir -p "$pool_root"
+
+  if [ -L node_modules ]; then
+    current_target="$(resolved_link_target)"
+    if [ "$current_target" = "$shared_modules" ]; then
+      write_marker
+      note "already linked to $shared_modules"
+      return 0
+    fi
+
+    if ! is_managed_link "$current_target"; then
+      die "node_modules is an unmanaged symlink to $current_target"
+    fi
+
+    rm node_modules
+    mkdir -p "$shared_modules"
+    write_marker
+    ln -s "$shared_modules" node_modules
+    note "relinked this worktree for dependency key $dependency_key"
+    return 0
+  fi
+
+  if [ -e node_modules ]; then
+    [ -d node_modules ] || die "node_modules exists but is not a directory"
+
+    if [ -d "$shared_modules" ] && [ -n "$(ls -A "$shared_modules")" ]; then
+      if [ "$discard_local" != "true" ]; then
+        die "a compatible shared tree already exists; rerun with --discard-local to remove this duplicate"
+      fi
+      rm -rf "$repository_root/node_modules"
+      note "removed the duplicate local node_modules"
+    else
+      if [ -d "$shared_modules" ]; then
+        rmdir "$shared_modules"
+      fi
+      write_marker
+      mv node_modules "$shared_modules"
+      note "adopted the existing node_modules as the shared tree"
+    fi
+  else
+    mkdir -p "$shared_modules"
+  fi
+
+  write_marker
+  ln -s "$shared_modules" node_modules
+  note "linked $repository_root/node_modules -> $shared_modules"
+}
+
+install_lock_dir=""
+
+release_install_lock() {
+  if [ -n "$install_lock_dir" ]; then
+    rm -rf "$install_lock_dir"
+  fi
+}
+
+acquire_install_lock() {
+  install_lock_dir="$tree_root/.install-lock"
+  local attempts=0
+  local owner_pid
+
+  while ! mkdir "$install_lock_dir" 2>/dev/null; do
+    if [ -f "$install_lock_dir/pid" ]; then
+      owner_pid="$(cat "$install_lock_dir/pid")"
+      if ! kill -0 "$owner_pid" 2>/dev/null; then
+        rm -rf "$install_lock_dir"
+        continue
+      fi
+    fi
+
+    attempts=$((attempts + 1))
+    if [ "$attempts" -ge 600 ]; then
+      die "timed out waiting for another install using $shared_modules"
+    fi
+    if [ "$attempts" -eq 1 ]; then
+      note "waiting for another worktree to finish installing this dependency tree"
+    fi
+    sleep 1
+  done
+
+  printf '%s\n' "$$" >"$install_lock_dir/pid"
+  trap release_install_lock EXIT
+  trap 'exit 130' INT
+  trap 'exit 143' TERM
+}
+
+command="${1:-}"
+[ -n "$command" ] || {
+  usage
+  exit 2
+}
+shift
+
+discard_local=false
+if [ "${1:-}" = "--discard-local" ]; then
+  discard_local=true
+  shift
+fi
+[ "$#" -eq 0 ] || die "unexpected argument: $1"
+
+case "$command" in
+  link)
+    link_tree "$discard_local"
+    ;;
+  install)
+    link_tree "$discard_local"
+    acquire_install_lock
+    yarn install --frozen-lockfile
+    ;;
+  check)
+    check_link
+    ;;
+  status)
+    printf 'dependency key: %s\n' "$dependency_key"
+    printf 'shared tree:   %s\n' "$shared_modules"
+    if [ -L node_modules ]; then
+      current_target="$(resolved_link_target)"
+      printf 'worktree:      linked to %s\n' "$current_target"
+      if [ "$current_target" = "$shared_modules" ]; then
+        printf '%s\n' "status:        compatible"
+      elif is_managed_link "$current_target"; then
+        printf '%s\n' "status:        stale (run 'shared-node-modules install')"
+        exit 1
+      else
+        printf '%s\n' "status:        unmanaged symlink"
+      fi
+    elif [ -d node_modules ]; then
+      printf '%s\n' "status:        local, unshared node_modules"
+    else
+      printf '%s\n' "status:        node_modules is missing"
+    fi
+    ;;
+  list)
+    if [ ! -d "$pool_root" ]; then
+      note "no shared dependency trees exist yet"
+      exit 0
+    fi
+    for stored_marker in "$pool_root"/*/.shared-node-modules; do
+      [ -f "$stored_marker" ] || continue
+      stored_tree="$(dirname "$stored_marker")/node_modules"
+      if [ -d "$stored_tree" ]; then
+        du -sh "$stored_tree"
+      fi
+    done
+    ;;
+  -h | --help | help)
+    usage
+    ;;
+  *)
+    usage >&2
+    exit 2
+    ;;
+esac
