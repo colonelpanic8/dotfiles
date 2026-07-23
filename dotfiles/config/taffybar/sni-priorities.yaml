@@ -15,6 +15,8 @@ priorities:
   priority: 1
 - key: item-id:git-sync-rs
   priority: 1
+- key: process:git-sync-rs
+  priority: 1
 - key: process:slack
   priority: 1
 - key: icon-name:kdeconnectindicatordark
@@ -40,8 +42,6 @@ priorities:
 - key: item-id:systray_6518
   priority: -1
 - key: item-id:tailscale
-  priority: -1
-- key: process:git-sync-rs
   priority: -1
 - key: process:tailscale
   priority: -1
