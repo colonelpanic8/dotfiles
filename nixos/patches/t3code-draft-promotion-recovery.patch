@@ -1,0 +1,70 @@
+--- a/apps/web/src/components/ChatView.logic.test.ts
++++ b/apps/web/src/components/ChatView.logic.test.ts
+@@ -9 +9 @@
+-import { describe, expect, it } from "vite-plus/test";
++import { afterEach, describe, expect, it, vi } from "vite-plus/test";
+@@ -10,0 +11 @@
++import { appAtomRegistry } from "../rpc/atomRegistry";
+@@ -22,0 +24,2 @@
++  recoverDraftThreadAfterBootstrap,
++  resolveStartedThreadRef,
+@@ -31,0 +35,4 @@
++afterEach(() => {
++  vi.restoreAllMocks();
++});
++
+@@ -80,0 +88,44 @@
++
++describe("recoverDraftThreadAfterBootstrap", () => {
++  it("refreshes the reserved thread stream when bootstrap hydration stalls", async () => {
++    vi.spyOn(appAtomRegistry, "get").mockReturnValue(null as never);
++    vi.spyOn(appAtomRegistry, "subscribe").mockReturnValue(() => undefined);
++    const refresh = vi.spyOn(appAtomRegistry, "refresh").mockImplementation(() => undefined);
++
++    await expect(recoverDraftThreadAfterBootstrap({ environmentId, threadId }, 0)).resolves.toBe(
++      false,
++    );
++
++    expect(refresh).toHaveBeenCalledTimes(1);
++  });
++
++  it("keeps a hydrated thread stream intact", async () => {
++    vi.spyOn(appAtomRegistry, "get").mockReturnValue(
++      makeThread({ session: readySession }) as never,
++    );
++    const subscribe = vi.spyOn(appAtomRegistry, "subscribe");
++    const refresh = vi.spyOn(appAtomRegistry, "refresh");
++
++    await expect(recoverDraftThreadAfterBootstrap({ environmentId, threadId }, 0)).resolves.toBe(
++      true,
++    );
++
++    expect(subscribe).not.toHaveBeenCalled();
++    expect(refresh).not.toHaveBeenCalled();
++  });
++});
++
++describe("resolveStartedThreadRef", () => {
++  const threadRef = { environmentId, threadId };
++
++  it("promotes from authoritative started detail", () => {
++    expect(resolveStartedThreadRef(threadRef, makeThread({ session: readySession }))).toEqual(
++      threadRef,
++    );
++  });
++
++  it("waits while detail has not started", () => {
++    expect(resolveStartedThreadRef(threadRef, makeThread())).toBeNull();
++    expect(resolveStartedThreadRef(threadRef, null)).toBeNull();
++  });
++});
+--- a/apps/web/src/components/ChatView.tsx
++++ b/apps/web/src/components/ChatView.tsx
+@@ -244,0 +245 @@
++  recoverDraftThreadAfterBootstrap,
+@@ -4408,0 +4410,5 @@
++        if (isLocalDraftThread) {
++          void recoverDraftThreadAfterBootstrap(
++            scopeThreadRef(activeThread.environmentId, threadIdForSend),
++          );
++        }

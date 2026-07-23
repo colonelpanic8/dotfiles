@@ -37,6 +37,14 @@
     hash = "sha256-sz2yVuFYNv4kzhzA2v7Dw58IGsEQ2szbLsdLtcbfm1c=";
   };
 
+  # PR #4318 (head 9d8c831cbd32) overlaps ChatView imports after #4271.
+  # Keep the live cumulative diff auditable while applying those two files
+  # through the compatibility patch below.
+  t3codePr4318 = final.fetchurl {
+    url = "https://patch-diff.githubusercontent.com/raw/pingdotgg/t3code/pull/4318.diff";
+    hash = "sha256-RGJYyQ61f+RbT3lD/VX6WYb5OFiuLOlHVwNxdlusmOU=";
+  };
+
   # Upstream is pinned after Theo's Threads view (#4026) merged. Keep
   # the remaining patches ordered: later patches may build on earlier UI work.
   t3codePatches = [
@@ -90,6 +98,17 @@
     # Sidebar V2 and keybinding-test combination for #4277 with
     # #4263/#4270/#4271.
     ./patches/t3code-settle-thread-keybinding.patch
+    # Recover stalled draft-to-server thread promotion: t3code#4318 (head
+    # 9d8c831cbd32). ChatView files are combined with #4271 below.
+    (final.fetchpatch {
+      url = "https://patch-diff.githubusercontent.com/raw/pingdotgg/t3code/pull/4318.diff";
+      excludes = [
+        "apps/web/src/components/ChatView.logic.test.ts"
+        "apps/web/src/components/ChatView.tsx"
+      ];
+      hash = "sha256-zUCZSYFN1M1biUcWtv9r3g3NdNtPPC0Uo0bBw+8tEKs=";
+    })
+    ./patches/t3code-draft-promotion-recovery.patch
   ];
 
   t3codePatchedSource = final.applyPatches {
@@ -99,7 +118,8 @@
       builtins.seq t3codePr4257
         (builtins.seq t3codePr4258
           (builtins.seq t3codePr4263
-            (builtins.seq t3codePr4277 t3codePatches)));
+            (builtins.seq t3codePr4277
+              (builtins.seq t3codePr4318 t3codePatches))));
   };
 
   t3codeUnwrapped = (prev.t3code.unwrapped.override {pnpm_10 = final.pnpm_11;}).overrideAttrs (
