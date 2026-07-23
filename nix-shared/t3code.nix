@@ -62,6 +62,14 @@
     hash = "sha256-hTFq9kDZhZPJ9odddKRuEJ3mqRzL5AnjgDIAL2WqzVc=";
   };
 
+  # PR #4401 overlaps the assembled asset tests and Sidebar V2 surface.
+  # Keep its complete cumulative diff auditable while applying those two
+  # files through the compatibility patch below.
+  t3codePr4401 = final.fetchurl {
+    url = "https://patch-diff.githubusercontent.com/raw/pingdotgg/t3code/pull/4401.diff";
+    hash = "sha256-TEhokBmc58cdgcWtRSvMlUdn8ZsmSGbaAjPqpu9r1hk=";
+  };
+
   # Upstream is pinned through branch-drift hardening (#2284). Keep the
   # remaining patches ordered: later patches may build on earlier UI work.
   t3codePatches = [
@@ -170,6 +178,18 @@
     # Keep the upstream PR unchanged while assigning its lineage migration the
     # next durable local ID in the Frankenstein stack.
     ./patches/t3code-pr-4390-stack-compat.patch
+    # User-local project icons: t3code#4401 (head 012142d48fa6).
+    (final.fetchpatch {
+      url = "https://patch-diff.githubusercontent.com/raw/pingdotgg/t3code/pull/4401.diff";
+      excludes = [
+        "apps/server/src/assets/AssetAccess.test.ts"
+        "apps/web/src/components/SidebarV2.tsx"
+      ];
+      hash = "sha256-3KvOqEPia15y2OTBJBkSMTIFVulio1JexTWAeDSYxnI=";
+    })
+    # Preserve the existing thread-artifact tests and optional large Sidebar
+    # V2 icons while adding #4401's complete changes to the excluded files.
+    ./patches/t3code-pr-4401-stack-compat.patch
   ];
 
   t3codePatchedSource = final.applyPatches {
@@ -182,7 +202,8 @@
           (builtins.seq t3codePr4263
             (builtins.seq t3codePr4277
               (builtins.seq t3codePr4324
-                (builtins.seq t3codePr4332 t3codePatches))))));
+                (builtins.seq t3codePr4332
+                  (builtins.seq t3codePr4401 t3codePatches)))))));
     postPatch = ''
       install -m 0644 ${t3codePr4332Foreground} \
         apps/mobile/assets/android-icon-foreground.png
