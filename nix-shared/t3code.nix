@@ -154,6 +154,12 @@
       url = "https://patch-diff.githubusercontent.com/raw/pingdotgg/t3code/pull/4386.diff";
       hash = "sha256-DJwvlbVaBxWHsP+DiBMDF6vjFccwfYi6a55kzkNNeQ0=";
     })
+    # Keep the Android new-task composer above the keyboard while it expands:
+    # t3code#4388 (head f4c8e04c2822).
+    (final.fetchurl {
+      url = "https://patch-diff.githubusercontent.com/raw/pingdotgg/t3code/pull/4388.diff";
+      hash = "sha256-3/BbosFzUK7soaUY+xo5Z1pFKRX8AU7n/JIT2q4FL/I=";
+    })
     # Fork a thread from a selected assistant response on web and mobile:
     # t3code#4390 (head 29c1ba000a58).
     (final.fetchurl {
