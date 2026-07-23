@@ -24,3 +24,8 @@ populate-cachix cache="colonelpanic8-dotfiles" host=`hostname` *args:
 
 publish-hyprland-cachix cache="colonelpanic8-dotfiles" *args:
 	store_paths="$(nix build --no-link --print-out-paths ".#hyprland-stuff" --option warn-dirty false {{args}})" && cachix push {{cache}} $store_paths
+
+# Build a sideloadable Android APK from the patched T3 Code source.
+# Reuses the desktop patch stack; runs the repo's .#android dev shell.
+t3code-apk *args:
+	{{justfile_directory()}}/scripts/build-t3code-apk.sh {{args}}
