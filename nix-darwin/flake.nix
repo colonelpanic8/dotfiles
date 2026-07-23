@@ -59,6 +59,12 @@
       flake = false;
     };
 
+    # Patch selections for this source are maintained in ../nix-shared/t3code.nix.
+    t3code-upstream = {
+      url = "github:pingdotgg/t3code";
+      flake = false;
+    };
+
     keepbook = {
       url = "github:colonelpanic8/keepbook";
       inputs.nixpkgs.follows = "nixpkgs";
@@ -302,6 +308,7 @@
 
       nixpkgs.overlays = [
         (import ../nix-shared/overlays)
+        (import ../nix-shared/t3code.nix {inherit inputs;})
         # Use codex and claude-code from dedicated flakes with cachix
         (final: prev: {
           bazel = inputs.nixpkgs-bazel.legacyPackages.${prev.stdenv.hostPlatform.system}.bazel;

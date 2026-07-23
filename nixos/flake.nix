@@ -332,7 +332,7 @@
       flake = false;
     };
 
-    # Patch selections for this source are maintained in t3code.nix.
+    # Patch selections for this source are maintained in ../nix-shared/t3code.nix.
     t3code-upstream = {
       url = "github:pingdotgg/t3code";
       flake = false;
