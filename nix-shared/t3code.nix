@@ -190,6 +190,12 @@
     # Preserve the existing thread-artifact tests and optional large Sidebar
     # V2 icons while adding #4401's complete changes to the excluded files.
     ./patches/t3code-pr-4401-stack-compat.patch
+    # Self-heal empty thread details and back off failed thread subscriptions:
+    # t3code#4405 (head 4659cf54b530).
+    (final.fetchurl {
+      url = "https://patch-diff.githubusercontent.com/raw/pingdotgg/t3code/pull/4405.diff";
+      hash = "sha256-nhPMr3s0kS+cW5794l+1DTENJYOD11NDLHvaOcqrOGA=";
+    })
   ];
 
   t3codePatchedSource = final.applyPatches {
