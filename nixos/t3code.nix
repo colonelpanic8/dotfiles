@@ -103,6 +103,11 @@
       url = "https://patch-diff.githubusercontent.com/raw/pingdotgg/t3code/pull/4323.diff";
       hash = "sha256-VhZphoO0Qi6yN1YTrzZYLpStjBAMZTpL3KNLZc1Ss6s=";
     })
+    # Optional larger sidebar v2 project icons: t3code#4324 (head e859246a4ce0).
+    (final.fetchurl {
+      url = "https://patch-diff.githubusercontent.com/raw/pingdotgg/t3code/pull/4324.diff";
+      hash = "sha256-kODBBCjyhGyB98Dvtm5LHQ2msv1t/4PnYc1hlQCt0fM=";
+    })
   ];
 
   t3codePatchedSource = final.applyPatches {
