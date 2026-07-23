@@ -1,0 +1,3 @@
+# Share pnpm's dependency-graph store across repositories and Git worktrees.
+# pnpm automatically disables this in CI, where the shared cache is usually cold.
+enableGlobalVirtualStore: true
