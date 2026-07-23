@@ -1,5 +1,5 @@
 diff --git a/apps/server/src/assets/AssetAccess.ts b/apps/server/src/assets/AssetAccess.ts
-index b469e0e31..34c46b2e0 100644
+index b469e0e315b888f6bdba7b901816cde39611800b..34c46b2e00b7e74a8c51e279e582bfb04446c467 100644
 --- a/apps/server/src/assets/AssetAccess.ts
 +++ b/apps/server/src/assets/AssetAccess.ts
 @@ -163,7 +163,7 @@ const resolveCanonicalWorkspaceFileForRequest = (input: {
@@ -13,7 +13,7 @@ index b469e0e31..34c46b2e0 100644
    const fileSystem = yield* FileSystem.FileSystem;
 diff --git a/apps/server/src/assets/ThreadArtifactResolver.test.ts b/apps/server/src/assets/ThreadArtifactResolver.test.ts
 new file mode 100644
-index 000000000..6177b8385
+index 0000000000000000000000000000000000000000..6177b83856f893ad8d2350e156d63dbbda9ba1d0
 --- /dev/null
 +++ b/apps/server/src/assets/ThreadArtifactResolver.test.ts
 @@ -0,0 +1,153 @@
@@ -172,7 +172,7 @@ index 000000000..6177b8385
 +});
 diff --git a/apps/server/src/assets/ThreadArtifactResolver.ts b/apps/server/src/assets/ThreadArtifactResolver.ts
 new file mode 100644
-index 000000000..4e8e3a707
+index 0000000000000000000000000000000000000000..4e8e3a707857bbf82a720a79368055db29946691
 --- /dev/null
 +++ b/apps/server/src/assets/ThreadArtifactResolver.ts
 @@ -0,0 +1,106 @@
@@ -283,7 +283,7 @@ index 000000000..4e8e3a707
 +  return matches.size === 1 ? (matches.values().next().value ?? null) : null;
 +}
 diff --git a/apps/server/src/ws.ts b/apps/server/src/ws.ts
-index f6f46d1e7..363544c12 100644
+index f6f46d1e76ed2fc319b8fa9a3ba0d43b370fa3da..363544c1217fa8f3663390cbaed7907e6f1f40f0 100644
 --- a/apps/server/src/ws.ts
 +++ b/apps/server/src/ws.ts
 @@ -5,6 +5,7 @@ import * as Duration from "effect/Duration";
@@ -365,7 +365,7 @@ index f6f46d1e7..363544c12 100644
                }
 diff --git a/apps/web/src/components/ChatMarkdown.logic.test.ts b/apps/web/src/components/ChatMarkdown.logic.test.ts
 new file mode 100644
-index 000000000..cece699f7
+index 0000000000000000000000000000000000000000..cece699f733c5b9098ec282dfc5bcce0392483b2
 --- /dev/null
 +++ b/apps/web/src/components/ChatMarkdown.logic.test.ts
 @@ -0,0 +1,20 @@
@@ -391,7 +391,7 @@ index 000000000..cece699f7
 +});
 diff --git a/apps/web/src/components/ChatMarkdown.logic.ts b/apps/web/src/components/ChatMarkdown.logic.ts
 new file mode 100644
-index 000000000..42556ab87
+index 0000000000000000000000000000000000000000..42556ab87f5c73c2e82d203659432b996fa7a7bf
 --- /dev/null
 +++ b/apps/web/src/components/ChatMarkdown.logic.ts
 @@ -0,0 +1,12 @@
@@ -408,7 +408,7 @@ index 000000000..42556ab87
 +    : null;
 +}
 diff --git a/apps/web/src/components/ChatMarkdown.tsx b/apps/web/src/components/ChatMarkdown.tsx
-index fac3bf7d2..027af0bd1 100644
+index fac3bf7d24559ab737841ebd8055c574c295e287..027af0bd10ef494ab10b9b378d771fb670c8dd57 100644
 --- a/apps/web/src/components/ChatMarkdown.tsx
 +++ b/apps/web/src/components/ChatMarkdown.tsx
 @@ -9,7 +9,7 @@ import {
@@ -595,7 +595,7 @@ index fac3bf7d2..027af0bd1 100644
        openExternalLinkInPreview,
        openMarkdownFileInPreview,
 diff --git a/apps/web/src/components/chat/MessagesTimeline.test.tsx b/apps/web/src/components/chat/MessagesTimeline.test.tsx
-index c0b41527f..1b47b2a2e 100644
+index c0b41527fa5246c235e045786ec7a49d37b559cc..1b47b2a2e893fa67eddfae2c3b29b8c63bed5a06 100644
 --- a/apps/web/src/components/chat/MessagesTimeline.test.tsx
 +++ b/apps/web/src/components/chat/MessagesTimeline.test.tsx
 @@ -222,6 +222,23 @@ function buildUserTimelineEntry(text: string) {
@@ -646,7 +646,7 @@ index c0b41527f..1b47b2a2e 100644
      const {
        resolveTimelineIsAtEnd,
 diff --git a/apps/web/src/components/chat/MessagesTimeline.tsx b/apps/web/src/components/chat/MessagesTimeline.tsx
-index 225d2a531..0c996e7af 100644
+index 225d2a5317748d96b16f2e4c11baf6f2f7d5f5ac..0c996e7af08cc7b32f6d68f447a738259fcb324f 100644
 --- a/apps/web/src/components/chat/MessagesTimeline.tsx
 +++ b/apps/web/src/components/chat/MessagesTimeline.tsx
 @@ -1028,6 +1028,9 @@ function AssistantTimelineRow({ row }: { row: Extract<TimelineRow, { kind: "mess
@@ -660,7 +660,7 @@ index 225d2a531..0c996e7af 100644
            skills={ctx.skills}
          />
 diff --git a/packages/contracts/src/assets.ts b/packages/contracts/src/assets.ts
-index 0dbe7d9fa..51f416779 100644
+index 0dbe7d9fa259127aa65c56f39cf85d3dc88d22b2..51f416779a8b9fe2605463a1b39e4bce68fcdcdc 100644
 --- a/packages/contracts/src/assets.ts
 +++ b/packages/contracts/src/assets.ts
 @@ -1,6 +1,6 @@

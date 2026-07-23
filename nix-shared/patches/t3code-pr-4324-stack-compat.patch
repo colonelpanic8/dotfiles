@@ -1,8 +1,20 @@
+diff --git a/apps/desktop/src/settings/DesktopClientSettings.test.ts b/apps/desktop/src/settings/DesktopClientSettings.test.ts
+index 8f50aa8f88284e86860ebbc9e070357e5a344c2f..2e1df03106fa33d176ef4aa9e7e7519e804042a7 100644
+--- a/apps/desktop/src/settings/DesktopClientSettings.test.ts
++++ b/apps/desktop/src/settings/DesktopClientSettings.test.ts
+@@ -30,6 +30,7 @@ const clientSettings: ClientSettings = {
+   sidebarThreadSortOrder: "created_at",
+   sidebarThreadPreviewCount: 6,
+   sidebarV2Enabled: false,
++  sidebarV2LargeIcons: false,
+   timestampFormat: "24-hour",
+   wordWrap: true,
+ };
 diff --git a/apps/web/src/components/SidebarV2.tsx b/apps/web/src/components/SidebarV2.tsx
-index dd05e2d8204602e089cd621d894f94a2977ff3c2..d4905b1bd0fb6d927730d3f9c92ea2c02d4e1cee 100644
+index f75e42ec1a3327f47ab7ff0910e77a7bccde9d42..b6d508a15541ec92f710c365fd62cfe00aa0aadd 100644
 --- a/apps/web/src/components/SidebarV2.tsx
 +++ b/apps/web/src/components/SidebarV2.tsx
-@@ -334,6 +334,7 @@ const SidebarV2Row = memo(function SidebarV2Row(props: {
+@@ -385,6 +385,7 @@ const SidebarV2Row = memo(function SidebarV2Row(props: {
    const lastVisitedAt = useUiStateStore((state) => state.threadLastVisitedAtById[threadKey]);
    const isSelected = useThreadSelectionStore((state) => state.selectedThreadKeys.has(threadKey));
    const openPrLink = useOpenPrLink();
@@ -10,7 +22,7 @@ index dd05e2d8204602e089cd621d894f94a2977ff3c2..d4905b1bd0fb6d927730d3f9c92ea2c0
  
    // Same semantics as v1 (never-visited counts as read): flipping the beta
    // flag must not light up every historical thread as unread.
-@@ -626,7 +627,7 @@ const SidebarV2Row = memo(function SidebarV2Row(props: {
+@@ -695,7 +696,7 @@ const SidebarV2Row = memo(function SidebarV2Row(props: {
                <ProjectFavicon
                  environmentId={thread.environmentId}
                  cwd={props.projectCwd ?? ""}
@@ -19,7 +31,7 @@ index dd05e2d8204602e089cd621d894f94a2977ff3c2..d4905b1bd0fb6d927730d3f9c92ea2c0
                  fallbackIcon={MessageSquareIcon}
                />
              </span>
-@@ -693,89 +694,107 @@ const SidebarV2Row = memo(function SidebarV2Row(props: {
+@@ -762,99 +763,117 @@ const SidebarV2Row = memo(function SidebarV2Row(props: {
              />
            }
          >
@@ -39,7 +51,12 @@ index dd05e2d8204602e089cd621d894f94a2977ff3c2..d4905b1bd0fb6d927730d3f9c92ea2c0
 +                className="size-14 shrink-0"
                />
 -              {props.projectTitle ? (
--                <span className="min-w-0 flex-1 truncate text-xs font-medium text-muted-foreground/85">
+-                <span
+-                  className={cn(
+-                    "min-w-0 flex-1 truncate text-xs text-muted-foreground/85",
+-                    shouldRecede ? "font-normal" : "font-medium",
+-                  )}
+-                >
 -                  {props.projectTitle}
 -                </span>
 -              ) : (
@@ -47,15 +64,19 @@ index dd05e2d8204602e089cd621d894f94a2977ff3c2..d4905b1bd0fb6d927730d3f9c92ea2c0
 -              )}
 -              <span className="relative ml-auto flex h-5 min-w-8 shrink-0 items-center justify-end pl-1 text-xs">
 -                <span className="tabular-nums text-muted-foreground/65 transition-opacity group-hover/v2-row:opacity-0">
--                  {props.jumpLabel ? (
--                    props.jumpLabel
--                  ) : topStatus ? (
+-                  {topStatus ? (
 -                    <span
--                      role="status"
 -                      className={cn(
 -                        "inline-flex items-center gap-1 font-medium",
 -                        topStatus.className,
 -                      )}
+-                    >
+-                      {topStatus.icon === "working" ? (
+-                        <CircleDashedIcon aria-hidden className="size-4 shrink-0" />
+-                      ) : topStatus.icon === "done" ? (
+-                        <CircleCheckIcon aria-hidden className="size-4 shrink-0" />
+-                      ) : null}
+-                      {/* The label alone is the live region: a role="status"
 +            ) : null}
 +            <div className={cn(largeIcons && "min-w-0 flex-1")}>
 +              <div className="flex h-5 min-w-0 items-center gap-1.5">
@@ -67,7 +88,12 @@ index dd05e2d8204602e089cd621d894f94a2977ff3c2..d4905b1bd0fb6d927730d3f9c92ea2c0
 +                  />
 +                )}
 +                {props.projectTitle ? (
-+                  <span className="min-w-0 flex-1 truncate text-xs font-medium text-muted-foreground/85">
++                  <span
++                    className={cn(
++                      "min-w-0 flex-1 truncate text-xs text-muted-foreground/85",
++                      shouldRecede ? "font-normal" : "font-medium",
++                    )}
++                  >
 +                    {props.projectTitle}
 +                  </span>
 +                ) : (
@@ -75,11 +101,8 @@ index dd05e2d8204602e089cd621d894f94a2977ff3c2..d4905b1bd0fb6d927730d3f9c92ea2c0
 +                )}
 +                <span className="relative ml-auto flex h-5 min-w-8 shrink-0 items-center justify-end pl-1 text-xs">
 +                  <span className="tabular-nums text-muted-foreground/65 transition-opacity group-hover/v2-row:opacity-0">
-+                    {props.jumpLabel ? (
-+                      props.jumpLabel
-+                    ) : topStatus ? (
++                    {topStatus ? (
 +                      <span
-+                        role="status"
 +                        className={cn(
 +                          "inline-flex items-center gap-1 font-medium",
 +                          topStatus.className,
@@ -90,25 +113,15 @@ index dd05e2d8204602e089cd621d894f94a2977ff3c2..d4905b1bd0fb6d927730d3f9c92ea2c0
 +                        ) : topStatus.icon === "done" ? (
 +                          <CircleCheckIcon aria-hidden className="size-4 shrink-0" />
 +                        ) : null}
-+                        {topStatus.label}
-+                      </span>
-+                    ) : (
-+                      threadTimeLabel(thread)
-+                    )}
-+                  </span>
-+                  {props.settlementSupported ? (
-+                    <button
-+                      type="button"
-+                      aria-label="Settle thread"
-+                      onClick={handleSettleClick}
-+                      className="absolute inset-y-0 right-0 inline-flex cursor-pointer items-center gap-1 rounded-md bg-transparent px-2 text-xs text-muted-foreground opacity-0 transition-opacity hover:text-foreground focus-visible:opacity-100 group-hover/v2-row:opacity-100"
-                     >
--                      {topStatus.icon === "working" ? (
--                        <CircleDashedIcon aria-hidden className="size-4 shrink-0" />
--                      ) : topStatus.icon === "done" ? (
--                        <CircleCheckIcon aria-hidden className="size-4 shrink-0" />
++                        {/* The label alone is the live region: a role="status"
+                           wrapper around the ticking duration would make
+                           screen readers announce every second. */}
+-                      <span role="status">{topStatus.label}</span>
+-                      {status === "working" ? (
+-                        <span aria-hidden>
+-                          <WorkingDuration startedAt={resolveWorkingStartedAt(thread)} />
+-                        </span>
 -                      ) : null}
--                      {topStatus.label}
 -                    </span>
 -                  ) : (
 -                    threadTimeLabel(thread)
@@ -139,11 +152,7 @@ index dd05e2d8204602e089cd621d894f94a2977ff3c2..d4905b1bd0fb6d927730d3f9c92ea2c0
 -                <span className="shrink-0 font-mono">
 -                  <span className="text-emerald-600 dark:text-emerald-400">+{diff.insertions}</span>{" "}
 -                  <span className="text-red-600 dark:text-red-400">−{diff.deletions}</span>
-+                      <CheckIcon className="size-3" />
-+                      Settle
-+                    </button>
-+                  ) : null}
-                 </span>
+-                </span>
 -              ) : null}
 -              <span
 -                aria-hidden
@@ -152,7 +161,17 @@ index dd05e2d8204602e089cd621d894f94a2977ff3c2..d4905b1bd0fb6d927730d3f9c92ea2c0
 -                {isRemote ? (
 -                  <span className="inline-flex shrink-0 items-center text-sidebar-muted-foreground/70">
 -                    <ServerIcon aria-hidden className="size-3.5" />
--                  </span>
++                        <span role="status">{topStatus.label}</span>
++                        {status === "working" ? (
++                          <span aria-hidden>
++                            <WorkingDuration startedAt={resolveWorkingStartedAt(thread)} />
++                          </span>
++                        ) : null}
++                      </span>
++                    ) : (
++                      threadTimeLabel(thread)
++                    )}
+                   </span>
 -                ) : null}
 -                {driverKind ? (
 -                  <span className="inline-flex shrink-0 items-center opacity-60">
@@ -161,6 +180,18 @@ index dd05e2d8204602e089cd621d894f94a2977ff3c2..d4905b1bd0fb6d927730d3f9c92ea2c0
 -                      displayName={thread.session?.providerName ?? modelInstanceId}
 -                      iconClassName="size-3.5"
 -                    />
++                  {props.settlementSupported ? (
++                    <button
++                      type="button"
++                      aria-label="Settle thread"
++                      onClick={handleSettleClick}
++                      className="absolute inset-y-0 right-0 inline-flex cursor-pointer items-center gap-1 rounded-md bg-transparent px-2 text-xs text-muted-foreground opacity-0 transition-opacity hover:text-foreground focus-visible:opacity-100 group-hover/v2-row:opacity-100"
++                    >
++                      <CheckIcon className="size-3" />
++                      Settle
++                    </button>
++                  ) : null}
++                </span>
 +              </div>
 +              <div className="mt-1 flex min-w-0">{title}</div>
 +              <div className="mt-0.5 flex min-w-0 items-center gap-1.5 text-xs text-muted-foreground/75">
@@ -201,7 +232,7 @@ index dd05e2d8204602e089cd621d894f94a2977ff3c2..d4905b1bd0fb6d927730d3f9c92ea2c0
 +              </div>
              </div>
            </div>
-         </TooltipTrigger>
+           {props.jumpLabel ? <JumpHintBadge label={props.jumpLabel} /> : null}
 diff --git a/apps/web/src/components/settings/BetaSettingsPanel.tsx b/apps/web/src/components/settings/BetaSettingsPanel.tsx
 index 942bd374d911fcd367928be65f6ab063b79e01c0..471db53ee975e232a44958664bc3702bc196d814 100644
 --- a/apps/web/src/components/settings/BetaSettingsPanel.tsx
@@ -235,10 +266,10 @@ index 942bd374d911fcd367928be65f6ab063b79e01c0..471db53ee975e232a44958664bc3702b
                title="Auto-settle inactive threads"
                description="Threads with no activity for this long settle automatically. Threads on merged or closed PRs always settle."
 diff --git a/packages/contracts/src/settings.test.ts b/packages/contracts/src/settings.test.ts
-index 463086c25493fff45bc9836fd8b4ded0a0154c98..4fa5cc2964bd2cf57cc0b447d70c08a3bb848c6e 100644
+index e8eaf723e174d4ab43583171f361f753bccadf7d..2b50b0c5a0d56826aa8a08e00647b6d077df7d20 100644
 --- a/packages/contracts/src/settings.test.ts
 +++ b/packages/contracts/src/settings.test.ts
-@@ -71,6 +71,10 @@ describe("ClientSettings sidebar v2", () => {
+@@ -56,6 +56,10 @@ describe("ClientSettings sidebar v2", () => {
      expect(settings.sidebarAutoSettleAfterDays).toBe(3);
    });
  
@@ -250,10 +281,10 @@ index 463086c25493fff45bc9836fd8b4ded0a0154c98..4fa5cc2964bd2cf57cc0b447d70c08a3
      expect(
        decodeClientSettings({ sidebarAutoSettleAfterDays: null }).sidebarAutoSettleAfterDays,
 diff --git a/packages/contracts/src/settings.ts b/packages/contracts/src/settings.ts
-index 5c9abc0a657fec1d6f966cd1433bb90c186d9231..8c72789069ea01c95285b9e0386090f743e4755b 100644
+index 06f7de3db67ab84491da572825506da9f7d2623f..47ebdd747a3eed919c6efd045c07a0adf0038bdd 100644
 --- a/packages/contracts/src/settings.ts
 +++ b/packages/contracts/src/settings.ts
-@@ -122,6 +122,7 @@ export const ClientSettingsSchema = Schema.Struct({
+@@ -115,6 +115,7 @@ export const ClientSettingsSchema = Schema.Struct({
      Schema.withDecodingDefault(Effect.succeed(DEFAULT_SIDEBAR_THREAD_PREVIEW_COUNT)),
    ),
    sidebarV2Enabled: Schema.Boolean.pipe(Schema.withDecodingDefault(Effect.succeed(false))),
@@ -261,7 +292,7 @@ index 5c9abc0a657fec1d6f966cd1433bb90c186d9231..8c72789069ea01c95285b9e0386090f7
    timestampFormat: TimestampFormat.pipe(
      Schema.withDecodingDefault(Effect.succeed(DEFAULT_TIMESTAMP_FORMAT)),
    ),
-@@ -612,6 +613,7 @@ export const ClientSettingsPatch = Schema.Struct({
+@@ -604,6 +605,7 @@ export const ClientSettingsPatch = Schema.Struct({
    sidebarThreadSortOrder: Schema.optionalKey(SidebarThreadSortOrder),
    sidebarThreadPreviewCount: Schema.optionalKey(SidebarThreadPreviewCount),
    sidebarV2Enabled: Schema.optionalKey(Schema.Boolean),
@@ -269,16 +300,3 @@ index 5c9abc0a657fec1d6f966cd1433bb90c186d9231..8c72789069ea01c95285b9e0386090f7
    timestampFormat: Schema.optionalKey(TimestampFormat),
    wordWrap: Schema.optionalKey(Schema.Boolean),
  });
-
-diff --git a/apps/desktop/src/settings/DesktopClientSettings.test.ts b/apps/desktop/src/settings/DesktopClientSettings.test.ts
-index 147cf99f4..dc3fe1d37 100644
---- a/apps/desktop/src/settings/DesktopClientSettings.test.ts
-+++ b/apps/desktop/src/settings/DesktopClientSettings.test.ts
-@@ -31,6 +31,7 @@ const clientSettings: ClientSettings = {
-   sidebarThreadSortOrder: "created_at",
-   sidebarThreadPreviewCount: 6,
-   sidebarV2Enabled: false,
-+  sidebarV2LargeIcons: false,
-   timestampFormat: "24-hour",
-   wordWrap: true,
- };

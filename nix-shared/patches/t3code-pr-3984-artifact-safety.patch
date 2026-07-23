@@ -1,5 +1,5 @@
 diff --git a/apps/server/src/assets/AssetAccess.test.ts b/apps/server/src/assets/AssetAccess.test.ts
-index 42fd3f900..5b99debf4 100644
+index 42fd3f900e5a91622717139f0f48a84df145747d..5b99debf433c3e66c661cc8d40c28d4edc15cadc 100644
 --- a/apps/server/src/assets/AssetAccess.test.ts
 +++ b/apps/server/src/assets/AssetAccess.test.ts
 @@ -1,5 +1,5 @@
@@ -124,7 +124,7 @@ index 42fd3f900..5b99debf4 100644
      Effect.gen(function* () {
        const config = yield* ServerConfig.ServerConfig;
 diff --git a/apps/server/src/assets/AssetAccess.ts b/apps/server/src/assets/AssetAccess.ts
-index 34c46b2e0..1bdaf9c4f 100644
+index 34c46b2e00b7e74a8c51e279e582bfb04446c467..1bdaf9c4fa4b3b5dde07434cbaab73ac5ef9d912 100644
 --- a/apps/server/src/assets/AssetAccess.ts
 +++ b/apps/server/src/assets/AssetAccess.ts
 @@ -39,6 +39,7 @@ import { resolveAttachmentPathById } from "../attachmentStore.ts";
@@ -178,7 +178,7 @@ index 34c46b2e0..1bdaf9c4f 100644
    token: string,
    relativePath: string,
 diff --git a/apps/server/src/assets/ThreadArtifactResolver.test.ts b/apps/server/src/assets/ThreadArtifactResolver.test.ts
-index 6177b8385..72dc287fe 100644
+index 6177b83856f893ad8d2350e156d63dbbda9ba1d0..72dc287fe56c5fef039ba834ec9347e4ac5bf9d8 100644
 --- a/apps/server/src/assets/ThreadArtifactResolver.test.ts
 +++ b/apps/server/src/assets/ThreadArtifactResolver.test.ts
 @@ -3,6 +3,7 @@ import { describe, expect, it } from "vite-plus/test";
@@ -310,7 +310,7 @@ index 6177b8385..72dc287fe 100644
  
    it("ignores matching artifacts from other turns and unknown messages", () => {
 diff --git a/apps/server/src/assets/ThreadArtifactResolver.ts b/apps/server/src/assets/ThreadArtifactResolver.ts
-index 4e8e3a707..315684c22 100644
+index 4e8e3a707857bbf82a720a79368055db29946691..315684c220109bd79bda2b44a6c0c8bd33db31cc 100644
 --- a/apps/server/src/assets/ThreadArtifactResolver.ts
 +++ b/apps/server/src/assets/ThreadArtifactResolver.ts
 @@ -1,5 +1,7 @@
@@ -450,7 +450,7 @@ index 4e8e3a707..315684c22 100644
      }
    }
 diff --git a/apps/server/src/ws.ts b/apps/server/src/ws.ts
-index 363544c12..580ecb1a0 100644
+index 363544c1217fa8f3663390cbaed7907e6f1f40f0..580ecb1a0c32ae6d00db54efa64f6465da2bf71c 100644
 --- a/apps/server/src/ws.ts
 +++ b/apps/server/src/ws.ts
 @@ -5,7 +5,6 @@ import * as Duration from "effect/Duration";

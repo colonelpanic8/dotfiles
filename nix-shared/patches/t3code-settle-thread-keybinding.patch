@@ -1,5 +1,5 @@
 diff --git a/apps/web/src/components/SidebarV2.tsx b/apps/web/src/components/SidebarV2.tsx
-index 4098da8ac09b073872ffd524ff141c8c68a2827b..dd05e2d8204602e089cd621d894f94a2977ff3c2 100644
+index a7747a348772bf6a7b4365c2554d6addf8ed9e4e..f75e42ec1a3327f47ab7ff0910e77a7bccde9d42 100644
 --- a/apps/web/src/components/SidebarV2.tsx
 +++ b/apps/web/src/components/SidebarV2.tsx
 @@ -1,6 +1,6 @@
@@ -23,13 +23,13 @@ index 4098da8ac09b073872ffd524ff141c8c68a2827b..dd05e2d8204602e089cd621d894f94a2
  } from "../keybindings";
  import { useShortcutModifierState } from "../shortcutModifierState";
  import { isTerminalFocused } from "../lib/terminalFocus";
-@@ -74,10 +73,19 @@ import { legacyProjectCwdPreferenceKey, useUiStateStore } from "../uiStateStore"
- import { useThreadSelectionStore } from "../threadSelectionStore";
+@@ -76,10 +75,19 @@ import { useThreadSelectionStore } from "../threadSelectionStore";
+ import { useSidebarProjectScopeStore } from "../sidebarProjectScopeStore";
  import { useThreadActions } from "../hooks/useThreadActions";
  import { useHandleNewThread } from "../hooks/useHandleNewThread";
 -import { openCommandPalette } from "../commandPaletteBus";
 +import { isCommandPaletteOpen, openCommandPalette } from "../commandPaletteBus";
- import { startNewThreadFromContext } from "../lib/chatThreadActions";
+ import { resolveThreadActionProjectRef, startNewThreadFromContext } from "../lib/chatThreadActions";
  import { useClientSettings, useUpdateClientSettings } from "../hooks/useSettings";
  import { useCopyToClipboard } from "../hooks/useCopyToClipboard";
 +import {
@@ -44,28 +44,33 @@ index 4098da8ac09b073872ffd524ff141c8c68a2827b..dd05e2d8204602e089cd621d894f94a2
  import { useEnvironments, usePrimaryEnvironmentId } from "../state/environments";
  import { useProjects, useThreadShells } from "../state/entities";
  import { environmentServerConfigsAtom, primaryServerKeybindingsAtom } from "../state/server";
-@@ -92,14 +100,19 @@ import type { SidebarThreadSummary } from "../types";
+@@ -94,17 +102,24 @@ import type { SidebarThreadSummary } from "../types";
  import { cn } from "~/lib/utils";
  import {
-   firstValidTimestampMs,
+   formatWorkingDurationLabel,
 +  getSidebarThreadKeysNeedingChangeRequestReporter,
    hasUnseenCompletion,
 +  isSidebarThreadEffectivelySettled,
    isTrailingDoubleClick,
    orderItemsByPreferredIds,
 -  resolveAdjacentThreadId,
+   resolveSettledTimestamp,
 +  pruneSidebarChangeRequestStates,
 +  resolveNextActiveThreadIdAfterSettle,
 +  resolveSidebarThreadGitCwd,
    resolveSidebarV2Status,
+   resolveWorkingStartedAt,
++  shouldPublishSidebarChangeRequestState,
++  shouldQuerySidebarThreadGitStatus,
    shouldNavigateAfterProjectRemoval,
    sortLogicalProjectsForSidebar,
+   sortSettledThreadsForSidebarV2,
    sortThreadsForSidebarV2,
 +  shouldDismissThreadSettleConfirmation,
  } from "./Sidebar.logic";
  import { resolveLocalCheckoutBranchMismatch } from "./BranchToolbar.logic";
  import { prStatusIndicator, resolveThreadPr } from "./ThreadStatusIndicators";
-@@ -132,6 +145,40 @@ import { useComposerDraftStore } from "../composerDraftStore";
+@@ -137,6 +152,46 @@ import { useComposerDraftStore } from "../composerDraftStore";
  // Settled-tail paging: recent history is the common lookup; the deep tail
  // stays behind an explicit Show more.
  const SETTLED_TAIL_INITIAL_COUNT = 10;
@@ -83,7 +88,12 @@ index 4098da8ac09b073872ffd524ff141c8c68a2827b..dd05e2d8204602e089cd621d894f94a2
 +    sidebarProjectCwd: null,
 +  });
 +  const gitStatus = useEnvironmentQuery(
-+    (thread.branch != null || thread.worktreePath !== null) && gitCwd !== null
++    gitCwd !== null &&
++      shouldQuerySidebarThreadGitStatus({
++        branch: thread.branch,
++        worktreePath: thread.worktreePath,
++        gitCwd,
++      })
 +      ? vcsEnvironment.status({
 +          environmentId: thread.environmentId,
 +          input: { cwd: gitCwd },
@@ -98,15 +108,16 @@ index 4098da8ac09b073872ffd524ff141c8c68a2827b..dd05e2d8204602e089cd621d894f94a2
 +    })?.state ?? null;
 +
 +  useEffect(() => {
++    if (!shouldPublishSidebarChangeRequestState(gitStatus.isPending)) return;
 +    onChangeRequestState(threadKey, prState);
-+  }, [onChangeRequestState, prState, threadKey]);
++  }, [gitStatus.isPending, onChangeRequestState, prState, threadKey]);
 +
 +  return null;
 +}
  const SETTLED_TAIL_PAGE_COUNT = 25;
  const PROJECT_GROUPING_MODE_LABELS: Record<SidebarProjectGroupingMode, string> = {
    repository: "Group by repository",
-@@ -330,7 +377,11 @@ const SidebarV2Row = memo(function SidebarV2Row(props: {
+@@ -381,9 +436,18 @@ const SidebarV2Row = memo(function SidebarV2Row(props: {
                  }
                : null;
  
@@ -117,9 +128,28 @@ index 4098da8ac09b073872ffd524ff141c8c68a2827b..dd05e2d8204602e089cd621d894f94a2
 +    sidebarProjectCwd: null,
 +  });
    const gitStatus = useEnvironmentQuery(
-     (thread.branch != null || thread.worktreePath !== null) && gitCwd !== null
+-    (thread.branch != null || thread.worktreePath !== null) && gitCwd !== null
++    gitCwd !== null &&
++      shouldQuerySidebarThreadGitStatus({
++        branch: thread.branch,
++        worktreePath: thread.worktreePath,
++        gitCwd,
++      })
        ? vcsEnvironment.status({
-@@ -1107,8 +1158,24 @@ export default function SidebarV2() {
+           environmentId: thread.environmentId,
+           input: { cwd: gitCwd },
+@@ -406,8 +470,9 @@ const SidebarV2Row = memo(function SidebarV2Row(props: {
+   // and a merged/closed PR auto-settles a thread — data only rows have.
+   const prState = pr?.state ?? null;
+   useEffect(() => {
++    if (!shouldPublishSidebarChangeRequestState(gitStatus.isPending)) return;
+     onChangeRequestState(threadKey, prState);
+-  }, [onChangeRequestState, prState, threadKey]);
++  }, [gitStatus.isPending, onChangeRequestState, prState, threadKey]);
+ 
+   const modelInstanceId = thread.session?.providerInstanceId ?? thread.modelSelection.instanceId;
+   const providerEntry = props.providerEntryByInstanceId.get(modelInstanceId) ?? null;
+@@ -1174,8 +1239,24 @@ export default function SidebarV2() {
    // merging, no optimistic holds. Archived threads remain hidden here —
    // archive keeps its original "remove from sidebar" meaning.
    const serverConfigs = useAtomValue(environmentServerConfigsAtom);
@@ -145,7 +175,7 @@ index 4098da8ac09b073872ffd524ff141c8c68a2827b..dd05e2d8204602e089cd621d894f94a2
      const visible = threads.filter(
        (thread) =>
          thread.archivedAt === null &&
-@@ -1122,14 +1189,7 @@ export default function SidebarV2() {
+@@ -1189,14 +1270,7 @@ export default function SidebarV2() {
        // or descriptor not loaded yet) never classify as settled: the user
        // could neither un-settle nor pin them, so auto-settling them would
        // strand rows in a tail with no working affordances.
@@ -161,9 +191,9 @@ index 4098da8ac09b073872ffd524ff141c8c68a2827b..dd05e2d8204602e089cd621d894f94a2
          settled.push(thread);
        } else {
          active.push(thread);
-@@ -1143,14 +1203,7 @@ export default function SidebarV2() {
-           firstValidTimestampMs(left.latestUserMessageAt, left.updatedAt),
-       ),
+@@ -1206,14 +1280,7 @@ export default function SidebarV2() {
+       activeThreads: sortThreadsForSidebarV2(active),
+       settledThreads: sortSettledThreadsForSidebarV2(settled),
      };
 -  }, [
 -    autoSettleAfterDays,
@@ -177,7 +207,7 @@ index 4098da8ac09b073872ffd524ff141c8c68a2827b..dd05e2d8204602e089cd621d894f94a2
  
    // The settled tail renders in pages: history shouldn't dominate the
    // sidebar, and the common lookups are recent. Expansion resets when the
-@@ -1190,6 +1243,43 @@ export default function SidebarV2() {
+@@ -1253,6 +1320,43 @@ export default function SidebarV2() {
    // rendered at click time.
    const orderedThreadKeysRef = useRef(orderedThreadKeys);
    orderedThreadKeysRef.current = orderedThreadKeys;
@@ -221,7 +251,7 @@ index 4098da8ac09b073872ffd524ff141c8c68a2827b..dd05e2d8204602e089cd621d894f94a2
    const threadByKey = useMemo(
      () =>
        new Map(
-@@ -1200,6 +1290,16 @@ export default function SidebarV2() {
+@@ -1263,6 +1367,16 @@ export default function SidebarV2() {
        ),
      [orderedThreads],
    );
@@ -238,7 +268,7 @@ index 4098da8ac09b073872ffd524ff141c8c68a2827b..dd05e2d8204602e089cd621d894f94a2
    // Handlers read these through refs: depending on per-update Map/Set
    // identities would give every row a fresh callback prop on each shell
    // event and defeat row memoization during streaming.
-@@ -1220,6 +1320,10 @@ export default function SidebarV2() {
+@@ -1283,6 +1397,10 @@ export default function SidebarV2() {
    );
    const settledThreadKeysRef = useRef(settledThreadKeys);
    settledThreadKeysRef.current = settledThreadKeys;
@@ -249,7 +279,7 @@ index 4098da8ac09b073872ffd524ff141c8c68a2827b..dd05e2d8204602e089cd621d894f94a2
  
    const jumpLabelByKey = useMemo(() => {
      const mapping = new Map<string, string>();
-@@ -1321,26 +1425,30 @@ export default function SidebarV2() {
+@@ -1384,26 +1502,30 @@ export default function SidebarV2() {
          const threadKey = scopedThreadKey(threadRef);
          if (settlingThreadKeysRef.current.has(threadKey)) return;
          settlingThreadKeysRef.current.add(threadKey);
@@ -292,7 +322,7 @@ index 4098da8ac09b073872ffd524ff141c8c68a2827b..dd05e2d8204602e089cd621d894f94a2
              navigateAfterSettle = nextThread
                ? () => navigateToThread(scopeThreadRef(nextThread.environmentId, nextThread.id))
                : shell
-@@ -1598,6 +1706,7 @@ export default function SidebarV2() {
+@@ -1661,6 +1783,7 @@ export default function SidebarV2() {
    useEffect(() => {
      const onWindowKeyDown = (event: KeyboardEvent) => {
        if (event.defaultPrevented || event.repeat) return;
@@ -300,7 +330,7 @@ index 4098da8ac09b073872ffd524ff141c8c68a2827b..dd05e2d8204602e089cd621d894f94a2
        const command = resolveShortcutCommand(event, keybindings, {
          platform: navigator.platform,
          context: {
-@@ -1606,41 +1715,76 @@ export default function SidebarV2() {
+@@ -1669,41 +1792,76 @@ export default function SidebarV2() {
            modelPickerOpen: isModelPickerOpen(),
          },
        });
@@ -395,7 +425,7 @@ index 4098da8ac09b073872ffd524ff141c8c68a2827b..dd05e2d8204602e089cd621d894f94a2
    // Same predicate as v1: hints show only while the held modifiers exactly
    // match a thread-jump binding. Adding Shift (screenshots) or Alt no
    // longer matches ⌘1..9, so the overlay hides for chords like ⌘⇧4.
-@@ -1692,6 +1836,19 @@ export default function SidebarV2() {
+@@ -1762,6 +1920,19 @@ export default function SidebarV2() {
      shortcutLabelForCommand(keybindings, "chat.new");
    return (
      <>
@@ -415,7 +445,7 @@ index 4098da8ac09b073872ffd524ff141c8c68a2827b..dd05e2d8204602e089cd621d894f94a2
        <SidebarChromeHeader isElectron={isElectron} />
        <SidebarContent className="gap-0">
          <SidebarGroup className="px-2 pb-2 pt-3">
-@@ -2138,6 +2295,30 @@ export default function SidebarV2() {
+@@ -2207,6 +2378,30 @@ export default function SidebarV2() {
          </DialogPopup>
        </Dialog>
        <SidebarChromeFooter />
@@ -447,7 +477,7 @@ index 4098da8ac09b073872ffd524ff141c8c68a2827b..dd05e2d8204602e089cd621d894f94a2
    );
  }
 diff --git a/apps/web/src/keybindings.test.ts b/apps/web/src/keybindings.test.ts
-index de0f72c4bc684886d1d4a4150965d9896cd64296..679f539eb1a6098d4485cb409920920dc4a090c0 100644
+index faed2f439dd86eceb1ed18ec294dc55a110f8884..d9e175af23973415dd61a5edbf9b456394f6963b 100644
 --- a/apps/web/src/keybindings.test.ts
 +++ b/apps/web/src/keybindings.test.ts
 @@ -1,4 +1,4 @@
@@ -456,15 +486,15 @@ index de0f72c4bc684886d1d4a4150965d9896cd64296..679f539eb1a6098d4485cb409920920d
  
  import {
    type KeybindingCommand,
-@@ -22,6 +22,7 @@ import {
+@@ -21,6 +21,7 @@ import {
+   isTerminalSplitVerticalShortcut,
    isTerminalToggleShortcut,
-   resolveCustomShortcutCommand,
    resolveShortcutCommand,
 +  resolveThreadSidebarShortcutAction,
    shouldShowComposerControlHintsForModifiers,
    shouldShowCommandHintForModifiers,
    shouldShowModelPickerJumpHints,
-@@ -173,6 +174,11 @@ const DEFAULT_BINDINGS = compile([
+@@ -170,6 +171,11 @@ const DEFAULT_BINDINGS = compile([
      whenAst: whenNot(whenIdentifier("terminalFocus")),
    },
    { shortcut: modShortcut("o"), command: "editor.openFavorite" },
@@ -476,7 +506,7 @@ index de0f72c4bc684886d1d4a4150965d9896cd64296..679f539eb1a6098d4485cb409920920d
    { shortcut: modShortcut("[", { shiftKey: true }), command: "thread.previous" },
    { shortcut: modShortcut("]", { shiftKey: true }), command: "thread.next" },
    { shortcut: modShortcut("1"), command: "thread.jump.1" },
-@@ -195,6 +201,88 @@ const DEFAULT_BINDINGS = compile([
+@@ -192,6 +198,88 @@ const DEFAULT_BINDINGS = compile([
    },
  ]);
  

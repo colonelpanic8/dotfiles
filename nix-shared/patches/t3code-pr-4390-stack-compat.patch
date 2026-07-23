@@ -1,14 +1,26 @@
 diff --git a/apps/server/src/persistence/Migrations.ts b/apps/server/src/persistence/Migrations.ts
-index 6843f59e..47155b2b 100644
+index 38325934f3e57ec87691add37ff061eb9395750a..466a65df85fec420dc8fea0c4fe59a40d26b6ba9 100644
 --- a/apps/server/src/persistence/Migrations.ts
 +++ b/apps/server/src/persistence/Migrations.ts
-@@ -95 +95 @@ const migrationEntries = [
+@@ -92,7 +92,7 @@ export const migrationEntries = [
+   [31, "AuthAuthorizationScopes", Migration0031],
+   [32, "AuthPairingProofKeyThumbprint", Migration0032],
+   [33, "ProjectionThreadsSettled", Migration0033],
 -  [34, "ProjectionThreadForkLineage", Migration0034],
 +  [35, "ProjectionThreadForkLineage", Migration0034],
+ ] as const;
+ 
+ export const makeMigrationLoader = (throughId?: number) =>
 diff --git a/apps/server/src/persistence/Migrations/034_ProjectionThreadForkLineage.test.ts b/apps/server/src/persistence/Migrations/034_ProjectionThreadForkLineage.test.ts
-index 14118598..34822047 100644
+index 3f6acff48d126fafab3c91c712be149b5288eb92..93b98a289fc6edec35360d86c2ce3a81e97a7780 100644
 --- a/apps/server/src/persistence/Migrations/034_ProjectionThreadForkLineage.test.ts
 +++ b/apps/server/src/persistence/Migrations/034_ProjectionThreadForkLineage.test.ts
-@@ -20 +20 @@ layer("034_ProjectionThreadForkLineage", (it) => {
+@@ -17,7 +17,7 @@ layer("034_ProjectionThreadForkLineage", (it) => {
+       const before = yield* sql<{ readonly name: string }>`PRAGMA table_info(projection_threads)`;
+       assert.isFalse(before.some((column) => column.name === "forked_from_thread_id"));
+ 
 -      yield* runMigrations({ toMigrationInclusive: 34 });
 +      yield* runMigrations({ toMigrationInclusive: 35 });
+       const columns = yield* sql<{ readonly name: string }>`PRAGMA table_info(projection_threads)`;
+       const indexes = yield* sql<{ readonly name: string }>`PRAGMA index_list(projection_threads)`;
+ 
