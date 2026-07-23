@@ -108,6 +108,18 @@
       url = "https://patch-diff.githubusercontent.com/raw/pingdotgg/t3code/pull/4324.diff";
       hash = "sha256-kODBBCjyhGyB98Dvtm5LHQ2msv1t/4PnYc1hlQCt0fM=";
     })
+    # Trigger the slash-command menu mid-prompt, not just at line start:
+    # t3code#4181 (head d95abc106cdd).
+    (final.fetchurl {
+      url = "https://patch-diff.githubusercontent.com/raw/pingdotgg/t3code/pull/4181.diff";
+      hash = "sha256-Lwjeh0D0bUKg9WX/asNArbwx8OTCx07DL75b01SzWZ0=";
+    })
+    # Claude provider skill discovery for the $ picker: t3code#4325
+    # (head 6802b6145e67).
+    (final.fetchurl {
+      url = "https://patch-diff.githubusercontent.com/raw/pingdotgg/t3code/pull/4325.diff";
+      hash = "sha256-e/eaLHEgkW33qunxRvK+W2uZjpqLo/uvssxYMOVz4AY=";
+    })
   ];
 
   t3codePatchedSource = final.applyPatches {
