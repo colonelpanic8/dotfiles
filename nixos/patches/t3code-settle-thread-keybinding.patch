@@ -1,5 +1,5 @@
 diff --git a/apps/web/src/components/SidebarV2.tsx b/apps/web/src/components/SidebarV2.tsx
-index c021f5829e02cf69b8610143941351aa84921002..d35a6e7ca961e96802d809ebad9c827ac52819bc 100644
+index c021f5829e02cf69b8610143941351aa84921002..d5d425f14b29d07030966454f920ef92f65241d8 100644
 --- a/apps/web/src/components/SidebarV2.tsx
 +++ b/apps/web/src/components/SidebarV2.tsx
 @@ -3 +3 @@ import { useAtomValue } from "@effect/atom-react";
@@ -24,14 +24,47 @@ index c021f5829e02cf69b8610143941351aa84921002..d35a6e7ca961e96802d809ebad9c827a
 +  AlertDialogTitle,
 +} from "./ui/alert-dialog";
 +import { Button } from "./ui/button";
-@@ -80,0 +90 @@ import {
+@@ -79,0 +89 @@ import {
++  getSidebarThreadKeysNeedingChangeRequestReporter,
+@@ -80,0 +91 @@ import {
 +  isSidebarThreadEffectivelySettled,
-@@ -82 +92 @@ import {
+@@ -82 +93 @@ import {
 -  resolveAdjacentThreadId,
 +  resolveNextActiveThreadIdAfterSettle,
-@@ -84,0 +95 @@ import {
+@@ -84,0 +96 @@ import {
 +  shouldDismissThreadSettleConfirmation,
-@@ -879,0 +891,17 @@ export default function SidebarV2() {
+@@ -109,0 +122,30 @@ const SETTLED_TAIL_INITIAL_COUNT = 10;
++
++function SidebarV2HiddenThreadChangeRequestStateReporter(props: {
++  thread: SidebarThreadSummary;
++  projectCwd: string | null;
++  onChangeRequestState: (threadKey: string, state: "open" | "closed" | "merged" | null) => void;
++}) {
++  const { thread, projectCwd, onChangeRequestState } = props;
++  const threadKey = scopedThreadKey(scopeThreadRef(thread.environmentId, thread.id));
++  const gitCwd = thread.worktreePath ?? projectCwd;
++  const gitStatus = useEnvironmentQuery(
++    (thread.branch != null || thread.worktreePath !== null) && gitCwd !== null
++      ? vcsEnvironment.status({
++          environmentId: thread.environmentId,
++          input: { cwd: gitCwd },
++        })
++      : null,
++  );
++  const prState =
++    resolveThreadPr({
++      threadBranch: thread.branch,
++      gitStatus: gitStatus.data,
++      hasDedicatedWorktree: thread.worktreePath !== null,
++    })?.state ?? null;
++
++  useEffect(() => {
++    onChangeRequestState(threadKey, prState);
++  }, [onChangeRequestState, prState, threadKey]);
++
++  return null;
++}
+@@ -879,0 +922,17 @@ export default function SidebarV2() {
 +  const isThreadEffectivelySettled = useCallback(
 +    (thread: SidebarThreadSummary) => {
 +      const threadKey = scopedThreadKey(scopeThreadRef(thread.environmentId, thread.id));
@@ -49,9 +82,9 @@ index c021f5829e02cf69b8610143941351aa84921002..d35a6e7ca961e96802d809ebad9c827a
 +  );
 +  const isThreadEffectivelySettledRef = useRef(isThreadEffectivelySettled);
 +  isThreadEffectivelySettledRef.current = isThreadEffectivelySettled;
-@@ -881 +908,0 @@ export default function SidebarV2() {
+@@ -881 +939,0 @@ export default function SidebarV2() {
 -    const now = `${nowMinute}:00.000Z`;
-@@ -896,8 +923 @@ export default function SidebarV2() {
+@@ -896,8 +954 @@ export default function SidebarV2() {
 -      const supportsSettlement =
 -        serverConfigs.get(thread.environmentId)?.environment.capabilities.threadSettlement === true;
 -      const threadKey = scopedThreadKey(scopeThreadRef(thread.environmentId, thread.id));
@@ -61,7 +94,7 @@ index c021f5829e02cf69b8610143941351aa84921002..d35a6e7ca961e96802d809ebad9c827a
 -        effectiveSettled(thread, { now, autoSettleAfterDays, changeRequestState })
 -      ) {
 +      if (isThreadEffectivelySettled(thread)) {
-@@ -917,8 +937 @@ export default function SidebarV2() {
+@@ -917,8 +968 @@ export default function SidebarV2() {
 -  }, [
 -    autoSettleAfterDays,
 -    changeRequestStateByKey,
@@ -71,7 +104,7 @@ index c021f5829e02cf69b8610143941351aa84921002..d35a6e7ca961e96802d809ebad9c827a
 -    threads,
 -  ]);
 +  }, [isThreadEffectivelySettled, scopedProject, threads]);
-@@ -963,0 +977,28 @@ export default function SidebarV2() {
+@@ -963,0 +1008,28 @@ export default function SidebarV2() {
 +  // Route actions are independent of the selected project chip. Keep every
 +  // live shell in stable creation order for eligibility, confirmation, and
 +  // post-settle fallback; rendered keyboard traversal stays scoped below.
@@ -100,17 +133,28 @@ index c021f5829e02cf69b8610143941351aa84921002..d35a6e7ca961e96802d809ebad9c827a
 +  );
 +  const allThreadByKeyRef = useRef(allThreadByKey);
 +  allThreadByKeyRef.current = allThreadByKey;
-@@ -993,0 +1035,4 @@ export default function SidebarV2() {
+@@ -973,0 +1046,10 @@ export default function SidebarV2() {
++  const visibleThreadKeySet = useMemo(() => new Set(orderedThreadKeys), [orderedThreadKeys]);
++  const hiddenChangeRequestReporterThreadKeys = useMemo(
++    () =>
++      getSidebarThreadKeysNeedingChangeRequestReporter(
++        allUnarchivedThreadKeys,
++        visibleThreadKeySet,
++        true,
++      ),
++    [allUnarchivedThreadKeys, visibleThreadKeySet],
++  );
+@@ -993,0 +1076,4 @@ export default function SidebarV2() {
 +  const [settleConfirmationThreadKey, setSettleConfirmationThreadKey] = useState<string | null>(
 +    null,
 +  );
 +  const settleConfirmationButtonRef = useRef<HTMLButtonElement>(null);
-@@ -1094,0 +1140 @@ export default function SidebarV2() {
+@@ -1094,0 +1181 @@ export default function SidebarV2() {
 +        setSettleConfirmationThreadKey((current) => (current === threadKey ? null : current));
-@@ -1101 +1147 @@ export default function SidebarV2() {
+@@ -1101 +1188 @@ export default function SidebarV2() {
 -          const shell = threadByKeyRef.current.get(threadKey);
 +          const shell = allThreadByKeyRef.current.get(threadKey);
-@@ -1104,11 +1150,14 @@ export default function SidebarV2() {
+@@ -1104,11 +1191,14 @@ export default function SidebarV2() {
 -            const orderedKeys = orderedThreadKeysRef.current;
 -            const settledKeys = settledThreadKeysRef.current;
 -            const currentIndex = orderedKeys.indexOf(threadKey);
@@ -136,9 +180,9 @@ index c021f5829e02cf69b8610143941351aa84921002..d35a6e7ca961e96802d809ebad9c827a
 +              },
 +            });
 +            const nextThread = nextThreadKey ? allThreadByKeyRef.current.get(nextThreadKey) : null;
-@@ -1371,0 +1421 @@ export default function SidebarV2() {
+@@ -1371,0 +1462 @@ export default function SidebarV2() {
 +      if (isCommandPaletteOpen() || isModelPickerOpen()) return;
-@@ -1380,4 +1430,19 @@ export default function SidebarV2() {
+@@ -1380,4 +1471,19 @@ export default function SidebarV2() {
 -      const navigateToThreadKey = (targetThreadKey: string | null) => {
 -        if (!targetThreadKey) return false;
 -        const targetThread = threadByKey.get(targetThreadKey);
@@ -162,7 +206,7 @@ index c021f5829e02cf69b8610143941351aa84921002..d35a6e7ca961e96802d809ebad9c827a
 +      if (action.type === "navigate") {
 +        const targetThread = threadByKey.get(action.threadKey);
 +        if (!targetThread) return;
-@@ -1387,11 +1451,0 @@ export default function SidebarV2() {
+@@ -1387,11 +1492,0 @@ export default function SidebarV2() {
 -        return true;
 -      };
 -      const traversalDirection = threadTraversalDirectionFromCommand(command);
@@ -174,7 +218,7 @@ index c021f5829e02cf69b8610143941351aa84921002..d35a6e7ca961e96802d809ebad9c827a
 -            direction: traversalDirection,
 -          }),
 -        );
-@@ -1400,3 +1454,4 @@ export default function SidebarV2() {
+@@ -1400,3 +1495,4 @@ export default function SidebarV2() {
 -      const jumpIndex = threadJumpIndexFromCommand(command ?? "");
 -      if (jumpIndex === null) return;
 -      navigateToThreadKey(orderedThreadKeys[jumpIndex] ?? null);
@@ -182,13 +226,13 @@ index c021f5829e02cf69b8610143941351aa84921002..d35a6e7ca961e96802d809ebad9c827a
 +      event.stopPropagation();
 +      if (action.type === "consume") return;
 +      setSettleConfirmationThreadKey(action.threadKey);
-@@ -1406,0 +1462,2 @@ export default function SidebarV2() {
+@@ -1406,0 +1503,2 @@ export default function SidebarV2() {
 +    allThreadByKey,
 +    isThreadEffectivelySettled,
-@@ -1411,0 +1469,2 @@ export default function SidebarV2() {
+@@ -1411,0 +1510,2 @@ export default function SidebarV2() {
 +    serverConfigs,
 +    settleConfirmationThreadKey,
-@@ -1414,0 +1474,26 @@ export default function SidebarV2() {
+@@ -1414,0 +1515,26 @@ export default function SidebarV2() {
 +  const settleConfirmationThread = settleConfirmationThreadKey
 +    ? (allThreadByKey.get(settleConfirmationThreadKey) ?? null)
 +    : null;
@@ -215,7 +259,19 @@ index c021f5829e02cf69b8610143941351aa84921002..d35a6e7ca961e96802d809ebad9c827a
 +    }
 +  }, [routeThreadKey, settleConfirmationThread, settleConfirmationThreadKey]);
 +
-@@ -1729,0 +1815,24 @@ export default function SidebarV2() {
+@@ -1465,0 +1592,11 @@ export default function SidebarV2() {
++      {hiddenChangeRequestReporterThreadKeys.map((threadKey) => {
++        const thread = allThreadByKey.get(threadKey);
++        return thread ? (
++          <SidebarV2HiddenThreadChangeRequestStateReporter
++            key={threadKey}
++            thread={thread}
++            projectCwd={projectCwdByKey.get(`${thread.environmentId}:${thread.projectId}`) ?? null}
++            onChangeRequestState={handleChangeRequestState}
++          />
++        ) : null;
++      })}
+@@ -1729,0 +1867,24 @@ export default function SidebarV2() {
 +      <AlertDialog
 +        open={settleConfirmationThread !== null}
 +        onOpenChange={(open) => {

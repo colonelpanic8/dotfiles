@@ -28,13 +28,13 @@
     hash = "sha256-X0QU015jYx8hkOCwLVWzGof9MIgyaopcIZOU8CoZwLQ=";
   };
 
-  # PR #4277 (head a6d2a79f2611) overlaps Sidebar V2 and the combined
+  # PR #4277 (head 60ff41deecff) overlaps Sidebar V2 and the combined
   # keybinding tests after #4263/#4270/#4271.
   # Keep the live cumulative diff auditable while applying that file through
   # the compatibility patch below.
   t3codePr4277 = final.fetchurl {
     url = "https://patch-diff.githubusercontent.com/raw/pingdotgg/t3code/pull/4277.diff";
-    hash = "sha256-LzzkEoY1LCexfrmcU5elrOD3A/hgX0w7wlhPO9ay4rY=";
+    hash = "sha256-VliqUb4h22oUJOtQ34w1QBzErZ5YVnuwk3bLqQNonrg=";
   };
 
   # Upstream is pinned through branch-drift hardening (#2284). Keep the
@@ -69,10 +69,10 @@
     })
     # Combined shared-file changes from #4257, #4258, and #4263.
     ./patches/t3code-command-palette-prs.patch
-    # Emacs/readline editing mode: t3code#4270 (head cdb86471323d).
+    # Emacs/readline editing mode: t3code#4270 (head 85d1678228e6).
     (final.fetchurl {
       url = "https://patch-diff.githubusercontent.com/raw/pingdotgg/t3code/pull/4270.diff";
-      hash = "sha256-nDHECUPDxrV84fM5WqXBYYFAqTQWcyMGB6GYZ93XPhU=";
+      hash = "sha256-LFPXt5E6RwhofXsAmdj+evKXPZMG9qMB4UDVWs3jbl0=";
     })
     # Keyboard-select composer controls + hold-modifier hints: t3code#4271
     # (head d5ca73b82391). Raw diff applies with fuzz after #4258.
@@ -80,7 +80,7 @@
       url = "https://patch-diff.githubusercontent.com/raw/pingdotgg/t3code/pull/4271.diff";
       hash = "sha256-M5nxqZRXZdbLnXEKK+JdJaOydbnhhNg20cllI1W8f4E=";
     })
-    # Settle the open thread with Mod+Shift+X: t3code#4277 (head a6d2a79f2611).
+    # Settle the open thread with Mod+Shift+X: t3code#4277 (head 60ff41deecff).
     (final.fetchpatch {
       url = "https://patch-diff.githubusercontent.com/raw/pingdotgg/t3code/pull/4277.diff";
       excludes = [
@@ -98,10 +98,10 @@
       hash = "sha256-RGJYyQ61f+RbT3lD/VX6WYb5OFiuLOlHVwNxdlusmOU=";
     })
     # Coalesce high-frequency assistant streaming deltas: t3code#4323
-    # (head 88ab240f5f6e).
+    # (head dbcb664e5284).
     (final.fetchurl {
       url = "https://patch-diff.githubusercontent.com/raw/pingdotgg/t3code/pull/4323.diff";
-      hash = "sha256-VhZphoO0Qi6yN1YTrzZYLpStjBAMZTpL3KNLZc1Ss6s=";
+      hash = "sha256-4OnuT1Qz1+PdFNrLaO5jzPQVBI/uK0mSSvmh+Der/WE=";
     })
     # Optional larger sidebar v2 project icons: t3code#4324 (head e859246a4ce0).
     (final.fetchurl {
