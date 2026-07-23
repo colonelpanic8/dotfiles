@@ -1,4 +1,4 @@
-active_repository = "parents"
+active_repository = "personal"
 
 [[repositories]]
 id = "personal"
