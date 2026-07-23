@@ -154,6 +154,12 @@
       url = "https://patch-diff.githubusercontent.com/raw/pingdotgg/t3code/pull/4386.diff";
       hash = "sha256-DJwvlbVaBxWHsP+DiBMDF6vjFccwfYi6a55kzkNNeQ0=";
     })
+    # Fork a thread from a selected assistant response on web and mobile:
+    # t3code#4390 (head 29c1ba000a58).
+    (final.fetchurl {
+      url = "https://patch-diff.githubusercontent.com/raw/pingdotgg/t3code/pull/4390.diff";
+      hash = "sha256-bRZKwfj0DV1MRKgQ6gIMPeR6ZLvLkr40DAZviGq7FPI=";
+    })
   ];
 
   t3codePatchedSource = final.applyPatches {
