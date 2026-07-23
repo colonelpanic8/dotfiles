@@ -2465,11 +2465,11 @@
         "xmonad-contrib": "xmonad-contrib"
       },
       "locked": {
-        "lastModified": 1784584947,
-        "narHash": "sha256-7LtDr+WpjErumRB96X5Hjy3MojcJCyvNdYlv5a5L7Js=",
+        "lastModified": 1784830515,
+        "narHash": "sha256-vzyxHx/yyMKkgP+HU1OxoffnvKmCftC/gWkAbflDTq4=",
         "ref": "refs/heads/master",
-        "rev": "2d194d566463bcdc6e16efc7ebc6c5db9ab91ed1",
-        "revCount": 2408,
+        "rev": "dd83a664c82f295892d96397b872e95126aa990c",
+        "revCount": 2409,
         "type": "git",
         "url": "file:///srv/dotfiles/dotfiles/config/taffybar/taffybar"
       },
