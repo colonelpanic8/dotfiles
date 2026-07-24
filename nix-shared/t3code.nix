@@ -292,10 +292,10 @@
       hash = "sha256-nhPMr3s0kS+cW5794l+1DTENJYOD11NDLHvaOcqrOGA=";
     })
     # Honor XDG base directories with legacy fallback: t3code#4419
-    # (head 28f42e3d8b2f).
+    # (head 4d7c10665325).
     (final.fetchurl {
       url = "https://patch-diff.githubusercontent.com/raw/pingdotgg/t3code/pull/4419.diff";
-      hash = "sha256-C89L6j4amJNH1e0nJq+wll/ffbQebuK1teFJ+kWS11c=";
+      hash = "sha256-QnXvF9a74enFPwPlxkXfsif8xp85WrjgaKKVH/POHB4=";
     })
     # Refuse startup when another server owns the state dir, plus SQLite
     # busy_timeout: t3code#4420 (head bad5be3e2745).
