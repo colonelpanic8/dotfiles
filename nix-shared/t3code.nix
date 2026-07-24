@@ -369,6 +369,12 @@
       hash = "sha256-SoYkUZkd1ebJGiwhd34hlJ8vL0dJYLJBU+HazcWHeZI=";
     })
     ./patches/t3code-pr-4439-stack-compat.patch
+    # Separate config, data, state, cache, and runtime storage with an explicit
+    # XDG/legacy CLI override: t3code#4437 (head b049ae2167f3).
+    (final.fetchurl {
+      url = "https://patch-diff.githubusercontent.com/raw/pingdotgg/t3code/pull/4437.diff";
+      hash = "sha256-K1bqRzRsO9lOiYHRY+lOQSf+XEhtDVeB1clVljr2Ge8=";
+    })
   ];
 
   t3codePatchedSource = final.applyPatches {
