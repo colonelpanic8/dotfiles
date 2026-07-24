@@ -236,6 +236,25 @@
       url = "https://patch-diff.githubusercontent.com/raw/pingdotgg/t3code/pull/4419.diff";
       hash = "sha256-rXFy5jqN+w3iggxZL6gFya85MEz0jZolIqA4fzbmTDU=";
     })
+    # Refuse startup when another server owns the state dir, plus SQLite
+    # busy_timeout: t3code#4420 (head bad5be3e2745).
+    (final.fetchurl {
+      url = "https://patch-diff.githubusercontent.com/raw/pingdotgg/t3code/pull/4420.diff";
+      hash = "sha256-K/Mxja9loe1MITDFjFYxCKi/xaEwbpVp/Py26pBMeFo=";
+    })
+    # Settle stale running provider sessions on startup: t3code#4421
+    # (head a638faf43b27).
+    (final.fetchurl {
+      url = "https://patch-diff.githubusercontent.com/raw/pingdotgg/t3code/pull/4421.diff";
+      hash = "sha256-3VZ3ENQXVrEtWA2nSeSgh7RTLt9RH6u7cXQ7X+gz64A=";
+    })
+    # Desktop attaches to an existing local backend instead of spawning;
+    # server mints the 0600 local-attach-token: t3code#4423
+    # (head 2cbc91518db0).
+    (final.fetchurl {
+      url = "https://patch-diff.githubusercontent.com/raw/pingdotgg/t3code/pull/4423.diff";
+      hash = "sha256-6hFncBXCNsIUp3D1WGRaUBmkqgL90aBPGYNPPNa/k7I=";
+    })
   ];
 
   t3codePatchedSource = final.applyPatches {
