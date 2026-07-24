@@ -263,6 +263,19 @@
     fsType = "vfat";
   };
 
+  # Bulk data disk. Automounting keeps boot independent of the drive, while
+  # the short timeouts make access fail quickly if the disk is absent or sick.
+  fileSystems."/mnt/hard-drive" = {
+    device = "/dev/disk/by-uuid/89856ef2-a14a-4590-827e-674572125c64";
+    fsType = "ext4";
+    options = [
+      "nofail"
+      "x-systemd.automount"
+      "x-systemd.device-timeout=1s"
+      "x-systemd.mount-timeout=5s"
+    ];
+  };
+
   swapDevices = [
     {device = "/dev/disk/by-uuid/129345f3-e1e1-4d45-9db9-643160c6d564";}
   ];
