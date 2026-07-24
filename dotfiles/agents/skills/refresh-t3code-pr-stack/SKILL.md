@@ -57,7 +57,7 @@ advanced them during the refresh.
 Synchronize two related inventories without conflating them:
 
 - **Maintained PR branches:** writable `colonelpanic8` branches that can be rebased and repaired.
-- **Carried patches:** everything represented in `/srv/dotfiles/nixos/t3code.nix`, including external PRs and closed-but-unmerged PRs that must remain in the personal build.
+- **Carried patches:** everything represented in `/srv/dotfiles/nix-shared/t3code.nix`, including external PRs and closed-but-unmerged PRs that must remain in the personal build.
 - **New owned PRs:** PRs created by `colonelpanic8` since the last completed patch-stack refresh that must be admitted automatically when they are not already carried or absorbed upstream.
 
 A PR being closed does not mean its feature should be removed. A PR being merged does not mean it can be removed until the pinned upstream source actually contains it.
@@ -65,7 +65,7 @@ A PR being closed does not mean its feature should be removed. A PR being merged
 ## Fixed locations and safety rules
 
 - Resolve T3 Code through `/srv/dotfiles/dotfiles/agents/project-links/t3code`.
-- Use `/srv/dotfiles/nixos/t3code.nix` as the carried-patch manifest.
+- Use `/srv/dotfiles/nix-shared/t3code.nix` as the carried-patch manifest.
 - Update only the `t3code-upstream` input in `/srv/dotfiles/nixos/flake.lock` unless another change is explicitly required.
 - Work only in the primary `/srv/dotfiles` checkout. Never create or use a dotfiles worktree.
 - Never create a nested T3 Code worktree under `/srv/dotfiles`.
@@ -122,7 +122,7 @@ Build a table with one row per relevant PR containing:
 Derive the sets independently:
 
 1. Parse every `pull/NUMBER.diff` URL from `t3code.nix`, including audit-only bindings forced through `builtins.seq`.
-2. Determine the last completed stack-refresh boundary from the newest committed change to `nixos/t3code.nix`. Inspect current uncommitted manifest changes too, but do not treat them as a completed refresh.
+2. Determine the last completed stack-refresh boundary from the newest committed change to `nix-shared/t3code.nix`. Inspect current uncommitted manifest changes too, but do not treat them as a completed refresh.
 3. Query all PRs authored by `colonelpanic8`, including open, draft, merged, and closed PRs, with `createdAt`, `updatedAt`, head/base OIDs, and branch ownership.
 4. Query each carried PR directly, because third-party PRs are absent from the authored list.
 
@@ -255,7 +255,7 @@ For each overlap group:
 4. Resolve conflicting files semantically so the final tree preserves every represented feature and current upstream behavior.
 5. Run focused tests for the combined behavior.
 6. Generate a full-index Git diff containing only the compatibility-owned files.
-7. Replace the corresponding file under `nixos/patches/` and document its PR/file coverage in `t3code.nix`.
+7. Replace the corresponding file under `nix-shared/patches/` and document its PR/file coverage in `t3code.nix`.
 8. Prove that no omitted raw hunk is lost between the exclusions and compatibility patch.
 
 Stage new compatibility files before Nix evaluation so the flake includes them. Keep the stack ordered by dependency and overlap, not by PR number.
@@ -305,7 +305,7 @@ blocker.
 
 From `/srv/dotfiles/nixos`:
 
-1. Run `nix-instantiate --parse t3code.nix`.
+1. Run `nix-instantiate --parse ../nix-shared/t3code.nix`.
 2. Run `git diff --check` for the intended dotfiles paths.
 3. Build the patched source to validate patch order.
 4. Build the actual host `pkgs.t3code` derivation.

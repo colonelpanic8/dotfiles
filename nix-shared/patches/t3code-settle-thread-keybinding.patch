@@ -23,10 +23,11 @@ index fa4ee28d140ba757f54e62992d0172a8da5b2403..34bcf163f09a706ce8a6d5278b07849a
  } from "../keybindings";
  import { useShortcutModifierState } from "../shortcutModifierState";
  import { isTerminalFocused } from "../lib/terminalFocus";
-@@ -85,6 +84,15 @@ import { resolveThreadActionProjectRef, startNewThreadFromContext } from "../lib
+@@ -85,7 +84,16 @@ import { resolveThreadActionProjectRef, startNewThreadFromContext } from "../lib
  import { resolveChatNewShortcutBehavior } from "../lib/chatRouteShortcuts";
  import { useClientSettings, useUpdateClientSettings } from "../hooks/useSettings";
  import { useCopyToClipboard } from "../hooks/useCopyToClipboard";
+ import { useNowMinute } from "../hooks/useNowMinute";
 +import {
 +  AlertDialog,
 +  AlertDialogClose,
