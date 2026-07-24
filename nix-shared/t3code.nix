@@ -348,6 +348,12 @@
     # Combine #4426's environment-aware thread creation flow with the
     # previously assembled command-palette and keybinding changes.
     ../nixos/patches/t3code-pr-4426-stack-compat.patch
+    # Choose an environment before an environment-scoped project when creating
+    # a new task on mobile: t3code#4447 (head 355a74a7d6de).
+    (final.fetchurl {
+      url = "https://patch-diff.githubusercontent.com/raw/pingdotgg/t3code/pull/4447.diff";
+      hash = "sha256-JxAzSJpYxjVyyj9oci1grP4Dr6yKobElQtkBhKrZaQo=";
+    })
     # Show completed image-generation activity as compact evidence links that
     # open in the right panel: t3code#4427 (head c0a41f8cf692). This
     # compatibility patch keeps #3984's filename promotion, transactional
