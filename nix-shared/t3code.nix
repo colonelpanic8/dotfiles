@@ -413,6 +413,16 @@
       hash = "sha256-t/E0DHXtKkxl8nDQcpTNr7zGJiucyt3ceF8yWv3ePhM=";
     })
     ./patches/t3code-pr-4477-stack-compat.patch
+    # Refresh the sidebar resize cap when the window grows: t3code#4482
+    # (head 233e5db37a7d).
+    (final.fetchurl {
+      url = "https://patch-diff.githubusercontent.com/raw/pingdotgg/t3code/pull/4482.diff";
+      hash = "sha256-SmdvAW8PHJ8dpHqLmGkVsdMXxNt4A8b9DBoQx3NOmxk=";
+    })
+    # The snooze feature arrived with migration ID 34 after that ID had already
+    # been recorded locally for ProjectionThreadGoals. Run its idempotent schema
+    # update as migration 36 so existing databases receive it.
+    ./patches/t3code-projection-threads-snoozed-migration-compat.patch
   ];
 
   t3codePatchedSource = final.applyPatches {
