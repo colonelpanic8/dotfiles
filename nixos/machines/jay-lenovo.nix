@@ -11,7 +11,6 @@
 
   myModules.wyoming.enable = false;
   features.full.enable = true;
-  myModules.t3codeServer.enable = true;
 
   nixpkgs.overlays = [
     (_final: prev: let

@@ -41,16 +41,13 @@
     self';
   codexDesktopLinuxPackage = let
     shallowRepositoryWatchesFeature = "shallow-repository-watches";
-    supportsShallowRepositoryWatches = builtins.pathExists (
-      "${inputs.codex-desktop-linux}/linux-features/${shallowRepositoryWatchesFeature}/feature.json"
-    );
-    package =
-      codexDesktopLinux.packages.${pkgs.stdenv.hostPlatform.system}.codex-desktop.override {
-        enableComputerUseUi = true;
-        linuxFeatureIds =
-          ["remote-mobile-control"]
-          ++ lib.optional supportsShallowRepositoryWatches shallowRepositoryWatchesFeature;
-      };
+    supportsShallowRepositoryWatches = builtins.pathExists "${inputs.codex-desktop-linux}/linux-features/${shallowRepositoryWatchesFeature}/feature.json";
+    package = codexDesktopLinux.packages.${pkgs.stdenv.hostPlatform.system}.codex-desktop.override {
+      enableComputerUseUi = true;
+      linuxFeatureIds =
+        ["remote-mobile-control"]
+        ++ lib.optional supportsShallowRepositoryWatches shallowRepositoryWatchesFeature;
+    };
     gsettingsSchemaDataDirs = lib.concatMapStringsSep ":" (pkg:
       lib.removeSuffix "/glib-2.0/schemas" (pkgs.glib.getSchemaPath pkg)) (with pkgs; [
       gsettings-desktop-schemas
@@ -125,6 +122,10 @@
     });
 in
   makeEnable config "myModules.code" true {
+    # Code-capable hosts run the persistent backend used by the client-only
+    # T3 Code desktop wrapper. Individual hosts can still opt out explicitly.
+    myModules.t3codeServer.enable = lib.mkDefault true;
+
     programs.direnv = {
       enable = true;
       nix-direnv.enable = true;
