@@ -305,7 +305,7 @@
     };
 
     codex-desktop-linux = {
-      url = "github:colonelpanic8/codex-desktop-linux/codex/update-26.721.30844";
+      url = "github:ilysenko/codex-desktop-linux/main";
     };
 
     claude-code-nix = {

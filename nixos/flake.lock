@@ -190,16 +190,16 @@
         "nixpkgs": "nixpkgs"
       },
       "locked": {
-        "lastModified": 1784839909,
-        "narHash": "sha256-Fhz9/5D/1w9js4zvF5ULrRnJld2cq9sd25qIKWxiA74=",
-        "owner": "colonelpanic8",
+        "lastModified": 1784918709,
+        "narHash": "sha256-UWCaJUKkAOUH7+TvC//uhJItpEDmPFJ5dOoptyAFJxM=",
+        "owner": "ilysenko",
         "repo": "codex-desktop-linux",
-        "rev": "a33f6cdeb72a4514a7f4163f4efe429d1a8e536b",
+        "rev": "66c780a6939b1f35aa3d90c5ad07ff2b35f1f644",
         "type": "github"
       },
       "original": {
-        "owner": "colonelpanic8",
-        "ref": "codex/update-26.721.30844",
+        "owner": "ilysenko",
+        "ref": "main",
         "repo": "codex-desktop-linux",
         "type": "github"
       }
