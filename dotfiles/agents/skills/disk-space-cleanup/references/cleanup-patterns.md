@@ -29,6 +29,14 @@ For `/var/lib/private/gitea-runner`, a validated sequence is:
 
 Preserve `.runner`, `.labels`, `.docker/config.json`, SSH material, Kubernetes material, and other registration/configuration state.
 
+On nix-darwin iOS runners, APFS volumes such as `/System/Volumes/Data` and
+`/nix` share the same container free-space pool. An Xcode “Macintosh HD is out
+of space” failure therefore does not establish that Nix is the main reclaim
+opportunity. Check `nix-store --gc --print-dead` before collecting and measure
+the actual result. If few paths are dead, preserve an inventory and inspect
+`/Users`, `/private/var`, and `/Library/Developer` before proposing targeted
+Xcode, runner, or user-cache cleanup.
+
 ## Logs and App Caches
 
 - Delete or truncate `~/.local/share/picom/debug.log` only after confirming picom is not actively writing it and correcting the verbose logging cause.

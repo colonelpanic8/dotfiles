@@ -5,3 +5,5 @@ one-filesystem scans as the primary guardrail.
 
 - `/Volumes/Extreme SSD`
 - `/private/var/lib/gitea-runner-external`
+- `/mnt/hard-drive` on `railbird-sf`
+- `/shared` on `ryzen-shine`
