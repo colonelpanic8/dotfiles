@@ -19,6 +19,12 @@
     "apps/web/src/components/Sidebar.tsx"
     "apps/web/src/components/SidebarV2.tsx"
   ];
+  t3codePr4426OverlapFiles = [
+    "apps/web/src/commandPaletteBus.ts"
+    "apps/web/src/components/CommandPalette.tsx"
+    "apps/web/src/keybindings.test.ts"
+    "packages/shared/src/keybindings.ts"
+  ];
 
   # PR #3984 predates the pinned base. Its complete cumulative diff remains
   # auditable here while the rebased form below applies it to current main.
@@ -122,6 +128,14 @@
     hash = "sha256-SvwbkjsdR32DDpErQZZm/ldeAQSSfD41NlflI7GewtM=";
   };
 
+  # PR #4426 (head 75149bc3f50a) overlaps the assembled command palette and
+  # keybinding defaults. Keep its complete cumulative diff auditable while
+  # applying those files through the compatibility patch below.
+  t3codePr4426 = final.fetchurl {
+    url = "https://patch-diff.githubusercontent.com/raw/pingdotgg/t3code/pull/4426.diff";
+    hash = "sha256-jvtmflvRh9MAwxEXlbkvGXY/+TX6YRZEZfzfs2MY/Ak=";
+  };
+
   t3codePrAudits = [
     t3codePr3984
     t3codePr4257
@@ -136,6 +150,7 @@
     t3codePr4390
     t3codePr4401
     t3codePr4425
+    t3codePr4426
   ];
 
   # Upstream is pinned through branch-drift hardening (#2284). Keep the
@@ -300,6 +315,17 @@
     # Combine #4425's sidebar changes with the previously assembled sidebar
     # features from #4390 and #4401.
     ../nixos/patches/t3code-pr-4425-stack-compat.patch
+    # Choose an environment, then an environment-scoped project, when creating
+    # a thread with Mod+Shift+N: t3code#4426 (head 75149bc3f50a). Apply its
+    # non-overlapping files directly.
+    (final.fetchpatch {
+      url = "https://patch-diff.githubusercontent.com/raw/pingdotgg/t3code/pull/4426.diff";
+      excludes = t3codePr4426OverlapFiles;
+      hash = "sha256-DbuyyjSvlwT4JvalkhfiE10kKGENPB6FdIlQS69i7q4=";
+    })
+    # Combine #4426's environment-aware thread creation flow with the
+    # previously assembled command-palette and keybinding changes.
+    ../nixos/patches/t3code-pr-4426-stack-compat.patch
   ];
 
   t3codePatchedSource = final.applyPatches {
