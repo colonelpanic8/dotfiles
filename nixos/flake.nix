@@ -316,6 +316,12 @@
       };
     };
 
+    orca = {
+      # Track the automated update PR branch until it lands on main.
+      url = "github:Samuka007/nix-orca/automation/update-orca";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+
     # WezTerm main includes native tmux control-mode tabs and splits. Keep this
     # separate from the regular terminal package so it is explicitly
     # experimental and easy to update independently.

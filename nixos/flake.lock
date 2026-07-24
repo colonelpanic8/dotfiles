@@ -1982,6 +1982,27 @@
         "type": "github"
       }
     },
+    "orca": {
+      "inputs": {
+        "nixpkgs": [
+          "nixpkgs"
+        ]
+      },
+      "locked": {
+        "lastModified": 1784864522,
+        "narHash": "sha256-2IKswMaGJPpKZcb2ZiMgrE2GC4rqWMjerhonMYfrOJM=",
+        "owner": "Samuka007",
+        "repo": "nix-orca",
+        "rev": "e0cd9763dc54453bb25161699f8f27931e4e1b36",
+        "type": "github"
+      },
+      "original": {
+        "owner": "Samuka007",
+        "ref": "automation/update-orca",
+        "repo": "nix-orca",
+        "type": "github"
+      }
+    },
     "org-agenda-api": {
       "inputs": {
         "emacs-overlay": "emacs-overlay",
@@ -2226,6 +2247,7 @@
         "nixpkgs-stable": "nixpkgs-stable",
         "nixtheplanet": "nixtheplanet",
         "notifications-tray-icon": "notifications-tray-icon",
+        "orca": "orca",
         "org-agenda-api": "org-agenda-api",
         "railbird-secrets": "railbird-secrets",
         "rlru": "rlru",

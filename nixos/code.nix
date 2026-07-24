@@ -287,6 +287,9 @@ in
         claudeDesktop
         cabal2nix
       ]
+      ++ lib.optionals config.myModules.desktop.enable [
+        inputs.orca.packages.${pkgs.stdenv.hostPlatform.system}.orca-ide
+      ]
       ++ (
         if pkgs.stdenv.hostPlatform.system == "x86_64-linux"
         then
