@@ -27,6 +27,9 @@
     "apps/web/src/keybindings.test.ts"
     "packages/shared/src/keybindings.ts"
   ];
+  t3codePr4439OverlapFiles = [
+    "apps/server/src/serverSettings.test.ts"
+  ];
 
   # PR #3984 predates the pinned base. Its complete cumulative diff remains
   # auditable here while the rebased form below applies it to current main.
@@ -146,6 +149,14 @@
     hash = "sha256-syHIwQOW6YdHVY9AjJOeymsP28jYF1wnmuPujxJFT7U=";
   };
 
+  # PR #4439 overlaps the assembled server-settings persistence tests. Keep
+  # its complete cumulative diff auditable while applying that file through
+  # the compatibility patch below.
+  t3codePr4439 = final.fetchurl {
+    url = "https://patch-diff.githubusercontent.com/raw/pingdotgg/t3code/pull/4439.diff";
+    hash = "sha256-g6jbLCkyUYeTNvIozC7q7zwPbBXTBFyI42QKjcz47LA=";
+  };
+
   t3codePrAudits = [
     t3codePr3984
     t3codePr4257
@@ -162,6 +173,7 @@
     t3codePr4425
     t3codePr4426
     t3codePr4427
+    t3codePr4439
   ];
 
   # Upstream is pinned through branch-drift hardening (#2284). Keep the
@@ -342,6 +354,16 @@
     # compatibility patch keeps #3984's filename promotion, transactional
     # snapshot lookup, and artifact-path safeguards intact.
     ./patches/t3code-pr-4427-stack-compat.patch
+    # Configure centralized or repository-local worktree placement:
+    # t3code#4439 (head 9a64b23e894c). Apply its non-overlapping files
+    # directly and combine its persistence assertions with the assembled
+    # server-settings tests.
+    (final.fetchpatch {
+      url = "https://patch-diff.githubusercontent.com/raw/pingdotgg/t3code/pull/4439.diff";
+      excludes = t3codePr4439OverlapFiles;
+      hash = "sha256-Eq9aK7T6qaa1he5Syom61G6HpiohJwTjfLxjtDFsrDg=";
+    })
+    ./patches/t3code-pr-4439-stack-compat.patch
   ];
 
   t3codePatchedSource = final.applyPatches {
