@@ -5,6 +5,16 @@
     "apps/web/src/components/CommandPalette.logic.ts"
     "apps/web/src/components/CommandPalette.tsx"
   ];
+  t3codePr4394OverlapFiles = [
+    "apps/web/src/components/BranchToolbar.tsx"
+    "apps/web/src/components/BranchToolbarEnvModeSelector.tsx"
+    "apps/web/src/components/BranchToolbarEnvironmentSelector.tsx"
+    "apps/web/src/components/chat/ChatComposer.tsx"
+    "apps/web/src/components/chat/CompactComposerControlsMenu.tsx"
+    "apps/web/src/components/chat/ProviderModelPicker.tsx"
+    "apps/web/src/components/chat/TraitsPicker.tsx"
+    "apps/web/src/components/chat/composerProviderState.tsx"
+  ];
 
   # PR #3984 predates the pinned base. Its complete cumulative diff remains
   # auditable here while the rebased form below applies it to current main.
@@ -76,6 +86,14 @@
     hash = "sha256-hTFq9kDZhZPJ9odddKRuEJ3mqRzL5AnjgDIAL2WqzVc=";
   };
 
+  # PR #4394 (head 5eb4ad57a3b7) overlaps the composer-control stack from #4271.
+  # Keep its complete cumulative diff auditable while applying the shared
+  # files through the compatibility patch below.
+  t3codePr4394 = final.fetchurl {
+    url = "https://patch-diff.githubusercontent.com/raw/pingdotgg/t3code/pull/4394.diff";
+    hash = "sha256-7RaVgpELDsZVokXpLxcPtazFiO7Qvp6NP076HMBPzsg=";
+  };
+
   # PR #4390 overlaps the assembled legacy sidebar. Keep its complete
   # cumulative diff auditable while applying that file through the
   # compatibility patch below.
@@ -102,6 +120,7 @@
     t3codePr4318
     t3codePr4324
     t3codePr4332
+    t3codePr4394
     t3codePr4390
     t3codePr4401
   ];
@@ -135,15 +154,18 @@
     })
     # Combined shared-file changes from #4257, #4258, and #4263.
     ./patches/t3code-command-palette-prs.patch
-    # Navigate open selections with Ctrl-N/Ctrl-P: t3code#4394
-    # (head ac909b972c9c).
-    (final.fetchurl {
-      url = "https://patch-diff.githubusercontent.com/raw/pingdotgg/t3code/pull/4394.diff";
-      hash = "sha256-GTMfkZEHfYfMhPa+7Z5AAPh/pSe6x1G3tDdNbd/gdwk=";
-    })
     # Keyboard-select composer controls + hold-modifier hints: t3code#4271
     # (head 32156502206a).
     t3codePr4271
+    # Navigate open selections with Ctrl-N/Ctrl-P: t3code#4394
+    # (head 5eb4ad57a3b7). Apply its non-overlapping files directly.
+    (final.fetchpatch {
+      url = "https://patch-diff.githubusercontent.com/raw/pingdotgg/t3code/pull/4394.diff";
+      excludes = t3codePr4394OverlapFiles;
+      hash = "sha256-E1CrGN2OhR64kbdM4IkEtQMKwsVC5AQhQkl/FVZ6hj4=";
+    })
+    # Combine #4394's shared picker changes with #4271's composer controls.
+    ../nixos/patches/t3code-pr-4394-stack-compat.patch
     # Settle the open thread with Mod+Shift+X: t3code#4277 (head 67ea3a70714a).
     (final.fetchpatch {
       url = "https://patch-diff.githubusercontent.com/raw/pingdotgg/t3code/pull/4277.diff";

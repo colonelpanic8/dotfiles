@@ -1,0 +1,362 @@
+diff --git a/apps/web/src/components/BranchToolbar.tsx b/apps/web/src/components/BranchToolbar.tsx
+index 4a4bcf64e48d1b7ba17a14d28f69b2c4caaa5cb9..050f68c2380ce3396326264cdaa07e669c4d091f 100644
+--- a/apps/web/src/components/BranchToolbar.tsx
++++ b/apps/web/src/components/BranchToolbar.tsx
+@@ -98,6 +98,7 @@ interface MobileRunContextSelectorProps {
+   onEnvModeChange: (mode: EnvMode) => void;
+   previousWorktreeLabel: string | null;
+   onUsePreviousWorktree: () => void;
++  onSelectionComplete?: () => void;
+ }
+
+ const MobileRunContextSelector = memo(function MobileRunContextSelector({
+@@ -118,6 +119,7 @@ const MobileRunContextSelector = memo(function MobileRunContextSelector({
+   onEnvModeChange,
+   previousWorktreeLabel,
+   onUsePreviousWorktree,
++  onSelectionComplete,
+ }: MobileRunContextSelectorProps) {
+   const activeEnvironment = useMemo(
+     () => availableEnvironments?.find((env) => env.environmentId === environmentId) ?? null,
+@@ -186,7 +188,10 @@ const MobileRunContextSelector = memo(function MobileRunContextSelector({
+               <MenuGroupLabel>Run on</MenuGroupLabel>
+               <MenuRadioGroup
+                 value={environmentId}
+-                onValueChange={(value) => onEnvironmentChange(value as EnvironmentId)}
++                onValueChange={(value) => {
++                  onEnvironmentChange(value as EnvironmentId);
++                  onSelectionComplete?.();
++                }}
+               >
+                 {availableEnvironments.map((env) => {
+                   const Icon = env.isPrimary ? MonitorIcon : CloudIcon;
+@@ -215,9 +220,11 @@ const MobileRunContextSelector = memo(function MobileRunContextSelector({
+             onValueChange={(value) => {
+               if (value === "previous-worktree") {
+                 onUsePreviousWorktree();
++                onSelectionComplete?.();
+                 return;
+               }
+               onEnvModeChange(value as EnvMode);
++              onSelectionComplete?.();
+             }}
+           >
+             <MenuRadioItem disabled={envModeLocked} value="local">
+@@ -484,6 +491,7 @@ export const BranchToolbar = memo(function BranchToolbar({
+           onEnvModeChange={onEnvModeChange}
+           previousWorktreeLabel={previousWorktreeLabel}
+           onUsePreviousWorktree={onUsePreviousWorktree}
++          {...(onComposerFocusRequest ? { onSelectionComplete: onComposerFocusRequest } : {})}
+         />
+       ) : (
+         <div className="flex min-w-0 shrink-0 items-center gap-1">
+@@ -496,6 +504,7 @@ export const BranchToolbar = memo(function BranchToolbar({
+                 open={environmentPickerOpen}
+                 onOpenChange={(open) => handlePickerOpenChange("environment", open)}
+                 shortcutHintLabel={availableEnvironmentHintLabel}
++                {...(onComposerFocusRequest ? { onSelectionComplete: onComposerFocusRequest } : {})}
+                 {...(showEnvironmentPicker && onEnvironmentChange ? { onEnvironmentChange } : {})}
+               />
+               <Separator orientation="vertical" className="mx-0.5 h-3.5!" />
+@@ -511,6 +520,7 @@ export const BranchToolbar = memo(function BranchToolbar({
+             onEnvModeChange={onEnvModeChange}
+             previousWorktreeLabel={previousWorktreeLabel}
+             onUsePreviousWorktree={onUsePreviousWorktree}
++            {...(onComposerFocusRequest ? { onSelectionComplete: onComposerFocusRequest } : {})}
+           />
+         </div>
+       )}
+diff --git a/apps/web/src/components/BranchToolbarEnvModeSelector.tsx b/apps/web/src/components/BranchToolbarEnvModeSelector.tsx
+index d1e536361922fcfe377efde8e6f933c1e733b510..8e9809b6379222c2241c1b65944dee008620a121 100644
+--- a/apps/web/src/components/BranchToolbarEnvModeSelector.tsx
++++ b/apps/web/src/components/BranchToolbarEnvModeSelector.tsx
+@@ -30,6 +30,7 @@ interface BranchToolbarEnvModeSelectorProps {
+   onEnvModeChange: (mode: EnvMode) => void;
+   previousWorktreeLabel?: string | null;
+   onUsePreviousWorktree?: () => void;
++  onSelectionComplete?: () => void;
+ }
+
+ export const BranchToolbarEnvModeSelector = memo(function BranchToolbarEnvModeSelector({
+@@ -42,6 +43,7 @@ export const BranchToolbarEnvModeSelector = memo(function BranchToolbarEnvModeSe
+   onEnvModeChange,
+   previousWorktreeLabel,
+   onUsePreviousWorktree,
++  onSelectionComplete,
+ }: BranchToolbarEnvModeSelectorProps) {
+   const showPreviousWorktree = Boolean(previousWorktreeLabel && onUsePreviousWorktree);
+   const envModeItems = useMemo(
+@@ -82,9 +84,11 @@ export const BranchToolbarEnvModeSelector = memo(function BranchToolbarEnvModeSe
+       onValueChange={(value: string | null) => {
+         if (value === PREVIOUS_WORKTREE_SELECT_VALUE) {
+           onUsePreviousWorktree?.();
++          onSelectionComplete?.();
+           return;
+         }
+         onEnvModeChange(value as EnvMode);
++        onSelectionComplete?.();
+       }}
+       items={envModeItems}
+     >
+diff --git a/apps/web/src/components/BranchToolbarEnvironmentSelector.tsx b/apps/web/src/components/BranchToolbarEnvironmentSelector.tsx
+index a528b31d19d4e6a2a648f860048032db558763b0..64f1e375f3f81b66915427cce3a3c4664863c79c 100644
+--- a/apps/web/src/components/BranchToolbarEnvironmentSelector.tsx
++++ b/apps/web/src/components/BranchToolbarEnvironmentSelector.tsx
+@@ -24,6 +24,7 @@ interface BranchToolbarEnvironmentSelectorProps {
+   // Absent when there is only one environment to show: the indicator still
+   // renders (as a static label) so remote projects are always identifiable.
+   onEnvironmentChange?: (environmentId: EnvironmentId) => void;
++  onSelectionComplete?: () => void;
+ }
+
+ export const BranchToolbarEnvironmentSelector = memo(function BranchToolbarEnvironmentSelector({
+@@ -34,6 +35,7 @@ export const BranchToolbarEnvironmentSelector = memo(function BranchToolbarEnvir
+   onOpenChange,
+   shortcutHintLabel,
+   onEnvironmentChange,
++  onSelectionComplete,
+ }: BranchToolbarEnvironmentSelectorProps) {
+   const activeEnvironment = useMemo(() => {
+     return availableEnvironments.find((env) => env.environmentId === environmentId) ?? null;
+@@ -67,7 +69,10 @@ export const BranchToolbarEnvironmentSelector = memo(function BranchToolbarEnvir
+       value={environmentId}
+       {...(open !== undefined ? { open } : {})}
+       {...(onOpenChange ? { onOpenChange } : {})}
+-      onValueChange={(value) => onEnvironmentChange(value as EnvironmentId)}
++      onValueChange={(value) => {
++        onEnvironmentChange(value as EnvironmentId);
++        onSelectionComplete?.();
++      }}
+       items={environmentItems}
+     >
+       <SelectTrigger variant="ghost" size="xs" className="font-medium" aria-label="Run on">
+diff --git a/apps/web/src/components/chat/ChatComposer.tsx b/apps/web/src/components/chat/ChatComposer.tsx
+index d4b65a30e1eebcccca4fd2bfd058de063008b0ce..3ab3b40cf7ab5f5d3664a4625305b7d18fed9ba1 100644
+--- a/apps/web/src/components/chat/ChatComposer.tsx
++++ b/apps/web/src/components/chat/ChatComposer.tsx
+@@ -291,6 +291,7 @@ const ComposerFooterModeControls = memo(function ComposerFooterModeControls(prop
+   onToggleInteractionMode: () => void;
+   onRuntimeModeChange: (mode: RuntimeMode) => void;
+   onTogglePlanSidebar: () => void;
++  onSelectionComplete: () => void;
+ }) {
+   const runtimeModeOption = runtimeModeConfig[props.runtimeMode];
+   const RuntimeModeIcon = runtimeModeOption.icon;
+@@ -353,7 +354,10 @@ const ComposerFooterModeControls = memo(function ComposerFooterModeControls(prop
+           value={props.runtimeMode}
+           open={props.runtimeModePickerOpen}
+           onOpenChange={props.onRuntimeModePickerOpenChange}
+-          onValueChange={(value) => props.onRuntimeModeChange(value!)}
++          onValueChange={(value) => {
++            props.onRuntimeModeChange(value!);
++            props.onSelectionComplete();
++          }}
+         >
+           <TooltipTrigger
+             render={
+@@ -363,6 +367,7 @@ const ComposerFooterModeControls = memo(function ComposerFooterModeControls(prop
+                 size="sm"
+                 className="font-medium"
+                 aria-label="Runtime mode"
++                data-chat-runtime-mode-picker="true"
+               />
+             }
+           >
+@@ -1275,6 +1280,7 @@ export const ChatComposer = memo(function ChatComposer(props: ChatComposerProps)
+     modelOptions: composerModelOptions?.[selectedInstanceId],
+     prompt,
+     onPromptChange: setPromptFromTraits,
++    onSelectionComplete: scheduleComposerFocus,
+   });
+   // Hint badges show while the held modifiers are a subset of a composer
+   // control shortcut's modifiers; computed once here and passed down.
+@@ -1308,6 +1314,7 @@ export const ChatComposer = memo(function ChatComposer(props: ChatComposerProps)
+     modelOptions: composerModelOptions?.[selectedInstanceId],
+     prompt,
+     onPromptChange: setPromptFromTraits,
++    onSelectionComplete: scheduleComposerFocus,
+     open: isComposerTraitsPickerOpen,
+     onOpenChange: (open) => {
+       applyComposerPickerOpenChange("traits", open);
+@@ -2845,6 +2852,7 @@ export const ChatComposer = memo(function ChatComposer(props: ChatComposerProps)
+                     }}
+                     getModelDisabledReason={getModelDisabledReason}
+                     onInstanceModelChange={onProviderModelSelect}
++                    onSelectionComplete={scheduleComposerFocus}
+                   />
+                 )}
+
+@@ -2879,6 +2887,7 @@ export const ChatComposer = memo(function ChatComposer(props: ChatComposerProps)
+                     onToggleInteractionMode={toggleInteractionMode}
+                     onTogglePlanSidebar={togglePlanSidebar}
+                     onRuntimeModeChange={handleRuntimeModeChange}
++                    onSelectionComplete={scheduleComposerFocus}
+                   />
+                 ) : (
+                   <>
+@@ -2906,6 +2915,7 @@ export const ChatComposer = memo(function ChatComposer(props: ChatComposerProps)
+                       onToggleInteractionMode={toggleInteractionMode}
+                       onRuntimeModeChange={handleRuntimeModeChange}
+                       onTogglePlanSidebar={togglePlanSidebar}
++                      onSelectionComplete={scheduleComposerFocus}
+                     />
+                   </>
+                 )}
+diff --git a/apps/web/src/components/chat/CompactComposerControlsMenu.tsx b/apps/web/src/components/chat/CompactComposerControlsMenu.tsx
+index c522f66f6fa73bafed423e2f5ae747470f32dafb..41a095887f9440fdd1f6ef44f6a5fdcd92013698 100644
+--- a/apps/web/src/components/chat/CompactComposerControlsMenu.tsx
++++ b/apps/web/src/components/chat/CompactComposerControlsMenu.tsx
+@@ -43,6 +43,7 @@ export const CompactComposerControlsMenu = memo(function CompactComposerControls
+   onToggleInteractionMode: () => void;
+   onTogglePlanSidebar: () => void;
+   onRuntimeModeChange: (mode: RuntimeMode) => void;
++  onSelectionComplete: () => void;
+ }) {
+   const triggerRef = useRef<HTMLButtonElement>(null);
+   return (
+@@ -79,6 +80,7 @@ export const CompactComposerControlsMenu = memo(function CompactComposerControls
+                 onValueChange={(value) => {
+                   if (!value || value === props.interactionMode) return;
+                   props.onToggleInteractionMode();
++                  props.onSelectionComplete();
+                 }}
+               >
+                 <MenuRadioItem value="default">Chat</MenuRadioItem>
+@@ -93,6 +95,7 @@ export const CompactComposerControlsMenu = memo(function CompactComposerControls
+             onValueChange={(value) => {
+               if (!value || value === props.runtimeMode) return;
+               props.onRuntimeModeChange(value as RuntimeMode);
++              props.onSelectionComplete();
+             }}
+           >
+             <MenuRadioItem value="approval-required">Supervised</MenuRadioItem>
+@@ -103,7 +106,12 @@ export const CompactComposerControlsMenu = memo(function CompactComposerControls
+           {props.activePlan ? (
+             <>
+               <MenuDivider />
+-              <MenuItem onClick={props.onTogglePlanSidebar}>
++              <MenuItem
++                onClick={() => {
++                  props.onTogglePlanSidebar();
++                  props.onSelectionComplete();
++                }}
++              >
+                 <ListTodoIcon className="size-4 shrink-0" />
+                 {props.planSidebarOpen
+                   ? `Hide ${props.planSidebarLabel.toLowerCase()} sidebar`
+diff --git a/apps/web/src/components/chat/ProviderModelPicker.tsx b/apps/web/src/components/chat/ProviderModelPicker.tsx
+index ab08c07c9e9a8306e637a97e31a15b81761e5dc2..a12dfbada2e8c5c00cece27be881f33c2c094b2e 100644
+--- a/apps/web/src/components/chat/ProviderModelPicker.tsx
++++ b/apps/web/src/components/chat/ProviderModelPicker.tsx
+@@ -44,6 +44,7 @@ export const ProviderModelPicker = memo(function ProviderModelPicker(props: {
+   onOpenChange?: (open: boolean) => void;
+   getModelDisabledReason?: (instanceId: ProviderInstanceId, model: string) => string | null;
+   onInstanceModelChange: (instanceId: ProviderInstanceId, model: string) => void;
++  onSelectionComplete?: () => void;
+ }) {
+   const [uncontrolledIsMenuOpen, setUncontrolledIsMenuOpen] = useState(false);
+   const triggerRef = useRef<HTMLButtonElement | null>(null);
+@@ -133,6 +134,7 @@ export const ProviderModelPicker = memo(function ProviderModelPicker(props: {
+     if (props.disabled) return;
+     props.onInstanceModelChange(instanceId, model);
+     setIsMenuOpen(false);
++    props.onSelectionComplete?.();
+   };
+
+   return (
+diff --git a/apps/web/src/components/chat/TraitsPicker.tsx b/apps/web/src/components/chat/TraitsPicker.tsx
+index e597123a3741c171f2c575fa902860ce2e00cdfb..65b0eb470466f6bacb809f07f05d40ec8f415138 100644
+--- a/apps/web/src/components/chat/TraitsPicker.tsx
++++ b/apps/web/src/components/chat/TraitsPicker.tsx
+@@ -219,6 +219,7 @@ export interface TraitsMenuContentProps {
+   allowPromptInjectedEffort?: boolean;
+   triggerVariant?: VariantProps<typeof buttonVariants>["variant"];
+   triggerClassName?: string;
++  onSelectionComplete?: () => void;
+ }
+
+ export interface TraitsPickerControlProps {
+@@ -236,6 +237,7 @@ export const TraitsMenuContent = memo(function TraitsMenuContentImpl({
+   onPromptChange,
+   modelOptions,
+   allowPromptInjectedEffort = true,
++  onSelectionComplete,
+   ...persistence
+ }: TraitsMenuContentProps & TraitsPersistence) {
+   const setProviderModelOptions = useComposerDraftStore((store) => store.setProviderModelOptions);
+@@ -288,6 +290,7 @@ export const TraitsMenuContent = memo(function TraitsMenuContentImpl({
+           ? ULTRATHINK_PROMPT_PREFIX
+           : applyClaudePromptEffortPrefix(prompt, "ultrathink");
+       onPromptChange(nextPrompt);
++      onSelectionComplete?.();
+       return;
+     }
+     if (ultrathinkInBodyText && descriptor.id === primarySelectDescriptor?.id) return;
+@@ -296,6 +299,7 @@ export const TraitsMenuContent = memo(function TraitsMenuContentImpl({
+       onPromptChange(stripped);
+     }
+     updateDescriptors(replaceDescriptorCurrentValue(descriptors, descriptor.id, value));
++    onSelectionComplete?.();
+   };
+
+   if (!hasAnyControls) {
+@@ -368,6 +372,7 @@ export const TraitsMenuContent = memo(function TraitsMenuContentImpl({
+                   updateDescriptors(
+                     replaceDescriptorCurrentValue(descriptors, descriptor.id, value === "on"),
+                   );
++                  onSelectionComplete?.();
+                 }}
+               >
+                 {(["on", "off"] as const).map((value) => (
+@@ -400,6 +405,7 @@ export const TraitsPicker = memo(function TraitsPicker({
+   open,
+   onOpenChange,
+   shortcutHintLabel,
++  onSelectionComplete,
+   ...persistence
+ }: TraitsMenuContentProps & TraitsPickerControlProps & TraitsPersistence) {
+   const [uncontrolledMenuOpen, setUncontrolledMenuOpen] = useState(false);
+@@ -463,6 +469,7 @@ export const TraitsPicker = memo(function TraitsPicker({
+             ref={triggerRef}
+             size="sm"
+             variant={triggerVariant ?? "ghost"}
++            data-chat-provider-traits-picker="true"
+             className={cn(
+               isCodexStyle
+                 ? "min-w-0 max-w-40 shrink justify-start overflow-hidden whitespace-nowrap px-2 text-muted-foreground/70 hover:text-foreground/80 sm:max-w-48 sm:px-3 [&_svg]:mx-0"
+@@ -494,6 +501,7 @@ export const TraitsPicker = memo(function TraitsPicker({
+           onPromptChange={onPromptChange}
+           modelOptions={modelOptions}
+           allowPromptInjectedEffort={allowPromptInjectedEffort}
++          {...(onSelectionComplete ? { onSelectionComplete } : {})}
+           {...persistence}
+         />
+       </MenuPopup>
+diff --git a/apps/web/src/components/chat/composerProviderState.tsx b/apps/web/src/components/chat/composerProviderState.tsx
+index dc6df55189dd55b482a8595749f17148543ab141..5fedc5d87836807d04904980d90ea680b3329077 100644
+--- a/apps/web/src/components/chat/composerProviderState.tsx
++++ b/apps/web/src/components/chat/composerProviderState.tsx
+@@ -112,6 +112,7 @@ type TraitsRenderInput = {
+   modelOptions: ReadonlyArray<ProviderOptionSelection> | undefined;
+   prompt: string;
+   onPromptChange: (prompt: string) => void;
++  onSelectionComplete?: () => void;
+ };
+
+ export function getComposerPromptInjectionState(prompt: string): ComposerPromptInjectionState {
+@@ -161,6 +162,7 @@ function renderTraitsControl(
+     modelOptions,
+     prompt,
+     onPromptChange,
++    onSelectionComplete,
+   } = input;
+   const hasTarget = threadRef !== undefined || draftId !== undefined;
+   if (
+@@ -180,6 +182,7 @@ function renderTraitsControl(
+       modelOptions={modelOptions}
+       prompt={prompt}
+       onPromptChange={onPromptChange}
++      {...(onSelectionComplete ? { onSelectionComplete } : {})}
+       {...(pickerControlProps ?? {})}
+     />
+   );
