@@ -230,6 +230,12 @@
       url = "https://patch-diff.githubusercontent.com/raw/pingdotgg/t3code/pull/4405.diff";
       hash = "sha256-nhPMr3s0kS+cW5794l+1DTENJYOD11NDLHvaOcqrOGA=";
     })
+    # Honor XDG base directories for data and settings: t3code#4419
+    # (head a5edd8110c12).
+    (final.fetchurl {
+      url = "https://patch-diff.githubusercontent.com/raw/pingdotgg/t3code/pull/4419.diff";
+      hash = "sha256-rXFy5jqN+w3iggxZL6gFya85MEz0jZolIqA4fzbmTDU=";
+    })
   ];
 
   t3codePatchedSource = final.applyPatches {
