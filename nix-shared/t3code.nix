@@ -304,10 +304,10 @@
     # t3code#4332 (head e6f196d0d563).
     t3codePr4332
     # Refresh a project favicon when its icon is clicked: t3code#4337
-    # (head fa4c78575814).
+    # (head af165bffae34).
     (final.fetchurl {
       url = "https://patch-diff.githubusercontent.com/raw/pingdotgg/t3code/pull/4337.diff";
-      hash = "sha256-GSGJFgWTXIpUlis8wrY9YjNDSwqIT7MBX+29miUdEtM=";
+      hash = "sha256-pDvYnybng8nJqFU1DiXk6hlW1kD6Exc2u7CtF5lhprI=";
     })
     # Recover stranded provider turns after lost completion events or backend
     # restarts: t3code#4386 (head 01681ab2a81b).

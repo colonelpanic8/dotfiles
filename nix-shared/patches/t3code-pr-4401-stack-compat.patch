@@ -394,13 +394,13 @@ index 1bdaf9c4fa4b3b5dde07434cbaab73ac5ef9d912..d5f5b8dd018420afdee5b1e0d8304dc1
    const decodedPath = decodeRelativePath(relativePath);
    if (decodedPath === null) return null;
 diff --git a/apps/web/src/components/ProjectFavicon.tsx b/apps/web/src/components/ProjectFavicon.tsx
-index 9d8eea05275fe7042917fd5b72286dc795ec3d54..cb51c1f7c863c018a7106baa1992c33831288e7b 100644
+index 4080e13b5423bcbf5c3248b52ac4297d9d94728d..f954d2b417cb514f1ac8cf6d8d9e5ed88a055273 100644
 --- a/apps/web/src/components/ProjectFavicon.tsx
 +++ b/apps/web/src/components/ProjectFavicon.tsx
-@@ -7,18 +7,55 @@ import { FolderIcon } from "lucide-react";
+@@ -4,16 +4,56 @@ import { FolderIcon } from "lucide-react";
  import type { ComponentType } from "react";
- import { useCallback, useState } from "react";
- import { useAssetUrl } from "../assets/assetUrls";
+ import { useState } from "react";
+ import { useAssetUrl, useRefreshAssetUrl } from "../assets/assetUrls";
 +import { useEnvironmentSettings } from "../hooks/useSettings";
  
  const loadedProjectFaviconSrcs = new Set<string>();
@@ -443,16 +443,18 @@ index 9d8eea05275fe7042917fd5b72286dc795ec3d54..cb51c1f7c863c018a7106baa1992c338
    className?: string | undefined;
    fallbackIcon?: ComponentType<{ className?: string }>;
  }) {
+-  const resource = { _tag: "project-favicon", cwd: input.cwd } as const;
 +  const configuredIconRevision = useEnvironmentSettings(input.environmentId, (settings) =>
 +    projectFaviconSettingsRevision(settings, input.cwd, input.repositoryKey),
 +  );
-   const src = useAssetUrl(input.environmentId, {
-     _tag: "project-favicon",
-     cwd: input.cwd,
++  const resource = {
++    _tag: "project-favicon" as const,
++    cwd: input.cwd,
 +    ...(configuredIconRevision ? { revision: configuredIconRevision } : {}),
-   });
-   const FallbackIcon = input.fallbackIcon ?? FolderIcon;
- 
++  };
+   const src = useAssetUrl(input.environmentId, resource);
+   // Clicking an icon re-issues its asset URL, which makes the server resolve
+   // the project's icon from scratch. That is what picks up an icon that was
 diff --git a/apps/web/src/components/Sidebar.logic.test.ts b/apps/web/src/components/Sidebar.logic.test.ts
 index 8a8a5bb171b54e5de0329402b851d8aaab8fcb78..24292a0348855188c48d3727b4abb39c27780a4f 100644
 --- a/apps/web/src/components/Sidebar.logic.test.ts
