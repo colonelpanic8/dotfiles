@@ -1,0 +1,225 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+usage() {
+  cat <<'EOF'
+Usage:
+  t3code-remote-pair probe SSH_TARGET
+  t3code-remote-pair create SSH_TARGET BASE_URL [options]
+
+Options for create:
+  --base-dir REMOTE_DIR  T3 state directory (default: $HOME/.t3 on remote)
+  --label LABEL          Pairing-link label (default: local hostname)
+  --ttl DURATION         Pairing-link lifetime (default: 15m)
+
+Environment overrides:
+  T3CODE_SSH_ADDRESS_FAMILY  SSH AddressFamily: any, inet, or inet6
+  T3CODE_SSH_HOST_KEY_ALIAS  Known-hosts alias for an alternate target name
+
+The create command prints sensitive pairing JSON to stdout. Redirect it to a
+mode-0600 temporary file and remove that file immediately after pairing.
+EOF
+}
+
+die() {
+  printf 'error: %s\n' "$*" >&2
+  exit 2
+}
+
+ssh_options=(
+  -o BatchMode=yes
+  -o ConnectTimeout=10
+  -o ServerAliveInterval=5
+  -o ServerAliveCountMax=2
+)
+
+case ${T3CODE_SSH_ADDRESS_FAMILY:-any} in
+  any|inet|inet6)
+    ssh_options+=(-o "AddressFamily=${T3CODE_SSH_ADDRESS_FAMILY:-any}")
+    ;;
+  *)
+    die "T3CODE_SSH_ADDRESS_FAMILY must be any, inet, or inet6"
+    ;;
+esac
+
+if [[ -n ${T3CODE_SSH_HOST_KEY_ALIAS:-} ]]; then
+  ssh_options+=(-o "HostKeyAlias=${T3CODE_SSH_HOST_KEY_ALIAS}")
+fi
+
+# This is remote-shell source inserted into the two intentionally local-expanded heredocs below.
+# shellcheck disable=SC2016
+resolve_remote_t3='
+find_t3() {
+  if command -v t3 >/dev/null 2>&1; then
+    command -v t3
+    return
+  fi
+  for candidate in \
+    "$HOME/.nix-profile/bin/t3" \
+    "/etc/profiles/per-user/$USER/bin/t3" \
+    /run/current-system/sw/bin/t3 \
+    /usr/local/bin/t3 \
+    /usr/bin/t3
+  do
+    if [ -x "$candidate" ]; then
+      printf "%s\n" "$candidate"
+      return
+    fi
+  done
+  return 1
+}
+'
+
+probe() {
+  local target=$1
+  # Expand resolve_remote_t3 locally; remote expressions below are escaped explicitly.
+  # shellcheck disable=SC2087
+  ssh "${ssh_options[@]}" "$target" sh -s <<EOF
+set -u
+$resolve_remote_t3
+
+printf 'ssh=ok\n'
+printf 'hostname=%s\n' "\$(hostname 2>/dev/null || uname -n)"
+printf 'os=%s\n' "\$(uname -srm 2>/dev/null || true)"
+
+node_path=\$(command -v node 2>/dev/null || true)
+if [ -n "\$node_path" ]; then
+  printf 'node_path=%s\n' "\$node_path"
+  printf 'node_version=%s\n' "\$("\$node_path" --version 2>/dev/null || true)"
+else
+  printf 'node_path=\nnode_version=\n'
+fi
+
+t3_path=\$(find_t3 2>/dev/null || true)
+if [ -n "\$t3_path" ]; then
+  printf 't3_path=%s\n' "\$t3_path"
+  printf 't3_version=%s\n' "\$("\$t3_path" --version 2>/dev/null | head -n 1 || true)"
+else
+  printf 't3_path=\nt3_version=\n'
+fi
+
+if command -v systemctl >/dev/null 2>&1; then
+  printf 't3code_service_active=%s\n' \
+    "\$(systemctl --user is-active t3code-headless.service 2>/dev/null || true)"
+  printf 't3code_service_exec_start=%s\n' \
+    "\$(systemctl --user show t3code-headless.service -p ExecStart --value 2>/dev/null || true)"
+else
+  printf 't3code_service_active=\nt3code_service_exec_start=\n'
+fi
+
+if command -v tailscale >/dev/null 2>&1; then
+  printf 'tailscale_ipv4=%s\n' "\$(tailscale ip -4 2>/dev/null | head -n 1 || true)"
+  printf 'tailscale_ipv6=%s\n' "\$(tailscale ip -6 2>/dev/null | head -n 1 || true)"
+else
+  printf 'tailscale_ipv4=\ntailscale_ipv6=\n'
+fi
+EOF
+}
+
+create() {
+  local target=$1
+  local base_url=$2
+  shift 2
+
+  # Preserve this marker until the remote shell can expand its own HOME.
+  # shellcheck disable=SC2016
+  local base_dir='$HOME/.t3'
+  local label
+  label="paired from $(hostname 2>/dev/null || uname -n)"
+  local ttl=15m
+
+  while (($#)); do
+    case $1 in
+      --base-dir)
+        (($# >= 2)) || die "--base-dir requires a value"
+        base_dir=$2
+        shift 2
+        ;;
+      --label)
+        (($# >= 2)) || die "--label requires a value"
+        label=$2
+        shift 2
+        ;;
+      --ttl)
+        (($# >= 2)) || die "--ttl requires a value"
+        ttl=$2
+        shift 2
+        ;;
+      --help|-h)
+        usage
+        exit 0
+        ;;
+      *)
+        die "unknown option: $1"
+        ;;
+    esac
+  done
+
+  [[ $base_url =~ ^https?:// ]] || die "BASE_URL must begin with http:// or https://"
+
+  # Expand resolve_remote_t3 locally; remote expressions below are escaped explicitly.
+  # shellcheck disable=SC2087
+  ssh "${ssh_options[@]}" "$target" sh -s -- "$base_url" "$base_dir" "$label" "$ttl" <<EOF
+set -eu
+$resolve_remote_t3
+
+base_url=\$1
+base_dir=\$2
+label=\$3
+ttl=\$4
+
+case \$base_dir in
+  '\$HOME')
+    base_dir=\$HOME
+    ;;
+  '\$HOME/'*)
+    base_dir="\$HOME/\${base_dir#\\\$HOME/}"
+    ;;
+  '~')
+    base_dir=\$HOME
+    ;;
+  '~/'*)
+    base_dir="\$HOME/\${base_dir#~/}"
+    ;;
+esac
+
+t3_path=\$(find_t3) || {
+  printf 't3 was not found in the remote non-interactive PATH or known profile locations.\n' >&2
+  exit 69
+}
+
+exec "\$t3_path" auth pairing create \
+  --base-dir "\$base_dir" \
+  --base-url "\$base_url" \
+  --label "\$label" \
+  --ttl "\$ttl" \
+  --json
+EOF
+}
+
+main() {
+  (($# >= 1)) || {
+    usage >&2
+    exit 2
+  }
+
+  case $1 in
+    probe)
+      (($# == 2)) || die "probe requires exactly one SSH target"
+      probe "$2"
+      ;;
+    create)
+      (($# >= 3)) || die "create requires an SSH target and base URL"
+      shift
+      create "$@"
+      ;;
+    --help|-h)
+      usage
+      ;;
+    *)
+      die "unknown command: $1"
+      ;;
+  esac
+}
+
+main "$@"

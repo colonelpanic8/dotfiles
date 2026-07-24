@@ -1,0 +1,4 @@
+interface:
+  display_name: "T3 Code Remote Pairing"
+  short_description: "Pair this T3 Code client with remote servers"
+  default_prompt: "Use $pair-t3code-remote to pair this T3 Code desktop client with my remote T3 Code server and verify the connection."
