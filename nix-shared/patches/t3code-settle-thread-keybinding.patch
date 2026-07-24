@@ -1,16 +1,21 @@
 diff --git a/apps/web/src/components/SidebarV2.tsx b/apps/web/src/components/SidebarV2.tsx
-index fa4ee28d140ba757f54e62992d0172a8da5b2403..34bcf163f09a706ce8a6d5278b07849ad05b8bf6 100644
+index e544b560561a88d228b4cb20d749b56a78ccde72..2974f1950828e6372bb1969c5366263ccf59f56f 100644
 --- a/apps/web/src/components/SidebarV2.tsx
 +++ b/apps/web/src/components/SidebarV2.tsx
-@@ -1,6 +1,6 @@
+@@ -1,11 +1,6 @@
  import { autoAnimate } from "@formkit/auto-animate";
  import { useAtomValue } from "@effect/atom-react";
--import { effectiveSettled } from "@t3tools/client-runtime/state/thread-settled";
-+import { canSettle } from "@t3tools/client-runtime/state/thread-settled";
+-import {
+-  canSnooze,
+-  effectiveSettled,
+-  effectiveSnoozed,
+-  threadWokeAt,
+-} from "@t3tools/client-runtime/state/thread-settled";
++import { canSettle, canSnooze, threadWokeAt } from "@t3tools/client-runtime/state/thread-settled";
  import type { EnvironmentThreadShell } from "@t3tools/client-runtime/state/models";
  import {
    scopeProjectRef,
-@@ -47,11 +47,10 @@ import {
+@@ -56,11 +51,10 @@ import {
  import { isElectron } from "../env";
  import {
    resolveShortcutCommand,
@@ -23,8 +28,7 @@ index fa4ee28d140ba757f54e62992d0172a8da5b2403..34bcf163f09a706ce8a6d5278b07849a
  } from "../keybindings";
  import { useShortcutModifierState } from "../shortcutModifierState";
  import { isTerminalFocused } from "../lib/terminalFocus";
-@@ -85,7 +84,16 @@ import { resolveThreadActionProjectRef, startNewThreadFromContext } from "../lib
- import { resolveChatNewShortcutBehavior } from "../lib/chatRouteShortcuts";
+@@ -95,6 +89,15 @@ import { resolveChatNewShortcutBehavior } from "../lib/chatRouteShortcuts";
  import { useClientSettings, useUpdateClientSettings } from "../hooks/useSettings";
  import { useCopyToClipboard } from "../hooks/useCopyToClipboard";
  import { useNowMinute } from "../hooks/useNowMinute";
@@ -40,12 +44,13 @@ index fa4ee28d140ba757f54e62992d0172a8da5b2403..34bcf163f09a706ce8a6d5278b07849a
  import { useEnvironments, usePrimaryEnvironmentId } from "../state/environments";
  import { useProjects, useThreadShells } from "../state/entities";
  import { environmentServerConfigsAtom, primaryServerKeybindingsAtom } from "../state/server";
-@@ -99,17 +107,24 @@ import type { SidebarThreadSummary } from "../types";
- import { cn } from "~/lib/utils";
+@@ -110,17 +113,25 @@ import { cn } from "~/lib/utils";
  import {
    formatWorkingDurationLabel,
+   firstValidTimestampMs,
 +  getSidebarThreadKeysNeedingChangeRequestReporter,
    hasUnseenCompletion,
++  isSidebarThreadEffectivelySnoozed,
 +  isSidebarThreadEffectivelySettled,
    isTrailingDoubleClick,
    orderItemsByPreferredIds,
@@ -65,8 +70,8 @@ index fa4ee28d140ba757f54e62992d0172a8da5b2403..34bcf163f09a706ce8a6d5278b07849a
 +  shouldDismissThreadSettleConfirmation,
  } from "./Sidebar.logic";
  import { resolveLocalCheckoutBranchMismatch } from "./BranchToolbar.logic";
- import { prStatusIndicator, resolveThreadPr } from "./ThreadStatusIndicators";
-@@ -142,6 +157,46 @@ import { useComposerDraftStore } from "../composerDraftStore";
+ import {
+@@ -164,6 +175,46 @@ import { useComposerDraftStore } from "../composerDraftStore";
  // Settled-tail paging: recent history is the common lookup; the deep tail
  // stays behind an explicit Show more.
  const SETTLED_TAIL_INITIAL_COUNT = 10;
@@ -113,10 +118,10 @@ index fa4ee28d140ba757f54e62992d0172a8da5b2403..34bcf163f09a706ce8a6d5278b07849a
  const SETTLED_TAIL_PAGE_COUNT = 25;
  const PROJECT_GROUPING_MODE_LABELS: Record<SidebarProjectGroupingMode, string> = {
    repository: "Group by repository",
-@@ -386,9 +441,18 @@ const SidebarV2Row = memo(function SidebarV2Row(props: {
-                 }
-               : null;
-
+@@ -491,9 +542,18 @@ const SidebarV2Row = memo(function SidebarV2Row(props: {
+                   }
+                 : null;
+ 
 -  const gitCwd = thread.worktreePath ?? props.projectCwd;
 +  const gitCwd = resolveSidebarThreadGitCwd({
 +    worktreePath: thread.worktreePath,
@@ -134,7 +139,7 @@ index fa4ee28d140ba757f54e62992d0172a8da5b2403..34bcf163f09a706ce8a6d5278b07849a
        ? vcsEnvironment.status({
            environmentId: thread.environmentId,
            input: { cwd: gitCwd },
-@@ -411,8 +475,9 @@ const SidebarV2Row = memo(function SidebarV2Row(props: {
+@@ -517,8 +577,9 @@ const SidebarV2Row = memo(function SidebarV2Row(props: {
    // and a merged/closed PR auto-settles a thread — data only rows have.
    const prState = pr?.state ?? null;
    useEffect(() => {
@@ -142,10 +147,10 @@ index fa4ee28d140ba757f54e62992d0172a8da5b2403..34bcf163f09a706ce8a6d5278b07849a
      onChangeRequestState(threadKey, prState);
 -  }, [onChangeRequestState, prState, threadKey]);
 +  }, [gitStatus.isPending, onChangeRequestState, prState, threadKey]);
-
+ 
    const modelInstanceId = thread.session?.providerInstanceId ?? thread.modelSelection.instanceId;
    const providerEntry = props.providerEntryByInstanceId.get(modelInstanceId) ?? null;
-@@ -1179,8 +1244,24 @@ export default function SidebarV2() {
+@@ -1367,8 +1428,36 @@ export default function SidebarV2() {
    // merging, no optimistic holds. Archived threads remain hidden here —
    // archive keeps its original "remove from sidebar" meaning.
    const serverConfigs = useAtomValue(environmentServerConfigsAtom);
@@ -166,44 +171,66 @@ index fa4ee28d140ba757f54e62992d0172a8da5b2403..34bcf163f09a706ce8a6d5278b07849a
 +  );
 +  const isThreadEffectivelySettledRef = useRef(isThreadEffectivelySettled);
 +  isThreadEffectivelySettledRef.current = isThreadEffectivelySettled;
-   const { activeThreads, settledThreads } = useMemo(() => {
++  const isThreadEffectivelySnoozed = useCallback(
++    (thread: SidebarThreadSummary, now: string) =>
++      isSidebarThreadEffectivelySnoozed({
++        thread,
++        snoozeSupported:
++          serverConfigs.get(thread.environmentId)?.environment.capabilities.threadSnooze === true,
++        now,
++      }),
++    [serverConfigs],
++  );
++  const isThreadEffectivelySnoozedRef = useRef(isThreadEffectivelySnoozed);
++  isThreadEffectivelySnoozedRef.current = isThreadEffectivelySnoozed;
+   const { activeThreads, snoozedThreads, settledThreads, snoozeNow } = useMemo(() => {
 -    const now = `${nowMinute}:00.000Z`;
-     const visible = threads.filter(
-       (thread) =>
-         thread.archivedAt === null &&
-@@ -1194,14 +1275,7 @@ export default function SidebarV2() {
-       // or descriptor not loaded yet) never classify as settled: the user
-       // could neither un-settle nor pin them, so auto-settling them would
-       // strand rows in a tail with no working affordances.
+     // Snooze classification uses a REAL clock, not the quantized minute:
+     // wake times are second-precise and a woken thread must not linger on
+     // the shelf for the rest of the minute. snoozeWakeTick re-runs this
+@@ -1385,25 +1474,12 @@ export default function SidebarV2() {
+     const snoozed: EnvironmentThreadShell[] = [];
+     const settled: EnvironmentThreadShell[] = [];
+     for (const thread of visible) {
+-      // Threads on servers without the settlement capability (old server,
+-      // or descriptor not loaded yet) never classify as settled: the user
+-      // could neither un-settle nor pin them, so auto-settling them would
+-      // strand rows in a tail with no working affordances.
 -      const supportsSettlement =
 -        serverConfigs.get(thread.environmentId)?.environment.capabilities.threadSettlement === true;
+-      const supportsSnooze =
+-        serverConfigs.get(thread.environmentId)?.environment.capabilities.threadSnooze === true;
 -      const threadKey = scopedThreadKey(scopeThreadRef(thread.environmentId, thread.id));
 -      const changeRequestState = changeRequestStateByKey.get(threadKey) ?? null;
--      if (
+       // Snooze outranks settled classification: an explicitly snoozed thread
+       // belongs to the shelf even if it would also auto-settle (the shelf's
+       // wake time is a stronger statement about when it matters again).
+-      if (supportsSnooze && effectiveSnoozed(thread, { now: preciseNow })) {
++      if (isThreadEffectivelySnoozed(thread, preciseNow)) {
+         snoozed.push(thread);
+-      } else if (
 -        supportsSettlement &&
 -        effectiveSettled(thread, { now, autoSettleAfterDays, changeRequestState })
 -      ) {
-+      if (isThreadEffectivelySettled(thread)) {
++      } else if (isThreadEffectivelySettled(thread)) {
          settled.push(thread);
        } else {
          active.push(thread);
-@@ -1211,14 +1285,7 @@ export default function SidebarV2() {
-       activeThreads: sortThreadsForSidebarV2(active),
-       settledThreads: sortSettledThreadsForSidebarV2(settled),
+@@ -1421,11 +1497,9 @@ export default function SidebarV2() {
+       snoozeNow: preciseNow,
      };
--  }, [
+   }, [
 -    autoSettleAfterDays,
 -    changeRequestStateByKey,
 -    nowMinute,
--    scopedProjectKeys,
++    isThreadEffectivelySettled,
++    isThreadEffectivelySnoozed,
+     scopedProjectKeys,
 -    serverConfigs,
--    threads,
--  ]);
-+  }, [isThreadEffectivelySettled, scopedProjectKeys, threads]);
-
-   // The settled tail renders in pages: history shouldn't dominate the
-   // sidebar, and the common lookups are recent. Expansion resets when the
-@@ -1258,6 +1325,43 @@ export default function SidebarV2() {
+     snoozeWakeTick,
+     threads,
+   ]);
+@@ -1529,6 +1603,43 @@ export default function SidebarV2() {
    // rendered at click time.
    const orderedThreadKeysRef = useRef(orderedThreadKeys);
    orderedThreadKeysRef.current = orderedThreadKeys;
@@ -247,7 +274,7 @@ index fa4ee28d140ba757f54e62992d0172a8da5b2403..34bcf163f09a706ce8a6d5278b07849a
    const threadByKey = useMemo(
      () =>
        new Map(
-@@ -1268,6 +1372,16 @@ export default function SidebarV2() {
+@@ -1539,6 +1650,16 @@ export default function SidebarV2() {
        ),
      [orderedThreads],
    );
@@ -264,43 +291,42 @@ index fa4ee28d140ba757f54e62992d0172a8da5b2403..34bcf163f09a706ce8a6d5278b07849a
    // Handlers read these through refs: depending on per-update Map/Set
    // identities would give every row a fresh callback prop on each shell
    // event and defeat row memoization during streaming.
-@@ -1288,6 +1402,10 @@ export default function SidebarV2() {
+@@ -1570,6 +1691,10 @@ export default function SidebarV2() {
    );
-   const settledThreadKeysRef = useRef(settledThreadKeys);
-   settledThreadKeysRef.current = settledThreadKeys;
+   const snoozedThreadKeysRef = useRef(snoozedThreadKeys);
+   snoozedThreadKeysRef.current = snoozedThreadKeys;
 +  const [settleConfirmationThreadKey, setSettleConfirmationThreadKey] = useState<string | null>(
 +    null,
 +  );
 +  const settleConfirmationButtonRef = useRef<HTMLButtonElement>(null);
-
+ 
    const jumpLabelByKey = useMemo(() => {
      const mapping = new Map<string, string>();
-@@ -1389,26 +1507,30 @@ export default function SidebarV2() {
+@@ -1673,7 +1798,7 @@ export default function SidebarV2() {
+   const planForwardNavigation = useCallback(
+     (threadKey: string, coParkingKeys?: ReadonlySet<string>): (() => void) | null => {
+       if (routeThreadKeyRef.current !== threadKey) return null;
+-      const shell = threadByKeyRef.current.get(threadKey);
++      const shell = allThreadByKeyRef.current.get(threadKey);
+       const orderedKeys = orderedThreadKeysRef.current;
+       const settledKeys = settledThreadKeysRef.current;
+       const snoozedKeys = snoozedThreadKeysRef.current;
+@@ -1701,8 +1826,41 @@ export default function SidebarV2() {
          const threadKey = scopedThreadKey(threadRef);
          if (settlingThreadKeysRef.current.has(threadKey)) return;
          settlingThreadKeysRef.current.add(threadKey);
 +        setSettleConfirmationThreadKey((current) => (current === threadKey ? null : current));
          try {
-           // Settling the thread you're looking at moves you forward: the next
-           // remaining card (never a settled row, never one settling in the
-           // same batch), or a fresh draft in this project when it was the
-           // last active one. Snapshot the target before the settle mutates
-           // the partition. Background settles never navigate.
--          const shell = threadByKeyRef.current.get(threadKey);
+-          const navigateAfterSettle = planForwardNavigation(threadKey, opts.coSettlingKeys);
++          // Settling the thread you're looking at moves you forward: the next
++          // remaining card (never a settled row, never one settling in the
++          // same batch), or a fresh draft in this project when it was the
++          // last active one. Snapshot the target before the settle mutates
++          // the partition. Background settles never navigate.
 +          const shell = allThreadByKeyRef.current.get(threadKey);
-           let navigateAfterSettle: (() => void) | null = null;
-           if (routeThreadKey === threadKey) {
--            const orderedKeys = orderedThreadKeysRef.current;
--            const settledKeys = settledThreadKeysRef.current;
--            const currentIndex = orderedKeys.indexOf(threadKey);
--            const nextCardKey =
--              currentIndex === -1
--                ? null
--                : ([
--                    ...orderedKeys.slice(currentIndex + 1),
--                    ...orderedKeys.slice(0, currentIndex),
--                  ].find((key) => !settledKeys.has(key) && !opts.coSettlingKeys?.has(key)) ?? null);
--            const nextThread = nextCardKey ? threadByKeyRef.current.get(nextCardKey) : null;
++          let navigateAfterSettle: (() => void) | null = null;
++          if (routeThreadKeyRef.current === threadKey) {
++            const navigationNow = new Date().toISOString();
 +            const nextThreadKey = resolveNextActiveThreadIdAfterSettle({
 +              threadIds: orderedThreadKeysRef.current,
 +              fallbackThreadIds: allUnarchivedThreadKeysRef.current,
@@ -310,15 +336,34 @@ index fa4ee28d140ba757f54e62992d0172a8da5b2403..34bcf163f09a706ce8a6d5278b07849a
 +                return (
 +                  candidate !== undefined &&
 +                  !opts.coSettlingKeys?.has(candidateKey) &&
++                  !isThreadEffectivelySnoozedRef.current(candidate, navigationNow) &&
 +                  !isThreadEffectivelySettledRef.current(candidate)
 +                );
 +              },
 +            });
 +            const nextThread = nextThreadKey ? allThreadByKeyRef.current.get(nextThreadKey) : null;
-             navigateAfterSettle = nextThread
-               ? () => navigateToThread(scopeThreadRef(nextThread.environmentId, nextThread.id))
-               : shell
-@@ -1666,6 +1788,7 @@ export default function SidebarV2() {
++            navigateAfterSettle = nextThread
++              ? () => navigateToThread(scopeThreadRef(nextThread.environmentId, nextThread.id))
++              : shell
++                ? () =>
++                    void handleNewThreadRef.current(
++                      scopeProjectRef(shell.environmentId, shell.projectId),
++                    )
++                : () => void router.navigate({ to: "/" });
++          }
+           const result = await settleThread(threadRef);
+           if (result._tag === "Failure") {
+             // Never navigate away from a thread that did not settle.
+@@ -1728,7 +1886,7 @@ export default function SidebarV2() {
+         }
+       })();
+     },
+-    [planForwardNavigation, settleThread],
++    [navigateToThread, router, settleThread],
+   );
+   const attemptUnsettle = useCallback(
+     (threadRef: ScopedThreadRef) => {
+@@ -2132,6 +2290,7 @@ export default function SidebarV2() {
    useEffect(() => {
      const onWindowKeyDown = (event: KeyboardEvent) => {
        if (event.defaultPrevented || event.repeat) return;
@@ -326,7 +371,7 @@ index fa4ee28d140ba757f54e62992d0172a8da5b2403..34bcf163f09a706ce8a6d5278b07849a
        const command = resolveShortcutCommand(event, keybindings, {
          platform: navigator.platform,
          context: {
-@@ -1674,41 +1797,76 @@ export default function SidebarV2() {
+@@ -2140,41 +2299,96 @@ export default function SidebarV2() {
            modelPickerOpen: isModelPickerOpen(),
          },
        });
@@ -391,19 +436,33 @@ index fa4ee28d140ba757f54e62992d0172a8da5b2403..34bcf163f09a706ce8a6d5278b07849a
 +    settleConfirmationThreadKey,
      threadByKey,
    ]);
-
+ 
 +  const settleConfirmationThread = settleConfirmationThreadKey
 +    ? (allThreadByKey.get(settleConfirmationThreadKey) ?? null)
 +    : null;
++  const settleConfirmationCanSettle =
++    settleConfirmationThread !== null &&
++    serverConfigs.get(settleConfirmationThread.environmentId)?.environment.capabilities
++      .threadSettlement === true &&
++    canSettle(settleConfirmationThread, { now: new Date().toISOString() });
 +  const confirmShortcutSettle = useCallback(() => {
-+    if (!settleConfirmationThread || settleConfirmationThreadKey !== routeThreadKeyRef.current) {
++    if (
++      !settleConfirmationThread ||
++      settleConfirmationThreadKey !== routeThreadKeyRef.current ||
++      !settleConfirmationCanSettle
++    ) {
 +      setSettleConfirmationThreadKey(null);
 +      return;
 +    }
 +    attemptSettle(
 +      scopeThreadRef(settleConfirmationThread.environmentId, settleConfirmationThread.id),
 +    );
-+  }, [attemptSettle, settleConfirmationThread, settleConfirmationThreadKey]);
++  }, [
++    attemptSettle,
++    settleConfirmationCanSettle,
++    settleConfirmationThread,
++    settleConfirmationThreadKey,
++  ]);
 +
 +  useEffect(() => {
 +    if (
@@ -412,16 +471,22 @@ index fa4ee28d140ba757f54e62992d0172a8da5b2403..34bcf163f09a706ce8a6d5278b07849a
 +        routeThreadKey,
 +        targetExists: settleConfirmationThread !== null,
 +        targetExplicitlySettled: settleConfirmationThread?.settledOverride === "settled",
++        targetCanSettle: settleConfirmationCanSettle,
 +      })
 +    ) {
 +      setSettleConfirmationThreadKey(null);
 +    }
-+  }, [routeThreadKey, settleConfirmationThread, settleConfirmationThreadKey]);
++  }, [
++    routeThreadKey,
++    settleConfirmationCanSettle,
++    settleConfirmationThread,
++    settleConfirmationThreadKey,
++  ]);
 +
    // Same predicate as v1: hints show only while the held modifiers exactly
    // match a thread-jump binding. Adding Shift (screenshots) or Alt no
    // longer matches ⌘1..9, so the overlay hides for chords like ⌘⇧4.
-@@ -1774,6 +1932,19 @@ export default function SidebarV2() {
+@@ -2240,6 +2454,19 @@ export default function SidebarV2() {
      shortcutLabelForCommand(keybindings, "chat.new");
    return (
      <>
@@ -441,12 +506,12 @@ index fa4ee28d140ba757f54e62992d0172a8da5b2403..34bcf163f09a706ce8a6d5278b07849a
        <SidebarChromeHeader isElectron={isElectron} />
        <SidebarContent className="gap-0">
          <SidebarGroup className="px-2 pb-2 pt-3">
-@@ -2219,6 +2390,30 @@ export default function SidebarV2() {
+@@ -2753,6 +2980,34 @@ export default function SidebarV2() {
          </DialogPopup>
        </Dialog>
        <SidebarChromeFooter />
 +      <AlertDialog
-+        open={settleConfirmationThread !== null}
++        open={settleConfirmationThread !== null && settleConfirmationCanSettle}
 +        onOpenChange={(open) => {
 +          if (!open) setSettleConfirmationThreadKey(null);
 +        }}
@@ -462,7 +527,11 @@ index fa4ee28d140ba757f54e62992d0172a8da5b2403..34bcf163f09a706ce8a6d5278b07849a
 +          </AlertDialogHeader>
 +          <AlertDialogFooter>
 +            <AlertDialogClose render={<Button variant="outline" />}>Cancel</AlertDialogClose>
-+            <Button ref={settleConfirmationButtonRef} onClick={confirmShortcutSettle}>
++            <Button
++              ref={settleConfirmationButtonRef}
++              disabled={!settleConfirmationCanSettle}
++              onClick={confirmShortcutSettle}
++            >
 +              Settle thread
 +              <Kbd className="ml-1 h-5 px-1.5">Enter</Kbd>
 +            </Button>
@@ -479,7 +548,7 @@ index faed2f439dd86eceb1ed18ec294dc55a110f8884..d9e175af23973415dd61a5edbf9b4563
 @@ -1,4 +1,4 @@
 -import { assert, describe, it } from "vite-plus/test";
 +import { assert, describe, expect, it } from "vite-plus/test";
-
+ 
  import {
    type KeybindingCommand,
 @@ -21,6 +21,7 @@ import {
@@ -505,7 +574,7 @@ index faed2f439dd86eceb1ed18ec294dc55a110f8884..d9e175af23973415dd61a5edbf9b4563
 @@ -192,6 +198,88 @@ const DEFAULT_BINDINGS = compile([
    },
  ]);
-
+ 
 +describe("thread settle shortcut", () => {
 +  it("resolves Mod+Shift+X outside the terminal", () => {
 +    assert.strictEqual(
@@ -591,3 +660,15 @@ index faed2f439dd86eceb1ed18ec294dc55a110f8884..d9e175af23973415dd61a5edbf9b4563
  describe("isTerminalToggleShortcut", () => {
    it("matches Cmd+J on macOS", () => {
      assert.isTrue(
+diff --git a/packages/shared/src/keybindings.ts b/packages/shared/src/keybindings.ts
+index 6695374ba257bd04fdd301923af59b0d6679c1df..084d5c62068939d4fde09d99ee1edd25af079703 100644
+--- a/packages/shared/src/keybindings.ts
++++ b/packages/shared/src/keybindings.ts
+@@ -47,6 +47,7 @@ export const DEFAULT_KEYBINDINGS: ReadonlyArray<KeybindingRule> = [
+   { key: "mod+shift+l", command: "envModePicker.toggle", when: "!terminalFocus" },
+   { key: "mod+shift+b", command: "branchPicker.toggle", when: "!terminalFocus" },
+   { key: "mod+o", command: "editor.openFavorite" },
++  { key: "mod+shift+x", command: "thread.settle", when: "!terminalFocus" },
+   { key: "mod+shift+[", command: "thread.previous" },
+   { key: "mod+shift+]", command: "thread.next" },
+   ...THREAD_JUMP_KEYBINDING_COMMANDS.map((command, index) => ({

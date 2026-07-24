@@ -1,51 +1,388 @@
+diff --git a/apps/server/src/keybindings.test.ts b/apps/server/src/keybindings.test.ts
+index 2b30159c7df8eb10fba769c25597016bb9293ad9..74b87b938dcc38d072243f855b05377c5a21497c 100644
+--- a/apps/server/src/keybindings.test.ts
++++ b/apps/server/src/keybindings.test.ts
+@@ -203,6 +203,8 @@ it.layer(NodeServices.layer)("keybindings", (it) => {
+       assert.equal(defaultsByCommand.get("rightPanel.toggle"), "mod+alt+b");
+       assert.equal(defaultsByCommand.get("project.add"), "alt+a");
+       assert.equal(defaultsByCommand.get("terminal.splitVertical"), "mod+shift+d");
++      assert.equal(defaultsByCommand.get("chat.newEnvironment"), "mod+shift+n");
++      assert.isFalse(defaultsByCommand.has("chat.newLocal"));
+       assert.equal(defaultsByCommand.get("modelPicker.jump.1"), "mod+1");
+       assert.equal(defaultsByCommand.get("modelPicker.jump.9"), "mod+9");
+       assert.equal(defaultsByCommand.get("modelOptionsPicker.toggle"), "mod+shift+e");
+@@ -309,6 +311,55 @@ it.layer(NodeServices.layer)("keybindings", (it) => {
+       }).pipe(Effect.provide(makeKeybindingsLayer())),
+   );
+ 
++  it.effect("migrates the previous new-local default to the environment picker", () =>
++    Effect.gen(function* () {
++      const { keybindingsConfigPath } = yield* ServerConfig.ServerConfig;
++      yield* writeKeybindingsConfig(keybindingsConfigPath, [
++        {
++          key: "mod+shift+n",
++          command: "chat.newLocal",
++          when: "!terminalFocus",
++        },
++        {
++          key: "mod+shift+l",
++          command: "chat.newLocal",
++          when: "!terminalFocus",
++        },
++      ]);
++
++      yield* Effect.gen(function* () {
++        const keybindings = yield* Keybindings.Keybindings;
++        yield* keybindings.syncDefaultKeybindingsOnStartup;
++      });
++
++      const persisted = yield* readKeybindingsConfig(keybindingsConfigPath);
++      assert.isTrue(
++        persisted.some(
++          (entry) =>
++            entry.command === "chat.newEnvironment" &&
++            entry.key === "mod+shift+n" &&
++            entry.when === "!terminalFocus",
++        ),
++      );
++      assert.isFalse(
++        persisted.some(
++          (entry) =>
++            entry.command === "chat.newLocal" &&
++            entry.key === "mod+shift+n" &&
++            entry.when === "!terminalFocus",
++        ),
++      );
++      assert.isTrue(
++        persisted.some(
++          (entry) =>
++            entry.command === "chat.newLocal" &&
++            entry.key === "mod+shift+l" &&
++            entry.when === "!terminalFocus",
++        ),
++      );
++    }).pipe(Effect.provide(makeKeybindingsLayer())),
++  );
++
+   it.effect("skips conflicting default keybindings on startup and logs a detailed warning", () => {
+     const messages: string[] = [];
+     const logger = Logger.make(({ message }) => {
 diff --git a/apps/web/src/commandPaletteBus.ts b/apps/web/src/commandPaletteBus.ts
-index 2282333..19bc8da 100644
+index 228233398987a8f6482182fe6ab26fa9fe5c8e93..19bc8da5687a90a79afe192993cd0b6908d6963a 100644
 --- a/apps/web/src/commandPaletteBus.ts
 +++ b/apps/web/src/commandPaletteBus.ts
-@@ -9 +9 @@ export interface CommandPaletteOpenDetail {
+@@ -6,7 +6,7 @@ const COMMAND_PALETTE_OPEN_EVENT = "t3code:open-command-palette";
+ const COMMAND_PALETTE_CLOSE_EVENT = "t3code:close-command-palette";
+ 
+ export interface CommandPaletteOpenDetail {
 -  readonly open?: "add-project" | "new-thread-in";
 +  readonly open?: "add-project" | "new-thread-in" | "new-thread-on";
+   readonly preferredProjectRef?: ScopedProjectRef | null;
+ }
+ 
 diff --git a/apps/web/src/components/CommandPalette.logic.test.ts b/apps/web/src/components/CommandPalette.logic.test.ts
-index 0b6c106..86c0afb 100644
+index bac4bfcb58e94653a6cebac57d587bdfdef0ef36..86c0afb380f23a68452e5beab34a832f6b6f6503 100644
 --- a/apps/web/src/components/CommandPalette.logic.test.ts
 +++ b/apps/web/src/components/CommandPalette.logic.test.ts
-@@ -10,0 +11 @@ import {
+@@ -8,34 +8,18 @@ import {
+   filterCommandPaletteGroups,
+   resolveBrowseTabCompletion,
+   resolveCommandPaletteEmptyStateMessage,
+-  shouldClearAddProjectEnvironmentOnPop,
+-  shouldHandleCommandPaletteShortcut,
 +  resolveNewThreadOnIntent,
-@@ -16,0 +18,8 @@ import {
++  resetAddProjectFlowState,
++  shouldIgnoreAddProjectShortcut,
++  shouldResetPaletteFlowOnPop,
+   type CommandPaletteGroup,
+ } from "./CommandPalette.logic";
+ 
+-describe("shouldHandleCommandPaletteShortcut", () => {
+-  it("does not capture the add-project shortcut from an editable target", () => {
+-    expect(
+-      shouldHandleCommandPaletteShortcut({
+-        command: "project.add",
+-        editableTarget: true,
+-      }),
+-    ).toBe(false);
+-  });
+-
+-  it("still handles add-project outside editors and the palette toggle everywhere", () => {
+-    expect(
+-      shouldHandleCommandPaletteShortcut({
+-        command: "project.add",
+-        editableTarget: false,
+-      }),
+-    ).toBe(true);
+-    expect(
+-      shouldHandleCommandPaletteShortcut({
+-        command: "commandPalette.toggle",
+-        editableTarget: true,
+-      }),
+-    ).toBe(true);
 +describe("resolveNewThreadOnIntent", () => {
 +  it("keeps the intent pending until environment-backed projects load", () => {
 +    expect(resolveNewThreadOnIntent({ isActive: false, environmentItemCount: 0 })).toBe("ignore");
 +    expect(resolveNewThreadOnIntent({ isActive: true, environmentItemCount: 0 })).toBe("defer");
 +    expect(resolveNewThreadOnIntent({ isActive: true, environmentItemCount: 1 })).toBe("open");
+   });
+ });
+ 
+@@ -76,7 +60,10 @@ const makeActionItem = (value: string) => ({
+ });
+ 
+ describe("buildNewThreadPickerGroups", () => {
+-  const addProjectItem = makeActionItem("action:add-project");
++  const addProjectItem = {
++    ...makeActionItem("action:add-project"),
++    shortcutCommand: "project.add" as const,
++  };
+ 
+   it("waits for projects before showing an empty picker", () => {
+     expect(
+@@ -107,6 +94,13 @@ describe("buildNewThreadPickerGroups", () => {
+       },
+       { value: "new-thread-actions", items: ["action:add-project"] },
+     ]);
++    expect(
++      buildNewThreadPickerGroups({
++        projectItems: [projectItem],
++        addProjectItem,
++        areProjectsLoading: false,
++      })[1]?.items[0]?.shortcutCommand,
++    ).toBe("project.add");
+   });
+ 
+   it("offers Add project when loading completes without projects", () => {
+@@ -159,30 +153,8 @@ describe("resolveCommandPaletteEmptyStateMessage", () => {
+   });
+ });
+ 
+-describe("shouldClearAddProjectEnvironmentOnPop", () => {
+-  it("clears the selected environment when returning from source selection", () => {
+-    expect(
+-      shouldClearAddProjectEnvironmentOnPop({
+-        viewStackDepth: 2,
+-        currentGroupValue: "sources:environment-local",
+-        addProjectEnvironmentId: "environment-local",
+-      }),
+-    ).toBe(true);
+-  });
+-
+-  it("keeps the selected environment while returning to source selection", () => {
+-    expect(
+-      shouldClearAddProjectEnvironmentOnPop({
+-        viewStackDepth: 3,
+-        currentGroupValue: undefined,
+-        addProjectEnvironmentId: "environment-local",
+-      }),
+-    ).toBe(false);
+-  });
+-});
+-
+-describe("filterCommandPaletteGroups", () => {
+-  it("keeps dedicated picker actions visible for the actions-only filter", () => {
++describe("filterCommandPaletteGroups actions-only filter", () => {
++  it("keeps dedicated picker actions visible", () => {
+     const addProjectItem = {
+       ...makeActionItem("action:add-project"),
+       searchTerms: ["add project"],
+@@ -318,6 +290,44 @@ describe("resolveBrowseTabCompletion", () => {
+   });
+ });
+ 
++describe("shouldIgnoreAddProjectShortcut", () => {
++  it("allows Alt+A from the editable search input while the new-task palette is open", () => {
++    expect(shouldIgnoreAddProjectShortcut({ paletteOpen: true, editableTarget: true })).toBe(false);
++  });
++
++  it("continues to ignore Alt+A from editors outside the palette", () => {
++    expect(shouldIgnoreAddProjectShortcut({ paletteOpen: false, editableTarget: true })).toBe(true);
 +  });
 +});
 +
++describe("shouldResetPaletteFlowOnPop", () => {
++  it("resets a flow opened from a nested parent when its first view is popped", () => {
++    expect(shouldResetPaletteFlowOnPop(1, 2)).toBe(true);
++  });
++
++  it("keeps a flow active while popping between its own nested views", () => {
++    expect(shouldResetPaletteFlowOnPop(1, 3)).toBe(false);
++  });
++});
++
++describe("resetAddProjectFlowState", () => {
++  it("clears every piece of add-project state before opening another palette flow", () => {
++    const flowBaseDepthRef = { current: 2 as number | null };
++    const clearEnvironment = vi.fn();
++    const clearCloneFlow = vi.fn();
++
++    resetAddProjectFlowState({
++      flowBaseDepthRef,
++      clearEnvironment,
++      clearCloneFlow,
++    });
++
++    expect(clearEnvironment).toHaveBeenCalledOnce();
++    expect(clearCloneFlow).toHaveBeenCalledOnce();
++    expect(flowBaseDepthRef.current).toBeNull();
++  });
++});
++
+ function makeThread(overrides: Partial<Thread> = {}): Thread {
+   return {
+     id: ThreadId.make("thread-1"),
 diff --git a/apps/web/src/components/CommandPalette.logic.ts b/apps/web/src/components/CommandPalette.logic.ts
-index 6b741ef..245a7d4 100644
+index 411cf3514d501668dc970ab8770424c33f7c49fa..245a7d4c04cb77d6a1846d812d8f15ca9bdac249 100644
 --- a/apps/web/src/components/CommandPalette.logic.ts
 +++ b/apps/web/src/components/CommandPalette.logic.ts
-@@ -18,0 +19,8 @@ export const NEW_THREAD_PROJECT_VIEW_GROUP = "new-thread-projects";
+@@ -16,14 +16,12 @@ export const ITEM_ICON_CLASS = "size-4 text-muted-foreground/80";
+ export const ADDON_ICON_CLASS = "size-4";
+ export const NEW_THREAD_PROJECT_VIEW_GROUP = "new-thread-projects";
+ 
+-export function shouldHandleCommandPaletteShortcut(input: {
+-  command: KeybindingCommand | null;
+-  editableTarget: boolean;
+-}): boolean {
+-  if (input.command === "commandPalette.toggle") {
+-    return true;
+-  }
+-  return input.command === "project.add" && !input.editableTarget;
 +export function resolveNewThreadOnIntent(input: {
 +  isActive: boolean;
 +  environmentItemCount: number;
 +}): "ignore" | "defer" | "open" {
 +  if (!input.isActive) return "ignore";
 +  return input.environmentItemCount > 0 ? "open" : "defer";
+ }
+ 
+ export interface CommandPaletteItem {
+@@ -79,6 +77,29 @@ export function enumerateCommandPaletteItems(
+   });
+ }
+ 
++export function shouldResetPaletteFlowOnPop(
++  flowBaseDepth: number | null,
++  currentDepth: number,
++): boolean {
++  return flowBaseDepth !== null && Math.max(0, currentDepth - 1) <= flowBaseDepth;
 +}
 +
++export function shouldIgnoreAddProjectShortcut(input: {
++  paletteOpen: boolean;
++  editableTarget: boolean;
++}): boolean {
++  return input.editableTarget && !input.paletteOpen;
++}
++
++export function resetAddProjectFlowState(input: {
++  flowBaseDepthRef: { current: number | null };
++  clearEnvironment: () => void;
++  clearCloneFlow: () => void;
++}): void {
++  input.clearCloneFlow();
++  input.clearEnvironment();
++  input.flowBaseDepthRef.current = null;
++}
+ export function buildNewThreadPickerGroups(input: {
+   projectItems: ReadonlyArray<CommandPaletteActionItem>;
+   addProjectItem: CommandPaletteActionItem;
+@@ -101,7 +122,6 @@ export function buildNewThreadPickerGroups(input: {
+   });
+   return groups;
+ }
+-
+ export function resolveCommandPaletteEmptyStateMessage(input: {
+   readonly contextualMessage?: string;
+   readonly isNewThreadProjectPickerView: boolean;
+@@ -122,19 +142,6 @@ export function resolveCommandPaletteEmptyStateMessage(input: {
+     ? "No projects yet. Add a project to start a thread."
+     : undefined;
+ }
+-
+-export function shouldClearAddProjectEnvironmentOnPop(input: {
+-  viewStackDepth: number;
+-  currentGroupValue: string | undefined;
+-  addProjectEnvironmentId: string | null;
+-}): boolean {
+-  return (
+-    input.viewStackDepth <= 1 ||
+-    (input.addProjectEnvironmentId !== null &&
+-      input.currentGroupValue === `sources:${input.addProjectEnvironmentId}`)
+-  );
+-}
+-
+ export type CommandPaletteMode = "root" | "root-browse" | "submenu" | "submenu-browse";
+ 
+ export function filterBrowseEntries(input: {
 diff --git a/apps/web/src/components/CommandPalette.tsx b/apps/web/src/components/CommandPalette.tsx
-index a1ec6fc..a72995b 100644
+index 297a6b27480b45230b7804370c2261a94b83b1c6..42cad31e8e176b7ce0479a5d0018d824c9c172a4 100644
 --- a/apps/web/src/components/CommandPalette.tsx
 +++ b/apps/web/src/components/CommandPalette.tsx
-@@ -25,0 +26 @@ import {
+@@ -23,11 +23,13 @@ import {
+   ArrowDownIcon,
+   ArrowLeftIcon,
+   ArrowUpIcon,
 +  CloudIcon,
-@@ -30,0 +32 @@ import {
+   CornerLeftUpIcon,
+   FolderIcon,
+   FolderPlusIcon,
+   LinkIcon,
+   MessageSquareIcon,
 +  MonitorIcon,
-@@ -37,0 +40 @@ import {
+   SettingsIcon,
+   SquarePenIcon,
+ } from "lucide-react";
+@@ -35,6 +37,7 @@ import {
+   useCallback,
+   useDeferredValue,
+   useEffect,
 +  useEffectEvent,
-@@ -120,0 +124 @@ import {
+   useLayoutEffect,
+   useMemo,
+   useReducer,
+@@ -63,7 +66,10 @@ import {
+   useProjects,
+   useThreadShells,
+ } from "../state/entities";
+-import { resolveThreadActionProjectRef, startNewThreadFromContext } from "../lib/chatThreadActions";
++import {
++  resolveThreadActionProjectRef,
++  startNewThreadFromContext,
++} from "../lib/chatThreadActions";
+ import {
+   appendBrowsePathSegment,
+   canNavigateUp,
+@@ -79,7 +85,11 @@ import {
+   isUnsupportedWindowsProjectPath,
+   resolveProjectPathForDispatch,
+ } from "../lib/projectPaths";
+-import { onCloseCommandPalette, onOpenCommandPalette } from "../commandPaletteBus";
++import {
++  isCommandPaletteOpen,
++  onCloseCommandPalette,
++  onOpenCommandPalette,
++} from "../commandPaletteBus";
+ import { isTerminalFocused } from "../lib/terminalFocus";
+ import { getLatestThreadForProject, sortThreads } from "../lib/threadSort";
+ import { cn, isMacPlatform, isWindowsPlatform, newProjectId } from "../lib/utils";
+@@ -111,8 +121,10 @@ import {
+   RECENT_THREAD_LIMIT,
+   resolveBrowseTabCompletion,
+   resolveCommandPaletteEmptyStateMessage,
+-  shouldClearAddProjectEnvironmentOnPop,
+-  shouldHandleCommandPaletteShortcut,
 +  resolveNewThreadOnIntent,
-@@ -179,0 +184,13 @@ function getEnvironmentBrowsePlatform(os: string | null | undefined): string {
++  resetAddProjectFlowState,
++  shouldIgnoreAddProjectShortcut,
++  shouldResetPaletteFlowOnPop,
+ } from "./CommandPalette.logic";
+ import { orderItemsByPreferredIds, sortLogicalProjectsForSidebar } from "./Sidebar.logic";
+ import { resolveEnvironmentOptionLabel } from "./BranchToolbar.logic";
+@@ -171,6 +183,19 @@ function getEnvironmentBrowsePlatform(os: string | null | undefined): string {
+   return typeof navigator === "undefined" ? "" : navigator.platform;
+ }
+ 
 +function renderProjectActionIcon(project: {
 +  environmentId: EnvironmentId;
 +  workspaceRoot: string;
@@ -59,24 +396,125 @@ index a1ec6fc..a72995b 100644
 +  );
 +}
 +
-@@ -366 +383,2 @@ type CommandPaletteOpenIntent =
+ interface AddProjectEnvironmentOption {
+   readonly environmentId: EnvironmentId;
+   readonly label: string;
+@@ -357,7 +382,8 @@ type CommandPaletteOpenIntent =
+   | {
+       readonly kind: "new-thread-in";
+       readonly preferredProjectRef: ScopedProjectRef | null;
 -    };
 +    }
 +  | { readonly kind: "new-thread-on" };
-@@ -380,0 +399 @@ type CommandPaletteUiAction =
+ 
+ interface CommandPaletteUiState {
+   readonly open: boolean;
+@@ -372,6 +398,7 @@ type CommandPaletteUiAction =
+       readonly _tag: "OpenNewThreadIn";
+       readonly preferredProjectRef: ScopedProjectRef | null;
+     }
 +  | { readonly _tag: "OpenNewThreadOn" }
-@@ -404,0 +424,2 @@ function reduceCommandPaletteUiState(
+   | { readonly _tag: "ClearOpenIntent" };
+ 
+ function reduceCommandPaletteUiState(
+@@ -396,11 +423,26 @@ function reduceCommandPaletteUiState(
+           preferredProjectRef: action.preferredProjectRef,
+         },
+       };
 +    case "OpenNewThreadOn":
 +      return { open: true, openIntent: { kind: "new-thread-on" } };
-@@ -438,0 +460 @@ export function CommandPalette({ children }: { children: ReactNode }) {
+     case "ClearOpenIntent":
+       return state.openIntent ? { ...state, openIntent: null } : state;
+   }
+ }
+ 
++function isEditableKeyboardTarget(target: EventTarget | null): boolean {
++  if (!(target instanceof HTMLElement)) {
++    return false;
++  }
++  return (
++    target instanceof HTMLInputElement ||
++    target instanceof HTMLTextAreaElement ||
++    target instanceof HTMLSelectElement ||
++    target.isContentEditable ||
++    target.closest('[contenteditable]:not([contenteditable="false"])') !== null
++  );
++}
++
+ export function CommandPalette({ children }: { children: ReactNode }) {
+   const [state, dispatch] = useReducer(reduceCommandPaletteUiState, {
+     open: false,
+@@ -417,6 +459,7 @@ export function CommandPalette({ children }: { children: ReactNode }) {
+       }),
+     [],
+   );
 +  const openNewThreadOn = useCallback(() => dispatch({ _tag: "OpenNewThreadOn" }), []);
-@@ -490,0 +513,2 @@ export function CommandPalette({ children }: { children: ReactNode }) {
+   const clearOpenIntent = useCallback(() => dispatch({ _tag: "ClearOpenIntent" }), []);
+   const keybindings = useAtomValue(primaryServerKeybindingsAtom);
+   const composerHandleRef = useRef<ChatComposerHandle | null>(null);
+@@ -433,23 +476,21 @@ export function CommandPalette({ children }: { children: ReactNode }) {
+ 
+   useEffect(() => {
+     const onKeyDown = (event: globalThis.KeyboardEvent) => {
+-      if (event.defaultPrevented) return;
++      if (event.defaultPrevented || event.repeat) return;
+       const command = resolveShortcutCommand(event, keybindings, {
+         context: {
+           terminalFocus: isTerminalFocused(),
+           terminalOpen,
+         },
+       });
+-      const target =
+-        event.target instanceof Element
+-          ? event.target.closest(
+-              'input, textarea, select, [contenteditable]:not([contenteditable="false"])',
+-            )
+-          : null;
++      if (command !== "commandPalette.toggle" && command !== "project.add") {
++        return;
++      }
+       if (
+-        !shouldHandleCommandPaletteShortcut({
+-          command,
+-          editableTarget: target !== null,
++        command === "project.add" &&
++        shouldIgnoreAddProjectShortcut({
++          paletteOpen: isCommandPaletteOpen(),
++          editableTarget: isEditableKeyboardTarget(event.target),
+         })
+       ) {
+         return;
+@@ -471,13 +512,15 @@ export function CommandPalette({ children }: { children: ReactNode }) {
+       onOpenCommandPalette((detail) => {
+         if (detail.open === "new-thread-in") {
+           openNewThreadIn(detail.preferredProjectRef);
 +        } else if (detail.open === "new-thread-on") {
 +          openNewThreadOn();
-@@ -497 +521 @@ export function CommandPalette({ children }: { children: ReactNode }) {
+         } else if (detail.open === "add-project") {
+           openAddProject();
+         } else {
+           setOpen(true);
+         }
+       }),
 -    [openAddProject, openNewThreadIn, setOpen],
 +    [openAddProject, openNewThreadIn, openNewThreadOn, setOpen],
-@@ -724,0 +749,7 @@ function OpenCommandPaletteDialog(props: {
+   );
+ 
+   useEffect(() => onCloseCommandPalette(() => setOpen(false)), [setOpen]);
+@@ -550,6 +593,9 @@ function OpenCommandPaletteDialog(props: {
+   const keybindings = useAtomValue(primaryServerKeybindingsAtom);
+   const providers = useAtomValue(primaryServerProvidersAtom);
+   const [viewStack, setViewStack] = useState<CommandPaletteView[]>([]);
++  const viewStackDepthRef = useRef(0);
++  viewStackDepthRef.current = viewStack.length;
++  const addProjectFlowBaseDepthRef = useRef<number | null>(null);
+   const currentView = viewStack.at(-1) ?? null;
+   const isNewThreadProjectPickerView =
+     currentView?.groups[0]?.value === NEW_THREAD_PROJECT_VIEW_GROUP;
+@@ -714,6 +760,13 @@ function OpenCommandPaletteDialog(props: {
+ 
+     return options;
+   }, [environments]);
 +  const newThreadEnvironmentOptions = useMemo(
 +    () =>
 +      [...addProjectEnvironmentOptions].sort((left, right) =>
@@ -84,16 +522,27 @@ index a1ec6fc..a72995b 100644
 +      ),
 +    [addProjectEnvironmentOptions],
 +  );
-@@ -898,7 +929 @@ function OpenCommandPaletteDialog(props: {
+   const defaultAddProjectEnvironmentId = addProjectEnvironmentOptions[0]?.environmentId ?? null;
+   const wslAddProjectEnvironmentOption = useMemo(
+     () =>
+@@ -887,19 +940,93 @@ function OpenCommandPaletteDialog(props: {
+             group?.memberProjects.flatMap((member) => [member.title, member.workspaceRoot]) ?? []
+           );
+         },
 -        icon: (project) => (
 -          <ProjectFavicon
 -            environmentId={project.environmentId}
 -            cwd={project.workspaceRoot}
+-            repositoryKey={project.repositoryIdentity?.canonicalKey}
 -            className={ITEM_ICON_CLASS}
 -          />
 -        ),
 +        icon: renderProjectActionIcon,
-@@ -909,0 +935,81 @@ function OpenCommandPaletteDialog(props: {
+         runProject: openProjectFromSearch,
+       }),
+     [openProjectFromSearch, pickerProjects, projectGroupByTargetKey],
+   );
+ 
 +  const newThreadEnvironmentItems = useMemo((): CommandPaletteSubmenuItem[] => {
 +    const orderedEnvironmentOptions = currentProjectEnvironmentId
 +      ? [
@@ -175,16 +624,238 @@ index a1ec6fc..a72995b 100644
 +    projectGroups,
 +  ]);
 +
-@@ -924,7 +1030 @@ function OpenCommandPaletteDialog(props: {
+   const projectThreadItems = useMemo(
+     () =>
+       enumerateCommandPaletteItems(
+@@ -914,14 +1041,7 @@ function OpenCommandPaletteDialog(props: {
+               group?.memberProjects.flatMap((member) => [member.title, member.workspaceRoot]) ?? []
+             );
+           },
 -          icon: (project) => (
 -            <ProjectFavicon
 -              environmentId={project.environmentId}
 -              cwd={project.workspaceRoot}
+-              repositoryKey={project.repositoryIdentity?.canonicalKey}
 -              className={ITEM_ICON_CLASS}
 -            />
 -          ),
 +          icon: renderProjectActionIcon,
-@@ -1329,0 +1430,28 @@ function OpenCommandPaletteDialog(props: {
+           runProject: async (project) => {
+             const group = newThreadProjectGroupByTargetKey.get(
+               `${project.environmentId}:${project.id}`,
+@@ -970,6 +1090,18 @@ function OpenCommandPaletteDialog(props: {
+   );
+   const recentThreadItems = allThreadItems.slice(0, RECENT_THREAD_LIMIT);
+ 
++  const resetAddProjectFlow = useCallback((): void => {
++    resetAddProjectFlowState({
++      flowBaseDepthRef: addProjectFlowBaseDepthRef,
++      clearEnvironment: () => {
++        setAddProjectEnvironmentId(null);
++      },
++      clearCloneFlow: () => {
++        setAddProjectCloneFlow(null);
++      },
++    });
++  }, []);
++
+   function pushPaletteView(view: CommandPaletteView): void {
+     setViewStack((previousViews) => [
+       ...previousViews,
+@@ -995,18 +1127,16 @@ function OpenCommandPaletteDialog(props: {
+   }
+ 
+   function popView(): void {
+-    setAddProjectCloneFlow(null);
+     if (isNewThreadProjectPickerView) {
+       setNewThreadPreferredProjectRef(null);
+     }
+     if (
+-      shouldClearAddProjectEnvironmentOnPop({
+-        viewStackDepth: viewStack.length,
+-        currentGroupValue: currentView?.groups[0]?.value,
+-        addProjectEnvironmentId,
+-      })
++      viewStack.length <= 1 ||
++      shouldResetPaletteFlowOnPop(addProjectFlowBaseDepthRef.current, viewStack.length)
+     ) {
+-      setAddProjectEnvironmentId(null);
++      resetAddProjectFlow();
++    } else {
++      setAddProjectCloneFlow(null);
+     }
+     setViewStack((previousViews) => previousViews.slice(0, -1));
+     setHighlightedItemValue(null);
+@@ -1021,8 +1151,13 @@ function OpenCommandPaletteDialog(props: {
+     }
+   }
+ 
++  const markAddProjectFlowOpen = useCallback((): void => {
++    addProjectFlowBaseDepthRef.current ??= viewStackDepthRef.current;
++  }, []);
++
+   const startAddProjectBrowse = useCallback(
+     (environmentId: EnvironmentId): void => {
++      markAddProjectFlowOpen();
+       setAddProjectEnvironmentId(environmentId);
+       setAddProjectCloneFlow(null);
+       pushPaletteView({
+@@ -1031,11 +1166,12 @@ function OpenCommandPaletteDialog(props: {
+         initialQuery: getAddProjectInitialQueryForEnvironment(environmentId),
+       });
+     },
+-    [getAddProjectInitialQueryForEnvironment],
++    [getAddProjectInitialQueryForEnvironment, markAddProjectFlowOpen],
+   );
+ 
+   const startAddProjectClone = useCallback(
+     (environmentId: EnvironmentId, source: AddProjectRemoteSource): void => {
++      markAddProjectFlowOpen();
+       setAddProjectEnvironmentId(environmentId);
+       setAddProjectCloneFlow({ step: "repository", environmentId, source });
+       pushPaletteView({
+@@ -1044,7 +1180,7 @@ function OpenCommandPaletteDialog(props: {
+         initialQuery: "",
+       });
+     },
+-    [],
++    [markAddProjectFlowOpen],
+   );
+ 
+   const openSourceControlSettings = useCallback(() => {
+@@ -1148,6 +1284,7 @@ function OpenCommandPaletteDialog(props: {
+ 
+   const startAddProjectSourceSelection = useCallback(
+     (environmentId: EnvironmentId): void => {
++      markAddProjectFlowOpen();
+       setAddProjectEnvironmentId(environmentId);
+       setAddProjectCloneFlow(null);
+       pushPaletteView({
+@@ -1160,7 +1297,12 @@ function OpenCommandPaletteDialog(props: {
+         ),
+       });
+     },
+-    [browseEnvironmentId, buildAddProjectSourceGroups, sourceControlDiscovery.data],
++    [
++      browseEnvironmentId,
++      buildAddProjectSourceGroups,
++      markAddProjectFlowOpen,
++      sourceControlDiscovery.data,
++    ],
+   );
+ 
+   const addProjectEnvironmentItems: CommandPaletteActionItem[] = addProjectEnvironmentOptions.map(
+@@ -1190,7 +1332,11 @@ function OpenCommandPaletteDialog(props: {
+   );
+ 
+   const openAddProjectFlow = useCallback(() => {
++    if (addProjectFlowBaseDepthRef.current !== null) {
++      return;
++    }
+     if (addProjectEnvironmentOptions.length > 1) {
++      markAddProjectFlowOpen();
+       pushPaletteView({
+         addonIcon: <FolderPlusIcon className={ADDON_ICON_CLASS} />,
+         groups: addProjectEnvironmentGroups,
+@@ -1210,46 +1356,52 @@ function OpenCommandPaletteDialog(props: {
+       return;
+     }
+ 
++    markAddProjectFlowOpen();
+     void startAddProjectSourceSelection(environmentId);
+   }, [
+     addProjectEnvironmentGroups,
+     addProjectEnvironmentOptions.length,
+     defaultAddProjectEnvironmentId,
++    markAddProjectFlowOpen,
+     startAddProjectSourceSelection,
+   ]);
+ 
+-  const addProjectActionItem: CommandPaletteActionItem = {
+-    kind: "action",
+-    value: "action:add-project",
+-    searchTerms: [
+-      "add project",
+-      "folder",
+-      "directory",
+-      "browse",
+-      "clone",
+-      "remote",
+-      "repository",
+-      "repo",
+-      "git",
+-      "github",
+-      "gitlab",
+-      "bitbucket",
+-      "azure",
+-      "devops",
+-      "url",
+-      "environment",
+-    ],
+-    title: "Add project",
+-    icon: <FolderPlusIcon className={ITEM_ICON_CLASS} />,
+-    shortcutCommand: "project.add",
+-    keepOpen: true,
+-    run: async () => {
+-      openAddProjectFlow();
+-    },
+-  };
++  const addProjectAction = useMemo<CommandPaletteActionItem>(
++    () => ({
++      kind: "action",
++      value: "action:add-project",
++      searchTerms: [
++        "add project",
++        "folder",
++        "directory",
++        "browse",
++        "clone",
++        "remote",
++        "repository",
++        "repo",
++        "git",
++        "github",
++        "gitlab",
++        "bitbucket",
++        "azure",
++        "devops",
++        "url",
++        "environment",
++      ],
++      title: "Add project",
++      icon: <FolderPlusIcon className={ITEM_ICON_CLASS} />,
++      shortcutCommand: "project.add",
++      keepOpen: true,
++      run: async () => {
++        openAddProjectFlow();
++      },
++    }),
++    [openAddProjectFlow],
++  );
++
+   const newThreadPickerGroups = buildNewThreadPickerGroups({
+     projectItems: projectThreadItems,
+-    addProjectItem: addProjectActionItem,
++    addProjectItem: addProjectAction,
+     areProjectsLoading: !allEnvironmentShellsBootstrapped,
+   });
+   const newThreadPickerView = useMemo<CommandPaletteView>(
+@@ -1280,15 +1432,42 @@ function OpenCommandPaletteDialog(props: {
+     }
+     setNewThreadPreferredProjectRef(openIntent.preferredProjectRef);
+     clearOpenIntent();
+-    setAddProjectEnvironmentId(null);
+-    setAddProjectCloneFlow(null);
++    resetAddProjectFlow();
+     setIsRemoteProjectLookingUp(false);
+     setIsRemoteProjectCloning(false);
+     setViewStack([newThreadPickerView]);
+     setHighlightedItemValue(null);
+     setQuery("");
+     setNewThreadPickerGeneration((generation) => generation + 1);
+-  }, [clearOpenIntent, newThreadPickerView, openIntent]);
++  }, [clearOpenIntent, newThreadPickerView, openIntent, resetAddProjectFlow]);
++
 +  const openNewThreadOnFlow = useEffectEvent(() => {
 +    clearOpenIntent();
 +    setAddProjectCloneFlow(null);
@@ -212,8 +883,13 @@ index a1ec6fc..a72995b 100644
 +    }
 +    openNewThreadOnFlow();
 +  }, [newThreadEnvironmentItems.length, openIntent]);
-+
-@@ -1358,0 +1487,27 @@ function OpenCommandPaletteDialog(props: {
+ 
+   const actionItems: Array<CommandPaletteActionItem | CommandPaletteSubmenuItem> = [];
+ 
+@@ -1319,6 +1498,33 @@ function OpenCommandPaletteDialog(props: {
+       });
+     }
+ 
 +    if (newThreadEnvironmentItems.length > 0) {
 +      actionItems.push({
 +        kind: "submenu",
@@ -241,26 +917,129 @@ index a1ec6fc..a72995b 100644
 +      });
 +    }
 +
+     actionItems.push({
+       kind: "submenu",
+       value: "action:new-thread-in",
+@@ -1330,7 +1536,7 @@ function OpenCommandPaletteDialog(props: {
+     });
+   }
+ 
+-  actionItems.push(addProjectActionItem);
++  actionItems.push(addProjectAction);
+ 
+   if (wslAddProjectEnvironmentOption) {
+     actionItems.push({
+diff --git a/apps/web/src/environmentGrouping.test.ts b/apps/web/src/environmentGrouping.test.ts
+index fd0849ac704c66c1843ff17b7de6a3a2b727c595..8160136aa7448db2e1eb9308bbc50b9391fd3150 100644
+--- a/apps/web/src/environmentGrouping.test.ts
++++ b/apps/web/src/environmentGrouping.test.ts
+@@ -12,7 +12,6 @@ import {
+   buildPhysicalToLogicalProjectKeyMap,
+   buildSidebarProjectPickerEntries,
+   buildSidebarProjectSnapshots,
+-  resolveNewThreadPickerProjectRef,
+   resolveScopedNewThreadProjectRef,
+ } from "./sidebarProjectGrouping";
+ import { orderItemsByPreferredIds } from "./components/Sidebar.logic";
+@@ -379,38 +378,41 @@ describe("environment grouping", () => {
+     });
+   });
+ 
+-  it("uses the sidebar scope when the command palette has no explicit project preference", () => {
++  it("builds environment-scoped picker entries without falling back to another machine", () => {
+     const primary = makeProject({ repositoryIdentity });
+     const remote = makeProject({
+       id: ProjectId.make("project-remote"),
+       environmentId: remoteEnvironmentId,
+       repositoryIdentity,
+     });
+-    const separate = makeProject({
+-      id: ProjectId.make("project-separate"),
+-      title: "separate",
+-      workspaceRoot: "/tmp/separate",
++    const primaryOnly = makeProject({
++      id: ProjectId.make("project-primary-only"),
++      title: "primary-only",
++      workspaceRoot: "/tmp/primary-only",
+     });
+-    const [group] = buildSidebarProjectSnapshots({
+-      projects: [primary, remote, separate],
++    const groups = buildSidebarProjectSnapshots({
++      projects: [primaryOnly, primary, remote],
+       settings: defaultGroupingSettings,
+       primaryEnvironmentId,
+       resolveEnvironmentLabel: () => null,
+     });
+ 
+-    expect(
+-      resolveNewThreadPickerProjectRef({
+-        preferredProjectRef: null,
+-        scopedProjectGroup: group ?? null,
+-        contextualProjectRef: {
+-          environmentId: separate.environmentId,
+-          projectId: separate.id,
+-        },
+-      }),
+-    ).toEqual({
+-      environmentId: primary.environmentId,
+-      projectId: primary.id,
++    const entries = buildSidebarProjectPickerEntries({
++      groups,
++      preferredProjectRef: {
++        environmentId: primaryEnvironmentId,
++        projectId: primary.id,
++      },
++      targetEnvironmentId: remoteEnvironmentId,
++    });
++
++    expect(entries).toHaveLength(1);
++    expect(entries[0]?.group.projectKey).toBe(repositoryIdentity.canonicalKey);
++    expect(entries[0]?.targetProject).toMatchObject({
++      environmentId: remoteEnvironmentId,
++      id: remote.id,
+     });
++    expect(entries[0]?.isPreferred).toBe(false);
+   });
+ 
+   it("keeps manual project order when building grouped sidebar entries", () => {
 diff --git a/apps/web/src/keybindings.test.ts b/apps/web/src/keybindings.test.ts
-index d9e175a..c77167c 100644
+index d9e175af23973415dd61a5edbf9b456394f6963b..c77167cc4e83dbc1f067642131d444e5e86672be 100644
 --- a/apps/web/src/keybindings.test.ts
 +++ b/apps/web/src/keybindings.test.ts
-@@ -160 +160 @@ const DEFAULT_BINDINGS = compile([
+@@ -157,7 +157,7 @@ const DEFAULT_BINDINGS = compile([
+     whenAst: whenNot(whenIdentifier("terminalFocus")),
+   },
+   { shortcut: modShortcut("o", { shiftKey: true }), command: "chat.new" },
 -  { shortcut: modShortcut("n", { shiftKey: true }), command: "chat.newLocal" },
 +  { shortcut: modShortcut("n", { shiftKey: true }), command: "chat.newEnvironment" },
-@@ -452,0 +453,4 @@ describe("shortcutLabelForCommand", () => {
+   {
+     shortcut: {
+       key: "a",
+@@ -450,6 +450,10 @@ describe("shortcutLabelForCommand", () => {
+       "⌘B",
+     );
+     assert.strictEqual(shortcutLabelForCommand(DEFAULT_BINDINGS, "chat.new", "MacIntel"), "⇧⌘O");
 +    assert.strictEqual(
 +      shortcutLabelForCommand(DEFAULT_BINDINGS, "chat.newEnvironment", "Linux"),
 +      "Ctrl+Shift+N",
 +    );
-@@ -791,0 +796,3 @@ describe("chat/editor shortcuts", () => {
+     assert.strictEqual(shortcutLabelForCommand(DEFAULT_BINDINGS, "diff.toggle", "Linux"), "Ctrl+D");
+     assert.strictEqual(
+       shortcutLabelForCommand(DEFAULT_BINDINGS, "rightPanel.toggle", "MacIntel"),
+@@ -789,15 +793,33 @@ describe("chat/editor shortcuts", () => {
+   });
+ 
+   it("matches chat.newLocal shortcut", () => {
 +    const localBindings = compile([
 +      { shortcut: modShortcut("l", { shiftKey: true }), command: "chat.newLocal" },
 +    ]);
-@@ -793 +800 @@ describe("chat/editor shortcuts", () => {
+     assert.isTrue(
 -      isChatNewLocalShortcut(event({ key: "n", metaKey: true, shiftKey: true }), DEFAULT_BINDINGS, {
 +      isChatNewLocalShortcut(event({ key: "l", metaKey: true, shiftKey: true }), localBindings, {
-@@ -798 +805,15 @@ describe("chat/editor shortcuts", () => {
+         platform: "MacIntel",
+       }),
+     );
+     assert.isTrue(
 -      isChatNewLocalShortcut(event({ key: "n", ctrlKey: true, shiftKey: true }), DEFAULT_BINDINGS, {
 +      isChatNewLocalShortcut(event({ key: "l", ctrlKey: true, shiftKey: true }), localBindings, {
 +        platform: "Linux",
@@ -277,12 +1056,51 @@ index d9e175a..c77167c 100644
 +    );
 +    assert.strictEqual(
 +      resolveShortcutCommand(event({ key: "n", ctrlKey: true, shiftKey: true }), DEFAULT_BINDINGS, {
-@@ -800,0 +822 @@ describe("chat/editor shortcuts", () => {
+         platform: "Linux",
+       }),
 +      "chat.newEnvironment",
+     );
+   });
+ 
+diff --git a/packages/contracts/src/keybindings.test.ts b/packages/contracts/src/keybindings.test.ts
+index 7336a42d2df44ae7f25ffa2569d4ab92795d9b38..06d63a00fffd1eef890ff1bbd32b9cf4090dd6f8 100644
+--- a/packages/contracts/src/keybindings.test.ts
++++ b/packages/contracts/src/keybindings.test.ts
+@@ -71,6 +71,12 @@ it.effect("parses keybinding rules", () =>
+     });
+     assert.strictEqual(parsedAddProject.command, "project.add");
+ 
++    const parsedEnvironment = yield* decode(KeybindingRule, {
++      key: "mod+shift+n",
++      command: "chat.newEnvironment",
++    });
++    assert.strictEqual(parsedEnvironment.command, "chat.newEnvironment");
++
+     const parsedModelPickerToggle = yield* decode(KeybindingRule, {
+       key: "mod+shift+m",
+       command: "modelPicker.toggle",
+diff --git a/packages/contracts/src/keybindings.ts b/packages/contracts/src/keybindings.ts
+index ae91013f0aa24cf8603a13b5e67e00fe7dcae795..5f8ee0485663edca81d43da9c651d4b4b2d27ad5 100644
+--- a/packages/contracts/src/keybindings.ts
++++ b/packages/contracts/src/keybindings.ts
+@@ -75,6 +75,7 @@ const STATIC_KEYBINDING_COMMANDS = [
+   "preview.resetZoom",
+   "commandPalette.toggle",
+   "chat.new",
++  "chat.newEnvironment",
+   "chat.newLocal",
+   "project.add",
+   "editor.openFavorite",
 diff --git a/packages/shared/src/keybindings.ts b/packages/shared/src/keybindings.ts
-index 084d5c6..91a5f1f 100644
+index 084d5c62068939d4fde09d99ee1edd25af079703..91a5f1ff8ba5081f9e2ac1869d67764da3b05250 100644
 --- a/packages/shared/src/keybindings.ts
 +++ b/packages/shared/src/keybindings.ts
-@@ -40 +40 @@ export const DEFAULT_KEYBINDINGS: ReadonlyArray<KeybindingRule> = [
+@@ -37,7 +37,7 @@ export const DEFAULT_KEYBINDINGS: ReadonlyArray<KeybindingRule> = [
+   { key: "mod+k", command: "commandPalette.toggle", when: "!terminalFocus" },
+   { key: "mod+n", command: "chat.new", when: "!terminalFocus" },
+   { key: "mod+shift+o", command: "chat.new", when: "!terminalFocus" },
 -  { key: "mod+shift+n", command: "chat.newLocal", when: "!terminalFocus" },
 +  { key: "mod+shift+n", command: "chat.newEnvironment", when: "!terminalFocus" },
+   { key: "alt+a", command: "project.add", when: "!terminalFocus" },
+   { key: "mod+shift+m", command: "modelPicker.toggle", when: "!terminalFocus" },
+   { key: "mod+shift+e", command: "modelOptionsPicker.toggle", when: "!terminalFocus" },

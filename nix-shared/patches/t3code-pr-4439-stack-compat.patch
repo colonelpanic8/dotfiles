@@ -1,34 +1,66 @@
 diff --git a/apps/server/src/serverSettings.test.ts b/apps/server/src/serverSettings.test.ts
-index dcf8f7b00..aa1bb2cc3 100644
+index 10612bd34dbd9fab82b578565fa798c969ce59c7..b58937be32fab842890cdb10db39b1450feebd34 100644
 --- a/apps/server/src/serverSettings.test.ts
 +++ b/apps/server/src/serverSettings.test.ts
-@@ -452,5 +452,6 @@ it.layer(NodeServices.layer)("server settings", (it) => {
+@@ -447,6 +447,7 @@ it.layer(NodeServices.layer)("server settings", (it) => {
+ 
        const next = yield* serverSettings.updateSettings({
          addProjectBaseDirectory: "  ~/Development  ",
 +        worktreePathTemplate: "  {repoRoot}/.worktrees/{branch}  ",
          observability: {
            otlpTracesUrl: "  http://localhost:4318/v1/traces  ",
            otlpMetricsUrl: "  http://localhost:4318/v1/metrics  ",
-@@ -458,5 +459,6 @@ it.layer(NodeServices.layer)("server settings", (it) => {
+@@ -454,6 +455,7 @@ it.layer(NodeServices.layer)("server settings", (it) => {
        });
+ 
        assert.equal(next.addProjectBaseDirectory, "~/Development");
 +      assert.equal(next.worktreePathTemplate, "{repoRoot}/.worktrees/{branch}");
        assert.deepEqual(next.observability, {
          otlpTracesUrl: "http://localhost:4318/v1/traces",
          otlpMetricsUrl: "http://localhost:4318/v1/metrics",
-@@ -493,6 +495,7 @@ it.layer(NodeServices.layer)("server settings", (it) => {
-       const fileSystem = yield* FileSystem.FileSystem;
-       const next = yield* serverSettings.updateSettings({
-         addProjectBaseDirectory: "~/Development",
-+        worktreePathTemplate: "{repoRoot}/.worktrees/{branch}",
-         projectIcons: {
-           "/workspace/t3code": "~/.config/t3code/icons/t3code.svg",
+@@ -494,6 +496,7 @@ it.layer(NodeServices.layer)("server settings", (it) => {
+         projectIconsByGitRemote: {
+           "github.com/t3tools/t3code": "~/.config/t3code/icons/t3code.svg",
          },
-@@ -523,6 +526,7 @@ it.layer(NodeServices.layer)("server settings", (it) => {
-       // @effect-diagnostics-next-line preferSchemaOverJson:off
-       assert.deepEqual(JSON.parse(raw), {
-         addProjectBaseDirectory: "~/Development",
 +        worktreePathTemplate: "{repoRoot}/.worktrees/{branch}",
-         projectIcons: {
-           "/workspace/t3code": "~/.config/t3code/icons/t3code.svg",
+         observability: {
+           otlpTracesUrl: "http://localhost:4318/v1/traces",
+           otlpMetricsUrl: "http://localhost:4318/v1/metrics",
+@@ -522,6 +525,7 @@ it.layer(NodeServices.layer)("server settings", (it) => {
+         projectIconsByGitRemote: {
+           "github.com/t3tools/t3code": "~/.config/t3code/icons/t3code.svg",
          },
++        worktreePathTemplate: "{repoRoot}/.worktrees/{branch}",
+         observability: {
+           otlpTracesUrl: "http://localhost:4318/v1/traces",
+           otlpMetricsUrl: "http://localhost:4318/v1/metrics",
+diff --git a/packages/contracts/src/settings.ts b/packages/contracts/src/settings.ts
+index effd8b806225e6497c0c7c1c7ef0b04e7c9fc96b..e947dee258328c7f746afacafe498012abf3db39 100644
+--- a/packages/contracts/src/settings.ts
++++ b/packages/contracts/src/settings.ts
+@@ -397,6 +397,7 @@ export const ObservabilitySettings = Schema.Struct({
+ export type ObservabilitySettings = typeof ObservabilitySettings.Type;
+ 
+ export const DEFAULT_AUTOMATIC_GIT_FETCH_INTERVAL = Duration.seconds(30);
++export const DEFAULT_WORKTREE_PATH_TEMPLATE = "{worktreesDir}/{repoName}/{branch}";
+ 
+ const ProjectIconPath = TrimmedNonEmptyString.check(Schema.isMaxLength(1024));
+ const ProjectIconWorkspaceRoot = TrimmedNonEmptyString.check(Schema.isMaxLength(1024));
+@@ -417,6 +418,9 @@ export const ServerSettings = Schema.Struct({
+   newWorktreesStartFromOrigin: Schema.Boolean.pipe(
+     Schema.withDecodingDefault(Effect.succeed(true)),
+   ),
++  worktreePathTemplate: TrimmedNonEmptyString.pipe(
++    Schema.withDecodingDefault(Effect.succeed(DEFAULT_WORKTREE_PATH_TEMPLATE)),
++  ),
+   addProjectBaseDirectory: TrimmedString.pipe(Schema.withDecodingDefault(Effect.succeed(""))),
+   projectIcons: Schema.Record(ProjectIconWorkspaceRoot, ProjectIconPath).pipe(
+     Schema.withDecodingDefault(Effect.succeed({})),
+@@ -571,6 +575,7 @@ export const ServerSettingsPatch = Schema.Struct({
+   automaticGitFetchInterval: Schema.optionalKey(Schema.DurationFromMillis),
+   defaultThreadEnvMode: Schema.optionalKey(ThreadEnvMode),
+   newWorktreesStartFromOrigin: Schema.optionalKey(Schema.Boolean),
++  worktreePathTemplate: Schema.optionalKey(TrimmedNonEmptyString),
+   addProjectBaseDirectory: Schema.optionalKey(TrimmedString),
+   // Whole-map replacement. Omitting a key removes that project's override.
+   projectIcons: Schema.optionalKey(Schema.Record(ProjectIconWorkspaceRoot, ProjectIconPath)),

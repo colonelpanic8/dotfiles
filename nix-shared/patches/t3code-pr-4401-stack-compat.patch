@@ -1,5 +1,5 @@
 diff --git a/apps/server/src/assets/AssetAccess.test.ts b/apps/server/src/assets/AssetAccess.test.ts
-index 5b99debf433c3e66c661cc8d40c28d4edc15cadc..662d919e24b17b79dc2da14079f4dd12cff9cdf6 100644
+index 5b99debf433c3e66c661cc8d40c28d4edc15cadc..aea3d22a0fc8a32e7e2dc96a8277d2f0e5cd08de 100644
 --- a/apps/server/src/assets/AssetAccess.test.ts
 +++ b/apps/server/src/assets/AssetAccess.test.ts
 @@ -1,5 +1,5 @@
@@ -14,7 +14,7 @@ index 5b99debf433c3e66c661cc8d40c28d4edc15cadc..662d919e24b17b79dc2da14079f4dd12
  import * as Path from "effect/Path";
  import * as PlatformError from "effect/PlatformError";
 +import * as Stream from "effect/Stream";
-
+ 
  import * as ServerSecretStore from "../auth/ServerSecretStore.ts";
  import * as ServerConfig from "../config.ts";
  import * as ProjectFaviconResolver from "../project/ProjectFaviconResolver.ts";
@@ -31,11 +31,11 @@ index 5b99debf433c3e66c661cc8d40c28d4edc15cadc..662d919e24b17b79dc2da14079f4dd12
 +  ServerSettings.ServerSettingsService.layerTest(),
    ServerSecretStore.layer.pipe(Layer.provide(configLayer)),
  ).pipe(Layer.provideMerge(NodeServices.layer));
-
-@@ -343,6 +348,137 @@ describe("AssetAccess", () => {
+ 
+@@ -343,6 +348,191 @@ describe("AssetAccess", () => {
      }).pipe(Effect.provide(testLayer)),
    );
-
+ 
 +  it.effect("issues exact capabilities for configured project icons outside the workspace", () =>
 +    Effect.gen(function* () {
 +      const fileSystem = yield* FileSystem.FileSystem;
@@ -69,6 +69,60 @@ index 5b99debf433c3e66c661cc8d40c28d4edc15cadc..662d919e24b17b79dc2da14079f4dd12
 +      expect(
 +        yield* resolveAsset(suffix.slice(0, separatorIndex), suffix.slice(separatorIndex + 1)),
 +      ).toEqual({ kind: "file", path: canonicalIconPath });
++    }).pipe(Effect.provide(testLayer)),
++  );
++
++  it.effect("finds workspace icon settings keyed by the unnormalized request root", () =>
++    Effect.gen(function* () {
++      const fileSystem = yield* FileSystem.FileSystem;
++      const path = yield* Path.Path;
++      const root = yield* fileSystem.makeTempDirectoryScoped({
++        prefix: "t3-asset-favicon-raw-root-",
++      });
++      const requestedRoot = `${root}/.`;
++      const iconDirectory = yield* fileSystem.makeTempDirectoryScoped({
++        prefix: "t3-asset-favicon-raw-custom-",
++      });
++      const iconPath = path.join(iconDirectory, "custom.svg");
++      yield* fileSystem.writeFileString(iconPath, "<svg />");
++      const settings = ServerSettings.ServerSettingsService.of({
++        start: Effect.void,
++        ready: Effect.void,
++        getSettings: Effect.succeed({
++          ...DEFAULT_SERVER_SETTINGS,
++          projectIcons: { [requestedRoot]: iconPath },
++        }),
++        updateSettings: () => Effect.die("not implemented"),
++        streamChanges: Stream.empty,
++      });
++
++      const result = yield* issueAssetUrl({
++        resource: { _tag: "project-favicon", cwd: requestedRoot, revision: iconPath },
++      }).pipe(Effect.provideService(ServerSettings.ServerSettingsService, settings));
++
++      expect(result.relativeUrl.endsWith("/custom.svg")).toBe(true);
++    }).pipe(Effect.provide(testLayer)),
++  );
++
++  it.effect("rejects automatically discovered icon symlinks outside the workspace", () =>
++    Effect.gen(function* () {
++      const fileSystem = yield* FileSystem.FileSystem;
++      const path = yield* Path.Path;
++      const root = yield* fileSystem.makeTempDirectoryScoped({
++        prefix: "t3-asset-favicon-auto-symlink-root-",
++      });
++      const outsideDirectory = yield* fileSystem.makeTempDirectoryScoped({
++        prefix: "t3-asset-favicon-auto-symlink-outside-",
++      });
++      const outsidePath = path.join(outsideDirectory, "secret.svg");
++      yield* fileSystem.writeFileString(outsidePath, "<svg>secret</svg>");
++      yield* fileSystem.symlink(outsidePath, path.join(root, "favicon.svg"));
++
++      const error = yield* issueAssetUrl({
++        resource: { _tag: "project-favicon", cwd: root },
++      }).pipe(Effect.flip);
++
++      expect(error._tag).toBe("AssetProjectFaviconNotFoundError");
 +    }).pipe(Effect.provide(testLayer)),
 +  );
 +
@@ -170,13 +224,285 @@ index 5b99debf433c3e66c661cc8d40c28d4edc15cadc..662d919e24b17b79dc2da14079f4dd12
    it.effect("preserves structured project favicon resolution causes", () =>
      Effect.gen(function* () {
        const fileSystem = yield* FileSystem.FileSystem;
+@@ -361,6 +551,7 @@ describe("AssetAccess", () => {
+         cause: platformCause,
+       });
+       const resolver = ProjectFaviconResolver.ProjectFaviconResolver.of({
++        resolve: () => Effect.fail(resolutionCause),
+         resolvePath: () => Effect.fail(resolutionCause),
+       });
+ 
+diff --git a/apps/server/src/assets/AssetAccess.ts b/apps/server/src/assets/AssetAccess.ts
+index 1bdaf9c4fa4b3b5dde07434cbaab73ac5ef9d912..d5f5b8dd018420afdee5b1e0d8304dc1a69b4a19 100644
+--- a/apps/server/src/assets/AssetAccess.ts
++++ b/apps/server/src/assets/AssetAccess.ts
+@@ -38,6 +38,8 @@ import * as ServerSecretStore from "../auth/ServerSecretStore.ts";
+ import { resolveAttachmentPathById } from "../attachmentStore.ts";
+ import * as ServerConfig from "../config.ts";
+ import * as ProjectFaviconResolver from "../project/ProjectFaviconResolver.ts";
++import * as RepositoryIdentityResolver from "../project/RepositoryIdentityResolver.ts";
++import * as ServerSettings from "../serverSettings.ts";
+ import * as WorkspacePaths from "../workspace/WorkspacePaths.ts";
+ import type { ResolvedThreadArtifactPath } from "./ThreadArtifactResolver.ts";
+ 
+@@ -85,6 +87,12 @@ const AssetClaimsSchema = Schema.Union([
+     relativePath: Schema.NullOr(Schema.String),
+     expiresAt: Schema.Number,
+   }),
++  Schema.Struct({
++    version: Schema.Literal(2),
++    kind: Schema.Literal("project-icon"),
++    absolutePath: Schema.NullOr(Schema.String),
++    expiresAt: Schema.Number,
++  }),
+ ]);
+ type AssetClaims = typeof AssetClaimsSchema.Type;
+ 
+@@ -283,8 +291,8 @@ export const issueAssetUrl = Effect.fn("AssetAccess.issueAssetUrl")(function* (i
+             }),
+         ),
+       );
+-      const faviconResolver = yield* ProjectFaviconResolver.ProjectFaviconResolver;
+-      const faviconPath = yield* faviconResolver.resolvePath(workspaceRoot).pipe(
++      const settings = yield* ServerSettings.ServerSettingsService;
++      const serverSettings = yield* settings.getSettings.pipe(
+         Effect.mapError(
+           (cause) =>
+             new AssetProjectFaviconResolutionError({
+@@ -293,39 +301,67 @@ export const issueAssetUrl = Effect.fn("AssetAccess.issueAssetUrl")(function* (i
+             }),
+         ),
+       );
+-      const relativePath = faviconPath ? path.relative(workspaceRoot, faviconPath) : null;
+-      if (
+-        relativePath &&
+-        !(yield* resolveCanonicalWorkspaceFile({ workspaceRoot, relativePath }).pipe(
++      const faviconResolver = yield* ProjectFaviconResolver.ProjectFaviconResolver;
++      const repositoryIdentityResolver =
++        yield* RepositoryIdentityResolver.RepositoryIdentityResolver;
++      const repositoryIdentity = yield* repositoryIdentityResolver.resolve(workspaceRoot);
++      const customIconPaths = [
++        serverSettings.projectIcons[workspaceRoot] ??
++          serverSettings.projectIcons[input.resource.cwd],
++        ...(repositoryIdentity
++          ? [serverSettings.projectIconsByGitRemote[repositoryIdentity.canonicalKey]]
++          : []),
++      ].filter((iconPath): iconPath is string => iconPath !== undefined);
++      const resolvedFavicon = yield* faviconResolver
++        .resolve(workspaceRoot, customIconPaths.length === 0 ? undefined : { customIconPaths })
++        .pipe(
+           Effect.mapError(
+             (cause) =>
+-              new AssetProjectFaviconInspectionError({
++              new AssetProjectFaviconResolutionError({
+                 resource: input.resource,
+                 cause,
+               }),
+           ),
+-        ))
+-      ) {
+-        return yield* new AssetProjectFaviconNotFoundError({
+-          resource: input.resource,
+-        });
++        );
++      const canonicalFaviconPath = resolvedFavicon
++        ? resolvedFavicon.source === "custom-setting"
++          ? yield* optionOnNotFound(fileSystem.realPath(resolvedFavicon.path)).pipe(
++              Effect.mapError(
++                (cause) =>
++                  new AssetProjectFaviconInspectionError({
++                    resource: input.resource,
++                    cause,
++                  }),
++              ),
++            )
++          : yield* Effect.gen(function* () {
++              const canonicalPath = yield* resolveCanonicalWorkspaceFile({
++                workspaceRoot,
++                relativePath: path.relative(workspaceRoot, resolvedFavicon.path),
++              }).pipe(
++                Effect.mapError(
++                  (cause) =>
++                    new AssetProjectFaviconInspectionError({
++                      resource: input.resource,
++                      cause,
++                    }),
++                ),
++              );
++              return canonicalPath === null ? Option.none<string>() : Option.some(canonicalPath);
++            })
++        : Option.none<string>();
++      if (resolvedFavicon && Option.isNone(canonicalFaviconPath)) {
++        return yield* new AssetProjectFaviconNotFoundError({ resource: input.resource });
+       }
+       claims = {
+-        version: 1,
+-        kind: "project-favicon",
+-        workspaceRoot: yield* fileSystem.realPath(workspaceRoot).pipe(
+-          Effect.mapError(
+-            (cause) =>
+-              new AssetWorkspaceResolutionError({
+-                resource: input.resource,
+-                cause,
+-              }),
+-          ),
+-        ),
+-        relativePath,
++        version: 2,
++        kind: "project-icon",
++        absolutePath: Option.getOrNull(canonicalFaviconPath),
+         expiresAt,
+       };
+-      fileName = relativePath ? path.basename(relativePath) : PROJECT_FAVICON_FALLBACK_MARKER;
++      fileName = resolvedFavicon
++        ? path.basename(resolvedFavicon.path)
++        : PROJECT_FAVICON_FALLBACK_MARKER;
+       break;
+     }
+   }
+@@ -432,6 +468,32 @@ export const resolveAsset = Effect.fn("AssetAccess.resolveAsset")(function* (
+     });
+     return faviconPath ? ({ kind: "file", path: faviconPath } satisfies ResolvedAsset) : null;
+   }
++  if (claims.kind === "project-icon") {
++    if (claims.absolutePath === null) return null;
++    const fileSystem = yield* FileSystem.FileSystem;
++    const canonicalPath = yield* optionOnNotFound(fileSystem.realPath(claims.absolutePath)).pipe(
++      Effect.tapError((cause) =>
++        Effect.logError("Failed to canonicalize configured project icon.", {
++          path: claims.absolutePath,
++          cause,
++        }),
++      ),
++      Effect.orElseSucceed(() => Option.none()),
++    );
++    if (Option.isNone(canonicalPath) || canonicalPath.value !== claims.absolutePath) return null;
++    const info = yield* optionOnNotFound(fileSystem.stat(canonicalPath.value)).pipe(
++      Effect.tapError((cause) =>
++        Effect.logError("Failed to inspect configured project icon.", {
++          path: canonicalPath.value,
++          cause,
++        }),
++      ),
++      Effect.orElseSucceed(() => Option.none()),
++    );
++    return Option.isSome(info) && info.value.type === "File"
++      ? ({ kind: "file", path: canonicalPath.value } satisfies ResolvedAsset)
++      : null;
++  }
+ 
+   const decodedPath = decodeRelativePath(relativePath);
+   if (decodedPath === null) return null;
+diff --git a/apps/web/src/components/ProjectFavicon.tsx b/apps/web/src/components/ProjectFavicon.tsx
+index 9d8eea05275fe7042917fd5b72286dc795ec3d54..cb51c1f7c863c018a7106baa1992c33831288e7b 100644
+--- a/apps/web/src/components/ProjectFavicon.tsx
++++ b/apps/web/src/components/ProjectFavicon.tsx
+@@ -7,18 +7,55 @@ import { FolderIcon } from "lucide-react";
+ import type { ComponentType } from "react";
+ import { useCallback, useState } from "react";
+ import { useAssetUrl } from "../assets/assetUrls";
++import { useEnvironmentSettings } from "../hooks/useSettings";
+ 
+ const loadedProjectFaviconSrcs = new Set<string>();
+ 
++function hashProjectFaviconRevision(input: string): string {
++  let hash = 0x811c9dc5;
++  for (let index = 0; index < input.length; index += 1) {
++    hash ^= input.charCodeAt(index);
++    hash = Math.imul(hash, 0x01000193) >>> 0;
++  }
++  return hash.toString(36);
++}
++
++export function projectFaviconSettingsRevision(
++  settings: {
++    readonly projectIcons: Readonly<Record<string, string>>;
++    readonly projectIconsByGitRemote: Readonly<Record<string, string>>;
++  },
++  cwd: string,
++  repositoryKey?: string | null,
++): string | undefined {
++  const pathIcon = settings.projectIcons[cwd];
++  const remoteEntries = Object.entries(settings.projectIconsByGitRemote);
++  if (!pathIcon && remoteEntries.length === 0 && !repositoryKey) return undefined;
++  const revisionSource = JSON.stringify([
++    "path",
++    pathIcon ?? null,
++    "repository",
++    repositoryKey ?? null,
++    "remotes",
++    remoteEntries.sort(([left], [right]) => left.localeCompare(right)),
++  ]);
++  return `icons:${revisionSource.length}:${hashProjectFaviconRevision(revisionSource)}`;
++}
++
+ export function ProjectFavicon(input: {
+   environmentId: EnvironmentId;
+   cwd: string;
++  repositoryKey?: string | null | undefined;
+   className?: string | undefined;
+   fallbackIcon?: ComponentType<{ className?: string }>;
+ }) {
++  const configuredIconRevision = useEnvironmentSettings(input.environmentId, (settings) =>
++    projectFaviconSettingsRevision(settings, input.cwd, input.repositoryKey),
++  );
+   const src = useAssetUrl(input.environmentId, {
+     _tag: "project-favicon",
+     cwd: input.cwd,
++    ...(configuredIconRevision ? { revision: configuredIconRevision } : {}),
+   });
+   const FallbackIcon = input.fallbackIcon ?? FolderIcon;
+ 
+diff --git a/apps/web/src/components/Sidebar.logic.test.ts b/apps/web/src/components/Sidebar.logic.test.ts
+index 8a8a5bb171b54e5de0329402b851d8aaab8fcb78..24292a0348855188c48d3727b4abb39c27780a4f 100644
+--- a/apps/web/src/components/Sidebar.logic.test.ts
++++ b/apps/web/src/components/Sidebar.logic.test.ts
+@@ -20,6 +20,7 @@ import {
+   orderItemsByPreferredIds,
+   resolveProjectStatusIndicator,
+   pruneSidebarChangeRequestStates,
++  resolveProjectRepositoryKey,
+   resolveSidebarThreadGitCwd,
+   resolveSidebarStageBadgeLabel,
+   resolveThreadRowClassName,
+@@ -96,6 +97,21 @@ describe("shouldPublishSidebarChangeRequestState", () => {
+   });
+ });
+ 
++describe("resolveProjectRepositoryKey", () => {
++  it("preserves a repository identity for sidebar favicon cache revisions", () => {
++    expect(
++      resolveProjectRepositoryKey({
++        repositoryIdentity: { canonicalKey: "github.com/pingdotgg/t3code" },
++      }),
++    ).toBe("github.com/pingdotgg/t3code");
++  });
++
++  it("returns null while repository identity is unavailable", () => {
++    expect(resolveProjectRepositoryKey(undefined)).toBeNull();
++    expect(resolveProjectRepositoryKey({ repositoryIdentity: null })).toBeNull();
++  });
++});
++
+ describe("shouldNavigateAfterProjectRemoval", () => {
+   const projectThreads = [{ environmentId: "environment-local", id: "thread-1" }];
+ 
 diff --git a/apps/web/src/components/SidebarV2.tsx b/apps/web/src/components/SidebarV2.tsx
-index 817d393898ceff4f20708f050eca1c7735baec5e..3f2ebdf8ff10323ad001cb77cc04ddf59433bd54 100644
+index 248958ddf4189a367cc0c997ba2b030c3873eac8..ae2266a28b5544769bef393da87df2ba7cfa583a 100644
 --- a/apps/web/src/components/SidebarV2.tsx
 +++ b/apps/web/src/components/SidebarV2.tsx
-@@ -129,6 +129,11 @@ import {
- import { resolveLocalCheckoutBranchMismatch } from "./BranchToolbar.logic";
- import { prStatusIndicator, resolveThreadPr } from "./ThreadStatusIndicators";
+@@ -124,6 +124,8 @@ import {
+   isSidebarThreadEffectivelySettled,
+   isTrailingDoubleClick,
+   orderItemsByPreferredIds,
++  resolveAdjacentThreadId,
++  resolveProjectRepositoryKey,
+   resolveSettledTimestamp,
+   pruneSidebarChangeRequestStates,
+   resolveNextActiveThreadIdAfterSettle,
+@@ -151,6 +153,11 @@ import {
+   type SnoozePreset,
+ } from "./Sidebar.snooze";
  import { ProjectFavicon } from "./ProjectFavicon";
 +import {
 +  ProjectIconDialog,
@@ -186,7 +512,39 @@ index 817d393898ceff4f20708f050eca1c7735baec5e..3f2ebdf8ff10323ad001cb77cc04ddf5
  import { ProviderInstanceIcon } from "./chat/ProviderInstanceIcon";
  import { getTriggerDisplayModelLabel } from "./chat/providerIconUtils";
  import { deriveProviderInstanceEntries, type ProviderInstanceEntry } from "../providerInstances";
-@@ -361,6 +366,10 @@ const SidebarV2Row = memo(function SidebarV2Row(props: {
+@@ -279,6 +286,7 @@ function SidebarV2ThreadTooltip({
+   thread,
+   projectTitle,
+   projectCwd,
++  projectRepositoryKey,
+   environmentLabel,
+   driverKind,
+   modelInstanceId,
+@@ -288,6 +296,7 @@ function SidebarV2ThreadTooltip({
+   thread: SidebarThreadSummary;
+   projectTitle: string | null;
+   projectCwd: string | null;
++  projectRepositoryKey: string | null;
+   environmentLabel: string | null;
+   driverKind: ProviderInstanceEntry["driverKind"] | null;
+   modelInstanceId: string;
+@@ -316,6 +325,7 @@ function SidebarV2ThreadTooltip({
+               <ProjectFavicon
+                 environmentId={thread.environmentId}
+                 cwd={projectCwd ?? ""}
++                repositoryKey={projectRepositoryKey}
+                 className="size-4 shrink-0 stroke-muted-foreground"
+               />
+               <div className="min-w-0 wrap-break-word text-foreground/90">{projectTitle}</div>
+@@ -436,6 +446,7 @@ const SidebarV2Row = memo(function SidebarV2Row(props: {
+   currentEnvironmentId: string | null;
+   environmentLabel: string | null;
+   projectCwd: string | null;
++  projectRepositoryKey: string | null;
+   projectTitle: string | null;
+   providerEntryByInstanceId: ReadonlyMap<string, ProviderInstanceEntry>;
+   onThreadClick: (event: ReactMouseEvent, threadRef: ScopedThreadRef) => void;
+@@ -447,6 +458,10 @@ const SidebarV2Row = memo(function SidebarV2Row(props: {
    isRenaming: boolean;
    renamingTitle: string;
    onContextMenu: (threadRef: ScopedThreadRef, position: { x: number; y: number }) => void;
@@ -196,8 +554,16 @@ index 817d393898ceff4f20708f050eca1c7735baec5e..3f2ebdf8ff10323ad001cb77cc04ddf5
 +  ) => void;
    onSettle: (threadRef: ScopedThreadRef) => void;
    onUnsettle: (threadRef: ScopedThreadRef) => void;
-   onChangeRequestState: (threadKey: string, state: "open" | "closed" | "merged" | null) => void;
-@@ -519,6 +528,17 @@ const SidebarV2Row = memo(function SidebarV2Row(props: {
+   onSnooze: (threadRef: ScopedThreadRef, preset: SnoozePreset) => void;
+@@ -605,6 +620,7 @@ const SidebarV2Row = memo(function SidebarV2Row(props: {
+       thread={thread}
+       projectTitle={props.projectTitle}
+       projectCwd={props.projectCwd}
++      projectRepositoryKey={props.projectRepositoryKey}
+       environmentLabel={props.environmentLabel}
+       driverKind={driverKind}
+       modelInstanceId={modelInstanceId}
+@@ -626,6 +642,17 @@ const SidebarV2Row = memo(function SidebarV2Row(props: {
      },
      [onContextMenu, threadRef],
    );
@@ -215,7 +581,7 @@ index 817d393898ceff4f20708f050eca1c7735baec5e..3f2ebdf8ff10323ad001cb77cc04ddf5
    const handleKeyDown = useCallback(
      (event: ReactKeyboardEvent) => {
        if (event.target !== event.currentTarget) return;
-@@ -697,6 +717,7 @@ const SidebarV2Row = memo(function SidebarV2Row(props: {
+@@ -833,10 +860,12 @@ const SidebarV2Row = memo(function SidebarV2Row(props: {
                  !props.isActive &&
                    "opacity-40 grayscale group-hover/v2-row:opacity-100 group-hover/v2-row:grayscale-0",
                )}
@@ -223,7 +589,12 @@ index 817d393898ceff4f20708f050eca1c7735baec5e..3f2ebdf8ff10323ad001cb77cc04ddf5
              >
                <ProjectFavicon
                  environmentId={thread.environmentId}
-@@ -775,20 +796,24 @@ const SidebarV2Row = memo(function SidebarV2Row(props: {
+                 cwd={props.projectCwd ?? ""}
++                repositoryKey={props.projectRepositoryKey}
+                 className={largeIcons ? "size-6" : "size-4"}
+                 fallbackIcon={MessageSquareIcon}
+               />
+@@ -941,20 +970,26 @@ const SidebarV2Row = memo(function SidebarV2Row(props: {
              )}
            >
              {largeIcons ? (
@@ -236,6 +607,7 @@ index 817d393898ceff4f20708f050eca1c7735baec5e..3f2ebdf8ff10323ad001cb77cc04ddf5
 +                <ProjectFavicon
 +                  environmentId={thread.environmentId}
 +                  cwd={props.projectCwd ?? ""}
++                  repositoryKey={props.projectRepositoryKey}
 +                  className="size-14 shrink-0"
 +                />
 +              </span>
@@ -252,13 +624,14 @@ index 817d393898ceff4f20708f050eca1c7735baec5e..3f2ebdf8ff10323ad001cb77cc04ddf5
 +                    <ProjectFavicon
 +                      environmentId={thread.environmentId}
 +                      cwd={props.projectCwd ?? ""}
++                      repositoryKey={props.projectRepositoryKey}
 +                      className="size-4 shrink-0"
 +                    />
 +                  </span>
                  )}
                  {props.projectTitle ? (
                    <span
-@@ -941,6 +966,7 @@ export default function SidebarV2() {
+@@ -1132,6 +1167,7 @@ export default function SidebarV2() {
    const [projectActionsTarget, setProjectActionsTarget] = useState<SidebarProjectSnapshot | null>(
      null,
    );
@@ -266,7 +639,7 @@ index 817d393898ceff4f20708f050eca1c7735baec5e..3f2ebdf8ff10323ad001cb77cc04ddf5
    const [projectScopeMenuOpen, setProjectScopeMenuOpen] = useState(false);
    const newThreadContext = useHandleNewThread();
    const openAddProjectCommandPalette = useCallback(
-@@ -1040,6 +1066,19 @@ export default function SidebarV2() {
+@@ -1231,6 +1267,19 @@ export default function SidebarV2() {
        ),
      [projectGroups],
    );
@@ -283,10 +656,10 @@ index 817d393898ceff4f20708f050eca1c7735baec5e..3f2ebdf8ff10323ad001cb77cc04ddf5
 +  );
 +  const projectMemberByKeyRef = useRef(projectMemberByKey);
 +  projectMemberByKeyRef.current = projectMemberByKey;
-
+ 
    // now is quantized to the minute so effectiveSettled memoization doesn't
    // churn on every render; auto-settle thresholds are day-granular anyway.
-@@ -1406,6 +1445,46 @@ export default function SidebarV2() {
+@@ -1690,6 +1739,46 @@ export default function SidebarV2() {
    // event and defeat row memoization during streaming.
    const threadByKeyRef = useRef(threadByKey);
    threadByKeyRef.current = threadByKey;
@@ -333,15 +706,41 @@ index 817d393898ceff4f20708f050eca1c7735baec5e..3f2ebdf8ff10323ad001cb77cc04ddf5
    // handleNewThread is inherently unstable (depends on the projects list);
    // a ref keeps it out of attemptSettle's dependency array.
    const handleNewThreadRef = useRef(newThreadContext.handleNewThread);
-@@ -2171,6 +2250,7 @@ export default function SidebarV2() {
-                     isRenaming={renamingThreadKey === threadKey}
-                     renamingTitle={renamingThreadKey === threadKey ? renamingTitle : ""}
-                     onContextMenu={handleThreadContextMenu}
-+                    onProjectIconContextMenu={handleProjectIconContextMenu}
-                     onSettle={attemptSettle}
-                     onUnsettle={attemptUnsettle}
-                     onChangeRequestState={handleChangeRequestState}
-@@ -2236,6 +2316,12 @@ export default function SidebarV2() {
+@@ -2577,6 +2666,7 @@ export default function SidebarV2() {
+                     <ProjectFavicon
+                       environmentId={scopedProjectGroup.environmentId}
+                       cwd={scopedProjectGroup.workspaceRoot}
++                      repositoryKey={scopedProjectGroup.repositoryIdentity?.canonicalKey}
+                       className="size-4 shrink-0"
+                     />
+                   ) : (
+@@ -2614,6 +2704,7 @@ export default function SidebarV2() {
+                           <ProjectFavicon
+                             environmentId={project.environmentId}
+                             cwd={project.workspaceRoot}
++                            repositoryKey={project.repositoryIdentity?.canonicalKey}
+                             className="size-4 shrink-0"
+                           />
+                           <span className="min-w-0 truncate text-sm">{project.displayName}</span>
+@@ -2726,6 +2817,9 @@ export default function SidebarV2() {
+                       projectCwd={
+                         projectCwdByKey.get(`${thread.environmentId}:${thread.projectId}`) ?? null
+                       }
++                      projectRepositoryKey={resolveProjectRepositoryKey(
++                        projectMemberByKey.get(`${thread.environmentId}:${thread.projectId}`),
++                      )}
+                       projectTitle={
+                         projectDisplayNameByKey.get(
+                           `${thread.environmentId}:${thread.projectId}`,
+@@ -2741,6 +2835,7 @@ export default function SidebarV2() {
+                       isRenaming={renamingThreadKey === threadKey}
+                       renamingTitle={renamingThreadKey === threadKey ? renamingTitle : ""}
+                       onContextMenu={handleThreadContextMenu}
++                      onProjectIconContextMenu={handleProjectIconContextMenu}
+                       onSettle={attemptSettle}
+                       onUnsettle={attemptUnsettle}
+                       onSnooze={attemptSnooze}
+@@ -2854,6 +2949,12 @@ export default function SidebarV2() {
            ) : null}
          </SidebarGroup>
        </SidebarContent>
@@ -354,7 +753,15 @@ index 817d393898ceff4f20708f050eca1c7735baec5e..3f2ebdf8ff10323ad001cb77cc04ddf5
        <Dialog
          open={projectActionsTarget !== null}
          onOpenChange={(open) => {
-@@ -2347,6 +2433,15 @@ export default function SidebarV2() {
+@@ -2880,6 +2981,7 @@ export default function SidebarV2() {
+                     <ProjectFavicon
+                       environmentId={member.environmentId}
+                       cwd={member.workspaceRoot}
++                      repositoryKey={member.repositoryIdentity?.canonicalKey}
+                       className="size-5 shrink-0 sm:size-4"
+                     />
+                     <div className="min-w-0 flex-1">
+@@ -2965,6 +3067,15 @@ export default function SidebarV2() {
                          </SelectPopup>
                        </Select>
                      </label>

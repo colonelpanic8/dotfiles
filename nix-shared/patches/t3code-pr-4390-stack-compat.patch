@@ -1,21 +1,28 @@
 diff --git a/apps/server/src/persistence/Migrations.ts b/apps/server/src/persistence/Migrations.ts
-index 38325934f3e57ec87691add37ff061eb9395750a..466a65df85fec420dc8fea0c4fe59a40d26b6ba9 100644
+index d25895671a910e974cef32dfca639fb11f3ab295..8091b121a01be340342e25744fa33273ebfb9289 100644
 --- a/apps/server/src/persistence/Migrations.ts
 +++ b/apps/server/src/persistence/Migrations.ts
-@@ -92,7 +92,7 @@ export const migrationEntries = [
-   [31, "AuthAuthorizationScopes", Migration0031],
+@@ -47,6 +47,7 @@ import Migration0031 from "./Migrations/031_AuthAuthorizationScopes.ts";
+ import Migration0032 from "./Migrations/032_AuthPairingProofKeyThumbprint.ts";
+ import Migration0033 from "./Migrations/033_ProjectionThreadsSettled.ts";
+ import Migration0034 from "./Migrations/034_ProjectionThreadsSnoozed.ts";
++import Migration0035 from "./Migrations/035_ProjectionThreadForkLineage.ts";
+ 
+ /**
+  * Migration loader with all migrations defined inline.
+@@ -93,6 +94,7 @@ export const migrationEntries = [
    [32, "AuthPairingProofKeyThumbprint", Migration0032],
    [33, "ProjectionThreadsSettled", Migration0033],
--  [34, "ProjectionThreadForkLineage", Migration0034],
-+  [35, "ProjectionThreadForkLineage", Migration0034],
+   [34, "ProjectionThreadsSnoozed", Migration0034],
++  [35, "ProjectionThreadForkLineage", Migration0035],
  ] as const;
-
+ 
  export const makeMigrationLoader = (throughId?: number) =>
 diff --git a/apps/web/src/components/Sidebar.tsx b/apps/web/src/components/Sidebar.tsx
-index bd18ac5c..505c4bcc 100644
+index 33eb0b6e287b2679d0e9ff8c09e8d74e5a908657..5b0b264f876847275617931d40ab2878fa02de86 100644
 --- a/apps/web/src/components/Sidebar.tsx
 +++ b/apps/web/src/components/Sidebar.tsx
-@@ -64,6 +64,10 @@ import {
+@@ -63,6 +63,10 @@ import {
    squashAtomCommandFailure,
  } from "@t3tools/client-runtime/state/runtime";
  import { type ChangeRequestStateLike } from "@t3tools/client-runtime/state/thread-settled";
@@ -26,16 +33,16 @@ index bd18ac5c..505c4bcc 100644
  import { useLocation, useNavigate, useParams, useRouter } from "@tanstack/react-router";
  import {
    MAX_SIDEBAR_THREAD_PREVIEW_COUNT,
-@@ -108,6 +112,7 @@ import { isModelPickerOpen } from "../modelPickerVisibility";
+@@ -107,6 +111,7 @@ import { isModelPickerOpen } from "../modelPickerVisibility";
  import { useShortcutModifierState } from "../shortcutModifierState";
  import { readLocalApi } from "../localApi";
  import { useComposerDraftStore } from "../composerDraftStore";
 +import { useForkThread } from "../hooks/useForkThread";
  import { useNewThreadHandler } from "../hooks/useHandleNewThread";
  import { useDesktopUpdateState } from "../state/desktopUpdate";
-
-@@ -209,7 +214,7 @@ import { useCopyToClipboard } from "~/hooks/useCopyToClipboard";
- import { useIsMobile } from "~/hooks/useMediaQuery";
+ 
+@@ -209,7 +214,7 @@ import { useIsMobile } from "~/hooks/useMediaQuery";
+ import { useNowMinute } from "~/hooks/useNowMinute";
  import { CommandDialogTrigger } from "./ui/command";
  import { useClientSettings, useUpdateClientSettings } from "~/hooks/useSettings";
 -import { primaryServerKeybindingsAtom } from "../state/server";
@@ -52,7 +59,7 @@ index bd18ac5c..505c4bcc 100644
    const updateSettings = useUpdateClientSettings();
    const sidebarThreadPreviewCount = useClientSettings<SidebarThreadPreviewCount>(
      (settings) => settings.sidebarThreadPreviewCount,
-@@ -2208,11 +2215,23 @@ const SidebarProjectItem = memo(function SidebarProjectItem(props: SidebarProjec
+@@ -2197,11 +2204,23 @@ const SidebarProjectItem = memo(function SidebarProjectItem(props: SidebarProjec
        );
        const threadWorkspacePath =
          thread.worktreePath ?? threadProject?.workspaceRoot ?? project.workspaceRoot ?? null;
@@ -76,10 +83,10 @@ index bd18ac5c..505c4bcc 100644
            { id: "rename", label: "Rename thread" },
            { id: "mark-unread", label: "Mark unread" },
            { id: "copy-path", label: "Copy Path" },
-@@ -2246,6 +2265,15 @@ const SidebarProjectItem = memo(function SidebarProjectItem(props: SidebarProjec
+@@ -2235,6 +2254,15 @@ const SidebarProjectItem = memo(function SidebarProjectItem(props: SidebarProjec
          return;
        }
-
+ 
 +      if (clicked === "fork-thread") {
 +        if (sourceTurnId === null) return;
 +        const forkedThreadRef = await forkSidebarThread(thread, sourceTurnId);
@@ -92,7 +99,7 @@ index bd18ac5c..505c4bcc 100644
        if (clicked === "rename") {
          startThreadRename(threadKey, thread.title);
          return;
-@@ -2302,10 +2330,13 @@ const SidebarProjectItem = memo(function SidebarProjectItem(props: SidebarProjec
+@@ -2291,10 +2319,13 @@ const SidebarProjectItem = memo(function SidebarProjectItem(props: SidebarProjec
        copyPathToClipboard,
        copyThreadIdToClipboard,
        deleteThread,
@@ -106,16 +113,86 @@ index bd18ac5c..505c4bcc 100644
        startThreadRename,
      ],
    );
-diff --git a/apps/server/src/persistence/Migrations/034_ProjectionThreadForkLineage.test.ts b/apps/server/src/persistence/Migrations/034_ProjectionThreadForkLineage.test.ts
-index 3f6acff48d126fafab3c91c712be149b5288eb92..93b98a289fc6edec35360d86c2ce3a81e97a7780 100644
---- a/apps/server/src/persistence/Migrations/034_ProjectionThreadForkLineage.test.ts
-+++ b/apps/server/src/persistence/Migrations/034_ProjectionThreadForkLineage.test.ts
-@@ -17,7 +17,7 @@ layer("034_ProjectionThreadForkLineage", (it) => {
-       const before = yield* sql<{ readonly name: string }>`PRAGMA table_info(projection_threads)`;
-       assert.isFalse(before.some((column) => column.name === "forked_from_thread_id"));
- 
--      yield* runMigrations({ toMigrationInclusive: 34 });
-+      yield* runMigrations({ toMigrationInclusive: 35 });
-       const columns = yield* sql<{ readonly name: string }>`PRAGMA table_info(projection_threads)`;
-       const indexes = yield* sql<{ readonly name: string }>`PRAGMA index_list(projection_threads)`;
- 
+diff --git a/apps/web/src/components/SidebarV2.tsx b/apps/web/src/components/SidebarV2.tsx
+index ae8748935ffc3f2fb2fbadc0caaaa25ec716e3df..248958ddf4189a367cc0c997ba2b030c3873eac8 100644
+--- a/apps/web/src/components/SidebarV2.tsx
++++ b/apps/web/src/components/SidebarV2.tsx
+@@ -2,6 +2,10 @@ import { autoAnimate } from "@formkit/auto-animate";
+ import { useAtomValue } from "@effect/atom-react";
+ import { canSettle, canSnooze, threadWokeAt } from "@t3tools/client-runtime/state/thread-settled";
+ import type { EnvironmentThreadShell } from "@t3tools/client-runtime/state/models";
++import {
++  resolveLatestForkableTurnId,
++  supportsThreadFork,
++} from "@t3tools/client-runtime/thread-forking";
+ import {
+   scopeProjectRef,
+   scopeThreadRef,
+@@ -78,6 +82,7 @@ import { legacyProjectCwdPreferenceKey, useUiStateStore } from "../uiStateStore"
+ import { useThreadSelectionStore } from "../threadSelectionStore";
+ import { useSidebarProjectScopeStore } from "../sidebarProjectScopeStore";
+ import { useThreadActions } from "../hooks/useThreadActions";
++import { useForkThread } from "../hooks/useForkThread";
+ import { useHandleNewThread } from "../hooks/useHandleNewThread";
+ import {
+   closeCommandPalette,
+@@ -1095,6 +1100,7 @@ export default function SidebarV2() {
+   const projectGroupingSettings = useClientSettings(selectProjectGroupingSettings);
+   const { settleThread, unsettleThread, snoozeThread, unsnoozeThread, deleteThread } =
+     useThreadActions();
++  const forkSidebarThread = useForkThread();
+   const updateThreadMetadata = useAtomCommand(threadEnvironment.updateMetadata, {
+     reportFailure: false,
+   });
+@@ -2163,6 +2169,15 @@ export default function SidebarV2() {
+           true;
+         const supportsSnooze =
+           serverConfigs.get(thread.environmentId)?.environment.capabilities.threadSnooze === true;
++        const providerInstanceId =
++          thread.session?.providerInstanceId ?? thread.modelSelection.instanceId;
++        const providerDriver =
++          serverConfigs
++            .get(thread.environmentId)
++            ?.providers.find((provider) => provider.instanceId === providerInstanceId)?.driver ??
++          null;
++        const forkSupported = supportsThreadFork(providerDriver);
++        const sourceTurnId = resolveLatestForkableTurnId(thread.latestTurn);
+         const isSettled = settledThreadKeysRef.current.has(threadKey);
+         const isSnoozed = snoozedThreadKeysRef.current.has(threadKey);
+         // Presets resolve at menu-open time (same as the popover).
+@@ -2200,6 +2215,9 @@ export default function SidebarV2() {
+                         },
+                   ]
+                 : []),
++              ...(forkSupported
++                ? [{ id: "fork-thread", label: "Fork thread", disabled: sourceTurnId === null }]
++                : []),
+               { id: "rename", label: "Rename thread" },
+               { id: "mark-unread", label: "Mark unread" },
+               { id: "delete", label: "Delete", destructive: true, icon: "trash" },
+@@ -2248,6 +2266,14 @@ export default function SidebarV2() {
+           case "unsnooze":
+             attemptUnsnooze(threadRef);
+             return;
++          case "fork-thread": {
++            if (sourceTurnId === null) return;
++            const forkedThreadRef = await forkSidebarThread(thread, sourceTurnId);
++            if (forkedThreadRef !== null) {
++              navigateToThread(forkedThreadRef);
++            }
++            return;
++          }
+           case "rename":
+             startThreadRename(threadRef, thread.title);
+             return;
+@@ -2292,8 +2318,10 @@ export default function SidebarV2() {
+       attemptUnsnooze,
+       confirmThreadDelete,
+       deleteThread,
++      forkSidebarThread,
+       handleMultiSelectContextMenu,
+       markThreadUnread,
++      navigateToThread,
+       serverConfigs,
+       startThreadRename,
+     ],
