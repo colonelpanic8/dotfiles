@@ -167,6 +167,19 @@ timeout 30s du -xh --max-depth=1 "$HOME/.local/share" 2>/dev/null | sort -h
 
 Machine-specific heavy hitters seen in practice:
 
+- 2026-07-24 `ryzen-shine` online partition reclaim: GPT partition numbers
+  were not in physical order. `/boot` (`nvme0n1p3`) and root
+  (`nvme0n1p4`) physically preceded the obsolete Microsoft-reserved
+  (`p1`) and `/shared` NTFS (`p2`) partitions. After preserving an
+  `sfdisk` text dump and raw GPT sectors, unmounting `/shared`, and
+  validating the exact replacement table with `sfdisk --no-act`, writing
+  the table required `sfdisk --no-reread` because root was mounted.
+  `partx --delete --nr 1:2 /dev/nvme0n1` removed the deleted, unmounted
+  partition devices from the running kernel, and
+  `partx --update --nr 4 /dev/nvme0n1` exposed the enlarged root boundary.
+  `resize2fs /dev/nvme0n1p4` then grew ext4 online. Always revalidate the
+  disk ID, partition starts, PARTUUIDs, mount state, and exact physical
+  order before reusing this pattern.
 - 2026-07-22 zero-free-space failure mode: with `/` reporting zero bytes
   available, `apply_patch` truncated an untracked shell function to zero bytes
   before reporting its write failure. Stop all source-file writes as soon as
