@@ -154,7 +154,7 @@
   # the compatibility patch below.
   t3codePr4439 = final.fetchurl {
     url = "https://patch-diff.githubusercontent.com/raw/pingdotgg/t3code/pull/4439.diff";
-    hash = "sha256-l3Ny8UyDy3D89b5IMfqFg/svnEE0kz0f/32/vSKFt8g=";
+    hash = "sha256-T3Zk1LpN4zhJ7bVtMafnxJDEQAd51Q4Cle7PyO2mRJk=";
   };
 
   t3codePrAudits = [
@@ -360,13 +360,13 @@
       hash = "sha256-siLeGq3yAcTp/9wdplzXWiJQAizitPUpvBilO/AfTLM=";
     })
     # Configure centralized or repository-local worktree placement:
-    # t3code#4439 (head ae84e098ec67). Apply its non-overlapping files
+    # t3code#4439 (head 8f4946145d90). Apply its non-overlapping files
     # directly and combine its persistence assertions with the assembled
     # server-settings tests.
     (final.fetchpatch {
       url = "https://patch-diff.githubusercontent.com/raw/pingdotgg/t3code/pull/4439.diff";
       excludes = t3codePr4439OverlapFiles;
-      hash = "sha256-z5Rbntm/k4eYpu3qSyckcDExJeKe1T+YtqhquLUiz0o=";
+      hash = "sha256-0SiflRYcPn7yl3owMqz6Wrp9xyCibDg/3lbIeAdU6dg=";
     })
     ./patches/t3code-pr-4439-stack-compat.patch
   ];
