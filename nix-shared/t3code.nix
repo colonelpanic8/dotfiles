@@ -467,7 +467,8 @@ in {
             "$out/bin/.t3code-desktop-password-store-wrapped"
           makeWrapper "$out/bin/.t3code-desktop-password-store-wrapped" \
             "$out/bin/t3code-desktop" \
-            --add-flags "--password-store=gnome-libsecret"
+            --add-flags "--password-store=gnome-libsecret" \
+            --add-flags "--backend-mode=client-only"
         '';
     });
 }
