@@ -1,12 +1,13 @@
 {-# LANGUAGE OverloadedStrings #-}
 
--- | A usage widget that follows the Hyprland AI scratchpad selection.
+-- | Configurable OpenAI and Anthropic usage sections.
 --
 -- The Hyprland config (scratchpads.lua) lets SUPER+ALT+C toggle whichever AI
 -- app is currently selected via rofi_ai_scratchpad.sh, which records the
--- choice in $XDG_STATE_HOME/hypr/ai-scratchpad. This widget reads the same
--- state file and shows the matching provider's usage section (OpenAI for
--- "codex", Anthropic for "claude"), switching live when the file changes.
+-- choice in $XDG_STATE_HOME/hypr/ai-scratchpad. By default, this widget reads
+-- the same state file and shows the matching provider's usage section (OpenAI
+-- for "codex", Anthropic for "claude"), switching live when the file changes.
+-- Set TAFFYBAR_AI_USAGE_MODE=both to keep both provider sections visible.
 module TaffybarConfig.AIUsage
   ( aiUsageWidget,
   )
@@ -57,6 +58,9 @@ aiScratchpadStateDir = do
 aiScratchpadStateFile :: FilePath
 aiScratchpadStateFile = "ai-scratchpad"
 
+aiUsageModeEnvVar :: String
+aiUsageModeEnvVar = "TAFFYBAR_AI_USAGE_MODE"
+
 -- | Keep the weekly position compact and leading while leaving all usage and
 -- reset-window calculations in the library. Rows without a position retain
 -- the conventional @name value@ layout.
@@ -105,39 +109,55 @@ anthropicUsageSection = do
         anthropicUsageStackLabelRenderer = const compactUsageWindowLabel
       }
 
--- | Show usage for whichever AI app the Hyprland AI scratchpad currently
--- targets, switching live when the selection changes.
+activeAIUsageWidget :: Gtk.Widget -> Gtk.Widget -> IO Gtk.Widget
+activeAIUsageWidget openAIWidget anthropicWidget = do
+  stack <- Gtk.stackNew
+  -- Size the provider switcher for its visible child.  The default
+  -- homogeneous sizing makes Codex reserve the width of Claude's extra
+  -- per-model (Fable) usage row even while that page is hidden.
+  Gtk.stackSetHomogeneous stack False
+  Gtk.stackAddNamed stack openAIWidget codexChild
+  Gtk.stackAddNamed stack anthropicWidget claudeChild
+  readActiveAIScratchpad >>= Gtk.stackSetVisibleChildName stack
+
+  let syncVisibleChild =
+        readActiveAIScratchpad
+          >>= \name -> postGUIASync (Gtk.stackSetVisibleChildName stack name)
+
+  void $ Gtk.onWidgetRealize stack $ do
+    stateDir <- aiScratchpadStateDir
+    createDirectoryIfMissing True stateDir
+    manager <- FSNotify.startManager
+    void $
+      FSNotify.watchDir
+        manager
+        stateDir
+        ((== aiScratchpadStateFile) . takeFileName . FSNotify.eventPath)
+        (const syncVisibleChild)
+    syncVisibleChild
+    void $ Gtk.onWidgetUnrealize stack $ FSNotify.stopManager manager
+
+  Gtk.widgetShowAll stack
+  Gtk.toWidget stack
+
+bothAIUsageWidget :: Gtk.Widget -> Gtk.Widget -> IO Gtk.Widget
+bothAIUsageWidget openAIWidget anthropicWidget = do
+  box <- Gtk.boxNew Gtk.OrientationHorizontal 16
+  Gtk.boxPackStart box openAIWidget False False 0
+  Gtk.boxPackStart box anthropicWidget False False 0
+  Gtk.widgetShowAll box
+  Gtk.toWidget box
+
+-- | Show the active AI scratchpad provider by default, or both providers when
+-- TAFFYBAR_AI_USAGE_MODE is set to "both".
 aiUsageWidget :: TaffyIO Gtk.Widget
 aiUsageWidget = do
   openAIWidget <- openAIUsageSection
   anthropicWidget <- anthropicUsageSection
-  stackWidget <- liftIO $ do
-    stack <- Gtk.stackNew
-    -- Size the provider switcher for its visible child.  The default
-    -- homogeneous sizing makes Codex reserve the width of Claude's extra
-    -- per-model (Fable) usage row even while that page is hidden.
-    Gtk.stackSetHomogeneous stack False
-    Gtk.stackAddNamed stack openAIWidget codexChild
-    Gtk.stackAddNamed stack anthropicWidget claudeChild
-    readActiveAIScratchpad >>= Gtk.stackSetVisibleChildName stack
-
-    let syncVisibleChild =
-          readActiveAIScratchpad
-            >>= \name -> postGUIASync (Gtk.stackSetVisibleChildName stack name)
-
-    void $ Gtk.onWidgetRealize stack $ do
-      stateDir <- aiScratchpadStateDir
-      createDirectoryIfMissing True stateDir
-      manager <- FSNotify.startManager
-      void $
-        FSNotify.watchDir
-          manager
-          stateDir
-          ((== aiScratchpadStateFile) . takeFileName . FSNotify.eventPath)
-          (const syncVisibleChild)
-      syncVisibleChild
-      void $ Gtk.onWidgetUnrealize stack $ FSNotify.stopManager manager
-
-    Gtk.widgetShowAll stack
-    Gtk.toWidget stack
-  decorateWithClassAndBox "ai-usage" stackWidget
+  mode <- liftIO $ fmap (T.toLower . T.pack) <$> lookupEnv aiUsageModeEnvVar
+  contents <-
+    liftIO $
+      if mode == Just "both"
+        then bothAIUsageWidget openAIWidget anthropicWidget
+        else activeAIUsageWidget openAIWidget anthropicWidget
+  decorateWithClassAndBox "ai-usage" contents

@@ -368,6 +368,7 @@
           rmdir --ignore-fail-on-non-empty "$HOME/.config/systemd/user/taffybar.service.d" 2>/dev/null || true
         '';
         systemd.user.services.taffybar.Service = {
+          Environment = ["TAFFYBAR_AI_USAGE_MODE=${cfg.aiUsageMode}"];
           ExecCondition = "${taffybarExecCondition}";
           ExecStartPre = "${waitForGraphicalSocket}";
           ExecStart = lib.mkForce "${taffybarStart}";
@@ -387,6 +388,14 @@ in
         description = ''
           Use the complete development closure or executable-only runtime
           packages suitable for portable rescue media.
+        '';
+      };
+      myModules.taffybar.aiUsageMode = lib.mkOption {
+        type = lib.types.enum ["active" "both"];
+        default = "active";
+        description = ''
+          Choose whether the AI usage widget follows the active Hyprland
+          scratchpad provider or always displays both provider sections.
         '';
       };
     };

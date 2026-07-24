@@ -14,6 +14,7 @@
   features.full.enable = true;
   myModules.claudeRemoteControl.enable = true;
   myModules.t3codeServer.enable = true;
+  myModules.taffybar.aiUsageMode = "both";
   myModules.games.enable = lib.mkForce true;
   myModules.kubelet.enable = false;
   myModules.nvidia.enable = true;
