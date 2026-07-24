@@ -1,5 +1,5 @@
 diff --git a/apps/web/src/components/SidebarV2.tsx b/apps/web/src/components/SidebarV2.tsx
-index a7747a348772bf6a7b4365c2554d6addf8ed9e4e..f75e42ec1a3327f47ab7ff0910e77a7bccde9d42 100644
+index fa4ee28d140ba757f54e62992d0172a8da5b2403..34bcf163f09a706ce8a6d5278b07849ad05b8bf6 100644
 --- a/apps/web/src/components/SidebarV2.tsx
 +++ b/apps/web/src/components/SidebarV2.tsx
 @@ -1,6 +1,6 @@
@@ -23,13 +23,8 @@ index a7747a348772bf6a7b4365c2554d6addf8ed9e4e..f75e42ec1a3327f47ab7ff0910e77a7b
  } from "../keybindings";
  import { useShortcutModifierState } from "../shortcutModifierState";
  import { isTerminalFocused } from "../lib/terminalFocus";
-@@ -76,10 +75,19 @@ import { useThreadSelectionStore } from "../threadSelectionStore";
- import { useSidebarProjectScopeStore } from "../sidebarProjectScopeStore";
- import { useThreadActions } from "../hooks/useThreadActions";
- import { useHandleNewThread } from "../hooks/useHandleNewThread";
--import { openCommandPalette } from "../commandPaletteBus";
-+import { isCommandPaletteOpen, openCommandPalette } from "../commandPaletteBus";
- import { resolveThreadActionProjectRef, startNewThreadFromContext } from "../lib/chatThreadActions";
+@@ -85,6 +84,15 @@ import { resolveThreadActionProjectRef, startNewThreadFromContext } from "../lib
+ import { resolveChatNewShortcutBehavior } from "../lib/chatRouteShortcuts";
  import { useClientSettings, useUpdateClientSettings } from "../hooks/useSettings";
  import { useCopyToClipboard } from "../hooks/useCopyToClipboard";
 +import {
@@ -44,7 +39,7 @@ index a7747a348772bf6a7b4365c2554d6addf8ed9e4e..f75e42ec1a3327f47ab7ff0910e77a7b
  import { useEnvironments, usePrimaryEnvironmentId } from "../state/environments";
  import { useProjects, useThreadShells } from "../state/entities";
  import { environmentServerConfigsAtom, primaryServerKeybindingsAtom } from "../state/server";
-@@ -94,17 +102,24 @@ import type { SidebarThreadSummary } from "../types";
+@@ -99,17 +107,24 @@ import type { SidebarThreadSummary } from "../types";
  import { cn } from "~/lib/utils";
  import {
    formatWorkingDurationLabel,
@@ -70,7 +65,7 @@ index a7747a348772bf6a7b4365c2554d6addf8ed9e4e..f75e42ec1a3327f47ab7ff0910e77a7b
  } from "./Sidebar.logic";
  import { resolveLocalCheckoutBranchMismatch } from "./BranchToolbar.logic";
  import { prStatusIndicator, resolveThreadPr } from "./ThreadStatusIndicators";
-@@ -137,6 +152,46 @@ import { useComposerDraftStore } from "../composerDraftStore";
+@@ -142,6 +157,46 @@ import { useComposerDraftStore } from "../composerDraftStore";
  // Settled-tail paging: recent history is the common lookup; the deep tail
  // stays behind an explicit Show more.
  const SETTLED_TAIL_INITIAL_COUNT = 10;
@@ -117,10 +112,10 @@ index a7747a348772bf6a7b4365c2554d6addf8ed9e4e..f75e42ec1a3327f47ab7ff0910e77a7b
  const SETTLED_TAIL_PAGE_COUNT = 25;
  const PROJECT_GROUPING_MODE_LABELS: Record<SidebarProjectGroupingMode, string> = {
    repository: "Group by repository",
-@@ -381,9 +436,18 @@ const SidebarV2Row = memo(function SidebarV2Row(props: {
+@@ -386,9 +441,18 @@ const SidebarV2Row = memo(function SidebarV2Row(props: {
                  }
                : null;
- 
+
 -  const gitCwd = thread.worktreePath ?? props.projectCwd;
 +  const gitCwd = resolveSidebarThreadGitCwd({
 +    worktreePath: thread.worktreePath,
@@ -138,7 +133,7 @@ index a7747a348772bf6a7b4365c2554d6addf8ed9e4e..f75e42ec1a3327f47ab7ff0910e77a7b
        ? vcsEnvironment.status({
            environmentId: thread.environmentId,
            input: { cwd: gitCwd },
-@@ -406,8 +470,9 @@ const SidebarV2Row = memo(function SidebarV2Row(props: {
+@@ -411,8 +475,9 @@ const SidebarV2Row = memo(function SidebarV2Row(props: {
    // and a merged/closed PR auto-settles a thread — data only rows have.
    const prState = pr?.state ?? null;
    useEffect(() => {
@@ -146,10 +141,10 @@ index a7747a348772bf6a7b4365c2554d6addf8ed9e4e..f75e42ec1a3327f47ab7ff0910e77a7b
      onChangeRequestState(threadKey, prState);
 -  }, [onChangeRequestState, prState, threadKey]);
 +  }, [gitStatus.isPending, onChangeRequestState, prState, threadKey]);
- 
+
    const modelInstanceId = thread.session?.providerInstanceId ?? thread.modelSelection.instanceId;
    const providerEntry = props.providerEntryByInstanceId.get(modelInstanceId) ?? null;
-@@ -1174,8 +1239,24 @@ export default function SidebarV2() {
+@@ -1179,8 +1244,24 @@ export default function SidebarV2() {
    // merging, no optimistic holds. Archived threads remain hidden here —
    // archive keeps its original "remove from sidebar" meaning.
    const serverConfigs = useAtomValue(environmentServerConfigsAtom);
@@ -175,7 +170,7 @@ index a7747a348772bf6a7b4365c2554d6addf8ed9e4e..f75e42ec1a3327f47ab7ff0910e77a7b
      const visible = threads.filter(
        (thread) =>
          thread.archivedAt === null &&
-@@ -1189,14 +1270,7 @@ export default function SidebarV2() {
+@@ -1194,14 +1275,7 @@ export default function SidebarV2() {
        // or descriptor not loaded yet) never classify as settled: the user
        // could neither un-settle nor pin them, so auto-settling them would
        // strand rows in a tail with no working affordances.
@@ -191,7 +186,7 @@ index a7747a348772bf6a7b4365c2554d6addf8ed9e4e..f75e42ec1a3327f47ab7ff0910e77a7b
          settled.push(thread);
        } else {
          active.push(thread);
-@@ -1206,14 +1280,7 @@ export default function SidebarV2() {
+@@ -1211,14 +1285,7 @@ export default function SidebarV2() {
        activeThreads: sortThreadsForSidebarV2(active),
        settledThreads: sortSettledThreadsForSidebarV2(settled),
      };
@@ -204,10 +199,10 @@ index a7747a348772bf6a7b4365c2554d6addf8ed9e4e..f75e42ec1a3327f47ab7ff0910e77a7b
 -    threads,
 -  ]);
 +  }, [isThreadEffectivelySettled, scopedProjectKeys, threads]);
- 
+
    // The settled tail renders in pages: history shouldn't dominate the
    // sidebar, and the common lookups are recent. Expansion resets when the
-@@ -1253,6 +1320,43 @@ export default function SidebarV2() {
+@@ -1258,6 +1325,43 @@ export default function SidebarV2() {
    // rendered at click time.
    const orderedThreadKeysRef = useRef(orderedThreadKeys);
    orderedThreadKeysRef.current = orderedThreadKeys;
@@ -251,7 +246,7 @@ index a7747a348772bf6a7b4365c2554d6addf8ed9e4e..f75e42ec1a3327f47ab7ff0910e77a7b
    const threadByKey = useMemo(
      () =>
        new Map(
-@@ -1263,6 +1367,16 @@ export default function SidebarV2() {
+@@ -1268,6 +1372,16 @@ export default function SidebarV2() {
        ),
      [orderedThreads],
    );
@@ -268,7 +263,7 @@ index a7747a348772bf6a7b4365c2554d6addf8ed9e4e..f75e42ec1a3327f47ab7ff0910e77a7b
    // Handlers read these through refs: depending on per-update Map/Set
    // identities would give every row a fresh callback prop on each shell
    // event and defeat row memoization during streaming.
-@@ -1283,6 +1397,10 @@ export default function SidebarV2() {
+@@ -1288,6 +1402,10 @@ export default function SidebarV2() {
    );
    const settledThreadKeysRef = useRef(settledThreadKeys);
    settledThreadKeysRef.current = settledThreadKeys;
@@ -276,10 +271,10 @@ index a7747a348772bf6a7b4365c2554d6addf8ed9e4e..f75e42ec1a3327f47ab7ff0910e77a7b
 +    null,
 +  );
 +  const settleConfirmationButtonRef = useRef<HTMLButtonElement>(null);
- 
+
    const jumpLabelByKey = useMemo(() => {
      const mapping = new Map<string, string>();
-@@ -1384,26 +1502,30 @@ export default function SidebarV2() {
+@@ -1389,26 +1507,30 @@ export default function SidebarV2() {
          const threadKey = scopedThreadKey(threadRef);
          if (settlingThreadKeysRef.current.has(threadKey)) return;
          settlingThreadKeysRef.current.add(threadKey);
@@ -322,7 +317,7 @@ index a7747a348772bf6a7b4365c2554d6addf8ed9e4e..f75e42ec1a3327f47ab7ff0910e77a7b
              navigateAfterSettle = nextThread
                ? () => navigateToThread(scopeThreadRef(nextThread.environmentId, nextThread.id))
                : shell
-@@ -1661,6 +1783,7 @@ export default function SidebarV2() {
+@@ -1666,6 +1788,7 @@ export default function SidebarV2() {
    useEffect(() => {
      const onWindowKeyDown = (event: KeyboardEvent) => {
        if (event.defaultPrevented || event.repeat) return;
@@ -330,7 +325,7 @@ index a7747a348772bf6a7b4365c2554d6addf8ed9e4e..f75e42ec1a3327f47ab7ff0910e77a7b
        const command = resolveShortcutCommand(event, keybindings, {
          platform: navigator.platform,
          context: {
-@@ -1669,41 +1792,76 @@ export default function SidebarV2() {
+@@ -1674,41 +1797,76 @@ export default function SidebarV2() {
            modelPickerOpen: isModelPickerOpen(),
          },
        });
@@ -395,7 +390,7 @@ index a7747a348772bf6a7b4365c2554d6addf8ed9e4e..f75e42ec1a3327f47ab7ff0910e77a7b
 +    settleConfirmationThreadKey,
      threadByKey,
    ]);
- 
+
 +  const settleConfirmationThread = settleConfirmationThreadKey
 +    ? (allThreadByKey.get(settleConfirmationThreadKey) ?? null)
 +    : null;
@@ -425,7 +420,7 @@ index a7747a348772bf6a7b4365c2554d6addf8ed9e4e..f75e42ec1a3327f47ab7ff0910e77a7b
    // Same predicate as v1: hints show only while the held modifiers exactly
    // match a thread-jump binding. Adding Shift (screenshots) or Alt no
    // longer matches ⌘1..9, so the overlay hides for chords like ⌘⇧4.
-@@ -1762,6 +1920,19 @@ export default function SidebarV2() {
+@@ -1774,6 +1932,19 @@ export default function SidebarV2() {
      shortcutLabelForCommand(keybindings, "chat.new");
    return (
      <>
@@ -445,7 +440,7 @@ index a7747a348772bf6a7b4365c2554d6addf8ed9e4e..f75e42ec1a3327f47ab7ff0910e77a7b
        <SidebarChromeHeader isElectron={isElectron} />
        <SidebarContent className="gap-0">
          <SidebarGroup className="px-2 pb-2 pt-3">
-@@ -2207,6 +2378,30 @@ export default function SidebarV2() {
+@@ -2219,6 +2390,30 @@ export default function SidebarV2() {
          </DialogPopup>
        </Dialog>
        <SidebarChromeFooter />
@@ -483,7 +478,7 @@ index faed2f439dd86eceb1ed18ec294dc55a110f8884..d9e175af23973415dd61a5edbf9b4563
 @@ -1,4 +1,4 @@
 -import { assert, describe, it } from "vite-plus/test";
 +import { assert, describe, expect, it } from "vite-plus/test";
- 
+
  import {
    type KeybindingCommand,
 @@ -21,6 +21,7 @@ import {
@@ -509,7 +504,7 @@ index faed2f439dd86eceb1ed18ec294dc55a110f8884..d9e175af23973415dd61a5edbf9b4563
 @@ -192,6 +198,88 @@ const DEFAULT_BINDINGS = compile([
    },
  ]);
- 
+
 +describe("thread settle shortcut", () => {
 +  it("resolves Mod+Shift+X outside the terminal", () => {
 +    assert.strictEqual(

@@ -1,5 +1,5 @@
 diff --git a/apps/server/src/assets/AssetAccess.test.ts b/apps/server/src/assets/AssetAccess.test.ts
-index 5b99debf433c3e66c661cc8d40c28d4edc15cadc..986db0b5a0260e0591949cad8c655d31f5771058 100644
+index 5b99debf433c3e66c661cc8d40c28d4edc15cadc..662d919e24b17b79dc2da14079f4dd12cff9cdf6 100644
 --- a/apps/server/src/assets/AssetAccess.test.ts
 +++ b/apps/server/src/assets/AssetAccess.test.ts
 @@ -1,5 +1,5 @@
@@ -9,7 +9,7 @@ index 5b99debf433c3e66c661cc8d40c28d4edc15cadc..986db0b5a0260e0591949cad8c655d31
  import { PROJECT_FAVICON_FALLBACK_MARKER } from "@t3tools/shared/projectFavicon";
  import { describe, expect, it } from "@effect/vitest";
  import * as Effect from "effect/Effect";
-@@ -7,10 +7,12 @@ import * as FileSystem from "effect/FileSystem";
+@@ -7,10 +7,13 @@ import * as FileSystem from "effect/FileSystem";
  import * as Layer from "effect/Layer";
  import * as Path from "effect/Path";
  import * as PlatformError from "effect/PlatformError";
@@ -18,19 +18,21 @@ index 5b99debf433c3e66c661cc8d40c28d4edc15cadc..986db0b5a0260e0591949cad8c655d31
  import * as ServerSecretStore from "../auth/ServerSecretStore.ts";
  import * as ServerConfig from "../config.ts";
  import * as ProjectFaviconResolver from "../project/ProjectFaviconResolver.ts";
++import * as RepositoryIdentityResolver from "../project/RepositoryIdentityResolver.ts";
 +import * as ServerSettings from "../serverSettings.ts";
  import * as T3ProjectFileLoader from "../project/T3ProjectFileLoader.ts";
  import * as WorkspacePaths from "../workspace/WorkspacePaths.ts";
  import {
-@@ -30,6 +32,7 @@ const testLayer = Layer.mergeAll(
+@@ -30,6 +33,8 @@ const testLayer = Layer.mergeAll(
      Layer.provide(WorkspacePaths.layer),
      Layer.provide(T3ProjectFileLoader.layer),
    ),
++  RepositoryIdentityResolver.layer,
 +  ServerSettings.ServerSettingsService.layerTest(),
    ServerSecretStore.layer.pipe(Layer.provide(configLayer)),
  ).pipe(Layer.provideMerge(NodeServices.layer));
 
-@@ -343,6 +346,42 @@ describe("AssetAccess", () => {
+@@ -343,6 +348,137 @@ describe("AssetAccess", () => {
      }).pipe(Effect.provide(testLayer)),
    );
 
@@ -70,14 +72,109 @@ index 5b99debf433c3e66c661cc8d40c28d4edc15cadc..986db0b5a0260e0591949cad8c655d31
 +    }).pipe(Effect.provide(testLayer)),
 +  );
 +
++  it.effect("rejects a configured project icon replaced by a symlink after signing", () =>
++    Effect.gen(function* () {
++      const fileSystem = yield* FileSystem.FileSystem;
++      const path = yield* Path.Path;
++      const root = yield* fileSystem.makeTempDirectoryScoped({
++        prefix: "t3-asset-favicon-symlink-root-",
++      });
++      const iconDirectory = yield* fileSystem.makeTempDirectoryScoped({
++        prefix: "t3-asset-favicon-symlink-custom-",
++      });
++      const outsideDirectory = yield* fileSystem.makeTempDirectoryScoped({
++        prefix: "t3-asset-favicon-symlink-outside-",
++      });
++      const iconPath = path.join(iconDirectory, "custom.svg");
++      const outsidePath = path.join(outsideDirectory, "secret.svg");
++      yield* fileSystem.writeFileString(iconPath, "<svg>icon</svg>");
++      yield* fileSystem.writeFileString(outsidePath, "<svg>secret</svg>");
++      const settings = ServerSettings.ServerSettingsService.of({
++        start: Effect.void,
++        ready: Effect.void,
++        getSettings: Effect.succeed({
++          ...DEFAULT_SERVER_SETTINGS,
++          projectIcons: { [root]: iconPath },
++        }),
++        updateSettings: () => Effect.die("not implemented"),
++        streamChanges: Stream.empty,
++      });
++
++      const result = yield* issueAssetUrl({
++        resource: { _tag: "project-favicon", cwd: root, revision: iconPath },
++      }).pipe(Effect.provideService(ServerSettings.ServerSettingsService, settings));
++      const suffix = result.relativeUrl.slice(`${ASSET_ROUTE_PREFIX}/`.length);
++      const separatorIndex = suffix.indexOf("/");
++      const token = suffix.slice(0, separatorIndex);
++
++      yield* fileSystem.remove(iconPath);
++      yield* fileSystem.symlink(outsidePath, iconPath);
++
++      expect(yield* resolveAsset(token, suffix.slice(separatorIndex + 1))).toBeNull();
++    }).pipe(Effect.provide(testLayer)),
++  );
++
++  it.effect("uses a configured git-remote icon across clone paths", () =>
++    Effect.gen(function* () {
++      const fileSystem = yield* FileSystem.FileSystem;
++      const path = yield* Path.Path;
++      const root = yield* fileSystem.makeTempDirectoryScoped({
++        prefix: "t3-asset-favicon-remote-root-",
++      });
++      const iconDirectory = yield* fileSystem.makeTempDirectoryScoped({
++        prefix: "t3-asset-favicon-remote-custom-",
++      });
++      const iconPath = path.join(iconDirectory, "custom.svg");
++      yield* fileSystem.writeFileString(iconPath, "<svg />");
++      const canonicalIconPath = yield* fileSystem.realPath(iconPath);
++      const settings = ServerSettings.ServerSettingsService.of({
++        start: Effect.void,
++        ready: Effect.void,
++        getSettings: Effect.succeed({
++          ...DEFAULT_SERVER_SETTINGS,
++          projectIconsByGitRemote: { "github.com/t3tools/t3code": iconPath },
++        }),
++        updateSettings: () => Effect.die("not implemented"),
++        streamChanges: Stream.empty,
++      });
++      const repositoryIdentityResolver = RepositoryIdentityResolver.RepositoryIdentityResolver.of({
++        resolve: () =>
++          Effect.succeed({
++            canonicalKey: "github.com/t3tools/t3code",
++            locator: {
++              source: "git-remote",
++              remoteName: "origin",
++              remoteUrl: "git@github.com:T3Tools/T3Code.git",
++            },
++          }),
++      });
++
++      const result = yield* issueAssetUrl({
++        resource: { _tag: "project-favicon", cwd: root, revision: iconPath },
++      }).pipe(
++        Effect.provideService(ServerSettings.ServerSettingsService, settings),
++        Effect.provideService(
++          RepositoryIdentityResolver.RepositoryIdentityResolver,
++          repositoryIdentityResolver,
++        ),
++      );
++      const suffix = result.relativeUrl.slice(`${ASSET_ROUTE_PREFIX}/`.length);
++      const separatorIndex = suffix.indexOf("/");
++
++      expect(
++        yield* resolveAsset(suffix.slice(0, separatorIndex), suffix.slice(separatorIndex + 1)),
++      ).toEqual({ kind: "file", path: canonicalIconPath });
++    }).pipe(Effect.provide(testLayer)),
++  );
++
    it.effect("preserves structured project favicon resolution causes", () =>
      Effect.gen(function* () {
        const fileSystem = yield* FileSystem.FileSystem;
 diff --git a/apps/web/src/components/SidebarV2.tsx b/apps/web/src/components/SidebarV2.tsx
-index a20d0f9da874cdff3790a073abe13f693856f734..a8af0933d03be5acfc68896e00c85e588ac75fa2 100644
+index 817d393898ceff4f20708f050eca1c7735baec5e..3f2ebdf8ff10323ad001cb77cc04ddf59433bd54 100644
 --- a/apps/web/src/components/SidebarV2.tsx
 +++ b/apps/web/src/components/SidebarV2.tsx
-@@ -117,6 +117,11 @@ import {
+@@ -129,6 +129,11 @@ import {
  import { resolveLocalCheckoutBranchMismatch } from "./BranchToolbar.logic";
  import { prStatusIndicator, resolveThreadPr } from "./ThreadStatusIndicators";
  import { ProjectFavicon } from "./ProjectFavicon";
@@ -89,7 +186,7 @@ index a20d0f9da874cdff3790a073abe13f693856f734..a8af0933d03be5acfc68896e00c85e58
  import { ProviderInstanceIcon } from "./chat/ProviderInstanceIcon";
  import { getTriggerDisplayModelLabel } from "./chat/providerIconUtils";
  import { deriveProviderInstanceEntries, type ProviderInstanceEntry } from "../providerInstances";
-@@ -305,6 +310,10 @@ const SidebarV2Row = memo(function SidebarV2Row(props: {
+@@ -361,6 +366,10 @@ const SidebarV2Row = memo(function SidebarV2Row(props: {
    isRenaming: boolean;
    renamingTitle: string;
    onContextMenu: (threadRef: ScopedThreadRef, position: { x: number; y: number }) => void;
@@ -100,7 +197,7 @@ index a20d0f9da874cdff3790a073abe13f693856f734..a8af0933d03be5acfc68896e00c85e58
    onSettle: (threadRef: ScopedThreadRef) => void;
    onUnsettle: (threadRef: ScopedThreadRef) => void;
    onChangeRequestState: (threadKey: string, state: "open" | "closed" | "merged" | null) => void;
-@@ -449,6 +458,17 @@ const SidebarV2Row = memo(function SidebarV2Row(props: {
+@@ -519,6 +528,17 @@ const SidebarV2Row = memo(function SidebarV2Row(props: {
      },
      [onContextMenu, threadRef],
    );
@@ -118,7 +215,7 @@ index a20d0f9da874cdff3790a073abe13f693856f734..a8af0933d03be5acfc68896e00c85e58
    const handleKeyDown = useCallback(
      (event: ReactKeyboardEvent) => {
        if (event.target !== event.currentTarget) return;
-@@ -623,6 +643,7 @@ const SidebarV2Row = memo(function SidebarV2Row(props: {
+@@ -697,6 +717,7 @@ const SidebarV2Row = memo(function SidebarV2Row(props: {
                  !props.isActive &&
                    "opacity-40 grayscale group-hover/v2-row:opacity-100 group-hover/v2-row:grayscale-0",
                )}
@@ -126,7 +223,7 @@ index a20d0f9da874cdff3790a073abe13f693856f734..a8af0933d03be5acfc68896e00c85e58
              >
                <ProjectFavicon
                  environmentId={thread.environmentId}
-@@ -701,20 +722,24 @@ const SidebarV2Row = memo(function SidebarV2Row(props: {
+@@ -775,20 +796,24 @@ const SidebarV2Row = memo(function SidebarV2Row(props: {
              )}
            >
              {largeIcons ? (
@@ -160,8 +257,8 @@ index a20d0f9da874cdff3790a073abe13f693856f734..a8af0933d03be5acfc68896e00c85e58
 +                  </span>
                  )}
                  {props.projectTitle ? (
-                   <span className="min-w-0 flex-1 truncate text-xs font-medium text-muted-foreground/85">
-@@ -856,6 +881,7 @@ export default function SidebarV2() {
+                   <span
+@@ -941,6 +966,7 @@ export default function SidebarV2() {
    const [projectActionsTarget, setProjectActionsTarget] = useState<SidebarProjectSnapshot | null>(
      null,
    );
@@ -169,7 +266,7 @@ index a20d0f9da874cdff3790a073abe13f693856f734..a8af0933d03be5acfc68896e00c85e58
    const [projectScopeMenuOpen, setProjectScopeMenuOpen] = useState(false);
    const newThreadContext = useHandleNewThread();
    const openAddProjectCommandPalette = useCallback(
-@@ -955,6 +981,19 @@ export default function SidebarV2() {
+@@ -1040,6 +1066,19 @@ export default function SidebarV2() {
        ),
      [projectGroups],
    );
@@ -189,7 +286,7 @@ index a20d0f9da874cdff3790a073abe13f693856f734..a8af0933d03be5acfc68896e00c85e58
 
    // now is quantized to the minute so effectiveSettled memoization doesn't
    // churn on every render; auto-settle thresholds are day-granular anyway.
-@@ -1324,6 +1363,42 @@ export default function SidebarV2() {
+@@ -1406,6 +1445,46 @@ export default function SidebarV2() {
    // event and defeat row memoization during streaming.
    const threadByKeyRef = useRef(threadByKey);
    threadByKeyRef.current = threadByKey;
@@ -204,9 +301,12 @@ index a20d0f9da874cdff3790a073abe13f693856f734..a8af0933d03be5acfc68896e00c85e58
 +          `${thread.environmentId}:${thread.projectId}`,
 +        );
 +        if (!member) return;
-+        const configuredIcon = serverConfigs.get(member.environmentId)?.settings.projectIcons[
-+          member.workspaceRoot
-+        ];
++        const settings = serverConfigs.get(member.environmentId)?.settings;
++        const configuredIcon =
++          settings?.projectIcons[member.workspaceRoot] ??
++          (member.repositoryIdentity
++            ? settings?.projectIconsByGitRemote[member.repositoryIdentity.canonicalKey]
++            : undefined);
 +        const clicked = await settlePromise(() =>
 +          api.contextMenu.show(
 +            [
@@ -224,6 +324,7 @@ index a20d0f9da874cdff3790a073abe13f693856f734..a8af0933d03be5acfc68896e00c85e58
 +          environmentLabel: member.environmentLabel,
 +          title: member.title,
 +          workspaceRoot: member.workspaceRoot,
++          repositoryKey: member.repositoryIdentity?.canonicalKey,
 +        });
 +      })();
 +    },
@@ -232,7 +333,7 @@ index a20d0f9da874cdff3790a073abe13f693856f734..a8af0933d03be5acfc68896e00c85e58
    // handleNewThread is inherently unstable (depends on the projects list);
    // a ref keeps it out of attemptSettle's dependency array.
    const handleNewThreadRef = useRef(newThreadContext.handleNewThread);
-@@ -2075,6 +2150,7 @@ export default function SidebarV2() {
+@@ -2171,6 +2250,7 @@ export default function SidebarV2() {
                      isRenaming={renamingThreadKey === threadKey}
                      renamingTitle={renamingThreadKey === threadKey ? renamingTitle : ""}
                      onContextMenu={handleThreadContextMenu}
@@ -240,7 +341,7 @@ index a20d0f9da874cdff3790a073abe13f693856f734..a8af0933d03be5acfc68896e00c85e58
                      onSettle={attemptSettle}
                      onUnsettle={attemptUnsettle}
                      onChangeRequestState={handleChangeRequestState}
-@@ -2140,6 +2216,12 @@ export default function SidebarV2() {
+@@ -2236,6 +2316,12 @@ export default function SidebarV2() {
            ) : null}
          </SidebarGroup>
        </SidebarContent>
@@ -253,7 +354,7 @@ index a20d0f9da874cdff3790a073abe13f693856f734..a8af0933d03be5acfc68896e00c85e58
        <Dialog
          open={projectActionsTarget !== null}
          onOpenChange={(open) => {
-@@ -2251,6 +2333,14 @@ export default function SidebarV2() {
+@@ -2347,6 +2433,15 @@ export default function SidebarV2() {
                          </SelectPopup>
                        </Select>
                      </label>
@@ -263,6 +364,7 @@ index a20d0f9da874cdff3790a073abe13f693856f734..a8af0933d03be5acfc68896e00c85e58
 +                        environmentLabel: member.environmentLabel,
 +                        title: member.title,
 +                        workspaceRoot: member.workspaceRoot,
++                        repositoryKey: member.repositoryIdentity?.canonicalKey,
 +                      }}
 +                    />
                    </div>

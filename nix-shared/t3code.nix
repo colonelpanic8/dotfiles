@@ -28,25 +28,23 @@
     hash = "sha256-FkyVXUTh+ewQHD41TnrvtzS4aUAqLnVeSDMr3cGFhwo=";
   };
 
-  # PR #4263 (head f4d74da0c1ea) likewise has command-palette hunks in the
+  # PR #4263 (head 8c2b49f32ec9) likewise has command-palette hunks in the
   # compatibility patch while its remaining files use fetchpatch below.
   t3codePr4263 = final.fetchurl {
     url = "https://patch-diff.githubusercontent.com/raw/pingdotgg/t3code/pull/4263.diff";
-    hash = "sha256-JBITmQv+ExGphqHa4EdOgtsAigTyyO125SLCbW9qG90=";
+    hash = "sha256-8NfHZ7mtpieGk+Cn8D83H4ij6fMEgqKitr41ommhiBM=";
   };
 
-  # PR #4277 (head 456bd17b31ea) overlaps Sidebar V2 and the combined
+  # PR #4277 (head c7c05e4f1e94) overlaps Sidebar V2 and the combined
   # keybinding tests after #4263/#4271.
   # Keep the live cumulative diff auditable while applying that file through
   # the compatibility patch below.
   t3codePr4277 = final.fetchurl {
     url = "https://patch-diff.githubusercontent.com/raw/pingdotgg/t3code/pull/4277.diff";
-    hash = "sha256-/Fx879OvGib+LXiCT9vAzSfPQpUMG09dTnPBjr56NnE=";
+    hash = "sha256-BLtmTI5YdU+CeXsV/MtUNLwL9kclXAtmO0fnxSyTc0Q=";
   };
 
-  # PR #4271 overlaps ChatView after the earlier selection-navigation patch.
-  # Keep its complete cumulative diff auditable while applying that file
-  # through the compatibility patch below.
+  # PR #4271 applies in full after the earlier selection-navigation patch.
   t3codePr4271 = final.fetchurl {
     url = "https://patch-diff.githubusercontent.com/raw/pingdotgg/t3code/pull/4271.diff";
     hash = "sha256-9L5vpbUUpOZFBnNhtD4s56wa06xh3vgzRbW0TnyNLzA=";
@@ -60,8 +58,8 @@
     hash = "sha256-5u4GHl1+wzxyIjUshKDHG7oK7O4CZqX/Gf+2ZYo3d3U=";
   };
 
-  # PR #4324 overlaps the assembled sidebar settings surface. Keep the live
-  # cumulative diff auditable while applying its stack-compatible form below.
+  # PR #4324 applies in full; a small compatibility patch below updates the
+  # assembled desktop settings fixture for its new default.
   t3codePr4324 = final.fetchurl {
     url = "https://patch-diff.githubusercontent.com/raw/pingdotgg/t3code/pull/4324.diff";
     hash = "sha256-36zRSHX6dYPh8lLnDwWd7J9kc72YvY2+EgcatiUBZAk=";
@@ -78,12 +76,12 @@
     hash = "sha256-hTFq9kDZhZPJ9odddKRuEJ3mqRzL5AnjgDIAL2WqzVc=";
   };
 
-  # PR #4401 overlaps the assembled asset tests and Sidebar V2 surface.
+  # PR #4401 (head 73ce47980a9b) overlaps the assembled asset tests and Sidebar V2 surface.
   # Keep its complete cumulative diff auditable while applying those two
   # files through the compatibility patch below.
   t3codePr4401 = final.fetchurl {
     url = "https://patch-diff.githubusercontent.com/raw/pingdotgg/t3code/pull/4401.diff";
-    hash = "sha256-TEhokBmc58cdgcWtRSvMlUdn8ZsmSGbaAjPqpu9r1hk=";
+    hash = "sha256-zxcGCbhqGaCsYmQ5Wvhr/Jm5HE/0E6C2dKkDTPJ4SXY=";
   };
 
   t3codePrAudits = [
@@ -109,16 +107,16 @@
     # Also use transactional thread snapshots, correct streaming boundaries,
     # and a bounded retry for projection/file visibility races.
     ./patches/t3code-pr-3984-artifact-safety.patch
-    # Searchable new-thread project picker: t3code#4259 (head 78f2be6b6385).
+    # Searchable new-thread project picker: t3code#4259 (head b13116c73cde).
     (final.fetchurl {
       url = "https://patch-diff.githubusercontent.com/raw/pingdotgg/t3code/pull/4259.diff";
-      hash = "sha256-YsBrTop2rrOMlw5O5lv3ty+aRZ32QQBZX4+vwpSJYC4=";
+      hash = "sha256-ajcn0jSr9yqeF+W7Lze4IlBq0QiVMg/3j4R2RXufEAo=";
     })
-    # Reuse the command-palette new-thread picker for Ctrl+N: t3code#4263 (head f4d74da0c1ea).
+    # Reuse the command-palette new-thread picker for Ctrl+N: t3code#4263 (head 8c2b49f32ec9).
     (final.fetchpatch {
       url = "https://patch-diff.githubusercontent.com/raw/pingdotgg/t3code/pull/4263.diff";
       excludes = commandPaletteOverlapFiles;
-      hash = "sha256-tJ63AkFqugsVLyfiaBRo4z/4mw0vEKms4m1JrUE60Is=";
+      hash = "sha256-YeKAZMN9btSENVL4+g9Bn16C0G1bm6WfspBOCFI/smE=";
     })
     # Configurable add-project shortcut: t3code#4258 (head d1740c6139d5).
     (final.fetchpatch {
@@ -129,27 +127,22 @@
     # Combined shared-file changes from #4257, #4258, and #4263.
     ./patches/t3code-command-palette-prs.patch
     # Navigate open selections with Ctrl-N/Ctrl-P: t3code#4394
-    # (head fb36416e8f8f).
+    # (head 0b6f8187d870).
     (final.fetchurl {
       url = "https://patch-diff.githubusercontent.com/raw/pingdotgg/t3code/pull/4394.diff";
-      hash = "sha256-PYlA1B1u0T/r7+aBfsbGgFMsuYTJ/OCt/s9W5Tb63eA=";
+      hash = "sha256-0kh/BF72uOCvWyzMEskTcoKFT5HZsERge9pNgiwMK1s=";
     })
     # Keyboard-select composer controls + hold-modifier hints: t3code#4271
     # (head 0e314b5d5ac3).
-    (final.fetchpatch {
-      url = "https://patch-diff.githubusercontent.com/raw/pingdotgg/t3code/pull/4271.diff";
-      excludes = ["apps/web/src/components/ChatView.tsx"];
-      hash = "sha256-GiB7B2etpjUeXbBfNFFtub95InDhSvWqHsWuX+F8b08=";
-    })
-    ./patches/t3code-pr-4271-stack-compat.patch
-    # Settle the open thread with Mod+Shift+X: t3code#4277 (head 456bd17b31ea).
+    t3codePr4271
+    # Settle the open thread with Mod+Shift+X: t3code#4277 (head c7c05e4f1e94).
     (final.fetchpatch {
       url = "https://patch-diff.githubusercontent.com/raw/pingdotgg/t3code/pull/4277.diff";
       excludes = [
         "apps/web/src/components/SidebarV2.tsx"
         "apps/web/src/keybindings.test.ts"
       ];
-      hash = "sha256-i+ckiUm/5oR6bBPnmJ/zNJcdKutSrmzDWxIE29ahXCI=";
+      hash = "sha256-oYQ2QXCOBuyUPSLuFcB8/rNih0ttySgAteFyL4IvvnY=";
     })
     # Sidebar V2 and keybinding-test combination for #4277 with #4263/#4271.
     ./patches/t3code-settle-thread-keybinding.patch
@@ -167,6 +160,9 @@
       hash = "sha256-10GvXjgmjHGWe7k86z3gaIvoV1/kB8qc7X7aJccCeVA=";
     })
     # Optional larger sidebar v2 project icons: t3code#4324 (head 796723419898).
+    t3codePr4324
+    # Keep the assembled desktop settings fixture aligned with the added
+    # sidebarV2LargeIcons default.
     ./patches/t3code-pr-4324-stack-compat.patch
     # Trigger the slash-command menu mid-prompt, not just at line start:
     # t3code#4181 (head d95abc106cdd).
@@ -202,32 +198,32 @@
       hash = "sha256-3/BbosFzUK7soaUY+xo5Z1pFKRX8AU7n/JIT2q4FL/I=";
     })
     # Fork a thread from a selected assistant response on web and mobile:
-    # t3code#4390 (head e16ab0ded616).
+    # t3code#4390 (head 0ae75501eb0e).
     (final.fetchurl {
       url = "https://patch-diff.githubusercontent.com/raw/pingdotgg/t3code/pull/4390.diff";
-      hash = "sha256-Mjl5SohDAZQaIZ4FQi9qPuMSxg/DZqZqylpBWXzPp8I=";
+      hash = "sha256-uwEU1JjM23F6BJ8pHHK94wrElSOiaQ2zYCXqqfPwr2Y=";
     })
     # This database previously carried ProjectionThreadGoals as migration 34.
     # Keep the upstream PR unchanged while assigning its lineage migration the
     # next durable local ID in the Frankenstein stack.
     ./patches/t3code-pr-4390-stack-compat.patch
-    # User-local project icons: t3code#4401 (head 012142d48fa6).
+    # User-local project icons: t3code#4401 (head 73ce47980a9b).
     (final.fetchpatch {
       url = "https://patch-diff.githubusercontent.com/raw/pingdotgg/t3code/pull/4401.diff";
       excludes = [
         "apps/server/src/assets/AssetAccess.test.ts"
         "apps/web/src/components/SidebarV2.tsx"
       ];
-      hash = "sha256-3KvOqEPia15y2OTBJBkSMTIFVulio1JexTWAeDSYxnI=";
+      hash = "sha256-vfOthSAhatGmMoSE0xPOj2pPY4qZaKWa+uCcEhhJais=";
     })
     # Preserve the existing thread-artifact tests and optional large Sidebar
     # V2 icons while adding #4401's complete changes to the excluded files.
     ./patches/t3code-pr-4401-stack-compat.patch
     # Self-heal empty thread details and back off failed thread subscriptions:
-    # t3code#4405 (head 4659cf54b530).
+    # t3code#4405 (head f7053ca4e84b).
     (final.fetchurl {
       url = "https://patch-diff.githubusercontent.com/raw/pingdotgg/t3code/pull/4405.diff";
-      hash = "sha256-nhPMr3s0kS+cW5794l+1DTENJYOD11NDLHvaOcqrOGA=";
+      hash = "sha256-JT8eNFtI2j8yctimYBA5Ibuh4uvaIstvVaVDr9XUhrA=";
     })
   ];
 
