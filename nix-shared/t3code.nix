@@ -120,12 +120,12 @@
     hash = "sha256-zxcGCbhqGaCsYmQ5Wvhr/Jm5HE/0E6C2dKkDTPJ4SXY=";
   };
 
-  # PR #4425 (head 6c844f6bda9e) overlaps both assembled sidebar surfaces.
+  # PR #4425 (head f40fc1a0ed8a) overlaps both assembled sidebar surfaces.
   # Keep its complete cumulative diff auditable while applying those files
   # through the compatibility patch below.
   t3codePr4425 = final.fetchurl {
     url = "https://patch-diff.githubusercontent.com/raw/pingdotgg/t3code/pull/4425.diff";
-    hash = "sha256-SvwbkjsdR32DDpErQZZm/ldeAQSSfD41NlflI7GewtM=";
+    hash = "sha256-Eh8POQGbZMUcYcDjcxJQAOcb2k70/pxzup6adTUT/bk=";
   };
 
   # PR #4426 (head 75149bc3f50a) overlaps the assembled command palette and
@@ -306,11 +306,11 @@
       hash = "sha256-6hFncBXCNsIUp3D1WGRaUBmkqgL90aBPGYNPPNa/k7I=";
     })
     # Show remote environment names in thread rows when space permits:
-    # t3code#4425 (head 6c844f6bda9e). Apply its non-overlapping files directly.
+    # t3code#4425 (head f40fc1a0ed8a). Apply its non-overlapping files directly.
     (final.fetchpatch {
       url = "https://patch-diff.githubusercontent.com/raw/pingdotgg/t3code/pull/4425.diff";
       excludes = t3codePr4425OverlapFiles;
-      hash = "sha256-yqLFy+4g1r9hvQ5rIwB0nfZH0ieFEDAHTlF26JRB6ig=";
+      hash = "sha256-ADySVSYSboZm8lAMnQ4ftV10G4DdPkGmVVmLcq+PsyM=";
     })
     # Combine #4425's sidebar changes with the previously assembled sidebar
     # features from #4390 and #4401.
