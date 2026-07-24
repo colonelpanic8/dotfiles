@@ -15,6 +15,10 @@
     "apps/web/src/components/chat/TraitsPicker.tsx"
     "apps/web/src/components/chat/composerProviderState.tsx"
   ];
+  t3codePr4425OverlapFiles = [
+    "apps/web/src/components/Sidebar.tsx"
+    "apps/web/src/components/SidebarV2.tsx"
+  ];
 
   # PR #3984 predates the pinned base. Its complete cumulative diff remains
   # auditable here while the rebased form below applies it to current main.
@@ -110,6 +114,14 @@
     hash = "sha256-zxcGCbhqGaCsYmQ5Wvhr/Jm5HE/0E6C2dKkDTPJ4SXY=";
   };
 
+  # PR #4425 (head 6c844f6bda9e) overlaps both assembled sidebar surfaces.
+  # Keep its complete cumulative diff auditable while applying those files
+  # through the compatibility patch below.
+  t3codePr4425 = final.fetchurl {
+    url = "https://patch-diff.githubusercontent.com/raw/pingdotgg/t3code/pull/4425.diff";
+    hash = "sha256-SvwbkjsdR32DDpErQZZm/ldeAQSSfD41NlflI7GewtM=";
+  };
+
   t3codePrAudits = [
     t3codePr3984
     t3codePr4257
@@ -123,6 +135,7 @@
     t3codePr4394
     t3codePr4390
     t3codePr4401
+    t3codePr4425
   ];
 
   # Upstream is pinned through branch-drift hardening (#2284). Keep the
@@ -277,6 +290,16 @@
       url = "https://patch-diff.githubusercontent.com/raw/pingdotgg/t3code/pull/4423.diff";
       hash = "sha256-6hFncBXCNsIUp3D1WGRaUBmkqgL90aBPGYNPPNa/k7I=";
     })
+    # Show remote environment names in thread rows when space permits:
+    # t3code#4425 (head 6c844f6bda9e). Apply its non-overlapping files directly.
+    (final.fetchpatch {
+      url = "https://patch-diff.githubusercontent.com/raw/pingdotgg/t3code/pull/4425.diff";
+      excludes = t3codePr4425OverlapFiles;
+      hash = "sha256-yqLFy+4g1r9hvQ5rIwB0nfZH0ieFEDAHTlF26JRB6ig=";
+    })
+    # Combine #4425's sidebar changes with the previously assembled sidebar
+    # features from #4390 and #4401.
+    ../nixos/patches/t3code-pr-4425-stack-compat.patch
   ];
 
   t3codePatchedSource = final.applyPatches {

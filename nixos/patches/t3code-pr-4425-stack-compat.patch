@@ -1,0 +1,85 @@
+diff --git a/apps/web/src/components/Sidebar.tsx b/apps/web/src/components/Sidebar.tsx
+index 505c4bcc164b8807d3bc17b71d23172a348bd758..5984fcd461f552a92b648fd16322c1ff2df096d4 100644
+--- a/apps/web/src/components/Sidebar.tsx
++++ b/apps/web/src/components/Sidebar.tsx
+@@ -23,6 +23,7 @@ import {
+ } from "./ThreadStatusIndicators";
+ import { ProjectFavicon } from "./ProjectFavicon";
+ import { ProjectIconDialog, type ProjectIconTarget } from "./ProjectIconSettings";
++import { RemoteEnvironmentIndicator } from "./RemoteEnvironmentIndicator";
+ import { useAtomValue } from "@effect/atom-react";
+ import { autoAnimate } from "@formkit/auto-animate";
+ import React, { useCallback, useEffect, memo, useMemo, useRef, useState } from "react";
+@@ -754,7 +755,7 @@ export const SidebarThreadRow = memo(function SidebarThreadRow(props: SidebarThr
+         size="sm"
+         isActive={isActive}
+         data-testid={`thread-row-${thread.id}`}
+-        className={`${resolveThreadRowClassName({
++        className={`@container/thread-row ${resolveThreadRowClassName({
+           isActive,
+           isSelected,
+         })} relative isolate`}
+@@ -915,14 +916,14 @@ export const SidebarThreadRow = memo(function SidebarThreadRow(props: SidebarThr
+                   <Tooltip>
+                     <TooltipTrigger
+                       render={
+-                        <span
+-                          aria-label={threadEnvironmentLabel ?? "Remote"}
+-                          className="inline-flex items-center justify-center"
++                        <RemoteEnvironmentIndicator
++                          icon={CloudIcon}
++                          label={threadEnvironmentLabel ?? "Remote"}
++                          className="max-w-24"
++                          iconClassName="size-3 text-muted-foreground/40"
+                         />
+                       }
+-                    >
+-                      <CloudIcon className="size-3 text-muted-foreground/40" />
+-                    </TooltipTrigger>
++                    />
+                     <TooltipPopup side="top">{threadEnvironmentLabel}</TooltipPopup>
+                   </Tooltip>
+                 )}
+diff --git a/apps/web/src/components/SidebarV2.tsx b/apps/web/src/components/SidebarV2.tsx
+index dace972f1d758058daf480fcaf3fce44685c85b3..e032c903f7d86eb87873133f1a11a2658db21971 100644
+--- a/apps/web/src/components/SidebarV2.tsx
++++ b/apps/web/src/components/SidebarV2.tsx
+@@ -111,6 +111,7 @@ import { buildThreadRouteParams, resolveThreadRouteTarget } from "../threadRoute
+ import { formatRelativeTimeLabel } from "../timestampFormat";
+ import type { SidebarThreadSummary } from "../types";
+ import { cn } from "~/lib/utils";
++import { RemoteEnvironmentIndicator } from "./RemoteEnvironmentIndicator";
+ import {
+   formatWorkingDurationLabel,
+   getSidebarThreadKeysNeedingChangeRequestReporter,
+@@ -787,7 +788,7 @@ const SidebarV2Row = memo(function SidebarV2Row(props: {
+               role="button"
+               tabIndex={0}
+               data-testid="sidebar-v2-row-card"
+-              className={rowSurfaceClassName}
++              className={cn("@container/thread-row", rowSurfaceClassName)}
+               onClick={handleClick}
+               onDoubleClick={handleDoubleClick}
+               onKeyDown={handleKeyDown}
+@@ -888,14 +889,14 @@ const SidebarV2Row = memo(function SidebarV2Row(props: {
+                   <span className="text-red-600 dark:text-red-400">−{diff.deletions}</span>
+                 </span>
+               ) : null}
+-              <span
+-                aria-hidden
+-                className="pointer-events-none ml-auto inline-flex shrink-0 items-center gap-1"
+-              >
++              <span className="pointer-events-none ml-auto inline-flex shrink-0 items-center gap-1">
+                 {isRemote ? (
+-                  <span className="inline-flex shrink-0 items-center text-sidebar-muted-foreground/70">
+-                    <ServerIcon aria-hidden className="size-3.5" />
+-                  </span>
++                  <RemoteEnvironmentIndicator
++                    icon={ServerIcon}
++                    label={props.environmentLabel ?? "Remote"}
++                    className="max-w-24 shrink-0 text-sidebar-muted-foreground/70"
++                    iconClassName="size-3.5"
++                  />
+                 ) : null}
+                 {driverKind ? (
+                   <span className="inline-flex shrink-0 items-center opacity-60">
