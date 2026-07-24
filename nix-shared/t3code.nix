@@ -178,10 +178,21 @@
     hash = "sha256-j8y7AuU+E1U6O2lzy1yhIpR2hs59jNPvrsfRBwex8aU=";
   };
 
-  # PR #4444 (head bb2c567e61dc) overlaps DesktopApp startup after #4437.
+  # PR #4444 (head 704649ec6948) overlaps DesktopApp startup after #4437.
   t3codePr4444 = final.fetchurl {
     url = "https://patch-diff.githubusercontent.com/raw/pingdotgg/t3code/pull/4444.diff";
     hash = "sha256-NsK02bDaCW3uprmX/dajLs1+z8UcrJKqHCtSFTUrZ8I=";
+  };
+
+  # PR #4474 is stacked on #4444. Audit its complete cumulative diff while
+  # applying only the commit-pinned pairing delta after #4444 below.
+  t3codePr4474 = final.fetchurl {
+    url = "https://patch-diff.githubusercontent.com/raw/pingdotgg/t3code/pull/4474.diff";
+    hash = "sha256-hx/16AtAo5JpZSpXM2KftRUZ5BQNk1ZJbOnqE48MwZw=";
+  };
+  t3codePr4474Unique = final.fetchurl {
+    url = "https://github.com/colonelpanic8/t3code/compare/704649ec6948a66e9a0b1e0199dec5a09d1e301b...8f3ac9f81d70eab58a5693d5e98e6198f428da08.diff";
+    hash = "sha256-Ei+4uIsmtuhZUYaTlAl8mzuRsZqZvvXL3DegdY2R7+8=";
   };
 
   # PR #4477 (head bcc18e65b5b6) overlaps Claude model additions on the
@@ -209,6 +220,7 @@
     t3codePr4427
     t3codePr4439
     t3codePr4444
+    t3codePr4474
     t3codePr4477
   ];
 
@@ -381,7 +393,7 @@
       hash = "sha256-LJTucZOXRLHxCh9Rxu/sZObkyvEqc1Zdik4VxSV3+Qc=";
     })
     # Start Electron as a client of a separately owned local backend:
-    # t3code#4444 (head bb2c567e61dc). Apply non-overlapping files directly.
+    # t3code#4444 (head 704649ec6948). Apply non-overlapping files directly.
     (final.fetchpatch {
       url = "https://patch-diff.githubusercontent.com/raw/pingdotgg/t3code/pull/4444.diff";
       excludes = t3codePr4444OverlapFiles;
@@ -389,6 +401,10 @@
     })
     # Combine DesktopApp startup with #4437's split cache path.
     ./patches/t3code-pr-4444-stack-compat.patch
+    # Discover and explicitly pair with same-user loopback `t3 serve`
+    # instances: t3code#4474 (head 8f3ac9f81d70). Its cumulative PR diff
+    # includes #4444, so apply only the immutable #4444..#4474 range.
+    t3codePr4474Unique
     # Discover Claude models from SDK initialization rather than relying on
     # the fallback catalog: t3code#4477 (head bcc18e65b5b6).
     (final.fetchpatch {
