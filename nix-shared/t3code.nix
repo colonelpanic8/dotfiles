@@ -353,6 +353,12 @@
     # compatibility patch keeps #3984's filename promotion, transactional
     # snapshot lookup, and artifact-path safeguards intact.
     ./patches/t3code-pr-4427-stack-compat.patch
+    # Refresh positional model-picker shortcuts when virtualized rows are
+    # reordered: t3code#4433 (head cc3e4f13cc4f).
+    (final.fetchurl {
+      url = "https://patch-diff.githubusercontent.com/raw/pingdotgg/t3code/pull/4433.diff";
+      hash = "sha256-siLeGq3yAcTp/9wdplzXWiJQAizitPUpvBilO/AfTLM=";
+    })
     # Configure centralized or repository-local worktree placement:
     # t3code#4439 (head 9a64b23e894c). Apply its non-overlapping files
     # directly and combine its persistence assertions with the assembled
