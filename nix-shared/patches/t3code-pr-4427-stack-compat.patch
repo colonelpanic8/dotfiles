@@ -193,7 +193,7 @@ index 2c180fbf119005cb382951700bb1ea0ef706bc86..c391cf366fdfb2c87c09f6c0229055c2
      const exactWorkspaceFile = yield* resolveCanonicalWorkspaceFileForRequest({
 diff --git a/apps/server/src/assets/GeneratedImageResolver.test.ts b/apps/server/src/assets/GeneratedImageResolver.test.ts
 new file mode 100644
-index 0000000000000000000000000000000000000000..9b37fcadc1189a99140be861a6004d57eb85b3f0
+index 0000000000000000000000000000000000000000..6a22c35dc3e2ef826d495280b91263d3a0beda5c
 --- /dev/null
 +++ b/apps/server/src/assets/GeneratedImageResolver.test.ts
 @@ -0,0 +1,117 @@
@@ -204,8 +204,8 @@ index 0000000000000000000000000000000000000000..9b37fcadc1189a99140be861a6004d57
 +
 +import {
 +  findGeneratedImagePath,
-+  isGeneratedImageLookupRetryable,
-+  retryGeneratedImageLookup,
++  isGeneratedImageFileLookupRetryable,
++  retryGeneratedImageFileLookup,
 +} from "./GeneratedImageResolver.ts";
 +
 +const ACTIVITY_ID = EventId.make("activity-generated-image");
@@ -294,7 +294,7 @@ index 0000000000000000000000000000000000000000..9b37fcadc1189a99140be861a6004d57
 +  effectIt.live("retries transient not-found failures and preserves other failures", () =>
 +    Effect.gen(function* () {
 +      let attempts = 0;
-+      const result = yield* retryGeneratedImageLookup(
++      const result = yield* retryGeneratedImageFileLookup(
 +        Effect.suspend(() => {
 +          attempts += 1;
 +          return attempts < 3
@@ -305,18 +305,18 @@ index 0000000000000000000000000000000000000000..9b37fcadc1189a99140be861a6004d57
 +
 +      expect(result).toBe("ready");
 +      expect(attempts).toBe(3);
-+      expect(isGeneratedImageLookupRetryable({ _tag: "AssetGeneratedImageNotFoundError" })).toBe(
-+        true,
-+      );
-+      expect(isGeneratedImageLookupRetryable({ _tag: "AssetGeneratedImageInspectionError" })).toBe(
-+        false,
-+      );
++      expect(
++        isGeneratedImageFileLookupRetryable({ _tag: "AssetGeneratedImageNotFoundError" }),
++      ).toBe(true);
++      expect(
++        isGeneratedImageFileLookupRetryable({ _tag: "AssetGeneratedImageInspectionError" }),
++      ).toBe(false);
 +    }),
 +  );
 +});
 diff --git a/apps/server/src/assets/GeneratedImageResolver.ts b/apps/server/src/assets/GeneratedImageResolver.ts
 new file mode 100644
-index 0000000000000000000000000000000000000000..917c047871bf44fe9ff50b9d891a7926a7ed0540
+index 0000000000000000000000000000000000000000..ee6d6d02f429ffc3be9e3bb7ff9e3aee906bbfd0
 --- /dev/null
 +++ b/apps/server/src/assets/GeneratedImageResolver.ts
 @@ -0,0 +1,52 @@
@@ -357,23 +357,23 @@ index 0000000000000000000000000000000000000000..917c047871bf44fe9ff50b9d891a7926
 +  return savedPath.length > 0 ? savedPath : null;
 +}
 +
-+export function isGeneratedImageLookupRetryable(error: unknown): boolean {
++export function isGeneratedImageFileLookupRetryable(error: unknown): boolean {
 +  return asRecord(error)?._tag === "AssetGeneratedImageNotFoundError";
 +}
 +
-+export function retryGeneratedImageLookup<A, E, R>(
++export function retryGeneratedImageFileLookup<A, E, R>(
 +  lookup: Effect.Effect<A, E, R>,
 +): Effect.Effect<A, E, R> {
 +  return lookup.pipe(
 +    Effect.retry({
 +      times: GENERATED_IMAGE_LOOKUP_RETRY_COUNT,
 +      schedule: Schedule.spaced(GENERATED_IMAGE_LOOKUP_RETRY_INTERVAL),
-+      while: isGeneratedImageLookupRetryable,
++      while: isGeneratedImageFileLookupRetryable,
 +    }),
 +  );
 +}
 diff --git a/apps/server/src/ws.ts b/apps/server/src/ws.ts
-index 9f646dcea688ab51438188e3d4755d26f4cb6501..939109eae95fe871a712440c1f9a683b7d58b8e6 100644
+index 9f646dcea688ab51438188e3d4755d26f4cb6501..af3fb05177f17f8ca8819679aa73ebc26b674b72 100644
 --- a/apps/server/src/ws.ts
 +++ b/apps/server/src/ws.ts
 @@ -49,6 +49,8 @@ import {
@@ -391,45 +391,40 @@ index 9f646dcea688ab51438188e3d4755d26f4cb6501..939109eae95fe871a712440c1f9a683b
  import { issueAssetUrl, issueThreadArtifactUrl } from "./assets/AssetAccess.ts";
 +import {
 +  findGeneratedImagePath,
-+  retryGeneratedImageLookup,
++  retryGeneratedImageFileLookup,
 +} from "./assets/GeneratedImageResolver.ts";
  import {
    findThreadArtifactPath,
    retryThreadArtifactLookup,
-@@ -1708,6 +1714,39 @@ const makeWsRpcLayer = (
+@@ -1708,6 +1714,34 @@ const makeWsRpcLayer = (
            observeRpcEffect(
              WS_METHODS.assetsCreateUrl,
              Effect.gen(function* () {
 +              if (input.resource._tag === "generated-image") {
 +                const resource = input.resource;
-+                return yield* retryGeneratedImageLookup(
-+                  Effect.gen(function* () {
-+                    const snapshot = yield* projectionSnapshotQuery
-+                      .getThreadDetailSnapshot(resource.threadId)
-+                      .pipe(
-+                        Effect.mapError(
-+                          (cause) =>
-+                            new AssetGeneratedImageInspectionError({
-+                              resource,
-+                              cause,
-+                            }),
-+                        ),
-+                      );
-+                    const generatedImagePath = Option.isSome(snapshot)
-+                      ? findGeneratedImagePath(
-+                          snapshot.value.thread.activities,
-+                          resource.activityId,
-+                        )
-+                      : null;
-+                    if (!generatedImagePath) {
-+                      return yield* new AssetGeneratedImageNotFoundError({
-+                        resource,
-+                      });
-+                    }
-+                    return yield* issueAssetUrl({
-+                      resource,
-+                      generatedImagePath,
-+                    });
++                const snapshot = yield* projectionSnapshotQuery
++                  .getThreadDetailSnapshot(resource.threadId)
++                  .pipe(
++                    Effect.mapError(
++                      (cause) =>
++                        new AssetGeneratedImageInspectionError({
++                          resource,
++                          cause,
++                        }),
++                    ),
++                  );
++                const generatedImagePath = Option.isSome(snapshot)
++                  ? findGeneratedImagePath(snapshot.value.thread.activities, resource.activityId)
++                  : null;
++                if (!generatedImagePath) {
++                  return yield* new AssetGeneratedImageNotFoundError({
++                    resource,
++                  });
++                }
++                return yield* retryGeneratedImageFileLookup(
++                  issueAssetUrl({
++                    resource,
++                    generatedImagePath,
 +                  }),
 +                );
 +              }
@@ -437,7 +432,7 @@ index 9f646dcea688ab51438188e3d4755d26f4cb6501..939109eae95fe871a712440c1f9a683b
                  const resource = input.resource;
                  return yield* retryThreadArtifactLookup(
 diff --git a/apps/web/src/components/ChatView.tsx b/apps/web/src/components/ChatView.tsx
-index 4aa41167e78f92282e0e7654b02a2b172057fd5d..8ed40665ad261cdbbd91aa87c2dfcaaf4d951abe 100644
+index 4aa41167e78f92282e0e7654b02a2b172057fd5d..45a74c5eefb440de54cf2385cd50c36d158aadac 100644
 --- a/apps/web/src/components/ChatView.tsx
 +++ b/apps/web/src/components/ChatView.tsx
 @@ -134,6 +134,7 @@ import { closePreviewSession } from "./preview/closePreviewSession";
@@ -448,12 +443,13 @@ index 4aa41167e78f92282e0e7654b02a2b172057fd5d..8ed40665ad261cdbbd91aa87c2dfcaaf
  import { DiffWorkerPoolProvider } from "./DiffWorkerPoolProvider";
  import { BranchToolbar, type BranchToolbarHandle } from "./BranchToolbar";
  import { resolveShortcutCommand, shortcutLabelForCommand } from "../keybindings";
-@@ -5572,6 +5573,13 @@ function ChatViewContent(props: ChatViewProps) {
+@@ -5572,6 +5573,14 @@ function ChatViewContent(props: ChatViewProps) {
          timestampFormat={timestampFormat}
          mode="embedded"
        />
 +    ) : activeRightPanelSurface?.kind === "generated-image" ? (
 +      <GeneratedImagePanel
++        key={activeRightPanelSurface.id}
 +        environmentId={activeThreadRef.environmentId}
 +        threadRef={activeThreadRef}
 +        activityId={activeRightPanelSurface.activityId}
