@@ -12,7 +12,7 @@ index 662d919e24b17b79dc2da14079f4dd12cff9cdf6..171500fcfd8e1c13c91ab7ec54d0bab8
 @@ -309,6 +309,59 @@ describe("AssetAccess", () => {
      }).pipe(Effect.provide(testLayer)),
    );
- 
+
 +  it.effect("issues exact capabilities for provider-generated images", () =>
 +    Effect.gen(function* () {
 +      const fileSystem = yield* FileSystem.FileSystem;
@@ -98,7 +98,7 @@ index 2c180fbf119005cb382951700bb1ea0ef706bc86..c391cf366fdfb2c87c09f6c0229055c2
 @@ -171,9 +179,37 @@ const resolveCanonicalWorkspaceFileForRequest = (input: {
      Effect.orElseSucceed(() => null),
    );
- 
+
 +const resolveCanonicalGeneratedImage = Effect.fn("AssetAccess.resolveCanonicalGeneratedImage")(
 +  function* (absolutePath: string) {
 +    const fileSystem = yield* FileSystem.FileSystem;
@@ -193,14 +193,20 @@ index 2c180fbf119005cb382951700bb1ea0ef706bc86..c391cf366fdfb2c87c09f6c0229055c2
      const exactWorkspaceFile = yield* resolveCanonicalWorkspaceFileForRequest({
 diff --git a/apps/server/src/assets/GeneratedImageResolver.test.ts b/apps/server/src/assets/GeneratedImageResolver.test.ts
 new file mode 100644
-index 0000000000000000000000000000000000000000..13cebe4dc1563bd2851426b33b84228d41e330f6
+index 0000000000000000000000000000000000000000..9b37fcadc1189a99140be861a6004d57eb85b3f0
 --- /dev/null
 +++ b/apps/server/src/assets/GeneratedImageResolver.test.ts
-@@ -0,0 +1,88 @@
+@@ -0,0 +1,117 @@
 +import { EventId, type OrchestrationThreadActivity } from "@t3tools/contracts";
++import { it as effectIt } from "@effect/vitest";
++import * as Effect from "effect/Effect";
 +import { describe, expect, it } from "vite-plus/test";
 +
-+import { findGeneratedImagePath } from "./GeneratedImageResolver.ts";
++import {
++  findGeneratedImagePath,
++  isGeneratedImageLookupRetryable,
++  retryGeneratedImageLookup,
++} from "./GeneratedImageResolver.ts";
 +
 +const ACTIVITY_ID = EventId.make("activity-generated-image");
 +
@@ -284,14 +290,42 @@ index 0000000000000000000000000000000000000000..13cebe4dc1563bd2851426b33b84228d
 +      ),
 +    ).toBeNull();
 +  });
++
++  effectIt.live("retries transient not-found failures and preserves other failures", () =>
++    Effect.gen(function* () {
++      let attempts = 0;
++      const result = yield* retryGeneratedImageLookup(
++        Effect.suspend(() => {
++          attempts += 1;
++          return attempts < 3
++            ? Effect.fail({ _tag: "AssetGeneratedImageNotFoundError" as const })
++            : Effect.succeed("ready");
++        }),
++      );
++
++      expect(result).toBe("ready");
++      expect(attempts).toBe(3);
++      expect(isGeneratedImageLookupRetryable({ _tag: "AssetGeneratedImageNotFoundError" })).toBe(
++        true,
++      );
++      expect(isGeneratedImageLookupRetryable({ _tag: "AssetGeneratedImageInspectionError" })).toBe(
++        false,
++      );
++    }),
++  );
 +});
 diff --git a/apps/server/src/assets/GeneratedImageResolver.ts b/apps/server/src/assets/GeneratedImageResolver.ts
 new file mode 100644
-index 0000000000000000000000000000000000000000..b8dadf283b684309f373e224d9867b5c26f1054c
+index 0000000000000000000000000000000000000000..917c047871bf44fe9ff50b9d891a7926a7ed0540
 --- /dev/null
 +++ b/apps/server/src/assets/GeneratedImageResolver.ts
-@@ -0,0 +1,31 @@
+@@ -0,0 +1,52 @@
 +import type { EventId, OrchestrationThreadActivity } from "@t3tools/contracts";
++import * as Effect from "effect/Effect";
++import * as Schedule from "effect/Schedule";
++
++const GENERATED_IMAGE_LOOKUP_RETRY_COUNT = 20;
++const GENERATED_IMAGE_LOOKUP_RETRY_INTERVAL = "250 millis";
 +
 +function asRecord(value: unknown): Record<string, unknown> | null {
 +  return value !== null && typeof value === "object" && !Array.isArray(value)
@@ -322,8 +356,24 @@ index 0000000000000000000000000000000000000000..b8dadf283b684309f373e224d9867b5c
 +  const savedPath = item.savedPath.trim();
 +  return savedPath.length > 0 ? savedPath : null;
 +}
++
++export function isGeneratedImageLookupRetryable(error: unknown): boolean {
++  return asRecord(error)?._tag === "AssetGeneratedImageNotFoundError";
++}
++
++export function retryGeneratedImageLookup<A, E, R>(
++  lookup: Effect.Effect<A, E, R>,
++): Effect.Effect<A, E, R> {
++  return lookup.pipe(
++    Effect.retry({
++      times: GENERATED_IMAGE_LOOKUP_RETRY_COUNT,
++      schedule: Schedule.spaced(GENERATED_IMAGE_LOOKUP_RETRY_INTERVAL),
++      while: isGeneratedImageLookupRetryable,
++    }),
++  );
++}
 diff --git a/apps/server/src/ws.ts b/apps/server/src/ws.ts
-index 9f646dcea688ab51438188e3d4755d26f4cb6501..b52e97ab3126029de2c13e5d9d0c46a4145a40c8 100644
+index 9f646dcea688ab51438188e3d4755d26f4cb6501..939109eae95fe871a712440c1f9a683b7d58b8e6 100644
 --- a/apps/server/src/ws.ts
 +++ b/apps/server/src/ws.ts
 @@ -49,6 +49,8 @@ import {
@@ -335,47 +385,221 @@ index 9f646dcea688ab51438188e3d4755d26f4cb6501..b52e97ab3126029de2c13e5d9d0c46a4
    AssetWorkspaceAssetInspectionError,
    AssetWorkspaceAssetNotFoundError,
    AssetWorkspaceContextNotFoundError,
-@@ -88,6 +90,7 @@ import * as TerminalManager from "./terminal/Manager.ts";
+@@ -88,6 +90,10 @@ import * as TerminalManager from "./terminal/Manager.ts";
  import * as PreviewAutomationBroker from "./mcp/PreviewAutomationBroker.ts";
  import * as PreviewManager from "./preview/Manager.ts";
  import { issueAssetUrl, issueThreadArtifactUrl } from "./assets/AssetAccess.ts";
-+import { findGeneratedImagePath } from "./assets/GeneratedImageResolver.ts";
++import {
++  findGeneratedImagePath,
++  retryGeneratedImageLookup,
++} from "./assets/GeneratedImageResolver.ts";
  import {
    findThreadArtifactPath,
    retryThreadArtifactLookup,
-@@ -1708,6 +1711,32 @@ const makeWsRpcLayer = (
+@@ -1708,6 +1714,39 @@ const makeWsRpcLayer = (
            observeRpcEffect(
              WS_METHODS.assetsCreateUrl,
              Effect.gen(function* () {
 +              if (input.resource._tag === "generated-image") {
 +                const resource = input.resource;
-+                const snapshot = yield* projectionSnapshotQuery
-+                  .getThreadDetailSnapshot(resource.threadId)
-+                  .pipe(
-+                    Effect.mapError(
-+                      (cause) =>
-+                        new AssetGeneratedImageInspectionError({
-+                          resource,
-+                          cause,
-+                        }),
-+                    ),
-+                  );
-+                const generatedImagePath = Option.isSome(snapshot)
-+                  ? findGeneratedImagePath(snapshot.value.thread.activities, resource.activityId)
-+                  : null;
-+                if (!generatedImagePath) {
-+                  return yield* new AssetGeneratedImageNotFoundError({
-+                    resource,
-+                  });
-+                }
-+                return yield* issueAssetUrl({
-+                  resource,
-+                  generatedImagePath,
-+                });
++                return yield* retryGeneratedImageLookup(
++                  Effect.gen(function* () {
++                    const snapshot = yield* projectionSnapshotQuery
++                      .getThreadDetailSnapshot(resource.threadId)
++                      .pipe(
++                        Effect.mapError(
++                          (cause) =>
++                            new AssetGeneratedImageInspectionError({
++                              resource,
++                              cause,
++                            }),
++                        ),
++                      );
++                    const generatedImagePath = Option.isSome(snapshot)
++                      ? findGeneratedImagePath(
++                          snapshot.value.thread.activities,
++                          resource.activityId,
++                        )
++                      : null;
++                    if (!generatedImagePath) {
++                      return yield* new AssetGeneratedImageNotFoundError({
++                        resource,
++                      });
++                    }
++                    return yield* issueAssetUrl({
++                      resource,
++                      generatedImagePath,
++                    });
++                  }),
++                );
 +              }
                if (input.resource._tag === "thread-artifact") {
                  const resource = input.resource;
                  return yield* retryThreadArtifactLookup(
+diff --git a/apps/web/src/components/ChatView.tsx b/apps/web/src/components/ChatView.tsx
+index 4aa41167e78f92282e0e7654b02a2b172057fd5d..8ed40665ad261cdbbd91aa87c2dfcaaf4d951abe 100644
+--- a/apps/web/src/components/ChatView.tsx
++++ b/apps/web/src/components/ChatView.tsx
+@@ -134,6 +134,7 @@ import { closePreviewSession } from "./preview/closePreviewSession";
+ import { subscribePreviewAction } from "./preview/previewActionBus";
+ import { getConfiguredPreviewUrls } from "./preview/previewEmptyStateLogic";
+ import { RightPanelTabs } from "./RightPanelTabs";
++import { GeneratedImagePanel } from "./chat/GeneratedImagePanel";
+ import { DiffWorkerPoolProvider } from "./DiffWorkerPoolProvider";
+ import { BranchToolbar, type BranchToolbarHandle } from "./BranchToolbar";
+ import { resolveShortcutCommand, shortcutLabelForCommand } from "../keybindings";
+@@ -5572,6 +5573,13 @@ function ChatViewContent(props: ChatViewProps) {
+         timestampFormat={timestampFormat}
+         mode="embedded"
+       />
++    ) : activeRightPanelSurface?.kind === "generated-image" ? (
++      <GeneratedImagePanel
++        environmentId={activeThreadRef.environmentId}
++        threadRef={activeThreadRef}
++        activityId={activeRightPanelSurface.activityId}
++        name={activeRightPanelSurface.name}
++      />
+     ) : (activeRightPanelSurface?.kind === "files" || activeRightPanelSurface?.kind === "file") &&
+       activeProject &&
+       activeWorkspaceRoot ? (
+diff --git a/apps/web/src/components/RightPanelTabs.tsx b/apps/web/src/components/RightPanelTabs.tsx
+index 83524009c19edec152487f21a1dacefc7c602ed7..93ce687216c83ab86998e1b474409268d30cc019 100644
+--- a/apps/web/src/components/RightPanelTabs.tsx
++++ b/apps/web/src/components/RightPanelTabs.tsx
+@@ -1,6 +1,15 @@
+ import type { ContextMenuItem, PreviewSessionSnapshot } from "@t3tools/contracts";
+ import { getTerminalLabel } from "@t3tools/shared/terminalLabels";
+-import { ClipboardList, FileDiff, Files, Globe2, Plus, TerminalSquare, X } from "lucide-react";
++import {
++  ClipboardList,
++  FileDiff,
++  Files,
++  Globe2,
++  ImageIcon,
++  Plus,
++  TerminalSquare,
++  X,
++} from "lucide-react";
+ import {
+   type MouseEvent as ReactMouseEvent,
+   type ReactElement,
+@@ -198,6 +207,8 @@ function surfaceTitle(
+       return "Files";
+     case "file":
+       return surface.relativePath.slice(surface.relativePath.lastIndexOf("/") + 1);
++    case "generated-image":
++      return surface.name;
+     case "terminal":
+       return (
+         terminalLabelsById.get(surface.activeTerminalId) ??
+@@ -262,6 +273,8 @@ function SurfaceIcon({
+           className="size-3.5"
+         />
+       );
++    case "generated-image":
++      return <ImageIcon className="size-3.5 shrink-0" />;
+     case "terminal":
+       return <TerminalSquare className="size-3.5 shrink-0" />;
+     case "plan":
+diff --git a/apps/web/src/components/chat/GeneratedImagePanel.test.tsx b/apps/web/src/components/chat/GeneratedImagePanel.test.tsx
+new file mode 100644
+index 0000000000000000000000000000000000000000..a4f3249aed11779ccefd0e219cff52a5a4abb46a
+--- /dev/null
++++ b/apps/web/src/components/chat/GeneratedImagePanel.test.tsx
+@@ -0,0 +1,45 @@
++import { EnvironmentId, EventId, ThreadId } from "@t3tools/contracts";
++import { scopeThreadRef } from "@t3tools/client-runtime/environment";
++import { renderToStaticMarkup } from "react-dom/server";
++import { beforeEach, describe, expect, it, vi } from "vite-plus/test";
++
++import { GeneratedImagePanel } from "./GeneratedImagePanel";
++
++const assetUrlState = vi.hoisted(() => ({
++  current: {
++    _tag: "Success" as const,
++    url: "https://environment.example/api/assets/generated-image/generated.png",
++  },
++}));
++
++vi.mock("~/assets/assetUrls", () => ({
++  useAssetUrlState: () => assetUrlState.current,
++}));
++
++const environmentId = EnvironmentId.make("environment-local");
++const threadRef = scopeThreadRef(environmentId, ThreadId.make("thread-1"));
++
++beforeEach(() => {
++  assetUrlState.current = {
++    _tag: "Success",
++    url: "https://environment.example/api/assets/generated-image/generated.png",
++  };
++});
++
++describe("GeneratedImagePanel", () => {
++  it("renders the selected generated image", () => {
++    const markup = renderToStaticMarkup(
++      <GeneratedImagePanel
++        environmentId={environmentId}
++        threadRef={threadRef}
++        activityId={EventId.make("activity-generated-image")}
++        name="generated.png"
++      />,
++    );
++
++    expect(markup).toContain('alt="generated.png"');
++    expect(markup).toContain(
++      'src="https://environment.example/api/assets/generated-image/generated.png"',
++    );
++  });
++});
+diff --git a/apps/web/src/components/chat/GeneratedImagePanel.tsx b/apps/web/src/components/chat/GeneratedImagePanel.tsx
+new file mode 100644
+index 0000000000000000000000000000000000000000..f3cd9e53fb50e0e0b149230d25b96677012fda89
+--- /dev/null
++++ b/apps/web/src/components/chat/GeneratedImagePanel.tsx
+@@ -0,0 +1,42 @@
++import type { EnvironmentId, EventId, ScopedThreadRef } from "@t3tools/contracts";
++import { LoaderCircle } from "lucide-react";
++import { useState } from "react";
++
++import { useAssetUrlState } from "~/assets/assetUrls";
++
++export function GeneratedImagePanel(props: {
++  readonly environmentId: EnvironmentId;
++  readonly threadRef: ScopedThreadRef;
++  readonly activityId: EventId;
++  readonly name: string;
++}) {
++  const assetUrl = useAssetUrlState(props.environmentId, {
++    _tag: "generated-image",
++    threadId: props.threadRef.threadId,
++    activityId: props.activityId,
++  });
++  const [failedUrl, setFailedUrl] = useState<string | null>(null);
++
++  if (assetUrl._tag === "Failure" || (assetUrl._tag === "Success" && failedUrl === assetUrl.url)) {
++    return (
++      <div className="flex min-h-0 flex-1 items-center justify-center px-6 text-center text-xs leading-relaxed text-destructive">
++        Unable to load generated image.
++      </div>
++    );
++  }
++
++  return assetUrl._tag === "Success" ? (
++    <div className="flex min-h-0 flex-1 items-center justify-center overflow-auto p-4">
++      <img
++        className="max-h-full max-w-full object-contain"
++        src={assetUrl.url}
++        alt={props.name}
++        onError={() => setFailedUrl(assetUrl.url)}
++      />
++    </div>
++  ) : (
++    <div className="flex min-h-0 flex-1 items-center justify-center text-muted-foreground">
++      <LoaderCircle className="size-5 animate-spin" />
++    </div>
++  );
++}
 diff --git a/apps/web/src/components/chat/MessagesTimeline.logic.test.ts b/apps/web/src/components/chat/MessagesTimeline.logic.test.ts
 index 6d74204bc1cae3c94aeeae8afbe8b7187191318e..f367bc4413d6c8d86726a03f56ac1bbd8f34cdb0 100644
 --- a/apps/web/src/components/chat/MessagesTimeline.logic.test.ts
@@ -383,7 +607,7 @@ index 6d74204bc1cae3c94aeeae8afbe8b7187191318e..f367bc4413d6c8d86726a03f56ac1bbd
 @@ -541,6 +541,84 @@ describe("deriveMessagesTimelineRows", () => {
      ).toBeDefined();
    });
- 
+
 +  it("keeps generated images visible when their completed turn is folded", () => {
 +    const rows = deriveMessagesTimelineRows({
 +      timelineEntries: [
@@ -537,7 +761,7 @@ index 6d74204bc1cae3c94aeeae8afbe8b7187191318e..f367bc4413d6c8d86726a03f56ac1bbd
 +    ]);
 +  });
  });
- 
+
  describe("computeStableMessagesTimelineRows", () => {
 diff --git a/apps/web/src/components/chat/MessagesTimeline.logic.ts b/apps/web/src/components/chat/MessagesTimeline.logic.ts
 index 3227bac2413bd99369bd563d338dd7054ed688bf..03116c31fb77d10982cc88817f727a9a4b5fc074 100644
@@ -565,7 +789,7 @@ index 3227bac2413bd99369bd563d338dd7054ed688bf..03116c31fb77d10982cc88817f727a9a
            foldsByAnchorEntryId.has(nextEntry.id)
          ) {
 diff --git a/apps/web/src/components/chat/MessagesTimeline.test.tsx b/apps/web/src/components/chat/MessagesTimeline.test.tsx
-index 5e9003e0e25885a6750ec6ae7b4ff4b35c7d1856..c13b4201d333313dfcc4b78670b815a702a13144 100644
+index 5e9003e0e25885a6750ec6ae7b4ff4b35c7d1856..843fdecbd3356c006116bb827c736b61a723e7d6 100644
 --- a/apps/web/src/components/chat/MessagesTimeline.test.tsx
 +++ b/apps/web/src/components/chat/MessagesTimeline.test.tsx
 @@ -1,4 +1,4 @@
@@ -574,22 +798,11 @@ index 5e9003e0e25885a6750ec6ae7b4ff4b35c7d1856..c13b4201d333313dfcc4b78670b815a7
  import { createRef, type ReactNode, type Ref } from "react";
  import { renderToStaticMarkup } from "react-dom/server";
  import { beforeAll, describe, expect, it, vi } from "vite-plus/test";
-@@ -122,6 +122,10 @@ vi.mock("@pierre/diffs/react", () => {
-   return { FileDiff: MockFileDiff };
- });
- 
-+vi.mock("../../assets/assetUrls", () => ({
-+  useAssetUrl: () => "https://environment.example/api/assets/generated-image/generated.png",
-+}));
-+
- function matchMedia() {
-   return {
-     matches: false,
-@@ -240,6 +244,39 @@ function buildAssistantTimelineEntry(text: string) {
+@@ -240,6 +240,37 @@ function buildAssistantTimelineEntry(text: string) {
  }
- 
+
  describe("MessagesTimeline", () => {
-+  it("renders completed image generation work as an expandable inline preview", () => {
++  it("renders completed image generation work as a compact image link", () => {
 +    const timelineEntries = [
 +      {
 +        id: "work-generated-image",
@@ -615,72 +828,59 @@ index 5e9003e0e25885a6750ec6ae7b4ff4b35c7d1856..c13b4201d333313dfcc4b78670b815a7
 +      <MessagesTimeline {...buildProps()} timelineEntries={timelineEntries} />,
 +    );
 +
-+    expect(markup).toContain('aria-label="Preview generated image generated.png"');
-+    expect(markup).toContain('alt="generated.png"');
-+    expect(markup).toContain(
-+      'src="https://environment.example/api/assets/generated-image/generated.png"',
-+    );
++    expect(markup).toContain('aria-label="Open generated image generated.png"');
++    expect(markup).toContain(">generated.png</span>");
++    expect(markup).not.toContain("<img");
 +  });
 +
    it("uses the larger leading inset only when the top fade is enabled", () => {
      const timelineEntries = [buildUserTimelineEntry("Hello")];
- 
+
 diff --git a/apps/web/src/components/chat/MessagesTimeline.tsx b/apps/web/src/components/chat/MessagesTimeline.tsx
-index a4a13e00b33dc9dbbf26161b954cea5fb7efca1f..f5b35a5b69d1d402c82395b70cdb0cf458225052 100644
+index a4a13e00b33dc9dbbf26161b954cea5fb7efca1f..62a78c805362ae7ef275f4d79b0400525f36526a 100644
 --- a/apps/web/src/components/chat/MessagesTimeline.tsx
 +++ b/apps/web/src/components/chat/MessagesTimeline.tsx
-@@ -99,6 +99,7 @@ import { cn } from "~/lib/utils";
+@@ -47,6 +47,7 @@ import {
+   EyeIcon,
+   GlobeIcon,
+   HammerIcon,
++  ImageIcon,
+   MessageCircleIcon,
+   MousePointerClickIcon,
+   PaintbrushIcon,
+@@ -99,6 +100,7 @@ import { cn } from "~/lib/utils";
  import { useUiStateStore } from "~/uiStateStore";
  import { type TimestampFormat } from "@t3tools/contracts/settings";
  import { formatChatTimestampTooltip, formatShortTimestamp } from "../../timestampFormat";
-+import { useAssetUrl } from "../../assets/assetUrls";
- 
++import { useRightPanelStore } from "~/rightPanelStore";
+
  import {
    buildInlineTerminalContextText,
-@@ -1924,11 +1925,56 @@ function toolWorkEntryHeading(workEntry: TimelineWorkEntry): string {
- 
+@@ -1924,11 +1926,37 @@ function toolWorkEntryHeading(workEntry: TimelineWorkEntry): string {
+
  const stopRowToggle = (e: { stopPropagation: () => void }) => e.stopPropagation();
- 
-+const GeneratedImageWorkEntryPreview = memo(function GeneratedImageWorkEntryPreview({
+
++const GeneratedImageWorkEntryLink = memo(function GeneratedImageWorkEntryLink({
 +  threadRef,
 +  image,
 +}: {
 +  threadRef: ScopedThreadRef;
 +  image: NonNullable<TimelineWorkEntry["generatedImage"]>;
 +}) {
-+  const ctx = use(TimelineRowCtx);
-+  const resource = useMemo(
-+    () => ({
-+      _tag: "generated-image" as const,
-+      threadId: threadRef.threadId,
-+      activityId: image.activityId,
-+    }),
-+    [image.activityId, threadRef.threadId],
-+  );
-+  const imageUrl = useAssetUrl(threadRef.environmentId, resource);
-+  if (!imageUrl) {
-+    return null;
-+  }
-+
 +  return (
 +    <button
 +      type="button"
-+      className="mt-1 ms-7 block max-w-72 cursor-zoom-in overflow-hidden rounded-lg border border-border/70 bg-muted/30"
-+      aria-label={`Preview generated image ${image.name}`}
++      className="mt-1 ms-7 flex max-w-[calc(100%-1.75rem)] items-center gap-1.5 text-left text-xs text-info-foreground underline-offset-2 hover:underline"
++      aria-label={`Open generated image ${image.name}`}
 +      onClick={(event) => {
 +        event.stopPropagation();
-+        ctx.onImageExpand({
-+          images: [{ src: imageUrl, name: image.name }],
-+          index: 0,
-+        });
++        useRightPanelStore.getState().openGeneratedImage(threadRef, image.activityId, image.name);
 +      }}
++      onKeyDown={stopRowToggle}
 +      onPointerDown={stopRowToggle}
 +    >
-+      <img
-+        src={imageUrl}
-+        alt={image.name}
-+        className="block h-auto max-h-72 w-auto max-w-full object-contain"
-+      />
++      <ImageIcon className="size-3.5 shrink-0" aria-hidden />
++      <span className="truncate">{image.name}</span>
 +    </button>
 +  );
 +});
@@ -694,26 +894,232 @@ index a4a13e00b33dc9dbbf26161b954cea5fb7efca1f..f5b35a5b69d1d402c82395b70cdb0cf4
    const activity = use(TimelineRowActivityCtx);
    const [expanded, setExpanded] = useState(false);
    const iconConfig = workToneIcon(workEntry.tone);
-@@ -2079,6 +2125,12 @@ const SimpleWorkEntryRow = memo(function SimpleWorkEntryRow(props: {
+@@ -2079,6 +2107,9 @@ const SimpleWorkEntryRow = memo(function SimpleWorkEntryRow(props: {
            </pre>
          </div>
        ) : null}
 +      {workEntry.generatedImage && ctx.threadRef ? (
-+        <GeneratedImageWorkEntryPreview
-+          threadRef={ctx.threadRef}
-+          image={workEntry.generatedImage}
-+        />
++        <GeneratedImageWorkEntryLink threadRef={ctx.threadRef} image={workEntry.generatedImage} />
 +      ) : null}
      </div>
    );
  });
+diff --git a/apps/web/src/rightPanelStore.test.ts b/apps/web/src/rightPanelStore.test.ts
+index c7457cfd3040325cd9732b93f3d4eb54135b934d..40eaae16511f96e65b764efa381decef3bc44381 100644
+--- a/apps/web/src/rightPanelStore.test.ts
++++ b/apps/web/src/rightPanelStore.test.ts
+@@ -1,5 +1,5 @@
+ import { scopeThreadRef } from "@t3tools/client-runtime/environment";
+-import { type EnvironmentId, ThreadId } from "@t3tools/contracts";
++import { type EnvironmentId, EventId, ThreadId } from "@t3tools/contracts";
+ import { beforeEach, describe, expect, it } from "vite-plus/test";
+
+ import {
+@@ -205,6 +205,57 @@ describe("rightPanelStore", () => {
+     });
+   });
+
++  it("opens generated images as reusable named surfaces", () => {
++    const activityId = EventId.make("activity-generated-image");
++
++    useRightPanelStore.getState().openGeneratedImage(refA, activityId, "first-name.png");
++    useRightPanelStore.getState().open(refA, "plan");
++    useRightPanelStore.getState().openGeneratedImage(refA, activityId, "generated.png");
++
++    expect(selectThreadRightPanelState(useRightPanelStore.getState().byThreadKey, refA)).toEqual({
++      isOpen: true,
++      activeSurfaceId: "generated-image:activity-generated-image",
++      surfaces: [
++        {
++          id: "generated-image:activity-generated-image",
++          kind: "generated-image",
++          activityId,
++          name: "generated.png",
++        },
++        { id: "plan", kind: "plan" },
++      ],
++    });
++  });
++
++  it("drops malformed generated-image surfaces during migration", () => {
++    expect(
++      migratePersistedRightPanelState({
++        byThreadKey: {
++          "env-1:thread-A": {
++            isOpen: true,
++            activeSurfaceId: "generated-image:wrong-id",
++            surfaces: [
++              {
++                id: "generated-image:wrong-id",
++                kind: "generated-image",
++                activityId: "activity-generated-image",
++                name: "generated.png",
++              },
++            ],
++          },
++        },
++      }),
++    ).toEqual({
++      byThreadKey: {
++        "env-1:thread-A": {
++          isOpen: true,
++          activeSurfaceId: null,
++          surfaces: [],
++        },
++      },
++    });
++  });
++
+   it("removes persisted file surfaces when their workspace no longer exists", () => {
+     useRightPanelStore.getState().openFile(refA, "src/index.ts");
+     useRightPanelStore.getState().open(refA, "plan");
+diff --git a/apps/web/src/rightPanelStore.ts b/apps/web/src/rightPanelStore.ts
+index 70d163306cca5b32d32319359c8ecc9a68c3dbf8..d0309364139cce67e09ae6775781cc0ea27d7c2b 100644
+--- a/apps/web/src/rightPanelStore.ts
++++ b/apps/web/src/rightPanelStore.ts
+@@ -5,16 +5,25 @@
+  * surface descriptors and the active surface, while each feature continues to
+  * own its durable resource state. Browser surfaces point at preview tab ids,
+  * terminal surfaces point at terminal session ids, file surfaces point at
+- * workspace paths, and diff/plan/files remain singleton surfaces.
++ * workspace paths, generated-image surfaces point at provider activities, and
++ * diff/plan/files remain singleton surfaces.
+  */
+ import { scopedThreadKey } from "@t3tools/client-runtime/environment";
+-import type { ScopedThreadRef } from "@t3tools/contracts";
++import type { EventId, ScopedThreadRef } from "@t3tools/contracts";
+ import { create } from "zustand";
+ import { createJSONStorage, persist } from "zustand/middleware";
+
+ import { resolveStorage } from "./lib/storage";
+
+-export const RIGHT_PANEL_KINDS = ["plan", "diff", "files", "file", "preview", "terminal"] as const;
++export const RIGHT_PANEL_KINDS = [
++  "plan",
++  "diff",
++  "files",
++  "file",
++  "preview",
++  "terminal",
++  "generated-image",
++] as const;
+ export type RightPanelKind = (typeof RIGHT_PANEL_KINDS)[number];
+
+ export type RightPanelSurface =
+@@ -37,10 +46,16 @@ export type RightPanelSurface =
+       revealLine: number | null;
+       revealRequestId: number;
+     }
++  | {
++      id: `generated-image:${string}`;
++      kind: "generated-image";
++      activityId: EventId;
++      name: string;
++    }
+   | { id: "plan"; kind: "plan" };
+
+ const RIGHT_PANEL_STORAGE_KEY = "t3code:right-panel-state:v2";
+-const RIGHT_PANEL_STORAGE_VERSION = 7;
++const RIGHT_PANEL_STORAGE_VERSION = 8;
+
+ export interface ThreadRightPanelState {
+   isOpen: boolean;
+@@ -50,9 +65,13 @@ export interface ThreadRightPanelState {
+
+ interface RightPanelStoreState {
+   byThreadKey: Record<string, ThreadRightPanelState>;
+-  open: (ref: ScopedThreadRef, kind: Exclude<RightPanelKind, "file" | "terminal">) => void;
++  open: (
++    ref: ScopedThreadRef,
++    kind: Exclude<RightPanelKind, "file" | "terminal" | "generated-image">,
++  ) => void;
+   openBrowser: (ref: ScopedThreadRef, tabId: string | null) => void;
+   openFile: (ref: ScopedThreadRef, relativePath: string, line?: number) => void;
++  openGeneratedImage: (ref: ScopedThreadRef, activityId: EventId, name: string) => void;
+   openTerminal: (ref: ScopedThreadRef, terminalId: string) => void;
+   splitTerminal: (
+     ref: ScopedThreadRef,
+@@ -72,7 +91,10 @@ interface RightPanelStoreState {
+   show: (ref: ScopedThreadRef) => void;
+   close: (ref: ScopedThreadRef) => void;
+   toggleVisibility: (ref: ScopedThreadRef) => void;
+-  toggle: (ref: ScopedThreadRef, kind: Exclude<RightPanelKind, "file" | "terminal">) => void;
++  toggle: (
++    ref: ScopedThreadRef,
++    kind: Exclude<RightPanelKind, "file" | "terminal" | "generated-image">,
++  ) => void;
+   removeThread: (ref: ScopedThreadRef) => void;
+ }
+
+@@ -83,7 +105,7 @@ const EMPTY_THREAD_STATE: ThreadRightPanelState = {
+ };
+
+ const singletonSurface = (
+-  kind: Exclude<RightPanelKind, "file" | "preview" | "terminal">,
++  kind: Exclude<RightPanelKind, "file" | "preview" | "terminal" | "generated-image">,
+ ): RightPanelSurface => {
+   switch (kind) {
+     case "diff":
+@@ -112,6 +134,13 @@ const fileSurface = (
+   revealRequestId,
+ });
+
++const generatedImageSurface = (activityId: EventId, name: string): RightPanelSurface => ({
++  id: `generated-image:${activityId}`,
++  kind: "generated-image",
++  activityId,
++  name,
++});
++
+ const terminalSurface = (terminalId: string): RightPanelSurface => ({
+   id: `terminal:${terminalId}`,
+   kind: "terminal",
+@@ -184,6 +213,17 @@ export function migratePersistedRightPanelState(persistedState: unknown): {
+                           : 0;
+                       return [{ ...surface, revealLine, revealRequestId }];
+                     }
++                    if (surface.kind === "generated-image") {
++                      if (
++                        typeof surface.activityId !== "string" ||
++                        surface.id !== `generated-image:${surface.activityId}` ||
++                        typeof surface.name !== "string" ||
++                        surface.name.trim().length === 0
++                      ) {
++                        return [];
++                      }
++                      return [surface];
++                    }
+                     if (surface.kind !== "terminal") return [surface];
+                     if (
+                       !("resourceId" in surface) ||
+@@ -286,6 +326,20 @@ export const useRightPanelStore = create<RightPanelStoreState>()(
+             };
+           }),
+         })),
++      openGeneratedImage: (ref, activityId, name) =>
++        set((state) => ({
++          byThreadKey: updateThread(state.byThreadKey, scopedThreadKey(ref), (current) => {
++            const surface = generatedImageSurface(activityId, name);
++            const existing = current.surfaces.some((entry) => entry.id === surface.id);
++            return {
++              isOpen: true,
++              activeSurfaceId: surface.id,
++              surfaces: existing
++                ? current.surfaces.map((entry) => (entry.id === surface.id ? surface : entry))
++                : [...current.surfaces, surface],
++            };
++          }),
++        })),
+       openTerminal: (ref, terminalId) =>
+         set((state) => ({
+           byThreadKey: updateThread(state.byThreadKey, scopedThreadKey(ref), (current) =>
 diff --git a/apps/web/src/session-logic.test.ts b/apps/web/src/session-logic.test.ts
 index 0f12e672f66f9427f6b5200c423d9e2c23e5baf6..488f61cbaa09e5bc10374697211661cf273a682c 100644
 --- a/apps/web/src/session-logic.test.ts
 +++ b/apps/web/src/session-logic.test.ts
 @@ -691,6 +691,54 @@ describe("workEntryIndicatesToolFailure", () => {
  });
- 
+
  describe("deriveWorkLogEntries", () => {
 +  it("exposes completed image generation metadata without leaking its saved path", () => {
 +    const [entry] = deriveWorkLogEntries([
@@ -814,11 +1220,11 @@ index 5d5051f748e7d5eefef2ed38757add1000ebae86..edd0d5a164eeb4d2648a94f172eef23f
 +    ...(generatedImage !== undefined ? { generatedImage } : {}),
    };
  }
- 
+
 @@ -1086,6 +1096,28 @@ function extractToolCallId(payload: Record<string, unknown> | null): string | nu
    return asTrimmedString(data?.toolCallId);
  }
- 
+
 +function extractGeneratedImage(
 +  payload: Record<string, unknown> | null,
 +  activityKind: OrchestrationThreadActivity["kind"],
@@ -850,12 +1256,12 @@ index 910016a45191e4ce393273ce1e288de9a2b9b6b4..9ed4d0a48fdf84cdd7a497707817d32f
 +++ b/packages/contracts/src/assets.ts
 @@ -1,6 +1,6 @@
  import * as Schema from "effect/Schema";
- 
+
 -import { MessageId, ThreadId, TrimmedNonEmptyString, TurnId } from "./baseSchemas.ts";
 +import { EventId, MessageId, ThreadId, TrimmedNonEmptyString, TurnId } from "./baseSchemas.ts";
- 
+
  const ASSET_PATH_MAX_LENGTH = 1024;
- 
+
 @@ -15,6 +15,10 @@ export const AssetResource = Schema.Union([
      messageId: MessageId,
      path: TrimmedNonEmptyString.check(Schema.isMaxLength(ASSET_PATH_MAX_LENGTH)),
@@ -870,7 +1276,7 @@ index 910016a45191e4ce393273ce1e288de9a2b9b6b4..9ed4d0a48fdf84cdd7a497707817d32f
 @@ -142,6 +146,29 @@ export class AssetAttachmentNotFoundError extends Schema.TaggedErrorClass<AssetA
    }
  }
- 
+
 +export class AssetGeneratedImageNotFoundError extends Schema.TaggedErrorClass<AssetGeneratedImageNotFoundError>()(
 +  "AssetGeneratedImageNotFoundError",
 +  {

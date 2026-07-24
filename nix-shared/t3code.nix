@@ -138,12 +138,12 @@
     hash = "sha256-CCDoLKIJeB2/MIvrJ6E+pBTWc0md63cnAamhgq0/TdQ=";
   };
 
-  # PR #4427 (head b923a8c7e285) overlaps the existing generated-image and
+  # PR #4427 (head f20908f85333) overlaps the existing generated-image and
   # asset-access stack. Keep its complete cumulative diff auditable while
   # applying the semantic combination below.
   t3codePr4427 = final.fetchurl {
     url = "https://patch-diff.githubusercontent.com/raw/pingdotgg/t3code/pull/4427.diff";
-    hash = "sha256-d3uFoAMxC64TKeIJj0wHZW1AAwJMhzao8213JububfQ=";
+    hash = "sha256-ojN5peT+X0M2MFzIc3ZFMUI5P/P9sLtv5r/bnQEq2po=";
   };
 
   t3codePrAudits = [
@@ -337,9 +337,10 @@
     # Combine #4426's environment-aware thread creation flow with the
     # previously assembled command-palette and keybinding changes.
     ../nixos/patches/t3code-pr-4426-stack-compat.patch
-    # Render completed image-generation activity directly, including after a
-    # reload: t3code#4427 (head b923a8c7e285). This compatibility patch keeps
-    # #3984's filename promotion and its artifact-path safeguards intact.
+    # Show completed image-generation activity as compact evidence links that
+    # open in the right panel: t3code#4427 (head f20908f85333). This
+    # compatibility patch keeps #3984's filename promotion, transactional
+    # snapshot lookup, and artifact-path safeguards intact.
     ./patches/t3code-pr-4427-stack-compat.patch
   ];
 
