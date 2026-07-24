@@ -176,6 +176,7 @@ Machine-specific heavy hitters seen in practice:
 - `~/.cache/uv` can exceed 20G and is reclaimable with `uv cache clean`.
 - If `uv cache clean` reports that the cache is currently in use, do not add `--force`; leave it for a later idle cleanup so an active environment or install is not disrupted.
 - On 2026-07-21 this host had no `uv` executable on PATH; after confirming no open references or writes in the last hour, directly removing the idle `~/.cache/uv` directory reclaimed 8.2G.
+- 2026-07-23 Railbird Mobile Yarn Berry/Nix rebuild: regenerating a large `fetchYarnBerryDeps` offline cache and then materializing `node_modules` exhausted the filesystem with only 299 MiB free. Removing 803 MiB of task-created conversion scratch and running unprivileged `nix store gc` reclaimed 15.4 GiB; the final `node_modules` derivation then succeeded with about 18 GiB free. Preserve roughly 18 GiB of headroom for this dependency build.
 - `~/.cache/yarn` and `~/.cache/cabal` can together exceed 4G on this machine; after checking for open files and recent writes, clearing these dependency caches is a safe reclaiming step (dependencies will be redownloaded or rebuilt).
 - `~/.cache/pypoetry` can exceed 7G across artifacts, repository cache, and virtualenvs; inspect first, then use Poetry cache commands or targeted virtualenv removal.
 - `~/.cache/google-chrome` can exceed 8G across multiple Chrome profiles; close Chrome before clearing profile cache directories.
