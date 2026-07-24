@@ -2000,11 +2000,11 @@
         "org-window-habit": "org-window-habit"
       },
       "locked": {
-        "lastModified": 1784767239,
-        "narHash": "sha256-aHpxalHLTrUaA7q8sVyITPjssBrZ2ovOlINgQa2p3gI=",
+        "lastModified": 1784852985,
+        "narHash": "sha256-FrVG/9ZLlttNApDvKi21NlImh7eg0A2QzvhfZXhl/V8=",
         "owner": "colonelpanic8",
         "repo": "org-agenda-api",
-        "rev": "39dad217e6551b6accca005677a6cad142841c08",
+        "rev": "9b0d56e08b4dcb2a683f55bc4b0b8b50c16d9fef",
         "type": "github"
       },
       "original": {
