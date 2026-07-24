@@ -303,31 +303,30 @@
       url = "https://patch-diff.githubusercontent.com/raw/pingdotgg/t3code/pull/4405.diff";
       hash = "sha256-nhPMr3s0kS+cW5794l+1DTENJYOD11NDLHvaOcqrOGA=";
     })
-    # Honor XDG base directories with legacy fallback: t3code#4419
-    # (head 4d7c10665325).
-    (final.fetchurl {
-      url = "https://patch-diff.githubusercontent.com/raw/pingdotgg/t3code/pull/4419.diff";
-      hash = "sha256-QnXvF9a74enFPwPlxkXfsif8xp85WrjgaKKVH/POHB4=";
-    })
+    # XXX: These 3 should remain disabled for now
+
     # Refuse startup when another server owns the state dir, plus SQLite
     # busy_timeout: t3code#4420 (head bad5be3e2745).
-    (final.fetchurl {
-      url = "https://patch-diff.githubusercontent.com/raw/pingdotgg/t3code/pull/4420.diff";
-      hash = "sha256-K/Mxja9loe1MITDFjFYxCKi/xaEwbpVp/Py26pBMeFo=";
-    })
+    # (final.fetchurl {
+    #   url = "https://patch-diff.githubusercontent.com/raw/pingdotgg/t3code/pull/4420.diff";
+    #   hash = "sha256-K/Mxja9loe1MITDFjFYxCKi/xaEwbpVp/Py26pBMeFo=";
+    # })
     # Settle stale running provider sessions on startup: t3code#4421
     # (head a638faf43b27).
-    (final.fetchurl {
-      url = "https://patch-diff.githubusercontent.com/raw/pingdotgg/t3code/pull/4421.diff";
-      hash = "sha256-3VZ3ENQXVrEtWA2nSeSgh7RTLt9RH6u7cXQ7X+gz64A=";
-    })
+    # (final.fetchurl {
+    #   url = "https://patch-diff.githubusercontent.com/raw/pingdotgg/t3code/pull/4421.diff";
+    #   hash = "sha256-3VZ3ENQXVrEtWA2nSeSgh7RTLt9RH6u7cXQ7X+gz64A=";
+    # })
     # Desktop attaches to an existing local backend instead of spawning;
     # server mints the 0600 local-attach-token: t3code#4423
-    # (head 2cbc91518db0).
-    (final.fetchurl {
-      url = "https://patch-diff.githubusercontent.com/raw/pingdotgg/t3code/pull/4423.diff";
-      hash = "sha256-6hFncBXCNsIUp3D1WGRaUBmkqgL90aBPGYNPPNa/k7I=";
-    })
+    # (head 142696b4dee2).
+    # (final.fetchurl {
+    #   url = "https://patch-diff.githubusercontent.com/raw/pingdotgg/t3code/pull/4423.diff";
+    #   hash = "sha256-ngX9RXIL1vcaGvzJjn7DzGHTktAf57XISznarxXzDks=";
+    # })
+
+    # XXX
+
     # Show remote environment names in thread rows when space permits:
     # t3code#4425 (head f40fc1a0ed8a). Apply its non-overlapping files directly.
     (final.fetchpatch {
