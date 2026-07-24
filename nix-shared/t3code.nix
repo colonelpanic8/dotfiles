@@ -21,6 +21,8 @@
   ];
   t3codePr4426OverlapFiles = [
     "apps/web/src/commandPaletteBus.ts"
+    "apps/web/src/components/CommandPalette.logic.test.ts"
+    "apps/web/src/components/CommandPalette.logic.ts"
     "apps/web/src/components/CommandPalette.tsx"
     "apps/web/src/keybindings.test.ts"
     "packages/shared/src/keybindings.ts"
@@ -128,12 +130,12 @@
     hash = "sha256-Eh8POQGbZMUcYcDjcxJQAOcb2k70/pxzup6adTUT/bk=";
   };
 
-  # PR #4426 (head 75149bc3f50a) overlaps the assembled command palette and
+  # PR #4426 (head f1dd61f7deb9) overlaps the assembled command palette and
   # keybinding defaults. Keep its complete cumulative diff auditable while
   # applying those files through the compatibility patch below.
   t3codePr4426 = final.fetchurl {
     url = "https://patch-diff.githubusercontent.com/raw/pingdotgg/t3code/pull/4426.diff";
-    hash = "sha256-jvtmflvRh9MAwxEXlbkvGXY/+TX6YRZEZfzfs2MY/Ak=";
+    hash = "sha256-CCDoLKIJeB2/MIvrJ6E+pBTWc0md63cnAamhgq0/TdQ=";
   };
 
   # PR #4427 (head b923a8c7e285) overlaps the existing generated-image and
@@ -325,7 +327,7 @@
     # features from #4390 and #4401.
     ../nixos/patches/t3code-pr-4425-stack-compat.patch
     # Choose an environment, then an environment-scoped project, when creating
-    # a thread with Mod+Shift+N: t3code#4426 (head 75149bc3f50a). Apply its
+    # a thread with Mod+Shift+N: t3code#4426 (head f1dd61f7deb9). Apply its
     # non-overlapping files directly.
     (final.fetchpatch {
       url = "https://patch-diff.githubusercontent.com/raw/pingdotgg/t3code/pull/4426.diff";

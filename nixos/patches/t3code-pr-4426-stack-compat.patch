@@ -2,37 +2,50 @@ diff --git a/apps/web/src/commandPaletteBus.ts b/apps/web/src/commandPaletteBus.
 index 2282333..19bc8da 100644
 --- a/apps/web/src/commandPaletteBus.ts
 +++ b/apps/web/src/commandPaletteBus.ts
-@@ -6,7 +6,7 @@ const COMMAND_PALETTE_OPEN_EVENT = "t3code:open-command-palette";
- const COMMAND_PALETTE_CLOSE_EVENT = "t3code:close-command-palette";
-
- export interface CommandPaletteOpenDetail {
+@@ -9 +9 @@ export interface CommandPaletteOpenDetail {
 -  readonly open?: "add-project" | "new-thread-in";
 +  readonly open?: "add-project" | "new-thread-in" | "new-thread-on";
-   readonly preferredProjectRef?: ScopedProjectRef | null;
- }
-
+diff --git a/apps/web/src/components/CommandPalette.logic.test.ts b/apps/web/src/components/CommandPalette.logic.test.ts
+index 0b6c106..86c0afb 100644
+--- a/apps/web/src/components/CommandPalette.logic.test.ts
++++ b/apps/web/src/components/CommandPalette.logic.test.ts
+@@ -10,0 +11 @@ import {
++  resolveNewThreadOnIntent,
+@@ -16,0 +18,8 @@ import {
++describe("resolveNewThreadOnIntent", () => {
++  it("keeps the intent pending until environment-backed projects load", () => {
++    expect(resolveNewThreadOnIntent({ isActive: false, environmentItemCount: 0 })).toBe("ignore");
++    expect(resolveNewThreadOnIntent({ isActive: true, environmentItemCount: 0 })).toBe("defer");
++    expect(resolveNewThreadOnIntent({ isActive: true, environmentItemCount: 1 })).toBe("open");
++  });
++});
++
+diff --git a/apps/web/src/components/CommandPalette.logic.ts b/apps/web/src/components/CommandPalette.logic.ts
+index 6b741ef..245a7d4 100644
+--- a/apps/web/src/components/CommandPalette.logic.ts
++++ b/apps/web/src/components/CommandPalette.logic.ts
+@@ -18,0 +19,8 @@ export const NEW_THREAD_PROJECT_VIEW_GROUP = "new-thread-projects";
++export function resolveNewThreadOnIntent(input: {
++  isActive: boolean;
++  environmentItemCount: number;
++}): "ignore" | "defer" | "open" {
++  if (!input.isActive) return "ignore";
++  return input.environmentItemCount > 0 ? "open" : "defer";
++}
++
 diff --git a/apps/web/src/components/CommandPalette.tsx b/apps/web/src/components/CommandPalette.tsx
-index a1ec6fc..0032e69 100644
+index a1ec6fc..a72995b 100644
 --- a/apps/web/src/components/CommandPalette.tsx
 +++ b/apps/web/src/components/CommandPalette.tsx
-@@ -23,11 +23,13 @@ import {
-   ArrowDownIcon,
-   ArrowLeftIcon,
-   ArrowUpIcon,
+@@ -25,0 +26 @@ import {
 +  CloudIcon,
-   CornerLeftUpIcon,
-   FolderIcon,
-   FolderPlusIcon,
-   LinkIcon,
-   MessageSquareIcon,
+@@ -30,0 +32 @@ import {
 +  MonitorIcon,
-   SettingsIcon,
-   SquarePenIcon,
- } from "lucide-react";
-@@ -177,6 +179,19 @@ function getEnvironmentBrowsePlatform(os: string | null | undefined): string {
-   return typeof navigator === "undefined" ? "" : navigator.platform;
- }
-
+@@ -37,0 +40 @@ import {
++  useEffectEvent,
+@@ -120,0 +124 @@ import {
++  resolveNewThreadOnIntent,
+@@ -179,0 +184,13 @@ function getEnvironmentBrowsePlatform(os: string | null | undefined): string {
 +function renderProjectActionIcon(project: {
 +  environmentId: EnvironmentId;
 +  workspaceRoot: string;
@@ -46,65 +59,24 @@ index a1ec6fc..0032e69 100644
 +  );
 +}
 +
- interface AddProjectEnvironmentOption {
-   readonly environmentId: EnvironmentId;
-   readonly label: string;
-@@ -363,7 +378,8 @@ type CommandPaletteOpenIntent =
-   | {
-       readonly kind: "new-thread-in";
-       readonly preferredProjectRef: ScopedProjectRef | null;
+@@ -366 +383,2 @@ type CommandPaletteOpenIntent =
 -    };
 +    }
 +  | { readonly kind: "new-thread-on" };
-
- interface CommandPaletteUiState {
-   readonly open: boolean;
-@@ -378,6 +394,7 @@ type CommandPaletteUiAction =
-       readonly _tag: "OpenNewThreadIn";
-       readonly preferredProjectRef: ScopedProjectRef | null;
-     }
+@@ -380,0 +399 @@ type CommandPaletteUiAction =
 +  | { readonly _tag: "OpenNewThreadOn" }
-   | { readonly _tag: "ClearOpenIntent" };
-
- function reduceCommandPaletteUiState(
-@@ -402,6 +419,8 @@ function reduceCommandPaletteUiState(
-           preferredProjectRef: action.preferredProjectRef,
-         },
-       };
+@@ -404,0 +424,2 @@ function reduceCommandPaletteUiState(
 +    case "OpenNewThreadOn":
 +      return { open: true, openIntent: { kind: "new-thread-on" } };
-     case "ClearOpenIntent":
-       return state.openIntent ? { ...state, openIntent: null } : state;
-   }
-@@ -436,6 +455,7 @@ export function CommandPalette({ children }: { children: ReactNode }) {
-       }),
-     [],
-   );
+@@ -438,0 +460 @@ export function CommandPalette({ children }: { children: ReactNode }) {
 +  const openNewThreadOn = useCallback(() => dispatch({ _tag: "OpenNewThreadOn" }), []);
-   const clearOpenIntent = useCallback(() => dispatch({ _tag: "ClearOpenIntent" }), []);
-   const keybindings = useAtomValue(primaryServerKeybindingsAtom);
-   const composerHandleRef = useRef<ChatComposerHandle | null>(null);
-@@ -488,13 +508,15 @@ export function CommandPalette({ children }: { children: ReactNode }) {
-       onOpenCommandPalette((detail) => {
-         if (detail.open === "new-thread-in") {
-           openNewThreadIn(detail.preferredProjectRef);
+@@ -490,0 +513,2 @@ export function CommandPalette({ children }: { children: ReactNode }) {
 +        } else if (detail.open === "new-thread-on") {
 +          openNewThreadOn();
-         } else if (detail.open === "add-project") {
-           openAddProject();
-         } else {
-           setOpen(true);
-         }
-       }),
+@@ -497 +521 @@ export function CommandPalette({ children }: { children: ReactNode }) {
 -    [openAddProject, openNewThreadIn, setOpen],
 +    [openAddProject, openNewThreadIn, openNewThreadOn, setOpen],
-   );
-
-   useEffect(() => onCloseCommandPalette(() => setOpen(false)), [setOpen]);
-@@ -722,6 +744,13 @@ function OpenCommandPaletteDialog(props: {
-
-     return options;
-   }, [environments]);
+@@ -724,0 +749,7 @@ function OpenCommandPaletteDialog(props: {
 +  const newThreadEnvironmentOptions = useMemo(
 +    () =>
 +      [...addProjectEnvironmentOptions].sort((left, right) =>
@@ -112,13 +84,7 @@ index a1ec6fc..0032e69 100644
 +      ),
 +    [addProjectEnvironmentOptions],
 +  );
-   const defaultAddProjectEnvironmentId = addProjectEnvironmentOptions[0]?.environmentId ?? null;
-   const wslAddProjectEnvironmentOption = useMemo(
-     () =>
-@@ -895,18 +924,93 @@ function OpenCommandPaletteDialog(props: {
-             group?.memberProjects.flatMap((member) => [member.title, member.workspaceRoot]) ?? []
-           );
-         },
+@@ -898,7 +929 @@ function OpenCommandPaletteDialog(props: {
 -        icon: (project) => (
 -          <ProjectFavicon
 -            environmentId={project.environmentId}
@@ -127,11 +93,7 @@ index a1ec6fc..0032e69 100644
 -          />
 -        ),
 +        icon: renderProjectActionIcon,
-         runProject: openProjectFromSearch,
-       }),
-     [openProjectFromSearch, pickerProjects, projectGroupByTargetKey],
-   );
-
+@@ -909,0 +935,81 @@ function OpenCommandPaletteDialog(props: {
 +  const newThreadEnvironmentItems = useMemo((): CommandPaletteSubmenuItem[] => {
 +    const orderedEnvironmentOptions = currentProjectEnvironmentId
 +      ? [
@@ -213,13 +175,7 @@ index a1ec6fc..0032e69 100644
 +    projectGroups,
 +  ]);
 +
-   const projectThreadItems = useMemo(
-     () =>
-       enumerateCommandPaletteItems(
-@@ -921,13 +1025,7 @@ function OpenCommandPaletteDialog(props: {
-               group?.memberProjects.flatMap((member) => [member.title, member.workspaceRoot]) ?? []
-             );
-           },
+@@ -924,7 +1030 @@ function OpenCommandPaletteDialog(props: {
 -          icon: (project) => (
 -            <ProjectFavicon
 -              environmentId={project.environmentId}
@@ -228,24 +184,12 @@ index a1ec6fc..0032e69 100644
 -            />
 -          ),
 +          icon: renderProjectActionIcon,
-           runProject: async (project) => {
-             const group = newThreadProjectGroupByTargetKey.get(
-               `${project.environmentId}:${project.id}`,
-@@ -1327,6 +1425,29 @@ function OpenCommandPaletteDialog(props: {
-     setNewThreadPickerGeneration((generation) => generation + 1);
-   }, [clearOpenIntent, newThreadPickerView, openIntent, resetAddProjectFlow]);
-
-+  useLayoutEffect(() => {
-+    if (openIntent?.kind !== "new-thread-on") {
-+      return;
-+    }
+@@ -1329,0 +1430,28 @@ function OpenCommandPaletteDialog(props: {
++  const openNewThreadOnFlow = useEffectEvent(() => {
 +    clearOpenIntent();
 +    setAddProjectCloneFlow(null);
 +    setViewStack([]);
 +    setQuery("");
-+    if (newThreadEnvironmentItems.length === 0) {
-+      return;
-+    }
 +    pushPaletteView({
 +      addonIcon: <SquarePenIcon className={ADDON_ICON_CLASS} />,
 +      groups: [
@@ -256,15 +200,20 @@ index a1ec6fc..0032e69 100644
 +        },
 +      ],
 +    });
-+  }, [clearOpenIntent, newThreadEnvironmentItems, openIntent]);
++  });
 +
-   const actionItems: Array<CommandPaletteActionItem | CommandPaletteSubmenuItem> = [];
-
-   if (projects.length > 0) {
-@@ -1356,6 +1477,33 @@ function OpenCommandPaletteDialog(props: {
-       });
-     }
-
++  useLayoutEffect(() => {
++    const resolution = resolveNewThreadOnIntent({
++      isActive: openIntent?.kind === "new-thread-on",
++      environmentItemCount: newThreadEnvironmentItems.length,
++    });
++    if (resolution !== "open") {
++      return;
++    }
++    openNewThreadOnFlow();
++  }, [newThreadEnvironmentItems.length, openIntent]);
++
+@@ -1358,0 +1487,27 @@ function OpenCommandPaletteDialog(props: {
 +    if (newThreadEnvironmentItems.length > 0) {
 +      actionItems.push({
 +        kind: "submenu",
@@ -292,47 +241,26 @@ index a1ec6fc..0032e69 100644
 +      });
 +    }
 +
-     actionItems.push({
-       kind: "submenu",
-       value: "action:new-thread-in",
 diff --git a/apps/web/src/keybindings.test.ts b/apps/web/src/keybindings.test.ts
 index d9e175a..c77167c 100644
 --- a/apps/web/src/keybindings.test.ts
 +++ b/apps/web/src/keybindings.test.ts
-@@ -157,7 +157,7 @@ const DEFAULT_BINDINGS = compile([
-     whenAst: whenNot(whenIdentifier("terminalFocus")),
-   },
-   { shortcut: modShortcut("o", { shiftKey: true }), command: "chat.new" },
+@@ -160 +160 @@ const DEFAULT_BINDINGS = compile([
 -  { shortcut: modShortcut("n", { shiftKey: true }), command: "chat.newLocal" },
 +  { shortcut: modShortcut("n", { shiftKey: true }), command: "chat.newEnvironment" },
-   {
-     shortcut: {
-       key: "a",
-@@ -450,6 +450,10 @@ describe("shortcutLabelForCommand", () => {
-       "⌘B",
-     );
-     assert.strictEqual(shortcutLabelForCommand(DEFAULT_BINDINGS, "chat.new", "MacIntel"), "⇧⌘O");
+@@ -452,0 +453,4 @@ describe("shortcutLabelForCommand", () => {
 +    assert.strictEqual(
 +      shortcutLabelForCommand(DEFAULT_BINDINGS, "chat.newEnvironment", "Linux"),
 +      "Ctrl+Shift+N",
 +    );
-     assert.strictEqual(shortcutLabelForCommand(DEFAULT_BINDINGS, "diff.toggle", "Linux"), "Ctrl+D");
-     assert.strictEqual(
-       shortcutLabelForCommand(DEFAULT_BINDINGS, "rightPanel.toggle", "MacIntel"),
-@@ -789,15 +793,33 @@ describe("chat/editor shortcuts", () => {
-   });
-
-   it("matches chat.newLocal shortcut", () => {
+@@ -791,0 +796,3 @@ describe("chat/editor shortcuts", () => {
 +    const localBindings = compile([
 +      { shortcut: modShortcut("l", { shiftKey: true }), command: "chat.newLocal" },
 +    ]);
-     assert.isTrue(
+@@ -793 +800 @@ describe("chat/editor shortcuts", () => {
 -      isChatNewLocalShortcut(event({ key: "n", metaKey: true, shiftKey: true }), DEFAULT_BINDINGS, {
 +      isChatNewLocalShortcut(event({ key: "l", metaKey: true, shiftKey: true }), localBindings, {
-         platform: "MacIntel",
-       }),
-     );
-     assert.isTrue(
+@@ -798 +805,15 @@ describe("chat/editor shortcuts", () => {
 -      isChatNewLocalShortcut(event({ key: "n", ctrlKey: true, shiftKey: true }), DEFAULT_BINDINGS, {
 +      isChatNewLocalShortcut(event({ key: "l", ctrlKey: true, shiftKey: true }), localBindings, {
 +        platform: "Linux",
@@ -349,22 +277,12 @@ index d9e175a..c77167c 100644
 +    );
 +    assert.strictEqual(
 +      resolveShortcutCommand(event({ key: "n", ctrlKey: true, shiftKey: true }), DEFAULT_BINDINGS, {
-         platform: "Linux",
-       }),
+@@ -800,0 +822 @@ describe("chat/editor shortcuts", () => {
 +      "chat.newEnvironment",
-     );
-   });
-
 diff --git a/packages/shared/src/keybindings.ts b/packages/shared/src/keybindings.ts
 index 084d5c6..91a5f1f 100644
 --- a/packages/shared/src/keybindings.ts
 +++ b/packages/shared/src/keybindings.ts
-@@ -37,7 +37,7 @@ export const DEFAULT_KEYBINDINGS: ReadonlyArray<KeybindingRule> = [
-   { key: "mod+k", command: "commandPalette.toggle", when: "!terminalFocus" },
-   { key: "mod+n", command: "chat.new", when: "!terminalFocus" },
-   { key: "mod+shift+o", command: "chat.new", when: "!terminalFocus" },
+@@ -40 +40 @@ export const DEFAULT_KEYBINDINGS: ReadonlyArray<KeybindingRule> = [
 -  { key: "mod+shift+n", command: "chat.newLocal", when: "!terminalFocus" },
 +  { key: "mod+shift+n", command: "chat.newEnvironment", when: "!terminalFocus" },
-   { key: "alt+a", command: "project.add", when: "!terminalFocus" },
-   { key: "mod+shift+m", command: "modelPicker.toggle", when: "!terminalFocus" },
-   { key: "mod+shift+e", command: "modelOptionsPicker.toggle", when: "!terminalFocus" },
