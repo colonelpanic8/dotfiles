@@ -56,6 +56,9 @@
   t3codePr4444OverlapFiles = [
     "apps/desktop/src/app/DesktopApp.ts"
   ];
+  t3codePr4477OverlapFiles = [
+    "apps/server/src/provider/Layers/ClaudeProvider.ts"
+  ];
 
   # PR #3984 now applies directly to the pinned base. Its additional
   # artifact-safety hardening remains a separate local patch below.
@@ -181,6 +184,14 @@
     hash = "sha256-NsK02bDaCW3uprmX/dajLs1+z8UcrJKqHCtSFTUrZ8I=";
   };
 
+  # PR #4477 (head bcc18e65b5b6) overlaps Claude model additions on the
+  # refreshed base. Keep its complete diff auditable while applying that file
+  # through the compatibility patch below.
+  t3codePr4477 = final.fetchurl {
+    url = "https://patch-diff.githubusercontent.com/raw/pingdotgg/t3code/pull/4477.diff";
+    hash = "sha256-DVyKYq0TTz8B9dVkFT8waGSdpz1RhaHSPo5RTwW9kLU=";
+  };
+
   t3codePrAudits = [
     t3codePr3984
     t3codePr4257
@@ -198,6 +209,7 @@
     t3codePr4427
     t3codePr4439
     t3codePr4444
+    t3codePr4477
   ];
 
   # Upstream is pinned through branch-drift hardening (#2284). Keep the
@@ -377,6 +389,14 @@
     })
     # Combine DesktopApp startup with #4437's split cache path.
     ./patches/t3code-pr-4444-stack-compat.patch
+    # Discover Claude models from SDK initialization rather than relying on
+    # the fallback catalog: t3code#4477 (head bcc18e65b5b6).
+    (final.fetchpatch {
+      url = "https://patch-diff.githubusercontent.com/raw/pingdotgg/t3code/pull/4477.diff";
+      excludes = t3codePr4477OverlapFiles;
+      hash = "sha256-t/E0DHXtKkxl8nDQcpTNr7zGJiucyt3ceF8yWv3ePhM=";
+    })
+    ./patches/t3code-pr-4477-stack-compat.patch
   ];
 
   t3codePatchedSource = final.applyPatches {
