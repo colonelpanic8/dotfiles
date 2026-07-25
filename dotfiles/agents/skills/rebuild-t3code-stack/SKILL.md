@@ -5,10 +5,12 @@ description: "Rebuild Ivan's T3 Code integration branch from its ordered manifes
 
 # Rebuild the T3 Code integration branch
 
-The manifests, rebuild tooling, epilogue patches and full instructions live IN
-THE FORK on the `t3code/stack-tooling` branch, under `nix/stack/`. Read
-`nix/stack/BUILDING.md` there first -- it is authoritative and this skill does
-not duplicate it.
+The manifests, rebuild tooling and epilogue patches live IN THE FORK on the
+`t3code/stack-tooling` branch, under `nix/stack/`. Its `BUILDING.md` is the
+authoritative reference and goes into more detail than this skill; read it when
+you need the full procedure. This skill is the operational summary, kept here
+because skills must be discoverable under `~/.claude/skills`. **If the two ever
+disagree, BUILDING.md wins** -- it is versioned alongside the code it describes.
 
 Dotfiles holds only two things: the `t3code-integration` flake input pinned to a
 rev, and `nix-shared/t3code.nix`, a ~32-line overlay adding the Electron
