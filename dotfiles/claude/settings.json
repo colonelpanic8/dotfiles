@@ -123,6 +123,10 @@
       }
     ]
   },
+  "statusLine": {
+    "type": "command",
+    "command": "if [ -f '/home/imalison/.orca/agent-hooks/claude-statusline.sh' ] && [ -r '/home/imalison/.orca/agent-hooks/claude-statusline.sh' ] && [ -x '/home/imalison/.orca/agent-hooks/claude-statusline.sh' ]; then /bin/sh '/home/imalison/.orca/agent-hooks/claude-statusline.sh'; else cat >/dev/null 2>&1 || :; fi"
+  },
   "enabledPlugins": {
     "superpowers@superpowers-marketplace": true,
     "agent-browser@agent-browser": true
@@ -132,8 +136,5 @@
   "remoteControlAtStartup": true,
   "inputNeededNotifEnabled": true,
   "agentPushNotifEnabled": true,
-  "statusLine": {
-    "type": "command",
-    "command": "if [ -f '/home/imalison/.orca/agent-hooks/claude-statusline.sh' ] && [ -r '/home/imalison/.orca/agent-hooks/claude-statusline.sh' ] && [ -x '/home/imalison/.orca/agent-hooks/claude-statusline.sh' ]; then /bin/sh '/home/imalison/.orca/agent-hooks/claude-statusline.sh'; else cat >/dev/null 2>&1 || :; fi"
-  }
+  "tui": "fullscreen"
 }
