@@ -203,6 +203,21 @@
     hash = "sha256-DVyKYq0TTz8B9dVkFT8waGSdpz1RhaHSPo5RTwW9kLU=";
   };
 
+  # PR #4484 (head 0e43e7fe0eef) overlaps the assembled ChatView logic tests.
+  # Keep its complete cumulative diff auditable while applying that file
+  # through the compatibility patch below.
+  t3codePr4484 = final.fetchurl {
+    url = "https://patch-diff.githubusercontent.com/raw/pingdotgg/t3code/pull/4484.diff";
+    hash = "sha256-ti/unWa+nqpla3YspmxvuEKK0zDSzPRabtvozLR54cM=";
+  };
+
+  # PR #4486 (head acccd0e9fe6c) selects the backend that supplies
+  # diagnostics, which makes diagnostics usable in client-only mode.
+  t3codePr4486 = final.fetchurl {
+    url = "https://patch-diff.githubusercontent.com/raw/pingdotgg/t3code/pull/4486.diff";
+    hash = "sha256-boC974iTE0373CTpyAIA8dURvt8eajSb3NBTTby0B10=";
+  };
+
   t3codePrAudits = [
     t3codePr3984
     t3codePr4257
@@ -222,6 +237,8 @@
     t3codePr4444
     t3codePr4474
     t3codePr4477
+    t3codePr4484
+    t3codePr4486
   ];
 
   # Upstream is pinned through branch-drift hardening (#2284). Keep the
@@ -425,6 +442,25 @@
       url = "https://patch-diff.githubusercontent.com/raw/pingdotgg/t3code/pull/4487.diff";
       hash = "sha256-tAX/dCfz0oUTkzjkAFJk9VFcoJnDkR3FGzQ7l8RCawA=";
     })
+    # Recover local draft identities after failed bootstrap cleanup:
+    # t3code#4484 (head 0e43e7fe0eef).
+    (final.fetchpatch {
+      url = "https://patch-diff.githubusercontent.com/raw/pingdotgg/t3code/pull/4484.diff";
+      excludes = ["apps/web/src/components/ChatView.logic.test.ts"];
+      hash = "sha256-WD/UA+Gj8bLS/MLW3BSfGM+2u2GtRjdDoD0F6Mi6jpw=";
+    })
+    # Combine #4484's classifier assertions with #4318's draft-promotion
+    # recovery tests.
+    ../nixos/patches/t3code-pr-4484-stack-compat.patch
+    # Select the backend that provides diagnostics, including in client-only
+    # mode: t3code#4486 (head acccd0e9fe6c). Its settings file overlaps the
+    # assembled import ordering, so apply it through the compatibility patch.
+    (final.fetchpatch {
+      url = "https://patch-diff.githubusercontent.com/raw/pingdotgg/t3code/pull/4486.diff";
+      excludes = ["apps/web/src/components/settings/DiagnosticsSettings.tsx"];
+      hash = "sha256-dcvreavHmLI6wrGQGFtClFtks0WhXskWGcOxgGeRUDo=";
+    })
+    ../nixos/patches/t3code-pr-4486-stack-compat.patch
     # The snooze feature arrived with migration ID 34 after that ID had already
     # been recorded locally for ProjectionThreadGoals. Run its idempotent schema
     # update as migration 36 so existing databases receive it.
