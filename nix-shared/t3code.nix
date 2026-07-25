@@ -419,6 +419,12 @@
       url = "https://patch-diff.githubusercontent.com/raw/pingdotgg/t3code/pull/4482.diff";
       hash = "sha256-SmdvAW8PHJ8dpHqLmGkVsdMXxNt4A8b9DBoQx3NOmxk=";
     })
+    # Drop non-interactive Codex models from the model picker: t3code#4487
+    # (head 11c647c6ec05).
+    (final.fetchurl {
+      url = "https://patch-diff.githubusercontent.com/raw/pingdotgg/t3code/pull/4487.diff";
+      hash = "sha256-tAX/dCfz0oUTkzjkAFJk9VFcoJnDkR3FGzQ7l8RCawA=";
+    })
     # The snooze feature arrived with migration ID 34 after that ID had already
     # been recorded locally for ProjectionThreadGoals. Run its idempotent schema
     # update as migration 36 so existing databases receive it.
