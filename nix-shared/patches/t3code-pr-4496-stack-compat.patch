@@ -1,0 +1,804 @@
+diff --git a/apps/web/src/components/settings/ConnectionsSettings.logic.test.ts b/apps/web/src/components/settings/ConnectionsSettings.logic.test.ts
+index 3a4699536d893c6bc9c565f2d1da39d13a219991..b2dc08ba8f1f79d757414a822e6ff91afc308430 100644
+--- a/apps/web/src/components/settings/ConnectionsSettings.logic.test.ts
++++ b/apps/web/src/components/settings/ConnectionsSettings.logic.test.ts
+@@ -1,11 +1,24 @@
++import {
++  BearerConnectionProfile,
++  BearerConnectionTarget,
++  PrimaryConnectionTarget,
++  RelayConnectionTarget,
++  SshConnectionProfile,
++  SshConnectionTarget,
++  type ConnectionCatalogEntry,
++} from "@t3tools/client-runtime/connection";
+ import {
+   EnvironmentId,
+   type DesktopWslState,
+   type LocalServerAdvertisement,
+ } from "@t3tools/contracts";
++import * as Option from "effect/Option";
+ import { describe, expect, it, vi } from "vite-plus/test";
+ import {
+   applyWslEnableSelection,
++  environmentPairingBaseUrl,
++  resolveAccessEnvironment,
++  resolveShareablePairingUrl,
+   selectLocalServerPairingCandidates,
+ } from "./ConnectionsSettings.logic";
+ 
+@@ -123,3 +136,189 @@ describe("selectLocalServerPairingCandidates", () => {
+     ).toEqual([{ advertisement, pairAgain: true }]);
+   });
+ });
++
++const primaryId = EnvironmentId.make("primary-env");
++const savedId = EnvironmentId.make("saved-env");
++
++describe("resolveAccessEnvironment", () => {
++  it("administers the managed backend when one exists, even while viewing a saved environment", () => {
++    expect(
++      resolveAccessEnvironment({
++        primaryEnvironmentId: primaryId,
++        activeEnvironmentId: savedId,
++      }),
++    ).toEqual({ environmentId: primaryId, isPrimary: true });
++  });
++
++  it("administers the selected environment when there is no managed backend", () => {
++    expect(
++      resolveAccessEnvironment({
++        primaryEnvironmentId: null,
++        activeEnvironmentId: savedId,
++      }),
++    ).toEqual({ environmentId: savedId, isPrimary: false });
++  });
++
++  it("has nothing to administer when no environment is selected either", () => {
++    expect(
++      resolveAccessEnvironment({ primaryEnvironmentId: null, activeEnvironmentId: null }),
++    ).toEqual({ environmentId: null, isPrimary: false });
++  });
++});
++
++describe("environmentPairingBaseUrl", () => {
++  const entry = (
++    target: ConnectionCatalogEntry["target"],
++    profile?: unknown,
++  ): ConnectionCatalogEntry => ({
++    target,
++    profile: (profile === undefined
++      ? Option.none()
++      : Option.some(profile)) as ConnectionCatalogEntry["profile"],
++  });
++
++  it("uses a bearer environment's own base URL", () => {
++    expect(
++      environmentPairingBaseUrl(
++        entry(
++          new BearerConnectionTarget({
++            environmentId: savedId,
++            label: "headless",
++            connectionId: "bearer:saved-env",
++          }),
++          new BearerConnectionProfile({
++            connectionId: "bearer:saved-env",
++            environmentId: savedId,
++            label: "headless",
++            httpBaseUrl: "https://box.tail.ts.net/",
++            wsBaseUrl: "wss://box.tail.ts.net/",
++          }),
++        ),
++      ),
++    ).toBe("https://box.tail.ts.net/");
++  });
++
++  it("uses the primary's base URL", () => {
++    expect(
++      environmentPairingBaseUrl(
++        entry(
++          new PrimaryConnectionTarget({
++            environmentId: primaryId,
++            label: "local",
++            httpBaseUrl: "http://127.0.0.1:3773/",
++            wsBaseUrl: "ws://127.0.0.1:3773/",
++          }),
++        ),
++      ),
++    ).toBe("http://127.0.0.1:3773/");
++  });
++
++  it("has no shareable URL for a bearer environment whose profile is missing", () => {
++    expect(
++      environmentPairingBaseUrl(
++        entry(
++          new BearerConnectionTarget({
++            environmentId: savedId,
++            label: "headless",
++            connectionId: "bearer:saved-env",
++          }),
++        ),
++      ),
++    ).toBeNull();
++  });
++
++  it("has no shareable URL for an SSH tunnel, whose local address is meaningless elsewhere", () => {
++    expect(
++      environmentPairingBaseUrl(
++        entry(
++          new SshConnectionTarget({
++            environmentId: savedId,
++            label: "box",
++            connectionId: "ssh:box",
++          }),
++          new SshConnectionProfile({
++            connectionId: "ssh:box",
++            environmentId: savedId,
++            label: "box",
++            target: { alias: "box", hostname: "box", username: "ivan", port: 22 },
++          }),
++        ),
++      ),
++    ).toBeNull();
++  });
++
++  it("has no shareable URL for a relay environment", () => {
++    expect(
++      environmentPairingBaseUrl(
++        entry(new RelayConnectionTarget({ environmentId: savedId, label: "cloud" })),
++      ),
++    ).toBeNull();
++  });
++});
++
++describe("resolveShareablePairingUrl", () => {
++  const currentOriginPairingUrl = "https://client.example/pair?token=secret";
++
++  it("prefers the selected advertised endpoint", () => {
++    expect(
++      resolveShareablePairingUrl({
++        endpointPairingUrl: "https://box.tail.ts.net/pair?token=secret",
++        basePairingUrl: "http://192.168.1.5:3773/pair?token=secret",
++        currentOriginPairingUrl,
++        servesCurrentOrigin: true,
++        isCurrentOriginLoopback: false,
++      }),
++    ).toBe("https://box.tail.ts.net/pair?token=secret");
++  });
++
++  it("falls back to the administered server's own base URL", () => {
++    expect(
++      resolveShareablePairingUrl({
++        endpointPairingUrl: null,
++        basePairingUrl: "http://192.168.1.5:3773/pair?token=secret",
++        currentOriginPairingUrl,
++        servesCurrentOrigin: false,
++        isCurrentOriginLoopback: false,
++      }),
++    ).toBe("http://192.168.1.5:3773/pair?token=secret");
++  });
++
++  it("uses this page's origin only for the server that serves this page", () => {
++    expect(
++      resolveShareablePairingUrl({
++        endpointPairingUrl: null,
++        basePairingUrl: null,
++        currentOriginPairingUrl,
++        servesCurrentOrigin: true,
++        isCurrentOriginLoopback: false,
++      }),
++    ).toBe(currentOriginPairingUrl);
++  });
++
++  it("shows the bare code for another server with no address, not a link to this client", () => {
++    // A relay or SSH environment, or a bearer environment whose profile is
++    // missing: an origin-relative link would pair the scanning device to this
++    // client app instead of the server the link belongs to.
++    expect(
++      resolveShareablePairingUrl({
++        endpointPairingUrl: null,
++        basePairingUrl: null,
++        currentOriginPairingUrl,
++        servesCurrentOrigin: false,
++        isCurrentOriginLoopback: false,
++      }),
++    ).toBeNull();
++  });
++
++  it("shows the bare code when this page's origin is loopback", () => {
++    expect(
++      resolveShareablePairingUrl({
++        endpointPairingUrl: null,
++        basePairingUrl: null,
++        currentOriginPairingUrl: "http://localhost:3773/pair?token=secret",
++        servesCurrentOrigin: true,
++        isCurrentOriginLoopback: true,
++      }),
++    ).toBeNull();
++  });
++});
+diff --git a/apps/web/src/components/settings/ConnectionsSettings.logic.ts b/apps/web/src/components/settings/ConnectionsSettings.logic.ts
+index eec3ff06aeb6bbdff63b97588e8d0abb3bc0e26f..b4185e34b58095efcf41fd8912e702296aaa5d8e 100644
+--- a/apps/web/src/components/settings/ConnectionsSettings.logic.ts
++++ b/apps/web/src/components/settings/ConnectionsSettings.logic.ts
+@@ -1,9 +1,82 @@
++import type { ConnectionCatalogEntry } from "@t3tools/client-runtime/connection";
+ import type {
+   DesktopBridge,
+   DesktopWslState,
+   EnvironmentId,
+   LocalServerAdvertisement,
+ } from "@t3tools/contracts";
++import * as Option from "effect/Option";
++
++/**
++ * Pick the server whose pairing links and client sessions the Connections page
++ * administers.
++ *
++ * A desktop that manages its own backend keeps administering that backend, so
++ * managed mode is unchanged. A client-only desktop — or a browser pointed at a
++ * saved server — has no primary, and administers the selected environment
++ * instead. Access management was previously reachable only through the primary,
++ * which left those clients with no way to mint a pairing link at all.
++ */
++export function resolveAccessEnvironment(input: {
++  readonly primaryEnvironmentId: EnvironmentId | null;
++  readonly activeEnvironmentId: EnvironmentId | null;
++}): { readonly environmentId: EnvironmentId | null; readonly isPrimary: boolean } {
++  const environmentId = input.primaryEnvironmentId ?? input.activeEnvironmentId;
++  return {
++    environmentId,
++    isPrimary: environmentId !== null && environmentId === input.primaryEnvironmentId,
++  };
++}
++
++/**
++ * The address to build a shareable pairing URL from for an environment the
++ * desktop does not manage. Only a directly addressable HTTP origin is usable:
++ * relay and SSH environments are reached through a broker or a local tunnel
++ * whose address means nothing on another device, so those fall back to showing
++ * the bare pairing code instead of an unusable link.
++ */
++export function environmentPairingBaseUrl(entry: ConnectionCatalogEntry): string | null {
++  switch (entry.target._tag) {
++    case "PrimaryConnectionTarget":
++      return entry.target.httpBaseUrl;
++    case "BearerConnectionTarget":
++      return Option.isSome(entry.profile) && entry.profile.value._tag === "BearerConnectionProfile"
++        ? entry.profile.value.httpBaseUrl
++        : null;
++    case "RelayConnectionTarget":
++    case "SshConnectionTarget":
++      return null;
++  }
++}
++
++/**
++ * Pick the pairing URL to show for a link, from the addresses that reach the
++ * server being administered.
++ *
++ * The page's own origin is only one of those addresses when this page is served
++ * by the administered server — the managed-backend case. For any other
++ * environment (a saved server reached over the network, a relay, or an SSH
++ * tunnel) an origin-relative link would pair the scanning device to this client
++ * app instead of the server the link belongs to, so there is no shareable URL
++ * and the caller falls back to showing the bare pairing code. A loopback origin
++ * is likewise unshareable: it resolves to the scanning device, not to us.
++ */
++export function resolveShareablePairingUrl(input: {
++  /** Pairing URL for the advertised endpoint the user picked, when there is one. */
++  readonly endpointPairingUrl: string | null;
++  /** Pairing URL built from the administered server's own base URL. */
++  readonly basePairingUrl: string | null;
++  /** Pairing URL on this page's origin. */
++  readonly currentOriginPairingUrl: string;
++  /** Whether the administered server is the one serving this page. */
++  readonly servesCurrentOrigin: boolean;
++  readonly isCurrentOriginLoopback: boolean;
++}): string | null {
++  if (input.endpointPairingUrl !== null) return input.endpointPairingUrl;
++  if (input.basePairingUrl !== null) return input.basePairingUrl;
++  if (!input.servesCurrentOrigin || input.isCurrentOriginLoopback) return null;
++  return input.currentOriginPairingUrl;
++}
+ 
+ type WslEnableBridge = Pick<DesktopBridge, "setWslBackendEnabled" | "setWslDistro" | "setWslOnly">;
+ 
+diff --git a/apps/web/src/components/settings/ConnectionsSettings.tsx b/apps/web/src/components/settings/ConnectionsSettings.tsx
+index 4d94d0b48957a768775f906fc792d8376d556962..24ff4ae4bb80f2d7f69a65f55c9c47ea76eda6fa 100644
+--- a/apps/web/src/components/settings/ConnectionsSettings.tsx
++++ b/apps/web/src/components/settings/ConnectionsSettings.tsx
+@@ -46,6 +46,9 @@ import { formatElapsedDurationLabel, formatExpiresInLabel } from "../../timestam
+ import { resolveDesktopPairingUrl, resolveHostedPairingUrl } from "./pairingUrls";
+ import {
+   applyWslEnableSelection,
++  environmentPairingBaseUrl,
++  resolveAccessEnvironment,
++  resolveShareablePairingUrl,
+   selectLocalServerPairingCandidates,
+ } from "./ConnectionsSettings.logic";
+ import {
+@@ -119,6 +122,7 @@ import {
+ import { hasCloudPublicConfig } from "~/cloud/publicConfig";
+ import { useCloudLinkController } from "~/cloud/useCloudLinkController";
+ import { authEnvironment } from "~/state/auth";
++import { useActiveEnvironmentId } from "~/state/entities";
+ import { environmentCatalog } from "~/connection/catalog";
+ import {
+   connectPairing as connectPairingAtom,
+@@ -515,6 +519,8 @@ type PairingLinkListRowProps = {
+   endpointUrl: string | null | undefined;
+   endpoints: ReadonlyArray<AdvertisedEndpoint>;
+   defaultEndpointKey: string | null;
++  // Whether the server these links belong to is the one serving this page.
++  servesCurrentOrigin: boolean;
+   presentation?: AccessSectionPresentation;
+   revokingPairingLinkId: string | null;
+   onRevoke: (id: string) => void;
+@@ -525,6 +531,7 @@ const PairingLinkListRow = memo(function PairingLinkListRow({
+   endpointUrl,
+   endpoints,
+   defaultEndpointKey,
++  servesCurrentOrigin,
+   presentation = "current",
+   revokingPairingLinkId,
+   onRevoke,
+@@ -540,10 +547,11 @@ const PairingLinkListRow = memo(function PairingLinkListRow({
+     () => resolveCurrentOriginPairingUrl(pairingLink.credential),
+     [pairingLink.credential],
+   );
+-  const hostedPairingUrl = useMemo(
++  const basePairingUrl = useMemo(
+     () =>
+       endpointUrl != null && endpointUrl !== ""
+-        ? resolveHostedPairingUrl(endpointUrl, pairingLink.credential)
++        ? (resolveHostedPairingUrl(endpointUrl, pairingLink.credential) ??
++          resolveDesktopPairingUrl(endpointUrl, pairingLink.credential))
+         : null,
+     [endpointUrl, pairingLink.credential],
+   );
+@@ -572,13 +580,13 @@ const PairingLinkListRow = memo(function PairingLinkListRow({
+     }
+     return options;
+   }, [endpoints, pairingLink.credential]);
+-  const shareablePairingUrl =
+-    endpointPairingUrl ??
+-    (endpointUrl != null && endpointUrl !== ""
+-      ? (hostedPairingUrl ?? resolveDesktopPairingUrl(endpointUrl, pairingLink.credential))
+-      : isLoopbackHostname(window.location.hostname)
+-        ? null
+-        : currentOriginPairingUrl);
++  const shareablePairingUrl = resolveShareablePairingUrl({
++    endpointPairingUrl,
++    basePairingUrl,
++    currentOriginPairingUrl,
++    servesCurrentOrigin,
++    isCurrentOriginLoopback: isLoopbackHostname(window.location.hostname),
++  });
+   const revealValue = shareablePairingUrl ?? pairingLink.credential;
+   const isShareableHostedAppPairingUrl =
+     shareablePairingUrl !== null && isHostedAppPairingUrl(shareablePairingUrl);
+@@ -979,12 +987,19 @@ type AuthorizedClientsHeaderActionProps = {
+   clientSessions: ReadonlyArray<ServerClientSessionRecord>;
+   isRevokingOtherClients: boolean;
+   onRevokeOtherClients: () => void;
++  // Supplied by the parent so the link is minted on whichever environment the
++  // page is administering, rather than always on the primary.
++  onCreatePairingLink: (input: {
++    readonly label: string;
++    readonly scopes: ReadonlyArray<AuthEnvironmentScope>;
++  }) => Promise<void>;
+ };
+ 
+ const AuthorizedClientsHeaderAction = memo(function AuthorizedClientsHeaderAction({
+   clientSessions,
+   isRevokingOtherClients,
+   onRevokeOtherClients,
++  onCreatePairingLink,
+ }: AuthorizedClientsHeaderActionProps) {
+   const [dialogOpen, setDialogOpen] = useState(false);
+   const [pairingLabel, setPairingLabel] = useState("");
+@@ -996,7 +1011,7 @@ const AuthorizedClientsHeaderAction = memo(function AuthorizedClientsHeaderActio
+   const handleCreatePairingLink = useCallback(async () => {
+     setIsCreatingPairingLink(true);
+     try {
+-      await createServerPairingCredential({ label: pairingLabel, scopes: pairingScopes });
++      await onCreatePairingLink({ label: pairingLabel, scopes: pairingScopes });
+       setPairingLabel("");
+       setPairingScopes([...AuthStandardClientScopes]);
+       setDialogOpen(false);
+@@ -1012,7 +1027,7 @@ const AuthorizedClientsHeaderAction = memo(function AuthorizedClientsHeaderActio
+     } finally {
+       setIsCreatingPairingLink(false);
+     }
+-  }, [pairingLabel, pairingScopes]);
++  }, [onCreatePairingLink, pairingLabel, pairingScopes]);
+ 
+   const togglePairingScope = useCallback((scope: AuthEnvironmentScope, checked: boolean) => {
+     setPairingScopes((current) =>
+@@ -1153,6 +1168,7 @@ type PairingClientsListProps = {
+   endpointUrl: string | null | undefined;
+   endpoints: ReadonlyArray<AdvertisedEndpoint>;
+   defaultEndpointKey: string | null;
++  servesCurrentOrigin: boolean;
+   presentation?: AccessSectionPresentation;
+   isLoading: boolean;
+   pairingLinks: ReadonlyArray<ServerPairingLinkRecord>;
+@@ -1167,6 +1183,7 @@ const PairingClientsList = memo(function PairingClientsList({
+   endpointUrl,
+   endpoints,
+   defaultEndpointKey,
++  servesCurrentOrigin,
+   presentation = "current",
+   isLoading,
+   pairingLinks,
+@@ -1185,6 +1202,7 @@ const PairingClientsList = memo(function PairingClientsList({
+           endpointUrl={endpointUrl}
+           endpoints={endpoints}
+           defaultEndpointKey={defaultEndpointKey}
++          servesCurrentOrigin={servesCurrentOrigin}
+           presentation={presentation}
+           revokingPairingLinkId={revokingPairingLinkId}
+           onRevoke={onRevokePairingLink}
+@@ -1732,12 +1750,26 @@ export function ConnectionsSettings() {
+   const [localServerDiscoveryError, setLocalServerDiscoveryError] = useState<string | null>(null);
+   const { environments } = useEnvironments();
+   const primaryEnvironment = usePrimaryEnvironment();
++  const activeEnvironmentId = useActiveEnvironmentId();
+   const connectPairing = useAtomCommand(connectPairingAtom, { reportFailure: false });
+   const connectSshEnvironment = useAtomCommand(connectSshEnvironmentAtom, {
+     reportFailure: false,
+   });
+   const removeEnvironment = useAtomCommand(environmentCatalog.remove, { reportFailure: false });
+   const retryEnvironment = useAtomCommand(environmentCatalog.retryNow, { reportFailure: false });
++  const createEnvironmentPairingLink = useAtomCommand(authEnvironment.createPairingCredential, {
++    reportFailure: false,
++  });
++  const revokeEnvironmentPairingLink = useAtomCommand(authEnvironment.revokePairingLink, {
++    reportFailure: false,
++  });
++  const revokeEnvironmentClientSession = useAtomCommand(authEnvironment.revokeClientSession, {
++    reportFailure: false,
++  });
++  const revokeOtherEnvironmentClientSessions = useAtomCommand(
++    authEnvironment.revokeOtherClientSessions,
++    { reportFailure: false },
++  );
+   const primaryEnvironmentId = primaryEnvironment?.environmentId ?? null;
+   const primarySessionState = usePrimarySessionState();
+   const currentSessionScopes = desktopBridge
+@@ -1945,10 +1977,41 @@ export function ConnectionsSettings() {
+   const canManageLocalBackend =
+     !isClientOnlyDesktop && (currentSessionScopes?.includes(AuthAccessWriteScope) ?? false);
+   const canManageRelay = currentSessionScopes?.includes(AuthRelayWriteScope) ?? false;
++
++  const { environmentId: accessEnvironmentId, isPrimary: isAccessEnvironmentPrimary } =
++    resolveAccessEnvironment({ primaryEnvironmentId, activeEnvironmentId });
++  const accessEnvironment =
++    accessEnvironmentId === null
++      ? null
++      : (environments.find(
++          (environment) => environment.entry.target.environmentId === accessEnvironmentId,
++        ) ?? null);
++  // Scopes come from the session on the server being administered. For a
++  // non-primary environment that is the credential this client paired with,
++  // which is administrative when it was bootstrapped from the server's own
++  // startup token and standard-only when it came from an ordinary pairing link.
++  const accessEnvironmentSession = useEnvironmentQuery(
++    !isAccessEnvironmentPrimary && accessEnvironmentId !== null
++      ? authEnvironment.sessionState({ environmentId: accessEnvironmentId, input: null })
++      : null,
++  );
++  const accessSessionScopes = isAccessEnvironmentPrimary
++    ? currentSessionScopes
++    : accessEnvironmentSession.data?.authenticated
++      ? (accessEnvironmentSession.data.scopes ?? null)
++      : null;
++  const canManageEnvironmentAccess = accessSessionScopes?.includes(AuthAccessWriteScope) ?? false;
++  // An environment the desktop does not manage has no advertised-endpoint list.
++  // Its own base URL is the address this client reaches it on, and it needs no
++  // reachability gate: being connected through it is the proof.
++  const accessEnvironmentPairingBaseUrl =
++    isAccessEnvironmentPrimary || accessEnvironment === null
++      ? null
++      : environmentPairingBaseUrl(accessEnvironment.entry);
+   const authAccessChanges = useEnvironmentQuery(
+-    canManageLocalBackend && primaryEnvironmentId !== null
++    canManageEnvironmentAccess && accessEnvironmentId !== null
+       ? authEnvironment.accessChanges({
+-          environmentId: primaryEnvironmentId,
++          environmentId: accessEnvironmentId,
+           input: null,
+         })
+       : null,
+@@ -2138,32 +2201,78 @@ export function ConnectionsSettings() {
+     setDisableTailscaleServeDialogOpen(true);
+   }, []);
+ 
+-  const handleRevokeDesktopPairingLink = useCallback(async (id: string) => {
+-    setRevokingDesktopPairingLinkId(id);
+-    setDesktopAccessManagementMutationError(null);
+-    try {
+-      await revokeServerPairingLink(id);
+-    } catch (error) {
+-      const message = error instanceof Error ? error.message : "Failed to revoke pairing link.";
+-      setDesktopAccessManagementMutationError(message);
+-      toastManager.add(
+-        stackedThreadToast({
+-          type: "error",
+-          title: "Could not revoke pairing link",
+-          description: message,
+-        }),
+-      );
+-    } finally {
+-      setRevokingDesktopPairingLinkId(null);
+-    }
+-  }, []);
++  const handleCreateAccessPairingLink = useCallback(
++    async (input: {
++      readonly label: string;
++      readonly scopes: ReadonlyArray<AuthEnvironmentScope>;
++    }) => {
++      if (isAccessEnvironmentPrimary || accessEnvironmentId === null) {
++        await createServerPairingCredential(input);
++        return;
++      }
++      const result = await createEnvironmentPairingLink({
++        environmentId: accessEnvironmentId,
++        input,
++      });
++      if (result._tag === "Failure") {
++        if (isAtomCommandInterrupted(result)) return;
++        throw squashAtomCommandFailure(result);
++      }
++    },
++    [accessEnvironmentId, createEnvironmentPairingLink, isAccessEnvironmentPrimary],
++  );
++
++  const handleRevokeDesktopPairingLink = useCallback(
++    async (id: string) => {
++      setRevokingDesktopPairingLinkId(id);
++      setDesktopAccessManagementMutationError(null);
++      try {
++        if (isAccessEnvironmentPrimary || accessEnvironmentId === null) {
++          await revokeServerPairingLink(id);
++        } else {
++          const result = await revokeEnvironmentPairingLink({
++            environmentId: accessEnvironmentId,
++            input: { id },
++          });
++          if (result._tag === "Failure") {
++            if (isAtomCommandInterrupted(result)) return;
++            throw squashAtomCommandFailure(result);
++          }
++        }
++      } catch (error) {
++        const message = error instanceof Error ? error.message : "Failed to revoke pairing link.";
++        setDesktopAccessManagementMutationError(message);
++        toastManager.add(
++          stackedThreadToast({
++            type: "error",
++            title: "Could not revoke pairing link",
++            description: message,
++          }),
++        );
++      } finally {
++        setRevokingDesktopPairingLinkId(null);
++      }
++    },
++    [accessEnvironmentId, isAccessEnvironmentPrimary, revokeEnvironmentPairingLink],
++  );
+ 
+   const handleRevokeDesktopClientSession = useCallback(
+     async (sessionId: ServerClientSessionRecord["sessionId"]) => {
+       setRevokingDesktopClientSessionId(sessionId);
+       setDesktopAccessManagementMutationError(null);
+       try {
+-        await revokeServerClientSession(sessionId);
++        if (isAccessEnvironmentPrimary || accessEnvironmentId === null) {
++          await revokeServerClientSession(sessionId);
++        } else {
++          const result = await revokeEnvironmentClientSession({
++            environmentId: accessEnvironmentId,
++            input: { sessionId },
++          });
++          if (result._tag === "Failure") {
++            if (isAtomCommandInterrupted(result)) return;
++            throw squashAtomCommandFailure(result);
++          }
++        }
+       } catch (error) {
+         const message = error instanceof Error ? error.message : "Failed to revoke client access.";
+         setDesktopAccessManagementMutationError(message);
+@@ -2178,14 +2287,27 @@ export function ConnectionsSettings() {
+         setRevokingDesktopClientSessionId(null);
+       }
+     },
+-    [],
++    [accessEnvironmentId, isAccessEnvironmentPrimary, revokeEnvironmentClientSession],
+   );
+ 
+   const handleRevokeOtherDesktopClients = useCallback(async () => {
+     setIsRevokingOtherDesktopClients(true);
+     setDesktopAccessManagementMutationError(null);
+     try {
+-      const revokedCount = await revokeOtherServerClientSessions();
++      let revokedCount: number;
++      if (isAccessEnvironmentPrimary || accessEnvironmentId === null) {
++        revokedCount = await revokeOtherServerClientSessions();
++      } else {
++        const result = await revokeOtherEnvironmentClientSessions({
++          environmentId: accessEnvironmentId,
++          input: null,
++        });
++        if (result._tag === "Failure") {
++          if (isAtomCommandInterrupted(result)) return;
++          throw squashAtomCommandFailure(result);
++        }
++        revokedCount = result.value.revokedCount;
++      }
+       toastManager.add({
+         type: "success",
+         title: revokedCount === 1 ? "Revoked 1 other client" : `Revoked ${revokedCount} clients`,
+@@ -2204,7 +2326,7 @@ export function ConnectionsSettings() {
+     } finally {
+       setIsRevokingOtherDesktopClients(false);
+     }
+-  }, []);
++  }, [accessEnvironmentId, isAccessEnvironmentPrimary, revokeOtherEnvironmentClientSessions]);
+ 
+   const handleAddSavedBackend = useCallback(async () => {
+     if (savedBackendMode === "ssh") {
+@@ -3029,7 +3151,15 @@ export function ConnectionsSettings() {
+       }
+     />
+   );
+-  const renderAuthorizedClients = (presentation: AccessSectionPresentation) => (
++  const renderAuthorizedClients = (
++    presentation: AccessSectionPresentation,
++    endpoints: {
++      readonly endpointUrl: string | null | undefined;
++      readonly endpoints: ReadonlyArray<AdvertisedEndpoint>;
++      readonly defaultEndpointKey: string | null;
++      readonly servesCurrentOrigin: boolean;
++    },
++  ) => (
+     <>
+       {desktopAccessManagementError ? (
+         <div className={accessRowClassName(presentation)}>
+@@ -3037,9 +3167,10 @@ export function ConnectionsSettings() {
+         </div>
+       ) : null}
+       <PairingClientsList
+-        endpointUrl={desktopServerExposureState?.endpointUrl}
+-        endpoints={visibleDesktopAdvertisedEndpoints}
+-        defaultEndpointKey={defaultDesktopAdvertisedEndpointKey}
++        endpointUrl={endpoints.endpointUrl}
++        endpoints={endpoints.endpoints}
++        defaultEndpointKey={endpoints.defaultEndpointKey}
++        servesCurrentOrigin={endpoints.servesCurrentOrigin}
+         presentation={presentation}
+         isLoading={isLoadingDesktopAccessManagement}
+         pairingLinks={visibleDesktopPairingLinks}
+@@ -3051,6 +3182,32 @@ export function ConnectionsSettings() {
+       />
+     </>
+   );
++  const renderAuthorizedClientsSection = (endpoints: {
++    readonly endpointUrl: string | null | undefined;
++    readonly endpoints: ReadonlyArray<AdvertisedEndpoint>;
++    readonly defaultEndpointKey: string | null;
++    readonly servesCurrentOrigin: boolean;
++  }) => (
++    <SettingsSection
++      title="Authorized clients"
++      headerAction={
++        <AuthorizedClientsHeaderAction
++          clientSessions={desktopClientSessions}
++          isRevokingOtherClients={isRevokingOtherDesktopClients}
++          onRevokeOtherClients={handleRevokeOtherDesktopClients}
++          onCreatePairingLink={handleCreateAccessPairingLink}
++        />
++      }
++    >
++      <ScrollArea
++        scrollFade
++        className="max-h-[22.5rem]"
++        data-testid="authorized-clients-scroll-area"
++      >
++        {renderAuthorizedClients("current", endpoints)}
++      </ScrollArea>
++    </SettingsSection>
++  );
+   const renderNetworkAccessRow = () => (
+     <SettingsRow
+       title="Network access"
+@@ -3195,7 +3352,24 @@ export function ConnectionsSettings() {
+         </SettingsSection>
+       ) : null}
+ 
+-      {isClientOnlyDesktop ? null : canManageLocalBackend ? (
++      {/*
++       * Pairing links and client sessions belong to whichever server this page
++       * is administering. When that server is not a desktop-managed backend —
++       * a browser or hosted app pointed at a saved server — it has no "This
++       * environment" block to live under, so it gets its own section.
++       */}
++      {!isAccessEnvironmentPrimary && canManageEnvironmentAccess
++        ? renderAuthorizedClientsSection({
++            endpointUrl: accessEnvironmentPairingBaseUrl,
++            endpoints: EMPTY_ADVERTISED_ENDPOINTS,
++            defaultEndpointKey: null,
++            // This page is not served by the environment being administered, so
++            // its own origin never stands in for that server's address.
++            servesCurrentOrigin: false,
++          })
++        : null}
++
++      {canManageLocalBackend ? (
+         <>
+           <SettingsSection title="This environment">
+             {primaryVersionMismatch ? (
+@@ -3237,26 +3411,16 @@ export function ConnectionsSettings() {
+             )}
+           </SettingsSection>
+ 
+-          {isLocalBackendRemotelyReachable ? (
+-            <SettingsSection
+-              title="Authorized clients"
+-              headerAction={
+-                <AuthorizedClientsHeaderAction
+-                  clientSessions={desktopClientSessions}
+-                  isRevokingOtherClients={isRevokingOtherDesktopClients}
+-                  onRevokeOtherClients={handleRevokeOtherDesktopClients}
+-                />
+-              }
+-            >
+-              <ScrollArea
+-                scrollFade
+-                className="max-h-[22.5rem]"
+-                data-testid="authorized-clients-scroll-area"
+-              >
+-                {renderAuthorizedClients("current")}
+-              </ScrollArea>
+-            </SettingsSection>
+-          ) : null}
++          {isLocalBackendRemotelyReachable
++            ? renderAuthorizedClientsSection({
++                endpointUrl: desktopServerExposureState?.endpointUrl,
++                endpoints: visibleDesktopAdvertisedEndpoints,
++                defaultEndpointKey: defaultDesktopAdvertisedEndpointKey,
++                // The managed backend is the origin that served this page, so a
++                // non-loopback current-origin link does reach it.
++                servesCurrentOrigin: true,
++              })
++            : null}
+           <AlertDialog
+             open={isDesktopServerExposureDialogOpen}
+             onOpenChange={(open) => {
+@@ -3523,7 +3687,15 @@ export function ConnectionsSettings() {
+             </DialogPopup>
+           </Dialog>
+         </>
+-      ) : (
++      ) : /*
++       * Only explain the missing scope when there is a backend to be missing
++       * it on. A client with no primary at all (hosted app, or a client-only
++       * desktop) administers a saved environment in its own section above, so
++       * this row would contradict it — and an empty "This environment"
++       * heading is worse than none. A client-only desktop likewise manages no
++       * backend here, so it never gets the heading either.
++       */
++      !isClientOnlyDesktop && primaryEnvironmentId !== null ? (
+         <SettingsSection title="This environment">
+           <SettingsRow
+             title="Administrative access"
+@@ -3531,6 +3703,8 @@ export function ConnectionsSettings() {
+           />
+           <CloudLinkRow canManageRelay={canManageRelay} />
+         </SettingsSection>
++      ) : (
++        <CloudLinkRow canManageRelay={canManageRelay} />
+       )}
+ 
+       {localServerPairingCandidates.length > 0 ? (

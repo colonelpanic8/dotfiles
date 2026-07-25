@@ -53,11 +53,34 @@
     "apps/server/src/serverSettings.test.ts"
     "packages/contracts/src/settings.ts"
   ];
-  t3codePr4444OverlapFiles = [
+  t3codePr4474OverlapFiles = [
     "apps/desktop/src/app/DesktopApp.ts"
+    "apps/web/src/components/CommandPalette.tsx"
+    "apps/web/src/components/SidebarV2.tsx"
+    "apps/web/src/routes/_chat.tsx"
   ];
   t3codePr4477OverlapFiles = [
     "apps/server/src/provider/Layers/ClaudeProvider.ts"
+  ];
+  t3codePr4484OverlapFiles = [
+    "apps/web/src/components/ChatView.logic.test.ts"
+    # OrchestrationGetSnapshotError and OrchestrationDispatchCommandError have
+    # byte-identical bodies, so at this stack's offset `patch` silently lands
+    # #4484's retryWithNewThreadId field on the wrong class. Carry it exactly
+    # through the compatibility patch instead.
+    "packages/contracts/src/orchestration.ts"
+  ];
+  t3codePr4486OverlapFiles = [
+    "apps/web/src/components/settings/DiagnosticsSettings.tsx"
+  ];
+  t3codeShowRemoteHostNameOverlapFiles = [
+    "apps/web/src/components/Sidebar.tsx"
+    "apps/web/src/components/SidebarV2.tsx"
+  ];
+  t3codePr4496OverlapFiles = [
+    "apps/web/src/components/settings/ConnectionsSettings.logic.test.ts"
+    "apps/web/src/components/settings/ConnectionsSettings.logic.ts"
+    "apps/web/src/components/settings/ConnectionsSettings.tsx"
   ];
 
   # PR #3984 now applies directly to the pinned base. Its additional
@@ -67,7 +90,7 @@
     hash = "sha256-AewKjsqWDQ84Zy8PGIetPEueLmOa+bGSZDrJFGy6DxQ=";
   };
 
-  # PR #4257 (head 3add2a76d8cf) only changes the three shared command-palette files, so its
+  # PR #4257 (head ee5da25a75f9) only changes the three shared command-palette files, so its
   # complete diff is represented by the compatibility patch below. Keep its
   # live source and hash here so a bump still audits the PR itself.
   t3codePr4257 = final.fetchurl {
@@ -75,33 +98,33 @@
     hash = "sha256-2nLbkaii4O4qB/cn8c9rxyyMrNqb6TLsWVW80pea1IQ=";
   };
 
-  # PR #4258 (head 2250aeaa6349) has command-palette hunks represented by
+  # PR #4258 (head 88cfcca843ba) has command-palette hunks represented by
   # the compatibility patch below; audit its complete cumulative diff too.
   t3codePr4258 = final.fetchurl {
     url = "https://patch-diff.githubusercontent.com/raw/pingdotgg/t3code/pull/4258.diff";
     hash = "sha256-gMbobx6gfD9CcEgSRG5UJIuCmwem8e0ahAvCk1HDlEY=";
   };
 
-  # PR #4263 (head a5e53a9ce552) applies in full before the command-palette
+  # PR #4263 (head ef15fa2ea50b) applies in full before the command-palette
   # compatibility patch combines #4257 and #4258.
   t3codePr4263 = final.fetchurl {
     url = "https://patch-diff.githubusercontent.com/raw/pingdotgg/t3code/pull/4263.diff";
     hash = "sha256-GHEaZHjLi68G8GSikLIZdZ2dxF8X16bzOoJH30NVrc4=";
   };
 
-  # PR #4277 (head 51a0af5abe14) overlaps Sidebar V2 and the combined
+  # PR #4277 (head a9108bfd2edd) overlaps Sidebar V2 and the combined
   # keybinding tests after #4263/#4271.
   # Keep the live cumulative diff auditable while applying that file through
   # the compatibility patch below.
   t3codePr4277 = final.fetchurl {
     url = "https://patch-diff.githubusercontent.com/raw/pingdotgg/t3code/pull/4277.diff";
-    hash = "sha256-AJiRBhXKmmeSOE4S+6/vvHna/FPgZGm0VVbfqlJR7Uc=";
+    hash = "sha256-ZoR9AgbhP4XDQMSJ0JgPKjgatdPDe8AG2mEnbradrjw=";
   };
 
-  # PR #4271 (head 1b204aa2aa62) overlaps the assembled keybinding defaults.
+  # PR #4271 (head ae7005f0610c) overlaps the assembled keybinding defaults.
   t3codePr4271 = final.fetchurl {
     url = "https://patch-diff.githubusercontent.com/raw/pingdotgg/t3code/pull/4271.diff";
-    hash = "sha256-kKzEGIil44jQ/loXlyGlh5LzQVtiMGJC+/pq9Nhjm4g=";
+    hash = "sha256-wDKPsbwIDgi45MVYzZ4JkcXwlu+QLwnhYzKctiLzmB4=";
   };
 
   # PR #4318 overlaps the assembled thread-route tests. Keep the live
@@ -130,12 +153,12 @@
     hash = "sha256-hTFq9kDZhZPJ9odddKRuEJ3mqRzL5AnjgDIAL2WqzVc=";
   };
 
-  # PR #4394 (head d23d083127fa) overlaps the composer-control stack from #4271.
+  # PR #4394 (head dcd01dd1aade) overlaps the composer-control stack from #4271.
   # Keep its complete cumulative diff auditable while applying the shared
   # files through the compatibility patch below.
   t3codePr4394 = final.fetchurl {
     url = "https://patch-diff.githubusercontent.com/raw/pingdotgg/t3code/pull/4394.diff";
-    hash = "sha256-WYIPc+yYUVqnNHBiPAvvfKVcVveiqj5JMeb8X+lhwoU=";
+    hash = "sha256-3MA78o7Y0UrFvcOnWD+zG3cg6/130NRXX5iftkMQHbY=";
   };
 
   # PR #4390 overlaps the assembled legacy sidebar. Keep its complete
@@ -143,10 +166,10 @@
   # compatibility patch below.
   t3codePr4390 = final.fetchurl {
     url = "https://patch-diff.githubusercontent.com/raw/pingdotgg/t3code/pull/4390.diff";
-    hash = "sha256-Llw9tPjERKTyKG2vcdd75ds6tHhteBE9O+3ExwD5q9Y=";
+    hash = "sha256-A3NKT0x6l85LxJ67COUn8Ys+ToLFFfs3b/1F54JShIA=";
   };
 
-  # PR #4401 (head 804efc44c5a8) overlaps the assembled asset and sidebar surfaces.
+  # PR #4401 (head 975961667d38) overlaps the assembled asset and sidebar surfaces.
   # Keep its complete cumulative diff auditable while applying those
   # files through the compatibility patch below.
   t3codePr4401 = final.fetchurl {
@@ -154,20 +177,20 @@
     hash = "sha256-cnwdpjwHuXIVnY4Jejq41n+ktMIuskodXyBe+DEKmpg=";
   };
 
-  # PR #4426 (head fb312224805f) overlaps the assembled command palette and
+  # PR #4426 (head a93d1ea2a700) overlaps the assembled command palette and
   # keybinding defaults. Keep its complete cumulative diff auditable while
   # applying those files through the compatibility patch below.
   t3codePr4426 = final.fetchurl {
     url = "https://patch-diff.githubusercontent.com/raw/pingdotgg/t3code/pull/4426.diff";
-    hash = "sha256-qHJOMAuzAEuOA4GxRnWtXVGpkWyAsa08MSz5wVaF6Ko=";
+    hash = "sha256-IJytXMiguIVVsdjdg8+pLE9qk35q42ON8KdDXMNFSYg=";
   };
 
-  # PR #4427 (head 9939cc9a46e6) overlaps the existing generated-image and
+  # PR #4427 (head d2e6495f9e3d) overlaps the existing generated-image and
   # asset-access stack. Keep its complete cumulative diff auditable while
   # applying the semantic combination below.
   t3codePr4427 = final.fetchurl {
     url = "https://patch-diff.githubusercontent.com/raw/pingdotgg/t3code/pull/4427.diff";
-    hash = "sha256-Z5v60/cZWdf5j5WppatoyjKJKfPAziEvBER8c6txbwI=";
+    hash = "sha256-Ex0z0EFy4uFKfjeKaBRDB9+8zYIcNbfsSJUJdjpMUv0=";
   };
 
   # PR #4439 overlaps the assembled server-settings persistence tests. Keep
@@ -175,47 +198,57 @@
   # the compatibility patch below.
   t3codePr4439 = final.fetchurl {
     url = "https://patch-diff.githubusercontent.com/raw/pingdotgg/t3code/pull/4439.diff";
-    hash = "sha256-j8y7AuU+E1U6O2lzy1yhIpR2hs59jNPvrsfRBwex8aU=";
+    hash = "sha256-WTfqANYYQxDpI5vomNSZeyY9nppxU4iYwK5wuOX6v+I=";
   };
 
-  # PR #4444 (head 704649ec6948) overlaps DesktopApp startup after #4437.
-  t3codePr4444 = final.fetchurl {
-    url = "https://patch-diff.githubusercontent.com/raw/pingdotgg/t3code/pull/4444.diff";
-    hash = "sha256-NsK02bDaCW3uprmX/dajLs1+z8UcrJKqHCtSFTUrZ8I=";
-  };
-
-  # PR #4474 is stacked on #4444. Audit its complete cumulative diff while
-  # applying only the commit-pinned pairing delta after #4444 below.
+  # PR #4474 (head ec578bf9a0c8) carries every commit of #4444 plus its own
+  # local-server discovery work, so the stack applies #4474 alone. Verified by
+  # reverse-applying #4444's complete diff against #4474's tree: only import
+  # lines differ, and each is a superset of #4444's version.
   t3codePr4474 = final.fetchurl {
     url = "https://patch-diff.githubusercontent.com/raw/pingdotgg/t3code/pull/4474.diff";
-    hash = "sha256-hx/16AtAo5JpZSpXM2KftRUZ5BQNk1ZJbOnqE48MwZw=";
-  };
-  t3codePr4474Unique = final.fetchurl {
-    url = "https://github.com/colonelpanic8/t3code/compare/704649ec6948a66e9a0b1e0199dec5a09d1e301b...8f3ac9f81d70eab58a5693d5e98e6198f428da08.diff";
-    hash = "sha256-Ei+4uIsmtuhZUYaTlAl8mzuRsZqZvvXL3DegdY2R7+8=";
+    hash = "sha256-qR6SSwhJdMPR2stsGOcOqWfAkdfugPzNCJXwa28FURY=";
   };
 
-  # PR #4477 (head bcc18e65b5b6) overlaps Claude model additions on the
+  # PR #4477 (head fc3bf5d6c120) overlaps Claude model additions on the
   # refreshed base. Keep its complete diff auditable while applying that file
   # through the compatibility patch below.
   t3codePr4477 = final.fetchurl {
     url = "https://patch-diff.githubusercontent.com/raw/pingdotgg/t3code/pull/4477.diff";
-    hash = "sha256-DVyKYq0TTz8B9dVkFT8waGSdpz1RhaHSPo5RTwW9kLU=";
+    hash = "sha256-qHjWSRH/+AIyYsvK31pZ4Ms2dQtdg2ABpvwCXl6K6yo=";
   };
 
-  # PR #4484 (head 0e43e7fe0eef) overlaps the assembled ChatView logic tests.
-  # Keep its complete cumulative diff auditable while applying that file
-  # through the compatibility patch below.
+  # PR #4484 (head eaf7e88dd2b4) overlaps the assembled ChatView logic tests.
   t3codePr4484 = final.fetchurl {
     url = "https://patch-diff.githubusercontent.com/raw/pingdotgg/t3code/pull/4484.diff";
-    hash = "sha256-ti/unWa+nqpla3YspmxvuEKK0zDSzPRabtvozLR54cM=";
+    hash = "sha256-eAnkwOlueParse/ApQsGoPm2/njIYh8brrIysR/jXOM=";
   };
 
-  # PR #4486 (head acccd0e9fe6c) selects the backend that supplies
-  # diagnostics, which makes diagnostics usable in client-only mode.
+  # PR #4486 (head 0db411ea1815) overlaps #4437's diagnostics panel changes.
   t3codePr4486 = final.fetchurl {
     url = "https://patch-diff.githubusercontent.com/raw/pingdotgg/t3code/pull/4486.diff";
-    hash = "sha256-boC974iTE0373CTpyAIA8dURvt8eajSb3NBTTby0B10=";
+    hash = "sha256-+mzT+cwrmp4NgIaDRq/CUTLgX/HzSv0scmrl+TAvNZ0=";
+  };
+
+  # PR #4496 (head f14509692ccb) overlaps #4474's connections settings work.
+  t3codePr4496 = final.fetchurl {
+    url = "https://patch-diff.githubusercontent.com/raw/pingdotgg/t3code/pull/4496.diff";
+    hash = "sha256-Jpk8wr/cpWp3xCL2XP7cyqUHcZ3pUUaDN+JgddkTyvE=";
+  };
+
+  # BRANCH-LINKED PATCH — NOT a pull request. `t3code/show-remote-host-name`
+  # (head 106e11790906) shows remote environment names in sidebar thread rows.
+  # Its pull request, t3code#4425, was closed unmerged, so this entry links the
+  # fork BRANCH deliberately: the branch is the authority, not the PR.
+  #
+  # Treat it exactly like an outstanding PR. Rebase it onto live upstream main,
+  # push it back to `fork`, and refresh this hash and the head annotation on
+  # every stack refresh. Do NOT drop it because no open pull request references
+  # it and searching GitHub for #4425 shows it closed — that is precisely why it
+  # is linked by branch. Re-pin the compare base whenever the upstream pin moves.
+  t3codeShowRemoteHostName = final.fetchurl {
+    url = "https://github.com/colonelpanic8/t3code/compare/5719e8ac4020dda0e375ef61d044b61f55a0df8a...t3code/show-remote-host-name.diff";
+    hash = "sha256-BhQL4vS6W2wuuimuiqrs8f2njnu7N9IqtvRsI9iwDaw=";
   };
 
   t3codePrAudits = [
@@ -234,11 +267,12 @@
     t3codePr4426
     t3codePr4427
     t3codePr4439
-    t3codePr4444
     t3codePr4474
     t3codePr4477
     t3codePr4484
     t3codePr4486
+    t3codePr4496
+    t3codeShowRemoteHostName
   ];
 
   # Upstream is pinned through branch-drift hardening (#2284). Keep the
@@ -251,15 +285,15 @@
     # Also use transactional thread snapshots, correct streaming boundaries,
     # and a bounded retry for projection/file visibility races.
     ./patches/t3code-pr-3984-artifact-safety.patch
-    # Searchable new-thread project picker: t3code#4259 (head a1e3bc69a67c).
+    # Searchable new-thread project picker: t3code#4259 (head ece984160567).
     (final.fetchurl {
       url = "https://patch-diff.githubusercontent.com/raw/pingdotgg/t3code/pull/4259.diff";
-      hash = "sha256-sZcSRjBNjZE85LYG7znRVYYPxMozpCDVo1Z4Nuob0jg=";
+      hash = "sha256-28MTV1o8MnxPtIv0mrz8DjrPQYYk8WsLsAO868SZm+M=";
     })
     # Reuse the command-palette new-thread picker for Ctrl+N:
-    # t3code#4263 (head a5e53a9ce552).
+    # t3code#4263 (head ef15fa2ea50b).
     t3codePr4263
-    # Configurable add-project shortcut: t3code#4258 (head 2250aeaa6349).
+    # Configurable add-project shortcut: t3code#4258 (head 88cfcca843ba).
     (final.fetchpatch {
       url = "https://patch-diff.githubusercontent.com/raw/pingdotgg/t3code/pull/4258.diff";
       excludes = commandPaletteOverlapFiles;
@@ -268,15 +302,15 @@
     # Combine #4257 and #4258 with #4263's current command-palette flow.
     ./patches/t3code-command-palette-prs.patch
     # Keyboard-select composer controls + hold-modifier hints: t3code#4271
-    # (head 1b204aa2aa62). Apply non-overlapping files directly.
+    # (head ae7005f0610c). Apply non-overlapping files directly.
     (final.fetchpatch {
       url = "https://patch-diff.githubusercontent.com/raw/pingdotgg/t3code/pull/4271.diff";
       excludes = t3codePr4271OverlapFiles;
-      hash = "sha256-uxX7tnLMn1ghnZcqmaEmxkey22qoIGOYyocM6kA2cs4=";
+      hash = "sha256-sbuaSoEzmCW+Ejxf+kgpRwbUft2P8cyDyNfZxHGKeVk=";
     })
     ./patches/t3code-pr-4271-stack-compat.patch
     # Navigate open selections with Ctrl-N/Ctrl-P: t3code#4394
-    # (head d23d083127fa). Apply its non-overlapping files directly.
+    # (head dcd01dd1aade). Apply its non-overlapping files directly.
     (final.fetchpatch {
       url = "https://patch-diff.githubusercontent.com/raw/pingdotgg/t3code/pull/4394.diff";
       excludes = t3codePr4394OverlapFiles;
@@ -284,15 +318,15 @@
     })
     # Combine #4394's shared picker changes with #4271's composer controls.
     ../nixos/patches/t3code-pr-4394-stack-compat.patch
-    # Settle the open thread with Mod+Shift+X: t3code#4277 (head 51a0af5abe14).
+    # Settle the open thread with Mod+Shift+X: t3code#4277 (head a9108bfd2edd).
     (final.fetchpatch {
       url = "https://patch-diff.githubusercontent.com/raw/pingdotgg/t3code/pull/4277.diff";
       excludes = t3codePr4277OverlapFiles;
-      hash = "sha256-WudBiyOsqmbQ1U9ux0MNF7HLpbBs3PUOTXkIgwOp7cU=";
+      hash = "sha256-Cjg8jPb5IO0hqG93E79TSN26hjz801GesjQ/Qwxg+Ps=";
     })
     # Sidebar V2 and keybinding-test combination for #4277 with #4263/#4271.
     ./patches/t3code-settle-thread-keybinding.patch
-    # Recover stalled draft-thread promotion: t3code#4318 (head 2b366f5a0fe8).
+    # Recover stalled draft-thread promotion: t3code#4318 (head 0018ca24c00f).
     (final.fetchpatch {
       url = "https://patch-diff.githubusercontent.com/raw/pingdotgg/t3code/pull/4318.diff";
       excludes = ["apps/web/src/threadRoutes.test.ts"];
@@ -300,12 +334,12 @@
     })
     ./patches/t3code-pr-4318-stack-compat.patch
     # Coalesce high-frequency assistant streaming deltas: t3code#4323
-    # (head d0975d106b4f).
+    # (head f67b0914e57c).
     (final.fetchurl {
       url = "https://patch-diff.githubusercontent.com/raw/pingdotgg/t3code/pull/4323.diff";
-      hash = "sha256-U0x1Udkd0zJZgtwRmAV9x8djnWez6WvJAFQQ5IDiB3E=";
+      hash = "sha256-O8I4SB6Pcc4q4cFz+wMgRFUqGVydj9CIMDcZMPFFFZQ=";
     })
-    # Optional larger sidebar v2 project icons: t3code#4324 (head aadeaa221d09).
+    # Optional larger sidebar v2 project icons: t3code#4324 (head 05d3203dcaa0).
     t3codePr4324
     # Keep the assembled desktop settings fixture aligned with the added
     # sidebarV2LargeIcons default.
@@ -318,37 +352,37 @@
     })
     # Claude provider skill discovery is upstream via t3code#4414.
     # Use a properly sized flat foreground for Android adaptive icons:
-    # t3code#4332 (head e6f196d0d563).
+    # t3code#4332 (head e4395b63c430).
     t3codePr4332
     # Refresh a project favicon when its icon is clicked: t3code#4337
-    # (head af165bffae34).
+    # (head bf76e6c79005).
     (final.fetchurl {
       url = "https://patch-diff.githubusercontent.com/raw/pingdotgg/t3code/pull/4337.diff";
       hash = "sha256-pDvYnybng8nJqFU1DiXk6hlW1kD6Exc2u7CtF5lhprI=";
     })
     # Recover stranded provider turns after lost completion events or backend
-    # restarts: t3code#4386 (head 01681ab2a81b).
+    # restarts: t3code#4386 (head 725102246270).
     (final.fetchurl {
       url = "https://patch-diff.githubusercontent.com/raw/pingdotgg/t3code/pull/4386.diff";
       hash = "sha256-jjrEaesVYSODYpeFfNuJ2KPUiD50Z0tJnNtyLae416g=";
     })
     # Keep the Android new-task composer above the keyboard while it expands:
-    # t3code#4388 (head 7814d4798d69).
+    # t3code#4388 (head e6eff76ae220).
     (final.fetchurl {
       url = "https://patch-diff.githubusercontent.com/raw/pingdotgg/t3code/pull/4388.diff";
       hash = "sha256-nRLeyb5f8gWfVA39c1UagUOJRy8qJQ7zyi5ggEPXNN4=";
     })
     # Clone a thread through its latest completed response from the sidebar:
-    # t3code#4390 (head 9ac81ba1f05a).
+    # t3code#4390 (head b779c54181e9).
     (final.fetchpatch {
       url = "https://patch-diff.githubusercontent.com/raw/pingdotgg/t3code/pull/4390.diff";
       excludes = t3codePr4390OverlapFiles;
-      hash = "sha256-FtOBL/YYAbyEYXZLrdWtLAjuDafKiDC5aqzHp6O0sDg=";
+      hash = "sha256-0T4q0vl18voDPtWVSKYfQ5cKZc3LoSTkRcS2rgmoh34=";
     })
     # Preserve the assembled sidebars and upstream migration registry while
     # carrying #4390's migration 35 fork-lineage entry.
     ./patches/t3code-pr-4390-stack-compat.patch
-    # User-local project icons: t3code#4401 (head 804efc44c5a8).
+    # User-local project icons: t3code#4401 (head 975961667d38).
     (final.fetchpatch {
       url = "https://patch-diff.githubusercontent.com/raw/pingdotgg/t3code/pull/4401.diff";
       excludes = t3codePr4401OverlapFiles;
@@ -358,7 +392,7 @@
     # V2 icons while adding #4401's complete changes to the excluded files.
     ./patches/t3code-pr-4401-stack-compat.patch
     # Self-heal empty thread details and back off failed thread subscriptions:
-    # t3code#4405 (head 6a4e6bf0b53f).
+    # t3code#4405 (head 10b95f1c2566).
     (final.fetchurl {
       url = "https://patch-diff.githubusercontent.com/raw/pingdotgg/t3code/pull/4405.diff";
       hash = "sha256-nhPMr3s0kS+cW5794l+1DTENJYOD11NDLHvaOcqrOGA=";
@@ -366,7 +400,7 @@
     # Closed, unmerged attempts #4419, #4420, #4421, #4423, and #4425 are
     # intentionally not carried.
     # Choose an environment, then an environment-scoped project, when creating
-    # a thread with Mod+Shift+N: t3code#4426 (head fb312224805f). Apply its
+    # a thread with Mod+Shift+N: t3code#4426 (head a93d1ea2a700). Apply its
     # non-overlapping files directly.
     (final.fetchpatch {
       url = "https://patch-diff.githubusercontent.com/raw/pingdotgg/t3code/pull/4426.diff";
@@ -377,90 +411,121 @@
     # previously assembled command-palette and keybinding changes.
     ../nixos/patches/t3code-pr-4426-stack-compat.patch
     # Choose an environment before an environment-scoped project when creating
-    # a new task on mobile: t3code#4447 (head 61fee7075d8d).
+    # a new task on mobile: t3code#4447 (head 70138785a18a).
     (final.fetchurl {
       url = "https://patch-diff.githubusercontent.com/raw/pingdotgg/t3code/pull/4447.diff";
-      hash = "sha256-LcVOyJb6I43lYcgZ3PWWEtTh4xyFuNDssNxbNL0MdYc=";
+      hash = "sha256-kSTOwbc/HG7vUbt8SN3JdKrlXSVEW1QP1J8DpCkMhLA=";
     })
     # Show completed image-generation activity as compact evidence links that
-    # open in the right panel: t3code#4427 (head 9939cc9a46e6). This
+    # open in the right panel: t3code#4427 (head d2e6495f9e3d). This
     # compatibility patch keeps #3984's filename promotion, transactional
     # snapshot lookup, and artifact-path safeguards intact.
     ./patches/t3code-pr-4427-stack-compat.patch
     # Refresh positional model-picker shortcuts when virtualized rows are
-    # reordered: t3code#4433 (head 6560269d0d6f).
+    # reordered: t3code#4433 (head 2b107b9f8a50).
     (final.fetchurl {
       url = "https://patch-diff.githubusercontent.com/raw/pingdotgg/t3code/pull/4433.diff";
       hash = "sha256-cVgAIKSWSOoXekQrwFhh8FzCVA5xRCe37zfrLihP1+A=";
     })
     # Configure centralized or repository-local worktree placement:
-    # t3code#4439 (head 366d6e021814). Apply its non-overlapping files
+    # t3code#4439 (head 72afbca6e614). Apply its non-overlapping files
     # directly and combine its persistence assertions with the assembled
     # server-settings tests.
     (final.fetchpatch {
       url = "https://patch-diff.githubusercontent.com/raw/pingdotgg/t3code/pull/4439.diff";
       excludes = t3codePr4439OverlapFiles;
-      hash = "sha256-6pk81feanqE3f+tAWxVFIAkYvfVT6Pj61OGEsbdCHHw=";
+      hash = "sha256-LDDE+2pWJ0Z2+XX8UQ3ypEpV4Uk0/lNem//mbxY7FUM=";
     })
     ./patches/t3code-pr-4439-stack-compat.patch
     # Separate config, data, state, cache, and runtime storage with an explicit
-    # XDG/legacy CLI override: t3code#4437 (head e7bae5f92d12).
+    # XDG/legacy CLI override: t3code#4437 (head ee717d877a5b).
     (final.fetchurl {
       url = "https://patch-diff.githubusercontent.com/raw/pingdotgg/t3code/pull/4437.diff";
-      hash = "sha256-LJTucZOXRLHxCh9Rxu/sZObkyvEqc1Zdik4VxSV3+Qc=";
+      hash = "sha256-3rV+O6PeXXHw6nCg3U//9Rc6G4pwKhsVA+EVnU4xoYs=";
     })
-    # Start Electron as a client of a separately owned local backend:
-    # t3code#4444 (head 704649ec6948). Apply non-overlapping files directly.
+    # Start Electron as a client of a separately owned local backend
+    # (t3code#4444, head 94724c65101c) and discover/explicitly pair with
+    # same-user loopback `t3 serve` instances: t3code#4474 (head ec578bf9a0c8).
+    # #4474 contains every #4444 commit, so one patch carries both features and
+    # #4444 needs no separate entry. Apply its non-overlapping files directly.
     (final.fetchpatch {
-      url = "https://patch-diff.githubusercontent.com/raw/pingdotgg/t3code/pull/4444.diff";
-      excludes = t3codePr4444OverlapFiles;
-      hash = "sha256-60qXgRNqcXBxFH/S25ARC7fEO30jQU7yYW4VB+sIeqg=";
+      url = "https://patch-diff.githubusercontent.com/raw/pingdotgg/t3code/pull/4474.diff";
+      excludes = t3codePr4474OverlapFiles;
+      hash = "sha256-iDj0EVvyep7TtHf+JGXNJVv+EapNX7DPD6xgfHanL/A=";
     })
-    # Combine DesktopApp startup with #4437's split cache path.
-    ./patches/t3code-pr-4444-stack-compat.patch
-    # Discover and explicitly pair with same-user loopback `t3 serve`
-    # instances: t3code#4474 (head 8f3ac9f81d70). Its cumulative PR diff
-    # includes #4444, so apply only the immutable #4444..#4474 range.
-    t3codePr4474Unique
+    # Combine #4474's DesktopApp startup with #4437's split cache path, and its
+    # client-only environment-presence changes with the assembled command
+    # palette, Sidebar V2, and chat route.
+    ./patches/t3code-pr-4474-stack-compat.patch
     # Discover Claude models from SDK initialization rather than relying on
-    # the fallback catalog: t3code#4477 (head bcc18e65b5b6).
+    # the fallback catalog: t3code#4477 (head fc3bf5d6c120).
     (final.fetchpatch {
       url = "https://patch-diff.githubusercontent.com/raw/pingdotgg/t3code/pull/4477.diff";
       excludes = t3codePr4477OverlapFiles;
-      hash = "sha256-t/E0DHXtKkxl8nDQcpTNr7zGJiucyt3ceF8yWv3ePhM=";
+      hash = "sha256-2JWuUV0gmZS+yp6XBBX6FwIAYjpLpaEb+A89uQXHse8=";
     })
     ./patches/t3code-pr-4477-stack-compat.patch
     # Refresh the sidebar resize cap when the window grows: t3code#4482
-    # (head 233e5db37a7d).
+    # (head ea0cea17c7ca).
     (final.fetchurl {
       url = "https://patch-diff.githubusercontent.com/raw/pingdotgg/t3code/pull/4482.diff";
-      hash = "sha256-SmdvAW8PHJ8dpHqLmGkVsdMXxNt4A8b9DBoQx3NOmxk=";
+      hash = "sha256-17aAJbb2e1XetVDr0KIBy81J/udEfSavI8K+0dv1cb8=";
     })
     # Drop non-interactive Codex models from the model picker: t3code#4487
-    # (head 11c647c6ec05).
+    # (head 6b75ff3f0c09). Applies directly to the assembled stack.
     (final.fetchurl {
       url = "https://patch-diff.githubusercontent.com/raw/pingdotgg/t3code/pull/4487.diff";
       hash = "sha256-tAX/dCfz0oUTkzjkAFJk9VFcoJnDkR3FGzQ7l8RCawA=";
     })
-    # Recover local draft identities after failed bootstrap cleanup:
-    # t3code#4484 (head 0e43e7fe0eef).
-    (final.fetchpatch {
-      url = "https://patch-diff.githubusercontent.com/raw/pingdotgg/t3code/pull/4484.diff";
-      excludes = ["apps/web/src/components/ChatView.logic.test.ts"];
-      hash = "sha256-WD/UA+Gj8bLS/MLW3BSfGM+2u2GtRjdDoD0F6Mi6jpw=";
+    # Keep rapid settings edits from reverting each other by overlaying pending
+    # server-settings patches: t3code#4494 (head b27a3135638b). Applies directly.
+    # Two attempts to also close the sub-millisecond response/broadcast gap were
+    # implemented and reverted: `settingsUpdated` carries no revision or
+    # correlation marker, so every client-side heuristic regressed something
+    # worse than the gap. See the PR thread.
+    (final.fetchurl {
+      url = "https://patch-diff.githubusercontent.com/raw/pingdotgg/t3code/pull/4494.diff";
+      hash = "sha256-UedjHXwkOmv1D3XoypzI0dnFNZpJ/J+eiqdHXsXw1Yg=";
     })
-    # Combine #4484's classifier assertions with #4318's draft-promotion
-    # recovery tests.
-    ../nixos/patches/t3code-pr-4484-stack-compat.patch
-    # Select the backend that provides diagnostics, including in client-only
-    # mode: t3code#4486 (head acccd0e9fe6c). Its settings file overlaps the
-    # assembled import ordering, so apply it through the compatibility patch.
+    # Let clients without a managed backend manage pairing: t3code#4496
+    # (head f14509692ccb). Apply its non-overlapping files directly and combine
+    # its connections-settings changes with #4474's below.
+    (final.fetchpatch {
+      url = "https://patch-diff.githubusercontent.com/raw/pingdotgg/t3code/pull/4496.diff";
+      excludes = t3codePr4496OverlapFiles;
+      hash = "sha256-LSQdfgzU2FJ9mnWQHWccPE3ePz5ersR/XSOwgrKmSPw=";
+    })
+    ./patches/t3code-pr-4496-stack-compat.patch
+    # Select the diagnostics environment: t3code#4486 (head 0db411ea1815).
+    # Apply its non-overlapping files directly and combine its panel changes
+    # with #4437's split storage layout below.
     (final.fetchpatch {
       url = "https://patch-diff.githubusercontent.com/raw/pingdotgg/t3code/pull/4486.diff";
-      excludes = ["apps/web/src/components/settings/DiagnosticsSettings.tsx"];
-      hash = "sha256-dcvreavHmLI6wrGQGFtClFtks0WhXskWGcOxgGeRUDo=";
+      excludes = t3codePr4486OverlapFiles;
+      hash = "sha256-rNhD4zKTUVhSvnlm8djQZeOR1uTPHquTDIwEBZY9oKE=";
     })
-    ../nixos/patches/t3code-pr-4486-stack-compat.patch
+    ./patches/t3code-pr-4486-stack-compat.patch
+    # Recover draft thread IDs after failed bootstrap cleanup: t3code#4484
+    # (head eaf7e88dd2b4). Apply its non-overlapping files directly and combine
+    # its ChatView logic tests with the assembled suite below.
+    (final.fetchpatch {
+      url = "https://patch-diff.githubusercontent.com/raw/pingdotgg/t3code/pull/4484.diff";
+      excludes = t3codePr4484OverlapFiles;
+      hash = "sha256-1OtprYyESjVjnRovJeQVX1H160EJ1zrp6GqSuV+nIFw=";
+    })
+    ./patches/t3code-pr-4484-stack-compat.patch
+    # Show remote environment names in sidebar thread rows. BRANCH-LINKED, not a
+    # PR: fork branch `t3code/show-remote-host-name` (head 106e11790906), whose
+    # PR t3code#4425 is closed. Keep carrying it; see the binding above. Apply
+    # its non-overlapping files directly.
+    (final.fetchpatch {
+      url = "https://github.com/colonelpanic8/t3code/compare/5719e8ac4020dda0e375ef61d044b61f55a0df8a...t3code/show-remote-host-name.diff";
+      excludes = t3codeShowRemoteHostNameOverlapFiles;
+      hash = "sha256-ADySVSYSboZm8lAMnQ4ftV10G4DdPkGmVVmLcq+PsyM=";
+    })
+    # Combine the remote-environment thread-row indicator with the assembled
+    # legacy sidebar and Sidebar V2.
+    ./patches/t3code-show-remote-host-name-stack-compat.patch
     # The snooze feature arrived with migration ID 34 after that ID had already
     # been recorded locally for ProjectionThreadGoals. Run its idempotent schema
     # update as migration 36 so existing databases receive it.

@@ -44,3 +44,15 @@ index 6aff7af603c6a9e625ee5343d1e17d0f80602f24..e37631655126cc3e15b9fb9b30f3f06b
  const completedTurn = {
    turnId: TurnId.make("turn-1"),
    state: "completed" as const,
+diff --git a/packages/contracts/src/orchestration.ts b/packages/contracts/src/orchestration.ts
+index da3830f85cfa8d09529efec39d8a12164922ba3c..02049b6ad92a9227c6ba5421a89f998f8837416f 100644
+--- a/packages/contracts/src/orchestration.ts
++++ b/packages/contracts/src/orchestration.ts
+@@ -1456,6 +1456,7 @@ export class OrchestrationDispatchCommandError extends Schema.TaggedErrorClass<O
+   {
+     message: TrimmedNonEmptyString,
+     cause: Schema.optional(Schema.Defect()),
++    retryWithNewThreadId: Schema.optional(Schema.Boolean),
+   },
+ ) {}
+ 
