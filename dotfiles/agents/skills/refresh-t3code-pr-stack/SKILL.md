@@ -57,10 +57,13 @@ advanced them during the refresh.
 Synchronize two related inventories without conflating them:
 
 - **Maintained PR branches:** writable `colonelpanic8` branches that can be rebased and repaired.
-- **Carried patches:** everything represented in `/srv/dotfiles/nix-shared/t3code.nix`, including external PRs and closed-but-unmerged PRs that must remain in the personal build.
+- **Carried patches:** everything represented in `/srv/dotfiles/nix-shared/t3code.nix`, including external PRs, closed-but-unmerged PRs, and branch-linked patches that must remain in the personal build.
+- **Branch-linked carried patches:** entries whose URL names a `colonelpanic8` fork branch rather than a pull request — for example `https://github.com/colonelpanic8/t3code/compare/<baseOid>...<branch>.diff`. These exist precisely because their PR was closed, was never opened, or should not be tracked through GitHub's PR state at all.
 - **New owned PRs:** PRs created by `colonelpanic8` since the last completed patch-stack refresh that must be admitted automatically when they are not already carried or absorbed upstream.
 
 A PR being closed does not mean its feature should be removed. A PR being merged does not mean it can be removed until the pinned upstream source actually contains it.
+
+**Treat a branch-linked entry exactly like an outstanding PR.** Rebase its branch onto the current live `origin/main`, push the rebased branch back to `fork`, refresh its hash and recorded head OID, regenerate any compatibility patch it needs, and keep it in the stack. Never drop one because no open pull request references it, because its PR is closed, or because searching GitHub for the PR number finds nothing — the branch reference *is* the authority, and its presence in `t3code.nix` is deliberate. Remove one only on explicit instruction from the user, or after proving the exact pinned upstream source already contains its complete intended behavior. When you add a patch for work whose PR is closed or absent, always link the fork branch rather than the pull request, and say so in the entry's comment so a later refresh cannot misread it as an abandoned PR.
 
 ## Fixed locations and safety rules
 
@@ -122,9 +125,11 @@ Build a table with one row per relevant PR containing:
 Derive the sets independently:
 
 1. Parse every `pull/NUMBER.diff` URL from `t3code.nix`, including audit-only bindings forced through `builtins.seq`.
-2. Determine the last completed stack-refresh boundary from the newest committed change to `nix-shared/t3code.nix`. Inspect current uncommitted manifest changes too, but do not treat them as a completed refresh.
-3. Query all PRs authored by `colonelpanic8`, including open, draft, merged, and closed PRs, with `createdAt`, `updatedAt`, head/base OIDs, and branch ownership.
-4. Query each carried PR directly, because third-party PRs are absent from the authored list.
+2. Parse every fork-branch URL from `t3code.nix` too — any `github.com/colonelpanic8/t3code/compare/...` or other URL naming a branch instead of a pull request. Record the branch name and its recorded head. These are carried patches with no PR to query, and a PR-only sweep will silently miss them.
+3. Determine the last completed stack-refresh boundary from the newest committed change to `nix-shared/t3code.nix`. Inspect current uncommitted manifest changes too, but do not treat them as a completed refresh.
+4. Query all PRs authored by `colonelpanic8`, including open, draft, merged, and closed PRs, with `createdAt`, `updatedAt`, head/base OIDs, and branch ownership.
+5. Query each carried PR directly, because third-party PRs are absent from the authored list.
+6. Resolve each branch-linked entry against `fork` directly (`git rev-parse fork/<branch>`), not through the GitHub PR API.
 
 Use GitHub GraphQL `reviewThreads` for inline feedback; `gh pr view` summaries alone omit important unresolved comments.
 
@@ -135,6 +140,7 @@ Classify each PR:
 - **External carried patch:** refresh metadata/hash and composition, but do not attempt to push its branch.
 - **Merged and present in the new upstream pin:** remove its patch after proving ancestry/content.
 - **Closed unmerged but desired:** retain it. Do not reopen it automatically.
+- **Branch-linked carried patch:** a manifest entry pointing at a fork branch rather than a PR. Treat it exactly like an owned, maintained, outstanding PR: rebase the branch onto live main, push it back to `fork`, refresh its hash and head annotation, and regenerate its compatibility patch. Its lack of an open PR is the reason it is branch-linked, never a reason to drop it.
 - **Historical absent PR:** created before the refresh boundary and not carried. Treat it as intentionally dropped or superseded unless the user explicitly restores it; do not resurrect old PRs merely because they are absent.
 - **Obsolete or intentionally dropped carried PR:** remove only with explicit evidence from the user or existing manifest history.
 
@@ -238,6 +244,15 @@ nix store prefetch-file --json \
 ```
 
 Update the 12-character head annotation and raw `fetchurl` hash, including audit-only bindings.
+
+For every branch-linked entry, do the same against its branch. Pin the compare base to the exact upstream main OID the stack is built on and name the branch as the head, so the URL stays explicit about which branch it carries:
+
+```bash
+nix store prefetch-file --json \
+  https://github.com/colonelpanic8/t3code/compare/UPSTREAM_MAIN_OID...BRANCH_NAME.diff
+```
+
+Re-pin that base OID whenever the upstream pin advances, and refresh the hash and recorded branch head with it.
 
 For every `fetchpatch` with `excludes`, recompute the normalized hash through the same Nix expression and exclusion list. Never substitute the raw `fetchurl` hash; the normalization changes it.
 
