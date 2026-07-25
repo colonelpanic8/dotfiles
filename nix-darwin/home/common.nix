@@ -263,7 +263,7 @@ in {
   };
 
   launchd.agents.alt-tab = lib.mkIf pkgs.stdenv.isDarwin {
-    enable = true;
+    enable = false;
     config = {
       ProgramArguments = [
         "/usr/bin/open"
