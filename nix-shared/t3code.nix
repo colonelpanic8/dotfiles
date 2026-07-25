@@ -622,6 +622,20 @@ in {
             "$out/bin/t3code-desktop" \
             --add-flags "--password-store=gnome-libsecret" \
             --add-flags "--backend-mode=client-only"
+        ''
+        + final.lib.optionalString final.stdenv.hostPlatform.isDarwin ''
+          # Always start the packaged desktop app as a client of the
+          # separately-owned t3codeServer backend (t3code#4444/#4474)
+          # rather than an Electron-managed one. `makeWrapper` here is
+          # makeBinaryWrapper's compiled-stub implementation (the only
+          # wrapper hook symlinkJoin wires in), so this still produces a
+          # native Mach-O executable at bin/t3code-desktop, which the app
+          # bundle's Contents/MacOS entry symlinks to by relative path.
+          mv "$out/bin/t3code-desktop" \
+            "$out/bin/.t3code-desktop-client-mode-wrapped"
+          makeWrapper "$out/bin/.t3code-desktop-client-mode-wrapped" \
+            "$out/bin/t3code-desktop" \
+            --add-flags "--backend-mode=client-only"
         '';
     });
 }
