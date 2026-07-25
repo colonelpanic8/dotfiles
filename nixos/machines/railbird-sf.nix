@@ -92,6 +92,17 @@
     # This host's lingering user manager runs without a local graphical login.
     startTarget = "default.target";
   };
+  # Dean's own headless T3 Code server on this host, entirely separate from
+  # imalison's above: distinct loopback/Tailscale-Serve ports, and lingering
+  # so his systemd --user instance (and its default.target-gated service)
+  # comes up at boot even though he never logs in graphically here.
+  users.users.dean.linger = true;
+  home-manager.users.dean.myModules.t3codeServer = {
+    enable = true;
+    localPort = 3775;
+    tailscaleServePort = 8444;
+    systemdStartTarget = "default.target";
+  };
   myModules.syncthing.enable = true;
   myModules.fonts.enable = true;
   myModules.plasma.enable = true;
