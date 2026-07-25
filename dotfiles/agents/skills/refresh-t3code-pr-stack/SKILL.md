@@ -73,53 +73,17 @@ Every writable topic must sit on the exact current main OID. Local-only topics
 (`kind = "local"`, e.g. `t3code/local/artifact-safety`, `t3code/local/nix-flake`)
 rebase too.
 
-## 3. Rebuild groups first, then the main stack
+## 3. Rebuild the integration branch
 
-A **group** is a sub-manifest whose output branch is pinned as one entry in the
-main manifest — a subsystem tree. Group PRs that all edit the same files, so
-their combination is resolved once against a STABLE base (upstream main) instead
-of being re-derived against a shifting assembled stack on every refresh.
+Use `$rebuild-t3code-stack`. It owns the rebuild procedure, the conflict-helper
+caveats, and the verification ladder; do not duplicate them here.
 
-`t3code-thread-picker.toml` groups #4263/#4257/#4258/#4426, which all edit the
-CommandPalette trio. It merges into the main stack with zero conflicts.
+In short: groups first, then the main stack; resolve conflicts against BRANCH
+content, never by copying a reference tree; and gate on
+`audit-stack-content.py` before pushing. A green build does not prove features
+survived — the content audit does.
 
-```
-# group first
-rebuild-t3code-stack.py --manifest nix-shared/t3code-thread-picker.toml \
-    --mode reproduce --write-lock --push
-# then pin its new head in t3code-stack.toml and rebuild the main stack
-rebuild-t3code-stack.py --mode refresh --write-lock --push
-```
-
-Modes: `reproduce` merges at manifest pins (deterministic, for proving a rebuild
-reproduces a known tree); `refresh` follows current branch heads.
-
-Lock, state file, and build worktree all derive from the manifest name, so a
-group build and the main build can be in flight simultaneously.
-
-## 4. Resolving conflicts
-
-The script stops on an unrecognized conflict, leaving it in the build worktree;
-resume with `--continue`. Resolve **semantically** — never `-X ours/theirs`.
-
-Two helpers, in order of preference:
-
-1. **`replay-resolutions.py --from-build fork/t3code/stack --label '#4257'`** —
-   replays that entry's resolution verbatim from a previous build. Exact, but
-   only valid while entry order is unchanged up to that point. Use a remote ref
-   (`fork/t3code/stack`); the branch may not exist locally.
-2. **`resolve-from-baseline.py --baseline <tree>`** — copies files that no LATER
-   entry touches from a known-good tree. When building a GROUP, also pass
-   `--foreign-manifest nix-shared/t3code-stack.toml` so files touched by
-   non-group entries are refused — copying those would import their content
-   early and make them falsely report EMPTY upstack.
-
-`--force` overrides the safety check. **It is lossy** — it has twice dropped
-content when a file had genuine changes from more than one source, including a
-whole test. Prefer a real resolution for any file with substantive content from
-multiple topics.
-
-## 5. Minimize carried topics
+## 4. Minimize carried topics
 
 Treat every topic as temporary debt. The script flags `ABSORBED` (already an
 ancestor of main) and `EMPTY` (merge changed nothing) as drop candidates —
@@ -137,28 +101,12 @@ already used, a fixture that must list every field, or glue between topics that
 has no other home. Keep them minimal; prefer a group branch when the glue
 belongs to a specific cluster.
 
-## 6. Verify
+## 5. Verify
 
-In order, cheapest first:
+Run the full ladder from `$rebuild-t3code-stack`: content audit, tree diff,
+conflict count, build. All four, in that order.
 
-1. **Tree diff** — the lock records the previous tree OID. Any change must be
-   explainable by upstream movement plus topic movement. Anything else is
-   resolution drift.
-2. **Conflict count** — recorded in the lock. Under re-resolution a conflict is a
-   recurring per-rebuild cost, so a rising count means the stack is drifting.
-   Consider a new group.
-3. **Build** — the real gate:
-   ```
-   nix build --impure --expr 'let flake = builtins.getFlake "git+file:///srv/dotfiles?dir=nixos";
-     pkgs = import flake.inputs.nixpkgs { system = "x86_64-linux"; config.allowUnfree = true;
-       overlays = [ (import /srv/dotfiles/nix-shared/t3code.nix { inherit (flake) inputs; }) ]; };
-   in pkgs.t3code'
-   ```
-   **Check the real exit code** — piping nix through `tail` masks failure.
-
-The build has caught defects the tree diff missed. Do not skip it.
-
-## 7. Land it
+## 6. Land it
 
 Push branch + dated tag, repin `t3code-integration` by rev in
 `nixos/flake.nix`, run `nix flake lock --update-input t3code-integration`, write
