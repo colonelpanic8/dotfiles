@@ -16,7 +16,7 @@ Treat the PR as the canonical standalone implementation and the Nix stack as the
 
 - Resolve the T3 Code checkout through `/srv/dotfiles/dotfiles/agents/project-links/t3code`. Repair that ignored symlink if its target moved.
 - Use `origin` for `pingdotgg/t3code` and `fork` for `colonelpanic8/t3code`; verify rather than assume.
-- Maintain the topic manifest in `/srv/dotfiles/nix-shared/t3code-stack.toml`.
+- Maintain the topic manifest at `nix/stack/stack.toml` on the fork's `t3code/stack-tooling` branch.
 - Maintain the upstream source pin in `/srv/dotfiles/nixos/flake.lock` from the `t3code-upstream` input declared in `flake.nix`.
 - Put compatibility patches in `/srv/dotfiles/nixos/patches/`.
 
@@ -68,7 +68,7 @@ Do not start the Nix integration until the PR exists and the published head matc
 
 ## 4. Add the PR to the integration manifest
 
-Re-read the dotfiles status and `nix-shared/t3code-stack.toml` first; another
+Re-read `nix/stack/stack.toml` on `t3code/stack-tooling` first; another
 session may have changed the stack while the PR was being prepared.
 
 The stack is an **integration branch rebuilt by 3-way merge** from an ordered
@@ -89,7 +89,7 @@ audit binding. Do not reintroduce any of those.
 
 **Placement matters.** Put the entry next to topics it overlaps, so conflict
 resolution stays local. If it edits the CommandPalette trio, add it to the
-`t3code-thread-picker.toml` group instead of the main manifest, and repin the
+`nix/stack/thread-picker.toml` group instead of the main manifest, and repin the
 group. If it opens a new overlap cluster with two or more existing topics,
 consider a new group manifest rather than accumulating conflicts in the main
 stack.
@@ -100,13 +100,13 @@ genuinely needs newer upstream, run `$refresh-t3code-pr-stack` and revalidate.
 ## 5. Rebuild and resolve
 
 ```
-nixos/scripts/rebuild-t3code-stack.py --mode refresh --write-lock --push
+nix/stack/bin/rebuild-t3code-stack.py --mode refresh --write-lock --push
 ```
 
 The rebuild stops on conflicts; resolve them semantically and `--continue`. See
 `$refresh-t3code-pr-stack` for the conflict helpers and their caveats.
 
-`pnpmDeps.hash` in `nix-shared/t3code.nix` only changes when `pnpm-lock.yaml`
+`pnpmDeps.hash` in the fork's `flake.nix` only changes when `pnpm-lock.yaml`
 does — compare against the previous tree before assuming it moved.
 
 ## 6. Build and activate

@@ -5,6 +5,15 @@ description: "Rebuild Ivan's T3 Code integration branch from its ordered manifes
 
 # Rebuild the T3 Code integration branch
 
+The manifests, rebuild tooling, epilogue patches and full instructions live IN
+THE FORK on the `t3code/stack-tooling` branch, under `nix/stack/`. Read
+`nix/stack/BUILDING.md` there first -- it is authoritative and this skill does
+not duplicate it.
+
+Dotfiles holds only two things: the `t3code-integration` flake input pinned to a
+rev, and `nix-shared/t3code.nix`, a ~32-line overlay adding the Electron
+safeStorage wrapper. Nothing else about the stack lives downstream.
+
 The stack is an integration branch on the fork, regenerated from scratch by
 merging an ordered manifest of topic branches onto live upstream main. It is a
 build artifact: never commit to it, never base work on it, never merge it back.
@@ -34,10 +43,10 @@ Groups first, then the main stack. A group is a sub-manifest whose output branch
 is pinned as one entry in the main manifest — a subsystem tree.
 
 ```
-rebuild-t3code-stack.py --manifest nix-shared/t3code-thread-picker.toml \
+nix/stack/bin/rebuild-t3code-stack.py --manifest nix/stack/thread-picker.toml \
     --mode reproduce --write-lock --push
-# pin the new group head in t3code-stack.toml, then
-rebuild-t3code-stack.py --mode refresh --write-lock --push
+# pin the new group head in nix/stack/stack.toml, then
+nix/stack/bin/rebuild-t3code-stack.py --mode refresh --write-lock --push
 ```
 
 `reproduce` merges at manifest pins (deterministic). `refresh` follows current
@@ -52,16 +61,16 @@ and `EMPTY` entries as drop candidates.
 
 Resolve **semantically**. Never `-X ours/theirs`.
 
-**`replay-resolutions.py --from-build fork/t3code/stack --label '#4257'`** is the
+**`nix/stack/bin/replay-resolutions.py --from-build fork/t3code/stack --label '#4257'`** is the
 safest helper: it replays that entry's resolution verbatim from a previous
 build. Exact, but only valid while entry order is unchanged up to that point —
 past any manifest insertion or reorder, the merge context differs and the replay
 is wrong. Use a remote ref; the branch may not exist locally.
 
-**`resolve-from-baseline.py`** copies files from a reference tree. It is the
+**`nix/stack/bin/resolve-from-baseline.py`** copies files from a reference tree. It is the
 dangerous one. It is only sound when the reference tree is known-correct for
 that file AND no later entry contributes to it. When building a group, pass
-`--foreign-manifest nix-shared/t3code-stack.toml` so files touched by non-group
+`--foreign-manifest nix/stack/stack.toml` so files touched by non-group
 entries are refused.
 
 **`--force` overrides that safety check. Treat it as a last resort.** Every
@@ -73,11 +82,20 @@ from exactly one topic. For any file where two or more topics contribute — and
 When hand-resolving, read the **branch's** diff (`git diff main...<pin> -- <file>`)
 to see what it is trying to add, and make sure the result contains it.
 
+## Syntax gate -- run before any build
+
+`nix shell nixpkgs#esbuild`, then parse every changed `.ts`/`.tsx` with
+`esbuild <f> --outfile=/dev/null`. Exact location in seconds; a nix build takes
+minutes and Babel surfaces only the FIRST parse error per file, so one build
+cycle buys one fix. Gate across ALL changed files at once. Also check for
+orphaned import blocks and duplicate imported identifiers -- the two damage
+patterns a line-union leaves that still look plausible.
+
 ## Verification ladder
 
 Run all four, in order. Do not stop early.
 
-1. **Content audit — `audit-stack-content.py`.** For every entry, checks that the
+1. **Content audit — `nix/stack/bin/audit-stack-content.py`.** For every entry, checks that the
    substantive lines its branch adds are present in the built tree. A non-zero
    MISSING is not automatically a bug (a later entry may legitimately rewrite
    those lines) but **every one needs a specific explanation before pushing**. A

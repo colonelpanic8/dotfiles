@@ -23,11 +23,11 @@ bodies). A 3-way merge cannot make that mistake.
 | Thing | Path |
 |---|---|
 | T3 Code checkout | `/srv/dotfiles/dotfiles/agents/project-links/t3code` |
-| Main manifest | `/srv/dotfiles/nix-shared/t3code-stack.toml` |
-| Main lock | `/srv/dotfiles/nix-shared/t3code-stack.lock.json` |
-| Group manifest(s) | `/srv/dotfiles/nix-shared/t3code-<group>.toml` |
-| Rebuild | `/srv/dotfiles/nixos/scripts/rebuild-t3code-stack.py` |
-| Conflict helpers | `nixos/scripts/resolve-from-baseline.py`, `replay-resolutions.py` |
+| Stack tooling | fork branch `t3code/stack-tooling`, under `nix/stack/` |
+| Instructions | `nix/stack/BUILDING.md` on that branch (authoritative) |
+| Manifests + locks | `nix/stack/stack.toml`, `nix/stack/thread-picker.toml` (+ `.lock.json`) |
+| Rebuild + helpers | `nix/stack/bin/` |
+| Overlay (dotfiles) | `/srv/dotfiles/nix-shared/t3code.nix` -- safeStorage wrapper only |
 | Flake input | `t3code-integration` in `/srv/dotfiles/nixos/flake.nix`, pinned by REV |
 
 ## Safety rules
