@@ -1,6 +1,6 @@
 ---
 name: submit-t3code-change
-description: "Implement and publish a focused change to pingdotgg/t3code, then add the resulting upstream pull request to Ivan's ordered Nix applyPatches stack and activate the patched personal build. Use when asked to change T3 Code, open or update a T3 Code PR, carry a T3 Code change locally, or make a T3 Code feature available in the personal NixOS installation even if upstream may not merge it."
+description: "Implement and publish a focused change to pingdotgg/t3code, then add the resulting upstream pull request to Ivan's ordered Nix integration manifest and activate the rebuilt personal build. Use when asked to change T3 Code, open or update a T3 Code PR, carry a T3 Code change locally, or make a T3 Code feature available in the personal NixOS installation even if upstream may not merge it."
 ---
 
 # Submit a T3 Code Change
@@ -16,7 +16,7 @@ Treat the PR as the canonical standalone implementation and the Nix stack as the
 
 - Resolve the T3 Code checkout through `/srv/dotfiles/dotfiles/agents/project-links/t3code`. Repair that ignored symlink if its target moved.
 - Use `origin` for `pingdotgg/t3code` and `fork` for `colonelpanic8/t3code`; verify rather than assume.
-- Maintain the patch manifest in `/srv/dotfiles/nixos/t3code.nix`.
+- Maintain the topic manifest in `/srv/dotfiles/nix-shared/t3code-stack.toml`.
 - Maintain the upstream source pin in `/srv/dotfiles/nixos/flake.lock` from the `t3code-upstream` input declared in `flake.nix`.
 - Put compatibility patches in `/srv/dotfiles/nixos/patches/`.
 
@@ -66,62 +66,75 @@ Then:
 
 Do not start the Nix integration until the PR exists and the published head matches the locally validated commit.
 
-## 4. Add the PR to the personal patch stack
+## 4. Add the PR to the integration manifest
 
-First re-read the current dotfiles status and `nixos/t3code.nix`; another session may have changed the stack while the PR was being prepared.
+Re-read the dotfiles status and `nix-shared/t3code-stack.toml` first; another
+session may have changed the stack while the PR was being prepared.
 
-Fetch and record the live cumulative diff:
+The stack is an **integration branch rebuilt by 3-way merge** from an ordered
+manifest — not an `applyPatches` list of diffs. Adding a PR means adding one
+manifest entry naming its fork branch:
 
-```bash
-nix store prefetch-file --json \
-  https://patch-diff.githubusercontent.com/raw/pingdotgg/t3code/pull/PR_NUMBER.diff
+```toml
+[[entry]]
+pr = 4512
+kind = "fork"                       # or "external" (other authors), "local" (no PR)
+branch = "t3code/my-feature"
+pin = "abc123def456"                # 12-char head OID
+summary = "One line, imperative"
 ```
 
-Add a concise comment containing the feature, PR number, and 12-character PR head. Preserve the intended patch ordering.
+There is no hash, no `excludes`, no compatibility patch, and no `builtins.seq`
+audit binding. Do not reintroduce any of those.
 
-Choose the integration form by testing against the exact pinned source and all earlier patches:
+**Placement matters.** Put the entry next to topics it overlaps, so conflict
+resolution stays local. If it edits the CommandPalette trio, add it to the
+`t3code-thread-picker.toml` group instead of the main manifest, and repin the
+group. If it opens a new overlap cluster with two or more existing topics,
+consider a new group manifest rather than accumulating conflicts in the main
+stack.
 
-- Use `fetchurl` when the raw cumulative PR diff applies cleanly in sequence.
-- Use `fetchpatch` with the smallest possible `excludes` list when only some files overlap earlier PRs. Compute the normalized `fetchpatch` hash; it is not the raw `fetchurl` hash.
-- Create a local compatibility patch when overlapping files require a semantic combination of multiple PRs. Generate it from a clean temporary integration tree based on the pinned source, not by editing a stale patch blindly.
-- When the raw PR is represented wholly or partly by a compatibility patch, retain and force evaluation of the live raw PR URL and hash with `builtins.seq`. This keeps upstream head changes auditable.
+Do not advance the upstream pin merely to simplify one integration. If the PR
+genuinely needs newer upstream, run `$refresh-t3code-pr-stack` and revalidate.
 
-Compatibility patches must preserve the complete intent of every represented PR. Name them for the feature or overlap, document which PRs/files they combine, and generate full-index Git diffs. Stage newly created local patch files before Nix evaluation because flakes omit untracked files.
+## 5. Rebuild and resolve
 
-Do not advance `t3code-upstream` merely to simplify one integration. If the PR genuinely requires a newer upstream pin, perform the relevant refresh steps from `$refresh-t3code-pr-stack` and revalidate the entire stack.
+```
+nixos/scripts/rebuild-t3code-stack.py --mode refresh --write-lock --push
+```
 
-## 5. Refresh derived Nix hashes
+The rebuild stops on conflicts; resolve them semantically and `--continue`. See
+`$refresh-t3code-pr-stack` for the conflict helpers and their caveats.
 
-Expect three distinct hash surfaces:
-
-1. Raw `fetchurl` hashes for GitHub cumulative diffs.
-2. Normalized `fetchpatch` hashes for diffs with exclusions.
-3. `pnpmDeps` for the final patched source.
-
-Let Nix report the expected hash when a normalized patch or `pnpmDeps` changes, update only the matching field, and rebuild. Update the patched source name/version date when the source pin or assembled build date changes.
+`pnpmDeps.hash` in `nix-shared/t3code.nix` only changes when `pnpm-lock.yaml`
+does — compare against the previous tree before assuming it moved.
 
 ## 6. Build and activate
 
-From `/srv/dotfiles/nixos`:
+1. Repin `t3code-integration` by REV in `nixos/flake.nix` (never by branch), then
+   `nix flake lock --update-input t3code-integration`.
+2. Build the actual host package, not just the source:
+   ```
+   nix build --impure --expr 'let flake = builtins.getFlake "git+file:///srv/dotfiles?dir=nixos";
+     pkgs = import flake.inputs.nixpkgs { system = "x86_64-linux"; config.allowUnfree = true;
+       overlays = [ (import /srv/dotfiles/nix-shared/t3code.nix { inherit (flake) inputs; }) ]; };
+   in pkgs.t3code'
+   ```
+   **Check the real exit code** — piping nix through `tail` masks failure.
+3. `just switch` from `/srv/dotfiles/nixos` only after the package succeeds.
+4. Verify the installed `t3` store path and, where enabled,
+   `t3code-headless.service` activity and `ExecStart` path.
 
-1. Parse `t3code.nix` with `nix-instantiate --parse`.
-2. Run `git diff --check` on the dotfiles changes.
-3. Build the patched source to prove the ordered patch application.
-4. Build the actual host T3 Code package, not merely an isolated fetched diff.
-5. Run `just switch` only from `/srv/dotfiles/nixos` after the package succeeds.
-6. Verify the installed `t3` store path and, where enabled, `t3code-headless.service` activity and `ExecStart` path.
-
-Do not claim success from a hash-prefetch or source build alone. The final package and activation must succeed.
+Do not claim success from a source build alone.
 
 ## 7. Commit the dotfiles integration
 
-Review staged and unstaged state again. Commit only the Nix manifest, lockfile if changed, and compatibility patches belonging to this PR. Preserve unrelated index entries by using explicit paths rather than a broad `git commit`.
-
-Push the dotfiles commit to its current default branch after validation. Report:
+Commit the manifest, lock, and flake changes **together** so the pin and lock
+never disagree. Use explicit paths so unrelated staged entries do not leak in.
+Push after validation. Report:
 
 - PR URL and head OID.
-- T3 Code validation commands.
-- Patch-stack form: raw, excluded, or compatibility patch.
-- Nix package/build and activation result.
-- T3 Code and dotfiles commits.
-- Any unrelated worktree changes left untouched.
+- Manifest entry added, and whether it went in the main stack or a group.
+- Conflicts resolved during the rebuild.
+- New integration rev and tag; tree changed or unchanged.
+- Build and activation result; T3 Code and dotfiles commits.

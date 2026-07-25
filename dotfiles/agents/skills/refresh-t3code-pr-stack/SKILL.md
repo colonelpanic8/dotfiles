@@ -1,351 +1,185 @@
 ---
 name: refresh-t3code-pr-stack
-description: "Refresh Ivan's maintained T3 Code pull requests and personal Nix patch stack: discover and automatically incorporate newly created Ivan-authored PRs, inspect and address review feedback, rebase writable branches onto the latest live upstream main, minimize carried patches, push safely, update the t3code-upstream lock, recompute hashes, regenerate compatibility patches only when necessary, build, activate, and commit the result. Use when asked to update, rebase, repair, synchronize, or maintain all T3 Code PRs or the patched T3 Code installation."
+description: "Refresh Ivan's maintained T3 Code pull requests and personal Nix integration branch: discover and incorporate newly created Ivan-authored PRs, address review feedback, rebase writable branches onto live upstream main, rebuild the integration branch by 3-way merge from an ordered manifest, minimize carried topics, push safely, repin the flake input, build, activate, and commit. Use when asked to update, rebase, repair, synchronize, or maintain all T3 Code PRs or the patched T3 Code installation."
 ---
 
-# Refresh the T3 Code PR Stack
+# Refresh the T3 Code integration branch
 
-## Read the contribution rules first
+## How this works
 
-Before inventory, API queries, branch work, or any other task action, read the
-T3 Code repository-root `AGENTS.md` and `CONTRIBUTING.md` completely. Apply the
-contribution guide to every maintained PR: keep proposals focused, avoid
-unrelated fixes, and require current before/after images for UI changes or a
-short video for motion, timing, transition, and interaction changes.
+The personal T3 Code build is an **integration branch on the fork**, rebuilt
+from scratch on every refresh by merging an ordered manifest of topics onto live
+upstream main. It is a build artifact: never commit to it, never base work on
+it, never merge it back.
 
-## Parallelize independent work
+This replaced an `applyPatches` stack of raw PR diffs plus hand-written
+`*-stack-compat.patch` conflict resolutions. Do not reintroduce that approach.
+`patch(1)` does fuzzy context matching with no ancestry, and it silently landed
+a hunk on the wrong symbol at least once (#4484, two byte-identical class
+bodies). A 3-way merge cannot make that mistake.
 
-Parallel agent work is the default for this workflow. At the beginning of the
-refresh, split the work into independent tracks and keep the available agent
-slots occupied whenever useful work can proceed concurrently. Do not make one
-agent serially inspect, repair, and capture every PR when those tasks can be
-separated safely.
+## Fixed locations
 
-Use distinct subagents for as many of these tracks as the inventory supports:
+| Thing | Path |
+|---|---|
+| T3 Code checkout | `/srv/dotfiles/dotfiles/agents/project-links/t3code` |
+| Main manifest | `/srv/dotfiles/nix-shared/t3code-stack.toml` |
+| Main lock | `/srv/dotfiles/nix-shared/t3code-stack.lock.json` |
+| Group manifest(s) | `/srv/dotfiles/nix-shared/t3code-<group>.toml` |
+| Rebuild | `/srv/dotfiles/nixos/scripts/rebuild-t3code-stack.py` |
+| Conflict helpers | `nixos/scripts/resolve-from-baseline.py`, `replay-resolutions.py` |
+| Flake input | `t3code-integration` in `/srv/dotfiles/nixos/flake.nix`, pinned by REV |
 
-- owned-PR and carried-patch discovery;
-- complete review-thread, discussion-comment, and CI/check inventory;
-- repair and validation of different writable PR branches in disjoint T3 Code
-  worktrees;
-- compatibility-patch reconstruction or independent semantic verification;
-- UI evidence planning and capture for different PRs or interaction groups.
+## Safety rules
 
-Every subagent must read the repository-root `AGENTS.md` and `CONTRIBUTING.md`
-before acting. Assign every subagent an explicit project-local T3 Code worktree
-under `<repo>/.worktrees/<task>` and include that exact path in its delegation
-prompt. This applies to read-only inventory, review, validation, and media work
-as well as branch-writing tasks: subagents must not work from the primary T3
-Code checkout. The primary agent must create or verify each assigned worktree,
-confirm it is clean, and give the agent exclusive ownership of that worktree,
-branch, files, and artifacts. A read-only subagent may inspect the primary
-`/srv/dotfiles` checkout when its assignment requires manifest or history
-evidence, but it must not edit it; never create a dotfiles worktree. Remind every
-agent that other agents are working concurrently and it must not revert their
-changes. Have inventory agents return structured evidence, and have media agents
-save clearly named screenshots or videos in disjoint temporary artifact
-directories. Use an agent-owned isolated desktop/browser for application
-capture unless the task specifically requires the user's logged-in browser
-state.
-
-The primary agent remains responsible for reviewing and integrating all
-results. Serialize operations that share state: force-pushes to the same
-branch, edits to the same manifest or compatibility file, final Nix builds and
-activation, dotfiles commits, and pushes. Re-query remote heads and comments
-after parallel work completes because another agent or review bot may have
-advanced them during the refresh.
-
-Synchronize two related inventories without conflating them:
-
-- **Maintained PR branches:** writable `colonelpanic8` branches that can be rebased and repaired.
-- **Carried patches:** everything represented in `/srv/dotfiles/nix-shared/t3code.nix`, including external PRs, closed-but-unmerged PRs, and branch-linked patches that must remain in the personal build.
-- **Branch-linked carried patches:** entries whose URL names a `colonelpanic8` fork branch rather than a pull request — for example `https://github.com/colonelpanic8/t3code/compare/<baseOid>...<branch>.diff`. These exist precisely because their PR was closed, was never opened, or should not be tracked through GitHub's PR state at all.
-- **New owned PRs:** PRs created by `colonelpanic8` since the last completed patch-stack refresh that must be admitted automatically when they are not already carried or absorbed upstream.
-
-A PR being closed does not mean its feature should be removed. A PR being merged does not mean it can be removed until the pinned upstream source actually contains it.
-
-**Treat a branch-linked entry exactly like an outstanding PR.** Rebase its branch onto the current live `origin/main`, push the rebased branch back to `fork`, refresh its hash and recorded head OID, regenerate any compatibility patch it needs, and keep it in the stack. Never drop one because no open pull request references it, because its PR is closed, or because searching GitHub for the PR number finds nothing — the branch reference *is* the authority, and its presence in `t3code.nix` is deliberate. Remove one only on explicit instruction from the user, or after proving the exact pinned upstream source already contains its complete intended behavior. When you add a patch for work whose PR is closed or absent, always link the fork branch rather than the pull request, and say so in the entry's comment so a later refresh cannot misread it as an abandoned PR.
-
-## Fixed locations and safety rules
-
-- Resolve T3 Code through `/srv/dotfiles/dotfiles/agents/project-links/t3code`.
-- Use `/srv/dotfiles/nix-shared/t3code.nix` as the carried-patch manifest.
-- Update only the `t3code-upstream` input in `/srv/dotfiles/nixos/flake.lock` unless another change is explicitly required.
-- Work only in the primary `/srv/dotfiles` checkout. Never create or use a dotfiles worktree.
+- Work only in the primary `/srv/dotfiles` checkout. Never create a dotfiles worktree.
 - Never create a nested T3 Code worktree under `/srv/dotfiles`.
-- Preserve dirty T3 Code worktrees and unrelated dotfiles index entries. Do not stash, reset, clean, or rewrite them.
-- Detect concurrent edits by rechecking status and relevant file OIDs before each mutation phase.
+- Preserve dirty T3 Code worktrees and unrelated dotfiles index entries.
+- **Pin the flake input by rev, never by branch** — `t3code/stack` is force-pushed.
+  Every rebuild also pushes a dated tag so older revs stay fetchable.
+- Re-check the live `origin/main` head before each mutation phase; if it moved,
+  rebase affected branches and rebuild.
 
-## Keep main current and minimize carried patches
+## 1. Inventory
 
-Treat the live `origin/main` head as an invariant, not a one-time starting
-point. Fetch it before inventory and record its OID. Before each branch rewrite,
-stack generation, build, activation, and final commit, compare against the live
-remote main head and fetch again if it moved. Every writable PR must be rebased
-onto that exact current main OID. If main advances during the refresh, invalidate
-affected branch bases, integration results, hashes, tests, and media; rebase and
-regenerate them before calling the refresh complete.
+Read the T3 Code repo-root `AGENTS.md` and `CONTRIBUTING.md`. Verify
+`gh auth status`. Fetch `origin/main` and `fork`, record the main OID.
 
-To the extent possible, avoid carrying additional patches and eliminate
-existing ones when the exact pinned upstream source makes them unnecessary.
-Treat every PR diff, exclusion, audit binding, and local compatibility patch as
-temporary debt:
+Build one row per relevant PR: number, title, state, review decision, base/head
+OID, fork branch, writable or not, and whether it is new since the last refresh.
 
-- Advance upstream first, then rebase writable PRs so upstream-absorbed hunks
-  disappear from their cumulative diffs.
-- Remove a carried patch when the exact pin contains its complete intended
-  behavior. When it contains only part, recompute the remaining unique delta
-  and use the smallest exclusion and compatibility machinery that preserves all
-  unabsorbed desired behavior.
-- Prefer an unmodified raw PR diff. Add an exclusion or local compatibility
-  patch only when the ordered raw diffs cannot compose semantically, and use
-  the smallest sound file/hunk coverage.
-- Delete obsolete exclusions, audit bindings, compatibility files, and manifest
-  plumbing as soon as the stack no longer needs them. Do not retain machinery
-  merely for historical continuity.
+Reconcile two inventories without conflating them:
 
-Do not simplify the stack by silently dropping desired behavior. Keep a closed
-unmerged or external patch until the exact pin contains its intent or the user
-explicitly says to drop it.
+- **Maintained PR branches** — writable `colonelpanic8` branches, rebasable.
+- **Carried topics** — every entry in the manifest, including external PRs,
+  closed-but-unmerged PRs, and branch-linked entries.
+- **New owned PRs** — created by `colonelpanic8` since the last refresh; admit
+  them unless already carried or absorbed upstream.
 
-## 1. Build an inventory before changing anything
+A PR being closed does not mean drop it. A PR being merged does not mean drop it
+until the pinned upstream actually contains it.
 
-Read the applicable `AGENTS.md` files, verify `gh auth status`, fetch the live
-`origin/main` and `fork`, record the fetched main OID, and inspect all T3 Code
-worktrees.
+**Branch-linked entries** (no `pr` key, e.g. `t3code/show-remote-host-name`)
+exist precisely because their PR was closed or never opened. The BRANCH is the
+authority. Rebase, push, and keep carrying it. Remove only on explicit
+instruction, or after proving upstream contains its complete behavior.
 
-Build a table with one row per relevant PR containing:
+**External entries** (`kind = "external"`, e.g. #3984, #4181) belong to other
+authors and cannot be rebased. They merge from the PR head as-is.
 
-- PR number, title, author, state, merge state, and review decision.
-- Creation/update timestamps and whether the PR is new since the last completed stack refresh.
-- Base OID, head OID, fork branch, and whether the branch is writable.
-- Whether it is present in `t3code.nix` and how: raw `fetchurl`, excluded `fetchpatch`, or local compatibility patch.
-- Unresolved current review threads and failing/pending checks.
-- Whether current upstream contains the merged result.
+## 2. Rebase writable branches onto live main
 
-Derive the sets independently:
+Every writable topic must sit on the exact current main OID. Local-only topics
+(`kind = "local"`, e.g. `t3code/local/artifact-safety`, `t3code/local/nix-flake`)
+rebase too.
 
-1. Parse every `pull/NUMBER.diff` URL from `t3code.nix`, including audit-only bindings forced through `builtins.seq`.
-2. Parse every fork-branch URL from `t3code.nix` too — any `github.com/colonelpanic8/t3code/compare/...` or other URL naming a branch instead of a pull request. Record the branch name and its recorded head. These are carried patches with no PR to query, and a PR-only sweep will silently miss them.
-3. Determine the last completed stack-refresh boundary from the newest committed change to `nix-shared/t3code.nix`. Inspect current uncommitted manifest changes too, but do not treat them as a completed refresh.
-4. Query all PRs authored by `colonelpanic8`, including open, draft, merged, and closed PRs, with `createdAt`, `updatedAt`, head/base OIDs, and branch ownership.
-5. Query each carried PR directly, because third-party PRs are absent from the authored list.
-6. Resolve each branch-linked entry against `fork` directly (`git rev-parse fork/<branch>`), not through the GitHub PR API.
+## 3. Rebuild groups first, then the main stack
 
-Use GitHub GraphQL `reviewThreads` for inline feedback; `gh pr view` summaries alone omit important unresolved comments.
+A **group** is a sub-manifest whose output branch is pinned as one entry in the
+main manifest — a subsystem tree. Group PRs that all edit the same files, so
+their combination is resolved once against a STABLE base (upstream main) instead
+of being re-derived against a shifting assembled stack on every refresh.
 
-Classify each PR:
+`t3code-thread-picker.toml` groups #4263/#4257/#4258/#4426, which all edit the
+CommandPalette trio. It merges into the main stack with zero conflicts.
 
-- **New owned PR:** authored by `colonelpanic8`, targets `main`, is absent from the committed/current manifest, and was created after the last completed refresh boundary. Automatically incorporate it after branch validation. Include drafts and quickly closed-unmerged PRs; upstream state alone does not make a new personal feature unwanted.
-- **Owned and maintained:** rebase and fix.
-- **External carried patch:** refresh metadata/hash and composition, but do not attempt to push its branch.
-- **Merged and present in the new upstream pin:** remove its patch after proving ancestry/content.
-- **Closed unmerged but desired:** retain it. Do not reopen it automatically.
-- **Branch-linked carried patch:** a manifest entry pointing at a fork branch rather than a PR. Treat it exactly like an owned, maintained, outstanding PR: rebase the branch onto live main, push it back to `fork`, refresh its hash and head annotation, and regenerate its compatibility patch. Its lack of an open PR is the reason it is branch-linked, never a reason to drop it.
-- **Historical absent PR:** created before the refresh boundary and not carried. Treat it as intentionally dropped or superseded unless the user explicitly restores it; do not resurrect old PRs merely because they are absent.
-- **Obsolete or intentionally dropped carried PR:** remove only with explicit evidence from the user or existing manifest history.
-
-Do not ask for confirmation merely because a qualifying new owned PR was discovered. Incorporating it is part of this workflow. Stop for direction only when the PR itself says it is not intended for the personal build or two implementations are mutually exclusive and history does not establish which one supersedes the other.
-
-Present the inventory in the working commentary before rewriting branches.
-
-## 2. Rebase and repair each writable PR
-
-Process owned PRs independently; each must remain a clean proposal against `origin/main`, not a stacked PR.
-
-For each branch:
-
-1. Record the remote head OID for an exact force-with-lease guard.
-2. Locate its attached worktree. Use it only if clean. If no worktree owns the branch, create a project-local isolated worktree. If its existing worktree is dirty, do not touch it; report that branch as blocked while continuing safe work elsewhere.
-3. Fetch and verify the live remote main head, then rebase onto that exact OID.
-4. Resolve conflicts according to the standalone PR's intent, without importing unrelated personal patches.
-5. Re-read all unresolved review threads against the rebased code.
-6. Implement every actionable correctness, reliability, test, and maintainability fix. Evaluate bot comments critically; do not blindly apply contradictory or invalid advice.
-7. Add regression tests. For obsolete or invalid feedback, prepare a concise evidence-based reply instead of changing correct code.
-8. Always run the relevant formatting, lint, and type checks for the affected
-   scope. Run focused tests for behavioral changes, bug fixes, risky rebases,
-   and new edge cases. For small mechanical-only rebases, local tests may be
-   deferred to CI when they are slow and would add little signal; run them when
-   reasonably fast and record any intentional deferral. Do not run repo-wide
-   `vp check`, `vp run typecheck`, or test suites unless the repository
-   instructions or user explicitly require them. Run `vp run lint:mobile` for
-   native mobile changes.
-9. Update before/after images or video when rebasing or feedback changes UI behavior.
-10. Commit coherent review fixes and push with an explicit `--force-with-lease=refs/heads/BRANCH:RECORDED_OID`.
-11. Re-query the PR head and checks. Reply to or resolve review threads only after the fix is published and verified.
-
-Do not force-push when the remote head changed unexpectedly. Fetch, inspect the new commits, and reconcile them first.
-
-Treat review feedback as a proposal to evaluate, not an instruction to obey. Do
-not be afraid to push back when a suggestion is unreasonable, conflicts with
-the PR's focused intent, weakens correctness or maintainability, or rests on an
-incorrect premise. Respond politely and humbly: acknowledge the reviewer's
-concern, explain the relevant evidence and tradeoff without sounding dismissive,
-and invite correction if important context was missed. Prefer a small concrete
-example, test result, or code reference over argumentative language.
-
-### Close the CI loop for every writable PR
-
-CI is implementation work, not merely inventory. After every push, query all
-required and advisory checks and wait for the current head's checks to reach a
-terminal state. For each failure, inspect the failed job annotations and logs
-with `gh pr checks`, `gh run view`, and `gh run view --log-failed` as
-appropriate. Reproduce branch-caused failures locally, fix the underlying code,
-tests, generated files, formatting, or configuration, rerun the repository
-checks, push, and repeat until the PR has no actionable failing checks.
-
-Do not treat a retry as a fix without evidence that the failure is flaky or
-external. If a check is blocked by upstream infrastructure, permissions, or an
-unrelated base-branch failure, preserve the evidence, report the exact check and
-run URL, and continue independent work. Do not call a maintained PR clean while
-its current head has an unexplained failure or a still-running required check.
-
-## 3. Incorporate every newly discovered owned PR
-
-After its branch is rebased, repaired, pushed, and validated, add each qualifying new owned PR to the carried patch stack in the same refresh. Do not leave it only in the inventory.
-
-For each new PR:
-
-1. Fetch its current cumulative `.diff` and raw hash.
-2. Choose its position by feature dependency and file overlap, not simply PR number.
-3. Attempt the raw `fetchurl` diff against the exact assembled stack.
-4. If it overlaps existing patches, use the smallest sound `fetchpatch` exclusion set and/or regenerate the relevant compatibility patch. A conflict is work to reconcile, not a reason to skip the new PR.
-5. Add the feature, PR number, 12-character head OID, URL, and correct hash form to `t3code.nix`.
-6. When a compatibility patch represents its raw diff, retain an audit-only raw fetch connected through `builtins.seq`.
-7. If the PR merged before refresh, incorporate it by advancing the pinned source when possible; otherwise carry its diff until the selected pin contains it.
-
-Before proceeding, compare the manifest-derived PR set with the discovery inventory and require that every qualifying new owned PR is now either represented in `t3code.nix` or proven present in the pinned upstream source.
-
-## 4. Advance the pinned upstream source
-
-After writable PR heads are stable, run from `/srv/dotfiles/nixos`:
-
-```bash
-nix flake update t3code-upstream
+```
+# group first
+rebuild-t3code-stack.py --manifest nix-shared/t3code-thread-picker.toml \
+    --mode reproduce --write-lock --push
+# then pin its new head in t3code-stack.toml and rebuild the main stack
+rebuild-t3code-stack.py --mode refresh --write-lock --push
 ```
 
-Compare the new locked revision with each merged carried PR. Remove a merged patch only when its changes are present in that exact locked source. Retain closed-unmerged and external desired patches.
+Modes: `reproduce` merges at manifest pins (deterministic, for proving a rebuild
+reproduces a known tree); `refresh` follows current branch heads.
 
-Also compare every carried patch with the exact new locked source for full or
-partial absorption, regardless of the PR's GitHub state. Rebase writable PRs
-again if needed and remove fully redundant patches. Recompute the smallest
-compatibility and exclusion coverage that preserves only the unabsorbed
-behavior. Prefer no local compatibility patch whenever the current raw diffs
-now compose cleanly.
+Lock, state file, and build worktree all derive from the manifest name, so a
+group build and the main build can be in flight simultaneously.
 
-Update the patched source name/version date when appropriate. Do not update unrelated flake inputs.
+## 4. Resolving conflicts
 
-## 5. Refresh raw and normalized patch hashes
+The script stops on an unrecognized conflict, leaving it in the build worktree;
+resume with `--continue`. Resolve **semantically** — never `-X ours/theirs`.
 
-For every carried PR, including newly admitted PRs, fetch its current head and raw cumulative diff hash:
+Two helpers, in order of preference:
 
-```bash
-nix store prefetch-file --json \
-  https://patch-diff.githubusercontent.com/raw/pingdotgg/t3code/pull/PR_NUMBER.diff
-```
+1. **`replay-resolutions.py --from-build fork/t3code/stack --label '#4257'`** —
+   replays that entry's resolution verbatim from a previous build. Exact, but
+   only valid while entry order is unchanged up to that point. Use a remote ref
+   (`fork/t3code/stack`); the branch may not exist locally.
+2. **`resolve-from-baseline.py --baseline <tree>`** — copies files that no LATER
+   entry touches from a known-good tree. When building a GROUP, also pass
+   `--foreign-manifest nix-shared/t3code-stack.toml` so files touched by
+   non-group entries are refused — copying those would import their content
+   early and make them falsely report EMPTY upstack.
 
-Update the 12-character head annotation and raw `fetchurl` hash, including audit-only bindings.
+`--force` overrides the safety check. **It is lossy** — it has twice dropped
+content when a file had genuine changes from more than one source, including a
+whole test. Prefer a real resolution for any file with substantive content from
+multiple topics.
 
-For every branch-linked entry, do the same against its branch. Pin the compare base to the exact upstream main OID the stack is built on and name the branch as the head, so the URL stays explicit about which branch it carries:
+## 5. Minimize carried topics
 
-```bash
-nix store prefetch-file --json \
-  https://github.com/colonelpanic8/t3code/compare/UPSTREAM_MAIN_OID...BRANCH_NAME.diff
-```
+Treat every topic as temporary debt. The script flags `ABSORBED` (already an
+ancestor of main) and `EMPTY` (merge changed nothing) as drop candidates —
+verify, then delete the manifest line. Do not drop desired behavior silently.
 
-Re-pin that base OID whenever the upstream pin advances, and refresh the hash and recorded branch head with it.
+**Watch for compat-patch-era content.** Some historical `*-stack-compat.patch`
+files carried ORIGINAL local work that exists in no branch — merging alone can
+never recover it. Everything of that kind now lives either on a topic branch or
+as an explicit `[[epilogue]]`. If a build fails on a missing export or symbol,
+suspect this first.
 
-For every `fetchpatch` with `excludes`, recompute the normalized hash through the same Nix expression and exclusion list. Never substitute the raw `fetchurl` hash; the normalization changes it.
+**Epilogues** are patches that are functions of the ASSEMBLED tree and therefore
+cannot live on any branch — a migration ID that depends on what the stack
+already used, a fixture that must list every field, or glue between topics that
+has no other home. Keep them minimal; prefer a group branch when the glue
+belongs to a specific cluster.
 
-Keep audit-only raw fetches connected to evaluation with `builtins.seq`, so a changed PR cannot silently bypass its recorded hash.
+## 6. Verify
 
-## 6. Rebuild compatibility patches from source
+In order, cheapest first:
 
-Do not assume an old compatibility patch remains valid after a rebase or upstream bump.
+1. **Tree diff** — the lock records the previous tree OID. Any change must be
+   explainable by upstream movement plus topic movement. Anything else is
+   resolution drift.
+2. **Conflict count** — recorded in the lock. Under re-resolution a conflict is a
+   recurring per-rebuild cost, so a rising count means the stack is drifting.
+   Consider a new group.
+3. **Build** — the real gate:
+   ```
+   nix build --impure --expr 'let flake = builtins.getFlake "git+file:///srv/dotfiles?dir=nixos";
+     pkgs = import flake.inputs.nixpkgs { system = "x86_64-linux"; config.allowUnfree = true;
+       overlays = [ (import /srv/dotfiles/nix-shared/t3code.nix { inherit (flake) inputs; }) ]; };
+   in pkgs.t3code'
+   ```
+   **Check the real exit code** — piping nix through `tail` masks failure.
 
-For each overlap group:
+The build has caught defects the tree diff missed. Do not skip it.
 
-1. Start from the exact new `t3code-upstream` source in a clean temporary integration tree.
-2. Apply the ordered non-overlapping PR portions exactly as Nix will.
-3. Apply the current raw diffs for the overlapping PRs.
-4. Resolve conflicting files semantically so the final tree preserves every represented feature and current upstream behavior.
-5. Run focused tests for the combined behavior.
-6. Generate a full-index Git diff containing only the compatibility-owned files.
-7. Replace the corresponding file under `nix-shared/patches/` and document its PR/file coverage in `t3code.nix`.
-8. Prove that no omitted raw hunk is lost between the exclusions and compatibility patch.
+## 7. Land it
 
-Stage new compatibility files before Nix evaluation so the flake includes them. Keep the stack ordered by dependency and overlap, not by PR number.
+Push branch + dated tag, repin `t3code-integration` by rev in
+`nixos/flake.nix`, run `nix flake lock --update-input t3code-integration`, write
+the lock, build, then `just switch` from `/srv/dotfiles/nixos`. Commit the
+manifest, lock, and flake changes together so the pin and lock never disagree.
 
-## 7. Refresh final dependency hashes
+## Parallelizing
 
-Build the final patched source and package. If `pnpmDeps` changes, let Nix report the expected hash, update that field, and rebuild. Distinguish:
+Independent tracks — PR/CI inventory, review-comment triage, repair of different
+writable branches, UI evidence capture — can run as subagents. Give each an
+explicit T3 Code worktree under `<repo>/.worktrees/<task>` and exclusive
+ownership of it; never the primary checkout, never a dotfiles worktree.
+Serialize force-pushes to the same branch, manifest edits, the final build, and
+commits. Re-query remote heads afterwards; bots may have advanced them.
 
-- Raw GitHub diff hashes.
-- Normalized `fetchpatch` hashes.
-- Final patched-source `pnpmDeps` hash.
+## Report
 
-Never bulk-replace hashes without matching each error to its derivation.
-
-## 8. Capture and attach current contribution evidence
-
-After writable heads and compatibility merges are stable, assign media agents
-to every PR with visible UI or interaction changes. A combined personal-stack
-build may be used only when it contains the exact recorded PR heads and the
-capture isolates the target PR's behavior without attributing another patch's
-entry point or UI to it.
-
-For each applicable PR:
-
-1. Record the PR head, upstream base, and combined integration/package OID in a
-   small artifact manifest.
-2. Use disposable seed projects and non-sensitive data in an agent-owned
-   isolated desktop/browser.
-3. Capture clear before/after stills for static UI changes and a short video for
-   motion, keyboard interaction, focus, timing, or navigation behavior.
-4. Dismiss unrelated notifications and inspect the final artifact for clarity,
-   correct attribution, and accidental personal information.
-5. Save files in a disjoint temporary directory named for the PR, then attach
-   the selected artifacts to its GitHub description or conversation and update
-   the UI/verification text.
-6. Re-query the PR and upstream heads immediately before and after capture. If
-   either relevant head moved, invalidate the stale artifact, reconcile the new
-   code, and recapture before publishing.
-
-Use the logged-in browser only for the attachment step when required; keep
-application setup and capture isolated. Do not claim that capture was attempted
-when a usable artifact exists locally, and do not call a UI PR contribution-
-ready while its required current media is missing without reporting the exact
-blocker.
-
-## 9. Validate and activate the complete stack
-
-From `/srv/dotfiles/nixos`:
-
-1. Run `nix-instantiate --parse ../nix-shared/t3code.nix`.
-2. Run `git diff --check` for the intended dotfiles paths.
-3. Build the patched source to validate patch order.
-4. Build the actual host `pkgs.t3code` derivation.
-5. Run `just switch` from the primary checkout only.
-6. Verify the installed `t3` store path and, where enabled, the active `t3code-headless.service` `ExecStart` path.
-7. Re-query PR heads, unresolved threads, and required CI checks to catch races during the refresh.
-8. Re-query the live remote main head, fetch every current writable PR head, and
-   prove that the recorded live main OID is both its merge base and an ancestor;
-   do not rely only on GitHub's `baseRefOid`. If live main moved or a head does
-   not descend from that exact OID, invalidate affected validation and return to
-   branch rebasing before committing.
-
-If a branch remains blocked by dirty state, external ownership, a genuine design decision, or failing upstream infrastructure, preserve all successful independent work and report the exact blocker. Do not mark the overall refresh clean while a maintained PR or patch is silently stale.
-
-## 10. Commit and report
-
-Review the entire dotfiles worktree and define one atomic patch-stack refresh commit unless independent changes clearly require more. Use explicit paths so pre-existing staged changes do not leak into the commit. Push the current default branch after validation.
-
-Report:
-
-- Upstream old/new locked OIDs.
-- Newly discovered PRs and how each was automatically incorporated or absorbed upstream.
-- Every PR old/new head, state, review work, validation, and push result.
-- Patches absorbed, retained, added, or removed and why.
-- Compatibility patches regenerated.
-- Every changed hash category.
-- Final package, `just switch`, installed binary, and service verification.
-- Commit and push result plus unrelated worktree changes left untouched.
+- Upstream old/new OIDs; group and main old/new tree OIDs and whether they moved.
+- New PRs discovered and how each was incorporated or found absorbed.
+- Per-PR head, state, review work, and push result.
+- Topics added, retained, or dropped, and why.
+- Conflict count vs. the previous refresh.
+- Build result, `just switch`, and commit/push result.
+- Any unrelated worktree changes left untouched.
