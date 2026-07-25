@@ -340,7 +340,7 @@ note = "Overlaps several already-carried Sidebar surfaces; ordered last, after s
 [[entry]]
 kind = "local"
 branch = "t3code/local/nix-flake"
-pin = "2c5091190"
+pin = "414a5cc09"
 summary = "Nix flake: dev shell and desktop package"
 note = """
 Purely additive (flake.nix + nix/README.md), so it carries at essentially zero

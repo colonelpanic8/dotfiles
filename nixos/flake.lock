@@ -2463,19 +2463,26 @@
       }
     },
     "t3code-integration": {
-      "flake": false,
+      "inputs": {
+        "flake-utils": [
+          "flake-utils"
+        ],
+        "nixpkgs": [
+          "nixpkgs"
+        ]
+      },
       "locked": {
-        "lastModified": 1785004460,
-        "narHash": "sha256-eEEw2/wY5HAG1zOjwaAyRnLk7JuoNIKAdYsyslDEjIY=",
+        "lastModified": 1785007747,
+        "narHash": "sha256-7/KAZKhZoRsor3eWc24VElAZZIiwccxldguaVesXmUI=",
         "owner": "colonelpanic8",
         "repo": "t3code",
-        "rev": "10d20847ebe3d7a024271676d7ed5f5b5ba3967d",
+        "rev": "e181533871fc27f9e6a7bb0fa3e7c41850ba2a9c",
         "type": "github"
       },
       "original": {
         "owner": "colonelpanic8",
         "repo": "t3code",
-        "rev": "10d20847ebe3d7a024271676d7ed5f5b5ba3967d",
+        "rev": "e181533871fc27f9e6a7bb0fa3e7c41850ba2a9c",
         "type": "github"
       }
     },
