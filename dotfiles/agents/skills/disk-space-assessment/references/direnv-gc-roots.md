@@ -10,7 +10,7 @@ Run:
 python /srv/dotfiles/dotfiles/agents/skills/disk-space-assessment/scripts/direnv_gc_roots_audit.py --top 30
 ```
 
-The script writes a timestamped JSON artifact under `~/.cache/ncdu/` and updates `latest-direnv-gc-roots.json`. Preserve the timestamped artifact with the related ncdu snapshots.
+The script writes a timestamped JSON artifact under `/srv/disk-space-assessments/` (the shared `SAFE_NCDU_DIR` location, not a per-user `~/.cache` dir) and updates `latest-direnv-gc-roots.json`. Preserve the timestamped artifact with the related ncdu snapshots.
 
 ## Interpret the Measures
 

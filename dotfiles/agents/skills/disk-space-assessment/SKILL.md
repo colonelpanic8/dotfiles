@@ -21,12 +21,14 @@ safe_ncdu /home
 safe_ncdu /nix/store
 ```
 
-`safe_ncdu` writes these durable artifacts under `~/.cache/ncdu/`:
+`safe_ncdu` writes these durable artifacts under `/srv/disk-space-assessments/` (a shared, `users`-group-readable location — `$SAFE_NCDU_DIR`, overridable via env var — not a per-user `~/.cache` dir):
 
 - `safe-ncdu-<root>-<timestamp>.json.zst`: compressed importable ncdu data
 - `<snapshot>.excludes`: exact exclusions used
 - `<snapshot>.meta`: scan root, timestamps, hostname, ncdu version, status, and artifact paths
 - `latest-<root>.json.zst` plus matching sidecar symlinks
+
+The `latest-<root>.json.zst` symlink (e.g. `latest-root.json.zst`, `latest-home.json.zst`, `latest-nix_store.json.zst`) is the intentional predictable-location contract: it always points at the newest snapshot for that root, so any session can find "the most recent ncdu run" without searching timestamped filenames or being told the path. Prefer querying `latest-<root>.json.zst` over a specific timestamped snapshot unless you deliberately need an older run for comparison. Every skill or ad-hoc command that produces an ncdu export (including from `disk-space-cleanup`) must go through `safe_ncdu` so it lands under this same location instead of a one-off `/tmp` export or an unrecorded interactive session.
 
 Keep timestamped files intact for iterative analysis. Report their absolute paths in the handoff. If a scan cannot finish, retain and report the failed manifest, mark the coverage gap, and use bounded probes as supplemental evidence.
 
@@ -77,19 +79,21 @@ safe_ncdu /home
 safe_ncdu /nix/store
 ```
 
-If `safe_ncdu` is unavailable, run `/srv/dotfiles/dotfiles/lib/functions/safe_ncdu <subcommand> <args>` as a script (e.g. `zsh /srv/dotfiles/dotfiles/lib/functions/safe_ncdu top ~/.cache/ncdu/latest-root.json.zst 30`) — do NOT plain-`source` it. The file ends with a bare `safe_ncdu "$@"` tail-call meant for zsh's autoload mechanism; sourcing it directly in a non-interactive shell re-invokes that tail-call with the sourcing command's own (usually empty) positional params, silently kicking off a full unprivileged `/` scan and clobbering the `latest-root` symlink with inferior data. If that happens, re-point `latest-*` symlinks at the correct privileged snapshot's `.json.zst`/`.excludes`/`.meta` files. If `ncdu` itself is missing, use Nix temporarily rather than substituting a non-reusable interactive scan.
+If `safe_ncdu` is unavailable, run `/srv/dotfiles/dotfiles/lib/functions/safe_ncdu <subcommand> <args>` as a script (e.g. `zsh /srv/dotfiles/dotfiles/lib/functions/safe_ncdu top /srv/disk-space-assessments/latest-root.json.zst 30`) — do NOT plain-`source` it. The file ends with a bare `safe_ncdu "$@"` tail-call meant for zsh's autoload mechanism; sourcing it directly in a non-interactive shell re-invokes that tail-call with the sourcing command's own (usually empty) positional params, silently kicking off a full unprivileged `/` scan and clobbering the `latest-root` symlink with inferior data. If that happens, re-point `latest-*` symlinks at the correct privileged snapshot's `.json.zst`/`.excludes`/`.meta` files. If `ncdu` itself is missing, use Nix temporarily rather than substituting a non-reusable interactive scan.
 
-Do not store the privileged scan in root's home. Set `HOME=/home/imalison` so all artifacts remain together and are available to later sessions. Restore ownership to `imalison:users` if `sudo` creates root-owned snapshot artifacts.
+The interactive shell's `safe_ncdu` function is not sourced live from this repo file — home-manager bakes it into `/nix/store/*-dotfiles-zsh-lib/functions/safe_ncdu` at build time. After editing `lib/functions/safe_ncdu`, the change is invisible to the shell function (and even a brand-new `zsh -c '...'` process, since it re-autoloads from the same stale Nix store path) until `just switch` (from `/srv/dotfiles/nixos`) rebuilds and re-links it. To validate an edit immediately, invoke the repo file directly as a script (`zsh /srv/dotfiles/dotfiles/lib/functions/safe_ncdu ...`), same as the "unavailable" fallback above.
+
+Artifacts always land in the shared `/srv/disk-space-assessments/` location regardless of which user or `sudo` ran the scan, so a privileged scan cannot orphan its output in root's home. Set `HOME=/home/imalison` on the privileged invocation anyway — `safe_ncdu`'s exclude computation reads `$HOME` to skip imalison's keybase mount, and without it a bare `sudo` would compute excludes against root's home instead. This host's default umask (`077`) makes every newly created file `0600` regardless of the directory's group ownership, which would silently defeat group read; `safe_ncdu` and `direnv_gc_roots_audit.py` both explicitly `chgrp users` + `chmod 0640` each artifact after writing it to compensate. If `sudo` or a manual run ever leaves root-owned or `0600` snapshot files behind, restore them to `imalison:users` mode `0640` (directory `2750`) so the `users` group keeps read access.
 
 ## 4. Analyze Iteratively
 
 Query the same export at multiple depths:
 
 ```bash
-safe_ncdu top ~/.cache/ncdu/latest-root.json.zst 30
-safe_ncdu top ~/.cache/ncdu/latest-root.json.zst 30 /home/imalison
-safe_ncdu top ~/.cache/ncdu/latest-home.json.zst 30 /imalison/Projects
-safe_ncdu open ~/.cache/ncdu/latest-root.json.zst
+safe_ncdu top /srv/disk-space-assessments/latest-root.json.zst 30
+safe_ncdu top /srv/disk-space-assessments/latest-root.json.zst 30 /home/imalison
+safe_ncdu top /srv/disk-space-assessments/latest-home.json.zst 30 /imalison/Projects
+safe_ncdu open /srv/disk-space-assessments/latest-root.json.zst
 ```
 
 Use `du` only for bounded confirmation, live-change checks, or paths missing from the snapshot:

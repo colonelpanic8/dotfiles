@@ -9,7 +9,9 @@ Usage:
   safe_ncdu excludes [ROOT]
 
 Creates a compressed ncdu export while avoiding mounted descendants of ROOT.
-Default ROOT is /. Default OUTPUT is ~/.cache/ncdu/safe-ncdu-<root>-<timestamp>.json.zst.
+Default ROOT is /. Default OUTPUT is $SAFE_NCDU_DIR/safe-ncdu-<root>-<timestamp>.json.zst,
+where SAFE_NCDU_DIR defaults to /srv/disk-space-assessments (a shared,
+users-group-readable location, not a per-user \$HOME/.cache dir).
 Records matching .excludes and .meta sidecars for reproducible analysis.
 EOF
 }
@@ -22,6 +24,16 @@ function _safe_ncdu_require {
             return 1
         fi
     done
+}
+
+function _safe_ncdu_share_artifact {
+    # A restrictive umask (e.g. 077) makes every artifact 0600 regardless of
+    # the shared output directory's group ownership. Force group-read back
+    # on so other "users"-group accounts can actually read snapshots.
+    # Best-effort: skip silently if we don't own the file (e.g. it was
+    # already fixed up by a different user/root).
+    chgrp users "$1" 2>/dev/null
+    chmod 0640 "$1" 2>/dev/null
 }
 
 function _safe_ncdu_root_name {
@@ -97,8 +109,15 @@ function _safe_ncdu_scan {
     local started_at finished_at host ncdu_version scan_status exit_code
     root_real="$(realpath -m "$root")" || return 1
     root_name="$(_safe_ncdu_root_name "$root_real")"
-    out_dir="$HOME/.cache/ncdu"
+    out_dir="${SAFE_NCDU_DIR:-/srv/disk-space-assessments}"
     mkdir -p "$out_dir"
+    # Shared multi-user location, not a per-user $HOME/.cache dir: keep it
+    # group-owned and group-readable so every "users"-group account (and
+    # root, writing here during privileged scans) can find the latest
+    # snapshot. Best-effort: only the dir owner or root can actually change
+    # this, so a non-owner invocation silently skips it rather than failing.
+    chgrp users "$out_dir" 2>/dev/null
+    chmod 2750 "$out_dir" 2>/dev/null
 
     if [[ -z "$output" ]]; then
         output="$out_dir/safe-ncdu-${root_name}-$(date +%Y%m%d-%H%M%S).json.zst"
@@ -109,6 +128,7 @@ function _safe_ncdu_scan {
     excludes_file="${output}.excludes"
     meta_file="${output}.meta"
     _safe_ncdu_excludes "$root_real" | sort -u | tee "$excludes_file" >/dev/null
+    _safe_ncdu_share_artifact "$excludes_file"
 
     started_at="$(date --iso-8601=seconds)"
     host="$(hostname)"
@@ -125,6 +145,7 @@ function _safe_ncdu_scan {
         echo "excludes=$excludes_file"
         echo "exit_code="
     } >| "$meta_file"
+    _safe_ncdu_share_artifact "$meta_file"
 
     local -a exclude_args
     local exclude
@@ -139,6 +160,7 @@ function _safe_ncdu_scan {
     echo "safe_ncdu: metadata recorded in $meta_file"
     ncdu -0 -x -c "${exclude_args[@]}" -o "$output" "$root_real"
     exit_code=$?
+    [[ -e "$output" ]] && _safe_ncdu_share_artifact "$output"
     finished_at="$(date --iso-8601=seconds)"
     if [[ $exit_code -eq 0 ]]; then
         scan_status="complete"
@@ -157,6 +179,7 @@ function _safe_ncdu_scan {
         echo "excludes=$excludes_file"
         echo "exit_code=$exit_code"
     } >| "$meta_file"
+    _safe_ncdu_share_artifact "$meta_file"
     [[ $exit_code -eq 0 ]] || return $exit_code
 
     latest="$out_dir/latest-${root_name}.json.zst"

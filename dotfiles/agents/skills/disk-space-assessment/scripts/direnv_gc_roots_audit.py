@@ -5,6 +5,7 @@ import collections
 import datetime as dt
 import json
 import os
+import shutil
 import socket
 import sqlite3
 import subprocess
@@ -84,7 +85,11 @@ def top_paths(paths: set[str], path_sizes: dict[str, int], limit: int) -> list[d
 def main() -> int:
     parser = argparse.ArgumentParser(description="Audit Nix paths retained by .direnv GC roots.")
     parser.add_argument("--top", type=int, default=30, help="Projects and store paths to show.")
-    parser.add_argument("--output", help="JSON artifact path; defaults under ~/.cache/ncdu.")
+    parser.add_argument(
+        "--output",
+        help="JSON artifact path; defaults under the shared SAFE_NCDU_DIR "
+        "(/srv/disk-space-assessments unless overridden).",
+    )
     args = parser.parse_args()
     if args.top < 1:
         parser.error("--top must be positive")
@@ -181,17 +186,29 @@ def main() -> int:
         "projects": projects,
     }
 
-    out_dir = Path.home() / ".cache" / "ncdu"
+    out_dir = Path(os.environ.get("SAFE_NCDU_DIR", "/srv/disk-space-assessments"))
     out_dir.mkdir(parents=True, exist_ok=True)
+    try:
+        shutil.chown(out_dir, group="users")
+        out_dir.chmod(0o2750)
+    except (LookupError, PermissionError, OSError):
+        pass  # shared dir already fixed up by another user, or we don't own it
     output = Path(args.output).expanduser() if args.output else out_dir / f"direnv-gc-roots-{generated_at:%Y%m%d-%H%M%S}.json"
     output = output.resolve()
     output.parent.mkdir(parents=True, exist_ok=True)
     temporary = output.with_suffix(output.suffix + ".tmp")
     temporary.write_text(json.dumps(artifact, indent=2) + "\n")
     os.replace(temporary, output)
+    # A restrictive umask (e.g. 077) would otherwise leave this 0600, defeating
+    # the shared /srv/disk-space-assessments location's users-group read access.
+    try:
+        shutil.chown(output, group="users")
+        output.chmod(0o640)
+    except (LookupError, PermissionError, OSError):
+        pass
     latest = out_dir / "latest-direnv-gc-roots.json"
     latest.unlink(missing_ok=True)
-    latest.symlink_to(output)
+    latest.symlink_to(output.name)
 
     print(f"Direnv GC-root artifact: {output}")
     print(f"Raw direnv roots: {artifact['raw_direnv_root_count']}")

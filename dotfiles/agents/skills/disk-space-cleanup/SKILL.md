@@ -126,37 +126,17 @@ Machine-specific note:
 
 Avoid mounted or remote filesystems when profiling space. Load ignore patterns from `references/ignore-paths.md`.
 
-Use one-filesystem scans to avoid crossing mounts:
+Prefer the local `safe_ncdu` wrapper over raw `ncdu` invocations. It writes compressed exports under the predictable, shared `/srv/disk-space-assessments/` location (`users`-group readable, not a per-user `~/.cache` dir), records the exclude list beside each export, excludes mounted descendants of the scan root, and keeps a `latest-<root>.json.zst` symlink (plus `.excludes`/`.meta` sidecars) pointing at the most recent run for each root so later analysis and later sessions — and other accounts in the `users` group — never have to guess a path or rescan:
 
 ```bash
-ncdu -x "$HOME"
-sudo ncdu -x /
-```
-
-When excluding known noisy mountpoints:
-
-```bash
-ncdu -x --exclude "$HOME/keybase" "$HOME"
-sudo ncdu -x --exclude /keybase --exclude /var/lib/railbird /
-```
-
-If `ncdu` is missing, use:
-
-```bash
-nix run nixpkgs#ncdu -- -x "$HOME"
-```
-
-For reusable, mount-safe snapshots on this machine, prefer the local wrapper:
-
-```bash
-safe_ncdu /
+safe_ncdu /home/imalison
 sudo -n env HOME=/home/imalison safe_ncdu /
 safe_ncdu /nix/store
-safe_ncdu top ~/.cache/ncdu/latest-root.json.zst 30 /home/imalison
-safe_ncdu open ~/.cache/ncdu/latest-root.json.zst
+safe_ncdu top /srv/disk-space-assessments/latest-root.json.zst 30 /home/imalison
+safe_ncdu open /srv/disk-space-assessments/latest-root.json.zst
 ```
 
-`safe_ncdu` writes compressed ncdu exports under `~/.cache/ncdu`, records the exclude list beside the export, excludes mounted descendants of the scan root, and supports follow-up `top` queries without rescanning.
+Only fall back to raw, non-persistent `ncdu -x "$HOME"` / `sudo ncdu -x /` for a quick interactive look when `safe_ncdu` itself is broken — never use it as the recorded evidence for an assessment. If `ncdu` is missing entirely, use `nix run nixpkgs#ncdu -- -x "$HOME"` the same way, as a one-off, not as a substitute for a `safe_ncdu` snapshot.
 
 For quick, non-blocking triage on very large trees, prefer bounded probes:
 
@@ -279,11 +259,11 @@ Common retention pattern on this machine:
 - NixOS system generations and a repo-root `nixos/result` symlink can pin multiple Android Studio and Android SDK versions. Check `/nix/var/nix/profiles/system-*-link`, `/run/current-system`, `/run/booted-system`, and `/srv/dotfiles/nixos/result` before assuming Android paths are pinned by project shells.
 - `~/Projects/railbird-mobile/.direnv/flake-profile-*` can pin large Android SDK system images. Removing stale direnv profiles there is a more targeted first step than deleting Android store paths directly.
 - 2026-05-27 Railbird GHC audit: the Railbird backend flake did not explicitly reference Haskell, but its dev shell had derivation-time GHC edges through `inputs.secrets.devShells.${system}.default -> agenix -> shellcheck -> ShellCheck -> ghc` and through `shell-packages.nix`'s `rdma-core -> pandoc-cli -> ghc`. Railbird Mobile had similar non-app-code GHC edges through `inputs.secrets`/`agenix` and `nixGLIntel -> shellcheck`. The `railbird/gql` and `railbird-mobile/src/gql` shells did not show GHC edges in their derivation graphs, only Rust/Cargo build tooling from packages such as `just`.
-- For a repeatable `/nix/store` `ncdu` snapshot without driving the TUI, export and inspect it:
+- For a repeatable `/nix/store` `ncdu` snapshot without driving the TUI, use `safe_ncdu` rather than a one-off `/tmp` export, so the snapshot lands at the predictable `/srv/disk-space-assessments/latest-nix_store.json.zst` path instead of a location later sessions won't know to check:
 
 ```bash
-ncdu -0 -x -c -o /tmp/nix-store.ncdu.json.zst /nix/store
-zstdcat /tmp/nix-store.ncdu.json.zst | jq 'def sumd: if type=="array" then ((.[0].dsize // 0) + ([.[1:][] | sumd] | add // 0)) elif type=="object" then (.dsize // 0) else 0 end; .[3] | sumd'
+safe_ncdu /nix/store
+safe_ncdu top /srv/disk-space-assessments/latest-nix_store.json.zst 30
 ```
 
 - `nix-store --gc --print-dead` plus the Nix SQLite database is a fast way to estimate immediate GC wins before deleting anything:
