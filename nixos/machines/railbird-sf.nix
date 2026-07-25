@@ -102,6 +102,25 @@
     localPort = 3775;
     tailscaleServePort = 8444;
     systemdStartTarget = "default.target";
+    # Tailscale Serve is node-wide state, and this node's operator is imalison,
+    # so dean's unprivileged service cannot configure it. Root provisions his
+    # mapping below instead.
+    tailscaleServe = false;
+  };
+
+  # The privileged half of dean's Tailscale Serve mapping. Serve config is
+  # persistent in tailscaled, but re-applying is idempotent and repairs the
+  # mapping if the node's state is ever reset.
+  systemd.services.t3code-serve-dean = {
+    description = "Tailscale Serve mapping for dean's headless T3 Code server";
+    after = ["tailscaled.service"];
+    wants = ["tailscaled.service"];
+    wantedBy = ["multi-user.target"];
+    serviceConfig = {
+      Type = "oneshot";
+      RemainAfterExit = true;
+      ExecStart = "${config.services.tailscale.package}/bin/tailscale serve --bg --https=8444 --set-path=/ http://127.0.0.1:3775";
+    };
   };
   myModules.syncthing.enable = true;
   myModules.fonts.enable = true;

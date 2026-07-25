@@ -4,6 +4,7 @@
   localPort ? 3774,
   pkgs,
   repositoryRoot,
+  tailscaleServe ? true,
   tailscaleServePort ? 443,
 }: let
   # T3 hydrates PATH from the login shell, but the service still needs a
@@ -26,6 +27,16 @@
     tailscale
     zsh
   ]);
+  # Tailscale Serve is node-wide state in tailscaled, not per-user, so only the
+  # operator (or root) may configure it. A second server on the same host must
+  # leave it off and have the mapping provisioned privileged, out of band.
+  serveFlags = lib.optionalString tailscaleServe (
+    lib.concatStringsSep " " [
+      "--tailscale-serve"
+      "--tailscale-serve-port"
+      (toString tailscaleServePort)
+    ]
+  );
 in
   pkgs.writeShellScript "t3code-headless-server" ''
     set -eu
@@ -45,7 +56,6 @@ in
     exec ${pkgs.t3code}/bin/t3 serve \
       --host 127.0.0.1 \
       --port ${toString localPort} \
-      --tailscale-serve \
-      --tailscale-serve-port ${toString tailscaleServePort} \
+      ${serveFlags} \
       "$repository_root"
   ''

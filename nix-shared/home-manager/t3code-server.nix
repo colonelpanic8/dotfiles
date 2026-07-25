@@ -8,7 +8,7 @@
   serverCommand = import ../t3code-server.nix {
     inherit lib pkgs;
     homeDirectory = config.home.homeDirectory;
-    inherit (cfg) localPort repositoryRoot tailscaleServePort;
+    inherit (cfg) localPort repositoryRoot tailscaleServe tailscaleServePort;
   };
 in {
   options.myModules.t3codeServer = {
@@ -24,6 +24,17 @@ in {
       type = lib.types.port;
       default = 3774;
       description = "Loopback port used by the persistent T3 Code server.";
+    };
+
+    tailscaleServe = lib.mkOption {
+      type = lib.types.bool;
+      default = true;
+      description = ''
+        Let this server configure Tailscale Serve itself. Serve config is
+        node-wide rather than per-user, so only the Tailscale operator may set
+        it without root. Disable this for additional servers on a host that
+        already has one, and provision their mapping privileged instead.
+      '';
     };
 
     tailscaleServePort = lib.mkOption {
