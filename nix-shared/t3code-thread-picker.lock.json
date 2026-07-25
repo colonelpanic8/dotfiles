@@ -1,0 +1,39 @@
+{
+  "generated": "2026-07-25T12:00:00+00:00",
+  "mode": "reproduce",
+  "upstream_main": "5719e8ac4020dda0e375ef61d044b61f55a0df8a",
+  "integration_branch": "t3code/group/thread-picker",
+  "commit": "89dfc86a669dc0736c14b395d0dc819a10442e57",
+  "tree": "d8013f890cd1c54c9b120fea56a581d792dd8ea5",
+  "tag": "t3code-thread-picker/20260725-050000",
+  "conflicts": 3,
+  "entries": [
+    {
+      "entry": "#4263",
+      "oid": "ef15fa2ea50b",
+      "status": "merged"
+    },
+    {
+      "entry": "#4257",
+      "oid": "ee5da25a75f9",
+      "status": "merged",
+      "conflicted": true
+    },
+    {
+      "entry": "#4258",
+      "oid": "88cfcca843ba",
+      "status": "merged",
+      "conflicted": true
+    },
+    {
+      "entry": "#4426",
+      "oid": "a93d1ea2a700",
+      "status": "merged",
+      "conflicted": true
+    },
+    {
+      "entry": "t3code-command-palette-logic-helpers.patch",
+      "status": "epilogue"
+    }
+  ]
+}

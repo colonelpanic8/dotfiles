@@ -1,8 +1,8 @@
 diff --git a/apps/desktop/src/settings/DesktopClientSettings.test.ts b/apps/desktop/src/settings/DesktopClientSettings.test.ts
-index 8f50aa8f88284e86860ebbc9e070357e5a344c2f..2e1df03106fa33d176ef4aa9e7e7519e804042a7 100644
+index b3b0b0e4c..5d0418507 100644
 --- a/apps/desktop/src/settings/DesktopClientSettings.test.ts
 +++ b/apps/desktop/src/settings/DesktopClientSettings.test.ts
-@@ -30,6 +30,7 @@ const clientSettings: ClientSettings = {
+@@ -33,6 +33,7 @@ const clientSettings: ClientSettings = {
    sidebarThreadSortOrder: "created_at",
    sidebarThreadPreviewCount: 6,
    sidebarV2Enabled: false,

@@ -338,9 +338,13 @@
       flake = false;
     };
 
-    # Patch selections for this source are maintained in ../nix-shared/t3code.nix.
-    t3code-upstream = {
-      url = "github:pingdotgg/t3code";
+    # The carried patch stack is now an integration BRANCH on the fork, rebuilt
+    # from ../nix-shared/t3code-stack.toml by nixos/scripts/rebuild-t3code-stack.py.
+    #
+    # Pin by REV, never by branch: t3code/stack is force-pushed on every rebuild.
+    # Each rebuild also pushes a dated tag, so older revs stay fetchable.
+    t3code-integration = {
+      url = "github:colonelpanic8/t3code/10d20847ebe3d7a024271676d7ed5f5b5ba3967d";
       flake = false;
     };
 

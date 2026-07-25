@@ -2252,7 +2252,7 @@
         "railbird-secrets": "railbird-secrets",
         "rlru": "rlru",
         "systems": "systems_6",
-        "t3code-upstream": "t3code-upstream",
+        "t3code-integration": "t3code-integration",
         "voxtype": "voxtype",
         "vscode-server": "vscode-server",
         "wezterm-nightly": "wezterm-nightly",
@@ -2462,19 +2462,20 @@
         "type": "github"
       }
     },
-    "t3code-upstream": {
+    "t3code-integration": {
       "flake": false,
       "locked": {
-        "lastModified": 1784946517,
-        "narHash": "sha256-hlXyQiLeJfhMv8XQ/+B0lADZbDSzku6Bj95tIeoscjQ=",
-        "owner": "pingdotgg",
+        "lastModified": 1785004460,
+        "narHash": "sha256-eEEw2/wY5HAG1zOjwaAyRnLk7JuoNIKAdYsyslDEjIY=",
+        "owner": "colonelpanic8",
         "repo": "t3code",
-        "rev": "5719e8ac4020dda0e375ef61d044b61f55a0df8a",
+        "rev": "10d20847ebe3d7a024271676d7ed5f5b5ba3967d",
         "type": "github"
       },
       "original": {
-        "owner": "pingdotgg",
+        "owner": "colonelpanic8",
         "repo": "t3code",
+        "rev": "10d20847ebe3d7a024271676d7ed5f5b5ba3967d",
         "type": "github"
       }
     },
