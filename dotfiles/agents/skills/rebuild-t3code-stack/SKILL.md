@@ -118,6 +118,17 @@ Run all four, in order. Do not stop early.
    **Check the real exit code.** Piping nix through `tail` returns tail's status
    and has masked a failing build. A green build proves it compiles, not that
    features survived — only step 1 proves that.
+5. **Smoke check — `nix build .#checks.<system>.smoke`.** Launches the packaged
+   app headlessly in client-only mode and fails if the renderer throws.
+
+**A green build does not prove the app runs.** A dropped import is a runtime
+ReferenceError, not a bundler error, so rolldown emits a bundle with a free
+variable in it. That shipped a build whose first paint was "Something went
+wrong: useEnvironmentSettings is not defined" — two imports lost by taking only
+`ours` on an import conflict whose `theirs` side carried the new module. Cheap
+static catch: collect bare `use[A-Z]\w+(` calls per changed file and subtract
+what is imported or locally declared (exclude dotted calls; handle
+`import React, { ... }`).
 
 ## Landing it
 
