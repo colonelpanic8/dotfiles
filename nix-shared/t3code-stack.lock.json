@@ -1,15 +1,15 @@
 {
-  "generated": "2026-07-25T13:05:00+00:00",
-  "mode": "reproduce",
+  "generated": "2026-07-25T16:00:00+00:00",
+  "mode": "refresh",
   "upstream_main": "5719e8ac4020dda0e375ef61d044b61f55a0df8a",
   "integration_branch": "t3code/stack",
-  "commit": "10d20847ebe3d7a024271676d7ed5f5b5ba3967d",
-  "tree": "e6eee4c0145028ac221b88e4c5bfa5a6e1fdf28f",
-  "previous_tree": "727c0c1a3122c36abfe0dc78db3dd83b7cb9bf82",
+  "commit": "a7f44b958825eaf9222f9b94ff25c3ae3e16ebfb",
+  "tree": "b162c3fb3e20e01b1bf7c0d7d132b1e9090a640c",
+  "previous_tree": "d708475eb55cd4aa3e605035548c86f94c42dcc1",
   "tree_changed": true,
-  "tag": "t3code-stack/20260725-053000",
-  "conflicts": 13,
-  "build_verified": "/nix/store/b31x54rsw6xk62csxhac0i698zkfszmg-t3code-0.0.29-stack-20260725",
+  "tag": "t3code-stack/20260725-simplified",
+  "conflicts": 14,
+  "build_verified": "/nix/store/xmv5npdj9zyn9m1zd67485hg6ryk5cq4-t3code-0.0.28-flake-stack-a7f44b9",
   "groups": {
     "t3code/group/thread-picker": "nix-shared/t3code-thread-picker.lock.json"
   },
@@ -169,7 +169,7 @@
     },
     {
       "entry": "#4496",
-      "oid": "f14509692ccb48790683ecf72b3723d7c69d722c",
+      "oid": "b824828392d888c8e3bdb26001452ea24145ad71",
       "status": "merged",
       "conflicted": true
     },
@@ -187,7 +187,7 @@
     },
     {
       "entry": "t3code/show-remote-host-name",
-      "oid": "106e1179090651a933cd20819779ec032dc6c9a8",
+      "oid": "b17565cc79ae60b1c27f2437ae66180b8d75428c",
       "status": "merged",
       "conflicted": true
     },
@@ -198,8 +198,14 @@
       "conflicted": true
     },
     {
+      "entry": "#4538",
+      "oid": "e8f62d6510f51a0ac5a3e2609b2d2728e6265f35",
+      "status": "merged",
+      "conflicted": true
+    },
+    {
       "entry": "t3code/local/nix-flake",
-      "oid": "2c5091190f73e7b50101056288747522055f8bc5",
+      "oid": "414a5cc09f0abf36e58c78538d36c27d4b4b3c0c",
       "status": "merged"
     },
     {
@@ -209,6 +215,11 @@
     {
       "entry": "t3code-projection-threads-snoozed-migration-compat.patch",
       "status": "epilogue"
+    },
+    {
+      "entry": "t3code-sidebar-environment-indicator-compat.patch",
+      "status": "epilogue"
     }
-  ]
+  ],
+  "note": "#4505 subsumed by t3code/show-remote-host-name; entries reduced 36 -> 35"
 }

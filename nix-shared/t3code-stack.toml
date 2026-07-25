@@ -319,23 +319,28 @@ WRONG class at this stack's offset. A 3-way merge cannot make that mistake.
 [[entry]]
 kind = "fork"
 branch = "t3code/show-remote-host-name"
-pin = "106e11790906"
-summary = "Show remote environment names in sidebar thread rows"
+pin = "2f14f287e29c"
+summary = "Remote environment names + per-environment accent colors in the sidebar"
 note = """
 BRANCH-LINKED, not a PR. Its pull request t3code#4425 was closed unmerged, so
 the BRANCH is the authority. Treat it exactly like an outstanding PR: rebase,
-push, keep carrying. Do NOT drop it because #4425 shows closed -- that is
-precisely why it is linked by branch. Remove only on explicit instruction, or
-after proving the pinned upstream contains its complete intended behavior.
+push, keep carrying it. Do NOT drop it because #4425 shows closed -- that is
+precisely why it is linked by branch.
+
+SUBSUMES #4505 (t3code/color-host-names): this branch is now based on top of it,
+so #4505 has no separate entry. Merging them separately meant hand-combining two
+branches that were already combined correctly upstream -- which is where most of
+this cluster's conflicts came from. If the branches are ever split again, restore
+#4505 as its own entry BEFORE this one.
 """
 
 [[entry]]
-pr = 4505
+pr = 4538
 kind = "fork"
-branch = "t3code/color-host-names"
-pin = "e6e3dd5c579f"
-summary = "Color environment indicators per environment"
-note = "Overlaps several already-carried Sidebar surfaces; ordered last, after show-remote-host-name."
+branch = "t3code/custom-environment-names"
+pin = "e8f62d6510f5"
+summary = "Allow per-client custom environment names"
+note = "Shares client-local environment settings and Connections UI with #4505, so it follows that topic."
 
 [[entry]]
 kind = "local"
@@ -371,4 +376,12 @@ The snooze feature arrived upstream with migration ID 34 after that ID had
 already been recorded locally for ProjectionThreadGoals. This is a function of
 the assembled stack, not an independent topic, so it cannot be a normal entry.
 Was nix-shared/patches/t3code-projection-threads-snoozed-migration-compat.patch.
+"""
+
+[[epilogue]]
+patch = "patches/t3code-sidebar-environment-indicator-compat.patch"
+summary = "Reconcile remote labels with environment accent colors"
+note = """
+#4505 and the remote-environment label topics edit the same sidebar indicators.
+Preserve both the text label and the per-environment accent after assembly.
 """
