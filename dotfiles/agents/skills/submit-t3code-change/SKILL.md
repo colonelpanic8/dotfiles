@@ -95,7 +95,8 @@ consider a new group manifest rather than accumulating conflicts in the main
 stack.
 
 Do not advance the upstream pin merely to simplify one integration. If the PR
-genuinely needs newer upstream, run `$refresh-t3code-pr-stack` and revalidate.
+genuinely needs newer upstream, run `$refresh-t3code-pr-branches` and
+revalidate.
 
 ## 5. Rebuild and resolve
 
@@ -104,7 +105,7 @@ nix/stack/bin/rebuild-t3code-stack.py --mode refresh --write-lock --push
 ```
 
 The rebuild stops on conflicts; resolve them semantically and `--continue`. See
-`$refresh-t3code-pr-stack` for the conflict helpers and their caveats.
+`$rebuild-t3code-stack` for the conflict helpers and their caveats.
 
 `pnpmDeps.hash` in the fork's `flake.nix` only changes when `pnpm-lock.yaml`
 does — compare against the previous tree before assuming it moved.

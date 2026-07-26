@@ -1,0 +1,4 @@
+interface:
+  display_name: "T3 Code Stack Inventory"
+  short_description: "Check which T3 Code topics the stack carries"
+  default_prompt: "Use $inventory-t3code-pr-stack to check whether all of my relevant T3 Code branches and PRs are represented in the integration manifest."

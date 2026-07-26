@@ -1,12 +1,17 @@
 ---
 name: rebuild-t3code-stack
-description: "Rebuild Ivan's T3 Code integration branch from its ordered manifests, resolving merge conflicts correctly and proving no carried feature was dropped. Use when asked to rebuild, regenerate, or repair the T3 Code stack branch, when a manifest entry or pin changes, or when a rebuild stopped on a conflict and needs to be resumed. For the wider job of maintaining the PRs themselves, use refresh-t3code-pr-stack, which delegates the rebuild to this skill."
+description: "Change and publish Ivan's assembled T3 Code integration stack: admit or remove manifest topics, rebuild groups and the main branch, resolve conflicts, prove carried content survived, push a dated revision, repin Nix, build, smoke-test, activate, and commit coupled files. Use when asked to incorporate inventoried branches into the installed stack, rebuild, regenerate, publish, repin, or resume a stopped integration build. Do not use for read-only inventory or topic-branch rebasing."
 ---
 
 # Rebuild the T3 Code integration branch
 
+Read `/srv/dotfiles/dotfiles/agents/project-guides/t3code-pr-stack.md`
+completely before acting. Use `$inventory-t3code-pr-stack` for a read-only
+carriage check and `$refresh-t3code-pr-branches` for maintaining topic branches.
+This skill owns manifest and integration-output mutations.
+
 The manifests, rebuild tooling and epilogue patches live IN THE FORK on the
-`t3code/stack-tooling` branch, under `nix/stack/`. Its `BUILDING.md` is the
+`t3code/stack-tooling` branch, under `stack/`. Its `BUILDING.md` is the
 authoritative reference and goes into more detail than this skill; read it when
 you need the full procedure. This skill is the operational summary, kept here
 because skills must be discoverable under `~/.claude/skills`. **If the two ever
@@ -16,9 +21,9 @@ Dotfiles holds only two things: the `t3code-integration` flake input pinned to a
 rev, and `nix-shared/t3code.nix`, a ~32-line overlay adding the Electron
 safeStorage wrapper. Nothing else about the stack lives downstream.
 
-The stack is an integration branch on the fork, regenerated from scratch by
-merging an ordered manifest of topic branches onto live upstream main. It is a
-build artifact: never commit to it, never base work on it, never merge it back.
+The stack is an integration branch on the fork, assembled by merging an ordered
+manifest of topic branches. It is a build artifact: never commit to it, never
+base work on it, never merge it back.
 
 ## Read this first: the mistake that cost two features
 
@@ -41,14 +46,30 @@ Two rules follow, and they are the whole point of this skill:
 
 ## Procedure
 
+There are three modes:
+
+- `refresh` rebuilds the entire stack from current upstream `main` and current
+  topic heads. This is the full rebase/refresh path.
+- `reproduce` rebuilds the entire stack at recorded pins.
+- `extend` starts from the locked pre-epilogue commit, merges only a newly
+  appended manifest suffix, then reapplies the epilogues.
+
+Extend is intentionally strict: the old manifest must be an exact prefix, the
+published integration branch must equal the locked commit, and the lock must
+contain a manifest snapshot and pre-epilogue commit. If an existing entry
+changed, moved, or disappeared, use refresh. Extend is a fast path for adding
+PRs, not a replacement for periodic refreshes.
+
 Groups first, then the main stack. A group is a sub-manifest whose output branch
 is pinned as one entry in the main manifest — a subsystem tree.
 
 ```
-nix/stack/bin/rebuild-t3code-stack.py --manifest nix/stack/thread-picker.toml \
+stack/bin/rebuild-t3code-stack.py --manifest stack/thread-picker.toml \
     --mode reproduce --write-lock --push
-# pin the new group head in nix/stack/stack.toml, then
-nix/stack/bin/rebuild-t3code-stack.py --mode refresh --write-lock --push
+# pin the new group head in stack/stack.toml, then
+stack/bin/rebuild-t3code-stack.py --mode refresh --write-lock --push
+# after appending one or more new entries:
+stack/bin/rebuild-t3code-stack.py --mode extend --write-lock --push
 ```
 
 `reproduce` merges at manifest pins (deterministic). `refresh` follows current
@@ -63,16 +84,16 @@ and `EMPTY` entries as drop candidates.
 
 Resolve **semantically**. Never `-X ours/theirs`.
 
-**`nix/stack/bin/replay-resolutions.py --from-build fork/t3code/stack --label '#4257'`** is the
+**`stack/bin/replay-resolutions.py --from-build fork/t3code/stack --label '#4257'`** is the
 safest helper: it replays that entry's resolution verbatim from a previous
 build. Exact, but only valid while entry order is unchanged up to that point —
 past any manifest insertion or reorder, the merge context differs and the replay
 is wrong. Use a remote ref; the branch may not exist locally.
 
-**`nix/stack/bin/resolve-from-baseline.py`** copies files from a reference tree. It is the
+**`stack/bin/resolve-from-baseline.py`** copies files from a reference tree. It is the
 dangerous one. It is only sound when the reference tree is known-correct for
 that file AND no later entry contributes to it. When building a group, pass
-`--foreign-manifest nix/stack/stack.toml` so files touched by non-group
+`--foreign-manifest stack/stack.toml` so files touched by non-group
 entries are refused.
 
 **`--force` overrides that safety check. Treat it as a last resort.** Every
@@ -95,12 +116,14 @@ patterns a line-union leaves that still look plausible.
 
 ## Verification ladder
 
-Run all four, in order. Do not stop early.
+Run all five, in order. Do not stop early.
 
-1. **Content audit — `nix/stack/bin/audit-stack-content.py`.** For every entry, checks that the
+1. **Content audit — `stack/bin/audit-stack-content.py`.** For every entry, checks that the
    substantive lines its branch adds are present in the built tree. A non-zero
    MISSING is not automatically a bug (a later entry may legitimately rewrite
-   those lines) but **every one needs a specific explanation before pushing**. A
+   those lines) but **every one needs a specific explanation before pushing**.
+   Store reviewed rewrites in `stack/audit-exceptions.toml`, guarded by the
+   exact missing-line count and digest so a newly dropped line fails again. A
    large count on an entry you resolved with `--force` means you dropped its
    content.
 2. **Tree diff vs the previous lock.** Changes must be explainable by upstream

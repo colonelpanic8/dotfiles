@@ -1,0 +1,4 @@
+interface:
+  display_name: "T3 Code PR Branch Refresh"
+  short_description: "Rebase and maintain writable T3 Code topics"
+  default_prompt: "Use $refresh-t3code-pr-branches to review and rebase my maintained T3 Code topic branches onto live upstream main."
