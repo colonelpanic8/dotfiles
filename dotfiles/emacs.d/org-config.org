@@ -754,7 +754,7 @@ SCHEDULED: %^t
                  ,(format "%s%s\n%s" "* NEXT %?" imalison:created-property-string
                           "SCHEDULED: %(format-time-string \"<%Y-%m-%d %a>\")")))
   (add-to-list 'org-capture-templates
-               `("i" "Inbox" entry (file ,imalison:org-gtd-file)
+               `("i" "Inbox" entry (file ,imalison:org-inbox-file)
                  (function (lambda (&rest args) (imalison:make-org-todo-template :creation-state "INBOX")))))
 
   (add-to-list 'org-capture-templates
