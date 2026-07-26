@@ -317,7 +317,8 @@ in {
 
   system.autoUpgrade = {
     enable = true;
-    dates = "hourly";
+    # Upgrade once overnight instead of interrupting work throughout the day.
+    dates = "*-*-* 03:00:00";
   };
 
   system.stateVersion = "23.05";
