@@ -344,7 +344,7 @@
     # Pin by REV, never by branch: t3code/stack is force-pushed on every rebuild.
     # Each rebuild also pushes a dated tag, so older revs stay fetchable.
     t3code-integration = {
-      url = "github:colonelpanic8/t3code/778ef15750f88ce7bf02dbe23f2ea893ecae8d39";
+      url = "github:colonelpanic8/t3code/d8c370b12f4723d9835dda8b96dff5d2bbb15754";
       inputs = {
         nixpkgs.follows = "nixpkgs";
         flake-utils.follows = "flake-utils";
