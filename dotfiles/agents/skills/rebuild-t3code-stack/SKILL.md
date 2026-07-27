@@ -84,11 +84,22 @@ and `EMPTY` entries as drop candidates.
 
 Resolve **semantically**. Never `-X ours/theirs`.
 
-**`stack/bin/replay-resolutions.py --from-build fork/t3code/stack --label '#4257'`** is the
-safest helper: it replays that entry's resolution verbatim from a previous
-build. Exact, but only valid while entry order is unchanged up to that point —
-past any manifest insertion or reorder, the merge context differs and the replay
-is wrong. Use a remote ref; the branch may not exist locally.
+**rerere does most of this for you now.** It is enabled repo-locally and seeded
+from the published build, so most conflicts arrive already resolved. The rebuild
+script lists replayed paths separately from ones needing a human; `autoupdate` is
+off, so replayed paths stay unmerged and you must review and `git add` them.
+Re-seed with `stack/bin/train-rerere.py --clear` after any build that corrects a
+resolution, and only ever from a build that passed the full ladder — training
+from a defective build makes its mistakes the silent default. Check the cache
+with `stack/bin/train-rerere.py --verify`.
+
+**`stack/bin/replay-resolutions.py --from-build fork/t3code/stack --label '#4257'`**
+replays that entry's resolution verbatim from a previous build. Exact, but only
+valid while entry order is unchanged up to that point — past any manifest
+insertion or reorder, the merge context differs and the replay is wrong. rerere
+does not have that limitation (it keys on conflict content, not position), so
+reach for this only when you want a whole file from a known build. Use a remote
+ref; the branch may not exist locally.
 
 **`stack/bin/resolve-from-baseline.py`** copies files from a reference tree. It is the
 dangerous one. It is only sound when the reference tree is known-correct for
