@@ -44,6 +44,7 @@
     ./notifications-tray-icon.nix
     ./nvidia.nix
     ./options.nix
+    ./paseo.nix
     ./plasma.nix
     ./postgres.nix
     ./rabbitmq.nix
