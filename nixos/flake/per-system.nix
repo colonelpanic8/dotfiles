@@ -29,6 +29,10 @@
 in {
   formatter = pkgs.alejandra;
 
+  apps = lib.optionalAttrs pkgs.stdenv.isLinux {
+    t3code-apk = inputs.t3code-integration.apps.${system}.build-android;
+  };
+
   packages =
     {
       colonelpanic-org-agenda-api = containerLib.containers.colonelpanic;

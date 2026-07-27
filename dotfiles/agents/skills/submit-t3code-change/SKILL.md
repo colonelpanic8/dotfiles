@@ -17,7 +17,7 @@ Treat the PR as the canonical standalone implementation and the Nix stack as the
 - Resolve the T3 Code checkout through `/srv/dotfiles/dotfiles/agents/project-links/t3code`. Repair that ignored symlink if its target moved.
 - Use `origin` for `pingdotgg/t3code` and `fork` for `colonelpanic8/t3code`; verify rather than assume.
 - Maintain the topic manifest at `nix/stack/stack.toml` on the fork's `t3code/stack-tooling` branch.
-- Maintain the upstream source pin in `/srv/dotfiles/nixos/flake.lock` from the `t3code-upstream` input declared in `flake.nix`.
+- Maintain the assembled `t3code-integration` revision pin in `/srv/dotfiles/nixos/flake.nix` and `flake.lock`.
 - Put compatibility patches in `/srv/dotfiles/nixos/patches/`.
 
 Never create a T3 Code worktree beneath `/srv/dotfiles`. Never use a dotfiles worktree; edit only the primary `/srv/dotfiles` checkout.
@@ -116,9 +116,9 @@ does — compare against the previous tree before assuming it moved.
    `nix flake lock --update-input t3code-integration`.
 2. Build the actual host package, not just the source:
    ```
-   nix build --impure --expr 'let flake = builtins.getFlake "git+file:///srv/dotfiles?dir=nixos";
+nix build --impure --expr 'let flake = builtins.getFlake "git+file:///srv/dotfiles?dir=nixos";
      pkgs = import flake.inputs.nixpkgs { system = "x86_64-linux"; config.allowUnfree = true;
-       overlays = [ (import /srv/dotfiles/nix-shared/t3code.nix { inherit (flake) inputs; }) ]; };
+       overlays = [ flake.inputs.t3code-integration.overlays.client ]; };
    in pkgs.t3code'
    ```
    **Check the real exit code** — piping nix through `tail` masks failure.

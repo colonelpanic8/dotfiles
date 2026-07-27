@@ -343,13 +343,13 @@
       flake = false;
     };
 
-    # The carried patch stack is now an integration BRANCH on the fork, rebuilt
-    # from ../nix-shared/t3code-stack.toml by nixos/scripts/rebuild-t3code-stack.py.
+    # The carried topic stack is an integration branch on the fork, rebuilt
+    # from stack/stack.toml on the t3code/stack-tooling branch.
     #
     # Pin by REV, never by branch: t3code/stack is force-pushed on every rebuild.
     # Each rebuild also pushes a dated tag, so older revs stay fetchable.
     t3code-integration = {
-      url = "github:colonelpanic8/t3code/96d7ab5ebee724cb30974862c4f6d0fcfae40a02";
+      url = "github:colonelpanic8/t3code/3f86748df7c499aa889f2871c0d514cf421a03fb";
       inputs = {
         nixpkgs.follows = "nixpkgs";
         flake-utils.follows = "flake-utils";

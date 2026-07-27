@@ -689,7 +689,7 @@
         "nixpkgs": "nixpkgs_3",
         "nixpkgs-bazel": "nixpkgs-bazel",
         "railbird-secrets": "railbird-secrets",
-        "t3code-upstream": "t3code-upstream"
+        "t3code-integration": "t3code-integration"
       }
     },
     "rust-analyzer-src": {
@@ -867,19 +867,27 @@
         "type": "github"
       }
     },
-    "t3code-upstream": {
-      "flake": false,
+    "t3code-integration": {
+      "inputs": {
+        "flake-utils": [
+          "flake-utils"
+        ],
+        "nixpkgs": [
+          "nixpkgs"
+        ]
+      },
       "locked": {
-        "lastModified": 1784946517,
-        "narHash": "sha256-hlXyQiLeJfhMv8XQ/+B0lADZbDSzku6Bj95tIeoscjQ=",
-        "owner": "pingdotgg",
+        "lastModified": 1785141420,
+        "narHash": "sha256-EFFjhp9MaotxDfjzmmX/ncrAzZDbJxyncXimhK05h1c=",
+        "owner": "colonelpanic8",
         "repo": "t3code",
-        "rev": "5719e8ac4020dda0e375ef61d044b61f55a0df8a",
+        "rev": "3f86748df7c499aa889f2871c0d514cf421a03fb",
         "type": "github"
       },
       "original": {
-        "owner": "pingdotgg",
+        "owner": "colonelpanic8",
         "repo": "t3code",
+        "rev": "3f86748df7c499aa889f2871c0d514cf421a03fb",
         "type": "github"
       }
     }

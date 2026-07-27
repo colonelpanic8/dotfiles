@@ -15,7 +15,7 @@ and integration-build skills. Read the repo-root `AGENTS.md` and
 | Group manifest and lock | `stack/thread-picker.toml`, `stack/thread-picker.lock.json` |
 | Rebuild tools | `stack/bin/` |
 | Integration branch | `fork/t3code/stack` |
-| Dotfiles consumer | `/srv/dotfiles/nix-shared/t3code.nix` |
+| Dotfiles consumers | `nixos/nix.nix`, `nixos/t3code-server.nix`, and nix-darwin equivalents |
 | Flake input | `t3code-integration` in `/srv/dotfiles/nixos/flake.nix` |
 
 The integration branch is an assembled build artifact. Never commit to it, base

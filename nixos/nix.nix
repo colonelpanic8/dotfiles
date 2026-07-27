@@ -110,7 +110,7 @@
         # (import ./nvidia-container-toolkit-overlay.nix)
         (import ./emacs-overlay.nix)
         (import ../nix-shared/overlays)
-        (import ../nix-shared/t3code.nix {inherit inputs;})
+        inputs.t3code-integration.overlays.client
         # Use fast-moving agent tools from dedicated flakes.
         (final: prev: {
           codex = inputs.codex-cli-nix.packages.${prev.stdenv.hostPlatform.system}.default;

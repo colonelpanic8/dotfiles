@@ -17,9 +17,10 @@ you need the full procedure. This skill is the operational summary, kept here
 because skills must be discoverable under `~/.claude/skills`. **If the two ever
 disagree, BUILDING.md wins** -- it is versioned alongside the code it describes.
 
-Dotfiles holds only two things: the `t3code-integration` flake input pinned to a
-rev, and `nix-shared/t3code.nix`, a ~32-line overlay adding the Electron
-safeStorage wrapper. Nothing else about the stack lives downstream.
+Dotfiles pins the `t3code-integration` input, selects its exported client
+overlay and Home Manager module, and supplies machine policy such as users,
+paths, ports, and start targets. Packaging, desktop integration, service
+definitions, and Android tooling live in the T3 Code flake.
 
 The stack is an integration branch on the fork, assembled by merging an ordered
 manifest of topic branches. It is a build artifact: never commit to it, never
@@ -144,9 +145,9 @@ Run all five, in order. Do not stop early.
    drifting; consider a new group.
 4. **Build:**
    ```
-   nix build --impure --expr 'let flake = builtins.getFlake "git+file:///srv/dotfiles?dir=nixos";
+nix build --impure --expr 'let flake = builtins.getFlake "git+file:///srv/dotfiles?dir=nixos";
      pkgs = import flake.inputs.nixpkgs { system = "x86_64-linux"; config.allowUnfree = true;
-       overlays = [ (import /srv/dotfiles/nix-shared/t3code.nix { inherit (flake) inputs; }) ]; };
+       overlays = [ flake.inputs.t3code-integration.overlays.client ]; };
    in pkgs.t3code'
    ```
    **Check the real exit code.** Piping nix through `tail` returns tail's status
@@ -175,10 +176,10 @@ Commit manifest, lock, and flake changes **together** so the pin and lock never
 disagree. Use explicit paths — a bare `git commit` after `git add` has swept
 unrelated pre-existing staged changes into a commit before.
 
-The build definition lives in the fork's own `flake.nix`, carried as the
-`t3code/local/nix-flake` topic. `nix-shared/t3code.nix` only consumes that output
-and adds the Electron safeStorage wrapper. **Anything build-related belongs in
-the fork's flake, not in dotfiles** — when both defined the build, they drifted.
+The build, client wrapper, reusable service module, desktop integration, and
+Android tooling live in the fork's own `flake.nix` and `nix/`, carried as the
+`t3code/local/nix-flake` topic. **Reusable T3 Code integration belongs in that
+flake; dotfiles should contain only host/user policy.**
 
 ## If you cannot finish
 

@@ -1,17 +1,18 @@
 {
   config,
+  inputs,
   lib,
   makeEnable,
   ...
 }: let
   cfg = config.myModules.t3codeServer;
   enabledModule = makeEnable config "myModules.t3codeServer" false {
-    home-manager.sharedModules = [../nix-shared/home-manager/t3code-server.nix];
-    home-manager.users.imalison.myModules.t3codeServer = {
+    home-manager.sharedModules = [inputs.t3code-integration.homeManagerModules.t3code-server];
+    home-manager.users.imalison.services.t3code = {
       enable = true;
       repositoryRoot = "/srv/dotfiles";
-      inherit (cfg) tailscaleServePort;
-      systemdStartTarget = cfg.startTarget;
+      tailscaleServe.port = cfg.tailscaleServePort;
+      systemdTarget = cfg.startTarget;
     };
   };
 in

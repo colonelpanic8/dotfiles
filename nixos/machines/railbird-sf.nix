@@ -97,15 +97,16 @@
   # so his systemd --user instance (and its default.target-gated service)
   # comes up at boot even though he never logs in graphically here.
   users.users.dean.linger = true;
-  home-manager.users.dean.myModules.t3codeServer = {
+  home-manager.users.dean.services.t3code = {
     enable = true;
-    localPort = 3775;
-    tailscaleServePort = 8444;
-    systemdStartTarget = "default.target";
+    repositoryRoot = "/home/dean/dotfiles";
+    port = 3775;
+    tailscaleServe.port = 8444;
+    systemdTarget = "default.target";
     # Tailscale Serve is node-wide state, and this node's operator is imalison,
     # so dean's unprivileged service cannot configure it. Root provisions his
     # mapping below instead.
-    tailscaleServe = false;
+    tailscaleServe.enable = false;
   };
 
   # The privileged half of dean's Tailscale Serve mapping. Serve config is

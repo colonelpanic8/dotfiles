@@ -107,7 +107,10 @@ in {
   home.file = dotfilesLinks;
 
   myModules.codexGeneratedSkills.enable = true;
-  myModules.t3codeServer.enable = true;
+  services.t3code = {
+    enable = true;
+    repositoryRoot = "${config.home.homeDirectory}/dotfiles";
+  };
 
   home.packages =
     [
@@ -290,9 +293,11 @@ in {
       enable = true;
       plugins = ["git" "sudo"];
     };
-    shellAliases = {
-      df_ssh = "TERM='xterm-256color' ssh -o StrictHostKeyChecking=no";
-    } // multiplexerAliases;
+    shellAliases =
+      {
+        df_ssh = "TERM='xterm-256color' ssh -o StrictHostKeyChecking=no";
+      }
+      // multiplexerAliases;
     initContent = lib.mkMerge [
       (lib.mkOrder 550 ''
         fpath+="${libDir}/functions"

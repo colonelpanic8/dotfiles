@@ -59,10 +59,14 @@
       flake = false;
     };
 
-    # Patch selections for this source are maintained in ../nix-shared/t3code.nix.
-    t3code-upstream = {
-      url = "github:pingdotgg/t3code";
-      flake = false;
+    # Pin the assembled integration by revision; its flake owns packaging,
+    # desktop integration, and the persistent server module.
+    t3code-integration = {
+      url = "github:colonelpanic8/t3code/3f86748df7c499aa889f2871c0d514cf421a03fb";
+      inputs = {
+        nixpkgs.follows = "nixpkgs";
+        flake-utils.follows = "flake-utils";
+      };
     };
 
     keepbook = {
@@ -82,7 +86,6 @@
       inputs.nixpkgs.follows = "nixpkgs";
       inputs.flake-utils.follows = "flake-utils";
     };
-
   };
 
   outputs = inputs @ {
@@ -105,7 +108,7 @@
     sharedHomeModules = [
       ./home/common.nix
       ./home/git-sync.nix
-      ../nix-shared/home-manager/t3code-server.nix
+      inputs.t3code-integration.homeManagerModules.t3code-server
     ];
     homeForUser = user: "/Users/${user}";
     mkUserDescription = user:
@@ -310,7 +313,7 @@
 
       nixpkgs.overlays = [
         (import ../nix-shared/overlays)
-        (import ../nix-shared/t3code.nix {inherit inputs;})
+        inputs.t3code-integration.overlays.client
         # Use codex and claude-code from dedicated flakes with cachix
         (final: prev: {
           bazel = inputs.nixpkgs-bazel.legacyPackages.${prev.stdenv.hostPlatform.system}.bazel;
