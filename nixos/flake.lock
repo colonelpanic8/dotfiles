@@ -2098,6 +2098,26 @@
         "type": "github"
       }
     },
+    "paseo": {
+      "inputs": {
+        "nixpkgs": [
+          "nixpkgs"
+        ]
+      },
+      "locked": {
+        "lastModified": 1785104439,
+        "narHash": "sha256-93jJB6vXabxJHUbSSttFti/wvgW4c0QXrDWSlXC2bZo=",
+        "owner": "getpaseo",
+        "repo": "paseo",
+        "rev": "1a1ff8828f002fce08e239bae3d46aff75e22f52",
+        "type": "github"
+      },
+      "original": {
+        "owner": "getpaseo",
+        "repo": "paseo",
+        "type": "github"
+      }
+    },
     "pre-commit-hooks": {
       "inputs": {
         "flake-compat": "flake-compat",
@@ -2249,6 +2269,7 @@
         "notifications-tray-icon": "notifications-tray-icon",
         "orca": "orca",
         "org-agenda-api": "org-agenda-api",
+        "paseo": "paseo",
         "railbird-secrets": "railbird-secrets",
         "rlru": "rlru",
         "systems": "systems_6",

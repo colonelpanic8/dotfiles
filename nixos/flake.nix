@@ -308,6 +308,11 @@
       url = "github:ilysenko/codex-desktop-linux/main";
     };
 
+    paseo = {
+      url = "github:getpaseo/paseo";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+
     claude-code-nix = {
       url = "github:sadjow/claude-code-nix";
       inputs = {
