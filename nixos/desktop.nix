@@ -172,7 +172,7 @@
         -e "s#^Exec=.*spotify\\( .*\\)\\?\$#Exec=$out/bin/spotify\\1#" \
         "$out/share/applications/spotify.desktop"
     '');
-  vlc4Unwrapped = pkgs.callPackage ./packages/vlc4 { };
+  vlc4Unwrapped = pkgs.callPackage ./packages/vlc4 {};
   vlc4 = pkgs.symlinkJoin {
     name = "${vlc4Unwrapped.name}-wayland";
     paths = [vlc4Unwrapped];
