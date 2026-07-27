@@ -8,7 +8,7 @@
 }: let
   cfg = config.myModules.desktop;
   isFull = cfg.profile == "full";
-  weztermNightly = inputs.wezterm-nightly.packages.${pkgs.stdenv.hostPlatform.system}.default;
+  rynkbenchPackage = inputs.rynkbench.packages.${pkgs.stdenv.hostPlatform.system}.default;
   desktopShellUi = pkgs.writeShellApplication {
     name = "desktop_shell_ui";
     runtimeInputs = [
@@ -345,6 +345,20 @@
           };
           Install.WantedBy = ["graphical-session.target"];
         };
+
+        systemd.user.services.rynkbench = {
+          Unit = {
+            Description = "Rynkbench keyboard configurator";
+            After = ["graphical-session.target"];
+            PartOf = ["graphical-session.target"];
+          };
+          Service = {
+            ExecStart = "${lib.getExe pkgs.static-web-server} --host 127.0.0.1 --port 4173 --root ${rynkbenchPackage} --page-fallback ${rynkbenchPackage}/index.html";
+            Restart = "on-failure";
+            RestartSec = 5;
+          };
+          Install.WantedBy = ["graphical-session.target"];
+        };
       }
     ];
 
@@ -385,7 +399,6 @@
         xwininfo
         xsettingsd
         alacritty
-        weztermNightly
         blueman
         d-spy
         kdePackages.dolphin

@@ -58,6 +58,14 @@
       };
     };
 
+    rynkbench = {
+      url = "github:colonelpanic8/rynkbench";
+      inputs = {
+        nixpkgs.follows = "nixpkgs";
+        flake-utils.follows = "flake-utils";
+      };
+    };
+
     git-blame-rank = {
       url = "github:colonelpanic8/git-blame-rank";
       inputs = {
@@ -315,17 +323,6 @@
 
     claude-code-nix = {
       url = "github:sadjow/claude-code-nix";
-      inputs = {
-        nixpkgs.follows = "nixpkgs";
-        flake-utils.follows = "flake-utils";
-      };
-    };
-
-    # WezTerm main includes native tmux control-mode tabs and splits. Keep this
-    # separate from the regular terminal package so it is explicitly
-    # experimental and easy to update independently.
-    wezterm-nightly = {
-      url = "github:wezterm/wezterm?dir=nix";
       inputs = {
         nixpkgs.follows = "nixpkgs";
         flake-utils.follows = "flake-utils";
