@@ -130,7 +130,6 @@
       ...
     }: let
       essentialPkgs = (import ../nix-shared/system/essential.nix {inherit pkgs lib inputs;}).environment.systemPackages;
-      isTargetPrimaryUser = primaryUser == targetPrimaryUser;
       paseoHome = "${homeForUser primaryUser}/.paseo";
       paseoPackage = inputs.paseo.packages.${pkgs.stdenv.hostPlatform.system}.default;
       paseoDesktopPackage = inputs.paseo.packages.${pkgs.stdenv.hostPlatform.system}.desktop;
@@ -189,7 +188,7 @@
           owner = "root";
           mode = "0400";
         };
-        secrets.paseo-password-environment = lib.mkIf isTargetPrimaryUser {
+        secrets.paseo-password-environment = {
           file = ../nixos/secrets/paseo-password-environment.age;
           owner = primaryUser;
           mode = "0400";
@@ -280,7 +279,7 @@
         };
       };
 
-      launchd.daemons.paseo = lib.mkIf isTargetPrimaryUser {
+      launchd.daemons.paseo = {
         serviceConfig = {
           ProgramArguments = ["${paseoDaemon}"];
           UserName = primaryUser;
@@ -440,8 +439,6 @@
         essentialPkgs
         ++ [
           pkgs.gnupg
-        ]
-        ++ lib.optionals isTargetPrimaryUser [
           paseoPackage
           paseoDesktopPackage
         ];

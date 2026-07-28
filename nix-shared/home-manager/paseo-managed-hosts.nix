@@ -66,7 +66,7 @@
     trap - EXIT
   '';
 in
-  lib.mkIf (config.home.username == "imalison") {
+  lib.mkIf (lib.elem config.home.username ["imalison" "kat"]) {
     age.secrets.paseo-password-environment.file = ../../nixos/secrets/paseo-password-environment.age;
 
     systemd.user.services.paseo-managed-hosts = lib.mkIf pkgs.stdenv.isLinux {
