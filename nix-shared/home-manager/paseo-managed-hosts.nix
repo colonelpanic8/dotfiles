@@ -8,30 +8,37 @@
     {
       label = "jay-lenovo";
       endpoint = "jay-lenovo:6767";
+      color = "green";
     }
     {
       label = "jimi-hendnix";
       endpoint = "jimi-hendnix:6767";
+      color = "amber";
     }
     {
       label = "mac-demarco-mini";
       endpoint = "mac-demarco-mini:6767";
+      color = "purple";
     }
     {
       label = "nixquick";
       endpoint = "nixquick:6767";
+      color = "red";
     }
     {
       label = "railbird-sf";
       endpoint = "railbird-sf:6767";
+      color = "green";
     }
     {
       label = "ryzen-shine";
       endpoint = "ryzen-shine:6767";
+      color = "blue";
     }
     {
       label = "strixi-minaj";
       endpoint = "strixi-minaj:6767";
+      color = "orange";
     }
   ];
   fleetHostsJson = builtins.toJSON fleetHosts;
