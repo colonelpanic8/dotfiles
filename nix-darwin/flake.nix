@@ -133,6 +133,7 @@
       isTargetPrimaryUser = primaryUser == targetPrimaryUser;
       paseoHome = "${homeForUser primaryUser}/.paseo";
       paseoPackage = inputs.paseo.packages.${pkgs.stdenv.hostPlatform.system}.default;
+      paseoDesktopPackage = inputs.paseo.packages.${pkgs.stdenv.hostPlatform.system}.desktop;
       paseoDaemon = pkgs.writeShellScript "paseo-daemon" ''
         set -eu
 
@@ -440,7 +441,10 @@
         ++ [
           pkgs.gnupg
         ]
-        ++ lib.optionals isTargetPrimaryUser [paseoPackage];
+        ++ lib.optionals isTargetPrimaryUser [
+          paseoPackage
+          paseoDesktopPackage
+        ];
 
       nixpkgs.config.allowUnfree = true;
 
@@ -457,17 +461,15 @@
           "ddcctl"
           "m1ddc"
         ];
-        casks =
-          [
-            "claude"
-            "chatgpt"
-            "ghostty"
-            "hammerspoon"
-            "raycast"
-            "spotify"
-            "vlc"
-          ]
-          ++ lib.optionals isTargetPrimaryUser ["paseo"];
+        casks = [
+          "claude"
+          "chatgpt"
+          "ghostty"
+          "hammerspoon"
+          "raycast"
+          "spotify"
+          "vlc"
+        ];
         greedyCasks = true;
         onActivation = {
           cleanup = "zap";
