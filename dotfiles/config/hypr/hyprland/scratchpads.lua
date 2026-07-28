@@ -71,7 +71,11 @@ function M.setup(ctx)
     },
     paseo = {
       command = "paseo-desktop",
-      classes = { "Paseo", "paseo" },
+      -- The launcher passes --class=paseo-desktop, but that only sets the
+      -- X11 WM_CLASS; under Wayland the app ID stays the generic Electron
+      -- one. The initial title is what actually identifies the window.
+      class = "electron",
+      initial_title = "Paseo",
     },
     dropdown = {
       command = "ghostty --config-file=/home/imalison/.config/ghostty/dropdown",
