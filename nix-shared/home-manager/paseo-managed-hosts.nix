@@ -72,6 +72,49 @@ in
   lib.mkIf (lib.elem config.home.username ["imalison" "kat"]) {
     age.secrets.paseo-password-environment.file = ../../nixos/secrets/paseo-password-environment.age;
 
+    home.activation.configurePaseoDesktopClientOnly = lib.mkIf pkgs.stdenv.isDarwin (
+      lib.hm.dag.entryAfter ["writeBoundary"] ''
+        settings_dir=${lib.escapeShellArg "${config.home.homeDirectory}/Library/Application Support/Paseo"}
+        settings_path="$settings_dir/desktop-settings.json"
+        mkdir -p "$settings_dir"
+        temporary="$(${pkgs.coreutils}/bin/mktemp "$settings_dir/.desktop-settings.json.XXXXXX")"
+        trap 'rm -f "$temporary"' EXIT
+
+        if [ -f "$settings_path" ] && ${pkgs.jq}/bin/jq empty "$settings_path" >/dev/null 2>&1; then
+          ${pkgs.jq}/bin/jq '
+            .version = 1
+            | .settings = (.settings // {})
+            | .settings.releaseChannel = (.settings.releaseChannel // "stable")
+            | .settings.daemon = (.settings.daemon // {})
+            | .settings.daemon.manageBuiltInDaemon = false
+            | .settings.daemon.keepRunningAfterQuit = (.settings.daemon.keepRunningAfterQuit // false)
+            | .migrations = (.migrations // {})
+            | .migrations.legacyRendererSettingsImported = true
+            | .migrations.daemonStopOnQuitDefaultApplied = true
+          ' "$settings_path" >"$temporary"
+        else
+          ${pkgs.jq}/bin/jq -n '{
+            version: 1,
+            settings: {
+              releaseChannel: "stable",
+              daemon: {
+                manageBuiltInDaemon: false,
+                keepRunningAfterQuit: false
+              }
+            },
+            migrations: {
+              legacyRendererSettingsImported: true,
+              daemonStopOnQuitDefaultApplied: true
+            }
+          }' >"$temporary"
+        fi
+
+        chmod 0600 "$temporary"
+        mv "$temporary" "$settings_path"
+        trap - EXIT
+      ''
+    );
+
     systemd.user.services.paseo-managed-hosts = lib.mkIf pkgs.stdenv.isLinux {
       Unit = {
         Description = "Render the agenix-backed Paseo fleet registry";
