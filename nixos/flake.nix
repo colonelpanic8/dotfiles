@@ -317,7 +317,10 @@
     };
 
     paseo = {
-      url = "github:getpaseo/paseo";
+      # The assembled branch of the paseo-assembly stack: upstream main plus
+      # carried topics/PRs. Force-pushed on every rebuild; `nix flake update
+      # paseo` moves to its current head.
+      url = "github:colonelpanic8/paseo/assembled";
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
