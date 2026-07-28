@@ -1,0 +1,4 @@
+interface:
+  display_name: "T3 Code Assembly Rebuild"
+  short_description: "Assemble, publish, and install the personal T3 Code build"
+  default_prompt: "Use $rebuild-t3code-assembly to incorporate inventoried topics into the integration manifest, verify the assembled branch, repin Nix, and activate it."

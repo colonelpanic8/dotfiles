@@ -334,10 +334,10 @@
       flake = false;
     };
 
-    # The carried topic stack is an integration branch on the fork, rebuilt
-    # from stack/stack.toml on the t3code/stack-tooling branch.
+    # The personal assembly is generated from assembly.toml in the dedicated
+    # colonelpanic8/t3code-assembly repository.
     #
-    # Pin by REV, never by branch: t3code/stack is force-pushed on every rebuild.
+    # Pin by REV, never by branch: t3code/assembled is force-pushed on rebuild.
     # Each rebuild also pushes a dated tag, so older revs stay fetchable.
     t3code-integration = {
       url = "github:colonelpanic8/t3code/04e54c1ac95334b162384a99c762e0c9cc38c0cd";

@@ -1,11 +1,11 @@
 ---
 name: refresh-t3code-pr-branches
-description: "Maintain Ivan's writable T3 Code PR and local topic branches by inspecting review feedback, making requested fixes, rebasing onto the exact live upstream main, verifying focused changes, and pushing safely. Use when asked to update, rebase, repair, synchronize, or address reviews on T3 Code topic branches without rebuilding the integration stack or changing the Nix installation."
+description: "Maintain Ivan's writable T3 Code PR and local topic branches by inspecting review feedback, making requested fixes, rebasing onto the exact live upstream main, verifying focused changes, and pushing safely. Use when asked to update, rebase, repair, synchronize, or address reviews on T3 Code topic branches without rebuilding the personal assembly or changing the Nix installation."
 ---
 
 # Refresh T3 Code PR branches
 
-Read `/srv/dotfiles/dotfiles/agents/project-guides/t3code-pr-stack.md`
+Read `/srv/dotfiles/dotfiles/agents/project-guides/t3code-assembly.md`
 completely before acting.
 
 ## Scope
@@ -16,7 +16,7 @@ rebuild or push the integration branch, change Nix pins, build the package,
 activate NixOS, or commit dotfiles.
 
 If the user has not named branches, first run the read-only reconciliation from
-`$inventory-t3code-pr-stack` to determine the exact writable set.
+`$inventory-t3code-assembly` to determine the exact writable set.
 
 ## Procedure
 
@@ -33,7 +33,7 @@ If the user has not named branches, first run the read-only reconciliation from
    Branch-linked and local topics rebase too. Never rebase external topics or
    the integration branch.
 6. Resolve conflicts from the branch's intended behavior. Preserve branch
-   content rather than copying from the assembled stack.
+   content rather than copying from the assembled branch.
 7. Run focused formatting, lint, type checks, and behavioral tests required by
    the repo instructions and proportional to each branch's changes.
 8. Re-fetch and verify `origin/main` has not moved. If it moved, rebase again.
@@ -51,5 +51,5 @@ worktree under `/srv/dotfiles`.
 
 Report old/new upstream OIDs, each branch's old/new head, PR state and review
 work, verification, push result, and dirty worktrees left untouched. Recommend
-`$rebuild-t3code-stack` when refreshed heads or missing topics should be
+`$rebuild-t3code-assembly` when refreshed heads or missing topics should be
 incorporated, but do not invoke it automatically.

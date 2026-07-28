@@ -8,11 +8,11 @@ description: "Implement and publish a focused change to pingdotgg/t3code, then a
 Carry one change through two linked deliverables:
 
 1. A focused, ready-for-review PR against `pingdotgg/t3code:main`.
-2. A manifest entry in the personal integration stack, rebuilt and activated.
+2. A manifest entry in the personal assembly, rebuilt and activated.
 
-Read `/srv/dotfiles/dotfiles/agents/project-guides/t3code-pr-stack.md` first
+Read `/srv/dotfiles/dotfiles/agents/project-guides/t3code-assembly.md` first
 for locations and safety invariants. The PR is the canonical standalone
-implementation; the stack is the durable personal integration. Create the PR
+implementation; the assembly is the durable personal integration. Create the PR
 before integrating it.
 
 ## 1. Establish clean repository state
@@ -28,7 +28,7 @@ before integrating it.
    usable.
 5. Base the new branch directly on current `origin/main`. Keep each PR
    independently applicable to `main`; never base it on another unmerged PR or
-   on the assembled stack.
+   on the assembled branch.
 
 ## 2. Implement a focused upstream change
 
@@ -65,17 +65,17 @@ Plus `vp run lint:mobile` for native mobile changes and the relevant
 Do not start the integration until the published head matches the locally
 validated commit.
 
-## 4. Integrate into the stack
+## 4. Integrate into the assembly
 
-Follow **`stack/BUILDING.md` on `fork/t3code/stack-tooling`**, sections
-"Adding a topic" through "Landing a rebuild". Re-read `stack/stack.toml`
-first — another session may have changed the stack while the PR was being
-prepared. Do not claim success from a source build alone.
+Follow **`BUILDING.md` in the `t3code-assembly` repository**, sections
+"Adding a topic" through "Landing a rebuild". Re-read `assembly.toml` first —
+another session may have changed the assembly while the PR was being prepared.
+Do not claim success from a source build alone.
 
 ## 5. Report
 
 - PR URL and head OID.
-- Manifest entry added, and whether it went in the main stack or a group.
+- Manifest entry added, and whether it went in the main assembly or a group.
 - Conflicts resolved during the rebuild.
 - New integration rev and tag; tree changed or unchanged.
 - Build and activation result; T3 Code and dotfiles commits.

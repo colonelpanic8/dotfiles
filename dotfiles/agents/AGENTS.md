@@ -153,3 +153,4 @@ Examples of what's stored:
   - `./project-guides/railbird.md`
   - `./project-guides/org-emacs-packages.md`
   - `./project-guides/subtr-actor-rocket-sense-rlru.md`
+  - `./project-guides/t3code-assembly.md`

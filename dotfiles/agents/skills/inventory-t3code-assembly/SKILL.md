@@ -1,11 +1,11 @@
 ---
-name: inventory-t3code-pr-stack
-description: "Read-only inventory of Ivan's T3 Code pull requests, fork branches, carried manifest topics, and published integration lock. Use when asked whether new T3 Code branches or PRs have been incorporated, what the stack currently carries, whether topics are missing or redundant, or for an evidence-backed stack status report without changing branches, manifests, Nix pins, or the installed build."
+name: inventory-t3code-assembly
+description: "Read-only inventory of Ivan's T3 Code pull requests, fork branches, carried manifest topics, and published integration lock. Use when asked whether new T3 Code branches or PRs have been incorporated, what the assembly currently carries, whether topics are missing or redundant, or for an evidence-backed assembly status report without changing branches, manifests, Nix pins, or the installed build."
 ---
 
-# Inventory the T3 Code PR stack
+# Inventory the T3 Code assembly
 
-Read `/srv/dotfiles/dotfiles/agents/project-guides/t3code-pr-stack.md`
+Read `/srv/dotfiles/dotfiles/agents/project-guides/t3code-assembly.md`
 completely before acting. This skill is strictly read-only.
 
 ## Inventory
@@ -14,8 +14,8 @@ completely before acting. This skill is strictly read-only.
 2. Verify `gh auth status`.
 3. Fetch `origin/main` and `fork`, then record the live main OID. Fetching is
    allowed; do not check out, rebase, merge, edit, or push.
-4. Read `stack/BUILDING.md`, both manifests, and both locks from
-   `fork/t3code/stack-tooling`.
+4. Read `BUILDING.md`, both manifests, and both locks from the dedicated
+   `t3code-assembly` repository.
 5. Query all relevant `colonelpanic8` PRs, including open, closed, and merged
    states. Capture number, title, state, review decision, base/head OIDs, head
    branch, creation/update times, writability, and checks.
@@ -36,7 +36,7 @@ Do not modify any branch, PR, manifest, lock, flake file, running installation,
 or remote state. If changes are warranted, recommend the precise next skill:
 
 - `$refresh-t3code-pr-branches` for review fixes or rebases.
-- `$rebuild-t3code-stack` for manifest admission/removal, assembly, publication,
+- `$rebuild-t3code-assembly` for manifest admission/removal, assembly, publication,
   Nix repinning, build, or activation.
 
 ## Report

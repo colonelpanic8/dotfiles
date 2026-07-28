@@ -1,0 +1,4 @@
+interface:
+  display_name: "T3 Code Assembly Inventory"
+  short_description: "Check which topics the T3 Code assembly carries"
+  default_prompt: "Use $inventory-t3code-assembly to check whether all of my relevant T3 Code branches and PRs are represented in the integration manifest."
