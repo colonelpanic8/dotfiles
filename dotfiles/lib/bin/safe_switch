@@ -1,0 +1,76 @@
+#!/usr/bin/env zsh
+# Run `just switch` for /srv/dotfiles/nixos detached from the caller.
+#
+# Rebuilds restart paseo.service when the paseo unit changed. When the caller
+# is a Paseo-hosted agent or terminal, it lives in paseo.service's own cgroup,
+# so the stop phase of the switch kills the caller — and with it a directly
+# attached switch, stranding the activation half-finished. This script runs
+# the switch inside a tmux session on a dedicated socket whose server is
+# started through `systemd-run --user`, which places it in the user manager's
+# cgroup where a paseo restart cannot reach it.
+#
+# Retrieve a running (or finished) switch with:
+#   tmux -L nixos-switch attach -t switch
+# or follow the log:
+#   tail -f ~/.local/state/nixos-switch/switch.log
+
+set -ue
+
+SOCKET=nixos-switch
+SESSION=switch
+STATE_DIR="$HOME/.local/state/nixos-switch"
+LOG="$STATE_DIR/switch.log"
+TMUX=/run/current-system/sw/bin/tmux
+
+mkdir -p "$STATE_DIR"
+touch "$LOG"
+
+attach_or_tail() {
+	if [ -t 1 ]; then
+		exec "$TMUX" -L "$SOCKET" attach -t "$SESSION"
+	else
+		echo "Following $LOG (attach with: tmux -L $SOCKET attach -t $SESSION)"
+		# Follow until the switch process inside the pane exits; remain-on-exit
+		# keeps the pane itself around for later inspection.
+		local pane_pid
+		pane_pid=$("$TMUX" -L "$SOCKET" display-message -p -t "$SESSION" '#{pane_pid}')
+		exec tail -f --pid="$pane_pid" "$LOG"
+	fi
+}
+
+if "$TMUX" -L "$SOCKET" has-session -t "$SESSION" 2>/dev/null; then
+	echo "A switch session already exists on socket '$SOCKET'."
+	attach_or_tail
+fi
+
+# Quote the switch arguments for re-use inside the tmux command string.
+args=""
+for arg in "$@"; do
+	args="$args ${(q)arg}"
+done
+
+inner="cd /srv/dotfiles/nixos && just switch$args 2>&1 | tee $LOG; echo \"[safe_switch] exit \$pipestatus[1]\" | tee -a $LOG"
+
+# systemd-run --user guarantees the tmux server (spawned on first use of this
+# socket) lands in the user manager's cgroup, not the caller's. If the server
+# already exists, this just creates a session on it, which is equally safe
+# because that server was itself started the same way. Agent environments
+# often lack the user-bus variables, so default them before connecting.
+export XDG_RUNTIME_DIR="${XDG_RUNTIME_DIR:-/run/user/$UID}"
+export DBUS_SESSION_BUS_ADDRESS="${DBUS_SESSION_BUS_ADDRESS:-unix:path=$XDG_RUNTIME_DIR/bus}"
+if ! systemd-run --user --collect --quiet -p Type=forking \
+	"$TMUX" -L "$SOCKET" new-session -d -s "$SESSION" \
+	"/run/current-system/sw/bin/zsh -lc ${(q)inner}"; then
+	echo "systemd-run --user failed; escaping the caller's cgroup via sudo instead." >&2
+	/run/wrappers/bin/sudo systemd-run --uid="$UID" --collect --quiet -p Type=forking \
+		--setenv=XDG_RUNTIME_DIR="$XDG_RUNTIME_DIR" \
+		"$TMUX" -L "$SOCKET" new-session -d -s "$SESSION" \
+		"/run/current-system/sw/bin/zsh -lc ${(q)inner}"
+fi
+
+# remain-on-exit keeps the pane (and its scrollback) around after the switch
+# finishes so attaching later shows the outcome; kill the session to dismiss.
+"$TMUX" -L "$SOCKET" set-option -t "$SESSION" remain-on-exit on
+
+echo "Switch started in detached tmux session '$SESSION' (socket '$SOCKET')."
+attach_or_tail

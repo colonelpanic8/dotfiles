@@ -76,6 +76,11 @@ Treat model selection and effort level as separate decisions. The following scor
   to a temporary checkout. Home Manager's out-of-store links would remain tied
   to that path after the checkout is removed.
 - Host configs live under `machines/`; choose the appropriate host when needed.
+- A rebuild may restart `paseo.service`, which kills every Paseo-hosted agent and
+  terminal — including you, if you are one. `just switch` detects this and re-runs
+  itself detached via `safe_switch` (a tmux session outside paseo's cgroup).
+  Follow or retrieve a run with `tmux -L nixos-switch attach -t switch` or
+  `tail -f ~/.local/state/nixos-switch/switch.log`.
 
 ## Ad-hoc utilities via Nix
 - If you want to use a CLI utility you know about but it is not currently available on PATH, prefer using `nix run` / `nix shell` to get it temporarily rather than installing it globally.
