@@ -69,6 +69,10 @@ function M.setup(ctx)
       command = "t3code-desktop",
       class = "t3code",
     },
+    paseo = {
+      command = "paseo-desktop",
+      classes = { "Paseo", "paseo" },
+    },
     dropdown = {
       command = "ghostty --config-file=/home/imalison/.config/ghostty/dropdown",
       class = "com.mitchellh.ghostty.dropdown",
