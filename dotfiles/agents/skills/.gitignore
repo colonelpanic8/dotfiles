@@ -1,2 +1,10 @@
 .system/
 codex-primary-runtime/
+
+# Synced from the installed Paseo Desktop bundle. Each directory contains a
+# .paseo-managed-files.json ownership manifest and is regenerated at runtime.
+paseo/
+paseo-advisor/
+paseo-committee/
+paseo-handoff/
+paseo-loop/
