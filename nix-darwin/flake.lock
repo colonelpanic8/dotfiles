@@ -648,6 +648,27 @@
         "type": "github"
       }
     },
+    "paseo": {
+      "inputs": {
+        "nixpkgs": [
+          "nixpkgs"
+        ]
+      },
+      "locked": {
+        "lastModified": 1785257072,
+        "narHash": "sha256-q7hDstbxbFpSfWbDdndrg7iLQxbfR3McVwLN0TeM3X0=",
+        "owner": "colonelpanic8",
+        "repo": "paseo",
+        "rev": "35e778f9c7450310648895c0fafd2084b09b2346",
+        "type": "github"
+      },
+      "original": {
+        "owner": "colonelpanic8",
+        "ref": "assembled",
+        "repo": "paseo",
+        "type": "github"
+      }
+    },
     "railbird-secrets": {
       "inputs": {
         "agenix": "agenix_2",
@@ -688,6 +709,7 @@
         "nix-homebrew": "nix-homebrew",
         "nixpkgs": "nixpkgs_3",
         "nixpkgs-bazel": "nixpkgs-bazel",
+        "paseo": "paseo",
         "railbird-secrets": "railbird-secrets",
         "t3code-integration": "t3code-integration"
       }

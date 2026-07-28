@@ -69,6 +69,11 @@
       };
     };
 
+    paseo = {
+      url = "github:colonelpanic8/paseo/assembled";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+
     keepbook = {
       url = "github:colonelpanic8/keepbook";
       inputs.nixpkgs.follows = "nixpkgs";
@@ -125,6 +130,39 @@
       ...
     }: let
       essentialPkgs = (import ../nix-shared/system/essential.nix {inherit pkgs lib inputs;}).environment.systemPackages;
+      isTargetPrimaryUser = primaryUser == targetPrimaryUser;
+      paseoHome = "${homeForUser primaryUser}/.paseo";
+      paseoPackage = inputs.paseo.packages.${pkgs.stdenv.hostPlatform.system}.default;
+      paseoDaemon = pkgs.writeShellScript "paseo-daemon" ''
+        set -eu
+
+        secret_file='${config.age.secrets.paseo-password-environment.path}'
+        password_line="$(${pkgs.gnugrep}/bin/grep -m1 '^PASEO_PASSWORD=' "$secret_file")"
+        password="''${password_line#PASEO_PASSWORD=}"
+        if [ -z "$password" ]; then
+          echo "Paseo password secret is empty" >&2
+          exit 1
+        fi
+
+        tailscale_ip=""
+        attempts=0
+        while [ "$attempts" -lt 30 ]; do
+          tailscale_ip="$(${config.services.tailscale.package}/bin/tailscale ip -4 2>/dev/null | ${pkgs.coreutils}/bin/head -n 1 || true)"
+          if [ -n "$tailscale_ip" ]; then
+            break
+          fi
+          attempts=$((attempts + 1))
+          sleep 2
+        done
+        if [ -z "$tailscale_ip" ]; then
+          echo "Timed out waiting for a Tailscale IPv4 address" >&2
+          exit 1
+        fi
+
+        export PASEO_PASSWORD="$password"
+        export PASEO_LISTEN="$tailscale_ip:6767"
+        exec ${paseoPackage}/bin/paseo-server --no-relay
+      '';
       disabledAppleSymbolicHotKey = parameters: {
         enabled = false;
         value = {
@@ -148,6 +186,11 @@
         secrets.tailscale-authkey = {
           file = ../nixos/secrets/tailscale-authkey.age;
           owner = "root";
+          mode = "0400";
+        };
+        secrets.paseo-password-environment = lib.mkIf isTargetPrimaryUser {
+          file = ../nixos/secrets/paseo-password-environment.age;
+          owner = primaryUser;
           mode = "0400";
         };
       };
@@ -233,6 +276,41 @@
           StartInterval = 300;
           StandardOutPath = "/var/log/tailscale-autoconnect.log";
           StandardErrorPath = "/var/log/tailscale-autoconnect.err.log";
+        };
+      };
+
+      launchd.daemons.paseo = lib.mkIf isTargetPrimaryUser {
+        serviceConfig = {
+          ProgramArguments = ["${paseoDaemon}"];
+          UserName = primaryUser;
+          GroupName = "staff";
+          WorkingDirectory = homeForUser primaryUser;
+          EnvironmentVariables = {
+            HOME = homeForUser primaryUser;
+            USER = primaryUser;
+            LOGNAME = primaryUser;
+            SHELL = "/bin/zsh";
+            NODE_ENV = "production";
+            PASEO_HOME = paseoHome;
+            PASEO_HOSTNAMES = config.networking.hostName;
+            PATH = lib.concatStringsSep ":" [
+              "${homeForUser primaryUser}/.nix-profile/bin"
+              "${homeForUser primaryUser}/.local/state/nix/profile/bin"
+              "/etc/profiles/per-user/${primaryUser}/bin"
+              "/run/current-system/sw/bin"
+              "/nix/var/nix/profiles/default/bin"
+              "/opt/homebrew/bin"
+              "/usr/local/bin"
+              "/usr/bin"
+              "/bin"
+            ];
+          };
+          RunAtLoad = true;
+          KeepAlive = true;
+          ProcessType = "Background";
+          ThrottleInterval = 10;
+          StandardOutPath = "${homeForUser primaryUser}/Library/Logs/paseo-daemon.log";
+          StandardErrorPath = "${homeForUser primaryUser}/Library/Logs/paseo-daemon.err.log";
         };
       };
 
@@ -361,7 +439,8 @@
         essentialPkgs
         ++ [
           pkgs.gnupg
-        ];
+        ]
+        ++ lib.optionals isTargetPrimaryUser [paseoPackage];
 
       nixpkgs.config.allowUnfree = true;
 
@@ -378,15 +457,17 @@
           "ddcctl"
           "m1ddc"
         ];
-        casks = [
-          "claude"
-          "chatgpt"
-          "ghostty"
-          "hammerspoon"
-          "raycast"
-          "spotify"
-          "vlc"
-        ];
+        casks =
+          [
+            "claude"
+            "chatgpt"
+            "ghostty"
+            "hammerspoon"
+            "raycast"
+            "spotify"
+            "vlc"
+          ]
+          ++ lib.optionals isTargetPrimaryUser ["paseo"];
         greedyCasks = true;
         onActivation = {
           cleanup = "zap";

@@ -14,6 +14,10 @@
       endpoint = "jimi-hendnix:6767";
     }
     {
+      label = "mac-demarco-mini";
+      endpoint = "mac-demarco-mini:6767";
+    }
+    {
       label = "nixquick";
       endpoint = "nixquick:6767";
     }
