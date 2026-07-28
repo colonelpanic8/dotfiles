@@ -17,7 +17,7 @@ completion reporting remain in clone-project.
 
 Environment:
   CLONE_PROJECT_TERMINAL  Graphical terminal command
-                          (default: $GITHUB_CLONE_TERMINAL, $TERMINAL, or ghostty)
+                          (default: ghostty)
 EOF
   }
 
@@ -45,7 +45,7 @@ EOF
   local terminal
   typeset -a terminal_argv clone_argv
 
-  terminal="${CLONE_PROJECT_TERMINAL:-${GITHUB_CLONE_TERMINAL:-${TERMINAL:-ghostty}}}"
+  terminal="${CLONE_PROJECT_TERMINAL:-ghostty}"
   terminal_argv=(${(z)terminal})
   if (( ${#terminal_argv[@]} == 0 )) || ! command -v "${terminal_argv[1]}" >/dev/null 2>&1; then
     print -u2 -- "clone-project-desktop: graphical terminal not found: ${terminal_argv[1]:-$terminal}"
