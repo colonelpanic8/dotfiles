@@ -126,6 +126,10 @@ in
     # T3 Code desktop wrapper. Individual hosts can still opt out explicitly.
     myModules.t3codeServer.enable = lib.mkDefault true;
 
+    # The Paseo daemon is the same kind of always-on agent backend, and the
+    # desktop client below is useless without one to pair with.
+    myModules.paseo.enable = lib.mkDefault true;
+
     programs.direnv = {
       enable = true;
       nix-direnv.enable = true;
