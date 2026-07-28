@@ -48,4 +48,8 @@ makeEnable config "myModules.paseo" false {
       serviceConfig.EnvironmentFile = config.age.secrets.paseo-password-environment.path;
     })
   ];
+
+  home-manager.users.imalison.imports = [
+    ../nix-shared/home-manager/paseo-desktop-settings.nix
+  ];
 }
