@@ -71,10 +71,11 @@ function M.setup(ctx)
     },
     paseo = {
       command = "paseo-desktop",
-      -- The desktop build now calls app.setName("Paseo") before window
-      -- creation, so Electron reports a real Wayland app ID instead of the
-      -- generic "electron" one. The initial title still pins the main window.
-      class = "paseo-desktop",
+      -- The Wayland app ID comes from the Electron app root's package.json
+      -- name ("paseo-desktop" since the nix launcher gained one) or, on older
+      -- Electron, from the runtime app name ("Paseo"). Older builds published
+      -- the generic "electron"; match all three, plus the initial title.
+      classes = { "paseo-desktop", "Paseo", "electron" },
       initial_title = "Paseo",
     },
     dropdown = {
