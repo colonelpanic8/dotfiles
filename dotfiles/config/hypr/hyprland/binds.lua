@@ -90,6 +90,12 @@ function M.setup(ctx)
   end
 
   local function setup_rofi_and_tool_bindings()
+    local clone_project_desktop_command = "clone-project-desktop"
+    local dotfiles_worktree = os.getenv("DOTFILES_WORKTREE")
+    if dotfiles_worktree and dotfiles_worktree ~= "" then
+      clone_project_desktop_command = shell_quote(dotfiles_worktree .. "/dotfiles/lib/bin/clone-project-desktop")
+    end
+
     bind(main_mod .. " + X", exec("rofi_command.sh"), desc("Open command menu"))
     bind(hyper .. " + V", exec([[cliphist list | rofi -dmenu -p "Clipboard" | cliphist decode | wl-copy]]), desc("Open clipboard history"))
     bind(hyper .. " + P", exec("rofi-pass"), desc("Open password menu"))
@@ -105,8 +111,8 @@ function M.setup(ctx)
     bind(hyper .. " + X", exec("hypr_rofi_action"), desc("Open Hyprland action menu"))
     bind(hyper .. " + I", exec("rofi_select_input.hs"), desc("Open input selection menu"))
     bind(hyper .. " + Y", exec("rofi_agentic_skill"), desc("Open agentic skill menu"))
-    bind(hyper .. " + F", exec("clone-project-desktop"), desc("Find a GitHub repository to clone"))
-    bind(hyper .. " + SHIFT + F", exec("clone-project-desktop --user"), desc("Find a GitHub owner and repository to clone"))
+    bind(hyper .. " + F", exec(clone_project_desktop_command), desc("Find a GitHub repository to clone"))
+    bind(hyper .. " + SHIFT + F", exec(clone_project_desktop_command .. " --user"), desc("Find a GitHub owner and repository to clone"))
   end
 
   local function setup_external_command_bindings()

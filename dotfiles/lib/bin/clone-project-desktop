@@ -42,21 +42,23 @@ EOF
       ;;
   esac
 
-  local terminal
+  local clone_project_command script_dir terminal
   typeset -a terminal_argv clone_argv
 
+  script_dir="${functions_source[clone_project_desktop]:A:h}"
+  clone_project_command="$script_dir/clone-project"
   terminal="${CLONE_PROJECT_TERMINAL:-ghostty}"
   terminal_argv=(${(z)terminal})
   if (( ${#terminal_argv[@]} == 0 )) || ! command -v "${terminal_argv[1]}" >/dev/null 2>&1; then
     print -u2 -- "clone-project-desktop: graphical terminal not found: ${terminal_argv[1]:-$terminal}"
     return 127
   fi
-  if ! command -v clone-project >/dev/null 2>&1; then
-    print -u2 -- "clone-project-desktop: clone-project is not installed"
+  if [[ ! -x "$clone_project_command" ]]; then
+    print -u2 -- "clone-project-desktop: clone-project is not executable next to the launcher"
     return 127
   fi
 
-  clone_argv=(clone-project)
+  clone_argv=("$clone_project_command")
   if [[ "$picker_mode" == "owners" ]]; then
     clone_argv+=(--user)
   else

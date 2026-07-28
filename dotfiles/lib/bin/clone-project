@@ -125,9 +125,9 @@ EOF
 
   function command_path {
     local command_file
-    command_file="$(whence -p clone-project 2>/dev/null || true)"
-    if [[ -z "$command_file" ]]; then
-      command_file="${0:A}"
+    command_file="${functions_source[clone_project]:A}"
+    if [[ -z "$command_file" || ! -x "$command_file" ]]; then
+      command_file="$(whence -p clone-project 2>/dev/null || true)"
     fi
     [[ -n "$command_file" ]] || {
       print -u2 -- "clone-project: could not locate its executable for fzf reloads"
