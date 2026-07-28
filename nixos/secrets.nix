@@ -4,7 +4,10 @@
   ...
 }: {
   home-manager.users.imalison = {config, ...}: {
-    imports = [inputs.agenix.homeManagerModules.default];
+    imports = [
+      inputs.agenix.homeManagerModules.default
+      ../nix-shared/home-manager/paseo-managed-hosts.nix
+    ];
     age.identityPaths = ["${config.home.homeDirectory}/.ssh/id_ed25519"];
     home.packages = [
       inputs.agenix.packages."${pkgs.stdenv.hostPlatform.system}".default

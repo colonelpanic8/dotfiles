@@ -1,6 +1,7 @@
 {
   config,
   inputs,
+  lib,
   makeEnable,
   ...
 }:
@@ -25,4 +26,16 @@ makeEnable config "myModules.paseo" false {
   networking.firewall.interfaces."tailscale0".allowedTCPPorts = [
     config.services.paseo.port
   ];
+
+  age.secrets.paseo-password-environment = lib.mkIf config.myModules.tailscale.enable {
+    file = ./secrets/paseo-password-environment.age;
+    owner = config.services.paseo.user;
+    group = config.services.paseo.group;
+    mode = "0400";
+  };
+
+  systemd.services.paseo = lib.mkIf config.myModules.tailscale.enable {
+    after = ["agenix.service"];
+    serviceConfig.EnvironmentFile = config.age.secrets.paseo-password-environment.path;
+  };
 }

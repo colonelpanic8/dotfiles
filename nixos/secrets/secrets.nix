@@ -32,4 +32,5 @@ in {
   # Optional Tailscale pre-auth key for unattended enrollment.
   # This is safe to commit encrypted; default plaintext is "DISABLED".
   "tailscale-authkey.age".publicKeys = keys.kanivanKeys;
+  "paseo-password-environment.age".publicKeys = keys.agenixKeys;
 }

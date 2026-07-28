@@ -96,6 +96,7 @@ in {
   imports = [
     inputs.agenix.homeManagerModules.default
     ../../nix-shared/home-manager/codex-generated-skills.nix
+    ../../nix-shared/home-manager/paseo-managed-hosts.nix
   ];
 
   programs.home-manager.enable = true;
