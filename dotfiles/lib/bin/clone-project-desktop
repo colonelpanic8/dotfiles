@@ -1,195 +1,85 @@
-#!/usr/bin/env bash
+#!/usr/bin/env zsh
 
-set -euo pipefail
+function clone_project_desktop {
+  emulate -L zsh
+  setopt errexit nounset pipefail
 
-github_mode=false
-notification_id=""
-last_progress=""
+  local picker_mode="repositories"
 
-usage() {
-  cat <<'EOF'
-Usage: clone-project-desktop [--github]
+  function usage {
+    cat <<'EOF'
+Usage: clone-project-desktop [QUERY]
+       clone-project-desktop --user [OWNER-QUERY]
 
-Graphical launcher for clone-project: prompt for a repository in rofi, then
-clone it in the background with desktop notifications for progress and
-completion. Requires rofi and notify-send, i.e. a graphical session.
+Open clone-project's interactive GitHub repository picker in a dedicated
+graphical terminal window. All searching, selection, cloning, validation, and
+completion reporting remain in clone-project.
 
-With --github, the rofi prompt expects an OWNER/REPO name (see
-clone-project --github).
-
-Set PROJECTS_DIR to use a different project root.
+Environment:
+  CLONE_PROJECT_TERMINAL  Graphical terminal command
+                          (default: $GITHUB_CLONE_TERMINAL, $TERMINAL, or ghostty)
 EOF
-}
+  }
 
-case "${1:-}" in
-  -h|--help)
-    usage
-    exit 0
-    ;;
-  --github)
-    github_mode=true
-    shift
-    ;;
-esac
+  case "${1:-}" in
+    -h|--help)
+      usage
+      return 0
+      ;;
+    --user)
+      picker_mode="owners"
+      shift
+      (( $# <= 1 )) || {
+        usage >&2
+        return 2
+      }
+      ;;
+    *)
+      (( $# <= 1 )) || {
+        usage >&2
+        return 2
+      }
+      ;;
+  esac
 
-if (( $# != 0 )); then
-  usage >&2
-  exit 2
-fi
+  local terminal
+  typeset -a terminal_argv clone_argv
 
-for command_name in rofi notify-send clone-project; do
-  if ! command -v "$command_name" >/dev/null 2>&1; then
-    printf 'clone-project-desktop: %s is not installed\n' "$command_name" >&2
-    exit 1
+  terminal="${CLONE_PROJECT_TERMINAL:-${GITHUB_CLONE_TERMINAL:-${TERMINAL:-ghostty}}}"
+  terminal_argv=(${(z)terminal})
+  if (( ${#terminal_argv[@]} == 0 )) || ! command -v "${terminal_argv[1]}" >/dev/null 2>&1; then
+    print -u2 -- "clone-project-desktop: graphical terminal not found: ${terminal_argv[1]:-$terminal}"
+    return 127
   fi
-done
-
-projects_dir="${PROJECTS_DIR:-$HOME/Projects}"
-case "$projects_dir" in
-  "~") projects_dir="$HOME" ;;
-  \~/*) projects_dir="$HOME/${projects_dir#\~/}" ;;
-esac
-
-prompt="Clone into ${projects_dir/#$HOME/~}"
-if $github_mode; then
-  prompt="GitHub repo (owner/repo) into ${projects_dir/#$HOME/~}"
-fi
-
-repository="$(
-  printf '' | rofi -dmenu -lines 0 -p "$prompt" || true
-)"
-
-# Treat dismissing the prompt or submitting an empty value as cancellation.
-[[ -n "$repository" ]] || exit 0
-
-project_name="${repository%/}"
-project_name="${project_name%%\?*}"
-project_name="${project_name%%\#*}"
-project_name="${project_name##*/}"
-project_name="${project_name##*:}"
-project_name="${project_name%.git}"
-[[ -n "$project_name" ]] || project_name="$repository"
-
-destination="$projects_dir/$project_name"
-
-notify_started() {
-  notification_id="$(
-    notify-send \
-      --app-name="Clone project" \
-      --icon=folder-download \
-      --expire-time=0 \
-      --hint=int:value:0 \
-      --print-id \
-      "Cloning $project_name" \
-      "Starting…"$'\n'"$destination" \
-      2>/dev/null || true
-  )"
-}
-
-notify_progress() {
-  local progress="$1"
-  local -a progress_hint=()
-
-  [[ -n "$progress" && "$progress" != "$last_progress" ]] || return 0
-  [[ "$notification_id" =~ ^[0-9]+$ ]] || return 0
-  last_progress="$progress"
-
-  if [[ "$progress" =~ ([0-9]{1,3})% ]]; then
-    progress_hint=(--hint="int:value:${BASH_REMATCH[1]}")
+  if ! command -v clone-project >/dev/null 2>&1; then
+    print -u2 -- "clone-project-desktop: clone-project is not installed"
+    return 127
   fi
 
-  notify-send \
-    --app-name="Clone project" \
-    --icon=folder-download \
-    --expire-time=0 \
-    --replace-id="$notification_id" \
-    "${progress_hint[@]}" \
-    "Cloning $project_name" \
-    "$progress"$'\n'"$destination" \
-    2>/dev/null || true
-}
+  clone_argv=(clone-project)
+  if [[ "$picker_mode" == "owners" ]]; then
+    clone_argv+=(--user)
+  else
+    clone_argv+=(--search)
+  fi
+  (( $# == 0 )) || clone_argv+=("$1")
 
-notify_finished() {
-  local summary="$1"
-  local body="$2"
-  local urgency="${3:-normal}"
-  local -a replace_args=()
-
-  if [[ "$notification_id" =~ ^[0-9]+$ ]]; then
-    replace_args=(--replace-id="$notification_id")
+  # Give Ghostty launches their own identity so the window manager can treat
+  # this as a compact picker instead of another ordinary terminal.
+  if [[ "${terminal_argv[1]:t}" == "ghostty" ]]; then
+    terminal_argv+=(
+      --gtk-single-instance=false
+      --class=com.mitchellh.ghostty.githubclone
+      '--title=GitHub Clone'
+      --window-width=120
+      --window-height=32
+    )
   fi
 
-  notify-send \
-    --app-name="Clone project" \
-    --icon=folder-download \
-    --urgency="$urgency" \
-    --expire-time=8000 \
-    "${replace_args[@]}" \
-    "$summary" \
-    "$body" \
-  2>/dev/null || true
+  (
+    CLONE_PROJECT_DESKTOP_LAUNCHED=1 \
+      "${terminal_argv[@]}" -e "${clone_argv[@]}" >/dev/null 2>&1 &!
+  )
 }
 
-latest_clone_progress() {
-  tr '\r' '\n' <"$clone_log" | awk '
-    /Enumerating objects:/ ||
-    /Counting objects:/ ||
-    /Compressing objects:/ ||
-    /Receiving objects:/ ||
-    /Resolving deltas:/ ||
-    /Updating files:/ ||
-    /Filtering content:/ ||
-    /Checking out files:/ {
-      progress = $0
-    }
-    END {
-      sub(/^remote: /, "", progress)
-      sub(/[[:space:]]+$/, "", progress)
-      print progress
-    }
-  '
-}
-
-clone_log="$(mktemp "${TMPDIR:-/tmp}/clone-project.XXXXXX")"
-clone_pid=""
-
-# Invoked indirectly by the EXIT trap below.
-# shellcheck disable=SC2329
-cleanup() {
-  if [[ -n "$clone_pid" ]] && kill -0 "$clone_pid" 2>/dev/null; then
-    kill "$clone_pid" 2>/dev/null || true
-    wait "$clone_pid" 2>/dev/null || true
-  fi
-  rm -f -- "$clone_log"
-}
-
-trap cleanup EXIT
-notify_started
-
-declare -a clone_argv=(clone-project)
-$github_mode && clone_argv+=(--github)
-clone_argv+=("$repository")
-
-"${clone_argv[@]}" >"$clone_log" 2>&1 &
-clone_pid=$!
-
-while kill -0 "$clone_pid" 2>/dev/null; do
-  notify_progress "$(latest_clone_progress)"
-  sleep 0.4
-done
-notify_progress "$(latest_clone_progress)"
-
-if wait "$clone_pid"; then
-  clone_pid=""
-  notify_finished "Clone complete" "$destination"
-  exit 0
-else
-  status=$?
-  clone_pid=""
-fi
-
-notify_finished \
-  "Clone failed" \
-  "$(tail -n1 -- "$clone_log")" \
-  critical
-exit "$status"
+clone_project_desktop "$@"

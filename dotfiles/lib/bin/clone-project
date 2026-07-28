@@ -1,116 +1,351 @@
-#!/usr/bin/env bash
+#!/usr/bin/env zsh
 
-set -euo pipefail
+function clone_project {
+  emulate -L zsh
+  setopt errexit nounset pipefail
 
-projects_dir="${PROJECTS_DIR:-$HOME/Projects}"
-github_mode=false
+  local mode="repositories"
+  local initial_query=""
+  local repository=""
+  local project_name=""
+  local projects_dir="${PROJECTS_DIR:-$HOME/Projects}"
+  local min_query_length="${GITHUB_CLONE_MIN_QUERY_LENGTH:-3}"
+  local debounce="${GITHUB_CLONE_DEBOUNCE:-0.4}"
+  local search_limit="${GITHUB_CLONE_SEARCH_LIMIT:-50}"
+  local owner_repo_limit="${GITHUB_CLONE_OWNER_REPO_LIMIT:-1000}"
+  local github_mode=false
 
-usage() {
-  cat <<'EOF'
-Usage: clone-project [--github] [REPOSITORY [DIRECTORY]]
+  function usage {
+    cat <<'EOF'
+Usage: clone-project [--search [QUERY]]
+       clone-project --user [OWNER-QUERY]
+       clone-project --github OWNER/REPO [DIRECTORY]
+       clone-project REPOSITORY [DIRECTORY]
 
-Clone a git repository into ~/Projects. With no REPOSITORY, prompt for it on
-the terminal, so this works over SSH or any other non-graphical session.
-DIRECTORY, when provided, must be a single directory name.
+With no arguments, interactively search GitHub and clone the selected
+repository into ~/Projects. With --user, first choose a user or organization
+and then choose one of its repositories. --search accepts an optional initial
+repository query.
 
-With --github, REPOSITORY is an OWNER/REPO name and cloning is delegated to
-`gh repo clone`, honoring the authenticated GitHub CLI account and configured
-git protocol.
+REPOSITORY clones a URL or git remote directly. With --github, REPOSITORY is an
+OWNER/REPO name and cloning is delegated to `gh repo clone`, honoring the
+authenticated GitHub CLI account and configured git protocol. DIRECTORY, when
+provided, must be a single directory name.
 
-Set PROJECTS_DIR to use a different project root.
+Use clone-project-desktop to open the interactive workflow in its dedicated
+graphical terminal window.
 
-For a graphical rofi + desktop-notification launcher, see
-clone-project-desktop.
+Environment:
+  GITHUB_CLONE_MIN_QUERY_LENGTH  Minimum live-search length (default: 3)
+  GITHUB_CLONE_DEBOUNCE          Seconds to wait after typing (default: 0.4)
+  GITHUB_CLONE_SEARCH_LIMIT      Live-search result count (default: 50)
+  GITHUB_CLONE_OWNER_REPO_LIMIT  Repositories loaded for an owner (default: 1000)
+  PROJECTS_DIR                   Clone destination root (default: ~/Projects)
 EOF
-}
+  }
 
-infer_project_name() {
-  local repository="$1"
-  local name
+  function valid_positive_integer {
+    [[ "$1" == <-> && "$1" -gt 0 ]]
+  }
 
-  repository="${repository%/}"
-  repository="${repository%%\?*}"
-  repository="${repository%%\#*}"
-  name="${repository##*/}"
-  name="${name##*:}"
-  name="${name%.git}"
+  function require_picker_configuration {
+    local command_name
+    for command_name in gh fzf; do
+      if ! command -v "$command_name" >/dev/null 2>&1; then
+        print -u2 -- "clone-project: required command not found: $command_name"
+        return 127
+      fi
+    done
 
-  if [[ -z "$name" || "$name" == "." || "$name" == ".." || "$name" == */* ]]; then
+    if ! valid_positive_integer "$min_query_length"; then
+      print -u2 -- "clone-project: GITHUB_CLONE_MIN_QUERY_LENGTH must be a positive integer"
+      return 2
+    fi
+    if ! valid_positive_integer "$search_limit"; then
+      print -u2 -- "clone-project: GITHUB_CLONE_SEARCH_LIMIT must be a positive integer"
+      return 2
+    fi
+    if ! valid_positive_integer "$owner_repo_limit"; then
+      print -u2 -- "clone-project: GITHUB_CLONE_OWNER_REPO_LIMIT must be a positive integer"
+      return 2
+    fi
+    if [[ "$debounce" != <-> && "$debounce" != <->.<-> ]]; then
+      print -u2 -- "clone-project: GITHUB_CLONE_DEBOUNCE must be a non-negative number"
+      return 2
+    fi
+
+    if ! gh auth status >/dev/null 2>&1; then
+      print -u2 -- "clone-project: GitHub CLI is not authenticated; run: gh auth login"
+      return 1
+    fi
+  }
+
+  function search_repositories {
+    local query="${1:-}"
+    (( ${#query} >= min_query_length )) || return 0
+
+    gh search repos \
+      --limit "$search_limit" \
+      --json fullName,description,stargazersCount,language,isPrivate \
+      --jq '.[] | [
+        .fullName,
+        (if .isPrivate then "private" else "public" end),
+        ("★" + (.stargazersCount | tostring)),
+        (.language // ""),
+        (.description // "")
+      ] | @tsv' \
+      -- "$query" 2>/dev/null || true
+  }
+
+  function search_owners {
+    local query="${1:-}"
+    (( ${#query} >= min_query_length )) || return 0
+
+    gh api --method GET search/users \
+      -f "q=$query" \
+      -f "per_page=$search_limit" \
+      --jq '.items[] | [.login, .type] | @tsv' \
+      2>/dev/null || true
+  }
+
+  function list_owner_repositories {
+    local owner="$1"
+
+    gh repo list "$owner" \
+      --limit "$owner_repo_limit" \
+      --json nameWithOwner,description,stargazerCount,primaryLanguage,isPrivate \
+      --jq '.[] | [
+        .nameWithOwner,
+        (if .isPrivate then "private" else "public" end),
+        ("★" + (.stargazerCount | tostring)),
+        (.primaryLanguage.name // ""),
+        (.description // "")
+      ] | @tsv'
+  }
+
+  function command_path {
+    local command_file
+    command_file="$(whence -p clone-project 2>/dev/null || true)"
+    if [[ -z "$command_file" ]]; then
+      command_file="${0:A}"
+    fi
+    [[ -n "$command_file" ]] || {
+      print -u2 -- "clone-project: could not locate its executable for fzf reloads"
+      return 1
+    }
+    print -r -- "$command_file"
+  }
+
+  function live_search {
+    local search_kind="$1"
+    local prompt="$2"
+    local query="${3:-}"
+    local self reload selection
+
+    self="$(command_path)" || return
+    reload="sleep ${(q)debounce}; ${(q)self} --internal-$search_kind {q}"
+    selection="$(
+      fzf \
+        --disabled \
+        --no-sort \
+        --delimiter=$'\t' \
+        --with-nth=1,2,3,4,5 \
+        --prompt="$prompt" \
+        --header="Type at least $min_query_length characters; GitHub search is debounced" \
+        --query="$query" \
+        --bind="start:reload($reload),change:reload($reload)" \
+        || true
+    )"
+    print -r -- "${selection%%$'\t'*}"
+  }
+
+  function choose_owner_repository {
+    local owner="$1"
+    local selection
+
+    selection="$(
+      list_owner_repositories "$owner" |
+        fzf \
+          --delimiter=$'\t' \
+          --with-nth=1,2,3,4,5 \
+          --prompt="$owner repository> " \
+          --header="Filtering repositories locally" \
+          || true
+    )"
+    print -r -- "${selection%%$'\t'*}"
+  }
+
+  function infer_project_name {
+    local remote="$1"
+    local name
+
+    remote="${remote%/}"
+    remote="${remote%%\?*}"
+    remote="${remote%%\#*}"
+    name="${remote##*/}"
+    name="${name##*:}"
+    name="${name%.git}"
+
+    if [[ -z "$name" || "$name" == "." || "$name" == ".." || "$name" == */* ]]; then
+      return 1
+    fi
+
+    print -r -- "$name"
+  }
+
+  function notify_result {
+    local result_status="$1"
+    local destination="$2"
+
+    [[ -n "${CLONE_PROJECT_DESKTOP_LAUNCHED:-}" ]] || return 0
+    command -v notify-send >/dev/null 2>&1 || return 0
+
+    if (( result_status == 0 )); then
+      notify-send --app-name="Clone project" "Clone complete" "$destination" || true
+    else
+      notify-send --app-name="Clone project" --urgency=critical \
+        "Clone failed" "$repository was not cloned" || true
+    fi
+  }
+
+  case "${1:-}" in
+    -h|--help)
+      usage
+      return 0
+      ;;
+    --internal-repositories)
+      shift
+      search_repositories "${1:-}"
+      return
+      ;;
+    --internal-owners)
+      shift
+      search_owners "${1:-}"
+      return
+      ;;
+    --internal-owner-repositories)
+      shift
+      [[ $# -eq 1 ]] || return 2
+      list_owner_repositories "$1"
+      return
+      ;;
+    --search)
+      shift
+      (( $# <= 1 )) || {
+        usage >&2
+        return 2
+      }
+      initial_query="${1:-}"
+      ;;
+    --user)
+      mode="owners"
+      shift
+      if [[ "${1:-}" == "-h" || "${1:-}" == "--help" ]]; then
+        usage
+        return 0
+      fi
+      (( $# <= 1 )) || {
+        usage >&2
+        return 2
+      }
+      initial_query="${1:-}"
+      ;;
+    --github)
+      github_mode=true
+      mode="direct"
+      shift
+      if (( $# < 1 || $# > 2 )); then
+        usage >&2
+        return 2
+      fi
+      repository="$1"
+      ;;
+    "")
+      ;;
+    *)
+      mode="direct"
+      if (( $# > 2 )); then
+        usage >&2
+        return 2
+      fi
+      repository="$1"
+      ;;
+  esac
+
+  if [[ "$mode" != "direct" ]]; then
+    if [[ ! -t 0 || ! -t 1 ]]; then
+      print -u2 -- "clone-project: interactive search requires a terminal; use clone-project-desktop from a graphical launcher"
+      return 2
+    fi
+
+    require_picker_configuration || return
+
+    local owner
+    if [[ "$mode" == "owners" ]]; then
+      owner="$(live_search owners 'GitHub owner> ' "$initial_query")"
+      [[ -n "$owner" ]] || return 0
+      repository="$(choose_owner_repository "$owner")"
+    else
+      repository="$(live_search repositories 'GitHub repository> ' "$initial_query")"
+    fi
+
+    [[ -n "$repository" ]] || return 0
+    github_mode=true
+  fi
+
+  if (( $# == 2 )) && [[ "$mode" == "direct" ]]; then
+    project_name="$2"
+    if [[ -z "$project_name" || "$project_name" == "." || "$project_name" == ".." || "$project_name" == */* ]]; then
+      print -u2 -- "clone-project: DIRECTORY must be a single directory name"
+      return 2
+    fi
+  elif ! project_name="$(infer_project_name "$repository")"; then
+    print -u2 -- "clone-project: could not infer a directory name; pass one as the second argument"
+    return 2
+  fi
+
+  case "$projects_dir" in
+    "~") projects_dir="$HOME" ;;
+    \~/*) projects_dir="$HOME/${projects_dir#\~/}" ;;
+  esac
+
+  local destination="$projects_dir/$project_name"
+  if [[ -e "$destination" ]]; then
+    print -u2 -- "clone-project: destination already exists: $destination"
+    notify_result 1 "$destination"
     return 1
   fi
 
-  printf '%s\n' "$name"
+  if ! mkdir -p -- "$projects_dir"; then
+    print -u2 -- "clone-project: could not create project directory: $projects_dir"
+    notify_result 1 "$destination"
+    return 1
+  fi
+
+  local clone_status=0
+  cd -- "$projects_dir"
+  if $github_mode; then
+    if ! command -v gh >/dev/null 2>&1; then
+      print -u2 -- "clone-project: gh is required for GitHub cloning"
+      notify_result 127 "$destination"
+      return 127
+    fi
+    if gh repo clone "$repository" "$project_name" -- --recurse-submodules --progress; then
+      clone_status=0
+    else
+      clone_status=$?
+    fi
+  elif git clone --recurse-submodules --progress -- "$repository" "$project_name"; then
+    clone_status=0
+  else
+    clone_status=$?
+  fi
+
+  if (( clone_status == 0 )); then
+    print -r -- "Cloned to $destination"
+  fi
+  notify_result "$clone_status" "$destination"
+  return "$clone_status"
 }
 
-case "${1:-}" in
-  -h|--help)
-    usage
-    exit 0
-    ;;
-  --github)
-    github_mode=true
-    shift
-    ;;
-esac
-
-if (( $# == 0 )); then
-  if $github_mode; then
-    usage >&2
-    exit 2
-  fi
-
-  if [[ ! -t 0 ]]; then
-    printf 'clone-project: no REPOSITORY given and stdin is not a terminal\n' >&2
-    exit 2
-  fi
-
-  read -rp "Clone into ${projects_dir/#$HOME/~}: " repository
-  [[ -n "$repository" ]] || exit 0
-elif (( $# <= 2 )); then
-  repository="$1"
-else
-  usage >&2
-  exit 2
-fi
-
-if (( $# == 2 )); then
-  project_name="$2"
-  if [[ -z "$project_name" || "$project_name" == "." || "$project_name" == ".." || "$project_name" == */* ]]; then
-    printf 'clone-project: DIRECTORY must be a single directory name\n' >&2
-    exit 2
-  fi
-elif ! project_name="$(infer_project_name "$repository")"; then
-  printf 'clone-project: could not infer a directory name; pass one as the second argument\n' >&2
-  exit 2
-fi
-
-case "$projects_dir" in
-  "~") projects_dir="$HOME" ;;
-  \~/*) projects_dir="$HOME/${projects_dir#\~/}" ;;
-esac
-
-destination="$projects_dir/$project_name"
-
-if [[ -e "$destination" ]]; then
-  printf 'clone-project: destination already exists: %s\n' "$destination" >&2
-  exit 1
-fi
-
-if ! mkdir -p -- "$projects_dir"; then
-  printf 'clone-project: could not create project directory: %s\n' "$projects_dir" >&2
-  exit 1
-fi
-
-cd -- "$projects_dir"
-
-if $github_mode; then
-  if ! command -v gh >/dev/null 2>&1; then
-    printf 'clone-project: gh is required with --github\n' >&2
-    exit 127
-  fi
-  gh repo clone "$repository" "$project_name" -- --recurse-submodules --progress
-else
-  git clone --recurse-submodules --progress -- "$repository" "$project_name"
-fi
-
-printf 'Cloned to %s\n' "$destination"
+clone_project "$@"
