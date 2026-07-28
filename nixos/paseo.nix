@@ -34,8 +34,18 @@ makeEnable config "myModules.paseo" false {
     mode = "0400";
   };
 
-  systemd.services.paseo = lib.mkIf config.myModules.tailscale.enable {
-    after = ["agenix.service"];
-    serviceConfig.EnvironmentFile = config.age.secrets.paseo-password-environment.path;
-  };
+  systemd.services.paseo = lib.mkMerge [
+    {
+      # Rebuilds driven from a terminal or agent that lives inside
+      # paseo.service's own cgroup die when switch-to-configuration stops the
+      # unit, so the switch's start phase never runs and paseo stays down.
+      # Upholds= makes systemd itself start the unit again whenever it is
+      # found inactive while multi-user.target is up.
+      upheldBy = ["multi-user.target"];
+    }
+    (lib.mkIf config.myModules.tailscale.enable {
+      after = ["agenix.service"];
+      serviceConfig.EnvironmentFile = config.age.secrets.paseo-password-environment.path;
+    })
+  ];
 }
