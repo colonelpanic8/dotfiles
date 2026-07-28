@@ -137,6 +137,7 @@
         set -eu
 
         secret_file='${config.age.secrets.paseo-password-environment.path}'
+        /bin/wait4path "$secret_file"
         password_line="$(${pkgs.gnugrep}/bin/grep -m1 '^PASEO_PASSWORD=' "$secret_file")"
         password="''${password_line#PASEO_PASSWORD=}"
         if [ -z "$password" ]; then

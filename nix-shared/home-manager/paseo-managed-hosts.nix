@@ -43,6 +43,9 @@
     # Home Manager agenix paths intentionally contain runtime shell
     # expressions on Linux and Darwin. Let the assignment expand them.
     secret_file=${configuredSecretPath}
+    ${lib.optionalString pkgs.stdenv.isDarwin ''
+      /bin/wait4path "$secret_file"
+    ''}
     password_line="$(${pkgs.gnugrep}/bin/grep -m1 '^PASEO_PASSWORD=' "$secret_file")"
     password="''${password_line#PASEO_PASSWORD=}"
     if [ -z "$password" ]; then
