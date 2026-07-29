@@ -13,7 +13,7 @@ Use the minimum permitted native driver agent when available. Invoke the wrapper
 - Review and verify the output in the parent agent before using it.
 - Never include credentials, secrets, or unnecessary personal data in the prompt.
 - Permit at most one cross-model handoff. Never ask the child to invoke either CLI or delegate again.
-- A Sol caller may target Opus for specialized design work but must never target Fable. Choose Fable as the primary model before the task begins when Fable is warranted.
+- A Sol caller may target Opus 5 for review, design critique, or an independent perspective, but must never target Fable 5. Choose Fable 5 as the primary model before the task begins when it is warranted.
 - Keep one writer per worktree. Have the parent make any resulting edits.
 
 Environment variables documented in the scripts may override their conservative model, effort, timeout, turn, and budget defaults.
