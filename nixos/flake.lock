@@ -2168,11 +2168,11 @@
     "rmk": {
       "flake": false,
       "locked": {
-        "lastModified": 1785281749,
-        "narHash": "sha256-GjquyvQyknWWvnQ0aRc3lDhti/GWS/4rYIAQ5p4Nr70=",
+        "lastModified": 1785314234,
+        "narHash": "sha256-bFcuS0nx403WmbugDgaDeg3bRblgXdnFFLF+SJEcWVM=",
         "owner": "colonelpanic8",
         "repo": "rmk",
-        "rev": "de74f86309ea1fa2c18b5c8b007d7a757dfadafa",
+        "rev": "2f2f40d88422ff3bae4afe6bd538503e7711b09b",
         "type": "github"
       },
       "original": {
@@ -2353,16 +2353,15 @@
         "rmk": "rmk"
       },
       "locked": {
-        "lastModified": 1785301847,
-        "narHash": "sha256-JJYnMTBVs+NF3Hf7O7ILFT/VMpihWaWhsuXDiZ5RB9k=",
+        "lastModified": 1785316776,
+        "narHash": "sha256-coTOU7f9M5mlo3Id9HBTHU4BmZ1ijHcPJI3paqXmCpA=",
         "owner": "colonelpanic8",
         "repo": "rynkbench",
-        "rev": "7f72a6d819eecd13abc9243ef5fe00df7fd20544",
+        "rev": "7fa515e50f4ce864165a48cdc56563b16b15f9cd",
         "type": "github"
       },
       "original": {
         "owner": "colonelpanic8",
-        "ref": "rynkbench-tauri-desktop",
         "repo": "rynkbench",
         "type": "github"
       }
