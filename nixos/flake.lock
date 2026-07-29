@@ -2168,16 +2168,16 @@
     "rmk": {
       "flake": false,
       "locked": {
-        "lastModified": 1784835505,
-        "narHash": "sha256-Ja/4MqOKSP3uKV6D0H2pTKzcSNuMAgB3hKk7aZ2udEU=",
+        "lastModified": 1785281749,
+        "narHash": "sha256-GjquyvQyknWWvnQ0aRc3lDhti/GWS/4rYIAQ5p4Nr70=",
         "owner": "colonelpanic8",
         "repo": "rmk",
-        "rev": "3c7dd59aaf73b29471baf77b0b4d4d902b59cab3",
+        "rev": "de74f86309ea1fa2c18b5c8b007d7a757dfadafa",
         "type": "github"
       },
       "original": {
         "owner": "colonelpanic8",
-        "ref": "lighting-extension-introspection",
+        "ref": "assembled",
         "repo": "rmk",
         "type": "github"
       }
@@ -2353,15 +2353,16 @@
         "rmk": "rmk"
       },
       "locked": {
-        "lastModified": 1784835800,
-        "narHash": "sha256-NctgCsiAL7wPCo13jCZMhdz41akn5gZ/kKAmcvvjPbE=",
+        "lastModified": 1785301847,
+        "narHash": "sha256-JJYnMTBVs+NF3Hf7O7ILFT/VMpihWaWhsuXDiZ5RB9k=",
         "owner": "colonelpanic8",
         "repo": "rynkbench",
-        "rev": "4d188a71ff80aa93cd9bc504d6e43c9458990400",
+        "rev": "7f72a6d819eecd13abc9243ef5fe00df7fd20544",
         "type": "github"
       },
       "original": {
         "owner": "colonelpanic8",
+        "ref": "rynkbench-tauri-desktop",
         "repo": "rynkbench",
         "type": "github"
       }

@@ -59,7 +59,9 @@
     };
 
     rynkbench = {
-      url = "github:colonelpanic8/rynkbench";
+      # TEMPORARY: track the desktop-app branch until it lands on master.
+      # Once merged, drop the branch suffix and `nix flake update rynkbench`.
+      url = "github:colonelpanic8/rynkbench/rynkbench-tauri-desktop";
       inputs = {
         nixpkgs.follows = "nixpkgs";
         flake-utils.follows = "flake-utils";

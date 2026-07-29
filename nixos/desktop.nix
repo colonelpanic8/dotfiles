@@ -9,6 +9,10 @@
   cfg = config.myModules.desktop;
   isFull = cfg.profile == "full";
   rynkbenchPackage = inputs.rynkbench.packages.${pkgs.stdenv.hostPlatform.system}.default;
+  # Desktop shell for the same UI, with a native hidapi transport instead of
+  # WebHID (which WebKitGTK lacks). Ships its own launcher entry, so unlike
+  # the served build below it needs no browser.
+  rynkbenchTauri = lib.attrByPath ["rynkbench-tauri"] null inputs.rynkbench.packages.${pkgs.stdenv.hostPlatform.system};
   desktopShellUi = pkgs.writeShellApplication {
     name = "desktop_shell_ui";
     runtimeInputs = [
@@ -429,7 +433,7 @@
         graphviz
         mermaid-cli
         pandoc
-      ])
+      ] ++ lib.optional (rynkbenchTauri != null) rynkbenchTauri)
       ++ lib.optionals (pkgs.stdenv.hostPlatform.system == "x86_64-linux") [
         googleChromeCommandWrappers
         googleChromeDesktopEntries
