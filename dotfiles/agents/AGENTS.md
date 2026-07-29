@@ -189,3 +189,4 @@ Examples of what's stored:
   - `./project-guides/org-emacs-packages.md`
   - `./project-guides/subtr-actor-rocket-sense-rlru.md`
   - `./project-guides/t3code-assembly.md`
+  - `./project-guides/paseo-assembly.md` (source: `/srv/dotfiles/dotfiles/agents/project-guides/paseo-assembly.md`) — paseo, paseo-assembly. **`assembled` is compiled output — never hand-commit to it.** Read the guide before anything involving `assembled` or "adding this to my paseo build"; it is the only place that procedure lives.
