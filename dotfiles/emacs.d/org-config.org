@@ -1030,7 +1030,14 @@ than by restricting =org-mem-watch-dirs= (the watch dirs also drive backlinks).
   :defer 1
   :custom
   ((org-mem-watch-dirs (list (expand-file-name imalison:org-dir)))
-   (org-mem-do-sync-with-org-id t))
+   (org-mem-do-sync-with-org-id t)
+   ;; Drop upstream's ".org_archive" from the default.  The archive files hold
+   ;; ~600 dead nodes --- mostly old org-gcal event instances, where a
+   ;; recurring "Dentist" or "Flight to San Francisco" contributes one ID per
+   ;; occurrence --- so indexing them buys nothing but title collisions and
+   ;; completion noise.  Nothing outside the archives links to an ID inside
+   ;; them, so no backlink is lost by this.
+   (org-mem-suffixes '(".org")))
   :config
   (org-mem-updater-mode +1))
 
