@@ -18,7 +18,7 @@ makeEnable config "myModules.extra" false {
     kef
     roborock-control
     rofi-roborock
-    texlive.combined.scheme-full
+    texliveSmall
     tor
     yt-dlp
   ];
