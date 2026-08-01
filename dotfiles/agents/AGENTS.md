@@ -9,6 +9,10 @@
 - Whenever you pick a model tier for an agent, record a one-line justification for that choice (in your reasoning/CoT or a brief note in the delegating message) so the decision is auditable. Tie the justification to what the agent must actually decide at execution time, not just the topic's importance — a task specified tightly enough that the taste is already discharged doesn't need the stronger tier. If you can't articulate why the cheaper tier is insufficient, default to it.
 - These guidelines apply to writing, editing, and refactoring code. Non-coding work (reading, searching, planning, running commands, answering questions) does not need to be delegated.
 
+## Paseo-hosted sessions
+
+- If `PASEO_AGENT_ID` is set, read `/srv/dotfiles/dotfiles/agents/PASEO.md` completely and follow it. If it is unset, do not load that file.
+
 ## Code verification
 - Run the relevant formatting, lint, and type checks for changed code whenever the project provides them. Prefer the narrowest affected package or file scope, but do not routinely omit these static checks merely because a change is small or mechanical.
 - Choose local tests in proportion to the change and their cost. Behavioral changes, bug fixes, risky refactors, and new edge cases should get focused tests that exercise the changed behavior.
