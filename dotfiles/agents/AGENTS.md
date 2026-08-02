@@ -44,37 +44,19 @@ Treat model selection and effort level as separate decisions. The following scor
 - Use Fable 5 at medium effort for ordinary design planning and at high effort for truly meaty, ambiguous, high-stakes, or long-horizon work.
 - Do not automatically use low or max effort. Medium is the floor, high is the general default, and extra high is reserved for tasks where deeper reasoning is likely to affect correctness.
 - Difficulty alone does not settle the choice. Prefer Sol or Opus 5 at extra-high effort when execution is difficult but the desired outcome is clear; prefer Fable 5 when determining the right outcome requires judgment or taste, or when the difficulty is deep enough that the cost is worth it.
-- Have Sol critique Fable 5's plans. Fable produces the best plans, which is exactly why they benefit from a skeptical reader that did not author them — Sol is good at finding the step that will not survive contact with the code.
+- For substantive plans, use an independent subagent as a critic when the risk justifies it; prefer a Paseo-managed subagent when one is available.
 
 ### Provider preference and plan capacity
 - The user may state a preference for one provider's models — Claude (Fable 5, Opus 5) or Codex (Sol, Luna) — usually because there is more remaining plan capacity on that side. Treat such a preference as a routing constraint that outranks the default preferences above, and keep honoring it for the rest of the session rather than drifting back after a few tasks.
 - Honor it within the quality floor, not below it. Shifting implementation from Sol to Opus 5 or the reverse is fine, since they are peers. Dropping to a banned tier to stay on the preferred provider is not — if the preferred side has nothing appropriate for the task, say so and use the other provider rather than silently downgrading.
 - Fable 5 remains reserved for the cases that warrant it. A stated preference for Claude is not license to route ordinary implementation to Fable 5; prefer Opus 5.
-- Under a provider preference, keep the critique habit but source the critic within that provider: a different model on the same side, or failing that a fresh agent of the same model with no authoring context and an explicitly adversarial brief. Same-brand critique is weaker than cross-brand, so lean harder on giving the critic the artifact and goal alone.
-- When capacity is the reason, prefer shifting the cheap high-volume work first. Moving mechanical fan-out between Luna and a Claude-side model changes usage far more than moving a single design task does.
+- When capacity is the reason, prefer shifting the cheap high-volume work first and keep expensive models for decisions that materially benefit from them.
 - If no preference has been stated and it would materially change how a large piece of work is routed, it is reasonable to ask which side has capacity before starting.
 
 ### Context window variants
 - The `[1m]` variants (Opus 5 1M, Fable 5 1M, Sonnet 5 1M) trade cost for a 1M-token context window. The plain 200k variants are the default.
 - Reach for a 1M variant only when the task genuinely needs the window: whole-repository sweeps, long-horizon sessions expected to run past a compaction, or analysis over a large corpus that cannot be usefully chunked.
 - Do not pick a 1M variant as insurance against a context that has not proven too small. Subagents are usually the better answer to "too much to read" — they read broadly and return conclusions.
-
-## Cross-model delegation
-- Use cross-model delegation when the user requests it, or when model diversity or an independent check would be useful. Critique is the main case and is worth reaching for on its own; handing execution across the boundary is more situational.
-- Codex should use the `claude_delegator` agent for the Opus 5 cases below, including review pairing. Claude should prefer the `codex-delegator` agent when delegating to Sol. Use `$cross-agent-delegation` or its `ask-claude` and `ask-codex` wrappers when direct invocation is simpler.
-- Permit at most one cross-model handoff and never recursively delegate. Cross-model children may write, under the same territorial discipline as any other worker: exclusive ownership of their directories/files, only one writer per worktree.
-- The parent agent owns review, verification, and integration of the child's output.
-- A Sol agent must never spawn, invoke, or delegate to Fable 5, including through cross-model wrappers or indirect subagent chains. If a task warrants Fable 5, select it as the primary model before beginning rather than allowing Sol to escalate itself.
-- Sol may delegate to other Sol agents at medium effort or higher, to Luna for mechanical work, and to Opus 5 for review, design critique, UX writing, aesthetic review, or an independent perspective.
-- Fable 5 may delegate bounded execution, exploration, and verification work downward to Sol or Opus 5.
-
-### Cross-model critique
-- Having models critique and evaluate each other's work is broadly valuable and is a good default for substantive work, not something the user has to ask for. They fail differently, so each catches what the other is prone to miss, and a critic that did not author the work is not defending it.
-- This applies to plans and designs as much as to diffs. Sol critiquing a Fable 5 plan, Opus 5 reviewing a Sol implementation, and Sol adversarially checking an Opus 5 change are all the same move.
-- For implementation, the usual shape is Sol implements and Opus 5 reviews — Sol grinds the change to completion, Opus 5 judges whether it was the right change, well-named, and well-factored. Reverse it when the interesting risk is execution correctness rather than design: let Opus 5 draft and have Sol check edge cases, concurrency, and error paths.
-- Give the critic the artifact and the original goal, not a summary of the author's reasoning. A reviewer walked through the author's justification mostly ratifies it.
-- The critic is advisory. The orchestrating agent decides what to act on, applies the edits itself, and keeps one writer per worktree.
-- Skip it for small mechanical changes where a second model adds latency without signal. Reserve it for plans worth getting right, behavioral changes, refactors, tricky correctness work, and anything about to become a pull request.
 
 ## Sharing dev-server / preview links
 - When sharing a local server or preview URL, always prefer this machine's Tailscale address over `127.0.0.1`/`localhost`/LAN IPs, so the link opens from any device on the tailnet.
