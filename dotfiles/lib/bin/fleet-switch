@@ -1,0 +1,273 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+readonly NIXOS_DIR=/srv/dotfiles/nixos
+readonly TMUX_SOCKET=fleet-switch
+SELF=$(readlink -f "$0")
+readonly SELF
+
+usage() {
+	cat <<'EOF'
+Usage: fleet-switch [OPTION] [HOST ...] [-- SWITCH_ARG ...]
+
+Run `just switch` locally or on one or more NixOS hosts.
+
+With one host, run in the current terminal. With multiple hosts, open one tmux
+pane per host and run all switches concurrently. Use `local` for this machine.
+
+Options:
+  --online          Switch this host and configured NixOS hosts currently online
+                    in Tailscale
+  --session NAME    Name the tmux session/window (default: fleet-switch-TIMESTAMP)
+  --no-attach       Start a fanout without attaching to its tmux session/window
+  -n, --dry-run     Print the commands without running them
+  -h, --help        Show this help
+
+Examples:
+  fleet-switch
+  fleet-switch strixi-minaj
+  fleet-switch local strixi-minaj railbird-sf
+  fleet-switch --online
+  fleet-switch strixi-minaj -- --show-trace
+EOF
+}
+
+die() {
+	printf 'fleet-switch: %s\n' "$*" >&2
+	exit 1
+}
+
+shell_quote() {
+	local value=$1
+	value=${value//\'/\'\\\'\'}
+	printf "'%s'" "$value"
+}
+
+join_shell_command() {
+	local word
+	for word in "$@"; do
+		shell_quote "$word"
+		printf ' '
+	done
+}
+
+is_local_host() {
+	local host=$1
+	local short_hostname
+	short_hostname=$(hostname -s)
+	[[ $host == local || $host == localhost || $host == "$short_hostname" ]]
+}
+
+configured_hosts() {
+	local machine
+	for machine in "$NIXOS_DIR"/machines/*.nix; do
+		basename "$machine" .nix
+	done
+}
+
+online_hosts() {
+	command -v tailscale >/dev/null 2>&1 || die "--online requires tailscale"
+	command -v jq >/dev/null 2>&1 || die "--online requires jq"
+
+	local -A configured=()
+	local host
+	while IFS= read -r host; do
+		configured[$host]=1
+	done < <(configured_hosts)
+
+	printf '%s\n' local
+	while IFS= read -r host; do
+		[[ -n ${configured[$host]:-} ]] && printf '%s\n' "$host"
+	done < <(
+		tailscale status --json |
+			jq -r '.Peer[] | select(.Online == true) | .HostName' |
+			sort -u
+	)
+}
+
+run_one() {
+	local host=$1
+	shift
+	[[ ${1:-} == -- ]] && shift
+
+	if is_local_host "$host"; then
+		printf '\n==> %s (local)\n' "$(hostname -s)"
+		cd "$NIXOS_DIR"
+		exec just switch "$@"
+	fi
+
+	local remote_command
+	remote_command="cd $(shell_quote "$NIXOS_DIR") && exec just switch"
+	local arg
+	for arg in "$@"; do
+		remote_command+=" $(shell_quote "$arg")"
+	done
+
+	printf '\n==> %s (ssh)\n' "$host"
+	exec ssh -tt -- "$host" "$remote_command"
+}
+
+print_one() {
+	local host=$1
+	shift
+	if is_local_host "$host"; then
+		printf '[%s] cd %s && ' "$host" "$NIXOS_DIR"
+		join_shell_command just switch "$@"
+	else
+		printf '[%s] ' "$host"
+		join_shell_command ssh -tt -- "$host" \
+			"cd $(shell_quote "$NIXOS_DIR") && exec just switch$(
+				for arg in "$@"; do printf ' %s' "$(shell_quote "$arg")"; done
+			)"
+	fi
+	printf '\n'
+}
+
+deduplicate_hosts() {
+	local -A seen=()
+	local host
+	for host in "$@"; do
+		[[ -n ${seen[$host]:-} ]] && continue
+		seen[$host]=1
+		printf '%s\n' "$host"
+	done
+}
+
+start_fanout() {
+	local session=$1
+	local attach=$2
+	shift 2
+	local -a hosts=("$@")
+	local -a pane_commands=()
+	local host command
+
+	command -v tmux >/dev/null 2>&1 || die "fanout requires tmux"
+
+	for host in "${hosts[@]}"; do
+		command=$(join_shell_command "$SELF" --run-one "$host" -- "${switch_args[@]}")
+		pane_commands+=("$command")
+	done
+
+	if [[ -n ${TMUX:-} ]]; then
+		local window_id
+		window_id=$(tmux new-window -d -P -F '#{window_id}' -n "$session" "${pane_commands[0]}")
+		for command in "${pane_commands[@]:1}"; do
+			tmux split-window -d -t "$window_id" "$command"
+		done
+		tmux set-option -w -t "$window_id" remain-on-exit on
+		tmux select-layout -t "$window_id" tiled >/dev/null
+		if [[ $attach == 1 ]]; then
+			tmux select-window -t "$window_id"
+		else
+			printf 'Switches started in tmux window %s.\n' "$window_id"
+		fi
+		return
+	fi
+
+	local tmux_bin
+	tmux_bin=$(command -v tmux)
+	export XDG_RUNTIME_DIR="${XDG_RUNTIME_DIR:-/run/user/$UID}"
+	export DBUS_SESSION_BUS_ADDRESS="${DBUS_SESSION_BUS_ADDRESS:-unix:path=$XDG_RUNTIME_DIR/bus}"
+
+	# Put the tmux server in the user manager's cgroup. A local switch may restart
+	# paseo.service, and the fanout must survive long enough to keep its SSH panes
+	# and the other hosts' switches alive.
+	if ! systemd-run --user --collect --quiet -p Type=forking \
+		"$tmux_bin" -L "$TMUX_SOCKET" new-session -d -s "$session" -n switch \
+		"${pane_commands[0]}"; then
+		printf 'fleet-switch: systemd-run --user failed; retrying through sudo\n' >&2
+		/run/wrappers/bin/sudo systemd-run --uid="$UID" --collect --quiet -p Type=forking \
+			--setenv=XDG_RUNTIME_DIR="$XDG_RUNTIME_DIR" \
+			"$tmux_bin" -L "$TMUX_SOCKET" new-session -d -s "$session" -n switch \
+			"${pane_commands[0]}"
+	fi
+
+	for command in "${pane_commands[@]:1}"; do
+		"$tmux_bin" -L "$TMUX_SOCKET" split-window -d -t "$session:0" "$command"
+	done
+	"$tmux_bin" -L "$TMUX_SOCKET" set-option -w -t "$session:0" remain-on-exit on
+	"$tmux_bin" -L "$TMUX_SOCKET" select-layout -t "$session:0" tiled >/dev/null
+
+	if [[ $attach == 1 ]]; then
+		exec "$tmux_bin" -L "$TMUX_SOCKET" attach -t "$session"
+	fi
+	printf 'Switches started in tmux session %s (attach: tmux -L %s attach -t %s).\n' \
+		"$session" "$TMUX_SOCKET" "$session"
+}
+
+session="fleet-switch-$(date +%Y%m%d-%H%M%S)-$$"
+attach=1
+dry_run=0
+discover_online=0
+run_one_host=""
+declare -a hosts=()
+declare -a switch_args=()
+
+while (($#)); do
+	case $1 in
+		--online)
+			discover_online=1
+			shift
+			;;
+		--session)
+			(($# >= 2)) || die "--session requires a name"
+			session=$2
+			shift 2
+			;;
+		--no-attach)
+			attach=0
+			shift
+			;;
+		-n | --dry-run)
+			dry_run=1
+			shift
+			;;
+		-h | --help)
+			usage
+			exit 0
+			;;
+		--run-one)
+			(($# >= 2)) || die "--run-one requires a host"
+			run_one_host=$2
+			shift 2
+			;;
+		--)
+			shift
+			switch_args=("$@")
+			break
+			;;
+		-*)
+			die "unknown option: $1"
+			;;
+		*)
+			hosts+=("$1")
+			shift
+			;;
+	esac
+done
+
+if [[ -n $run_one_host ]]; then
+	run_one "$run_one_host" -- "${switch_args[@]}"
+fi
+
+if [[ $discover_online == 1 ]]; then
+	mapfile -t discovered < <(online_hosts)
+	hosts+=("${discovered[@]}")
+fi
+
+((${#hosts[@]})) || hosts=(local)
+mapfile -t hosts < <(deduplicate_hosts "${hosts[@]}")
+
+if [[ $dry_run == 1 ]]; then
+	for host in "${hosts[@]}"; do
+		print_one "$host" "${switch_args[@]}"
+	done
+	exit 0
+fi
+
+if ((${#hosts[@]} == 1)); then
+	run_one "${hosts[0]}" -- "${switch_args[@]}"
+fi
+
+start_fanout "$session" "$attach" "${hosts[@]}"

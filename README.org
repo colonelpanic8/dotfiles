@@ -69,18 +69,20 @@ cd /etc/nixos
 just switch
 #+end_src
 
-The local =just switch= recipe wraps =nixos-rebuild switch --flake ".#"=, waits
-for an already-running switch to finish, and overrides the Taffybar inputs to
-the live checkout under this repo. Use it instead of running =nixos-rebuild=
-directly.
+The local =just switch= recipe wraps =nixos-rebuild switch --flake ".#"=. When
+called from a Paseo-hosted process it detaches into a dedicated tmux server so
+the activation can safely restart Paseo. Use it instead of running
+=nixos-rebuild= directly.
 
-Useful variants:
+Use =fleet-switch= to start the same operation locally or over SSH. Multiple
+hosts run concurrently in tiled tmux panes; =local= means the current machine,
+and =--online= selects this machine plus configured NixOS hosts currently
+online in Tailscale.
 
 #+begin_src sh
-cd /etc/nixos
-just switch-remote
-just switch-local-taffybar
-just remote-switch <host>
+fleet-switch strixi-minaj
+fleet-switch local strixi-minaj railbird-sf
+fleet-switch --online
 #+end_src
 
 Build/check examples:

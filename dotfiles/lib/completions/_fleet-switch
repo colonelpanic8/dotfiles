@@ -1,0 +1,21 @@
+#compdef fleet-switch
+
+local -a hosts
+hosts=(
+  local:'this machine'
+  ${^${(f)"$(command find /srv/dotfiles/nixos/machines -maxdepth 1 -name '*.nix' -printf '%f\n' 2>/dev/null)"}%.nix}:'configured NixOS host'
+)
+
+_arguments -s -S \
+  '--online[switch local and online configured Tailscale hosts]' \
+  '--session=[tmux session/window name]:name' \
+  '--no-attach[start the fanout without attaching]' \
+  '(-n --dry-run)'{-n,--dry-run}'[print commands without running them]' \
+  '(-h --help)'{-h,--help}'[show help]' \
+  '*:host:->hosts'
+
+case $state in
+  hosts)
+    _describe 'host' hosts
+    ;;
+esac
