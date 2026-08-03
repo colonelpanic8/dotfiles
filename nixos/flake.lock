@@ -2353,11 +2353,11 @@
         "rmk": "rmk"
       },
       "locked": {
-        "lastModified": 1785751973,
-        "narHash": "sha256-S0yKj2me78kFpMh2buz0WcvmOL3kG+Qdpw6pzKv73Bk=",
+        "lastModified": 1785773656,
+        "narHash": "sha256-WHD/OlsMiM/R2ix+k4yN8jBEpZUzlm/3MvG/HO+fg7Q=",
         "owner": "colonelpanic8",
         "repo": "rynkbench",
-        "rev": "60e9d7b29fa05998bc1782553f63ee61699b9846",
+        "rev": "4094a3eeb84a201f8e0f36ec8ff92a938fbbcee1",
         "type": "github"
       },
       "original": {
