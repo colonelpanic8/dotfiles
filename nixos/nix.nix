@@ -73,6 +73,7 @@
           "https://taffybar.cachix.org"
           "https://codex-cli.cachix.org"
           "https://claude-code.cachix.org"
+          "https://paseo-colonelpanic8.cachix.org"
         ];
         trusted-substituters = [
           "https://cache.nixos.org"
@@ -85,6 +86,7 @@
           "https://taffybar.cachix.org"
           "https://codex-cli.cachix.org"
           "https://claude-code.cachix.org"
+          "https://paseo-colonelpanic8.cachix.org"
         ];
         trusted-public-keys = [
           "cuda-maintainers.cachix.org-1:0dq3bujKpuEPMCX6U4WylrUDZ9JyUG0VpVZa7CNfq5E="
@@ -96,6 +98,7 @@
           "taffybar.cachix.org-1:beZotJ1nVEsAnJxa3lWn0zwzZM7oeXmGh4ADRpHeeIo="
           "codex-cli.cachix.org-1:1Br3H1hHoRYG22n//cGKJOk3cQXgYobUel6O8DgSing="
           "claude-code.cachix.org-1:YeXf2aNu7UTX8Vwrze0za1WEDS+4DuI2kVeWEE4fsRk="
+          "paseo-colonelpanic8.cachix.org-1:fxfDiskEv5JT+xX3CbXBUAWblc+234mDeodXDi7eY1k="
         ];
         nix-path = nixPath;
       };

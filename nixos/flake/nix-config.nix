@@ -18,6 +18,7 @@
     "https://taffybar.cachix.org"
     "https://codex-cli.cachix.org"
     "https://claude-code.cachix.org"
+    "https://paseo-colonelpanic8.cachix.org"
   ];
   extra-trusted-substituters = [
     "https://ai.cachix.org"
@@ -40,5 +41,6 @@
     "taffybar.cachix.org-1:beZotJ1nVEsAnJxa3lWn0zwzZM7oeXmGh4ADRpHeeIo="
     "codex-cli.cachix.org-1:1Br3H1hHoRYG22n//cGKJOk3cQXgYobUel6O8DgSing="
     "claude-code.cachix.org-1:YeXf2aNu7UTX8Vwrze0za1WEDS+4DuI2kVeWEE4fsRk="
+    "paseo-colonelpanic8.cachix.org-1:fxfDiskEv5JT+xX3CbXBUAWblc+234mDeodXDi7eY1k="
   ];
 }
