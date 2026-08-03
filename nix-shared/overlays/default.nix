@@ -38,6 +38,15 @@ final: prev: {
     doCheck = false;
   });
 
+  localsend = prev.localsend.overrideAttrs (oldAttrs: {
+    patches = (oldAttrs.patches or []) ++ [
+      (final.fetchpatch {
+        url = "https://github.com/colonelpanic8/localsend/commit/c4660fe19d1b462f3e8b2ff41c139ea773de6040.patch";
+        hash = "sha256-d7JUcmKPZzSE3/nsHAqhc0HDe/YTYoK5Rok3Bx7wHyA=";
+      })
+    ];
+  });
+
   magma = prev.magma.overrideAttrs (oldAttrs: {
     # The CUDA codegen step in magma 2.9.0 can segfault when `make generate`
     # fans out across all cores. Keep the rest of the build parallel.
