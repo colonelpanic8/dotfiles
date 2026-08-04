@@ -79,6 +79,15 @@ Treat model selection and effort level as separate decisions. The following scor
 - Do not create or switch branches as routine task setup, and do not leave requested work only on a side branch.
 - Before any explicitly requested branch switch, inspect the worktree and preserve all existing changes without disrupting branches attached to other worktrees.
 
+## Generated branches (fork-fold / fork-assembler workflows)
+- Several repositories carry local work as topic branches that a tool folds into a single integration branch — commonly named `assembled`. Recognize the pattern from commit subjects like `fork-fold: merge <branch>`, an assembly manifest, or a branch whose history is a chain of merges of `fold/*`-style branches onto an upstream base.
+- **Never hand-commit to a generated branch.** It is compiled output: the next regeneration rebuilds it from the topic branches, and anything committed directly onto it is silently discarded. This holds even when the branch is currently checked out, is the only place the code builds, or the change is a one-line fix.
+- Land every change on the topic branch that owns that code, then regenerate the integration branch. If no topic branch owns it yet, ask which one should — do not default to the generated branch.
+- A detached HEAD sitting on the generated branch is the usual trap: check what branch you are on before committing in these repos, and confirm the target branch is a source branch rather than an output one.
+- If you find work already stranded on a generated branch, flag it before doing anything else — it is one rebuild away from being lost — then port it to the proper topic branch.
+- After regenerating, verify the rebuild was lossless by comparing the new integration tree against the previous head (`git diff --stat <old> <new>`, or compare `git rev-parse <old>^{tree}` with the new tree). An empty diff means nothing was dropped.
+- Known instances: the paseo assembly (see `./project-guides/paseo-assembly.md`), the T3 Code assembly (see `./project-guides/t3code-assembly.md`), and the `colonelpanic8/rmk` fork used by `glove80-rmk`, whose `assembled` branch is folded from its `fold/*` branches.
+
 ## GitHub pull requests
 - Default to creating pull requests as ready for review, not drafts.
 - Do not add a `[codex]` prefix or any other agent/tool prefix to pull request titles.
