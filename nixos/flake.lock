@@ -126,11 +126,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1785285785,
-        "narHash": "sha256-r1cMlvXjRVKe+uQ/GKwy4TpionpmbNgksFP2758D/MM=",
+        "lastModified": 1785802791,
+        "narHash": "sha256-MK+5xu/3jD22eXRfZNgi4R1mhryVN3aAIzxS1Nb29N0=",
         "owner": "sadjow",
         "repo": "claude-code-nix",
-        "rev": "da78262708d858861afbe1f68ea65fedda4054c4",
+        "rev": "b03bf902ceb0163929f8a4d5ad3a7635802cfba3",
         "type": "github"
       },
       "original": {
@@ -190,11 +190,11 @@
         "nixpkgs": "nixpkgs"
       },
       "locked": {
-        "lastModified": 1785687623,
-        "narHash": "sha256-f5uwkAH/v3qNMznufPMEqD44zCoA0BgTCXLLyosFkVA=",
+        "lastModified": 1785789460,
+        "narHash": "sha256-Sb0+BJuESdSAAxq/lq9ROTuuUyzXSP8VNnBmEGJtR1k=",
         "owner": "ilysenko",
         "repo": "codex-desktop-linux",
-        "rev": "ec38ca664c7fd18fa33744216850924bd3132872",
+        "rev": "717a981443f4e0eb509e2e5fc050ce38d7bd0e52",
         "type": "github"
       },
       "original": {
@@ -731,6 +731,22 @@
       "original": {
         "owner": "hercules-ci",
         "repo": "gitignore.nix",
+        "type": "github"
+      }
+    },
+    "glove80-rmk": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1785793399,
+        "narHash": "sha256-vSXT9uEA44wSWBPbPX2GZFnicUcuN0dtMcaH2ohr85g=",
+        "owner": "colonelpanic8",
+        "repo": "glove80-rmk",
+        "rev": "617397c64446d23753fe532a157de86038001861",
+        "type": "github"
+      },
+      "original": {
+        "owner": "colonelpanic8",
+        "repo": "glove80-rmk",
         "type": "github"
       }
     },
@@ -2347,17 +2363,18 @@
         "flake-utils": [
           "flake-utils"
         ],
+        "glove80-rmk": "glove80-rmk",
         "nixpkgs": [
           "nixpkgs"
         ],
         "rmk": "rmk"
       },
       "locked": {
-        "lastModified": 1785773656,
-        "narHash": "sha256-WHD/OlsMiM/R2ix+k4yN8jBEpZUzlm/3MvG/HO+fg7Q=",
+        "lastModified": 1785793497,
+        "narHash": "sha256-wb8xcN2FoA1KmwM7fZWGSNKQ1zlpWCfDHHpJOpIs0p8=",
         "owner": "colonelpanic8",
         "repo": "rynkbench",
-        "rev": "4094a3eeb84a201f8e0f36ec8ff92a938fbbcee1",
+        "rev": "d4c9fbc81222b23d6151d34e14309b135a822db2",
         "type": "github"
       },
       "original": {
