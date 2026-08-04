@@ -77,6 +77,12 @@ function M.setup(ctx)
       -- the generic "electron"; match all three, plus the initial title.
       classes = { "paseo-desktop", "Paseo", "electron" },
       initial_title = "Paseo",
+      -- Class and title matching is substring-based, and a from-source
+      -- `npm run dev:desktop` build satisfies every pattern above: its app ID
+      -- "getpaseo-desktop" contains "paseo-desktop", and its initial title
+      -- "Paseo Debug" contains "Paseo". Without this the dev build gets adopted
+      -- into the installed client's scratchpad and the two fight over it.
+      exclude_classes = { "getpaseo-desktop" },
     },
     dropdown = {
       command = "ghostty --config-file=/home/imalison/.config/ghostty/dropdown",
@@ -113,6 +119,7 @@ function M.setup(ctx)
     return window
       and not (type(is_file_chooser_window) == "function" and is_file_chooser_window(window))
       and lower_contains_any(window.class, def.classes or def.class)
+      and not (def.exclude_classes and lower_contains_any(window.class, def.exclude_classes))
       and lower_contains(window.title, def.title)
       and lower_contains(window.initial_title, def.initial_title)
   end
