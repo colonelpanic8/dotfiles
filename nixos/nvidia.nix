@@ -80,7 +80,7 @@ in
     # A switch can install newer NVIDIA userspace while the old kernel module
     # remains loaded until reboot. Avoid restarting the driver-bound daemon in
     # that mismatched window; it starts normally with the matching module at boot.
-    systemd.services.nvidia-powerd = {
+    systemd.services.nvidia-powerd = lib.mkIf config.hardware.nvidia.dynamicBoost.enable {
       restartIfChanged = false;
       serviceConfig.ExecCondition = nvidiaPowerdVersionCondition;
     };

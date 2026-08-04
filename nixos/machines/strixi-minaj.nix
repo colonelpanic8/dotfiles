@@ -237,7 +237,11 @@ in {
     options nvidia NVreg_DynamicPowerManagement=0x00
   '';
   hardware.nvidia.powerManagement.enable = true;
-  hardware.nvidia.dynamicBoost.enable = true;
+  # Dynamic Boost requires nvidia-powerd and conflicts with the forced D0
+  # configuration above, which is needed to avoid this laptop's GSP resume
+  # failures. Keep the daemon disabled so `just switch` does not fail when it
+  # cannot allocate a GPU device handle.
+  hardware.nvidia.dynamicBoost.enable = false;
   # In Hybrid mode Hyprland renders on Intel while NVIDIA stays available for
   # compute and explicit render offload. The hardware MUX can still select a
   # fully NVIDIA-driven display path after a reboot.
