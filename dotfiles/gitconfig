@@ -100,12 +100,19 @@
 	smudge = git-lfs smudge -- %f
 	process = git-lfs filter-process
 	required = true
-[credential "https://github.com"]
-	helper = 
-	helper = !/nix/store/fc59sg6h20yvm9hh589zawj0n4xvjkyv-gh-2.96.0/bin/.gh-wrapped auth git-credential
-[credential "https://gist.github.com"]
-	helper = 
-	helper = !/nix/store/fc59sg6h20yvm9hh589zawj0n4xvjkyv-gh-2.96.0/bin/.gh-wrapped auth git-credential
+# Talk to GitHub over SSH, always. This covers URLs we do not control --
+# submodules pinned to an https:// URL in .gitmodules, remotes added by
+# tooling -- without rewriting each remote by hand.
+#
+# These blocks replace a `gh auth setup-git` credential helper that had
+# baked an absolute /nix/store path in here; the store path was later
+# garbage-collected and every https push died on the missing binary.
+# home-manager already generates a correctly-pinned helper in
+# ~/.config/git/config, so nothing needs to be pinned here.
+[url "git@github.com:"]
+	insteadOf = https://github.com/
+[url "git@gist.github.com:"]
+	insteadOf = https://gist.github.com/
 [includeIf "gitdir:~/Projects/org-agenda-api/"]
 	path = ~/.gitconfig.org-agenda-api
 [includeIf "gitdir:~/Projects/dotfiles/org-agenda-api/"]
