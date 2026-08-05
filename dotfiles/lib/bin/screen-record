@@ -1,0 +1,308 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+state_dir="${XDG_RUNTIME_DIR:-/tmp}/screen-record"
+mkdir -p "$state_dir"
+record_pid_file="$state_dir/record.pid"
+replay_pid_file="$state_dir/replay.pid"
+saved_hook="$state_dir/on-saved"
+
+output_dir="${SCREEN_RECORD_DIR:-$HOME/Videos/recordings}"
+replay_dir="${SCREEN_RECORD_REPLAY_DIR:-$output_dir/replays}"
+fps="${SCREEN_RECORD_FPS:-60}"
+quality="${SCREEN_RECORD_QUALITY:-very_high}"
+codec="${SCREEN_RECORD_CODEC:-h264}"
+container="${SCREEN_RECORD_CONTAINER:-mp4}"
+audio="${SCREEN_RECORD_AUDIO:-default_output}"
+replay_seconds="${SCREEN_RECORD_REPLAY_SECONDS:-300}"
+cursor="${SCREEN_RECORD_CURSOR:-yes}"
+
+self="$(readlink -f "$0")"
+
+usage() {
+  cat <<'EOF'
+Usage: screen-record <command> [target] [options]
+
+Commands:
+  toggle [target]   Stop the running recording, or start one (default command)
+  start [target]    Start a recording
+  stop              Stop and save the running recording
+  pause             Pause/unpause the running recording
+  status            Exit 0 if a recording is running, otherwise 1
+  replay [target]   Start the instant-replay buffer (nothing is written until save)
+  save              Write the replay buffer to a file
+  replay-stop       Stop the replay buffer
+  list-audio        Show audio sources usable with --audio
+
+Targets:
+  region            Select a rectangle with slurp (default)
+  window            The focused Hyprland window
+  monitor           The focused monitor
+  <name>            A specific monitor, e.g. DP-1
+
+Options:
+  --audio <spec>    gpu-screen-recorder audio spec (default: default_output)
+  --mic             Also record the default input
+  --no-audio        Record without audio
+  --fps <n>         Frame rate (default: 60)
+  --no-cursor       Omit the cursor
+  --seconds <n>     Replay buffer length for `replay` (default: 300)
+
+Recordings land in ~/Videos/recordings; the path is copied to the clipboard
+when a file is written. Override defaults with SCREEN_RECORD_DIR,
+SCREEN_RECORD_FPS, SCREEN_RECORD_QUALITY, SCREEN_RECORD_CODEC,
+SCREEN_RECORD_CONTAINER, SCREEN_RECORD_AUDIO, SCREEN_RECORD_REPLAY_SECONDS.
+EOF
+}
+
+notify() {
+  notify-send -a screen-record \
+    -h "string:x-canonical-private-synchronous:screen-record" \
+    "$1" "${2:-}" || true
+}
+
+running_pid() {
+  local pid_file="$1" pid
+  [ -r "$pid_file" ] || return 1
+  pid="$(cat "$pid_file")"
+  [ -n "$pid" ] || return 1
+  kill -0 "$pid" 2>/dev/null || return 1
+  printf '%s\n' "$pid"
+}
+
+# gpu-screen-recorder runs this after it writes a file, with the path and the
+# kind of capture ("regular", "replay", "screenshot").
+on_saved() {
+  local path="$1" kind="${2:-regular}"
+  printf '%s' "$path" | wl-copy || true
+  case "$kind" in
+    replay) notify "Replay saved" "$path" ;;
+    *) notify "Recording saved" "$path" ;;
+  esac
+}
+
+write_saved_hook() {
+  cat >"$saved_hook" <<EOF
+#!/usr/bin/env bash
+exec bash ${self@Q} on-saved "\$@"
+EOF
+  chmod +x "$saved_hook"
+}
+
+resolve_target() {
+  local target="$1" geom
+
+  case "$target" in
+    region)
+      geom="$(slurp -f '%wx%h+%x+%y')" || return 1
+      target_args=(-w region -region "$geom")
+      ;;
+    window)
+      geom="$(hyprctl activewindow -j | jq -r '"\(.size[0])x\(.size[1])+\(.at[0])+\(.at[1])"')"
+      case "$geom" in
+        *null* | "") notify "No focused window"; return 1 ;;
+      esac
+      target_args=(-w region -region "$geom")
+      ;;
+    monitor | screen)
+      local name
+      name="$(hyprctl monitors -j | jq -r 'map(select(.focused)) | .[0].name // empty')"
+      [ -n "$name" ] || name=screen
+      target_args=(-w "$name")
+      ;;
+    *)
+      target_args=(-w "$target")
+      ;;
+  esac
+}
+
+common_args() {
+  local -a args=(-f "$fps" -k "$codec" -q "$quality" -cursor "$cursor" -v no -sc "$saved_hook")
+  if [ -n "$audio" ]; then
+    args+=(-a "$audio")
+  fi
+  printf '%s\n' "${args[@]}"
+}
+
+start_recording() {
+  local target="$1"
+  if running_pid "$record_pid_file" >/dev/null; then
+    notify "Already recording"
+    return 0
+  fi
+
+  local -a target_args=()
+  resolve_target "$target" || return 0
+
+  mkdir -p "$output_dir"
+  local out
+  out="$output_dir/$(date +%Y-%m-%d_%H-%M-%S).$container"
+
+  write_saved_hook
+  local -a args=()
+  mapfile -t args < <(common_args)
+
+  gpu-screen-recorder "${target_args[@]}" "${args[@]}" -o "$out" \
+    >"$state_dir/record.log" 2>&1 &
+  echo $! >"$record_pid_file"
+
+  # gpu-screen-recorder exits early on capture/encoder errors; a short grace
+  # period turns that into a visible failure instead of a silent no-op.
+  sleep 0.7
+  if ! running_pid "$record_pid_file" >/dev/null; then
+    rm -f "$record_pid_file"
+    notify "Recording failed" "$(tail -n 3 "$state_dir/record.log")"
+    return 1
+  fi
+  notify "Recording started" "$target"
+}
+
+stop_recording() {
+  local pid
+  if ! pid="$(running_pid "$record_pid_file")"; then
+    notify "Not recording"
+    return 1
+  fi
+  kill -INT "$pid"
+  local waited=0
+  while kill -0 "$pid" 2>/dev/null && [ "$waited" -lt 100 ]; do
+    sleep 0.1
+    waited=$((waited + 1))
+  done
+  rm -f "$record_pid_file"
+}
+
+start_replay() {
+  local target="$1"
+  if running_pid "$replay_pid_file" >/dev/null; then
+    notify "Replay buffer already running"
+    return 0
+  fi
+
+  local -a target_args=()
+  resolve_target "$target" || return 0
+
+  mkdir -p "$replay_dir"
+  write_saved_hook
+  local -a args=()
+  mapfile -t args < <(common_args)
+
+  gpu-screen-recorder "${target_args[@]}" "${args[@]}" \
+    -c "$container" -r "$replay_seconds" -o "$replay_dir" \
+    >"$state_dir/replay.log" 2>&1 &
+  echo $! >"$replay_pid_file"
+
+  sleep 0.7
+  if ! running_pid "$replay_pid_file" >/dev/null; then
+    rm -f "$replay_pid_file"
+    notify "Replay buffer failed" "$(tail -n 3 "$state_dir/replay.log")"
+    return 1
+  fi
+  notify "Replay buffer running" "Last ${replay_seconds}s, save with screen-record save"
+}
+
+main() {
+  local command="${1:-toggle}"
+  shift || true
+
+  if [ "$command" = "on-saved" ]; then
+    on_saved "$@"
+    return 0
+  fi
+
+  local target=region
+  case "${1:-}" in
+    "" | -*) ;;
+    *)
+      target="$1"
+      shift
+      ;;
+  esac
+
+  local mic=no
+  while [ "$#" -gt 0 ]; do
+    case "$1" in
+      --audio)
+        audio="$2"
+        shift 2
+        ;;
+      --mic)
+        mic=yes
+        shift
+        ;;
+      --no-audio)
+        audio=""
+        shift
+        ;;
+      --fps)
+        fps="$2"
+        shift 2
+        ;;
+      --no-cursor)
+        cursor=no
+        shift
+        ;;
+      --seconds)
+        replay_seconds="$2"
+        shift 2
+        ;;
+      -h | --help)
+        usage
+        return 0
+        ;;
+      *)
+        echo "screen-record: unknown option $1" >&2
+        return 2
+        ;;
+    esac
+  done
+  if [ "$mic" = yes ]; then
+    audio="${audio:+$audio|}default_input"
+  fi
+
+  case "$command" in
+    toggle)
+      if running_pid "$record_pid_file" >/dev/null; then
+        stop_recording
+      else
+        start_recording "$target"
+      fi
+      ;;
+    start) start_recording "$target" ;;
+    stop) stop_recording ;;
+    pause)
+      local pid
+      pid="$(running_pid "$record_pid_file")" || {
+        notify "Not recording"
+        return 1
+      }
+      kill -USR2 "$pid"
+      ;;
+    status) running_pid "$record_pid_file" >/dev/null ;;
+    replay) start_replay "$target" ;;
+    save)
+      local pid
+      pid="$(running_pid "$replay_pid_file")" || {
+        notify "No replay buffer running"
+        return 1
+      }
+      kill -USR1 "$pid"
+      ;;
+    replay-stop)
+      local pid
+      pid="$(running_pid "$replay_pid_file")" || return 1
+      kill -INT "$pid"
+      rm -f "$replay_pid_file"
+      ;;
+    list-audio) gpu-screen-recorder --list-audio-devices ;;
+    -h | --help | help) usage ;;
+    *)
+      echo "screen-record: unknown command $command" >&2
+      usage >&2
+      return 2
+      ;;
+  esac
+}
+
+main "$@"

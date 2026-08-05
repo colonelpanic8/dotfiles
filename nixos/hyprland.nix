@@ -407,6 +407,21 @@
       exec python3 ${../dotfiles/lib/bin/hypr_rofi_action} "$@"
     '';
   };
+  screenRecord = pkgs.writeShellApplication {
+    name = "screen-record";
+    runtimeInputs = [
+      config.programs.gpu-screen-recorder.package
+      hyprlandPackage
+      pkgs.coreutils
+      pkgs.jq
+      pkgs.libnotify
+      pkgs.slurp
+      pkgs.wl-clipboard
+    ];
+    text = ''
+      exec bash ${../dotfiles/lib/bin/screen-record} "$@"
+    '';
+  };
   hyprscratchSettings = {
     daemon_options = "clean";
     global_options = "";
@@ -615,6 +630,10 @@
       )
     ];
 
+    # Installs the setcap gsr-kms-server wrapper, without which gpu-screen-recorder
+    # cannot capture on Wayland without a portal prompt per recording.
+    programs.gpu-screen-recorder.enable = true;
+
     # Hyprland-specific packages
     environment.systemPackages = with pkgs;
       [
@@ -630,6 +649,8 @@
         grim # Screenshot utility
         slurp # Region selection
         swappy # Screenshot annotation
+        gpu-screen-recorder-gtk # GUI for gpu-screen-recorder
+        screenRecord # Region/window/monitor recording + instant replay
         nwg-displays # GUI monitor arrangement
         hyprsaver # Shader-based layer-shell screensaver
         ddcutil # Monitor input switching over DDC/CI
