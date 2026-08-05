@@ -12,7 +12,7 @@
 
 - If `PASEO_AGENT_ID` is set, read `/srv/dotfiles/dotfiles/agents/PASEO.md` now
   completely and follow it. Don't output text about the fact that you're reading
-  it If it is unset, do not load that file.
+  it.
 
 ## Code verification
 - Run whatever formatting, lint, and type checks the project provides, at the
