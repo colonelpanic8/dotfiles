@@ -133,10 +133,6 @@ Treat model selection and effort level as separate decisions. The following scor
 - Phone: 301-244-8534
 - Primary Credit Card: Chase-Reserve
 
-## Repository Overview
-
-This is an org-mode repository containing personal task management, calendars, habits, and project tracking files. It serves as the central hub for Ivan's personal organization.
-
 ## Credentials via `pass`
 
 Many credentials and personal details are stored in `pass` (the standard unix password manager). There are hundreds of entries covering a wide range of things, so always search before asking the user for information. Use `pass find <keyword>` to search and `pass show <entry>` to retrieve values.
@@ -156,9 +152,9 @@ Examples of what's stored:
 
 ## Guidelines
 
-- When filling out forms or making purchases, pull personal info from this file and credentials from `pass` rather than asking the user to provide them.
+- When filling out forms or making purchases, pull personal info from this file
+  and credentials from `pass` rather than asking the user to provide them.
 - If a task requires a credential not found in `pass`, ask the user rather than guessing.
-- This repo's org files (gtd.org, calendar.org, habits.org, projects.org) contain task and scheduling data. The org-agenda-api skill/service can also be used to query agenda data programmatically.
 
 ## Project links (local symlink index)
 - Paths in this section are relative to this file's directory (`dotfiles/agents/`).
