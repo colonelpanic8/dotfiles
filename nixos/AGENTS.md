@@ -15,6 +15,16 @@ Avoid dropping scripts in `~/bin` or `~/.local/bin` unless the user explicitly a
 
 - Run `just switch` from `/etc/nixos` or `/srv/dotfiles/nixos` (not `nixos-rebuild` directly).
 - Host configs live under `machines/`.
+- Activate only from the primary `/srv/dotfiles` checkout. `just switch` refuses
+  a non-primary one, and overriding `DOTFILES_WORKTREE` to defeat that is a
+  mistake: Home Manager's out-of-store symlinks would stay pointed at the
+  temporary checkout after it is removed, leaving `~` full of dangling links.
+- A rebuild may restart `paseo.service`, killing every Paseo-hosted agent and
+  terminal — including you, if you are one. `just switch` detects that it is
+  running inside paseo's cgroup and re-executes itself detached via
+  `safe_switch`, a tmux session outside the cgroup. Follow or retrieve that run
+  with `tmux -L nixos-switch attach -t switch` or
+  `tail -f ~/.local/state/nixos-switch/switch.log`.
 
 ## Rofi/Tmux Integration Pointers
 
