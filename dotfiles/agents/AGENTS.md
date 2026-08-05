@@ -38,6 +38,16 @@
   server — assume other sessions/users depend on it. Leave existing servers
   alone and just stand up your own.
 
+## Comments
+- Generally avoid superflous comments
+- Avoid comments that implicitly sort of respond to a request or address aspects
+  of a conversation thread that won't make sense to someone reading the code
+  without that context.
+- Keep comments terse when you do use them.
+
+## Tests
+- Don't add tests that just check a box or test something superflous.
+
 ## Git worktrees
 - For a repository at `<repo_root>`, use worktree paths like `<repo_root>/.worktrees/<task-or-branch>`.
 - Create `.worktrees/` if needed before running `git worktree add`.
@@ -98,7 +108,7 @@
 - Country of Citizenship: United States of America
 - Birthday: August 2, 1990 (1990-08-02)
 - Address: 100 Broderick St APT 401, San Francisco, CA 94117, United States
-- Employer: Railbird Inc.
+- Employer: railbird inc.
 - GitHub: colonelpanic8
 - Phone: 301-244-8534
 - Primary Credit Card: Chase-Reserve
@@ -118,7 +128,6 @@ Examples of what's stored:
 - The store is regularly updated with new entries. Always do a dynamic lookup with `pass find` rather than assuming what's there.
 - Provide credentials to tools/config at runtime via environment variables or inline `pass` usage instead of committing them.
 - Never hardcode credentials or store them in plain text files.
-
 
 ## Project links (local symlink index)
 - Paths in this section are relative to this file's directory (`dotfiles/agents/`).

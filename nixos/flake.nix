@@ -304,12 +304,11 @@
 
     nixtheplanet.url = "github:matthewcroughan/nixtheplanet";
 
+    # No `follows` here or on claude-code-nix: both publish prebuilt binaries to
+    # their own cachix, built against their own locked nixpkgs. Overriding it
+    # changes the store path and forces a local rebuild of every artifact.
     codex-cli-nix = {
       url = "github:sadjow/codex-cli-nix/main";
-      inputs = {
-        nixpkgs.follows = "nixpkgs";
-        flake-utils.follows = "flake-utils";
-      };
     };
 
     codex-desktop-linux = {
@@ -317,19 +316,11 @@
     };
 
     paseo = {
-      # The assembled branch of the paseo-assembly stack: upstream main plus
-      # carried topics/PRs. Force-pushed on every rebuild; `nix flake update
-      # paseo` moves to its current head.
       url = "github:colonelpanic8/paseo/assembled";
-      inputs.nixpkgs.follows = "nixpkgs";
     };
 
     claude-code-nix = {
       url = "github:sadjow/claude-code-nix";
-      inputs = {
-        nixpkgs.follows = "nixpkgs";
-        flake-utils.follows = "flake-utils";
-      };
     };
 
     ccusage-fleet = {
