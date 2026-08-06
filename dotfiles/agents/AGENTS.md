@@ -8,11 +8,17 @@
   covers when to delegate, which model tier to pick, effort levels, provider
   preference, and the `[1m]` context-window variants.
 
-## Paseo-hosted sessions
+## Paseo
+Paseo is an agentic development environment and its currently my daily driver
+for running agents.
 
-- If `PASEO_AGENT_ID` is set, read `/srv/dotfiles/dotfiles/agents/PASEO.md` now
-  completely and follow it. Don't output text about the fact that you're reading
-  it.
+- Unless the user or task explicitly says otherwise, start every agent session
+  or worker created by Paseo in the provider's full-permissions mode (Codex:
+  `full-access`
+- VERY IMPORTANT: ALWAYS use paseo subagents over native subagents when they are
+  available.
+- Give every Paseo-managed subagent a self-contained initial prompt. It does not
+  inherit the parent's full conversation automatically.
 
 ## Code verification
 - Run whatever formatting, lint, and type checks the project provides, at the
