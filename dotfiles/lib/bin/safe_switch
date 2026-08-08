@@ -18,12 +18,16 @@ set -ue
 
 SOCKET=nixos-switch
 SESSION=switch
-STATE_DIR="$HOME/.local/state/nixos-switch"
+STATE_DIR="${XDG_STATE_HOME:-$HOME/.local/state}/nixos-switch"
 LOG="$STATE_DIR/switch.log"
 TMUX=/run/current-system/sw/bin/tmux
 
-mkdir -p "$STATE_DIR"
-touch "$LOG"
+if ! mkdir -p "$STATE_DIR" || ! touch "$LOG"; then
+	STATE_DIR="${TMPDIR:-/tmp}/nixos-switch-$UID"
+	LOG="$STATE_DIR/switch.log"
+	mkdir -p "$STATE_DIR"
+	touch "$LOG"
+fi
 
 attach_or_tail() {
 	if [ -t 1 ]; then
@@ -49,7 +53,7 @@ for arg in "$@"; do
 	args="$args ${(q)arg}"
 done
 
-inner="cd /srv/dotfiles/nixos && just switch$args 2>&1 | tee $LOG; echo \"[safe_switch] exit \$pipestatus[1]\" | tee -a $LOG"
+inner="cd /srv/dotfiles/nixos && just switch$args 2>&1 | tee ${(q)LOG}; echo \"[safe_switch] exit \$pipestatus[1]\" | tee -a ${(q)LOG}"
 
 # systemd-run --user guarantees the tmux server (spawned on first use of this
 # socket) lands in the user manager's cgroup, not the caller's. If the server
