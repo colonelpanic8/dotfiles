@@ -13,6 +13,7 @@
 
   features.full.enable = true;
   myModules.claudeRemoteControl.enable = true;
+  home-manager.users.imalison.programs.codexDesktopLinux.enable = lib.mkForce false;
   myModules.taffybar.aiUsageMode = "both";
   myModules.games.enable = lib.mkForce true;
   myModules.kubelet.enable = false;
