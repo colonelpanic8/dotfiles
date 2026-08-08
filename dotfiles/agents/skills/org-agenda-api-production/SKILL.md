@@ -13,7 +13,7 @@ Access the production org-agenda-api instance at https://org-agenda-api.rocket-s
 
 Get the password from `pass`:
 ```bash
-pass show org-agenda-api/imalison
+pass show org-agenda-api-imalison
 ```
 
 Username is currently `imalison`.
