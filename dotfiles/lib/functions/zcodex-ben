@@ -1,0 +1,8 @@
+#!/usr/bin/env sh
+
+function zcodex-ben {
+    CODEX_HOME="${CODEX_BEN_HOME:-$HOME/.codex-ben}" ZRW_NAME=codex-ben \
+        zrw codex --dangerously-bypass-approvals-and-sandbox --cd "$PWD" "$@"
+}
+
+zcodex-ben "$@"

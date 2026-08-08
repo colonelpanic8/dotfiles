@@ -1,0 +1,7 @@
+#!/usr/bin/env sh
+
+function codex-ben {
+    CODEX_HOME="${CODEX_BEN_HOME:-$HOME/.codex-ben}" codex "$@"
+}
+
+codex-ben "$@"
