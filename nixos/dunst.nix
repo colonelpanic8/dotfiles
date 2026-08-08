@@ -1,4 +1,6 @@
 {
+  systemd.user.services.dunst.Service.ExecCondition = "/run/current-system/sw/bin/desktop_shell_ui exec-condition taffybar";
+
   services.dunst = {
     enable = true;
     settings = {

@@ -348,6 +348,7 @@
         };
         systemd.user.services."status-notifier-watcher" = {
           Unit.Before = ["taffybar.service" "plasma-kded6.service"];
+          Service.ExecCondition = "/run/current-system/sw/bin/desktop_shell_ui exec-condition-except noctalia";
           Service.ExecStartPre = "${statusNotifierWatcherPreStart}";
         };
 

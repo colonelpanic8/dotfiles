@@ -24,6 +24,20 @@
       exec ${../dotfiles/lib/bin/desktop_shell_ui} "$@"
     '';
   };
+  shellUiExecCondition = shell:
+    pkgs.writeShellScript "${shell}-exec-condition" ''
+      exec /run/current-system/sw/bin/desktop_shell_ui exec-condition ${shell}
+    '';
+  dmsSeed = pkgs.writeText "dms-trial-settings.json" (builtins.toJSON {
+    showWorkspaceApps = true;
+    showWorkspaceIndex = true;
+    groupWorkspaceApps = false;
+    groupActiveWorkspaceApps = false;
+    maxWorkspaceIcons = 20;
+    workspaceActiveAppHighlightEnabled = true;
+    showOccupiedWorkspacesOnly = false;
+    systemTrayIconTintMode = "none";
+  });
   chromeCommandLineFlags =
     [
       "--disable-features=WaylandFractionalScaleV1"
@@ -268,8 +282,97 @@
     };
 
     home-manager.sharedModules = [
-      {
+      inputs.dms.homeModules.dank-material-shell
+      inputs.noctalia.homeModules.default
+      ({
+        config,
+        lib,
+        ...
+      }: {
         imports = [./dunst.nix];
+
+        home.file.".local/bin/desktop_shell_ui" = lib.mkIf isFull {
+          source = config.lib.file.mkOutOfStoreSymlink "/run/current-system/sw/bin/desktop_shell_ui";
+          force = true;
+        };
+        home.file.".local/bin/hypr_shell_ui" = lib.mkIf isFull {
+          source = config.lib.file.mkOutOfStoreSymlink "/run/current-system/sw/bin/hypr_shell_ui";
+          force = true;
+        };
+
+        programs.dank-material-shell = lib.mkIf isFull {
+          enable = true;
+          systemd.enable = true;
+          enableSystemMonitoring = false;
+          enableVPN = false;
+          enableDynamicTheming = false;
+          enableAudioWavelength = false;
+          enableCalendarEvents = false;
+        };
+
+        programs.noctalia = lib.mkIf isFull {
+          enable = true;
+          systemd.enable = true;
+          settings = {
+            shell = {
+              font_family = "Iosevka Aile";
+              clipboard_enabled = false;
+              polkit_agent = false;
+              telemetry_enabled = false;
+            };
+            wallpaper.enabled = false;
+            lockscreen.enabled = false;
+            osd.enabled = false;
+            notification.enable_daemon = true;
+            bar.main = {
+              position = "top";
+              thickness = 34;
+              margin_ends = 8;
+              margin_edge = 4;
+              padding = 8;
+              widget_spacing = 4;
+              reserve_space = true;
+              start = ["launcher" "taskbar"];
+              center = ["clock"];
+              end = ["media" "tray" "network" "bluetooth" "volume" "battery" "control-center" "session"];
+            };
+            widget.taskbar = {
+              group_by_workspace = true;
+              workspace_group_content = "icons";
+              group_single_icon_per_app = false;
+              show_workspace_label = true;
+              hide_empty_workspaces = false;
+              workspace_group_capsule = true;
+              only_active_workspace = false;
+              show_all_outputs = false;
+            };
+            widget.tray = {
+              drawer = false;
+              hidden = [];
+              pinned = [];
+            };
+          };
+        };
+
+        home.activation.seedDmsTrialSettings = lib.mkIf isFull (lib.hm.dag.entryAfter ["writeBoundary"] ''
+          settings_dir="${config.xdg.configHome}/DankMaterialShell"
+          settings_file="$settings_dir/settings.json"
+          if [ ! -e "$settings_file" ]; then
+            mkdir -p "$settings_dir"
+            cp ${dmsSeed} "$settings_file"
+            chmod u+w "$settings_file"
+          fi
+        '');
+
+        systemd.user.services.dms.Service = lib.mkIf isFull {
+          ExecCondition = "${shellUiExecCondition "dms"}";
+          Environment = [
+            "DMS_DISABLE_POLKIT=1"
+            "DMS_DISABLE_MATUGEN=1"
+          ];
+        };
+        systemd.user.services.noctalia.Service.ExecCondition =
+          lib.mkIf isFull "${shellUiExecCondition "noctalia"}";
 
         xdg.desktopEntries."com.mitchellh.ghostty" = {
           name = "Ghostty";
@@ -363,7 +466,7 @@
           };
           Install.WantedBy = ["graphical-session.target"];
         };
-      }
+      })
     ];
 
     environment.systemPackages =
@@ -457,7 +560,7 @@ in
   // {
     options = lib.recursiveUpdate enabledModule.options {
       myModules.desktop.shellUi = lib.mkOption {
-        type = lib.types.enum ["taffybar"];
+        type = lib.types.enum ["taffybar" "dms" "noctalia"];
         default = "taffybar";
         description = ''
           Desktop shell UI used by Hyprland-oriented bindings. This controls

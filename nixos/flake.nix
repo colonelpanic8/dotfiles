@@ -116,6 +116,16 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
+    dms = {
+      url = "github:AvengeMedia/DankMaterialShell/stable";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+
+    noctalia = {
+      url = "github:noctalia-dev/noctalia";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+
     # Pin the latest release and keep plugins on its exact ABI. Aquamarine and
     # hyprutils are exposed as shared inputs below so every plugin builds
     # against the same dependency revisions as Hyprland.

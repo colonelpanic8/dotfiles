@@ -1,7 +1,9 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-if command -v desktop_shell_ui >/dev/null 2>&1; then
+if [[ -x /run/current-system/sw/bin/desktop_shell_ui ]]; then
+  shell_ui="$(/run/current-system/sw/bin/desktop_shell_ui current 2>/dev/null || true)"
+elif command -v desktop_shell_ui >/dev/null 2>&1; then
   shell_ui="$(desktop_shell_ui current 2>/dev/null || true)"
 else
   shell_ui=""
@@ -13,6 +15,12 @@ run_launcher() {
   case "$shell_ui" in
     taffybar|rofi)
       exec rofi -show drun -show-icons
+      ;;
+    dms)
+      exec dms ipc call spotlight toggle
+      ;;
+    noctalia)
+      exec noctalia msg panel-toggle launcher
       ;;
     *)
       echo "unknown IM_HYPRLAND_SHELL_UI: $shell_ui" >&2
@@ -40,13 +48,25 @@ case "${1:-}" in
     run_launcher
     ;;
   run)
-    exec rofi -show run
+    case "$shell_ui" in
+      dms) exec dms ipc call spotlight toggle ;;
+      noctalia) exec noctalia msg panel-toggle launcher ;;
+      *) exec rofi -show run ;;
+    esac
     ;;
   control-center)
-    exit 0
+    case "$shell_ui" in
+      dms) exec dms ipc call control-center toggle ;;
+      noctalia) exec noctalia msg panel-toggle control-center home ;;
+      *) exit 0 ;;
+    esac
     ;;
   settings)
-    exit 0
+    case "$shell_ui" in
+      dms) exec dms ipc call settings focusOrToggle ;;
+      noctalia) exec noctalia msg settings-toggle ;;
+      *) exit 0 ;;
+    esac
     ;;
   window)
     shift

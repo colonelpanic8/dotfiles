@@ -9,6 +9,9 @@ normalize_shell_ui() {
     taffybar|rofi)
       printf '%s\n' "taffybar"
       ;;
+    dms|noctalia)
+      printf '%s\n' "$1"
+      ;;
     *)
       return 1
       ;;
@@ -33,6 +36,51 @@ write_shell_ui() {
   printf '%s\n' "$shell_ui" > "$state_file"
 }
 
+reset_stopped_units() {
+  systemctl --user reset-failed "$@" 2>/dev/null || true
+}
+
+start_modular_sni_watcher() {
+  systemctl --user start status-notifier-watcher.service
+}
+
+stop_conflicting_sni_watchers() {
+  local cmdline=""
+  local owner_pid=""
+  local owner_unit=""
+
+  systemctl --user stop status-notifier-watcher.service 2>/dev/null || true
+
+  owner_pid="$(
+    { busctl --user status org.kde.StatusNotifierWatcher 2>/dev/null || true; } |
+      while IFS='=' read -r key value; do
+        if [[ "$key" == PID ]]; then
+          printf '%s' "$value"
+          break
+        fi
+      done
+  )"
+
+  if [[ -n "$owner_pid" ]]; then
+    cmdline="$(tr '\0' ' ' < "/proc/$owner_pid/cmdline" 2>/dev/null || true)"
+    if [[ "$cmdline" == *kded6* ]]; then
+      IFS= read -r owner_unit < "/proc/$owner_pid/cgroup" || true
+      owner_unit="${owner_unit#*::}"
+      owner_unit="${owner_unit##*/}"
+      if [[ -n "$owner_unit" ]]; then
+        systemctl --user kill --signal=SIGKILL --kill-whom=all "$owner_unit" 2>/dev/null || true
+      fi
+    fi
+  fi
+
+  for _ in {1..30}; do
+    if ! busctl --user status org.kde.StatusNotifierWatcher >/dev/null 2>&1; then
+      return 0
+    fi
+    sleep 0.1
+  done
+}
+
 apply_shell_ui() {
   local shell_ui="$1"
 
@@ -41,7 +89,23 @@ apply_shell_ui() {
 
   case "$shell_ui" in
     taffybar)
+      systemctl --user stop dms.service noctalia.service 2>/dev/null || true
+      reset_stopped_units dms.service noctalia.service
+      start_modular_sni_watcher
+      systemctl --user start dunst.service
       systemctl --user start taffybar.service
+      ;;
+    dms)
+      systemctl --user stop taffybar.service noctalia.service dunst.service 2>/dev/null || true
+      reset_stopped_units taffybar.service noctalia.service dunst.service
+      start_modular_sni_watcher
+      systemctl --user start dms.service
+      ;;
+    noctalia)
+      systemctl --user stop taffybar.service dms.service dunst.service 2>/dev/null || true
+      reset_stopped_units taffybar.service dms.service dunst.service
+      stop_conflicting_sni_watchers
+      systemctl --user start noctalia.service
       ;;
   esac
 }
@@ -49,7 +113,7 @@ apply_shell_ui() {
 set_shell_ui() {
   local shell_ui
   shell_ui="$(normalize_shell_ui "${1:-}")" || {
-    echo "usage: desktop_shell_ui set taffybar" >&2
+    echo "usage: desktop_shell_ui set {taffybar|dms|noctalia}" >&2
     exit 2
   }
 
@@ -65,7 +129,11 @@ case "${1:-current}" in
     set_shell_ui "${2:-}"
     ;;
   toggle)
-    set_shell_ui taffybar
+    case "$(current_shell_ui)" in
+      taffybar) set_shell_ui dms ;;
+      dms) set_shell_ui noctalia ;;
+      noctalia) set_shell_ui taffybar ;;
+    esac
     ;;
   apply)
     apply_shell_ui "$(current_shell_ui)"
@@ -73,8 +141,11 @@ case "${1:-current}" in
   exec-condition)
     [[ "$(current_shell_ui)" == "$(normalize_shell_ui "${2:-}")" ]]
     ;;
+  exec-condition-except)
+    [[ "$(current_shell_ui)" != "$(normalize_shell_ui "${2:-}")" ]]
+    ;;
   *)
-    echo "usage: desktop_shell_ui {current|set|toggle|apply|exec-condition}" >&2
+    echo "usage: desktop_shell_ui {current|set {taffybar|dms|noctalia}|toggle|apply|exec-condition|exec-condition-except}" >&2
     exit 2
     ;;
 esac
