@@ -4,7 +4,7 @@
   pkgs,
   inputs,
   orgAgendaApiContainer ? null,
-  orgAgendaApiImageName ? "localhost/org-agenda-api:colonelpanic-4bc4008-22a5515",
+  orgAgendaApiImageName ? "localhost/org-agenda-api:colonelpanic-7c349a7-64700cd",
   ...
 }: {
   imports = [
