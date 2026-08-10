@@ -260,7 +260,7 @@ virtualClasses =
 
 -- Commands
 
-codexCommand = "codex_desktop_scratchpad"
+codexCommand = "codex-desktop"
 discordCommand = "discord"
 elementCommand = "element-desktop"
 emacsCommand = "emacsclient -c"

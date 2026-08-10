@@ -14,7 +14,7 @@ function M.setup(ctx)
 
   scratchpads = {
     codex = {
-      command = "codex_desktop_scratchpad",
+      command = "codex-desktop",
       class = "codex-desktop",
       -- The main window and pet share a process and app ID. The initial title
       -- is stable across later UI title changes and keeps the pet out of all

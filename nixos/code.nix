@@ -6,7 +6,6 @@
   makeEnable,
   ...
 }: let
-  codexSharedAppServerUrl = "ws://127.0.0.1:46231";
   claudeDesktopSource = inputs.claude-desktop;
   claudeDesktopBase = pkgs.callPackage "${claudeDesktopSource}/nix/claude-desktop.nix" {};
   claudeDesktop = claudeDesktopBase.overrideAttrs (oldAttrs: {
@@ -24,102 +23,6 @@
   claudeDesktopFhs = pkgs.callPackage "${claudeDesktopSource}/nix/fhs.nix" {
     claude-desktop = claudeDesktop;
   };
-  codexDesktopLinux = let
-    flake = import "${inputs.codex-desktop-linux}/flake.nix";
-    self' =
-      (flake.outputs {
-        self = self';
-        nixpkgs = inputs.nixpkgs;
-        flake-utils = inputs.flake-utils;
-      })
-      // {
-        outPath = "${inputs.codex-desktop-linux}";
-        rev = inputs.codex-desktop-linux.rev or "";
-        lastModified = inputs.codex-desktop-linux.lastModified or 1;
-      };
-  in
-    self';
-  codexDesktopLinuxPackage = let
-    shallowRepositoryWatchesFeature = "shallow-repository-watches";
-    supportsShallowRepositoryWatches = builtins.pathExists "${inputs.codex-desktop-linux}/linux-features/${shallowRepositoryWatchesFeature}/feature.json";
-    package = codexDesktopLinux.packages.${pkgs.stdenv.hostPlatform.system}.codex-desktop.override {
-      enableComputerUseUi = true;
-      linuxFeatureIds =
-        ["remote-mobile-control"]
-        ++ lib.optional supportsShallowRepositoryWatches shallowRepositoryWatchesFeature;
-    };
-    gsettingsSchemaDataDirs = lib.concatMapStringsSep ":" (pkg:
-      lib.removeSuffix "/glib-2.0/schemas" (pkgs.glib.getSchemaPath pkg)) (with pkgs; [
-      gsettings-desktop-schemas
-      gtk3
-    ]);
-  in
-    package.overrideAttrs (oldAttrs: {
-      nativeBuildInputs =
-        (oldAttrs.nativeBuildInputs or [])
-        ++ [
-          pkgs.asar
-          pkgs.perl
-        ];
-      src = oldAttrs.src.overrideAttrs (payloadOldAttrs: {
-        installPhase = ''
-          export CODEX_ENFORCE_CRITICAL_PATCHES=0
-          export CODEX_LINUX_ICON_SOURCE=${inputs.codex-desktop-linux}/assets/codex-linux.png
-          ${payloadOldAttrs.installPhase}
-        '';
-      });
-      # Keep this outside the upstream source so input updates cannot cause
-      # source-patch conflicts. This can go away once the package wrapper adds
-      # the GSettings schema roots itself upstream.
-      postFixup =
-        (oldAttrs.postFixup or "")
-        + ''
-          # Current Desktop releases split settings visibility into a separate
-          # webview chunk. Keep the Linux page visible until the upstream
-          # patcher input includes the equivalent source-level fix.
-          settings_visibility_assets=()
-          for candidate in "$out"/opt/codex-desktop/content/webview/assets/*.js; do
-            if grep -Fq 'case`general-settings`:case`agent`:case`personalization`:return!0;' "$candidate" \
-              && grep -Fq 'case`keyboard-shortcuts`:return!0' "$candidate"; then
-              settings_visibility_assets+=("$candidate")
-            fi
-          done
-          if [[ "''${#settings_visibility_assets[@]}" -ne 1 ]]; then
-            echo "expected exactly one Codex settings visibility asset, found ''${#settings_visibility_assets[@]}" >&2
-            exit 1
-          fi
-          settings_visibility_asset="''${settings_visibility_assets[0]}"
-          if ! grep -Fq 'case`linux-desktop`:return!0;' "$settings_visibility_asset"; then
-            perl -0pi -e '
-              BEGIN { $count = 0 }
-              $count += s/case`general-settings`:case`agent`:case`personalization`:return!0;/case`linux-desktop`:return!0;case`general-settings`:case`agent`:case`personalization`:return!0;/g;
-              END { die "expected exactly one Codex settings visibility filter, found $count\n" unless $count == 1 }
-            ' "$settings_visibility_asset"
-          fi
-
-          # The upstream Desktop bundle normally constructs its local host
-          # without a websocket URL and therefore owns a private app-server
-          # child process. Supplying websocket_url selects its existing client
-          # transport instead, so Desktop and the CLI can share the durable
-          # systemd-managed app-server below.
-          app_asar="$out/opt/codex-desktop/resources/app.asar"
-          app_asar_dir="$(mktemp -d)"
-          ${lib.getExe pkgs.asar} extract "$app_asar" "$app_asar_dir"
-          main_bundle="$(find "$app_asar_dir/.vite/build" -name 'main-*.js' -print -quit)"
-          perl -0pi -e '
-            BEGIN { $count = 0 }
-            $count += s/\{id:([A-Za-z_\$][A-Za-z0-9_\$]*),display_name:`Local`,kind:`local`\}/\{id:$1,display_name:`Local`,kind:`local`,websocket_url:process.env.CODEX_APP_SERVER_WS_URL??null\}/g;
-            END { die "expected exactly one local Codex host object, found $count\n" unless $count == 1 }
-          ' "$main_bundle"
-          ${lib.getExe pkgs.asar} pack "$app_asar_dir" "$app_asar.new"
-          mv "$app_asar.new" "$app_asar"
-          rm -r "$app_asar_dir"
-
-          wrapProgram "$out/bin/codex-desktop" \
-            --set CODEX_APP_SERVER_WS_URL "${codexSharedAppServerUrl}" \
-            --prefix XDG_DATA_DIRS : "${gsettingsSchemaDataDirs}"
-        '';
-    });
 in
   makeEnable config "myModules.code" true {
     # Code-capable hosts run the persistent backend used by the client-only
@@ -153,16 +56,10 @@ in
     };
 
     home-manager.sharedModules = lib.mkIf config.myModules.desktop.enable [
-      codexDesktopLinux.homeManagerModules.default
+      inputs.codex-desktop-linux.homeManagerModules.default
       {
         home.sessionVariables.YDOTOOL_SOCKET = "/run/ydotoold/socket";
         systemd.user.sessionVariables.YDOTOOL_SOCKET = "/run/ydotoold/socket";
-
-        xdg.configFile."codex-desktop/settings.json".text =
-          (builtins.toJSON {
-            "codex-linux-computer-use-ui-enabled" = true;
-          })
-          + "\n";
       }
     ];
 
@@ -174,13 +71,10 @@ in
 
       programs.codexDesktopLinux = {
         enable = true;
-        package = codexDesktopLinuxPackage;
-        # Bake CODEX_CLI_PATH into the launcher so Codex Desktop always finds this
-        # CLI, regardless of how it is started (GUI autostart, app launcher,
-        # terminal, or warm-start handoff) and without needing a re-login.
         cliPackage = pkgs.codex;
         computerUseUi.enable = true;
         remoteMobileControl.enable = true;
+        linuxFeatures = ["shallow-repository-watches"];
         remoteControl = {
           enable = true;
           package = pkgs.codex;
@@ -197,10 +91,7 @@ in
             ripgrep
             zsh
           ];
-          # Loopback WebSocket is understood by both the Desktop client path
-          # above and `codex --remote`; unlike the Desktop-owned stdio child,
-          # this process survives when the UI exits.
-          listen = codexSharedAppServerUrl;
+          listen = "ws://127.0.0.1:46231";
         };
       };
     };
