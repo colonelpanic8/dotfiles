@@ -332,13 +332,13 @@
       flake = false;
     };
 
-    # The personal assembly is generated from assembly.toml in the dedicated
+    # The personal assembly is generated from manifest.toml in the dedicated
     # colonelpanic8/t3code-assembly repository.
     #
-    # Pin by REV, never by branch: t3code/assembled is force-pushed on rebuild.
+    # Pin by REV, never by branch: generated assembly branches move on rebuild.
     # Each rebuild also pushes a dated tag, so older revs stay fetchable.
     t3code-integration = {
-      url = "github:colonelpanic8/t3code/04e54c1ac95334b162384a99c762e0c9cc38c0cd";
+      url = "github:colonelpanic8/t3code/0b908f386ccd764d9aa9dc985fa4308e85665462";
       inputs = {
         nixpkgs.follows = "nixpkgs";
         flake-utils.follows = "flake-utils";
