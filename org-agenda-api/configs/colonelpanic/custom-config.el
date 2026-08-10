@@ -227,6 +227,7 @@ Returns nil for non-entry templates or templates that can't be converted."
 ;; Set up org-project-capture for container environment
 (require 'org-project-capture)
 (require 'org-category-capture)
+(setq occ-auto-insert-category-heading nil)
 
 (setq org-project-capture-projects-file
       (imalison:join-paths imalison:org-dir "projects.org"))
