@@ -71,11 +71,9 @@ in {
 
   config = lib.mkIf cfg.enable {
     home.file = {
-      # NB: ~/.codex/.gitignore is intentionally NOT managed here. ~/.codex is
-      # a git-sync-rs checkout of the codex-history repo, which ships its own
-      # real .gitignore — git refuses to read a symlinked ignore file, so an
-      # HM-managed symlink here would silently disable ignore rules and risk
-      # committing auth.json/sqlite state. Leave it to the repo.
+      # NB: ~/.codex/.gitignore is intentionally NOT managed here. Codex owns
+      # its runtime state, and Home Manager should not replace its local ignore
+      # rules with an out-of-store symlink.
 
       ".codex/AGENTS.md" = {
         force = true;

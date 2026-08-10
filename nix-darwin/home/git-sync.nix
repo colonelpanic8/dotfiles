@@ -39,11 +39,7 @@
         min_interval = 300.0;
         watch_paths = ["projects" "history.jsonl" "plans" "tasks"];
       }
-      # NB: codex-history is intentionally NOT synced on mac-demarco-mini.
-      # The codex archive is ~1GB and this machine runs chronically near full
-      # (APFS container ~94% used); cloning it would break every darwin
-      # rebuild. mac's own Codex sessions are already merged into the repo —
-      # it just doesn't receive. Re-enable once the disk has headroom.
+      # Codex runtime state is intentionally not synchronized.
     ];
   };
 in {

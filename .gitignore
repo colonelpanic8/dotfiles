@@ -71,8 +71,8 @@ gotools
 # /dotfiles/claude/* rule above keeps it out of the flake source.
 !/dotfiles/claude/skills
 
-# Same story for Codex: ~/.codex resolves into dotfiles/codex on nix-darwin,
-# so the codex-history repo and live Codex state nest inside this worktree.
+# Codex runtime state is intentionally separate from the tracked configuration
+# that is exposed under dotfiles/codex on nix-darwin.
 # Allowlist only HM-managed configuration and custom agents.
 /dotfiles/codex/*
 !/dotfiles/codex/AGENTS.md

@@ -7,11 +7,10 @@
 }: let
   gitSyncServicePath = lib.makeBinPath [pkgs.coreutils pkgs.git pkgs.openssh];
   gitSyncToml = pkgs.formats.toml {};
-  # AI chat-history sync (Claude Code + Codex) is rolled out machine-by-machine;
-  # each new machine needs its existing history merged into the repo first (see
-  # github.com/colonelpanic8/claude-history and .../codex-history).
-  aiHistoryHosts = ["ryzen-shine" "railbird-sf" "jay-lenovo" "strixi-minaj"];
-  syncAiHistory = builtins.elem config.networking.hostName aiHistoryHosts;
+  # Claude Code history sync is rolled out machine-by-machine; each new machine
+  # needs its existing history merged into the repo first.
+  claudeHistoryHosts = ["ryzen-shine" "railbird-sf" "jay-lenovo" "strixi-minaj"];
+  syncClaudeHistory = builtins.elem config.networking.hostName claudeHistoryHosts;
   gmcliPackage = inputs.gmcli.packages.${pkgs.stdenv.hostPlatform.system}.default;
   gmcliViewerBase = inputs.gmcli.packages.${pkgs.stdenv.hostPlatform.system}.gmcli-viewer;
   gmcliCookiePython = pkgs.python3.withPackages (ps: [ps.browser-cookie3]);
@@ -188,7 +187,7 @@ in {
             min_interval = 30.0;
           }
         ]
-        ++ lib.optionals syncAiHistory [
+        ++ lib.optionals syncClaudeHistory [
           {
             name = "claude-history";
             path = config.home.homeDirectory + "/.claude";
@@ -198,16 +197,6 @@ in {
             min_interval = 300.0;
             initial_sync = false;
             watch_paths = ["projects" "history.jsonl" "plans" "tasks"];
-          }
-          {
-            name = "codex-history";
-            path = config.home.homeDirectory + "/.codex";
-            uri = "git@github.com:colonelpanic8/codex-history.git";
-            watch = false;
-            interval = 600;
-            min_interval = 300.0;
-            initial_sync = false;
-            watch_paths = ["sessions" "archived_sessions" "history.jsonl"];
           }
         ];
     };
