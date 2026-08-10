@@ -7,6 +7,7 @@
     imports = [
       inputs.agenix.homeManagerModules.default
       ../nix-shared/home-manager/paseo-managed-hosts.nix
+      ../nix-shared/home-manager/t3code-managed-connections.nix
     ];
     age.identityPaths = ["${config.home.homeDirectory}/.ssh/id_ed25519"];
     home.packages = [
