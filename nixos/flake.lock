@@ -122,11 +122,11 @@
         "nixpkgs": "nixpkgs"
       },
       "locked": {
-        "lastModified": 1785979872,
-        "narHash": "sha256-Ot7+3tmqWgzeA1FLd+V7yYtk76J4kQPfD9IOShQeJyk=",
+        "lastModified": 1786159714,
+        "narHash": "sha256-Rm3yXcjHmoebdRA35SVy/AM9PsckDPPJkY+xGodiIHQ=",
         "owner": "sadjow",
         "repo": "claude-code-nix",
-        "rev": "15b3d255166a0e45b66f1f6f5b1ec8eeb6fc772c",
+        "rev": "9bf9ac959eaee3b06d6ef13f18a711ae64a581b4",
         "type": "github"
       },
       "original": {
@@ -786,11 +786,11 @@
     "glove80-rmk": {
       "flake": false,
       "locked": {
-        "lastModified": 1786062544,
-        "narHash": "sha256-pHMtcip5u7imBTVU7Xq0KeXRJkkiEzj6P1tX57H6WwM=",
+        "lastModified": 1786205882,
+        "narHash": "sha256-EEtadxNsvhrcfFF7Uv6r7YdgOifGhUT4QrES/4rkbDc=",
         "owner": "colonelpanic8",
         "repo": "glove80-rmk",
-        "rev": "43dfc1a07f8ca3959cf15ae1c03b3fb07d115272",
+        "rev": "0c7561f69fdf41be7bfdc1cd22ce2e0854b3a60a",
         "type": "github"
       },
       "original": {
@@ -1606,11 +1606,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1786039776,
-        "narHash": "sha256-Nw1eLBVr8ErAjm3bsh4+SEjjlENKqnambz0CGl2lwnE=",
+        "lastModified": 1786131696,
+        "narHash": "sha256-9zzb//6+hxsFkmk/Yu4jTwfON5XeMUSLa+xn1ujz04Y=",
         "owner": "colonelpanic8",
         "repo": "keepbook",
-        "rev": "7bda19d499479c0766abbf43afb376ba70ff5ec6",
+        "rev": "33450294961d0ea2e7c0957b8da6fd2974c13cc2",
         "type": "github"
       },
       "original": {
@@ -1737,11 +1737,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1786002193,
-        "narHash": "sha256-gGvigh8fvaZsfq8L2KH1AuRY0rGfrUvU8Cy2wEGabVo=",
+        "lastModified": 1786207003,
+        "narHash": "sha256-I2ksY551yZar/lTXLGHUaecEKQRWBn7xl7Gaog076/I=",
         "owner": "nixified-ai",
         "repo": "flake",
-        "rev": "3889b3f6f6be0e7f346873e66fc76d02c73acdf8",
+        "rev": "a307cbd288ae3e64775b2dcc0c9660c368ff6a59",
         "type": "github"
       },
       "original": {
@@ -2226,11 +2226,11 @@
         "nixpkgs": "nixpkgs_11"
       },
       "locked": {
-        "lastModified": 1786151012,
-        "narHash": "sha256-ytt85PofrRgxrRFi30AMqjpzzPke2MWlTneaBx8x1Lo=",
+        "lastModified": 1786228629,
+        "narHash": "sha256-2SM3L8Sy5Uu1LwGqOrf9MvDKcQcddF60ZByfG/feSRA=",
         "owner": "colonelpanic8",
         "repo": "paseo",
-        "rev": "424d7fcf96605ff34b969251e9a29605f05b568c",
+        "rev": "d5dbc8b1cee17f5869202be0e7544d4b3fde4c29",
         "type": "github"
       },
       "original": {
@@ -2389,11 +2389,11 @@
     "rmk": {
       "flake": false,
       "locked": {
-        "lastModified": 1786051321,
-        "narHash": "sha256-jGWHQ3BrNPOhzfYDlFuIcLeFM5W18FkeZ/OPoecVvp0=",
+        "lastModified": 1786191370,
+        "narHash": "sha256-VZbWxTMlKpKgDLdWWucxEICsI7CFdjnkXQWYjsIB1d0=",
         "owner": "colonelpanic8",
         "repo": "rmk",
-        "rev": "a0928ab6a34b6c4d53f1f3758e1879624821f592",
+        "rev": "54b57ac4f36b2645c7dd5840e50468e3a11dc5b2",
         "type": "github"
       },
       "original": {
@@ -2576,11 +2576,11 @@
         "rmk": "rmk"
       },
       "locked": {
-        "lastModified": 1786063031,
-        "narHash": "sha256-lZA8dMRnYPWuncP1+yJLAOhIqljktr15Yc/DPk0OeJs=",
+        "lastModified": 1786205926,
+        "narHash": "sha256-CP6FqZf2k7EZScfa5C5HsXKnzDpyhnPnWA9kT7QdHOQ=",
         "owner": "colonelpanic8",
         "repo": "rynkbench",
-        "rev": "688593118e61b2f39a5197d494687397ea71c238",
+        "rev": "651856032cdea76912a43d06345d00718c7678a4",
         "type": "github"
       },
       "original": {
@@ -2821,11 +2821,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1784244240,
-        "narHash": "sha256-kEuB+x+rpD6OpRBx6MSO0Kdm6vBivaCTRWGhTvtTdjk=",
+        "lastModified": 1786057461,
+        "narHash": "sha256-4DkDjXjwuLd1ZaLP94SG3f++EcAhi7taHLv2LWDaemU=",
         "owner": "peteonrails",
         "repo": "voxtype",
-        "rev": "f97276661d9b723aa3236f03879650a2a06c3ec3",
+        "rev": "a3c092b6852aa6298ddd623a676bb7efcffcd653",
         "type": "github"
       },
       "original": {
