@@ -15,6 +15,7 @@
   myModules.claudeRemoteControl.enable = true;
   myModules.taffybar.aiUsageMode = "both";
   myModules.games.enable = lib.mkForce true;
+  myModules.hermesAgent.enable = true;
   myModules.kubelet.enable = false;
   myModules.nvidia.enable = true;
   myModules.paseo.enable = true;

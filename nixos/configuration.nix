@@ -32,6 +32,7 @@
     ./gitea.nix
     ./gnome.nix
     ./home-assistant.nix
+    ./hermes-agent.nix
     ./imalison.nix
     ./internet-computer.nix
     ./k3s.nix

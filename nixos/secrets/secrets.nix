@@ -33,4 +33,5 @@ in {
   # This is safe to commit encrypted; default plaintext is "DISABLED".
   "tailscale-authkey.age".publicKeys = keys.kanivanKeys;
   "paseo-password-environment.age".publicKeys = keys.agenixKeys;
+  "hermes-environment.age".publicKeys = keys.agenixKeys;
 }

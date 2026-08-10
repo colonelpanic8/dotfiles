@@ -319,6 +319,10 @@
       url = "github:colonelpanic8/paseo/assembled";
     };
 
+    hermes-agent = {
+      url = "github:NousResearch/hermes-agent";
+    };
+
     claude-code-nix = {
       url = "github:sadjow/claude-code-nix";
     };
