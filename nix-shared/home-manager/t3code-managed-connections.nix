@@ -15,11 +15,13 @@
   ];
   magicDnsSuffix = "taileb3aad.ts.net";
   connections =
-    map (host: {
+    map (host: let
+      authority = "${host}.${magicDnsSuffix}${lib.optionalString (host == "railbird-sf") ":8443"}";
+    in {
       environmentId = "fleet:${host}";
       label = host;
-      httpBaseUrl = "https://${host}.${magicDnsSuffix}/";
-      wsBaseUrl = "wss://${host}.${magicDnsSuffix}/";
+      httpBaseUrl = "https://${authority}/";
+      wsBaseUrl = "wss://${authority}/";
     })
     fleetHosts;
   connectionsJson = builtins.toJSON connections;
