@@ -68,6 +68,8 @@ We're going to use this to write separate parts of our config to different secti
 ;; Capture-only storage; intentionally excluded from `org-agenda-files'.
 (defvar imalison:org-links-file
   (imalison:join-paths imalison:org-dir "links.org"))
+(defvar imalison:org-vocabulary-file
+  (imalison:join-paths imalison:org-dir "notes" "vocab.org"))
 (defvar imalison:shared-org-gtd-file
   (imalison:join-paths imalison:shared-org-dir "shared_gtd.org"))
 (defvar imalison:shared-habits-file
@@ -759,7 +761,14 @@ SCHEDULED: %^t
 
   (add-to-list 'org-capture-templates
                `("L" "Link" entry (file ,imalison:org-links-file)
-                 "* %?")))
+                 "* %?"))
+
+  (add-to-list 'org-capture-templates
+               `("v" "Productive vocabulary" entry
+                 (file ,imalison:org-vocabulary-file)
+                 "* %^{Word} :vocabulary:\n%^{Definition}\n\nExample: %^{Original sentence}\n\nSource: %a"
+                 :prepare-finalize
+                 imalison:org-fc-initialize-vocabulary-card)))
 #+end_src
 ** Babel
 #+begin_src emacs-lisp :tangle org-config-config.el
@@ -1219,12 +1228,45 @@ org-node and never touches SQLite at all.
 #+begin_src emacs-lisp
 (use-package org-fc
   :after org
-  :bind ("C-c 9" . org-fc-hydra/body)
+  :bind (("C-c 9" . org-fc-hydra/body)
+         ("C-c v c" . imalison:org-capture-vocabulary)
+         ("C-c v r" . imalison:org-fc-review-vocabulary))
+  :preface
+  (defun imalison:org-capture-vocabulary ()
+    "Capture a productive-vocabulary card."
+    (interactive)
+    (org-capture nil "v"))
+
+  (defun imalison:org-fc-initialize-vocabulary-card ()
+    "Initialize the captured entry as an FSRS vocabulary card."
+    (require 'org-fc-algo-fsrs)
+    (require 'org-fc-type-vocab)
+    (let ((org-fc-default-algo 'fsrs6))
+      (org-fc-type-vocab-init)))
+
+  (defun imalison:org-fc-review-vocabulary ()
+    "Review due cards in `imalison:org-vocabulary-file'."
+    (interactive)
+    (require 'org-fc-algo-fsrs)
+    (require 'org-fc-type-vocab)
+    (org-fc-review
+     `(:paths ,imalison:org-vocabulary-file :order shuffled)))
+  :custom
+  ((org-fc-default-algo 'fsrs6)
+   (org-fc-algo-fsrs6-desired-retention 0.9)
+   (org-fc-directories (list imalison:org-vocabulary-file)))
   :config
   (progn
-    (require 'org-fc-hydra))
+    (require 'org-fc-hydra)
+    (require 'org-fc-algo-fsrs)
+    (require 'org-fc-type-vocab)
+    (add-to-list
+     'org-fc-custom-contexts
+     `(vocabulary . (:paths ,imalison:org-vocabulary-file
+                     :order shuffled))))
   :ensure (:host github :repo "l3kn/org-fc"
-                    :files ("*.el" "awk" "demo.org")))
+           :files ("*.el" "awk" "python" "demo.org")
+           :pre-build ("git submodule update --init --recursive")))
 #+end_src
 ** org-ql
 #+begin_src emacs-lisp
