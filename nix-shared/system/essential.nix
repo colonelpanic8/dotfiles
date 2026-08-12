@@ -37,6 +37,7 @@
     # Upstream checks currently depend on TS artifacts that are not built in Nix.
     doCheck = false;
   });
+  repowise = pkgs.callPackage ../packages/repowise.nix {inherit inputs;};
 
   commonPkgs = lib.filter (pkg: lib.meta.availableOn pkgs.stdenv.hostPlatform pkg) ((with pkgs; [
       automake
@@ -80,6 +81,7 @@
       patchelf
       pstree
       rclone
+      repowise
       ripgrep
       skim
       tmux
