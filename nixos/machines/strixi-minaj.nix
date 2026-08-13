@@ -121,6 +121,7 @@ in {
   myModules.riverXmonad.enable = true;
   myModules.extra.enable = false;
   myModules.code.enable = true;
+  myModules.t3codeServer.startTarget = "default.target";
   myModules.games.enable = false;
   myModules.syncthing.enable = true;
   myModules.fonts.enable = true;
@@ -135,6 +136,8 @@ in {
     gpuDevice = 1;
   };
   myModules."keepbook-sync".enable = true;
+
+  users.users.imalison.linger = true;
 
   hardware.enableRedistributableFirmware = true;
 
