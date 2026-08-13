@@ -9,6 +9,7 @@
   cfg = config.myModules.t3codeServer;
   environmentId = "fleet:${config.networking.hostName}";
   enabledModule = makeEnable config "myModules.t3codeServer" false {
+    users.users.imalison.linger = true;
     home-manager.sharedModules = [inputs.t3code-integration.homeManagerModules.t3code-server];
     home-manager.users.imalison = {config, ...}: {
       services.t3code = {
@@ -50,7 +51,7 @@ in
 
         startTarget = lib.mkOption {
           type = lib.types.str;
-          default = "graphical-session.target";
+          default = "default.target";
           description = "User systemd target that starts the headless T3 Code service.";
         };
       };
