@@ -64,6 +64,8 @@ in
     ];
 
     home-manager.users.imalison = lib.mkIf config.myModules.desktop.enable {
+      imports = [../nix-shared/home-manager/t3code-keybindings.nix];
+
       programs.codex = {
         enable = true;
         package = pkgs.codex;
@@ -73,26 +75,7 @@ in
         enable = true;
         cliPackage = pkgs.codex;
         computerUseUi.enable = true;
-        remoteMobileControl.enable = true;
         linuxFeatures = ["shallow-repository-watches"];
-        remoteControl = {
-          enable = true;
-          package = pkgs.codex;
-          extraPackages = with pkgs; [
-            bash
-            coreutils
-            findutils
-            git
-            gnugrep
-            gnused
-            nix
-            nodejs
-            openssh
-            ripgrep
-            zsh
-          ];
-          listen = "ws://127.0.0.1:46231";
-        };
       };
     };
 
