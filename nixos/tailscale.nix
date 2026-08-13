@@ -43,7 +43,7 @@ makeEnable config "myModules.tailscale" true {
 
     serviceConfig = {
       Type = "oneshot";
-      RemainAfterExit = true;
+      RemainAfterExit = false;
     };
 
     script = ''
@@ -57,13 +57,29 @@ makeEnable config "myModules.tailscale" true {
         exit 0
       fi
 
-      state="$(${pkgs.tailscale}/bin/tailscale status --json 2>/dev/null | ${pkgs.jq}/bin/jq -r '.BackendState // empty' || true)"
-      if [ "$state" = "Running" ]; then
+      status_json="$(${pkgs.tailscale}/bin/tailscale status --json 2>/dev/null || true)"
+      state="$(printf '%s' "$status_json" | ${pkgs.jq}/bin/jq -r '.BackendState // empty' 2>/dev/null || true)"
+      key_expiry="$(printf '%s' "$status_json" | ${pkgs.jq}/bin/jq -r '.Self.KeyExpiry // empty' 2>/dev/null || true)"
+      key_expired=false
+      if [ -n "$key_expiry" ]; then
+        expiry_epoch="$(${pkgs.coreutils}/bin/date -d "$key_expiry" +%s 2>/dev/null || true)"
+        now_epoch="$(${pkgs.coreutils}/bin/date +%s)"
+        if [ -n "$expiry_epoch" ] && [ "$expiry_epoch" -le "$now_epoch" ]; then
+          key_expired=true
+        fi
+      fi
+
+      if [ "$state" = "Running" ] && [ "$key_expired" = false ]; then
         exit 0
       fi
 
-      # First-time (or post-logout) login.
+      reauth_args=()
+      if [ "$key_expired" = true ]; then
+        reauth_args+=(--force-reauth)
+      fi
+
       if ! ${pkgs.tailscale}/bin/tailscale up \
+        "''${reauth_args[@]}" \
         --auth-key "file:$key_file" \
         --accept-dns=true \
         --hostname=${lib.escapeShellArg config.networking.hostName} \
@@ -73,5 +89,15 @@ makeEnable config "myModules.tailscale" true {
         exit 0
       fi
     '';
+  };
+
+  systemd.timers.tailscale-autoconnect = {
+    description = "Periodically repair Tailscale authentication";
+    wantedBy = ["timers.target"];
+    timerConfig = {
+      OnBootSec = "2m";
+      OnUnitActiveSec = "30m";
+      Persistent = true;
+    };
   };
 }
