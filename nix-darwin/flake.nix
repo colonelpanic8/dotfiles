@@ -5,6 +5,30 @@
     nixpkgs.url = "github:NixOS/nixpkgs/nixpkgs-unstable";
     # Bazel 7.6.0 from current nixpkgs crashes in the Darwin bootstrap linker.
     nixpkgs-bazel.url = "github:NixOS/nixpkgs/f205b5574fd0cb7da5b702a2da51507b7f4fdd1b";
+
+    repowise = {
+      url = "github:repowise-dev/repowise/73c82764c8554a26b39853602aab023c81b2d014";
+      flake = false;
+    };
+
+    pyproject-nix = {
+      url = "github:pyproject-nix/pyproject.nix/1b1485546d85f6f6c7aadb10c4923dbc09633263";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+
+    uv2nix = {
+      url = "github:pyproject-nix/uv2nix/0dfa8388dc855b1774f509725d8ea6806291571d";
+      inputs.nixpkgs.follows = "nixpkgs";
+      inputs.pyproject-nix.follows = "pyproject-nix";
+    };
+
+    pyproject-build-systems = {
+      url = "github:pyproject-nix/build-system-pkgs/90fde00db3687922d39d95fc591475fd0bbbcd72";
+      inputs.nixpkgs.follows = "nixpkgs";
+      inputs.pyproject-nix.follows = "pyproject-nix";
+      inputs.uv2nix.follows = "uv2nix";
+    };
+
     flake-utils.url = "github:numtide/flake-utils";
     nix-darwin.url = "github:LnL7/nix-darwin";
     nix-darwin.inputs.nixpkgs.follows = "nixpkgs";
@@ -62,7 +86,7 @@
     # Pin the assembled integration by revision; its flake owns packaging,
     # desktop integration, and the persistent server module.
     t3code-integration = {
-      url = "github:colonelpanic8/t3code/6bca19b89472209d41e90755f853db650b4f71e3";
+      url = "github:colonelpanic8/t3code/15bb954ff01e9d2354f2555f0a386b125c364f95";
       inputs = {
         nixpkgs.follows = "nixpkgs";
         flake-utils.follows = "flake-utils";
