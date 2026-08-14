@@ -80,7 +80,17 @@
     }
     (lib.mkIf config.services.rumno.enable {
       # Do not let rumno's forking/PIDFile startup gate the whole graphical session.
-      systemd.user.services.rumno.unitConfig.After = lib.mkForce ["graphical-session.target"];
+      systemd.user.services.rumno = {
+        unitConfig.After = lib.mkForce ["graphical-session.target"];
+        serviceConfig = {
+          Type = lib.mkForce "forking";
+          PIDFile = lib.mkForce "/tmp/rumno/rumno.pid";
+          ExecStart = lib.mkForce (lib.escapeShellArgs (
+            ["${config.services.rumno.package}/bin/rumno-background"]
+            ++ config.services.rumno.extraArgs
+          ));
+        };
+      };
     })
     (lib.mkIf config.features.full.enable {
       myModules.base.enable = true;

@@ -394,64 +394,6 @@
     flake-utils,
     ...
   }: let
-    # Nixpkgs PR patches - just specify PR number and hash
-    nixpkgsPRPatches = [
-      {
-        pr = 523297;
-        hash = "sha256-SsfeBuL8vIuj1R4aCRZWY5rYSlw441LK+IwLOo0cx/w=";
-      }
-      {
-        pr = 523536;
-        hash = "sha256-wzHOQAGEhnMuhjdUeTVvA78DO/cE118ehB7zfhsppqI=";
-      }
-      {
-        pr = 523537;
-        hash = "sha256-wTOj47AOXP0oryLDoT+ZJGqgcseRbk0saf77pB8/e7M=";
-      }
-    ];
-
-    # Custom patches that don't fit the PR template
-    nixpkgsCustomPatches = [];
-
-    # Home-manager PR patches - just specify PR number and hash
-    homeManagerPRPatches = [
-      # Example:
-      # {
-      #   pr = 1234;
-      #   hash = "sha256-...";
-      # }
-    ];
-
-    # Custom home-manager patches that don't fit the PR template
-    homeManagerCustomPatches = [
-      {
-        url = "https://github.com/colonelpanic8/home-manager/commit/92f4b7aa5254f8bcddc9ef86e04ea5314410d10b.patch";
-        hash = "sha256-RQl5daVpCqQi05l9QfTEz2PpQxmsv/HYnXrgXbqbwWk=";
-      }
-    ];
-
-    # Convert PR patches to full patch format for nixpkgs
-    nixpkgsPrPatchesToPatches = prPatches:
-      map (p: {
-        url = "https://patch-diff.githubusercontent.com/raw/NixOS/nixpkgs/pull/${toString p.pr}.patch";
-        hash = p.hash;
-      })
-      prPatches;
-
-    # Convert PR patches to full patch format for home-manager
-    homeManagerPrPatchesToPatches = prPatches:
-      map (p: {
-        url = "https://patch-diff.githubusercontent.com/raw/nix-community/home-manager/pull/${toString p.pr}.patch";
-        hash = p.hash;
-      })
-      prPatches;
-
-    # Combine all nixpkgs patches
-    allNixpkgsPatches = (nixpkgsPrPatchesToPatches nixpkgsPRPatches) ++ nixpkgsCustomPatches;
-
-    # Combine all home-manager patches
-    allHomeManagerPatches = (homeManagerPrPatchesToPatches homeManagerPRPatches) ++ homeManagerCustomPatches;
-
     perSystem = import ./flake/per-system.nix {
       inherit self inputs nixpkgs org-agenda-api agenix;
     };
@@ -492,66 +434,20 @@
       modules ? [],
       specialArgs ? {},
       ...
-    }: let
-      # Bootstrap nixpkgs for this specific system
-      bootstrapPkgs = import nixpkgs {
-        inherit system;
-        config = {};
-        overlays = [];
-      };
-      # Apply patches to nixpkgs source
-      patchedSource = bootstrapPkgs.applyPatches {
-        name = "nixpkgs-patched";
-        src = nixpkgs;
-        patches = map bootstrapPkgs.fetchpatch allNixpkgsPatches;
-      };
-      # Get eval-config from patched source
-      evalConfig = import "${patchedSource}/nixos/lib/eval-config.nix";
-      # Apply patches to home-manager source (only if there are patches)
-      patchedHomeManagerSource =
-        if allHomeManagerPatches == []
-        then home-manager
-        else
-          bootstrapPkgs.applyPatches {
-            name = "home-manager-patched";
-            src = home-manager;
-            patches = map bootstrapPkgs.fetchpatch allHomeManagerPatches;
-          };
-      # Get the NixOS module from the patched source
-      patchedHomeManagerModule =
-        if allHomeManagerPatches == []
-        then home-manager.nixosModules.home-manager
-        else import "${patchedHomeManagerSource}/nixos";
-      # Create a modified inputs with patched home-manager
-      patchedInputs =
-        inputs
-        // {
-          home-manager =
-            inputs.home-manager
-            // {
-              nixosModules =
-                inputs.home-manager.nixosModules
-                // {
-                  home-manager = patchedHomeManagerModule;
-                };
-              # Also provide the patched source path for any direct imports
-              outPath = patchedHomeManagerSource.outPath or "${patchedHomeManagerSource}";
-            };
-        };
-    in
-      evalConfig {
+    }:
+      nixpkgs.lib.nixosSystem {
         inherit system;
         modules = baseModules ++ modules;
         specialArgs =
           rec {
-            inputs = patchedInputs;
+            inherit inputs;
             inherit machineNames;
             makeEnable = (import ./make-enable.nix) nixpkgs.lib;
             keys = import ./keys.nix;
             usersInfo = (import ./users.nix) {
               pkgs = {zsh = "zsh";};
               inherit keys system;
-              inputs = patchedInputs;
+              inherit inputs;
             };
             realUsers = (
               builtins.attrNames

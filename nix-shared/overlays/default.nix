@@ -47,6 +47,20 @@ final: prev: {
     ];
   });
 
+  heroic-unwrapped = prev.heroic-unwrapped.overrideAttrs (oldAttrs: {
+    nativeBuildInputs = (oldAttrs.nativeBuildInputs or []) ++ [final.makeWrapper];
+    postFixup = (oldAttrs.postFixup or "") + ''
+      wrapProgram $out/bin/heroic --add-flags --class=heroic
+    '';
+  });
+
+  element-desktop = prev.element-desktop.overrideAttrs (oldAttrs: {
+    nativeBuildInputs = (oldAttrs.nativeBuildInputs or []) ++ [final.makeWrapper];
+    postFixup = (oldAttrs.postFixup or "") + ''
+      wrapProgram $out/bin/element-desktop --add-flags --class=Element
+    '';
+  });
+
   magma = prev.magma.overrideAttrs (oldAttrs: {
     # The CUDA codegen step in magma 2.9.0 can segfault when `make generate`
     # fans out across all cores. Keep the rest of the build parallel.
