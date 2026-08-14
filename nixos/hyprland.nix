@@ -211,6 +211,7 @@
     then "1"
     else "0";
   hyprlandCursorSizeString = toString config.myModules.hyprland.cursorSize;
+  ultrawideMode = "3440x1440@${toString cfg.ultrawideRefreshRate}Hz";
   enableHyprglass = false;
   hyprglass = pkgs.callPackage ./packages/hyprglass {
     src = inputs.hyprglass;
@@ -529,7 +530,7 @@
                   {
                     criteria = "Microstep MPG341CX OLED *";
                     status = "enable";
-                    mode = "3440x1440@240Hz";
+                    mode = ultrawideMode;
                     position = "2560,0";
                     scale = 1.0;
                   }
@@ -543,7 +544,7 @@
                   {
                     criteria = "Microstep MPG341CX OLED *";
                     status = "enable";
-                    mode = "3440x1440@240Hz";
+                    mode = ultrawideMode;
                     position = "0,0";
                     scale = 1.0;
                   }
@@ -666,13 +667,21 @@ in
   enabledModule
   // {
     options = lib.recursiveUpdate enabledModule.options {
-      myModules.hyprland.portable = lib.mkOption {
-        type = lib.types.bool;
-        default = false;
-        description = ''
-          Avoid host-specific monitor policy and nonessential session daemons
-          while retaining the normal Hyprland package, config, and utilities.
-        '';
+      myModules.hyprland = {
+        portable = lib.mkOption {
+          type = lib.types.bool;
+          default = false;
+          description = ''
+            Avoid host-specific monitor policy and nonessential session daemons
+            while retaining the normal Hyprland package, config, and utilities.
+          '';
+        };
+
+        ultrawideRefreshRate = lib.mkOption {
+          type = lib.types.number;
+          default = 240;
+          description = "Refresh rate requested for the 3440x1440 ultrawide monitor.";
+        };
       };
     };
   }
