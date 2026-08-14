@@ -239,6 +239,8 @@ in
       ddrescue
       smartmontools
       nvme-cli
+      memtester
+      stressapptest
       efibootmgr
       pciutils
       usbutils
