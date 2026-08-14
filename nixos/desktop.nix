@@ -420,7 +420,6 @@
         rofi-pass
         scrobbleScrubberApp
         scrobbleScrubber
-        simplescreenrecorder
         skippy-xd
         transmission_4-gtk
         vlc4

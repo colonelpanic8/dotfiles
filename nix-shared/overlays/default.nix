@@ -352,7 +352,7 @@ from transformers import (/' \
       python-final: python-prev: {
         pykefcontrol = python-prev.buildPythonPackage rec {
           pname = "pykefcontrol";
-          version = "0.9.3-pr17";
+          version = "0.9.3";
           pyproject = true;
 
           src = final.fetchFromGitHub {

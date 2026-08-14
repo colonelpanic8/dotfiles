@@ -114,6 +114,33 @@
         (import ./emacs-overlay.nix)
         (import ../nix-shared/overlays)
         inputs.t3code-integration.overlays.client
+        (final: prev: let
+          unwrapped = prev.t3code.unwrapped.overrideAttrs (old: {
+            pnpmDeps = old.pnpmDeps.overrideAttrs (_: {
+              outputHash = "sha256-1RmV+n7hrElMyIFPoZ9sk9Hs01bq1syNeapPaTFiW3E=";
+            });
+          });
+        in {
+          t3code = final.symlinkJoin {
+            pname = "t3code-client";
+            inherit (unwrapped) version meta;
+            paths = [unwrapped];
+            nativeBuildInputs = [final.makeBinaryWrapper];
+            postBuild = ''
+              for program in "$out/bin"/*; do
+                wrapProgram "$program" \
+                  --prefix PATH : "${final.lib.makeBinPath [final.codex final.gh final.git]}"
+              done
+              mv "$out/bin/t3code-desktop" \
+                "$out/bin/.t3code-desktop-client-unwrapped"
+              makeWrapper "$out/bin/.t3code-desktop-client-unwrapped" \
+                "$out/bin/t3code-desktop" \
+                --add-flags "--password-store=gnome-libsecret" \
+                --add-flags "--backend-mode=client-only"
+            '';
+            passthru = {inherit unwrapped;};
+          };
+        })
         # Use fast-moving agent tools from dedicated flakes.
         (final: prev: {
           codex = inputs.codex-cli-nix.packages.${prev.stdenv.hostPlatform.system}.default;

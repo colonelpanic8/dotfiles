@@ -10,17 +10,17 @@
   session = import ./session-variables.nix;
   system = pkgs.stdenv.hostPlatform.system;
   hyprlandInput = inputs.hyprland;
-  # GCC 15 ICEs while compiling Hyprland's ConfigManager. GCC 16 builds
+  # GCC 15 ICEs while compiling Hyprland 0.55's ConfigManager. GCC 16 builds
   # the unmodified source, avoiding the old Clang-only source compatibility patch.
   hyprlandStdenv = pkgs.gcc16Stdenv;
   baseHyprlandPackage = hyprlandInput.packages.${system}.hyprland.override {
     stdenv = hyprlandStdenv;
-  };
-  hyprlockPackage = inputs.hyprlock.packages.${system}.hyprlock;
-  hyprlandGcc16Overlay = final: prev: {
-    hyprland = prev.hyprland.override {
-      stdenv = final.gcc16Stdenv;
+    hyprland-guiutils = pkgs.hyprland-guiutils.override {
+      stdenv = hyprlandStdenv;
     };
+  };
+  hyprlandGcc16Overlay = final: prev: {
+    hyprland = baseHyprlandPackage;
     hyprland-unwrapped = final.hyprland.override {wrapRuntimeDeps = false;};
     hyprland-with-tests = final.hyprland.override {withTests = true;};
   };
@@ -205,10 +205,7 @@
       overrideAttrs = f: makeHyprlandLuaPackage (package.overrideAttrs f);
     };
   hyprlandPackage = makeHyprlandLuaPackage baseHyprlandPackage;
-  hyprlandPortalPackage = pkgs.xdg-desktop-portal-hyprland.overrideAttrs (_: {
-    version = "1.4.0-unstable-2026-07-18";
-    src = inputs.xdph;
-  });
+  hyprlandPortalPackage = config.programs.hyprland.portalPackage;
   hyprlandGapsEnabledString =
     if config.myModules.hyprland.gaps.enable
     then "1"
@@ -485,7 +482,6 @@
       enable = true;
       # Keep Hyprland and plugins on a matched flake input for ABI compatibility.
       package = hyprlandPackage;
-      portalPackage = hyprlandPortalPackage;
       # Let UWSM manage the Hyprland session targets
       withUWSM = true;
     };
@@ -641,7 +637,7 @@
         hyprpaper # Wallpaper
         neowall # Shader wallpaper
         hypridle # Idle daemon
-        hyprlockPackage # Screen locker
+        hyprlock # Screen locker
         hyprcursor # Cursor themes
         wl-clipboard # Clipboard for Wayland
         wtype # Wayland input typing
