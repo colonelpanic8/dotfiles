@@ -34,6 +34,7 @@
     ./home-assistant.nix
     ./hermes-agent.nix
     ./imalison.nix
+    ./input-resilience.nix
     ./internet-computer.nix
     ./k3s.nix
     ./kat.nix
