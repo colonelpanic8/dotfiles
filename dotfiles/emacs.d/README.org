@@ -1347,12 +1347,30 @@ Paradox is a package.el extension. I have no use for it now that I use straight.
   :commands emacs-everywhere
   :config
   (progn
+    (defun imalison:hyprland-json-command (command)
+      (condition-case nil
+          (json-parse-string
+           (shell-command-to-string command)
+           :object-type 'alist
+           :array-type 'list
+           :false-object nil
+           :null-object nil)
+        (error nil)))
+
     (defun imalison:emacs-everywhere-app-info-hyprland ()
       (require 'json)
-      (let* ((window (json-parse-string
-                      (shell-command-to-string "hyprctl -j activewindow")
-                      :object-type 'alist
-                      :array-type 'list))
+      (require 'seq)
+      (let* ((active-window
+              (imalison:hyprland-json-command "hyprctl -j activewindow"))
+             (window
+              (if (alist-get 'address active-window)
+                  active-window
+                (seq-find
+                 (lambda (candidate)
+                   (and (equal (alist-get 'focusHistoryID candidate) 0)
+                        (alist-get 'mapped candidate)
+                        (not (alist-get 'hidden candidate))))
+                 (imalison:hyprland-json-command "hyprctl -j clients"))))
              (address (alist-get 'address window))
              (class (or (alist-get 'initialClass window)
                         (alist-get 'class window)

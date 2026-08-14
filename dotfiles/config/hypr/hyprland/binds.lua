@@ -16,7 +16,7 @@ function M.setup(ctx)
     bind(main_mod .. " + P", exec(launcher_command), desc("Open application launcher"))
     bind(main_mod .. " + SHIFT + P", exec(run_menu), desc("Open command runner"))
     bind(main_mod .. " + SHIFT + Return", exec(terminal), desc("Open terminal"))
-    bind(main_mod .. " + E", exec("emacsclient --eval '(emacs-everywhere)'"), desc("Open Emacs Everywhere"))
+    bind(main_mod .. " + E", exec("emacsclient --alternate-editor='' --eval '(emacs-everywhere)'"), desc("Open Emacs Everywhere"))
     bind(main_mod .. " + V", exec("wl-paste --no-newline | ydotool type --file -"), desc("Type clipboard contents"))
   end
 
