@@ -153,13 +153,17 @@
           pykefcontrol = final.python3Packages.callPackage ./packages/pykefcontrol {};
           roborock-control = final.callPackage ./packages/roborock-control {};
           rofi-roborock = final.callPackage ./packages/rofi-roborock {};
-          rumno = prev.rumno.overrideAttrs (old: {
+          rumno = prev.rumno.overrideAttrs (finalAttrs: _old: {
             version = "0.1.4-unstable-2026-05-26";
             src = final.fetchFromGitLab {
               owner = "ivanmalison";
               repo = "rumno";
               rev = "2049179542b75681230800bd008441b45b10ee6e";
               hash = "sha256-/sLXY5JMmCnhr6xNyDUGONiX0Ye/w7YLKD0RAgjRW8s=";
+            };
+            cargoDeps = final.rustPlatform.fetchCargoVendor {
+              inherit (finalAttrs) pname version src;
+              hash = "sha256-7OI5t2sX4xNljcIMzynpqncPvhn9Pu65G0/JIzxGnEQ=";
             };
           });
         })
