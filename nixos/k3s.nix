@@ -252,7 +252,6 @@ in {
       extraFlags =
         [
           "--tls-san ryzen-shine.local"
-          "--tls-san nixquick.local"
           "--tls-san biskcomp.local"
           "--tls-san jimi-hendnix.local"
           "--tls-san dev.railbird.ai"
