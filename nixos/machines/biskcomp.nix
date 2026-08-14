@@ -28,7 +28,6 @@ in {
   myModules.games.enable = false;
   myModules.syncthing.enable = true;
   myModules.fonts.enable = true;
-  myModules.nixified-ai.enable = false;
   myModules.cache-server = {
     enable = false;
     host-string = biskcomp-nginx-hostnames;

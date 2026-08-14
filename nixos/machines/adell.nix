@@ -18,7 +18,6 @@
   myModules.games.enable = false;
   myModules.syncthing.enable = true;
   myModules.fonts.enable = true;
-  myModules.nixified-ai.enable = false;
   myModules.gitea-runner.enable = false;
   hardware.nvidia.open = true;
 
