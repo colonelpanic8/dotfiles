@@ -3,7 +3,7 @@
 "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
-<!-- 2026-08-14 Fri 00:51 -->
+<!-- 2026-08-14 Fri 22:38 -->
 <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>&lrm;</title>
@@ -3634,19 +3634,20 @@ a:hover {
 <li><a href="#early">4. Early</a>
 <ul>
 <li><a href="#lexicalbinding">4.1. Lexical Binding</a></li>
-<li><a href="#security">4.2. Security</a></li>
-<li><a href="#setupautocompile">4.3. Setup auto-compile</a></li>
-<li><a href="#prefernewerversions">4.4. Prefer Newer Versions</a></li>
-<li><a href="#customfiles">4.5. Custom Files</a></li>
-<li><a href="#benchmarking">4.6. Benchmarking</a></li>
-<li><a href="#guidisables">4.7. GUI Disables</a></li>
-<li><a href="#bytecompiler">4.8. Byte-Compiler</a></li>
-<li><a href="#execpathfromshell">4.9. exec-path-from-shell</a></li>
-<li><a href="#noflet">4.10. noflet</a></li>
-<li><a href="#nonforkingshellcommandtostring">4.11. Non-Forking Shell Command To String</a></li>
-<li><a href="#setemacsenvironmentvariable">4.12. Set EMACS environment variable</a></li>
-<li><a href="#dontusesystemfont">4.13. Don't use system font</a></li>
-<li><a href="#setdefaultbrowser">4.14. Set default browser</a></li>
+<li><a href="#appearancedependencies">4.2. Appearance Dependencies</a></li>
+<li><a href="#security">4.3. Security</a></li>
+<li><a href="#setupautocompile">4.4. Setup auto-compile</a></li>
+<li><a href="#prefernewerversions">4.5. Prefer Newer Versions</a></li>
+<li><a href="#customfiles">4.6. Custom Files</a></li>
+<li><a href="#benchmarking">4.7. Benchmarking</a></li>
+<li><a href="#guidisables">4.8. GUI Disables</a></li>
+<li><a href="#bytecompiler">4.9. Byte-Compiler</a></li>
+<li><a href="#execpathfromshell">4.10. exec-path-from-shell</a></li>
+<li><a href="#noflet">4.11. noflet</a></li>
+<li><a href="#nonforkingshellcommandtostring">4.12. Non-Forking Shell Command To String</a></li>
+<li><a href="#setemacsenvironmentvariable">4.13. Set EMACS environment variable</a></li>
+<li><a href="#dontusesystemfont">4.14. Don't use system font</a></li>
+<li><a href="#setdefaultbrowser">4.15. Set default browser</a></li>
 </ul>
 </li>
 <li><a href="#functions">5. Functions</a>
@@ -4045,19 +4046,17 @@ a:hover {
 <li><a href="#basicconfig">20.1. Basic Config</a></li>
 <li><a href="#themes">20.2. Themes</a></li>
 <li><a href="#alltheicons">20.3. all-the-icons</a></li>
-<li><a href="#nerdicons">20.4. nerd-icons</a></li>
-<li><a href="#doommodeline">20.5. doom-modeline</a></li>
-<li><a href="#pagebreaklines">20.6. page-break-lines</a></li>
-<li><a href="#windownumber">20.7. window-number</a></li>
-<li><a href="#whitespacesetup">20.8. Whitespace Setup</a></li>
-<li><a href="#colorizecompliationbuffers">20.9. Colorize Compliation Buffers</a></li>
-<li><a href="#automaticthemechanger">20.10. Automatic Theme Changer</a></li>
-<li><a href="#fixansitermcolors">20.11. Fix <code>ansi-term</code> Colors</a></li>
-<li><a href="#afterloadthemehook">20.12. After <code>load-theme</code> hook</a></li>
-<li><a href="#setfont">20.13. Set Font</a></li>
-<li><a href="#imalisonappearance">20.14. imalison:appearance</a>
+<li><a href="#pagebreaklines">20.4. page-break-lines</a></li>
+<li><a href="#windownumber">20.5. window-number</a></li>
+<li><a href="#whitespacesetup">20.6. Whitespace Setup</a></li>
+<li><a href="#colorizecompliationbuffers">20.7. Colorize Compliation Buffers</a></li>
+<li><a href="#automaticthemechanger">20.8. Automatic Theme Changer</a></li>
+<li><a href="#fixansitermcolors">20.9. Fix <code>ansi-term</code> Colors</a></li>
+<li><a href="#afterloadthemehook">20.10. After <code>load-theme</code> hook</a></li>
+<li><a href="#setfont">20.11. Set Font</a></li>
+<li><a href="#imalisonappearance">20.12. imalison:appearance</a>
 <ul>
-<li><a href="#hookstoseteverythingup">20.14.1. Hooks to set everything up</a></li>
+<li><a href="#hookstoseteverythingup">20.12.1. Hooks to set everything up</a></li>
 </ul>
 </li>
 </ul>
@@ -4256,9 +4255,42 @@ file uses lexical scoping.
 </div>
 </div>
 </div>
-<div id="outline-container-security" class="outline-3">
-<h3 id="security"><span class="section-number-3">4.2.</span> Security <a href="#security"><svg aria-hidden="true" class="octicon octicon-link" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a></h3>
+<div id="outline-container-appearancedependencies" class="outline-3">
+<h3 id="appearancedependencies"><span class="section-number-3">4.2.</span> Appearance Dependencies <a href="#appearancedependencies"><svg aria-hidden="true" class="octicon octicon-link" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a></h3>
 <div class="outline-text-3" id="text-4-2">
+<p>
+Install and load the packages required by the startup appearance before the
+rest of the configuration queues optional packages.
+</p>
+<div class="org-src-container">
+<pre class="src src-emacs-lisp">(<span class="org-keyword">use-package</span> <span class="org-constant">gotham-theme</span>
+  <span class="org-builtin">:ensure</span> (<span class="org-builtin">:wait</span> t)
+  <span class="org-builtin">:defer</span> t)
+
+(<span class="org-keyword">use-package</span> <span class="org-constant">nerd-icons</span>
+  <span class="org-builtin">:ensure</span> (<span class="org-builtin">:wait</span> t)
+  <span class="org-builtin">:demand</span> t)
+
+(<span class="org-keyword">use-package</span> <span class="org-constant">shrink-path</span>
+  <span class="org-builtin">:ensure</span> (<span class="org-builtin">:host</span> gitlab <span class="org-builtin">:repo</span> <span class="org-string">"bennya/shrink-path.el"</span>
+                 <span class="org-builtin">:protocol</span> https <span class="org-builtin">:wait</span> t)
+  <span class="org-builtin">:demand</span> t)
+
+(<span class="org-keyword">use-package</span> <span class="org-constant">doom-modeline</span>
+  <span class="org-builtin">:ensure</span> (<span class="org-builtin">:wait</span> t)
+  <span class="org-builtin">:demand</span> t
+  <span class="org-builtin">:custom</span>
+  (doom-modeline-height 40))
+
+(<span class="org-keyword">defvar</span> <span class="org-variable-name">imalison:enable-doom-modeline-on-startup</span> t
+  <span class="org-doc">"Non-nil means enable `</span><span class="org-doc"><span class="org-constant">doom-modeline-mode</span></span><span class="org-doc">' during startup."</span>)
+</pre>
+</div>
+</div>
+</div>
+<div id="outline-container-security" class="outline-3">
+<h3 id="security"><span class="section-number-3">4.3.</span> Security <a href="#security"><svg aria-hidden="true" class="octicon octicon-link" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a></h3>
+<div class="outline-text-3" id="text-4-3">
 <div class="org-src-container">
 <pre class="src src-emacs-lisp">(<span class="org-keyword">defvar</span> <span class="org-variable-name">imalison:secure</span> t)
 
@@ -4298,8 +4330,8 @@ file uses lexical scoping.
 </div>
 </div>
 <div id="outline-container-setupautocompile" class="outline-3">
-<h3 id="setupautocompile"><span class="section-number-3">4.3.</span> Setup auto-compile <a href="#setupautocompile"><svg aria-hidden="true" class="octicon octicon-link" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a></h3>
-<div class="outline-text-3" id="text-4-3">
+<h3 id="setupautocompile"><span class="section-number-3">4.4.</span> Setup auto-compile <a href="#setupautocompile"><svg aria-hidden="true" class="octicon octicon-link" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a></h3>
+<div class="outline-text-3" id="text-4-4">
 <div class="org-src-container">
 <pre class="src src-emacs-lisp">(<span class="org-keyword">use-package</span> <span class="org-constant">auto-compile</span>
   <span class="org-builtin">:demand</span> t
@@ -4312,8 +4344,8 @@ file uses lexical scoping.
 </div>
 </div>
 <div id="outline-container-prefernewerversions" class="outline-3">
-<h3 id="prefernewerversions"><span class="section-number-3">4.4.</span> Prefer Newer Versions <a href="#prefernewerversions"><svg aria-hidden="true" class="octicon octicon-link" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a></h3>
-<div class="outline-text-3" id="text-4-4">
+<h3 id="prefernewerversions"><span class="section-number-3">4.5.</span> Prefer Newer Versions <a href="#prefernewerversions"><svg aria-hidden="true" class="octicon octicon-link" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a></h3>
+<div class="outline-text-3" id="text-4-5">
 <p>
 To reduce the risk of loading outdated byte code files, we set
 load-prefer-newer and enable auto-compile-on-load-mode as early as
@@ -4326,8 +4358,8 @@ possible.
 </div>
 </div>
 <div id="outline-container-customfiles" class="outline-3">
-<h3 id="customfiles"><span class="section-number-3">4.5.</span> Custom Files <a href="#customfiles"><svg aria-hidden="true" class="octicon octicon-link" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a></h3>
-<div class="outline-text-3" id="text-4-5">
+<h3 id="customfiles"><span class="section-number-3">4.6.</span> Custom Files <a href="#customfiles"><svg aria-hidden="true" class="octicon octicon-link" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a></h3>
+<div class="outline-text-3" id="text-4-6">
 <p>
 The default value of <code>custom-file</code> is just the current user's <code>.emacs.d/init.el</code>
 file. Emacs will add content to <code>custom-file</code> whenever a variable is customized
@@ -4353,8 +4385,8 @@ in the dotfiles repo but they are shared across machines elsewhere.
 </div>
 </div>
 <div id="outline-container-benchmarking" class="outline-3">
-<h3 id="benchmarking"><span class="section-number-3">4.6.</span> Benchmarking <a href="#benchmarking"><svg aria-hidden="true" class="octicon octicon-link" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a></h3>
-<div class="outline-text-3" id="text-4-6">
+<h3 id="benchmarking"><span class="section-number-3">4.7.</span> Benchmarking <a href="#benchmarking"><svg aria-hidden="true" class="octicon octicon-link" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a></h3>
+<div class="outline-text-3" id="text-4-7">
 <p>
 This appears here so that it can accurately benchmark as much of
 startup as possible.
@@ -4376,8 +4408,8 @@ startup as possible.
 </div>
 </div>
 <div id="outline-container-guidisables" class="outline-3">
-<h3 id="guidisables"><span class="section-number-3">4.7.</span> GUI Disables <a href="#guidisables"><svg aria-hidden="true" class="octicon octicon-link" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a></h3>
-<div class="outline-text-3" id="text-4-7">
+<h3 id="guidisables"><span class="section-number-3">4.8.</span> GUI Disables <a href="#guidisables"><svg aria-hidden="true" class="octicon octicon-link" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a></h3>
+<div class="outline-text-3" id="text-4-8">
 <p>
 Death to any gui elements in emacs! Do this EARLY so that emacs
 doesn't redisplay in a way that is visually unpleasant on startup a
@@ -4399,8 +4431,8 @@ Tooltips are annoying:
 </div>
 </div>
 <div id="outline-container-bytecompiler" class="outline-3">
-<h3 id="bytecompiler"><span class="section-number-3">4.8.</span> Byte-Compiler <a href="#bytecompiler"><svg aria-hidden="true" class="octicon octicon-link" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a></h3>
-<div class="outline-text-3" id="text-4-8">
+<h3 id="bytecompiler"><span class="section-number-3">4.9.</span> Byte-Compiler <a href="#bytecompiler"><svg aria-hidden="true" class="octicon octicon-link" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a></h3>
+<div class="outline-text-3" id="text-4-9">
 <p>
 These definitions silence the byte-compiler.
 </p>
@@ -4429,8 +4461,8 @@ These definitions silence the byte-compiler.
 </div>
 </div>
 <div id="outline-container-execpathfromshell" class="outline-3">
-<h3 id="execpathfromshell"><span class="section-number-3">4.9.</span> exec-path-from-shell <a href="#execpathfromshell"><svg aria-hidden="true" class="octicon octicon-link" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a></h3>
-<div class="outline-text-3" id="text-4-9">
+<h3 id="execpathfromshell"><span class="section-number-3">4.10.</span> exec-path-from-shell <a href="#execpathfromshell"><svg aria-hidden="true" class="octicon octicon-link" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a></h3>
+<div class="outline-text-3" id="text-4-10">
 <p>
 Sets environment variables by starting a shell.
 </p>
@@ -4456,8 +4488,8 @@ Sets environment variables by starting a shell.
 </div>
 </div>
 <div id="outline-container-noflet" class="outline-3">
-<h3 id="noflet"><span class="section-number-3">4.10.</span> noflet <a href="#noflet"><svg aria-hidden="true" class="octicon octicon-link" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a></h3>
-<div class="outline-text-3" id="text-4-10">
+<h3 id="noflet"><span class="section-number-3">4.11.</span> noflet <a href="#noflet"><svg aria-hidden="true" class="octicon octicon-link" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a></h3>
+<div class="outline-text-3" id="text-4-11">
 <div class="org-src-container">
 <pre class="src src-emacs-lisp">(<span class="org-keyword">use-package</span> <span class="org-constant">noflet</span>
   <span class="org-builtin">:after</span> (dash) <span class="org-comment-delimiter">;;</span><span class="org-comment">@HACK: noflet does not properly declare dependencies
@@ -4467,8 +4499,8 @@ Sets environment variables by starting a shell.
 </div>
 </div>
 <div id="outline-container-nonforkingshellcommandtostring" class="outline-3">
-<h3 id="nonforkingshellcommandtostring"><span class="section-number-3">4.11.</span> Non-Forking Shell Command To String <a href="#nonforkingshellcommandtostring"><svg aria-hidden="true" class="octicon octicon-link" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a></h3>
-<div class="outline-text-3" id="text-4-11">
+<h3 id="nonforkingshellcommandtostring"><span class="section-number-3">4.12.</span> Non-Forking Shell Command To String <a href="#nonforkingshellcommandtostring"><svg aria-hidden="true" class="octicon octicon-link" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a></h3>
+<div class="outline-text-3" id="text-4-12">
 <p>
 Emacs' built in <code>shell-command-to-string</code> function has the downside that it
 forks a new shell process every time it is executed. This means that any shell
@@ -4544,8 +4576,8 @@ This solution only applies it to projectile-find-file
 </div>
 </div>
 <div id="outline-container-setemacsenvironmentvariable" class="outline-3">
-<h3 id="setemacsenvironmentvariable"><span class="section-number-3">4.12.</span> Set EMACS environment variable <a href="#setemacsenvironmentvariable"><svg aria-hidden="true" class="octicon octicon-link" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a></h3>
-<div class="outline-text-3" id="text-4-12">
+<h3 id="setemacsenvironmentvariable"><span class="section-number-3">4.13.</span> Set EMACS environment variable <a href="#setemacsenvironmentvariable"><svg aria-hidden="true" class="octicon octicon-link" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a></h3>
+<div class="outline-text-3" id="text-4-13">
 <p>
 Emacs cask seems to depend on the EMACS environment variable being set to the
 binary path of emacs. I found the method for getting the path to the emacs
@@ -4565,8 +4597,8 @@ to cause issues. Oh well&#x2026;
 </div>
 </div>
 <div id="outline-container-dontusesystemfont" class="outline-3">
-<h3 id="dontusesystemfont"><span class="section-number-3">4.13.</span> Don't use system font <a href="#dontusesystemfont"><svg aria-hidden="true" class="octicon octicon-link" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a></h3>
-<div class="outline-text-3" id="text-4-13">
+<h3 id="dontusesystemfont"><span class="section-number-3">4.14.</span> Don't use system font <a href="#dontusesystemfont"><svg aria-hidden="true" class="octicon octicon-link" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a></h3>
+<div class="outline-text-3" id="text-4-14">
 <p>
 I want to control my own font for emacs
 </p>
@@ -4577,8 +4609,8 @@ I want to control my own font for emacs
 </div>
 </div>
 <div id="outline-container-setdefaultbrowser" class="outline-3">
-<h3 id="setdefaultbrowser"><span class="section-number-3">4.14.</span> Set default browser <a href="#setdefaultbrowser"><svg aria-hidden="true" class="octicon octicon-link" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a></h3>
-<div class="outline-text-3" id="text-4-14">
+<h3 id="setdefaultbrowser"><span class="section-number-3">4.15.</span> Set default browser <a href="#setdefaultbrowser"><svg aria-hidden="true" class="octicon octicon-link" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a></h3>
+<div class="outline-text-3" id="text-4-15">
 <div class="org-src-container">
 <pre class="src src-emacs-lisp">(<span class="org-keyword">when</span> (equal system-type 'gnu/linux)
     (<span class="org-keyword">setq</span> browse-url-browser-function 'browse-url-generic
@@ -6080,12 +6112,30 @@ Paradox is a package.el extension. I have no use for it now that I use straight.
   <span class="org-builtin">:commands</span> emacs-everywhere
   <span class="org-builtin">:config</span>
   (<span class="org-keyword">progn</span>
+    (<span class="org-keyword">defun</span> <span class="org-function-name">imalison:hyprland-json-command</span> (command)
+      (<span class="org-keyword">condition-case</span> nil
+          (json-parse-string
+           (shell-command-to-string command)
+           <span class="org-builtin">:object-type</span> 'alist
+           <span class="org-builtin">:array-type</span> 'list
+           <span class="org-builtin">:false-object</span> nil
+           <span class="org-builtin">:null-object</span> nil)
+        (<span class="org-warning">error</span> nil)))
+
     (<span class="org-keyword">defun</span> <span class="org-function-name">imalison:emacs-everywhere-app-info-hyprland</span> ()
       (<span class="org-keyword">require</span> '<span class="org-constant">json</span>)
-      (<span class="org-keyword">let*</span> ((window (json-parse-string
-                      (shell-command-to-string <span class="org-string">"hyprctl -j activewindow"</span>)
-                      <span class="org-builtin">:object-type</span> 'alist
-                      <span class="org-builtin">:array-type</span> 'list))
+      (<span class="org-keyword">require</span> '<span class="org-constant">seq</span>)
+      (<span class="org-keyword">let*</span> ((active-window
+              (imalison:hyprland-json-command <span class="org-string">"hyprctl -j activewindow"</span>))
+             (window
+              (<span class="org-keyword">if</span> (alist-get 'address active-window)
+                  active-window
+                (seq-find
+                 (<span class="org-keyword">lambda</span> (candidate)
+                   (<span class="org-keyword">and</span> (equal (alist-get 'focusHistoryID candidate) 0)
+                        (alist-get 'mapped candidate)
+                        (not (alist-get 'hidden candidate))))
+                 (imalison:hyprland-json-command <span class="org-string">"hyprctl -j clients"</span>))))
              (address (alist-get 'address window))
              (class (<span class="org-keyword">or</span> (alist-get 'initialClass window)
                         (alist-get 'class window)
@@ -9947,7 +9997,7 @@ Ensure all themes that I use are installed:
 
 (defvar-setq packages-appearance
   '(monokai-theme zenburn-theme base16-theme molokai-theme moe-theme
-                  tango-2-theme gotham-theme sublime-themes
+                  tango-2-theme sublime-themes
                   waher-theme ample-theme material-theme zerodark-theme
                   color-theme-modern leuven-theme spacemacs-theme gruvbox-theme
                   forest-blue-theme flatland-theme afternoon-theme
@@ -9975,35 +10025,9 @@ Ensure all themes that I use are installed:
 </div>
 </div>
 </div>
-<div id="outline-container-nerdicons" class="outline-3">
-<h3 id="nerdicons"><span class="section-number-3">20.4.</span> nerd-icons <a href="#nerdicons"><svg aria-hidden="true" class="octicon octicon-link" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a></h3>
-<div class="outline-text-3" id="text-20-4">
-<div class="org-src-container">
-<pre class="src src-emacs-lisp">(<span class="org-keyword">use-package</span> <span class="org-constant">nerd-icons</span>
-  <span class="org-builtin">:defer</span> t)
-</pre>
-</div>
-</div>
-</div>
-<div id="outline-container-doommodeline" class="outline-3">
-<h3 id="doommodeline"><span class="section-number-3">20.5.</span> doom-modeline <a href="#doommodeline"><svg aria-hidden="true" class="octicon octicon-link" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a></h3>
-<div class="outline-text-3" id="text-20-5">
-<div class="org-src-container">
-<pre class="src src-emacs-lisp">(<span class="org-keyword">use-package</span> <span class="org-constant">doom-modeline</span>
-  <span class="org-builtin">:after</span> nerd-icons
-  <span class="org-builtin">:commands</span> doom-modeline-mode
-  <span class="org-builtin">:custom</span>
-  (doom-modeline-height 40))
-
-(<span class="org-keyword">defvar</span> <span class="org-variable-name">imalison:enable-doom-modeline-on-startup</span> t
-  <span class="org-doc">"Non-nil means enable `</span><span class="org-doc"><span class="org-constant">doom-modeline-mode</span></span><span class="org-doc">' during startup."</span>)
-</pre>
-</div>
-</div>
-</div>
 <div id="outline-container-pagebreaklines" class="outline-3">
-<h3 id="pagebreaklines"><span class="section-number-3">20.6.</span> page-break-lines <a href="#pagebreaklines"><svg aria-hidden="true" class="octicon octicon-link" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a></h3>
-<div class="outline-text-3" id="text-20-6">
+<h3 id="pagebreaklines"><span class="section-number-3">20.4.</span> page-break-lines <a href="#pagebreaklines"><svg aria-hidden="true" class="octicon octicon-link" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a></h3>
+<div class="outline-text-3" id="text-20-4">
 <div class="org-src-container">
 <pre class="src src-emacs-lisp">(<span class="org-keyword">use-package</span> <span class="org-constant">page-break-lines</span>
   <span class="org-builtin">:demand</span> t
@@ -10019,8 +10043,8 @@ Ensure all themes that I use are installed:
 </div>
 </div>
 <div id="outline-container-windownumber" class="outline-3">
-<h3 id="windownumber"><span class="section-number-3">20.7.</span> window-number <a href="#windownumber"><svg aria-hidden="true" class="octicon octicon-link" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a></h3>
-<div class="outline-text-3" id="text-20-7">
+<h3 id="windownumber"><span class="section-number-3">20.5.</span> window-number <a href="#windownumber"><svg aria-hidden="true" class="octicon octicon-link" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a></h3>
+<div class="outline-text-3" id="text-20-5">
 <div class="org-src-container">
 <pre class="src src-emacs-lisp">(<span class="org-keyword">use-package</span> <span class="org-constant">window-number</span>
   <span class="org-builtin">:defer</span> t)
@@ -10029,8 +10053,8 @@ Ensure all themes that I use are installed:
 </div>
 </div>
 <div id="outline-container-whitespacesetup" class="outline-3">
-<h3 id="whitespacesetup"><span class="section-number-3">20.8.</span> Whitespace Setup <a href="#whitespacesetup"><svg aria-hidden="true" class="octicon octicon-link" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a></h3>
-<div class="outline-text-3" id="text-20-8">
+<h3 id="whitespacesetup"><span class="section-number-3">20.6.</span> Whitespace Setup <a href="#whitespacesetup"><svg aria-hidden="true" class="octicon octicon-link" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a></h3>
+<div class="outline-text-3" id="text-20-6">
 <p>
 Make whitespace-mode use just basic coloring:
 </p>
@@ -10052,8 +10076,8 @@ Set the character used to represent spaces to ·, and the character used for tab
 </div>
 </div>
 <div id="outline-container-colorizecompliationbuffers" class="outline-3">
-<h3 id="colorizecompliationbuffers"><span class="section-number-3">20.9.</span> Colorize Compliation Buffers <a href="#colorizecompliationbuffers"><svg aria-hidden="true" class="octicon octicon-link" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a></h3>
-<div class="outline-text-3" id="text-20-9">
+<h3 id="colorizecompliationbuffers"><span class="section-number-3">20.7.</span> Colorize Compliation Buffers <a href="#colorizecompliationbuffers"><svg aria-hidden="true" class="octicon octicon-link" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a></h3>
+<div class="outline-text-3" id="text-20-7">
 <p>
 This automatically applies ansi-color interpretation of terminal escape
 sequences to compilation buffers.
@@ -10075,8 +10099,8 @@ sequences to compilation buffers.
 </div>
 </div>
 <div id="outline-container-automaticthemechanger" class="outline-3">
-<h3 id="automaticthemechanger"><span class="section-number-3">20.10.</span> Automatic Theme Changer <a href="#automaticthemechanger"><svg aria-hidden="true" class="octicon octicon-link" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a></h3>
-<div class="outline-text-3" id="text-20-10">
+<h3 id="automaticthemechanger"><span class="section-number-3">20.8.</span> Automatic Theme Changer <a href="#automaticthemechanger"><svg aria-hidden="true" class="octicon octicon-link" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a></h3>
+<div class="outline-text-3" id="text-20-8">
 <p>
 Disabled for now
 </p>
@@ -10094,8 +10118,8 @@ Disabled for now
 </div>
 </div>
 <div id="outline-container-fixansitermcolors" class="outline-3">
-<h3 id="fixansitermcolors"><span class="section-number-3">20.11.</span> Fix <code>ansi-term</code> Colors <a href="#fixansitermcolors"><svg aria-hidden="true" class="octicon octicon-link" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a></h3>
-<div class="outline-text-3" id="text-20-11">
+<h3 id="fixansitermcolors"><span class="section-number-3">20.9.</span> Fix <code>ansi-term</code> Colors <a href="#fixansitermcolors"><svg aria-hidden="true" class="octicon octicon-link" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a></h3>
+<div class="outline-text-3" id="text-20-9">
 <p>
 For some reason, loading certain themes can cause colors in
 <code>ansi-term-color-vector</code> to be undefined. The following code handles restoring
@@ -10120,8 +10144,8 @@ load-theme hook (See the heading below).
 </div>
 </div>
 <div id="outline-container-afterloadthemehook" class="outline-3">
-<h3 id="afterloadthemehook"><span class="section-number-3">20.12.</span> After <code>load-theme</code> hook <a href="#afterloadthemehook"><svg aria-hidden="true" class="octicon octicon-link" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a></h3>
-<div class="outline-text-3" id="text-20-12">
+<h3 id="afterloadthemehook"><span class="section-number-3">20.10.</span> After <code>load-theme</code> hook <a href="#afterloadthemehook"><svg aria-hidden="true" class="octicon octicon-link" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a></h3>
+<div class="outline-text-3" id="text-20-10">
 <div class="org-src-container">
 <pre class="src src-emacs-lisp">(<span class="org-keyword">defvar</span> <span class="org-variable-name">imalison:light-theme</span> 'solarized-light)
 (<span class="org-keyword">defvar</span> <span class="org-variable-name">imalison:dark-theme</span> 'gotham)
@@ -10138,8 +10162,8 @@ load-theme hook (See the heading below).
 </div>
 </div>
 <div id="outline-container-setfont" class="outline-3">
-<h3 id="setfont"><span class="section-number-3">20.13.</span> Set Font <a href="#setfont"><svg aria-hidden="true" class="octicon octicon-link" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a></h3>
-<div class="outline-text-3" id="text-20-13">
+<h3 id="setfont"><span class="section-number-3">20.11.</span> Set Font <a href="#setfont"><svg aria-hidden="true" class="octicon octicon-link" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a></h3>
+<div class="outline-text-3" id="text-20-11">
 <div class="org-src-container">
 <pre class="src src-emacs-lisp">(<span class="org-keyword">defvar</span> <span class="org-variable-name">imalison:preferred-font-families</span>
   '(<span class="org-string">"JetBrainsMono Nerd Font"</span>
@@ -10159,8 +10183,8 @@ load-theme hook (See the heading below).
 </div>
 </div>
 <div id="outline-container-imalisonappearance" class="outline-3">
-<h3 id="imalisonappearance"><span class="section-number-3">20.14.</span> imalison:appearance <a href="#imalisonappearance"><svg aria-hidden="true" class="octicon octicon-link" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a></h3>
-<div class="outline-text-3" id="text-20-14">
+<h3 id="imalisonappearance"><span class="section-number-3">20.12.</span> imalison:appearance <a href="#imalisonappearance"><svg aria-hidden="true" class="octicon octicon-link" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a></h3>
+<div class="outline-text-3" id="text-20-12">
 <div class="org-src-container">
 <pre class="src src-emacs-lisp">(<span class="org-keyword">defvar</span> <span class="org-variable-name">imalison:linum-format</span>)
 
@@ -10195,8 +10219,8 @@ load-theme hook (See the heading below).
 </div>
 </div>
 <div id="outline-container-hookstoseteverythingup" class="outline-4">
-<h4 id="hookstoseteverythingup"><span class="section-number-4">20.14.1.</span> Hooks to set everything up <a href="#hookstoseteverythingup"><svg aria-hidden="true" class="octicon octicon-link" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a></h4>
-<div class="outline-text-4" id="text-20-14-1">
+<h4 id="hookstoseteverythingup"><span class="section-number-4">20.12.1.</span> Hooks to set everything up <a href="#hookstoseteverythingup"><svg aria-hidden="true" class="octicon octicon-link" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a></h4>
+<div class="outline-text-4" id="text-20-12-1">
 <div class="org-src-container">
 <pre class="src src-emacs-lisp">(<span class="org-keyword">defvar</span> <span class="org-variable-name">imalison:appearance-setup-done</span> nil)
 
@@ -10237,7 +10261,7 @@ load-theme hook (See the heading below).
 
 (<span class="org-keyword">if</span> (imalison:daemon-startup-p)
     (add-hook 'server-after-make-frame-hook 'imalison:appearance-setup-hook)
-  (add-hook 'elpaca-after-init-hook 'imalison:appearance-setup-hook))
+  (add-hook 'after-init-hook 'imalison:appearance-setup-hook))
 </pre>
 </div>
 </div>
