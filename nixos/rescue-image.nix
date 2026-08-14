@@ -55,6 +55,16 @@ in
 
     nixpkgs.config.allowUnfree = true;
 
+    # machines/rescue.nix deliberately skips configuration.nix, and with it the
+    # overlay in nix.nix. Enabling myModules.desktop still makes
+    # dotfiles-links.nix reach for pkgs.computer-use-linux, so provide just that
+    # package rather than pulling in the full workstation overlay set.
+    nixpkgs.overlays = [
+      (final: _prev: {
+        computer-use-linux = final.callPackage ./packages/computer-use-linux {};
+      })
+    ];
+
     # Keep the hostname aligned with the flake output so an installed writable
     # rescue system can use an ordinary `just switch` from /srv/dotfiles/nixos.
     networking.hostName =
