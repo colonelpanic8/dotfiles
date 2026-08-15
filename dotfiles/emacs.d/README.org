@@ -1351,6 +1351,7 @@ Paradox is a package.el extension. I have no use for it now that I use straight.
 ** gcmh
 #+begin_src emacs-lisp
 (use-package gcmh
+  :ensure (gcmh :host gitlab :repo "koral/gcmh" :protocol https)
   :defer 5
   :config (gcmh-mode 1))
 #+end_src
@@ -2943,6 +2944,7 @@ The following is taken from [[https://github.com/syl20bnr/spacemacs/blob/a650877
   :commands purty-on-save-mode
   :ensure (purty :repo "joneshf/purty"
                  :host gitlab
+                 :protocol https
                  :files ("purty.el")))
 
 (use-package psc-ide
