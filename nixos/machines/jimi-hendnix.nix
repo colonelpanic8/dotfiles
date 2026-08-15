@@ -74,6 +74,34 @@
     ];
   };
 
+  fileSystems."/mnt/windows" = {
+    device = "/dev/disk/by-uuid/DEFA1F27FA1EFC09";
+    fsType = "ntfs3";
+    options = [
+      "ro"
+      "uid=1000"
+      "gid=100"
+      "umask=0022"
+      "nofail"
+      "x-systemd.automount"
+      "x-systemd.device-timeout=1s"
+      "x-systemd.mount-timeout=5s"
+    ];
+  };
+
+  fileSystems."/mnt/sata-nixos" = {
+    device = "/dev/disk/by-uuid/30583504-9530-4095-a556-da1209ef9b63";
+    fsType = "ext4";
+    options = [
+      "ro"
+      "noload"
+      "nofail"
+      "x-systemd.automount"
+      "x-systemd.device-timeout=1s"
+      "x-systemd.mount-timeout=5s"
+    ];
+  };
+
   swapDevices = [
     {device = "/dev/disk/by-uuid/c0dcff59-8072-48fb-b242-a7a1797e4b48";}
   ];
