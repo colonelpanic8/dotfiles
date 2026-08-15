@@ -305,6 +305,26 @@ nix-store --gc --print-roots | rg '/\\.direnv/flake-profile-' | awk -F' -> ' '{p
 ```
 
 - If counts are high and the projects are inactive, propose targeted `.direnv` cleanup for user confirmation.
+- 2026-08-14 `jimi-hendnix` (multi-user railbird box) — single largest validated win in this skill's history: **251.8 GiB freed by one `nix-collect-garbage -d`**, moving `/` from 90% used (94G free) to 44% (499G free). Three cleanup classes fed that single GC, and none of them freed meaningful space until the GC ran:
+  - **Dead nixtheplanet macOS VM, ~167 GiB.** Three plain symlinks (`/home/imalison/macos-ventura-base-image.qcow2`, `/home/kat/macos-ventura-base-image.qcow2`, `/var/lib/private/nixtheplanet-macos-ventura/macos-ventura-base-image.qcow2`) each pinned a ~40 GiB `mac_hdd_ng.qcow2`. Because this host sets `keep-derivations = true` and `keep-outputs = true`, they also transitively pinned four `InstallAssistant.iso`/`.pkg` build inputs (45 GiB) and `BaseSystem.img` (3 GiB). Those build inputs have **zero referrers** — `nix-store --query --referrers-closure` returns only the path itself — so only `nix-store --query --roots <path>` reveals the retention. Use `--query --roots`, not referrers, whenever a huge store path looks unrooted but is not in `--print-dead`. `services.macos-ventura.enable` was already `false` and the 19 GiB runtime disk was last touched 2024-11-01.
+  - **13 stale `.direnv` dirs across six users' homes, ~56 GiB collectively direnv-only**, all 600–800 days old. On disk they were only 76–248 KiB each — the size is entirely what they pin. The four per-user `railbird` checkouts each had a ~14.8 GiB closure but ~3 MiB marginal-unique, so they only paid off removed together.
+  - **`/var/lib/private/gitea-runner`, 32 GiB**, removed outright along with the service (see below).
+- 2026-08-14 `nix-store --gc --print-dead` returned **zero** dead paths on the first run because a concurrent nix process held ~15k temp GC roots (`nix-store --gc --print-roots` was dominated by `{temp:NNNN}` entries). After that process died and its `temproots` file went stale, the same command found 345 dead paths. If `--print-dead` says zero on a store you have reason to believe is dirty, check the roots listing for `{temp:...}` domination and re-run.
+
+## Removing a Service Entirely (not just its caches)
+
+Validated 2026-08-14 on `jimi-hendnix` for gitea-runner. When the user wants a service gone rather than trimmed, disable it in Nix and rebuild *before* deleting state, so nothing recreates the directory:
+
+1. Confirm no job is mid-flight: `systemctl status <unit>` should show the bare daemon with no child job processes, and `pgrep -a -u <service-user>` should list only the daemon.
+2. Flip the flag in the host config (`nixos/machines/<host>.nix`) to `false` rather than deleting the line — this host already expresses `services.macos-ventura.enable = false` and `myModules.railbird-k3s.enable = false` the same way.
+3. `just switch` from `/srv/dotfiles/nixos`. A successful run prints `removing user 'gitea-runner'`.
+4. Only then `rm -rf` the state tree.
+5. Note the server-side consequence: the runner's registration (`.runner` token) is destroyed, so the runner will show as offline in the Gitea instance and must be re-registered if ever reinstated.
+
+### `just switch` gotchas hit during that run
+
+- `safe_switch` refuses to start when a tmux session already exists on the `nixos-switch` socket, and instead **silently tails the previous run's log** — so it looks like a successful switch that did not include your change. Check `tmux -L nixos-switch list-panes -t switch -F '#{pane_pid} #{pane_dead}'`; `pane_dead=1` means the old run finished and the session is just lingering. `tmux -L nixos-switch kill-session -t switch`, then re-run. Always verify with `readlink /run/current-system` plus a `systemctl is-enabled` check rather than trusting the tail output.
+- `/boot` on this host is deliberately kept `ro` by another workflow (the journal shows a `mount -o remount,rw /boot` immediately followed by `remount,ro`). `switch-to-configuration` then fails with `OSError: [Errno 30] Read-only file system: '/boot/loader/entries/...'` and `Failed to install bootloader` **after** the config has already built. Before assuming corruption, check `dmesg` for `fat-fs`/device errors against the actual `/boot` device — in this run the I/O errors were all on `sdd`/`sdc3` (removable rescue media), and boot-time `systemd-fsck` reported `/dev/nvme1n1p1` clean. Remount rw, re-run the switch, then restore `ro` to leave the machine as found.
 
 ## Safety Rules
 
