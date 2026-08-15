@@ -402,7 +402,7 @@
       railbird-sf = {
         specialArgs = {
           orgAgendaApiContainer = null;
-          orgAgendaApiImageName = "localhost/org-agenda-api:colonelpanic-70ff0de-81eded0";
+          orgAgendaApiImageName = "localhost/org-agenda-api:colonelpanic-baa0148-56d1261";
         };
       };
     };
