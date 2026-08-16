@@ -115,11 +115,7 @@
         (import ../nix-shared/overlays)
         inputs.t3code-integration.overlays.client
         (final: prev: let
-          unwrapped = prev.t3code.unwrapped.overrideAttrs (old: {
-            pnpmDeps = old.pnpmDeps.overrideAttrs (_: {
-              outputHash = "sha256-VdE+ycyF/UvPr2urLlKOt/Aa5t2WqKcidr2D0sH0eVI=";
-            });
-          });
+          unwrapped = prev.t3code.unwrapped;
         in {
           t3code = final.symlinkJoin {
             pname = "t3code-client";
