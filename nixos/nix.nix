@@ -117,7 +117,7 @@
         (final: prev: let
           unwrapped = prev.t3code.unwrapped.overrideAttrs (old: {
             pnpmDeps = old.pnpmDeps.overrideAttrs (_: {
-              outputHash = "sha256-1RmV+n7hrElMyIFPoZ9sk9Hs01bq1syNeapPaTFiW3E=";
+              outputHash = "sha256-VdE+ycyF/UvPr2urLlKOt/Aa5t2WqKcidr2D0sH0eVI=";
             });
           });
         in {
