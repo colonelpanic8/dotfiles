@@ -1,0 +1,642 @@
+diff --git a/app/error.c b/app/error.c
+index 2fd7aec..82ab6b5 100644
+--- a/app/error.c
++++ b/app/error.c
+@@ -269,9 +269,9 @@ static void common_err(error_type_t type, uintptr_t addr, testword_t good, testw
+         if (new_header) {
+ #if TESTWORD_WIDTH > 32
+             //                  columns:  0---------1---------2---------3---------4---------5---------6---------7---------
+-            display_pinned_message(0, 0, "pCPU  Pass  Test  Failing Address        Expected          Found           ");
+-            display_pinned_message(1, 0, "----  ----  ----  ---------------------  ----------------  ----------------");
+-            //                  fields:    NN   NNNN   NN   PPPPPPPPPOOO (N.NN?B)  XXXXXXXXXXXXXXXX  XXXXXXXXXXXXXXXX
++            display_pinned_message(0, 0, "CPU Pass Test Failing Address        Expected          Found             DIMM");
++            display_pinned_message(1, 0, "--- ---- ---- ---------------------  ----------------  ----------------  ----");
++            //                  fields:   NNN NNNN   NN PPPPPPPPPOOO (N.NN?B) XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX   ANN
+ #else
+             //                  columns:  0---------1---------2---------3---------4---------5---------6---------7---------
+             display_pinned_message(0, 0, "pCPU  Pass  Test  Failing Address        Expected  Found     Err Bits");
+@@ -289,9 +289,15 @@ static void common_err(error_type_t type, uintptr_t addr, testword_t good, testw
+
+             set_foreground_colour(YELLOW);
+
++#if TESTWORD_WIDTH > 32
++            display_scrolled_message(0, "%3i %4i %4i %09x%03x (%kB)",
++                                     type != CECC_ERROR ? smp_my_cpu_num() : ecc_status.core,
++                                     pass_num, test_num, page, offset, page << 2);
++#else
+             display_scrolled_message(0, " %2i   %4i   %2i   %09x%03x (%kB)",
+                                      type != CECC_ERROR ? smp_my_cpu_num() : ecc_status.core,
+                                      pass_num, test_num, page, offset, page << 2);
++#endif
+
+             if (type == PARITY_ERROR) {
+                 display_scrolled_message(41, "%s", "Parity error detected near this address");
+@@ -299,7 +305,11 @@ static void common_err(error_type_t type, uintptr_t addr, testword_t good, testw
+                 display_scrolled_message(41, "%s%2i", "Correctable ECC Error - CH#", ecc_status.channel);
+             } else {
+ #if TESTWORD_WIDTH > 32
+-                display_scrolled_message(41, "%016x  %016x", good, bad);
++                dimm_location_t location;
++                display_scrolled_message(37, "%016x  %016x", good, bad);
++                if (memctrl_decode_dimm(addr, &location)) {
++                    display_scrolled_message(73, "%c%i", 'A' + location.channel, location.dimm + 1);
++                }
+ #else
+                 display_scrolled_message(41, "%08x  %08x  %08x  %i", good, bad, xor, error_count);
+ #endif
+diff --git a/app/reports.c b/app/reports.c
+index 620e4df..e67044c 100644
+--- a/app/reports.c
++++ b/app/reports.c
+@@ -279,6 +279,9 @@ static int format_results(char *buf, int bufsize)
+     }
+
+     pos = buf_printf(pos, "Memory: %u MB\r\n", (uintptr_t)(num_pm_pages / 256));
++    if (memctrl_dimm_decoder_enabled()) {
++        pos = buf_printf(pos, "DIMM error decoding: AMD Zen DF3 (A1/A2/B1/B2)\r\n");
++    }
+
+     // IMC or RAM spec line.
+     if (imc.freq) {
+@@ -596,6 +599,9 @@ void serial_log_run_start(void)
+     }
+
+     slog("info", " mem_mb=%u", (uintptr_t)(num_pm_pages / 256));
++    if (memctrl_dimm_decoder_enabled()) {
++        slog("info", " dimm_decode=amd_zen_df3 slots=A1,A2,B1,B2");
++    }
+
+     if (imc.freq) {
+         slog("info", " imc=%s-%u cas=%u%s-%u-%u-%u",
+diff --git a/system/aarch64/memctrl.c b/system/aarch64/memctrl.c
+index a929f9c..383ad59 100644
+--- a/system/aarch64/memctrl.c
++++ b/system/aarch64/memctrl.c
+@@ -34,3 +34,15 @@ void memctrl_poll_ecc(void)
+ {
+     // Nothing to do.
+ }
++
++bool memctrl_decode_dimm(uintptr_t addr, dimm_location_t *location)
++{
++    (void)addr;
++    (void)location;
++    return false;
++}
++
++bool memctrl_dimm_decoder_enabled(void)
++{
++    return false;
++}
+diff --git a/system/imc/imc.h b/system/imc/imc.h
+index 24483f2..9c96899 100644
+--- a/system/imc/imc.h
++++ b/system/imc/imc.h
+@@ -10,6 +10,10 @@
+ /* Memory configuration Detection for AMD Zen CPUs */
+ void get_imc_config_amd_zen(void);
+
++bool decode_dimm_amd_zen(uintptr_t addr, uint8_t *channel, uint8_t *dimm, uint8_t *rank);
++
++bool is_dimm_decoder_enabled_amd_zen(void);
++
+ /* Memory configuration Detection for Intel Sandy Bridge */
+ void get_imc_config_intel_snb(void);
+
+diff --git a/system/imc/x86/amd_zen.c b/system/imc/x86/amd_zen.c
+index 4d87755..1115ee2 100644
+--- a/system/imc/x86/amd_zen.c
++++ b/system/imc/x86/amd_zen.c
+@@ -15,6 +15,7 @@
+ #include "pci.h"
+
+ #include "imc.h"
++#include "amd_zen_addr.h"
+
+ #include "display.h" // DEBUG
+
+@@ -40,6 +41,82 @@
+ #define ECC_RD_EN (1 << 10)
+ #define ECC_WR_EN (1 << 0)
+
++#define AMD_DF_FICAA_REG            0x5C
++#define AMD_DF_FICAD_REG            0x98
++#define AMD_DF_INSTANCE_ENABLE      (1U << 0)
++#define AMD_DF_INSTANCE_SHIFT       16
++#define AMD_DF_FUNCTION_SHIFT       11
++#define AMD_DF_REGISTER_MASK        0x7FC
++#define AMD_DF_DEVICE               0x18
++#define AMD_DF_FUNCTION             4
++#define AMD_DF_DRAM_BASE            0x110
++#define AMD_DF_DRAM_LIMIT           0x114
++#define AMD_DF_DRAM_HOLE            0x104
++#define AMD_DF_GLOBAL_CTL           0x3F8
++
++#define AMD_SMN_UMC_CS_BASE         (AMD_SMN_UMC_BAR + 0x00)
++#define AMD_SMN_UMC_CS_BASE_SEC     (AMD_SMN_UMC_BAR + 0x10)
++#define AMD_SMN_UMC_CS_MASK         (AMD_SMN_UMC_BAR + 0x20)
++#define AMD_SMN_UMC_CS_MASK_SEC     (AMD_SMN_UMC_BAR + 0x28)
++
++static amd_zen_addr_map_t amd_zen_addr_map;
++
++static uint32_t amd_df_read(uint8_t instance, uint8_t function, uint16_t reg)
++{
++    uint32_t ficaa = AMD_DF_INSTANCE_ENABLE;
++
++    ficaa |= (uint32_t)instance << AMD_DF_INSTANCE_SHIFT;
++    ficaa |= (uint32_t)function << AMD_DF_FUNCTION_SHIFT;
++    ficaa |= reg & AMD_DF_REGISTER_MASK;
++
++    pci_config_write32(0, AMD_DF_DEVICE, AMD_DF_FUNCTION, AMD_DF_FICAA_REG, ficaa);
++    return pci_config_read32(0, AMD_DF_DEVICE, AMD_DF_FUNCTION, AMD_DF_FICAD_REG);
++}
++
++static uint32_t amd_df_read_broadcast(uint8_t function, uint16_t reg)
++{
++    uint32_t ficaa = (uint32_t)function << AMD_DF_FUNCTION_SHIFT;
++    ficaa |= reg & AMD_DF_REGISTER_MASK;
++
++    pci_config_write32(0, AMD_DF_DEVICE, AMD_DF_FUNCTION, AMD_DF_FICAA_REG, ficaa);
++    return pci_config_read32(0, AMD_DF_DEVICE, AMD_DF_FUNCTION, AMD_DF_FICAD_REG);
++}
++
++static void init_dimm_decoder_amd_zen(void)
++{
++    uint32_t cs_base[AMD_ZEN_CHANNELS][AMD_ZEN_CHIP_SELECTS];
++    uint32_t cs_mask[AMD_ZEN_CHANNELS][AMD_ZEN_CS_MASKS];
++    uint32_t dram_base = amd_df_read(0, 0, AMD_DF_DRAM_BASE);
++    uint32_t dram_limit = amd_df_read(0, 0, AMD_DF_DRAM_LIMIT);
++    uint32_t global_ctl = amd_df_read_broadcast(0, AMD_DF_GLOBAL_CTL);
++    uint32_t hole_ctl = amd_df_read_broadcast(0, AMD_DF_DRAM_HOLE);
++
++    if (dram_base != amd_df_read(1, 0, AMD_DF_DRAM_BASE)
++        || dram_limit != amd_df_read(1, 0, AMD_DF_DRAM_LIMIT)) {
++        return;
++    }
++
++    for (int channel = 0; channel < AMD_ZEN_CHANNELS; channel++) {
++        uint32_t channel_offset = channel * AMD_SMN_UMC_CHB_OFFSET;
++
++        for (int cs = 0; cs < AMD_ZEN_CHIP_SELECTS; cs++) {
++            cs_base[channel][cs] = amd_smn_read(AMD_SMN_UMC_CS_BASE + channel_offset + cs * 4);
++            if (amd_smn_read(AMD_SMN_UMC_CS_BASE_SEC + channel_offset + cs * 4) != 0) {
++                return;
++            }
++        }
++        for (int mask = 0; mask < AMD_ZEN_CS_MASKS; mask++) {
++            cs_mask[channel][mask] = amd_smn_read(AMD_SMN_UMC_CS_MASK + channel_offset + mask * 4);
++            if (amd_smn_read(AMD_SMN_UMC_CS_MASK_SEC + channel_offset + mask * 4) != 0) {
++                return;
++            }
++        }
++    }
++
++    amd_zen_addr_map_init(&amd_zen_addr_map, dram_base, dram_limit, global_ctl, hole_ctl,
++                          cs_base, cs_mask);
++}
++
+ void get_imc_config_amd_zen(void)
+ {
+     uint32_t smn_reg, offset;
+@@ -47,6 +124,10 @@ void get_imc_config_amd_zen(void)
+
+     imc.tCL_dec = 0;
+
++    if (imc.family == IMC_K19_VRM) {
++        init_dimm_decoder_amd_zen();
++    }
++
+     // Get Memory Mapped Register Base Address (Enable MMIO if needed)
+     reg_cha = amd_smn_read(AMD_SMN_UMC_DRAM_CONFIG) & 0x7F;
+     reg_chb = amd_smn_read(AMD_SMN_UMC_DRAM_CONFIG + AMD_SMN_UMC_CHB_OFFSET) & 0x7F;
+@@ -140,6 +221,25 @@ void get_imc_config_amd_zen(void)
+ #endif
+ }
+
++bool decode_dimm_amd_zen(uintptr_t addr, uint8_t *channel, uint8_t *dimm, uint8_t *rank)
++{
++    amd_zen_dimm_location_t location;
++
++    if (!amd_zen_decode_dimm(&amd_zen_addr_map, addr, &location)) {
++        return false;
++    }
++
++    *channel = location.channel;
++    *dimm = location.dimm;
++    *rank = location.rank;
++    return true;
++}
++
++bool is_dimm_decoder_enabled_amd_zen(void)
++{
++    return amd_zen_addr_map.valid;
++}
++
+ void poll_ecc_amd_zen(bool report)
+ {
+     uint8_t umc = 0, umc_max = 0;
+diff --git a/system/loongarch/memctrl.c b/system/loongarch/memctrl.c
+index 48f534c..3c87543 100644
+--- a/system/loongarch/memctrl.c
++++ b/system/loongarch/memctrl.c
+@@ -49,3 +49,15 @@ void memctrl_poll_ecc(void)
+         return;
+     }
+ }
++
++bool memctrl_decode_dimm(uintptr_t addr, dimm_location_t *location)
++{
++    (void)addr;
++    (void)location;
++    return false;
++}
++
++bool memctrl_dimm_decoder_enabled(void)
++{
++    return false;
++}
+diff --git a/system/memctrl.h b/system/memctrl.h
+index 3ad3d39..fc59ee2 100644
+--- a/system/memctrl.h
++++ b/system/memctrl.h
+@@ -40,6 +40,12 @@ typedef struct __attribute__((packed)) ecc_status {
+     uint8_t             channel;
+ } ecc_info_t;
+
++typedef struct {
++    uint8_t channel;
++    uint8_t dimm;
++    uint8_t rank;
++} dimm_location_t;
++
+ /**
+  * Current DRAM configuration of the Integrated Memory Controller
+  */
+@@ -56,4 +62,8 @@ void memctrl_init(void);
+
+ void memctrl_poll_ecc(void);
+
++bool memctrl_decode_dimm(uintptr_t addr, dimm_location_t *location);
++
++bool memctrl_dimm_decoder_enabled(void);
++
+ #endif // MEMCTRL_H
+diff --git a/system/smbios.c b/system/smbios.c
+index 73f6502..56d9ee5 100644
+--- a/system/smbios.c
++++ b/system/smbios.c
+@@ -38,10 +38,12 @@ int dmi_num_memory_devices = 0;
+ // Cached copies of board manufacturer and product name, saved at boot
+ // before memory testing can overwrite the original SMBIOS table data.
+ #define DMI_STRING_MAX  64
++#define DMI_LOCATOR_MAX 32
+
+ static char dmi_board_manufacturer[DMI_STRING_MAX];
+ static char dmi_board_product[DMI_STRING_MAX];
+ static bool dmi_board_info_valid = false;
++static char dmi_memory_locators[MAX_DMI_MEM_DEVICES][DMI_LOCATOR_MAX];
+
+ // Cached copies of the system (type 1) and baseboard (type 2) serial
+ // numbers, empty when the firmware provides none. Saved at boot, like
+@@ -51,6 +53,15 @@ static char dmi_board_serial[DMI_STRING_MAX];
+
+ static bool copy_dmi_string(char *dst, size_t dst_size, struct tstruct_header *header, uint8_t string_idx);
+
++static void capture_memory_locators(void)
++{
++    for (int i = 0; i < dmi_num_memory_devices; i++) {
++        struct mem_dev *md = dmi_memory_devices[i];
++        copy_dmi_string(dmi_memory_locators[i], sizeof(dmi_memory_locators[i]),
++                        &md->header, md->dev_locator);
++    }
++}
++
+ static char *get_tstruct_string(struct tstruct_header *header, uint16_t maxlen, int n)
+ {
+     if (n < 1)
+@@ -373,6 +384,7 @@ int smbios_init(void)
+
+     if (result == 0) {
+         capture_serial_numbers();
++        capture_memory_locators();
+     }
+
+ #if defined(__aarch64__)
+@@ -384,6 +396,22 @@ int smbios_init(void)
+     return result;
+ }
+
++bool has_smbios_dimm_locator(uint8_t channel, uint8_t dimm)
++{
++    char channel_name = 'A' + channel;
++    char dimm_name = '1' + dimm;
++
++    for (int i = 0; i < dmi_num_memory_devices; i++) {
++        size_t len = strlen(dmi_memory_locators[i]);
++        if (len >= 2
++            && toupper((unsigned char)dmi_memory_locators[i][len - 2]) == channel_name
++            && dmi_memory_locators[i][len - 1] == dimm_name) {
++            return true;
++        }
++    }
++    return false;
++}
++
+ void get_smbios_board_info(const char **manufacturer, const char **product)
+ {
+     if (dmi_board_info_valid) {
+diff --git a/system/smbios.h b/system/smbios.h
+index 9dae9b3..f5c2aaa 100644
+--- a/system/smbios.h
++++ b/system/smbios.h
+@@ -193,6 +193,8 @@ extern struct cpu_info *dmi_cpu_info;
+
+ int smbios_init(void);
+
++bool has_smbios_dimm_locator(uint8_t channel, uint8_t dimm);
++
+ /**
+  * Retrieve board manufacturer and product name strings.
+  * Sets output pointers to NULL if unavailable.
+diff --git a/system/x86/memctrl.c b/system/x86/memctrl.c
+index c94cf66..b75b668 100644
+--- a/system/x86/memctrl.c
++++ b/system/x86/memctrl.c
+@@ -13,6 +13,7 @@
+
+ #include "memctrl.h"
+ #include "imc/imc.h"
++#include "smbios.h"
+
+ #include "display.h"
+
+@@ -93,3 +94,36 @@ void memctrl_poll_ecc(void)
+         break;
+     }
+ }
++
++bool memctrl_decode_dimm(uintptr_t addr, dimm_location_t *location)
++{
++    if (!memctrl_dimm_decoder_enabled()) {
++        return false;
++    }
++
++    switch (imc.family) {
++      case IMC_K19_VRM:
++        if (!decode_dimm_amd_zen(addr, &location->channel, &location->dimm, &location->rank)) {
++            return false;
++        }
++        return true;
++      default:
++        return false;
++    }
++}
++
++bool memctrl_dimm_decoder_enabled(void)
++{
++    if (imc.family != IMC_K19_VRM || !is_dimm_decoder_enabled_amd_zen()) {
++        return false;
++    }
++
++    for (uint8_t channel = 0; channel < 2; channel++) {
++        for (uint8_t dimm = 0; dimm < 2; dimm++) {
++            if (!has_smbios_dimm_locator(channel, dimm)) {
++                return false;
++            }
++        }
++    }
++    return true;
++}
+diff --git a/system/imc/x86/amd_zen_addr.c b/system/imc/x86/amd_zen_addr.c
+new file mode 100644
+index 0000000..fa1662a
+--- /dev/null
++++ b/system/imc/x86/amd_zen_addr.c
+@@ -0,0 +1,176 @@
++// SPDX-License-Identifier: GPL-2.0
++
++#include <stddef.h>
++#include <stdint.h>
++#include <string.h>
++
++#include "amd_zen_addr.h"
++
++#define BIT64(n)                    (1ULL << (n))
++#define DF_ADDR_RANGE_VALID         (1U << 0)
++#define DF_LEGACY_MMIO_HOLE_ENABLED (1U << 1)
++#define DF3_INTERLEAVE_MODE_MASK    (0xFU << 2)
++#define DF3_INTERLEAVE_ADDR_MASK    (0x7U << 9)
++#define DF3_INTERLEAVE_DIES_MASK    (0x3U << 6)
++#define DF3_INTERLEAVE_SOCKET_MASK  (1U << 8)
++#define DF3_TWO_CHANNEL_HASHED      (0xCU << 2)
++#define DF3_HASH_64K                (1U << 20)
++#define DF3_HASH_2M                 (1U << 21)
++#define DF3_HASH_1G                 (1U << 22)
++#define DF_ADDR_MASK                0xFFFFF000U
++#define DF_ADDR_SHIFT               16
++#define DF_LIMIT_LOW_MASK           ((1ULL << 28) - 1)
++#define DF_HOLE_BASE_MASK           0xFF000000U
++#define DF_HOLE_VALID               (1U << 0)
++#define DF3_DESTINATION_ID_MASK     0x3FFU
++#define FOUR_GB                     (1ULL << 32)
++#define UMC_CS_ENABLED              (1U << 0)
++#define UMC_CS_COMPARE_BITS         0xFFFFFFFEU
++
++static bool same_chip_select_layout(
++    const uint32_t cs_base[AMD_ZEN_CHANNELS][AMD_ZEN_CHIP_SELECTS],
++    const uint32_t cs_mask[AMD_ZEN_CHANNELS][AMD_ZEN_CS_MASKS])
++{
++    for (int cs = 0; cs < AMD_ZEN_CHIP_SELECTS; cs++) {
++        if (cs_base[0][cs] != cs_base[1][cs]) {
++            return false;
++        }
++    }
++    for (int mask = 0; mask < AMD_ZEN_CS_MASKS; mask++) {
++        if (cs_mask[0][mask] != cs_mask[1][mask]) {
++            return false;
++        }
++    }
++    return true;
++}
++
++bool amd_zen_addr_map_init(amd_zen_addr_map_t *map,
++                           uint32_t dram_base,
++                           uint32_t dram_limit,
++                           uint32_t global_ctl,
++                           uint32_t hole_ctl,
++                           const uint32_t cs_base[AMD_ZEN_CHANNELS][AMD_ZEN_CHIP_SELECTS],
++                           const uint32_t cs_mask[AMD_ZEN_CHANNELS][AMD_ZEN_CS_MASKS])
++{
++    memset(map, 0, sizeof(*map));
++
++    if (!(dram_base & DF_ADDR_RANGE_VALID)) {
++        return false;
++    }
++    if ((dram_base & DF3_INTERLEAVE_MODE_MASK) != DF3_TWO_CHANNEL_HASHED) {
++        return false;
++    }
++    if (dram_base & (DF3_INTERLEAVE_DIES_MASK | DF3_INTERLEAVE_SOCKET_MASK)) {
++        return false;
++    }
++    if (dram_limit & DF3_DESTINATION_ID_MASK) {
++        return false;
++    }
++    if (!same_chip_select_layout(cs_base, cs_mask)) {
++        return false;
++    }
++
++    uint8_t interleave_bit = 8 + ((dram_base & DF3_INTERLEAVE_ADDR_MASK) >> 9);
++    if (interleave_bit != 8 && interleave_bit != 9) {
++        return false;
++    }
++
++    map->legacy_hole_enabled = (dram_base & DF_LEGACY_MMIO_HOLE_ENABLED) != 0;
++    map->hash_64k = (global_ctl & DF3_HASH_64K) != 0;
++    map->hash_2m = (global_ctl & DF3_HASH_2M) != 0;
++    map->hash_1g = (global_ctl & DF3_HASH_1G) != 0;
++    map->interleave_bit = interleave_bit;
++    map->base_addr = (uint64_t)(dram_base & DF_ADDR_MASK) << DF_ADDR_SHIFT;
++    map->limit_addr = ((uint64_t)(dram_limit & DF_ADDR_MASK) << DF_ADDR_SHIFT) | DF_LIMIT_LOW_MASK;
++    map->hole_base = hole_ctl & DF_HOLE_BASE_MASK;
++
++    if (map->base_addr > map->limit_addr) {
++        return false;
++    }
++    if (map->legacy_hole_enabled
++        && (!(hole_ctl & DF_HOLE_VALID) || map->hole_base == 0 || map->hole_base >= FOUR_GB)) {
++        return false;
++    }
++
++    memcpy(map->cs_base, cs_base, sizeof(map->cs_base));
++    memcpy(map->cs_mask, cs_mask, sizeof(map->cs_mask));
++    map->valid = true;
++    return true;
++}
++
++static uint8_t decode_channel(const amd_zen_addr_map_t *map, uint64_t addr)
++{
++    uint8_t channel = (addr >> map->interleave_bit) & 1;
++
++    channel ^= (addr >> 14) & 1;
++    if (map->hash_64k) {
++        channel ^= (addr >> 18) & 1;
++    }
++    if (map->hash_2m) {
++        channel ^= (addr >> 23) & 1;
++    }
++    if (map->hash_1g) {
++        channel ^= (addr >> 32) & 1;
++    }
++    return channel;
++}
++
++static uint64_t remove_bit(uint64_t value, uint8_t bit)
++{
++    uint64_t low_mask = BIT64(bit) - 1;
++    return (value & low_mask) | ((value >> 1) & ~low_mask);
++}
++
++bool amd_zen_decode_dimm(const amd_zen_addr_map_t *map,
++                         uint64_t system_addr,
++                         amd_zen_dimm_location_t *location)
++{
++    if (!map->valid || system_addr < map->base_addr || system_addr > map->limit_addr) {
++        return false;
++    }
++
++    uint8_t channel = decode_channel(map, system_addr);
++
++    uint64_t unhashed_addr = system_addr;
++    uint8_t encoded_channel = (unhashed_addr >> map->interleave_bit) & 1;
++    if (encoded_channel != channel) {
++        unhashed_addr ^= BIT64(map->interleave_bit);
++    }
++
++    if (map->legacy_hole_enabled && unhashed_addr >= FOUR_GB) {
++        unhashed_addr -= FOUR_GB - map->hole_base;
++    }
++    if (unhashed_addr < map->base_addr) {
++        return false;
++    }
++
++    uint64_t normalized_addr = remove_bit(unhashed_addr - map->base_addr, map->interleave_bit);
++    uint32_t normalized_reg_addr = normalized_addr >> 8;
++    int matched_cs = -1;
++
++    for (int cs = 0; cs < AMD_ZEN_CHIP_SELECTS; cs++) {
++        uint32_t base = map->cs_base[channel][cs];
++        if (!(base & UMC_CS_ENABLED)) {
++            continue;
++        }
++
++        uint32_t mask = map->cs_mask[channel][cs >> 1];
++        uint32_t compare_bits = ~mask & UMC_CS_COMPARE_BITS;
++        if ((normalized_reg_addr & compare_bits) == (base & compare_bits)) {
++            if (matched_cs >= 0) {
++                return false;
++            }
++            matched_cs = cs;
++        }
++    }
++
++    if (matched_cs < 0) {
++        return false;
++    }
++
++    location->channel = channel;
++    location->dimm = matched_cs >> 1;
++    location->rank = matched_cs & 1;
++    location->normalized_addr = normalized_addr;
++    return true;
++}
+diff --git a/system/imc/x86/amd_zen_addr.h b/system/imc/x86/amd_zen_addr.h
+new file mode 100644
+index 0000000..830ac01
+--- /dev/null
++++ b/system/imc/x86/amd_zen_addr.h
+@@ -0,0 +1,45 @@
++// SPDX-License-Identifier: GPL-2.0
++#ifndef AMD_ZEN_ADDR_H
++#define AMD_ZEN_ADDR_H
++
++#include <stdbool.h>
++#include <stdint.h>
++
++#define AMD_ZEN_CHANNELS       2
++#define AMD_ZEN_CHIP_SELECTS   4
++#define AMD_ZEN_CS_MASKS       2
++
++typedef struct {
++    bool        valid;
++    bool        legacy_hole_enabled;
++    bool        hash_64k;
++    bool        hash_2m;
++    bool        hash_1g;
++    uint8_t     interleave_bit;
++    uint64_t    base_addr;
++    uint64_t    limit_addr;
++    uint64_t    hole_base;
++    uint32_t    cs_base[AMD_ZEN_CHANNELS][AMD_ZEN_CHIP_SELECTS];
++    uint32_t    cs_mask[AMD_ZEN_CHANNELS][AMD_ZEN_CS_MASKS];
++} amd_zen_addr_map_t;
++
++typedef struct {
++    uint8_t     channel;
++    uint8_t     dimm;
++    uint8_t     rank;
++    uint64_t    normalized_addr;
++} amd_zen_dimm_location_t;
++
++bool amd_zen_addr_map_init(amd_zen_addr_map_t *map,
++                           uint32_t dram_base,
++                           uint32_t dram_limit,
++                           uint32_t global_ctl,
++                           uint32_t hole_ctl,
++                           const uint32_t cs_base[AMD_ZEN_CHANNELS][AMD_ZEN_CHIP_SELECTS],
++                           const uint32_t cs_mask[AMD_ZEN_CHANNELS][AMD_ZEN_CS_MASKS]);
++
++bool amd_zen_decode_dimm(const amd_zen_addr_map_t *map,
++                         uint64_t system_addr,
++                         amd_zen_dimm_location_t *location);
++
++#endif // AMD_ZEN_ADDR_H

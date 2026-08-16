@@ -1,10 +1,21 @@
 {
   config,
   lib,
+  pkgs,
   ...
 }: let
   cfg = config.myModules.bootloaders.grub;
   systemdBootCfg = config.myModules.bootloaders.systemdBoot;
+  memtest86plusDimmDecode = pkgs.memtest86plus.overrideAttrs (old: {
+    version = "9.00-7726853-dimm-decode";
+    src = pkgs.fetchFromGitHub {
+      owner = "memtest86plus";
+      repo = "memtest86plus";
+      rev = "7726853667fad43f7ec163a99e41fbb9d90ac092";
+      hash = "sha256-dQxiQ6X6hSxVJjDH8FgSyH25lO81mA8b6xnJUk6hV9A=";
+    };
+    patches = (old.patches or []) ++ [../patches/memtest86plus-amd-zen-dimm-decoding.patch];
+  });
 in {
   options.myModules.bootloaders.grub = {
     enable = lib.mkEnableOption "GRUB bootloader support";
@@ -77,14 +88,21 @@ in {
         theme = lib.mkIf (cfg.theme != null) (lib.mkDefault cfg.theme);
         gfxmodeEfi = lib.mkDefault cfg.gfxmode;
         gfxmodeBios = lib.mkDefault cfg.gfxmode;
-        extraEntries = lib.optionalString (cfg.windowsEfiUuid != null) ''
-          menuentry "Windows Boot Manager" {
-            insmod part_gpt
-            insmod fat
-            search --no-floppy --fs-uuid --set=root ${cfg.windowsEfiUuid}
-            chainloader /EFI/Microsoft/Boot/bootmgfw.efi
-          }
-        '';
+        extraEntries =
+          ''
+            menuentry "Memtest86+ (AMD Zen DIMM slot decoder)" {
+              linux @bootRoot@/memtest-dimm-decode.bin
+            }
+          ''
+          + lib.optionalString (cfg.windowsEfiUuid != null) ''
+            menuentry "Windows Boot Manager" {
+              insmod part_gpt
+              insmod fat
+              search --no-floppy --fs-uuid --set=root ${cfg.windowsEfiUuid}
+              chainloader /EFI/Microsoft/Boot/bootmgfw.efi
+            }
+          '';
+        extraFiles."memtest-dimm-decode.bin" = memtest86plusDimmDecode.efi;
       };
     };
   };
