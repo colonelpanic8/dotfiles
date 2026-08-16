@@ -134,6 +134,12 @@
               rev = "2049179542b75681230800bd008441b45b10ee6e";
               hash = "sha256-/sLXY5JMmCnhr6xNyDUGONiX0Ye/w7YLKD0RAgjRW8s=";
             };
+            cargoHash = "sha256-7OI5t2sX4xNljcIMzynpqncPvhn9Pu65G0/JIzxGnEQ=";
+            cargoDeps = old.cargoDeps.overrideAttrs (cargoOld: {
+              vendorStaging = cargoOld.vendorStaging.overrideAttrs {
+                outputHash = "sha256-7OI5t2sX4xNljcIMzynpqncPvhn9Pu65G0/JIzxGnEQ=";
+              };
+            });
           });
         })
       ]
