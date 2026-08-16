@@ -114,6 +114,29 @@
         (import ./emacs-overlay.nix)
         (import ../nix-shared/overlays)
         inputs.t3code-integration.overlays.client
+        (final: prev: let
+          unwrapped = prev.t3code.unwrapped;
+        in {
+          t3code = final.symlinkJoin {
+            pname = "t3code-client";
+            inherit (unwrapped) version meta;
+            paths = [unwrapped];
+            nativeBuildInputs = [final.makeBinaryWrapper];
+            postBuild = ''
+              for program in "$out/bin"/*; do
+                wrapProgram "$program" \
+                  --prefix PATH : "${final.lib.makeBinPath [final.codex final.gh final.git]}"
+              done
+              mv "$out/bin/t3code-desktop" \
+                "$out/bin/.t3code-desktop-client-unwrapped"
+              makeWrapper "$out/bin/.t3code-desktop-client-unwrapped" \
+                "$out/bin/t3code-desktop" \
+                --add-flags "--password-store=gnome-libsecret" \
+                --add-flags "--backend-mode=client-only"
+            '';
+            passthru = {inherit unwrapped;};
+          };
+        })
         # Use fast-moving agent tools from dedicated flakes.
         (final: prev: {
           codex = inputs.codex-cli-nix.packages.${prev.stdenv.hostPlatform.system}.default;
@@ -126,7 +149,7 @@
           pykefcontrol = final.python3Packages.callPackage ./packages/pykefcontrol {};
           roborock-control = final.callPackage ./packages/roborock-control {};
           rofi-roborock = final.callPackage ./packages/rofi-roborock {};
-          rumno = prev.rumno.overrideAttrs (old: {
+          rumno = prev.rumno.overrideAttrs (finalAttrs: _old: {
             version = "0.1.4-unstable-2026-05-26";
             src = final.fetchFromGitLab {
               owner = "ivanmalison";
@@ -134,12 +157,10 @@
               rev = "2049179542b75681230800bd008441b45b10ee6e";
               hash = "sha256-/sLXY5JMmCnhr6xNyDUGONiX0Ye/w7YLKD0RAgjRW8s=";
             };
-            cargoHash = "sha256-7OI5t2sX4xNljcIMzynpqncPvhn9Pu65G0/JIzxGnEQ=";
-            cargoDeps = old.cargoDeps.overrideAttrs (cargoOld: {
-              vendorStaging = cargoOld.vendorStaging.overrideAttrs {
-                outputHash = "sha256-7OI5t2sX4xNljcIMzynpqncPvhn9Pu65G0/JIzxGnEQ=";
-              };
-            });
+            cargoDeps = final.rustPlatform.fetchCargoVendor {
+              inherit (finalAttrs) pname version src;
+              hash = "sha256-7OI5t2sX4xNljcIMzynpqncPvhn9Pu65G0/JIzxGnEQ=";
+            };
           });
         })
       ]

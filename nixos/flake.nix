@@ -139,11 +139,11 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
-    # Pin the latest release and keep plugins on its exact ABI. Aquamarine and
-    # hyprutils are exposed as shared inputs below so every plugin builds
-    # against the same dependency revisions as Hyprland.
+    # page-flip/cursor/EGL fixes target the 0.55.4/Aquamarine 0.12.1 startup
+    # hang seen on ryzen-shine with NVIDIA 595.71.05. Plugins follow this input
+    # so they build against the exact same Hyprland ABI.
     hyprland = {
-      url = "git+https://github.com/hyprwm/Hyprland?submodules=1&ref=refs/tags/v0.56.0";
+      url = "git+https://github.com/hyprwm/Hyprland?submodules=1&rev=a0136d8c04687bb36eb8a28eb9d1ff92aea99704";
       inputs = {
         aquamarine.follows = "aquamarine";
         hyprutils.follows = "hyprutils";
@@ -162,33 +162,13 @@
     hyprgraphics.follows = "hyprland/hyprgraphics";
     hyprlang.follows = "hyprland/hyprlang";
     hyprutils = {
-      url = "github:hyprwm/hyprutils/5f03477ab3a005ff27c527486f551883535aea2f";
+      url = "github:hyprwm/hyprutils/40ede2e7bdec80ba5d4c443160d905e9f841ae5f";
       inputs.nixpkgs.follows = "nixpkgs";
       inputs.systems.follows = "systems";
     };
 
-    # v0.9.6 includes the explicit shared-pointer conversion required by the
-    # hyprutils revision shipped with Hyprland 0.56.
-    hyprlock = {
-      url = "github:hyprwm/hyprlock/v0.9.6";
-      inputs = {
-        hyprgraphics.follows = "hyprgraphics";
-        hyprlang.follows = "hyprlang";
-        hyprutils.follows = "hyprutils";
-        hyprwayland-scanner.follows = "hyprland/hyprwayland-scanner";
-        nixpkgs.follows = "nixpkgs";
-        systems.follows = "systems";
-      };
-    };
-
-    # Use the portal revision selected by Hyprland 0.56; it includes the
-    # explicit-pointer conversions required by the shared hyprutils input.
-    xdph.follows = "hyprland/xdph";
-
     hyprNStack = {
-      # Combines swapWithWindow with the Hyprland 0.56 compatibility work from
-      # upstream PR #55: https://github.com/zakk4223/hyprNStack/pull/55
-      url = "github:colonelpanic8/hyprNStack/1708d1da0d2ce06e357dd47ad4e82bcfcbad18c5";
+      url = "github:colonelpanic8/hyprNStack?ref=codex/hyprnstack-combined";
       inputs = {
         hyprland.follows = "hyprland";
         nixpkgs.follows = "nixpkgs";
@@ -205,14 +185,13 @@
     };
 
     hyprwinview = {
-      url = "github:colonelpanic8/hyprwinview";
+      url = "github:colonelpanic8/hyprwinview/c5c432c124a4b7c8d04996bced2821c27d9fbcc1";
       inputs.hyprland.follows = "hyprland";
     };
 
     hyprtasking = {
-      # Combines keyboard workspace jump labels (upstream PR #119) with the
-      # Hyprland 0.56 compatibility work from upstream PR #121.
-      url = "github:colonelpanic8/hyprtasking/34b34801448b353101c36382eb2658b89e66314f";
+      # Pending upstream PR #119: keyboard workspace jump labels.
+      url = "github:colonelpanic8/hyprtasking?ref=colonelpanic/workspace-jump-labels";
       inputs = {
         hyprland.follows = "hyprland";
         nixpkgs.follows = "nixpkgs";
@@ -221,14 +200,13 @@
     };
 
     hypr-workspace-history = {
-      url = "github:colonelpanic8/hypr-workspace-history";
+      url = "github:colonelpanic8/hypr-workspace-history/f1ce0601a476a50f05e5740073709016879844dc";
       inputs.hyprland.follows = "hyprland";
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
     hypr-dynamic-cursors = {
-      # Current main follows Hyprland's post-0.56 cursor namespace move.
-      url = "github:VirtCode/hypr-dynamic-cursors/5ef778ea151deb3573383d13d6e1cf7eed7336e1";
+      url = "github:VirtCode/hypr-dynamic-cursors/da447486c84e0be81f2cdd208af1ef92469f0a88";
       inputs = {
         hyprland.follows = "hyprland";
         nixpkgs.follows = "nixpkgs";
@@ -424,7 +402,7 @@
       railbird-sf = {
         specialArgs = {
           orgAgendaApiContainer = null;
-          orgAgendaApiImageName = "localhost/org-agenda-api:colonelpanic-754fc33-994fd41";
+          orgAgendaApiImageName = "localhost/org-agenda-api:colonelpanic-baa0148-56d1261";
         };
       };
     };

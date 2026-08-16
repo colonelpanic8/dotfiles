@@ -8,7 +8,6 @@
     "jay-lenovo"
     "jimi-hendnix"
     "mac-demarco-mini"
-    "nixquick"
     "railbird-sf"
     "ryzen-shine"
     "strixi-minaj"

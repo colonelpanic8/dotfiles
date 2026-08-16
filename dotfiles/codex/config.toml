@@ -49,3 +49,6 @@ enabled = true
 
 [plugins."browser-use@openai-bundled"]
 enabled = true
+
+[projects."/home/imalison/dotfiles"]
+trust_level = "trusted"

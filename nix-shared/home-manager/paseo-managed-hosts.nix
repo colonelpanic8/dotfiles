@@ -21,11 +21,6 @@
       color = "purple";
     }
     {
-      label = "nixquick";
-      endpoint = "nixquick:6767";
-      color = "red";
-    }
-    {
       label = "railbird-sf";
       endpoint = "railbird-sf:6767";
       color = "green";

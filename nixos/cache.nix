@@ -4,7 +4,7 @@
   ...
 }: let
   # Peers that enable myModules.cache-server (keep in sync with machines/*.nix).
-  # nixquick also runs one but has been off the tailnet for months; re-add it
+  # jimi-hendnix also runs one but has been off the tailnet for months; re-add it
   # here and in the justfile when it comes back.
   cacheHosts = [
     {

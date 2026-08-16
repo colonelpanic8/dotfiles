@@ -3,9 +3,8 @@ rec {
   hostKeys = [
     "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIG3UqIYs/NY0okKuiIO+dU2OM7A8vv3b6//GedagvLoX ryzen-shine.local"
     "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAINFbM1sL/vlDhrqPV1OMIGi4dKG0tMKhWSXx95ccbfyM biskcomp.local"
-    "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIIoHW29TmS5FgK12N+bCXhGWASDdmzqSEA0QxbyGaJ+j nixquick.local"
+    "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIIoHW29TmS5FgK12N+bCXhGWASDdmzqSEA0QxbyGaJ+j jimi-hendnix.local"
     "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIIaA0tRVTqwBDxY6X03wx+50pbB37y5e8gqFpFMDa/Bj adele.local"
-    "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAID4j70BoksIEiX+OMBCsSG8wvMIEwoRQf5Gz5ppbm7Iy jimi-hendnix.local"
     "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIOYAoN3l15Avweu5fcfcnlRzmFPHtlYIpo02sxBHANZ+ strixy-minaj.local"
     "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIFTYwBuQ3CNbkj6gAQ0oqxhPlKZ+X6tUaZotccowzjCW justin-bieber-creek.local"
   ];

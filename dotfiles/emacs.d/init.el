@@ -28,6 +28,28 @@
 ;; Default hosted git clones to SSH (e.g., git@github.com:owner/repo.git).
 (setq elpaca-order-defaults (plist-put elpaca-order-defaults :protocol 'ssh))
 
+;; Elpaca failures are otherwise silent: a failed package keeps its queue from
+;; finalizing, so use-package bodies of healthy packages never run and init
+;; reports no error.  Warn per failure and summarize anything unfinished.
+(defun imalison:elpaca-warn-failed (e)
+  (warn "Elpaca: %s failed to build (M-x elpaca-log for details)" (elpaca<-id e)))
+
+(defun imalison:elpaca-report-unfinished ()
+  (let (bad)
+    (dolist (q elpaca--queues)
+      (dolist (entry (elpaca-q<-elpacas q))
+        (let* ((p (cdr entry))
+               (s (elpaca<-status p)))
+          (unless (memq s '(finished activated))
+            (push (format "%s(%s)" (elpaca<-id p) s) bad)))))
+    (when bad
+      (warn "Elpaca: %d packages did not finish: %s"
+            (length bad) (string-join (nreverse bad) " ")))))
+
+(when (fboundp 'elpaca-subscribe)
+  (elpaca-subscribe 'failed #'imalison:elpaca-warn-failed))
+(add-hook 'elpaca-after-init-hook #'imalison:elpaca-report-unfinished)
+
 (defun imalison:existing-executable (&rest candidates)
   (seq-find #'file-executable-p (delq nil candidates)))
 

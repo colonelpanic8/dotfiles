@@ -86,6 +86,32 @@ file uses lexical scoping.
 ;;; -*- lexical-binding: t -*-
 (setq-default lexical-binding t)
 #+END_SRC
+** Appearance Dependencies
+Install and load the packages required by the startup appearance before the
+rest of the configuration queues optional packages.
+#+BEGIN_SRC emacs-lisp
+(use-package gotham-theme
+  :ensure (:wait t)
+  :defer t)
+
+(use-package nerd-icons
+  :ensure (:wait t)
+  :demand t)
+
+(use-package shrink-path
+  :ensure (:host gitlab :repo "bennya/shrink-path.el"
+                 :protocol https :wait t)
+  :demand t)
+
+(use-package doom-modeline
+  :ensure (:wait t)
+  :demand t
+  :custom
+  (doom-modeline-height 40))
+
+(defvar imalison:enable-doom-modeline-on-startup t
+  "Non-nil means enable `doom-modeline-mode' during startup.")
+#+END_SRC
 ** Security
 #+BEGIN_SRC emacs-lisp
 (defvar imalison:secure t)
@@ -1325,6 +1351,7 @@ Paradox is a package.el extension. I have no use for it now that I use straight.
 ** gcmh
 #+begin_src emacs-lisp
 (use-package gcmh
+  :ensure (gcmh :host gitlab :repo "koral/gcmh" :protocol https)
   :defer 5
   :config (gcmh-mode 1))
 #+end_src
@@ -1347,12 +1374,30 @@ Paradox is a package.el extension. I have no use for it now that I use straight.
   :commands emacs-everywhere
   :config
   (progn
+    (defun imalison:hyprland-json-command (command)
+      (condition-case nil
+          (json-parse-string
+           (shell-command-to-string command)
+           :object-type 'alist
+           :array-type 'list
+           :false-object nil
+           :null-object nil)
+        (error nil)))
+
     (defun imalison:emacs-everywhere-app-info-hyprland ()
       (require 'json)
-      (let* ((window (json-parse-string
-                      (shell-command-to-string "hyprctl -j activewindow")
-                      :object-type 'alist
-                      :array-type 'list))
+      (require 'seq)
+      (let* ((active-window
+              (imalison:hyprland-json-command "hyprctl -j activewindow"))
+             (window
+              (if (alist-get 'address active-window)
+                  active-window
+                (seq-find
+                 (lambda (candidate)
+                   (and (equal (alist-get 'focusHistoryID candidate) 0)
+                        (alist-get 'mapped candidate)
+                        (not (alist-get 'hidden candidate))))
+                 (imalison:hyprland-json-command "hyprctl -j clients"))))
              (address (alist-get 'address window))
              (class (or (alist-get 'initialClass window)
                         (alist-get 'class window)
@@ -2899,6 +2944,7 @@ The following is taken from [[https://github.com/syl20bnr/spacemacs/blob/a650877
   :commands purty-on-save-mode
   :ensure (purty :repo "joneshf/purty"
                  :host gitlab
+                 :protocol https
                  :files ("purty.el")))
 
 (use-package psc-ide
@@ -4120,7 +4166,7 @@ Ensure all themes that I use are installed:
 
 (defvar-setq packages-appearance
   '(monokai-theme zenburn-theme base16-theme molokai-theme moe-theme
-                  tango-2-theme gotham-theme sublime-themes
+                  tango-2-theme sublime-themes
                   waher-theme ample-theme material-theme zerodark-theme
                   color-theme-modern leuven-theme spacemacs-theme gruvbox-theme
                   forest-blue-theme flatland-theme afternoon-theme
@@ -4140,22 +4186,6 @@ Ensure all themes that I use are installed:
 (use-package all-the-icons
   :defer t)
 #+END_SRC
-** nerd-icons
-#+BEGIN_SRC emacs-lisp
-(use-package nerd-icons
-  :defer t)
-#+END_SRC
-** doom-modeline
-#+begin_src emacs-lisp
-(use-package doom-modeline
-  :after nerd-icons
-  :commands doom-modeline-mode
-  :custom
-  (doom-modeline-height 40))
-
-(defvar imalison:enable-doom-modeline-on-startup t
-  "Non-nil means enable `doom-modeline-mode' during startup.")
-#+end_src
 ** page-break-lines
 #+BEGIN_SRC emacs-lisp
 (use-package page-break-lines
@@ -4336,7 +4366,7 @@ load-theme hook (See the heading below).
 
 (if (imalison:daemon-startup-p)
     (add-hook 'server-after-make-frame-hook 'imalison:appearance-setup-hook)
-  (add-hook 'elpaca-after-init-hook 'imalison:appearance-setup-hook))
+  (add-hook 'after-init-hook 'imalison:appearance-setup-hook))
 #+END_SRC
 * Post Init Custom
 #+BEGIN_SRC emacs-lisp
