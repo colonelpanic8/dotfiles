@@ -103,9 +103,24 @@
     ];
   };
 
+  # Prefer the SN770; the Intel 660p is QLC and shares its device with /.
   swapDevices = [
-    {device = "/dev/disk/by-uuid/c0dcff59-8072-48fb-b242-a7a1797e4b48";}
+    {
+      device = "/dev/disk/by-uuid/598e9aa1-4940-4410-a2fa-3dfd8b7d2c0d";
+      priority = 10;
+    }
+    {
+      device = "/dev/disk/by-uuid/c0dcff59-8072-48fb-b242-a7a1797e4b48";
+      priority = 1;
+    }
   ];
+
+  # Absorb swap traffic in RAM before touching either disk.
+  zramSwap = {
+    enable = true;
+    algorithm = "zstd";
+    priority = 100;
+  };
 
   networking.useDHCP = lib.mkDefault true;
   nixpkgs.hostPlatform = lib.mkDefault "x86_64-linux";
