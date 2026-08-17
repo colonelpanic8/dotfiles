@@ -3,6 +3,7 @@
     "ryzen-shine"
     "strixi-minaj"
     "jay-lenovo"
+    "jimi-hendnix"
     "mac-demarco-mini"
     "railbird-sf"
   ];
