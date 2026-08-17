@@ -305,6 +305,23 @@ from transformers import (/' \
       '';
   });
 
+  # nixpkgs pins a 2021 Wayback Machine copy of the unversioned download URL.
+  # PassMark only publishes the current free build at a stable URL, so this
+  # tracks it by hand; a hash mismatch here means a new release shipped.
+  memtest86-efi = prev.memtest86-efi.overrideAttrs (_: {
+    version = "11.7.1000";
+    src = prev.fetchzip {
+      url = "https://www.memtest86.com/downloads/memtest86-usb.zip";
+      hash = "sha256-IRkEzTtsPwCADGxpSynIvzQRl715lOJqLf/ERp409iY=";
+      stripRoot = false;
+      # PassMark's CDN 403s anything that does not look like a browser.
+      curlOptsList = [
+        "--user-agent"
+        "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
+      ];
+    };
+  });
+
   playwright-cli = final.callPackage ../../nixos/packages/playwright-cli { };
   # Custom Waybar fork for workspace taskbar support + external SNI watcher option.
   waybar = prev.waybar.overrideAttrs (old: {

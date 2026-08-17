@@ -90,6 +90,10 @@ in {
         gfxmodeBios = lib.mkDefault cfg.gfxmode;
         extraEntries =
           ''
+            menuentry "MemTest86 (PassMark, free)" {
+              insmod chain
+              chainloader @bootRoot@/memtest86.efi
+            }
             menuentry "Memtest86+ (AMD Zen DIMM slot decoder)" {
               linux @bootRoot@/memtest-dimm-decode.bin
             }
@@ -102,7 +106,17 @@ in {
               chainloader /EFI/Microsoft/Boot/bootmgfw.efi
             }
           '';
-        extraFiles."memtest-dimm-decode.bin" = memtest86plusDimmDecode.efi;
+        extraFiles = {
+          "memtest-dimm-decode.bin" = memtest86plusDimmDecode.efi;
+          # PassMark's free build decodes SPD/SMBIOS itself, so it names the
+          # failing slot without the Memtest86+ patch above. It looks for the
+          # rest of these beside its own binary; without unifont.bin its log
+          # reports "InitFont - Unable to open unifont.bin".
+          "memtest86.efi" = "${pkgs.memtest86-efi}/BOOTX64.efi";
+          "unifont.bin" = "${pkgs.memtest86-efi}/unifont.bin";
+          "blacklist.cfg" = "${pkgs.memtest86-efi}/blacklist.cfg";
+          "mt86.png" = "${pkgs.memtest86-efi}/mt86.png";
+        };
       };
     };
   };
