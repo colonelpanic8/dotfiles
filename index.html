@@ -3,7 +3,7 @@
 "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
-<!-- 2026-08-17 Mon 18:27 -->
+<!-- 2026-08-17 Mon 20:49 -->
 <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>&lrm;</title>
@@ -4263,11 +4263,7 @@ Install and load the packages required by the startup appearance before the
 rest of the configuration queues optional packages.
 </p>
 <div class="org-src-container">
-<pre class="src src-emacs-lisp">(<span class="org-keyword">use-package</span> <span class="org-constant">gotham-theme</span>
-  <span class="org-builtin">:ensure</span> (<span class="org-builtin">:wait</span> t)
-  <span class="org-builtin">:defer</span> t)
-
-(<span class="org-keyword">use-package</span> <span class="org-constant">nerd-icons</span>
+<pre class="src src-emacs-lisp">(<span class="org-keyword">use-package</span> <span class="org-constant">nerd-icons</span>
   <span class="org-builtin">:ensure</span> (<span class="org-builtin">:wait</span> t)
   <span class="org-builtin">:demand</span> t)
 
@@ -9999,7 +9995,7 @@ Ensure all themes that I use are installed:
 
 (defvar-setq packages-appearance
   '(monokai-theme zenburn-theme base16-theme molokai-theme moe-theme
-                  tango-2-theme sublime-themes
+                  tango-2-theme gotham-theme sublime-themes
                   waher-theme ample-theme material-theme zerodark-theme
                   color-theme-modern leuven-theme spacemacs-theme gruvbox-theme
                   forest-blue-theme flatland-theme afternoon-theme
@@ -10226,22 +10222,8 @@ load-theme hook (See the heading below).
 <div class="org-src-container">
 <pre class="src src-emacs-lisp">(<span class="org-keyword">defvar</span> <span class="org-variable-name">imalison:appearance-setup-done</span> nil)
 
-(<span class="org-keyword">defun</span> <span class="org-function-name">imalison:ensure-theme-load-path</span> (theme)
-  (<span class="org-keyword">when</span> (boundp 'elpaca-builds-directory)
-    (<span class="org-keyword">when-let</span> ((theme-dir
-                (seq-find
-                 (<span class="org-keyword">lambda</span> (dir)
-                   (file-exists-p
-                    (expand-file-name (format <span class="org-string">"%s-theme.el"</span> theme) dir)))
-                 (directory-files
-                  elpaca-builds-directory
-                  t
-                  directory-files-no-dot-files-regexp))))
-      (add-to-list 'custom-theme-load-path theme-dir))))
-
 (<span class="org-keyword">defun</span> <span class="org-function-name">imalison:appearance-setup-hook</span> (<span class="org-type">&amp;rest</span> args)
   (<span class="org-keyword">unless</span> imalison:appearance-setup-done
-    (imalison:ensure-theme-load-path imalison:dark-theme)
     (<span class="org-keyword">unless</span> (member imalison:dark-theme custom-enabled-themes)
       (load-theme imalison:dark-theme t))
     (apply 'imalison:appearance args)
@@ -10263,7 +10245,7 @@ load-theme hook (See the heading below).
 
 (<span class="org-keyword">if</span> (imalison:daemon-startup-p)
     (add-hook 'server-after-make-frame-hook 'imalison:appearance-setup-hook)
-  (add-hook 'after-init-hook 'imalison:appearance-setup-hook))
+  (add-hook 'elpaca-after-init-hook 'imalison:appearance-setup-hook))
 </pre>
 </div>
 </div>
