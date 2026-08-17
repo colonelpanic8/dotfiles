@@ -376,6 +376,10 @@
       inherit self inputs nixpkgs org-agenda-api agenix;
     };
 
+    orgAgendaApiRev = builtins.substring 0 7 (org-agenda-api.rev or "unknown");
+    dotfilesRev = builtins.substring 0 7 (self.rev or self.dirtyRev or "dirty");
+    orgAgendaApiImageName = "org-agenda-api:colonelpanic-${orgAgendaApiRev}-${dotfilesRev}";
+
     machinesFilepath = ./machines;
     machineFilenames = builtins.attrNames (builtins.readDir machinesFilepath);
     machineNameFromFilename = filename: builtins.head (builtins.split "\\." filename);
@@ -401,8 +405,8 @@
       };
       railbird-sf = {
         specialArgs = {
-          orgAgendaApiContainer = null;
-          orgAgendaApiImageName = "localhost/org-agenda-api:colonelpanic-baa0148-56d1261";
+          orgAgendaApiContainer = (perSystem "x86_64-linux").packages.colonelpanic-org-agenda-api;
+          inherit orgAgendaApiImageName;
         };
       };
     };
