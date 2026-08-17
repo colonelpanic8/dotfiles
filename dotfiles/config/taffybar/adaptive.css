@@ -1,0 +1,111 @@
+@import url("taffybar.css");
+
+.taffy-window.bar-profile-compact .taffy-box {
+	font-size: 10pt;
+}
+
+.taffy-window.bar-profile-small .taffy-box {
+	font-size: 9.5pt;
+	border-radius: 8px;
+}
+
+.taffy-window.bar-profile-small .outer-pad,
+.taffy-window.bar-profile-small .workspaces .outer-pad {
+	border-radius: 8px;
+	margin: 4px 3px;
+}
+
+.taffy-window.bar-profile-small .inner-pad,
+.taffy-window.bar-profile-small .workspaces .inner-pad {
+	border-radius: 7px;
+	padding-top: 2px;
+	padding-bottom: 2px;
+}
+
+.taffy-window.bar-profile-small .workspaces .contents {
+	border-radius: 7px;
+	padding: 0px 3px;
+}
+
+.taffy-window.bar-profile-small .workspaces .overlay-box .workspace-label {
+	padding: 1px 4px 4px 10px;
+}
+
+.taffy-window.bar-profile-small .visible .contents,
+.taffy-window.bar-profile-small .workspaces .window-icon-container,
+.taffy-window.bar-profile-small .workspaces .window-icon-container.active {
+	padding-top: 1px;
+	padding-bottom: 1px;
+}
+
+.taffy-window.bar-profile-small .auto-size-image,
+.taffy-window.bar-profile-small .sni-tray {
+	padding-top: 2px;
+	padding-bottom: 2px;
+}
+
+.taffy-window.bar-profile-tiny .taffy-box {
+	font-size: 8.5pt;
+	border-radius: 7px;
+}
+
+.taffy-window.bar-profile-tiny .outer-pad,
+.taffy-window.bar-profile-tiny .workspaces .outer-pad {
+	border-radius: 7px;
+	margin: 2px 3px;
+}
+
+.taffy-window.bar-profile-tiny .inner-pad,
+.taffy-window.bar-profile-tiny .workspaces .inner-pad {
+	border-radius: 6px;
+	padding-top: 0px;
+	padding-bottom: 0px;
+}
+
+.taffy-window.bar-profile-tiny .inner-pad {
+	padding-left: 8px;
+	padding-right: 8px;
+}
+
+.taffy-window.bar-profile-tiny .workspaces .inner-pad {
+	padding-left: 8px;
+	padding-right: 2px;
+}
+
+.taffy-window.bar-profile-tiny .workspaces .contents {
+	border-radius: 6px;
+	padding: 0px 2px;
+}
+
+.taffy-window.bar-profile-tiny .workspace-label {
+	font-size: 8pt;
+}
+
+.taffy-window.bar-profile-tiny .workspaces .overlay-box .workspace-label {
+	padding: 0px 3px 3px 9px;
+}
+
+.taffy-window.bar-profile-tiny .visible .contents,
+.taffy-window.bar-profile-tiny .workspaces .window-icon-container,
+.taffy-window.bar-profile-tiny .workspaces .window-icon-container.active {
+	padding-top: 0px;
+	padding-bottom: 0px;
+}
+
+.taffy-window.bar-profile-tiny .auto-size-image,
+.taffy-window.bar-profile-tiny .sni-tray {
+	padding-top: 0px;
+	padding-bottom: 0px;
+}
+
+.taffy-window.bar-profile-tiny .icon-label > .icon,
+.taffy-window.bar-profile-tiny .usage-section.icon-label > .icon,
+.taffy-window.bar-profile-tiny .ram-swap .icon-label > .icon {
+	padding-right: 6px;
+	min-width: 18px;
+}
+
+.taffy-window.bar-profile-tiny .sun-lock .wlsunset,
+.taffy-window.bar-profile-tiny .sun-lock .screen-lock {
+	padding: 0px 3px;
+}

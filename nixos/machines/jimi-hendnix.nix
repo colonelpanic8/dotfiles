@@ -16,6 +16,7 @@
   };
 
   features.full.enable = true;
+  myModules.taffybar.aiUsageMode = "both";
   myModules.cache-server = {
     enable = true;
     port = 3090;

@@ -3,9 +3,8 @@
 
 module TaffybarConfig.Widgets
   ( clockWidget,
-    endWidgetsForHost,
+    endWidgetsForCapabilities,
     startWidgetsForBackend,
-    startWidgetsForHostAndBackend,
   )
 where
 
@@ -62,8 +61,12 @@ import System.Taffybar.Widget.Util
 import qualified System.Taffybar.Widget.Wlsunset as Wlsunset
 import qualified System.Taffybar.Widget.Workspaces as Workspaces
 import TaffybarConfig.AIUsage (aiUsageWidget)
-import TaffybarConfig.Host (laptopHosts)
+import TaffybarConfig.RuntimeCapabilities (RuntimeCapabilities)
 import TaffybarConfig.Temperature (cpuGpuTemperatureWidget)
+import TaffybarConfig.WidgetPlan
+  ( EndWidgetPlan (..),
+    endWidgetPlanForCapabilities,
+  )
 import TaffybarConfig.WidgetUtil
   ( decorateWithClassAndBox,
     decorateWithClassAndBoxM,
@@ -320,9 +323,6 @@ sunLockWidget :: TaffyIO Gtk.Widget
 sunLockWidget =
   stackInPill "sun-lock" [simplifiedWlsunsetWidget, simplifiedScreenLockWidget]
 
-cpuPowerOverlayHosts :: [String]
-cpuPowerOverlayHosts = ["strixi-minaj"]
-
 cpuWidget :: Bool -> TaffyIO Gtk.Widget
 cpuWidget showPackagePower =
   decorateWithClassAndBoxM "cpu" $
@@ -475,19 +475,21 @@ startWidgetsForBackend backend =
     -- These Wayland widgets are Hyprland-specific.
     BackendWayland -> [omniMenuWidget, workspacesWidget]
 
-startWidgetsForHostAndBackend :: String -> Backend -> [TaffyIO Gtk.Widget]
-startWidgetsForHostAndBackend _hostName = startWidgetsForBackend
-
-endWidgetsForHost :: String -> [TaffyIO Gtk.Widget]
-endWidgetsForHost hostName =
+endWidgetsForCapabilities :: RuntimeCapabilities -> [TaffyIO Gtk.Widget]
+endWidgetsForCapabilities capabilities =
   -- NOTE: end widgets are packed with Gtk.boxPackEnd, so the list order is
   -- right-to-left on screen. Make the tray appear at the far right by placing
   -- it first in the list. (On laptops: the battery/wifi stack is far right,
   -- tray immediately left of it.)
-  let hostCPUWidget = cpuWidget $ hostName `elem` cpuPowerOverlayHosts
+  let plan = endWidgetPlanForCapabilities capabilities
+      hostCPUWidget = cpuWidget $ includeCPUPower plan
+      audioWidgetForCapabilities =
+        if includeBacklight plan
+          then audioBacklightWidget
+          else audioWidget
       baseEndWidgets =
         [ sniTrayWidget,
-          audioWidget,
+          audioWidgetForCapabilities,
           aiUsageWidget,
           hostCPUWidget,
           cpuGpuTemperatureWidget,
@@ -501,7 +503,7 @@ endWidgetsForHost hostName =
         [ batteryNetworkWidget,
           sniTrayWidget,
           diskCPUFrequencyWidget,
-          audioBacklightWidget,
+          audioWidgetForCapabilities,
           aiUsageWidget,
           hostCPUWidget,
           cpuGpuTemperatureWidget,
@@ -509,6 +511,6 @@ endWidgetsForHost hostName =
           sunLockWidget,
           mprisWidget
         ]
-   in if hostName `elem` laptopHosts
+   in if useBatteryLayout plan
         then laptopEndWidgets
         else baseEndWidgets

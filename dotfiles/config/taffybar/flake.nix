@@ -158,6 +158,8 @@
                   "imalison-taffybar.cabal"
                   "TaffybarConfig"
                   "TaffybarConfig/.*"
+                  "test"
+                  "test/.*"
                 ])
                 { }
             ) [

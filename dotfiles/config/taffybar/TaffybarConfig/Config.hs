@@ -1,41 +1,92 @@
 module TaffybarConfig.Config
-  ( mkSimpleTaffyConfig,
+  ( mkTaffybarConfig,
   )
 where
 
-import TaffybarConfig.Host (compactBarHosts, smallBarHosts, tinyBarHosts)
-import TaffybarConfig.Widgets (clockWidget, endWidgetsForHost, startWidgetsForHostAndBackend)
-import System.Taffybar.Context (Backend)
+import Control.Monad.IO.Class (liftIO)
+import qualified Data.Text as T
+import qualified GI.Gdk as Gdk
+import System.Taffybar.Context (Backend, TaffybarConfig)
 import System.Taffybar.SimpleConfig
+import TaffybarConfig.Profile
+import TaffybarConfig.RuntimeCapabilities
+import TaffybarConfig.Widgets
+  ( clockWidget,
+    endWidgetsForCapabilities,
+    startWidgetsForBackend,
+  )
 
-mkSimpleTaffyConfig :: String -> Backend -> [FilePath] -> SimpleTaffyConfig
-mkSimpleTaffyConfig hostName backend cssFiles =
-  defaultSimpleTaffyConfig
-    { startWidgets = startWidgetsForHostAndBackend hostName backend,
-      centerWidgets = [clockWidget],
-      endWidgets = endWidgetsForHost hostName,
-      barLevels = Nothing,
-      barPosition = Top,
-      widgetSpacing = 0,
-      barPadding =
-        if hostName `elem` tinyBarHosts
-          then 0
-          else
-            if hostName `elem` smallBarHosts
-              then 1
-              else
-                if hostName `elem` compactBarHosts
-                  then 2
-                  else 4,
-      barHeight =
-        if hostName `elem` tinyBarHosts
-          then ScreenRatio $ 1 / 90
-          else
-            if hostName `elem` smallBarHosts
-              then ScreenRatio $ 1 / 72
-              else
-                if hostName `elem` compactBarHosts
-                  then ScreenRatio $ 1 / 60
-                  else ScreenRatio $ 2 / 99,
-      cssPaths = cssFiles
-    }
+data MonitorGeometry = MonitorGeometry
+  { monitorLogicalWidth :: Int,
+    monitorLogicalHeight :: Int,
+    monitorScale :: Int
+  }
+
+getMonitorGeometry :: Int -> IO (Maybe MonitorGeometry)
+getMonitorGeometry monitorNumber = do
+  maybeDisplay <- Gdk.displayGetDefault
+  case maybeDisplay of
+    Nothing -> pure Nothing
+    Just display -> do
+      maybeMonitor <- Gdk.displayGetMonitor display $ fromIntegral monitorNumber
+      case maybeMonitor of
+        Nothing -> pure Nothing
+        Just monitor -> do
+          geometry <- Gdk.monitorGetGeometry monitor
+          width <- fromIntegral <$> Gdk.getRectangleWidth geometry
+          height <- fromIntegral <$> Gdk.getRectangleHeight geometry
+          scale <- fromIntegral <$> Gdk.monitorGetScaleFactor monitor
+          pure $
+            Just $
+              MonitorGeometry
+                { monitorLogicalWidth = width,
+                  monitorLogicalHeight = height,
+                  monitorScale = scale
+                }
+
+monitorConfigKey :: MonitorGeometry -> BarProfile -> RuntimeCapabilities -> T.Text
+monitorConfigKey geometry profile capabilities =
+  T.intercalate
+    (T.pack ":")
+    [ barProfileClass profile,
+      T.pack $ show $ monitorLogicalWidth geometry,
+      T.pack $ show $ monitorLogicalHeight geometry,
+      T.pack $ show $ monitorScale geometry,
+      T.pack $ show capabilities
+    ]
+
+mkTaffybarConfig :: Backend -> [FilePath] -> TaffybarConfig
+mkTaffybarConfig backend cssFiles =
+  toTaffybarConfigPerMonitor baseConfig $ \monitorNumber -> do
+    capabilities <- getRuntimeCapabilities
+    maybeGeometry <- liftIO $ getMonitorGeometry monitorNumber
+    let geometry =
+          maybe
+            (MonitorGeometry 3840 2160 1)
+            id
+            maybeGeometry
+        profile = profileForLogicalWidth $ monitorLogicalWidth geometry
+        config =
+          baseConfig
+            { barCssClasses = [barProfileClass profile],
+              endWidgets = endWidgetsForCapabilities capabilities,
+              barPadding = barProfilePadding profile,
+              barHeight = ScreenRatio $ barProfileHeightRatio profile
+            }
+    pure $
+      SimpleMonitorConfig
+        { simpleMonitorConfigKey = monitorConfigKey geometry profile capabilities,
+          simpleMonitorConfig = config
+        }
+  where
+    baseConfig =
+      defaultSimpleTaffyConfig
+        { startWidgets = startWidgetsForBackend backend,
+          centerWidgets = [clockWidget],
+          endWidgets = [],
+          barLevels = Nothing,
+          barPosition = Top,
+          widgetSpacing = 0,
+          cssPaths = cssFiles,
+          startupHook = startRuntimeCapabilityMonitoring
+        }

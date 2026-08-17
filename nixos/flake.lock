@@ -1618,11 +1618,11 @@
     "mova": {
       "flake": false,
       "locked": {
-        "lastModified": 1787003722,
-        "narHash": "sha256-mvcD4nbTZMPIprnRb/xMVmzPT3DWi9WA+ySViYMdJqw=",
+        "lastModified": 1787005390,
+        "narHash": "sha256-Gh45ZoQ+NOFg9OUqou1qe4bnYAQGrxGExro3N+IkyGE=",
         "owner": "colonelpanic8",
         "repo": "mova",
-        "rev": "d0d386774211a4c7977b35df4c534e0deaa25c54",
+        "rev": "5bc1881b467484edcdeac6c6e63f32fff92bfb3a",
         "type": "github"
       },
       "original": {
@@ -2113,11 +2113,11 @@
         "org-window-habit": "org-window-habit"
       },
       "locked": {
-        "lastModified": 1787003742,
-        "narHash": "sha256-ZvUE2nkMK/snT5Xx5mRSunWJAhHB2uUa4dg4aBEQboY=",
+        "lastModified": 1787005417,
+        "narHash": "sha256-SKmvBj5AiIhwE/jEwfjDj3QgDyjBz6UzuycWG1jJy94=",
         "owner": "colonelpanic8",
         "repo": "org-agenda-api",
-        "rev": "67fa173071f28aa6e1bd266597d122b0db0be404",
+        "rev": "e5c118b8abf44044e13cd5b75bf2061d4c458038",
         "type": "github"
       },
       "original": {
@@ -2791,11 +2791,11 @@
         "xmonad-contrib": "xmonad-contrib"
       },
       "locked": {
-        "lastModified": 1784830515,
-        "narHash": "sha256-vzyxHx/yyMKkgP+HU1OxoffnvKmCftC/gWkAbflDTq4=",
+        "lastModified": 1787004403,
+        "narHash": "sha256-FOonECsO+mdLtrcVCICHvRe/pPPr85ytEvoSYLB/vUc=",
         "ref": "refs/heads/master",
-        "rev": "dd83a664c82f295892d96397b872e95126aa990c",
-        "revCount": 2409,
+        "rev": "8b51594eb3c790247afa449ba62776cee66a83d6",
+        "revCount": 2410,
         "type": "git",
         "url": "file:///srv/dotfiles/dotfiles/config/taffybar/taffybar"
       },
