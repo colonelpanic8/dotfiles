@@ -50,6 +50,6 @@ makeEnable config "myModules.paseo" false {
   ];
 
   home-manager.users.imalison.imports = [
-    ../nix-shared/home-manager/paseo-desktop-settings.nix
+    ../nix-shared/home-manager/paseo-settings-seed.nix
   ];
 }

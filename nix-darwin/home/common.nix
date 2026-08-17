@@ -129,6 +129,7 @@ in {
     inputs.agenix.homeManagerModules.default
     ../../nix-shared/home-manager/codex-generated-skills.nix
     ../../nix-shared/home-manager/paseo-managed-hosts.nix
+    ../../nix-shared/home-manager/paseo-settings-seed.nix
     ../../nix-shared/home-manager/t3code-managed-connections.nix
   ];
 
