@@ -16,13 +16,23 @@
     path = ../dotfiles/lib;
     name = "dotfiles-zsh-lib";
   };
+  # Shell snippet picking the live worktree copy of dotfiles/lib when it
+  # exists (edits take effect without a rebuild), falling back to the store
+  # copy on systems without the checkout (e.g. rescue images).
+  resolveDotfilesLib = ''
+    DOTFILES_LIB="${config.dotfiles-worktree}/dotfiles/lib"
+    [ -d "$DOTFILES_LIB" ] || DOTFILES_LIB="${zshLibDir}"
+    export DOTFILES_LIB
+  '';
   githubClone = pkgs.writeShellScriptBin "github_clone" ''
-    export PATH="${zshLibDir}/bin:$PATH"
-    exec ${pkgs.zsh}/bin/zsh ${zshLibDir}/functions/github_clone "$@"
+    ${resolveDotfilesLib}
+    export PATH="$DOTFILES_LIB/bin:$PATH"
+    exec ${pkgs.zsh}/bin/zsh "$DOTFILES_LIB/functions/github_clone" "$@"
   '';
   githubUserClone = pkgs.writeShellScriptBin "github_user_clone" ''
-    export PATH="${githubClone}/bin:${zshLibDir}/bin:$PATH"
-    exec ${pkgs.zsh}/bin/zsh ${zshLibDir}/functions/github_user_clone "$@"
+    ${resolveDotfilesLib}
+    export PATH="${githubClone}/bin:$DOTFILES_LIB/bin:$PATH"
+    exec ${pkgs.zsh}/bin/zsh "$DOTFILES_LIB/functions/github_user_clone" "$@"
   '';
   machineFilenames = builtins.attrNames (builtins.readDir ./machines);
   machineNameFromFilename = filename: builtins.head (builtins.split "\\." filename);
@@ -101,9 +111,9 @@ in
             # handled once by oh-my-zsh below, with this check intentionally skipped.
             ZSH_DISABLE_COMPFIX=true
 
-            fpath=("${zshLibDir}/completions" $fpath)
-            fpath+="${zshLibDir}/functions"
-            for file in "${zshLibDir}/functions/"*
+            fpath=("$DOTFILES_LIB/completions" $fpath)
+            fpath+="$DOTFILES_LIB/functions"
+            for file in "$DOTFILES_LIB/functions/"*(N)
             do
                 autoload "''${file##*/}"
             done
@@ -213,7 +223,8 @@ in
           export STARSHIP_INSIDE_EMACS="yes"
         '';
         extraInit = ''
-          export PATH="$HOME/.cargo/bin:${zshLibDir}/bin:${zshLibDir}/functions:$PATH";
+          ${resolveDotfilesLib}
+          export PATH="$HOME/.cargo/bin:$DOTFILES_LIB/bin:$DOTFILES_LIB/functions:$PATH";
         '';
       };
     };

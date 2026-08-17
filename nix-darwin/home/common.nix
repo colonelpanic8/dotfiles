@@ -9,6 +9,7 @@
 }: let
   srcDotfilesDir = builtins.dirOf libDir;
   worktreeDotfilesDir = "${config.home.homeDirectory}/dotfiles/dotfiles";
+  worktreeLibDir = "${worktreeDotfilesDir}/lib";
   outOfStore = config.lib.file.mkOutOfStoreSymlink;
   replaceRuntimeDir = builtins.replaceStrings ["$XDG_RUNTIME_DIR"] ["\${XDG_RUNTIME_DIR}"];
   gpgKeyPath = replaceRuntimeDir config.age.secrets.gpg-keys.path;
@@ -228,8 +229,8 @@ in {
 
   home.sessionPath = [
     "$HOME/.cargo/bin"
-    "${libDir}/bin"
-    "${libDir}/functions"
+    "${worktreeLibDir}/bin"
+    "${worktreeLibDir}/functions"
   ];
 
   home.sessionVariables = {
@@ -335,8 +336,8 @@ in {
       // multiplexerAliases;
     initContent = lib.mkMerge [
       (lib.mkOrder 550 ''
-        fpath+="${libDir}/functions"
-        for file in "${libDir}/functions/"*; do
+        fpath+="${worktreeLibDir}/functions"
+        for file in "${worktreeLibDir}/functions/"*(N); do
           autoload "''${file##*/}"
         done
       '')
