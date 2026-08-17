@@ -90,10 +90,6 @@ file uses lexical scoping.
 Install and load the packages required by the startup appearance before the
 rest of the configuration queues optional packages.
 #+BEGIN_SRC emacs-lisp
-(use-package gotham-theme
-  :ensure (:wait t)
-  :defer t)
-
 (use-package nerd-icons
   :ensure (:wait t)
   :demand t)
@@ -4166,7 +4162,7 @@ Ensure all themes that I use are installed:
 
 (defvar-setq packages-appearance
   '(monokai-theme zenburn-theme base16-theme molokai-theme moe-theme
-                  tango-2-theme sublime-themes
+                  tango-2-theme gotham-theme sublime-themes
                   waher-theme ample-theme material-theme zerodark-theme
                   color-theme-modern leuven-theme spacemacs-theme gruvbox-theme
                   forest-blue-theme flatland-theme afternoon-theme
@@ -4329,22 +4325,8 @@ load-theme hook (See the heading below).
 #+BEGIN_SRC emacs-lisp
 (defvar imalison:appearance-setup-done nil)
 
-(defun imalison:ensure-theme-load-path (theme)
-  (when (boundp 'elpaca-builds-directory)
-    (when-let ((theme-dir
-                (seq-find
-                 (lambda (dir)
-                   (file-exists-p
-                    (expand-file-name (format "%s-theme.el" theme) dir)))
-                 (directory-files
-                  elpaca-builds-directory
-                  t
-                  directory-files-no-dot-files-regexp))))
-      (add-to-list 'custom-theme-load-path theme-dir))))
-
 (defun imalison:appearance-setup-hook (&rest args)
   (unless imalison:appearance-setup-done
-    (imalison:ensure-theme-load-path imalison:dark-theme)
     (unless (member imalison:dark-theme custom-enabled-themes)
       (load-theme imalison:dark-theme t))
     (apply 'imalison:appearance args)
@@ -4366,7 +4348,7 @@ load-theme hook (See the heading below).
 
 (if (imalison:daemon-startup-p)
     (add-hook 'server-after-make-frame-hook 'imalison:appearance-setup-hook)
-  (add-hook 'after-init-hook 'imalison:appearance-setup-hook))
+  (add-hook 'elpaca-after-init-hook 'imalison:appearance-setup-hook))
 #+END_SRC
 * Post Init Custom
 #+BEGIN_SRC emacs-lisp
