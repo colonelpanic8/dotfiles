@@ -313,7 +313,7 @@
     };
 
     codex-desktop-linux = {
-      url = "github:colonelpanic8/codex-desktop-linux/agent/use-official-linux-package";
+      url = "github:ilysenko/codex-desktop-linux/main";
     };
 
     paseo = {

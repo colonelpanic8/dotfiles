@@ -182,16 +182,16 @@
         "nixpkgs": "nixpkgs_3"
       },
       "locked": {
-        "lastModified": 1786480037,
-        "narHash": "sha256-ky66VpKfjk3rHnpdeSgzvmBvi38PwEUHIpzXCnSx9vg=",
-        "owner": "colonelpanic8",
+        "lastModified": 1786948352,
+        "narHash": "sha256-qFouSfAf8Az0j7dUMf128KNXqszdBi8LtmWHEhT3FOw=",
+        "owner": "ilysenko",
         "repo": "codex-desktop-linux",
-        "rev": "4fe0cc8454f32ae80326a5a49ec8431928e97fcd",
+        "rev": "2078f4da93bc262cb0c5dddd7ad483c6d37fb8cd",
         "type": "github"
       },
       "original": {
-        "owner": "colonelpanic8",
-        "ref": "agent/use-official-linux-package",
+        "owner": "ilysenko",
+        "ref": "main",
         "repo": "codex-desktop-linux",
         "type": "github"
       }
