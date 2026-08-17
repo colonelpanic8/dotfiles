@@ -208,8 +208,10 @@ We're going to use this to write separate parts of our config to different secti
 
 (defun org-todo-at-date (date)
   (interactive (list (org-time-string-to-time (org-read-date))))
-  (flet ((org-current-effective-time (&rest r) date)
-            (org-today (&rest r) (time-to-days date)))
+  (cl-letf (((symbol-function 'org-current-effective-time)
+             (lambda (&rest _r) date))
+            ((symbol-function 'org-today)
+             (lambda (&rest _r) (time-to-days date))))
     (cond ((eq major-mode 'org-mode) (org-todo))
           ((eq major-mode 'org-agenda-mode) (org-agenda-todo)))))
 
@@ -227,8 +229,8 @@ We're going to use this to write separate parts of our config to different secti
   (interactive)
   (setq time (or time (time-convert (encode-time (parse-time-string (org-read-date))) 'list)))
   (message "%s" time)
-  (flet
-      ((current-time (&rest args) time))
+  (cl-letf (((symbol-function 'current-time)
+             (lambda (&rest _args) time)))
     (funcall fn)))
 #+end_src
 ** Reschedule Past Items to Today
@@ -870,7 +872,7 @@ as its link target.
                 (if type
                     (replace-regexp-in-string "-" "" (symbol-name type))
                     "secondarystring")
-                (incf (gethash type cache 0)))))))
+                (cl-incf (gethash type cache 0)))))))
 #+END_SRC
 
 This function replaces the default naming scheme with a call to
