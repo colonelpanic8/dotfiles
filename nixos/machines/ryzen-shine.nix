@@ -46,6 +46,14 @@
   myModules.nixified-ai.enable = true;
   boot.kernelPackages = pkgs.linuxPackages_latest;
 
+  # MemTest86 2026-08-16 (/boot/MemTest86-Report-20260816-215525_934520.html):
+  # 193 errors, every one a bit-31 flip, at five addresses inside a 25KB window
+  # around 0x2AAC6BDC8 — at JEDEC 2133MT/s, so a defective cell, not an
+  # overclock. Reserve 4MB around it so Linux never hands that page out. The
+  # backslash keeps GRUB from expanding "$0x..." as a variable. Re-derive the
+  # address if the DIMMs are moved: the physical mapping changes with them.
+  boot.kernelParams = ["memmap=4M\\$0x2AAB00000"];
+
   boot.loader.systemd-boot.configurationLimit = 5;
   myModules.bootloaders.systemdBoot.enable = false;
   myModules.bootloaders.grub = {
