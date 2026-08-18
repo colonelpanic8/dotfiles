@@ -565,7 +565,7 @@
           name = user;
           home = homeForUser user;
           description = mkUserDescription user;
-          openssh.authorizedKeys.keys = inputs.railbird-secrets.keys.kanivanKeys;
+          openssh.authorizedKeys.keys = inputs.railbird-secrets.keys.sshClientKeys;
         })
         // {
           gitea-runner = {
