@@ -421,6 +421,20 @@ stop_hyprsaver() {
     pkill -TERM -P "$pid" >/dev/null 2>&1 || true
     rm -f "$hyprsaver_pid_file"
   fi
+
+  # A hyprsaver blocked on a dead output ignores --quit and SIGTERM while
+  # still holding its exclusive keyboard grab, which leaves the session unable
+  # to focus any window. Escalate to SIGKILL for any survivor, including
+  # processes the pid file lost track of.
+  local deadline=$((SECONDS + 2))
+  while pgrep -x hyprsaver >/dev/null 2>&1; do
+    if [ "$SECONDS" -ge "$deadline" ]; then
+      log_event "hyprsaver stop escalated to SIGKILL"
+      pkill -KILL -x hyprsaver >/dev/null 2>&1 || true
+      break
+    fi
+    sleep 0.2
+  done
 }
 
 stop_backends() {
