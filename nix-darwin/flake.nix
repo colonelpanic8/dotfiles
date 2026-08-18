@@ -420,7 +420,7 @@
         (final: prev: let
           previousUnwrapped = prev.t3code.unwrapped;
           unwrapped = previousUnwrapped.overrideAttrs (_finalAttrs: previousAttrs: {
-            pnpmDeps = previousAttrs.pnpmDeps.overrideAttrs (_: {
+            pnpmDeps = final.lib.overrideDerivation previousAttrs.pnpmDeps (_: {
               outputHash = "sha256-VdE+ycyF/UvPr2urLlKOt/Aa5t2WqKcidr2D0sH0eVI=";
             });
           });
