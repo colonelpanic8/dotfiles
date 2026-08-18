@@ -45,6 +45,7 @@
 in {
   launchd.agents.git-sync-rs = {
     enable = true;
+    domain = "user";
     config = {
       EnvironmentVariables = {
         PATH = lib.makeBinPath [pkgs.coreutils pkgs.git pkgs.openssh];

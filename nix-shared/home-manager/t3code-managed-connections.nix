@@ -81,6 +81,7 @@ in
 
     launchd.agents.t3code-managed-connections = lib.mkIf pkgs.stdenv.isDarwin {
       enable = true;
+      domain = "user";
       config = {
         ProgramArguments = ["${renderConfiguration}"];
         RunAtLoad = true;

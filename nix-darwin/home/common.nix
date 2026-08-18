@@ -44,16 +44,6 @@
     ''} \
       "$repository_root"
   '';
-  raycastPath = lib.concatStringsSep ":" [
-    "${config.home.homeDirectory}/.nix-profile/bin"
-    "/run/current-system/sw/bin"
-    "/opt/homebrew/bin"
-    "/usr/local/bin"
-    "/usr/bin"
-    "/bin"
-    "/usr/sbin"
-    "/sbin"
-  ];
   importGpgKeyScript = pkgs.writeShellScript "import-gpg-key" ''
     set -eu
 
@@ -98,6 +88,20 @@
       --passphrase-file "$passphrase_path" \
       --import "$normalized_key_file"
   '';
+  guiApplicationLauncher = application:
+    pkgs.writeShellScript "launch-${lib.toLower application}-with-aqua" ''
+      while true; do
+        while ! /bin/launchctl print "gui/$UID" >/dev/null 2>&1; do
+          /bin/sleep 5
+        done
+
+        /usr/bin/open -gja ${lib.escapeShellArg application} || true
+
+        while /bin/launchctl print "gui/$UID" >/dev/null 2>&1; do
+          /bin/sleep 5
+        done
+      done
+    '';
   multiplexerAliases = import ../../nix-shared/multiplexer-aliases.nix;
 
   excludedTopLevelEntries = [
@@ -148,7 +152,32 @@ in {
     repositoryRoot = "${config.home.homeDirectory}/dotfiles";
   };
 
-  launchd.agents.t3code-headless.config.ProgramArguments = lib.mkForce ["${t3codeManagedServerCommand}"];
+  launchd.agents.t3code-headless = {
+    domain = "user";
+    config.ProgramArguments = lib.mkForce ["${t3codeManagedServerCommand}"];
+  };
+
+  launchd.agents.hammerspoon = {
+    enable = true;
+    domain = "user";
+    config = {
+      ProgramArguments = ["${guiApplicationLauncher "Hammerspoon"}"];
+      ProcessType = "Background";
+      RunAtLoad = true;
+    };
+  };
+
+  launchd.agents.raycast = {
+    enable = true;
+    domain = "user";
+    config = {
+      ProgramArguments = ["${guiApplicationLauncher "Raycast"}"];
+      ProcessType = "Background";
+      RunAtLoad = true;
+      StandardOutPath = "${config.home.homeDirectory}/Library/Logs/raycast-launchd.log";
+      StandardErrorPath = "${config.home.homeDirectory}/Library/Logs/raycast-launchd.err.log";
+    };
+  };
 
   home.packages =
     [
@@ -225,7 +254,9 @@ in {
         /usr/bin/killall Raycast || true
         /bin/sleep 1
       fi
-      /usr/bin/open /Applications/Raycast.app || true
+      if /bin/launchctl print "gui/$UID" >/dev/null 2>&1; then
+        /usr/bin/open /Applications/Raycast.app || true
+      fi
     fi
   '';
 
@@ -270,8 +301,16 @@ in {
     '';
   };
 
+  launchd.agents.activate-agenix = lib.mkIf pkgs.stdenv.isDarwin {
+    domain = "user";
+  };
+  launchd.agents.gpg-agent = lib.mkIf pkgs.stdenv.isDarwin {
+    domain = "user";
+  };
+
   launchd.agents.import-gpg-key = {
     enable = true;
+    domain = "user";
     config = {
       ProgramArguments = ["${importGpgKeyScript}"];
       KeepAlive = {
@@ -282,24 +321,6 @@ in {
       RunAtLoad = true;
       StandardOutPath = "${config.home.homeDirectory}/Library/Logs/import-gpg-key.log";
       StandardErrorPath = "${config.home.homeDirectory}/Library/Logs/import-gpg-key.err.log";
-    };
-  };
-
-  launchd.agents.raycast = lib.mkIf pkgs.stdenv.isDarwin {
-    enable = true;
-    config = {
-      EnvironmentVariables = {
-        PATH = raycastPath;
-      };
-      ProgramArguments = [
-        "/usr/bin/open"
-        "/Applications/Raycast.app"
-      ];
-      KeepAlive = false;
-      ProcessType = "Interactive";
-      RunAtLoad = true;
-      StandardOutPath = "${config.home.homeDirectory}/Library/Logs/raycast-launchd.log";
-      StandardErrorPath = "${config.home.homeDirectory}/Library/Logs/raycast-launchd.err.log";
     };
   };
 

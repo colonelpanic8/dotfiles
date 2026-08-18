@@ -2,6 +2,7 @@ hostname := "mac-demarco-mini"
 target-hostname := "mac-demarco-mini-imalison"
 darwin-rebuild := "/run/current-system/sw/bin/darwin-rebuild"
 ssh-key := "/Users/kat/.ssh/id_ed25519"
+primary-uid := `id -u kat`
 
 build:
 	sudo -H env "GIT_SSH_COMMAND=ssh -i {{ssh-key}} -o IdentitiesOnly=yes" {{darwin-rebuild}} build --flake .#{{hostname}}
@@ -13,7 +14,7 @@ check-imalison:
 	./scripts/check-imalison-ready.sh
 
 switch:
-	sudo -H env "GIT_SSH_COMMAND=ssh -i {{ssh-key}} -o IdentitiesOnly=yes" {{darwin-rebuild}} switch --flake .#{{hostname}}
+	sudo launchctl asuser {{primary-uid}} env HOME=/var/root "GIT_SSH_COMMAND=ssh -i {{ssh-key}} -o IdentitiesOnly=yes" {{darwin-rebuild}} switch --flake .#{{hostname}}
 
 switch-imalison: check-imalison
 	sudo -H env "GIT_SSH_COMMAND=ssh -i {{ssh-key}} -o IdentitiesOnly=yes" {{darwin-rebuild}} switch --flake .#{{target-hostname}}

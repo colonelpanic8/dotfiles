@@ -88,6 +88,7 @@ in
 
     launchd.agents.paseo-managed-hosts = lib.mkIf pkgs.stdenv.isDarwin {
       enable = true;
+      domain = "user";
       config = {
         ProgramArguments = ["${renderRegistry}"];
         RunAtLoad = true;

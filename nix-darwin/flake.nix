@@ -41,7 +41,7 @@
     };
     nix-homebrew.url = "github:zhaofengli-wip/nix-homebrew";
     brew-src = {
-      url = "github:Homebrew/brew/6.0.11";
+      url = "github:Homebrew/brew/6.0.16";
       flake = false;
     };
 
@@ -520,10 +520,6 @@
       # Auto upgrade nix package and the daemon service.
       launchd.user = lib.mkIf (primaryUser == activePrimaryUser) {
         envVariables.PATH = config.environment.systemPath;
-        agents.hammerspoon.serviceConfig = {
-          ProgramArguments = ["/usr/bin/open" "-gja" "Hammerspoon"];
-          RunAtLoad = true;
-        };
       };
 
       programs.direnv.enable = true;
