@@ -23,15 +23,15 @@ in {
   "discourse-admin-password.age".publicKeys = keys.hostKeys;
   "discourse-secret-key-base.age".publicKeys = keys.hostKeys;
   "vaultwarden-environment-file.age".publicKeys = keys.hostKeys;
-  "org-api-passwords.age".publicKeys = keys.hostKeys ++ keys.kanivanKeys ++ keys.railbird-sf;
-  "org-api-auth-password.age".publicKeys = keys.hostKeys ++ keys.kanivanKeys ++ keys.railbird-sf;
-  "org-api-ssh-key.age".publicKeys = keys.hostKeys ++ keys.kanivanKeys ++ keys.railbird-sf;
-  "google-assistant-integration-service-key.age".publicKeys = keys.hostKeys ++ keys.kanivanKeys;
-  "zwave-js.json.age".publicKeys = keys.hostKeys ++ keys.kanivanKeys;
+  "org-api-passwords.age".publicKeys = keys.hostKeys ++ keys.sshClientKeys ++ keys.railbird-sf;
+  "org-api-auth-password.age".publicKeys = keys.hostKeys ++ keys.sshClientKeys ++ keys.railbird-sf;
+  "org-api-ssh-key.age".publicKeys = keys.hostKeys ++ keys.sshClientKeys ++ keys.railbird-sf;
+  "google-assistant-integration-service-key.age".publicKeys = keys.hostKeys ++ keys.sshClientKeys;
+  "zwave-js.json.age".publicKeys = keys.hostKeys ++ keys.sshClientKeys;
 
   # Optional Tailscale pre-auth key for unattended enrollment.
   # This is safe to commit encrypted; default plaintext is "DISABLED".
-  "tailscale-authkey.age".publicKeys = keys.kanivanKeys;
+  "tailscale-authkey.age".publicKeys = keys.sshClientKeys;
   "paseo-password-environment.age".publicKeys = keys.agenixKeys;
   "hermes-environment.age".publicKeys = keys.agenixKeys;
 }

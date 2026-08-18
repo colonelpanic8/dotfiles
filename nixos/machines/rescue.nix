@@ -1,15 +1,25 @@
 {
-  imports = [
-    ../options.nix
-    ../environment.nix
-    ../display-manager.nix
-    ../desktop.nix
-    ../taffybar.nix
-    ../sni.nix
-    ../chrome-favicon-dbus.nix
-    ../waybar.nix
-    ../rescue-image.nix
-  ];
+  inputs,
+  lib,
+  rescueMode,
+  ...
+}: {
+  imports =
+    [
+      ../options.nix
+      ../environment.nix
+      ../display-manager.nix
+      ../desktop.nix
+      ../taffybar.nix
+      ../sni.nix
+      ../chrome-favicon-dbus.nix
+      ../waybar.nix
+      ../rescue-image.nix
+    ]
+    ++ lib.optionals (rescueMode == "usb") [
+      inputs.agenix.nixosModules.default
+      ../tailscale.nix
+    ];
 
   # A normal machine identity with a deliberately small, portable module set.
   # Do not import configuration.nix here: that would evaluate and enable many

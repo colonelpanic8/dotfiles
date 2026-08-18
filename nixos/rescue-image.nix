@@ -115,7 +115,7 @@ in
         "video"
         "wheel"
       ];
-      openssh.authorizedKeys.keys = keys.kanivanKeys;
+      openssh.authorizedKeys.keys = keys.sshClientKeys;
     };
     security.sudo.wheelNeedsPassword = false;
 
@@ -218,6 +218,10 @@ in
       codexDesktop
       inputs.claude-code-nix.packages.${system}.default
       claudeDesktop
+      inputs.paseo.packages.${system}.default
+      inputs.paseo.packages.${system}.desktop
+      inputs.t3code-integration.packages.${system}.t3code
+      gh
       # Focused disk, filesystem, hardware, and network rescue kit.
       bashInteractive
       zsh

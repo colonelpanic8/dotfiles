@@ -36,42 +36,42 @@ in {
       // {
         extraGroups = extraGroupsWithWheel ++ ["dialout"];
         name = "imalison";
-        openssh.authorizedKeys.keys = kanivanKeys;
+        openssh.authorizedKeys.keys = sshClientKeys;
       };
     kat =
       userDefaults
       // {
         extraGroups = extraGroupsWithWheel;
         name = "kat";
-        openssh.authorizedKeys.keys = kanivanKeys;
+        openssh.authorizedKeys.keys = sshClientKeys;
       };
     dean =
       userDefaults
       // {
         extraGroups = extraGroupsWithWheel;
         name = "dean";
-        openssh.authorizedKeys.keys = kanivanKeys ++ deanKeys;
+        openssh.authorizedKeys.keys = sshClientKeys ++ deanKeys;
       };
     alex =
       userDefaults
       // {
         extraGroups = extraGroupsWithWheel;
         name = "alex";
-        openssh.authorizedKeys.keys = kanivanKeys ++ alexKeys;
+        openssh.authorizedKeys.keys = sshClientKeys ++ alexKeys;
       };
     loewy =
       userDefaults
       // {
         inherit extraGroups;
         name = "loewy";
-        openssh.authorizedKeys.keys = kanivanKeys ++ loewyKeys;
+        openssh.authorizedKeys.keys = sshClientKeys ++ loewyKeys;
       };
     ben =
       userDefaults
       // {
         inherit extraGroups;
         name = "ben";
-        openssh.authorizedKeys.keys = benKeys ++ kanivanKeys;
+        openssh.authorizedKeys.keys = benKeys ++ sshClientKeys;
       };
   };
 

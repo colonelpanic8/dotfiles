@@ -27,6 +27,9 @@ rec {
     "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAINYy93265G59aA1ksckjqlfeHq0vpEpzC8BwqCrpeXdh kat@Kats-Mac-mini.local"
     "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIG60q//rVd2JESQT59XLvLdsH9AdYfQXTkXMjx9pH3xp imalison@justin-bieber-creek"
   ];
+  rescueKeys = [
+    "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIEa3QDgHe6/QWK+H34a1rR0+gSCj54OORyLovHZc4Eqd imalison@nixos-rescue-usb-2026-08-18"
+  ];
   deanKeys = [
     "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAICDvbEVL+y7eV4+mtxOuHwyomBBQ6uYMesctstua20+e deanwenstrand@deans-mbp-2.lan"
     "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIFeXvPyHIYBPtn6QJtOrjlBUsZjDonVRfmWqTTM2ITWx nixos@nixos"
@@ -47,8 +50,9 @@ rec {
   loewyKeys = [
     "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDROb8zcXAgqR3xNpStjt8kSL2Tnic+aWVlQRkmmLveay0RDPatHVKiWtscBoFYvL19xwpi692nZjyPAGQBLMquVx8rexHUFVbs6UVM41Y/QV0UZLSlVM7xNl3nL/dQoxT8OC2a9WJThNm41EjFzzKAuUaWqjm4+uEsC9felBIzndlA5/bIn6EUkMb2X8qmOOIOod1UeVZeK0fWMoDdKsHtQjiQrrP4nLjOmrTQ+BF2yUHwFbW6SCQiXT1Jzq4zymnI717ZraTK0nXzl8amLrGGrh36TrR7pv9hWLeNIMCARvOtABMdQmrT1dI4FxLK1uKM696uzfoaZDUn58G2VGrd loewy gitlab"
   ];
-  agenixKeys = hostKeys ++ kanivanKeys;
-  allKeys = loewyKeys ++ mikeKeys ++ kanivanKeys ++ deanKeys ++ alexKeys ++ hostKeys;
+  sshClientKeys = kanivanKeys ++ rescueKeys;
+  agenixKeys = hostKeys ++ sshClientKeys;
+  allKeys = loewyKeys ++ mikeKeys ++ sshClientKeys ++ deanKeys ++ alexKeys ++ hostKeys;
   railbird-sf = [
     "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIDozY/3Cd9npaYPCgIn/E7MjW9c7Zb5/wTO5Qi7yRU45 root@railbird-sf"
   ];
