@@ -157,8 +157,11 @@
       paseoHome = "${homeForUser primaryUser}/.paseo";
       paseoPackage = inputs.paseo.packages.${pkgs.stdenv.hostPlatform.system}.default;
       paseoDesktopPackage = inputs.paseo.packages.${pkgs.stdenv.hostPlatform.system}.desktop;
+      ensurePaseoMcpInjection = import ../nix-shared/ensure-paseo-mcp-injection.nix {inherit pkgs;};
       paseoDaemon = pkgs.writeShellScript "paseo-daemon" ''
         set -eu
+
+        ${ensurePaseoMcpInjection} ${lib.escapeShellArg "${paseoHome}/config.json"}
 
         secret_file='${config.age.secrets.paseo-password-environment.path}'
         /bin/wait4path "$secret_file"

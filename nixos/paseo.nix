@@ -3,6 +3,7 @@
   inputs,
   lib,
   makeEnable,
+  pkgs,
   ...
 }:
 makeEnable config "myModules.paseo" false {
@@ -42,6 +43,12 @@ makeEnable config "myModules.paseo" false {
       # Upholds= makes systemd itself start the unit again whenever it is
       # found inactive while multi-user.target is up.
       upheldBy = ["multi-user.target"];
+      preStart = let
+        ensurePaseoMcpInjection = import ../nix-shared/ensure-paseo-mcp-injection.nix {inherit pkgs;};
+      in
+        lib.mkAfter ''
+          ${ensurePaseoMcpInjection} ${lib.escapeShellArg "${config.services.paseo.dataDir}/config.json"}
+        '';
     }
     (lib.mkIf config.myModules.tailscale.enable {
       after = ["agenix.service"];
