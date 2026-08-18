@@ -144,6 +144,7 @@ in {
   myModules.codexGeneratedSkills.enable = true;
   services.t3code = {
     enable = true;
+    package = pkgs.t3code;
     repositoryRoot = "${config.home.homeDirectory}/dotfiles";
   };
 

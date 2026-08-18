@@ -417,6 +417,23 @@
       nixpkgs.overlays = [
         (import ../nix-shared/overlays)
         inputs.t3code-integration.overlays.client
+        (final: prev: let
+          previousUnwrapped = prev.t3code.unwrapped;
+          unwrapped = previousUnwrapped.overrideAttrs (_finalAttrs: previousAttrs: {
+            pnpmDeps = previousAttrs.pnpmDeps.overrideAttrs (_: {
+              outputHash = "sha256-VdE+ycyF/UvPr2urLlKOt/Aa5t2WqKcidr2D0sH0eVI=";
+            });
+          });
+        in {
+          t3code = prev.t3code.overrideAttrs (previousAttrs: {
+            buildCommand =
+              builtins.replaceStrings
+              ["${previousUnwrapped}"]
+              ["${unwrapped}"]
+              previousAttrs.buildCommand;
+            passthru = (previousAttrs.passthru or {}) // {inherit unwrapped;};
+          });
+        })
         # Use codex and claude-code from dedicated flakes with cachix
         (final: prev: {
           bazel = inputs.nixpkgs-bazel.legacyPackages.${prev.stdenv.hostPlatform.system}.bazel;
