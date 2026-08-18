@@ -1041,6 +1041,11 @@ than by restricting =org-mem-watch-dirs= (the watch dirs also drive backlinks).
   :defer 1
   :custom
   ((org-mem-watch-dirs (list (expand-file-name imalison:org-dir)))
+   ;; The explicit watch directory is the complete note corpus.  Do not also
+   ;; infer directories from `recentf-list' (or agenda/ID state): stale Org
+   ;; paths there can otherwise make the initial scan fail after this
+   ;; dotfiles checkout moves.
+   (org-mem-do-look-everywhere nil)
    (org-mem-do-sync-with-org-id t)
    ;; Drop upstream's ".org_archive" from the default.  The archive files hold
    ;; ~600 dead nodes --- mostly old org-gcal event instances, where a
