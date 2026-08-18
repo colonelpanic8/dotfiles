@@ -76,6 +76,24 @@ in
         cliPackage = pkgs.codex;
         computerUseUi.enable = true;
         linuxFeatures = ["shallow-repository-watches"];
+        remoteControl = {
+          enable = true;
+          package = pkgs.codex;
+          extraPackages = with pkgs; [
+            bash
+            coreutils
+            findutils
+            git
+            gnugrep
+            gnused
+            nix
+            nodejs
+            openssh
+            ripgrep
+            zsh
+          ];
+          listen = "unix://";
+        };
       };
     };
 
