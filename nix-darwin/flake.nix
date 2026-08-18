@@ -426,11 +426,7 @@
           });
         in {
           t3code = prev.t3code.overrideAttrs (previousAttrs: {
-            buildCommand =
-              builtins.replaceStrings
-              ["${previousUnwrapped}"]
-              ["${unwrapped}"]
-              previousAttrs.buildCommand;
+            paths = [unwrapped];
             passthru = (previousAttrs.passthru or {}) // {inherit unwrapped;};
           });
         })
