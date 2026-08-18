@@ -655,11 +655,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1785794226,
-        "narHash": "sha256-uNUxtLzlqKLQC+K4OJu4YDYNfuych9579Dg8VJeuvcs=",
+        "lastModified": 1787008449,
+        "narHash": "sha256-MWtK660WrZqcY3BVrCG4e5Y/ILlJ44+zYZlmGlt3OZU=",
         "owner": "colonelpanic8",
         "repo": "paseo",
-        "rev": "a5ab286c17f9121b3e40a9a7a3918a64c16356d1",
+        "rev": "5702c3166a004d7db28cf49b5381bd3e43349f5a",
         "type": "github"
       },
       "original": {
