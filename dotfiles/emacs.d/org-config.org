@@ -725,12 +725,12 @@ specific time, they should appear in the agenda at that time!
   (add-to-list 'org-capture-templates
                `("y" "Calendar entry (Linked)" entry
                  (file ,imalison:org-calendar-file)
-                 ,(format "%s%s\n%s" "* %? %A" imalison:created-property-string "%^T")))
+                 ,(format "%s%s\n%s" "* %? %A" imalison:created-property-string "%^{When}T")))
 
   (add-to-list 'org-capture-templates
                `("c" "Calendar entry" entry
                  (file ,imalison:org-calendar-file)
-                 ,(format "%s\n%s\n%s" "* %?" imalison:created-property-string "%^T")))
+                 ,(format "%s\n%s\n%s" "* %?" imalison:created-property-string "%^{When}T")))
 
   (add-to-list 'org-capture-templates
                `("z" "Shopping Todo" entry (file ,imalison:shared-shopping-file)
