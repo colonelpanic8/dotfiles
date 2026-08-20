@@ -2108,21 +2108,38 @@
         "nixpkgs": [
           "nixpkgs"
         ],
+        "org-fc": "org-fc",
         "org-project-capture": "org-project-capture",
         "org-wild-notifier": "org-wild-notifier",
         "org-window-habit": "org-window-habit"
       },
       "locked": {
-        "lastModified": 1787040380,
-        "narHash": "sha256-9HFOEB72v4cfFvL+4OOvtEqLkIniVKPYdy06LOvh8Oc=",
+        "lastModified": 1787210377,
+        "narHash": "sha256-pzqLr4fdnsAEBskUF7Ldm3193cMJ0m/p/FGLVTTulPw=",
         "owner": "colonelpanic8",
         "repo": "org-agenda-api",
-        "rev": "b798f160a63c6954503180ecfacd1f0960d82210",
+        "rev": "4b9fc0abf05fb5698898d97e565870be6f3e8aa6",
         "type": "github"
       },
       "original": {
         "owner": "colonelpanic8",
         "repo": "org-agenda-api",
+        "type": "github"
+      }
+    },
+    "org-fc": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1768685906,
+        "narHash": "sha256-/CUrcu1bcCZr5/f7ZvyuXlSKptACBA0PtQoFkhiNZJw=",
+        "owner": "l3kn",
+        "repo": "org-fc",
+        "rev": "fce1cb265445f9c08ecb6b524562115eba9ab7a6",
+        "type": "github"
+      },
+      "original": {
+        "owner": "l3kn",
+        "repo": "org-fc",
         "type": "github"
       }
     },
