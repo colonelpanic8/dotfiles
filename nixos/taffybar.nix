@@ -311,8 +311,8 @@
     cmdline="$(${pkgs.coreutils}/bin/tr '\0' ' ' < "/proc/$owner_pid/cmdline" 2>/dev/null || true)"
     case "$cmdline" in
       *kded6*)
-        echo "status-notifier-watcher-pre-start: killing stale kded6 StatusNotifierWatcher owner pid=$owner_pid" >&2
-        kill "$owner_pid" 2>/dev/null || true
+        echo "status-notifier-watcher-pre-start: force-killing stale kded6 StatusNotifierWatcher owner pid=$owner_pid" >&2
+        kill -KILL "$owner_pid" 2>/dev/null || true
         attempts=0
         while ${pkgs.systemd}/bin/busctl --user status org.kde.StatusNotifierWatcher >/dev/null 2>&1; do
           attempts=$((attempts + 1))
