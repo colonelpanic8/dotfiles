@@ -325,6 +325,10 @@ function M.setup(ctx)
           -- inactive tiles with col.inactive_border; this is the selection
           -- highlight and it follows hyprtasking:move. Keep it clearly visible.
           border_size = 3,
+          -- Swap the stock bindings: left click enters the hovered workspace,
+          -- right click drags windows between tiles.
+          select_button = 0x110, -- BTN_LEFT
+          drag_button = 0x111, -- BTN_RIGHT
           exit_on_hovered = false,
           close_overview_on_reload = false,
           grid = {
