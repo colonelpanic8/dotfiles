@@ -9,12 +9,23 @@
   # GCC 15 ICEs while compiling Hyprland 0.55's ConfigManager. GCC 16 builds
   # the unmodified source, avoiding the old Clang-only source compatibility patch.
   hyprlandStdenv = pkgs.gcc16Stdenv;
-  baseHyprlandPackage = hyprlandInput.packages.${system}.hyprland.override {
-    stdenv = hyprlandStdenv;
-    hyprland-guiutils = pkgs.hyprland-guiutils.override {
+  hyprlockPackage = inputs.hyprlock.packages.${system}.default;
+  baseHyprlandPackage =
+    (hyprlandInput.packages.${system}.hyprland.override {
       stdenv = hyprlandStdenv;
-    };
-  };
+      hyprland-guiutils = hyprlandInput.inputs.hyprland-guiutils.packages.${system}.default.override {
+        stdenv = hyprlandStdenv;
+      };
+    }).overrideAttrs (old: {
+      # The 0.56.2 release branch rejects glaze 8 even though main accepts it,
+      # while the release's own pinned nixpkgs already packages glaze 8.
+      postPatch =
+        (old.postPatch or "")
+        + ''
+          substituteInPlace CMakeLists.txt \
+            --replace-fail 'find_package(glaze 7...<8 QUIET)' 'find_package(glaze QUIET)'
+        '';
+    });
   hyprlandPluginsForBase = pkgs.callPackage "${pkgs.path}/pkgs/applications/window-managers/hyprwm/hyprland-plugins" {
     hyprland = baseHyprlandPackage;
   };
@@ -396,7 +407,7 @@
     hyprpaper
     neowall
     hypridle
-    hyprlock
+    hyprlockPackage
     hyprcursor
     wl-clipboard
     wtype
@@ -456,6 +467,7 @@ in {
     hyprWorkspaceHistory
     hyprglass
     hyprlandConfigSyntax
+    hyprlockPackage
     hyprlandPackage
     hyprlandPluginPackages
     hyprlandStuff

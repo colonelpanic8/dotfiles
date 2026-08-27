@@ -139,11 +139,11 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
-    # page-flip/cursor/EGL fixes target the 0.55.4/Aquamarine 0.12.1 startup
-    # hang seen on ryzen-shine with NVIDIA 595.71.05. Plugins follow this input
-    # so they build against the exact same Hyprland ABI.
+    # Keep Hyprland's release and separately exposed dependencies on the exact
+    # revisions from the release lock. Plugins follow this input so they build
+    # against the exact same Hyprland ABI.
     hyprland = {
-      url = "git+https://github.com/hyprwm/Hyprland?submodules=1&rev=a0136d8c04687bb36eb8a28eb9d1ff92aea99704";
+      url = "git+https://github.com/hyprwm/Hyprland?submodules=1&rev=efb50993780079460b0cbed1363e2166a2de1d9f";
       inputs = {
         aquamarine.follows = "aquamarine";
         hyprutils.follows = "hyprutils";
@@ -151,7 +151,7 @@
     };
 
     aquamarine = {
-      url = "github:hyprwm/aquamarine/9b5f14d9483445e766294eb8fbe0b8f370269ed0";
+      url = "github:hyprwm/aquamarine/1a10fe26a9f7d989c359e6a9ea61aa2e44d06c36";
       inputs = {
         hyprutils.follows = "hyprutils";
         nixpkgs.follows = "nixpkgs";
@@ -162,13 +162,35 @@
     hyprgraphics.follows = "hyprland/hyprgraphics";
     hyprlang.follows = "hyprland/hyprlang";
     hyprutils = {
-      url = "github:hyprwm/hyprutils/40ede2e7bdec80ba5d4c443160d905e9f841ae5f";
+      url = "github:hyprwm/hyprutils/5a7b8cf221914ce4714407950e4ffbdddcd8b66f";
       inputs.nixpkgs.follows = "nixpkgs";
       inputs.systems.follows = "systems";
     };
+    hyprlock = {
+      url = "github:hyprwm/hyprlock/b222d9b1f87e980cac379371df57913a53b99d7f";
+      inputs = {
+        hyprgraphics.follows = "hyprgraphics";
+        hyprlang.follows = "hyprlang";
+        hyprutils.follows = "hyprutils";
+        hyprwayland-scanner.follows = "hyprland/hyprwayland-scanner";
+        nixpkgs.follows = "nixpkgs";
+        systems.follows = "systems";
+      };
+    };
+    xdg-desktop-portal-hyprland = {
+      url = "github:hyprwm/xdg-desktop-portal-hyprland/cc8e5ef8fb2acef3db488b9a33b0c48c2a4ee204";
+      inputs = {
+        hyprland-protocols.follows = "hyprland/hyprland-protocols";
+        hyprlang.follows = "hyprlang";
+        hyprutils.follows = "hyprutils";
+        hyprwayland-scanner.follows = "hyprland/hyprwayland-scanner";
+        nixpkgs.follows = "nixpkgs";
+        systems.follows = "systems";
+      };
+    };
 
     hyprNStack = {
-      url = "github:colonelpanic8/hyprNStack?ref=codex/hyprnstack-combined";
+      url = "github:colonelpanic8/hyprNStack?ref=codex/hyprnstack-combined-0.56";
       inputs = {
         hyprland.follows = "hyprland";
         nixpkgs.follows = "nixpkgs";
@@ -185,13 +207,12 @@
     };
 
     hyprwinview = {
-      url = "github:colonelpanic8/hyprwinview/c5c432c124a4b7c8d04996bced2821c27d9fbcc1";
+      url = "github:colonelpanic8/hyprwinview/26f4a0191aa147eb47a91a9d8053fbd9bf428a24";
       inputs.hyprland.follows = "hyprland";
     };
 
     hyprtasking = {
-      # Pending upstream PR #119: keyboard workspace jump labels.
-      url = "github:colonelpanic8/hyprtasking?ref=colonelpanic/workspace-jump-labels";
+      url = "github:raybbian/hyprtasking/2da6a6c73deb3ca23dc8334a9672d9a6cf403eef";
       inputs = {
         hyprland.follows = "hyprland";
         nixpkgs.follows = "nixpkgs";
@@ -200,13 +221,13 @@
     };
 
     hypr-workspace-history = {
-      url = "github:colonelpanic8/hypr-workspace-history/f1ce0601a476a50f05e5740073709016879844dc";
+      url = "github:colonelpanic8/hypr-workspace-history/d1178fddea5299d166daef40235a93cb21cca2bd";
       inputs.hyprland.follows = "hyprland";
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
     hypr-dynamic-cursors = {
-      url = "github:VirtCode/hypr-dynamic-cursors/da447486c84e0be81f2cdd208af1ef92469f0a88";
+      url = "github:VirtCode/hypr-dynamic-cursors/5a224284872208b5324759d535d65061043725de";
       inputs = {
         hyprland.follows = "hyprland";
         nixpkgs.follows = "nixpkgs";
