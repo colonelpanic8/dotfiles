@@ -166,7 +166,6 @@ in
         haskellPackages.dhall-json
 
         # misc
-        bazel
         perf-tools
         protobuf
 
