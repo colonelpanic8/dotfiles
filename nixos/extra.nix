@@ -16,8 +16,6 @@ makeEnable config "myModules.extra" false {
     gource
     gimp
     kef
-    roborock-control
-    rofi-roborock
     texliveSmall
     tor
     yt-dlp

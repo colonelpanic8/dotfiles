@@ -1,6 +1,7 @@
 {
   config,
   lib,
+  pkgs,
   ...
 }: {
   imports = [
@@ -77,6 +78,10 @@
 
   config = lib.mkMerge [
     {
+      environment.systemPackages = with pkgs; [
+        roborock-control
+        rofi-roborock
+      ];
       system.autoUpgrade.flake = "github:colonelpanic8/dotfiles?dir=nixos#${config.networking.hostName}";
     }
     (lib.mkIf config.services.rumno.enable {
